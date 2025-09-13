@@ -41,13 +41,17 @@ theorem max_empty : (∅ : Finset α).max = ⊥ :=
   rfl
 
 @[simp]
-theorem max_insert {a : α} {s : Finset α} : (insert a s).max = max ↑a s.max :=
+theorem max_insert [DecidableEq α] {a : α} {s : Finset α} : (insert a s).max = max ↑a s.max :=
   fold_insert_idem
 
 @[simp]
 theorem max_singleton {a : α} : Finset.max {a} = (a : WithBot α) := by
   rw [← insert_empty_eq]
   exact max_insert
+
+lemma max_pair [DecidableEq α] (a b : α) :
+    Finset.max {a, b} = max (↑a) (↑b) := by
+  simp
 
 theorem max_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.max = b := by
   obtain ⟨b, h, _⟩ := le_sup (α := WithBot α) h _ rfl
@@ -124,13 +128,17 @@ theorem min_empty : (∅ : Finset α).min = ⊤ :=
   rfl
 
 @[simp]
-theorem min_insert {a : α} {s : Finset α} : (insert a s).min = min (↑a) s.min :=
+theorem min_insert [DecidableEq α] {a : α} {s : Finset α} : (insert a s).min = min (↑a) s.min :=
   fold_insert_idem
 
 @[simp]
 theorem min_singleton {a : α} : Finset.min {a} = (a : WithTop α) := by
   rw [← insert_empty_eq]
   exact min_insert
+
+lemma min_pair [DecidableEq α] (a b : α) :
+    Finset.min {a, b} = min (↑a) (↑b) := by
+  simp
 
 theorem min_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.min = b := by
   obtain ⟨b, h, _⟩ := inf_le (α := WithTop α) h _ rfl
@@ -312,17 +320,25 @@ theorem min'_subset {s t : Finset α} (H : s.Nonempty) (hst : s ⊆ t) :
     t.min' (H.mono hst) ≤ s.min' H :=
   min'_le _ _ (hst (s.min'_mem H))
 
-theorem max'_insert (a : α) (s : Finset α) (H : s.Nonempty) :
+@[simp] theorem max'_insert [DecidableEq α] (a : α) (s : Finset α) (H : s.Nonempty) :
     (insert a s).max' (s.insert_nonempty a) = max (s.max' H) a :=
   (isGreatest_max' _ _).unique <| by
     rw [coe_insert, max_comm]
     exact (isGreatest_max' _ _).insert _
 
-theorem min'_insert (a : α) (s : Finset α) (H : s.Nonempty) :
+@[simp] theorem min'_insert [DecidableEq α] (a : α) (s : Finset α) (H : s.Nonempty) :
     (insert a s).min' (s.insert_nonempty a) = min (s.min' H) a :=
   (isLeast_min' _ _).unique <| by
     rw [coe_insert, min_comm]
     exact (isLeast_min' _ _).insert _
+
+lemma min'_pair [DecidableEq α] (a b : α) :
+    min' {a, b} (insert_nonempty _ _) = min a b := by
+  simp [min_comm]
+
+lemma max'_pair [DecidableEq α] (a b : α) :
+    max' {a, b} (insert_nonempty _ _) = max a b := by
+  simp [max_comm]
 
 theorem lt_max'_of_mem_erase_max' [DecidableEq α] {a : α} (ha : a ∈ s.erase (s.max' H)) :
     a < s.max' H :=
