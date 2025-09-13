@@ -713,7 +713,7 @@ section Congr
 namespace WithSeminorms
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-variable [NormedField 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
+variable [SeminormedRing 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 /-- Two families of seminorms `p` and `q` on the same space generate the same topology
