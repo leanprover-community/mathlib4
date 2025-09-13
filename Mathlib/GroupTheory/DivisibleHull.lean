@@ -215,7 +215,6 @@ theorem qsmul_def (a : ℚ) (x : DivisibleHull M) :
     a • x = (SignType.sign a : ℤ) • (show ℚ≥0 from ⟨|a|, abs_nonneg _⟩) • x :=
   rfl
 
-@[simp]
 theorem zero_qsmul (x : DivisibleHull M) : (0 : ℚ) • x = 0 := by
   simp [qsmul_def]
 
