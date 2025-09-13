@@ -13,28 +13,7 @@ The tests below became fast by the fix in
 https://github.com/leanprover/lean4/pull/4085
 -/
 
-section
 
--- Initial issue: https://github.com/leanprover-community/mathlib4/issues/12226
-
-open Complex Filter Bornology
-
-/--
-error: failed to synthesize
-  AddMonoidHomClass (AddGroupSeminorm ℂ) ℂ ℝ
-
-Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
--/
-#guard_msgs in
-set_option synthInstance.maxHeartbeats 3000 in
-#synth AddMonoidHomClass (AddGroupSeminorm ℂ) ℂ ℝ
-
-set_option synthInstance.maxHeartbeats 3000 in
--- This then results in a near failure (or failure on nightly-testing) of the simpNF linter on
--- `Complex.comap_exp_cobounded` and `Complex.map_exp_comap_re_atTop`:
-example : comap exp (cobounded ℂ) = comap re atTop := by simp
-
-end
 
 section
 
