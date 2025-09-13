@@ -3,9 +3,9 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Analysis.Normed.Affine.Isometry
 import Mathlib.Topology.Algebra.ContinuousAffineMap
 import Mathlib.Analysis.Normed.Operator.NormedSpace
+import Mathlib.Analysis.Normed.Group.AddTorsor
 
 /-!
 # Continuous affine maps between normed spaces.
