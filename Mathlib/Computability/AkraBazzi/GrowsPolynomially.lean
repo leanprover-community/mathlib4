@@ -10,10 +10,10 @@ import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 
 /-!
-# Akra-Bazzi theorem: The polynomial growth condition
+# Akra–Bazzi theorem: The polynomial growth condition
 
 This file defines and develops an API for the polynomial growth condition that appears in the
-statement of the Akra-Bazzi theorem: for the Akra-Bazzi theorem to hold, the function `g` must
+statement of the Akra–Bazzi theorem: for the Akra–Bazzi theorem to hold, the function `g` must
 satisfy the condition that `c₁ g(n) ≤ g(u) ≤ c₂ g(n)`, for u between b*n and n for any constant
 `b ∈ (0,1)`.
 
@@ -24,6 +24,8 @@ only requiring it for `b = 1 / 2` or any other particular value between 0 and 1.
 could in principle make it harder to prove that a particular function grows polynomially,
 this issue doesn't seem to arise in practice.
 
+## Tags
+Akra Bazzi, Akra-Bazzi, Akra–Bazzi, polynomial growth condition
 -/
 
 open Finset Real Filter Asymptotics
@@ -31,7 +33,7 @@ open scoped Topology
 
 namespace AkraBazziRecurrence
 
-/-- The growth condition that the function `g` must satisfy for the Akra-Bazzi theorem to apply.
+/-- The growth condition that the function `g` must satisfy for the Akra–Bazzi theorem to apply.
 It roughly states that `c₁ g(n) ≤ g(u) ≤ c₂ g(n)`, for `u` between `b*n` and `n` for any
 constant `b ∈ (0,1)`. -/
 def GrowsPolynomially (f : ℝ → ℝ) : Prop :=
