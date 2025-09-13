@@ -1352,4 +1352,13 @@ lemma rescale_to_shell [NormedAddCommGroup F] [NormedSpace 𝕜 F] {c : 𝕜} (h
     ∃ d : 𝕜, d ≠ 0 ∧ ‖d • x‖ < ε ∧ (ε/‖c‖ ≤ ‖d • x‖) ∧ (‖d‖⁻¹ ≤ ε⁻¹ * ‖c‖ * ‖x‖) :=
   rescale_to_shell_semi_normed hc εpos (norm_ne_zero_iff.mpr hx)
 
+#where
+example [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] (f : E →ₗ[𝕜] F) (s : Set F) :
+    Absorbent 𝕜 s → s ⊆ Set.range f → s = Set.univ := by
+  intro hs_abs hs_sub
+  rw [s.eq_univ_iff_forall]
+  sorry
+
+
+
 end normSeminorm
