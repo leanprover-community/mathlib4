@@ -171,8 +171,7 @@ theorem minpoly_eq_pow_coprime {m : ℕ} (hcop : Nat.Coprime m n) :
   · intro u hunit _ _
     congr
     simp [Nat.isUnit_iff.mp hunit]
-  · intro a p _ hprime
-    intro hind h hcop
+  · intro a p _ hprime hind h hcop
     rw [hind h (Nat.Coprime.coprime_mul_left hcop)]; clear hind
     replace hprime := hprime.nat_prime
     have hdiv := (Nat.Prime.coprime_iff_not_dvd hprime).1 (Nat.Coprime.coprime_mul_right hcop)

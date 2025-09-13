@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen
+Authors: Anne Baanen, Edward van de Meent
 -/
 import Mathlib.Tactic.TacticAnalysis
 import Mathlib.Tactic.ExtractGoal
@@ -183,3 +183,30 @@ def terminalToGrind : TacticAnalysis.Config where
       logWarningAt stx m!"replace the proof with 'grind': {seq}"
       if oldHeartbeats * 2 < newHeartbeats then
         logWarningAt stx m!"'grind' is slower than the original: {oldHeartbeats} -> {newHeartbeats}"
+
+-- TODO: add compatibility with `rintro` and `intros`
+/-- Suggest merging two adjacent `intro` tactics which don't pattern match. -/
+register_option linter.tacticAnalysis.introMerge : Bool := {
+  defValue := true
+}
+
+@[tacticAnalysis linter.tacticAnalysis.introMerge, inherit_doc linter.tacticAnalysis.introMerge]
+def introMerge : TacticAnalysis.Config := .ofComplex {
+  out := Option (TSyntax `tactic)
+  ctx := Array (Array Term)
+  trigger ctx stx :=
+    match stx with
+    | `(tactic| intro%$x $args*) => .continue ((ctx.getD #[]).push
+      -- if `intro` is used without arguments, treat it as `intro _`
+      <| if args.size = 0 then #[⟨mkHole x⟩] else args)
+    | _ => if let some args := ctx then if args.size > 1 then .accept args else .skip else .skip
+  test ctx goal := do
+    let ctxT := ctx.flatten
+    let tac ← `(tactic| intro $ctxT*)
+    try
+      let _ ← Lean.Elab.runTactic goal tac
+      return some tac
+    catch _e => -- if for whatever reason we can't run `intro` here.
+      return none
+  tell _stx _old _oldHeartbeats new _newHeartbeats :=
+    if let some tac := new then m!"Try this: {tac}" else none}
