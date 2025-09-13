@@ -93,9 +93,10 @@ theorem exp_zero : exp 0 = 1 := by
   rcases j with - | j
   · exact absurd hj (not_le_of_gt zero_lt_one)
   · dsimp [exp']
-    induction' j with j ih
-    · simp
-    · rw [← ih (by simp)]
+    induction j with
+    | zero => simp
+    | succ j ih =>
+      rw [← ih (by simp)]
       simp only [sum_range_succ, pow_succ]
       simp
 
@@ -455,7 +456,7 @@ lemma norm_exp_sub_sum_le_exp_norm_sub_sum (x : ℂ) (n : ℕ) :
     rw [sum_range_sub_sum_range hj, sum_range_sub_sum_range hj]
     refine (IsAbsoluteValue.abv_sum norm ..).trans_eq ?_
     congr with i
-    simp [Complex.norm_pow]
+    simp [Complex.norm_pow, Complex.norm_natCast]
   _ ≤ Real.exp ‖x‖ - ∑ m ∈ range n, ‖x‖ ^ m / m.factorial := by
     gcongr
     exact Real.sum_le_exp_of_nonneg (norm_nonneg _) _
@@ -549,7 +550,7 @@ theorem expNear_zero (x r) : expNear 0 x r = r := by simp [expNear]
 
 @[simp]
 theorem expNear_succ (n x r) : expNear (n + 1) x r = expNear n x (1 + x / (n + 1) * r) := by
-  simp [expNear, range_succ, mul_add, add_left_comm, add_assoc, pow_succ, div_eq_mul_inv,
+  simp [expNear, range_add_one, mul_add, add_left_comm, add_assoc, pow_succ, div_eq_mul_inv,
     Nat.factorial]
   ac_rfl
 
