@@ -346,6 +346,13 @@ theorem multipliable_mabs_iff [CommGroup α] [LinearOrder α] [IsOrderedMonoid �
 
 alias ⟨Summable.of_abs, Summable.abs⟩ := summable_abs_iff
 
+-- This should also work for any `AddCommGroup α` with `IsOrderedCancelAddMonoid α`:
+-- we are only use multiplication by `-1` here.
+theorem Summable.alternating [Ring α] [LinearOrder α] [IsOrderedRing α]
+  [UniformSpace α] [IsUniformAddGroup α] [CompleteSpace α] {f : ℕ → α} (hf : Summable f) :
+    Summable (fun n => (-1) ^ n * f n) :=
+  Summable.of_abs (by simpa [summable_abs_iff])
+
 theorem Finite.of_summable_const [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
     [TopologicalSpace α] [Archimedean α]
     [OrderClosedTopology α] {b : α} (hb : 0 < b) (hf : Summable fun _ : ι ↦ b) :
