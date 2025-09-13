@@ -115,19 +115,17 @@ variable {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A]
 matrices, operators on a Hilbert space, elements of a C⋆-algebra, etc. -/
 noncomputable def log (a : A) : A := cfc Real.log a
 
-@[simp]
+@[simp, grind]
 protected lemma _root_.IsSelfAdjoint.log {a : A} : IsSelfAdjoint (log a) := cfc_predicate _ a
 
+@[simp, grind] lemma log_zero : log (0 : A) = 0 := by simp [log]
 
-@[simp] lemma log_zero : log (0 : A) = 0 := by simp [log]
+@[simp, grind] lemma log_one : log (1 : A) = 0 := by simp [log]
 
-@[simp] lemma log_one : log (1 : A) = 0 := by simp [log]
-
-@[simp]
+@[simp, grind =]
 lemma log_algebraMap {r : ℝ} : log (algebraMap ℝ A r) = algebraMap ℝ A (Real.log r) := by
   simp [log]
 
--- TODO: Relate the hypothesis to a notion of strict positivity
 lemma log_smul {r : ℝ} (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, x ≠ 0) (hr : r ≠ 0)
     (ha₁ : IsSelfAdjoint a := by cfc_tac) :
     log (r • a) = algebraMap ℝ A (Real.log r) + log a := by
@@ -137,7 +135,15 @@ lemma log_smul {r : ℝ} (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, x ≠ 0) (hr
       cfc_congr (Real.log_mul hr <| ha₂ · ·)
     _ = _ := by rw [cfc_const_add _ _ _]
 
--- TODO: Relate the hypothesis to a notion of strict positivity
+@[grind =]
+lemma log_smul' [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A] {r : ℝ} (a : A)
+    (hr : 0 < r) (ha : IsStrictlyPositive a := by cfc_tac) :
+    log (r • a) = algebraMap ℝ A (Real.log r) + log a := by
+  have ha₂ : ∀ x ∈ spectrum ℝ a, x ≠ 0 := by
+    rw [StarOrderedRing.isStrictlyPositive_iff_spectrum_pos (R := ℝ) a] at ha
+    grind
+  grind [log_smul]
+
 lemma log_pow (n : ℕ) (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, x ≠ 0)
     (ha₁ : IsSelfAdjoint a := by cfc_tac) : log (a ^ n) = n • log a := by
   have ha₂' : ContinuousOn Real.log (spectrum ℝ a) := by fun_prop (disch := assumption)
@@ -145,22 +151,35 @@ lemma log_pow (n : ℕ) (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, x ≠ 0)
   rw [log, ← cfc_pow_id (R := ℝ) a n ha₁, ← cfc_comp' Real.log (· ^ n) a ha₂'', log]
   simp_rw [Real.log_pow, ← Nat.cast_smul_eq_nsmul ℝ n, cfc_const_mul (n : ℝ) Real.log a ha₂']
 
+@[grind =]
+lemma log_pow' [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A] (n : ℕ) (a : A)
+    (ha : IsStrictlyPositive a := by cfc_tac) :
+    log (a ^ n) = n • log a := by
+  have ha₂ : ∀ x ∈ spectrum ℝ a, x ≠ 0 := by
+    rw [StarOrderedRing.isStrictlyPositive_iff_spectrum_pos (R := ℝ) a] at ha
+    grind
+  grind [log_pow]
+
 variable [CompleteSpace A]
 
-lemma log_exp (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : log (NormedSpace.exp ℝ a) = a := by
+open NormedSpace in
+@[grind =]
+lemma log_exp (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : log (exp ℝ a) = a := by
   have hcont : ContinuousOn Real.log (Real.exp '' spectrum ℝ a) := by fun_prop (disch := simp)
   rw [log, ← real_exp_eq_normedSpace_exp, ← cfc_comp' Real.log Real.exp a hcont]
   simp [cfc_id' (R := ℝ) a]
 
--- TODO: Relate the hypothesis to a notion of strict positivity
-lemma exp_log (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x) (ha₁ : IsSelfAdjoint a := by cfc_tac) :
-    NormedSpace.exp ℝ (log a) = a := by
-  have ha₃ : ContinuousOn Real.log (spectrum ℝ a) := by
-    have : ∀ x ∈ spectrum ℝ a, x ≠ 0 := by peel ha₂ with x hx h; exact h.ne'
-    fun_prop (disch := assumption)
-  rw [← real_exp_eq_normedSpace_exp .log, log, ← cfc_comp' Real.exp Real.log a (by fun_prop) ha₃]
-  conv_rhs => rw [← cfc_id (R := ℝ) a ha₁]
-  exact cfc_congr (Real.exp_log <| ha₂ · ·)
+open NormedSpace in
+@[grind =]
+lemma exp_log [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A] (a : A)
+    (ha : IsStrictlyPositive a := by cfc_tac) : exp ℝ (log a) = a := by
+  have ha₂ : ∀ x ∈ spectrum ℝ a, x ≠ 0 := by
+    rw [StarOrderedRing.isStrictlyPositive_iff_spectrum_pos (R := ℝ) a] at ha
+    grind
+  rw [← real_exp_eq_normedSpace_exp .log, log, ← cfc_comp' Real.exp Real.log a (by fun_prop)]
+  conv_rhs => rw [← cfc_id (R := ℝ) a]
+  refine cfc_congr fun x hx => ?_
+  grind [Real.exp_log]
 
 end real_log
 end CFC
