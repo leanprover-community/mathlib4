@@ -11,7 +11,8 @@ import Mathlib.Algebra.Order.Hom.Monoid
 # Equivalence between `ℕ+` and `nonZeroDivisors ℕ`
 -/
 
-@[simps] -- PNat.equivNonZeroDivisorsNat_apply_coe
+/-- `ℕ+` is equivalent to `nonZeroDivisors ℕ` in terms of order and multiplication. -/
+@[simps]
 def PNat.equivNonZeroDivisorsNat : ℕ+ ≃*o nonZeroDivisors ℕ where
   toFun x := ⟨x.val, by simp⟩
   invFun x := ⟨x.val, by simp [Nat.pos_iff_ne_zero]⟩

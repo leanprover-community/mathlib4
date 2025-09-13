@@ -67,9 +67,9 @@ theorem mk_eq_mk {m m' : M} {s s' : ℕ+} :
   simp_rw [Submonoid.smul_def]
   constructor
   · rintro ⟨u, hu⟩
-    exact ⟨↑ⁿ.symm u, hu⟩
+    exact ⟨↑ⁿ.symm u, by simpa using hu⟩
   · rintro ⟨u, hu⟩
-    exact ⟨↑ⁿ u, hu⟩
+    exact ⟨↑ⁿ u, by simpa using hu⟩
 
 /-- If `f : M → ℕ+ → α` respects the equivalence on localization,
 lift it to a function `DivisibleHull M → α`. -/
@@ -79,7 +79,7 @@ def liftOn {α : Type*} (x : DivisibleHull M)
   LocalizedModule.liftOn x (fun p ↦ f p.1 (↑ⁿ.symm p.2)) fun p p' heq ↦
     h p.1 p'.1 (↑ⁿ.symm p.2) (↑ⁿ.symm p'.2) ((by
       obtain ⟨u, hu⟩ := heq
-      exact mk_eq_mk.mpr ⟨↑ⁿ.symm u, hu⟩))
+      exact mk_eq_mk.mpr ⟨↑ⁿ.symm u, by simpa using hu⟩))
 
 @[simp]
 theorem liftOn_mk {α : Type*} (m : M) (s : ℕ+)
@@ -98,10 +98,10 @@ def liftOn₂ {α : Type*} (x y : DivisibleHull M)
     h p.1 q.1 p'.1 q'.1 (↑ⁿ.symm p.2) (↑ⁿ.symm q.2) (↑ⁿ.symm p'.2) (↑ⁿ.symm q'.2)
       ((by
         obtain ⟨u, hu⟩ := heq
-        exact mk_eq_mk.mpr ⟨↑ⁿ.symm u, hu⟩
+        exact mk_eq_mk.mpr ⟨↑ⁿ.symm u, by simpa using hu⟩
       )) ((by
         obtain ⟨u, hu⟩ := heq'
-        exact mk_eq_mk.mpr ⟨↑ⁿ.symm u, hu⟩
+        exact mk_eq_mk.mpr ⟨↑ⁿ.symm u, by simpa using hu⟩
       ))
 
 @[simp]
@@ -122,9 +122,9 @@ instance decidable_liftOn₂ (f : M → ℕ+ → M → ℕ+ → Prop)
   · intro a1 a2 b1 b2 h1 h2
     refine h a1.1 a2.1 b1.1 b2.1 (↑ⁿ.symm a1.2) (↑ⁿ.symm a2.2) (↑ⁿ.symm b1.2) (↑ⁿ.symm b2.2) ?_ ?_
     · obtain ⟨u, hu⟩ := h1
-      exact mk_eq_mk.mpr ⟨↑ⁿ.symm u, hu⟩
+      exact mk_eq_mk.mpr ⟨↑ⁿ.symm u, by simpa using hu⟩
     · obtain ⟨u, hu⟩ := h2
-      exact mk_eq_mk.mpr ⟨↑ⁿ.symm u, hu⟩
+      exact mk_eq_mk.mpr ⟨↑ⁿ.symm u, by simpa using hu⟩
 
 theorem mk_add_mk {m1 m2 : M} {s1 s2 : ℕ+} :
     mk m1 s1 + mk m2 s2 = mk (s2.val • m1 + s1.val • m2) (s1 * s2) := LocalizedModule.mk_add_mk
