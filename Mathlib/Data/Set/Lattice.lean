@@ -1034,6 +1034,9 @@ theorem sUnion_inter_sUnion {s t : Set (Set α)} :
     ⋃₀ s ∩ ⋃₀ t = ⋃ p ∈ s ×ˢ t, (p : Set α × Set α).1 ∩ p.2 :=
   sSup_inf_sSup
 
+lemma biUnion_diff_eq_sUnion (s : Set (Set α)) (t : Set α) : ⋃ x ∈ s, (x \ t) = (⋃₀ s) \ t := by
+  simp_rw [sUnion_eq_biUnion, diff_eq_compl_inter, inter_iUnion₂]
+
 theorem biUnion_iUnion (s : ι → Set α) (t : α → Set β) :
     ⋃ x ∈ ⋃ i, s i, t x = ⋃ (i) (x ∈ s i), t x := by simp [@iUnion_comm _ ι]
 
