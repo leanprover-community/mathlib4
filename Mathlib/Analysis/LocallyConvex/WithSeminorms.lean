@@ -602,8 +602,8 @@ theorem continuous_of_continuous_comp {q : SeminormFamily 𝕝₂ F ι'} [Topolo
   convert (hf i).continuousAt.tendsto
   exact (map_zero _).symm
 
-theorem continuous_iff_continuous_comp {q : SeminormFamily 𝕜₂ F ι'} [TopologicalSpace E]
-    [IsTopologicalAddGroup E] [TopologicalSpace F] (hq : WithSeminorms q) (f : E →ₛₗ[σ₁₂] F) :
+theorem continuous_iff_continuous_comp {q : SeminormFamily 𝕝₂ F ι'} [TopologicalSpace E]
+    [IsTopologicalAddGroup E] [TopologicalSpace F] (hq : WithSeminorms q) (f : E →ₛₗ[τ₁₂] F) :
     Continuous f ↔ ∀ i, Continuous ((q i).comp f) :=
   ⟨fun h i => (hq.continuous_seminorm i).comp h, continuous_of_continuous_comp hq f⟩
 
