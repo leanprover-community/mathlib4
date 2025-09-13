@@ -22,7 +22,7 @@ variable (X) in
 commutative monoid object. -/
 class abbrev CommGrpObj := GrpObj X, IsCommMon X
 
-@[deprecated (since := "2025-09-13")] alias abbrev := CommGrpObj
+@[deprecated (since := "2025-09-13")] alias CommGrp_Class := CommGrpObj
 
 section CommGrp_
 
