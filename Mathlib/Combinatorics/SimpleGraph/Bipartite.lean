@@ -299,19 +299,16 @@ structure CompleteBipartiteSubgraph (G : SimpleGraph V) (s t : ℕ) where
   /-- The "right" subset of size `t`. -/
   right : Finset V
   card_right : #right = t
-  Adj : ∀ v₁ ∈ left, ∀ v₂ ∈ right, G.Adj v₁ v₂
+  /-- Vertices in the "left" and "right" subsets are adjacent. -/
+  Adj : ∀ ⦃v₁⦄, v₁ ∈ left → ∀ ⦃v₂⦄, v₂ ∈ right → G.Adj v₁ v₂
 
 variable {s t : ℕ} (B : G.CompleteBipartiteSubgraph s t)
 
 namespace CompleteBipartiteSubgraph
 
 /-- The "left" and "right" parts in a `G.CompleteBipartiteSubgraph s t` are disjoint. -/
-theorem disjoint_left_right : Disjoint B.left B.right := by
-  rw [disjoint_left]
-  intro v h₁
-  have nhadj : ¬G.Adj v v := G.loopless v
-  contrapose! nhadj with h₂
-  exact B.Adj v h₁ v h₂
+theorem disjoint_left_right : Disjoint B.left B.right :=
+  disjoint_left.mpr fun v hv₁ hv₂ ↦ (G.loopless v) (B.Adj hv₁ hv₂)
 
 /-- The finset of vertices in a `G.CompleteBipartiteSubgraph s t`. -/
 @[simp]
@@ -334,21 +331,21 @@ noncomputable def toCopy : Copy (completeBipartiteGraph (Fin s) (Fin t)) G := by
   let f : Fin s ⊕ Fin t ↪ V := by
     refine ⟨Sum.elim (Subtype.val ∘ fs) (Subtype.val ∘ ft), fun st₁ st₂ ↦ ?_⟩
     match st₁, st₂ with
-    | Sum.inl s₁, Sum.inl s₂ => simp [← Subtype.ext_iff_val]
+    | Sum.inl s₁, Sum.inl s₂ => simp [← Subtype.ext_iff]
     | Sum.inr t₁, Sum.inl s₂ =>
-      simpa using (B.Adj (fs s₂) (fs s₂).prop (ft t₁) (ft t₁).prop).ne'
+      simpa using (B.Adj (fs s₂).prop (ft t₁).prop).ne'
     | Sum.inl s₁, Sum.inr t₂ =>
-      simpa using (B.Adj (fs s₁) (fs s₁).prop (ft t₂) (ft t₂).prop).symm.ne'
-    | Sum.inr t₁, Sum.inr t₂ => simp [← Subtype.ext_iff_val]
+      simpa using (B.Adj (fs s₁).prop (ft t₂).prop).symm.ne'
+    | Sum.inr t₁, Sum.inr t₂ => simp [← Subtype.ext_iff]
   refine ⟨⟨f.toFun, fun {st₁ st₂} hadj ↦ ?_⟩, f.injective⟩
   rcases hadj with ⟨hst₁, hst₂⟩ | ⟨hst₁, hst₂⟩
   all_goals dsimp [f]
   · rw [← Sum.inl_getLeft st₁ hst₁, ← Sum.inr_getRight st₂ hst₂,
       Sum.elim_inl, Sum.elim_inr]
-    exact B.Adj (fs _) (by simp) (ft _) (by simp)
+    exact B.Adj (by simp) (by simp)
   · rw [← Sum.inr_getRight st₁ hst₁, ← Sum.inl_getLeft st₂ hst₂,
       Sum.elim_inl, Sum.elim_inr, adj_comm]
-    exact B.Adj (fs _) (by simp) (ft _) (by simp)
+    exact B.Adj (by simp) (by simp)
 
 /-- A copy of a complete bipartite graph identifies a complete bipartite subgraph. -/
 def ofCopy (f : Copy (completeBipartiteGraph α β) G) :
