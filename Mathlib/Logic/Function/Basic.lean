@@ -52,9 +52,7 @@ lemma hfunext {α α' : Sort u} {β : α → Sort v} {β' : α' → Sort v} {f :
   have : ∀ a, f a ≍ f' a := fun a ↦ h a a (HEq.refl a)
   have : β = β' := by funext a; exact type_eq_of_heq (this a)
   subst this
-  apply heq_of_eq
-  funext a
-  exact eq_of_heq (this a)
+  grind
 
 theorem ne_iff {β : α → Sort*} {f₁ f₂ : ∀ a, β a} : f₁ ≠ f₂ ↔ ∃ a, f₁ a ≠ f₂ a :=
   funext_iff.not.trans not_forall
