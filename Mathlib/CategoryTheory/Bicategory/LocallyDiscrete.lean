@@ -55,6 +55,9 @@ instance [DecidableEq C] : DecidableEq (LocallyDiscrete C) :=
 instance [Inhabited C] : Inhabited (LocallyDiscrete C) :=
   ⟨⟨default⟩⟩
 
+-- abbrev Hom [CategoryStruct.{v} C] (a b : LocallyDiscrete C) : Type v :=
+--   Discrete (a.as ⟶ b.as)
+
 instance categoryStruct [CategoryStruct.{v} C] : CategoryStruct (LocallyDiscrete C) where
   Hom a b := Discrete (a.as ⟶ b.as)
   id a := ⟨𝟙 a.as⟩
@@ -62,8 +65,12 @@ instance categoryStruct [CategoryStruct.{v} C] : CategoryStruct (LocallyDiscrete
 
 variable [CategoryStruct.{v} C]
 
+abbrev mkHom {a b : C} (f : a ⟶ b) :
+    mk a ⟶ mk b :=
+  ⟨f⟩
+
 @[simp]
-lemma id_as (a : LocallyDiscrete C) : (𝟙 a : Discrete (a.as ⟶ a.as)).as = 𝟙 a.as :=
+lemma id_as (a : LocallyDiscrete C) : (𝟙 a : a ⟶ a).as = 𝟙 a.as :=
   rfl
 
 @[simp]
@@ -80,6 +87,20 @@ instance subsingleton2Hom {a b : LocallyDiscrete C} (f g : a ⟶ b) : Subsinglet
 /-- Extract the equation from a 2-morphism in a locally discrete 2-category. -/
 theorem eq_of_hom {X Y : LocallyDiscrete C} {f g : X ⟶ Y} (η : f ⟶ g) : f = g :=
   Discrete.ext η.1.1
+
+end LocallyDiscrete
+
+namespace LocallyDiscrete
+
+variable [Category.{v} C]
+
+def idIso (a : C) :
+    mkHom (𝟙 a) ≅ 𝟙 (mk a) :=
+  eqToIso rfl
+
+def compIso {a b c : C} (f : a ⟶ b) (g : b ⟶ c) :
+    mkHom (f ≫ g) ≅ mkHom f ≫ mkHom g :=
+  eqToIso rfl
 
 end LocallyDiscrete
 
