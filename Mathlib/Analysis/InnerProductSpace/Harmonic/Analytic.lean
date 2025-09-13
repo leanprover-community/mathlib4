@@ -13,7 +13,7 @@ import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
 
 If `f : ℂ → ℝ` is harmonic at `x`, we show that `∂f/∂1 - I • ∂f/∂I` is complex-analytic at `x`.
 
-TODO: As soon as PR #9598 (feat(Analysis/Complex): HasPrimitives on disc) is merged, extend this to
+TODO: As soon as PR https://github.com/leanprover-community/mathlib4/issues/9598 (feat(Analysis/Complex): HasPrimitives on disc) is merged, extend this to
 show that `f` itself is locally the real part of a holomorphic function, and hence real-analytic.
 -/
 

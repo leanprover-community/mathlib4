@@ -7,13 +7,13 @@ import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 import Mathlib.CategoryTheory.Monoidal.Comon_
 
 /-!
-# Comonoid objects in a cartesian monoidal category.
+# Comonoid objects in a Cartesian monoidal category.
 
-The category of comonoid objects in a cartesian monoidal category is equivalent
+The category of comonoid objects in a Cartesian monoidal category is equivalent
 to the category itself, via the forgetful functor.
 -/
 
-open CategoryTheory MonoidalCategory CartesianMonoidalCategory Limits Comon_Class
+open CategoryTheory MonoidalCategory CartesianMonoidalCategory Limits ComonObj
 
 universe v u
 
@@ -24,7 +24,7 @@ variable (C : Type u) [Category.{v} C] [CartesianMonoidalCategory C]
 attribute [local simp] leftUnitor_hom rightUnitor_hom
 
 /--
-The functor from a cartesian monoidal category to comonoids in that category,
+The functor from a Cartesian monoidal category to comonoids in that category,
 equipping every object with the diagonal map as a comultiplication.
 -/
 def cartesianComon_ : C ⥤ Comon_ C where
@@ -39,11 +39,11 @@ def cartesianComon_ : C ⥤ Comon_ C where
 
 variable {C}
 
-@[simp] theorem counit_eq_toUnit (A : C) [Comon_Class A] : ε[A] = toUnit _ := by ext
+@[simp] theorem counit_eq_toUnit (A : C) [ComonObj A] : ε[A] = toUnit _ := by ext
 
 @[deprecated (since := "2025-05-09")] alias counit_eq_from := counit_eq_toUnit
 
-@[simp] theorem comul_eq_lift (A : C) [Comon_Class A] : Δ[A] = lift (𝟙 _) (𝟙 _) := by
+@[simp] theorem comul_eq_lift (A : C) [ComonObj A] : Δ[A] = lift (𝟙 _) (𝟙 _) := by
   ext
   · simpa using comul_counit A =≫ fst _ _
   · simpa using counit_comul A =≫ snd _ _
@@ -51,7 +51,7 @@ variable {C}
 @[deprecated (since := "2025-05-09")] alias comul_eq_diag := comul_eq_lift
 
 /--
-Every comonoid object in a cartesian monoidal category is equivalent to
+Every comonoid object in a Cartesian monoidal category is equivalent to
 the canonical comonoid structure on the underlying object.
 -/
 @[simps] def iso_cartesianComon_ (A : Comon_ C) : A ≅ (cartesianComon_ C).obj A.X :=
@@ -59,7 +59,7 @@ the canonical comonoid structure on the underlying object.
     inv := .mk' (𝟙 _) }
 
 /--
-The category of comonoid objects in a cartesian monoidal category is equivalent
+The category of comonoid objects in a Cartesian monoidal category is equivalent
 to the category itself, via the forgetful functor.
 -/
 @[simps] def comonEquiv : Comon_ C ≌ C where
