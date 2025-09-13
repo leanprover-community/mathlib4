@@ -29,10 +29,10 @@ protected lemma isOrderedRing [IsOrderedRing R] (zero : f 0 = 0) (one : f 1 = 1)
   letI _ : PartialOrder S := PartialOrder.lift f hf
   { __ := hf.isOrderedAddMonoid f zero add (swap nsmul)
     zero_le_one := show f 0 ≤ f 1 by simp only [zero, one, zero_le_one]
-    mul_le_mul_of_nonneg_left a b c h hc := show f (c * a) ≤ f (c * b) by
-      rw [mul, mul]; refine mul_le_mul_of_nonneg_left h ?_; rwa [← zero]
-    mul_le_mul_of_nonneg_right a b c h hc := show f (a * c) ≤ f (b * c) by
-      rw [mul, mul]; refine mul_le_mul_of_nonneg_right h ?_; rwa [← zero] }
+    mul_le_mul_of_nonneg_left a ha b c hbc := show f (a * b) ≤ f (a * c) by
+      rw [mul, mul]; refine mul_le_mul_of_nonneg_left hbc ?_; rwa [← zero]
+    mul_le_mul_of_nonneg_right a ha b c hbc := show f (b * a) ≤ f (c * a) by
+      rw [mul, mul]; refine mul_le_mul_of_nonneg_right hbc ?_; rwa [← zero] }
 
 /-- Pullback a `IsStrictOrderedRing` under an injective map. -/
 protected lemma isStrictOrderedRing [IsStrictOrderedRing R] (zero : f 0 = 0) (one : f 1 = 1)
@@ -47,10 +47,10 @@ protected lemma isStrictOrderedRing [IsStrictOrderedRing R] (zero : f 0 = 0) (on
   { __ := hf.isOrderedCancelAddMonoid f zero add (swap nsmul)
     __ := domain_nontrivial f zero one
     __ := hf.isOrderedRing f zero one add mul nsmul npow natCast
-    mul_lt_mul_of_pos_left a b c h hc := show f (c * a) < f (c * b) by
-      simpa only [mul, zero] using mul_lt_mul_of_pos_left ‹f a < f b› (by rwa [← zero])
-    mul_lt_mul_of_pos_right a b c h hc := show f (a * c) < f (b * c) by
-      simpa only [mul, zero] using mul_lt_mul_of_pos_right ‹f a < f b› (by rwa [← zero]) }
+    mul_lt_mul_of_pos_left a ha b c hbc := show f (a * b) < f (a * c) by
+      rw [mul, mul]; refine mul_lt_mul_of_pos_left hbc ?_; rwa [← zero]
+    mul_lt_mul_of_pos_right a ha b c hbc := show f (b * a) < f (c * a) by
+      rw [mul, mul]; refine mul_lt_mul_of_pos_right hbc ?_; rwa [← zero] }
 
 @[deprecated (since := "2025-04-10")]
 protected alias orderedSemiring := Function.Injective.isOrderedRing
