@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Group.TransferInstance
-import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.InjSurj
 
 /-!
@@ -13,7 +12,7 @@ import Mathlib.Algebra.GroupWithZero.InjSurj
 This continues the pattern set in `Mathlib/Algebra/Group/TransferInstance.lean`.
 -/
 
-assert_not_exists Ring
+assert_not_exists MulAction Ring
 
 universe u v
 
@@ -42,19 +41,5 @@ protected abbrev mulZeroOneClass [MulZeroOneClass β] : MulZeroOneClass α := by
   let one := e.one
   let mul := e.mul
   apply e.injective.mulZeroOneClass _ <;> intros <;> exact e.apply_symm_apply _
-
-variable (M : Type*) [Monoid M]
-
-/-- Transfer `DistribMulAction` across an `Equiv` -/
-protected abbrev distribMulAction (e : α ≃ β) [AddCommMonoid β] :
-    letI := Equiv.addCommMonoid e
-    ∀ [DistribMulAction M β], DistribMulAction M α := by
-  intros
-  letI := Equiv.addCommMonoid e
-  exact
-    ({ Equiv.mulAction M e with
-        smul_zero := by simp [zero_def, smul_def]
-        smul_add := by simp [add_def, smul_def, smul_add] } :
-      DistribMulAction M α)
 
 end Equiv
