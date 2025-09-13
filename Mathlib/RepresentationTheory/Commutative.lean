@@ -3,7 +3,7 @@ Copyright (c) 2025 Uni Marx. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Uni Marx
 -/
-import Mathlib.RepresentationTheory.Character
+import Mathlib.RepresentationTheory.FDRep
 
 /-!
 # Representations of commutative monoids
