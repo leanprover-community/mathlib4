@@ -323,7 +323,7 @@ theorem comp_coe_eq_comp_coe_comp_equivOfMapEq {γ : Type*} [DecidableEq γ]
   ext x
   simp [equivOfMapEq, ← mapEquiv_apply t g]
 
-/-- The obvious equivalence between a type and its `Finset.univ.val` coerced to a type. -/
+/-- The canonical equivalence between a type and its `Finset.univ.val` coerced to a type. -/
 noncomputable def equivCoeValUniv (α : Type*) [DecidableEq α] [Fintype α] :
     α ≃ (Finset.univ (α := α)).val where
   toFun x := ⟨x, ⟨0, by simp⟩⟩
