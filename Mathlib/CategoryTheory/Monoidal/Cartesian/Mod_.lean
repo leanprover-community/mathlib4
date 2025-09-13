@@ -18,7 +18,7 @@ variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
 attribute [local simp] leftUnitor_hom
 
 /-- Every object is a module over a monoid object via the trivial action. -/
-@[reducible] def Mod_Class.trivialAction (M : C) [Mon_Class M] (X : C) :
+@[reducible] def Mod_Class.trivialAction (M : C) [MonObj M] (X : C) :
     Mod_Class M X where
   smul := snd M X
 
