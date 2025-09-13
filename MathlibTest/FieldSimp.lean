@@ -6,6 +6,7 @@ Authors: Jon Eugster, David Renshaw, Heather Macbeth, Michael Rothgang
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
+import Mathlib.Data.Real.Basic
 
 /-!
 # Tests for the `field_simp` tactic
@@ -545,7 +546,7 @@ example {K : Type*} [Field K] (n : ℕ) (w : K) (h0 : w ≠ 0) : w ^ n ≠ 0 := 
 
 example {K : Type*} [Field K] (n : ℕ) (w : K) (h0 : w ≠ 0) : w ^ n / w ^ n = n := by
   field_simp
-  guard_target = (1:K) = n
+  guard_target = (1 : K) = n
   exact test_sorry
 
 section
@@ -585,6 +586,19 @@ example (hK : ∀ ξ : K, 0 < ξ + 1) (x : K) : 1 / (x + 1) = 5 := by
   field_simp
   guard_target = 1 = (x + 1) * 5
   exact test_sorry
+
+/-- Test that the discharger can handle some casting -/
+example (n : ℕ) (h : n ≠ 0) : 1 / (n : K) * n = 1 := by
+  field_simp
+
+/-- Test that the discharger can handle some casting -/
+example (n : ℕ) (h : n ≠ 0) : 1 / (n : ℝ) * n = 1 := by
+  field_simp
+
+-- Minimised from Fourier/AddCircle.lean
+example (n : ℕ) (T : ℝ) {hT : T ≠ 0} (hn : n ≠ 0) {a : ℝ} :
+    (2 * a / T * (n * (T / 2 / n))) = a := by
+  field_simp
 
 end
 
