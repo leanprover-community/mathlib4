@@ -603,13 +603,13 @@ section SL2Z
 
 open ModularForm CuspForm
 
-variable {k F} {Γ : Subgroup (GL (Fin 2) ℝ)} [IsArithmetic Γ] [FunLike F ℍ ℂ]
+variable {k F} {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.IsArithmetic] [FunLike F ℍ ℂ]
 
 lemma ModularFormClass.bdd_at_infty_slash [ModularFormClass F Γ k]
     (f : F) (g : SL(2, ℤ)) : IsBoundedAtImInfty (f ∣[k] g) := by
   rw [← OnePoint.isBoundedAt_infty, SL_slash, OnePoint.IsBoundedAt.slash]
   apply bdd_at_cusps f
-  rw [IsArithmetic.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff']
+  rw [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff']
   exact ⟨g, by simp [mapGL]⟩
 
 lemma ModularFormClass.bdd_at_infty [ModularFormClass F Γ k]
@@ -620,7 +620,7 @@ lemma CuspFormClass.zero_at_infty_slash [CuspFormClass F Γ k]
     (f : F) (g : SL(2, ℤ)) : IsZeroAtImInfty (f ∣[k] g) := by
   rw [← OnePoint.isZeroAt_infty, SL_slash, OnePoint.IsZeroAt.slash]
   apply zero_at_cusps f
-  rw [IsArithmetic.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff']
+  rw [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff']
   exact ⟨g, by simp [mapGL]⟩
 
 lemma CuspFormClass.zero_at_infty [CuspFormClass F Γ k]
