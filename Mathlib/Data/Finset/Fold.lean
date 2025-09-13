@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.Multiset.Fold
+import Mathlib.Data.Finset.Lattice.Lemmas
 
 /-!
 # The fold operation for a commutative associative operation over a finset.
