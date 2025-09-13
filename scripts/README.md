@@ -141,10 +141,6 @@ to learn about it as well!
   Prints the list of the 10 longest Lean files in `Mathlib`.
   This output is automatically posted to zulip once a week.
 
-**Mathlib tactics**
-- `polyrith_sage.py`, `polyrith_sage_helper.py` are required for `polyrith`
-  to communication with the Sage server.
-
 **Data files with linter exceptions**
 - `nolints.json` contains exceptions for all `env_linter`s in mathlib.
   For permanent and deliberate exceptions, add a `@[nolint lintername]` in the .lean file instead.
