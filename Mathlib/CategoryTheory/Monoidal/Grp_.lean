@@ -8,11 +8,11 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.ExactFunctor
 
 /-!
-# The category of groups in a cartesian monoidal category
+# The category of groups in a Cartesian monoidal category
 
-We define group objects in cartesian monoidal categories.
+We define group objects in Cartesian monoidal categories.
 
-We show that the associativity diagram of a group object is always cartesian and deduce that
+We show that the associativity diagram of a group object is always Cartesian and deduce that
 morphisms of group objects commute with taking inverses.
 
 We show that a finite-product-preserving functor takes group objects to group objects.
@@ -26,12 +26,12 @@ variable {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory.{v₁} C
 
 section
 
-/-- A group object internal to a cartesian monoidal category. Also see the bundled `Grp_`. -/
+/-- A group object internal to a Cartesian monoidal category. Also see the bundled `Grp_`. -/
 class Grp_Class (X : C) extends Mon_Class X where
   /-- The inverse in a group object -/
   inv : X ⟶ X
-  left_inv (X) : lift inv (𝟙 X) ≫ mul = toUnit _ ≫ one := by aesop_cat
-  right_inv (X) : lift (𝟙 X) inv ≫ mul = toUnit _ ≫ one := by aesop_cat
+  left_inv (X) : lift inv (𝟙 X) ≫ mul = toUnit _ ≫ one := by cat_disch
+  right_inv (X) : lift (𝟙 X) inv ≫ mul = toUnit _ ≫ one := by cat_disch
 
 namespace Mon_Class
 
@@ -53,7 +53,7 @@ end Grp_Class
 end
 
 variable (C) in
-/-- A group object in a cartesian monoidal category. -/
+/-- A group object in a Cartesian monoidal category. -/
 structure Grp_ where
   /-- The underlying object in the ambient monoidal category -/
   X : C
@@ -104,6 +104,7 @@ lemma comp' {A₁ A₂ A₃ : Grp_ C} (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
 end Grp_
 
 namespace Grp_Class
+variable {G X : C} [Grp_Class G]
 
 variable {A : C} {B : C}
 
@@ -156,6 +157,14 @@ theorem inv_comp_inv (A : C) [Grp_Class A] : ι ≫ ι = 𝟙 A := by
   apply lift_left_mul_ext ι[A]
   rw [right_inv, ← comp_toUnit_assoc ι, ← left_inv, comp_lift_assoc, Category.comp_id]
 
+/-- Transfer `Grp_Class` along an isomorphism. -/
+@[simps!]
+abbrev ofIso (e : G ≅ X) : Grp_Class X where
+  toMon_Class := .ofIso e
+  inv := e.inv ≫ ι[G] ≫ e.hom
+  left_inv := by simp [Mon_Class.ofIso]
+  right_inv := by simp [Mon_Class.ofIso]
+
 instance (A : C) [Grp_Class A] : IsIso ι[A] := ⟨ι, by simp, by simp⟩
 
 /-- For `inv ≫ inv = 𝟙` see `inv_comp_inv`. -/
@@ -195,9 +204,9 @@ def mulRight {A : C} [Grp_Class A] (f : 𝟙_ C ⟶ A) : A ≅ A where
 lemma mulRight_one (A : C) [Grp_Class A] : mulRight η[A] = Iso.refl A := by
   ext; simp
 
-/-- The associativity diagram of a group object is cartesian.
+/-- The associativity diagram of a group object is Cartesian.
 
-In fact, any monoid object whose associativity diagram is cartesian can be made into a group object
+In fact, any monoid object whose associativity diagram is Cartesian can be made into a group object
 (we do not prove this in this file), so we should expect that many properties of group objects
 follow from this result. -/
 theorem isPullback (A : C) [Grp_Class A] :
@@ -252,11 +261,17 @@ lemma toMon_Class_injective {X : C} :
   exacts [congr(($e.symm).mul), congr(($e.symm).one)]
 
 @[ext]
-lemma _root_.Grp_Class.ext {X : C} (h₁ h₂ : Grp_Class X)
-    (H : h₁.toMon_Class = h₂.toMon_Class) : h₁ = h₂ :=
+lemma ext {X : C} (h₁ h₂ : Grp_Class X) (H : h₁.toMon_Class = h₂.toMon_Class) : h₁ = h₂ :=
   Grp_Class.toMon_Class_injective H
 
-end Grp_Class
+namespace tensorObj
+variable [BraidedCategory C] {G H : C} [Grp_Class G] [Grp_Class H]
+
+@[simps inv]
+instance : Grp_Class (G ⊗ H) where
+  inv := ι ⊗ₘ ι
+
+end Grp_Class.tensorObj
 
 namespace Grp_
 
@@ -265,6 +280,7 @@ section
 variable (C)
 
 /-- The forgetful functor from group objects to monoid objects. -/
+@[simps! obj_X]
 def forget₂Mon_ : Grp_ C ⥤ Mon_ C :=
   inducedFunctor Grp_.toMon_
 
@@ -315,8 +331,8 @@ def mkIso' {G H : C} (e : G ≅ H) [Grp_Class G] [Grp_Class H] [IsMon_Hom e.hom]
 /-- Construct an isomorphism of group objects by giving an isomorphism between the underlying
 objects and checking compatibility with unit and multiplication only in the forward direction. -/
 @[simps!]
-abbrev mkIso {G H : Grp_ C} (e : G.X ≅ H.X) (one_f : η[G.X] ≫ e.hom = η[H.X] := by aesop_cat)
-    (mul_f : μ[G.X] ≫ e.hom = (e.hom ⊗ₘ e.hom) ≫ μ[H.X] := by aesop_cat) : G ≅ H :=
+abbrev mkIso {G H : Grp_ C} (e : G.X ≅ H.X) (one_f : η[G.X] ≫ e.hom = η[H.X] := by cat_disch)
+    (mul_f : μ[G.X] ≫ e.hom = (e.hom ⊗ₘ e.hom) ≫ μ[H.X] := by cat_disch) : G ≅ H :=
   have : IsMon_Hom e.hom := ⟨one_f, mul_f⟩
   mkIso' e
 
@@ -412,6 +428,28 @@ attribute [local instance] Monoidal.ofChosenFiniteProducts in
 noncomputable def mapGrpFunctor : (C ⥤ₗ D) ⥤ Grp_ C ⥤ Grp_ D where
   obj F := F.1.mapGrp
   map {F G} α := { app A := .mk' (α.app A.X) }
+
+/-- Pullback a group object along a fully faithful monoidal functor. -/
+@[simps]
+abbrev FullyFaithful.grp_Class (hF : F.FullyFaithful) (X : C) [Grp_Class (F.obj X)] :
+    Grp_Class X where
+  __ := hF.mon_Class X
+  inv := hF.preimage ι[F.obj X]
+  left_inv := hF.map_injective <| by
+    simp [FullyFaithful.mon_Class, OplaxMonoidal.η_of_cartesianMonoidalCategory]
+  right_inv := hF.map_injective <| by
+    simp [FullyFaithful.mon_Class, OplaxMonoidal.η_of_cartesianMonoidalCategory]
+
+/-- The essential image of a full and faithful functor between cartesian-monoidal categories is the
+same on group objects as on objects. -/
+@[simp] lemma essImage_mapGrp [F.Full] [F.Faithful] {G : Grp_ D} :
+    F.mapGrp.essImage G ↔ F.essImage G.X where
+  mp := by rintro ⟨H, ⟨e⟩⟩; exact ⟨H.X, ⟨(Grp_.forget _).mapIso e⟩⟩
+  mpr := by
+    rintro ⟨H, ⟨e⟩⟩
+    let : Grp_Class (F.obj H) := .ofIso e.symm
+    let : Grp_Class H := (FullyFaithful.ofFullyFaithful F).grp_Class H
+    refine ⟨⟨H⟩, ⟨Grp_.mkIso e ?_ ?_⟩⟩ <;> simp
 
 end Functor
 

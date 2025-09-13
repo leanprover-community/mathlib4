@@ -490,7 +490,7 @@ def IdentityPreunctor : Prefunctor (Type u) Nat where
   obj _ := 5
   map _ := ⟨⟨rfl⟩⟩
 
-/-- error: unknown identifier 'IdentityPreunctor_map_down_down' -/
+/-- error: Unknown identifier `IdentityPreunctor_map_down_down` -/
 #guard_msgs in
 #check IdentityPreunctor_map_down_down
 

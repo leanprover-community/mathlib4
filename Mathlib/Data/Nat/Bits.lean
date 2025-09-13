@@ -74,10 +74,8 @@ lemma bodd_mul (m n : ℕ) : bodd (m * n) = (bodd m && bodd n) := by
     cases bodd m <;> cases bodd n <;> rfl
 
 lemma mod_two_of_bodd (n : ℕ) : n % 2 = (bodd n).toNat := by
-  have := congr_arg bodd (mod_add_div n 2)
-  simp? [not] at this says
-    simp only [bodd_add, bodd_mul, bodd_succ, not, bodd_zero, Bool.false_and, Bool.bne_false]
-      at this
+  have : (n % 2).bodd = n.bodd := by
+    simpa using congr_arg bodd (mod_add_div n 2)
   have _ : ∀ b, and false b = false := by
     intro b
     cases b <;> rfl
@@ -96,7 +94,7 @@ lemma div2_two : div2 2 = 1 := rfl
 @[simp]
 lemma div2_succ (n : ℕ) : div2 (n + 1) = cond (bodd n) (succ (div2 n)) (div2 n) := by
   simp only [bodd, boddDiv2, div2]
-  rcases boddDiv2 n with ⟨_ |_ , _⟩ <;> simp
+  rcases boddDiv2 n with ⟨_ |_, _⟩ <;> simp
 
 attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm Nat.mul_assoc
 
@@ -152,13 +150,13 @@ def size : ℕ → ℕ :=
   binaryRec 0 fun _ _ => succ
 
 /-- `bits n` returns a list of Bools which correspond to the binary representation of n, where
-    the head of the list represents the least significant bit -/
+the head of the list represents the least significant bit -/
 def bits : ℕ → List Bool :=
   binaryRec [] fun b _ IH => b :: IH
 
 /-- `ldiff a b` performs bitwise set difference. For each corresponding
-  pair of bits taken as booleans, say `aᵢ` and `bᵢ`, it applies the
-  boolean operation `aᵢ ∧ ¬bᵢ` to obtain the `iᵗʰ` bit of the result. -/
+  pair of bits taken as Booleans, say `aᵢ` and `bᵢ`, it applies the
+  Boolean operation `aᵢ ∧ ¬bᵢ` to obtain the `iᵗʰ` bit of the result. -/
 def ldiff : ℕ → ℕ → ℕ :=
   bitwise fun a b => a && not b
 
@@ -286,12 +284,12 @@ theorem one_bits : Nat.bits 1 = [true] := by
 
 theorem bodd_eq_bits_head (n : ℕ) : n.bodd = n.bits.headI := by
   induction n using Nat.binaryRec' with
-  | z => simp
-  | f _ _ h _ => simp [bodd_bit, bits_append_bit _ _ h]
+  | zero => simp
+  | bit _ _ h => simp [bodd_bit, bits_append_bit _ _ h]
 
 theorem div2_bits_eq_tail (n : ℕ) : n.div2.bits = n.bits.tail := by
   induction n using Nat.binaryRec' with
-  | z => simp
-  | f _ _ h _ => simp [div2_bit, bits_append_bit _ _ h]
+  | zero => simp
+  | bit _ _ h => simp [div2_bit, bits_append_bit _ _ h]
 
 end Nat

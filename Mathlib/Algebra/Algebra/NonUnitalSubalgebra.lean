@@ -44,9 +44,6 @@ lemma subtype_injective :
 theorem coe_subtype : (subtype s : s → A) = ((↑) : s → A) :=
   rfl
 
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
-
 end NonUnitalSubalgebraClass
 
 end NonUnitalSubalgebraClass
@@ -153,10 +150,7 @@ Useful to fix definitional equalities. -/
 protected def copy (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) :
     NonUnitalSubalgebra R A :=
   { S.toNonUnitalSubsemiring.copy s hs with
-    smul_mem' := fun r a (ha : a ∈ s) => by
-      change r • a ∈ s
-      rw [hs] at ha ⊢
-      exact S.smul_mem' r ha }
+    smul_mem' r a := by simpa [hs] using S.smul_mem r }
 
 @[simp]
 theorem coe_copy (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) :
@@ -864,8 +858,6 @@ theorem range_eq_top [IsScalarTower R B B] [SMulCommClass R B B] (f : A →ₙ�
     NonUnitalAlgHom.range f = (⊤ : NonUnitalSubalgebra R B) ↔ Function.Surjective f :=
   NonUnitalAlgebra.eq_top_iff
 
-@[deprecated (since := "2024-11-11")] alias range_top_iff_surjective := range_eq_top
-
 end NonUnitalAlgebra
 
 namespace NonUnitalSubalgebra
@@ -976,7 +968,7 @@ theorem coe_inclusion {S T : NonUnitalSubalgebra R A} (h : S ≤ T) (s : S) :
 
 section SuprLift
 
-variable {ι : Type*}
+variable {ι : Sort*}
 
 theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalSubalgebra R A}
     (dir : Directed (· ≤ ·) S) : ↑(iSup S) = ⋃ i, (S i : Set A) :=
