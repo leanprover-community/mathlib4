@@ -4821,8 +4821,10 @@ import Mathlib.NumberTheory.LucasLehmer
 import Mathlib.NumberTheory.LucasPrimality
 import Mathlib.NumberTheory.MaricaSchoenheim
 import Mathlib.NumberTheory.Modular
+import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
 import Mathlib.NumberTheory.ModularForms.Basic
 import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
+import Mathlib.NumberTheory.ModularForms.Cusps
 import Mathlib.NumberTheory.ModularForms.DedekindEta
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
