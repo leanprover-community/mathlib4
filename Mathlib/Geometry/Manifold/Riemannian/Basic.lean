@@ -224,7 +224,7 @@ as in the vector space.
 
 Should not be a global instance, as it does not coincide definitionally with the Riemannian
 structure for inner product spaces, but can be activated locally. -/
-def normSMulClassTangentSpaceVectorSpace (x : E) : NormSMulClass ℝ (TangentSpace 𝓘(ℝ, E) x) :=
+lemma normSMulClassTangentSpaceVectorSpace (x : E) : NormSMulClass ℝ (TangentSpace 𝓘(ℝ, E) x) :=
   inferInstanceAs (NormSMulClass ℝ E)
 
 attribute [local instance] normSMulClassTangentSpaceVectorSpace

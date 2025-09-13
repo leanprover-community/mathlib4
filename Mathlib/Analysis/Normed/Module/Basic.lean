@@ -37,7 +37,9 @@ typeclass can be used for "semi normed spaces" too, just as `Module` can be used
 -/
 @[class_abbrev]
 structure NormedSpace (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [SeminormedAddCommGroup E] where
+  /-- missing doc -/
   [a : Module 𝕜 E]
+  /-- missing doc -/
   [b : NormSMulClass 𝕜 E]
 
 attribute [instance] NormedSpace.mk
@@ -149,7 +151,7 @@ end SeminormedAddCommGroup
 domain, using the `SeminormedAddCommGroup.induced` norm.
 
 See note [reducible non-instances] -/
-abbrev NormedSpace.induced {F : Type*} (𝕜 E G : Type*) [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+lemma NormedSpace.induced {F : Type*} (𝕜 E G : Type*) [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
     [SeminormedAddCommGroup G] [NormedSpace 𝕜 G] [FunLike F E G] [LinearMapClass F 𝕜 E G] (f : F) :
     @NormSMulClass 𝕜 E _ (SeminormedAddGroup.induced E G f).toNorm _ :=
   let _ := SeminormedAddGroup.induced E G f
@@ -233,7 +235,9 @@ variable [NormedSpace 𝕜 𝕜'] [SMulCommClass 𝕜 𝕜' 𝕜'] [IsScalarTowe
 -/
 @[class_abbrev]
 structure NormedAlgebra (𝕜 : Type*) (𝕜' : Type*) [NormedField 𝕜] [SeminormedRing 𝕜'] where
+  /-- missing doc -/
   [a : Algebra 𝕜 𝕜']
+  /-- missing doc -/
   [b : NormSMulClass 𝕜 𝕜']
 
 attribute [instance] NormedAlgebra.mk
@@ -346,7 +350,7 @@ end NormedAlgebra
 `NormedAlgebra` structure on the domain, using the `SeminormedRing.induced` norm.
 
 See note [reducible non-instances] -/
-abbrev NormedAlgebra.induced {F : Type*} (𝕜 R S : Type*) [NormedField 𝕜] [Ring R] [Algebra 𝕜 R]
+lemma NormedAlgebra.induced {F : Type*} (𝕜 R S : Type*) [NormedField 𝕜] [Ring R] [Algebra 𝕜 R]
     [SeminormedRing S] [NormedAlgebra 𝕜 S] [FunLike F R S] [NonUnitalAlgHomClass F 𝕜 R S]
     (f : F) :
     @NormSMulClass 𝕜 R _ (SeminormedRing.induced R S f).toNorm _ :=
@@ -431,7 +435,7 @@ example : NormedSpace 𝕜 (RestrictScalars 𝕜 𝕜' E) := by infer_instance
 /-- The action of the original normed_field on `RestrictScalars 𝕜 𝕜' E`.
 This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
 -/
-def Module.RestrictScalars.normSMulClassOrig (𝕜 : Type*) (𝕜' : Type*) (E : Type*) [NormedField 𝕜']
+lemma Module.RestrictScalars.normSMulClassOrig (𝕜 : Type*) (𝕜' : Type*) (E : Type*) [NormedField 𝕜']
     [SeminormedAddCommGroup E] [Module 𝕜' E] [I : NormSMulClass 𝕜' E] :
     letI := RestrictScalars.moduleOrig 𝕜 𝕜' E
     NormSMulClass 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
@@ -449,7 +453,7 @@ inferred, and because it is likely to create instance diamonds.
 
 See Note [reducible non-instances].
 -/
-abbrev NormSMulClass.restrictScalars :
+lemma NormSMulClass.restrictScalars :
     letI := Module.restrictScalars 𝕜 𝕜' E
     NormSMulClass 𝕜 E :=
   RestrictScalars.normSMulClass _ 𝕜' E
@@ -698,7 +702,7 @@ abbrev NormedAddCommGroup.ofCoreReplaceAll [U : UniformSpace E] [B : Bornology E
 /-- Produces a `NormedSpace 𝕜 E` instance from a `NormedSpace.Core`. This is meant to be used
 on types where the `NormedAddCommGroup E` instance has also been defined using `core`.
 See note [reducible non-instances]. -/
-abbrev NormedSpace.ofCore {𝕜 : Type*} {E : Type*} [NormedField 𝕜] [SeminormedAddCommGroup E]
+lemma NormedSpace.ofCore {𝕜 : Type*} {E : Type*} [NormedField 𝕜] [SeminormedAddCommGroup E]
     [Module 𝕜 E] (core : NormedSpace.Core 𝕜 E) : NormSMulClass 𝕜 E where
   norm_smul r x := by rw [core.norm_smul r x]
 

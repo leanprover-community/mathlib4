@@ -217,7 +217,7 @@ lemma l2_opNNNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) : ‖A * B‖�
 
 /-- The normed algebra structure on `Matrix n n 𝕜` arising from the operator norm given by the
 identification with (continuous) linear endmorphisms of `EuclideanSpace 𝕜 n`. -/
-def instL2OpNormedSpace : NormSMulClass 𝕜 (Matrix m n 𝕜) where
+lemma instL2OpNormedSpace : NormSMulClass 𝕜 (Matrix m n 𝕜) where
   norm_smul r x := by
     rw [l2_opNorm_def, LinearEquiv.map_smul]
     exact norm_smul r ((toEuclideanLin (𝕜 := 𝕜) (m := m) (n := n)).trans toContinuousLinearMap x)

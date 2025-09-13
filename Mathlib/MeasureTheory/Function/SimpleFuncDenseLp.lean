@@ -454,7 +454,7 @@ attribute [local instance] simpleFunc.isBoundedSMul
 
 /-- If `E` is a normed space, `Lp.simpleFunc E p μ` is a normed space. Not declared as an
 instance as it is (as of writing) used only in the construction of the Bochner integral. -/
-protected def normedSpace {𝕜} [NormedField 𝕜] [NormedSpace 𝕜 E] [Fact (1 ≤ p)] :
+protected lemma normedSpace {𝕜} [NormedField 𝕜] [NormedSpace 𝕜 E] [Fact (1 ≤ p)] :
     NormSMulClass 𝕜 (Lp.simpleFunc E p μ) :=
   NormedDivisionRing.toNormSMulClass
 

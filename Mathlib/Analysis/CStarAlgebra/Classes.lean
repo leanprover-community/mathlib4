@@ -23,15 +23,25 @@ heavier imports.
 /-- The class of non-unital (complex) C⋆-algebras. -/
 @[class_abbrev]
 structure NonUnitalCStarAlgebra (A : Type*) where
+  /-- missing doc -/
   [a : NonUnitalRing A]
+  /-- missing doc -/
   [b : WithNormedRing A]
+  /-- missing doc -/
   [c : StarRing A]
+  /-- missing doc -/
   [d : CompleteSpace A]
+  /-- missing doc -/
   [e : CStarRing A]
+  /-- missing doc -/
   [f : Module ℂ A]
+  /-- missing doc -/
   [g : NormSMulClass ℂ A]
+  /-- missing doc -/
   [h : IsScalarTower ℂ A A]
+  /-- missing doc -/
   [i : SMulCommClass ℂ A A]
+  /-- missing doc -/
   [j : StarModule ℂ A]
 
 attribute [instance] NonUnitalCStarAlgebra.mk
@@ -39,15 +49,25 @@ attribute [instance] NonUnitalCStarAlgebra.mk
 /-- The class of non-unital commutative (complex) C⋆-algebras. -/
 @[class_abbrev]
 structure NonUnitalCommCStarAlgebra (A : Type*) where
+  /-- missing doc -/
   [a : NonUnitalCommRing A]
+  /-- missing doc -/
   [b : WithNormedRing A]
+  /-- missing doc -/
   [c : StarRing A]
+  /-- missing doc -/
   [d : CompleteSpace A]
+  /-- missing doc -/
   [e : CStarRing A]
+  /-- missing doc -/
   [f : Module ℂ A]
+  /-- missing doc -/
   [g : NormSMulClass ℂ A]
+  /-- missing doc -/
   [h : IsScalarTower ℂ A A]
+  /-- missing doc -/
   [i : SMulCommClass ℂ A A]
+  /-- missing doc -/
   [j : StarModule ℂ A]
 
 attribute [instance] NonUnitalCommCStarAlgebra.mk
@@ -55,13 +75,21 @@ attribute [instance] NonUnitalCommCStarAlgebra.mk
 /-- The class of unital (complex) C⋆-algebras. -/
 @[class_abbrev]
 structure CStarAlgebra (A : Type*) where
+  /-- missing doc -/
   [a : Ring A]
+  /-- missing doc -/
   [b : WithNormedRing A]
+  /-- missing doc -/
   [c : StarRing A]
+  /-- missing doc -/
   [d : CompleteSpace A]
+  /-- missing doc -/
   [e : CStarRing A]
+  /-- missing doc -/
   [f : Algebra ℂ A]
+  /-- missing doc -/
   [g : NormSMulClass ℂ A]
+  /-- missing doc -/
   [h : StarModule ℂ A]
 
 attribute [instance] CStarAlgebra.mk
@@ -69,13 +97,21 @@ attribute [instance] CStarAlgebra.mk
 /-- The class of unital commutative (complex) C⋆-algebras. -/
 @[class_abbrev]
 structure CommCStarAlgebra (A : Type*) where
+  /-- missing doc -/
   [a : CommRing A]
+  /-- missing doc -/
   [b : WithNormedRing A]
+  /-- missing doc -/
   [c : StarRing A]
+  /-- missing doc -/
   [d : CompleteSpace A]
+  /-- missing doc -/
   [e : CStarRing A]
+  /-- missing doc -/
   [f : Algebra ℂ A]
+  /-- missing doc -/
   [g : NormSMulClass ℂ A]
+  /-- missing doc -/
   [h : StarModule ℂ A]
 
 attribute [instance] CommCStarAlgebra.mk

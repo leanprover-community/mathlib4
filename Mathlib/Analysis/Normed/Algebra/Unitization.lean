@@ -124,7 +124,7 @@ attribute [local instance] Unitization.normedRingAux
 /-- Pull back the normed algebra structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`. This uses the wrong `NormedRing` instance (i.e.,
 `Unitization.normedRingAux`), so we only use it as a local instance to build the real one. -/
-noncomputable abbrev normedAlgebraAux : NormSMulClass 𝕜 (Unitization 𝕜 A) :=
+lemma normedAlgebraAux : NormSMulClass 𝕜 (Unitization 𝕜 A) :=
   NormedAlgebra.induced 𝕜 (Unitization 𝕜 A) (𝕜 × (A →L[𝕜] A)) (splitMul 𝕜 A)
 
 attribute [local instance] Unitization.normedAlgebraAux

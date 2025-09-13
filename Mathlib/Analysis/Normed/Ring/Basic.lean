@@ -36,16 +36,22 @@ class WithSeminormedRing (α : Type*) [NonUnitalRing α] extends Norm α,
   /-- The norm is submultiplicative. -/
   protected norm_mul_le : ∀ a b, norm (a * b) ≤ norm a * norm b
 
+/-- missing doc -/
 @[class_abbrev]
 structure NonUnitalSeminormedRing (α : Type*) where
+  /-- missing doc -/
   [a : NonUnitalRing α]
+  /-- missing doc -/
   [b : WithSeminormedRing α]
 
 attribute [instance] NonUnitalSeminormedRing.mk
 
+/-- missing doc -/
 @[class_abbrev]
 structure SeminormedRing (α : Type*) where
+  /-- missing doc -/
   [a : Ring α]
+  /-- missing doc -/
   [b : WithSeminormedRing α]
 
 attribute [instance] SeminormedRing.mk
@@ -58,16 +64,22 @@ class WithNormedRing (α : Type*) [NonUnitalRing α] extends Norm α, MetricSpac
   /-- The norm is submultiplicative. -/
   norm_mul_le : ∀ a b, norm (a * b) ≤ norm a * norm b
 
+/-- missing doc -/
 @[class_abbrev]
 structure NonUnitalNormedRing (α : Type*) where
+  /-- missing doc -/
   [a : NonUnitalRing α]
+  /-- missing doc -/
   [b : WithNormedRing α]
 
 attribute [instance] NonUnitalNormedRing.mk
 
+/-- missing doc -/
 @[class_abbrev]
 structure NormedRing (α : Type*) where
+  /-- missing doc -/
   [a : Ring α]
+  /-- missing doc -/
   [b : WithNormedRing α]
 
 attribute [instance] NormedRing.mk
@@ -82,7 +94,9 @@ instance (priority := 100) NormedRing.toSeminormedRing [NonUnitalRing α] [β : 
 seminorm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 @[class_abbrev]
 structure NonUnitalSeminormedCommRing (α : Type*) where
+  /-- missing doc -/
   [a : NonUnitalCommRing α]
+  /-- missing doc -/
   [b : WithSeminormedRing α]
 
 attribute [instance] NonUnitalSeminormedCommRing.mk
@@ -91,7 +105,9 @@ attribute [instance] NonUnitalSeminormedCommRing.mk
 norm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 @[class_abbrev]
 structure NonUnitalNormedCommRing (α : Type*) where
+  /-- missing doc -/
   [a : NonUnitalCommRing α]
+  /-- missing doc -/
   [b : WithNormedRing α]
 
 attribute [instance] NonUnitalNormedCommRing.mk
@@ -100,7 +116,9 @@ attribute [instance] NonUnitalNormedCommRing.mk
 the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 @[class_abbrev]
 structure SeminormedCommRing (α : Type*) where
+  /-- missing doc -/
   [a : CommRing α]
+  /-- missing doc -/
   [b : WithSeminormedRing α]
 
 attribute [instance] SeminormedCommRing.mk
@@ -109,7 +127,9 @@ attribute [instance] SeminormedCommRing.mk
 the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 @[class_abbrev]
 structure NormedCommRing (α : Type*) where
+  /-- missing doc -/
   [a : CommRing α]
+  /-- missing doc -/
   [b : WithNormedRing α]
 
 attribute [instance] NormedCommRing.mk

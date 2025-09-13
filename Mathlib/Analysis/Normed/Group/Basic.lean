@@ -125,9 +125,12 @@ class WithESeminormedAddMonoid (E : Type*) [TopologicalSpace E] [AddMonoid E]
   enorm_zero : ‖(0 : E)‖ₑ = 0
   protected enorm_add_le : ∀ x y : E, ‖x + y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
 
+/-- missing doc -/
 @[class_abbrev]
 structure ESeminormedAddMonoid (E : Type*) [TopologicalSpace E] where
+  /-- missing doc -/
   [a : AddMonoid E]
+  /-- missing doc -/
   [b : WithESeminormedAddMonoid E]
 
 attribute [instance] ESeminormedAddMonoid.mk
@@ -139,9 +142,12 @@ class WithENormedAddMonoid (E : Type*) [TopologicalSpace E] [AddMonoid E]
     extends WithESeminormedAddMonoid E where
   enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 0
 
+/-- missing doc -/
 @[class_abbrev]
 structure ENormedAddMonoid (E : Type*) [TopologicalSpace E] where
+  /-- missing doc -/
   [a : AddMonoid E]
+  /-- missing doc -/
   [b : WithENormedAddMonoid E]
 
 attribute [instance] ENormedAddMonoid.mk
@@ -154,9 +160,12 @@ class WithESeminormedMonoid (E : Type*) [TopologicalSpace E] [Monoid E]
   enorm_zero : ‖(1 : E)‖ₑ = 0
   enorm_mul_le : ∀ x y : E, ‖x * y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
 
+/-- missing doc -/
 @[class_abbrev, to_additive]
 structure ESeminormedMonoid (E : Type*) [TopologicalSpace E] where
+  /-- missing doc -/
   [a : Monoid E]
+  /-- missing doc -/
   [b : WithESeminormedMonoid E]
 
 attribute [instance] ESeminormedMonoid.mk
@@ -169,9 +178,12 @@ class WithENormedMonoid (E : Type*) [TopologicalSpace E] [Monoid E]
     extends WithESeminormedMonoid E where
   enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 1
 
+/-- missing doc -/
 @[class_abbrev, to_additive]
 structure ENormedMonoid (E : Type*) [TopologicalSpace E] where
+  /-- missing doc -/
   [a : Monoid E]
+  /-- missing doc -/
   [b : WithENormedMonoid E]
 
 attribute [instance] ENormedMonoid.mk
@@ -184,7 +196,9 @@ is not an `EMetricSpace`. This is because `ℝ≥0∞` carries the order topolog
 the topology coming from `edist`. -/
 @[class_abbrev]
 structure ESeminormedAddCommMonoid (E : Type*) [TopologicalSpace E] where
+  /-- missing doc -/
   [a : AddCommMonoid E]
+  /-- missing doc -/
   [b : WithESeminormedAddMonoid E]
 
 attribute [instance] ESeminormedAddCommMonoid.mk
@@ -197,7 +211,9 @@ is not an `EMetricSpace`. This is because `ℝ≥0∞` carries the order topolog
 the topology coming from `edist`. -/
 @[class_abbrev]
 structure ENormedAddCommMonoid (E : Type*) [TopologicalSpace E] where
+  /-- missing doc -/
   [a : AddCommMonoid E]
+  /-- missing doc -/
   [b : WithENormedAddMonoid E]
 
 attribute [instance] ENormedAddCommMonoid.mk
@@ -205,7 +221,9 @@ attribute [instance] ENormedAddCommMonoid.mk
 /-- An e-seminormed commutative monoid is a commutative monoid endowed with a continuous enorm. -/
 @[class_abbrev, to_additive]
 structure ESeminormedCommMonoid (E : Type*) [TopologicalSpace E] where
+  /-- missing doc -/
   [a : CommMonoid E]
+  /-- missing doc -/
   [b : WithESeminormedMonoid E]
 
 attribute [instance] ESeminormedCommMonoid.mk
@@ -214,7 +232,9 @@ attribute [instance] ESeminormedCommMonoid.mk
 which is positive definite. -/
 @[class_abbrev, to_additive]
 structure ENormedCommMonoid (E : Type*) [TopologicalSpace E] where
+  /-- missing doc -/
   [a : CommMonoid E]
+  /-- missing doc -/
   [b : WithENormedMonoid E]
 
 attribute [instance] ENormedCommMonoid.mk
@@ -226,9 +246,12 @@ class WithSeminormedAddGroup (E : Type*) [AddGroup E] extends Norm E, PseudoMetr
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
 
+/-- missing doc -/
 @[class_abbrev]
 structure SeminormedAddGroup (E : Type*) where
+  /-- missing doc -/
   [a : AddGroup E]
+  /-- missing doc -/
   [b : WithSeminormedAddGroup E]
 
 attribute [instance] SeminormedAddGroup.mk
@@ -241,9 +264,12 @@ class WithSeminormedGroup (E : Type*) [Group E] extends Norm E, PseudoMetricSpac
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
 
+/-- missing doc -/
 @[class_abbrev, to_additive]
 structure SeminormedGroup (E : Type*) where
+  /-- missing doc -/
   [a : Group E]
+  /-- missing doc -/
   [b : WithSeminormedGroup E]
 
 attribute [instance] SeminormedGroup.mk
@@ -255,9 +281,12 @@ class WithNormedAddGroup (E : Type*) [AddGroup E] extends Norm E, MetricSpace E 
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
 
+/-- missing doc -/
 @[class_abbrev]
 structure NormedAddGroup (E : Type*) where
+  /-- missing doc -/
   [a : AddGroup E]
+  /-- missing doc -/
   [b : WithNormedAddGroup E]
 
 attribute [instance] NormedAddGroup.mk
@@ -270,9 +299,12 @@ class WithNormedGroup (E : Type*) [Group E] extends Norm E, MetricSpace E where
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x / y‖ := by aesop
 
+/-- missing doc -/
 @[class_abbrev, to_additive]
 structure NormedGroup (E : Type*) where
+  /-- missing doc -/
   [a : Group E]
+  /-- missing doc -/
   [b : WithNormedGroup E]
 
 attribute [instance] NormedGroup.mk
@@ -281,7 +313,9 @@ attribute [instance] NormedGroup.mk
 defines a pseudometric space structure. -/
 @[class_abbrev]
 structure SeminormedAddCommGroup (E : Type*) where
+  /-- missing doc -/
   [a : AddCommGroup E]
+  /-- missing doc -/
   [b : WithSeminormedAddGroup E]
 
 attribute [instance] SeminormedAddCommGroup.mk
@@ -290,7 +324,9 @@ attribute [instance] SeminormedAddCommGroup.mk
 defines a pseudometric space structure. -/
 @[class_abbrev, to_additive]
 structure SeminormedCommGroup (E : Type*) where
+  /-- missing doc -/
   [a : CommGroup E]
+  /-- missing doc -/
   [b : WithSeminormedGroup E]
 
 attribute [instance] SeminormedCommGroup.mk
@@ -299,7 +335,9 @@ attribute [instance] SeminormedCommGroup.mk
 metric space structure. -/
 @[class_abbrev]
 structure NormedAddCommGroup (E : Type*) where
+  /-- missing doc -/
   [a : AddCommGroup E]
+  /-- missing doc -/
   [b : WithNormedAddGroup E]
 
 attribute [instance] NormedAddCommGroup.mk
@@ -308,7 +346,9 @@ attribute [instance] NormedAddCommGroup.mk
 space structure. -/
 @[class_abbrev, to_additive]
 structure NormedCommGroup (E : Type*) where
+  /-- missing doc -/
   [a : CommGroup E]
+  /-- missing doc -/
   [b : WithNormedGroup E]
 
 attribute [instance] NormedCommGroup.mk

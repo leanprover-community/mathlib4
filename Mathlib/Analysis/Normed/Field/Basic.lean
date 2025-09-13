@@ -44,7 +44,9 @@ instance (α : Type*) [Ring α] [h : WithNormMulClassNormedRing α] : WithNormed
 `‖x y‖ = ‖x‖ ‖y‖`. -/
 @[class_abbrev]
 structure NormedDivisionRing (α : Type*) where
+  /-- missing doc -/
   [a : DivisionRing α]
+  /-- missing doc -/
   [b : WithNormMulClassNormedRing α]
 
 attribute [instance] NormedDivisionRing.mk

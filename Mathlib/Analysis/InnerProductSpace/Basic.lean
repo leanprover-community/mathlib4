@@ -876,6 +876,7 @@ abbrev InnerProductSpace.withInnerProductSpaceReal :
       change re ⟪(r : 𝕜) • x, y⟫ = r * re ⟪x, y⟫
       simp only [inner_smul_left, conj_ofReal, re_ofReal_mul] }
 
+/-- missing doc -/
 abbrev InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
   @InnerProductSpace.mk _ _ _ _ _ (Module.restrictScalars ℝ 𝕜 E)
     (InnerProductSpace.withInnerProductSpaceReal 𝕜 E)

@@ -110,10 +110,13 @@ class WithInnerProductSpace (𝕜 : Type*) (E : Type*) [RCLike 𝕜] [AddCommGro
   /-- The inner product is conjugate linear in the first coordinate. -/
   smul_left : ∀ x y r, inner (r • x) y = conj r * inner x y
 
+/-- missing doc -/
 @[class_abbrev]
 structure InnerProductSpace (𝕜 : Type*) (E : Type*) [RCLike 𝕜] [AddCommGroup E]
     [WithSeminormedAddGroup E] where
+  /-- missing doc -/
   [a : Module 𝕜 E]
+  /-- missing doc -/
   [b : WithInnerProductSpace 𝕜 E]
 
 attribute [instance] InnerProductSpace.mk
@@ -420,7 +423,7 @@ attribute [local instance] toSeminormedAddGroup
 
 /-- Normed space (which is actually a seminorm in general) structure constructed from a
 `PreInnerProductSpace.Core` structure -/
-def toNormedSpace : NormSMulClass 𝕜 F where
+lemma toNormedSpace : NormSMulClass 𝕜 F where
   norm_smul r x := by
     rw [norm_eq_sqrt_re_inner, inner_smul_left, inner_smul_right, ← mul_assoc]
     rw [RCLike.conj_mul, ← ofReal_pow, re_ofReal_mul, sqrt_mul, ← ofReal_normSq_eq_inner_self,
@@ -546,7 +549,7 @@ topology to make sure it is defeq to an already existing topology. -/
 
 /-- Normed space structure constructed from an `InnerProductSpace.Core` structure, adjusting the
 topology to make sure it is defeq to an already existing topology. -/
-@[reducible] def toNormedSpaceOfTopology
+lemma toNormedSpaceOfTopology
     [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :

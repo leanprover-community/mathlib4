@@ -206,7 +206,7 @@ variable [NormedField R] [SeminormedAddCommGroup α] [NormedSpace R α]
 /-- Normed space instance (using sup norm of sup norm) for matrices over a normed space.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
-protected def normedSpace : NormSMulClass R (Matrix m n α) :=
+protected lemma normedSpace : NormSMulClass R (Matrix m n α) :=
   Pi.instNormSMulClass
 
 namespace Norms.Elementwise
