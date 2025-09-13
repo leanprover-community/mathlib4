@@ -294,8 +294,10 @@ instance addCommGroup : AddCommGroup ℚ where
   add_assoc := Rat.add_assoc
   neg_add_cancel := Rat.neg_add_cancel
   sub_eq_add_neg := Rat.sub_eq_add_neg
-  nsmul := nsmulRec
   zsmul := zsmulRec
+
+instance : AddMonoidNSMul ℚ where
+  nsmul := nsmulRec
 
 instance addGroup : AddGroup ℚ := by infer_instance
 
@@ -318,6 +320,8 @@ instance commMonoid : CommMonoid ℚ where
   one_mul := Rat.one_mul
   mul_comm := Rat.mul_comm
   mul_assoc := Rat.mul_assoc
+
+instance : MonoidNPow ℚ where
   npow n q := q ^ n
   npow_zero := by intros; apply Rat.ext <;> simp [Int.pow_zero]
   npow_succ n q := by

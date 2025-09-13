@@ -27,7 +27,7 @@ theorem mulSupport_mul [MulOneClass M] (f g : α → M) :
   mulSupport_binop_subset (· * ·) (one_mul _) f g
 
 @[to_additive]
-theorem mulSupport_pow [Monoid M] (f : α → M) (n : ℕ) :
+theorem mulSupport_pow [Monoid M] [MonoidNPow M] (f : α → M) (n : ℕ) :
     (mulSupport fun x => f x ^ n) ⊆ mulSupport f := by
   induction n with
   | zero => simp [pow_zero]

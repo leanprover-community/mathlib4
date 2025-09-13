@@ -248,7 +248,7 @@ lemma one_apply_eq_zero_iff {M₀ N₀ : Type*} [MulZeroOneClass M₀] [MulZeroO
 end MonoidWithZeroHom
 
 section CommMonoidWithZero
-variable [CommMonoidWithZero M₀] {n : ℕ} (hn : n ≠ 0)
+variable [CommMonoidWithZero M₀] [MonoidNPow M₀] {n : ℕ} (hn : n ≠ 0)
 
 /-- We define `x ↦ x^n` (for positive `n : ℕ`) as a `MonoidWithZeroHom` -/
 def powMonoidWithZeroHom : M₀ →*₀ M₀ :=

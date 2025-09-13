@@ -103,10 +103,10 @@ class MonoidWithZero (M₀ : Type u) extends Monoid M₀, MulZeroOneClass M₀, 
 
 section MonoidWithZero
 
-variable [MonoidWithZero M₀]
+variable [MonoidWithZero M₀] [MonoidNPow M₀]
 
 /-- If `x` is multiplicative with respect to `f`, then so is any `x^n`. -/
-theorem pow_mul_apply_eq_pow_mul {M : Type*} [Monoid M] (f : M₀ → M) {x : M₀}
+theorem pow_mul_apply_eq_pow_mul {M : Type*} [Monoid M] [MonoidNPow M] (f : M₀ → M) {x : M₀}
     (hx : ∀ y : M₀, f (x * y) = f x * f y) (n : ℕ) :
     ∀ (y : M₀), f (x ^ n * y) = f x ^ n * f y := by
   induction n with
@@ -227,7 +227,7 @@ The type is required to come with an “inverse” function, and the inverse of 
 class CommGroupWithZero (G₀ : Type*) extends CommMonoidWithZero G₀, GroupWithZero G₀
 
 section
-variable [CancelMonoidWithZero M₀] {x : M₀}
+variable [CancelMonoidWithZero M₀] [MonoidNPow M₀] {x : M₀}
 
 lemma eq_zero_or_one_of_sq_eq_self (hx : x ^ 2 = x) : x = 0 ∨ x = 1 :=
   or_iff_not_imp_left.mpr (mul_left_injective₀ · <| by simpa [sq] using hx)

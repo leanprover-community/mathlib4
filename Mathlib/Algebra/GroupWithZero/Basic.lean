@@ -137,7 +137,7 @@ theorem right_ne_zero_of_mul_eq_one (h : a * b = 1) : b ≠ 0 :=
 end
 
 section MonoidWithZero
-variable [MonoidWithZero M₀] {a : M₀} {n : ℕ}
+variable [MonoidWithZero M₀] [MonoidNPow M₀] {a : M₀} {n : ℕ}
 
 @[simp] lemma zero_pow : ∀ {n : ℕ}, n ≠ 0 → (0 : M₀) ^ n = 0
   | n + 1, _ => by rw [pow_succ, mul_zero]
@@ -392,7 +392,9 @@ theorem mul_left_surjective₀ {a : G₀} (h : a ≠ 0) : Surjective fun g => a 
 theorem mul_right_surjective₀ {a : G₀} (h : a ≠ 0) : Surjective fun g => g * a := fun g =>
   ⟨g * a⁻¹, by simp [mul_assoc, inv_mul_cancel₀ h]⟩
 
-lemma zero_zpow : ∀ n : ℤ, n ≠ 0 → (0 : G₀) ^ n = 0
+lemma zero_zpow (n : ℤ) (h : n ≠ 0) : (0 : G₀) ^ n = 0 :=
+  let _ := Monoid.monoidNPow G₀
+  match n, h with
   | (n : ℕ), h => by rw [zpow_natCast, zero_pow]; simpa [Int.natCast_eq_zero] using h
   | .negSucc n, _ => by simp
 
@@ -404,7 +406,9 @@ lemma zero_zpow_eq (n : ℤ) : (0 : G₀) ^ n = if n = 0 then 1 else 0 := by
 lemma zero_zpow_eq_one₀ {n : ℤ} : (0 : G₀) ^ n = 1 ↔ n = 0 := by
   rw [zero_zpow_eq, one_ne_zero.ite_eq_left_iff]
 
-lemma zpow_add_one₀ (ha : a ≠ 0) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
+lemma zpow_add_one₀ (ha : a ≠ 0) (n : ℤ) : a ^ (n + 1) = a ^ n * a :=
+  let _ := Monoid.monoidNPow G₀
+  match n with
   | (n : ℕ) => by simp only [← Int.natCast_succ, zpow_natCast, pow_succ]
   | -1 => by simp [ha]
   | .negSucc (n + 1) => by
@@ -446,7 +450,7 @@ variable [CommGroupWithZero G₀]
 theorem div_mul_eq_mul_div₀ (a b c : G₀) : a / c * b = a * b / c := by
   simp_rw [div_eq_mul_inv, mul_assoc, mul_comm c⁻¹]
 
-lemma div_sq_cancel (a b : G₀) : a ^ 2 * b / a = a * b := by
+lemma div_sq_cancel [MonoidNPow G₀] (a b : G₀) : a ^ 2 * b / a = a * b := by
   obtain rfl | ha := eq_or_ne a 0
   · simp
   · rw [sq, mul_assoc, mul_div_cancel_left₀ _ ha]

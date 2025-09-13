@@ -129,7 +129,7 @@ end MulOneClass
 
 section Monoid
 
-variable [Monoid M] {a b : M}
+variable [Monoid M] [MonoidNPow M] {a b : M}
 
 @[to_additive (attr := simp)]
 theorem pow_right (h : Commute a b) (n : ℕ) : Commute a (b ^ n) :=
@@ -173,7 +173,9 @@ protected theorem mul_inv (hab : Commute a b) : (a * b)⁻¹ = a⁻¹ * b⁻¹ :
 protected theorem inv (hab : Commute a b) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by rw [hab.eq, mul_inv_rev]
 
 @[to_additive AddCommute.zsmul_add]
-protected lemma mul_zpow (h : Commute a b) : ∀ n : ℤ, (a * b) ^ n = a ^ n * b ^ n
+protected lemma mul_zpow (h : Commute a b) (n : ℤ) : (a * b) ^ n = a ^ n * b ^ n :=
+  let _ := Monoid.monoidNPow G
+  match n with
   | (n : ℕ)    => by simp [zpow_natCast, h.mul_pow n]
   | .negSucc n => by simp [h.mul_pow, (h.pow_pow _ _).eq, mul_inv_rev]
 

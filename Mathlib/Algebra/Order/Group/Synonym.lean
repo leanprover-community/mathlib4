@@ -66,6 +66,9 @@ instance [h : MulOneClass α] : MulOneClass αᵒᵈ := h
 instance [h : Monoid α] : Monoid αᵒᵈ := h
 
 @[to_additive]
+instance [Monoid α] [h : MonoidNPow α] : MonoidNPow αᵒᵈ := h
+
+@[to_additive]
 instance OrderDual.instCommMonoid [h : CommMonoid α] : CommMonoid αᵒᵈ := h
 
 @[to_additive]
@@ -184,6 +187,9 @@ instance [h : MulOneClass α] : MulOneClass (Lex α) := h
 
 @[to_additive]
 instance [h : Monoid α] : Monoid (Lex α) := h
+
+@[to_additive]
+instance [Monoid α] [h : MonoidNPow α] : MonoidNPow (Lex α) := h
 
 @[to_additive]
 instance [h : CommMonoid α] : CommMonoid (Lex α) := h

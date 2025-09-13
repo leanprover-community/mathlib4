@@ -201,7 +201,7 @@ lemma prod_erase_of_comm [DecidableEq M] (ha : a ∈ l) (comm : ∀ x ∈ l, ∀
       ih h fun x hx y hy ↦ comm _ (List.mem_cons_of_mem b hx) _ (List.mem_cons_of_mem b hy)]
 
 @[to_additive]
-lemma prod_map_eq_pow_single [DecidableEq α] {l : List α} (a : α) (f : α → M)
+lemma prod_map_eq_pow_single [MonoidNPow M] [DecidableEq α] {l : List α} (a : α) (f : α → M)
     (hf : ∀ a', a' ≠ a → a' ∈ l → f a' = 1) : (l.map f).prod = f a ^ l.count a := by
   induction l generalizing a with
   | nil => rw [map_nil, prod_nil, count_nil, _root_.pow_zero]
@@ -214,7 +214,8 @@ lemma prod_map_eq_pow_single [DecidableEq α] {l : List α} (a : α) (f : α →
     · rw [hf a' ha' mem_cons_self, one_mul, add_zero]
 
 @[to_additive]
-lemma prod_eq_pow_single [DecidableEq M] (a : M) (h : ∀ a', a' ≠ a → a' ∈ l → a' = 1) :
+lemma prod_eq_pow_single [MonoidNPow M] [DecidableEq M] (a : M)
+    (h : ∀ a', a' ≠ a → a' ∈ l → a' = 1) :
     l.prod = a ^ l.count a :=
   _root_.trans (by rw [map_id]) (prod_map_eq_pow_single a id h)
 
@@ -359,7 +360,8 @@ theorem prod_set' (L : List G) (n : ℕ) (a : G) :
       drop_eq_nil_of_le ((le_of_not_gt hn).trans n.le_succ)]
 
 @[to_additive]
-lemma prod_map_ite_eq {A : Type*} [DecidableEq A] (l : List A) (f g : A → G) (a : A) :
+lemma prod_map_ite_eq [MonoidNPow G] {A : Type*} [DecidableEq A] (l : List A) (f g : A → G)
+    (a : A) :
     (l.map fun x => if x = a then f x else g x).prod
       = (f a / g a) ^ (l.count a) * (l.map g).prod := by
   induction l with

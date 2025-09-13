@@ -40,12 +40,13 @@ theorem Monoid.ext {M : Type u} ⦃m₁ m₂ : Monoid M⦄
   let f : @MonoidHom M M m₁.toMulOneClass m₂.toMulOneClass :=
     @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ (_) _ id h₁)
       (fun x y => congr_fun (congr_fun h_mul x) y)
-  have : m₁.npow = m₂.npow := by
-    ext n x
-    exact @MonoidHom.map_pow M M m₁ m₂ f x n
   rcases m₁ with @⟨@⟨⟨_⟩⟩, ⟨_⟩⟩
   rcases m₂ with @⟨@⟨⟨_⟩⟩, ⟨_⟩⟩
   congr
+
+@[to_additive (attr := ext)]
+theorem MonoidNPow.ext {M : Type*} [Monoid M] ⦃m₁ m₂ : MonoidNPow M⦄ : m₁ = m₂ := by
+  cases m₁; cases m₂; congr; ext n; induction n <;> simp_all
 
 @[to_additive]
 theorem CommMonoid.toMonoid_injective {M : Type u} :

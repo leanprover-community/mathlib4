@@ -74,11 +74,12 @@ theorem prod_pair (a b : M) : ({a, b} : Multiset M).prod = a * b := by
   rw [insert_eq_cons, prod_cons, prod_singleton]
 
 @[to_additive (attr := simp)]
-theorem prod_replicate (n : ℕ) (a : M) : (replicate n a).prod = a ^ n := by
+theorem prod_replicate [MonoidNPow M] (n : ℕ) (a : M) : (replicate n a).prod = a ^ n := by
   simp [replicate, List.prod_replicate]
 
 @[to_additive]
-theorem pow_count [DecidableEq M] (a : M) : a ^ s.count a = (s.filter (Eq a)).prod := by
+theorem pow_count [MonoidNPow M] [DecidableEq M] (a : M) :
+    a ^ s.count a = (s.filter (Eq a)).prod := by
   rw [filter_eq, prod_replicate]
 
 @[to_additive]
@@ -90,6 +91,7 @@ theorem prod_hom_rel (s : Multiset ι) {r : M → N → Prop} {f : ι → M} {g 
 
 @[to_additive]
 theorem prod_map_one : prod (m.map fun _ => (1 : M)) = 1 := by
+  let _ := Monoid.monoidNPow M
   rw [map_const', prod_replicate, one_pow]
 
 @[to_additive]

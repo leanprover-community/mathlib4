@@ -36,6 +36,8 @@ instance instAddCancelCommMonoid : AddCancelCommMonoid (Multiset α) where
   zero_add := Multiset.zero_add
   add_zero := Multiset.add_zero
   add_left_cancel _ _ _ := Multiset.add_right_inj.1
+
+instance : AddMonoidNSMul (Multiset α) where
   nsmul := nsmulRec
 
 lemma mem_of_mem_nsmul {a : α} {s : Multiset α} {n : ℕ} (h : a ∈ n • s) : a ∈ s := by
