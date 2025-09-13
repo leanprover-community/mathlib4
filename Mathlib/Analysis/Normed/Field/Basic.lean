@@ -31,6 +31,7 @@ variable {G α β ι : Type*}
 open Filter
 open scoped Topology NNReal ENNReal
 
+/-- Missing doc -/
 class WithNormMulClassNormedRing (α : Type*) [Ring α]
     extends Norm α, MetricSpace α, NormMulClass α where
   /-- The distance is induced by the norm. -/

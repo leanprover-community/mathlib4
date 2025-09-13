@@ -441,6 +441,7 @@ lemma Module.RestrictScalars.normSMulClassOrig (𝕜 : Type*) (𝕜' : Type*) (E
     NormSMulClass 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
   I
 
+/-- Missing doc -/
 abbrev Module.restrictScalars : Module 𝕜 E :=
   RestrictScalars.module 𝕜 𝕜' E
 
@@ -458,6 +459,7 @@ lemma NormSMulClass.restrictScalars :
     NormSMulClass 𝕜 E :=
   RestrictScalars.normSMulClass _ 𝕜' E
 
+/-- Missing doc -/
 abbrev NormedSpace.restrictScalars :
     NormedSpace 𝕜 E := by
   letI := Module.restrictScalars 𝕜 𝕜' E

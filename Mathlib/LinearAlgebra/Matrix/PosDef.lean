@@ -648,6 +648,7 @@ noncomputable abbrev WithNormedAddGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.P
       smul_left := fun x y r => by
         rw [← smul_eq_mul, ← dotProduct_smul, starRingEnd_apply, ← star_smul] }
 
+/-- Missing doc -/
 noncomputable abbrev NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
     NormedAddCommGroup (n → 𝕜) := by
   letI := WithNormedAddGroup.ofMatrix hM
@@ -659,6 +660,7 @@ abbrev WithInnerProductSpace.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
       (WithNormedAddGroup.ofMatrix hM).toWithSeminormedAddGroup :=
   InnerProductSpace.ofCore _
 
+/-- Missing doc -/
 abbrev InnerProductSpace.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
     @InnerProductSpace 𝕜 (n → 𝕜) _ _
       (WithNormedAddGroup.ofMatrix hM).toWithSeminormedAddGroup := by

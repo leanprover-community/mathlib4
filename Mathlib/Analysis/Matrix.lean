@@ -235,6 +235,7 @@ $L^\infty$ spaces.
 
 section LinftyOp
 
+/-- Missing doc -/
 @[local instance]
 protected def linftyOpWithSeminormedAddGroup [SeminormedAddCommGroup α] :
     WithSeminormedAddGroup (Matrix m n α) :=
@@ -247,6 +248,7 @@ protected def linftyOpSeminormedAddCommGroup [SeminormedAddCommGroup α] :
     SeminormedAddCommGroup (Matrix m n α) :=
   (by infer_instance : SeminormedAddCommGroup (m → PiLp 1 fun j : n => α))
 
+/-- Missing doc -/
 @[local instance]
 protected def linftyOpWithNormedAddGroup [NormedAddCommGroup α] :
     WithNormedAddGroup (Matrix m n α) :=
@@ -366,6 +368,7 @@ theorem linfty_opNorm_mulVec (A : Matrix l m α) (v : m → α) : ‖A *ᵥ v‖
 
 end NonUnitalSeminormedRing
 
+/-- Missing doc -/
 @[local instance]
 protected def linftyOpWithSeminormedRing [NonUnitalSeminormedRing α] :
     WithSeminormedRing (Matrix n n α) :=
@@ -390,6 +393,7 @@ matrix. -/
 protected def linftyOpSemiNormedRing [SeminormedRing α] [DecidableEq n] :
     SeminormedRing (Matrix n n α) := by infer_instance
 
+/-- Missing doc -/
 @[local instance]
 protected def linftyOpWithNormedRing [NonUnitalNormedRing α] :
     WithNormedRing (Matrix n n α) :=
@@ -500,6 +504,7 @@ section frobenius
 
 open scoped Matrix
 
+/-- Missing doc -/
 @[local instance]
 def frobeniusWithSeminormedAddGroup [SeminormedAddCommGroup α] :
     WithSeminormedAddGroup (Matrix m n α) :=
@@ -512,6 +517,7 @@ def frobeniusSeminormedAddCommGroup [SeminormedAddCommGroup α] :
     SeminormedAddCommGroup (Matrix m n α) :=
   inferInstanceAs (SeminormedAddCommGroup (PiLp 2 fun _i : m => PiLp 2 fun _j : n => α))
 
+/-- Missing doc -/
 @[local instance]
 def frobeniusWithNormedAddGroup [NormedAddCommGroup α] : WithNormedAddGroup (Matrix m n α) :=
   (by infer_instance : WithNormedAddGroup (PiLp 2 fun i : m => PiLp 2 fun j : n => α))
@@ -660,6 +666,7 @@ theorem frobenius_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B�
 theorem frobenius_norm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖ ≤ ‖A‖ * ‖B‖ :=
   frobenius_nnnorm_mul A B
 
+/-- Missing doc -/
 @[local instance]
 def frobeniusWithNormedRing [DecidableEq m] : WithNormedRing (Matrix m m α) :=
   { Matrix.frobeniusWithSeminormedAddGroup with
