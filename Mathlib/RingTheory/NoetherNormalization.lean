@@ -254,8 +254,8 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
     · obtain ⟨f, fi, fne⟩ := Submodule.exists_mem_ne_zero_of_ne_bot eqi
       set ϕ := kerLiftAlg <| hom2 f I
       have := Quotient.nontrivial hi
-      obtain ⟨s, _, g, injg, intg⟩ := hd (ker <| hom2 f I) (ker_ne_top <| hom2 f I)
-      have comp : (kerLiftAlg (hom2 f I)).comp (Quotient.mkₐ k <| ker <| hom2 f I) = (hom2 f I) :=
+      obtain ⟨s, _, g, injg, intg⟩ := hd (hom2 f I).ker (ker_ne_top (hom2 f I).toRingHom)
+      have comp : (kerLiftAlg (hom2 f I)).comp (Quotient.mkₐ k (hom2 f I).ker) = (hom2 f I) :=
         AlgHom.ext fun a ↦ by
           simp only [AlgHom.coe_comp, Quotient.mkₐ_eq_mk, Function.comp_apply, kerLiftAlg_mk]
       exact ⟨s, by omega, ϕ.comp g, (ϕ.coe_comp  g) ▸ (kerLiftAlg_injective _).comp injg,
@@ -274,7 +274,7 @@ theorem exists_integral_inj_algHom_of_fg : ∃ s, ∃ g : (MvPolynomial (Fin s) 
     Function.Injective g ∧ g.IsIntegral := by
   obtain ⟨n, f, fsurj⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp fin
   set ϕ := quotientKerAlgEquivOfSurjective fsurj
-  obtain ⟨s, _, g, injg, intg⟩ := exists_integral_inj_algHom_of_quotient (ker f) (ker_ne_top _)
+  obtain ⟨s, _, g, injg, intg⟩ := exists_integral_inj_algHom_of_quotient f.ker (ker_ne_top _)
   use s, ϕ.toAlgHom.comp g
   simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
     EmbeddingLike.comp_injective, AlgHom.toRingHom_eq_coe]

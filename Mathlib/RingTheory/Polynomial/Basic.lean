@@ -1091,7 +1091,7 @@ theorem ker_map (f : R →+* S) :
 
 lemma ker_mapAlgHom {S₁ S₂ σ : Type*} [CommRing S₁] [CommRing S₂] [Algebra R S₁]
     [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
-    RingHom.ker (MvPolynomial.mapAlgHom (σ := σ) f) = Ideal.map MvPolynomial.C (RingHom.ker f) :=
+    (MvPolynomial.mapAlgHom (σ := σ) f).ker = Ideal.map MvPolynomial.C f.ker :=
   MvPolynomial.ker_map (f.toRingHom : S₁ →+* S₂)
 
 end MvPolynomial
