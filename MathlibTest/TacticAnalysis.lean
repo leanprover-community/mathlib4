@@ -74,3 +74,36 @@ example {α : Type u} (f : α → Type max u v) : 1 = 1 := by
   rfl
 
 end replaceWithGrind
+
+section introMerge
+
+set_option linter.tacticAnalysis.introMerge true
+
+/-- warning: Try this: intro a b -/
+#guard_msgs in
+example : ∀ a b : Unit, a = b := by
+  intro a
+  intro b
+  rfl
+
+/-- warning: Try this: intro _ b -/
+#guard_msgs in
+example : ∀ a b : Unit, a = b := by
+  intro
+  intro b
+  rfl
+
+/-- warning: Try this: intro a _ -/
+#guard_msgs in
+example : ∀ a b : Unit, a = b := by
+  intro a
+  intro _
+  rfl
+
+
+#guard_msgs in
+example : ∀ a b : Unit, a = b := by
+  intro a b
+  rfl
+
+end introMerge
