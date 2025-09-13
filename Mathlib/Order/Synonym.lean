@@ -10,10 +10,13 @@ import Mathlib.Order.Basic
 /-!
 # Type synonyms
 
-This file provides two type synonyms for order theory:
+This file provides three type synonyms for order theory:
+
 * `OrderDual α`: Type synonym of `α` to equip it with the dual order (`a ≤ b` becomes `b ≤ a`).
 * `Lex α`: Type synonym of `α` to equip it with its lexicographic order. The precise meaning depends
   on the type we take the lex of. Examples include `Prod`, `Sigma`, `List`, `Finset`.
+* `Colex α`: Type synonym of `α` to equip it with its colexicographic order. The precise meaning
+  depends on the type we take the colex of. Examples include `Finsupp`, `Finset`.
 
 ## Notation
 
@@ -25,8 +28,10 @@ The general rule for notation of `Lex` types is to append `ₗ` to the usual not
 
 One should not abuse definitional equality between `α` and `αᵒᵈ`/`Lex α`. Instead, explicit
 coercions should be inserted:
+
 * `OrderDual`: `OrderDual.toDual : α → αᵒᵈ` and `OrderDual.ofDual : αᵒᵈ → α`
 * `Lex`: `toLex : α → Lex α` and `ofLex : Lex α → α`.
+* `Colex`: `toColex : α → Colex α` and `ofColex : Colex α → α`.
 
 ## See also
 
@@ -178,3 +183,60 @@ protected def Lex.rec {β : Lex α → Sort*} (h : ∀ a, β (toLex a)) : ∀ a,
 
 @[simp] lemma Lex.forall {p : Lex α → Prop} : (∀ a, p a) ↔ ∀ a, p (toLex a) := Iff.rfl
 @[simp] lemma Lex.exists {p : Lex α → Prop} : (∃ a, p a) ↔ ∃ a, p (toLex a) := Iff.rfl
+
+/-! ### Colexicographic order -/
+
+
+/-- A type synonym to equip a type with its lexicographic order. -/
+def Colex (α : Type*) :=
+  α
+
+/-- `toColex` is the identity function to the `Colex` of a type. -/
+@[match_pattern]
+def toColex : α ≃ Colex α :=
+  Equiv.refl _
+
+/-- `ofColex` is the identity function from the `Colex` of a type. -/
+@[match_pattern]
+def ofColex : Colex α ≃ α :=
+  Equiv.refl _
+
+@[simp]
+theorem toColex_symm_eq : (@toColex α).symm = ofColex :=
+  rfl
+
+@[simp]
+theorem ofColex_symm_eq : (@ofColex α).symm = toColex :=
+  rfl
+
+@[simp]
+theorem toColex_ofColex (a : Colex α) : toColex (ofColex a) = a :=
+  rfl
+
+@[simp]
+theorem ofColex_toColex (a : α) : ofColex (toColex a) = a :=
+  rfl
+
+theorem toColex_inj {a b : α} : toColex a = toColex b ↔ a = b := by simp
+
+theorem ofColex_inj {a b : Colex α} : ofColex a = ofColex b ↔ a = b := by simp
+
+instance (α : Type*) [BEq α] : BEq (Colex α) where
+  beq a b := ofColex a == ofColex b
+
+instance (α : Type*) [BEq α] [LawfulBEq α] : LawfulBEq (Colex α) :=
+  inferInstanceAs (LawfulBEq α)
+
+instance (α : Type*) [DecidableEq α] : DecidableEq (Colex α) :=
+  inferInstanceAs (DecidableEq α)
+
+instance (α : Type*) [Inhabited α] : Inhabited (Colex α) :=
+  inferInstanceAs (Inhabited α)
+
+/-- A recursor for `Colex`. Use as `induction x`. -/
+@[elab_as_elim, induction_eliminator, cases_eliminator]
+protected def Colex.rec {β : Colex α → Sort*} (h : ∀ a, β (toColex a)) : ∀ a, β a :=
+  fun a => h (ofColex a)
+
+@[simp] lemma Colex.forall {p : Colex α → Prop} : (∀ a, p a) ↔ ∀ a, p (toColex a) := Iff.rfl
+@[simp] lemma Colex.exists {p : Colex α → Prop} : (∃ a, p a) ↔ ∃ a, p (toColex a) := Iff.rfl
