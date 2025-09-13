@@ -501,8 +501,8 @@ end linear
 /-! ### The Cartesian product of two C^n functions is C^n. -/
 section prod
 
-/-- If two functions `f` and `g` admit Taylor series `p` and `q` in a set `s`, then the cartesian
-product of `f` and `g` admits the cartesian product of `p` and `q` as a Taylor series. -/
+/-- If two functions `f` and `g` admit Taylor series `p` and `q` in a set `s`, then the Cartesian
+product of `f` and `g` admits the Cartesian product of `p` and `q` as a Taylor series. -/
 theorem HasFTaylorSeriesUpToOn.prodMk {n : WithTop ℕ∞}
     (hf : HasFTaylorSeriesUpToOn n f p s) {g : E → G}
     {q : E → FormalMultilinearSeries 𝕜 E G} (hg : HasFTaylorSeriesUpToOn n g q s) :
@@ -519,7 +519,7 @@ theorem HasFTaylorSeriesUpToOn.prodMk {n : WithTop ℕ∞}
 @[deprecated (since := "2025-03-09")]
 alias HasFTaylorSeriesUpToOn.prod := HasFTaylorSeriesUpToOn.prodMk
 
-/-- The cartesian product of `C^n` functions at a point in a domain is `C^n`. -/
+/-- The Cartesian product of `C^n` functions at a point in a domain is `C^n`. -/
 @[fun_prop]
 theorem ContDiffWithinAt.prodMk {s : Set E} {f : E → F} {g : E → G}
     (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x) :
@@ -543,7 +543,7 @@ theorem ContDiffWithinAt.prodMk {s : Set E} {f : E → F} {g : E → G}
 @[deprecated (since := "2025-03-09")]
 alias ContDiffWithinAt.prod := ContDiffWithinAt.prodMk
 
-/-- The cartesian product of `C^n` functions on domains is `C^n`. -/
+/-- The Cartesian product of `C^n` functions on domains is `C^n`. -/
 @[fun_prop]
 theorem ContDiffOn.prodMk {s : Set E} {f : E → F} {g : E → G} (hf : ContDiffOn 𝕜 n f s)
     (hg : ContDiffOn 𝕜 n g s) : ContDiffOn 𝕜 n (fun x : E => (f x, g x)) s := fun x hx =>
@@ -552,7 +552,7 @@ theorem ContDiffOn.prodMk {s : Set E} {f : E → F} {g : E → G} (hf : ContDiff
 @[deprecated (since := "2025-03-09")]
 alias ContDiffOn.prod := ContDiffOn.prodMk
 
-/-- The cartesian product of `C^n` functions at a point is `C^n`. -/
+/-- The Cartesian product of `C^n` functions at a point is `C^n`. -/
 @[fun_prop]
 theorem ContDiffAt.prodMk {f : E → F} {g : E → G} (hf : ContDiffAt 𝕜 n f x)
     (hg : ContDiffAt 𝕜 n g x) : ContDiffAt 𝕜 n (fun x : E => (f x, g x)) x :=
@@ -561,7 +561,7 @@ theorem ContDiffAt.prodMk {f : E → F} {g : E → G} (hf : ContDiffAt 𝕜 n f 
 @[deprecated (since := "2025-03-09")]
 alias ContDiffAt.prod := ContDiffAt.prodMk
 
-/-- The cartesian product of `C^n` functions is `C^n`. -/
+/-- The Cartesian product of `C^n` functions is `C^n`. -/
 @[fun_prop]
 theorem ContDiff.prodMk {f : E → F} {g : E → G} (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
     ContDiff 𝕜 n fun x : E => (f x, g x) :=

@@ -1352,7 +1352,7 @@ variable {sXY : BinaryFan X Y} {sYZ : BinaryFan Y Z}
 /-- Given binary fans `sXY` over `X Y`, and `sYZ` over `Y Z`, and `s` over `sXY.X Z`,
 if `sYZ` is a limit cone we can construct a binary fan over `X sYZ.X`.
 
-This is an ingredient of building the associator for a cartesian category. -/
+This is an ingredient of building the associator for a Cartesian category. -/
 def BinaryFan.assoc (Q : IsLimit sYZ) (s : BinaryFan sXY.pt Z) : BinaryFan X sYZ.pt :=
   mk (s.fst ≫ sXY.fst) (Q.lift (mk (s.fst ≫ sXY.snd) s.snd))
 
@@ -1367,7 +1367,7 @@ lemma BinaryFan.assoc_snd (Q : IsLimit sYZ) (s : BinaryFan sXY.pt Z) :
 /-- Given binary fans `sXY` over `X Y`, and `sYZ` over `Y Z`, and `s` over `X sYZ.X`,
 if `sYZ` is a limit cone we can construct a binary fan over `sXY.X Z`.
 
-This is an ingredient of building the associator for a cartesian category. -/
+This is an ingredient of building the associator for a Cartesian category. -/
 def BinaryFan.assocInv (P : IsLimit sXY) (s : BinaryFan X sYZ.pt) : BinaryFan sXY.pt Z :=
   BinaryFan.mk (P.lift (BinaryFan.mk s.fst (s.snd ≫ sYZ.fst))) (s.snd ≫ sYZ.snd)
 
