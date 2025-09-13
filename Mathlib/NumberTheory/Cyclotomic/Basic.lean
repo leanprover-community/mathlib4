@@ -880,6 +880,8 @@ instance IsSepClosedOfCharZero.isCyclotomicExtension [CharZero K] :
   rw [IsCyclotomicExtension.eq_self_sdiff_zero]
   exact IsSepClosed.isCyclotomicExtension _ K fun _ _ h ↦ ⟨Nat.cast_ne_zero.mpr h⟩
 
+end IsAlgClosed
+
 @[deprecated (since := "2025-06-22")]
 alias IsAlgClosedOfCharZero.isCyclotomicExtension := IsSepClosedOfCharZero.isCyclotomicExtension
 
