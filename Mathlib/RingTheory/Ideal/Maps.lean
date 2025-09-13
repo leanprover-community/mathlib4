@@ -647,10 +647,12 @@ theorem le_comap_mul : comap f K * comap f L ≤ comap f (K * L) :=
       mul_mono (map_le_iff_le_comap.2 <| le_rfl) (map_le_iff_le_comap.2 <| le_rfl)
 
 theorem le_comap_pow (n : ℕ) : K.comap f ^ n ≤ (K ^ n).comap f := by
-  induction' n with n n_ih
-  · rw [pow_zero, pow_zero, Ideal.one_eq_top, Ideal.one_eq_top]
+  induction n with
+  | zero =>
+    rw [pow_zero, pow_zero, Ideal.one_eq_top, Ideal.one_eq_top]
     exact rfl.le
-  · rw [pow_succ, pow_succ]
+  | succ n n_ih =>
+    rw [pow_succ, pow_succ]
     exact (Ideal.mul_mono_left n_ih).trans (Ideal.le_comap_mul f)
 
 lemma disjoint_map_primeCompl_iff_comap_le {S : Type*} [Semiring S] {f : R →+* S}
