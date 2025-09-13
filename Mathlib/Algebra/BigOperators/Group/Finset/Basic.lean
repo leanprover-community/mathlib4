@@ -863,8 +863,8 @@ theorem prod_erase_eq_div {a : ι} (h : a ∈ s) : ∏ x ∈ s.erase a, f x = (�
 
 /-- A telescoping product along `{0, ..., n - 1}` of a commutative-group-valued function reduces to
 the ratio of the last and first factors. -/
-@[to_additive /-- A telescoping sum along `{0, ..., n - 1}` of a function valued in a commutative additive
-group reduces to the difference of the last and first terms. -/]
+@[to_additive /-- A telescoping sum along `{0, ..., n - 1}` of a function valued in a commutative
+additive group reduces to the difference of the last and first terms. -/]
 lemma prod_range_div (f : ℕ → G) (n : ℕ) : (∏ i ∈ range n, f (i + 1) / f i) = f n / f 0 := by
   apply prod_range_induction <;> simp
 
