@@ -96,6 +96,9 @@ theorem subsingleton_quotient_iff_eq_top : Subsingleton (M ⧸ p) ↔ p = ⊤ :=
   · rintro rfl
     infer_instance
 
+instance [Subsingleton M] : Subsingleton (M ⧸ p) :=
+  Submodule.subsingleton_quotient_iff_eq_top.mpr (Subsingleton.elim _ _)
+
 theorem unique_quotient_iff_eq_top : Nonempty (Unique (M ⧸ p)) ↔ p = ⊤ :=
   ⟨fun ⟨h⟩ => subsingleton_quotient_iff_eq_top.mp (@Unique.instSubsingleton _ h),
     by rintro rfl; exact ⟨QuotientTop.unique⟩⟩
