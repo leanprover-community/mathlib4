@@ -109,7 +109,7 @@ Group Theory:
     unitary group: 'Matrix.unitaryGroup'
     special unitary group: 'https://en.wikipedia.org/wiki/Special_unitary_group'
   Representation theory of finite groups:
-    representations of abelian groups: 'https://proofwiki.org/wiki/Irreducible_Representations_of_Abelian_Group'
+    representations of abelian groups: 'FDRep.finrank_eq_one_simple_of_commMonoid'
     dual groups: 'https://kconrad.math.uconn.edu/blurbs/grouptheory/charthy.pdf'
     Maschke theorem: 'MonoidAlgebra.Submodule.exists_isCompl'
     orthogonality of irreducible characters: 'FDRep.char_orthonormal'
