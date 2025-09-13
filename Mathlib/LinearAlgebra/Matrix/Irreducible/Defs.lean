@@ -64,7 +64,7 @@ def toQuiver (A : Matrix n n ℝ) : Quiver n :=
 /-- A matrix `A` is irreducible if it is entrywise nonnegative and
 its quiver of positive entries (`toQuiver A`) is strongly connected. -/
 def Irreducible (A : Matrix n n ℝ) : Prop :=
-  (∀ i j, 0 ≤ A i j) ∧ (letI : Quiver n := toQuiver A; IsStronglyConnected n)
+  (∀ i j, 0 ≤ A i j) ∧ (letI : Quiver n := toQuiver A; IsStronglyConnectedPos n)
 
 /-- A matrix `A` is primitive if it is entrywise nonnegative
 and some positive power has all entries strictly positive. -/

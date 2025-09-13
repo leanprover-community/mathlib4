@@ -12,15 +12,19 @@ namespace Quiver
 
 section Connected
 
+/-- Strong reachability: every pair of vertices is connected by some path (length ≥ 0). -/
+abbrev IsStronglyConnected (V : Type*) [Quiver V] : Prop :=
+  ∀ i j : V, Nonempty (Path i j)
+
 /-- A quiver is strongly connected if for any two vertices there exists a path of positive
 length between them. -/
-abbrev IsStronglyConnected (V : Type*) [Quiver V] : Prop :=
+abbrev IsStronglyConnectedPos (V : Type*) [Quiver V] : Prop :=
   ∀ i j : V, Nonempty { p : Path i j // p.length > 0 }
 
 /-- Expand `IsStronglyConnected` to an existential over paths with positive length. -/
-theorem isStronglyConnected_iff_forall_exists_pos_length_path
+theorem isStronglyConnectedPos_iff_forall_exists_pos_length_path
     (V : Type*) [Quiver V] :
-    IsStronglyConnected V ↔ ∀ i j : V, ∃ p : Path i j, 0 < p.length := by
+    IsStronglyConnectedPos V ↔ ∀ i j : V, ∃ p : Path i j, 0 < p.length := by
   constructor
   · intro h i j
     rcases h i j with ⟨⟨p, hp⟩⟩
@@ -30,16 +34,16 @@ theorem isStronglyConnected_iff_forall_exists_pos_length_path
     exact ⟨⟨p, hp⟩⟩
 
 /-- From strong connectivity, get a path of positive length from `i` to `j`. -/
-theorem exists_pos_length_path_of_isStronglyConnected
-    {V : Type*} [Quiver V] (h : IsStronglyConnected V) (i j : V) :
+theorem exists_pos_length_path_of_isStronglyConnectedPos
+    {V : Type*} [Quiver V] (h : IsStronglyConnectedPos V) (i j : V) :
     ∃ p : Path i j, 0 < p.length :=
-  (isStronglyConnected_iff_forall_exists_pos_length_path V).1 h i j
+  (isStronglyConnectedPos_iff_forall_exists_pos_length_path V).1 h i j
 
 /-- From strong connectivity, get a cycle of positive length at any vertex. -/
-theorem exists_pos_length_cycle_of_isStronglyConnected
-    {V : Type*} [Quiver V] (h : IsStronglyConnected V) (i : V) :
+theorem exists_pos_length_cycle_of_isStronglyConnectedPos
+    {V : Type*} [Quiver V] (h : IsStronglyConnectedPos V) (i : V) :
     ∃ p : Path i i, 0 < p.length :=
-  exists_pos_length_path_of_isStronglyConnected h i i
+  exists_pos_length_path_of_isStronglyConnectedPos h i i
 
 /-- Equivalence relation for strong connectivity: each direction has a path. -/
 def stronglyConnectedSetoid (V : Type*) [Quiver V] : Setoid V :=
