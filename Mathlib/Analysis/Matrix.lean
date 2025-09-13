@@ -668,7 +668,7 @@ theorem frobenius_norm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖
 
 /-- Missing doc -/
 @[local instance]
-def frobeniusWithNormedRing [DecidableEq m] : WithNormedRing (Matrix m m α) :=
+def frobeniusWithNormedRing : WithNormedRing (Matrix m m α) :=
   { Matrix.frobeniusWithSeminormedAddGroup with
     norm := Norm.norm
     norm_mul_le := frobenius_norm_mul

@@ -555,7 +555,7 @@ lemma toNormedSpaceOfTopology
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
     letI : WithNormedAddGroup F := cd.toNormedAddCommGroupOfTopology h h';
     NormSMulClass 𝕜 F :=
-  letI : WithNormedAddGroup F := cd.toNormedAddCommGroupOfTopology h h'
+  let A : WithNormedAddGroup F := cd.toNormedAddCommGroupOfTopology h h'
   { norm_smul r x := by
       rw [norm_eq_sqrt_re_inner, inner_smul_left, inner_smul_right, ← mul_assoc]
       rw [RCLike.conj_mul, ← ofReal_pow, re_ofReal_mul, sqrt_mul, ← ofReal_normSq_eq_inner_self,

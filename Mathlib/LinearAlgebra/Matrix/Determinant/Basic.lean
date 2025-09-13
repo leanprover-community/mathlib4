@@ -264,7 +264,7 @@ theorem det_smul (A : Matrix n n R) (c : R) : det (c • A) = c ^ Fintype.card n
     _ = det (diagonal fun _ => c) * det A := det_mul _ _
     _ = c ^ Fintype.card n * det A := by simp
 
-@[simp]
+@[nolint simpNF, simp]
 theorem det_smul_of_tower {α} [Monoid α] [MulAction α R] [IsScalarTower α R R]
     [SMulCommClass α R R] (c : α) (A : Matrix n n R) :
     det (c • A) = c ^ Fintype.card n • det A := by

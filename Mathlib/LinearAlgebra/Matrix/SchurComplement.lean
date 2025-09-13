@@ -367,7 +367,7 @@ theorem det_fromBlocks₁₁ (A : Matrix m m α) (B : Matrix m n α) (C : Matrix
   rw [fromBlocks_eq_of_invertible₁₁ (A := A), det_mul, det_mul, det_fromBlocks_zero₂₁,
     det_fromBlocks_zero₂₁, det_fromBlocks_zero₁₂, det_one, det_one, one_mul, one_mul, mul_one]
 
-@[simp]
+@[simp, nolint simpNF]
 theorem det_fromBlocks_one₁₁ (B : Matrix m n α) (C : Matrix n m α) (D : Matrix n n α) :
     (Matrix.fromBlocks 1 B C D).det = det (D - C * B) := by
   haveI : Invertible (1 : Matrix m m α) := invertibleOne
@@ -384,7 +384,7 @@ theorem det_fromBlocks₂₂ (A : Matrix m m α) (B : Matrix m n α) (C : Matrix
     cases i <;> cases j <;> rfl
   rw [this, det_submatrix_equiv_self, det_fromBlocks₁₁]
 
-@[simp]
+@[simp, nolint simpNF]
 theorem det_fromBlocks_one₂₂ (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α) :
     (Matrix.fromBlocks A B C 1).det = det (A - B * C) := by
   haveI : Invertible (1 : Matrix n n α) := invertibleOne
