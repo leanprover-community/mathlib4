@@ -3,11 +3,8 @@ Copyright (c) 2025 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Analysis.Normed.Field.Lemmas
-import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.LinearAlgebra.Finsupp.Span
-import Mathlib.Topology.Algebra.Module.WeakBilin
+import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # Holding file
