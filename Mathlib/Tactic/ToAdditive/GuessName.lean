@@ -108,7 +108,7 @@ def nameDict : String → List String
   | "zpow"          => ["zsmul"]
   | "mabs"          => ["abs"]
   | "dvd"           => ["add", "Dvd"]
-  | "preprime"      => ["add", "Prime"]
+  | "prime₀"      => ["add", "Prime"]
   | "primal"        => ["add", "Primal"]
   | "monoid"        => ["add", "Monoid"]
   | "submonoid"     => ["add", "Submonoid"]

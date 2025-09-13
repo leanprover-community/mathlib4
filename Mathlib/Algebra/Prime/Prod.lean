@@ -38,8 +38,8 @@ theorem Irreducible.irreducible_isUnit_or [Monoid M] [Monoid N] {p : M × N} (h 
     · exact .inl ⟨isUnit_of_mul_isUnit_left h.2, hu⟩
     · exact .inr ⟨isUnit_of_mul_isUnit_right h.2, hu⟩
 
-@[to_additive] theorem Prod.preprime_iff [CommMonoid M] [CommMonoid N] {p : M × N} :
-    Preprime p ↔ (Preprime p.1 ∧ IsUnit p.2) ∨ (Preprime p.2 ∧ IsUnit p.1) where
+@[to_additive] theorem Prod.prime₀_iff [CommMonoid M] [CommMonoid N] {p : M × N} :
+    Prime₀ p ↔ (Prime₀ p.1 ∧ IsUnit p.2) ∨ (Prime₀ p.2 ∧ IsUnit p.1) where
   mp h := by
     apply (h.2 (p.1, 1) (1, p.2) (by simp)).imp <;>
       (intro dvd; simp_rw [prod_dvd_iff, ← isUnit_iff_dvd_one] at dvd)
@@ -59,7 +59,7 @@ theorem Irreducible.irreducible_isUnit_or [Monoid M] [Monoid N] {p : M × N} (h 
 variable [CommMonoidWithZero M] [CommMonoidWithZero N] {p : M × N}
 
 theorem Prime.of_prime_fst_isUnit_snd (hp1 : Prime p.1) (hp2 : IsUnit p.2) : Prime p :=
-  ⟨by rintro rfl; exact hp1.1 rfl, Prod.preprime_iff.mpr (.inl ⟨hp1.2, hp2⟩)⟩
+  ⟨by rintro rfl; exact hp1.1 rfl, Prod.prime₀_iff.mpr (.inl ⟨hp1.2, hp2⟩)⟩
 
 theorem Prime.of_prime_snd_isUnit_fst (hp2 : Prime p.2) (hp1 : IsUnit p.1) : Prime p :=
-  ⟨by rintro rfl; exact hp2.1 rfl, Prod.preprime_iff.mpr (.inr ⟨hp2.2, hp1⟩)⟩
+  ⟨by rintro rfl; exact hp2.1 rfl, Prod.prime₀_iff.mpr (.inr ⟨hp2.2, hp1⟩)⟩

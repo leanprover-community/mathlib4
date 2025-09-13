@@ -32,21 +32,21 @@ assert_not_exists OrderedCommMonoid Multiset
 
 variable {M : Type*}
 
-section Preprime
+section Prime₀
 
 variable [CommMonoid M]
 
-/-- An element `p` of a commutative monoid is called "preprime",
+/-- An element `p` of a commutative monoid is called "Prime₀",
 if it's not a unit, and `p ∣ a * b → p ∣ a ∨ p ∣ b` for all `a`, `b`.
-It is the same as `Prime` except that a preprime element can be zero. -/
+It is the same as `Prime` except that a Prime₀ element can be zero. -/
 @[to_additive /-- An element `p` of a commutative additive monoid is called prime if it is
 not an additive unit, and `p ∣ₐ a * b → p ∣ₐ a ∨ p ∣ₐ b` for all `a`, `b`. -/]
-abbrev Preprime (p : M) : Prop :=
+abbrev Prime₀ (p : M) : Prop :=
   ¬IsUnit p ∧ ∀ a b, p ∣ a * b → p ∣ a ∨ p ∣ b
 
-namespace Preprime
+namespace Prime₀
 
-variable {p : M} (hp : Preprime p)
+variable {p : M} (hp : Prime₀ p)
 include hp
 
 @[to_additive] theorem not_unit : ¬IsUnit p := hp.1
@@ -82,12 +82,12 @@ include hp
 @[to_additive] theorem dvd_pow_iff_dvd {a : M} {n : ℕ} (hn : n ≠ 0) : p ∣ a ^ n ↔ p ∣ a :=
   ⟨hp.dvd_of_dvd_pow, (dvd_pow · hn)⟩
 
-end Preprime
+end Prime₀
 
 @[to_additive (attr := simp)]
-theorem not_preprime_one : ¬Preprime (1 : M) := fun h ↦ h.not_unit isUnit_one
+theorem not_Prime₀_one : ¬Prime₀ (1 : M) := fun h ↦ h.not_unit isUnit_one
 
-end Preprime
+end Prime₀
 
 section Prime
 
@@ -96,7 +96,7 @@ variable [CommMonoidWithZero M]
 /-- An element `p` of a commutative monoid with zero (e.g., a ring) is called *prime*,
 if it's not zero, not a unit, and `p ∣ a * b → p ∣ a ∨ p ∣ b` for all `a`, `b`. -/
 def Prime (p : M) : Prop :=
-  p ≠ 0 ∧ Preprime p
+  p ≠ 0 ∧ Prime₀ p
 
 namespace Prime
 
@@ -136,7 +136,7 @@ end Prime
 theorem not_prime_zero : ¬Prime (0 : M) := fun h ↦ h.ne_zero rfl
 
 @[simp]
-theorem not_prime_one : ¬Prime (1 : M) := fun h ↦ not_preprime_one h.2
+theorem not_prime_one : ¬Prime (1 : M) := fun h ↦ not_Prime₀_one h.2
 
 end Prime
 
@@ -179,22 +179,22 @@ section CommMonoid
 
 variable [CommMonoid M]
 
-@[to_additive] theorem Irreducible.preprime_of_isPrimal {a : M}
-    (irr : Irreducible a) (primal : IsPrimal a) : Preprime a :=
+@[to_additive] theorem Irreducible.Prime₀_of_isPrimal {a : M}
+    (irr : Irreducible a) (primal : IsPrimal a) : Prime₀ a :=
   ⟨irr.not_isUnit, fun a b dvd ↦ by
     obtain ⟨d₁, d₂, h₁, h₂, rfl⟩ := primal dvd
     exact (of_irreducible_mul irr).symm.imp (·.mul_right_dvd.mpr h₁) (·.mul_left_dvd.mpr h₂)⟩
 
-@[to_additive] theorem Irreducible.preprime [DecompositionMonoid M] {a : M}
-    (irr : Irreducible a) : Preprime a :=
-  irr.preprime_of_isPrimal (DecompositionMonoid.primal a)
+@[to_additive] theorem Irreducible.Prime₀ [DecompositionMonoid M] {a : M}
+    (irr : Irreducible a) : Prime₀ a :=
+  irr.Prime₀_of_isPrimal (DecompositionMonoid.primal a)
 
-@[to_additive] theorem IsRegular.irreducible_of_preprime {a : M}
-    (reg : IsRegular a) (preprime : Preprime a) : Irreducible a :=
-  ⟨preprime.not_unit, fun a b ↦ by
+@[to_additive] theorem IsRegular.irreducible_of_Prime₀ {a : M}
+    (reg : IsRegular a) (Prime₀ : Prime₀ a) : Irreducible a :=
+  ⟨Prime₀.not_unit, fun a b ↦ by
     rintro rfl
     rw [isRegular_mul_iff] at reg
-    exact (preprime.dvd_or_dvd dvd_rfl).symm.imp
+    exact (Prime₀.dvd_or_dvd dvd_rfl).symm.imp
       (isUnit_of_dvd_one <| reg.2.dvd_cancel_right.mp <| dvd_mul_of_dvd_right · _)
       (isUnit_of_dvd_one <| reg.1.dvd_cancel_left.mp <| dvd_mul_of_dvd_left · _)⟩
 
@@ -204,12 +204,12 @@ section CancelCommMonoid
 
 variable [CancelCommMonoid M] {p : M}
 
-@[to_additive] protected theorem Preprime.irreducible (hp : Preprime p) : Irreducible p :=
-  (IsRegular.all p).irreducible_of_preprime hp
+@[to_additive] protected theorem Prime₀.irreducible (hp : Prime₀ p) : Irreducible p :=
+  (IsRegular.all p).irreducible_of_Prime₀ hp
 
 @[to_additive]
-theorem irreducible_iff_preprime [DecompositionMonoid M] {a : M} : Irreducible a ↔ Preprime a :=
-  ⟨Irreducible.preprime, Preprime.irreducible⟩
+theorem irreducible_iff_Prime₀ [DecompositionMonoid M] {a : M} : Irreducible a ↔ Prime₀ a :=
+  ⟨Irreducible.Prime₀, Prime₀.irreducible⟩
 
 end CancelCommMonoid
 
@@ -219,7 +219,7 @@ variable [CommMonoidWithZero M]
 
 theorem Irreducible.prime_of_isPrimal {a : M}
     (irr : Irreducible a) (primal : IsPrimal a) : Prime a :=
-  ⟨irr.ne_zero, irr.preprime_of_isPrimal primal⟩
+  ⟨irr.ne_zero, irr.Prime₀_of_isPrimal primal⟩
 
 theorem Irreducible.prime [DecompositionMonoid M] {a : M} (irr : Irreducible a) : Prime a :=
   irr.prime_of_isPrimal (DecompositionMonoid.primal a)
@@ -231,7 +231,7 @@ section CancelCommMonoidWithZero
 variable [CancelCommMonoidWithZero M] {p : M}
 
 protected theorem Prime.irreducible (hp : Prime p) : Irreducible p :=
-  (isCancelMulZero_iff_forall_isRegular.mp inferInstance hp.1).irreducible_of_preprime hp.2
+  (isCancelMulZero_iff_forall_isRegular.mp inferInstance hp.1).irreducible_of_Prime₀ hp.2
 
 theorem irreducible_iff_prime [DecompositionMonoid M] {a : M} : Irreducible a ↔ Prime a :=
   ⟨Irreducible.prime, Prime.irreducible⟩
