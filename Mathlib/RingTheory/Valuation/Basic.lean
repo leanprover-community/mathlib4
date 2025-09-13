@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 -/
 import Mathlib.Algebra.Order.Hom.Monoid
+import Mathlib.Algebra.Order.Monoid.Unbundled.Units
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.Tactic.TFAE
@@ -501,6 +502,8 @@ end IsNontrivial
 
 namespace IsEquiv
 
+section
+
 variable [Ring R] [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ'₀]
   {v : Valuation R Γ₀} {v₁ : Valuation R Γ₀} {v₂ : Valuation R Γ'₀} {v₃ : Valuation R Γ''₀}
 
@@ -529,28 +532,381 @@ theorem map {v' : Valuation R Γ₀} (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f
 theorem comap {S : Type*} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :
     (v₁.comap f).IsEquiv (v₂.comap f) := fun r s => h (f r) (f s)
 
-theorem val_eq (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = v₂ s := by
-  simpa only [le_antisymm_iff] using and_congr (h r s) (h s r)
+end
 
-theorem ne_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ 0 ↔ v₂ r ≠ 0 := by
-  have : v₁ r ≠ v₁ 0 ↔ v₂ r ≠ v₂ 0 := not_congr h.val_eq
-  rwa [v₁.map_zero, v₂.map_zero] at this
+section LinearOrderedCommMonoidWithZero
 
-lemma lt_iff_lt (h : v₁.IsEquiv v₂) {x y : R} :
-    v₁ x < v₁ y ↔ v₂ x < v₂ y := by
+variable [Ring R]
+  {Γ₁ Γ₂ : Type*} [LinearOrderedCommMonoidWithZero Γ₁] [LinearOrderedCommMonoidWithZero Γ₂]
+  {v₁ : Valuation R Γ₁} {v₂ : Valuation R Γ₂}
+  (h : v₁.IsEquiv v₂)
+  {x x₁ x₂ y y₁ y₂ z w : R}
+
+include h
+
+theorem val_eq : v₁ x = v₁ y ↔ v₂ x = v₂ y := by
+  simpa only [le_antisymm_iff] using and_congr (h x y) (h y x)
+
+theorem eq_zero : v₁ x = 0 ↔ v₂ x = 0 := by
+  rw [← v₁.map_zero, ← v₂.map_zero, h.val_eq]
+
+theorem ne_zero : v₁ x ≠ 0 ↔ v₂ x ≠ 0 := by
+  rw [not_iff_not, h.eq_zero]
+
+lemma lt_iff_lt : v₁ x < v₁ y ↔ v₂ x < v₂ y := by
   rw [← le_iff_le_iff_lt_iff_lt, h]
 
-lemma le_one_iff_le_one (h : v₁.IsEquiv v₂) {x : R} :
-    v₁ x ≤ 1 ↔ v₂ x ≤ 1 := by
+lemma le_one_iff_le_one : v₁ x ≤ 1 ↔ v₂ x ≤ 1 := by
   rw [← v₁.map_one, h, map_one]
 
-lemma eq_one_iff_eq_one (h : v₁.IsEquiv v₂) {x : R} :
-    v₁ x = 1 ↔ v₂ x = 1 := by
+lemma eq_one_iff_eq_one : v₁ x = 1 ↔ v₂ x = 1 := by
   rw [← v₁.map_one, h.val_eq, map_one]
 
-lemma lt_one_iff_lt_one (h : v₁.IsEquiv v₂) {x : R} :
-    v₁ x < 1 ↔ v₂ x < 1 := by
+lemma lt_one_iff_lt_one : v₁ x < 1 ↔ v₂ x < 1 := by
   rw [← v₁.map_one, h.lt_iff_lt, map_one]
+
+set_option linter.unusedVariables false in
+/-- If `v₁.Equiv v₂`, then the ranges of `v₁` and `v₂` are isomorphic. We can adjoin the inverses
+of elements of the ranges that are invertible in both monoids, and the two resulting monoids are
+also isomorphic.
+
+This `Prop` is precisely the relation saying that the isomorphism sends `x` to `y`.
+
+This is an auxiliary definition for the tactic `rw_val_equiv`. -/
+@[nolint unusedArguments]
+def Associated (h : v₁.IsEquiv v₂) (x : Γ₁) (y : Γ₂) : Prop :=
+  ∃ r s : R, IsUnit (v₁ s) ∧ IsUnit (v₂ s) ∧ v₁ r = x * v₁ s ∧ v₂ r = y * v₂ s
+
+namespace Associated
+
+variable {h} {x₁ x₂ : Γ₁} {y₁ y₂ : Γ₂} (h₁ : h.Associated x₁ y₁) (h₂ : h.Associated x₂ y₂)
+
+theorem value {r : R} : h.Associated (v₁ r) (v₂ r) :=
+  ⟨r, 1, by simp⟩
+
+theorem zero : h.Associated 0 0 := by
+  simpa using value (h := h) (r := 0)
+
+theorem one : h.Associated 1 1 := by
+  simpa using value (h := h) (r := 1)
+
+include h₁ h₂
+
+theorem mul : h.Associated (x₁ * x₂) (y₁ * y₂) := by
+  obtain ⟨r₁, s₁, u₁, v₁, e₁, f₁⟩ := h₁
+  obtain ⟨r₂, s₂, u₂, v₂, e₂, f₂⟩ := h₂
+  exact ⟨r₁ * r₂, s₁ * s₂, by simp [mul_mul_mul_comm, *]⟩
+
+omit h₂ in
+theorem pow (n : ℕ) : h.Associated (x₁ ^ n) (y₁ ^ n) := by
+  induction n with
+  | zero => simpa using one
+  | succ n ih => simpa [pow_succ] using ih.mul h₁
+
+theorem le_iff_le : x₁ ≤ x₂ ↔ y₁ ≤ y₂ := by
+  obtain ⟨r₁, s₁, i₁, j₁, e₁, f₁⟩ := h₁
+  obtain ⟨r₂, s₂, i₂, j₂, e₂, f₂⟩ := h₂
+  rw [← i₁.mul_le_mul_right, ← i₂.mul_le_mul_left, ← e₁, mul_left_comm, ← mul_assoc, ← e₂,
+    ← j₁.mul_le_mul_right, ← j₂.mul_le_mul_left, ← f₁, mul_left_comm, ← mul_assoc, ← f₂,
+    ← map_mul, ← map_mul, ← map_mul, ← map_mul, h]
+
+theorem min : h.Associated (min x₁ x₂) (min y₁ y₂) := by
+  obtain hx | hx := le_total x₁ x₂
+  · have hy := (h₁.le_iff_le h₂).mp hx
+    rwa [min_eq_left hx, min_eq_left hy]
+  · have hy := (h₂.le_iff_le h₁).mp hx
+    rwa [min_eq_right hx, min_eq_right hy]
+
+theorem max : h.Associated (max x₁ x₂) (max y₁ y₂) := by
+  obtain hx | hx := le_total x₁ x₂
+  · have hy := (h₁.le_iff_le h₂).mp hx
+    rwa [max_eq_right hx, max_eq_right hy]
+  · have hy := (h₂.le_iff_le h₁).mp hx
+    rwa [max_eq_left hx, max_eq_left hy]
+
+theorem lt_iff_lt : x₁ < x₂ ↔ y₁ < y₂ := by
+  simp_rw [← not_le, h₂.le_iff_le h₁]
+
+theorem eq_iff_eq : x₁ = x₂ ↔ y₁ = y₂ := by
+  simp_rw [le_antisymm_iff, h₁.le_iff_le h₂, h₂.le_iff_le h₁]
+
+theorem ne_iff_ne : x₁ ≠ x₂ ↔ y₁ ≠ y₂ := by
+  simp_rw [not_iff_not, h₁.eq_iff_eq h₂]
+
+end Associated
+
+end LinearOrderedCommMonoidWithZero
+
+section LinearOrderedCommGroupWithZero
+
+variable [Ring R]
+  {Γ₁ Γ₂ : Type*} [LinearOrderedCommGroupWithZero Γ₁] [LinearOrderedCommGroupWithZero Γ₂]
+  {v₁ : Valuation R Γ₁} {v₂ : Valuation R Γ₂}
+  (h : v₁.IsEquiv v₂)
+
+include h
+
+theorem associated_iff_exists {x : Γ₁} {y : Γ₂} :
+    h.Associated x y ↔ ∃ r s, v₁ r / v₁ s = x ∧ v₂ r / v₂ s = y := by
+  refine ⟨fun ⟨r, s, i, j, e, f⟩ ↦ ⟨r, s, by simp [e, f, i.ne_zero, j.ne_zero]⟩, ?_⟩
+  rintro ⟨r, s, rfl, rfl⟩
+  have : v₁ s = 0 ↔ v₂ s = 0 :=
+    Associated.eq_iff_eq (h := h) .value .zero
+  by_cases hs : v₁ s = 0
+  · rw [hs, this.mp hs, div_zero, div_zero]
+    exact .zero
+  · have := this.not.mp hs
+    exact ⟨r, s, .mk0 _ hs, .mk0 _ this, by simp [hs, this]⟩
+alias ⟨Associated.exists_eq, Associated.intro⟩ := associated_iff_exists
+
+namespace Associated
+
+variable {h} {x₁ x₂ : Γ₁} {y₁ y₂ : Γ₂} (h₁ : h.Associated x₁ y₁) (h₂ : h.Associated x₂ y₂)
+
+include h₁
+
+theorem inv : h.Associated x₁⁻¹ y₁⁻¹ := by
+  rw [associated_iff_exists] at h₁ ⊢
+  obtain ⟨r, s, rfl, rfl⟩ := h₁
+  exact ⟨s, r, by simp⟩
+
+theorem zpow (n : ℤ) : h.Associated (x₁ ^ n) (y₁ ^ n) := by
+  obtain ⟨n, rfl | rfl⟩ := n.eq_nat_or_neg
+  · convert h₁.pow n <;> rw [zpow_natCast]
+  · convert (h₁.pow n).inv <;> rw [zpow_neg, zpow_natCast]
+
+include h₂
+
+theorem div : h.Associated (x₁ / x₂) (y₁ / y₂) := by
+  convert h₁.mul h₂.inv using 1 <;> rw [div_eq_mul_inv]
+
+omit h₁ h₂
+
+@[elab_as_elim, induction_eliminator, cases_eliminator]
+theorem rec {motive : ∀ x y, h.Associated x y → Prop}
+    (ih : ∀ r s, 0 < v₁ s → 0 < v₂ s → motive (v₁ r / v₁ s) (v₂ r / v₂ s) (div value value))
+    {x : Γ₁} {y : Γ₂} (hxy : h.Associated x y) : motive x y hxy := by
+  obtain ⟨r, s, i, j, e, f⟩ := hxy
+  convert ih r s (zero_lt_iff.mpr i.ne_zero) (zero_lt_iff.mpr j.ne_zero)
+  · rw [e, i.mul_div_cancel_right]
+  · rw [f, j.mul_div_cancel_right]
+
+end Associated
+
+namespace EquivTac
+
+open Lean Elab Meta Tactic Qq
+
+initialize registerTraceClass `rw_val_equiv
+
+variable {u₁ u₂ u₃ : Level}
+  {R : Q(Type u₁)} {Γ₁ : Q(Type u₂)} {Γ₂ : Q(Type u₃)} {hR : Q(Ring $R)}
+  {mΓ₁ : Q(LinearOrderedCommMonoidWithZero $Γ₁)}
+  (gΓ₁? : Option Q(LinearOrderedCommGroupWithZero $Γ₁))
+  {mΓ₂ : Q(LinearOrderedCommMonoidWithZero $Γ₂)}
+  (gΓ₂? : Option Q(LinearOrderedCommGroupWithZero $Γ₂))
+  (v₁ : Q(Valuation $R $Γ₁)) (v₂ : Q(Valuation $R $Γ₂))
+  (h : Q(Valuation.IsEquiv $v₁ $v₂))
+
+set_option linter.unusedVariables false in
+include gΓ₁? gΓ₂? in
+/-- The main loop: given an expression like `min (v₁ x) (v₁ y) / v₁ z`,
+form the associated expression `min (v₂ x) (v₂ y) / v₂ z` and a proof that they are associated.
+
+Allowed operations are: `0`, `1`, `v₁ r`, `⁻¹`, `^` (both `ℕ` and `ℤ`), `*`, `/`, `min`, `max`.
+
+Out of these, `⁻¹`, `^` (for `ℤ`), and `/` are only allowed for groups. -/
+partial def mkAssociated (h : Q(Valuation.IsEquiv $v₁ $v₂)) (x : Q($Γ₁)) :
+    MetaM (Option ((y : Q($Γ₂)) × Q(Associated $h $x $y))) := do
+  match x with
+  | ~q(0) => return .some ⟨q(0), q(Associated.zero (h := $h))⟩
+  | ~q(1) => return .some ⟨q(1), q(Associated.one (h := $h))⟩
+  | ~q(«$v₁» $r) => return .some ⟨q($v₂ $r), q(Associated.value (h := $h) (r := $r))⟩
+  | ~q($x ^ $n) =>
+    let .some ⟨y, hxy⟩ ← mkAssociated h x | return .none
+    return .some ⟨q($y ^ $n), q(Associated.pow $hxy $n)⟩
+  | ~q($x₁ * $x₂) =>
+    let .some ⟨y₁, hy₁⟩ ← mkAssociated h x₁ | return .none
+    let .some ⟨y₂, hy₂⟩ ← mkAssociated h x₂ | return .none
+    return .some ⟨q($y₁ * $y₂), q(Associated.mul $hy₁ $hy₂)⟩
+  | ~q(min $x₁ $x₂) =>
+    let .some ⟨y₁, hy₁⟩ ← mkAssociated h x₁ | return .none
+    let .some ⟨y₂, hy₂⟩ ← mkAssociated h x₂ | return .none
+    return .some ⟨q(min $y₁ $y₂), q(Associated.min $hy₁ $hy₂)⟩
+  | ~q(max $x₁ $x₂) =>
+    let .some ⟨y₁, hy₁⟩ ← mkAssociated h x₁ | return .none
+    let .some ⟨y₂, hy₂⟩ ← mkAssociated h x₂ | return .none
+    return .some ⟨q(max $y₁ $y₂), q(Associated.max $hy₁ $hy₂)⟩
+  | _ => -- TODO: Optimise this part so it doesn't run every time we use inverse
+    let .some gΓ₁ := gΓ₁? | return .none
+    let .some gΓ₂ := gΓ₂? | return .none
+    let mΓ₁' : Q(LinearOrderedCommMonoidWithZero $Γ₁) :=
+      q(@LinearOrderedCommGroupWithZero.toLinearOrderedCommMonoidWithZero $Γ₁ $gΓ₁)
+    let mΓ₂' : Q(LinearOrderedCommMonoidWithZero $Γ₂) :=
+      q(@LinearOrderedCommGroupWithZero.toLinearOrderedCommMonoidWithZero $Γ₂ $gΓ₂)
+    let @MaybeDefEq.defEq u₂ _ _ _ d₁ ← isDefEqQ mΓ₁' mΓ₁ | return .none
+    let @MaybeDefEq.defEq u₃ _ _ _ d₂ ← isDefEqQ mΓ₂' mΓ₂ | return .none
+    match x with
+    | ~q($x⁻¹) =>
+      let .some ⟨y, hxy⟩ ← mkAssociated h x | return .none
+      return .some ⟨q($y⁻¹), q(Associated.inv $hxy)⟩
+    | ~q($x ^ ($n : ℤ)) =>
+      let .some ⟨y, hxy⟩ ← mkAssociated h x | return .none
+      return .some ⟨q($y ^ $n), q(Associated.zpow $hxy $n)⟩
+    | ~q($x₁ / $x₂) =>
+      let .some ⟨y₁, hy₁⟩ ← mkAssociated h x₁ | return .none
+      let .some ⟨y₂, hy₂⟩ ← mkAssociated h x₂ | return .none
+      return .some ⟨q($y₁ / $y₂), q(Associated.div $hy₁ $hy₂)⟩
+    | _ => return .none
+
+/-- The type of relations: `≤`, `<`, `=`, `≠`. -/
+inductive RelType : Type
+  | le | lt | eq | ne
+deriving Repr
+
+/-- Convert a `RelType` to an `Expr` for debugging. -/
+def RelType.toExpr : RelType → Expr
+  | .le => .const ``RelType.le []
+  | .lt => .const ``RelType.lt []
+  | .eq => .const ``RelType.eq []
+  | .ne => .const ``RelType.ne []
+
+/-- Convert a `RelType` to the `Prop` on `Γ₁` that it represents. -/
+def RelType.toProp {α : Q(Type u₁)} (oα : Q(Preorder $α)) : RelType → (x y : Q($α)) → Q(Prop)
+  | .le, x, y => q($x ≤ $y)
+  | .lt, x, y => q($x < $y)
+  | .eq, x, y => q($x = $y)
+  | .ne, x, y => q($x ≠ $y)
+
+/-- Match the Prop in the form of `termL₁ ≤ termR₁` (where the `≤` can also be `<`, `=`, or `≠`),
+where `termL₁` and `termR₁` are terms of `Γ₁`, and then form the associated terms `termL₂` and
+`termR₂` in `Γ₂`, and then a proof of `termL₁ ≤ termR₁ ↔ termL₂ ≤ termR₂`. -/
+def mkProof (h : Q(Valuation.IsEquiv $v₁ $v₂)) (rel : RelType) (x y : Q($Γ₁)) :
+    MetaM (Option ((e₂ : Q(Prop)) × Q($(rel.toProp q(inferInstance) x y) ↔ $e₂))) := do
+  let gΓ₁? ← trySynthInstanceQ q(LinearOrderedCommGroupWithZero $Γ₁)
+  let gΓ₂? ← trySynthInstanceQ q(LinearOrderedCommGroupWithZero $Γ₂)
+  let .some ⟨z, hxz⟩ ← mkAssociated gΓ₁?.toOption gΓ₂?.toOption v₁ v₂ h x | return .none
+  let .some ⟨w, hyw⟩ ← mkAssociated gΓ₁?.toOption gΓ₂?.toOption v₁ v₂ h y | return .none
+  trace[rw_val_equiv] m!"Transformed:\n({rel.toProp (α := Γ₁) q(inferInstance) x y})
+to:\n({rel.toProp (α := Γ₂) q(inferInstance) z w})"
+  match rel with
+  | .le => return .some ⟨q($z ≤ $w), q(Associated.le_iff_le (h := $h) $hxz $hyw)⟩
+  | .lt => return .some ⟨q($z < $w), q(Associated.lt_iff_lt (h := $h) $hxz $hyw)⟩
+  | .eq => return .some ⟨q($z = $w), q(Associated.eq_iff_eq (h := $h) $hxz $hyw)⟩
+  | .ne => return .some ⟨q($z ≠ $w), q(Associated.ne_iff_ne (h := $h) $hxz $hyw)⟩
+
+/-- Match the relation to be one of `≤`, `<`, `=`, or `≠`, and then use `mkProof` to build the
+proof wanted. -/
+def matchAndMkProof (h : Q(Valuation.IsEquiv $v₁ $v₂)) (e₁ : Q(Prop)) :
+    MetaM (Option ((e₂ : Q(Prop)) × Q($e₁ ↔ $e₂))) := do
+  match e₁ with
+  | ~q(($a : «$Γ₁») ≤ $b) => mkProof v₁ v₂ h .le a b
+  | ~q(($a : «$Γ₁») < $b) => mkProof v₁ v₂ h .lt a b
+  | ~q(($a : «$Γ₁») = $b) => mkProof v₁ v₂ h .eq a b
+  | ~q(($a : «$Γ₁») ≠ $b) => mkProof v₁ v₂ h .ne a b
+  | _ => return .none
+
+/-- The core simproc of `rw_val_equiv`. Given `h : IsEquiv v₁ v₂`, find relations in `Γ₁` and
+transport them to `Γ₂`. -/
+def equivCore (h : Q(Valuation.IsEquiv $v₁ $v₂)) : Simp.Simproc := fun e : Expr ↦ do
+  let ⟨1, ~q(Prop), e⟩ ← inferTypeQ e | return .continue
+  let .some ⟨e₂, pf⟩ ← matchAndMkProof v₁ v₂ h e | return .continue
+  return .visit { expr := e₂, proof? := q(propext $pf) }
+
+set_option linter.unusedVariables false in
+/-- Process the given local hypothesis. -/
+def atLocal (s : Simp.Simproc) (f : FVarId) : TacticM Unit := do
+  let hyp ← instantiateMVars (← f.getType)
+  let ctx ← Simp.mkContext (simpTheorems := #[])
+  let (r, _) ← Simp.mainCore hyp ctx (methods := {post := s})
+  liftMetaTactic1 fun m ↦ do
+    let .some (f, m) ← applySimpResultToLocalDecl m f r false | return m
+    return m
+
+/-- Process the goal. -/
+def atTarget (s : Simp.Simproc) : TacticM Unit := do
+  liftMetaTactic1 fun m ↦ do
+    -- `Simproc` usually does not allow arguments, so we hijacked `Simp.mainCore` to provide a
+    -- `Simproc` that accepts arguments (which is `equivCore` here).
+    let target ← instantiateMVars (← m.getType)
+    let ctx ← Simp.mkContext (simpTheorems := #[])
+    let (r, _) ← Simp.mainCore target ctx (methods := {post := s})
+    let i ← applySimpResultToTarget m target r
+    return i
+  evalTactic (← `(tactic| try rfl))
+
+/-- Given the direction (`← ` or nothing) and `equiv : v₁.IsEquiv v₂`, make the simproc that
+transforms relations according to the equivalence. -/
+def mkSimproc (symm? : Option Syntax) (equiv : Term) : TacticM Simp.Simproc := do
+  let h : Expr ← elabTerm equiv none
+  match symm? with
+  | .none =>
+    let ⟨0, h', h⟩ ← inferTypeQ h
+      | throwError "given term is not a proof"
+    let ~q(@Valuation.IsEquiv $R $Γ₁ $Γ₂ $hR $hΓ₁ $hΓ₂ $v₁ $v₂) := h'
+      | throwError "given term is not Valuation.isEquiv"
+    return equivCore v₁ v₂ h
+  | .some _ =>
+    let ⟨0, h', h⟩ ← inferTypeQ h
+      | throwError "given term is not a proof"
+    let ~q(@Valuation.IsEquiv $R $Γ₁ $Γ₂ $hR $hΓ₁ $hΓ₂ $v₁ $v₂) := h'
+      | throwError "given term is not Valuation.isEquiv"
+    return equivCore v₂ v₁ q(($h).symm)
+
+open Parser.Tactic Parser.Term
+
+/-- A tactic to rewrite expressions in a goal (e.g. `v₁ x ≤ 1`) with an equivalent one in the other
+value group or monoid (e.g. `v₂ x ≤ 1`), given `h : v₁.IsEquiv v₂`.
+
+One can use `← ` to rewrite in the opposite direction, and to use `at` to specify which hypotheses
+and/or goal to rewrite at, similar to the syntax of `rw`.
+
+One can also use `rwa_val_equiv` to automatically use `assumption` afterwards, similar to `rwa`.
+
+Usage:
+```lean
+example {R Γ₁ Γ₂ : Type*} [Ring R]
+    [LinearOrderedCommMonoidWithZero Γ₁] [LinearOrderedCommMonoidWithZero Γ₂]
+    {v₁ : Valuation R Γ₁} {v₂ : Valuation R Γ₂}
+    (h : v₁.IsEquiv v₂) :
+    {x | v₁ x ≤ 1} = {x | v₂ x ≤ 1} := by
+  rw_val_equiv h
+```
+-/
+elab "rw_val_equiv " symm?:(leftArrow)? e:(ppSpace colGt term:max) loc:(location)? : tactic => do
+  let s ← mkSimproc symm? e
+  match loc with
+  | .none => atTarget s
+  | .some loc => withLocation (expandLocation loc) (atLocal s) (atTarget s) default
+
+open Lean.Parser.Tactic
+
+/-- An alternate version of `rw_val_equiv` that calls `assumption` afterwards. -/
+macro "rwa_val_equiv " s:(leftArrow)? e:(ppSpace colGt term:max) loc:(location)? : tactic =>
+  match s with
+  | .none => `(tactic| (rw_val_equiv $e $[$loc]?; assumption))
+  | .some _ => `(tactic| (rw_val_equiv ← $e $[$loc]?; assumption))
+
+end EquivTac
+
+variable {x y z w : R}
+
+theorem div_le_div_iff_div_le_div : v₁ x / v₁ y ≤ v₁ z / v₁ w ↔ v₂ x / v₂ y ≤ v₂ z / v₂ w := by
+  rw_val_equiv h
+
+theorem le_div_iff_le_div : v₁ x ≤ v₁ y / v₁ z ↔ v₂ x ≤ v₂ y / v₂ z := by
+  rw_val_equiv h
+
+theorem lt_div_iff_lt_div : v₁ x < v₁ y / v₁ z ↔ v₂ x < v₂ y / v₂ z := by
+  rw_val_equiv h
+
+theorem eq_div_iff_eq_div : v₁ x = v₁ y / v₁ z ↔ v₂ x = v₂ y / v₂ z := by
+  rw_val_equiv h
+
+theorem ne_div_iff_ne_div : v₁ x ≠ v₁ y / v₁ z ↔ v₂ x ≠ v₂ y / v₂ z := by
+  rw_val_equiv h
+
+end LinearOrderedCommGroupWithZero
 
 end IsEquiv
 
