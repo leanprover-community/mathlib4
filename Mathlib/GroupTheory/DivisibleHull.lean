@@ -151,8 +151,7 @@ theorem nsmul_mk (a : ℕ) (m : M) (s : ℕ+) : a • mk m s = mk (a • m) s :=
   | succ n h => simp [add_nsmul, mk_add_mk_left, h]
 
 theorem nnqsmul_mk (a : ℚ≥0) (m : M) (s : ℕ+) :
-    a • mk m s =
-    mk (a.num • m) (⟨a.den, Nat.pos_of_ne_zero (a.den_ne_zero)⟩ * s) := by
+    a • mk m s = mk (a.num • m) (⟨a.den, a.den_pos⟩ * s) := by
   convert LocalizedModule.mk'_smul_mk ℚ≥0 a.num m ⟨a.den, by simp⟩ (↑ⁿ s)
   simp [IsLocalization.eq_mk'_iff_mul_eq]
 
@@ -258,7 +257,7 @@ theorem qsmul_of_nonpos {a : ℚ} (h : a ≤ 0) (x : DivisibleHull M) :
   · simp [qsmul_def, abs_eq_neg_self.mpr h.le, sign_neg h]
 
 theorem qsmul_mk (a : ℚ) (m : M) (s : ℕ+) :
-    a • mk m s = mk (a.num • m) (⟨a.den, Nat.pos_of_ne_zero (a.den_ne_zero)⟩ * s) := by
+    a • mk m s = mk (a.num • m) (⟨a.den, a.den_pos⟩ * s) := by
   obtain h | h := le_total 0 a
   · rw [qsmul_of_nonneg h]
     have : a.num.natAbs • m = a.num • m := by
