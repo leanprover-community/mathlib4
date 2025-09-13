@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Monoidal.Mon_
 /-!
 # Yoneda embedding of `Mon_ C`
 
-We show that monoid objects in cartesian monoidal categories are exactly those whose yoneda presheaf
+We show that monoid objects in Cartesian monoidal categories are exactly those whose yoneda presheaf
 is a presheaf of monoids, by constructing the yoneda embedding `Mon_ C ⥤ Cᵒᵖ ⥤ MonCat.{v}` and
 showing that it is fully faithful and its (essential) image is the representable functors.
 -/
@@ -279,7 +279,7 @@ lemma Mon_Class.mul_comp (f₁ f₂ : X ⟶ M) (g : M ⟶ N) [IsMon_Hom g] :
 @[reassoc]
 lemma Mon_Class.pow_comp (f : X ⟶ M) (n : ℕ) (g : M ⟶ N) [IsMon_Hom g] :
     (f ^ n) ≫ g = (f ≫ g) ^ n := by
-  induction' n with n hn <;> simp [pow_succ, Mon_Class.mul_comp, *]
+  induction n <;> simp [pow_succ, Mon_Class.mul_comp, *]
 
 @[reassoc (attr := simp)]
 lemma Mon_Class.comp_one (f : X ⟶ Y) : f ≫ (1 : Y ⟶ M) = 1 :=
@@ -291,7 +291,7 @@ lemma Mon_Class.comp_mul (f : X ⟶ Y) (g₁ g₂ : Y ⟶ M) : f ≫ (g₁ * g�
 
 @[reassoc]
 lemma Mon_Class.comp_pow (f : X ⟶ M) (n : ℕ) (h : Y ⟶ X) : h ≫ f ^ n = (h ≫ f) ^ n := by
-  induction' n with n hn <;> simp [pow_succ, Mon_Class.comp_mul, *]
+  induction n <;> simp [pow_succ, Mon_Class.comp_mul, *]
 
 variable (M) in
 lemma Mon_Class.one_eq_one : η = (1 : _ ⟶ M) :=
