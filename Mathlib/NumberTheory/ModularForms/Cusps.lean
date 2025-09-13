@@ -59,21 +59,24 @@ lemma IsCusp.smul_of_mem {c : OnePoint ℝ} {𝒢 : Subgroup (GL (Fin 2) ℝ)} (
     ConjAct.toConjAct_smul, inv_inv, Subgroup.mul_mem_cancel_right _ hg,
     Subgroup.mul_mem_cancel_left _ (inv_mem hg)]
 
-lemma isCusp_iff_of_relindex_ne_zero {𝒢 𝒢' : Subgroup (GL (Fin 2) ℝ)}
-    (h𝒢 : 𝒢' ≤ 𝒢) (h𝒢' : 𝒢'.relindex 𝒢 ≠ 0) (c : OnePoint ℝ) :
+lemma isCusp_iff_of_relIndex_ne_zero {𝒢 𝒢' : Subgroup (GL (Fin 2) ℝ)}
+    (h𝒢 : 𝒢' ≤ 𝒢) (h𝒢' : 𝒢'.relIndex 𝒢 ≠ 0) (c : OnePoint ℝ) :
     IsCusp c 𝒢' ↔ IsCusp c 𝒢 := by
   refine ⟨fun ⟨g, hg, hgp, hgc⟩ ↦ ⟨g, h𝒢 hg, hgp, hgc⟩, fun ⟨g, hg, hgp, hgc⟩ ↦ ?_⟩
-  obtain ⟨n, hn, -, hgn⟩ := Subgroup.exists_pow_mem_of_relindex_ne_zero h𝒢' hg
+  obtain ⟨n, hn, -, hgn⟩ := Subgroup.exists_pow_mem_of_relIndex_ne_zero h𝒢' hg
   refine ⟨g ^ n, (Subgroup.mem_inf.mpr hgn).1, hgp.pow hn.ne', ?_⟩
   rw [Nat.pos_iff_ne_zero] at hn
   rwa [(hgp.pow hn).smul_eq_self_iff, hgp.parabolicFixedPoint_pow hn, ← hgp.smul_eq_self_iff]
 
+@[deprecated (since := "2025-09-13")]
+alias isCusp_iff_of_relindex_ne_zero := isCusp_iff_of_relIndex_ne_zero
+
 lemma Commensurable.isCusp_iff {𝒢 𝒢' : Subgroup (GL (Fin 2) ℝ)}
     (h𝒢 : Commensurable 𝒢 𝒢') {c : OnePoint ℝ} :
     IsCusp c 𝒢 ↔ IsCusp c 𝒢' := by
-  rw [← isCusp_iff_of_relindex_ne_zero inf_le_left, isCusp_iff_of_relindex_ne_zero inf_le_right]
-  · simpa [Subgroup.inf_relindex_right] using h𝒢.1
-  · simpa [Subgroup.inf_relindex_left] using h𝒢.2
+  rw [← isCusp_iff_of_relIndex_ne_zero inf_le_left, isCusp_iff_of_relIndex_ne_zero inf_le_right]
+  · simpa [Subgroup.inf_relIndex_right] using h𝒢.1
+  · simpa [Subgroup.inf_relIndex_left] using h𝒢.2
 
 /-- The cusps of `SL(2, ℤ)` are precisely the elements of `ℙ¹(ℚ)`. -/
 lemma isCusp_SL2Z_iff {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ c ∈ Set.range (OnePoint.map Rat.cast) := by
