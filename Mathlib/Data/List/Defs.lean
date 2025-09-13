@@ -403,9 +403,9 @@ def zipWith5 (f : α → β → γ → δ → ε → ζ) : List α → List β �
   | x :: xs, y :: ys, z :: zs, u :: us, v :: vs => f x y z u v :: zipWith5 f xs ys zs us vs
   | _, _, _, _, _ => []
 
-/-- Given a starting list `old`, a list of booleans and a replacement list `new`,
+/-- Given a starting list `old`, a list of Booleans and a replacement list `new`,
 read the items in `old` in succession and either replace them with the next element of `new` or
-not, according as to whether the corresponding boolean is `true` or `false`. -/
+not, according as to whether the corresponding Boolean is `true` or `false`. -/
 def replaceIf : List α → List Bool → List α → List α
   | l, _, [] => l
   | [], _, _ => []
