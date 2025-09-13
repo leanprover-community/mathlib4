@@ -6,6 +6,9 @@ Authors: Kalle Kytölä, Moritz Doll
 import Mathlib.Topology.Algebra.Module.LinearMap
 import Mathlib.LinearAlgebra.SesquilinearForm
 
+import Mathlib.Topology.Algebra.Module.Holding
+import Mathlib.Topology.Algebra.Module.StrongTopology
+
 /-!
 # Weak dual topology
 
@@ -178,3 +181,39 @@ end Ring
 end WeakBilin
 
 end WeakTopology
+
+section NontriviallyNormedField
+
+variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [AddCommGroup F]
+variable [Module 𝕜 E] [Module 𝕜 F]
+
+variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
+
+namespace LinearMap
+
+lemma dualEmbedding_surjective : Function.Surjective (WeakBilin.eval B) := by
+  rintro ⟨f₁, hf₁⟩
+  have mem_span :
+    f₁ ∈ Submodule.span 𝕜 (⇑(WeakBilin.eval B).toLinearMap₂ '' Set.univ) := by
+      rw [Set.image_univ, mem_span_iff_continuous _]
+      convert hf₁
+      simpa [WeakBilin.instTopologicalSpace] using Eq.symm (induced_to_pi ..)
+  obtain ⟨l, _, hl2⟩ := (Finsupp.mem_span_image_iff_linearCombination _).mp mem_span
+  use Finsupp.linearCombination 𝕜 (id (M := F) (R := 𝕜)) l
+  rw [← ContinuousLinearMap.coe_inj, WeakBilin.eval, coe_mk, AddHom.coe_mk]
+  simpa [Finsupp.linearCombination_apply, map_finsuppSum, ← hl2] using (by rfl)
+
+/-- When `B` is right-separating, `F` is linearly equivalent to the strong dual of `E` with the
+weak topology. -/
+noncomputable def rightDualEquiv (hr : B.SeparatingRight) : F ≃ₗ[𝕜] StrongDual 𝕜 (WeakBilin B) :=
+  LinearEquiv.ofBijective (WeakBilin.eval B)
+    ⟨WeakBilin.dualEmbedding_injective_of_separatingRight B hr, dualEmbedding_surjective B⟩
+
+/-- When `B` is left-separating, `E` is linearly equivalent to the strong dual of `F` with the
+weak topology. -/
+noncomputable def leftDualEquiv (hl : B.SeparatingLeft) : E ≃ₗ[𝕜] StrongDual 𝕜 (WeakBilin B.flip) :=
+  rightDualEquiv _ (LinearMap.flip_separatingRight.mpr hl)
+
+end LinearMap
+
+end NontriviallyNormedField

@@ -60,42 +60,20 @@ theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
 
 end NormedField
 
-section NontriviallyNormedField
+section
 
-variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [AddCommGroup F]
+variable [NontriviallyNormedField 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 variable [Module 𝕜 E] [Module 𝕜 F]
 
-variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
-
-lemma dualEmbedding_surjective : Function.Surjective (WeakBilin.eval B) := by
-  rintro ⟨f₁, hf₁⟩
-  have mem_span :
-    f₁ ∈ Submodule.span 𝕜 (⇑(WeakBilin.eval B).toLinearMap₂ '' Set.univ) := by
-      rw [Set.image_univ, mem_span_iff_continuous _]
-      convert hf₁
-      simpa [WeakBilin.instTopologicalSpace] using Eq.symm (induced_to_pi ..)
-  obtain ⟨l, _, hl2⟩ := (Finsupp.mem_span_image_iff_linearCombination _).mp mem_span
-  use Finsupp.linearCombination 𝕜 (id (M := F) (R := 𝕜)) l
-  rw [← ContinuousLinearMap.coe_inj, WeakBilin.eval, coe_mk, AddHom.coe_mk]
-  simpa [Finsupp.linearCombination_apply, map_finsuppSum, ← hl2] using (by rfl)
-
-/-- When `B` is right-separating, `F` is linearly equivalent to the strong dual of `E` with the
-weak topology. -/
-noncomputable def rightDualEquiv (hr : B.SeparatingRight) : F ≃ₗ[𝕜] StrongDual 𝕜 (WeakBilin B) :=
-  LinearEquiv.ofBijective (WeakBilin.eval B)
-    ⟨WeakBilin.dualEmbedding_injective_of_separatingRight B hr, dualEmbedding_surjective B⟩
-
-/-- When `B` is left-separating, `E` is linearly equivalent to the strong dual of `F` with the
-weak topology. -/
-noncomputable def leftDualEquiv (hl : B.SeparatingLeft) : E ≃ₗ[𝕜] StrongDual 𝕜 (WeakBilin B.flip) :=
-  rightDualEquiv _ (LinearMap.flip_separatingRight.mpr hl)
+variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
 
 lemma closureOperator_polar_gc_empty_of_separatingLeft (h : SeparatingLeft B) :
     B.polar_gc.closureOperator (∅ : Set E) = {0} := by
   simp only [GaloisConnection.closureOperator_apply, Function.comp_apply, polar_empty,
     OrderDual.ofDual_toDual, (B.flip.polar_univ h)]
 
-end NontriviallyNormedField
+end
+
 
 section RCLike
 
@@ -157,6 +135,10 @@ theorem flip_polar_polar_eq {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E}
   exact ((lt_iff_le_not_ge.mp one_lt_x_f₀).2)
     (Preorder.le_trans (RCLike.re ((B x) f₀)) ‖(B x) f₀‖ 1
       (RCLike.re_le_norm ((B x) f₀)) (hc f₀ hg₃))
+
+
+
+#find_home! closureOperator_polar_gc_empty_of_separatingLeft
 
 /-
 This fails when `s` is empty. Indeed, `closedAbsConvexHull (E := WeakBilin B) 𝕜 s` is the empty set,

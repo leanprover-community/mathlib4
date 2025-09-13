@@ -88,40 +88,7 @@ open scoped NNReal
 
 section
 
-
-
-section NontriviallyNormedField
-
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
-/- A linear functional `φ` is in the span of a collection of linear functionals if and only if `φ`
-is continuous with respect to the topology induced by the collection of linear functionals. See
-`LinearMap.mem_span_iff_continuous_of_finite` for a result about finite collections of linear
-functionals. -/
-theorem mem_span_iff_continuous {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜] 𝕜) :
-    φ ∈ Submodule.span 𝕜 (Set.range f) ↔
-    Continuous[⨅ i, induced (f i) inferInstance, inferInstance] φ := by
-  letI t𝕜 : TopologicalSpace 𝕜 := inferInstance
-  letI t₁ : TopologicalSpace E := ⨅ i, induced (f i) t𝕜
-  letI t₂ (s : Finset ι) : TopologicalSpace E := ⨅ i : s, induced (f i) t𝕜
-  suffices
-      Continuous[t₁, t𝕜] φ ↔ ∃ s : Finset ι, Continuous[t₂ s, t𝕜] φ by
-    simp_rw [this, ← mem_span_iff_continuous_of_finite, Submodule.span_range_eq_iSup,
-      iSup_subtype]
-    rw [Submodule.mem_iSup_iff_exists_finset]
-  have t₁_group : @IsTopologicalAddGroup E t₁ _ :=
-    topologicalAddGroup_iInf fun _ ↦ topologicalAddGroup_induced _
-  have t₂_group (s : Finset ι) : @IsTopologicalAddGroup E (t₂ s) _ :=
-    topologicalAddGroup_iInf fun _ ↦ topologicalAddGroup_induced _
-  have t₁_smul : @ContinuousSMul 𝕜 E _ _ t₁ :=
-    continuousSMul_iInf fun _ ↦ continuousSMul_induced _
-  have t₂_smul (s : Finset ι) : @ContinuousSMul 𝕜 E _ _ (t₂ s) :=
-    continuousSMul_iInf fun _ ↦ continuousSMul_induced _
-  simp_rw [Seminorm.continuous_iff_continuous_comp (norm_withSeminorms 𝕜 𝕜), forall_const]
-  conv in Continuous _ => rw [Seminorm.continuous_iff one_pos, nhds_iInf]
-  conv in Continuous _ =>
-    rw [letI := t₂ s; Seminorm.continuous_iff one_pos, nhds_iInf, iInf_subtype]
-  rw [Filter.mem_iInf_finite]
 
 theorem mem_span_iff_bound {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜] 𝕜) :
     φ ∈ Submodule.span 𝕜 (Set.range f) ↔
@@ -140,8 +107,6 @@ theorem mem_span_iff_bound {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜]
     rcases Seminorm.bound_of_continuous this _ H with ⟨s, C, -, hC⟩
     exact ⟨s, C, hC⟩
   · exact Seminorm.cont_withSeminorms_normedSpace _ this _ H
-
-end NontriviallyNormedField
 
 end
 
