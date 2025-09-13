@@ -731,11 +731,19 @@ lemma map_comm (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (x : N ⊗[R] M) :
     map f g (TensorProduct.comm R N M x) = TensorProduct.comm R Q P (map g f x) :=
   DFunLike.congr_fun (map_comp_comm_eq _ _) _
 
-theorem map_range_eq_span_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
+theorem range_map (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
+    range (map f g) = .map₂ (mk R _ _) (range f) (range g) := by
+  simp_rw [← Submodule.map_top, Submodule.map₂_map_map, ← map₂_mk_top_top_eq_top,
+    Submodule.map_map₂]
+  rfl
+
+theorem range_map_eq_span_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     range (map f g) = Submodule.span R { t | ∃ m n, f m ⊗ₜ g n = t } := by
   simp only [← Submodule.map_top, ← span_tmul_eq_top, Submodule.map_span]
   congr; ext t
   simp
+
+@[deprecated (since := "2025-09-07")] alias map_range_eq_span_tmul := range_map_eq_span_tmul
 
 /-- Given submodules `p ⊆ P` and `q ⊆ Q`, this is the natural map: `p ⊗ q → P ⊗ Q`. -/
 @[simp]
@@ -743,15 +751,14 @@ def mapIncl (p : Submodule R P) (q : Submodule R Q) : p ⊗[R] q →ₗ[R] P ⊗
   map p.subtype q.subtype
 
 lemma range_mapIncl (p : Submodule R P) (q : Submodule R Q) :
-    LinearMap.range (mapIncl p q) = Submodule.span R (Set.image2 (· ⊗ₜ ·) p q) := by
-  rw [mapIncl, map_range_eq_span_tmul]
-  congr; ext; simp
+    LinearMap.range (mapIncl p q) = .map₂ (mk R _ _) p q := by
+  simp_rw [mapIncl, range_map, Submodule.range_subtype]
 
 theorem map₂_eq_range_lift_comp_mapIncl (f : P →ₗ[R] Q →ₗ[R] M)
     (p : Submodule R P) (q : Submodule R Q) :
     Submodule.map₂ f p q = LinearMap.range (lift f ∘ₗ mapIncl p q) := by
-  simp_rw [LinearMap.range_comp, range_mapIncl, Submodule.map_span,
-    Set.image_image2, Submodule.map₂_eq_span_image2, lift.tmul]
+  simp_rw [LinearMap.range_comp, range_mapIncl, Submodule.map_map₂]
+  rfl
 
 section
 
@@ -772,7 +779,7 @@ lemma map_map (f₂ : M₂ →ₗ[R] M₃) (g₂ : N₂ →ₗ[R] N₃) (f₁ : 
 lemma range_mapIncl_mono {p p' : Submodule R P} {q q' : Submodule R Q} (hp : p ≤ p') (hq : q ≤ q') :
     LinearMap.range (mapIncl p q) ≤ LinearMap.range (mapIncl p' q') := by
   simp_rw [range_mapIncl]
-  exact Submodule.span_mono (Set.image2_subset hp hq)
+  exact Submodule.map₂_le_map₂ hp hq
 
 theorem lift_comp_map (i : P →ₗ[R] Q →ₗ[R] Q') (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     (lift i).comp (map f g) = lift ((i.comp f).compl₂ g) :=
