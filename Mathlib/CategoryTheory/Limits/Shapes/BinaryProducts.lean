@@ -280,7 +280,7 @@ section
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
--- Porting note: would it be okay to use this more generally?
+-- TODO: would it be okay to use this more generally?
 attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Eq
 
 /-- A binary fan with vertex `P` consists of the two projections `π₁ : P ⟶ X` and `π₂ : P ⟶ Y`. -/
@@ -1392,15 +1392,11 @@ protected def IsLimit.assoc (P : IsLimit sXY) (Q : IsLimit sYZ) {s : BinaryFan s
     · apply P.hom_ext
       rintro ⟨⟨⟩⟩ <;> simp
       · exact w ⟨.left⟩
-      · specialize w ⟨.right⟩
-        simp? at w says
-          simp only [pair_obj_right, BinaryFan.assoc_snd,
-            Functor.const_obj_obj, pair_obj_left] at w
+      · replace w : m ≫ Q.lift (BinaryFan.mk (s.fst ≫ sXY.snd) s.snd) = t.π.app ⟨.right⟩ := by
+          simpa using w ⟨.right⟩
         simp [← w]
-    · specialize w ⟨.right⟩
-      simp? at w says
-        simp only [pair_obj_right, BinaryFan.assoc_snd,
-          Functor.const_obj_obj, pair_obj_left] at w
+    · replace w : m ≫ Q.lift (BinaryFan.mk (s.fst ≫ sXY.snd) s.snd) = t.π.app ⟨.right⟩ := by
+        simpa using w ⟨.right⟩
       simp [← w]
 
 /-- Given two pairs of limit cones corresponding to the parenthesisations of `X × Y × Z`,
