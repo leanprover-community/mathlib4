@@ -106,9 +106,9 @@ lemma isCusp_SL2Z_iff' {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ ∃ g : SL(2, �
        ← (Rat.castHom ℝ).algebraMap_toAlgebra, g.map_mapGL]
 
 /-- The cusps of any arithmetic subgroup are the same as those of `SL(2, ℤ)`. -/
-lemma IsArithmetic.isCusp_iff_isCusp_SL2Z (𝒢 : Subgroup (GL (Fin 2) ℝ)) [IsArithmetic 𝒢]
+lemma Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsArithmetic]
     {c : OnePoint ℝ} : IsCusp c 𝒢 ↔ IsCusp c 𝒮ℒ :=
-  IsArithmetic.is_commensurable.isCusp_iff
+  is_commensurable.isCusp_iff
 
 end IsCusp
 
@@ -125,36 +125,36 @@ abbrev CuspOrbits (𝒢 : Subgroup (GL (Fin 2) ℝ)) :=
 
 /-- Surjection from `SL(2, ℤ) / (𝒢 ⊓ SL(2, ℤ))` to cusp orbits of `𝒢`. Mostly useful for showing
 that `CuspOrbits 𝒢` is finite for arithmetic subgroups. -/
-noncomputable def cosetToCuspOrbit (𝒢 : Subgroup (GL (Fin 2) ℝ)) [IsArithmetic 𝒢] :
+noncomputable def cosetToCuspOrbit (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsArithmetic] :
     SL(2, ℤ) ⧸ (𝒢.comap <| mapGL ℝ) → CuspOrbits 𝒢 :=
   Quotient.lift
     (fun g ↦ ⟦⟨mapGL ℝ g⁻¹ • ∞,
-      (IsArithmetic.isCusp_iff_isCusp_SL2Z 𝒢).mpr <| isCusp_SL2Z_iff.mpr ⟨mapGL ℚ g⁻¹ • ∞, by
-        rw [← Rat.coe_castHom, OnePoint.map_smul, OnePoint.map_infty,
-        ← (Rat.castHom ℝ).algebraMap_toAlgebra, map_mapGL]⟩⟩⟧)
+      (Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z 𝒢).mpr <| isCusp_SL2Z_iff.mpr
+        ⟨mapGL ℚ g⁻¹ • ∞, by rw [← Rat.coe_castHom, OnePoint.map_smul, OnePoint.map_infty,
+          ← (Rat.castHom ℝ).algebraMap_toAlgebra, map_mapGL]⟩⟩⟧)
     (fun a b hab ↦ by
       rw [← Quotient.eq_iff_equiv, Quotient.eq, QuotientGroup.leftRel_apply] at hab
       refine Quotient.eq.mpr ⟨⟨_, hab⟩, ?_⟩
       simp [MulAction.mul_smul])
 
 @[simp]
-lemma cosetToCuspOrbit_apply_mk {𝒢 : Subgroup (GL (Fin 2) ℝ)} [IsArithmetic 𝒢] (g : SL(2, ℤ)) :
+lemma cosetToCuspOrbit_apply_mk {𝒢 : Subgroup (GL (Fin 2) ℝ)} [𝒢.IsArithmetic] (g : SL(2, ℤ)) :
     cosetToCuspOrbit 𝒢 ⟦g⟧ = ⟦⟨mapGL ℝ g⁻¹ • ∞,
-    (IsArithmetic.isCusp_iff_isCusp_SL2Z 𝒢).mpr <| isCusp_SL2Z_iff.mpr ⟨mapGL ℚ g⁻¹ • ∞, by
-      rw [← Rat.coe_castHom, OnePoint.map_smul, OnePoint.map_infty,
-      ← (Rat.castHom ℝ).algebraMap_toAlgebra, map_mapGL]⟩⟩⟧ :=
+    (Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z 𝒢).mpr <| isCusp_SL2Z_iff.mpr
+      ⟨mapGL ℚ g⁻¹ • ∞, by rw [← Rat.coe_castHom, OnePoint.map_smul, OnePoint.map_infty,
+        ← (Rat.castHom ℝ).algebraMap_toAlgebra, map_mapGL]⟩⟩⟧ :=
   rfl
 
-lemma surjective_cosetToCuspOrbit (𝒢 : Subgroup (GL (Fin 2) ℝ)) [IsArithmetic 𝒢] :
+lemma surjective_cosetToCuspOrbit (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsArithmetic] :
     (cosetToCuspOrbit 𝒢).Surjective := by
   rintro ⟨c, (hc : IsCusp c _)⟩
-  rw [IsArithmetic.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff'] at hc
+  rw [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff'] at hc
   obtain ⟨g, rfl⟩ := hc
   use ⟦g⁻¹⟧
   aesop
 
 /-- An arithmetic subgroup has finitely many cusp orbits. -/
-instance (𝒢 : Subgroup (GL (Fin 2) ℝ)) [IsArithmetic 𝒢] : Finite (CuspOrbits 𝒢) :=
+instance (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsArithmetic] : Finite (CuspOrbits 𝒢) :=
   .of_surjective _ (surjective_cosetToCuspOrbit 𝒢)
 
 end CuspOrbits
