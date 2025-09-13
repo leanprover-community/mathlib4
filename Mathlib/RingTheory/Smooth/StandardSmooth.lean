@@ -3,20 +3,14 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jung Tao Cheng, Christian Merten, Andrew Yang
 -/
-import Mathlib.Algebra.MvPolynomial.PDeriv
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.RingTheory.Extension.Presentation.Basic
+import Mathlib.RingTheory.Extension.Presentation.Submersive
 
 /-!
 # Standard smooth algebras
 
-In this file we define standard smooth algebras. For this we introduce
-the notion of a `PreSubmersivePresentation`. This is a presentation `P` that has
-fewer relations than generators. More precisely there exists an injective map from `σ`
-to `ι`. To such a presentation we may associate a Jacobian. `P` is then a submersive
-presentation, if its Jacobian is invertible.
-
-Finally, a standard smooth algebra is an algebra that admits a submersive presentation.
+A standard smooth algebra is an algebra that admits a `SubmersivePresentation`. A standard
+smooth algebra is of relative dimension `n` if it admits a submersive presentation of
+dimension `n`.
 
 While every standard smooth algebra is smooth, the converse does not hold. But if `S` is `R`-smooth,
 then `S` is `R`-standard smooth locally on `S`, i.e. there exists a set `{ t }` of `S` that
@@ -26,24 +20,6 @@ generates the unit ideal, such that `Sₜ` is `R`-standard smooth for every `t` 
 
 All of these are in the `Algebra` namespace. Let `S` be an `R`-algebra.
 
-- `PreSubmersivePresentation`: A `Presentation` of `S` as `R`-algebra, equipped with an injective
-  map `P.map` from `σ` to `ι`. This map is used to define the differential of a
-  presubmersive presentation.
-
-For a presubmersive presentation `P` of `S` over `R` we make the following definitions:
-
-- `PreSubmersivePresentation.differential`: A linear endomorphism of `σ → P.Ring` sending
-  the `j`-th standard basis vector, corresponding to the `j`-th relation, to the vector
-  of partial derivatives of `P.relation j` with respect to the coordinates `P.map i` for
-  `i : σ`.
-- `PreSubmersivePresentation.jacobian`: The determinant of `P.differential`.
-- `PreSubmersivePresentation.jacobiMatrix`: If `σ` has a `Fintype` instance, we may form
-  the matrix corresponding to `P.differential`. Its determinant is `P.jacobian`.
-- `SubmersivePresentation`: A submersive presentation is a finite, presubmersive presentation `P`
-  with in `S` invertible Jacobian.
-
-Furthermore, for algebras we define:
-
 - `Algebra.IsStandardSmooth`: `S` is `R`-standard smooth if `S` admits a submersive
   `R`-presentation.
 - `Algebra.IsStandardSmooth.relativeDimension`: If `S` is `R`-standard smooth this is the dimension
@@ -52,27 +28,9 @@ Furthermore, for algebras we define:
 - `Algebra.IsStandardSmoothOfRelativeDimension n`: `S` is `R`-standard smooth of relative dimension
   `n` if it admits a submersive `R`-presentation of dimension `n`.
 
-Finally, for ring homomorphisms we define:
-
-- `RingHom.IsStandardSmooth`: A ring homomorphism `R →+* S` is standard smooth if `S` is standard
-  smooth as `R`-algebra.
-- `RingHom.IsStandardSmoothOfRelativeDimension n`: A ring homomorphism `R →+* S` is standard
-  smooth of relative dimension `n` if `S` is standard smooth of relative dimension `n` as
-  `R`-algebra.
-
 ## TODO
 
-- Show that the module of Kähler differentials of a standard smooth `R`-algebra `S` of relative
-  dimension `n` is `S`-free of rank `n`. In particular this shows that the relative dimension
-  is independent of the choice of the standard smooth presentation.
-- Show that standard smooth algebras are smooth. This relies on the computation of the module of
-  Kähler differentials.
 - Show that locally on the target, smooth algebras are standard smooth.
-
-## Implementation details
-
-Standard smooth algebras and ring homomorphisms feature 4 universe levels: The universe levels of
-the rings involved and the universe levels of the types of the variables and relations.
 
 ## Notes
 
@@ -604,6 +562,8 @@ exists a submersive presentation.
 -/
 class IsStandardSmooth : Prop where
   out : ∃ (ι σ : Type) (_ : Finite σ), Finite ι ∧ Nonempty (SubmersivePresentation R S ι σ)
+
+variable [Finite σ]
 
 lemma SubmersivePresentation.isStandardSmooth [Finite ι] (P : SubmersivePresentation R S ι σ) :
     IsStandardSmooth R S := by
