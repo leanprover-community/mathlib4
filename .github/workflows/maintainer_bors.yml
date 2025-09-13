@@ -57,7 +57,8 @@ jobs:
           printf $'mOrD=%s\n' "${m_or_d}" >> "${GITHUB_OUTPUT}"
           printf $'removeLabels=%s\n' "${remove_labels}" >> "${GITHUB_OUTPUT}"
           if [ "${AUTHOR}" == 'leanprover-community-mathlib4-bot' ] ||
-             [ "${AUTHOR}" == 'leanprover-community-bot-assistant' ]
+             [ "${AUTHOR}" == 'leanprover-community-bot-assistant' ] ||
+             [ "${AUTHOR}" == 'mathlib-bors[bot]' ]
           then
             printf $'bot=true\n'
             printf $'bot=true\n' >> "${GITHUB_OUTPUT}"
