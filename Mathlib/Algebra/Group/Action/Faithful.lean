@@ -58,7 +58,7 @@ instance RightCancelMonoid.faithfulSMul [RightCancelMonoid α] : FaithfulSMul α
 
 /-- `Monoid.toOppositeMulAction` is faithful on cancellative monoids. -/
 @[to_additive /-- `AddMonoid.toOppositeAddAction` is faithful on additive cancellative monoids. -/]
-instance LefttCancelMonoid.to_faithfulSMul_mulOpposite [LeftCancelMonoid α] : FaithfulSMul αᵐᵒᵖ α :=
+instance LeftCancelMonoid.to_faithfulSMul_mulOpposite [LeftCancelMonoid α] : FaithfulSMul αᵐᵒᵖ α :=
   ⟨fun h ↦ MulOpposite.unop_injective <| mul_left_cancel (h 1)⟩
 
 instance (R : Type*) [MulOneClass R] : FaithfulSMul R R := ⟨fun {r₁ r₂} h ↦ by simpa using h 1⟩
