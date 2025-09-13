@@ -125,8 +125,7 @@ def restrictedULiftYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type (max w v₁ v₂)) (E :
 lemma restrictedULiftYonedaHomEquiv'_symm_naturality_right (P : Cᵒᵖ ⥤ Type (max w v₁ v₂)) {E E' : ℰ}
     (g : E ⟶ E') (f : (P ⟶ (restrictedULiftYoneda.{max w v₁} A).obj E)) :
     (restrictedULiftYonedaHomEquiv' A P E').symm (f ≫ (restrictedULiftYoneda A).map g) =
-      (restrictedULiftYonedaHomEquiv' A P E).symm f ≫ (Functor.const _ ).map g := by
-  rfl
+      (restrictedULiftYonedaHomEquiv' A P E).symm f ≫ (Functor.const _ ).map g := rfl
 
 @[reassoc]
 lemma restrictedULiftYonedaHomEquiv'_symm_app_naturality_left

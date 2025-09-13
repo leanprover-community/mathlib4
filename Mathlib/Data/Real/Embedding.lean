@@ -197,7 +197,7 @@ def embedReal : M →+o ℝ where
   map_add' := embedRealFun_add
   monotone' := (embedRealFun_strictMono M).monotone
 
-theorem embedReal_apply (a : M) :  embedReal M a = embedRealFun a := by rfl
+theorem embedReal_apply (a : M) :  embedReal M a = embedRealFun a := rfl
 
 variable (M) in
 theorem embedReal_injective : Function.Injective (embedReal M) :=
