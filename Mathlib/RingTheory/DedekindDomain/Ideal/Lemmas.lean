@@ -58,7 +58,7 @@ theorem exists_notMem_one_of_ne_bot [IsDedekindDomain A] {I : Ideal A} (hI0 : I 
 @[deprecated (since := "2025-05-23")]
 alias exists_not_mem_one_of_ne_bot := exists_notMem_one_of_ne_bot
 
-theorem mul_left_strictMono [IsDedekindDomain A] {I : FractionalIdeal A⁰ K} (hI : I ≠ 0) :
+theorem mul_right_strictMono [IsDedekindDomain A] {I : FractionalIdeal A⁰ K} (hI : I ≠ 0) :
     StrictMono (I * ·) :=
   strictMono_of_le_iff_le fun _ _ => (mul_left_le_iff hI).symm
 
@@ -214,7 +214,7 @@ theorem Ideal.exist_integer_multiples_notMem {J : Ideal A} (hJ : J ≠ ⊤) {ι 
   -- To show the inclusion of `J / I` into `I⁻¹ = 1 / I`, note that `J < I`.
   calc
     ↑J / I = ↑J * I⁻¹ := div_eq_mul_inv (↑J) I
-    _ < 1 * I⁻¹ := mul_right_strictMono (inv_ne_zero hI0) ?_
+    _ < 1 * I⁻¹ := mul_left_strictMono (inv_ne_zero hI0) ?_
     _ = I⁻¹ := one_mul _
   rw [← coeIdeal_top]
   -- And multiplying by `I⁻¹` is indeed strictly monotone.

@@ -85,7 +85,7 @@ theorem right_inverse_eq (I J : FractionalIdeal R₁⁰ K) (h : I * J = 1) : J =
     rw [mul_comm]
     exact (mem_div_iff_of_nonzero hI).mp hy x hx
   rw [← h]
-  apply mul_left_mono I
+  gcongr
   apply (le_div_iff_of_nonzero hI).mpr _
   intro y hy x hx
   rw [mul_comm]
@@ -198,7 +198,8 @@ lemma num_le_mul_inv (I : FractionalIdeal R₁⁰ K) : I.num ≤ I * I⁻¹ := b
   · rw [hI, num_zero_eq <| FaithfulSMul.algebraMap_injective R₁ K, zero_mul, zero_eq_bot,
       coeIdeal_bot]
   · rw [mul_comm, ← den_mul_self_eq_num']
-    exact mul_right_mono I <| spanSingleton_le_iff_mem.2 (den_mem_inv hI)
+    gcongr
+    exact spanSingleton_le_iff_mem.2 (den_mem_inv hI)
 
 lemma bot_lt_mul_inv {I : FractionalIdeal R₁⁰ K} (hI : I ≠ ⊥) : ⊥ < I * I⁻¹ :=
   lt_of_lt_of_le (coeIdeal_ne_zero.2 (hI ∘ num_eq_zero_iff.1)).bot_lt I.num_le_mul_inv
