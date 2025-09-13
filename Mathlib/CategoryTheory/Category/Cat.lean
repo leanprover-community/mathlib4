@@ -66,9 +66,34 @@ instance bicategory : Bicategory.{max v u, max v u} Cat.{v, u} where
 
 /-- `Cat` is a strict bicategory. -/
 instance bicategory.strict : Bicategory.Strict Cat.{v, u} where
-  id_comp {C} {D} F := by cases F; rfl
-  comp_id {C} {D} F := by cases F; rfl
-  assoc := by intros; rfl
+  id_comp {C} {D} F := by
+    apply Functor.ext _ _
+    · intro; rfl
+    · intro X Y f; unfold_projs; simp [Functor.comp_map]
+  comp_id {C} {D} F := by
+    apply Functor.ext _ _
+    · intro; rfl
+    · intro X Y f; unfold_projs; simp [Functor.comp_map]
+  assoc := by
+    intros
+    apply Functor.ext _ _
+    · intro; rfl
+    · intro X Y f; unfold_projs; simp [Functor.comp_map]
+  leftUnitor_eqToIso := by
+    intros
+    unfold_projs
+    ext
+    simp
+  rightUnitor_eqToIso := by
+    intros
+    unfold_projs
+    ext
+    simp
+  associator_eqToIso := by
+    intros
+    unfold_projs
+    ext
+    simp
 
 /-- Category structure on `Cat` -/
 instance category : LargeCategory.{max v u} Cat.{v, u} :=
@@ -93,7 +118,7 @@ theorem comp_obj {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) (X : C) : (F ≫ G).o
 @[simp]
 theorem comp_map {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) {X Y : C} (f : X ⟶ Y) :
     (F ≫ G).map f = G.map (F.map f) :=
-  rfl
+  Functor.comp_map F G f
 
 @[simp]
 theorem id_app {C D : Cat} (F : C ⟶ D) (X : C) : (𝟙 F : F ⟶ F).app X = 𝟙 (F.obj X) := rfl
