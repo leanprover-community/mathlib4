@@ -137,7 +137,7 @@ end field_simp
 section finiteness
 /--
 info: Try these:
-• finiteness
+• tauto_set
 -/
 #guard_msgs in
 open ENNReal in
