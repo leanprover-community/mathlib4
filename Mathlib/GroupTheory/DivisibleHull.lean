@@ -16,6 +16,7 @@ import Mathlib.RingTheory.Localization.FractionRing
 This file constructs the divisible hull of an `AddCommMonoid` as a `ℕ`-module localized at
 `ℕ+` (implemented using `nonZeroDivisors ℕ`), which is a ℕ-divisible `AddCommMonoid` and a
 `ℚ≥0`-module. Futher more, we show that
+
 * when `M` is a group, so is `DivisibleHull M`, which is also a `ℚ`-module
 * when `M` is linearly ordered and cancellative, so is `DivisibleHull M`, which is also an
   ordered `ℚ≥0`-module.
@@ -55,21 +56,14 @@ theorem mk_zero (s : ℕ+) : mk (0 : M) s = 0 := by simp [mk]
 
 @[elab_as_elim, induction_eliminator]
 theorem ind {motive : DivisibleHull M → Prop} (mk : ∀ num den, motive (.mk num den)) :
-    ∀ x, motive x := by
-  apply LocalizedModule.induction_on
-  intro m s
-  apply mk m (↑ⁿ.symm s)
+    ∀ x, motive x :=
+  LocalizedModule.induction_on fun m s ↦ mk m (↑ⁿ.symm s)
 
 theorem mk_eq_mk {m m' : M} {s s' : ℕ+} :
     mk m s = mk m' s' ↔ ∃ u : ℕ+, u.val • s'.val • m = u.val • s.val • m' := by
   unfold mk
-  rw [LocalizedModule.mk_eq]
-  simp_rw [Submonoid.smul_def]
-  constructor
-  · rintro ⟨u, hu⟩
-    exact ⟨↑ⁿ.symm u, by simpa using hu⟩
-  · rintro ⟨u, hu⟩
-    exact ⟨↑ⁿ u, by simpa using hu⟩
+  rw [LocalizedModule.mk_eq, ↑ⁿ.exists_congr_left]
+  rfl
 
 /-- If `f : M → ℕ+ → α` respects the equivalence on localization,
 lift it to a function `DivisibleHull M → α`. -/
@@ -77,9 +71,9 @@ def liftOn {α : Type*} (x : DivisibleHull M)
     (f : M → ℕ+ → α)
     (h : ∀ (m m' : M) (s s' : ℕ+), mk m s = mk m' s' → f m s = f m' s') : α :=
   LocalizedModule.liftOn x (fun p ↦ f p.1 (↑ⁿ.symm p.2)) fun p p' heq ↦
-    h p.1 p'.1 (↑ⁿ.symm p.2) (↑ⁿ.symm p'.2) ((by
+    h p.1 p'.1 (↑ⁿ.symm p.2) (↑ⁿ.symm p'.2) <| by
       obtain ⟨u, hu⟩ := heq
-      exact mk_eq_mk.mpr ⟨↑ⁿ.symm u, by simpa using hu⟩))
+      exact mk_eq_mk.mpr ⟨↑ⁿ.symm u, hu⟩
 
 @[simp]
 theorem liftOn_mk {α : Type*} (m : M) (s : ℕ+)
@@ -96,13 +90,12 @@ def liftOn₂ {α : Type*} (x y : DivisibleHull M)
   LocalizedModule.liftOn₂ x y (fun p q ↦ f p.1 (↑ⁿ.symm p.2) q.1 (↑ⁿ.symm q.2))
     fun p q p' q' heq heq' ↦
     h p.1 q.1 p'.1 q'.1 (↑ⁿ.symm p.2) (↑ⁿ.symm q.2) (↑ⁿ.symm p'.2) (↑ⁿ.symm q'.2)
-      ((by
+      (by
         obtain ⟨u, hu⟩ := heq
-        exact mk_eq_mk.mpr ⟨↑ⁿ.symm u, by simpa using hu⟩
-      )) ((by
+        exact mk_eq_mk.mpr ⟨↑ⁿ.symm u, hu⟩)
+      (by
         obtain ⟨u, hu⟩ := heq'
-        exact mk_eq_mk.mpr ⟨↑ⁿ.symm u, by simpa using hu⟩
-      ))
+        exact mk_eq_mk.mpr ⟨↑ⁿ.symm u, hu⟩)
 
 @[simp]
 theorem liftOn₂_mk {α : Type*} (m m' : M) (s s' : ℕ+)
@@ -110,21 +103,6 @@ theorem liftOn₂_mk {α : Type*} (m m' : M) (s s' : ℕ+)
     (h : ∀ (m n m' n' : M) (s t s' t' : ℕ+),
       mk m s = mk m' s' → mk n t = mk n' t' → f m s n t = f m' s' n' t') :
     liftOn₂ (mk m s) (mk m' s') f h = f m s m' s' := rfl
-
-instance decidable_liftOn₂ (f : M → ℕ+ → M → ℕ+ → Prop)
-    [(m : M) → (s : ℕ+) → (n : M) → (t : ℕ+) → Decidable (f m s n t)]
-    (h : ∀ (m n m' n' : M) (s t s' t' : ℕ+),
-      mk m s = mk m' s' → mk n t = mk n' t' → f m s n t = f m' s' n' t')
-    (x y : DivisibleHull M) :
-    Decidable (liftOn₂ x y f h) := by
-  change Decidable (Quotient.liftOn₂ _ _ _ ?_)
-  · infer_instance
-  · intro a1 a2 b1 b2 h1 h2
-    refine h a1.1 a2.1 b1.1 b2.1 (↑ⁿ.symm a1.2) (↑ⁿ.symm a2.2) (↑ⁿ.symm b1.2) (↑ⁿ.symm b2.2) ?_ ?_
-    · obtain ⟨u, hu⟩ := h1
-      exact mk_eq_mk.mpr ⟨↑ⁿ.symm u, by simpa using hu⟩
-    · obtain ⟨u, hu⟩ := h2
-      exact mk_eq_mk.mpr ⟨↑ⁿ.symm u, by simpa using hu⟩
 
 theorem mk_add_mk {m1 m2 : M} {s1 s2 : ℕ+} :
     mk m1 s1 + mk m2 s2 = mk (s2.val • m1 + s1.val • m2) (s1 * s2) := LocalizedModule.mk_add_mk
@@ -160,23 +138,16 @@ instance : DivisibleBy (DivisibleHull M) ℕ where
   div m n := (n⁻¹ : ℚ≥0) • m
   div_zero := by simp
   div_cancel n {m} h := by
-    rw [← Nat.cast_smul_eq_nsmul ℚ≥0 n, smul_smul, mul_inv_cancel₀ (by simpa using h), one_smul]
+    rw [← Nat.cast_smul_eq_nsmul ℚ≥0 n, smul_smul, mul_inv_cancel₀ (mod_cast h), one_smul]
 
 section TorsionFree
 variable [IsAddTorsionFree M]
 
 theorem mk_eq_mk_iff_smul_eq_smul {m m' : M} {s s' : ℕ+} :
     mk m s = mk m' s' ↔ s'.val • m = s.val • m' := by
-  rw [mk_eq_mk]
-  constructor
-  · intro ⟨u, h⟩
-    exact (nsmul_right_inj (by simp)).mp h
-  · intro hr
-    use 1
-    rw [hr]
+  aesop (add simp [mk_eq_mk, nsmul_right_inj])
 
-theorem mk_left_injective (s : ℕ+) :
-    Function.Injective (fun (m : M) ↦ mk m s) := by
+theorem mk_left_injective (s : ℕ+) : Function.Injective (fun (m : M) ↦ mk m s) := by
   intro m n h
   simp_rw [mk_eq_mk_iff_smul_eq_smul] at h
   exact nsmul_right_injective (by simp) h
@@ -191,8 +162,7 @@ end TorsionFree
 section Divisible
 variable [DivisibleBy M ℕ]
 
-theorem mk_left_surjective (s : ℕ+) :
-    Function.Surjective (fun (m : M) ↦ mk m s) := by
+theorem mk_left_surjective (s : ℕ+) : Function.Surjective (fun (m : M) ↦ mk m s) := by
   intro m
   induction m with | mk m t
   use DivisibleBy.div (s.val • m) t.val
@@ -231,7 +201,8 @@ end Divisible
 section Group
 variable {M : Type*} [AddCommGroup M]
 
-theorem mk_neg (m : M) (s : ℕ+) : mk (-m) s = - mk m s :=
+@[simp]
+theorem mk_neg (m : M) (s : ℕ+) : mk (-m) s = -mk m s :=
   eq_neg_of_add_eq_zero_left (by simp [mk_add_mk_left])
 
 noncomputable
@@ -242,46 +213,39 @@ theorem qsmul_def (a : ℚ) (x : DivisibleHull M) :
     a • x = (SignType.sign a : ℤ) • (show ℚ≥0 from ⟨|a|, abs_nonneg _⟩) • x :=
   rfl
 
+@[simp]
+theorem zero_qsmul (x : DivisibleHull M) : (0 : ℚ) • x = 0 := by
+  simp [qsmul_def]
+
 theorem qsmul_of_nonneg {a : ℚ} (h : 0 ≤ a) (x : DivisibleHull M) :
     a • x = (show ℚ≥0 from ⟨a, h⟩) • x := by
-  obtain rfl | h := eq_or_lt_of_le h
-  · have : ⟨0, Left.nonneg_neg_iff.mpr h⟩ = (0 : ℚ≥0) := rfl
-    simp [qsmul_def, this]
-  · simp [qsmul_def, abs_eq_self.mpr h.le, sign_pos h]
+  have := h.eq_or_lt
+  aesop (add simp [qsmul_def, abs_of_pos])
 
 theorem qsmul_of_nonpos {a : ℚ} (h : a ≤ 0) (x : DivisibleHull M) :
     a • x = -((show ℚ≥0 from ⟨-a, Left.nonneg_neg_iff.mpr h⟩) • x) := by
-  obtain rfl | h := eq_or_lt_of_le h
-  · have : ⟨0, Left.nonneg_neg_iff.mpr h⟩ = (0 : ℚ≥0) := rfl
-    simp [qsmul_def, this]
-  · simp [qsmul_def, abs_eq_neg_self.mpr h.le, sign_neg h]
+  have := h.eq_or_lt
+  aesop (add simp [qsmul_def, abs_of_neg])
 
 theorem qsmul_mk (a : ℚ) (m : M) (s : ℕ+) :
     a • mk m s = mk (a.num • m) (⟨a.den, a.den_pos⟩ * s) := by
   obtain h | h := le_total 0 a
-  · rw [qsmul_of_nonneg h]
-    have : a.num.natAbs • m = a.num • m := by
-      rw [← natCast_zsmul]
-      congr
-      simpa using h
-    simp [nnqsmul_mk, this]
+  · rw [qsmul_of_nonneg h, nnqsmul_mk, ← natCast_zsmul]
+    congr
+    simpa using h
   · rw [qsmul_of_nonpos h]
     have : a.num.natAbs • m = -a.num • m := by
       rw [← natCast_zsmul]
       congr
       simpa using h
-    simp [nnqsmul_mk, this, mk_neg]
+    simp [nnqsmul_mk, this]
 
 noncomputable
 instance : Module ℚ (DivisibleHull M) where
   one_smul x := by
     induction x with | mk m s
-    simp only [qsmul_mk, Rat.num_ofNat, one_smul, Rat.den_ofNat]
-    apply congrArg
-    simp
-  zero_smul x := by
-    induction x with | mk m s
-    simp [qsmul_mk]
+    simp [qsmul_of_nonneg zero_le_one, nnqsmul_mk]
+  zero_smul := zero_qsmul
   smul_zero a := by simp [qsmul_def]
   smul_add a x y := by simp [qsmul_def, smul_add]
   add_smul a b x := by
@@ -307,9 +271,7 @@ instance : Module ℚ (DivisibleHull M) where
     rw [Rat.mul_num_den']
 
 theorem zsmul_mk (a : ℤ) (m : M) (s : ℕ+) : a • mk m s = mk (a • m) s := by
-  suffices (a : ℚ) • mk m s = mk (a • m) s by simpa [Int.cast_smul_eq_zsmul]
-  rw [qsmul_mk]
-  exact congrArg _ <| Subtype.eq (by simp)
+  simp [← Int.cast_smul_eq_zsmul ℚ a, qsmul_mk]
 
 end Group
 
@@ -318,28 +280,14 @@ variable {M : Type*} [AddCommMonoid M] [LinearOrder M] [AddLeftStrictMono M]
 
 private theorem lift_aux (m n m' n' : M) (s t s' t' : ℕ+)
     (h : mk m s = mk m' s') (h' : mk n t = mk n' t') :
-    (fun m s n t ↦ t.val • m ≤ s.val • n) m s n t =
-    (fun m s n t ↦ t.val • m ≤ s.val • n) m' s' n' t' := by
+    (t.val • m ≤ s.val • n) = (t'.val • m' ≤ s'.val • n') := by
   rw [mk_eq_mk_iff_smul_eq_smul] at h h'
-  suffices t.val • m ≤ s.val • n ↔ t'.val • m' ≤ s'.val • n' by simpa
-  rw [← (nsmul_right_strictMono
-    (mul_ne_zero (show s'.val ≠ 0 by simp) (show t'.val ≠ 0 by simp))).le_iff_le]
-  rw [show (s'.val * t'.val) • t.val • m = (t.val * t'.val) • s'.val • m by
-    simp_rw [smul_smul]
-    ring_nf]
-  rw [show (s'.val * t'.val) • s.val • n = (s.val * s'.val) • t'.val • n by
-    simp_rw [smul_smul]
-    ring_nf]
-  rw [h, h']
-  rw [show (t.val * t'.val) • s.val • m' = (s.val * t.val) • t'.val • m' by
-    simp_rw [smul_smul]
-    ring_nf]
-  rw [show (s.val * s'.val) • t.val • n' = (s.val * t.val) • s'.val • n' by
-    simp_rw [smul_smul]
-    ring_nf]
-  exact (nsmul_right_strictMono
-    (mul_ne_zero (show s.val ≠ 0 by simp) (show t.val ≠ 0 by simp))).le_iff_le
-
+  rw [propext_iff, ← (nsmul_right_strictMono (mul_ne_zero s'.ne_zero t'.ne_zero)).le_iff_le]
+  convert (nsmul_right_strictMono (M := M) (mul_ne_zero s.ne_zero t.ne_zero)).le_iff_le using 2
+  · simp_rw [smul_smul, mul_rotate s'.val, ← smul_smul, h, smul_smul]
+    ring_nf
+  · simp_rw [smul_smul, ← mul_rotate s'.val, ← smul_smul, ← h', smul_smul]
+    ring_nf
 instance : LE (DivisibleHull M) where
   le x y := liftOn₂ x y (fun m s n t ↦ t.val • m ≤ s.val • n) lift_aux
 
@@ -355,11 +303,10 @@ instance : LinearOrder (DivisibleHull M) where
     induction b with | mk mb sb
     induction c with | mk mc sc
     rw [mk_le_mk] at ⊢ hab hbc
-    rw [← (nsmul_right_strictMono (show sb.val ≠ 0 by simp)).le_iff_le]
-    rw [← (nsmul_right_strictMono (show sc.val ≠ 0 by simp)).le_iff_le] at hab
+    rw [← (nsmul_right_strictMono (show sb.val ≠ 0 by simp)).le_iff_le, smul_comm _ _ ma,
+      smul_comm _ _ mc]
+    rw [← (nsmul_right_strictMono (show sc.val ≠ 0 by simp)).le_iff_le, smul_comm _ _ mb] at hab
     rw [← (nsmul_right_strictMono (show sa.val ≠ 0 by simp)).le_iff_le] at hbc
-    rw [smul_comm _ _ ma, smul_comm _ _ mc]
-    rw [smul_comm _ _ mb] at hab
     exact hab.trans hbc
   le_antisymm a b h h' := by
     induction a with | mk ma sa
@@ -372,7 +319,9 @@ instance : LinearOrder (DivisibleHull M) where
     induction b with | mk mb sb
     simp_rw [mk_le_mk]
     exact le_total _ _
-  toDecidableLE := decidable_liftOn₂ _ _
+  toDecidableLE := by
+    unfold DecidableLE LE.le instLE liftOn₂ LocalizedModule.liftOn₂
+    infer_instance
 
 theorem mk_lt_mk {m m' : M} {s s' : ℕ+} : mk m s < mk m' s' ↔ s'.val • m < s.val • m' := by
   simp_rw [lt_iff_not_ge, mk_le_mk]
@@ -387,11 +336,9 @@ private lemma aux_add_lt_add_left (a : DivisibleHull M) {b c : DivisibleHull M} 
   simp_rw [mk_add_mk]
   rw [mk_lt_mk] at ⊢ h
   simp_rw [PNat.mul_coe, mul_smul, smul_add, smul_smul]
-  suffices (sa * sb * sc : ℕ) • ma + (sa * sa : ℕ) • (sc : ℕ) • mb
-      < (sa * sb * sc : ℕ) • ma + (sa * sa : ℕ) • (sb : ℕ) • mc by
-    simp_rw [smul_smul] at this
-    convert this using 3 <;> ring
-  apply _root_.add_lt_add_left <| nsmul_lt_nsmul_right (by simp) h
+  have := add_lt_add_left (nsmul_lt_nsmul_right (sa * sa).ne_zero h) ((sa * sb * sc.val) • ma)
+  simp_rw [PNat.mul_coe, smul_smul] at this
+  convert this using 3 <;> ring
 
 instance : IsOrderedCancelAddMonoid (DivisibleHull M) where
   add_le_add_left a b h c := by
@@ -431,6 +378,16 @@ def coeOrderAddMonoidHom : M →+o DivisibleHull M where
 theorem coeOrderAddMonoidHom_injective : Function.Injective (coeOrderAddMonoidHom M) :=
   coeAddMonoidHom_injective
 
+/-- `ArchimedeanClass.mk` of an element from `DivisibleHull` only depends on the numerator. -/
+theorem archimedeanClassMk_mk_eq (m : M) (s s' : ℕ+) :
+    ArchimedeanClass.mk (mk m s) = ArchimedeanClass.mk (mk m s') := by
+  suffices (s : ℤ) • mk m s = (s' : ℤ) • mk m s' by
+    apply_fun ArchimedeanClass.mk at this
+    rw [ArchimedeanClass.mk_smul _ (by simp)] at this
+    rw [ArchimedeanClass.mk_smul _ (by simp)] at this
+    exact this
+  simp_rw [zsmul_mk, mk_eq_mk_iff_smul_eq_smul, natCast_zsmul, smul_smul, mul_comm s'.val]
+
 variable (M) in
 /-- Forward direction of `archimedeanClassOrderIso`. -/
 private noncomputable
@@ -440,12 +397,8 @@ def aux_archimedeanClassOrderHom : ArchimedeanClass M →o ArchimedeanClass (Div
 /-- See `archimedeanClassOrderIso_symm_apply` for public API. -/
 private theorem aux_archimedeanClassMk_mk (m : M) (s : ℕ+) :
     ArchimedeanClass.mk (mk m s) = aux_archimedeanClassOrderHom M (ArchimedeanClass.mk m) := by
-  trans ArchimedeanClass.mk ((s.val : ℤ) • mk m s)
-  · rw [ArchimedeanClass.mk_smul _ (show (s.val : ℤ) ≠ 0 by simp)]
-  rw [aux_archimedeanClassOrderHom, ArchimedeanClass.orderHom_mk, coeOrderAddMonoidHom_apply,
-    zsmul_mk]
-  apply congrArg
-  simp [mk_eq_mk_iff_smul_eq_smul]
+  rw [aux_archimedeanClassOrderHom, ArchimedeanClass.orderHom_mk, coeOrderAddMonoidHom_apply]
+  apply archimedeanClassMk_mk_eq
 
 /-- Use `Equiv.injective archimedeanClassOrderIso` for public API. -/
 private theorem aux_archimedeanClassOrderHom_injective :
