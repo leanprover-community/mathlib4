@@ -123,13 +123,13 @@ noncomputable abbrev toCompleteLinearOrder
   { toCompleteLattice α, ‹LinearOrder α›, LinearOrder.toBiheytingAlgebra _ with }
 
 -- See note [reducible non-instances]
-/-- A finite boolean algebra is complete. -/
+/-- A finite Boolean algebra is complete. -/
 noncomputable abbrev toCompleteBooleanAlgebra [BooleanAlgebra α] : CompleteBooleanAlgebra α where
   __ := ‹BooleanAlgebra α›
   __ := Fintype.toCompleteDistribLattice α
 
 -- See note [reducible non-instances]
-/-- A finite boolean algebra is complete and atomic. -/
+/-- A finite Boolean algebra is complete and atomic. -/
 noncomputable abbrev toCompleteAtomicBooleanAlgebra [BooleanAlgebra α] :
     CompleteAtomicBooleanAlgebra α :=
   (toCompleteBooleanAlgebra α).toCompleteAtomicBooleanAlgebra
