@@ -34,7 +34,7 @@ reasons:
   one on `Valuation`.
 -/
 
-variable {R : Type*} [LinearOrder R]
+variable {R S : Type*} [LinearOrder R]
 
 namespace ArchimedeanClass
 section Ring
@@ -134,6 +134,40 @@ theorem add_right_cancel_of_ne_top {x y z : ArchimedeanClass R} (hx : x ≠ ⊤)
   simp_rw [← add_comm x] at h
   exact add_left_cancel_of_ne_top hx h
 
+variable [LinearOrder S] [Ring S] [IsStrictOrderedRing S]
+
+private theorem mk_le_mk_iff_denselyOrdered' [DenselyOrdered R] [Archimedean R] {x y : S}
+    (f : R →+* S) (hf : StrictMono f) (h : 0 < y) :
+    mk x ≤ mk y ↔ ∃ q : R, 0 < f q ∧ f q * |y| ≤ |x| := by
+  have H {q} : 0 < f q ↔ 0 < q := by simpa using hf.lt_iff_lt (a := 0)
+  constructor
+  · rintro ⟨(_ | n), hn⟩
+    · simp_all
+    · obtain ⟨q, hq₀, hq⟩ := exists_nsmul_lt_of_pos (one_pos (α := R)) (n + 1)
+      refine ⟨q, H.2 hq₀, le_of_mul_le_mul_left ?_ n.cast_add_one_pos⟩
+      simpa [← mul_assoc] using mul_le_mul (hf hq).le hn (abs_nonneg y) (by simp)
+  · rintro ⟨q, hq₀, hq⟩
+    have hq₀' := H.1 hq₀
+    obtain ⟨n, hn⟩ := exists_lt_nsmul hq₀' 1
+    refine ⟨n, le_of_mul_le_mul_left ?_ hq₀⟩
+    have h : 0 ≤ f (n • q) := by
+      rw [← f.map_zero]
+      exact f.monotone' (nsmul_nonneg hq₀'.le n)
+    simpa [mul_comm, mul_assoc] using mul_le_mul (hf hn).le hq (mul_nonneg hq₀.le (abs_nonneg y)) h
+
+theorem mk_le_mk_iff_denselyOrdered [DenselyOrdered R] [Archimedean R] {x y : S}
+    (f : R →+*o S) (hf : StrictMono f) :
+    mk x ≤ mk y ↔ ∃ q : R, 0 < f q ∧ f q * |y| ≤ |x| := by
+  obtain hy | rfl | hy := lt_trichotomy y 0
+  · simpa using mk_le_mk_iff_denselyOrdered' f hf (neg_pos.2 hy)
+  · have : ∃ q, 0 < f q := ⟨1, by simp⟩
+    simpa
+  · exact mk_le_mk_iff_denselyOrdered' f hf hy
+
+def _root_.Rat.castOrderRingHom [Field R] [IsStrictOrderedRing R] : ℚ →+*o R where
+  monotone' := Rat.cast_mono
+  __ := Rat.castHom _
+
 end IsStrictOrderedRing
 end Ring
 
@@ -179,6 +213,11 @@ noncomputable instance : LinearOrderedAddCommGroupWithTop (ArchimedeanClass R) w
   zsmul_neg' n x := by
     induction x with | mk x
     rw [← mk_zpow, zpow_negSucc, pow_succ, zsmul_succ', mk_inv, mk_mul, ← zpow_natCast, mk_zpow]
+
+theorem mk_le_mk_iff_ratCast [Field S] [IsOrderedRing S] {x y : S} :
+    mk x ≤ mk y ↔ ∃ q : ℚ, 0 < q ∧ q * |y| ≤ |x| := by
+  have := IsOrderedRing.toIsStrictOrderedRing S
+  simpa using mk_le_mk_iff_denselyOrdered Rat.castOrderRingHom Rat.cast_strictMono (x := x) (y := y)
 
 end Field
 end ArchimedeanClass
