@@ -136,10 +136,6 @@ theorem flip_polar_polar_eq {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E}
     (Preorder.le_trans (RCLike.re ((B x) f₀)) ‖(B x) f₀‖ 1
       (RCLike.re_le_norm ((B x) f₀)) (hc f₀ hg₃))
 
-
-
-#find_home! closureOperator_polar_gc_empty_of_separatingLeft
-
 /-
 This fails when `s` is empty. Indeed, `closedAbsConvexHull (E := WeakBilin B) 𝕜 s` is the empty set,
 but `B.polar_gc.closureOperator s` equals `{0}` when `B` is left separating.
