@@ -32,7 +32,7 @@ def finite (C : Type u) [Category.{v} C] : Precoverage C where
 
 variable {C : Type u} [Category.{v} C]
 
-@[simp] lemma mem_finite {X : C} {s : Presieve X} :
+@[simp] lemma mem_finite_iff {X : C} {s : Presieve X} :
     s ∈ finite C X ↔ s.uncurry.Finite := Iff.rfl
 
 theorem ofArrows_mem_finite {X : C} {ι : Type*} [Finite ι] (Y : ι → C) (f : (i : ι) → Y i ⟶ X) :
