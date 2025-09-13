@@ -26,7 +26,7 @@ variable {G : Type*}
 section LinearOrderedCommGroup
 variable [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] {a b c : G}
 
-@[to_additive] lemma mabs_pow (n : ℕ) (a : G) : |a ^ n|ₘ = |a|ₘ ^ n := by
+@[to_additive] lemma mabs_pow [MonoidNPow G] (n : ℕ) (a : G) : |a ^ n|ₘ = |a|ₘ ^ n := by
   obtain ha | ha := le_total a 1
   · rw [mabs_of_le_one ha, ← mabs_inv, ← inv_pow, mabs_of_one_le]
     exact one_le_pow_of_one_le' (one_le_inv'.2 ha) n

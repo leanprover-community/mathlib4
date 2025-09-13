@@ -41,7 +41,7 @@ theorem isConj_comm {g h : α} : IsConj g h ↔ IsConj h g :=
 theorem IsConj.trans {a b c : α} : IsConj a b → IsConj b c → IsConj a c
   | ⟨c₁, hc₁⟩, ⟨c₂, hc₂⟩ => ⟨c₂ * c₁, hc₂.mul_left hc₁⟩
 
-theorem IsConj.pow {a b : α} (n : ℕ) : IsConj a b → IsConj (a ^ n) (b ^ n)
+theorem IsConj.pow [MonoidNPow α] {a b : α} (n : ℕ) : IsConj a b → IsConj (a ^ n) (b ^ n)
   | ⟨c, hc⟩ => ⟨c, hc.pow_right n⟩
 
 @[simp]
@@ -84,13 +84,13 @@ theorem conj_mul {a b c : α} : b * a * b⁻¹ * (b * c * b⁻¹) = b * (a * c) 
   (map_mul (MulAut.conj b) a c).symm
 
 @[simp]
-theorem conj_pow {i : ℕ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻¹ := by
+theorem conj_pow [MonoidNPow α] {i : ℕ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻¹ := by
   induction i with
   | zero => simp
   | succ i hi => simp [pow_succ, hi]
 
 @[simp]
-theorem conj_zpow {i : ℤ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻¹ := by
+theorem conj_zpow [MonoidNPow α] {i : ℤ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻¹ := by
   cases i
   · simp
   · simp only [zpow_negSucc, conj_pow, mul_inv_rev, inv_inv]

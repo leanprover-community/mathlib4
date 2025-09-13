@@ -146,6 +146,7 @@ variable {G : Type*} [Group G]
 
 @[to_additive (attr := simp) abs_zsmul_eq_zero]
 lemma zpow_abs_eq_one (a : G) (n : ℤ) : a ^ |n| = 1 ↔ a ^ n = 1 := by
+  let _ := Monoid.monoidNPow G
   rw [← Int.natCast_natAbs, zpow_natCast, pow_natAbs_eq_one]
 
 end Group
