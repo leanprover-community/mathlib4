@@ -106,11 +106,11 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
     Nat.card (E ≃ₐ[F] E) = finrank F E := by
   obtain ⟨α, hα⟩ := Field.exists_primitive_element F E
   let iso : F⟮α⟯ ≃ₐ[F] E :=
-    { toFun := fun e => e.val
-      invFun := fun e => ⟨e, by rw [hα]; exact IntermediateField.mem_top⟩
-      map_mul' := fun _ _ => rfl
-      map_add' := fun _ _ => rfl
-      commutes' := fun _ => rfl }
+    { toFun e := e.val
+      invFun e := ⟨e, by rw [hα]; exact IntermediateField.mem_top⟩
+      map_mul' _ _ := rfl
+      map_add' _ _ := rfl
+      map_smul' _ _ := rfl }
   have H : IsIntegral F α := IsGalois.integral F α
   have h_sep : IsSeparable F α := IsGalois.separable F α
   have h_splits : (minpoly F α).Splits (algebraMap F E) := IsGalois.splits F α
@@ -245,7 +245,7 @@ lemma fixedField_antitone : Antitone (@fixedField F _ E _ _) :=
 
 /-- The fixing subgroup of `K : IntermediateField F E` is isomorphic to `E ≃ₐ[K] E`. -/
 def fixingSubgroupEquiv : fixingSubgroup K ≃* E ≃ₐ[K] E where
-  toFun ϕ := { AlgEquiv.toRingEquiv (ϕ : E ≃ₐ[F] E) with commutes' := ϕ.mem }
+  toFun ϕ := AlgEquiv.ofCommutes (ϕ : E ≃ₐ[F] E) ϕ.mem
   invFun ϕ := ⟨ϕ.restrictScalars _, ϕ.commutes⟩
   map_mul' _ _ := by ext; rfl
 

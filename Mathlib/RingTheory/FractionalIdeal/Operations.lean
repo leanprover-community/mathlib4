@@ -199,9 +199,9 @@ variable [IsLocalization S P] [IsLocalization S P']
 ideals in `P` and in `P'`, which are both localizations of `R` at `S`. -/
 noncomputable irreducible_def canonicalEquiv : FractionalIdeal S P ≃+* FractionalIdeal S P' :=
   mapEquiv
-    { ringEquivOfRingEquiv P P' (RingEquiv.refl R)
-        (show S.map _ = S by rw [RingEquiv.toMonoidHom_refl, Submonoid.map_id]) with
-      commutes' := fun _ => ringEquivOfRingEquiv_eq _ _ }
+    (.ofCommutes (ringEquivOfRingEquiv P P' (RingEquiv.refl R)
+        (show S.map _ = S by rw [RingEquiv.toMonoidHom_refl, Submonoid.map_id]))
+      (fun _ => ringEquivOfRingEquiv_eq _ _))
 
 @[simp]
 theorem mem_canonicalEquiv_apply {I : FractionalIdeal S P} {x : P'} :
