@@ -224,17 +224,22 @@ instance addZeroClass [AddZeroClass α] : AddZeroClass (WithTop α) :=
 section AddMonoid
 variable [AddMonoid α]
 
-instance addMonoid : AddMonoid (WithTop α) where
-  __ := WithTop.addSemigroup
-  __ := WithTop.addZeroClass
+instance instNSMul : NSMul (WithTop α) where
   nsmul n a := match a, n with
     | (a : α), n => ↑(n • a)
     | ⊤, 0 => 0
-    | ⊤, _n + 1 => ⊤
-  nsmul_zero a := by cases a <;> simp [zero_nsmul]
-  nsmul_succ n a := by cases a <;> cases n <;> simp [succ_nsmul, coe_add]
+    | ⊤, _ + 1 => ⊤
 
 @[simp, norm_cast] lemma coe_nsmul (a : α) (n : ℕ) : ↑(n • a) = n • (a : WithTop α) := rfl
+
+instance addMonoid : AddMonoid (WithTop α) where
+  __ := WithTop.addSemigroup
+  __ := WithTop.addZeroClass
+  nsmul_zero a := by cases a <;> first | rfl | simp [← coe_nsmul]
+  nsmul_succ n a := match a, n with
+  | ⊤, 0  => rfl
+  | ⊤, _ + 1  => rfl
+  | (a : α), _ => by simp [← coe_nsmul, ← coe_add, AddMonoid.nsmul_succ]
 
 /-- Coercion from `α` to `WithTop α` as an `AddMonoidHom`. -/
 def addHom : α →+ WithTop α where
