@@ -276,19 +276,15 @@ theorem aeval_primPart_eq_zero {S : Type*} [Ring S] [IsDomain S] [Algebra R S]
     [NoZeroSMulDivisors R S] {p : R[X]} {s : S} (hpzero : p ≠ 0) (hp : aeval s p = 0) :
     aeval s p.primPart = 0 := by
   rw [eq_C_content_mul_primPart p, map_mul, aeval_C] at hp
-  have hcont : p.content ≠ 0 := fun h => hpzero (content_eq_zero_iff.1 h)
-  replace hcont := Function.Injective.ne (FaithfulSMul.algebraMap_injective R S) hcont
-  rw [map_zero] at hcont
-  exact eq_zero_of_ne_zero_of_mul_left_eq_zero hcont hp
+  refine eq_zero_of_ne_zero_of_mul_left_eq_zero ?_ hp
+  rwa [(FaithfulSMul.algebraMap_injective R S).ne_iff' (map_zero _), Ne, content_eq_zero_iff]
 
 theorem eval₂_primPart_eq_zero {S : Type*} [CommSemiring S] [IsDomain S] {f : R →+* S}
     (hinj : Function.Injective f) {p : R[X]} {s : S} (hpzero : p ≠ 0) (hp : eval₂ f s p = 0) :
     eval₂ f s p.primPart = 0 := by
   rw [eq_C_content_mul_primPart p, eval₂_mul, eval₂_C] at hp
-  have hcont : p.content ≠ 0 := fun h => hpzero (content_eq_zero_iff.1 h)
-  replace hcont := Function.Injective.ne hinj hcont
-  rw [map_zero] at hcont
-  exact eq_zero_of_ne_zero_of_mul_left_eq_zero hcont hp
+  refine eq_zero_of_ne_zero_of_mul_left_eq_zero ?_ hp
+  rwa [hinj.ne_iff' (map_zero _), Ne, content_eq_zero_iff]
 
 end PrimPart
 
@@ -320,15 +316,12 @@ theorem content_mul {p q : R[X]} : (p * q).content = p.content * q.content := by
         ∀ (n : ℕ) (p q : R[X]), (p * q).degree < n → (p * q).content = p.content * q.content by
       apply h
       apply lt_of_le_of_lt degree_le_natDegree (WithBot.coe_lt_coe.2 (Nat.lt_succ_self _))
-    intro n
-    induction n with
+    intro n p q hpq
+    induction n generalizing p q with
     | zero =>
-      intro p q hpq
-      rw [Nat.cast_zero,
-        Nat.WithBot.lt_zero_iff, degree_eq_bot, mul_eq_zero] at hpq
+      rw [Nat.cast_zero, Nat.WithBot.lt_zero_iff, degree_eq_bot, mul_eq_zero] at hpq
       rcases hpq with (rfl | rfl) <;> simp
     | succ n ih => ?_
-    intro p q hpq
     by_cases p0 : p = 0
     · simp [p0]
     by_cases q0 : q = 0

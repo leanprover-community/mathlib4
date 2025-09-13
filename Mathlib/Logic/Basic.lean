@@ -897,10 +897,8 @@ theorem ite_or : ite (P ∨ Q) a b = ite P a (ite Q a b) := by
 
 theorem dite_dite_comm {B : Q → α} {C : ¬P → ¬Q → α} (h : P → ¬Q) :
     (if p : P then A p else if q : Q then B q else C p q) =
-     if q : Q then B q else if p : P then A p else C p q :=
-  dite_eq_iff'.2 ⟨
-    fun p ↦ by rw [dif_neg (h p), dif_pos p],
-    fun np ↦ by congr; funext _; rw [dif_neg np]⟩
+     if q : Q then B q else if p : P then A p else C p q := by
+  grind
 
 theorem ite_ite_comm (h : P → ¬Q) :
     (if P then a else if Q then b else c) =

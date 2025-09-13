@@ -125,8 +125,7 @@ theorem dvd_prime {p m : ℕ+} (pp : p.Prime) : m ∣ p ↔ m = 1 ∨ m = p := b
   simp
 
 theorem Prime.ne_one {p : ℕ+} : p.Prime → p ≠ 1 := by
-  intro pp
-  intro contra
+  intro pp contra
   apply Nat.Prime.ne_one pp
   rw [PNat.coe_eq_one_iff]
   apply contra

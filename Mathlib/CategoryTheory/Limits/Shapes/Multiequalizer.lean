@@ -713,10 +713,7 @@ noncomputable def ofSigmaCoforkFunctor : Cofork I.fstSigmaMap I.sndSigmaMap ⥤ 
   obj := Multicofork.ofSigmaCofork I
   map {K₁ K₂} f :=
     { hom := f.hom
-      w := by --sorry --by rintro (_ | _) <;> simp
-        rintro (_ | _)
-        · simp
-        · simp }
+      w := by rintro (_ | _) <;> simp }
 
 /--
 The category of multicoforks is equivalent to the category of coforks over `∐ I.left ⇉ ∐ I.right`.
@@ -736,9 +733,7 @@ noncomputable def multicoforkEquivSigmaCofork :
         -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): in mathlib3 this was just `ext` and I don't know why it's not here
         apply Limits.colimit.hom_ext
         rintro ⟨j⟩
-        dsimp
-        simp only [Category.comp_id, colimit.ι_desc, Cofan.mk_ι_app]
-        rfl)
+        simp)
 
 end MultispanIndex
 
@@ -901,10 +896,7 @@ def sigmaπ : ∐ I.right ⟶ multicoequalizer I :=
 @[reassoc (attr := simp)]
 theorem ι_sigmaπ (b) : Sigma.ι I.right b ≫ sigmaπ I = π I b := by
   rw [sigmaπ, ← Category.assoc, Iso.comp_inv_eq, isoCoequalizer]
-  simp only [MultispanIndex.multicoforkEquivSigmaCofork_inverse,
-    MultispanIndex.ofSigmaCoforkFunctor_obj, colimit.isoColimitCocone_ι_hom,
-    Multicofork.ofSigmaCofork_pt, colimit.cocone_x, Multicofork.π_eq_app_right]
-  rfl
+  simp
 
 instance : Epi (sigmaπ I) := epi_comp _ _
 

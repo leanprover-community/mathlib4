@@ -12,7 +12,7 @@ General algebra:
     presheafed space: 'AlgebraicGeometry.PresheafedSpace'
     sheafed space: 'AlgebraicGeometry.SheafedSpace'
     monoidal category: 'CategoryTheory.MonoidalCategory'
-    cartesian closed: 'CategoryTheory.CartesianClosed'
+    Cartesian closed: 'CategoryTheory.CartesianClosed'
     abelian category: 'CategoryTheory.Abelian'
 
   Numbers:

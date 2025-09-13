@@ -210,7 +210,7 @@ instance : PartialOrder L := inferInstance
 instance : IsOrderedRing L := inferInstance
 
 instance : CanonicallyOrderedAdd L where
-  exists_add_of_le := @(exists_add_of_le)
+  exists_add_of_le := exists_add_of_le _ _
   le_add_self a b := by rw [add_comm]; exact le_self_add a b
   le_self_add := le_self_add
 

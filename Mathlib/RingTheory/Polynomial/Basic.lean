@@ -264,7 +264,7 @@ theorem geom_sum_X_comp_X_add_one_eq_sum (n : ℕ) :
   | zero => dsimp; simp only [zero_comp, coeff_zero, Nat.cast_zero]
   | succ n ih =>
     simp only [geom_sum_succ', ih, add_comp, X_pow_comp, coeff_add, Nat.choose_succ_succ,
-    Nat.cast_add, coeff_X_add_one_pow]
+      Nat.cast_add, coeff_X_add_one_pow]
 
 theorem Monic.geom_sum {P : R[X]} (hP : P.Monic) (hdeg : 0 < P.natDegree) {n : ℕ} (hn : n ≠ 0) :
     (∑ i ∈ range n, P ^ i).Monic := by
