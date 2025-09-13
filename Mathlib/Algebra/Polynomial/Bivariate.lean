@@ -17,7 +17,7 @@ the abbreviation `CC` to view a constant in the base ring `R` as a bivariate pol
 -/
 
 /-- The notation `Y` for `X` in the `Polynomial` scope. -/
-scoped[Polynomial.Bivariate] notation3:max "Y" => Polynomial.X (R := Polynomial _)
+scoped[Polynomial.Bivariate] notation3:max "Y" => Polynomial.C Polynomial.X
 
 /-- The notation `R[X][Y]` for `R[X][X]` in the `Polynomial` scope. -/
 scoped[Polynomial.Bivariate] notation3:max R "[X][Y]" => Polynomial (Polynomial R)
@@ -184,7 +184,7 @@ lemma eval₂_eval₂RingHom_apply (f : R →+* S) (x y : S) (p : R[X][Y]) :
   congr($(eval₂RingHom_eval₂RingHom f x y) p)
 
 lemma eval_C_X_comp_eval₂_map_C_X :
-    (evalRingHom (C X : R[X][Y])).comp (eval₂RingHom (mapRingHom <| algebraMap R R[X][Y]) (C Y)) =
+    (evalRingHom (Y : R[X][Y])).comp (eval₂RingHom (mapRingHom <| algebraMap R R[X][Y]) (C X)) =
       .id _ := by
   ext <;> simp
 
@@ -192,7 +192,7 @@ lemma eval_C_X_comp_eval₂_map_C_X :
 `Y : R[X,Y,X']` (substitution of `Y'` by `Y`), obtaining another polynomial in `R[X,Y,X']`.
 When this polynomial is then evaluated at `X' = X`, the original polynomial `p` is recovered. -/
 lemma eval_C_X_eval₂_map_C_X {p : R[X][Y]} :
-    eval (C X) (eval₂ (mapRingHom <| algebraMap R R[X][Y]) (C Y) p) = p :=
+    eval Y (eval₂ (mapRingHom <| algebraMap R R[X][Y]) (C X) p) = p :=
   congr($eval_C_X_comp_eval₂_map_C_X p)
 
 end
