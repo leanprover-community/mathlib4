@@ -544,7 +544,7 @@ lemma adjoin_id_eq_span_one_add (s : Set 𝕜) :
 
 lemma nonUnitalStarAlgebraAdjoin_id_subset_ker_evalStarAlgHom {s : Set 𝕜} (h0 : 0 ∈ s) :
     (adjoin 𝕜 {restrict s (.id 𝕜)} : Set C(s, 𝕜)) ⊆
-      RingHom.ker (evalStarAlgHom 𝕜 𝕜 (⟨0, h0⟩ : s)) := by
+      (evalStarAlgHom 𝕜 𝕜 (⟨0, h0⟩ : s)).ker := by
   intro f hf
   induction hf using adjoin_induction with
   | mem f hf =>
@@ -554,15 +554,15 @@ lemma nonUnitalStarAlgebraAdjoin_id_subset_ker_evalStarAlgHom {s : Set 𝕜} (h0
   | zero => exact zero_mem _
   | mul f g _ _ _ hg => exact Ideal.mul_mem_left _ f hg
   | smul r f _ hf =>
-    rw [SetLike.mem_coe, RingHom.mem_ker] at hf ⊢
+    rw [SetLike.mem_coe, AlgHom.mem_ker] at hf ⊢
     rw [map_smul, hf, smul_zero]
   | star f _ hf =>
-    rw [SetLike.mem_coe, RingHom.mem_ker] at hf ⊢
+    rw [SetLike.mem_coe, AlgHom.mem_ker, StarAlgHom.coe_toAlgHom] at hf ⊢
     rw [map_star, hf, star_zero]
 
 lemma ker_evalStarAlgHom_inter_adjoin_id (s : Set 𝕜) (h0 : 0 ∈ s) :
     (StarAlgebra.adjoin 𝕜 {restrict s (.id 𝕜)} : Set C(s, 𝕜)) ∩
-      RingHom.ker (evalStarAlgHom 𝕜 𝕜 (⟨0, h0⟩ : s)) = adjoin 𝕜 {restrict s (.id 𝕜)} := by
+      (evalStarAlgHom 𝕜 𝕜 (⟨0, h0⟩ : s)).ker = adjoin 𝕜 {restrict s (.id 𝕜)} := by
   ext f
   constructor
   · rintro ⟨hf₁, hf₂⟩
@@ -570,7 +570,8 @@ lemma ker_evalStarAlgHom_inter_adjoin_id (s : Set 𝕜) (h0 : 0 ∈ s) :
     simp_rw [adjoin_id_eq_span_one_add, Set.mem_add, SetLike.mem_coe, mem_span_singleton] at hf₁
     obtain ⟨-, ⟨r, rfl⟩, f, hf, rfl⟩ := hf₁
     have := nonUnitalStarAlgebraAdjoin_id_subset_ker_evalStarAlgHom h0 hf
-    simp only [SetLike.mem_coe, RingHom.mem_ker, evalStarAlgHom_apply] at hf₂ this
+    simp only [SetLike.mem_coe, AlgHom.mem_ker, StarAlgHom.coe_toAlgHom,
+      evalStarAlgHom_apply] at hf₂ this
     rw [add_apply, this, add_zero, smul_apply, one_apply, smul_eq_mul, mul_one] at hf₂
     rwa [hf₂, zero_smul, zero_add]
   · simp only [Set.mem_inter_iff, SetLike.mem_coe]
@@ -579,14 +580,15 @@ lemma ker_evalStarAlgHom_inter_adjoin_id (s : Set 𝕜) (h0 : 0 ∈ s) :
 
 -- the statement should be in terms of non unital subalgebras, but we lack API
 open RingHom Filter Topology in
-theorem AlgHom.closure_ker_inter {F S K A : Type*} [CommRing K] [Ring A] [Algebra K A]
+theorem AlgHom.closure_ker_inter {S K A : Type*} [CommRing K] [Ring A] [Algebra K A]
     [TopologicalSpace K] [T1Space K] [TopologicalSpace A] [ContinuousSub A] [ContinuousSMul K A]
-    [FunLike F A K] [AlgHomClass F K A K] [SetLike S A] [OneMemClass S A] [AddSubgroupClass S A]
-    [SMulMemClass S K A] (φ : F) (hφ : Continuous φ) (s : S) :
-    closure (s ∩ RingHom.ker φ) = closure s ∩ (ker φ : Set A) := by
+    [SetLike S A] [OneMemClass S A] [AddSubgroupClass S A]
+    [SMulMemClass S K A] (φ : A →ₐ[K] K) (hφ : Continuous φ) (s : S) :
+    closure (s ∩ φ.ker) =
+      closure s ∩ (φ.ker : Set A) := by
   refine subset_antisymm ?_ ?_
-  · simpa only [ker_eq, (isClosed_singleton.preimage hφ).closure_eq]
-      using closure_inter_subset_inter_closure s (ker φ : Set A)
+  · simpa [ker_eq, (isClosed_singleton.preimage hφ).closure_eq]
+      using closure_inter_subset_inter_closure s (ker (φ : A →ₐ[K] K).toRingHom : Set A)
   · intro x ⟨hxs, (hxφ : φ x = 0)⟩
     rw [mem_closure_iff_clusterPt, ClusterPt] at hxs
     have : Tendsto (fun y ↦ y - φ y • 1) (𝓝 x ⊓ 𝓟 s) (𝓝 x) := by
@@ -597,10 +599,11 @@ theorem AlgHom.closure_ker_inter {F S K A : Type*} [CommRing K] [Ring A] [Algebr
       ⟨sub_mem hg (SMulMemClass.smul_mem _ <| one_mem _), by simp [RingHom.mem_ker]⟩
 
 lemma ker_evalStarAlgHom_eq_closure_adjoin_id (s : Set 𝕜) (h0 : 0 ∈ s) [CompactSpace s] :
-    (RingHom.ker (evalStarAlgHom 𝕜 𝕜 (⟨0, h0⟩ : s)) : Set C(s, 𝕜)) =
+    ((evalStarAlgHom 𝕜 𝕜 (⟨0, h0⟩ : s)).ker : Set C(s, 𝕜)) =
       closure (adjoin 𝕜 {(restrict s (.id 𝕜))}) := by
   rw [← ker_evalStarAlgHom_inter_adjoin_id s h0,
-    AlgHom.closure_ker_inter (φ := evalStarAlgHom 𝕜 𝕜 (X := s) ⟨0, h0⟩) (continuous_eval_const _) _]
+    AlgHom.closure_ker_inter (φ := (evalStarAlgHom 𝕜 𝕜 (X := s) ⟨0, h0⟩).toAlgHom)
+    (continuous_eval_const _) _]
   convert (Set.univ_inter _).symm
   rw [← Polynomial.toContinuousMapOn_X_eq_restrict_id, ← Polynomial.toContinuousMapOnAlgHom_apply,
     ← polynomialFunctions.starClosure_eq_adjoin_X s]
@@ -623,8 +626,9 @@ lemma ContinuousMapZero.adjoin_id_dense {s : Set 𝕜} [Zero s] (h0 : ((0 : s) :
     toContinuousMapHom_apply, toContinuousMap_id h0,
     ← ContinuousMap.ker_evalStarAlgHom_eq_closure_adjoin_id s h0']
   apply Set.eq_univ_of_forall fun f ↦ ?_
-  simp only [Set.mem_preimage, toContinuousMapHom_apply, SetLike.mem_coe, RingHom.mem_ker,
-    ContinuousMap.evalStarAlgHom_apply, ContinuousMap.coe_coe]
+  simp only [AlgHom.toRingHom_eq_coe, Set.mem_preimage, toContinuousMapHom_apply, SetLike.mem_coe,
+    RingHom.mem_ker, RingHom.coe_coe, StarAlgHom.coe_toAlgHom, ContinuousMap.evalStarAlgHom_apply,
+    ContinuousMap.coe_coe]
   rw [show ⟨0, h0'⟩ = (0 : s) by ext; exact h0.symm, map_zero f]
 
 /-- An induction principle for `C(s, 𝕜)₀`. -/
