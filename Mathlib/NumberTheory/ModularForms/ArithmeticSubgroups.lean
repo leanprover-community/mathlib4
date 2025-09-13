@@ -18,15 +18,15 @@ open Matrix.SpecialLinearGroup
 
 open scoped MatrixGroups
 
+namespace Subgroup
+
 /-- The image of the modular group `SL(2, ℤ)`, as a subgroup of `GL(2, ℝ)`. -/
 scoped[MatrixGroups] notation "𝒮ℒ" => MonoidHom.range (mapGL ℝ : SL(2, ℤ) →* GL (Fin 2) ℝ)
 
 /-- Coercion from subgroups of `SL(2, ℤ)` to subgroups of `GL(2, ℝ)` by mapping along the obvious
 inclusion homomorphism. -/
 instance : Coe (Subgroup SL(2, ℤ)) (Subgroup (GL (Fin 2) ℝ)) where
-  coe Γ := Γ.map (mapGL ℝ)
-
-section ArithmeticSubgroups
+  coe := map (mapGL ℝ)
 
 /-- A subgroup of `GL(2, ℝ)` is arithmetic if it is commensurable with the image of `SL(2, ℤ)`. -/
 class IsArithmetic (𝒢 : Subgroup (GL (Fin 2) ℝ)) : Prop where
@@ -38,8 +38,8 @@ instance : IsArithmetic 𝒮ℒ where is_commensurable := .refl 𝒮ℒ
 lemma isArithmetic_iff_finiteIndex {Γ : Subgroup SL(2, ℤ)} : IsArithmetic Γ ↔ Γ.FiniteIndex := by
   constructor <;>
   · refine fun ⟨h⟩ ↦ ⟨?_⟩
-    simpa [Commensurable, MonoidHom.range_eq_map, ← Subgroup.relindex_comap,
-      Subgroup.comap_map_eq_self_of_injective mapGL_injective] using h
+    simpa [Commensurable, MonoidHom.range_eq_map, ← relindex_comap,
+      comap_map_eq_self_of_injective mapGL_injective] using h
 
 /-- Images in `GL(2, ℝ)` of finite-index subgroups of `SL(2, ℤ)` are arithmetic. -/
 instance (Γ : Subgroup SL(2, ℤ)) [Γ.FiniteIndex] : IsArithmetic Γ :=
@@ -50,4 +50,4 @@ instance IsArithmetic.finiteIndex_comap (𝒢 : Subgroup (GL (Fin 2) ℝ)) [IsAr
     (𝒢.comap (mapGL (R := ℤ) ℝ)).FiniteIndex :=
   ⟨𝒢.index_comap (mapGL (R := ℤ) ℝ) ▸ IsArithmetic.is_commensurable.1⟩
 
-end ArithmeticSubgroups
+end Subgroup

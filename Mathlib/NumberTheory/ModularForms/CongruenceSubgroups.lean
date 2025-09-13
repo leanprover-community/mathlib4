@@ -329,7 +329,7 @@ lemma finiteIndex_conjGL (g : GL (Fin 2) ℚ) : (conjGL ⊤ (g.map <| Rat.castHo
 
 /-- Conjugates of `SL(2, ℤ)` by `GL(2, ℚ)` are arithmetic subgroups. -/
 lemma isArithmetic_conj_SL2Z (g : GL (Fin 2) ℚ) :
-    IsArithmetic ((toConjAct (g.map (Rat.castHom ℝ))) • 𝒮ℒ) := by
+    (toConjAct (g.map (Rat.castHom ℝ)) • 𝒮ℒ).IsArithmetic := by
   constructor
   rw [MonoidHom.range_eq_map]
   constructor
@@ -340,9 +340,9 @@ lemma isArithmetic_conj_SL2Z (g : GL (Fin 2) ℚ) :
     exact (finiteIndex_conjGL g).index_ne_zero
 
 /-- Conjugation by `GL(2, ℚ)` preserves arithmetic subgroups. -/
-lemma IsArithmetic.conj (𝒢 : Subgroup (GL (Fin 2) ℝ)) [IsArithmetic 𝒢] (g : GL (Fin 2) ℚ) :
-    IsArithmetic ((toConjAct (g.map (Rat.castHom ℝ))) • 𝒢) :=
-  ⟨((Commensurable.commensurable_conj _).mp IsArithmetic.is_commensurable).trans
+lemma IsArithmetic.conj (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsArithmetic] (g : GL (Fin 2) ℚ) :
+    (toConjAct (g.map (Rat.castHom ℝ)) • 𝒢).IsArithmetic :=
+  ⟨((Commensurable.commensurable_conj _).mp Subgroup.IsArithmetic.is_commensurable).trans
     (isArithmetic_conj_SL2Z g).is_commensurable⟩
 
 /-- If `Γ` is a congruence subgroup, then so is `g⁻¹ Γ g ∩ SL(2, ℤ)` for any `g ∈ GL(2, ℚ)`. -/

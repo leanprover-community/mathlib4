@@ -31,10 +31,9 @@ lemma IsZeroAtImInfty.slash (hg : g 1 0 = 0) (hf : IsZeroAtImInfty f) :
 lemma IsBoundedAtImInfty.slash (hg : g 1 0 = 0) (hf : IsBoundedAtImInfty f) :
     IsBoundedAtImInfty (f ∣[k] g) := by
   rw [IsBoundedAtImInfty, BoundedAtFilter, ← Asymptotics.isBigO_norm_left] at hf ⊢
-  simp only [norm_σ, ModularForm.slash_def, denom, hg, Complex.ofReal_zero, zero_mul, zero_add,
-    norm_mul, mul_assoc]
-  simpa only [mul_comm (‖f _‖)] using
-    (hf.comp_tendsto (tendsto_smul_atImInfty hg)).const_mul_left _
+  suffices (fun x ↦ (‖g.det.val ^ (k - 1)‖ * ‖g 1 1 ^ (-k)‖) * ‖f (g • x)‖) =O[atImInfty] 1 by
+    simpa [ModularForm.slash_def, denom, hg, mul_assoc, mul_comm ‖f _‖]
+  apply (hf.comp_tendsto (tendsto_smul_atImInfty hg)).const_mul_left
 
 end UpperHalfPlane
 
@@ -44,23 +43,19 @@ variable (c : OnePoint ℝ) (f : ℍ → ℂ) (k : ℤ)
 
 /-- We say `f` is bounded at `c` if, for all `g` with `g • ∞ = c`, the function `f ∣[k] g` is
 bounded at `∞`. -/
-def IsBoundedAt : Prop :=
-    ∀ (g : GL (Fin 2) ℝ), g • ∞ = c → IsBoundedAtImInfty (f ∣[k] g)
+def IsBoundedAt : Prop := ∀ g : GL (Fin 2) ℝ, g • ∞ = c → IsBoundedAtImInfty (f ∣[k] g)
 
 /-- We say `f` is zero at `c` if, for all `g` with `g • ∞ = c`, the function `f ∣[k] g` is
 zero at `∞`. -/
-def IsZeroAt : Prop :=
-    ∀ (g : GL (Fin 2) ℝ), g • ∞ = c → IsZeroAtImInfty (f ∣[k] g)
+def IsZeroAt : Prop := ∀ g : GL (Fin 2) ℝ, g • ∞ = c → IsZeroAtImInfty (f ∣[k] g)
 
 variable {c f k} {g : GL (Fin 2) ℝ}
 
-lemma IsBoundedAt.slash :
-    IsBoundedAt c (f ∣[k] g) k ↔ IsBoundedAt (g • c) f k := by
+lemma IsBoundedAt.slash : IsBoundedAt c (f ∣[k] g) k ↔ IsBoundedAt (g • c) f k := by
   rw [IsBoundedAt, IsBoundedAt, (Equiv.mulLeft g).forall_congr_left]
   simp [MulAction.mul_smul, inv_smul_eq_iff, ← SlashAction.slash_mul]
 
-lemma IsZeroAt.slash :
-    IsZeroAt c (f ∣[k] g) k ↔ IsZeroAt (g • c) f k := by
+lemma IsZeroAt.slash : IsZeroAt c (f ∣[k] g) k ↔ IsZeroAt (g • c) f k := by
   rw [IsZeroAt, IsZeroAt, (Equiv.mulLeft g).forall_congr_left]
   simp [MulAction.mul_smul, inv_smul_eq_iff, ← SlashAction.slash_mul]
 
@@ -72,35 +67,27 @@ lemma IsZeroAt.add {f' : ℍ → ℂ} (hf : IsZeroAt c f k) (hf' : IsZeroAt c f'
     IsZeroAt c (f + f') k :=
   fun g hg ↦ by simpa using (hf g hg).add (hf' g hg)
 
-lemma isBoundedAt_infty : IsBoundedAt ∞ f k ↔ IsBoundedAtImInfty f := by
-  constructor
-  · intro h
-    simpa using h 1 (by simp)
-  · exact fun h _ hg ↦ h.slash _ (smul_infty_eq_self_iff.mp hg)
+lemma isBoundedAt_infty : IsBoundedAt ∞ f k ↔ IsBoundedAtImInfty f :=
+  ⟨fun h ↦ by simpa using h 1 (by simp), fun h _ hg ↦ h.slash _ (smul_infty_eq_self_iff.mp hg)⟩
 
-lemma isZeroAt_infty : IsZeroAt ∞ f k ↔ IsZeroAtImInfty f := by
-  constructor
-  · intro h
-    simpa using h 1 (by simp)
-  · exact fun h _ hg ↦ h.slash _ (smul_infty_eq_self_iff.mp hg)
+lemma isZeroAt_infty : IsZeroAt ∞ f k ↔ IsZeroAtImInfty f :=
+  ⟨fun h ↦ by simpa using h 1 (by simp), fun h _ hg ↦ h.slash _ (smul_infty_eq_self_iff.mp hg)⟩
 
 /-- To check that `f` is bounded at `c`, it suffices for `f ∣[k] g` to be bounded at `∞` for any
 single `g` with `g • ∞ = c`. -/
-lemma isBoundedAt_iff (hg : g • ∞ = c) :
-    IsBoundedAt c f k ↔ IsBoundedAtImInfty (f ∣[k] g) :=
+lemma isBoundedAt_iff (hg : g • ∞ = c) : IsBoundedAt c f k ↔ IsBoundedAtImInfty (f ∣[k] g) :=
   ⟨fun hc ↦ hc g hg , by simp only [← hg, ← IsBoundedAt.slash, isBoundedAt_infty, imp_self]⟩
 
 /-- To check that `f` is zero at `c`, it suffices for `f ∣[k] g` to be zero at `∞` for any
 single `g` with `g • ∞ = c`. -/
-lemma isZeroAt_iff (hg : g • ∞ = c) :
-    IsZeroAt c f k ↔ IsZeroAtImInfty (f ∣[k] g) :=
+lemma isZeroAt_iff (hg : g • ∞ = c) : IsZeroAt c f k ↔ IsZeroAtImInfty (f ∣[k] g) :=
   ⟨fun hc ↦ hc g hg , by simp only [← hg, ← IsZeroAt.slash, isZeroAt_infty, imp_self]⟩
 
 section SL2Z
 
 variable {c : OnePoint ℝ} {f : ℍ → ℂ} {k : ℤ}
 
-lemma isBoundedAt_iff_exists_SL2Z (hc : IsCusp c (mapGL (R := ℤ) ℝ).range) :
+lemma isBoundedAt_iff_exists_SL2Z (hc : IsCusp c 𝒮ℒ) :
     IsBoundedAt c f k ↔ ∃ γ : SL(2, ℤ), mapGL ℝ γ • ∞ = c ∧ IsBoundedAtImInfty (f ∣[k] γ) := by
   constructor
   · obtain ⟨γ, rfl⟩ := isCusp_SL2Z_iff'.mp hc
@@ -108,7 +95,7 @@ lemma isBoundedAt_iff_exists_SL2Z (hc : IsCusp c (mapGL (R := ℤ) ℝ).range) :
   · rintro ⟨γ, rfl, b⟩
     simpa only [← IsBoundedAt.slash, isBoundedAt_infty] using b
 
-lemma isZeroAt_iff_exists_SL2Z (hc : IsCusp c (mapGL (R := ℤ) ℝ).range) :
+lemma isZeroAt_iff_exists_SL2Z (hc : IsCusp c 𝒮ℒ) :
     IsZeroAt c f k ↔ ∃ γ : SL(2, ℤ), mapGL ℝ γ • ∞ = c ∧ IsZeroAtImInfty (f ∣[k] γ) := by
   constructor
   · obtain ⟨γ, rfl⟩ := isCusp_SL2Z_iff'.mp hc
@@ -116,13 +103,13 @@ lemma isZeroAt_iff_exists_SL2Z (hc : IsCusp c (mapGL (R := ℤ) ℝ).range) :
   · rintro ⟨γ, rfl, b⟩
     simpa only [← IsZeroAt.slash, isZeroAt_infty] using b
 
-lemma isBoundedAt_iff_forall_SL2Z (hc : IsCusp c (mapGL (R := ℤ) ℝ).range) :
+lemma isBoundedAt_iff_forall_SL2Z (hc : IsCusp c 𝒮ℒ) :
     IsBoundedAt c f k ↔ ∀ γ : SL(2, ℤ), mapGL ℝ γ • ∞ = c → IsBoundedAtImInfty (f ∣[k] γ) := by
   refine ⟨fun hc _ hγ ↦ by simpa using hc _ hγ, fun h ↦ ?_⟩
   obtain ⟨γ, rfl⟩ := isCusp_SL2Z_iff'.mp hc
   simpa only [← IsBoundedAt.slash, isBoundedAt_infty] using h γ rfl
 
-lemma isZeroAt_iff_forall_SL2Z (hc : IsCusp c (mapGL (R := ℤ) ℝ).range) :
+lemma isZeroAt_iff_forall_SL2Z (hc : IsCusp c 𝒮ℒ) :
     IsZeroAt c f k ↔ ∀ γ : SL(2, ℤ), mapGL ℝ γ • ∞ = c → IsZeroAtImInfty (f ∣[k] γ) := by
   refine ⟨fun hc _ hγ ↦ by simpa using hc _ hγ, fun h ↦ ?_⟩
   obtain ⟨γ, rfl⟩ := isCusp_SL2Z_iff'.mp hc
