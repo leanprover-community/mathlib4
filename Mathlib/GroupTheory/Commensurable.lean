@@ -33,7 +33,7 @@ variable {G : Type*} [Group G]
 
 /-- Two subgroups `H K` of `G` are commensurable if `H ⊓ K` has finite index in both `H` and `K` -/
 def Commensurable (H K : Subgroup G) : Prop :=
-  H.relindex K ≠ 0 ∧ K.relindex H ≠ 0
+  H.relIndex K ≠ 0 ∧ K.relIndex H ≠ 0
 
 namespace Commensurable
 
@@ -50,7 +50,7 @@ theorem symm {H K : Subgroup G} : Commensurable H K → Commensurable K H := And
 @[trans]
 theorem trans {H K L : Subgroup G} (hhk : Commensurable H K) (hkl : Commensurable K L) :
     Commensurable H L :=
-  ⟨Subgroup.relindex_ne_zero_trans hhk.1 hkl.1, Subgroup.relindex_ne_zero_trans hkl.2 hhk.2⟩
+  ⟨Subgroup.relIndex_ne_zero_trans hhk.1 hkl.1, Subgroup.relIndex_ne_zero_trans hkl.2 hhk.2⟩
 
 theorem equivalence : Equivalence (@Commensurable G _) :=
   ⟨Commensurable.refl, fun h => Commensurable.symm h, fun h₁ h₂ => Commensurable.trans h₁ h₂⟩

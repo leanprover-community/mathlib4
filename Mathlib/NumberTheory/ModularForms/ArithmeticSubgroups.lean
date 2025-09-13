@@ -38,7 +38,7 @@ instance : IsArithmetic 𝒮ℒ where is_commensurable := .refl 𝒮ℒ
 lemma isArithmetic_iff_finiteIndex {Γ : Subgroup SL(2, ℤ)} : IsArithmetic Γ ↔ Γ.FiniteIndex := by
   constructor <;>
   · refine fun ⟨h⟩ ↦ ⟨?_⟩
-    simpa [Commensurable, MonoidHom.range_eq_map, ← relindex_comap,
+    simpa [Commensurable, MonoidHom.range_eq_map, ← relIndex_comap,
       comap_map_eq_self_of_injective mapGL_injective] using h
 
 /-- Images in `GL(2, ℝ)` of finite-index subgroups of `SL(2, ℤ)` are arithmetic. -/

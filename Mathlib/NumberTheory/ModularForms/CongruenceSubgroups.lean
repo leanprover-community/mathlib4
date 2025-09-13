@@ -316,8 +316,8 @@ open Subgroup in
 lemma finiteIndex_conjGL (g : GL (Fin 2) ℚ) : (conjGL ⊤ (g.map <| Rat.castHom ℝ)).FiniteIndex := by
   constructor
   let t := (toConjAct <| g.map <| Rat.castHom ℝ)⁻¹
-  suffices (t • 𝒮ℒ ⊓ 𝒮ℒ).relindex 𝒮ℒ ≠ 0 by
-    rwa [conjGL, index_comap, ← inf_relindex_right, ← MonoidHom.range_eq_map]
+  suffices (t • 𝒮ℒ ⊓ 𝒮ℒ).relIndex 𝒮ℒ ≠ 0 by
+    rwa [conjGL, index_comap, ← inf_relIndex_right, ← MonoidHom.range_eq_map]
   obtain ⟨N, hN, hN'⟩ := exists_Gamma_le_conj' g 1
   rw [Gamma_one_top, ← MonoidHom.range_eq_map] at hN'
   suffices Γ(N) ≤ (t • 𝒮ℒ ⊓ 𝒮ℒ).comap (mapGL ℝ) by
@@ -333,10 +333,10 @@ lemma isArithmetic_conj_SL2Z (g : GL (Fin 2) ℚ) :
   constructor
   rw [MonoidHom.range_eq_map]
   constructor
-  · rw [← Subgroup.relindex_comap, Subgroup.relindex_top_right]
+  · rw [← Subgroup.relIndex_comap, Subgroup.relIndex_top_right]
     exact (finiteIndex_conjGL g⁻¹).index_ne_zero
-  · rw [← Subgroup.relindex_pointwise_smul (toConjAct (g.map (Rat.castHom ℝ)))⁻¹,
-      inv_smul_smul, ← Subgroup.relindex_comap, Subgroup.relindex_top_right]
+  · rw [← Subgroup.relIndex_pointwise_smul (toConjAct (g.map (Rat.castHom ℝ)))⁻¹,
+      inv_smul_smul, ← Subgroup.relIndex_comap, Subgroup.relIndex_top_right]
     exact (finiteIndex_conjGL g).index_ne_zero
 
 /-- Conjugation by `GL(2, ℚ)` preserves arithmetic subgroups. -/
