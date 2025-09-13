@@ -134,26 +134,19 @@ instance instContinuousSMul [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (We
   simp only [Function.comp_apply, Pi.smul_apply, LinearMap.map_smulₛₗ, RingHom.id_apply,
     LinearMap.smul_apply]
 
+variable [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜]
+
 /--
 Map `F` into the topological dual of `E` with the weak topology induced by `F`
 -/
-def eval [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜] :
-    F →ₗ[𝕜] StrongDual 𝕜 (WeakBilin B) where
+def eval : F →ₗ[𝕜] StrongDual 𝕜 (WeakBilin B) where
   toFun f := ⟨B.flip f, by fun_prop⟩
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
-end Semiring
-
-section Semiring
-
-variable [TopologicalSpace 𝕜] [CommSemiring 𝕜] [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜]
-  [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F]
-
-variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
-
 open LinearMap in
-lemma dualEmbedding_injective_of_separatingRight (hr : B.SeparatingRight) :
+lemma dualEmbedding_injective_of_separatingRight {E F : Type*} [AddCommGroup E] [AddCommGroup F]
+    [Module 𝕜 E] [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) (hr : B.SeparatingRight) :
     Function.Injective (WeakBilin.eval B) :=
   (injective_iff_map_eq_zero _).mpr (fun f hf ↦
     (separatingRight_iff_linear_flip_nontrivial.mp hr) f (ContinuousLinearMap.coe_inj.mpr hf))
