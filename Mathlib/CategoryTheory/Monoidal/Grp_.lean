@@ -33,6 +33,8 @@ class GrpObj (X : C) extends MonObj X where
   left_inv (X) : lift inv (𝟙 X) ≫ mul = toUnit _ ≫ one := by cat_disch
   right_inv (X) : lift (𝟙 X) inv ≫ mul = toUnit _ ≫ one := by cat_disch
 
+@[deprecated (since := "2025-09-13")] alias Grp_Class := GrpObj
+
 namespace MonObj
 
 @[inherit_doc] scoped notation "ι" => GrpObj.inv
@@ -441,6 +443,8 @@ abbrev FullyFaithful.grpObj (hF : F.FullyFaithful) (X : C) [GrpObj (F.obj X)] :
     simp [FullyFaithful.monObj, OplaxMonoidal.η_of_cartesianMonoidalCategory]
   right_inv := hF.map_injective <| by
     simp [FullyFaithful.monObj, OplaxMonoidal.η_of_cartesianMonoidalCategory]
+
+@[deprecated (since := "2025-09-13")] alias FullyFaithful.grp_Class := FullyFaithful.grpObj
 
 /-- The essential image of a full and faithful functor between cartesian-monoidal categories is the
 same on group objects as on objects. -/

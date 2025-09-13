@@ -22,6 +22,8 @@ variable (X) in
 commutative monoid object. -/
 class abbrev CommGrpObj := GrpObj X, IsCommMon X
 
+@[deprecated (since := "2025-09-13")] alias abbrev := CommGrpObj
+
 section CommGrp_
 
 variable (X) in
@@ -30,5 +32,8 @@ def CommGrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ CommGrp.{w})
     (α : (F ⋙ forget _).RepresentableBy X) : CommGrpObj X where
   __ := GrpObj.ofRepresentableBy X (F ⋙ forget₂ CommGrp Grp) α
   __ := IsCommMon.ofRepresentableBy X (F ⋙ forget₂ CommGrp CommMonCat) α
+
+@[deprecated (since := "2025-09-13")]
+alias CommGrp_Class.ofRepresentableBy := CommGrpObj.ofRepresentableBy
 
 end CommGrp_
