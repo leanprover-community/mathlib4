@@ -48,8 +48,7 @@ lemma IsCusp.smul {c : OnePoint ℝ} {𝒢 : Subgroup (GL (Fin 2) ℝ)} (hc : Is
     (g : GL (Fin 2) ℝ) : IsCusp (g • c) (ConjAct.toConjAct g • 𝒢) := by
   obtain ⟨p, hp𝒢, hpp, hpc⟩ := hc
   refine ⟨_, 𝒢.smul_mem_pointwise_smul _ _ hp𝒢, ?_, ?_⟩
-  · simpa only [ConjAct.toConjAct_smul, GeneralLinearGroup.IsParabolic, Units.val_mul,
-      isParabolic_conj_iff] using hpp
+  · simpa [ConjAct.toConjAct_smul] using hpp
   · simp [ConjAct.toConjAct_smul, MulAction.mul_smul, hpc]
 
 lemma IsCusp.smul_of_mem {c : OnePoint ℝ} {𝒢 : Subgroup (GL (Fin 2) ℝ)} (hc : IsCusp c 𝒢)
@@ -85,14 +84,12 @@ lemma isCusp_SL2Z_iff {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ c ∈ Set.range 
   · rintro ⟨c, rfl⟩
     obtain ⟨a, rfl⟩ := c.exists_mem_SL2 ℤ
     refine ⟨_, ⟨a * ModularGroup.T * a⁻¹, rfl⟩, ?_, ?_⟩
-    · simp only [map_mul, map_inv, GeneralLinearGroup.IsParabolic, Units.val_mul,
-         isParabolic_conj_iff]
+    · suffices (mapGL ℝ ModularGroup.T).IsParabolic by simpa
       refine ⟨fun ⟨a, ha⟩ ↦ zero_ne_one' ℝ (by simpa [ModularGroup.T] using congr_fun₂ ha 0 1), ?_⟩
       simp [disc_fin_two, trace_fin_two, det_fin_two, ModularGroup.T]
       norm_num
-    · simp [← Rat.coe_castHom, OnePoint.map_smul, MulAction.mul_smul,
-        a.map_mapGL (by rfl : _ = Rat.castHom ℝ),
-        smul_infty_eq_self_iff.mpr (show mapGL ℝ ModularGroup.T 1 0 = 0 by simp [ModularGroup.T])]
+    · rw [← Rat.coe_castHom, ← (Rat.castHom ℝ).algebraMap_toAlgebra]
+      simp [OnePoint.map_smul, MulAction.mul_smul, smul_infty_eq_self_iff, ModularGroup.T]
 
 /-- The cusps of `SL(2, ℤ)` are precisely the `SL(2, ℤ)` orbit of `∞`. -/
 lemma isCusp_SL2Z_iff' {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ ∃ g : SL(2, ℤ), c = mapGL ℝ g • ∞ := by
@@ -101,10 +98,12 @@ lemma isCusp_SL2Z_iff' {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ ∃ g : SL(2, �
   · rintro ⟨c, rfl⟩
     obtain ⟨g, rfl⟩ := c.exists_mem_SL2 ℤ
     refine ⟨g, ?_⟩
-    rw [← Rat.coe_castHom, OnePoint.map_smul, OnePoint.map_infty, g.map_mapGL (by rfl)]
+    rw [← Rat.coe_castHom, OnePoint.map_smul, OnePoint.map_infty,
+      ← (Rat.castHom ℝ).algebraMap_toAlgebra, g.map_mapGL]
   · rintro ⟨g, rfl⟩
     refine ⟨mapGL ℚ g • ∞, ?_⟩
-    rw [← Rat.coe_castHom, OnePoint.map_smul, OnePoint.map_infty, g.map_mapGL (by rfl)]
+    rw [← Rat.coe_castHom, OnePoint.map_smul, OnePoint.map_infty,
+       ← (Rat.castHom ℝ).algebraMap_toAlgebra, g.map_mapGL]
 
 /-- The cusps of any arithmetic subgroup are the same as those of `SL(2, ℤ)`. -/
 lemma IsArithmetic.isCusp_iff_isCusp_SL2Z (𝒢 : Subgroup (GL (Fin 2) ℝ)) [IsArithmetic 𝒢]
@@ -131,11 +130,20 @@ noncomputable def cosetToCuspOrbit (𝒢 : Subgroup (GL (Fin 2) ℝ)) [IsArithme
   Quotient.lift
     (fun g ↦ ⟦⟨mapGL ℝ g⁻¹ • ∞,
       (IsArithmetic.isCusp_iff_isCusp_SL2Z 𝒢).mpr <| isCusp_SL2Z_iff.mpr ⟨mapGL ℚ g⁻¹ • ∞, by
-        rw [← Rat.coe_castHom, OnePoint.map_smul, OnePoint.map_infty, map_mapGL _ (by rfl)]⟩⟩⟧)
+        rw [← Rat.coe_castHom, OnePoint.map_smul, OnePoint.map_infty,
+        ← (Rat.castHom ℝ).algebraMap_toAlgebra, map_mapGL]⟩⟩⟧)
     (fun a b hab ↦ by
       rw [← Quotient.eq_iff_equiv, Quotient.eq, QuotientGroup.leftRel_apply] at hab
       refine Quotient.eq.mpr ⟨⟨_, hab⟩, ?_⟩
       simp [MulAction.mul_smul])
+
+@[simp]
+lemma cosetToCuspOrbit_apply_mk {𝒢 : Subgroup (GL (Fin 2) ℝ)} [IsArithmetic 𝒢] (g : SL(2, ℤ)) :
+    cosetToCuspOrbit 𝒢 ⟦g⟧ = ⟦⟨mapGL ℝ g⁻¹ • ∞,
+    (IsArithmetic.isCusp_iff_isCusp_SL2Z 𝒢).mpr <| isCusp_SL2Z_iff.mpr ⟨mapGL ℚ g⁻¹ • ∞, by
+      rw [← Rat.coe_castHom, OnePoint.map_smul, OnePoint.map_infty,
+      ← (Rat.castHom ℝ).algebraMap_toAlgebra, map_mapGL]⟩⟩⟧ :=
+  rfl
 
 lemma surjective_cosetToCuspOrbit (𝒢 : Subgroup (GL (Fin 2) ℝ)) [IsArithmetic 𝒢] :
     (cosetToCuspOrbit 𝒢).Surjective := by
@@ -143,7 +151,6 @@ lemma surjective_cosetToCuspOrbit (𝒢 : Subgroup (GL (Fin 2) ℝ)) [IsArithmet
   rw [IsArithmetic.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff'] at hc
   obtain ⟨g, rfl⟩ := hc
   use ⟦g⁻¹⟧
-  unfold cosetToCuspOrbit
   aesop
 
 /-- An arithmetic subgroup has finitely many cusp orbits. -/
