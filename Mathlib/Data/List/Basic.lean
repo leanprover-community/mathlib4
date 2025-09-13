@@ -157,15 +157,10 @@ theorem exists_mem_cons_of_exists {p : α → Prop} {a : α} {l : List α} : (�
   fun ⟨x, xl, px⟩ => ⟨x, mem_cons_of_mem _ xl, px⟩
 
 theorem or_exists_of_exists_mem_cons {p : α → Prop} {a : α} {l : List α} : (∃ x ∈ a :: l, p x) →
-    p a ∨ ∃ x ∈ l, p x :=
-  fun ⟨x, xal, px⟩ =>
-    Or.elim (eq_or_mem_of_mem_cons xal) (fun h : x = a => by rw [← h]; left; exact px)
-      fun h : x ∈ l => Or.inr ⟨x, h, px⟩
+    p a ∨ ∃ x ∈ l, p x := by grind
 
 theorem exists_mem_cons_iff (p : α → Prop) (a : α) (l : List α) :
-    (∃ x ∈ a :: l, p x) ↔ p a ∨ ∃ x ∈ l, p x :=
-  Iff.intro or_exists_of_exists_mem_cons fun h =>
-    Or.elim h (exists_mem_cons_of l) exists_mem_cons_of_exists
+    (∃ x ∈ a :: l, p x) ↔ p a ∨ ∃ x ∈ l, p x := by grind
 
 /-! ### list subset -/
 
@@ -303,9 +298,7 @@ theorem getLast_append_singleton {a : α} (l : List α) :
 
 theorem getLast_append_of_right_ne_nil (l₁ l₂ : List α) (h : l₂ ≠ []) :
     getLast (l₁ ++ l₂) (append_ne_nil_of_right_ne_nil l₁ h) = getLast l₂ h := by
-  induction l₁ with
-  | nil => simp
-  | cons _ _ ih => simp only [cons_append]; rw [List.getLast_cons]; exact ih
+  induction l₁ with grind
 
 theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (by simp) = a := by
   simp
@@ -332,15 +325,9 @@ theorem getLast_replicate_succ (m : ℕ) (a : α) :
 /-! ### getLast? -/
 
 theorem mem_getLast?_eq_getLast : ∀ {l : List α} {x : α}, x ∈ l.getLast? → ∃ h, x = getLast l h
-  | [], x, hx => False.elim <| by simp at hx
-  | [a], x, hx =>
-    have : a = x := by simpa using hx
-    this ▸ ⟨cons_ne_nil a [], rfl⟩
-  | a :: b :: l, x, hx => by
-    rw [getLast?_cons_cons] at hx
-    rcases mem_getLast?_eq_getLast hx with ⟨_, h₂⟩
-    use cons_ne_nil _ _
-    assumption
+  | [], x, hx
+  | [a], x, hx
+  | a :: b :: l, x, hx => by grind
 
 theorem getLast?_eq_getLast_of_ne_nil : ∀ {l : List α} (h : l ≠ []), l.getLast? = some (l.getLast h)
   | [], h => (h rfl).elim
@@ -378,11 +365,7 @@ theorem getLast?_append_of_ne_nil (l₁ : List α) :
   | b :: l₂, _ => getLast?_append_cons l₁ b l₂
 
 theorem mem_getLast?_append_of_mem_getLast? {l₁ l₂ : List α} {x : α} (h : x ∈ l₂.getLast?) :
-    x ∈ (l₁ ++ l₂).getLast? := by
-  cases l₂
-  · contradiction
-  · rw [List.getLast?_append_cons]
-    exact h
+    x ∈ (l₁ ++ l₂).getLast? := by grind
 
 /-! ### head(!?) and tail -/
 
@@ -433,10 +416,7 @@ theorem head?_append_of_ne_nil :
   | _ :: _, _, _ => rfl
 
 theorem tail_append_singleton_of_ne_nil {a : α} {l : List α} (h : l ≠ nil) :
-    tail (l ++ [a]) = tail l ++ [a] := by
-  induction l
-  · contradiction
-  · rw [tail, cons_append, tail]
+    tail (l ++ [a]) = tail l ++ [a] := by grind
 
 theorem cons_head?_tail : ∀ {l : List α} {a : α}, a ∈ head? l → a :: tail l = l
   | [], a, h => by contradiction
@@ -481,13 +461,7 @@ theorem Sublist.cons_cons {l₁ l₂ : List α} (a : α) (s : l₁ <+ l₂) : a 
   Sublist.cons₂ _ s
 
 lemma cons_sublist_cons' {a b : α} : a :: l₁ <+ b :: l₂ ↔ a :: l₁ <+ l₂ ∨ a = b ∧ l₁ <+ l₂ := by
-  constructor
-  · rintro (_ | _)
-    · exact Or.inl ‹_›
-    · exact Or.inr ⟨rfl, ‹_›⟩
-  · rintro (h | ⟨rfl, h⟩)
-    · exact h.cons _
-    · rwa [cons_sublist_cons]
+  grind
 
 theorem sublist_cons_of_sublist (a : α) (h : l₁ <+ l₂) : l₁ <+ a :: l₂ := h.cons _
 
@@ -525,23 +499,11 @@ theorem idxOf_of_notMem {l : List α} {a : α} : a ∉ l → idxOf a l = length 
 @[deprecated (since := "2025-05-23")] alias idxOf_of_not_mem := idxOf_of_notMem
 
 theorem idxOf_append_of_mem {a : α} (h : a ∈ l₁) : idxOf a (l₁ ++ l₂) = idxOf a l₁ := by
-  induction l₁ with
-  | nil =>
-    exfalso
-    exact not_mem_nil h
-  | cons d₁ t₁ ih =>
-    rw [List.cons_append]
-    by_cases hh : d₁ = a
-    · iterate 2 rw [idxOf_cons_eq _ hh]
-    rw [idxOf_cons_ne _ hh, idxOf_cons_ne _ hh, ih (mem_of_ne_of_mem (Ne.symm hh) h)]
+  induction l₁ with grind
 
 theorem idxOf_append_of_notMem {a : α} (h : a ∉ l₁) :
     idxOf a (l₁ ++ l₂) = l₁.length + idxOf a l₂ := by
-  induction l₁ with
-  | nil => rw [List.nil_append, List.length, Nat.zero_add]
-  | cons d₁ t₁ ih =>
-    rw [List.cons_append, idxOf_cons_ne _ (ne_of_not_mem_cons h).symm, List.length,
-      ih (not_mem_of_not_mem_cons h), Nat.succ_add]
+  induction l₁ with grind
 
 @[deprecated (since := "2025-05-23")] alias idxOf_append_of_not_mem := idxOf_append_of_notMem
 
@@ -569,10 +531,7 @@ theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length)
 theorem ext_getElem?' {l₁ l₂ : List α} (h' : ∀ n < max l₁.length l₂.length, l₁[n]? = l₂[n]?) :
     l₁ = l₂ := by
   apply ext_getElem?
-  intro n
-  rcases Nat.lt_or_ge n <| max l₁.length l₂.length with hn | hn
-  · exact h' n hn
-  · simp_all [Nat.max_le]
+  grind
 
 theorem ext_get_iff {l₁ l₂ : List α} :
     l₁ = l₂ ↔ l₁.length = l₂.length ∧ ∀ n h₁ h₂, get l₁ ⟨n, h₁⟩ = get l₂ ⟨n, h₂⟩ := by
@@ -623,10 +582,7 @@ theorem get_reverse' (l : List α) (n) (hn') :
   simp
 
 theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0, by omega⟩] := by
-  refine ext_get (by convert h) fun n h₁ h₂ => ?_
-  simp
-  congr
-  omega
+  refine ext_get (by convert h) (by grind)
 
 end deprecated
 
@@ -1005,18 +961,7 @@ variable (p)
 
 theorem monotone_filter_right (l : List α) ⦃p q : α → Bool⦄
     (h : ∀ a, p a → q a) : l.filter p <+ l.filter q := by
-  induction l with
-  | nil => rfl
-  | cons hd tl IH =>
-    by_cases hp : p hd
-    · rw [filter_cons_of_pos hp, filter_cons_of_pos (h _ hp)]
-      exact IH.cons_cons hd
-    · rw [filter_cons_of_neg hp]
-      by_cases hq : q hd
-      · rw [filter_cons_of_pos hq]
-        exact sublist_cons_of_sublist hd IH
-      · rw [filter_cons_of_neg hq]
-        exact IH
+  induction l with grind
 
 lemma map_filter {f : α → β} (hf : Injective f) (l : List α)
     [DecidablePred fun b => ∃ a, p a ∧ f a = b] :
@@ -1058,10 +1003,7 @@ variable {p : α → Bool}
 
 -- Cannot be @[simp] because `a` cannot be inferred by `simp`.
 theorem length_eraseP_add_one {l : List α} {a} (al : a ∈ l) (pa : p a) :
-    (l.eraseP p).length + 1 = l.length := by
-  let ⟨_, l₁, l₂, _, _, h₁, h₂⟩ := exists_of_eraseP al pa
-  rw [h₂, h₁, length_append, length_append]
-  rfl
+    (l.eraseP p).length + 1 = l.length := by grind
 
 end eraseP
 
@@ -1089,20 +1031,10 @@ theorem erase_getElem [DecidableEq ι] {l : List ι} {i : ℕ} (hi : i < l.lengt
     Perm (l.erase l[i]) (l.eraseIdx i) := by
   induction l generalizing i with
   | nil => simp
-  | cons a l IH =>
-    cases i with
-    | zero => simp
-    | succ i =>
-      have hi' : i < l.length := by simpa using hi
-      if ha : a = l[i] then
-        simpa [ha] using .trans (perm_cons_erase (getElem_mem _)) (.cons _ (IH hi'))
-      else
-        simpa [ha] using IH hi'
+  | cons a l IH => cases i with grind
 
 theorem length_eraseIdx_add_one {l : List ι} {i : ℕ} (h : i < l.length) :
-    (l.eraseIdx i).length + 1 = l.length := by
-  rw [length_eraseIdx]
-  split <;> omega
+    (l.eraseIdx i).length + 1 = l.length := by grind
 
 end Erase
 
@@ -1231,12 +1163,7 @@ variable [BEq α] [LawfulBEq α]
 
 lemma lookup_graph (f : α → β) {a : α} {as : List α} (h : a ∈ as) :
     lookup a (as.map fun x => (x, f x)) = some (f a) := by
-  induction as with
-  | nil => exact (not_mem_nil h).elim
-  | cons a' as ih =>
-    by_cases ha : a = a'
-    · simp [ha]
-    · simpa [lookup_cons, beq_false_of_ne ha] using ih (List.mem_of_ne_of_mem ha h)
+  induction as with grind
 
 end lookup
 
