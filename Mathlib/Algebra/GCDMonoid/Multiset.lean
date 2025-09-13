@@ -74,6 +74,7 @@ nonrec theorem lcm_eq_zero_iff [Nontrivial α] (s : Multiset α) : s.lcm = 0 ↔
   | empty => simp only [lcm_zero, one_ne_zero, notMem_zero]
   | cons a s ihs => simp only [mem_cons, lcm_cons, lcm_eq_zero_iff, ihs, @eq_comm _ a]
 
+@[simp]
 theorem lcm_ne_zero_iff [Nontrivial α] (s : Multiset α) : s.lcm ≠ 0 ↔ 0 ∉ s :=
   not_congr (lcm_eq_zero_iff s)
 
