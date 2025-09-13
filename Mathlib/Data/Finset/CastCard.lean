@@ -43,6 +43,6 @@ lemma cast_card_union : (#(s ∪ t) : R) = #s + #t - #(s ∩ t) := by
   rw [eq_sub_iff_add_eq, ← cast_add, card_union_add_card_inter, cast_add]
 
 lemma cast_card_sdiff (h : s ⊆ t) : (#(t \ s) : R) = #t - #s := by
-  rw [card_sdiff h, Nat.cast_sub (card_mono h)]
+  rw [card_sdiff_of_subset h, Nat.cast_sub (card_mono h)]
 
 end Finset

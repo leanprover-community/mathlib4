@@ -118,8 +118,8 @@ lemma triangle_counting'
       exact Eq.trans_le (by ring) (mul_le_mul_of_nonneg_right hX' <| by positivity)
     have i : badVertices G ε s t ∪ badVertices G ε s u ⊆ s :=
       union_subset (filter_subset _ _) (filter_subset _ _)
-    rw [sub_mul, one_mul, card_sdiff i, Nat.cast_sub (card_le_card i), sub_le_sub_iff_left,
-      mul_assoc, mul_comm ε, two_mul]
+    rw [sub_mul, one_mul, card_sdiff_of_subset i, Nat.cast_sub (card_le_card i),
+      sub_le_sub_iff_left, mul_assoc, mul_comm ε, two_mul]
     refine (Nat.cast_le.2 <| card_union_le _ _).trans ?_
     rw [Nat.cast_add]
     gcongr

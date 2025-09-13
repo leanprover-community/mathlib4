@@ -384,7 +384,7 @@ alias eq_of_mem_insert_of_not_mem := eq_of_mem_insert_of_notMem
 /-- A version of `LawfulSingleton.insert_empty_eq` that works with `dsimp`. -/
 @[simp] lemma insert_empty : insert a (∅ : Finset α) = {a} := rfl
 
-@[simp]
+@[simp, grind =]
 theorem cons_eq_insert (a s h) : @cons α a s h = insert a s :=
   ext fun a => by simp
 
@@ -397,13 +397,12 @@ theorem mem_insert_coe {s : Finset α} {x y : α} : x ∈ insert y s ↔ x ∈ i
 instance : LawfulSingleton α (Finset α) :=
   ⟨fun a => by simp⟩
 
-@[simp]
+@[simp, grind =]
 theorem insert_eq_of_mem (h : a ∈ s) : insert a s = s :=
   eq_of_veq <| ndinsert_of_mem h
 
 @[simp]
-theorem insert_eq_self : insert a s = s ↔ a ∈ s :=
-  ⟨fun h => h ▸ mem_insert_self _ _, insert_eq_of_mem⟩
+theorem insert_eq_self : insert a s = s ↔ a ∈ s := by grind
 
 theorem insert_ne_self : insert a s ≠ s ↔ a ∉ s :=
   insert_eq_self.not

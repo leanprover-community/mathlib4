@@ -223,7 +223,7 @@ theorem sum_pow_mul_eq_add_pow (a b : R) (s : Finset ι) :
   classical
   rw [← prod_const, prod_add]
   refine Finset.sum_congr rfl fun t ht => ?_
-  rw [prod_const, prod_const, ← card_sdiff (mem_powerset.1 ht)]
+  rw [prod_const, prod_const, ← card_sdiff_of_subset (mem_powerset.1 ht)]
 
 /-- Summing `a^#s * b^(n-#s)` over all finite subsets `s` of a fintype of cardinality `n`
 gives `(a + b)^n`. The "good" proof involves expanding along all coordinates using the fact that
