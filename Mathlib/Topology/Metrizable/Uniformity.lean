@@ -265,6 +265,60 @@ theorem UniformSpace.metrizableSpace [UniformSpace X] [IsCountablyGenerated (�
   letI := UniformSpace.metricSpace X
   infer_instance
 
+theorem UniformSpace.generated_by_pseudoMetricSpace_set (X : Type*) [u : UniformSpace X] :
+    ∃ (𝔇 : Set (PseudoMetricSpace X)), u = ⨅ d : ↥𝔇, d.val.toUniformSpace := by
+  suffices ∃ (𝔘' : Set (UniformSpace X)),
+      (∀ u' : ↥𝔘', 𝓤[u'.val].IsCountablyGenerated) ∧ u = ⨅ u' : ↥𝔘', u'.val by
+    obtain ⟨𝔘', h𝔘', rfl⟩ := this
+    replace h𝔘' := fun u' : ↥𝔘' => @UniformSpace.metrizable_uniformity _ u'.val (h𝔘' u')
+    choose d hd using h𝔘'; exists range d; simp [iInf_range', hd]
+  suffices ∀ U ∈ 𝓤 X, ∃ u' : UniformSpace X, u ≤ u' ∧ 𝓤[u'].IsCountablyGenerated ∧ U ∈ 𝓤[u'] by
+    simp_rw [← Filter.mem_sets (f := 𝓤 X), SetCoe.forall'] at this
+    choose u' iuu' hcu' huu' using this; exists range u'
+    constructor; · simp only [forall_subtype_range_iff, hcu', forall_true_iff]
+    apply le_antisymm
+    · simp only [le_iInf_iff, forall_subtype_range_iff, iuu', forall_true_iff]
+    · rw [UniformSpace.le_def, Filter.le_def]; intro U hU
+      rw [iInf_uniformity, iInf_range']; exact mem_iInf_of_mem ⟨U, hU⟩ (huu' ⟨U, hU⟩)
+  intro U hU
+  have hu := @comp_symm_mem_uniformity_sets X _;
+  simp_rw [← Filter.mem_sets, SetCoe.forall',
+    ← exists_prop (a := _ ∈ (𝓤 X).sets), SetCoe.exists'] at hu
+  choose V hsV hV using hu
+  let B n := V^[n] ⟨symmetrizeRel U, symmetrize_mem_uniformity hU⟩
+  have iuB : 𝓤 X ≤ ⨅ n, 𝓟 (B n).val :=
+    le_iInf fun n => le_principal_iff.mpr (B n).2
+  exists UniformSpace.ofCore
+    { uniformity := ⨅ n, 𝓟 (B n).val
+      refl := refl_le_uniformity.trans iuB
+      symm := by
+        suffices ∀ n, IsSymmetricRel (B n).val by
+          unfold IsSymmetricRel at this
+          simp_rw [tendsto_iff_comap, Filter.comap_iInf, comap_principal, this]; rfl
+        intro n; cases n <;> simp [B, - iterate_succ, iterate_succ', symmetric_symmetrizeRel, hsV]
+      comp := calc
+        _ ≤ (⨅ n, 𝓟 (B (n + 1)).val).lift' (fun s => s ○ s) :=
+          lift'_mono (le_iInf_comp _ (· + 1)) le_rfl
+        _ = (⨅ n, (𝓟 (B (n + 1)).val).lift' (fun s => s ○ s)) :=
+          lift_iInf_of_directed
+            (by
+              apply Antitone.directed_ge
+              refine monotone_principal.comp_antitone ?_
+              refine Antitone.comp_monotone (g := fun n => (B n).val) ?_ (monotone_id.add_const 1)
+              apply antitone_nat_of_succ_le; intro n
+              simp only [iterate_succ_apply', Set.le_iff_subset, B]
+              refine subset_trans (subset_comp_self ?_) (hV _)
+              rw [← principal_mono]
+              exact refl_le_uniformity.trans (le_principal_iff.mpr (Subtype.prop _)))
+            (monotone_principal.comp <| monotone_id.compRel monotone_id)
+        _ = (⨅ n, 𝓟 ((B (n + 1)).val ○ (B (n + 1)).val)) :=
+          iInf_congr fun n => lift'_principal <| monotone_id.compRel monotone_id
+        _ ≤ (⨅ n, 𝓟 (B n).val) :=
+          iInf_mono fun n => by simp [B, - iterate_succ, iterate_succ', hV] }
+  exact ⟨iuB,
+    isCountablyGenerated_seq _,
+    mem_of_superset (mem_iInf_of_mem 0 (mem_principal_self _)) (symmetrizeRel_subset_self U)⟩
+
 /-- A totally bounded set is separable in countably generated uniform spaces. This can be obtained
 from the more general `EMetric.subset_countable_closure_of_almost_dense_set`. -/
 lemma TotallyBounded.isSeparable [UniformSpace X] [i : IsCountablyGenerated (𝓤 X)]
