@@ -551,7 +551,7 @@ def reduceEqQ (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
   have pf_ef₂ := ← Sign.mkEqMul iM pf_sgn₂ q(Eq.trans $pf_l₂ (Eq.symm $pf_rhs)) pf_l₂'
   return ⟨g₁.expr f₁', g₂.expr f₂', q(eq_eq_cancel_eq $pf_ef₁ $pf_ef₂ $pf₀)⟩
 
-/-- Given `e₁` and `e₂`, cancel nonzero factors to construct a new equality which is logically
+/-- Given `e₁` and `e₂`, cancel positive factors to construct a new equality which is logically
 equivalent to `e₁ ≤ e₂`. -/
 def reduceLeQ (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
     (iM : Q(CommGroupWithZero $M)) (iM' : Q(PartialOrder $M))
@@ -569,7 +569,7 @@ def reduceLeQ (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
   have pf_ef₂ := ← Sign.mkEqMul iM pf_sgn₂ q(Eq.trans $pf_l₂ (Eq.symm $pf_rhs)) pf_l₂'
   return ⟨g₁.expr f₁', g₂.expr f₂', q(le_eq_cancel_le $pf_ef₁ $pf_ef₂ $pf₀)⟩
 
-/-- Given `e₁` and `e₂`, cancel nonzero factors to construct a new equality which is logically
+/-- Given `e₁` and `e₂`, cancel positive factors to construct a new equality which is logically
 equivalent to `e₁ < e₂`. -/
 def reduceLtQ (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
     (iM : Q(CommGroupWithZero $M)) (iM' : Q(PartialOrder $M))
