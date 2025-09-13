@@ -295,8 +295,7 @@ lemma _root_.MeasureTheory.MeasurePreserving.variance_fun_comp {Ω' : Type*}
     {mΩ' : MeasurableSpace Ω'} {ν : Measure Ω'} {X : Ω → Ω'}
     (hX : MeasurePreserving X μ ν) {f : Ω' → ℝ} (hf : AEMeasurable f ν) :
     Var[fun ω ↦ f (X ω); μ] = Var[f; ν] := by
-  rw [← hX.map_eq, variance_map (hX.map_eq ▸ hf) hX.aemeasurable]
-  rfl
+  rw [← hX.map_eq, variance_map (hX.map_eq ▸ hf) hX.aemeasurable, Function.comp_def]
 
 lemma variance_map_equiv {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
     (X : Ω → ℝ) (Y : Ω' ≃ᵐ Ω) :

@@ -363,7 +363,7 @@ theorem IsStarNormal.orthogonal_range (hT : IsStarNormal T) :
   T.orthogonal_range ▸ hT.ker_adjoint_eq_ker
 
 /- TODO: As we have a more general result of this for elements in non-unital C⋆-algebras
-(see Analysis/CStarAlgebra/Projection), we will want to simplify the proof
+(see `Mathlib/Analysis/CStarAlgebra/Projection.lean`), we will want to simplify the proof
 by using the complexification of an inner product space over `𝕜`. -/
 /-- An idempotent operator is self-adjoint iff it is normal. -/
 theorem IsIdempotentElem.isSelfAdjoint_iff_isStarNormal (hT : IsIdempotentElem T) :
