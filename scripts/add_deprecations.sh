@@ -64,17 +64,30 @@ mkDeclAndDepr () {
       regexIdent=regex "  *" idRegex
       plusRegex="^\\+[^+-]*" regexIdent
       minusRegex="^-[^+-]*" regexIdent
+      n=split(regex, kws, "|")
+      for(i=1; i<=n; i++){
+        kword=kws[i]
+        gsub(/[^a-z]/, "", kword)
+        keywords[3*i+0]=kword
+      }
     }
     ($0 ~ minusRegex) {
       for(i=1; i<=NF; i++) {
-        if ($i ~ regex"$") { old=$(i+1); break }
+        strip=$i
+        gsub(/^[+-]*/, "", strip)
+        for(kw in keywords) {
+          if (strip == keywords[kw]) { old=$(i+1); break }
+        }
       }
     }
     # the check on `old` is to make sure that we found an "old" name to deprecate
     # otherwise, the declaration could be a genuinely new one.
     (($0 ~ plusRegex) && (!(old == ""))) {
       for(i=1; i<=NF; i++) {
-        if ($i ~ regex"$") {
+        strip=$i
+        for(kw in keywords) {
+        gsub(/^[+-]*/, "", strip)
+        if (strip == keywords[kw]) {
           sub(/^\+/, "", $i)
           if (!(old == $(i+1))) {
             # print the line that passes on to `addDeprecations`
@@ -84,16 +97,15 @@ mkDeclAndDepr () {
             reps++
             # reset the "old name counter", since the deprecation happened
             old=""
-            perr(NR " plus " i ": " $i "\n")
             break
           } else {
-            # we found a keyword corresponding to a declaration the following word was not
-            # different from the line prior to the change so we do not need to deprecate
+            # We found a keyword corresponding to a declaration, but the following word was not
+            # different from the line prior to the change.  Hence, we do not need to deprecate.
             # reset the "old name counter", since the deprecation should not happen
             old=""
             break
           }
-        }
+        }}
       }
     } END {
       # print to stderr a summary of deprecations
