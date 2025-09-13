@@ -57,7 +57,7 @@ lemma _root_.IsUnit.isStrictlyPositive {a : A} (ha : IsUnit a) (ha₀ : 0 ≤ a)
 
 @[grind →]
 lemma isSelfAdjoint [StarRing A] [StarOrderedRing A] {a : A} (ha : IsStrictlyPositive a) :
-    IsSelfAdjoint a := by cfc_tac
+    IsSelfAdjoint a := ha.nonneg.isSelfAdjoint
 
 @[simp, grind]
 lemma _root_.isStrictlyPositive_one [ZeroLEOneClass A] :
@@ -75,14 +75,9 @@ variable {𝕜 : Type*} [Ring A] [PartialOrder A]
 protected lemma smul [Semifield 𝕜] [PartialOrder 𝕜] [Algebra 𝕜 A] [PosSMulMono 𝕜 A] {c : 𝕜}
     (hc : 0 < c) {a : A} (ha : IsStrictlyPositive a) :
     IsStrictlyPositive (c • a) := by
-  have hunit : IsUnit (c • a) := by
-    rw [isUnit_iff_exists]
-    refine ⟨c⁻¹ • ha.isUnit.unit⁻¹, ?_⟩
-    have h₁ : c * c⁻¹ = 1 := mul_inv_cancel₀ (ne_of_lt hc).symm
-    have h₂ : c⁻¹ * c = 1 := inv_mul_cancel₀ (ne_of_lt hc).symm
-    simp [smul_smul, h₁, h₂]
-  have hnonneg : 0 ≤ c • a := smul_nonneg hc.le ha.1
-  exact hunit.isStrictlyPositive hnonneg
+  have hunit : IsUnit (c • a) :=
+    isUnit_iff_exists.mpr ⟨c⁻¹ • ha.isUnit.unit⁻¹, by simp [(ne_of_lt hc).symm]⟩
+  exact hunit.isStrictlyPositive (smul_nonneg hc.le ha.nonneg)
 
 @[grind ←, aesop safe apply]
 lemma _root_.isStrictlyPositive_algebraMap [ZeroLEOneClass A] [Semifield 𝕜] [PartialOrder 𝕜]

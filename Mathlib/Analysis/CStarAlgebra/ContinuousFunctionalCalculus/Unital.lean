@@ -894,16 +894,10 @@ lemma cfcHom_nonneg_iff [NonnegSpectrumClass R A] {a : A} (ha : p a) {f : C(spec
 
 lemma cfcHom_isStrictlyPositive_iff [NonnegSpectrumClass R A] {a : A} (ha : p a)
     {f : C(spectrum R a, R)} : IsStrictlyPositive (cfcHom ha f) ↔ ∀ x, 0 < f x := by
-  constructor
-  · intro hf x
-    exact hf.spectrum_pos <| by rw [cfcHom_map_spectrum (R := R)]; exact Set.mem_range_self x
-  · intro h
-    refine ⟨?_, ?_⟩
-    · rw [cfcHom_nonneg_iff]
-      exact fun x => le_of_lt (h x)
-    · apply spectrum.isUnit_of_zero_notMem (R := R)
-      rw [cfcHom_map_spectrum]
-      grind [ne_of_lt]
+  refine ⟨fun hf x => hf.spectrum_pos <| cfcHom_map_spectrum (R := R) ha _ ▸ Set.mem_range_self x,
+    fun h => ⟨cfcHom_nonneg_iff _ |>.mpr fun x => le_of_lt (h x), ?_⟩⟩
+  apply spectrum.isUnit_of_zero_notMem (R := R)
+  grind [cfcHom_map_spectrum, ne_of_lt]
 
 lemma cfc_mono {f g : R → R} {a : A} (h : ∀ x ∈ spectrum R a, f x ≤ g x)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
