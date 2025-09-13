@@ -41,7 +41,6 @@ variable [CommRing A]
 variable [AddCommMonoid ι] [LinearOrder ι] [IsOrderedCancelAddMonoid ι]
 variable [SetLike σ A] [AddSubmonoidClass σ A] {𝒜 : ι → σ} [GradedRing 𝒜]
 
--- Porting note: This proof needs a long time to elaborate
 theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI : I.IsHomogeneous 𝒜)
     (I_ne_top : I ≠ ⊤)
     (homogeneous_mem_or_mem :
@@ -64,7 +63,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
         `= proj max₁ x * proj max₂ y`
         `  + ∑ {(i, j) ∈ supports \ {(max₁, max₂)} | i + j = max₁ + max₂}, xᵢ * yⱼ`.
         This is a contradiction, because both `proj (max₁ + max₂) (x * y) ∈ I` and the sum on the
-        right hand side is in `I` however `proj max₁ x * proj max₂ y` is not in `I`.
+        right-hand side is in `I` however `proj max₁ x * proj max₂ y` is not in `I`.
         -/
       set set₁ := {i ∈ (decompose 𝒜 x).support | proj 𝒜 i x ∉ I} with set₁_eq
       set set₂ := {i ∈ (decompose 𝒜 y).support | proj 𝒜 i y ∉ I} with set₂_eq

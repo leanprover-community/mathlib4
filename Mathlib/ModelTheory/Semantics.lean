@@ -198,7 +198,7 @@ theorem realize_constantsVarsEquivLeft [L[[α]].Structure M]
   simp only [constantsVarsEquivLeft, realize_relabel, Equiv.coe_trans, Function.comp_apply,
     constantsVarsEquiv_apply, relabelEquiv_symm_apply]
   refine _root_.trans ?_ realize_constantsToVars
-  rcongr x
+  congr 1; funext x -- Note: was previously rcongr x
   rcases x with (a | (b | i)) <;> simp
 
 end Term
@@ -573,8 +573,6 @@ theorem realize_relabel_sumInr (φ : L.Formula (Fin n)) {v : Empty → M} {x : F
     cast_refl, Function.comp_id,
     Subsingleton.elim (x ∘ (natAdd n : Fin 0 → Fin n)) default]
 
-@[deprecated (since := "2025-02-21")] alias realize_relabel_sum_inr := realize_relabel_sumInr
-
 @[simp]
 theorem realize_equal {t₁ t₂ : L.Term α} {x : α → M} :
     (t₁.equal t₂).Realize x ↔ t₁.realize x = t₂.realize x := by simp [Term.equal, Realize]
@@ -628,7 +626,7 @@ theorem realize_equivSentence_symm_con [L[[α]].Structure M]
     BoundedFormula.realize_relabelEquiv, Function.comp]
   refine _root_.trans ?_ BoundedFormula.realize_constantsVarsEquiv
   rw [iff_iff_eq]
-  congr with (_ | a)
+  congr 1 with (_ | a)
   · simp
   · cases a
 
@@ -840,9 +838,7 @@ theorem realize_toFormula (φ : L.BoundedFormula α n) (v : α ⊕ (Fin n) → M
     · rcases x with _ | x
       · simp
       · refine Fin.lastCases ?_ ?_ x
-        · rw [Sum.elim_inr, Sum.elim_inr,
-            finSumFinEquiv_symm_last, Sum.map_inr, Sum.elim_inr]
-          simp [Fin.snoc]
+        · simp [Fin.snoc]
         · simp only [castSucc, Sum.elim_inr,
             finSumFinEquiv_symm_apply_castAdd, Sum.map_inl, Sum.elim_inl]
           rw [← castSucc]

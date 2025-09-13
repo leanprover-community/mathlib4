@@ -448,7 +448,6 @@ theorem IsCycle.sign {f : Perm α} (hf : IsCycle f) : sign f = -(-1) ^ #f.suppor
         have h : #(swap x (f x) * f).support + 1 = #f.support := by
           rw [← insert_erase (mem_support.2 hx.1), support_swap_mul_eq _ _ h1,
             card_insert_of_notMem (notMem_erase _ _), sdiff_singleton_eq_erase]
-        have : #(swap x (f x) * f).support < #f.support := card_support_swap_mul hx.1
         rw [sign_mul, sign_swap hx.1.symm, (hf.swap_mul hx.1 h1).sign, ← h]
         simp only [mul_neg, neg_mul, one_mul, neg_neg, pow_add, pow_one, mul_one]
 termination_by #f.support

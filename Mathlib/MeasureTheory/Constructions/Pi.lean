@@ -663,9 +663,9 @@ open Measure
 
 /-- We intentionally restrict this only to the nondependent function space, since type-class
 inference cannot find an instance for `ι → ℝ` when this is stated for dependent function spaces. -/
-@[to_additive "We intentionally restrict this only to the nondependent function space, since
+@[to_additive /-- We intentionally restrict this only to the nondependent function space, since
 type-class inference cannot find an instance for `ι → ℝ` when this is stated for dependent function
-spaces."]
+spaces. -/]
 instance Pi.isMulLeftInvariant_volume {α} [Group α] [MeasureSpace α]
     [SigmaFinite (volume : Measure α)] [MeasurableMul α] [IsMulLeftInvariant (volume : Measure α)] :
     IsMulLeftInvariant (volume : Measure (ι → α)) :=
@@ -673,9 +673,9 @@ instance Pi.isMulLeftInvariant_volume {α} [Group α] [MeasureSpace α]
 
 /-- We intentionally restrict this only to the nondependent function space, since type-class
 inference cannot find an instance for `ι → ℝ` when this is stated for dependent function spaces. -/
-@[to_additive "We intentionally restrict this only to the nondependent function space, since
+@[to_additive /-- We intentionally restrict this only to the nondependent function space, since
 type-class inference cannot find an instance for `ι → ℝ` when this is stated for dependent function
-spaces."]
+spaces. -/]
 instance Pi.isInvInvariant_volume {α} [Group α] [MeasureSpace α] [SigmaFinite (volume : Measure α)]
     [MeasurableInv α] [IsInvInvariant (volume : Measure α)] :
     IsInvInvariant (volume : Measure (ι → α)) :=
