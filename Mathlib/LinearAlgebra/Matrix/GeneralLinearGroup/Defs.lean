@@ -113,8 +113,6 @@ theorem coe_inv : ↑A⁻¹ = (↑A : Matrix n n R)⁻¹ :=
   letI := A.invertible
   invOf_eq_nonsing_inv (↑A : Matrix n n R)
 
-@[deprecated (since := "2024-11-26")] alias toLinear := toLin
-
 @[simp]
 theorem coe_toLin : (toLin A : (n → R) →ₗ[R] n → R) = Matrix.mulVecLin A :=
   rfl
@@ -153,16 +151,13 @@ variable (f : R →+* S)
 
 @[simp]
 protected lemma map_one : map f (1 : GL n R) = 1 := by
-  ext
-  simp only [map_one, Units.val_one]
+  simp only [map_one]
 
 protected lemma map_mul (g h : GL n R) : map f (g * h) = map f g * map f h := by
-  ext
-  simp only [map_mul, Units.val_mul]
+  simp only [map_mul]
 
 protected lemma map_inv (g : GL n R) : map f g⁻¹ = (map f g)⁻¹ := by
-  ext
-  simp only [map_inv, coe_units_inv]
+  simp only [map_inv]
 
 protected lemma map_det (g : GL n R) : Matrix.GeneralLinearGroup.det (map f g) =
     Units.map f (Matrix.GeneralLinearGroup.det g) := by
@@ -199,8 +194,6 @@ def toGL : Matrix.SpecialLinearGroup n R →* Matrix.GeneralLinearGroup n R wher
   toFun A := ⟨↑A, ↑A⁻¹, congr_arg (·.1) (mul_inv_cancel A), congr_arg (·.1) (inv_mul_cancel A)⟩
   map_one' := Units.ext rfl
   map_mul' _ _ := Units.ext rfl
-
-@[deprecated (since := "2024-11-26")] alias coeToGL := toGL
 
 instance hasCoeToGeneralLinearGroup : Coe (SpecialLinearGroup n R) (GL n R) :=
   ⟨toGL⟩

@@ -200,16 +200,6 @@ section Algebra
 
 variable {R : Type u} [CommSemiring R] {S : Type v} [Semiring S] [Algebra R S]
 
-/-- The map `R[X] → S[X]` as an algebra homomorphism. -/
-def mapAlg (R : Type u) [CommSemiring R] (S : Type v) [Semiring S] [Algebra R S] :
-    R[X] →ₐ[R] S[X] :=
-  @aeval _ S[X] _ _ _ (X : S[X])
-
-/-- `mapAlg` is the morphism induced by `R → S`. -/
-theorem mapAlg_eq_map (p : R[X]) : mapAlg R S p = map (algebraMap R S) p := by
-  simp only [mapAlg, aeval_def, eval₂_eq_sum, map, algebraMap_apply, RingHom.coe_comp]
-  ext; congr
-
 /-- A polynomial `p` lifts if and only if it is in the image of `mapAlg`. -/
 theorem mem_lifts_iff_mem_alg (R : Type u) [CommSemiring R] {S : Type v} [Semiring S] [Algebra R S]
     (p : S[X]) : p ∈ lifts (algebraMap R S) ↔ p ∈ AlgHom.range (@mapAlg R _ S _ _) := by

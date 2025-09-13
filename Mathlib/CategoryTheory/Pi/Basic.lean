@@ -24,7 +24,7 @@ universe w₀ w₁ w₂ v₁ v₂ v₃ u₁ u₂ u₃
 variable {I : Type w₀} {J : Type w₁} (C : I → Type u₁) [∀ i, Category.{v₁} (C i)]
 
 
-/-- `pi C` gives the cartesian product of an indexed family of categories.
+/-- `pi C` gives the Cartesian product of an indexed family of categories.
 -/
 instance pi : Category.{max w₀ v₁} (∀ i, C i) where
   Hom X Y := ∀ i, X i ⟶ Y i
@@ -58,12 +58,8 @@ section
 
 variable {J : Type w₁}
 
-/- Porting note: add this because Lean cannot see directly through the `∘` for
-`Function.comp` -/
-
-instance (f : J → I) : (j : J) → Category ((C ∘ f) j) := by
-  dsimp
-  infer_instance
+instance (f : J → I) : (j : J) → Category ((C ∘ f) j) :=
+  inferInstanceAs <| (j : J) → Category (C (f j))
 
 /-- Pull back an `I`-indexed family of objects to a `J`-indexed family, along a function `J → I`.
 -/
@@ -103,7 +99,7 @@ def comapComp (f : K → J) (g : J → I) : comap C g ⋙ comap (C ∘ g) f ≅ 
 /-- The natural isomorphism between pulling back then evaluating, and just evaluating. -/
 @[simps!]
 def comapEvalIsoEval (h : J → I) (j : J) : comap C h ⋙ eval (C ∘ h) j ≅ eval C (h j) :=
-  NatIso.ofComponents (fun _ => Iso.refl _) (by simp only [Iso.refl]; simp)
+  NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
 
 end
 
@@ -111,7 +107,6 @@ section
 
 variable {J : Type w₀} {D : J → Type u₁} [∀ j, Category.{v₁} (D j)]
 
-/- Porting note: maybe mixing up universes -/
 instance sumElimCategory : ∀ s : I ⊕ J, Category.{v₁} (Sum.elim C D s)
   | Sum.inl i => by
     dsimp
@@ -119,9 +114,6 @@ instance sumElimCategory : ∀ s : I ⊕ J, Category.{v₁} (Sum.elim C D s)
   | Sum.inr j => by
     dsimp
     infer_instance
-
-/- Porting note: replaced `Sum.rec` with `match`'s per the error about
-current state of code generation -/
 
 /-- The bifunctor combining an `I`-indexed family of objects with a `J`-indexed family of objects
 to obtain an `I ⊕ J`-indexed family of objects.
@@ -207,12 +199,8 @@ end EqToHom
 -- One could add some natural isomorphisms showing
 -- how `Functor.pi` commutes with `Pi.eval` and `Pi.comap`.
 @[simp]
-theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙ Pi.eval C i = f i := by
-  apply Functor.ext
-  · intro _ _ _
-    simp
-  · intro _
-    rfl
+theorem pi'_eval (f : ∀ i, A ⥤ C i) (i : I) : pi' f ⋙ Pi.eval C i = f i :=
+  rfl
 
 /-- Two functors to a product category are equal iff they agree on every coordinate. -/
 theorem pi_ext (f f' : A ⥤ ∀ i, C i) (h : ∀ i, f ⋙ (Pi.eval C i) = f' ⋙ (Pi.eval C i)) :
@@ -286,7 +274,7 @@ lemma isIso_pi_iff {X Y : ∀ i, C i} (f : X ⟶ Y) :
   · intro _ i
     exact (Pi.isoApp (asIso f) i).isIso_hom
   · intro
-    exact ⟨fun i => inv (f i), by aesop_cat, by aesop_cat⟩
+    exact ⟨fun i => inv (f i), by cat_disch, by cat_disch⟩
 
 variable (C)
 

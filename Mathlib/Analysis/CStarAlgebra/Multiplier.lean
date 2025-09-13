@@ -191,9 +191,10 @@ instance instIntCast : IntCast 𝓜(𝕜, A) where
 instance instPow : Pow 𝓜(𝕜, A) ℕ where
   pow a n :=
     ⟨a.toProd ^ n, fun x y => by
-      induction' n with k hk generalizing x y
-      · rfl
-      · rw [Prod.pow_snd, Prod.pow_fst] at hk ⊢
+      induction n generalizing x y with
+      | zero => rfl
+      | succ k hk =>
+        rw [Prod.pow_snd, Prod.pow_fst] at hk ⊢
         rw [pow_succ' a.snd, mul_apply, a.central, hk, pow_succ a.fst, mul_apply]⟩
 
 instance instInhabited : Inhabited 𝓜(𝕜, A) :=
@@ -640,8 +641,6 @@ instance instCStarRing : CStarRing 𝓜(𝕜, A) where
 
 end DenselyNormed
 
-#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
 noncomputable instance {A : Type*} [NonUnitalCStarAlgebra A] : CStarAlgebra 𝓜(ℂ, A) where
-  norm_mul_self_le := CStarRing.norm_mul_self_le
 
 end DoubleCentralizer

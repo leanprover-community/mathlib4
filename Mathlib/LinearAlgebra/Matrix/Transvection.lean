@@ -400,7 +400,7 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
         simp [h]
       simp only [h, transvection_mul_apply_same, IH, ← hni, add_le_iff_nonpos_right,
           listTransvecCol_mul_last_row_drop _ _ hn]
-      field_simp [hM]
+      simp [field]
     · have hni : n ≠ i := by
         rintro rfl
         cases i
@@ -477,7 +477,8 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
       have : ¬n.succ ≤ i := by simp only [← hni, n.lt_succ_self, not_le]
       simp only [h, mul_transvection_apply_same, if_false,
         mul_listTransvecRow_last_col_take _ _ hnr.le, hni.le, this, if_true, IH hnr.le]
-      field_simp [hM]
+      field_simp
+      ring
     · have hni : n ≠ i := by
         rintro rfl
         cases i
@@ -732,11 +733,7 @@ theorem diagonal_transvection_induction_of_det_ne_zero (P : Matrix n n 𝕜 → 
   let Q : Matrix n n 𝕜 → Prop := fun N => det N ≠ 0 ∧ P N
   have : Q M := by
     apply diagonal_transvection_induction Q M
-    · intro D hD
-      have detD : det (diagonal D) ≠ 0 := by
-        rw [hD]
-        exact hMdet
-      exact ⟨detD, hdiag _ detD⟩
+    · grind
     · intro t
       exact ⟨by simp, htransvec t⟩
     · intro A B QA QB
