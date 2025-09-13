@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Moritz Doll
 -/
 import Mathlib.LinearAlgebra.Prod
+import Mathlib.GroupTheory.GroupAction.Basic
 
 /-!
 # Partially defined linear maps
@@ -643,19 +644,23 @@ def compPMap (g : F →ₗ[R] G) (f : E →ₗ.[R] F) : E →ₗ.[R] G where
 theorem compPMap_apply (g : F →ₗ[R] G) (f : E →ₗ.[R] F) (x) : g.compPMap f x = g (f x) :=
   rfl
 
-open Classical in
-noncomputable def compPMapLeft (f : F →ₗ.[R] G) (g : E →ₗ[R] F) : E →ₗ[R] G :=
-  if hgf : LinearMap.range g ≤ f.domain then f.toFun.comp (g.codRestrict f.domain
-    (fun x ↦ hgf (mem_range_self g x))) else 0
-
-theorem compPMapLeft_apply {f : F →ₗ.[R] G} {g : E →ₗ[R] F} (hgf : LinearMap.range g ≤ f.domain)
-    (x : E) : (g.compPMapLeft f) x = f ⟨g x, hgf (mem_range_self g x)⟩ := by
-  simp [compPMapLeft, hgf]
-  congr
-
 end LinearMap
 
 namespace LinearPMap
+
+open Classical in
+/-- Composition of a `LinearPMap` with a `LinearMap`.
+
+The composition is well-defined if the range of the `LinearMap` is
+contained in the domain of the `LinearPMap`. -/
+noncomputable def compLinearMap (f : F →ₗ.[R] G) (g : E →ₗ[R] F) : E →ₗ[R] G :=
+  if hgf : LinearMap.range g ≤ f.domain then f.toFun.comp (g.codRestrict f.domain
+    (fun x ↦ hgf (LinearMap.mem_range_self g x))) else 0
+
+theorem compLinearMap_apply {f : F →ₗ.[R] G} {g : E →ₗ[R] F} (hgf : LinearMap.range g ≤ f.domain)
+    (x : E) : (f.compLinearMap g) x = f ⟨g x, hgf (LinearMap.mem_range_self g x)⟩ := by
+  simp [compLinearMap, hgf]
+  congr
 
 /-- Restrict codomain of a `LinearPMap` -/
 def codRestrict (f : E →ₗ.[R] F) (p : Submodule R F) (H : ∀ x, f x ∈ p) : E →ₗ.[R] p where
@@ -1098,10 +1103,10 @@ theorem inverse_cancel' (hf : Function.Bijective f) (x' : f.domain) :
 theorem inverse_sub_inverse_eq {f g : E →ₗ.[R] F} (hf : Function.Bijective f)
     (hg : Function.Bijective g) (hfg : g.domain ≤ f.domain) :
     f.inverse_asLinearMap - g.inverse_asLinearMap =
-    f.inverse_asLinearMap ∘ₗ (g.inverse_asLinearMap.compPMapLeft (g - f)) := by
+    f.inverse_asLinearMap ∘ₗ ((g - f).compLinearMap g.inverse_asLinearMap) := by
   ext x
   simp only [LinearMap.sub_apply, LinearMap.coe_comp, Function.comp_apply]
-  rw [LinearMap.compPMapLeft_apply (by simpa [sub_domain, inverse_asLinearMap_range hg]
+  rw [compLinearMap_apply (by simpa [sub_domain, inverse_asLinearMap_range hg]
     using hfg),
     sub_apply]
   simp [inverse_cancel hg, inverse_cancel' hf]
@@ -1143,16 +1148,38 @@ theorem range_resolventLM (f : E →ₗ.[R] E) {z : R} (hz : z ∈ f.resolvent_s
   rw [inverse_asLinearMap_range hz, vadd_domain, neg_domain]
 
 /-- The first resolvent identity. -/
-theorem resolvent_sub_resolvent_eq (f : E →ₗ.[R] E) {z1 z2 : R} (hz1 : z1 ∈ f.resolvent_set)
+theorem resolventLM_sub_resolvent_eq {f : E →ₗ.[R] E} {z1 z2 : R} (hz1 : z1 ∈ f.resolvent_set)
     (hz2 : z2 ∈ f.resolvent_set) :
     f.resolventLM z1 - f.resolventLM z2 = (z2 - z1) • f.resolventLM z1 ∘ₗ f.resolventLM z2 := by
   rw [inverse_sub_inverse_eq hz1 hz2 (by simp), ← LinearMap.comp_smul]
   congr 1
   ext x
-  simp
-  rw [LinearMap.compPMapLeft_apply]
+  rw [LinearMap.smul_apply, compLinearMap_apply]
   · simp [sub_apply, vadd_apply, vadd_apply, ← sub_smul]
   · simp [f.range_resolventLM hz2, sub_domain]
+
+theorem resolventLM_commute [NoZeroSMulDivisors R E] {f : E →ₗ.[R] E} {z1 z2 : R}
+    (hz1 : z1 ∈ f.resolvent_set) (hz2 : z2 ∈ f.resolvent_set) :
+    f.resolventLM z1 ∘ₗ f.resolventLM z2 = f.resolventLM z2 ∘ₗ f.resolventLM z1 := by
+  by_cases hz : z1 = z2
+  · rw [hz]
+  have h1 := resolventLM_sub_resolvent_eq hz1 hz2
+  have h2 := resolventLM_sub_resolvent_eq hz2 hz1
+  have : (z2 - z1) • f.resolventLM z1 ∘ₗ f.resolventLM z2 +
+      (z1 - z2) • f.resolventLM z2 ∘ₗ f.resolventLM z1 = 0 := by
+    rw [← h1, ← h2]
+    ext x
+    simp
+  have := eq_neg_of_add_eq_zero_right this
+  rw [← neg_smul, neg_sub] at this
+  apply smul_cancel_of_non_zero_divisor (z1 - z2)
+  · intro f hf
+    have := LinearMap.instNoZeroSMulDivisors.eq_zero_or_eq_zero_of_smul_eq_zero hf
+    obtain h1|h2 := this
+    · exfalso
+      exact hz (sub_eq_zero.mp h1)
+    exact h2
+  exact this.symm
 
 end resolvent
 
