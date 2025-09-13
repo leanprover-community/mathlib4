@@ -520,4 +520,22 @@ lemma setIntegral_rnDeriv_smul' [SigmaFinite ν] (hμν : μ ≪ ν) (s : Set α
 
 end IntegralRNDerivMul
 
+section Conv
+
+open Measure
+
+variable {G : Type*} [Group G] [MeasureSpace G] [MeasurableMul₂ G] [MeasurableInv G]
+  {μ : Measure G} [SFinite μ] [IsMulLeftInvariant μ]
+
+-- I guess I should give a proof for monoids...
+@[to_additive]
+theorem mconv_absolutelyContinuous (ν₁ ν₂ : Measure G)
+    [ν₁.HaveLebesgueDecomposition μ] [ν₂.HaveLebesgueDecomposition μ]
+    (hν₁ : ν₁ ≪ μ) (hν₂ : ν₂ ≪ μ) : ν₁ ∗ₘ ν₂ ≪ μ := by
+  rw [← withDensity_rnDeriv_eq _ _  hν₁, ← withDensity_rnDeriv_eq _ _  hν₂,
+    mconv_withDensity_eq_mlconvolution (by fun_prop) (by fun_prop)]
+  exact withDensity_absolutelyContinuous _ _
+
+end Conv
+
 end MeasureTheory

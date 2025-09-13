@@ -6,6 +6,7 @@ Authors: Kexing Ying
 import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
 import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
 import Mathlib.MeasureTheory.Measure.Sub
+import Mathlib.Analysis.LConvolution
 
 /-!
 # Lebesgue decomposition
