@@ -290,7 +290,57 @@ theorem image_mem_functorPushforward (R : Presieve X) {f : Y ⟶ X} (h : R f) :
     R.functorPushforward F (F.map f) :=
   ⟨Y, f, 𝟙 _, h, by simp⟩
 
+/-- This presieve generates `functorPushforward`.
+See `arrows_generate_map_eq_functorPushforward`. -/
+inductive map (s : Presieve X) : Presieve (F.obj X) where
+  | of {Y : C} {u : Y ⟶ X} (h : s u) : map s (F.map u)
+
 end FunctorPushforward
+
+section uncurry
+
+variable (s : Presieve X)
+
+/-- Uncurry a presieve to one set over the sigma type. -/
+def uncurry : Set (Σ Y, Y ⟶ X) :=
+  { u | s u.snd }
+
+@[simp] theorem uncurry_singleton {Y : C} (u : Y ⟶ X) : (singleton u).uncurry = { ⟨Y, u⟩ } := by
+  ext ⟨Z, v⟩; constructor
+  · rintro ⟨⟩; rfl
+  · intro h
+    rw [Set.mem_singleton_iff, Sigma.ext_iff] at h
+    obtain ⟨rfl, h⟩ := h; subst h; constructor
+
+@[simp] theorem uncurry_pullbackArrows [HasPullbacks C] {B : C} (b : B ⟶ X) :
+    (pullbackArrows b s).uncurry = (fun f ↦ ⟨pullback f.2 b, pullback.snd _ _⟩) '' s.uncurry := by
+  ext ⟨Z, v⟩; constructor
+  · rintro ⟨Y, u, hu⟩; exact ⟨⟨Y, u⟩, hu, rfl⟩
+  · rintro ⟨⟨Y, u⟩, hu, h⟩
+    rw [Sigma.ext_iff] at h
+    obtain ⟨rfl, h⟩ := h
+    rw [heq_iff_eq] at h; subst h
+    exact ⟨Y, u, hu⟩
+
+@[simp] theorem uncurry_bind (t : ⦃Y : C⦄ → (f : Y ⟶ X) → s f → Presieve Y) :
+    (s.bind t).uncurry = ⋃ i ∈ s.uncurry,
+      Sigma.map id (fun Z g ↦ (g ≫ i.2 : Z ⟶ X)) '' (t _ ‹_›).uncurry := by
+  ext ⟨Z, v⟩; simp only [Set.mem_iUnion, Set.mem_image]; constructor
+  · rintro ⟨Y, g, f, hf, ht, hv⟩
+    exact ⟨⟨_, f⟩, hf, ⟨_, g⟩, ht, Sigma.ext rfl (heq_of_eq hv)⟩
+  · rintro ⟨⟨_, f⟩, hf, ⟨Y, g⟩, hg, h⟩
+    rw [Sigma.ext_iff] at h
+    obtain ⟨rfl, h⟩ := h
+    rw [heq_iff_eq] at h; subst h
+    exact ⟨_, _, _, _, hg, rfl⟩
+
+@[simp] theorem uncurry_ofArrows {ι : Type*} (Y : ι → C) (f : (i : ι) → Y i ⟶ X) :
+    (ofArrows Y f).uncurry = Set.range fun i : ι ↦ ⟨_, f i⟩ := by
+  ext ⟨Z, v⟩; simp only [Set.mem_range, Sigma.mk.injEq]; constructor
+  · rintro ⟨i⟩; exact ⟨_, rfl, HEq.refl _⟩
+  · rintro ⟨i, rfl, h⟩; rw [← eq_of_heq h]; exact ⟨i⟩
+
+end uncurry
 
 end Presieve
 
@@ -416,6 +466,12 @@ def generate (R : Presieve X) : Sieve X where
   downward_closed := by
     rintro Y Z _ ⟨W, g, f, hf, rfl⟩ h
     exact ⟨_, h ≫ g, _, hf, by simp⟩
+
+theorem arrows_generate_map_eq_functorPushforward {s : Presieve X} :
+    (generate (s.map F)).arrows = s.functorPushforward F := by
+  refine funext fun Z ↦ Set.ext fun u ↦ ⟨?_, ?_⟩
+  · rintro ⟨_, _, _, ⟨hu⟩, rfl⟩; exact ⟨_, _, _, hu, rfl⟩
+  · rintro ⟨_, _, _, hu, rfl⟩; exact ⟨_, _, _, ⟨hu⟩, rfl⟩
 
 /-- Given a presieve on `X`, and a sieve on each domain of an arrow in the presieve, we can bind to
 produce a sieve on `X`.
@@ -708,6 +764,12 @@ def functorPushforward (R : Sieve X) : Sieve (F.obj X) where
     intro _ _ f h g
     obtain ⟨X, α, β, hα, rfl⟩ := h
     exact ⟨X, α, g ≫ β, hα, by simp⟩
+
+theorem generate_map_eq_functorPushforward {s : Presieve X} :
+    generate (s.map F) = (generate s).functorPushforward F := by
+  ext
+  rw [arrows_generate_map_eq_functorPushforward]
+  simp [functorPushforward_extend_eq]
 
 @[simp]
 theorem functorPushforward_id (R : Sieve X) : R.functorPushforward (𝟭 _) = R := by
