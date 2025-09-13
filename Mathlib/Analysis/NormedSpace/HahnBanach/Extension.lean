@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Heather Macbeth
 -/
 import Mathlib.Analysis.Convex.Cone.Extension
-import Mathlib.Analysis.Normed.Module.RCLike.Basic
+import Mathlib.Analysis.Normed.Module.Span
 import Mathlib.Analysis.NormedSpace.Extend
 import Mathlib.Analysis.RCLike.Lemmas
 
@@ -25,9 +25,8 @@ satisfying `RCLike 𝕜`.
 
 In this setting, `exists_dual_vector` states that, for any nonzero `x`, there exists a continuous
 linear form `g` of norm `1` with `g x = ‖x‖` (where the norm has to be interpreted as an element
-of `𝕜`).
--/
-
+of `𝕜`). Using this, we prove that if `E` and `F` are nontrivial normed vector spaces over an
+`RCLike` field `𝕜`, then the space of continuous linear operators between them is nontrivial. -/
 
 universe u v
 
@@ -148,8 +147,7 @@ variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 open ContinuousLinearEquiv Submodule
 
 theorem coord_norm' {x : E} (h : x ≠ 0) : ‖(‖x‖ : 𝕜) • coord 𝕜 x h‖ = 1 := by
-  rw [norm_smul (α := 𝕜) (x := coord 𝕜 x h), RCLike.norm_coe_norm, coord_norm,
-    mul_inv_cancel₀ (mt norm_eq_zero.mp h)]
+  simp [-algebraMap_smul, norm_smul, mul_inv_cancel₀ (mt norm_eq_zero.mp h)]
 
 /-- Corollary of Hahn-Banach. Given a nonzero element `x` of a normed space, there exists an
 element of the dual space, of norm `1`, whose value on `x` is `‖x‖`. -/
@@ -184,5 +182,16 @@ theorem exists_dual_vector'' (x : E) : ∃ g : StrongDual 𝕜 E, ‖g‖ ≤ 1 
     simp [hx]
   · rcases exists_dual_vector 𝕜 x hx with ⟨g, g_norm, g_eq⟩
     exact ⟨g, g_norm.le, g_eq⟩
+
+/-- As a consequence of Hahn-Banach, if `E` and `F` are nontrivial normed vector spaces over an
+`RCLike` field `𝕜`, there are nontrivial continuous linear operators between them. -/
+instance (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F] [Nontrivial E] [Nontrivial F] :
+    Nontrivial (E →L[𝕜] F) := by
+  obtain ⟨v, hv⟩ := exists_ne (0 : E)
+  obtain ⟨φ, hφ_norm, hφ_eval⟩ := exists_dual_vector 𝕜 _ hv
+  obtain ⟨w, hw⟩ := exists_ne (0 : F)
+  refine ⟨(𝕜 ∙ w).subtypeₗᵢ.toContinuousLinearMap ∘L
+    (toSpanNonzeroSingleton 𝕜 _ hw) ∘L φ, 0, DFunLike.ne_iff.mpr ⟨v, by simp [hφ_eval, hv, hw]⟩⟩
+
 
 end DualVector

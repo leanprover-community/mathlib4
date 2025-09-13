@@ -114,6 +114,20 @@ theorem exists_eq_one_ne_zero_of_ne_zero_pair {x y : V} (hx : x ≠ 0) (hy : y �
   · exact ⟨(v x)⁻¹ • v, inv_mul_cancel₀ vx, show (v x)⁻¹ * v y ≠ 0 by simp [vx, vy]⟩
   · exact ⟨u + v, by simp [ux, vx], by simp [uy, vy]⟩
 
+#where
+/-- As a consequence of Hahn-Banach, if `E` and `F` are nontrivial normed vector spaces over an
+`RCLike` field `𝕜`, there are nontrivial continuous linear operators between them. -/
+instance (W : Type*) [AddCommGroup W] [TopologicalSpace W] [Module R W] [Nontrivial W] [Nontrivial V] :--[NormedSpace 𝕜 F] [Nontrivial E] [Nontrivial F] :
+    Nontrivial (W →L[R] V) := by
+  obtain ⟨v, hv⟩ := exists_ne (0 : V)
+  obtain ⟨w, hw⟩ := exists_ne (0 : W)
+  obtain ⟨φ, hφ_eval⟩ := exists_eq_one (R := R) hv
+  have := ContinuousLinearEquiv.toSpanNonzeroSingleton R _ hw
+  -- have := (R ∙ w).subtypeₗᵢ.toContinuousLinearMap ∘L
+  --   (toSpanNonzeroSingleton R _ hw) ∘L φ
+  -- refine ⟨(R ∙ w).subtypeₗᵢ.toContinuousLinearMap ∘L
+  --   (toSpanNonzeroSingleton R _ hw) ∘L φ, 0, DFunLike.ne_iff.mpr ⟨v, by simp [hφ_eval, hv, hw]⟩⟩
+
 variable [IsTopologicalAddGroup V]
 
 /-- The center of continuous linear maps on a topological vector space
