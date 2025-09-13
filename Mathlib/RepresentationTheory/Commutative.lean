@@ -40,24 +40,21 @@ theorem finrank_eq_one_simple_of_commMonoid [IsAlgClosed k]
   -- We show that for any nonzero `x : V`, the span of `x` is a subrepresentation.
   -- We have to explicitly show it is a representation since the relationship
   -- between `FDRep` and `Rep` is not developed well enough yet.
-  -- TODO: fix this when made possible by
+  -- TODO: fix this when made possible
   let W := ↥ (Submodule.span k {x})
   let rho_endo (g : G) : V ⟶ V := ⟨FGModuleCat.ofHom <| V.ρ g, by
     intro h
     ext a
-    simp only [FGModuleCat.obj_carrier, FGModuleCat.hom_comp, ModuleCat.hom_ofHom, hom_action_ρ,
-      LinearMap.coe_comp, Function.comp_apply]
-    rw[← Module.End.mul_apply, ← Module.End.mul_apply, ← map_mul, ← map_mul, mul_comm]⟩
+    change (V.ρ g * V.ρ h) a = (V.ρ h * V.ρ g) a
+    rw[← map_mul, ← map_mul, mul_comm]⟩
   have invariant (g y) (hy : y ∈ Submodule.span k {x}) : (V.ρ g) y ∈ Submodule.span k {x} := by
     change (rho_endo g) y ∈ Submodule.span k {x}
     obtain ⟨c, eq⟩ := endomorphism_simple_eq_smul_id k <| rho_endo g
     rw[← eq]
-    exact Submodule.smul_mem (Submodule.span k {x}) c hy
+    exact (Submodule.span k {x}).smul_mem c hy
   let w_rho : G →* W →ₗ[k] W := ⟨⟨fun g => (V.ρ g).restrict <| invariant g,
       by ext a; simp⟩,
-    by intro g h
-       ext a
-       aesop⟩
+    by intro g h; ext a; aesop⟩
   let WMod := FDRep.of w_rho
   -- This subrepresentation induces a monomorphism into `V`, which must be iso since `V` is simple.
   let incl : WMod ⟶ V := ⟨FGModuleCat.ofHom <| Submodule.subtype _, fun _ => rfl⟩
@@ -68,13 +65,12 @@ theorem finrank_eq_one_simple_of_commMonoid [IsAlgClosed k]
       rfl)
   have incl_nz : incl ≠ 0 := by
     intro h
-    have mem : x ∈ Submodule.span k {x} := by simp
+    have mem : x ∈ Submodule.span k {x} := Submodule.mem_span_singleton_self x
     have wrong : incl ⟨x,mem⟩ = (0 : WMod ⟶ V) ⟨x,mem⟩ := by rw[h]
     exact x_nonzero wrong
-  have incl_isIso := isIso_of_mono_of_nonzero incl_nz
-  let incl_iso := asIso incl
+  have := isIso_of_mono_of_nonzero incl_nz
   let incl' := (forget₂ (FGModuleCat k) (ModuleCat k)).mapIso <|
-    (forget₂ _ (FGModuleCat k)).mapIso incl_iso
+    (forget₂ _ (FGModuleCat k)).mapIso <| asIso incl
   -- So `V` must be equal to the span of `x`, hence 1-dimensional.
   let incl_equiv : WMod ≃ₗ[k] V.V := CategoryTheory.Iso.toLinearEquiv <| incl'
   rw[← LinearEquiv.finrank_eq incl_equiv]
