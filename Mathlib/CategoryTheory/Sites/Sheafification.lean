@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Finite
 # Sheafification
 
 Given a site `(C, J)` we define a typeclass `HasSheafify J A` saying that the inclusion functor from
-`A`-valued sheaves on `C` to presheaves admits a left exact left adjoint (sheafification).
+`A`-valued sheaves on `C` to presheaves admits a left-exact left adjoint (sheafification).
 
 Note: to access the `HasSheafify` instance for suitable concrete categories, import the file
 `Mathlib/CategoryTheory/Sites/LeftExact.lean`.
@@ -33,7 +33,7 @@ A proposition saying that the inclusion functor from sheaves to presheaves admit
 abbrev HasWeakSheafify : Prop := (sheafToPresheaf J A).IsRightAdjoint
 
 /--
-`HasSheafify` means that the inclusion functor from sheaves to presheaves admits a left exact
+`HasSheafify` means that the inclusion functor from sheaves to presheaves admits a left-exact
 left adjoint (sheafification).
 
 Given a finite limit preserving functor `F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A` and an adjunction

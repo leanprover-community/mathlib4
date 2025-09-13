@@ -14,7 +14,7 @@ is a presheaf, then `CostructuredArrow yoneda A` is filtered (equivalently, the 
 elements of `A` is cofiltered) if and only if `A` preserves finite limits.
 
 This is one of the keys steps of establishing the equivalence `Ind C ≌ (Cᵒᵖ ⥤ₗ Type u)` (here,
-`Cᵒᵖ ⥤ₗ Type u` is the category of left exact functors) for a *small* finitely cocomplete category
+`Cᵒᵖ ⥤ₗ Type u` is the category of left-exact functors) for a *small* finitely cocomplete category
 `C`.
 
 ## Implementation notes

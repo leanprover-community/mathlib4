@@ -17,18 +17,18 @@ import Mathlib.CategoryTheory.Sites.Sheafification
 /-!
 # Mayer-Vietoris squares
 
-The purpose of this file is to allow the formalization of long exact
+The purpose of this file is to allow the formalization of long-exact
 Mayer-Vietoris sequences in sheaf cohomology. If `X₄` is an open subset
 of a topological space that is covered by two open subsets `X₂` and `X₃`,
-it is known that there is a long exact sequence
+it is known that there is a long-exact sequence
 `... ⟶ H^q(X₄) ⟶ H^q(X₂) ⊞ H^q(X₃) ⟶ H^q(X₁) ⟶ H^{q+1}(X₄) ⟶ ...`
 where `X₁` is the intersection of `X₂` and `X₃`, and `H^q` are the
 cohomology groups with values in an abelian sheaf.
 
 In this file, we introduce a structure
 `GrothendieckTopology.MayerVietorisSquare` which extends `Square C`,
-and asserts properties which shall imply the existence of long
-exact Mayer-Vietoris sequences in sheaf cohomology (TODO).
+and asserts properties which shall imply the existence of long-exact
+Mayer-Vietoris sequences in sheaf cohomology (TODO).
 We require that the map `X₁ ⟶ X₃` is a monomorphism and
 that the square in `C` becomes a pushout square in
 the category of sheaves after the application of the

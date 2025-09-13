@@ -42,7 +42,7 @@ local cohomology, local cohomology modules
     * the right-derived functor definition
     * the characterization as the limit of Koszul homology
     * the characterization as the cohomology of a Cech-like complex
-* Establish long exact sequence(s) in local cohomology
+* Establish long-exact sequence(s) in local cohomology
 -/
 
 

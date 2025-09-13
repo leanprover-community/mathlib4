@@ -13,7 +13,7 @@ containing `M`, in the sense that monoid homs `M → H` are in bijection with mo
 any commutative group `H`.
 
 Note that "Grothendieck group" also refers to the analogous construction in an abelian category
-obtained by formally making the last term of each short exact sequence invertible.
+obtained by formally making the last term of each short-exact sequence invertible.
 
 ### References
 

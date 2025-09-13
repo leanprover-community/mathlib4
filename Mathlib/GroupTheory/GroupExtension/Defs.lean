@@ -15,7 +15,7 @@ such as splittings and equivalences.
 
 ## Main definitions
 
-- `(Add?)GroupExtension N E G`: structure for extensions of `G` by `N` as short exact sequences
+- `(Add?)GroupExtension N E G`: structure for extensions of `G` by `N` as short-exact sequences
   `1 → N → E → G → 1` (`0 → N → E → G → 0` for additive groups)
 - `(Add?)GroupExtension.Equiv S S'`: structure for equivalences of two group extensions `S` and `S'`
   as specific homomorphisms `E → E'` such that each diagram below is commutative
@@ -52,7 +52,7 @@ If `N` is abelian,
 
 variable (N E G : Type*)
 
-/-- `AddGroupExtension N E G` is a short exact sequence of additive groups `0 → N → E → G → 0`. -/
+/-- `AddGroupExtension N E G` is a short-exact sequence of additive groups `0 → N → E → G → 0`. -/
 structure AddGroupExtension [AddGroup N] [AddGroup E] [AddGroup G] where
   /-- The inclusion homomorphism `N →+ E` -/
   inl : N →+ E
@@ -65,7 +65,7 @@ structure AddGroupExtension [AddGroup N] [AddGroup E] [AddGroup G] where
   /-- The projection map is surjective. -/
   rightHom_surjective : Function.Surjective rightHom
 
-/-- `GroupExtension N E G` is a short exact sequence of groups `1 → N → E → G → 1`. -/
+/-- `GroupExtension N E G` is a short-exact sequence of groups `1 → N → E → G → 1`. -/
 @[to_additive]
 structure GroupExtension [Group N] [Group E] [Group G] where
   /-- The inclusion homomorphism `N →* E` -/

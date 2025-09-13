@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Finite
 We say that a functor `F` is left exact if it preserves finite limits, it is right exact if it
 preserves finite colimits, and it is exact if it is both left exact and right exact.
 
-In this file, we define the categories of bundled left exact, right exact and exact functors.
+In this file, we define the categories of bundled left-exact, right-exact and exact functors.
 
 -/
 
@@ -35,10 +35,10 @@ def LeftExactFunctor :=
 instance : Category (LeftExactFunctor C D) :=
   ObjectProperty.FullSubcategory.category _
 
-/-- `C ⥤ₗ D` denotes left exact functors `C ⥤ D` -/
+/-- `C ⥤ₗ D` denotes left-exact functors `C ⥤ D` -/
 infixr:26 " ⥤ₗ " => LeftExactFunctor
 
-/-- A left exact functor is in particular a functor. -/
+/-- A left-exact functor is in particular a functor. -/
 def LeftExactFunctor.forget : (C ⥤ₗ D) ⥤ C ⥤ D :=
   ObjectProperty.ι _
 
@@ -48,7 +48,7 @@ instance : (LeftExactFunctor.forget C D).Full :=
 instance : (LeftExactFunctor.forget C D).Faithful :=
   ObjectProperty.faithful_ι _
 
-/-- The inclusion of left exact functors into functors is fully faithful. -/
+/-- The inclusion of left-exact functors into functors is fully faithful. -/
 abbrev LeftExactFunctor.fullyFaithful : (LeftExactFunctor.forget C D).FullyFaithful :=
   ObjectProperty.fullyFaithfulι _
 
@@ -59,10 +59,10 @@ def RightExactFunctor :=
 instance : Category (RightExactFunctor C D) :=
   ObjectProperty.FullSubcategory.category _
 
-/-- `C ⥤ᵣ D` denotes right exact functors `C ⥤ D` -/
+/-- `C ⥤ᵣ D` denotes right-exact functors `C ⥤ D` -/
 infixr:26 " ⥤ᵣ " => RightExactFunctor
 
-/-- A right exact functor is in particular a functor. -/
+/-- A right-exact functor is in particular a functor. -/
 def RightExactFunctor.forget : (C ⥤ᵣ D) ⥤ C ⥤ D :=
   ObjectProperty.ι _
 
@@ -72,7 +72,7 @@ instance : (RightExactFunctor.forget C D).Full :=
 instance : (RightExactFunctor.forget C D).Faithful :=
   ObjectProperty.faithful_ι _
 
-/-- The inclusion of right exact functors into functors is fully faithful. -/
+/-- The inclusion of right-exact functors into functors is fully faithful. -/
 abbrev RightExactFunctor.fullyFaithful : (RightExactFunctor.forget C D).FullyFaithful :=
   ObjectProperty.fullyFaithfulι _
 
@@ -97,7 +97,7 @@ instance : (ExactFunctor.forget C D).Full :=
 instance : (ExactFunctor.forget C D).Faithful :=
   ObjectProperty.faithful_ι _
 
-/-- Turn an exact functor into a left exact functor. -/
+/-- Turn an exact functor into a left-exact functor. -/
 def LeftExactFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤ₗ D :=
   ObjectProperty.ιOfLE (fun _ => And.left)
 
@@ -107,7 +107,7 @@ instance : (LeftExactFunctor.ofExact C D).Full :=
 instance : (LeftExactFunctor.ofExact C D).Faithful :=
   ObjectProperty.faithful_ιOfLE _
 
-/-- Turn an exact functor into a left exact functor. -/
+/-- Turn an exact functor into a left-exact functor. -/
 def RightExactFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤ᵣ D :=
   ObjectProperty.ιOfLE (fun _ => And.right)
 
@@ -165,11 +165,11 @@ theorem RightExactFunctor.forget_map {F G : C ⥤ᵣ D} (α : F ⟶ G) :
 theorem ExactFunctor.forget_map {F G : C ⥤ₑ D} (α : F ⟶ G) : (ExactFunctor.forget C D).map α = α :=
   rfl
 
-/-- Turn a left exact functor into an object of the category `LeftExactFunctor C D`. -/
+/-- Turn a left-exact functor into an object of the category `LeftExactFunctor C D`. -/
 def LeftExactFunctor.of (F : C ⥤ D) [PreservesFiniteLimits F] : C ⥤ₗ D :=
   ⟨F, inferInstance⟩
 
-/-- Turn a right exact functor into an object of the category `RightExactFunctor C D`. -/
+/-- Turn a right-exact functor into an object of the category `RightExactFunctor C D`. -/
 def RightExactFunctor.of (F : C ⥤ D) [PreservesFiniteColimits F] : C ⥤ᵣ D :=
   ⟨F, inferInstance⟩
 
@@ -222,7 +222,7 @@ section
 
 variable (C D E)
 
-/-- Whiskering a left exact functor by a left exact functor yields a left exact functor. -/
+/-- Whiskering a left-exact functor by a left-exact functor yields a left-exact functor. -/
 @[simps! obj_obj obj_map map_app_app]
 def LeftExactFunctor.whiskeringLeft : (C ⥤ₗ D) ⥤ (D ⥤ₗ E) ⥤ (C ⥤ₗ E) where
   obj F := ObjectProperty.lift _ (forget _ _ ⋙ (Functor.whiskeringLeft C D E).obj F.obj)
@@ -237,7 +237,7 @@ def LeftExactFunctor.whiskeringLeft : (C ⥤ₗ D) ⥤ (D ⥤ₗ E) ⥤ (C ⥤�
     rw [ObjectProperty.FullSubcategory.comp_def]
     cat_disch
 
-/-- Whiskering a left exact functor by a left exact functor yields a left exact functor. -/
+/-- Whiskering a left-exact functor by a left-exact functor yields a left-exact functor. -/
 @[simps! obj_obj obj_map map_app_app]
 def LeftExactFunctor.whiskeringRight : (D ⥤ₗ E) ⥤ (C ⥤ₗ D) ⥤ (C ⥤ₗ E) where
   obj F := ObjectProperty.lift _ (forget _ _ ⋙ (Functor.whiskeringRight C D E).obj F.obj)
@@ -246,7 +246,7 @@ def LeftExactFunctor.whiskeringRight : (D ⥤ₗ E) ⥤ (C ⥤ₗ D) ⥤ (C ⥤�
     { app := fun H => ((Functor.whiskeringRight C D E).map η).app H.obj
       naturality := fun _ _ f => ((Functor.whiskeringRight C D E).map η).naturality f }
 
-/-- Whiskering a right exact functor by a right exact functor yields a right exact functor. -/
+/-- Whiskering a right-exact functor by a right-exact functor yields a right-exact functor. -/
 @[simps! obj_obj obj_map map_app_app]
 def RightExactFunctor.whiskeringLeft : (C ⥤ᵣ D) ⥤ (D ⥤ᵣ E) ⥤ (C ⥤ᵣ E) where
   obj F := ObjectProperty.lift _ (forget _ _ ⋙ (Functor.whiskeringLeft C D E).obj F.obj)
@@ -261,7 +261,7 @@ def RightExactFunctor.whiskeringLeft : (C ⥤ᵣ D) ⥤ (D ⥤ᵣ E) ⥤ (C ⥤�
     rw [ObjectProperty.FullSubcategory.comp_def]
     cat_disch
 
-/-- Whiskering a right exact functor by a right exact functor yields a right exact functor. -/
+/-- Whiskering a right-exact functor by a right-exact functor yields a right-exact functor. -/
 @[simps! obj_obj obj_map map_app_app]
 def RightExactFunctor.whiskeringRight : (D ⥤ᵣ E) ⥤ (C ⥤ᵣ D) ⥤ (C ⥤ᵣ E) where
   obj F := ObjectProperty.lift _ (forget _ _ ⋙ (Functor.whiskeringRight C D E).obj F.obj)

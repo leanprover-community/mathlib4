@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Adhesive
 import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 
 /-!
-# Left exactness of sheafification
+# Left-exactness of sheafification
 In this file we show that sheafification commutes with finite limits.
 -/
 
