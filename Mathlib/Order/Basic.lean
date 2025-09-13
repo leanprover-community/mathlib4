@@ -6,7 +6,7 @@ Authors: Jeremy Avigad, Mario Carneiro
 import Mathlib.Data.Subtype
 import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Order.Notation
-import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.GRewrite
 import Mathlib.Tactic.Spread
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Inhabit
@@ -1346,7 +1346,7 @@ end PUnit
 
 section «Prop»
 
-/-- Propositions form a complete boolean algebra, where the `≤` relation is given by implication. -/
+/-- Propositions form a complete Boolean algebra, where the `≤` relation is given by implication. -/
 instance Prop.le : LE Prop :=
   ⟨(· → ·)⟩
 
