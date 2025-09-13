@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Analysis.Normed.Ring.WithAbs
+--import Mathlib.Analysis.Normed.Ring.WithAbs
 
 /-!
 # Equivalence of real-valued absolute values
@@ -181,6 +181,9 @@ private theorem tendsto_pow_div_one_add_pow_zero {v : AbsoluteValue R S} {a : R}
   simpa using tendsto_atTop_add_right_of_le _ _ (tendsto_pow_atTop_atTop_of_one_lt ha)
     (fun _ ↦ le_rfl) |>.congr fun n ↦ (sub_eq_add_neg (v a ^ n) 1).symm
 
+variable {ι : Type*} [Fintype ι] [DecidableEq ι] {v : ι → AbsoluteValue R S}
+  {w : AbsoluteValue R S} {a b : R} {i : ι}
+
 /--
 - $v_1, ..., v_k, w$: absolute values on a field $F$.
 - $v_i$ is inequivalent to $v_j$ for all $j \neq i$ via the divergent point $a \in F$.
@@ -189,10 +192,8 @@ private theorem tendsto_pow_div_one_add_pow_zero {v : AbsoluteValue R S} {a : R}
 
 There is a $k\in F$ such that $1 < v_i(k)$ while $v_j(k) < 1$ for all $j \neq i$ and $w(k) < 1$.
 -/
-private theorem exists_one_lt_lt_one_lt_one_of_eq_one
-    {ι : Type*} [Fintype ι] [DecidableEq ι] {v : ι → AbsoluteValue R S} {w : AbsoluteValue R S}
-    {a b : R} {i : ι} (ha : 1 < v i a) (haj : ∀ j ≠ i, v j a < 1) (haw : w a = 1) (hb : 1 < v i b)
-    (hbw : w b < 1) :
+private theorem exists_one_lt_lt_one_lt_one_of_eq_one (ha : 1 < v i a) (haj : ∀ j ≠ i, v j a < 1)
+    (haw : w a = 1) (hb : 1 < v i b) (hbw : w b < 1) :
     ∃ k : R, 1 < v i k ∧ (∀ j ≠ i, v j k < 1) ∧ w k < 1 := by
   let c : ℕ → R := fun n ↦ a ^ n * b
   have hcᵢ : Tendsto (fun n ↦ (v i) (c n)) atTop atTop := by
@@ -219,10 +220,8 @@ There is a $k ∈ F$ such that $1 < v_i(k)$ while $v_j(k) < 1$ for all $j ≠ i$
 Note that this is the result `exists_one_lt_lt_one_lt_one_of_eq_one` replacing the condition
 that $w(a) = 1$ with $1 < w(a)$.
 -/
-private theorem exists_one_lt_lt_one_lt_one_of_one_lt
-    {ι : Type*} [Fintype ι] [DecidableEq ι] {v : ι → AbsoluteValue R S} {w : AbsoluteValue R S}
-    {a b : R} {i : ι} (ha : 1 < v i a) (haj : ∀ j ≠ i, v j a < 1) (haw : 1 < w a) (hb : 1 < v i b)
-    (hbw : w b < 1) :
+private theorem exists_one_lt_lt_one_lt_one_of_one_lt (ha : 1 < v i a) (haj : ∀ j ≠ i, v j a < 1)
+    (haw : 1 < w a) (hb : 1 < v i b) (hbw : w b < 1) :
     ∃ k : R, 1 < v i k ∧ (∀ j ≠ i, v j k < 1) ∧ w k < 1 := by
   let c : ℕ → R := fun n ↦ 1 / (1 + a⁻¹ ^ n) * b
   have hcᵢ : Tendsto (fun n ↦ v i (c n)) atTop (𝓝 (v i b)) := by
@@ -248,52 +247,49 @@ private theorem exists_one_lt_lt_one_lt_one_of_one_lt
       Finset.le_sup_dite_neg (fun j ↦ j = i) (Finset.mem_univ j) _
   · exact hrN _ <| le_max_iff.2 (.inr le_rfl)
 
-/--
-Let $v_1, ..., v_k$ be a collection of at least two non-trivial and pairwise inequivalent
-absolute values on a field $F$. There is an $a ∈ F$ such that $1 < v_1(a)$ while
-$v_j(a) < 1$ for all other $j ≠ 1$.
--/
-theorem exists_one_lt_lt_one_of_pairwise_not_isEquiv {n : ℕ} {v : Fin (n + 2) → AbsoluteValue R S}
-    (h : ∀ i, (v i).IsNontrivial) (hv : Pairwise fun i j ↦ ¬(v i).IsEquiv (v j)) :
-    ∃ (a : R), 1 < v 0 a ∧ ∀ j ≠ 0, v j a < 1 := by
-  induction n using Nat.case_strong_induction_on with
-  | hz =>
-    let ⟨a, ha⟩ := (v 0).exists_one_lt_lt_one_of_not_isEquiv (h 0) (h 1)
-      (hv zero_ne_one)
-    exact ⟨a, ha.1, by simp [Fin.forall_fin_two]; exact ha.2⟩
-  | hi n ih =>
-    -- Assume the result is true for all smaller collections of absolute values
-    -- Let `a : K` be the value from the collection with the last absolute value removed
-    let ⟨a, ha⟩ := ih n le_rfl (fun _ ↦ h _) (hv.comp_of_injective <| Fin.castSucc_injective _)
-    -- Let `b : K` be the value using the first and last absolute value
-    have : ![0, Fin.last (n + 2)].Injective := by simp [Function.Injective, Fin.forall_fin_two]
-    let ⟨b, hb⟩ := ih 0 (by linarith) (fun _ ↦ h _) <| hv.comp_of_injective this
-    simp [Fin.forall_fin_two] at hb
-    -- If `v last < 1` then `a` works.
-    by_cases ha₀ : v (Fin.last _) a < 1
+theorem Disjoint.eq_of_ne {α : Type*} {a b : α} (h : a ≠ b) :
+    Disjoint (fun c ↦ c = a) fun c ↦ c = b := by
+  intro p hpa hpb
+  refine le_bot_iff.2 <| funext fun c ↦ ?_
+  simp only [Pi.bot_apply, Prop.bot_eq_false, eq_iff_iff, iff_false]
+  intro hpc
+  exact h (hpa _ hpc ▸ hpb _ hpc)
+
+open Fintype Subtype in
+theorem exists_one_lt_lt_one_of_pairwise_not_isEquiv (h : ∀ i, (v i).IsNontrivial)
+    (hv : Pairwise fun i j ↦ ¬(v i).IsEquiv (v j)) :
+    ∀ i, ∃ (a : R), 1 < v i a ∧ ∀ j ≠ i, v j a < 1 := by
+  revert hv h
+  apply induction_subsingleton_or_nontrivial
+    (P := fun ι hι ↦ [DecidableEq ι] → ∀ v : ι → AbsoluteValue R S, (∀ i, (v i).IsNontrivial) →
+      (Pairwise fun i j ↦ ¬(v i).IsEquiv (v j)) → ∀ i, ∃ (a : R), 1 < v i a ∧ ∀ j ≠ i, v j a < 1)
+  · intro ι _ _ _ v h hv i
+    obtain ⟨a, ha⟩ := (h i).exists_abv_gt_one
+    exact ⟨a, ha, fun j hij ↦ absurd (Subsingleton.elim i j) hij.symm⟩
+  · intro ι _ _ ih _ v h hv i
+    rcases eq_or_ne (card ι) 2 with (hc | hc)
+    · obtain ⟨j, hj⟩ := (Nat.card_eq_two_iff' i).1 <| card_eq_nat_card ▸ hc
+      let ⟨a, ha⟩ := (v i).exists_one_lt_lt_one_of_not_isEquiv (h i) (h j) (hv hj.1.symm)
+      exact ⟨a, ha.1, fun _ h ↦ hj.2 _ h ▸ ha.2⟩
+    have hlt : 2 < card ι := Nat.lt_of_le_of_ne (one_lt_card_iff_nontrivial.2 ‹_›) hc.symm
+    obtain ⟨lst, hl⟩ := exists_ne i
+    let ⟨a, ha⟩ := ih {j : ι // j ≠ lst} (card_subtype_lt fun a ↦ a rfl) (restrict _ v)
+      (fun i ↦ h _) (hv.comp_of_injective val_injective) ⟨i, hl.symm⟩
+    let ⟨b, hb⟩ := ih {j : ι // j = i ∨ j = lst} (by simp [card_subtype_or_disjoint _ _ <|
+        Disjoint.eq_of_ne hl.symm, hlt]) (restrict _ v) (fun i ↦ h _)
+      (hv.comp_of_injective val_injective) ⟨i, by simp⟩
+    rcases eq_or_ne (v lst a) 1 with (ha₁ | ha₁)
+    · let ⟨k, hk⟩ := exists_one_lt_lt_one_lt_one_of_eq_one ha.1 ha.2 ha₁ hb.1 (hb.2 ⟨lst, .inr rfl⟩
+        (coe_ne_coe.1 hl))
+      refine ⟨k, hk.1, fun j hj ↦ ?_⟩
+      rcases eq_or_ne j lst with (rfl | h); try exact hk.2.2; exact hk.2.1 ⟨j, h⟩ (coe_ne_coe.1 hj)
+    rcases ha₁.lt_or_gt with (ha₀ | ha₀)
     · refine ⟨a, ha.1, fun j hj ↦ ?_⟩
-      by_cases hj' : j = Fin.last (n + 2)
-      · exact hj' ▸ ha₀
-      · exact ha.2 (Fin.castPred _ (ne_eq _ _ ▸  hj')) <| Fin.castPred_ne_zero _ hj
-    -- If `v last = 1` then this is given by `exists_one_lt_lt_one_lt_one_of_eq_one` with
-    -- `w = v last`.
-    · by_cases ha₁ : v (Fin.last _) a = 1
-      · let ⟨k, hk⟩ := exists_one_lt_lt_one_lt_one_of_eq_one
-          (v := fun i : Fin (n + 2) ↦ v i.castSucc) ha.1 ha.2 ha₁ hb.1 hb.2
-        refine ⟨k, hk.1, fun j hj ↦ ?_⟩
-        by_cases h : j ≠ Fin.last (n + 2)
-        · exact ne_eq _ _ ▸ hk.2.1 (j.castPred h) <| Fin.castPred_ne_zero _ hj
-        · exact not_ne_iff.1 h ▸ hk.2.2
-      -- The last cast `1 < v last` is given by `exists_one_lt_lt_one_lt_one_of_one_lt` with
-      -- `w = v last`.
-      · let ⟨k, hk⟩ := exists_one_lt_lt_one_lt_one_of_one_lt
-          (v := fun i : Fin (n + 2) ↦ v i.castSucc) ha.1 ha.2
-            (lt_of_le_of_ne (not_lt.1 ha₀) (ne_eq _ _ ▸ ha₁).symm) hb.1 hb.2
-        refine ⟨k, hk.1, fun j hj ↦ ?_⟩
-        by_cases h : j ≠ Fin.last _
-        · apply ne_eq _ _ ▸ hk.2.1 (j.castPred h)
-          rwa [← Fin.castPred_zero, Fin.castPred_inj]
-        · exact not_ne_iff.1 h ▸ hk.2.2
+      rcases eq_or_ne j lst with (rfl | h); try exact ha₀; exact ha.2 ⟨j, h⟩ (by simpa using hj)
+    · let ⟨k, hk⟩ := exists_one_lt_lt_one_lt_one_of_one_lt ha.1 ha.2 ha₀ hb.1 (hb.2 ⟨lst, .inr rfl⟩
+        (coe_ne_coe.1 hl))
+      refine ⟨k, hk.1, fun j hj ↦ ?_⟩
+      rcases eq_or_ne j lst with (rfl | h); try exact hk.2.2; exact hk.2.1 ⟨j, h⟩ (coe_ne_coe.1 hj)
 
 end LinearOrderedField
 
