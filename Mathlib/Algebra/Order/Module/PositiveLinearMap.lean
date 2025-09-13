@@ -52,16 +52,14 @@ instance instCoeToLinearMap : CoeHead F (E₁ →ₚ[R] E₂) where
 
 /-- An additive group homomorphism that maps nonnegative elements to nonnegative elements
 is an order homomorphism. -/
-lemma _root_.OrderHomClass.ofAddHom {F' E₁' E₂' : Type*} [FunLike F' E₁' E₂'] [AddGroup E₁']
+lemma _root_.OrderHomClass.ofAddMonoidHom {F' E₁' E₂' : Type*} [FunLike F' E₁' E₂'] [AddGroup E₁']
     [LE E₁'] [AddRightMono E₁'] [AddGroup E₂'] [LE E₂'] [AddRightMono E₂']
     [AddMonoidHomClass F' E₁' E₂']
     (h : ∀ f : F', ∀ x, 0 ≤ x → 0 ≤ f x) : OrderHomClass F' E₁' E₂' where
-  map_rel f a b hab := by
-    rw [← sub_nonneg] at hab ⊢
-    have : 0 ≤ f (b - a) := h f (b - a) hab
-    simpa using this
+  map_rel f a b hab := by simpa using h f (b - a) (sub_nonneg.mpr hab)
 
-@[deprecated (since := "2025-09-13")] alias _root_.OrderHomClass.ofLinear := OrderHomClass.ofAddHom
+@[deprecated (since := "2025-09-13")] alias _root_.OrderHomClass.ofLinear :=
+  OrderHomClass.ofAddMonoidHom
 
 end PositiveLinearMapClass
 
