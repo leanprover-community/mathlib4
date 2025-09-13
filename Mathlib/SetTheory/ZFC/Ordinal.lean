@@ -344,6 +344,14 @@ theorem toZFSet_strictMono : StrictMono toZFSet :=
 theorem toZFSet_injective : Function.Injective toZFSet :=
   toZFSet_strictMono.injective
 
+@[simp]
+theorem toZFSet_zero : toZFSet 0 = ∅ := by
+  ext; simp [mem_toZFSet_iff]
+
+@[simp]
+theorem toZFSet_succ (o : Ordinal) : toZFSet (Order.succ o) = insert (toZFSet o) (toZFSet o) := by
+  aesop (add simp [mem_toZFSet_iff, le_iff_eq_or_lt])
+
 end Ordinal
 
 namespace ZFSet
@@ -368,14 +376,6 @@ theorem isOrdinal_iff_mem_range_toZFSet {x : ZFSet.{u}} :
     exact Set.mem_range_self _
   · rintro ⟨a, rfl⟩
     exact isOrdinal_toZFSet a
-
-@[simp]
-theorem toZFSet_zero : toZFSet 0 = ∅ := by
-  ext; simp [mem_toZFSet_iff]
-
-@[simp]
-theorem toZFSet_succ (o : Ordinal) : toZFSet (Order.succ o) = insert (toZFSet o) (toZFSet o) := by
-  aesop (add simp [mem_toZFSet_iff, le_iff_eq_or_lt])
 
 /-- `Ordinal` is order-equivalent to the type of von Neumann ordinals. -/
 @[simps apply symm_apply]
