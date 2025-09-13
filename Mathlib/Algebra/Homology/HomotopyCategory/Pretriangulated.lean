@@ -470,8 +470,6 @@ lemma contractible_distinguished (X : HomotopyCategory C (ComplexShape.up ℤ)) 
 lemma distinguished_cocone_triangle {X Y : HomotopyCategory C (ComplexShape.up ℤ)} (f : X ⟶ Y) :
     ∃ (Z : HomotopyCategory C (ComplexShape.up ℤ)) (g : Y ⟶ Z) (h : Z ⟶ X⟦1⟧),
       Triangle.mk f g h ∈ distinguishedTriangles C := by
-  obtain ⟨X⟩ := X
-  obtain ⟨Y⟩ := Y
   obtain ⟨f, rfl⟩ := (quotient _ _).map_surjective f
   exact ⟨_, _, _, ⟨_, _, f, ⟨Iso.refl _⟩⟩⟩
 
