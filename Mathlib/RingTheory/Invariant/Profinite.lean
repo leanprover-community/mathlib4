@@ -164,8 +164,6 @@ instance (P : Ideal A) (Q : Ideal B) [Q.IsPrime] [Q.LiesOver P]
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
   exact hσ' x
 
-set_option maxHeartbeats 400000 in
--- short term fix
 /-- The stabilizer subgroup of `Q` surjects onto `Aut((B/Q)/(A/P))`. -/
 theorem Ideal.Quotient.stabilizerHom_surjective_of_profinite
     (P : Ideal A) (Q : Ideal B) [Q.IsPrime] [Q.LiesOver P]
@@ -194,10 +192,12 @@ theorem Ideal.Quotient.stabilizerHom_surjective_of_profinite
     rw [← this]
     rfl
   · ext x
-    obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-    obtain ⟨N, hN⟩ := ProfiniteGrp.exist_openNormalSubgroup_sub_open_nhds_of_one
+    have hx := Ideal.Quotient.mk_surjective x
+    obtain ⟨x, rfl⟩ := hx
+    have hx := ProfiniteGrp.exist_openNormalSubgroup_sub_open_nhds_of_one
       (stabilizer_isOpen G x) (one_mem _)
-    lift x to B' N.1.1 using fun g ↦ hN g.2
+    obtain ⟨N, hN⟩ := hx
+    lift x to B' N.1.1 using fun (g : ↑N.toOpenSubgroup) ↦ hN g.2
     change Ideal.Quotient.mk Q (QuotientGroup.mk (s := N) a • x).1 = _
     rw [this]
     exact DFunLike.congr_fun (s N).2 (Ideal.Quotient.mk _ x)
