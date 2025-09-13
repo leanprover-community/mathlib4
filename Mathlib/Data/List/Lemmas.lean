@@ -21,21 +21,20 @@ theorem setOf_mem_eq_empty_iff {l : List α} : { x | x ∈ l } = ∅ ↔ l = [] 
 
 theorem injOn_insertIdx_index_of_notMem (l : List α) (x : α) (hx : x ∉ l) :
     Set.InjOn (fun k => l.insertIdx k x) { n | n ≤ l.length } := by
-  induction l with
+  intro n hn m hm h
+  induction l generalizing n m with
   | nil =>
-    intro n hn m hm _
     simp_all [Set.mem_singleton_iff, Set.setOf_eq_eq_singleton, length]
   | cons hd tl IH =>
-    intro n hn m hm h
     simp only [length, Set.mem_setOf_eq] at hn hm
     simp only [mem_cons, not_or] at hx
     cases n <;> cases m
     · rfl
     · simp [hx.left] at h
     · simp [Ne.symm hx.left] at h
-    · simp only [insertIdx_succ_cons] at h
+    · simp only [insertIdx_succ_cons, cons.injEq, true_and] at h
       rw [Nat.succ_inj]
-      refine IH hx.right ?_ ?_ (by injection h)
+      refine IH hx.right ?_ ?_ h
       · simpa [Nat.succ_le_succ_iff] using hn
       · simpa [Nat.succ_le_succ_iff] using hm
 
