@@ -195,3 +195,25 @@ theorem le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot
   simp only [le_sup_right]
 
 end Submodule
+
+namespace Module
+
+open Pointwise
+
+variable [Module.Finite R M]
+
+theorem subsingleton_of_subsingleton_quotSMulTop {x : R} (hx : x ∈ (annihilator R M).jacobson)
+    [h : Subsingleton (M ⧸ x • (⊤ : Submodule R M))] : Subsingleton M := by
+  rw [← Submodule.annihilator_top] at hx
+  exact (Submodule.subsingleton_iff R).mp <| subsingleton_of_top_le_bot <| le_of_eq <|
+    Submodule.eq_bot_of_eq_pointwise_smul_of_mem_jacobson_annihilator Module.Finite.fg_top
+      (Submodule.subsingleton_quotient_iff_eq_top.mp h).symm hx
+
+theorem nontrivial_quotSMulTop_of_mem_annihilator_jacobson [h : Nontrivial M] {x : R}
+    (hx : x ∈ (annihilator R M).jacobson) : Nontrivial (M ⧸ x • (⊤ : Submodule R M)) := by
+  by_contra hq
+  have : Subsingleton (M ⧸ x • (⊤ : Submodule R M)) := not_nontrivial_iff_subsingleton.mp hq
+  have : Subsingleton M := subsingleton_of_subsingleton_quotSMulTop hx
+  exact not_nontrivial M h
+
+end Module

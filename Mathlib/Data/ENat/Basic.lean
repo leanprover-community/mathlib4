@@ -559,3 +559,21 @@ lemma WithBot.add_one_le_iff {n : ℕ} {m : WithBot ℕ∞} : n + 1 ≤ m ↔ n 
   · simp
   · rw [WithBot.coe_le_coe, ENat.coe_add, ENat.coe_one, ENat.add_one_le_iff (ENat.coe_ne_top n),
       ← WithBot.coe_lt_coe, WithBot.coe_natCast]
+
+lemma ENat.add_right_cancel_iff (a b c : ℕ∞) (netop : c ≠ ⊤) : a + c = b + c ↔ a = b :=
+  ⟨fun h ↦ ENat.add_left_injective_of_ne_top netop h, fun h ↦ by rw [h]⟩
+
+lemma withBotENat_add_coe_cancel (a b : WithBot ℕ∞) (c : ℕ) : a + c = b + c ↔ a = b := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
+  by_cases eqbot : a = ⊥
+  · simp [eqbot, WithBot.bot_add] at h
+    rw [WithBot.add_coe_eq_bot_iff.mp h.symm, eqbot]
+  · by_cases eqbot' : b = ⊥
+    · absurd eqbot
+      simpa [eqbot'] using h
+    · have : a.unbot eqbot + c = b.unbot eqbot' + c := by
+        apply WithBot.coe_inj.mp
+        convert h
+        repeat simpa using by rfl
+      rw [← WithBot.coe_unbot a eqbot, ← WithBot.coe_unbot b eqbot', WithBot.coe_inj]
+      simpa [ENat.add_right_cancel_iff _ _ _ (ENat.coe_ne_top c)] using this
