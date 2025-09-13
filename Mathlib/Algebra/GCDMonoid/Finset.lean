@@ -105,7 +105,7 @@ theorem lcm_eq_lcm_image [DecidableEq α] : s.lcm f = (s.image f).lcm id :=
 theorem lcm_eq_zero_iff [Nontrivial α] : s.lcm f = 0 ↔ ∃ x ∈ s, f x = 0 := by
   simp only [lcm_def, Multiset.lcm_eq_zero_iff, Multiset.mem_map, mem_val]
 
-@[simp] theorem lcm_ne_zero_iff [Nontrivial α] : s.lcm f ≠ 0 ↔ ∀ x ∈ s, f x ≠ 0 := by
+theorem lcm_ne_zero_iff [Nontrivial α] : s.lcm f ≠ 0 ↔ ∀ x ∈ s, f x ≠ 0 := by
   simp [lcm_eq_zero_iff]
 
 end lcm
