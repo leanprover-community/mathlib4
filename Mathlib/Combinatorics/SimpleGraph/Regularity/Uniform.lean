@@ -328,8 +328,8 @@ lemma IsEquipartition.card_biUnion_offDiag_le' (hP : P.IsEquipartition) :
   suffices (#U - 1) * #U ≤ #A / #P.parts * (#A / #P.parts + 1) by
     rwa [Nat.mul_sub_right_distrib, one_mul, ← offDiag_card] at this
   have := hP.card_part_le_average_add_one hU
-  refine Nat.mul_le_mul ((Nat.sub_le_sub_right this 1).trans ?_) this
-  simp only [Nat.add_succ_sub_one, add_zero, le_rfl]
+  gcongr
+  exact Nat.sub_le_of_le_add this
 
 lemma IsEquipartition.card_biUnion_offDiag_le (hε : 0 < ε) (hP : P.IsEquipartition)
     (hP' : 4 / ε ≤ #P.parts) : #(P.parts.biUnion offDiag) ≤ ε / 2 * #A ^ 2 := by
