@@ -162,13 +162,17 @@ end TorsionFree
 section Divisible
 variable [DivisibleBy M ℕ]
 
+theorem mk_divisibleByDiv_smul (m : M) (s t : ℕ+) :
+    mk (DivisibleBy.div (s.val • m) t.val) s = mk m t := by
+  rw [mk_eq_mk]
+  use 1
+  rw [DivisibleBy.div_cancel _ (by simp)]
+
 theorem mk_left_surjective (s : ℕ+) : Function.Surjective (fun (m : M) ↦ mk m s) := by
   intro m
   induction m with | mk m t
   use DivisibleBy.div (s.val • m) t.val
-  rw [mk_eq_mk]
-  use 1
-  rw [DivisibleBy.div_cancel _ (by simp)]
+  simp [mk_divisibleByDiv_smul]
 
 theorem coe_surjective : Function.Surjective ((↑) : M → DivisibleHull M) :=
   mk_left_surjective 1
@@ -183,10 +187,8 @@ variable (M) in
 def coeAddEquiv : M ≃+ DivisibleHull M where
   __ := coeAddMonoidHom M
   invFun m := m.liftOn (fun m s ↦ DivisibleBy.div m s.val) (fun m m' s s' h ↦ by
-    simp_rw [mk_eq_mk_iff_smul_eq_smul] at h
-    rw [← nsmul_right_inj (show s.val ≠ 0 by simp)]
-    rw [← nsmul_right_inj (show s'.val ≠ 0 by simp)]
-    rw [DivisibleBy.div_cancel _ (by simp), h, smul_comm, DivisibleBy.div_cancel _ (by simp)])
+    rw [← mk_divisibleByDiv_smul m 1 s, ← mk_divisibleByDiv_smul m' 1 s'] at h
+    simpa using mk_left_injective 1 h)
   left_inv m := by
     rw [← nsmul_right_inj (show 1 ≠ 0 by simp)]
     simp [DivisibleBy.div_cancel]
