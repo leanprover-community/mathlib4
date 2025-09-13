@@ -52,8 +52,10 @@ theorem ofFn_congr {m n : ℕ} (h : m = n) (f : Fin m → α) :
 theorem ofFn_succ' {n} (f : Fin (succ n) → α) :
     ofFn f = (ofFn fun i => f (Fin.castSucc i)).concat (f (Fin.last _)) := by
   induction n with
-  | zero => rw [ofFn_zero, concat_nil, ofFn_succ, ofFn_zero]; rfl
-  | succ n IH => rw [ofFn_succ, IH, ofFn_succ, concat_cons, Fin.castSucc_zero]; congr
+  | zero => rw [ofFn_zero, concat_nil, ofFn_succ, ofFn_zero, Fin.last_zero]
+  | succ n IH =>
+    rw [ofFn_succ, IH, ofFn_succ, concat_cons, Fin.castSucc_zero, Fin.succ_last]
+    simp only [succ_eq_add_one, Fin.castSucc_succ]
 
 @[simp]
 theorem ofFn_fin_append {m n} (a : Fin m → α) (b : Fin n → α) :
