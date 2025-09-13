@@ -208,7 +208,7 @@ lemma eisensteinSeries_slash_apply (k : ℤ) (γ : SL(2, ℤ)) :
 
 /-- The SlashInvariantForm defined by an Eisenstein series of weight `k : ℤ`, level `Γ(N)`,
   and congruence condition given by `a : Fin 2 → ZMod N`. -/
-def eisensteinSeries_SIF (k : ℤ) : SlashInvariantForm ((Gamma N).map <| mapGL ℝ) k where
+def eisensteinSeries_SIF (k : ℤ) : SlashInvariantForm Γ(N) k where
   toFun := eisensteinSeries a k
   slash_action_eq' A hA := by
     obtain ⟨g, hg, rfl⟩ := hA

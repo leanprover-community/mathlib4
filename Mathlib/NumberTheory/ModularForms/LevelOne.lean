@@ -26,7 +26,7 @@ variable {F : Type*} [FunLike F ℍ ℂ] {k : ℤ}
 
 namespace SlashInvariantForm
 
-variable [SlashInvariantFormClass F (Γ(1).map <| mapGL ℝ) k]
+variable [SlashInvariantFormClass F Γ(1) k]
 
 lemma exists_one_half_le_im_and_norm_le (hk : k ≤ 0) (f : F) (τ : ℍ) :
     ∃ ξ : ℍ, 1 / 2 ≤ ξ.im ∧ ‖f τ‖ ≤ ‖f ξ‖ :=
@@ -56,7 +56,7 @@ end SlashInvariantForm
 
 namespace ModularFormClass
 
-variable [ModularFormClass F (Γ(1).map <| mapGL ℝ) k]
+variable [ModularFormClass F Γ(1) k]
 
 private theorem cuspFunction_eqOn_const_of_nonpos_wt (hk : k ≤ 0) (f : F) :
     Set.EqOn (cuspFunction 1 f) (const ℂ (cuspFunction 1 f 0)) (Metric.ball 0 1) := by
@@ -87,19 +87,19 @@ lemma levelOne_neg_weight_eq_zero (hk : k < 0) (f : F) : ⇑f = 0 := by
   · exact (lt_irrefl _ hk).elim
   · rw [hf, hf₀, const_zero]
 
-lemma levelOne_weight_zero_const [ModularFormClass F (Γ(1).map <| mapGL ℝ) 0] (f : F) :
+lemma levelOne_weight_zero_const [ModularFormClass F Γ(1) 0] (f : F) :
     ∃ c, ⇑f = Function.const _ c :=
   ⟨_, levelOne_nonpos_wt_const le_rfl f⟩
 
 end ModularFormClass
 
 lemma ModularForm.levelOne_weight_zero_rank_one :
-    Module.rank ℂ (ModularForm (Γ(1).map <| mapGL ℝ) 0) = 1 := by
+    Module.rank ℂ (ModularForm Γ(1) 0) = 1 := by
   refine rank_eq_one (const 1) (by simp [DFunLike.ne_iff]) fun g ↦ ?_
   obtain ⟨c', hc'⟩ := levelOne_weight_zero_const g
   aesop
 
 lemma ModularForm.levelOne_neg_weight_rank_zero (hk : k < 0) :
-    Module.rank ℂ (ModularForm (Γ(1).map <| mapGL ℝ) k) = 0 := by
+    Module.rank ℂ (ModularForm Γ(1) k) = 0 := by
   refine rank_eq_zero_iff.mpr fun f ↦ ⟨_, one_ne_zero, ?_⟩
   simpa only [one_smul, ← DFunLike.coe_injective.eq_iff] using levelOne_neg_weight_eq_zero hk f
