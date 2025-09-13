@@ -331,14 +331,13 @@ end pi
 * `a = b * star b` for some `b`
 * `a` is self-adjoint and has a non-negative spectrum -/
 theorem _root_.nonneg_TFAE {a : A} :
-    List.TFAE [
-      0 ≤ a,
+    [ 0 ≤ a,
       a = sqrt a * sqrt a,
       ∃ b : A, 0 ≤ b ∧ a = b * b,
       ∃ b : A, IsSelfAdjoint b ∧ a = b * b,
       ∃ b : A, a = star b * b,
       ∃ b : A, a = b * star b,
-      IsSelfAdjoint a ∧ QuasispectrumRestricts a ContinuousMap.realToNNReal ] := by
+      IsSelfAdjoint a ∧ QuasispectrumRestricts a ContinuousMap.realToNNReal ].TFAE := by
   tfae_have 1 ↔ 7 := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts
   tfae_have 5 → 1 := fun ⟨b, hb⟩ => hb ▸ star_mul_self_nonneg _
   tfae_have 6 → 1 := fun ⟨b, hb⟩ => hb ▸ mul_star_self_nonneg _
