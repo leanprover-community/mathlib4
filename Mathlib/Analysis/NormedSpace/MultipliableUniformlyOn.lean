@@ -12,7 +12,7 @@ import Mathlib.Topology.Algebra.IsUniformGroup.Order
 # Uniform convergence of products of functions
 
 We gather some results about the uniform convergence of infinite products, in particular those of
-the form `∏' i, (1 + f i x)` for a sequence `f` of complex valued functions.
+the form `∏' i, (1 + f i x)` for a sequence `f` of complex-valued functions.
 -/
 
 open Filter Function Complex Finset Topology
