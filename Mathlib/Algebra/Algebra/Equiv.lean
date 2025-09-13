@@ -83,14 +83,16 @@ variable {A₁' : Type uA₁'} {A₂' : Type uA₂'} {A₃' : Type uA₃'}
 
 section Semiring
 
+/-- Defines an algebra equivalence by taking in a `RingEquiv e` and a commutes field:
+`∀ r, e (algebraMap _ _ r) = algebraMap _ _ r`. -/
 @[reducible, inline]
 def ofCommutes [CommSemiring R] [Semiring A₁] [Semiring A₂] [Algebra R A₁] [Algebra R A₂]
-    (e : A₁ ≃+* A₂) (h_comm : ∀ r : R, e (algebraMap R A₁ r) = algebraMap R A₂ r) :
+    (e : A₁ ≃+* A₂) (commutes' : ∀ r : R, e (algebraMap R A₁ r) = algebraMap R A₂ r) :
     A₁ ≃ₐ[R] A₂ where
   toEquiv := e.toEquiv
   map_add' := map_add e
   map_mul' := map_mul e
-  map_smul' r a := show e (r • a) = r • (e a) by simp [Algebra.smul_def, h_comm]
+  map_smul' r a := show e (r • a) = r • (e a) by simp [Algebra.smul_def, commutes']
 
 variable [Add A₁] [Add A₂] [Add A₃] [Mul A₁] [Mul A₂] [Mul A₃]
 variable [Add A₁'] [Add A₂'] [Add A₃'] [Mul A₁'] [Mul A₂'] [Mul A₃']
@@ -250,8 +252,7 @@ def refl : A₁ ≃ₐ[R] A₁ :=
 instance : Inhabited (A₁ ≃ₐ[R] A₁) :=
   ⟨refl⟩
 
-@[simp, norm_cast] lemma refl_toAlgHom {A₁ A₂ : Type*} [CommSemiring R]
-    [Semiring A₁] [Semiring A₂] [Algebra R A₁] [Algebra R A₂] :
+@[simp, norm_cast] lemma refl_toAlgHom {A₁ : Type*} [CommSemiring R] [Semiring A₁] [Algebra R A₁] :
     (refl : A₁ ≃ₐ[R] A₁) = AlgHom.id R A₁ := rfl
 @[simp, norm_cast] lemma refl_toRingHom {A₁ : Type*} [NonAssocSemiring A₁] [SMul R A₁] :
     (refl : A₁ ≃ₐ[R] A₁) = RingHom.id A₁ := rfl
