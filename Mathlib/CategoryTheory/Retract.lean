@@ -55,10 +55,14 @@ instance : IsSplitMono h.i := ⟨⟨h.splitMono⟩⟩
 
 variable (X) in
 /-- Any object is a retract of itself. -/
-@[simps]
+@[refl, simps]
 def refl : Retract X X where
   i := 𝟙 X
   r := 𝟙 X
+
+/-- The same as `Retract.refl` except with the object implicit -/
+@[simp]
+protected abbrev rfl : Retract X X := refl X
 
 /-- A retract of a retract is a retract. -/
 @[simps]
