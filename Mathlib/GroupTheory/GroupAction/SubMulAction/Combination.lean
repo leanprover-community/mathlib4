@@ -8,7 +8,6 @@ import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
 import Mathlib.GroupTheory.GroupAction.Embedding
 import Mathlib.GroupTheory.GroupAction.Basic
-import Mathlib.Data.Finset.SetLike
 
 /-! # Combinations
 
@@ -61,7 +60,10 @@ theorem mem_iff {s : Finset α} :
     s ∈ n.Combination α ↔ s.card = n := by
   rw [Combination, Set.mem_setOf_eq]
 
-instance : SetLike (n.Combination α) α := SetLike.instSubtype
+-- TODO : Update once there is a `SetLike` for `Finset` (PR  #28241)
+instance : SetLike (n.Combination α) α where
+  coe s := s
+  coe_injective' s t h := SetCoe.ext (by simpa using h)
 
 @[simp]
 theorem coe_coe {s : n.Combination α} :
