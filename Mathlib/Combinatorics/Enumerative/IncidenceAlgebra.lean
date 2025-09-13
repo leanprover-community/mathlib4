@@ -609,7 +609,7 @@ end DecidableLe
 
 variable {𝕜} (f f₁ f₂ : IncidenceAlgebra 𝕜 α) (g g₁ g₂ : IncidenceAlgebra 𝕜 β)
 
-/-- The cartesian product of two incidence algebras. -/
+/-- The Cartesian product of two incidence algebras. -/
 protected def prod : IncidenceAlgebra 𝕜 (α × β) where
   toFun x y := f x.1 y.1 * g x.2 y.2
   eq_zero_of_not_le' x y hxy := by

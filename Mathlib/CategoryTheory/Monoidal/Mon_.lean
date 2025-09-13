@@ -992,7 +992,7 @@ end SymmetricCategory
 /-!
 Projects:
 * Check that `Mon_ MonCat ≌ CommMonCat`, via the Eckmann-Hilton argument.
-  (You'll have to hook up the cartesian monoidal structure on `MonCat` first,
+  (You'll have to hook up the Cartesian monoidal structure on `MonCat` first,
   available in https://github.com/leanprover-community/mathlib3/pull/3463)
 * More generally, check that `Mon_ (Mon_ C) ≌ CommMon_ C` when `C` is braided.
 * Check that `Mon_ TopCat ≌ [bundled topological monoids]`.

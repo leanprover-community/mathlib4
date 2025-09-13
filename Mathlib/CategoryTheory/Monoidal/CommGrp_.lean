@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Monoidal.Grp_
 import Mathlib.CategoryTheory.Monoidal.CommMon_
 
 /-!
-# The category of commutative groups in a cartesian monoidal category
+# The category of commutative groups in a Cartesian monoidal category
 -/
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
@@ -17,7 +17,7 @@ open Mon_Class
 
 variable (C : Type u₁) [Category.{v₁} C] [CartesianMonoidalCategory.{v₁} C] [BraidedCategory C]
 
-/-- A commutative group object internal to a cartesian monoidal category. -/
+/-- A commutative group object internal to a Cartesian monoidal category. -/
 structure CommGrp_ where
   /-- The underlying object in the ambient monoidal category -/
   X : C
