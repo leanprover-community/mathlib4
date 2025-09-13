@@ -133,7 +133,7 @@ theorem eq_zero_of_abs_deriv_le_mul_abs_self_of_eq_zero_right {f f' : ℝ → E}
     (ha : f a = 0) (bound : ∀ x ∈ Ico a b, ‖f' x‖ ≤ K * ‖f x‖) :
     ∀ x ∈ Set.Icc a b, f x = 0 := by
   intro x hx
-  apply norm_eq_zero.mp <| le_antisymm _ (norm_nonneg (f x))
+  apply norm_le_zero_iff.mp
   calc ‖f x‖
     _ ≤ gronwallBound 0 K 0 (x - a) :=
       norm_le_gronwallBound_of_norm_deriv_right_le hf hf' (by simp [ha]) (by simpa using bound) _ hx
