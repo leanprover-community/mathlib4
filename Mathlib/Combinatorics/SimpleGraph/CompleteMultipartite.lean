@@ -338,12 +338,8 @@ variable {r t : ℕ} (A : G.CompleteEquipartiteSubgraph r t)
 namespace CompleteEquipartiteSubgraph
 
 /-- The parts in a `G.CompleteEquipartiteSubgraph r t` are pairwise disjoint. -/
-theorem pairwise_disjoint_on_parts : Pairwise (Disjoint on A.parts) := by
-  refine A.Adj.mono (fun i₁ i₂ h ↦ ?_)
-  rw [onFun_apply, disjoint_left]
-  intro v hv₁
-  contrapose! h with hv₂
-  exact ⟨v, hv₁, v, hv₂, G.loopless v⟩
+theorem pairwise_disjoint_on_parts : Pairwise (Disjoint on A.parts) :=
+  fun _ _ hne ↦ disjoint_left.mpr fun v hv₁ hv₂ ↦ (G.loopless v) (A.Adj hne hv₁ hv₂)
 
 /-- The finset of vertices in a `G.CompleteEquipartiteSubgraph r t`. -/
 abbrev verts : Finset V :=
