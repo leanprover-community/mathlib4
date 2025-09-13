@@ -120,7 +120,7 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type uE} [NormedAdd
 
 /-- `HasFTaylorSeriesUpToOn n f p s` registers the fact that `p 0 = f` and `p (m+1)` is a
 derivative of `p m` for `m < n`, and is continuous for `m ≤ n`. This is a predicate analogous to
-`HasFDerivWithinAt` but for higher order derivatives.
+`HasFDerivWithinAt` but for higher-order derivatives.
 
 Notice that `p` does not sum up to `f` on the diagonal (`FormalMultilinearSeries.sum`), even if
 `f` is analytic and `n = ∞`: an additional `1/m!` factor on the `m`th term is necessary for that. -/
@@ -674,7 +674,7 @@ lemma iteratedFDerivWithin_comp_sub (n : ℕ) (a : E) :
 
 /-- `HasFTaylorSeriesUpTo n f p` registers the fact that `p 0 = f` and `p (m+1)` is a
 derivative of `p m` for `m < n`, and is continuous for `m ≤ n`. This is a predicate analogous to
-`HasFDerivAt` but for higher order derivatives.
+`HasFDerivAt` but for higher-order derivatives.
 
 Notice that `p` does not sum up to `f` on the diagonal (`FormalMultilinearSeries.sum`), even if
 `f` is analytic and `n = ∞`: an addition `1/m!` factor on the `m`th term is necessary for that. -/

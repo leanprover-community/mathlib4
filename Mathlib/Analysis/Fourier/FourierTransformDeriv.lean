@@ -45,7 +45,7 @@ We introduce two convenience definitions:
   This is essentially `ContinuousLinearMap.smulRight`, up to the factor `- 2πI` designed to make
   sure that the Fourier integral of `fourierSMulRight L f` is the derivative of the Fourier
   integral of `f`.
-* `VectorFourier.fourierPowSMulRight` is the higher order analogue for higher derivatives:
+* `VectorFourier.fourierPowSMulRight` is the higher-order analogue for higher derivatives:
   `fourierPowSMulRight L f v n` is informally `(-(2 * π * I))^n (L v ⬝)^n • f v`, in
   the space of continuous multilinear maps `W [×n]→L[ℝ] E`.
 
