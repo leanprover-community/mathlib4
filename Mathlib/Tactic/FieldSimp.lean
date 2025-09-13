@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, David Renshaw, Heather Macbeth, Arend Mellendijk, Michael Rothgang
 -/
 import Mathlib.Data.Ineq
+import Mathlib.Tactic.FieldSimp.Attr
 import Mathlib.Tactic.FieldSimp.Discharger
 import Mathlib.Tactic.FieldSimp.Lemmas
 import Mathlib.Util.AtLocation
@@ -705,11 +706,7 @@ elab "field_simp" d:(discharger)? args:(simpArgs)? : conv => do
   -- convert `x` to the output of the normalization
   Conv.applySimpResult r
 
-end Mathlib.Tactic.FieldSimp
-
-open Mathlib.Tactic
-
-simproc_decl field (Eq _ _) := fun (t : Expr) ↦ do
+def proc : Simp.Simproc := fun (t : Expr) ↦ do
   let ctx ← Simp.getContext
   let disch e : MetaM Expr := Prod.fst <$> (FieldSimp.discharge e).run ctx >>= Option.getM
   try
@@ -720,7 +717,13 @@ simproc_decl field (Eq _ _) := fun (t : Expr) ↦ do
   catch _ =>
     return .continue
 
-attribute [inherit_doc FieldSimp.fieldSimp] field
+simproc_decl eqProc (Eq _ _) := proc
+simproc_decl leProc (LE.le _ _) := proc
+simproc_decl ltProc (LT.lt _ _) := proc
+
+attribute [field] eqProc leProc ltProc
+
+end Mathlib.Tactic.FieldSimp
 
 /-!
  We register `field_simp` with the `hint` tactic.
