@@ -341,7 +341,6 @@ theorem _root_.nonneg_TFAE {a : A} :
   tfae_have 1 ↔ 7 := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts
   tfae_have 5 → 1 := fun ⟨b, hb⟩ => hb ▸ star_mul_self_nonneg _
   tfae_have 6 → 1 := fun ⟨b, hb⟩ => hb ▸ mul_star_self_nonneg _
-  tfae_have 1 → 3 := fun h => ⟨sqrt a, sqrt_nonneg a, sqrt_mul_sqrt_self a |>.symm⟩
   tfae_have 3 → 4 := fun ⟨b, hb⟩ => ⟨b, hb.1.isSelfAdjoint, hb.2⟩
   tfae_have 4 → 5 := fun ⟨b, hb⟩ => ⟨b, hb.1.symm ▸ hb.2⟩
   tfae_have 4 → 6 := fun ⟨b, hb⟩ => ⟨b, hb.1.symm ▸ hb.2⟩
