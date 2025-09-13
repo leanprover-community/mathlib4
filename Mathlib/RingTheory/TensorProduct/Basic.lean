@@ -1404,6 +1404,12 @@ lemma Algebra.TensorProduct.includeLeft_surjective
 
 end
 
+/-- Given a subalgebra `C` of an `R`-algebra `A`, and an `R`-algebra `B`, the base change of `C` to
+a subalgebra of `A ⊗[R] B` -/
+def Subalgebra.baseChange {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
+    (B : Type*) [CommRing B] [Algebra R B] (C : Subalgebra R A) : Subalgebra B (B ⊗[R] A) :=
+  AlgHom.range (Algebra.TensorProduct.map (AlgHom.id B B) C.val)
+
 variable {R A B : Type*} [CommSemiring R] [NonUnitalNonAssocSemiring A]
   [NonUnitalNonAssocSemiring B] [Module R A] [Module R B] [SMulCommClass R A A]
   [SMulCommClass R B B] [IsScalarTower R A A] [IsScalarTower R B B]
