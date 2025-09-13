@@ -64,9 +64,10 @@ theorem max_eq_bot {s : Finset α} : s.max = ⊥ ↔ s = ∅ :=
     fun h ↦ h.symm ▸ max_empty⟩
 
 theorem mem_of_max {s : Finset α} : ∀ {a : α}, s.max = a → a ∈ s := by
-  induction' s using Finset.induction_on with b s _ ih
-  · intro _ H; cases H
-  · intro a h
+  induction s using Finset.induction_on with
+  | empty => intro _ H; cases H
+  | insert b s _ ih =>
+    intro a h
     by_cases p : b = a
     · induction p
       exact mem_insert_self b s
@@ -245,6 +246,12 @@ theorem min'_eq_inf' : s.min' H = s.inf' H id := rfl
 @[simp]
 theorem max'_singleton (a : α) : ({a} : Finset α).max' (singleton_nonempty _) = a := by simp [max']
 
+lemma min'_eq_iff (a : α) : s.min' H = a ↔ a ∈ s ∧ ∀ (b : α), b ∈ s → a ≤ b :=
+  ⟨(· ▸ ⟨min'_mem _ _, min'_le _⟩), fun h ↦ le_antisymm (min'_le _ _ h.1) (le_min' _ _ _ h.2)⟩
+
+lemma max'_eq_iff (a : α) : s.max' H = a ↔ a ∈ s ∧ ∀ (b : α), b ∈ s → b ≤ a :=
+  ⟨(· ▸ ⟨max'_mem _ _, le_max' _⟩), fun h ↦ le_antisymm (max'_le _ _ _ h.2) (le_max' _ _ h.1)⟩
+
 theorem min'_le_max' (hs : s.Nonempty) : s.min' hs ≤ s.max' hs := min'_le _ _ (max'_mem _ _)
 
 theorem min'_lt_max' {i j} (H1 : i ∈ s) (H2 : j ∈ s) (H3 : i ≠ j) :
@@ -283,22 +290,18 @@ theorem map_toDual_max (s : Finset α) : s.max.map toDual = (s.image toDual).min
 
 theorem ofDual_min' {s : Finset αᵒᵈ} (hs : s.Nonempty) :
     ofDual (min' s hs) = max' (s.image ofDual) (hs.image _) := by
-  rw [← WithBot.coe_eq_coe]
   simp [min'_eq_inf', max'_eq_sup']
 
 theorem ofDual_max' {s : Finset αᵒᵈ} (hs : s.Nonempty) :
     ofDual (max' s hs) = min' (s.image ofDual) (hs.image _) := by
-  rw [← WithTop.coe_eq_coe]
   simp [min'_eq_inf', max'_eq_sup']
 
 theorem toDual_min' {s : Finset α} (hs : s.Nonempty) :
     toDual (min' s hs) = max' (s.image toDual) (hs.image _) := by
-  rw [← WithBot.coe_eq_coe]
   simp [min'_eq_inf', max'_eq_sup']
 
 theorem toDual_max' {s : Finset α} (hs : s.Nonempty) :
     toDual (max' s hs) = min' (s.image toDual) (hs.image _) := by
-  rw [← WithTop.coe_eq_coe]
   simp [min'_eq_inf', max'_eq_sup']
 
 theorem max'_subset {s t : Finset α} (H : s.Nonempty) (hst : s ⊆ t) :
@@ -451,7 +454,7 @@ theorem card_le_diff_of_interleaved {s t : Finset α}
 @[elab_as_elim]
 theorem induction_on_max [DecidableEq α] {p : Finset α → Prop} (s : Finset α) (h0 : p ∅)
     (step : ∀ a s, (∀ x ∈ s, x < a) → p s → p (insert a s)) : p s := by
-  induction' s using Finset.eraseInduction with s ih
+  induction s using Finset.eraseInduction with | _ s ih
   rcases s.eq_empty_or_nonempty with (rfl | hne)
   · exact h0
   · have H : s.max' hne ∈ s := max'_mem s hne
@@ -484,7 +487,7 @@ ordered type : a predicate is true on all `s : Finset α` provided that:
 @[elab_as_elim]
 theorem induction_on_max_value [DecidableEq ι] (f : ι → α) {p : Finset ι → Prop} (s : Finset ι)
     (h0 : p ∅) (step : ∀ a s, a ∉ s → (∀ x ∈ s, f x ≤ f a) → p s → p (insert a s)) : p s := by
-  induction' s using Finset.eraseInduction with s ihs
+  induction s using Finset.eraseInduction with | _ s ihs
   rcases (s.image f).eq_empty_or_nonempty with (hne | hne)
   · simp only [image_eq_empty] at hne
     simp only [hne, h0]

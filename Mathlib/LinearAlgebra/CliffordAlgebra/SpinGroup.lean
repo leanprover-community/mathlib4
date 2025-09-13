@@ -212,7 +212,7 @@ theorem star_mem {x : CliffordAlgebra Q} (hx : x ∈ pinGroup Q) : star x ∈ pi
   refine ⟨star y, ?_, by simp only [hy₂, Units.coe_star]⟩
   rw [← hy₂] at hx₃
   have hy₃ : y * star y = 1 := by
-    rw [← Units.eq_iff]
+    rw [← Units.val_inj]
     simp only [hx₃, Units.val_mul, Units.coe_star, Units.val_one]
   apply_fun fun x => y⁻¹ * x at hy₃
   simp only [inv_mul_cancel_left, mul_one] at hy₃
