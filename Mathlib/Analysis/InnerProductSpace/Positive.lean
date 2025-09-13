@@ -183,7 +183,8 @@ open scoped ComplexOrder in
     {A : Matrix n n 𝕜} : A.toEuclideanLin.IsPositive ↔ A.PosSemidef := by
   simp_rw [LinearMap.IsPositive, ← Matrix.isHermitian_iff_isSymmetric, inner_re_symm,
     EuclideanSpace.inner_eq_star_dotProduct, Matrix.piLp_ofLp_toEuclideanLin, Matrix.toLin'_apply,
-    dotProduct_comm (A.mulVec _), Matrix.PosSemidef, and_congr_right_iff, RCLike.nonneg_iff (K:=𝕜)]
+    dotProduct_comm (A.mulVec _), Matrix.PosSemidef, and_congr_right_iff,
+    RCLike.nonneg_iff (K := 𝕜)]
   refine fun hA ↦ (EuclideanSpace.equiv n 𝕜).forall_congr' fun x ↦ ?_
   simp [hA.im_star_dotProduct_mulVec_self]
 

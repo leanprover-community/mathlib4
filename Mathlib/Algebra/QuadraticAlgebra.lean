@@ -221,7 +221,7 @@ section MulAction
 
 instance [Monoid S] [MulAction S R] : MulAction S (QuadraticAlgebra R a b) where
   one_smul _ := by ext <;> simp
-  mul_smul _ _ _ := by ext <;> simp[mul_smul]
+  mul_smul _ _ _ := by ext <;> simp [mul_smul]
 
 end MulAction
 
@@ -242,7 +242,7 @@ instance [AddCommMonoid R] : AddCommMonoid (QuadraticAlgebra R a b) := fast_inst
   refine (equivProd a b).injective.addCommMonoid _ rfl ?_ ?_ <;> intros <;> rfl
 
 instance [Semiring S] [AddCommMonoid R] [Module S R] : Module S (QuadraticAlgebra R a b) where
-  add_smul r s x := by ext <;> simp[add_smul]
+  add_smul r s x := by ext <;> simp [add_smul]
   zero_smul x := by ext <;> simp
 
 instance [AddGroup R] : AddGroup (QuadraticAlgebra R a b) := fast_instance% by
