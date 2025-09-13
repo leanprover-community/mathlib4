@@ -112,7 +112,9 @@ theorem div_mem {x y : M} (hx : x ∈ H) (hy : y ∈ H) : x / y ∈ H := by
   rw [div_eq_mul_inv]; exact mul_mem hx (inv_mem hy)
 
 @[to_additive (attr := aesop 90% (rule_sets := [SetLike]))]
-theorem zpow_mem {x : M} (hx : x ∈ K) : ∀ n : ℤ, x ^ n ∈ K
+theorem zpow_mem {x : M} (hx : x ∈ K) (n : ℤ) : x ^ n ∈ K :=
+  let _ := Monoid.monoidNPow M
+  match n with
   | (n : ℕ) => by
     rw [zpow_natCast]
     exact pow_mem hx n
@@ -189,8 +191,7 @@ variable (H)
 /-- A subgroup of a group inherits a group structure. -/
 @[to_additive /-- An additive subgroup of an `AddGroup` inherits an `AddGroup` structure. -/]
 instance (priority := 75) toGroup : Group H := fast_instance%
-  Subtype.coe_injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 -- Prefer subclasses of `CommGroup` over subclasses of `SubgroupClass`.
 /-- A subgroup of a `CommGroup` is a `CommGroup`. -/
@@ -198,7 +199,7 @@ instance (priority := 75) toGroup : Group H := fast_instance%
 instance (priority := 75) toCommGroup {G : Type*} [CommGroup G] [SetLike S G] [SubgroupClass S G] :
     CommGroup H := fast_instance%
   Subtype.coe_injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+    fun _ _ => rfl
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive (attr := coe)
@@ -223,7 +224,7 @@ theorem coe_subtype : (SubgroupClass.subtype H : H → G) = ((↑) : H → G) :=
 variable {H}
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
+theorem coe_pow [MonoidNPow G] (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 
 @[to_additive (attr := simp, norm_cast)]
@@ -440,7 +441,7 @@ protected theorem mul_mem_cancel_left {x y : G} (h : x ∈ H) : x * y ∈ H ↔ 
   mul_mem_cancel_left h
 
 @[to_additive]
-protected theorem pow_mem {x : G} (hx : x ∈ K) : ∀ n : ℕ, x ^ n ∈ K :=
+protected theorem pow_mem [MonoidNPow G] {x : G} (hx : x ∈ K) : ∀ n : ℕ, x ^ n ∈ K :=
   pow_mem hx
 
 @[to_additive]
@@ -481,12 +482,13 @@ instance div : Div H :=
   ⟨fun a b => ⟨a / b, H.div_mem a.2 b.2⟩⟩
 
 /-- An `AddSubgroup` of an `AddGroup` inherits a natural scaling. -/
-instance _root_.AddSubgroup.nsmul {G} [AddGroup G] {H : AddSubgroup G} : SMul ℕ H :=
+instance _root_.AddSubgroup.nsmul {G} [AddGroup G] {H : AddSubgroup G} [AddMonoidNSMul G] :
+    SMul ℕ H :=
   ⟨fun n a => ⟨n • a, H.nsmul_mem a.2 n⟩⟩
 
 /-- A subgroup of a group inherits a natural power -/
 @[to_additive existing]
-protected instance npow : Pow H ℕ :=
+protected instance npow [MonoidNPow G] : Pow H ℕ :=
   ⟨fun a n => ⟨a ^ n, H.pow_mem a.2 n⟩⟩
 
 /-- An `AddSubgroup` of an `AddGroup` inherits an integer scaling. -/
@@ -519,7 +521,7 @@ theorem coe_mk (x : G) (hx : x ∈ H) : ((⟨x, hx⟩ : H) : G) = x :=
   rfl
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
+theorem coe_pow [MonoidNPow G] (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 
 @[to_additive (attr := norm_cast)]
@@ -532,14 +534,13 @@ theorem mk_eq_one {g : G} {h} : (⟨g, h⟩ : H) = 1 ↔ g = 1 := Submonoid.mk_e
 /-- A subgroup of a group inherits a group structure. -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits an `AddGroup` structure. -/]
 instance toGroup {G : Type*} [Group G] (H : Subgroup G) : Group H := fast_instance%
-  Subtype.coe_injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 /-- A subgroup of a `CommGroup` is a `CommGroup`. -/
 @[to_additive /-- An `AddSubgroup` of an `AddCommGroup` is an `AddCommGroup`. -/]
 instance toCommGroup {G : Type*} [CommGroup G] (H : Subgroup G) : CommGroup H := fast_instance%
   Subtype.coe_injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+    fun _ _ => rfl
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive /-- The natural group hom from an `AddSubgroup` of `AddGroup` `G` to `G`. -/]

@@ -226,7 +226,8 @@ theorem pointReflection_vsub_left (x y : P) : pointReflection x y -ᵥ x = x -�
   vadd_vsub ..
 
 @[simp]
-theorem pointReflection_vsub_right (x y : P) : pointReflection x y -ᵥ y = 2 • (x -ᵥ y) := by
+theorem pointReflection_vsub_right [AddMonoidNSMul G] (x y : P) :
+    pointReflection x y -ᵥ y = 2 • (x -ᵥ y) := by
   simp [pointReflection, two_nsmul, vadd_vsub_assoc]
 
 @[simp]

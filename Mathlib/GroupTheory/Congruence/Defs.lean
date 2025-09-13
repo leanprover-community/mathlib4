@@ -531,7 +531,7 @@ section Monoids
 
 /-- Multiplicative congruence relations preserve natural powers. -/
 @[to_additive /-- Additive congruence relations preserve natural scaling. -/]
-protected theorem pow {M : Type*} [Monoid M] (c : Con M) :
+protected theorem pow {M : Type*} [Monoid M] [MonoidNPow M] (c : Con M) :
     ∀ (n : ℕ) {w x}, c w x → c (w ^ n) (x ^ n)
   | 0, w, x, _ => by simpa using c.refl _
   | Nat.succ n, w, x, h => by simpa [pow_succ] using c.mul (Con.pow c n h) h
@@ -545,12 +545,12 @@ instance one [MulOneClass M] (c : Con M) : One c.Quotient where
   one := Quotient.mk'' (1 : M)
   -- one := ((1 : M) : c.Quotient)
 
-instance _root_.AddCon.Quotient.nsmul {M : Type*} [AddMonoid M] (c : AddCon M) :
+instance _root_.AddCon.Quotient.nsmul {M : Type*} [AddMonoid M] [AddMonoidNSMul M] (c : AddCon M) :
     SMul ℕ c.Quotient where
   smul n := (Quotient.map' (n • ·)) fun _ _ => c.nsmul n
 
 @[to_additive existing AddCon.Quotient.nsmul]
-instance {M : Type*} [Monoid M] (c : Con M) : Pow c.Quotient ℕ where
+instance {M : Type*} [Monoid M] [MonoidNPow M] (c : Con M) : Pow c.Quotient ℕ where
   pow x n := Quotient.map' (fun x => x ^ n) (fun _ _ => c.pow n) x
 
 /-- The quotient of a semigroup by a congruence relation is a semigroup. -/
@@ -569,14 +569,18 @@ instance commSemigroup {M : Type*} [CommSemigroup M] (c : Con M) : CommSemigroup
 @[to_additive /-- The quotient of an `AddMonoid` by an additive congruence relation is
 an `AddMonoid`. -/]
 instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient := fast_instance%
-  Function.Surjective.monoid _ Quotient.mk''_surjective rfl (fun _ _ => rfl) fun _ _ => rfl
+  Function.Surjective.monoid _ Quotient.mk''_surjective rfl fun _ _ => rfl
+
+@[to_additive]
+instance {M : Type*} [Monoid M] [MonoidNPow M] (c : Con M) : MonoidNPow c.Quotient := fast_instance%
+  Function.Surjective.monoidNPow _ (by exact Quotient.mk''_surjective) rfl (fun _ _ => rfl)
+    fun _ _ => rfl
 
 /-- The quotient of a `CommMonoid` by a congruence relation is a `CommMonoid`. -/
 @[to_additive /-- The quotient of an `AddCommMonoid` by an additive congruence
 relation is an `AddCommMonoid`. -/]
 instance commMonoid {M : Type*} [CommMonoid M] (c : Con M) : CommMonoid c.Quotient := fast_instance%
-  fast_instance% Function.Surjective.commMonoid _ Quotient.mk''_surjective rfl
-    (fun _ _ => rfl) fun _ _ => rfl
+  fast_instance% Function.Surjective.commMonoid _ Quotient.mk''_surjective rfl fun _ _ => rfl
 
 /-- Sometimes, a group is defined as a quotient of a monoid by a congruence relation.
 Usually, the inverse operation is defined as `Setoid.map f _` for some `f`.
@@ -618,9 +622,11 @@ protected theorem div : ∀ {w x y z}, c w x → c y z → c (w / y) (x / z) := 
 
 /-- Multiplicative congruence relations preserve integer powers. -/
 @[to_additive /-- Additive congruence relations preserve integer scaling. -/]
-protected theorem zpow : ∀ (n : ℤ) {w x}, c w x → c (w ^ n) (x ^ n)
-  | Int.ofNat n, w, x, h => by simpa only [zpow_natCast, Int.ofNat_eq_coe] using c.pow n h
-  | Int.negSucc n, w, x, h => by simpa only [zpow_negSucc] using c.inv (c.pow _ h)
+protected theorem zpow (n : ℤ) {w x} (h : c w x) : c (w ^ n) (x ^ n) :=
+  let _ := Monoid.monoidNPow M
+  match n with
+  | Int.ofNat n => by simpa only [zpow_natCast, Int.ofNat_eq_coe] using c.pow n h
+  | Int.negSucc n => by simpa only [zpow_negSucc] using c.inv (c.pow _ h)
 
 /-- The inversion induced on the quotient by a congruence relation on a type with an
 inversion. -/
@@ -653,14 +659,14 @@ instance zpowinst : Pow c.Quotient ℤ :=
 an `AddGroup`. -/]
 instance group : Group c.Quotient := fast_instance%
   Function.Surjective.group Quotient.mk'' Quotient.mk''_surjective
-    rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 /-- The quotient of a `CommGroup` by a congruence relation is a `CommGroup`. -/
 @[to_additive /-- The quotient of an `AddCommGroup` by an additive congruence
 relation is an `AddCommGroup`. -/]
 instance commGroup {M : Type*} [CommGroup M] (c : Con M) : CommGroup c.Quotient := fast_instance%
   Function.Surjective.commGroup _ Quotient.mk''_surjective rfl (fun _ _ => rfl) (fun _ => rfl)
-      (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ _ => rfl
 
 end Groups
 

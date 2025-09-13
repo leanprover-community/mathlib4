@@ -324,6 +324,13 @@ lemma mul_div_cancel_of_imp (h : b = 0 → a = 0) : a * b / b = a := by
 
 @[simp] lemma divp_mk0 (a : G₀) (hb : b ≠ 0) : a /ₚ Units.mk0 b hb = a / b := divp_eq_div _ _
 
+lemma zpow_sub₀ (ha : a ≠ 0) (m n : ℤ) : a ^ (m - n) = a ^ m / a ^ n := by
+  rw [Int.sub_eq_add_neg, zpow_add₀ ha, zpow_neg, div_eq_mul_inv]
+
+section NPow
+
+variable [MonoidNPow G₀]
+
 lemma pow_sub₀ (a : G₀) (ha : a ≠ 0) (h : n ≤ m) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ := by
   have h1 : m - n + n = m := Nat.sub_add_cancel h
   have h2 : a ^ (m - n) * a ^ n = a ^ m := by rw [← pow_add, h1]
@@ -340,9 +347,6 @@ lemma inv_pow_sub₀ (ha : a ≠ 0) (h : n ≤ m) : a⁻¹ ^ (m - n) = (a ^ m)�
 lemma inv_pow_sub_of_lt (a : G₀) (h : n < m) : a⁻¹ ^ (m - n) = (a ^ m)⁻¹ * a ^ n := by
   rw [pow_sub_of_lt a⁻¹ h, inv_pow, inv_pow, inv_inv]
 
-lemma zpow_sub₀ (ha : a ≠ 0) (m n : ℤ) : a ^ (m - n) = a ^ m / a ^ n := by
-  rw [Int.sub_eq_add_neg, zpow_add₀ ha, zpow_neg, div_eq_mul_inv]
-
 lemma zpow_natCast_sub_natCast₀ (ha : a ≠ 0) (m n : ℕ) : a ^ (m - n : ℤ) = a ^ m / a ^ n := by
   simpa using zpow_sub₀ ha m n
 
@@ -352,7 +356,11 @@ lemma zpow_natCast_sub_one₀ (ha : a ≠ 0) (n : ℕ) : a ^ (n - 1 : ℤ) = a ^
 lemma zpow_one_sub_natCast₀ (ha : a ≠ 0) (n : ℕ) : a ^ (1 - n : ℤ) = a / a ^ n := by
   simpa using zpow_sub₀ ha 1 n
 
-lemma zpow_ne_zero {a : G₀} : ∀ n : ℤ, a ≠ 0 → a ^ n ≠ 0
+end NPow
+
+lemma zpow_ne_zero {a : G₀} (n : ℤ) : a ≠ 0 → a ^ n ≠ 0 :=
+  let _ := Monoid.monoidNPow G₀
+  match n with
   | (_ : ℕ) => by rw [zpow_natCast]; exact pow_ne_zero _
   | .negSucc n => fun ha ↦ by rw [zpow_negSucc]; exact inv_ne_zero (pow_ne_zero _ ha)
 

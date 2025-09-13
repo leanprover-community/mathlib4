@@ -117,7 +117,7 @@ lemma isSquare_subset_image_isSquare {f : F} (hf : Function.Surjective f) :
 end MonoidHom
 
 section Monoid
-variable [Monoid α] {n : ℕ} {a : α}
+variable [Monoid α] [MonoidNPow α] {n : ℕ} {a : α}
 
 @[to_additive even_iff_exists_two_nsmul]
 lemma isSquare_iff_exists_sq (a : α) : IsSquare a ↔ ∃ r, a = r ^ 2 := by simp [IsSquare, pow_two]
@@ -165,8 +165,10 @@ lemma IsSquare.div [DivisionCommMonoid α] {a b : α} (ha : IsSquare a) (hb : Is
 lemma Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquare (a ^ n) := by
   aesop (add simp zpow_add)
 
-example {G : Type*} [CommGroup G] {a b c d e : G} (ha : IsSquare a) {n : ℕ} {k : ℤ} (hk : Even k) :
+example {G : Type*} [CommGroup G] [MonoidNPow G]
+    {a b c d e : G} (ha : IsSquare a) {n : ℕ} {k : ℤ} (hk : Even k) :
     IsSquare <| a * (b * b) / (c ^ 2) * (d ^ k) * (e ^ (n + n)) := by aesop
 
-example {G : Type*} [AddCommGroup G] {a b c d e : G} (ha : Even a) {n : ℕ} {k : ℤ} (hk : Even k) :
+example {G : Type*} [AddCommGroup G] [AddMonoidNSMul G]
+    {a b c d e : G} (ha : Even a) {n : ℕ} {k : ℤ} (hk : Even k) :
     Even <| a + (b + b) - 2 • c + k • d + (n + n) • e := by aesop

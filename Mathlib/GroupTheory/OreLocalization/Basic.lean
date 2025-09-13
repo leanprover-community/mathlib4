@@ -389,6 +389,9 @@ instance : Monoid R[S⁻¹] where
   one_mul := OreLocalization.one_mul
   mul_one := OreLocalization.mul_one
   mul_assoc := OreLocalization.mul_assoc
+
+unseal OreLocalization.npow in
+@[to_additive] instance : MonoidNPow R[S⁻¹] where
   npow := OreLocalization.npow
 
 @[to_additive]

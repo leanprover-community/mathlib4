@@ -371,6 +371,11 @@ instance (priority := 75) toMonoid {M : Type*} [Monoid M] {A : Type*} [SetLike A
     [SubmonoidClass A M] (S : A) : Monoid S := fast_instance%
   Subtype.coe_injective.monoid Subtype.val rfl fun _ _ => rfl
 
+@[to_additive]
+instance (priority := 75) {M : Type*} [Monoid M] [MonoidNPow M] {A : Type*} [SetLike A M]
+    [SubmonoidClass A M] (S : A) : MonoidNPow S := fast_instance%
+  Subtype.coe_injective.monoidNPow Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
+
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a `CommMonoid` is a `CommMonoid`. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`. -/]

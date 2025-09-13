@@ -75,14 +75,18 @@ instance instMulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) 
 
 @[to_additive]
 instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
-  { npow := fun z a => ⟨Monoid.npow z a.1, Monoid.npow z a.2⟩,
-    npow_zero := fun _ => Prod.ext (Monoid.npow_zero _) (Monoid.npow_zero _),
-    npow_succ := fun _ _ => Prod.ext (Monoid.npow_succ _ _) (Monoid.npow_succ _ _),
-    one_mul := by simp,
+  { one_mul := by simp,
     mul_one := by simp }
 
 @[to_additive]
-instance instIsMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionFree M] [IsMulTorsionFree N] :
+instance [Monoid M] [Monoid N] [MonoidNPow M] [MonoidNPow N] : MonoidNPow (M × N) where
+  npow := fun z a => ⟨MonoidNPow.npow z a.1, MonoidNPow.npow z a.2⟩
+  npow_zero := fun _ => Prod.ext (MonoidNPow.npow_zero _) (MonoidNPow.npow_zero _)
+  npow_succ := fun _ _ => Prod.ext (MonoidNPow.npow_succ _ _) (MonoidNPow.npow_succ _ _)
+
+@[to_additive]
+instance instIsMulTorsionFree [Monoid M] [Monoid N] [MonoidNPow M] [MonoidNPow N]
+    [IsMulTorsionFree M] [IsMulTorsionFree N] :
     IsMulTorsionFree (M × N) where
   pow_left_injective n hn a b hab := by
     ext <;> apply pow_left_injective hn; exacts [congr(($hab).1), congr(($hab).2)]
