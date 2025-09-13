@@ -25,20 +25,18 @@ section conjugation
 
 variable {m}
 
--- conjugation lemmas are not flagged `simp` because `g.val⁻¹` is simp-normal form, not
--- `g⁻¹.val`, but `g⁻¹.val` is more convenient in this theory
+@[simp] lemma disc_conj : (g.val * m * g.val⁻¹).disc = m.disc := by
+  simp only [disc_fin_two, ← Matrix.coe_units_inv, trace_units_conj, det_units_conj]
 
-lemma disc_conj : (g * m * g⁻¹).disc = m.disc := by
-  simp only [disc_fin_two, trace_units_conj, det_units_conj]
-
-lemma disc_conj' : (g⁻¹ * m * g).disc = m.disc := by
+@[simp] lemma disc_conj' : (g.val⁻¹ * m * g.val).disc = m.disc := by
   simpa using disc_conj g⁻¹
 
-lemma isParabolic_conj_iff : (g * m * g⁻¹).IsParabolic ↔ IsParabolic m := by
-  simp_rw [IsParabolic, disc_conj, Set.mem_range, Units.eq_mul_inv_iff_mul_eq,
-    scalar_apply, ← smul_eq_diagonal_mul, smul_eq_mul_diagonal, Units.mul_right_inj]
+@[simp] lemma isParabolic_conj_iff : (g.val * m * g.val⁻¹).IsParabolic ↔ IsParabolic m := by
+  simp_rw [IsParabolic, disc_conj, Set.mem_range, ← Matrix.coe_units_inv,
+    Units.eq_mul_inv_iff_mul_eq, scalar_apply, ← smul_eq_diagonal_mul, smul_eq_mul_diagonal,
+    Units.mul_right_inj]
 
-lemma isParabolic_conj'_iff : (g⁻¹ * m * g).IsParabolic ↔ m.IsParabolic := by
+@[simp] lemma isParabolic_conj'_iff : (g.val⁻¹ * m * g.val).IsParabolic ↔ m.IsParabolic := by
   simpa using isParabolic_conj_iff g⁻¹
 
 end conjugation
@@ -104,16 +102,16 @@ def IsElliptic : Prop := m.disc < 0
 
 variable {m}
 
-lemma isHyperbolic_conj_iff : (g * m * g⁻¹).IsHyperbolic ↔ m.IsHyperbolic := by
-  simp only [IsHyperbolic, disc_conj]
+lemma isHyperbolic_conj_iff : (g.val * m * g.val⁻¹).IsHyperbolic ↔ m.IsHyperbolic := by
+  simp [IsHyperbolic]
 
-lemma isHyperbolic_conj'_iff : (g⁻¹ * m * g).IsHyperbolic ↔ m.IsHyperbolic := by
+lemma isHyperbolic_conj'_iff : (g.val⁻¹ * m * g.val).IsHyperbolic ↔ m.IsHyperbolic := by
   simpa using isHyperbolic_conj_iff g⁻¹
 
-lemma isElliptic_conj_iff : (g * m * g⁻¹).IsElliptic ↔ m.IsElliptic := by
-  simp only [IsElliptic, disc_conj]
+lemma isElliptic_conj_iff : (g.val * m * g.val⁻¹).IsElliptic ↔ m.IsElliptic := by
+  simp [IsElliptic]
 
-lemma isElliptic_conj'_iff : (g⁻¹ * m * g).IsElliptic ↔ m.IsElliptic := by
+lemma isElliptic_conj'_iff : (g.val⁻¹ * m * g.val).IsElliptic ↔ m.IsElliptic := by
   simpa using isElliptic_conj_iff g⁻¹
 
 end LinearOrderedRing
@@ -124,6 +122,14 @@ variable {R K : Type*} [CommRing R] [Field K]
 
 /-- Synonym of `Matrix.IsParabolic`, for dot-notation. -/
 abbrev IsParabolic (g : GL (Fin 2) R) : Prop := g.val.IsParabolic
+
+@[simp] lemma isParabolic_conj_iff [Nontrivial R] (g h : GL (Fin 2) R) :
+    IsParabolic (g * h * g⁻¹) ↔ IsParabolic h := by
+  simp [IsParabolic]
+
+@[simp] lemma isParabolic_conj_iff' [Nontrivial R] (g h : GL (Fin 2) R) :
+    IsParabolic (g⁻¹ * h * g) ↔ IsParabolic h := by
+  simp [IsParabolic]
 
 /-- Synonym of `Matrix.IsElliptic`, for dot-notation. -/
 abbrev IsElliptic [Preorder R] (g : GL (Fin 2) R) : Prop := g.val.IsElliptic
