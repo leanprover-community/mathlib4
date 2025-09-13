@@ -706,6 +706,7 @@ elab "field_simp" d:(discharger)? args:(simpArgs)? : conv => do
   -- convert `x` to the output of the normalization
   Conv.applySimpResult r
 
+@[inherit_doc fieldSimp]
 def proc : Simp.Simproc := fun (t : Expr) ↦ do
   let ctx ← Simp.getContext
   let disch e : MetaM Expr := Prod.fst <$> (FieldSimp.discharge e).run ctx >>= Option.getM
@@ -721,7 +722,7 @@ simproc_decl eqProc (Eq _ _) := proc
 simproc_decl leProc (LE.le _ _) := proc
 simproc_decl ltProc (LT.lt _ _) := proc
 
-attribute [field] eqProc leProc ltProc
+attribute [field, inherit_doc fieldSimp] eqProc leProc ltProc
 
 end Mathlib.Tactic.FieldSimp
 

@@ -7,6 +7,7 @@ import Mathlib.Init
 
 open Lean Meta
 
-initialize extProc : Simp.SimprocExtension
+/-- Initialize the attribute `field` grouping the simprocs associated to the field_simp tactic. -/
+initialize fieldSimpExt : Simp.SimprocExtension
  ← Simp.registerSimprocAttr `field
       "Attribute grouping the simprocs associated to the field_simp tactic" none
