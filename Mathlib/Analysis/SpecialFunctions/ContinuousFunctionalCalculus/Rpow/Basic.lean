@@ -322,6 +322,34 @@ lemma sqrt_map_pi {c : ∀ i, C i} (hc : ∀ i, 0 ≤ c i := by cfc_tac) :
 
 end pi
 
+/-- For an element `a` in a C⋆-algebra, TFAE:
+* `0 ≤ a`
+* `a = sqrt a * sqrt a`
+* `a = b * b` for some non-negative `b`
+* `a = b * b` for some self-adjoint `b`
+* `a = star b * b` for some `b`
+* `a = b * star b` for some `b`
+* `a` is self-adjoint and has a non-negative spectrum -/
+theorem _root_.nonneg_TFAE {a : A} :
+    List.TFAE [
+      0 ≤ a,
+      a = sqrt a * sqrt a,
+      ∃ b : A, 0 ≤ b ∧ a = b * b,
+      ∃ b : A, IsSelfAdjoint b ∧ a = b * b,
+      ∃ b : A, a = star b * b,
+      ∃ b : A, a = b * star b,
+      IsSelfAdjoint a ∧ QuasispectrumRestricts a ContinuousMap.realToNNReal ] := by
+  tfae_have 1 ↔ 7 := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts
+  tfae_have 5 → 1 := fun ⟨b, hb⟩ => hb ▸ star_mul_self_nonneg _
+  tfae_have 6 → 1 := fun ⟨b, hb⟩ => hb ▸ mul_star_self_nonneg _
+  tfae_have 1 → 3 := fun h => ⟨sqrt a, sqrt_nonneg a, sqrt_mul_sqrt_self a |>.symm⟩
+  tfae_have 3 → 4 := fun ⟨b, hb⟩ => ⟨b, hb.1.isSelfAdjoint, hb.2⟩
+  tfae_have 4 → 5 := fun ⟨b, hb⟩ => ⟨b, hb.1.symm ▸ hb.2⟩
+  tfae_have 4 → 6 := fun ⟨b, hb⟩ => ⟨b, hb.1.symm ▸ hb.2⟩
+  tfae_have 1 → 2 := fun h => sqrt_mul_sqrt_self a |>.symm
+  tfae_have 2 → 3 := fun h => ⟨sqrt a, sqrt_nonneg a, h⟩
+  tfae_finish
+
 end sqrt
 
 end NonUnital
@@ -555,10 +583,6 @@ lemma sqrt_sq (a : A) (ha : 0 ≤ a := by cfc_tac) : sqrt (a ^ 2) = a := by
 
 lemma sq_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) : (sqrt a) ^ 2 = a := by
   rw [pow_two, sqrt_mul_sqrt_self (A := A) a]
-
-theorem _root_.nonneg_iff_eq_star_mul_self {a : A} : 0 ≤ a ↔ ∃ b : A, a = star b * b := by
-  refine ⟨fun h => ⟨sqrt a, ?_⟩, fun ⟨b, hb⟩ => hb ▸ star_mul_self_nonneg _⟩
-  rw [sqrt_nonneg _ |>.isSelfAdjoint, ← sq, sq_sqrt a]
 
 @[simp]
 lemma sqrt_algebraMap {r : ℝ≥0} : sqrt (algebraMap ℝ≥0 A r) = algebraMap ℝ≥0 A (NNReal.sqrt r) := by
