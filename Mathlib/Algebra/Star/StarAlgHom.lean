@@ -698,11 +698,7 @@ instance : FunLike (A ≃⋆ₐ[R] B) A B where
   coe f := f.toFun
   coe_injective' := DFunLike.coe_injective
 
-@[simp]
-theorem toAlgEquiv_eq_coe (e : A ≃⋆ₐ[R] B) : e.toAlgEquiv = e := rfl
-
-theorem toRingEquiv_eq_coe (e : A ≃⋆ₐ[R] B) : e.toRingEquiv = e :=
-  rfl
+theorem toRingEquiv_eq_coe (e : A ≃⋆ₐ[R] B) : e.toRingEquiv = e := rfl
 
 @[ext]
 theorem ext {f g : A ≃⋆ₐ[R] B} (h : ∀ a, f a = g a) : f = g :=
