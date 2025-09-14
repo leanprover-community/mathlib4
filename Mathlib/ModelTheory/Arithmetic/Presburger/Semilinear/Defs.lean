@@ -51,20 +51,20 @@ open Set Pointwise AddSubmonoid
 
 /-- A set is linear if is a coset of a finitely generated additive submonoid. -/
 def IsLinearSet (s : Set M) : Prop :=
-  ∃ (a : M) (t : Finset M), s = a +ᵥ (closure (t : Set M) : Set M)
+  ∃ (a : M) (t : Set M), t.Finite ∧ s = a +ᵥ (closure t : Set M)
 
-/-- An equivalent expression of `IsLinearSet` in terms of `Set.Finite` instead of `Finset`. -/
+/-- An equivalent expression of `IsLinearSet` in terms of `Finset` instead of `Set.Finite`. -/
 theorem isLinearSet_iff :
-    IsLinearSet s ↔ ∃ (a : M) (t : Set M), t.Finite ∧ s = a +ᵥ (closure t : Set M) :=
+    IsLinearSet s ↔ ∃ (a : M) (t : Finset M), s = a +ᵥ (closure (t : Set M) : Set M) :=
   exists_congr fun a =>
-    ⟨fun ⟨t, hs⟩ => ⟨t, t.finite_toSet, hs⟩, fun ⟨t, ht, hs⟩ => ⟨ht.toFinset, by simpa⟩⟩
+    ⟨fun ⟨t, ht, hs⟩ => ⟨ht.toFinset, by simpa⟩, fun ⟨t, hs⟩ => ⟨t, t.finite_toSet, hs⟩⟩
 
 @[simp]
 theorem IsLinearSet.singleton (a) : IsLinearSet ({a} : Set M) :=
   ⟨a, ∅, by simp⟩
 
 theorem IsLinearSet.closure_finset (s : Finset M) : IsLinearSet (closure (s : Set M) : Set M) :=
-  ⟨0, s, by rw [zero_vadd]⟩
+  ⟨0, s, by simp [zero_vadd]⟩
 
 theorem IsLinearSet.closure_of_finite {s : Set M} (hs : s.Finite) :
     IsLinearSet (closure s : Set M) := by
@@ -73,11 +73,10 @@ theorem IsLinearSet.closure_of_finite {s : Set M} (hs : s.Finite) :
 
 theorem isLinearSet_iff_exists_fg_eq_vadd :
     IsLinearSet s ↔ ∃ (a : M) (P : AddSubmonoid M), P.FG ∧ s = a +ᵥ (P : Set M) :=
-  exists_congr fun a =>
-    ⟨fun ⟨t, hs⟩ => ⟨_, ⟨t, rfl⟩, hs⟩, fun ⟨P, ⟨t, hP⟩, hs⟩ => ⟨t, by rwa [hP]⟩⟩
+  isLinearSet_iff.trans (exists_congr fun a =>
+    ⟨fun ⟨t, hs⟩ => ⟨_, ⟨t, rfl⟩, hs⟩, fun ⟨P, ⟨t, hP⟩, hs⟩ => ⟨t, by rwa [hP]⟩⟩)
 
-theorem IsLinearSet.of_fg {P : AddSubmonoid M} (hP : P.FG) :
-    IsLinearSet (P : Set M) := by
+theorem IsLinearSet.of_fg {P : AddSubmonoid M} (hP : P.FG) : IsLinearSet (P : Set M) := by
   rw [isLinearSet_iff_exists_fg_eq_vadd]
   exact ⟨0, P, hP, by rw [zero_vadd]⟩
 
@@ -86,19 +85,17 @@ protected theorem IsLinearSet.univ [AddMonoid.FG M] : IsLinearSet (univ : Set M)
   of_fg AddMonoid.FG.fg_top
 
 theorem IsLinearSet.vadd (a : M) (hs : IsLinearSet s) : IsLinearSet (a +ᵥ s) := by
-  rcases hs with ⟨b, t, rfl⟩
-  exact ⟨a + b, t, by rw [vadd_vadd]⟩
+  rcases hs with ⟨b, t, ht, rfl⟩
+  exact ⟨a + b, t, ht, by rw [vadd_vadd]⟩
 
 theorem IsLinearSet.add (hs₁ : IsLinearSet s₁) (hs₂ : IsLinearSet s₂) : IsLinearSet (s₁ + s₂) := by
-  classical
-  rcases hs₁ with ⟨a, t₁, rfl⟩
-  rcases hs₂ with ⟨b, t₂, rfl⟩
-  exact ⟨a + b, t₁ ∪ t₂, by simp [vadd_add_vadd, closure_union, coe_sup]⟩
+  rcases hs₁ with ⟨a, t₁, ht₁, rfl⟩
+  rcases hs₂ with ⟨b, t₂, ht₂, rfl⟩
+  exact ⟨a + b, t₁ ∪ t₂, ht₁.union ht₂, by simp [vadd_add_vadd, closure_union, coe_sup]⟩
 
 theorem IsLinearSet.image (hs : IsLinearSet s) (f : F) : IsLinearSet (f '' s) := by
-  classical
-  rcases hs with ⟨a, t, rfl⟩
-  refine ⟨f a, t.image f, ?_⟩
+  rcases hs with ⟨a, t, ht, rfl⟩
+  refine ⟨f a, f '' t, ht.image f, ?_⟩
   simp [image_vadd_distrib, ← AddMonoidHom.map_mclosure]
 
 /-- A set is semilinear if it is a finite union of linear sets. -/
@@ -224,12 +221,11 @@ theorem IsSemilinearSet.proj' {p : (ι → M) → (κ → M) → Prop} :
   proj
 
 protected lemma IsLinearSet.closure (hs : IsLinearSet s) : IsSemilinearSet (closure s : Set M) := by
-  classical
-  rcases hs with ⟨a, t, rfl⟩
-  convert (IsSemilinearSet.singleton 0).union (isSemilinearSet ⟨a, {a} ∪ t, rfl⟩)
+  rcases hs with ⟨a, t, ht, rfl⟩
+  convert (IsSemilinearSet.singleton 0).union (isSemilinearSet
+    ⟨a, {a} ∪ t, (finite_singleton a).union ht, rfl⟩)
   ext x
-  simp only [SetLike.mem_coe, Finset.coe_union, Finset.coe_singleton, singleton_union,
-    mem_insert_iff, mem_vadd_set, vadd_eq_add]
+  simp only [SetLike.mem_coe, singleton_union, mem_insert_iff, mem_vadd_set, vadd_eq_add]
   constructor
   · intro hx
     induction hx using closure_induction with
@@ -266,11 +262,17 @@ protected theorem IsSemilinearSet.closure (hs : IsSemilinearSet s) :
 
 /-- A linear set is proper if its submonoid generators (periods) are linearly independent. -/
 def IsProperLinearSet (s : Set M) : Prop :=
-  ∃ (a : M) (t : Finset M), LinearIndepOn ℕ id (t : Set M) ∧ s = a +ᵥ (closure (t : Set M) : Set M)
+  ∃ (a : M) (t : Set M), t.Finite ∧ LinearIndepOn ℕ id t ∧ s = a +ᵥ (closure t : Set M)
+
+theorem isProperLinearSet_iff :
+    IsProperLinearSet s ↔ ∃ (a : M) (t : Finset M),
+      LinearIndepOn ℕ id (t : Set M) ∧ s = a +ᵥ (closure (t : Set M) : Set M) :=
+  exists_congr fun a =>
+    ⟨fun ⟨t, ht, hs⟩ => ⟨ht.toFinset, by simpa⟩, fun ⟨t, hs⟩ => ⟨t, t.finite_toSet, hs⟩⟩
 
 theorem IsProperLinearSet.isLinearSet (hs : IsProperLinearSet s) : IsLinearSet s := by
-  rcases hs with ⟨a, t, _, rfl⟩
-  exact ⟨a, t, rfl⟩
+  rcases hs with ⟨a, t, ht, _, rfl⟩
+  exact ⟨a, t, ht, rfl⟩
 
 /-- A semilinear set is proper if it is a finite union of proper linear sets. -/
 def IsProperSemilinearSet (s : Set M) : Prop :=
@@ -324,11 +326,12 @@ theorem IsProperSemilinearSet.biUnion {s : Set ι} {t : ι → Set M} (hs : s.Fi
 lemma IsLinearSet.isProperSemilinearSet [IsCancelAdd M] (hs : IsLinearSet s) :
     IsProperSemilinearSet s := by
   classical
+  rw [isLinearSet_iff] at hs
   rcases hs with ⟨a, t, rfl⟩
   induction hn : t.card using Nat.strong_induction_on generalizing a t with | _ n ih
   subst hn
   by_cases hindep : LinearIndepOn ℕ id (t : Set M)
-  · exact IsProperLinearSet.isProperSemilinearSet ⟨a, t, hindep, rfl⟩
+  · exact IsProperLinearSet.isProperSemilinearSet ⟨a, t, by simpa⟩
   rw [not_linearIndepOn_finset_iffₒₛ] at hindep
   rcases hindep with ⟨t', ht', f, heq, i, hi, hfi⟩
   simp only [Function.id_def] at heq
