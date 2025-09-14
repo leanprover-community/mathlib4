@@ -6,7 +6,6 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.Ideal.Maps
-
 /-!
 
 # Local rings homomorphisms
@@ -127,6 +126,30 @@ local ring hom. -/
 instance (priority := 100) {K R} [DivisionRing K] [CommRing R] [Nontrivial R]
     (f : K →+* R) : IsLocalHom f where
   map_nonunit r hr := by simpa only [isUnit_iff_ne_zero, ne_eq, map_eq_zero] using hr.ne_zero
+
+/-- A (nontrivial) quotient of a local ring is a local ring. -/
+instance {R : Type*} [CommRing R] [IsLocalRing R] {I : Ideal R} [Nontrivial (R ⧸ I)] :
+    IsLocalRing (R ⧸ I) :=
+  IsLocalRing.of_surjective' (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
+
+/-- If `R` is a local ring and `I ⊆ R` is an ideal, then the preimage of the maximal ideal in
+`R/I` under the map `R -> R/I` (i.e., `Ideal.Quotient.mk I`) is the maximal ideal in `R`. -/
+theorem quotient_comap_maximalIdeal
+    {R : Type*} [CommRing R] [IsLocalRing R] (I : Ideal R) [Nontrivial (R ⧸ I)] :
+    Ideal.comap (Ideal.Quotient.mk I) (maximalIdeal (R ⧸ I)) = (maximalIdeal R) := by
+  have : Ideal.IsMaximal (Ideal.comap (Ideal.Quotient.mk I) (maximalIdeal (R ⧸ I))) :=
+    Ideal.comap_isMaximal_of_surjective (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
+  exact eq_maximalIdeal this
+
+/-- If `R` is a local ring and `I ⊆ R` is an ideal, then under the map `R->R/I` the image of
+the maximal ideal of `R` is the maximal ideal of `R/I`. -/
+theorem quotient_map_maximalIdeal
+    {R : Type*} [CommRing R] [IsLocalRing R] (I : Ideal R) [Nontrivial (R ⧸ I)] :
+    Ideal.map (Ideal.Quotient.mk I) (maximalIdeal R) = (maximalIdeal (R ⧸ I)) := by
+  have := Ideal.map_comap_of_surjective (Ideal.Quotient.mk I)
+    Ideal.Quotient.mk_surjective (maximalIdeal (R ⧸ I))
+  rw[quotient_comap_maximalIdeal] at this
+  exact this
 
 end IsLocalRing
 

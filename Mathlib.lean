@@ -5582,12 +5582,15 @@ import Mathlib.RingTheory.LocalProperties.Reduced
 import Mathlib.RingTheory.LocalProperties.Submodule
 import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.RingTheory.LocalRing.Defs
+import Mathlib.RingTheory.LocalRing.EmbeddingDimension
+import Mathlib.RingTheory.LocalRing.LocalRingDimension
 import Mathlib.RingTheory.LocalRing.LocalSubring
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
 import Mathlib.RingTheory.LocalRing.Module
 import Mathlib.RingTheory.LocalRing.NonLocalRing
 import Mathlib.RingTheory.LocalRing.Quotient
+import Mathlib.RingTheory.LocalRing.RegularLocalRings
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
