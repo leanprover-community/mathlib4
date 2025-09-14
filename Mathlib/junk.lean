@@ -1,10 +1,45 @@
+/-
+Copyright (c) 2025 Lawrence Wu. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Lawrence Wu
+-/
 import Mathlib
+
+/-!
+# (Simultaneous) Diagonalization of linear maps
+
+Given an `R`-module `M`, a *simultaneous diagonalization* of a family of `R`-linear endomorphisms
+`f : α → End R M` is a basis of `M` consisting of simultaneous eigenvectors of `f`.
+We define *diagonalization* as the special case where `α` is `Unit`.
+
+## Main definitions / results:
+
+* `LinearMap.diagonalization_of_isDiag_toMatrix`:
+  a basis for which the matrix representation is diagonal is a diagonalization.
+* `LinearMap.Diagonalization.μ_equiv`:
+  all diagonalizations of a linear map have the same eigenvalues up to permutation.
+* `LinearMap.exists_diagonalization_iff_iSup_eigenspace`:
+  a linear map is diagonalizable iff the eigenspaces span the whole space.
+* `LinearMap.exists_diagonalization_iff_directSum_eigenspace`:
+  a linear map is diagonalizable iff the direct sum of the eigenspaces is the whole space.
+* `LinearMap.exists_diagonalization_iff_minpoly_splits_and_squarefree`:
+  a linear map is diagonalizable iff the minimal polynomial splits and is squarefree.
+* `LinearMap.exists_simultaneousDiagonalization_iff_commute`: a family of linear maps is
+  simultaneously diagonalizable iff they commute and are individually diagonalizable.
+
+## TODO
+
+* Treatment of normal endomorphisms
+-/
 
 namespace LinearMap
 
 open Module Matrix Polynomial
 
-variable {α R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+universe u
+
+variable {α R : Type*} {M : Type u} [CommRing R] [AddCommGroup M] [Module R M]
+variable {K : Type*} [Field K] [Module K M]
 
 /--
 A diagonalization of a family of linear maps $T_i : V \to V$ is a basis of $V$
@@ -85,23 +120,33 @@ lemma Diagonalization.charpoly_eq {ι : Type*} [Fintype ι] [DecidableEq ι] [No
     f.charpoly = ∏ i, (X - C (D.μ i)) := by
   rw [← f.charpoly_toMatrix D.toBasis, D.toMatrix_eq_diagonal, charpoly_diagonal]
 
-lemma Diagonalization.iSup_eigenspace_eq_top {ι : Type*} {f : End R M} (D : f.Diagonalization ι) :
+lemma Diagonalization.splits_charpoly {ι : Type*} [Fintype ι] [DecidableEq ι] [Module.Finite K M]
+    {f : End K M} (D : f.Diagonalization ι) : f.charpoly.Splits (RingHom.id K) := by
+  simp [D.charpoly_eq, splits_prod_iff, X_sub_C_ne_zero, splits_X_sub_C]
+
+lemma Diagonalization.isRoot_charpoly {ι : Type*} [Fintype ι] [DecidableEq ι] [Module.Finite K M]
+    {f : End K M} (D : f.Diagonalization ι) (i : ι) : f.charpoly.IsRoot (D.μ i) := by
+  rw [D.charpoly_eq, Polynomial.isRoot_prod]
+  use i
+  simp
+
+lemma Diagonalization.iSup_eigenspace {ι : Type*} {f : End R M} (D : f.Diagonalization ι) :
     ⨆ μ, f.eigenspace μ = ⊤ := by
   sorry
 
-lemma nonempty_diagonalization_iff_iSup_eigenspace {ι : Type*} {f : End R M} [Free R M] :
-    Nonempty ((ι : Type) × f.Diagonalization ι) ↔ ⨆ μ, f.eigenspace μ = ⊤ := by
+lemma exists_diagonalization_iff_iSup_eigenspace {f : End R M} [Free R M] :
+    (∃ ι : Type u, Nonempty (f.Diagonalization ι)) ↔ ⨆ μ, f.eigenspace μ = ⊤ := by
   sorry
 
--- TODO: determine generality. Maybe needs Module.Free?
-lemma nonempty_diagonalization_iff_directSum_eigenspace {ι : Type*} {f : End R M}
-    [IsDomain R] [DecidableEq f.Eigenvalues] : Nonempty ((ι : Type) × f.Diagonalization ι) ↔
-    DirectSum.IsInternal fun (μ : f.Eigenvalues) => f.eigenspace μ := by
-  sorry
+lemma exists_diagonalization_iff_directSum_eigenspace {f : End R M}
+    [Free R M] [NoZeroSMulDivisors R M] [DecidableEq R] :
+    (∃ ι : Type u, Nonempty (f.Diagonalization ι)) ↔ DirectSum.IsInternal f.eigenspace := by
+  simp [DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top,
+    Module.End.eigenspaces_iSupIndep f, exists_diagonalization_iff_iSup_eigenspace]
 
 -- probably follow-up work
-lemma nonempty_diagonalization_iff_minpoly_splits_and_squarefree  {ι K : Type*}
-    [Field K] [Module K M] {f : End K M} : Nonempty ((ι : Type) × f.Diagonalization ι) ↔
+theorem exists_diagonalization_iff_minpoly_splits_and_squarefree {f : End K M} :
+    (∃ ι : Type u, Nonempty (f.Diagonalization ι)) ↔
     (minpoly K f).Splits (RingHom.id K) ∧ Squarefree (minpoly K f) := by
   sorry
 
@@ -116,7 +161,10 @@ theorem LinearMap.Diagonalization.μ_equiv {ι ι' R M : Type*} [CommRing R] [Is
     ∃ e : ι ≃ ι', D₁.μ = D₂.μ ∘ e := by
   sorry
 
--- TODO: Something about simultaneous diagonalization commuting
--- TODO: The above for normal endomorphisms
+theorem exists_simultaneousDiagonalization_iff_commute {f : α → End R M} :
+    (∃ ι : Type u, Nonempty (SimultaneousDiagonalization ι f)) ↔
+    (∀ i : α, ∃ ι : Type u, Nonempty (Diagonalization ι (f i))) ∧
+    ∀ i j : α, Commute (f i) (f j) := by
+  sorry
 
 end LinearMap
