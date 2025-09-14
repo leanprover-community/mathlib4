@@ -19,8 +19,8 @@ import Mathlib.Analysis.LocallyConvex.WithSeminorms
 ## Main statements
 
 - `LinearMap.mem_span_iff_continuous_of_finite` A linear functional `φ` can be expressed as a linear
-  combination of linear functionals `f₁,…,fₙ` if and only if `φ` is continuous with respect to the
-  topology induced by `f₁,…,fₙ`.
+  combination of finitely many linear functionals `f₁,…,fₙ` if and only if `φ` is continuous with
+  respect to the topology induced by `f₁,…,fₙ`.
 - `LinearMap.mem_span_iff_continuous` A linear functional `φ` is in the span of a collection of
   linear functionals if and only if `φ` is continuous with respect to the topology induced by the
   collection of linear functionals.
