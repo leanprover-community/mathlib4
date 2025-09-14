@@ -171,8 +171,7 @@ variable {f : E →ₗ.[R] F}
 
 /-- The inverse of `f : LinearPMap` is closed if and only if `f` is closed. -/
 theorem inverse_closed_iff (hf : LinearMap.ker f.toFun = ⊥) : f.inverse.IsClosed ↔ f.IsClosed := by
-  unfold IsClosed
-  rw [inverse_graph hf]
+  rw [IsClosed, inverse_graph hf]
   exact (ContinuousLinearEquiv.prodComm R E F).isClosed_image
 
 variable [ContinuousAdd E] [ContinuousAdd F]
