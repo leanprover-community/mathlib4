@@ -551,7 +551,7 @@ def reduceEqQ (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
   have pf_ef₂ := ← Sign.mkEqMul iM pf_sgn₂ q(Eq.trans $pf_l₂ (Eq.symm $pf_rhs)) pf_l₂'
   return ⟨g₁.expr f₁', g₂.expr f₂', q(eq_eq_cancel_eq $pf_ef₁ $pf_ef₂ $pf₀)⟩
 
-/-- Given `e₁` and `e₂`, cancel positive factors to construct a new equality which is logically
+/-- Given `e₁` and `e₂`, cancel positive factors to construct a new inequality which is logically
 equivalent to `e₁ ≤ e₂`. -/
 def reduceLeQ (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
     (iM : Q(CommGroupWithZero $M)) (iM' : Q(PartialOrder $M))
@@ -569,7 +569,7 @@ def reduceLeQ (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
   have pf_ef₂ := ← Sign.mkEqMul iM pf_sgn₂ q(Eq.trans $pf_l₂ (Eq.symm $pf_rhs)) pf_l₂'
   return ⟨g₁.expr f₁', g₂.expr f₂', q(le_eq_cancel_le $pf_ef₁ $pf_ef₂ $pf₀)⟩
 
-/-- Given `e₁` and `e₂`, cancel positive factors to construct a new equality which is logically
+/-- Given `e₁` and `e₂`, cancel positive factors to construct a new inequality which is logically
 equivalent to `e₁ < e₂`. -/
 def reduceLtQ (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type))
     (iM : Q(CommGroupWithZero $M)) (iM' : Q(PartialOrder $M))
@@ -617,9 +617,9 @@ def reduceEq (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (t : E
   -- find a `CommGroupWithZero` instance on `K`
   let iK : Q(CommGroupWithZero $K) ← synthInstanceQ q(CommGroupWithZero $K)
   trace[Tactic.field_simp] "clearing denominators in {a} ~ {b}"
+  -- run the core (in)equality-transforming mechanism on `a =/≤/< b`
   match i with
   | .eq =>
-    -- run the core equality-transforming mechanism on `a = b`
     let ⟨a', b', pf⟩ ← reduceEqQ disch iK a b
     let t' ← mkAppM `Eq #[a', b']
     return { expr := t', proof? := pf }
@@ -628,7 +628,6 @@ def reduceEq (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (t : E
     let iK'' : Q(PosMulStrictMono $K) ← synthInstanceQ q(PosMulStrictMono $K)
     let iK''' : Q(PosMulReflectLE $K) ← synthInstanceQ q(PosMulReflectLE $K)
     let iK'''' : Q(ZeroLEOneClass $K) ← synthInstanceQ q(ZeroLEOneClass $K)
-    -- run the core equality-transforming mechanism on `a ≤ b`
     let ⟨a', b', pf⟩ ← reduceLeQ disch iK iK' iK'' iK''' iK'''' a b
     let t' ← mkAppM `LE.le #[a', b']
     return { expr := t', proof? := pf }
@@ -637,7 +636,6 @@ def reduceEq (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (t : E
     let iK'' : Q(PosMulStrictMono $K) ← synthInstanceQ q(PosMulStrictMono $K)
     let iK''' : Q(PosMulReflectLT $K) ← synthInstanceQ q(PosMulReflectLT $K)
     let iK'''' : Q(ZeroLEOneClass $K) ← synthInstanceQ q(ZeroLEOneClass $K)
-    -- run the core equality-transforming mechanism on `a < b`
     let ⟨a', b', pf⟩ ← reduceLtQ disch iK iK' iK'' iK''' iK'''' a b
     let t' ← mkAppM `LT.lt #[a', b']
     return { expr := t', proof? := pf }
