@@ -55,7 +55,7 @@ instance : IsMon_Hom (snd M N) where
 instance foo {f : M ⟶ N} {g : M ⟶ O} [IsMon_Hom f] [IsMon_Hom g] : IsMon_Hom (lift f g) where
   mul_hom := by ext <;> simp [← tensor_comp_assoc]
 
-instance [IsCommMon M] : IsMon_Hom μ[M] where
+instance [IsCommMonObj M] : IsMon_Hom μ[M] where
   one_hom := by simp [toUnit_unique (ρ_ (𝟙_ C)).hom (λ_ (𝟙_ C)).hom]
 
 end MonObj
@@ -159,8 +159,8 @@ section BraidedCategory
 variable [BraidedCategory C]
 
 /-- If `M` is a commutative monoid object, then `Hom(X, M)` has a commutative monoid structure. -/
-abbrev Hom.commMonoid [IsCommMon M] : CommMonoid (X ⟶ M) where
-  mul_comm f g := by simpa [-IsCommMon.mul_comm] using lift g f ≫= IsCommMon.mul_comm M
+abbrev Hom.commMonoid [IsCommMonObj M] : CommMonoid (X ⟶ M) where
+  mul_comm f g := by simpa [-IsCommMonObj.mul_comm] using lift g f ≫= IsCommMonObj.mul_comm M
 
 scoped[MonObj] attribute [instance] Hom.commMonoid
 
