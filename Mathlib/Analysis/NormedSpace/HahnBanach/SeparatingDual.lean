@@ -19,9 +19,11 @@ This property is satisfied for normed spaces over `ℝ` or `ℂ` (by the analyti
 and for locally convex topological spaces over `ℝ` (by the geometric Hahn-Banach theorem).
 
 Under the assumption `SeparatingDual R V`, we show in
-`SeparatingDual.exists_continuousLinearMap_apply_eq` that the group of continuous linear
+`SeparatingDual.exists_continuousLinearEquiv_apply_eq` that the group of continuous linear
 equivalences acts transitively on the set of nonzero vectors.
--/
+
+Using this, we prove that if `E` and `F` are nontrivial normed vector spaces over an
+`RCLike` field `𝕜`, then the space of continuous linear operators between them is nontrivial. -/
 
 /-- When `E` is a topological module over a topological ring `R`, the class `SeparatingDual R E`
 registers that continuous linear forms on `E` separate points of `E`. -/
@@ -55,6 +57,7 @@ lemma exists_ne_zero {x : V} (hx : x ≠ 0) :
     ∃ f : StrongDual R V, f x ≠ 0 :=
   exists_ne_zero' x hx
 
+
 theorem exists_separating_of_ne {x y : V} (h : x ≠ y) :
     ∃ f : StrongDual R V, f x ≠ f y := by
   rcases exists_ne_zero (R := R) (sub_ne_zero_of_ne h) with ⟨f, hf⟩
@@ -87,7 +90,8 @@ theorem _root_.separatingDual_iff_injective : SeparatingDual R V ↔
 
 variable [SeparatingDual R V]
 
-open Function in
+open Function
+
 /-- Given a finite-dimensional subspace `W` of a space `V` with separating dual, any
   linear functional on `W` extends to a continuous linear functional on `V`.
   This is stated more generally for an injective linear map from `W` to `V`. -/
@@ -98,6 +102,46 @@ theorem dualMap_surjective_iff {W} [AddCommGroup W] [Module R W] [FiniteDimensio
   have := (separatingDual_iff_injective.mp ‹_›).comp hf
   rw [← LinearMap.coe_comp] at this
   exact LinearMap.flip_surjective_iff₁.mpr this
+
+/-- As a consequence of Hahn-Banach, if `E` and `F` are nontrivial normed vector spaces over an
+`RCLike` field `𝕜`, there are nontrivial continuous linear operators between them. -/
+instance (W : Type*) [AddCommGroup W] [TopologicalSpace W] [Module R W] [Nontrivial W]
+  [Nontrivial V] [ContinuousSMul R W] :
+    Nontrivial (V →L[R] W) := by
+  obtain ⟨v, hv⟩ := exists_ne (0 : V)
+  obtain ⟨w, hw⟩ := exists_ne (0 : W)
+  obtain ⟨ψ, hψ⟩ := exists_ne_zero (R := R) hv
+  let p : Submodule R W := R ∙ w
+  let A := p.subtypeL
+  set φ : R →L[R] p :=
+  { toFun := by
+      intro x
+      use x • w
+      rw [Submodule.mem_span_singleton]
+      use x
+    map_add' x y := by
+      simp
+      exact Module.add_smul x y w
+    map_smul' m x:= by
+      simp
+      exact mul_smul m x w
+    cont := by fun_prop} with hφ
+  set α := A ∘L φ ∘L ψ with hα
+  refine ⟨α, 0, ?_⟩
+  refine DFunLike.ne_iff.mpr ⟨v, ?_⟩
+  simp only [hα, ContinuousLinearMap.coe_comp', comp_apply, ContinuousLinearMap.zero_apply]
+  have injA : Function.Injective A := by exact --Submodule.subtype_injective
+    (Set.injective_codRestrict Subtype.property).mp fun ⦃a₁ a₂⦄ a ↦ a
+  have injφ : Function.Injective φ := by
+    rw [hφ]
+    simp only [ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk]
+    have := @smul_left_injective R p _ _ _ _ ⟨w, Submodule.mem_span_singleton_self _⟩
+    apply this
+    simp [hw]
+  rw [map_ne_zero_iff (f := A) (hf := injA)]
+  rwa [map_ne_zero_iff (f := φ) (hf := injφ)]
+
+#lint
 
 lemma exists_eq_one {x : V} (hx : x ≠ 0) :
     ∃ f : StrongDual R V, f x = 1 := by
@@ -114,19 +158,6 @@ theorem exists_eq_one_ne_zero_of_ne_zero_pair {x y : V} (hx : x ≠ 0) (hy : y �
   · exact ⟨(v x)⁻¹ • v, inv_mul_cancel₀ vx, show (v x)⁻¹ * v y ≠ 0 by simp [vx, vy]⟩
   · exact ⟨u + v, by simp [ux, vx], by simp [uy, vy]⟩
 
-#where
-/-- As a consequence of Hahn-Banach, if `E` and `F` are nontrivial normed vector spaces over an
-`RCLike` field `𝕜`, there are nontrivial continuous linear operators between them. -/
-instance (W : Type*) [AddCommGroup W] [TopologicalSpace W] [Module R W] [Nontrivial W] [Nontrivial V] :--[NormedSpace 𝕜 F] [Nontrivial E] [Nontrivial F] :
-    Nontrivial (W →L[R] V) := by
-  obtain ⟨v, hv⟩ := exists_ne (0 : V)
-  obtain ⟨w, hw⟩ := exists_ne (0 : W)
-  obtain ⟨φ, hφ_eval⟩ := exists_eq_one (R := R) hv
-  have := ContinuousLinearEquiv.toSpanNonzeroSingleton R _ hw
-  -- have := (R ∙ w).subtypeₗᵢ.toContinuousLinearMap ∘L
-  --   (toSpanNonzeroSingleton R _ hw) ∘L φ
-  -- refine ⟨(R ∙ w).subtypeₗᵢ.toContinuousLinearMap ∘L
-  --   (toSpanNonzeroSingleton R _ hw) ∘L φ, 0, DFunLike.ne_iff.mpr ⟨v, by simp [hφ_eval, hv, hw]⟩⟩
 
 variable [IsTopologicalAddGroup V]
 
