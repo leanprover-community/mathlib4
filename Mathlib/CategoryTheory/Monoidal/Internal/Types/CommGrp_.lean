@@ -23,9 +23,9 @@ open CategoryTheory MonObj
 
 namespace CommGrpTypeEquivalenceCommGrp
 
-instance commGrpCommGroup (A : Type u) [GrpObj A] [IsCommMon A] : CommGroup A :=
+instance commGrpCommGroup (A : Type u) [GrpObj A] [IsCommMonObj A] : CommGroup A :=
   { GrpTypeEquivalenceGrp.grpGroup A with
-    mul_comm := fun x y => by convert congr_fun (IsCommMon.mul_comm A) (y, x) }
+    mul_comm := fun x y => by convert congr_fun (IsCommMonObj.mul_comm A) (y, x) }
 
 /-- Converting a commutative group object in `Type u` into a group. -/
 noncomputable def functor : CommGrp_ (Type u) ⥤ CommGrp.{u} where

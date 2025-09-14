@@ -176,14 +176,14 @@ lemma GrpObj.inv_eq_inv : ι = (𝟙 G)⁻¹ := by simp [Hom.inv_def]
 
 @[deprecated (since := "2025-09-13")] alias Grp_Class.inv_eq_inv := GrpObj.inv_eq_inv
 
-instance [BraidedCategory C] [IsCommMon G] : IsMon_Hom ι[G] where
+instance [BraidedCategory C] [IsCommMonObj G] : IsMon_Hom ι[G] where
   one_hom := by simp [one_eq_one, ← Hom.inv_def]
   mul_hom := by simp [GrpObj.mul_inv_rev]
 
 attribute [local simp] Hom.inv_def in
-instance [BraidedCategory C] [IsCommMon G] {f : M ⟶ G} [IsMon_Hom f] : IsMon_Hom f⁻¹ where
+instance [BraidedCategory C] [IsCommMonObj G] {f : M ⟶ G} [IsMon_Hom f] : IsMon_Hom f⁻¹ where
 
 /-- If `G` is a commutative group object, then `Hom(X, G)` has a commutative group structure. -/
-abbrev Hom.commGroup [BraidedCategory C] [IsCommMon G] : CommGroup (X ⟶ G) where
+abbrev Hom.commGroup [BraidedCategory C] [IsCommMonObj G] : CommGroup (X ⟶ G) where
 
 scoped[MonObj] attribute [instance] Hom.commGroup
