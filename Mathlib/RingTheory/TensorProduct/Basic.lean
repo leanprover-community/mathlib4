@@ -558,11 +558,7 @@ lemma _root_.LinearMap.map_mul_of_map_mul_tmul {f : A ⊗[R] B →ₗ[S] C}
     exact hf _ _ _ _) x y
 
 /-- Build an algebra equivalence from a linear equivalence out of a tensor product, and evidence
-that on pure tensors, it preserves multiplication and the identity.
-
-Note that we state `h_one` using `1 ⊗ₜ[R] 1` instead of `1` so that lemmas about `f` applied to pure
-tensors can be directly applied by the caller (without needing `TensorProduct.one_def`).
--/
+that on pure tensors, it preserves multiplication. -/
 def algEquivOfLinearEquivTensorProduct (f : A ⊗[R] B ≃ₗ[S] C)
     (h_mul : ∀ (a₁ a₂ : A) (b₁ b₂ : B), f ((a₁ * a₂) ⊗ₜ (b₁ * b₂)) = f (a₁ ⊗ₜ b₁) * f (a₂ ⊗ₜ b₂)) :
     A ⊗[R] B ≃ₐ[S] C :=
