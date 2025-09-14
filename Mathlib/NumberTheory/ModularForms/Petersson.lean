@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 
-import Mathlib.NumberTheory.ModularForms.QExpansion
+import Mathlib.NumberTheory.ModularForms.Basic
 
 /-!
 # The Petersson scalar product
