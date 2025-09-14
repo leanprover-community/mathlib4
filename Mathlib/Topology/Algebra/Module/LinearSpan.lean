@@ -49,7 +49,10 @@ variable [Finite ι] [Field 𝕜] [t𝕜 : TopologicalSpace 𝕜] [IsTopological
 /- A linear functional `φ` can be expressed as a linear combination of linear functionals `f₁,…,fₙ`
 if and only if `φ` is continuous with respect to the topology induced by `f₁,…,fₙ`. See
 `LinearMap.mem_span_iff_continuous` for a result about arbitrary collections of linear functionals.
--/
+/- A linear functional `φ` can be expressed as a linear combination of finitely many linear
+functionals `f₁,…,fₙ` if and only if `φ` is continuous with respect to the topology induced by
+`f₁,…,fₙ`. See `LinearMap.mem_span_iff_continuous` for a result about arbitrary collections of
+linear functionals. -/
 theorem mem_span_iff_continuous_of_finite {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜] 𝕜) :
     φ ∈ Submodule.span 𝕜 (Set.range f) ↔ Continuous[⨅ i, induced (f i) t𝕜, t𝕜] φ := by
   let _ := ⨅ i, induced (f i) t𝕜
