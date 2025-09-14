@@ -34,7 +34,7 @@ variable (Γ)
 
 /-- The width of the cusp `∞` for a subgroup of `SL(2, ℤ)`, i.e. the least `n > 0` such that
 `[1, n; 0, 1] ∈ Γ`. -/
-protected noncomputable def width : ℕ := relindex Γ (.zpowers ModularGroup.T)
+protected noncomputable def width : ℕ := relIndex Γ (.zpowers ModularGroup.T)
 
 lemma width_ne_zero [Γ.FiniteIndex] : Γ.width ≠ 0 :=
   FiniteIndex.index_ne_zero
