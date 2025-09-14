@@ -62,6 +62,7 @@ instance categoryStruct [CategoryStruct.{v} C] : CategoryStruct (LocallyDiscrete
 
 variable [CategoryStruct.{v} C]
 
+/-- Construct a 1-morphism in the locally discrete bicategory. -/
 abbrev mkHom {a b : C} (f : a ⟶ b) :
     mk a ⟶ mk b :=
   ⟨f⟩
