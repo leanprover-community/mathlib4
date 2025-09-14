@@ -34,34 +34,40 @@ lemma petersson_continuous (k : ℤ) {f f' : ℍ → ℂ}
   apply (Complex.continuous_ofReal.comp continuous_im).zpow₀
   exact fun τ ↦ .inl <| Complex.ofReal_ne_zero.mpr τ.im_ne_zero
 
--- TO DO: Generalize this to allow any `g ∈ GL(2, ℝ)` once #24830 is merged
-lemma petersson_slash (k : ℤ) (f f' : ℍ → ℂ) (g : GL (Fin 2) ℝ) (hg : 0 < g.val.det) (τ : ℍ) :
-    petersson k (f ∣[k] g) (f' ∣[k] g) τ = (↑ₘ[ℝ] g).det ^ (k - 2) * petersson k f f' (g • τ) := by
-  let D := (↑ₘ[ℝ] g).det
+lemma petersson_slash (k : ℤ) (f f' : ℍ → ℂ) (g : GL (Fin 2) ℝ) (τ : ℍ) :
+    petersson k (f ∣[k] g) (f' ∣[k] g) τ =
+      |g.val.det| ^ (k - 2) * σ g (petersson k f f' (g • τ)) := by
+  let D := g.val.det
   have hD : (D : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr <| g.det_ne_zero
   let j := denom g τ
   calc petersson k (f ∣[k] g) (f' ∣[k] g) τ
-  _ = conj (f (g • τ) * D ^ (k - 1) * j^(-k)) *
-        (f' (g • τ) * D ^ (k - 1) * j ^ (-k)) * τ.im ^ k := by
-      simp [ModularForm.slash_def, show σ g = RingHom.id _ by simp [UpperHalfPlane.σ, hg],
-        petersson, D, j]
-  _ = D ^ (2 * k - 2) * conj (f (g • τ)) * (f' (g • τ)) * (τ.im ^ k * j.normSq ^ (-k)) := by
+  _ = conj (σ g (f (g • τ)) * D ^ (k - 1) * j^(-k)) *
+        (σ g (f' (g • τ)) * D ^ (k - 1) * j ^ (-k)) * τ.im ^ k := by
+      simp [ModularForm.slash_def, petersson, D, j]
+  _ = D ^ (2 * k - 2) * conj (σ g (f (g • τ)))
+        * σ g (f' (g • τ)) * (τ.im ^ k * j.normSq ^ (-k)) := by
     simp only [Complex.normSq_eq_conj_mul_self, (by ring : 2 * k - 2 = (k - 1) + (k - 1)),
       zpow_add₀ hD, mul_zpow, map_mul, map_zpow₀, Complex.conj_ofReal]
     ring
-  _ = D ^ (k - 2) * (conj (f (g • τ)) * (f' (g • τ)) * (D * τ.im / j.normSq) ^ k) := by
+  _ = |D| ^ (2 * k - 2) * conj (σ g (f (g • τ)))
+      * σ g (f' (g • τ)) * (τ.im ^ k * j.normSq ^ (-k)) := by
+    simp only [← Complex.ofReal_zpow, (show Even (2 * k - 2) by aesop).zpow_abs]
+  _ = |D| ^ (k - 2) *
+      (conj (σ g (f (g • τ))) * σ g (f' (g • τ)) * (|D| * τ.im / j.normSq) ^ k) := by
     rw [div_zpow, mul_zpow, zpow_neg, div_eq_mul_inv, (by ring : 2 * k - 2 = k + (k - 2)),
-      zpow_add₀ hD]
+      zpow_add₀ (by aesop)]
     ring
-  _ = D ^ (k - 2) * (conj (f (g • τ)) * (f' (g • τ)) * (im (g • τ)) ^ k) := by
+  _ = |D| ^ (k - 2) * (conj (σ g (f (g • τ))) * σ g (f' (g • τ)) * (im (g • τ)) ^ k) := by
     rw [im_smul_eq_div_normSq, Complex.ofReal_div, Complex.ofReal_mul,
-      Matrix.GeneralLinearGroup.val_det_apply, abs_of_pos hg]
+      Matrix.GeneralLinearGroup.val_det_apply]
+  _ = |g.val.det| ^ (k - 2) * σ g (petersson k f f' (g • τ)) := by
+    by_cases h : 0 < g.val.det <;> simp [σ, h, D, petersson]
 
 lemma petersson_slash_SL (k : ℤ) (f f' : ℍ → ℂ) (g : SL(2, ℤ)) (τ : ℍ) :
     petersson k (f ∣[k] g) (f' ∣[k] g) τ = petersson k f f' (g • τ) := by
-  rw [ModularForm.SL_slash, ModularForm.SL_slash, petersson_slash] <;>
-  rw [Matrix.SpecialLinearGroup.coe_GL_coe_matrix, Matrix.SpecialLinearGroup.det_coe] <;>
-  simp
+  -- need to disable two simp lemmas as they work against `Matrix.SpecialLinearGroup.det_coe`
+  simp [σ, ModularForm.SL_slash, petersson_slash,
+    -Matrix.SpecialLinearGroup.map_apply_coe, -Matrix.SpecialLinearGroup.coe_matrix_coe]
 
 /-- If `f, f'` are modular forms and `f` is zero at infinity, then `petersson k f f'` has
 exponentially rapid decay at infinity. -/
