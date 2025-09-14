@@ -76,7 +76,7 @@ theorem eq_iff_subset : s = t ↔ (s : Finset α) ⊆ (t : Finset α) := by
 
 variable (α n) in
 /-- `Nat.Combination α n` as a `SubMulAction` of `Finset α`. -/
-@[to_additive "`Nat.Combination α n` as a `SubAddAction` of `Finsetα`."]
+@[to_additive /--`Nat.Combination α n` as a `SubAddAction` of `Finsetα`.-/]
 def subMulAction [DecidableEq α] : SubMulAction G (Finset α) where
   carrier := n.Combination α
   smul_mem' g s := (Finset.card_smul_finset g s).trans
@@ -173,7 +173,8 @@ variable (α G)
 
 variable (n) in
 /-- The equivariant map from embeddings of `Fin n` (aka arrangement) to combinations. -/
-@[to_additive "The equivariant map from embeddings of `Fin n` (aka arrangements) to combinations"]
+@[to_additive /-- The equivariant map from embeddings of `Fin n`
+  (aka arrangements) to combinations. -/]
 def mulActionHom_of_embedding [DecidableEq α] :
     (Fin n ↪ α) →[G] n.Combination α where
   toFun f := ⟨Finset.univ.map f, by rw [mem_iff, Finset.card_map, Finset.card_fin]⟩
@@ -289,7 +290,7 @@ theorem compl_bijective :
 end
 
 /-- The obvious map from a type to its 1-combinations, as an equivariant map. -/
-@[to_additive "The obvious map from a type to its 1-combinations, as an equivariant map."]
+@[to_additive /-- The obvious map from a type to its 1-combinations, as an equivariant map. -/]
 def mulActionHom_singleton [DecidableEq α] :
     α →[G] Nat.Combination α 1 where
   toFun x := ⟨{x}, Finset.card_singleton x⟩
