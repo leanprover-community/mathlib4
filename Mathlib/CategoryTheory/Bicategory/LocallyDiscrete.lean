@@ -55,9 +55,6 @@ instance [DecidableEq C] : DecidableEq (LocallyDiscrete C) :=
 instance [Inhabited C] : Inhabited (LocallyDiscrete C) :=
   ⟨⟨default⟩⟩
 
--- abbrev Hom [CategoryStruct.{v} C] (a b : LocallyDiscrete C) : Type v :=
---   Discrete (a.as ⟶ b.as)
-
 instance categoryStruct [CategoryStruct.{v} C] : CategoryStruct (LocallyDiscrete C) where
   Hom a b := Discrete (a.as ⟶ b.as)
   id a := ⟨𝟙 a.as⟩
@@ -88,23 +85,9 @@ instance subsingleton2Hom {a b : LocallyDiscrete C} (f g : a ⟶ b) : Subsinglet
 theorem eq_of_hom {X Y : LocallyDiscrete C} {f g : X ⟶ Y} (η : f ⟶ g) : f = g :=
   Discrete.ext η.1.1
 
-theorem eqToHom_eq_of_hom {X Y : LocallyDiscrete C} {f g : X ⟶ Y} (η : f ⟶ g) :
+theorem eq_eqToHom {X Y : LocallyDiscrete C} {f g : X ⟶ Y} (η : f ⟶ g) :
     η = eqToHom (eq_of_hom η) :=
   Subsingleton.elim _ _
-
-end LocallyDiscrete
-
-namespace LocallyDiscrete
-
-variable [Category.{v} C]
-
-def idIso (a : C) :
-    mkHom (𝟙 a) ≅ 𝟙 (mk a) :=
-  eqToIso rfl
-
-def compIso {a b c : C} (f : a ⟶ b) (g : b ⟶ c) :
-    mkHom (f ≫ g) ≅ mkHom f ≫ mkHom g :=
-  eqToIso rfl
 
 end LocallyDiscrete
 

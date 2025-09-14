@@ -157,13 +157,6 @@ section
 
 variable (F : Pseudofunctor B C) {a b c d : B}
 
-#check map₂_whisker_left
-
-lemma map₂_whisker_left_symm (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) :
-    F.map f ◁ F.map₂ η = (F.mapComp f g).inv ≫ F.map₂ (f ◁ η) ≫ (F.mapComp f h).hom := by
-  simp
-  -- Proof goes here
-
 @[reassoc, to_app]
 lemma map₂_associator_inv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     F.map₂ (α_ f g h).inv =
@@ -175,8 +168,6 @@ lemma map₂_associator_inv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     IsIso.Iso.inv_hom]
   rw [← F.map₂_inv]
   simp
-
-#check map₂_right_unitor
 
 @[reassoc, to_app]
 lemma map₂_left_unitor_inv (f : a ⟶ b) :
@@ -223,20 +214,6 @@ lemma mapComp_assoc_left_inv {c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d)
     (α_ (F.map f) (F.map g) (F.map h)).hom ≫ F.map f ◁ (F.mapComp g h).inv ≫
     (F.mapComp f (g ≫ h)).inv ≫ F.map₂ (α_ f g h).inv :=
   F.toLax.mapComp_assoc_left _ _ _
-
-@[reassoc, to_app]
-lemma mapComp_assoc_mapComp_inv {c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
-    (F.mapComp f g).hom ▷ F.map h ≫ (α_ (F.map f) (F.map g) (F.map h)).hom ≫
-    F.map f ◁ (F.mapComp g h).inv =
-    (F.mapComp (f ≫ g) h).inv ≫ F.map₂ (α_ f g h).hom ≫ (F.mapComp f (g ≫ h)).hom := by
-  simp
-
-@[reassoc, to_app]
-lemma mapComp_assoc_inv_mapComp_inv {c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
-     F.map f ◁ (F.mapComp g h).hom ≫ (α_ (F.map f) (F.map g) (F.map h)).inv ≫
-    (F.mapComp f g).inv ▷ F.map h  =
-    (F.mapComp f (g ≫ h)).inv ≫ F.map₂ (α_ f g h).inv ≫ (F.mapComp (f ≫ g) h).hom := by
-  simp [map₂_associator_inv]
 
 @[reassoc, to_app]
 lemma mapComp_comp_left (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :

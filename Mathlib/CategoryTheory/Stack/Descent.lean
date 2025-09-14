@@ -178,5 +178,3 @@ end DescentData
 end Pseudofunctor
 
 end CategoryTheory
-
-#lint
