@@ -28,7 +28,7 @@ example : M ◁ (λ_ (M ⊗ M)).inv ≫ (α_ M (𝟙_ _) (M ⊗ M)).inv ≫
     (ρ_ M).hom ▷ (M ⊗ M) ≫ _ ◁ μ ≫ μ = _ ◁ μ ≫ μ := by
   simp only [mon_tauto]
 
-variable [BraidedCategory C] [IsCommMon M] [IsCommMon N]
+variable [BraidedCategory C] [IsCommMonObj M] [IsCommMonObj N]
 
 example : (β_ M M).hom ≫ μ = μ := by simp only [mon_tauto]
 example : (β_ M M).inv ≫ μ = μ := by simp only [mon_tauto]
