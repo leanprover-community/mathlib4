@@ -955,6 +955,8 @@ variable [BraidedCategory.{v₁} C]
 class IsCommMonObj (X : C) [MonObj X] where
   mul_comm (X) : (β_ X X).hom ≫ μ = μ := by cat_disch
 
+@[deprecated (since := "2025-09-14")] alias IsCommMon := IsCommMonObj
+
 open scoped MonObj
 
 namespace IsCommMonObj

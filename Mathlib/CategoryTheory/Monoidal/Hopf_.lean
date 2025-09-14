@@ -35,6 +35,8 @@ class HopfObj (X : C) extends BimonObj X where
   antipode_left (X) : Δ ≫ antipode ▷ X ≫ μ = ε ≫ η := by cat_disch
   antipode_right (X) : Δ ≫ X ◁ antipode ≫ μ = ε ≫ η := by cat_disch
 
+@[deprecated (since := "2025-09-14")] alias Hopf_Class := HopfObj
+
 namespace HopfObj
 
 @[inherit_doc] scoped notation "𝒮" => HopfObj.antipode
