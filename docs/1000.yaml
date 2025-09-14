@@ -164,6 +164,9 @@ Q193882:
 
 Q193910:
   title: Euler's theorem
+  decl: Nat.ModEq.pow_totient
+  authors: Chris Hughes
+  date: 2020
 
 Q194919:
   title: Inverse eigenvalues theorem
@@ -1260,6 +1263,9 @@ Q1076274:
 
 Q1077462:
   title: König's theorem (set theory)
+  authors: Mario Carneiro
+  date: 2018
+  decl: Cardinal.sum_lt_prod
 
 Q1077741:
   title: Hairy ball theorem
