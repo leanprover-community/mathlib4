@@ -776,10 +776,14 @@ lemma map_map (f₂ : M₂ →ₗ[R] M₃) (g₂ : N₂ →ₗ[R] N₃) (f₁ : 
     (x : M₁ ⊗ N₁) : map f₂ g₂ (map f₁ g₁ x) = map (f₂ ∘ₗ f₁) (g₂ ∘ₗ g₁) x :=
   DFunLike.congr_fun (map_comp ..).symm x
 
+lemma range_map_mono {a : M₁ →ₗ[R] M₂} {b : M₃ →ₗ[R] M₂} {c : N₁ →ₗ[R] N₂} {d : N₃ →ₗ[R] N₂}
+    (hab : range a ≤ range b) (hcd : range c ≤ range d) : range (map a c) ≤ range (map b d) := by
+  simp_rw [range_map]
+  exact Submodule.map₂_le_map₂ hab hcd
+
 lemma range_mapIncl_mono {p p' : Submodule R P} {q q' : Submodule R Q} (hp : p ≤ p') (hq : q ≤ q') :
-    LinearMap.range (mapIncl p q) ≤ LinearMap.range (mapIncl p' q') := by
-  simp_rw [range_mapIncl]
-  exact Submodule.map₂_le_map₂ hp hq
+    LinearMap.range (mapIncl p q) ≤ LinearMap.range (mapIncl p' q') :=
+  range_map_mono (by simpa) (by simpa)
 
 theorem lift_comp_map (i : P →ₗ[R] Q →ₗ[R] Q') (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     (lift i).comp (map f g) = lift ((i.comp f).compl₂ g) :=
