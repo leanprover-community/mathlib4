@@ -106,7 +106,7 @@ noncomputable def quotientTensorEquiv (m : Submodule R M) :
     simp only [Submodule.map_sup]
     erw [Submodule.map_id, Submodule.map_id]
     simp only [sup_eq_left]
-    rw [map_range_eq_span_tmul, map_range_eq_span_tmul]
+    rw [range_map_eq_span_tmul, range_map_eq_span_tmul]
     simp)
 
 @[simp]
@@ -136,7 +136,7 @@ noncomputable def tensorQuotientEquiv (n : Submodule R N) :
     simp only [Submodule.map_sup]
     erw [Submodule.map_id, Submodule.map_id]
     simp only [sup_eq_right]
-    rw [map_range_eq_span_tmul, map_range_eq_span_tmul]
+    rw [range_map_eq_span_tmul, range_map_eq_span_tmul]
     simp)
 
 @[simp]
