@@ -111,8 +111,8 @@ end
 
 /- ### `ArithmeticFunction.sigma` and `ArithmeticFunction.zeta` -/
 
-example (a b : ℕ) (hb : 0 < b) : ArithmeticFunction.sigma a b > 0 := by positivity
-example (a : ℕ) (ha : 0 < a) : ArithmeticFunction.zeta a > 0 := by positivity
+example (a b : ℕ) (hb : 0 < b) : 0 < ArithmeticFunction.sigma a b := by positivity
+example (a : ℕ) (ha : 0 < a) : 0 < ArithmeticFunction.zeta a := by positivity
 
 /-
 ## Test for meta-variable instantiation
