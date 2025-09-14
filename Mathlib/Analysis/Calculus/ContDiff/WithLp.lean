@@ -10,9 +10,11 @@ import Mathlib.Analysis.Normed.Lp.PiLp
 # Derivatives on `WithLp`
 -/
 
+open scoped ENNReal
+
 section PiLp
 
-open ContinuousLinearMap
+open ContinuousLinearMap WithLp
 
 variable {𝕜 ι : Type*} {E : ι → Type*} {H : Type*}
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup H] [∀ i, NormedAddCommGroup (E i)]
@@ -78,4 +80,25 @@ theorem contDiff_piLp_apply {i : ι} :
     ContDiff 𝕜 n (fun f : PiLp p E => f i) :=
   (contDiff_piLp p).1 contDiff_id i
 
+variable {p}
+
+lemma PiLp.contDiff_ofLp : ContDiff 𝕜 n (@ofLp p (Π i, E i)) :=
+  (continuousLinearEquiv p 𝕜 E).contDiff
+
+lemma PiLp.contDiff_toLp : ContDiff 𝕜 n (@toLp p (Π i, E i)) :=
+  (continuousLinearEquiv p 𝕜 E).symm.contDiff
+
 end PiLp
+
+namespace WithLp
+
+variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup F]
+  [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {p : ℝ≥0∞} [Fact (1 ≤ p)] {n : WithTop ℕ∞}
+
+lemma contDiff_ofLp : ContDiff 𝕜 n (@ofLp p (E × F)) :=
+  (prodContinuousLinearEquiv p 𝕜 E F).contDiff
+
+lemma contDiff_toLp : ContDiff 𝕜 n (@toLp p (E × F)) :=
+  (prodContinuousLinearEquiv p 𝕜 E F).symm.contDiff
+
+end WithLp

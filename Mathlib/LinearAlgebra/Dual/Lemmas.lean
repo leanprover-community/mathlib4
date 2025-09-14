@@ -46,7 +46,7 @@ This file contains basic results on dual vector spaces.
     `M ⧸ W.dualCoannihilator →ₗ[R] Dual R W`.
     It is an perfect pairing when `R` is a field and `W` is finite-dimensional.
 * Vector spaces:
-  * `Subspace.dualAnnihilator_dualConnihilator_eq` says that the double dual annihilator,
+  * `Subspace.dualAnnihilator_dualCoannihilator_eq` says that the double dual annihilator,
     pulled back ground `Module.Dual.eval`, is the original submodule.
   * `Subspace.dualAnnihilator_gci` says that `module.dualAnnihilator_gc R M` is an
     antitone Galois coinsertion.
@@ -832,7 +832,7 @@ theorem dualAnnihilator_inf_eq (W W' : Subspace K V₁) :
   rfl
 
 -- This is also true if `V₁` is finite dimensional since one can restrict `ι` to some subtype
--- for which the infi and supr are the same.
+-- for which the infimum and supremum are the same.
 -- The obstruction to the `dualAnnihilator_inf_eq` argument carrying through is that we need
 -- for `Module.Dual R (Π (i : ι), V ⧸ W i) ≃ₗ[K] Π (i : ι), Module.Dual R (V ⧸ W i)`, which is not
 -- true for infinite `ι`. One would need to add additional hypothesis on `W` (for example, it might
@@ -1025,7 +1025,7 @@ sending `f ⊗ g` to the composition of `TensorProduct.map f g` with
 the natural isomorphism `R ⊗ R ≃ R`.
 -/
 def dualDistrib : Dual R M ⊗[R] Dual R N →ₗ[R] Dual R (M ⊗[R] N) :=
-  compRight ↑(TensorProduct.lid R R) ∘ₗ homTensorHomMap R M N R R
+  compRight _ (TensorProduct.lid R R) ∘ₗ homTensorHomMap R M N R R
 
 variable {R M N}
 
@@ -1042,7 +1042,7 @@ variable [Module R M] [Module A M] [Module R N] [IsScalarTower R A M]
 
 /-- Heterobasic version of `TensorProduct.dualDistrib` -/
 def dualDistrib : Dual A M ⊗[R] Dual R N →ₗ[A] Dual A (M ⊗[R] N) :=
-  compRight (Algebra.TensorProduct.rid R A A).toLinearMap ∘ₗ homTensorHomMap R A A M N A R
+  compRight _ (Algebra.TensorProduct.rid R A A).toLinearMap ∘ₗ homTensorHomMap R A A M N A R
 
 variable {R M N}
 
@@ -1061,10 +1061,9 @@ variable [Module R M] [Module R N]
 -/
 noncomputable def dualDistribInvOfBasis (b : Basis ι R M) (c : Basis κ R N) :
     Dual R (M ⊗[R] N) →ₗ[R] Dual R M ⊗[R] Dual R N :=
-  -- Porting note: ∑ (i) (j) does not seem to work; applyₗ needs a little help to unify
   ∑ i, ∑ j,
     (ringLmapEquivSelf R ℕ _).symm (b.dualBasis i ⊗ₜ c.dualBasis j) ∘ₗ
-      (applyₗ (c j)) ∘ₗ (applyₗ (b i)) ∘ₗ lcurry R M N R
+      applyₗ (c j) ∘ₗ applyₗ (b i) ∘ₗ lcurry R M N R
 
 @[simp]
 theorem dualDistribInvOfBasis_apply (b : Basis ι R M) (c : Basis κ R N) (f : Dual R (M ⊗[R] N)) :

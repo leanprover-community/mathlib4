@@ -40,7 +40,7 @@ namespace ProbabilityTheory
 
 section GaussianPDF
 
-/-- Probability density function of the gaussian distribution with mean `μ` and variance `v`. -/
+/-- Probability density function of the Gaussian distribution with mean `μ` and variance `v`. -/
 noncomputable
 def gaussianPDFReal (μ : ℝ) (v : ℝ≥0) (x : ℝ) : ℝ :=
   (√(2 * π * v))⁻¹ * rexp (- (x - μ)^2 / (2 * v))
@@ -54,22 +54,22 @@ lemma gaussianPDFReal_zero_var (m : ℝ) : gaussianPDFReal m 0 = 0 := by
   ext1 x
   simp [gaussianPDFReal]
 
-/-- The gaussian pdf is positive when the variance is not zero. -/
+/-- The Gaussian pdf is positive when the variance is not zero. -/
 lemma gaussianPDFReal_pos (μ : ℝ) (v : ℝ≥0) (x : ℝ) (hv : v ≠ 0) : 0 < gaussianPDFReal μ v x := by
   rw [gaussianPDFReal]
   positivity
 
-/-- The gaussian pdf is nonnegative. -/
+/-- The Gaussian pdf is nonnegative. -/
 lemma gaussianPDFReal_nonneg (μ : ℝ) (v : ℝ≥0) (x : ℝ) : 0 ≤ gaussianPDFReal μ v x := by
   rw [gaussianPDFReal]
   positivity
 
-/-- The gaussian pdf is measurable. -/
+/-- The Gaussian pdf is measurable. -/
 @[fun_prop]
 lemma measurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) : Measurable (gaussianPDFReal μ v) :=
   (((measurable_id.add_const _).pow_const _).neg.div_const _).exp.const_mul _
 
-/-- The gaussian pdf is strongly measurable. -/
+/-- The Gaussian pdf is strongly measurable. -/
 @[fun_prop]
 lemma stronglyMeasurable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
     StronglyMeasurable (gaussianPDFReal μ v) :=
@@ -97,7 +97,7 @@ lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
     field_simp
   exact Integrable.comp_sub_right hg μ
 
-/-- The gaussian distribution pdf integrates to 1 when the variance is not zero. -/
+/-- The Gaussian distribution pdf integrates to 1 when the variance is not zero. -/
 lemma lintegral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
     ∫⁻ x, ENNReal.ofReal (gaussianPDFReal μ v x) = 1 := by
   rw [← ENNReal.toReal_eq_one_iff]
@@ -111,11 +111,10 @@ lemma lintegral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
     mul_neg]
   simp_rw [← neg_mul]
   rw [neg_mul, integral_gaussian, ← Real.sqrt_inv, ← Real.sqrt_mul]
-  · field_simp
-    ring
+  · simp [field]
   · positivity
 
-/-- The gaussian distribution pdf integrates to 1 when the variance is not zero. -/
+/-- The Gaussian distribution pdf integrates to 1 when the variance is not zero. -/
 lemma integral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
     ∫ x, gaussianPDFReal μ v x = 1 := by
   have h := lintegral_gaussianPDFReal_eq_one μ hv
@@ -138,18 +137,10 @@ lemma gaussianPDFReal_inv_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) 
     Real.sqrt_mul', mul_inv_rev, NNReal.coe_mul, NNReal.coe_mk]
   rw [← mul_assoc]
   refine congr_arg₂ _ ?_ ?_
-  · field_simp
+  · simp (disch := positivity) only [Real.sqrt_mul, mul_inv_rev, field]
     rw [Real.sqrt_sq_eq_abs]
-    ring_nf
-    calc (√↑v)⁻¹ * (√2)⁻¹ * (√π)⁻¹
-      = (√↑v)⁻¹ * (√2)⁻¹ * (√π)⁻¹ * (|c| * |c|⁻¹) := by
-          rw [mul_inv_cancel₀, mul_one]
-          simp only [ne_eq, abs_eq_zero, hc, not_false_eq_true]
-    _ = (√↑v)⁻¹ * (√2)⁻¹ * (√π)⁻¹ * |c| * |c|⁻¹ := by ring
   · congr 1
     field_simp
-    congr 1
-    ring
 
 lemma gaussianPDFReal_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) (x : ℝ) :
     gaussianPDFReal μ v (c * x)
@@ -395,7 +386,9 @@ open Real Complex
 
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {p : Measure Ω} {μ : ℝ} {v : ℝ≥0} {X : Ω → ℝ}
 
-/-- The complex moment generating function of a Gaussian distribution with mean `μ` and variance `v`
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
+set_option linter.unusedSimpArgs false in
+/-- The complex moment-generating function of a Gaussian distribution with mean `μ` and variance `v`
 is given by `z ↦ exp (z * μ + v * z ^ 2 / 2)`. -/
 theorem complexMGF_id_gaussianReal (z : ℂ) :
     complexMGF id (gaussianReal μ v) z = cexp (z * μ + v * z ^ 2 / 2) := by
@@ -417,7 +410,9 @@ theorem complexMGF_id_gaussianReal (z : ℂ) :
       rw [integral_cexp_quadratic (by simpa using pos_iff_ne_zero.mpr hv), ← mul_assoc]
     _ = 1 * cexp (-μ ^ 2 / (2 * v) - (z + μ / v) ^ 2 / (4 * -(2 * v)⁻¹)) := by
       congr 1
-      field_simp [Real.sqrt_eq_rpow]
+      simp only [field, sqrt_eq_rpow, one_div, ofReal_inv, NNReal.coe_inv, NNReal.coe_mul,
+        NNReal.coe_ofNat, ofReal_mul, ofReal_ofNat, neg_neg, div_inv_eq_mul,
+        ne_eq, ofReal_eq_zero, rpow_eq_zero, not_false_eq_true]
       rw [Complex.ofReal_cpow (by positivity)]
       push_cast
       ring_nf
@@ -425,10 +420,10 @@ theorem complexMGF_id_gaussianReal (z : ℂ) :
       rw [one_mul]
       congr 1
       have : (v : ℂ) ≠ 0 := by simpa
-      field_simp
+      simp [field]
       ring
 
-/-- The complex moment generating function of a random variable with Gaussian distribution
+/-- The complex moment-generating function of a random variable with Gaussian distribution
 with mean `μ` and variance `v` is given by `z ↦ exp (z * μ + v * z ^ 2 / 2)`. -/
 theorem complexMGF_gaussianReal (hX : p.map X = gaussianReal μ v) (z : ℂ) :
     complexMGF X p z = cexp (z * μ + v * z ^ 2 / 2) := by
@@ -444,7 +439,7 @@ theorem charFun_gaussianReal (t : ℝ) :
   simp only [mul_pow, I_sq, mul_neg, mul_one, sub_eq_add_neg]
   ring_nf
 
-/-- The moment generating function of a random variable with Gaussian distribution
+/-- The moment-generating function of a random variable with Gaussian distribution
 with mean `μ` and variance `v` is given by `t ↦ exp (μ * t + v * t ^ 2 / 2)`. -/
 theorem mgf_gaussianReal (hX : p.map X = gaussianReal μ v) (t : ℝ) :
     mgf X p t = rexp (μ * t + v * t ^ 2 / 2) := by
@@ -462,7 +457,7 @@ theorem mgf_fun_id_gaussianReal :
 theorem mgf_id_gaussianReal : mgf id (gaussianReal μ v) = fun t ↦ rexp (μ * t + v * t ^ 2 / 2) :=
   mgf_fun_id_gaussianReal
 
-/-- The cumulant generating function of a random variable with Gaussian distribution
+/-- The cumulant-generating function of a random variable with Gaussian distribution
 with mean `μ` and variance `v` is given by `t ↦ μ * t + v * t ^ 2 / 2`. -/
 theorem cgf_gaussianReal (hX : p.map X = gaussianReal μ v) (t : ℝ) :
     cgf X p t = μ * t + v * t ^ 2 / 2 := by

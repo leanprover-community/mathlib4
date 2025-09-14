@@ -3,9 +3,9 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Group.UniqueProds.Basic
-import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.Data.Finsupp.Lex
 import Mathlib.Data.ZMod.Basic
 
@@ -85,7 +85,7 @@ theorem zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a 
     dsimp only; rw [Finset.sum_apply']
     refine (Finset.sum_eq_single 0 ?_ ?_).trans ?_
     · intro b hb b0
-      rw [single_pow, one_pow, single_eq_of_ne]
+      rw [single_pow, one_pow, single_eq_of_ne']
       exact nsmul_ne_zero_of_lt_addOrderOf b0 (Finset.mem_range.mp hb)
     · grind
     · rw [single_pow, one_pow, zero_smul, single_eq_same]
@@ -94,7 +94,7 @@ theorem zero_divisors_of_torsion {R A} [Nontrivial R] [Ring R] [AddMonoid A] (a 
     · have a0 : a ≠ 0 :=
         ne_of_eq_of_ne (one_nsmul a).symm
           (nsmul_ne_zero_of_lt_addOrderOf one_ne_zero (Nat.succ_le_iff.mp o2))
-      simp only [a0, single_eq_of_ne, Ne, not_false_iff]
+      simp only [a0, single_eq_of_ne', Ne, not_false_iff]
     · simpa only [single_eq_same] using zero_ne_one
   · convert Commute.geom_sum₂_mul (R := AddMonoidAlgebra R A) _ (addOrderOf a) using 3
     · rw [single_zero_one, one_pow, mul_one]
@@ -137,8 +137,8 @@ elab "guard_decl" na:ident mod:ident : command => do
   let dcl ← liftCoreM <| realizeGlobalConstNoOverloadWithInfo na
   let mdn := mod.getId
   let env ← getEnv
-  let .some dcli := env.getModuleIdxFor? dcl | unreachable!
-  let .some mdni := env.getModuleIdx? mdn | throwError "the module {mod} is not imported!"
+  let some dcli := env.getModuleIdxFor? dcl | unreachable!
+  let some mdni := env.getModuleIdx? mdn | throwError "the module {mod} is not imported!"
   unless dcli = mdni do throwError "instance {na} is no longer in {mod}."
 
 guard_decl Finsupp.Lex.addLeftMono Mathlib.Data.Finsupp.Lex

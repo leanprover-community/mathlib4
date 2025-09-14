@@ -101,7 +101,7 @@ def multicospanComp : (S.index (P ⋙ F)).multicospan ≅ (S.index P).multicospa
       | WalkingMulticospan.right _ => Iso.refl _)
     (by
       rintro (a | b) (a | b) (f | f | f)
-      all_goals aesop_cat)
+      all_goals cat_disch)
 
 /-- Mapping the multifork associated to a cover `S : J.Cover X` and a presheaf `P` with
 respect to a functor `F` is isomorphic (upto a natural isomorphism of the underlying functors)
@@ -145,8 +145,8 @@ lemma Sheaf.isSeparated {FA : A → A → Type*} {CA : A → Type*}
     [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA] [J.HasSheafCompose (forget A)]
     (F : Sheaf J A) : Presheaf.IsSeparated J F.val := by
   rintro X S hS x y h
-  exact (Presieve.isSeparated_of_isSheaf _ _ ((isSheaf_iff_isSheaf_of_type _ _).1
-    ((sheafCompose J (forget A)).obj F).2) S hS).ext (fun _ _ hf => h _ _ hf)
+  exact (((isSheaf_iff_isSheaf_of_type _ _).1
+    ((sheafCompose J (forget A)).obj F).2).isSeparated S hS).ext (fun _ _ hf => h _ _ hf)
 
 lemma Presheaf.IsSheaf.isSeparated {F : Cᵒᵖ ⥤ A} {FA : A → A → Type*} {CA : A → Type*}
     [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA]

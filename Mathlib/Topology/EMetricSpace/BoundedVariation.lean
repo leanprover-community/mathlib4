@@ -366,7 +366,7 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
           ∑ i ∈ Finset.range m, edist (f (w (n + 1 + i + 1))) (f (w (n + 1 + i))) := by
       dsimp only [w]
       congr 1
-      · grind [Finset.mem_range, Finset.sum_congr]
+      · grind [Finset.sum_congr]
       · grind
     _ = (∑ i ∈ Finset.range n, edist (f (w (i + 1))) (f (w i))) +
           ∑ i ∈ Finset.Ico (n + 1) (n + 1 + m), edist (f (w (i + 1))) (f (w i)) := by
@@ -584,7 +584,7 @@ protected theorem add {f : α → E} {s : Set α} (hf : LocallyBoundedVariationO
     (ha : a ∈ s) (hb : b ∈ s) (hc : c ∈ s) :
     variationOnFromTo f s a b + variationOnFromTo f s b c = variationOnFromTo f s a c := by
   symm
-  refine additive_of_isTotal ((· : α) ≤ ·) (variationOnFromTo f s) (· ∈ s) ?_ ?_ ha hb hc
+  refine additive_of_isTotal (· ≤ · : α → α → Prop) (variationOnFromTo f s) (· ∈ s) ?_ ?_ ha hb hc
   · rintro x y _xs _ys
     simp only [variationOnFromTo.eq_neg_swap f s y x, add_neg_cancel]
   · rintro x y z xy yz xs ys zs

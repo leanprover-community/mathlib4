@@ -40,7 +40,9 @@ subtype `↥F`.
 * `isPathConnected_iff_pathConnectedSpace : IsPathConnected F ↔ PathConnectedSpace ↥F`
 
 Furthermore, it is shown that continuous images and quotients of path-connected sets/spaces are
-path-connected, and that every path-connected set/space is also connected.
+path-connected, and that every path-connected set/space is also connected. (See
+`Counterexamples.TopologistsSineCurve` for an example of a set in `ℝ × ℝ` that is connected but not
+path-connected.)
 -/
 
 noncomputable section
@@ -287,8 +289,8 @@ theorem pathComponentIn_mono {G : Set X} (h : F ⊆ G) :
 /-! ### Path component of the identity in a group -/
 
 /-- The path component of the identity in a topological monoid, as a submonoid. -/
-@[to_additive (attr := simps)
-"The path component of the identity in an additive topological monoid, as an additive submonoid."]
+@[to_additive (attr := simps) /-- The path component of the identity in an additive topological
+monoid, as an additive submonoid. -/]
 def Submonoid.pathComponentOne (M : Type*) [Monoid M] [TopologicalSpace M] [ContinuousMul M] :
     Submonoid M where
   carrier := pathComponent (1 : M)
@@ -296,8 +298,8 @@ def Submonoid.pathComponentOne (M : Type*) [Monoid M] [TopologicalSpace M] [Cont
   one_mem' := mem_pathComponent_self 1
 
 /-- The path component of the identity in a topological group, as a subgroup. -/
-@[to_additive (attr := simps!)
-"The path component of the identity in an additive topological group, as an additive subgroup."]
+@[to_additive (attr := simps!) /-- The path component of the identity in an additive topological
+group, as an additive subgroup. -/]
 def Subgroup.pathComponentOne (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G] :
     Subgroup G where
   toSubmonoid := .pathComponentOne G
@@ -564,6 +566,10 @@ instance (priority := 100) PathConnectedSpace.connectedSpace [PathConnectedSpace
   rw [← univ_subset_iff]
   exact (by simpa using hx : pathComponent x = univ) ▸ pathComponent_subset_component x
 
+/-- A path-connected set is connected.
+
+(See `Counterexamples.TopologistsSineCurve` for the standard counterexample showing that the
+converse is false.) -/
 theorem IsPathConnected.isConnected (hF : IsPathConnected F) : IsConnected F := by
   rw [isConnected_iff_connectedSpace]
   rw [isPathConnected_iff_pathConnectedSpace] at hF

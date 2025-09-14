@@ -106,8 +106,8 @@ instance : Category Scheme where
 /-- `f ⁻¹ᵁ U` is notation for `(Opens.map f.base).obj U`,
   the preimage of an open set `U` under `f`. -/
 scoped[AlgebraicGeometry] notation3:90 f:91 " ⁻¹ᵁ " U:90 =>
-  @Prefunctor.obj (Scheme.Opens _) _ (Scheme.Opens _) _
-    (Opens.map (f : Scheme.Hom _ _).base).toPrefunctor U
+  @Functor.obj (Scheme.Opens _) _ (Scheme.Opens _) _
+    (Opens.map (f : Scheme.Hom _ _).base) U
 
 /-- `Γ(X, U)` is notation for `X.presheaf.obj (op U)`. -/
 scoped[AlgebraicGeometry] notation3 "Γ(" X ", " U ")" =>
@@ -131,6 +131,15 @@ We give schemes the specialization preorder by default.
 instance {X : Scheme.{u}} : Preorder X := specializationPreorder X
 
 lemma le_iff_specializes {X : Scheme.{u}} {a b : X} : a ≤ b ↔ b ⤳ a := by rfl
+
+open Order in
+lemma height_of_isClosed {X : Scheme} {x : X} (hx : IsClosed {x}) : height x = 0 := by
+  simp only [height_eq_zero]
+  intro b _
+  obtain rfl | h := eq_or_ne b x
+  · assumption
+  · have := IsClosed.not_specializes hx rfl h
+    contradiction
 
 namespace Hom
 
@@ -277,11 +286,9 @@ noncomputable def Hom.homeomorph {X Y : Scheme.{u}} (f : X.Hom Y) [IsIso (C := S
 lemma Hom.homeomorph_apply {X Y : Scheme.{u}} (f : X.Hom Y) [IsIso (C := Scheme) f] (x) :
     f.homeomorph x = f.base x := rfl
 
--- Porting note: Lean seems not able to find this coercion any more
 instance hasCoeToTopCat : CoeOut Scheme TopCat where
   coe X := X.carrier
 
--- Porting note: added this unification hint just in case
 /-- forgetful functor to `TopCat` is the same as coercion -/
 unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢
   forgetToTop.obj X ≟ (X : TopCat)
@@ -369,8 +376,6 @@ theorem app_eq {X Y : Scheme} (f : X ⟶ Y) {U V : Y.Opens} (e : U = V) :
 theorem eqToHom_c_app {X Y : Scheme} (e : X = Y) (U) :
     (eqToHom e).app U = eqToHom (by subst e; rfl) := by subst e; rfl
 
--- Porting note: in `AffineScheme.lean` file, `eqToHom_op` can't be used in `(e)rw` or `simp(_rw)`
--- when terms get very complicated. See `AlgebraicGeometry.IsAffineOpen.isLocalization_stalk_aux`.
 lemma presheaf_map_eqToHom_op (X : Scheme) (U V : X.Opens) (i : U = V) :
     X.presheaf.map (eqToHom i).op = eqToHom (i ▸ rfl) := by
   rw [eqToHom_op, eqToHom_map]
@@ -380,11 +385,6 @@ instance isIso_toLRSHom {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsIso f.toLRSHo
 
 instance isIso_base {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] : IsIso f.base :=
   Scheme.forgetToTop.map_isIso f
-
--- Porting note: need an extra instance here.
-instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.c.app U) :=
-  haveI := PresheafedSpace.c_isIso_of_iso f.toPshHom
-  NatIso.isIso_app_of_isIso f.c _
 
 instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U) : IsIso (f.app U) :=
   haveI := PresheafedSpace.c_isIso_of_iso f.toPshHom
@@ -408,7 +408,7 @@ def Hom.copyBase {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) : X
   prop x := by
     subst h
     convert f.prop x using 4
-    aesop_cat
+    cat_disch
 
 lemma Hom.copyBase_eq {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) :
     f.copyBase g h = f := by
@@ -416,7 +416,7 @@ lemma Hom.copyBase_eq {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g
   obtain ⟨⟨⟨f₁, f₂⟩, f₃⟩, f₄⟩ := f
   simp only [Hom.copyBase, LocallyRingedSpace.Hom.toShHom_mk]
   congr
-  aesop_cat
+  cat_disch
 
 end Scheme
 

@@ -67,7 +67,7 @@ instance normedRing [Ring R] (v : AbsoluteValue R ℝ) : NormedRing (WithAbs v) 
   v.toNormedRing
 
 lemma norm_eq_abv [Ring R] (v : AbsoluteValue R ℝ) (x : WithAbs v) :
-    ‖x‖ = v x := rfl
+    ‖x‖ = v (WithAbs.equiv v x) := rfl
 
 end more_instances
 

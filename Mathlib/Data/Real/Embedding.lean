@@ -3,14 +3,10 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-
-import Mathlib.Data.Real.Archimedean
-import Mathlib.Data.Real.Basic
-import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.Algebra.Order.Module.OrderedSMul
-import Mathlib.Tactic.Qify
+import Mathlib.Algebra.Order.Module.Defs
+import Mathlib.Data.Real.Archimedean
 
 /-!
 # Embedding of archimedean groups into reals
@@ -65,7 +61,7 @@ theorem num_le_nat_mul_den [ZeroLEOneClass M] [NeZero (1 : M)]
 namespace Archimedean
 
 /-- Set of rational numbers that are less than the "number" `x / 1`.
- Formally, these are numbers `p / q` such that `p • 1 < q • x`. -/
+Formally, these are numbers `p / q` such that `p • 1 < q • x`. -/
 abbrev ratLt (x : M) : Set ℚ := {r | r.num • 1 < r.den • x}
 
 theorem mkRat_mem_ratLt {num : ℤ} {den : ℕ} (hden : den ≠ 0) {x : M} :
@@ -128,7 +124,7 @@ theorem ratLt_add (x y : M) : ratLt (x + y) = ratLt x + ratLt y := by
       simp [hk]
     have hka0 : k * a.den ≠ 0 := mul_ne_zero hk0 a.den_ne_zero
     obtain ⟨m, ⟨hm1, hm2⟩, _⟩ := existsUnique_add_zsmul_mem_Ico zero_lt_one 0 (k • a.den • x - 1)
-    refine ⟨mkRat m (k * a.den), ?_, mkRat (k * a.num - m) (k * a.den) , ?_, ?_⟩
+    refine ⟨mkRat m (k * a.den), ?_, mkRat (k * a.num - m) (k * a.den), ?_, ?_⟩
     · rw [mkRat_mem_ratLt hka0, ← smul_smul]
       simpa using hm2
     · have hk' : 1 + (k • a.num • 1 - k • a.den • y) ≤ k • a.den • x - 1 := by
@@ -149,7 +145,7 @@ theorem ratLt_add (x y : M) : ratLt (x + y) = ratLt x + ratLt y := by
     exact num_smul_one_lt_den_smul_add hu hv
 
 theorem ratLt'_bddAbove (x : M) : BddAbove (ratLt' x) :=
-   Monotone.map_bddAbove Rat.cast_mono <| ratLt_bddAbove x
+  Monotone.map_bddAbove Rat.cast_mono <| ratLt_bddAbove x
 
 theorem ratLt'_nonempty (x : M) : (ratLt' x).Nonempty := Set.image_nonempty.mpr (ratLt_nonempty x)
 

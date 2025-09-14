@@ -761,7 +761,7 @@ theorem tsum_iUnion_le_tsum {ι : Type*} (f : α → ℝ≥0∞) (t : ι → Set
   _ = ∑' i, ∑' x : t i, f x := ENNReal.tsum_sigma' _
 
 theorem tsum_biUnion_le_tsum {ι : Type*} (f : α → ℝ≥0∞) (s : Set ι) (t : ι → Set α) :
-    ∑' x : ⋃ i ∈ s , t i, f x ≤ ∑' i : s, ∑' x : t i, f x :=
+    ∑' x : ⋃ i ∈ s, t i, f x ≤ ∑' i : s, ∑' x : t i, f x :=
   calc ∑' x : ⋃ i ∈ s, t i, f x = ∑' x : ⋃ i : s, t i, f x := tsum_congr_set_coe _ <| by simp
   _ ≤ ∑' i : s, ∑' x : t i, f x := tsum_iUnion_le_tsum _ _
 
@@ -1428,7 +1428,7 @@ theorem liminf_add_of_right_tendsto_zero {u : Filter ι} {g : ι → ℝ≥0∞}
   rintro a hab
   filter_upwards [hb, ENNReal.tendsto_nhds_zero.1 hg _ <| lt_min (tsub_pos_of_lt hab) one_pos]
     with i hfg hg
-  exact ENNReal.le_of_add_le_add_right (hg.trans_lt <| by bound).ne <|
+  exact ENNReal.le_of_add_le_add_right (hg.trans_lt <| by simp).ne <|
     (add_le_of_le_tsub_left_of_le hab.le <| hg.trans <| min_le_left ..).trans hfg
 
 theorem liminf_add_of_left_tendsto_zero {u : Filter ι} {f : ι → ℝ≥0∞} (hf : u.Tendsto f (𝓝 0))

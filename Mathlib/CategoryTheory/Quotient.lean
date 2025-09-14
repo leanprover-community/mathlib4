@@ -21,11 +21,7 @@ relation, `functor_map_eq_iff` says that no unnecessary identifications have bee
 /-- A `HomRel` on `C` consists of a relation on every hom-set. -/
 def HomRel (C) [Quiver C] :=
   ∀ ⦃X Y : C⦄, (X ⟶ Y) → (X ⟶ Y) → Prop
--- The `Inhabited` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance (C) [Quiver C] : Inhabited (HomRel C) where
-  default := fun _ _ _ _ ↦ PUnit
+deriving Inhabited
 
 namespace CategoryTheory
 
@@ -114,7 +110,6 @@ theorem comp_mk {a b c : Quotient r} (f : a.as ⟶ b.as) (g : b.as ⟶ c.as) :
     comp r (Quot.mk _ f) (Quot.mk _ g) = Quot.mk _ (f ≫ g) :=
   rfl
 
--- Porting note: Had to manually add the proofs of `comp_id` `id_comp` and `assoc`
 instance category : Category (Quotient r) where
   Hom := Hom r
   id a := Quot.mk _ (𝟙 a.as)
@@ -156,8 +151,7 @@ protected theorem sound {a b : C} {f₁ f₂ : a ⟶ b} (h : r f₁ f₂) :
 lemma compClosure_iff_self [h : Congruence r] {X Y : C} (f g : X ⟶ Y) :
     CompClosure r f g ↔ r f g := by
   constructor
-  · intro hfg
-    induction' hfg with m m' hm
+  · rintro ⟨hfg⟩
     exact Congruence.compLeft _ (Congruence.compRight _ (by assumption))
   · exact CompClosure.of _ _ _
 
@@ -201,12 +195,7 @@ def lift (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = 
 variable (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = F.map f₂)
 
 theorem lift_spec : functor r ⋙ lift r F H = F := by
-  apply Functor.ext; rotate_left
-  · rintro X
-    rfl
-  · rintro X Y f
-    dsimp [lift, functor]
-    simp
+  tauto
 
 theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = lift r F H := by
   subst_vars
@@ -216,7 +205,7 @@ theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = 
     congr
   · rintro _ _ f
     dsimp [lift, Functor]
-    refine Quot.inductionOn f (fun _ ↦ ?_) -- Porting note: this line was originally an `apply`
+    refine Quot.inductionOn f fun _ ↦ ?_
     simp only [heq_eq_eq]
     congr
 
@@ -245,10 +234,8 @@ theorem lift_obj_functor_obj (X : C) :
     (lift r F H).obj ((functor r).obj X) = F.obj X := rfl
 
 theorem lift_map_functor_map {X Y : C} (f : X ⟶ Y) :
-    (lift r F H).map ((functor r).map f) = F.map f := by
-  rw [← NatIso.naturality_1 (lift.isLift r F H)]
-  dsimp [lift, functor]
-  simp
+    (lift r F H).map ((functor r).map f) = F.map f :=
+  rfl
 
 variable {r}
 
@@ -276,11 +263,11 @@ lemma natTransLift_app (F G : Quotient r ⥤ D)
 lemma comp_natTransLift {F G H : Quotient r ⥤ D}
     (τ : Quotient.functor r ⋙ F ⟶ Quotient.functor r ⋙ G)
     (τ' : Quotient.functor r ⋙ G ⟶ Quotient.functor r ⋙ H) :
-    natTransLift r τ ≫ natTransLift r τ' =  natTransLift r (τ ≫ τ') := by aesop_cat
+    natTransLift r τ ≫ natTransLift r τ' =  natTransLift r (τ ≫ τ') := by cat_disch
 
 @[simp]
 lemma natTransLift_id (F : Quotient r ⥤ D) :
-    natTransLift r (𝟙 (Quotient.functor r ⋙ F)) = 𝟙 _ := by aesop_cat
+    natTransLift r (𝟙 (Quotient.functor r ⋙ F)) = 𝟙 _ := by cat_disch
 
 /-- In order to define a natural isomorphism `F ≅ G` with `F G : Quotient r ⥤ D`, it suffices
 to do so after precomposing with `Quotient.functor r`. -/
@@ -296,7 +283,7 @@ variable (D)
 
 instance full_whiskeringLeft_functor :
     ((whiskeringLeft C _ D).obj (functor r)).Full where
-  map_surjective f := ⟨natTransLift r f, by aesop_cat⟩
+  map_surjective f := ⟨natTransLift r f, by cat_disch⟩
 
 instance faithful_whiskeringLeft_functor :
     ((whiskeringLeft C _ D).obj (functor r)).Faithful := ⟨by apply natTrans_ext⟩
