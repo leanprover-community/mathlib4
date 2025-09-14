@@ -710,6 +710,7 @@ variable (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)
 abbrev idealLattice : Submodule ℤ (mixedSpace K) := LinearMap.range <|
   (mixedEmbedding K).toIntAlgHom.toLinearMap ∘ₗ ((I : Submodule (𝓞 K) K).subtype.restrictScalars ℤ)
 
+omit [NumberField K] in
 theorem mem_idealLattice {x : mixedSpace K} :
     x ∈ idealLattice K I ↔ ∃ y, y ∈ (I : Set K) ∧ mixedEmbedding K y = x := by
   simp [idealLattice]
