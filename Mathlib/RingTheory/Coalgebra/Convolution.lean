@@ -162,7 +162,7 @@ scoped[ConvolutionProduct] attribute [instance] LinearMap.convOne LinearMap.conv
 
 lemma convOne_def : (1 : C →ₗ[R] A) = Algebra.linearMap R A ∘ₗ counit := rfl
 
-@[simp] lemma convOne_apply (c : C) : (1 : C →ₗ[R] A) c = algebraMap R A (counit c) := rfl
+@[simp] lemma convOne_apply (c : C) : (1 : C →ₗ[R] A) c = algebraMap R A (counit (R := R) c) := rfl
 
 /-- Convolution semiring structure on linear maps from a coalgebra to an algebra. -/
 abbrev convSemiring : Semiring (C →ₗ[R] A) where
@@ -180,11 +180,7 @@ variable [CommSemiring A] [AddCommMonoid C] [Algebra R A] [Module R C] [Coalgebr
 /-- Commutative convolution semiring structure on linear maps from a cocommutative coalgebra to an
 algebra. -/
 abbrev convCommSemiring : CommSemiring (C →ₗ[R] A) where
-  mul_comm f g := by
-    rw [convMul_def, ← comm_comp_comul, ← LinearMap.comp_assoc δ, map_comp_comm_eq, convMul_def,
-      ← LinearMap.comp_assoc, ← LinearMap.comp_assoc, ← LinearMap.comp_assoc]
-    congr 3
-    ext; exact mul_comm _ _
+  mul_comm f g := by ext x; rw [convMul_apply, ← comm_comul R x, map_comm, mul'_comm, convMul_apply]
 
 scoped[ConvolutionProduct] attribute [instance] LinearMap.convCommSemiring
 

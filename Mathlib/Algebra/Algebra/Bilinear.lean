@@ -258,8 +258,10 @@ theorem toSpanSingleton_eq_algebra_linearMap : toSpanSingleton R A 1 = Algebra.l
 end Semiring
 
 section CommSemiring
-variable [CommSemiring R] [NonUnitalNonAssocCommSemiring A]
-    [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
+-- TODO: Generalise to `NonUnitalNonAssocCommSemiring`. This can't currently be done
+-- because there is no instance **to** `NonUnitalNonAssocCommSemiring`.
+variable [CommSemiring R] [NonUnitalCommSemiring A]
+  [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
 
 lemma mul'_comp_comm : mul' R A ∘ₗ TensorProduct.comm R A A = mul' R A :=
   TensorProduct.ext' <| by simp [mul_comm]
