@@ -89,7 +89,7 @@ lemma Δ_integral_of_isIntegral (W : WeierstrassCurve K) [IsIntegral R W] :
 
 lemma integralModel_Δ_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).Δ = W.Δ := by
-  conv_rhs => rw [← integralModel_baseChange_eq R W]
+  conv_rhs => rw [← baseChange_integralModel_eq R W]
   simp [integralModel]
 
 variable [IsDomain R] [ValuationRing R] [IsFractionRing R K]
@@ -184,7 +184,7 @@ theorem exists_isMinimal (W : WeierstrassCurve K) :
   obtain ⟨C, hC⟩ := exists_maximalFor_of_wellFoundedGT
     (fun (C : VariableChange K) ↦ IsIntegral R (C • W))
     (fun (C : VariableChange K) ↦ valuation_Δ_aux R (C • W))
-    (exists_integral R W)
+    (exists_isIntegral R W)
   refine ⟨C, ⟨⟨by simp only [one_smul, hC.1], ?_⟩⟩⟩
   intro j hj; rw [← smul_assoc] at hj
   let h := hC.2 hj
@@ -194,10 +194,10 @@ theorem exists_isMinimal (W : WeierstrassCurve K) :
 
 /-- A minimal Weierstrass equation for a given Weierstrass curve over `K`. -/
 noncomputable def minimal (W : WeierstrassCurve K) : WeierstrassCurve K :=
-  (W.exists_minimal R).choose • W
+  (W.exists_isMinimal R).choose • W
 
 instance {W : WeierstrassCurve K} :
-    IsMinimal R (W.minimal R) := (W.exists_minimal R).choose_spec
+    IsMinimal R (W.minimal R) := (W.exists_isMinimal R).choose_spec
 
 end Minimal
 
