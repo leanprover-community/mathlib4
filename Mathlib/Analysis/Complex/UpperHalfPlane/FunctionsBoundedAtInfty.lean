@@ -10,7 +10,7 @@ import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 /-!
 # Bounded at infinity
 
-For complex valued functions on the upper half plane, this file defines the filter
+For complex-valued functions on the upper half plane, this file defines the filter
 `UpperHalfPlane.atImInfty` required for defining when functions are bounded at infinity and zero at
 infinity. Both of which are relevant for defining modular forms.
 -/

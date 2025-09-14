@@ -668,7 +668,7 @@ theorem mul_integral_upcrossingsBefore_le_integral_pos_part_aux [IsFiniteMeasure
   simp_rw [sub_zero, ← upcrossingsBefore_pos_eq hab]
   rfl
 
-/-- **Doob's upcrossing estimate**: given a real valued discrete submartingale `f` and real
+/-- **Doob's upcrossing estimate**: given a real-valued discrete submartingale `f` and real
 values `a` and `b`, we have `(b - a) * 𝔼[upcrossingsBefore a b f N] ≤ 𝔼[(f N - a)⁺]` where
 `upcrossingsBefore a b f N` is the number of times the process `f` crossed from below `a` to above
 `b` before the time `N`. -/
