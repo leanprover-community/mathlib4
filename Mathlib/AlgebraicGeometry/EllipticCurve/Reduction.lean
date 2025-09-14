@@ -113,12 +113,8 @@ theorem exists_integral (W : WeierstrassCurve K) :
   by_cases hlmax_le_1 : lmax ≤ 1
   · use ⟨1, 0, 0, 0⟩
     apply isIntegral_of_exists_lift R
-    all_goals
-      apply (mem_integer_iff _ _ _).mp
-      simp only [variableChange_def, inv_one, Units.val_one, mul_zero, add_zero, one_mul, one_pow,
-        zero_mul, sub_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow]
-      apply (Valuation.mem_integer_iff _ _).mpr
-      exact (hlmax _ (by simp [l₀, l])).trans hlmax_le_1
+    all_goals simpa [← mem_integer_iff, variableChange_def, Valuation.mem_integer_iff]
+      using (hlmax _ (by simp [l₀, l])).trans hlmax_le_1
   · have hlmax_ge_1 : lmax ≥ 1 := le_of_not_ge hlmax_le_1
     have h : ∃ a : K, valuation R K a = lmax := by
       let i : ℕ := l.idxOf lmax
