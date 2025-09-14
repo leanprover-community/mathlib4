@@ -67,7 +67,7 @@ theorem length'_ne_zero_iff_cons (s : Seq α) :
   cases s <;> simp
 
 /-- The statement of `length_le_iff'` does not assume that the sequence terminates. For a
-simpler statement of the theorem where the sequence is known to terminate see `length_le_iff` -/
+simpler statement of the theorem where the sequence is known to terminate see `length_le_iff`. -/
 theorem length_le_iff' {s : Seq α} {n : ℕ} :
     (∃ h, s.length h ≤ n) ↔ s.TerminatedAt n := by
   simp only [length, Nat.find_le_iff, TerminatedAt, Terminates, exists_prop]
@@ -78,7 +78,7 @@ theorem length_le_iff' {s : Seq α} {n : ℕ} :
     exact ⟨⟨n, hn⟩, ⟨n, le_rfl, hn⟩⟩
 
 /-- The statement of `length_le_iff` assumes that the sequence terminates. For a
-statement of the where the sequence is not known to terminate see `length_le_iff'` -/
+statement of the where the sequence is not known to terminate see `length_le_iff'`. -/
 theorem length_le_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
     s.length h ≤ n ↔ s.TerminatedAt n := by
   rw [← length_le_iff']; simp [h]
@@ -90,7 +90,7 @@ theorem length'_le_iff {s : Seq α} {n : ℕ} :
   · simpa [length'_of_not_terminates h] using forall_not_of_not_exists h n
 
 /-- The statement of `lt_length_iff'` does not assume that the sequence terminates. For a
-simpler statement of the theorem where the sequence is known to terminate see `lt_length_iff` -/
+simpler statement of the theorem where the sequence is known to terminate see `lt_length_iff`. -/
 theorem lt_length_iff' {s : Seq α} {n : ℕ} :
     (∀ h : s.Terminates, n < s.length h) ↔ ∃ a, a ∈ s.get? n := by
   simp only [Terminates, TerminatedAt, length, Nat.lt_find_iff, forall_exists_index, Option.mem_def,
@@ -102,7 +102,7 @@ theorem lt_length_iff' {s : Seq α} {n : ℕ} :
     exact hn <| le_stable s hkn hk
 
 /-- The statement of `length_le_iff` assumes that the sequence terminates. For a
-statement of the where the sequence is not known to terminate see `length_le_iff'` -/
+statement of the where the sequence is not known to terminate see `length_le_iff'`. -/
 theorem lt_length_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
     n < s.length h ↔ ∃ a, a ∈ s.get? n := by
   rw [← lt_length_iff']; simp [h]
@@ -778,8 +778,7 @@ theorem map_all_iff {β : Type u} {f : α → β} {p : β → Prop} {s : Seq α}
     solve_by_elim
 
 theorem take_all {s : Seq α} {p : α → Prop} (h_all : ∀ x ∈ s, p x) {n : ℕ} {x : α}
-    (hx : x ∈ s.take n) :
-    p x := by
+    (hx : x ∈ s.take n) : p x := by
   induction n generalizing s with
   | zero => simp [take] at hx
   | succ m ih =>

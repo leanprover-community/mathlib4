@@ -753,13 +753,9 @@ def update (s : Seq α) (n : ℕ) (f : α → α) : Seq α where
 def set (s : Seq α) (n : ℕ) (a : α) : Seq α :=
   update s n fun _ ↦ a
 
-/-!
-### Predicates on sequences
--/
-
 /--
-`Pairwise R s` means that all the elements with earlier indexes are
-`R`-related to all the elements with later indexes.
+`Pairwise R s` means that all the elements with earlier indices are
+`R`-related to all the elements with later indices.
 ```
 Pairwise R [1, 2, 3] ↔ R 1 2 ∧ R 1 3 ∧ R 2 3
 ```
@@ -768,11 +764,6 @@ and if `R = (· < ·)` then it asserts that `s` is (strictly) sorted.
 -/
 def Pairwise (R : α → α → Prop) (s : Seq α) : Prop :=
   ∀ i j, i < j → ∀ x ∈ s.get? i, ∀ y ∈ s.get? j, R x y
-
--- /-- `s₁.AtLeastAsLongAs s₂` means that `s₁` has at least as many elements as sequence `s₂`.
--- In particular, they both may be infinite. -/
--- def AtLeastAsLongAs (a : Seq α) (b : Seq β) : Prop :=
---   ∀ n, a.TerminatedAt n → b.TerminatedAt n
 
 end Seq
 
