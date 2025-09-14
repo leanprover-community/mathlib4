@@ -5,7 +5,7 @@ Authors: Kalle Kytölä, Moritz Doll
 -/
 import Mathlib.Topology.Algebra.Module.LinearMap
 import Mathlib.LinearAlgebra.SesquilinearForm
-import Mathlib.Topology.Algebra.Module.Holding
+import Mathlib.Topology.Algebra.Module.LinearSpan
 import Mathlib.Topology.Algebra.Module.StrongTopology
 
 /-!

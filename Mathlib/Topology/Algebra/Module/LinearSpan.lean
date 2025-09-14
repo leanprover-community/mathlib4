@@ -14,10 +14,24 @@ import Mathlib.LinearAlgebra.Finsupp.Span
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 
 /-!
-# Holding file
+# Linear Span
 
-A holding file whilst I try moving stuff around. Come up with a better name once we know what goes
-in here.
+## Main statements
+
+- `LinearMap.mem_span_iff_continuous_of_finite` A linear functional `φ` can be expressed as a linear
+  combination of linear functionals `f₁,…,fₙ` if and only if `φ` is continuous with respect to the
+  topology induced by `f₁,…,fₙ`.
+- `LinearMap.mem_span_iff_continuous` A linear functional `φ` is in the span of a collection of
+  linear functionals if and only if `φ` is continuous with respect to the topology induced by the
+  collection of linear functionals.
+
+## References
+
+* [Rudin, *Functional Analysis*][rudin1991]
+
+## Tags
+
+span, continuous
 
 -/
 
