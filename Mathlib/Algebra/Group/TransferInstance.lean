@@ -156,8 +156,7 @@ protected abbrev monoid [Monoid β] : Monoid α := by
 protected abbrev monoidNPow [Monoid β] [MonoidNPow β] :
     let _ := e.monoid
     MonoidNPow α :=
-  let _ := e.one
-  let _ := e.mul
+  let _ := e.monoid
   let _ := e.pow ℕ
   e.injective.monoidNPow _ _ _ fun _ _ ↦ e.apply_symm_apply _
 
@@ -168,6 +167,24 @@ protected abbrev commMonoid [CommMonoid β] : CommMonoid α := by
   let mul := e.mul
   apply e.injective.commMonoid _ <;> intros <;> exact e.apply_symm_apply _
 
+/-- Transfer `DivInvMonoid` across an `Equiv` -/
+@[to_additive /-- Transfer `SubNegMonoid` across an `Equiv` -/]
+protected abbrev divInvMonoid [DivInvMonoid β] : DivInvMonoid α := by
+  let one := e.one
+  let mul := e.mul
+  let inv := e.Inv
+  let div := e.div
+  apply e.injective.divInvMonoid _ <;> intros <;> exact e.apply_symm_apply _
+
+/-- Transfer `GroupZPow` across an `Equiv` -/
+@[to_additive /-- Transfer `AddGroupZSMul` across an `Equiv` -/]
+protected abbrev groupZPow [DivInvMonoid β] [GroupZPow β] :
+    letI := e.divInvMonoid
+    GroupZPow α := by
+  let _ := e.divInvMonoid
+  let _ := e.pow ℤ
+  apply e.injective.groupZPow <;> intros <;> exact e.apply_symm_apply _
+
 /-- Transfer `Group` across an `Equiv` -/
 @[to_additive /-- Transfer `AddGroup` across an `Equiv` -/]
 protected abbrev group [Group β] : Group α := by
@@ -175,7 +192,6 @@ protected abbrev group [Group β] : Group α := by
   let mul := e.mul
   let inv := e.Inv
   let div := e.div
-  let zpow := e.pow ℤ
   apply e.injective.group _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `CommGroup` across an `Equiv` -/
@@ -185,7 +201,6 @@ protected abbrev commGroup [CommGroup β] : CommGroup α := by
   let mul := e.mul
   let inv := e.Inv
   let div := e.div
-  let zpow := e.pow ℤ
   apply e.injective.commGroup _ <;> intros <;> exact e.apply_symm_apply _
 
 end Equiv

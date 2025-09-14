@@ -55,7 +55,8 @@ theorem div_right (h : SemiconjBy a x y) (h' : SemiconjBy a x' y') :
   rw [div_eq_mul_inv, div_eq_mul_inv]
   exact h.mul_right h'.inv_right₀
 
-lemma zpow_right₀ {a x y : G₀} (h : SemiconjBy a x y) (m : ℤ) : SemiconjBy a (x ^ m) (y ^ m) :=
+lemma zpow_right₀ [GroupZPow G₀] {a x y : G₀} (h : SemiconjBy a x y) (m : ℤ) :
+    SemiconjBy a (x ^ m) (y ^ m) :=
   let _ := Monoid.monoidNPow G₀
   match m with
   | (n : ℕ) => by simp [h.pow_right n]
@@ -64,7 +65,7 @@ lemma zpow_right₀ {a x y : G₀} (h : SemiconjBy a x y) (m : ℤ) : SemiconjBy
 end SemiconjBy
 
 namespace Commute
-variable [GroupWithZero G₀] {a b : G₀}
+variable [GroupWithZero G₀] [GroupZPow G₀] {a b : G₀}
 
 lemma zpow_right₀ (h : Commute a b) : ∀ m : ℤ, Commute a (b ^ m) := SemiconjBy.zpow_right₀ h
 

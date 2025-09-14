@@ -246,13 +246,7 @@ instance : Div αˣ where
 
 /-- Units of a monoid form a `DivInvMonoid`. -/
 @[to_additive /-- Additive units of an additive monoid form a `SubNegMonoid`. -/]
-instance instDivInvMonoid [MonoidNPow α] : DivInvMonoid αˣ where
-  zpow := fun n a ↦ match n, a with
-    | Int.ofNat n, a => a ^ n
-    | Int.negSucc n, a => (a ^ n.succ)⁻¹
-  zpow_zero' := fun a ↦ by simp
-  zpow_succ' := fun n a ↦ by simp [pow_succ]
-  zpow_neg' := fun n a ↦ by simp
+instance instDivInvMonoid : DivInvMonoid αˣ where
 
 /-- Units of a monoid form a group. -/
 @[to_additive /-- Additive units of an additive monoid form an additive group. -/]
@@ -266,6 +260,14 @@ instance instCommGroupUnits {α} [CommMonoid α] : CommGroup αˣ where
   mul_comm := fun _ _ => ext <| mul_comm _ _
 
 variable [MonoidNPow α]
+
+@[to_additive] instance : GroupZPow αˣ where
+  zpow := fun n a ↦ match n, a with
+    | Int.ofNat n, a => a ^ n
+    | Int.negSucc n, a => (a ^ n.succ)⁻¹
+  zpow_zero' := fun a ↦ by simp
+  zpow_succ' := fun n a ↦ by simp [pow_succ]
+  zpow_neg' := fun n a ↦ by simp
 
 @[to_additive (attr := simp, norm_cast)]
 lemma val_pow_eq_pow_val (n : ℕ) : ↑(a ^ n) = (a ^ n : α) := rfl
@@ -282,7 +284,9 @@ variable [DivisionMonoid α]
   Eq.symm <| inv_eq_of_mul_eq_one_right u.mul_inv
 
 @[to_additive (attr := simp, norm_cast)]
-lemma val_div_eq_div_val : ∀ u₁ u₂ : αˣ, ↑(u₁ / u₂) = (u₁ / u₂ : α) := by simp [div_eq_mul_inv]
+lemma val_div_eq_div_val : ∀ u₁ u₂ : αˣ, ↑(u₁ / u₂) = (u₁ / u₂ : α) := by
+  let _ := Monoid.monoidNPow α
+  simp [div_eq_mul_inv]
 
 end DivisionMonoid
 end Units
@@ -341,6 +345,7 @@ theorem mul_divp_cancel (a : α) (u : αˣ) : a * u /ₚ u = a :=
 
 @[field_simps]
 theorem divp_divp_eq_divp_mul (x : α) (u₁ u₂ : αˣ) : x /ₚ u₁ /ₚ u₂ = x /ₚ (u₂ * u₁) := by
+  let _ := Monoid.monoidNPow α
   simp only [divp, mul_inv_rev, Units.val_mul, mul_assoc]
 
 @[simp]
@@ -356,6 +361,7 @@ lifts the calculation to `α`.
 -/
 @[field_simps]
 theorem val_div_eq_divp (u₁ u₂ : αˣ) : ↑(u₁ / u₂) = ↑u₁ /ₚ u₂ := by
+  let _ := Monoid.monoidNPow α
   rw [divp, division_def, Units.val_mul]
 
 end Monoid

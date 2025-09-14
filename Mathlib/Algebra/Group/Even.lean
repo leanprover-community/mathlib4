@@ -152,7 +152,7 @@ variable [DivisionMonoid α] {a : α}
 @[to_additive] alias ⟨_, IsSquare.inv⟩ := isSquare_inv
 
 @[to_additive (attr := aesop unsafe 80%) Even.zsmul_right]
-lemma IsSquare.zpow (n : ℤ) : IsSquare a → IsSquare (a ^ n) := by
+lemma IsSquare.zpow [GroupZPow α] (n : ℤ) : IsSquare a → IsSquare (a ^ n) := by
   aesop (add simp Commute.mul_zpow)
 
 end DivisionMonoid
@@ -162,13 +162,13 @@ lemma IsSquare.div [DivisionCommMonoid α] {a b : α} (ha : IsSquare a) (hb : Is
     IsSquare (a / b) := by aesop (add simp div_eq_mul_inv)
 
 @[to_additive (attr := simp, aesop unsafe 90%) Even.zsmul_left]
-lemma Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquare (a ^ n) := by
+lemma Even.isSquare_zpow [Group α] [GroupZPow α] {n : ℤ} : Even n → ∀ a : α, IsSquare (a ^ n) := by
   aesop (add simp zpow_add)
 
-example {G : Type*} [CommGroup G] [MonoidNPow G]
+example {G : Type*} [CommGroup G] [MonoidNPow G] [GroupZPow G]
     {a b c d e : G} (ha : IsSquare a) {n : ℕ} {k : ℤ} (hk : Even k) :
     IsSquare <| a * (b * b) / (c ^ 2) * (d ^ k) * (e ^ (n + n)) := by aesop
 
-example {G : Type*} [AddCommGroup G] [AddMonoidNSMul G]
+example {G : Type*} [AddCommGroup G] [AddMonoidNSMul G] [AddGroupZSMul G]
     {a b c d e : G} (ha : Even a) {n : ℕ} {k : ℤ} (hk : Even k) :
     Even <| a + (b + b) - 2 • c + k • d + (n + n) • e := by aesop

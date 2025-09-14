@@ -192,7 +192,8 @@ theorem prod_map_div : (m.map fun i => f i / g i).prod = (m.map f).prod / (m.map
   m.prod_hom₂ (· / ·) mul_div_mul_comm (div_one _) _ _
 
 @[to_additive]
-theorem prod_map_zpow {n : ℤ} : (m.map fun i => f i ^ n).prod = (m.map f).prod ^ n := by
+theorem prod_map_zpow [GroupZPow G] {n : ℤ} :
+    (m.map fun i => f i ^ n).prod = (m.map f).prod ^ n := by
   convert (m.map f).prod_hom (zpowGroupHom n : G →* G)
   simp only [map_map, Function.comp_apply, zpowGroupHom_apply]
 

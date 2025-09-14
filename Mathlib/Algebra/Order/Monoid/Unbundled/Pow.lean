@@ -303,7 +303,7 @@ end Monoid
 
 section DivInvMonoid
 
-variable [DivInvMonoid G] [Preorder G] [MulLeftMono G]
+variable [DivInvMonoid G] [GroupZPow G] [Preorder G] [MulLeftMono G]
 
 @[to_additive zsmul_nonneg]
 theorem one_le_zpow {x : G} (H : 1 ≤ x) {n : ℤ} (hn : 0 ≤ n) : 1 ≤ x ^ n := by

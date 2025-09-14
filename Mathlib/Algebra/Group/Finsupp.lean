@@ -298,6 +298,13 @@ end AddZeroClass
 section AddMonoid
 variable [AddMonoid M]
 
+instance instAddMonoid : AddMonoid (ι →₀ M) :=
+  fast_instance% DFunLike.coe_injective.addMonoid _ coe_zero coe_add
+
+section NSMul
+
+variable [AddMonoidNSMul M]
+
 /-- Note the general `SMul` instance for `Finsupp` doesn't apply as `ℕ` is not distributive
 unless `F i`'s addition is commutative. -/
 instance instNatSMul : SMul ℕ (ι →₀ M) where smul n v := v.mapRange (n • ·) (nsmul_zero _)
@@ -306,10 +313,12 @@ instance instNatSMul : SMul ℕ (ι →₀ M) where smul n v := v.mapRange (n �
 
 lemma nsmul_apply (n : ℕ) (f : ι →₀ M) (x : ι) : (n • f) x = n • f x := rfl
 
-instance instAddMonoid : AddMonoid (ι →₀ M) :=
-  fast_instance% DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
+instance : AddMonoidNSMul (ι →₀ M) :=
+  fast_instance% DFunLike.coe_injective.addMonoidNSMul _ coe_zero coe_add fun _ _ => rfl
 
-instance instIsAddTorsionFree [IsAddTorsionFree M] : IsAddTorsionFree (ι →₀ M) :=
+end NSMul
+
+instance instIsAddTorsionFree [AddMonoidNSMul M] [IsAddTorsionFree M] : IsAddTorsionFree (ι →₀ M) :=
   DFunLike.coe_injective.isAddTorsionFree coeFnAddHom
 
 end AddMonoid
@@ -318,8 +327,7 @@ section AddCommMonoid
 variable [AddCommMonoid M]
 
 instance instAddCommMonoid : AddCommMonoid (ι →₀ M) :=
-  fast_instance% DFunLike.coe_injective.addCommMonoid
-    DFunLike.coe coe_zero coe_add (fun _ _ => rfl)
+  fast_instance% DFunLike.coe_injective.addCommMonoid DFunLike.coe coe_zero coe_add
 
 lemma single_add_single_eq_single_add_single {k l m n : ι} {u v : M} (hu : u ≠ 0) (hv : v ≠ 0) :
     single k u + single l v = single m u + single n v ↔
@@ -368,12 +376,15 @@ lemma mapRange_sub' [SubtractionMonoid H] [FunLike F G H] [AddMonoidHomClass F G
 
 /-- Note the general `SMul` instance for `Finsupp` doesn't apply as `ℤ` is not distributive
 unless `F i`'s addition is commutative. -/
-instance instIntSMul : SMul ℤ (ι →₀ G) :=
+instance instIntSMul [AddGroupZSMul G] : SMul ℤ (ι →₀ G) :=
   ⟨fun n v => v.mapRange (n • ·) (zsmul_zero _)⟩
 
 instance instAddGroup : AddGroup (ι →₀ G) :=
   fast_instance% DFunLike.coe_injective.addGroup DFunLike.coe coe_zero coe_add coe_neg coe_sub
-    (fun _ _ => rfl) fun _ _ => rfl
+
+instance [AddGroupZSMul G] : AddGroupZSMul (ι →₀ G) :=
+  fast_instance% DFunLike.coe_injective.addGroupZSMul _ coe_zero coe_add coe_neg coe_sub
+    fun _ _ => rfl
 
 @[simp]
 lemma support_neg (f : ι →₀ G) : support (-f) = support f :=
@@ -417,6 +428,5 @@ end AddGroup
 
 instance instAddCommGroup [AddCommGroup G] : AddCommGroup (ι →₀ G) :=
   fast_instance% DFunLike.coe_injective.addCommGroup DFunLike.coe coe_zero coe_add coe_neg coe_sub
-    (fun _ _ => rfl) fun _ _ => rfl
 
 end Finsupp

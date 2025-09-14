@@ -90,7 +90,7 @@ theorem distrib (f g h k : X ⟶ Y) : (f +ᵣ g) +ₗ h +ᵣ k = (f +ₗ h) +ᵣ
   rw [leftAdd, h₁, Category.assoc, h₂, rightAdd]
 
 /-- In a category with binary biproducts, the morphisms form a commutative monoid. -/
-def addCommMonoidHomOfHasBinaryBiproducts : AddCommMonoid (X ⟶ Y) where
+abbrev addCommMonoidHomOfHasBinaryBiproducts : AddCommMonoid (X ⟶ Y) where
   add := (· +ᵣ ·)
   add_assoc :=
     (EckmannHilton.mul_assoc (isUnital_leftAdd X Y) (isUnital_rightAdd X Y) (distrib X Y)).assoc
@@ -99,7 +99,12 @@ def addCommMonoidHomOfHasBinaryBiproducts : AddCommMonoid (X ⟶ Y) where
   add_zero := (isUnital_rightAdd X Y).right_id
   add_comm :=
     (EckmannHilton.mul_comm (isUnital_leftAdd X Y) (isUnital_rightAdd X Y) (distrib X Y)).comm
-  nsmul := letI : Add (X ⟶ Y) := ⟨(· +ᵣ ·)⟩; nsmulRec
+
+abbrev addMonoidNSMulHomOfHasBinaryBiproducts :
+    letI := addCommMonoidHomOfHasBinaryBiproducts X Y
+    AddMonoidNSMul (X ⟶ Y) :=
+  letI := addCommMonoidHomOfHasBinaryBiproducts X Y
+  { nsmul := letI : Add (X ⟶ Y) := ⟨(· +ᵣ ·)⟩; nsmulRec }
 
 end
 

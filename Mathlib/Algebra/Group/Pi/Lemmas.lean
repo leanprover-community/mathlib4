@@ -267,7 +267,7 @@ theorem Pi.mulSingle_pow [∀ i, Monoid (f i)] [∀ i, MonoidNPow (f i)] (i : I)
   (MonoidHom.mulSingle f i).map_pow x n
 
 @[to_additive]
-theorem Pi.mulSingle_zpow [∀ i, Group (f i)] (i : I) (x : f i) (n : ℤ) :
+theorem Pi.mulSingle_zpow [∀ i, Group (f i)] [∀ i, GroupZPow (f i)] (i : I) (x : f i) (n : ℤ) :
     mulSingle i (x ^ n) = mulSingle i x ^ n :=
   (MonoidHom.mulSingle f i).map_zpow x n
 

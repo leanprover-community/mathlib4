@@ -76,6 +76,10 @@ theorem Commute.isUnit_mul_iff (h : Commute a b) : IsUnit (a * b) ↔ IsUnit a �
 theorem isUnit_mul_self_iff : IsUnit (a * a) ↔ IsUnit a :=
   (Commute.refl a).isUnit_mul_iff.trans and_self_iff
 
+section Pow
+
+variable [MonoidNPow M]
+
 @[to_additive (attr := simp)]
 lemma Commute.units_zpow_right (h : Commute a u) (m : ℤ) : Commute a ↑(u ^ m) :=
   SemiconjBy.units_zpow_right h m
@@ -83,10 +87,6 @@ lemma Commute.units_zpow_right (h : Commute a u) (m : ℤ) : Commute a ↑(u ^ m
 @[to_additive (attr := simp)]
 lemma Commute.units_zpow_left (h : Commute ↑u a) (m : ℤ) : Commute ↑(u ^ m) a :=
   (h.symm.units_zpow_right m).symm
-
-section Pow
-
-variable [MonoidNPow M]
 
 /-- If a natural power of `x` is a unit, then `x` is a unit. -/
 @[to_additive

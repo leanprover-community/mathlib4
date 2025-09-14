@@ -58,13 +58,13 @@ The following facts are true more generally in a (linearly) ordered commutative 
 /-- Pullback a `LinearOrderedCommMonoidWithZero` under an injective map.
 See note [reducible non-instances]. -/
 abbrev Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β] [Bot β] [One β]
-    [Mul β] [Pow β ℕ] [Max β] [Min β] (f : β → α) (hf : Function.Injective f) (zero : f 0 = 0)
-    (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
+    [Mul β] [Max β] [Min β] (f : β → α) (hf : Function.Injective f) (zero : f 0 = 0)
+    (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y))
     (bot : f ⊥ = ⊥) : LinearOrderedCommMonoidWithZero β where
   __ := LinearOrder.lift f hf hsup hinf
-  __ := hf.isOrderedMonoid f one mul npow
-  __ := hf.commMonoidWithZero f zero one mul npow
+  __ := hf.isOrderedMonoid f one mul
+  __ := hf.commMonoidWithZero f zero one mul
   zero_le_one :=
       show f 0 ≤ f 1 by simp only [zero, one, LinearOrderedCommMonoidWithZero.zero_le_one]
   bot_le a := show f ⊥ ≤ f a from bot ▸ bot_le
@@ -100,7 +100,7 @@ instance instLinearOrderedAddCommMonoidWithTopOrderDualAdditive :
   top_add' := fun a ↦ zero_mul (Additive.toMul (OrderDual.ofDual a))
   le_top := fun a ↦ @zero_le' _ _ (Additive.toMul (OrderDual.ofDual a))
 
-variable [NoZeroDivisors α]
+variable [NoZeroDivisors α] [MonoidNPow α]
 
 lemma pow_pos_iff (hn : n ≠ 0) : 0 < a ^ n ↔ 0 < a := by simp_rw [zero_lt_iff, pow_ne_zero_iff hn]
 

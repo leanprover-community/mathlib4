@@ -957,7 +957,7 @@ lemma inv_mul_le_one_of_le₀ (h : a ≤ b) (hb : 0 ≤ b) : b⁻¹ * a ≤ 1 :=
   inv_mul_le_of_le_mul₀ hb zero_le_one <| by rwa [mul_one]
 
 section ZPow
-variable {m n : ℤ}
+variable [GroupZPow G₀] {m n : ℤ}
 
 lemma zpow_nonneg (ha : 0 ≤ a) (n : ℤ) : 0 ≤ a ^ n :=
   let _ := Monoid.monoidNPow G₀
@@ -1328,6 +1328,8 @@ lemma inv_lt_one_iff₀ : a⁻¹ < 1 ↔ a ≤ 0 ∨ 1 < a := by
 
 lemma inv_le_one_iff₀ : a⁻¹ ≤ 1 ↔ a ≤ 0 ∨ 1 ≤ a := by
   simp only [← not_lt, one_lt_inv_iff₀, not_and_or]
+
+variable [GroupZPow G₀]
 
 lemma zpow_right_injective₀ (ha₀ : 0 < a) (ha₁ : a ≠ 1) : Injective fun n : ℤ ↦ a ^ n := by
   obtain ha₁ | ha₁ := ha₁.lt_or_gt

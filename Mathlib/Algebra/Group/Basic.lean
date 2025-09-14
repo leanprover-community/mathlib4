@@ -449,6 +449,14 @@ lemma inv_pow [MonoidNPow α] (a : α) : ∀ n : ℕ, a⁻¹ ^ n = (a ^ n)⁻¹
   | 0 => by rw [pow_zero, pow_zero, inv_one]
   | n + 1 => by rw [pow_succ', pow_succ, inv_pow _ n, mul_inv_rev]
 
+@[to_additive nsmul_zero_sub]
+lemma one_div_pow [MonoidNPow α] (a : α) (n : ℕ) :
+    (1 / a) ^ n = 1 / a ^ n := by simp only [one_div, inv_pow]
+
+section ZPow
+
+variable [GroupZPow α]
+
 -- the attributes are intentionally out of order. `smul_zero` proves `zsmul_zero`.
 @[to_additive zsmul_zero, simp]
 lemma one_zpow (n : ℤ) : (1 : α) ^ n = 1 :=
@@ -461,7 +469,7 @@ lemma one_zpow (n : ℤ) : (1 : α) ^ n = 1 :=
 lemma zpow_neg (a : α) (n : ℤ) : a ^ (-n) = (a ^ n)⁻¹ :=
   let _ := Monoid.monoidNPow α
   match n with
-  | (_ + 1 : ℕ) => DivInvMonoid.zpow_neg' _ _
+  | (_ + 1 : ℕ) => GroupZPow.zpow_neg' _ _
   | 0 => by simp
   | Int.negSucc n => by
     rw [zpow_negSucc, inv_inv, ← zpow_natCast]
@@ -481,12 +489,10 @@ lemma inv_zpow (a : α) (n : ℤ) : a⁻¹ ^ n = (a ^ n)⁻¹ :=
 @[to_additive (attr := simp) zsmul_neg']
 lemma inv_zpow' (a : α) (n : ℤ) : a⁻¹ ^ n = a ^ (-n) := by rw [inv_zpow, zpow_neg]
 
-@[to_additive nsmul_zero_sub]
-lemma one_div_pow [MonoidNPow α] (a : α) (n : ℕ) :
-    (1 / a) ^ n = 1 / a ^ n := by simp only [one_div, inv_pow]
-
 @[to_additive zsmul_zero_sub]
 lemma one_div_zpow (a : α) (n : ℤ) : (1 / a) ^ n = 1 / a ^ n := by simp only [one_div, inv_zpow]
+
+end ZPow
 
 variable {a b c}
 
@@ -505,6 +511,10 @@ theorem inv_ne_one : a⁻¹ ≠ 1 ↔ a ≠ 1 :=
 @[to_additive]
 theorem eq_of_one_div_eq_one_div (h : 1 / a = 1 / b) : a = b := by
   rw [← one_div_one_div a, h, one_div_one_div]
+
+section ZPow
+
+variable [GroupZPow α]
 
 -- Note that `mul_zsmul` and `zpow_mul` have the primes swapped
 -- when additivised since their argument order,
@@ -531,6 +541,8 @@ lemma zpow_mul' (a : α) (m n : ℤ) : a ^ (m * n) = (a ^ n) ^ m := by rw [Int.m
 
 @[to_additive]
 theorem zpow_comm (a : α) (m n : ℤ) : (a ^ m) ^ n = (a ^ n) ^ m := by rw [← zpow_mul, zpow_mul']
+
+end ZPow
 
 variable (a b c)
 
@@ -623,7 +635,7 @@ theorem div_mul_div_comm : a / b * (c / d) = a * c / (b * d) := by simp
 @[to_additive]
 theorem mul_div_mul_comm : a * b / (c * d) = a / c * (b / d) := by simp
 
-@[to_additive zsmul_add] lemma mul_zpow (n : ℤ) : (a * b) ^ n = a ^ n * b ^ n :=
+@[to_additive zsmul_add] lemma mul_zpow [GroupZPow α] (n : ℤ) : (a * b) ^ n = a ^ n * b ^ n :=
   let _ := Monoid.monoidNPow α
   match n with
   | (n : ℕ) => by simp_rw [zpow_natCast, mul_pow]
@@ -634,7 +646,7 @@ lemma div_pow [MonoidNPow α] (a b : α) (n : ℕ) : (a / b) ^ n = a ^ n / b ^ n
   simp only [div_eq_mul_inv, mul_pow, inv_pow]
 
 @[to_additive zsmul_sub]
-lemma div_zpow (a b : α) (n : ℤ) : (a / b) ^ n = a ^ n / b ^ n := by
+lemma div_zpow [GroupZPow α] (a b : α) (n : ℤ) : (a / b) ^ n = a ^ n / b ^ n := by
   simp only [div_eq_mul_inv, mul_zpow, inv_zpow]
 
 attribute [field_simps] div_pow div_zpow
@@ -824,7 +836,8 @@ theorem leftInverse_inv_mul_mul_right (c : G) :
   fun x ↦ inv_mul_cancel_left c x
 
 @[to_additive (attr := simp) natAbs_nsmul_eq_zero]
-lemma pow_natAbs_eq_one [MonoidNPow G] : a ^ n.natAbs = 1 ↔ a ^ n = 1 := by cases n <;> simp
+lemma pow_natAbs_eq_one [MonoidNPow G] [GroupZPow G] :
+    a ^ n.natAbs = 1 ↔ a ^ n = 1 := by cases n <;> simp
 
 @[to_additive sub_nsmul]
 lemma pow_sub [MonoidNPow G] (a : G) {m n : ℕ} (h : n ≤ m) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ :=
@@ -834,6 +847,8 @@ lemma pow_sub [MonoidNPow G] (a : G) {m n : ℕ} (h : n ≤ m) : a ^ (m - n) = a
 theorem inv_pow_sub [MonoidNPow G] (a : G) {m n : ℕ} (h : n ≤ m) :
    a⁻¹ ^ (m - n) = (a ^ m)⁻¹ * a ^ n := by
   rw [pow_sub a⁻¹ h, inv_pow, inv_pow, inv_inv]
+
+variable [GroupZPow G]
 
 @[to_additive add_one_zsmul]
 lemma zpow_add_one (a : G) (n : ℤ) : a ^ (n + 1) = a ^ n * a :=
@@ -1105,12 +1120,13 @@ instance AddCommMonoid.toGrindNatModule [s : AddCommMonoid α] [t : AddMonoidNSM
     zero_nsmul := t.nsmul_zero
     add_one_nsmul n a := by change (n + 1) • a = n • a + a; rw [add_nsmul, one_nsmul] }
 
-instance AddCommGroup.toGrindIntModule [s : AddCommGroup α] [t : AddMonoidNSMul α] :
+instance AddCommGroup.toGrindIntModule [s : AddCommGroup α]
+    [nsmul : AddMonoidNSMul α] [zsmul : AddGroupZSMul α] :
     Grind.IntModule α :=
   { s with
-    nsmul := ⟨t.nsmul⟩
-    zsmul := ⟨s.zsmul⟩
-    zero_zsmul := SubNegMonoid.zsmul_zero'
+    nsmul := ⟨nsmul.nsmul⟩
+    zsmul := ⟨zsmul.zsmul⟩
+    zero_zsmul := zsmul.zsmul_zero'
     one_zsmul := one_zsmul
     add_zsmul n m a := add_zsmul a n m
     zsmul_natCast_eq_nsmul n a := by simp }

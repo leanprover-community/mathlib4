@@ -57,13 +57,13 @@ lemma fold_max_add [LinearOrder M] [Add M] [AddRightMono M] (s : Finset ι) (a :
   classical induction s using Finset.induction_on <;> simp [*, max_add_add_right]
 
 @[to_additive nsmul_inf']
-lemma inf'_pow [LinearOrder M] [Monoid M] [MulLeftMono M] [MulRightMono M] (s : Finset ι)
-    (f : ι → M) (n : ℕ) (hs) : s.inf' hs f ^ n = s.inf' hs fun a ↦ f a ^ n :=
+lemma inf'_pow [LinearOrder M] [Monoid M] [MonoidNPow M] [MulLeftMono M] [MulRightMono M]
+    (s : Finset ι) (f : ι → M) (n : ℕ) (hs) : s.inf' hs f ^ n = s.inf' hs fun a ↦ f a ^ n :=
   map_finset_inf' (OrderHom.mk _ <| pow_left_mono n) hs _
 
 @[to_additive nsmul_sup']
-lemma sup'_pow [LinearOrder M] [Monoid M] [MulLeftMono M] [MulRightMono M] (s : Finset ι)
-    (f : ι → M) (n : ℕ) (hs) : s.sup' hs f ^ n = s.sup' hs fun a ↦ f a ^ n :=
+lemma sup'_pow [LinearOrder M] [Monoid M] [MonoidNPow M] [MulLeftMono M] [MulRightMono M]
+    (s : Finset ι) (f : ι → M) (n : ℕ) (hs) : s.sup' hs f ^ n = s.sup' hs fun a ↦ f a ^ n :=
   map_finset_sup' (OrderHom.mk _ <| pow_left_mono n) hs _
 
 section Group

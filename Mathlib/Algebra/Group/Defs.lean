@@ -855,6 +855,8 @@ class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
   protected div := DivInvMonoid.div'
   /-- `a / b := a * b⁻¹` -/
   protected div_eq_mul_inv : ∀ a b : G, a / b = a * b⁻¹ := by intros; rfl
+
+class GroupZPow (G : Type u) [DivInvMonoid G] where
   /-- The power operation: `a ^ n = a * ··· * a`; `a ^ (-n) = a⁻¹ * ··· a⁻¹` (`n` times) -/
   protected zpow : ℤ → G → G := zpowRec npowRec
   /-- `a ^ 0 = 1` -/
@@ -896,6 +898,8 @@ explanations on this.
 class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
   protected sub := SubNegMonoid.sub'
   protected sub_eq_add_neg : ∀ a b : G, a - b = a + -b := by intros; rfl
+
+class AddGroupZSMul (G : Type u) [SubNegMonoid G] where
   /-- Multiplication by an integer.
   Set this to `zsmulRec` unless `Module` diamonds are possible. -/
   protected zsmul : ℤ → G → G
@@ -907,12 +911,15 @@ class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
     intros; rfl
 
 attribute [to_additive SubNegMonoid] DivInvMonoid
+attribute [to_additive] GroupZPow
 
-instance DivInvMonoid.toZPow {M} [DivInvMonoid M] : Pow M ℤ :=
-  ⟨fun x n ↦ DivInvMonoid.zpow n x⟩
+@[to_additive] abbrev DivInvMonoid.groupZPow (M) [DivInvMonoid M] : GroupZPow M where
 
-instance SubNegMonoid.toZSMul {M} [SubNegMonoid M] : SMul ℤ M :=
-  ⟨SubNegMonoid.zsmul⟩
+instance DivInvMonoid.toZPow {M} [DivInvMonoid M] [GroupZPow M] : Pow M ℤ :=
+  ⟨fun x n ↦ GroupZPow.zpow n x⟩
+
+instance SubNegMonoid.toZSMul {M} [SubNegMonoid M] [AddGroupZSMul M] : SMul ℤ M :=
+  ⟨AddGroupZSMul.zsmul⟩
 
 attribute [to_additive existing] DivInvMonoid.toZPow
 
@@ -934,18 +941,22 @@ section DivInvMonoid
 
 variable [DivInvMonoid G]
 
+section Pow
+
+variable [GroupZPow G]
+
 @[to_additive (attr := simp) zsmul_eq_smul] theorem zpow_eq_pow (n : ℤ) (x : G) :
-    DivInvMonoid.zpow n x = x ^ n :=
+    GroupZPow.zpow n x = x ^ n :=
   rfl
 
 @[to_additive (attr := simp) zero_zsmul] theorem zpow_zero (a : G) : a ^ (0 : ℤ) = 1 :=
-  DivInvMonoid.zpow_zero' a
+  GroupZPow.zpow_zero' a
 
 @[to_additive (attr := simp, norm_cast) natCast_zsmul]
 theorem zpow_natCast [MonoidNPow G] (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
   | 0 => (zpow_zero _).trans (pow_zero _).symm
   | n + 1 => calc
-    a ^ (↑(n + 1) : ℤ) = a ^ (n : ℤ) * a := DivInvMonoid.zpow_succ' _ _
+    a ^ (↑(n + 1) : ℤ) = a ^ (n : ℤ) * a := GroupZPow.zpow_succ' _ _
     _ = a ^ n * a := congrArg (· * a) (zpow_natCast a n)
     _ = a ^ (n + 1) := (pow_succ _ _).symm
 
@@ -957,7 +968,9 @@ lemma zpow_ofNat [MonoidNPow G] (a : G) (n : ℕ) : a ^ (ofNat(n) : ℤ) = a ^ O
 @[to_additive (attr := simp) negSucc_zsmul]
 theorem zpow_negSucc [MonoidNPow G] (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
   rw [← zpow_natCast]
-  exact DivInvMonoid.zpow_neg' n a
+  exact GroupZPow.zpow_neg' n a
+
+end Pow
 
 /-- Dividing by an element is the same as multiplying by its inverse.
 
@@ -981,6 +994,10 @@ theorem mul_div_assoc (a b c : G) : a * b / c = a * (b / c) := by
 theorem one_div (a : G) : 1 / a = a⁻¹ :=
   (inv_eq_one_div a).symm
 
+section Pow
+
+variable [GroupZPow G]
+
 @[to_additive (attr := simp) one_zsmul]
 lemma zpow_one (a : G) : a ^ (1 : ℤ) = a := by
   let _ := Monoid.monoidNPow G
@@ -999,6 +1016,8 @@ lemma zpow_neg_one (x : G) : x ^ (-1 : ℤ) = x⁻¹ :=
 @[to_additive]
 lemma zpow_neg_coe_of_pos [MonoidNPow G] (a : G) : ∀ {n : ℕ}, 0 < n → a ^ (-(n : ℤ)) = (a ^ n)⁻¹
   | _ + 1, _ => zpow_negSucc _ _
+
+end Pow
 
 end DivInvMonoid
 

@@ -245,16 +245,18 @@ instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid (WithZero α) where
     | none, _ => rfl
     | some _, none => rfl
     | some a, some b => congr_arg some (div_eq_mul_inv a b)
+
+instance [DivInvMonoid α] [GroupZPow α] : GroupZPow (WithZero α) where
   zpow n a := a ^ n
   zpow_zero'
     | none => rfl
     | some _ => congr_arg some (zpow_zero _)
   zpow_succ'
     | n, none => by change 0 ^ _ = 0 ^ _ * 0; simp only [mul_zero]; rfl
-    | n, some _ => congr_arg some (DivInvMonoid.zpow_succ' _ _)
+    | n, some _ => congr_arg some (GroupZPow.zpow_succ' _ _)
   zpow_neg'
     | n, none => rfl
-    | n, some _ => congr_arg some (DivInvMonoid.zpow_neg' _ _)
+    | n, some _ => congr_arg some (GroupZPow.zpow_neg' _ _)
 
 instance instDivInvOneMonoid [DivInvOneMonoid α] : DivInvOneMonoid (WithZero α) where
 
@@ -433,6 +435,8 @@ lemma log_div {x y : Gᵐ⁰} (hx : x ≠ 0) (hy : y ≠ 0) : log (x / y) = log 
 lemma log_inv : ∀ x : Gᵐ⁰, log x⁻¹ = -log x
   | 0 => by simp
   | (x : Multiplicative G) => rfl
+
+variable [AddGroupZSMul G]
 
 @[simp← ] lemma exp_zsmul (n : ℤ) (a : G) : exp (n • a) = exp a ^ n := rfl
 

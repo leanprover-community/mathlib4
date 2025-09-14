@@ -481,7 +481,7 @@ end MonoidHom
 
 namespace List
 
-theorem prod_zpow {β : Type*} [DivisionCommMonoid β] {r : ℤ} {l : List β} :
+theorem prod_zpow {β : Type*} [DivisionCommMonoid β] [GroupZPow β] {r : ℤ} {l : List β} :
     l.prod ^ r = (map (fun x ↦ x ^ r) l).prod :=
   let fr : β →* β := ⟨⟨fun b ↦ b ^ r, one_zpow r⟩, (mul_zpow · · r)⟩
   map_list_prod fr l

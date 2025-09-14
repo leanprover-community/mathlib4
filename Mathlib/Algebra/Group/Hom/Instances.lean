@@ -91,37 +91,39 @@ instance MonoidHom.instCommMonoid [MulOneClass M] [CommMonoid N] :
   fast_instance%
     DFunLike.coe_injective.monoidNPow DFunLike.coe rfl (fun _ _ => rfl) fun _ _ => rfl
 
-instance ZeroHom.instIntSMul [Zero M] [AddGroup N] : SMul ℤ (ZeroHom M N) where
+instance ZeroHom.instIntSMul [Zero M] [AddGroup N] [AddGroupZSMul N] : SMul ℤ (ZeroHom M N) where
   smul a f :=
     { toFun := a • f
       map_zero' := by simp [zsmul_zero] }
 
-instance AddMonoidHom.instIntSMul [AddZeroClass M] [AddCommGroup N] : SMul ℤ (M →+ N) where
+instance AddMonoidHom.instIntSMul [AddZeroClass M] [AddCommGroup N] [AddGroupZSMul N] :
+    SMul ℤ (M →+ N) where
   smul a f :=
     { toFun := a • f
       map_zero' := by simp [zsmul_zero]
       map_add' x y := by simp [zsmul_add] }
 
 @[to_additive existing ZeroHom.instIntSMul]
-instance OneHom.instIntPow [One M] [Group N] : Pow (OneHom M N) ℤ where
+instance OneHom.instIntPow [One M] [Group N] [GroupZPow N] : Pow (OneHom M N) ℤ where
   pow f n :=
     { toFun := f ^ n
       map_one' := by simp }
 
 @[to_additive existing AddMonoidHom.instIntSMul]
-instance MonoidHom.instIntPow [MulOneClass M] [CommGroup N] : Pow (M →* N) ℤ where
+instance MonoidHom.instIntPow [MulOneClass M] [CommGroup N] [GroupZPow N] : Pow (M →* N) ℤ where
   pow f n :=
     { toFun := f ^ n
       map_one' := by simp
       map_mul' x y := by simp [mul_zpow] }
 
 @[to_additive (attr := simp)]
-lemma OneHom.zpow_apply [One M] [Group N] (f : OneHom M N) (z : ℤ) (x : M) :
+lemma OneHom.zpow_apply [One M] [Group N] [GroupZPow N] (f : OneHom M N) (z : ℤ) (x : M) :
     (f ^ z) x = f x ^ z :=
   rfl
 
 @[to_additive (attr := simp)]
-lemma MonoidHom.zpow_apply [MulOneClass M] [CommGroup N] (f : M →* N) (z : ℤ) (x : M) :
+lemma MonoidHom.zpow_apply [MulOneClass M] [CommGroup N] [GroupZPow N]
+    (f : M →* N) (z : ℤ) (x : M) :
     (f ^ z) x = f x ^ z :=
   rfl
 
@@ -130,14 +132,19 @@ lemma MonoidHom.zpow_apply [MulOneClass M] [CommGroup N] (f : M →* N) (z : ℤ
 instance OneHom.instGroup [One M] [Group N] : Group (OneHom M N) :=
   fast_instance%
     DFunLike.coe_injective.group DFunLike.coe
-      rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+      rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+
+@[to_additive] instance [One M] [Group N] [GroupZPow N] : GroupZPow (OneHom M N) :=
+  fast_instance%
+    DFunLike.coe_injective.groupZPow DFunLike.coe rfl (fun _ _ => rfl) (fun _ => rfl)
+      (fun _ _ => rfl) fun _ _ => rfl
 
 /-- If `G` is a commutative group, then so is `OneHom M G`. -/
 @[to_additive /-- If `G` is an additive commutative group, then so is `ZeroHom M G`. -/]
 instance OneHom.instCommGroup [One M] [CommGroup N] : CommGroup (OneHom M N) :=
   fast_instance%
     DFunLike.coe_injective.commGroup DFunLike.coe
-      rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+      rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
 
 /-- If `G` is a commutative group, then `M →* G` is a commutative group too. -/
 @[to_additive /-- If `G` is an additive commutative group, then `M →+ G` is an additive commutative
@@ -145,7 +152,12 @@ instance OneHom.instCommGroup [One M] [CommGroup N] : CommGroup (OneHom M N) :=
 instance MonoidHom.instCommGroup [MulOneClass M] [CommGroup N] : CommGroup (M →* N) :=
   fast_instance%
     DFunLike.coe_injective.commGroup DFunLike.coe
-      rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+      rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+
+@[to_additive] instance [MulOneClass M] [CommGroup N] [GroupZPow N] : GroupZPow (M →* N) :=
+  fast_instance%
+    DFunLike.coe_injective.groupZPow DFunLike.coe rfl (fun _ _ => rfl) (fun _ => rfl)
+      (fun _ _ => rfl) fun _ _ => rfl
 
 @[to_additive]
 instance [One M] [MulOneClass N] [IsLeftCancelMul N] : IsLeftCancelMul (OneHom M N) :=
@@ -188,12 +200,15 @@ theorem AddMonoid.End.one_apply [AddZeroClass M] (m : M) : (1 : AddMonoid.End M)
 instance AddMonoid.End.instAddCommGroup [AddCommGroup M] : AddCommGroup (AddMonoid.End M) :=
   AddMonoidHom.instAddCommGroup
 
-instance AddMonoid.End.instIntCast [AddCommGroup M] : IntCast (AddMonoid.End M) :=
+instance [AddCommGroup M] [AddGroupZSMul M] : AddGroupZSMul (AddMonoid.End M) :=
+  inferInstanceAs (AddGroupZSMul <| M →+ M)
+
+instance AddMonoid.End.instIntCast [AddCommGroup M] [AddGroupZSMul M] : IntCast (AddMonoid.End M) :=
   { intCast := fun z => z • (1 : AddMonoid.End M) }
 
 /-- See also `AddMonoid.End.intCast_def`. -/
 @[simp]
-theorem AddMonoid.End.intCast_apply [AddCommGroup M] (z : ℤ) (m : M) :
+theorem AddMonoid.End.intCast_apply [AddCommGroup M] [AddGroupZSMul M] (z : ℤ) (m : M) :
     (↑z : AddMonoid.End M) m = z • m :=
   rfl
 

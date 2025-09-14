@@ -73,11 +73,14 @@ instance commMonoid [∀ i, CommMonoid (f i)] : CommMonoid (∀ i, f i) :=
 
 @[to_additive Pi.subNegMonoid]
 instance divInvMonoid [∀ i, DivInvMonoid (f i)] : DivInvMonoid (∀ i, f i) where
-  zpow := fun z x i => x i ^ z
   div_eq_mul_inv := by intros; ext; exact div_eq_mul_inv _ _
-  zpow_zero' := by intros; ext; exact DivInvMonoid.zpow_zero' _
-  zpow_succ' := by intros; ext; exact DivInvMonoid.zpow_succ' _ _
-  zpow_neg' := by intros; ext; exact DivInvMonoid.zpow_neg' _ _
+
+@[to_additive]
+instance [∀ i, DivInvMonoid (f i)] [∀ i, GroupZPow (f i)] : GroupZPow (∀ i, f i) where
+  zpow := fun z x i => x i ^ z
+  zpow_zero' := by intros; ext; exact GroupZPow.zpow_zero' _
+  zpow_succ' := by intros; ext; exact GroupZPow.zpow_succ' _ _
+  zpow_neg' := by intros; ext; exact GroupZPow.zpow_neg' _ _
 
 @[to_additive]
 instance divInvOneMonoid [∀ i, DivInvOneMonoid (f i)] : DivInvOneMonoid (∀ i, f i) where

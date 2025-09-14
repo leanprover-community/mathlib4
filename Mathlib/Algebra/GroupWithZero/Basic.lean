@@ -392,6 +392,8 @@ theorem mul_left_surjective₀ {a : G₀} (h : a ≠ 0) : Surjective fun g => a 
 theorem mul_right_surjective₀ {a : G₀} (h : a ≠ 0) : Surjective fun g => g * a := fun g =>
   ⟨g * a⁻¹, by simp [mul_assoc, inv_mul_cancel₀ h]⟩
 
+variable [GroupZPow G₀]
+
 lemma zero_zpow (n : ℤ) (h : n ≠ 0) : (0 : G₀) ^ n = 0 :=
   let _ := Monoid.monoidNPow G₀
   match n, h with

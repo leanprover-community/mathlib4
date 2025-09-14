@@ -76,7 +76,7 @@ theorem units_val_iff {a x y : Mˣ} : SemiconjBy (a : M) x y ↔ SemiconjBy a x 
   ⟨units_of_val, units_val⟩
 
 @[to_additive (attr := simp)]
-lemma units_zpow_right {a : M} {x y : Mˣ} (h : SemiconjBy a x y)
+lemma units_zpow_right [MonoidNPow M] {a : M} {x y : Mˣ} (h : SemiconjBy a x y)
     (m : ℤ) : SemiconjBy a ↑(x ^ m) ↑(y ^ m) :=
   let _ := Monoid.monoidNPow M
   match m with

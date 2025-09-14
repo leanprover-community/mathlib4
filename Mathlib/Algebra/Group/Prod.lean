@@ -94,10 +94,13 @@ instance instIsMulTorsionFree [Monoid M] [Monoid N] [MonoidNPow M] [MonoidNPow N
 @[to_additive Prod.subNegMonoid]
 instance [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) where
   div_eq_mul_inv _ _ := by ext <;> exact div_eq_mul_inv ..
-  zpow z a := ⟨DivInvMonoid.zpow z a.1, DivInvMonoid.zpow z a.2⟩
-  zpow_zero' _ := by ext <;> exact DivInvMonoid.zpow_zero' _
-  zpow_succ' _ _ := by ext <;> exact DivInvMonoid.zpow_succ' ..
-  zpow_neg' _ _ := by ext <;> exact DivInvMonoid.zpow_neg' ..
+
+@[to_additive] instance [DivInvMonoid G] [GroupZPow G] [DivInvMonoid H] [GroupZPow H] :
+    GroupZPow (G × H) where
+  zpow z a := ⟨GroupZPow.zpow z a.1, GroupZPow.zpow z a.2⟩
+  zpow_zero' _ := by ext <;> exact GroupZPow.zpow_zero' _
+  zpow_succ' _ _ := by ext <;> exact GroupZPow.zpow_succ' ..
+  zpow_neg' _ _ := by ext <;> exact GroupZPow.zpow_neg' ..
 
 @[to_additive]
 instance [DivisionMonoid G] [DivisionMonoid H] : DivisionMonoid (G × H) :=

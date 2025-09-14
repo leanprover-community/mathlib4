@@ -171,7 +171,7 @@ instance AddMonoid.natSMulWithZero [AddMonoid A] [AddMonoidNSMul A] : SMulWithZe
   smul_zero := _root_.nsmul_zero
   zero_smul := zero_nsmul
 
-instance AddGroup.intSMulWithZero [AddGroup A] : SMulWithZero ℤ A where
+instance AddGroup.intSMulWithZero [AddGroup A] [AddGroupZSMul A] : SMulWithZero ℤ A where
   smul_zero := zsmul_zero
   zero_smul := zero_zsmul
 
@@ -398,11 +398,11 @@ section
 
 variable [AddGroup A] [DistribSMul M A]
 
-instance AddGroup.int_smulCommClass : SMulCommClass ℤ M A where
+instance AddGroup.int_smulCommClass [AddGroupZSMul A] : SMulCommClass ℤ M A where
   smul_comm n x y := ((DistribSMul.toAddMonoidHom A x).map_zsmul y n).symm
 
 -- `SMulCommClass.symm` is not registered as an instance, as it would cause a loop
-instance AddGroup.int_smulCommClass' : SMulCommClass M ℤ A :=
+instance AddGroup.int_smulCommClass' [AddGroupZSMul A] : SMulCommClass M ℤ A :=
   SMulCommClass.symm _ _ _
 
 @[simp]

@@ -70,12 +70,14 @@ instance permGroup : Group (Perm α) where
   one_mul := trans_refl
   mul_one := refl_trans
   inv_mul_cancel := self_trans_symm
-  zpow := zpowRec fun n f ↦ f ^ n
-  zpow_succ' _ _ := coe_fn_injective <| Function.iterate_succ _ _
 
 instance : MonoidNPow (Perm α) where
   npow n f := f ^ n
   npow_succ _ _ := coe_fn_injective <| Function.iterate_succ _ _
+
+instance : GroupZPow (Perm α) where
+  zpow := zpowRec fun n f ↦ f ^ n
+  zpow_succ' _ _ := coe_fn_injective <| Function.iterate_succ _ _
 
 @[simp]
 theorem default_eq : (default : Perm α) = 1 :=
@@ -603,6 +605,8 @@ variable [AddGroup α] (a b : α)
     Equiv.addRight a ^ n = Equiv.addRight (n • a) := by
   ext; simp [Perm.coe_pow]
 
+variable [AddGroupZSMul α]
+
 @[simp] lemma zpow_addLeft (n : ℤ) : Equiv.addLeft a ^ n = Equiv.addLeft (n • a) :=
   (map_zsmul ({ toFun := Equiv.addLeft, map_zero' := addLeft_zero, map_add' := addLeft_add } :
     α →+ Additive (Perm α)) _ _).symm
@@ -638,6 +642,8 @@ variable [Group α] (a b : α)
 @[simp] lemma pow_mulRight [MonoidNPow α] (n : ℕ) :
     Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n) := by
   ext; simp [Perm.coe_pow]
+
+variable [GroupZPow α]
 
 @[simp] lemma zpow_mulLeft (n : ℤ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) :=
   (map_zpow ({ toFun := Equiv.mulLeft, map_one' := mulLeft_one, map_mul' := mulLeft_mul } :

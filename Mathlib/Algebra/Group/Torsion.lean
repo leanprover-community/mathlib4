@@ -43,7 +43,7 @@ lemma IsMulTorsionFree.pow_eq_one_iff (hn : n ≠ 0) : a ^ n = 1 ↔ a = 1 :=
 end Monoid
 
 section Group
-variable [Group G] [MonoidNPow G] [IsMulTorsionFree G] {n : ℤ} {a b : G}
+variable [Group G] [MonoidNPow G] [GroupZPow G] [IsMulTorsionFree G] {n : ℤ} {a b : G}
 
 @[to_additive zsmul_right_injective]
 lemma zpow_left_injective : ∀ {n : ℤ}, n ≠ 0 → Injective fun a : G ↦ a ^ n
