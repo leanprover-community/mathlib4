@@ -359,7 +359,7 @@ theorem iff_of_iSup_eq_top [IsAffine Y] {ι : Type*}
 
 instance : IsLocalAtSource P := by
   apply HasAffineProperty.isLocalAtSource
-  intros X Y f _ 𝒰
+  intro X Y f _ 𝒰
   simp_rw [← HasAffineProperty.iff_of_isAffine (P := P),
     iff_of_source_openCover 𝒰.affineRefinement.openCover,
     fun i ↦ iff_of_source_openCover (P := P) (f := 𝒰.map i ≫ f) (𝒰.obj i).affineCover]
@@ -386,7 +386,7 @@ lemma isLocal_ringHomProperty_of_isLocalAtSource_of_isLocalAtTarget
     refine (RingHom.RespectsIso.isLocalization_away_iff hP ..).mp ?_
     exact (MorphismProperty.arrow_mk_iso_iff P (SpecMapRestrictBasicOpenIso
       (CommRingCat.ofHom f) r)).mp (IsLocalAtTarget.restrict H (basicOpen r))
-  · intros R S _ _ f s hs H
+  · intro R S _ _ f s hs H
     apply IsLocalAtSource.of_openCover (Scheme.affineOpenCoverOfSpanRangeEqTop
       (fun i : s ↦ (i : S)) (by simpa)).openCover
     intro i
@@ -503,7 +503,7 @@ lemma isStableUnderBaseChange (hP : RingHom.IsStableUnderBaseChange Q) :
   apply HasAffineProperty.isStableUnderBaseChange
   letI := HasAffineProperty.isLocal_affineProperty P
   apply AffineTargetMorphismProperty.IsStableUnderBaseChange.mk
-  intros X Y S _ _ f g H
+  intro X Y S _ _ f g H
   rw [← HasAffineProperty.iff_of_isAffine (P := P)] at H ⊢
   wlog hX : IsAffine Y generalizing Y
   · rw [IsLocalAtSource.iff_of_openCover (P := P)

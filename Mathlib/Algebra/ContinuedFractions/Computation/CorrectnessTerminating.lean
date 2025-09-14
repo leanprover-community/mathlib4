@@ -72,7 +72,7 @@ variable [FloorRing K]
 protected theorem compExactValue_correctness_of_stream_eq_some_aux_comp {a : K} (b c : K)
     (fract_a_ne_zero : Int.fract a ≠ 0) :
     ((⌊a⌋ : K) * b + c) / Int.fract a + b = (b * a + c) / Int.fract a := by
-  field_simp [fract_a_ne_zero]
+  field_simp
   rw [Int.fract]
   ring
 
@@ -114,7 +114,7 @@ theorem compExactValue_correctness_of_stream_eq_some :
         _ = ⌊v⌋ := by simp [fract_eq_zero]
     | inr fract_ne_zero =>
       -- Int.fract v ≠ 0; the claim then easily follows by unfolding a single computation step
-      field_simp [contsAux, nextConts, nextNum, nextDen, of_h_eq_floor, compExactValue,
+      simp [field, contsAux, nextConts, nextNum, nextDen, of_h_eq_floor, compExactValue,
         IntFractPair.of, fract_ne_zero]
   | succ n IH =>
     intro ifp_succ_n succ_nth_stream_eq
@@ -146,12 +146,7 @@ theorem compExactValue_correctness_of_stream_eq_some :
       -- ifp_succ_n.fr ≠ 0
       -- use the IH to show that the following equality suffices
       suffices
-        compExactValue ppconts pconts ifp_n.fr = compExactValue pconts conts ifp_succ_n.fr by
-        #adaptation_note /-- 2025-08-10 replace the following with grind after
-        https://github.com/leanprover/lean4/issues/9825 is fixed -/
-        have : v = compExactValue ppconts pconts ifp_n.fr := IH nth_stream_eq
-        conv_lhs => rw [this]
-        assumption
+        compExactValue ppconts pconts ifp_n.fr = compExactValue pconts conts ifp_succ_n.fr by grind
       -- get the correspondence between ifp_n and ifp_succ_n
       obtain ⟨ifp_n', nth_stream_eq', ifp_n_fract_ne_zero, ⟨refl⟩⟩ :
         ∃ ifp_n, IntFractPair.stream v n = some ifp_n ∧
@@ -171,7 +166,8 @@ theorem compExactValue_correctness_of_stream_eq_some :
       have : compExactValue ppconts pconts ifp_n.fr =
           (ppA + ifp_n.fr⁻¹ * pA) / (ppB + ifp_n.fr⁻¹ * pB) := by
         -- unfold compExactValue and the convergent computation once
-        simp [ifp_n_fract_ne_zero, compExactValue, nextConts, nextNum, nextDen, ppA, ppB]
+        simp only [compExactValue, ifp_n_fract_ne_zero, ↓reduceIte, nextConts, nextNum, one_mul,
+          nextDen, ppA, ppB]
         ac_rfl
       rw [this]
       -- two calculations needed to show the claim
@@ -181,27 +177,12 @@ theorem compExactValue_correctness_of_stream_eq_some :
         compExactValue_correctness_of_stream_eq_some_aux_comp pB ppB ifp_succ_n_fr_ne_zero
       let f := Int.fract (1 / ifp_n.fr)
       have f_ne_zero : f ≠ 0 := by simpa [f] using ifp_succ_n_fr_ne_zero
-      rw [inv_eq_one_div] at tmp_calc tmp_calc'
-      -- because `field_simp` is not as powerful
-      have hA : (↑⌊1 / ifp_n.fr⌋ * pA + ppA) + pA * f = pA * (1 / ifp_n.fr) + ppA := by
-        have := congrFun (congrArg HMul.hMul tmp_calc) f
-        rwa [right_distrib, div_mul_cancel₀ (h := f_ne_zero),
-          div_mul_cancel₀ (h := f_ne_zero)] at this
-      have hB : (↑⌊1 / ifp_n.fr⌋ * pB + ppB) + pB * f = pB * (1 / ifp_n.fr) + ppB := by
-        have := congrFun (congrArg HMul.hMul tmp_calc') f
-        rwa [right_distrib, div_mul_cancel₀ (h := f_ne_zero),
-          div_mul_cancel₀ (h := f_ne_zero)] at this
       -- now unfold the recurrence one step and simplify both sides to arrive at the conclusion
       dsimp only [conts, pconts, ppconts]
-      field_simp [compExactValue, contsAux_recurrence s_nth_eq ppconts_eq pconts_eq,
-        nextConts, nextNum, nextDen]
       have hfr : (IntFractPair.of (1 / ifp_n.fr)).fr = f := rfl
-      #adaptation_note /-- 2025-08-10 replace the following with grind after
-        https://github.com/leanprover/lean4/issues/9825 is fixed -/
-      rw [one_div, if_neg _, ← one_div, hfr]
-      · field_simp [pA, pB, ppA, ppB, pconts, ppconts, hA, hB]
-        ac_rfl
-      · rwa [inv_eq_one_div, hfr]
+      simp [compExactValue, contsAux_recurrence s_nth_eq ppconts_eq pconts_eq,
+        nextConts, nextNum, nextDen]
+      grind
 
 open GenContFract (of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none)
 

@@ -66,7 +66,6 @@ theorem iUnion_mk (π : Prepartition I) (f h) : (mk π f h).iUnion = π.iUnion :
 @[simp]
 theorem iUnion_toPrepartition : π.toPrepartition.iUnion = π.iUnion := rfl
 
--- Porting note: Previous proof was `:= Set.mem_iUnion₂`
 @[simp]
 theorem mem_iUnion : x ∈ π.iUnion ↔ ∃ J ∈ π, x ∈ J := by
   convert Set.mem_iUnion₂
