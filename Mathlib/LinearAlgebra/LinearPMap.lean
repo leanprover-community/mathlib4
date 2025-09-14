@@ -991,6 +991,8 @@ theorem inverse_domain : (inverse f).domain = LinearMap.range f.toFun := by
     ← LinearEquiv.fst_comp_prodComm, Submodule.map_comp]
   rfl
 
+section injective
+
 variable (hf : LinearMap.ker f.toFun = ⊥)
 include hf
 
@@ -1038,18 +1040,16 @@ theorem inverse_apply_eq {y : (inverse f).domain} {x : f.domain} (hxy : f x = y)
   have := mem_inverse_graph hf x
   grind [mem_graph_iff]
 
+end injective
+
 section bijective
-
-variable (hf2 : LinearMap.range f.toFun = ⊤)
-
-omit hf
 
 /-- The domain of the inverse of `f` is the full space if and only if `f` is bijective. -/
 theorem inverse_domain_eq_top_iff : f.inverse.domain = ⊤ ↔ LinearMap.range f.toFun = ⊤ := by
   rw [inverse_domain]
 
 open Classical in
-/-- If `f` is surjective, then the inverse is defined as a linear map. -/
+/-- If `f` is bijective, then the inverse is defined as a linear map. -/
 noncomputable def inverse_asLinearMap (g : E →ₗ.[R] F) : F →ₗ[R] E :=
   if hg : LinearMap.range g.toFun = ⊤ then g.inverse.toFun.comp (LinearEquiv.ofTop g.inverse.domain
     ((inverse_domain_eq_top_iff).mpr hg)).symm.toLinearMap
@@ -1060,37 +1060,40 @@ theorem inverse_asLinearMap_eq_if_range_eq_top (hf : LinearMap.range f.toFun = �
     ((inverse_domain_eq_top_iff).mpr hf)).symm.toLinearMap := by
   simp [hf, inverse_asLinearMap]
 
-theorem mem_inverse_domain_of_bijective (hf : Function.Bijective f) (y : F) :
+variable (hf : Function.Bijective f)
+include hf
+
+theorem mem_inverse_domain_of_bijective (y : F) :
     y ∈ f.inverse.domain := by
   rw [((inverse_domain_eq_top_iff).mpr (LinearMap.range_eq_top.mpr hf.2))]
   exact Submodule.mem_top
 
-theorem inverse_asLinearMap_apply_eq_inverse_apply (hf : Function.Bijective f) {y : F} :
+theorem inverse_asLinearMap_apply_eq_inverse_apply {y : F} :
     f.inverse_asLinearMap y = f.inverse ⟨y, mem_inverse_domain_of_bijective hf y⟩ := by
   simp [inverse_asLinearMap, (LinearMap.range_eq_top.mpr hf.2)]
   congr
 
-theorem inverse_asLinearMap_range (hf : Function.Bijective f) :
+theorem inverse_asLinearMap_range :
     LinearMap.range f.inverse_asLinearMap = f.domain := by
   simp [inverse_asLinearMap_eq_if_range_eq_top (LinearMap.range_eq_top.mpr hf.2),
     inverse_range (LinearMap.ker_eq_bot.mpr hf.1)]
 
-theorem inverse_asLinearMap_apply_mem_domain (hf : Function.Bijective f) (x : F) :
+theorem inverse_asLinearMap_apply_mem_domain (x : F) :
     f.inverse_asLinearMap x ∈ f.domain := by
   rw [← inverse_asLinearMap_range hf]
   exact LinearMap.mem_range_self f.inverse_asLinearMap x
 
-theorem mem_graph_of_inverse_asLinearMap (hf : Function.Bijective f) (y : F) :
+theorem mem_graph_of_inverse_asLinearMap (y : F) :
     (f.inverse_asLinearMap y, y) ∈ f.graph := by
   rw [inverse_asLinearMap_apply_eq_inverse_apply hf]
   exact mem_graph_of_inverse (LinearMap.ker_eq_bot.mpr hf.1) _
 
-theorem inverse_cancel (hf : Function.Bijective f) (x : F) :
+theorem inverse_apply_apply_cancel (x : F) :
     f ⟨f.inverse_asLinearMap x, inverse_asLinearMap_apply_mem_domain hf x⟩ = x := by
   apply ((image_iff (inverse_asLinearMap_apply_mem_domain hf x)).mpr ?_).symm
   exact mem_graph_of_inverse_asLinearMap hf _
 
-theorem inverse_cancel' (hf : Function.Bijective f) (x' : f.domain) :
+theorem apply_inverse_apply_cancel (x' : f.domain) :
     f.inverse_asLinearMap (f x') = x' := by
   have : (f x', (x' : E)) ∈ f.inverse.graph := by
     rw [inverse_graph (LinearMap.ker_eq_bot.mpr hf.1)]
@@ -1099,9 +1102,12 @@ theorem inverse_cancel' (hf : Function.Bijective f) (x' : f.domain) :
   rw [this]
   exact inverse_asLinearMap_apply_eq_inverse_apply hf
 
-/-- `f⁻¹ - g⁻¹ = f⁻¹ (f - g) g⁻¹` -/
-theorem inverse_sub_inverse_eq {f g : E →ₗ.[R] F} (hf : Function.Bijective f)
-    (hg : Function.Bijective g) (hfg : g.domain ≤ f.domain) :
+/-- Calculate the difference of inverses of `LinearPMap`s `f` and `g` assuming both are bijective
+and the domain of `g` is contained in the domain of `f`.
+
+Informally, this is expressed as `f⁻¹ - g⁻¹ = f⁻¹ (f - g) g⁻¹`. -/
+theorem inverse_sub_inverse_eq {g : E →ₗ.[R] F} (hg : Function.Bijective g)
+    (hfg : g.domain ≤ f.domain) :
     f.inverse_asLinearMap - g.inverse_asLinearMap =
     f.inverse_asLinearMap ∘ₗ ((g - f).compLinearMap g.inverse_asLinearMap) := by
   ext x
@@ -1109,7 +1115,7 @@ theorem inverse_sub_inverse_eq {f g : E →ₗ.[R] F} (hf : Function.Bijective f
   rw [compLinearMap_apply (by simpa [sub_domain, inverse_asLinearMap_range hg]
     using hfg),
     sub_apply]
-  simp [inverse_cancel hg, inverse_cancel' hf]
+  simp [inverse_apply_apply_cancel hg, apply_inverse_apply_cancel hf]
 
 end bijective
 
