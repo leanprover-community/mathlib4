@@ -796,7 +796,7 @@ noncomputable instance instNormedAlgebra : NormSMulClass ℂ (CStarMatrix n n A)
   norm_smul r M := by simpa only [norm_def, map_smul] using norm_smul r (toCLM M)
 
 /-- Matrices with entries in a unital C⋆-algebra form a unital C⋆-algebra. -/
-noncomputable instance instCStarAlgebra [DecidableEq n] : CStarAlgebra (CStarMatrix n n A) where
+noncomputable example : CStarAlgebra (CStarMatrix n n A) := by infer_instance
 
 end unital
 
