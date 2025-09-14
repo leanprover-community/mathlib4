@@ -23,7 +23,7 @@ open CategoryTheory MonObj
 
 namespace CommGrpTypeEquivalenceCommGrp
 
-instance commGrpCommGroup (A : Type u) [Grp_Class A] [IsCommMon A] : CommGroup A :=
+instance commGrpCommGroup (A : Type u) [GrpObj A] [IsCommMon A] : CommGroup A :=
   { GrpTypeEquivalenceGrp.grpGroup A with
     mul_comm := fun x y => by convert congr_fun (IsCommMon.mul_comm A) (y, x) }
 
