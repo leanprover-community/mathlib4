@@ -1154,7 +1154,7 @@ theorem range_resolventLM (f : E →ₗ.[R] E) {z : R} (hz : z ∈ f.resolvent_s
   rw [inverse_asLinearMap_range hz, vadd_domain, neg_domain]
 
 /-- The first resolvent identity. -/
-theorem resolventLM_sub_resolvent_eq {f : E →ₗ.[R] E} {z1 z2 : R} (hz1 : z1 ∈ f.resolvent_set)
+theorem resolventLM_sub_resolventLM_eq {f : E →ₗ.[R] E} {z1 z2 : R} (hz1 : z1 ∈ f.resolvent_set)
     (hz2 : z2 ∈ f.resolvent_set) :
     f.resolventLM z1 - f.resolventLM z2 = (z2 - z1) • f.resolventLM z1 ∘ₗ f.resolventLM z2 := by
   rw [inverse_sub_inverse_eq hz1 hz2 (by simp), ← LinearMap.comp_smul]
@@ -1169,8 +1169,8 @@ theorem resolventLM_commute [NoZeroSMulDivisors R E] {f : E →ₗ.[R] E} {z1 z2
     f.resolventLM z1 ∘ₗ f.resolventLM z2 = f.resolventLM z2 ∘ₗ f.resolventLM z1 := by
   by_cases hz : z1 = z2
   · rw [hz]
-  have h1 := resolventLM_sub_resolvent_eq hz1 hz2
-  have h2 := resolventLM_sub_resolvent_eq hz2 hz1
+  have h1 := resolventLM_sub_resolventLM_eq hz1 hz2
+  have h2 := resolventLM_sub_resolventLM_eq hz2 hz1
   have : (z2 - z1) • f.resolventLM z1 ∘ₗ f.resolventLM z2 +
       (z1 - z2) • f.resolventLM z2 ∘ₗ f.resolventLM z1 = 0 := by
     rw [← h1, ← h2]
