@@ -26,8 +26,8 @@ yields a not-necessarily-unital, not-necessarily-associative algebra.
 `k`-linear combinations of terms of `G`, endowed with a skewed convolution product.
 
 ## TODO
-- the algebra instance (see #10541)
-- lifting lemmas (see #10541)
+- the algebra instance (see https://github.com/leanprover-community/mathlib4/issues/10541)
+- lifting lemmas (see https://github.com/leanprover-community/mathlib4/issues/10541)
 -/
 
 
@@ -264,6 +264,10 @@ theorem smul_single {S} [SMulZeroClass S k] (s : S) (a : G) (b : k) :
 
 theorem single_injective (a : G) : Function.Injective (single a : k → SkewMonoidAlgebra k G) :=
   toFinsuppAddEquiv.symm.injective.comp (Finsupp.single_injective a)
+
+theorem single_left_inj {a a' : G} {b : k} (h : b ≠ 0) : single a b = single a' b ↔ a = a' := by
+  rw [← toFinsupp_inj]
+  exact Finsupp.single_left_inj h
 
 theorem _root_.IsSMulRegular.skewMonoidAlgebra_iff {S : Type*} [Monoid S] [DistribMulAction S k]
     {a : S} [Nonempty G] : IsSMulRegular k a ↔ IsSMulRegular (SkewMonoidAlgebra k G) a := by
