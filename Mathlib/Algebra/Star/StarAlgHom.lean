@@ -666,7 +666,6 @@ instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiri
     NonUnitalAlgHomClass F R A B :=
   { }
 
-
 section Basic
 
 variable {F R A B C : Type*} [Add A] [Add B] [Mul A] [Mul B] [SMul R A] [SMul R B] [Star A]
