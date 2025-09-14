@@ -819,8 +819,7 @@ theorem dite_eq_iff' : dite P A B = c ↔ (∀ h, A h = c) ∧ ∀ h, B h = c :=
 theorem ite_eq_iff' : ite P a b = c ↔ (P → a = c) ∧ (¬P → b = c) := dite_eq_iff'
 
 theorem dite_ne_left_iff : dite P (fun _ ↦ a) B ≠ a ↔ ∃ h, a ≠ B h := by
-  rw [Ne, dite_eq_left_iff, not_forall]
-  exact exists_congr fun h ↦ by rw [ne_comm]
+  grind
 
 theorem dite_ne_right_iff : (dite P A fun _ ↦ b) ≠ b ↔ ∃ h, A h ≠ b := by
   simp only [Ne, dite_eq_right_iff, not_forall]
