@@ -121,14 +121,13 @@ lemma IsProperMap.ultrafilter_le_nhds_of_tendsto (h : IsProperMap f) ⦃𝒰 : U
   (isProperMap_iff_ultrafilter.mp h).2 hy
 
 /-- The composition of two proper maps is proper. -/
-lemma IsProperMap.comp (hf : IsProperMap f) (hg : IsProperMap g) :
+lemma IsProperMap.comp (hg : IsProperMap g) (hf : IsProperMap f) :
     IsProperMap (g ∘ f) := by
   refine ⟨by fun_prop, fun ℱ z h ↦ ?_⟩
   rw [mapClusterPt_comp] at h
   rcases hg.clusterPt_of_mapClusterPt h with ⟨y, rfl, hy⟩
   rcases hf.clusterPt_of_mapClusterPt hy with ⟨x, rfl, hx⟩
   use x, rfl
-
 
 /-- If the composition of two continuous functions `g ∘ f` is proper and `f` is surjective,
 then `g` is proper. -/
@@ -280,7 +279,7 @@ lemma IsClosed.isProperMap_subtypeVal {C : Set X} (hC : IsClosed C) : IsProperMa
 
 /-- The restriction of a proper map to a closed subset is proper. -/
 lemma IsProperMap.restrict {C : Set X} (hf : IsProperMap f) (hC : IsClosed C) :
-    IsProperMap fun x : C ↦ f x := hC.isProperMap_subtypeVal.comp  hf
+    IsProperMap fun x : C ↦ f x := hf.comp hC.isProperMap_subtypeVal
 
 /-- The range of a proper map is closed. -/
 lemma IsProperMap.isClosed_range (hf : IsProperMap f) : IsClosed (range f) :=
@@ -302,6 +301,45 @@ lemma isProperMap_iff_isClosedMap_and_tendsto_cofinite [T1Space Y] :
 theorem Continuous.isProperMap [CompactSpace X] [T2Space Y] (hf : Continuous f) : IsProperMap f :=
   isProperMap_iff_isClosedMap_and_tendsto_cofinite.2 ⟨hf, hf.isClosedMap, by simp⟩
 
+theorem isProperMap_const_iff [T1Space Y] (y : Y) :
+    IsProperMap (fun _ : X ↦ y) ↔ CompactSpace X := by
+  classical
+  rw [isProperMap_iff_isClosedMap_and_compact_fibers]
+  constructor
+  · rintro ⟨-, -, h⟩
+    exact ⟨by simpa using h y⟩
+  · intro H
+    refine ⟨continuous_const, isClosedMap_const, fun y' ↦ ?_⟩
+    simp [preimage_const, mem_singleton_iff, apply_ite, isCompact_univ]
+
+theorem isProperMap_const [h : CompactSpace X] [T1Space Y] (y : Y) :
+    IsProperMap (fun _ : X ↦ y) :=
+  isProperMap_const_iff y |>.mpr h
+
+theorem isProperMap_fst [CompactSpace Y] :
+    IsProperMap (Prod.fst : X × Y → X) :=
+  Homeomorph.prodPUnit X |>.isProperMap.comp (isProperMap_id.prodMap (isProperMap_const ()))
+
+theorem isProperMap_snd [CompactSpace X] :
+    IsProperMap (Prod.snd : X × Y → Y) :=
+  Homeomorph.punitProd Y |>.isProperMap.comp ((isProperMap_const ()).prodMap isProperMap_id)
+
+/-- The restriction of a proper map to a closed subset is proper. -/
+lemma IsProperMap.restrictPreimage (S : Set Y) (hf : IsProperMap f) :
+    IsProperMap (S.restrictPreimage f) where
+  toContinuous := by fun_prop
+  clusterPt_of_mapClusterPt 𝓕 y hy := by
+    let 𝓕' : Filter X := map (↑) 𝓕
+    have hy' : MapClusterPt (y : Y) 𝓕' f := by
+      have := hy.tendsto_comp <| continuous_subtype_val.tendsto y
+      exact .of_comp tendsto_map this
+    rcases hf.clusterPt_of_mapClusterPt hy' with ⟨x, hxy, hx⟩
+    refine ⟨⟨x, show f x ∈ S from hxy ▸ y.mem⟩, ?_, ?_⟩
+    · ext
+      exact hxy
+    · rwa [ClusterPt, nhds_subtype, ← map_neBot_iff ((↑) : f ⁻¹' S → X), Filter.push_pull',
+        ← ClusterPt]
+
 /-- A proper map `f : X → Y` is **universally closed**: for any topological space `Z`, the map
 `Prod.map f id : X × Z → Y × Z` is closed. We will prove in `isProperMap_iff_universally_closed`
 that proper maps are exactly continuous maps which have this property, but this result should be
@@ -310,47 +348,3 @@ theorem IsProperMap.universally_closed (Z) [TopologicalSpace Z] (h : IsProperMap
     IsClosedMap (Prod.map f id : X × Z → Y × Z) :=
   -- `f × id` is proper as a product of proper maps, hence closed.
   (h.prodMap isProperMap_id).isClosedMap
-
-/-- A map `f : X → Y` is proper if and only if it is continuous and the map
-`(Prod.map f id : X × Filter X → Y × Filter X)` is closed. This is stronger than
-`isProperMap_iff_universally_closed` since it shows that there's only one space to check to get
-properness, but in most cases it doesn't matter. -/
-theorem isProperMap_iff_isClosedMap_filter {X : Type u} {Y : Type v} [TopologicalSpace X]
-    [TopologicalSpace Y] {f : X → Y} :
-    IsProperMap f ↔ Continuous f ∧ IsClosedMap
-      (Prod.map f id : X × Filter X → Y × Filter X) := by
-  constructor <;> intro H
-  -- The direct implication is clear.
-  · exact ⟨H.continuous, H.universally_closed _⟩
-  · rw [isProperMap_iff_ultrafilter]
-  -- Let `𝒰 : Ultrafilter X`, and assume that `f` tends to some `y` along `𝒰`.
-    refine ⟨H.1, fun 𝒰 y hy ↦ ?_⟩
-  -- In `X × Filter X`, consider the closed set `F := closure {(x, ℱ) | ℱ = pure x}`
-    let F : Set (X × Filter X) := closure {xℱ | xℱ.2 = pure xℱ.1}
-  -- Since `f × id` is closed, the set `(f × id) '' F` is also closed.
-    have := H.2 F isClosed_closure
-  -- Let us show that `(y, 𝒰) ∈ (f × id) '' F`.
-    have : (y, ↑𝒰) ∈ Prod.map f id '' F :=
-  -- Note that, by the properties of the topology on `Filter X`, the function `pure : X → Filter X`
-  -- tends to the point `𝒰` of `Filter X` along the filter `𝒰` on `X`. Since `f` tends to `y` along
-  -- `𝒰`, we get that the function `(f, pure) : X → (Y, Filter X)` tends to `(y, 𝒰)` along
-  -- `𝒰`. Furthermore, each `(f, pure)(x) = (f × id)(x, pure x)` is clearly an element of
-  -- the closed set `(f × id) '' F`, thus the limit `(y, 𝒰)` also belongs to that set.
-      this.mem_of_tendsto (hy.prodMk_nhds (Filter.tendsto_pure_self (𝒰 : Filter X)))
-        (Eventually.of_forall fun x ↦ ⟨⟨x, pure x⟩, subset_closure rfl, rfl⟩)
-  -- The above shows that `(y, 𝒰) = (f x, 𝒰)`, for some `x : X` such that `(x, 𝒰) ∈ F`.
-    rcases this with ⟨⟨x, _⟩, hx, ⟨_, _⟩⟩
-  -- We already know that `f x = y`, so to finish the proof we just have to check that `𝒰` tends
-  -- to `x`. So, for `U ∈ 𝓝 x` arbitrary, let's show that `U ∈ 𝒰`. Since `𝒰` is a ultrafilter,
-  -- it is enough to show that `Uᶜ` is not in `𝒰`.
-    refine ⟨x, rfl, fun U hU ↦ Ultrafilter.compl_notMem_iff.mp fun hUc ↦ ?_⟩
-    rw [mem_closure_iff_nhds] at hx
-  -- Indeed, if that was the case, the set `V := {𝒢 : Filter X | Uᶜ ∈ 𝒢}` would be a neighborhood
-  -- of `𝒰` in `Filter X`, hence `U ×ˢ V` would be a neighborhood of `(x, 𝒰) : X × Filter X`.
-  -- But recall that `(x, 𝒰) ∈ F = closure {(x, ℱ) | ℱ = pure x}`, so the neighborhood `U ×ˢ V`
-  -- must contain some element of the form `(z, pure z)`. In other words, we have `z ∈ U` and
-  -- `Uᶜ ∈ pure z`, which means `z ∈ Uᶜ` by the definition of pure.
-  -- This is a contradiction, which completes the proof.
-    rcases hx (U ×ˢ {𝒢 | Uᶜ ∈ 𝒢}) (prod_mem_nhds hU (isOpen_setOf_mem.mem_nhds hUc)) with
-      ⟨⟨z, 𝒢⟩, ⟨⟨hz : z ∈ U, hz' : Uᶜ ∈ 𝒢⟩, rfl : 𝒢 = pure z⟩⟩
-    exact hz' hz
