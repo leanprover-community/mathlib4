@@ -7,6 +7,8 @@ import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 import Mathlib.NumberTheory.NumberField.Norm
 import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 import Mathlib.Topology.Instances.Complex
+import Mathlib.Analysis.AbsoluteValue.Equivalence
+import Mathlib.Analysis.Normed.Field.WithAbs
 
 /-!
 # Infinite places of a number field
@@ -509,3 +511,95 @@ lemma isReal_infinitePlace : InfinitePlace.IsReal (infinitePlace) :=
   ⟨Rat.castHom ℂ, by ext; simp, rfl⟩
 
 end Rat
+
+namespace NumberField.InfinitePlace
+
+variable {K : Type*} [Field K] {v w : InfinitePlace K}
+
+/--
+If $v$ and `w` are infinite places of `K` and `v = w ^ t` for some `t` then `t = 1`.
+-/
+theorem rpow_one_of_rpow_eq {t : ℝ} (h : (fun x => w x ^ t) = v) : t = 1 := by
+  let ⟨ψ, hψ⟩ := v.2
+  let ⟨φ, hφ⟩ := w.2
+  simp only [coe_apply, ← hψ, ← hφ, funext_iff] at h
+  simpa [place_apply, map_ofNat] using congrArg (Real.logb 2) (h 2)
+
+/-- Two infinite places `v` and `w` are equal if and only if their underlying absolute values
+are equivalent. -/
+theorem eq_iff_isEquiv : w = v ↔ w.1.IsEquiv v.1 := by
+  refine ⟨fun h ↦ h ▸ .rfl, fun h ↦ ?_⟩
+  let ⟨t, _, h⟩ := w.1.isEquiv_iff_exists_rpow_eq.1 h
+  exact ext _ _ fun k ↦ by simpa [rpow_one_of_rpow_eq h, ext, coe_apply] using funext_iff.1 h k
+
+variable (v)
+
+theorem exists_apply_one_lt : ∃ x, 1 < v x :=
+  ⟨2, let ⟨ψ, hψ⟩ := v.2; by simp [coe_apply, ← hψ, map_ofNat]⟩
+
+/--
+Infinite places are represented by non-trivial absolute values.
+-/
+theorem isNontrivial : v.1.IsNontrivial :=
+  let ⟨x, hx⟩ := v.exists_apply_one_lt
+  ⟨x, v.pos_iff.1 <| by linarith, by linarith [v.coe_apply _ ▸ hx]⟩
+
+variable {v}
+
+open scoped Topology
+
+open Filter in
+/--
+- $K$: field;
+- $v$: infinite place of $K$;
+- $c \in K$;
+- $1 < v(c)$;
+- $w(c) > 1$ for any infinite place $w\neq v$.
+
+There is a sequence in $K$ that tends to $1$ with respect
+to $v$ and tends to $0$ with respect to all other $w\neq v$.
+
+Such a sequence is given by $\frac{1}{1 + c ^ {-n}}$.
+-/
+theorem exists_tendsto_one_tendsto_zero {v : InfinitePlace K} {c : K} (hv : 1 < v c)
+    (h : ∀ w : InfinitePlace K, w ≠ v → w c < 1) :
+    ∃ a : ℕ → K, atTop.Tendsto (β := WithAbs v.1) a (𝓝 1) ∧
+      (∀ w ≠ v, atTop.Tendsto (β := WithAbs w.1) a (𝓝 0)) := by
+  refine ⟨fun n => 1 / (1 + c⁻¹ ^ n), ?_, fun w hwv => ?_⟩
+  · nth_rw 3 [show (1 : WithAbs v.1) = 1 / 1 by norm_num]
+    apply Tendsto.div tendsto_const_nhds _ one_ne_zero
+    nth_rw 2 [← add_zero (1 : WithAbs v.1)]
+    apply Tendsto.const_add
+    rw [tendsto_zero_iff_norm_tendsto_zero]
+    have hx₁ := map_inv₀ v _ ▸ inv_lt_one_of_one_lt₀ hv
+    simpa using tendsto_pow_atTop_nhds_zero_of_lt_one (AbsoluteValue.nonneg _ _) hx₁
+  · simp_rw [div_eq_mul_inv, one_mul]
+    rw [tendsto_zero_iff_norm_tendsto_zero]
+    simp_rw [norm_inv]
+    apply Tendsto.inv_tendsto_atTop
+    have (a : WithAbs w.1) (n : ℕ) : ‖a ^ n‖ - 1 ≤  ‖1 + a ^ n‖  := by
+      simp_rw [add_comm, ← norm_one (α := WithAbs w.1), tsub_le_iff_right]
+      exact norm_le_add_norm_add _ _
+    apply tendsto_atTop_mono (this _) (tendsto_atTop_add_right_of_le _ (-1) _ (fun _ => le_rfl))
+    refine tendsto_atTop_of_geom_le (c := w c⁻¹) (by simp) ?_ (fun n => ?_)
+    · exact map_inv₀ w _ ▸ (one_lt_inv₀ (w.1.pos fun h ↦ by simp_all; linarith)).2 (h w hwv)
+    · simp only [map_inv₀, norm_inv, norm_pow]
+      rw [pow_add, pow_one, mul_comm]
+      exact le_rfl
+
+noncomputable instance [NumberField K] : DecidableEq (InfinitePlace K) :=
+  (Fintype.equivFin _).decidableEq
+
+/--
+- $K$: field;
+- $v$: infinite place of $K$;
+- $\exists w \neq v$.
+
+There is an $x\in K$ such that $v(x) > 1$ and $w(x) < 1$ for all $w\neq v$.
+-/
+theorem exists_one_lt_lt_one [NumberField K] :
+    ∃ (x : K), 1 < v x ∧ ∀ w ≠ v, w x < 1 :=
+  AbsoluteValue.exists_one_lt_lt_one_pi_of_not_isEquiv isNontrivial
+    (fun _ _ hwv ↦ eq_iff_isEquiv.not.1 hwv) v
+
+end NumberField.InfinitePlace
