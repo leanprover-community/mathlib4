@@ -64,20 +64,13 @@ mkDeclAndDepr () {
       regexIdent=regex "  *" idRegex
       plusRegex="^\\+[^+-]*" regexIdent
       minusRegex="^-[^+-]*" regexIdent
-      n=split(regex, kws, "|")
-      for(i=1; i<=n; i++){
-        kword=kws[i]
-        gsub(/[^a-z]/, "", kword)
-        keywords[3*i+0]=kword
-      }
+      regex="^"regex"$"
     }
     ($0 ~ minusRegex) {
       for(i=1; i<=NF; i++) {
         strip=$i
         gsub(/^[+-]*/, "", strip)
-        for(kw in keywords) {
-          if (strip == keywords[kw]) { old=$(i+1); break }
-        }
+        if (strip ~ regex) { old=$(i+1); break }
       }
     }
     # the check on `old` is to make sure that we found an "old" name to deprecate
@@ -85,9 +78,8 @@ mkDeclAndDepr () {
     (($0 ~ plusRegex) && (!(old == ""))) {
       for(i=1; i<=NF; i++) {
         strip=$i
-        for(kw in keywords) {
         gsub(/^[+-]*/, "", strip)
-        if (strip == keywords[kw]) {
+        if (strip ~ regex) {
           sub(/^\+/, "", $i)
           if (!(old == $(i+1))) {
             # print the line that passes on to `addDeprecations`
@@ -105,7 +97,7 @@ mkDeclAndDepr () {
             old=""
             break
           }
-        }}
+        }
       }
     } END {
       # print to stderr a summary of deprecations
