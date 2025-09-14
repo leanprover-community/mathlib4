@@ -3,8 +3,8 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Analysis.Normed.Group.Int
-import Mathlib.Tactic.ComputeAsymptotics.Multiseries
+import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 
 /-!
 # Convert domain of a function
