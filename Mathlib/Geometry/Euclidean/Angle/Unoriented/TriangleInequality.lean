@@ -23,7 +23,7 @@ variable [NormedAddCommGroup V]
 variable [InnerProductSpace ℝ V]
 
 
-namespace UnitVectorAngles
+section UnitVectorAngles
 
 @[simp]
 lemma inner_self_eq_one {x : V} (hx : ‖x‖ = 1) : ⟪x, x⟫ = 1 :=
@@ -133,7 +133,8 @@ private lemma angle_le_angle_add_angle_aux {x y : V} (Hx : ‖x‖ = 1) (Hy : �
   rw [H0]
   field_simp; simp
 
-lemma angle_le_angle_add_angle {x y z : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) (Hz : ‖z‖ = 1) :
+lemma angle_le_angle_add_angle_of_norm_one {x y z : V}
+    (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) (Hz : ‖z‖ = 1) :
     angle x z ≤ angle x y + angle y z := by
   rcases lt_or_ge Real.pi (angle x y + angle y z) with H | H
   · linarith [angle_le_pi x z]
@@ -170,8 +171,9 @@ theorem InnerProductGeometry.angle_le_angle_add_angle (x y z : V) :
   · simpa [hy] using angle_le_pi x z
   by_cases hz : z = 0
   · simpa [hz] using angle_nonneg x y
-  have H := UnitVectorAngles.angle_le_angle_add_angle (norm_normalize_eq_one_iff.mpr hx)
-    (norm_normalize_eq_one_iff.mpr hy) (norm_normalize_eq_one_iff.mpr hz)
+  have H := angle_le_angle_add_angle_of_norm_one
+    (norm_normalize_eq_one_iff.mpr hx) (norm_normalize_eq_one_iff.mpr hy)
+    (norm_normalize_eq_one_iff.mpr hz)
   simp at H
   exact H
 
