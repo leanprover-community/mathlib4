@@ -18,6 +18,7 @@ import Mathlib.RingTheory.Localization.Module
 import Mathlib.Algebra.Module.LocalizedModule.Exact
 import Mathlib.RingTheory.LocalProperties.Projective
 import Mathlib.Algebra.Category.Grp.Zero
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 /-!
 # The Global Dimension of a Ring
 -/
@@ -412,6 +413,32 @@ section GlobalDimension
 
 variable (R : Type u) [CommRing R]
 
+open Abelian
+
+local instance [Small.{v} R] (I : Ideal R) : Small.{v} (R ⧸ I) :=
+  small_of_surjective Ideal.Quotient.mk_surjective
+
+local instance [Small.{v} R] : CategoryTheory.HasExt.{max u v} (ModuleCat.{v} R) :=
+  CategoryTheory.hasExt_of_enoughProjectives.{max u v} (ModuleCat.{v} R)
+
+lemma ext_subsingleton_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ) (pos : n > 0)
+    (h : ∀ I : Ideal R, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M n)) :
+    ∀ N : ModuleCat.{v} R, Subsingleton (Ext N M n) := by
+  match n with
+  | 0 =>
+    absurd pos
+    exact Nat.not_lt_zero 0
+  | 1 =>
+    have : Injective M := by
+      rw [← Module.injective_iff_injective_object, ← Module.Baer.iff_injective]
+      intro I g
+
+      sorry
+    intro N
+    exact subsingleton_of_forall_eq 0 (fun e ↦ Ext.eq_zero_of_injective e)
+  | n + 2 =>
+    sorry
+
 noncomputable def globalDimension : WithBot ℕ∞ :=
   ⨆ (M : ModuleCat.{v} R), projectiveDimension M
 
@@ -425,6 +452,12 @@ lemma globalDimension_eq_bot_iff [Small.{v} R] : globalDimension.{u, v} R = ⊥ 
 lemma globalDimension_le_iff (n : ℕ) : globalDimension.{u, v} R ≤ n ↔
     ∀ M : ModuleCat.{v} R, HasProjectiveDimensionLE M n := by
   simp [globalDimension, projectiveDimension_le_iff]
+
+lemma globalDimension_le_tfae [Small.{v} R] (n : ℕ) :
+    [globalDimension.{u, v} R ≤ n,
+    ∀ M : ModuleCat.{v} R, Module.Finite R M → HasProjectiveDimensionLE M n,
+    ∀ m ≥ n, ∀ (N M : ModuleCat.{v} R), Subsingleton (Ext N M m)].TFAE := by
+  sorry
 
 lemma globalDimension_eq_iSup_loclization_prime : globalDimension.{u, v} R =
     ⨆ (p : PrimeSpectrum R), globalDimension.{u, v} (Localization.AtPrime p.1) := by
