@@ -237,5 +237,84 @@ theorem prod_Ico_div (hmn : m ≤ n) : ∏ i ∈ Ico m n, f (i + 1) / f i = f n 
 
 end Group
 
+section TelescopingSum
+
+variable {f : ℕ → ℤ}
+
+/-- Sum from 0 to n equals first term plus sum from 1 to n -/
+lemma sum_range_succ_eq_head (n : ℕ) (s : ℕ → ℤ) :
+    (Finset.range (n + 1)).sum s = s 0 + (Finset.range n).sum (fun k => s (k + 1)) := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [Finset.sum_range_succ, ih, Finset.sum_range_succ]
+    simp only [add_assoc]
+
+/-- The general alternating telescoping sum theorem.
+    Given sequences a, b, c where a decomposes as b + c
+    and consecutive terms telescope (b(k+1) = c(k)),
+    the alternating sum of a reduces to boundary terms.
+
+    This theorem is used in the proof of Euler's polyhedron formula. -/
+theorem alternating_telescoping_sum
+    (n : ℕ) (a b c : ℕ → ℤ)
+    (hdecomp : ∀ k ≤ n, a k = b k + c k)
+    (hcancel : ∀ k ∈ Finset.range n, b (k + 1) = c k) :
+    (Finset.range (n + 1)).sum (fun k => (-1 : ℤ)^k * a k) = b 0 + (-1 : ℤ)^n * c n := by
+  induction n with
+  | zero =>
+    -- Base case: n = 0
+    simp
+    rw [hdecomp 0 (le_refl 0)]
+  | succ n ih =>
+    -- Inductive step: assume true for n, prove for n+1
+    -- Split the sum: Σ_{k=0}^{n+1} = Σ_{k=0}^n + term at (n+1)
+    rw [Finset.sum_range_succ]
+    -- Apply induction hypothesis to the first part
+    have ih_applied : (Finset.range (n + 1)).sum (fun k => (-1 : ℤ)^k * a k) =
+        b 0 + (-1 : ℤ)^n * c n := by
+      apply ih
+      · intro k hk
+        apply hdecomp
+        exact Nat.le_trans hk (Nat.le_succ n)
+      · intro k hk
+        apply hcancel
+        exact Finset.mem_range.mpr (Nat.lt_trans (Finset.mem_range.mp hk) (Nat.lt_succ_self n))
+    rw [ih_applied]
+    -- Expand a(n+1) using hdecomp
+    rw [hdecomp (n + 1) (le_refl (n + 1))]
+    -- Now we have: b 0 + (-1)^n * c n + (-1)^(n+1) * (b(n+1) + c(n+1))
+    -- Use hcancel: b(n+1) = c n
+    have cancel_eq : b (n + 1) = c n := hcancel n (Finset.mem_range.mpr (Nat.lt_succ_self n))
+    rw [cancel_eq]
+    -- Goal: b 0 + (-1)^n * c n + (-1)^(n+1) * (c n + c(n+1)) = b 0 + (-1)^(n+1) * c(n+1)
+    rw [pow_succ]
+    -- The goal reduces to showing the telescoping property
+    -- Note: pow_succ gives us (-1)^(n+1) = (-1)^n * (-1), not (-1) * (-1)^n
+    -- First, distribute the multiplication
+    have distrib : ((-1 : ℤ)^n * (-1)) * (c n + c (n + 1)) =
+                   ((-1)^n * (-1)) * c n + ((-1)^n * (-1)) * c (n + 1) := by
+      rw [Int.mul_add]
+    rw [distrib]
+    -- Now we have: b 0 + (-1)^n * c n + (((-1)^n * (-1)) * c n + ((-1)^n * (-1)) * c(n+1))
+    -- Simplify (-1)^n * (-1) = -(-1)^n
+    have neg_eq : ((-1 : ℤ)^n) * (-1) = -((-1)^n) := by
+      rw [mul_comm, Int.neg_one_mul]
+    simp only [neg_eq]
+    -- Now: b 0 + (-1)^n * c n + (-((-1)^n) * c n + -((-1)^n) * c(n+1))
+    simp only [Int.neg_mul]
+    -- Now: b 0 + (-1)^n * c n - (-1)^n * c n - (-1)^n * c(n+1)
+    -- Rearrange to show cancellation
+    simp only [add_assoc]
+    -- Goal: b 0 + ((-1)^n * c n + (-((-1)^n * c n) + -((-1)^n * c(n+1)))) =
+    --       b 0 + -((-1)^n * c(n+1))
+    congr 1
+    -- Goal: (-1)^n * c n + (-((-1)^n * c n) + -((-1)^n * c(n+1))) = -((-1)^n * c(n+1))
+    rw [← add_assoc]
+    rw [add_neg_cancel]
+    simp only [zero_add]
+
+end TelescopingSum
+
 end Nat
 end Finset

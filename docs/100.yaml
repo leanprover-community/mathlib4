@@ -59,6 +59,8 @@
   title  : The Independence of the Parallel Postulate
 13:
   title  : Polyhedron Formula
+  decl   : Theorems100.euler_formula_2d
+  authors: Jesse Alama
 14:
   title  : Euler’s Summation of 1 + (1/2)^2 + (1/3)^2 + ….
   decl   : hasSum_zeta_two

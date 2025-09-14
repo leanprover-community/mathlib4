@@ -511,6 +511,8 @@ import Mathlib.Algebra.Homology.AlternatingConst
 import Mathlib.Algebra.Homology.Augment
 import Mathlib.Algebra.Homology.Bifunctor
 import Mathlib.Algebra.Homology.BifunctorAssociator
+import Mathlib.Algebra.Homology.EulerPolyhedronFormula
+import Mathlib.Algebra.Homology.EulerPolyhedronFormula.Basic
 import Mathlib.Algebra.Homology.BifunctorFlip
 import Mathlib.Algebra.Homology.BifunctorHomotopy
 import Mathlib.Algebra.Homology.BifunctorShift
