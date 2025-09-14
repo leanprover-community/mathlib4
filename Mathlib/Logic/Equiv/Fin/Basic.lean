@@ -148,9 +148,7 @@ theorem finSuccEquiv'_last_apply_castSucc (i : Fin n) :
 
 theorem finSuccEquiv'_last_apply {i : Fin (n + 1)} (h : i ≠ Fin.last n) :
     finSuccEquiv' (Fin.last n) i = Fin.castLT i (Fin.val_lt_last h) := by
-  rcases Fin.exists_castSucc_eq.2 h with ⟨i, rfl⟩
-  rw [finSuccEquiv'_last_apply_castSucc]
-  rfl
+  simp
 
 theorem finSuccEquiv'_ne_last_apply {i j : Fin (n + 1)} (hi : i ≠ Fin.last n) (hj : j ≠ i) :
     finSuccEquiv' i j = (i.castLT (Fin.val_lt_last hi)).predAbove j := by

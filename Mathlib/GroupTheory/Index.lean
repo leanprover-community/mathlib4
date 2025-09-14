@@ -28,8 +28,8 @@ Several theorems proved in this file are known as Lagrange's theorem.
 # Main results
 
 - `card_mul_index` : `Nat.card H * H.index = Nat.card G`
-- `index_mul_card` : `H.index * Fintype.card H = Fintype.card G`
-- `index_dvd_card` : `H.index ∣ Fintype.card G`
+- `index_mul_card` : `H.index * Nat.card H = Nat.card G`
+- `index_dvd_card` : `H.index ∣ Nat.card G`
 - `relindex_mul_index` : If `H ≤ K`, then `H.relindex K * K.index = H.index`
 - `index_dvd_of_le` : If `H ≤ K`, then `K.index ∣ H.index`
 - `relindex_mul_relindex` : `relindex` is multiplicative in towers
@@ -47,15 +47,15 @@ open Cardinal Function
 variable {G G' : Type*} [Group G] [Group G'] (H K L : Subgroup G)
 
 /-- The index of a subgroup as a natural number. Returns `0` if the index is infinite. -/
-@[to_additive "The index of an additive subgroup as a natural number.
-Returns 0 if the index is infinite."]
+@[to_additive /-- The index of an additive subgroup as a natural number.
+Returns 0 if the index is infinite. -/]
 noncomputable def index : ℕ :=
   Nat.card (G ⧸ H)
 
 /-- If `H` and `K` are subgroups of a group `G`, then `relindex H K : ℕ` is the index
 of `H ∩ K` in `K`. The function returns `0` if the index is infinite. -/
-@[to_additive "If `H` and `K` are subgroups of an additive group `G`, then `relindex H K : ℕ`
-is the index of `H ∩ K` in `K`. The function returns `0` if the index is infinite."]
+@[to_additive /-- If `H` and `K` are subgroups of an additive group `G`, then `relindex H K : ℕ`
+is the index of `H ∩ K` in `K`. The function returns `0` if the index is infinite. -/]
 noncomputable def relindex : ℕ :=
   (H.subgroupOf K).index
 
@@ -85,6 +85,16 @@ theorem index_comap (f : G' →* G) :
 theorem relindex_comap (f : G' →* G) (K : Subgroup G') :
     relindex (comap f H) K = relindex H (map f K) := by
   rw [relindex, subgroupOf, comap_comap, index_comap, ← f.map_range, K.range_subtype]
+
+@[to_additive]
+theorem relindex_map_map_of_injective {f : G →* G'} (H K : Subgroup G) (hf : Function.Injective f) :
+    relindex (map f H) (map f K) = relindex H K := by
+  rw [← Subgroup.relindex_comap, Subgroup.comap_map_eq_self_of_injective hf]
+
+@[to_additive]
+theorem relindex_map_map (f : G →* G') (H K : Subgroup G) :
+    (map f H).relindex (map f K) = (H ⊔ f.ker).relindex (K ⊔ f.ker) := by
+  rw [← comap_map_eq, ← comap_map_eq, relindex_comap, (gc_map_comap f).l_u_l_eq_l]
 
 variable {H K L}
 
@@ -147,8 +157,8 @@ theorem relindex_dvd_of_le_left (hHK : H ≤ K) : K.relindex L ∣ H.relindex L 
 
 /-- A subgroup has index two if and only if there exists `a` such that for all `b`, exactly one
 of `b * a` and `b` belong to `H`. -/
-@[to_additive "An additive subgroup has index two if and only if there exists `a` such that
-for all `b`, exactly one of `b + a` and `b` belong to `H`."]
+@[to_additive /-- An additive subgroup has index two if and only if there exists `a` such that
+for all `b`, exactly one of `b + a` and `b` belong to `H`. -/]
 theorem index_eq_two_iff : H.index = 2 ↔ ∃ a, ∀ b, Xor' (b * a ∈ H) (b ∈ H) := by
   simp only [index, Nat.card_eq_two_iff' ((1 : G) : G ⧸ H), ExistsUnique, inv_mem_iff,
     QuotientGroup.exists_mk, QuotientGroup.forall_mk, Ne, QuotientGroup.eq, mul_one,
@@ -299,8 +309,8 @@ theorem relindex_eq_zero_of_le_right (hKL : K ≤ L) (hHK : H.relindex K = 0) : 
   Finite.card_eq_zero_of_embedding (quotientSubgroupOfEmbeddingOfLE H hKL) hHK
 
 /-- If `J` has finite index in `K`, then the same holds for their comaps under any group hom. -/
-@[to_additive "If `J` has finite index in `K`, then the same holds for their comaps under any
-additive group hom."]
+@[to_additive /-- If `J` has finite index in `K`, then the same holds for their comaps under any
+additive group hom. -/]
 lemma relindex_comap_ne_zero (f : G →* G') {J K : Subgroup G'} (hJK : J.relindex K ≠ 0) :
     (J.comap f).relindex (K.comap f) ≠ 0 := by
   rw [relindex_comap]
@@ -340,8 +350,8 @@ theorem index_inf_ne_zero (hH : H.index ≠ 0) (hK : K.index ≠ 0) : (H ⊓ K).
   exact relindex_inf_ne_zero hH hK
 
 /-- If `J` has finite index in `K`, then `J ⊓ L` has finite index in `K ⊓ L` for any `L`. -/
-@[to_additive "If `J` has finite index in `K`, then `J ⊓ L` has finite index in `K ⊓ L` for any
-`L`."]
+@[to_additive /-- If `J` has finite index in `K`, then `J ⊓ L` has finite index in `K ⊓ L` for any
+`L`. -/]
 lemma relindex_inter_ne_zero {J K : Subgroup G} (hJK : J.relindex K ≠ 0) (L : Subgroup G) :
     (J ⊓ L).relindex (K ⊓ L) ≠ 0 := by
   rw [← range_subtype L, inf_comm, ← map_comap_eq, inf_comm, ← map_comap_eq, ← relindex_comap,
@@ -413,7 +423,7 @@ theorem index_ne_zero_of_finite [hH : Finite (G ⧸ H)] : H.index ≠ 0 := by
   exact Nat.card_pos.ne'
 
 /-- Finite index implies finite quotient. -/
-@[to_additive "Finite index implies finite quotient."]
+@[to_additive /-- Finite index implies finite quotient. -/]
 noncomputable def fintypeOfIndexNeZero (hH : H.index ≠ 0) : Fintype (G ⧸ H) :=
   @Fintype.ofFinite _ (Nat.finite_of_card_ne_zero hH)
 
@@ -572,8 +582,12 @@ instance IsFiniteRelIndex.to_finiteIndex_subgroupOf [H.IsFiniteRelIndex K] :
 theorem finiteIndex_iff : H.FiniteIndex ↔ H.index ≠ 0 :=
   ⟨fun h ↦ h.index_ne_zero, fun h ↦ ⟨h⟩⟩
 
+@[to_additive]
+theorem not_finiteIndex_iff {G : Type*} [Group G] {H : Subgroup G} :
+    ¬ H.FiniteIndex ↔ H.index = 0 := by simp [finiteIndex_iff]
+
 /-- A finite index subgroup has finite quotient. -/
-@[to_additive "A finite index subgroup has finite quotient"]
+@[to_additive /-- A finite index subgroup has finite quotient -/]
 noncomputable def fintypeQuotientOfFiniteIndex [FiniteIndex H] : Fintype (G ⧸ H) :=
   fintypeOfIndexNeZero FiniteIndex.index_ne_zero
 
@@ -589,10 +603,9 @@ theorem finiteIndex_of_finite_quotient [Finite (G ⧸ H)] : FiniteIndex H :=
 theorem finiteIndex_iff_finite_quotient : FiniteIndex H ↔ Finite (G ⧸ H) :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ finiteIndex_of_finite_quotient⟩
 
--- Porting note: had to manually provide finite instance for quotient when it should be automatic
 @[to_additive]
 instance (priority := 100) finiteIndex_of_finite [Finite G] : FiniteIndex H :=
-  @finiteIndex_of_finite_quotient _ _ H (Quotient.finite _)
+  finiteIndex_of_finite_quotient
 
 variable (H) in
 @[to_additive]

@@ -255,8 +255,8 @@ def createsLimitOfReflectsIso {K : J ⥤ C} {F : C ⥤ D} [F.ReflectsIsomorphism
         exact IsLimit.ofIsoLimit hd' (asIso f).symm⟩ }
 
 /-- If `F` reflects isomorphisms and we can lift a single limit cone to a limit cone, then `F`
-    creates limits. Note that unlike `createsLimitOfReflectsIso`, to apply this result it is
-    necessary to know that `K ⋙ F` actually has a limit. -/
+creates limits. Note that unlike `createsLimitOfReflectsIso`, to apply this result it is
+necessary to know that `K ⋙ F` actually has a limit. -/
 def createsLimitOfReflectsIso' {K : J ⥤ C} {F : C ⥤ D} [F.ReflectsIsomorphisms]
     {c : Cone (K ⋙ F)} (hc : IsLimit c) (h : LiftsToLimit K F c hc) : CreatesLimit K F :=
   createsLimitOfReflectsIso fun _ t =>
@@ -369,8 +369,8 @@ def createsColimitOfReflectsIso {K : J ⥤ C} {F : C ⥤ D} [F.ReflectsIsomorphi
         exact IsColimit.ofIsoColimit hd' (asIso f)⟩ }
 
 /-- If `F` reflects isomorphisms and we can lift a single colimit cocone to a colimit cocone, then
-    `F` creates limits. Note that unlike `createsColimitOfReflectsIso`, to apply this result it is
-    necessary to know that `K ⋙ F` actually has a colimit. -/
+`F` creates limits. Note that unlike `createsColimitOfReflectsIso`, to apply this result it is
+necessary to know that `K ⋙ F` actually has a colimit. -/
 def createsColimitOfReflectsIso' {K : J ⥤ C} {F : C ⥤ D} [F.ReflectsIsomorphisms]
     {c : Cocone (K ⋙ F)} (hc : IsColimit c) (h : LiftsToColimit K F c hc) : CreatesColimit K F :=
   createsColimitOfReflectsIso fun _ t =>
@@ -384,10 +384,6 @@ def createsColimitOfReflectsIsomorphismsOfPreserves {K : J ⥤ C} {F : C ⥤ D}
     [F.ReflectsIsomorphisms] [HasColimit K] [PreservesColimit K F] : CreatesColimit K F :=
   createsColimitOfReflectsIso' (isColimitOfPreserves F (colimit.isColimit _))
     ⟨⟨_, Iso.refl _⟩, colimit.isColimit _⟩
-
-@[deprecated (since := "2025-02-01")]
-noncomputable alias createsColimitOfFullyFaithfulOfPreserves :=
-  createsColimitOfReflectsIsomorphismsOfPreserves
 
 -- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cocone maps,

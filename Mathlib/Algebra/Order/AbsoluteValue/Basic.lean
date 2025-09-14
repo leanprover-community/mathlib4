@@ -113,6 +113,10 @@ protected theorem pos_iff {x : R} : 0 < abv x ↔ x ≠ 0 :=
   (abv.nonneg x).lt_iff_ne'.trans abv.ne_zero_iff
 protected alias ⟨_, pos⟩ := AbsoluteValue.pos_iff
 
+@[simp]
+protected theorem nonpos_iff {x : R} : abv x ≤ 0 ↔ x = 0 := by
+  simp only [← abv.eq_zero, le_antisymm_iff, abv.nonneg, and_true]
+
 theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
   h <| by simp [← abv.map_mul]
 
@@ -246,9 +250,9 @@ open Int in
 /-- Values of an absolute value coincide on the image of `ℕ` in `R`
 if and only if they coincide on the image of `ℤ` in `R`. -/
 lemma eq_on_nat_iff_eq_on_int {f g : AbsoluteValue R S} :
-    (∀ n : ℕ , f n = g n) ↔ ∀ n : ℤ , f n = g n := by
+    (∀ n : ℕ, f n = g n) ↔ ∀ n : ℤ, f n = g n := by
   refine ⟨fun h z ↦ ?_, fun a n ↦ mod_cast a n⟩
-  obtain ⟨n , rfl | rfl⟩ := Int.eq_nat_or_neg z <;> simp [h n]
+  obtain ⟨n, rfl | rfl⟩ := Int.eq_nat_or_neg z <;> simp [h n]
 
 end OrderedCommRing
 
@@ -383,58 +387,6 @@ lemma IsNontrivial.exists_abv_lt_one (h : v.IsNontrivial) : ∃ x ≠ 0, v x < 1
   refine ⟨y⁻¹, inv_ne_zero hy₀, ?_⟩
   rw [map_inv₀]
   exact (inv_lt_one₀ <| v.pos hy₀).mpr hy
-
-theorem inv_pos {x : R} (h : 0 < v x) : 0 < v x⁻¹ := by
-  rwa [map_inv₀, _root_.inv_pos]
-
-omit [ExistsAddOfLE S] in
-theorem ne_zero_of_one_lt {x : R} (hv : 1 < v x) : x ≠ 0 := by
-  contrapose! hv
-  simp [hv]
-
-theorem isNontrivial_iff_exists_abv_one_lt :
-    v.IsNontrivial ↔ ∃ x, 1 < v x := by
-  refine ⟨fun h => h.exists_abv_gt_one, fun ⟨x, hx⟩ => ⟨x⁻¹, ?_, ?_⟩⟩
-  · simpa only [ne_eq, inv_eq_zero] using ne_zero_of_one_lt hx
-  · simpa only [map_inv₀, ne_eq, inv_eq_one] using ne_of_gt hx
-
-omit [ExistsAddOfLE S] [IsStrictOrderedRing S] in
-theorem nonpos_iff {x : R} : v x ≤ 0 ↔ v x = 0 := by
-  simp [le_antisymm_iff, v.nonneg _]
-
-theorem inv_lt_one_iff {x : R} : v x⁻¹ < 1 ↔ x = 0 ∨ 1 < v x := by
-  simp only [map_inv₀, inv_lt_one_iff₀, nonpos_iff, map_eq_zero]
-
-theorem mul_one_div_lt_iff {y : R} (x : R) (h : 0 < v y) : v (x * (1 / y)) < 1 ↔ v x < v y := by
-  rw [map_mul, one_div, map_inv₀, mul_inv_lt_iff₀ h, one_mul]
-
-theorem mul_one_div_pow_lt_iff {n : ℕ} {y : R} (x : R) (h : 0 < v y) :
-    v (x * (1 / y ^ n)) < 1 ↔ v x < v y ^ n :=
-  map_pow v _ _ ▸ mul_one_div_lt_iff x (map_pow v _ _ ▸ pow_pos h n)
-
-variable {w : AbsoluteValue R S}
-
-theorem one_lt_of_lt_one_imp (h : ∀ x, v x < 1 → w x < 1) {x : R} (hv : 1 < v x) : 1 < w x :=
-  (inv_lt_one_iff.1 <| h _ <| map_inv₀ v _ ▸ inv_lt_one_of_one_lt₀ hv).resolve_left <|
-    ne_zero_of_one_lt hv
-
-theorem one_lt_iff_of_lt_one_iff (h : ∀ x, v x < 1 ↔ w x < 1) (x : R) : 1 < v x ↔ 1 < w x :=
-  ⟨fun hv => one_lt_of_lt_one_imp (fun _ => (h _).1) hv,
-    fun hw => one_lt_of_lt_one_imp (fun _ => (h _).2) hw⟩
-
-theorem eq_one_of_lt_one_iff (h : ∀ x, v x < 1 ↔ w x < 1) {x : R} (hv : v x = 1) : w x = 1 := by
-  cases eq_or_lt_of_le (not_lt.1 <| (h x).not.1 hv.not_lt) with
-  | inl hl => rw [← hl]
-  | inr hr => rw [← one_lt_iff_of_lt_one_iff h] at hr; absurd hv; exact ne_of_gt hr
-
-theorem eq_one_iff_of_lt_one_iff (h : ∀ x, v x < 1 ↔ w x < 1) (x : R) : v x = 1 ↔ w x = 1 :=
-  ⟨fun hv => eq_one_of_lt_one_iff h hv, fun hw => eq_one_of_lt_one_iff (fun _ => (h _).symm) hw⟩
-
-variable (w)
-
-omit [ExistsAddOfLE S] [IsStrictOrderedRing S] in
-theorem pos_of_pos {a : R} (hv : 0 < v a) : 0 < w a := by
-  rwa [AbsoluteValue.pos_iff] at hv ⊢
 
 end LinearOrderedSemifield
 

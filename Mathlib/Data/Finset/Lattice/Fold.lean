@@ -125,20 +125,6 @@ theorem sup_ite (p : β → Prop) [DecidablePred p] :
     (s.sup fun i => ite (p i) (f i) (g i)) = (s.filter p).sup f ⊔ (s.filter fun i => ¬p i).sup g :=
   fold_ite _
 
-theorem le_sup_dite_pos (p : β → Prop) [DecidablePred p] {f : (b : β) → p b → α}
-    {g : (b : β) → ¬p b → α} {b : β} (h₀ : b ∈ s) (h₁ : p b) :
-    f b h₁ ≤ s.sup fun i => if h : p i then f i h else g i h := by
-  have : f b h₁ = (fun i => if h : p i then f i h else g i h) b := by simp [h₁]
-  rw [this]
-  apply Finset.le_sup h₀
-
-theorem le_sup_dite_neg (p : β → Prop) [DecidablePred p] {f : (b : β) → p b → α}
-    {g : (b : β) → ¬p b → α} {b : β} (h₀ : b ∈ s) (h₁ : ¬p b) :
-    g b h₁ ≤ s.sup fun i => if h : p i then f i h else g i h := by
-  have : g b h₁ = (fun i => if h : p i then f i h else g i h) b := by simp [h₁]
-  rw [this]
-  apply Finset.le_sup h₀
-
 @[gcongr]
 theorem sup_mono_fun {g : β → α} (h : ∀ b ∈ s, f b ≤ g b) : s.sup f ≤ s.sup g :=
   Finset.sup_le fun b hb => le_trans (h b hb) (le_sup hb)
@@ -623,7 +609,7 @@ protected theorem sup_lt_iff (ha : ⊥ < a) : s.sup f < a ↔ ∀ b ∈ s, f b <
 theorem sup_mem_of_nonempty (hs : s.Nonempty) : s.sup f ∈ f '' s := by
   classical
   induction s using Finset.induction with
-  | empty => exfalso; simp only [Finset.not_nonempty_empty] at hs
+  | empty => simp only [Finset.not_nonempty_empty] at hs
   | insert a s _ h =>
     rw [Finset.sup_insert (b := a) (s := s) (f := f)]
     cases s.eq_empty_or_nonempty with
@@ -752,12 +738,8 @@ lemma sup'_eq_of_forall {a : α} (h : ∀ b ∈ s, f b = a) : s.sup' H f = a :=
     (le_sup'_of_le _ H.choose_spec (h _ H.choose_spec).ge)
 
 @[simp]
-theorem sup'_const (a : α) : s.sup' H (fun _ => a) = a := by
-  apply le_antisymm
-  · apply sup'_le
-    intros
-    exact le_rfl
-  · apply le_sup' (fun _ => a) H.choose_spec
+theorem sup'_const (a : α) : s.sup' H (fun _ => a) = a :=
+  sup'_eq_of_forall H (fun _ ↦ a) fun _ ↦ congrFun rfl
 
 theorem sup'_union [DecidableEq β] {s₁ s₂ : Finset β} (h₁ : s₁.Nonempty) (h₂ : s₂.Nonempty)
     (f : β → α) :

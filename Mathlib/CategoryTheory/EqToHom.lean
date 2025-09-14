@@ -217,7 +217,7 @@ instance {X Y : C} (h : X = Y) : IsIso (eqToHom h) :=
 
 @[simp]
 theorem inv_eqToHom {X Y : C} (h : X = Y) : inv (eqToHom h) = eqToHom h.symm := by
-  aesop_cat
+  cat_disch
 
 variable {D : Type u₂} [Category.{v₂} D]
 
@@ -227,12 +227,10 @@ namespace Functor
   because usually you don't really want to do this. -/
 theorem ext {F G : C ⥤ D} (h_obj : ∀ X, F.obj X = G.obj X)
     (h_map : ∀ X Y f,
-      F.map f = eqToHom (h_obj X) ≫ G.map f ≫ eqToHom (h_obj Y).symm := by aesop_cat) :
+      F.map f = eqToHom (h_obj X) ≫ G.map f ≫ eqToHom (h_obj Y).symm := by cat_disch) :
     F = G := by
   match F, G with
-  | mk F_pre _ _ , mk G_pre _ _ =>
-    match F_pre, G_pre with
-    | Prefunctor.mk F_obj _ , Prefunctor.mk G_obj _ =>
+  | mk F_obj _ _ _, mk G_obj _ _ _ =>
     obtain rfl : F_obj = G_obj := by
       ext X
       apply h_obj
@@ -241,7 +239,7 @@ theorem ext {F G : C ⥤ D} (h_obj : ∀ X, F.obj X = G.obj X)
     simpa using h_map X Y f
 
 lemma ext_of_iso {F G : C ⥤ D} (e : F ≅ G) (hobj : ∀ X, F.obj X = G.obj X)
-    (happ : ∀ X, e.hom.app X = eqToHom (hobj X) := by aesop_cat) : F = G :=
+    (happ : ∀ X, e.hom.app X = eqToHom (hobj X) := by cat_disch) : F = G :=
   Functor.ext hobj (fun X Y f => by
     rw [← cancel_mono (e.hom.app Y), e.hom.naturality f, happ, happ, Category.assoc,
     Category.assoc, eqToHom_trans, eqToHom_refl, Category.comp_id])
@@ -313,7 +311,7 @@ theorem eqToHom_map (F : C ⥤ D) {X Y : C} (p : X = Y) :
 
 @[reassoc (attr := simp)]
 theorem eqToHom_map_comp (F : C ⥤ D) {X Y Z : C} (p : X = Y) (q : Y = Z) :
-    F.map (eqToHom p) ≫ F.map (eqToHom q) = F.map (eqToHom <| p.trans q) := by aesop_cat
+    F.map (eqToHom p) ≫ F.map (eqToHom q) = F.map (eqToHom <| p.trans q) := by cat_disch
 
 /-- See the note on `eqToHom_map` regarding using this as a `simp` lemma.
 -/
@@ -322,7 +320,7 @@ theorem eqToIso_map (F : C ⥤ D) {X Y : C} (p : X = Y) :
 
 @[simp]
 theorem eqToIso_map_trans (F : C ⥤ D) {X Y Z : C} (p : X = Y) (q : Y = Z) :
-    F.mapIso (eqToIso p) ≪≫ F.mapIso (eqToIso q) = F.mapIso (eqToIso <| p.trans q) := by aesop_cat
+    F.mapIso (eqToIso p) ≪≫ F.mapIso (eqToIso q) = F.mapIso (eqToIso <| p.trans q) := by cat_disch
 
 @[simp]
 theorem eqToHom_app {F G : C ⥤ D} (h : F = G) (X : C) :
