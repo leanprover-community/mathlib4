@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Monoidal.Mon_
 
 universe v₁ v₂ v₃ u₁ u₂ u₃ u
 
-open CategoryTheory MonoidalCategory Mon_Class
+open CategoryTheory MonoidalCategory MonObj
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory.{v₁} C]
 
@@ -22,7 +22,7 @@ variable (C) in
 structure CommMon_ where
   /-- The underlying object in the ambient monoidal category -/
   X : C
-  [mon : Mon_Class X]
+  [mon : MonObj X]
   [comm : IsCommMon X]
 
 attribute [instance] CommMon_.mon CommMon_.comm
@@ -60,8 +60,6 @@ theorem comp_hom {R S T : CommMon_ C} (f : R ⟶ S) (g : S ⟶ T) :
 lemma hom_ext {A B : CommMon_ C} (f g : A ⟶ B) (h : f.hom = g.hom) : f = g :=
   Mon_.Hom.ext h
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): the following two lemmas `id'` and `comp'`
--- have been added to ease automation;
 @[simp]
 lemma id' (A : CommMon_ C) : (𝟙 A : A.toMon_ ⟶ A.toMon_) = 𝟙 (A.toMon_) := rfl
 
@@ -118,7 +116,7 @@ end
 /-- Construct an isomorphism of commutative monoid objects by giving a monoid isomorphism between
 the underlying objects. -/
 @[simps!]
-def mkIso' {M N : C} (e : M ≅ N) [Mon_Class M] [IsCommMon M] [Mon_Class N] [IsCommMon N]
+def mkIso' {M N : C} (e : M ≅ N) [MonObj M] [IsCommMon M] [MonObj N] [IsCommMon N]
     [IsMon_Hom e.hom] : mk M ≅ mk N :=
   (fullyFaithfulForget₂Mon_ C).preimageIso (Mon_.mkIso' e)
 
@@ -153,7 +151,7 @@ variable [F.LaxBraided] [F'.LaxBraided] [G.LaxBraided]
 
 open scoped Obj
 
-instance isCommMon_obj {M : C} [Mon_Class M] [IsCommMon M] : IsCommMon (F.obj M) where
+instance isCommMon_obj {M : C} [MonObj M] [IsCommMon M] : IsCommMon (F.obj M) where
   mul_comm := by
     dsimp; rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMon.mul_comm]
 
