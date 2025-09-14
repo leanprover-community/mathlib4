@@ -20,7 +20,7 @@ open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory M
 
 universe w v u
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
-  {M G H X Y : C} [MonObj M] [Grp_Class G] [Grp_Class H]
+  {M G H X Y : C} [MonObj M] [GrpObj G] [GrpObj H]
 
 /-- Construct a morphism `G ⟶ H` of `Grp_ C` C from a map `f : G ⟶ H` and a `IsMon_Hom f`
 instance. -/
@@ -29,8 +29,8 @@ def Grp_.homMk (f : G ⟶ H) [IsMon_Hom f] : .mk G ⟶ Grp_.mk H := ⟨f⟩
 
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
-def Grp_Class.ofRepresentableBy (F : Cᵒᵖ ⥤ Grp.{w}) (α : (F ⋙ forget _).RepresentableBy X) :
-    Grp_Class X where
+def GrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ Grp.{w}) (α : (F ⋙ forget _).RepresentableBy X) :
+    GrpObj X where
   __ := MonObj.ofRepresentableBy X (F ⋙ forget₂ Grp MonCat) α
   inv := α.homEquiv.symm (α.homEquiv (𝟙 _))⁻¹
   left_inv := by
@@ -51,6 +51,8 @@ def Grp_Class.ofRepresentableBy (F : Cᵒᵖ ⥤ Grp.{w}) (α : (F ⋙ forget _)
     simp only [Functor.comp_map, ConcreteCategory.forget_map_eq_coe, map_one, map_mul]
     simp only [← ConcreteCategory.forget_map_eq_coe, ← Functor.comp_map, ← α.homEquiv_comp]
     simp [- Functor.comp_obj]
+
+@[deprecated (since := "2025-09-13")] alias Grp_Class.ofRepresentableBy := GrpObj.ofRepresentableBy
 
 /-- If `G` is a group object, then `Hom(X, G)` has a group structure. -/
 abbrev Hom.group : Group (X ⟶ G) where
@@ -77,18 +79,22 @@ def yonedaGrpObjRepresentableBy : (yonedaGrpObj G ⋙ forget _).RepresentableBy 
   Functor.representableByEquiv.symm (.refl _)
 
 variable (G) in
-lemma Grp_Class.ofRepresentableBy_yonedaGrpObjRepresentableBy :
-    ofRepresentableBy G _ (yonedaGrpObjRepresentableBy G) = ‹Grp_Class G› := by
+lemma GrpObj.ofRepresentableBy_yonedaGrpObjRepresentableBy :
+    ofRepresentableBy G _ (yonedaGrpObjRepresentableBy G) = ‹GrpObj G› := by
   ext; change lift (fst G G) (snd G G) ≫ μ = μ; rw [lift_fst_snd, Category.id_comp]
+
+@[deprecated (since := "2025-09-13")]
+alias Grp_Class.ofRepresentableBy_yonedaGrpObjRepresentableBy :=
+  GrpObj.ofRepresentableBy_yonedaGrpObjRepresentableBy
 
 variable (X) in
 /-- If `X` represents a presheaf of groups `F`, then `Hom(-, X)` is isomorphic to `F` as
 a presheaf of groups. -/
 @[simps! hom inv]
 def yonedaGrpObjIsoOfRepresentableBy (F : Cᵒᵖ ⥤ Grp.{v}) (α : (F ⋙ forget _).RepresentableBy X) :
-    letI := Grp_Class.ofRepresentableBy X F α
+    letI := GrpObj.ofRepresentableBy X F α
     yonedaGrpObj X ≅ F :=
-  letI := Grp_Class.ofRepresentableBy X F α
+  letI := GrpObj.ofRepresentableBy X F α
   NatIso.ofComponents (fun Y ↦ MulEquiv.toGrpIso
     { toEquiv := α.homEquiv
       map_mul' :=
@@ -124,41 +130,55 @@ lemma essImage_yonedaGrp :
   · rintro ⟨G, ⟨α⟩⟩
     exact ⟨G.X, ⟨Functor.representableByEquiv.symm (Functor.isoWhiskerRight α (forget _))⟩⟩
   · rintro ⟨X, ⟨e⟩⟩
-    letI := Grp_Class.ofRepresentableBy X F e
+    letI := GrpObj.ofRepresentableBy X F e
     exact ⟨⟨X⟩, ⟨yonedaGrpObjIsoOfRepresentableBy X F e⟩⟩
 
 @[reassoc]
-lemma Grp_Class.inv_comp (f : X ⟶ G) (g : G ⟶ H) [IsMon_Hom g] : f⁻¹ ≫ g = (f ≫ g)⁻¹ := by
+lemma GrpObj.inv_comp (f : X ⟶ G) (g : G ⟶ H) [IsMon_Hom g] : f⁻¹ ≫ g = (f ≫ g)⁻¹ := by
   simp [Hom.inv_def]
 
+@[deprecated (since := "2025-09-13")] alias Grp_Class.inv_comp := GrpObj.inv_comp
+
 @[reassoc]
-lemma Grp_Class.div_comp (f g : X ⟶ G) (h : G ⟶ H) [IsMon_Hom h] :
+lemma GrpObj.div_comp (f g : X ⟶ G) (h : G ⟶ H) [IsMon_Hom h] :
     (f / g) ≫ h = (f ≫ h) / (g ≫ h) :=
   ((yonedaGrp.map <| Grp_.homMk h).app <| op X).hom.map_div f g
 
+@[deprecated (since := "2025-09-13")] alias Grp_Class.div_comp := GrpObj.div_comp
+
 @[reassoc]
-lemma Grp_Class.zpow_comp (f : X ⟶ G) (n : ℤ) (g : G ⟶ H) [IsMon_Hom g] :
+lemma GrpObj.zpow_comp (f : X ⟶ G) (n : ℤ) (g : G ⟶ H) [IsMon_Hom g] :
     (f ^ n) ≫ g = (f ≫ g) ^ n :=
   ((yonedaGrp.map <| Grp_.homMk g).app <| op X).hom.map_zpow f n
 
+@[deprecated (since := "2025-09-13")] alias Grp_Class.zpow_comp := GrpObj.zpow_comp
+
 @[reassoc]
-lemma Grp_Class.comp_inv (f : X ⟶ Y) (g : Y ⟶ G) : f ≫ g⁻¹ = (f ≫ g)⁻¹ :=
+lemma GrpObj.comp_inv (f : X ⟶ Y) (g : Y ⟶ G) : f ≫ g⁻¹ = (f ≫ g)⁻¹ :=
   ((yonedaGrp.obj ⟨G⟩).map f.op).hom.map_inv g
 
-@[reassoc]
-lemma Grp_Class.comp_div (f : X ⟶ Y) (g h : Y ⟶ G) : f ≫ (g / h) = f ≫ g / f ≫ h :=
-  ((yonedaGrp.obj ⟨G⟩).map f.op).hom.map_div g h
+@[deprecated (since := "2025-09-13")] alias Grp_Class.comp_inv := GrpObj.comp_inv
 
 @[reassoc]
-lemma Grp_Class.comp_zpow (f : X ⟶ Y) (g : Y ⟶ G) : ∀ n : ℤ, f ≫ g ^ n = (f ≫ g) ^ n
+lemma GrpObj.comp_div (f : X ⟶ Y) (g h : Y ⟶ G) : f ≫ (g / h) = f ≫ g / f ≫ h :=
+  ((yonedaGrp.obj ⟨G⟩).map f.op).hom.map_div g h
+
+@[deprecated (since := "2025-09-13")] alias Grp_Class.comp_div := GrpObj.comp_div
+
+@[reassoc]
+lemma GrpObj.comp_zpow (f : X ⟶ Y) (g : Y ⟶ G) : ∀ n : ℤ, f ≫ g ^ n = (f ≫ g) ^ n
   | (n : ℕ) => by simp [comp_pow]
   | .negSucc n => by simp [comp_pow, comp_inv]
 
-lemma Grp_Class.inv_eq_inv : ι = (𝟙 G)⁻¹ := by simp [Hom.inv_def]
+@[deprecated (since := "2025-09-13")] alias Grp_Class.comp_zpow := GrpObj.comp_zpow
+
+lemma GrpObj.inv_eq_inv : ι = (𝟙 G)⁻¹ := by simp [Hom.inv_def]
+
+@[deprecated (since := "2025-09-13")] alias Grp_Class.inv_eq_inv := GrpObj.inv_eq_inv
 
 instance [BraidedCategory C] [IsCommMon G] : IsMon_Hom ι[G] where
   one_hom := by simp [one_eq_one, ← Hom.inv_def]
-  mul_hom := by simp [Grp_Class.mul_inv_rev]
+  mul_hom := by simp [GrpObj.mul_inv_rev]
 
 attribute [local simp] Hom.inv_def in
 instance [BraidedCategory C] [IsCommMon G] {f : M ⟶ G} [IsMon_Hom f] : IsMon_Hom f⁻¹ where
