@@ -30,7 +30,7 @@ to the `mathlib` 3 version but avoids non-standard instances.
 
 ## Tags
 
-well founded relation, well order, extension
+well-founded relation, well order, extension
 -/
 
 

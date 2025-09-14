@@ -457,8 +457,7 @@ theorem one_add_le_sup_seminorm_apply {m : ℕ × ℕ} {k n : ℕ} (hk : k ≤ m
   rw [← Nat.sum_range_choose m.1]
   push_cast
   rw [Finset.sum_mul]
-  have hk' : Finset.range (k + 1) ⊆ Finset.range (m.1 + 1) := by
-    rwa [Finset.range_subset, add_le_add_iff_right]
+  have hk' : Finset.range (k + 1) ⊆ Finset.range (m.1 + 1) := by grind
   grw [hk']
   gcongr ∑ _i ∈ Finset.range (m.1 + 1), ?_ with i hi
   move_mul [(Nat.choose k i : ℝ), (Nat.choose m.1 i : ℝ)]
@@ -1296,16 +1295,10 @@ theorem memLp_top (f : 𝓢(E, F)) (μ : Measure E := by volume_tac) : MemLp f �
   refine memLp_top_of_bound f.continuous.aestronglyMeasurable C (ae_of_all μ fun x ↦ ?_)
   simpa using hC x
 
-@[deprecated (since := "2025-02-21")]
-alias memℒp_top := memLp_top
-
 /-- Schwartz functions are in `L^p` for any `p`. -/
 theorem memLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] : MemLp f p μ :=
   ⟨f.continuous.aestronglyMeasurable, f.eLpNorm_lt_top p μ⟩
-
-@[deprecated (since := "2025-02-21")]
-alias memℒp := memLp
 
 /-- Map a Schwartz function to an `Lp` function for any `p`. -/
 def toLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth] :
