@@ -29,6 +29,8 @@ theorem derivRootWeight_nonneg (P : ℂ[X]) (z w : ℂ) : 0 ≤ derivRootWeight 
 
 variable {P : ℂ[X]} {z : ℂ}
 
+/-- The sum of the weights `derivRootWeight P z w` of all the roots `w` of `P` is positive,
+provided that `P` is not a constant polynomial. -/
 theorem sum_derivRootWeight_pos (hP : 0 < degree P) (z : ℂ) :
     0 < ∑ w ∈ P.roots.toFinset, derivRootWeight P z w := by
   have hP₀ : P ≠ 0 := by rintro rfl; simp at hP
@@ -60,7 +62,7 @@ theorem eq_centerMass_of_eval_derivative_eq_zero (hP : 0 < P.degree)
   suffices ∑ x ∈ s, weight x • (z - x) = 0 by calc
     z = s.centerMass weight fun _ ↦ z := by
       rw [Finset.centerMass, ← Finset.sum_smul, inv_smul_smul₀]
-      exact (sum_derivRootWeight_pos P hP z).ne'
+      exact (sum_derivRootWeight_pos hP z).ne'
     _ = s.centerMass weight (z - ·) + s.centerMass weight id := by
       simp only [Finset.centerMass, ← smul_add, ← Finset.sum_add_distrib, id, sub_add_cancel]
     _ = s.centerMass weight id := by
@@ -96,7 +98,7 @@ theorem rootSet_derivative_subset_convexHull_rootSet (h₀ : 0 < P.degree) :
   rw [eq_centerMass_of_eval_derivative_eq_zero h₀ hz.2]
   apply Finset.centerMass_mem_convexHull
   · simp [derivRootWeight_nonneg]
-  · apply sum_derivRootWeight_pos P h₀
+  · apply sum_derivRootWeight_pos h₀
   · simp [mem_rootSet]
 
 end Polynomial
