@@ -1,9 +1,4 @@
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
-import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
-import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.CategoryTheory.Sites.Grothendieck
-import Mathlib.CategoryTheory.Sites.Sheaf
-import Mathlib.CategoryTheory.Sites.Over
+import Mathlib.CategoryTheory.Stack.Descent
 
 universe v u v₁ u₁
 
@@ -56,7 +51,13 @@ def homPreSheaf (S : Pseudofunctor (LocallyDiscrete Cᵒᵖ) Cat.{v₁, u₁}) (
 
   map_comp := _
 
+open Pseudofunctor
+
 variable {J : GrothendieckTopology C}
 
-structure IsStack (S : Pseudofunctor (LocallyDiscrete Cᵒᵖ) Cat.{v₁, u₁}) where
-  isSheafOfHom : ∀ (U : C) (x y : S.obj ⟨op U⟩), Presieve.IsSheaf (J.over U) (homPreSheaf S U x y)
+structure IsStack [Limits.HasPullbacks C] (S : Pseudofunctor (LocallyDiscrete Cᵒᵖ) Cat.{v₁, u₁}) where
+  is_sheaf_of_hom : ∀ (U : C) (x y : S.obj ⟨op U⟩), Presieve.IsSheaf (J.over U) (homPreSheaf S U x y)
+  is_descent_effective : ∀ (U : C) (R : Sieve U) (_ : R ∈ J.sieves U)
+    (d : S.DescentData U (fun i : Σ V, { f : V ⟶ U // R f } ↦ (i.2 : i.1 ⟶ U))),
+      ∃ X : S.obj ⟨op U⟩,
+        Nonempty (d ≅ DescentData.canonical S U (fun i : Σ V, { f : V ⟶ U // R f } ↦ (i.2 : i.1 ⟶ U)) X)

@@ -137,6 +137,16 @@ lemma associator_inv_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ 
     (α_ F G H).inv.app X = eqToHom (by simp) :=
   rfl
 
+theorem associator_eqToIso {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) :
+    α_ F G H = eqToIso (by simp) :=
+  rfl
+
+theorem rightUnitor_eqToIso {B C : Cat} (F : B ⟶ C) : ρ_ F = eqToIso (by simp) :=
+  rfl
+
+theorem leftUnitor_eqToIso {B C : Cat} (F : B ⟶ C) : λ_ F = eqToIso (by simp) :=
+  rfl
+
 /-- The identity in the category of categories equals the identity functor. -/
 theorem id_eq_id (X : Cat) : 𝟙 X = 𝟭 X := rfl
 
