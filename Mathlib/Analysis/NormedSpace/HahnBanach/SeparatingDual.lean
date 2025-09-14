@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
+Authors: Sébastien Gouëzel, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.Central.Defs
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
@@ -18,13 +18,20 @@ module `V` over `R` can be separated by continuous linear forms.
 This property is satisfied for normed spaces over `ℝ` or `ℂ` (by the analytic Hahn-Banach theorem)
 and for locally convex topological spaces over `ℝ` (by the geometric Hahn-Banach theorem).
 
+We show in `SeparatingDual.exists_ne_zero` that given any non-zero vector in an `R`-module `V`
+satisfying `SeparatingDual R V`, there exists a continuous linear functional whose value on `v` is
+non-zero.
+
+As a consequence of the existence of `SeparatingDual.exists_ne_zero`, a generalization of
+Hahn-Banach beyond the normed setting, we show that if `V` and `W` are nontrivial topological vector
+spaces over a topological field `R` that acts continuously on `W`, and if `SeparatingDual R V`,
+there are nontrivial continuous `R`-linear operators between `V` and `W`. This is recorded in the
+instance `SeparatingDual.instNontrivialContinuousLinearMapIdOfContinuousSMul`.
+
 Under the assumption `SeparatingDual R V`, we show in
 `SeparatingDual.exists_continuousLinearEquiv_apply_eq` that the group of continuous linear
 equivalences acts transitively on the set of nonzero vectors.
-
-Using this, we prove that if `E` and `F` are nontrivial normed vector spaces over an
-`RCLike` field `𝕜`, then the space of continuous linear operators between them is nontrivial. -/
-
+-/
 /-- When `E` is a topological module over a topological ring `R`, the class `SeparatingDual R E`
 registers that continuous linear forms on `E` separate points of `E`. -/
 @[mk_iff separatingDual_def]
@@ -56,7 +63,6 @@ variable {R V : Type*} [Ring R] [AddCommGroup V] [TopologicalSpace V]
 lemma exists_ne_zero {x : V} (hx : x ≠ 0) :
     ∃ f : StrongDual R V, f x ≠ 0 :=
   exists_ne_zero' x hx
-
 
 theorem exists_separating_of_ne {x y : V} (h : x ≠ y) :
     ∃ f : StrongDual R V, f x ≠ f y := by
@@ -103,45 +109,21 @@ theorem dualMap_surjective_iff {W} [AddCommGroup W] [Module R W] [FiniteDimensio
   rw [← LinearMap.coe_comp] at this
   exact LinearMap.flip_surjective_iff₁.mpr this
 
-/-- As a consequence of Hahn-Banach, if `E` and `F` are nontrivial normed vector spaces over an
-`RCLike` field `𝕜`, there are nontrivial continuous linear operators between them. -/
-instance (W : Type*) [AddCommGroup W] [TopologicalSpace W] [Module R W] [Nontrivial W]
-  [Nontrivial V] [ContinuousSMul R W] :
-    Nontrivial (V →L[R] W) := by
+variable (V) in
+open ContinuousLinearMap in
+/- As a consequence of the existence of non-zero linear maps, itself a consequence of Hahn-Banach
+in the normed setting, we show that if `V` and `W` are nontrivial topological vector spaces over a
+topological field `R` that acts continuously on `W`, and if `SeparatingDual R V`, there are
+nontrivial continuous `R`-linear operators between `V` and `W`. -/
+instance (W) [AddCommGroup W] [TopologicalSpace W] [Module R W] [Nontrivial W]
+   [ContinuousSMul R W] [Nontrivial V] : Nontrivial (V →L[R] W) := by
   obtain ⟨v, hv⟩ := exists_ne (0 : V)
   obtain ⟨w, hw⟩ := exists_ne (0 : W)
   obtain ⟨ψ, hψ⟩ := exists_ne_zero (R := R) hv
-  let p : Submodule R W := R ∙ w
-  let A := p.subtypeL
-  set φ : R →L[R] p :=
-  { toFun := by
-      intro x
-      use x • w
-      rw [Submodule.mem_span_singleton]
-      use x
-    map_add' x y := by
-      simp
-      exact Module.add_smul x y w
-    map_smul' m x:= by
-      simp
-      exact mul_smul m x w
-    cont := by fun_prop} with hφ
-  set α := A ∘L φ ∘L ψ with hα
-  refine ⟨α, 0, ?_⟩
-  refine DFunLike.ne_iff.mpr ⟨v, ?_⟩
-  simp only [hα, ContinuousLinearMap.coe_comp', comp_apply, ContinuousLinearMap.zero_apply]
-  have injA : Function.Injective A := by exact --Submodule.subtype_injective
-    (Set.injective_codRestrict Subtype.property).mp fun ⦃a₁ a₂⦄ a ↦ a
-  have injφ : Function.Injective φ := by
-    rw [hφ]
-    simp only [ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk]
-    have := @smul_left_injective R p _ _ _ _ ⟨w, Submodule.mem_span_singleton_self _⟩
-    apply this
-    simp [hw]
-  rw [map_ne_zero_iff (f := A) (hf := injA)]
-  rwa [map_ne_zero_iff (f := φ) (hf := injφ)]
-
-#lint
+  let φ := toSpanSingleton R (⟨w, Submodule.mem_span_singleton_self _⟩ : (R ∙ w))
+  refine ⟨(R ∙ w).subtypeL ∘L φ ∘L ψ, 0, DFunLike.ne_iff.mpr ⟨v, ?_⟩⟩
+  simpa [map_ne_zero_iff (R ∙ w).subtypeL <| (R ∙ w).subtype_injective,
+    map_ne_zero_iff φ <| smul_left_injective _ <| by simp [hw]]
 
 lemma exists_eq_one {x : V} (hx : x ≠ 0) :
     ∃ f : StrongDual R V, f x = 1 := by
@@ -157,7 +139,6 @@ theorem exists_eq_one_ne_zero_of_ne_zero_pair {x y : V} (hx : x ≠ 0) (hy : y �
   rcases ne_or_eq (v x) 0 with vx|vx
   · exact ⟨(v x)⁻¹ • v, inv_mul_cancel₀ vx, show (v x)⁻¹ * v y ≠ 0 by simp [vx, vy]⟩
   · exact ⟨u + v, by simp [ux, vx], by simp [uy, vy]⟩
-
 
 variable [IsTopologicalAddGroup V]
 
