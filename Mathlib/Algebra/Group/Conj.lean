@@ -90,7 +90,8 @@ theorem conj_pow [MonoidNPow α] {i : ℕ} {a b : α} : (a * b * a⁻¹) ^ i = a
   | succ i hi => simp [pow_succ, hi]
 
 @[simp]
-theorem conj_zpow [MonoidNPow α] {i : ℤ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻¹ := by
+theorem conj_zpow [GroupZPow α] {i : ℤ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻¹ := by
+  let _ := Monoid.monoidNPow α
   cases i
   · simp
   · simp only [zpow_negSucc, conj_pow, mul_inv_rev, inv_inv]

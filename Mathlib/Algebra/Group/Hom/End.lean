@@ -47,7 +47,7 @@ instance instSemiring [AddCommMonoid M] [AddMonoidNSMul M] : Semiring (AddMonoid
     left_distrib := fun _ _ _ => AddMonoidHom.ext fun _ => AddMonoidHom.map_add _ _ _,
     right_distrib := fun _ _ _ => AddMonoidHom.ext fun _ => rfl }
 
-instance instRing [AddCommGroup M] [AddMonoidNSMul M] : Ring (AddMonoid.End M) :=
+instance instRing [AddCommGroup M] [AddMonoidNSMul M] [AddGroupZSMul M] : Ring (AddMonoid.End M) :=
   { AddMonoid.End.instSemiring, AddMonoid.End.instAddCommGroup with
     intCast := fun z => z • (1 : AddMonoid.End M),
     intCast_ofNat := natCast_zsmul _,

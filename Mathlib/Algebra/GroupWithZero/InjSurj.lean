@@ -223,7 +223,7 @@ variable [CommGroupWithZero G₀]
 /-- Pull back a `CommGroupWithZero` along an injective function.
 See note [reducible non-instances]. -/
 protected abbrev Function.Injective.commGroupWithZero [Zero G₀'] [Mul G₀'] [One G₀'] [Inv G₀']
-    [Div G₀'] [Pow G₀' ℤ] (f : G₀' → G₀) (hf : Injective f) (zero : f 0 = 0)
+    [Div G₀'] (f : G₀' → G₀) (hf : Injective f) (zero : f 0 = 0)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y) : CommGroupWithZero G₀' :=
   { hf.groupWithZero f zero one mul inv div, hf.commSemigroup f mul with }
@@ -231,7 +231,7 @@ protected abbrev Function.Injective.commGroupWithZero [Zero G₀'] [Mul G₀'] [
 /-- Push forward a `CommGroupWithZero` along a surjective function.
 See note [reducible non-instances]. -/
 protected def Function.Surjective.commGroupWithZero [Zero G₀'] [Mul G₀'] [One G₀'] [Inv G₀']
-    [Div G₀'] [Pow G₀' ℤ] (h01 : (0 : G₀') ≠ 1) (f : G₀ → G₀') (hf : Surjective f)
+    [Div G₀'] (h01 : (0 : G₀') ≠ 1) (f : G₀ → G₀') (hf : Surjective f)
     (zero : f 0 = 0) (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y) :
     CommGroupWithZero G₀' :=

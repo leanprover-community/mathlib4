@@ -50,10 +50,11 @@ instance (priority := 100) CommSemiring.toGrindCommSemiring [s : CommSemiring α
   { Semiring.toGrindSemiring α with
     mul_comm := s.mul_comm }
 
-instance (priority := 100) Ring.toGrindRing [s : Ring α] [MonoidNPow α] [AddMonoidNSMul α] :
+instance (priority := 100) Ring.toGrindRing [s : Ring α] [MonoidNPow α]
+    [AddMonoidNSMul α] [AddGroupZSMul α] :
     Grind.Ring α :=
   { s, Semiring.toGrindSemiring α with
-    zsmul := ⟨s.zsmul⟩
+    zsmul := ⟨AddGroupZSMul.zsmul⟩
     natCast := inferInstance
     intCast := inferInstance
     neg_zsmul i a := neg_zsmul a i
@@ -66,7 +67,7 @@ instance (priority := 100) Ring.toGrindRing [s : Ring α] [MonoidNPow α] [AddMo
     zsmul_natCast_eq_nsmul n a := natCast_zsmul a n }
 
 instance (priority := 100) CommRing.toGrindCommRing [s : CommRing α]
-    [MonoidNPow α] [AddMonoidNSMul α] :
+    [MonoidNPow α] [AddMonoidNSMul α] [AddGroupZSMul α] :
     Grind.CommRing α :=
   { Ring.toGrindRing α with
     mul_comm := s.mul_comm }
@@ -89,7 +90,6 @@ example (s : Grind.CommRing α) : CommRing α :=
     right_distrib := Grind.Semiring.right_distrib
     mul_zero := Grind.Semiring.mul_zero
     one_mul := Grind.Semiring.one_mul
-    zsmul := zsmulRec
     natCast := Nat.cast
     natCast_zero :=  Grind.Semiring.natCast_zero
     natCast_succ n := Grind.Semiring.natCast_succ n

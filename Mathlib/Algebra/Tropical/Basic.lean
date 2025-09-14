@@ -414,21 +414,24 @@ instance instGroupTropical [AddGroup R] : Group (Tropical R) :=
   { instMonoidTropical with
     inv := Inv.inv
     div_eq_mul_inv := fun _ _ => untrop_injective <| by simp [sub_eq_add_neg]
-    inv_mul_cancel := fun _ => untrop_injective <| neg_add_cancel _
-    zpow := fun n x => trop <| n • untrop x
-    zpow_zero' := fun _ => untrop_injective <| zero_zsmul _
-    zpow_succ' := fun _ _ => untrop_injective <| SubNegMonoid.zsmul_succ' _ _
-    zpow_neg' := fun _ _ => untrop_injective <| SubNegMonoid.zsmul_neg' _ _ }
+    inv_mul_cancel := fun _ => untrop_injective <| neg_add_cancel _ }
+
+instance [AddGroup R] [AddGroupZSMul R] : GroupZPow (Tropical R) where
+  zpow := fun n x => trop <| n • untrop x
+  zpow_zero' := fun _ => untrop_injective <| zero_zsmul _
+  zpow_succ' := fun _ _ => untrop_injective <| AddGroupZSMul.zsmul_succ' _ _
+  zpow_neg' := fun _ _ => untrop_injective <| AddGroupZSMul.zsmul_neg' _ _
 
 instance [AddCommGroup R] : CommGroup (Tropical R) :=
   { instGroupTropical with mul_comm := fun _ _ => untrop_injective (add_comm _ _) }
 
 @[simp]
-theorem untrop_zpow [AddGroup R] (x : Tropical R) (n : ℤ) : untrop (x ^ n) = n • untrop x :=
+theorem untrop_zpow [AddGroup R] [AddGroupZSMul R] (x : Tropical R) (n : ℤ) :
+    untrop (x ^ n) = n • untrop x :=
   rfl
 
 @[simp]
-theorem trop_zsmul [AddGroup R] (x : R) (n : ℤ) : trop (n • x) = trop x ^ n :=
+theorem trop_zsmul [AddGroup R] [AddGroupZSMul R] (x : R) (n : ℤ) : trop (n • x) = trop x ^ n :=
   rfl
 
 end Monoid

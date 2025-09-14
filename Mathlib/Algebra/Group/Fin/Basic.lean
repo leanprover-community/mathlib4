@@ -71,6 +71,8 @@ instance addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) where
   sub := Fin.sub
   sub_eq_add_neg := fun ⟨a, ha⟩ ⟨b, hb⟩ ↦
     Fin.ext <| by simp [Fin.sub_def, Fin.neg_def, Fin.add_def, Nat.add_comm]
+
+instance (n : ℕ) [NeZero n] : AddGroupZSMul (Fin n) where
   zsmul := zsmulRec
 
 /-- Note this is more general than `Fin.addCommGroup` as it applies (vacuously) to `Fin 0` too. -/

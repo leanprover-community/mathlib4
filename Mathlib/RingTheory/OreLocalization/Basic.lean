@@ -284,6 +284,9 @@ protected def zsmul : ℤ → X[S⁻¹] → X[S⁻¹] := zsmulRec
 unseal OreLocalization.zsmul in
 instance instAddGroupOreLocalization : AddGroup X[S⁻¹] where
   neg_add_cancel := OreLocalization.neg_add_cancel
+
+unseal OreLocalization.zsmul in
+instance : AddGroupZSMul X[S⁻¹] where
   zsmul := OreLocalization.zsmul
 
 end AddGroup

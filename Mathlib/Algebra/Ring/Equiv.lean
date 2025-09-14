@@ -848,7 +848,7 @@ def ofHomInv {R S F G : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
 
 end SemiringHom
 
-variable [Semiring R] [Semiring S]
+variable [Semiring R] [Semiring S] [MonoidNPow R] [MonoidNPow S]
 
 section GroupPower
 

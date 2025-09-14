@@ -622,7 +622,7 @@ protected theorem div : ∀ {w x y z}, c w x → c y z → c (w / y) (x / z) := 
 
 /-- Multiplicative congruence relations preserve integer powers. -/
 @[to_additive /-- Additive congruence relations preserve integer scaling. -/]
-protected theorem zpow (n : ℤ) {w x} (h : c w x) : c (w ^ n) (x ^ n) :=
+protected theorem zpow [GroupZPow M] (n : ℤ) {w x} (h : c w x) : c (w ^ n) (x ^ n) :=
   let _ := Monoid.monoidNPow M
   match n with
   | Int.ofNat n => by simpa only [zpow_natCast, Int.ofNat_eq_coe] using c.pow n h
@@ -644,14 +644,14 @@ instance hasDiv : Div c.Quotient :=
 
 /-- The integer scaling induced on the quotient by a congruence relation on a type with a
 subtraction. -/
-instance _root_.AddCon.Quotient.zsmul {M : Type*} [AddGroup M] (c : AddCon M) :
+instance _root_.AddCon.Quotient.zsmul {M : Type*} [AddGroup M] (c : AddCon M) [AddGroupZSMul M] :
     SMul ℤ c.Quotient :=
   ⟨fun z => (Quotient.map' (z • ·)) fun _ _ => c.zsmul z⟩
 
 /-- The integer power induced on the quotient by a congruence relation on a type with a
 division. -/
 @[to_additive existing AddCon.Quotient.zsmul]
-instance zpowinst : Pow c.Quotient ℤ :=
+instance zpowinst [GroupZPow M] : Pow c.Quotient ℤ :=
   ⟨fun x z => Quotient.map' (fun x => x ^ z) (fun _ _ h => c.zpow z h) x⟩
 
 /-- The quotient of a group by a congruence relation is a group. -/
@@ -659,14 +659,18 @@ instance zpowinst : Pow c.Quotient ℤ :=
 an `AddGroup`. -/]
 instance group : Group c.Quotient := fast_instance%
   Function.Surjective.group Quotient.mk'' Quotient.mk''_surjective
-    rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    rfl (fun _ _ => rfl) (fun _ => rfl) fun _ _ => rfl
+
+@[to_additive] instance [GroupZPow M] (c : Con M) : GroupZPow c.Quotient := fast_instance%
+  Function.Surjective.groupZPow _ (by exact Quotient.mk''_surjective) rfl (fun _ _ => rfl)
+    (fun _ => by rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 /-- The quotient of a `CommGroup` by a congruence relation is a `CommGroup`. -/
 @[to_additive /-- The quotient of an `AddCommGroup` by an additive congruence
 relation is an `AddCommGroup`. -/]
 instance commGroup {M : Type*} [CommGroup M] (c : Con M) : CommGroup c.Quotient := fast_instance%
   Function.Surjective.commGroup _ Quotient.mk''_surjective rfl (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+    fun _ _ => rfl
 
 end Groups
 

@@ -244,7 +244,7 @@ theorem prod_ite_one (s : Finset ι) (p : ι → Prop) [DecidablePred p]
     exact fun i hi => if_neg (h i hi)
 
 @[to_additive sum_boole_nsmul]
-theorem prod_pow_boole [DecidableEq ι] (s : Finset ι) (f : ι → M) (a : ι) :
+theorem prod_pow_boole [MonoidNPow M] [DecidableEq ι] (s : Finset ι) (f : ι → M) (a : ι) :
     (∏ x ∈ s, f x ^ ite (a = x) 1 0) = ite (a ∈ s) (f a) 1 := by simp
 
 end CommMonoid

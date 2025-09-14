@@ -40,7 +40,7 @@ variable [Group G] {a x y : G}
 
 @[to_additive] alias ⟨_, inv_right⟩ := inv_right_iff
 
-@[to_additive (attr := simp)] lemma zpow_right (h : SemiconjBy a x y)
+@[to_additive (attr := simp)] lemma zpow_right [GroupZPow G] (h : SemiconjBy a x y)
     (m : ℤ) : SemiconjBy a (x ^ m) (y ^ m) :=
   let _ := Monoid.monoidNPow G
   match m with

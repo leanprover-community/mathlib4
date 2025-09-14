@@ -60,7 +60,7 @@ instance nonAssocSemiring [∀ i, NonAssocSemiring <| f i] : NonAssocSemiring (�
   { Pi.nonUnitalNonAssocSemiring, Pi.mulZeroOneClass, Pi.addMonoidWithOne with }
 
 instance semiring [∀ i, Semiring <| f i] : Semiring (∀ i : I, f i) :=
-  { Pi.nonUnitalSemiring, Pi.nonAssocSemiring, Pi.monoidWithZero with }
+  { Pi.nonUnitalSemiring, Pi.nonAssocSemiring, Pi.monoidWithZero (α := f) with }
 
 instance nonUnitalCommSemiring [∀ i, NonUnitalCommSemiring <| f i] :
     NonUnitalCommSemiring (∀ i : I, f i) :=

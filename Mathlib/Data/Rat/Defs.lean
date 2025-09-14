@@ -294,10 +294,12 @@ instance addCommGroup : AddCommGroup ℚ where
   add_assoc := Rat.add_assoc
   neg_add_cancel := Rat.neg_add_cancel
   sub_eq_add_neg := Rat.sub_eq_add_neg
-  zsmul := zsmulRec
 
 instance : AddMonoidNSMul ℚ where
   nsmul := nsmulRec
+
+instance : AddGroupZSMul ℚ where
+  zsmul := zsmulRec
 
 instance addGroup : AddGroup ℚ := by infer_instance
 

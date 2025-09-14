@@ -15,7 +15,7 @@ variable {ι M M₀ R : Type*}
 
 namespace Multiset
 section CommMonoid
-variable [CommMonoid M] [HasDistribNeg M]
+variable [CommMonoid M] [MonoidNPow M] [HasDistribNeg M]
 
 @[simp] lemma prod_map_neg (s : Multiset M) : (s.map Neg.neg).prod = (-1) ^ card s * s.prod :=
   Quotient.inductionOn s (by simp)

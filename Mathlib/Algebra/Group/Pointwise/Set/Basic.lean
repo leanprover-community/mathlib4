@@ -780,6 +780,10 @@ protected def divisionMonoid : DivisionMonoid (Set α) :=
 
 scoped[Pointwise] attribute [instance] Set.divisionMonoid Set.subtractionMonoid
 
+@[to_additive] abbrev groupZPow : GroupZPow (Set α) where
+
+scoped[Pointwise] attribute [instance] Set.groupZPow
+
 @[to_additive (attr := simp 500)]
 theorem isUnit_iff : IsUnit s ↔ ∃ a, s = {a} ∧ IsUnit a := by
   constructor
@@ -801,7 +805,8 @@ lemma univ_div_univ : (univ / univ : Set α) = univ := by simp [div_eq_mul_inv]
   rw [div_eq_mul_inv]; exact subset_mul_right _ hs
 
 @[to_additive (attr := simp) zsmul_empty]
-lemma empty_zpow (hn : n ≠ 0) : (∅ : Set α) ^ n = ∅ := by cases n <;> aesop
+lemma empty_zpow (hn : n ≠ 0) : (∅ : Set α) ^ n = ∅ := by
+  cases n <;> aesop
 
 @[to_additive]
 lemma Nonempty.zpow (hs : s.Nonempty) : ∀ {n : ℤ}, (s ^ n).Nonempty
@@ -819,7 +824,7 @@ set_option push_neg.use_distrib true in
     exact empty_zpow hn
 
 @[to_additive (attr := simp) zsmul_singleton]
-lemma singleton_zpow (a : α) (n : ℤ) : ({a} : Set α) ^ n = {a ^ n} := by
+lemma singleton_zpow [GroupZPow α] (a : α) (n : ℤ) : ({a} : Set α) ^ n = {a ^ n} := by
   let _ := Monoid.monoidNPow α
   cases n <;> simp
 

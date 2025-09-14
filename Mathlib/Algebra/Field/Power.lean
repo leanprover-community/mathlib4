@@ -19,7 +19,7 @@ variable {α : Type*}
 
 section DivisionRing
 
-variable [DivisionRing α] {n : ℤ}
+variable [DivisionRing α] [GroupZPow α] {n : ℤ}
 
 theorem Odd.neg_zpow (h : Odd n) (a : α) : (-a) ^ n = -a ^ n := by
   have hn : n ≠ 0 := by rintro rfl; exact Int.not_even_iff_odd.2 h .zero

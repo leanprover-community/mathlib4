@@ -59,6 +59,8 @@ def castRingHom : ℕ →+* α :=
 
 @[simp, norm_cast] lemma coe_castRingHom : (castRingHom α : ℕ → α) = Nat.cast := rfl
 
+variable [AddMonoidNSMul α]
+
 lemma _root_.nsmul_eq_mul' (a : α) (n : ℕ) : n • a = a * n := by
   induction n with
   | zero => rw [zero_nsmul, Nat.cast_zero, mul_zero]
@@ -73,7 +75,7 @@ section Semiring
 variable [Semiring α] {m n : ℕ}
 
 @[simp, norm_cast]
-lemma cast_pow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n) = (m ^ n : α)
+lemma cast_pow [MonoidNPow α] (m : ℕ) : ∀ n : ℕ, ↑(m ^ n) = (m ^ n : α)
   | 0 => by simp
   | n + 1 => by rw [_root_.pow_succ', _root_.pow_succ', cast_mul, cast_pow m n]
 

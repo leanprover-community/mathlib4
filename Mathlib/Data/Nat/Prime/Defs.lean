@@ -457,7 +457,7 @@ theorem coe_nat_inj (p q : Nat.Primes) : (p : ℕ) = (q : ℕ) ↔ p = q :=
 
 end Primes
 
-instance monoid.primePow {α : Type*} [Monoid α] : Pow α Primes :=
+instance monoid.primePow {α : Type*} [Monoid α] [MonoidNPow α] : Pow α Primes :=
   ⟨fun x p => x ^ (p : ℕ)⟩
 
 instance fact_prime_two : Fact (Prime 2) :=

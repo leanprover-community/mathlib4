@@ -34,7 +34,7 @@ instance NonUnitalNonAssocSemiring.nat_isScalarTower [NonUnitalNonAssocSemiring 
     | succ n ih => simp_rw [succ_nsmul, ← ih, smul_eq_mul, add_mul]
 
 /-- Note that `AddCommGroup.int_isScalarTower` requires stronger assumptions on `R`. -/
-instance NonUnitalNonAssocRing.int_isScalarTower [NonUnitalNonAssocRing R] :
+instance NonUnitalNonAssocRing.int_isScalarTower [NonUnitalNonAssocRing R] [AddGroupZSMul R] :
     IsScalarTower ℤ R R where
   smul_assoc n x y :=
     let _ := AddMonoid.addMonoidNSMul R

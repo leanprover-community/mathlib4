@@ -113,12 +113,12 @@ theorem sum_ite_self_eq' [DecidableEq α] {N : Type*} [AddCommMonoid N] (f : α 
   simp
 
 @[to_additive (attr := simp)]
-theorem prod_pow [Fintype α] (f : α →₀ ℕ) (g : α → N) :
+theorem prod_pow [MonoidNPow N] [Fintype α] (f : α →₀ ℕ) (g : α → N) :
     (f.prod fun a b => g a ^ b) = ∏ a, g a ^ f a :=
   f.prod_fintype _ fun _ ↦ pow_zero _
 
 @[to_additive (attr := simp)]
-theorem prod_zpow {N} [DivisionCommMonoid N] [Fintype α] (f : α →₀ ℤ) (g : α → N) :
+theorem prod_zpow {N} [DivisionCommMonoid N] [GroupZPow N] [Fintype α] (f : α →₀ ℤ) (g : α → N) :
     (f.prod fun a b => g a ^ b) = ∏ a, g a ^ f a :=
   f.prod_fintype _ fun _ ↦ zpow_zero _
 

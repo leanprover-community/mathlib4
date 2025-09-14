@@ -89,6 +89,8 @@ lemma prod_indicator (s : Finset ι) (f : ι → Set κ) (g : ι → κ → R) :
     ∏ i ∈ s, (f i).indicator (g i) = (⋂ x ∈ s, f x).indicator (∏ i ∈ s, g i) := by
   ext a; simpa using prod_indicator_apply ..
 
+variable [MonoidNPow R]
+
 lemma prod_indicator_const_apply (s : Finset ι) (f : ι → Set κ) (g : κ → R) (j : κ) :
     ∏ i ∈ s, (f i).indicator g j = (⋂ x ∈ s, f x).indicator (g ^ #s) j := by
   simp [prod_indicator_apply]

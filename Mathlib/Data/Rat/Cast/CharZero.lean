@@ -58,7 +58,7 @@ def castHom : ℚ →+* α where
 @[simp, norm_cast] lemma cast_div (p q : ℚ) : ↑(p / q) = (p / q : α) := map_div₀ (castHom α) ..
 
 @[simp, norm_cast]
-lemma cast_zpow (p : ℚ) (n : ℤ) : ↑(p ^ n) = (p ^ n : α) := map_zpow₀ (castHom α) ..
+lemma cast_zpow [GroupZPow α] (p : ℚ) (n : ℤ) : ↑(p ^ n) = (p ^ n : α) := map_zpow₀ (castHom α) ..
 
 @[norm_cast]
 theorem cast_divInt (a b : ℤ) : (a /. b : α) = a / b := by
@@ -106,7 +106,8 @@ def castHom : ℚ≥0 →+* α where
 @[simp, norm_cast] lemma cast_div (p q) : (p / q : ℚ≥0) = (p / q : α) := map_div₀ (castHom α) ..
 
 @[simp, norm_cast]
-lemma cast_zpow (q : ℚ≥0) (p : ℤ) : ↑(q ^ p) = ((q : α) ^ p : α) := map_zpow₀ (castHom α) ..
+lemma cast_zpow [GroupZPow α] (q : ℚ≥0) (p : ℤ) :
+    ↑(q ^ p) = ((q : α) ^ p : α) := map_zpow₀ (castHom α) ..
 
 @[simp]
 lemma cast_divNat (a b : ℕ) : (divNat a b : α) = a / b := by

@@ -31,6 +31,8 @@ instance instField : Field ℚ where
     rw [← NNRat.den_coe, ← Int.cast_natCast q.num, ← NNRat.num_coe]; exact(num_div_den _).symm
   ratCast_def _ := (num_div_den _).symm
 
+instance : GroupZPow ℚ where
+
 /-!
 ### Extra instances to short-circuit type class resolution
 
@@ -92,6 +94,8 @@ instance instSemifield : Semifield ℚ≥0 where
   nnratCast_def q := q.num_div_den.symm
   nnqsmul q a := q * a
   nnqsmul_def q a := rfl
+
+instance : GroupZPow ℚ≥0 where
   zpow n a := a ^ n
   zpow_zero' a := by ext; norm_cast
   zpow_succ' n a := by ext; norm_cast

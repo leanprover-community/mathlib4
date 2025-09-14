@@ -233,6 +233,7 @@ instance (priority := 100) GroupSeminormClass.toNonnegHomClass [Group α]
     NonnegHomClass F α β :=
   { ‹GroupSeminormClass F α β› with
     apply_nonneg := fun f a =>
+      let _ := AddMonoid.addMonoidNSMul β
       (nsmul_nonneg_iff two_ne_zero).1 <| by
         rw [two_nsmul, ← map_one_eq_zero f, ← div_self' a]
         exact map_div_le_add _ _ _ }

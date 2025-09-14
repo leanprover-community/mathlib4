@@ -101,7 +101,11 @@ lemma cast_comm (n : ℤ) (x : α) : n * x = x * n := (cast_commute ..).eq
 
 lemma commute_cast (a : α) (n : ℤ) : Commute a n := (cast_commute ..).symm
 
-@[simp] lemma _root_.zsmul_eq_mul (a : α) : ∀ n : ℤ, n • a = n * a
+variable [AddGroupZSMul α]
+
+@[simp] lemma _root_.zsmul_eq_mul (a : α) (n : ℤ) : n • a = n * a :=
+  let _ := AddMonoid.addMonoidNSMul α
+  match n with
   | (n : ℕ) => by rw [natCast_zsmul, nsmul_eq_mul, Int.cast_natCast]
   | -[n+1] => by simp [Nat.cast_succ, neg_add_rev, Int.cast_negSucc, add_mul]
 
@@ -266,7 +270,7 @@ theorem ext_int' [MonoidWithZero α] [FunLike F ℤ α] [MonoidWithZeroHomClass 
     this
 
 section Group
-variable (α) [Group α] (β) [AddGroup β]
+variable (α) [Group α] [GroupZPow α] (β) [AddGroup β] [AddGroupZSMul β]
 
 /-- Additive homomorphisms from `ℤ` are defined by the image of `1`. -/
 def zmultiplesHom : β ≃ (ℤ →+ β) where
@@ -303,7 +307,7 @@ lemma AddMonoidHom.apply_int (f : ℤ →+ β) (n : ℤ) : f n = n • f 1 := by
 end Group
 
 section CommGroup
-variable (α) [CommGroup α] (β) [AddCommGroup β]
+variable (α) [CommGroup α] [GroupZPow α] (β) [AddCommGroup β] [AddGroupZSMul β]
 
 /-- If `α` is commutative, `zmultiplesHom` is an additive equivalence. -/
 def zmultiplesAddHom : β ≃+ (ℤ →+ β) :=

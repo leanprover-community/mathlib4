@@ -139,7 +139,7 @@ theorem noncommProd_mem (S : Submonoid M) {ι : Type*} (t : Finset ι) (f : ι �
 end Monoid
 
 section CommMonoid
-variable [CommMonoid M] {x : M}
+variable [CommMonoid M] [MonoidNPow M] {x : M}
 
 @[to_additive]
 lemma mem_closure_iff_exists_finset_subset {s : Set M} :

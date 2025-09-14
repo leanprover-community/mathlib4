@@ -179,7 +179,7 @@ variable (A) in
   map_one' := smul_one r
   map_mul' := smul_mul' r
 
-@[simp] lemma smul_pow' (r : M) (x : A) (n : ℕ) : r • x ^ n = (r • x) ^ n :=
+@[simp] lemma smul_pow' [MonoidNPow A] (r : M) (x : A) (n : ℕ) : r • x ^ n = (r • x) ^ n :=
   (MulDistribMulAction.toMonoidHom _ _).map_pow _ _
 
 variable (M A) in

@@ -20,7 +20,7 @@ section zpow'
 variable {α : Type*}
 
 section
-variable [GroupWithZero α]
+variable [GroupWithZero α] [GroupZPow α]
 
 open Classical in
 /-- This is a variant of integer exponentiation, defined for internal use in the `field_simp` tactic
@@ -87,14 +87,14 @@ lemma zpow'_mul (a : α) (m n : ℤ) : zpow' a (m * n) = zpow' (zpow' a m) n := 
     simp [zpow', ha]
   simpa [zpow', ha, hm, hn] using zpow_mul a m n
 
-lemma zpow'_ofNat (a : α) {n : ℕ} (hn : n ≠ 0) : zpow' a n = a ^ n := by
+lemma zpow'_ofNat [MonoidNPow α] (a : α) {n : ℕ} (hn : n ≠ 0) : zpow' a n = a ^ n := by
   rw [zpow'_of_ne_zero_right]
   · simp
   exact_mod_cast hn
 
 end
 
-lemma mul_zpow' [CommGroupWithZero α] (n : ℤ) (a b : α) :
+lemma mul_zpow' [CommGroupWithZero α] [GroupZPow α] (n : ℤ) (a b : α) :
     zpow' (a * b) n = zpow' a n * zpow' b n := by
   by_cases ha : a = 0
   · simp [ha]
@@ -102,7 +102,7 @@ lemma mul_zpow' [CommGroupWithZero α] (n : ℤ) (a b : α) :
   · simp [hb]
   simpa [zpow', ha, hb] using mul_zpow a b n
 
-theorem list_prod_zpow' [CommGroupWithZero α] {r : ℤ} {l : List α} :
+theorem list_prod_zpow' [CommGroupWithZero α] [GroupZPow α] {r : ℤ} {l : List α} :
     zpow' (prod l) r = prod (map (fun x ↦ zpow' x r) l) :=
   let fr : α →* α := ⟨⟨fun b ↦ zpow' b r, one_zpow' r⟩, (mul_zpow' r)⟩
   map_list_prod fr l

@@ -142,7 +142,7 @@ protected theorem sign_eq_abs_ediv (a : ℤ) : sign a = |a| / a :=
 end Int
 
 section Group
-variable {G : Type*} [Group G]
+variable {G : Type*} [Group G] [GroupZPow G]
 
 @[to_additive (attr := simp) abs_zsmul_eq_zero]
 lemma zpow_abs_eq_one (a : G) (n : ℤ) : a ^ |n| = 1 ↔ a ^ n = 1 := by

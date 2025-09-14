@@ -62,6 +62,8 @@ deriving instance CommSemiring for NNRat
 deriving instance LinearOrder for NNRat
 deriving instance Sub for NNRat
 deriving instance Inhabited for NNRat
+deriving instance AddMonoidNSMul for NNRat
+deriving instance MonoidNPow for NNRat
 
 namespace NNRat
 

@@ -178,7 +178,8 @@ theorem map_noncommProd [MonoidHomClass F α β] (s : Multiset α) (comm) (f : F
   simpa using map_list_prod f _
 
 @[to_additive noncommSum_eq_card_nsmul]
-theorem noncommProd_eq_pow_card (s : Multiset α) (comm) (m : α) (h : ∀ x ∈ s, x = m) :
+theorem noncommProd_eq_pow_card [MonoidNPow α]
+    (s : Multiset α) (comm) (m : α) (h : ∀ x ∈ s, x = m) :
     s.noncommProd comm = m ^ Multiset.card s := by
   induction s using Quotient.inductionOn
   simp only [quot_mk_to_coe, noncommProd_coe, coe_card, mem_coe] at *
@@ -330,7 +331,8 @@ theorem map_noncommProd [MonoidHomClass F β γ] (s : Finset α) (f : α → β)
   simp [noncommProd, Multiset.map_noncommProd]
 
 @[to_additive noncommSum_eq_card_nsmul]
-theorem noncommProd_eq_pow_card (s : Finset α) (f : α → β) (comm) (m : β) (h : ∀ x ∈ s, f x = m) :
+theorem noncommProd_eq_pow_card [MonoidNPow β]
+    (s : Finset α) (f : α → β) (comm) (m : β) (h : ∀ x ∈ s, f x = m) :
     s.noncommProd f comm = m ^ s.card := by
   rw [noncommProd, Multiset.noncommProd_eq_pow_card _ _ m]
   · simp only [Finset.card_def, Multiset.card_map]
@@ -416,7 +418,7 @@ section FinitePi
 variable {M : ι → Type*} [∀ i, Monoid (M i)]
 
 @[to_additive]
-theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
+theorem noncommProd_mul_single [∀ i, MonoidNPow (M i)] [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
     (univ.noncommProd (fun i => Pi.mulSingle i (x i)) fun i _ j _ _ =>
         Pi.mulSingle_apply_commute x i j) = x := by
   ext i
@@ -442,6 +444,7 @@ theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
 @[to_additive]
 theorem _root_.MonoidHom.pi_ext [Finite ι] [DecidableEq ι] {f g : (∀ i, M i) →* γ}
     (h : ∀ i x, f (Pi.mulSingle i x) = g (Pi.mulSingle i x)) : f = g := by
+  let _ (i) := Monoid.monoidNPow (M i)
   cases nonempty_fintype ι
   ext x
   rw [← noncommProd_mul_single x, univ.map_noncommProd, univ.map_noncommProd]

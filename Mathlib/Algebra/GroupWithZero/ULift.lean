@@ -32,11 +32,9 @@ instance commMonoidWithZero [CommMonoidWithZero α] : CommMonoidWithZero (ULift 
   Equiv.ulift.injective.commMonoidWithZero _ rfl rfl fun _ _ => rfl
 
 instance groupWithZero [GroupWithZero α] : GroupWithZero (ULift α) :=
-  Equiv.ulift.injective.groupWithZero _ rfl rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    fun _ _ => rfl
+  Equiv.ulift.injective.groupWithZero _ rfl rfl (fun _ _ => rfl) (fun _ => rfl) fun _ _ => rfl
 
 instance commGroupWithZero [CommGroupWithZero α] : CommGroupWithZero (ULift α) :=
-  Equiv.ulift.injective.commGroupWithZero _ rfl rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    fun _ _ => rfl
+  Equiv.ulift.injective.commGroupWithZero _ rfl rfl (fun _ _ => rfl) (fun _ => rfl) fun _ _ => rfl
 
 end ULift
