@@ -278,9 +278,6 @@ noncomputable def quotientInfEquivProdNormalizerQuotient (H N : Subgroup G)
       rw [coe_mul_of_left_le_normalizer_right H N hLE] at hy
       rcases hy with ⟨h, hh, n, hn, rfl⟩
       use ⟨h, hh⟩
-      let _ : Setoid ↑(H ⊔ N) :=
-        (@leftRel ↑(H ⊔ N) (H ⊔ N : Subgroup G).toGroup (N.subgroupOf (H ⊔ N)))
-      -- Porting note: Lean couldn't find this automatically
       refine Quotient.eq.mpr ?_
       change leftRel _ _ _
       rw [leftRel_apply]
@@ -364,7 +361,7 @@ def comapMk'OrderIso (N : Subgroup G) [hn : N.Normal] :
   toFun H' := ⟨Subgroup.comap (mk' N) H', le_comap_mk' N _⟩
   invFun H := Subgroup.map (mk' N) H
   left_inv H' := Subgroup.map_comap_eq_self <| by simp
-  right_inv := fun ⟨H, hH⟩ => Subtype.ext_val <| by simpa
+  right_inv := fun ⟨H, hH⟩ => Subtype.ext <| by simpa
   map_rel_iff' := Subgroup.comap_le_comap_of_surjective <| mk'_surjective _
 
 end CorrespTheorem
