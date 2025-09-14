@@ -324,6 +324,7 @@ lemma decreasingInduction_succ_left {motive : (m : ℕ) → m ≤ n → Sort*} (
       of_succ m smn (decreasingInduction of_succ self smn) := by
   rw [Subsingleton.elim mn (Nat.le_trans (le_succ m) smn), decreasingInduction_trans,
     decreasingInduction_succ']
+  exact le_add_right m 1
 
 /-- Given `P : ℕ → ℕ → Sort*`, if for all `m n : ℕ` we can extend `P` from the rectangle
 strictly below `(m, n)` to `P m n`, then we have `P n m` for all `n m : ℕ`.
