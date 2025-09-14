@@ -17,6 +17,7 @@ import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.RingTheory.Localization.Module
 import Mathlib.Algebra.Module.LocalizedModule.Exact
 import Mathlib.RingTheory.LocalProperties.Projective
+import Mathlib.Algebra.Category.Grp.Zero
 /-!
 # The Global Dimension of a Ring
 -/
@@ -54,13 +55,36 @@ lemma projectiveDimension_eq_of_iso (X Y : C) (e : X ≅ Y) :
     projectiveDimension X = projectiveDimension Y := by
   sorry
 
+lemma hasProjectiveDimensionLT_of_projectiveDimension_lt (X : C) (n : ℕ)
+    (h : projectiveDimension X < n) : HasProjectiveDimensionLT X n := by
+  have : projectiveDimension X ∈ _ := csInf_mem (by
+    use ⊤
+    simp)
+  simp only [Set.mem_setOf_eq] at this
+  exact this n h
+
 lemma projectiveDimension_le_iff (X : C) (n : ℕ) : projectiveDimension X ≤ n ↔
     HasProjectiveDimensionLE X n := by
-  sorry
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · apply hasProjectiveDimensionLT_of_projectiveDimension_lt X (n + 1)
+    exact lt_of_le_of_lt h (Nat.cast_lt.mpr (lt_add_one n))
+  · apply sInf_le
+    simp only [Set.mem_setOf_eq, Nat.cast_lt]
+    intro i hi
+    exact CategoryTheory.hasProjectiveDimensionLT_of_ge X (n + 1) i hi
 
 lemma projectiveDimension_eq_bot_iff (X : C) : projectiveDimension X = ⊥ ↔
     Limits.IsZero X := by
-  sorry
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · have : HasProjectiveDimensionLT X 0 := by
+      apply hasProjectiveDimensionLT_of_projectiveDimension_lt X 0
+      simp [h, bot_lt_iff_ne_bot]
+    exact isZero_of_hasProjectiveDimensionLT_zero X
+  · rw [eq_bot_iff]
+    apply sInf_le
+    intro i _
+    have := h.hasProjectiveDimensionLT_zero
+    apply hasProjectiveDimensionLT_of_ge X 0 i (Nat.zero_le i)
 
 lemma projectiveDimension_eq_nonnegProjectiveDimension_of_not_zero (X : C) (h : ¬ Limits.IsZero X) :
     nonnegProjectiveDimension X = projectiveDimension X :=  by
@@ -74,10 +98,29 @@ lemma nonnegProjectiveDimension_ne_top_iff (X : C) : nonnegProjectiveDimension X
     ∃ n, HasProjectiveDimensionLE X n := by
   sorry
 
-lemma hasProjectiveDimensionLT_one_iff (X : C) : Projective X ↔ HasProjectiveDimensionLT X 1 := by
-  refine ⟨fun h ↦ inferInstance, fun h ↦ ?_⟩
-
-  sorry
+--needed
+open Limits Abelian in
+lemma hasProjectiveDimensionLT_one_iff (X : C) :
+    Projective X ↔ HasProjectiveDimensionLT X 1 := by
+  letI := HasExt.standard C
+  refine ⟨fun h ↦ inferInstance, fun ⟨h⟩ ↦ ⟨?_⟩⟩
+  intro Z Y f g epi
+  let S := ShortComplex.mk (kernel.ι g) g (kernel.condition g)
+  have S_exact : S.ShortExact := {
+    exact := ShortComplex.exact_kernel g
+    mono_f := equalizer.ι_mono
+    epi_g := epi}
+  have : IsZero (AddCommGrp.of (Ext X S.X₁ 1)) := by
+    let _ := h 1 (le_refl 1) (Y := S.X₁)
+    exact AddCommGrp.isZero_of_subsingleton _
+  have exac := Ext.covariant_sequence_exact₃' X S_exact 0 1 (zero_add 1)
+  have surj: Function.Surjective ((Ext.mk₀ S.g).postcomp X (add_zero 0)) :=
+    (AddCommGrp.epi_iff_surjective _).mp (exac.epi_f (this.eq_zero_of_tgt _))
+  rcases surj (Ext.mk₀ f) with ⟨f', hf'⟩
+  use Ext.addEquiv₀ f'
+  simp only [AddMonoidHom.flip_apply, Ext.bilinearComp_apply_apply] at hf'
+  rw [← Ext.mk₀_addEquiv₀_apply f', Ext.mk₀_comp_mk₀] at hf'
+  exact (Ext.mk₀_bijective X Y).1 hf'
 
 end ProjectiveDimension
 
