@@ -183,7 +183,7 @@ omit [IsFractionRing R K] in
 instance {W : WeierstrassCurve K} [IsMinimal R W] :
     IsIntegral R W := by simpa using IsMinimal.val_Δ_maximal.1
 
-theorem exists_minimal (W : WeierstrassCurve K) :
+theorem exists_isMinimal (W : WeierstrassCurve K) :
     ∃ C : VariableChange K, IsMinimal R (C • W) := by
   obtain ⟨C, hC⟩ := exists_maximalFor_of_wellFoundedGT
     (fun (C : VariableChange K) ↦ IsIntegral R (C • W))
