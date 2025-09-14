@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
 import Mathlib.Topology.Algebra.Module.WeakBilin
-import Mathlib.Topology.Algebra.Module.Holding
+import Mathlib.Topology.Algebra.Module.LinearSpan
 
 /-!
 # Weak Dual in Topological Vector Spaces
