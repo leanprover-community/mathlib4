@@ -267,10 +267,10 @@ theorem IsConservativeOn.isExactOn_ball (hf' : ContinuousOn f (ball c r))
     IsExactOn f (ball c r) :=
   ⟨fun z ↦ wedgeIntegral c z f, fun _ ↦ hf.hasDerivAt_wedgeIntegral hf'⟩
 
-theorem isConservativeOn_iff_isDifferentiableOn
-    {U : Set ℂ} (hU : IsOpen U) (hf' : ContinuousOn f U) :
-    IsConservativeOn f U ↔ DifferentiableOn ℂ f U := by
-  refine ⟨fun hf z hz ↦ ?_, DifferentiableOn.isConservativeOn⟩
+theorem isConservativeOn_and_continuousOn_iff_isDifferentiableOn
+    {U : Set ℂ} (hU : IsOpen U) :
+    IsConservativeOn f U ∧ ContinuousOn f U ↔ DifferentiableOn ℂ f U := by
+  refine ⟨fun ⟨hf, hf'⟩ z hz ↦ ?_, fun hf ↦ ⟨hf.isConservativeOn, hf.continuousOn⟩⟩
   obtain ⟨r, h₀, h₁⟩ : ∃ r > 0, ball z r ⊆ U := Metric.isOpen_iff.mp hU z hz
   have : DifferentiableOn ℂ f (ball z r) :=
     (IsConservativeOn.isExactOn_ball (hf'.mono h₁) (hf.mono h₁)).differentiableOn isOpen_ball
