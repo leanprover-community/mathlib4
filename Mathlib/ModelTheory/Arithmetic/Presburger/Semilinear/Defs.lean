@@ -44,9 +44,8 @@ of sets in form `{ x | ∃ y, p x y }`.
 
 universe u v
 
-variable {α : Type u} {β : Type v} [AddCommMonoid α] [AddCommMonoid β]
-  {F : Type*} [FunLike F α β] [AddMonoidHomClass F α β]
-  {ι κ : Type*} {a : α} {s s₁ s₂ : Set α}
+variable {α β ι κ F : Type*} [AddCommMonoid α] [AddCommMonoid β]
+  [FunLike F α β] [AddMonoidHomClass F α β] {a : α} {s s₁ s₂ : Set α}
 
 open Set Pointwise AddSubmonoid
 
@@ -94,14 +93,14 @@ theorem IsLinearSet.image (hs : IsLinearSet s) (f : F) : IsLinearSet (f '' s) :=
 
 /-- A set is semilinear if it is a finite union of linear sets. -/
 def IsSemilinearSet (s : Set α) : Prop :=
-  ∃ (S : Finset (Set α)), (∀ t ∈ S, IsLinearSet t) ∧ s = ⋃₀ S
+  ∃ (S : Set (Set α)), S.Finite ∧ (∀ t ∈ S, IsLinearSet t) ∧ s = ⋃₀ S
 
 theorem IsLinearSet.isSemilinearSet (h : IsLinearSet s) : IsSemilinearSet s :=
-  ⟨{s}, by simp [h], by simp⟩
+  ⟨{s}, by simp, by simp [h], by simp⟩
 
 @[simp]
 theorem IsSemilinearSet.empty : IsSemilinearSet (∅ : Set α) :=
-  ⟨∅, by simp, by simp⟩
+  ⟨∅, by simp, by simp, by simp⟩
 
 @[simp]
 theorem IsSemilinearSet.singleton (a) : IsSemilinearSet ({a} : Set α) :=
@@ -110,6 +109,11 @@ theorem IsSemilinearSet.singleton (a) : IsSemilinearSet ({a} : Set α) :=
 theorem IsSemilinearSet.closure_finset (s : Finset α) :
     IsSemilinearSet (closure (s : Set α) : Set α) :=
   (IsLinearSet.closure_finset s).isSemilinearSet
+
+theorem IsSemilinearSet.closure_of_finite {s : Set α} (hs : s.Finite) :
+    IsSemilinearSet (closure s : Set α) := by
+  rw [← hs.coe_toFinset]
+  exact closure_finset _
 
 theorem IsSemilinearSet.of_addSubmonoidFG {P : AddSubmonoid α} (hP : P.FG) :
     IsSemilinearSet (P : Set α) :=
@@ -122,14 +126,13 @@ protected theorem IsSemilinearSet.univ [AddMonoid.FG α] : IsSemilinearSet (univ
 /-- Semilinear sets are closed under union. -/
 theorem IsSemilinearSet.union (hs₁ : IsSemilinearSet s₁) (hs₂ : IsSemilinearSet s₂) :
     IsSemilinearSet (s₁ ∪ s₂) := by
-  classical
-  rcases hs₁ with ⟨S₁, hS₁, rfl⟩
-  rcases hs₂ with ⟨S₂, hS₂, rfl⟩
-  rw [← sUnion_union, ← Finset.coe_union]
-  refine ⟨S₁ ∪ S₂, ?_, rfl⟩
+  rcases hs₁ with ⟨S₁, hS₁, hS₁', rfl⟩
+  rcases hs₂ with ⟨S₂, hS₂, hS₂', rfl⟩
+  rw [← sUnion_union]
+  refine ⟨S₁ ∪ S₂, by simp [hS₁, hS₂], ?_, rfl⟩
   intro s hs
-  rw [Finset.mem_union] at hs
-  exact hs.elim (hS₁ s) (hS₂ s)
+  rw [mem_union] at hs
+  exact hs.elim (hS₁' s) (hS₂' s)
 
 theorem IsSemilinearSet.sUnion {S : Finset (Set α)} (hS : ∀ s ∈ S, IsSemilinearSet s) :
     IsSemilinearSet (⋃₀ (S : Set (Set α))) := by
@@ -168,24 +171,23 @@ theorem IsSemilinearSet.of_finite (hs : s.Finite) : IsSemilinearSet s := by
   simp
 
 theorem IsSemilinearSet.vadd (a : α) (hs : IsSemilinearSet s) : IsSemilinearSet (a +ᵥ s) := by
-  classical
-  rcases hs with ⟨S, hS, rfl⟩
-  simp_rw [vadd_set_sUnion, Finset.mem_coe]
-  exact biUnion_finset fun s hs => ((hS s hs).vadd a).isSemilinearSet
+  rcases hs with ⟨S, hS, hS', rfl⟩
+  simp_rw [vadd_set_sUnion]
+  refine biUnion hS fun s hs => ((hS' s hs).vadd a).isSemilinearSet
 
 /-- Semilinear sets are closed under set addition. -/
 theorem IsSemilinearSet.add (hs₁ : IsSemilinearSet s₁) (hs₂ : IsSemilinearSet s₂) :
     IsSemilinearSet (s₁ + s₂) := by
-  rcases hs₁ with ⟨S₁, hS₁, rfl⟩
-  rcases hs₂ with ⟨S₂, hS₂, rfl⟩
-  simp_rw [sUnion_add, add_sUnion, Finset.mem_coe]
-  exact biUnion_finset fun s₁ hs₁ => biUnion_finset fun s₂ hs₂ =>
-    ((hS₁ s₁ hs₁).add (hS₂ s₂ hs₂)).isSemilinearSet
+  rcases hs₁ with ⟨S₁, hS₁, hS₁', rfl⟩
+  rcases hs₂ with ⟨S₂, hS₂, hS₂', rfl⟩
+  simp_rw [sUnion_add, add_sUnion]
+  exact biUnion hS₁ fun s₁ hs₁ => biUnion hS₂ fun s₂ hs₂ =>
+    ((hS₁' s₁ hs₁).add (hS₂' s₂ hs₂)).isSemilinearSet
 
 theorem IsSemilinearSet.image (hs : IsSemilinearSet s) (f : F) : IsSemilinearSet (f '' s) := by
-  rcases hs with ⟨S, hS, rfl⟩
-  simp_rw [sUnion_eq_biUnion, Finset.mem_coe, image_iUnion]
-  exact biUnion_finset fun s hs => ((hS s hs).image f).isSemilinearSet
+  rcases hs with ⟨S, hS, hS', rfl⟩
+  simp_rw [sUnion_eq_biUnion, image_iUnion]
+  exact biUnion hS fun s hs => ((hS' s hs).image f).isSemilinearSet
 
 theorem isSemilinearSet_image_iff {F : Type*} [EquivLike F α β] [AddEquivClass F α β] (f : F) :
     IsSemilinearSet (f '' s) ↔ IsSemilinearSet s := by
@@ -246,13 +248,12 @@ protected lemma IsLinearSet.closure (hs : IsLinearSet s) : IsSemilinearSet (clos
 /-- Semilinear sets are closed under additive closure. -/
 protected theorem IsSemilinearSet.closure (hs : IsSemilinearSet s) :
     IsSemilinearSet (closure s : Set α) := by
-  classical
-  rcases hs with ⟨S, hS, rfl⟩
-  induction S using Finset.induction with
+  rcases hs with ⟨S, hS, hS', rfl⟩
+  induction S, hS using Finite.induction_on with
   | empty => simp
-  | insert s S _ ih =>
-    simp_rw [Finset.mem_insert, forall_eq_or_imp] at hS
-    simpa [closure_union, coe_sup] using hS.1.closure.add (ih hS.2)
+  | insert S hS ih =>
+    simp_rw [mem_insert_iff, forall_eq_or_imp] at hS'
+    simpa [closure_union, coe_sup] using hS'.1.closure.add (ih hS'.2)
 
 /-- A linear set is proper if its submonoid generators (periods) are linearly independent. -/
 def IsProperLinearSet (s : Set α) : Prop :=
@@ -264,16 +265,16 @@ theorem IsProperLinearSet.isLinearSet (hs : IsProperLinearSet s) : IsLinearSet s
 
 /-- A semilinear set is proper if it is a finite union of proper linear sets. -/
 def IsProperSemilinearSet (s : Set α) : Prop :=
-  ∃ (S : Finset (Set α)), (∀ t ∈ S, IsProperLinearSet t) ∧ s = ⋃₀ S
+  ∃ (S : Set (Set α)), S.Finite ∧ (∀ t ∈ S, IsProperLinearSet t) ∧ s = ⋃₀ S
 
 theorem IsProperSemilinearSet.isSemilinearSet (hs : IsProperSemilinearSet s) :
     IsSemilinearSet s := by
-  rcases hs with ⟨S, hS, rfl⟩
-  exact ⟨S, fun s hs => (hS s hs).isLinearSet, rfl⟩
+  rcases hs with ⟨S, hS, hS', rfl⟩
+  exact ⟨S, hS, fun s hs => (hS' s hs).isLinearSet, rfl⟩
 
 theorem IsProperLinearSet.isProperSemilinearSet (hs : IsProperLinearSet s) :
     IsProperSemilinearSet s :=
-  ⟨{s}, by simp [hs], by simp⟩
+  ⟨{s}, by simp, by simp [hs], by simp⟩
 
 @[simp]
 theorem IsProperSemilinearSet.empty : IsProperSemilinearSet (∅ : Set α) :=
@@ -281,14 +282,13 @@ theorem IsProperSemilinearSet.empty : IsProperSemilinearSet (∅ : Set α) :=
 
 theorem IsProperSemilinearSet.union (hs₁ : IsProperSemilinearSet s₁)
     (hs₂ : IsProperSemilinearSet s₂) : IsProperSemilinearSet (s₁ ∪ s₂) := by
-  classical
-  rcases hs₁ with ⟨S₁, hS₁, rfl⟩
-  rcases hs₂ with ⟨S₂, hS₂, rfl⟩
-  rw [← sUnion_union, ← Finset.coe_union]
-  refine ⟨S₁ ∪ S₂, ?_, rfl⟩
+  rcases hs₁ with ⟨S₁, hS₁, hS₁', rfl⟩
+  rcases hs₂ with ⟨S₂, hS₂, hS₂', rfl⟩
+  rw [← sUnion_union]
+  refine ⟨S₁ ∪ S₂, by simp [hS₁, hS₂], ?_, rfl⟩
   intro s hs
-  simp only [Finset.mem_union] at hs
-  exact hs.elim (hS₁ s) (hS₂ s)
+  rw [mem_union] at hs
+  exact hs.elim (hS₁' s) (hS₂' s)
 
 theorem IsProperSemilinearSet.sUnion {S : Finset (Set α)} (hS : ∀ s ∈ S, IsProperSemilinearSet s) :
     IsProperSemilinearSet (⋃₀ (S : Set (Set α))) := by
@@ -304,6 +304,12 @@ theorem IsProperSemilinearSet.biUnion_finset {s : Finset ι} {t : ι → Set α}
   classical
   simp_rw [← Finset.mem_coe, ← sUnion_image, ← Finset.coe_image]
   apply sUnion
+  simpa
+
+theorem IsProperSemilinearSet.biUnion {s : Set ι} {t : ι → Set α} (hs : s.Finite)
+    (ht : ∀ i ∈ s, IsProperSemilinearSet (t i)) : IsProperSemilinearSet (⋃ i ∈ s, t i) := by
+  rw [← hs.coe_toFinset]
+  apply biUnion_finset
   simpa
 
 lemma IsLinearSet.isProperSemilinearSet [IsCancelAdd α] (hs : IsLinearSet s) :
@@ -356,6 +362,6 @@ lemma IsLinearSet.isProperSemilinearSet [IsCancelAdd α] (hs : IsLinearSet s) :
 proper linear sets. -/
 theorem IsSemilinearSet.isProperSemilinearSet [IsCancelAdd α] (hs : IsSemilinearSet s) :
     IsProperSemilinearSet s := by
-  rcases hs with ⟨S, hS, rfl⟩
-  simp_rw [sUnion_eq_biUnion, Finset.mem_coe]
-  exact IsProperSemilinearSet.biUnion_finset fun s hs => (hS s hs).isProperSemilinearSet
+  rcases hs with ⟨S, hS, hS', rfl⟩
+  simp_rw [sUnion_eq_biUnion]
+  exact IsProperSemilinearSet.biUnion hS fun s hs => (hS' s hs).isProperSemilinearSet
