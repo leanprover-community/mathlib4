@@ -61,7 +61,7 @@ noncomputable def integralModel (W : WeierstrassCurve K) [hW : IsIntegral R W] :
   hW.integral.choose
 
 omit [IsFractionRing R K] in
-lemma integralModel_baseChange_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
+lemma baseChange_integralModel_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     (integralModel R W).baseChange K = W :=
   hW.integral.choose_spec.symm
 
