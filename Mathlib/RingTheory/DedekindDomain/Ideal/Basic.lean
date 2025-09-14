@@ -59,9 +59,9 @@ variable [IsDomain A]
 /-- A Dedekind domain is an integral domain such that every fractional ideal has an inverse.
 
 This is equivalent to `IsDedekindDomain`.
-In particular we provide a `FractionalIdeal.comm_group_with_zero` instance,
-assuming `IsDedekindDomain A`, which implies `IsDedekindDomainInv`. For **integral** ideals,
-`IsDedekindDomain`(`_inv`) implies only `Ideal.cancelCommMonoidWithZero`.
+In particular we provide a `CommGroupWithZero` instance,
+assuming `IsDedekindDomain A`, which implies `IsDedekindDomainInv`. For **integral** domain,
+`IsDedekindDomain`(`Inv`) implies only `Ideal.cancelCommMonoidWithZero`.
 -/
 def IsDedekindDomainInv : Prop :=
   ∀ I ≠ (⊥ : FractionalIdeal A⁰ (FractionRing A)), I * I⁻¹ = 1
