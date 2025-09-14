@@ -212,6 +212,22 @@ instance : Category (PreZeroHypercover S) where
 
 end Category
 
+section Functoriality
+
+variable {D : Type*} [Category D] {F : C ⥤ D}
+
+/-- The image of a pre-`0`-hypercover under a functor. -/
+@[simps]
+def map (F : C ⥤ D) (E : PreZeroHypercover.{w} S) : PreZeroHypercover.{w} (F.obj S) where
+  I₀ := E.I₀
+  X i := F.obj (E.X i)
+  f i := F.map (E.f i)
+
+lemma presieve₀_map : (E.map F).presieve₀ = E.presieve₀.map F :=
+  (Presieve.map_ofArrows _).symm
+
+end Functoriality
+
 variable {F : PreZeroHypercover.{w'} S} {G : PreZeroHypercover.{w''} S}
 
 /-- The left inclusion into the disjoint union. -/
@@ -330,6 +346,21 @@ instance : Category (ZeroHypercover.{w} J S) where
   Hom := Hom J
   id _ := PreZeroHypercover.Hom.id _
   comp := PreZeroHypercover.Hom.comp
+
+section Functoriality
+
+variable {D : Type*} [Category D] {F : C ⥤ D} {K : Precoverage D}
+
+/-- The image of a `0`-hypercover under a functor. -/
+@[simps toPreZeroHypercover]
+def map (F : C ⥤ D) (E : ZeroHypercover.{w} J S) (h : J ≤ K.comap F) :
+    ZeroHypercover.{w} K (F.obj S) where
+  __ := E.toPreZeroHypercover.map F
+  mem₀ := by
+    rw [PreZeroHypercover.presieve₀_map, ← mem_comap_iff]
+    exact h _ E.mem₀
+
+end Functoriality
 
 end ZeroHypercover
 

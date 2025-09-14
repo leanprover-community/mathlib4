@@ -132,6 +132,43 @@ instance (J K : Precoverage C) [IsStableUnderSup J] [IsStableUnderSup K] :
     IsStableUnderSup (J ⊓ K) where
   sup_mem_coverings hR hS := ⟨J.sup_mem_coverings hR.1 hS.1, K.sup_mem_coverings hR.2 hS.2⟩
 
+section Functoriality
+
+variable {D : Type*} [Category D] {F : C ⥤ D}
+
+variable {J K : Precoverage D}
+
+open Limits
+
+/-- If `J` is a precoverage on `D`, we obtain a precoverage on `C` by declaring a presieve on `D`
+to be covering if its image under `F` is. -/
+def comap (F : C ⥤ D) (J : Precoverage D) : Precoverage C where
+  coverings Y R := R.map F ∈ J (F.obj Y)
+
+@[simp]
+lemma mem_comap_iff {X : C} {R : Presieve X} :
+    R ∈ J.comap F X ↔ R.map F ∈ J (F.obj X) := Iff.rfl
+
+lemma comap_inf : (J ⊓ K).comap F = J.comap F ⊓ K.comap F := rfl
+
+instance [HasIsos J] : HasIsos (J.comap F) where
+  mem_coverings_of_isIso {S T} f hf := by simpa using mem_coverings_of_isIso (F.map f)
+
+instance [IsStableUnderComposition.{w', w} J] :
+    IsStableUnderComposition.{w', w} (J.comap F) where
+  comp_mem_coverings {ι} S Y f hf σ Z g hg := by
+    simp at hf hg ⊢
+    exact J.comp_mem_coverings _ hf _ hg
+
+instance [PreservesLimitsOfShape WalkingCospan F] [IsStableUnderBaseChange.{w} J] :
+    IsStableUnderBaseChange.{w} (J.comap F) where
+  mem_coverings_of_isPullback {ι} S Y f hf Z g P p₁ p₂ h := by
+    simp only [mem_comap_iff, Presieve.map_ofArrows] at hf ⊢
+    exact mem_coverings_of_isPullback _ hf _ _ _
+      fun i ↦ CategoryTheory.Functor.map_isPullback F (h i)
+
+end Functoriality
+
 end Precoverage
 
 end CategoryTheory
