@@ -244,6 +244,39 @@ theorem continuousAt_matrix_inv [Fintype n] [DecidableEq n] [CommRing R] [IsTopo
     (A : Matrix n n R) (h : ContinuousAt Ring.inverse A.det) : ContinuousAt Inv.inv A :=
   (h.comp continuous_id.matrix_det.continuousAt).smul continuous_id.matrix_adjugate.continuousAt
 
+namespace Topology
+
+variable {m n R S : Type*} [TopologicalSpace R] [TopologicalSpace S] {f : R → S}
+
+lemma IsInducing.matrix_map (hf : IsInducing f) :
+    IsInducing (map · f : Matrix m n R → Matrix m n S) :=
+  IsInducing.piMap fun _ : m ↦ (IsInducing.piMap fun _ : n ↦ hf)
+
+lemma IsEmbedding.matrix_map (hf : IsEmbedding f) :
+    IsEmbedding (map · f : Matrix m n R → Matrix m n S) :=
+  IsEmbedding.piMap fun _ : m ↦ (IsEmbedding.piMap fun _ : n ↦ hf)
+
+lemma IsClosedEmbedding.matrix_map (hf : IsClosedEmbedding f) :
+    IsClosedEmbedding (map · f : Matrix m n R → Matrix m n S) :=
+  IsClosedEmbedding.piMap fun _ : m ↦ (IsClosedEmbedding.piMap fun _ : n ↦ hf)
+
+lemma IsOpenEmbedding.matrix_map [Fintype m] [Fintype n] (hf : IsOpenEmbedding f) :
+    IsOpenEmbedding (map · f : Matrix m n R → Matrix m n S) :=
+  IsOpenEmbedding.piMap fun _ : m ↦ (IsOpenEmbedding.piMap fun _ : n ↦ hf)
+
+/-- The topology on matrices over a discrete space is discrete. -/
+instance discreteTopologyMatrix [Fintype m] [Fintype n] [DiscreteTopology R] :
+    DiscreteTopology (Matrix m n R) :=
+  inferInstanceAs (DiscreteTopology (m → n → R))
+
+/-- If `R` is a commutative ring with the discrete topology, then `SL(n, R)` has the discrete
+topology. -/
+instance Matrix.SpecialLinearGroup.discreteTopology [Fintype n] [DecidableEq n]
+    [DiscreteTopology R] [CommRing R] : DiscreteTopology (Matrix.SpecialLinearGroup n R) :=
+  instDiscreteTopologySubtype
+
+end Topology
+
 -- lemmas about functions in `Data/Matrix/Block.lean`
 section BlockMatrices
 
