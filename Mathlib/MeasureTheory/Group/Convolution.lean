@@ -146,24 +146,19 @@ instance probabilitymeasure_of_probabilitymeasures_mconv (μ : Measure M) (ν : 
     IsProbabilityMeasure (μ ∗ₘ ν) :=
   MeasureTheory.isProbabilityMeasure_map (by fun_prop)
 
--- TODO: Clean Proof!
 @[to_additive]
 theorem mconv_absolutelyContinuous [MeasurableMul₂ M] {μ ν ρ : Measure M}
     [IsMulLeftInvariant ρ] [SFinite ν] (hν : ν ≪ ρ) : μ ∗ₘ ν ≪ ρ := by
   refine AbsolutelyContinuous.mk (fun s hs h ↦ ?_)
   rw [← lintegral_indicator_one hs, lintegral_mconv (by measurability)]
-  conv =>
-    enter [1, 2, x, 2, y]
-    change s.indicator 1 ((fun y ↦ x * y) y)
-    simp [← Set.indicator_comp_right]
-  conv =>
-    enter [1, 2, x]
+  conv in s.indicator 1 (_ * _) => change s.indicator 1 ((fun y ↦ x * y) y)
+  simp [← Set.indicator_comp_right]
+  conv in ∫⁻ _, _ ∂ν =>
     rw [lintegral_indicator_one (by apply MeasurableSet.preimage hs (by fun_prop))]
-  have : ∀ x : M, ν (HMul.hMul x ⁻¹' s) = 0 := by
-    intro x
+  have h0 (x : M) : ν (HMul.hMul x ⁻¹' s) = 0 := by
     apply hν
     rw [← map_apply (by fun_prop) hs, IsMulLeftInvariant.map_mul_left_eq_self, h]
-  simp [this]
+  simp [h0]
 
 @[to_additive]
 lemma map_mconv_monoidHom {M M' : Type*} {mM : MeasurableSpace M} [Monoid M] [MeasurableMul₂ M]
