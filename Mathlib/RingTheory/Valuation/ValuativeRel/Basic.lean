@@ -747,6 +747,10 @@ lemma ValueGroupWithZero.embed_strictMono [v.Compatible] : StrictMono (embed v) 
   rw [← map_mul, ← map_mul, (isEquiv (valuation R) v).lt_iff_lt] at h
   simpa [embed] using h
 
+lemma one_apply_posSubmonoid [Nontrivial R] [NoZeroDivisors R] [DecidablePred fun x : R ↦ x = 0]
+    (x : posSubmonoid R) : (1 : Valuation R Γ) x = 1 :=
+  Valuation.one_apply_of_ne_zero (by simp)
+
 end ValuativeRel
 
 /-- If `B` is an `A` algebra and both `A` and `B` have valuative relations,

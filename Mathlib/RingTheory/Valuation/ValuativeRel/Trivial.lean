@@ -10,7 +10,9 @@ import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 
 # Trivial Valuative Relations
 
-Trivial valuative relations map all non-zero elements to a valuation of 1.
+Trivial valuative relations relate all non-zero elements to each other. Equivalently,
+all elements are related to `1`: the relation is equal to the relation induced
+by the trivial valuation which sends all non-zero elements to `1`.
 
 ## TODO
 
@@ -26,7 +28,9 @@ variable {R Γ : Type} [CommRing R] [DecidableEq R] [IsDomain R]
 
 open WithZero
 
-/-- The trivial valuative relation on a ring `R`, such that all zero-divisors are related. -/
+/-- The trivial valuative relation on a domain `R`, such that all non-zero elements are related.
+The domain condition is necessary so that the relation is closed when multiplying.
+-/
 def trivialRel : ValuativeRel R where
   rel x y := if y = 0 then x = 0 else True
   rel_total _ _ := by split_ifs <;> simp_all
@@ -49,10 +53,6 @@ lemma trivialRel_eq_ofValuation_one :
   convert (eq_trivialRel_of_compatible_one (Γ := Γ)).symm
   exact .ofValuation 1
 
-lemma one_apply_posSubmonoid [ValuativeRel R] (x : posSubmonoid R) :
-    (1 : Valuation R Γ) x = 1 :=
-  Valuation.one_apply_of_ne_zero (by simp)
-
 variable (R Γ) in
 lemma subsingleton_units_valueGroupWithZero_of_trivialRel [ValuativeRel R]
     [Valuation.Compatible (1 : Valuation R Γ)] :
@@ -65,7 +65,7 @@ lemma subsingleton_units_valueGroupWithZero_of_trivialRel [ValuativeRel R]
   rw [Units.ext_iff, ← hr, ← ht, div_eq_div_iff, ← map_mul, ← map_mul, this.val_eq] <;>
   simp [one_apply_posSubmonoid]
 
-lemma not_isNontrivial_trivialRel [ValuativeRel R] [Valuation.Compatible (1 : Valuation R Γ)] :
+lemma not_isNontrivial_of_trivialRel [ValuativeRel R] [Valuation.Compatible (1 : Valuation R Γ)] :
     ¬ IsNontrivial R := by
   rintro ⟨⟨x, hx, hx'⟩⟩
   have := subsingleton_units_valueGroupWithZero_of_trivialRel R Γ
