@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.Subpresheaf.Sieves
 
 # Subsheaf of types
 
-We define the sub(pre)sheaf of a type valued presheaf.
+We define the sub(pre)sheaf of a type-valued presheaf.
 
 ## Main results
 
