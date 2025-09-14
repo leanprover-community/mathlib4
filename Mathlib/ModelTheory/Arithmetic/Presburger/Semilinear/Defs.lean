@@ -101,11 +101,11 @@ def IsSemilinearSet (s : Set M) : Prop :=
   ∃ (S : Set (Set M)), S.Finite ∧ (∀ t ∈ S, IsLinearSet t) ∧ s = ⋃₀ S
 
 theorem IsLinearSet.isSemilinearSet (h : IsLinearSet s) : IsSemilinearSet s :=
-  ⟨{s}, by simp, by simp [h], by simp⟩
+  ⟨{s}, by simpa⟩
 
 @[simp]
 theorem IsSemilinearSet.empty : IsSemilinearSet (∅ : Set M) :=
-  ⟨∅, by simp, by simp, by simp⟩
+  ⟨∅, by simp⟩
 
 @[simp]
 theorem IsSemilinearSet.singleton (a) : IsSemilinearSet ({a} : Set M) :=
@@ -278,11 +278,11 @@ theorem IsProperSemilinearSet.isSemilinearSet (hs : IsProperSemilinearSet s) :
 
 theorem IsProperLinearSet.isProperSemilinearSet (hs : IsProperLinearSet s) :
     IsProperSemilinearSet s :=
-  ⟨{s}, by simp, by simp [hs], by simp⟩
+  ⟨{s}, by simpa⟩
 
 @[simp]
 theorem IsProperSemilinearSet.empty : IsProperSemilinearSet (∅ : Set M) :=
-  ⟨∅, by simp, by simp⟩
+  ⟨∅, by simp⟩
 
 theorem IsProperSemilinearSet.union (hs₁ : IsProperSemilinearSet s₁)
     (hs₂ : IsProperSemilinearSet s₂) : IsProperSemilinearSet (s₁ ∪ s₂) := by
