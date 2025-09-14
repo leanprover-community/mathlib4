@@ -513,6 +513,46 @@ example :
 
 end ONotation
 
+section DifferentDomainsCodomains
+
+example :
+    Tendsto (fun (x : ℕ) ↦ ((x + 2) / (x + 3) : ℝ)) atTop (𝓝 1) := by
+  compute_asymptotics
+
+example :
+    Tendsto (fun (x : ℤ) ↦ ((x + 2) / (x + 3) : ℝ)) atTop (𝓝 1) := by
+  compute_asymptotics
+
+example :
+    Tendsto (fun (x : ℚ) ↦ ((x + 2) / (x + 3) : ℝ)) atTop (𝓝 1) := by
+  compute_asymptotics
+
+example :
+    Tendsto (fun (x : ℕ) ↦ x ^ 2) atTop atTop := by
+  compute_asymptotics
+
+example :
+    Tendsto (fun (x : ℤ) ↦ -x ^ 2) atTop atBot := by
+  compute_asymptotics
+
+example :
+    Tendsto (fun (x : ℚ) ↦ (x + 2) / (x + 3)) atTop (𝓝 1) := by
+  compute_asymptotics
+
+example :
+    (fun (n : ℕ) ↦ (n : ℚ)) =o[atTop] (fun (n : ℕ) ↦ (n ^ 2 - n : ℤ)) := by
+  compute_asymptotics
+
+example :
+    (fun (n : ℕ) ↦ (n : ℚ)) =O[atTop] (fun (n : ℕ) ↦ (- n : ℤ)) := by
+  compute_asymptotics
+
+example :
+    (fun (n : ℕ) ↦ (n ^ 3 : ℚ) / (n + 1 : ℚ)) ~[atTop] (fun (n : ℕ) ↦ (n ^ 2 - n : ℤ)) := by
+  compute_asymptotics
+
+end DifferentDomainsCodomains
+
 -- example from the paper. It's used in the proof of Akkra-Bazzi theorem.
 example (p b ε : ℝ) (hb1 : 0 < b) (hb2 : b < 1) (hε : 0 < ε) :
   let f := fun (x : ℝ) ↦
@@ -564,7 +604,8 @@ example : Tendsto Real.exp atTop atTop := by
   compute_asymptotics
 
 /--
-error: proveTendstoInf proved that the function fun x => x / x ^ 2 tends to finite limit: 𝓝 0 -/
+error: proveTendstoInf proved that the function fun x => id x / id (x ^ 2) tends to finite limit: 𝓝 0
+-/
 #guard_msgs in
 example :
   let f := fun (x : ℝ) ↦ x;

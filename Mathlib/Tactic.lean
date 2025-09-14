@@ -58,6 +58,7 @@ import Mathlib.Tactic.ComputeAsymptotics.Meta.CompareMS
 import Mathlib.Tactic.ComputeAsymptotics.Meta.CompareReal
 import Mathlib.Tactic.ComputeAsymptotics.Meta.ConstSimp
 import Mathlib.Tactic.ComputeAsymptotics.Meta.ConstSimpAttribute
+import Mathlib.Tactic.ComputeAsymptotics.Meta.ConvertDomain
 import Mathlib.Tactic.ComputeAsymptotics.Meta.Defs
 import Mathlib.Tactic.ComputeAsymptotics.Meta.Exp
 import Mathlib.Tactic.ComputeAsymptotics.Meta.LeadingTerm

@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
 import Mathlib.Tactic.ComputeAsymptotics.Lemmas
+import Mathlib.Tactic.ComputeAsymptotics.Meta.CompareMS
+import Mathlib.Tactic.ComputeAsymptotics.Meta.ConvertDomain
 import Mathlib.Tactic.ComputeAsymptotics.Meta.Exp
 import Mathlib.Tactic.ComputeAsymptotics.Meta.Log
 import Mathlib.Tactic.ComputeAsymptotics.Meta.Trimming
-import Mathlib.Tactic.ComputeAsymptotics.Meta.CompareMS
 
 /-!
 # TODO
@@ -39,9 +40,12 @@ theorem Approximates_sqrt_of_pow {basis : Basis} {ms : PreMS basis} {f : ℝ →
 
 /-- Implemetation of `createMS` in `BasisM`. -/
 partial def createMSImp (x body : Q(ℝ)) : BasisM MS := do
+  if !body.hasAnyFVar (fun fvarId ↦ fvarId == x.fvarId!) then
+    return ← BasisM.const body
   if body == x then
     return ← BasisM.monomial (← get).n_id
   match body.getAppFnArgs with
+  | (``id, #[_, arg]) => return ← createMSImp x arg
   | (``Neg.neg, #[_, _, arg]) => return MS.neg (← createMSImp x arg)
   | (``HAdd.hAdd, #[_, _, _, _, arg1, arg2]) =>
     let ms1 ← createMSImp x arg1
@@ -129,11 +133,7 @@ partial def createMSImp (x body : Q(ℝ)) : BasisM MS := do
       f := ← mkLambdaFVars #[x] q(Real.sqrt $arg)
       h_approx := ← mkAppM ``Approximates_sqrt_of_pow #[res.h_approx]
     }
-  | _ =>
-    if body.hasAnyFVar (fun fvarId ↦ fvarId == x.fvarId!) then
-      throwError f!"Unsupported body in createMS: {body}"
-    else
-      return ← BasisM.const body
+  | _ => throwError f!"Unsupported body in createMS: {body}"
 
 /-- Given a body of a function, returns the MS approximating it. -/
 def createMS (x body : Q(ℝ)) : TacticM MS := do
@@ -226,16 +226,15 @@ def computeTendsto (f : Q(ℝ → ℝ)) (source : Q(Filter ℝ)) :
         q(tendsto_nhds_punctured_of_tendsto_top $f $c $h_tendsto_left $h_tendsto_right)⟩
   | _ => throwError f!"Unexpected source filter: {← ppExpr source}"
 
-/-- Proves that `f` tends to `target` at `source`. -/
-def proveTendsto (f : Q(ℝ → ℝ)) (source target : Q(Filter ℝ)) :
+/-- Proves that `f : ℝ → ℝ` tends to `target` at `source`. -/
+def proveTendstoReal (f : Q(ℝ → ℝ)) (source target : Q(Filter ℝ)) :
     TacticM Q(Filter.Tendsto $f $source $target) := do
   let ⟨limit, h_tendsto⟩ ← computeTendsto f source
   if !(← isDefEq limit target) then
     match target, limit with
     | ~q(𝓝 $a), ~q(𝓝 $b) =>
       let h_eq : Q($b = $a) ← mkFreshExprMVarQ q($b = $a)
-      let extraGoals ← evalTacticAt
-        (← `(tactic| norm_num)) h_eq.mvarId!
+      let extraGoals ← evalTacticAt (← `(tactic| norm_num)) h_eq.mvarId!
       if ← extraGoals.anyM (fun g ↦ do pure (← g.getType).isFalse) then
         throwError m!"The tactic proved that the function {← ppExpr f} tends " ++
           m!"to {← ppExpr limit}, not {← ppExpr target}."
@@ -247,6 +246,30 @@ def proveTendsto (f : Q(ℝ → ℝ)) (source target : Q(Filter ℝ)) :
         m!"not {← ppExpr target}."
   else
     pure h_tendsto
+
+/-- Proves that `f : α → β` tends to `target` at `source`. -/
+partial def proveTendsto {α β : Q(Type)} (f : Q($α → $β)) (source : Q(Filter $α))
+    (target : Q(Filter $β)) :
+    TacticM Q(Filter.Tendsto $f $source $target) := do
+  match β with
+  | ~q(ℝ) =>
+    match α with
+    | ~q(ℝ) => proveTendstoReal q($f) q($source) q($target)
+    | _ =>
+      let ⟨cast, source', h_source, f', _⟩ ← ConvertDomain.convertFunDomain q($f) q($source)
+      let pf ← proveTendsto q($f') q($source') q($target)
+      return q(ConvertDomain.tendsto_cast_domain $f' $source $source' $target $cast $h_source $pf)
+  | _ =>
+    let ⟨cast, target', h_convert⟩ ← ConvertDomain.convertTendstoTarget q($f) q($source) q($target)
+    let f' : Q($α → ℝ) := q(fun x ↦ $cast ($f x))
+    let h_goal ← mkFreshExprMVarQ q(Filter.Tendsto $f' $source $target')
+    let [newGoal] ← evalTacticAt (← `(tactic| push_cast)) h_goal.mvarId!
+      | panic! "proveTendsto: Unexpected number of goals after push_cast"
+    let t : Q(Prop) ← inferType (.mvar newGoal)
+    let ~q(@Filter.Tendsto.{0, 0} $α'' $β'' $f'' $source'' $target'') := t
+      | panic! "proveTendsto: Unexpected newGoal type"
+    newGoal.assign (← proveTendsto q($f'') q($source'') q($target''))
+    return q($h_convert $h_goal)
 
 /-- Result type of `proveTendstoInf`. -/
 inductive ProveTendstoInfResult (source : Q(Filter ℝ)) (f : Q(ℝ → ℝ))
@@ -265,14 +288,46 @@ def proveTendstoInf (source : Q(Filter ℝ)) (f : Q(ℝ → ℝ)) :
     throwError f!"proveTendstoInf proved that the function {← ppExpr f} tends " ++
       f!"to finite limit: {← ppExpr limit}"
 
-/-- Proves that `f` is little `o` of `g` at `source`. -/
-def proveIsLittleO (source : Q(Filter ℝ)) (f g : Q(ℝ → ℝ)) : TacticM Q($f =o[$source] $g) := do
+/-- Proves that `f : ℝ → ℝ` is little-i of `g : ℝ → ℝ` at `source`. -/
+def proveIsLittleOReal (source : Q(Filter ℝ)) (f g : Q(ℝ → ℝ)) : TacticM Q($f =o[$source] $g) := do
   match ← proveTendstoInf q($source) q(fun x ↦ $g x / $f x) with
   | .top h_tendsto => return q(isLittleO_of_tendsto_top $h_tendsto)
   | .bot h_tendsto => return q(isLittleO_of_tendsto_bot $h_tendsto)
 
-/-- Proves that `f` is big `O` of `g` at `source`. -/
-def proveIsBigO (source : Q(Filter ℝ)) (f g : Q(ℝ → ℝ)) : TacticM Q($f =O[$source] $g) := do
+/-- Proves that `f : α → ℝ` is little-o of `g : α → ℝ` at `source`. -/
+partial def proveIsLittleORealCodomain {α : Q(Type)} (source : Q(Filter $α)) (f g : Q($α → ℝ)) :
+    TacticM Q($f =o[$source] $g) := do
+  match α with
+  | ~q(ℝ) => return (← proveIsLittleOReal q($source) q($f) q($g))
+  | _ =>
+    let ⟨castf, source', h_source, f', _⟩ ← ConvertDomain.convertFunDomain q($f) q($source)
+    let ⟨castg, _, _, g', _⟩ ← ConvertDomain.convertFunDomain q($g) q($source)
+    haveI : $castf =Q $castg := ⟨⟩; do
+    let pf ← proveIsLittleOReal q($source') q($f') q($g')
+    return q(ConvertDomain.IsLittleO_cast_domain $f' $g' $source $source' $castg $pf $h_source)
+
+/-- Proves that `f : α → β` is little-o of `g : α → γ` at `source`. -/
+def proveIsLittleO {α β γ : Q(Type)} (source : Q(Filter $α)) (f : Q($α → $β)) (g : Q($α → $γ))
+    (β_norm : Q(NormedAddCommGroup $β)) (γ_norm : Q(NormedAddCommGroup $γ)) :
+    TacticM Q($f =o[$source] $g) := do
+  let ⟨castf, h_castf⟩ ← ConvertDomain.getLawfulCodomainCast β β_norm
+  let ⟨castg, h_castg⟩ ← ConvertDomain.getLawfulCodomainCast γ γ_norm
+  let f' : Q($α → ℝ) := q(fun x ↦ $castf ($f x))
+  let g' : Q($α → ℝ) := q(fun x ↦ $castg ($g x))
+  let h_goal ← mkFreshExprMVarQ q($f' =o[$source] $g')
+  let [newGoal] ← evalTacticAt (← `(tactic| push_cast)) h_goal.mvarId!
+    | panic! "proveIsLittleO: Unexpected number of goals after push_cast"
+  let t : Q(Prop) ← inferType (.mvar newGoal)
+  let ~q(@IsLittleO.{0, 0, 0} $α'' ℝ ℝ _ _ $source'' $f'' $g'') := t
+    | panic! "proveIsLittleO: Unexpected newGoal type"
+  haveI : $α'' =Q $α := ⟨⟩; do
+  newGoal.assign (← proveIsLittleORealCodomain q($source) q($f'') q($g''))
+  assumeInstancesCommute
+  return q(ConvertDomain.IsLittleO_cast_codomain $f $g $source $castf $castg
+    $h_castf $h_castg $h_goal)
+
+/-- Proves that `f : ℝ → ℝ` is big-o of `g : ℝ → ℝ` at `source`. -/
+def proveIsBigOReal (source : Q(Filter ℝ)) (f g : Q(ℝ → ℝ)) : TacticM Q($f =O[$source] $g) := do
   let ⟨limit, h_tendsto⟩ ← computeTendsto q(fun x ↦ $g x / $f x) source
   match limit with
   | ~q(atTop) => return q(isBigO_of_tendsto_top $h_tendsto)
@@ -284,38 +339,110 @@ def proveIsBigO (source : Q(Filter ℝ)) (f g : Q(ℝ → ℝ)) : TacticM Q($f =
     appendGoals extraGoals
     return q(isBigO_of_tendsto_nhds $h_tendsto $h_ne)
 
+/-- Proves that `f : α → ℝ` is big-o of `g : α → ℝ` at `source`. -/
+partial def proveIsBigORealCodomain {α : Q(Type)} (source : Q(Filter $α)) (f g : Q($α → ℝ)) :
+    TacticM Q($f =O[$source] $g) := do
+  match α with
+  | ~q(ℝ) => return (← proveIsBigOReal q($source) q($f) q($g))
+  | _ =>
+    let ⟨castf, source', h_source, f', _⟩ ← ConvertDomain.convertFunDomain q($f) q($source)
+    let ⟨castg, _, _, g', _⟩ ← ConvertDomain.convertFunDomain q($g) q($source)
+    haveI : $castf =Q $castg := ⟨⟩; do
+    let pf ← proveIsBigOReal q($source') q($f') q($g')
+    return q(ConvertDomain.IsBigO_cast_domain $f' $g' $source $source' $castf $pf $h_source)
+
+/-- Proves that `f : α → β` is big-o of `g : α → γ` at `source`. -/
+partial def proveIsBigO {α β γ : Q(Type)} (source : Q(Filter $α)) (f : Q($α → $β)) (g : Q($α → $γ))
+    (β_norm : Q(NormedAddCommGroup $β)) (γ_norm : Q(NormedAddCommGroup $γ)) :
+    TacticM Q($f =O[$source] $g) := do
+  let ⟨castf, h_castf⟩ ← ConvertDomain.getLawfulCodomainCast β β_norm
+  let ⟨castg, h_castg⟩ ← ConvertDomain.getLawfulCodomainCast γ γ_norm
+  let f' : Q($α → ℝ) := q(fun x ↦ $castf ($f x))
+  let g' : Q($α → ℝ) := q(fun x ↦ $castg ($g x))
+  let h_goal ← mkFreshExprMVarQ q($f' =O[$source] $g')
+  let [newGoal] ← evalTacticAt (← `(tactic| push_cast)) h_goal.mvarId!
+    | panic! "proveIsBigO: Unexpected number of goals after push_cast"
+  let t : Q(Prop) ← inferType (.mvar newGoal)
+  let ~q(@IsBigO.{0, 0, 0} $α'' ℝ ℝ _ _ $source'' $f'' $g'') := t
+    | panic! "proveIsBigO: Unexpected newGoal type"
+  haveI : $α'' =Q $α := ⟨⟩; do
+  newGoal.assign (← proveIsBigORealCodomain q($source) q($f'') q($g''))
+  assumeInstancesCommute
+  return q(ConvertDomain.IsBigO_cast_codomain $f $g $source $castf $castg
+    $h_castf $h_castg $h_goal)
+
 /-- Proves that `f` is equivalent to `g` at `source`. -/
-def proveIsEquivalent (source : Q(Filter ℝ)) (f g : Q(ℝ → ℝ)) : TacticM Q($f ~[$source] $g) := do
+def proveIsEquivalentReal (source : Q(Filter ℝ)) (f g : Q(ℝ → ℝ)) :
+    TacticM Q($f ~[$source] $g) := do
   let pf ← proveTendsto q(fun x ↦ $f x / $g x) source q(𝓝 1)
   return q(isEquivalent_of_tendsto_one $pf)
 
-/-- Computes limits of functions `ℝ → ℝ`. It is able to close `Tendsto`, `IsLittleO`, `IsBigO` and
-`IsEquivalent` goals.
+/-- Proves that `f : α → ℝ` is equivalent to `g : α → ℝ` at `source`. -/
+def proveIsEquivalentRealCodomain {α : Q(Type)} (source : Q(Filter $α)) (f g : Q($α → ℝ)) :
+    TacticM Q($f ~[$source] $g) := do
+  match α with
+  | ~q(ℝ) => return (← proveIsEquivalentReal q($source) q($f) q($g))
+  | _ =>
+    let ⟨castf, source', h_source, f', _⟩ ← ConvertDomain.convertFunDomain q($f) q($source)
+    let ⟨castg, _, _, g', _⟩ ← ConvertDomain.convertFunDomain q($g) q($source)
+    haveI : $castf =Q $castg := ⟨⟩; do
+    let pf ← proveIsEquivalentReal q($source') q($f') q($g')
+    return q(ConvertDomain.IsEquivalent_cast_domain $f' $g' $source $source' $castf $pf $h_source)
+
+/-- Proves that `f : α → β` is equivalent to `g : α → β` at `source`. -/
+def proveIsEquivalent {α β : Q(Type)} (source : Q(Filter $α)) (f : Q($α → $β)) (g : Q($α → $β))
+    (β_norm : Q(NormedAddCommGroup $β)) :
+    TacticM Q($f ~[$source] $g) := do
+  let ⟨cast, h_cast⟩ ← ConvertDomain.getLawfulCodomainCast β β_norm
+  let f' : Q($α → ℝ) := q(fun x ↦ $cast ($f x))
+  let g' : Q($α → ℝ) := q(fun x ↦ $cast ($g x))
+  let h_goal ← mkFreshExprMVarQ q($f' ~[$source] $g')
+  let [newGoal] ← evalTacticAt (← `(tactic| push_cast)) h_goal.mvarId!
+    | panic! "proveIsEquivalent: Unexpected number of goals after push_cast"
+  let t : Q(Prop) ← inferType (.mvar newGoal)
+  let ~q(@IsEquivalent.{0, 0} $α'' ℝ _ $source'' $f'' $g'') := t
+    | panic! "proveIsEquivalent: Unexpected newGoal type"
+  haveI : $α'' =Q $α := ⟨⟩; do
+  newGoal.assign (← proveIsEquivalentRealCodomain q($source) q($f'') q($g''))
+  assumeInstancesCommute
+  return q(ConvertDomain.IsEquivalent_cast_codomain $f $g $source $cast $h_cast $h_goal)
+
+/-- Computes asymptotics of functions. Domain and codomain of the function must be `ℕ`, `ℤ`,
+`ℚ` or `ℝ`. It is able to close goals of types `Tendsto`, `IsLittleO`, `IsBigO` and `IsEquivalent`.
 
 It works on wide class of function, that is constructed by arithmetic operations, powers, `exp` and
 `log` operations. -/
 elab "compute_asymptotics" : tactic =>
-  Lean.Elab.Tactic.withMainContext do
+  focus do
+  withMainContext do
     let goal ← getMainGoal
-    let target : Q(Prop) ← getMainTarget
-    match target with
-    | ~q(@Tendsto ℝ ℝ $f $source $target) =>
-      goal.assign (← proveTendsto f source target)
-    | ~q(@IsLittleO ℝ ℝ ℝ _ _ $source $f $g) =>
-      goal.assign (← proveIsLittleO source f g)
-    | ~q(@IsBigO ℝ ℝ ℝ _ _ $source $f $g) =>
-      goal.assign (← proveIsBigO source f g)
-    | ~q(@IsEquivalent ℝ ℝ _ $source $f $g) =>
-      goal.assign (← proveIsEquivalent source f g)
+    let t : Q(Prop) ← getMainTarget
+    match t with
+    | ~q(@Tendsto.{0, 0} $domain $codomain $f $source $target) =>
+      goal.assign (← proveTendsto q($f) q($source) q($target))
+    | ~q(@IsLittleO.{0, 0, 0} $α $β $γ $inst_β $inst_γ $source $f $g) =>
+      let inst_β' ← synthInstanceQ q(NormedAddCommGroup $β)
+      let inst_γ' ← synthInstanceQ q(NormedAddCommGroup $γ)
+      goal.assign (← proveIsLittleO source f g inst_β' inst_γ')
+    | ~q(@IsBigO.{0, 0, 0} $α $β $γ $inst_β $inst_γ $source $f $g) =>
+      let inst_β' ← synthInstanceQ q(NormedAddCommGroup $β)
+      let inst_γ' ← synthInstanceQ q(NormedAddCommGroup $γ)
+      goal.assign (← proveIsBigO source f g inst_β' inst_γ')
+    | ~q(@IsEquivalent.{0, 0} $α $β $inst_β $source $f $g) =>
+      let inst_β' ← synthInstanceQ q(NormedAddCommGroup $β)
+      goal.assign (← proveIsEquivalent source f g inst_β')
     | _ =>
       throwError "unsupported goal"
 
+-- TODO: support other types
+/-- `compute_limit f at source with h` computes the limit `limit` of `f : ℝ → ℝ` at `source`
+and add the fact `h : Tendsto f source limit` to the context. -/
 elab (name := computeLimit)
     "compute_limit " f:(term) " at " source:(term) " with " name:(ident) : tactic => do
   focus do
   withMainContext do
-    let f : Q(ℝ → ℝ) ← Term.elabTerm f q(ℝ → ℝ)
-    let source : Q(Filter ℝ) ← Term.elabTerm source q(Filter ℝ)
+    let f : Q(ℝ → ℝ) ← Term.elabTermAndSynthesize f q(ℝ → ℝ)
+    let source : Q(Filter ℝ) ← Term.elabTermAndSynthesize source q(Filter ℝ)
     let ⟨limit, h_tendsto⟩ ← computeTendsto f source
     let goalNew ← (← getMainGoal).assert name.getId q(Tendsto $f $source $limit) h_tendsto
     let (_, goalNew) ← goalNew.intro1P
