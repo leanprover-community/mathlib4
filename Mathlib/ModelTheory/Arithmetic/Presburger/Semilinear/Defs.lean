@@ -53,6 +53,12 @@ open Set Pointwise AddSubmonoid
 def IsLinearSet (s : Set M) : Prop :=
   ∃ (a : M) (t : Finset M), s = a +ᵥ (closure (t : Set M) : Set M)
 
+/-- An equivalent expression of `IsLinearSet` in terms of `Set.Finite` instead of `Finset`. -/
+theorem isLinearSet_iff :
+    IsLinearSet s ↔ ∃ (a : M) (t : Set M), t.Finite ∧ s = a +ᵥ (closure t : Set M) :=
+  exists_congr fun a =>
+    ⟨fun ⟨t, hs⟩ => ⟨t, t.finite_toSet, hs⟩, fun ⟨t, ht, hs⟩ => ⟨ht.toFinset, by simpa⟩⟩
+
 @[simp]
 theorem IsLinearSet.singleton (a) : IsLinearSet ({a} : Set M) :=
   ⟨a, ∅, by simp⟩
@@ -68,8 +74,7 @@ theorem IsLinearSet.closure_of_finite {s : Set M} (hs : s.Finite) :
 theorem isLinearSet_iff_exists_fg_eq_vadd :
     IsLinearSet s ↔ ∃ (a : M) (P : AddSubmonoid M), P.FG ∧ s = a +ᵥ (P : Set M) :=
   exists_congr fun a =>
-    ⟨fun ⟨t, hs⟩ => ⟨_, ⟨t, rfl⟩, hs⟩,
-    fun ⟨P, ⟨t, hP⟩, hs⟩ => ⟨t, by rwa [hP]⟩⟩
+    ⟨fun ⟨t, hs⟩ => ⟨_, ⟨t, rfl⟩, hs⟩, fun ⟨P, ⟨t, hP⟩, hs⟩ => ⟨t, by rwa [hP]⟩⟩
 
 theorem IsLinearSet.of_fg {P : AddSubmonoid M} (hP : P.FG) :
     IsLinearSet (P : Set M) := by
