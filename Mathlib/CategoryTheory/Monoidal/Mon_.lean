@@ -952,34 +952,36 @@ section
 variable [BraidedCategory.{v₁} C]
 
 /-- Predicate for a monoid object to be commutative. -/
-class IsCommMon (X : C) [MonObj X] where
+class IsCommMonObj (X : C) [MonObj X] where
   mul_comm (X) : (β_ X X).hom ≫ μ = μ := by cat_disch
+
+@[deprecated (since := "2025-09-14")] alias IsCommMon := IsCommMonObj
 
 open scoped MonObj
 
-namespace IsCommMon
+namespace IsCommMonObj
 
 attribute [reassoc (attr := simp, mon_tauto)] mul_comm
 
 variable (M) in
 @[reassoc (attr := simp, mon_tauto)]
-lemma mul_comm' [IsCommMon M] : (β_ M M).inv ≫ μ = μ := by simp [← cancel_epi (β_ M M).hom]
+lemma mul_comm' [IsCommMonObj M] : (β_ M M).inv ≫ μ = μ := by simp [← cancel_epi (β_ M M).hom]
 
-instance : IsCommMon (𝟙_ C) where
+instance : IsCommMonObj (𝟙_ C) where
   mul_comm := by dsimp; rw [braiding_leftUnitor, unitors_equal]
 
-end IsCommMon
+end IsCommMonObj
 
 variable (M) in
 @[reassoc (attr := simp)]
-lemma MonObj.mul_mul_mul_comm [IsCommMon M] :
+lemma MonObj.mul_mul_mul_comm [IsCommMonObj M] :
     tensorμ M M M M ≫ (μ ⊗ₘ μ) ≫ μ = (μ ⊗ₘ μ) ≫ μ := by simp only [mon_tauto]
 
 @[deprecated (since := "2025-09-09")] alias Mon_Class.mul_mul_mul_comm := MonObj.mul_mul_mul_comm
 
 variable (M) in
 @[reassoc (attr := simp)]
-lemma MonObj.mul_mul_mul_comm' [IsCommMon M] :
+lemma MonObj.mul_mul_mul_comm' [IsCommMonObj M] :
     tensorδ M M M M ≫ (μ ⊗ₘ μ) ≫ μ = (μ ⊗ₘ μ) ≫ μ := by simp only [mon_tauto]
 
 @[deprecated (since := "2025-09-09")] alias Mon_Class.mul_mul_mul_comm' := MonObj.mul_mul_mul_comm'
@@ -989,7 +991,7 @@ end
 section SymmetricCategory
 variable [SymmetricCategory C] {M N W X Y Z : C} [MonObj M] [MonObj N]
 
-instance [IsCommMon M] [IsCommMon N] : IsCommMon (M ⊗ N) where
+instance [IsCommMonObj M] [IsCommMonObj N] : IsCommMonObj (M ⊗ N) where
   mul_comm := by
     simp [← IsIso.inv_comp_eq, tensorμ, ← associator_inv_naturality_left_assoc,
       ← associator_naturality_right_assoc, SymmetricCategory.braiding_swap_eq_inv_braiding M N,
