@@ -151,9 +151,9 @@ theorem mk_add_mk {m1 m2 : M} {s1 s2 : S} :
   mk_eq.mpr <| ⟨1, rfl⟩
 
 private theorem add_assoc' (x y z : LocalizedModule S M) : x + y + z = x + (y + z) := by
-  induction' x with mx sx
-  induction' y with my sy
-  induction' z with mz sz
+  induction x with | _ mx sx
+  induction y with | _ my sy
+  induction z with | _ mz sz
   simp only [mk_add_mk, smul_add]
   refine mk_eq.mpr ⟨1, ?_⟩
   rw [one_smul, one_smul]
@@ -330,20 +330,20 @@ theorem mk_smul_mk (r : R) (m : M) (s t : S) :
 variable {T}
 
 private theorem one_smul_aux (p : LocalizedModule S M) : (1 : T) • p = p := by
-  induction' p with m s
+  induction p with | _ m s
   rw [show (1 : T) = IsLocalization.mk' T (1 : R) (1 : S) by rw [IsLocalization.mk'_one, map_one]]
   rw [mk'_smul_mk, one_smul, one_mul]
 
 private theorem mul_smul_aux (x y : T) (p : LocalizedModule S M) :
     (x * y) • p = x • y • p := by
-  induction' p with m s
+  induction p with | _ m s
   rw [← IsLocalization.mk'_sec (M := S) T x, ← IsLocalization.mk'_sec (M := S) T y]
   simp_rw [← IsLocalization.mk'_mul, mk'_smul_mk, ← mul_smul, mul_assoc]
 
 private theorem smul_add_aux (x : T) (p q : LocalizedModule S M) :
     x • (p + q) = x • p + x • q := by
-  induction' p with m s
-  induction' q with n t
+  induction p with | _ m s
+  induction q with | _ n t
   rw [smul_def, smul_def, mk_add_mk, mk_add_mk]
   rw [show x • _ =  IsLocalization.mk' T _ _ • _ by rw [IsLocalization.mk'_sec (M := S) T]]
   rw [← IsLocalization.mk'_cancel _ _ (IsLocalization.sec S x).2, mk'_smul_mk]
@@ -356,7 +356,7 @@ private theorem smul_zero_aux (x : T) : x • (0 : LocalizedModule S M) = 0 := b
 
 private theorem add_smul_aux (x y : T) (p : LocalizedModule S M) :
     (x + y) • p = x • p + y • p := by
-  induction' p with m s
+  induction p with | _ m s
   rw [smul_def T x, smul_def T y, mk_add_mk, show (x + y) • _ =  IsLocalization.mk' T _ _ • _ by
     rw [← IsLocalization.mk'_sec (M := S) T x, ← IsLocalization.mk'_sec (M := S) T y,
       ← IsLocalization.mk'_add, IsLocalization.mk'_cancel _ _ s], mk'_smul_mk, ← smul_assoc,
@@ -366,7 +366,7 @@ private theorem add_smul_aux (x y : T) (p : LocalizedModule S M) :
   · rw [mul_mul_mul_comm, mul_assoc] -- ring does not work here
 
 private theorem zero_smul_aux (p : LocalizedModule S M) : (0 : T) • p = 0 := by
-  induction' p with m s
+  induction p with | _ m s
   rw [show (0 : T) = IsLocalization.mk' T (0 : R) (1 : S) by rw [IsLocalization.mk'_zero],
     mk'_smul_mk, zero_smul, zero_mk]
 
@@ -450,7 +450,7 @@ theorem algebraMap_mk {A : Type*} [Semiring A] [Algebra R A] (a : R) (s : S) :
 
 instance : IsScalarTower R T (LocalizedModule S M) where
   smul_assoc r x p := by
-    induction' p with m s
+    induction p with | _ m s
     rw [← IsLocalization.mk'_sec (M := S) T x, IsLocalization.smul_mk', mk'_smul_mk, mk'_smul_mk,
       smul'_mk, mul_smul]
 
@@ -689,7 +689,7 @@ If `g` is a linear map `M → M''` such that all scalar multiplication by `s : S
 theorem lift_unique (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R (Module.End R M'')) x))
     (l : LocalizedModule S M →ₗ[R] M'') (hl : l.comp (LocalizedModule.mkLinearMap S M) = g) :
     LocalizedModule.lift S g h = l := by
-  ext x; induction' x with m s
+  ext x; induction x with | _ m s
   rw [LocalizedModule.lift_mk]
   rw [Module.End.algebraMap_isUnit_inv_apply_eq_iff, ← hl, LinearMap.coe_comp,
     Function.comp_apply, LocalizedModule.mkLinearMap_apply, ← l.map_smul, LocalizedModule.smul'_mk]
@@ -807,8 +807,8 @@ theorem fromLocalizedModule_mk (m : M) (s : S) :
   rfl
 
 theorem fromLocalizedModule.inj : Function.Injective <| fromLocalizedModule S f := fun x y eq1 => by
-  induction' x with a b
-  induction' y with a' b'
+  induction x with | _ a b
+  induction y with | _ a' b'
   simp only [fromLocalizedModule_mk] at eq1
   rw [Module.End.algebraMap_isUnit_inv_apply_eq_iff, ← LinearMap.map_smul,
     Module.End.algebraMap_isUnit_inv_apply_eq_iff'] at eq1
