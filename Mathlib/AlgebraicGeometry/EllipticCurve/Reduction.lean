@@ -28,9 +28,9 @@ fraction fields of discrete valuation rings.
 
 ## Main statements
 
-* `exists_integral`: any Weierstrass curve is isomorphic to one given by
+* `exists_isIntegral`: any Weierstrass curve is isomorphic to one given by
   an integral Weierstrass equation.
-* `exists_minimal`: any Weierstrass curve is isomorphic to one given by
+* `exists_isMinimal`: any Weierstrass curve is isomorphic to one given by
   a minimal Weierstrass equation.
 
 ## References
@@ -47,7 +47,7 @@ namespace WeierstrassCurve
 section Integral
 
 variable (R : Type*) [CommRing R]
-variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
+variable {K : Type*} [Field K] [Algebra R K]
 
 /-- A Weierstrass equation over the fraction field `K` is integral if
 it has coefficients in the ring `R`. -/
@@ -60,12 +60,10 @@ noncomputable def integralModel (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     WeierstrassCurve R :=
   hW.integral.choose
 
-omit [IsFractionRing R K] in
 lemma baseChange_integralModel_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     (integralModel R W).baseChange K = W :=
   hW.integral.choose_spec.symm
 
-omit [IsFractionRing R K] in
 lemma isIntegral_of_exists_lift {W : WeierstrassCurve K}
     (h₁ : ∃ r₁, (algebraMap R K) r₁ = W.a₁)
     (h₂ : ∃ r₂, (algebraMap R K) r₂ = W.a₂)
@@ -82,7 +80,6 @@ lemma isIntegral_of_exists_lift {W : WeierstrassCurve K}
   · apply h₄.choose_spec.symm
   · apply h₆.choose_spec.symm
 
-omit [IsFractionRing R K] in
 lemma Δ_integral_of_isIntegral (W : WeierstrassCurve K) [IsIntegral R W] :
     ∃ r : R, algebraMap R K r = W.Δ := by
   obtain ⟨W_int, hW_int⟩ : ∃ W_int : WeierstrassCurve R, W = W_int.baseChange K :=
@@ -90,13 +87,12 @@ lemma Δ_integral_of_isIntegral (W : WeierstrassCurve K) [IsIntegral R W] :
   use W_int.Δ
   rw [hW_int, map_Δ]
 
-omit [IsFractionRing R K] in
 lemma integralModel_Δ_eq (W : WeierstrassCurve K) [hW : IsIntegral R W] :
     algebraMap R K (integralModel R W).Δ = W.Δ := by
   conv_rhs => rw [← integralModel_baseChange_eq R W]
   simp [integralModel]
 
-variable [IsDomain R] [ValuationRing R]
+variable [IsDomain R] [ValuationRing R] [IsFractionRing R K]
 
 open ValuationRing
 
