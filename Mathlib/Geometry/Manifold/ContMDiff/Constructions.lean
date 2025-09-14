@@ -500,13 +500,9 @@ lemma ContMDiff.sumElim {f : M → N} {g : M' → N}
       simp only [extChartAt, ChartedSpace.sum_chartAt_inr, Sum.elim_inr]
       congr
 
-@[deprecated (since := "2025-02-20")] alias ContMDiff.sum_elim := ContMDiff.sumElim
-
 lemma ContMDiff.sumMap {f : M → N} {g : M' → N'}
     (hf : ContMDiff I J n f) (hg : ContMDiff I J n g) : ContMDiff I J n (Sum.map f g) :=
   ContMDiff.sumElim (ContMDiff.inl.comp hf) (ContMDiff.inr.comp hg)
-
-@[deprecated (since := "2025-02-20")] alias ContMDiff.sum_map := ContMDiff.sumMap
 
 lemma contMDiff_of_contMDiff_inl {f : M → N}
     (h : ContMDiff I J n ((@Sum.inl N N') ∘ f)) : ContMDiff I J n f := by
