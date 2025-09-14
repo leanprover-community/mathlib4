@@ -183,7 +183,7 @@ def heval : PowerSeries R →ₐ[R] HahnSeries Γ R where
     by_cases hg : g = 0 <;> simp [hg, Algebra.algebraMap_eq_smul_one]
 
 theorem heval_of_orderTop_not_pos (hx : ¬ 0 < x.orderTop) (a : PowerSeries R) :
-    heval x a = (constantCoeff R) a • 1 := by
+    heval x a = constantCoeff a • 1 := by
   simp [powerSeriesFamily_of_not_orderTop_pos hx]
 
 theorem heval_mul {a b : PowerSeries R} :

@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Scott Carnahan. All rights reserved.
+Copyright (c) 2025 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
@@ -7,18 +7,35 @@ import Mathlib.RingTheory.HahnSeries.HEval
 import Mathlib.RingTheory.PowerSeries.Binomial
 
 /-!
-# Hahn Series
-We introduce generalized powers of certain binomials in Hahn series.
+# Hahn Series expansions of powers of binomials
+We introduce generalized powers of certain binomials in Hahn series. Recall that
+Hahn series are formal power series `Γ → A` where the exponent set `Γ` is partially ordered, and the
+support is partially well-ordered. In this file, we consider the case where one has an action of a
+binomial ring `R` on both `Γ` and `A`. Here, a binomial ring is a ring `R` that admits a uniquely
+defined notion of binomial coefficient `Ring.choose r n` for all `r` in `R` and natural numbers `n`.
+Using a binomial series expansion, this allows us to define generalized powers of the
+form `(x - y)^r`, where `x` and `y` are Hahn series with singleton support.
+
+One application of these binomial powers is to the theory of vertex algebras, where one often
+encounters expressions in the abbreviated form `(x-y)^n A(x)B(y)`, where `n` is an integer,
+`A : V → V((x))` and `B : V → V((y))` are linear maps to Laurent series spaces. This is expanded
+as a linear map `V → V((x))((y))` once `(x-y)^n` is rewritten as `x^n(1 - y/x)^n` and `A(x)` is
+extended to a map `V((y)) → V((x))((y))` by operating on coefficients.
 
 ## Main Definitions
   * `HahnSeries.binomialPow` describes powers of a binomial of the form `single g 1 - single g' 1`,
   where the powers take values in a binomial ring.
 
 ## Main results
-  *
+  * `HahnSeries.binomialPow_add` asserts that adding exponents amounts to multiplying the
+  corresponding formal powers of binomial series.
+  * `HahnSeries.binomialPow_nat` asserts that natural number powers are given by the usual iterated
+  multiplication of Hahn series.
 
 ## TODO
-  * more about coefficients?
+  * `HahnSeries.coeff_binomialPow_smul_add` :
+    `(binomialPow A g g' r).coeff (r • g + n • (g' - g)) = Int.negOnePow n • Ring.choose r n • 1`
+    (proved in a WIP PR)
 
 -/
 
@@ -74,10 +91,9 @@ theorem binomialPow_add {g g' : Γ} (r r' : R) :
 theorem binomialPow_one {g g' : Γ} (h : g < g') :
     binomialPow A g g' (Nat.cast (R := R) 1) = ((single g) (1 : A) - (single g') 1) := by
   rw [binomialPow_apply, PowerSeries.binomialSeries_nat 1, pow_one, map_add,
-    PowerSeries.heval_X _ (pos_orderTop_single_sub h (-1)),
-    ← RingHom.map_one (f := PowerSeries.C A), PowerSeries.heval_C _, one_smul, mul_add, mul_one,
-    single_mul_single, one_mul, single_neg, Nat.cast_one, one_smul, add_sub_cancel,
-    sub_eq_add_neg]
+    PowerSeries.heval_X _ (pos_orderTop_single_sub h (-1)), ← RingHom.map_one PowerSeries.C,
+    PowerSeries.heval_C _, one_smul, mul_add, mul_one, single_mul_single, one_mul, single_neg,
+    Nat.cast_one, one_smul, add_sub_cancel, sub_eq_add_neg]
 
 theorem binomialPow_nat {g g' : Γ} (h : g < g') (n : ℕ) :
     binomialPow A g g' (n : R) = ((single g (1 : A)) - single g' 1) ^ n := by
