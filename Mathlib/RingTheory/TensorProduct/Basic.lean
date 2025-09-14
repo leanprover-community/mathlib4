@@ -596,6 +596,7 @@ end AlgEquiv
 
 variable [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
 variable [Semiring B] [Algebra R B]
+
 /-- Build an algebra morphism from a linear map out of a tensor product, and evidence that on pure
 tensors, it preserves multiplication and the identity.
 
