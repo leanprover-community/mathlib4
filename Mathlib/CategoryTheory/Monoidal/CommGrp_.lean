@@ -21,7 +21,7 @@ variable (C : Type u₁) [Category.{v₁} C] [CartesianMonoidalCategory.{v₁} C
 structure CommGrp_ where
   /-- The underlying object in the ambient monoidal category -/
   X : C
-  [grp : Grp_Class X]
+  [grp : GrpObj X]
   [comm : IsCommMon X]
 
 attribute [instance] CommGrp_.grp CommGrp_.comm
@@ -148,7 +148,7 @@ end
 /-- Construct an isomorphism of commutative group objects by giving a monoid isomorphism between the
 underlying objects. -/
 @[simps!]
-def mkIso' {G H : C} (e : G ≅ H) [Grp_Class G] [IsCommMon G] [Grp_Class H] [IsCommMon H]
+def mkIso' {G H : C} (e : G ≅ H) [GrpObj G] [IsCommMon G] [GrpObj H] [IsCommMon H]
     [IsMon_Hom e.hom] : mk G ≅ mk H :=
   (fullyFaithfulForget₂Grp_ C).preimageIso (Grp_.mkIso' e)
 
