@@ -120,7 +120,7 @@ instance normOneClass [Nontrivial E] : NormOneClass (E →L[𝕜] E) :=
 instance toWithNormedAddGroup [RingHomIsometric σ₁₂] : WithNormedAddGroup (E →SL[σ₁₂] F) :=
   WithNormedAddGroup.ofSeparation fun f => (opNorm_zero_iff f).mp
 
-instance [RingHomIsometric σ₁₂] : NormedAddCommGroup (E →SL[σ₁₂] F) := by infer_instance
+example [RingHomIsometric σ₁₂] : NormedAddCommGroup (E →SL[σ₁₂] F) := by infer_instance
 
 /-- Continuous linear maps form a normed ring with respect to the operator norm. -/
 instance toNormedRing : WithNormedRing (E →L[𝕜] E) where

@@ -638,6 +638,6 @@ instance instCStarRing : CStarRing 𝓜(𝕜, A) where
 
 end DenselyNormed
 
-noncomputable instance {A : Type*} [NonUnitalCStarAlgebra A] : CStarAlgebra 𝓜(ℂ, A) where
+example {A : Type*} [NonUnitalCStarAlgebra A] : CStarAlgebra 𝓜(ℂ, A) := by infer_instance
 
 end DoubleCentralizer

@@ -13,5 +13,5 @@ in earlier files.
 -/
 
 noncomputable
-instance {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E] [CompleteSpace E] :
-    CStarAlgebra (E →L[ℂ] E) where
+example {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E] [CompleteSpace E] :
+    CStarAlgebra (E →L[ℂ] E) := by infer_instance

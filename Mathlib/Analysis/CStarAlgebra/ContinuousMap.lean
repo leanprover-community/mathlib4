@@ -20,13 +20,13 @@ namespace BoundedContinuousFunction
 
 variable [TopologicalSpace α]
 
-instance [NonUnitalCStarAlgebra A] : NonUnitalCStarAlgebra (α →ᵇ A) where
+example [NonUnitalCStarAlgebra A] : NonUnitalCStarAlgebra (α →ᵇ A) := by infer_instance
 
-instance [NonUnitalCommCStarAlgebra A] : NonUnitalCommCStarAlgebra (α →ᵇ A) where
+example [NonUnitalCommCStarAlgebra A] : NonUnitalCommCStarAlgebra (α →ᵇ A) := by infer_instance
 
-instance [CStarAlgebra A] : CStarAlgebra (α →ᵇ A) where
+example [CStarAlgebra A] : CStarAlgebra (α →ᵇ A) := by infer_instance
 
-instance [CommCStarAlgebra A] : CommCStarAlgebra (α →ᵇ A) where
+example [CommCStarAlgebra A] : CommCStarAlgebra (α →ᵇ A) := by infer_instance
 
 end BoundedContinuousFunction
 
@@ -34,13 +34,13 @@ namespace ContinuousMap
 
 variable [TopologicalSpace α] [CompactSpace α]
 
-instance [NonUnitalCStarAlgebra A] : NonUnitalCStarAlgebra C(α, A) where
+example [NonUnitalCStarAlgebra A] : NonUnitalCStarAlgebra C(α, A) := by infer_instance
 
-instance [NonUnitalCommCStarAlgebra A] : NonUnitalCommCStarAlgebra C(α, A) where
+example [NonUnitalCommCStarAlgebra A] : NonUnitalCommCStarAlgebra C(α, A) := by infer_instance
 
-instance [CStarAlgebra A] : CStarAlgebra C(α, A) where
+example [CStarAlgebra A] : CStarAlgebra C(α, A) := by infer_instance
 
-instance [CommCStarAlgebra A] : CommCStarAlgebra C(α, A) where
+example [CommCStarAlgebra A] : CommCStarAlgebra C(α, A) := by infer_instance
 
 end ContinuousMap
 
@@ -48,9 +48,9 @@ namespace ZeroAtInftyContinuousMap
 
 open ZeroAtInfty
 
-instance [TopologicalSpace α] [NonUnitalCStarAlgebra A] : NonUnitalCStarAlgebra C₀(α, A) where
+example [TopologicalSpace α] [NonUnitalCStarAlgebra A] : NonUnitalCStarAlgebra C₀(α, A) where
 
-instance [TopologicalSpace α] [NonUnitalCommCStarAlgebra A] :
-    NonUnitalCommCStarAlgebra C₀(α, A) where
+example [TopologicalSpace α] [NonUnitalCommCStarAlgebra A] :
+    NonUnitalCommCStarAlgebra C₀(α, A) := by infer_instance
 
 end ZeroAtInftyContinuousMap

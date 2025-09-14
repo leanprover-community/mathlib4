@@ -164,22 +164,18 @@ namespace OrderDual
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) seminormedGroup [SeminormedGroup E] : SeminormedGroup Eᵒᵈ :=
-  ‹SeminormedGroup E›
+instance (priority := 100) seminormedGroup [Group E] [h : WithSeminormedGroup E] :
+    WithSeminormedGroup Eᵒᵈ := h
+
+-- See note [lower instance priority]
+example [SeminormedCommGroup E] : SeminormedCommGroup Eᵒᵈ := by infer_instance
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) seminormedCommGroup [SeminormedCommGroup E] : SeminormedCommGroup Eᵒᵈ :=
-  ‹SeminormedCommGroup E›
+instance (priority := 100) normedGroup [Group E] [h : WithNormedGroup E] :
+    WithNormedGroup Eᵒᵈ := h
 
--- See note [lower instance priority]
-@[to_additive]
-instance (priority := 100) normedGroup [NormedGroup E] : NormedGroup Eᵒᵈ := ‹NormedGroup E›
-
--- See note [lower instance priority]
-@[to_additive]
-instance (priority := 100) normedCommGroup [NormedCommGroup E] : NormedCommGroup Eᵒᵈ :=
-  ‹NormedCommGroup E›
+example [NormedCommGroup E] : NormedCommGroup Eᵒᵈ := by infer_instance
 
 end OrderDual
 end OrderDual

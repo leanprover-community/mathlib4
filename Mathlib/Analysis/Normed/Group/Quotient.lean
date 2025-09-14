@@ -327,8 +327,8 @@ noncomputable def AddSubgroup.seminormedAddCommGroupQuotient (S : AddSubgroup M)
 
 /-- The quotient in the category of normed groups. -/
 @[deprecated QuotientAddGroup.instNormedAddCommGroup (since := "2025-02-02")]
-noncomputable instance AddSubgroup.normedAddCommGroupQuotient (S : AddSubgroup M)
-    [IsClosed (S : Set M)] : NormedAddCommGroup (M ⧸ S) := inferInstance
+example (S : AddSubgroup M) [IsClosed (S : Set M)] :
+    NormedAddCommGroup (M ⧸ S) := inferInstance
 
 namespace AddSubgroup
 
