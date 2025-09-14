@@ -388,6 +388,17 @@ end Multiset
 theorem List.finite_toSet (l : List α) : { x | x ∈ l }.Finite :=
   (show Multiset α from ⟦l⟧).finite_toSet
 
+/-- `Finset α` is order isomorphic to the type of finite sets in `α`. -/
+@[simps] noncomputable def OrderIso.finsetSetFinite : Finset α ≃o {s : Set α // s.Finite} where
+  toFun s := ⟨s, s.finite_toSet⟩
+  invFun s := s.2.toFinset
+  left_inv _ := by simp
+  right_inv _ := by simp
+  map_rel_iff' := .rfl
+
+instance : WellFoundedLT {s : Set α // s.Finite} :=
+  OrderIso.finsetSetFinite.symm.toOrderEmbedding.wellFoundedLT
+
 /-! ### Finite instances
 
 There is seemingly some overlap between the following instances and the `Fintype` instances
