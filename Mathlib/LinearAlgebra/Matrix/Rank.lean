@@ -6,6 +6,7 @@ Authors: Johan Commelin, Eric Wieser
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.DotProduct
 import Mathlib.LinearAlgebra.Matrix.Dual
@@ -311,6 +312,21 @@ theorem cRank_toNat_eq_rank (A : Matrix m n R) : A.cRank.toNat = A.rank := by
 theorem eRank_toNat_eq_rank (A : Matrix m n R) : A.eRank.toNat = A.rank := by
   rw [eRank_toNat_eq_finrank, ← rank_eq_finrank_span_cols]
 
+/-- The rank factorization derived from `Module.finBasis`. -/
+noncomputable def rankFactorization [IsPrincipalIdealRing R] [IsDomain R] {r : Type*} [Fintype r]
+    (A : Matrix m n R) (hr : Fintype.card r = A.rank) :
+    { B : Matrix m r R × Matrix r n R // A = B.1 * B.2 } where
+  val :=
+    let V := LinearMap.range A.mulVecLin
+    let basis_V := (Module.finBasis R V).reindex (Fintype.equivFinOfCardEq hr).symm
+    let col_repr (j : n) := basis_V.repr ⟨A.col j, col_mem_range_mulVecLin _ _⟩
+    (Matrix.of fun i j => (basis_V j).val i, Matrix.of fun i j => col_repr j i)
+  property := by
+    extract_lets V basis_V col_repr
+    ext i j
+    have : A.col j = ∑ i, col_repr j i • basis_V i := by simp only [col_repr, basis_V.sum_repr]
+    simpa [mul_comm] using congr_fun this i
+
 end CommRing
 
 section Field
@@ -344,21 +360,6 @@ theorem cRank_diagonal [DecidableEq m] (w : m → R) :
 theorem eRank_diagonal [DecidableEq m] (w : m → R) :
     (diagonal w).eRank = {i | (w i) ≠ 0}.encard := by
   simp [eRank, cRank_diagonal, toENat_cardinalMk_subtype]
-
-/-- The rank factorization derived from `Module.finBasis`. -/
-noncomputable def rankFactorization {r : Type*} [Fintype r]
-    (A : Matrix m n R) (hr : Fintype.card r = A.rank) :
-    { B : Matrix m r R × Matrix r n R // A = B.1 * B.2 } where
-  val :=
-    let V := LinearMap.range A.mulVecLin
-    let basis_V := (Module.finBasis R V).reindex (Fintype.equivFinOfCardEq hr).symm
-    let col_repr (j : n) := basis_V.repr ⟨A.col j, col_mem_range_mulVecLin _ _⟩
-    (Matrix.of fun i j => (basis_V j).val i, Matrix.of fun i j => col_repr j i)
-  property := by
-    extract_lets V basis_V col_repr
-    ext i j
-    have : A.col j = ∑ i, col_repr j i • basis_V i := by simp only [col_repr, basis_V.sum_repr]
-    simpa [mul_comm] using congr_fun this i
 
 end Field
 
