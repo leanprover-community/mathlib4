@@ -18,9 +18,9 @@ variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] [BraidedCat
 
 variable (X) in
 /-- If `X` represents a presheaf of commutative monoids, then `X` is a commutative monoid object. -/
-lemma IsCommMon.ofRepresentableBy (F : Cᵒᵖ ⥤ CommMonCat) (α : (F ⋙ forget _).RepresentableBy X) :
+lemma IsCommMonObj.ofRepresentableBy (F : Cᵒᵖ ⥤ CommMonCat) (α : (F ⋙ forget _).RepresentableBy X) :
     letI : MonObj X := .ofRepresentableBy X (F ⋙ forget₂ CommMonCat MonCat) α
-    IsCommMon X := by
+    IsCommMonObj X := by
   letI : MonObj X := .ofRepresentableBy X (F ⋙ forget₂ CommMonCat MonCat) α
   have : μ = α.homEquiv.symm (α.homEquiv (fst X X) * α.homEquiv (snd X X)) := rfl
   constructor
@@ -28,3 +28,6 @@ lemma IsCommMon.ofRepresentableBy (F : Cᵒᵖ ⥤ CommMonCat) (α : (F ⋙ forg
     ConcreteCategory.forget_map_eq_coe, Equiv.apply_symm_apply, map_mul,
     ← ConcreteCategory.forget_map_eq_coe, ← Functor.comp_map, ← α.homEquiv_comp, op_tensorObj,
     Functor.comp_obj, braiding_hom_fst, braiding_hom_snd, _root_.mul_comm]
+
+@[deprecated (since := "2025-09-14")]
+alias IsCommMon.ofRepresentableBy := IsCommMonObj.ofRepresentableBy
