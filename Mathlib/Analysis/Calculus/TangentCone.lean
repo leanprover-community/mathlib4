@@ -291,7 +291,7 @@ theorem zero_mem_tangentCone {s : Set E} {x : E} (hx : x ∈ closure s) :
         simp only [c, norm_smul, norm_pow, pow_succ, norm_mul, d, ← dist_eq_norm']
         gcongr
         exacts [hm_le n, (hvu n).le]
-      _ = ‖r‖ * u n := by field_simp [mul_assoc]
+      _ = ‖r‖ * u n := by field_simp
   refine squeeze_zero_norm Hle ?_
   simpa using tendsto_const_nhds.mul u_lim
 
@@ -514,7 +514,7 @@ theorem UniqueDiffWithinAt.univ_pi (ι : Type*) [Finite ι] (E : ι → Type*)
   refine ⟨(dense_pi univ fun i _ => (h i).1).mono ?_, fun i _ => (h i).2⟩
   norm_cast
   simp only [← Submodule.iSup_map_single, iSup_le_iff, LinearMap.map_span, Submodule.span_le,
-    ← mapsTo']
+    ← mapsTo_iff_image_subset]
   exact fun i => (mapsTo_tangentConeAt_pi fun j _ => (h j).2).mono Subset.rfl Submodule.subset_span
 
 theorem UniqueDiffWithinAt.pi (ι : Type*) [Finite ι] (E : ι → Type*)

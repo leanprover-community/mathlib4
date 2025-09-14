@@ -231,7 +231,7 @@ that we then optimize by tweaking the parameters. The (almost) optimal parameter
 
 theorem exists_large_sphere_aux (n d : ℕ) : ∃ k ∈ range (n * (d - 1) ^ 2 + 1),
     (↑(d ^ n) / ((n * (d - 1) ^ 2 :) + 1) : ℝ) ≤ #(sphere n d k) := by
-  refine exists_le_card_fiber_of_nsmul_le_card_of_maps_to (fun x hx => ?_) nonempty_range_succ ?_
+  refine exists_le_card_fiber_of_nsmul_le_card_of_maps_to (fun x hx => ?_) nonempty_range_add_one ?_
   · rw [mem_range, Nat.lt_succ_iff]
     exact sum_sq_le_of_mem_box hx
   · rw [card_range, nsmul_eq_mul, mul_div_assoc', cast_add_one, mul_div_cancel_left₀, card_box]
@@ -288,7 +288,8 @@ theorem le_sqrt_log (hN : 4096 ≤ N) : log (2 / (1 - 2 / exp 1)) * (69 / 50) �
   calc
     _ ≤ log (2 ^ 3) * (69 / 50) := by
       gcongr
-      · field_simp [show 2 < Real.exp 1 from lt_trans (by norm_num1) exp_one_gt_d9]
+      · field_simp
+        simp (disch := positivity) [show 2 < Real.exp 1 from lt_trans (by norm_num1) exp_one_gt_d9]
       · norm_num1
         exact two_div_one_sub_two_div_e_le_eight
     _ ≤ √(log (2 ^ 12)) := by
