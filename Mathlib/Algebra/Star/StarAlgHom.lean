@@ -618,8 +618,7 @@ end StarAlgHom
 
 /-- A *⋆-algebra* equivalence is an equivalence preserving addition, multiplication, scalar
 multiplication and the star operation, which allows for considering both unital and non-unital
-equivalences with a single structure. Currently, `AlgEquiv` requires unital algebras, which is
-why this structure does not extend it. -/
+equivalences with a single structure. -/
 structure StarAlgEquiv (R A B : Type*) [Add A] [Add B] [Mul A] [Mul B] [SMul R A] [SMul R B]
   [Star A] [Star B] extends A ≃ₐ[R] B where
   /-- By definition, a ⋆-algebra equivalence preserves the `star` operation. -/
@@ -629,8 +628,8 @@ structure StarAlgEquiv (R A B : Type*) [Add A] [Add B] [Mul A] [Mul B] [SMul R A
 
 @[inherit_doc] notation:25 A " ≃⋆ₐ[" R "] " B => StarAlgEquiv R A B
 
-/-- Reinterpret a star algebra equivalence as a `RingEquiv` by forgetting the interaction with
-the star operation and scalar multiplication. -/
+/-- Reinterpret a ⋆-algebra equivalence as an `AlgEquiv` by forgetting the interaction with
+the star operation. -/
 add_decl_doc StarAlgEquiv.toAlgEquiv
 
 @[deprecated AlgEquivClass (since := "2025-14-09")]
@@ -713,7 +712,7 @@ theorem coe_refl : ⇑(refl : A ≃⋆ₐ[R] A) = id :=
 @[symm]
 nonrec def symm (e : A ≃⋆ₐ[R] B) : B ≃⋆ₐ[R] A :=
   { e.symm with
-    map_star' := fun b => by
+    map_star' b := by
       simpa only [apply_inv_apply, inv_apply_apply] using
         congr_arg (inv e) (map_star e (inv e b)).symm }
 
@@ -769,7 +768,7 @@ theorem to_ringEquiv_symm (f : A ≃⋆ₐ[R] B) : (f : A ≃+* B).symm = f.symm
 @[trans]
 def trans (e₁ : A ≃⋆ₐ[R] B) (e₂ : B ≃⋆ₐ[R] C) : A ≃⋆ₐ[R] C :=
   { e₁.toAlgEquiv.trans e₂.toAlgEquiv with
-    map_star' := fun a =>
+    map_star' a :=
       show e₂.toFun (e₁.toFun (star a)) = star (e₂.toFun (e₁.toFun a)) by
         rw [e₁.map_star', e₂.map_star'] }
 
@@ -801,8 +800,6 @@ theorem rightInverse_symm (e : A ≃⋆ₐ[R] B) : Function.RightInverse e.symm 
   e.right_inv
 
 section AlgEquiv
-variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
-  [Algebra R A] [Algebra R B] [Star A] [Star B]
 
 @[simp]
 theorem toAlgEquiv_symm (f : A ≃⋆ₐ[R] B) : f.symm.toAlgEquiv = f.toAlgEquiv.symm := rfl
@@ -814,8 +811,8 @@ theorem coe_toAlgEquiv (f : A ≃⋆ₐ[R] B) : ⇑f.toAlgEquiv = ⇑f := rfl
 theorem coe_symm_toAlgEquiv (f : A ≃⋆ₐ[R] B) : ⇑f.toAlgEquiv.symm = ⇑f.symm := rfl
 
 @[simp]
-theorem toAlgEquiv_trans {C : Type*} [Semiring C] [Algebra R C] [Star C] (f : A ≃⋆ₐ[R] B)
-    (g : B ≃⋆ₐ[R] C) : (f.trans g).toAlgEquiv = f.toAlgEquiv.trans g.toAlgEquiv := rfl
+theorem toAlgEquiv_trans (f : A ≃⋆ₐ[R] B) (g : B ≃⋆ₐ[R] C) :
+    (f.trans g).toAlgEquiv = f.toAlgEquiv.trans g.toAlgEquiv := rfl
 
 theorem toAlgEquiv_injective : Function.Injective (toAlgEquiv (R:=R) (A:=A) (B:=B)) :=
   fun _ _  h => ext <| AlgEquiv.congr_fun h
@@ -827,8 +824,7 @@ theorem toAlgEquiv_refl : (refl : A ≃⋆ₐ[R] A).toAlgEquiv = AlgEquiv.refl :
 `star` operation. -/
 def ofAlgEquiv (f : A ≃ₐ[R] B) (map_star : ∀ x, f (star x) = star (f x)) :
     A ≃⋆ₐ[R] B where
-  toRingEquiv := f.toRingEquiv
-  map_smul' := f.toLinearEquiv.map_smul
+  toAlgEquiv := f
   map_star' := map_star
 
 @[simp]

@@ -87,7 +87,7 @@ instance equivLike : EquivLike (A ≃A[R] B) A B where
 instance continuousAlgEquivClass : ContinuousAlgEquivClass (A ≃A[R] B) R A B where
   map_add f := f.map_add'
   map_mul f := f.map_mul'
-  map_smul f := f.map_smul'
+  map_smulₛₗ f := f.map_smul'
   map_continuous := continuous_toFun
   inv_continuous := continuous_invFun
 
