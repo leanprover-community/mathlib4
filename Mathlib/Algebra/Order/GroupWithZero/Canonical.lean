@@ -131,17 +131,17 @@ instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosReflectLE :
 instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulReflectLT :
     PosMulReflectLT α where elim _a _b _c := lt_of_mul_lt_mul_left'
 
-#adaptation_note /-- 2025-03-29 lean4#7717 Needed to add `dsimp only` -/
+#adaptation_note /-- 2025-03-29 https://github.com/leanprover/lean4/issues/7717 Needed to add `dsimp only` -/
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulStrictMono :
     PosMulStrictMono α where
-  elim a b c hbc := by dsimp only; by_contra! h; exact hbc.not_ge <| (mul_le_mul_left a.2).1 h
+  elim a b c hbc := by dsimp only; by_contra! h; exact hbc.not_ge <| (mul_le_mul_iff_right₀ a.2).1 h
 
-#adaptation_note /-- 2025-03-29 lean4#7717 Needed to add `dsimp only` -/
+#adaptation_note /-- 2025-03-29 https://github.com/leanprover/lean4/issues/7717 Needed to add `dsimp only` -/
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosStrictMono :
     MulPosStrictMono α where
-  elim a b c hbc := by dsimp only; by_contra! h; exact hbc.not_ge <| (mul_le_mul_right a.2).1 h
+  elim a b c hbc := by dsimp only; by_contra! h; exact hbc.not_ge <| (mul_le_mul_iff_left₀ a.2).1 h
 
 @[simp]
 theorem Units.zero_lt (u : αˣ) : (0 : α) < u :=
@@ -490,14 +490,15 @@ protected lemma isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrder
 
 /-- Adding a new zero to a canonically ordered additive monoid produces another one. -/
 instance instCanonicallyOrderedAdd [AddZeroClass α] [Preorder α] [CanonicallyOrderedAdd α] :
-    CanonicallyOrderedAdd (WithZero α) :=
-  { WithZero.instExistsAddOfLE with
-    le_self_add := fun a b => by
-      induction a
-      · exact bot_le
-      induction b
-      · exact le_rfl
-      · exact WithZero.coe_le_coe.2 le_self_add }
+    CanonicallyOrderedAdd (WithZero α) where
+  le_add_self
+  | 0, _ => bot_le
+  | (a : α), 0 => le_rfl
+  | (a : α), (b : α) => WithZero.coe_le_coe.2 le_add_self
+  le_self_add
+  | 0, _ => bot_le
+  | (a : α), 0 => le_rfl
+  | (a : α), (b : α) => WithZero.coe_le_coe.2 le_self_add
 
 instance instLinearOrderedCommMonoidWithZero [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α] :
     LinearOrderedCommMonoidWithZero (WithZero α) where

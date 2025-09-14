@@ -77,7 +77,7 @@ lemma IsGreatest.norm_cfc [Nontrivial A] (f : 𝕜 → 𝕜) (a : A)
 lemma IsGreatest.nnnorm_cfc [Nontrivial A] (f : 𝕜 → 𝕜) (a : A)
     (hf : ContinuousOn f (σ 𝕜 a) := by cfc_cont_tac) (ha : p a := by cfc_tac) :
     IsGreatest ((fun x ↦ ‖f x‖₊) '' σ 𝕜 a) ‖cfc f a‖₊ := by
-  convert Real.toNNReal_mono.map_isGreatest (.norm_cfc f a)
+  convert Real.toNNReal_monotone.map_isGreatest (.norm_cfc f a)
   all_goals simp [Set.image_image, norm_toNNReal]
 
 lemma norm_apply_le_norm_cfc (f : 𝕜 → 𝕜) (a : A) ⦃x : 𝕜⦄ (hx : x ∈ σ 𝕜 a)
@@ -264,7 +264,7 @@ lemma IsGreatest.norm_cfcₙ (f : 𝕜 → 𝕜) (a : A)
 lemma IsGreatest.nnnorm_cfcₙ (f : 𝕜 → 𝕜) (a : A)
     (hf : ContinuousOn f (σₙ 𝕜 a) := by cfc_cont_tac) (hf₀ : f 0 = 0 := by cfc_zero_tac)
     (ha : p a := by cfc_tac) : IsGreatest ((fun x ↦ ‖f x‖₊) '' σₙ 𝕜 a) ‖cfcₙ f a‖₊ := by
-  convert Real.toNNReal_mono.map_isGreatest (.norm_cfcₙ f a)
+  convert Real.toNNReal_monotone.map_isGreatest (.norm_cfcₙ f a)
   all_goals simp [Set.image_image, norm_toNNReal]
 
 lemma norm_apply_le_norm_cfcₙ (f : 𝕜 → 𝕜) (a : A) ⦃x : 𝕜⦄ (hx : x ∈ σₙ 𝕜 a)

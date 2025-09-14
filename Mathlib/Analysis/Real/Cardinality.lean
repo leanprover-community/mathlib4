@@ -34,7 +34,7 @@ We conclude that all intervals with distinct endpoints have cardinality continuu
 
 ## Notation
 
-* `𝔠` : notation for `Cardinal.continuum` in locale `Cardinal`, defined in `SetTheory.Continuum`.
+* `𝔠` : notation for `Cardinal.continuum` in scope `Cardinal`, defined in `SetTheory.Continuum`.
 
 ## Tags
 continuum, cardinality, reals, cardinality of the reals
@@ -113,8 +113,9 @@ theorem increasing_cantorFunction (h1 : 0 < c) (h2 : c < 1 / 2) {n : ℕ} {f g :
   have h3 : c < 1 := by
     apply h2.trans
     norm_num
-  induction' n with n ih generalizing f g
-  · let f_max : ℕ → Bool := fun n => Nat.rec false (fun _ _ => true) n
+  induction n generalizing f g with
+  | zero =>
+    let f_max : ℕ → Bool := fun n => Nat.rec false (fun _ _ => true) n
     have hf_max : ∀ n, f n → f_max n := by
       intro n hn
       cases n
@@ -144,11 +145,12 @@ theorem increasing_cantorFunction (h1 : 0 < c) (h2 : c < 1 / 2) {n : ℕ} {f g :
         · contradiction
         simp [g_min]
       · exact cantorFunctionAux_zero _
-  rw [cantorFunction_succ f (le_of_lt h1) h3, cantorFunction_succ g (le_of_lt h1) h3]
-  rw [hn 0 <| zero_lt_succ n]
-  apply add_lt_add_left
-  rw [mul_lt_mul_left h1]
-  exact ih (fun k hk => hn _ <| Nat.succ_lt_succ hk) fn gn
+  | succ n ih =>
+    rw [cantorFunction_succ f (le_of_lt h1) h3, cantorFunction_succ g (le_of_lt h1) h3]
+    rw [hn 0 <| zero_lt_succ n]
+    apply add_lt_add_left
+    rw [mul_lt_mul_left h1]
+    exact ih (fun k hk => hn _ <| Nat.succ_lt_succ hk) fn gn
 
 /-- `cantorFunction c` is injective if `0 < c < 1/2`. -/
 theorem cantorFunction_injective (h1 : 0 < c) (h2 : c < 1 / 2) :
@@ -210,8 +212,7 @@ theorem mk_Ioi_real (a : ℝ) : #(Ioi a) = 𝔠 := by
     convert @Iic_union_Ioi ℝ _ _
     exact Iio_union_right
   rw [← hu]
-  refine lt_of_le_of_lt (mk_union_le _ _) ?_
-  refine lt_of_le_of_lt (add_le_add_right (mk_union_le _ _) _) ?_
+  grw [mk_union_le, mk_union_le]
   have h2 : (fun x => a + a - x) '' Ioi a = Iio a := by
     convert @image_const_sub_Ioi ℝ _ _ _
     simp
@@ -258,5 +259,40 @@ theorem mk_Icc_real {a b : ℝ} (h : a < b) : #(Icc a b) = 𝔠 :=
 /-- The cardinality of the interval (a, b]. -/
 theorem mk_Ioc_real {a b : ℝ} (h : a < b) : #(Ioc a b) = 𝔠 :=
   le_antisymm (mk_real ▸ mk_set_le _) (mk_Ioo_real h ▸ mk_le_mk_of_subset Ioo_subset_Ioc_self)
+
+@[simp]
+lemma Real.Ioo_countable_iff {x y : ℝ} :
+    (Ioo x y).Countable ↔ y ≤ x := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
+  contrapose! h
+  rw [← Cardinal.le_aleph0_iff_set_countable, Cardinal.mk_Ioo_real h, not_le]
+  exact Cardinal.aleph0_lt_continuum
+
+@[simp]
+lemma Real.Ico_countable_iff {x y : ℝ} :
+    (Ico x y).Countable ↔ y ≤ x := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
+  contrapose! h
+  rw [← Cardinal.le_aleph0_iff_set_countable, Cardinal.mk_Ico_real h, not_le]
+  exact Cardinal.aleph0_lt_continuum
+
+@[simp]
+lemma Real.Ioc_countable_iff {x y : ℝ} :
+    (Ioc x y).Countable ↔ y ≤ x := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
+  contrapose! h
+  rw [← Cardinal.le_aleph0_iff_set_countable, Cardinal.mk_Ioc_real h, not_le]
+  exact Cardinal.aleph0_lt_continuum
+
+@[simp]
+lemma Real.Icc_countable_iff {x y : ℝ} :
+    (Icc x y).Countable ↔ y ≤ x := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by
+    rcases le_iff_eq_or_lt.mp h with heq | hlt
+    · simp [heq]
+    · simp [hlt]⟩
+  contrapose! h
+  rw [← Cardinal.le_aleph0_iff_set_countable, Cardinal.mk_Icc_real h, not_le]
+  exact Cardinal.aleph0_lt_continuum
 
 end Cardinal

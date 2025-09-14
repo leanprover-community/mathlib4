@@ -103,7 +103,7 @@ class InnerProductSpace (𝕜 : Type*) (E : Type*) [RCLike 𝕜] [SeminormedAddC
   NormedSpace 𝕜 E, Inner 𝕜 E where
   /-- The inner product induces the norm. -/
   norm_sq_eq_re_inner : ∀ x : E, ‖x‖ ^ 2 = re (inner x x)
-  /-- The inner product is *hermitian*, taking the `conj` swaps the arguments. -/
+  /-- The inner product is *Hermitian*, taking the `conj` swaps the arguments. -/
   conj_inner_symm : ∀ x y, conj (inner y x) = inner x y
   /-- The inner product is additive in the first coordinate. -/
   add_left : ∀ x y z, inner (x + y) z = inner x z + inner y z
@@ -131,7 +131,7 @@ instance defined on it, otherwise this will create a second non-defeq norm insta
 /-- A structure requiring that a scalar product is positive semidefinite and symmetric. -/
 structure PreInnerProductSpace.Core (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup F]
   [Module 𝕜 F] extends Inner 𝕜 F where
-  /-- The inner product is *hermitian*, taking the `conj` swaps the arguments. -/
+  /-- The inner product is *Hermitian*, taking the `conj` swaps the arguments. -/
   conj_inner_symm x y : conj (inner y x) = inner x y
   /-- The inner product is positive (semi)definite. -/
   re_inner_nonneg x : 0 ≤ re (inner x x)
@@ -359,10 +359,9 @@ theorem inner_mul_inner_self_le (x y : F) : ‖⟪x, y⟫‖ * ‖⟪y, x⟫‖ 
   · have hzero' : ‖⟪x, y⟫‖ ≠ 0 := norm_ne_zero_iff.2 hzero
     convert cauchy_schwarz_aux' (𝕜 := 𝕜) (⟪x, y⟫ • x) y (t / ‖⟪x, y⟫‖) using 3
     · field_simp
-      rw [← sq, normSq, normSq, inner_smul_right, inner_smul_left, ← mul_assoc _ _ ⟪x, x⟫,
+      rw [normSq, normSq, inner_smul_right, inner_smul_left, ← mul_assoc _ _ ⟪x, x⟫,
         mul_conj]
-      nth_rw 2 [sq]
-      rw [← ofReal_mul, re_ofReal_mul]
+      rw [← ofReal_pow, re_ofReal_mul]
       ring
     · field_simp
       rw [inner_smul_left, mul_comm _ ⟪x, y⟫_𝕜, mul_conj, ← ofReal_pow, ofReal_re]
