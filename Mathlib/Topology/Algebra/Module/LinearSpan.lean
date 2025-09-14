@@ -46,9 +46,6 @@ variable {ι 𝕜 E F : Type*}
 variable [Finite ι] [Field 𝕜] [t𝕜 : TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
   [AddCommGroup E] [Module 𝕜 E] [T0Space 𝕜]
 
-/- A linear functional `φ` can be expressed as a linear combination of linear functionals `f₁,…,fₙ`
-if and only if `φ` is continuous with respect to the topology induced by `f₁,…,fₙ`. See
-`LinearMap.mem_span_iff_continuous` for a result about arbitrary collections of linear functionals.
 /- A linear functional `φ` can be expressed as a linear combination of finitely many linear
 functionals `f₁,…,fₙ` if and only if `φ` is continuous with respect to the topology induced by
 `f₁,…,fₙ`. See `LinearMap.mem_span_iff_continuous` for a result about arbitrary collections of
