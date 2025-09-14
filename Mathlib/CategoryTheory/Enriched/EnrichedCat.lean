@@ -138,7 +138,8 @@ variable {W} in
 def transportEnrichment (F : V ⥤ W) [F.LaxMonoidal] :
     Pseudofunctor (EnrichedCat.{w, v, u} V) (EnrichedCat W) where
   obj C := .of W <| TransportEnrichment F C
-  map F := by { _ }
+  map G := EnrichedFunctor.transport G F
+  map₂ α := _
 
 end EnrichedCat
 
