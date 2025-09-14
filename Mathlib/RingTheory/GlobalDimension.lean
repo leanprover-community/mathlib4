@@ -114,19 +114,18 @@ noncomputable def ModuleCat.localizedModule_map [Small.{v} R] {M N : ModuleCat.{
   ModuleCat.ofHom.{v} <| IsLocalizedModule.mapExtendScalars S (M.localizedModule_mkLinearMap S)
     (N.localizedModule_mkLinearMap S) (Localization S) (ModuleCat.homLinearEquiv (S := R) f)
 
-lemma projectiveDimension_eq_iSup_localizedModule (M : ModuleCat.{v} R) [Module.Finite R M]
+lemma projectiveDimension_eq_iSup_localizedModule_prime (M : ModuleCat.{v} R) [Module.Finite R M]
     [Small.{v, u} R] : projectiveDimension M = ⨆ (p : PrimeSpectrum R), projectiveDimension
     (M.localizedModule p.1.primeCompl) := by
   have aux (n : ℕ) : projectiveDimension M ≤ n ↔ ⨆ (p : PrimeSpectrum R), projectiveDimension
     (M.localizedModule p.1.primeCompl) ≤ n := by
     simp only [projectiveDimension_le_iff, iSup_le_iff]
     induction' n with n ih generalizing M
-    · --simp only [HasProjectiveDimensionLE, zero_add, ← hasProjectiveDimensionLT_one_iff]
+    · simp only [HasProjectiveDimensionLE, zero_add, ← hasProjectiveDimensionLT_one_iff]
       --Module.projective_of_isLocalizedModule
       --Module.projective_of_localization_maximal
       sorry
-    · --Module.free_of_isLocalizedModule
-      rcases Module.Finite.exists_fin' R M with ⟨m, f', hf'⟩
+    · rcases Module.Finite.exists_fin' R M with ⟨m, f', hf'⟩
       let f := f'.comp ((Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)).trans
         (Finsupp.linearEquivFunOnFinite R R (Fin m))).1
       have surjf : Function.Surjective f := by simpa [f] using hf'
@@ -198,6 +197,93 @@ lemma projectiveDimension_eq_iSup_localizedModule (M : ModuleCat.{v} R) [Module.
         (WithBot.coe_inj.mpr (ENat.coe_toNat eqtop).symm)
       simpa only [this] using aux n
 
-lemma globalDimension_eq_iSup_loclization : globalDimension.{u, v} R =
+lemma projectiveDimension_eq_iSup_localizedModule_maximal (M : ModuleCat.{v} R) [Module.Finite R M]
+    [Small.{v, u} R] : projectiveDimension M = ⨆ (p : MaximalSpectrum R), projectiveDimension
+    (M.localizedModule p.1.primeCompl) := by
+  have aux (n : ℕ) : projectiveDimension M ≤ n ↔ ⨆ (p : MaximalSpectrum R), projectiveDimension
+    (M.localizedModule p.1.primeCompl) ≤ n := by
+    simp only [projectiveDimension_le_iff, iSup_le_iff]
+    induction' n with n ih generalizing M
+    · simp only [HasProjectiveDimensionLE, zero_add, ← hasProjectiveDimensionLT_one_iff]
+      --Module.projective_of_isLocalizedModule
+      --Module.projective_of_localization_maximal
+      sorry
+    · rcases Module.Finite.exists_fin' R M with ⟨m, f', hf'⟩
+      let f := f'.comp ((Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)).trans
+        (Finsupp.linearEquivFunOnFinite R R (Fin m))).1
+      have surjf : Function.Surjective f := by simpa [f] using hf'
+      let S : ShortComplex (ModuleCat.{v} R) := {
+        f := ModuleCat.ofHom.{v} (LinearMap.ker f).subtype
+        g := ModuleCat.ofHom.{v} f
+        zero := by
+          ext x
+          simp }
+      have S_exact' : Function.Exact (ConcreteCategory.hom S.f) (ConcreteCategory.hom S.g) := by
+        intro x
+        simp [S]
+      have S_exact : S.ShortExact := {
+        exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr S_exact'
+        mono_f := (ModuleCat.mono_iff_injective S.f).mpr (LinearMap.ker f).injective_subtype
+        epi_g := (ModuleCat.epi_iff_surjective S.g).mpr surjf}
+      let _ : Module.Finite R S.X₂ := by
+        simp [S, Module.Finite.equiv (Shrink.linearEquiv R R).symm, Finite.of_fintype (Fin m)]
+      let _ : Module.Free R (Shrink.{v, u} R) :=  Module.Free.of_equiv (Shrink.linearEquiv R R).symm
+      let _ : Module.Free R S.X₂ := Module.Free.finsupp R (Shrink.{v, u} R) _
+      have proj := ModuleCat.projective_of_categoryTheory_projective S.X₂
+      let _ := S.X₁.localizedModule_isLocalizedModule
+      let _ := S.X₂.localizedModule_isLocalizedModule
+      let _ := S.X₃.localizedModule_isLocalizedModule
+      have Sp_exact' (p : MaximalSpectrum R) := IsLocalizedModule.map_exact p.1.primeCompl
+        (S.X₁.localizedModule_mkLinearMap p.1.primeCompl)
+        (S.X₂.localizedModule_mkLinearMap p.1.primeCompl)
+        (S.X₃.localizedModule_mkLinearMap p.1.primeCompl)
+        _ _ S_exact'
+      let Sp (p : MaximalSpectrum R) : ShortComplex (ModuleCat.{v} (Localization.AtPrime p.1)) := {
+        f := ModuleCat.localizedModule_map p.1.primeCompl S.f
+        g := ModuleCat.localizedModule_map p.1.primeCompl S.g
+        zero := by
+          ext x
+          simp [ModuleCat.localizedModule_map, Function.Exact.apply_apply_eq_zero (Sp_exact' p)]}
+      have Sp_exact (p : MaximalSpectrum R) : (Sp p).ShortExact := {
+        exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mpr (Sp_exact' p)
+        mono_f := (ModuleCat.mono_iff_injective _).mpr
+          (IsLocalizedModule.map_injective p.1.primeCompl
+            (S.X₁.localizedModule_mkLinearMap p.1.primeCompl)
+            (S.X₂.localizedModule_mkLinearMap p.1.primeCompl)
+            _ (LinearMap.ker f).injective_subtype)
+        epi_g := (ModuleCat.epi_iff_surjective _).mpr
+          (IsLocalizedModule.map_surjective p.1.primeCompl
+            (S.X₂.localizedModule_mkLinearMap p.1.primeCompl)
+            (S.X₃.localizedModule_mkLinearMap p.1.primeCompl)
+            _ surjf) }
+      have ih' := ih (ModuleCat.of R (LinearMap.ker f))
+      let _ (p : MaximalSpectrum R) : Module.Free (Localization.AtPrime p.1) (Sp p).X₂ :=
+        Module.free_of_isLocalizedModule p.1.primeCompl
+        (S.X₂.localizedModule_mkLinearMap p.1.primeCompl)
+      have projp (p : MaximalSpectrum R) :=
+        ModuleCat.projective_of_categoryTheory_projective (Sp p).X₂
+      simp only [HasProjectiveDimensionLE] at ih' ⊢
+      rw [S_exact.hasProjectiveDimensionLT_X₃_iff n proj, ih']
+      exact (forall_congr' (fun p ↦ (Sp_exact p).hasProjectiveDimensionLT_X₃_iff n (projp p))).symm
+  refine eq_of_forall_ge_iff (fun N ↦ ?_)
+  by_cases eqbot : N = ⊥
+  · simp only [eqbot, le_bot_iff, projectiveDimension_eq_bot_iff, iSup_eq_bot,
+      ModuleCat.isZero_iff_subsingleton]
+    simp only [ModuleCat.localizedModule, ← Equiv.subsingleton_congr (equivShrink _)]
+
+    sorry
+  · by_cases eqtop : N.unbot eqbot = ⊤
+    · have : N = ⊤ := (WithBot.coe_unbot _ eqbot).symm.trans (WithBot.coe_inj.mpr eqtop)
+      simp [this]
+    · let n := (N.unbot eqbot).toNat
+      have : N = n := (WithBot.coe_unbot _ eqbot).symm.trans
+        (WithBot.coe_inj.mpr (ENat.coe_toNat eqtop).symm)
+      simpa only [this] using aux n
+
+lemma globalDimension_eq_iSup_loclization_prime : globalDimension.{u, v} R =
+    ⨆ (p : PrimeSpectrum R), globalDimension.{u, v} (Localization.AtPrime p.1) := by
+  sorry
+
+lemma globalDimension_eq_iSup_loclization_maximal : globalDimension.{u, v} R =
     ⨆ (p : MaximalSpectrum R), globalDimension.{u, v} (Localization.AtPrime p.1) := by
   sorry
