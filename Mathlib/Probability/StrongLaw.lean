@@ -25,7 +25,7 @@ This file also contains the Lᵖ version of the strong law of large numbers prov
 ## Implementation
 
 The main point is to prove the result for real-valued random variables, as the general case
-of Banach-space valued random variables follows from this case and approximation by simple
+of Banach-space-valued random variables follows from this case and approximation by simple
 functions. The real version is given in `ProbabilityTheory.strong_law_ae_real`.
 
 We follow the proof by Etemadi

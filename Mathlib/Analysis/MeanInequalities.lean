@@ -50,7 +50,7 @@ $$
 $$
 The classical version is proven as a special case of this inequality for $w_i=\frac{1}{n}$.
 
-The inequalities are proven only for real valued positive functions on `Finset`s, and namespaced in
+The inequalities are proven only for real-valued positive functions on `Finset`s, and namespaced in
 `Real`. The weighted version follows as a corollary of the weighted AM-GM inequality.
 
 ### Young's inequality
@@ -941,7 +941,7 @@ theorem rpow_sum_le_const_mul_sum_rpow (hp : 1 ≤ p) :
     ENNReal.rpow_le_rpow (inner_le_Lp_mul_Lq s 1 f hpq.symm) hpq.nonneg
 
 /-- **Minkowski inequality**: the `L_p` seminorm of the sum of two vectors is less than or equal
-to the sum of the `L_p`-seminorms of the summands. A version for `ℝ≥0∞` valued nonnegative
+to the sum of the `L_p`-seminorms of the summands. A version for `ℝ≥0∞`-valued nonnegative
 functions. -/
 theorem Lp_add_le (hp : 1 ≤ p) :
     (∑ i ∈ s, (f i + g i) ^ p) ^ (1 / p) ≤

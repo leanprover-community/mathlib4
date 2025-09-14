@@ -131,7 +131,7 @@ theorem setIntegral_abs_condExp_le {s : Set α} (hs : MeasurableSet[m] s) (f : �
     (le_of_eq <| integral_congr_ae <| Eventually.of_forall fun x => ?_)
   simp_rw [← Real.norm_eq_abs, norm_indicator_eq_indicator_norm]
 
-/-- If the real valued function `f` is bounded almost everywhere by `R`, then so is its conditional
+/-- If the real-valued function `f` is bounded almost everywhere by `R`, then so is its conditional
 expectation. -/
 theorem ae_bdd_condExp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x ∂μ, |f x| ≤ R) :
     ∀ᵐ x ∂μ, |(μ[f|m]) x| ≤ R := by

@@ -70,7 +70,7 @@ the space is already endowed with an extended distance. We say that this is a Ri
 if the distance is given by the infimum of the lengths of `C^1` paths, measured using the norm in
 the tangent spaces.
 
-This is a `Prop` valued typeclass, on top of existing data.
+This is a `Prop`-valued typeclass, on top of existing data.
 
 If you need to *construct* a distance using a Riemannian structure,
 see `EmetricSpace.ofRiemannianMetric`. -/

@@ -20,7 +20,7 @@ and that `ℚ_[p]` is Cauchy complete.
 ## Important definitions
 
 * `Padic` : the type of `p`-adic numbers
-* `padicNormE` : the rational valued `p`-adic norm on `ℚ_[p]`
+* `padicNormE` : the rational-valued `p`-adic norm on `ℚ_[p]`
 * `Padic.addValuation` : the additive `p`-adic valuation on `ℚ_[p]`, with values in `WithTop ℤ`
 
 ## Notation
