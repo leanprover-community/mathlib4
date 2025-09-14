@@ -55,9 +55,8 @@ def IsLinearSet (s : Set M) : Prop :=
 
 /-- An equivalent expression of `IsLinearSet` in terms of `Finset` instead of `Set.Finite`. -/
 theorem isLinearSet_iff :
-    IsLinearSet s ↔ ∃ (a : M) (t : Finset M), s = a +ᵥ (closure (t : Set M) : Set M) :=
-  exists_congr fun a =>
-    ⟨fun ⟨t, ht, hs⟩ => ⟨ht.toFinset, by simpa⟩, fun ⟨t, hs⟩ => ⟨t, t.finite_toSet, hs⟩⟩
+    IsLinearSet s ↔ ∃ (a : M) (t : Finset M), s = a +ᵥ (closure (t : Set M) : Set M) := by
+  simp [IsLinearSet, Finset.exists]
 
 @[simp]
 theorem IsLinearSet.singleton (a) : IsLinearSet ({a} : Set M) :=
