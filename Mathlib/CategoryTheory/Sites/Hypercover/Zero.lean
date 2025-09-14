@@ -357,7 +357,7 @@ def map (F : C ⥤ D) (E : ZeroHypercover.{w} J S) (h : J ≤ K.comap F) :
     ZeroHypercover.{w} K (F.obj S) where
   __ := E.toPreZeroHypercover.map F
   mem₀ := by
-    rw [PreZeroHypercover.presieve₀_map, ← mem_comap]
+    rw [PreZeroHypercover.presieve₀_map, ← mem_comap_iff]
     exact h _ E.mem₀
 
 end Functoriality

@@ -146,7 +146,7 @@ def comap (F : C ⥤ D) (J : Precoverage D) : Precoverage C where
   coverings Y R := R.map F ∈ J (F.obj Y)
 
 @[simp]
-lemma mem_comap {X : C} {R : Presieve X} :
+lemma mem_comap_iff {X : C} {R : Presieve X} :
     R ∈ J.comap F X ↔ R.map F ∈ J (F.obj X) := Iff.rfl
 
 lemma comap_inf : (J ⊓ K).comap F = J.comap F ⊓ K.comap F := rfl
@@ -163,7 +163,7 @@ instance [IsStableUnderComposition.{w', w} J] :
 instance [PreservesLimitsOfShape WalkingCospan F] [IsStableUnderBaseChange.{w} J] :
     IsStableUnderBaseChange.{w} (J.comap F) where
   mem_coverings_of_isPullback {ι} S Y f hf Z g P p₁ p₂ h := by
-    simp only [mem_comap, Presieve.map_ofArrows] at hf ⊢
+    simp only [mem_comap_iff, Presieve.map_ofArrows] at hf ⊢
     exact mem_coverings_of_isPullback _ hf _ _ _
       fun i ↦ CategoryTheory.Functor.map_isPullback F (h i)
 
