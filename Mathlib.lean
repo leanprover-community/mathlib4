@@ -1569,6 +1569,7 @@ import Mathlib.Analysis.Complex.Order
 import Mathlib.Analysis.Complex.Periodic
 import Mathlib.Analysis.Complex.PhragmenLindelof
 import Mathlib.Analysis.Complex.Polynomial.Basic
+import Mathlib.Analysis.Complex.Polynomial.GaussLucas
 import Mathlib.Analysis.Complex.Polynomial.UnitTrinomial
 import Mathlib.Analysis.Complex.Positivity
 import Mathlib.Analysis.Complex.ReImTopology
