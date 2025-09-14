@@ -100,7 +100,7 @@ variable [IsDomain R] [ValuationRing R]
 
 open ValuationRing
 
-theorem exists_integral (W : WeierstrassCurve K) :
+theorem exists_isIntegral (W : WeierstrassCurve K) :
     ∃ C : VariableChange K, IsIntegral R (C • W) := by
   let l₀ := [W.a₁, W.a₂, W.a₃, W.a₄, W.a₆]
   let l := l₀.map (fun a ↦ valuation R K a)
