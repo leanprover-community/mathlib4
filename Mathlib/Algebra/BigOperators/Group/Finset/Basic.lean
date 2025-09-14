@@ -861,10 +861,10 @@ lemma prod_insert_div (ha : a ∉ s) (f : ι → G) :
 theorem prod_erase_eq_div {a : ι} (h : a ∈ s) : ∏ x ∈ s.erase a, f x = (∏ x ∈ s, f x) / f a := by
   rw [eq_div_iff_mul_eq', prod_erase_mul _ _ h]
 
-/-- A telescoping product along `{0, ..., n - 1}` of a commutative group valued function reduces to
+/-- A telescoping product along `{0, ..., n - 1}` of a commutative-group-valued function reduces to
 the ratio of the last and first factors. -/
-@[to_additive /-- A telescoping sum along `{0, ..., n - 1}` of an additive commutative group valued
-function reduces to the difference of the last and first terms. -/]
+@[to_additive /-- A telescoping sum along `{0, ..., n - 1}` of a function valued in a commutative
+additive group reduces to the difference of the last and first terms. -/]
 lemma prod_range_div (f : ℕ → G) (n : ℕ) : (∏ i ∈ range n, f (i + 1) / f i) = f n / f 0 := by
   apply prod_range_induction <;> simp
 

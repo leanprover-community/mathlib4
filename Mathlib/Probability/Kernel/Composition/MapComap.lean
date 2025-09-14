@@ -125,7 +125,7 @@ instance IsZeroOrMarkovKernel.map (κ : Kernel α β) [IsZeroOrMarkovKernel κ] 
 
 instance IsFiniteKernel.map (κ : Kernel α β) [IsFiniteKernel κ] (f : β → γ) :
     IsFiniteKernel (map κ f) := by
-  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => ?_⟩⟩
+  refine ⟨⟨κ.bound, κ.bound_lt_top, fun a => ?_⟩⟩
   by_cases hf : Measurable f
   · rw [map_apply' κ hf a MeasurableSet.univ]
     exact measure_le_bound κ a _
@@ -192,7 +192,7 @@ instance IsZeroOrMarkovKernel.comap (κ : Kernel α β) [IsZeroOrMarkovKernel κ
 
 instance IsFiniteKernel.comap (κ : Kernel α β) [IsFiniteKernel κ] (hg : Measurable g) :
     IsFiniteKernel (comap κ g hg) := by
-  refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => ?_⟩⟩
+  refine ⟨⟨κ.bound, κ.bound_lt_top, fun a => ?_⟩⟩
   rw [comap_apply' κ hg a Set.univ]
   exact measure_le_bound κ _ _
 
@@ -437,7 +437,7 @@ instance IsSFiniteKernel.fst (κ : Kernel α (β × γ)) [IsSFiniteKernel κ] :
 instance (priority := 100) isFiniteKernel_of_isFiniteKernel_fst {κ : Kernel α (β × γ)}
     [h : IsFiniteKernel (fst κ)] :
     IsFiniteKernel κ := by
-  refine ⟨IsFiniteKernel.bound (fst κ), h.bound_lt_top,
+  refine ⟨(fst κ).bound, (fst κ).bound_lt_top,
     fun a ↦ le_trans ?_ (measure_le_bound (fst κ) a Set.univ)⟩
   rw [fst_apply' _ _ MeasurableSet.univ]
   simp
@@ -499,7 +499,7 @@ instance IsSFiniteKernel.snd (κ : Kernel α (β × γ)) [IsSFiniteKernel κ] :
 instance (priority := 100) isFiniteKernel_of_isFiniteKernel_snd {κ : Kernel α (β × γ)}
     [h : IsFiniteKernel (snd κ)] :
     IsFiniteKernel κ := by
-  refine ⟨IsFiniteKernel.bound (snd κ), h.bound_lt_top,
+  refine ⟨(snd κ).bound, (snd κ).bound_lt_top,
     fun a ↦ le_trans ?_ (measure_le_bound (snd κ) a Set.univ)⟩
   rw [snd_apply' _ _ MeasurableSet.univ]
   simp

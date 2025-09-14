@@ -47,7 +47,7 @@ open Set Filter
 
 variable {α : Type*} [LinearOrder α] {E : Type*} [PseudoEMetricSpace E]
 
-/-- The (extended real valued) variation of a function `f` on a set `s` inside a linear order is
+/-- The (extended-real-valued) variation of a function `f` on a set `s` inside a linear order is
 the supremum of the sum of `edist (f (u (i+1))) (f (u i))` over all finite increasing
 sequences `u` in `s`. -/
 noncomputable def eVariationOn (f : α → E) (s : Set α) : ℝ≥0∞ :=
@@ -676,7 +676,7 @@ protected theorem comp_eq_of_monotoneOn {β : Type*} [LinearOrder β] (f : α �
 
 end variationOnFromTo
 
-/-- If a real valued function has bounded variation on a set, then it is a difference of monotone
+/-- If a real-valued function has bounded variation on a set, then it is a difference of monotone
 functions there. -/
 theorem LocallyBoundedVariationOn.exists_monotoneOn_sub_monotoneOn {f : α → ℝ} {s : Set α}
     (h : LocallyBoundedVariationOn f s) :

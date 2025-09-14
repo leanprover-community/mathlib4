@@ -15,7 +15,7 @@ We define `Cone F`, a cone over a functor `F`,
 and `F.cones : Cᵒᵖ ⥤ Type`, the functor associating to `X` the cones over `F` with cone point `X`.
 
 A cone `c` is defined by specifying its cone point `c.pt` and a natural transformation `c.π`
-from the constant `c.pt` valued functor to `F`.
+from the constant `c.pt`-valued functor to `F`.
 
 We provide `c.w f : c.π.app j ≫ F.map f = c.π.app j'` for any `f : j ⟶ j'`
 as a wrapper for `c.π.naturality f` avoiding unneeded identity morphisms.

@@ -7,22 +7,22 @@ import Mathlib.CategoryTheory.Monoidal.Grp_
 import Mathlib.CategoryTheory.Monoidal.CommMon_
 
 /-!
-# The category of commutative groups in a cartesian monoidal category
+# The category of commutative groups in a Cartesian monoidal category
 -/
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 open CategoryTheory Category Limits MonoidalCategory CartesianMonoidalCategory Mon_ Grp_ CommMon_
-open Mon_Class
+open MonObj
 
 variable (C : Type u₁) [Category.{v₁} C] [CartesianMonoidalCategory.{v₁} C] [BraidedCategory C]
 
-/-- A commutative group object internal to a cartesian monoidal category. -/
+/-- A commutative group object internal to a Cartesian monoidal category. -/
 structure CommGrp_ where
   /-- The underlying object in the ambient monoidal category -/
   X : C
-  [grp : Grp_Class X]
-  [comm : IsCommMon X]
+  [grp : GrpObj X]
+  [comm : IsCommMonObj X]
 
 attribute [instance] CommGrp_.grp CommGrp_.comm
 
@@ -148,7 +148,7 @@ end
 /-- Construct an isomorphism of commutative group objects by giving a monoid isomorphism between the
 underlying objects. -/
 @[simps!]
-def mkIso' {G H : C} (e : G ≅ H) [Grp_Class G] [IsCommMon G] [Grp_Class H] [IsCommMon H]
+def mkIso' {G H : C} (e : G ≅ H) [GrpObj G] [IsCommMonObj G] [GrpObj H] [IsCommMonObj H]
     [IsMon_Hom e.hom] : mk G ≅ mk H :=
   (fullyFaithfulForget₂Grp_ C).preimageIso (Grp_.mkIso' e)
 
@@ -187,7 +187,7 @@ def mapCommGrp : CommGrp_ C ⥤ CommGrp_ D where
       comm :=
         { mul_comm := by
             dsimp
-            rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMon.mul_comm] } }
+            rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMonObj.mul_comm] } }
   map f := F.mapMon.map f
   map_id X := show F.mapMon.map (𝟙 X.toGrp_.toMon_) = _ by cat_disch
 

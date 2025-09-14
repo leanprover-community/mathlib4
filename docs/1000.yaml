@@ -164,6 +164,9 @@ Q193882:
 
 Q193910:
   title: Euler's theorem
+  decl: Nat.ModEq.pow_totient
+  authors: Chris Hughes
+  date: 2020
 
 Q194919:
   title: Inverse eigenvalues theorem
@@ -747,6 +750,11 @@ Q721695:
 
 Q727102:
   title: Fermat's theorem (stationary points)
+  decls:
+    - IsLocalExtr.deriv_eq_zero
+    - IsLocalExtr.fderiv_eq_zero
+  authors: Yury G. Kudryashov
+  date: 2019
 
 Q729359:
   title: Hadamard three-circle theorem
@@ -1260,6 +1268,9 @@ Q1076274:
 
 Q1077462:
   title: König's theorem (set theory)
+  authors: Mario Carneiro
+  date: 2018
+  decl: Cardinal.sum_lt_prod
 
 Q1077741:
   title: Hairy ball theorem
@@ -3716,6 +3727,9 @@ Q7644264:
 
 Q7660749:
   title: Sylvester's determinant theorem
+  decl: Matrix.det_one_add_mul_comm
+  authors: Eric Wieser
+  date: 2022
 
 Q7661308:
   title: Symmetric hypergraph theorem

@@ -56,7 +56,7 @@ lemma bodd_two : bodd 2 = false := rfl
 @[simp]
 lemma bodd_succ (n : ℕ) : bodd (succ n) = not (bodd n) := by
   simp only [bodd, boddDiv2]
-  let ⟨b,m⟩ := boddDiv2 n
+  let ⟨b, m⟩ := boddDiv2 n
   cases b <;> rfl
 
 @[simp]
@@ -76,12 +76,6 @@ lemma bodd_mul (m n : ℕ) : bodd (m * n) = (bodd m && bodd n) := by
 lemma mod_two_of_bodd (n : ℕ) : n % 2 = (bodd n).toNat := by
   have : (n % 2).bodd = n.bodd := by
     simpa using congr_arg bodd (mod_add_div n 2)
-  have _ : ∀ b, and false b = false := by
-    intro b
-    cases b <;> rfl
-  have _ : ∀ b, bxor b false = b := by
-    intro b
-    cases b <;> rfl
   rw [← this]
   rcases mod_two_eq_zero_or_one n with h | h <;> rw [h] <;> rfl
 

@@ -115,9 +115,9 @@ instance (priority := 100) _root_.IsPrincipalIdealRing.of_isNoetherianRing_of_is
 
 end Semiring
 
-section CommRing
+section CommSemiring
 
-variable [CommRing R] [Module R M]
+variable [CommSemiring R] [Module R M]
 
 theorem associated_generator_span_self [IsDomain R] (r : R) :
     Associated (generator <| Ideal.span {r}) r := by
@@ -146,7 +146,14 @@ theorem generator_submoduleImage_dvd_of_mem {N O : Submodule R M} (hNO : N ≤ O
   rw [← mem_iff_generator_dvd, LinearMap.mem_submoduleImage_of_le hNO]
   exact ⟨x, hx, rfl⟩
 
-end CommRing
+theorem dvd_generator_span_iff {r : R} {s : Set R} [(Ideal.span s).IsPrincipal] :
+    r ∣ generator (Ideal.span s) ↔ ∀ x ∈ s, r ∣ x where
+  mp h x hx := h.trans <| (mem_iff_generator_dvd _).mp (Ideal.subset_span hx)
+  mpr h := have : (span R s).IsPrincipal := ‹_›
+    span_induction h (dvd_zero _) (fun _ _ _ _ ↦ dvd_add) (fun _ _ _ ↦ (·.mul_left _))
+      (generator_mem _)
+
+end CommSemiring
 
 end Submodule.IsPrincipal
 

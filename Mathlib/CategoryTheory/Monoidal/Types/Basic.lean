@@ -115,8 +115,8 @@ theorem CartesianMonoidalCategory.lift_apply {X Y Z : Type u} {f : X ⟶ Y} {g :
 
 -- We don't yet have an API for tensor products indexed by finite ordered types,
 -- but it would be nice to state how monoidal functors preserve these.
-/-- If `F` is a monoidal functor out of `Type`, it takes the (n+1)st cartesian power
-of a type to the image of that type, tensored with the image of the nth cartesian power. -/
+/-- If `F` is a monoidal functor out of `Type`, it takes the (n+1)st Cartesian power
+of a type to the image of that type, tensored with the image of the nth Cartesian power. -/
 noncomputable def MonoidalFunctor.mapPi {C : Type*} [Category C] [MonoidalCategory C]
     (F : Type _ ⥤ C) [F.Monoidal] (n : ℕ) (β : Type*) :
     F.obj (Fin (n + 1) → β) ≅ F.obj β ⊗ F.obj (Fin n → β) :=
