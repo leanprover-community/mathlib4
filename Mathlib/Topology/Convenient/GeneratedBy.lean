@@ -116,8 +116,8 @@ attribute [continuity] continuous_equiv_symm
 lemma le_generatedBy [IsGeneratedBy X Y] : tY ≤ .generatedBy X :=
   fun U hU ↦ continuous_equiv_symm.isOpen_preimage U hU
 
-lemma generatedBy_eq [IsGeneratedBy X Y] : .generatedBy X = tY := by
-  refine le_antisymm TopologicalSpace.generatedBy_le le_generatedBy
+lemma generatedBy_eq [IsGeneratedBy X Y] : .generatedBy X = tY :=
+  le_antisymm TopologicalSpace.generatedBy_le le_generatedBy
 
 lemma iff_le_generatedBy :
     IsGeneratedBy X Y ↔ tY ≤ .generatedBy X :=
