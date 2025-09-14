@@ -7,6 +7,8 @@ import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.CategoryTheory.Subobject.Limits
 import Mathlib.CategoryTheory.GradedObject
 import Mathlib.Algebra.Homology.ShortComplex.Basic
+import Mathlib.Algebra.Category.ModuleCat.Basic
+import Mathlib.LinearAlgebra.Dimension.Finrank
 
 /-!
 # Homological complexes.
@@ -814,6 +816,41 @@ theorem mkHom_f_succ_succ (n : ℕ) :
   dsimp [mkHom, mkHomAux]
 
 end MkHom
+
+variable {𝕜 : Type*} [Field 𝕜]
+
+/-- For chain complexes over field modules, `dTo k` and `dFrom (k+1)` have the same range dimension,
+    as they represent the same boundary map composed with isomorphisms. -/
+lemma dTo_dFrom_range_finrank_eq (C : ChainComplex (ModuleCat 𝕜) ℕ) (k : ℕ) :
+    Module.finrank 𝕜 (LinearMap.range (C.dTo k).hom) =
+    Module.finrank 𝕜 (LinearMap.range (C.dFrom (k + 1)).hom) := by
+  -- Both dTo k and dFrom (k+1) are essentially C.d (k+1) k composed with isomorphisms
+  have rel : (ComplexShape.down ℕ).Rel (k + 1) k := by
+    simp [ComplexShape.down, ComplexShape.down']
+  have dTo_eq : C.dTo k = (C.xPrevIso rel).hom ≫ C.d (k + 1) k := C.dTo_eq rel
+  have dFrom_eq : C.dFrom (k + 1) = C.d (k + 1) k ≫ (C.xNextIso rel).inv := C.dFrom_eq rel
+  -- Pre-composition with an isomorphism doesn't change the range dimension
+  rw [dTo_eq]
+  have range_dTo : Module.finrank 𝕜
+      (LinearMap.range ((C.xPrevIso rel).hom ≫ C.d (k + 1) k).hom) =
+      Module.finrank 𝕜 (LinearMap.range (C.d (k + 1) k).hom) := by
+    have : ((C.xPrevIso rel).hom ≫ C.d (k + 1) k).hom =
+           (C.d (k + 1) k).hom ∘ₗ (C.xPrevIso rel).toLinearEquiv.toLinearMap := rfl
+    rw [this, LinearMap.range_comp]
+    have hsurj : Function.Surjective (C.xPrevIso rel).toLinearEquiv.toLinearMap :=
+      (C.xPrevIso rel).toLinearEquiv.surjective
+    rw [LinearMap.range_eq_top.mpr hsurj, Submodule.map_top]
+  -- Post-composition with an isomorphism preserves range dimension
+  rw [dFrom_eq]
+  have range_dFrom : Module.finrank 𝕜
+      (LinearMap.range ((C.d (k + 1) k ≫ (C.xNextIso rel).inv).hom)) =
+      Module.finrank 𝕜 (LinearMap.range (C.d (k + 1) k).hom) := by
+    have : ((C.d (k + 1) k) ≫ (C.xNextIso rel).inv).hom =
+           (C.xNextIso rel).toLinearEquiv.symm.toLinearMap ∘ₗ (C.d (k + 1) k).hom := rfl
+    rw [this, LinearMap.range_comp]
+    exact LinearEquiv.finrank_map_eq (C.xNextIso rel).toLinearEquiv.symm
+      (LinearMap.range (C.d (k + 1) k).hom)
+  rw [range_dTo, range_dFrom]
 
 end ChainComplex
 
