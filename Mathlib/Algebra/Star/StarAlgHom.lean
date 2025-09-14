@@ -659,6 +659,14 @@ end StarAlgEquivClass
 
 namespace StarAlgEquiv
 
+-- See note [lower instance priority]
+instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A]
+    [DistribMulAction R A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [EquivLike F A B]
+    [AlgEquivClass F R A B] :
+    NonUnitalAlgHomClass F R A B :=
+  { }
+
+
 section Basic
 
 variable {F R A B C : Type*} [Add A] [Add B] [Mul A] [Mul B] [SMul R A] [SMul R B] [Star A]
