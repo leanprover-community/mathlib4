@@ -45,9 +45,8 @@ notation:50 A " ≃ₐ[" R "] " A' => AlgEquiv R A A'
 /-- `AlgEquivClass F R A B` states that `F` is a type of algebra structure preserving
   equivalences. You should extend this class when you extend `AlgEquiv`. -/
 class AlgEquivClass (F : Type*) (R A B : outParam (Type*)) [Add A] [Add B] [Mul A] [Mul B]
-    [SMul R A] [SMul R B] [EquivLike F A B] extends RingEquivClass F A B where
-  /-- An equivalence of algebras commutes with the action of scalars. -/
-  map_smul : ∀ (f : F) (r : R) (a : A), f (r • a) = r • f a
+    [SMul R A] [SMul R B] [EquivLike F A B] extends RingEquivClass F A B,
+      MulActionHomClass F R A B where
 
 namespace AlgEquivClass
 
@@ -120,7 +119,7 @@ instance : FunLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
 instance : AlgEquivClass (A₁ ≃ₐ[R] A₂) R A₁ A₂ where
   map_add f := f.map_add'
   map_mul f := f.map_mul'
-  map_smul f := f.map_smul'
+  map_smulₛₗ f := f.map_smul'
 
 @[ext]
 theorem ext {f g : A₁ ≃ₐ[R] A₂} (h : ∀ a, f a = g a) : f = g :=

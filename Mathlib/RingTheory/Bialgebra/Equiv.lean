@@ -71,7 +71,7 @@ instance instCoeToBialgEquiv : CoeHead F (A ≃ₐc[R] B) where
 instance (priority := 100) toAlgEquivClass : AlgEquivClass F R A B where
   map_mul := map_mul
   map_add := map_add
-  map_smul := map_smul
+  map_smulₛₗ := map_smul
 
 end BialgEquivClass
 

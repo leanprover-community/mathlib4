@@ -621,11 +621,9 @@ multiplication and the star operation, which allows for considering both unital 
 equivalences with a single structure. Currently, `AlgEquiv` requires unital algebras, which is
 why this structure does not extend it. -/
 structure StarAlgEquiv (R A B : Type*) [Add A] [Add B] [Mul A] [Mul B] [SMul R A] [SMul R B]
-  [Star A] [Star B] extends A ≃+* B where
+  [Star A] [Star B] extends A ≃ₐ[R] B where
   /-- By definition, a ⋆-algebra equivalence preserves the `star` operation. -/
   map_star' : ∀ a : A, toFun (star a) = star (toFun a)
-  /-- By definition, a ⋆-algebra equivalence commutes with the action of scalars. -/
-  map_smul' : ∀ (r : R) (a : A), toFun (r • a) = r • toFun a
 
 @[inherit_doc StarAlgEquiv] infixr:25 " ≃⋆ₐ " => StarAlgEquiv _
 
@@ -633,45 +631,28 @@ structure StarAlgEquiv (R A B : Type*) [Add A] [Add B] [Mul A] [Mul B] [SMul R A
 
 /-- Reinterpret a star algebra equivalence as a `RingEquiv` by forgetting the interaction with
 the star operation and scalar multiplication. -/
-add_decl_doc StarAlgEquiv.toRingEquiv
+add_decl_doc StarAlgEquiv.toAlgEquiv
 
-/-- The class that directly extends `RingEquivClass` and `SMulHomClass`.
-
-Mostly an implementation detail for `StarAlgEquivClass`.
--/
+@[deprecated AlgEquivClass (since := "2025-14-09")]
 class NonUnitalAlgEquivClass (F : Type*) (R A B : outParam Type*)
   [Add A] [Mul A] [SMul R A] [Add B] [Mul B] [SMul R B] [EquivLike F A B] : Prop
   extends RingEquivClass F A B, MulActionSemiHomClass F (@id R) A B where
 
 namespace StarAlgEquivClass
 
--- See note [lower instance priority]
-instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A]
-    [DistribMulAction R A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [EquivLike F A B]
-    [NonUnitalAlgEquivClass F R A B] :
-    NonUnitalAlgHomClass F R A B :=
-  { }
-
--- See note [lower instance priority]
-instance (priority := 100) instAlgHomClass (F R A B : Type*) [CommSemiring R] [Semiring A]
-    [Algebra R A] [Semiring B] [Algebra R B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] :
-    AlgEquivClass F R A B :=
-  { map_smul _ _ := by simp }
-
 /-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` and `StarHomClass F A B` into
 an actual `StarAlgEquiv`. This is declared as the default coercion from `F` to `A ≃⋆ₐ[R] B`. -/
 @[coe]
 def toStarAlgEquiv {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B]
-    [Star B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B]
+    [Star B] [EquivLike F A B] [AlgEquivClass F R A B] [StarHomClass F A B]
     (f : F) : A ≃⋆ₐ[R] B :=
-  { (f : A ≃+* B) with
-    map_star' := map_star f
-    map_smul' := map_smul f}
+  { (f : A ≃ₐ[R] B) with
+    map_star' := map_star f }
 
 /-- Any type satisfying `AlgEquivClass` and `StarHomClass` can be cast into `StarAlgEquiv` via
 `StarAlgEquivClass.toStarAlgEquiv`. -/
 instance instCoeHead {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B]
-    [SMul R B] [Star B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B] :
+    [SMul R B] [Star B] [EquivLike F A B] [AlgEquivClass F R A B] [StarHomClass F A B] :
     CoeHead F (A ≃⋆ₐ[R] B) :=
   ⟨toStarAlgEquiv⟩
 
@@ -694,10 +675,10 @@ instance : EquivLike (A ≃⋆ₐ[R] B) A B where
     rcases g with ⟨⟨⟨_, _, _⟩, _⟩, _⟩
     congr
 
-instance : NonUnitalAlgEquivClass (A ≃⋆ₐ[R] B) R A B where
+instance : AlgEquivClass (A ≃⋆ₐ[R] B) R A B where
   map_mul f := f.map_mul'
   map_add f := f.map_add'
-  map_smulₛₗ := map_smul'
+  map_smulₛₗ f := f.map_smul'
 
 instance : StarHomClass (A ≃⋆ₐ[R] B) A B where
   map_star := map_star'
@@ -718,8 +699,7 @@ theorem ext {f g : A ≃⋆ₐ[R] B} (h : ∀ a, f a = g a) : f = g :=
 /-- The identity map is a star algebra isomorphism. -/
 @[refl]
 def refl : A ≃⋆ₐ[R] A :=
-  { RingEquiv.refl A with
-    map_smul' := fun _ _ => rfl
+  { AlgEquiv.refl (R := R) (A₁ := A) with
     map_star' := fun _ => rfl }
 
 instance : Inhabited (A ≃⋆ₐ[R] A) :=
@@ -735,10 +715,7 @@ nonrec def symm (e : A ≃⋆ₐ[R] B) : B ≃⋆ₐ[R] A :=
   { e.symm with
     map_star' := fun b => by
       simpa only [apply_inv_apply, inv_apply_apply] using
-        congr_arg (inv e) (map_star e (inv e b)).symm
-    map_smul' := fun r b => by
-      simpa only [apply_inv_apply, inv_apply_apply] using
-        congr_arg (inv e) (map_smul e r (inv e b)).symm }
+        congr_arg (inv e) (map_star e (inv e b)).symm }
 
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply (e : A ≃⋆ₐ[R] B) : B → A :=
@@ -757,19 +734,19 @@ theorem symm_bijective : Function.Bijective (symm : (A ≃⋆ₐ[R] B) → B ≃
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp]
-theorem coe_mk (e h₁ h₂) : ⇑(⟨e, h₁, h₂⟩ : A ≃⋆ₐ[R] B) = e := rfl
+theorem coe_mk (e h) : ⇑(⟨e, h⟩ : A ≃⋆ₐ[R] B) = e := rfl
 
 @[simp]
 theorem mk_coe (e : A ≃⋆ₐ[R] B) (e' h₁ h₂ h₃ h₄ h₅ h₆) :
-    (⟨⟨⟨e, e', h₁, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : A ≃⋆ₐ[R] B) = e := ext fun _ => rfl
+    (⟨⟨⟨e, e', h₁, h₂⟩, h₃, h₄, h₅⟩, h₆⟩ : A ≃⋆ₐ[R] B) = e := ext fun _ => rfl
 
 /-- Auxiliary definition to avoid looping in `dsimp` with `StarAlgEquiv.symm_mk`. -/
 protected def symm_mk.aux (f f') (h₁ h₂ h₃ h₄ h₅ h₆) :=
-  (⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : A ≃⋆ₐ[R] B).symm
+  (⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄, h₅⟩, h₆⟩ : A ≃⋆ₐ[R] B).symm
 
 @[simp]
 theorem symm_mk (f f') (h₁ h₂ h₃ h₄ h₅ h₆) :
-    (⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄⟩, h₅, h₆⟩ : A ≃⋆ₐ[R] B).symm =
+    (⟨⟨⟨f, f', h₁, h₂⟩, h₃, h₄, h₅⟩, h₆⟩ : A ≃⋆ₐ[R] B).symm =
       { symm_mk.aux f f' h₁ h₂ h₃ h₄ h₅ h₆ with
         toFun := f'
         invFun := f } :=
@@ -791,11 +768,7 @@ theorem to_ringEquiv_symm (f : A ≃⋆ₐ[R] B) : (f : A ≃+* B).symm = f.symm
 /-- Transitivity of `StarAlgEquiv`. -/
 @[trans]
 def trans (e₁ : A ≃⋆ₐ[R] B) (e₂ : B ≃⋆ₐ[R] C) : A ≃⋆ₐ[R] C :=
-  { e₁.toRingEquiv.trans
-      e₂.toRingEquiv with
-    map_smul' := fun r a =>
-      show e₂.toFun (e₁.toFun (r • a)) = r • e₂.toFun (e₁.toFun a) by
-        rw [e₁.map_smul', e₂.map_smul']
+  { e₁.toAlgEquiv.trans e₂.toAlgEquiv with
     map_star' := fun a =>
       show e₂.toFun (e₁.toFun (star a)) = star (e₂.toFun (e₁.toFun a)) by
         rw [e₁.map_star', e₂.map_star'] }
@@ -830,11 +803,6 @@ theorem rightInverse_symm (e : A ≃⋆ₐ[R] B) : Function.RightInverse e.symm 
 section AlgEquiv
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] [Star A] [Star B]
-
-/-- Interpret a ⋆-algebra equivalence as an algebra equivalence. -/
-def toAlgEquiv (f : A ≃⋆ₐ[R] B) : A ≃ₐ[R] B where
-  toRingEquiv := f.toRingEquiv
-  map_smul' _ _ := by simp_rw [map_smul']
 
 @[simp]
 theorem toAlgEquiv_symm (f : A ≃⋆ₐ[R] B) : f.symm.toAlgEquiv = f.toAlgEquiv.symm := rfl
