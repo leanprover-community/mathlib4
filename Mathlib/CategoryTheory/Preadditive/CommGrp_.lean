@@ -24,7 +24,7 @@ open CategoryTheory Limits MonoidalCategory CartesianMonoidalCategory
 variable {C : Type u} [Category.{v} C] [Preadditive C] [CartesianMonoidalCategory C]
 
 @[simps]
-instance (X : C) : Grp_Class X where
+instance (X : C) : GrpObj X where
   one := 0
   mul := fst _ _ + snd _ _
   inv := -𝟙 X
