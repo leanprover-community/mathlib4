@@ -632,6 +632,10 @@ structure StarAlgEquiv (R A B : Type*) [Add A] [Add B] [Mul A] [Mul B] [SMul R A
 the star operation. -/
 add_decl_doc StarAlgEquiv.toAlgEquiv
 
+/-- The class that directly extends `RingEquivClass` and `SMulHomClass`.
+
+Mostly an implementation detail for `StarAlgEquivClass`.
+-/
 @[deprecated AlgEquivClass (since := "2025-14-09")]
 class NonUnitalAlgEquivClass (F : Type*) (R A B : outParam Type*)
   [Add A] [Mul A] [SMul R A] [Add B] [Mul B] [SMul R B] [EquivLike F A B] : Prop
@@ -695,6 +699,8 @@ instance : FunLike (A ≃⋆ₐ[R] B) A B where
   coe_injective' := DFunLike.coe_injective
 
 @[simp]
+theorem toAlgEquiv_eq_coe (e : A ≃⋆ₐ[R] B) : e.toAlgEquiv = e := rfl
+
 theorem toRingEquiv_eq_coe (e : A ≃⋆ₐ[R] B) : e.toRingEquiv = e :=
   rfl
 
