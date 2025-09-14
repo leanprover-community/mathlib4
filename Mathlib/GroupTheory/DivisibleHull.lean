@@ -277,7 +277,7 @@ theorem zsmul_mk (a : ℤ) (m : M) (s : ℕ+) : a • mk m s = mk (a • m) s :=
 end Group
 
 section LinearOrder
-variable {M : Type*} [AddCommMonoid M] [LinearOrder M] [AddLeftStrictMono M]
+variable {M : Type*} [AddCommMonoid M] [LinearOrder M] [IsOrderedCancelAddMonoid M]
 
 private theorem lift_aux (m n m' n' : M) (s t s' t' : ℕ+)
     (h : mk m s = mk m' s') (h' : mk n t = mk n' t') :
@@ -350,7 +350,7 @@ instance : IsOrderedCancelAddMonoid (DivisibleHull M) where
     contrapose! h
     exact aux_add_lt_add_left a h
 
-instance : PosSMulStrictMono ℚ≥0 (DivisibleHull M) where
+instance : IsStrictOrderedModule ℚ≥0 (DivisibleHull M) where
   smul_lt_smul_of_pos_left a ha b c h := by
     induction b with | mk mb sb
     induction c with | mk mc sc
@@ -358,16 +358,28 @@ instance : PosSMulStrictMono ℚ≥0 (DivisibleHull M) where
     simp_rw [nnqsmul_mk, mk_lt_mk, smul_smul, PNat.mul_coe]
     simp_rw [mul_right_comm _ _ a.num, mul_smul _ _ mc, mul_smul _ _ mb]
     exact (nsmul_right_strictMono (by simpa using ha.ne.symm)).lt_iff_lt.mpr h
+  smul_lt_smul_of_pos_right a ha b c h := by
+    induction a with | mk m s
+    simp_rw [nnqsmul_mk, mk_lt_mk, smul_smul, PNat.mul_coe, PNat.mk_coe]
+    refine smul_lt_smul_of_pos_right ?_ ?_
+    · convert mul_lt_mul_of_pos_right (NNRat.lt_def.mp h) (show 0 < s.val by simp) using 1 <;> ring
+    · rw [← mk_zero 1, mk_lt_mk] at ha
+      simpa using ha
 
 end LinearOrder
 
 section OrderedGroup
 variable {M : Type*} [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M]
 
-instance : PosSMulStrictMono ℚ (DivisibleHull M) where
+instance : IsStrictOrderedModule ℚ (DivisibleHull M) where
   smul_lt_smul_of_pos_left a ha b c h := by
     simp_rw [qsmul_of_nonneg ha.le]
     apply smul_lt_smul_of_pos_left h (by simpa using ha)
+  smul_lt_smul_of_pos_right a ha b c h := by
+    apply lt_of_sub_pos
+    rw [← sub_smul]
+    simp_rw [qsmul_of_nonneg (sub_pos_of_lt h).le]
+    apply smul_pos (by simpa [← NNRat.coe_pos] using h) ha
 
 variable (M) in
 /-- Coercion from `M` to `DivisibleHull M` as an `OrderAddMonoidHom`. -/
