@@ -39,9 +39,9 @@ open Topology TopologicalSpace
 
 namespace LinearMap
 
-section TopologicalRing
-
 variable {ι 𝕜 E F : Type*}
+
+section TopologicalRing
 
 variable [Finite ι] [Field 𝕜] [t𝕜 : TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
   [AddCommGroup E] [Module 𝕜 E] [T0Space 𝕜]
@@ -67,10 +67,7 @@ theorem mem_span_iff_continuous_of_finite {f : ι → E →ₗ[𝕜] 𝕜} (φ :
 
 end TopologicalRing
 
-
 section NontriviallyNormedField
-
-variable {ι 𝕜 E F : Type*}
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
