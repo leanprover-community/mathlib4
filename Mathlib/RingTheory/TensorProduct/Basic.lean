@@ -613,6 +613,7 @@ theorem algHomOfLinearMapTensorProduct_apply (f h_mul h_one x) :
   rfl
 
 variable [Algebra R C]
+
 section lift
 variable [IsScalarTower R S C]
 
