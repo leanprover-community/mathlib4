@@ -257,6 +257,17 @@ theorem toSpanSingleton_eq_algebra_linearMap : toSpanSingleton R A 1 = Algebra.l
 
 end Semiring
 
+section CommSemiring
+variable [CommSemiring R] [NonUnitalNonAssocCommSemiring A]
+    [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
+
+lemma mul'_comp_comm : mul' R A ∘ₗ TensorProduct.comm R A A = mul' R A :=
+  TensorProduct.ext' <| by simp [mul_comm]
+
+lemma mul'_comm (x : A ⊗[R] A) : mul' R A (TensorProduct.comm R A A x) = mul' R A x :=
+  congr($mul'_comp_comm _)
+
+end CommSemiring
 end LinearMap
 
 open scoped RingTheory.LinearMap
