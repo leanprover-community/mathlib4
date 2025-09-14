@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
 import Mathlib.Algebra.Lie.Ideal
+import Mathlib.Algebra.Lie.CochainTrivial
 
 /-!
 # Extensions of Lie algebras
@@ -61,11 +62,97 @@ structure Extension where
   ⟨L, _, _, i, p, h⟩
 
 /-- A surjective Lie algebra homomorphism yields an extension. -/
-theorem isExtension_of_surjective (f : L →ₗ⁅R⁆ M) (hf : Function.Surjective f) :
+theorem isExtension.of_surjective (f : L →ₗ⁅R⁆ M) (hf : Function.Surjective f) :
     IsExtension f.ker.incl f where
   ker_eq_bot := LieIdeal.ker_incl f.ker
   range_eq_top := (LieHom.range_eq_top f).mpr hf
   exact := LieIdeal.incl_range f.ker
+
+variable (E : Extension R N M)
+
+instance : LieRing E.L := E.instLieRing
+
+instance : LieAlgebra R E.L := E.instLieAlgebra
+
+instance : LieHom R E.L M := E.proj
+
+namespace Extension
+
+/-- `Extension`s are equivalent iff there is a homomorphism making a commuting diagram. -/
+@[ext] structure Equiv (E' : Extension R N M) where
+  /-- The homomorphism -/
+  toLieEquiv : E.L ≃ₗ⁅R⁆ E'.L
+  /-- The left-hand side of the diagram commutes. -/
+  incl_comm : toLieEquiv.comp E.incl = E'.incl
+  /-- The right-hand side of the diagram commutes. -/
+  proj_comm : E'.proj.comp toLieEquiv = E.proj
+
+instance : Mul (E.Equiv E) where
+  mul x y := {
+    toLieEquiv := x.toLieEquiv.trans y.toLieEquiv
+    incl_comm := by
+      ext z
+      rw [LieHom.comp_apply, LieEquiv.trans, LieHom.comp_apply, ← LieHom.comp_apply _ _ z,
+        x.incl_comm, ← LieHom.comp_apply, y.incl_comm]
+    proj_comm := by
+      ext z
+      rw [LieHom.comp_apply, LieEquiv.trans, LieHom.comp_apply,
+        ← LieHom.comp_apply _ _ (x.toLieEquiv.toLieHom z), y.proj_comm, ← LieHom.comp_apply,
+        x.proj_comm] }
+
+@[simp]
+lemma Equiv.mul_eq (x y : E.Equiv E) : (x * y).toLieEquiv = x.toLieEquiv.trans y.toLieEquiv :=
+  rfl
+
+instance : One (E.Equiv E) where
+  one := {
+    toLieEquiv := LieEquiv.refl
+    incl_comm := by ext; simp
+    proj_comm := by ext; simp }
+
+@[simp] lemma Equiv.one_eq : (1 : E.Equiv E).toLieEquiv = LieEquiv.refl := rfl
+
+instance : Inv (E.Equiv E) where
+  inv x := {
+    toLieEquiv := x.toLieEquiv.symm
+    incl_comm := by
+      ext y
+      simp only [LieHom.coe_comp, LieEquiv.coe_coe, Function.comp_apply]
+      nth_rw 2 [show E.incl y = x.toLieEquiv.symm (x.toLieEquiv (E.incl y)) by simp]
+      have : (x.toLieEquiv (E.incl y)) = (x.toLieEquiv.comp E.incl) y := by
+        rw [LieHom.comp_apply, LieEquiv.coe_toLieHom]
+      rw [this, x.incl_comm]
+    proj_comm := by
+      ext y
+      simp only [LieHom.coe_comp, LieEquiv.coe_coe, Function.comp_apply]
+      rw [show E.proj y = E.proj.comp x.toLieEquiv (x.toLieEquiv.symm y) by simp, x.proj_comm]
+  }
+
+@[simp] lemma Equiv.inv_eq (x : E.Equiv E) : x⁻¹.toLieEquiv = x.toLieEquiv.symm := rfl
+
+instance : Group (E.Equiv E) where
+  mul_assoc _ _ _ := rfl
+  one_mul _ := rfl
+  mul_one _ := rfl
+  inv_mul_cancel x := by ext; simp
+
+/-- `Splitting` of a Lie extension is a section homomorphism. -/
+structure Splitting where
+  /-- A section homomorphism -/
+  sectionHom : M →ₗ⁅R⁆ E.L
+  /-- The section is a left inverse of the projection map. -/
+  leftInv : Function.LeftInverse E.proj sectionHom
+
+instance : FunLike (Splitting E) M E.L where
+  coe s := s.sectionHom
+  coe_injective' := by
+    intro ⟨_, _⟩ ⟨_, _⟩ h
+    congr
+    exact DFunLike.coe_injective h
+
+instance : LinearMapClass (Splitting E) R M E.L where
+  map_add f := f.sectionHom.map_add'
+  map_smulₛₗ f := f.sectionHom.map_smul'
 
 section TwoCocycleTriv
 
@@ -73,10 +160,35 @@ section TwoCocycleTriv
 trivial action of `L` on `V`. -/
 structure twoCocycleTriv (R L V) [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup V]
     [Module R V] where
-  /-- The underlying linear function. -/
+  /-- The underlying bilinear map. -/
   toFun : L →ₗ[R] L →ₗ[R] V
   map_eq_zero_of_eq' x : toFun x x = 0
   cocycle x y z : toFun x ⁅y, z⁆ = toFun ⁅x, y⁆ z + toFun y ⁅x, z⁆
+
+/-- The canonical injection from cocycles to cochains. -/
+def toCochain [AddCommGroup V] [Module R V] : (twoCocycleTriv R L V) → (twoCochain R L V) :=
+  fun ⟨a, h, _⟩ ↦ ⟨a, h⟩
+
+theorem toCochain_toBilin [AddCommGroup V] [Module R V] (a : twoCocycleTriv R L V) :
+    (toCochain a).toBilin = a.toFun :=
+  rfl
+
+theorem image_eq_kernel [AddCommGroup V] [Module R V] (a : twoCochain R L V) :
+    a ∈ (Set.range toCochain) ↔ a ∈ twoCocycle R L V := by
+  rw [mem_twoCocycle_iff, Set.mem_range]
+  constructor
+  · intro h
+    obtain ⟨b, hb⟩ := h
+    ext x y z
+    simp only [d₂₃_apply_apply, LinearMap.zero_apply, Pi.zero_apply]
+    have := b.cocycle x y z
+    rw [← toCochain_toBilin, hb, ← twoCochain_skew R L V _ z, ← lie_skew x z,
+      LinearMap.map_neg] at this
+    simp [this]
+  · intro h
+    have := (mem_twoCocycle_iff_Jacobi_like R L V a).mp h
+    use ⟨a.toBilin, a.alt, this⟩
+    simp [toCochain]
 
 variable [AddCommGroup V] [Module R V] (c : twoCocycleTriv R L V)
 
@@ -140,15 +252,17 @@ def twoCocycleTrivProj : (ofTwoCocycleTrivModule c) →ₗ⁅R⁆ L where
 lemma surjective_of_cocycle : Function.Surjective (twoCocycleTrivProj c) :=
   fun x ↦ Exists.intro (x, 0) rfl
 
-lemma isExtension_twoCocycleTriv :
-    IsExtension (twoCocycleTrivProj c).ker.incl (twoCocycleTrivProj c) :=
-  isExtension_of_surjective (twoCocycleTrivProj c) (surjective_of_cocycle c)
+lemma isExtensionTwoCocycleTriv :
+    LieAlgebra.IsExtension (twoCocycleTrivProj c).ker.incl (twoCocycleTrivProj c) :=
+  isExtension.of_surjective (twoCocycleTrivProj c) (surjective_of_cocycle c)
 
 /-- A Lie extension from a trivial 2-cocycle -/
-def Extension.ofTwoCocycleTriv :
+def ofTwoCocycleTriv :
     Extension R (twoCocycleTrivProj c).ker L :=
-  IsExtension.extension (isExtension_twoCocycleTriv c)
+  IsExtension.extension (isExtensionTwoCocycleTriv c)
 
 end TwoCocycleTriv
+
+end Extension
 
 end LieAlgebra
