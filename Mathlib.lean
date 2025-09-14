@@ -905,6 +905,7 @@ import Mathlib.Algebra.Order.Module.Basic
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Module.Equiv
 import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Algebra.Order.Module.HahnEmbedding
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Pointwise
 import Mathlib.Algebra.Order.Module.PositiveLinearMap
@@ -1208,6 +1209,7 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.NormalForms
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Basic
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Formula
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Point
+import Mathlib.AlgebraicGeometry.EllipticCurve.Reduction
 import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
 import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
 import Mathlib.AlgebraicGeometry.Fiber

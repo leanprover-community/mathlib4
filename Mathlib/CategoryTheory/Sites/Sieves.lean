@@ -161,6 +161,14 @@ theorem pullback_singleton (g : Z ⟶ X) [HasPullback g f] :
 inductive ofArrows {ι : Type*} (Y : ι → C) (f : ∀ i, Y i ⟶ X) : Presieve X
   | mk (i : ι) : ofArrows _ _ (f i)
 
+lemma ofArrows.mk' {ι : Type*} {Y : ι → C} {f : ∀ i, Y i ⟶ X} {Z : C} {g : Z ⟶ X}
+    (i : ι) (h : Z = Y i) (hg : g = eqToHom h ≫ f i) :
+    ofArrows Y f g := by
+  subst h
+  simp only [eqToHom_refl, id_comp] at hg
+  subst hg
+  constructor
+
 theorem ofArrows_pUnit : (ofArrows _ fun _ : PUnit => f) = singleton f := by
   funext Y
   ext g
@@ -294,6 +302,28 @@ theorem image_mem_functorPushforward (R : Presieve X) {f : Y ⟶ X} (h : R f) :
 See `arrows_generate_map_eq_functorPushforward`. -/
 inductive map (s : Presieve X) : Presieve (F.obj X) where
   | of {Y : C} {u : Y ⟶ X} (h : s u) : map s (F.map u)
+
+section
+
+variable {F}
+
+@[grind ←]
+lemma map_map {X Y : C} {f : Y ⟶ X} {R : Presieve X} (hf : R f) : R.map F (F.map f) :=
+  ⟨hf⟩
+
+@[simp]
+lemma map_ofArrows {X : C} {ι : Type*} {Y : ι → C} (f : ∀ i, Y i ⟶ X) :
+    (ofArrows Y f).map F = ofArrows _ (fun i ↦ F.map (f i)) := by
+  refine le_antisymm (fun Z g hg ↦ ?_) fun _ _ ⟨i⟩ ↦ map_map ⟨i⟩
+  obtain ⟨hu⟩ := hg
+  obtain ⟨i, rfl, rfl⟩ := Presieve.ofArrows_surj _ _ hu
+  simpa using ofArrows.mk i
+
+@[simp]
+lemma map_singleton {X Y : C} (f : X ⟶ Y) : (singleton f).map F = singleton (F.map f) := by
+  rw [← ofArrows_pUnit.{_, _, 0}, map_ofArrows, ofArrows_pUnit]
+
+end
 
 end FunctorPushforward
 

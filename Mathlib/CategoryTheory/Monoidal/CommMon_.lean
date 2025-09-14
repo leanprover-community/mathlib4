@@ -23,7 +23,7 @@ structure CommMon_ where
   /-- The underlying object in the ambient monoidal category -/
   X : C
   [mon : MonObj X]
-  [comm : IsCommMon X]
+  [comm : IsCommMonObj X]
 
 attribute [instance] CommMon_.mon CommMon_.comm
 
@@ -116,7 +116,7 @@ end
 /-- Construct an isomorphism of commutative monoid objects by giving a monoid isomorphism between
 the underlying objects. -/
 @[simps!]
-def mkIso' {M N : C} (e : M ≅ N) [MonObj M] [IsCommMon M] [MonObj N] [IsCommMon N]
+def mkIso' {M N : C} (e : M ≅ N) [MonObj M] [IsCommMonObj M] [MonObj N] [IsCommMonObj N]
     [IsMon_Hom e.hom] : mk M ≅ mk N :=
   (fullyFaithfulForget₂Mon_ C).preimageIso (Mon_.mkIso' e)
 
@@ -151,9 +151,9 @@ variable [F.LaxBraided] [F'.LaxBraided] [G.LaxBraided]
 
 open scoped Obj
 
-instance isCommMon_obj {M : C} [MonObj M] [IsCommMon M] : IsCommMon (F.obj M) where
+instance isCommMonObj_obj {M : C} [MonObj M] [IsCommMonObj M] : IsCommMonObj (F.obj M) where
   mul_comm := by
-    dsimp; rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMon.mul_comm]
+    dsimp; rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMonObj.mul_comm]
 
 variable (F) in
 /-- A lax braided functor takes commutative monoid objects to commutative monoid objects.
@@ -167,7 +167,7 @@ def mapCommMon : CommMon_ C ⥤ CommMon_ D where
       comm :=
         { mul_comm := by
             dsimp
-            rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMon.mul_comm] } }
+            rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMonObj.mul_comm] } }
   map f := F.mapMon.map f
 
 @[simp]
