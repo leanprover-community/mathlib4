@@ -325,11 +325,11 @@ end pi
 /-- For an element `a` in a C⋆-algebra, TFAE:
 * `0 ≤ a`
 * `a = sqrt a * sqrt a`
-* `a = b * b` for some non-negative `b`
+* `a = b * b` for some nonnegative `b`
 * `a = b * b` for some self-adjoint `b`
 * `a = star b * b` for some `b`
 * `a = b * star b` for some `b`
-* `a` is self-adjoint and has a non-negative spectrum -/
+* `a` is self-adjoint and has nonnegative spectrum -/
 theorem _root_.nonneg_TFAE {a : A} :
     [ 0 ≤ a,
       a = sqrt a * sqrt a,
@@ -339,14 +339,24 @@ theorem _root_.nonneg_TFAE {a : A} :
       ∃ b : A, a = b * star b,
       IsSelfAdjoint a ∧ QuasispectrumRestricts a ContinuousMap.realToNNReal ].TFAE := by
   tfae_have 1 ↔ 7 := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts
-  tfae_have 5 → 1 := fun ⟨b, hb⟩ => hb ▸ star_mul_self_nonneg _
-  tfae_have 6 → 1 := fun ⟨b, hb⟩ => hb ▸ mul_star_self_nonneg _
-  tfae_have 3 → 4 := fun ⟨b, hb⟩ => ⟨b, hb.1.isSelfAdjoint, hb.2⟩
-  tfae_have 4 → 5 := fun ⟨b, hb⟩ => ⟨b, hb.1.symm ▸ hb.2⟩
-  tfae_have 4 → 6 := fun ⟨b, hb⟩ => ⟨b, hb.1.symm ▸ hb.2⟩
   tfae_have 1 → 2 := fun h => sqrt_mul_sqrt_self a |>.symm
   tfae_have 2 → 3 := fun h => ⟨sqrt a, sqrt_nonneg a, h⟩
+  tfae_have 3 → 4 := fun ⟨b, hb⟩ => ⟨b, hb.1.isSelfAdjoint, hb.2⟩
+  tfae_have 4 → 5 := fun ⟨b, hb⟩ => ⟨b, hb.1.symm ▸ hb.2⟩
+  tfae_have 5 → 6 := fun ⟨b, hb⟩ => ⟨star b, star_star b |>.symm ▸ hb⟩
+  tfae_have 6 → 1 := fun ⟨b, hb⟩ => hb ▸ mul_star_self_nonneg _
   tfae_finish
+
+theorem _root_.nonneg_iff_eq_sqrt_mul_sqrt {a : A} :
+    0 ≤ a ↔ a = sqrt a * sqrt a := nonneg_TFAE.out 0 1
+theorem _root_.nonneg_iff_eq_nonneg_mul_self {a : A} :
+    0 ≤ a ↔ ∃ b, 0 ≤ b ∧ a = b * b := nonneg_TFAE.out 0 2
+theorem _root_.nonneg_iff_eq_isSelfAdjoint_mul_self {a : A} :
+    0 ≤ a ↔ ∃ b, IsSelfAdjoint b ∧ a = b * b := nonneg_TFAE.out 0 3
+theorem _root_.nonneg_iff_eq_star_mul_self {a : A} :
+    0 ≤ a ↔ ∃ b, a = star b * b := nonneg_TFAE.out 0 4
+theorem _root_.nonneg_iff_eq_mul_star_self {a : A} :
+    0 ≤ a ↔ ∃ b, a = b * star b := nonneg_TFAE.out 0 5
 
 end sqrt
 
