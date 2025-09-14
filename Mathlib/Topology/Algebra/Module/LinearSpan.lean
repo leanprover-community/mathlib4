@@ -43,8 +43,8 @@ variable {ι 𝕜 E F : Type*}
 
 section TopologicalRing
 
-variable [Finite ι] [Field 𝕜] [t𝕜 : TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
-  [AddCommGroup E] [Module 𝕜 E] [T0Space 𝕜]
+variable [Finite ι] [Field 𝕜] [t𝕜 : TopologicalSpace 𝕜] [IsTopologicalRing 𝕜] [T0Space 𝕜]
+  [AddCommGroup E] [Module 𝕜 E]
 
 /- A linear functional `φ` can be expressed as a linear combination of finitely many linear
 functionals `f₁,…,fₙ` if and only if `φ` is continuous with respect to the topology induced by
