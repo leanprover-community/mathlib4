@@ -185,14 +185,15 @@ variable {ι : Type*} [Fintype ι] [DecidableEq ι] {v : ι → AbsoluteValue R 
   {w : AbsoluteValue R S} {a b : R} {i : ι}
 
 /--
-- $v_1, ..., v_k, w$: absolute values on a field $F$.
-- $v_i$ is inequivalent to $v_j$ for all $j \neq i$ via the divergent point $a \in F$.
-- $v_i$ is inequivalent to $w$ via the divergent point $b \in F$.
-- $w(a) = 1$.
+- `v i, w`: absolute values on a field $R$.
+- `v i` is inequivalent to `v j` for all `j ≠ i` via the divergent point `a : R`.
+- `v i` is inequivalent to `w` via the divergent point `b : R`.
+- `w a = 1`.
 
-There is a $k\in F$ such that $1 < v_i(k)$ while $v_j(k) < 1$ for all $j \neq i$ and $w(k) < 1$.
+Then there is a common divergent point `k` causing both `v i` and `w` to be inequivalent to
+each `v j` for `j ≠ i`
 -/
-private theorem exists_one_lt_lt_one_lt_one_of_eq_one (ha : 1 < v i a) (haj : ∀ j ≠ i, v j a < 1)
+private theorem exists_one_lt_lt_one_pi_of_eq_one (ha : 1 < v i a) (haj : ∀ j ≠ i, v j a < 1)
     (haw : w a = 1) (hb : 1 < v i b) (hbw : w b < 1) :
     ∃ k : R, 1 < v i k ∧ (∀ j ≠ i, v j k < 1) ∧ w k < 1 := by
   let c : ℕ → R := fun n ↦ a ^ n * b
@@ -210,17 +211,15 @@ private theorem exists_one_lt_lt_one_lt_one_of_eq_one (ha : 1 < v i a) (haj : �
   · simpa using hrₙ j hj _ <| Finset.le_sup_dite_neg (fun j ↦ j = i) (Finset.mem_univ j) _
 
 /--
-- $v_1, ..., v_k, w$: absolute values on $F$.
-- $v_i$ is inequivalent to $v_j$ for all $j \neq i$ via the divergent point $a \in F$.
-- $v_i$ is inequivalent to $w$ via the divergent point $b\in F$.
-- $1 < w(a)$.
+- `v i, w`: absolute values on `R`.
+- `v i` is inequivalent to `v j` for all `j ≠ i` via the divergent point `a : R`.
+- `v i` is inequivalent to `w` via the divergent point `b : R`.
+- `1 < w a`.
 
-There is a $k ∈ F$ such that $1 < v_i(k)$ while $v_j(k) < 1$ for all $j ≠ i$ and $w(k) < 1$.
-
-Note that this is the result `exists_one_lt_lt_one_lt_one_of_eq_one` replacing the condition
-that $w(a) = 1$ with $1 < w(a)$.
+Then there is a common divergent point `k : R` causing both `v i` and `w` to be inequivalent to
+each `v j` for `j ≠ i`.
 -/
-private theorem exists_one_lt_lt_one_lt_one_of_one_lt (ha : 1 < v i a) (haj : ∀ j ≠ i, v j a < 1)
+private theorem exists_one_lt_lt_one_pi_of_one_lt (ha : 1 < v i a) (haj : ∀ j ≠ i, v j a < 1)
     (haw : 1 < w a) (hb : 1 < v i b) (hbw : w b < 1) :
     ∃ k : R, 1 < v i k ∧ (∀ j ≠ i, v j k < 1) ∧ w k < 1 := by
   let c : ℕ → R := fun n ↦ 1 / (1 + a⁻¹ ^ n) * b
@@ -247,49 +246,58 @@ private theorem exists_one_lt_lt_one_lt_one_of_one_lt (ha : 1 < v i a) (haj : �
       Finset.le_sup_dite_neg (fun j ↦ j = i) (Finset.mem_univ j) _
   · exact hrN _ <| le_max_iff.2 (.inr le_rfl)
 
-theorem Disjoint.eq_of_ne {α : Type*} {a b : α} (h : a ≠ b) :
-    Disjoint (fun c ↦ c = a) fun c ↦ c = b := by
-  intro p hpa hpb
-  refine le_bot_iff.2 <| funext fun c ↦ ?_
-  simp only [Pi.bot_apply, Prop.bot_eq_false, eq_iff_iff, iff_false]
-  intro hpc
-  exact h (hpa _ hpc ▸ hpb _ hpc)
+theorem _root_.Fintype.card_subtype_or_eq {α : Type*} [Fintype α] [DecidableEq α] {a b : α}
+    (h : a ≠ b) : Fintype.card { c : α // c = a ∨ c = b } = 2 := by
+  simpa using Fintype.card_subtype_or_disjoint _ _ <| fun p hpa hpb ↦
+    le_bot_iff.2 <| funext fun c ↦ by simpa using fun hpc ↦ h (hpa _ hpc ▸ hpb _ hpc)
 
 open Fintype Subtype in
-theorem exists_one_lt_lt_one_of_pairwise_not_isEquiv (h : ∀ i, (v i).IsNontrivial)
+/--
+If `v : ι → AbsoluteValue R S` is a finite collection of non-trivial and pairwise inequivalent
+absolute values, then for any `v i` there is some `a : R` such that `1 < v i a` while all other
+`v j a < 1`.
+-/
+theorem exists_one_lt_lt_one_pi_of_not_isEquiv (h : ∀ i, (v i).IsNontrivial)
     (hv : Pairwise fun i j ↦ ¬(v i).IsEquiv (v j)) :
     ∀ i, ∃ (a : R), 1 < v i a ∧ ∀ j ≠ i, v j a < 1 := by
-  revert hv h
-  apply induction_subsingleton_or_nontrivial
-    (P := fun ι hι ↦ [DecidableEq ι] → ∀ v : ι → AbsoluteValue R S, (∀ i, (v i).IsNontrivial) →
-      (Pairwise fun i j ↦ ¬(v i).IsEquiv (v j)) → ∀ i, ∃ (a : R), 1 < v i a ∧ ∀ j ≠ i, v j a < 1)
-  · intro ι _ _ _ v h hv i
-    obtain ⟨a, ha⟩ := (h i).exists_abv_gt_one
+  let P (ι : Type u_3) [Fintype ι] : Prop := [DecidableEq ι] →
+    ∀ v : ι → AbsoluteValue R S, (∀ i, (v i).IsNontrivial) →
+      (Pairwise fun i j ↦ ¬(v i).IsEquiv (v j)) → ∀ i, ∃ (a : R), 1 < v i a ∧ ∀ j ≠ i, v j a < 1
+  -- Use strong induction on the index
+  revert hv h; refine induction_subsingleton_or_nontrivial (P := P) ι (fun ι _ _ _ v h hv i ↦ ?_)
+    (fun ι _ _ ih _ v h hv i ↦ ?_) v
+  · -- If `ι` is trivial this follows immediately from `(v i).IsNontrivial`
+    let ⟨a, ha⟩ := (h i).exists_abv_gt_one
     exact ⟨a, ha, fun j hij ↦ absurd (Subsingleton.elim i j) hij.symm⟩
-  · intro ι _ _ ih _ v h hv i
-    rcases eq_or_ne (card ι) 2 with (hc | hc)
-    · obtain ⟨j, hj⟩ := (Nat.card_eq_two_iff' i).1 <| card_eq_nat_card ▸ hc
+  · rcases eq_or_ne (card ι) 2 with (hc | hc)
+    · -- If `ι` has two elements this is `exists_one_lt_lt_one_of_not_isEquiv`
+      let ⟨j, hj⟩ := (Nat.card_eq_two_iff' i).1 <| card_eq_nat_card ▸ hc
       let ⟨a, ha⟩ := (v i).exists_one_lt_lt_one_of_not_isEquiv (h i) (h j) (hv hj.1.symm)
       exact ⟨a, ha.1, fun _ h ↦ hj.2 _ h ▸ ha.2⟩
     have hlt : 2 < card ι := Nat.lt_of_le_of_ne (one_lt_card_iff_nontrivial.2 ‹_›) hc.symm
-    obtain ⟨lst, hl⟩ := exists_ne i
-    let ⟨a, ha⟩ := ih {j : ι // j ≠ lst} (card_subtype_lt fun a ↦ a rfl) (restrict _ v)
-      (fun i ↦ h _) (hv.comp_of_injective val_injective) ⟨i, hl.symm⟩
-    let ⟨b, hb⟩ := ih {j : ι // j = i ∨ j = lst} (by simp [card_subtype_or_disjoint _ _ <|
-        Disjoint.eq_of_ne hl.symm, hlt]) (restrict _ v) (fun i ↦ h _)
-      (hv.comp_of_injective val_injective) ⟨i, by simp⟩
-    rcases eq_or_ne (v lst a) 1 with (ha₁ | ha₁)
-    · let ⟨k, hk⟩ := exists_one_lt_lt_one_lt_one_of_eq_one ha.1 ha.2 ha₁ hb.1 (hb.2 ⟨lst, .inr rfl⟩
-        (coe_ne_coe.1 hl))
-      refine ⟨k, hk.1, fun j hj ↦ ?_⟩
-      rcases eq_or_ne j lst with (rfl | h); try exact hk.2.2; exact hk.2.1 ⟨j, h⟩ (coe_ne_coe.1 hj)
-    rcases ha₁.lt_or_gt with (ha₀ | ha₀)
-    · refine ⟨a, ha.1, fun j hj ↦ ?_⟩
-      rcases eq_or_ne j lst with (rfl | h); try exact ha₀; exact ha.2 ⟨j, h⟩ (by simpa using hj)
-    · let ⟨k, hk⟩ := exists_one_lt_lt_one_lt_one_of_one_lt ha.1 ha.2 ha₀ hb.1 (hb.2 ⟨lst, .inr rfl⟩
-        (coe_ne_coe.1 hl))
-      refine ⟨k, hk.1, fun j hj ↦ ?_⟩
-      rcases eq_or_ne j lst with (rfl | h); try exact hk.2.2; exact hk.2.1 ⟨j, h⟩ (coe_ne_coe.1 hj)
+    -- Choose another distinguished index `j ≠ i`
+    let ⟨j, hj⟩ := exists_ne i
+    -- Apply induction first the subcollection `v i` for `i ≠ j`
+    let ⟨a, ha⟩ := ih {k : ι // k ≠ j} (card_subtype_lt fun a ↦ a rfl) (restrict _ v)
+      (fun i ↦ h _) (hv.comp_of_injective val_injective) ⟨i, hj.symm⟩
+    -- Then apply induction next to the subcollection `v i, v k`.
+    let ⟨b, hb⟩ := ih {k : ι // k = i ∨ k = j} (by linarith [card_subtype_or_eq hj.symm])
+      (restrict _ v) (fun _ ↦ h _) (hv.comp_of_injective val_injective) ⟨i, .inl rfl⟩
+    rcases eq_or_ne (v j a) 1 with (ha₁ | ha₁)
+    · -- If `v j a = 1` then use the sequence `a ^ n * b` in the applied lemma
+      let ⟨c, hc⟩ := exists_one_lt_lt_one_pi_of_eq_one ha.1 ha.2 ha₁ hb.1 (hb.2 ⟨j, .inr rfl⟩
+        (coe_ne_coe.1 hj))
+      refine ⟨c, hc.1, fun k hk ↦ ?_⟩
+      rcases eq_or_ne k j with (rfl | h); try exact hc.2.2; exact hc.2.1 ⟨k, h⟩ (coe_ne_coe.1 hk)
+    rcases ha₁.lt_or_gt with (ha_lt | ha_gt)
+    · -- If `v j a < 1` then `a` works
+      refine ⟨a, ha.1, fun k hk ↦ ?_⟩
+      rcases eq_or_ne k j with (rfl | h); try exact ha_lt; exact ha.2 ⟨k, h⟩ (by simpa using hk)
+    · -- If `1 < v j a` then use the sequence `b / (1 + a ^ (-n))` in the applied lemma
+      let ⟨c, hc⟩ := exists_one_lt_lt_one_pi_of_one_lt ha.1 ha.2 ha_gt hb.1 (hb.2 ⟨j, .inr rfl⟩
+        (coe_ne_coe.1 hj))
+      refine ⟨c, hc.1, fun k hk ↦ ?_⟩
+      rcases eq_or_ne k j with (rfl | h); try exact hc.2.2; exact hc.2.1 ⟨k, h⟩ (coe_ne_coe.1 hk)
 
 end LinearOrderedField
 
@@ -355,7 +363,6 @@ theorem isEquiv_iff_exists_rpow_eq {v w : AbsoluteValue F ℝ} :
       rpow_inv_log (v.pos hb₀) (h.eq_one_iff.not.2 hb₁), exp_one_rpow, exp_log (w.pos hb₀)]
   · exact ⟨1, zero_lt_one, funext fun x ↦ by rcases eq_or_ne x 0 with rfl | h₀ <;>
       aesop (add simp [h.isNontrivial_iff])⟩
-
 
 end Real
 
