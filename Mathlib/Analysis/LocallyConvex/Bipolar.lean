@@ -38,8 +38,7 @@ variable [Module 𝕜 E] [Module 𝕜 F]
 
 variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
 
-lemma closureOperator_polar_gc_empty_of_separatingLeft (h : SeparatingLeft B) :
-    B.polar_gc.closureOperator (∅ : Set E) = {0} := by
+example (h : SeparatingLeft B) : B.polar_gc.closureOperator (∅ : Set E) = {0} := by
   simp only [GaloisConnection.closureOperator_apply, Function.comp_apply, polar_empty,
     OrderDual.ofDual_toDual, (B.flip.polar_univ h)]
 
