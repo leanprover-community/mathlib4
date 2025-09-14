@@ -30,15 +30,6 @@ variable (R : Type u) [CommRing R]
 
 open CategoryTheory IsLocalRing RingTheory.Sequence
 
-def HasGlobalDimensionLE (n : ℕ) : Prop :=
-  ∀ (M : ModuleCat.{v} R), HasProjectiveDimensionLE M n
-
-noncomputable def globalDimension : ℕ∞ :=
-  sInf (({(n : ℕ) | HasGlobalDimensionLE.{u, v} R n}).image WithTop.some)
-
-lemma HasGlobalDimensionLE_iff (n : ℕ) : HasGlobalDimensionLE R n ↔ globalDimension R ≤ n := by
-  sorry
-
 section ProjectiveDimension
 
 variable {C : Type u} [Category.{v, u} C] [Abelian C]
@@ -48,12 +39,17 @@ variable {C : Type u} [Category.{v, u} C] [Abelian C]
 noncomputable def projectiveDimension (X : C) : WithBot ℕ∞ :=
   sInf {n : WithBot ℕ∞ | ∀ (i : ℕ), n < i → HasProjectiveDimensionLT X i}
 
+/-
 noncomputable def nonnegProjectiveDimension (X : C) : ℕ∞ :=
   sInf (({(n : ℕ) | HasProjectiveDimensionLT X n}).image WithTop.some)
+-/
 
 lemma projectiveDimension_eq_of_iso (X Y : C) (e : X ≅ Y) :
     projectiveDimension X = projectiveDimension Y := by
-  sorry
+  simp only [projectiveDimension]
+  congr! 5
+  exact ⟨fun h ↦ hasProjectiveDimensionLT_of_iso e _,
+    fun h ↦ hasProjectiveDimensionLT_of_iso e.symm _⟩
 
 lemma hasProjectiveDimensionLT_of_projectiveDimension_lt (X : C) (n : ℕ)
     (h : projectiveDimension X < n) : HasProjectiveDimensionLT X n := by
@@ -71,7 +67,25 @@ lemma projectiveDimension_le_iff (X : C) (n : ℕ) : projectiveDimension X ≤ n
   · apply sInf_le
     simp only [Set.mem_setOf_eq, Nat.cast_lt]
     intro i hi
-    exact CategoryTheory.hasProjectiveDimensionLT_of_ge X (n + 1) i hi
+    exact hasProjectiveDimensionLT_of_ge X (n + 1) i hi
+
+lemma projectiveDimension_ge_iff (X : C) (n : ℕ) : n ≤ projectiveDimension X  ↔
+    ¬ HasProjectiveDimensionLT X n := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · simp only [projectiveDimension, le_sInf_iff, Set.mem_setOf_eq] at h
+    by_contra lt
+    by_cases eq0 : n = 0
+    · have := h ⊥ (fun i _ ↦ (hasProjectiveDimensionLT_of_ge X n i (by simp [eq0])))
+      simp [eq0] at this
+    · have : ∀ (i : ℕ), (n - 1 : ℕ) < (i : WithBot ℕ∞) → HasProjectiveDimensionLT X i := by
+        intro i hi
+        exact hasProjectiveDimensionLT_of_ge X n i (Nat.le_of_pred_lt (Nat.cast_lt.mp hi))
+      have not := Nat.cast_le.mp (h (n - 1 : ℕ) this)
+      omega
+  · simp only [projectiveDimension, le_sInf_iff, Set.mem_setOf_eq]
+    intro m hm
+    by_contra nle
+    exact h (hm _ (lt_of_not_ge nle))
 
 lemma projectiveDimension_eq_bot_iff (X : C) : projectiveDimension X = ⊥ ↔
     Limits.IsZero X := by
@@ -86,17 +100,51 @@ lemma projectiveDimension_eq_bot_iff (X : C) : projectiveDimension X = ⊥ ↔
     have := h.hasProjectiveDimensionLT_zero
     apply hasProjectiveDimensionLT_of_ge X 0 i (Nat.zero_le i)
 
+lemma projectiveDimension_eq_find (X : C) (h : ∃ n, HasProjectiveDimensionLE X n)
+    (nzero : ¬ Limits.IsZero X) [DecidablePred (HasProjectiveDimensionLE X)] :
+    projectiveDimension X = Nat.find h := by
+  apply le_antisymm ((projectiveDimension_le_iff _ _).mpr (Nat.find_spec h))
+  apply (projectiveDimension_ge_iff _ _).mpr
+  by_cases eq0 : Nat.find h = 0
+  · simp only [eq0]
+    by_contra
+    exact nzero (isZero_of_hasProjectiveDimensionLT_zero X)
+  · rw [← Nat.succ_pred_eq_of_ne_zero eq0]
+    exact (Nat.find_min h (Nat.sub_one_lt eq0))
+/-
 lemma projectiveDimension_eq_nonnegProjectiveDimension_of_not_zero (X : C) (h : ¬ Limits.IsZero X) :
     nonnegProjectiveDimension X = projectiveDimension X :=  by
   sorry
+-/
 
 lemma projectiveDimension_ne_top_iff (X : C) : projectiveDimension X ≠ ⊤ ↔
     ∃ n, HasProjectiveDimensionLE X n := by
-  sorry
+  simp only [projectiveDimension, ne_eq, sInf_eq_top, Set.mem_setOf_eq, not_forall]
+  refine ⟨fun ⟨x, hx, ne⟩ ↦ ?_, fun ⟨n, hn⟩ ↦ ?_⟩
+  · by_cases eqbot : x = ⊥
+    · use 0
+      have := hx 0 (by simp [eqbot, bot_lt_iff_ne_bot])
+      exact instHasProjectiveDimensionLTSucc X 0
+    · have : x.unbot eqbot ≠ ⊤ := by
+        by_contra eq
+        rw [← WithBot.coe_inj, WithBot.coe_unbot, WithBot.coe_top] at eq
+        exact ne eq
+      use (x.unbot eqbot).toNat
+      have eq : x = (x.unbot eqbot).toNat := (WithBot.coe_unbot x eqbot).symm.trans
+        (WithBot.coe_inj.mpr (ENat.coe_toNat this).symm)
+      have : x < ((x.unbot eqbot).toNat + 1 : ℕ) := by
+        nth_rw 1 [eq]
+        exact Nat.cast_lt.mpr (lt_add_one _)
+      exact hx ((x.unbot eqbot).toNat + 1 : ℕ) this
+  · use n
+    simpa using ⟨fun i hi ↦ hasProjectiveDimensionLT_of_ge X (n + 1) i hi,
+      WithBot.coe_inj.not.mpr (ENat.coe_ne_top n)⟩
 
+/-
 lemma nonnegProjectiveDimension_ne_top_iff (X : C) : nonnegProjectiveDimension X ≠ ⊤ ↔
     ∃ n, HasProjectiveDimensionLE X n := by
   sorry
+-/
 
 --needed
 open Limits Abelian in
@@ -360,6 +408,24 @@ lemma projectiveDimension_eq_iSup_localizedModule_maximal (M : ModuleCat.{v} R) 
         (WithBot.coe_inj.mpr (ENat.coe_toNat eqtop).symm)
       simpa only [this] using aux n
 
+section GlobalDimension
+
+variable (R : Type u) [CommRing R]
+
+noncomputable def globalDimension : WithBot ℕ∞ :=
+  ⨆ (M : ModuleCat.{v} R), projectiveDimension M
+
+lemma globalDimension_eq_bot_iff [Small.{v} R] : globalDimension.{u, v} R = ⊥ ↔ Subsingleton R := by
+  simp only [globalDimension, iSup_eq_bot, projectiveDimension_eq_bot_iff,
+    ModuleCat.isZero_iff_subsingleton]
+  refine ⟨fun h ↦ ?_, fun h M ↦ Module.subsingleton R M⟩
+  let _ := h (ModuleCat.of R (Shrink.{v} R))
+  exact (equivShrink.{v} R).subsingleton
+
+lemma globalDimension_le_iff (n : ℕ) : globalDimension.{u, v} R ≤ n ↔
+    ∀ M : ModuleCat.{v} R, HasProjectiveDimensionLE M n := by
+  simp [globalDimension, projectiveDimension_le_iff]
+
 lemma globalDimension_eq_iSup_loclization_prime : globalDimension.{u, v} R =
     ⨆ (p : PrimeSpectrum R), globalDimension.{u, v} (Localization.AtPrime p.1) := by
   sorry
@@ -367,3 +433,5 @@ lemma globalDimension_eq_iSup_loclization_prime : globalDimension.{u, v} R =
 lemma globalDimension_eq_iSup_loclization_maximal : globalDimension.{u, v} R =
     ⨆ (p : MaximalSpectrum R), globalDimension.{u, v} (Localization.AtPrime p.1) := by
   sorry
+
+end GlobalDimension
