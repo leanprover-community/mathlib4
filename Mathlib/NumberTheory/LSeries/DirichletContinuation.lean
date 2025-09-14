@@ -346,7 +346,7 @@ lemma differentiable_LFunctionTrivChar₁ : Differentiable ℂ (LFunctionTrivCha
     ← differentiableOn_compl_singleton_and_continuousAt_iff (c := 1) Filter.univ_mem]
   refine ⟨DifferentiableOn.congr (f := fun s ↦ (s - 1) * LFunctionTrivChar n s)
     (fun _ hs ↦ DifferentiableAt.differentiableWithinAt <| by fun_prop (disch := simp_all))
-   fun _ hs ↦ Function.update_of_ne (Set.mem_diff_singleton.mp hs).2 ..,
+    fun _ hs ↦ Function.update_of_ne (Set.mem_diff_singleton.mp hs).2 ..,
     continuousWithinAt_compl_self.mp ?_⟩
   simpa using LFunctionTrivChar_residue_one
 
@@ -360,7 +360,7 @@ lemma deriv_LFunctionTrivChar₁_apply_of_ne_one {s : ℂ} (hs : s ≠ 1) :
   rw [H, deriv_fun_mul (by fun_prop) (differentiableAt_LFunction _ s (.inl hs)), deriv_sub_const,
     deriv_id'', one_mul, add_comm]
 
-/-- The negative logarithmtic derivative of `s ↦ (s - 1) * L χ s` for a trivial
+/-- The negative logarithmic derivative of `s ↦ (s - 1) * L χ s` for a trivial
 Dirichlet character `χ` is continuous away from the zeros of `L χ` (including at `s = 1`). -/
 lemma continuousOn_neg_logDeriv_LFunctionTrivChar₁ :
     ContinuousOn (fun s ↦ -deriv (LFunctionTrivChar₁ n) s / LFunctionTrivChar₁ n s)

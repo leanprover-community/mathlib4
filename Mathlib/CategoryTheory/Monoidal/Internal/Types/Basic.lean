@@ -20,11 +20,11 @@ assert_not_exists MonoidWithZero
 
 universe v u
 
-open CategoryTheory Mon_Class
+open CategoryTheory MonObj
 
 namespace MonTypeEquivalenceMon
 
-instance monMonoid (A : Type u) [Mon_Class A] : Monoid A where
+instance monMonoid (A : Type u) [MonObj A] : Monoid A where
   one := η[A] PUnit.unit
   mul x y := μ[A] (x, y)
   one_mul x := by convert congr_fun (one_mul A) (PUnit.unit, x)
@@ -66,21 +66,21 @@ noncomputable def monTypeEquivalenceMon : Mon_ (Type u) ≌ MonCat.{u} where
   unitIso := Iso.refl _
   counitIso := NatIso.ofComponents
     (fun A => MulEquiv.toMonCatIso { Equiv.refl _ with map_mul' := fun _ _ => rfl })
-    (by aesop_cat)
+    (by cat_disch)
 
 /-- The equivalence `Mon_ (Type u) ≌ MonCat.{u}`
 is naturally compatible with the forgetful functors to `Type u`.
 -/
 noncomputable def monTypeEquivalenceMonForget :
     MonTypeEquivalenceMon.functor ⋙ forget MonCat ≅ Mon_.forget (Type u) :=
-  NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
+  NatIso.ofComponents (fun _ => Iso.refl _) (by cat_disch)
 
 noncomputable instance monTypeInhabited : Inhabited (Mon_ (Type u)) :=
   ⟨MonTypeEquivalenceMon.inverse.obj (MonCat.of PUnit)⟩
 
 namespace CommMonTypeEquivalenceCommMon
 
-instance commMonCommMonoid (A : Type u) [Mon_Class A] [IsCommMon A] : CommMonoid A :=
+instance commMonCommMonoid (A : Type u) [MonObj A] [IsCommMon A] : CommMonoid A :=
   { MonTypeEquivalenceMon.monMonoid A with
     mul_comm := fun x y => by convert congr_fun (IsCommMon.mul_comm A) (y, x) }
 
@@ -114,7 +114,7 @@ noncomputable def commMonTypeEquivalenceCommMon : CommMon_ (Type u) ≌ CommMonC
   unitIso := Iso.refl _
   counitIso := NatIso.ofComponents
     (fun A => MulEquiv.toCommMonCatIso { Equiv.refl _ with map_mul' := fun _ _ => rfl })
-    (by aesop_cat)
+    (by cat_disch)
 
 /-- The equivalences `Mon_ (Type u) ≌ MonCat.{u}` and `CommMon_ (Type u) ≌ CommMonCat.{u}`
 are naturally compatible with the forgetful functors to `MonCat` and `Mon_ (Type u)`.

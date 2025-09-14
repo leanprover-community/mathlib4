@@ -12,6 +12,11 @@ notation "ℝ" => Real
 @[instance] axiom Real.linearOrder : LinearOrder ℝ
 @[instance] axiom Real.isStrictOrderedRing : IsStrictOrderedRing ℝ
 
+example {a b c : ℝ} {f : ℝ → ℝ} (h : f (a * c * b) * f (c + b + a) = 1) :
+    f (a + b + c) * f (b * a * c) = 1 := by
+  ring_nf at *
+  exact h
+
 example (x y : ℕ) : x + y = y + x := by ring
 example (x y : ℕ) : x + y + y = 2 * y + x := by ring
 example (x y : ℕ) : x + id y = y + id x := by ring!
@@ -69,7 +74,7 @@ end Rat
 
 example (A : ℕ) : (2 * A) ^ 2 = (2 * A) ^ 2 := by ring
 
-example (x y : ℚ) (hx : x ≠ 0) (hy : y ≠ 0) :
+example (x y z : ℚ) (hx : x ≠ 0) (hy : y ≠ 0) :
     x / (y / z) + y ⁻¹ + 1 / (y * -x) = -1/ (x * y) + (x * z + 1) / y := by
   field_simp
   ring
@@ -204,6 +209,14 @@ example (x : ℤ) (R : ℤ → ℤ → Prop) : True := by
 
 end
 
+-- new behaviour as of https://github.com/leanprover-community/mathlib4/issues/27562
+-- (Previously, because of a metavariable instantiation issue, the tactic succeeded as a no-op.)
+/-- error: ring_nf made no progress at h -/
+#guard_msgs in
+example {R : Type*} [CommSemiring R] {x y : R} : True := by
+  have h : x + y = 3 := test_sorry
+  ring_nf at h
+
 -- Test that `ring_nf` doesn't unfold local let expressions, and `ring_nf!` does
 set_option linter.unusedTactic false in
 example (x : ℝ) (f : ℝ → ℝ) : True := by
@@ -229,3 +242,6 @@ example (x : ℝ) (f : ℝ → ℝ) : True := by
 -- Test that `ring_nf` doesn't get confused about bound variables
 example : (fun x : ℝ => x * x^2) = (fun y => y^2 * y) := by
   ring_nf
+
+-- Test that `ring` works for division without subtraction
+example {R : Type} [Semifield R] [CharZero R] {x : R} : x / 2 + x / 2 = x := by ring

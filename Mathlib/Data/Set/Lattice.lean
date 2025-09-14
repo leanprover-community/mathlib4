@@ -9,7 +9,7 @@ import Mathlib.Data.Set.BooleanAlgebra
 /-!
 # The set lattice
 
-This file is a collection of results on the complete atomic boolean algebra structure of `Set α`.
+This file is a collection of results on the complete atomic Boolean algebra structure of `Set α`.
 Notation for the complete lattice operations can be found in `Mathlib/Order/SetNotation.lean`.
 
 ## Main declarations
@@ -824,8 +824,6 @@ theorem sUnion_powerset_gc :
 def sUnionPowersetGI :
     GaloisInsertion (⋃₀ · : Set (Set α) → Set α) (𝒫 · : Set α → Set (Set α)) :=
   gi_sSup_Iic
-
-@[deprecated (since := "2024-12-07")] alias sUnion_powerset_gi := sUnionPowersetGI
 
 /-- If all sets in a collection are either `∅` or `Set.univ`, then so is their union. -/
 theorem sUnion_mem_empty_univ {S : Set (Set α)} (h : S ⊆ {∅, univ}) :

@@ -12,16 +12,16 @@ import Mathlib.CategoryTheory.Monoidal.Action.Basic
 
 universe v₁ v₂ u₁ u₂
 
-open CategoryTheory MonoidalCategory Mon_Class
+open CategoryTheory MonoidalCategory MonObj
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
   {D : Type u₂} [Category.{v₂} D] [MonoidalLeftAction C D]
 
 section Mod_Class
 
-open Mon_Class
+open MonObj
 
-variable (M : C) [Mon_Class M]
+variable (M : C) [MonObj M]
 
 open scoped MonoidalLeftAction
 /-- Given an action of a monoidal category `C` on a category `D`,
@@ -34,15 +34,15 @@ class Mod_Class (X : D) where
   /-- The action map -/
   smul : M ⊙ₗ X ⟶ X
   /-- The identity acts trivially. -/
-  one_smul' (X) : η ⊵ₗ X ≫ smul = (λₗ X).hom := by aesop_cat
+  one_smul' (X) : η ⊵ₗ X ≫ smul = (λₗ X).hom := by cat_disch
   /-- The action map is compatible with multiplication. -/
-  mul_smul' (X) : μ ⊵ₗ X ≫ smul = (αₗ M M X).hom ≫ M ⊴ₗ smul ≫ smul := by aesop_cat
+  mul_smul' (X) : μ ⊵ₗ X ≫ smul = (αₗ M M X).hom ≫ M ⊴ₗ smul ≫ smul := by cat_disch
 
 attribute [reassoc] Mod_Class.mul_smul' Mod_Class.one_smul'
 
-@[inherit_doc] scoped[Mon_Class] notation "γ" => Mod_Class.smul
-@[inherit_doc] scoped[Mon_Class] notation "γ["Y"]" => Mod_Class.smul (X := Y)
-@[inherit_doc] scoped[Mon_Class] notation "γ["N","Y"]" =>
+@[inherit_doc] scoped[MonObj] notation "γ" => Mod_Class.smul
+@[inherit_doc] scoped[MonObj] notation "γ["Y"]" => Mod_Class.smul (X := Y)
+@[inherit_doc] scoped[MonObj] notation "γ["N","Y"]" =>
   Mod_Class.smul (M := N) (X := Y)
 
 variable {M}
@@ -69,7 +69,7 @@ abbrev regular : Mod_Class M M where
   smul := μ
 
 attribute [local instance] regular in
-@[simp] lemma smul_eq_mul (M : C) [Mon_Class M] : γ[M, M] = μ[M] := rfl
+@[simp] lemma smul_eq_mul (M : C) [MonObj M] : γ[M, M] = μ[M] := rfl
 
 /-- If `C` acts monoidally on `D`, then every object of `D` is canonically a
 module over the trivial monoid. -/
@@ -91,11 +91,11 @@ end Mod_Class
 
 open scoped Mod_Class MonoidalLeftAction
 
-variable (A : C) [Mon_Class A]
+variable (A : C) [MonObj A]
 /-- A morphism in `D` is a morphism of `A`-module objects if it commutes with
 the action maps -/
 class IsMod_Hom {M N : D} [Mod_Class A M] [Mod_Class A N] (f : M ⟶ N) where
-  smul_hom : γ[M] ≫ f = A ⊴ₗ f ≫ γ[N] := by aesop_cat
+  smul_hom : γ[M] ≫ f = A ⊴ₗ f ≫ γ[N] := by cat_disch
 
 attribute [reassoc (attr := simp)] IsMod_Hom.smul_hom
 
@@ -113,7 +113,7 @@ instance (f : M ≅ N) [IsMod_Hom A f.hom] :
 variable (D) in
 /-- A module object for a monoid object in a monoidal category acting on the
 ambient category. -/
-structure Mod_ (A : C) [Mon_Class A] where
+structure Mod_ (A : C) [MonObj A] where
   /-- The underlying object in the ambient category -/
   X : D
   [mod : Mod_Class A X]
@@ -122,7 +122,7 @@ attribute [instance] Mod_.mod
 
 namespace Mod_
 
-variable {A : C} [Mon_Class A] (M : Mod_ D A)
+variable {A : C} [MonObj A] (M : Mod_ D A)
 
 theorem assoc_flip : A ⊴ₗ γ ≫ γ = (αₗ A A M.X).inv ≫ μ ⊵ₗ M.X ≫ γ := by simp
 
@@ -140,7 +140,7 @@ taking a morphism without a [isMod_Hom] instance, as well as the relevant
 equality to put such an instance. -/
 @[simps!]
 def Hom.mk' {M N : Mod_ D A} (f : M.X ⟶ N.X)
-    (smul_hom : γ[M.X] ≫ f = A ⊴ₗ f ≫ γ[N.X] := by aesop_cat) : Hom M N :=
+    (smul_hom : γ[M.X] ≫ f = A ⊴ₗ f ≫ γ[N.X] := by cat_disch) : Hom M N :=
   letI : IsMod_Hom A f := ⟨smul_hom⟩
   ⟨f⟩
 
@@ -150,7 +150,7 @@ a `Mod_Class` instance (rather than bundled as `Mod_`),
 as well as the relevant equality to put such an instance. -/
 @[simps!]
 def Hom.mk'' {M N : D} [Mod_Class A M] [Mod_Class A N] (f : M ⟶ N)
-    (smul_hom : γ[M] ≫ f = A ⊴ₗ f ≫ γ[N] := by aesop_cat) :
+    (smul_hom : γ[M] ≫ f = A ⊴ₗ f ≫ γ[N] := by cat_disch) :
     Hom (.mk (A := A) M) (.mk (A := A) N) :=
   letI : IsMod_Hom A f := ⟨smul_hom⟩
   ⟨f⟩
@@ -206,7 +206,7 @@ def forget : Mod_ D A ⥤ D where
 
 section comap
 
-variable {A B : C} [Mon_Class A] [Mon_Class B] (f : A ⟶ B) [IsMon_Hom f]
+variable {A B : C} [MonObj A] [MonObj B] (f : A ⟶ B) [IsMon_Hom f]
 
 open MonoidalLeftAction in
 /-- When `M` is a `B`-module in `D` and `f : A ⟶ B` is a morphism of internal
@@ -250,7 +250,7 @@ lemma scalarRestriction_hom
 between the categories of module objects.
 -/
 @[simps]
-def comap {A B : C} [Mon_Class A] [Mon_Class B] (f : A ⟶ B) [IsMon_Hom f] :
+def comap {A B : C} [MonObj A] [MonObj B] (f : A ⟶ B) [IsMon_Hom f] :
     Mod_ D B ⥤ Mod_ D A where
   obj M :=
     letI := scalarRestriction f M.X

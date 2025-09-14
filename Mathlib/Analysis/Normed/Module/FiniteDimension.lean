@@ -7,9 +7,9 @@ import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.Normed.Group.Lemmas
 import Mathlib.Analysis.Normed.Affine.AddTorsor
 import Mathlib.Analysis.Normed.Affine.Isometry
-import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
+import Mathlib.Analysis.Normed.Operator.NormedSpace
 import Mathlib.Analysis.NormedSpace.RieszLemma
-import Mathlib.Analysis.NormedSpace.Pointwise
+import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 import Mathlib.Logic.Encodable.Pi
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Topology.Algebra.InfiniteSum.Module
@@ -61,7 +61,7 @@ variable {R₁ : Type*} [Field R₁] [Module R₁ E₁] [Module R₁ F] [FiniteD
   [FiniteDimensional R₁ F]
 
 /-- A linear isometry between finite dimensional spaces of equal dimension can be upgraded
-    to a linear isometry equivalence. -/
+to a linear isometry equivalence. -/
 def toLinearIsometryEquiv (li : E₁ →ₗᵢ[R₁] F) (h : finrank R₁ E₁ = finrank R₁ F) :
     E₁ ≃ₗᵢ[R₁] F where
   toLinearEquiv := li.toLinearMap.linearEquivOfInjective li.injective h
@@ -90,7 +90,7 @@ variable {𝕜 : Type*} {V₁ V₂ : Type*} {P₁ P₂ : Type*} [NormedField �
 variable [FiniteDimensional 𝕜 V₁] [FiniteDimensional 𝕜 V₂]
 
 /-- An affine isometry between finite dimensional spaces of equal dimension can be upgraded
-    to an affine isometry equivalence. -/
+to an affine isometry equivalence. -/
 def toAffineIsometryEquiv [Inhabited P₁] (li : P₁ →ᵃⁱ[𝕜] P₂) (h : finrank 𝕜 V₁ = finrank 𝕜 V₂) :
     P₁ ≃ᵃⁱ[𝕜] P₂ :=
   AffineIsometryEquiv.mk' li (li.linearIsometry.toLinearIsometryEquiv h)
@@ -278,7 +278,7 @@ theorem opNNNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[
     set φ := v.equivFunL.toContinuousLinearMap
     calc
       ‖u e‖₊ = ‖u (∑ i, v.equivFun e i • v i)‖₊ := by rw [v.sum_equivFun]
-      _ = ‖∑ i, v.equivFun e i • (u <| v i)‖₊ := by simp [map_sum]
+      _ = ‖∑ i, v.equivFun e i • (u <| v i)‖₊ := by simp only [equivFun_apply, map_sum, map_smul]
       _ ≤ ∑ i, ‖v.equivFun e i • (u <| v i)‖₊ := nnnorm_sum_le _ _
       _ = ∑ i, ‖v.equivFun e i‖₊ * ‖u (v i)‖₊ := by simp only [nnnorm_smul]
       _ ≤ ∑ i, ‖v.equivFun e i‖₊ * M := by gcongr; apply hu
@@ -434,7 +434,7 @@ theorem FiniteDimensional.of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
         gcongr
         · exact hc.2.le
         · apply fle
-      _ = r := by field_simp [(zero_lt_one.trans Rgt).ne']
+      _ = r := by simp [(zero_lt_one.trans Rgt).ne']
   obtain ⟨x : E, _ : x ∈ Metric.closedBall (0 : E) r, φ : ℕ → ℕ, φmono : StrictMono φ,
     φlim : Tendsto (g ∘ φ) atTop (𝓝 x)⟩ := h.tendsto_subseq A
   have B : CauchySeq (g ∘ φ) := φlim.cauchySeq

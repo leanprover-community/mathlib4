@@ -65,14 +65,14 @@ def commGrpEquivalenceAux : CommGrp_.forget C ⋙ toCommGrp C ≅
       Category.id_comp]
     apply monoidal_hom_ext
     · simp only [comp_add, lift_fst, lift_snd, add_zero]
-      convert (Mon_Class.lift_comp_one_right _ 0).symm
+      convert (MonObj.lift_comp_one_right _ 0).symm
       · simp
       · infer_instance
     · simp only [comp_add, lift_fst, lift_snd, zero_add]
-      convert (Mon_Class.lift_comp_one_left 0 _).symm
+      convert (MonObj.lift_comp_one_left 0 _).symm
       · simp
       · infer_instance
-  · aesop_cat
+  · cat_disch
 
 /-- An additive category is equivalent to its category of commutative group objects. -/
 @[simps!]
