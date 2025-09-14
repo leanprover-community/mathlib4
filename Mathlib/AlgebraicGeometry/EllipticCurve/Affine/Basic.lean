@@ -163,6 +163,17 @@ lemma equation_iff_variableChange (x y : R) :
   congr! 1
   ring1
 
+lemma equation_div_iff {K : Type*} [Field K]
+    {E : WeierstrassCurve.Affine K} {x y z : K} (hz : z ≠ 0) :
+    E.Equation (x / z) (y / z) ↔ y ^ 2 * z + E.a₁ * x * y * z + E.a₃ * y * z ^ 2 =
+      x ^ 3 + E.a₂ * x ^ 2 * z + E.a₄ * x * z ^ 2 + E.a₆ * z ^ 3 := by
+  rw [Affine.equation_iff, ← (mul_left_injective₀ (pow_ne_zero 3 hz)).eq_iff]
+  congr! 1
+  · field_simp [hz]
+    ring
+  · field_simp [hz]
+    ring
+
 /-! ## The nonsingular condition in affine coordinates -/
 
 variable (W) in
@@ -228,6 +239,18 @@ lemma nonsingular_iff_variableChange (x y : R) :
     nonsingular_zero, variableChange_a₃, variableChange_a₄, inv_one, Units.val_one]
   simp only [variableChange_def]
   congr! 3 <;> ring1
+
+lemma nonsingular_div_iff {K : Type*} [Field K]
+    {E : WeierstrassCurve.Affine K} {x y z : K} (hz : z ≠ 0) :
+    E.Nonsingular (x / z) (y / z) ↔ E.Equation (x / z) (y / z) ∧
+      (E.a₁ * y * z - (3 * x ^ 2 + 2 * E.a₂ * x * z + E.a₄ * z ^ 2) ≠ 0 ∨
+      2 * y + E.a₁ * x + E.a₃ * z ≠ 0) := by
+  rw [Affine.nonsingular_iff']
+  congr! 2
+  · rw [iff_comm, ne_eq, ← (mul_left_injective₀ (pow_ne_zero 2 hz)).eq_iff]
+    field_simp [hz]
+    ring_nf
+  · field_simp [hz]
 
 private lemma equation_zero_iff_nonsingular_zero_of_Δ_ne_zero (hΔ : W.Δ ≠ 0) :
     W.Equation 0 0 ↔ W.Nonsingular 0 0 := by
