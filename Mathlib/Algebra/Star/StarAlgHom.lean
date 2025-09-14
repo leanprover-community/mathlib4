@@ -639,6 +639,13 @@ class NonUnitalAlgEquivClass (F : Type*) (R A B : outParam Type*)
 
 namespace StarAlgEquivClass
 
+-- See note [lower instance priority]
+instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A]
+    [DistribMulAction R A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [EquivLike F A B]
+    [AlgEquivClass F R A B] :
+    NonUnitalAlgHomClass F R A B :=
+  { }
+
 /-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` and `StarHomClass F A B` into
 an actual `StarAlgEquiv`. This is declared as the default coercion from `F` to `A ≃⋆ₐ[R] B`. -/
 @[coe]
@@ -658,13 +665,6 @@ instance instCoeHead {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A] [Add 
 end StarAlgEquivClass
 
 namespace StarAlgEquiv
-
--- See note [lower instance priority]
-instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A]
-    [DistribMulAction R A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [EquivLike F A B]
-    [AlgEquivClass F R A B] :
-    NonUnitalAlgHomClass F R A B :=
-  { }
 
 section Basic
 
