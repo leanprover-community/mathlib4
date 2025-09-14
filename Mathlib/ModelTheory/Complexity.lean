@@ -15,7 +15,7 @@ This file defines quantifier complexity of first-order formulas, and constructs 
 - `FirstOrder.Language.BoundedFormula.IsAtomic` defines atomic formulas - those which are
   constructed only from terms and relations.
 - `FirstOrder.Language.BoundedFormula.IsQF` defines quantifier-free formulas - those which are
-  constructed only from atomic formulas and boolean operations.
+  constructed only from atomic formulas and Boolean operations.
 - `FirstOrder.Language.BoundedFormula.IsPrenex` defines when a formula is in prenex normal form -
   when it consists of a series of quantifiers applied to a quantifier-free formula.
 - `FirstOrder.Language.BoundedFormula.toPrenex` constructs a prenex normal form of a given formula.
@@ -64,7 +64,7 @@ theorem IsAtomic.castLE {h : l ≤ n} (hφ : IsAtomic φ) : (φ.castLE h).IsAtom
   IsAtomic.recOn hφ (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.rel _ _
 
 /-- A quantifier-free formula is a formula defined without quantifiers. These are all equivalent
-to boolean combinations of atomic formulas. -/
+to Boolean combinations of atomic formulas. -/
 inductive IsQF : L.BoundedFormula α n → Prop
   | falsum : IsQF falsum
   | of_isAtomic {φ} (h : IsAtomic φ) : IsQF φ
