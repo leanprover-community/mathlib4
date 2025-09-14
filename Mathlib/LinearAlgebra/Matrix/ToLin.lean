@@ -1145,12 +1145,11 @@ See also `LinearMap.toMatrix'`
 def endVecAlgEquivMatrixEnd :
     Module.End A (ι → M) ≃ₐ[R] Matrix ι ι (Module.End A M) :=
   .ofCommutes (endVecRingEquivMatrixEnd ι A M)
-    (by
-      intro
-      ext
-      simp only [endVecRingEquivMatrixEnd, Module.algebraMap_end_eq_smul_id, RingEquiv.coe_mk,
-        Equiv.coe_fn_mk, LinearMap.smul_apply, id_coe, id_eq, Pi.smul_apply, Pi.single_apply,
-        smul_ite, smul_zero, LinearMap.coe_mk, AddHom.coe_mk, algebraMap_matrix_apply]
-      split_ifs <;> rfl)
+  fun _ => by
+    ext
+    simp only [endVecRingEquivMatrixEnd, Module.algebraMap_end_eq_smul_id, RingEquiv.coe_mk,
+      Equiv.coe_fn_mk, LinearMap.smul_apply, id_coe, id_eq, Pi.smul_apply, Pi.single_apply,
+      smul_ite, smul_zero, LinearMap.coe_mk, AddHom.coe_mk, algebraMap_matrix_apply]
+    split_ifs <;> rfl
 
 end

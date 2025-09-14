@@ -367,7 +367,7 @@ theorem IsFractionRing.stabilizerHom_surjective :
   let _ := MulSemiringAction.compHom L (stabilizerHom G P Q K L)
   intro f
   obtain ⟨g, hg⟩ := FixedPoints.toAlgAut_surjective (MulAction.stabilizer G Q) L
-    (AlgEquiv.ofCommutes f (fun x ↦ fixed_of_fixed2 G P Q K L f x x.2))
+    (AlgEquiv.ofCommutes f fun x ↦ fixed_of_fixed2 G P Q K L f x x.2)
   exact ⟨g, by rwa [AlgEquiv.ext_iff] at hg ⊢⟩
 
 /-- The stabilizer subgroup of `Q` surjects onto `Aut((B/Q)/(A/P))`. -/

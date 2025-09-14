@@ -214,8 +214,8 @@ an isomorphism `h : R ≃ₐ[A] P` such that `h(M) = T` induces an isomorphism o
 @[simps!]
 noncomputable def algEquivOfAlgEquiv : S ≃ₐ[A] Q :=
   .ofCommutes (ringEquivOfRingEquiv S Q h.toRingEquiv H)
-    (fun _ => by dsimp; rw [IsScalarTower.algebraMap_apply A R S, map_eq,
-      RingHom.coe_coe, AlgEquiv.commutes, IsScalarTower.algebraMap_apply A P Q])
+  fun _ => by dsimp; rw [IsScalarTower.algebraMap_apply A R S, map_eq,
+    RingHom.coe_coe, AlgEquiv.commutes, IsScalarTower.algebraMap_apply A P Q]
 
 variable {S Q h}
 
@@ -309,7 +309,7 @@ theorem isLocalization_iff_of_ringEquiv (h : S ≃+* P) :
     IsLocalization M S ↔
       haveI := (h.toRingHom.comp <| algebraMap R S).toAlgebra; IsLocalization M P :=
   letI := (h.toRingHom.comp <| algebraMap R S).toAlgebra
-  isLocalization_iff_of_algEquiv M <| .ofCommutes h (fun _ => rfl)
+  isLocalization_iff_of_algEquiv M <| .ofCommutes h fun _ => rfl
 
 variable (S) in
 /-- If an algebra is simultaneously localizations for two submonoids, then an arbitrary algebra

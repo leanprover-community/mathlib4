@@ -535,11 +535,11 @@ variable (k G) in
 def AddMonoidAlgebra.toMultiplicativeAlgEquiv [Semiring k] [Algebra R k] [AddMonoid G] :
     AddMonoidAlgebra k G ≃ₐ[R] MonoidAlgebra k (Multiplicative G) :=
   .ofCommutes (AddMonoidAlgebra.toMultiplicative k G)
-    (fun r => by simp [AddMonoidAlgebra.toMultiplicative])
+    fun r => by simp [AddMonoidAlgebra.toMultiplicative]
 
 variable (k G) in
 /-- The algebra equivalence between `MonoidAlgebra` and `AddMonoidAlgebra` in terms of
 `Additive`. -/
 def MonoidAlgebra.toAdditiveAlgEquiv [Semiring k] [Algebra R k] [Monoid G] :
     MonoidAlgebra k G ≃ₐ[R] AddMonoidAlgebra k (Additive G) :=
-  .ofCommutes (MonoidAlgebra.toAdditive k G) (fun r => by simp [MonoidAlgebra.toAdditive])
+  .ofCommutes (MonoidAlgebra.toAdditive k G) fun r => by simp [MonoidAlgebra.toAdditive]

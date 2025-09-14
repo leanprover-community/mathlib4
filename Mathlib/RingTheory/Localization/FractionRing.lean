@@ -398,10 +398,10 @@ variable {A B C D : Type*}
 /-- An algebra isomorphism of rings induces an algebra isomorphism of fraction fields. -/
 noncomputable def fieldEquivOfAlgEquiv (f : B ≃ₐ[A] C) : FB ≃ₐ[FA] FC :=
   .ofCommutes (IsFractionRing.ringEquivOfRingEquiv f.toRingEquiv)
-    (fun x => by
-      obtain ⟨x, y, -, rfl⟩ := IsFractionRing.div_surjective (A := A) x
-      simp_rw [map_div₀, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B FB]
-      simp [← IsScalarTower.algebraMap_apply A C FC])
+  fun x => by
+    obtain ⟨x, y, -, rfl⟩ := IsFractionRing.div_surjective (A := A) x
+    simp_rw [map_div₀, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B FB]
+    simp [← IsScalarTower.algebraMap_apply A C FC]
 
 lemma restrictScalars_fieldEquivOfAlgEquiv (f : B ≃ₐ[A] C) :
     (fieldEquivOfAlgEquiv FA FB FC f).restrictScalars A = algEquivOfAlgEquiv f := by

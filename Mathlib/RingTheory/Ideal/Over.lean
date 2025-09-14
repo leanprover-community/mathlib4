@@ -243,10 +243,10 @@ variable {P} {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C] (σ : E)
 /-- An `A ⧸ p`-algebra isomorphism between `B ⧸ P` and `C ⧸ Q` induced by an `A`-algebra
   isomorphism between `B` and `C`, where `Q = σ P`. -/
 def algEquivOfEqMap (h : Q = P.map σ) : (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) :=
-  .ofCommutes (quotientEquiv P Q σ h)
-  (by
+  .ofCommutes (quotientEquiv P Q σ h) <|
+  by
     rintro ⟨x⟩
-    exact congrArg (Ideal.Quotient.mk Q) (AlgHomClass.commutes σ x))
+    exact congrArg (Ideal.Quotient.mk Q) (AlgHomClass.commutes σ x)
 
 @[simp]
 theorem algEquivOfEqMap_apply (h : Q = P.map σ) (x : B) : algEquivOfEqMap p σ h x = σ x :=

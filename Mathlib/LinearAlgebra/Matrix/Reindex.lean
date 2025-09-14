@@ -108,8 +108,7 @@ variable [CommSemiring R] [Fintype n] [Fintype m] [Semiring A] [Algebra R A]
 map that reindexes a matrix's rows and columns with equivalent types,
 `Matrix.reindex`, is an equivalence of algebras. -/
 def reindexAlgEquiv (e : m ≃ n) : Matrix m m A ≃ₐ[R] Matrix n n A :=
-  .ofLinearEquiv (reindexLinearEquiv _ _ e e)
-    (fun a b => (reindexLinearEquiv_mul _ _ e e e a b).symm)
+  .ofLinearEquiv (reindexLinearEquiv _ _ e e) fun a b => (reindexLinearEquiv_mul _ _ e e e a b).symm
 
 @[simp]
 theorem reindexAlgEquiv_apply (e : m ≃ n) (M : Matrix m m A) :

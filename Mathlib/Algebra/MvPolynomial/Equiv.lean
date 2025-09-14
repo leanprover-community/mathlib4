@@ -295,10 +295,10 @@ with coefficients in multivariable polynomials in the other type.
 @[simps!]
 def sumAlgEquiv : MvPolynomial (S₁ ⊕ S₂) R ≃ₐ[R] MvPolynomial S₁ (MvPolynomial S₂ R) :=
   .ofCommutes (sumRingEquiv R S₁ S₂)
-    (fun r => by
+    fun r => by
       have A : algebraMap R (MvPolynomial S₁ (MvPolynomial S₂ R)) r = (C (C r) :) := rfl
       have B : algebraMap R (MvPolynomial (S₁ ⊕ S₂) R) r = C r := rfl
-      simp [sumRingEquiv, mvPolynomialEquivMvPolynomial, A])
+      simp [sumRingEquiv, mvPolynomialEquivMvPolynomial, A]
 
 lemma sumAlgEquiv_comp_rename_inr :
     (sumAlgEquiv R S₁ S₂).toAlgHom.comp (rename Sum.inr) = IsScalarTower.toAlgHom R
