@@ -222,8 +222,7 @@ theorem IsSemilinearSet.proj' {p : (ι → M) → (κ → M) → Prop} :
 
 protected lemma IsLinearSet.closure (hs : IsLinearSet s) : IsSemilinearSet (closure s : Set M) := by
   rcases hs with ⟨a, t, ht, rfl⟩
-  convert (IsSemilinearSet.singleton 0).union (isSemilinearSet
-    ⟨a, {a} ∪ t, (finite_singleton a).union ht, rfl⟩)
+  convert (IsSemilinearSet.singleton 0).union (isSemilinearSet ⟨a, {a} ∪ t, by simp [ht], rfl⟩)
   ext x
   simp only [SetLike.mem_coe, singleton_union, mem_insert_iff, mem_vadd_set, vadd_eq_add]
   constructor
