@@ -125,7 +125,7 @@ instance (W : Type*) [AddCommGroup W] [TopologicalSpace W] [Module R W] [Nontriv
     map_smul' m x:= by
       simp
       exact mul_smul m x w
-    cont := by fun_prop} with hφ
+    cont := by fun_prop } with hφ
   set α := A ∘L φ ∘L ψ with hα
   refine ⟨α, 0, ?_⟩
   refine DFunLike.ne_iff.mpr ⟨v, ?_⟩
