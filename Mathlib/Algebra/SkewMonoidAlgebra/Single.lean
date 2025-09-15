@@ -25,41 +25,37 @@ variable {M α : Type*} [AddCommMonoid M] (a a' : α) (b : M) (f : SkewMonoidAlg
 Given an element `f` of a skew monoid algebra, `erase a f` is an element with the same coefficients
 as `f` except at `a` where the coefficient is `0`.
 If `a` is not in the support of `f` then `erase a f = f`. -/
-def erase : SkewMonoidAlgebra M α →+ SkewMonoidAlgebra M α where
+@[simps] def erase : SkewMonoidAlgebra M α →+ SkewMonoidAlgebra M α where
   toFun f := ⟨f.toFinsupp.erase a⟩
   map_zero' := by simp
   map_add' := by simp
 
 @[simp]
-theorem toFinsupp_erase : (f.erase a).toFinsupp = f.toFinsupp.erase a := rfl
-
-@[simp]
 theorem support_erase [DecidableEq α] : (f.erase a).support = f.support.erase a := by
-  rcases f with ⟨⟩
   ext; simp [erase]
 
 @[simp]
-theorem erase_same : (f.erase a).coeff a = 0 := by
+theorem coeff_erase_same : (f.erase a).coeff a = 0 := by
   simp [erase]
 
+variable {a a'} in
 @[simp]
-theorem erase_ne (h : a' ≠ a) : (f.erase a).coeff a' = f.coeff a' := by
-  rcases f with ⟨⟩
+theorem coeff_erase_ne (h : a' ≠ a) : (f.erase a).coeff a' = f.coeff a' := by
   simp [erase, h]
 
 @[simp]
 theorem erase_single : erase a (single a b) = 0 := by
   simp [erase]
 
-@[simp]
-theorem coeff_erase [DecidableEq α] : (f.erase a).coeff a' = if a' = a then 0 else f.coeff a' :=
+theorem coeff_erase_apply [DecidableEq α] :
+    (f.erase a).coeff a' = if a' = a then 0 else f.coeff a' :=
   ite_congr rfl (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 theorem single_add_erase (a : α) (f : SkewMonoidAlgebra M α) :
     single a (f.coeff a) + f.erase a = f := by
   apply toFinsupp_injective
-  simp only [single, ← toFinsupp_apply, toFinsupp_add, toFinsupp_erase]
-  rw [Finsupp.single_add_erase]
+  rw [single, ← toFinsupp_apply, toFinsupp_add, erase_apply_toFinsupp,
+    Finsupp.single_add_erase]
 
 @[elab_as_elim]
 theorem induction {p : SkewMonoidAlgebra M α → Prop} (f : SkewMonoidAlgebra M α) (h0 : p 0)
@@ -87,11 +83,8 @@ variable {M α : Type*} [AddCommMonoid M] (f : SkewMonoidAlgebra M α) (a a' : �
 a given value `b : M`.
 If `b = 0`, this amounts to removing `a` from the support of `f`.
 Otherwise, if `a` was not in the `support` of `f`, it is added to it. -/
-def update : SkewMonoidAlgebra M α :=
+@[simps] def update : SkewMonoidAlgebra M α :=
   ⟨f.toFinsupp.update a b⟩
-
-@[simp]
-theorem toFinsupp_update : (f.update a b).toFinsupp = f.toFinsupp.update a b := rfl
 
 @[simp]
 theorem update_self : f.update a (f.coeff a) = f := by
@@ -119,13 +112,17 @@ theorem coeff_update_apply [DecidableEq α] :
 theorem coeff_update_same [DecidableEq α] : (f.update a b).coeff a = b := by
   rw [f.coeff_update_apply, if_pos rfl]
 
+variable {a a'} in
+@[simp]
 theorem coeff_update_ne [DecidableEq α] (h : a' ≠ a) : (f.update a b).coeff a' = f.coeff a' := by
   rw [f.coeff_update_apply, if_neg h]
 
+theorem update_eq_erase_add_single [DecidableEq α] : f.update a b = f.erase a + single a b := by
+  ext x; by_cases hx : x = a <;> aesop (add norm coeff_single_apply)
+
 @[simp]
 theorem update_zero_eq_erase [DecidableEq α] : f.update a 0 = f.erase a := by
-  ext
-  simp [coeff_update_apply, coeff_erase]
+  ext; simp [coeff_update_apply, coeff_erase_apply]
 
 end update
 
