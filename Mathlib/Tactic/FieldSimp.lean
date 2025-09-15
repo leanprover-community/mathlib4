@@ -609,7 +609,7 @@ def reduceExpr (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (x :
 /-- Given an (in)equality `a = b` (respectively, `a ≤ b`, `a < b`), cancel nonzero (resp. positive)
 factors to construct a new (in)equality which is logically equivalent to `a = b` (respectively,
 `a ≤ b`, `a < b`). -/
-def reduceEq (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (t : Expr) :
+def reduceProp (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (t : Expr) :
     AtomM Simp.Result := do
   let ⟨i, _, a, b⟩ ← t.ineq?
   -- infer `u` and `K : Q(Type u)` such that `x : Q($K)`
@@ -690,7 +690,7 @@ elab (name := fieldSimp) "field_simp" d:(discharger)? args:(simpArgs)? loc:(loca
   let disch ← parseDischarger d args
   let s ← IO.mkRef {}
   let cleanup r := do r.mkEqTrans (← simpOnlyNames [] r.expr) -- convert e.g. `x = x` to `True`
-  let m := AtomM.recurse s {} (fun e ↦ reduceEq disch e <|> reduceExpr disch e) cleanup
+  let m := AtomM.recurse s {} (fun e ↦ reduceProp disch e <|> reduceExpr disch e) cleanup
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   transformAtLocation (m ·) "field_simp" (failIfUnchanged := true) (mayCloseGoalFromHyp := true) loc
 
@@ -709,7 +709,7 @@ def proc : Simp.Simproc := fun (t : Expr) ↦ do
   let ctx ← Simp.getContext
   let disch e : MetaM Expr := Prod.fst <$> (FieldSimp.discharge e).run ctx >>= Option.getM
   try
-    let r ← AtomM.run .reducible <| FieldSimp.reduceEq disch t
+    let r ← AtomM.run .reducible <| FieldSimp.reduceProp disch t
     -- the `field_simp`-normal form is in opposition to the `simp`-lemmas `one_div` and `mul_inv`,
     -- so we need to undo any such lemma applications, otherwise we can get infinite loops
     return .visit <| ← r.mkEqTrans (← simpOnlyNames [``one_div, ``mul_inv] r.expr)
