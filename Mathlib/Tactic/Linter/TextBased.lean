@@ -23,9 +23,10 @@ Currently, this file contains linters checking
 - for lines with windows line endings,
 - for lines containing trailing whitespace,
 - for module names to be in upper camel case,
-- for module names to be valid Windows filenames.
+- for module names to be valid Windows filenames, and containing no forbidden characters such as
+  `!`, `.` or spaces.
 
-For historic reasons, some further such check checks are written in a Python script `lint-style.py`:
+For historic reasons, some further such checks are written in a Python script `lint-style.py`:
 these are gradually being rewritten in Lean.
 
 This linter has a file for style exceptions (to avoid false positives in the implementation),
@@ -405,7 +406,7 @@ def modulesOSForbidden (opts : LinterOptions) (modules : Array Lean.Name) : IO N
   ]
   -- We also check for the exclamation mark (which is not forbidden on Windows, but e.g. on Nix OS).
   let forbiddenCharacters := [
-    '<', '>', '"', '/', '\\', '|', '?', '*',
+    '<', '>', '"', '/', '\\', '|', '?', '*', ' ',
   ]
   let mut badNamesNum := 0
   for name in modules do
