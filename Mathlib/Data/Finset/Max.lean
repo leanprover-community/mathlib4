@@ -41,7 +41,7 @@ theorem max_empty : (∅ : Finset α).max = ⊥ :=
   rfl
 
 @[simp]
-theorem max_insert [DecidableEq α] {a : α} {s : Finset α} : (insert a s).max = max ↑a s.max :=
+theorem max_insert {a : α} {s : Finset α} : (insert a s).max = max ↑a s.max :=
   fold_insert_idem
 
 @[simp]
@@ -49,7 +49,7 @@ theorem max_singleton {a : α} : Finset.max {a} = (a : WithBot α) := by
   rw [← insert_empty_eq]
   exact max_insert
 
-lemma max_pair [DecidableEq α] (a b : α) :
+lemma max_pair (a b : α) :
     Finset.max {a, b} = max (↑a) (↑b) := by
   simp
 
@@ -68,9 +68,10 @@ theorem max_eq_bot {s : Finset α} : s.max = ⊥ ↔ s = ∅ :=
     fun h ↦ h.symm ▸ max_empty⟩
 
 theorem mem_of_max {s : Finset α} : ∀ {a : α}, s.max = a → a ∈ s := by
-  induction' s using Finset.induction_on with b s _ ih
-  · intro _ H; cases H
-  · intro a h
+  induction s using Finset.induction_on with
+  | empty => intro _ H; cases H
+  | insert b s _ ih =>
+    intro a h
     by_cases p : b = a
     · induction p
       exact mem_insert_self b s
@@ -127,7 +128,7 @@ theorem min_empty : (∅ : Finset α).min = ⊤ :=
   rfl
 
 @[simp]
-theorem min_insert [DecidableEq α] {a : α} {s : Finset α} : (insert a s).min = min (↑a) s.min :=
+theorem min_insert {a : α} {s : Finset α} : (insert a s).min = min (↑a) s.min :=
   fold_insert_idem
 
 @[simp]
@@ -135,7 +136,7 @@ theorem min_singleton {a : α} : Finset.min {a} = (a : WithTop α) := by
   rw [← insert_empty_eq]
   exact min_insert
 
-lemma min_pair [DecidableEq α] (a b : α) :
+lemma min_pair (a b : α) :
     Finset.min {a, b} = min (↑a) (↑b) := by
   simp
 
@@ -319,23 +320,23 @@ theorem min'_subset {s t : Finset α} (H : s.Nonempty) (hst : s ⊆ t) :
     t.min' (H.mono hst) ≤ s.min' H :=
   min'_le _ _ (hst (s.min'_mem H))
 
-@[simp] theorem max'_insert [DecidableEq α] (a : α) (s : Finset α) (H : s.Nonempty) :
+@[simp] theorem max'_insert (a : α) (s : Finset α) (H : s.Nonempty) :
     (insert a s).max' (s.insert_nonempty a) = max (s.max' H) a :=
   (isGreatest_max' _ _).unique <| by
     rw [coe_insert, max_comm]
     exact (isGreatest_max' _ _).insert _
 
-@[simp] theorem min'_insert [DecidableEq α] (a : α) (s : Finset α) (H : s.Nonempty) :
+@[simp] theorem min'_insert (a : α) (s : Finset α) (H : s.Nonempty) :
     (insert a s).min' (s.insert_nonempty a) = min (s.min' H) a :=
   (isLeast_min' _ _).unique <| by
     rw [coe_insert, min_comm]
     exact (isLeast_min' _ _).insert _
 
-lemma min'_pair [DecidableEq α] (a b : α) :
+lemma min'_pair (a b : α) :
     min' {a, b} (insert_nonempty _ _) = min a b := by
   simp [min_comm]
 
-lemma max'_pair [DecidableEq α] (a b : α) :
+lemma max'_pair (a b : α) :
     max' {a, b} (insert_nonempty _ _) = max a b := by
   simp [max_comm]
 
@@ -469,7 +470,7 @@ theorem card_le_diff_of_interleaved {s t : Finset α}
 @[elab_as_elim]
 theorem induction_on_max [DecidableEq α] {p : Finset α → Prop} (s : Finset α) (h0 : p ∅)
     (step : ∀ a s, (∀ x ∈ s, x < a) → p s → p (insert a s)) : p s := by
-  induction' s using Finset.eraseInduction with s ih
+  induction s using Finset.eraseInduction with | _ s ih
   rcases s.eq_empty_or_nonempty with (rfl | hne)
   · exact h0
   · have H : s.max' hne ∈ s := max'_mem s hne
@@ -502,7 +503,7 @@ ordered type : a predicate is true on all `s : Finset α` provided that:
 @[elab_as_elim]
 theorem induction_on_max_value [DecidableEq ι] (f : ι → α) {p : Finset ι → Prop} (s : Finset ι)
     (h0 : p ∅) (step : ∀ a s, a ∉ s → (∀ x ∈ s, f x ≤ f a) → p s → p (insert a s)) : p s := by
-  induction' s using Finset.eraseInduction with s ihs
+  induction s using Finset.eraseInduction with | _ s ihs
   rcases (s.image f).eq_empty_or_nonempty with (hne | hne)
   · simp only [image_eq_empty] at hne
     simp only [hne, h0]

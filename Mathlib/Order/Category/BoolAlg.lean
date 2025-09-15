@@ -7,9 +7,9 @@ import Mathlib.Order.Category.HeytAlg
 import Mathlib.Order.Hom.CompleteLattice
 
 /-!
-# The category of boolean algebras
+# The category of Boolean algebras
 
-This defines `BoolAlg`, the category of boolean algebras.
+This defines `BoolAlg`, the category of Boolean algebras.
 -/
 
 
@@ -19,9 +19,9 @@ universe u
 
 open CategoryTheory
 
-/-- The category of boolean algebras. -/
+/-- The category of Boolean algebras. -/
 structure BoolAlg where
-  /-- The underlying boolean algebra. -/
+  /-- The underlying Boolean algebra. -/
   carrier : Type*
   [str : BooleanAlgebra carrier]
 
