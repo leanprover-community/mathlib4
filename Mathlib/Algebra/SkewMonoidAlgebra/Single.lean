@@ -25,12 +25,10 @@ variable {M α : Type*} [AddCommMonoid M] (a a' : α) (b : M) (f : SkewMonoidAlg
 Given an element `f` of a skew monoid algebra, `erase a f` is an element with the same coefficients
 as `f` except at `a` where the coefficient is `0`.
 If `a` is not in the support of `f` then `erase a f = f`. -/
-def erase : SkewMonoidAlgebra M α :=
-    ⟨ haveI := Classical.decEq α
-      f.support.erase a,
-      fun a' ↦ haveI := Classical.decEq α
-        if a' = a then 0 else f.coeff a',
-      by aesop⟩
+def erase : SkewMonoidAlgebra M α →+ SkewMonoidAlgebra M α where
+  toFun f := ⟨f.toFinsupp.erase a⟩
+  map_zero' := by simp
+  map_add' := by simp
 
 @[simp]
 theorem toFinsupp_erase : (f.erase a).toFinsupp = f.toFinsupp.erase a := rfl
@@ -38,8 +36,7 @@ theorem toFinsupp_erase : (f.erase a).toFinsupp = f.toFinsupp.erase a := rfl
 @[simp]
 theorem support_erase [DecidableEq α] : (f.erase a).support = f.support.erase a := by
   rcases f with ⟨⟩
-  ext
-  simp only [support, erase, Finset.mem_erase, Finsupp.mem_support_iff]
+  ext; simp [erase]
 
 @[simp]
 theorem erase_same : (f.erase a).coeff a = 0 := by
@@ -52,16 +49,11 @@ theorem erase_ne [DecidableEq α] (h : a' ≠ a) : (f.erase a).coeff a' = f.coef
 
 @[simp]
 theorem erase_single [DecidableEq α] : erase a (single a b) = 0 := by
-  aesop (add norm [erase, coeff_single])
+  simp [erase]
 
 @[simp]
 theorem coeff_erase [DecidableEq α] : (f.erase a).coeff a' = if a' = a then 0 else f.coeff a' :=
   ite_congr rfl (fun _ ↦ rfl) (fun _ ↦ rfl)
-
-@[simp]
-theorem erase_zero [DecidableEq α] {a : α} :
-    erase a (0 : SkewMonoidAlgebra M α) = 0 := by
-  classical rw [← support_eq_empty, support_erase, support_zero, Finset.erase_empty]
 
 theorem single_add_erase (a : α) (f : SkewMonoidAlgebra M α) :
     single a (f.coeff a) + f.erase a = f := by
@@ -96,11 +88,7 @@ a given value `b : M`.
 If `b = 0`, this amounts to removing `a` from the support of `f`.
 Otherwise, if `a` was not in the `support` of `f`, it is added to it. -/
 def update : SkewMonoidAlgebra M α :=
-  ⟨ haveI := Classical.decEq α; haveI := Classical.decEq M
-    if b = 0 then f.support.erase a else insert a f.support,
-    haveI := Classical.decEq α
-    Function.update f.toFinsupp a b,
-    by aesop (add norm [Function.update, Finset.mem_erase])⟩
+  ⟨f.toFinsupp.update a b⟩
 
 @[simp]
 theorem toFinsupp_update : (f.update a b).toFinsupp = f.toFinsupp.update a b := rfl
@@ -113,15 +101,14 @@ theorem update_self : f.update a (f.coeff a) = f := by
 
 @[simp]
 theorem zero_update : update 0 a b = single a b := by
-  apply toFinsupp_injective
-  simp
+  simp [update]
 
 theorem support_update [DecidableEq α] [DecidableEq M] :
     support (f.update a b) = if b = 0 then f.support.erase a else insert a f.support := by
-  aesop (add norm update)
+  aesop (add norm [update, Finsupp.support_update_ne_zero])
 
 theorem coeff_update [DecidableEq α] : (f.update a b).coeff = Function.update f.coeff a b := by
-  simp only [coeff, update, Finsupp.coe_mk]
+  simp only [coeff, update, Finsupp.update, Finsupp.coe_mk]
   congr!
 
 theorem coeff_update_apply [DecidableEq α] :
