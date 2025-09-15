@@ -172,14 +172,14 @@ def binaryProductLimit (X Y : Type u) : IsLimit (binaryProductCone X Y) where
   fac _ j := Discrete.recOn j fun j => WalkingPair.casesOn j rfl rfl
   uniq _ _ w := funext fun x => Prod.ext (congr_fun (w ⟨left⟩) x) (congr_fun (w ⟨right⟩) x)
 
-/-- The category of types has `X × Y`, the usual cartesian product,
+/-- The category of types has `X × Y`, the usual Cartesian product,
 as the binary product of `X` and `Y`.
 -/
 @[simps]
 def binaryProductLimitCone (X Y : Type u) : Limits.LimitCone (pair X Y) :=
   ⟨_, binaryProductLimit X Y⟩
 
-/-- The categorical binary product in `Type u` is cartesian product. -/
+/-- The categorical binary product in `Type u` is Cartesian product. -/
 noncomputable def binaryProductIso (X Y : Type u) : Limits.prod X Y ≅ X × Y :=
   limit.isoLimitCone (binaryProductLimitCone X Y)
 

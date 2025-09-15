@@ -90,9 +90,9 @@ theorem span_basisOfIsMaxRank {u : Fin (rank K) → (𝓞 K)ˣ} (hu : IsMaxRank 
 theorem finiteIndex_iff_sup_torsion_finiteIndex (s : Subgroup (𝓞 K)ˣ) :
     s.FiniteIndex ↔ (s ⊔ torsion K).FiniteIndex := by
   refine ⟨fun h ↦ Subgroup.finiteIndex_of_le le_sup_left, fun h ↦ ?_⟩
-  rw [Subgroup.finiteIndex_iff, ← Subgroup.relindex_mul_index (le_sup_left : s ≤ s ⊔ torsion K)]
+  rw [Subgroup.finiteIndex_iff, ← Subgroup.relIndex_mul_index (le_sup_left : s ≤ s ⊔ torsion K)]
   refine Nat.mul_ne_zero ?_ (Subgroup.finiteIndex_iff.mp h)
-  rw [Subgroup.relindex_sup_left]
+  rw [Subgroup.relIndex_sup_left]
   exact Subgroup.FiniteIndex.index_ne_zero
 
 open Subgroup in
@@ -324,7 +324,7 @@ Let `u` and `v` be two families of units. Assume that the subgroup `U` generated
 -/
 theorem regOfFamily_div_regOfFamily {u v : Fin (rank K) → (𝓞 K)ˣ} (hv : IsMaxRank v)
     (h : Subgroup.closure (Set.range u) ⊔ torsion K ≤ Subgroup.closure (Set.range v) ⊔ torsion K) :
-    regOfFamily u / regOfFamily v = (Subgroup.closure (Set.range u) ⊔ (torsion K)).relindex
+    regOfFamily u / regOfFamily v = (Subgroup.closure (Set.range u) ⊔ (torsion K)).relIndex
       (Subgroup.closure (Set.range v) ⊔ (torsion K)) := by
   classical
   by_cases hu : IsMaxRank u
@@ -335,14 +335,14 @@ theorem regOfFamily_div_regOfFamily {u v : Fin (rank K) → (𝓞 K)ˣ} (hv : Is
         ← SupHomClass.map_sup, ← SupHomClass.map_sup]
       exact AddSubgroup.map_mono <| (OrderIso.le_iff_le Subgroup.toAddSubgroup).mpr h
     rw [regOfFamily_of_isMaxRank hu, regOfFamily_of_isMaxRank hv,
-      covolume_div_covolume_eq_relindex _ _ this, span_basisOfIsMaxRank hu,
-      span_basisOfIsMaxRank hv, AddSubgroup.relindex_map_map, logEmbedding_ker,
-      ← OrderIso.map_sup, ← OrderIso.map_sup, ← Subgroup.relindex_toAddSubgroup]
+      covolume_div_covolume_eq_relIndex _ _ this, span_basisOfIsMaxRank hu,
+      span_basisOfIsMaxRank hv, AddSubgroup.relIndex_map_map, logEmbedding_ker,
+      ← OrderIso.map_sup, ← OrderIso.map_sup, ← Subgroup.relIndex_toAddSubgroup]
   · rw [regOfFamily_eq_zero hu, zero_div, eq_comm, Nat.cast_eq_zero]
     have : (Subgroup.closure (Set.range v) ⊔ torsion K).index ≠ 0 := by
       rw [← Subgroup.finiteIndex_iff, ← finiteIndex_iff_sup_torsion_finiteIndex]
       exact isMaxRank_iff_closure_finiteIndex.mp hv
-    rwa [← mul_eq_zero_iff_right this, Subgroup.relindex_mul_index h,
+    rwa [← mul_eq_zero_iff_right this, Subgroup.relIndex_mul_index h,
       ← Subgroup.not_finiteIndex_iff, ← finiteIndex_iff_sup_torsion_finiteIndex,
       ← isMaxRank_iff_closure_finiteIndex.not]
 
@@ -354,7 +354,7 @@ theorem regOfFamily_div_regulator (u : Fin (rank K) → (𝓞 K)ˣ) :
     regOfFamily u / regulator K = (Subgroup.closure (Set.range u) ⊔ (torsion K)).index := by
   rw [regulator_eq_regOfFamily_fundSystem, regOfFamily_div_regOfFamily (isMaxRank_fundSystem K)
     (by simp only [closure_fundSystem_sup_torsion_eq_top, le_top]),
-    closure_fundSystem_sup_torsion_eq_top, Subgroup.relindex_top_right]
+    closure_fundSystem_sup_torsion_eq_top, Subgroup.relIndex_top_right]
 
 end index
 
