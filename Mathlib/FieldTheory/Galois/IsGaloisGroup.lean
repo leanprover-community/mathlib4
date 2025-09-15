@@ -78,4 +78,93 @@ theorem mulEquivCongr_apply_smul [IsGaloisGroup G K L] [Finite G] [IsGaloisGroup
     (g : G) (x : L) : mulEquivCongr G H K L g • x = g • x :=
   AlgEquiv.ext_iff.mp ((mulEquivAlgEquiv H K L).apply_symm_apply (mulEquivAlgEquiv G K L g)) x
 
+variable (H H' : Subgroup G) (F F' : IntermediateField K L)
+
+instance to_subgroup [hGKL : IsGaloisGroup G K L] :
+    IsGaloisGroup H (FixedPoints.intermediateField H : IntermediateField K L) L where
+  faithful := have := hGKL.faithful; inferInstance
+  commutes := ⟨fun g x y ↦ by simp_rw [IntermediateField.smul_def, smul_eq_mul, smul_mul', x.2 g]⟩
+  isInvariant := ⟨fun x h ↦ ⟨⟨x, h⟩, rfl⟩⟩
+
+theorem card_subgroup_eq_finrank_fixedpoints [IsGaloisGroup G K L] :
+    Nat.card H = Module.finrank (FixedPoints.intermediateField H : IntermediateField K L) L :=
+  card_eq_finrank H (FixedPoints.intermediateField H) L
+
+instance to_intermediateField [Finite G] [hGKL : IsGaloisGroup G K L] :
+    IsGaloisGroup (fixingSubgroup G (F : Set L)) F L where
+  faithful := have := hGKL.faithful; inferInstance
+  commutes := ⟨fun g x y ↦ by
+    simp_rw [IntermediateField.smul_def, smul_eq_mul, smul_mul', Subgroup.smul_def, g.2 x]⟩
+  isInvariant := ⟨fun x h ↦ ⟨⟨x, by
+    have := hGKL.finiteDimensional
+    have := hGKL.isGalois
+    rw [← IsGalois.fixedField_fixingSubgroup F]
+    exact fun ⟨g, hg⟩ ↦ (mulEquivCongr_apply_smul _ G K L g x).symm.trans
+      (Subtype.forall.mp h _ (by simpa [mem_fixingSubgroup_iff] using hg))⟩, rfl⟩⟩
+
+theorem card_fixingSubgroup_eq_finrank [Finite G] [IsGaloisGroup G K L] :
+    Nat.card (fixingSubgroup G (F : Set L)) = Module.finrank F L :=
+  card_eq_finrank (fixingSubgroup G (F : Set L)) F L
+
+section GaloisCorrespondence
+
+theorem fixingSubgroup_le_of_le (h : F ≤ F') :
+    fixingSubgroup G (F' : Set L) ≤ fixingSubgroup G (F : Set L) :=
+  fun _ hσ ⟨x, hx⟩ ↦ hσ ⟨x, h hx⟩
+
+section SMulCommClass
+
+variable [SMulCommClass G K L]
+
+theorem fixingSubgroup_bot : fixingSubgroup G ((⊥ : IntermediateField K L) : Set L) = ⊤ := by
+  simp [Subgroup.ext_iff, mem_fixingSubgroup_iff, IntermediateField.mem_bot]
+
+theorem fixedPoints_bot :
+    (FixedPoints.intermediateField (⊥ : Subgroup G) : IntermediateField K L) = ⊤ := by
+  simp [IntermediateField.ext_iff]
+
+theorem le_fixedPoints_iff_le_fixingSubgroup :
+    F ≤ FixedPoints.intermediateField H ↔ H ≤ fixingSubgroup G (F : Set L) :=
+  ⟨fun h g hg x ↦ h x.2 ⟨g, hg⟩, fun h x hx g ↦ h g.2 ⟨x, hx⟩⟩
+
+theorem fixedPoints_le_of_le (h : H ≤ H') :
+    FixedPoints.intermediateField H' ≤ (FixedPoints.intermediateField H : IntermediateField K L) :=
+  fun _ hσ ⟨x, hx⟩ ↦ hσ ⟨x, h hx⟩
+
+end SMulCommClass
+
+section IsGaloisGroup
+
+variable [hGKL : IsGaloisGroup G K L]
+
+theorem fixingSubgroup_top : fixingSubgroup G ((⊤ : IntermediateField K L) : Set L) = ⊥ := by
+  simp only [Subgroup.ext_iff, mem_fixingSubgroup_iff, Subgroup.mem_bot]
+  exact fun x ↦ ⟨fun h ↦ hGKL.faithful.eq_of_smul_eq_smul (by simpa using h), fun h ↦ by simp [h]⟩
+
+theorem fixedPoints_top :
+    (FixedPoints.intermediateField (⊤ : Subgroup G) : IntermediateField K L) = ⊥ := by
+  simp only [eq_bot_iff, SetLike.le_def, FixedPoints.mem_intermediateField_iff, Subtype.forall,
+    Subgroup.mem_top, Subgroup.mk_smul, forall_const]
+  exact hGKL.isInvariant.isInvariant
+
+theorem fixingSubgroup_fixedPoints [Finite G] :
+    fixingSubgroup G ((FixedPoints.intermediateField H : IntermediateField K L) : Set L) = H := by
+  have : FiniteDimensional K L := hGKL.finiteDimensional
+  refine (Subgroup.eq_of_le_of_card_ge ?_ ?_).symm
+  · rw [← le_fixedPoints_iff_le_fixingSubgroup]
+  · rw [hGKL.card_subgroup_eq_finrank_fixedpoints, hGKL.card_subgroup_eq_finrank_fixedpoints]
+    apply IntermediateField.finrank_le_of_le_left
+    rw [le_fixedPoints_iff_le_fixingSubgroup]
+
+theorem fixedPoints_fixingSubgroup [Finite G] :
+    FixedPoints.intermediateField (fixingSubgroup G (F : Set L)) = F := by
+  have : FiniteDimensional K L := hGKL.finiteDimensional
+  refine (IntermediateField.eq_of_le_of_finrank_eq' ?_ ?_).symm
+  · rw [le_fixedPoints_iff_le_fixingSubgroup]
+  · rw [← card_subgroup_eq_finrank_fixedpoints, card_fixingSubgroup_eq_finrank]
+
+end IsGaloisGroup
+
+end GaloisCorrespondence
+
 end IsGaloisGroup
