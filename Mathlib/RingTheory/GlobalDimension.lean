@@ -180,7 +180,7 @@ variable (R : Type u) [CommRing R]
 
 open Abelian
 
-local instance [Small.{v} R] (I : Ideal R) : Small.{v} (R ⧸ I) :=
+local instance small_of_quotient [Small.{v} R] (I : Ideal R) : Small.{v} (R ⧸ I) :=
   small_of_surjective Ideal.Quotient.mk_surjective
 
 
@@ -190,7 +190,7 @@ universe w
 
 variable [UnivLE.{v, w}]
 
-local instance [Small.{v} R] : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
+local instance hasExt_of_small [Small.{v} R] : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
   CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
 
 open Limits in
@@ -287,7 +287,7 @@ lemma globalDimension_le_iff (n : ℕ) : globalDimension.{v} R ≤ n ↔
     ∀ M : ModuleCat.{v} R, HasProjectiveDimensionLE M n := by
   simp [globalDimension, projectiveDimension_le_iff]
 
-local instance : HasExt.{max (max (v + 1) u) v, v, max (v + 1) u} (ModuleCat.{v} R) :=
+local instance hasExt_standard : HasExt.{max (max (v + 1) u) v, v, max (v + 1) u} (ModuleCat.{v} R) :=
   CategoryTheory.HasExt.standard (ModuleCat.{v} R)
 
 lemma globalDimension_le_tfae [Small.{v} R] (n : ℕ) : [globalDimension.{v} R ≤ n,

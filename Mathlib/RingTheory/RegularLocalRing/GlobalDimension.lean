@@ -93,6 +93,6 @@ lemma projectiveDimension_residueField_eq_ringKrullDim [IsRegularLocalRing R] :
 -/
 
 theorem globalDimension_eq_ringKrullDim [IsRegularLocalRing R] :
-    globalDimension.{u, v} R = ringKrullDim R := by
+    globalDimension.{v} R = ringKrullDim R := by
 
   sorry
