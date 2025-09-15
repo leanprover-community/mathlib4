@@ -219,7 +219,7 @@ theorem Finset.squarefree_prod_of_pairwise_isCoprime {ι : Type*} [DecidableEq �
   | empty => simp
   | @insert a s ha ih =>
     rw [Finset.prod_insert ha, squarefree_mul_iff]
-    rw [Finset.coe_insert, Set.pairwise_insert] at hs
+    rw [toSet, Finset.coe_insert, Set.pairwise_insert] at hs
     refine ⟨.prod_right fun i hi ↦ ?_, hs' a (by simp), ?_⟩
     · exact (hs.right i (by simp [hi]) fun h ↦ ha (h ▸ hi)).left
     · exact ih hs.left fun i hi ↦ hs' i <| Finset.mem_insert_of_mem hi
