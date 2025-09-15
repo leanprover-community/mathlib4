@@ -239,15 +239,9 @@ lemma exists_diagonalization_iff_iSup_eigenspace {f : End K V} :
 
 lemma SimultaneousDiagonalization.commute {ι : Type*} {f : α → End R M}
     (D : SimultaneousDiagonalization ι f) (i j : α) : Commute (f i) (f j) := by
-  ext m
-  induction D.toBasis.mem_span m using Submodule.span_induction with
-  | mem u hu =>
-    obtain ⟨k, rfl⟩ := Set.mem_range.mp hu
-    have := D.hasEigenVector_μ i k
-    have := D.hasEigenVector_μ j k
-    simp_all [hasEigenvector_iff, smul_smul, mul_comm]
-  | zero => simp
-  | add => simp [*] at *
-  | smul _ _ _ hm => simp [hm]
+  refine D.toBasis.ext fun k ↦ ?_
+  have := D.hasEigenVector_μ i k
+  have := D.hasEigenVector_μ j k
+  simp_all [hasEigenvector_iff, smul_smul, mul_comm]
 
 end LinearMap
