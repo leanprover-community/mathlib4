@@ -373,7 +373,7 @@ def Int.divModEquiv (n : ℕ) [NeZero n] : ℤ ≃ ℤ × Fin n where
   left_inv a := by
     simp_rw [Fin.val_ofNat, natCast_mod, natMod,
       toNat_of_nonneg (emod_nonneg _ <| natCast_eq_zero.not.2 (NeZero.ne n)), emod_emod,
-      ediv_add_emod']
+      ediv_mul_add_emod]
   right_inv := fun ⟨q, r, hrn⟩ => by
     simp only [Prod.mk_inj, Fin.ext_iff]
     obtain ⟨h1, h2⟩ := Int.natCast_nonneg r, Int.ofNat_lt.2 hrn

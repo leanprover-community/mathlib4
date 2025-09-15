@@ -589,7 +589,7 @@ theorem idxOf_get [DecidableEq α] {a : α} {l : List α} (h) : get l ⟨idxOf a
 @[simp]
 theorem getElem?_idxOf [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
     l[idxOf a l]? = some a := by
-  rw [getElem?_eq_getElem, getElem_idxOf (idxOf_lt_length_iff.2 h)]
+  rw [getElem?_eq_getElem (idxOf_lt_length_iff.2 h), getElem_idxOf]
 
 theorem idxOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy : y ∈ l) :
     idxOf x l = idxOf y l ↔ x = y :=

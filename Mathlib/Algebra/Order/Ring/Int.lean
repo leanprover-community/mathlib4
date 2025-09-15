@@ -76,7 +76,7 @@ theorem Nat.exists_add_mul_eq_of_gcd_dvd_of_mul_pred_le (p q n : ℕ) (dvd : p.g
   let b := b_n + a_n / q.succ * p.succ
   refine ⟨a.toNat, b.toNat, Nat.cast_injective (R := ℤ) ?_⟩
   have : a * p.succ + b * q.succ = n := by rw [add_mul, ← add_assoc,
-    add_right_comm, mul_right_comm, ← add_mul, Int.emod_add_ediv', eq, mul_comm, mul_comm b_n]
+    add_right_comm, mul_right_comm, ← add_mul, Int.emod_add_ediv_mul, eq, mul_comm, mul_comm b_n]
   rw [Nat.cast_add, Nat.cast_mul, Nat.cast_mul, Int.natCast_toNat_eq_self.mpr
     (Int.emod_nonneg _ <| by omega), Int.natCast_toNat_eq_self.mpr, this]
   -- show b ≥ 0 by contradiction

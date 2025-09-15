@@ -187,6 +187,9 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
     · rw [get_eq_getElem, hk']
       simp only [getLast_eq_getElem, length_cons, Nat.succ_sub_succ_eq_sub,
         Nat.sub_zero, get_eq_getElem, getElem_cons_succ]
+    · simp only [dropLast_cons₂, length_cons, length_dropLast, Nat.add_one_sub_one,
+        Nat.add_lt_add_iff_right] at hk ⊢
+      omega
     simpa using hk
 
 theorem prev_getLast_cons' (y : α) (hxy : x ∈ y :: l) (hx : x = y) :

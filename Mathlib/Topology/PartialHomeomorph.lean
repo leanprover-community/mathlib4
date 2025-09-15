@@ -1386,7 +1386,7 @@ theorem subtypeRestr_symm_eqOn {U : Opens X} (hU : Nonempty U) :
   intro y hy
   rw [eq_comm, eq_symm_apply _ _ hy.1]
   · change restrict _ e _ = _
-    rw [← subtypeRestr_coe, (e.subtypeRestr hU).right_inv hy]
+    rw [← subtypeRestr_coe _ hU, (e.subtypeRestr hU).right_inv hy]
   · have := map_target _ hy; rwa [subtypeRestr_source] at this
 
 theorem subtypeRestr_symm_eqOn_of_le {U V : Opens X} (hU : Nonempty U) (hV : Nonempty V)

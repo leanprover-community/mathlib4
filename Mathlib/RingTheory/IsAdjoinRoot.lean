@@ -697,7 +697,7 @@ theorem Algebra.adjoin.powerBasis'_minpoly_gen [IsDomain R] [IsDomain S] [NoZero
       (degree_pos hx').ne'
   rw [← minpolyGen_eq, adjoin.powerBasis', minpolyGen_map, minpolyGen_eq,
     AdjoinRoot.powerBasis'_gen, ← isAdjoinRoot_root_eq_root _,
-    ← isAdjoinRootMonic_toAdjoinRoot,
+    ← isAdjoinRootMonic_toAdjoinRoot _ (monic hx'),
     minpoly_eq (AdjoinRoot.isAdjoinRootMonic _ (monic hx')) (irreducible hx')]
 
 end Algebra

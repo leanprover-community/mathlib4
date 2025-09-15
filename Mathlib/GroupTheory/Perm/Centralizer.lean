@@ -473,7 +473,7 @@ theorem nat_card_range_toPermHom :
   simp only [← SetLike.coe_sort_coe, Fintype.card_eq_nat_card]
   congr
   ext
-  rw [SetLike.mem_coe, mem_range_toPermHom_iff', Set.mem_setOf_eq, ← beq_eq_beq]
+  rw [SetLike.mem_coe, mem_range_toPermHom_iff', Set.mem_setOf_eq]
 
 section Kernel
 /- Here, we describe the kernel of `g.OnCycleFactors.toPermHom` -/

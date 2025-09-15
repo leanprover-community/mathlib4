@@ -969,8 +969,8 @@ theorem comapFunIsLocallyFraction (f : R →+* S) (U : Opens (PrimeSpectrum.Top 
   specialize h_frac ⟨PrimeSpectrum.comap f q, hqW⟩
   refine ⟨h_frac.1, ?_⟩
   dsimp only [comapFun]
-  erw [← Localization.localRingHom_to_map (PrimeSpectrum.comap f q).asIdeal, ← RingHom.map_mul,
-    h_frac.2, Localization.localRingHom_to_map]
+  erw [← Localization.localRingHom_to_map (PrimeSpectrum.comap f q).asIdeal _ _ rfl,
+    ← RingHom.map_mul, h_frac.2, Localization.localRingHom_to_map]
   rfl
 
 /-- For a ring homomorphism `f : R →+* S` and open sets `U` and `V` of the prime spectra of `R` and

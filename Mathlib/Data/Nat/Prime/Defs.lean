@@ -3,7 +3,6 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Batteries.Data.Nat.Gcd
 import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Algebra.GroupWithZero.Nat
 import Mathlib.Algebra.Prime.Defs

@@ -139,7 +139,8 @@ theorem killCompl_C (r : R) : killCompl hf (C r) = C r := algHom_C _ _
 theorem killCompl_comp_rename : (killCompl hf).comp (rename f) = AlgHom.id R _ :=
   algHom_ext fun i => by
     dsimp
-    rw [rename, killCompl, aeval_X, comp_apply, aeval_X, dif_pos, Equiv.ofInjective_symm_apply]
+    rw [rename, killCompl, aeval_X, comp_apply, aeval_X, dif_pos ⟨i, rfl⟩,
+      Equiv.ofInjective_symm_apply]
 
 @[simp]
 theorem killCompl_rename_app (p : MvPolynomial σ R) : killCompl hf (rename f p) = p :=

@@ -83,14 +83,14 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Highe
   swap
   · rintro ⟨k, hk⟩
     rw [assoc, X.δ_comp_σ_of_gt', v.comp_δ_eq_zero_assoc, zero_comp, zsmul_zero]
-    · simp only [Fin.lt_iff_val_lt_val]
-      dsimp [Fin.natAdd, Fin.cast]
-      omega
     · intro h
       replace h : a + 3 + k = 1 := by simp [Fin.ext_iff] at h
       omega
     · dsimp [Fin.cast, Fin.pred]
       rw [Nat.add_right_comm, Nat.add_sub_assoc (by simp : 1 ≤ 3)]
+      omega
+    · simp only [Fin.lt_iff_val_lt_val]
+      dsimp [Fin.natAdd, Fin.cast]
       omega
   simp only [assoc]
   conv_lhs =>
@@ -123,8 +123,9 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Highe
       rw [Fin.le_iff_val_le_val]
       dsimp
       omega
-    rw [← Fin.succ_mk, ← Fin.castSucc_mk _ i, δ_comp_σ_of_le X hia, add_eq_zero_iff_eq_neg,
-      ← neg_zsmul]
+    generalize_proofs
+    rw [← Fin.succ_mk (n + 1) a ‹_›, ← Fin.castSucc_mk (n + 2) i ‹_›,
+      δ_comp_σ_of_le X hia, add_eq_zero_iff_eq_neg, ← neg_zsmul]
     congr 2
     ring
 
@@ -144,10 +145,10 @@ theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Hi
         add_neg_cancel]
     · intro j
       rw [comp_zsmul, comp_zsmul, δ_comp_σ_of_gt', v.comp_δ_eq_zero_assoc, zero_comp, zsmul_zero]
-      · simp only [Fin.succ_lt_succ_iff, j.succ_pos]
       · simp [Fin.succ_ne_zero]
       · dsimp
         omega
+      · simp only [Fin.succ_lt_succ_iff, j.succ_pos]
 
 theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFacesVanish q φ) :
     HigherFacesVanish (q + 1) (φ ≫ (𝟙 _ + Hσ q).f (n + 1)) := by
