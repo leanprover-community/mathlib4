@@ -23,7 +23,10 @@ Should we redefine `Hyperreal.st x = ArchimedeanClass.standardPart x 1`?
 -/
 
 namespace ArchimedeanClass
-variable {K : Type*} [LinearOrder K] [CommRing K] [IsStrictOrderedRing K] {x y : K}
+variable {K : Type*} [LinearOrder K] {x y : K}
+
+section Ring
+variable [CommRing K] [IsStrictOrderedRing K]
 
 private theorem exists_mk_sub_real_mul_gt' (f : ℝ →+* K) (hf : StrictMono f)
     (hx : 0 < x) (hy : 0 < y) (h : mk y ≤ mk x) :
@@ -143,4 +146,30 @@ theorem standardPart_zero_left (f : ℝ →+* K) (hf : StrictMono f) (x : K) :
   · apply standardPart_of_mk_lt_mk_sub f hf
     simp_all [lt_top_iff_ne_top]
 
+end Ring
+
+section Field
+variable [Field K] [IsStrictOrderedRing K]
+
+theorem standardPart_mul_mul (f : ℝ →+* K) (hf : StrictMono f) {a : K} (ha : a ≠ 0) (x y : K) :
+    standardPart f (a * x) (a * y) = standardPart f x y := by
+  obtain rfl | hy := eq_or_ne y 0
+  · simp
+  have ha : mk a ≠ ⊤ := by simpa
+  obtain h | h := le_or_gt (mk y) (mk x)
+  · apply standardPart_of_mk_lt_mk_sub f hf
+    rw [mul_comm (f _), mul_assoc, ← mul_sub, mk_mul, mk_mul]
+    apply LinearOrderedAddCommGroupWithTop.strictMono_add_right_of_ne_top _ ha
+    rw [mul_comm]
+    exact mk_lt_mk_sub_standardPart_mul f hf hy h
+  · rw [standardPart_of_mk_lt_mk f hf h, standardPart_of_mk_lt_mk f hf]
+    rw [mk_mul, mk_mul]
+    exact LinearOrderedAddCommGroupWithTop.strictMono_add_right_of_ne_top _ ha h
+
+theorem standardPart_div_div (f : ℝ →+* K) (hf : StrictMono f) {a : K} (ha : a ≠ 0) (x y : K) :
+    standardPart f (x / a) (y / a) = standardPart f x y := by
+  rw [div_eq_inv_mul, div_eq_inv_mul, standardPart_mul_mul f hf]
+  simpa
+
+end Field
 end ArchimedeanClass
