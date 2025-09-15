@@ -609,7 +609,7 @@ lemma iff_exists_appLE
       Q (f.appLE U V e).hom := by
   haveI inst : HasRingHomProperty P Q := inferInstance
   haveI : HasRingHomProperty P (Locally Q) := by
-    apply @copy (P' := P) (Q := Q) (Q' := Locally Q)
+    apply @copy (P := P) (P' := P) (Q := Q) (Q' := Locally Q)
     · infer_instance
     · rfl
     · intro R S _ _ f
