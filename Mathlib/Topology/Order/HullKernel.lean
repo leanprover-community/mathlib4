@@ -88,14 +88,16 @@ open Finset in
 lemma hull_finsetInf (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
     hull T (inf F id) = T ↓∩ upperClosure F.toSet := by
   rw [coe_upperClosure]
-  induction' F using Finset.induction_on with a F' _ I4
-  · simp only [coe_empty, mem_empty_iff_false, iUnion_of_empty, iUnion_empty, Set.preimage_empty,
+  induction F using Finset.induction_on with
+  | empty =>
+    simp only [coe_empty, mem_empty_iff_false, iUnion_of_empty, iUnion_empty, Set.preimage_empty,
       inf_empty]
     by_contra hf
     rw [← Set.not_nonempty_iff_eq_empty, not_not] at hf
     obtain ⟨x, hx⟩ := hf
     exact (hT x (Subtype.coe_prop x)).1 (isMax_iff_eq_top.mpr (eq_top_iff.mpr hx))
-  · simp only [coe_insert, mem_insert_iff, mem_coe, iUnion_iUnion_eq_or_left, Set.preimage_union,
+  | insert a F' _ I4 =>
+    simp only [coe_insert, mem_insert_iff, mem_coe, iUnion_iUnion_eq_or_left, Set.preimage_union,
       preimage_iUnion, inf_insert, id_eq, hull_inf hT, I4]
 
 /- Every relative-open set of the form `T ↓∩ (↑(upperClosure F))ᶜ` for `F` finite is a relative-open

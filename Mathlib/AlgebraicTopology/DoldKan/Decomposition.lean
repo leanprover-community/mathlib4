@@ -50,10 +50,12 @@ the $y_i$ are in degree $n$. -/
 theorem decomposition_Q (n q : ℕ) :
     ((Q q).f (n + 1) : X _⦋n + 1⦌ ⟶ X _⦋n + 1⦌) =
       ∑ i : Fin (n + 1) with i.val < q, (P i).f (n + 1) ≫ X.δ i.rev.succ ≫ X.σ (Fin.rev i) := by
-  induction' q with q hq
-  · simp only [Q_zero, HomologicalComplex.zero_f_apply, Nat.not_lt_zero,
+  induction q with
+  | zero =>
+    simp only [Q_zero, HomologicalComplex.zero_f_apply, Nat.not_lt_zero,
       Finset.filter_false, Finset.sum_empty]
-  · by_cases hqn : q + 1 ≤ n + 1
+  | succ q hq =>
+    by_cases hqn : q + 1 ≤ n + 1
     swap
     · rw [Q_is_eventually_constant (show n + 1 ≤ q by omega), hq]
       congr 1

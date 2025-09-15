@@ -28,9 +28,10 @@ theorem mul_eq_mul_prime_prod {α : Type*} [DecidableEq α] {x y a : R} {s : Fin
     (hp : ∀ i ∈ s, Prime (p i)) (hx : x * y = a * ∏ i ∈ s, p i) :
     ∃ (t u : Finset α) (b c : R),
       t ∪ u = s ∧ Disjoint t u ∧ a = b * c ∧ (x = b * ∏ i ∈ t, p i) ∧ y = c * ∏ i ∈ u, p i := by
-  induction' s using Finset.induction with i s his ih generalizing x y a
-  · exact ⟨∅, ∅, x, y, by simp [hx]⟩
-  · rw [prod_insert his, ← mul_assoc] at hx
+  induction s using Finset.induction generalizing x y a with
+  | empty => exact ⟨∅, ∅, x, y, by simp [hx]⟩
+  | insert i s his ih =>
+    rw [prod_insert his, ← mul_assoc] at hx
     have hpi : Prime (p i) := hp i (mem_insert_self _ _)
     rcases ih (fun i hi ↦ hp i (mem_insert_of_mem hi)) hx with
       ⟨t, u, b, c, htus, htu, hbc, rfl, rfl⟩

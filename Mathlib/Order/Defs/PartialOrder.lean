@@ -46,10 +46,12 @@ class Preorder (α : Type*) extends LE α, LT α where
 attribute [to_dual self (reorder := 3 5, 6 7)] Preorder.le_trans
 attribute [to_dual self (reorder := 3 4)] Preorder.lt_iff_le_not_ge
 
-instance [Preorder α] : Lean.Grind.Preorder α where
+instance [Preorder α] : Std.LawfulOrderLT α where
+  lt_iff := Preorder.lt_iff_le_not_ge
+
+instance [Preorder α] : Std.IsPreorder α where
   le_refl := Preorder.le_refl
-  le_trans := Preorder.le_trans _ _ _
-  lt_iff_le_not_le := Preorder.lt_iff_le_not_ge _ _
+  le_trans := Preorder.le_trans
 
 @[deprecated (since := "2025-05-11")] alias Preorder.lt_iff_le_not_le := Preorder.lt_iff_le_not_ge
 
@@ -181,8 +183,8 @@ class PartialOrder (α : Type*) extends Preorder α where
 
 attribute [to_dual self (reorder := 5 6)] PartialOrder.le_antisymm
 
-instance [PartialOrder α] : Lean.Grind.PartialOrder α where
-  le_antisymm := PartialOrder.le_antisymm _ _
+instance [PartialOrder α] : Std.IsPartialOrder α where
+  le_antisymm := PartialOrder.le_antisymm
 
 variable [PartialOrder α] {a b : α}
 
