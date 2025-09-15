@@ -5,7 +5,7 @@ Authors: David Loeffler
 -/
 import Mathlib.Data.Real.Basic
 import Mathlib.GroupTheory.Commensurable
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Topology
 import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 import Mathlib.Topology.Algebra.Ring.Real
 import Mathlib.Topology.Instances.Matrix
@@ -58,21 +58,17 @@ end Subgroup
 
 namespace Matrix.SpecialLinearGroup
 
-lemma isInducing_toGL : Topology.IsInducing (mapGL ℝ : SL(2, ℤ) → GL (Fin 2) ℝ) := by
-  refine .of_comp continuous_of_discreteTopology Units.continuous_val ?_
-  refine (Topology.IsInducing.matrix_map ?_).comp ⟨rfl⟩
-  exact Topology.IsEmbedding.toIsInducing (Isometry.isEmbedding fun _ _ ↦ rfl)
+local notation "SL" => SpecialLinearGroup
 
-lemma isEmbedding_toGL : Topology.IsEmbedding (mapGL ℝ : SL(2, ℤ) → GL (Fin 2) ℝ) :=
-  ⟨isInducing_toGL, mapGL_injective⟩
+variable {n : Type*} [Fintype n] [DecidableEq n]
 
-instance discreteTopology_SL2ℤ : DiscreteTopology 𝒮ℒ :=
-  isEmbedding_toGL.toHomeomorph.discreteTopology
+instance discreteSpecialLinearGroupRange : DiscreteTopology (mapGL (n := n) (R := ℤ) ℝ).range :=
+  (isEmbedding_mapGL (Isometry.isEmbedding fun _ _ ↦ rfl)).toHomeomorph.discreteTopology
 
-lemma isClosed_SL2ℤ : IsClosed (𝒮ℒ : Set (GL (Fin 2) ℝ)) :=
+lemma isClosed_range_mapGL : IsClosed ((mapGL (n := n) (R := ℤ) ℝ).range : Set (GL n ℝ)) :=
   Subgroup.isClosed_of_discrete
 
-lemma isClosedEmbedding_toGL : Topology.IsClosedEmbedding (mapGL ℝ : SL(2, ℤ) → GL (Fin 2) ℝ) :=
-  ⟨isEmbedding_toGL, isClosed_SL2ℤ⟩
+lemma isClosedEmbedding_mapGL : Topology.IsClosedEmbedding (mapGL ℝ : SL n ℤ → GL n ℝ) :=
+  ⟨isEmbedding_mapGL (Isometry.isEmbedding fun _ _ ↦ rfl), isClosed_range_mapGL⟩
 
 end Matrix.SpecialLinearGroup

@@ -713,15 +713,7 @@ protected theorem ContinuousAt.piMap {f : ∀ i, A i → B i} {x : ∀ i, A i}
 
 protected lemma Topology.IsInducing.piMap {f : ∀ i, A i → B i}
     (hf : ∀ i, IsInducing (f i)) : IsInducing (Pi.map f) := by
-  refine isInducing_iff_nhds.mpr fun x ↦ le_antisymm ?_ (fun s ↦ ?_)
-  · simpa [← Filter.map_le_iff_le_comap]
-      using (Continuous.piMap fun i ↦ (hf i).continuous).continuousAt
-  · simp only [Filter.mem_comap, nhds_pi, Filter.mem_pi']
-    rintro ⟨I, t, ht, ht'⟩
-    simp only [fun i ↦ Topology.isInducing_iff_nhds.mp (hf i) (x i),
-      Filter.mem_comap] at ht
-    choose u hu hu' using ht
-    exact ⟨Set.pi I u, ⟨I, u, hu, le_rfl⟩, subset_trans (fun v ↦ by aesop) ht'⟩
+  simp [isInducing_iff_nhds, nhds_pi, (hf _).nhds_eq_comap, Filter.pi_comap]
 
 protected lemma Topology.IsEmbedding.piMap {f : ∀ i, A i → B i}
     (hf : ∀ i, IsEmbedding (f i)) : IsEmbedding (Pi.map f) :=
@@ -981,7 +973,7 @@ protected lemma Topology.IsClosedEmbedding.piMap {f : ∀ i, A i → B i}
     (hf : ∀ i, IsClosedEmbedding (f i)) : IsClosedEmbedding (Pi.map f) :=
   ⟨.piMap fun i ↦ (hf i).1, by simpa using isClosed_set_pi fun i _ ↦ (hf i).2⟩
 
-protected lemma Topology.IsOpenEmbedding.piMap [Fintype ι] {f : ∀ i, A i → B i}
+protected lemma Topology.IsOpenEmbedding.piMap [Finite ι] {f : ∀ i, A i → B i}
     (hf : ∀ i, IsOpenEmbedding (f i)) : IsOpenEmbedding (Pi.map f) :=
   ⟨.piMap fun i ↦ (hf i).1, by simpa using isOpen_set_pi Set.finite_univ fun i _ ↦ (hf i).2⟩
 

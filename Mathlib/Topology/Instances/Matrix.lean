@@ -47,15 +47,14 @@ instance [TopologicalSpace R] : TopologicalSpace (Matrix m n R) :=
 instance [TopologicalSpace R] [T2Space R] : T2Space (Matrix m n R) :=
   Pi.t2Space
 
-open Matrix
-
-instance [TopologicalSpace R] [DecidableEq n] [Fintype n] [CommRing R] :
-    TopologicalSpace (SpecialLinearGroup n R) :=
-  instTopologicalSpaceSubtype
+/-- The topology on finite matrices over a discrete space is discrete. -/
+instance [TopologicalSpace R] [Finite m] [Finite n] [DiscreteTopology R] :
+    DiscreteTopology (Matrix m n R) :=
+  Pi.discreteTopology
 
 section Set
 
-theorem IsOpen.matrix [Fintype m] [Fintype n]
+theorem IsOpen.matrix [Finite m] [Finite n]
     [TopologicalSpace R] {S : Set R} (hS : IsOpen S) :
     IsOpen (S.matrix : Set (Matrix m n R)) :=
   Set.matrix_eq_pi ▸
@@ -260,20 +259,9 @@ lemma IsClosedEmbedding.matrix_map (hf : IsClosedEmbedding f) :
     IsClosedEmbedding (map · f : Matrix m n R → Matrix m n S) :=
   IsClosedEmbedding.piMap fun _ : m ↦ (IsClosedEmbedding.piMap fun _ : n ↦ hf)
 
-lemma IsOpenEmbedding.matrix_map [Fintype m] [Fintype n] (hf : IsOpenEmbedding f) :
+lemma IsOpenEmbedding.matrix_map [Finite m] [Finite n] (hf : IsOpenEmbedding f) :
     IsOpenEmbedding (map · f : Matrix m n R → Matrix m n S) :=
   IsOpenEmbedding.piMap fun _ : m ↦ (IsOpenEmbedding.piMap fun _ : n ↦ hf)
-
-/-- The topology on matrices over a discrete space is discrete. -/
-instance discreteTopologyMatrix [Fintype m] [Fintype n] [DiscreteTopology R] :
-    DiscreteTopology (Matrix m n R) :=
-  inferInstanceAs (DiscreteTopology (m → n → R))
-
-/-- If `R` is a commutative ring with the discrete topology, then `SL(n, R)` has the discrete
-topology. -/
-instance Matrix.SpecialLinearGroup.discreteTopology [Fintype n] [DecidableEq n]
-    [DiscreteTopology R] [CommRing R] : DiscreteTopology (Matrix.SpecialLinearGroup n R) :=
-  instDiscreteTopologySubtype
 
 end Topology
 
@@ -467,3 +455,23 @@ theorem Summable.matrix_blockDiag' {f : X → Matrix (Σ i, m' i) (Σ i, n' i) R
 end BlockMatrices
 
 end tsum
+
+namespace Matrix.SpecialLinearGroup
+
+variable [Fintype n] [DecidableEq n] [CommRing R] [TopologicalSpace R]
+
+instance : TopologicalSpace (SpecialLinearGroup n R) :=
+  instTopologicalSpaceSubtype
+
+/-- If `R` is a commutative ring with the discrete topology, then `SL(n, R)` has the discrete
+topology. -/
+instance [DiscreteTopology R] : DiscreteTopology (SpecialLinearGroup n R) :=
+  instDiscreteTopologySubtype
+
+/-- The special linear group over a topological ring is a topological group. -/
+instance topologicalGroup [IsTopologicalRing R] : IsTopologicalGroup (SpecialLinearGroup n R) where
+  continuous_inv := by simpa [continuous_induced_rng] using continuous_induced_dom.matrix_adjugate
+  continuous_mul := by simpa only [continuous_induced_rng] using
+    (continuous_induced_dom.comp continuous_fst).mul (continuous_induced_dom.comp continuous_snd)
+
+end Matrix.SpecialLinearGroup
