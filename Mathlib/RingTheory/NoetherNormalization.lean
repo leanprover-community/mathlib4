@@ -62,10 +62,7 @@ local notation3 "up" => 2 + f.totalDegree
 
 variable {f v} in
 private lemma lt_up (vlt : ∀ i, v i < up) : ∀ l ∈ ofFn v, l < up := by
-  intro l h
-  rw [mem_ofFn] at h
-  obtain ⟨y, rfl⟩ := h
-  exact vlt y
+  grind
 
 /-- `r` maps `(i : Fin (n + 1))` to `up ^ i`. -/
 local notation3 "r" => fun (i : Fin (n + 1)) ↦ up ^ i.1
@@ -202,8 +199,8 @@ private noncomputable abbrev eqv1 :
 /- `eqv2` is the isomorphism from `k[X_0,...,X_n]/T(I)` into `k[X_0,...,X_n]/I`,
 induced by `T`. -/
 private noncomputable abbrev eqv2 :
-    (MvPolynomial (Fin (n + 1)) k ⧸ I.map (T f)) ≃ₐ[k] MvPolynomial (Fin (n + 1)) k ⧸ I
-  := quotientEquivAlg (R₁ := k) (I.map (T f)) I (T f).symm <| by
+    (MvPolynomial (Fin (n + 1)) k ⧸ I.map (T f)) ≃ₐ[k] MvPolynomial (Fin (n + 1)) k ⧸ I :=
+  quotientEquivAlg (R₁ := k) (I.map (T f)) I (T f).symm <| by
   calc
     _ = I.map ((T f).symm.toRingEquiv.toRingHom.comp (T f)) := by
       have : (T f).symm.toRingEquiv.toRingHom.comp (T f) = RingHom.id _ :=
@@ -290,6 +287,6 @@ theorem exists_finite_inj_algHom_of_fg : ∃ s, ∃ g : (MvPolynomial (Fin s) k)
     algebraize [g.toRingHom]
     rw [IsScalarTower.algebraMap_eq k (MvPolynomial (Fin s) k), algebraMap_toAlgebra']
   exact ⟨s, g, inj, int.to_finite
-    (h ▸ algebraMap_finiteType_iff_algebra_finiteType.mpr fin).of_comp_finiteType⟩
+    (h ▸ RingHom.finiteType_algebraMap.mpr fin).of_comp_finiteType⟩
 
 end mainthm

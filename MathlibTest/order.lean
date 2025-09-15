@@ -1,4 +1,4 @@
-import Mathlib.Data.Matrix.Rank
+import Mathlib.LinearAlgebra.Matrix.Rank
 import Mathlib.Tactic.Order
 
 example (a b c : Nat) (h1 : a ≤ b) (h2 : b ≤ c) : a ≤ c := by
@@ -123,18 +123,9 @@ trace:
     #5 := #6 ⊔ #7
     #0 ≠ #5
     ¬ #0 < #5
-[order] Working on type ℕ (linear order)
-[order] Collected atoms:
-    #0 := x
-    #1 := y
-[order] Collected facts:
-    #0 < #1
-[order] Processed facts:
-    #0 ≠ #1
-    #0 ≤ #1
 -/
 #guard_msgs in
-example (a b c : α) (x y : Nat) (h : x < y) [Lattice α] : a ⊓ (b ⊔ c) ≤ (a ⊓ b) ⊔ (a ⊓ c) := by
+example (a b c : α) [Lattice α] : a ⊓ (b ⊔ c) ≤ (a ⊓ b) ⊔ (a ⊓ c) := by
   order
 
 -- This used to work when a different matching strategy was used in `order`.

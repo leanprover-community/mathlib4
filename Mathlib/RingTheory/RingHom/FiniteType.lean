@@ -49,7 +49,7 @@ theorem IsLocalization.exists_smul_mem_of_mem_adjoin [Algebra R S']
     (IsLocalization.finsetIntegerMultiple_image _ s).symm
   obtain ⟨n, hn⟩ :=
     Algebra.pow_smul_mem_of_smul_subset_of_mem_adjoin (y : S) (s : Set S') (A.map g)
-      (by rw [hx₁]; exact Set.image_subset _ hA₁) hx (Set.mem_image_of_mem _ (hA₂ y.2))
+      (by rw [hx₁]; exact Set.image_mono hA₁) hx (Set.mem_image_of_mem _ (hA₂ y.2))
   obtain ⟨x', hx', hx''⟩ := hn n (le_of_eq rfl)
   rw [Algebra.smul_def, ← map_mul] at hx''
   obtain ⟨a, ha₂⟩ := (IsLocalization.eq_iff_exists M S').mp hx''
