@@ -170,6 +170,11 @@ theorem trace_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] [NonUnitalN
 
 @[deprecated (since := "2025-03-20")] alias trace_col_mul_row := trace_replicateCol_mul_replicateRow
 
+@[simp]
+theorem trace_vecMulVec [NonUnitalNonAssocSemiring R] (a b : n → R) :
+    trace (vecMulVec a b) = a ⬝ᵥ b := by
+  rw [vecMulVec_eq Unit, trace_replicateCol_mul_replicateRow]
+
 end Mul
 
 lemma trace_submatrix_succ {n : ℕ} [AddCommMonoid R]
