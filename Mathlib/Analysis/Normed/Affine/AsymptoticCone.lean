@@ -10,7 +10,7 @@ import Mathlib.Analysis.Normed.Module.FiniteDimension
 /-!
 # Asymptotic cone of a set
 
-This file defines the asymptotic cone of a set in a normed affine space.
+This file defines the asymptotic cone of a set in a topological affine space.
 
 ## Implementation details
 
@@ -22,7 +22,7 @@ that `∃ᶠ p in Filter.atTop • 𝓝 v, p ∈ s` holds.
 ## Main definitions
 
 * `AffineSpace.asymptoticNhds`: the filter of neighborhoods at infinity in some direction.
-* `asymptoticCone`: the asymptotic cone of a subset of a normed affine space.
+* `asymptoticCone`: the asymptotic cone of a subset of a topological affine space.
 
 ## Main statements
 
@@ -42,14 +42,13 @@ section General
 
 variable
   {k V P : Type*}
-  [NormedField k] [LinearOrder k]
-  [NormedAddCommGroup V] [NormedSpace k V] [MetricSpace P] [NormedAddTorsor V P]
+  [Field k] [LinearOrder k] [AddCommGroup V] [Module k V] [AddTorsor V P] [TopologicalSpace V]
 
 namespace AffineSpace
 
 variable (k P) in
-/-- In a normed affine space `P` over `k`, `AffineSpace.asymptoticNhds k P v` is the filter of
-neighborhoods at infinity in the direction of `v`. In a normed vector space, this is the filter
+/-- In a topological affine space `P` over `k`, `AffineSpace.asymptoticNhds k P v` is the filter of
+neighborhoods at infinity in the direction of `v`. In a topological vector space, this is the filter
 `Filter.atTop • 𝓝 v`. To support affine spaces, the actual definition is different and should be
 considered an implementation detail. Use `AffineSpace.asymptoticNhds_eq_smul` or
 `AffineSpace.asymptoticNhds_eq_smul` for unfolding. -/
@@ -83,7 +82,8 @@ theorem _root_.Filter.Tendsto.const_vadd_asymptoticNhds {f : α → P} {v : V} (
   rw [← vadd_asymptoticNhds u, ← Filter.map_vadd]
   exact tendsto_map.comp hf
 
-variable [OrderTopology k] [IsStrictOrderedRing k]
+variable [TopologicalSpace k] [OrderTopology k] [IsStrictOrderedRing k]
+  [IsTopologicalAddGroup V] [ContinuousSMul k V]
 
 theorem asymptoticNhds_eq_smul (v : V) : asymptoticNhds k V v = atTop (α := k) • 𝓝 v := by
   unfold asymptoticNhds
@@ -165,7 +165,7 @@ theorem nhds_bind_asymptoticNhds (v : V) :
     exact bind_mono (pure_le_nhds v) .rfl
 
 @[simp]
-theorem asymptoticNhds_bind_nhds (v : V) :
+theorem asymptoticNhds_bind_nhds [TopologicalSpace P] [IsTopologicalAddTorsor P] (v : V) :
     (asymptoticNhds k P v).bind 𝓝 = asymptoticNhds k P v := by
   refine le_antisymm (fun s h => ?_) (bind_mono le_rfl (.of_forall pure_le_nhds))
   have ⟨p⟩ : Nonempty P := inferInstance
@@ -239,7 +239,8 @@ theorem asymptoticCone_iUnion_of_finite {ι : Type*} [Finite ι] (f : ι → Set
     asymptoticCone k (⋃ i, f i) = ⋃ i, asymptoticCone k (f i) := by
   rw [← Set.sUnion_range, asymptoticCone_sUnion (Set.finite_range f), Set.biUnion_range]
 
-variable [OrderTopology k] [IsStrictOrderedRing k]
+variable [TopologicalSpace k] [OrderTopology k] [IsStrictOrderedRing k]
+  [IsTopologicalAddGroup V] [ContinuousSMul k V]
 
 theorem zero_mem_asymptoticCone {s : Set P} : 0 ∈ asymptoticCone k s ↔ s.Nonempty := by
   refine ⟨Function.mtr ?_, fun _ => ?_⟩
@@ -287,7 +288,8 @@ theorem asymptoticCone_univ : asymptoticCone k (Set.univ : Set P) = Set.univ := 
   rw [← AffineSubspace.top_coe k, asymptoticCone_affineSubspace Set.univ_nonempty,
     AffineSubspace.direction_top, Submodule.top_coe, closure_univ]
 
-theorem asymptoticCone_closure (s : Set P) : asymptoticCone k (closure s) = asymptoticCone k s := by
+theorem asymptoticCone_closure [TopologicalSpace P] [IsTopologicalAddTorsor P] (s : Set P) :
+    asymptoticCone k (closure s) = asymptoticCone k s := by
   ext
   simp_rw [mem_asymptoticCone_iff, mem_closure_iff_frequently, ← frequently_bind,
     asymptoticNhds_bind_nhds]
@@ -312,8 +314,10 @@ section Convex
 open AffineSpace
 
 variable
-  {k V : Type*} [NormedField k] [LinearOrder k] [OrderTopology k] [IsStrictOrderedRing k]
-  [NormedAddCommGroup V] [NormedSpace k V] {s : Set V}
+  {k V : Type*}
+  [Field k] [LinearOrder k] [IsStrictOrderedRing k] [TopologicalSpace k] [OrderTopology k]
+  [AddCommGroup V] [Module k V] [TopologicalSpace V] [IsTopologicalAddGroup V] [ContinuousSMul k V]
+  {s : Set V}
 
 /-- If a closed set `s` is star-convex at `p` and `v` is in the asymptotic cone of `s`, then the ray
 of direction `v` starting from `p` is contained in `s`. -/
