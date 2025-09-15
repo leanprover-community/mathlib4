@@ -398,7 +398,7 @@ theorem Module.free_iff_noZeroSMulDivisors [Module.Finite R M] :
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
 
 -- https://mathoverflow.net/questions/16953/are-submodules-of-free-modules-free#comment31868_16954
-proof_wanted Submodule.free_of_free_of_pid {R M : Type*} [Semiring R] [AddCommMonoid M]
+proof_wanted Submodule.free_of_free_of_pid {R M : Type*} [CommRing R] [AddCommGroup M]
     [IsPrincipalIdealRing R] [IsDomain R] [Module R M] [Module.Free R M] (N : Submodule R M) :
     Module.Free R N
 
