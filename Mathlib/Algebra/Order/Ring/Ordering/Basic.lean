@@ -66,14 +66,14 @@ theorem mem_of_isSumSq {x : R} (hx : IsSumSq x) : x ∈ P := by
 
 section mk'
 
-variable {R : Type*} [CommRing R] {P : Set R} {add} {mul} {sq} {minus}
+variable {R : Type*} [CommRing R] {P : Set R} {add} {mul} {sq} {neg_one}
 
 /-- Construct a preordering from a minimal set of axioms. -/
 def mk' {R : Type*} [CommRing R] (P : Set R)
     (add : ∀ {x y : R}, x ∈ P → y ∈ P → x + y ∈ P)
     (mul : ∀ {x y : R}, x ∈ P → y ∈ P → x * y ∈ P)
     (sq : ∀ x : R, x * x ∈ P)
-    (minus : -1 ∉ P) :
+    (neg_one : -1 ∉ P) :
     RingPreordering R where
   carrier := P
   add_mem' {x y} := by simpa using add
@@ -81,8 +81,8 @@ def mk' {R : Type*} [CommRing R] (P : Set R)
   zero_mem' := by simpa using sq 0
   one_mem' := by simpa using sq 1
 
-@[simp] theorem mem_mk' {x : R} : x ∈ mk' P add mul sq minus ↔ x ∈ P := .rfl
-@[simp, norm_cast] theorem coe_mk' : mk' P add mul sq minus = P := rfl
+@[simp] theorem mem_mk' {x : R} : x ∈ mk' P add mul sq neg_one ↔ x ∈ P := .rfl
+@[simp, norm_cast] theorem coe_mk' : mk' P add mul sq neg_one = P := rfl
 
 end mk'
 
@@ -129,7 +129,7 @@ theorem neg_smul_mem [P.HasIdealSupport]
 
 end HasIdealSupport
 
-theorem hasIdealSupport_of_isUnit_2 (h : IsUnit (2 : R)) : P.HasIdealSupport := by
+theorem hasIdealSupport_of_isUnit_two (h : IsUnit (2 : R)) : P.HasIdealSupport := by
   rw [hasIdealSupport_iff]
   intro x a _ _
   rcases h.exists_right_inv with ⟨half, h2⟩
@@ -140,7 +140,7 @@ theorem hasIdealSupport_of_isUnit_2 (h : IsUnit (2 : R)) : P.HasIdealSupport := 
   ring_nf
   aesop (add simp sub_eq_add_neg)
 
-instance [h : Fact (IsUnit (2 : R))] : P.HasIdealSupport := hasIdealSupport_of_isUnit_2 h.out
+instance [h : Fact (IsUnit (2 : R))] : P.HasIdealSupport := hasIdealSupport_of_isUnit_two h.out
 
 section Field
 
@@ -161,6 +161,7 @@ instance : P.HasIdealSupport where
   smul_mem_support := by simp [supportAddSubgroup_eq_bot]
 
 @[simp] theorem support_eq_bot : P.support = ⊥ := by
+  rw [toAddSubgroup_inj _ ⊥]
   simpa using supportAddSubgroup_eq_bot P
 
 instance : P.support.IsPrime := by simpa using Ideal.bot_prime

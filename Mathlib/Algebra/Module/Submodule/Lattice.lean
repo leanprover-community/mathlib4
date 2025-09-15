@@ -12,7 +12,6 @@ import Mathlib.Algebra.Module.PUnit
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Tactic.ApplyFun
 
 /-!
 # The lattice structure on `Submodule`s
@@ -118,15 +117,6 @@ theorem eq_bot_of_subsingleton [Subsingleton p] : p = ⊥ :=
 
 theorem nontrivial_iff_ne_bot : Nontrivial p ↔ p ≠ ⊥ := by
   rw [iff_not_comm, not_nontrivial_iff_subsingleton, subsingleton_iff_eq_bot]
-
-@[simp]
-theorem toAddSubgroup_eq_bot_iff
-    {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] (m : Submodule R M) :
-    m.toAddSubgroup = ⊥ ↔ m = ⊥ where
-  mp h := by
-    apply_fun Submodule.toAddSubgroup using Submodule.toAddSubgroup_injective
-    simpa using h
-  mpr h := by simp [h]
 
 /-!
 ## Top element of a submodule
