@@ -308,16 +308,10 @@ theorem Trivialization.mdifferentiableOn_section_iff {s : ∀ x, E x} {a : Set B
     [MemTrivializationAtlas e] (ha : IsOpen a) (ha' : a ⊆ e.baseSet) :
     MDifferentiableOn IB (IB.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) a ↔
       MDifferentiableOn IB 𝓘(𝕜, F) (fun x ↦ (e ⟨x, s x⟩).2) a := by
-  -- golfing useful?
-  constructor
-  · intro h x hx
-    have : MDifferentiableAt IB (IB.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) x :=
-      (h x hx).mdifferentiableAt <| ha.mem_nhds hx
-    exact ((e.mdifferentiableAt_section_iff _ _ (ha' hx)).mp this).mdifferentiableWithinAt
-  · intro h x hx
-    have : MDifferentiableAt IB 𝓘(𝕜, F) (fun x ↦ (e { proj := x, snd := s x }).2) x :=
-      (h x hx).mdifferentiableAt <| ha.mem_nhds hx
-    exact ((e.mdifferentiableAt_section_iff _ _ (ha' hx)).mpr this).mdifferentiableWithinAt
+  refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩ <;>
+  have := (h x hx).mdifferentiableAt <| ha.mem_nhds hx
+  · exact ((e.mdifferentiableAt_section_iff _ _ (ha' hx)).mp this).mdifferentiableWithinAt
+  · exact ((e.mdifferentiableAt_section_iff _ _ (ha' hx)).mpr this).mdifferentiableWithinAt
 
 variable {IB} in
 /-- For any trivialization `e`, the differentiability of a section on `e.baseSet`
