@@ -431,6 +431,7 @@ instance existsAddOfLE : ExistsAddOfLE Ordinal where
 -- TODO: This gives us `zero_le` as an immediate consequence.
 -- Private/protect the old theorem, golf proofs.
 instance canonicallyOrderedAdd : CanonicallyOrderedAdd Ordinal where
+  le_add_self := le_add_left
   le_self_add := le_add_right
 
 /-- `a - b` is the unique ordinal satisfying `b + (a - b) = a` when `b ≤ a`. -/
@@ -535,7 +536,7 @@ alias add_le_of_limit := add_le_iff_of_isSuccLimit
 
 theorem isNormal_add_right (a : Ordinal) : IsNormal (a + ·) := by
   rw [isNormal_iff_strictMono_limit]
-  exact ⟨add_left_strictMono, fun _ l _ ↦ (add_le_iff_of_isSuccLimit l).2⟩
+  exact ⟨add_right_strictMono, fun _ l _ ↦ (add_le_iff_of_isSuccLimit l).2⟩
 
 theorem isSuccLimit_add (a : Ordinal) {b : Ordinal} : IsSuccLimit b → IsSuccLimit (a + b) :=
   (isNormal_add_right a).isSuccLimit

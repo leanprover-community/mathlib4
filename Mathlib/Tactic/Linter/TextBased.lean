@@ -391,32 +391,53 @@ register_option linter.modulesForbiddenWindows : Bool := { defValue := true }
 COM6, COM7, COM8, COM9, COM¹, COM², COM³, LPT1, LPT2, LPT3, LPT4, LPT5, LPT6, LPT7, LPT8, LPT9,
 LPT¹, LPT² or LPT³ in its filename, as these are forbidden on Windows.
 
+Also verify that module names contain no forbidden characters such as `*`, `?` (Windows),
+`!` (forbidden on Nix OS) or `.` (might result from confusion with a module name).
+
 Source: https://learn.microsoft.com/en-gb/windows/win32/fileio/naming-a-file.
 Return the number of module names violating this rule. -/
-def modulesForbiddenWindows (opts : LinterOptions) (modules : Array Lean.Name) : IO Nat := do
+def modulesOSForbidden (opts : LinterOptions) (modules : Array Lean.Name) : IO Nat := do
   unless getLinterValue linter.modulesUpperCamelCase opts do return 0
   let forbiddenNames := [
     "CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8",
     "COM9", "COM¹", "COM²", "COM³", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8",
     "LPT9", "LPT¹", "LPT²", "LPT³"
   ]
+  -- We also check for the exclamation mark (which is not forbidden on Windows, but e.g. on Nix OS).
+  let forbiddenCharacters := [
+    '<', '>', '"', '/', '\\', '|', '?', '*',
+  ]
   let mut badNamesNum := 0
   for name in modules do
+    let mut isBad := false
     let mut badComps : List String := []
+    let mut badChars : List String := []
     for comp in name.componentsRev do
       let .str .anonymous s := comp | continue
       if forbiddenNames.contains s.toUpper then
         badComps := s :: badComps
-    match badComps with
-    | [] => continue
-    | [badComp] =>
-      badNamesNum := badNamesNum + 1
-      IO.eprintln s!"error: module name '{name}' contains component '{badComp}', \
-        which is forbidden in Windows filenames."
-    | badComps' =>
-      badNamesNum := badNamesNum + 1
-      IO.eprintln s!"error: module name '{name}' contains components '{badComps'}', \
-        which is forbidden in Windows filenames."
+      else
+        if s.contains '!' then
+          isBad := true
+          IO.eprintln s!"error: module name '{name}' contains forbidden character '!'"
+        else if s.contains '.' then
+          isBad := true
+          IO.eprintln s!"error: module name '{name}' contains forbidden character '.'"
+        for c in forbiddenCharacters do
+          if s.contains c then
+            badChars := c.toString :: badChars
+    if !badComps.isEmpty || !badChars.isEmpty then
+      isBad := true
+    if isBad then badNamesNum := badNamesNum + 1
+
+    if !badComps.isEmpty then
+      IO.eprintln s!"error: module name '{name}' contains \
+        component{if badComps.length > 1 then "s" else ""} '{badComps}', \
+        which {if badComps.length > 1 then "are" else "is"} forbidden in Windows filenames."
+    if !badChars.isEmpty then
+      IO.eprintln s!"error: module name '{name}' contains \
+        character{if badChars.length > 1 then "s" else ""} '{badChars}', \
+        which {if badChars.length > 1 then "are" else "is"} forbidden in Windows filenames."
   return badNamesNum
 
 end Mathlib.Linter.TextBased
