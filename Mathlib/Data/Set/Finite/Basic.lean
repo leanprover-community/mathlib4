@@ -467,9 +467,8 @@ The implementation of these constructors ideally should be no more than `Set.toF
 after possibly setting up some `Fintype` and classical `Decidable` instances.
 -/
 
-
 section SetFiniteConstructors
-variable {s t u : Set α}
+variable {s t u : Set α} {a : α}
 
 @[nontriviality]
 theorem Finite.of_subsingleton [Subsingleton α] (s : Set α) : s.Finite :=
@@ -542,6 +541,10 @@ theorem finite_singleton (a : α) : ({a} : Set α).Finite :=
 @[simp]
 protected theorem Finite.insert (a : α) {s : Set α} (hs : s.Finite) : (insert a s).Finite :=
   (finite_singleton a).union hs
+
+@[simp] lemma finite_insert : (insert a s).Finite ↔ s.Finite where
+  mp hs := hs.subset <| subset_insert ..
+  mpr := .insert _
 
 theorem Finite.image {s : Set α} (f : α → β) (hs : s.Finite) : (f '' s).Finite := by
   have := hs.to_subtype
