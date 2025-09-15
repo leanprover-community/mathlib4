@@ -9,7 +9,8 @@ import Mathlib.Topology.Algebra.Group.Pointwise
 /-!
 # Topological torsors of additive groups
 
-This file defines topological torsors of additive groups and proves some basic results.
+This file defines topological torsors of additive groups, that is, torsors where `+ᵥ` and `-ᵥ` are
+continuous.
 -/
 
 open Topology
@@ -106,8 +107,7 @@ section AddGroup
 variable {G : Type*} [AddGroup G] [TopologicalSpace G] [IsTopologicalAddGroup G]
 
 instance : IsTopologicalAddTorsor G where
-  toContinuousVAdd := inferInstance
-  continuous_vsub := by simp only [vsub_eq_sub, sub_eq_add_neg]; fun_prop
+  continuous_vsub := by simp only [vsub_eq_sub]; fun_prop
 
 end AddGroup
 

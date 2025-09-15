@@ -223,7 +223,7 @@ theorem uniformContinuous_vadd : UniformContinuous fun x : V × P => x.1 +ᵥ x.
 theorem uniformContinuous_vsub : UniformContinuous fun x : P × P => x.1 -ᵥ x.2 :=
   (LipschitzWith.prod_fst.vsub LipschitzWith.prod_snd).uniformContinuous
 
-instance (priority := 100) : IsTopologicalAddTorsor P where
+instance : IsTopologicalAddTorsor P where
   continuous_vadd := uniformContinuous_vadd.continuous
   continuous_vsub := uniformContinuous_vsub.continuous
 
