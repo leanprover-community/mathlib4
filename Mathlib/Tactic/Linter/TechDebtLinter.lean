@@ -62,10 +62,10 @@ def getDebts : Syntax → CommandElabM (Array Syntax)
   | .missing => pure #[]
 
 /-
-Count
-`set_option linter.deprecated false` outside of `Mathlib/Deprecated`
-do not count
-`set_option linter.deprecated false in ... @[deprecated ...]` outside of `Mathlib/Deprecated`
+* Outside of `Mathlib/Deprecated`, count
+  `set_option linter.deprecated false`
+* Outside of `Mathlib/Deprecated`, do not count
+  `set_option linter.deprecated false in ... @[deprecated ...]`
 -/
 
 open Lean Elab Command in
@@ -81,10 +81,10 @@ def techDebtLinterLinter : Linter where run stx := do
     return
   if (← get).messages.hasErrors then
     return
-  let debt ← getDebts stx
-  if debt.isEmpty then
-    return
-  Linter.logLint linter.techDebtLinter stx  m!"{debt.size}: {debt}"
+  match ← getDebts stx with
+  | #[] => return
+  | debt =>
+    Linter.logLint linter.techDebtLinter stx  m!"{debt.size}: {debt}"
 
 initialize addLinter techDebtLinterLinter
 
