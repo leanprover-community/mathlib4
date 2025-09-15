@@ -64,6 +64,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.hashCommand
   linter.oldObtain
   linter.style.cases
+  linter.style.induction
   linter.style.refine
   linter.style.commandStart
   linter.style.cdot
