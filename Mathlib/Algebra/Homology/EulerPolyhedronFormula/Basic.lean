@@ -9,6 +9,7 @@ import Mathlib.Algebra.Homology.Augment
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+import Mathlib.Algebra.Homology.ShortComplex.Exact
 
 -- Module categories and linear algebra
 import Mathlib.Algebra.Category.ModuleCat.Basic
@@ -902,18 +903,19 @@ lemma chain_complex_rank_nullity (C : ChainComplex (ModuleCat (ZMod 2)) ℕ) (k 
     Module.finrank (ZMod 2) (LinearMap.ker (C.dFrom k).hom) := by
   rw [LinearMap.finrank_range_add_finrank_ker]
 
-/-- If a complex is acyclic, it is exact at every position -/
-lemma acyclic_implies_exact_at (C : ChainComplex (ModuleCat (ZMod 2)) ℕ) (k : ℕ)
-    (hC : C.Acyclic) : C.ExactAt k := by
-  exact hC k
+/-- Helper: Get the short complex at position k of a chain complex -/
+noncomputable abbrev chainComplexSc (C : ChainComplex (ModuleCat (ZMod 2)) ℕ) (k : ℕ) :
+    ShortComplex (ModuleCat (ZMod 2)) := C.sc k
 
-/-- Exactness implies that the image equals the kernel -/
-lemma exact_implies_image_eq_kernel (C : ChainComplex (ModuleCat (ZMod 2)) ℕ) (k : ℕ)
-    (hexact : C.ExactAt k) :
-    LinearMap.range (C.dTo k).hom = LinearMap.ker (C.dFrom k).hom := by
-  -- ExactAt k means the short complex at k is exact
-  -- For ModuleCat, this means range(dTo k) = ker(dFrom k)
-  exact hexact.moduleCat_range_eq_ker
+/-- The short complex at position k has f = dTo k and g = dFrom k -/
+lemma sc_morphisms (C : ChainComplex (ModuleCat (ZMod 2)) ℕ) (k : ℕ) :
+    (C.sc k).f = C.dTo k ∧ (C.sc k).g = C.dFrom k := by
+  constructor <;> rfl
+
+-- Note: We can directly use the fact that C.Acyclic means ∀ k, C.ExactAt k
+-- and C.ExactAt k is definitionally equal to (C.sc k).Exact
+-- So we don't need intermediate lemmas
+
 
 /-- For an acyclic polyhedron, the augmented complex is acyclic,
     so the Euler characteristic of the augmented complex has a specific value
@@ -970,10 +972,16 @@ lemma acyclic_augmented_euler_char (GP : GeometricPolyhedron α) [DecidableEq α
     have hk_pos : k + 1 ≠ 0 := Nat.succ_ne_zero k
     rw [if_neg hk_pos]
     -- Now b(k+1) = finrank(range(dFrom(k+1))) and c(k) = finrank(ker(dFrom k))
-    -- Since the complex is acyclic, it's exact at k
-    have hexact := acyclic_implies_exact_at C k C_acyclic
-    -- Exactness means image(dTo k) = kernel(dFrom k)
-    have img_eq_ker := exact_implies_image_eq_kernel C k hexact
+    -- Since the complex is acyclic, the short complex at k is exact
+    -- C.Acyclic means ∀ i, C.ExactAt i, and C.ExactAt k = (C.sc k).Exact by definition
+    have hexact : (C.sc k).Exact := C_acyclic k
+    -- Exactness means image(f) = kernel(g) for the short complex
+    -- For the short complex: (C.sc k).f = C.dTo k and (C.sc k).g = C.dFrom k
+    have ⟨hf, hg⟩ := sc_morphisms C k
+    -- So exactness gives: range(dTo k) = ker(dFrom k)
+    have img_eq_ker : LinearMap.range (C.dTo k).hom = LinearMap.ker (C.dFrom k).hom := by
+      rw [← hf, ← hg]
+      exact hexact.moduleCat_range_eq_ker
     -- We need to show finrank(range(dFrom(k+1))) = finrank(ker(dFrom k))
     -- We know from exactness that range(dTo k) = ker(dFrom k)
     rw [← img_eq_ker]
@@ -1039,13 +1047,19 @@ lemma acyclic_augmented_euler_char (GP : GeometricPolyhedron α) [DecidableEq α
     -- By exactness at position n = P.dim + 1:
     -- ker(dFrom n) = image(dTo n) = image(dFrom (n+1))
     -- So faceDim(ker(dFrom n)) = faceDim(image(dFrom (n+1)))
-    -- Since the complex is acyclic, it's exact at n
-    have hexact := acyclic_implies_exact_at C n C_acyclic
-    have ker_eq_img := exact_implies_image_eq_kernel C n hexact
+    -- Since the complex is acyclic, the short complex at n is exact
+    have hexact : (C.sc n).Exact := C_acyclic n
     -- The kernel equals the image of the map from position n+1
     have ker_dim : Module.finrank (ZMod 2) (LinearMap.ker (C.dFrom n).hom) =
                    Module.finrank (ZMod 2) (LinearMap.range (C.dTo n).hom) := by
-      rw [ker_eq_img]
+      -- Use exactness: range(dTo n) = ker(dFrom n)
+      have ⟨hf, hg⟩ := sc_morphisms C n
+      have h := hexact.moduleCat_range_eq_ker
+      -- h : range((sc C n).f) = ker((sc C n).g)
+      -- We know (sc C n).f = dTo C n and (sc C n).g = dFrom C n
+      rw [hf, hg] at h
+      -- Now h : range(dTo C n) = ker(dFrom C n)
+      rw [← h]
     -- By the relationship between dTo and dFrom (they're the same up to isomorphism)
     have img_dim : Module.finrank (ZMod 2) (LinearMap.range (C.dTo n).hom) = 1 :=
       augmented_dTo_at_dim_plus_one_image_finrank GP
