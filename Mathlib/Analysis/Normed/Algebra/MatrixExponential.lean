@@ -134,6 +134,8 @@ nonrec theorem exp_nsmul (n : ℕ) (A : Matrix m m 𝔸) : exp 𝕂 (n • A) = 
 nonrec theorem isUnit_exp (A : Matrix m m 𝔸) : IsUnit (exp 𝕂 A) :=
   open scoped Norms.Operator in isUnit_exp _ A
 
+attribute [-instance] SpecialLinearGroup.hasCoeToGeneralLinearGroup GeneralLinearGroup.instCoeFun
+
 nonrec theorem exp_units_conj (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
     exp 𝕂 (U * A * U⁻¹) = U * exp 𝕂 A * U⁻¹ :=
   open scoped Norms.Operator in exp_units_conj _ U A
