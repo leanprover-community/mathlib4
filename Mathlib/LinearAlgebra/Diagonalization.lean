@@ -55,7 +55,7 @@ structure SimultaneousDiagonalization (ι : Type*) (f : α → End R M) extends 
   hasEigenVector_μ (a : α) (i : ι) : (f a).HasEigenvector (μ a i) (toBasis i)
 
 @[ext]
-theorem SimultaneousDiagonalization.ext {ι : Type*} {f : α → End R M}
+lemma SimultaneousDiagonalization.ext {ι : Type*} {f : α → End R M}
     {D₁ D₂ : SimultaneousDiagonalization ι f} (h : D₁.toBasis = D₂.toBasis) : D₁ = D₂ := by
   suffices D₁.μ = D₂.μ by cases D₁; cases D₂; simp_all only
   ext a i
@@ -69,7 +69,7 @@ A diagonalization of a linear map $T : V \to V$ is a basis of $V$ consisting of 
 def Diagonalization (ι : Type*) (f : End R M) := SimultaneousDiagonalization ι fun _ : Unit ↦ f
 
 @[ext]
-theorem Diagonalization.ext {ι : Type*} {f : Module.End R M} {D₁ D₂ : f.Diagonalization ι}
+lemma Diagonalization.ext {ι : Type*} {f : Module.End R M} {D₁ D₂ : f.Diagonalization ι}
     (h : D₁.toBasis = D₂.toBasis) : D₁ = D₂ :=
   SimultaneousDiagonalization.ext h
 
@@ -77,7 +77,7 @@ theorem Diagonalization.ext {ι : Type*} {f : Module.End R M} {D₁ D₂ : f.Dia
 def Diagonalization.μ {ι : Type*} {f : End R M} (self : f.Diagonalization ι) :=
   SimultaneousDiagonalization.μ self ()
 
-theorem Diagonalization.hasEigenVector_μ {ι : Type*} {f : End R M}
+lemma Diagonalization.hasEigenVector_μ {ι : Type*} {f : End R M}
     (self : f.Diagonalization ι) (i : ι) : f.HasEigenvector (self.μ i) (self.toBasis i) :=
   SimultaneousDiagonalization.hasEigenVector_μ self () i
 
@@ -251,8 +251,18 @@ proof_wanted exists_diagonalization_iff_minpoly_splits_and_squarefree {f : End K
 proof_wanted Diagonalization.isSemisimple {ι : Type*} {f : End R M} (D : f.Diagonalization ι) :
   f.IsSemisimple
 
-proof_wanted SimultaneousDiagonalization.commute {ι : Type*} {f : α → End R M}
-    (D : SimultaneousDiagonalization ι f) (i j : α) : Commute (f i) (f j)
+lemma SimultaneousDiagonalization.commute {ι : Type*} {f : α → End R M}
+    (D : SimultaneousDiagonalization ι f) (i j : α) : Commute (f i) (f j) := by
+  ext m
+  induction D.toBasis.mem_span m using Submodule.span_induction with
+  | mem u hu =>
+    obtain ⟨k, rfl⟩ := Set.mem_range.mp hu
+    have := D.hasEigenVector_μ i k
+    have := D.hasEigenVector_μ j k
+    simp_all [hasEigenvector_iff, smul_smul, mul_comm]
+  | zero => simp
+  | add => simp [*] at *
+  | smul _ _ _ hm => simp [hm]
 
 proof_wanted exists_simultaneousDiagonalization_iff_commute {f : α → End R M} :
     (∃ ι : Type uM, Nonempty (SimultaneousDiagonalization ι f)) ↔
