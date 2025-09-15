@@ -7,37 +7,25 @@ import Mathlib.Combinatorics.SimpleGraph.Walks
 
 /-!
 
-# Walks 
-
-In a simple graph, a *walk* is a finite sequence of adjacent vertices, and can be
-thought of equally well as a sequence of directed edges.
-
-**Warning:** graph theorists mean something different by "path" than
-do homotopy theorists.  A "walk" in graph theory is a "path" in
-homotopy theory.  Another warning: some graph theorists use "path" and
-"simple path" for "walk" and "path."
-
-Some definitions and theorems have inspiration from multigraph
-counterparts in [Chou1994].
+# The `n`-th vertex of a walk and related definitions
 
 ## Main definitions
 
-* `SimpleGraph.Walk` (with accompanying pattern definitions
-  `SimpleGraph.Walk.nil'` and `SimpleGraph.Walk.cons'`)
-
-* `SimpleGraph.Walk.map` for the induced map on walks,
-  given an (injective) graph homomorphism.
-
-## Tags
-walks
+* `p.getVert n` the `n`th vertex of a walk `p`. If `n` is greater than or equal to `p.length`,
+  the result is the walk's endpoint.
+* `p.snd` the second vertex of a walk, or the only vertex in a nil walk.
+* `p.penultimate` the penultimate vertex of a walk, or the only vertex in a nil walk.
+* `p.drop n` the walk formed by removing the first `n` darts from `p`.
+* `p.take n` the walk formed by taking the first `n` darts of `p`.
+* `p.tail` the walk formed by removing the first dart from `p`.
+* `p.dropLast` the walk formed by removing the last dart from `p`.
 
 -/
 
 universe u
 namespace SimpleGraph
 
-variable {V : Type u}
-variable {G : SimpleGraph V}
+variable {V : Type u} {G : SimpleGraph V}
 namespace Walk
 
 /-- Get the `n`th vertex from a walk, where `n` is generally expected to be
