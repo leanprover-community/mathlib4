@@ -98,8 +98,7 @@ instance full_ιOfLE (h : P ≤ P') : (ιOfLE h).Full := (fullyFaithfulιOfLE h)
 instance faithful_ιOfLE (h : P ≤ P') : (ιOfLE h).Faithful := (fullyFaithfulιOfLE h).faithful
 
 @[deprecated "use ιOfLECompιIso" (since := "2025-03-04")]
-theorem FullSubcategory.map_inclusion (h : P ≤ P') :
-  ιOfLE h ⋙ P'.ι = P.ι := rfl
+theorem FullSubcategory.map_inclusion (h : P ≤ P') : ιOfLE h ⋙ P'.ι = P.ι := rfl
 
 /-- If `h : P ≤ P'` is an inequality of properties of objects,
 this is the obvious isomorphism `ιOfLE h ⋙ P'.ι ≅ P.ι`. -/
@@ -135,12 +134,6 @@ lemma ι_obj_lift_obj (X : C) :
 @[simp]
 lemma ι_obj_lift_map {X Y : C} (f : X ⟶ Y) :
     P.ι.map ((P.lift F hF).map f) = F.map f := rfl
-
-instance [F.Faithful] : (P.lift F hF).Faithful :=
-  Functor.Faithful.of_comp_iso (P.liftCompιIso F hF)
-
-instance [F.Full] : (P.lift F hF).Full :=
-  Functor.Full.of_comp_faithful_iso (P.liftCompιIso F hF)
 
 instance [F.Faithful] : (P.lift F hF).Faithful :=
   Functor.Faithful.of_comp_iso (P.liftCompιIso F hF)

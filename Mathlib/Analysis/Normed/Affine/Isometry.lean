@@ -454,15 +454,27 @@ theorem symm_bijective : Bijective (AffineIsometryEquiv.symm : (P₂ ≃ᵃⁱ[�
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp]
-theorem toAffineEquiv_symm : e.toAffineEquiv.symm = e.symm.toAffineEquiv :=
+theorem toAffineEquiv_symm : e.symm.toAffineEquiv = e.toAffineEquiv.symm :=
   rfl
 
 @[simp]
-theorem toIsometryEquiv_symm : e.toIsometryEquiv.symm = e.symm.toIsometryEquiv :=
+theorem coe_symm_toAffineEquiv : ⇑e.toAffineEquiv.symm = e.symm :=
   rfl
 
 @[simp]
-theorem toHomeomorph_symm : e.toHomeomorph.symm = e.symm.toHomeomorph :=
+theorem toIsometryEquiv_symm : e.symm.toIsometryEquiv = e.toIsometryEquiv.symm :=
+  rfl
+
+@[simp]
+theorem coe_symm_toIsometryEquiv : ⇑e.toIsometryEquiv.symm = e.symm :=
+  rfl
+
+@[simp]
+theorem toHomeomorph_symm : e.symm.toHomeomorph = e.toHomeomorph.symm :=
+  rfl
+
+@[simp]
+theorem coe_symm_toHomeomorph : ⇑e.toHomeomorph.symm = e.symm :=
   rfl
 
 /-- Composition of `AffineIsometryEquiv`s as an `AffineIsometryEquiv`. -/
@@ -754,8 +766,6 @@ theorem AffineMap.isOpenMap_linear_iff {f : P →ᵃ[𝕜] P₂} : IsOpenMap f.l
     simp
   rw [this]
   simp only [Homeomorph.comp_isOpenMap_iff, Homeomorph.comp_isOpenMap_iff']
-
-attribute [local instance] AffineSubspace.nonempty_map -- Porting note: removed `fails_quickly`
 
 namespace AffineSubspace
 

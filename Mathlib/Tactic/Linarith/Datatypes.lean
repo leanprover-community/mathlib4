@@ -16,12 +16,12 @@ We split them into their own file.
 This file also contains a few convenient auxiliary functions.
 -/
 
-open Lean Elab Tactic Meta Qq Mathlib
+open Lean Elab Tactic Meta Qq
 
 initialize registerTraceClass `linarith
 initialize registerTraceClass `linarith.detail
 
-namespace Linarith
+namespace Mathlib.Tactic.Linarith
 
 /-- A shorthand for getting the types of a list of proofs terms, to trace. -/
 def linarithGetProofsMessage (l : List Expr) : MetaM MessageData := do
@@ -129,6 +129,9 @@ structure Comp : Type where
   where `i` is the index of a recorded atom, and `a` is the coefficient. -/
   coeffs : Linexp
 deriving Inhabited, Repr
+
+-- See https://github.com/leanprover/lean4/issues/10295
+attribute [nolint unusedArguments] Mathlib.Tactic.Linarith.instReprComp.repr
 
 /-- `c.vars` returns the list of variables that appear in the linear expression contained in `c`. -/
 def Comp.vars : Comp → List Nat := Linexp.vars ∘ Comp.coeffs
@@ -305,4 +308,4 @@ def mkSingleCompZeroOf (c : Nat) (h : Expr) : MetaM (Ineq × Expr) := do
     let e' ← mkAppM iq.toConstMulName #[h, ex]
     return (iq, e')
 
-end Linarith
+end Mathlib.Tactic.Linarith

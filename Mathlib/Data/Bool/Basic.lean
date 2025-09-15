@@ -4,13 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
 import Mathlib.Logic.Basic
-import Mathlib.Logic.Function.Defs
 import Mathlib.Order.Defs.LinearOrder
 
 /-!
 # Booleans
 
-This file proves various trivial lemmas about booleans and their
+This file proves various trivial lemmas about Booleans and their
 relation to decidable propositions.
 
 ## Tags
@@ -23,8 +22,8 @@ namespace Bool
 section
 
 /-!
-This section contains lemmas about booleans which were present in core Lean 3.
-The remainder of this file contains lemmas about booleans from mathlib 3.
+This section contains lemmas about Booleans which were present in core Lean 3.
+The remainder of this file contains lemmas about Booleans from mathlib 3.
 -/
 
 theorem true_eq_false_eq_False : ¬true = false := by decide
@@ -49,8 +48,6 @@ theorem or_eq_true_eq_eq_true_or_eq_true (a b : Bool) :
 
 theorem not_eq_true_eq_eq_false (a : Bool) : (not a = true) = (a = false) := by cases a <;> simp
 
-#adaptation_note /-- nightly-2024-03-05
-this is no longer a simp lemma, as the LHS simplifies. -/
 theorem and_eq_false_eq_eq_false_or_eq_false (a b : Bool) :
     ((a && b) = false) = (a = false ∨ b = false) := by
   cases a <;> cases b <;> simp
@@ -135,13 +132,13 @@ theorem eq_true_of_not_eq_false' {a : Bool} : !a = false → a = true := by
 theorem eq_false_of_not_eq_true' {a : Bool} : !a = true → a = false := by
   cases a <;> decide
 
-theorem bne_eq_xor : bne = xor := by funext a b; revert a b; decide
+theorem bne_eq_xor : bne = xor := by constructor
 
 attribute [simp] xor_assoc
 
 theorem xor_iff_ne : ∀ {x y : Bool}, xor x y = true ↔ x ≠ y := by decide
 
-/-! ### De Morgan's laws for booleans -/
+/-! ### De Morgan's laws for Booleans -/
 
 instance linearOrder : LinearOrder Bool where
   le_refl := by decide

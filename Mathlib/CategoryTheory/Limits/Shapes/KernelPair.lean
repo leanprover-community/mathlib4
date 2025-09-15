@@ -55,10 +55,7 @@ namespace IsKernelPair
 
 /-- The data expressing that `(a, b)` is a kernel pair is subsingleton. -/
 instance : Subsingleton (IsKernelPair f a b) :=
-  ⟨fun P Q => by
-    cases P
-    cases Q
-    congr ⟩
+  ⟨fun P Q => by constructor⟩
 
 /-- If `f` is a monomorphism, then `(𝟙 _, 𝟙 _)` is a kernel pair for `f`. -/
 theorem id_of_mono [Mono f] : IsKernelPair f (𝟙 _) (𝟙 _) :=
@@ -69,7 +66,6 @@ instance [Mono f] : Inhabited (IsKernelPair f (𝟙 _) (𝟙 _)) :=
 
 variable {f a b}
 
--- Porting note: `lift` and the two following simp lemmas were introduced to ease the port
 /--
 Given a pair of morphisms `p`, `q` to `X` which factor through `f`, they factor through any kernel
 pair of `f`.
@@ -168,26 +164,21 @@ protected theorem pullback {X Y Z A : C} {g : Y ⟶ Z} {a₁ a₂ : A ⟶ Y} (h 
   refine ⟨⟨by rw [pullback.lift_fst, pullback.lift_fst]⟩, ⟨PullbackCone.isLimitAux _
     (fun s => pullback.lift (s.fst ≫ pullback.fst _ _)
       (h.lift (s.fst ≫ pullback.snd _ _) (s.snd ≫ pullback.snd _ _) ?_ ) ?_) (fun s => ?_)
-        (fun s => ?_) (fun s m hm => ?_)⟩⟩
+        (fun s => ?_) (fun s (m : _ ⟶ pullback f (a₁ ≫ g)) hm => ?_)⟩⟩
   · simp_rw [Category.assoc, ← pullback.condition, ← Category.assoc, s.condition]
   · simp only [assoc, lift_fst_assoc, pullback.condition]
   · ext <;> simp
   · ext
     · simp [s.condition]
     · simp
-  · #adaptation_note /-- nightly-2024-04-01
-    This `symm` (or the following ones that undo it) wasn't previously necessary. -/
-    symm
-    apply pullback.hom_ext
-    · symm
-      simpa using hm WalkingCospan.left =≫ pullback.fst f g
-    · symm
-      apply PullbackCone.IsLimit.hom_ext h.isLimit
+  · apply pullback.hom_ext
+    · simpa using hm WalkingCospan.left =≫ pullback.fst f g
+    · apply PullbackCone.IsLimit.hom_ext h.isLimit
       · simpa using hm WalkingCospan.left =≫ pullback.snd f g
       · simpa using hm WalkingCospan.right =≫ pullback.snd f g
 
 theorem mono_of_isIso_fst (h : IsKernelPair f a b) [IsIso a] : Mono f := by
-  obtain ⟨l, h₁, h₂⟩ := Limits.PullbackCone.IsLimit.lift' h.isLimit (𝟙 _) (𝟙 _) (by simp [h.w])
+  obtain ⟨l, h₁, h₂⟩ := Limits.PullbackCone.IsLimit.lift' h.isLimit (𝟙 _) (𝟙 _) (by simp)
   rw [IsPullback.cone_fst, ← IsIso.eq_comp_inv, Category.id_comp] at h₁
   rw [h₁, IsIso.inv_comp_eq, Category.comp_id] at h₂
   constructor
