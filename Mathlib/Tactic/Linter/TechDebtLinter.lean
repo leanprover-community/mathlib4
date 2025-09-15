@@ -67,6 +67,10 @@ def getDebts : Syntax → CommandElabM (Array Syntax)
   `set_option linter.deprecated false`
 * Outside of `Mathlib/Deprecated`, do not count
   `set_option linter.deprecated false in ... @[deprecated ...]`
+* Count the lines of
+  * `scripts/nolints.json`,
+  * `scripts/nolints_prime_decls.txt`,
+  * `**/Deprecated/*.lean`
 -/
 
 open Lean Elab Command in
