@@ -221,7 +221,7 @@ example : Real.binEntropy (-1) = -2 * Real.log 2 := by
 /-- Several functions on reals are defined using `OrderIso.symm`, for instead, `Real.arcsin`. This
 means that the definition proceeds by starting with `Real.sin`, observing (in `Real.sinOrderIso`)
 that it's a strictly monotonic and continuous map from `[-π/2, π/2]` to `[-1, 1]`, thus, a
-bijection. Then inverting this function gives map from `[-1, 1]` to `[-π/2, π/2]`. Finally, this is
+bijection. Then inverting this function gives a map from `[-1, 1]` to `[-π/2, π/2]`. Finally, this is
 _extended_ to the whole reals, taking the extreme points `-π/2` and `π/2` as the minimal extension.
 
 This means that `Real.arcsin x = -π/2` for all `x ≤ -1`, and it's `π/2` for all `x ≥ 1`.
