@@ -59,7 +59,7 @@ theorem charpoly_one [StrongRankCondition R] :
     (1 : M →ₗ[R] M).charpoly = (X - 1) ^ Module.finrank R M := by
   simp [charpoly, Module.finrank_eq_card_chooseBasisIndex, Matrix.charpoly_one]
 
--- in #29428
+/-- in #29428 -/
 axiom charpoly_sub_smul (phi : Module.End R M) (mu : R) :
     (phi - mu • 1).charpoly  = phi.charpoly.comp (X + C mu)
 
