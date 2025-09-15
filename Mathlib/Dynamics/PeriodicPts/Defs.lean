@@ -3,7 +3,6 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Batteries.Data.Nat.Gcd
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Sub.Basic
@@ -588,7 +587,7 @@ theorem pow_mod_period_smul (n : ℕ) {m : M} {a : α} :
 @[to_additive (attr := simp)]
 theorem zpow_mod_period_smul (j : ℤ) {g : G} {a : α} :
     g ^ (j % (period g a : ℤ)) • a = g ^ j • a := by
-  conv_rhs => rw [← Int.emod_add_ediv j (period g a), zpow_add, mul_smul,
+  conv_rhs => rw [← Int.emod_add_mul_ediv j (period g a), zpow_add, mul_smul,
     zpow_smul_eq_iff_period_dvd.mpr (dvd_mul_right _ _)]
 
 @[to_additive (attr := simp)]

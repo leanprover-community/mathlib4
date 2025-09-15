@@ -6,6 +6,7 @@ Authors: Jean Lo, Yaël Dillies, Moritz Doll
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Analysis.LocallyConvex.Basic
+import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Data.Real.Pointwise
 
 /-!
@@ -187,7 +188,7 @@ instance instPartialOrder : PartialOrder (Seminorm 𝕜 E) :=
   PartialOrder.lift _ DFunLike.coe_injective
 
 instance instIsOrderedCancelAddMonoid : IsOrderedCancelAddMonoid (Seminorm 𝕜 E) :=
-  DFunLike.coe_injective.isOrderedCancelAddMonoid _ rfl coe_add fun _ _ => rfl
+  Function.Injective.isOrderedCancelAddMonoid DFunLike.coe coe_add .rfl
 
 instance instMulAction [Monoid R] [MulAction R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] :
     MulAction R (Seminorm 𝕜 E) :=
