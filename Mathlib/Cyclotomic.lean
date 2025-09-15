@@ -13,7 +13,42 @@ open Algebra Subalgebra
 
 -- TODO: use the same arguments order everywhere
 
+theorem IsPrimitiveRoot.isUnit_unit_mem_torsion {M : Type*} [CommMonoid M] {ζ : M} {n : ℕ}
+    (hn : 0 < n) (hζ : IsPrimitiveRoot ζ n) : (hζ.isUnit hn).unit ∈ CommMonoid.torsion Mˣ :=
+  orderOf_ne_zero_iff.mp <| by simpa [← (hζ.isUnit_unit hn).eq_orderOf] using hn.ne'
 
+/-- Docstring -/
+def CommGroup.torsion_map {G H : Type*} [CommGroup G] [CommGroup H] (f : G →* H) :
+    CommGroup.torsion G →* CommGroup.torsion H :=
+  MonoidHom.mk' (fun ⟨x, hx⟩ ↦ ⟨f x, f.isOfFinOrder hx⟩) (fun _ _ ↦ by ext; simp)
+
+@[simp]
+theorem CommGroup.torsion_coe_map {G H : Type*} [CommGroup G] [CommGroup H] (f : G →* H)
+    (x : CommGroup.torsion G) : (CommGroup.torsion_map f x : H) = f (x : G) := rfl
+
+theorem CommGroup.torsion_map_injective {G H : Type*} [CommGroup G] [CommGroup H] {f : G →* H}
+    (hf : Function.Injective f) : Function.Injective (CommGroup.torsion_map f) :=
+  fun _ _ h ↦ by simpa using hf (congr_arg Subtype.val h)
+
+instance IsCyclotomicExtension.zero (A : Type*) (B : Type*) [CommRing A] [CommRing B]
+    [Algebra A B] [h : IsCyclotomicExtension {0} A B] : IsCyclotomicExtension ∅ A B := by
+  rwa [eq_self_sdiff_zero, sdiff_self, Set.bot_eq_empty] at h
+
+example {A C : Type*} [CommRing A] [CommRing C] [Algebra A C] (B₁ B₂ : Subalgebra A C)
+    (n₁ n₂ : ℕ) [h₁ : IsCyclotomicExtension {n₁} A B₁] (h : B₁ ≤ B₂)
+    (hB₂ : Nat.card (CommGroup.torsion B₂ˣ) = n₂) [NeZero n₁] [NeZero n₂] : n₁ ∣ n₂ := by
+  obtain ⟨_, hζ⟩ := h₁.1 rfl (NeZero.ne n₁)
+  let ζ : CommGroup.torsion B₁ˣ :=
+    ⟨(hζ.isUnit (NeZero.pos n₁)).unit, hζ.isUnit_unit_mem_torsion (NeZero.pos n₁)⟩
+  let f : CommGroup.torsion B₁ˣ →* CommGroup.torsion B₂ˣ :=
+    CommGroup.torsion_map (Units.map (Subalgebra.inclusion h))
+  convert hB₂ ▸ Subgroup.orderOf_dvd_natCard _ (f ζ).prop
+  rw [orderOf_submonoid, orderOf_injective f]
+  · rw [(hζ.isUnit_unit (NeZero.pos n₁)).eq_orderOf]
+    let g : CommGroup.torsion B₁ˣ →* B₁ˣ := (CommGroup.torsion (↥B₁)ˣ).subtype
+    rw [← (orderOf_injective g (Subgroup.subtype_injective (CommGroup.torsion B₁ˣ)) _)]
+    rfl
+  · exact CommGroup.torsion_map_injective <| Units.map_injective <| Subalgebra.inclusion_injective h
 
 theorem IsPrimitiveRoot.adjoin_pair_eq (A : Type*) {B : Type*} [CommSemiring A] [CommRing B]
     [Algebra A B] [IsDomain B] {ζ₁ ζ₂ : B} {k₁ : ℕ} {k₂ : ℕ} (hζ₁ : IsPrimitiveRoot ζ₁ k₁)
