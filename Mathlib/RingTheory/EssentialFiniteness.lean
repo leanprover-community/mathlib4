@@ -75,7 +75,7 @@ lemma essFiniteType_cond_iff (σ : Finset S) :
     · intro s
       obtain ⟨t, ht, ht', h⟩ := hσ s
       exact ⟨⟨⟨_, h⟩, ⟨t, ht⟩, ht'⟩, rfl⟩
-    · intros x y e
+    · intro x y e
       exact ⟨1, by simpa using Subtype.ext e⟩
 
 lemma essFiniteType_iff :

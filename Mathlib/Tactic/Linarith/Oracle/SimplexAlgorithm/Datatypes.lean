@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
 import Mathlib.Init
-import Batteries.Data.Rat.Basic
 import Std.Data.HashMap.Basic
 
 /-!
@@ -60,9 +59,9 @@ instance : UsableInSimplexAlgorithm DenseMatrix where
     mat.data.zipIdx.foldl (init := []) fun acc (row, i) =>
       let rowVals := Array.toList <| row.zipIdx.filterMap fun (v, j) =>
         if v != 0 then
-          .some (i, j, v)
+          some (i, j, v)
         else
-          .none
+          none
       rowVals ++ acc
   ofValues {n m : Nat} vals : DenseMatrix _ _ := Id.run do
     let mut data : Array (Array Rat) := Array.replicate n <| Array.replicate m 0
