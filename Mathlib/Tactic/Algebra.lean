@@ -15,17 +15,18 @@ open Mathlib.Meta AtomM
 attribute [local instance] monadLiftOptionMetaM
 
 /-
+TODOs:
+* Handle subtraction, negation, division, inversion.
+* Handle exponents with general natural expressions. Will have to decide what to do with the
+  expression in the base. `Ring` distributes both addition in the exponents and products in the
+  base, having put the base into ring normal form. Here we'd probably want to put the base into
+  algebra normal form, and distribute the exponents into the atoms if it's a single `smul`.
+  For now we might just not normalize the base.
+* `algebra_nf` tactic that does cleanup
+* `polynomial(_nf)` tactics that do some preprocessing to deal with `monomial` and `Polynomial.C`
+* `match_coefficients` tactic that normalizes polynomials and matches corresponding coefficients.
+* Handle `algebraMap` in some way. Either with a preprocessing step or as a special case in `eval`
 
-Comments:
-
-To implement `smul` need `mul` to handle the case where the two scalar rings are equal
-To implement `mul` need `smul` to handle $(r₁ • s) * (r₂ • s') = (r₁ • r₂) • (s * s'), so is this
-one big mutually inductive family?
-
-Also need `add` to implement `mul` properly, so some work to be done.
-
-There's a problem in `matchRingsSMul` when the two rings are defeq. I don't think there is a great
-way to cast one of the ExProds to the other.
 -/
 
 section ExSum
@@ -36,6 +37,7 @@ set_option linter.style.longLine false
 open Ring in
 mutual
 
+/-- An expression of the form `r • a` -/
 inductive ExSMul : ∀ {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {_ : Q(CommSemiring $R)}
   {_ : Q(CommSemiring $A)} (_ : Q(Algebra $R $A)), (a : Q($A)) → Type
   | smul
@@ -70,14 +72,10 @@ variable {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring
 
 
 def one : Ring.ExSum q($sA) q(Nat.rawCast (nat_lit 1) + 0 : $A) :=
-  -- have n : Q(ℕ) := mkRawNatLit 1
-  -- have : $n =Q 1 := ⟨⟩
   .add (.const (e := q(Nat.rawCast (nat_lit 1) : $A)) 1 none) .zero
 
 /-- WARNING : n should be a natural literal. -/
 def mkNat (n : Q(ℕ)) : Ring.ExSum q($sA) q(Nat.rawCast $n + 0 : $A) :=
-  -- have n : Q(ℕ) := mkRawNatLit 1
-  -- have : $n =Q 1 := ⟨⟩
   .add (.const (e := q(Nat.rawCast ($n) : $A)) n.natLit! none) .zero
 
 def _root_.Mathlib.Tactic.Ring.ExProd.one : Ring.ExProd q($sA) q((nat_lit 1).rawCast : $A) :=
@@ -94,6 +92,7 @@ namespace ExSum
 end ExSum
 end ExSum
 
+/- Copied from `Ring` -/
 structure Result {u : Lean.Level} {A : Q(Type u)} (E : Q($A) → Type) (e : Q($A)) where
   /-- The normalized result. -/
   expr : Q($A)
@@ -101,71 +100,6 @@ structure Result {u : Lean.Level} {A : Q(Type u)} (E : Q($A) → Type) (e : Q($A
   val : E expr
   /-- A proof that the original expression is equal to the normalized result. -/
   proof : Q($e = $expr)
-
-section Proofs
-variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] {e e' ea a a' : A} {r er : R}
-
-theorem atom_pf (h : e = a):
-    e = ((nat_lit 1).rawCast : R) • (a ^ (nat_lit 1).rawCast * (nat_lit 1).rawCast) +
-      (Nat.rawCast 0) := by
-  simp [h]
-
-theorem smul_zero_rawCast : r • ((nat_lit 0).rawCast : A) = (nat_lit 0).rawCast := by
-  simp
-
-theorem smul_congr (hr : r = er) (ha : a = ea) (h : er • ea = e'): r • a = e' := by
-  rw [hr, ha, h]
-
-theorem add_rawCast_zero : a + Nat.rawCast 0 = a := by
-  simp
-
-
-lemma mul_natCast_zero {R : Type*} [CommSemiring R] (r : R) :
-    r * (Nat.rawCast 0 : R) = Nat.rawCast 0 := by
-  simp
-
-class LawfulHMul (R₁ R₂ : Type*) [CommSemiring R₁] [CommSemiring R₂] [HMul R₁ R₂ R₁] where
-  mul_zero : ∀ r₁ : R₁, r₁ * (0 : R₂) = 0
-  zero_mul : ∀ r₂ : R₂, (0 : R₁) * r₂ = 0
-  mul_one : ∀ r₁ : R₁, r₁ * (1 : R₂) = r₁
-  cast : R₁ → R₂
-  cast_mul : ∀ r₁ : R₁, ∀ r₂ : R₂, cast (r₁ * r₂) = cast r₁ * r₂
-  cast_one : cast 1 = 1
-  cast_zero : cast 0 = 0
-
-attribute [local simp] LawfulHMul.mul_zero LawfulHMul.zero_mul LawfulHMul.cast_mul
-  LawfulHMul.cast_one LawfulHMul.cast_zero
-
--- theorem test [Algebra R ℕ] : r • 1 =
-
-lemma hmul_zero_natCast {R₁ R₂ : Type*} [CommSemiring R₁] [CommSemiring R₂]
-    [HMul R₁ R₂ R₁] [LawfulHMul R₁ R₂] (r₁ : R₁) :
-  r₁ * (Nat.rawCast 0 : R₂) = Nat.rawCast 0 := by
-  simp [LawfulHMul.mul_zero]
-
-lemma hmul_cast_one_mul {R₁ R₂ : Type*} [CommSemiring R₁] [CommSemiring R₂]
-    [HMul R₁ R₂ R₁] [LawfulHMul R₁ R₂] (r₂ : R₂) :
-    (LawfulHMul.cast ((1:R₁) * r₂) : R₂) = (1 : ℕ) •  r₂ + (Nat.rawCast 0:R₂) := by
-  simp
-
-lemma hmul_cast_zero_mul {R₁ R₂ : Type*} [CommSemiring R₁] [CommSemiring R₂]
-    [HMul R₁ R₂ R₁] [LawfulHMul R₁ R₂] (r₂ : R₂) :
-    (LawfulHMul.cast ((Nat.rawCast 0:R₁) * r₂) : R₂) = (Nat.rawCast 0:R₂) := by
-  simp
-
-local instance {R : Type*} [CommSemiring R] : LawfulHMul R R where
-  zero_mul := zero_mul
-  mul_zero := mul_zero
-  mul_one := mul_one
-  cast := id
-  cast_mul := fun _ _ ↦ rfl
-  cast_one := rfl
-  cast_zero := rfl
-
-end Proofs
-
--- variable {u v w : Level} {R : Q(Type u)} {A : Q(Type v)} (sA : Q(CommSemiring $A))
---   (sR : Q(CommSemiring $R)) (sAlg : Q(Algebra $R $A))
 
 variable {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
   {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (a : Q($A)) (b : Q($A))
@@ -189,6 +123,7 @@ def evalAtom :
   ⟩
 
 open NormNum
+
 /--
 Two monomials are said to "overlap" if they differ by a constant factor, in which case the
 constants just add. When this happens, the constant may be either zero (if the monomials cancel)
@@ -200,24 +135,6 @@ inductive Overlap (a : Q($A)) where
   /-- The expression `e` (the sum of monomials) is equal to another monomial
   (with nonzero leading coefficient). -/
   | nonzero (_ : Result (ExSMul q($sAlg)) a)
-
--- variable {a a' a₁ a₂ a₃ b b' b₁ b₂ b₃ c c₁ c₂ : R}
-
--- theorem add_overlap_pf (x : R) (e) (pq_pf : a + b = c) :
---     x ^ e * a + x ^ e * b = x ^ e * c := by subst_vars; simp [mul_add]
-
--- theorem add_overlap_pf_zero (x : R) (e) :
---     IsNat (a + b) (nat_lit 0) → IsNat (x ^ e * a + x ^ e * b) (nat_lit 0)
---   | ⟨h⟩ => ⟨by simp [h, ← mul_add]⟩
-
--- TODO: decide if this is a good idea globally in
--- https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/.60MonadLift.20Option.20.28OptionT.20m.29.60/near/469097834
-private local instance {m} [Pure m] : MonadLift Option (OptionT m) where
-  monadLift f := .mk <| pure f
-
-def _root_.Mathlib.Tactic.Ring.ExSum.isZero (vr : Ring.ExSum sA a) : Bool := match vr with
-| .zero .. => true
-| _ => false
 
 /--
 Given monomials `va, vb`, attempts to add them together to get another monomial.
@@ -244,42 +161,6 @@ def evalAddOverlap {a b : Q($A)} (va : ExSMul sAlg a) (vb : ExSMul sAlg b) :
       -- IO.println s!"I think {← ppExpr a} + {← ppExpr b} ≠ 0"
       return .nonzero ⟨_, .smul vt va, q(sorry)⟩
 
-
-
-  -- | .const za ha, .const zb hb => do
-  --   let ra := Result.ofRawRat za a ha; let rb := Result.ofRawRat zb b hb
-  --   let res ← ra.add rb
-  --   match res with
-  --   | .isNat _ (.lit (.natVal 0)) p => pure <| .zero p
-  --   | rc =>
-  --     let ⟨zc, hc⟩ ← rc.toRatNZ
-  --     let ⟨c, pc⟩ := rc.toRawEq
-  --     pure <| .nonzero ⟨c, .const zc hc, pc⟩
-  -- | .mul (x := a₁) (e := a₂) va₁ va₂ va₃, .mul vb₁ vb₂ vb₃ => do
-  --   guard (va₁.eq vb₁ && va₂.eq vb₂)
-  --   match ← evalAddOverlap va₃ vb₃ with
-  --   | .zero p => pure <| .zero (q(add_overlap_pf_zero $a₁ $a₂ $p) : Expr)
-  --   | .nonzero ⟨_, vc, p⟩ =>
-  --     pure <| .nonzero ⟨_, .mul va₁ va₂ vc, (q(add_overlap_pf $a₁ $a₂ $p) : Expr)⟩
-  -- | _, _ => OptionT.fail
-
--- theorem add_pf_zero_add (b : R) : 0 + b = b := by simp
-
--- theorem add_pf_add_zero (a : R) : a + 0 = a := by simp
-
--- theorem add_pf_add_overlap
---     (_ : a₁ + b₁ = c₁) (_ : a₂ + b₂ = c₂) : (a₁ + a₂ : R) + (b₁ + b₂) = c₁ + c₂ := by
---   subst_vars; simp [add_assoc, add_left_comm]
-
--- theorem add_pf_add_overlap_zero
---     (h : IsNat (a₁ + b₁) (nat_lit 0)) (h₄ : a₂ + b₂ = c) : (a₁ + a₂ : R) + (b₁ + b₂) = c := by
---   subst_vars; rw [add_add_add_comm, h.1, Nat.cast_zero, add_pf_zero_add]
-
--- theorem add_pf_add_lt (a₁ : R) (_ : a₂ + b = c) : (a₁ + a₂) + b = a₁ + c := by simp [*, add_assoc]
-
--- theorem add_pf_add_gt (b₁ : R) (_ : a + b₂ = c) : a + (b₁ + b₂) = b₁ + c := by
---   subst_vars; simp [add_left_comm]
-
 variable {sAlg a b} in
 partial def ExSMul.cmp :
     ExSMul sAlg a → ExSMul sAlg b → Ordering
@@ -292,6 +173,18 @@ partial def ExSum.cmp {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q
   | .add a₁ a₂, .add b₁ b₂ => (a₁.cmp b₁).then (a₂.cmp b₂)
   | .zero, .add .. => .lt
   | .add .., .zero => .gt
+
+variable {sAlg a b} in
+partial def ExSMul.eq :
+    ExSMul sAlg a → ExSMul sAlg b → Bool
+  | .smul vr va, .smul vs vb => (va.eq vb) && (vr.eq vs)
+
+partial def ExSum.eq {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
+  {sA : Q(CommSemiring $A)} {sAlg : Q(Algebra $R $A)} {a : Q($A)} {b : Q($A)} :
+    ExSum sAlg a → ExSum sAlg b → Bool
+  | .zero, .zero => true
+  | .add a₁ a₂, .add b₁ b₂ => a₁.eq b₁ ∧ a₂.eq b₂
+  | _, _ => false
 
 /-- Adds two polynomials `va, vb` together to get a normalized result polynomial.
 
@@ -451,10 +344,8 @@ partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(Comm
     | _ => els
   | ``HAdd.hAdd | ``Add.add => match e with
     | ~q($a + $b) =>
-      -- throwError "add not implemented"
       let ⟨_, va, pa⟩ ← eval q($sAlg) cacheR q($a)
       let ⟨_, vb, pb⟩ ← eval q($sAlg) cacheR q($b)
-      -- IO.println "running evalAdd"
       let ⟨_, vab, pab⟩ ← evalAdd q($sAlg) va vb
       return ⟨_, vab, q(sorry)⟩
     | _ => els
@@ -474,7 +365,6 @@ partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(Comm
         /- This code should be unreachable? -/
         throwError s!"Failed to normalize {eb} to a natural literal 3"
       have b : ℕ := blit.natLit!
-      -- have : $b =Q $blit := ⟨⟩
       have pb : Q($blit = $b) := q(sorry) -- q(($pf_isNat).out.trans $this)
       let ⟨_, va, pa⟩ ← eval sAlg cacheR a
       let ⟨c, vc, p⟩ ← evalPow sAlg b va
@@ -491,25 +381,18 @@ theorem eq_congr {R : Type*} {a b a' b' : R} (ha : a = a') (hb : b = b') (h : a'
 
 def normalize (goal : MVarId) {u v : Lean.Level} (R : Q(Type u)) (A : Q(Type v)) :
     AtomM MVarId := do
-  -- let goal ← try getMainGoal catch
-  --   | _ => return
   let some (A', e₁, e₂) :=
     (← whnfR <|← instantiateMVars <|← goal.getType).eq?
     | throwError "algebra failed: not an equality"
-  -- IO.println s!"A' = {← ppExpr A'}"
-  -- IO.println s!"A = {← ppExpr A}"
   guard (←isDefEq A A')
   have sA : Q(CommSemiring $A) := ← synthInstanceQ q(CommSemiring $A)
   have sR : Q(CommSemiring $R) := ← synthInstanceQ q(CommSemiring $R)
   have sAlg : Q(Algebra $R $A) := ← synthInstanceQ q(Algebra $R $A)
 
-  -- IO.println "synthed"
   have e₁ : Q($A) := e₁
   have e₂ : Q($A) := e₂
-  -- IO.println "test"
   let cr ← Ring.mkCache sR
   let ca ← Ring.mkCache sA
-
   let (⟨a, exa, pa⟩ : Result (ExSum sAlg) e₁) ← eval sAlg cr e₁
   let (⟨b, exb, pb⟩ : Result (ExSum sAlg) e₂) ← eval sAlg cr e₂
 
@@ -522,34 +405,62 @@ def normalize (goal : MVarId) {u v : Lean.Level} (R : Q(Type u)) (A : Q(Type v))
   -- else throwError "algebra failed to normalize expression."
   -- let l ← ExSum.eq_exSum g'.mvarId! a b exa exb
   -- Tactic.pushGoals l
-  /- TODO: we probably want to do some sort of normalization of intermediate expressions.
-    `norm_num` does not seem set up to do this very well. Much of the work is actually done by
-    `simp`, namely `a+0 -> a` and `a*1 -> a`. -/
   -- for g in l do
   --   let l ← evalTacticAt (← `(tactic| norm_num)) g
   --   Tactic.pushGoals l
     -- NormNum.normNumAt g (← getSimpContext)
 
+/-- Frontend of `algebra`: attempt to close a goal `g`, assuming it is an equation of semirings. -/
+def proveEq (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) : AtomM Unit := do
+  let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
+    | throwError "algebra failed: not an equality"
+  let .sort u ← whnf (← inferType α) | unreachable!
+  let v ← try u.dec catch _ => throwError "not a type{indentExpr α}"
+  let some ⟨u, R⟩ := base | throwError "algebra failed: could not infer base ring."
+  have A : Q(Type v) := α
+  let sA ← synthInstanceQ q(CommSemiring $A)
+  let sR ← synthInstanceQ q(CommSemiring $R)
+  let sAlg ← synthInstanceQ q(Algebra $R $A)
+  have e₁ : Q($A) := e₁; have e₂ : Q($A) := e₂
+  let eq ← algCore q($sAlg) e₁ e₂
+  g.assign eq
+where
+  /-- The core of `proveEq` takes expressions `e₁ e₂ : α` where `α` is a `CommSemiring`,
+  and returns a proof that they are equal (or fails). -/
+  algCore {u v : Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
+      {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (e₁ e₂ : Q($A)) : AtomM Q($e₁ = $e₂) := do
+    let c ← Ring.mkCache sR
+    profileitM Exception "algebra" (← getOptions) do
+      let ⟨a, va, pa⟩ ← eval sAlg c e₁
+      let ⟨b, vb, pb⟩ ← eval sAlg c e₂
+      unless va.eq vb do
+        let g ← mkFreshExprMVar (← (← Ring.ringCleanupRef.get) q($a = $b))
+        throwError "algebra failed, algebra expressions not equal\n{g.mvarId!}"
+      let pb : Q($e₂ = $a) := pb
+      /- TODO: extract lemma -/
+      return q(by simp_all)
 
+
+/-- If `e` has type `Type u` for some level `u`, return `u` and `e : Q(Type u)` -/
 def inferLevelQ (e : Expr) : MetaM (Σ u : Lean.Level, Q(Type u)) := do
   let .sort u ← whnf (← inferType e) | throwError "not a type{indentExpr e}"
   let some v := (← instantiateLevelMVars u).dec | throwError "not a Type{indentExpr e}"
   return ⟨v, e⟩
 
-elab (name := algebra) "algebra " R:term ", " A:term : tactic =>
+elab (name := algebra) "algebra":tactic =>
+  withMainContext do
+    let g ← getMainGoal
+    AtomM.run .default (proveEq none g)
+
+elab (name := algebra_over) "algebra" " with " R:term : tactic =>
   withMainContext do
     let ⟨u, R⟩ ← inferLevelQ (← elabTerm R none)
-    let ⟨v, A⟩ ← inferLevelQ (← elabTerm A none)
-    -- IO.println s!"Rings are {← ppExpr R} : Type {u} and {← ppExpr A} : Type {v}"
-
     let g ← getMainGoal
-    let g ← AtomM.run .default (normalize g R A)
-    Tactic.pushGoal g
+    AtomM.run .default (proveEq (some ⟨u, R⟩) g)
 
 
 example {x : ℚ} {y : ℤ} : y • x + (1:ℤ) • x = (1 + y) • x := by
-  algebra ℤ, ℚ
-  rfl
+  algebra with ℤ
 
 example {S R A : Type*} [CommSemiring S] [CommSemiring R] [CommSemiring A] [Algebra S R]
     [Algebra R A] [Algebra S A] [IsScalarTower S R A] {r : R} {s : S} {a₁ a₂ : A} :
@@ -562,9 +473,8 @@ end Mathlib.Tactic.Algebra
 
 
 example (x : ℚ) :  x + x = (2 : ℤ) • x := by
-  algebra ℤ, ℚ
+  algebra with ℤ
   -- match_scalars <;> simp
-  rfl
 
 example (x : ℚ) : x = 1 := by
   algebra ℤ, ℚ
