@@ -95,7 +95,6 @@ This is also the smallest counterexample for `n = 5`.
 -/
 theorem sumOfPowersConjectureFor_five_false : ¬SumOfPowersConjectureFor 5 := by
   intro conj
-  let n := 5
   let a := [27, 84, 110, 133]
   let b := 144
   have : 5 ≤ 4 := conj a b (by simp [a]) (by simp [a]) (by simp) (by decide)
@@ -112,7 +111,6 @@ https://ieeexplore.ieee.org/document/74138
 -/
 theorem sumOfPowersConjectureFor_four_false : ¬SumOfPowersConjectureFor 4 := by
   intro conj
-  let n := 4
   let a := [95_800, 217_519, 414_560]
   let b := 422_481
   have : 4 ≤ 3 := conj a b (by simp [a]) (by simp [a]) (by simp) (by decide)
