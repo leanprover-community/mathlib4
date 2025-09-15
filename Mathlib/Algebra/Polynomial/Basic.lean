@@ -1048,6 +1048,10 @@ theorem coeffs_empty_iff (p : R[X]) : coeffs p = ∅ ↔ p = 0 := by
   rw [← nonempty_iff_ne_empty]
   exact ⟨p.coeff n, coeff_mem_coeffs p n hn⟩
 
+@[simp]
+theorem coeffs_nonempty_iff {p : R[X]} : p.coeffs.Nonempty ↔ p ≠ 0 := by
+  simp [Finset.nonempty_iff_ne_empty]
+
 theorem coeffs_monomial (n : ℕ) {c : R} (hc : c ≠ 0) : (monomial n c).coeffs = {c} := by
   rw [coeffs, support_monomial n hc]
   simp
