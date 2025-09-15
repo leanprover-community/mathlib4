@@ -549,6 +549,7 @@ import Mathlib.Algebra.Homology.Embedding.TruncGE
 import Mathlib.Algebra.Homology.Embedding.TruncGEHomology
 import Mathlib.Algebra.Homology.Embedding.TruncLE
 import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
+import Mathlib.Algebra.Homology.EulerCharacteristic
 import Mathlib.Algebra.Homology.ExactSequence
 import Mathlib.Algebra.Homology.Factorizations.Basic
 import Mathlib.Algebra.Homology.Functor
