@@ -7,7 +7,7 @@ import Mathlib.Algebra.Polynomial.Degree.IsMonicOfDegree
 import Mathlib.Analysis.Complex.Polynomial.Basic
 
 /-!
-# Factorization of monic poynomials of given degree
+# Factorization of monic polynomials of given degree
 
 This file contains two main results:
 
