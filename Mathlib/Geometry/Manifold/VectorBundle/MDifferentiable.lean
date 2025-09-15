@@ -209,8 +209,6 @@ end coordChange
 variable [(x : B) → AddCommMonoid (E x)] [(x : B) → Module 𝕜 (E x)]
   [VectorBundle 𝕜 F E] [ContMDiffVectorBundle 1 F E IB]
 
--- FIXME: should this (and ContMDiffWithinAt.change_section_trivialization)
--- be named `coordChange` instead?
 lemma MDifferentiableWithinAt.change_section_trivialization
     {e : Trivialization F TotalSpace.proj} [MemTrivializationAtlas e]
     {e' : Trivialization F TotalSpace.proj} [MemTrivializationAtlas e']
@@ -305,8 +303,8 @@ theorem Trivialization.mdifferentiableAt_section_iff
 variable {IB} in
 /-- Differentiability of a section on `s` can be determined
 using any trivialisation whose `baseSet` contains `s`. -/
-theorem mdifferentiableOn_section_of_mem_baseSet {s : ∀ x, E x} {a : Set B}
-    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
+theorem Trivialization.mdifferentiableOn_section_iff {s : ∀ x, E x} {a : Set B}
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
     [MemTrivializationAtlas e] (ha : IsOpen a) (ha' : a ⊆ e.baseSet) :
     MDifferentiableOn IB (IB.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) a ↔
       MDifferentiableOn IB 𝓘(𝕜, F) (fun x ↦ (e ⟨x, s x⟩).2) a := by
@@ -324,12 +322,12 @@ theorem mdifferentiableOn_section_of_mem_baseSet {s : ∀ x, E x} {a : Set B}
 variable {IB} in
 /-- For any trivialization `e`, the differentiability of a section on `e.baseSet`
 can be determined using `e`. -/
-theorem mdifferentiableOn_section_of_mem_baseSet₀ {s : ∀ x, E x}
-    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
+theorem Trivialization.mdifferentiableOn_section_baseSet_iff {s : ∀ x, E x}
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
     [MemTrivializationAtlas e] :
     MDifferentiableOn IB (IB.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet ↔
       MDifferentiableOn IB 𝓘(𝕜, F) (fun x ↦ (e ⟨x, s x⟩).2) e.baseSet :=
-  mdifferentiableOn_section_of_mem_baseSet e.open_baseSet (subset_refl _)
+  e.mdifferentiableOn_section_iff e.open_baseSet subset_rfl
 
 end
 
