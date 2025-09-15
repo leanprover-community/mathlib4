@@ -344,8 +344,7 @@ theorem chromaticNumber_eq_zero_of_isEmpty [IsEmpty V] : G.chromaticNumber = 0 :
 @[deprecated (since := "2025-09-15")]
 alias chromaticNumber_eq_zero_of_isempty := chromaticNumber_eq_zero_of_isEmpty
 
-theorem isEmpty_of_chromaticNumber_eq_zero (G : SimpleGraph V) (h : G.chromaticNumber = 0) :
-    IsEmpty V := by
+theorem isEmpty_of_chromaticNumber_eq_zero (h : G.chromaticNumber = 0) : IsEmpty V := by
   have := colorable_of_chromaticNumber_ne_top (h ▸ ENat.zero_ne_top)
   rw [h] at this
   exact G.isEmpty_of_colorable_zero this
