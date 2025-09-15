@@ -315,7 +315,7 @@ variable
   {k V : Type*} [NormedField k] [LinearOrder k] [OrderTopology k] [IsStrictOrderedRing k]
   [NormedAddCommGroup V] [NormedSpace k V] {s : Set V}
 
-/-- If a closed set `s` is star-convex an `p` and `v` is in the asymptotic cone of `s`, then the ray
+/-- If a closed set `s` is star-convex at `p` and `v` is in the asymptotic cone of `s`, then the ray
 of direction `v` starting from `p` is contained in `s`. -/
 theorem StarConvex.smul_vadd_mem_of_isClosed_of_mem_asymptoticCone {c : k} {v p : V}
     (hs₁ : StarConvex k p s) (hs₂ : IsClosed s) (hc : 0 ≤ c) (hv : v ∈ asymptoticCone k s) :
