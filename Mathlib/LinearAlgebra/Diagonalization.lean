@@ -105,7 +105,7 @@ diagonality of the matrix representation.
 noncomputable def diagonalization_of_isDiag_toMatrix [Nontrivial R] {ι : Type*} [Fintype ι]
     [DecidableEq ι] {f : End R M} {b : Basis ι R M} (h : (f.toMatrix b b).IsDiag) :
     f.Diagonalization ι :=
-  Diagonalization.mk (b := b) (μ := fun i ↦ f.toMatrix b b i i) <| fun i ↦ by
+  .mk (b := b) (μ := fun i ↦ f.toMatrix b b i i) <| fun i ↦ by
     have : f (b i) = ∑ j, f.toMatrix b b j i • b j := by simp [toMatrix_apply, b.sum_repr]
     have (j : ι) (hj : j ≠ i) : f.toMatrix b b j i = 0 := h hj
     simp_all [hasEigenvector_iff, Finset.sum_eq_single i, b.ne_zero]
