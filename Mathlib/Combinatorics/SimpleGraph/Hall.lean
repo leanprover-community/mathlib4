@@ -73,7 +73,7 @@ theorem exists_IsMatching_of_forall_ncard_le [DecidablePred (· ∈ p₁)] (h₁
   · use x
     have := hx₂ ▸ (this x hx₁)
     simp only [this, ↓reduceDIte, hx₁, hx₂, dite_else_false, forall_exists_index, true_and]
-    exact fun _ _ k ↦ Subtype.ext_iff_val.mp <| hf₁ (hx₂ ▸ k)
+    exact fun _ _ k ↦ Subtype.ext_iff.mp <| hf₁ (hx₂ ▸ k)
 
 private
 lemma union_eq_univ_of_forall_ncard_le (h₁ : G.IsBipartiteWith p₁ p₂)
