@@ -525,6 +525,13 @@ theorem tail_support_append {u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
 theorem support_eq_cons {u v : V} (p : G.Walk u v) : p.support = u :: p.support.tail := by
   cases p <;> simp
 
+theorem support_eq_concat {u v : V} (p : G.Walk u v) : p.support = p.support.dropLast.concat v := by
+  cases p with
+  | nil => rfl
+  | cons h p =>
+    obtain ⟨_, _, _, hq⟩ := exists_cons_eq_concat h p
+    simp [hq]
+
 @[simp]
 theorem start_mem_support {u v : V} (p : G.Walk u v) : u ∈ p.support := by cases p <;> simp
 
