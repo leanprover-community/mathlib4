@@ -61,7 +61,7 @@ open Finset Real Filter Asymptotics
 open scoped Topology
 
 /-!
-#### Definition of Akra-Bazzi recurrences
+### Definition of Akra-Bazzi recurrences
 
 This section defines the predicate `AkraBazziRecurrence T g a b r` which states that `T`
 satisfies the recurrence
@@ -80,7 +80,7 @@ local notation "ε" => smoothingFn
 
 
 /-!
-#### Technical lemmas
+### Technical lemmas
 
 The next several lemmas are technical lemmas leading up to `rpow_p_mul_one_sub_smoothingFn_le` and
 `rpow_p_mul_one_add_smoothingFn_ge`, which are key steps in the main proof.
@@ -445,7 +445,7 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
   exact hn
 
 /-!
-#### Main proof
+### Main proof
 
 This final section proves the Akra-Bazzi theorem.
 -/
@@ -608,6 +608,12 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
             · exact le_of_lt <| h_smoothing_gt_half n hn
       _ = C * ((1 - ε n) * asympBound g a b n) := by ring
 
+#adaptation_note
+/--
+This linter is only enabled on `nightly-testing`, but it causes a deterministic timeout there.
+Can this proof be refactored into some smaller pieces?
+-/
+set_option linter.tacticAnalysis.linarithToGrind false in
 /-- The main proof of the lower bound part of the Akra-Bazzi theorem. The factor
 `1 + ε n` does not change the asymptotic order, but is needed for the induction step to go
 through. -/
