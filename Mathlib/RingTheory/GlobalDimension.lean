@@ -19,6 +19,7 @@ import Mathlib.Algebra.Module.LocalizedModule.Exact
 import Mathlib.RingTheory.LocalProperties.Projective
 import Mathlib.Algebra.Category.Grp.Zero
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
+import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 /-!
 # The Global Dimension of a Ring
 -/
@@ -409,6 +410,69 @@ lemma projectiveDimension_eq_iSup_localizedModule_maximal (M : ModuleCat.{v} R) 
         (WithBot.coe_inj.mpr (ENat.coe_toNat eqtop).symm)
       simpa only [this] using aux n
 
+open Limits in
+omit [IsNoetherianRing R] in
+lemma projectiveDimension_le_projectiveDimension_of_isLocalizedModule [Small.{v, u} R]
+    (S : Submonoid R) (M : ModuleCat.{v} R) :
+    projectiveDimension (M.localizedModule S) ≤ projectiveDimension M := by
+  have aux (n : ℕ) : projectiveDimension M ≤ n → projectiveDimension (M.localizedModule S) ≤ n := by
+    simp only [projectiveDimension_le_iff]
+    let _ : Small.{v, u} (Localization S) :=
+      small_of_surjective Localization.mkHom_surjective
+    induction' n with n ih generalizing M
+    · simp only [HasProjectiveDimensionLE, zero_add, ← hasProjectiveDimensionLT_one_iff]
+      rw [← IsProjective.iff_projective, ← IsProjective.iff_projective]
+      intro _
+      exact Module.projective_of_isLocalizedModule S (M.localizedModule_mkLinearMap S)
+    · rcases ModuleCat.enoughProjectives.1 M with ⟨⟨P, f⟩⟩
+      let T := ShortComplex.mk (kernel.ι f) f (kernel.condition f)
+      have T_exact : T.ShortExact := {
+        exact := ShortComplex.exact_kernel f
+        mono_f := equalizer.ι_mono
+        epi_g := ‹_›}
+      have T_exact' : Function.Exact (ConcreteCategory.hom T.f) (ConcreteCategory.hom T.g) :=
+        (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact T).mp T_exact.1
+      have TS_exact' := IsLocalizedModule.map_exact S
+        (T.X₁.localizedModule_mkLinearMap S)
+        (T.X₂.localizedModule_mkLinearMap S)
+        (T.X₃.localizedModule_mkLinearMap S)
+        _ _ T_exact'
+      let TS : ShortComplex (ModuleCat.{v} (Localization S)) := {
+        f := ModuleCat.localizedModule_map S T.f
+        g := ModuleCat.localizedModule_map S T.g
+        zero := by
+          ext x
+          simp [ModuleCat.localizedModule_map, Function.Exact.apply_apply_eq_zero TS_exact']}
+      have TS_exact : TS.ShortExact := {
+        exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mpr TS_exact'
+        mono_f := (ModuleCat.mono_iff_injective _).mpr (IsLocalizedModule.map_injective S
+          (T.X₁.localizedModule_mkLinearMap S) (T.X₂.localizedModule_mkLinearMap S)
+            _ ((ModuleCat.mono_iff_injective T.f).mp T_exact.2))
+        epi_g := (ModuleCat.epi_iff_surjective _).mpr (IsLocalizedModule.map_surjective S
+          (T.X₂.localizedModule_mkLinearMap S) (T.X₃.localizedModule_mkLinearMap S)
+            _ ((ModuleCat.epi_iff_surjective T.g).mp T_exact.3)) }
+      let _ : Projective TS.X₂ := by
+        rw [← IsProjective.iff_projective]
+        have : Module.Projective R T.X₂ := (IsProjective.iff_projective _).mpr ‹_›
+        exact Module.projective_of_isLocalizedModule S (T.X₂.localizedModule_mkLinearMap S)
+      simp only [HasProjectiveDimensionLE]
+      rw [T_exact.hasProjectiveDimensionLT_X₃_iff n ‹_›,
+        TS_exact.hasProjectiveDimensionLT_X₃_iff n ‹_›]
+      exact ih (kernel f)
+  refine le_of_forall_ge (fun N ↦ ?_)
+  by_cases eqbot : N = ⊥
+  · simp only [eqbot, le_bot_iff, projectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton,
+      ModuleCat.localizedModule, ← Equiv.subsingleton_congr (equivShrink _)]
+    intro _
+    apply LocalizedModule.instSubsingleton _
+  · by_cases eqtop : N.unbot eqbot = ⊤
+    · have : N = ⊤ := (WithBot.coe_unbot _ eqbot).symm.trans (WithBot.coe_inj.mpr eqtop)
+      simp [this]
+    · let n := (N.unbot eqbot).toNat
+      have : N = n := (WithBot.coe_unbot _ eqbot).symm.trans
+        (WithBot.coe_inj.mpr (ENat.coe_toNat eqtop).symm)
+      simpa only [this] using aux n
+
 section GlobalDimension
 
 variable (R : Type u) [CommRing R]
@@ -421,23 +485,36 @@ local instance [Small.{v} R] (I : Ideal R) : Small.{v} (R ⧸ I) :=
 local instance [Small.{v} R] : CategoryTheory.HasExt.{max u v} (ModuleCat.{v} R) :=
   CategoryTheory.hasExt_of_enoughProjectives.{max u v} (ModuleCat.{v} R)
 
-lemma ext_subsingleton_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ) (pos : n > 0)
-    (h : ∀ I : Ideal R, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M n)) :
-    ∀ N : ModuleCat.{v} R, Subsingleton (Ext N M n) := by
-  match n with
-  | 0 =>
-    absurd pos
-    exact Nat.not_lt_zero 0
-  | 1 =>
-    have : Injective M := by
+open Limits in
+lemma ext_subsingleton_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ)
+    (h : ∀ I : Ideal R, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M (n + 1))) :
+    ∀ N : ModuleCat.{v} R, Subsingleton (Ext N M (n + 1)) := by
+  induction' n with n ih generalizing M
+  · have : Injective M := by
       rw [← Module.injective_iff_injective_object, ← Module.Baer.iff_injective]
       intro I g
 
       sorry
     intro N
     exact subsingleton_of_forall_eq 0 (fun e ↦ Ext.eq_zero_of_injective e)
-  | n + 2 =>
-    sorry
+  · let ei : EnoughInjectives (ModuleCat R) := inferInstance
+    rcases ei.1 M with ⟨⟨I, inj, f, mono⟩⟩
+    let S := ShortComplex.mk f (cokernel.π f) (cokernel.condition f)
+    have S_exact : S.ShortExact := {
+      exact := ShortComplex.exact_cokernel f
+      mono_f := ‹_›
+      epi_g := coequalizer.π_epi}
+    have (N : ModuleCat R) : Subsingleton (Ext N M (n + 1 + 1)) ↔
+      Subsingleton (Ext N (cokernel f) (n + 1)) := by
+      have (m : ℕ) : Subsingleton (AddCommGrp.of (Ext N S.X₂ (m + 1))) :=
+        subsingleton_of_forall_eq 0 Ext.eq_zero_of_injective
+      have := ComposableArrows.Exact.isIso_map'
+        (Ext.covariantSequence_exact N S_exact (n + 1) (n + 1 + 1) rfl) 1 (by decide)
+        (IsZero.eq_zero_of_src (AddCommGrp.of (Ext N S.X₂ (n + 1))).isZero_of_subsingleton _)
+        (IsZero.eq_zero_of_tgt (AddCommGrp.of (Ext N S.X₂ (n + 1 + 1))).isZero_of_subsingleton _)
+      exact (@asIso _ _ _ _ _ this).addCommGroupIsoToAddEquiv.subsingleton_congr.symm
+    simp only [this] at h ⊢
+    exact ih (cokernel f) h
 
 noncomputable def globalDimension : WithBot ℕ∞ :=
   ⨆ (M : ModuleCat.{v} R), projectiveDimension M
