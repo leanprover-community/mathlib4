@@ -375,6 +375,8 @@ lemma baseChange_toPresentation :
 
 lemma baseChange_ring : (P.baseChange R).Ring = P.Ring := rfl
 
+lemma baseChange_val : (P.baseChange T).val = fun x ↦ 1 ⊗ₜ[R] P.val x := rfl
+
 @[simp]
 lemma baseChange_jacobian [Finite σ] : (P.baseChange T).jacobian = 1 ⊗ₜ P.jacobian := by
   classical
@@ -386,8 +388,8 @@ lemma baseChange_jacobian [Finite σ] : (P.baseChange T).jacobian = 1 ⊗ₜ P.j
     simp only [baseChange, jacobiMatrix_apply, Presentation.baseChange_relation,
       RingHom.mapMatrix_apply, Matrix.map_apply,
       Presentation.baseChange_toGenerators, MvPolynomial.pderiv_map]
-  rw [h, ← RingHom.map_det, Generators.algebraMap_apply, aeval_map_algebraMap, P.algebraMap_apply]
-  apply aeval_one_tmul
+  rw [h, ← RingHom.map_det, Generators.algebraMap_apply, aeval_map_algebraMap, P.algebraMap_apply,
+    baseChange_val, aeval_one_tmul]
 
 end BaseChange
 
