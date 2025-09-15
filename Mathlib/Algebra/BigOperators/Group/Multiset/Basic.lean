@@ -18,7 +18,7 @@ and sums indexed by finite sets.
 ## Main declarations
 
 * `Multiset.prod`: `s.prod f` is the product of `f i` over all `i ∈ s`. Not to be mistaken with
-  the cartesian product `Multiset.product`.
+  the Cartesian product `Multiset.product`.
 * `Multiset.sum`: `s.sum f` is the sum of `f i` over all `i ∈ s`.
 -/
 
@@ -226,5 +226,9 @@ theorem sum_map_tsub [AddCommMonoid M] [PartialOrder M] [ExistsAddOfLE M]
     exact map_congr rfl fun x hx => tsub_add_cancel_of_le <| hfg _ hx
 
 end OrderedSub
+
+instance {M : Type*} : IsAddTorsionFree (Multiset M) :=
+  ⟨fun n hn x y h ↦ open Classical in Multiset.ext' fun _ ↦
+    (Nat.mul_right_inj hn).mp <| by simp only [← Multiset.count_nsmul, h]⟩
 
 end Multiset
