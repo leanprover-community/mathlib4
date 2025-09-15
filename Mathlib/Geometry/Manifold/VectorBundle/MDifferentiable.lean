@@ -499,6 +499,121 @@ lemma MDifferentiable.sum_section {ι : Type*} {s : Finset ι} {t : ι → (x : 
     MDifferentiable I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) :=
   fun x₀ ↦ .sum_section fun i ↦ (hs i) x₀
 
+/-- The scalar product `ψ • s` of a differentiable function `ψ : M → 𝕜` and a section `s` of a
+vector bundle `V → M` is differentiable once `s` is differentiable on an open set containing
+`tsupport ψ`.
+
+See `ContMDiffOn.smul_section_of_tsupport` for the analogous result about `C^n` sections. -/
+lemma MDifferentiableOn.smul_section_of_tsupport {s : Π (x : B), E x} {ψ : B → 𝕜}
+    (hψ : MDifferentiableOn I 𝓘(𝕜) ψ u) (ht : IsOpen u) (ht' : tsupport ψ ⊆ u)
+    (hs : MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) u) :
+    MDifferentiable I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (ψ x • s x)) := by
+  apply mdifferentiable_of_mdifferentiableOn_union_of_isOpen (hψ.smul_section hs) ?_ ?_ ht
+      (isOpen_compl_iff.mpr <| isClosed_tsupport ψ)
+  · apply ((mdifferentiable_zeroSection _ _).mdifferentiableOn (s := (tsupport ψ)ᶜ)).congr
+    intro y hy
+    simp [image_eq_zero_of_notMem_tsupport hy, zeroSection]
+  · exact Set.compl_subset_iff_union.mp <| Set.compl_subset_compl.mpr ht'
+
+variable {ι : Type*} {t : ι → (x : B) → E x}
+
+open Function
+
+/-- The sum of a locally finite collection of sections is differentiable iff each section is.
+Version at a point within a set. -/
+lemma MDifferentiableWithinAt.sum_section_of_locallyFinite
+    (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
+    (ht' : ∀ i, MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F))
+      (fun x ↦ TotalSpace.mk' F x (t i x)) u x₀) :
+    MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F))
+      (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) u x₀ := by
+  obtain ⟨u', hu', hfin⟩ := ht x₀
+  -- All sections `t i` but a finite set `s` vanish near `x₀`: choose a neighbourhood `u` of `x₀`
+  -- and a finite set `s` of sections which don't vanish.
+  let s := {i | ((fun i ↦ {x | t i x ≠ 0}) i ∩ u').Nonempty}
+  have := hfin.fintype
+  have : MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F))
+      (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) (u ∩ u') x₀ :=
+     MDifferentiableWithinAt.sum_section fun i ↦ ((ht' i).mono inter_subset_left)
+  apply (mdifferentiableWithinAt_inter hu').mp
+  apply this.congr fun y hy ↦ ?_
+  · rw [TotalSpace.mk_inj, tsum_eq_sum']
+    refine support_subset_iff'.mpr fun i hi ↦ ?_
+    by_contra! h
+    have : i ∈ s.toFinset := by
+      refine Set.mem_toFinset.mpr ?_
+      simp only [s, ne_eq, Set.mem_setOf_eq]
+      use x₀
+      simpa using ⟨h, mem_of_mem_nhds hu'⟩
+    exact hi this
+  rw [TotalSpace.mk_inj, tsum_eq_sum']
+  refine support_subset_iff'.mpr fun i hi ↦ ?_
+  by_contra! h
+  have : i ∈ s.toFinset := by
+    refine Set.mem_toFinset.mpr ?_
+    simp only [s, ne_eq, Set.mem_setOf_eq]
+    use y
+    simpa using ⟨h, Set.mem_of_mem_inter_right hy⟩
+  exact hi this
+
+/-- The sum of a locally finite collection of sections is `C^k` at `x` iff each section is. -/
+lemma MDifferentiableAt.sum_section_of_locallyFinite
+    (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
+    (ht' : ∀ i, MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t i x)) x₀) :
+    MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) x₀ := by
+  simp_rw [← mdifferentiableWithinAt_univ] at ht' ⊢
+  exact .sum_section_of_locallyFinite ht ht'
+
+/-- The sum of a locally finite collection of sections is `C^k` on a set `u` iff each section is. -/
+lemma MDifferentiableOn.sum_section_of_locallyFinite
+    (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
+    (ht' : ∀ i, MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t i x)) u) :
+    MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) u :=
+  fun x hx ↦ .sum_section_of_locallyFinite ht (ht' · x hx)
+
+/-- The sum of a locally finite collection of sections is `C^k` iff each section is. -/
+lemma MDifferentiable.sum_section_of_locallyFinite (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
+    (ht' : ∀ i, MDifferentiable I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t i x))) :
+    MDifferentiable I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) :=
+  fun x ↦ .sum_section_of_locallyFinite ht fun i ↦ ht' i x
+
+-- Future: the next four lemmas can presumably be generalised, but some hypotheses on the supports
+-- of the sections `t i` are necessary.
+lemma MDifferentiableWithinAt.finsum_section_of_locallyFinite
+    (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
+    (ht' : ∀ i, MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t i x)) u x₀) :
+    MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) u x₀ := by
+  sorry
+  -- apply (MDifferentiableWithinAt.sum_section_of_locallyFinite ht ht').congr' (t := Set.univ)
+  --     (fun y hy ↦ ?_) (by grind) trivial
+  -- rw [← tsum_eq_finsum]
+  -- choose U hu hfin using ht y
+  -- have : {x | t x y ≠ 0} ⊆ {i | ((fun i ↦ {x | t i x ≠ 0}) i ∩ U).Nonempty} := by
+  --   intro x hx
+  --   rw [Set.mem_setOf] at hx ⊢
+  --   use y
+  --   simpa using ⟨hx, mem_of_mem_nhds hu⟩
+  -- exact Set.Finite.subset hfin this
+
+lemma MDifferentiableAt.finsum_section_of_locallyFinite
+    (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
+    (ht' : ∀ i, MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t i x)) x₀) :
+    MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) x₀ := by
+  simp_rw [← mdifferentiableWithinAt_univ] at ht' ⊢
+  exact .finsum_section_of_locallyFinite ht ht'
+
+lemma MDifferentiableOn.finsum_section_of_locallyFinite
+    (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
+    (ht' : ∀ i, MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t i x)) u) :
+    MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) u :=
+  fun x hx ↦ .finsum_section_of_locallyFinite ht fun i ↦ ht' i x hx
+
+lemma MDifferentiable.finsum_section_of_locallyFinite
+    (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
+    (ht' : ∀ i, MDifferentiable I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t i x))) :
+    MDifferentiable I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) :=
+  fun x ↦ .finsum_section_of_locallyFinite ht fun i ↦ ht' i x
+#exit
 end operations
 
 section
