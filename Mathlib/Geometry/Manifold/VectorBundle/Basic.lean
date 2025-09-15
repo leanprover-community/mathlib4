@@ -509,34 +509,43 @@ theorem Trivialization.contMDiffWithinAt_section {s : ∀ x, E x} (a : Set B) {x
 
 /-- Smoothness of a `C^n` section at `x₀` can be determined
 using any trivialisation whose `baseSet` contains `x₀`. -/
-theorem contMDiffAt_section_of_mem_baseSet {s : ∀ x, E x} {x₀ : B}
-    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
+theorem Trivialization.contMDiffAt_section_iff {s : ∀ x, E x} {x₀ : B}
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
     [MemTrivializationAtlas e] (hx₀ : x₀ ∈ e.baseSet) :
     ContMDiffAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀ ↔
       ContMDiffAt IB 𝓘(𝕜, F) n (fun x ↦ (e ⟨x, s x⟩).2) x₀ := by
   simp_rw [← contMDiffWithinAt_univ]
   exact e.contMDiffWithinAt_section univ hx₀
 
+@[deprecated (since := "2025-09-15")]
+alias contMDiffAt_section_of_mem_baseSet := Trivialization.contMDiffAt_section_iff
+
 /-- Smoothness of a `C^n` section on `s` can be determined
 using any trivialisation whose `baseSet` contains `s`. -/
-theorem contMDiffOn_section_of_mem_baseSet {s : ∀ x, E x} {a : Set B}
-    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
+theorem Trivialization.contMDiffOn_section_iff {s : ∀ x, E x} {a : Set B}
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
     [MemTrivializationAtlas e] (ha : IsOpen a) (ha' : a ⊆ e.baseSet) :
     ContMDiffOn IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) a ↔
       ContMDiffOn IB 𝓘(𝕜, F) n (fun x ↦ (e ⟨x, s x⟩).2) a := by
   refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩ <;>
   have := (h x hx).contMDiffAt <| ha.mem_nhds hx
-  · exact ((contMDiffAt_section_of_mem_baseSet (ha' hx)).mp this).contMDiffWithinAt
-  · exact ((contMDiffAt_section_of_mem_baseSet (ha' hx)).mpr this).contMDiffWithinAt
+  · exact ((e.contMDiffAt_section_iff (ha' hx)).mp this).contMDiffWithinAt
+  · exact ((e.contMDiffAt_section_iff (ha' hx)).mpr this).contMDiffWithinAt
+
+@[deprecated (since := "2025-09-15")]
+alias contMDiffOn_section_of_mem_baseSet := Trivialization.contMDiffOn_section_iff
 
 /-- For any trivialization `e`, the smoothness of a `C^n` section on `e.baseSet`
 can be determined using `e`. -/
-theorem contMDiffOn_section_of_mem_baseSet₀ {s : ∀ x, E x}
-    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
+theorem Trivialization.contMDiffOn_section_baseSet_iff {s : ∀ x, E x}
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
     [MemTrivializationAtlas e] :
     ContMDiffOn IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet ↔
       ContMDiffOn IB 𝓘(𝕜, F) n (fun x ↦ (e ⟨x, s x⟩).2) e.baseSet :=
-  contMDiffOn_section_of_mem_baseSet e.open_baseSet (subset_refl _)
+  e.contMDiffOn_section_iff e.open_baseSet subset_rfl
+
+@[deprecated (since := "2025-09-15")]
+alias contMDiffOn_section_of_mem_baseSet₀ := Trivialization.contMDiffOn_section_baseSet_iff
 
 end
 
