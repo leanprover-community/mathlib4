@@ -160,8 +160,9 @@ def isLimitBinaryFan (X Y : C) :
 
 instance (priority := low) : HasBinaryProducts C where
   has_limit F := by
-    rw [Limits.pair_eq F]
-    exact ⟨⟨⟨_, isLimitBinaryFan (F.obj ⟨WalkingPair.left⟩) (F.obj ⟨WalkingPair.right⟩)⟩⟩⟩
+    have : HasLimit (pair (F.obj ⟨WalkingPair.left⟩) (F.obj ⟨WalkingPair.right⟩)) :=
+      ⟨⟨⟨_, isLimitBinaryFan (F.obj ⟨WalkingPair.left⟩) (F.obj ⟨WalkingPair.right⟩)⟩⟩⟩
+    apply hasLimit_of_iso (diagramIsoPair F).symm
 
 end SemilatticeInf
 
@@ -191,8 +192,9 @@ def isColimitBinaryCofan (X Y : C) :
 
 instance (priority := low) : HasBinaryCoproducts C where
   has_colimit F := by
-    rw [Limits.pair_eq F]
-    exact ⟨⟨⟨_, isColimitBinaryCofan (F.obj ⟨WalkingPair.left⟩) (F.obj ⟨WalkingPair.right⟩)⟩⟩⟩
+    have : HasColimit (pair (F.obj ⟨WalkingPair.left⟩) (F.obj ⟨WalkingPair.right⟩)) :=
+      ⟨⟨⟨_, isColimitBinaryCofan (F.obj ⟨WalkingPair.left⟩) (F.obj ⟨WalkingPair.right⟩)⟩⟩⟩
+    apply hasColimit_of_iso (diagramIsoPair F)
 
 end SemilatticeSup
 
