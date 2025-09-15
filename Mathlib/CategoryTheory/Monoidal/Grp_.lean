@@ -69,6 +69,8 @@ namespace Grp_
 @[simps X]
 def toMon (A : Grp_ C) : Mon C := ⟨A.X⟩
 
+@[deprecated (since := "2025-09-15")] alias toMon_ := toMon
+
 variable (C) in
 /-- The trivial group object. -/
 @[simps!]
@@ -289,9 +291,13 @@ variable (C)
 def forget₂Mon : Grp_ C ⥤ Mon C :=
   inducedFunctor Grp_.toMon
 
+@[deprecated (since := "2025-09-15")] alias forget₂Mon_ := forget₂Mon
+
 /-- The forgetful functor from group objects to monoid objects is fully faithful. -/
 def fullyFaithfulForget₂Mon : (forget₂Mon C).FullyFaithful :=
   fullyFaithfulInducedFunctor _
+
+@[deprecated (since := "2025-09-15")] alias fullyFaithfulForget₂Mon_ := fullyFaithfulForget₂Mon
 
 instance : (forget₂Mon C).Full := InducedCategory.full _
 instance : (forget₂Mon C).Faithful := InducedCategory.faithful _

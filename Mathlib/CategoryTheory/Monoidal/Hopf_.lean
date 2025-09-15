@@ -57,6 +57,8 @@ structure Hopf where
   X : C
   [hopf : HopfObj X]
 
+@[deprecated (since := "2025-09-15")] alias Hopf_ := Hopf
+
 attribute [instance] Hopf.hopf
 
 namespace Hopf
@@ -65,6 +67,8 @@ variable {C}
 
 /-- A Hopf monoid is a bimonoid. -/
 def toBimon (A : Hopf C) : Bimon C := .mk' A.X
+
+@[deprecated (since := "2025-09-15")] alias toBimon_ := toBimon
 
 /--
 Morphisms of Hopf monoids are just morphisms of the underlying bimonoids.

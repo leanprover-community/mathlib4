@@ -157,6 +157,8 @@ class IsMonHom (f : M ⟶ N) : Prop where
   one_hom (f) : η ≫ f = η := by cat_disch
   mul_hom (f) : μ ≫ f = (f ⊗ₘ f) ≫ μ := by cat_disch
 
+@[deprecated (since := "2025-09-15")] alias IsMon_Hom := IsMonHom
+
 attribute [reassoc (attr := simp)] IsMonHom.one_hom IsMonHom.mul_hom
 
 instance : IsMonHom (𝟙 M) where
@@ -182,6 +184,8 @@ structure Mon where
   /-- The underlying object in the ambient monoidal category -/
   X : C
   [mon : MonObj X]
+
+@[deprecated (since := "2025-09-15")] alias Mon_ := Mon
 
 attribute [instance] Mon.mon
 
@@ -579,6 +583,8 @@ theorem monToLaxMonoidal_laxMonoidalToMon_obj_mul (F : Mon C) :
 
 theorem isMonHom_counitIsoAux (F : Mon C) :
     IsMonHom (counitIsoAux C F).hom where
+
+@[deprecated (since := "2025-09-15")] alias counitIsoAux_IsMon_Hom := isMonHom_counitIsoAux
 
 /-- Implementation of `Mon.equivLaxMonoidalFunctorPUnit`. -/
 @[simps!]
