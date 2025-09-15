@@ -3464,6 +3464,7 @@ import Mathlib.Data.Nat.Fib.Zeckendorf
 import Mathlib.Data.Nat.Find
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.GCD.BigOperators
+import Mathlib.Data.Nat.GCD.Prime
 import Mathlib.Data.Nat.Hyperoperation
 import Mathlib.Data.Nat.Init
 import Mathlib.Data.Nat.Lattice
