@@ -471,7 +471,8 @@ theorem MemLp.enorm_rpow_div {f : α → ε} (hf : MemLp f p μ) (q : ℝ≥0∞
     by_cases p_zero : p = 0
     · simp [p_zero]
     rw [ENNReal.div_zero p_zero]
-    simpa only [ENNReal.rpow_zero, eLpNorm_exponent_top] using (memLp_top_const_enorm (by simp)).2
+    simpa only [ENNReal.rpow_zero, eLpNorm_exponent_top] using
+      (memLp_const_of_enorm (by simp) : MemLp (fun _ : α => (1 : ℝ≥0∞)) ∞ μ).2
   rw [eLpNorm_enorm_rpow _ (ENNReal.toReal_pos q_zero q_top)]
   apply ENNReal.rpow_lt_top_of_nonneg ENNReal.toReal_nonneg
   rw [ENNReal.ofReal_toReal q_top, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
@@ -488,7 +489,7 @@ theorem MemLp.norm_rpow_div {f : α → E} (hf : MemLp f p μ) (q : ℝ≥0∞) 
     by_cases p_zero : p = 0
     · simp [p_zero]
     rw [ENNReal.div_zero p_zero]
-    exact (memLp_top_const (1 : ℝ)).2
+    exact (memLp_const (1 : ℝ)).2
   rw [eLpNorm_norm_rpow _ (ENNReal.toReal_pos q_zero q_top)]
   apply ENNReal.rpow_lt_top_of_nonneg ENNReal.toReal_nonneg
   rw [ENNReal.ofReal_toReal q_top, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
