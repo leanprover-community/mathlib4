@@ -279,9 +279,10 @@ theorem det_eval_matrixOfPolynomials_eq_det_vandermonde (v : Fin n → R) (p : F
 
 lemma det_vandermonde_id_eq_superFactorial (n : ℕ) :
     (vandermonde fun i : Fin (n + 1) ↦ (i : R)).det = n.superFactorial := by
-  induction' n with n hn
-  · simp
-  · rw [Nat.superFactorial, det_vandermonde, Fin.prod_univ_succAbove _ 0]
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    rw [Nat.superFactorial, det_vandermonde, Fin.prod_univ_succAbove _ 0]
     push_cast
     congr
     · simp only [Fin.val_zero, Nat.cast_zero, sub_zero]

@@ -233,19 +233,17 @@ theorem extension_property {P} [AddCommGroup P] [Module R P] (f : N →ₗ[R] M)
     (hf : Function.Injective f) (g : N →ₗ[R] P) :
     ∃ h : M →ₗ[R] P, h ∘ₗ f = g :=
   have ⟨m, compl⟩ := exists_isCompl (LinearMap.range f)
-  ⟨g ∘ₗ LinearMap.linearProjOfIsCompl _ f hf compl, by ext; simp⟩
+  ⟨g ∘ₗ f.linearProjOfIsCompl _ hf compl, by ext; simp⟩
 
-theorem lifting_property (f : M →ₗ[R] N) (hf : Function.Surjective f) :
-    ∃ h : N →ₗ[R] M, f ∘ₗ h = LinearMap.id := by
+theorem lifting_property {P} [AddCommGroup P] [Module R P] (f : M →ₗ[R] N)
+    (hf : Function.Surjective f) (g : P →ₗ[R] N) :
+    ∃ h : P →ₗ[R] M, f ∘ₗ h = g := by
   have ⟨m, compl⟩ := exists_isCompl (LinearMap.ker f)
-  use Submodule.subtype _ ∘ₗ ((f.quotKerEquivOfSurjective hf).symm ≪≫ₗ
-    Submodule.quotientEquivOfIsCompl _ m compl).toLinearMap
-  ext x
-  dsimp
-  obtain ⟨z, rfl⟩ := hf x
-  rw [← LinearMap.sub_mem_ker_iff, ← Submodule.Quotient.mk_eq_zero, ← Submodule.mkQ_apply,
-    map_sub, Submodule.mkQ_apply, Submodule.mkQ_apply, Submodule.mk_quotientEquivOfIsCompl_apply,
-    ← LinearMap.quotKerEquivOfSurjective_apply_mk f hf, LinearEquiv.symm_apply_apply, sub_self]
+  let e := (Submodule.quotientEquivOfIsCompl _ m compl).symm ≪≫ₗ f.quotKerEquivOfSurjective hf
+  refine ⟨Submodule.subtype _ ∘ₗ e.symm.toLinearMap ∘ₗ g, LinearMap.ext fun x ↦ ?_⟩
+  obtain ⟨z, eq⟩ := e.surjective (g x)
+  simp only [LinearMap.comp_apply, ← eq, LinearEquiv.coe_coe, e.symm_apply_apply]
+  simp [e]
 
 theorem sSup_simples_le (N : Submodule R M) :
     sSup { m : Submodule R M | IsSimpleModule R m ∧ m ≤ N } = N := by

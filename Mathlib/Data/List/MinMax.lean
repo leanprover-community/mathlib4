@@ -68,8 +68,9 @@ theorem argAux_self (hr₀ : Irreflexive r) (a : α) : argAux r (some a) a = a :
 
 theorem not_of_mem_foldl_argAux (hr₀ : Irreflexive r) (hr₁ : Transitive r) :
     ∀ {a m : α} {o : Option α}, a ∈ l → m ∈ foldl (argAux r) o l → ¬r a m := by
-  induction' l using List.reverseRecOn with tl a ih
-  · simp
+  induction l using List.reverseRecOn with
+  | nil => simp
+  | append_singleton tl a ih => ?_
   intro b m o hb ho
   rw [foldl_append, foldl_cons, foldl_nil, argAux] at ho
   rcases hf : foldl (argAux r) o tl with - | c
@@ -369,10 +370,10 @@ theorem minimum_eq_coe_iff : minimum l = m ↔ m ∈ l ∧ ∀ a ∈ l, m ≤ a 
   @maximum_eq_coe_iff αᵒᵈ _ _ _
 
 theorem coe_le_maximum_iff : a ≤ l.maximum ↔ ∃ b, b ∈ l ∧ a ≤ b := by
-  induction' l <;> simp [maximum_cons, *]
+  induction l <;> simp [maximum_cons, *]
 
 theorem minimum_le_coe_iff : l.minimum ≤ a ↔ ∃ b, b ∈ l ∧ b ≤ a := by
-  induction' l <;> simp [minimum_cons, *]
+  induction l <;> simp [minimum_cons, *]
 
 theorem maximum_ne_bot_of_ne_nil (h : l ≠ []) : l.maximum ≠ ⊥ :=
   match l, h with | _ :: _, _ => by simp [maximum_cons]
@@ -477,22 +478,24 @@ variable [OrderBot α] {l : List α}
 
 @[simp]
 theorem foldr_max_of_ne_nil (h : l ≠ []) : ↑(l.foldr max ⊥) = l.maximum := by
-  induction' l with hd tl IH
-  · contradiction
-  · rw [maximum_cons, foldr, WithBot.coe_max]
+  induction l with
+  | nil => contradiction
+  | cons hd tl IH =>
+    rw [maximum_cons, foldr, WithBot.coe_max]
     by_cases h : tl = []
     · simp [h]
     · simp [IH h]
 
 theorem max_le_of_forall_le (l : List α) (a : α) (h : ∀ x ∈ l, x ≤ a) : l.foldr max ⊥ ≤ a := by
-  induction' l with y l IH
-  · simp
-  · simpa [h y mem_cons_self] using IH fun x hx => h x <| mem_cons_of_mem _ hx
+  induction l with
+  | nil => simp
+  | cons y l IH => simpa [h y mem_cons_self] using IH fun x hx => h x <| mem_cons_of_mem _ hx
 
 theorem le_max_of_le {l : List α} {a x : α} (hx : x ∈ l) (h : a ≤ x) : a ≤ l.foldr max ⊥ := by
-  induction' l with y l IH
-  · exact absurd hx not_mem_nil
-  · obtain hl | hl := hx
+  induction l with
+  | nil => exact absurd hx not_mem_nil
+  | cons y l IH =>
+    obtain hl | hl := hx
     · simp only [foldr]
       exact le_max_of_le_left h
     · exact le_max_of_le_right (IH (by assumption))

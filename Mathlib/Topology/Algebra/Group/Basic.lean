@@ -40,6 +40,15 @@ universe u v w x
 
 variable {G : Type w} {H : Type x} {α : Type u} {β : Type v}
 
+/-- In a Hausdorff magma with continuous multiplication, the centralizer of any set is closed. -/
+lemma Set.isClosed_centralizer {M : Type*} (s : Set M) [Mul M] [TopologicalSpace M]
+    [ContinuousMul M] [T2Space M] : IsClosed (centralizer s) := by
+  rw [centralizer, setOf_forall]
+  refine isClosed_sInter ?_
+  rintro - ⟨m, ht, rfl⟩
+  refine isClosed_imp (by simp) <| isClosed_eq ?_ ?_
+  all_goals fun_prop
+
 section ContinuousMulGroup
 
 /-!

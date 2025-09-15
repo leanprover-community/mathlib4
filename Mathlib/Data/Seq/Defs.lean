@@ -78,8 +78,7 @@ theorem get?_mk (f hf) : @get? α ⟨f, hf⟩ = f :=
 
 theorem le_stable (s : Seq α) {m n} (h : m ≤ n) : s.get? m = none → s.get? n = none := by
   obtain ⟨f, al⟩ := s
-  induction' h with n _ IH
-  exacts [id, fun h2 => al (IH h2)]
+  induction h with | refl => exact id | step _ IH => exact fun h2 ↦ al (IH h2)
 
 /-- If `s.get? n = some aₙ` for some value `aₙ`, then there is also some value `aₘ` such
 that `s.get? = some aₘ` for `m ≤ n`.
@@ -199,16 +198,15 @@ theorem destruct_cons (a : α) : ∀ s, destruct (cons a s) = some (a, s)
 
 theorem destruct_eq_none {s : Seq α} : destruct s = none → s = nil := by
   dsimp [destruct]
-  induction' f0 : get? s 0 <;> intro h
+  rcases f0 : get? s 0 <;> intro h
   · apply Subtype.eq
     funext n
-    induction' n with n IH
-    exacts [f0, s.2 IH]
+    induction n with | zero => exact f0 | succ n IH => exact s.2 IH
   · contradiction
 
 theorem destruct_eq_cons {s : Seq α} {a s'} : destruct s = some (a, s') → s = cons a s' := by
   dsimp [destruct]
-  induction' f0 : get? s 0 with a' <;> intro h
+  rcases f0 : get? s 0 with - | a' <;> intro h
   · contradiction
   · obtain ⟨f, al⟩ := s
     injections _ h1 h2
@@ -289,9 +287,10 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
   refine ⟨Stream'.corec' (Corec.f f) (some b), fun {n} h => ?_⟩
   rw [Stream'.corec'_eq]
   change Stream'.corec' (Corec.f f) (Corec.f f (some b)).2 n = none
-  revert h; generalize some b = o; revert o
-  induction' n with n IH <;> intro o
-  · change (Corec.f f o).1 = none → (Corec.f f (Corec.f f o).2).1 = none
+  revert h; generalize some b = o
+  induction n generalizing o with
+  | zero =>
+    change (Corec.f f o).1 = none → (Corec.f f (Corec.f f o).2).1 = none
     rcases o with - | b <;> intro h
     · rfl
     dsimp [Corec.f] at h
@@ -300,7 +299,8 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
     · rfl
     · obtain ⟨a, b'⟩ := s
       contradiction
-  · rw [Stream'.corec'_eq (Corec.f f) (Corec.f f o).2, Stream'.corec'_eq (Corec.f f) o]
+  | succ n IH =>
+    rw [Stream'.corec'_eq (Corec.f f) (Corec.f f o).2, Stream'.corec'_eq (Corec.f f) o]
     exact IH (Corec.f f o).2
 
 @[simp]
@@ -309,7 +309,7 @@ theorem corec_eq (f : β → Option (α × β)) (b : β) :
   dsimp [corec, destruct, get]
   rw [show Stream'.corec' (Corec.f f) (some b) 0 = (Corec.f f (some b)).1 from rfl]
   dsimp [Corec.f]
-  induction' h : f b with s; · rfl
+  rcases h : f b with - | s; · rfl
   obtain ⟨a, b'⟩ := s; dsimp [Corec.f]
   apply congr_arg fun b' => some (a, b')
   apply Subtype.eq
@@ -530,20 +530,22 @@ theorem mem_cons_iff {a b : α} {s : Seq α} : a ∈ cons b s ↔ a = b ∨ a �
 theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
     (h1 : ∀ b s', a = b ∨ C s' → C (cons b s')) : C s := by
   obtain ⟨k, e⟩ := M; unfold Stream'.get at e
-  induction' k with k IH generalizing s
-  · have TH : s = cons a (tail s) := by
+  induction k generalizing s with
+  | zero =>
+    have TH : s = cons a (tail s) := by
       apply destruct_eq_cons
       unfold destruct get? Functor.map
       rw [← e]
       rfl
     rw [TH]
     apply h1 _ _ (Or.inl rfl)
-  cases s with
-  | nil => injection e
-  | cons b s' =>
-    have h_eq : (cons b s').val (Nat.succ k) = s'.val k := by cases s' using Subtype.recOn; rfl
-    rw [h_eq] at e
-    apply h1 _ _ (Or.inr (IH e))
+  | succ k IH =>
+    cases s with
+    | nil => injection e
+    | cons b s' =>
+      have h_eq : (cons b s').val (Nat.succ k) = s'.val k := by cases s' using Subtype.recOn; rfl
+      rw [h_eq] at e
+      apply h1 _ _ (Or.inr (IH e))
 
 /-!
 ### Converting from/to other types
@@ -662,7 +664,7 @@ def map (f : α → β) : Seq α → Seq β
   | ⟨s, al⟩ =>
     ⟨s.map (Option.map f), fun {n} => by
       dsimp [Stream'.map, Stream'.get]
-      induction' e : s n with e <;> intro
+      rcases e : s n with - | e <;> intro
       · rw [al e]
         assumption
       · contradiction⟩

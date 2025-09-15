@@ -329,7 +329,7 @@ theorem mul_inv : ∀ {z : ℤ_[p]}, ‖z‖ = 1 → z * z.inv = 1
     rw [norm_eq_padic_norm] at h
     dsimp only
     rw [dif_pos h]
-    apply Subtype.ext_iff_val.2
+    apply Subtype.ext_iff.2
     simp [mul_inv_cancel₀ hk]
 
 theorem inv_mul {z : ℤ_[p]} (hz : ‖z‖ = 1) : z.inv * z = 1 := by rw [mul_comm, mul_inv hz]

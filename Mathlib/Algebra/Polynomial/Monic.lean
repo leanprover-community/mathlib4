@@ -546,8 +546,6 @@ theorem leadingCoeff_smul_of_smul_regular {S : Type*} [SMulZeroClass S R] {k : S
 theorem monic_of_isUnit_leadingCoeff_inv_smul (h : IsUnit p.leadingCoeff) :
     Monic (h.unit⁻¹ • p) := by
   rw [Monic.def, leadingCoeff_smul_of_smul_regular _ (isSMulRegular_of_group _), Units.smul_def]
-  obtain ⟨k, hk⟩ := h
-  simp only [← hk, smul_eq_mul, ← Units.val_mul, Units.val_eq_one, inv_mul_eq_iff_eq_mul]
   simp
 
 theorem isUnit_leadingCoeff_mul_right_eq_zero_iff (h : IsUnit p.leadingCoeff) {q : R[X]} :

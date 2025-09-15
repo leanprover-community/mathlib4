@@ -49,7 +49,7 @@ instance [Zero M] [SMulWithZero M B] : SMulWithZero M (ZeroHom A B) where
 instance [MonoidWithZero M] [MulActionWithZero M B] : MulActionWithZero M (ZeroHom A B) where
   __ : SMulWithZero _ _ := inferInstance
   one_smul _ := ext fun _ => one_smul _ _
-  mul_smul _ _ _ :=  ext fun _ => mul_smul _ _ _
+  mul_smul _ _ _ := ext fun _ => mul_smul _ _ _
 
 end Zero
 
@@ -97,6 +97,6 @@ instance [DistribSMul M B] : DistribSMul M (A →+ B) where
 instance [Monoid M] [DistribMulAction M B] : DistribMulAction M (A →+ B) where
   __ : DistribSMul _ _ := inferInstance
   one_smul _ := ext fun _ => one_smul _ _
-  mul_smul _ _ _ :=  ext fun _ => mul_smul _ _ _
+  mul_smul _ _ _ := ext fun _ => mul_smul _ _ _
 
 end AddMonoidHom

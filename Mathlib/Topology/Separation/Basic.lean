@@ -192,7 +192,7 @@ theorem exists_isOpen_singleton_of_isOpen_finite [T0Space X] {s : Set X} (hfin :
   · rcases ihs t hts htne hto with ⟨x, hxt, hxo⟩
     exact ⟨x, hts.1 hxt, hxo⟩
   · -- Porting note: was `rcases minimal_nonempty_open_eq_singleton ho hne _ with ⟨x, hx⟩`
-    --               https://github.com/leanprover/std4/issues/116
+    --               https://github.com/leanprover-community/batteries/issues/116
     rsuffices ⟨x, hx⟩ : ∃ x, s.toSet = {x}
     · exact ⟨x, hx.symm ▸ rfl, hx ▸ ho⟩
     refine minimal_nonempty_open_eq_singleton ho hne ?_

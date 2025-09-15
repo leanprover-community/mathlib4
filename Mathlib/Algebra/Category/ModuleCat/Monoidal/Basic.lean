@@ -66,7 +66,7 @@ def whiskerRight {M₁ M₂ : ModuleCat R} (f : M₁ ⟶ M₂) (N : ModuleCat R)
 theorem id_tensorHom_id (M N : ModuleCat R) :
     tensorHom (𝟙 M) (𝟙 N) = 𝟙 (ModuleCat.of R (M ⊗ N)) := by
   ext : 1
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): even with high priority `ext` fails to find this.
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): even with high priority `ext` fails to find this.
   apply TensorProduct.ext
   rfl
 
@@ -75,7 +75,7 @@ theorem id_tensorHom_id (M N : ModuleCat R) :
 theorem tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : ModuleCat R} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁)
     (g₂ : Y₂ ⟶ Z₂) : tensorHom (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom f₁ f₂ ≫ tensorHom g₁ g₂ := by
   ext : 1
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): even with high priority `ext` fails to find this.
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): even with high priority `ext` fails to find this.
   apply TensorProduct.ext
   rfl
 
@@ -124,7 +124,7 @@ theorem pentagon (W X Y Z : ModuleCat R) :
 theorem leftUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
     tensorHom (𝟙 (ModuleCat.of R R)) f ≫ (leftUnitor N).hom = (leftUnitor M).hom ≫ f := by
   ext : 1
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): broken ext
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): broken ext
   apply TensorProduct.ext
   ext x
   dsimp
@@ -135,7 +135,7 @@ theorem leftUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
 theorem rightUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
     tensorHom f (𝟙 (ModuleCat.of R R)) ≫ (rightUnitor N).hom = (rightUnitor M).hom ≫ f := by
   ext : 1
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): broken ext
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): broken ext
   apply TensorProduct.ext
   ext x
   dsimp

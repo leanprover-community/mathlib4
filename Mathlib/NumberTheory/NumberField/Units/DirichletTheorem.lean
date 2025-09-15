@@ -334,7 +334,7 @@ theorem unitLattice_span_eq_top :
       rw [mult]; split_ifs <;> norm_num
   · refine mul_neg_of_pos_of_neg ?_ ((exists_unit K w).choose_spec x ?_)
     · rw [mult]; split_ifs <;> norm_num
-    · exact Subtype.ext_iff_val.not.mp (ne_of_mem_erase hx)
+    · exact Subtype.ext_iff.not.mp (ne_of_mem_erase hx)
 
 end span_top
 

@@ -832,7 +832,7 @@ theorem approx_apply [TopologicalSpace β] [OrderClosedTopology β] [MeasurableS
   · exact hf measurableSet_Ici
 
 theorem monotone_approx (i : ℕ → β) (f : α → β) : Monotone (approx i f) := fun _ _ h =>
-  Finset.sup_mono <| Finset.range_subset.2 h
+  Finset.sup_mono <| Finset.range_subset_range.2 h
 
 theorem approx_comp [TopologicalSpace β] [OrderClosedTopology β] [MeasurableSpace β]
     [OpensMeasurableSpace β] [MeasurableSpace γ] {i : ℕ → β} {f : γ → β} {g : α → γ} {n : ℕ} (a : α)

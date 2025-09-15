@@ -210,8 +210,9 @@ lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
     (∑ i ∈ s, f i) ^ n = ∑ k ∈ piAntidiag s n, multinomial s k *
       s.noncommProd (fun i ↦ f i ^ k i) (hc.mono' fun _ _ h ↦ h.pow_pow ..) := by
   classical
-  induction' s using Finset.cons_induction with a s has ih generalizing n
-  · cases n <;> simp
+  induction s using Finset.cons_induction generalizing n with
+  | empty => cases n <;> simp
+  | cons a s has ih => ?_
   rw [Finset.sum_cons, piAntidiag_cons, sum_disjiUnion]
   simp only [sum_map, Pi.add_apply, multinomial_cons,
     Pi.add_apply, if_true, Nat.cast_mul, noncommProd_cons,
@@ -253,8 +254,9 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
           k.1.1.multinomial *
             (k.1.1.map <| x).noncommProd
               (Multiset.map_set_pairwise <| hc.mono <| mem_sym_iff.1 k.2) := by
-  induction' s using Finset.induction with a s ha ih
-  · rw [sum_empty]
+  induction s using Finset.induction with
+  | empty =>
+    rw [sum_empty]
     rintro (_ | n)
     · rw [_root_.pow_zero, Fintype.sum_subsingleton]
       swap
@@ -265,6 +267,7 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
     · rw [_root_.pow_succ, mul_zero]
       haveI : IsEmpty (Finset.sym (∅ : Finset α) n.succ) := Finset.instIsEmpty
       apply (Fintype.sum_empty _).symm
+  | insert a s ha ih => ?_
   intro n; specialize ih (hc.mono <| s.subset_insert a)
   rw [sum_insert ha, (Commute.sum_right s _ _ _).add_pow, sum_range]; swap
   · exact fun _ hb => hc (mem_insert_self a s) (mem_insert_of_mem hb)

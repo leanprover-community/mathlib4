@@ -209,7 +209,7 @@ lemma isComplex₂_mk (S : ComposableArrows C 2) (w : S.map' 0 1 ≫ S.map' 1 2 
 
 lemma _root_.CategoryTheory.ShortComplex.isComplex_toComposableArrows (S : ShortComplex C) :
     S.toComposableArrows.IsComplex :=
-  -- Disable `Fin.reduceFinMk` because otherwise `Precompose.map_one_succ` does not apply. (#27382)
+  -- Disable `Fin.reduceFinMk` because otherwise `Precompose.map_one_succ` does not apply. (https://github.com/leanprover-community/mathlib4/issues/27382)
   isComplex₂_mk _ (by simp [-Fin.reduceFinMk])
 
 lemma exact₂_iff (S : ComposableArrows C 2) (hS : S.IsComplex) :

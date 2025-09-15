@@ -89,6 +89,18 @@ theorem of_val (a : MulArchimedeanOrder M) : of (val a) = a := rfl
 @[to_additive (attr := simp)]
 theorem val_of (a : M) : val (of a) = a := rfl
 
+@[to_additive]
+instance [Nonempty M] : Nonempty (MulArchimedeanOrder M) :=
+  inferInstanceAs (Nonempty M)
+
+@[to_additive]
+instance [Inhabited M] : Inhabited (MulArchimedeanOrder M) :=
+  ⟨of default⟩
+
+@[to_additive]
+instance [Subsingleton M] : Subsingleton (MulArchimedeanOrder M) :=
+  inferInstanceAs (Subsingleton M)
+
 variable [Group M] [Lattice M]
 
 @[to_additive]
@@ -237,6 +249,10 @@ theorem mk_mabs (a : M) : mk |a|ₘ = mk a :=
   mk_eq_mk.mpr ⟨⟨1, by simp⟩, ⟨1, by simp⟩⟩
 
 @[to_additive]
+instance [Subsingleton M] : Subsingleton (MulArchimedeanClass M) :=
+  inferInstanceAs (Subsingleton (Antisymmetrization ..))
+
+@[to_additive]
 noncomputable
 instance : LinearOrder (MulArchimedeanClass M) := by
   classical
@@ -260,7 +276,9 @@ instance : OrderTop (MulArchimedeanClass M) where
     rw [mk_le_mk]
     exact ⟨1, by simp⟩
 
-variable (M) in
+@[to_additive]
+instance : Inhabited (MulArchimedeanClass M) := ⟨⊤⟩
+
 @[to_additive (attr := simp)]
 theorem mk_one : mk 1 = (⊤ : MulArchimedeanClass M) := rfl
 
@@ -273,19 +291,16 @@ theorem mk_eq_top_iff : mk a = ⊤ ↔ a = 1 where
 theorem top_eq_mk_iff : ⊤ = mk a ↔ a = 1 := by
   rw [eq_comm, mk_eq_top_iff]
 
-variable (M) in
 @[to_additive (attr := simp)]
 theorem out_top : (⊤ : MulArchimedeanClass M).out = 1 := by
   rw [← mk_eq_top_iff, mk_out]
 
-variable (M) in
 @[to_additive]
 instance [Nontrivial M] : Nontrivial (MulArchimedeanClass M) where
   exists_pair_ne := by
     obtain ⟨x, hx⟩ := exists_ne (1 : M)
     exact ⟨mk x, ⊤, mk_eq_top_iff.ne.mpr hx⟩
 
-variable (M) in
 @[to_additive]
 theorem mk_antitoneOn : AntitoneOn mk (Set.Ici (1 : M)) := by
   intro a ha b hb hab
@@ -295,7 +310,6 @@ theorem mk_antitoneOn : AntitoneOn mk (Set.Ici (1 : M)) := by
   rw [mabs_eq_self.mpr ha, mabs_eq_self.mpr hb] at h
   simpa using h
 
-variable (M) in
 @[to_additive]
 theorem mk_monotoneOn : MonotoneOn mk (Set.Iic (1 : M)) := by
   intro a ha b hb hab

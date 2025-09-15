@@ -83,7 +83,7 @@ theorem adjoin_algebraMap_image_union_eq_adjoin_adjoin (s : Set S) (t : Set A) :
 theorem adjoin_adjoin_of_tower (s : Set A) : adjoin S (adjoin R s : Set A) = adjoin S s := by
   apply le_antisymm (adjoin_le _)
   · exact adjoin_mono subset_adjoin
-  · change adjoin R s ≤ (adjoin S s).restrictScalars R
+  · rw [← Subalgebra.coe_restrictScalars R (S := S), SetLike.coe_subset_coe]
     exact adjoin_le subset_adjoin
 
 theorem Subalgebra.restrictScalars_adjoin {s : Set A} :

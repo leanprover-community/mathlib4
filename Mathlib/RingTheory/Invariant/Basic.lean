@@ -12,8 +12,8 @@ import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 Given an extension of rings `B/A` and an action of `G` on `B`, we introduce a predicate
 `Algebra.IsInvariant A B G` which states that every fixed point of `B` lies in the image of `A`.
 
-The main application is in algebraic number theory, where `G := Gal(L/K)` is the galois group
-of some finite galois extension of number fields, and `A := 𝓞K` and `B := 𝓞L` are their ring of
+The main application is in algebraic number theory, where `G := Gal(L/K)` is the Galois group
+of some finite Galois extension of number fields, and `A := 𝓞K` and `B := 𝓞L` are their ring of
 integers. This main result in this file implies the existence of Frobenius elements in this setting.
 See `Mathlib/RingTheory/Frobenius.lean`.
 
@@ -396,7 +396,7 @@ include G in
 For any domain `k` containing `B ⧸ Q`,
 any endomorphism of `k` can be restricted to an endomorphism of `B ⧸ Q`.
 
-This is basically the fact that `L/K` normal implies `κ(Q)/κ(P)` normal in the galois setting.
+This is basically the fact that `L/K` normal implies `κ(Q)/κ(P)` normal in the Galois setting.
 -/
 lemma Ideal.Quotient.exists_algHom_fixedPoint_quotient_under
     (σ : k →ₐ[A ⧸ P] k) :
