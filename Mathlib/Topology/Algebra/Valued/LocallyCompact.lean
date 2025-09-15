@@ -279,7 +279,7 @@ lemma isPrincipalIdealRing_of_compactSpace [hc : CompactSpace 𝒪[K]] :
   have hm := mulArchimedean_mrange_of_isCompact_integer hc
   -- The key result is that a valuation ring that maps into a `MulArchimedean` value group
   -- is a PIR iff the value group is not densely ordered.
-  refine hi.isPrincipalIdealRing_iff_not_denselyOrdered.mpr fun _ ↦ ?_
+  refine hi.isPrincipalIdealRing_iff_not_denselyOrdered_mrange.mpr fun _ ↦ ?_
   -- since we are densely ordered, we necessarily are nontrivial
   exact not_subsingleton (MonoidHom.mrange (v : Valuation K Γ₀))ˣ
     (LocallyFiniteOrder.denselyOrdered_iff_subsingleton.mp inferInstance)

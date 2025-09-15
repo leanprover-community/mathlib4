@@ -61,7 +61,7 @@ lemma wellFounded_gt_on_v_iff_discrete_mrange [Nontrivial (MonoidHom.mrange v)ˣ
 
 lemma isPrincipalIdealRing_iff_not_denselyOrdered [MulArchimedean (MonoidHom.mrange v)]
     (hv : Integers v O) :
-    IsPrincipalIdealRing O ↔ ¬ DenselyOrdered (MonoidHom.mrange v) := by
+    IsPrincipalIdealRing O ↔ ¬ DenselyOrdered (Set.range v) := by
   refine ⟨fun _ ↦ not_denselyOrdered_of_isPrincipalIdealRing hv, fun H ↦ ?_⟩
   rcases subsingleton_or_nontrivial (MonoidHom.mrange v)ˣ with hs|_
   · have := bijective_algebraMap_of_subsingleton_units_mrange hv
@@ -73,6 +73,11 @@ lemma isPrincipalIdealRing_iff_not_denselyOrdered [MulArchimedean (MonoidHom.mra
   rw [this, hv.wfDvdMonoid_iff_wellFounded_gt_on_v, hv.wellFounded_gt_on_v_iff_discrete_mrange,
     LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered]
   exact H
+
+lemma isPrincipalIdealRing_iff_not_denselyOrdered_mrange [MulArchimedean (MonoidHom.mrange v)]
+    (hv : Integers v O) :
+    IsPrincipalIdealRing O ↔ ¬ DenselyOrdered (MonoidHom.mrange v) :=
+  isPrincipalIdealRing_iff_not_denselyOrdered hv
 
 end Valuation.Integers
 
