@@ -29,12 +29,7 @@ def toModifiers (nm : Name) (newDoc : Option (TSyntax `Lean.Parser.Command.docCo
   let env ← getEnv
   let d ← getConstInfo nm
   let mods : Modifiers :=
-  { /-
-    #adapation_note nightly-2025-09-11
-    The API for docstrings was changed in https://github.com/leanprover/lean4/pull/10307
-    I have added the `doc.verso.get (← getOptions)` flag here.
-    -/
-    docString? := newDoc.map (·, doc.verso.get (← getOptions))
+  { docString? := newDoc.map (·, doc.verso.get (← getOptions))
     visibility :=
     if isPrivateNameExport nm then
       Visibility.private
@@ -60,11 +55,6 @@ def toPreDefinition (nm newNm : Name) (newType newValue : Expr)
   let mods ← toModifiers nm newDoc
   let predef : PreDefinition :=
   { ref := Syntax.missing
-    /-
-    #adapation_note nightly-2025-09-11
-    The API for docstrings was changed in https://github.com/leanprover/lean4/pull/10307
-    I have added the `mkNullNode #[]` here without understanding what it means.
-    -/
     binders := mkNullNode #[]
     kind := if d.isDef then DefKind.def else DefKind.theorem
     levelParams := d.levelParams
