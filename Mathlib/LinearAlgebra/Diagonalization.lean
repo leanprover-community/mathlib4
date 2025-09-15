@@ -3,10 +3,10 @@ Copyright (c) 2025 Lawrence Wu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lawrence Wu
 -/
+import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.LinearAlgebra.Matrix.IsDiag
-import Mathlib.LinearAlgebra.Semisimple
 
 /-!
 # (Simultaneous) Diagonalization of linear maps
@@ -24,11 +24,10 @@ We define *diagonalization* as the special case where `α` is `Unit`.
 
 ## TODO
 
-* `LinearMap.exists_diagonalization_iff_minpoly_splits_and_squarefree`:
-  a linear map is diagonalizable iff the minimal polynomial splits and is squarefree.
-* `LinearMap.Diagonalization.isSemisimple`: all diagonalizable linear maps are semisimple.
-* `LinearMap.exists_simultaneousDiagonalization_iff_commute`: a family of linear maps is
-  simultaneously diagonalizable iff they commute and are individually diagonalizable.
+* a linear map is diagonalizable iff the minimal polynomial splits and is squarefree.
+* all diagonalizable linear maps are semisimple.
+* a family of linear maps is simultaneously diagonalizable iff they commute and are
+  individually diagonalizable.
 * `IsIdempotentElem` implies diagonalizable (https://math.stackexchange.com/a/1017060/315369)
 * Generalize `exists_diagonalization_iff_directSum_eigenspace` and
   `exists_diagonalization_iff_iSup_eigenspace` to PIDs pending
@@ -238,14 +237,6 @@ lemma exists_diagonalization_iff_iSup_eigenspace {f : End K V} :
   _ ↔ _ := by
     simp [DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top, eigenspaces_iSupIndep f]
 
-proof_wanted exists_diagonalization_iff_minpoly_splits_and_squarefree {f : End K V} :
-    (∃ ι : Type uV, Nonempty (f.Diagonalization ι)) ↔
-    (minpoly K f).Splits (RingHom.id K) ∧ Squarefree (minpoly K f)
-
--- May need additional assumptions on `R` and `M` for this to hold.
-proof_wanted Diagonalization.isSemisimple {ι : Type*} {f : End R M} (D : f.Diagonalization ι) :
-  f.IsSemisimple
-
 lemma SimultaneousDiagonalization.commute {ι : Type*} {f : α → End R M}
     (D : SimultaneousDiagonalization ι f) (i j : α) : Commute (f i) (f j) := by
   ext m
@@ -258,10 +249,5 @@ lemma SimultaneousDiagonalization.commute {ι : Type*} {f : α → End R M}
   | zero => simp
   | add => simp [*] at *
   | smul _ _ _ hm => simp [hm]
-
-proof_wanted exists_simultaneousDiagonalization_iff_commute {f : α → End R M} :
-    (∃ ι : Type uM, Nonempty (SimultaneousDiagonalization ι f)) ↔
-    (∀ i : α, ∃ ι : Type uM, Nonempty (Diagonalization ι (f i))) ∧
-    ∀ i j : α, Commute (f i) (f j)
 
 end LinearMap
