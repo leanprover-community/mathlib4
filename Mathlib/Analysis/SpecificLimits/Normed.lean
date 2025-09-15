@@ -826,8 +826,7 @@ theorem Antitone.tendsto_le_alternating_series
   exact ha.le_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; omega) tendsto_id)) _
 
 theorem Summable.tendsto_alternating_series_tsum
-    {E} [Ring E] [LinearOrder E] [IsOrderedRing E]
-    [UniformSpace E] [IsUniformAddGroup E] [CompleteSpace E]
+    {E} [Ring E] [UniformSpace E] [IsUniformAddGroup E] [CompleteSpace E]
     {f : ℕ → E} (hfs : Summable f) :
     Tendsto (fun n => (∑ i ∈ range n, (-1) ^ i * f i)) atTop (𝓝 (∑' i : ℕ, (-1) ^ i * f i)) :=
   Summable.tendsto_sum_tsum_nat hfs.alternating
