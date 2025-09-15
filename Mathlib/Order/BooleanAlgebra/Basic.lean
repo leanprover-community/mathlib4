@@ -428,7 +428,7 @@ end GeneralizedBooleanAlgebra
 ### Boolean algebras
 -/
 -- See note [reducible non instances]
-/-- A bounded generalized boolean algebra is a boolean algebra. -/
+/-- A bounded generalized Boolean algebra is a Boolean algebra. -/
 abbrev GeneralizedBooleanAlgebra.toBooleanAlgebra [GeneralizedBooleanAlgebra α] [OrderTop α] :
     BooleanAlgebra α where
   __ := ‹GeneralizedBooleanAlgebra α›
