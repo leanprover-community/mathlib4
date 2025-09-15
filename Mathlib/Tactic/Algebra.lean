@@ -375,6 +375,12 @@ partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(Comm
 
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta Qq
 
+/-- If `e` has type `Type u` for some level `u`, return `u` and `e : Q(Type u)` -/
+def inferLevelQ (e : Expr) : MetaM (Σ u : Lean.Level, Q(Type u)) := do
+  let .sort u ← whnf (← inferType e) | throwError "not a type{indentExpr e}"
+  let some v := (← instantiateLevelMVars u).dec | throwError "not a Type{indentExpr e}"
+  return ⟨v, e⟩
+
 theorem eq_congr {R : Type*} {a b a' b' : R} (ha : a = a') (hb : b = b') (h : a' = b') : a = b := by
   subst ha hb
   exact h
@@ -410,13 +416,23 @@ def normalize (goal : MVarId) {u v : Lean.Level} (R : Q(Type u)) (A : Q(Type v))
   --   Tactic.pushGoals l
     -- NormNum.normNumAt g (← getSimpContext)
 
+def inferBase (e : Expr) :
+    MetaM <| Σ u : Lean.Level, Q(Type u) := do
+  let some res := e.find? (fun e ↦ e.constName == ``HSMul.hSMul)
+    | throwError "Failed to infer base ring."
+  have ring := (res.getAppArgs)[0]!
+  inferLevelQ ring
+
 /-- Frontend of `algebra`: attempt to close a goal `g`, assuming it is an equation of semirings. -/
 def proveEq (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) : AtomM Unit := do
   let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
     | throwError "algebra failed: not an equality"
   let .sort u ← whnf (← inferType α) | unreachable!
   let v ← try u.dec catch _ => throwError "not a type{indentExpr α}"
-  let some ⟨u, R⟩ := base | throwError "algebra failed: could not infer base ring."
+  let ⟨u, R⟩ ←
+    match base with
+      | .some p => do pure p
+      | none => do inferBase (← g.getType)
   have A : Q(Type v) := α
   let sA ← synthInstanceQ q(CommSemiring $A)
   let sR ← synthInstanceQ q(CommSemiring $R)
@@ -441,11 +457,6 @@ where
       return q(by simp_all)
 
 
-/-- If `e` has type `Type u` for some level `u`, return `u` and `e : Q(Type u)` -/
-def inferLevelQ (e : Expr) : MetaM (Σ u : Lean.Level, Q(Type u)) := do
-  let .sort u ← whnf (← inferType e) | throwError "not a type{indentExpr e}"
-  let some v := (← instantiateLevelMVars u).dec | throwError "not a Type{indentExpr e}"
-  return ⟨v, e⟩
 
 elab (name := algebra) "algebra":tactic =>
   withMainContext do
@@ -473,34 +484,28 @@ end Mathlib.Tactic.Algebra
 
 
 example (x : ℚ) :  x + x = (2 : ℤ) • x := by
-  algebra with ℤ
+  algebra
   -- match_scalars <;> simp
 
 example (x : ℚ) : x = 1 := by
-  algebra ℤ, ℚ
+  algebra with ℕ
   sorry
 
 example (x y : ℚ) : x + y  = y + x := by
-  algebra ℕ, ℚ
-  rfl
+  algebra with ℕ
 
 example (x y : ℚ) : x + y*x + x + y  = (x + x) + (x*y + y) := by
-  algebra ℕ, ℚ
-  rfl
+  algebra with ℕ
 
 -- BUG: ExProd.one doesn't match with the empty product in sums.
 example (x : ℚ) : x + x + x  = 3 * x := by
-  algebra ℕ, ℚ
-  sorry
+  algebra with ℕ
 
 example (x : ℚ) : (x + x) + (x + x)  = x + x + x + x := by
-  algebra ℕ, ℚ
-  -- simp
-  simp only [Nat.rawCast, Nat.cast_one, pow_one, Nat.cast_ofNat, one_smul, Nat.cast_zero, add_zero,
-    mul_one]
+  algebra with ℕ
 
 example (x y : ℚ) : x + (y)*(x+y) = 0 := by
-  algebra ℕ, ℚ
+  algebra with ℕ
   simp
   sorry
 
