@@ -580,7 +580,7 @@ lemma sup_spanningCoe (H H' : Subgraph G) :
 /-- The top of the `Subgraph G` lattice is equivalent to the graph itself. -/
 @[deprecated (since := "2025-09-15")] alias topEquiv := topIso
 
-/-- The bottom of the `Subgraph G` lattice is equivalent to the empty graph on the empty
+/-- The bottom of the `Subgraph G` lattice is isomorphic to the empty graph on the empty
 vertex type. -/
 def botIso : (⊥ : Subgraph G).coe ≃g emptyGraph Empty where
   toFun v := v.property.elim
