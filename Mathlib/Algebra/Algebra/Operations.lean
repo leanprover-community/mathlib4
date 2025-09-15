@@ -30,7 +30,7 @@ Let `R` be a commutative ring (or semiring) and let `A` be an `R`-algebra.
 
 It is proved that `Submodule R A` is a semiring, and also an algebra over `Set A`.
 
-Additionally, in the `Pointwise` locale we promote `Submodule.pointwiseDistribMulAction` to a
+Additionally, in the `Pointwise` scope we promote `Submodule.pointwiseDistribMulAction` to a
 `MulSemiringAction` as `Submodule.pointwiseMulSemiringAction`.
 
 When `R` is not necessarily commutative, and `A` is merely a `R`-module with a ring structure
@@ -307,7 +307,7 @@ protected theorem pow_add {m n : ℕ} (h : n ≠ 0) : M ^ (m + n) = M ^ m * M ^ 
 protected theorem pow_one : M ^ 1 = M := by
   rw [Submodule.pow_succ, Submodule.pow_zero, Submodule.one_mul]
 
-/-- `Submodule.pow_succ` with the right hand side commuted. -/
+/-- `Submodule.pow_succ` with the right-hand side commuted. -/
 protected theorem pow_succ' {n : ℕ} (h : n ≠ 0) : M ^ (n + 1) = M * M ^ n := by
   rw [add_comm, M.pow_add h, Submodule.pow_one]
 

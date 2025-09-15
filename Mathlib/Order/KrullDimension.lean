@@ -463,9 +463,9 @@ lemma coheight_ne_zero {x : α} : coheight x ≠ 0 ↔ ¬ IsMax x := coheight_eq
 lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
     n < height x ↔ ∃ y < x, height y = n where
   mp h := by
-    obtain ⟨m, hx : height x = m⟩ := Option.ne_none_iff_exists'.mp hfin.ne_top
-    rw [hx] at h; norm_cast at h
-    obtain ⟨p, hp, hlen⟩ := exists_series_of_height_eq_coe x hx
+    obtain ⟨m, hx : m = height x⟩ := WithTop.ne_top_iff_exists.mp hfin.ne_top
+    rw [← hx] at h; norm_cast at h
+    obtain ⟨p, hp, hlen⟩ := exists_series_of_height_eq_coe x hx.symm
     use p ⟨n, by omega⟩
     constructor
     · rw [← hp]
@@ -539,14 +539,15 @@ lemma coheight_eq_coe_iff_maximal_le_coheight {a : α} {n : ℕ} :
   height_eq_coe_iff_minimal_le_height (α := αᵒᵈ)
 
 lemma one_lt_height_iff {x : α} : 1 < Order.height x ↔ ∃ y z, z < y ∧ y < x := by
-  rw [← ENat.add_one_le_iff ENat.one_ne_top, show 1 + 1 = (2 : ℕ∞) from rfl]
+  rw [← ENat.add_one_le_iff ENat.one_ne_top, one_add_one_eq_two]
   refine ⟨fun h ↦ ?_, ?_⟩
   · obtain ⟨p, hp, hlen⟩ := Order.exists_series_of_le_height x (n := 2) h
     refine ⟨p 1, p 0, p.rel_of_lt ?_, hp ▸ p.rel_of_lt ?_⟩ <;> simp [Fin.lt_def, hlen]
   · rintro ⟨y, z, hzy, hyx⟩
     let p : LTSeries α := RelSeries.fromListChain' [z, y, x] (List.cons_ne_nil z [y, x])
       (List.Chain'.cons_cons hzy <| List.chain'_pair.mpr hyx)
-    exact Order.length_le_height (p := p) (by rfl)
+    have : p.last = x := by simp [p, ← RelSeries.getLast_toList]
+    exact Order.length_le_height this.le
 
 end height
 
@@ -676,11 +677,10 @@ lemma krullDim_eq_top [InfiniteDimensionalOrder α] :
   | ⊥, hm => False.elim <| by
     haveI : Inhabited α := ⟨LTSeries.withLength _ 0 0⟩
     exact not_le_of_gt (WithBot.bot_lt_coe _ : ⊥ < (0 : WithBot (WithTop ℕ))) <| hm default
-  | some ⊤, _ => le_refl _
-  | some (some m), hm => by
+  | .some ⊤, _ => le_refl _
+  | .some (.some m), hm => by
     refine (not_lt_of_ge (hm (LTSeries.withLength _ (m + 1))) ?_).elim
-    rw [WithBot.some_eq_coe, ← WithBot.coe_natCast, WithBot.coe_lt_coe,
-      WithTop.some_eq_coe, ← WithTop.coe_natCast, WithTop.coe_lt_coe]
+    rw [← WithBot.coe_natCast, WithBot.coe_lt_coe, ← WithTop.coe_natCast, WithTop.coe_lt_coe]
     simp
 
 lemma krullDim_eq_top_iff : krullDim α = ⊤ ↔ InfiniteDimensionalOrder α := by
@@ -753,7 +753,7 @@ lemma _root_.LTSeries.height_last_longestOf [FiniteDimensionalOrder α] :
 The Krull dimension is the supremum of the elements' heights.
 
 This version of the lemma assumes that `α` is nonempty. In this case, the coercion from `ℕ∞` to
-`WithBot ℕ∞` is on the outside fo the right-hand side, which is usually more convenient.
+`WithBot ℕ∞` is on the outside of the right-hand side, which is usually more convenient.
 
 If `α` were empty, then `krullDim α = ⊥`. See `krullDim_eq_iSup_height` for the more general
 version, with the coercion under the supremum.

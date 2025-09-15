@@ -312,7 +312,7 @@ theorem chromaticNumber_le_one_of_subsingleton (G : SimpleGraph V) [Subsingleton
     G.chromaticNumber ≤ 1 := by
   rw [← Nat.cast_one, chromaticNumber_le_iff_colorable]
   refine ⟨Coloring.mk (fun _ => 0) ?_⟩
-  intros v w
+  intro v w
   cases Subsingleton.elim v w
   simp
 
@@ -528,7 +528,7 @@ end completeMultipartiteGraph
 theorem free_of_colorable {W : Type*} {H : SimpleGraph W}
     (nhc : ¬H.Colorable n) (hc : G.Colorable n) : H.Free G := by
   contrapose! nhc with hc'
-  rw [not_not] at hc'
+  rw [not_free] at hc'
   exact ⟨hc.some.comp hc'.some.toHom⟩
 
 end SimpleGraph

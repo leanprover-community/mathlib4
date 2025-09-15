@@ -5,8 +5,6 @@ Authors: Kim Morrison
 -/
 import Mathlib.Order.WithBot.Basic
 
-set_option autoImplicit true
-
 /-!
 ### Algebraic replacement rules
 
@@ -18,6 +16,8 @@ The proof pattern is `map₂_lemma operation_lemma`. For example, `map₂_comm m
 
 This is a subset of the lemmas from `Mathlib.Data.Option.NAry`.
 -/
+
+set_option autoImplicit true
 
 namespace WithBot
 

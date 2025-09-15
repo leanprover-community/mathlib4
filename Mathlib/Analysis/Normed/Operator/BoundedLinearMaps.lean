@@ -126,7 +126,7 @@ theorem smul (c : 𝕜) (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap �
       _ = ‖c‖ * M * ‖x‖ := (mul_assoc _ _ _).symm
 
 theorem neg (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap 𝕜 fun e => -f e := by
-  rw [show (fun e => -f e) = fun e => (-1 : 𝕜) • f e by funext; simp]
+  rw [show (fun e => -f e) = fun e => (-1 : 𝕜) • f e by simp]
   exact smul (-1) hf
 
 theorem add (hf : IsBoundedLinearMap 𝕜 f) (hg : IsBoundedLinearMap 𝕜 g) :
@@ -396,7 +396,7 @@ theorem isBoundedBilinearMap_apply : IsBoundedBilinearMap 𝕜 fun p : (E →L[�
 `F`, is a bounded bilinear map. -/
 theorem isBoundedBilinearMap_smulRight :
     IsBoundedBilinearMap 𝕜 fun p =>
-      (ContinuousLinearMap.smulRight : (E →L[𝕜] 𝕜) → F → E →L[𝕜] F) p.1 p.2 :=
+      (ContinuousLinearMap.smulRight : StrongDual 𝕜 E → F → E →L[𝕜] F) p.1 p.2 :=
   (smulRightL 𝕜 E F).isBoundedBilinearMap
 
 /-- The composition of a continuous linear map with a continuous multilinear map is a bounded

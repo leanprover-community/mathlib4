@@ -165,8 +165,7 @@ lemma Functor.isContinuous_of_coverPreserving (hF₁ : CompatiblePreserving.{w} 
         fun V f hf => (H.isAmalgamation (hx.functorPushforward hF₁) (F.map f) _).trans
           (hF₁.apply_map _ hx hf)⟩
     · intro y₁ y₂ hy₁ hy₂
-      apply (Presieve.isSeparated_of_isSheaf _ _ ((isSheaf_iff_isSheaf_of_type _ _).1 G.2) _
-        (hF₂.cover_preserve hS)).ext
+      apply (((isSheaf_iff_isSheaf_of_type _ _).1 G.2).isSeparated _ (hF₂.cover_preserve hS)).ext
       rintro Y _ ⟨Z, g, h, hg, rfl⟩
       dsimp
       simp only [Functor.map_comp, types_comp_apply]

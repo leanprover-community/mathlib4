@@ -57,7 +57,7 @@ def _root_.Function.Embedding.coeWithTop : α ↪ WithTop α where
   inj' := WithTop.coe_injective
 
 /-- The coercion `α → WithTop α` bundled as monotone map. -/
-@[simps]
+@[simps -fullyApplied]
 def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithTop α where
   toFun := (↑)
   inj' := WithTop.coe_injective
@@ -130,7 +130,7 @@ def _root_.Function.Embedding.coeWithBot : α ↪ WithBot α where
   inj' := WithBot.coe_injective
 
 /-- The coercion `α → WithBot α` bundled as monotone map. -/
-@[simps]
+@[simps -fullyApplied]
 def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithBot α where
   toFun := (↑)
   inj' := WithBot.coe_injective
@@ -187,17 +187,10 @@ protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β where
 protected def withTopMap (f : α ↪o β) : WithTop α ↪o WithTop β :=
   { f.dual.withBotMap.dual with toFun := WithTop.map f }
 
-/-- Coercion `α → WithBot α` as an `OrderEmbedding`. -/
-@[simps -fullyApplied]
-protected def withBotCoe : α ↪o WithBot α where
-  toFun := .some
-  inj' := WithBot.coe_injective
-  map_rel_iff' := WithBot.coe_le_coe
-
-/-- Coercion `α → WithTop α` as an `OrderEmbedding`. -/
-@[simps -fullyApplied]
-protected def withTopCoe : α ↪o WithTop α :=
-  { (OrderEmbedding.withBotCoe (α := αᵒᵈ)).dual with toFun := .some }
+@[deprecated (since := "2025-08-21")] protected alias withBotCoe := WithBot.coeOrderHom
+@[deprecated (since := "2025-08-21")] alias withBotCoe_apply := WithBot.coeOrderHom_apply
+@[deprecated (since := "2025-08-21")] protected alias withTopCoe := WithTop.coeOrderHom
+@[deprecated (since := "2025-08-21")] alias withTopCoe_apply := WithTop.coeOrderHom_apply
 
 end OrderEmbedding
 
@@ -288,12 +281,12 @@ theorem withBot_id : (SupHom.id α).withBot = SupBotHom.id _ := DFunLike.coe_inj
 @[simp]
 theorem withBot_comp (f : SupHom β γ) (g : SupHom α β) :
     (f.comp g).withBot = f.withBot.comp g.withBot :=
-  DFunLike.coe_injective <| Eq.symm <| WithTop.map_comp_map _ _
+  DFunLike.coe_injective <| Eq.symm <| WithBot.map_comp_map _ _
 
 /-- Adjoins a `⊤` to the codomain of a `SupHom`. -/
 @[simps]
 def withTop' [OrderTop β] (f : SupHom α β) : SupHom (WithTop α) β where
-  toFun a := a.elim ⊤ f
+  toFun a := a.mapD ⊤ f
   map_sup' a b :=
     match a, b with
     | ⊤, ⊤ => (top_sup_eq _).symm
@@ -304,7 +297,7 @@ def withTop' [OrderTop β] (f : SupHom α β) : SupHom (WithTop α) β where
 /-- Adjoins a `⊥` to the domain of a `SupHom`. -/
 @[simps]
 def withBot' [OrderBot β] (f : SupHom α β) : SupBotHom (WithBot α) β where
-  toFun a := a.elim ⊥ f
+  toFun a := a.mapD ⊥ f
   map_sup' a b :=
     match a, b with
     | ⊥, ⊥ => (bot_sup_eq _).symm
@@ -356,12 +349,12 @@ theorem withBot_id : (InfHom.id α).withBot = InfHom.id _ := DFunLike.coe_inject
 @[simp]
 theorem withBot_comp (f : InfHom β γ) (g : InfHom α β) :
     (f.comp g).withBot = f.withBot.comp g.withBot :=
-  DFunLike.coe_injective <| Eq.symm <| WithTop.map_comp_map _ _
+  DFunLike.coe_injective <| Eq.symm <| WithBot.map_comp_map _ _
 
 /-- Adjoins a `⊤` to the codomain of an `InfHom`. -/
 @[simps]
 def withTop' [OrderTop β] (f : InfHom α β) : InfTopHom (WithTop α) β where
-  toFun a := a.elim ⊤ f
+  toFun a := a.mapD ⊤ f
   map_inf' a b :=
     match a, b with
     | ⊤, ⊤ => (top_inf_eq _).symm
@@ -373,7 +366,7 @@ def withTop' [OrderTop β] (f : InfHom α β) : InfTopHom (WithTop α) β where
 /-- Adjoins a `⊥` to the codomain of an `InfHom`. -/
 @[simps]
 def withBot' [OrderBot β] (f : InfHom α β) : InfHom (WithBot α) β where
-  toFun a := a.elim ⊥ f
+  toFun a := a.mapD ⊥ f
   map_inf' a b :=
     match a, b with
     | ⊥, ⊥ => (bot_inf_eq _).symm
@@ -425,7 +418,7 @@ theorem withBot_id : (LatticeHom.id α).withBot = LatticeHom.id _ :=
 @[simp]
 theorem withBot_comp (f : LatticeHom β γ) (g : LatticeHom α β) :
     (f.comp g).withBot = f.withBot.comp g.withBot :=
-  DFunLike.coe_injective <| Eq.symm <| WithTop.map_comp_map _ _
+  DFunLike.coe_injective <| Eq.symm <| WithBot.map_comp_map _ _
 
 /-- Adjoins a `⊤` and `⊥` to the domain and codomain of a `LatticeHom`. -/
 @[simps]
@@ -444,14 +437,14 @@ lemma withTopWithBot_apply (f : LatticeHom α β) (a : WithTop <| WithBot α) :
 @[simp]
 theorem withTopWithBot_id : (LatticeHom.id α).withTopWithBot = BoundedLatticeHom.id _ :=
   DFunLike.coe_injective <| by
-    refine (congr_arg WithTop.map ?_).trans WithBot.map_id
+    refine (congr_arg WithBot.map ?_).trans WithTop.map_id
     rw [withBot_id]
     rfl
 
 @[simp]
 theorem withTopWithBot_comp (f : LatticeHom β γ) (g : LatticeHom α β) :
     (f.comp g).withTopWithBot = f.withTopWithBot.comp g.withTopWithBot := by
-  ext; simp
+  ext; simp [← WithBot.map_comp_map, ← WithTop.map_comp_map]
 
 /-- Adjoins a `⊥` to the codomain of a `LatticeHom`. -/
 @[simps]

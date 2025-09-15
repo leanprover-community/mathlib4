@@ -28,7 +28,6 @@ braiding and associating isomorphisms, and the product comparison morphism.
 * [Stacks: coproducts of pairs](https://stacks.math.columbia.edu/tag/04AN)
 -/
 
-
 universe v v₁ u u₁ u₂
 
 open CategoryTheory
@@ -654,8 +653,8 @@ theorem prod.lift_fst_comp_snd_comp {W X Y Z : C} [HasBinaryProduct W Y] [HasBin
   rw [← prod.lift_map]
   simp
 
--- We take the right hand side here to be simp normal form, as this way composition lemmas for
--- `f ≫ h` and `g ≫ k` can fire (eg `id_comp`) , while `map_fst` and `map_snd` can still work just
+-- We take the right-hand side here to be simp normal form, as this way composition lemmas for
+-- `f ≫ h` and `g ≫ k` can fire (e.g. `id_comp`), while `map_fst` and `map_snd` can still work just
 -- as well.
 @[reassoc (attr := simp)]
 theorem prod.map_map {A₁ A₂ A₃ B₁ B₂ B₃ : C} [HasBinaryProduct A₁ B₁] [HasBinaryProduct A₂ B₂]
@@ -758,8 +757,8 @@ theorem coprod.desc_comp_inl_comp_inr {W X Y Z : C} [HasBinaryCoproduct W Y]
     coprod.desc (g ≫ coprod.inl) (g' ≫ coprod.inr) = coprod.map g g' := by
   rw [← coprod.map_desc]; simp
 
--- We take the right hand side here to be simp normal form, as this way composition lemmas for
--- `f ≫ h` and `g ≫ k` can fire (eg `id_comp`) , while `inl_map` and `inr_map` can still work just
+-- We take the right-hand side here to be simp normal form, as this way composition lemmas for
+-- `f ≫ h` and `g ≫ k` can fire (e.g. `id_comp`), while `inl_map` and `inr_map` can still work just
 -- as well.
 @[reassoc (attr := simp)]
 theorem coprod.map_map {A₁ A₂ A₃ B₁ B₂ B₃ : C} [HasBinaryCoproduct A₁ B₁] [HasBinaryCoproduct A₂ B₂]
@@ -1395,13 +1394,12 @@ protected def IsLimit.assoc (P : IsLimit sXY) (Q : IsLimit sYZ) {s : BinaryFan s
       · exact w ⟨.left⟩
       · specialize w ⟨.right⟩
         simp? at w says
-          simp only [pair_obj_right, BinaryFan.π_app_right, BinaryFan.assoc_snd,
+          simp only [pair_obj_right, BinaryFan.assoc_snd,
             Functor.const_obj_obj, pair_obj_left] at w
-        rw [← w]
-        simp
+        simp [← w]
     · specialize w ⟨.right⟩
       simp? at w says
-        simp only [pair_obj_right, BinaryFan.π_app_right, BinaryFan.assoc_snd,
+        simp only [pair_obj_right, BinaryFan.assoc_snd,
           Functor.const_obj_obj, pair_obj_left] at w
       simp [← w]
 
