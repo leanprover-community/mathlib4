@@ -20,7 +20,7 @@ import Mathlib.Tactic.Linter.UnusedTactic
 import Mathlib.Tactic.Linter.Style
 -- This import makes the `#min_imports` command available globally.
 import Mathlib.Tactic.MinImports
-import Mathlib.Tactic.TacticAnalysis
+import Mathlib.Tactic.TacticAnalysis.Declarations
 
 /-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
@@ -81,6 +81,14 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.show
   linter.style.maxHeartbeats
   -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
+
+/-- Define a set of linters that are used in the `nightly-testing` branch
+to catch any regressions.
+-/
+register_linter_set linter.nightlyRegressionSet :=
+  linter.tacticAnalysis.linarithToGrind
+  linter.tacticAnalysis.omegaToGrind
+  linter.tacticAnalysis.ringToGrind
 
 -- Check that all linter options mentioned in the mathlib standard linter set exist.
 open Lean Elab.Command Linter Mathlib.Linter Mathlib.Linter.Style

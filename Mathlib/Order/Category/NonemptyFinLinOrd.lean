@@ -120,8 +120,7 @@ def dualEquiv : NonemptyFinLinOrd ≌ NonemptyFinLinOrd where
 theorem mono_iff_injective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
     Mono f ↔ Function.Injective f := by
   refine ⟨?_, ConcreteCategory.mono_of_injective f⟩
-  intro
-  intro a₁ a₂ h
+  intro _ a₁ a₂ h
   let X := of (ULift (Fin 1))
   let g₁ : X ⟶ A := ofHom ⟨fun _ => a₁, fun _ _ _ => by rfl⟩
   let g₂ : X ⟶ A := ofHom ⟨fun _ => a₂, fun _ _ _ => by rfl⟩
