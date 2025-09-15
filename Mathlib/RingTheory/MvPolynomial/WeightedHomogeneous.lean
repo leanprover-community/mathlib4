@@ -126,7 +126,7 @@ theorem weightedTotalDegree_add (w : σ → M) {p q : MvPolynomial σ R} :
   sorry
 
 theorem weightedTotalDegree_mul (w : σ → M) {p q : MvPolynomial σ R} :
-    weightedTotalDegree w (p + q) ≤ weightedTotalDegree w p + weightedTotalDegree w q := by
+    weightedTotalDegree w (p * q) ≤ weightedTotalDegree w p + weightedTotalDegree w q := by
   sorry
 
 theorem weightedTotalDegree_pow (w : σ → M) {p : MvPolynomial σ R} {n : ℕ} :
