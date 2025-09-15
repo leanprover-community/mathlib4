@@ -232,12 +232,12 @@ lemma toSubmodule_sup :
 
 @[simp, norm_cast]
 lemma coe_sup :
-    ↑(s ⊔ t) = closure (s.toSubmodule ⊔ t.toSubmodule).carrier := by
+    (↑(s ⊔ t) : Set N) = closure ↑(s.toSubmodule ⊔ t.toSubmodule) := by
   simp only [← coe_toSubmodule, toSubmodule_sup]
-  simp only [coe_toSubmodule, Submodule.coe_closure, Submodule.carrier_eq_coe]
+  simp only [coe_toSubmodule, Submodule.coe_closure]
 
 @[simp] lemma mem_sup :
-    x ∈ s ⊔ t ↔ x ∈ closure (s.toSubmodule ⊔ t.toSubmodule).carrier := Iff.rfl
+    x ∈ s ⊔ t ↔ x ∈ closure ↑(s.toSubmodule ⊔ t.toSubmodule) := Iff.rfl
 
 instance : SupSet (ClosedSubmodule R N) where
   sSup S := ⟨(⨆ s ∈ S, s.toSubmodule).closure, isClosed_closure⟩
@@ -253,21 +253,21 @@ lemma toSubmodule_iSup (f : ι → ClosedSubmodule R N) :
 
 @[simp, norm_cast]
 lemma coe_sSup (S : Set (ClosedSubmodule R N)) :
-    ↑(sSup S) = closure (⨆ s ∈ S, s.toSubmodule).carrier := by
+    (↑(sSup S) : Set N) = closure ↑(⨆ s ∈ S, s.toSubmodule) := by
   simp only [← coe_toSubmodule, toSubmodule_sSup]
-  simp only [coe_toSubmodule, Submodule.coe_closure, Submodule.carrier_eq_coe]
+  simp only [coe_toSubmodule, Submodule.coe_closure]
 
 @[simp, norm_cast]
 lemma coe_iSup (f : ι → ClosedSubmodule R N) :
-    ↑(⨆ i, f i) = closure (⨆ i, (f i).toSubmodule).carrier := by
-  simp only [← coe_toSubmodule, toSubmodule_iSup, Submodule.carrier_eq_coe]
-  rfl
+    (↑(⨆ i, f i) : Set N) = closure ↑(⨆ i, (f i).toSubmodule) := by
+  simp only [← coe_toSubmodule, toSubmodule_iSup]
+  simp only [coe_toSubmodule, Submodule.coe_closure]
 
 @[simp] lemma mem_sSup {S : Set (ClosedSubmodule R N)} :
-    x ∈ sSup S ↔ x ∈ closure (⨆ s ∈ S, s.toSubmodule).carrier := Iff.rfl
+    x ∈ sSup S ↔ x ∈ closure ↑(⨆ s ∈ S, s.toSubmodule) := Iff.rfl
 
 @[simp] lemma mem_iSup {f : ι → ClosedSubmodule R N} :
-    x ∈ ⨆ i, f i ↔ x ∈ closure (⨆ i, (f i).toSubmodule).carrier := by
+    x ∈ ⨆ i, f i ↔ x ∈ closure ↑(⨆ i, (f i).toSubmodule) := by
   simp [← SetLike.mem_coe]
 
 instance : SemilatticeSup (ClosedSubmodule R N) where
