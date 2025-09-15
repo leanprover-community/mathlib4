@@ -321,24 +321,24 @@ theorem min'_subset {s t : Finset α} (H : s.Nonempty) (hst : s ⊆ t) :
   min'_le _ _ (hst (s.min'_mem H))
 
 @[simp] theorem max'_insert (a : α) (s : Finset α) (H : s.Nonempty) :
-    (insert a s).max' (s.insert_nonempty a) = max (s.max' H) a :=
+    (insert a s).max' (s.insert_nonempty a) = max a (s.max' H) :=
   (isGreatest_max' _ _).unique <| by
-    rw [coe_insert, max_comm]
+    rw [coe_insert]
     exact (isGreatest_max' _ _).insert _
 
 @[simp] theorem min'_insert (a : α) (s : Finset α) (H : s.Nonempty) :
     (insert a s).min' (s.insert_nonempty a) = min a (s.min' H) :=
   (isLeast_min' _ _).unique <| by
-    rw [coe_insert, min_comm]
+    rw [coe_insert]
     exact (isLeast_min' _ _).insert _
 
 lemma min'_pair (a b : α) :
     min' {a, b} (insert_nonempty _ _) = min a b := by
-  simp [min_comm]
+  simp
 
 lemma max'_pair (a b : α) :
     max' {a, b} (insert_nonempty _ _) = max a b := by
-  simp [max_comm]
+  simp
 
 theorem lt_max'_of_mem_erase_max' [DecidableEq α] {a : α} (ha : a ∈ s.erase (s.max' H)) :
     a < s.max' H :=
