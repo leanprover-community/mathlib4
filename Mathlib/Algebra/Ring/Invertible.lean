@@ -57,9 +57,9 @@ theorem eq_of_invOf_add_eq_invOf_add_invOf [Ring R] {a b : R} [Invertible a] [In
     conv => lhs; rw [← one_add_one_eq_two, ← add_assoc, neg_add_cancel, zero_add]
     rw [add_comm, ← add_assoc]
     exact this
-  let helper {x y : R} [Invertible x] [Invertible y] (h' : -1 = ⅟x * y + ⅟y * x)
+  have helper {x y : R} [Invertible x] [Invertible y] (h' : -1 = ⅟x * y + ⅟y * x)
       : -(y + x) = x * ⅟y * x := by
-    apply (add_left_inj y).mp
+    apply add_right_cancel
     rw [(by simp : -(y + x) + y = -x)]
     conv => rhs; rhs; rw [(by simp : y = x * ⅟x * y)]
     rw [mul_assoc, mul_assoc, ← mul_add x]
@@ -67,8 +67,7 @@ theorem eq_of_invOf_add_eq_invOf_add_invOf [Ring R] {a b : R} [Invertible a] [In
     apply (mul_right_inj_of_invertible x).mpr
     rw [add_comm]
     exact h'
-  have h_a_binv_a : -(b + a) = a * ⅟b * a := by
-    exact helper h_neg_identity
+  have h_a_binv_a : -(b + a) = a * ⅟b * a := helper h_neg_identity
   have h_b_ainv_b : -(a + b) = b * ⅟a * b := by
     rw [add_comm] at h_neg_identity
     exact helper h_neg_identity
