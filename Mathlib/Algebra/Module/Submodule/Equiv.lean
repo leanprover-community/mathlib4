@@ -224,9 +224,7 @@ theorem equivSubtypeMap_apply {p : Submodule R M} {q : Submodule R p} (x : q) :
 
 @[simp]
 theorem equivSubtypeMap_symm_apply {p : Submodule R M} {q : Submodule R p} (x : q.map p.subtype) :
-    ((p.equivSubtypeMap q).symm x : M) = x := by
-  cases x
-  rfl
+    ((p.equivSubtypeMap q).symm x : M) = x := rfl
 
 /-- A linear injection `M ↪ N` restricts to an equivalence `f⁻¹ p ≃ p` for any submodule `p`
 contained in its range. -/
