@@ -327,7 +327,7 @@ theorem min'_subset {s t : Finset α} (H : s.Nonempty) (hst : s ⊆ t) :
     exact (isGreatest_max' _ _).insert _
 
 @[simp] theorem min'_insert (a : α) (s : Finset α) (H : s.Nonempty) :
-    (insert a s).min' (s.insert_nonempty a) = min (s.min' H) a :=
+    (insert a s).min' (s.insert_nonempty a) = min a (s.min' H) :=
   (isLeast_min' _ _).unique <| by
     rw [coe_insert, min_comm]
     exact (isLeast_min' _ _).insert _
