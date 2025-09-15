@@ -459,7 +459,7 @@ optional arguments:
   proof without attempting to drop redundancies. (`true` by default.)
 * `restrict_type` (not yet implemented in mathlib4)
   will only use hypotheses that are inequalities over `tp`. This is useful
-  if you have e.g. both integer and rational valued inequalities in the local context, which can
+  if you have e.g. both integer- and rational-valued inequalities in the local context, which can
   sometimes confuse the tactic.
 
 A variant, `nlinarith`, does some basic preprocessing to handle some nonlinear goals.

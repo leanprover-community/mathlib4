@@ -722,6 +722,19 @@ theorem primeIdealOf_eq_map_closedPoint (x : U) :
     hU.primeIdealOf x = (Spec.map (X.presheaf.germ _ x x.2)).base (closedPoint _) :=
   hU.isoSpec_hom_base_apply _
 
+/-- If a point `x : U` is a closed point, then its corresponding prime ideal is maximal. -/
+theorem primeIdealOf_isMaximal_of_isClosed (x : U) (hx : IsClosed {(x : X)}) :
+    (hU.primeIdealOf x).asIdeal.IsMaximal := by
+  have hx₀ : IsClosed {x} := by
+    simpa [← Set.image_singleton, Set.preimage_image_eq _ Subtype.val_injective]
+      using hx.preimage U.isOpenEmbedding'.continuous
+  apply (hU.primeIdealOf x).isClosed_singleton_iff_isMaximal.mp
+  rw [primeIdealOf, ← Set.image_singleton]
+  refine (Topology.IsClosedEmbedding.isClosed_iff_image_isClosed <|
+    IsHomeomorph.isClosedEmbedding ?_).mp hx₀
+  apply (TopCat.isIso_iff_isHomeomorph _).mp
+  infer_instance
+
 theorem isLocalization_stalk' (y : PrimeSpectrum Γ(X, U)) (hy : hU.fromSpec.base y ∈ U) :
     @IsLocalization.AtPrime
       (R := Γ(X, U))
@@ -1040,7 +1053,7 @@ lemma Scheme.zeroLocus_inf (X : Scheme.{u}) {U : X.Opens} (I J : Ideal Γ(X, U))
     ext x
     by_cases hxU : x ∈ U
     · simpa [hxU] using congr(⟨x, hxU⟩ ∈ $this)
-    · simp only [Submodule.inf_coe, Set.mem_union,
+    · simp only [Submodule.coe_inf, Set.mem_union,
         codisjoint_iff_compl_le_left.mp (X.codisjoint_zeroLocus (U := U) (I ∩ J)) hxU,
         codisjoint_iff_compl_le_left.mp (X.codisjoint_zeroLocus (U := U) I) hxU, true_or]
   simp only [← U.toSpecΓ_preimage_zeroLocus, PrimeSpectrum.zeroLocus_inf I J,
@@ -1052,7 +1065,7 @@ lemma Scheme.zeroLocus_biInf
     X.zeroLocus (U := U) ↑(⨅ i ∈ t, I i) = (⋃ i ∈ t, X.zeroLocus (U := U) (I i)) ∪ (↑U)ᶜ := by
   refine ht.induction_on _ (by simp) fun {i t} hit ht IH ↦ ?_
   simp only [Set.mem_insert_iff, Set.iUnion_iUnion_eq_or_left, ← IH, ← zeroLocus_inf,
-    Submodule.inf_coe, Set.union_assoc]
+    Submodule.coe_inf, Set.union_assoc]
   congr!
   simp
 
