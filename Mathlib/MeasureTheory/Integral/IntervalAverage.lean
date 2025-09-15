@@ -62,7 +62,7 @@ theorem intervalAverage_congr_codiscreteWithin {a b : ℝ} {f₁ f₂ : ℝ → 
 There exists a point in an interval such that the mean of a continuous function over the interval
 equals the value of the function at the point. -/
 theorem exists_eq_interval_average
-   {f : ℝ → ℝ} {a b : ℝ} (hab : a ≠ b) (hf : ContinuousOn f (uIcc a b)) :
+    {f : ℝ → ℝ} {a b : ℝ} (hab : a ≠ b) (hf : ContinuousOn f (uIcc a b)) :
     ∃ c ∈ uIoo a b, f c = ⨍ (x : ℝ) in a..b, f x := by
   wlog h : a < b generalizing a b
   · rw [uIcc_comm] at hf
