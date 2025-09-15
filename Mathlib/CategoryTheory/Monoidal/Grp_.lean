@@ -160,7 +160,8 @@ theorem inv_comp_inv (A : C) [GrpObj A] : ι ≫ ι = 𝟙 A := by
   rw [right_inv, ← comp_toUnit_assoc ι, ← left_inv, comp_lift_assoc, Category.comp_id]
 
 /-- Transfer `GrpObj` along an isomorphism. -/
-@[simps!]
+-- Note: The simps lemmas are not tagged simp because their `#discr_tree_simp_key` are too generic.
+@[simps! -isSimp]
 abbrev ofIso (e : G ≅ X) : GrpObj X where
   toMonObj := .ofIso e
   inv := e.inv ≫ ι[G] ≫ e.hom
