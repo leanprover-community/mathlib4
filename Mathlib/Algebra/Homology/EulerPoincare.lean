@@ -79,8 +79,10 @@ lemma euler_poincare_telescoping (C : ChainComplex (ModuleCat k) ℕ) (n : ℕ)
     [∀ i : ℕ, Module.Finite k (C.homology i)] :
     ∑ i ∈ Finset.range (n + 1), (-1 : ℤ)^i * (Module.finrank k (C.X i) : ℤ) =
     ∑ i ∈ Finset.range (n + 1), (-1 : ℤ)^i * (Module.finrank k (C.homology i) : ℤ) +
-    ∑ i ∈ Finset.range (n + 1), (-1 : ℤ)^i * (Module.finrank k (LinearMap.range (C.dFrom i).hom) : ℤ) -
-    ∑ i ∈ Finset.range (n + 1), (-1 : ℤ)^i * (Module.finrank k (LinearMap.range (C.dTo i).hom) : ℤ) := by
+    ∑ i ∈ Finset.range (n + 1),
+      (-1 : ℤ)^i * (Module.finrank k (LinearMap.range (C.dFrom i).hom) : ℤ) -
+    ∑ i ∈ Finset.range (n + 1),
+      (-1 : ℤ)^i * (Module.finrank k (LinearMap.range (C.dTo i).hom) : ℤ) := by
   -- Use rank-nullity: dim(X_i) = dim(ker d_i) + dim(range d_i)
   -- And homology formula: dim(H_i) = dim(ker d_i) - dim(range(dTo i))
   -- The telescoping comes from the fact that range(dFrom i) at position i
