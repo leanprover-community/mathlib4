@@ -209,7 +209,7 @@ def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
       return
     for s in unwanted_cdot stx do
       Linter.logLint linter.style.cdot s
-        m!"Please, use '·' (typed as `\\.`) instead of '{s}' as 'cdot'."
+        m!"Please, use '·' (typed as `\\.`) instead of '.' as 'cdot'."
     -- We also check for isolated cdot's, i.e. when the cdot is on its own line.
     for cdot in Mathlib.Linter.findCDot stx do
       match cdot.find? (·.isOfKind `token.«· ») with
