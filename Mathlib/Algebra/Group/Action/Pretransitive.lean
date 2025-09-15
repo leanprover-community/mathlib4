@@ -52,7 +52,7 @@ class AddAction.IsPretransitive (M α : Type*) [VAdd M α] : Prop where
 
 /-- `M` acts pretransitively on `α` if for any `x y` there is `g` such that `g • x = y`.
   A transitive action should furthermore have `α` nonempty. -/
-@[to_additive]
+@[to_additive (attr := mk_iff)]
 class MulAction.IsPretransitive (M α : Type*) [SMul M α] : Prop where
   /-- There is `g` such that `g • x = y`. -/
   exists_smul_eq : ∀ x y : α, ∃ g : M, g • x = y
@@ -74,12 +74,12 @@ lemma exists_smul_eq (x y : α) : ∃ m : M, m • x = y := IsPretransitive.exis
 lemma surjective_smul (x : α) : Surjective fun c : M ↦ c • x := exists_smul_eq M x
 
 /-- The left regular action of a group on itself is transitive. -/
-@[to_additive "The regular action of a group on itself is transitive."]
+@[to_additive /-- The regular action of a group on itself is transitive. -/]
 instance Regular.isPretransitive [Group G] : IsPretransitive G G :=
   ⟨fun x y ↦ ⟨y * x⁻¹, inv_mul_cancel_right _ _⟩⟩
 
 /-- The right regular action of a group on itself is transitive. -/
-@[to_additive "The right regular action of an additive group on itself is transitive."]
+@[to_additive /-- The right regular action of an additive group on itself is transitive. -/]
 instance Regular.isPretransitive_mulOpposite [Group G] : IsPretransitive Gᵐᵒᵖ G :=
   ⟨fun x y ↦ ⟨.op (x⁻¹ * y), mul_inv_cancel_left _ _⟩⟩
 

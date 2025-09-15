@@ -51,12 +51,12 @@ theorem map_map (f₁ : β → γ) (f₂ : α → β) :
     map f₁ (map f₂ xs) = map (fun x => f₁ <| f₂ x) xs := by
   induction xs <;> simp_all
 
-theorem map_pmap {p : α → Prop} (f₁ : β → γ) (f₂ : (a : α) → p a → β) (H : ∀ x ∈ xs.toList, p x):
+theorem map_pmap {p : α → Prop} (f₁ : β → γ) (f₂ : (a : α) → p a → β) (H : ∀ x ∈ xs.toList, p x) :
     map f₁ (pmap f₂ xs H) = pmap (fun x hx => f₁ <| f₂ x hx) xs H := by
   induction xs <;> simp_all
 
 theorem pmap_map {p : β → Prop} (f₁ : (b : β) → p b → γ) (f₂ : α → β)
-    (H : ∀ x ∈ (xs.map f₂).toList, p x):
+    (H : ∀ x ∈ (xs.map f₂).toList, p x) :
     pmap f₁ (map f₂ xs) H = pmap (fun x hx => f₁ (f₂ x) hx) xs (by simpa using H) := by
   induction xs <;> simp_all
 

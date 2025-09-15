@@ -3,12 +3,11 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Peter Nelson
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.GeomSum
+import Mathlib.Data.Nat.Factorial.SuperFactorial
 import Mathlib.LinearAlgebra.Matrix.Block
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.RingTheory.Polynomial.Pochhammer
 
 /-!
 # Vandermonde matrix
@@ -173,9 +172,9 @@ private theorem det_projVandermonde_of_field (v w : Fin n → K) :
       projVandermonde (v ∘ succ) (w ∘ succ) i j := by
     ext i j
     simp only [projVandermonde_apply, val_zero, rev_zero, val_last, val_succ,
-      coe_castSucc, submatrix_apply, cons_succ, Function.comp_apply, rev_succ,
-      Pi.smul_apply, smul_eq_mul, W, r, rev_castSucc]
-    field_simp
+      coe_castSucc, submatrix_apply, Function.comp_apply, rev_succ,
+      W, r, rev_castSucc]
+    simp
     ring
   /- The first row of `W` is `[(w 0)^n, 0, ..., 0]` - take a cofactor expansion along this row,
   and apply induction. -/
@@ -183,7 +182,12 @@ private theorem det_projVandermonde_of_field (v w : Fin n → K) :
     (fun i j ↦ by simp [W, r, projVandermonde_apply]), det_succ_row_zero,
     Finset.sum_eq_single 0 _ (by simp)]
   · rw [succAbove_zero, hW_eq, det_mul_column, ih]
-    field_simp [show W 0 0 = w 0 ^ n by simp [W, projVandermonde_apply], prod_univ_succ, hr]
+    simp only [Nat.succ_eq_add_one, coe_ofNat_eq_mod, Nat.zero_mod,
+      pow_zero, show W 0 0 = w 0 ^ n by simp [W, projVandermonde_apply], one_mul, hr]
+    field_simp
+    simp only [Finset.prod_div_distrib, Finset.prod_const, Finset.card_fin, Function.comp_apply]
+    field_simp
+    simp only [prod_univ_succ, Ioi_zero_eq_map, Finset.prod_map, coe_succEmb, prod_Ioi_succ]
   intro j _ hj0
   obtain ⟨j, rfl⟩ := j.eq_succ_of_ne_zero hj0
   rw [mul_eq_zero, mul_eq_zero]
@@ -197,13 +201,13 @@ theorem det_projVandermonde (v w : Fin n → R) : (projVandermonde v w).det =
   let u (b : Bool) (i : Fin n) := (algebraMap (MvPolynomial (Fin n × Bool) ℤ)
     (FractionRing (MvPolynomial (Fin n × Bool) ℤ))) (MvPolynomial.X ⟨i, b⟩)
   have hdet := det_projVandermonde_of_field (u true) (u false)
-  simp only [u, RingHom.mapMatrix_apply] at hdet
+  simp only [u] at hdet
   norm_cast at hdet
   rw [projVandermonde_map, ← RingHom.map_det, IsFractionRing.coe_inj] at hdet
   apply_fun MvPolynomial.eval₂Hom (Int.castRingHom R) (fun x ↦ (if x.2 then v else w) x.1) at hdet
   rw [RingHom.map_det] at hdet
   convert hdet <;>
-  simp [← Matrix.ext_iff, projVandermonde_apply, u]
+  simp [← Matrix.ext_iff, projVandermonde_apply]
 
 /-- The formula for the determinant of a Vandermonde matrix. -/
 theorem det_vandermonde (v : Fin n → R) :
@@ -258,13 +262,13 @@ theorem eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials (v : Fin
     Matrix.of (fun i j => ((p j).eval (v i))) =
     (Matrix.vandermonde v) * (Matrix.of (fun (i j : Fin n) => (p j).coeff i)) := by
   ext i j
-  rw [Matrix.mul_apply, eval, Matrix.of_apply, eval₂]
-  simp only [eq_intCast, Int.cast_id, Matrix.vandermonde]
+  simp_rw [Matrix.mul_apply, eval, Matrix.of_apply, eval₂]
+  simp only [Matrix.vandermonde]
   have : (p j).support ⊆ range n := supp_subset_range <| Nat.lt_of_le_of_lt (h_deg j) <| Fin.prop j
   rw [sum_eq_of_subset _ (fun j => zero_mul ((v i) ^ j)) this, ← Fin.sum_univ_eq_sum_range]
   congr
   ext k
-  rw [mul_comm, Matrix.of_apply, RingHom.id_apply, of_apply]
+  rw [mul_comm, Matrix.of_apply, RingHom.id_apply]
 
 theorem det_eval_matrixOfPolynomials_eq_det_vandermonde (v : Fin n → R) (p : Fin n → R[X])
     (h_deg : ∀ i, (p i).natDegree = i) (h_monic : ∀ i, Monic <| p i) :
@@ -272,5 +276,42 @@ theorem det_eval_matrixOfPolynomials_eq_det_vandermonde (v : Fin n → R) (p : F
   rw [Matrix.eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials v p (fun i ↦
       Nat.le_of_eq (h_deg i)), Matrix.det_mul,
       Matrix.det_matrixOfPolynomials p h_deg h_monic, mul_one]
+
+lemma det_vandermonde_id_eq_superFactorial (n : ℕ) :
+    (vandermonde fun i : Fin (n + 1) ↦ (i : R)).det = n.superFactorial := by
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    rw [Nat.superFactorial, det_vandermonde, Fin.prod_univ_succAbove _ 0]
+    push_cast
+    congr
+    · simp only [Fin.val_zero, Nat.cast_zero, sub_zero]
+      norm_cast
+      simp [Fin.prod_univ_eq_prod_range (fun i ↦ (↑i + 1)) (n + 1)]
+    · rw [det_vandermonde] at hn
+      simp [hn]
+
+private lemma of_eval_descPochhammer_eq_mul_of_choose {n : ℕ} (v : Fin n → ℕ) :
+    (of fun i j : Fin n => (descPochhammer ℤ j).eval (v i : ℤ)).det =
+    (∏ i : Fin n, Nat.factorial i) *
+      (of fun i j : Fin n => (Nat.choose (v i) j : ℤ)).det := by
+  convert det_mul_row (fun (i : Fin n) => ((Nat.factorial (i : ℕ)) : ℤ)) _
+  · rw [of_apply, descPochhammer_eval_eq_descFactorial ℤ _ _]
+    congr
+    exact Nat.descFactorial_eq_factorial_mul_choose _ _
+  · rw [Nat.cast_prod]
+
+lemma superFactorial_dvd_vandermonde_det {n : ℕ} (v : Fin (n + 1) → ℤ) :
+    ↑n.superFactorial ∣ (vandermonde v).det := by
+  let m := inf' univ ⟨0, mem_univ _⟩ v
+  let w' := fun i ↦ (v i - m).toNat
+  have hw' : ∀ i, (w' i : ℤ) = v i - m := fun i ↦ Int.toNat_sub_of_le (inf'_le _ (mem_univ _))
+  have h := det_eval_matrixOfPolynomials_eq_det_vandermonde (fun i ↦ ↑(w' i))
+      (fun i => descPochhammer ℤ i)
+      (fun i => descPochhammer_natDegree ℤ i)
+      (fun i => monic_descPochhammer ℤ i)
+  conv_lhs at h => simp only [hw', det_vandermonde_sub]
+  use (of (fun (i j : Fin (n + 1)) => (Nat.choose (w' i) (j : ℕ) : ℤ))).det
+  simp [h, of_eval_descPochhammer_eq_mul_of_choose w', Fin.prod_univ_eq_prod_range]
 
 end Matrix

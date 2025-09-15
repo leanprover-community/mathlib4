@@ -3,7 +3,6 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Batteries.Data.Nat.Gcd
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Sub.Basic
@@ -465,7 +464,7 @@ theorem periodicOrbit_apply_eq (hx : x ∈ periodicPts f) :
   periodicOrbit_apply_iterate_eq hx 1
 
 theorem periodicOrbit_chain (r : α → α → Prop) {f : α → α} {x : α} :
-    (periodicOrbit f x).Chain r ↔ ∀ n < minimalPeriod f x, r (f^[n] x) (f^[n + 1] x) := by
+    (periodicOrbit f x).Chain r ↔ ∀ n < minimalPeriod f x, r (f^[n] x) (f^[n+1] x) := by
   by_cases hx : x ∈ periodicPts f
   · have hx' := minimalPeriod_pos_of_mem_periodicPts hx
     have hM := Nat.sub_add_cancel (succ_le_iff.2 hx')
@@ -483,7 +482,7 @@ theorem periodicOrbit_chain (r : α → α → Prop) {f : α → α} {x : α} :
     simp
 
 theorem periodicOrbit_chain' (r : α → α → Prop) {f : α → α} {x : α} (hx : x ∈ periodicPts f) :
-    (periodicOrbit f x).Chain r ↔ ∀ n, r (f^[n] x) (f^[n + 1] x) := by
+    (periodicOrbit f x).Chain r ↔ ∀ n, r (f^[n] x) (f^[n+1] x) := by
   rw [periodicOrbit_chain r]
   refine ⟨fun H n => ?_, fun H n _ => H n⟩
   rw [iterate_succ_apply, ← iterate_mod_minimalPeriod_eq, ← iterate_mod_minimalPeriod_eq (n := n),
@@ -537,18 +536,18 @@ variable {M : Type u} [Monoid M] [MulAction M α]
 The period of a multiplicative action of `g` on `a` is the smallest positive `n` such that
 `g ^ n • a = a`, or `0` if such an `n` does not exist.
 -/
-@[to_additive "The period of an additive action of `g` on `a` is the smallest positive `n`
-such that `(n • g) +ᵥ a = a`, or `0` if such an `n` does not exist."]
+@[to_additive /-- The period of an additive action of `g` on `a` is the smallest positive `n`
+such that `(n • g) +ᵥ a = a`, or `0` if such an `n` does not exist. -/]
 noncomputable def period (m : M) (a : α) : ℕ := minimalPeriod (fun x => m • x) a
 
 /-- `MulAction.period m a` is definitionally equal to `Function.minimalPeriod (m • ·) a`. -/
-@[to_additive "`AddAction.period m a` is definitionally equal to
-`Function.minimalPeriod (m +ᵥ ·) a`"]
+@[to_additive /-- `AddAction.period m a` is definitionally equal to
+`Function.minimalPeriod (m +ᵥ ·) a` -/]
 theorem period_eq_minimalPeriod {m : M} {a : α} :
     MulAction.period m a = minimalPeriod (fun x => m • x) a := rfl
 
 /-- `m ^ (period m a)` fixes `a`. -/
-@[to_additive (attr := simp) "`(period m a) • m` fixes `a`."]
+@[to_additive (attr := simp) /-- `(period m a) • m` fixes `a`. -/]
 theorem pow_period_smul (m : M) (a : α) : m ^ (period m a) • a = a := by
   rw [period_eq_minimalPeriod, ← smul_iterate_apply, iterate_minimalPeriod]
 
@@ -588,7 +587,7 @@ theorem pow_mod_period_smul (n : ℕ) {m : M} {a : α} :
 @[to_additive (attr := simp)]
 theorem zpow_mod_period_smul (j : ℤ) {g : G} {a : α} :
     g ^ (j % (period g a : ℤ)) • a = g ^ j • a := by
-  conv_rhs => rw [← Int.emod_add_ediv j (period g a), zpow_add, mul_smul,
+  conv_rhs => rw [← Int.emod_add_mul_ediv j (period g a), zpow_add, mul_smul,
     zpow_smul_eq_iff_period_dvd.mpr (dvd_mul_right _ _)]
 
 @[to_additive (attr := simp)]

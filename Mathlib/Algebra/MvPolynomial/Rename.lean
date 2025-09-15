@@ -139,7 +139,8 @@ theorem killCompl_C (r : R) : killCompl hf (C r) = C r := algHom_C _ _
 theorem killCompl_comp_rename : (killCompl hf).comp (rename f) = AlgHom.id R _ :=
   algHom_ext fun i => by
     dsimp
-    rw [rename, killCompl, aeval_X, comp_apply, aeval_X, dif_pos, Equiv.ofInjective_symm_apply]
+    rw [rename, killCompl, aeval_X, comp_apply, aeval_X, dif_pos ⟨i, rfl⟩,
+      Equiv.ofInjective_symm_apply]
 
 @[simp]
 theorem killCompl_rename_app (p : MvPolynomial σ R) : killCompl hf (rename f p) = p :=
@@ -239,7 +240,7 @@ theorem exists_finset_rename (p : MvPolynomial σ R) :
     refine ⟨insert n s, ⟨?_, ?_⟩⟩
     · refine rename (Subtype.map id ?_) p * X ⟨n, s.mem_insert_self n⟩
       simp +contextual only [id, or_true, Finset.mem_insert, forall_true_iff]
-    · simp only [rename_rename, rename_X, Subtype.coe_mk, map_mul]
+    · simp only [rename_rename, rename_X, map_mul]
       rfl
 
 /-- `exists_finset_rename` for two polynomials at once: for any two polynomials `p₁`, `p₂` in a

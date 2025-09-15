@@ -115,7 +115,7 @@ theorem AlgebraicIndepOn.insert_iff {s : Set ι} {i : ι} (h : i ∉ s) :
   classical simp_rw [← algebraicIndependent_equiv (subtypeInsertEquivOption h).symm,
     AlgebraicIndepOn]
   convert option_iff (x := fun i : s ↦ x i) (a := x i) using 2
-  · ext (_|_) <;> rfl
+  · ext (_ | _) <;> rfl
   · rw [Set.image_eq_range]
 
 protected theorem AlgebraicIndepOn.insert {s : Set ι} {i : ι} (hs : AlgebraicIndepOn R x s)
@@ -170,7 +170,7 @@ theorem sumElim_iff {ι'} {y : ι' → A} : AlgebraicIndependent R (Sum.elim y x
   · exact ⟨fun h ↦ (hx <| by apply h.comp _ Sum.inr_injective).elim, fun h ↦ (hx h.1).elim⟩
   let e := (sumAlgEquiv R ι' ι).trans (mapAlgEquiv _ hx.aevalEquiv)
   have : aeval (Sum.elim y x) = ((aeval y).restrictScalars R).comp e.toAlgHom := by
-    ext (_|_) <;> simp [e, algebraMap_aevalEquiv]
+    ext (_ | _) <;> simp [e, algebraMap_aevalEquiv]
   simp_rw [hx, AlgebraicIndependent, this]; simp
 
 theorem iff_adjoin_image (s : Set ι) :
@@ -179,7 +179,7 @@ theorem iff_adjoin_image (s : Set ι) :
   rw [show x '' s = range fun i : s ↦ x i by ext; simp]
   convert ← sumElim_iff
   classical apply algebraicIndependent_equiv' ((Equiv.sumComm ..).trans (Equiv.Set.sumCompl ..))
-  ext (_|_) <;> rfl
+  ext (_ | _) <;> rfl
 
 theorem iff_adjoin_image_compl (s : Set ι) :
     AlgebraicIndependent R x ↔ AlgebraicIndependent R (fun i : ↥sᶜ ↦ x i) ∧
