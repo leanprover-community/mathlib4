@@ -609,8 +609,6 @@ theorem getElem?_idxOf [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
     l[idxOf a l]? = some a := by
   rw [getElem?_eq_getElem (idxOf_lt_length_iff.2 h), getElem_idxOf]
 
-@[deprecated (since := "2025-02-15")] alias idxOf_get? := getElem?_idxOf
-
 theorem idxOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy : y ∈ l) :
     idxOf x l = idxOf y l ↔ x = y :=
   ⟨fun h => by
