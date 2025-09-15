@@ -15,7 +15,7 @@ This file proves many basic properties of inner product spaces (real or complex)
 ## Main results
 
 - `inner_mul_inner_self_le`: the Cauchy-Schwartz inequality (one of many variants).
-- `norm_inner_eq_norm_iff`: the equality criteion in the Cauchy-Schwartz inequality (also in many
+- `norm_inner_eq_norm_iff`: the equality criterion in the Cauchy-Schwartz inequality (also in many
   variants).
 - `inner_eq_sum_norm_sq_div_four`: the polarization identity.
 
@@ -806,6 +806,10 @@ theorem inner_le_one_of_norm_one {x y : F} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1)
 theorem neg_one_le_inner_of_norm_one {x y : F} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) : -1 ≤ ⟪x, y⟫_ℝ := by
   have H := neg_le_of_abs_le (abs_real_inner_le_norm x y)
   simp_all
+
+@[simp]
+theorem inner_self_eq_one_of_norm_one {x : F} (hx : ‖x‖ = 1) : ⟪x, x⟫_ℝ = 1 :=
+  (inner_eq_one_iff_of_norm_one hx hx).mpr rfl
 
 theorem inner_lt_norm_mul_iff_real {x y : F} : ⟪x, y⟫_ℝ < ‖x‖ * ‖y‖ ↔ ‖y‖ • x ≠ ‖x‖ • y :=
   calc

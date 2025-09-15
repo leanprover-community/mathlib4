@@ -25,39 +25,20 @@ variable [InnerProductSpace ℝ V]
 
 section UnitVectorAngles
 
-@[simp]
-lemma inner_self_eq_one {x : V} (hx : ‖x‖ = 1) : ⟪x, x⟫ = 1 :=
-  (inner_eq_one_iff_of_norm_one hx hx).mpr rfl
-
-lemma neg_one_le_inner {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) : -1 ≤ ⟪x, y⟫ := by
-  have H := neg_le_of_abs_le (abs_real_inner_le_norm x y)
-  simp_all
-
-lemma neg_one_le_inner_normalize_normalize (x y : V) :
-    (-1 : ℝ) ≤ ⟪normalize x, normalize y⟫ := by
-  by_cases hx : x = 0
-  · simp_all
-  by_cases hy : y = 0
-  · simp_all
-  have H: ‖normalize x‖ = 1 := norm_normalize_eq_one_iff.mpr hx
-  have H0: ‖normalize y‖ = 1 := norm_normalize_eq_one_iff.mpr hy
-  exact neg_one_le_inner H H0
-
 /-- Gets the orthogonal direction of one vector relative to another.
 The definition is only for `y` such that `‖y‖ = 1`. -/
 private noncomputable def ortho (y x : V) : V := x - ⟪x, y⟫ • y
 
 private lemma inner_ortho_nonneg {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) : 0 ≤ ⟪x, ortho y x⟫ := by
-  rw [ortho, inner_sub_right, real_inner_smul_right, inner_self_eq_one hx]
+  rw [ortho, inner_sub_right, real_inner_smul_right, inner_self_eq_one_of_norm_one hx]
   rw [← sq, sub_nonneg, sq_le_one_iff_abs_le_one]
   have H := abs_real_inner_le_norm x y
   simp_all
 
-@[simp]
 private lemma inner_normalize_ortho (x : V) {y : V} (hy : ‖y‖ = 1) :
     ⟪y, normalize (ortho y x)⟫ = 0 := by
   rw [ortho, NormedSpace.normalize, real_inner_smul_right, inner_sub_right,
-      real_inner_smul_right, inner_self_eq_one hy, real_inner_comm]
+      real_inner_smul_right, inner_self_eq_one_of_norm_one hy, real_inner_comm]
   simp
 
 private lemma inner_normalized_ortho_sq_add_inner_sq_eq_one {x y : V}
@@ -85,15 +66,10 @@ private lemma inner_normalized_ortho_sq_add_inner_sq_eq_one {x y : V}
   rw [real_inner_self_eq_norm_sq, hx, real_inner_self_eq_norm_sq, hy]
   ring
 
-
-lemma inner_eq_cos_angle {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
-    ⟪x, y⟫ = Real.cos (angle x y) := by
-  simp_all [cos_angle]
-
 private lemma inner_ortho_right_eq_sin_angle {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     ⟪x, normalize (ortho y x)⟫ = Real.sin (angle x y) := by
   have H : ⟪x, normalize (ortho y x)⟫ ^ 2 = Real.sin (angle x y) ^ 2 := by
-    simp [Real.sin_sq, ← inner_eq_cos_angle hx hy,
+    simp [Real.sin_sq, ← inner_eq_cos_angle_of_norm_one hx hy,
       ← inner_normalized_ortho_sq_add_inner_sq_eq_one hx hy]
   rw [sq_eq_sq_iff_abs_eq_abs, abs_of_nonneg (sin_angle_nonneg x y)] at H
   have H0 : 0 ≤ ⟪x, normalize (ortho y x)⟫ := by
@@ -106,7 +82,7 @@ private lemma inner_ortho_right_eq_sin_angle {x y : V} (hx : ‖x‖ = 1) (hy : 
 
 private lemma angle_le_angle_add_angle_aux {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) :
     x = Real.cos (angle x y) • y + Real.sin (angle x y) • normalize (ortho y x) := by
-  rw [← inner_ortho_right_eq_sin_angle Hx Hy, ← inner_eq_cos_angle Hx Hy]
+  rw [← inner_ortho_right_eq_sin_angle Hx Hy, ← inner_eq_cos_angle_of_norm_one Hx Hy]
   by_cases hxy : x - ⟪x, y⟫ • y = 0
   · simp [ortho, hxy, ← sub_eq_zero]
   simp only [ortho]
@@ -117,18 +93,18 @@ private lemma angle_le_angle_add_angle_aux {x y : V} (Hx : ‖x‖ = 1) (Hy : �
     rw [sub_ne_zero, ne_comm, sq_ne_one_iff]
     constructor <;> contrapose! hxy
     · rw [inner_eq_one_iff_of_norm_one Hx Hy] at hxy
-      simp_all [inner_self_eq_one]
+      simp_all [inner_self_eq_one_of_norm_one]
     · rw [inner_eq_neg_one_iff_of_norm_one Hx Hy] at hxy
-      simp_all [inner_self_eq_one]
+      simp_all [inner_self_eq_one_of_norm_one]
   rw [← smul_assoc, smul_eq_mul]
   field_simp
   rw [sq, ← real_inner_self_eq_norm_sq]
   have H0 : ⟪x - ⟪x, y⟫ • y, x - ⟪x, y⟫ • y⟫ = 1 - ⟪x, y⟫ ^ 2 := by
-    rw [inner_sub_left, inner_sub_right, inner_sub_right, inner_self_eq_one Hx]
+    rw [inner_sub_left, inner_sub_right, inner_sub_right, inner_self_eq_one_of_norm_one Hx]
     rw [real_inner_smul_right, ← sq]
     field_simp
     rw [real_inner_smul_left, real_inner_smul_left, real_inner_smul_right]
-    rw [inner_self_eq_one Hy, real_inner_comm y x]
+    rw [inner_self_eq_one_of_norm_one Hy, real_inner_comm y x]
     ring
   rw [H0]
   field_simp; simp
@@ -148,10 +124,16 @@ lemma angle_le_angle_add_angle_of_norm_one {x y z : V}
     angle_comm z y, inner_normalize_ortho] at H1
   norm_num at H1
   rw [mul_comm (Real.cos (angle y z))] at H1
-  have H2 := neg_one_le_inner_normalize_normalize (ortho y x) (ortho y z)
+  have H2 : -1 ≤ ⟪normalize (ortho y x), normalize (ortho y z)⟫ := by
+    by_cases H3 : ortho y x = 0
+    · simp_all
+    by_cases H4 : ortho y z = 0
+    · simp_all
+    exact neg_one_le_inner_of_norm_one
+      (norm_normalize_eq_one_iff.mpr H3) (norm_normalize_eq_one_iff.mpr H4)
   have H3 := mul_nonneg (sin_angle_nonneg x y) (sin_angle_nonneg y z)
   have H4 : Real.cos (angle x y + angle y z) ≤ Real.cos (angle x z) := by
-    rw [Real.cos_add, ← inner_eq_cos_angle Hx Hz]
+    rw [Real.cos_add, ← inner_eq_cos_angle_of_norm_one Hx Hz]
     rw [neg_le_iff_add_nonneg] at H2
     rw [H1]
     field_simp
