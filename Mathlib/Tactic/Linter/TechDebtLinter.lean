@@ -23,7 +23,7 @@ namespace TechDebtLinter
 
 /--
 `getDebts stx` extracts from syntax all the nodes that carry some technical debt.
-Most of the times, these are nodes whos mere presence is already a sign of technical debt
+Most of the times, these are nodes whose mere presence is already a sign of technical debt
 (for instance, `erw`, or `nolint simpNF`).
 Sometimes, the node is a sign of technical debt only if another node is absent
 (for instance, `set_option linter.deprecated false` is usually considered as technical debt, but
