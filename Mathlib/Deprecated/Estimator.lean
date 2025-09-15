@@ -12,6 +12,8 @@ import Mathlib.Lean.Thunk
 /-!
 # Improvable lower bounds.
 
+Note: this entire file is deprecated.
+
 The typeclass `Estimator a ε`, where `a : Thunk α` and `ε : Type`,
 states that `e : ε` carries the data of a lower bound for `a.get`,
 in the form `bound_le : bound a e ≤ a.get`,
@@ -53,6 +55,8 @@ Given `[Estimator a ε]`
 * `improve a e` returns none iff `bound a e = a.get`,
   and otherwise it returns a strictly better bound.
 -/
+@[deprecated "No replacement: this was only used \
+  in the implementation of the removed `rw_search` tactic." (since := "2025-09-11")]
 class Estimator [Preorder α] (a : Thunk α) (ε : Type*) extends EstimatorData a ε where
   /-- The calculated bounds are always lower bounds. -/
   bound_le e : bound e ≤ a.get
@@ -61,6 +65,10 @@ class Estimator [Preorder α] (a : Thunk α) (ε : Type*) extends EstimatorData 
   improve_spec e : match improve e with
     | none => bound e = a.get
     | some e' => bound e < bound e'
+
+-- Everything in this file is deprecated,
+-- but we'll just add the deprecation attribute to the main class.
+set_option linter.deprecated false
 
 open EstimatorData Set
 
