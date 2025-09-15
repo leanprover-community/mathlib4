@@ -1,3 +1,4 @@
+import Batteries.Tactic.Alias
 import Mathlib.Tactic.Linter.TechDebtLinter
 --import Mathlib.adomaniLeanUtils.inspect_syntax
 

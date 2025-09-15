@@ -1,5 +1,4 @@
 import Lean.Elab.Command
-import Batteries.Tactic.Alias
 import Mathlib.Tactic.AdaptationNote
 /-!
 #  The "techDebtLinter" linter
