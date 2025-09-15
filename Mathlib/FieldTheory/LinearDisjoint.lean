@@ -415,8 +415,8 @@ theorem of_finrank_sup [FiniteDimensional F A] [FiniteDimensional F B]
 -/
 theorem finrank_left_eq_finrank [Module.Finite F A] (h₁ : A.LinearDisjoint B) (h₂ : A ⊔ B = ⊤) :
     finrank A E = finrank F B := by
-  have := finrank_mul_finrank F A E ▸ finrank_top F E ▸ h₂ ▸ h₁.finrank_sup
-  rwa [mul_right_inj' (finrank_pos.ne')] at this
+  have := h₁.finrank_sup
+  rwa [h₂, finrank_top', ← finrank_mul_finrank F A E, mul_right_inj' finrank_pos.ne'] at this
 
 /-- If `A` and `B` are linearly disjoint over `F` and `A ⊔ B = E`, then the `Module.finrank` of
 `E` over `B` is equal to the `Module.finrank` of `A` over `F`.
