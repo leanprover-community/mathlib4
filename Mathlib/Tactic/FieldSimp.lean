@@ -716,13 +716,15 @@ def proc : Simp.Simproc := fun (t : Expr) ↦ do
   catch _ =>
     return .continue
 
-simproc_decl eqProc (Eq _ _) := proc
-simproc_decl leProc (LE.le _ _) := proc
-simproc_decl ltProc (LT.lt _ _) := proc
-
-attribute [field, inherit_doc fieldSimp] eqProc leProc ltProc
-
 end Mathlib.Tactic.FieldSimp
+
+open Mathlib.Tactic
+
+simproc_decl fieldEq (Eq _ _) := FieldSimp.proc
+simproc_decl fieldLe (LE.le _ _) := FieldSimp.proc
+simproc_decl fieldLt (LT.lt _ _) := FieldSimp.proc
+
+attribute [field, inherit_doc FieldSimp.fieldSimp] fieldEq fieldLe fieldLt
 
 /-!
  We register `field_simp` with the `hint` tactic.
