@@ -19,7 +19,7 @@ This generalizes the function of the same name in the study of `Hyperreal` numbe
 
 ## Todo
 
-Should we redefine `Hyperreal.st` in terems of `ArchimedeanClass.standardPart x`?
+Should we redefine `Hyperreal.st` in terms of `ArchimedeanClass.standardPart`?
 -/
 
 namespace ArchimedeanClass
