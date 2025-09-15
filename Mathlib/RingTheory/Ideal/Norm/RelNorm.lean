@@ -375,5 +375,3 @@ theorem relNorm_algebraMap' {R'} [CommRing R'] (I : Ideal R') [Algebra R' R]
 end Ideal
 
 end SpanNorm
-
-#where
