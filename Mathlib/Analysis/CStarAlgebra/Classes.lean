@@ -75,10 +75,13 @@ section Elemental
 variable {A : Type*}
 
 noncomputable instance [CStarAlgebra A] (x : A) :
-    CStarAlgebra (StarAlgebra.elemental ℂ x) where
+    CStarAlgebra (StarAlgebra.elemental ℂ x) :=
+  StarSubalgebra.cstarAlgebra _ (h_closed := StarAlgebra.elemental.isClosed ℂ x)
 
 noncomputable instance [NonUnitalCStarAlgebra A] (x : A) :
-    NonUnitalCStarAlgebra (NonUnitalStarAlgebra.elemental ℂ x) where
+    NonUnitalCStarAlgebra (NonUnitalStarAlgebra.elemental ℂ x) :=
+  NonUnitalStarSubalgebra.nonUnitalCStarAlgebra _
+    (h_closed := NonUnitalStarAlgebra.elemental.isClosed ℂ x)
 
 noncomputable instance [CStarAlgebra A] (x : A) [IsStarNormal x] :
     CommCStarAlgebra (StarAlgebra.elemental ℂ x) where
