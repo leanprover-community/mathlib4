@@ -54,6 +54,23 @@ noncomputable def adjoin.powerBasis {x : S} (hx : IsIntegral K x) :
   basis := adjoin.powerBasisAux hx
   basis_eq_pow i := by rw [adjoin.powerBasisAux, Basis.mk_apply]
 
+/--
+If `x` generates `S` over `K` and is integral over `K`, then it defines a power basis.
+See `PowerBasis.ofAdjoinEqTop'` for a version over a more general base ring.
+-/
+noncomputable def _root_.PowerBasis.ofAdjoinEqTop {x : S} (hx : IsIntegral K x)
+    (hx' : adjoin K {x} = ⊤) : PowerBasis K S :=
+  (adjoin.powerBasis hx).map ((Subalgebra.equivOfEq _ _ hx').trans Subalgebra.topEquiv)
+
+@[simp]
+theorem _root_.PowerBasis.ofAdjoinEqTop_gen {x : S} (hx : IsIntegral K x)
+    (hx' : adjoin K {x} = ⊤) : (PowerBasis.ofAdjoinEqTop hx hx').gen = x := rfl
+
+@[simp]
+theorem _root_.PowerBasis.ofAdjoinEqTop_dim {x : S} (hx : IsIntegral K x)
+    (hx' : adjoin K {x} = ⊤) :
+    (PowerBasis.ofAdjoinEqTop hx hx').dim = (minpoly K x).natDegree := rfl
+
 end Algebra
 
 open Algebra
