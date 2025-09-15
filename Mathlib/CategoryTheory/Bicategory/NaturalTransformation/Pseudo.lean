@@ -134,7 +134,6 @@ variable (F) in
 lemma id.toOplax : Oplax.StrongTrans.id F.toOplax = 𝟙 F :=
   rfl
 
-
 section
 
 variable {a b c : B} {a' : C}
