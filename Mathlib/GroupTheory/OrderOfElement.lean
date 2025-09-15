@@ -637,7 +637,7 @@ lemma zpow_mod_orderOf (x : G) (z : ℤ) : x ^ (z % (orderOf x : ℤ)) = x ^ z :
   calc
     x ^ (z % (orderOf x : ℤ)) = x ^ (z % orderOf x + orderOf x * (z / orderOf x) : ℤ) := by
         simp [zpow_add, zpow_mul, pow_orderOf_eq_one]
-    _ = x ^ z := by rw [Int.emod_add_ediv]
+    _ = x ^ z := by rw [Int.emod_add_mul_ediv]
 
 @[to_additive (attr := simp) zsmul_smul_addOrderOf]
 theorem zpow_pow_orderOf : (x ^ i) ^ orderOf x = 1 := by
@@ -1232,7 +1232,7 @@ lemma charP_of_ne_zero (hn : card R = p) (hR : ∀ i < p, (i : R) = 0 → i = 0)
       rw [← Nat.mod_add_div n p, Nat.cast_add, Nat.cast_mul, H, zero_mul, add_zero] at h
       rw [Nat.dvd_iff_mod_eq_zero]
       apply hR _ (Nat.mod_lt _ _) h
-      rw [← hn, gt_iff_lt, Fintype.card_pos_iff]
+      rw [← hn, Fintype.card_pos_iff]
       exact ⟨0⟩
     · rintro ⟨n, rfl⟩
       rw [Nat.cast_mul, H, zero_mul]
