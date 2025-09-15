@@ -337,10 +337,12 @@ theorem colorable_of_chromaticNumber_ne_top (h : G.chromaticNumber ≠ ⊤) :
   obtain ⟨n, hn⟩ := h
   exact colorable_chromaticNumber hn
 
-theorem chromaticNumber_eq_zero_of_isempty (G : SimpleGraph V) [IsEmpty V] :
-    G.chromaticNumber = 0 := by
+theorem chromaticNumber_eq_zero_of_isEmpty [IsEmpty V] : G.chromaticNumber = 0 := by
   rw [← nonpos_iff_eq_zero, ← Nat.cast_zero, chromaticNumber_le_iff_colorable]
   apply colorable_of_isEmpty
+
+@[deprecated (since := "2025-09-15")]
+alias chromaticNumber_eq_zero_of_isempty := chromaticNumber_eq_zero_of_isEmpty
 
 theorem isEmpty_of_chromaticNumber_eq_zero (G : SimpleGraph V) (h : G.chromaticNumber = 0) :
     IsEmpty V := by
