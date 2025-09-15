@@ -276,7 +276,7 @@ Note that similar APIs are duplicated across several types: e.g. `Vector.get`, `
 example : [100,200,300,400,500].get! 12 = default := by
   rfl
 
-/- Trying to evaluate the expression lead to a panic. -/
+/- Trying to evaluate the expression leads to a panic. -/
 #guard_msgs(drop all) in
 #eval [100,200,300,400,500].get! 12
 
