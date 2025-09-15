@@ -1354,3 +1354,30 @@ instance [Subsingleton M] (S : Submonoid R) : Subsingleton (LocalizedModule S M)
   use 1, S.one_mem, Subsingleton.elim _ _
 
 end LocalizedModule
+
+namespace IsLocalizedModule
+
+variable {R M A N : Type*} [CommRing R] [AddCommMonoid M] [Module R M]
+  [CommRing A] [AddCommMonoid N] [Module A N] [Algebra R A] [Module R N] [IsScalarTower R A N]
+  (f : M →ₗ[R] N)
+
+theorem noZeroSMulDivisors (S : Submonoid R) [NoZeroSMulDivisors R M] [IsLocalization S A]
+    [IsLocalizedModule S f] : NoZeroSMulDivisors A N := by
+  rw [noZeroSMulDivisors_iff]
+  intro c x hcx
+  obtain ⟨a, s, rfl⟩ := IsLocalization.mk'_surjective S c
+  obtain ⟨⟨m, t⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f x
+  rw [Function.uncurry_apply_pair] at hcx ⊢
+  rw [mk'_smul_mk', mk'_eq_zero, IsLocalizedModule.eq_zero_iff S] at hcx
+  obtain ⟨u, hl⟩ := hcx
+  rw [← smul_assoc] at hl
+  obtain (hua | rfl) := NoZeroSMulDivisors.eq_zero_or_eq_zero_of_smul_eq_zero hl
+  · rw [IsLocalization.mk'_eq_zero_iff]
+    exact Or.inl ⟨u, hua⟩
+  · simp
+
+instance (S : Submonoid R) [NoZeroSMulDivisors R M] :
+    NoZeroSMulDivisors (Localization S) (LocalizedModule S M) :=
+  noZeroSMulDivisors (LocalizedModule.mkLinearMap S M) S
+
+end IsLocalizedModule
