@@ -581,19 +581,20 @@ lemma MDifferentiable.sum_section_of_locallyFinite (ht : LocallyFinite fun i ↦
 -- of the sections `t i` are necessary.
 lemma MDifferentiableWithinAt.finsum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
-    (ht' : ∀ i, MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t i x)) u x₀) :
-    MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) u x₀ := by
-  sorry
-  -- apply (MDifferentiableWithinAt.sum_section_of_locallyFinite ht ht').congr' (t := Set.univ)
-  --     (fun y hy ↦ ?_) (by grind) trivial
-  -- rw [← tsum_eq_finsum]
-  -- choose U hu hfin using ht y
-  -- have : {x | t x y ≠ 0} ⊆ {i | ((fun i ↦ {x | t i x ≠ 0}) i ∩ U).Nonempty} := by
-  --   intro x hx
-  --   rw [Set.mem_setOf] at hx ⊢
-  --   use y
-  --   simpa using ⟨hx, mem_of_mem_nhds hu⟩
-  -- exact Set.Finite.subset hfin this
+    (ht' : ∀ i, MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F))
+      (fun x ↦ TotalSpace.mk' F x (t i x)) u x₀) :
+    MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F))
+      (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) u x₀ := by
+  apply (MDifferentiableWithinAt.sum_section_of_locallyFinite ht ht').congr' (t := Set.univ)
+      (fun y hy ↦ ?_) (by grind) trivial
+  rw [← tsum_eq_finsum]
+  choose U hu hfin using ht y
+  have : {x | t x y ≠ 0} ⊆ {i | ((fun i ↦ {x | t i x ≠ 0}) i ∩ U).Nonempty} := by
+    intro x hx
+    rw [Set.mem_setOf] at hx ⊢
+    use y
+    simpa using ⟨hx, mem_of_mem_nhds hu⟩
+  exact Set.Finite.subset hfin this
 
 lemma MDifferentiableAt.finsum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
@@ -613,7 +614,7 @@ lemma MDifferentiable.finsum_section_of_locallyFinite
     (ht' : ∀ i, MDifferentiable I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t i x))) :
     MDifferentiable I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (∑ᶠ i, t i x)) :=
   fun x ↦ .finsum_section_of_locallyFinite ht fun i ↦ ht' i x
-#exit
+
 end operations
 
 section
