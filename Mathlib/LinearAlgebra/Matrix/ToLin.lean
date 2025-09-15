@@ -674,17 +674,13 @@ theorem LinearMap.toMatrix_smulBasis_left {G} [Group G] [DistribMulAction G M₁
     [SMulCommClass G R M₁] (g : G) (f : M₁ →ₗ[R] M₂) :
     LinearMap.toMatrix (g • v₁) v₂ f =
       LinearMap.toMatrix v₁ v₂ (f ∘ₗ DistribMulAction.toLinearMap _ _ g) := by
-  ext
-  rw [LinearMap.toMatrix_apply, LinearMap.toMatrix_apply]
-  dsimp
+  rfl
 
 theorem LinearMap.toMatrix_smulBasis_right {G} [Group G] [DistribMulAction G M₂]
     [SMulCommClass G R M₂] (g : G) (f : M₁ →ₗ[R] M₂) :
     LinearMap.toMatrix v₁ (g • v₂) f =
       LinearMap.toMatrix v₁ v₂ (DistribMulAction.toLinearMap _ _ g⁻¹ ∘ₗ f) := by
-  ext
-  rw [LinearMap.toMatrix_apply, LinearMap.toMatrix_apply]
-  dsimp
+  rfl
 
 end Finite
 
