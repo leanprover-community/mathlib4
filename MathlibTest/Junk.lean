@@ -151,7 +151,7 @@ example : Nat.log 3 10 = 2 ∧ Nat.clog 3 10 = 3 ∧ Nat.log 0 100 = 0 := by
 
 /-- `Int.log` could easily be mistaken to be a version of `Nat.log` for `Int` arguments instead.
 In fact, `Int.log b x` is designed to try to extend `Nat.log` to give the appropriate negative value
-when `x` is the interval `[0,1]`. The base `b` must be a natural number bases, so there's no worries
+when `x` is the interval `[0,1]`. The base `b` must be a natural number base, so there's no worries
 about what to do when the base is negative.
 
 When the base `b` is 0, the same junk value of 0 is used as `Nat.log`. When the argument `x` is
