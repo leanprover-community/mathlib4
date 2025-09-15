@@ -107,23 +107,30 @@ theorem mk_lt_mk_sub_standardPart_mul (f : ℝ →+* K) (hf : StrictMono f)
   rw [standardPart, dif_pos H]
   exact Classical.choose_spec H
 
-theorem standardPart_of_mk_lt_mk (f : ℝ →+* K) (hf : StrictMono f) {r : ℝ}
-    (h : mk x < mk y) : standardPart f x y = 0 := by
-  apply dif_neg
-  intro ⟨r, hr⟩
-  apply hr.not_ge
-  rw [mk_sub_eq_mk_left]
+private theorem mk_sub_le_mk_of_lt (f : ℝ →+* K) (hf : StrictMono f) (h : mk x < mk y) (r : ℝ) :
+    mk (x - f r * y) ≤ mk x := by
+  obtain rfl | hr' := eq_or_ne r 0
+  · simp
+  · rw [mk_sub_eq_mk_left]
+    exact h.trans_le <| mk_le_mk_add_of_archimedean ⟨f, hf.monotone⟩ ..
 
+theorem standardPart_of_mk_lt_mk (f : ℝ →+* K) (hf : StrictMono f) (h : mk x < mk y) :
+    standardPart f x y = 0 :=
+  dif_neg fun ⟨r, hr⟩ ↦ (mk_sub_le_mk_of_lt f hf h r).not_gt (h.trans hr)
 
-  #exit
-
-theorem standardPart_of_mk_sub_gt_mk (f : ℝ →+* K) (hf : StrictMono f) {r : ℝ}
+theorem standardPart_of_mk_lt_mk_sub (f : ℝ →+* K) (hf : StrictMono f) {r : ℝ}
     (h : mk y < mk (x - f r * y)) : standardPart f x y = r := by
   have hy : y ≠ 0 := by aesop
-
-  sorry
-
-  #exit
+  obtain h' | h' := le_or_gt (mk y) (mk x)
+  · contrapose! h
+    have hf' : mk (f (r - standardPart f x y) * y) = mk y := by
+      rw [ne_comm, ne_eq, ← sub_eq_zero] at h
+      rw [mk_mul]
+      convert zero_add _
+      exact mk_map_of_archimedean' ⟨f, hf.monotone⟩ h
+    rw [← add_sub_cancel (standardPart f x y) r, f.map_add, add_mul, sub_add_eq_sub_sub,
+      mk_sub_eq_mk_right (hf' ▸ mk_lt_mk_sub_standardPart_mul f hf hy h'), hf']
+  · cases (mk_sub_le_mk_of_lt f hf h' r).not_gt (h'.trans h)
 
 @[simp]
 theorem standardPart_zero_right (f : ℝ →+* K) (x : K) : standardPart f x 0 = 0 := by
@@ -133,28 +140,7 @@ theorem standardPart_zero_left (f : ℝ →+* K) (hf : StrictMono f) (x : K) :
     standardPart f 0 x = 0 := by
   obtain rfl | hx := eq_or_ne x 0
   · exact standardPart_zero_right f 0
-  · rw [standardPart]
-    split_ifs
-    apply dif_neg
-    simp only [zero_sub, mk_neg,  not_exists, not_lt]
-
-#exit
-
-#exit
-
-theorem existsUnique_mk_sub_real_mul_gt (f : ℝ →+* K) (hf : StrictMono f)
-    (hx : x ≠ 0) (h : mk y ≤ mk x) :
-    ∃! r : ℝ, mk y < mk (x - f r * y) := by
-  apply existsUnique_of_exists_of_unique (exists_mk_sub_real_mul_gt f hf hx h)
-  intro r₁ r₂ hr₁ hr₂
-  by_contra hr
-  rw [← sub_eq_zero, ← hf.injective.eq_iff, f.map_zero] at hr
-  sorry
-
-theorem existsUnique_mk_add_real_mul_gt (f : ℝ →+* K) (hf : StrictMono f)
-    (hx : x ≠ 0) (h : mk y ≤ mk x) :
-    ∃! r : ℝ, mk y < mk (x + f r * y) := by
-  rw [(Equiv.neg _).existsUnique_congr_left]
-  simpa [← sub_eq_add_neg] using existsUnique_mk_sub_real_mul_gt f hf hx h
+  · apply standardPart_of_mk_lt_mk_sub f hf
+    simp_all [lt_top_iff_ne_top]
 
 end ArchimedeanClass

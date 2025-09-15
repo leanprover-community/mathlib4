@@ -172,6 +172,17 @@ theorem add_right_cancel_of_ne_top {x y z : ArchimedeanClass R} (hx : x ≠ ⊤)
   simp_rw [← add_comm x] at h
   exact add_left_cancel_of_ne_top hx h
 
+theorem mk_le_mk_add_of_archimedean [CommRing S] [IsOrderedRing S] [Archimedean S]
+    (f : S →+*o R) (x : R) (y : S) : mk x ≤ mk (f y) + mk x := by
+  obtain rfl | hy := eq_or_ne y 0
+  · simp
+  · rw [mk_map_of_archimedean' f hy, zero_add]
+
+theorem mk_le_add_mk_of_archimedean [CommRing S] [IsOrderedRing S] [Archimedean S]
+    (f : S →+*o R) (x : R) (y : S) : mk x ≤ mk x + mk (f y) := by
+  rw [add_comm]
+  exact mk_le_mk_add_of_archimedean f x y
+
 variable [Ring S] [IsStrictOrderedRing S]
 
 theorem mk_le_mk_iff_denselyOrdered [DenselyOrdered R] [Archimedean R] {x y : S}
