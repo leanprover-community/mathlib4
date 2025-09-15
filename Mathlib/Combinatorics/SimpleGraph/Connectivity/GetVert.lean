@@ -30,7 +30,7 @@ namespace Walk
 
 /-- Get the `n`th vertex from a walk, where `n` is generally expected to be
 between `0` and `p.length`, inclusive.
-If `n` is greater than or equal to `p.length`, the result is the path's endpoint. -/
+If `n` is greater than or equal to `p.length`, the result is the walk's endpoint. -/
 def getVert {u v : V} : G.Walk u v → ℕ → V
   | nil, _ => u
   | cons _ _, 0 => u
