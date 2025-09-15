@@ -126,10 +126,10 @@ abbrev ExistsEqualSumsOfLikePowersFor (R : Type*) [Semiring R] (k m n : ℕ) : P
   (x.map (· ^ k)).sum = (y.map (· ^ k)).sum
 
 /-- Euler's sum of powers conjecture for `k` restricts solutions for `(k, m, 1)`. -/
-theorem existsEqualSumsOfLikePowersFor_of_sumOfPowersConjectureWith (R : Type*) [Semiring R] :
-    ∀ k, ∀ m ≥ 2,
+theorem existsEqualSumsOfLikePowersFor_of_sumOfPowersConjectureWith (R : Type*) [Semiring R]
+    (k m : ℕ) (hm : 2 ≤ m) :
     SumOfPowersConjectureWith R k → ExistsEqualSumsOfLikePowersFor R k m 1 → k ≤ m := by
-  intro k m hm conj ⟨x, y, hx, hy, hx₀, hy₀, hdisj, hsum⟩
+  intro conj ⟨x, y, hx, hy, hx₀, hy₀, hdisj, hsum⟩
   rw [← hx]
   rw [List.eq_cons_of_length_one hy] at hsum hy₀
   simp at hsum hy₀
@@ -147,9 +147,10 @@ abbrev LanderParkinSelfridgeConjecture (R : Type*) [Semiring R] (k m n : ℕ) : 
 
 /-- Euler's sum of powers conjecture for `k` implies the Lander, Parkin, and Selfridge conjecture
 for `(k, m, 1)`. -/
-theorem LanderParkinSelfridgeConjecture_of_sumOfPowersConjectureWith (R : Type*) [Semiring R] :
-    ∀ k, ∀ m ≥ 2, SumOfPowersConjectureWith R k → LanderParkinSelfridgeConjecture R k m 1 := by
-  intro k m hm conj hsum
+theorem LanderParkinSelfridgeConjecture_of_sumOfPowersConjectureWith (R : Type*) [Semiring R]
+    (k m : ℕ) (hm : 2 ≤ m) :
+    SumOfPowersConjectureWith R k → LanderParkinSelfridgeConjecture R k m 1 := by
+  intro conj hsum
   have := existsEqualSumsOfLikePowersFor_of_sumOfPowersConjectureWith R k m hm conj hsum
   omega
 
