@@ -75,12 +75,12 @@ example (h₁ : a ∣ b) (h₂ : b ∣ a ^ 2 * c) : a ∣ b ^ 2 * c := by
 To be able to use `grewrite`, the relevant lemmas need to be tagged with `@[gcongr]`.
 To rewrite inside a transitive relation, you can also give it an `IsTrans` instance.
 -/
-syntax (name := grewriteSeq) "grewrite" optConfig rwRuleSeq (location)? : tactic
+syntax (name := grewriteSeq) "grewrite" optConfig rwRuleSeq (location)? (rwDischarge)? : tactic
 
 @[tactic grewriteSeq, inherit_doc grewriteSeq] def evalGRewriteSeq : Tactic := fun stx => do
   let cfg ← elabGRewriteConfig stx[1]
   let loc := expandOptLocation stx[3]
-  withRWRulesSeq stx[0] stx[2] fun symm term => do
+  withRWRulesSeq stx stx[0] stx[2] 4 fun symm term => do
     withLocation loc
       (grewriteLocalDecl term symm · cfg)
       (grewriteTarget term symm cfg)

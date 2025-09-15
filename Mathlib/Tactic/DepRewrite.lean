@@ -506,13 +506,13 @@ With `rewrite! +letAbs (castMode := .all)`, casts are inserted whenever necessar
 This means that the 'motive is not type correct' error never occurs,
 at the expense of creating potentially complicated terms.
 -/
-syntax (name := depRewriteSeq) "rewrite!" optConfig rwRuleSeq (location)? : tactic
+syntax (name := depRewriteSeq) "rewrite!" optConfig rwRuleSeq (location)? (rwDischarge)?: tactic
 
 /--
 `rw!` is like `rewrite!`, but also calls `dsimp` to simplify the result after every substitution.
 It is available as an ordinary tactic and a `conv` tactic.
 -/
-syntax (name := depRwSeq) "rw!" optConfig rwRuleSeq (location)? : tactic
+syntax (name := depRwSeq) "rw!" optConfig rwRuleSeq (location)? (rwDischarge)? : tactic
 
 /-- Apply `rewrite!` to the goal. -/
 def depRewriteTarget (stx : Syntax) (symm : Bool) (config : DepRewrite.Config := {}) :
@@ -542,7 +542,7 @@ declare_config_elab elabDepRewriteConfig Config
 def evalDepRewriteSeq : Tactic := fun stx => do
   let cfg ← elabDepRewriteConfig stx[1]
   let loc   := expandOptLocation stx[3]
-  withRWRulesSeq stx[0] stx[2] fun symm term => do
+  withRWRulesSeq stx stx[0] stx[2] 4 fun symm term => do
     withLocation loc
       (depRewriteLocalDecl term symm · cfg)
       (depRewriteTarget term symm cfg)
@@ -552,7 +552,7 @@ def evalDepRewriteSeq : Tactic := fun stx => do
 def evalDepRwSeq : Tactic := fun stx => do
   let cfg ← elabDepRewriteConfig stx[1]
   let loc   := expandOptLocation stx[3]
-  withRWRulesSeq stx[0] stx[2] fun symm term => do
+  withRWRulesSeq stx stx[0] stx[2] 4 fun symm term => do
     withLocation loc
       (depRewriteLocalDecl term symm · cfg)
       (depRewriteTarget term symm cfg)
@@ -564,10 +564,10 @@ namespace Conv
 open Conv
 
 @[inherit_doc depRewriteSeq]
-syntax (name := depRewrite) "rewrite!" optConfig rwRuleSeq (location)? : conv
+syntax (name := depRewrite) "rewrite!" optConfig rwRuleSeq (location)? (rwDischarge)? : conv
 
 @[inherit_doc depRwSeq]
-syntax (name := depRw) "rw!" optConfig rwRuleSeq (location)? : conv
+syntax (name := depRw) "rw!" optConfig rwRuleSeq (location)? (rwDischarge)? : conv
 
 /-- Apply `rewrite!` to the goal. -/
 def depRewriteTarget (stx : Syntax) (symm : Bool) (config : DepRewrite.Config := {}) :
@@ -606,7 +606,7 @@ def depRwLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId)
 def evalDepRewriteSeq : Tactic := fun stx => do
   let cfg ← elabDepRewriteConfig stx[1]
   let loc   := expandOptLocation stx[3]
-  withRWRulesSeq stx[0] stx[2] fun symm term => do
+  withRWRulesSeq stx stx[0] stx[2] 4 fun symm term => do
     withLocation loc
       (DepRewrite.depRewriteLocalDecl term symm · cfg)
       (depRewriteTarget term symm cfg)
@@ -616,7 +616,7 @@ def evalDepRewriteSeq : Tactic := fun stx => do
 def evalDepRwSeq : Tactic := fun stx => do
   let cfg ← elabDepRewriteConfig stx[1]
   let loc   := expandOptLocation stx[3]
-  withRWRulesSeq stx[0] stx[2] fun symm term => do
+  withRWRulesSeq stx stx[0] stx[2] 4 fun symm term => do
     withLocation loc
       (depRwLocalDecl term symm · cfg)
       (depRwTarget term symm cfg)
