@@ -28,7 +28,7 @@ with respect to the volume `vol` is the sum of `vol J (f (π.tag J))` over all b
 The integral is defined as the limit of integral sums along a filter. Different filters correspond
 to different integration theories. In order to avoid code duplication, all our definitions and
 theorems take an argument `l : BoxIntegral.IntegrationParams`. This is a type that holds three
-boolean values, and encodes eight filters including those corresponding to Riemann,
+Boolean values, and encodes eight filters including those corresponding to Riemann,
 Henstock-Kurzweil, and McShane integrals.
 
 Following the design of infinite sums (see `hasSum` and `tsum`), we define a predicate
