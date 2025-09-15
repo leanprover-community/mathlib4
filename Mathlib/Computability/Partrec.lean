@@ -148,7 +148,7 @@ theorem rfindOpt_mono {α} {f : ℕ → Option α} (H : ∀ {a m n}, m ≤ n →
     have := (H (le_max_left _ _) h).symm.trans (H (le_max_right _ _) hk)
     simp at this; simp [this, get_mem]⟩
 
-/-- `Partrec f` means that the partial function `f : ℕ → ℕ` is partially recursive. -/
+/-- `Partrec f` means that the partial function `f : ℕ →. ℕ` is partially recursive. -/
 inductive Partrec : (ℕ →. ℕ) → Prop
   | zero : Partrec (pure 0)
   | succ : Partrec succ
