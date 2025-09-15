@@ -148,7 +148,7 @@ def Diagonalization.smul {ι : Type*} {f : End R M} (D : f.Diagonalization ι) (
   SimultaneousDiagonalization.smul D fun _ ↦ c
 
 /-- Any simultaneous diagonalization of `f` also diagonalizes `f - c • 1`. -/
-def SimultaneousDiagonalization.sub_smul {ι : Type*} {f : α → End R M}
+def SimultaneousDiagonalization.subSmulOne {ι : Type*} {f : α → End R M}
     (D : SimultaneousDiagonalization ι f) (c : α → R) :
     SimultaneousDiagonalization ι (f - c • 1) where
   toBasis := D.toBasis
@@ -158,12 +158,12 @@ def SimultaneousDiagonalization.sub_smul {ι : Type*} {f : α → End R M}
     simp_all [hasEigenvector_iff, _root_.sub_smul]
 
 /-- Any diagonalization of `f` also diagonalizes `f - c • 1`. -/
-def Diagonalization.sub_smul {ι : Type*} {f : End R M} (D : f.Diagonalization ι) (c : R) :
+def Diagonalization.subSmulOne {ι : Type*} {f : End R M} (D : f.Diagonalization ι) (c : R) :
     (f - c • 1).Diagonalization ι :=
   SimultaneousDiagonalization.sub_smul D fun _ ↦ c
 
 /-- Any simultaneous diagonalization of `f` also diagonalizes `f i + f j` for any `i` and `j`. -/
-def SimultaneousDiagonalization.diagonalization_add {ι : Type*} {f : α → End R M}
+def SimultaneousDiagonalization.diagonalizationAdd {ι : Type*} {f : α → End R M}
     (D : SimultaneousDiagonalization ι f) (i j : α) : (f i + f j).Diagonalization ι :=
   .mk (b := D.toBasis) (μ := fun k ↦ D.μ i k + D.μ j k) <| fun k ↦ by
     have := D.hasEigenVector_μ i k
@@ -171,7 +171,7 @@ def SimultaneousDiagonalization.diagonalization_add {ι : Type*} {f : α → End
     simp_all [hasEigenvector_iff, _root_.add_smul]
 
 /-- Any simultaneous diagonalization of `f` also diagonalizes `∑ a, f a`. -/
-def SimultaneousDiagonalization.diagonalization_sum [Fintype α] [Nontrivial R]
+def SimultaneousDiagonalization.diagonalizationSum [Fintype α] [Nontrivial R]
     {ι : Type*} {f : α → End R M} (D : SimultaneousDiagonalization ι f) :
     (∑ a, f a).Diagonalization ι :=
   .mk (b := D.toBasis) (μ := fun i ↦ ∑ a, D.μ a i) <| fun k ↦ by
@@ -179,7 +179,7 @@ def SimultaneousDiagonalization.diagonalization_sum [Fintype α] [Nontrivial R]
     simp_all [hasEigenvector_iff, D.toBasis.ne_zero, Finset.sum_smul]
 
 /-- Any simultaneous diagonalization of `f` also diagonalizes `f i * f j` for any `i` and `j`. -/
-def SimultaneousDiagonalization.diagonalization_mul {ι : Type*} {f : α → End R M}
+def SimultaneousDiagonalization.diagonalizationMul {ι : Type*} {f : α → End R M}
     (D : SimultaneousDiagonalization ι f) (i j : α) : (f i * f j).Diagonalization ι :=
   .mk (b := D.toBasis) (μ := fun k ↦ D.μ i k * D.μ j k) <| fun k ↦ by
     have := D.hasEigenVector_μ i k
