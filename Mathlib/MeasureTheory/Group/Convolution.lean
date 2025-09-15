@@ -151,7 +151,7 @@ theorem mconv_absolutelyContinuous [MeasurableMul₂ M] {μ ν ρ : Measure M}
   refine AbsolutelyContinuous.mk (fun s hs h ↦ ?_)
   rw [← lintegral_indicator_one hs, lintegral_mconv (by measurability)]
   conv in s.indicator 1 (_ * _) => change s.indicator 1 ((fun y ↦ x * y) y)
-  simp [← Set.indicator_comp_right]
+  simp only [← Set.indicator_comp_right, Pi.one_comp]
   conv in ∫⁻ _, _ ∂ν =>
     rw [lintegral_indicator_one (by apply MeasurableSet.preimage hs (by fun_prop))]
   have h0 (x : M) : ν (HMul.hMul x ⁻¹' s) = 0 := by
