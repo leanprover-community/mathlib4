@@ -267,22 +267,6 @@ lemma mulArchimedean_mrange_of_isCompact_integer (hc : IsCompact (X := K) 𝒪[K
   obtain ⟨_⟩ := locallyFiniteOrder_units_mrange_of_isCompact_integer hc
   exact MulArchimedean.of_locallyFiniteOrder
 
--- MOVE
-instance {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀] [DenselyOrdered G₀] :
-    DenselyOrdered G₀ˣ := by
-  refine ⟨fun x y h ↦ ?_⟩
-  obtain ⟨z, hz⟩ := exists_between (Units.val_lt_val.mpr h)
-  rcases (zero_le' (a := z)).eq_or_lt with rfl | hz'
-  · simp at hz
-  refine ⟨Units.mk0 z hz'.ne', ?_⟩
-  simp [← Units.val_lt_val, hz]
-
--- MOVE
-instance {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀] [DenselyOrdered G₀] :
-    Nontrivial G₀ˣ := by
-  obtain ⟨x, hx, hx'⟩ := exists_between (zero_lt_one' G₀)
-  refine ⟨Units.mk0 x hx.ne', 1, by simpa [Units.ext_iff] using hx'.ne⟩
-
 lemma isPrincipalIdealRing_of_compactSpace [hc : CompactSpace 𝒪[K]] :
     IsPrincipalIdealRing 𝒪[K] := by
   -- The strategy to show that we have a PIR is by contradiction,
@@ -300,13 +284,6 @@ lemma isPrincipalIdealRing_of_compactSpace [hc : CompactSpace 𝒪[K]] :
   exact not_subsingleton (MonoidHom.mrange (v : Valuation K Γ₀))ˣ
     (LocallyFiniteOrder.denselyOrdered_iff_subsingleton.mp inferInstance)
 
--- MOVE
-theorem _root_.Valuation.isNontrivial_iff_exists_lt_one {K Γ : Type*} [Field K]
-    [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) :
-    v.IsNontrivial ↔ ∃ x, x ≠ 0 ∧ v x < 1 :=
-  ⟨fun h ↦ by simpa using h.exists_lt_one (v := v), fun ⟨x, hx0, hx1⟩ ↦ ⟨x, by simp [hx0, hx1.ne]⟩⟩
-
--- MOVE
 theorem _root_.Valuation.isNontrivial_iff_not_a_field {K Γ : Type*} [Field K]
     [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) :
     v.IsNontrivial ↔ IsLocalRing.maximalIdeal v.integer ≠ ⊥ := by
