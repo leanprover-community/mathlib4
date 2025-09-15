@@ -161,8 +161,7 @@ instance : P.HasIdealSupport where
   smul_mem_support := by simp [supportAddSubgroup_eq_bot]
 
 @[simp] theorem support_eq_bot : P.support = ⊥ := by
-  rw [toAddSubgroup_inj _ ⊥]
-  simpa using supportAddSubgroup_eq_bot P
+  simpa [← Submodule.toAddSubgroup_inj] using supportAddSubgroup_eq_bot P
 
 instance : P.support.IsPrime := by simpa using Ideal.bot_prime
 
