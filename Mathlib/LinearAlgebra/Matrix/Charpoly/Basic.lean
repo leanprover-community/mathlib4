@@ -280,8 +280,8 @@ theorem charpoly_units_conj' (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
     (M⁻¹.val * N * M.val).charpoly = N.charpoly :=
   charpoly_units_conj M⁻¹ N
 
-theorem charpoly_sub_scalar (M : Matrix n n R) (mu : R) :
-    (M - scalar n mu).charpoly  = M.charpoly.comp (X + C mu) := by
+theorem charpoly_sub_scalar (M : Matrix n n R) (μ : R) :
+    (M - scalar n μ).charpoly  = M.charpoly.comp (X + C μ) := by
   simp_rw [charpoly, det_apply, Polynomial.sum_comp, Polynomial.smul_comp, Polynomial.prod_comp]
   congr! with σ _ i _
   by_cases hi : σ i = i <;> simp [hi]
