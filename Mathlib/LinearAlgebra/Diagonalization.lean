@@ -129,7 +129,7 @@ def Diagonalization.zero [Nontrivial R] {ι : Type*} (b : Basis ι R M) :
   Diagonalization.mk (b := b) (μ := 0) (by simp [hasEigenvector_iff, b.ne_zero])
 
 /-- Any basis diagonalizes the identity map. -/
-def diagonalization_one [Nontrivial R] {ι : Type*} (b : Basis ι R M) :
+def Diagonalization.one [Nontrivial R] {ι : Type*} (b : Basis ι R M) :
     (1 : End R M).Diagonalization ι :=
   Diagonalization.mk (b := b) (μ := 1) (by simp [hasEigenvector_iff, b.ne_zero])
 
