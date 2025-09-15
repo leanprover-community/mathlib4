@@ -236,7 +236,7 @@ protected theorem nonempty : (p : Set M).Nonempty :=
 
 @[simp]
 theorem mk_eq_zero {x} (h : x ∈ p) : (⟨x, h⟩ : p) = 0 ↔ x = 0 :=
-  Subtype.ext_iff_val
+  Subtype.ext_iff
 
 variable {p}
 
