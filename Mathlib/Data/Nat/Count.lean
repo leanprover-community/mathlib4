@@ -37,12 +37,12 @@ def count (n : ℕ) : ℕ :=
 theorem count_zero : count p 0 = 0 := by
   rw [count, List.range_zero, List.countP, List.countP.go]
 
-/-- A fintype instance for the set relevant to `Nat.count`. Locally an instance in locale `count` -/
-def CountSet.fintype (n : ℕ) : Fintype { i // i < n ∧ p i } := by
-  apply Fintype.ofFinset {x ∈ range n | p x}
-  intro x
-  rw [mem_filter, mem_range]
-  rfl
+/-- A fintype instance for the set relevant to `Nat.count`. Locally an instance in scope `count` -/
+def CountSet.fintype (n : ℕ) : Fintype { i // i < n ∧ p i } :=
+  Fintype.ofFinset {x ∈ range n | p x} <| by
+    intro x
+    rw [mem_filter, mem_range]
+    rfl
 
 scoped[Count] attribute [instance] Nat.CountSet.fintype
 
@@ -54,8 +54,8 @@ theorem count_eq_card_filter_range (n : ℕ) : count p n = #{x ∈ range n | p x
 
 /-- `count p n` can be expressed as the cardinality of `{k // k < n ∧ p k}`. -/
 theorem count_eq_card_fintype (n : ℕ) : count p n = Fintype.card { k : ℕ // k < n ∧ p k } := by
-  rw [count_eq_card_filter_range, ← Fintype.card_ofFinset, ← CountSet.fintype]
-  rfl
+  rw [count_eq_card_filter_range, Fintype.card_of_subtype]
+  simp
 
 theorem count_le {n : ℕ} : count p n ≤ n := by
   rw [count_eq_card_filter_range]
@@ -133,8 +133,7 @@ alias ⟨_, count_of_forall⟩ := count_iff_forall
 @[simp] theorem count_true (n : ℕ) : count (fun _ ↦ True) n = n := count_of_forall fun _ _ ↦ trivial
 
 theorem count_iff_forall_not {n : ℕ} : count p n = 0 ↔ ∀ m < n, ¬p m := by
-  simpa [count_eq_card_filter_range, mem_range] using
-    card_filter_eq_zero_iff (p := p) (s := range n)
+  simp [count_eq_card_filter_range]
 
 alias ⟨_, count_of_forall_not⟩ := count_iff_forall_not
 

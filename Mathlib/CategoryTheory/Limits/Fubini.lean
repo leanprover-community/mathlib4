@@ -102,24 +102,10 @@ def coneOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
             π :=
               { app := fun k => c.π.app (j, k)
                 naturality := fun k k' f => by
-                  dsimp; simp only [Category.id_comp]
-                  have := @NatTrans.naturality _ _ _ _ _ _ c.π (j, k) (j, k') (𝟙 j, f)
-                  dsimp at this
-                  simp? at this says
-                    simp only [Category.id_comp, Functor.map_id, NatTrans.id_app] at this
-                  exact this } }
+                  simpa using @NatTrans.naturality _ _ _ _ _ _ c.π (j, k) (j, k') (𝟙 j, f) } }
       naturality := fun j j' f =>
         (Q j').hom_ext
-          (by
-            dsimp
-            intro k
-            simp only [Limits.ConeMorphism.w, Limits.Cones.postcompose_obj_π,
-              Limits.IsLimit.fac_assoc, Limits.IsLimit.fac, NatTrans.comp_app, Category.id_comp,
-              Category.assoc]
-            have := @NatTrans.naturality _ _ _ _ _ _ c.π (j, k) (j', k) (f, 𝟙 k)
-            dsimp at this
-            simp only [Category.id_comp, Category.comp_id, CategoryTheory.Functor.map_id] at this
-            exact this) }
+          (fun k => by simpa using @NatTrans.naturality _ _ _ _ _ _ c.π (j, k) (j', k) (f, 𝟙 k)) }
 
 /-- Given a diagram `D` of limit cones over the `curry.obj G j`, and a cone over `G`,
 we can construct a cone over the diagram consisting of the cone points from `D`.

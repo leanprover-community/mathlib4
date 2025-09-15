@@ -221,7 +221,7 @@ theorem sup_mem (s : Set α) (w₁ : ⊥ ∈ s) (w₂ : ∀ᵉ (x ∈ s) (y ∈ 
 
 @[simp]
 protected theorem sup_eq_bot_iff (f : β → α) (S : Finset β) : S.sup f = ⊥ ↔ ∀ s ∈ S, f s = ⊥ := by
-  classical induction' S using Finset.induction with a S _ hi <;> simp [*]
+  classical induction S using Finset.induction <;> simp [*]
 
 @[simp]
 lemma sup_disjSum (s : Finset β) (t : Finset γ) (f : β ⊕ γ → α) :
@@ -609,7 +609,7 @@ protected theorem sup_lt_iff (ha : ⊥ < a) : s.sup f < a ↔ ∀ b ∈ s, f b <
 theorem sup_mem_of_nonempty (hs : s.Nonempty) : s.sup f ∈ f '' s := by
   classical
   induction s using Finset.induction with
-  | empty => exfalso; simp only [Finset.not_nonempty_empty] at hs
+  | empty => simp only [Finset.not_nonempty_empty] at hs
   | insert a s _ h =>
     rw [Finset.sup_insert (b := a) (s := s) (f := f)]
     cases s.eq_empty_or_nonempty with
@@ -1118,14 +1118,14 @@ variable [DecidableEq α] {s : Finset ι} {f : ι → Finset α} {a : α}
 
 set_option linter.docPrime false in
 @[simp] lemma mem_sup' (hs) : a ∈ s.sup' hs f ↔ ∃ i ∈ s, a ∈ f i := by
-  induction' hs using Nonempty.cons_induction <;> simp [*]
+  induction hs using Nonempty.cons_induction <;> simp [*]
 
 set_option linter.docPrime false in
 @[simp] lemma mem_inf' (hs) : a ∈ s.inf' hs f ↔ ∀ i ∈ s, a ∈ f i := by
-  induction' hs using Nonempty.cons_induction <;> simp [*]
+  induction hs using Nonempty.cons_induction <;> simp [*]
 
 @[simp] lemma mem_sup : a ∈ s.sup f ↔ ∃ i ∈ s, a ∈ f i := by
-  induction' s using cons_induction <;> simp [*]
+  induction s using cons_induction <;> simp [*]
 
 @[simp]
 theorem sup_singleton_apply (s : Finset β) (f : β → α) :

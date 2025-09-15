@@ -497,7 +497,7 @@ lemma cfc_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
       rw [sum_coe_sort s, hsum]
       exact continuousOn_finset_sum s fun i hi => hf i hi
     rw [← sum_coe_sort s, ← sum_coe_sort s]
-    rw [cfc_apply_pi _ a _ (fun ⟨i, hi⟩ => hf i hi), ← map_sum, cfc_apply _ a ha hf']
+    rw [cfc_apply_pi _ a ha (fun ⟨i, hi⟩ => hf i hi), ← map_sum, cfc_apply _ a ha hf']
     congr 1
     ext
     simp
@@ -736,7 +736,7 @@ lemma isUnit_cfc_iff (f : R → R) (a : A) (hf : ContinuousOn f (spectrum R a) :
 
 alias ⟨_, isUnit_cfc⟩ := isUnit_cfc_iff
 
-variable [HasContinuousInv₀ R] (f : R → R) (a : A)
+variable [ContinuousInv₀ R] (f : R → R) (a : A)
 
 /-- Bundle `cfc f a` into a unit given a proof that `f` is nonzero on the spectrum of `a`. -/
 @[simps]
@@ -783,7 +783,7 @@ lemma cfc_map_div (f g : R → R) (a : A) (hg' : ∀ x ∈ spectrum R a, g x ≠
 section ContinuousOnInvSpectrum
 -- TODO: this section should probably be moved to another file altogether
 
-variable {R A : Type*} [Semifield R] [Ring A] [TopologicalSpace R] [HasContinuousInv₀ R]
+variable {R A : Type*} [Semifield R] [Ring A] [TopologicalSpace R] [ContinuousInv₀ R]
 variable [Algebra R A]
 
 @[fun_prop]

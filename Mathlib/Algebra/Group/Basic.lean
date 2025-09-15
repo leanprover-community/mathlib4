@@ -174,12 +174,20 @@ lemma pow_eq_pow_mod (m : ℕ) (ha : a ^ n = 1) : a ^ m = a ^ (m % n) := by
 @[to_additive (attr := simp)]
 lemma mul_left_iterate (a : M) : ∀ n : ℕ, (a * ·)^[n] = (a ^ n * ·)
   | 0 => by ext; simp
-  | n + 1 => by ext; simp [pow_succ, mul_left_iterate]
+  | n + 1 => by simp [pow_succ, mul_left_iterate]
 
 @[to_additive (attr := simp)]
 lemma mul_right_iterate (a : M) : ∀ n : ℕ, (· * a)^[n] = (· * a ^ n)
   | 0 => by ext; simp
-  | n + 1 => by ext; simp [pow_succ', mul_right_iterate]
+  | n + 1 => by simp [pow_succ', mul_right_iterate]
+
+/-- Version of `mul_left_iterate` that is fully applied, for `rw`. -/
+@[to_additive /-- Version of `add_left_iterate` that is fully applied, for `rw`. -/]
+lemma mul_left_iterate_apply (a b : M) : (a * ·)^[n] b = a ^ n * b := by simp
+
+/-- Version of `mul_right_iterate` that is fully applied, for `rw`. -/
+@[to_additive /-- Version of `add_right_iterate` that is fully applied, for `rw`. -/ ]
+lemma mul_right_iterate_apply (a b : M) : (· * a)^[n] b = b * a ^ n := by simp
 
 @[to_additive]
 lemma mul_left_iterate_apply_one (a : M) : (a * ·)^[n] 1 = a ^ n := by simp
@@ -868,7 +876,7 @@ lemma zpow_one_sub_natCast (a : G) (n : ℕ) : a ^ (1 - n : ℤ) = a / a ^ n := 
 theorem zpow_eq_zpow_emod {x : G} (m : ℤ) {n : ℤ} (h : x ^ n = 1) :
     x ^ m = x ^ (m % n) :=
   calc
-    x ^ m = x ^ (m % n + n * (m / n)) := by rw [Int.emod_add_ediv]
+    x ^ m = x ^ (m % n + n * (m / n)) := by rw [Int.emod_add_mul_ediv]
     _ = x ^ (m % n) := by simp [zpow_add, zpow_mul, h]
 
 theorem zpow_eq_zpow_emod' {x : G} (m : ℤ) {n : ℕ} (h : x ^ n = 1) :
@@ -1029,7 +1037,7 @@ lemma multiplicative_of_symmetric_of_isTotal
     (hmul : ∀ {a b c}, r a b → r b c → p a b → p b c → p a c → f a c = f a b * f b c)
     {a b c : α} (pab : p a b) (pbc : p b c) (pac : p a c) : f a c = f a b * f b c := by
   have hmul' : ∀ {b c}, r b c → p a b → p b c → p a c → f a c = f a b * f b c := by
-    intros b c rbc pab pbc pac
+    intro b c rbc pab pbc pac
     obtain rab | rba := total_of r a b
     · exact hmul rab rbc pab pbc pac
     rw [← one_mul (f a c), ← hf_swap pab, mul_assoc]

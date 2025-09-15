@@ -596,7 +596,7 @@ instance [DecidableEq α] : DecidableRel (@Equiv α) := fun x y =>
 def powerset (t : Ordnode α) : Ordnode (Ordnode α) :=
   insertMin nil <| foldr (fun x ts => glue (insertMin (ι x) (map (insertMin x) ts)) ts) t nil
 
-/-- O(m * n). The cartesian product of two sets: `(a, b) ∈ s.prod t` iff `a ∈ s` and `b ∈ t`.
+/-- O(m * n). The Cartesian product of two sets: `(a, b) ∈ s.prod t` iff `a ∈ s` and `b ∈ t`.
 
      prod {1, 2} {2, 3} = {(1, 2), (1, 3), (2, 2), (2, 3)} -/
 protected def prod {β} (t₁ : Ordnode α) (t₂ : Ordnode β) : Ordnode (α × β) :=
@@ -753,7 +753,7 @@ def span (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α × Ordn
 
 /-- Auxiliary definition for `ofAscList`.
 
-**Note:** This function is defined by well founded recursion, so it will probably not compute
+**Note:** This function is defined by well-founded recursion, so it will probably not compute
 in the kernel, meaning that you probably can't prove things like
 `ofAscList [1, 2, 3] = {1, 2, 3}` by `rfl`.
 This implementation is optimized for VM evaluation. -/
