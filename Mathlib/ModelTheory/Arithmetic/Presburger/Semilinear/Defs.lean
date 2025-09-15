@@ -66,9 +66,8 @@ theorem IsLinearSet.closure_finset (s : Finset M) : IsLinearSet (closure (s : Se
   ⟨0, s, by simp [zero_vadd]⟩
 
 theorem IsLinearSet.closure_of_finite {s : Set M} (hs : s.Finite) :
-    IsLinearSet (closure s : Set M) := by
-  rw [← hs.coe_toFinset]
-  exact closure_finset _
+    IsLinearSet (closure s : Set M) :=
+  ⟨0, s, hs, by simp⟩
 
 theorem isLinearSet_iff_exists_fg_eq_vadd :
     IsLinearSet s ↔ ∃ (a : M) (P : AddSubmonoid M), P.FG ∧ s = a +ᵥ (P : Set M) :=
@@ -134,51 +133,43 @@ theorem IsSemilinearSet.union (hs₁ : IsSemilinearSet s₁) (hs₂ : IsSemiline
   rcases hs₁ with ⟨S₁, hS₁, hS₁', rfl⟩
   rcases hs₂ with ⟨S₂, hS₂, hS₂', rfl⟩
   rw [← sUnion_union]
-  refine ⟨S₁ ∪ S₂, by simp [hS₁, hS₂], ?_, rfl⟩
-  intro s hs
+  refine ⟨S₁ ∪ S₂, hS₁.union hS₂, fun s hs => ?_, rfl⟩
   rw [mem_union] at hs
   exact hs.elim (hS₁' s) (hS₂' s)
 
-theorem IsSemilinearSet.sUnion {S : Finset (Set M)} (hS : ∀ s ∈ S, IsSemilinearSet s) :
-    IsSemilinearSet (⋃₀ (S : Set (Set M))) := by
-  classical
-  induction S using Finset.induction with
+theorem IsSemilinearSet.sUnion {S : Set (Set M)} (hS : S.Finite)
+    (hS' : ∀ s ∈ S, IsSemilinearSet s) : IsSemilinearSet (⋃₀ S) := by
+  induction S, hS using Finite.induction_on with
   | empty => simp
-  | insert s S _ ih =>
-    simp_rw [Finset.mem_insert, forall_eq_or_imp] at hS
-    simpa using hS.1.union (ih hS.2)
+  | insert S _ ih =>
+    simp_rw [mem_insert_iff, forall_eq_or_imp] at hS'
+    simpa using hS'.1.union (ih hS'.2)
 
 theorem IsSemilinearSet.iUnion [Finite ι] {s : ι → Set M} (hs : ∀ i, IsSemilinearSet (s i)) :
     IsSemilinearSet (⋃ i, s i) := by
-  classical
-  haveI := Fintype.ofFinite ι
-  rw [← sUnion_range, ← image_univ, ← Finset.coe_univ, ← Finset.coe_image]
-  apply sUnion
-  simpa
-
-theorem IsSemilinearSet.biUnion_finset {s : Finset ι} {t : ι → Set M}
-    (ht : ∀ i ∈ s, IsSemilinearSet (t i)) : IsSemilinearSet (⋃ i ∈ s, t i) := by
-  classical
-  simp_rw [← Finset.mem_coe, ← sUnion_image, ← Finset.coe_image]
-  apply sUnion
+  rw [← sUnion_range]
+  apply sUnion (finite_range s)
   simpa
 
 theorem IsSemilinearSet.biUnion {s : Set ι} {t : ι → Set M} (hs : s.Finite)
     (ht : ∀ i ∈ s, IsSemilinearSet (t i)) : IsSemilinearSet (⋃ i ∈ s, t i) := by
-  rw [← hs.coe_toFinset]
-  apply biUnion_finset
+  rw [← sUnion_image]
+  apply sUnion (hs.image t)
   simpa
 
+theorem IsSemilinearSet.biUnion_finset {s : Finset ι} {t : ι → Set M}
+    (ht : ∀ i ∈ s, IsSemilinearSet (t i)) : IsSemilinearSet (⋃ i ∈ s, t i) :=
+  biUnion s.finite_toSet ht
+
 theorem IsSemilinearSet.of_finite (hs : s.Finite) : IsSemilinearSet s := by
-  rw [← biUnion_of_singleton s, ← hs.coe_toFinset]
-  simp_rw [Finset.mem_coe]
-  apply biUnion_finset
+  rw [← biUnion_of_singleton s]
+  apply biUnion hs
   simp
 
 theorem IsSemilinearSet.vadd (a : M) (hs : IsSemilinearSet s) : IsSemilinearSet (a +ᵥ s) := by
   rcases hs with ⟨S, hS, hS', rfl⟩
-  simp_rw [vadd_set_sUnion]
-  refine biUnion hS fun s hs => ((hS' s hs).vadd a).isSemilinearSet
+  rw [vadd_set_sUnion]
+  exact biUnion hS fun s hs => ((hS' s hs).vadd a).isSemilinearSet
 
 /-- Semilinear sets are closed under set addition. -/
 theorem IsSemilinearSet.add (hs₁ : IsSemilinearSet s₁) (hs₂ : IsSemilinearSet s₂) :
@@ -254,7 +245,7 @@ protected theorem IsSemilinearSet.closure (hs : IsSemilinearSet s) :
   rcases hs with ⟨S, hS, hS', rfl⟩
   induction S, hS using Finite.induction_on with
   | empty => simp
-  | insert S hS ih =>
+  | insert S _ ih =>
     simp_rw [mem_insert_iff, forall_eq_or_imp] at hS'
     simpa [closure_union, coe_sup] using hS'.1.closure.add (ih hS'.2)
 
@@ -294,32 +285,27 @@ theorem IsProperSemilinearSet.union (hs₁ : IsProperSemilinearSet s₁)
   rcases hs₁ with ⟨S₁, hS₁, hS₁', rfl⟩
   rcases hs₂ with ⟨S₂, hS₂, hS₂', rfl⟩
   rw [← sUnion_union]
-  refine ⟨S₁ ∪ S₂, by simp [hS₁, hS₂], ?_, rfl⟩
-  intro s hs
+  refine ⟨S₁ ∪ S₂, hS₁.union hS₂, fun s hs => ?_, rfl⟩
   rw [mem_union] at hs
   exact hs.elim (hS₁' s) (hS₂' s)
 
-theorem IsProperSemilinearSet.sUnion {S : Finset (Set M)} (hS : ∀ s ∈ S, IsProperSemilinearSet s) :
-    IsProperSemilinearSet (⋃₀ (S : Set (Set M))) := by
-  classical
-  induction S using Finset.induction with
+theorem IsProperSemilinearSet.sUnion {S : Set (Set M)} (hS : S.Finite)
+    (hS' : ∀ s ∈ S, IsProperSemilinearSet s) : IsProperSemilinearSet (⋃₀ S) := by
+  induction S, hS using Finite.induction_on with
   | empty => simp
-  | insert s S _ ih =>
-    simp_rw [Finset.mem_insert, forall_eq_or_imp] at hS
-    simpa using hS.1.union (ih hS.2)
-
-theorem IsProperSemilinearSet.biUnion_finset {s : Finset ι} {t : ι → Set M}
-    (ht : ∀ i ∈ s, IsProperSemilinearSet (t i)) : IsProperSemilinearSet (⋃ i ∈ s, t i) := by
-  classical
-  simp_rw [← Finset.mem_coe, ← sUnion_image, ← Finset.coe_image]
-  apply sUnion
-  simpa
+  | insert S _ ih =>
+    simp_rw [mem_insert_iff, forall_eq_or_imp] at hS'
+    simpa using hS'.1.union (ih hS'.2)
 
 theorem IsProperSemilinearSet.biUnion {s : Set ι} {t : ι → Set M} (hs : s.Finite)
     (ht : ∀ i ∈ s, IsProperSemilinearSet (t i)) : IsProperSemilinearSet (⋃ i ∈ s, t i) := by
-  rw [← hs.coe_toFinset]
-  apply biUnion_finset
+  rw [← sUnion_image]
+  apply sUnion (hs.image t)
   simpa
+
+theorem IsProperSemilinearSet.biUnion_finset {s : Finset ι} {t : ι → Set M}
+    (ht : ∀ i ∈ s, IsProperSemilinearSet (t i)) : IsProperSemilinearSet (⋃ i ∈ s, t i) :=
+  biUnion s.finite_toSet ht
 
 lemma IsLinearSet.isProperSemilinearSet [IsCancelAdd M] (hs : IsLinearSet s) :
     IsProperSemilinearSet s := by
