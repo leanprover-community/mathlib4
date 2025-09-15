@@ -3,25 +3,28 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
+import Mathlib.Algebra.Category.Grp.Zero
+import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
+import Mathlib.Algebra.Category.ModuleCat.Projective
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
+import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 import Mathlib.Data.ENat.Lattice
-import Mathlib.RingTheory.Spectrum.Maximal.Defs
-import Mathlib.RingTheory.Noetherian.Defs
-import Mathlib.RingTheory.Localization.AtPrime.Basic
-import Mathlib.RingTheory.Regular.Category
-import Mathlib.RingTheory.Regular.RegularSequence
-import Mathlib.Algebra.Module.LocalizedModule.AtPrime
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-import Mathlib.LinearAlgebra.Dimension.Finite
-import Mathlib.Algebra.Category.ModuleCat.Projective
-import Mathlib.RingTheory.Localization.Module
-import Mathlib.Algebra.Module.LocalizedModule.Exact
-import Mathlib.RingTheory.LocalProperties.Projective
-import Mathlib.Algebra.Category.Grp.Zero
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
-import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
+import Mathlib.RingTheory.Ideal.Quotient.Operations
 /-!
 # The Global Dimension of a Ring
+
+In this file, we define the projective dimension of an module and global dimension of ring
+and their basic properties.
+
+# Main definition and results
+
+* `projectiveDimension` : Given `X : C` where `C` is abelian,
+  return its projective dimension as `WithBot ℕ∞`
+
+* `globalDimension` : The global (homological) dimension of a (commutative) ring defined as
+  the supremum of projective dimension over all modules.
+
 -/
 
 --set_option pp.universes true
@@ -30,7 +33,7 @@ universe v u
 
 variable (R : Type u) [CommRing R]
 
-open CategoryTheory IsLocalRing RingTheory.Sequence
+open CategoryTheory
 
 section ProjectiveDimension
 
@@ -38,6 +41,7 @@ variable {C : Type u} [Category.{v, u} C] [Abelian C]
 
 --projectiveDimension should be `-∞` when `X = 0`
 
+/-- The projective dimension of object of abelian category. -/
 noncomputable def projectiveDimension (X : C) : WithBot ℕ∞ :=
   sInf {n : WithBot ℕ∞ | ∀ (i : ℕ), n < i → HasProjectiveDimensionLT X i}
 
@@ -273,6 +277,8 @@ lemma ext_subsingleton_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ
 
 end
 
+/-- The global (homological) dimension of a (commutative) ring defined as
+the supremum of projective dimension over all modules. -/
 noncomputable def globalDimension : WithBot ℕ∞ :=
   ⨆ (M : ModuleCat.{v} R), projectiveDimension.{v} M
 
@@ -287,7 +293,8 @@ lemma globalDimension_le_iff (n : ℕ) : globalDimension.{v} R ≤ n ↔
     ∀ M : ModuleCat.{v} R, HasProjectiveDimensionLE M n := by
   simp [globalDimension, projectiveDimension_le_iff]
 
-local instance hasExt_standard : HasExt.{max (max (v + 1) u) v, v, max (v + 1) u} (ModuleCat.{v} R) :=
+local instance hasExt_standard :
+  HasExt.{max (max (v + 1) u) v, v, max (v + 1) u} (ModuleCat.{v} R) :=
   CategoryTheory.HasExt.standard (ModuleCat.{v} R)
 
 lemma globalDimension_le_tfae [Small.{v} R] (n : ℕ) : [globalDimension.{v} R ≤ n,
