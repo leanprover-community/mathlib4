@@ -70,6 +70,7 @@ import Archive.Wiedijk100Theorems.BallotProblem
 import Archive.Wiedijk100Theorems.BirthdayProblem
 import Archive.Wiedijk100Theorems.BuffonsNeedle
 import Archive.Wiedijk100Theorems.CubingACube
+import Archive.Wiedijk100Theorems.EulerPolyhedronFormula
 import Archive.Wiedijk100Theorems.FriendshipGraphs
 import Archive.Wiedijk100Theorems.HeronsFormula
 import Archive.Wiedijk100Theorems.InverseTriangleSum
