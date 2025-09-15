@@ -43,6 +43,10 @@ Before the `open scoped Classical` line, various proofs are made with decidabili
 This can cause issues -- see for example the non-simp lemma `toWithTopZero` proved by `rfl`,
 followed by `@[simp] lemma toWithTopZero'` whose proof uses `convert`.
 
+## Deprecation
+
+As it appears this has been unused since 2018, we are now deprecating it.
+If `ENat` does not serve your purposes, please raise this on the community Zulip.
 
 ## Tags
 
@@ -53,8 +57,11 @@ PartENat, ℕ∞
 open Part hiding some
 
 /-- Type of natural numbers with infinity (`⊤`) -/
+@[deprecated ENat (since := "2025-09-01")]
 def PartENat : Type :=
   Part ℕ
+
+set_option linter.deprecated false
 
 namespace PartENat
 
