@@ -73,20 +73,15 @@ variable {α : Type} [Nonempty α] [ChainCompletePartialOrder α] {x : α} {f : 
 
 /-- The definition of an admissible set with base point `x` and inflationary function `f` -/
 structure IsAdmissible (x : α) (f : Inflationary α) (s : Set α) : Prop where
-  /-- The base point is a member of an admissible set -/
-  base_mem : x ∈ s
+  /-- The base point is the least element of an admissible set -/
+  base_isLeast : IsLeast s x
   /-- The image of an admissible set under the inflationary function is a subset of itself -/
   image_self_sub_self : f '' s ⊆ s
   /-- If a chain is a subset of an admissible set, its `cSup` is a member of the admissible set -/
   cSup_mem : ∀ (c : NonemptyChain α), ↑c ⊆ s → cSup c ∈ s
-  /-- The base point is the least element of an admissible set -/
-  base_least : ∀ y ∈ s, x ≤ y
 
-/-- `upset x` is the set of elements `y` such that `x ≤ y` -/
-abbrev upset (x : α) : Set α := {y | x ≤ y}
-
-lemma upset_isAdmissible : IsAdmissible x f (upset x) where
-  base_mem := le_refl x
+lemma ici_isAdmissible : IsAdmissible x f (Ici x) where
+  base_isLeast := ⟨le_refl x, fun _ h ↦ h⟩
   image_self_sub_self := by
     rintro _ ⟨y, hy, rfl⟩
     exact le_trans hy (f.le_map _)
@@ -94,7 +89,6 @@ lemma upset_isAdmissible : IsAdmissible x f (upset x) where
     intro c hc
     have ⟨y, hy⟩ := c.Nonempty'
     apply le_trans (hc hy) (le_cSup _ _ hy)
-  base_least := fun _ h ↦ h
 
 /-- The bottom admissible set with base point `x` and inflationary function `f` -/
 abbrev bot (x : α) (f : Inflationary α) : Set α := ⋂₀ {s | IsAdmissible x f s}
@@ -105,9 +99,13 @@ lemma mem_bot_iff {y : α} :
   exact mem_sInter
 
 lemma bot_isAdmissible : IsAdmissible x f (bot x f) where
-  base_mem := by
-    rw [mem_bot_iff]
-    exact fun _ h ↦ h.base_mem
+  base_isLeast := by
+    constructor
+    · rw [mem_bot_iff]
+      exact fun _ h ↦ h.base_isLeast.1
+    · intro y hy
+      rw [mem_bot_iff] at hy
+      exact (hy (Ici x) ici_isAdmissible)
   image_self_sub_self := by
     rintro _ ⟨y, hy, rfl⟩
     rw [mem_bot_iff]
@@ -118,10 +116,6 @@ lemma bot_isAdmissible : IsAdmissible x f (bot x f) where
     rw [mem_bot_iff]
     intro s hs
     exact hs.cSup_mem c (subset_trans hc (sInter_subset_of_mem hs))
-  base_least := by
-    intro y hy
-    rw [mem_bot_iff] at hy
-    exact (hy (upset x) upset_isAdmissible)
 
 lemma sub_bot_eq_bot {s : Set α} (h : IsAdmissible x f s) (h' : s ⊆ bot x f) : s = bot x f :=
   subset_antisymm h' (sInter_subset_of_mem h)
@@ -140,7 +134,9 @@ lemma map_mem_bot {y : α} (h : y ∈ bot x f) : f y ∈ bot x f := by
 lemma eq_bot {y : α} (hy : IsExtremePt x f y) : {z ∈ bot x f | z ≤ y ∨ f y ≤ z} = bot x f := by
   apply sub_bot_eq_bot _ (sep_subset _ _)
   apply IsAdmissible.mk
-  · exact ⟨bot_isAdmissible.base_mem, Or.inl (bot_isAdmissible.base_least y hy.mem_bot)⟩
+  · constructor
+    · exact ⟨bot_isAdmissible.base_isLeast.1, Or.inl (bot_isAdmissible.base_isLeast.2 hy.mem_bot)⟩
+    · exact fun y h ↦ bot_isAdmissible.base_isLeast.2 h.1
   · rintro _ ⟨z, ⟨hz, (hzy | hyz)⟩, rfl⟩ <;>
       refine ⟨map_mem_bot hz, ?_⟩
     · rcases le_iff_lt_or_eq.1 hzy with (hzy | rfl)
@@ -156,15 +152,16 @@ lemma eq_bot {y : α} (hy : IsExtremePt x f y) : {z ∈ bot x f | z ≤ y ∨ f 
         obtain h' := Or.resolve_left (hc hz).2 hzy
         right
         apply le_trans h' (le_cSup _ _ hz)
-  · exact fun y h ↦ bot_isAdmissible.base_least y h.1
 
 lemma setOf_isExtremePt_eq_bot : {y | IsExtremePt x f y} = bot x f := by
   apply sub_bot_eq_bot _ (fun _ h ↦ h.mem_bot)
   apply IsAdmissible.mk
-  · refine ⟨bot_isAdmissible.base_mem, ?_⟩
-    intro y hy hyx
-    exfalso
-    exact lt_irrefl x (lt_of_le_of_lt (bot_isAdmissible.base_least y hy) hyx)
+  · constructor
+    · refine ⟨bot_isAdmissible.base_isLeast.1, ?_⟩
+      intro y hy hyx
+      exfalso
+      exact lt_irrefl x (lt_of_le_of_lt (bot_isAdmissible.base_isLeast.2 hy) hyx)
+    · exact fun y h ↦ bot_isAdmissible.base_isLeast.2 h.1
   · rintro _ ⟨y, hy, rfl⟩
     refine ⟨map_mem_bot hy.mem_bot, ?_⟩
     intro z hz hzy
@@ -197,7 +194,6 @@ lemma setOf_isExtremePt_eq_bot : {y | IsExtremePt x f y} = bot x f := by
         · exfalso
           apply lt_irrefl y (lt_of_lt_of_le hy' hc')
         · exact hc'
-  · exact fun y h ↦ bot_isAdmissible.base_least y h.1
 
 lemma mem_bot_iff_isExtremePt {y : α} : y ∈ bot x f ↔ IsExtremePt x f y := by
   rw [← setOf_isExtremePt_eq_bot]
@@ -222,7 +218,7 @@ inflationary, then `f` has a fixed point -/
 theorem bourbaki_witt {α : Type} [Nonempty α] [ChainCompletePartialOrder α]
     (f : Inflationary α) : (fixedPoints f).Nonempty := by
   let x : α := Classical.ofNonempty
-  let y : α := cSup (NonemptyChain.mk (bot x f) ⟨x, bot_isAdmissible.base_mem⟩ (bot_isChain))
+  let y : α := cSup (NonemptyChain.mk (bot x f) ⟨x, bot_isAdmissible.base_isLeast.1⟩ (bot_isChain))
   use y
   apply le_antisymm _ (f.le_map y)
   apply le_cSup _ _
