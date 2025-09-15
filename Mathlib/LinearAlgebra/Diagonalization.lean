@@ -17,14 +17,10 @@ We define *diagonalization* as the special case where `α` is `Unit`.
 
 ## Main definitions / results:
 
-* `LinearMap.diagonalization_of_isDiag_toMatrix`:
-  a basis for which the matrix representation is diagonal is a diagonalization.
 * `LinearMap.exists_diagonalization_iff_directSum_eigenspace`:
   a linear map is diagonalizable iff the direct sum of the eigenspaces is the whole space.
 * `LinearMap.exists_diagonalization_iff_iSup_eigenspace`:
   a linear map is diagonalizable iff the eigenspaces span the whole space.
-* `LinearMap.Diagonalization.μ_equiv`:
-  all diagonalizations of a linear map have the same eigenvalues up to permutation.
 
 ## TODO
 
@@ -139,9 +135,9 @@ def diagonalization_one [Nontrivial R] {ι : Type*} (b : Basis ι R M) :
 
 /-- Any simultaneous diagonalization of `f` also diagonalizes `c • f`. -/
 def SimultaneousDiagonalization.smul {ι : Type*} {f : α → End R M}
-    (D : SimultaneousDiagonalization ι f) (c : R) : SimultaneousDiagonalization ι (c • f) where
+    (D : SimultaneousDiagonalization ι f) (c : α → R) : SimultaneousDiagonalization ι (c • f) where
   toBasis := D.toBasis
-  μ := fun a i ↦ c * D.μ a i
+  μ := fun a i ↦ c a * D.μ a i
   hasEigenVector_μ a i := by
     have := D.hasEigenVector_μ a i
     simp_all [hasEigenvector_iff, smul_smul]
@@ -149,21 +145,22 @@ def SimultaneousDiagonalization.smul {ι : Type*} {f : α → End R M}
 /-- Any diagonalization of `f` also diagonalizes `c • f`. -/
 def Diagonalization.smul {ι : Type*} {f : End R M} (D : f.Diagonalization ι) (c : R) :
     (c • f).Diagonalization ι :=
-  SimultaneousDiagonalization.smul D c
+  SimultaneousDiagonalization.smul D fun _ ↦ c
 
-/-- Any simultaneous diagonalization of `f` also diagonalizes `f + c • 1`. -/
-def SimultaneousDiagonalization.add_smul {ι : Type*} {f : α → End R M}
-    (D : SimultaneousDiagonalization ι f) (c : R) : SimultaneousDiagonalization ι (f + c • 1) where
+/-- Any simultaneous diagonalization of `f` also diagonalizes `f - c • 1`. -/
+def SimultaneousDiagonalization.sub_smul {ι : Type*} {f : α → End R M}
+    (D : SimultaneousDiagonalization ι f) (c : α → R) :
+    SimultaneousDiagonalization ι (f - c • 1) where
   toBasis := D.toBasis
-  μ := fun a i ↦ c + D.μ a i
+  μ := fun a i ↦ D.μ a i - c a
   hasEigenVector_μ a i := by
     have := D.hasEigenVector_μ a i
-    simp_all [hasEigenvector_iff, _root_.add_smul, add_comm]
+    simp_all [hasEigenvector_iff, _root_.sub_smul]
 
-/-- Any diagonalization of `f` also diagonalizes `f + c • 1`. -/
-def Diagonalization.add_smul {ι : Type*} {f : End R M} (D : f.Diagonalization ι) (c : R) :
-    (f + c • 1).Diagonalization ι :=
-  SimultaneousDiagonalization.add_smul D c
+/-- Any diagonalization of `f` also diagonalizes `f - c • 1`. -/
+def Diagonalization.sub_smul {ι : Type*} {f : End R M} (D : f.Diagonalization ι) (c : R) :
+    (f - c • 1).Diagonalization ι :=
+  SimultaneousDiagonalization.sub_smul D fun _ ↦ c
 
 /-- Any simultaneous diagonalization of `f` also diagonalizes `f i + f j` for any `i` and `j`. -/
 def SimultaneousDiagonalization.diagonalization_add [Fintype α] {ι : Type*} {f : α → End R M}
