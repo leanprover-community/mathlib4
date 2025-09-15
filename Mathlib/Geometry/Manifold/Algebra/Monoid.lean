@@ -412,18 +412,22 @@ theorem contMDiff_finprod_cond (hc : ∀ i, p i → ContMDiff I' I n (f i))
 
 variable {g : M → G}
 
+@[to_additive]
 theorem ContMDiffWithinAt.pow (hg : ContMDiffWithinAt I' I n g s x) (m : ℕ) :
     ContMDiffWithinAt I' I n (fun x ↦ g x ^ m) s x :=
   (contMDiff_pow m).contMDiffAt.comp_contMDiffWithinAt x hg
 
+@[to_additive]
 nonrec theorem ContMDiffAt.pow (hg : ContMDiffAt I' I n g x) (m : ℕ) :
     ContMDiffAt I' I n (fun x ↦ g x ^ m) x :=
   hg.pow m
 
+@[to_additive]
 theorem ContMDiffOn.pow (hg : ContMDiffOn I' I n g s) (m : ℕ) :
     ContMDiffOn I' I n (fun x ↦ g x ^ m) s :=
   fun x hx ↦ (hg x hx).pow m
 
+@[to_additive]
 theorem ContMDiff.pow (hg : ContMDiff I' I n g) (m : ℕ) :
     ContMDiff I' I n (fun x ↦ g x ^ m) :=
   fun x ↦ (hg x).pow m
