@@ -388,6 +388,17 @@ end Multiset
 theorem List.finite_toSet (l : List α) : { x | x ∈ l }.Finite :=
   (show Multiset α from ⟦l⟧).finite_toSet
 
+/-- `Finset α` is order isomorphic to the type of finite sets in `α`. -/
+@[simps] noncomputable def OrderIso.finsetSetFinite : Finset α ≃o {s : Set α // s.Finite} where
+  toFun s := ⟨s, s.finite_toSet⟩
+  invFun s := s.2.toFinset
+  left_inv _ := by simp
+  right_inv _ := by simp
+  map_rel_iff' := .rfl
+
+instance : WellFoundedLT {s : Set α // s.Finite} :=
+  OrderIso.finsetSetFinite.symm.toOrderEmbedding.wellFoundedLT
+
 /-! ### Finite instances
 
 There is seemingly some overlap between the following instances and the `Fintype` instances
@@ -685,9 +696,9 @@ theorem Finite.induction_on {motive : ∀ s : Set α, s.Finite → Prop} (s : Se
       ∀ hs : Set.Finite s, motive s hs → motive (insert a s) (hs.insert a)) :
     motive s hs := by
   lift s to Finset α using id hs
-  induction' s using Finset.cons_induction_on with a s ha ih
-  · simpa
-  · simpa using @insert a s ha (Set.toFinite _) (ih _)
+  induction s using Finset.cons_induction_on with
+  | empty => simpa
+  | cons a s ha ih => simpa using @insert a s ha (Set.toFinite _) (ih _)
 
 /-- Induction principle for finite sets: To prove a property `C` of a finite set `s`, it's enough
 to prove for the empty set and to prove that `C t → C ({a} ∪ t)` for all `t ⊆ s`.
