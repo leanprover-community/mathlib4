@@ -16,12 +16,12 @@ import Mathlib.CategoryTheory.Subterminal
 /-!
 # Exponential ideals
 
-An exponential ideal of a cartesian closed category `C` is a subcategory `D ⊆ C` such that for any
+An exponential ideal of a Cartesian-closed category `C` is a subcategory `D ⊆ C` such that for any
 `B : D` and `A : C`, the exponential `A ⟹ B` is in `D`: resembling ring-theoretic ideals. We
 define the notion here for inclusion functors `i : D ⥤ C` rather than explicit subcategories to
 preserve the principle of equivalence.
 
-We additionally show that if `C` is cartesian closed and `i : D ⥤ C` is a reflective functor, the
+We additionally show that if `C` is Cartesian closed and `i : D ⥤ C` is a reflective functor, the
 following are equivalent.
 * The left adjoint to `i` preserves binary (equivalently, finite) products.
 * `i` is an exponential ideal.
@@ -185,7 +185,7 @@ instance (priority := 10) exponentialIdeal_of_preservesBinaryProducts
 variable [ExponentialIdeal i]
 
 /-- If `i` witnesses that `D` is a reflective subcategory and an exponential ideal, then `D` is
-itself cartesian closed.
+itself Cartesian closed.
 -/
 def cartesianClosedOfReflective : CartesianClosed D where
   closed := fun B =>

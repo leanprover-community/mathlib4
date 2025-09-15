@@ -201,7 +201,7 @@ lemma reflection_mul_reflection_pow_apply (m : ℕ) (z : M)
     simp only [reflection_apply, map_add, map_sub, map_smul, hf, hg]
     -- `m` can be written in the form `2 * k + e`, where `e` is `0` or `1`.
     push_cast
-    rw [← Int.ediv_add_emod m 2]
+    rw [← Int.mul_ediv_add_emod m 2]
     set k : ℤ := m / 2
     set e : ℤ := m % 2
     simp_rw [add_assoc (2 * k), add_sub_assoc (2 * k), add_comm (2 * k),
