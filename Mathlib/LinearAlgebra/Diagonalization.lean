@@ -41,10 +41,10 @@ namespace LinearMap
 
 open Module End Matrix Polynomial
 
-universe u v
+universe uR uM uK uV
 
-variable {α : Type*} {R : Type u} {M : Type v} [CommRing R] [AddCommGroup M] [Module R M]
-variable {K : Type u} [Field K] [Module K M]
+variable {α : Type*} {R : Type uR} {M : Type uM} [CommRing R] [AddCommGroup M] [Module R M]
+variable {K : Type uK} {V : Type uV} [Field K] [AddCommGroup V] [Module K V]
 
 /--
 A diagonalization of a family of linear maps $T_i : V \to V$ is a basis of $V$
@@ -197,12 +197,14 @@ lemma Diagonalization.charpoly_eq [Nontrivial R] {ι : Type*} [Fintype ι] [Deci
     f.charpoly = ∏ i, (X - C (D.μ i)) := by
   rw [← f.charpoly_toMatrix D.toBasis, D.toMatrix_eq_diagonal, charpoly_diagonal]
 
-lemma Diagonalization.splits_charpoly {ι : Type*} [Fintype ι] [DecidableEq ι] [Module.Finite K M]
-    {f : End K M} (D : f.Diagonalization ι) : f.charpoly.Splits (RingHom.id K) := by
+lemma Diagonalization.splits_charpoly {ι : Type*} [Fintype ι] [DecidableEq ι] [Module.Finite K V]
+    {f : End K V} (D : f.Diagonalization ι) : f.charpoly.Splits (RingHom.id K) := by
   simp [D.charpoly_eq, splits_prod_iff, X_sub_C_ne_zero, splits_X_sub_C]
 
-lemma Diagonalization.isRoot_charpoly {ι : Type*} [Fintype ι] [DecidableEq ι] [Module.Finite K M]
-    {f : End K M} (D : f.Diagonalization ι) (i : ι) : f.charpoly.IsRoot (D.μ i) := by
+/-- TODO: `[Nontrivial R]` golfed in #29420 -/
+lemma Diagonalization.isRoot_charpoly [Nontrivial R] [IsDomain R] [Module.Finite R M] [Free R M]
+    {ι : Type*} [Fintype ι] [DecidableEq ι] {f : End R M} (D : f.Diagonalization ι) (i : ι) :
+    f.charpoly.IsRoot (D.μ i) := by
   rw [D.charpoly_eq, Polynomial.isRoot_prod]
   use i
   simp
@@ -221,28 +223,28 @@ then we can change the assumption here to
 `[IsPrincipalIdealRing R] [IsDomain R] [Free R M] [NoZeroSMulDivisors R M]` which handles both the
 field and PID cases.
 -/
-lemma exists_diagonalization_iff_directSum_eigenspace [DecidableEq K] {f : End K M} :
-    (∃ ι : Type v, Nonempty (f.Diagonalization ι)) ↔ DirectSum.IsInternal f.eigenspace := by
+lemma exists_diagonalization_iff_directSum_eigenspace [DecidableEq K] {f : End K V} :
+    (∃ ι : Type uV, Nonempty (f.Diagonalization ι)) ↔ DirectSum.IsInternal f.eigenspace := by
   constructor <;> intro h
   · obtain ⟨ι, ⟨D⟩⟩ := h
     simp [DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top, eigenspaces_iSupIndep f,
       D.iSup_eigenspace]
   · let v := fun i ↦ (Free.exists_basis K (f.eigenspace i)).some.2
     let B' := h.collectedBasis v -- universe (max u v)
-    let e := B'.indexEquiv (Free.exists_basis K M).some.2
+    let e := B'.indexEquiv (Free.exists_basis K V).some.2
     let B := B'.reindex e -- move to universe v
     refine ⟨_, ⟨Diagonalization.mk (b := B) (μ := (e.symm · |>.1)) fun i ↦ ?_⟩⟩
     rw [hasEigenvector_iff, B'.reindex_apply]
     exact ⟨h.collectedBasis_mem v _, B'.ne_zero _⟩
 
-lemma exists_diagonalization_iff_iSup_eigenspace {f : End K M} :
-    (∃ ι : Type v, Nonempty (f.Diagonalization ι)) ↔ ⨆ μ, f.eigenspace μ = ⊤ := by classical calc
+lemma exists_diagonalization_iff_iSup_eigenspace {f : End K V} :
+    (∃ ι : Type uV, Nonempty (f.Diagonalization ι)) ↔ ⨆ μ, f.eigenspace μ = ⊤ := by classical calc
   _ ↔ DirectSum.IsInternal f.eigenspace := exists_diagonalization_iff_directSum_eigenspace
   _ ↔ _ := by
     simp [DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top, eigenspaces_iSupIndep f]
 
-proof_wanted exists_diagonalization_iff_minpoly_splits_and_squarefree {f : End K M} :
-    (∃ ι : Type v, Nonempty (f.Diagonalization ι)) ↔
+proof_wanted exists_diagonalization_iff_minpoly_splits_and_squarefree {f : End K V} :
+    (∃ ι : Type uV, Nonempty (f.Diagonalization ι)) ↔
     (minpoly K f).Splits (RingHom.id K) ∧ Squarefree (minpoly K f)
 
 -- May need additional assumptions on `R` and `M` for this to hold.
@@ -253,8 +255,8 @@ proof_wanted SimultaneousDiagonalization.commute {ι : Type*} {f : α → End R 
     (D : SimultaneousDiagonalization ι f) (i j : α) : Commute (f i) (f j)
 
 proof_wanted exists_simultaneousDiagonalization_iff_commute {f : α → End R M} :
-    (∃ ι : Type v, Nonempty (SimultaneousDiagonalization ι f)) ↔
-    (∀ i : α, ∃ ι : Type v, Nonempty (Diagonalization ι (f i))) ∧
+    (∃ ι : Type uM, Nonempty (SimultaneousDiagonalization ι f)) ↔
+    (∀ i : α, ∃ ι : Type uM, Nonempty (Diagonalization ι (f i))) ∧
     ∀ i j : α, Commute (f i) (f j)
 
 end LinearMap
