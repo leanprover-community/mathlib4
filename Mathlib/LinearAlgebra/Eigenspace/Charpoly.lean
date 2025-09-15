@@ -5,8 +5,7 @@ Authors: Lawrence Wu
 -/
 import Mathlib.LinearAlgebra.Charpoly.BaseChange
 import Mathlib.LinearAlgebra.Charpoly.ToMatrix
-import Mathlib.LinearAlgebra.Eigenspace.Matrix
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Eigs
+import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 /-!
 # Eigenvalues are the roots of the characteristic polynomial.
