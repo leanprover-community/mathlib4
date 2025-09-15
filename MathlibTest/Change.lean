@@ -5,11 +5,14 @@ set_option pp.unicode.fun true
 set_option autoImplicit true
 
 /--
-info: Try this: change 0 = 1
+info: Try this:
+  change 0 = 1
 ---
-info: Try this: change (fun x ↦ x) 0 = 1
+info: Try this:
+  change (fun x ↦ x) 0 = 1
 ---
-info: Try this: change (fun x ↦ x) 0 = 1
+info: Try this:
+  change (fun x ↦ x) 0 = 1
 ---
 error: The term
   1 = 0

@@ -28,12 +28,15 @@ def fun₀.matchAlts : Parser :=
 As a result, if multiple match arms coincide, the last one takes precedence. -/
 @[term_parser]
 def fun₀ := leading_parser:maxPrec
-  ppAllowUngrouped >> unicodeSymbol "λ₀" "fun₀" >> fun₀.matchAlts
+  -- Prefer `fun₀` over `λ₀` when pretty printing.
+  ppAllowUngrouped >> unicodeSymbol "λ₀" "fun₀" (preserveForPP := true) >> fun₀.matchAlts
+
+namespace Internal
 
 /-- Implementation detail for `fun₀`, used by both `Finsupp` and `DFinsupp` -/
-local syntax:lead (name := stxSingle₀) "single₀" term:arg term:arg : term
+scoped syntax:lead (name := stxSingle₀) "single₀" term:arg term:arg : term
 /-- Implementation detail for `fun₀`, used by both `Finsupp` and `DFinsupp` -/
-local syntax:lead (name := stxUpdate₀) "update₀" term:arg term:arg term:arg : term
+scoped syntax:lead (name := stxUpdate₀) "update₀" term:arg term:arg term:arg : term
 
 /-- `Finsupp` elaborator for `single₀`. -/
 @[term_elab stxSingle₀]
@@ -62,6 +65,8 @@ macro_rules
           fst := false
         | _ => Macro.throwUnsupported
     pure stx
+
+end Internal
 
 /-- Unexpander for the `fun₀ | i => x` notation. -/
 @[app_unexpander Finsupp.single]
