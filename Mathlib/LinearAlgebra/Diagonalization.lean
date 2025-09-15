@@ -23,15 +23,16 @@ We define *diagonalization* as the special case where `α` is `Unit`.
   a linear map is diagonalizable iff the direct sum of the eigenspaces is the whole space.
 * `LinearMap.exists_diagonalization_iff_iSup_eigenspace`:
   a linear map is diagonalizable iff the eigenspaces span the whole space.
-* `LinearMap.exists_diagonalization_iff_minpoly_splits_and_squarefree`:
-  a linear map is diagonalizable iff the minimal polynomial splits and is squarefree.
-* `LinearMap.exists_simultaneousDiagonalization_iff_commute`: a family of linear maps is
-  simultaneously diagonalizable iff they commute and are individually diagonalizable.
 * `LinearMap.Diagonalization.μ_equiv`:
   all diagonalizations of a linear map have the same eigenvalues up to permutation.
 
 ## TODO
 
+* `LinearMap.exists_diagonalization_iff_minpoly_splits_and_squarefree`:
+  a linear map is diagonalizable iff the minimal polynomial splits and is squarefree.
+* `LinearMap.Diagonalization.isSemisimple`: all diagonalizable linear maps are semisimple.
+* `LinearMap.exists_simultaneousDiagonalization_iff_commute`: a family of linear maps is
+  simultaneously diagonalizable iff they commute and are individually diagonalizable.
 * `IsIdempotentElem` implies diagonalizable (https://math.stackexchange.com/a/1017060/315369)
 * Treatment of normal endomorphisms
 -/
@@ -154,8 +155,8 @@ lemma Diagonalization.toMatrix_eq_diagonal {ι : Type*} [Fintype ι] [DecidableE
   simp [toMatrix_apply, (D.hasEigenVector_μ j).apply_eq_smul]
   grind [Finsupp.single_apply, diagonal_apply]
 
--- note: Nontrivial R golfed in #29420
-lemma Diagonalization.charpoly_eq {ι : Type*} [Fintype ι] [DecidableEq ι] [Nontrivial R] [Free R M]
+-- note: [Nontrivial R] golfed in #29420
+lemma Diagonalization.charpoly_eq [Nontrivial R] {ι : Type*} [Fintype ι] [DecidableEq ι] [Free R M]
     [Module.Finite R M] {f : End R M} (D : f.Diagonalization ι) :
     f.charpoly = ∏ i, (X - C (D.μ i)) := by
   rw [← f.charpoly_toMatrix D.toBasis, D.toMatrix_eq_diagonal, charpoly_diagonal]
@@ -175,43 +176,40 @@ lemma Diagonalization.iSup_eigenspace {ι : Type*} {f : End R M} (D : f.Diagonal
   rw [eq_top_iff, ← Basis.span_eq D.toBasis, Submodule.span_le, Set.range_subset_iff]
   exact fun i ↦ Submodule.mem_iSup_of_mem (D.μ i) (hasEigenvector_iff.mp (D.hasEigenVector_μ i)).1
 
--- https://mathoverflow.net/questions/16953/are-submodules-of-free-modules-free#comment31868_16954
-instance {R M : Type*} [Semiring R] [AddCommMonoid M] [IsPrincipalIdealRing R] [IsDomain R] [Module R M] [Module.Free R M] (N : Submodule R M) : Module.Free R N := by
-  sorry
-
-lemma exists_diagonalization_iff_directSum_eigenspace [IsPrincipalIdealRing R] [IsDomain R]
-    [DecidableEq R] [NoZeroSMulDivisors R M] [Free R M] {f : End R M} :
+/--
+TODO: This proof also goes through for
+`[IsPrincipalIdealRing R] [IsDomain R] [Module.Finite R M] [NoZeroSMulDivisors R M]`,
+but the f.g. condition is unnecessary for fields. If the
+`proof_wanted Submodule.free_of_free_of_pid` is resolved, then we can change the assumption here to
+`[IsPrincipalIdealRing R] [IsDomain R] [Free R M] [NoZeroSMulDivisors R M]` which handles both the
+field and PID cases.
+-/
+lemma exists_diagonalization_iff_directSum_eigenspace [DecidableEq K] [Free K M] {f : End K M} :
     (∃ ι : Type v, Nonempty (f.Diagonalization ι)) ↔ DirectSum.IsInternal f.eigenspace := by
   constructor <;> intro h
   · obtain ⟨ι, ⟨D⟩⟩ := h
     simp [DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top, eigenspaces_iSupIndep f,
       D.iSup_eigenspace]
-  · let v := fun i ↦ (Free.exists_basis R (f.eigenspace i)).some.2
+  · let v := fun i ↦ (Free.exists_basis K (f.eigenspace i)).some.2
     let B' := h.collectedBasis v -- universe (max u v)
-    let e := (B'.indexEquiv (Free.exists_basis R M).some.2)
+    let e := B'.indexEquiv (Free.exists_basis K M).some.2
     let B := B'.reindex e -- move to universe v
-    refine ⟨_, ⟨Diagonalization.mk' (b := B) fun i ↦ ?_⟩⟩
-    use (e.symm i).fst
+    refine ⟨_, ⟨Diagonalization.mk (b := B) (μ := (e.symm · |>.1)) fun i ↦ ?_⟩⟩
     rw [hasEigenvector_iff, B'.reindex_apply]
-    refine ⟨h.collectedBasis_mem v _, B'.ne_zero _⟩
+    exact ⟨h.collectedBasis_mem v _, B'.ne_zero _⟩
 
-lemma exists_diagonalization_iff_iSup_eigenspace [IsPrincipalIdealRing R] [IsDomain R]
-    [NoZeroSMulDivisors R M] [Free R M] {f : End R M} :
+lemma exists_diagonalization_iff_iSup_eigenspace [Free K M] {f : End K M} :
     (∃ ι : Type v, Nonempty (f.Diagonalization ι)) ↔ ⨆ μ, f.eigenspace μ = ⊤ := by classical calc
   _ ↔ DirectSum.IsInternal f.eigenspace := exists_diagonalization_iff_directSum_eigenspace
   _ ↔ _ := by
     simp [DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top, eigenspaces_iSupIndep f]
 
--- probably follow-up work
-theorem exists_diagonalization_iff_minpoly_splits_and_squarefree {f : End K M} :
+proof_wanted exists_diagonalization_iff_minpoly_splits_and_squarefree {f : End K M} :
     (∃ ι : Type v, Nonempty (f.Diagonalization ι)) ↔
-    (minpoly K f).Splits (RingHom.id K) ∧ Squarefree (minpoly K f) := by
-  sorry
+    (minpoly K f).Splits (RingHom.id K) ∧ Squarefree (minpoly K f)
 
--- probably follow-up work. need determine right generality.
-lemma Diagonalization.isSemisimple {ι : Type*} [IsSemisimpleModule R M]
-    {f : End R M} (D : f.Diagonalization ι) : f.IsSemisimple := by
-  sorry
+proof_wanted Diagonalization.isSemisimple {ι : Type*} [IsSemisimpleModule R M]
+    {f : End R M} (D : f.Diagonalization ι) : f.IsSemisimple
 
 -- This is proved: https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/diagonalizable.20linear.20maps/near/539282397
 theorem LinearMap.Diagonalization.μ_equiv {ι ι' R M : Type*} [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M]
@@ -219,10 +217,9 @@ theorem LinearMap.Diagonalization.μ_equiv {ι ι' R M : Type*} [CommRing R] [Is
     ∃ e : ι ≃ ι', D₁.μ = D₂.μ ∘ e := by
   sorry
 
-theorem exists_simultaneousDiagonalization_iff_commute {f : α → End R M} :
+proof_wanted exists_simultaneousDiagonalization_iff_commute {f : α → End R M} :
     (∃ ι : Type v, Nonempty (SimultaneousDiagonalization ι f)) ↔
     (∀ i : α, ∃ ι : Type v, Nonempty (Diagonalization ι (f i))) ∧
-    ∀ i j : α, Commute (f i) (f j) := by
-  sorry
+    ∀ i j : α, Commute (f i) (f j)
 
 end LinearMap
