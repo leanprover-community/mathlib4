@@ -146,6 +146,14 @@ theorem standardPart_zero_left (f : ℝ →+* K) (hf : StrictMono f) (x : K) :
   · apply standardPart_of_mk_lt_mk_sub f hf
     simp_all [lt_top_iff_ne_top]
 
+theorem standardPart_map (f : ℝ →+* K) (hf : StrictMono f) (x y : ℝ) :
+    standardPart f (f x) (f y) = x / y := by
+  obtain rfl | hy := eq_or_ne y 0
+  · simp
+  · apply standardPart_of_mk_lt_mk_sub f hf
+    rw [← f.map_mul, div_mul_cancel₀ _ hy]
+    simpa [lt_top_iff_ne_top]
+
 end Ring
 
 section Field
