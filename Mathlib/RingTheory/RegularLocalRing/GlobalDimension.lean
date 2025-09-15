@@ -86,7 +86,7 @@ lemma finite_projectiveDimension_of_isRegularLocalRing [IsRegularLocalRing R] [S
   simpa [hm] using WithBot.coe_le_coe.mpr le_add_self
 
 variable (R) in
-theorem globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegularLocalRing R] :
+theorem IsRegularLocalRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegularLocalRing R] :
     globalDimension.{v} R = ringKrullDim R := by
   classical
   rw [globalDimension_eq_sup_projectiveDimension_finite]
