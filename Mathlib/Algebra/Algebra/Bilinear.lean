@@ -112,6 +112,14 @@ theorem mulLeftRight_apply (a b x : A) : mulLeftRight R (a, b) x = a * x * b :=
 theorem mul'_apply {a b : A} : mul' R A (a ⊗ₜ b) = a * b :=
   rfl
 
+variable {M : Type*} [AddCommMonoid M] [Module R M]
+
+theorem lift_lsmul_mul_eq_lsmul_lift_lsmul {r : R} :
+    lift (lsmul R M ∘ₗ mul R R r) = lsmul R M r ∘ₗ lift (lsmul R M) := by
+  apply TensorProduct.ext'
+  intro x a
+  simp [← mul_smul, mul_comm]
+
 end NonUnitalNonAssoc
 
 section NonUnital
