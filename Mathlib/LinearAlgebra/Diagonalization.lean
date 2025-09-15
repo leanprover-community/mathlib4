@@ -34,6 +34,10 @@ We define *diagonalization* as the special case where `α` is `Unit`.
 * `LinearMap.exists_simultaneousDiagonalization_iff_commute`: a family of linear maps is
   simultaneously diagonalizable iff they commute and are individually diagonalizable.
 * `IsIdempotentElem` implies diagonalizable (https://math.stackexchange.com/a/1017060/315369)
+* Generalize `exists_diagonalization_iff_directSum_eigenspace` and
+  `exists_diagonalization_iff_iSup_eigenspace` to PIDs pending
+  `proof_wanted Submodule.free_of_free_of_pid` in LinearAlgebra.FreeModule.PID.
+  Otherwise would need separate theorems for fields and f.g. over PIDs.
 * Treatment of normal endomorphisms
 -/
 
@@ -214,17 +218,10 @@ lemma Diagonalization.iSup_eigenspace {ι : Type*} {f : End R M} (D : f.Diagonal
   rw [eq_top_iff, ← Basis.span_eq D.toBasis, Submodule.span_le, Set.range_subset_iff]
   exact fun i ↦ Submodule.mem_iSup_of_mem (D.μ i) (hasEigenvector_iff.mp (D.hasEigenVector_μ i)).1
 
-/--
-TODO: This proof also goes through for
-`[IsPrincipalIdealRing R] [IsDomain R] [Module.Finite R M] [NoZeroSMulDivisors R M]`,
-but the f.g. condition is unnecessary for fields. If the
-`proof_wanted Submodule.free_of_free_of_pid` in LinearAlgebra.FreeModule.PID is resolved,
-then we can change the assumption here to
-`[IsPrincipalIdealRing R] [IsDomain R] [Free R M] [NoZeroSMulDivisors R M]` which handles both the
-field and PID cases.
--/
 lemma exists_diagonalization_iff_directSum_eigenspace [DecidableEq K] {f : End K V} :
     (∃ ι : Type uV, Nonempty (f.Diagonalization ι)) ↔ DirectSum.IsInternal f.eigenspace := by
+  -- There may be a shorter proof for fields, but this proof should work over PIDs too;
+  -- see TODO notes for this file.
   constructor <;> intro h
   · obtain ⟨ι, ⟨D⟩⟩ := h
     simp [DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top, eigenspaces_iSupIndep f,
