@@ -61,7 +61,8 @@ variable {M X Y : C} [MonObj M]
 attribute [reassoc (attr := simp)] one_mul mul_one mul_assoc
 
 /-- Transfer `MonObj` along an isomorphism. -/
-@[simps]
+-- Note: The simps lemmas are not tagged simp because their `#discr_tree_simp_key` are too generic.
+@[simps! -isSimp]
 def ofIso (e : M ≅ X) : MonObj X where
   one := η[M] ≫ e.hom
   mul := (e.inv ⊗ₘ e.inv) ≫ μ[M] ≫ e.hom
@@ -162,6 +163,7 @@ instance : IsMon_Hom (𝟙 M) where
 
 instance (f : M ⟶ N) (g : N ⟶ O) [IsMon_Hom f] [IsMon_Hom g] : IsMon_Hom (f ≫ g) where
 
+attribute [local simp] MonObj.ofIso_one MonObj.ofIso_mul in
 instance isMon_Hom_ofIso (e : M ≅ X) : letI := MonObj.ofIso e; IsMon_Hom e.hom := by
   letI := MonObj.ofIso e; exact { }
 
@@ -463,6 +465,7 @@ faithful too. -/
 protected def FullyFaithful.mapMon (hF : F.FullyFaithful) : F.mapMon.FullyFaithful where
   preimage {X Y} f := .mk' <| hF.preimage f.hom
 
+attribute [local simp] MonObj.ofIso_one MonObj.ofIso_mul in
 open Monoidal in
 /-- The essential image of a fully faithful functor between cartesian-monoidal categories is the
 same on monoid objects as on objects. -/
