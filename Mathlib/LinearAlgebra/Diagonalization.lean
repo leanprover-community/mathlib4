@@ -74,7 +74,7 @@ lemma Diagonalization.ext {ι : Type*} {f : Module.End R M} {D₁ D₂ : f.Diago
   SimultaneousDiagonalization.ext h
 
 /-- The eigenvalues of the diagonalization. -/
-def Diagonalization.μ {ι : Type*} {f : End R M} (self : f.Diagonalization ι) :=
+def Diagonalization.μ {ι : Type*} {f : End R M} (self : f.Diagonalization ι) : R :=
   SimultaneousDiagonalization.μ self ()
 
 lemma Diagonalization.hasEigenVector_μ {ι : Type*} {f : End R M}
