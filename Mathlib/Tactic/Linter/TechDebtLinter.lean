@@ -81,13 +81,6 @@ def getDebts : Syntax → CommandElabM (Array Syntax)
   * `**/Deprecated/*.lean`
 -/
 
-open Lean Elab Command in
-elab "td " cmd:command : command => do
-  elabCommand cmd
-  let debt ← getDebts cmd
-  logInfo m!"{debt.size}: {debt}"
-  --logInfo m!"{cmd}"
-
 @[inherit_doc Mathlib.Linter.linter.techDebtLinter]
 def techDebtLinterLinter : Linter where run stx := do
   unless Linter.getLinterValue linter.techDebtLinter (← getLinterOptions) do
