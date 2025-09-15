@@ -6,6 +6,7 @@ Authors: Jean Lo, Yaël Dillies, Moritz Doll
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Analysis.LocallyConvex.Basic
+import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Data.Real.Pointwise
 
 /-!
