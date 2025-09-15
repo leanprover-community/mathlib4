@@ -11,9 +11,9 @@ import Mathlib.CategoryTheory.Monoidal.Types.Basic
 /-!
 # Cartesian closure of Type
 
-Show that `Type u₁` is cartesian closed, and `C ⥤ Type u₁` is cartesian closed for `C` a small
+Show that `Type u₁` is Cartesian closed, and `C ⥤ Type u₁` is Cartesian closed for `C` a small
 category in `Type u₁`.
-Note this implies that the category of presheaves on a small category `C` is cartesian closed.
+Note this implies that the category of presheaves on a small category `C` is Cartesian closed.
 -/
 
 
