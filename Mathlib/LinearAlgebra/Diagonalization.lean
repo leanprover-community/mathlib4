@@ -137,7 +137,7 @@ def diagonalization_one [Nontrivial R] {ι : Type*} (b : Basis ι R M) :
 def SimultaneousDiagonalization.smul {ι : Type*} {f : α → End R M}
     (D : SimultaneousDiagonalization ι f) (c : α → R) : SimultaneousDiagonalization ι (c • f) where
   toBasis := D.toBasis
-  μ := fun a i ↦ c a * D.μ a i
+  μ := c • D.μ
   hasEigenVector_μ a i := by
     have := D.hasEigenVector_μ a i
     simp_all [hasEigenvector_iff, smul_smul]
