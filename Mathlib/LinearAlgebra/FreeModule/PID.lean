@@ -37,9 +37,8 @@ In this section, `M` is a free and finitely generated `R`-module, and
 
 ## TODO
 
-- `Submodule.nonempty_basis_of_pid` can be shown without `[Finite ι]`:
+- `proof_wanted Submodule.free_of_free_of_pid` which does not require f.g.:
   https://mathoverflow.net/questions/16953/are-submodules-of-free-modules-free#comment31868_16954
-  See the `proof_wanted`.
 
 ## Tags
 
