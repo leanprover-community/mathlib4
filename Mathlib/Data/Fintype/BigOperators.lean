@@ -241,9 +241,6 @@ theorem Fintype.prod_sumElim (f : α₁ → M) (g : α₂ → M) :
     ∏ x, Sum.elim f g x = (∏ a₁, f a₁) * ∏ a₂, g a₂ :=
   prod_disjSum _ _ _
 
-@[deprecated (since := "2025-02-20")] alias prod_sum_elim := prod_sumElim
-@[deprecated (since := "2025-02-20")] alias sum_sum_elim := sum_sumElim
-
 @[to_additive (attr := simp)]
 theorem Fintype.prod_sum_type (f : α₁ ⊕ α₂ → M) :
     ∏ x, f x = (∏ a₁, f (Sum.inl a₁)) * ∏ a₂, f (Sum.inr a₂) :=

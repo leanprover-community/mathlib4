@@ -39,13 +39,16 @@ section antisymm
 variable {α : Type u} {β : Type v}
 
 /-- **The Schröder-Bernstein Theorem**:
-Given injections `α → β` and `β → α`, we can get a bijection `α → β`. -/
-theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Function.Injective f)
-    (hg : Function.Injective g) : ∃ h : α → β, Bijective h := by
+Given injections `α → β` and `β → α` that satisfy a pointwise property `R`, we can get a bijection
+`α → β` that satisfies that same pointwise property. -/
+theorem schroeder_bernstein_of_rel {f : α → β} {g : β → α} (hf : Function.Injective f)
+    (hg : Function.Injective g) (R : α → β → Prop) (hp₁ : ∀ a : α, R a (f a))
+    (hp₂ : ∀ b : β, R (g b) b) :
+    ∃ h : α → β, Bijective h ∧ ∀ a : α, R a (h a) := by
   classical
   rcases isEmpty_or_nonempty β with hβ | hβ
   · have : IsEmpty α := Function.isEmpty f
-    exact ⟨_, ((Equiv.equivEmpty α).trans (Equiv.equivEmpty β).symm).bijective⟩
+    exact ⟨_, ((Equiv.equivEmpty α).trans (Equiv.equivEmpty β).symm).bijective, by simp⟩
   set F : Set α →o Set α :=
     { toFun := fun s => (g '' (f '' s)ᶜ)ᶜ
       monotone' := fun s t hst => by dsimp at hst ⊢; gcongr }
@@ -68,7 +71,22 @@ theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Function.Injec
       obtain ⟨y', hy', rfl⟩ : y ∈ g '' (f '' s)ᶜ := by rwa [hns]
       rw [g'g _] at hxy
       exact hy' ⟨x, hx, hxy⟩
-  exact ⟨h, ‹Injective h›, ‹Surjective h›⟩
+  refine ⟨h, ⟨‹Injective h›, ‹Surjective h›⟩, fun a ↦ ?_⟩
+  simp only [h, Set.piecewise, g']
+  split
+  · exact hp₁ a
+  · have : g (invFun g a) = a := by
+      have : a ∈ g '' (f '' s)ᶜ := by grind
+      obtain ⟨x, _, hx⟩ := mem_image _ _ _ |>.mp this
+      exact Function.invFun_eq ⟨x, hx⟩
+    grind
+
+/-- **The Schröder-Bernstein Theorem**:
+Given injections `α → β` and `β → α`, we can get a bijection `α → β`. -/
+theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Function.Injective f)
+    (hg : Function.Injective g) : ∃ h : α → β, Bijective h := by
+  obtain ⟨f, hf, _⟩ := schroeder_bernstein_of_rel hf hg (fun x y ↦ True) (by simp) (by simp)
+  exact ⟨f, hf⟩
 
 /-- **The Schröder-Bernstein Theorem**: Given embeddings `α ↪ β` and `β ↪ α`, there exists an
 equivalence `α ≃ β`. -/
