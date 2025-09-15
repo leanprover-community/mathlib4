@@ -10,6 +10,7 @@ import Mathlib.Algebra.BigOperators.Ring.Multiset
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Algebra.Ring.NegOnePow
 
 /-!
 # Results about big operators with values in a (semi)ring
@@ -372,3 +373,37 @@ lemma cast_prod {R : Type*} [CommRing R] (f : ι → ℤ) (s : Finset ι) :
   map_prod (Int.castRingHom R) _ _
 
 end Int
+
+section TelescopingSum
+
+variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+
+/-- Alternating sum of consecutive pairs (inclusive version).
+    The alternating sum of (a k + a (k + 1)) from 0 to n reduces to boundary terms. -/
+theorem sum_negOnePow_smul_add_consecutive_succ (n : ℕ) (a : ℕ → M) :
+    ∑ k ∈ Finset.range (n + 1), (k : ℤ).negOnePow • (a k + a (k + 1)) =
+    a 0 + (n : ℤ).negOnePow • a (n + 1) := by
+  induction n with
+  | zero =>
+    rw [Finset.sum_range_one]
+    simp only [Nat.cast_zero, Int.negOnePow_zero, one_smul]
+  | succ n ih =>
+    rw [Finset.sum_range_succ, ih]
+    simp only [Nat.cast_succ, Int.negOnePow_succ, smul_add]
+    simp only [Units.smul_def, Units.val_neg, neg_smul]
+    rw [add_assoc, add_neg_cancel_left]
+
+/-- Alternating sum of consecutive pairs.
+    The alternating sum of (a k + a (k + 1)) from 0 to n-1 reduces to boundary terms. -/
+theorem sum_negOnePow_smul_add_consecutive (n : ℕ) (a : ℕ → M) :
+    ∑ k ∈ Finset.range n, (k : ℤ).negOnePow • (a k + a (k + 1)) =
+    a 0 - (n : ℤ).negOnePow • a n := by
+  cases n with
+  | zero => simp
+  | succ n =>
+    rw [sum_negOnePow_smul_add_consecutive_succ]
+    simp only [sub_eq_add_neg]
+    congr 2
+    simp only [Nat.cast_succ, Int.negOnePow_succ, Units.smul_def, Units.val_neg, neg_smul, neg_neg]
+
+end TelescopingSum
