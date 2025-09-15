@@ -51,6 +51,7 @@ A diagonalization of a family of linear maps $T_i : V \to V$ is a basis of $V$
 consisting of simultaneous eigenvectors of $T_i$.
 -/
 structure SimultaneousDiagonalization (ι : Type*) (f : α → End R M) extends Basis ι R M where
+  /-- The eigenvalues of the diagonalization. -/
   μ : α → ι → R
   hasEigenVector_μ (a : α) (i : ι) : (f a).HasEigenvector (μ a i) (toBasis i)
 
@@ -163,7 +164,7 @@ def Diagonalization.sub_smul {ι : Type*} {f : End R M} (D : f.Diagonalization �
   SimultaneousDiagonalization.sub_smul D fun _ ↦ c
 
 /-- Any simultaneous diagonalization of `f` also diagonalizes `f i + f j` for any `i` and `j`. -/
-def SimultaneousDiagonalization.diagonalization_add [Fintype α] {ι : Type*} {f : α → End R M}
+def SimultaneousDiagonalization.diagonalization_add {ι : Type*} {f : α → End R M}
     (D : SimultaneousDiagonalization ι f) (i j : α) : (f i + f j).Diagonalization ι :=
   Diagonalization.mk (b := D.toBasis) (μ := fun k ↦ D.μ i k + D.μ j k) <| fun k ↦ by
     have := D.hasEigenVector_μ i k
@@ -179,7 +180,7 @@ def SimultaneousDiagonalization.diagonalization_sum [Fintype α] [Nontrivial R]
     simp_all [hasEigenvector_iff, D.toBasis.ne_zero, Finset.sum_smul]
 
 /-- Any simultaneous diagonalization of `f` also diagonalizes `f i * f j` for any `i` and `j`. -/
-def SimultaneousDiagonalization.diagonalization_mul [Fintype α] {ι : Type*} {f : α → End R M}
+def SimultaneousDiagonalization.diagonalization_mul {ι : Type*} {f : α → End R M}
     (D : SimultaneousDiagonalization ι f) (i j : α) : (f i * f j).Diagonalization ι :=
   Diagonalization.mk (b := D.toBasis) (μ := fun k ↦ D.μ i k * D.μ j k) <| fun k ↦ by
     have := D.hasEigenVector_μ i k
