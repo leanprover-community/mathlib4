@@ -834,6 +834,8 @@ theorem Summable.tendsto_alternating_series_tsum
 
 -- One shouldn't really need `CommRing E` here; perhaps even `AddCommGroup E` would suffice.
 -- But it's convenient to use `linarith` in the proof.
+-- TODO: generalize to conditionally-convergent sums
+-- see https://github.com/leanprover-community/mathlib4/pull/29577#discussion_r2343447344
 theorem alternating_series_error_bound
     {E} [CommRing E] [LinearOrder E] [IsStrictOrderedRing E]
     [UniformSpace E] [IsUniformAddGroup E] [CompleteSpace E] [OrderClosedTopology E]
