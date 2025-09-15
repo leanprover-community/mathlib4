@@ -1,5 +1,4 @@
 import Lean.Elab.Command
-import CFSG.adomaniLeanUtils.inspect_syntax
 import Batteries.Tactic.Alias
 import Mathlib.Tactic.AdaptationNote
 /-!
@@ -23,37 +22,6 @@ register_option linter.techDebtLinter : Bool := {
 
 namespace TechDebtLinter
 
-inspect #adaptation_note /-- comment -/
-
-inspect
-example : True := by
-  #adaptation_note /-- comment -/
-  trivial
-
-inspect
-set_option backward.dsimp.proofs false
-
-inspect
-@[nolint simpNF]
-example : True := by
-  trivial
-
-inspect
-example : 0 = 0 := by
-  erw []
--- Parser.Command.openSimple
--- Parser.Command.open
-inspect open _root_.Nat hiding add
-inspect open _root_.Nat
-inspect open _root_.Nat (add)
-inspect
-example : True := by
- open _root_.Nat in
- trivial
-
-inspect @[deprecated Nat (since := "")] example := 0
-inspect @[deprecated (since := "")] alias XX := Nat
-#eval getMainModule
 partial
 def getDebts : Syntax → CommandElabM (Array Syntax)
   | s@(.node _ kind args) => do
@@ -108,94 +76,16 @@ elab "td " cmd:command : command => do
   logInfo m!"{debt.size}: {debt}"
   --logInfo m!"{cmd}"
 
-
-/-- info: 1: [deprecated Nat (since := "")] -/
-#guard_msgs in
-td
-@[deprecated Nat (since := "")] example := 0
-
-/-- info: 1: [deprecated (since := "")] -/
-#guard_msgs in
-td
-@[deprecated (since := "")] alias X := Nat
-
-
-/-- info: 1: [set_option linter.deprecated false] -/
-#guard_msgs in
-td
-set_option linter.deprecated false in /-!-/
-
-/-- info: 1: [set_option linter.deprecated false] -/
-#guard_msgs in
-td
-set_option linter.deprecated false in
-@[simp] example : True := trivial
-
-namespace Fin.NatCast
-def zero := 0
-end Fin.NatCast
-
-/-- info: 1: [open Fin.NatCast hiding zero] -/
-#guard_msgs in
-td
-open Fin.NatCast hiding zero
-
-/-- info: 1: [open Fin.NatCast] -/
-#guard_msgs in
-td
-open Fin.NatCast
-
-
-/-- info: 1: [erw []] -/
-#guard_msgs in
-td
-example : 0 = 0 := by
-  erw []
-
-/-- info: 1: [nolint simpNF] -/
-#guard_msgs in
-td
-@[nolint simpNF]
-example : True := by
-  trivial
-
-
-/--
-info: 3: [set_option backward.dsimp.proofs false, set_option maxHeartbeats 100, set_option tactic.skipAssignedInstances false]
--/
-#guard_msgs in
-td
-set_option backward.dsimp.proofs false in
-set_option pp.proofs false in
-set_option maxHeartbeats 100 in -- testing techDebtLinter
-set_option tactic.skipAssignedInstances false in /-!-/
-
-/--
-info: 1: [#adaptation_note /-- -/
- ]
--/
-#guard_msgs in
-td
-#adaptation_note /---/
-
-/--
-info: 1: [#adaptation_note /-- -/
- ]
--/
-#guard_msgs in
-td
-example : True := by
-  #adaptation_note /---/
-  trivial
-
-
 @[inherit_doc Mathlib.Linter.linter.techDebtLinter]
-def techDebtLinterLinter : Linter where run := withSetOptionIn fun stx ↦ do
+def techDebtLinterLinter : Linter where run stx := do
   unless Linter.getLinterValue linter.techDebtLinter (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return
-  Linter.logLint linter.techDebtLinter stx m!"'{stx}' Nat subtraction"
+  let debt ← getDebts stx
+  if debt.isEmpty then
+    return
+  Linter.logLint linter.techDebtLinter stx  m!"{debt.size}: {debt}"
 
 initialize addLinter techDebtLinterLinter
 
