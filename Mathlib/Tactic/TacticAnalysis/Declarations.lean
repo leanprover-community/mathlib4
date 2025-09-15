@@ -210,3 +210,7 @@ def introMerge : TacticAnalysis.Config := .ofComplex {
       return none
   tell _stx _old _oldHeartbeats new _newHeartbeats :=
     if let some tac := new then m!"Try this: {tac}" else none}
+/-- Suggest replacing a sequence of tactics with `grobner` if that also solves the goal. -/
+register_option linter.tacticAnalysis.terminalToGrobner : Bool := {
+  defValue := true
+}
