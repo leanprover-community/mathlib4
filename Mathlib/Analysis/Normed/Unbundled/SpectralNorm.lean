@@ -128,7 +128,7 @@ theorem spectralValueTerms_nonneg (p : R[X]) (n : ℕ) : 0 ≤ spectralValueTerm
   · exact rpow_nonneg (norm_nonneg _) _
   · exact le_refl _
 
-/-- The spectral value of a polyomial is nonnegative. -/
+/-- The spectral value of a polynomial is nonnegative. -/
 theorem spectralValue_nonneg (p : R[X]) : 0 ≤ spectralValue p :=
   iSup_nonneg (spectralValueTerms_nonneg p)
 
