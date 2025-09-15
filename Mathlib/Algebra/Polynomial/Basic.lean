@@ -199,13 +199,10 @@ theorem toFinsupp_one : (1 : R[X]).toFinsupp = 1 :=
 
 @[simp]
 theorem toFinsupp_add (a b : R[X]) : (a + b).toFinsupp = a.toFinsupp + b.toFinsupp := by
-  cases a
-  cases b
   rw [← ofFinsupp_add]
 
 @[simp]
 theorem toFinsupp_neg {R : Type u} [Ring R] (a : R[X]) : (-a).toFinsupp = -a.toFinsupp := by
-  cases a
   rw [← ofFinsupp_neg]
 
 @[simp]
@@ -216,8 +213,6 @@ theorem toFinsupp_sub {R : Type u} [Ring R] (a b : R[X]) :
 
 @[simp]
 theorem toFinsupp_mul (a b : R[X]) : (a * b).toFinsupp = a.toFinsupp * b.toFinsupp := by
-  cases a
-  cases b
   rw [← ofFinsupp_mul]
 
 @[simp]
@@ -232,7 +227,6 @@ theorem toFinsupp_smul {S : Type*} [SMulZeroClass S R] (a : S) (b : R[X]) :
 
 @[simp]
 theorem toFinsupp_pow (a : R[X]) (n : ℕ) : (a ^ n).toFinsupp = a.toFinsupp ^ n := by
-  cases a
   rw [← ofFinsupp_pow]
 
 theorem _root_.IsSMulRegular.polynomial {S : Type*} [SMulZeroClass S R] {a : S}
@@ -989,7 +983,6 @@ def update (p : R[X]) (n : ℕ) (a : R) : R[X] :=
 theorem coeff_update (p : R[X]) (n : ℕ) (a : R) :
     (p.update n a).coeff = Function.update p.coeff n a := by
   ext
-  cases p
   simp only [coeff, update, Function.update_apply, coe_update]
 
 theorem coeff_update_apply (p : R[X]) (n : ℕ) (a : R) (i : ℕ) :
@@ -1011,7 +1004,6 @@ theorem update_zero_eq_erase (p : R[X]) (n : ℕ) : p.update n 0 = p.erase n := 
 theorem support_update (p : R[X]) (n : ℕ) (a : R) [Decidable (a = 0)] :
     support (p.update n a) = if a = 0 then p.support.erase n else insert n p.support := by
   classical
-    cases p
     simp only [support, update, Finsupp.support_update]
     congr
 
