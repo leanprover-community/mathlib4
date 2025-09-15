@@ -31,7 +31,7 @@ Note `Zero` has already been defined in core Lean.
 
 -/
 
-assert_not_exists Function.Injective
+assert_not_exists Function.Bijective
 
 universe u v w
 
