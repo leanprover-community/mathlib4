@@ -374,12 +374,12 @@ lemma comp_smul_left (a₁ a₂ : M) : (a₁ • ·) ∘ (a₂ • ·) = (((a₁
 variable {M}
 
 @[to_additive (attr := simp)]
-theorem smul_iterate (a : M) : ∀ n : ℕ, (a • · : α → α)^[n] = (a ^ n • ·)
+theorem smul_iterate [MonoidNPow M] (a : M) : ∀ n : ℕ, (a • · : α → α)^[n] = (a ^ n • ·)
   | 0 => by simp [funext_iff]
   | n + 1 => by ext; simp [smul_iterate, pow_succ, smul_smul]
 
 @[to_additive]
-lemma smul_iterate_apply (a : M) (n : ℕ) (x : α) : (a • ·)^[n] x = a ^ n • x := by
+lemma smul_iterate_apply [MonoidNPow M] (a : M) (n : ℕ) (x : α) : (a • ·)^[n] x = a ^ n • x := by
   rw [smul_iterate]
 
 /-- Pullback a multiplicative action along an injective map respecting `•`.
@@ -427,7 +427,7 @@ variable {M}
 section Monoid
 variable [Monoid N] [MulAction M N] [IsScalarTower M N N] [SMulCommClass M N N]
 
-lemma smul_pow (r : M) (x : N) : ∀ n, (r • x) ^ n = r ^ n • x ^ n
+lemma smul_pow [MonoidNPow M] [MonoidNPow N] (r : M) (x : N) : ∀ n, (r • x) ^ n = r ^ n • x ^ n
   | 0 => by simp
   | n + 1 => by rw [pow_succ', smul_pow _ _ n, smul_mul_smul_comm, ← pow_succ', ← pow_succ']
 
@@ -464,7 +464,10 @@ variable [Group H] [MulAction G H] [SMulCommClass G H H] [IsScalarTower G H H]
 lemma smul_inv (g : G) (a : H) : (g • a)⁻¹ = g⁻¹ • a⁻¹ :=
   inv_eq_of_mul_eq_one_right <| by rw [smul_mul_smul_comm, mul_inv_cancel, mul_inv_cancel, one_smul]
 
-lemma smul_zpow (g : G) (a : H) (n : ℤ) : (g • a) ^ n = g ^ n • a ^ n := by
+lemma smul_zpow [GroupZPow G] [GroupZPow H] (g : G) (a : H) (n : ℤ) :
+    (g • a) ^ n = g ^ n • a ^ n := by
+  let _ := Monoid.monoidNPow G
+  let _ := Monoid.monoidNPow H
   cases n <;> simp [smul_pow, smul_inv]
 
 end Group

@@ -570,6 +570,8 @@ instance instMonoid : Monoid (α →+* α) where
   mul_one := comp_id
   one_mul := id_comp
   mul_assoc _ _ _ := comp_assoc _ _ _
+
+instance : MonoidNPow (α →+* α) where
   npow n f := (npowRec n f).copy f^[n] <| by induction n <;> simp [npowRec, *]
   npow_succ _ _ := DFunLike.coe_injective <| Function.iterate_succ _ _
 
@@ -588,7 +590,7 @@ theorem cancel_left {g : β →+* γ} {f₁ f₂ : α →+* β} (hg : Injective 
 end RingHom
 
 section Semiring
-variable [Semiring α] [Semiring β]
+variable [Semiring α] [Semiring β] [MonoidNPow α] [MonoidNPow β]
 
 protected lemma RingHom.map_pow (f : α →+* β) (a) : ∀ n : ℕ, f (a ^ n) = f a ^ n := map_pow f a
 

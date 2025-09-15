@@ -558,7 +558,7 @@ theorem mul_self_inj [PosMulStrictMono R] [MulPosMono R]
     {a b : R} (h1 : 0 ≤ a) (h2 : 0 ≤ b) : a * a = b * b ↔ a = b :=
   (@strictMonoOn_mul_self R _).eq_iff_eq h1 h2
 
-lemma sign_cases_of_C_mul_pow_nonneg [PosMulStrictMono R]
+lemma sign_cases_of_C_mul_pow_nonneg [MonoidNPow R] [PosMulStrictMono R]
     (h : ∀ n, 0 ≤ a * b ^ n) : a = 0 ∨ 0 < a ∧ 0 ≤ b := by
   have : 0 ≤ a := by simpa only [pow_zero, mul_one] using h 0
   refine this.eq_or_lt'.imp_right fun ha ↦ ⟨ha, nonneg_of_mul_nonneg_right ?_ ha⟩
@@ -681,7 +681,7 @@ theorem pos_iff_neg_of_mul_neg [ExistsAddOfLE R] [PosMulMono R] [MulPosMono R]
     (hab : a * b < 0) : 0 < a ↔ b < 0 :=
   ⟨neg_of_mul_neg_right hab ∘ le_of_lt, pos_of_mul_neg_left hab ∘ le_of_lt⟩
 
-lemma sq_nonneg [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
+lemma sq_nonneg [MonoidNPow R] [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
     (a : R) : 0 ≤ a ^ 2 := by
   obtain ha | ha := le_or_gt 0 a
   · exact pow_succ_nonneg ha _
@@ -695,7 +695,7 @@ lemma sq_nonneg [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
     _ = a ^ 2 := by rw [← hab, zero_mul, add_zero]
 
 @[simp]
-lemma sq_nonpos_iff [ExistsAddOfLE R]
+lemma sq_nonpos_iff [MonoidNPow R] [ExistsAddOfLE R]
     [PosMulMono R] [AddLeftMono R] [NoZeroDivisors R] (r : R) :
     r ^ 2 ≤ 0 ↔ r = 0 := by
   trans r ^ 2 = 0
@@ -704,8 +704,9 @@ lemma sq_nonpos_iff [ExistsAddOfLE R]
 
 alias pow_two_nonneg := sq_nonneg
 
-lemma mul_self_nonneg [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
-    (a : R) : 0 ≤ a * a := by simpa only [sq] using sq_nonneg a
+lemma mul_self_nonneg [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R] (a : R) : 0 ≤ a * a := by
+  let _ := Monoid.monoidNPow R
+  simpa only [sq] using sq_nonneg a
 
 /-- The sum of two squares is zero iff both elements are zero. -/
 lemma mul_self_add_mul_self_eq_zero [NoZeroDivisors R]
@@ -732,6 +733,8 @@ lemma max_mul_mul_le_max_mul_max [PosMulMono R] [MulPosMono R] (b c : R) (ha : 0
   have cd : c * d ≤ max a c * max b d :=
     mul_le_mul (le_max_right a c) (le_max_right b d) hd (le_trans ha (le_max_left a c))
   max_le (by simpa [mul_comm, max_comm] using ba) (by simpa [mul_comm, max_comm] using cd)
+
+variable [MonoidNPow R]
 
 /-- Binary, squared, and division-free **arithmetic mean-geometric mean inequality**
 (aka AM-GM inequality) for linearly ordered commutative semirings. -/

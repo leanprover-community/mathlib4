@@ -41,22 +41,22 @@ instance instAddZeroClass [AddZeroClass α] : AddZeroClass αᵐᵒᵖ :=
   unop_injective.addZeroClass _ (by exact rfl) fun _ _ => rfl
 
 instance instAddMonoid [AddMonoid α] : AddMonoid αᵐᵒᵖ :=
-  unop_injective.addMonoid _ (by exact rfl) (fun _ _ => rfl) fun _ _ => rfl
+  unop_injective.addMonoid _ (by exact rfl) fun _ _ => rfl
+
+instance [AddMonoid α] [AddMonoidNSMul α] : AddMonoidNSMul αᵐᵒᵖ :=
+  unop_injective.addMonoidNSMul _ (by exact rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 instance instAddCommMonoid [AddCommMonoid α] : AddCommMonoid αᵐᵒᵖ :=
-  unop_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+  unop_injective.addCommMonoid _ rfl fun _ _ => rfl
 
 instance instSubNegMonoid [SubNegMonoid α] : SubNegMonoid αᵐᵒᵖ :=
-  unop_injective.subNegMonoid _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+  unop_injective.subNegMonoid _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ _ => rfl
 
 instance instAddGroup [AddGroup α] : AddGroup αᵐᵒᵖ :=
-  unop_injective.addGroup _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-  (fun _ _ => rfl) fun _ _ => rfl
+  unop_injective.addGroup _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ _ => rfl
 
 instance instAddCommGroup [AddCommGroup α] : AddCommGroup αᵐᵒᵖ :=
-  unop_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+  unop_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) fun _ _ => rfl
 
 /-!
 ### Multiplicative structures on `αᵐᵒᵖ`
@@ -99,6 +99,8 @@ instance instMulOneClass [MulOneClass α] : MulOneClass αᵐᵒᵖ where
 instance instMonoid [Monoid α] : Monoid αᵐᵒᵖ where
   toSemigroup := instSemigroup
   __ := instMulOneClass
+
+@[to_additive] instance [Monoid α] [MonoidNPow α] : MonoidNPow αᵐᵒᵖ where
   npow n a := op <| a.unop ^ n
   npow_zero _ := unop_injective <| pow_zero _
   npow_succ _ _ := unop_injective <| pow_succ' _ _
@@ -132,11 +134,14 @@ instance instCancelCommMonoid [CancelCommMonoid α] : CancelCommMonoid αᵐᵒ�
 instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid αᵐᵒᵖ where
   toMonoid := instMonoid
   toInv := instInv
+
+@[to_additive] instance [DivInvMonoid α] [GroupZPow α] : GroupZPow αᵐᵒᵖ where
   zpow n a := op <| a.unop ^ n
   zpow_zero' _ := unop_injective <| zpow_zero _
   zpow_succ' _ _ := unop_injective <| by
+    let _ := Monoid.monoidNPow α
     rw [unop_op, zpow_natCast, pow_succ', unop_mul, unop_op, zpow_natCast]
-  zpow_neg' _ _ := unop_injective <| DivInvMonoid.zpow_neg' _ _
+  zpow_neg' _ _ := unop_injective <| GroupZPow.zpow_neg' _ _
 
 @[to_additive]
 instance instDivisionMonoid [DivisionMonoid α] : DivisionMonoid αᵐᵒᵖ where
@@ -161,7 +166,7 @@ instance instCommGroup [CommGroup α] : CommGroup αᵐᵒᵖ where
   __ := instCommSemigroup
 
 section Monoid
-variable [Monoid α]
+variable [Monoid α] [MonoidNPow α]
 
 @[simp] lemma op_pow (x : α) (n : ℕ) : op (x ^ n) = op x ^ n := rfl
 
@@ -170,7 +175,7 @@ variable [Monoid α]
 end Monoid
 
 section DivInvMonoid
-variable [DivInvMonoid α]
+variable [DivInvMonoid α] [GroupZPow α]
 
 @[simp] lemma op_zpow (x : α) (z : ℤ) : op (x ^ z) = op x ^ z := rfl
 
@@ -259,22 +264,22 @@ theorem unop_pow {β} [Pow α β] (a : αᵃᵒᵖ) (b : β) : unop (a ^ b) = un
   rfl
 
 instance instMonoid [Monoid α] : Monoid αᵃᵒᵖ :=
-  unop_injective.monoid _ (by exact rfl) (fun _ _ => rfl) fun _ _ => rfl
+  unop_injective.monoid _ (by exact rfl) fun _ _ => rfl
+
+instance [Monoid α] [MonoidNPow α] : MonoidNPow αᵃᵒᵖ :=
+  unop_injective.monoidNPow _ (by exact rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 instance instCommMonoid [CommMonoid α] : CommMonoid αᵃᵒᵖ :=
-  unop_injective.commMonoid _ (by exact rfl) (fun _ _ => rfl) fun _ _ => rfl
+  unop_injective.commMonoid _ (by exact rfl) fun _ _ => rfl
 
 instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid αᵃᵒᵖ :=
-  unop_injective.divInvMonoid _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+  unop_injective.divInvMonoid _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ _ => rfl
 
 instance instGroup [Group α] : Group αᵃᵒᵖ :=
-  unop_injective.group _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+  unop_injective.group _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ _ => rfl
 
 instance instCommGroup [CommGroup α] : CommGroup αᵃᵒᵖ :=
-  unop_injective.commGroup _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+  unop_injective.commGroup _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ _ => rfl
 
 @[to_additive]
 instance instMulTorsionFree [Monoid α] [IsMulTorsionFree α] : IsMulTorsionFree αᵐᵒᵖ :=

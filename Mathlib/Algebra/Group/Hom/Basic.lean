@@ -25,7 +25,7 @@ variable {G : Type*} {H : Type*}
 variable {F : Type*}
 
 section CommMonoid
-variable [CommMonoid α]
+variable [CommMonoid α] [MonoidNPow α]
 
 /-- The `n`th power map on a commutative monoid for a natural `n`, considered as a morphism of
 monoids. -/
@@ -46,7 +46,7 @@ variable [DivisionCommMonoid α]
 homomorphism. -/
 @[to_additive (attr := simps) /-- Multiplication by an integer `n` on a commutative additive group,
 considered as an additive group homomorphism. -/]
-def zpowGroupHom (n : ℤ) : α →* α where
+def zpowGroupHom [GroupZPow α] (n : ℤ) : α →* α where
   toFun := (· ^ n)
   map_one' := one_zpow n
   map_mul' a b := mul_zpow a b n

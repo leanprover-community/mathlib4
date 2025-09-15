@@ -67,7 +67,7 @@ theorem isPrimal : IsPrimal p := fun _a _b dvd ↦ (hp.dvd_or_dvd dvd).elim
 theorem not_dvd_mul {a b : M} (ha : ¬ p ∣ a) (hb : ¬ p ∣ b) : ¬ p ∣ a * b :=
   hp.dvd_mul.not.mpr <| not_or.mpr ⟨ha, hb⟩
 
-theorem dvd_of_dvd_pow {a : M} {n : ℕ} (h : p ∣ a ^ n) : p ∣ a := by
+theorem dvd_of_dvd_pow [MonoidNPow M] {a : M} {n : ℕ} (h : p ∣ a ^ n) : p ∣ a := by
   induction n with
   | zero =>
     rw [pow_zero] at h
@@ -80,7 +80,7 @@ theorem dvd_of_dvd_pow {a : M} {n : ℕ} (h : p ∣ a ^ n) : p ∣ a := by
     · assumption
     · exact ih dvd_pow
 
-theorem dvd_pow_iff_dvd {a : M} {n : ℕ} (hn : n ≠ 0) : p ∣ a ^ n ↔ p ∣ a :=
+theorem dvd_pow_iff_dvd [MonoidNPow M] {a : M} {n : ℕ} (hn : n ≠ 0) : p ∣ a ^ n ↔ p ∣ a :=
   ⟨hp.dvd_of_dvd_pow, (dvd_pow · hn)⟩
 
 end Prime

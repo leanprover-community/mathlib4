@@ -34,7 +34,7 @@ open MulOpposite
 variable {F α β : Type*}
 
 section Monoid
-variable [Monoid α] [HasDistribNeg α] {n : ℕ} {a : α}
+variable [Monoid α] [MonoidNPow α] [HasDistribNeg α] {n : ℕ} {a : α}
 
 @[simp] lemma Even.neg_pow : Even n → ∀ a : α, (-a) ^ n = a ^ n := by
   rintro ⟨c, rfl⟩ a
@@ -45,7 +45,7 @@ lemma Even.neg_one_pow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_pow, one
 end Monoid
 
 section DivisionMonoid
-variable [DivisionMonoid α] [HasDistribNeg α] {a : α} {n : ℤ}
+variable [DivisionMonoid α] [GroupZPow α] [HasDistribNeg α] {a : α} {n : ℤ}
 
 lemma Even.neg_zpow : Even n → ∀ a : α, (-a) ^ n = a ^ n := by
   rintro ⟨c, rfl⟩ a; simp_rw [← Int.two_mul, zpow_mul, zpow_two, neg_mul_neg]
@@ -59,7 +59,9 @@ end DivisionMonoid
 section Semiring
 variable [Semiring α] [Semiring β] {a b : α} {m n : ℕ}
 
-lemma even_iff_exists_two_mul : Even a ↔ ∃ b, a = 2 * b := by simp [even_iff_exists_two_nsmul]
+lemma even_iff_exists_two_mul : Even a ↔ ∃ b, a = 2 * b := by
+  let _ := AddMonoid.addMonoidNSMul α
+  simp [even_iff_exists_two_nsmul]
 
 lemma even_iff_two_dvd : Even a ↔ 2 ∣ a := by simp [Even, Dvd.dvd, two_mul]
 
@@ -83,7 +85,7 @@ lemma Dvd.dvd.even (hab : a ∣ b) (ha : Even a) : Even b := ha.trans_dvd hab
 
 lemma even_two_mul (a : α) : Even (2 * a) := ⟨a, two_mul _⟩
 
-lemma Even.pow_of_ne_zero (ha : Even a) : ∀ {n : ℕ}, n ≠ 0 → Even (a ^ n)
+lemma Even.pow_of_ne_zero [MonoidNPow α] (ha : Even a) : ∀ {n : ℕ}, n ≠ 0 → Even (a ^ n)
   | n + 1, _ => by rw [pow_succ]; exact ha.mul_left _
 
 /-- An element `a` of a semiring is odd if there exists `k` such `a = 2*k + 1`. -/
@@ -134,12 +136,12 @@ lemma Odd.natCast {R : Type*} [Semiring R] {n : ℕ} (hn : Odd n) : Odd (n : R) 
   rw [mul_add, add_mul, mul_one, ← add_assoc, one_mul, mul_assoc, ← mul_add, ← mul_add, ← mul_assoc,
     ← Nat.cast_two, ← Nat.cast_comm]
 
-lemma Odd.pow {n : ℕ} (ha : Odd a) : Odd (a ^ n) := by
+lemma Odd.pow [MonoidNPow α] {n : ℕ} (ha : Odd a) : Odd (a ^ n) := by
   induction n with
   | zero => simp [pow_zero]
   | succ n hrec => rw [pow_succ]; exact hrec.mul ha
 
-lemma Odd.pow_add_pow_eq_zero [IsCancelAdd α] (hn : Odd n) (hab : a + b = 0) :
+lemma Odd.pow_add_pow_eq_zero [MonoidNPow α] [IsCancelAdd α] (hn : Odd n) (hab : a + b = 0) :
     a ^ n + b ^ n = 0 := by
   obtain ⟨k, rfl⟩ := hn
   induction k with | zero => simpa | succ k ih => ?_
@@ -174,7 +176,7 @@ theorem Odd.of_isUnit_two (h : IsUnit (2 : α)) (a : α) : Odd a := by
 end Ring
 
 section Monoid
-variable [Monoid α] [HasDistribNeg α] {n : ℕ}
+variable [Monoid α] [MonoidNPow α] [HasDistribNeg α] {n : ℕ}
 
 lemma Odd.neg_pow : Odd n → ∀ a : α, (-a) ^ n = -a ^ n := by
   rintro ⟨c, rfl⟩ a; simp_rw [pow_add, pow_mul, neg_sq, pow_one, mul_neg]
@@ -344,7 +346,7 @@ end Function
 
 section DistribNeg
 
-variable {R : Type*} [Monoid R] [HasDistribNeg R] {m n : ℕ}
+variable {R : Type*} [Monoid R] [MonoidNPow R] [HasDistribNeg R] {m n : ℕ}
 
 lemma neg_one_pow_eq_ite : (-1 : R) ^ n = if Even n then 1 else (-1) := by
   cases even_or_odd n with

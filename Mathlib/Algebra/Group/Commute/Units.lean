@@ -76,6 +76,10 @@ theorem Commute.isUnit_mul_iff (h : Commute a b) : IsUnit (a * b) ↔ IsUnit a �
 theorem isUnit_mul_self_iff : IsUnit (a * a) ↔ IsUnit a :=
   (Commute.refl a).isUnit_mul_iff.trans and_self_iff
 
+section Pow
+
+variable [MonoidNPow M]
+
 @[to_additive (attr := simp)]
 lemma Commute.units_zpow_right (h : Commute a u) (m : ℤ) : Commute a ↑(u ^ m) :=
   SemiconjBy.units_zpow_right h m
@@ -92,7 +96,8 @@ def Units.ofPow (u : Mˣ) (x : M) {n : ℕ} (hn : n ≠ 0) (hu : x ^ n = u) : M�
     (by rwa [← _root_.pow_succ', Nat.sub_add_cancel (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn)])
     (Commute.self_pow _ _)
 
-@[to_additive (attr := simp)] lemma isUnit_pow_iff (hn : n ≠ 0) : IsUnit (a ^ n) ↔ IsUnit a :=
+@[to_additive (attr := simp)] lemma isUnit_pow_iff (hn : n ≠ 0) :
+    IsUnit (a ^ n) ↔ IsUnit a :=
   ⟨fun ⟨u, hu⟩ ↦ (u.ofPow a hn hu.symm).isUnit, IsUnit.pow n⟩
 
 @[to_additive]
@@ -114,6 +119,8 @@ lemma Units.pow_ofPowEqOne (ha : a ^ n = 1) (hn : n ≠ 0) :
 @[to_additive]
 lemma IsUnit.of_pow_eq_one (ha : a ^ n = 1) (hn : n ≠ 0) : IsUnit a :=
   (Units.ofPowEqOne _ n ha hn).isUnit
+
+end Pow
 
 @[to_additive]
 lemma _root_.Units.commute_iff_inv_mul_cancel {u : Mˣ} {a : M} :

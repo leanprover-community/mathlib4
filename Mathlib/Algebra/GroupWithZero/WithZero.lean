@@ -189,6 +189,8 @@ instance pow : Pow (WithZero α) ℕ where
 end Pow
 
 instance instMonoidWithZero [Monoid α] : MonoidWithZero (WithZero α) where
+
+instance [Monoid α] [MonoidNPow α] : MonoidNPow (WithZero α) where
   npow n a := a ^ n
   npow_zero
     | 0 => rfl
@@ -243,16 +245,18 @@ instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid (WithZero α) where
     | none, _ => rfl
     | some _, none => rfl
     | some a, some b => congr_arg some (div_eq_mul_inv a b)
+
+instance [DivInvMonoid α] [GroupZPow α] : GroupZPow (WithZero α) where
   zpow n a := a ^ n
   zpow_zero'
     | none => rfl
     | some _ => congr_arg some (zpow_zero _)
   zpow_succ'
     | n, none => by change 0 ^ _ = 0 ^ _ * 0; simp only [mul_zero]; rfl
-    | n, some _ => congr_arg some (DivInvMonoid.zpow_succ' _ _)
+    | n, some _ => congr_arg some (GroupZPow.zpow_succ' _ _)
   zpow_neg'
     | n, none => rfl
-    | n, some _ => congr_arg some (DivInvMonoid.zpow_neg' _ _)
+    | n, some _ => congr_arg some (GroupZPow.zpow_neg' _ _)
 
 instance instDivInvOneMonoid [DivInvOneMonoid α] : DivInvOneMonoid (WithZero α) where
 
@@ -386,10 +390,10 @@ def log (x : Mᵐ⁰) : M := x.recZeroCoe 0 Multiplicative.toAdd
 lemma log_mul {x y : Mᵐ⁰} (hx : x ≠ 0) (hy : y ≠ 0) : log (x * y) = log x + log y := by
   lift x to Multiplicative M using hx; lift y to Multiplicative M using hy; rfl
 
-@[simp← ] lemma exp_nsmul (n : ℕ) (a : M) : exp (n • a) = exp a ^ n := rfl
+@[simp← ] lemma exp_nsmul [AddMonoidNSMul M] (n : ℕ) (a : M) : exp (n • a) = exp a ^ n := rfl
 
 @[simp]
-lemma log_pow : ∀ (x : Mᵐ⁰) (n : ℕ), log (x ^ n) = n • log x
+lemma log_pow [AddMonoidNSMul M] : ∀ (x : Mᵐ⁰) (n : ℕ), log (x ^ n) = n • log x
   | 0, 0 => by simp
   | 0, n + 1 => by simp
   | (x : Multiplicative M), n => rfl
@@ -432,10 +436,14 @@ lemma log_inv : ∀ x : Gᵐ⁰, log x⁻¹ = -log x
   | 0 => by simp
   | (x : Multiplicative G) => rfl
 
+variable [AddGroupZSMul G]
+
 @[simp← ] lemma exp_zsmul (n : ℤ) (a : G) : exp (n • a) = exp a ^ n := rfl
 
 @[simp]
-lemma log_zpow (x : Gᵐ⁰) (n : ℤ) : log (x ^ n) = n • log x := by cases n <;> simp [log_pow, log_inv]
+lemma log_zpow (x : Gᵐ⁰) (n : ℤ) : log (x ^ n) = n • log x := by
+  let _ := AddMonoid.addMonoidNSMul G
+  cases n <;> simp [log_pow, log_inv]
 
 end AddGroup
 end WithZero

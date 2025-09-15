@@ -30,15 +30,17 @@ instance instCommRing : CommRing ℤ where
   right_distrib := Int.add_mul
   mul_one := Int.mul_one
   one_mul := Int.one_mul
-  npow n x := x ^ n
-  npow_zero _ := rfl
-  npow_succ _ _ := rfl
   natCast := (·)
   natCast_zero := rfl
   natCast_succ _ := rfl
   intCast := (·)
   intCast_ofNat _ := rfl
   intCast_negSucc _ := rfl
+
+instance : MonoidNPow ℤ where
+  npow n x := x ^ n
+  npow_zero _ := rfl
+  npow_succ _ _ := rfl
 
 instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero ℤ where
   mul_left_cancel_of_ne_zero ha _ _ := (mul_eq_mul_left_iff ha).1
@@ -58,12 +60,12 @@ lemma cast_mul {α : Type*} [NonAssocRing α] : ∀ m n, ((m * n : ℤ) : α) = 
     | succ m ih => simp_all [add_mul]
 
 /-- Note this holds in marginally more generality than `Int.cast_mul` -/
-lemma cast_mul_eq_zsmul_cast {α : Type*} [AddGroupWithOne α] :
+lemma cast_mul_eq_zsmul_cast {α : Type*} [AddGroupWithOne α] [AddGroupZSMul α] :
     ∀ m n : ℤ, ↑(m * n) = m • (n : α) :=
   fun m ↦ Int.induction_on m (by simp) (fun _ ih ↦ by simp [add_mul, add_zsmul, ih]) fun _ ih ↦ by
     simp only [sub_mul, one_mul, cast_sub, ih, sub_zsmul, one_zsmul, ← sub_eq_add_neg, forall_const]
 
-@[simp, norm_cast] lemma cast_pow {R : Type*} [Ring R] (n : ℤ) (m : ℕ) :
+@[simp, norm_cast] lemma cast_pow {R : Type*} [Ring R] [MonoidNPow R] (n : ℤ) (m : ℕ) :
     ↑(n ^ m) = (n ^ m : R) := by
   induction m <;> simp [_root_.pow_succ, *]
 

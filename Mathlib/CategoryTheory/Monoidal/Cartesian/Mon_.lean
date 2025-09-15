@@ -152,6 +152,10 @@ abbrev Hom.monoid : Monoid (X ⟶ M) where
 
 scoped[MonObj] attribute [instance] Hom.monoid
 
+abbrev Hom.monoidNPow : MonoidNPow (X ⟶ M) where
+
+scoped[Mon_Class] attribute [instance] Hom.monoidNPow
+
 lemma Hom.one_def : (1 : X ⟶ M) = toUnit X ≫ η := rfl
 lemma Hom.mul_def (f₁ f₂ : X ⟶ M) : f₁ * f₂ = lift f₁ f₂ ≫ μ := rfl
 

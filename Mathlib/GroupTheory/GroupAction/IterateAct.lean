@@ -43,6 +43,8 @@ instance instCommMonoid : CommMonoid (IterateMulAct f) where
   one_mul _ := by ext; apply Nat.zero_add
   mul_one _ := rfl
   mul_comm _ _ := by ext; apply Nat.add_comm
+
+@[to_additive] instance : MonoidNPow (IterateMulAct f) where
   npow n a := ⟨n * a.val⟩
   npow_zero _ := by ext; apply Nat.zero_mul
   npow_succ n a := by ext; apply Nat.succ_mul

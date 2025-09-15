@@ -141,7 +141,7 @@ lemma mk_inv [Inv M] (a : M) : mk (a⁻¹) = (mk a)⁻¹ := rfl
 lemma symm_mk_inv [Inv M] (a : Mᵈᵐᵃ) : mk.symm (a⁻¹) = (mk.symm a)⁻¹ := rfl
 
 @[to_additive (attr := simp)]
-lemma mk_pow [Monoid M] (a : M) (n : ℕ) : mk (a ^ n) = mk a ^ n := rfl
+lemma mk_pow [Monoid M] [MonoidNPow M] (a : M) (n : ℕ) : mk (a ^ n) = mk a ^ n := rfl
 
 @[to_additive (attr := simp)]
 lemma symm_mk_pow [Monoid M] (a : Mᵈᵐᵃ) (n : ℕ) : mk.symm (a ^ n) = mk.symm a ^ n := rfl

@@ -48,6 +48,8 @@ instance : Monoid (Function.End α) where
   mul_assoc _ _ _ := rfl
   mul_one _ := rfl
   one_mul _ := rfl
+
+instance : MonoidNPow (Function.End α) where
   npow n f := f^[n]
   npow_succ _ _ := Function.iterate_succ _ _
 
@@ -68,8 +70,12 @@ instance permGroup : Group (Perm α) where
   one_mul := trans_refl
   mul_one := refl_trans
   inv_mul_cancel := self_trans_symm
+
+instance : MonoidNPow (Perm α) where
   npow n f := f ^ n
   npow_succ _ _ := coe_fn_injective <| Function.iterate_succ _ _
+
+instance : GroupZPow (Perm α) where
   zpow := zpowRec fun n f ↦ f ^ n
   zpow_succ' _ _ := coe_fn_injective <| Function.iterate_succ _ _
 
@@ -591,17 +597,23 @@ variable [AddGroup α] (a b : α)
 
 @[simp] lemma inv_addRight : (Equiv.addRight a)⁻¹ = Equiv.addRight (-a) := Equiv.coe_inj.1 rfl
 
-@[simp] lemma pow_addLeft (n : ℕ) : Equiv.addLeft a ^ n = Equiv.addLeft (n • a) := by
+@[simp] lemma pow_addLeft [AddMonoidNSMul α] (n : ℕ) :
+    Equiv.addLeft a ^ n = Equiv.addLeft (n • a) := by
   ext; simp [Perm.coe_pow]
 
-@[simp] lemma pow_addRight (n : ℕ) : Equiv.addRight a ^ n = Equiv.addRight (n • a) := by
+@[simp] lemma pow_addRight [AddMonoidNSMul α] (n : ℕ) :
+    Equiv.addRight a ^ n = Equiv.addRight (n • a) := by
   ext; simp [Perm.coe_pow]
+
+variable [AddGroupZSMul α]
 
 @[simp] lemma zpow_addLeft (n : ℤ) : Equiv.addLeft a ^ n = Equiv.addLeft (n • a) :=
   (map_zsmul ({ toFun := Equiv.addLeft, map_zero' := addLeft_zero, map_add' := addLeft_add } :
     α →+ Additive (Perm α)) _ _).symm
 
-@[simp] lemma zpow_addRight : ∀ (n : ℤ), Equiv.addRight a ^ n = Equiv.addRight (n • a)
+@[simp] lemma zpow_addRight (n : ℤ) : Equiv.addRight a ^ n = Equiv.addRight (n • a) :=
+  let _ := AddMonoid.addMonoidNSMul α
+  match n with
   | Int.ofNat n => by simp
   | Int.negSucc n => by simp
 
@@ -624,17 +636,22 @@ variable [Group α] (a b : α)
 
 @[simp] lemma inv_mulRight : (Equiv.mulRight a)⁻¹ = Equiv.mulRight a⁻¹ := Equiv.coe_inj.1 rfl
 
-@[simp] lemma pow_mulLeft (n : ℕ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) := by
+@[simp] lemma pow_mulLeft [MonoidNPow α] (n : ℕ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) := by
   ext; simp [Perm.coe_pow]
 
-@[simp] lemma pow_mulRight (n : ℕ) : Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n) := by
+@[simp] lemma pow_mulRight [MonoidNPow α] (n : ℕ) :
+    Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n) := by
   ext; simp [Perm.coe_pow]
+
+variable [GroupZPow α]
 
 @[simp] lemma zpow_mulLeft (n : ℤ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) :=
   (map_zpow ({ toFun := Equiv.mulLeft, map_one' := mulLeft_one, map_mul' := mulLeft_mul } :
               α →* Perm α) _ _).symm
 
-@[simp] lemma zpow_mulRight : ∀ n : ℤ, Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n)
+@[simp] lemma zpow_mulRight (n : ℤ) : Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n) :=
+  let _ := Monoid.monoidNPow α
+  match n with
   | Int.ofNat n => by simp
   | Int.negSucc n => by simp
 

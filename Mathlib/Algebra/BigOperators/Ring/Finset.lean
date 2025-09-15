@@ -26,7 +26,7 @@ variable {ι κ M R : Type*} {s s₁ s₂ : Finset ι} {i : ι}
 
 namespace Finset
 
-lemma prod_neg [CommMonoid M] [HasDistribNeg M] (f : ι → M) :
+lemma prod_neg [CommMonoid M] [MonoidNPow M] [HasDistribNeg M] (f : ι → M) :
     ∏ x ∈ s, -f x = (-1) ^ #s * ∏ x ∈ s, f x := by
   simpa using (s.1.map f).prod_map_neg
 
@@ -35,6 +35,7 @@ variable [AddCommMonoidWithOne R]
 
 lemma natCast_card_filter (p) [DecidablePred p] (s : Finset ι) :
     (#{x ∈ s | p x} : R) = ∑ a ∈ s, if p a then (1 : R) else 0 := by
+  let _ := AddMonoid.addMonoidNSMul R
   rw [sum_ite, sum_const_zero, add_zero, sum_const, nsmul_one]
 
 @[simp] lemma sum_boole (p) [DecidablePred p] (s : Finset ι) :
@@ -155,7 +156,7 @@ lemma sum_prod_piFinset [Fintype ι] (s : Finset κ) (g : ι → κ → R) :
     ∑ f ∈ piFinset fun _ : ι ↦ s, ∏ i, g i (f i) = ∏ i, ∑ j ∈ s, g i j := by
   rw [← prod_univ_sum]
 
-lemma sum_pow' (s : Finset κ) (f : κ → R) (n : ℕ) :
+lemma sum_pow' [MonoidNPow R] (s : Finset κ) (f : κ → R) (n : ℕ) :
     (∑ a ∈ s, f a) ^ n = ∑ p ∈ piFinset fun _i : Fin n ↦ s, ∏ i, f (p i) := by
   convert @prod_univ_sum (Fin n) _ _ _ _ _ (fun _i ↦ s) fun _i d ↦ f d; simp
 
@@ -218,7 +219,7 @@ theorem prod_add_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → R) :
 
 /-- Summing `a ^ #t * b ^ (n - #t)` over all finite subsets `t` of a finset `s`
 gives `(a + b) ^ #s`. -/
-theorem sum_pow_mul_eq_add_pow (a b : R) (s : Finset ι) :
+theorem sum_pow_mul_eq_add_pow [MonoidNPow R] (a b : R) (s : Finset ι) :
     (∑ t ∈ s.powerset, a ^ #t * b ^ (#s - #t)) = (a + b) ^ #s := by
   classical
   rw [← prod_const, prod_add]
@@ -229,7 +230,7 @@ theorem sum_pow_mul_eq_add_pow (a b : R) (s : Finset ι) :
 gives `(a + b)^n`. The "good" proof involves expanding along all coordinates using the fact that
 `x^n` is multilinear, but multilinear maps are only available now over rings, so we give instead
 a proof reducing to the usual binomial theorem to have a result over semirings. -/
-lemma _root_.Fintype.sum_pow_mul_eq_add_pow (ι : Type*) [Fintype ι] (a b : R) :
+lemma _root_.Fintype.sum_pow_mul_eq_add_pow [MonoidNPow R] (ι : Type*) [Fintype ι] (a b : R) :
     ∑ s : Finset ι, a ^ #s * b ^ (Fintype.card ι - #s) = (a + b) ^ Fintype.card ι :=
   Finset.sum_pow_mul_eq_add_pow _ _ _
 
@@ -244,7 +245,7 @@ variable [CommRing R]
 
 /-- The product of `f i - g i` over all of `s` is the sum over the powerset of `s` of the product of
 `g` over a subset `t` times the product of `f` over the complement of `t` times `(-1) ^ #t`. -/
-lemma prod_sub [DecidableEq ι] (f g : ι → R) (s : Finset ι) :
+lemma prod_sub [MonoidNPow R] [DecidableEq ι] (f g : ι → R) (s : Finset ι) :
     ∏ i ∈ s, (f i - g i) = ∑ t ∈ s.powerset, (-1) ^ #t * (∏ i ∈ s \ t, f i) * ∏ i ∈ t, g i := by
   simp [sub_eq_neg_add, prod_add, prod_neg, mul_right_comm]
 
@@ -280,7 +281,8 @@ open Finset
 namespace Fintype
 variable {ι κ R : Type*} [Fintype ι] [Fintype κ] [CommSemiring R]
 
-lemma sum_pow (f : ι → R) (n : ℕ) : (∑ a, f a) ^ n = ∑ p : Fin n → ι, ∏ i, f (p i) := by
+lemma sum_pow [MonoidNPow R] (f : ι → R) (n : ℕ) :
+    (∑ a, f a) ^ n = ∑ p : Fin n → ι, ∏ i, f (p i) := by
   simp [sum_pow']
 
 variable [DecidableEq ι]

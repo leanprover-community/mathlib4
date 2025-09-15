@@ -366,6 +366,7 @@ theorem prod_of_isEmpty [IsEmpty ι] (s : Finset ι) : ∏ i ∈ s, f i = 1 := b
 
 @[to_additive (attr := simp)]
 theorem prod_const_one : (∏ _x ∈ s, (1 : M)) = 1 := by
+  let _ := Monoid.monoidNPow M
   simp only [Finset.prod, Multiset.map_const', Multiset.prod_replicate, one_pow]
 
 @[to_additive (attr := simp)]
@@ -612,7 +613,8 @@ theorem prod_induction_nonempty {M : Type*} [CommMonoid M] (f : ι → M) (p : M
     (Multiset.forall_mem_map_iff.mpr base)
 
 @[to_additive]
-theorem prod_pow (s : Finset ι) (n : ℕ) (f : ι → M) : ∏ x ∈ s, f x ^ n = (∏ x ∈ s, f x) ^ n :=
+theorem prod_pow [MonoidNPow M] (s : Finset ι) (n : ℕ) (f : ι → M) :
+    ∏ x ∈ s, f x ^ n = (∏ x ∈ s, f x) ^ n :=
   Multiset.prod_map_pow
 
 theorem prod_dvd_prod_of_subset {ι M : Type*} [CommMonoid M] (s t : Finset ι) (f : ι → M)
@@ -651,7 +653,8 @@ theorem prod_div_distrib (f g : ι → G) : ∏ x ∈ s, f x / g x = (∏ x ∈ 
   Multiset.prod_map_div
 
 @[to_additive]
-theorem prod_zpow (f : ι → G) (s : Finset ι) (n : ℤ) : ∏ a ∈ s, f a ^ n = (∏ a ∈ s, f a) ^ n :=
+theorem prod_zpow [GroupZPow G] (f : ι → G) (s : Finset ι) (n : ℤ) :
+    ∏ a ∈ s, f a ^ n = (∏ a ∈ s, f a) ^ n :=
   Multiset.prod_map_zpow
 
 end DivisionCommMonoid

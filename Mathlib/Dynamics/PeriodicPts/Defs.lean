@@ -547,6 +547,8 @@ noncomputable def period (m : M) (a : α) : ℕ := minimalPeriod (fun x => m •
 theorem period_eq_minimalPeriod {m : M} {a : α} :
     MulAction.period m a = minimalPeriod (fun x => m • x) a := rfl
 
+variable [MonoidNPow M] [GroupZPow G]
+
 /-- `m ^ (period m a)` fixes `a`. -/
 @[to_additive (attr := simp) /-- `(period m a) • m` fixes `a`. -/]
 theorem pow_period_smul (m : M) (a : α) : m ^ (period m a) • a = a := by
@@ -573,6 +575,7 @@ theorem pow_smul_eq_iff_period_dvd {n : ℕ} {m : M} {a : α} :
 @[to_additive]
 theorem zpow_smul_eq_iff_period_dvd {j : ℤ} {g : G} {a : α} :
     g ^ j • a = a ↔ (period g a : ℤ) ∣ j := by
+  let _ := Monoid.monoidNPow G
   match j with
   | (n : ℕ) => rw [zpow_natCast, Int.natCast_dvd_natCast, pow_smul_eq_iff_period_dvd]
   | -(n + 1 : ℕ) =>
@@ -611,27 +614,23 @@ theorem zpow_period_add_smul (i : ℤ) (g : G) (a : α) :
     g ^ (period g a + i) • a = g ^ i • a := by
   rw [← zpow_mod_period_smul, Int.add_emod_left, zpow_mod_period_smul]
 
-variable {a : G} {b : α}
-
 @[to_additive]
-theorem pow_smul_eq_iff_minimalPeriod_dvd {n : ℕ} :
+theorem pow_smul_eq_iff_minimalPeriod_dvd {a : M} {b : α} {n : ℕ} :
     a ^ n • b = b ↔ minimalPeriod (a • ·) b ∣ n := by
   rw [← period_eq_minimalPeriod, pow_smul_eq_iff_period_dvd]
 
 @[to_additive]
-theorem zpow_smul_eq_iff_minimalPeriod_dvd {n : ℤ} :
+theorem zpow_smul_eq_iff_minimalPeriod_dvd {a : G} {b : α} {n : ℤ} :
     a ^ n • b = b ↔ (minimalPeriod (a • ·) b : ℤ) ∣ n := by
   rw [← period_eq_minimalPeriod, zpow_smul_eq_iff_period_dvd]
 
-variable (a b)
-
 @[to_additive (attr := simp)]
-theorem pow_smul_mod_minimalPeriod (n : ℕ) :
+theorem pow_smul_mod_minimalPeriod (a : M) (b : α) (n : ℕ) :
     a ^ (n % minimalPeriod (a • ·) b) • b = a ^ n • b := by
   rw [← period_eq_minimalPeriod, pow_mod_period_smul]
 
 @[to_additive (attr := simp)]
-theorem zpow_smul_mod_minimalPeriod (n : ℤ) :
+theorem zpow_smul_mod_minimalPeriod (a : G) (b : α) (n : ℤ) :
     a ^ (n % (minimalPeriod (a • ·) b : ℤ)) • b = a ^ n • b := by
   rw [← period_eq_minimalPeriod, zpow_mod_period_smul]
 

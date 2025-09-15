@@ -98,7 +98,7 @@ end MulOneClass
 
 section Monoid
 
-variable [Monoid M]
+variable [Monoid M] [MonoidNPow M]
 
 @[to_additive (attr := simp)]
 theorem pow_right {a x y : M} (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy a (x ^ n) (y ^ n) := by

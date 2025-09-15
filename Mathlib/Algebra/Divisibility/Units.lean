@@ -132,7 +132,7 @@ theorem not_isUnit_of_not_isUnit_dvd {a b : α} (ha : ¬IsUnit a) (hb : a ∣ b)
   mt (isUnit_of_dvd_unit hb) ha
 
 @[simp]
-lemma dvd_pow_self_iff {x : α} {n : ℕ} :
+lemma dvd_pow_self_iff [MonoidNPow α] {x : α} {n : ℕ} :
     x ∣ x ^ n ↔ n ≠ 0 ∨ IsUnit x := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp [isUnit_iff_dvd_one]

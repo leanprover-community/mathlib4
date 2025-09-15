@@ -108,11 +108,13 @@ instance [LinearOrder α] [IsOrderedAddMonoid α] : LinearOrderedAddCommGroupWit
   sub_eq_add_neg a b := by
     cases a <;> cases b <;> simp [← coe_sub, ← coe_neg, sub_eq_add_neg]
   neg_top := Option.map_none _
-  zsmul := zsmulRec
   add_neg_cancel := by
     rintro (a | a) ha
     · exact (ha rfl).elim
     · exact (WithTop.coe_add ..).symm.trans (WithTop.coe_eq_coe.2 (add_neg_cancel a))
+
+instance [LinearOrder α] [IsOrderedAddMonoid α] : AddGroupZSMul (WithTop α) where
+  zsmul := zsmulRec
 
 end LinearOrderedAddCommGroup
 

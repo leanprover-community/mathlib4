@@ -192,7 +192,11 @@ def comapEquiv {β γ : Type w} (e : β ≃ γ) : GradedObject β C ≌ GradedOb
 
 end
 
-instance hasShift {β : Type*} [AddCommGroup β] (s : β) : HasShift (GradedObjectWithShift s C) ℤ :=
+section
+
+variable {β : Type*} [AddCommGroup β] [AddGroupZSMul β] (s : β)
+
+instance hasShift : HasShift (GradedObjectWithShift s C) ℤ :=
   hasShiftMk _ _
     { F := fun n => comap C fun b : β => b + n • s
       zero := comapEq C (by cat_disch) ≪≫ Pi.comapId β fun _ => C
@@ -200,15 +204,16 @@ instance hasShift {β : Type*} [AddCommGroup β] (s : β) : HasShift (GradedObje
           (Pi.comapComp _ _ _).symm }
 
 @[simp]
-theorem shiftFunctor_obj_apply {β : Type*} [AddCommGroup β] (s : β) (X : β → C) (t : β) (n : ℤ) :
+theorem shiftFunctor_obj_apply (X : β → C) (t : β) (n : ℤ) :
     (shiftFunctor (GradedObjectWithShift s C) n).obj X t = X (t + n • s) :=
   rfl
 
 @[simp]
-theorem shiftFunctor_map_apply {β : Type*} [AddCommGroup β] (s : β)
-    {X Y : GradedObjectWithShift s C} (f : X ⟶ Y) (t : β) (n : ℤ) :
+theorem shiftFunctor_map_apply {X Y : GradedObjectWithShift s C} (f : X ⟶ Y) (t : β) (n : ℤ) :
     (shiftFunctor (GradedObjectWithShift s C) n).map f t = f (t + n • s) :=
   rfl
+
+end
 
 instance [HasZeroMorphisms C] (β : Type w) (X Y : GradedObject β C) : Zero (X ⟶ Y) :=
   ⟨fun _ => 0⟩

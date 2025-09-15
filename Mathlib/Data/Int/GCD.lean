@@ -258,7 +258,8 @@ theorem gcd_least_linear {a b : ℤ} (ha : a ≠ 0) :
 end Int
 
 @[to_additive gcd_nsmul_eq_zero]
-theorem pow_gcd_eq_one {M : Type*} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m = 1) (hn : x ^ n = 1) :
+theorem pow_gcd_eq_one {M : Type*} [Monoid M] [MonoidNPow M]
+    (x : M) {m n : ℕ} (hm : x ^ m = 1) (hn : x ^ n = 1) :
     x ^ m.gcd n = 1 := by
   rcases m with (rfl | m); · simp [hn]
   obtain ⟨y, rfl⟩ := IsUnit.of_pow_eq_one hm m.succ_ne_zero
@@ -268,7 +269,7 @@ theorem pow_gcd_eq_one {M : Type*} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m = 
 variable {α : Type*}
 
 section GroupWithZero
-variable [GroupWithZero α] {a b : α} {m n : ℕ}
+variable [GroupWithZero α] [MonoidNPow α] {a b : α} {m n : ℕ}
 
 protected lemma Commute.pow_eq_pow_iff_of_coprime (hab : Commute a b) (hmn : m.Coprime n) :
     a ^ m = b ^ n ↔ ∃ c, a = c ^ n ∧ b = c ^ m := by
@@ -277,6 +278,7 @@ protected lemma Commute.pow_eq_pow_iff_of_coprime (hab : Commute a b) (hmn : m.C
   by_cases n = 0; · simp_all
   by_cases hb : b = 0; · exact ⟨0, by simp_all⟩
   by_cases ha : a = 0; · exact ⟨0, by have := h.symm; simp_all⟩
+  let _ := DivInvMonoid.groupZPow α
   refine ⟨a ^ Nat.gcdB m n * b ^ Nat.gcdA m n, ?_, ?_⟩ <;>
   · refine (pow_one _).symm.trans ?_
     conv_lhs => rw [← zpow_natCast, ← hmn, Nat.gcd_eq_gcd_ab]
@@ -288,7 +290,7 @@ protected lemma Commute.pow_eq_pow_iff_of_coprime (hab : Commute a b) (hmn : m.C
 end GroupWithZero
 
 section CommGroupWithZero
-variable [CommGroupWithZero α] {a b : α} {m n : ℕ}
+variable [CommGroupWithZero α] [MonoidNPow α] {a b : α} {m n : ℕ}
 
 lemma pow_eq_pow_iff_of_coprime (hmn : m.Coprime n) : a ^ m = b ^ n ↔ ∃ c, a = c ^ n ∧ b = c ^ m :=
   (Commute.all _ _).pow_eq_pow_iff_of_coprime hmn

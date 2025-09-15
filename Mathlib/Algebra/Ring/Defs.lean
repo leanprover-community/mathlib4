@@ -174,7 +174,7 @@ theorem two_mul (n : α) : 2 * n = n + n :=
 theorem mul_two (n : α) : n * 2 = n + n :=
   (congrArg₂ _ rfl one_add_one_eq_two.symm).trans <| (left_distrib n 1 1).trans (by rw [mul_one])
 
-@[simp] lemma nsmul_eq_mul (n : ℕ) (a : α) : n • a = n * a := by
+@[simp] lemma nsmul_eq_mul [AddMonoidNSMul α] (n : ℕ) (a : α) : n • a = n * a := by
   induction n with
   | zero => rw [zero_nsmul, Nat.cast_zero, zero_mul]
   | succ n ih => rw [succ_nsmul, ih, Nat.cast_succ, add_mul, one_mul]
@@ -227,6 +227,8 @@ variable [CommSemiring α]
 
 theorem add_mul_self_eq (a b : α) : (a + b) * (a + b) = a * a + 2 * a * b + b * b := by
   simp only [two_mul, add_mul, mul_add, add_assoc, mul_comm b]
+
+variable [MonoidNPow α]
 
 lemma add_sq (a b : α) : (a + b) ^ 2 = a ^ 2 + 2 * a * b + b ^ 2 := by
   simp only [sq, add_mul_self_eq]

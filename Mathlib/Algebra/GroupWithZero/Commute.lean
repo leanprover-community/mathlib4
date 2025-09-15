@@ -32,13 +32,13 @@ theorem mul_inverse_rev {M₀} [CommMonoidWithZero M₀] (a b : M₀) :
     Ring.inverse (a * b) = inverse b * inverse a :=
   mul_inverse_rev' (Commute.all _ _)
 
-lemma inverse_pow (r : M₀) : ∀ n : ℕ, Ring.inverse r ^ n = Ring.inverse (r ^ n)
+lemma inverse_pow [MonoidNPow M₀] (r : M₀) : ∀ n : ℕ, Ring.inverse r ^ n = Ring.inverse (r ^ n)
   | 0 => by rw [pow_zero, pow_zero, Ring.inverse_one]
   | n + 1 => by
     rw [pow_succ', pow_succ, Ring.mul_inverse_rev' ((Commute.refl r).pow_left n),
       Ring.inverse_pow r n]
 
-lemma inverse_pow_mul_eq_iff_eq_mul {a : M₀} (b c : M₀) (ha : IsUnit a) {k : ℕ} :
+lemma inverse_pow_mul_eq_iff_eq_mul [MonoidNPow M₀] {a : M₀} (b c : M₀) (ha : IsUnit a) {k : ℕ} :
     Ring.inverse a ^ k * b = c ↔ b = a ^ k * c := by
   rw [Ring.inverse_pow, Ring.inverse_mul_eq_iff_eq_mul _ _ _ (IsUnit.pow _ ha)]
 
@@ -90,7 +90,7 @@ theorem div_left (hac : Commute a c) (hbc : Commute b c) : Commute (a / b) c := 
 end Commute
 
 section GroupWithZero
-variable [GroupWithZero G₀]
+variable [GroupWithZero G₀] [MonoidNPow G₀]
 
 theorem pow_inv_comm₀ (a : G₀) (m n : ℕ) : a⁻¹ ^ m * a ^ n = a ^ n * a⁻¹ ^ m :=
   (Commute.refl a).inv_left₀.pow_pow m n

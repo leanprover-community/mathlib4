@@ -84,16 +84,16 @@ lemma prod_lt_prod_of_ne_nil [Preorder M] [MulLeftStrictMono M]
     (exists_mem_of_ne_nil l hl).imp fun i hi => ⟨hi, hlt i hi⟩
 
 @[to_additive sum_le_card_nsmul]
-lemma prod_le_pow_card [Preorder M] [MulRightMono M]
+lemma prod_le_pow_card [MonoidNPow M] [Preorder M] [MulRightMono M]
     [MulLeftMono M] (l : List M) (n : M) (h : ∀ x ∈ l, x ≤ n) :
     l.prod ≤ n ^ l.length := by
   simpa only [map_id', map_const', prod_replicate] using prod_le_prod' h
 
 @[to_additive card_nsmul_le_sum]
-lemma pow_card_le_prod [Preorder M] [MulRightMono M]
+lemma pow_card_le_prod [MonoidNPow M] [Preorder M] [MulRightMono M]
     [MulLeftMono M] (l : List M) (n : M) (h : ∀ x ∈ l, n ≤ x) :
     n ^ l.length ≤ l.prod :=
-  @prod_le_pow_card Mᵒᵈ _ _ _ _ l n h
+  @prod_le_pow_card Mᵒᵈ _ _ _ _ _ l n h
 
 @[to_additive exists_lt_of_sum_lt]
 lemma exists_lt_of_prod_lt' [LinearOrder M] [MulRightMono M]
@@ -184,6 +184,7 @@ variable [CommMonoid M] [PartialOrder M] [CanonicallyOrderedMul M] {l : List M}
 
 @[to_additive] lemma prod_eq_one_iff [IsOrderedMonoid M] : l.prod = 1 ↔ ∀ x ∈ l, x = (1 : M) :=
   ⟨all_one_of_le_one_le_of_prod_eq_one fun _ _ => one_le _, fun h => by
+    let _ := Monoid.monoidNPow M
     rw [List.eq_replicate_iff.2 ⟨_, h⟩, prod_replicate, one_pow]
     · exact (length l)
     · rfl⟩

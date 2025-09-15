@@ -113,6 +113,8 @@ section zsmul
 
 variable {R : Type*}
 
-@[simp] lemma zsmul_one [AddGroupWithOne R] (n : ℤ) : n • (1 : R) = n := by cases n <;> simp
+@[simp] lemma zsmul_one [AddGroupWithOne R] [AddGroupZSMul R] (n : ℤ) : n • (1 : R) = n := by
+  let _ := AddMonoid.addMonoidNSMul R
+  cases n <;> simp
 
 end zsmul

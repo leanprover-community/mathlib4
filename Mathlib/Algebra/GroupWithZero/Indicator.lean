@@ -116,7 +116,7 @@ variable [NoZeroDivisors M₀]
 end MulZeroClass
 
 section MonoidWithZero
-variable [MonoidWithZero M₀] [NoZeroDivisors M₀] {n : ℕ}
+variable [MonoidWithZero M₀] [MonoidNPow M₀] [NoZeroDivisors M₀] {n : ℕ}
 
 @[simp] lemma support_pow (f : ι → M₀) (hn : n ≠ 0) : support (fun a ↦ f a ^ n) = support f := by
   ext; exact (pow_eq_zero_iff hn).not

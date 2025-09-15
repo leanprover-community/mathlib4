@@ -463,24 +463,30 @@ lemma map_comp_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (
 
 /-- See note [hom simp lemma priority] -/
 @[to_additive (attr := simp mid) (reorder := 9 10)]
-theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
-    ∀ n : ℕ, f (a ^ n) = f a ^ n
+theorem map_pow [Monoid G] [Monoid H] [MonoidNPow G] [MonoidNPow H] [MonoidHomClass F G H]
+    (f : F) (a : G) : ∀ n : ℕ, f (a ^ n) = f a ^ n
   | 0 => by rw [pow_zero, pow_zero, map_one]
   | n + 1 => by rw [pow_succ, pow_succ, map_mul, map_pow f a n]
 
 @[to_additive (attr := simp)]
-lemma map_comp_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (g : ι → G) (n : ℕ) :
+lemma map_comp_pow [Monoid G] [Monoid H] [MonoidNPow G] [MonoidNPow H] [MonoidHomClass F G H]
+    (f : F) (g : ι → G) (n : ℕ) :
     f ∘ (g ^ n) = f ∘ g ^ n := by ext; simp
 
 @[to_additive]
-theorem map_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H]
-    (f : F) (hf : ∀ x : G, f x⁻¹ = (f x)⁻¹) (a : G) : ∀ n : ℤ, f (a ^ n) = f a ^ n
+theorem map_zpow' [DivInvMonoid G] [DivInvMonoid H] [GroupZPow G] [GroupZPow H]
+    [MonoidHomClass F G H] (f : F) (hf : ∀ x : G, f x⁻¹ = (f x)⁻¹) (a : G)
+    (n : ℤ) : f (a ^ n) = f a ^ n :=
+  let _ := Monoid.monoidNPow G
+  let _ := Monoid.monoidNPow H
+  match n with
   | (n : ℕ) => by rw [zpow_natCast, map_pow, zpow_natCast]
   | Int.negSucc n => by rw [zpow_negSucc, hf, map_pow, ← zpow_negSucc]
 
 @[to_additive (attr := simp)]
-lemma map_comp_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H] (f : F)
-    (hf : ∀ x : G, f x⁻¹ = (f x)⁻¹) (g : ι → G) (n : ℤ) : f ∘ (g ^ n) = f ∘ g ^ n := by
+lemma map_comp_zpow' [DivInvMonoid G] [DivInvMonoid H] [GroupZPow G] [GroupZPow H]
+    [MonoidHomClass F G H] (f : F) (hf : ∀ x : G, f x⁻¹ = (f x)⁻¹) (g : ι → G) (n : ℤ) :
+    f ∘ (g ^ n) = f ∘ g ^ n := by
   ext; simp [map_zpow' f hf]
 
 /-- Group homomorphisms preserve integer power.
@@ -488,12 +494,13 @@ lemma map_comp_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H] (f
 See note [hom simp lemma priority] -/
 @[to_additive (attr := simp mid) (reorder := 9 10)
 /-- Additive group homomorphisms preserve integer scaling. -/]
-theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
-    (f : F) (g : G) (n : ℤ) : f (g ^ n) = f g ^ n := map_zpow' f (map_inv f) g n
+theorem map_zpow [Group G] [DivisionMonoid H] [GroupZPow G] [GroupZPow H] [MonoidHomClass F G H]
+    (f : F) (g : G) (n : ℤ) :
+    f (g ^ n) = f g ^ n := map_zpow' f (map_inv f) g n
 
 @[to_additive]
-lemma map_comp_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (g : ι → G)
-    (n : ℤ) : f ∘ (g ^ n) = f ∘ g ^ n := by simp
+lemma map_comp_zpow [Group G] [DivisionMonoid H] [GroupZPow G] [GroupZPow H] [MonoidHomClass F G H]
+    (f : F) (g : ι → G) (n : ℤ) : f ∘ (g ^ n) = f ∘ g ^ n := by simp
 
 end mul_one
 
@@ -501,8 +508,8 @@ end mul_one
 then so is the domain. -/
 @[to_additive /-- If the codomain of an injective additive monoid homomorphism is torsion free,
 then so is the domain. -/]
-theorem Function.Injective.isMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionFree N]
-    (f : M →* N) (hf : Function.Injective f) : IsMulTorsionFree M where
+theorem Function.Injective.isMulTorsionFree [Monoid M] [Monoid N] [MonoidNPow M] [MonoidNPow N]
+    [IsMulTorsionFree N] (f : M →* N) (hf : Function.Injective f) : IsMulTorsionFree M where
   pow_left_injective n hn x y hxy := hf <| IsMulTorsionFree.pow_left_injective hn <| by
     simpa using congrArg f hxy
 
@@ -865,12 +872,13 @@ theorem MonoidHom.id_comp [MulOneClass M] [MulOneClass N] (f : M →* N) :
     (MonoidHom.id N).comp f = f := MonoidHom.ext fun _ => rfl
 
 @[to_additive]
-protected theorem MonoidHom.map_pow [Monoid M] [Monoid N] (f : M →* N) (a : M) (n : ℕ) :
+protected theorem MonoidHom.map_pow [Monoid M] [Monoid N] [MonoidNPow M] [MonoidNPow N]
+    (f : M →* N) (a : M) (n : ℕ) :
     f (a ^ n) = f a ^ n := map_pow f a n
 
 @[to_additive]
-protected theorem MonoidHom.map_zpow' [DivInvMonoid M] [DivInvMonoid N] (f : M →* N)
-    (hf : ∀ x, f x⁻¹ = (f x)⁻¹) (a : M) (n : ℤ) :
+protected theorem MonoidHom.map_zpow' [DivInvMonoid M] [DivInvMonoid N]
+    [GroupZPow M] [GroupZPow N] (f : M →* N) (hf : ∀ x, f x⁻¹ = (f x)⁻¹) (a : M) (n : ℤ) :
     f (a ^ n) = f a ^ n := map_zpow' f hf a n
 
 /-- Makes a `OneHom` inverse from the bijective inverse of a `OneHom` -/
@@ -945,6 +953,8 @@ instance instMonoid : Monoid (Monoid.End M) where
   mul_assoc _ _ _ := MonoidHom.comp_assoc _ _ _
   mul_one := MonoidHom.comp_id
   one_mul := MonoidHom.id_comp
+
+@[to_additive] instance : MonoidNPow (Monoid.End M) where
   npow n f := (npowRec n f).copy f^[n] <| by induction n <;> simp [npowRec, *] <;> rfl
   npow_succ _ _ := DFunLike.coe_injective <| Function.iterate_succ _ _
 
@@ -1023,7 +1033,8 @@ protected theorem map_inv [Group α] [DivisionMonoid β] (f : α →* β) (a : �
 
 /-- Group homomorphisms preserve integer power. -/
 @[to_additive /-- Additive group homomorphisms preserve integer scaling. -/]
-protected theorem map_zpow [Group α] [DivisionMonoid β] (f : α →* β) (g : α) (n : ℤ) :
+protected theorem map_zpow [Group α] [DivisionMonoid β] [GroupZPow α] [GroupZPow β]
+    (f : α →* β) (g : α) (n : ℤ) :
     f (g ^ n) = f g ^ n := map_zpow f g n
 
 /-- Group homomorphisms preserve division. -/
@@ -1064,12 +1075,12 @@ lemma iterate_map_div {M F : Type*} [Group M] [FunLike F M M] [MonoidHomClass F 
 
 @[to_additive (attr := simp)]
 lemma iterate_map_pow {M F : Type*} [Monoid M] [FunLike F M M] [MonoidHomClass F M M]
-    (f : F) (n : ℕ) (x : M) (k : ℕ) :
+    (f : F) (n : ℕ) (x : M) (k : ℕ) [MonoidNPow M] :
     f^[n] (x ^ k) = f^[n] x ^ k :=
   Commute.iterate_left (map_pow f · k) n x
 
 @[to_additive (attr := simp)]
-lemma iterate_map_zpow {M F : Type*} [Group M] [FunLike F M M] [MonoidHomClass F M M]
+lemma iterate_map_zpow {M F : Type*} [Group M] [GroupZPow M] [FunLike F M M] [MonoidHomClass F M M]
     (f : F) (n : ℕ) (x : M) (k : ℤ) :
     f^[n] (x ^ k) = f^[n] x ^ k :=
   Commute.iterate_left (map_zpow f · k) n x

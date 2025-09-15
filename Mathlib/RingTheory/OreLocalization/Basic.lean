@@ -200,12 +200,14 @@ protected theorem add_zero (x : X[S⁻¹]) : x + 0 = x := by
 private def nsmul : ℕ → X[S⁻¹] → X[S⁻¹] := nsmulRec
 
 instance : AddMonoid X[S⁻¹] where
-    add_assoc := OreLocalization.add_assoc
-    zero_add := OreLocalization.zero_add
-    add_zero := OreLocalization.add_zero
-    nsmul := nsmul
-    nsmul_zero _ := by with_unfolding_all rfl
-    nsmul_succ _ _ := by with_unfolding_all rfl
+  add_assoc := OreLocalization.add_assoc
+  zero_add := OreLocalization.zero_add
+  add_zero := OreLocalization.add_zero
+
+instance : AddMonoidNSMul X[S⁻¹] where
+  nsmul := nsmul
+  nsmul_zero _ := by with_unfolding_all rfl
+  nsmul_succ _ _ := by with_unfolding_all rfl
 
 protected theorem smul_zero (x : R[S⁻¹]) : x • (0 : X[S⁻¹]) = 0 := by
   induction x with | _ r s
@@ -282,6 +284,9 @@ protected def zsmul : ℤ → X[S⁻¹] → X[S⁻¹] := zsmulRec
 unseal OreLocalization.zsmul in
 instance instAddGroupOreLocalization : AddGroup X[S⁻¹] where
   neg_add_cancel := OreLocalization.neg_add_cancel
+
+unseal OreLocalization.zsmul in
+instance : AddGroupZSMul X[S⁻¹] where
   zsmul := OreLocalization.zsmul
 
 end AddGroup

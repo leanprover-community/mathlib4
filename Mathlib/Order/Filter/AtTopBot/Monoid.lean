@@ -77,6 +77,8 @@ theorem Tendsto.atBot_mul_atBot (hf : Tendsto f l atBot) (hg : Tendsto g l atBot
     Tendsto (fun x => f x * g x) l atBot :=
   hf.atTop_mul_atTop (M := Mᵒᵈ) hg
 
+variable [MonoidNPow M]
+
 @[to_additive nsmul_atTop]
 theorem Tendsto.atTop_pow (hf : Tendsto f l atTop) {n : ℕ} (hn : 0 < n) :
     Tendsto (fun x => f x ^ n) l atTop := by

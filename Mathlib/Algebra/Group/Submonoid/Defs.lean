@@ -111,7 +111,7 @@ class AddSubmonoidClass (S : Type*) (M : outParam Type*) [AddZeroClass M] [SetLi
 attribute [to_additive] Submonoid SubmonoidClass
 
 @[to_additive (attr := aesop 90% (rule_sets := [SetLike]))]
-theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x : M}
+theorem pow_mem {M A} [Monoid M] [MonoidNPow M] [SetLike A M] [SubmonoidClass A M] {S : A} {x : M}
     (hx : x ∈ S) : ∀ n : ℕ, x ^ n ∈ S
   | 0 => by
     rw [pow_zero]
@@ -333,26 +333,27 @@ end OneMemClass
 variable {A : Type*} [MulOneClass M] [SetLike A M] [hA : SubmonoidClass A M] (S' : A)
 
 /-- An `AddSubmonoid` of an `AddMonoid` inherits a scalar multiplication. -/
-instance AddSubmonoidClass.nSMul {M} [AddMonoid M] {A : Type*} [SetLike A M]
+instance AddSubmonoidClass.nSMul {M} [AddMonoid M] [AddMonoidNSMul M] {A : Type*} [SetLike A M]
     [AddSubmonoidClass A M] (S : A) : SMul ℕ S :=
   ⟨fun n a => ⟨n • a.1, nsmul_mem a.2 n⟩⟩
 
 namespace SubmonoidClass
 
 /-- A submonoid of a monoid inherits a power operator. -/
-instance nPow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] (S : A) : Pow S ℕ :=
+instance nPow {M} [Monoid M] [MonoidNPow M] {A : Type*} [SetLike A M] [SubmonoidClass A M] (S : A) :
+    Pow S ℕ :=
   ⟨fun a n => ⟨a.1 ^ n, pow_mem a.2 n⟩⟩
 
 attribute [to_additive existing nSMul] nPow
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_pow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] {S : A} (x : S)
-    (n : ℕ) : ↑(x ^ n) = (x : M) ^ n :=
+theorem coe_pow {M} [Monoid M] [MonoidNPow M] {A : Type*} [SetLike A M] [SubmonoidClass A M] {S : A}
+    (x : S) (n : ℕ) : ↑(x ^ n) = (x : M) ^ n :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem mk_pow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] {S : A} (x : M)
-    (hx : x ∈ S) (n : ℕ) : (⟨x, hx⟩ : S) ^ n = ⟨x ^ n, pow_mem hx n⟩ :=
+theorem mk_pow {M} [Monoid M] [MonoidNPow M] {A : Type*} [SetLike A M] [SubmonoidClass A M] {S : A}
+    (x : M) (hx : x ∈ S) (n : ℕ) : (⟨x, hx⟩ : S) ^ n = ⟨x ^ n, pow_mem hx n⟩ :=
   rfl
 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
@@ -368,14 +369,19 @@ instance (priority := 75) toMulOneClass {M : Type*} [MulOneClass M] {A : Type*} 
 @[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits an `AddMonoid` structure. -/]
 instance (priority := 75) toMonoid {M : Type*} [Monoid M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : Monoid S := fast_instance%
-  Subtype.coe_injective.monoid Subtype.val rfl (fun _ _ => rfl) (fun _ _ => rfl)
+  Subtype.coe_injective.monoid Subtype.val rfl fun _ _ => rfl
+
+@[to_additive]
+instance (priority := 75) {M : Type*} [Monoid M] [MonoidNPow M] {A : Type*} [SetLike A M]
+    [SubmonoidClass A M] (S : A) : MonoidNPow S := fast_instance%
+  Subtype.coe_injective.monoidNPow Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a `CommMonoid` is a `CommMonoid`. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`. -/]
 instance (priority := 75) toCommMonoid {M} [CommMonoid M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : CommMonoid S := fast_instance%
-  Subtype.coe_injective.commMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.commMonoid Subtype.val rfl fun _ _ => rfl
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
 @[to_additive /-- The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`. -/]
@@ -444,19 +450,20 @@ instance toMulOneClass {M : Type*} [MulOneClass M] (S : Submonoid M) :
   Subtype.coe_injective.mulOneClass Subtype.val rfl fun _ _ => rfl
 
 @[to_additive]
-protected theorem pow_mem {M : Type*} [Monoid M] (S : Submonoid M) {x : M} (hx : x ∈ S) (n : ℕ) :
+protected theorem pow_mem {M : Type*} [Monoid M] [MonoidNPow M] (S : Submonoid M) {x : M}
+    (hx : x ∈ S) (n : ℕ) :
     x ^ n ∈ S :=
   pow_mem hx n
 
 /-- A submonoid of a monoid inherits a monoid structure. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits an `AddMonoid` structure. -/]
 instance toMonoid {M : Type*} [Monoid M] (S : Submonoid M) : Monoid S := fast_instance%
-  Subtype.coe_injective.monoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.monoid Subtype.val rfl fun _ _ => rfl
 
 /-- A submonoid of a `CommMonoid` is a `CommMonoid`. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`. -/]
 instance toCommMonoid {M} [CommMonoid M] (S : Submonoid M) : CommMonoid S := fast_instance%
-  Subtype.coe_injective.commMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.commMonoid Subtype.val rfl fun _ _ => rfl
 
 /-- A submonoid of a left cancellative unital magma inherits left cancellation. -/
 @[to_additive

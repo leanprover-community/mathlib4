@@ -165,7 +165,7 @@ theorem Sublist.prod_dvd_prod [CommMonoid M] {l₁ l₂ : List M} (h : l₁ <+ l
 
 section Alternating
 
-variable [CommGroup G]
+variable [CommGroup G] [GroupZPow G]
 
 @[to_additive]
 theorem alternatingProd_append :

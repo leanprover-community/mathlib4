@@ -68,6 +68,8 @@ instance monoid {C : Type u} [Category.{v} C] {X : C} : Monoid (End X) where
   one_mul := Category.comp_id
   mul_assoc := fun x y z => (Category.assoc z y x).symm
 
+instance {C : Type u} [Category.{v} C] {X : C} : MonoidNPow (End X) where
+
 section MulAction
 
 variable {C : Type u} [Category.{v} C]
@@ -133,6 +135,9 @@ instance : Group (Aut X) where
 theorem Aut_mul_def (f g : Aut X) : f * g = g.trans f := rfl
 
 theorem Aut_inv_def (f : Aut X) : f⁻¹ = f.symm := rfl
+
+instance : MonoidNPow (Aut X) where
+instance : GroupZPow (Aut X) where
 
 /-- Units in the monoid of endomorphisms of an object
 are (multiplicatively) equivalent to automorphisms of that object.

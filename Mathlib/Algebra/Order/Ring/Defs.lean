@@ -139,7 +139,8 @@ class IsStrictOrderedRing (R : Type*) [Semiring R] [PartialOrder R] extends
 attribute [instance 100] IsStrictOrderedRing.toZeroLEOneClass
 attribute [instance 100] IsStrictOrderedRing.toNontrivial
 
-instance [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] : Lean.Grind.OrderedRing R where
+instance [Semiring R] [MonoidNPow R] [AddMonoidNSMul R] [PartialOrder R] [IsStrictOrderedRing R] :
+    Lean.Grind.OrderedRing R where
   zero_lt_one := zero_lt_one
   mul_lt_mul_of_pos_left := IsStrictOrderedRing.mul_lt_mul_of_pos_left _ _ _
   mul_lt_mul_of_pos_right := IsStrictOrderedRing.mul_lt_mul_of_pos_right _ _ _

@@ -66,8 +66,7 @@ abbrev Ring.ofMinimalAxioms {R : Type u}
     mul_assoc := mul_assoc
     one_mul := one_mul
     mul_one := mul_one
-    neg_add_cancel := neg_add_cancel
-    zsmul := (· • ·) }
+    neg_add_cancel := neg_add_cancel }
 
 /-- Define a `CommRing` structure on a Type by proving a minimized set of axioms.
 Note that this uses the default definitions for `npow`, `nsmul`, `zsmul` and `sub`

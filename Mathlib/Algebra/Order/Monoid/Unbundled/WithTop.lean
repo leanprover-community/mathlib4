@@ -227,6 +227,8 @@ variable [AddMonoid α]
 instance addMonoid : AddMonoid (WithTop α) where
   __ := WithTop.addSemigroup
   __ := WithTop.addZeroClass
+
+instance addMonoidNSMul [AddMonoidNSMul α] : AddMonoidNSMul (WithTop α) where
   nsmul n a := match a, n with
     | (a : α), n => ↑(n • a)
     | ⊤, 0 => 0
@@ -234,7 +236,8 @@ instance addMonoid : AddMonoid (WithTop α) where
   nsmul_zero a := by cases a <;> simp [zero_nsmul]
   nsmul_succ n a := by cases a <;> cases n <;> simp [succ_nsmul, coe_add]
 
-@[simp, norm_cast] lemma coe_nsmul (a : α) (n : ℕ) : ↑(n • a) = n • (a : WithTop α) := rfl
+@[simp, norm_cast] lemma coe_nsmul [AddMonoidNSMul α] (a : α) (n : ℕ) :
+    ↑(n • a) = n • (a : WithTop α) := rfl
 
 /-- Coercion from `α` to `WithTop α` as an `AddMonoidHom`. -/
 def addHom : α →+ WithTop α where
@@ -565,6 +568,8 @@ variable [AddMonoid α]
 
 instance addMonoid : AddMonoid (WithBot α) := WithTop.addMonoid
 
+instance addMonoidNSMul [AddMonoidNSMul α] : AddMonoidNSMul (WithBot α) := WithTop.addMonoidNSMul
+
 /-- Coercion from `α` to `WithBot α` as an `AddMonoidHom`. -/
 def addHom : α →+ WithBot α where
   toFun := WithTop.some
@@ -574,7 +579,7 @@ def addHom : α →+ WithBot α where
 @[simp, norm_cast] lemma coe_addHom : ⇑(addHom : α →+ WithBot α) = WithBot.some := rfl
 
 @[simp, norm_cast]
-lemma coe_nsmul (a : α) (n : ℕ) : ↑(n • a) = n • (a : WithBot α) :=
+lemma coe_nsmul [AddMonoidNSMul α] (a : α) (n : ℕ) : ↑(n • a) = n • (a : WithBot α) :=
   (addHom : α →+ WithBot α).map_nsmul _ _
 
 end AddMonoid

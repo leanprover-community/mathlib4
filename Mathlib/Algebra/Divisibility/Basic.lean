@@ -126,6 +126,8 @@ theorem dvd_of_eq (h : a = b) : a ∣ b := by rw [h]
 
 alias Eq.dvd := dvd_of_eq
 
+variable [MonoidNPow α]
+
 @[gcongr]
 lemma pow_dvd_pow (a : α) (h : m ≤ n) : a ^ m ∣ a ^ n :=
   ⟨a ^ (n - m), by rw [← pow_add, Nat.add_comm, Nat.sub_add_cancel h]⟩
@@ -192,6 +194,8 @@ variable [CommMonoid α] {a b : α}
 
 theorem mul_dvd_mul_right (h : a ∣ b) (c : α) : a * c ∣ b * c := by
   gcongr
+
+variable [MonoidNPow α]
 
 theorem pow_dvd_pow_of_dvd (h : a ∣ b) (n : ℕ) : a ^ n ∣ b ^ n := by
   induction n with

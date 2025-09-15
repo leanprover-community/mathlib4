@@ -76,8 +76,10 @@ theorem units_val_iff {a x y : Mˣ} : SemiconjBy (a : M) x y ↔ SemiconjBy a x 
   ⟨units_of_val, units_val⟩
 
 @[to_additive (attr := simp)]
-lemma units_zpow_right {a : M} {x y : Mˣ} (h : SemiconjBy a x y) :
-    ∀ m : ℤ, SemiconjBy a ↑(x ^ m) ↑(y ^ m)
+lemma units_zpow_right [MonoidNPow M] {a : M} {x y : Mˣ} (h : SemiconjBy a x y)
+    (m : ℤ) : SemiconjBy a ↑(x ^ m) ↑(y ^ m) :=
+  let _ := Monoid.monoidNPow M
+  match m with
   | (n : ℕ) => by simp only [zpow_natCast, Units.val_pow_eq_pow_val, h, pow_right]
   | -[n+1] => by simp only [zpow_negSucc, Units.val_pow_eq_pow_val, units_inv_right, h, pow_right]
 
@@ -91,6 +93,8 @@ variable [Monoid M]
 @[to_additive /-- `a` semiconjugates `x` to `a + x + -a`. -/]
 lemma mk_semiconjBy (u : Mˣ) (x : M) : SemiconjBy (↑u) x (u * x * ↑u⁻¹) := by
   unfold SemiconjBy; rw [Units.inv_mul_cancel_right]
+
+variable [MonoidNPow M]
 
 lemma conj_pow (u : Mˣ) (x : M) (n : ℕ) :
     ((↑u : M) * x * (↑u⁻¹ : M)) ^ n = (u : M) * x ^ n * (↑u⁻¹ : M) :=

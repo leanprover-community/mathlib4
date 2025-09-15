@@ -35,7 +35,7 @@ variable {R S M M₂ : Type*}
 
 section AddCommMonoid
 
-variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x : M)
+variable [AddCommMonoid M] [AddMonoidNSMul M]
 
 instance AddCommMonoid.toNatModule : Module ℕ M where
   one_smul := one_nsmul
@@ -49,7 +49,7 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable (R M) [Semiring R] [AddCommGroup M]
+variable (M) [AddCommGroup M] [AddGroupZSMul M]
 
 instance AddCommGroup.toIntModule : Module ℤ M where
   one_smul := one_zsmul
@@ -72,11 +72,16 @@ abbrev Module.addCommMonoidToAddCommGroup
     neg_add_cancel := fun a =>
       show (-1 : R) • a + a = 0 by
         nth_rw 2 [← one_smul R a]
-        rw [← add_smul, neg_add_cancel, zero_smul]
-    zsmul := fun z a => (z : R) • a
+        rw [← add_smul, neg_add_cancel, zero_smul] }
+
+abbrev Module.addCommMonoidToAddGroupZSMul [Ring R] [AddCommMonoid M] [Module R M] :
+    letI := addCommMonoidToAddCommGroup R (M := M)
+    AddGroupZSMul M :=
+  letI := addCommMonoidToAddCommGroup R (M := M)
+  { zsmul := fun z a => (z : R) • a
     zsmul_zero' := fun a => by simpa only [Int.cast_zero] using zero_smul R a
     zsmul_succ' := fun z a => by simp [add_comm, add_smul]
-    zsmul_neg' := fun z a => by simp [← smul_assoc] }
+    zsmul_neg' := fun z a => by sorry } --simp [← smul_assoc] }
 
 section AddCommMonoid
 

@@ -63,22 +63,20 @@ namespace NonUnitalSubringClass
 -- Prefer subclasses of `NonUnitalRing` over subclasses of `NonUnitalSubringClass`.
 /-- A non-unital subring of a non-unital ring inherits a non-unital ring structure -/
 instance (priority := 75) toNonUnitalNonAssocRing : NonUnitalNonAssocRing s := fast_instance%
-  Subtype.val_injective.nonUnitalNonAssocRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.val_injective.nonUnitalNonAssocRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) _ _
 
 -- Prefer subclasses of `NonUnitalRing` over subclasses of `NonUnitalSubringClass`.
 /-- A non-unital subring of a non-unital ring inherits a non-unital ring structure -/
 instance (priority := 75) toNonUnitalRing {R : Type*} [NonUnitalRing R] [SetLike S R]
     [NonUnitalSubringClass S R] (s : S) : NonUnitalRing s := fast_instance%
-  Subtype.val_injective.nonUnitalRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.val_injective.nonUnitalRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) _
 
 -- Prefer subclasses of `NonUnitalRing` over subclasses of `NonUnitalSubringClass`.
 /-- A non-unital subring of a `NonUnitalCommRing` is a `NonUnitalCommRing`. -/
 instance (priority := 75) toNonUnitalCommRing {R} [NonUnitalCommRing R] [SetLike S R]
     [NonUnitalSubringClass S R] : NonUnitalCommRing s := fast_instance%
   Subtype.val_injective.nonUnitalCommRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    fun _ _ => rfl
 
 /-- The natural non-unital ring hom from a non-unital subring of a non-unital ring `R` to `R`. -/
 def subtype (s : S) : s →ₙ+* R :=
@@ -282,9 +280,9 @@ protected theorem sub_mem {x y : R} (hx : x ∈ s) (hy : y ∈ s) : x - y ∈ s 
 instance toNonUnitalRing {R : Type*} [NonUnitalRing R] (s : NonUnitalSubring R) :
     NonUnitalRing s := fast_instance%
   Subtype.coe_injective.nonUnitalRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    fun _ _ => rfl
 
-protected theorem zsmul_mem {x : R} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
+protected theorem zsmul_mem [AddGroupZSMul R] {x : R} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
   zsmul_mem hx n
 
 @[simp, norm_cast]
@@ -310,7 +308,7 @@ theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 := by
 instance toNonUnitalCommRing {R} [NonUnitalCommRing R] (s : NonUnitalSubring R) :
     NonUnitalCommRing s := fast_instance%
   Subtype.coe_injective.nonUnitalCommRing _ rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+    fun _ _ => rfl
 
 /-! ## Partial order -/
 

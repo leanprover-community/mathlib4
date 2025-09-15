@@ -24,19 +24,21 @@ variable {M : Type uM}
 
 namespace AddMonoid.End
 
-instance instAddMonoidWithOne (M) [AddCommMonoid M] : AddMonoidWithOne (AddMonoid.End M) where
+instance instAddMonoidWithOne (M) [AddCommMonoid M] [AddMonoidNSMul M] :
+    AddMonoidWithOne (AddMonoid.End M) where
   natCast n := n • (1 : AddMonoid.End M)
-  natCast_zero := AddMonoid.nsmul_zero _
-  natCast_succ n := AddMonoid.nsmul_succ n 1
+  natCast_zero := AddMonoidNSMul.nsmul_zero _
+  natCast_succ n := AddMonoidNSMul.nsmul_succ n 1
 
 /-- See also `AddMonoid.End.natCast_def`. -/
 @[simp]
-lemma natCast_apply [AddCommMonoid M] (n : ℕ) (m : M) : (↑n : AddMonoid.End M) m = n • m := rfl
+lemma natCast_apply [AddCommMonoid M] [AddMonoidNSMul M] (n : ℕ) (m : M) :
+    (↑n : AddMonoid.End M) m = n • m := rfl
 
-@[simp] lemma ofNat_apply [AddCommMonoid M] (n : ℕ) [n.AtLeastTwo] (m : M) :
+@[simp] lemma ofNat_apply [AddCommMonoid M] [AddMonoidNSMul M] (n : ℕ) [n.AtLeastTwo] (m : M) :
     (ofNat(n) : AddMonoid.End M) m = n • m := rfl
 
-instance instSemiring [AddCommMonoid M] : Semiring (AddMonoid.End M) :=
+instance instSemiring [AddCommMonoid M] [AddMonoidNSMul M] : Semiring (AddMonoid.End M) :=
   { AddMonoid.End.instMonoid M,
     AddMonoidHom.instAddCommMonoid,
     AddMonoid.End.instAddMonoidWithOne M with
@@ -45,7 +47,7 @@ instance instSemiring [AddCommMonoid M] : Semiring (AddMonoid.End M) :=
     left_distrib := fun _ _ _ => AddMonoidHom.ext fun _ => AddMonoidHom.map_add _ _ _,
     right_distrib := fun _ _ _ => AddMonoidHom.ext fun _ => rfl }
 
-instance instRing [AddCommGroup M] : Ring (AddMonoid.End M) :=
+instance instRing [AddCommGroup M] [AddMonoidNSMul M] [AddGroupZSMul M] : Ring (AddMonoid.End M) :=
   { AddMonoid.End.instSemiring, AddMonoid.End.instAddCommGroup with
     intCast := fun z => z • (1 : AddMonoid.End M),
     intCast_ofNat := natCast_zsmul _,

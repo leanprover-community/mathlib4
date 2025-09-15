@@ -167,11 +167,11 @@ def SMulWithZero.compHom (f : ZeroHom M₀' M₀) : SMulWithZero M₀' A where
 
 end Zero
 
-instance AddMonoid.natSMulWithZero [AddMonoid A] : SMulWithZero ℕ A where
+instance AddMonoid.natSMulWithZero [AddMonoid A] [AddMonoidNSMul A] : SMulWithZero ℕ A where
   smul_zero := _root_.nsmul_zero
   zero_smul := zero_nsmul
 
-instance AddGroup.intSMulWithZero [AddGroup A] : SMulWithZero ℤ A where
+instance AddGroup.intSMulWithZero [AddGroup A] [AddGroupZSMul A] : SMulWithZero ℤ A where
   smul_zero := zsmul_zero
   zero_smul := zero_zsmul
 
@@ -317,13 +317,13 @@ abbrev DistribSMul.compFun (f : N → M) : DistribSMul N A :=
 def DistribSMul.toAddMonoidHom (x : M) : A →+ A :=
   { SMulZeroClass.toZeroHom A x with toFun := (x • ·), map_add' := smul_add x }
 
-instance AddMonoid.nat_smulCommClass {M A : Type*} [AddMonoid A] [DistribSMul M A] :
-    SMulCommClass ℕ M A where
+instance AddMonoid.nat_smulCommClass {M A : Type*} [AddMonoid A] [DistribSMul M A]
+    [AddMonoidNSMul A] : SMulCommClass ℕ M A where
   smul_comm n x y := ((DistribSMul.toAddMonoidHom A x).map_nsmul y n).symm
 
 -- `SMulCommClass.symm` is not registered as an instance, as it would cause a loop
-instance AddMonoid.nat_smulCommClass' {M A : Type*} [AddMonoid A] [DistribSMul M A] :
-    SMulCommClass M ℕ A :=
+instance AddMonoid.nat_smulCommClass' {M A : Type*} [AddMonoid A] [DistribSMul M A]
+    [AddMonoidNSMul A] : SMulCommClass M ℕ A :=
   .symm _ _ _
 
 end DistribSMul
@@ -398,11 +398,11 @@ section
 
 variable [AddGroup A] [DistribSMul M A]
 
-instance AddGroup.int_smulCommClass : SMulCommClass ℤ M A where
+instance AddGroup.int_smulCommClass [AddGroupZSMul A] : SMulCommClass ℤ M A where
   smul_comm n x y := ((DistribSMul.toAddMonoidHom A x).map_zsmul y n).symm
 
 -- `SMulCommClass.symm` is not registered as an instance, as it would cause a loop
-instance AddGroup.int_smulCommClass' : SMulCommClass M ℤ A :=
+instance AddGroup.int_smulCommClass' [AddGroupZSMul A] : SMulCommClass M ℤ A :=
   SMulCommClass.symm _ _ _
 
 @[simp]

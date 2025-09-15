@@ -16,10 +16,11 @@ variable (α : Type*)
 
 -- This is a low priority instance so that the built-in `Lean.Grind.Semiring Nat` instance
 -- (which has a non-defeq `ofNat` instance) is used preferentially.
-instance (priority := 100) Semiring.toGrindSemiring [s : Semiring α] :
+instance (priority := 100) Semiring.toGrindSemiring [s : Semiring α]
+    [pow : MonoidNPow α] [smul : AddMonoidNSMul α] :
     Grind.Semiring α :=
   { s with
-    nsmul := ⟨s.nsmul⟩
+    nsmul := ⟨smul.nsmul⟩
     npow := ⟨fun a n => a^n⟩
     ofNat | 0 | 1 | n + 2 => inferInstance
     natCast := inferInstance
@@ -43,17 +44,17 @@ instance (priority := 100) Semiring.toGrindSemiring [s : Semiring α] :
       rw [← AddMonoidWithOne.natCast_succ]
     nsmul_eq_natCast_mul n a := nsmul_eq_mul n a }
 
-instance (priority := 100) CommSemiring.toGrindCommSemiring [s : CommSemiring α] :
+instance (priority := 100) CommSemiring.toGrindCommSemiring [s : CommSemiring α]
+    [MonoidNPow α] [AddMonoidNSMul α] :
     Grind.CommSemiring α :=
   { Semiring.toGrindSemiring α with
     mul_comm := s.mul_comm }
 
-instance (priority := 100) Ring.toGrindRing [s : Ring α] :
+instance (priority := 100) Ring.toGrindRing [s : Ring α] [MonoidNPow α]
+    [AddMonoidNSMul α] [AddGroupZSMul α] :
     Grind.Ring α :=
   { s, Semiring.toGrindSemiring α with
-    nsmul := ⟨s.nsmul⟩
-    npow := ⟨fun a n => a^n⟩
-    zsmul := ⟨s.zsmul⟩
+    zsmul := ⟨AddGroupZSMul.zsmul⟩
     natCast := inferInstance
     intCast := inferInstance
     neg_zsmul i a := neg_zsmul a i
@@ -65,12 +66,13 @@ instance (priority := 100) Ring.toGrindRing [s : Ring α] :
     intCast_neg := Int.cast_neg
     zsmul_natCast_eq_nsmul n a := natCast_zsmul a n }
 
-instance (priority := 100) CommRing.toGrindCommRing [s : CommRing α] :
+instance (priority := 100) CommRing.toGrindCommRing [s : CommRing α]
+    [MonoidNPow α] [AddMonoidNSMul α] [AddGroupZSMul α] :
     Grind.CommRing α :=
   { Ring.toGrindRing α with
     mul_comm := s.mul_comm }
 
-theorem Semiring.toGrindSemiring_ofNat [Semiring α] (n : ℕ) :
+theorem Semiring.toGrindSemiring_ofNat [Semiring α] [MonoidNPow α] [AddMonoidNSMul α] (n : ℕ) :
     @OfNat.ofNat α n (Lean.Grind.Semiring.ofNat n) = n.cast := by
   match n with
   | 0 => simp
@@ -88,9 +90,6 @@ example (s : Grind.CommRing α) : CommRing α :=
     right_distrib := Grind.Semiring.right_distrib
     mul_zero := Grind.Semiring.mul_zero
     one_mul := Grind.Semiring.one_mul
-    nsmul := nsmulRec
-    zsmul := zsmulRec
-    npow := npowRec
     natCast := Nat.cast
     natCast_zero :=  Grind.Semiring.natCast_zero
     natCast_succ n := Grind.Semiring.natCast_succ n

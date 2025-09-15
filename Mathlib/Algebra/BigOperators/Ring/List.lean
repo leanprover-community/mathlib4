@@ -37,7 +37,7 @@ end Commute
 
 namespace List
 section HasDistribNeg
-variable [Monoid M] [HasDistribNeg M]
+variable [Monoid M] [MonoidNPow M] [HasDistribNeg M]
 
 @[simp]
 lemma prod_map_neg (l : List M) :

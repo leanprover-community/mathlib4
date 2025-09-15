@@ -38,7 +38,7 @@ lemma AddMonoidHom.ext_nat [AddZeroClass A] {f g : ℕ →+ A} : f 1 = g 1 → f
 end AddMonoidHomClass
 
 section AddMonoid
-variable [AddMonoid M]
+variable [AddMonoid M] [AddMonoidNSMul M]
 
 variable (M) in
 /-- Additive homomorphisms from `ℕ` are defined by the image of `1`. -/
@@ -61,7 +61,7 @@ lemma AddMonoidHom.apply_nat (f : ℕ →+ M) (n : ℕ) : f n = n • f 1 := by
 end AddMonoid
 
 section Monoid
-variable [Monoid M]
+variable [Monoid M] [MonoidNPow M]
 
 variable (M) in
 /-- Monoid homomorphisms from `Multiplicative ℕ` are defined by the image
@@ -87,7 +87,7 @@ lemma MonoidHom.ext_mnat ⦃f g : Multiplicative ℕ →* M⦄
 end Monoid
 
 section AddCommMonoid
-variable [AddCommMonoid M]
+variable [AddCommMonoid M] [AddMonoidNSMul M]
 
 variable (M) in
 /-- If `M` is commutative, `multiplesHom` is an additive equivalence. -/
@@ -102,7 +102,7 @@ def multiplesAddHom : M ≃+ (ℕ →+ M) where
 end AddCommMonoid
 
 section CommMonoid
-variable [CommMonoid M]
+variable [CommMonoid M] [MonoidNPow M]
 
 variable (M) in
 /-- If `M` is commutative, `powersHom` is a multiplicative equivalence. -/

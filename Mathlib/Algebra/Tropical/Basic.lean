@@ -312,8 +312,10 @@ theorem add_eq_zero_iff {a b : Tropical (WithTop R)} : a + b = 0 ↔ a = 0 ∧ b
 instance instAddCommMonoidTropical [OrderTop R] : AddCommMonoid (Tropical R) :=
   { instZeroTropical, instAddCommSemigroupTropical with
     zero_add := fun _ => untrop_injective (min_top_left _)
-    add_zero := fun _ => untrop_injective (min_top_right _)
-    nsmul := nsmulRec }
+    add_zero := fun _ => untrop_injective (min_top_right _) }
+
+instance [OrderTop R] : AddMonoidNSMul (Tropical R) where
+  nsmul := nsmulRec
 
 end Order
 
@@ -394,13 +396,15 @@ instance instMulOneClassTropical [AddZeroClass R] : MulOneClass (Tropical R) whe
   mul_one _ := untrop_injective <| add_zero _
 
 instance instMonoidTropical [AddMonoid R] : Monoid (Tropical R) :=
-  { instMulOneClassTropical, instSemigroupTropical with
-    npow := fun n x => x ^ n
-    npow_zero := fun _ => untrop_injective <| by simp
-    npow_succ := fun _ _ => untrop_injective <| succ_nsmul _ _ }
+  { instMulOneClassTropical, instSemigroupTropical with }
+
+instance [AddMonoid R] [AddMonoidNSMul R] : MonoidNPow (Tropical R) where
+  npow := fun n x => x ^ n
+  npow_zero := fun _ => untrop_injective <| by simp
+  npow_succ := fun _ _ => untrop_injective <| succ_nsmul _ _
 
 @[simp]
-theorem trop_nsmul [AddMonoid R] (x : R) (n : ℕ) : trop (n • x) = trop x ^ n :=
+theorem trop_nsmul [AddMonoid R] [AddMonoidNSMul R] (x : R) (n : ℕ) : trop (n • x) = trop x ^ n :=
   rfl
 
 instance instCommMonoidTropical [AddCommMonoid R] : CommMonoid (Tropical R) :=
@@ -410,21 +414,24 @@ instance instGroupTropical [AddGroup R] : Group (Tropical R) :=
   { instMonoidTropical with
     inv := Inv.inv
     div_eq_mul_inv := fun _ _ => untrop_injective <| by simp [sub_eq_add_neg]
-    inv_mul_cancel := fun _ => untrop_injective <| neg_add_cancel _
-    zpow := fun n x => trop <| n • untrop x
-    zpow_zero' := fun _ => untrop_injective <| zero_zsmul _
-    zpow_succ' := fun _ _ => untrop_injective <| SubNegMonoid.zsmul_succ' _ _
-    zpow_neg' := fun _ _ => untrop_injective <| SubNegMonoid.zsmul_neg' _ _ }
+    inv_mul_cancel := fun _ => untrop_injective <| neg_add_cancel _ }
+
+instance [AddGroup R] [AddGroupZSMul R] : GroupZPow (Tropical R) where
+  zpow := fun n x => trop <| n • untrop x
+  zpow_zero' := fun _ => untrop_injective <| zero_zsmul _
+  zpow_succ' := fun _ _ => untrop_injective <| AddGroupZSMul.zsmul_succ' _ _
+  zpow_neg' := fun _ _ => untrop_injective <| AddGroupZSMul.zsmul_neg' _ _
 
 instance [AddCommGroup R] : CommGroup (Tropical R) :=
   { instGroupTropical with mul_comm := fun _ _ => untrop_injective (add_comm _ _) }
 
 @[simp]
-theorem untrop_zpow [AddGroup R] (x : Tropical R) (n : ℤ) : untrop (x ^ n) = n • untrop x :=
+theorem untrop_zpow [AddGroup R] [AddGroupZSMul R] (x : Tropical R) (n : ℤ) :
+    untrop (x ^ n) = n • untrop x :=
   rfl
 
 @[simp]
-theorem trop_zsmul [AddGroup R] (x : R) (n : ℤ) : trop (n • x) = trop x ^ n :=
+theorem trop_zsmul [AddGroup R] [AddGroupZSMul R] (x : R) (n : ℤ) : trop (n • x) = trop x ^ n :=
   rfl
 
 end Monoid
@@ -464,7 +471,7 @@ instance instDistribTropical [LinearOrder R] [Add R] [AddLeftMono R] [AddRightMo
   right_distrib _ _ _ := untrop_injective (min_add_add_right _ _ _).symm
 
 @[simp]
-theorem add_pow [LinearOrder R] [AddMonoid R] [AddLeftMono R] [AddRightMono R]
+theorem add_pow [LinearOrder R] [AddMonoid R] [AddMonoidNSMul R] [AddLeftMono R] [AddRightMono R]
     (x y : Tropical R) (n : ℕ) :
     (x + y) ^ n = x ^ n + y ^ n := by
   rcases le_total x y with h | h

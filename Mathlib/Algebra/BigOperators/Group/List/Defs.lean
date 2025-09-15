@@ -93,13 +93,14 @@ variable [Monoid M] [Monoid N] [Monoid P] {l l₁ l₂ : List M} {a : M}
 theorem prod_eq_foldr {l : List M} : l.prod = foldr (· * ·) 1 l := rfl
 
 @[to_additive (attr := simp)]
-theorem prod_replicate (n : ℕ) (a : M) : (replicate n a).prod = a ^ n := by
+theorem prod_replicate [MonoidNPow M] (n : ℕ) (a : M) : (replicate n a).prod = a ^ n := by
   induction n with
   | zero => rw [pow_zero, replicate_zero, prod_nil]
   | succ n ih => rw [replicate_succ, prod_cons, ih, pow_succ']
 
 @[to_additive sum_eq_card_nsmul]
-theorem prod_eq_pow_card (l : List M) (m : M) (h : ∀ x ∈ l, x = m) : l.prod = m ^ l.length := by
+theorem prod_eq_pow_card [MonoidNPow M] (l : List M) (m : M) (h : ∀ x ∈ l, x = m) :
+    l.prod = m ^ l.length := by
   rw [← prod_replicate, ← List.eq_replicate_iff.mpr ⟨rfl, h⟩]
 
 @[to_additive]

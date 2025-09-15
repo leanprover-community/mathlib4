@@ -90,7 +90,7 @@ lemma div_inf (a b c : α) : c / (a ⊓ b) = c / a ⊔ c / b := (OrderIso.divLef
 -- Chapter V, 1.E
 -- See also `one_le_pow_iff` for the existing version in linear orders
 @[to_additive]
-lemma pow_two_semiclosed
+lemma pow_two_semiclosed [MonoidNPow α]
     {a : α} (ha : 1 ≤ a ^ 2) : 1 ≤ a := by
   suffices this : (a ⊓ 1) * (a ⊓ 1) = a ⊓ 1 by
     rwa [← inf_eq_right, ← mul_eq_left]

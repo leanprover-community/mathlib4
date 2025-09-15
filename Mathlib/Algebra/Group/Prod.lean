@@ -75,14 +75,18 @@ instance instMulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) 
 
 @[to_additive]
 instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
-  { npow := fun z a => ⟨Monoid.npow z a.1, Monoid.npow z a.2⟩,
-    npow_zero := fun _ => Prod.ext (Monoid.npow_zero _) (Monoid.npow_zero _),
-    npow_succ := fun _ _ => Prod.ext (Monoid.npow_succ _ _) (Monoid.npow_succ _ _),
-    one_mul := by simp,
+  { one_mul := by simp,
     mul_one := by simp }
 
 @[to_additive]
-instance instIsMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionFree M] [IsMulTorsionFree N] :
+instance [Monoid M] [Monoid N] [MonoidNPow M] [MonoidNPow N] : MonoidNPow (M × N) where
+  npow := fun z a => ⟨MonoidNPow.npow z a.1, MonoidNPow.npow z a.2⟩
+  npow_zero := fun _ => Prod.ext (MonoidNPow.npow_zero _) (MonoidNPow.npow_zero _)
+  npow_succ := fun _ _ => Prod.ext (MonoidNPow.npow_succ _ _) (MonoidNPow.npow_succ _ _)
+
+@[to_additive]
+instance instIsMulTorsionFree [Monoid M] [Monoid N] [MonoidNPow M] [MonoidNPow N]
+    [IsMulTorsionFree M] [IsMulTorsionFree N] :
     IsMulTorsionFree (M × N) where
   pow_left_injective n hn a b hab := by
     ext <;> apply pow_left_injective hn; exacts [congr(($hab).1), congr(($hab).2)]
@@ -90,10 +94,13 @@ instance instIsMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionFree M] [IsMulT
 @[to_additive Prod.subNegMonoid]
 instance [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) where
   div_eq_mul_inv _ _ := by ext <;> exact div_eq_mul_inv ..
-  zpow z a := ⟨DivInvMonoid.zpow z a.1, DivInvMonoid.zpow z a.2⟩
-  zpow_zero' _ := by ext <;> exact DivInvMonoid.zpow_zero' _
-  zpow_succ' _ _ := by ext <;> exact DivInvMonoid.zpow_succ' ..
-  zpow_neg' _ _ := by ext <;> exact DivInvMonoid.zpow_neg' ..
+
+@[to_additive] instance [DivInvMonoid G] [GroupZPow G] [DivInvMonoid H] [GroupZPow H] :
+    GroupZPow (G × H) where
+  zpow z a := ⟨GroupZPow.zpow z a.1, GroupZPow.zpow z a.2⟩
+  zpow_zero' _ := by ext <;> exact GroupZPow.zpow_zero' _
+  zpow_succ' _ _ := by ext <;> exact GroupZPow.zpow_succ' ..
+  zpow_neg' _ _ := by ext <;> exact GroupZPow.zpow_neg' ..
 
 @[to_additive]
 instance [DivisionMonoid G] [DivisionMonoid H] : DivisionMonoid (G × H) :=

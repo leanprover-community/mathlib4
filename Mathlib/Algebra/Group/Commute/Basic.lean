@@ -99,6 +99,8 @@ protected theorem conj_iff (h : G) : Commute (h * a * h⁻¹) (h * b * h⁻¹) �
 protected theorem conj (comm : Commute a b) (h : G) : Commute (h * a * h⁻¹) (h * b * h⁻¹) :=
   (Commute.conj_iff h).mpr comm
 
+variable [GroupZPow G]
+
 @[to_additive (attr := simp)]
 lemma zpow_right (h : Commute a b) (m : ℤ) : Commute a (b ^ m) := SemiconjBy.zpow_right h m
 
@@ -120,7 +122,7 @@ end Group
 end Commute
 
 section Group
-variable [Group G]
+variable [Group G] [MonoidNPow G]
 
 @[to_additive] lemma pow_inv_comm (a : G) (m n : ℕ) : a⁻¹ ^ m * a ^ n = a ^ n * a⁻¹ ^ m :=
   (Commute.refl a).inv_left.pow_pow _ _

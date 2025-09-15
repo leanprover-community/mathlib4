@@ -177,6 +177,10 @@ theorem IsUnit.isRegular (ua : IsUnit a) : IsRegular a := by
   rcases ua with ⟨a, rfl⟩
   exact Units.isRegular a
 
+section Pow
+
+variable [MonoidNPow R]
+
 /-- Any power of a left-regular element is left-regular. -/
 @[to_additive]
 lemma IsLeftRegular.pow (n : ℕ) (rla : IsLeftRegular a) : IsLeftRegular (a ^ n) := by
@@ -208,6 +212,8 @@ lemma IsRightRegular.pow_iff (n0 : 0 < n) : IsRightRegular (a ^ n) ↔ IsRightRe
 @[to_additive] lemma IsRegular.pow_iff {n : ℕ} (n0 : 0 < n) : IsRegular (a ^ n) ↔ IsRegular a where
   mp h := ⟨(IsLeftRegular.pow_iff n0).mp h.left, (IsRightRegular.pow_iff n0).mp h.right⟩
   mpr h := ⟨.pow n h.left, .pow n h.right⟩
+
+end Pow
 
 @[to_additive (attr := simp)] lemma IsLeftRegular.mul_left_eq_self_iff (ha : IsLeftRegular a) :
     a * b = a ↔ b = 1 :=

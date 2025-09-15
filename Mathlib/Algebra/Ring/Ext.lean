@@ -281,11 +281,9 @@ namespace Semiring
     ext : 1 <;> assumption
   have h₂ : inst₁.toNonAssocSemiring = inst₂.toNonAssocSemiring := by
     ext : 1 <;> assumption
-  have h₃ : (inst₁.toMonoidWithZero).toMonoid = (inst₂.toMonoidWithZero).toMonoid := by
-    ext : 1; exact h_mul
   -- Split into fields and prove they are equal using the above.
   cases inst₁; cases inst₂
-  congr <;> solve | injection h₁ | injection h₂ | injection h₃
+  congr <;> solve | injection h₁ | injection h₂
 
 theorem toNonUnitalSemiring_injective :
     Function.Injective (@toNonUnitalSemiring R) := by

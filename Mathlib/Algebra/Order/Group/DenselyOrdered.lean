@@ -90,7 +90,7 @@ end DenselyOrdered
 variable {M : Type*} [LinearOrder M] [DenselyOrdered M] {x : M}
 
 section Monoid
-variable [CommMonoid M] [ExistsMulOfLE M] [IsOrderedCancelMonoid M]
+variable [CommMonoid M] [MonoidNPow M] [ExistsMulOfLE M] [IsOrderedCancelMonoid M]
 
 @[to_additive]
 private theorem exists_pow_two_le_of_one_lt (hx : 1 < x) : ∃ y : M, 1 < y ∧ y ^ 2 ≤ x := by
@@ -116,7 +116,7 @@ theorem exists_pow_lt_of_one_lt (hx : 1 < x) : ∀ n : ℕ, ∃ y : M, 1 < y ∧
 end Monoid
 
 section Group
-variable [CommGroup M] [IsOrderedCancelMonoid M]
+variable [CommGroup M] [MonoidNPow M] [IsOrderedCancelMonoid M]
 
 @[to_additive]
 theorem exists_lt_pow_of_lt_one (hx : x < 1) (n : ℕ) : ∃ y : M, y < 1 ∧ x < y ^ n := by

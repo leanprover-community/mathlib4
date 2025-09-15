@@ -101,7 +101,7 @@ end
 
 section Semiring
 
-variable [Semiring R]
+variable [Semiring R] [MonoidNPow R]
 
 protected lemma add_sq {a b : R} (h : Commute a b) :
     (a + b) ^ 2 = a ^ 2 + 2 * a * b + b ^ 2 := by
@@ -110,7 +110,7 @@ protected lemma add_sq {a b : R} (h : Commute a b) :
 end Semiring
 
 section Ring
-variable [Ring R] {a b : R}
+variable [Ring R] [MonoidNPow R] {a b : R}
 
 protected lemma sq_sub_sq (h : Commute a b) : a ^ 2 - b ^ 2 = (a + b) * (a - b) := by
   rw [sq, sq, h.mul_self_sub_mul_self_eq]
@@ -129,7 +129,7 @@ end Commute
 
 section HasDistribNeg
 variable (R)
-variable [Monoid R] [HasDistribNeg R]
+variable [Monoid R] [MonoidNPow R] [HasDistribNeg R]
 
 lemma neg_one_pow_eq_or : ∀ n : ℕ, (-1 : R) ^ n = 1 ∨ (-1 : R) ^ n = -1
   | 0 => Or.inl (pow_zero _)
@@ -156,7 +156,7 @@ alias neg_one_pow_two := neg_one_sq
 end HasDistribNeg
 
 section Ring
-variable [Ring R] {a : R} {n : ℕ}
+variable [Ring R] [MonoidNPow R] {a : R} {n : ℕ}
 
 @[simp] lemma neg_one_pow_mul_eq_zero_iff : (-1) ^ n * a = 0 ↔ a = 0 := by
   rcases neg_one_pow_eq_or R n with h | h <;> simp [h]
@@ -193,7 +193,7 @@ theorem mul_self_eq_one_iff [NonAssocRing R] [NoZeroDivisors R] {a : R} :
   rw [← (Commute.one_right a).mul_self_eq_mul_self_iff, mul_one]
 
 section CommRing
-variable [CommRing R]
+variable [CommRing R] [MonoidNPow R]
 
 lemma sq_sub_sq (a b : R) : a ^ 2 - b ^ 2 = (a + b) * (a - b) := (Commute.all a b).sq_sub_sq
 

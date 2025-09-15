@@ -74,6 +74,14 @@ end MulOneClass
 section Monoid
 variable [Monoid M] {a : M}
 
+theorem iff_eq_one_of_isUnit (h : IsUnit a) : IsIdempotentElem a ↔ a = 1 where
+  mp idem := by
+    have ⟨q, eq⟩ := h.exists_left_inv
+    rw [← eq, ← idem.eq, ← mul_assoc, eq, one_mul, idem.eq]
+  mpr := by rintro rfl; exact .one
+
+variable [MonoidNPow M]
+
 lemma pow (n : ℕ) (h : IsIdempotentElem a) : IsIdempotentElem (a ^ n) :=
   Nat.recOn n ((pow_zero a).symm ▸ one) fun n _ =>
     show a ^ n.succ * a ^ n.succ = a ^ n.succ by
@@ -86,12 +94,6 @@ lemma pow_succ_eq (n : ℕ) (h : IsIdempotentElem a) : a ^ (n + 1) = a :=
 theorem pow_eq (h : IsIdempotentElem a) {n : ℕ} (hn : n ≠ 0) : a ^ n = a := by
   obtain ⟨i, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hn
   exact h.pow_succ_eq _
-
-theorem iff_eq_one_of_isUnit (h : IsUnit a) : IsIdempotentElem a ↔ a = 1 where
-  mp idem := by
-    have ⟨q, eq⟩ := h.exists_left_inv
-    rw [← eq, ← idem.eq, ← mul_assoc, eq, one_mul, idem.eq]
-  mpr := by rintro rfl; exact .one
 
 end Monoid
 

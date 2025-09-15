@@ -18,9 +18,10 @@ open Function
 variable {M G : Type*}
 
 section Monoid
-variable [Monoid M]
+variable [Monoid M] [MonoidNPow M]
 
-instance [AddCommMonoid M] [IsAddTorsionFree M] : Lean.Grind.NoNatZeroDivisors M where
+instance [AddCommMonoid M] [AddMonoidNSMul M] [IsAddTorsionFree M] :
+    Lean.Grind.NoNatZeroDivisors M where
   no_nat_zero_divisors _ _ _ hk habk := IsAddTorsionFree.nsmul_right_injective hk habk
 
 @[to_additive] instance Subsingleton.to_isMulTorsionFree [Subsingleton M] : IsMulTorsionFree M where
@@ -48,7 +49,7 @@ lemma IsMulTorsionFree.pow_eq_one_iff' (ha : a ≠ 1) : a ^ n = 1 ↔ n = 0 := b
 end Monoid
 
 section Group
-variable [Group G] [IsMulTorsionFree G] {n : ℤ} {a b : G}
+variable [Group G] [MonoidNPow G] [GroupZPow G] [IsMulTorsionFree G] {n : ℤ} {a b : G}
 
 @[to_additive zsmul_right_injective]
 lemma zpow_left_injective : ∀ {n : ℤ}, n ≠ 0 → Injective fun a : G ↦ a ^ n

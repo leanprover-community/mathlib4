@@ -41,7 +41,7 @@ theorem smul_strictMono_right [SMul M α] [Preorder α] [CovariantClass M α HSM
     (m : M) : StrictMono (HSMul.hSMul m : α → α) :=
   fun _ _ => CovariantClass.elim _
 
-lemma le_pow_smul {G : Type*} [Monoid G] {α : Type*} [Preorder α] {g : G} {a : α}
+lemma le_pow_smul {G : Type*} [Monoid G] [MonoidNPow G] {α : Type*} [Preorder α] {g : G} {a : α}
     [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le]
     (h : a ≤ g • a) (n : ℕ) : a ≤ g ^ n • a := by
   induction n with
@@ -50,7 +50,7 @@ lemma le_pow_smul {G : Type*} [Monoid G] {α : Type*} [Preorder α] {g : G} {a :
     rw [pow_succ', mul_smul]
     exact h.trans (smul_mono_right g hn)
 
-lemma pow_smul_le {G : Type*} [Monoid G] {α : Type*} [Preorder α] {g : G} {a : α}
+lemma pow_smul_le {G : Type*} [Monoid G] [MonoidNPow G] {α : Type*} [Preorder α] {g : G} {a : α}
     [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le]
     (h : g • a ≤ a) (n : ℕ) : g ^ n • a ≤ a := by
   induction n with

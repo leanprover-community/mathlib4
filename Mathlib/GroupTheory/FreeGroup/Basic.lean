@@ -607,6 +607,9 @@ instance : Group (FreeGroup α) where
       List.recOn L rfl fun ⟨x, b⟩ tl ih =>
           Eq.trans (Quot.sound <| by simp [invRev]) ih
 
+@[to_additive] instance : MonoidNPow (FreeGroup α) where
+@[to_additive] instance : GroupZPow (FreeGroup α) where
+
 @[to_additive (attr := simp)]
 theorem pow_mk (n : ℕ) : mk L ^ n = mk (List.flatten <| List.replicate n L) :=
   match n with

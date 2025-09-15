@@ -191,6 +191,8 @@ variable [CommGroup α] [MulLeftMono α]
   rw [← oneLePart_div_leOnePart a, ← oneLePart_div_leOnePart b]
   exact div_le_div'' h.1 h.2
 
+variable [MonoidNPow α]
+
 @[to_additive abs_add_eq_two_nsmul_posPart]
 lemma mabs_mul_eq_oneLePart_sq (a : α) : |a|ₘ * a = a⁺ᵐ ^ 2 := by
   rw [sq, ← mul_mul_div_cancel a⁺ᵐ, oneLePart_mul_leOnePart, oneLePart_div_leOnePart]

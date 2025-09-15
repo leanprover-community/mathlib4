@@ -89,7 +89,7 @@ instance instNonAssocSemiring [NonAssocSemiring R] : NonAssocSemiring Rᵐᵒᵖ
 instance instSemiring [Semiring R] : Semiring Rᵐᵒᵖ where
   __ := instNonUnitalSemiring
   __ := instNonAssocSemiring
-  __ := instMonoidWithZero
+  __ := instMonoidWithZero (α := R)
 
 instance instNonUnitalCommSemiring [NonUnitalCommSemiring R] : NonUnitalCommSemiring Rᵐᵒᵖ where
   __ := instNonUnitalSemiring
@@ -168,7 +168,7 @@ instance instNonAssocSemiring [NonAssocSemiring R] : NonAssocSemiring Rᵃᵒᵖ
 instance instSemiring [Semiring R] : Semiring Rᵃᵒᵖ where
   __ := instNonUnitalSemiring
   __ := instNonAssocSemiring
-  __ := instMonoidWithZero
+  __ := instMonoidWithZero (α := R)
 
 instance instNonUnitalCommSemiring [NonUnitalCommSemiring R] : NonUnitalCommSemiring Rᵃᵒᵖ where
   __ := instNonUnitalSemiring

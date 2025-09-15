@@ -551,6 +551,28 @@ theorem prod_range_one (f : ℕ → M) : ∏ k ∈ range 1, f k = f 0 := by
 
 open List
 
+/-- For any product along `{0, ..., n - 1}` of a commutative-monoid-valued function, we can verify
+that it's equal to a different function just by checking ratios of adjacent terms up to `n`.
+
+This is a multiplicative discrete analogue of the fundamental theorem of calculus. -/
+@[to_additive /-- For any sum along `{0, ..., n - 1}` of a commutative-monoid-valued function, we
+can verify that it's equal to a different function just by checking differences of adjacent terms
+up to `n`.
+
+This is a discrete analogue of the fundamental theorem of calculus. -/]
+theorem prod_range_induction (f s : ℕ → M) (base : s 0 = 1)
+    (n : ℕ) (step : ∀ k < n, s (k + 1) = s k * f k) :
+    ∏ k ∈ Finset.range n, f k = s n := by
+  induction n with
+  | zero => rw [Finset.prod_range_zero, base]
+  | succ k hk =>
+    rw [Finset.prod_range_succ, step _ (Nat.lt_succ_self _), hk]
+    exact fun _ hl ↦ step _ (Nat.lt_succ_of_lt hl)
+
+section Pow
+
+variable [MonoidNPow M]
+
 @[to_additive]
 theorem prod_list_map_count [DecidableEq ι] (l : List ι) (f : ι → M) :
     (l.map f).prod = ∏ m ∈ l.toFinset, f m ^ l.count m := by
@@ -583,7 +605,7 @@ open Multiset
 
 @[to_additive]
 theorem prod_multiset_map_count [DecidableEq ι] (s : Multiset ι) {M : Type*} [CommMonoid M]
-    (f : ι → M) : (s.map f).prod = ∏ m ∈ s.toFinset, f m ^ s.count m := by
+    [MonoidNPow M] (f : ι → M) : (s.map f).prod = ∏ m ∈ s.toFinset, f m ^ s.count m := by
   refine Quot.induction_on s fun l => ?_
   simp [prod_list_map_count l f]
 
@@ -600,24 +622,6 @@ theorem prod_multiset_count_of_subset [DecidableEq M] (m : Multiset M) (s : Fins
   refine Quot.induction_on m fun l => ?_
   simp only [quot_mk_to_coe'', prod_coe, coe_count]
   apply prod_list_count_of_subset l s
-
-/-- For any product along `{0, ..., n - 1}` of a commutative-monoid-valued function, we can verify
-that it's equal to a different function just by checking ratios of adjacent terms up to `n`.
-
-This is a multiplicative discrete analogue of the fundamental theorem of calculus. -/
-@[to_additive /-- For any sum along `{0, ..., n - 1}` of a commutative-monoid-valued function, we
-can verify that it's equal to a different function just by checking differences of adjacent terms
-up to `n`.
-
-This is a discrete analogue of the fundamental theorem of calculus. -/]
-theorem prod_range_induction (f s : ℕ → M) (base : s 0 = 1)
-    (n : ℕ) (step : ∀ k < n, s (k + 1) = s k * f k) :
-    ∏ k ∈ Finset.range n, f k = s n := by
-  induction n with
-  | zero => rw [Finset.prod_range_zero, base]
-  | succ k hk =>
-    rw [Finset.prod_range_succ, step _ (Nat.lt_succ_self _), hk]
-    exact fun _ hl ↦ step _ (Nat.lt_succ_of_lt hl)
 
 @[to_additive (attr := simp)]
 theorem prod_const (b : M) : ∏ _x ∈ s, b = b ^ #s :=
@@ -643,14 +647,16 @@ lemma prod_pow_eq_pow_sum (s : Finset ι) (f : ι → ℕ) (a : M) :
     ∏ i ∈ s, a ^ f i = a ^ ∑ i ∈ s, f i :=
   cons_induction (by simp) (fun _ _ _ _ ↦ by simp [prod_cons, sum_cons, pow_add, *]) s
 
-@[to_additive]
-theorem prod_flip {n : ℕ} (f : ℕ → M) :
-    (∏ r ∈ range (n + 1), f (n - r)) = ∏ k ∈ range (n + 1), f k := by
-  induction n with
-  | zero => rw [prod_range_one, prod_range_one]
-  | succ n ih =>
-    rw [prod_range_succ', prod_range_succ _ (Nat.succ n)]
-    simp [← ih]
+/-- The product of the composition of functions `f` and `g`, is the product over `b ∈ s.image g` of
+`f b` to the power of the cardinality of the fibre of `b`. See also `Finset.prod_image`. -/
+@[to_additive /-- The sum of the composition of functions `f` and `g`, is the sum over
+`b ∈ s.image g` of `f b` times of the cardinality of the fibre of `b`. See also
+`Finset.sum_image`. -/]
+theorem prod_comp [DecidableEq κ] (f : κ → M) (g : ι → κ) :
+    ∏ a ∈ s, f (g a) = ∏ b ∈ s.image g, f b ^ #{a ∈ s | g a = b} := by
+  simp_rw [← prod_const, prod_fiberwise_of_maps_to' fun _ ↦ mem_image_of_mem _]
+
+end Pow
 
 /-- The difference with `Finset.prod_ninvolution` is that the involution is allowed to use
 membership of the domain of the product, rather than being a non-dependent function. -/
@@ -684,14 +690,14 @@ lemma prod_ninvolution (g : ι → ι) (hg₁ : ∀ a, f a * f (g a) = 1) (hg₂
   prod_involution (fun i _ => g i) (fun i _ => hg₁ i) (fun _ _ hi => hg₂ _ hi)
     (fun i _ => g_mem i) (fun i _ => hg₃ i)
 
-/-- The product of the composition of functions `f` and `g`, is the product over `b ∈ s.image g` of
-`f b` to the power of the cardinality of the fibre of `b`. See also `Finset.prod_image`. -/
-@[to_additive /-- The sum of the composition of functions `f` and `g`, is the sum over
-`b ∈ s.image g` of `f b` times of the cardinality of the fibre of `b`. See also
-`Finset.sum_image`. -/]
-theorem prod_comp [DecidableEq κ] (f : κ → M) (g : ι → κ) :
-    ∏ a ∈ s, f (g a) = ∏ b ∈ s.image g, f b ^ #{a ∈ s | g a = b} := by
-  simp_rw [← prod_const, prod_fiberwise_of_maps_to' fun _ ↦ mem_image_of_mem _]
+@[to_additive]
+theorem prod_flip {n : ℕ} (f : ℕ → M) :
+    (∏ r ∈ range (n + 1), f (n - r)) = ∏ k ∈ range (n + 1), f k := by
+  induction n with
+  | zero => rw [prod_range_one, prod_range_one]
+  | succ n ih =>
+    rw [prod_range_succ', prod_range_succ _ (Nat.succ n)]
+    simp [← ih]
 
 /-- A product can be partitioned into a product of products, each equivalent under a setoid. -/
 @[to_additive /-- A sum can be partitioned into a sum of sums, each equivalent under a setoid. -/]

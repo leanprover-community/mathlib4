@@ -351,6 +351,10 @@ variable [MonoidWithZero M₀]
 section Preorder
 variable [Preorder M₀] {a b : M₀} {m n : ℕ}
 
+section Pow
+
+variable [MonoidNPow M₀]
+
 @[simp] lemma pow_succ_nonneg [PosMulMono M₀] (ha : 0 ≤ a) : ∀ n, 0 ≤ a ^ (n + 1)
   | 0 => (pow_one a).symm ▸ ha
   | _ + 1 => pow_succ a _ ▸ mul_nonneg (pow_succ_nonneg ha _) ha
@@ -381,6 +385,8 @@ lemma sq_le [PosMulMono M₀] (h₀ : 0 ≤ a) (h₁ : a ≤ 1) : a ^ 2 ≤ a :=
 lemma pow_le_one₀ [PosMulMono M₀] {n : ℕ} (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) : a ^ n ≤ 1 :=
   pow_zero a ▸ pow_right_anti₀ ha₀ ha₁ (Nat.zero_le n)
 
+end Pow
+
 lemma one_le_mul_of_one_le_of_one_le [ZeroLEOneClass M₀] [PosMulMono M₀] (ha : 1 ≤ a) (hb : 1 ≤ b) :
     (1 : M₀) ≤ a * b := ha.trans <| le_mul_of_one_le_right (zero_le_one.trans ha) hb
 
@@ -406,6 +412,10 @@ protected lemma Bound.one_lt_mul [ZeroLEOneClass M₀] [PosMulMono M₀] [MulPos
 @[bound]
 lemma mul_le_one₀ [MulPosMono M₀] (ha : a ≤ 1) (hb₀ : 0 ≤ b) (hb : b ≤ 1) : a * b ≤ 1 :=
   (mul_le_mul_of_nonneg_right ha hb₀).trans <| by rwa [one_mul]
+
+section Pow
+
+variable [MonoidNPow M₀]
 
 lemma pow_lt_one₀ [PosMulMono M₀] (h₀ : 0 ≤ a) (h₁ : a < 1) : ∀ {n : ℕ}, n ≠ 0 → a ^ n < 1
   | 0, h => (h rfl).elim
@@ -457,6 +467,8 @@ lemma pow_left_monotoneOn [PosMulMono M₀] [MulPosMono M₀] :
     MonotoneOn (fun a : M₀ ↦ a ^ n) {x | 0 ≤ x} :=
   fun _a ha _b _ hab ↦ pow_le_pow_left₀ ha hab _
 
+end Pow
+
 variable [Preorder α] {f g : α → M₀}
 
 lemma monotone_mul_left_of_nonneg [PosMulMono M₀] (ha : 0 ≤ a) : Monotone fun x ↦ a * x :=
@@ -506,6 +518,10 @@ lemma lt_mul_right [PosMulStrictMono M₀] (ha : 0 < a) (hb : 1 < b) : a < a * b
 
 lemma lt_mul_self [ZeroLEOneClass M₀] [MulPosStrictMono M₀] (ha : 1 < a) : a < a * a :=
   lt_mul_left (ha.trans_le' zero_le_one) ha
+
+section Pow
+
+variable [MonoidNPow M₀]
 
 lemma sq_pos_of_pos [PosMulStrictMono M₀] (ha : 0 < a) : 0 < a ^ 2 := by
   simpa only [sq] using mul_pos ha ha
@@ -576,6 +592,8 @@ lemma pow_lt_self_of_lt_one₀ (h₀ : 0 < a) (h₁ : a < 1) (hn : 1 < n) : a ^ 
 
 end strict_mono
 
+end Pow
+
 variable [Preorder α] {f g : α → M₀}
 
 lemma strictMono_mul_left_of_pos [PosMulStrictMono M₀] (ha : 0 < a) :
@@ -613,6 +631,10 @@ end PartialOrder
 section LinearOrder
 variable [LinearOrder M₀] [PosMulStrictMono M₀] {a b : M₀}
   {m n : ℕ}
+
+section Pow
+
+variable [MonoidNPow M₀]
 
 lemma pow_le_pow_iff_left₀ [MulPosMono M₀] (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) :
     a ^ n ≤ b ^ n ↔ a ≤ b :=
@@ -693,6 +715,8 @@ lemma sq_lt_sq₀ (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ 2 < b ^ 2 ↔ a < b :=
 
 lemma sq_le_sq₀ (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ 2 ≤ b ^ 2 ↔ a ≤ b :=
   pow_le_pow_iff_left₀ ha hb two_ne_zero
+
+end Pow
 
 end MonoidWithZero.LinearOrder
 
@@ -933,19 +957,24 @@ lemma inv_mul_le_one_of_le₀ (h : a ≤ b) (hb : 0 ≤ b) : b⁻¹ * a ≤ 1 :=
   inv_mul_le_of_le_mul₀ hb zero_le_one <| by rwa [mul_one]
 
 section ZPow
-variable {m n : ℤ}
+variable [GroupZPow G₀] {m n : ℤ}
 
-lemma zpow_nonneg (ha : 0 ≤ a) : ∀ n : ℤ, 0 ≤ a ^ n
+lemma zpow_nonneg (ha : 0 ≤ a) (n : ℤ) : 0 ≤ a ^ n :=
+  let _ := Monoid.monoidNPow G₀
+  match n with
   | (n : ℕ) => by rw [zpow_natCast]; exact pow_nonneg ha _
   | -(n + 1 : ℕ) => by rw [zpow_neg, inv_nonneg, zpow_natCast]; exact pow_nonneg ha _
 
-lemma zpow_pos (ha : 0 < a) : ∀ n : ℤ, 0 < a ^ n
+lemma zpow_pos (ha : 0 < a) (n : ℤ) : 0 < a ^ n :=
+  let _ := Monoid.monoidNPow G₀
+  match n with
   | (n : ℕ) => by rw [zpow_natCast]; exact pow_pos ha _
   | -(n + 1 : ℕ) => by rw [zpow_neg, inv_pos, zpow_natCast]; exact pow_pos ha _
 
 omit [ZeroLEOneClass G₀] in
 lemma zpow_left_strictMonoOn₀ [MulPosMono G₀] (hn : 0 < n) :
     StrictMonoOn (fun a : G₀ ↦ a ^ n) {a | 0 ≤ a} := by
+  let _ := Monoid.monoidNPow G₀
   lift n to ℕ using hn.le; simpa using pow_left_strictMonoOn₀ (by omega)
 
 lemma zpow_right_mono₀ (ha : 1 ≤ a) : Monotone fun n : ℤ ↦ a ^ n := by
@@ -1299,6 +1328,8 @@ lemma inv_lt_one_iff₀ : a⁻¹ < 1 ↔ a ≤ 0 ∨ 1 < a := by
 
 lemma inv_le_one_iff₀ : a⁻¹ ≤ 1 ↔ a ≤ 0 ∨ 1 ≤ a := by
   simp only [← not_lt, one_lt_inv_iff₀, not_and_or]
+
+variable [GroupZPow G₀]
 
 lemma zpow_right_injective₀ (ha₀ : 0 < a) (ha₁ : a ≠ 1) : Injective fun n : ℤ ↦ a ^ n := by
   obtain ha₁ | ha₁ := ha₁.lt_or_gt

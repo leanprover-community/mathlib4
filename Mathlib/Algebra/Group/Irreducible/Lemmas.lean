@@ -20,7 +20,7 @@ section Monoid
 variable [Monoid M] [Monoid N] {f : F} {x y : M}
 
 @[to_additive]
-lemma not_irreducible_pow : ∀ {n : ℕ}, n ≠ 1 → ¬ Irreducible (x ^ n)
+lemma not_irreducible_pow [MonoidNPow M] : ∀ {n : ℕ}, n ≠ 1 → ¬ Irreducible (x ^ n)
   | 0, _ => by simp
   | n + 2, _ => by
     intro ⟨h₁, h₂⟩
@@ -97,6 +97,7 @@ lemma Irreducible.of_map [FunLike F M N] [MonoidHomClass F M N] [IsLocalHom f]
 
 @[to_additive]
 lemma Irreducible.not_isSquare (ha : Irreducible x) : ¬IsSquare x := by
+  let _ := Monoid.monoidNPow M
   rw [isSquare_iff_exists_sq]
   rintro ⟨y, rfl⟩
   exact not_irreducible_pow (by decide) ha

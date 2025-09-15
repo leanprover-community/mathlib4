@@ -15,9 +15,9 @@ subgroup, subgroups
 
 -/
 
-variable {G : Type*} [Group G]
-variable {A : Type*} [AddGroup A]
-variable {N : Type*} [Group N]
+variable {G : Type*} [Group G] [GroupZPow G]
+variable {A : Type*} [AddGroup A] [AddGroupZSMul A]
+variable {N : Type*} [Group N] [GroupZPow N]
 
 namespace Subgroup
 
@@ -55,7 +55,7 @@ theorem zpow_mem_zpowers (g : G) (k : ℤ) : g ^ k ∈ zpowers g :=
   mem_zpowers_iff.mpr ⟨k, rfl⟩
 
 @[to_additive (attr := simp)]
-theorem npow_mem_zpowers (g : G) (k : ℕ) : g ^ k ∈ zpowers g :=
+theorem npow_mem_zpowers [MonoidNPow G] (g : G) (k : ℕ) : g ^ k ∈ zpowers g :=
   zpow_natCast g k ▸ zpow_mem_zpowers g k
 
 -- increasing simp priority. Better lemma than `Subtype.exists`

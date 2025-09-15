@@ -45,6 +45,7 @@ lemma mulSupport_prod (s : Finset ι) (f : ι → κ → M) :
 @[to_additive]
 lemma isSquare_prod {s : Finset ι} (f : ι → M) (h : ∀ c ∈ s, IsSquare (f c)) :
     IsSquare (∏ i ∈ s, f i) := by
+  let _ := Monoid.monoidNPow M
   rw [isSquare_iff_exists_sq]
   use (∏ (x : s), ((isSquare_iff_exists_sq _).mp (h _ x.2)).choose)
   rw [@sq, ← Finset.prod_mul_distrib, ← Finset.prod_coe_sort]

@@ -32,25 +32,27 @@ shouldn't be useful outside of category theory.
 
 /-- Monoid homomorphisms from `ULift ℕ` are defined by the image of `1`. -/
 @[simps!]
-def uliftMultiplesHom (M : Type u) [AddMonoid M] : M ≃ (ULift.{u} ℕ →+ M) :=
+def uliftMultiplesHom (M : Type u) [AddMonoid M] [AddMonoidNSMul M] : M ≃ (ULift.{u} ℕ →+ M) :=
   (multiplesHom _).trans AddEquiv.ulift.symm.addMonoidHomCongrLeftEquiv
 
 /-- Monoid homomorphisms from `ULift (Multiplicative ℕ)` are defined by the image
 of `Multiplicative.ofAdd 1`. -/
 @[simps!]
-def uliftPowersHom (M : Type u) [Monoid M] : M ≃ (ULift.{u} (Multiplicative ℕ) →* M) :=
+def uliftPowersHom (M : Type u) [Monoid M] [MonoidNPow M] :
+    M ≃ (ULift.{u} (Multiplicative ℕ) →* M) :=
   (powersHom _).trans MulEquiv.ulift.symm.monoidHomCongrLeftEquiv
 
 namespace MonoidHom
 
 /-- The equivalence `(Multiplicative ℕ →* α) ≃ α` for any monoid `α`. -/
 @[deprecated powersHom (since := "2025-05-11")]
-def fromMultiplicativeNatEquiv (α : Type u) [Monoid α] : (Multiplicative ℕ →* α) ≃ α :=
+def fromMultiplicativeNatEquiv (α : Type u) [Monoid α] [MonoidNPow α] :
+    (Multiplicative ℕ →* α) ≃ α :=
   (powersHom _).symm
 
 /-- The equivalence `(ULift (Multiplicative ℕ) →* α) ≃ α` for any monoid `α`. -/
 @[deprecated uliftPowersHom (since := "2025-05-11")]
-def fromULiftMultiplicativeNatEquiv (α : Type u) [Monoid α] :
+def fromULiftMultiplicativeNatEquiv (α : Type u) [Monoid α] [MonoidNPow α] :
     (ULift.{u} (Multiplicative ℕ) →* α) ≃ α :=
   (uliftPowersHom _).symm
 
@@ -60,21 +62,25 @@ namespace AddMonoidHom
 
 /-- The equivalence `(ℕ →+ α) ≃ α` for any additive monoid `α`. -/
 @[deprecated multiplesHom (since := "2025-05-11")]
-def fromNatEquiv (α : Type u) [AddMonoid α] : (ℕ →+ α) ≃ α := (multiplesHom _).symm
+def fromNatEquiv (α : Type u) [AddMonoid α] [AddMonoidNSMul α] :
+    (ℕ →+ α) ≃ α := (multiplesHom _).symm
 
 /-- The equivalence `(ULift ℕ →+ α) ≃ α` for any additive monoid `α`. -/
 @[deprecated uliftMultiplesHom (since := "2025-05-11")]
-def fromULiftNatEquiv (α : Type u) [AddMonoid α] : (ULift.{u} ℕ →+ α) ≃ α :=
+def fromULiftNatEquiv (α : Type u) [AddMonoid α] [AddMonoidNSMul α] : (ULift.{u} ℕ →+ α) ≃ α :=
   (uliftMultiplesHom _).symm
 
 end AddMonoidHom
+
+section
+
+attribute [local instance] Monoid.monoidNPow AddMonoid.addMonoidNSMul
 
 /-- The forgetful functor `MonCat.{u} ⥤ Type u` is corepresentable. -/
 def MonCat.coyonedaObjIsoForget :
     coyoneda.obj (op (of (ULift.{u} (Multiplicative ℕ)))) ≅ forget MonCat.{u} :=
   NatIso.ofComponents fun M ↦
     (ConcreteCategory.homEquiv.trans (uliftPowersHom M.carrier).symm).toIso
-
 
 /-- The forgetful functor `CommMonCat.{u} ⥤ Type u` is corepresentable. -/
 def CommMonCat.coyonedaObjIsoForget :
@@ -93,6 +99,8 @@ def AddCommMonCat.coyonedaObjIsoForget :
     coyoneda.obj (op (of (ULift.{u} ℕ))) ≅ forget AddCommMonCat.{u} :=
   NatIso.ofComponents fun M ↦
     (ConcreteCategory.homEquiv.trans (uliftMultiplesHom M.carrier).symm).toIso
+
+end
 
 instance MonCat.forget_isCorepresentable :
     (forget MonCat.{u}).IsCorepresentable :=

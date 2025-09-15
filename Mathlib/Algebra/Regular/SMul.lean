@@ -128,6 +128,8 @@ variable {M}
 theorem of_mul_eq_one (h : a * b = 1) : IsSMulRegular M b :=
   of_mul (a := a) (by rw [h]; exact one M)
 
+variable [MonoidNPow R]
+
 /-- Any power of an `M`-regular element is `M`-regular. -/
 theorem pow (n : ℕ) (ra : IsSMulRegular M a) : IsSMulRegular M (a ^ n) := by
   induction n with

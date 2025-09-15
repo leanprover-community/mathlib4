@@ -40,12 +40,13 @@ theorem Monoid.ext {M : Type u} ⦃m₁ m₂ : Monoid M⦄
   let f : @MonoidHom M M m₁.toMulOneClass m₂.toMulOneClass :=
     @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ (_) _ id h₁)
       (fun x y => congr_fun (congr_fun h_mul x) y)
-  have : m₁.npow = m₂.npow := by
-    ext n x
-    exact @MonoidHom.map_pow M M m₁ m₂ f x n
   rcases m₁ with @⟨@⟨⟨_⟩⟩, ⟨_⟩⟩
   rcases m₂ with @⟨@⟨⟨_⟩⟩, ⟨_⟩⟩
   congr
+
+@[to_additive (attr := ext)]
+theorem MonoidNPow.ext {M : Type*} [Monoid M] ⦃m₁ m₂ : MonoidNPow M⦄ : m₁ = m₂ := by
+  cases m₁; cases m₂; congr; ext n; induction n <;> simp_all
 
 @[to_additive]
 theorem CommMonoid.toMonoid_injective {M : Type u} :
@@ -115,9 +116,6 @@ theorem DivInvMonoid.ext {M : Type*} ⦃m₁ m₂ : DivInvMonoid M⦄
   let f : @MonoidHom M M m₁.toMulOneClass m₂.toMulOneClass :=
     @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ (_) _ id h₁)
       (fun x y => congr_fun (congr_fun h_mul x) y)
-  have : m₁.zpow = m₂.zpow := by
-    ext m x
-    exact @MonoidHom.map_zpow' M M m₁ m₂ f (congr_fun h_inv) x m
   have : m₁.div = m₂.div := by
     ext a b
     exact @map_div' _ _
@@ -125,6 +123,12 @@ theorem DivInvMonoid.ext {M : Type*} ⦃m₁ m₂ : DivInvMonoid M⦄
   rcases m₁ with @⟨_, ⟨_⟩, ⟨_⟩⟩
   rcases m₂ with @⟨_, ⟨_⟩, ⟨_⟩⟩
   congr
+
+/- @[to_additive (attr := ext)]
+theorem GroupZPow.ext {G : Type*} [Group G] ⦃p₁ p₂ : GroupZPow G⦄ : p₁ = p₂ := by
+  cases p₁; cases p₂; congr; ext m x
+
+  exact @MonoidHom.map_zpow' G G _ _ p₁ p₂ f (congr_fun h_inv) x m -/
 
 @[to_additive]
 lemma Group.toDivInvMonoid_injective {G : Type*} : Injective (@Group.toDivInvMonoid G) := by

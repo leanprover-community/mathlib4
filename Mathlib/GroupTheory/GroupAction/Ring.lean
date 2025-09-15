@@ -25,7 +25,8 @@ instance NonUnitalNonAssocSemiring.toDistribSMul [NonUnitalNonAssocSemiring R] :
     DistribSMul R R where smul_add := mul_add
 
 /-- Note that `AddCommMonoid.nat_isScalarTower` requires stronger assumptions on `R`. -/
-instance NonUnitalNonAssocSemiring.nat_isScalarTower [NonUnitalNonAssocSemiring R] :
+instance NonUnitalNonAssocSemiring.nat_isScalarTower [NonUnitalNonAssocSemiring R]
+    [AddMonoidNSMul R] :
     IsScalarTower ℕ R R where
   smul_assoc n x y := by
     induction n with
@@ -33,9 +34,10 @@ instance NonUnitalNonAssocSemiring.nat_isScalarTower [NonUnitalNonAssocSemiring 
     | succ n ih => simp_rw [succ_nsmul, ← ih, smul_eq_mul, add_mul]
 
 /-- Note that `AddCommGroup.int_isScalarTower` requires stronger assumptions on `R`. -/
-instance NonUnitalNonAssocRing.int_isScalarTower [NonUnitalNonAssocRing R] :
+instance NonUnitalNonAssocRing.int_isScalarTower [NonUnitalNonAssocRing R] [AddGroupZSMul R] :
     IsScalarTower ℤ R R where
   smul_assoc n x y :=
+    let _ := AddMonoid.addMonoidNSMul R
     match n with
     | (n : ℕ) => by simp_rw [natCast_zsmul, smul_assoc]
     | -[n+1] => by simp_rw [negSucc_zsmul, smul_eq_mul, neg_mul, smul_mul_assoc]

@@ -34,7 +34,8 @@ lemma single_le_prod : (∀ x ∈ s, (1 : α) ≤ x) → ∀ x ∈ s, x ≤ s.pr
   Quotient.inductionOn s fun l hl x hx => by simpa using List.single_le_prod hl x hx
 
 @[to_additive sum_le_card_nsmul]
-lemma prod_le_pow_card (s : Multiset α) (n : α) (h : ∀ x ∈ s, x ≤ n) : s.prod ≤ n ^ card s := by
+lemma prod_le_pow_card [MonoidNPow α] (s : Multiset α) (n : α) (h : ∀ x ∈ s, x ≤ n) :
+    s.prod ≤ n ^ card s := by
   induction s using Quotient.inductionOn
   simpa using List.prod_le_pow_card _ _ h
 
@@ -67,7 +68,7 @@ lemma prod_le_prod_map (f : α → α) (h : ∀ x, x ∈ s → x ≤ f x) : s.pr
   prod_map_le_prod (α := αᵒᵈ) f h
 
 @[to_additive card_nsmul_le_sum]
-lemma pow_card_le_prod (h : ∀ x ∈ s, a ≤ x) : a ^ card s ≤ s.prod := by
+lemma pow_card_le_prod [MonoidNPow α] (h : ∀ x ∈ s, a ≤ x) : a ^ card s ≤ s.prod := by
   rw [← Multiset.prod_replicate, ← Multiset.map_const]
   exact prod_map_le_prod _ h
 

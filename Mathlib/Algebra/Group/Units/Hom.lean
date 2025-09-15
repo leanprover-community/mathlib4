@@ -116,7 +116,8 @@ section DivisionMonoid
 variable [DivisionMonoid α]
 
 @[to_additive (attr := simp, norm_cast)]
-theorem val_zpow_eq_zpow_val : ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) = (u : α) ^ n :=
+theorem val_zpow_eq_zpow_val [MonoidNPow α] [GroupZPow α] :
+    ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) = (u : α) ^ n :=
   (Units.coeHom α).map_zpow
 
 @[to_additive (attr := simp)]

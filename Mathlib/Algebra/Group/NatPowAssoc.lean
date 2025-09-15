@@ -107,7 +107,7 @@ instance Prod.instNatPowAssoc {N : Type*} [MulOneClass M] [Pow M ℕ] [NatPowAss
 
 section Monoid
 
-variable [Monoid M]
+variable [Monoid M] [MonoidNPow M]
 
 instance Monoid.PowAssoc : NatPowAssoc M where
   npow_add _ _ _ := pow_add _ _ _

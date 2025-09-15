@@ -70,18 +70,24 @@ protected theorem coe_add [AddZeroClass α] [Preorder α] [AddLeftMono α]
     (a b : { x : α // 0 ≤ x }) : ((a + b : { x : α // 0 ≤ x }) : α) = a + b :=
   rfl
 
-instance nsmul [AddMonoid α] [Preorder α] [AddLeftMono α] : SMul ℕ { x : α // 0 ≤ x } :=
+section NSMul
+
+variable [AddMonoid α] [Preorder α] [AddLeftMono α] [AddMonoidNSMul α]
+
+instance nsmul : SMul ℕ { x : α // 0 ≤ x } :=
   ⟨fun n x => ⟨n • (x : α), nsmul_nonneg x.prop n⟩⟩
 
 @[simp]
-theorem nsmul_mk [AddMonoid α] [Preorder α] [AddLeftMono α] (n : ℕ) {x : α}
+theorem nsmul_mk (n : ℕ) {x : α}
     (hx : 0 ≤ x) : (n • (⟨x, hx⟩ : { x : α // 0 ≤ x })) = ⟨n • x, nsmul_nonneg hx n⟩ :=
   rfl
 
 @[simp, norm_cast]
-protected theorem coe_nsmul [AddMonoid α] [Preorder α] [AddLeftMono α]
+protected theorem coe_nsmul
     (n : ℕ) (a : { x : α // 0 ≤ x }) : ((n • a : { x : α // 0 ≤ x }) : α) = n • (a : α) :=
   rfl
+
+end NSMul
 
 section One
 
@@ -125,7 +131,7 @@ section AddMonoid
 variable [AddMonoid α] [Preorder α] [AddLeftMono α]
 
 instance addMonoid : AddMonoid { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.addMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
+  Subtype.coe_injective.addMonoid _ Nonneg.coe_zero fun _ _ => rfl
 
 /-- Coercion `{x : α // 0 ≤ x} → α` as an `AddMonoidHom`. -/
 @[simps]
@@ -133,6 +139,11 @@ def coeAddMonoidHom : { x : α // 0 ≤ x } →+ α :=
   { toFun := ((↑) : { x : α // 0 ≤ x } → α)
     map_zero' := Nonneg.coe_zero
     map_add' := Nonneg.coe_add }
+
+variable [AddMonoidNSMul α]
+
+instance : AddMonoidNSMul { x : α // 0 ≤ x } :=
+  Subtype.coe_injective.addMonoidNSMul _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
 
 @[norm_cast]
 theorem nsmul_coe (n : ℕ) (r : { x : α // 0 ≤ x }) :
@@ -146,7 +157,7 @@ section AddCommMonoid
 variable [AddCommMonoid α] [Preorder α] [AddLeftMono α]
 
 instance addCommMonoid : AddCommMonoid { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.addCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) (fun _ _ => rfl)
+  Subtype.coe_injective.addCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl)
 
 end AddCommMonoid
 
@@ -175,7 +186,7 @@ end AddMonoidWithOne
 
 section Pow
 
-variable [MonoidWithZero α] [Preorder α] [ZeroLEOneClass α] [PosMulMono α]
+variable [MonoidWithZero α] [MonoidNPow α] [Preorder α] [ZeroLEOneClass α] [PosMulMono α]
 
 instance pow : Pow { x : α // 0 ≤ x } ℕ where
   pow x n := ⟨(x : α) ^ n, pow_nonneg x.2 n⟩
@@ -201,8 +212,10 @@ variable [Semiring α] [PartialOrder α] [ZeroLEOneClass α]
 
 instance semiring : Semiring { x : α // 0 ≤ x } :=
   Subtype.coe_injective.semiring _ Nonneg.coe_zero Nonneg.coe_one
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+
+instance [MonoidNPow α] : MonoidNPow { x : α // 0 ≤ x } :=
+  Subtype.coe_injective.monoidNPow _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
 instance monoidWithZero : MonoidWithZero { x : α // 0 ≤ x } := by infer_instance
 
@@ -223,8 +236,7 @@ variable [CommSemiring α] [PartialOrder α] [ZeroLEOneClass α]
 
 instance commSemiring : CommSemiring { x : α // 0 ≤ x } :=
   Subtype.coe_injective.commSemiring _ Nonneg.coe_zero Nonneg.coe_one
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
 instance commMonoidWithZero : CommMonoidWithZero { x : α // 0 ≤ x } := inferInstance
 

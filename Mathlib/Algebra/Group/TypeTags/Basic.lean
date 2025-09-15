@@ -265,31 +265,39 @@ instance Multiplicative.mulOneClass [AddZeroClass α] : MulOneClass (Multiplicat
   mul_one := @add_zero α _
 
 instance Additive.addMonoid [h : Monoid α] : AddMonoid (Additive α) :=
-  { Additive.addZeroClass, Additive.addSemigroup with
-    nsmul := @Monoid.npow α h
-    nsmul_zero := @Monoid.npow_zero α h
-    nsmul_succ := @Monoid.npow_succ α h }
+  { Additive.addZeroClass, Additive.addSemigroup with }
+
+instance Additive.addMonoidNSMul [Monoid α] [h : MonoidNPow α] : AddMonoidNSMul (Additive α) where
+  nsmul := @MonoidNPow.npow α _ h
+  nsmul_zero := @MonoidNPow.npow_zero α _ h
+  nsmul_succ := @MonoidNPow.npow_succ α _ h
 
 instance Multiplicative.monoid [h : AddMonoid α] : Monoid (Multiplicative α) :=
-  { Multiplicative.mulOneClass, Multiplicative.semigroup with
-    npow := @AddMonoid.nsmul α h
-    npow_zero := @AddMonoid.nsmul_zero α h
-    npow_succ := @AddMonoid.nsmul_succ α h }
+  { Multiplicative.mulOneClass, Multiplicative.semigroup with }
+
+instance Multiplicative.monoidNPow [AddMonoid α] [h : AddMonoidNSMul α] :
+    MonoidNPow (Multiplicative α) where
+  npow := @AddMonoidNSMul.nsmul α _ h
+  npow_zero := @AddMonoidNSMul.nsmul_zero α _ h
+  npow_succ := @AddMonoidNSMul.nsmul_succ α _ h
 
 @[simp]
-theorem ofMul_pow [Monoid α] (n : ℕ) (a : α) : ofMul (a ^ n) = n • ofMul a :=
+theorem ofMul_pow [Monoid α] [MonoidNPow α] (n : ℕ) (a : α) : ofMul (a ^ n) = n • ofMul a :=
   rfl
 
 @[simp]
-theorem toMul_nsmul [Monoid α] (n : ℕ) (a : Additive α) : (n • a).toMul = a.toMul ^ n :=
+theorem toMul_nsmul [Monoid α] [MonoidNPow α] (n : ℕ) (a : Additive α) :
+    (n • a).toMul = a.toMul ^ n :=
   rfl
 
 @[simp]
-theorem ofAdd_nsmul [AddMonoid α] (n : ℕ) (a : α) : ofAdd (n • a) = ofAdd a ^ n :=
+theorem ofAdd_nsmul [AddMonoid α] [AddMonoidNSMul α] (n : ℕ) (a : α) :
+    ofAdd (n • a) = ofAdd a ^ n :=
   rfl
 
 @[simp]
-theorem toAdd_pow [AddMonoid α] (a : Multiplicative α) (n : ℕ) : (a ^ n).toAdd = n • a.toAdd :=
+theorem toAdd_pow [AddMonoid α] [AddMonoidNSMul α] (a : Multiplicative α) (n : ℕ) :
+    (a ^ n).toAdd = n • a.toAdd :=
   rfl
 
 instance Additive.addLeftCancelMonoid [LeftCancelMonoid α] : AddLeftCancelMonoid (Additive α) :=
@@ -370,34 +378,42 @@ instance Multiplicative.involutiveInv [InvolutiveNeg α] : InvolutiveInv (Multip
 
 instance Additive.subNegMonoid [DivInvMonoid α] : SubNegMonoid (Additive α) :=
   { Additive.neg, Additive.sub, Additive.addMonoid with
-    sub_eq_add_neg := @div_eq_mul_inv α _
-    zsmul := @DivInvMonoid.zpow α _
-    zsmul_zero' := @DivInvMonoid.zpow_zero' α _
-    zsmul_succ' := @DivInvMonoid.zpow_succ' α _
-    zsmul_neg' := @DivInvMonoid.zpow_neg' α _ }
+    sub_eq_add_neg := @div_eq_mul_inv α _ }
+
+instance [DivInvMonoid α] [GroupZPow α] : AddGroupZSMul (Additive α) where
+  zsmul := @GroupZPow.zpow α _ _
+  zsmul_zero' := @GroupZPow.zpow_zero' α _ _
+  zsmul_succ' := @GroupZPow.zpow_succ' α _ _
+  zsmul_neg' := @GroupZPow.zpow_neg' α _ _
 
 instance Multiplicative.divInvMonoid [SubNegMonoid α] : DivInvMonoid (Multiplicative α) :=
   { Multiplicative.inv, Multiplicative.div, Multiplicative.monoid with
-    div_eq_mul_inv := @sub_eq_add_neg α _
-    zpow := @SubNegMonoid.zsmul α _
-    zpow_zero' := @SubNegMonoid.zsmul_zero' α _
-    zpow_succ' := @SubNegMonoid.zsmul_succ' α _
-    zpow_neg' := @SubNegMonoid.zsmul_neg' α _ }
+    div_eq_mul_inv := @sub_eq_add_neg α _ }
+
+instance [SubNegMonoid α] [AddGroupZSMul α] : GroupZPow (Multiplicative α) where
+  zpow := @AddGroupZSMul.zsmul α _ _
+  zpow_zero' := @AddGroupZSMul.zsmul_zero' α _ _
+  zpow_succ' := @AddGroupZSMul.zsmul_succ' α _ _
+  zpow_neg' := @AddGroupZSMul.zsmul_neg' α _ _
 
 @[simp]
-theorem ofMul_zpow [DivInvMonoid α] (z : ℤ) (a : α) : ofMul (a ^ z) = z • ofMul a :=
+theorem ofMul_zpow [DivInvMonoid α] [GroupZPow α] (z : ℤ) (a : α) :
+    ofMul (a ^ z) = z • ofMul a :=
   rfl
 
 @[simp]
-theorem toMul_zsmul [DivInvMonoid α] (z : ℤ) (a : Additive α) : (z • a).toMul = a.toMul ^ z :=
+theorem toMul_zsmul [DivInvMonoid α] [GroupZPow α] (z : ℤ) (a : Additive α) :
+    (z • a).toMul = a.toMul ^ z :=
   rfl
 
 @[simp]
-theorem ofAdd_zsmul [SubNegMonoid α] (z : ℤ) (a : α) : ofAdd (z • a) = ofAdd a ^ z :=
+theorem ofAdd_zsmul [SubNegMonoid α] [AddGroupZSMul α] (z : ℤ) (a : α) :
+    ofAdd (z • a) = ofAdd a ^ z :=
   rfl
 
 @[simp]
-theorem toAdd_zpow [SubNegMonoid α] (a : Multiplicative α) (z : ℤ) : (a ^ z).toAdd = z • a.toAdd :=
+theorem toAdd_zpow [SubNegMonoid α] [AddGroupZSMul α] (a : Multiplicative α) (z : ℤ) :
+    (a ^ z).toAdd = z • a.toAdd :=
   rfl
 
 instance Additive.subtractionMonoid [DivisionMonoid α] : SubtractionMonoid (Additive α) :=
@@ -430,10 +446,11 @@ instance Additive.addCommGroup [CommGroup α] : AddCommGroup (Additive α) :=
 instance Multiplicative.commGroup [AddCommGroup α] : CommGroup (Multiplicative α) :=
   { Multiplicative.group, Multiplicative.commMonoid with }
 
-instance [Monoid α] [IsMulTorsionFree α] : IsAddTorsionFree (Additive α) where
+instance [Monoid α] [MonoidNPow α] [IsMulTorsionFree α] : IsAddTorsionFree (Additive α) where
   nsmul_right_injective _ := pow_left_injective (M := α)
 
-instance [AddMonoid α] [IsAddTorsionFree α] : IsMulTorsionFree (Multiplicative α) where
+instance [AddMonoid α] [AddMonoidNSMul α] [IsAddTorsionFree α] :
+    IsMulTorsionFree (Multiplicative α) where
   pow_left_injective _ := nsmul_right_injective (M := α)
 
 /-- If `α` has some multiplicative structure and coerces to a function,

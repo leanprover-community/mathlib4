@@ -109,6 +109,8 @@ def Invertible.mulRight (a : α) {b : α} (_ : Invertible b) : Invertible a ≃ 
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 
+variable [MonoidNPow α]
+
 instance invertiblePow (m : α) [Invertible m] (n : ℕ) : Invertible (m ^ n) where
   invOf := ⅟m ^ n
   invOf_mul_self := by rw [← (commute_invOf m).symm.mul_pow, invOf_mul_self, one_pow]

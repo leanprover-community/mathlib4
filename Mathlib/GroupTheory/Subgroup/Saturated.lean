@@ -17,7 +17,7 @@ subgroup, subgroups
 
 namespace Subgroup
 
-variable {G : Type*} [Group G]
+variable {G : Type*} [Group G] [MonoidNPow G]
 
 /-- A subgroup `H` of `G` is *saturated* if for all `n : ℕ` and `g : G` with `g^n ∈ H`
 we have `n = 0` or `g ∈ H`. -/
@@ -33,7 +33,7 @@ theorem saturated_iff_npow {H : Subgroup G} :
   Iff.rfl
 
 @[to_additive]
-theorem saturated_iff_zpow {H : Subgroup G} :
+theorem saturated_iff_zpow [GroupZPow G] {H : Subgroup G} :
     Saturated H ↔ ∀ (n : ℤ) (g : G), g ^ n ∈ H → n = 0 ∨ g ∈ H := by
   constructor
   · intro hH n g hgn
@@ -55,7 +55,8 @@ end Subgroup
 
 namespace AddSubgroup
 
-theorem ker_saturated {A₁ A₂ : Type*} [AddGroup A₁] [AddMonoid A₂] [NoZeroSMulDivisors ℕ A₂]
+theorem ker_saturated {A₁ A₂ : Type*} [AddGroup A₁] [AddMonoid A₂]
+    [AddMonoidNSMul A₁] [AddMonoidNSMul A₂] [NoZeroSMulDivisors ℕ A₂]
     (f : A₁ →+ A₂) : f.ker.Saturated := by
   intro n g hg
   simpa only [f.mem_ker, nsmul_eq_smul, f.map_nsmul, smul_eq_zero] using hg
