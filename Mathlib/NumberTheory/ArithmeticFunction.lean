@@ -835,7 +835,7 @@ theorem sigma_eq_zero {k n : ℕ} : σ k n = 0 ↔ n = 0 := by
     simp [hn]
 
 @[simp]
-theorem sigma_pos {k n} : 0 < σ k n ↔ 0 < n := by
+theorem sigma_pos_iff {k n} : 0 < σ k n ↔ 0 < n := by
   simp [pos_iff_ne_zero]
 
 theorem sigma_apply_prime_pow {k p i : ℕ} (hp : p.Prime) :
@@ -861,13 +861,12 @@ theorem sigma_one (k : ℕ) : σ k 1 = 1 := by
   simp only [sigma_apply, divisors_one, sum_singleton, one_pow]
 
 theorem sigma_pos (k n : ℕ) (hn0 : n ≠ 0) : 0 < σ k n := by
-  rw [sigma_apply]
-  exact sum_pos (fun d hd ↦ pow_pos (pos_of_mem_divisors hd) k) (nonempty_divisors.mpr hn0)
+  rwa [sigma_pos_iff, pos_iff_ne_zero]
 
 theorem sigma_mono (k k' n : ℕ) (hk : k ≤ k') : σ k n ≤ σ k' n := by
   simp_rw [sigma_apply]
-  apply Finset.sum_le_sum
-  exact fun d hd ↦ Nat.pow_le_pow_right (Nat.pos_of_mem_divisors hd) hk
+  gcongr with d hd
+  exact Nat.pos_of_mem_divisors hd
 
 theorem zeta_mul_pow_eq_sigma {k : ℕ} : ζ * pow k = σ k := by
   ext
@@ -1415,7 +1414,7 @@ def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p e := do
     let rn ← core z p n
     assumeInstancesCommute
     match rn with
-    | .positive pn => return .positive q(Iff.mpr ArithmeticFunction.sigma_pos $pn)
+    | .positive pn => return .positive q(Iff.mpr ArithmeticFunction.sigma_pos_iff $pn)
     | _ => return .nonnegative q(Nat.zero_le _)
   | _, _, _ => throwError "not ArithmeticFunction.sigma"
 
