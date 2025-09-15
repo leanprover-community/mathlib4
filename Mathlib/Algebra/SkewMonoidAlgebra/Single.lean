@@ -43,12 +43,12 @@ theorem erase_same : (f.erase a).coeff a = 0 := by
   simp [erase]
 
 @[simp]
-theorem erase_ne [DecidableEq α] (h : a' ≠ a) : (f.erase a).coeff a' = f.coeff a' := by
+theorem erase_ne (h : a' ≠ a) : (f.erase a).coeff a' = f.coeff a' := by
   rcases f with ⟨⟩
   simp [erase, h]
 
 @[simp]
-theorem erase_single [DecidableEq α] : erase a (single a b) = 0 := by
+theorem erase_single : erase a (single a b) = 0 := by
   simp [erase]
 
 @[simp]
