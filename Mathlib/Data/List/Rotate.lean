@@ -148,9 +148,10 @@ theorem rotate_length_mul (l : List α) (n : ℕ) : l.rotate (l.length * n) = l 
 
 theorem rotate_perm (l : List α) (n : ℕ) : l.rotate n ~ l := by
   rw [rotate_eq_rotate']
-  induction' n with n hn generalizing l
-  · simp
-  · rcases l with - | ⟨hd, tl⟩
+  induction n generalizing l with
+  | zero => simp
+  | succ n hn =>
+    rcases l with - | ⟨hd, tl⟩
     · simp
     · rw [rotate'_cons_succ]
       exact (hn _).trans (perm_append_singleton _ _)
@@ -161,9 +162,10 @@ theorem nodup_rotate {l : List α} {n : ℕ} : Nodup (l.rotate n) ↔ Nodup l :=
 
 @[simp]
 theorem rotate_eq_nil_iff {l : List α} {n : ℕ} : l.rotate n = [] ↔ l = [] := by
-  induction' n with n hn generalizing l
-  · simp
-  · rcases l with - | ⟨hd, tl⟩
+  induction n generalizing l with
+  | zero => simp
+  | succ n hn =>
+    rcases l with - | ⟨hd, tl⟩
     · simp
     · simp [rotate_cons_succ, hn]
 
@@ -210,13 +212,6 @@ theorem getElem_rotate (l : List α) (n : ℕ) (k : Nat) (h : k < (l.rotate n).l
       l[(k + n) % l.length]'(mod_lt _ (length_rotate l n ▸ k.zero_le.trans_lt h)) := by
   rw [← Option.some_inj, ← getElem?_eq_getElem, ← getElem?_eq_getElem, getElem?_rotate]
   exact h.trans_eq (length_rotate _ _)
-
-set_option linter.deprecated false in
-@[deprecated getElem?_rotate (since := "2025-02-14")]
-theorem get?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
-    (l.rotate n).get? m = l.get? ((m + n) % l.length) := by
-  simp only [get?_eq_getElem?, length_rotate, hml, getElem?_eq_getElem, getElem_rotate]
-  rw [← getElem?_eq_getElem]
 
 theorem get_rotate (l : List α) (n : ℕ) (k : Fin (l.rotate n).length) :
     (l.rotate n).get k = l.get ⟨(k + n) % l.length, mod_lt _ (length_rotate l n ▸ k.pos)⟩ := by
@@ -300,9 +295,10 @@ theorem singleton_eq_rotate_iff {l : List α} {n : ℕ} {x : α} : [x] = l.rotat
 theorem reverse_rotate (l : List α) (n : ℕ) :
     (l.rotate n).reverse = l.reverse.rotate (l.length - n % l.length) := by
   rw [← length_reverse, ← rotate_eq_iff]
-  induction' n with n hn generalizing l
-  · simp
-  · rcases l with - | ⟨hd, tl⟩
+  induction n generalizing l with
+  | zero => simp
+  | succ n hn =>
+    rcases l with - | ⟨hd, tl⟩
     · simp
     · rw [rotate_cons_succ, ← rotate_rotate, hn]
       simp
@@ -324,9 +320,10 @@ theorem rotate_reverse (l : List α) (n : ℕ) :
 
 theorem map_rotate {β : Type*} (f : α → β) (l : List α) (n : ℕ) :
     map f (l.rotate n) = (map f l).rotate n := by
-  induction' n with n hn IH generalizing l
-  · simp
-  · rcases l with - | ⟨hd, tl⟩
+  induction n generalizing l with
+  | zero => simp
+  | succ n hn =>
+    rcases l with - | ⟨hd, tl⟩
     · simp
     · simp [hn]
 
