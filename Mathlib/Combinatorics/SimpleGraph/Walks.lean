@@ -144,7 +144,6 @@ protected def reverseAux {u v w : V} : G.Walk u v → G.Walk u w → G.Walk v w
 @[symm]
 def reverse {u v : V} (w : G.Walk u v) : G.Walk v u := w.reverseAux nil
 
-
 @[simp]
 theorem cons_append {u v w x : V} (h : G.Adj u v) (p : G.Walk v w) (q : G.Walk w x) :
     (cons h p).append q = cons h (p.append q) := rfl
@@ -805,7 +804,6 @@ lemma notNilRec_cons {motive : {u w : V} → (p : G.Walk u w) → ¬ p.Nil → S
 
 theorem end_mem_tail_support {u v : V} {p : G.Walk u v} (h : ¬ p.Nil) : v ∈ p.support.tail :=
   p.notNilRec (by simp) h
-
 
 @[simp] lemma nil_copy {u' v' : V} {p : G.Walk u v} (hu : u = u') (hv : v = v') :
     (p.copy hu hv).Nil = p.Nil := by
