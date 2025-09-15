@@ -1032,13 +1032,13 @@ theorem coeffs_one : coeffs (1 : R[X]) ⊆ {1} := by
   simp_rw [coeffs, Finset.image_subset_iff]
   simp_all [coeff_one]
 
-theorem coeff_mem_coeffs (p : R[X]) (n : ℕ) (h : p.coeff n ≠ 0) : p.coeff n ∈ p.coeffs := by
+theorem coeff_mem_coeffs {p : R[X]} {n : ℕ} (h : p.coeff n ≠ 0) : p.coeff n ∈ p.coeffs := by
   classical
   simp only [coeffs, mem_support_iff, Finset.mem_image, Ne]
   exact ⟨n, h, rfl⟩
 
 @[simp]
-theorem coeffs_empty_iff (p : R[X]) : coeffs p = ∅ ↔ p = 0 := by
+theorem coeffs_empty_iff {p : R[X]} : coeffs p = ∅ ↔ p = 0 := by
   refine ⟨?_, fun h ↦ by simp [h]⟩
   contrapose!
   intro h
@@ -1046,7 +1046,7 @@ theorem coeffs_empty_iff (p : R[X]) : coeffs p = ∅ ↔ p = 0 := by
   obtain ⟨n, hn⟩ := h
   rw [mem_support_iff] at hn
   rw [← nonempty_iff_ne_empty]
-  exact ⟨p.coeff n, coeff_mem_coeffs p n hn⟩
+  exact ⟨p.coeff n, coeff_mem_coeffs hn⟩
 
 @[simp]
 theorem coeffs_nonempty_iff {p : R[X]} : p.coeffs.Nonempty ↔ p ≠ 0 := by
