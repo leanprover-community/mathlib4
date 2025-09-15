@@ -477,8 +477,10 @@ theorem padicValNat_prime_prime_pow {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.P
 
 theorem padicValNat_mul_pow_left {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
     (n m : ℕ) (neq : p ≠ q) : padicValNat p (p^n * q^m) = n := by
+  #adaptation_note
+  /-- Remove `_root_` after nightly-2025-08-25-/
   rw [padicValNat.mul (NeZero.ne' (p^n)).symm (NeZero.ne' (q^m)).symm,
-    padicValNat.prime_pow, padicValNat_prime_prime_pow m neq, add_zero]
+    padicValNat.prime_pow, padicValNat_prime_prime_pow m neq, _root_.add_zero]
 
 theorem padicValNat_mul_pow_right {q : ℕ} [hp : Fact p.Prime] [hq : Fact q.Prime]
     (n m : ℕ) (neq : q ≠ p) : padicValNat q (p^n * q^m) = m := by
@@ -557,15 +559,17 @@ theorem padicValNat_eq_zero_of_mem_Ioo {m k : ℕ}
 
 theorem padicValNat_factorial_mul_add {n : ℕ} (m : ℕ) [hp : Fact p.Prime] (h : n < p) :
     padicValNat p (p * m + n) ! = padicValNat p (p * m) ! := by
+  #adaptation_note
+  /-- Remove `_root_` after nightly-2025-08-25-/
   induction n with
-  | zero => rw [add_zero]
+  | zero => rw [_root_.add_zero]
   | succ n hn =>
     rw [add_succ, factorial_succ,
       padicValNat.mul (succ_ne_zero (p * m + n)) <| factorial_ne_zero (p * m + _),
       hn <| lt_of_succ_lt h, ← add_succ,
       padicValNat_eq_zero_of_mem_Ioo ⟨(Nat.lt_add_of_pos_right <| succ_pos n),
         (Nat.mul_add _ _ _▸ Nat.mul_one _ ▸ ((add_lt_add_iff_left (p * m)).mpr h))⟩,
-      zero_add]
+      _root_.zero_add]
 
 /-- The `p`-adic valuation of `n!` is equal to the `p`-adic valuation of the factorial of the
 largest multiple of `p` below `n`, i.e. `(p * ⌊n / p⌋)!`. -/
@@ -590,7 +594,9 @@ of `n`. -/
 theorem sub_one_mul_padicValNat_factorial [hp : Fact p.Prime] (n : ℕ) :
     (p - 1) * padicValNat p (n !) = n - (p.digits n).sum := by
   rw [padicValNat_factorial <| lt_succ_of_lt <| lt.base (log p n)]
-  nth_rw 2 [← zero_add 1]
+  #adaptation_note
+  /-- Remove `_root_` after nightly-2025-08-25-/
+  nth_rw 2 [← _root_.zero_add 1]
   rw [Nat.succ_eq_add_one, ← Finset.sum_Ico_add' _ 0 _ 1,
     Ico_zero_eq_range, ← sub_one_mul_sum_log_div_pow_eq_sub_sum_digits, Nat.succ_eq_add_one]
 
@@ -626,10 +632,12 @@ theorem sub_one_mul_padicValNat_choose_eq_sub_sum_digits' {k n : ℕ} [hp : Fact
   rw [padicValNat.div_of_dvd <| factorial_mul_factorial_dvd_factorial h, Nat.mul_sub_left_distrib,
       padicValNat.mul (factorial_ne_zero _) (factorial_ne_zero _), Nat.mul_add]
   simp only [sub_one_mul_padicValNat_factorial]
+  #adaptation_note
+  /-- Remove `_root_` after nightly-2025-08-25-/
   rw [← Nat.sub_add_comm <| digit_sum_le p k, Nat.add_sub_cancel n k, ← Nat.add_sub_assoc <|
       digit_sum_le p n, Nat.sub_sub (k + n), ← Nat.sub_right_comm, Nat.sub_sub, sub_add_eq,
       add_comm, tsub_tsub_assoc (Nat.le_refl (k + n)) <| (add_comm k n) ▸ (Nat.add_le_add
-      (digit_sum_le p n) (digit_sum_le p k)), Nat.sub_self (k + n), zero_add, add_comm]
+      (digit_sum_le p n) (digit_sum_le p k)), Nat.sub_self (k + n), _root_.zero_add, add_comm]
 
 /-- **Kummer's Theorem**
 Taking (`p - 1`) times the `p`-adic valuation of the binomial `n` over `k` equals the sum of the
