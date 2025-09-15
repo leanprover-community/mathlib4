@@ -97,7 +97,9 @@ def techDebtLinterLinter : Linter where run stx := do
   match ← getDebts stx with
   | #[] => return
   | debt =>
-    Linter.logLint linter.techDebtLinter stx  m!"{debt.size}: {debt}"
+    let rg := stx.getRange?.getD default
+    Linter.logLint linter.techDebtLinter stx
+       m!"Command range: {(rg.start, rg.stop)}.\nDebt size: {debt.size}\n{debt}"
 
 initialize addLinter techDebtLinterLinter
 
