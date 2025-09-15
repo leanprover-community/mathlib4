@@ -35,6 +35,8 @@ theorem coe_one : ((1 : α) : WithTop α) = 1 :=
 @[to_additive (attr := simp, norm_cast)]
 lemma coe_eq_one : (a : WithTop α) = 1 ↔ a = 1 := coe_eq_coe
 
+@[to_additive] lemma coe_ne_one : (a : WithTop α) ≠ 1 ↔ a ≠ 1 := coe_eq_one.ne
+
 @[to_additive (attr := simp, norm_cast)]
 lemma one_eq_coe : 1 = (a : WithTop α) ↔ a = 1 := eq_comm.trans coe_eq_one
 
