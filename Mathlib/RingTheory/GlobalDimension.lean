@@ -8,24 +8,11 @@ import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+import Mathlib.Algebra.Module.LocalizedModule.Exact
 import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 import Mathlib.Data.ENat.Lattice
-import Mathlib.RingTheory.Spectrum.Maximal.Defs
-import Mathlib.RingTheory.Noetherian.Defs
-import Mathlib.RingTheory.Localization.AtPrime.Basic
-import Mathlib.RingTheory.Regular.Category
-import Mathlib.RingTheory.Regular.RegularSequence
-import Mathlib.Algebra.Module.LocalizedModule.AtPrime
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.LinearAlgebra.Dimension.Finite
-import Mathlib.Algebra.Category.ModuleCat.Projective
-import Mathlib.RingTheory.Localization.Module
-import Mathlib.Algebra.Module.LocalizedModule.Exact
 import Mathlib.RingTheory.LocalProperties.Projective
-import Mathlib.Algebra.Category.Grp.Zero
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
-import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
-import Mathlib.RingTheory.Ideal.Quotient.Operations
 /-!
 # The Global Dimension of a Ring
 
@@ -48,7 +35,7 @@ universe v u
 
 variable (R : Type u) [CommRing R]
 
-open CategoryTheory IsLocalRing RingTheory.Sequence
+open CategoryTheory
 
 section ProjectiveDimension
 
@@ -192,13 +179,9 @@ lemma hasProjectiveDimensionLT_one_iff (X : C) :
 
 end ProjectiveDimension
 
-section GlobalDimension
-
 local instance [Small.{v} R] (M : Type v) [AddCommGroup M] [Module R M] (S : Submonoid R) :
     Small.{v} (LocalizedModule S M) :=
   small_of_surjective (IsLocalizedModule.mk'_surjective S (LocalizedModule.mkLinearMap S M))
-
-
 
 variable {R}
 
@@ -227,9 +210,9 @@ noncomputable def ModuleCat.localizedModule_map [Small.{v} R] {M N : ModuleCat.{
   ModuleCat.ofHom.{v} <| IsLocalizedModule.mapExtendScalars S (M.localizedModule_mkLinearMap S)
     (N.localizedModule_mkLinearMap S) (Localization S) (ModuleCat.homLinearEquiv (S := R) f)
 
-lemma projectiveDimension_eq_iSup_localizedModule_prime (M : ModuleCat.{v} R) [Module.Finite R M]
-    [Small.{v, u} R] : projectiveDimension M = ⨆ (p : PrimeSpectrum R), projectiveDimension
-    (M.localizedModule p.1.primeCompl) := by
+lemma projectiveDimension_eq_iSup_localizedModule_prime [Small.{v, u} R] [IsNoetherianRing R]
+    (M : ModuleCat.{v} R) [Module.Finite R M] : projectiveDimension M =
+    ⨆ (p : PrimeSpectrum R), projectiveDimension (M.localizedModule p.1.primeCompl) := by
   have aux (n : ℕ) : projectiveDimension M ≤ n ↔ ⨆ (p : PrimeSpectrum R), projectiveDimension
     (M.localizedModule p.1.primeCompl) ≤ n := by
     simp only [projectiveDimension_le_iff, iSup_le_iff]
@@ -328,9 +311,9 @@ lemma projectiveDimension_eq_iSup_localizedModule_prime (M : ModuleCat.{v} R) [M
         (WithBot.coe_inj.mpr (ENat.coe_toNat eqtop).symm)
       simpa only [this] using aux n
 
-lemma projectiveDimension_eq_iSup_localizedModule_maximal (M : ModuleCat.{v} R) [Module.Finite R M]
-    [Small.{v, u} R] : projectiveDimension M = ⨆ (p : MaximalSpectrum R), projectiveDimension
-    (M.localizedModule p.1.primeCompl) := by
+lemma projectiveDimension_eq_iSup_localizedModule_maximal [Small.{v, u} R] [IsNoetherianRing R]
+    (M : ModuleCat.{v} R) [Module.Finite R M] : projectiveDimension M =
+    ⨆ (p : MaximalSpectrum R), projectiveDimension (M.localizedModule p.1.primeCompl) := by
   have aux (n : ℕ) : projectiveDimension M ≤ n ↔ ⨆ (p : MaximalSpectrum R), projectiveDimension
     (M.localizedModule p.1.primeCompl) ≤ n := by
     simp only [projectiveDimension_le_iff, iSup_le_iff]
@@ -429,7 +412,6 @@ lemma projectiveDimension_eq_iSup_localizedModule_maximal (M : ModuleCat.{v} R) 
       simpa only [this] using aux n
 
 open Limits in
-omit [IsNoetherianRing R] in
 lemma projectiveDimension_le_projectiveDimension_of_isLocalizedModule [Small.{v, u} R]
     (S : Submonoid R) (M : ModuleCat.{v} R) :
     projectiveDimension (M.localizedModule S) ≤ projectiveDimension M := by
