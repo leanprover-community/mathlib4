@@ -85,13 +85,6 @@ lemma finite_projectiveDimension_of_isRegularLocalRing [IsRegularLocalRing R] [S
   apply finite_projectiveDimension_of_isRegularLocalRing_aux M m
   simpa [hm] using WithBot.coe_le_coe.mpr le_add_self
 
-/- have some universe problem
-lemma projectiveDimension_residueField_eq_ringKrullDim [IsRegularLocalRing R] :
-    projectiveDimension (ModuleCat.of R (ResidueField R)) = ringKrullDim R := by
-  --follows from AB thm and above easily
-  sorry
--/
-
 variable (R) in
 theorem globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegularLocalRing R] :
     globalDimension.{v} R = ringKrullDim R := by
