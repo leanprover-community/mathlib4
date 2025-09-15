@@ -14,8 +14,8 @@ over the interval `Ι a b = Set.Ioc (min a b) (max a b)` w.r.t. the Lebesgue mea
 formulas for this average:
 
 * `interval_average_eq`: `⨍ x in a..b, f x = (b - a)⁻¹ • ∫ x in a..b, f x`;
-* `interval_average_eq_div`: `⨍ x in a..b, f x = (∫ x in a..b, f x) / (b - a)`.
-* `exists_eq_interval_average`: The mean value theorem for integrals.
+* `interval_average_eq_div`: `⨍ x in a..b, f x = (∫ x in a..b, f x) / (b - a)`;
+* `exists_eq_interval_average`: `∃ c, f c = ⨍ (x : ℝ) in a..b, f x`.
 
 We also prove that `⨍ x in a..b, f x = ⨍ x in b..a, f x`, see `interval_average_symm`.
 
@@ -58,35 +58,28 @@ theorem intervalAverage_congr_codiscreteWithin {a b : ℝ} {f₁ f₂ : ℝ → 
   rw [interval_average_eq, intervalIntegral.integral_congr_codiscreteWithin hf,
     ← interval_average_eq]
 
-/-- The mean value theorem for integrals. -/
+/-- The mean value theorem for integrals:
+There exists a point in an interval such that the mean of a continuous function over the interval
+equals the value of the function at the point. -/
 theorem exists_eq_interval_average
-   (f : ℝ → ℝ) (a b : ℝ) (hab : a ≠ b) (hf : ContinuousOn f (uIcc a b)) :
+   {f : ℝ → ℝ} {a b : ℝ} (hab : a ≠ b) (hf : ContinuousOn f (uIcc a b)) :
     ∃ c ∈ uIoo a b, f c = ⨍ (x : ℝ) in a..b, f x := by
   wlog h : a < b generalizing a b
   · rw [uIcc_comm] at hf
-    have := this b a hab.symm hf (lt_of_le_of_ne (le_of_not_gt h) (Ne.symm hab))
-    rw [uIoo_comm, interval_average_symm] at this
-    exact this
+    have := this hab.symm hf (lt_of_le_of_ne (le_of_not_gt h) (Ne.symm hab))
+    rwa [uIoo_comm, interval_average_symm] at this
   let ave := ⨍ (x : ℝ) in a..b, f x
-  have h_vol_fin1 : volume (uIoc a b) ≠ 0 := by
-    rw [uIoc_of_le (le_of_lt h), Real.volume_Ioc];
-    simp only [ne_eq, ENNReal.ofReal_eq_zero, tsub_le_iff_right, zero_add, not_le];
-    exact h
-  have h_vol_fin2 : volume (uIoc a b) ≠ ⊤ := by
-    rw [uIoc_of_le (le_of_lt h), Real.volume_Ioc];
-    exact ENNReal.ofReal_ne_top
+  have h_vol_fin1 : volume (uIoc a b) ≠ 0 := by simpa [h.le] using h
+  have h_vol_fin2 : volume (uIoc a b) ≠ ⊤ := by simp [h.le]
   have h_intble : IntegrableOn f (uIoc a b) := by
     have : IntegrableOn f (uIcc a b) := hf.integrableOn_uIcc
-    rw [uIcc_of_lt h] at this
-    rw [integrableOn_Icc_iff_integrableOn_Ioc] at this
-    rw [←uIoc_of_le (le_of_lt h)] at this
-    exact this
+    rwa [uIcc_of_lt h,integrableOn_Icc_iff_integrableOn_Ioc, ←uIoc_of_le (le_of_lt h)] at this
   let S1 := {x | x ∈ uIoc a b ∧ f x ≤ ave}
   let S2 := {x | x ∈ uIoc a b ∧ ave ≤ f x}
-  have h_meas1 : volume (S1 \ {b})  ≠ 0 := by
+  have h_meas1 : volume (S1 \ {b}) ≠ 0 := by
     rw [measure_diff_null Real.volume_singleton]
     exact (measure_le_setAverage_pos h_vol_fin1 h_vol_fin2 h_intble).ne'
-  have h_meas2 : volume (S2 \ {b})  ≠ 0 := by
+  have h_meas2 : volume (S2 \ {b}) ≠ 0 := by
     rw [measure_diff_null Real.volume_singleton]
     exact (measure_setAverage_le_pos h_vol_fin1 h_vol_fin2 h_intble).ne'
   obtain ⟨c1, ⟨hc1_mem, hc1_le⟩, hc1'⟩ := nonempty_of_measure_ne_zero h_meas1
