@@ -108,7 +108,7 @@ where
   else
     guard (t == s); some swaps
 
-/-- Extract the left and right hand sides of an equality or iff statement. -/
+/-- Extract the left and right-hand sides of an equality or iff statement. -/
 @[inline] def eqOrIff? (e : Expr) : Option (Expr × Expr) :=
   match e.eq? with
   | some (_, lhs, rhs) => some (lhs, rhs)
@@ -153,7 +153,7 @@ def addLocalRewriteEntry (decl : LocalDecl) :
 
 private abbrev ExtState := IO.Ref (Option (RefinedDiscrTree RewriteLemma))
 
-private builtin_initialize ExtState.default : ExtState ←
+private initialize ExtState.default : ExtState ←
   IO.mkRef none
 
 private instance : Inhabited ExtState where

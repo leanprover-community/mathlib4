@@ -183,6 +183,7 @@ instance orderedSub : OrderedSub (ι →₀ α) :=
 
 instance [AddLeftMono α] : CanonicallyOrderedAdd (ι →₀ α) where
   exists_add_of_le := fun {f g} h => ⟨g - f, ext fun x => (add_tsub_cancel_of_le <| h x).symm⟩
+  le_add_self _ _ _ := le_add_self
   le_self_add := fun _f _g _x => le_self_add
 
 @[simp, norm_cast] lemma coe_tsub (f g : ι →₀ α) : ⇑(f - g) = f - g := rfl
@@ -193,7 +194,7 @@ theorem tsub_apply (f g : ι →₀ α) (a : ι) : (f - g) a = f a - g a :=
 @[simp]
 theorem single_tsub : single i (a - b) = single i a - single i b := by
   ext j
-  obtain rfl | h := eq_or_ne i j
+  obtain rfl | h := eq_or_ne j i
   · rw [tsub_apply, single_eq_same, single_eq_same, single_eq_same]
   · rw [tsub_apply, single_eq_of_ne h, single_eq_of_ne h, single_eq_of_ne h, tsub_self]
 
