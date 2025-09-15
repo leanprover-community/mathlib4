@@ -10,6 +10,21 @@ import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 /-!
 # The Grothendieck construction
 
+Given a category `𝒮` and any pseudofunctor `F` from `𝒮` to `Cat`, we associate to it a category
+`∫ F`, equipped with a functor `∫ F ⥤ 𝒮`.
+
+The category `∫ F` is defined as follows:
+* Objects: pairs `(S, a)` where `S` is an object of the base category and `a` is an object of the
+  category `F(S)`.
+* Morphisms: morphisms `(R, b) ⟶ (S, a)` are defined as pairs `(f, h)` where `f : R ⟶ S` is a
+  morphism in `𝒮` and `h : F(f)(a) ⟶ b`
+
+The projection functor `∫ F ⥤ 𝒮` is then given by projecting to the first factors, i.e.
+* On objects, it sends `(S, a)` to `S`
+* On morphisms, it sends `(f, h)` to `f`
+
+# The CoGrothendieck construction
+
 Given a category `𝒮` and any pseudofunctor `F` from `𝒮ᵒᵖ` to `Cat`, we associate to it a category
 `∫ᶜ F`, equipped with a functor `∫ᶜ F ⥤ 𝒮`.
 
@@ -26,7 +41,7 @@ The projection functor `∫ᶜ F ⥤ 𝒮` is then given by projecting to the fi
 ## Naming conventions
 
 The name `Grothendieck` is reserved for the construction on covariant pseudofunctors from `𝒮` to
-`Cat`, whereas the word `CoGrothendieck` will be used for the contravariant construction.
+`Cat`, whereas the word `CoGrothendieck` is used for the contravariant construction.
 This is consistent with the convention for the Grothendieck construction on 1-functors
 `CategoryTheory.Grothendieck`.
 
@@ -34,9 +49,8 @@ This is consistent with the convention for the Grothendieck construction on 1-fu
 
 1. Once the bicategory of pseudofunctors has been defined, show that this construction forms a
 pseudofunctor from `Pseudofunctor (LocallyDiscrete 𝒮) Catᵒᵖ` to `Cat`.
-2. Develop the covariant version of `CoGrothendieck` and
-deduce the results in `CategoryTheory.Grothendieck` as a specialization of the
-results in this file.
+2. Deduce the results in `CategoryTheory.Grothendieck` as a specialization of
+   `Pseudofunctor.Grothendieck`.
 
 ## References
 [Vistoli2008] "Notes on Grothendieck Topologies, Fibered Categories and Descent Theory" by
@@ -50,7 +64,48 @@ universe w v₁ v₂ v₃ u₁ u₂ u₃
 
 open Functor Category Opposite Discrete Bicategory StrongTrans
 
-variable {𝒮 : Type u₁} [Category.{v₁} 𝒮] {F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}}
+variable {𝒮 : Type u₁} [Category.{v₁} 𝒮]
+
+/-- The type of objects in the fibered category associated to a presheaf valued in types. -/
+@[ext]
+structure Grothendieck (F : Pseudofunctor (LocallyDiscrete 𝒮) Cat.{v₂, u₂}) where
+  /-- The underlying object in the base category. -/
+  base : 𝒮
+  /-- The object in the fiber of the base object. -/
+  fiber : F.obj ⟨base⟩
+
+namespace Grothendieck
+
+variable {F : Pseudofunctor (LocallyDiscrete 𝒮) Cat.{v₂, u₂}}
+
+/-- Notation for the Grothendieck category associated to a pseudofunctor `F`. -/
+scoped prefix:75 "∫ " => Grothendieck
+
+/-- A morphism in the Grothendieck construction `∫ F` between two points `X Y : ∫ F` consists of
+a morphism in the base category `base : X.base ⟶ Y.base` and
+a morphism in a fiber `f.fiber : (F.map base).obj X.fiber ⟶ Y.fiber`.
+-/
+structure Hom (X Y : ∫ F) where
+  /-- The morphism between base objects. -/
+  base : X.base ⟶ Y.base
+  /-- The morphism in the fiber over the domain. -/
+  fiber : (F.map base.toLoc).obj X.fiber ⟶ Y.fiber
+
+@[simps! id_base id_fiber comp_base comp_fiber]
+instance categoryStruct : CategoryStruct (∫ F) where
+  Hom X Y := Hom X Y
+  id X := {
+    base := 𝟙 X.base
+    fiber := (F.mapId ⟨X.base⟩).hom.app X.fiber }
+  comp {X _ _} f g := {
+    base := f.base ≫ g.base
+    fiber := (F.mapComp f.base.toLoc g.base.toLoc).hom.app X.fiber ≫
+      (F.map g.base.toLoc).map f.fiber ≫ g.fiber }
+
+instance (X : ∫ F) : Inhabited (Hom X X) :=
+  ⟨𝟙 X⟩
+
+end Grothendieck
 
 /-- The type of objects in the fibered category associated to a presheaf valued in types. -/
 @[ext]
@@ -61,6 +116,8 @@ structure CoGrothendieck (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v�
   fiber : F.obj ⟨op base⟩
 
 namespace CoGrothendieck
+
+variable {F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}}
 
 /-- Notation for the Grothendieck category associated to a pseudofunctor `F`. -/
 scoped prefix:75 "∫ᶜ " => CoGrothendieck
