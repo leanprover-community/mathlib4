@@ -432,7 +432,6 @@ theorem limZero_congr {f g : CauSeq β abv} (h : f ≈ g) : LimZero f ↔ LimZer
 
 theorem abv_pos_of_not_limZero {f : CauSeq β abv} (hf : ¬LimZero f) :
     ∃ K > 0, ∃ i, ∀ j ≥ i, K ≤ abv (f j) := by
-  haveI := Classical.propDecidable
   by_contra nk
   refine hf fun ε ε0 => ?_
   simp only [not_exists, not_and, not_forall, not_le] at nk

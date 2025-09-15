@@ -26,7 +26,7 @@ We define ideal sheaves of schemes and provide various constructors for it.
 
 ## Main results
 * `AlgebraicGeometry.Scheme.IdealSheafData.gc`:
-  `support` and `vanishingIdeal` forms a galois connection.
+  `support` and `vanishingIdeal` forms a Galois connection.
 * `AlgebraicGeometry.Scheme.Hom.support_ker`: The support of a kernel of a quasi-compact morphism
   is the closure of the range.
 
@@ -103,7 +103,7 @@ lemma ideal_ofIdeals_le (I : ∀ U : X.affineOpens, Ideal Γ(X, U)) :
     (ofIdeals I).ideal ≤ I :=
   sSup_le (Set.forall_mem_image.mpr fun _ ↦ id)
 
-/-- The galois coinsertion between ideal sheaves and arbitrary families of ideals. -/
+/-- The Galois coinsertion between ideal sheaves and arbitrary families of ideals. -/
 protected def gci : GaloisCoinsertion ideal (ofIdeals (X := X)) where
   choice I hI :=
   { ideal := I
@@ -502,7 +502,7 @@ lemma le_support_iff_le_vanishingIdeal {I : X.IdealSheafData} {Z : Closeds X} :
 @[deprecated (since := "2025-05-16")]
 alias subset_support_iff_le_vanishingIdeal := le_support_iff_le_vanishingIdeal
 
-/-- `support` and `vanishingIdeal` forms a galois connection.
+/-- `support` and `vanishingIdeal` forms a Galois connection.
 This is the global version of `PrimeSpectrum.gc`. -/
 lemma gc : @GaloisConnection X.IdealSheafData (Closeds X)ᵒᵈ _ _ (support ·) (vanishingIdeal ·) :=
   fun _ _ ↦ le_support_iff_le_vanishingIdeal
