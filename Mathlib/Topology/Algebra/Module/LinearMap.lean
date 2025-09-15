@@ -715,6 +715,7 @@ def toSpanSingleton (x : M₁) : R₁ →L[R₁] M₁ where
   toLinearMap := LinearMap.toSpanSingleton R₁ M₁ x
   cont := continuous_id.smul continuous_const
 
+@[simp]
 theorem toSpanSingleton_apply (x : M₁) (r : R₁) : toSpanSingleton R₁ x r = r • x :=
   rfl
 
@@ -730,7 +731,7 @@ theorem toSpanSingleton_smul {α} [Monoid α] [DistribMulAction α M₁] [Contin
     toSpanSingleton R₁ (c • x) = c • toSpanSingleton R₁ x :=
   coe_inj.mp <| LinearMap.toSpanSingleton_smul _ _
 
-@[deprecated (since := "28-08-2025")] alias toSpanSingleton_smul' := toSpanSingleton_smul
+@[deprecated (since := "2025-08-28")] alias toSpanSingleton_smul' := toSpanSingleton_smul
 
 theorem one_smulRight_eq_toSpanSingleton (x : M₁) :
     (1 : R₁ →L[R₁] R₁).smulRight x = toSpanSingleton R₁ x :=
@@ -739,6 +740,11 @@ theorem one_smulRight_eq_toSpanSingleton (x : M₁) :
 @[simp]
 theorem toLinearMap_toSpanSingleton (x : M₁) :
     (toSpanSingleton R₁ x).toLinearMap = LinearMap.toSpanSingleton R₁ M₁ x := rfl
+
+variable {R₁} in
+theorem comp_toSpanSingleton (f : M₁ →L[R₁] M₂) (x : M₁) :
+    f ∘L toSpanSingleton R₁ x = toSpanSingleton R₁ (f x) :=
+  coe_inj.mp <| LinearMap.comp_toSpanSingleton _ _
 
 end ToSpanSingleton
 
@@ -893,7 +899,7 @@ theorem projKerOfRightInverse_apply_idem [IsTopologicalAddGroup M] (f₁ : M →
 theorem projKerOfRightInverse_comp_inv [IsTopologicalAddGroup M] (f₁ : M →SL[σ₁₂] M₂)
     (f₂ : M₂ →SL[σ₂₁] M) (h : Function.RightInverse f₂ f₁) (y : M₂) :
     f₁.projKerOfRightInverse f₂ h (f₂ y) = 0 :=
-  Subtype.ext_iff_val.2 <| by simp [h y]
+  Subtype.ext_iff.2 <| by simp [h y]
 
 end
 
@@ -1137,7 +1143,7 @@ theorem closedComplemented_bot : ClosedComplemented (⊥ : Submodule R M) :=
 
 @[simp]
 theorem closedComplemented_top : ClosedComplemented (⊤ : Submodule R M) :=
-  ⟨(id R M).codRestrict ⊤ fun _x => trivial, fun x => Subtype.ext_iff_val.2 <| by simp⟩
+  ⟨(id R M).codRestrict ⊤ fun _x => trivial, fun x => Subtype.ext_iff.2 <| by simp⟩
 
 end Submodule
 
@@ -1226,3 +1232,28 @@ theorem IsIdempotentElem.isClosed_range [T1Space M] {p : M →L[R] M}
   hp.range_eq_ker ▸ isClosed_ker (1 - p)
 
 end ContinuousLinearMap
+
+section topDualPairing
+
+variable {𝕜 E : Type*} [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [AddCommMonoid E]
+  [Module 𝕜 E] [TopologicalSpace E] [ContinuousConstSMul 𝕜 𝕜]
+
+variable (𝕜 E) in
+/-- The canonical pairing of a vector space and its topological dual. -/
+def topDualPairing : (E →L[𝕜] 𝕜) →ₗ[𝕜] E →ₗ[𝕜] 𝕜 :=
+  ContinuousLinearMap.coeLM 𝕜
+
+@[deprecated (since := "2025-08-3")] alias NormedSpace.dualPairing := topDualPairing
+
+@[deprecated (since := "2025-09-03")] alias strongDualPairing := topDualPairing
+
+@[simp]
+theorem topDualPairing_apply (v : E →L[𝕜] 𝕜)
+    (x : E) : topDualPairing 𝕜 E v x = v x :=
+  rfl
+
+@[deprecated (since := "2025-08-3")] alias NormedSpace.dualPairing_apply := topDualPairing_apply
+
+@[deprecated (since := "2025-09-03")] alias StrongDual.dualPairing_apply := topDualPairing_apply
+
+end topDualPairing
