@@ -876,7 +876,7 @@ lemma zpow_one_sub_natCast (a : G) (n : ℕ) : a ^ (1 - n : ℤ) = a / a ^ n := 
 theorem zpow_eq_zpow_emod {x : G} (m : ℤ) {n : ℤ} (h : x ^ n = 1) :
     x ^ m = x ^ (m % n) :=
   calc
-    x ^ m = x ^ (m % n + n * (m / n)) := by rw [Int.emod_add_ediv]
+    x ^ m = x ^ (m % n + n * (m / n)) := by rw [Int.emod_add_mul_ediv]
     _ = x ^ (m % n) := by simp [zpow_add, zpow_mul, h]
 
 theorem zpow_eq_zpow_emod' {x : G} (m : ℤ) {n : ℕ} (h : x ^ n = 1) :

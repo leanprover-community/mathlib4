@@ -840,7 +840,9 @@ theorem exists_ratFunc_val_lt (f : K⸨X⸩) (γ : ℤᵐ⁰ˣ) :
       rw [← inv_eq_one_div, ← mul_sub, map_mul, map_inv₀,
         ← PowerSeries.coe_X, valuation_X_pow, ← hs, ← RatFunc.coe_coe, ← PowerSeries.coe_sub,
         ← coe_algebraMap, adicValued_apply, valuation_of_algebraMap,
-        ← Units.val_mk0 (a := ((Multiplicative.ofAdd f.order : Multiplicative ℤ) : ℤᵐ⁰)), ← hη]
+        ← Units.val_mk0 (a := ((Multiplicative.ofAdd f.order : Multiplicative ℤ) : ℤᵐ⁰))
+            coe_ne_zero,
+        ← hη]
       apply inv_mul_lt_of_lt_mul₀
       rwa [← Units.val_mul]
     · simp only [PowerSeries.coe_pow, pow_ne_zero, PowerSeries.coe_X, ne_eq,

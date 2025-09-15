@@ -437,7 +437,7 @@ theorem sumProdDistrib_symm_apply_right {α β γ} (b : β × γ) :
 /-- The product of an indexed sum of types (formally, a `Sigma`-type `Σ i, α i`) by a type `β` is
 equivalent to the sum of products `Σ i, (α i × β)`. -/
 @[simps apply symm_apply]
-def sigmaProdDistrib {ι} (α : ι → Type*) (β) : (Σ i, α i) × β ≃ Σ i, α i × β :=
+def sigmaProdDistrib {ι : Type*} (α : ι → Type*) (β : Type*) : (Σ i, α i) × β ≃ Σ i, α i × β :=
   ⟨fun p => ⟨p.1.1, (p.1.2, p.2)⟩, fun p => (⟨p.1, p.2.1⟩, p.2.2), by grind, by grind⟩
 
 /-- The product `Bool × α` is equivalent to `α ⊕ α`. -/

@@ -265,7 +265,7 @@ theorem modEq_nsmul_cases (n : ℕ) (hn : n ≠ 0) :
     refine ⟨?_, k / n, ?_⟩
     · refine Int.emod_lt_of_pos _ ?_
       omega
-    · rw [hk, Int.ediv_add_emod']
+    · rw [hk, Int.ediv_mul_add_emod]
   · rintro ⟨k, _, j, hj⟩
     rw [hj]
     exact ⟨_, rfl⟩

@@ -10,7 +10,6 @@ import Lean.Meta.Tactic.Symm
 import Lean.Meta.Tactic.TryThis
 import Mathlib.Data.Array.Defs
 import Mathlib.Data.Nat.Notation
-import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.Meta.Simp
 import Mathlib.Lean.Name
@@ -494,6 +493,9 @@ structure Config : Type where
   self : Bool := false
   deriving Repr
 
+-- See https://github.com/leanprover/lean4/issues/10295
+attribute [nolint unusedArguments] instReprConfig.repr
+
 /-- Implementation function for `additiveTest`.
 Failure means that in that subexpression there is no constant that blocks `e` from being translated.
 We cache previous applications of the function, using an expression cache using ptr equality
@@ -973,9 +975,9 @@ def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
     addInstance tgt attr_kind prio |>.run'
 
 /-- Warn the user when the multiplicative declaration has an attribute. -/
-def warnExt {σ α β : Type} [Inhabited σ] (stx : Syntax) (ext : PersistentEnvExtension α β σ)
-    (f : σ → Name → Bool) (thisAttr attrName src tgt : Name) : CoreM Unit := do
-  if f (ext.getState (← getEnv)) src then
+def warnAttrCore (stx : Syntax) (f : Environment → Name → Bool)
+    (thisAttr attrName src tgt : Name) : CoreM Unit := do
+  if f (← getEnv) src then
     Linter.logLintIf linter.existingAttributeWarning stx <|
       m!"The source declaration {src} was given attribute {attrName} before calling @[{thisAttr}]. \
          The preferred method is to use `@[{thisAttr} (attr := {attrName})]` to apply the \
@@ -989,12 +991,12 @@ def warnExt {σ α β : Type} [Inhabited σ] (stx : Syntax) (ext : PersistentEnv
 /-- Warn the user when the multiplicative declaration has a simple scoped attribute. -/
 def warnAttr {α β : Type} [Inhabited β] (stx : Syntax) (attr : SimpleScopedEnvExtension α β)
     (f : β → Name → Bool) (thisAttr attrName src tgt : Name) : CoreM Unit :=
-warnExt stx attr.ext (f ·.stateStack.head!.state ·) thisAttr attrName src tgt
+  warnAttrCore stx (f <| attr.getState ·) thisAttr attrName src tgt
 
 /-- Warn the user when the multiplicative declaration has a parametric attribute. -/
-def warnParametricAttr {β : Type} (stx : Syntax) (attr : ParametricAttribute β)
+def warnParametricAttr {β : Type} [Inhabited β] (stx : Syntax) (attr : ParametricAttribute β)
     (thisAttr attrName src tgt : Name) : CoreM Unit :=
-warnExt stx attr.ext (·.contains ·) thisAttr attrName src tgt
+  warnAttrCore stx (attr.getParam? · · |>.isSome) thisAttr attrName src tgt
 
 /-- `additivizeLemmas names argInfo desc t` runs `t` on all elements of `names`
 and adds translations between the generated lemmas (the output of `t`).
@@ -1099,8 +1101,6 @@ def proceedFields (src tgt : Name) (argInfo : ArgInfo) : CoreM Unit := do
     | some (ConstantInfo.inductInfo { ctors, .. }) => ctors.toArray
     | _ => #[]
 
-open Tactic.TryThis in
-open private addSuggestionCore in addSuggestion in
 /-- Elaboration of the configuration options for `to_additive`. -/
 def elabToAdditive : Syntax → CoreM Config
   | `(attr| to_additive%$tk $[?%$trace]? $existing?
@@ -1147,20 +1147,28 @@ def elabToAdditive : Syntax → CoreM Config
       | `(str|$doc:str) => open Linter in do
         -- Deprecate `str` docstring syntax (since := "2025-08-12")
         if getLinterValue linter.deprecated (← getLinterOptions) then
+          let hintSuggestion := {
+            /- #adaptation_note: change to `.none` on nightly-2025-08-28. -/
+            diffGranularity := .auto
+            toTryThisSuggestion := { suggestion := "/-- " ++ doc.getString.trim ++ " -/" }
+          }
+          let sugg ← Hint.mkSuggestionsMessage #[hintSuggestion] doc
+            (codeActionPrefix? := "Update to: ") (forceList := false)
           logWarningAt doc <| .tagged ``Linter.deprecatedAttr
             m!"String syntax for `to_additive` docstrings is deprecated: Use \
-              docstring syntax instead (e.g. `@[to_additive /-- example -/]`)"
-          addSuggestionCore doc
-            (header := "Update deprecated syntax to:\n")
-            (codeActionPrefix? := "Update to: ")
-            (isInline := true)
-            #[{
-              suggestion := "/-- " ++ doc.getString.trim ++ " -/"
-            }]
+              docstring syntax instead (e.g. `@[to_additive /-- example -/]`)\n\
+              \n\
+              Update deprecated syntax to:{sugg}"
         return doc.getString
       | `(docComment|$doc:docComment) => do
         -- TODO: rely on `addDocString`s call to `validateDocComment` after removing `str` support
-        validateDocComment doc
+        /-
+        #adaptation_note
+        Without understanding the consequences, I am commenting out the next line,
+        as `validateDocComment` is now in `TermElabM` which is not trivial to reach from here.
+        Perhaps the existing comments here suggest it is no longer needed, anyway?
+        -/
+        -- validateDocComment doc
         /- Note: the following replicates the behavior of `addDocString`. However, this means that
         trailing whitespace might appear in docstrings added via `docComment` syntax when compared
         to those added via `str` syntax. See this [Zulip thread](https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Why.20do.20docstrings.20include.20trailing.20whitespace.3F/with/533553356). -/
@@ -1201,7 +1209,7 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
     warnParametricAttr stx Lean.Linter.deprecatedAttr thisAttr `deprecated src tgt
     -- the next line also warns for `@[to_additive, simps]`, because of the application times
     warnParametricAttr stx simpsAttr thisAttr `simps src tgt
-    warnExt stx Term.elabAsElim.ext (·.contains ·) thisAttr `elab_as_elim src tgt
+    warnAttrCore stx Term.elabAsElim.hasTag thisAttr `elab_as_elim src tgt
   -- add attributes
   -- the following is similar to `Term.ApplyAttributesCore`, but we hijack the implementation of
   -- `simps` and `to_additive`.

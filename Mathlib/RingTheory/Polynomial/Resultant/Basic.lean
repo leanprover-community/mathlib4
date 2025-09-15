@@ -96,7 +96,15 @@ lemma sylvesterDeriv_updateRow (f : R[X]) (hf : 0 < f.natDegree) :
     on_goal 3 =>
       rw [← Nat.cast_one (R := R), ← Nat.cast_add, show f.natDegree = 1 by omega]
       norm_num
-    on_goal 6 => rw [← Nat.cast_one (R := R), ← Nat.cast_add]
+    on_goal 6 =>
+      rw [← Nat.cast_one (R := R), ← Nat.cast_add]
+      #adaptation_note
+      /--
+      Prior to nightly-2025-09-09,
+      these two steps were not needed (i.e. `grind` just finished from here)
+      -/
+      have : 2 * f.natDegree - 2 - (j - (f.natDegree - 1)) + 1 = f.natDegree := by grind
+      simp [this]
     all_goals grind
 
 end sylvester

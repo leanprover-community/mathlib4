@@ -320,7 +320,7 @@ private def mkEncodableInstanceCmds (ctx : Deriving.Context) (typeNames : Array 
 
 private def mkEncodableCmds (indVal : InductiveVal) (declNames : Array Name) :
     TermElabM (Array Syntax) := do
-  let ctx ← mkContext "encodable" indVal.name
+  let ctx ← mkContext ``Encodable "encodable" indVal.name
   let toSFunNames : Array Name ← ctx.auxFunNames.mapM fun name => do
     let .str n' s := name.eraseMacroScopes | unreachable!
     mkFreshUserName <| .str n' (s ++ "_toS")

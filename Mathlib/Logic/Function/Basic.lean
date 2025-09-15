@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Set.Defs
 import Mathlib.Logic.Basic
+import Mathlib.Logic.Function.Defs
 import Mathlib.Logic.ExistsUnique
 import Mathlib.Logic.Nonempty
 import Mathlib.Logic.Nontrivial.Defs

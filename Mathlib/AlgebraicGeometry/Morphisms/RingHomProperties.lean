@@ -151,7 +151,7 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso P)
       simp only [Scheme.Hom.appLE, Opens.map_top, CommRingCat.comp_apply]
       rw [Scheme.basicOpen_res]
       simpa using hU
-    rw [← f.appLE_congr _ rfl this (fun f => P f.hom),
+    rw [← f.appLE_congr (by simp [Scheme.Hom.appLE]) rfl this (fun f => P f.hom),
       IsAffineOpen.appLE_eq_away_map f (isAffineOpen_top Y) U.2 _ r]
     simp only [CommRingCat.hom_ofHom]
     apply (config := { allowSynthFailures := true }) h₂
@@ -609,7 +609,7 @@ lemma iff_exists_appLE
       Q (f.appLE U V e).hom := by
   haveI inst : HasRingHomProperty P Q := inferInstance
   haveI : HasRingHomProperty P (Locally Q) := by
-    apply @copy (P' := P) (Q := Q) (Q' := Locally Q)
+    apply @copy (P := P) (P' := P) (Q := Q) (Q' := Locally Q)
     · infer_instance
     · rfl
     · intro R S _ _ f
