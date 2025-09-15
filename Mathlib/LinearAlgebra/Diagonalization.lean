@@ -124,7 +124,7 @@ def SimultaneousDiagonalization.of_diagonalization {ι : Type*} {f : α → Modu
   hasEigenVector_μ a i := h a ▸ (D a).hasEigenVector_μ i
 
 /-- Any basis diagonalizes the zero map. -/
-def diagonalization_zero [Nontrivial R] {ι : Type*} (b : Basis ι R M) :
+def Diagonalization.zero [Nontrivial R] {ι : Type*} (b : Basis ι R M) :
     (0 : End R M).Diagonalization ι :=
   Diagonalization.mk (b := b) (μ := 0) (by simp [hasEigenvector_iff, b.ne_zero])
 
