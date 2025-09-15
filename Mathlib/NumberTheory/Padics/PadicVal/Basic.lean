@@ -20,7 +20,7 @@ assumptions on `p`. The `p`-adic valuations on `ℕ` and `ℤ` agree with that o
 
 The valuation induces a norm on `ℚ`. This norm is defined in padicNorm.lean.
 
-## Notations
+## Notation
 
 This file uses the local notation `/.` for `Rat.mk`.
 

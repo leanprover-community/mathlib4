@@ -7,7 +7,7 @@ import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 
 /-!
 
-# Notations for the Dold-Kan equivalence
+# Notation for the Dold-Kan equivalence
 
 This file defines the notation `K[X] : ChainComplex C ℕ` for the alternating face
 map complex of `(X : SimplicialObject C)` where `C` is a preadditive category, as well

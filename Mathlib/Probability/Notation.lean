@@ -6,7 +6,7 @@ Authors: Rémy Degenne
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
 
-/-! # Notations for probability theory
+/-! # Notation for probability theory
 
 This file defines the following notations, for functions `X,Y`, measures `P, Q` defined on a
 measurable space `m0`, and another measurable space structure `m` with `hm : m ≤ m0`,
