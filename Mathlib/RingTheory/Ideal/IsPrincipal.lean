@@ -157,7 +157,7 @@ noncomputable def associatesNonZeroDivisorsMulEquivIsPrincipal :
 The isomorphism we choose here sends `1` to the generator chosen by `Ideal.generator`. -/
 noncomputable def isoBaseOfIsPrincipal {I : Ideal R}
     [hprinc : I.IsPrincipal] (hI : I ≠ ⊥) : R ≃ₗ[R] I :=
-  let x := IsPrincipal.generator I
+  letI x := IsPrincipal.generator I
   have hx : x ≠ 0 := by
     intro hx'
     rw [← IsPrincipal.eq_bot_iff_generator_eq_zero] at hx'

@@ -28,8 +28,6 @@ domains and valuation rings.
 -- TODO: Add definition and properties of Prüfer domains.
 -- TODO: Use `IsTorsionFree`.
 
-universe u v
-
 open Function (Injective Surjective)
 
 open LinearMap (lsmul rTensor lTensor)
@@ -42,7 +40,7 @@ namespace Module.Flat
 
 section Semiring
 
-variable {R M : Type u} [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 open LinearMap in
 /-- Scalar multiplication `m ↦ r • m` by a regular `r` is injective on a flat module. -/
@@ -65,7 +63,7 @@ end Semiring
 
 section Ring
 
-variable {R M : Type u} [CommRing R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 open scoped nonZeroDivisors
 
@@ -73,16 +71,16 @@ open LinearMap in
 
 /-- Scalar multiplication `m ↦ r • m` by a nonzerodivisor `r` is injective on a flat module. -/
 lemma isSMulRegular_of_nonZeroDivisors {r : R} (hr : r ∈ R⁰) [Flat R M] : IsSMulRegular M r := by
-  have hr : IsRegular r := le_nonZeroDivisors_iff_isRegular.mp (le_refl R⁰) ⟨r, hr⟩
-  apply isSMulRegular_of_isRegular hr
+  apply isSMulRegular_of_isRegular
+  exact le_nonZeroDivisors_iff_isRegular.mp (le_refl R⁰) ⟨r, hr⟩
 
 /-- Flat modules have no torsion. -/
 theorem torsion_eq_bot [Flat R M] : torsion R M = ⊥ := by
   rw [eq_bot_iff]
   -- indeed the definition of torsion means "annihiliated by a nonzerodivisor"
-  rintro m ⟨⟨r, hr⟩, (h : r • m = 0)⟩
+  rintro m ⟨⟨r, hr⟩, h⟩
   -- and we just showed that 0 is the only element with this property
-  exact isSMulRegular_of_nonZeroDivisors hr (by simp [h])
+  exact isSMulRegular_of_nonZeroDivisors hr (by simpa using h)
 
 /-- If `R` is Bezout then an `R`-module is flat iff it has no torsion. -/
 @[stacks 0539 "Generalized valuation ring to Bezout domain"]
