@@ -15,11 +15,11 @@ that `ArchimedeanClass.mk y < ArchimedeanClass.mk (x - r * y)`. We call this the
 the ratio `x / y`.
 
 This generalizes the function of the same name in the study of `Hyperreal` numbers, which is just
-`standardPart x 1`.
+`standardPart f x 1`, for `f : ℝ →+* Hyperreal` the canonical embedding.
 
 ## Todo
 
-Should we redefine `Hyperreal.st x = ArchimedeanClass.standardPart x 1`?
+Should we redefine `Hyperreal.st` in terems of `ArchimedeanClass.standardPart x`?
 -/
 
 namespace ArchimedeanClass
