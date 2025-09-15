@@ -7,7 +7,7 @@ import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.Prime.Defs
 
 /-!
-# Lemmas related to `Nat.Prime`
+# Lemmas related to `Nat.Prime` and `lcm`
 
 This file contains lemmas related to `Nat.Prime`.
 These lemmas are kept separate from `Mathlib/Data/Nat/GCD/Basic.lean` in order to minimize imports.
