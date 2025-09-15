@@ -37,7 +37,7 @@ section
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
 -- the generates simp lemmas like `id_fst` and `comp_snd`
-/-- `prod C D` gives the cartesian product of two categories. -/
+/-- `prod C D` gives the Cartesian product of two categories. -/
 @[simps (notRecursive := []) Hom id_fst id_snd comp_fst comp_snd, stacks 001K]
 instance prod : Category.{max v₁ v₂} (C × D) where
   Hom X Y := (X.1 ⟶ Y.1) × (X.2 ⟶ Y.2)
@@ -147,13 +147,13 @@ def snd : C × D ⥤ D where
   obj X := X.2
   map f := f.2
 
-/-- The functor swapping the factors of a cartesian product of categories, `C × D ⥤ D × C`. -/
+/-- The functor swapping the factors of a Cartesian product of categories, `C × D ⥤ D × C`. -/
 @[simps]
 def swap : C × D ⥤ D × C where
   obj X := (X.2, X.1)
   map f := (f.2, f.1)
 
-/-- Swapping the factors of a cartesian product of categories twice is naturally isomorphic
+/-- Swapping the factors of a Cartesian product of categories twice is naturally isomorphic
 to the identity functor.
 -/
 @[simps]
@@ -225,7 +225,7 @@ variable {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B]
 
 namespace Functor
 
-/-- The cartesian product of two functors. -/
+/-- The Cartesian product of two functors. -/
 @[simps]
 def prod (F : A ⥤ B) (G : C ⥤ D) : A × C ⥤ B × D where
   obj X := (F.obj X.1, G.obj X.2)
@@ -264,7 +264,7 @@ end Functor
 
 namespace NatTrans
 
-/-- The cartesian product of two natural transformations. -/
+/-- The Cartesian product of two natural transformations. -/
 @[simps! app_fst app_snd]
 def prod {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.prod H ⟶ G.prod I where
   app X := (α.app X.1, β.app X.2)
@@ -272,7 +272,7 @@ def prod {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.prod 
 /- Again, it is inadvisable in Lean 3 to setup a notation `α × β`;
 use instead `α.prod β` or `NatTrans.prod α β`. -/
 
-/-- The cartesian product of two natural transformations where both functors have the
+/-- The Cartesian product of two natural transformations where both functors have the
 same source. -/
 @[simps! app_fst app_snd]
 def prod' {F G : A ⥤ B} {H K : A ⥤ C} (α : F ⟶ G) (β : H ⟶ K) : F.prod' H ⟶ G.prod' K where
@@ -280,7 +280,7 @@ def prod' {F G : A ⥤ B} {H K : A ⥤ C} (α : F ⟶ G) (β : H ⟶ K) : F.prod
 
 end NatTrans
 
-/-- The cartesian product functor between functor categories -/
+/-- The Cartesian product functor between functor categories -/
 @[simps]
 def prodFunctor : (A ⥤ B) × (C ⥤ D) ⥤ A × C ⥤ B × D where
   obj FG := FG.1.prod FG.2
@@ -288,7 +288,7 @@ def prodFunctor : (A ⥤ B) × (C ⥤ D) ⥤ A × C ⥤ B × D where
 
 namespace NatIso
 
-/-- The cartesian product of two natural isomorphisms. -/
+/-- The Cartesian product of two natural isomorphisms. -/
 @[simps]
 def prod {F F' : A ⥤ B} {G G' : C ⥤ D} (e₁ : F ≅ F') (e₂ : G ≅ G') :
     F.prod G ≅ F'.prod G' where
@@ -299,7 +299,7 @@ end NatIso
 
 namespace Equivalence
 
-/-- The cartesian product of two equivalences of categories. -/
+/-- The Cartesian product of two equivalences of categories. -/
 @[simps]
 def prod (E₁ : A ≌ B) (E₂ : C ≌ D) : A × C ≌ B × D where
   functor := E₁.functor.prod E₂.functor
