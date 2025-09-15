@@ -49,6 +49,9 @@ noncomputable def prod (κ : Kernel α β) (η : Kernel α γ) : Kernel α (β �
 @[inherit_doc]
 scoped[ProbabilityTheory] infixl:100 " ×ₖ " => ProbabilityTheory.Kernel.prod
 
+lemma parallelComp_comp_copy (κ : Kernel α β) (η : Kernel α γ) :
+    (κ ∥ₖ η) ∘ₖ copy α = κ ×ₖ η := rfl
+
 @[simp]
 lemma zero_prod (η : Kernel α γ) : (0 : Kernel α β) ×ₖ η = 0 := by simp [prod]
 

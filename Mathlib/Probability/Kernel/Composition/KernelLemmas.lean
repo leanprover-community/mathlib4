@@ -57,18 +57,6 @@ lemma compProd_prodMkLeft_eq_comp
   rw [lintegral_dirac']
   exact measurable_measure_prodMk_left hs
 
-lemma parallelComp_comp_copy (κ : Kernel α β) (η : Kernel α γ) :
-    (κ ∥ₖ η) ∘ₖ (copy α) = κ ×ₖ η := by
-  by_cases hκ : IsSFiniteKernel κ
-  swap; · simp [hκ]
-  by_cases hη : IsSFiniteKernel η
-  swap; · simp [hη]
-  ext a s hs
-  simp_rw [prod_apply, comp_apply, copy_apply, Measure.bind_apply hs (Kernel.aemeasurable _)]
-  rw [lintegral_dirac']
-  swap; · exact Kernel.measurable_coe _ hs
-  rw [parallelComp_apply]
-
 lemma swap_parallelComp : swap β δ ∘ₖ (κ ∥ₖ η) = η ∥ₖ κ ∘ₖ swap α γ := by
   by_cases hκ : IsSFiniteKernel κ
   swap; · simp [hκ]
