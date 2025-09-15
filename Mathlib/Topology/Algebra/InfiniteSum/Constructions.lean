@@ -61,17 +61,18 @@ end ProdDomain
 section ProdCodomain
 
 variable [CommMonoid α] [TopologicalSpace α] [CommMonoid γ] [TopologicalSpace γ]
+{L : Filter (Finset β)}
 
-@[to_additive HasSum.prodMk]
-theorem HasProd.prodMk {f : β → α} {g : β → γ} {a : α} {b : γ} (hf : HasProd f a)
-    (hg : HasProd g b) : HasProd (fun x ↦ (⟨f x, g x⟩ : α × γ)) ⟨a, b⟩ := by
-  simp [HasProd, ← prod_mk_prod, Filter.Tendsto.prodMk_nhds hf hg]
+@[to_additive HasSumFilter.prodMk]
+theorem HasProdFilter.prodMk {f : β → α} {g : β → γ} {a : α} {b : γ} (hf : HasProdFilter L f a)
+    (hg : HasProdFilter L g b) : HasProdFilter L (fun x ↦ (⟨f x, g x⟩ : α × γ)) ⟨a, b⟩ := by
+  simp [HasProdFilter, ← prod_mk_prod, Filter.Tendsto.prodMk_nhds hf hg]
 
 @[deprecated (since := "2025-03-10")]
-alias HasSum.prod_mk := HasSum.prodMk
+alias HasSum.prod_mk := HasSumFilter.prodMk
 
-@[to_additive existing HasSum.prodMk, deprecated (since := "2025-03-10")]
-alias HasProd.prod_mk := HasProd.prodMk
+@[to_additive existing HasSumFilter.prodMk, deprecated (since := "2025-03-10")]
+alias HasProd.prod_mk := HasProdFilter.prodMk
 
 end ProdCodomain
 
@@ -97,7 +98,7 @@ lemma HasProd.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [Continu
 protected lemma Multipliable.tprod_sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M]
     [ContinuousMul M] [T2Space M] {f : α ⊕ β → M} (h₁ : Multipliable (f ∘ .inl))
     (h₂ : Multipliable (f ∘ .inr)) : ∏' i, f i = (∏' i, f (.inl i)) * (∏' i, f (.inr i)) :=
-  (h₁.hasProd.sum h₂.hasProd).tprod_eq
+  (h₁.hasProd.sum h₂.hasProd).tprodFilter_eq
 
 @[deprecated (since := "2025-04-12")] alias tsum_sum := Summable.tsum_sum
 @[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_sum :=
@@ -106,8 +107,8 @@ protected lemma Multipliable.tprod_sum {α β M : Type*} [CommMonoid M] [Topolog
 @[to_additive]
 lemma Multipliable.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M]
     (f : α ⊕ β → M) (h₁ : Multipliable (f ∘ Sum.inl)) (h₂ : Multipliable (f ∘ Sum.inr)) :
-    Multipliable f :=
-  ⟨_, .sum h₁.hasProd h₂.hasProd⟩
+    Multipliable f := by
+  simpa [HasProd, Multipliable] using ⟨_ , HasProd.sum h₁.hasProd h₂.hasProd⟩
 
 end Sum
 
@@ -146,7 +147,7 @@ theorem HasProd.prod_fiberwise {f : β × γ → α} {g : β → α} {a : α} (h
 @[to_additive]
 theorem Multipliable.sigma' {γ : β → Type*} {f : (Σ b : β, γ b) → α} (ha : Multipliable f)
     (hf : ∀ b, Multipliable fun c ↦ f ⟨b, c⟩) : Multipliable fun b ↦ ∏' c, f ⟨b, c⟩ :=
-  (ha.hasProd.sigma fun b ↦ (hf b).hasProd).multipliable
+  (ha.hasProd.sigma fun b ↦ (hf b).hasProd).multipliableFilter
 
 end RegularSpace
 
@@ -163,7 +164,7 @@ theorem HasProd.sigma_of_hasProd {γ : β → Type*} {f : (Σ b : β, γ b) → 
 protected theorem Multipliable.tprod_sigma' {γ : β → Type*} {f : (Σ b : β, γ b) → α}
     (h₁ : ∀ b, Multipliable fun c ↦ f ⟨b, c⟩) (h₂ : Multipliable f) :
     ∏' p, f p = ∏' (b) (c), f ⟨b, c⟩ :=
-  (h₂.hasProd.sigma fun b ↦ (h₁ b).hasProd).tprod_eq.symm
+  (h₂.hasProd.sigma fun b ↦ (h₁ b).hasProd).tprodFilter_eq.symm
 
 @[deprecated (since := "2025-04-12")] alias tsum_sigma' := Summable.tsum_sigma'
 @[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_sigma' :=
@@ -173,7 +174,7 @@ protected theorem Multipliable.tprod_sigma' {γ : β → Type*} {f : (Σ b : β,
 protected theorem Multipliable.tprod_prod' {f : β × γ → α} (h : Multipliable f)
     (h₁ : ∀ b, Multipliable fun c ↦ f (b, c)) :
     ∏' p, f p = ∏' (b) (c), f (b, c) :=
-  (h.hasProd.prod_fiberwise fun b ↦ (h₁ b).hasProd).tprod_eq.symm
+  (h.hasProd.prod_fiberwise fun b ↦ (h₁ b).hasProd).tprodFilter_eq.symm
 
 @[deprecated (since := "2025-04-12")] alias tsum_prod' := Summable.tsum_prod'
 @[to_additive existing Summable.tsum_prod', deprecated (since := "2025-04-12")] alias tprod_prod' :=
@@ -183,7 +184,7 @@ protected theorem Multipliable.tprod_prod' {f : β × γ → α} (h : Multipliab
 protected theorem Multipliable.tprod_prod_uncurry {f : β → γ → α}
     (h : Multipliable (Function.uncurry f)) (h₁ : ∀ b, Multipliable fun c ↦ f b c) :
     ∏' p : β × γ, uncurry f p = ∏' (b) (c), f b c :=
-  (h.hasProd.prod_fiberwise fun b ↦ (h₁ b).hasProd).tprod_eq.symm
+  (h.hasProd.prod_fiberwise fun b ↦ (h₁ b).hasProd).tprodFilter_eq.symm
 
 @[deprecated (since := "2025-04-12")] alias tsum_prod_uncurry :=
   Summable.tsum_prod_uncurry
@@ -264,7 +265,7 @@ lemma Multipliable.prod {f : β × γ → α} (h : Multipliable f) :
 lemma HasProd.tprod_fiberwise [T2Space α] {f : β → α} {a : α} (hf : HasProd f a) (g : β → γ) :
     HasProd (fun c : γ ↦ ∏' b : g ⁻¹' {c}, f b) a :=
   (((Equiv.sigmaFiberEquiv g).hasProd_iff).mpr hf).sigma <|
-    fun _ ↦ ((hf.multipliable.subtype _).hasProd_iff).mpr rfl
+    fun _ ↦ ((hf.multipliable.subtype _).hasProdFilter_iff).mpr rfl
 
 section CompleteT0Space
 
@@ -304,20 +305,22 @@ end CompleteSpace
 section Pi
 
 variable {ι : Type*} {X : α → Type*} [∀ x, CommMonoid (X x)] [∀ x, TopologicalSpace (X x)]
+  {L : Filter (Finset ι)}
 
 @[to_additive]
-theorem Pi.hasProd {f : ι → ∀ x, X x} {g : ∀ x, X x} :
-    HasProd f g ↔ ∀ x, HasProd (fun i ↦ f i x) (g x) := by
-  simp only [HasProd, tendsto_pi_nhds, prod_apply]
+theorem Pi.hasProdFilter {f : ι → ∀ x, X x} {g : ∀ x, X x} :
+    HasProdFilter L f g ↔ ∀ x, HasProdFilter L (fun i ↦ f i x) (g x) := by
+  simp only [HasProdFilter, tendsto_pi_nhds, prod_apply]
 
 @[to_additive]
-theorem Pi.multipliable {f : ι → ∀ x, X x} : Multipliable f ↔ ∀ x, Multipliable fun i ↦ f i x := by
-  simp only [Multipliable, Pi.hasProd, Classical.skolem]
+theorem Pi.multipliableFilter {f : ι → ∀ x, X x} :
+    MultipliableFilter L f ↔ ∀ x, MultipliableFilter L fun i ↦ f i x := by
+  simp only [MultipliableFilter, Pi.hasProdFilter, Classical.skolem]
 
 @[to_additive]
-theorem tprod_apply [∀ x, T2Space (X x)] {f : ι → ∀ x, X x} {x : α} (hf : Multipliable f) :
-    (∏' i, f i) x = ∏' i, f i x :=
-  (Pi.hasProd.mp hf.hasProd x).tprod_eq.symm
+theorem tprodFilter_apply [L.NeBot] [∀ x, T2Space (X x)] {f : ι → ∀ x, X x} {x : α}
+    (hf : MultipliableFilter L f) : (∏'[L] i, f i) x = ∏'[L] i, f i x :=
+  (Pi.hasProdFilter.mp hf.hasProdFilter x).tprodFilter_eq.symm
 
 end Pi
 
@@ -328,47 +331,50 @@ section MulOpposite
 
 open MulOpposite
 
-variable [AddCommMonoid α] [TopologicalSpace α] {f : β → α} {a : α}
+variable [AddCommMonoid α] [TopologicalSpace α] {f : β → α} {a : α} {L : Filter (Finset β)}
 
-theorem HasSum.op (hf : HasSum f a) : HasSum (fun a ↦ op (f a)) (op a) :=
+theorem HasSumFilter.op (hf : HasSumFilter L f a) : HasSumFilter L (fun a ↦ op (f a)) (op a) :=
   (hf.map (@opAddEquiv α _) continuous_op :)
 
-theorem Summable.op (hf : Summable f) : Summable (op ∘ f) :=
-  hf.hasSum.op.summable
+theorem SummableFilter.op (hf : SummableFilter L f) : SummableFilter L (op ∘ f) :=
+  hf.hasSumFilter.op.summableFilter
 
-theorem HasSum.unop {f : β → αᵐᵒᵖ} {a : αᵐᵒᵖ} (hf : HasSum f a) :
-    HasSum (fun a ↦ unop (f a)) (unop a) :=
+theorem HasSumFilter.unop {f : β → αᵐᵒᵖ} {a : αᵐᵒᵖ} (hf : HasSumFilter L f a) :
+    HasSumFilter L (fun a ↦ unop (f a)) (unop a) :=
   (hf.map (@opAddEquiv α _).symm continuous_unop :)
 
-theorem Summable.unop {f : β → αᵐᵒᵖ} (hf : Summable f) : Summable (unop ∘ f) :=
-  hf.hasSum.unop.summable
+theorem SummableFilter.unop {f : β → αᵐᵒᵖ} (hf : SummableFilter L f) :
+    SummableFilter L (unop ∘ f) :=
+  hf.hasSumFilter.unop.summableFilter
 
 @[simp]
-theorem hasSum_op : HasSum (fun a ↦ op (f a)) (op a) ↔ HasSum f a :=
-  ⟨HasSum.unop, HasSum.op⟩
+theorem hasSumFilter_op : HasSumFilter L (fun a ↦ op (f a)) (op a) ↔ HasSumFilter L f a :=
+  ⟨HasSumFilter.unop, HasSumFilter.op⟩
 
 @[simp]
-theorem hasSum_unop {f : β → αᵐᵒᵖ} {a : αᵐᵒᵖ} :
-    HasSum (fun a ↦ unop (f a)) (unop a) ↔ HasSum f a :=
-  ⟨HasSum.op, HasSum.unop⟩
+theorem hasSumFilter_unop {f : β → αᵐᵒᵖ} {a : αᵐᵒᵖ} :
+    HasSumFilter L (fun a ↦ unop (f a)) (unop a) ↔ HasSumFilter L f a :=
+  ⟨HasSumFilter.op, HasSumFilter.unop⟩
 
 @[simp]
-theorem summable_op : (Summable fun a ↦ op (f a)) ↔ Summable f :=
-  ⟨Summable.unop, Summable.op⟩
+theorem summableFilter_op : (SummableFilter L fun a ↦ op (f a)) ↔ SummableFilter L f :=
+  ⟨SummableFilter.unop, SummableFilter.op⟩
 
-theorem summable_unop {f : β → αᵐᵒᵖ} : (Summable fun a ↦ unop (f a)) ↔ Summable f :=
-  ⟨Summable.op, Summable.unop⟩
+theorem summableFilter_unop {f : β → αᵐᵒᵖ} :
+    (SummableFilter L fun a ↦ unop (f a)) ↔ SummableFilter L f :=
+  ⟨SummableFilter.op, SummableFilter.unop⟩
 
-theorem tsum_op [T2Space α] :
-    ∑' x, op (f x) = op (∑' x, f x) := by
-  by_cases h : Summable f
-  · exact h.hasSum.op.tsum_eq
-  · have ho := summable_op.not.mpr h
-    rw [tsum_eq_zero_of_not_summable h, tsum_eq_zero_of_not_summable ho, op_zero]
+theorem tsumFilter_op [T2Space α] [L.NeBot] :
+    ∑'[L] x, op (f x) = op (∑'[L] x, f x) := by
+  by_cases h : SummableFilter L f
+  · exact h.hasSumFilter.op.tsumFilter_eq
+  · have ho := summableFilter_op.not.mpr h
+    rw [tsumFilter_eq_zero_of_not_summableFilter h, tsumFilter_eq_zero_of_not_summableFilter ho,
+      op_zero]
 
-theorem tsum_unop [T2Space α] {f : β → αᵐᵒᵖ} :
-    ∑' x, unop (f x) = unop (∑' x, f x) :=
-  op_injective tsum_op.symm
+theorem tsumFilter_unop [T2Space α] [L.NeBot] {f : β → αᵐᵒᵖ} :
+    ∑'[L] x, unop (f x) = unop (∑'[L] x, f x) :=
+  op_injective tsumFilter_op.symm
 
 end MulOpposite
 
@@ -398,8 +404,8 @@ theorem summable_star_iff' : Summable (star f) ↔ Summable f :=
 
 theorem tsum_star [T2Space α] : star (∑' b, f b) = ∑' b, star (f b) := by
   by_cases hf : Summable f
-  · exact hf.hasSum.star.tsum_eq.symm
-  · rw [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable (mt Summable.ofStar hf),
-      star_zero]
+  · exact hf.hasSum.star.tsumFilter_eq.symm
+  · simp [tsumFilter_eq_zero_of_not_summableFilter hf,
+    tsumFilter_eq_zero_of_not_summableFilter (mt Summable.ofStar hf), star_zero]
 
 end ContinuousStar

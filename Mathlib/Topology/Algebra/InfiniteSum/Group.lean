@@ -26,44 +26,48 @@ variable {α β γ : Type*}
 section IsTopologicalGroup
 
 variable [CommGroup α] [TopologicalSpace α] [IsTopologicalGroup α]
-variable {f g : β → α} {a a₁ a₂ : α}
+variable {f g : β → α} {a a₁ a₂ : α} {L : Filter (Finset β)}
 
 -- `by simpa using` speeds up elaboration. Why?
 @[to_additive]
-theorem HasProd.inv (h : HasProd f a) : HasProd (fun b ↦ (f b)⁻¹) a⁻¹ := by
+theorem HasProdFilter.inv (h : HasProdFilter L f a) : HasProdFilter L (fun b ↦ (f b)⁻¹) a⁻¹ := by
   simpa only using h.map (MonoidHom.id α)⁻¹ continuous_inv
 
 @[to_additive]
-theorem Multipliable.inv (hf : Multipliable f) : Multipliable fun b ↦ (f b)⁻¹ :=
-  hf.hasProd.inv.multipliable
+theorem MultipliableFilter.inv (hf : MultipliableFilter L f) :
+    MultipliableFilter L fun b ↦ (f b)⁻¹ :=
+  hf.hasProdFilter.inv.multipliableFilter
 
 @[to_additive]
-theorem Multipliable.of_inv (hf : Multipliable fun b ↦ (f b)⁻¹) : Multipliable f := by
+theorem MultipliableFilter.of_inv (hf : MultipliableFilter L fun b ↦ (f b)⁻¹) :
+    MultipliableFilter L f := by
   simpa only [inv_inv] using hf.inv
 
 @[to_additive]
-theorem multipliable_inv_iff : (Multipliable fun b ↦ (f b)⁻¹) ↔ Multipliable f :=
-  ⟨Multipliable.of_inv, Multipliable.inv⟩
+theorem multipliableFilter_inv_iff :
+    (MultipliableFilter L fun b ↦ (f b)⁻¹) ↔ MultipliableFilter L f :=
+  ⟨MultipliableFilter.of_inv, MultipliableFilter.inv⟩
 
 @[to_additive]
-theorem HasProd.div (hf : HasProd f a₁) (hg : HasProd g a₂) :
-    HasProd (fun b ↦ f b / g b) (a₁ / a₂) := by
+theorem HasProdFilter.div (hf : HasProdFilter L f a₁) (hg : HasProdFilter L g a₂) :
+    HasProdFilter L (fun b ↦ f b / g b) (a₁ / a₂) := by
   simp only [div_eq_mul_inv]
   exact hf.mul hg.inv
 
 @[to_additive]
-theorem Multipliable.div (hf : Multipliable f) (hg : Multipliable g) :
-    Multipliable fun b ↦ f b / g b :=
-  (hf.hasProd.div hg.hasProd).multipliable
+theorem MultipliableFilter.div (hf : MultipliableFilter L f) (hg : MultipliableFilter L g) :
+    MultipliableFilter L fun b ↦ f b / g b :=
+  (hf.hasProdFilter.div hg.hasProdFilter).multipliableFilter
 
 @[to_additive]
-theorem Multipliable.trans_div (hg : Multipliable g) (hfg : Multipliable fun b ↦ f b / g b) :
-    Multipliable f := by
+theorem MultipliableFilter.trans_div (hg : MultipliableFilter L g)
+    (hfg : MultipliableFilter L fun b ↦ f b / g b) : MultipliableFilter L f := by
   simpa only [div_mul_cancel] using hfg.mul hg
 
 @[to_additive]
-theorem multipliable_iff_of_multipliable_div (hfg : Multipliable fun b ↦ f b / g b) :
-    Multipliable f ↔ Multipliable g :=
+theorem multipliableFilter_iff_of_multipliableFilter_div
+    (hfg : MultipliableFilter L fun b ↦ f b / g b) :
+    MultipliableFilter L f ↔ MultipliableFilter L g :=
   ⟨fun hf ↦ hf.trans_div <| by simpa only [inv_div] using hfg.inv, fun hg ↦ hg.trans_div hfg⟩
 
 @[to_additive]
@@ -78,7 +82,7 @@ theorem HasProd.update (hf : HasProd f a₁) (b : β) [DecidableEq β] (a : α) 
 @[to_additive]
 theorem Multipliable.update (hf : Multipliable f) (b : β) [DecidableEq β] (a : α) :
     Multipliable (update f b a) :=
-  (hf.hasProd.update b a).multipliable
+  (hf.hasProd.update b a).multipliableFilter
 
 @[to_additive]
 theorem HasProd.hasProd_compl_iff {s : Set β} (hf : HasProd (f ∘ (↑) : s → α) a₁) :
@@ -96,8 +100,8 @@ theorem HasProd.hasProd_iff_compl {s : Set β} (hf : HasProd (f ∘ (↑) : s �
 @[to_additive]
 theorem Multipliable.multipliable_compl_iff {s : Set β} (hf : Multipliable (f ∘ (↑) : s → α)) :
     Multipliable (f ∘ (↑) : ↑sᶜ → α) ↔ Multipliable f where
-  mp := fun ⟨_, ha⟩ ↦ (hf.hasProd.hasProd_compl_iff.1 ha).multipliable
-  mpr := fun ⟨_, ha⟩ ↦ (hf.hasProd.hasProd_iff_compl.1 ha).multipliable
+  mp := fun ⟨_, ha⟩ ↦ (hf.hasProd.hasProd_compl_iff.1 ha).multipliableFilter
+  mpr := fun ⟨_, ha⟩ ↦ (hf.hasProd.hasProd_iff_compl.1 ha).multipliableFilter
 
 @[to_additive]
 protected theorem Finset.hasProd_compl_iff (s : Finset β) :
@@ -161,25 +165,25 @@ section tprod
 variable [T2Space α]
 
 @[to_additive]
-theorem tprod_inv : ∏' b, (f b)⁻¹ = (∏' b, f b)⁻¹ := by
-  by_cases hf : Multipliable f
-  · exact hf.hasProd.inv.tprod_eq
-  · simp [tprod_eq_one_of_not_multipliable hf,
-      tprod_eq_one_of_not_multipliable (mt Multipliable.of_inv hf)]
+theorem tprodFilter_inv [L.NeBot] : ∏'[L] b, (f b)⁻¹ = (∏'[L] b, f b)⁻¹ := by
+  by_cases hf : MultipliableFilter L f
+  · exact hf.hasProdFilter.inv.tprodFilter_eq
+  · simp [tprodFilter_eq_one_of_not_multipliableFilter hf,
+      tprodFilter_eq_one_of_not_multipliableFilter (mt MultipliableFilter.of_inv hf)]
 
 @[to_additive]
-protected theorem Multipliable.tprod_div (hf : Multipliable f) (hg : Multipliable g) :
-    ∏' b, (f b / g b) = (∏' b, f b) / ∏' b, g b :=
-  (hf.hasProd.div hg.hasProd).tprod_eq
+protected theorem MultipliableFilter.tprod_div [L.NeBot] (hf : MultipliableFilter L f)
+    (hg : MultipliableFilter L g) : ∏'[L] b, (f b / g b) = (∏'[L] b, f b) / ∏'[L] b, g b :=
+  (hf.hasProdFilter.div hg.hasProdFilter).tprodFilter_eq
 
-@[deprecated (since := "2025-04-12")] alias tsum_sub := Summable.tsum_sub
+@[deprecated (since := "2025-04-12")] alias tsum_sub := SummableFilter.tsum_sub
 @[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_div :=
-  Multipliable.tprod_div
+  MultipliableFilter.tprod_div
 
 @[to_additive]
 protected theorem Multipliable.prod_mul_tprod_compl {s : Finset β} (hf : Multipliable f) :
     (∏ x ∈ s, f x) * ∏' x : ↑(s : Set β)ᶜ, f x = ∏' x, f x :=
-  ((s.hasProd f).mul_compl (s.multipliable_compl_iff.2 hf).hasProd).tprod_eq.symm
+  ((s.hasProd f).mul_compl (s.multipliable_compl_iff.2 hf).hasProd).tprodFilter_eq.symm
 
 @[deprecated (since := "2025-04-12")] alias sum_add_tsum_compl := Summable.sum_add_tsum_compl
 @[to_additive existing, deprecated (since := "2025-04-12")] alias prod_mul_tprod_compl :=
@@ -193,8 +197,7 @@ Lemma `tsum_eq_add_tsum_ite` writes `Σ' n, f n` as `f b` plus the sum of the
 remaining terms. -/]
 protected theorem Multipliable.tprod_eq_mul_tprod_ite [DecidableEq β] (hf : Multipliable f)
     (b : β) : ∏' n, f n = f b * ∏' n, ite (n = b) 1 (f n) := by
-  rw [(hasProd_ite_div_hasProd hf.hasProd b).tprod_eq]
-  exact (mul_div_cancel _ _).symm
+  simp [tprod, (hasProd_ite_div_hasProd hf.hasProd b).tprodFilter_eq]
 
 @[deprecated (since := "2025-04-12")] alias tsum_eq_add_tsum_ite := Summable.tsum_eq_add_tsum_ite
 @[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_eq_mul_tprod_ite :=
@@ -206,7 +209,7 @@ end IsTopologicalGroup
 
 section IsUniformGroup
 
-variable [CommGroup α] [UniformSpace α]
+variable [CommGroup α] [UniformSpace α] {L : Filter (Finset β)}
 
 /-- The **Cauchy criterion** for infinite products, also known as the **Cauchy convergence test** -/
 @[to_additive /-- The **Cauchy criterion** for infinite sums, also known as the
@@ -214,6 +217,14 @@ variable [CommGroup α] [UniformSpace α]
 theorem multipliable_iff_cauchySeq_finset [CompleteSpace α] {f : β → α} :
     Multipliable f ↔ CauchySeq fun s : Finset β ↦ ∏ b ∈ s, f b := by
   classical exact cauchy_map_iff_exists_tendsto.symm
+
+/-- The **Cauchy criterion** for conditionally convergent infinite products,
+also known as the **Cauchy convergence test** -/
+@[to_additive /-- The **Cauchy criterion** for conditionally convergent infinite sums,
+also known as the **Cauchy convergence test** -/]
+theorem multipliableFilter_iff_cauchy_finset [NeBot L] [CompleteSpace α] {f : β → α} :
+    MultipliableFilter L f ↔ Cauchy (L.map (fun s ↦ ∏ b ∈ s, f b)) := by
+  simp_rw [MultipliableFilter, HasProdFilter,  ← cauchy_map_iff_exists_tendsto]
 
 variable [IsUniformGroup α] {f g : β → α}
 
@@ -259,7 +270,7 @@ theorem cauchySeq_finset_iff_tprod_vanishing :
       simp_rw [Finset.mem_map]
       rintro _ ⟨b, -, rfl⟩
       exact hts b.prop
-    · exact tprod_eq_one_of_not_multipliable ht ▸ mem_of_mem_nhds ho
+    · apply tprodFilter_eq_one_of_not_multipliableFilter ht ▸ mem_of_mem_nhds ho
   · obtain ⟨s, hs⟩ := vanish _ he
     exact ⟨s, fun t hts ↦ (t.tprod_subtype f).symm ▸ hs _ hts⟩
 
@@ -375,8 +386,8 @@ theorem tendsto_tprod_compl_atTop_one (f : α → G) :
     obtain ⟨s, hs⟩ := H.tprod_vanishing he
     rw [Filter.mem_map, mem_atTop_sets]
     exact ⟨s, fun t hts ↦ hs _ <| Set.disjoint_left.mpr fun a ha has ↦ ha (hts has)⟩
-  · refine tendsto_const_nhds.congr fun _ ↦ (tprod_eq_one_of_not_multipliable ?_).symm
-    rwa [Finset.multipliable_compl_iff]
+  · refine tendsto_const_nhds.congr fun _ ↦ (tprodFilter_eq_one_of_not_multipliableFilter ?_).symm
+    simp [Finset.multipliable_compl_iff, H]
 
 /-- Product divergence test: if `f` is unconditionally multipliable, then `f x` tends to one along
 `cofinite`. -/
@@ -411,7 +422,7 @@ theorem multipliable_const_iff [Infinite β] [T2Space G] (a : G) :
       simpa [← Set.finite_univ_iff] using h.tendsto_cofinite_one this
     exact not_finite β
   · rintro rfl
-    exact multipliable_one
+    exact multipliableFilter_one
 
 @[to_additive (attr := simp)]
 theorem tprod_const [T2Space G] (a : G) : ∏' _ : β, a = a ^ (Nat.card β) := by
@@ -422,7 +433,7 @@ theorem tprod_const [T2Space G] (a : G) : ∏' _ : β, a = a ^ (Nat.card β) := 
   · simp only [Nat.card_eq_zero_of_infinite, pow_zero]
     rcases eq_or_ne a 1 with rfl | ha
     · simp
-    · apply tprod_eq_one_of_not_multipliable
+    · apply tprodFilter_eq_one_of_not_multipliableFilter
       simpa [multipliable_const_iff] using ha
 
 end IsTopologicalGroup
@@ -456,7 +467,7 @@ lemma HasProd.congr_cofinite₀ {c : K} (hc : HasProd f c) {s : Finset α}
 protected lemma Multipliable.tsum_congr_cofinite₀ [T2Space K] (hc : Multipliable f) {s : Finset α}
     (hs : ∀ a ∈ s, f a ≠ 0) (hs' : ∀ a ∉ s, f a = g a) :
     ∏' i, g i = ((∏' i, f i) * ((∏ i ∈ s, g i) / ∏ i ∈ s, f i)) :=
-  (hc.hasProd.congr_cofinite₀ hs hs').tprod_eq
+  (hc.hasProd.congr_cofinite₀ hs hs').tprodFilter_eq
 
 @[deprecated (since := "2025-04-12")] alias tsum_congr_cofinite := Multipliable.tsum_congr_cofinite₀
 
@@ -469,8 +480,9 @@ lemma Multipliable.congr_cofinite₀ (hf : Multipliable f) (hf' : ∀ a, f a ≠
     (hfg : ∀ᶠ a in cofinite, f a = g a) :
     Multipliable g := by
   classical
+  have hf2 := hf.hasProd
   obtain ⟨c, hc⟩ := hf
   obtain ⟨s, hs⟩ : ∃ s : Finset α, ∀ i ∉ s, f i = g i := ⟨hfg.toFinset, by simp⟩
-  exact (hc.congr_cofinite₀ (fun a _ ↦ hf' a) hs).multipliable
+  exact (hf2.congr_cofinite₀ (fun a _ ↦ hf' a) hs).multipliableFilter
 
 end CommGroupWithZero

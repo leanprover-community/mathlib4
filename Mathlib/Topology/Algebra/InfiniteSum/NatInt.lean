@@ -123,7 +123,7 @@ and taking a supremum. This is useful for outer measures. -/]
 theorem tprod_iSup_decode₂ [CompleteLattice α] (m : α → M) (m0 : m ⊥ = 1) (s : β → α) :
     ∏' i : ℕ, m (⨆ b ∈ decode₂ β i, s b) = ∏' b : β, m (s b) := by
   rw [← tprod_extend_one (@encode_injective β _)]
-  refine tprod_congr fun n ↦ ?_
+  refine tprodFilter_congr fun n ↦ ?_
   rcases em (n ∈ Set.range (encode : β → ℕ)) with ⟨a, rfl⟩ | hn
   · simp [encode_injective.extend_apply]
   · rw [extend_apply' _ _ _ hn]
@@ -184,7 +184,7 @@ variable [T2Space M] [ContinuousMul M]
 protected theorem Multipliable.prod_mul_tprod_nat_mul'
     {f : ℕ → M} {k : ℕ} (h : Multipliable (fun n ↦ f (n + k))) :
     ((∏ i ∈ range k, f i) * ∏' i, f (i + k)) = ∏' i, f i :=
-  h.hasProd.prod_range_mul.tprod_eq.symm
+  h.hasProd.prod_range_mul.tprodFilter_eq.symm
 
 @[deprecated (since := "2025-04-12")] alias sum_add_tsum_nat_add' := Summable.sum_add_tsum_nat_add'
 @[to_additive existing, deprecated (since := "2025-04-12")] alias prod_mul_tprod_nat_mul' :=
@@ -200,7 +200,7 @@ theorem tprod_eq_zero_mul'
 theorem tprod_even_mul_odd {f : ℕ → M} (he : Multipliable fun k ↦ f (2 * k))
     (ho : Multipliable fun k ↦ f (2 * k + 1)) :
     (∏' k, f (2 * k)) * ∏' k, f (2 * k + 1) = ∏' k, f k :=
-  (he.hasProd.even_mul_odd ho.hasProd).tprod_eq.symm
+  (he.hasProd.even_mul_odd ho.hasProd).tprodFilter_eq.symm
 
 end ContinuousMul
 
@@ -222,7 +222,7 @@ theorem hasProd_nat_add_iff {f : ℕ → G} (k : ℕ) :
 theorem multipliable_nat_add_iff {f : ℕ → G} (k : ℕ) :
     (Multipliable fun n ↦ f (n + k)) ↔ Multipliable f :=
   Iff.symm <|
-    (Equiv.mulRight (∏ i ∈ range k, f i)).surjective.multipliable_iff_of_hasProd_iff
+    (Equiv.mulRight (∏ i ∈ range k, f i)).surjective.multipliableFilter_iff_of_hasProdFilter_iff
       (hasProd_nat_add_iff k).symm
 
 @[to_additive]
@@ -261,8 +261,8 @@ theorem tendsto_prod_nat_add [T2Space G] (f : ℕ → G) :
       rw [div_eq_iff_eq_mul, mul_comm, hf.prod_mul_tprod_nat_add i]
     have h₁ : Tendsto (fun _ : ℕ ↦ ∏' i, f i) atTop (𝓝 (∏' i, f i)) := tendsto_const_nhds
     simpa only [h₀, div_self'] using Tendsto.div' h₁ hf.hasProd.tendsto_prod_nat
-  · refine tendsto_const_nhds.congr fun n ↦ (tprod_eq_one_of_not_multipliable ?_).symm
-    rwa [multipliable_nat_add_iff n]
+  · refine tendsto_const_nhds.congr fun n ↦ (tprodFilter_eq_one_of_not_multipliableFilter ?_).symm
+    rwa [← multipliable_nat_add_iff n] at hf
 
 end IsTopologicalGroup
 
@@ -350,7 +350,7 @@ lemma Multipliable.nat_mul_neg_add_one {f : ℤ → M} (hf : Multipliable f) :
 @[to_additive tsum_nat_add_neg_add_one]
 lemma tprod_nat_mul_neg_add_one [T2Space M] {f : ℤ → M} (hf : Multipliable f) :
     ∏' (n : ℕ), (f n * f (-(n + 1))) = ∏' (n : ℤ), f n :=
-  hf.hasProd.nat_mul_neg_add_one.tprod_eq
+  hf.hasProd.nat_mul_neg_add_one.tprodFilter_eq
 
 section ContinuousMul
 
@@ -381,7 +381,7 @@ lemma Multipliable.of_nat_of_neg_add_one {f : ℤ → M}
 lemma tprod_of_nat_of_neg_add_one [T2Space M] {f : ℤ → M}
     (hf₁ : Multipliable fun n : ℕ ↦ f n) (hf₂ : Multipliable fun n : ℕ ↦ f (-(n + 1))) :
     ∏' n : ℤ, f n = (∏' n : ℕ, f n) * ∏' n : ℕ, f (-(n + 1)) :=
-  (hf₁.hasProd.of_nat_of_neg_add_one hf₂.hasProd).tprod_eq
+  (hf₁.hasProd.of_nat_of_neg_add_one hf₂.hasProd).tprodFilter_eq
 
 /-- If `f₀, f₁, f₂, ...` and `g₀, g₁, g₂, ...` have products `a`, `b` respectively, then
 the `ℤ`-indexed sequence: `..., g₂, g₁, g₀, f₀, f₁, f₂, ...` (with `f₀` at the `0`-th position) has
@@ -409,14 +409,15 @@ lemma Multipliable.int_rec {f g : ℕ → M} (hf : Multipliable f) (hg : Multipl
 `∑' n, f n + ∑' n, g n`. -/]
 lemma tprod_int_rec [T2Space M] {f g : ℕ → M} (hf : Multipliable f) (hg : Multipliable g) :
     ∏' n : ℤ, Int.rec f g n = (∏' n : ℕ, f n) * ∏' n : ℕ, g n :=
-  (hf.hasProd.int_rec hg.hasProd).tprod_eq
+  (hf.hasProd.int_rec hg.hasProd).tprodFilter_eq
 
 @[to_additive]
 theorem HasProd.nat_mul_neg {f : ℤ → M} (hf : HasProd f m) :
     HasProd (fun n : ℕ ↦ f n * f (-n)) (m * f 0) := by
   -- Note this is much easier to prove if you assume more about the target space, but we have to
   -- work hard to prove it under the very minimal assumptions here.
-  apply (hf.mul (hasProd_ite_eq (0 : ℤ) (f 0))).hasProd_of_prod_eq fun u ↦ ?_
+  apply (hasProd_iff_hasProdFilter.mpr (hf.mul (hasProd_ite_eq (0 : ℤ) (f 0)))).hasProd_of_prod_eq
+    fun u ↦ ?_
   refine ⟨u.image Int.natAbs, fun v' hv' ↦ ?_⟩
   let u1 := v'.image fun x : ℕ ↦ (x : ℤ)
   let u2 := v'.image fun x : ℕ ↦ -(x : ℤ)
@@ -455,7 +456,7 @@ theorem Multipliable.nat_mul_neg {f : ℤ → M} (hf : Multipliable f) :
 @[to_additive]
 lemma tprod_nat_mul_neg [T2Space M] {f : ℤ → M} (hf : Multipliable f) :
     ∏' n : ℕ, (f n * f (-n)) = (∏' n : ℤ, f n) * f 0 :=
-  hf.hasProd.nat_mul_neg.tprod_eq
+  hf.hasProd.nat_mul_neg.tprodFilter_eq
 
 @[to_additive HasSum.of_add_one_of_neg_add_one]
 theorem HasProd.of_add_one_of_neg_add_one {f : ℤ → M}
@@ -473,7 +474,7 @@ lemma Multipliable.of_add_one_of_neg_add_one {f : ℤ → M}
 lemma tprod_of_add_one_of_neg_add_one [T2Space M] {f : ℤ → M}
     (hf₁ : Multipliable fun n : ℕ ↦ f (n + 1)) (hf₂ : Multipliable fun n : ℕ ↦ f (-(n + 1))) :
     ∏' n : ℤ, f n = (∏' n : ℕ, f (n + 1)) * f 0 * ∏' n : ℕ, f (-(n + 1)) :=
-  (hf₁.hasProd.of_add_one_of_neg_add_one hf₂.hasProd).tprod_eq
+  (hf₁.hasProd.of_add_one_of_neg_add_one hf₂.hasProd).tprodFilter_eq
 
 end ContinuousMul
 
@@ -498,7 +499,7 @@ lemma Multipliable.of_nat_of_neg {f : ℤ → G} (hf₁ : Multipliable fun n : �
 protected lemma Multipliable.tprod_of_nat_of_neg [T2Space G] {f : ℤ → G}
     (hf₁ : Multipliable fun n : ℕ ↦ f n) (hf₂ : Multipliable fun n : ℕ ↦ f (-n)) :
     ∏' n : ℤ, f n = (∏' n : ℕ, f n) * (∏' n : ℕ, f (-n)) / f 0 :=
-  (hf₁.hasProd.of_nat_of_neg hf₂.hasProd).tprod_eq
+  (hf₁.hasProd.of_nat_of_neg hf₂.hasProd).tprodFilter_eq
 
 @[deprecated (since := "2025-04-12")] alias tsum_of_nat_of_neg :=
   Summable.tsum_of_nat_of_neg
