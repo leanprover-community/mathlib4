@@ -1,0 +1,94 @@
+/-
+Copyright (c) 2025 Rémy Degenne. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Rémy Degenne, Lorenzo Luccioli
+-/
+import Mathlib.Probability.Kernel.Composition.CompProd
+import Mathlib.Probability.Kernel.Composition.Prod
+
+/-!
+# Lemmas relating different ways to compose kernels
+
+This file contains lemmas about the composition of kernels that do not fit in any of
+the other files in this directory, because they involve several types of compositions/products.
+
+## Main statements
+
+* `parallelComp_comp_copy`: `(κ ∥ₖ η) ∘ₖ (copy α) = κ ×ₖ η`
+* `deterministic_comp_copy`: for a deterministic kernel, copying then applying the kernel to
+  the two copies is the same as first applying the kernel then copying. That is, if `κ` is
+  a deterministic kernel, `(κ ∥ₖ κ) ∘ₖ copy α = copy β ∘ₖ κ`.
+
+-/
+
+
+open MeasureTheory ProbabilityTheory
+
+open scoped ENNReal
+
+variable {α β γ δ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+  {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ}
+  {μ : Measure α} {ν : Measure β} {κ : Kernel α β} {η : Kernel γ δ}
+
+namespace ProbabilityTheory.Kernel
+
+theorem comp_eq_snd_compProd (η : Kernel β γ) [IsSFiniteKernel η] (κ : Kernel α β)
+    [IsSFiniteKernel κ] : η ∘ₖ κ = snd (κ ⊗ₖ prodMkLeft α η) := by
+  ext a s hs
+  rw [comp_apply' _ _ _ hs, snd_apply' _ _ hs, compProd_apply]
+  swap
+  · exact measurable_snd hs
+  simp [← Set.preimage_comp]
+
+@[simp] lemma snd_compProd_prodMkLeft
+    (κ : Kernel α β) (η : Kernel β γ) [IsSFiniteKernel κ] [IsSFiniteKernel η] :
+    snd (κ ⊗ₖ prodMkLeft α η) = η ∘ₖ κ := (comp_eq_snd_compProd η κ).symm
+
+lemma compProd_prodMkLeft_eq_comp
+    (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel β γ) [IsSFiniteKernel η] :
+    κ ⊗ₖ (prodMkLeft α η) = (Kernel.id ×ₖ η) ∘ₖ κ := by
+  ext a s hs
+  rw [comp_eq_snd_compProd, compProd_apply hs, snd_apply' _ _ hs, compProd_apply]
+  swap; · exact measurable_snd hs
+  simp only [prodMkLeft_apply, ← Set.preimage_comp, Prod.snd_comp_mk, Set.preimage_id_eq, id_eq,
+    prod_apply' _ _ _ hs, id_apply]
+  congr with b
+  rw [lintegral_dirac']
+  exact measurable_measure_prodMk_left hs
+
+lemma parallelComp_comp_copy (κ : Kernel α β) (η : Kernel α γ) :
+    (κ ∥ₖ η) ∘ₖ (copy α) = κ ×ₖ η := by
+  by_cases hκ : IsSFiniteKernel κ
+  swap; · simp [hκ]
+  by_cases hη : IsSFiniteKernel η
+  swap; · simp [hη]
+  ext a s hs
+  simp_rw [prod_apply, comp_apply, copy_apply, Measure.bind_apply hs (Kernel.aemeasurable _)]
+  rw [lintegral_dirac']
+  swap; · exact Kernel.measurable_coe _ hs
+  rw [parallelComp_apply]
+
+lemma swap_parallelComp : swap β δ ∘ₖ (κ ∥ₖ η) = η ∥ₖ κ ∘ₖ swap α γ := by
+  by_cases hκ : IsSFiniteKernel κ
+  swap; · simp [hκ]
+  by_cases hη : IsSFiniteKernel η
+  swap; · simp [hη]
+  ext ac s hs
+  simp_rw [comp_apply, parallelComp_apply, Measure.bind_apply hs (Kernel.aemeasurable _),
+    swap_apply, lintegral_dirac' _ (Kernel.measurable_coe _ hs), parallelComp_apply' hs,
+    Prod.fst_swap, Prod.snd_swap]
+  rw [MeasureTheory.lintegral_prod_symm]
+  swap; · exact ((Kernel.id.measurable_coe hs).comp measurable_swap).aemeasurable
+  congr with d
+  simp_rw [Prod.swap_prod_mk, Measure.dirac_apply' _ hs, ← Set.indicator_comp_right,
+    lintegral_indicator (measurable_prodMk_left hs)]
+  simp
+
+/-- For a deterministic kernel, copying then applying the kernel to the two copies is the same
+as first applying the kernel then copying. -/
+lemma deterministic_comp_copy {f : α → β} (hf : Measurable f) :
+    (deterministic f hf ∥ₖ deterministic f hf) ∘ₖ copy α = copy β ∘ₖ deterministic f hf := by
+  simp_rw [parallelComp_comp_copy, deterministic_prod_deterministic, copy,
+    deterministic_comp_deterministic, Function.comp_def]
+
+end ProbabilityTheory.Kernel
