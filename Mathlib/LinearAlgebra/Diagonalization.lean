@@ -54,10 +54,23 @@ structure SimultaneousDiagonalization (ι : Type*) (f : α → End R M) extends 
   μ : α → ι → R
   hasEigenVector_μ (a : α) (i : ι) : (f a).HasEigenvector (μ a i) (toBasis i)
 
+@[ext]
+theorem SimultaneousDiagonalization.ext {ι : Type*} {f : α → End R M}
+    {D₁ D₂ : SimultaneousDiagonalization ι f} (h : D₁.toBasis = D₂.toBasis) : D₁ = D₂ := by
+  suffices D₁.μ = D₂.μ by cases D₁; cases D₂; simp_all only
+  ext a i
+  suffices D₁.μ a i • D₁.toBasis i = D₂.μ a i • D₁.toBasis i by
+    simpa using congr(D₁.toBasis.repr $this i)
+  rw [← (D₁.hasEigenVector_μ a i).apply_eq_smul, h, ← (D₂.hasEigenVector_μ a i).apply_eq_smul]
+
 /--
 A diagonalization of a linear map $T : V \to V$ is a basis of $V$ consisting of eigenvectors of $T$.
 -/
-abbrev Diagonalization (ι : Type*) (f : End R M) := SimultaneousDiagonalization ι fun _ : Unit ↦ f
+def Diagonalization (ι : Type*) (f : End R M) := SimultaneousDiagonalization ι fun _ : Unit ↦ f
+
+theorem Diagonalization.ext {ι : Type*} {f : Module.End R M} {D₁ D₂ : f.Diagonalization ι}
+    (h : D₁.toBasis = D₂.toBasis) : D₁ = D₂ :=
+  SimultaneousDiagonalization.ext h
 
 /-- The eigenvalues of the diagonalization. -/
 def Diagonalization.μ {ι : Type*} {f : End R M} (self : f.Diagonalization ι) :=
@@ -84,17 +97,42 @@ noncomputable def Diagonalization.mk' {ι : Type*} {f : End R M} {b : Basis ι R
   μ := fun _ i ↦ (exists_hasEigenVector i).choose
   hasEigenVector_μ := fun _ i => (exists_hasEigenVector i).choose_spec
 
-/-- A basis for the module gives a diagonalization for the zero map. -/
+/--
+Alternative constructor for `LinearMap.Diagonalization` from a basis of eigenvectors and
+diagonality of the matrix representation.
+-/
+noncomputable def diagonalization_of_isDiag_toMatrix [Nontrivial R] {ι : Type*} [Fintype ι]
+    [DecidableEq ι] {f : End R M} {b : Basis ι R M} (h : (f.toMatrix b b).IsDiag) :
+    f.Diagonalization ι :=
+  Diagonalization.mk (b := b) (μ := fun i ↦ f.toMatrix b b i i) <| fun i ↦ by
+    have : f (b i) = ∑ j, f.toMatrix b b j i • b j := by simp [toMatrix_apply, b.sum_repr]
+    have (j : ι) (hj : j ≠ i) : f.toMatrix b b j i = 0 := h hj
+    simp_all [hasEigenvector_iff, Finset.sum_eq_single i, b.ne_zero]
+
+/-- Get individual diagonalizations from a simultaneous diagonalization. -/
+def SimultaneousDiagonalization.diagonalization {ι : Type*} {f : α → Module.End R M}
+    (D : SimultaneousDiagonalization ι f) (a : α) : (f a).Diagonalization ι :=
+  Diagonalization.mk (D.hasEigenVector_μ a)
+
+/-- Construct a simultaneous diagonalization from a family of diagonalizations. -/
+def SimultaneousDiagonalization.of_diagonalization {ι : Type*} {f : α → Module.End R M}
+    {b : Basis ι R M} {D : (a : α) → (f a).Diagonalization ι} (h : ∀ a, (D a).toBasis = b) :
+    SimultaneousDiagonalization ι f where
+  toBasis := b
+  μ a i := (D a).μ i
+  hasEigenVector_μ a i := h a ▸ (D a).hasEigenVector_μ i
+
+/-- Any basis diagonalizes the zero map. -/
 def diagonalization_zero [Nontrivial R] {ι : Type*} (b : Basis ι R M) :
     (0 : End R M).Diagonalization ι :=
   Diagonalization.mk (b := b) (μ := 0) (by simp [hasEigenvector_iff, b.ne_zero])
 
-/-- A basis for the module gives a diagonalization for the identity map. -/
+/-- Any basis diagonalizes the identity map. -/
 def diagonalization_one [Nontrivial R] {ι : Type*} (b : Basis ι R M) :
     (1 : End R M).Diagonalization ι :=
   Diagonalization.mk (b := b) (μ := 1) (by simp [hasEigenvector_iff, b.ne_zero])
 
-/-- A diagonalization of `f` can be scaled to give a diagonalization of `c • f`. -/
+/-- Any simultaneous diagonalization of `f` also diagonalizes `c • f`. -/
 def SimultaneousDiagonalization.smul {ι : Type*} {f : α → End R M}
     (D : SimultaneousDiagonalization ι f) (c : R) : SimultaneousDiagonalization ι (c • f) where
   toBasis := D.toBasis
@@ -103,51 +141,28 @@ def SimultaneousDiagonalization.smul {ι : Type*} {f : α → End R M}
     have := D.hasEigenVector_μ a i
     simp_all [hasEigenvector_iff, smul_smul]
 
+/-- Any diagonalization of `f` also diagonalizes `c • f`. -/
 def Diagonalization.smul {ι : Type*} {f : End R M} (D : f.Diagonalization ι) (c : R) :
     (c • f).Diagonalization ι :=
   SimultaneousDiagonalization.smul D c
 
+/-- Any simultaneous diagonalization of `f` also diagonalizes `f i + f j` for any `i` and `j`. -/
+def SimultaneousDiagonalization.diagonalization_add [Fintype α] {ι : Type*} {f : α → End R M}
+    (D : SimultaneousDiagonalization ι f) (i j : α) : (f i + f j).Diagonalization ι :=
+  Diagonalization.mk (b := D.toBasis) (μ := fun k ↦ D.μ i k + D.μ j k) <| by
+    sorry
+
+/-- Any simultaneous diagonalization of `f` also diagonalizes `∑ a, f a`. -/
 def SimultaneousDiagonalization.diagonalization_sum [Fintype α] {ι : Type*} {f : α → End R M}
     (D : SimultaneousDiagonalization ι f) : (∑ a, f a).Diagonalization ι :=
   Diagonalization.mk (b := D.toBasis) (μ := fun i ↦ ∑ a, D.μ a i) <| by
     sorry
 
+/-- Any simultaneous diagonalization of `f` also diagonalizes `f i * f j` for any `i` and `j`. -/
 def SimultaneousDiagonalization.diagonalization_mul [Fintype α] {ι : Type*} {f : α → End R M}
     (D : SimultaneousDiagonalization ι f) (i j : α) : (f i * f j).Diagonalization ι :=
   Diagonalization.mk (b := D.toBasis) (μ := fun k ↦ D.μ i k * D.μ j k) <| by
     sorry
-
-/--
-Alternative constructor for `LinearMap.Diagonalization` from a basis of eigenvectors and
-diagonality of the matrix representation.
--/
-noncomputable def diagonalization_of_isDiag_toMatrix [Nontrivial R] {ι : Type*} [Fintype ι]
-    [DecidableEq ι] {f : End R M} {b : Basis ι R M} (h : (f.toMatrix b b).IsDiag) :
-    f.Diagonalization ι :=
-  Diagonalization.mk (b := b) (μ := fun i ↦ f.toMatrix b b i i) <| by
-    intro i
-    have : f (b i) = ∑ j, f.toMatrix b b j i • b j := by simp [toMatrix_apply, b.sum_repr]
-    have (j : ι) (hj : j ≠ i) : f.toMatrix b b j i = 0 := h hj
-    simp_all [hasEigenvector_iff, Finset.sum_eq_single i, b.ne_zero]
-
-/-- The diagonalization of the endomorphism indexed by `a`. -/
-def SimultaneousDiagonalization.diagonalization {ι : Type*} {f : α → Module.End R M}
-    (D : SimultaneousDiagonalization ι f) (a : α) : (f a).Diagonalization ι :=
-  Diagonalization.mk (D.hasEigenVector_μ a)
-
-@[ext]
-theorem SimultaneousDiagonalization.ext {ι : Type*} {f : α → End R M}
-    {D₁ D₂ : SimultaneousDiagonalization ι f} (h : D₁.toBasis = D₂.toBasis) : D₁ = D₂ := by
-  suffices D₁.μ = D₂.μ by cases D₁; cases D₂; simp_all only
-  ext a i
-  suffices D₁.μ a i • D₁.toBasis i = D₂.μ a i • D₁.toBasis i by
-    simpa using congr(D₁.toBasis.repr $this i)
-  rw [← (D₁.hasEigenVector_μ a i).apply_eq_smul, h, ← (D₂.hasEigenVector_μ a i).apply_eq_smul]
-
-example {ι} {f : Module.End R M} {D₁ D₂ : f.Diagonalization ι} (h : D₁.toBasis = D₂.toBasis) :
-    D₁ = D₂ := by
-  ext : 1
-  exact h
 
 lemma Diagonalization.toMatrix_eq_diagonal {ι : Type*} [Fintype ι] [DecidableEq ι]
     {f : End R M} (D : f.Diagonalization ι) : f.toMatrix D.toBasis D.toBasis = diagonal D.μ := by
@@ -155,7 +170,7 @@ lemma Diagonalization.toMatrix_eq_diagonal {ι : Type*} [Fintype ι] [DecidableE
   simp [toMatrix_apply, (D.hasEigenVector_μ j).apply_eq_smul]
   grind [Finsupp.single_apply, diagonal_apply]
 
--- note: [Nontrivial R] golfed in #29420
+/-- TODO: `[Nontrivial R]` golfed in #29420 -/
 lemma Diagonalization.charpoly_eq [Nontrivial R] {ι : Type*} [Fintype ι] [DecidableEq ι] [Free R M]
     [Module.Finite R M] {f : End R M} (D : f.Diagonalization ι) :
     f.charpoly = ∏ i, (X - C (D.μ i)) := by
@@ -184,7 +199,7 @@ but the f.g. condition is unnecessary for fields. If the
 `[IsPrincipalIdealRing R] [IsDomain R] [Free R M] [NoZeroSMulDivisors R M]` which handles both the
 field and PID cases.
 -/
-lemma exists_diagonalization_iff_directSum_eigenspace [DecidableEq K] [Free K M] {f : End K M} :
+lemma exists_diagonalization_iff_directSum_eigenspace [DecidableEq K] {f : End K M} :
     (∃ ι : Type v, Nonempty (f.Diagonalization ι)) ↔ DirectSum.IsInternal f.eigenspace := by
   constructor <;> intro h
   · obtain ⟨ι, ⟨D⟩⟩ := h
@@ -198,7 +213,7 @@ lemma exists_diagonalization_iff_directSum_eigenspace [DecidableEq K] [Free K M]
     rw [hasEigenvector_iff, B'.reindex_apply]
     exact ⟨h.collectedBasis_mem v _, B'.ne_zero _⟩
 
-lemma exists_diagonalization_iff_iSup_eigenspace [Free K M] {f : End K M} :
+lemma exists_diagonalization_iff_iSup_eigenspace {f : End K M} :
     (∃ ι : Type v, Nonempty (f.Diagonalization ι)) ↔ ⨆ μ, f.eigenspace μ = ⊤ := by classical calc
   _ ↔ DirectSum.IsInternal f.eigenspace := exists_diagonalization_iff_directSum_eigenspace
   _ ↔ _ := by
