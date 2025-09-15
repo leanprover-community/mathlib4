@@ -104,7 +104,7 @@ open Classical in
 noncomputable def standardPart (f : ℝ →+* K) (x y : K) : ℝ :=
   if H : ∃ r : ℝ, mk y < mk (x - f r * y) then Classical.choose H else 0
 
-theorem mk_lt_mk_sub_standardPart_mul (f : ℝ →+* K) (hf : StrictMono f)
+theorem mk_lt_mk_sub_standardPart (f : ℝ →+* K) (hf : StrictMono f)
     (hy : y ≠ 0) (h : mk y ≤ mk x) : mk y < mk (x - f (standardPart f x y) * y) := by
   have H := exists_mk_sub_real_mul_gt f hf hy h
   rw [standardPart, dif_pos H]
@@ -132,7 +132,7 @@ theorem standardPart_of_mk_lt_mk_sub (f : ℝ →+* K) (hf : StrictMono f) {r : 
       convert zero_add _
       exact mk_map_of_archimedean' ⟨f, hf.monotone⟩ h
     rw [← add_sub_cancel (standardPart f x y) r, f.map_add, add_mul, sub_add_eq_sub_sub,
-      mk_sub_eq_mk_right (hf' ▸ mk_lt_mk_sub_standardPart_mul f hf hy h'), hf']
+      mk_sub_eq_mk_right (hf' ▸ mk_lt_mk_sub_standardPart f hf hy h'), hf']
   · cases (mk_sub_le_mk_of_lt f hf h' r).not_gt (h'.trans h)
 
 @[simp]
@@ -169,7 +169,7 @@ theorem standardPart_mul_mul (f : ℝ →+* K) (hf : StrictMono f) {a : K} (ha :
     rw [mul_comm (f _), mul_assoc, ← mul_sub, mk_mul, mk_mul]
     apply LinearOrderedAddCommGroupWithTop.strictMono_add_right_of_ne_top _ ha
     rw [mul_comm]
-    exact mk_lt_mk_sub_standardPart_mul f hf hy h
+    exact mk_lt_mk_sub_standardPart f hf hy h
   · rw [standardPart_of_mk_lt_mk f hf h, standardPart_of_mk_lt_mk f hf]
     rw [mk_mul, mk_mul]
     exact LinearOrderedAddCommGroupWithTop.strictMono_add_right_of_ne_top _ ha h
