@@ -13,6 +13,7 @@ theorem Algebra.adjoin_trans {R S T : Type*} [CommSemiring R] [CommSemiring S] [
   have := congr_arg (Subalgebra.map (IsScalarTower.toAlgHom R S T)) hS
   rw [Algebra.map_top, AlgHom.map_adjoin, IsScalarTower.coe_toAlgHom'] at this
   rw [adjoin_union_eq_adjoin_adjoin, this, ← IsScalarTower.adjoin_range_toAlgHom]
+-- It's adjoin_algebraMap_image_union_eq_adjoin_adjoin
 
 -- This probably true more generally and already proved somewhere...
 attribute [local instance] FractionRing.liftAlgebra in
@@ -81,6 +82,7 @@ variable {A K C M : Type*} [CommRing A] [Field K] [CommRing C] [Field M] [Algebr
   [IsScalarTower B₂ L₂ M] [Algebra.IsSeparable K M] [FiniteDimensional K M]
 
 variable (A C B₁ B₂) in
+-- Give the differentIdeal version too
 theorem traceDual_le_span_traceDual [IsLocalization (algebraMapSubmonoid B₂ A⁰) L₂]
     [Module.Free A B₂] [Module.Finite A B₂]
     (h₁ : L₁.LinearDisjoint L₂) (h₂ : L₁ ⊔ L₂ = ⊤) :
@@ -109,6 +111,7 @@ theorem traceDual_le_span_traceDual [IsLocalization (algebraMapSubmonoid B₂ A�
   rw [SetLike.mem_coe, ← restrictScalars_mem A, traceDual_span_of_basis A _ b₂
     (by rw [Basis.localizationLocalization_span K A⁰ L₂]; ext; simp)]
   exact Submodule.subset_span <| Set.mem_range_self i
+
 
 variable [IsDomain A] [IsDomain B₁]
   [IsIntegrallyClosed A] [IsIntegrallyClosed B₁] [IsDedekindDomain B₂] [IsDedekindDomain C]
