@@ -11,9 +11,9 @@ import Mathlib.Tactic.ApplyFun
 import Mathlib.Data.Set.Subsingleton
 
 /-!
-# The category of finite boolean algebras
+# The category of finite Boolean algebras
 
-This file defines `FinBoolAlg`, the category of finite boolean algebras.
+This file defines `FinBoolAlg`, the category of finite Boolean algebras.
 
 ## TODO
 
@@ -32,7 +32,7 @@ universe u
 
 open CategoryTheory OrderDual Opposite
 
-/-- The category of finite boolean algebras with bounded lattice morphisms. -/
+/-- The category of finite Boolean algebras with bounded lattice morphisms. -/
 structure FinBoolAlg extends BoolAlg where
   [isFintype : Fintype toBoolAlg]
 
