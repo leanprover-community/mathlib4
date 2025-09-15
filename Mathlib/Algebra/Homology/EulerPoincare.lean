@@ -160,6 +160,50 @@ theorem polyhedron_euler_as_special_case
   -- This follows from the general Euler-Poincaré formula
   exact euler_poincare_formula C n
 
+/-- The key theorem: For a complex that becomes acyclic after augmentation,
+the Euler characteristic of the original complex equals 1 (or more generally,
+the dimension of the augmentation space).
+
+This captures the situation with polyhedra: the augmented complex is acyclic,
+which forces the original complex to have Euler characteristic 1. -/
+theorem euler_char_of_acyclic_augmentation (C : ChainComplex (ModuleCat k) ℕ) (N : ℕ)
+    [∀ i : ℕ, C.HasHomology i]
+    [∀ i : ℕ, Module.Finite k (C.X i)]
+    (hN_pos : 0 < N)
+    (hC_bounded : ∀ i > N, IsZero (C.X i))  -- Complex is zero above N
+    -- The key assumption: there exists an augmentation map ε: C_0 → k
+    -- such that the augmented complex is acyclic
+    (hC_augmented_acyclic : ∃ (ε : C.X 0 ⟶ ModuleCat.of k k),
+      -- The augmented complex has the form: ... → C_1 → C_0 → k → 0
+      -- and this augmented complex is acyclic
+      True) :  -- We'd need to properly formulate augmented acyclicity
+    eulerChar' C N = 1 := by
+  -- The idea:
+  -- 1. The augmented complex has Euler char = 0 (since it's acyclic)
+  -- 2. The augmented complex adds one term: -1 * dim(k) = -1
+  -- 3. So χ(original) - 1 = 0, hence χ(original) = 1
+  sorry
+
+/-- For a 2D polyhedron (surface), the homology is:
+- H_0 = ℤ (connected)
+- H_1 = 0 (no holes)
+- H_2 = ℤ (encloses volume)
+This gives homological Euler char = 1 - 0 + 1 = 2 -/
+theorem polyhedron_homology_euler_char (C : ChainComplex (ModuleCat k) ℕ)
+    [∀ i : ℕ, C.HasHomology i]
+    [∀ i : ℕ, Module.Finite k (C.X i)]
+    (hC_bounded : ∀ i > 2, IsZero (C.X i))
+    -- Homology assumptions for a spherical polyhedron
+    (h0 : Module.finrank k (C.homology 0) = 1)  -- connected
+    (h1 : Module.finrank k (C.homology 1) = 0)  -- no holes
+    (h2 : Module.finrank k (C.homology 2) = 1) : -- encloses volume
+    homology_eulerChar C 2 = 2 := by
+  unfold homology_eulerChar
+  simp only [Finset.sum_range_succ, Finset.sum_range_zero]
+  rw [h0, h1, h2]
+  simp only [pow_zero, pow_one, pow_two]
+  ring
+
 end Connection
 
 end ChainComplex
