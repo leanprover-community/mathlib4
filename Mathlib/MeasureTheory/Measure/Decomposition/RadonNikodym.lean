@@ -542,7 +542,7 @@ theorem rnDeriv_mconv [SFinite μ] {ν₁ ν₂ : Measure G} [IsFiniteMeasure ν
   exact (lintegral_rnDeriv_lt_top (ν₁ ∗ₘ ν₂) μ).ne
 
 @[to_additive]
-theorem rnDeriv_mconv' [SigmaFinite μ] (ν₁ ν₂ : Measure G) [SigmaFinite ν₁] [SigmaFinite ν₂]
+theorem rnDeriv_mconv' [SigmaFinite μ] {ν₁ ν₂ : Measure G} [SigmaFinite ν₁] [SigmaFinite ν₂]
     (hν₁ : ν₁ ≪ μ) (hν₂ : ν₂ ≪ μ) :
     (ν₁ ∗ₘ ν₂).rnDeriv μ =ᵐ[μ] (ν₁.rnDeriv μ) ⋆ₘₗ[μ] (ν₂.rnDeriv μ) := by
   rw [← withDensity_eq_iff_of_sigmaFinite (by fun_prop) (by fun_prop),
