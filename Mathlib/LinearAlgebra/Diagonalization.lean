@@ -68,6 +68,7 @@ A diagonalization of a linear map $T : V \to V$ is a basis of $V$ consisting of 
 -/
 def Diagonalization (ι : Type*) (f : End R M) := SimultaneousDiagonalization ι fun _ : Unit ↦ f
 
+@[ext]
 theorem Diagonalization.ext {ι : Type*} {f : Module.End R M} {D₁ D₂ : f.Diagonalization ι}
     (h : D₁.toBasis = D₂.toBasis) : D₁ = D₂ :=
   SimultaneousDiagonalization.ext h
@@ -146,23 +147,43 @@ def Diagonalization.smul {ι : Type*} {f : End R M} (D : f.Diagonalization ι) (
     (c • f).Diagonalization ι :=
   SimultaneousDiagonalization.smul D c
 
+/-- Any simultaneous diagonalization of `f` also diagonalizes `f + c • 1`. -/
+def SimultaneousDiagonalization.add_smul {ι : Type*} {f : α → End R M}
+    (D : SimultaneousDiagonalization ι f) (c : R) : SimultaneousDiagonalization ι (f + c • 1) where
+  toBasis := D.toBasis
+  μ := fun a i ↦ c + D.μ a i
+  hasEigenVector_μ a i := by
+    have := D.hasEigenVector_μ a i
+    simp_all [hasEigenvector_iff, _root_.add_smul, add_comm]
+
+/-- Any diagonalization of `f` also diagonalizes `f + c • 1`. -/
+def Diagonalization.add_smul {ι : Type*} {f : End R M} (D : f.Diagonalization ι) (c : R) :
+    (f + c • 1).Diagonalization ι :=
+  SimultaneousDiagonalization.add_smul D c
+
 /-- Any simultaneous diagonalization of `f` also diagonalizes `f i + f j` for any `i` and `j`. -/
 def SimultaneousDiagonalization.diagonalization_add [Fintype α] {ι : Type*} {f : α → End R M}
     (D : SimultaneousDiagonalization ι f) (i j : α) : (f i + f j).Diagonalization ι :=
-  Diagonalization.mk (b := D.toBasis) (μ := fun k ↦ D.μ i k + D.μ j k) <| by
-    sorry
+  Diagonalization.mk (b := D.toBasis) (μ := fun k ↦ D.μ i k + D.μ j k) <| fun k ↦ by
+    have := D.hasEigenVector_μ i k
+    have := D.hasEigenVector_μ j k
+    simp_all [hasEigenvector_iff, _root_.add_smul]
 
 /-- Any simultaneous diagonalization of `f` also diagonalizes `∑ a, f a`. -/
-def SimultaneousDiagonalization.diagonalization_sum [Fintype α] {ι : Type*} {f : α → End R M}
-    (D : SimultaneousDiagonalization ι f) : (∑ a, f a).Diagonalization ι :=
-  Diagonalization.mk (b := D.toBasis) (μ := fun i ↦ ∑ a, D.μ a i) <| by
-    sorry
+def SimultaneousDiagonalization.diagonalization_sum [Fintype α] [Nontrivial R]
+    {ι : Type*} {f : α → End R M} (D : SimultaneousDiagonalization ι f) :
+    (∑ a, f a).Diagonalization ι :=
+  Diagonalization.mk (b := D.toBasis) (μ := fun i ↦ ∑ a, D.μ a i) <| fun k ↦ by
+    have := (D.hasEigenVector_μ · k)
+    simp_all [hasEigenvector_iff, D.toBasis.ne_zero, Finset.sum_smul]
 
 /-- Any simultaneous diagonalization of `f` also diagonalizes `f i * f j` for any `i` and `j`. -/
 def SimultaneousDiagonalization.diagonalization_mul [Fintype α] {ι : Type*} {f : α → End R M}
     (D : SimultaneousDiagonalization ι f) (i j : α) : (f i * f j).Diagonalization ι :=
-  Diagonalization.mk (b := D.toBasis) (μ := fun k ↦ D.μ i k * D.μ j k) <| by
-    sorry
+  Diagonalization.mk (b := D.toBasis) (μ := fun k ↦ D.μ i k * D.μ j k) <| fun k ↦ by
+    have := D.hasEigenVector_μ i k
+    have := D.hasEigenVector_μ j k
+    simp_all [hasEigenvector_iff, smul_smul, mul_comm]
 
 lemma Diagonalization.toMatrix_eq_diagonal {ι : Type*} [Fintype ι] [DecidableEq ι]
     {f : End R M} (D : f.Diagonalization ι) : f.toMatrix D.toBasis D.toBasis = diagonal D.μ := by
@@ -195,7 +216,8 @@ lemma Diagonalization.iSup_eigenspace {ι : Type*} {f : End R M} (D : f.Diagonal
 TODO: This proof also goes through for
 `[IsPrincipalIdealRing R] [IsDomain R] [Module.Finite R M] [NoZeroSMulDivisors R M]`,
 but the f.g. condition is unnecessary for fields. If the
-`proof_wanted Submodule.free_of_free_of_pid` is resolved, then we can change the assumption here to
+`proof_wanted Submodule.free_of_free_of_pid` in LinearAlgebra.FreeModule.PID is resolved,
+then we can change the assumption here to
 `[IsPrincipalIdealRing R] [IsDomain R] [Free R M] [NoZeroSMulDivisors R M]` which handles both the
 field and PID cases.
 -/
@@ -223,14 +245,12 @@ proof_wanted exists_diagonalization_iff_minpoly_splits_and_squarefree {f : End K
     (∃ ι : Type v, Nonempty (f.Diagonalization ι)) ↔
     (minpoly K f).Splits (RingHom.id K) ∧ Squarefree (minpoly K f)
 
-proof_wanted Diagonalization.isSemisimple {ι : Type*} [IsSemisimpleModule R M]
-    {f : End R M} (D : f.Diagonalization ι) : f.IsSemisimple
+-- May need additional assumptions on `R` and `M` for this to hold.
+proof_wanted Diagonalization.isSemisimple {ι : Type*} {f : End R M} (D : f.Diagonalization ι) :
+  f.IsSemisimple
 
--- This is proved: https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/diagonalizable.20linear.20maps/near/539282397
-theorem LinearMap.Diagonalization.μ_equiv {ι ι' R M : Type*} [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M]
-    {f : Module.End R M} {D₁ : f.Diagonalization ι} {D₂ : f.Diagonalization ι'} :
-    ∃ e : ι ≃ ι', D₁.μ = D₂.μ ∘ e := by
-  sorry
+proof_wanted SimultaneousDiagonalization.commute {ι : Type*} {f : α → End R M}
+    (D : SimultaneousDiagonalization ι f) (i j : α) : Commute (f i) (f j)
 
 proof_wanted exists_simultaneousDiagonalization_iff_commute {f : α → End R M} :
     (∃ ι : Type v, Nonempty (SimultaneousDiagonalization ι f)) ↔
