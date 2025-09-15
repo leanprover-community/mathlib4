@@ -3,6 +3,7 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.LinearAlgebra.AffineSpace.Centroid
 import Mathlib.LinearAlgebra.AffineSpace.Independent
 import Mathlib.LinearAlgebra.AffineSpace.Pointwise
 import Mathlib.LinearAlgebra.Basis.SMul
@@ -25,21 +26,21 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 
 ## Main definitions
 
- * `AffineBasis`: a structure representing an affine basis of an affine space.
- * `AffineBasis.coord`: the map `P →ᵃ[k] k` corresponding to `i : ι`.
- * `AffineBasis.coord_apply_eq`: the behaviour of `AffineBasis.coord i` on `p i`.
- * `AffineBasis.coord_apply_ne`: the behaviour of `AffineBasis.coord i` on `p j` when `j ≠ i`.
- * `AffineBasis.coord_apply`: the behaviour of `AffineBasis.coord i` on `p j` for general `j`.
- * `AffineBasis.coord_apply_combination`: the characterisation of `AffineBasis.coord i` in terms
-    of affine combinations, i.e., `AffineBasis.coord i (w₀ p₀ + w₁ p₁ + ⋯) = wᵢ`.
+* `AffineBasis`: a structure representing an affine basis of an affine space.
+* `AffineBasis.coord`: the map `P →ᵃ[k] k` corresponding to `i : ι`.
+* `AffineBasis.coord_apply_eq`: the behaviour of `AffineBasis.coord i` on `p i`.
+* `AffineBasis.coord_apply_ne`: the behaviour of `AffineBasis.coord i` on `p j` when `j ≠ i`.
+* `AffineBasis.coord_apply`: the behaviour of `AffineBasis.coord i` on `p j` for general `j`.
+* `AffineBasis.coord_apply_combination`: the characterisation of `AffineBasis.coord i` in terms
+  of affine combinations, i.e., `AffineBasis.coord i (w₀ p₀ + w₁ p₁ + ⋯) = wᵢ`.
 
 ## TODO
 
- * Construct the affine equivalence between `P` and `{ f : ι →₀ k | f.sum = 1 }`.
+* Construct the affine equivalence between `P` and `{ f : ι →₀ k | f.sum = 1 }`.
 
 -/
 
-open Affine Set
+open Affine Module Set
 open scoped Pointwise
 
 universe u₁ u₂ u₃ u₄
@@ -47,6 +48,9 @@ universe u₁ u₂ u₃ u₄
 /-- An affine basis is a family of affine-independent points whose span is the top subspace. -/
 structure AffineBasis (ι : Type u₁) (k : Type u₂) {V : Type u₃} (P : Type u₄) [AddCommGroup V]
   [AffineSpace V P] [Ring k] [Module k V] where
+  /-- The underlying family of points.
+
+  Do NOT use directly. Use the coercion instead. -/
   protected toFun : ι → P
   protected ind' : AffineIndependent k toFun
   protected tot' : affineSpan k (range toFun) = ⊤
@@ -147,7 +151,7 @@ theorem coord_reindex (i : ι') : (b.reindex e).coord i = b.coord (e.symm i) := 
 
 @[simp]
 theorem coord_apply_eq (i : ι) : b.coord i (b i) = 1 := by
-  simp only [coord, Basis.coe_sumCoords, LinearEquiv.map_zero, LinearEquiv.coe_coe, sub_zero,
+  simp only [coord, Basis.coe_sumCoords, LinearEquiv.map_zero, sub_zero,
     AffineMap.coe_mk, Finsupp.sum_zero_index, vsub_self]
 
 @[simp]
@@ -166,11 +170,14 @@ theorem coord_apply_combination_of_mem (hi : i ∈ s) {w : ι → k} (hw : s.sum
       s.map_affineCombination b w hw]
 
 @[simp]
-theorem coord_apply_combination_of_not_mem (hi : i ∉ s) {w : ι → k} (hw : s.sum w = 1) :
+theorem coord_apply_combination_of_notMem (hi : i ∉ s) {w : ι → k} (hw : s.sum w = 1) :
     b.coord i (s.affineCombination k b w) = 0 := by
   classical simp only [coord_apply, hi, Finset.affineCombination_eq_linear_combination, if_false,
       mul_boole, hw, Function.comp_apply, smul_eq_mul, s.sum_ite_eq,
       s.map_affineCombination b w hw]
+
+@[deprecated (since := "2025-05-23")]
+alias coord_apply_combination_of_not_mem := coord_apply_combination_of_notMem
 
 @[simp]
 theorem sum_coord_apply_eq_one [Fintype ι] (q : P) : ∑ i, b.coord i q = 1 := by

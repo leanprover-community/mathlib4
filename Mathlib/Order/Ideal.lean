@@ -145,17 +145,19 @@ theorem mem_of_mem_of_le {x : P} {I J : Ideal P} : x ∈ I → I ≤ J → x ∈
   @Set.mem_of_mem_of_subset P x I J
 
 /-- A proper ideal is one that is not the whole set.
-    Note that the whole set might not be an ideal. -/
+Note that the whole set might not be an ideal. -/
 @[mk_iff]
 class IsProper (I : Ideal P) : Prop where
   /-- This ideal is not the whole set. -/
   ne_univ : (I : Set P) ≠ univ
 
-theorem isProper_of_not_mem {I : Ideal P} {p : P} (nmem : p ∉ I) : IsProper I :=
+theorem isProper_of_notMem {I : Ideal P} {p : P} (notMem : p ∉ I) : IsProper I :=
   ⟨fun hp ↦ by
     have := mem_univ p
     rw [← hp] at this
-    exact nmem this⟩
+    exact notMem this⟩
+
+@[deprecated (since := "2025-05-23")] alias isProper_of_not_mem := isProper_of_notMem
 
 /-- An ideal is maximal if it is maximal in the collection of proper ideals.
 
@@ -235,7 +237,9 @@ theorem top_of_top_mem (h : ⊤ ∈ I) : I = ⊤ := by
   ext
   exact iff_of_true (I.lower le_top h) trivial
 
-theorem IsProper.top_not_mem (hI : IsProper I) : ⊤ ∉ I := fun h ↦ hI.ne_top <| top_of_top_mem h
+theorem IsProper.top_notMem (hI : IsProper I) : ⊤ ∉ I := fun h ↦ hI.ne_top <| top_of_top_mem h
+
+@[deprecated (since := "2025-05-23")] alias IsProper.top_not_mem := IsProper.top_notMem
 
 end OrderTop
 
@@ -384,8 +388,11 @@ theorem mem_inf : x ∈ I ⊓ J ↔ x ∈ I ∧ x ∈ J :=
 theorem mem_sup : x ∈ I ⊔ J ↔ ∃ i ∈ I, ∃ j ∈ J, x ≤ i ⊔ j :=
   Iff.rfl
 
-theorem lt_sup_principal_of_not_mem (hx : x ∉ I) : I < I ⊔ principal x :=
+theorem lt_sup_principal_of_notMem (hx : x ∉ I) : I < I ⊔ principal x :=
   le_sup_left.lt_of_ne fun h ↦ hx <| by simpa only [left_eq_sup, principal_le_iff] using h
+
+@[deprecated (since := "2025-05-23")]
+alias lt_sup_principal_of_not_mem := lt_sup_principal_of_notMem
 
 end SemilatticeSupDirected
 
@@ -448,15 +455,21 @@ section BooleanAlgebra
 
 variable [BooleanAlgebra P] {x : P} {I : Ideal P}
 
-theorem IsProper.not_mem_of_compl_mem (hI : IsProper I) (hxc : xᶜ ∈ I) : x ∉ I := by
+theorem IsProper.notMem_of_compl_mem (hI : IsProper I) (hxc : xᶜ ∈ I) : x ∉ I := by
   intro hx
-  apply hI.top_not_mem
+  apply hI.top_notMem
   have ht : x ⊔ xᶜ ∈ I := sup_mem ‹_› ‹_›
   rwa [sup_compl_eq_top] at ht
 
-theorem IsProper.not_mem_or_compl_not_mem (hI : IsProper I) : x ∉ I ∨ xᶜ ∉ I := by
-  have h : xᶜ ∈ I → x ∉ I := hI.not_mem_of_compl_mem
+@[deprecated (since := "2025-05-23")]
+alias IsProper.not_mem_of_compl_mem := IsProper.notMem_of_compl_mem
+
+theorem IsProper.notMem_or_compl_notMem (hI : IsProper I) : x ∉ I ∨ xᶜ ∉ I := by
+  have h : xᶜ ∈ I → x ∉ I := hI.notMem_of_compl_mem
   tauto
+
+@[deprecated (since := "2025-05-23")]
+alias IsProper.not_mem_or_compl_not_mem := IsProper.notMem_or_compl_notMem
 
 end BooleanAlgebra
 
@@ -470,9 +483,6 @@ structure Cofinal (P) [Preorder P] where
   carrier : Set P
   /-- The `Cofinal` contains arbitrarily large elements. -/
   isCofinal : IsCofinal carrier
-
-@[deprecated Cofinal.isCofinal (since := "2024-12-02")]
-alias Cofinal.mem_gt := Cofinal.isCofinal
 
 namespace Cofinal
 

@@ -29,7 +29,7 @@ def Comp (v : TypeVec.{u} m) : Type _ :=
 
 namespace Comp
 
-open MvFunctor MvPFunctor
+open MvPFunctor
 
 variable {F G} {α β : TypeVec.{u} m} (f : α ⟹ β)
 

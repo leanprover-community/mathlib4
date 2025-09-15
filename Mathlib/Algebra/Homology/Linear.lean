@@ -15,7 +15,7 @@ category `C` is `R`-linear.
 ## TODO
 
 - show lemmas like `HomologicalComplex.homologyMap_smul` (after doing the same
-for short complexes in `Mathlib.Algebra.Homology.ShortComplex.Linear`)
+for short complexes in `Mathlib/Algebra/Homology/ShortComplex/Linear.lean`)
 
 -/
 
@@ -39,10 +39,10 @@ lemma smul_f_apply (r : R) (f : X ⟶ Y) (n : ι) : (r • f).f n = r • f.f n 
 lemma units_smul_f_apply (r : Rˣ) (f : X ⟶ Y) (n : ι) : (r • f).f n = r • f.f n := rfl
 
 instance (X Y : HomologicalComplex C c) : Module R (X ⟶ Y) where
-  one_smul a := by aesop_cat
-  smul_zero := by aesop_cat
-  smul_add := by aesop_cat
-  zero_smul := by aesop_cat
+  one_smul a := by cat_disch
+  smul_zero := by cat_disch
+  smul_add := by cat_disch
+  zero_smul := by cat_disch
   add_smul _ _ _ := by ext; apply add_smul
   mul_smul _ _ _ := by ext; apply mul_smul
 
@@ -52,4 +52,4 @@ end HomologicalComplex
 
 instance CategoryTheory.Functor.mapHomologicalComplex_linear
     (F : C ⥤ D) [F.Additive] [Functor.Linear R F] (c : ComplexShape ι) :
-  Functor.Linear R (F.mapHomologicalComplex c) where
+    Functor.Linear R (F.mapHomologicalComplex c) where

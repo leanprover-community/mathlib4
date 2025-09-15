@@ -13,7 +13,7 @@ import Mathlib.Topology.Algebra.Module.FiniteDimension
 # Strongly measurable and finitely strongly measurable functions
 
 This file contains some further development of strongly measurable and finitely strongly measurable
-functions, started in `Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic`.
+functions, started in `Mathlib/MeasureTheory/Function/StronglyMeasurable/Basic.lean`.
 
 ## References
 

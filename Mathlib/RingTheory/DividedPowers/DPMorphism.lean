@@ -161,7 +161,7 @@ def fromGens {f : A →+* B} {S : Set A} (hS : I = span S) (hf : I.map f ≤ J)
   ideal_comp         := hf
   dpow_comp {n} x hx := by
     have hS' : S ⊆ ideal_from_ringHom hI hJ hf := fun y hy ↦ by
-      simp only [mem_coe, ideal_from_ringHom, Submodule.mem_mk, mem_sep_iff]
+      simp only [mem_coe, ideal_from_ringHom, Submodule.mem_mk]
       exact ⟨hS ▸ subset_span hy, fun n => h y hy⟩
     rw [← span_le, ← hS] at hS'
     exact ((hS' hx).2 n).symm
@@ -218,7 +218,7 @@ protected def comp (g : DPMorphism hJ hK) (f : DPMorphism hI hJ) :
   mk' (IsDPMorphism.comp hK g.isDPMorphism f.isDPMorphism)
 
 @[simp] lemma comp_toRingHom (g : DPMorphism hJ hK) (f : DPMorphism hI hJ) :
-  (g.comp f).toRingHom = g.toRingHom.comp f.toRingHom := rfl
+    (g.comp f).toRingHom = g.toRingHom.comp f.toRingHom := rfl
 
 end DPMorphism
 

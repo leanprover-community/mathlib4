@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.SmallObject.Iteration.FunctorOfCocone
 # Existence of the iteration of a successor structure
 
 Given `Φ : SuccStruct C`, we show by transfinite induction
-that for any element `j` in a well ordered set `J`,
+that for any element `j` in a well-ordered set `J`,
 the type `Φ.Iteration j` is nonempty.
 
 -/
@@ -65,6 +65,7 @@ noncomputable def mkOfSucc {j : J} (hj : ¬IsMax j) (iter : Φ.Iteration j) :
     rintro ⟨k₁, h₁⟩ ⟨k₂, h₂⟩ f
     dsimp
     rw [← arrowMap, ← arrowMap, arrowMap_extendToSucc]
+    rfl
 
 namespace mkOfLimit
 
@@ -128,6 +129,7 @@ noncomputable def mkOfLimit {j : J} (hj : Order.IsSuccLimit j)
       apply Arrow.functor_ext
       rintro ⟨l₁, hl₁⟩ ⟨l₂, hl₂⟩ f
       dsimp
+      generalize_proofs
       rw [← arrowMap, ← arrowMap, arrowMap_functor hj iter l₁ l₂ _ (hl₂.trans hij),
         arrow_mk_mapObj]
       apply congr_arrowMap
@@ -136,6 +138,7 @@ noncomputable def mkOfLimit {j : J} (hj : Order.IsSuccLimit j)
       apply Arrow.functor_ext
       rintro ⟨l₁, hl₁⟩ ⟨l₂, hl₂⟩ f
       dsimp
+      generalize_proofs
       rw [← arrowMap, arrow_mk_mapObj, arrowMap_functor _ _ _ _ _ hl₂, arrow_mk_mapObj]
 
 variable (Φ)

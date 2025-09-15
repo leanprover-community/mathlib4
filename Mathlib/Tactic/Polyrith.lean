@@ -75,7 +75,7 @@ inductive Poly
   | div : Poly → Poly → Poly
   | pow : Poly → Poly → Poly
   | neg : Poly → Poly
-  deriving BEq, Repr
+  deriving BEq
 
 /--
 This converts a poly object into a string representing it. The string
@@ -154,7 +154,7 @@ partial def parse {u : Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
 
 /-- The possible hypothesis sources for a polyrith proof. -/
 inductive Source where
-  /-- `input n` refers to the `n`'th input `ai` in `polyrith [a1, ..., an]`. -/
+  /-- `input n` refers to the `n`-th input `ai` in `polyrith [a1, ..., an]`. -/
   | input : Nat → Source
   /-- `fvar h` refers to hypothesis `h` from the local context. -/
   | fvar : FVarId → Source
@@ -247,10 +247,13 @@ structure SageCoeffAndPower where
   /-- The function call produces an array of polynomials
   parallel to the input list of hypotheses. -/
   coeffs : Array Poly
-  /-- Sage produces an exponent (default 1) in the case where the hypothesess
+  /-- Sage produces an exponent (default 1) in the case where the hypotheses
   sum to a power of the goal. -/
   power  : ℕ
   deriving FromJson, Repr
+
+-- See https://github.com/leanprover/lean4/issues/10295
+attribute [nolint unusedArguments] Mathlib.Tactic.Polyrith.instReprSageCoeffAndPower.repr
 
 /-- The result of a sage call in the success case. -/
 structure SageSuccess where
@@ -261,6 +264,9 @@ structure SageSuccess where
   parallel to the input list of hypotheses and an exponent for the goal. -/
   data : Option SageCoeffAndPower := none
   deriving FromJson, Repr
+
+-- See https://github.com/leanprover/lean4/issues/10295
+attribute [nolint unusedArguments] Mathlib.Tactic.Polyrith.instReprSageSuccess.repr
 
 /-- The result of a sage call in the failure case. -/
 structure SageError where

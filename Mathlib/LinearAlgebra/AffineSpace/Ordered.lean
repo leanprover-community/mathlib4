@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Synonym
 import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 import Mathlib.LinearAlgebra.AffineSpace.Slope
@@ -43,21 +42,23 @@ other arguments belong to specific domains.
 section OrderedRing
 
 variable [Ring k] [PartialOrder k] [IsOrderedRing k]
-  [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module k E] [OrderedSMul k E]
+  [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module k E] [IsStrictOrderedModule k E]
 variable {a a' b b' : E} {r r' : k}
 
 theorem lineMap_mono_left (ha : a ≤ a') (hr : r ≤ 1) : lineMap a b r ≤ lineMap a' b r := by
   simp only [lineMap_apply_module]
-  exact add_le_add_right (smul_le_smul_of_nonneg_left ha (sub_nonneg.2 hr)) _
+  gcongr
+  exact sub_nonneg.2 hr
 
 theorem lineMap_strict_mono_left (ha : a < a') (hr : r < 1) : lineMap a b r < lineMap a' b r := by
   simp only [lineMap_apply_module]
-  exact add_lt_add_right (smul_lt_smul_of_pos_left ha (sub_pos.2 hr)) _
+  gcongr
+  exact sub_pos.2 hr
 
 omit [IsOrderedRing k] in
 theorem lineMap_mono_right (hb : b ≤ b') (hr : 0 ≤ r) : lineMap a b r ≤ lineMap a b' r := by
   simp only [lineMap_apply_module]
-  exact add_le_add_left (smul_le_smul_of_nonneg_left hb hr) _
+  gcongr
 
 omit [IsOrderedRing k] in
 theorem lineMap_strict_mono_right (hb : b < b') (hr : 0 < r) : lineMap a b r < lineMap a b' r := by
@@ -72,6 +73,8 @@ theorem lineMap_strict_mono_endpoints (ha : a < a') (hb : b < b') (h₀ : 0 ≤ 
     lineMap a b r < lineMap a' b' r := by
   rcases h₀.eq_or_lt with (rfl | h₀); · simpa
   exact (lineMap_mono_left ha.le h₁).trans_lt (lineMap_strict_mono_right hb h₀)
+
+variable [PosSMulReflectLT k E]
 
 theorem lineMap_lt_lineMap_iff_of_lt (h : r < r') : lineMap a b r < lineMap a b r' ↔ a < b := by
   simp only [lineMap_apply_module]
@@ -95,7 +98,7 @@ end OrderedRing
 section LinearOrderedRing
 
 variable [Ring k] [LinearOrder k] [IsStrictOrderedRing k]
-  [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module k E] [OrderedSMul k E]
+  [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module k E] [IsStrictOrderedModule k E]
   [Invertible (2 : k)] {a a' b b' : E} {r r' : k}
 
 theorem midpoint_le_midpoint (ha : a ≤ a') (hb : b ≤ b') : midpoint k a b ≤ midpoint k a' b' :=
@@ -107,7 +110,7 @@ section LinearOrderedField
 
 variable [Field k] [LinearOrder k] [IsStrictOrderedRing k]
   [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E]
-variable [Module k E] [OrderedSMul k E]
+variable [Module k E] [IsStrictOrderedModule k E] [PosSMulReflectLE k E]
 
 section
 
@@ -272,3 +275,25 @@ theorem lineMap_lt_map_iff_slope_lt_slope (hab : a < b) (h₀ : 0 < r) (h₁ : r
   map_lt_lineMap_iff_slope_lt_slope (E := Eᵒᵈ) hab h₀ h₁
 
 end LinearOrderedField
+
+
+lemma slope_pos_iff {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    {f : 𝕜 → 𝕜} {x₀ b : 𝕜} (hb : x₀ < b) :
+    0 < slope f x₀ b ↔ f x₀ < f b := by
+  simp [slope, hb]
+
+lemma slope_pos_iff_gt {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    {f : 𝕜 → 𝕜} {x₀ b : 𝕜} (hb : b < x₀) :
+    0 < slope f x₀ b ↔ f b < f x₀ := by
+  rw [slope_comm, slope_pos_iff hb]
+
+lemma pos_of_slope_pos {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    {f : 𝕜 → 𝕜} {x₀ b : 𝕜}
+    (hb : x₀ < b) (hbf : 0 < slope f x₀ b) (hf : f x₀ = 0) : 0 < f b := by
+  simp_all [slope]
+
+lemma neg_of_slope_pos {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    {f : 𝕜 → 𝕜} {x₀ b : 𝕜}
+    (hb : b < x₀) (hbf : 0 < slope f x₀ b) (hf : f x₀ = 0) : f b < 0 := by
+  rwa [slope_pos_iff_gt, hf] at hbf
+  exact hb

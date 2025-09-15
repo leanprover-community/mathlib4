@@ -26,7 +26,7 @@ lemma prod_preimage' (f : ι → κ) [DecidablePred (· ∈ Set.range f)] (s : F
   classical
   calc
     ∏ x ∈ preimage s f hf, g (f x) = ∏ x ∈ image f (preimage s f hf), g x :=
-      Eq.symm <| prod_image <| by simpa only [mem_preimage, Set.InjOn] using hf
+      Eq.symm <| prod_image <| by simpa [mem_preimage, Set.InjOn] using hf
     _ = ∏ x ∈ s with x ∈ Set.range f, g x := by rw [image_preimage]
 
 @[to_additive]

@@ -93,7 +93,7 @@ theorem mul_right_of_commute [IsLinearTopology Rᵐᵒᵖ R]
 
 /-- If `a` and `b` commute and `b` is topologically nilpotent,
   then `a * b` is topologically nilpotent. -/
- theorem mul_left_of_commute [IsLinearTopology R R] {a b : R}
+theorem mul_left_of_commute [IsLinearTopology R R] {a b : R}
     (hb : IsTopologicallyNilpotent b) (hab : Commute a b) :
     IsTopologicallyNilpotent (a * b) := by
   simp_rw [IsTopologicallyNilpotent, hab.mul_pow]
@@ -124,7 +124,7 @@ theorem mul_right {a : R} (ha : IsTopologicallyNilpotent a) (b : R) :
   ha.mul_right_of_commute (Commute.all ..)
 
 /-- If `b` is topologically nilpotent, then `a * b` is topologically nilpotent. -/
- theorem mul_left (a : R) {b : R} (hb : IsTopologicallyNilpotent b) :
+theorem mul_left (a : R) {b : R} (hb : IsTopologicallyNilpotent b) :
     IsTopologicallyNilpotent (a * b) :=
   hb.mul_left_of_commute (Commute.all ..)
 

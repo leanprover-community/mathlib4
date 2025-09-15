@@ -21,11 +21,6 @@ theorem Set.star_mem_center (ha : a ∈ Set.center R) : star a ∈ Set.center R 
     _ = star (star c * (star b * a)) := by rw [ha.right_assoc]
     _ = star (star b * a) * c := by rw [star_mul, star_star]
     _ = (star a * b) * c := by rw [star_mul, star_star]
-  mid_assoc b c := calc
-    b * star a * c = star (star c * star (b * star a)) := by rw [← star_mul, star_star]
-    _ = star (star c * (a * star b)) := by rw [star_mul b, star_star]
-    _ = star ((star c * a) * star b) := by rw [ha.mid_assoc]
-    _ = b * (star a * c) := by rw [star_mul, star_star, star_mul (star c), star_star]
   right_assoc b c := calc
     b * c * star a = star (a * star (b * c)) := by rw [star_mul, star_star]
     _ = star (a * (star c * star b)) := by rw [star_mul b]

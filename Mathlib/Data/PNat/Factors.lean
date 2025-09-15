@@ -22,26 +22,13 @@ the multiplicity of `p` in this factors multiset being the p-adic valuation of `
 -/
 
 /-- The type of multisets of prime numbers.  Unique factorization
- gives an equivalence between this set and ℕ+, as we will formalize
- below. -/
+gives an equivalence between this set and ℕ+, as we will formalize
+below. -/
 def PrimeMultiset :=
-  Multiset Nat.Primes deriving Inhabited, AddCommMonoid, DistribLattice,
-  SemilatticeSup, Sub
--- The `CanonicallyOrderedAdd, OrderBot, OrderedSub` instances should be constructed by a deriving
--- handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance : IsOrderedCancelAddMonoid PrimeMultiset :=
-  inferInstanceAs (IsOrderedCancelAddMonoid (Multiset Nat.Primes))
-
-instance : CanonicallyOrderedAdd PrimeMultiset :=
-  inferInstanceAs (CanonicallyOrderedAdd (Multiset Nat.Primes))
-
-instance : OrderBot PrimeMultiset :=
-  inferInstanceAs (OrderBot (Multiset Nat.Primes))
-
-instance : OrderedSub PrimeMultiset :=
-  inferInstanceAs (OrderedSub (Multiset Nat.Primes))
+  Multiset Nat.Primes
+deriving Inhabited, AddCommMonoid, DistribLattice,
+  SemilatticeSup, Sub,
+  IsOrderedCancelAddMonoid, CanonicallyOrderedAdd, OrderBot, OrderedSub
 
 namespace PrimeMultiset
 
@@ -56,12 +43,12 @@ theorem card_ofPrime (p : Nat.Primes) : Multiset.card (ofPrime p) = 1 :=
   rfl
 
 /-- We can forget the primality property and regard a multiset
- of primes as just a multiset of positive integers, or a multiset
- of natural numbers.  In the opposite direction, if we have a
- multiset of positive integers or natural numbers, together with
- a proof that all the elements are prime, then we can regard it
- as a multiset of primes.  The next block of results records
- obvious properties of these coercions.
+of primes as just a multiset of positive integers, or a multiset
+of natural numbers.  In the opposite direction, if we have a
+multiset of positive integers or natural numbers, together with
+a proof that all the elements are prime, then we can regard it
+as a multiset of primes.  The next block of results records
+obvious properties of these coercions.
 -/
 def toNatMultiset : PrimeMultiset → Multiset ℕ := fun v => v.map (↑)
 
@@ -118,7 +105,7 @@ instance coeMultisetPNatNat : Coe (Multiset ℕ+) (Multiset ℕ) :=
 theorem coePNat_nat (v : PrimeMultiset) : ((v : Multiset ℕ+) : Multiset ℕ) = (v : Multiset ℕ) := by
   change (v.map ((↑) : Nat.Primes → ℕ+)).map Subtype.val = v.map Subtype.val
   rw [Multiset.map_map]
-  congr
+  rfl
 
 /-- The product of a `PrimeMultiset`, as a `ℕ+`. -/
 def prod (v : PrimeMultiset) : ℕ+ :=
@@ -218,7 +205,7 @@ end PNat
 namespace PrimeMultiset
 
 /-- If we start with a multiset of primes, take the product and
- then factor it, we get back the original multiset. -/
+then factor it, we get back the original multiset. -/
 theorem factorMultiset_prod (v : PrimeMultiset) : v.prod.factorMultiset = v := by
   apply PrimeMultiset.coeNat_injective
   rw [v.prod.coeNat_factorMultiset, PrimeMultiset.coe_prod]
@@ -243,7 +230,7 @@ def factorMultisetEquiv : ℕ+ ≃ PrimeMultiset where
   right_inv := PrimeMultiset.factorMultiset_prod
 
 /-- Factoring gives a homomorphism from the multiplicative
- monoid ℕ+ to the additive monoid of multisets. -/
+monoid ℕ+ to the additive monoid of multisets. -/
 theorem factorMultiset_one : factorMultiset 1 = 0 := by
   simp [factorMultiset, PrimeMultiset.ofNatList, PrimeMultiset.ofNatMultiset]
 
@@ -271,8 +258,8 @@ theorem factorMultiset_ofPrime (p : Nat.Primes) :
   rw [(p : ℕ+).prod_factorMultiset, PrimeMultiset.prod_ofPrime]
 
 /-- We now have four different results that all encode the
- idea that inequality of multisets corresponds to divisibility
- of positive integers. -/
+idea that inequality of multisets corresponds to divisibility
+of positive integers. -/
 theorem factorMultiset_le_iff {m n : ℕ+} : factorMultiset m ≤ factorMultiset n ↔ m ∣ n := by
   constructor
   · intro h
@@ -309,7 +296,7 @@ end PrimeMultiset
 namespace PNat
 
 /-- The gcd and lcm operations on positive integers correspond
- to the inf and sup operations on multisets. -/
+to the inf and sup operations on multisets. -/
 theorem factorMultiset_gcd (m n : ℕ+) :
     factorMultiset (gcd m n) = factorMultiset m ⊓ factorMultiset n := by
   apply le_antisymm
@@ -333,7 +320,7 @@ theorem factorMultiset_lcm (m n : ℕ+) :
     · exact dvd_lcm_right m n
 
 /-- The number of occurrences of p in the factor multiset of m
- is the same as the p-adic valuation of m. -/
+is the same as the p-adic valuation of m. -/
 theorem count_factorMultiset (m : ℕ+) (p : Nat.Primes) (k : ℕ) :
     (p : ℕ+) ^ k ∣ m ↔ k ≤ m.factorMultiset.count p := by
   rw [Multiset.le_count_iff_replicate_le, ← factorMultiset_le_iff, factorMultiset_pow,

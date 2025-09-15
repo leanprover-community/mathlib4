@@ -25,7 +25,7 @@ namespace Subgroup
 theorem range_zpowersHom (g : G) : (zpowersHom G g).range = zpowers g := rfl
 
 @[to_additive]
-instance (a : G) : Countable (zpowers a) := Set.surjective_onto_range.countable
+instance (a : G) : Countable (zpowers a) := Set.rangeFactorization_surjective.countable
 
 end Subgroup
 
@@ -34,8 +34,6 @@ namespace AddSubgroup
 @[simp]
 theorem range_zmultiplesHom (a : A) : (zmultiplesHom A a).range = zmultiples a :=
   rfl
-
-attribute [to_additive existing (attr := simp)] Subgroup.range_zpowersHom
 
 section Ring
 

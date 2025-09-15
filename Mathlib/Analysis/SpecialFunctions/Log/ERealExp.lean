@@ -3,7 +3,7 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pietro Monticone, Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Data.Complex.Exponential
+import Mathlib.Analysis.Complex.Exponential
 import Mathlib.Data.EReal.Basic
 
 /-!
@@ -83,6 +83,10 @@ lemma exp_monotone : Monotone exp := exp_strictMono.monotone
 @[simp] lemma exp_le_one_iff {a : EReal} : exp a ≤ 1 ↔ a ≤ 0 := exp_zero ▸ @exp_le_exp_iff a 0
 
 @[simp] lemma one_le_exp_iff {a : EReal} : 1 ≤ exp a ↔ 0 ≤ a := exp_zero ▸ @exp_le_exp_iff 0 a
+
+@[gcongr] lemma exp_le_exp {a b : EReal} (h : a ≤ b) : exp a ≤ exp b := by simpa
+
+@[gcongr] lemma exp_lt_exp {a b : EReal} (h : a < b) : exp a < exp b := by simpa
 
 end Monotonicity
 

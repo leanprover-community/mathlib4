@@ -37,7 +37,7 @@ describing the product of two sets, namely `s ×ˢ t = fst ⁻¹' s ∩ snd ⁻�
 
 * `Filter.eventually_curry_iff`: An alternative definition of a curried filter
 * `Filter.curry_le_prod`: Something that is eventually true on the a product filter is eventually
-   true on the curried filter
+  true on the curried filter
 
 ## Tags
 
@@ -63,7 +63,7 @@ theorem mem_curry_iff {s : Set (α × β)} :
 theorem curry_le_prod : l.curry m ≤ l ×ˢ m := fun _ => Eventually.curry
 
 theorem Tendsto.curry {f : α → β → γ} {la : Filter α} {lb : Filter β} {lc : Filter γ}
-    (h : ∀ᶠ a in la, Tendsto (fun b : β => f a b) lb lc) : Tendsto (↿f) (la.curry lb) lc :=
+    (h : ∀ᶠ a in la, Tendsto (fun b : β => f a b) lb lc) : Tendsto ↿f (la.curry lb) lc :=
   fun _s hs => h.mono fun _a ha => ha hs
 
 theorem frequently_curry_prod_iff :

@@ -19,35 +19,35 @@ of instances is through the use of type synonyms. In this case, we use the type 
 of a semiring. In particular this type synonym depends on an absolute value, which provides a
 systematic way of assigning and inferring instances of the semiring that also depend on an absolute
 value. The completion of a field at multiple absolute values is defined in
-`Mathlib.Algebra.Ring.WithAbs` as `AbsoluteValue.Completion`. The completion of a number
+`Mathlib/Algebra/Ring/WithAbs.lean` as `AbsoluteValue.Completion`. The completion of a number
 field at an infinite place is then derived in this file, as `InfinitePlace` is a subtype of
 `AbsoluteValue`.
 
 ## Main definitions
- - `NumberField.InfinitePlace.Completion` : the completion of a number field `K` at an infinite
+- `NumberField.InfinitePlace.Completion` : the completion of a number field `K` at an infinite
   place, obtained by completing `K` with respect to the absolute value associated to the infinite
   place.
- - `NumberField.InfinitePlace.Completion.extensionEmbedding` : the embedding `v.embedding : K →+* ℂ`
+- `NumberField.InfinitePlace.Completion.extensionEmbedding` : the embedding `v.embedding : K →+* ℂ`
   extended to `v.Completion →+* ℂ`.
- - `NumberField.InfinitePlace.Completion.extensionEmbeddingOfIsReal` : if the infinite place `v`
+- `NumberField.InfinitePlace.Completion.extensionEmbeddingOfIsReal` : if the infinite place `v`
   is real, then this extends the embedding `v.embedding_of_isReal : K →+* ℝ` to
   `v.Completion →+* ℝ`.
- - `NumberField.InfinitePlace.Completion.ringEquivRealOfIsReal` : the ring isomorphism
+- `NumberField.InfinitePlace.Completion.ringEquivRealOfIsReal` : the ring isomorphism
   `v.Completion ≃+* ℝ` when `v` is a real infinite place; the forward direction of this is
   `extensionEmbeddingOfIsReal`.
- - `NumberField.InfinitePlace.Completion.ringEquivComplexOfIsComplex` : the ring isomorphism
+- `NumberField.InfinitePlace.Completion.ringEquivComplexOfIsComplex` : the ring isomorphism
   `v.Completion ≃+* ℂ` when `v` is a complex infinite place; the forward direction of this is
   `extensionEmbedding`.
 
 ## Main results
- - `NumberField.Completion.locallyCompactSpace` : the completion of a number field at
+- `NumberField.Completion.locallyCompactSpace` : the completion of a number field at
   an infinite place is locally compact.
- - `NumberField.Completion.isometry_extensionEmbedding` : the embedding `v.Completion →+* ℂ` is
+- `NumberField.Completion.isometry_extensionEmbedding` : the embedding `v.Completion →+* ℂ` is
   an isometry. See also `isometry_extensionEmbedding_of_isReal` for the corresponding result on
   `v.Completion →+* ℝ` when `v` is real.
- - `NumberField.Completion.bijective_extensionEmbedding_of_isComplex` : the embedding
+- `NumberField.Completion.bijective_extensionEmbedding_of_isComplex` : the embedding
   `v.Completion →+* ℂ` is bijective when `v` is complex. See also
-  `bijective_extensionEmebdding_of_isReal` for the corresponding result for `v.Completion →+* ℝ`
+  `bijective_extensionEmbedding_of_isReal` for the corresponding result for `v.Completion →+* ℝ`
   when `v` is real.
 
 ## Tags
@@ -63,8 +63,6 @@ variable {K : Type*} [Field K] (v : InfinitePlace K)
 
 /-- The completion of a number field at an infinite place. -/
 abbrev Completion := v.1.Completion
-
-@[deprecated (since := "2024-12-01")] alias completion := Completion
 
 namespace Completion
 
@@ -101,9 +99,6 @@ def extensionEmbedding : v.Completion →+* ℂ := extensionEmbedding_of_comp v.
 /-- The embedding `K →+* ℝ` associated to a real infinite place extended to `v.Completion →+* ℝ`. -/
 def extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion →+* ℝ :=
   extensionEmbedding_of_comp <| v.norm_embedding_of_isReal hv
-
-@[deprecated (since := "2024-12-07")]
-noncomputable alias extensionEmbedding_of_isReal := extensionEmbeddingOfIsReal
 
 @[simp]
 theorem extensionEmbedding_coe (x : K) : extensionEmbedding v x = v.embedding x :=
@@ -159,17 +154,11 @@ def ringEquivComplexOfIsComplex {v : InfinitePlace K} (hv : IsComplex v) :
     v.Completion ≃+* ℂ :=
   RingEquiv.ofBijective _ (bijective_extensionEmbedding_of_isComplex hv)
 
-@[deprecated (since := "2024-12-07")]
-noncomputable alias ringEquiv_complex_of_isComplex := ringEquivComplexOfIsComplex
-
 /-- If the infinite place `v` is complex, then `v.Completion` is isometric to `ℂ`. -/
 def isometryEquivComplexOfIsComplex {v : InfinitePlace K} (hv : IsComplex v) :
     v.Completion ≃ᵢ ℂ where
   toEquiv := ringEquivComplexOfIsComplex hv
   isometry_toFun := isometry_extensionEmbedding v
-
-@[deprecated (since := "2024-12-07")]
-noncomputable alias isometryEquiv_complex_of_isComplex := isometryEquivComplexOfIsComplex
 
 /-- If `v` is a real infinite place, then the embedding `v.Completion →+* ℝ` is surjective. -/
 theorem surjective_extensionEmbedding_of_isReal {v : InfinitePlace K} (hv : IsReal v) :
@@ -187,15 +176,9 @@ theorem bijective_extensionEmbedding_of_isReal {v : InfinitePlace K} (hv : IsRea
 def ringEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion ≃+* ℝ :=
   RingEquiv.ofBijective _ (bijective_extensionEmbedding_of_isReal hv)
 
-@[deprecated (since := "2024-12-07")]
-noncomputable alias ringEquiv_real_of_isReal := ringEquivRealOfIsReal
-
 /-- If the infinite place `v` is real, then `v.Completion` is isometric to `ℝ`. -/
 def isometryEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion ≃ᵢ ℝ where
   toEquiv := ringEquivRealOfIsReal hv
   isometry_toFun := isometry_extensionEmbedding_of_isReal hv
-
-@[deprecated (since := "2024-12-07")]
-noncomputable alias isometryEquiv_real_of_isReal := isometryEquivRealOfIsReal
 
 end NumberField.InfinitePlace.Completion

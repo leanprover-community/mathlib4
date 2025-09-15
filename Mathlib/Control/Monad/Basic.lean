@@ -10,9 +10,9 @@ import Mathlib.Logic.Equiv.Defs
 
 ## Attributes
 
- * ext
- * functor_norm
- * monad_norm
+* ext
+* functor_norm
+* monad_norm
 
 ## Implementation Details
 

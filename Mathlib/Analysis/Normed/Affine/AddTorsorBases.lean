@@ -13,11 +13,11 @@ This file contains results about bases in normed affine spaces.
 
 ## Main definitions:
 
- * `continuous_barycentric_coord`
- * `isOpenMap_barycentric_coord`
- * `AffineBasis.interior_convexHull`
- * `IsOpen.exists_subset_affineIndependent_span_eq_top`
- * `interior_convexHull_nonempty_iff_affineSpan_eq_top`
+* `continuous_barycentric_coord`
+* `isOpenMap_barycentric_coord`
+* `AffineBasis.interior_convexHull`
+* `IsOpen.exists_subset_affineIndependent_span_eq_top`
+* `interior_convexHull_nonempty_iff_affineSpan_eq_top`
 -/
 
 assert_not_exists HasFDerivAt
@@ -97,7 +97,7 @@ theorem IsOpen.exists_between_affineIndependent_span_eq_top {s u : Set P} (hu : 
   · rintro y ⟨⟨p, hp⟩, rfl⟩
     by_cases hps : p ∈ s <;>
     simp only [w, hps, lineMap_apply_one, Units.val_mk0, dif_neg, dif_pos, not_false_iff,
-      Units.val_one, Subtype.coe_mk] <;>
+      Units.val_one] <;>
     [exact hsu hps; exact hf p]
   · exact (ht₂.units_lineMap ⟨q, ht₁ hq⟩ w).range
   · rw [affineSpan_eq_affineSpan_lineMap_units (ht₁ hq) w, ht₃]

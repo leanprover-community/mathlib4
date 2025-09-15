@@ -3,7 +3,7 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Measure.Map
+import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 
 /-!
 # Pullback of a measure
@@ -70,6 +70,10 @@ theorem comap_apply₀ (f : α → β) (μ : Measure β) (hfi : Injective f)
     (hs : NullMeasurableSet s (comap f μ)) : comap f μ s = μ (f '' s) := by
   rw [comap, dif_pos (And.intro hfi hf)] at hs ⊢
   rw [toMeasure_apply₀ _ _ hs, OuterMeasure.comap_apply, coe_toOuterMeasure]
+
+lemma comap_undef {μ : Measure β}
+    (h : ¬ (Injective f ∧ ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ)) :
+    comap f μ = 0 := dif_neg h
 
 theorem le_comap_apply (f : α → β) (μ : Measure β) (hfi : Injective f)
     (hf : ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ) (s : Set α) :
@@ -146,6 +150,18 @@ lemma comap_comap (hf' : ∀ s, MeasurableSet s → MeasurableSet (f '' s)) (hg 
       comap_apply _ (hg.comp hf) (fun t ht ↦ image_comp g f _ ▸ hg' _ <| hf' _ ht) _ hs, image_comp]
   · rw [comap, dif_neg <| mt And.left hf, comap, dif_neg fun h ↦ hf h.1.of_comp]
 
+lemma comap_smul {μ : Measure β} (c : ℝ≥0∞) : comap f (c • μ) = c • comap f μ := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simp
+  by_cases h : Function.Injective f ∧ ∀ s : Set α, MeasurableSet s → NullMeasurableSet (f '' s) μ
+  · ext s hs
+    rw [comap_apply₀ f _ h.1 _ hs.nullMeasurableSet, smul_apply, smul_apply,
+      comap_apply₀ f μ h.1 h.2 hs.nullMeasurableSet]
+    simpa [nullMeasurableSet_smul_measure_iff hc] using h.2
+  · have h' : ¬ (Function.Injective f ∧
+        ∀ (s : Set α), MeasurableSet s → NullMeasurableSet (f '' s) (c • μ)) := by
+      simpa [nullMeasurableSet_smul_measure_iff hc] using h
+    simp [comap_undef, h, h']
 
 end Measure
 

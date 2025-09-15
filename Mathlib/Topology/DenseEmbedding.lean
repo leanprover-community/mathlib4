@@ -67,7 +67,7 @@ theorem closure_image_mem_nhds {s : Set α} {a : α} (di : IsDenseInducing i) (h
   refine mem_of_superset (hUo.mem_nhds haU) ?_
   calc
     U ⊆ closure (i '' (i ⁻¹' U)) := di.dense.subset_closure_image_preimage_of_isOpen hUo
-    _ ⊆ closure (i '' s) := closure_mono (image_subset i sub)
+    _ ⊆ closure (i '' s) := closure_mono (image_mono sub)
 
 theorem dense_image (di : IsDenseInducing i) {s : Set α} : Dense (i '' s) ↔ Dense s := by
   refine ⟨fun H x => ?_, di.dense.dense_image di.continuous⟩
@@ -78,7 +78,7 @@ theorem dense_image (di : IsDenseInducing i) {s : Set α} : Dense (i '' s) ↔ D
 `α` has empty interior. -/
 theorem interior_compact_eq_empty [T2Space β] (di : IsDenseInducing i) (hd : Dense (range i)ᶜ)
     {s : Set α} (hs : IsCompact s) : interior s = ∅ := by
-  refine eq_empty_iff_forall_not_mem.2 fun x hx => ?_
+  refine eq_empty_iff_forall_notMem.2 fun x hx => ?_
   rw [mem_interior_iff_mem_nhds] at hx
   have := di.closure_image_mem_nhds hx
   rw [(hs.image di.continuous).isClosed.closure_eq] at this
@@ -131,6 +131,15 @@ variable [TopologicalSpace γ]
   `g` is the unique such extension. In general, `g` might not be continuous or even extend `f`. -/
 def extend (di : IsDenseInducing i) (f : α → γ) (b : β) : γ :=
   @limUnder _ _ _ ⟨f (di.dense.some b)⟩ (comap i (𝓝 b)) f
+
+theorem tendsto_extend (di : IsDenseInducing i) {f : α → γ} {a : α} (hf : ContinuousAt f a) :
+    Tendsto f (𝓝 a) (𝓝 (di.extend f (i a))) := by
+  rw [IsDenseInducing.extend, ← di.nhds_eq_comap]
+  exact tendsto_nhds_limUnder ⟨_, hf⟩
+
+theorem inseparable_extend [R1Space γ] (di : IsDenseInducing i) {f : α → γ} {a : α}
+    (hf : ContinuousAt f a) : Inseparable (di.extend f (i a)) (f a) :=
+  tendsto_nhds_unique_inseparable (di.tendsto_extend hf) hf
 
 theorem extend_eq_of_tendsto [T2Space γ] (di : IsDenseInducing i) {b : β} {c : γ} {f : α → γ}
     (hf : Tendsto f (comap i (𝓝 b)) (𝓝 c)) : di.extend f b = c :=
@@ -276,9 +285,6 @@ theorem inj_iff (de : IsDenseEmbedding e) {x y} : e x = e y ↔ x = y :=
 
 theorem isEmbedding (de : IsDenseEmbedding e) : IsEmbedding e where __ := de
 
-@[deprecated (since := "2024-10-26")]
-alias to_embedding := isEmbedding
-
 /-- If the domain of a `IsDenseEmbedding` is a separable space, then so is its codomain. -/
 protected theorem separableSpace [SeparableSpace α] (de : IsDenseEmbedding e) : SeparableSpace β :=
   de.isDenseInducing.separableSpace
@@ -384,7 +390,7 @@ theorem Filter.HasBasis.hasBasis_of_isDenseInducing [TopologicalSpace α] [Topol
     obtain ⟨i, hi, hi'⟩ := (h _).mp hT₄
     exact
       ⟨i, hi,
-        (closure_mono (image_subset f hi')).trans
+        (closure_mono (image_mono hi')).trans
           (Subset.trans (closure_minimal (image_preimage_subset _ _) hT₂) hT₃)⟩
   · obtain ⟨i, hi, hi'⟩ := hT
     suffices closure (f '' s i) ∈ 𝓝 (f x) by filter_upwards [this] using hi'
