@@ -118,3 +118,12 @@ Note: This linter can be disabled with `set_option linter.techDebtLinter false`
 example : True := by
   #adaptation_note /---/
   trivial
+
+/--
+warning: 2: [set_option linter.style.longFile 0, set_option linter.style.longFile 10]
+
+Note: This linter can be disabled with `set_option linter.techDebtLinter false`
+-/
+#guard_msgs in
+set_option linter.style.longFile 0 in
+set_option linter.style.longFile 10

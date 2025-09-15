@@ -32,7 +32,8 @@ def getDebts : Syntax → CommandElabM (Array Syntax)
       if 2 ≤ (optionString.splitOn "backward").length ||
         2 ≤ (optionString.splitOn "tactic.skipAssignedInstances").length ||
         2 ≤ (optionString.splitOn "maxHeartbeats").length ||
-        2 ≤ (optionString.splitOn "linter.deprecated").length
+        2 ≤ (optionString.splitOn "linter.deprecated").length ||
+        2 ≤ (optionString.splitOn "linter.style.longFile").length
       then
         return rargs.push s
       else
