@@ -171,7 +171,7 @@ theorem mem_coe {x : B} : x ∈ (p : Set B) ↔ x ∈ p :=
 
 @[simp, norm_cast]
 theorem coe_eq_coe {x y : p} : (x : B) = y ↔ x = y :=
-  Subtype.ext_iff_val.symm
+  Subtype.ext_iff.symm
 
 @[simp]
 theorem coe_mem (x : p) : (x : B) ∈ p :=
