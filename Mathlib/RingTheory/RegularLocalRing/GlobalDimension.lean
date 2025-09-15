@@ -17,7 +17,7 @@ import Mathlib.RingTheory.Regular.AuslanderBuchsbaum
 
 universe u v
 
-variable (R : Type u) [CommRing R]
+variable {R : Type u} [CommRing R]
 
 open IsLocalRing CategoryTheory
 
@@ -82,7 +82,7 @@ lemma finite_projectiveDimension_of_isRegularLocalRing_aux [IsRegularLocalRing R
 lemma finite_projectiveDimension_of_isRegularLocalRing [IsRegularLocalRing R] [Small.{v, u} R]
     (M : ModuleCat.{v} R) [Module.Finite R M] : ∃ n, HasProjectiveDimensionLE M n := by
   rcases exist_nat_eq R with ⟨m, hm⟩
-  apply finite_projectiveDimension_of_isRegularLocalRing_aux R M m
+  apply finite_projectiveDimension_of_isRegularLocalRing_aux M m
   simpa [hm] using WithBot.coe_le_coe.mpr le_add_self
 
 /- have some universe problem
@@ -92,7 +92,50 @@ lemma projectiveDimension_residueField_eq_ringKrullDim [IsRegularLocalRing R] :
   sorry
 -/
 
-theorem globalDimension_eq_ringKrullDim [IsRegularLocalRing R] :
+variable (R) in
+theorem globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegularLocalRing R] :
     globalDimension.{v} R = ringKrullDim R := by
-
-  sorry
+  classical
+  rw [globalDimension_eq_sup_projectiveDimension_finite]
+  have depth_eq : depth (ModuleCat.of R (Shrink.{v, u} R)) = ringKrullDim R := by
+    rw [(isCohenMacaulayLocalRing_def R).mp isCohenMacaulayLocalRing_of_isRegularLocalRing]
+    exact WithBot.coe_inj.mpr (ring_depth_invariant (maximalIdeal R) Ideal.IsPrime.ne_top'.lt_top)
+  apply le_antisymm
+  · simp only [iSup_le_iff]
+    intro M hM
+    by_cases ntr : Nontrivial M
+    · have finM := (finite_projectiveDimension_of_isRegularLocalRing M)
+      have nz : ¬Limits.IsZero M := ModuleCat.isZero_iff_subsingleton.not.mpr
+        (not_subsingleton_iff_nontrivial.mpr ntr)
+      have eq : projectiveDimension M + depth M = ringKrullDim R := by
+        rw [projectiveDimension_eq_find M finM nz, ← depth_eq]
+        exact WithBot.coe_inj.mpr (AuslanderBuchsbaum M finM)
+      simpa [← eq] using WithBot.le_self_add WithBot.coe_ne_bot _
+    · have : Subsingleton M := not_nontrivial_iff_subsingleton.mp ntr
+      simp [(projectiveDimension_eq_bot_iff M).mpr (ModuleCat.isZero_iff_subsingleton.mpr this)]
+  · let _ : Small.{v, u} (ResidueField R) := small_of_surjective IsLocalRing.residue_surjective
+    let k := (ModuleCat.of R (Shrink.{v} (ResidueField R)))
+    let _ : Module.Finite R k :=
+      Module.Finite.equiv (Shrink.linearEquiv R (ResidueField R)).symm
+    have fink := (finite_projectiveDimension_of_isRegularLocalRing k)
+    have nz : ¬Limits.IsZero k := ModuleCat.isZero_iff_subsingleton.not.mpr
+      (not_subsingleton_iff_nontrivial.mpr inferInstance)
+    have eq : projectiveDimension k + depth k = ringKrullDim R := by
+      rw [projectiveDimension_eq_find k fink nz, ← depth_eq]
+      exact WithBot.coe_inj.mpr (AuslanderBuchsbaum k fink)
+    have eq0 : depth k = 0 := by
+      rw [IsLocalRing.depth_eq_sSup_length_regular, ← bot_eq_zero', sSup_eq_bot]
+      simp only [exists_prop, Set.mem_setOf_eq, bot_eq_zero', forall_exists_index, and_imp]
+      intro a rs reg mem len
+      match rs with
+      | [] => simp [← len]
+      | a :: rs' =>
+        simp only [RingTheory.Sequence.isRegular_cons_iff] at reg
+        simp only [List.mem_cons, forall_eq_or_imp] at mem
+        absurd reg.1
+        simp only [isSMulRegular_iff_right_eq_zero_of_smul, not_forall]
+        use 1
+        simp only [one_ne_zero, not_false_eq_true, exists_prop, and_true]
+        have : a • (1 : ResidueField R) = 0 := by simpa [Algebra.smul_def] using mem.1
+        rw [← map_one (Shrink.algEquiv R (ResidueField R)).symm, ← map_smul, this, map_zero]
+    simpa [← eq, eq0] using le_biSup projectiveDimension ‹_›
