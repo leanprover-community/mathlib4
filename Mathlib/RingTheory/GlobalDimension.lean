@@ -26,7 +26,7 @@ import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 
 --set_option pp.universes true
 
-universe u v
+universe v u
 
 variable (R : Type u) [CommRing R]
 
@@ -46,7 +46,7 @@ noncomputable def nonnegProjectiveDimension (X : C) : ℕ∞ :=
   sInf (({(n : ℕ) | HasProjectiveDimensionLT X n}).image WithTop.some)
 -/
 
-lemma projectiveDimension_eq_of_iso (X Y : C) (e : X ≅ Y) :
+lemma projectiveDimension_eq_of_iso {X Y : C} (e : X ≅ Y) :
     projectiveDimension X = projectiveDimension Y := by
   simp only [projectiveDimension]
   congr! 5
@@ -482,13 +482,20 @@ open Abelian
 local instance [Small.{v} R] (I : Ideal R) : Small.{v} (R ⧸ I) :=
   small_of_surjective Ideal.Quotient.mk_surjective
 
-local instance [Small.{v} R] : CategoryTheory.HasExt.{max u v} (ModuleCat.{v} R) :=
-  CategoryTheory.hasExt_of_enoughProjectives.{max u v} (ModuleCat.{v} R)
+
+section
+
+universe w
+
+variable [UnivLE.{v, w}]
+
+local instance [Small.{v} R] : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
+  CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
 
 open Limits in
 lemma ext_subsingleton_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ)
-    (h : ∀ I : Ideal R, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M (n + 1))) :
-    ∀ N : ModuleCat.{v} R, Subsingleton (Ext N M (n + 1)) := by
+    (h : ∀ I : Ideal R, Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M (n + 1))) :
+    ∀ N : ModuleCat.{v} R, Subsingleton (Ext.{w} N M (n + 1)) := by
   induction' n with n ih generalizing M
   · have : Injective M := by
       rw [← Module.injective_iff_injective_object, ← Module.Baer.iff_injective]
@@ -516,32 +523,113 @@ lemma ext_subsingleton_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ
     simp only [this] at h ⊢
     exact ih (cokernel f) h
 
-noncomputable def globalDimension : WithBot ℕ∞ :=
-  ⨆ (M : ModuleCat.{v} R), projectiveDimension M
+end
 
-lemma globalDimension_eq_bot_iff [Small.{v} R] : globalDimension.{u, v} R = ⊥ ↔ Subsingleton R := by
+noncomputable def globalDimension : WithBot ℕ∞ :=
+  ⨆ (M : ModuleCat.{v} R), projectiveDimension.{v} M
+
+lemma globalDimension_eq_bot_iff [Small.{v} R] : globalDimension.{v} R = ⊥ ↔ Subsingleton R := by
   simp only [globalDimension, iSup_eq_bot, projectiveDimension_eq_bot_iff,
     ModuleCat.isZero_iff_subsingleton]
   refine ⟨fun h ↦ ?_, fun h M ↦ Module.subsingleton R M⟩
   let _ := h (ModuleCat.of R (Shrink.{v} R))
   exact (equivShrink.{v} R).subsingleton
 
-lemma globalDimension_le_iff (n : ℕ) : globalDimension.{u, v} R ≤ n ↔
+lemma globalDimension_le_iff (n : ℕ) : globalDimension.{v} R ≤ n ↔
     ∀ M : ModuleCat.{v} R, HasProjectiveDimensionLE M n := by
   simp [globalDimension, projectiveDimension_le_iff]
 
-lemma globalDimension_le_tfae [Small.{v} R] (n : ℕ) :
-    [globalDimension.{u, v} R ≤ n,
+local instance : HasExt.{max (max (v + 1) u) v, v, max (v + 1) u} (ModuleCat.{v} R) :=
+  CategoryTheory.HasExt.standard (ModuleCat.{v} R)
+
+lemma globalDimension_le_tfae [Small.{v} R] (n : ℕ) : [globalDimension.{v} R ≤ n,
     ∀ M : ModuleCat.{v} R, Module.Finite R M → HasProjectiveDimensionLE M n,
-    ∀ m ≥ n, ∀ (N M : ModuleCat.{v} R), Subsingleton (Ext N M m)].TFAE := by
-  sorry
+    ∀ m ≥ n + 1, ∀ (N M : ModuleCat.{v} R), Subsingleton (Ext N M m)].TFAE := by
+  tfae_have 1 → 2 := by
+    simpa only [globalDimension, iSup_le_iff, projectiveDimension_le_iff]
+      using fun h M _ ↦ h M
+  tfae_have 2 → 3 := by
+    intro h m ge N M
+    have eq : m - 1 + 1 = m := by omega
+    have (I : Ideal R) :
+      Subsingleton (Ext (ModuleCat.of R (Shrink.{v, u} (R ⧸ I))) M (m - 1 + 1)) := by
+      simpa only [eq] using (h (ModuleCat.of R (Shrink.{v, u} (R ⧸ I)))
+        (Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ I)).symm)).1 m ge (Y := M)
+    rw [← eq]
+    exact ext_subsingleton_of_quotients.{v, u, max u (v + 1)} R M (m - 1) this N
+  tfae_have 3 → 1 := by
+    intro h
+    simp only [globalDimension, iSup_le_iff, projectiveDimension_le_iff]
+    intro M
+    exact ⟨fun m hm {N} ↦ h m hm M N⟩
+  tfae_finish
 
-lemma globalDimension_eq_iSup_loclization_prime : globalDimension.{u, v} R =
-    ⨆ (p : PrimeSpectrum R), globalDimension.{u, v} (Localization.AtPrime p.1) := by
-  sorry
+lemma globalDimension_eq_sup_projectiveDimension_finite [Small.{v, u} R] : globalDimension.{v} R =
+    ⨆ (M : ModuleCat.{v} R), ⨆ (_ : Module.Finite R M), projectiveDimension.{v} M := by
+  have aux (n : ℕ): globalDimension.{v} R ≤ n ↔
+    ⨆ (M : ModuleCat.{v} R), ⨆ (_ : Module.Finite R M), projectiveDimension.{v} M ≤ n := by
+    simpa only [iSup_le_iff, projectiveDimension_le_iff] using (globalDimension_le_tfae R n).out 0 1
+  refine eq_of_forall_ge_iff (fun N ↦ ?_)
+  by_cases eqbot : N = ⊥
+  · simp only [eqbot, le_bot_iff, globalDimension_eq_bot_iff, iSup_eq_bot,
+      projectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton]
+    refine ⟨fun h M _ ↦ Module.subsingleton R M, fun h ↦ ?_⟩
+    let _ := h (ModuleCat.of R (Shrink.{v} R)) (Module.Finite.equiv (Shrink.linearEquiv R R).symm)
+    exact (equivShrink.{v} R).subsingleton
+  · by_cases eqtop : N.unbot eqbot = ⊤
+    · have : N = ⊤ := (WithBot.coe_unbot _ eqbot).symm.trans (WithBot.coe_inj.mpr eqtop)
+      simp [this]
+    · let n := (N.unbot eqbot).toNat
+      have : N = n := (WithBot.coe_unbot _ eqbot).symm.trans
+        (WithBot.coe_inj.mpr (ENat.coe_toNat eqtop).symm)
+      simpa only [this] using aux n
 
-lemma globalDimension_eq_iSup_loclization_maximal : globalDimension.{u, v} R =
-    ⨆ (p : MaximalSpectrum R), globalDimension.{u, v} (Localization.AtPrime p.1) := by
-  sorry
+lemma globalDimension_eq_iSup_loclization_prime [Small.{v, u} R] [IsNoetherianRing R] :
+    globalDimension.{v} R =
+    ⨆ (p : PrimeSpectrum R), globalDimension.{v} (Localization.AtPrime p.1) := by
+  apply le_antisymm
+  · simp only [globalDimension_eq_sup_projectiveDimension_finite, iSup_le_iff]
+    intro M fin
+    simp only [projectiveDimension_eq_iSup_localizedModule_prime M, iSup_le_iff]
+    intro p
+    exact le_trans (le_iSup _ (M.localizedModule p.asIdeal.primeCompl))
+      (le_iSup (fun (p : PrimeSpectrum R) ↦ globalDimension (Localization.AtPrime p.asIdeal)) p)
+  · simp only [iSup_le_iff, globalDimension]
+    intro p Mp
+    let _ : Module R Mp := Module.compHom Mp (algebraMap R (Localization.AtPrime p.1))
+    have : IsScalarTower R (Localization.AtPrime p.1) Mp :=
+      ModuleCat.Algebra.instIsScalarTowerCarrier
+    apply le_trans (le_trans _ (projectiveDimension_le_projectiveDimension_of_isLocalizedModule
+      p.1.primeCompl (ModuleCat.of R Mp)))
+      (le_iSup (fun (M : ModuleCat.{v} R) ↦ projectiveDimension M) (ModuleCat.of R Mp))
+    let _ := isLocalizedModule_id p.1.primeCompl Mp (Localization.AtPrime p.1)
+    exact le_of_eq (projectiveDimension_eq_of_iso (LinearEquiv.extendScalarsOfIsLocalization
+      p.1.primeCompl (Localization.AtPrime p.1) (IsLocalizedModule.linearEquiv p.1.primeCompl
+      ((ModuleCat.of R Mp).localizedModule_mkLinearMap p.1.primeCompl)
+      LinearMap.id)).symm.toModuleIso)
+
+lemma globalDimension_eq_iSup_loclization_maximal [Small.{v, u} R] [IsNoetherianRing R] :
+    globalDimension.{v} R =
+    ⨆ (p : MaximalSpectrum R), globalDimension.{v} (Localization.AtPrime p.1) := by
+  apply le_antisymm
+  · simp only [globalDimension_eq_sup_projectiveDimension_finite, iSup_le_iff]
+    intro M fin
+    simp only [projectiveDimension_eq_iSup_localizedModule_maximal M, iSup_le_iff]
+    intro p
+    exact le_trans (le_iSup _ (M.localizedModule p.asIdeal.primeCompl))
+      (le_iSup (fun (p : MaximalSpectrum R) ↦ globalDimension (Localization.AtPrime p.asIdeal)) p)
+  · simp only [iSup_le_iff, globalDimension]
+    intro p Mp
+    let _ : Module R Mp := Module.compHom Mp (algebraMap R (Localization.AtPrime p.1))
+    have : IsScalarTower R (Localization.AtPrime p.1) Mp :=
+      ModuleCat.Algebra.instIsScalarTowerCarrier
+    apply le_trans (le_trans _ (projectiveDimension_le_projectiveDimension_of_isLocalizedModule
+      p.1.primeCompl (ModuleCat.of R Mp)))
+      (le_iSup (fun (M : ModuleCat.{v} R) ↦ projectiveDimension M) (ModuleCat.of R Mp))
+    let _ := isLocalizedModule_id p.1.primeCompl Mp (Localization.AtPrime p.1)
+    exact le_of_eq (projectiveDimension_eq_of_iso (LinearEquiv.extendScalarsOfIsLocalization
+      p.1.primeCompl (Localization.AtPrime p.1) (IsLocalizedModule.linearEquiv p.1.primeCompl
+      ((ModuleCat.of R Mp).localizedModule_mkLinearMap p.1.primeCompl)
+      LinearMap.id)).symm.toModuleIso)
 
 end GlobalDimension
