@@ -219,7 +219,7 @@ lemma Monotone.disjointed_succ_sup {f : ι → α} (hf : Monotone f) (i : ι) :
     have : Iio (succ i) = Iic i := by
       ext
       simp only [mem_Iio, lt_succ_iff_eq_or_lt_of_not_isMax h, mem_Iic, le_iff_lt_or_eq, Or.comm]
-    rw [this, ← sup'_eq_sup, ← partialSups_apply, hf.partialSups_eq,
+    rw [this, ← sup'_eq_sup nonempty_Iic, ← partialSups_apply, hf.partialSups_eq,
       sdiff_sup_cancel <| hf <| le_succ i]
 
 end SuccOrder

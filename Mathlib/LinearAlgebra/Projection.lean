@@ -523,7 +523,7 @@ theorem codRestrict_ker {f : M →ₗ[S] M} (h : IsProj m f) : ker h.codRestrict
   f.ker_codRestrict m _
 
 theorem isCompl {f : E →ₗ[R] E} (h : IsProj p f) : IsCompl p (ker f) := by
-  rw [← codRestrict_ker]
+  rw [← codRestrict_ker h]
   exact isCompl_of_proj h.codRestrict_apply_cod
 
 theorem eq_conj_prod_map' {f : E →ₗ[R] E} (h : IsProj p f) :

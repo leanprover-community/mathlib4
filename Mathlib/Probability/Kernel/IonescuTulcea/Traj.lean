@@ -191,7 +191,7 @@ theorem isProjectiveMeasureFamily_inducedFamily
   simp only [inducedFamily]
   rw [Measure.map_map, restrict₂_comp_restrict₂,
     ← restrict₂_comp_restrict₂ J.subset_Iic_sup_id (Iic_subset_Iic.2 sls), ← Measure.map_map,
-    ← frestrictLe₂, h (J.sup id) (I.sup id) sls]
+    ← frestrictLe₂.eq_def sls, h (J.sup id) (I.sup id) sls]
   all_goals fun_prop
 
 end MeasureTheory

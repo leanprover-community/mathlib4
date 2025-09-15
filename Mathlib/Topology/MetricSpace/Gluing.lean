@@ -607,7 +607,9 @@ theorem toInductiveLimit_commute (I : ∀ n, Isometry (f n)) (n : ℕ) :
   change inductiveLimitDist f ⟨n.succ, f n x⟩ ⟨n, x⟩ = 0
   rw [inductiveLimitDist_eq_dist I ⟨n.succ, f n x⟩ ⟨n, x⟩ n.succ, leRecOn_self,
     leRecOn_succ, leRecOn_self, dist_self]
-  exact le_succ _
+  · rfl
+  · rfl
+  · exact le_succ _
 
 theorem dense_iUnion_range_toInductiveLimit
     {X : ℕ → Type u} [(n : ℕ) → MetricSpace (X n)]

@@ -535,8 +535,8 @@ theorem eq_pow_of_mem_rootsOfUnity {k : ℕ} [NeZero k] {ζ ξ : Rˣ} (h : IsPri
   lift i to ℕ using hi0 with i₀ hi₀
   refine ⟨i₀, ?_, ?_⟩
   · zify; rw [hi₀]; exact Int.emod_lt_of_pos _ hk0
-  · rw [← zpow_natCast, hi₀, ← Int.emod_add_ediv n k, zpow_add, zpow_mul, h.zpow_eq_one, one_zpow,
-      mul_one]
+  · rw [← zpow_natCast, hi₀, ← Int.emod_add_mul_ediv n k, zpow_add, zpow_mul, h.zpow_eq_one,
+      one_zpow, mul_one]
 
 theorem eq_pow_of_pow_eq_one {k : ℕ} [NeZero k] {ζ ξ : R} (h : IsPrimitiveRoot ζ k)
     (hξ : ξ ^ k = 1) :

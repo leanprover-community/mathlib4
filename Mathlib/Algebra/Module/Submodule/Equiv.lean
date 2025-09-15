@@ -195,7 +195,7 @@ theorem ofBijective_symm_apply_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHom
 @[simp]
 theorem apply_ofBijective_symm_apply [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] {h}
     (x : M₂) : f ((ofBijective f h).symm x) = x := by
-  rw [← ofBijective_apply f ((ofBijective f h).symm x), apply_symm_apply]
+  rw [← ofBijective_apply f (hf := h) ((ofBijective f h).symm x), apply_symm_apply]
 
 end
 

@@ -307,7 +307,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
       · intro T f g
         ext x
         dsimp
-        rw [dif_pos]
+        rw [dif_pos ⟨x, rfl⟩]
         conv_lhs => rw [Equiv.ofInjective_symm_apply]
       · intro T f g
         ext x

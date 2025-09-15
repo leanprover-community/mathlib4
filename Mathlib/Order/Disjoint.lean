@@ -66,8 +66,8 @@ theorem disjoint_bot_right : Disjoint a ⊥ := fun _ _ hbot ↦ hbot
 theorem Disjoint.mono_left (h : a ≤ b) : Disjoint b c → Disjoint a c :=
   Disjoint.mono h le_rfl
 
-theorem Disjoint.mono_right : b ≤ c → Disjoint a c → Disjoint a b :=
-  Disjoint.mono le_rfl
+theorem Disjoint.mono_right (h : b ≤ c) : Disjoint a c → Disjoint a b :=
+  Disjoint.mono le_rfl h
 
 @[simp]
 theorem disjoint_self : Disjoint a a ↔ a = ⊥ :=
