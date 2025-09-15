@@ -492,6 +492,21 @@ theorem det_eq_zero_of_not_linearIndependent_cols [IsDomain R] {A : Matrix m m R
   contrapose! hA
   exact linearIndependent_cols_of_det_ne_zero hA
 
+theorem det_vecMulVec [Nontrivial n] (u v : n → R) : (vecMulVec u v).det = 0 := by
+  obtain ⟨i, j, hij⟩ := exists_pair_ne n
+  let uv' := ((vecMulVec u v).updateRow i v).updateRow j v
+  have huv' : uv'.det = 0 := by
+    refine detRowAlternating.map_eq_zero_of_eq _ ?_ hij
+    simp [uv', hij]
+  have : vecMulVec u v =
+      (uv'.updateRow i (u i • uv' i)).updateRow j (u j • uv'.updateRow i (u i • uv' i) j) := by
+    unfold uv'
+    rw [updateRow_comm _ hij, updateRow_idem, updateRow_ne hij.symm, updateRow_ne hij,
+      updateRow_self, updateRow_self, updateRow_comm _ hij, updateRow_idem,
+      ← update_vecMulVec u v j, update_eq_self, ← update_vecMulVec u v i, update_eq_self]
+  rw [this, det_updateRow_smul, updateRow_eq_self, det_updateRow_smul, updateRow_eq_self, huv',
+    mul_zero, mul_zero]
+
 theorem det_eq_of_forall_row_eq_smul_add_const_aux {A B : Matrix n n R} {s : Finset n} :
     ∀ (c : n → R) (_ : ∀ i, i ∉ s → c i = 0) (k : n) (_ : k ∉ s)
       (_ : ∀ i j, A i j = B i j + c i * B k j), det A = det B := by
