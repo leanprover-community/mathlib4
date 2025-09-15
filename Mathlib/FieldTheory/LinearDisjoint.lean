@@ -410,6 +410,21 @@ theorem of_finrank_sup [FiniteDimensional F A] [FiniteDimensional F B]
     (H : finrank F ↥(A ⊔ B) = finrank F A * finrank F B) : A.LinearDisjoint B :=
   linearDisjoint_iff'.2 <| .of_finrank_sup_of_free (by rwa [← sup_toSubalgebra_of_left])
 
+/-- If `A` and `B` are linearly disjoint over `F` and `A ⊔ B = E`, then the `Module.finrank` of
+`E` over `A` is equal to the `Module.finrank` of `B` over `F`.
+-/
+theorem finrank_left_eq_finrank [Module.Finite F A] (h₁ : A.LinearDisjoint B) (h₂ : A ⊔ B = ⊤) :
+    finrank A E = finrank F B := by
+  have := h₁.finrank_sup
+  rwa [h₂, finrank_top', ← finrank_mul_finrank F A E, mul_right_inj' finrank_pos.ne'] at this
+
+/-- If `A` and `B` are linearly disjoint over `F` and `A ⊔ B = E`, then the `Module.finrank` of
+`E` over `B` is equal to the `Module.finrank` of `A` over `F`.
+-/
+theorem finrank_right_eq_finrank [Module.Finite F B] (h₁ : A.LinearDisjoint B) (h₂ : A ⊔ B = ⊤) :
+    finrank B E = finrank F A :=
+  h₁.symm.finrank_left_eq_finrank (by rwa [sup_comm])
+
 /-- If `A` and `L` are linearly disjoint over `F`, one of them is algebraic,
 then `[L(A) : L] = [A : F]`. -/
 theorem adjoin_rank_eq_rank_left_of_isAlgebraic (H : A.LinearDisjoint L)
