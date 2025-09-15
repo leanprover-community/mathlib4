@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Data.PNat.Basic
 import Mathlib.Algebra.Order.Hom.Monoid
+import Mathlib.Data.PNat.Basic
 
 /-!
 # Equivalence between `ℕ+` and `nonZeroDivisors ℕ`
