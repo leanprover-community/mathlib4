@@ -200,7 +200,7 @@
   "Mathlib.Tactic.Linter",
   "Mathlib.Init"],
  "ignore":
- {"Mathlib.Util.Notation3": ["Lean.Elab.BuiltinCommand"],
+ {"Mathlib.Util.Notation3": ["Lean.Elab.AuxDef", "Lean.Elab.BuiltinCommand"],
   "Mathlib.Topology.UniformSpace.Defs": ["Mathlib.Tactic.Monotonicity.Basic"],
   "Mathlib.Topology.Sober": ["Mathlib.Algebra.HierarchyDesign"],
   "Mathlib.Topology.Sheaves.Forget": ["Mathlib.Algebra.Category.Ring.Limits"],
@@ -480,6 +480,7 @@
   "Mathlib.CategoryTheory.Sites.IsSheafFor":
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono"],
   "Mathlib.CategoryTheory.Preadditive.Basic": ["Mathlib.Algebra.Module.End"],
+  "Mathlib.CategoryTheory.NatTrans": ["Mathlib.Tactic.CategoryTheory.Reassoc"],
   "Mathlib.CategoryTheory.Monoidal.Rigid.Basic":
   ["Mathlib.Tactic.CategoryTheory.Monoidal.Basic"],
   "Mathlib.CategoryTheory.Monoidal.Mon_":
@@ -491,6 +492,7 @@
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback",
    "Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
   "Mathlib.CategoryTheory.Limits.IsLimit": ["Batteries.Tactic.Congr"],
+  "Mathlib.CategoryTheory.Iso": ["Mathlib.Tactic.CategoryTheory.Reassoc"],
   "Mathlib.CategoryTheory.Functor.Basic":
   ["Mathlib.Tactic.CategoryTheory.CheckCompositions"],
   "Mathlib.CategoryTheory.Bicategory.Functor.Oplax":
@@ -556,7 +558,9 @@
   "Mathlib.Algebra.Group.Idempotent": ["Mathlib.Data.Subtype"],
   "Mathlib.Algebra.Group.Even": ["Mathlib.Data.Set.Operations"],
   "Mathlib.Algebra.Group.Defs":
-  ["Mathlib.Algebra.Notation.Defs", "Mathlib.Tactic.OfNat"],
+  ["Mathlib.Algebra.Notation.Defs",
+   "Mathlib.Logic.Function.Defs",
+   "Mathlib.Tactic.OfNat"],
   "Mathlib.Algebra.GeomSum": ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
   "Mathlib.Algebra.Category.Ring.Basic":
   ["Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso"],
