@@ -119,8 +119,6 @@ theorem squashSeq_nth_of_lt {m : ℕ} (m_lt_n : m < n) : (squashSeq s n).get? m 
   | some =>
     obtain ⟨gp_n, s_nth_eq⟩ : ∃ gp_n, s.get? n = some gp_n :=
       s.ge_stable n.le_succ s_succ_nth_eq
-    obtain ⟨gp_m, s_mth_eq⟩ : ∃ gp_m, s.get? m = some gp_m :=
-      s.ge_stable (le_of_lt m_lt_n) s_nth_eq
     simp [*, squashSeq, m_lt_n.ne]
 
 /-- Squashing at position `n + 1` and taking the tail is the same as squashing the tail of the
