@@ -160,7 +160,8 @@ theorem inv_comp_inv (A : C) [GrpObj A] : ι ≫ ι = 𝟙 A := by
   rw [right_inv, ← comp_toUnit_assoc ι, ← left_inv, comp_lift_assoc, Category.comp_id]
 
 /-- Transfer `GrpObj` along an isomorphism. -/
-@[simps!]
+-- Note: The simps lemmas are not tagged simp because their `#discr_tree_simp_key` are too generic.
+@[simps! -isSimp]
 abbrev ofIso (e : G ≅ X) : GrpObj X where
   toMonObj := .ofIso e
   inv := e.inv ≫ ι[G] ≫ e.hom
@@ -446,6 +447,7 @@ abbrev FullyFaithful.grpObj (hF : F.FullyFaithful) (X : C) [GrpObj (F.obj X)] :
 
 @[deprecated (since := "2025-09-13")] alias FullyFaithful.grp_Class := FullyFaithful.grpObj
 
+attribute [local simp] MonObj.ofIso_one MonObj.ofIso_mul in
 /-- The essential image of a full and faithful functor between cartesian-monoidal categories is the
 same on group objects as on objects. -/
 @[simp] lemma essImage_mapGrp [F.Full] [F.Faithful] {G : Grp_ D} :
