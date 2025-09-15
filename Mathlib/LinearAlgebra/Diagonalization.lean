@@ -102,7 +102,7 @@ noncomputable def Diagonalization.mk' {ι : Type*} {f : End R M} {b : Basis ι R
 Alternative constructor for `LinearMap.Diagonalization` from a basis of eigenvectors and
 diagonality of the matrix representation.
 -/
-noncomputable def diagonalization_of_isDiag_toMatrix [Nontrivial R] {ι : Type*} [Fintype ι]
+noncomputable def Diagonalization.ofIsDiagToMatrix [Nontrivial R] {ι : Type*} [Fintype ι]
     [DecidableEq ι] {f : End R M} {b : Basis ι R M} (h : (f.toMatrix b b).IsDiag) :
     f.Diagonalization ι :=
   .mk (b := b) (μ := fun i ↦ f.toMatrix b b i i) <| fun i ↦ by
@@ -116,7 +116,7 @@ def SimultaneousDiagonalization.diagonalization {ι : Type*} {f : α → Module.
   .mk (D.hasEigenVector_μ a)
 
 /-- Construct a simultaneous diagonalization from a family of diagonalizations. -/
-def SimultaneousDiagonalization.of_diagonalization {ι : Type*} {f : α → Module.End R M}
+def SimultaneousDiagonalization.ofDiagonalization {ι : Type*} {f : α → Module.End R M}
     {b : Basis ι R M} {D : (a : α) → (f a).Diagonalization ι} (h : ∀ a, (D a).toBasis = b) :
     SimultaneousDiagonalization ι f where
   toBasis := b
@@ -160,7 +160,7 @@ def SimultaneousDiagonalization.subSmulOne {ι : Type*} {f : α → End R M}
 /-- Any diagonalization of `f` also diagonalizes `f - c • 1`. -/
 def Diagonalization.subSmulOne {ι : Type*} {f : End R M} (D : f.Diagonalization ι) (c : R) :
     (f - c • 1).Diagonalization ι :=
-  SimultaneousDiagonalization.sub_smul D fun _ ↦ c
+  SimultaneousDiagonalization.subSmulOne D fun _ ↦ c
 
 /-- Any simultaneous diagonalization of `f` also diagonalizes `f i + f j` for any `i` and `j`. -/
 def SimultaneousDiagonalization.diagonalizationAdd {ι : Type*} {f : α → End R M}
