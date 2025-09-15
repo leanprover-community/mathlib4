@@ -21,6 +21,15 @@ register_option linter.techDebtLinter : Bool := {
 
 namespace TechDebtLinter
 
+/--
+`getDebts stx` extracts from syntax all the nodes that carry some technical debt.
+Most of the times, these are nodes whos mere presence is already a sign of technical debt
+(for instance, `erw`, or `nolint simpNF`).
+Sometimes, the node is a sign of technical debt only if another node is absent
+(for instance, `set_option linter.deprecated false` is usually considered as technical debt, but
+if it is used to avoid a linter warning in a declaration that is itself deprecated,
+then we do not count it).
+-/
 partial
 def getDebts : Syntax → CommandElabM (Array Syntax)
   | s@(.node _ kind args) => do
@@ -30,10 +39,9 @@ def getDebts : Syntax → CommandElabM (Array Syntax)
       let optionName := s[1].getId
       let optionString := s[1].getId.toString
       if 2 ≤ (optionString.splitOn "backward").length ||
-        2 ≤ (optionString.splitOn "tactic.skipAssignedInstances").length ||
         2 ≤ (optionString.splitOn "maxHeartbeats").length ||
-        2 ≤ (optionString.splitOn "linter.deprecated").length ||
-        2 ≤ (optionString.splitOn "linter.style.longFile").length
+        #[`linter.deprecated, `linter.style.longFile, `tactic.skipAssignedInstances].contains
+          optionName
       then
         return rargs.push s
       else

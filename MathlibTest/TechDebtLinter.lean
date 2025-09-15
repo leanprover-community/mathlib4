@@ -89,13 +89,19 @@ example : True := by
 
 
 /--
-warning: 3: [set_option backward.dsimp.proofs false, set_option maxHeartbeats 100, set_option tactic.skipAssignedInstances false]
+warning: 5: [set_option backward.eqns.nonrecursive false,
+ set_option backward.dsimp.proofs false,
+ set_option synthInstance.maxHeartbeats 100,
+ set_option maxHeartbeats 100,
+ set_option tactic.skipAssignedInstances false]
 
 Note: This linter can be disabled with `set_option linter.techDebtLinter false`
 -/
 #guard_msgs in
+set_option backward.eqns.nonrecursive false in
 set_option backward.dsimp.proofs false in
 set_option pp.proofs false in
+set_option synthInstance.maxHeartbeats 100 in -- testing techDebtLinter
 set_option maxHeartbeats 100 in -- testing techDebtLinter
 set_option tactic.skipAssignedInstances false in /-!-/
 
