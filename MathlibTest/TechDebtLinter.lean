@@ -74,6 +74,7 @@ Note: This linter can be disabled with `set_option linter.techDebtLinter false`
 -/
 #guard_msgs in
 example : 0 = 0 := by
+  rewrite [← Nat.add_zero 0]
   erw []
 
 /--
