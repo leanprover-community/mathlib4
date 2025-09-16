@@ -674,7 +674,7 @@ lemma mem_interior_face_iff_sbtw [Nontrivial R] [NoZeroSMulDivisors R V] {n : �
     (s : Simplex R P n) {p : P} {i j : Fin (n + 1)} (h : i ≠ j) :
     p ∈ (s.face (Finset.card_pair h)).interior ↔ Sbtw R (s.points i) p (s.points j) := by
   have h' : Sbtw R (s.points i) p (s.points j) ↔
-      Sbtw R (s.points (min i j)) p (s.points (max i j )) := by
+      Sbtw R (s.points (min i j)) p (s.points (max i j)) := by
     rcases h.lt_or_gt with hij | hji
     · simp [min_eq_left hij.le, max_eq_right hij.le]
     · nth_rw 2 [sbtw_comm]
