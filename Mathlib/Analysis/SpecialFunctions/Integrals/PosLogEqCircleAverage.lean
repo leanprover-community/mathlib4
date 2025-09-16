@@ -109,7 +109,6 @@ private lemma circleAverage_log_norm_sub_const₁_integral :
 /--
 If `a : ℂ` has norm one, then the circle average `circleAverage (log ‖· - a‖) 0 1` vanishes.
 -/
-@[simp]
 theorem circleAverage_log_norm_sub_const₁ (h : ‖a‖ = 1) :
     circleAverage (log ‖· - a‖) 0 1 = 0 := by
   -- Observing that the problem is rotation invariant, we rotate by an angle of `ζ = - arg a` and
