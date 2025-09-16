@@ -479,11 +479,15 @@ instance (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] :
 noncomputable section toEuclideanDomain
 variable {R : Type*} [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
 
-/-- A noncomputable quotient to define the Euclidean domain structure. -/
+/-- A noncomputable quotient to define the Euclidean domain structure. The GCD algorithm only takes
+two steps to terminate. Given `GCD(x,y)`, if `x ∣ y` then `y%x = 0` so we're done in one step;
+otherwise `y%x = y` and then `GCD(x,y) = GCD(y,x)` which brings us back to the first case. -/
 def quotient (x y : R) : R :=
   open Classical in if y = 0 then 0 else if h : y ∣ x then h.choose else 0
 
-/-- A noncomputable remainder to define the Euclidean domain structure. -/
+/-- A noncomputable remainder to define the Euclidean domain structure. The GCD algorithm only takes
+two steps to terminate. Given `GCD(x,y)`, if `x ∣ y` then `y%x = 0` so we're done in one step;
+otherwise `y%x = y` and then `GCD(x,y) = GCD(y,x)` which brings us back to the first case. -/
 def remainder (x y : R) : R :=
   open Classical in if y ∣ x then 0 else x
 
@@ -527,15 +531,8 @@ step; otherwise `y%x = y` and then `GCD(x,y) = GCD(y,x)` which brings us back to
 See `EuclideanDomain.to_principal_ideal_domain` for EuclideanDomain ⇒ PID. -/
 def toEuclideanDomain : EuclideanDomain R where
   quotient := quotient
-  remainder := remainder
-  r x y := toWithBotNat x < toWithBotNat y
-  r_wellFounded := WellFounded.onFun wellFounded_lt
   quotient_zero x := by simp [quotient]
-  remainder_lt x y hy := by
-    rw [remainder]
-    split_ifs with hyx
-    · rwa [toWithBotNat_zero, bot_lt_toWithBotNat_iff]
-    · exact lt_iff_not_ge.mpr (mt (dvd_of_toWithBotNat_le_toWithBotNat _ _ hy) hyx)
+  remainder := remainder
   quotient_mul_add_remainder_eq x y := by
     rw [remainder, quotient]
     split_ifs with h₁ h₂ h₂
@@ -543,6 +540,13 @@ def toEuclideanDomain : EuclideanDomain R where
     · rw [h₁]; ring
     · rw [← h₂.choose_spec]; ring
     · ring
+  r x y := toWithBotNat x < toWithBotNat y
+  r_wellFounded := WellFounded.onFun wellFounded_lt
+  remainder_lt x y hy := by
+    rw [remainder]
+    split_ifs with hyx
+    · rwa [toWithBotNat_zero, bot_lt_toWithBotNat_iff]
+    · exact lt_iff_not_ge.mpr (mt (dvd_of_toWithBotNat_le_toWithBotNat _ _ hy) hyx)
   mul_left_not_lt x y hy := by
     by_cases hx : x = 0
     · simp [hx]
