@@ -7,6 +7,8 @@ From `v4.23.0-rc2` through to `nightly-2025-09-02`, `grind` panicked here.
 We keep this example as a regression test in Mathlib.
 -/
 
+set_option warn.sorry false
+
 variable {R : Type} [CommRing R]
 
 class DivisionRing (K : Type) extends Ring K, DivInvMonoid K, Nontrivial K where
@@ -61,5 +63,5 @@ attribute [local instance] Ideal.Quotient.field
 open Classical in
 theorem normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span.extracted_1_3
   {R : Type} [CommRing R] {I : Ideal R} [I.IsMaximal] {mapQ mapMinpoly : I.Quotient}
-  (hQ : mapQ ∈ normalizedFactors mapMinpoly) :
+  (_ : mapQ ∈ normalizedFactors mapMinpoly) :
   0 = 0 := by grind
