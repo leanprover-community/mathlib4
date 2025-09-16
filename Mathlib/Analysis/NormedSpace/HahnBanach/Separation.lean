@@ -314,15 +314,6 @@ theorem iInter_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
   obtain ⟨y, hy, hxy⟩ := hx l
   exact ((hxy.trans_lt (hlA y hy)).trans hl).false
 
-lemma mem_norm_le_of_balanced {𝕜 : Type*} [RCLike 𝕜] {K : Set 𝕜} (Balanced_K : Balanced 𝕜 K)
-    {x : 𝕜} (hx : x ∈ K) : ∀ z : 𝕜, ‖z‖ ≤ ‖x‖ → z ∈ K := fun z t ↦ by
-  by_cases ch: x = 0
-  · simp_all
-  · have : ‖z / x‖ ≤ 1 := by calc
-      _ = ‖z‖ / ‖x‖ := by rw [norm_div]
-      _ ≤ _ := (div_le_one₀ (by simpa)).mpr t
-    simpa [ch] using balanced_iff_smul_mem.mp Balanced_K this hx
-
 theorem closed_balanced_sep {𝕜 : Type*} [RCLike 𝕜] {r : ℝ} {K : Set 𝕜} (compact_K : IsCompact K)
     (zero_in : 0 ∈ K) (norm_lt_r : ∀ x ∈ K, ‖x‖ < r) :
     ∃ s, 0 < s ∧ s < r ∧ (∀ z ∈ K, ‖z‖ < s) := by
