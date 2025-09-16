@@ -213,7 +213,8 @@ lemma Iff.ne_right {α β : Sort*} {a b : α} {c d : β} : (a ≠ b ↔ c = d) �
 #adaptation_note
 /--
 2025-07-31. Upstream `Xor` has been renamed to `XorOp`.
-Anytime after v4.23.0-rc1 lands it should be okay to remove the deprecation, and then rename this.
+2025-09-16. The deprecation for `Xor` has been removed.
+Anytime after v4.25.0-rc1 lands we rename this back to `Xor`.
 -/
 /-- `Xor' a b` is the exclusive-or of propositions. -/
 def Xor' (a b : Prop) := (a ∧ ¬b) ∨ (b ∧ ¬a)
@@ -819,8 +820,7 @@ theorem dite_eq_iff' : dite P A B = c ↔ (∀ h, A h = c) ∧ ∀ h, B h = c :=
 theorem ite_eq_iff' : ite P a b = c ↔ (P → a = c) ∧ (¬P → b = c) := dite_eq_iff'
 
 theorem dite_ne_left_iff : dite P (fun _ ↦ a) B ≠ a ↔ ∃ h, a ≠ B h := by
-  rw [Ne, dite_eq_left_iff, not_forall]
-  exact exists_congr fun h ↦ by rw [ne_comm]
+  grind
 
 theorem dite_ne_right_iff : (dite P A fun _ ↦ b) ≠ b ↔ ∃ h, A h ≠ b := by
   simp only [Ne, dite_eq_right_iff, not_forall]
@@ -897,10 +897,8 @@ theorem ite_or : ite (P ∨ Q) a b = ite P a (ite Q a b) := by
 
 theorem dite_dite_comm {B : Q → α} {C : ¬P → ¬Q → α} (h : P → ¬Q) :
     (if p : P then A p else if q : Q then B q else C p q) =
-     if q : Q then B q else if p : P then A p else C p q :=
-  dite_eq_iff'.2 ⟨
-    fun p ↦ by rw [dif_neg (h p), dif_pos p],
-    fun np ↦ by congr; funext _; rw [dif_neg np]⟩
+     if q : Q then B q else if p : P then A p else C p q := by
+  grind
 
 theorem ite_ite_comm (h : P → ¬Q) :
     (if P then a else if Q then b else c) =
@@ -984,7 +982,6 @@ theorem beq_ext {α : Type*} (inst1 : BEq α) (inst2 : BEq α)
     (h : ∀ x y, @BEq.beq _ inst1 x y = @BEq.beq _ inst2 x y) :
     inst1 = inst2 := by
   have ⟨beq1⟩ := inst1
-  have ⟨beq2⟩ := inst2
   congr
   funext x y
   exact h x y

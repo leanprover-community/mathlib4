@@ -254,7 +254,7 @@ lemma completeEquipartiteGraph_eq_bot_iff :
   rw [← not_iff_not, not_or, ← ne_eq, ← edgeSet_nonempty, not_le, ← Nat.succ_le_iff,
     ← Fin.nontrivial_iff_two_le, ← ne_eq, ← Nat.pos_iff_ne_zero, Fin.pos_iff_nonempty]
   refine ⟨fun ⟨e, he⟩ ↦ ?_, fun ⟨⟨i₁, i₂, hv⟩, ⟨x⟩⟩ ↦ ?_⟩
-  · induction' e with v₁ v₂
+  · induction e with | _ v₁ v₂
     rw [mem_edgeSet, completeEquipartiteGraph_adj] at he
     exact ⟨⟨v₁.1, v₂.1, he⟩, ⟨v₁.2⟩⟩
   · use s((i₁, x), (i₂, x))
