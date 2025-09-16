@@ -25,6 +25,8 @@ def mulLeftEmbedding [Mul G] [IsLeftCancelMul G] (g : G) : G ↪ G where
   toFun h := g * h
   inj' := mul_right_injective g
 
+attribute [grind =] addLeftEmbedding_apply mulLeftEmbedding_apply
+
 /-- If right-multiplication by any element is cancellative, right-multiplication by `g` is an
 embedding. -/
 @[to_additive (attr := simps)
@@ -33,6 +35,8 @@ embedding. -/
 def mulRightEmbedding [Mul G] [IsRightCancelMul G] (g : G) : G ↪ G where
   toFun h := h * g
   inj' := mul_left_injective g
+
+attribute [grind =] addRightEmbedding_apply mulRightEmbedding_apply
 
 @[to_additive]
 theorem mulLeftEmbedding_eq_mulRightEmbedding [CommMagma G] [IsCancelMul G] (g : G) :
