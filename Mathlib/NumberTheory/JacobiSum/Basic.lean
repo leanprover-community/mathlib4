@@ -101,7 +101,7 @@ theorem jacobiSum_trivial_trivial :
   classical
   rw [jacobiSum_eq_sum_sdiff]
   have : ∀ x ∈ univ \ {0, 1}, (MulChar.trivial F R) x * (MulChar.trivial F R) (1 - x) = 1 := by
-    intros x hx
+    intro x hx
     rw [← map_mul, MulChar.trivial_apply, if_pos]
     simp only [mem_sdiff, mem_univ, mem_insert, mem_singleton, not_or, ← ne_eq, true_and] at hx
     simpa only [isUnit_iff_ne_zero, mul_ne_zero_iff, ne_eq, sub_eq_zero, @eq_comm _ _ x] using hx
@@ -109,7 +109,7 @@ theorem jacobiSum_trivial_trivial :
   _ = ∑ _ ∈ univ \ {0, 1}, 1 := sum_congr rfl this
   _ = #(univ \ {0, 1}) := (cast_card _).symm
   _ = Fintype.card F - 2 := by
-    rw [card_sdiff (subset_univ _), card_univ, card_pair zero_ne_one,
+    rw [card_sdiff_of_subset (subset_univ _), card_univ, card_pair zero_ne_one,
       Nat.cast_sub <| Nat.add_one_le_of_lt Fintype.one_lt_card, Nat.cast_two]
 
 /-- If `1` is the trivial multiplicative character on a finite field `F`, then `J(1,1) = #F-2`. -/
@@ -124,7 +124,7 @@ theorem jacobiSum_one_nontrivial {χ : MulChar F R} (hχ : χ ≠ 1) : jacobiSum
   have : ∑ x ∈ univ \ {0, 1}, ((1 : MulChar F R) x - 1) * (χ (1 - x) - 1) = 0 := by
     apply Finset.sum_eq_zero
     simp +contextual only [mem_sdiff, mem_univ, mem_insert, mem_singleton,
-      not_or, ← isUnit_iff_ne_zero, true_and, MulChar.one_apply, sub_self, zero_mul, and_imp,
+      not_or, ← isUnit_iff_ne_zero, true_and, MulChar.one_apply, sub_self, zero_mul,
       implies_true]
   simp only [jacobiSum_eq_aux, MulChar.sum_one_eq_card_units, MulChar.sum_eq_zero_of_ne_one hχ,
     add_zero, Fintype.card_eq_card_units_add_one (α := F), Nat.cast_add, Nat.cast_one,
@@ -149,10 +149,10 @@ theorem jacobiSum_nontrivial_inv {χ : MulChar F R} (hχ : χ ≠ 1) : jacobiSum
       exact one_ne_zero
     · simp only [mem_sdiff, mem_univ, mem_singleton, true_and] at hx
       rw [eq_comm, ← sub_eq_zero] at hx
-      field_simp
+      simp [field]
     · simp only [mem_sdiff, mem_univ, mem_singleton, true_and] at hy
       rw [eq_comm, neg_eq_iff_eq_neg, ← sub_eq_zero, sub_neg_eq_add] at hy
-      field_simp
+      simp [field]
   rw [this, ← add_eq_zero_iff_eq_neg, ← sum_eq_sum_diff_singleton_add (mem_univ (-1 : F))]
   exact MulChar.sum_eq_zero_of_ne_one hχ
 
@@ -200,9 +200,12 @@ lemma jacobiSum_mul_jacobiSum_inv (h : ringChar F' ≠ ringChar F) {χ φ : MulC
     (hφ : φ ≠ 1) (hχφ : χ * φ ≠ 1) :
     jacobiSum χ φ * jacobiSum χ⁻¹ φ⁻¹ = Fintype.card F := by
   obtain ⟨n, hp, hc⟩ := FiniteField.card F (ringChar F)
-  let ψ := FiniteField.primitiveChar F F' h   -- obtain primitive additive character `ψ : F → FF'`
-  let FF' := CyclotomicField ψ.n F'           -- the target field of `ψ`
-  let χ' := χ.ringHomComp (algebraMap F' FF') -- consider `χ` and `φ` as characters `F → FF'`
+  -- Obtain primitive additive character `ψ : F → FF'`.
+  let ψ := FiniteField.primitiveChar F F' h
+  -- the target field of `ψ`
+  let FF' := CyclotomicField ψ.n F'
+  -- Consider `χ` and `φ` as characters `F → FF'`.
+  let χ' := χ.ringHomComp (algebraMap F' FF')
   let φ' := φ.ringHomComp (algebraMap F' FF')
   have hinj := (algebraMap F' FF').injective
   apply hinj

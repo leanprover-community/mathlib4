@@ -75,7 +75,7 @@ theorem subsingleton_iff_exists_singleton_mem [Nonempty α] : l.Subsingleton ↔
 alias ⟨Subsingleton.exists_le_pure, _⟩ := subsingleton_iff_exists_le_pure
 
 lemma Subsingleton.isCountablyGenerated (hl : l.Subsingleton) : IsCountablyGenerated l := by
-  rcases subsingleton_iff_bot_or_pure.1 hl with rfl|⟨x, rfl⟩
+  rcases subsingleton_iff_bot_or_pure.1 hl with rfl | ⟨x, rfl⟩
   · exact isCountablyGenerated_bot
   · exact isCountablyGenerated_pure x
 

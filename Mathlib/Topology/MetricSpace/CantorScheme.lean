@@ -48,7 +48,7 @@ variable {β α : Type*} (A : List β → Set α)
 which sends each infinite sequence `x` to an element of the intersection along the
 branch corresponding to `x`, if it exists.
 We call this the map induced by the scheme. -/
-noncomputable def inducedMap : Σs : Set (ℕ → β), s → α :=
+noncomputable def inducedMap : Σ s : Set (ℕ → β), s → α :=
   ⟨fun x => Set.Nonempty (⋂ n : ℕ, A (res x n)), fun x => x.property.some⟩
 
 section Topology

@@ -77,17 +77,17 @@ register_option linter.dupNamespace : Bool := {
 
 namespace DupNamespaceLinter
 
-open Lean Parser Elab Command Meta
+open Lean Parser Elab Command Meta Linter
 
 @[inherit_doc linter.dupNamespace]
 def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
-  if Linter.getLinterValue linter.dupNamespace (← getOptions) then
+  if getLinterValue linter.dupNamespace (← getLinterOptions) then
     let mut aliases := #[]
     if let some exp := stx.find? (·.isOfKind `Lean.Parser.Command.export) then
       aliases ← getAliasSyntax exp
     for id in (← getNamesFrom (stx.getPos?.getD default)) ++ aliases do
       let declName := id.getId
-      if declName.hasMacroScopes then continue
+      if declName.hasMacroScopes || isPrivateName declName then continue
       let nm := declName.components
       let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) ↦ x == y
         | continue

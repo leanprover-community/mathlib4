@@ -23,7 +23,7 @@ private theorem lookmap.go_append (l : List α) (acc : Array α) :
     rw [lookmap, go, go]
     cases f hd with
     | none =>
-      simp only [go_append tl _, Array.toListAppend_eq, append_assoc, Array.push_toList]
+      simp only [go_append tl _, Array.toListAppend_eq, append_assoc, Array.toList_push]
       rfl
     | some a => rfl
 
@@ -34,13 +34,13 @@ theorem lookmap_nil : [].lookmap f = [] :=
 @[simp]
 theorem lookmap_cons_none {a : α} (l : List α) (h : f a = none) :
     (a :: l).lookmap f = a :: l.lookmap f := by
-  simp only [lookmap, lookmap.go, Array.toListAppend_eq, List.toList_toArray, nil_append]
+  simp only [lookmap, lookmap.go, Array.toListAppend_eq, nil_append]
   rw [lookmap.go_append, h]; rfl
 
 @[simp]
 theorem lookmap_cons_some {a b : α} (l : List α) (h : f a = some b) :
     (a :: l).lookmap f = b :: l := by
-  simp only [lookmap, lookmap.go, Array.toListAppend_eq, List.toList_toArray, nil_append]
+  simp only [lookmap, lookmap.go, Array.toListAppend_eq, nil_append]
   rw [h]
 
 theorem lookmap_some : ∀ l : List α, l.lookmap some = l

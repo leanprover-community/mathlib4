@@ -116,9 +116,9 @@ lemma IsDynCoverOf.nonempty_inter {T : X → X} {F : Set X} {U : Set (X × X)} {
   simp only [Finset.coe_filter, Finset.mem_filter, and_imp, imp_self, implies_true, and_true]
   refine ⟨fun y y_F ↦ ?_, Finset.card_mono (s.filter_subset _)⟩
   specialize h y_F
-  simp only [Finset.coe_sort_coe, mem_iUnion, Subtype.exists, exists_prop] at h
+  simp only [mem_iUnion, exists_prop] at h
   obtain ⟨z, z_s, y_Bz⟩ := h
-  simp only [coe_setOf, mem_setOf_eq, mem_iUnion, Subtype.exists, exists_prop]
+  simp only [mem_setOf_eq, mem_iUnion, exists_prop]
   exact ⟨z, ⟨z_s, nonempty_of_mem ⟨y_Bz, y_F⟩⟩, y_Bz⟩
 
 /-- From a dynamical cover `s` with entourage `U` and time `m`, we construct covers with entourage
@@ -133,7 +133,7 @@ lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F 
   -- Deal with the edge cases: `F = ∅` or `m = 0`.
   rcases F.eq_empty_or_nonempty with rfl | F_nemp
   · exact ⟨∅, by simp⟩
-  have _ : Nonempty X := nonempty_of_exists F_nemp
+  have _ : Nonempty X := F_nemp.nonempty
   have s_nemp := h.nonempty F_nemp
   obtain ⟨x, x_F⟩ := F_nemp
   rcases m.eq_zero_or_pos with rfl | m_pos
@@ -171,7 +171,6 @@ lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F 
   -- that it is indeed a `(U ○ U, m * n)` cover, and that its cardinality is at most `card s ^ n`.
   -- Only the first point requires significant work.
   let sn := range dyncover
-  have := fintypeRange dyncover
   refine ⟨sn.toFinset, ?_, ?_⟩
   · -- We implement the argument at the beginning: given `y ∈ F`, we extract `t 0`, `t 1`, `t 2`
     -- such that `y`, `T^[m] y`, `T^[m]^[2] y` ... is `(dynEntourage T U m)`-close to `t 0`, `t 1`,
@@ -183,7 +182,7 @@ lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F 
     have key : ∀ k : Fin n, ∃ z : s, y ∈ T^[m * k] ⁻¹' ball z (dynEntourage T U m) := by
       intro k
       have := h (MapsTo.iterate F_inv (m * k) y_F)
-      simp only [Finset.coe_sort_coe, mem_iUnion, Subtype.exists, exists_prop] at this
+      simp only [mem_iUnion, exists_prop] at this
       obtain ⟨z, z_s, hz⟩ := this
       exact ⟨⟨z, z_s⟩, hz⟩
     choose! t ht using key
@@ -268,7 +267,7 @@ lemma coverMincard_eq_zero_iff (T : X → X) (F : Set X) (U : Set (X × X)) (n :
   have := coverMincard_finite_iff T F U n
   rw [h, eq_true ENat.top_pos, true_iff] at this
   simp only [IsDynCoverOf, Finset.mem_coe, Nat.cast_eq_zero, Finset.card_eq_zero, exists_eq_right,
-    Finset.not_mem_empty, iUnion_of_empty, iUnion_empty] at this
+    Finset.notMem_empty, iUnion_of_empty, iUnion_empty] at this
   exact this
 
 lemma one_le_coverMincard_iff (T : X → X) (F : Set X) (U : Set (X × X)) (n : ℕ) :
@@ -343,11 +342,11 @@ lemma nonempty_inter_of_coverMincard {T : X → X} {F : Set X} {U : Set (X × X)
     simp only [s.mem_coe, mem_iUnion, exists_prop] at h
     simp only [s.coe_erase, mem_diff, s.mem_coe, mem_singleton_iff, mem_iUnion, exists_prop]
     obtain ⟨z, z_s, hz⟩ := h
-    refine ⟨z, ⟨z_s, fun z_x ↦ not_mem_empty y ?_⟩, hz⟩
+    refine ⟨z, ⟨z_s, fun z_x ↦ notMem_empty y ?_⟩, hz⟩
     rw [← ball_empt]
     rw [z_x] at hz
     exact mem_inter y_F hz
-  apply smaller_cover.coverMincard_le_card.not_lt
+  apply smaller_cover.coverMincard_le_card.not_gt
   rw [← h']
   exact_mod_cast s.card_erase_lt_of_mem x_s
 

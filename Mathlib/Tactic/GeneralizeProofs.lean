@@ -94,8 +94,8 @@ structure AState where
 /--
 Monad used to abstract proofs, to prepare for generalization.
 Has a cache (of expr/type? pairs),
-and it also has a reader context `Mathlib.Tactic.GeneralizeProofs.AContext`
-and a state `Mathlib.Tactic.GeneralizeProofs.AState`.
+and it also has a reader context `Mathlib/Tactic/GeneralizeProofs/AContext.lean`
+and a state `Mathlib/Tactic/GeneralizeProofs/AState.lean`.
 -/
 abbrev MAbs := ReaderT AContext <| MonadCacheT (Expr × Option Expr) Expr <| StateRefT AState MetaM
 
@@ -257,10 +257,10 @@ where
                 else
                   pure none
               mkLambdaFVars #[x] (← visit (b.instantiate1 x) ty'?)
-          | .letE n t v b _ =>
+          | .letE n t v b nondep =>
             let t' ← visit t none
-            withLetDecl n t' (← visit v t') fun x ↦ MAbs.withLocal x do
-              mkLetFVars #[x] (← visit (b.instantiate1 x) ty?)
+            mapLetDecl n t' (← visit v t') (nondep := nondep) fun x ↦ MAbs.withLocal x do
+              visit (b.instantiate1 x) ty?
           | .app .. =>
             e.withApp fun f args ↦ do
               let f' ← visit f none
@@ -419,10 +419,10 @@ where
               -- Make this prop available as a proof
               MGen.insertFVar t' (.fvar fvar')
             go g' (i + 1) (hs ++ hs')
-        | .letE n t v b _ =>
+        | .letE n t v b nondep =>
           withGeneralizedProofs t none fun hs' pfs' t' => do
             withGeneralizedProofs v t' fun hs'' pfs'' v' => do
-              let tgt' := Expr.letE n t' v' b false
+              let tgt' := Expr.letE n t' v' b nondep
               let g' ← mkFreshExprSyntheticOpaqueMVar tgt' tag
               g.assign <| mkAppN (← mkLambdaFVars (hs' ++ hs'') g') (pfs' ++ pfs'')
               let (fvar', g') ← g'.mvarId!.intro1P

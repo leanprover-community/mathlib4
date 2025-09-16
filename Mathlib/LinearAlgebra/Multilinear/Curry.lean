@@ -84,9 +84,7 @@ theorem MultilinearMap.curryLeft_apply (f : MultilinearMap R M M₂) (x : M 0)
 @[simp]
 theorem LinearMap.curry_uncurryLeft (f : M 0 →ₗ[R] MultilinearMap R (fun i :
     Fin n => M i.succ) M₂) : f.uncurryLeft.curryLeft = f := by
-  ext m x
-  simp only [tail_cons, LinearMap.uncurryLeft_apply, MultilinearMap.curryLeft_apply]
-  rw [cons_zero]
+  rfl
 
 @[simp]
 theorem MultilinearMap.uncurry_curryLeft (f : MultilinearMap R M M₂) :
@@ -103,6 +101,7 @@ linear isomorphism in `multilinearCurryLeftEquiv R M M₂`.
 
 The direct and inverse maps are given by `f.curryLeft` and `f.uncurryLeft`. Use these
 unless you need the full framework of linear equivs. -/
+@[simps]
 def multilinearCurryLeftEquiv :
     MultilinearMap R M M₂ ≃ₗ[R] (M 0 →ₗ[R] MultilinearMap R (fun i : Fin n => M i.succ) M₂) where
   toFun := MultilinearMap.curryLeft
@@ -115,7 +114,6 @@ def multilinearCurryLeftEquiv :
 variable {R M M₂}
 
 /-! #### Right currying -/
-
 
 /-- Given a multilinear map `f` in `n` variables to the space of linear maps from `M (last n)` to
 `M₂`, construct the corresponding multilinear map on `n+1` variables obtained by concatenating
@@ -260,7 +258,7 @@ lemma currySum_add (f₁ f₂ : MultilinearMap R N M₂) :
     currySum (f₁ + f₂) = currySum f₁ + currySum f₂ := rfl
 
 @[simp]
-lemma currySum_smul (r : R) (f : MultilinearMap R N M₂):
+lemma currySum_smul (r : R) (f : MultilinearMap R N M₂) :
     currySum (r • f) = r • currySum f := rfl
 
 /-- Given a family of modules `N : (ι ⊕ ι') → Type*`, a multilinear map on
@@ -328,7 +326,6 @@ def currySumEquiv : MultilinearMap R N M₂ ≃ₗ[R]
   toFun := currySum
   invFun := uncurrySum
   left_inv _ := by simp
-  right_inv _ := rfl
   map_add' := by aesop
   map_smul' := by aesop
 
@@ -382,7 +379,7 @@ theorem curryFinFinset_symm_apply_piecewise_const {k l n : ℕ} {s : Finset (Fin
     rw [finSumEquivOfFinset_inl, Finset.piecewise_eq_of_mem]
     apply Finset.orderEmbOfFin_mem
   · ext
-    rw [finSumEquivOfFinset_inr, Finset.piecewise_eq_of_not_mem]
+    rw [finSumEquivOfFinset_inr, Finset.piecewise_eq_of_notMem]
     exact Finset.mem_compl.1 (Finset.orderEmbOfFin_mem _ _ _)
 
 @[simp]

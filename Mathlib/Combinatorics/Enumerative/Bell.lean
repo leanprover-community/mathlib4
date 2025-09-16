@@ -83,8 +83,8 @@ theorem bell_mul_eq (m : Multiset ℕ) :
         rw [← Finset.prod_erase_mul _ _ hm]
         simp only [factorial_zero, one_pow, mul_one, zero_mul]
         exact this
-      · nth_rewrite 1 [← Finset.erase_eq_of_not_mem hm]
-        nth_rewrite 3 [← Finset.erase_eq_of_not_mem hm]
+      · nth_rewrite 1 [← Finset.erase_eq_of_notMem hm]
+        nth_rewrite 3 [← Finset.erase_eq_of_notMem hm]
         exact this
     rw [← Finset.prod_mul_distrib]
     apply Finset.prod_congr rfl
@@ -106,8 +106,8 @@ theorem bell_eq (m : Multiset ℕ) :
     apply Nat.dvd_mul_left
   · rw [← Nat.pos_iff_ne_zero]
     apply Nat.mul_pos
-    · simp only [gt_iff_lt, CanonicallyOrderedAdd.multiset_prod_pos, mem_map,
-      forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+    · simp only [CanonicallyOrderedAdd.multiset_prod_pos, mem_map, forall_exists_index, and_imp,
+        forall_apply_eq_imp_iff₂]
       exact fun _ _ ↦ Nat.factorial_pos _
     · apply Finset.prod_pos
       exact fun _ _ ↦ Nat.factorial_pos _
@@ -146,7 +146,7 @@ theorem uniformBell_one_left (n : ℕ) : uniformBell 1 n = 1 := by
     zero_add, choose_self]
 
 theorem uniformBell_one_right (m : ℕ) : uniformBell m 1 = 1 := by
-  simp only [uniformBell_eq, mul_one, add_tsub_cancel_right, ge_iff_le, le_refl,
+  simp only [uniformBell_eq, mul_one, add_tsub_cancel_right, le_refl,
     tsub_eq_zero_of_le, choose_zero_right, Finset.prod_const_one]
 
 theorem uniformBell_mul_eq (m : ℕ) {n : ℕ} (hn : n ≠ 0) :

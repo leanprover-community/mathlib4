@@ -160,7 +160,7 @@ scoped instance (priority := 100) : ContinuousMul Γ₀ where
     simp only [continuous_iff_continuousAt, ContinuousAt]
     rintro ⟨x, y⟩
     wlog hle : x ≤ y generalizing x y
-    · have := (this y x (le_of_not_le hle)).comp (continuous_swap.tendsto (x, y))
+    · have := (this y x (le_of_not_ge hle)).comp (continuous_swap.tendsto (x, y))
       simpa only [mul_comm, Function.comp_def, Prod.swap] using this
     rcases eq_or_ne x 0 with (rfl | hx) <;> [rcases eq_or_ne y 0 with (rfl | hy); skip]
     · rw [zero_mul]
@@ -178,7 +178,7 @@ scoped instance (priority := 100) : ContinuousMul Γ₀ where
       exact pure_le_nhds (x * y)
 
 @[nolint defLemma]
-scoped instance (priority := 100) : HasContinuousInv₀ Γ₀ :=
+scoped instance (priority := 100) : ContinuousInv₀ Γ₀ :=
   ⟨fun γ h => by
     rw [ContinuousAt, nhds_of_ne_zero h]
     exact pure_le_nhds γ⁻¹⟩

@@ -58,8 +58,6 @@ theorem Finite.card_pos [Finite α] [h : Nonempty α] : 0 < Nat.card α :=
 
 namespace Finite
 
-@[deprecated (since := "2025-02-21")] alias cast_card_eq_mk := Nat.cast_card
-
 theorem card_eq [Finite α] [Finite β] : Nat.card α = Nat.card β ↔ Nonempty (α ≃ β) := by
   haveI := Fintype.ofFinite α
   haveI := Fintype.ofFinite β
@@ -146,10 +144,10 @@ theorem card_sum [Finite α] [Finite β] : Nat.card (α ⊕ β) = Nat.card α + 
   simp only [Nat.card_eq_fintype_card, Fintype.card_sum]
 
 theorem card_image_le {s : Set α} [Finite s] (f : α → β) : Nat.card (f '' s) ≤ Nat.card s :=
-  card_le_of_surjective _ Set.surjective_onto_image
+  card_le_of_surjective _ Set.imageFactorization_surjective
 
 theorem card_range_le [Finite α] (f : α → β) : Nat.card (Set.range f) ≤ Nat.card α :=
-  card_le_of_surjective _ Set.surjective_onto_range
+  card_le_of_surjective _ Set.rangeFactorization_surjective
 
 theorem card_subtype_le [Finite α] (p : α → Prop) : Nat.card { x // p x } ≤ Nat.card α := by
   classical
@@ -196,7 +194,7 @@ theorem card_lt_card (ht : t.Finite) (hsub : s ⊂ t) : Nat.card s < Nat.card t 
 
 theorem eq_of_subset_of_card_le (ht : t.Finite) (hsub : s ⊆ t) (hcard : Nat.card t ≤ Nat.card s) :
     s = t :=
-  (eq_or_ssubset_of_subset hsub).elim id fun h ↦ absurd hcard <| not_le_of_lt <| ht.card_lt_card h
+  (eq_or_ssubset_of_subset hsub).elim id fun h ↦ absurd hcard <| not_le_of_gt <| ht.card_lt_card h
 
 theorem equiv_image_eq_iff_subset (e : α ≃ α) (hs : s.Finite) : e '' s = s ↔ e '' s ⊆ s :=
   ⟨fun h ↦ by rw [h], fun h ↦ hs.eq_of_subset_of_card_le h <|

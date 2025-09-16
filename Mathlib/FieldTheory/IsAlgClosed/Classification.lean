@@ -118,7 +118,7 @@ For a simpler, but less universe-polymorphic statement, see
 theorem cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt [Nontrivial R]
     (hv : IsTranscendenceBasis R v) (hR : #R ≤ ℵ₀) (hK : ℵ₀ < #K) :
     Cardinal.lift.{w} #K = Cardinal.lift.{v} #ι :=
-  have : ℵ₀ ≤ Cardinal.lift.{max u v} #ι := le_of_not_lt fun h => not_le_of_gt
+  have : ℵ₀ ≤ Cardinal.lift.{max u v} #ι := le_of_not_gt fun h => not_le_of_gt
     (show ℵ₀ < Cardinal.lift.{max u w} #K by simpa) <|
     calc
       Cardinal.lift.{max u w, v} #K ≤ max (max (Cardinal.lift.{max v w, u} #R)
