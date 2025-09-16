@@ -608,6 +608,12 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
             · exact le_of_lt <| h_smoothing_gt_half n hn
       _ = C * ((1 - ε n) * asympBound g a b n) := by ring
 
+#adaptation_note
+/--
+This linter is only enabled on `nightly-testing`, but it causes a deterministic timeout there.
+Can this proof be refactored into some smaller pieces?
+-/
+set_option linter.tacticAnalysis.linarithToGrind false in
 /-- The main proof of the lower bound part of the Akra-Bazzi theorem. The factor
 `1 + ε n` does not change the asymptotic order, but is needed for the induction step to go
 through. -/
