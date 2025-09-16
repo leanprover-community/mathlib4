@@ -828,7 +828,7 @@ around it in the case where `a` is of the form `e.symm b`, so we can use `g b` i
 @[simp]
 lemma piCongrLeft'_symm_apply_apply (P : α → Sort*) (e : α ≃ β) (g : ∀ b, P (e.symm b)) (b : β) :
     (piCongrLeft' P e).symm g (e.symm b) = g b := by
-  rw [piCongrLeft'_symm_apply, ← heq_iff_eq, rec_heq_iff_heq]
+  rw [piCongrLeft'_symm_apply, ← heq_iff_eq, eqRec_heq_iff_heq]
   exact congr_arg_heq _ (e.apply_symm_apply _)
 
 @[simp]
@@ -876,7 +876,7 @@ open Sum
 lemma piCongrLeft_apply_eq_cast {P : β → Sort v} {e : α ≃ β}
     (f : (a : α) → P (e a)) (b : β) :
     piCongrLeft P e f b = cast (congr_arg P (e.apply_symm_apply b)) (f (e.symm b)) :=
-  Eq.rec_eq_cast _ _
+  eqRec_eq_cast _ _
 
 theorem piCongrLeft_sumInl {ι ι' ι''} (π : ι'' → Type*) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
     (g : ∀ i, π (e (inr i))) (i : ι) :
