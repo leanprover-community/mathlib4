@@ -167,18 +167,18 @@ theorem pathIntegral_cast (ω : E → E →L[𝕜] F) (γ : Path a b) (hc : c = 
   simp [pathIntegral]
 
 @[simp]
-theorem PathIntegrable.cast_iff (hc : c = a) (hd : d = b) :
+theorem pathIntegrable_cast_iff (hc : c = a) (hd : d = b) :
     PathIntegrable ω (γ.cast hc hd) ↔ PathIntegrable ω γ := by
   simp [PathIntegrable]
 
-protected alias ⟨_, PathIntegrable.cast⟩ := PathIntegrable.cast_iff
+protected alias ⟨_, PathIntegrable.cast⟩ := pathIntegrable_cast_iff
 
 theorem pathIntegralFun_symm_apply (ω : E → E →L[𝕜] F) (γ : Path a b) (t : ℝ) :
     pathIntegralFun ω γ.symm t = -pathIntegralFun ω γ (1 - t) := by
   simp [pathIntegralFun, γ.extend_symm, derivWithin_comp_const_sub]
 
 @[simp]
-theorem pathIntegralFun_symm (ω : E → E →L[𝕜] F) (γ : Path a b):
+theorem pathIntegralFun_symm (ω : E → E →L[𝕜] F) (γ : Path a b) :
     pathIntegralFun ω γ.symm = (-pathIntegralFun ω γ <| 1 - ·) :=
   funext <| pathIntegralFun_symm_apply ω γ
 
@@ -237,13 +237,13 @@ theorem PathIntegrable.intervalIntegrable_pathIntegralFun_trans_left
     (h : PathIntegrable ω γab) (γbc : Path b c) :
     IntervalIntegrable (pathIntegralFun ω (γab.trans γbc)) volume 0 (1 / 2) := by
   refine .congr_ae ?_ (pathIntegralFun_trans_aeeq_left _ _ _).symm
-  simpa [ofNat_smul_eq_nsmul] using h.comp_mul_left 2 |>.smul (2 : 𝕜)
+  simpa [ofNat_smul_eq_nsmul] using h.comp_mul_left.smul (2 : 𝕜)
 
 theorem PathIntegrable.intervalIntegrable_pathIntegralFun_trans_right
     (γab : Path a b) (h : PathIntegrable ω γbc) :
     IntervalIntegrable (pathIntegralFun ω (γab.trans γbc)) volume (1 / 2) 1 := by
   refine .congr_ae ?_ (pathIntegralFun_trans_aeeq_right _ _ _).symm
-  simpa [ofNat_smul_eq_nsmul] using h.comp_sub_right 1 |>.comp_mul_left 2 |>.smul (2 : 𝕜)
+  simpa [ofNat_smul_eq_nsmul] using h.comp_sub_right 1 |>.comp_mul_left (c := 2) |>.smul (2 : 𝕜)
 
 protected theorem PathIntegrable.trans (h₁ : PathIntegrable ω γab) (h₂ : PathIntegrable ω γbc) :
     PathIntegrable ω (γab.trans γbc) :=
@@ -376,12 +376,12 @@ theorem PathIntegrable.fun_neg (h : PathIntegrable ω γ) : PathIntegrable (-ω 
   h.neg
 
 @[simp]
-theorem PathIntegrable.neg_iff : PathIntegrable (-ω) γ ↔ PathIntegrable ω γ :=
+theorem pathIntegrable_neg_iff : PathIntegrable (-ω) γ ↔ PathIntegrable ω γ :=
   ⟨fun h ↦ by simpa using h.neg, .neg⟩
 
 @[simp]
-theorem PathIntegrable.fun_neg_iff : PathIntegrable (-ω ·) γ ↔ PathIntegrable ω γ :=
-  PathIntegrable.neg_iff
+theorem pathIntegrable_fun_neg_iff : PathIntegrable (-ω ·) γ ↔ PathIntegrable ω γ :=
+  pathIntegrable_neg_iff
 
 @[simp]
 theorem pathIntegral_neg : pathIntegral (-ω) γ = -∫ᵖ x in γ, ω x := by
@@ -421,7 +421,7 @@ theorem pathIntegralFun_restrictScalars :
   simp [pathIntegralFun_def]
 
 @[simp]
-theorem PathIntegrable.restrictScalars_iff :
+theorem pathIntegrable_restrictScalars_iff :
     PathIntegrable (fun t ↦ (ω t).restrictScalars 𝕝) γ ↔ PathIntegrable ω γ := by
   simp [PathIntegrable]
 
@@ -445,7 +445,7 @@ nonrec theorem PathIntegrable.smul (h : PathIntegrable ω γ) :
   simpa [PathIntegrable] using h.smul c
 
 @[simp]
-theorem PathIntegrable.smul_iff : PathIntegrable (c • ω) γ ↔ c = 0 ∨ PathIntegrable ω γ := by
+theorem pathIntegrable_smul_iff : PathIntegrable (c • ω) γ ↔ c = 0 ∨ PathIntegrable ω γ := by
   rcases eq_or_ne c 0 with rfl | hc
   · simp [PathIntegrable.zero]
   · simp only [hc, false_or]
@@ -491,7 +491,7 @@ theorem HasFDerivWithinAt.pathIntegral_segment_source' (hs : Convex ℝ s)
     refine ContinuousOn.intervalIntegrable_of_Icc zero_le_one fun t ht ↦ ?_
     refine ((hδ ?_).1.eval_const _).comp AffineMap.lineMap_continuous.continuousWithinAt ?_
     · refine hsub <| segment_eq_image_lineMap ℝ a b ▸ mem_image_of_mem _ ht
-    · rw [mapsTo', ← segment_eq_image_lineMap]
+    · rw [mapsTo_iff_image_subset, ← segment_eq_image_lineMap]
       exact hs.segment_subset ha hbs
   · rw [pathIntegrable_segment]
     exact intervalIntegrable_const

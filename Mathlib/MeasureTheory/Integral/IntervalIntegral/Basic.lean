@@ -97,7 +97,7 @@ theorem IntervalIntegrable.congr_ae {g : ℝ → ε} (hf : IntervalIntegrable f 
 @[deprecated (since := "2025-05-13")]
 alias IntervalIntegrable.congr := IntervalIntegrable.congr_ae
 
-theorem intervalIntegrable_congr {g : ℝ → E} (h : EqOn f g (Ι a b)) :
+theorem intervalIntegrable_congr {g : ℝ → ε} (h : EqOn f g (Ι a b)) :
     IntervalIntegrable f μ a b ↔ IntervalIntegrable g μ a b :=
   intervalIntegrable_congr_ae <| (ae_restrict_mem measurableSet_uIoc).mono h
 
@@ -163,7 +163,7 @@ theorem intervalIntegrable_const [IsLocallyFiniteMeasure μ]
   intervalIntegrable_const_iff hc |>.2 <| Or.inr measure_Ioc_lt_top
 
 protected theorem IntervalIntegrable.zero : IntervalIntegrable (0 : ℝ → E) μ a b :=
-  intervalIntegrable_const_iff.mpr <| .inl rfl
+  (intervalIntegrable_const_iff <| by finiteness).mpr <| .inl rfl
 
 end
 
