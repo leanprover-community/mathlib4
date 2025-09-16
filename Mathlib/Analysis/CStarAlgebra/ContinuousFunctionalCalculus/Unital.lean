@@ -497,7 +497,7 @@ lemma cfc_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
       rw [sum_coe_sort s, hsum]
       exact continuousOn_finset_sum s fun i hi => hf i hi
     rw [← sum_coe_sort s, ← sum_coe_sort s]
-    rw [cfc_apply_pi _ a _ (fun ⟨i, hi⟩ => hf i hi), ← map_sum, cfc_apply _ a ha hf']
+    rw [cfc_apply_pi _ a ha (fun ⟨i, hi⟩ => hf i hi), ← map_sum, cfc_apply _ a ha hf']
     congr 1
     ext
     simp

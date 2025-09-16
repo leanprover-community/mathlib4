@@ -304,7 +304,7 @@ def restriction (p : R[X]) : Polynomial (Subring.closure (↑p.coeffs : Set R)) 
       (⟨p.coeff i,
           letI := Classical.decEq R
           if H : p.coeff i = 0 then H.symm ▸ (Subring.closure _).zero_mem
-          else Subring.subset_closure (p.coeff_mem_coeffs _ H)⟩ :
+          else Subring.subset_closure (p.coeff_mem_coeffs H)⟩ :
         Subring.closure (↑p.coeffs : Set R))
 
 @[simp]
@@ -372,7 +372,7 @@ def toSubring (hp : (↑p.coeffs : Set R) ⊆ T) : T[X] :=
     monomial i
       (⟨p.coeff i,
         letI := Classical.decEq R
-        if H : p.coeff i = 0 then H.symm ▸ T.zero_mem else hp (p.coeff_mem_coeffs _ H)⟩ : T)
+        if H : p.coeff i = 0 then H.symm ▸ T.zero_mem else hp (p.coeff_mem_coeffs H)⟩ : T)
 
 variable (hp : (↑p.coeffs : Set R) ⊆ T)
 

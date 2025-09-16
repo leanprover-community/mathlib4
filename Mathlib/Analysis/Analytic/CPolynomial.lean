@@ -168,13 +168,16 @@ lemma cpolynomialAt_uncurry_of_multilinear :
   f.hasFiniteFPowerSeriesOnBall_uncurry_of_multilinear.cpolynomialAt_of_mem
     (by simp only [Metric.emetric_ball_top, Set.mem_univ])
 
-lemma cpolyomialOn_uncurry_of_multilinear :
+lemma cpolynomialOn_uncurry_of_multilinear :
     CPolynomialOn 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s :=
   fun _ _ ↦ f.cpolynomialAt_uncurry_of_multilinear
 
+@[deprecated (since := "2025-09-15")]
+alias cpolyomialOn_uncurry_of_multilinear := cpolynomialOn_uncurry_of_multilinear
+
 lemma analyticOnNhd_uncurry_of_multilinear :
     AnalyticOnNhd 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s :=
-  f.cpolyomialOn_uncurry_of_multilinear.analyticOnNhd
+  f.cpolynomialOn_uncurry_of_multilinear.analyticOnNhd
 
 lemma analyticOn_uncurry_of_multilinear :
     AnalyticOn 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s :=

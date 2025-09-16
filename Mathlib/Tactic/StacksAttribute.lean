@@ -74,14 +74,14 @@ def stacksTagFn : ParserFn := fun c s =>
   else if s.pos == i then
     ParserState.mkError s "stacks tag"
   else
-    let tag := Substring.mk c.input i s.pos |>.toString
+    let tag := c.extract i s.pos
     if !tag.all fun c => c.isDigit || c.isUpper then
       ParserState.mkUnexpectedError s
         "Stacks tags must consist only of digits and uppercase letters."
     else if tag.length != 4 then
       ParserState.mkUnexpectedError s "Stacks tags must be exactly 4 characters"
     else
-      mkNodeToken stacksTagKind i c s
+      mkNodeToken stacksTagKind i true c s
 
 @[inherit_doc stacksTagFn]
 def stacksTagNoAntiquot : Parser := {
