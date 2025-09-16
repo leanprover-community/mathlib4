@@ -197,7 +197,7 @@ theorem abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq (hs : s₂ ⊆ s₁) (
   have hδ' : 0 ≤ 2 * δ - δ ^ 2 := by
     rw [sub_nonneg, sq]
     gcongr
-    exact hδ₁.le.trans (by norm_num)
+    exact hδ₁.le.trans (by simp)
   rw [← sub_pos] at hδ₁
   obtain rfl | hs₂' := s₂.eq_empty_or_nonempty
   · rw [Finset.card_empty, Nat.cast_zero] at hs₂
@@ -224,7 +224,7 @@ densities is at most `2 * δ`. -/
 theorem abs_edgeDensity_sub_edgeDensity_le_two_mul (hs : s₂ ⊆ s₁) (ht : t₂ ⊆ t₁) (hδ : 0 ≤ δ)
     (hscard : (1 - δ) * #s₁ ≤ #s₂) (htcard : (1 - δ) * #t₁ ≤ #t₂) :
     |(edgeDensity r s₂ t₂ : 𝕜) - edgeDensity r s₁ t₁| ≤ 2 * δ := by
-  rcases lt_or_le δ 1 with h | h
+  rcases lt_or_ge δ 1 with h | h
   · exact (abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq r hs ht hδ h hscard htcard).trans
       ((sub_le_self_iff _).2 <| sq_nonneg δ)
   rw [two_mul]

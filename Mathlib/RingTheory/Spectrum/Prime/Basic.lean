@@ -79,14 +79,6 @@ lemma nontrivial (p : PrimeSpectrum R) : Nontrivial R :=
 
 variable (R S)
 
-/-- The prime spectrum is in bijection with the set of prime ideals. -/
-@[simps]
-def equivSubtype : PrimeSpectrum R ≃ {I : Ideal R // I.IsPrime} where
-  toFun I := ⟨I.asIdeal, I.2⟩
-  invFun I := ⟨I, I.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
-
 theorem range_asIdeal : Set.range PrimeSpectrum.asIdeal = {J : Ideal R | J.IsPrime} :=
   Set.ext fun J ↦
     ⟨fun hJ ↦ let ⟨j, hj⟩ := Set.mem_range.mp hJ; Set.mem_setOf.mpr <| hj ▸ j.isPrime,
@@ -185,13 +177,13 @@ section Gc
 
 variable (R)
 
-/-- `zeroLocus` and `vanishingIdeal` form a galois connection. -/
+/-- `zeroLocus` and `vanishingIdeal` form a Galois connection. -/
 theorem gc :
     @GaloisConnection (Ideal R) (Set (PrimeSpectrum R))ᵒᵈ _ _ (fun I => zeroLocus I) fun t =>
       vanishingIdeal t :=
   fun I t => subset_zeroLocus_iff_le_vanishingIdeal t I
 
-/-- `zeroLocus` and `vanishingIdeal` form a galois connection. -/
+/-- `zeroLocus` and `vanishingIdeal` form a Galois connection. -/
 theorem gc_set :
     @GaloisConnection (Set R) (Set (PrimeSpectrum R))ᵒᵈ _ _ (fun s => zeroLocus s) fun t =>
       vanishingIdeal t := by
@@ -394,25 +386,6 @@ lemma zeroLocus_smul_of_isUnit {r : R} (hr : IsUnit r) (s : Set R) :
 
 section Order
 
-/-!
-## The specialization order
-
-We endow `PrimeSpectrum R` with a partial order induced from the ideal lattice.
-This is exactly the specialization order.
-See the corresponding section at `Mathlib/RingTheory/Spectrum/Prime/Topology.lean`.
--/
-
-instance : PartialOrder (PrimeSpectrum R) :=
-  PartialOrder.lift asIdeal (@PrimeSpectrum.ext _ _)
-
-@[simp]
-theorem asIdeal_le_asIdeal (x y : PrimeSpectrum R) : x.asIdeal ≤ y.asIdeal ↔ x ≤ y :=
-  Iff.rfl
-
-@[simp]
-theorem asIdeal_lt_asIdeal (x y : PrimeSpectrum R) : x.asIdeal < y.asIdeal ↔ x < y :=
-  Iff.rfl
-
 instance [IsDomain R] : OrderBot (PrimeSpectrum R) where
   bot := ⟨⊥, Ideal.bot_prime⟩
   bot_le I := @bot_le _ _ _ I.asIdeal
@@ -439,7 +412,7 @@ lemma zeroLocus_eq_singleton (m : Ideal R) [m.IsMaximal] :
 
 lemma isMin_iff {x : PrimeSpectrum R} :
     IsMin x ↔ x.asIdeal ∈ minimalPrimes R := by
-  show IsMin _ ↔ Minimal (fun q : Ideal R ↦ q.IsPrime ∧ ⊥ ≤ q) _
+  change IsMin _ ↔ Minimal (fun q : Ideal R ↦ q.IsPrime ∧ ⊥ ≤ q) _
   simp only [IsMin, Minimal, x.2, bot_le, and_self, and_true, true_and]
   exact ⟨fun H y hy e ↦ @H ⟨y, hy⟩ e, fun H y e ↦ H y.2 e⟩
 
@@ -452,7 +425,7 @@ open Submodule
 variable (R : Type u) [CommRing R] [IsNoetherianRing R]
 variable {A : Type u} [CommRing A] [IsDomain A] [IsNoetherianRing A]
 
-/-- In a noetherian ring, every ideal contains a product of prime ideals
+/-- In a Noetherian ring, every ideal contains a product of prime ideals
 ([samuel1967, § 3.3, Lemma 3]). -/
 theorem exists_primeSpectrum_prod_le (I : Ideal R) :
     ∃ Z : Multiset (PrimeSpectrum R), Multiset.prod (Z.map asIdeal) ≤ I := by
@@ -476,14 +449,14 @@ theorem exists_primeSpectrum_prod_le (I : Ideal R) :
   obtain ⟨Wy, h_Wy⟩ := hgt (M + span R {y}) (lt_add _ hy)
   use Wx + Wy
   rw [Multiset.map_add, Multiset.prod_add]
-  apply le_trans (Submodule.mul_le_mul h_Wx h_Wy)
+  apply le_trans (mul_le_mul' h_Wx h_Wy)
   rw [add_mul]
   apply sup_le (show M * (M + span R {y}) ≤ M from Ideal.mul_le_right)
   rw [mul_add]
   apply sup_le (show span R {x} * M ≤ M from Ideal.mul_le_left)
   rwa [span_mul_span, Set.singleton_mul_singleton, span_singleton_le_iff_mem]
 
-/-- In a noetherian integral domain which is not a field, every non-zero ideal contains a non-zero
+/-- In a Noetherian integral domain which is not a field, every non-zero ideal contains a non-zero
   product of prime ideals; in a field, the whole ring is a non-zero ideal containing only 0 as
   product or prime ideals ([samuel1967, § 3.3, Lemma 3]) -/
 theorem exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {I : Ideal A}
@@ -517,7 +490,7 @@ theorem exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {
   obtain ⟨Wy, h_Wy_le, h_Wx_ne⟩ := hgt (M + span A {y}) (lt_add _ hy) (ne_bot_of_gt (lt_add _ hy))
   use Wx + Wy
   rw [Multiset.map_add, Multiset.prod_add]
-  refine ⟨le_trans (Submodule.mul_le_mul h_Wx_le h_Wy_le) ?_, mt Ideal.mul_eq_bot.mp ?_⟩
+  refine ⟨le_trans (mul_le_mul' h_Wx_le h_Wy_le) ?_, mt Ideal.mul_eq_bot.mp ?_⟩
   · rw [add_mul]
     apply sup_le (show M * (M + span A {y}) ≤ M from Ideal.mul_le_right)
     rw [mul_add]

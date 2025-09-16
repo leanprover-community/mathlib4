@@ -3,7 +3,7 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Real.Cardinality
+import Mathlib.Analysis.Real.Cardinality
 import Mathlib.Topology.TietzeExtension
 /-!
 # Not normal topological spaces
@@ -30,7 +30,7 @@ theorem IsClosed.mk_lt_continuum [NormalSpace X] {s : Set X} (hs : IsClosed s)
   rcases exists_countable_dense X with ⟨t, htc, htd⟩
   haveI := htc.to_subtype
   -- To obtain a contradiction, we will prove `2 ^ 𝔠 ≤ 𝔠`.
-  refine (Cardinal.cantor 𝔠).not_le ?_
+  refine (Cardinal.cantor 𝔠).not_ge ?_
   calc
     -- Any function `s → ℝ` is continuous, hence `2 ^ 𝔠 ≤ #C(s, ℝ)`
     2 ^ 𝔠 ≤ #C(s, ℝ) := by
@@ -54,4 +54,4 @@ theorem IsClosed.mk_lt_continuum [NormalSpace X] {s : Set X} (hs : IsClosed s)
 /-- Let `s` be a closed set in a separable space. If the induced topology on `s` is discrete and `s`
 has cardinality at least continuum, then the ambient space is not a normal space. -/
 theorem IsClosed.not_normal_of_continuum_le_mk {s : Set X} (hs : IsClosed s) [DiscreteTopology s]
-    (hmk : 𝔠 ≤ #s) : ¬NormalSpace X := fun _ ↦ hs.mk_lt_continuum.not_le hmk
+    (hmk : 𝔠 ≤ #s) : ¬NormalSpace X := fun _ ↦ hs.mk_lt_continuum.not_ge hmk

@@ -47,7 +47,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
   -- Consider an open covering `S : Set (Set α)`
   refine ⟨fun ι s ho hcov => ?_⟩
   simp only [iUnion_eq_univ_iff] at hcov
-  -- choose a well founded order on `S`
+  -- choose a well-founded order on `S`
   obtain ⟨_, wf⟩ := exists_wellOrder ι
   -- Let `ind x` be the minimal index `s : S` such that `x ∈ s`.
   let ind (x : α) : ι := wellFounded_lt.min { i : ι | x ∈ s i } (hcov x)
@@ -135,7 +135,7 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
       rintro j₁ ⟨y, hyD, hyB⟩ j₂ ⟨z, hzD, hzB⟩
       by_contra! h' : j₁ ≠ j₂
       wlog h : j₁ < j₂ generalizing j₁ j₂ y z
-      · exact this z hzD hzB y hyD hyB h'.symm (h'.lt_or_lt.resolve_left h)
+      · exact this z hzD hzB y hyD hyB h'.symm (h'.lt_or_gt.resolve_left h)
       rcases memD.1 hyD with ⟨y', rfl, hsuby, -, hdisty⟩
       rcases memD.1 hzD with ⟨z', rfl, -, -, hdistz⟩
       suffices edist z' y' < 3 * 2⁻¹ ^ m from notMem_of_lt_ind h (hsuby this)

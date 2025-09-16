@@ -85,7 +85,7 @@ theorem rel_iff_exists_classes (r : Setoid α) {x y} : r x y ↔ ∃ c ∈ r.cla
 
 /-- Two equivalence relations are equal iff their equivalence classes are equal. -/
 theorem classes_inj {r₁ r₂ : Setoid α} : r₁ = r₂ ↔ r₁.classes = r₂.classes :=
-  ⟨fun h => h ▸ rfl, fun h => ext fun a b => by simp only [rel_iff_exists_classes, exists_prop, h]⟩
+  ⟨fun h => h ▸ rfl, fun h => ext fun a b => by simp only [rel_iff_exists_classes, h]⟩
 
 /-- The empty set is not an equivalence class. -/
 theorem empty_notMem_classes {r : Setoid α} : ∅ ∉ r.classes := fun ⟨y, hy⟩ =>
@@ -106,7 +106,7 @@ theorem eq_of_mem_classes {r : Setoid α} {x b} (hc : b ∈ r.classes) (hb : x �
   eq_of_mem_eqv_class classes_eqv_classes hc hb hc' hb'
 
 /-- The elements of a set of sets partitioning α are the equivalence classes of the
-    equivalence relation defined by the set of sets. -/
+equivalence relation defined by the set of sets. -/
 theorem eq_eqv_class_of_mem {c : Set (Set α)} (H : ∀ a, ∃! b ∈ c, a ∈ b) {s y}
     (hs : s ∈ c) (hy : y ∈ s) : s = { x | mkClasses c H x y } := by
   ext x
@@ -118,7 +118,7 @@ theorem eq_eqv_class_of_mem {c : Set (Set α)} (H : ∀ a, ∃! b ∈ c, a ∈ b
     rwa [eq_of_mem_eqv_class H hs hy hc (hx b' hc hb')]
 
 /-- The equivalence classes of the equivalence relation defined by a set of sets
-    partitioning α are elements of the set of sets. -/
+partitioning α are elements of the set of sets. -/
 theorem eqv_class_mem {c : Set (Set α)} (H : ∀ a, ∃! b ∈ c, a ∈ b) {y} :
     { x | mkClasses c H x y } ∈ c :=
   (H y).elim fun _ hc _ => eq_eqv_class_of_mem H hc.1 hc.2 ▸ hc.1
@@ -145,8 +145,8 @@ def setoidOfDisjointUnion {c : Set (Set α)} (hu : Set.sUnion c = @Set.univ α)
     (H : c.PairwiseDisjoint id) : Setoid α :=
   Setoid.mkClasses c <| eqv_classes_of_disjoint_union hu H
 
-/-- The equivalence relation made from the equivalence classes of an equivalence
-    relation r equals r. -/
+/-- The equivalence relation made from the equivalence classes of an equivalence relation `r`
+equals `r`. -/
 theorem mkClasses_classes (r : Setoid α) : mkClasses r.classes classes_eqv_classes = r :=
   ext fun x _y =>
     ⟨fun h => r.symm' (h { z | r z x } (r.mem_classes x) <| r.refl' x), fun h _b hb hx =>
@@ -167,11 +167,11 @@ noncomputable def quotientEquivClasses (r : Setoid α) : Quotient r ≃ Setoid.c
   apply Equiv.ofBijective (Quot.lift f f_respects_relation)
   constructor
   · intro (q_a : Quotient r) (q_b : Quotient r) h_eq
-    induction' q_a using Quotient.ind with a
-    induction' q_b using Quotient.ind with b
+    induction q_a using Quotient.ind with | _ a
+    induction q_b using Quotient.ind with | _ b
     simp only [f, Quotient.lift_mk, Subtype.ext_iff] at h_eq
     apply Quotient.sound
-    show a ∈ { x | r x b }
+    change a ∈ { x | r x b }
     rw [← h_eq]
     exact Setoid.refl a
   · rw [Quot.surjective_lift]
@@ -181,7 +181,7 @@ noncomputable def quotientEquivClasses (r : Setoid α) : Quotient r ≃ Setoid.c
 @[simp]
 lemma quotientEquivClasses_mk_eq (r : Setoid α) (a : α) :
     (quotientEquivClasses r (Quotient.mk r a) : Set α) = { x | r x a } :=
-  (@Subtype.ext_iff_val _ _ _ ⟨{ x | r x a }, Setoid.mem_classes r a⟩).mp rfl
+  (@Subtype.ext_iff _ _ _ ⟨{ x | r x a }, Setoid.mem_classes r a⟩).mp rfl
 
 section Partition
 
@@ -215,7 +215,7 @@ theorem IsPartition.sUnion_eq_univ {c : Set (Set α)} (hc : IsPartition c) : ⋃
     Set.mem_sUnion.2 <|
       let ⟨t, ht⟩ := hc.2 x
       ⟨t, by
-        simp only [existsUnique_iff_exists] at ht
+        simp only at ht
         tauto⟩
 
 /-- All elements of a partition of α are the equivalence class of some y ∈ α. -/
@@ -225,7 +225,7 @@ theorem exists_of_mem_partition {c : Set (Set α)} (hc : IsPartition c) {s} (hs 
   ⟨y, eq_eqv_class_of_mem hc.2 hs hy⟩
 
 /-- The equivalence classes of the equivalence relation defined by a partition of α equal
-    the original partition. -/
+the original partition. -/
 theorem classes_mkClasses (c : Set (Set α)) (hc : IsPartition c) :
     (mkClasses c hc.2).classes = c := by
   ext s
@@ -240,31 +240,31 @@ instance Partition.le : LE (Subtype (@IsPartition α)) :=
   ⟨fun x y => mkClasses x.1 x.2.2 ≤ mkClasses y.1 y.2.2⟩
 
 /-- Defining a partial order on partitions as the partial order on their induced
-    equivalence relations. -/
+equivalence relations. -/
 instance Partition.partialOrder : PartialOrder (Subtype (@IsPartition α)) where
   le := (· ≤ ·)
   lt x y := x ≤ y ∧ ¬y ≤ x
   le_refl _ := @le_refl (Setoid α) _ _
   le_trans _ _ _ := @le_trans (Setoid α) _ _ _ _
-  lt_iff_le_not_le _ _ := Iff.rfl
+  lt_iff_le_not_ge _ _ := Iff.rfl
   le_antisymm x y hx hy := by
     let h := @le_antisymm (Setoid α) _ _ _ hx hy
-    rw [Subtype.ext_iff_val, ← classes_mkClasses x.1 x.2, ← classes_mkClasses y.1 y.2, h]
+    rw [Subtype.ext_iff, ← classes_mkClasses x.1 x.2, ← classes_mkClasses y.1 y.2, h]
 
 variable (α) in
 /-- The order-preserving bijection between equivalence relations on a type `α`, and
-  partitions of `α` into subsets. -/
+partitions of `α` into subsets. -/
 protected def Partition.orderIso : Setoid α ≃o { C : Set (Set α) // IsPartition C } where
   toFun r := ⟨r.classes, empty_notMem_classes, classes_eqv_classes⟩
   invFun C := mkClasses C.1 C.2.2
   left_inv := mkClasses_classes
-  right_inv C := by rw [Subtype.ext_iff_val, ← classes_mkClasses C.1 C.2]
+  right_inv C := by rw [Subtype.ext_iff, ← classes_mkClasses C.1 C.2]
   map_rel_iff' {r s} := by
     conv_rhs => rw [← mkClasses_classes r, ← mkClasses_classes s]
     rfl
 
 /-- A complete lattice instance for partitions; there is more infrastructure for the
-    equivalent complete lattice on equivalence relations. -/
+equivalent complete lattice on equivalence relations. -/
 instance Partition.completeLattice : CompleteLattice (Subtype (@IsPartition α)) :=
   GaloisInsertion.liftCompleteLattice <|
     @OrderIso.toGaloisInsertion _ (Subtype (@IsPartition α)) _ (PartialOrder.toPreorder) <|

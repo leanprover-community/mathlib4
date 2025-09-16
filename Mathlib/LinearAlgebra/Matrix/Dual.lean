@@ -10,16 +10,14 @@ import Mathlib.LinearAlgebra.Matrix.ToLin
 /-!
 # Dual space, linear maps and matrices.
 
-This file contains some results on the matrix corresponding to the
-transpose of a linear map (in the dual space).
+This file contains some results about matrices and dual spaces.
 
 ## Tags
 
 matrix, linear_map, transpose, dual
 -/
 
-
-open Matrix
+open Matrix Module
 
 section Transpose
 
@@ -42,3 +40,13 @@ theorem Matrix.toLin_transpose (M : Matrix ι₁ ι₂ K) : Matrix.toLin B₁.du
   rw [LinearMap.toMatrix_toLin, LinearMap.toMatrix_transpose, LinearMap.toMatrix_toLin]
 
 end Transpose
+
+/-- The dot product as a linear equivalence to the dual. -/
+@[simps] def dotProductEquiv (R n : Type*) [CommSemiring R] [Fintype n] [DecidableEq n] :
+    (n → R) ≃ₗ[R] Module.Dual R (n → R) where
+  toFun v := ⟨⟨dotProduct v, dotProduct_add v⟩, fun t ↦ dotProduct_smul t v⟩
+  map_add' v w := by ext; simp
+  map_smul' t v := by ext; simp
+  invFun f i := f (LinearMap.single R _ i 1)
+  left_inv v := by simp
+  right_inv f := by ext; simp

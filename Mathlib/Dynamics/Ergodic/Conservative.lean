@@ -10,7 +10,7 @@ import Mathlib.Combinatorics.Pigeonhole
 /-!
 # Conservative systems
 
-In this file we define `f : α → α` to be a *conservative* system w.r.t a measure `μ` if `f` is
+In this file we define `f : α → α` to be a *conservative* system w.r.t. a measure `μ` if `f` is
 non-singular (`MeasureTheory.QuasiMeasurePreserving`) and for every measurable set `s` of
 positive measure at least one point `x ∈ s` returns back to `s` after some number of iterations of
 `f`. There are several properties that look like they are stronger than this one but actually follow
@@ -157,7 +157,8 @@ theorem ae_mem_imp_frequently_image_mem (hf : Conservative f μ) (hs : NullMeasu
     ∀ᵐ x ∂μ, x ∈ s → ∃ᶠ n in atTop, f^[n] x ∈ s := by
   simp only [frequently_atTop, @forall_swap (_ ∈ s), ae_all_iff]
   intro n
-  filter_upwards [measure_zero_iff_ae_notMem.1 (hf.measure_mem_forall_ge_image_notMem_eq_zero hs n)]
+  filter_upwards [
+    measure_eq_zero_iff_ae_notMem.1 (hf.measure_mem_forall_ge_image_notMem_eq_zero hs n)]
   simp
 
 theorem inter_frequently_image_mem_ae_eq (hf : Conservative f μ) (hs : NullMeasurableSet s μ) :
@@ -219,7 +220,7 @@ protected theorem iterate (hf : Conservative f μ) (n : ℕ) : Conservative f^[n
   refine ⟨f^[k] x, hk, m, ?_, ?_⟩
   · intro hm
     rw [hm, mul_zero, eq_comm, tsub_eq_zero_iff_le] at this
-    exact this.not_lt hkl
+    exact this.not_gt hkl
   · rwa [← iterate_mul, this, ← iterate_add_apply, tsub_add_cancel_of_le]
     exact hkl.le
 

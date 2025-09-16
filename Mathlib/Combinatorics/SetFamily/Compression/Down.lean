@@ -24,7 +24,7 @@ when the resulting set is not already in `𝒜`.
 
 ## Notation
 
-`𝓓 a 𝒜` is notation for `Down.compress a 𝒜` in locale `SetFamily`.
+`𝓓 a 𝒜` is notation for `Down.compress a 𝒜` in scope `SetFamily`.
 
 ## References
 
@@ -88,7 +88,7 @@ theorem card_memberSubfamily_add_card_nonMemberSubfamily (a : α) (𝒜 : Finset
 theorem memberSubfamily_union_nonMemberSubfamily (a : α) (𝒜 : Finset (Finset α)) :
     𝒜.memberSubfamily a ∪ 𝒜.nonMemberSubfamily a = 𝒜.image fun s => s.erase a := by
   ext s
-  simp only [mem_union, mem_memberSubfamily, mem_nonMemberSubfamily, mem_image, exists_prop]
+  simp only [mem_union, mem_memberSubfamily, mem_nonMemberSubfamily, mem_image]
   constructor
   · rintro (h | h)
     · exact ⟨_, h.1, erase_insert h.2⟩

@@ -17,7 +17,7 @@ A module satisfying these equivalent conditions is said to be a *Noetherian* R-m
 A ring is a *Noetherian ring* if it is Noetherian as a module over itself.
 
 (Note that we do not assume yet that our rings are commutative,
-so perhaps this should be called "left Noetherian".
+so perhaps this should be called "left-Noetherian".
 To avoid cumbersome names once we specialize to the commutative case,
 we don't make this explicit in the declaration names.)
 
@@ -185,7 +185,7 @@ lemma LinearMap.eventually_iSup_ker_pow_eq (f : M →ₗ[R] M) :
     monotone_stabilizes_iff_noetherian.mpr inferInstance f.iterateKer
   refine eventually_atTop.mpr ⟨n, fun m hm ↦ ?_⟩
   refine le_antisymm (iSup_le fun l ↦ ?_) (le_iSup (fun i ↦ LinearMap.ker (f ^ i)) m)
-  rcases le_or_lt m l with h | h
+  rcases le_or_gt m l with h | h
   · rw [← hn _ (hm.trans h), hn _ hm]
   · exact f.iterateKer.monotone h.le
 

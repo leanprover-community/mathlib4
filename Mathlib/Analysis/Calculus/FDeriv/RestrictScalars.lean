@@ -91,6 +91,11 @@ theorem DifferentiableAt.fderiv_restrictScalars (h : DifferentiableAt 𝕜' f x)
     fderiv 𝕜 f x = (fderiv 𝕜' f x).restrictScalars 𝕜 :=
   (h.hasFDerivAt.restrictScalars 𝕜).fderiv
 
+theorem DifferentiableWithinAt.restrictScalars_fderivWithin (hf : DifferentiableWithinAt 𝕜' f s x)
+    (hs : UniqueDiffWithinAt 𝕜 s x) :
+    (fderivWithin 𝕜' f s x).restrictScalars 𝕜 = fderivWithin 𝕜 f s x :=
+  ((hf.hasFDerivWithinAt.restrictScalars 𝕜).fderivWithin hs).symm
+
 theorem differentiableWithinAt_iff_restrictScalars (hf : DifferentiableWithinAt 𝕜 f s x)
     (hs : UniqueDiffWithinAt 𝕜 s x) : DifferentiableWithinAt 𝕜' f s x ↔
       ∃ g' : E →L[𝕜'] F, g'.restrictScalars 𝕜 = fderivWithin 𝕜 f s x := by

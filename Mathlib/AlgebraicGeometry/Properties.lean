@@ -49,7 +49,7 @@ instance {X : Scheme.{u}} : PrespectralSpace X :=
   have (Y : Scheme.{u}) (_ : IsAffine Y) : PrespectralSpace Y :=
     .of_isClosedEmbedding (Y := PrimeSpectrum _) _
       Y.isoSpec.hom.homeomorph.isClosedEmbedding
-  have (i) : PrespectralSpace (X.affineCover.map i).opensRange.1 :=
+  have (i : _) : PrespectralSpace (X.affineCover.map i).opensRange.1 :=
     this (X.affineCover.map i).opensRange (isAffineOpen_opensRange (X.affineCover.map i))
   .of_isOpenCover X.affineCover.isOpenCover_opensRange
 
@@ -64,7 +64,7 @@ theorem isReduced_of_isReduced_stalk [∀ x : X, _root_.IsReduced (X.presheaf.st
   refine ⟨fun U => ⟨fun s hs => ?_⟩⟩
   apply Presheaf.section_ext X.sheaf U s 0
   intro x hx
-  show (X.sheaf.presheaf.germ U x hx) s = (X.sheaf.presheaf.germ U x hx) 0
+  change (X.sheaf.presheaf.germ U x hx) s = (X.sheaf.presheaf.germ U x hx) 0
   rw [RingHom.map_zero]
   change X.presheaf.germ U x hx s = 0
   exact (hs.map _).eq_zero
@@ -112,7 +112,7 @@ theorem isReduced_of_isAffine_isReduced [IsAffine X] [_root_.IsReduced Γ(X, ⊤
 
 /-- To show that a statement `P` holds for all open subsets of all schemes, it suffices to show that
 1. In any scheme `X`, if `P` holds for an open cover of `U`, then `P` holds for `U`.
-2. For an open immerison `f : X ⟶ Y`, if `P` holds for the entire space of `X`, then `P` holds for
+2. For an open immersion `f : X ⟶ Y`, if `P` holds for the entire space of `X`, then `P` holds for
   the image of `f`.
 3. `P` holds for the entire space of an affine scheme.
 -/
@@ -149,7 +149,7 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : X.Opens
     (s : Γ(X, U)) (hs : X.basicOpen s = ⊥) : s = 0 := by
   apply TopCat.Presheaf.section_ext X.sheaf U
   intro x hx
-  show (X.sheaf.presheaf.germ U x hx) s = (X.sheaf.presheaf.germ U x hx) 0
+  change (X.sheaf.presheaf.germ U x hx) s = (X.sheaf.presheaf.germ U x hx) 0
   rw [RingHom.map_zero]
   induction U using reduce_to_affine_global generalizing hX with
   | h₁ X U H =>
@@ -160,7 +160,7 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : X.Opens
     rw [← X.sheaf.presheaf.germ_res_apply i x hx s]
     exact H
   | h₂ X Y f =>
-    refine ⟨f ⁻¹ᵁ f.opensRange, f.opensRange, by ext1; simp, rfl, ?_⟩
+    refine ⟨f ⁻¹ᵁ f.opensRange, f.opensRange, by simp, rfl, ?_⟩
     rintro H hX s hs _ ⟨x, rfl⟩
     haveI := isReduced_of_isOpenImmersion f
     specialize H (f.app _ s) _ x ⟨x, rfl⟩
@@ -295,5 +295,10 @@ theorem map_injective_of_isIntegral [IsIntegral X] {U V : X.Opens} (i : U ⟶ V)
   simp_rw [Ne, ← Opens.not_nonempty_iff_eq_bot, Classical.not_not]
   apply nonempty_preirreducible_inter U.isOpen (RingedSpace.basicOpen _ _).isOpen
   simpa using H
+
+noncomputable
+instance [IsIntegral X] : OrderTop X where
+  top := genericPoint X
+  le_top a := genericPoint_specializes a
 
 end AlgebraicGeometry

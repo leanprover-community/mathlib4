@@ -113,7 +113,7 @@ lemma inter_le_right : s ∩ t ≤ t := by
     · simp [h, IH]
 
 lemma le_inter (h₁ : s ≤ t) (h₂ : s ≤ u) : s ≤ t ∩ u := by
-  revert s u; refine @(Multiset.induction_on t ?_ fun a t IH => ?_) <;> intros s u h₁ h₂
+  revert s u; refine @(Multiset.induction_on t ?_ fun a t IH => ?_) <;> intro s u h₁ h₂
   · simpa only [zero_inter] using h₁
   by_cases h : a ∈ u
   · rw [cons_inter_of_pos _ h, ← erase_le_iff_le_cons]
@@ -167,7 +167,7 @@ lemma inter_add_distrib (s t u : Multiset α) : s ∩ t + u = (s + u) ∩ (t + u
   obtain ⟨a, ha⟩ := lt_iff_cons_le.1 <| h.lt_of_le <| le_inter
     (Multiset.add_le_add_right inter_le_left) (Multiset.add_le_add_right inter_le_right)
   rw [← cons_add] at ha
-  exact (lt_cons_self (s ∩ t) a).not_le <| le_inter
+  exact (lt_cons_self (s ∩ t) a).not_ge <| le_inter
     (Multiset.le_of_add_le_add_right (ha.trans inter_le_left))
     (Multiset.le_of_add_le_add_right (ha.trans inter_le_right))
 
@@ -239,16 +239,10 @@ theorem inter_add_sub_of_add_eq_add [DecidableEq α] {M N P Q : Multiset α} (h 
   rw [Multiset.count_add, Multiset.count_inter, Multiset.count_sub]
   have h0 : M.count x + N.count x = P.count x + Q.count x := by
     rw [Multiset.ext] at h
-    simp_all only [Multiset.mem_add, Multiset.count_add]
+    simp_all only [Multiset.count_add]
   omega
 
 /-! ### Disjoint multisets -/
-
-
-/-- `Disjoint s t` means that `s` and `t` have no elements in common. -/
-@[deprecated _root_.Disjoint (since := "2024-11-01")]
-protected def Disjoint (s t : Multiset α) : Prop :=
-  ∀ ⦃a⦄, a ∈ s → a ∈ t → False
 
 theorem disjoint_left {s t : Multiset α} : Disjoint s t ↔ ∀ {a}, a ∈ s → a ∉ t := by
   refine ⟨fun h a hs ht ↦ ?_, fun h u hs ht ↦ ?_⟩
@@ -264,9 +258,6 @@ alias _root_.Disjoint.not_mem_of_mem_left_multiset := Disjoint.notMem_of_mem_lef
 @[simp, norm_cast]
 theorem coe_disjoint (l₁ l₂ : List α) : Disjoint (l₁ : Multiset α) l₂ ↔ l₁.Disjoint l₂ :=
   disjoint_left
-
-@[deprecated (since := "2024-11-01")] protected alias Disjoint.symm := _root_.Disjoint.symm
-@[deprecated (since := "2024-11-01")] protected alias disjoint_comm := _root_.disjoint_comm
 
 theorem disjoint_right {s t : Multiset α} : Disjoint s t ↔ ∀ {a}, a ∈ t → a ∉ s :=
   disjoint_comm.trans disjoint_left
@@ -286,9 +277,6 @@ theorem disjoint_of_subset_left {s t u : Multiset α} (h : s ⊆ u) (d : Disjoin
 theorem disjoint_of_subset_right {s t u : Multiset α} (h : t ⊆ u) (d : Disjoint s u) :
     Disjoint s t :=
   (disjoint_of_subset_left h d.symm).symm
-
-@[deprecated (since := "2024-11-01")] protected alias disjoint_of_le_left := Disjoint.mono_left
-@[deprecated (since := "2024-11-01")] protected alias disjoint_of_le_right := Disjoint.mono_right
 
 @[simp]
 theorem zero_disjoint (l : Multiset α) : Disjoint 0 l := disjoint_bot_left
@@ -366,7 +354,7 @@ section Nodup
 variable {s t : Multiset α} {a : α}
 
 theorem nodup_add {s t : Multiset α} : Nodup (s + t) ↔ Nodup s ∧ Nodup t ∧ Disjoint s t :=
-  Quotient.inductionOn₂ s t fun _ _ => by simp [nodup_append]
+  Quotient.inductionOn₂ s t fun _ _ => by simp [nodup_append, disjoint_iff_ne]
 
 theorem disjoint_of_nodup_add {s t : Multiset α} (d : Nodup (s + t)) : Disjoint s t :=
   (nodup_add.1 d).2.2

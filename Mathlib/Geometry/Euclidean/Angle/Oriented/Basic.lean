@@ -296,24 +296,24 @@ angle. -/
 @[simp]
 theorem two_zsmul_oangle_smul_left_of_ne_zero (x y : V) {r : ℝ} (hr : r ≠ 0) :
     (2 : ℤ) • o.oangle (r • x) y = (2 : ℤ) • o.oangle x y := by
-  rcases hr.lt_or_lt with (h | h) <;> simp [h]
+  rcases hr.lt_or_gt with (h | h) <;> simp [h]
 
 /-- Multiplying the second vector passed to `oangle` by a nonzero real does not change twice the
 angle. -/
 @[simp]
 theorem two_zsmul_oangle_smul_right_of_ne_zero (x y : V) {r : ℝ} (hr : r ≠ 0) :
     (2 : ℤ) • o.oangle x (r • y) = (2 : ℤ) • o.oangle x y := by
-  rcases hr.lt_or_lt with (h | h) <;> simp [h]
+  rcases hr.lt_or_gt with (h | h) <;> simp [h]
 
 /-- Twice the angle between a multiple of a vector and that vector is 0. -/
 @[simp]
 theorem two_zsmul_oangle_smul_left_self (x : V) {r : ℝ} : (2 : ℤ) • o.oangle (r • x) x = 0 := by
-  rcases lt_or_le r 0 with (h | h) <;> simp [h]
+  rcases lt_or_ge r 0 with (h | h) <;> simp [h]
 
 /-- Twice the angle between a vector and a multiple of that vector is 0. -/
 @[simp]
 theorem two_zsmul_oangle_smul_right_self (x : V) {r : ℝ} : (2 : ℤ) • o.oangle x (r • x) = 0 := by
-  rcases lt_or_le r 0 with (h | h) <;> simp [h]
+  rcases lt_or_ge r 0 with (h | h) <;> simp [h]
 
 /-- Twice the angle between two multiples of a vector is 0. -/
 @[simp]
@@ -541,7 +541,7 @@ theorem inner_eq_norm_mul_norm_mul_cos_oangle (x y : V) :
   by_cases hy : y = 0; · simp [hy]
   rw [oangle, Real.Angle.cos_coe, Complex.cos_arg, o.norm_kahler]
   · simp only [kahler_apply_apply, real_smul, add_re, ofReal_re, mul_re, I_re, ofReal_im]
-    field_simp
+    simp [field]
   · exact o.kahler_ne_zero hx hy
 
 /-- The cosine of the oriented angle between two nonzero vectors is the inner product divided by
@@ -549,7 +549,7 @@ the product of the norms. -/
 theorem cos_oangle_eq_inner_div_norm_mul_norm {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     Real.Angle.cos (o.oangle x y) = ⟪x, y⟫ / (‖x‖ * ‖y‖) := by
   rw [o.inner_eq_norm_mul_norm_mul_cos_oangle]
-  field_simp [norm_ne_zero_iff.2 hx, norm_ne_zero_iff.2 hy]
+  field_simp
 
 /-- The cosine of the oriented angle between two nonzero vectors equals that of the unoriented
 angle. -/
@@ -635,8 +635,8 @@ theorem angle_eq_iff_oangle_eq_of_sign_eq {w x y z : V} (hw : w ≠ 0) (hx : x �
 /-- The oriented angle between two vectors equals the unoriented angle if the sign is positive. -/
 theorem oangle_eq_angle_of_sign_eq_one {x y : V} (h : (o.oangle x y).sign = 1) :
     o.oangle x y = InnerProductGeometry.angle x y := by
-  by_cases hx : x = 0; · exfalso; simp [hx] at h
-  by_cases hy : y = 0; · exfalso; simp [hy] at h
+  by_cases hx : x = 0; · simp [hx] at h
+  by_cases hy : y = 0; · simp [hy] at h
   refine (o.oangle_eq_angle_or_eq_neg_angle hx hy).resolve_right ?_
   intro hxy
   rw [hxy, Real.Angle.sign_neg, neg_eq_iff_eq_neg, ← SignType.neg_iff, ← not_le] at h
@@ -647,8 +647,8 @@ theorem oangle_eq_angle_of_sign_eq_one {x y : V} (h : (o.oangle x y).sign = 1) :
 negative. -/
 theorem oangle_eq_neg_angle_of_sign_eq_neg_one {x y : V} (h : (o.oangle x y).sign = -1) :
     o.oangle x y = -InnerProductGeometry.angle x y := by
-  by_cases hx : x = 0; · exfalso; simp [hx] at h
-  by_cases hy : y = 0; · exfalso; simp [hy] at h
+  by_cases hx : x = 0; · simp [hx] at h
+  by_cases hy : y = 0; · simp [hy] at h
   refine (o.oangle_eq_angle_or_eq_neg_angle hx hy).resolve_left ?_
   intro hxy
   rw [hxy, ← SignType.neg_iff, ← not_le] at h
@@ -669,10 +669,10 @@ theorem oangle_eq_zero_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y ≠ 0)
 theorem oangle_eq_pi_iff_angle_eq_pi {x y : V} :
     o.oangle x y = π ↔ InnerProductGeometry.angle x y = π := by
   by_cases hx : x = 0
-  · simp [hx, Real.Angle.pi_ne_zero.symm, div_eq_mul_inv, mul_right_eq_self₀, not_or,
+  · simp [hx, Real.Angle.pi_ne_zero.symm, div_eq_mul_inv,
       Real.pi_ne_zero]
   by_cases hy : y = 0
-  · simp [hy, Real.Angle.pi_ne_zero.symm, div_eq_mul_inv, mul_right_eq_self₀, not_or,
+  · simp [hy, Real.Angle.pi_ne_zero.symm, div_eq_mul_inv,
       Real.pi_ne_zero]
   refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [o.angle_eq_abs_oangle_toReal hx hy, h]
@@ -790,15 +790,11 @@ theorem oangle_sign_smul_add_right (x y : V) (r : ℝ) :
     all_goals
       simp_rw [s, Set.mem_image] at hz
       obtain ⟨r', -, rfl⟩ := hz
-      simp only [Prod.fst, Prod.snd]
+      simp only
       intro hz
     · simpa [hz] using (h' 0).1
     · simpa [hz] using (h' r').1
-  have hs : ∀ z : V × V, z ∈ s → o.oangle z.1 z.2 ≠ 0 ∧ o.oangle z.1 z.2 ≠ π := by
-    intro z hz
-    simp_rw [s, Set.mem_image] at hz
-    obtain ⟨r', -, rfl⟩ := hz
-    exact h' r'
+  have hs : ∀ z : V × V, z ∈ s → o.oangle z.1 z.2 ≠ 0 ∧ o.oangle z.1 z.2 ≠ π := by grind
   have hx : (x, y) ∈ s := by
     convert Set.mem_image_of_mem (fun r' : ℝ => (x, r' • x + y)) (Set.mem_univ 0)
     simp
@@ -893,7 +889,6 @@ vector, is the sign of the factor by which the second vector is multiplied in th
 multiplied by the sign of the angle between the two vectors. -/
 theorem oangle_sign_smul_add_smul_right (x y : V) (r₁ r₂ : ℝ) :
     (o.oangle x (r₁ • x + r₂ • y)).sign = SignType.sign r₂ * (o.oangle x y).sign := by
-  rw [← o.oangle_sign_smul_add_right x (r₁ • x + r₂ • y) (-r₁)]
   simp
 
 /-- The sign of the angle between a linear combination of two vectors and the second vector is
@@ -924,7 +919,7 @@ theorem oangle_sign_smul_add_smul_smul_add_smul (x y : V) (r₁ r₂ r₃ r₄ :
 /-- A base angle of an isosceles triangle is acute, oriented vector angle form. -/
 theorem abs_oangle_sub_left_toReal_lt_pi_div_two {x y : V} (h : ‖x‖ = ‖y‖) :
     |(o.oangle (y - x) y).toReal| < π / 2 := by
-  by_cases hn : x = y; · simp [hn, div_pos, Real.pi_pos]
+  by_cases hn : x = y; · simp [hn, Real.pi_pos]
   have hs : ((2 : ℤ) • o.oangle (y - x) y).sign = (o.oangle (y - x) y).sign := by
     conv_rhs => rw [oangle_sign_sub_left_swap]
     rw [o.oangle_eq_pi_sub_two_zsmul_oangle_sub_of_norm_eq hn h, Real.Angle.sign_pi_sub]

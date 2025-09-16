@@ -9,12 +9,12 @@ import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.Category.ModuleCat.Injective
 import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.Topology.Instances.AddCircle
+import Mathlib.Topology.Instances.AddCircle.Defs
 
 /-!
 # Injective objects in the category of abelian groups
 
-In this file we prove that divisible groups are injective object in category of (additive) abelian
+In this file we prove that divisible groups are injective objects in category of (additive) abelian
 groups and that the category of abelian groups has enough injective objects.
 
 ## Main results
@@ -22,7 +22,7 @@ groups and that the category of abelian groups has enough injective objects.
 - `AddCommGrp.injective_of_divisible` : a divisible group is also an injective object.
 - `AddCommGrp.enoughInjectives` : the category of abelian groups (written additively) has
   enough injectives.
-- `CommGrp.enoughInjectives` : the category of abelian group (written multiplicatively) has
+- `CommGrp.enoughInjectives` : the category of abelian groups (written multiplicatively) has
   enough injectives.
 
 ## Implementation notes
