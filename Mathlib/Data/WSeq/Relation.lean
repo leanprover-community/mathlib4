@@ -377,7 +377,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
           U s1 s2)
     {a} (ma : a ∈ destruct (join S)) : ∃ b, b ∈ destruct (join T) ∧ LiftRelO R U a b := by
   obtain ⟨n, h⟩ := exists_results_of_mem ma; clear ma; revert S T ST a
-  induction' n using Nat.strongRecOn with n IH
+  induction n using Nat.strongRecOn with | _ n IH
   intro S T ST a ra; simp only [destruct_join] at ra
   exact
     let ⟨o, m, k, rs1, rs2, en⟩ := of_results_bind ra
@@ -471,7 +471,7 @@ theorem join_map_ret (s : WSeq α) : join (map ret s) ~ʷ s := by
         have (s : WSeq α) : ∃ s' : WSeq α,
             (map ret s).join.destruct = (map ret s').join.destruct ∧ destruct s = s'.destruct :=
           ⟨s, rfl, rfl⟩
-        induction' s using WSeq.recOn with a s s <;> simp [ret, this]
+        induction s using WSeq.recOn <;> simp [ret, this]
   · exact ⟨s, rfl, rfl⟩
 
 @[simp]
@@ -491,19 +491,23 @@ theorem join_append (S T : WSeq (WSeq α)) : join (append S T) ~ʷ append (join 
       (let ⟨s, S, T, h1, h2⟩ := h
       ⟨s, S, T, congr_arg destruct h1, congr_arg destruct h2⟩)
   rintro c1 c2 ⟨s, S, T, rfl, rfl⟩
-  induction' s using WSeq.recOn with a s s
-  · induction' S using WSeq.recOn with s S S
-    · simp only [nil_append, join_nil]
-      induction' T using WSeq.recOn with s T T
-      · simp
-      · simp only [join_cons, destruct_think, Computation.destruct_think, liftRelAux_inr_inr]
+  induction s using WSeq.recOn with
+  | nil =>
+    induction S using WSeq.recOn with
+    | nil =>
+      simp only [nil_append, join_nil]
+      induction T using WSeq.recOn with
+      | nil => simp
+      | cons s T =>
+        simp only [join_cons, destruct_think, Computation.destruct_think, liftRelAux_inr_inr]
         refine ⟨s, nil, T, ?_, ?_⟩ <;> simp
-      · simp only [join_think, destruct_think, Computation.destruct_think, liftRelAux_inr_inr]
+      | think T =>
+        simp only [join_think, destruct_think, Computation.destruct_think, liftRelAux_inr_inr]
         refine ⟨nil, nil, T, ?_, ?_⟩ <;> simp
-    · simpa using ⟨s, S, T, rfl, rfl⟩
-    · refine ⟨nil, S, T, ?_, ?_⟩ <;> simp
-  · simpa using ⟨s, S, T, rfl, rfl⟩
-  · simpa using ⟨s, S, T, rfl, rfl⟩
+    | cons s S => simpa using ⟨s, S, T, rfl, rfl⟩
+    | think S => refine ⟨nil, S, T, ?_, ?_⟩ <;> simp
+  | cons a s => simpa using ⟨s, S, T, rfl, rfl⟩
+  | think s => simpa using ⟨s, S, T, rfl, rfl⟩
 
 @[simp]
 theorem bind_ret (f : α → β) (s) : bind s (ret ∘ f) ~ʷ map f s := by
@@ -537,17 +541,19 @@ theorem join_join (SS : WSeq (WSeq (WSeq α))) : join (join SS) ~ʷ join (map jo
     match c1, c2, h with
     | _, _, ⟨s, S, SS, rfl, rfl⟩ => by
       clear h
-      induction' s using WSeq.recOn with a s s
-      · induction' S using WSeq.recOn with s S S
-        · simp only [nil_append, join_nil]
-          induction' SS using WSeq.recOn with S SS SS
-          · simp
-          · refine ⟨nil, S, SS, ?_, ?_⟩ <;> simp
-          · refine ⟨nil, nil, SS, ?_, ?_⟩ <;> simp
-        · simpa using ⟨s, S, SS, rfl, rfl⟩
-        · refine ⟨nil, S, SS, ?_, ?_⟩ <;> simp
-      · simpa using ⟨s, S, SS, rfl, rfl⟩
-      · simpa using ⟨s, S, SS, rfl, rfl⟩
+      induction s using WSeq.recOn with
+      | nil =>
+        induction S using WSeq.recOn with
+        | nil =>
+          simp only [nil_append, join_nil]
+          induction SS using WSeq.recOn with
+          | nil => simp
+          | cons S SS => refine ⟨nil, S, SS, ?_, ?_⟩ <;> simp
+          | think SS => refine ⟨nil, nil, SS, ?_, ?_⟩ <;> simp
+        | cons s S => simpa using ⟨s, S, SS, rfl, rfl⟩
+        | think S => refine ⟨nil, S, SS, ?_, ?_⟩ <;> simp
+      | cons a s => simpa using ⟨s, S, SS, rfl, rfl⟩
+      | think s => simpa using ⟨s, S, SS, rfl, rfl⟩
 
 @[simp]
 theorem bind_assoc_comp (s : WSeq α) (f : α → WSeq β) (g : β → WSeq γ) :

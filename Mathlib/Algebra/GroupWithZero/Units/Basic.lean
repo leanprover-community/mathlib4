@@ -144,8 +144,7 @@ theorem isUnit_ringInverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
     · convert h
     · contrapose h
       rw [Ring.inverse_non_unit _ h]
-      exact not_isUnit_zero
-      ,
+      exact not_isUnit_zero,
     IsUnit.ringInverse⟩
 
 @[deprecated (since := "2025-04-22")] alias isUnit_ring_inverse := isUnit_ringInverse
@@ -214,11 +213,7 @@ theorem IsUnit.mk0 (x : G₀) (hx : x ≠ 0) : IsUnit x :=
 theorem isUnit_iff_ne_zero : IsUnit a ↔ a ≠ 0 :=
   (Units.exists_iff_ne_zero (p := (· = a))).trans (by simp)
 
-alias ⟨_, Ne.isUnit⟩ := isUnit_iff_ne_zero
-
--- Porting note: can't add this attribute?
--- https://github.com/leanprover-community/mathlib4/issues/740
--- attribute [protected] Ne.is_unit
+protected alias ⟨_, Ne.isUnit⟩ := isUnit_iff_ne_zero
 
 -- see Note [lower instance priority]
 instance (priority := 10) GroupWithZero.noZeroDivisors : NoZeroDivisors G₀ :=
