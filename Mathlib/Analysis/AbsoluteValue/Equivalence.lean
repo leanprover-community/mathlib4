@@ -156,8 +156,8 @@ variable {R S : Type*} [Field R] [Field S] [LinearOrder S] {v w : AbsoluteValue 
   [TopologicalSpace S] [IsStrictOrderedRing S] [Archimedean S] [_i : OrderTopology S]
 
 /--
-The limit $v\left(\frac{1}{1 + a ^ n}\right)\to 1$, for an absolute value $v$ on a field
-$F$ if $v(a) < 1$.
+`v (1 / (1 + a ^n))` tends to `1` whenever `v : AbsoluteValue R S` for fields `R` and `S`, provided
+`v a < 1`.
 -/
 private theorem tendsto_div_one_add_pow_nhds_one {v : AbsoluteValue R S} {a : R} (ha : v a < 1) :
     atTop.Tendsto (fun (n : ℕ) ↦ v (1 / (1 + a ^ n))) (𝓝 1) := by
@@ -170,10 +170,10 @@ private theorem tendsto_div_one_add_pow_nhds_one {v : AbsoluteValue R S} {a : R}
     (fun n ↦ le_trans (v.add_le _ _) (by rw [map_one, map_pow]))
 
 /--
-The limit $v \left(\frac{1}{1 + a ^ n}\right)\to 0$, for an absolute value $v$ on a field
-$F$ if $1 < v(a)$.
+`v (1 / (1 + a ^n))` tends to `0` whenever `v : AbsoluteValue R S` for fields `R` and `S`, provided
+`1 < v a`.
 -/
-private theorem tendsto_pow_div_one_add_pow_zero {v : AbsoluteValue R S} {a : R} (ha : 1 < v a) :
+private theorem tendsto_div_one_add_pow_nhds_zero {v : AbsoluteValue R S} {a : R} (ha : 1 < v a) :
     Filter.Tendsto (fun (n : ℕ) ↦ v (1 / (1 + a ^ n))) Filter.atTop (𝓝 0) := by
   simp_rw [div_eq_mul_inv, one_mul, map_inv₀, fun n ↦ add_comm 1 (a ^ n)]
   refine (tendsto_atTop_mono (fun n ↦ v.le_add _ _) ?_).inv_tendsto_atTop
@@ -228,7 +228,7 @@ private theorem exists_one_lt_lt_one_pi_of_one_lt (ha : 1 < v i a) (haj : ∀ j 
   have hcⱼ (j : ι) (hj : j ≠ i) : atTop.Tendsto (fun n ↦ v j (c n)) (𝓝 0) := by
     have : 1 < v j a⁻¹ := map_inv₀ (v j) _ ▸
       (one_lt_inv₀ <| (v j).pos fun h ↦ by linarith [map_zero (v _) ▸ h ▸ ha]).2 (haj j hj)
-    simpa [c] using (tendsto_pow_div_one_add_pow_zero this).mul_const _
+    simpa [c] using (tendsto_div_one_add_pow_nhds_zero this).mul_const _
   have hcₙ : atTop.Tendsto (fun n ↦ w (c n)) (𝓝 (w b)) := by
     have : w a⁻¹ < 1 := map_inv₀ w _ ▸ inv_lt_one_of_one_lt₀ haw
     simpa [c] using (tendsto_div_one_add_pow_nhds_one this).mul_const (w b)
