@@ -16,7 +16,7 @@ import Mathlib.Data.Nat.Prime.Basic
 This file defines the primorial function (the product of primes less than or equal to some bound),
 and proves that `primorial n ≤ 4 ^ n`.
 
-## Notations
+## Notation
 
 We use the local notation `n#` for the primorial of `n`: that is, the product of the primes less
 than or equal to `n`.

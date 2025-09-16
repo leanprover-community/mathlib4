@@ -24,7 +24,7 @@ We also provide `positivity` extensions to handle floor and ceil.
 * `Int.ceil a`: Least integer `z` such that `a ≤ z`.
 * `Int.fract a`: Fractional part of `a`, defined as `a - floor a`.
 
-## Notations
+## Notation
 
 * `⌊a⌋₊` is `Nat.floor a`.
 * `⌈a⌉₊` is `Nat.ceil a`.
