@@ -1558,6 +1558,7 @@ import Mathlib.Analysis.Complex.Exponential
 import Mathlib.Analysis.Complex.ExponentialBounds
 import Mathlib.Analysis.Complex.Hadamard
 import Mathlib.Analysis.Complex.HalfPlane
+import Mathlib.Analysis.Complex.Harmonic.MeanValue
 import Mathlib.Analysis.Complex.HasPrimitives
 import Mathlib.Analysis.Complex.IntegerCompl
 import Mathlib.Analysis.Complex.IsIntegral

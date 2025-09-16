@@ -4,20 +4,21 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Symmetric
-import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Complex.Conformal
+import Mathlib.Analysis.Complex.HasPrimitives
 import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
 
 /-!
 # Analyticity of Harmonic Functions
 
-If `f : ℂ → ℝ` is harmonic at `x`, we show that `∂f/∂1 - I • ∂f/∂I` is complex-analytic at `x`.
+If `f : ℂ → ℝ` is harmonic at `x`, we show that `∂f/∂1 - I • ∂f/∂I` is complex-analytic at `x`. If
+`f` is harmonic on an open ball, then it is the real part of a function `F : ℂ → ℂ` that is
+holomorphic on the ball.
 
-TODO: As soon as PR https://github.com/leanprover-community/mathlib4/issues/9598 (feat(Analysis/Complex): HasPrimitives on disc) is merged, extend this to
-show that `f` itself is locally the real part of a holomorphic function, and hence real-analytic.
+TODO: Show that harmonic functions are real-analytic.
 -/
 
-open Complex InnerProductSpace Topology
+open Complex InnerProductSpace Metric Topology
 
 variable
   {f : ℂ → ℝ} {x : ℂ}
@@ -60,3 +61,44 @@ theorem HarmonicAt.analyticAt_complex_partial (hf : HarmonicAt f x) :
   DifferentiableOn.analyticAt (s := { x | HarmonicAt f x })
     (fun _ hy ↦ (HarmonicAt.differentiableAt_complex_partial hy).differentiableWithinAt)
     ((isOpen_setOf_harmonicAt f).mem_nhds hf)
+
+/-
+If a function `f : ℂ → ℝ` is harmonic on an open ball, then `f` is the real part of a function
+`F : ℂ → ℂ` that is holomorphic on the ball.
+-/
+theorem harmonic_is_realOfHolomorphic {z : ℂ} {R : ℝ} (hf : HarmonicOnNhd f (ball z R)) :
+    ∃ F : ℂ → ℂ, (AnalyticOnNhd ℂ F (ball z R)) ∧ ((ball z R).EqOn (fun z ↦ (F z).re) f) := by
+  by_cases hR : R ≤ 0
+  · simp [ball_eq_empty.2 hR]
+  let g := ofRealCLM ∘ (fderiv ℝ f · 1) - I • ofRealCLM ∘ (fderiv ℝ f · I)
+  have hg : DifferentiableOn ℂ g (ball z R) :=
+    fun x hx ↦ (HarmonicAt.differentiableAt_complex_partial (hf x hx)).differentiableWithinAt
+  obtain ⟨F₀, hF₀⟩ := hg.isExactOn_ball
+  let F := fun x ↦ F₀ x - F₀ z + f z
+  have h₁F : ∀ z₁ ∈ ball z R, HasDerivAt F (g z₁) z₁ := by
+    simp_all [F]
+  have h₂F : DifferentiableOn ℂ F (ball z R) :=
+    fun x hx ↦ (h₁F x hx).differentiableAt.differentiableWithinAt
+  have h₃F : DifferentiableOn ℝ F (ball z R) :=
+    h₂F.restrictScalars (𝕜 := ℝ) (𝕜' := ℂ)
+  use F, h₂F.analyticOnNhd isOpen_ball
+  rw [(by aesop : (fun z ↦ (F z).re) = Complex.reCLM ∘ F)]
+  intro x hx
+  apply (convex_ball z R).eqOn_of_fderivWithin_eq (𝕜 := ℝ) (x := z)
+  · exact reCLM.differentiable.comp_differentiableOn h₃F
+  · exact fun y hy ↦ (ContDiffAt.differentiableAt (hf y hy).1 one_le_two).differentiableWithinAt
+  · exact isOpen_ball.uniqueDiffOn
+  · intro y hy
+    have h₄F := (h₁F y hy).differentiableAt
+    have h₅F := h₄F.restrictScalars (𝕜 := ℝ) (𝕜' := ℂ)
+    rw [fderivWithin_eq_fderiv (isOpen_ball.uniqueDiffWithinAt hy)
+      (reCLM.differentiableAt.comp y h₅F), fderivWithin_eq_fderiv
+      (isOpen_ball.uniqueDiffWithinAt hy) ((hf y hy).1.differentiableAt one_le_two), fderiv_comp y
+      (by fun_prop) h₅F, ContinuousLinearMap.fderiv, h₄F.fderiv_restrictScalars (𝕜 := ℝ)]
+    ext a
+    nth_rw 2 [(by simp : a = a.re • (1 : ℂ) + a.im • (I : ℂ))]
+    rw [ContinuousLinearMap.map_add, ContinuousLinearMap.map_smul, ContinuousLinearMap.map_smul]
+    simp [HasDerivAt.deriv (h₁F y hy), g]
+  · simp_all
+  · simp [F]
+  · assumption
