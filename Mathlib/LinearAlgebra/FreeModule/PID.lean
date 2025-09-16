@@ -39,6 +39,8 @@ In this section, `M` is a free and finitely generated `R`-module, and
 
 - `proof_wanted Submodule.free_of_free_of_pid` which does not require f.g.:
   https://mathoverflow.net/questions/16953/are-submodules-of-free-modules-free#comment31868_16954
+- `Module.free_of_finite_type_torsion_free` is true iff `IsBezout`:
+  https://math.stackexchange.com/a/51922/315369
 
 ## Tags
 

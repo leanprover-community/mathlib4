@@ -4155,7 +4155,6 @@ import Mathlib.LinearAlgebra.Countable
 import Mathlib.LinearAlgebra.CrossProduct
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.Determinant
-import Mathlib.LinearAlgebra.Diagonalization
 import Mathlib.LinearAlgebra.Dimension.Basic
 import Mathlib.LinearAlgebra.Dimension.Constructions
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
@@ -4178,6 +4177,7 @@ import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 import Mathlib.LinearAlgebra.Dual.Basis
 import Mathlib.LinearAlgebra.Dual.Defs
 import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.LinearAlgebra.Eigenbasis
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
