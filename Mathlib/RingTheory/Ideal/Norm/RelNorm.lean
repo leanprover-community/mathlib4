@@ -124,8 +124,6 @@ theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R�
       RingHom.comp_id, ← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq]
   let _ := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization
     (Algebra.algebraMapSubmonoid S M) Sₘ L
-  have : IsIntegralClosure Sₘ Rₘ L :=
-    IsIntegralClosure.of_isIntegrallyClosed _ _ _
   rw [map_spanIntNorm]
   refine span_eq_span (Set.image_subset_iff.mpr ?_) (Set.image_subset_iff.mpr ?_)
   · intro a' ha'
@@ -145,7 +143,6 @@ theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R�
       Algebra.norm_algebraMap] at has
     apply IsFractionRing.injective Rₘ K
     simp only [map_mul, map_pow]
-    have : FiniteDimensional K L := .of_isLocalization R S R⁰
     rwa [Algebra.algebraMap_intNorm (L := L), ← IsScalarTower.algebraMap_apply,
       ← IsScalarTower.algebraMap_apply, Algebra.algebraMap_intNorm (L := L)]
   · intro a ha
@@ -303,6 +300,39 @@ theorem map_relNorm (I : Ideal S) {T : Type*} [Semiring T] (f : R →+* T) :
 theorem relNorm_mono {I J : Ideal S} (h : I ≤ J) : relNorm R I ≤ relNorm R J :=
   spanNorm_mono R h
 
+variable {R}
+
+private theorem relNorm_map_algEquiv_aux {T : Type*} [CommRing T] [IsDedekindDomain T]
+    [IsIntegrallyClosed T] [Algebra R T] [Module.Finite R T] [NoZeroSMulDivisors R T]
+    [Algebra.IsSeparable (FractionRing R) (FractionRing T)] (σ : S ≃ₐ[R] T) (I : Ideal S) :
+    relNorm R (I.map σ) ≤ relNorm R I :=
+  span_mono fun _ ⟨x, hx₁, hx₂⟩ ↦ ⟨σ.toRingEquiv.symm x,
+    by rwa [SetLike.mem_coe, Ideal.symm_apply_mem_of_equiv_iff],
+    hx₂ ▸ Algebra.intNorm_map_algEquiv _ x σ.symm⟩
+
+@[simp]
+theorem relNorm_map_algEquiv {T : Type*} [CommRing T] [IsDedekindDomain T] [IsIntegrallyClosed T]
+    [Algebra R T] [Module.Finite R T] [NoZeroSMulDivisors R T]
+    [Algebra.IsSeparable (FractionRing R) (FractionRing T)] (σ : S ≃ₐ[R] T) (I : Ideal S) :
+    relNorm R (I.map σ) = relNorm R I := by
+  refine le_antisymm (relNorm_map_algEquiv_aux σ I) ?_
+  convert relNorm_map_algEquiv_aux σ.symm (I.map σ)
+  change I = map σ.symm.toAlgHom (map σ.toAlgHom I)
+  simp [map_mapₐ]
+
+@[simp]
+theorem relNorm_comap_algEquiv {T : Type*} [CommRing T] [IsDedekindDomain T] [IsIntegrallyClosed T]
+    [Algebra R T] [Module.Finite R T] [NoZeroSMulDivisors R T]
+    [Algebra.IsSeparable (FractionRing R) (FractionRing T)] (σ : S ≃ₐ[R] T) (I : Ideal T) :
+    relNorm R (I.comap σ) = relNorm R I := map_symm σ.toRingEquiv ▸ relNorm_map_algEquiv σ.symm I
+
+variable (R)
+
+open MulSemiringAction Pointwise in
+@[simp]
+theorem relNorm_smul {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S] (g : G)
+    (I : Ideal S) : relNorm R (g • I) = relNorm R I := relNorm_map_algEquiv (toAlgEquiv R S g) I
+
 theorem relNorm_le_comap (I : Ideal S) :
     relNorm R I ≤ comap (algebraMap R S) I := spanNorm_le_comap R I
 
@@ -313,6 +343,34 @@ theorem relNorm_relNorm (T : Type*) [CommRing T] [IsDedekindDomain T] [IsIntegra
     [Algebra.IsSeparable (FractionRing T) (FractionRing S)]
     (I : Ideal S) : relNorm R (relNorm T I) = relNorm R I :=
   spanNorm_spanNorm _ _ _
+
+variable {R} (S)
+
+attribute [local instance] Localization.AtPrime.liftAlgebra in
+theorem relNorm_algebraMap (I : Ideal R) :
+    relNorm R (I.map (algebraMap R S)) =
+      I ^ Module.finrank (FractionRing R) (FractionRing S) := by
+  rw [← spanNorm_eq]
+  refine eq_of_localization_maximal (fun P hPd ↦ ?_)
+  let P' := Algebra.algebraMapSubmonoid S P.primeCompl
+  let Rₚ := Localization.AtPrime P
+  let K := FractionRing R
+  rw [← spanIntNorm_localization R _ _ P.primeCompl_le_nonZeroDivisors (Localization P'),
+      Ideal.map_pow, I.map_map, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq R Rₚ,
+      ← I.map_map, ← (I.map _).span_singleton_generator, Ideal.map_span, Set.image_singleton,
+      spanNorm_singleton, Ideal.span_singleton_pow]
+  congr 2
+  apply IsFractionRing.injective Rₚ K
+  rw [Algebra.algebraMap_intNorm (L := FractionRing S), ← IsScalarTower.algebraMap_apply,
+    IsScalarTower.algebraMap_apply Rₚ K, Algebra.norm_algebraMap, map_pow]
+
+variable (R)
+
+/-- A version of `relNorm_algebraMap` involving a tower of algebras `S/R/R'`. -/
+theorem relNorm_algebraMap' {R'} [CommRing R'] (I : Ideal R') [Algebra R' R]
+    [Algebra R' S] [IsScalarTower R' R S] : relNorm R (I.map (algebraMap R' S)) =
+      I.map (algebraMap R' R) ^ Module.finrank (FractionRing R) (FractionRing S) := by
+  rw [← relNorm_algebraMap, Ideal.map_map, IsScalarTower.algebraMap_eq R' R S]
 
 end Ideal
 

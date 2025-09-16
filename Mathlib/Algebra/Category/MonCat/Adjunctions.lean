@@ -35,9 +35,9 @@ namespace MonCat
 /-- The functor of adjoining a neutral element `zero` to a semigroup -/]
 def adjoinOne : Semigrp.{u} ⥤ MonCat.{u} where
   obj S := MonCat.of (WithOne S)
-  map f := ofHom (WithOne.map f.hom)
-  map_id _ := MonCat.hom_ext WithOne.map_id
-  map_comp _ _ := MonCat.hom_ext (WithOne.map_comp _ _)
+  map f := ofHom (WithOne.mapMulHom f.hom)
+  map_id _ := MonCat.hom_ext WithOne.mapMulHom_id
+  map_comp _ _ := MonCat.hom_ext (WithOne.mapMulHom_comp _ _)
 
 @[to_additive]
 instance hasForgetToSemigroup : HasForget₂ MonCat Semigrp where
