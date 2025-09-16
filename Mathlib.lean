@@ -5761,6 +5761,7 @@ import Mathlib.RingTheory.RegularLocalRing.Defs
 import Mathlib.RingTheory.RegularLocalRing.GlobalDimension
 import Mathlib.RingTheory.RegularLocalRing.RegularRing.Basic
 import Mathlib.RingTheory.RegularLocalRing.RegularRing.GlobalDimension
+import Mathlib.RingTheory.RegularLocalRing.RegularRing.Polynomial
 import Mathlib.RingTheory.RingHom.Etale
 import Mathlib.RingTheory.RingHom.FaithfullyFlat
 import Mathlib.RingTheory.RingHom.Finite
