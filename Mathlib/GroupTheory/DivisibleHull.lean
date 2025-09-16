@@ -7,15 +7,15 @@ import Mathlib.Algebra.Module.LocalizedModule.Basic
 import Mathlib.Algebra.Order.Module.Archimedean
 import Mathlib.Algebra.Order.Monoid.PNat
 import Mathlib.Data.Sign.Defs
-import Mathlib.GroupTheory.Divisible
 import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # Divisible Hull of an abelian group
 
 This file constructs the divisible hull of an `AddCommMonoid` as a `ℕ`-module localized at
-`ℕ+` (implemented using `nonZeroDivisors ℕ`), which is a ℕ-divisible `AddCommMonoid` and a
-`ℚ≥0`-module. Futher more, we show that
+`ℕ+` (implemented using `nonZeroDivisors ℕ`), which is a `ℚ≥0`-module.
+
+Furthermore, we show that
 
 * when `M` is a group, so is `DivisibleHull M`, which is also a `ℚ`-module
 * when `M` is linearly ordered and cancellative, so is `DivisibleHull M`, which is also an
@@ -23,11 +23,13 @@ This file constructs the divisible hull of an `AddCommMonoid` as a `ℕ`-module 
 * when `M` is a linearly ordered group, `DivisibleHull M` is an ordered `ℚ`-module, and
   `ArchimedeanClass` are preserved.
 
+Despite the name, this file doesn't implement a `DivisibleBy` instance on `DivisibleHull`. This
+should be implemented on `LocalizedModule` in a more general setting (TODO: implement this).
+This file mainly focus on the specialization to `ℕ` and the linear order property introduced by it.
+
 ## Main declarations
 
 * `DivisibleHull M` is the divisible hull of an abelian group.
-* `DivisibleHull.coeAddEquiv` shows the divisible hull of a `ℕ`-divisible torsion-free monoid is
-  isomorphic to itself.
 * `DivisibleHull.archimedeanClassOrderIso M` is the equivalence between `ArchimedeanClass M` and
   `ArchimedeanClass (DivisibleHull M)`.
 
@@ -133,13 +135,6 @@ theorem nnqsmul_mk (a : ℚ≥0) (m : M) (s : ℕ+) :
   convert LocalizedModule.mk'_smul_mk ℚ≥0 a.num m ⟨a.den, by simp⟩ (↑ⁿ s)
   simp [IsLocalization.eq_mk'_iff_mul_eq]
 
-noncomputable
-instance : DivisibleBy (DivisibleHull M) ℕ where
-  div m n := (n⁻¹ : ℚ≥0) • m
-  div_zero := by simp
-  div_cancel n {m} h := by
-    rw [← Nat.cast_smul_eq_nsmul ℚ≥0 n, smul_smul, mul_inv_cancel₀ (mod_cast h), one_smul]
-
 section TorsionFree
 variable [IsAddTorsionFree M]
 
@@ -158,47 +153,6 @@ theorem coe_injective : Function.Injective ((↑) : M → DivisibleHull M) :=
 theorem coeAddMonoidHom_injective : Function.Injective (coeAddMonoidHom M) := coe_injective
 
 end TorsionFree
-
-section Divisible
-variable [DivisibleBy M ℕ]
-
-theorem mk_divisibleByDiv_smul (m : M) (s t : ℕ+) :
-    mk (DivisibleBy.div (s.val • m) t.val) s = mk m t := by
-  rw [mk_eq_mk]
-  use 1
-  rw [DivisibleBy.div_cancel _ (by simp)]
-
-theorem mk_left_surjective (s : ℕ+) : Function.Surjective (fun (m : M) ↦ mk m s) := by
-  intro m
-  induction m with | mk m t
-  use DivisibleBy.div (s.val • m) t.val
-  simp [mk_divisibleByDiv_smul]
-
-theorem coe_surjective : Function.Surjective ((↑) : M → DivisibleHull M) :=
-  mk_left_surjective 1
-
-theorem coeAddMonoidHom_surjective : Function.Surjective (coeAddMonoidHom M) := coe_surjective
-
-section TorsionFree
-variable [IsAddTorsionFree M]
-
-variable (M) in
-/-- A torsion-free divisible monoid is isomorphic to its divisible hull. -/
-def coeAddEquiv : M ≃+ DivisibleHull M where
-  __ := coeAddMonoidHom M
-  invFun m := m.liftOn (fun m s ↦ DivisibleBy.div m s.val) (fun m m' s s' h ↦ by
-    rw [← mk_divisibleByDiv_smul m 1 s, ← mk_divisibleByDiv_smul m' 1 s'] at h
-    simpa using mk_left_injective 1 h)
-  left_inv m := by
-    rw [← nsmul_right_inj (show 1 ≠ 0 by simp)]
-    simp [DivisibleBy.div_cancel]
-  right_inv m := by
-    induction m with | mk m s
-    simp [mk_eq_mk_iff_smul_eq_smul, DivisibleBy.div_cancel]
-
-end TorsionFree
-
-end Divisible
 
 section Group
 variable {M : Type*} [AddCommGroup M]
