@@ -6,7 +6,6 @@ Authors: Nailin Guan, Yongle Hu
 import Mathlib.RingTheory.KrullDimension.Regular
 import Mathlib.RingTheory.Regular.Flat
 import Mathlib.RingTheory.Regular.Ischebeck
-import Mathlib.Tactic.Cases
 
 /-!
 # Definition of Cohen-Macaulay Ring
@@ -272,7 +271,8 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
         by_contra eq0
         absurd hg
         apply LinearMap.ext (fun r ↦ ?_)
-        induction' r using Submodule.Quotient.induction_on with r
+        induction r using Submodule.Quotient.induction_on
+        rename_i r
         nth_rw 1 [← mul_one r, ← smul_eq_mul, Submodule.Quotient.mk_smul, map_smul]
         simp [eq0]
       have le : p ≤ LinearMap.ker (LinearMap.toSpanSingleton R M (g 1)) := by
