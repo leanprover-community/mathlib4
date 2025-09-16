@@ -104,8 +104,8 @@ lemma norm_integral_le_mul_norm [IsFiniteMeasure μ] (f : X →ᵇ E) :
 
 /-- `integralFiniteMeasureₗ` wraps the integral with respect to a finite measure `μ`
 as a `𝕜`-linear map on bounded continuous functions -/
-noncomputable def integralFiniteMeasureₗ (𝕜 : Type*) [NormedField 𝕜] [NormedSpace ℝ E]
-  [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E] [IsFiniteMeasure μ] :
+noncomputable def integralFiniteMeasureₗ (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 E]
+  [SMulCommClass ℝ 𝕜 E] [IsFiniteMeasure μ] :
     (X →ᵇ E) →ₗ[𝕜] E where
   toFun := (∫ x, · x ∂μ)
   map_add' f g := integral_add (f.integrable μ) (g.integrable μ)
@@ -113,8 +113,8 @@ noncomputable def integralFiniteMeasureₗ (𝕜 : Type*) [NormedField 𝕜] [No
 
 /-- `integralFiniteMeasureCLM` wraps the integral with respect to a finite measure `μ`
 as a continuous `𝕜`-linear map on bounded continuous functions -/
-noncomputable def integralFiniteMeasureCLM (𝕜 : Type*) [NormedField 𝕜] [NormedSpace ℝ E]
-  [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E] [IsFiniteMeasure μ] :
+noncomputable def integralFiniteMeasureCLM (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 E]
+  [SMulCommClass ℝ 𝕜 E] [IsFiniteMeasure μ] :
     (X →ᵇ E) →L[𝕜] E :=
   (integralFiniteMeasureₗ μ 𝕜).mkContinuous (measureUnivNNReal μ)
     (fun f ↦ le_trans (f.norm_integral_le_mul_norm _) le_rfl)
