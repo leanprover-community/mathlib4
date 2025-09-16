@@ -421,8 +421,8 @@ theorem tail_append_singleton_of_ne_nil {a : α} {l : List α} (h : l ≠ nil) :
 theorem cons_head?_tail : ∀ {l : List α} {a : α}, a ∈ head? l → a :: tail l = l
   | [], a, h => by contradiction
   | b :: l, a, h => by
-    simp? at h says simp only [head?_cons, Option.mem_def, Option.some.injEq] at h
-    simp [h]
+    have : b = a := by simpa using h
+    simp [this]
 
 theorem head!_mem_head? [Inhabited α] : ∀ {l : List α}, l ≠ [] → head! l ∈ head? l
   | [], h => by contradiction
@@ -498,12 +498,10 @@ theorem idxOf_of_notMem {l : List α} {a : α} : a ∉ l → idxOf a l = length 
 
 @[deprecated (since := "2025-05-23")] alias idxOf_of_not_mem := idxOf_of_notMem
 
-theorem idxOf_append_of_mem {a : α} (h : a ∈ l₁) : idxOf a (l₁ ++ l₂) = idxOf a l₁ := by
-  induction l₁ with grind
+theorem idxOf_append_of_mem {a : α} (h : a ∈ l₁) : idxOf a (l₁ ++ l₂) = idxOf a l₁ := by grind
 
 theorem idxOf_append_of_notMem {a : α} (h : a ∉ l₁) :
-    idxOf a (l₁ ++ l₂) = l₁.length + idxOf a l₂ := by
-  induction l₁ with grind
+    idxOf a (l₁ ++ l₂) = l₁.length + idxOf a l₂ := by grind
 
 @[deprecated (since := "2025-05-23")] alias idxOf_append_of_not_mem := idxOf_append_of_notMem
 
@@ -566,7 +564,7 @@ theorem idxOf_get [DecidableEq α] {a : α} {l : List α} (h) : get l ⟨idxOf a
 @[simp]
 theorem getElem?_idxOf [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
     l[idxOf a l]? = some a := by
-  rw [getElem?_eq_getElem, getElem_idxOf (idxOf_lt_length_iff.2 h)]
+  rw [getElem?_eq_getElem (idxOf_lt_length_iff.2 h), getElem_idxOf]
 
 theorem idxOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy : y ∈ l) :
     idxOf x l = idxOf y l ↔ x = y :=
@@ -1003,7 +1001,12 @@ variable {p : α → Bool}
 
 -- Cannot be @[simp] because `a` cannot be inferred by `simp`.
 theorem length_eraseP_add_one {l : List α} {a} (al : a ∈ l) (pa : p a) :
+<<<<<<< HEAD
     (l.eraseP p).length + 1 = l.length := by grind
+=======
+    (l.eraseP p).length + 1 = l.length := by
+  grind
+>>>>>>> master
 
 end eraseP
 
@@ -1034,7 +1037,12 @@ theorem erase_getElem [DecidableEq ι] {l : List ι} {i : ℕ} (hi : i < l.lengt
   | cons a l IH => cases i with grind
 
 theorem length_eraseIdx_add_one {l : List ι} {i : ℕ} (h : i < l.length) :
+<<<<<<< HEAD
     (l.eraseIdx i).length + 1 = l.length := by grind
+=======
+    (l.eraseIdx i).length + 1 = l.length := by
+  grind
+>>>>>>> master
 
 end Erase
 

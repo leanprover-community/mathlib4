@@ -27,10 +27,12 @@ lemma isUnit_iff_notMem_of_isAdicComplete_maximal [IsAdicComplete m R] (r : R) :
     absurd m.ne_top_iff_one.mp (Ideal.IsMaximal.ne_top hmax)
     simp [← hs, Ideal.mul_mem_left m s mem]
   · have mapu {n : ℕ} (npos : 0 < n) : IsUnit (Ideal.Quotient.mk (m ^ n) r) := by
-      induction' n with n ih
-      · absurd npos
+      induction n with
+      | zero =>
+        absurd npos
         exact Nat.not_lt_zero 0
-      · by_cases neq0 : n = 0
+      | succ n ih =>
+        by_cases neq0 : n = 0
         · let max' : (m ^ (n + 1)).IsMaximal := by simpa only [neq0, zero_add, pow_one] using hmax
           let hField : Field (R ⧸ m ^ (n + 1)) := Ideal.Quotient.field (m ^ (n + 1))
           simpa [isUnit_iff_ne_zero, ne_eq, Ideal.Quotient.eq_zero_iff_mem.not, neq0] using h
