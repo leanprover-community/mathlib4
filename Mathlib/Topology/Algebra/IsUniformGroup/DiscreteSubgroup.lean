@@ -20,7 +20,9 @@ variable {G : Type*} [Group G] [TopologicalSpace G]
 
 /-- If `G` has a topology, and `H ≤ K` are subgroups, then `H` as a subgroup of `K` is homeomorphic
 to `H` as a subgroup of `G`. This is `subgroupOfEquivOfLe` bundled as a `Homeomorph`. -/
-@[to_additive]
+@[to_additive /-- If `G` has a topology, and `H ≤ K` are subgroups, then `H` as a subgroup of `K`
+is homeomorphic to `H` as a subgroup of `G`. This is `subgroupOfEquivOfLe` bundled as a
+`Homeomorph`.-/]
 def Subgroup.subgroupOfHomeomorphOfLe {G : Type*} [Group G] [TopologicalSpace G]
     {H K : Subgroup G} (h : H ≤ K) :
     (H.subgroupOf K) ≃ₜ H :=
