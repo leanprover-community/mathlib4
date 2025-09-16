@@ -7,7 +7,7 @@ import Mathlib.Analysis.Complex.MeanValue
 import Mathlib.Analysis.InnerProductSpace.Harmonic.Analytic
 
 /-!
-# The Mean Value Property of Harmonic Functions
+# The Mean Value Property of Harmonic Functions on the Complex Plane
 -/
 
 open InnerProductSpace Metric Real
@@ -16,8 +16,8 @@ variable {f : ℂ → ℝ} {c : ℂ} {R : ℝ}
 
 /--
 The **Mean Value Property** of harmonic functions: If `f : ℂ → ℝ` is harmonic in a neighborhood of a
-closed disc of radius `R` and center `c`, then the circle average `circleAverage f c R` equals `f
-c`.
+closed disc of radius `R` and center `c`, then the circle average `circleAverage f c R` equals
+`f c`.
 -/
 theorem HarmonicOnNhd.circleAverage_eq (hf : HarmonicOnNhd f (closedBall c |R|)) :
     circleAverage f c R = f c := by
