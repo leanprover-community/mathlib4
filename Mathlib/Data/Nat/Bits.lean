@@ -8,6 +8,7 @@ import Mathlib.Data.List.Defs
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.Says
+import Mathlib.Util.AssertExists
 
 /-!
 # Additional properties of binary recursion on `Nat`
