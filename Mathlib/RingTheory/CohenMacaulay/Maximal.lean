@@ -139,11 +139,12 @@ lemma free_of_quotSMulTop_free [IsLocalRing R] [IsNoetherianRing R] (M : Type*) 
 theorem free_of_isMaximalCohenMacaulay_of_isRegularLocalRing [IsRegularLocalRing R] [Small.{v} R]
     (M : ModuleCat.{v} R) [Module.Finite R M] [M.IsMaximalCohenMacaulay] : Module.Free R M := by
   rcases exist_nat_eq R with ⟨n, hn⟩
-  induction' n with n ih generalizing R M
+  induction n generalizing R M
   · have : IsField R := isField_of_isRegularLocalRing_of_dimension_zero hn
     let _ : Field R := this.toField
     exact Module.Free.of_divisionRing R M
-  · by_cases ntr : Nontrivial M
+  · rename_i n ih _ _ _ _ _
+    by_cases ntr : Nontrivial M
     · obtain ⟨x, xmem, xnmem⟩ : ∃ x ∈ maximalIdeal R, x ∉ (maximalIdeal R) ^ 2 := by
         by_contra! ge
         have : IsField R := by
