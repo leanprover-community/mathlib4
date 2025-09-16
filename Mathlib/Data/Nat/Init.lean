@@ -31,7 +31,7 @@ See note [foundational algebra order theory].
 -/
 
 library_note "foundational algebra order theory"/--
-Batteries has a home-baked development of the algebraic and order theoretic theory of `ℕ` and `ℤ
+Batteries has a home-baked development of the algebraic and order-theoretic theory of `ℕ` and `ℤ
 which, in particular, is not typeclass-mediated. This is useful to set up the algebra and finiteness
 libraries in mathlib (naturals and integers show up as indices/offsets in lists, cardinality in
 finsets, powers in groups, ...).
@@ -322,7 +322,8 @@ lemma decreasingInduction_succ_left {motive : (m : ℕ) → m ≤ n → Sort*} (
     (smn : m + 1 ≤ n) (mn : m ≤ n) :
     decreasingInduction (motive := motive) of_succ self mn =
       of_succ m smn (decreasingInduction of_succ self smn) := by
-  rw [Subsingleton.elim mn (Nat.le_trans (le_succ m) smn), decreasingInduction_trans,
+  rw [Subsingleton.elim mn (Nat.le_trans (le_succ m) smn),
+    decreasingInduction_trans (n := m + 1) (Nat.le_succ m),
     decreasingInduction_succ']
 
 /-- Given `P : ℕ → ℕ → Sort*`, if for all `m n : ℕ` we can extend `P` from the rectangle

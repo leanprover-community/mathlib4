@@ -383,3 +383,50 @@ lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Id
         refine ⟨mem_minimalPrimes_of_primeHeight_eq_height (le_sup_left.trans hp.1.2) this.symm, ?_⟩
         rwa [p.height_eq_primeHeight, eq_comm]
       · exact hp.1.2 <| Ideal.mem_sup_right <| Ideal.subset_span <| Set.mem_singleton x
+
+/-- In a nontrivial commutative ring `R`, the supremum of heights of all ideals is equal to the
+Krull dimension of `R`. -/
+lemma Ideal.sup_height_eq_ringKrullDim [Nontrivial R] :
+    ↑(⨆ (I : Ideal R) (_ : I ≠ ⊤), I.height) = ringKrullDim R := by
+  apply le_antisymm
+  · rw [WithBot.coe_iSup ⟨⊤, fun _ _ => le_top⟩]
+    refine iSup_le fun I => ?_
+    by_cases h : I = ⊤
+    · simp [h, ringKrullDim_nonneg_of_nontrivial]
+    · simp [h, height_le_ringKrullDim_of_ne_top]
+  · refine iSup_le fun p => WithBot.coe_le_coe.mpr (le_trans (b := p.last.asIdeal.height) ?_ ?_)
+    · rw [height_eq_primeHeight]
+      apply le_trans (b := ⨆ (_ : p.last ≤ p.last), ↑p.length)
+      · exact le_iSup (fun _ => (↑p.length : ℕ∞)) le_rfl
+      · exact le_iSup (fun p' => (⨆ _, p'.length : ℕ∞)) p
+    · apply le_trans (b := ⨆ (_ : (p.last).asIdeal ≠ ⊤), p.last.asIdeal.height)
+      · exact le_iSup_of_le p.last.isPrime.ne_top' le_rfl
+      · exact le_iSup (fun I => ⨆ _, I.height) p.last.asIdeal
+
+/-- In a nontrivial commutative ring `R`, the supremum of prime heights of all prime ideals is
+equal to the Krull dimension of `R`. -/
+lemma Ideal.sup_primeHeight_eq_ringKrullDim [Nontrivial R] :
+    ↑(⨆ (I : Ideal R) (_ : I.IsPrime), I.primeHeight) = ringKrullDim R := by
+  rw [← sup_height_eq_ringKrullDim, WithBot.coe_inj]
+  apply le_antisymm
+  · exact iSup_mono fun I => iSup_mono' fun hI => ⟨hI.ne_top, by rw [← height_eq_primeHeight]⟩
+  · refine iSup_mono' fun I => ?_
+    by_cases I_top : I = ⊤
+    · exact ⟨⊥, by simp [I_top]⟩
+    · obtain ⟨P, hP⟩ : I.minimalPrimes.Nonempty :=
+        Set.nonempty_coe_sort.mp (nonempty_minimalPrimes I_top)
+      refine ⟨P, iSup_pos (α := ℕ∞) I_top ▸ le_iSup_of_le (hP.left.left) ?_⟩
+      exact iInf_le_of_le P (iInf_le_of_le hP le_rfl)
+
+/-- In a nontrivial commutative ring `R`, the supremum of prime heights of all maximal ideals is
+equal to the Krull dimension of `R`. -/
+lemma Ideal.sup_primeHeight_of_maximal_eq_ringKrullDim [Nontrivial R] :
+    ↑(⨆ (I : Ideal R) (_ : I.IsMaximal), I.primeHeight) = ringKrullDim R := by
+  rw [← Ideal.sup_primeHeight_eq_ringKrullDim, WithBot.coe_inj]
+  apply le_antisymm
+  · exact iSup_mono fun I => iSup_mono' fun hI => ⟨IsMaximal.isPrime hI, le_rfl⟩
+  · refine iSup_mono' fun I => ?_
+    obtain rfl | I_top := eq_or_ne I ⊤
+    · exact ⟨⊥, by grind [iSup_le_iff, Ideal.IsPrime.ne_top]⟩
+    · obtain ⟨M, hM, hIM⟩ := exists_le_maximal I I_top
+      exact ⟨M, iSup_mono' (fun hI ↦ ⟨hM, primeHeight_mono hIM⟩)⟩
