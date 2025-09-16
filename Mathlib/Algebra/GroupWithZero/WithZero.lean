@@ -442,7 +442,7 @@ end WithZero
 
 namespace MonoidWithZeroHom
 
-protected lemma map_eq_zero_iff {G₀ : Type*} [GroupWithZero G₀] {M₀ : Type*} [MulZeroOneClass M₀]
+protected lemma map_eq_zero_iff {G₀ M₀ : Type*} [GroupWithZero G₀] [MulZeroOneClass M₀]
     [Nontrivial M₀] {f : G₀ →*₀ M₀} {x : G₀} : f x = 0 ↔ x = 0 := by
   refine ⟨?_, by simp +contextual⟩
   contrapose!
