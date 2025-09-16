@@ -9,12 +9,14 @@ import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 
 /-!
 # Discrete subgroups of topological groups
+
+Note that the instance `Subgroup.isClosed_of_discrete` does not live here, in order that it can
+be used in other files without requiring lots of group-theoretic imports.
 -/
 
 open Filter Topology Uniformity
 
 variable {G : Type*} [Group G] [TopologicalSpace G]
-
 
 /-- If `G` has a topology, and `H ≤ K` are subgroups, then `H` as a subgroup of `K` is homeomorphic
 to `H` as a subgroup of `G`. This is `subgroupOfEquivOfLe` bundled as a `Homeomorph`. -/
@@ -30,34 +32,6 @@ def Subgroup.subgroupOfHomeomorphOfLe {G : Type*} [Group G] [TopologicalSpace G]
       fun t ↦ and_congr_right fun _ ↦ ⟨fun aux g hgh ↦ aux g (h hgh) hgh, by grind⟩)
 
 variable [IsTopologicalGroup G]
-
-attribute [local instance] IsTopologicalGroup.toUniformSpace
-
-@[to_additive]
-instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTopology H] :
-    IsClosed (H : Set G) := by
-  obtain ⟨V, V_in, VH⟩ : ∃ (V : Set G), V ∈ 𝓝 (1 : G) ∧ V ∩ (H : Set G) = {1} :=
-    nhds_inter_eq_singleton_of_mem_discrete H.one_mem
-  have : (fun p : G × G => p.2 / p.1) ⁻¹' V ∈ 𝓤 G := preimage_mem_comap V_in
-  apply isClosed_of_spaced_out this
-  intro h h_in h' h'_in
-  contrapose!
-  simp only [Set.mem_preimage, not_not]
-  rintro (hyp : h' / h ∈ V)
-  have : h' / h ∈ ({1} : Set G) := VH ▸ Set.mem_inter hyp (H.div_mem h'_in h_in)
-  exact (eq_of_div_eq_one this).symm
-
-@[to_additive]
-lemma Subgroup.tendsto_coe_cofinite_of_discrete [T2Space G] (H : Subgroup G) [DiscreteTopology H] :
-    Tendsto ((↑) : H → G) cofinite (cocompact _) :=
-  IsClosed.tendsto_coe_cofinite_of_discreteTopology inferInstance inferInstance
-
-@[to_additive]
-lemma MonoidHom.tendsto_coe_cofinite_of_discrete [T2Space G] {H : Type*} [Group H] {f : H →* G}
-    (hf : Function.Injective f) (hf' : DiscreteTopology f.range) :
-    Tendsto f cofinite (cocompact _) := by
-  replace hf : Function.Injective f.rangeRestrict := by simpa
-  exact f.range.tendsto_coe_cofinite_of_discrete.comp hf.tendsto_cofinite
 
 /-- If `G` is a topological group and `H` a finite-index subgroup, then `G` is topologically
 discrete iff `H` is. -/

@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.Topology.Algebra.IsUniformGroup.DiscreteSubgroup
+import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 import Mathlib.Topology.Algebra.Ring.Real
 import Mathlib.Topology.Metrizable.Basic
 
