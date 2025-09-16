@@ -769,10 +769,11 @@ lemma moduleDepth_quotient_regular_sequence_add_length_eq_moduleDepth (N M : Mod
     moduleDepth N (ModuleCat.of R (M ⧸ (Ideal.ofList rs) • (⊤ : Submodule R M))) + rs.length =
     moduleDepth N M := by
   generalize len : rs.length = n
-  induction' n with n hn generalizing M rs
+  induction n generalizing M rs
   · rw [List.length_eq_zero_iff.mp len, Ideal.ofList_nil, Submodule.bot_smul]
     simpa using moduleDepth_eq_of_iso_snd N (Submodule.quotEquivOfEqBot ⊥ rfl).toModuleIso
-  · match rs with
+  · rename_i n hn
+    match rs with
     | [] => simp at len
     | x :: rs' =>
       simp only [Nat.cast_add, Nat.cast_one]
@@ -935,14 +936,15 @@ lemma IsLocalRing.depth_quotient_regular_sequence_add_length_eq_depth [IsLocalRi
       (R ⧸ Ideal.ofList rs)) + rs.length =
     IsLocalRing.depth (ModuleCat.of R R) := by
   generalize len : rs.length = n
-  induction' n with n hn generalizing R rs
+  induction n generalizing R rs
   · let e : R ⧸ ofList rs ≃+* R :=
       (RingEquiv.ofBijective _ ((Ideal.Quotient.mk_bijective_iff_eq_bot (Ideal.ofList rs)).mpr
         (by simp [List.length_eq_zero_iff.mp len]))).symm
     have : IsLocalRing (R ⧸ ofList rs) := RingEquiv.isLocalRing e.symm
     have : IsNoetherianRing (R ⧸ ofList rs) := isNoetherianRing_of_ringEquiv R e.symm
     simpa using IsLocalRing.depth_eq_of_ringEquiv e
-  · match rs with
+  · rename_i n hn _ _ _
+    match rs with
     | [] => simp at len
     | x :: rs' =>
       let _ : IsLocalRing (R ⧸ Ideal.ofList (x :: rs')) :=
