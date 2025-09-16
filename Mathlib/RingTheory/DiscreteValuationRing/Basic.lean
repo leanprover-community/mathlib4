@@ -30,6 +30,9 @@ Let R be an integral domain, assumed to be a principal ideal ring and a local ri
 ### Definitions
 
 * `addVal R : AddValuation R PartENat` : the additive valuation on a DVR.
+* `toEuclideanDomain R : EuclideanDomain R` : a non-canonical structure of Euclidean domain on a
+  DVR, where `x % y = 0` if `y ∣ x` and `x % y = x` otherwise. The GCD algorithm terminates in two
+  steps.
 
 ## Implementation notes
 
