@@ -315,8 +315,7 @@ theorem fract_sub_self (a : R) : fract a - a = -⌊a⌋ :=
 theorem fract_add (a b : R) : ∃ z : ℤ, fract (a + b) - fract a - fract b = z :=
   ⟨⌊a⌋ + ⌊b⌋ - ⌊a + b⌋, by
     unfold fract
-    simp only [sub_eq_add_neg, neg_add_rev, neg_neg, cast_add, cast_neg]
-    abel⟩
+    grind⟩
 
 variable [IsStrictOrderedRing R]
 

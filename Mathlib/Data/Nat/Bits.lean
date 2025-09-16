@@ -101,6 +101,7 @@ lemma bodd_add_div2 : ∀ n, (bodd n).toNat + 2 * div2 n = n
     · simp
     · simp; omega
 
+@[grind =]
 lemma div2_val (n) : div2 n = n / 2 := by
   refine Nat.eq_of_mul_eq_mul_left (by decide)
     (Nat.add_left_cancel (Eq.trans ?_ (Nat.mod_add_div n 2).symm))
@@ -131,12 +132,7 @@ lemma shiftLeft'_false : ∀ n, shiftLeft' false m n = m <<< n
 @[simp] lemma shiftLeft_eq' (m n : Nat) : shiftLeft m n = m <<< n := rfl
 @[simp] lemma shiftRight_eq (m n : Nat) : shiftRight m n = m >>> n := rfl
 
-lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by
-  rw [div2_val]
-  apply (div_lt_iff_lt_mul <| succ_pos 1).2
-  have := Nat.mul_lt_mul_of_pos_left (lt_succ_self 1)
-    (lt_of_le_of_ne n.zero_le h.symm)
-  rwa [Nat.mul_one] at this
+lemma binaryRec_decreasing (h : n ≠ 0) : div2 n < n := by grind
 
 /-- `size n` : Returns the size of a natural number in
 bits i.e. the length of its binary representation -/
