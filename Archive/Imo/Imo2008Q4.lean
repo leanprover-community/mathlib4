@@ -78,6 +78,6 @@ theorem imo2008_q4 (f : ℝ → ℝ) (H₁ : ∀ x > 0, f x > 0) :
     obtain hb₂ := abs_eq_one_of_pow_eq_one b 4 (show 4 ≠ 0 by simp) (by grind)
     grind [abs_of_pos]
   -- f(ab) = 1/ab → a^4 = 1 → a = 1 → f(a) = 1/a → false
-  · simp [field, hab₂] at H₂
+  · simp only [hab₂, field] at H₂
     obtain ha₂ := abs_eq_one_of_pow_eq_one a 4 (show 4 ≠ 0 by simp) (by grind)
     grind [abs_of_pos]
