@@ -195,6 +195,10 @@ theorem unitsComplexEmbedding_complexConj (φ : K →+* ℂ) (u : (𝓞 K)ˣ) :
       (Units.complexEmbedding φ u) := by
   simp [Units.ext_iff]
 
+/--
+The image of a root of unity by the complex conjugation is its inverse.
+This is the version of `Complex.conj_rootsOfUnity` for CM-fields.
+-/
 @[simp]
 theorem unitsComplexConj_torsion (ζ : torsion K) :
     unitsComplexConj F (ζ : (𝓞 K)ˣ) = ζ⁻¹ := by
@@ -203,14 +207,6 @@ theorem unitsComplexConj_torsion (ζ : torsion K) :
     Units.ext_iff, Units.coe_map, MonoidHom.coe_coe, Subgroup.coe_inv, MonoidHom.map_inv,
     Complex.conj_rootsOfUnity (n := torsionOrder K)]
   exact map_complexEmbedding_torsion K  _ ▸ Subgroup.apply_coe_mem_map _ (torsion K) ζ
-
-/--
-The image of a root of unity by the complex conjugation is its inverse.
--/
-@[simp]
-theorem complexConj_of_mem_torsion {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K) :
-    complexConj F K ζ = ζ⁻¹ := by
-  simpa using congr_arg ((↑) : (𝓞 K)ˣ → K) <| unitsComplexConj_torsion F ⟨ζ, hζ⟩
 
 variable (K) in
 /--
