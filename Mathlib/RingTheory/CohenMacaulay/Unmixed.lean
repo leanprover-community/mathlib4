@@ -59,11 +59,12 @@ lemma isCohenMacaulayRing_of_unmixed
     tauto
   have {i : ℕ} : i ≤ p.height → ∃ rs : List R, (∀ r ∈ rs, r ∈ p) ∧ IsWeaklyRegular R rs ∧
     rs.length = i := by
-    induction' i with i hi
+    induction i
     · intro _
       use []
       simp
-    · intro le
+    · rename_i i hi
+      intro le
       have lt : i < p.height := lt_of_lt_of_le (ENat.coe_lt_coe.mpr (lt_add_one i)) le
       rcases hi (le_of_lt lt) with ⟨rs, mem, reg, len⟩
       have netop : Ideal.ofList rs ≠ ⊤ := ne_top_of_le_ne_top (Ideal.IsPrime.ne_top hp)
