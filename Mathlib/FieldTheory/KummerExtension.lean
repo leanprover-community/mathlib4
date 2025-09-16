@@ -21,11 +21,11 @@ Then `L/K` is cyclic iff
 - `autEquivRootsOfUnity`:
 Given an instance `IsSplittingField K L (X ^ n - C a)`
 (perhaps via `isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top`),
-then the galois group is isomorphic to `rootsOfUnity n K`, by sending
+then the Galois group is isomorphic to `rootsOfUnity n K`, by sending
 `σ ↦ σ α / α` for `α ^ n = a`, and the inverse is given by `μ ↦ (α ↦ μ • α)`.
 
 - `autEquivZmod`:
-Furthermore, given an explicit choice `ζ` of a primitive `n`-th root of unity, the galois group is
+Furthermore, given an explicit choice `ζ` of a primitive `n`-th root of unity, the Galois group is
 then isomorphic to `Multiplicative (ZMod n)` whose inverse is given by
 `i ↦ (α ↦ ζⁱ • α)`.
 
@@ -147,7 +147,7 @@ end Irreducible
 /-!
 ### Galois Group of `K[n√a]`
 We first develop the theory for a specific `K[n√a] := AdjoinRoot (X ^ n - C a)`.
-The main result is the description of the galois group: `autAdjoinRootXPowSubCEquiv`.
+The main result is the description of the Galois group: `autAdjoinRootXPowSubCEquiv`.
 -/
 
 variable {n : ℕ} (hζ : (primitiveRoots n K).Nonempty)

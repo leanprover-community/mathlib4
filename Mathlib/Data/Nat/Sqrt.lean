@@ -173,7 +173,7 @@ lemma sqrt_succ_le_succ_sqrt (n : ℕ) : sqrt n.succ ≤ n.sqrt.succ :=
   le_of_lt_succ <| sqrt_lt.2 <| (have := sqrt_le_add n; by grind)
 
 @[simp]
-lemma log2_two : (2 : ℕ).log2 = 1 := by simp [log2]
+lemma log2_two : (2 : ℕ).log2 = 1 := rfl
 
 @[simp]
 lemma sqrt_two : sqrt 2 = 1 := by simp [sqrt, sqrt.iter]
