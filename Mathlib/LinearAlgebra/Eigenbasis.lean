@@ -32,7 +32,7 @@ spelled as `∃ ι : Type u, Nonempty (f.Eigenbasis ι)` with the naming convent
 
 ## TODO
 
-* a linear map is diagonalizable iff the minimal polynomial splits and is squarefree.
+* a linear map is diagonalizable iff the minimal polynomial is a product of distinct linear factors.
 * all diagonalizable linear maps are semisimple.
 * a family of linear maps is simultaneously diagonalizable iff they commute and are
   individually diagonalizable.
