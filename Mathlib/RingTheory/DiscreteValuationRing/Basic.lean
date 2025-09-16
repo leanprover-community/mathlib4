@@ -523,7 +523,8 @@ lemma dvd_of_toWithBotNat_le_toWithBotNat (x y : R) (hx : x ≠ 0)
 variable (R) in
 /-- A noncomputable Euclidean domain structure on a discrete valuation ring, where the GCD algorithm
 only takes two steps to terminate. Given `GCD(x,y)`, if `x ∣ y` then `y%x = 0` so we're done in one
-step; otherwise `y%x = y` and then `GCD(x,y) = GCD(y,x)` which brings us back to the first case. -/
+step; otherwise `y%x = y` and then `GCD(x,y) = GCD(y,x)` which brings us back to the first case.
+See `EuclideanDomain.to_principal_ideal_domain` for EuclideanDomain ⇒ PID. -/
 def toEuclideanDomain : EuclideanDomain R where
   quotient := quotient
   remainder := remainder
