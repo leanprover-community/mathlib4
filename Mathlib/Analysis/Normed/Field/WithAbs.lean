@@ -5,7 +5,6 @@ Authors: Salvatore Mercuri
 -/
 import Mathlib.Analysis.Normed.Module.Completion
 import Mathlib.Analysis.Normed.Ring.WithAbs
-import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # WithAbs for fields
