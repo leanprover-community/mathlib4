@@ -442,7 +442,7 @@ lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
     simp only [Set.mem_image, Set.mem_setOf_eq, Set.mem_inter_iff, Set.mem_range, ← exists_and_left]
     congr! 2 with x
     exact and_congr_left fun h ↦ by simp [← h]
-  simp only [nonneg_iff_isSelfAdjoint_and_spectrumRestricts,
+  simp only [nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts,
     and_congr_right (SpectrumRestricts.nnreal_iff_nnnorm · le_rfl), Set.setOf_and]
   refine isClosed_eq ?_ ?_ |>.inter <| isClosed_le ?_ ?_
   all_goals fun_prop
