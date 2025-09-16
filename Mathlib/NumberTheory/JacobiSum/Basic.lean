@@ -109,7 +109,7 @@ theorem jacobiSum_trivial_trivial :
   _ = ∑ _ ∈ univ \ {0, 1}, 1 := sum_congr rfl this
   _ = #(univ \ {0, 1}) := (cast_card _).symm
   _ = Fintype.card F - 2 := by
-    rw [card_sdiff (subset_univ _), card_univ, card_pair zero_ne_one,
+    rw [card_sdiff_of_subset (subset_univ _), card_univ, card_pair zero_ne_one,
       Nat.cast_sub <| Nat.add_one_le_of_lt Fintype.one_lt_card, Nat.cast_two]
 
 /-- If `1` is the trivial multiplicative character on a finite field `F`, then `J(1,1) = #F-2`. -/

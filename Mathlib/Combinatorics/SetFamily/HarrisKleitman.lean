@@ -102,7 +102,7 @@ theorem IsUpperSet.card_inter_le_finset (h𝒜 : IsUpperSet (𝒜 : Set (Finset 
   rw [← isLowerSet_compl, ← coe_compl] at h𝒜
   have := h𝒜.le_card_inter_finset hℬ
   rwa [card_compl, Fintype.card_finset, tsub_mul, tsub_le_iff_tsub_le, ← mul_tsub, ←
-    card_sdiff inter_subset_right, sdiff_inter_self_right, sdiff_compl,
+    card_sdiff_of_subset inter_subset_right, sdiff_inter_self_right, sdiff_compl,
     _root_.inf_comm] at this
 
 /-- **Harris-Kleitman inequality**: Lower sets and upper sets of finsets anticorrelate. -/
@@ -119,7 +119,7 @@ theorem IsUpperSet.le_card_inter_finset (h𝒜 : IsUpperSet (𝒜 : Set (Finset 
   rw [← isLowerSet_compl, ← coe_compl] at h𝒜
   have := h𝒜.card_inter_le_finset hℬ
   rwa [card_compl, Fintype.card_finset, tsub_mul, le_tsub_iff_le_tsub, ← mul_tsub, ←
-    card_sdiff inter_subset_right, sdiff_inter_self_right, sdiff_compl,
+    card_sdiff_of_subset inter_subset_right, sdiff_inter_self_right, sdiff_compl,
     _root_.inf_comm] at this
   · exact mul_le_mul_left' (card_le_card inter_subset_right) _
   · rw [← Fintype.card_finset]

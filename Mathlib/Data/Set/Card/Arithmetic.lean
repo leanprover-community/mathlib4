@@ -29,7 +29,7 @@ theorem Finset.exists_disjoint_union_of_even_card [DecidableEq α] {s : Finset �
     ∃ (t u : Finset α), t ∪ u = s ∧ Disjoint t u ∧ #t = #u :=
   let ⟨n, hn⟩ := he
   let ⟨t, ht, ht'⟩ := exists_subset_card_eq (show n ≤ #s by omega)
-  ⟨t, s \ t, by simp [card_sdiff, disjoint_sdiff, *]⟩
+  ⟨t, s \ t, by simp [card_sdiff_of_subset, disjoint_sdiff, *]⟩
 
 theorem Finset.exists_disjoint_union_of_even_card_iff [DecidableEq α] (s : Finset α) :
     Even #s ↔ ∃ (t u : Finset α), t ∪ u = s ∧ Disjoint t u ∧ #t = #u :=
