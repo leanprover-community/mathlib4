@@ -5,7 +5,6 @@ Authors: Nailin Guan
 -/
 import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.RingTheory.RegularLocalRing.Defs
-import Mathlib.Tactic.Cases
 /-!
 
 # Define Regular Ring
