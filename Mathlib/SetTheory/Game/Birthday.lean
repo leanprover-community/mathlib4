@@ -6,6 +6,11 @@ Authors: Violeta Hernández Palacios
 import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.SetTheory.Game.Ordinal
 import Mathlib.SetTheory.Ordinal.NaturalOps
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Game.Birthday` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Birthdays of games

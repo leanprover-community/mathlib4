@@ -140,18 +140,18 @@ theorem kernelSubobjectMap_arrow (sq : Arrow.mk f ⟶ Arrow.mk f') :
   simp [kernelSubobjectMap]
 
 @[simp]
-theorem kernelSubobjectMap_id : kernelSubobjectMap (𝟙 (Arrow.mk f)) = 𝟙 _ := by aesop_cat
+theorem kernelSubobjectMap_id : kernelSubobjectMap (𝟙 (Arrow.mk f)) = 𝟙 _ := by cat_disch
 
 @[simp]
 theorem kernelSubobjectMap_comp {X'' Y'' : C} {f'' : X'' ⟶ Y''} [HasKernel f'']
     (sq : Arrow.mk f ⟶ Arrow.mk f') (sq' : Arrow.mk f' ⟶ Arrow.mk f'') :
     kernelSubobjectMap (sq ≫ sq') = kernelSubobjectMap sq ≫ kernelSubobjectMap sq' := by
-  aesop_cat
+  cat_disch
 
 @[reassoc]
 theorem kernel_map_comp_kernelSubobjectIso_inv (sq : Arrow.mk f ⟶ Arrow.mk f') :
     kernel.map f f' sq.1 sq.2 sq.3.symm ≫ (kernelSubobjectIso _).inv =
-      (kernelSubobjectIso _).inv ≫ kernelSubobjectMap sq := by aesop_cat
+      (kernelSubobjectIso _).inv ≫ kernelSubobjectMap sq := by cat_disch
 
 @[reassoc]
 theorem kernelSubobjectIso_comp_kernel_map (sq : Arrow.mk f ⟶ Arrow.mk f') :
@@ -208,7 +208,7 @@ instance kernelSubobject_comp_mono_isIso (f : X ⟶ Y) [HasKernel f] {Z : C} (h 
   · simp
 
 /-- Taking cokernels is an order-reversing map from the subobjects of `X` to the quotient objects
-    of `X`. -/
+of `X`. -/
 @[simps]
 def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op X))ᵒᵈ where
   toFun :=
@@ -230,7 +230,7 @@ def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op 
       · exact Quiver.Hom.unop_inj (cokernel.π_desc _ _ _)
 
 /-- Taking kernels is an order-reversing map from the quotient objects of `X` to the subobjects of
-    `X`. -/
+`X`. -/
 @[simps]
 def kernelOrderHom [HasKernels C] (X : C) : (Subobject (op X))ᵒᵈ →o Subobject X where
   toFun :=

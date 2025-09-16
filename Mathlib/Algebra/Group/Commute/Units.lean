@@ -51,8 +51,8 @@ theorem units_val_iff : Commute (u₁ : M) u₂ ↔ Commute u₁ u₂ :=
 end Commute
 
 /-- If the product of two commuting elements is a unit, then the left multiplier is a unit. -/
-@[to_additive "If the sum of two commuting elements is an additive unit, then the left summand is
-an additive unit."]
+@[to_additive /-- If the sum of two commuting elements is an additive unit, then the left summand is
+an additive unit. -/]
 def Units.leftOfMul (u : Mˣ) (a b : M) (hu : a * b = u) (hc : Commute a b) : Mˣ where
   val := a
   inv := b * ↑u⁻¹
@@ -62,8 +62,8 @@ def Units.leftOfMul (u : Mˣ) (a b : M) (hu : a * b = u) (hc : Commute a b) : M�
     rw [← this.units_inv_right.right_comm, ← hc.eq, hu, u.mul_inv]
 
 /-- If the product of two commuting elements is a unit, then the right multiplier is a unit. -/
-@[to_additive "If the sum of two commuting elements is an additive unit, then the right summand
-is an additive unit."]
+@[to_additive /-- If the sum of two commuting elements is an additive unit, then the right summand
+is an additive unit. -/]
 def Units.rightOfMul (u : Mˣ) (a b : M) (hu : a * b = u) (hc : Commute a b) : Mˣ :=
   u.leftOfMul b a (hc.eq ▸ hu) hc.symm
 
@@ -85,7 +85,8 @@ lemma Commute.units_zpow_left (h : Commute ↑u a) (m : ℤ) : Commute ↑(u ^ m
   (h.symm.units_zpow_right m).symm
 
 /-- If a natural power of `x` is a unit, then `x` is a unit. -/
-@[to_additive "If a natural multiple of `x` is an additive unit, then `x` is an additive unit."]
+@[to_additive
+/-- If a natural multiple of `x` is an additive unit, then `x` is an additive unit. -/]
 def Units.ofPow (u : Mˣ) (x : M) {n : ℕ} (hn : n ≠ 0) (hu : x ^ n = u) : Mˣ :=
   u.leftOfMul x (x ^ (n - 1))
     (by rwa [← _root_.pow_succ', Nat.sub_add_cancel (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn)])
@@ -103,7 +104,7 @@ lemma isUnit_pow_iff_of_not_isUnit (hx : ¬ IsUnit a) {n : ℕ} :
   simp [hx]
 
 /-- If `a ^ n = 1`, `n ≠ 0`, then `a` is a unit. -/
-@[to_additive (attr := simps!) "If `n • x = 0`, `n ≠ 0`, then `x` is an additive unit."]
+@[to_additive (attr := simps!) /-- If `n • x = 0`, `n ≠ 0`, then `x` is an additive unit. -/]
 def Units.ofPowEqOne (a : M) (n : ℕ) (ha : a ^ n = 1) (hn : n ≠ 0) : Mˣ := Units.ofPow 1 a hn ha
 
 @[to_additive (attr := simp)]
@@ -113,9 +114,6 @@ lemma Units.pow_ofPowEqOne (ha : a ^ n = 1) (hn : n ≠ 0) :
 @[to_additive]
 lemma IsUnit.of_pow_eq_one (ha : a ^ n = 1) (hn : n ≠ 0) : IsUnit a :=
   (Units.ofPowEqOne _ n ha hn).isUnit
-
-@[deprecated (since := "2025-02-03")] alias isUnit_ofPowEqOne := IsUnit.of_pow_eq_one
-@[deprecated (since := "2025-02-03")] alias isAddUnit_ofNSMulEqZero := IsAddUnit.of_nsmul_eq_zero
 
 @[to_additive]
 lemma _root_.Units.commute_iff_inv_mul_cancel {u : Mˣ} {a : M} :

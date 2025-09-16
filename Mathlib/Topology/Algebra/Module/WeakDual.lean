@@ -56,21 +56,13 @@ open Topology
 
 variable {α 𝕜 𝕝 E F : Type*}
 
-/-- The canonical pairing of a vector space and its topological dual. -/
-def topDualPairing (𝕜 E) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [AddCommMonoid E]
-    [Module 𝕜 E] [TopologicalSpace E] [ContinuousConstSMul 𝕜 𝕜] : (E →L[𝕜] 𝕜) →ₗ[𝕜] E →ₗ[𝕜] 𝕜 :=
-  ContinuousLinearMap.coeLM 𝕜
-
-theorem topDualPairing_apply [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
-    [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousConstSMul 𝕜 𝕜] (v : E →L[𝕜] 𝕜)
-    (x : E) : topDualPairing 𝕜 E v x = v x :=
-  rfl
-
 /-- The weak star topology is the topology coarsest topology on `E →L[𝕜] 𝕜` such that all
 functionals `fun v => v x` are continuous. -/
 def WeakDual (𝕜 E : Type*) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
   WeakBilin (topDualPairing 𝕜 E)
+deriving AddCommMonoid, Module 𝕜, TopologicalSpace, ContinuousAdd, Inhabited,
+  FunLike, ContinuousLinearMapClass
 
 namespace WeakDual
 
@@ -79,30 +71,6 @@ section Semiring
 variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
 variable [ContinuousConstSMul 𝕜 𝕜]
 variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
-
--- The following instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance instAddCommMonoid : AddCommMonoid (WeakDual 𝕜 E) :=
-  WeakBilin.instAddCommMonoid (topDualPairing 𝕜 E)
-
-instance instModule : Module 𝕜 (WeakDual 𝕜 E) :=
-  WeakBilin.instModule (topDualPairing 𝕜 E)
-
-instance instTopologicalSpace : TopologicalSpace (WeakDual 𝕜 E) :=
-  WeakBilin.instTopologicalSpace (topDualPairing 𝕜 E)
-
-instance instContinuousAdd : ContinuousAdd (WeakDual 𝕜 E) :=
-  WeakBilin.instContinuousAdd (topDualPairing 𝕜 E)
-
-instance instInhabited : Inhabited (WeakDual 𝕜 E) :=
-  ContinuousLinearMap.inhabited
-
-instance instFunLike : FunLike (WeakDual 𝕜 E) E 𝕜 :=
-  ContinuousLinearMap.funLike
-
-instance instContinuousLinearMapClass : ContinuousLinearMapClass (WeakDual 𝕜 E) 𝕜 E 𝕜 :=
-  ContinuousLinearMap.continuousSemilinearMapClass
 
 /-- If a monoid `M` distributively continuously acts on `𝕜` and this action commutes with
 multiplication on `𝕜`, then it acts on `WeakDual 𝕜 E`. -/
@@ -145,7 +113,7 @@ theorem continuous_of_continuous_eval [TopologicalSpace α] {g : α → WeakDual
   continuous_induced_rng.2 (continuous_pi_iff.mpr h)
 
 instance instT2Space [T2Space 𝕜] : T2Space (WeakDual 𝕜 E) :=
-   (WeakBilin.isEmbedding ContinuousLinearMap.coe_injective).t2Space
+  (WeakBilin.isEmbedding ContinuousLinearMap.coe_injective).t2Space
 
 end Semiring
 
@@ -169,6 +137,7 @@ end WeakDual
 def WeakSpace (𝕜 E) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
   WeakBilin (topDualPairing 𝕜 E).flip
+deriving AddCommMonoid, Module 𝕜, TopologicalSpace, ContinuousAdd
 
 section Semiring
 
@@ -177,21 +146,6 @@ variable [ContinuousConstSMul 𝕜 𝕜]
 variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
 namespace WeakSpace
-
--- The following instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance instAddCommMonoid : AddCommMonoid (WeakSpace 𝕜 E) :=
-  WeakBilin.instAddCommMonoid (topDualPairing 𝕜 E).flip
-
-instance instModule : Module 𝕜 (WeakSpace 𝕜 E) :=
-  WeakBilin.instModule (topDualPairing 𝕜 E).flip
-
-instance instTopologicalSpace : TopologicalSpace (WeakSpace 𝕜 E) :=
-  WeakBilin.instTopologicalSpace (topDualPairing 𝕜 E).flip
-
-instance instContinuousAdd : ContinuousAdd (WeakSpace 𝕜 E) :=
-  WeakBilin.instContinuousAdd (topDualPairing 𝕜 E).flip
 
 instance instModule' [CommSemiring 𝕝] [Module 𝕝 E] : Module 𝕝 (WeakSpace 𝕜 E) :=
   WeakBilin.instModule' (topDualPairing 𝕜 E).flip

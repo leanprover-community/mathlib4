@@ -175,9 +175,7 @@ theorem mapAlgHom_comp (C : Type*) [Semiring C] [Algebra R C] (f : B →ₐ[R] C
 
 theorem mapAlgHom_eq_eval₂AlgHom'_CAlgHom (f : A →ₐ[R] B) : mapAlgHom f = eval₂AlgHom'
     (CAlgHom.comp f) X (fun a => (commute_X (C (f a))).symm) := by
-  apply AlgHom.ext
-  intro x
-  congr
+  rfl
 
 /-- If `A` and `B` are isomorphic as `R`-algebras, then so are their polynomial rings -/
 def mapAlgEquiv (f : A ≃ₐ[R] B) : Polynomial A ≃ₐ[R] Polynomial B :=
@@ -236,11 +234,15 @@ theorem algHom_ext {f g : R[X] →ₐ[R] B} (hX : f X = g X) :
 theorem aeval_def (p : R[X]) : aeval x p = eval₂ (algebraMap R A) x p :=
   rfl
 
+@[simp]
+lemma eval_map_algebraMap (P : R[X]) (b : B) :
+    (map (algebraMap R B) P).eval b = aeval b P := by
+  rw [aeval_def, eval_map]
+
 /-- `mapAlg` is the morphism induced by `R → S`. -/
 theorem mapAlg_eq_map (S : Type v) [Semiring S] [Algebra R S] (p : R[X]) :
     mapAlg R S p = map (algebraMap R S) p := by
-  simp only [mapAlg, aeval_def, eval₂_eq_sum, map, algebraMap_apply, RingHom.coe_comp]
-  ext; congr
+  rfl
 
 theorem aeval_zero : aeval x (0 : R[X]) = 0 :=
   map_zero (aeval x)

@@ -126,7 +126,7 @@ instance [Presheaf.IsLocallySurjective Scheme.zariskiTopology (Sigma.desc f)] :
     Sheaf.IsLocallySurjective (yonedaGluedToSheaf hf) :=
   Presheaf.isLocallySurjective_of_isLocallySurjective_fac _
     (show Sigma.desc (fun i ↦ yoneda.map (toGlued hf i)) ≫
-      (yonedaGluedToSheaf hf).val = Sigma.desc f by aesop_cat)
+      (yonedaGluedToSheaf hf).val = Sigma.desc f by cat_disch)
 
 lemma comp_toGlued_eq {U : Scheme} {i j : ι} (a : U ⟶ X i) (b : U ⟶ X j)
     (h : yoneda.map a ≫ f i = yoneda.map b ≫ f j) :

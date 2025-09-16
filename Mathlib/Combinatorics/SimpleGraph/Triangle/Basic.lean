@@ -60,7 +60,7 @@ nonrec lemma EdgeDisjointTriangles.mono (h : G ≤ H) (hH : H.EdgeDisjointTriang
 
 lemma EdgeDisjointTriangles.map (f : α ↪ β) (hG : G.EdgeDisjointTriangles) :
     (G.map f).EdgeDisjointTriangles := by
-  rw [EdgeDisjointTriangles, cliqueSet_map (by norm_num : 3 ≠ 1),
+  rw [EdgeDisjointTriangles, cliqueSet_map (by simp : 3 ≠ 1),
     (Finset.map_injective f).injOn.pairwise_image]
   classical
   rintro s hs t ht hst
@@ -238,7 +238,7 @@ lemma farFromTriangleFree_of_disjoint_triangles (tris : Finset (Finset α))
     (tris_big : ε * (card α ^ 2 : ℕ) ≤ #tris) :
     G.FarFromTriangleFree ε := by
   rw [farFromTriangleFree_iff]
-  intros H _ hG hH
+  intro H _ hG hH
   rw [← Nat.cast_sub (card_le_card <| edgeFinset_mono hG)]
   exact tris_big.trans
     (Nat.cast_le.2 <| farFromTriangleFree_of_disjoint_triangles_aux htris pd hG hH)
@@ -256,7 +256,7 @@ lemma FarFromTriangleFree.lt_half (hG : G.FarFromTriangleFree ε) : ε < 2⁻¹ 
   classical
   by_contra! hε
   refine lt_irrefl (ε * card α ^ 2) ?_
-  have hε₀ : 0 < ε := hε.trans_lt' (by norm_num)
+  have hε₀ : 0 < ε := hε.trans_lt' (by simp)
   rw [inv_le_iff_one_le_mul₀ (zero_lt_two' 𝕜)] at hε
   calc
     _ ≤ (#G.edgeFinset : 𝕜) := by

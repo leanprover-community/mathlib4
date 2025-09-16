@@ -55,11 +55,11 @@ and that the topology for a general `𝓕` is indeed the expected inductive limi
   inductive limit / final topology associated to the natural maps
   `Πʳ i, [R i, A i]_[𝓟 S] → Πʳ i, [R i, A i]_[𝓕]`, where `𝓕 ≤ 𝓟 S`.
 * `RestrictedProduct.continuous_dom`: a map from `Πʳ i, [R i, A i]_[𝓕]` is continuous
-*if and only if* its restriction to each `Πʳ i, [R i, A i]_[𝓟 s]` (with `𝓕 ≤ 𝓟 s`) is continuous.
-* `RestrictedProduct.continuous_dom_prod_left`: assume that each `A i` is an **open** subset of
-`R i`. Then, for any topological space `Y`, a map from `Y × Πʳ i, [R i, A i]` is continuous
-*if and only if* its restriction to each `Y × Πʳ i, [R i, A i]_[𝓟 S]` (with `S` cofinite)
-is continuous.
+  *if and only if* its restriction to each `Πʳ i, [R i, A i]_[𝓟 s]` (with `𝓕 ≤ 𝓟 s`) is continuous.
+  * `RestrictedProduct.continuous_dom_prod_left`: assume that each `A i` is an **open** subset of
+  `R i`. Then, for any topological space `Y`, a map from `Y × Πʳ i, [R i, A i]` is continuous
+  *if and only if* its restriction to each `Y × Πʳ i, [R i, A i]_[𝓟 S]` (with `S` cofinite)
+  is continuous.
 
 * `RestrictedProduct.isTopologicalGroup`: if each `R i` is a topological group and each `A i` is an
   open subgroup of `R i`, then `Πʳ i, [R i, A i]` is a topological group.
@@ -326,7 +326,7 @@ properties when each `A i` is an open subset of `R i`. The key fact is that each
 `Πʳ i, [R i, A i]`.
 
 This allows us to prove a "universal property with parameters", expressing that for any
-arbitrary topolgical space `X` (of "parameters"), the product `X × Πʳ i, [R i, A i]`
+arbitrary topological space `X` (of "parameters"), the product `X × Πʳ i, [R i, A i]`
 is still the inductive limit of the `X × Πʳ i, [R i, A i]_[𝓟 S]` for `S` cofinite.
 
 This fact, which is **not true** for a general inductive limit, will allow us to prove continuity
@@ -609,9 +609,9 @@ instance isTopologicalRing [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)]
 Assume also that all but finitely many `A i`s are compact.
 Then the restricted product `Πʳ i, [R i, A i]` is a locally compact group. -/
 @[to_additive
-"Assume that each `R i` is a locally compact additive group with `A i` an open subgroup.
+/-- Assume that each `R i` is a locally compact additive group with `A i` an open subgroup.
 Assume also that all but finitely many `A i`s are compact.
-Then the restricted product `Πʳ i, [R i, A i]` is a locally compact additive group."]
+Then the restricted product `Πʳ i, [R i, A i]` is a locally compact additive group. -/]
 theorem locallyCompactSpace_of_group [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)]
     [∀ i, IsTopologicalGroup (R i)] [∀ i, LocallyCompactSpace (R i)]
     (hBcompact : ∀ᶠ i in cofinite, IsCompact (B i : Set (R i))) :
