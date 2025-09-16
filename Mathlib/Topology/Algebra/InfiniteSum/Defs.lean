@@ -223,4 +223,14 @@ theorem MultipliableFilter.hasProdFilter_iff (h : MultipliableFilter L f) [L.NeB
   · exact fun h ↦ HasProdFilter.tprodFilter_eq h
   · exact fun H ↦ H ▸ hasProdFilter h
 
+omit [T2Space α] in
+@[to_additive]
+lemma HasProdFilter_bot {f : β → α} {a : α} : HasProdFilter ⊥ f a := by
+  simp [HasProdFilter, Tendsto]
+
+omit [T2Space α] in
+@[to_additive]
+lemma MultipliableFilter_bot (f : β → α) : MultipliableFilter ⊥ f :=
+  ⟨1, HasProdFilter_bot⟩
+
 end HasProd

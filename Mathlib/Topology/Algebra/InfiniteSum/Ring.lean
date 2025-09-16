@@ -24,104 +24,122 @@ variable {ι κ α : Type*}
 section NonUnitalNonAssocSemiring
 
 variable [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [IsTopologicalSemiring α] {f : ι → α}
-  {a₁ : α}
+  {a₁ : α} {L : Filter (Finset ι)}
 
-theorem HasSum.mul_left (a₂) (h : HasSum f a₁) : HasSum (fun i ↦ a₂ * f i) (a₂ * a₁) := by
+theorem HasSumFilter.mul_left (a₂) (h : HasSumFilter L f a₁) :
+    HasSumFilter L (fun i ↦ a₂ * f i) (a₂ * a₁) := by
   simpa only using h.map (AddMonoidHom.mulLeft a₂) (continuous_const.mul continuous_id)
 
-theorem HasSum.mul_right (a₂) (hf : HasSum f a₁) : HasSum (fun i ↦ f i * a₂) (a₁ * a₂) := by
+theorem HasSumFilter.mul_right (a₂) (hf : HasSumFilter L f a₁) :
+    HasSumFilter L (fun i ↦ f i * a₂) (a₁ * a₂) := by
   simpa only using hf.map (AddMonoidHom.mulRight a₂) (continuous_id.mul continuous_const)
 
-theorem Summable.mul_left (a) (hf : Summable f) : Summable fun i ↦ a * f i :=
-  (hf.hasSum.mul_left _).summable
+theorem SummableFilter.mul_left (a) (hf : SummableFilter L f) : SummableFilter L fun i ↦ a * f i :=
+  (hf.hasSumFilter.mul_left _).summableFilter
 
-theorem Summable.mul_right (a) (hf : Summable f) : Summable fun i ↦ f i * a :=
-  (hf.hasSum.mul_right _).summable
+theorem SummableFilter.mul_right (a) (hf : SummableFilter L f) : SummableFilter L fun i ↦ f i * a :=
+  (hf.hasSumFilter.mul_right _).summableFilter
 
-section tsum
+section tsumFilter
 
 variable [T2Space α]
 
-protected theorem Summable.tsum_mul_left (a) (hf : Summable f) : ∑' i, a * f i = a * ∑' i, f i :=
-  (hf.hasSum.mul_left _).tsum_eq
+protected theorem SummableFilter.tsumFilter_mul_left [L.NeBot] (a) (hf : SummableFilter L f) :
+    ∑'[L] i, a * f i = a * ∑'[L] i, f i :=
+  (hf.hasSumFilter.mul_left _).tsumFilter_eq
 
-protected theorem Summable.tsum_mul_right (a) (hf : Summable f) : ∑' i, f i * a = (∑' i, f i) * a :=
-  (hf.hasSum.mul_right _).tsum_eq
+protected theorem SummableFilter.tsumFilter_mul_right [L.NeBot] (a) (hf : SummableFilter L f) :
+    ∑'[L] i, f i * a = (∑'[L] i, f i) * a :=
+  (hf.hasSumFilter.mul_right _).tsumFilter_eq
 
-theorem Commute.tsum_right (a) (h : ∀ i, Commute a (f i)) : Commute a (∑' i, f i) := by
+theorem Commute.tsumFilter_right [L.NeBot] (a) (h : ∀ i, Commute a (f i)) :
+    Commute a (∑'[L] i, f i) := by
   classical
-  by_cases hf : Summable f
-  · exact (hf.tsum_mul_left a).symm.trans ((congr_arg _ <| funext h).trans (hf.tsum_mul_right a))
-  · exact (tsum_eq_zero_of_not_summable hf).symm ▸ Commute.zero_right _
+  by_cases hf : SummableFilter L f
+  · exact (hf.tsumFilter_mul_left a).symm.trans
+      ((congr_arg _ <| funext h).trans (hf.tsumFilter_mul_right a))
+  · exact (tsumFilter_eq_zero_of_not_summableFilter hf).symm ▸ Commute.zero_right _
 
-theorem Commute.tsum_left (a) (h : ∀ i, Commute (f i) a) : Commute (∑' i, f i) a :=
-  (Commute.tsum_right _ fun i ↦ (h i).symm).symm
+theorem Commute.tsumFilter_left [L.NeBot] (a) (h : ∀ i, Commute (f i) a) :
+    Commute (∑'[L] i, f i) a :=
+  (Commute.tsumFilter_right _ fun i ↦ (h i).symm).symm
 
-end tsum
+end tsumFilter
 
 end NonUnitalNonAssocSemiring
 
 section DivisionSemiring
 
 variable [DivisionSemiring α] [TopologicalSpace α] [IsTopologicalSemiring α]
-    {f : ι → α} {a a₁ a₂ : α}
+    {f : ι → α} {a a₁ a₂ : α} {L : Filter (Finset ι)}
 
-theorem HasSum.div_const (h : HasSum f a) (b : α) : HasSum (fun i ↦ f i / b) (a / b) := by
+theorem HasSumFilter.div_const (h : HasSumFilter L f a) (b : α) :
+    HasSumFilter L (fun i ↦ f i / b) (a / b) := by
   simp only [div_eq_mul_inv, h.mul_right b⁻¹]
 
-theorem Summable.div_const (h : Summable f) (b : α) : Summable fun i ↦ f i / b :=
-  (h.hasSum.div_const _).summable
+theorem SummableFilter.div_const (h : SummableFilter L f) (b : α) :
+    SummableFilter L fun i ↦ f i / b :=
+  (h.hasSumFilter.div_const _).summableFilter
 
-theorem hasSum_mul_left_iff (h : a₂ ≠ 0) : HasSum (fun i ↦ a₂ * f i) (a₂ * a₁) ↔ HasSum f a₁ :=
-  ⟨fun H ↦ by simpa only [inv_mul_cancel_left₀ h] using H.mul_left a₂⁻¹, HasSum.mul_left _⟩
+theorem hasSumFilter_mul_left_iff (h : a₂ ≠ 0) :
+    HasSumFilter L (fun i ↦ a₂ * f i) (a₂ * a₁) ↔ HasSumFilter L f a₁ :=
+  ⟨fun H ↦ by simpa only [inv_mul_cancel_left₀ h] using H.mul_left a₂⁻¹, HasSumFilter.mul_left _⟩
 
-theorem hasSum_mul_right_iff (h : a₂ ≠ 0) : HasSum (fun i ↦ f i * a₂) (a₁ * a₂) ↔ HasSum f a₁ :=
-  ⟨fun H ↦ by simpa only [mul_inv_cancel_right₀ h] using H.mul_right a₂⁻¹, HasSum.mul_right _⟩
+theorem hasSumFilter_mul_right_iff (h : a₂ ≠ 0) :
+    HasSumFilter L (fun i ↦ f i * a₂) (a₁ * a₂) ↔ HasSumFilter L f a₁ :=
+  ⟨fun H ↦ by simpa only [mul_inv_cancel_right₀ h] using H.mul_right a₂⁻¹, HasSumFilter.mul_right _⟩
 
-theorem hasSum_div_const_iff (h : a₂ ≠ 0) : HasSum (fun i ↦ f i / a₂) (a₁ / a₂) ↔ HasSum f a₁ := by
-  simpa only [div_eq_mul_inv] using hasSum_mul_right_iff (inv_ne_zero h)
+theorem hasSumFilter_div_const_iff (h : a₂ ≠ 0) :
+    HasSumFilter L (fun i ↦ f i / a₂) (a₁ / a₂) ↔ HasSumFilter L f a₁ := by
+  simpa only [div_eq_mul_inv] using hasSumFilter_mul_right_iff (inv_ne_zero h)
 
-theorem summable_mul_left_iff (h : a ≠ 0) : (Summable fun i ↦ a * f i) ↔ Summable f :=
+theorem summableFilter_mul_left_iff (h : a ≠ 0) :
+    (SummableFilter L fun i ↦ a * f i) ↔ SummableFilter L f :=
   ⟨fun H ↦ by simpa only [inv_mul_cancel_left₀ h] using H.mul_left a⁻¹, fun H ↦ H.mul_left _⟩
 
-theorem summable_mul_right_iff (h : a ≠ 0) : (Summable fun i ↦ f i * a) ↔ Summable f :=
+theorem summableFilter_mul_right_iff (h : a ≠ 0) :
+    (SummableFilter L fun i ↦ f i * a) ↔ SummableFilter L f :=
   ⟨fun H ↦ by simpa only [mul_inv_cancel_right₀ h] using H.mul_right a⁻¹, fun H ↦ H.mul_right _⟩
 
-theorem summable_div_const_iff (h : a ≠ 0) : (Summable fun i ↦ f i / a) ↔ Summable f := by
-  simpa only [div_eq_mul_inv] using summable_mul_right_iff (inv_ne_zero h)
+theorem summableFilter_div_const_iff (h : a ≠ 0) :
+    (SummableFilter L fun i ↦ f i / a) ↔ SummableFilter L f := by
+  simpa only [div_eq_mul_inv] using summableFilter_mul_right_iff (inv_ne_zero h)
 
-theorem tsum_mul_left [T2Space α] : ∑' x, a * f x = a * ∑' x, f x := by
+theorem tsumFilter_mul_left [T2Space α] [L.NeBot] : ∑'[L] x, a * f x = a * ∑'[L] x, f x := by
   classical
-  exact if hf : Summable f then hf.tsum_mul_left a
+  exact if hf : SummableFilter L f then hf.tsumFilter_mul_left a
   else if ha : a = 0 then by simp [ha]
-  else by rw [tsum_eq_zero_of_not_summable hf,
-              tsum_eq_zero_of_not_summable (mt (summable_mul_left_iff ha).mp hf), mul_zero]
+  else by rw [tsumFilter_eq_zero_of_not_summableFilter hf,
+              tsumFilter_eq_zero_of_not_summableFilter (mt (summableFilter_mul_left_iff ha).mp hf),
+              mul_zero]
 
-theorem tsum_mul_right [T2Space α] : ∑' x, f x * a = (∑' x, f x) * a := by
+theorem tsumFilter_mul_right [T2Space α] [L.NeBot] : ∑'[L] x, f x * a = (∑'[L] x, f x) * a := by
   classical
-  exact if hf : Summable f then hf.tsum_mul_right a
+  exact if hf : SummableFilter L f then hf.tsumFilter_mul_right a
   else if ha : a = 0 then by simp [ha]
-  else by rw [tsum_eq_zero_of_not_summable hf,
-              tsum_eq_zero_of_not_summable (mt (summable_mul_right_iff ha).mp hf), zero_mul]
+  else by rw [tsumFilter_eq_zero_of_not_summableFilter hf,
+             tsumFilter_eq_zero_of_not_summableFilter (mt (summableFilter_mul_right_iff ha).mp hf),
+             zero_mul]
 
-theorem tsum_div_const [T2Space α] : ∑' x, f x / a = (∑' x, f x) / a := by
-  simpa only [div_eq_mul_inv] using tsum_mul_right
+theorem tsumFilter_div_const [T2Space α] [L.NeBot] : ∑'[L] x, f x / a = (∑'[L] x, f x) / a := by
+  simpa only [div_eq_mul_inv] using tsumFilter_mul_right
 
-theorem HasSum.const_div (h : HasSum (fun x ↦ 1 / f x) a) (b : α) :
-    HasSum (fun i ↦ b / f i) (b * a) := by
+theorem HasSumFilter.const_div (h : HasSumFilter L (fun x ↦ 1 / f x) a) (b : α) :
+    HasSumFilter L (fun i ↦ b / f i) (b * a) := by
   have := h.mul_left b
   simpa only [div_eq_mul_inv, one_mul] using this
 
-theorem Summable.const_div (h : Summable (fun x ↦ 1 / f x)) (b : α) :
-    Summable fun i ↦ b / f i :=
-  (h.hasSum.const_div b).summable
+theorem SummableFilter.const_div (h : SummableFilter L (fun x ↦ 1 / f x)) (b : α) :
+    SummableFilter L fun i ↦ b / f i :=
+  (h.hasSumFilter.const_div b).summableFilter
 
-theorem hasSum_const_div_iff (h : a₂ ≠ 0) :
-    HasSum (fun i ↦ a₂ / f i) (a₂ * a₁) ↔ HasSum (1/ f) a₁ := by
-  simpa only [div_eq_mul_inv, one_mul] using hasSum_mul_left_iff h
+theorem hasSumFilter_const_div_iff (h : a₂ ≠ 0) :
+    HasSumFilter L (fun i ↦ a₂ / f i) (a₂ * a₁) ↔ HasSumFilter L (1/ f) a₁ := by
+  simpa only [div_eq_mul_inv, one_mul] using hasSumFilter_mul_left_iff h
 
-theorem summable_const_div_iff (h : a ≠ 0) : (Summable fun i ↦ a / f i) ↔ Summable (1 / f) := by
-  simpa only [div_eq_mul_inv, one_mul] using summable_mul_left_iff h
+theorem summableFilter_const_div_iff (h : a ≠ 0) :
+    (SummableFilter L fun i ↦ a / f i) ↔ SummableFilter L (1 / f) := by
+  simpa only [div_eq_mul_inv, one_mul] using summableFilter_mul_left_iff h
 
 end DivisionSemiring
 
@@ -144,9 +162,9 @@ We first establish results about arbitrary index types, `ι` and `κ`, and then 
 section tsum_mul_tsum
 
 variable [TopologicalSpace α] [T3Space α] [NonUnitalNonAssocSemiring α] [IsTopologicalSemiring α]
-  {f : ι → α} {g : κ → α} {s t u : α}
+  {f : ι → α} {g : κ → α} {s t u : α} {L : Filter (Finset ι)} {L' : Filter (Finset κ)}
 
-theorem HasSum.mul_eq (hf : HasSum f s) (hg : HasSum g t)
+theorem HasSumFilter.mul_eq (hf : HasSum f s) (hg : HasSum g t)
     (hfg : HasSum (fun x : ι × κ ↦ f x.1 * g x.2) u) : s * t = u :=
   have key₁ : HasSum (fun i ↦ f i * t) (s * t) := hf.mul_right t
   have this : ∀ i : ι, HasSum (fun c : κ ↦ f i * g c) (f i * t) := fun i ↦ hg.mul_left (f i)
