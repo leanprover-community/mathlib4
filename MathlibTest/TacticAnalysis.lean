@@ -1,5 +1,20 @@
 import Mathlib.Tactic.TacticAnalysis.Declarations
 
+section terminalReplacement
+
+section omega
+
+set_option linter.tacticAnalysis.omegaToCutsat true
+
+/-- warning: `cutsat` can replace `omega` -/
+#guard_msgs in
+example : 1 + 1 = 2 := by
+  omega
+
+end omega
+
+end terminalReplacement
+
 section rwMerge
 
 set_option linter.tacticAnalysis.rwMerge true
