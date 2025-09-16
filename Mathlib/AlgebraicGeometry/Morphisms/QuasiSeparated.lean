@@ -235,7 +235,7 @@ theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme
       simp only [TopCat.Presheaf.restrictOpenCommRingCat_apply, Scheme.basicOpen_res]
       exact inf_le_inf h₂ le_rfl
   use n
-  intros m hm
+  intro m hm
   rw [← tsub_add_cancel_of_le hm]
   simp only [TopCat.Presheaf.restrictOpenCommRingCat_apply,
     pow_add, map_pow, map_mul, mul_assoc, ← Functor.map_comp, ← op_comp, homOfLE_comp,
@@ -277,15 +277,11 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     haveI := hs'.to_subtype
     cases nonempty_fintype s
     replace hs : S ⊓ U.1 = iSup fun i : s => (i : X.Opens) := by ext1; simpa using hs
-    have hs₁ : ∀ i : s, i.1.1 ≤ S := by
-      #adaptation_note /-- 2025-06-21 lean4#8914 This `change` does nothing. -/
-      intro i; -- change (i : X.Opens) ≤ S
+    have hs₁ (i : s) : i.1.1 ≤ S := by
       refine le_trans ?_ (inf_le_left (b := U.1))
       rw [hs]
       exact le_iSup (fun (i : s) => (i : X.Opens)) i
-    have hs₂ : ∀ i : s, i.1.1 ≤ U.1 := by
-      #adaptation_note /-- 2025-06-21 lean4#8914 This `change` does nothing. -/
-      intro i; -- change (i : X.Opens) ≤ U
+    have hs₂ (i : s) : i.1.1 ≤ U.1 := by
       refine le_trans ?_ (inf_le_right (a := S))
       rw [hs]
       exact le_iSup (fun (i : s) => (i : X.Opens)) i

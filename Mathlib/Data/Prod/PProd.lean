@@ -3,7 +3,8 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Logic.Function.Defs
+import Batteries.Logic
+import Mathlib.Tactic.TypeStar
 
 /-!
 # Extra facts about `PProd`
@@ -13,9 +14,6 @@ import Mathlib.Logic.Function.Defs
 open Function
 
 variable {α β γ δ : Sort*}
-
-#adaptation_note /-- this will not be needed after nightly-2025-07-01 -/
-attribute [grind cases eager] PProd
 
 namespace PProd
 

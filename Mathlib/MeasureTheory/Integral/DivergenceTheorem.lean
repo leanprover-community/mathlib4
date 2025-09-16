@@ -27,13 +27,10 @@ is true if the function is not differentiable at countably many points of the in
 Once we prove the general theorem, we deduce corollaries for functions `ℝ → E` and pairs of
 functions `(ℝ × ℝ) → E`.
 
-## Notations
+## Notation
 
 We use the following local notation to make the statement more readable. Note that the documentation
 website shows the actual terms, not those abbreviated using local notations.
-
-Porting note (Yury Kudryashov): I disabled some of these notations because I failed to make them
-work with Lean 4.
 
 * `ℝⁿ`, `ℝⁿ⁺¹`, `Eⁿ⁺¹`: `Fin n → ℝ`, `Fin (n + 1) → ℝ`, `Fin (n + 1) → E`;
 * `face i`: the `i`-th face of the box `[a, b]` as a closed segment in `ℝⁿ`, namely
@@ -46,7 +43,6 @@ work with Lean 4.
 ## TODO
 
 * Add a version that assumes existence and integrability of partial derivatives.
-* Restore local notations for find another way to make the statements more readable.
 
 ## Tags
 
@@ -409,9 +405,8 @@ theorem integral_eq_of_hasDerivAt_off_countable_of_le [CompleteSpace E] (f f' : 
       · rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hle] at Hi
         exact Hi.congr_set_ae Ioc_ae_eq_Icc.symm
     _ = f b - f a := by
-      simp only [e, Fin.sum_univ_one, e_symm]
-      have : ∀ c : ℝ, const (Fin 0) c = isEmptyElim := fun c => Subsingleton.elim _ _
-      simp [this, volume_pi, Measure.pi_of_empty fun _ : Fin 0 => volume]
+      simp [e, Subsingleton.elim (const (Fin 0) _) isEmptyElim, volume_pi,
+        Measure.pi_of_empty fun _ : Fin 0 ↦ _]
 
 @[deprecated (since := "2025-05-02")]
 alias integral_eq_of_hasDerivWithinAt_off_countable_of_le :=

@@ -39,13 +39,13 @@ instance commRing : CommRing ℚ where
 
 instance commGroupWithZero : CommGroupWithZero ℚ :=
   { exists_pair_ne := ⟨0, 1, Rat.zero_ne_one⟩
-    inv_zero := by
-      change Rat.inv 0 = 0
-      rw [Rat.inv_def]
-      rfl
+    inv_zero := Rat.inv_zero
     mul_inv_cancel := Rat.mul_inv_cancel
     mul_zero := mul_zero
-    zero_mul := zero_mul }
+    zero_mul := zero_mul
+    zpow z q := q ^ z
+    zpow_zero' := Rat.zpow_zero
+    zpow_succ' _ _ := by rw [Rat.zpow_natCast, Rat.zpow_natCast, Rat.pow_succ] }
 
 instance isDomain : IsDomain ℚ := NoZeroDivisors.to_isDomain _
 /-- The characteristic of `ℚ` is 0. -/
@@ -63,16 +63,13 @@ instance semiring : Semiring ℚ := by infer_instance
 
 /-! ### Miscellaneous lemmas -/
 
-lemma mkRat_eq_div (n : ℤ) (d : ℕ) : mkRat n d = n / d := by
-  simp only [mkRat_eq_divInt, divInt_eq_div, Int.cast_natCast]
-
 lemma divInt_div_divInt_cancel_left {x : ℤ} (hx : x ≠ 0) (n d : ℤ) :
     n /. x / (d /. x) = n /. d := by
-  rw [div_eq_mul_inv, inv_divInt', divInt_mul_divInt_cancel hx]
+  rw [div_eq_mul_inv, inv_divInt, divInt_mul_divInt_cancel hx]
 
 lemma divInt_div_divInt_cancel_right {x : ℤ} (hx : x ≠ 0) (n d : ℤ) :
     x /. n / (x /. d) = d /. n := by
-  rw [div_eq_mul_inv, inv_divInt', mul_comm, divInt_mul_divInt_cancel hx]
+  rw [div_eq_mul_inv, inv_divInt, mul_comm, divInt_mul_divInt_cancel hx]
 
 lemma num_div_den (r : ℚ) : (r.num : ℚ) / (r.den : ℚ) = r := by
   rw [← Int.cast_natCast, ← divInt_eq_div, num_divInt_den]
@@ -86,11 +83,9 @@ lemma num_div_den (r : ℚ) : (r.num : ℚ) / (r.den : ℚ) = r := by
 lemma natCast_eq_divInt (n : ℕ) : ↑n = n /. 1 := by rw [← Int.cast_natCast, intCast_eq_divInt]
 
 @[simp] lemma mul_den_eq_num (q : ℚ) : q * q.den = q.num := by
-  suffices (q.num /. ↑q.den) * (↑q.den /. 1) = q.num /. 1 by
-    conv => pattern (occs := 1) q; (rw [← num_divInt_den q])
-    simp only [intCast_eq_divInt, natCast_eq_divInt, num_divInt_den] at this ⊢; assumption
+  suffices (q.num /. ↑q.den) * (↑q.den /. 1) = q.num /. 1 by simp_all
   have : (q.den : ℤ) ≠ 0 := mod_cast q.den_ne_zero
-  rw [divInt_mul_divInt _ _ this Int.one_ne_zero, mul_comm (q.den : ℤ) 1, divInt_mul_right this]
+  rw [divInt_mul_divInt, mul_comm (q.den : ℤ) 1, divInt_mul_right this]
 
 @[simp] lemma den_mul_eq_num (q : ℚ) : q.den * q = q.num := by rw [mul_comm, mul_den_eq_num]
 
