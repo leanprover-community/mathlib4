@@ -3026,6 +3026,7 @@ import Mathlib.Condensed.Light.Explicit
 import Mathlib.Condensed.Light.Functors
 import Mathlib.Condensed.Light.Limits
 import Mathlib.Condensed.Light.Module
+import Mathlib.Condensed.Light.Small
 import Mathlib.Condensed.Light.TopCatAdjunction
 import Mathlib.Condensed.Light.TopComparison
 import Mathlib.Condensed.Limits
@@ -3072,8 +3073,12 @@ import Mathlib.Data.Bundle
 import Mathlib.Data.Char
 import Mathlib.Data.Complex.Basic
 import Mathlib.Data.Complex.BigOperators
+import Mathlib.Data.Complex.Cardinality
 import Mathlib.Data.Complex.Exponential
 import Mathlib.Data.Complex.ExponentialBounds
+import Mathlib.Data.Complex.FiniteDimensional
+import Mathlib.Data.Complex.Norm
+import Mathlib.Data.Complex.Order
 import Mathlib.Data.Complex.Trigonometric
 import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Countable.Defs
@@ -3459,6 +3464,7 @@ import Mathlib.Data.Nat.Fib.Zeckendorf
 import Mathlib.Data.Nat.Find
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.GCD.BigOperators
+import Mathlib.Data.Nat.GCD.Prime
 import Mathlib.Data.Nat.Hyperoperation
 import Mathlib.Data.Nat.Init
 import Mathlib.Data.Nat.Lattice
@@ -4364,6 +4370,7 @@ import Mathlib.LinearAlgebra.TensorAlgebra.Grading
 import Mathlib.LinearAlgebra.TensorAlgebra.ToTensorPower
 import Mathlib.LinearAlgebra.TensorPower.Basic
 import Mathlib.LinearAlgebra.TensorPower.Pairing
+import Mathlib.LinearAlgebra.TensorPower.Symmetric
 import Mathlib.LinearAlgebra.TensorProduct.Associator
 import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Basis
@@ -5461,6 +5468,7 @@ import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
 import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 import Mathlib.RingTheory.Flat.Localization
 import Mathlib.RingTheory.Flat.Stability
+import Mathlib.RingTheory.Flat.TorsionFree
 import Mathlib.RingTheory.FractionalIdeal.Basic
 import Mathlib.RingTheory.FractionalIdeal.Extended
 import Mathlib.RingTheory.FractionalIdeal.Inverse
@@ -6157,6 +6165,7 @@ import Mathlib.Tactic.NormNum.NatLog
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.OfScientific
 import Mathlib.Tactic.NormNum.Ordinal
+import Mathlib.Tactic.NormNum.Parity
 import Mathlib.Tactic.NormNum.Pow
 import Mathlib.Tactic.NormNum.PowMod
 import Mathlib.Tactic.NormNum.Prime
@@ -6274,6 +6283,7 @@ import Mathlib.Topology.Algebra.ContinuousMonoidHom
 import Mathlib.Topology.Algebra.Equicontinuity
 import Mathlib.Topology.Algebra.Field
 import Mathlib.Topology.Algebra.FilterBasis
+import Mathlib.Topology.Algebra.Group.AddTorsor
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 import Mathlib.Topology.Algebra.Group.Compact
