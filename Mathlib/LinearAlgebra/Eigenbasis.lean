@@ -101,15 +101,15 @@ lemma Eigenbasis.apply_eq_smul {ι : Type*} {f : End S M} (self : f.Eigenbasis �
 
 namespace CommonEigenbasis
 
-variable {ι : Type*} {f : α → End S M} {b : Basis ι S M} {D D₁ D₂ : CommonEigenbasis ι f}
+variable {ι : Type*} {f : α → End S M} {b : Basis ι S M} {B B₁ B₂ : CommonEigenbasis ι f}
 
 @[ext]
-lemma ext (h : D₁.toBasis = D₂.toBasis) : D₁ = D₂ := by
-  suffices D₁.μ = D₂.μ by cases D₁; cases D₂; simp_all only
+lemma ext (h : B₁.toBasis = B₂.toBasis) : B₁ = B₂ := by
+  suffices B₁.μ = B₂.μ by cases B₁; cases B₂; simp_all only
   ext a i
-  suffices D₁.μ a i • D₁.toBasis i = D₂.μ a i • D₁.toBasis i by
-    simpa using congr(D₁.toBasis.repr $this i)
-  rw [← D₁.apply_eq_smul a i, h, ← D₂.apply_eq_smul a i]
+  suffices B₁.μ a i • B₁.toBasis i = B₂.μ a i • B₁.toBasis i by
+    simpa using congr(B₁.toBasis.repr $this i)
+  rw [← B₁.apply_eq_smul a i, h, ← B₂.apply_eq_smul a i]
 
 /-- Alternative constructor for `LinearMap.CommonEigenbasis` from existence of eigenvalues. -/
 noncomputable def ofExists (exists_apply_eq_smul : ∀ a i, ∃ μ : S, f a (b i) = μ • b i) :
@@ -120,7 +120,7 @@ noncomputable def ofExists (exists_apply_eq_smul : ∀ a i, ∃ μ : S, f a (b i
 
 /-- Alternative constructor for `LinearMap.CommonEigenbasis` using `Module.End.HasEigenvector`. -/
 noncomputable def ofHasEigenVector {f : α → End R G} {b : Basis ι R G} {μ : α → ι → R}
-   (hasEigenvector_μ : ∀ a i, (f a).HasEigenvector (μ a i) (b i)) :
+    (hasEigenvector_μ : ∀ a i, (f a).HasEigenvector (μ a i) (b i)) :
     CommonEigenbasis ι f where
   toBasis := b
   μ := μ
@@ -152,45 +152,84 @@ theorem hasEigenVector_μ [Nontrivial R] {f : α → End R G}
     (f a).HasEigenvector (D.μ a i) (D.toBasis i) :=
   hasEigenvector_iff.mpr ⟨mem_eigenspace_iff.mpr (D.apply_eq_smul a i), D.toBasis.ne_zero i⟩
 
-variable (D) in
+variable (b B)
+
 /-- Get individual eigenbases from a common eigenbasis. -/
-def eigenbasis (a : α) : (f a).Eigenbasis ι := .mk (D.apply_eq_smul a)
+def eigenbasis (a : α) : (f a).Eigenbasis ι := .mk (B.apply_eq_smul a)
 
 /-- Construct a common eigenbasis from a family of eigenbases. -/
 def ofEigenbasis {D : (a : α) → (f a).Eigenbasis ι} (h : ∀ a, (D a).toBasis = b) :
     CommonEigenbasis ι f where
   toBasis := b
-  μ a i := (D a).μ i
+  μ a := (D a).μ
   apply_eq_smul a i := h a ▸ (D a).apply_eq_smul i
+
+/-- Any basis is a common eigenbasis of the zero map. -/
+def zero (α : Type*) : CommonEigenbasis ι (fun _ : α ↦ (0 : End S M)) where
+  toBasis := b
+  μ := 0
+  apply_eq_smul := by simp
+
+/-- Any basis is a common eigenbasis of the identity map. -/
+def one (α : Type*) : CommonEigenbasis ι (fun _ : α ↦ (1 : End S M)) where
+  toBasis := b
+  μ := 1
+  apply_eq_smul := by simp
 
 /-- Any common eigenbasis of `f` is also a common eigenbasis of `c • f`. -/
 def smul {f : α → End C M'} (D : CommonEigenbasis ι f) (c : α → C) :
     CommonEigenbasis ι (c • f) where
   toBasis := D.toBasis
   μ := c • D.μ
-  apply_eq_smul a i := by simp [D.apply_eq_smul, smul_smul]
+  apply_eq_smul := by simp [D.apply_eq_smul, smul_smul]
 
-/-- Any common eigenbasis of `f` is also a common eigenbasis of `f - c • 1`. -/
-def subSmulOne {f : α → End R G} (D : CommonEigenbasis ι f) (c : α → R) :
-    CommonEigenbasis ι (f - c • 1) where
+/-- Any common eigenbasis of `f` is also an eigenbasis of `f i + f j` for any `i` and `j`. -/
+def add (i : α) : CommonEigenbasis ι (f · + f i) where
+  toBasis := B.toBasis
+  μ := (B.μ · + B.μ i)
+  apply_eq_smul := by simp [B.apply_eq_smul, add_smul]
+
+/-- Any common eigenbasis of `f` is also an eigenbasis of `f i - f j` for any `i` and `j`. -/
+def sub {f : α → End R G} (D : CommonEigenbasis ι f) (i : α) : CommonEigenbasis ι (f · - f i) where
   toBasis := D.toBasis
-  μ := fun a i ↦ D.μ a i - c a
-  apply_eq_smul a i := by simp [D.apply_eq_smul, sub_smul]
+  μ := (D.μ · - D.μ i)
+  apply_eq_smul := by simp [D.apply_eq_smul, sub_smul]
 
-variable (D) in
-/-- Any common eigenbasis of `f` is also a common eigenbasis of `f i + f j` for any `i` and `j`. -/
-def eigenbasisAdd (i j : α) : (f i + f j).Eigenbasis ι :=
-  .mk (b := D.toBasis) (μ := D.μ i + D.μ j) <| fun k ↦ by simp [D.apply_eq_smul, add_smul]
+/-- Any common eigenbasis of `f` is also an eigenbasis of `f i * f j` for any `i` and `j`. -/
+def mul (i : α) : CommonEigenbasis ι (f · * f i) where
+  toBasis := B.toBasis
+  μ := (B.μ i * B.μ ·)
+  apply_eq_smul := by simp [B.apply_eq_smul, smul_smul]
 
-variable (D) in
-/-- Any common eigenbasis of `f` is also a common eigenbasis of `∑ a, f a`. -/
+/-- Any common eigenbasis of `f` is also a common eigenbasis of `f ^ n`. -/
+def pow (n : ℕ) : CommonEigenbasis ι (f ^ n) where
+  toBasis := B.toBasis
+  μ := (B.μ · · ^ n)
+  apply_eq_smul _ _ := by
+    induction n with
+    | zero => simp
+    | succ n h =>
+      rw [pow_succ, Pi.mul_apply, End.mul_apply, B.apply_eq_smul, map_smul, h, smul_smul, pow_succ']
+
+/-- Any common eigenbasis of `f` is also an eigenbasis of `∑ a, f a`. -/
 def eigenbasisSum [Fintype α] : (∑ a, f a).Eigenbasis ι :=
-  .mk (b := D.toBasis) (μ := ∑ a, D.μ a) <| fun k ↦ by simp [D.apply_eq_smul, Finset.sum_smul]
+  .mk (b := B.toBasis) (μ := ∑ a, B.μ a) (by simp [B.apply_eq_smul, Finset.sum_smul])
 
-variable (D) in
-/-- Any common eigenbasis of `f` is also a common eigenbasis of `f i * f j` for any `i` and `j`. -/
-def eigenbasisMul (i j : α) : (f i * f j).Eigenbasis ι :=
-  .mk (b := D.toBasis) (μ := D.μ j * D.μ i) <| fun k ↦ by simp [D.apply_eq_smul, smul_smul]
+variable {b}
+
+/-- `B.reindex (e : ι ≃ ι')` is a common eigenbasis indexed by `ι'`. -/
+def reindex {ι' : Type*} (e : ι ≃ ι') : CommonEigenbasis ι' f where
+  toBasis := B.toBasis.reindex e
+  μ a := B.μ a ∘ e.symm
+  apply_eq_smul := by simp [B.apply_eq_smul]
+
+/-- Construct a common eigenbasis from a family of common eigenbases. -/
+def sigma {ι' : Type*} {α : ι' → Type*} {f : (i : ι') → α i → End S M}
+    {D : (i : ι') → CommonEigenbasis ι (f i)} (h : ∀ i, (D i).toBasis = b) :
+    CommonEigenbasis ι fun a : Σ i, α i ↦ f a.1 a.2 where
+  toBasis := b
+  μ a := (D a.1).μ a.2
+  apply_eq_smul a := h a.1 ▸ (D a.1).apply_eq_smul a.2
 
 lemma commute {f : α → End C M'} (D : CommonEigenbasis ι f) (i j : α) :
     Commute (f i) (f j) :=
@@ -200,10 +239,10 @@ end CommonEigenbasis
 
 namespace Eigenbasis
 
-variable {ι : Type*} {f : End S M} {b : Basis ι S M} {D D₁ D₂ : f.Eigenbasis ι}
+variable {ι : Type*} {f : End S M} {b : Basis ι S M} {B B₁ B₂ : f.Eigenbasis ι}
 
 @[ext]
-lemma ext (h : D₁.toBasis = D₂.toBasis) : D₁ = D₂ := CommonEigenbasis.ext h
+lemma ext (h : B₁.toBasis = B₂.toBasis) : B₁ = B₂ := CommonEigenbasis.ext h
 
 /-- Alternative constructor for `LinearMap.Eigenbasis` from existence of eigenvalues. -/
 noncomputable def ofExists (exists_apply_eq_smul : ∀ i, ∃ μ : S, f (b i) = μ • b i) :
@@ -235,24 +274,23 @@ noncomputable def ofIsDiagToMatrix [Fintype ι] [DecidableEq ι] {f : End C M'} 
     (h : (f.toMatrix b b).IsDiag) : f.Eigenbasis ι :=
   CommonEigenbasis.ofIsDiagToMatrix fun _ ↦ h
 
-variable (b) in
-/-- Any basis is an eigenbasis of the zero map. -/
-def zero : (0 : End S M).Eigenbasis ι :=
-  .mk (b := b) (μ := 0) (by simp)
+variable (b D)
 
-variable (b) in
+/-- Any basis is an eigenbasis of the zero map. -/
+def zero : (0 : End S M).Eigenbasis ι := CommonEigenbasis.zero b Unit
+
 /-- Any basis is an eigenbasis of the identity map. -/
-def one : (1 : End S M).Eigenbasis ι :=
-  .mk (b := b) (μ := 1) (by simp)
+def one : (1 : End S M).Eigenbasis ι := CommonEigenbasis.one b Unit
 
 /-- Any eigenbasis of `f` is also an eigenbasis of `c • f`. -/
 def smul {f : End C M'} (D : f.Eigenbasis ι) (c : C) : (c • f).Eigenbasis ι :=
   CommonEigenbasis.smul D fun _ ↦ c
 
-/-- Any eigenbasis of `f` is also an eigenbasis of `f - c • 1`. -/
-def subSmulOne {f : End R G} (D : f.Eigenbasis ι) (c : R) :
-    (f - c • 1).Eigenbasis ι :=
-  CommonEigenbasis.subSmulOne D fun _ ↦ c
+/-- Any eigenbasis of `f` is also an eigenbasis of `f ^ n`. -/
+def pow (n : ℕ) : (f ^ n).Eigenbasis ι := CommonEigenbasis.pow B n
+
+/-- `B.reindex (e : ι ≃ ι')` is an eigenbasis indexed by `ι'`. -/
+def reindex {ι' : Type*} (e : ι ≃ ι') : f.Eigenbasis ι' := CommonEigenbasis.reindex B e
 
 lemma toMatrix_eq_diagonal [Fintype ι] [DecidableEq ι] {f : End C M'}
     (D : f.Eigenbasis ι) : f.toMatrix D.toBasis D.toBasis = diagonal D.μ := by
