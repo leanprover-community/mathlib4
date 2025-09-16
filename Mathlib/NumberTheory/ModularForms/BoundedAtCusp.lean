@@ -93,7 +93,7 @@ lemma isBoundedAt_iff_exists_SL2Z (hc : IsCusp c 𝒮ℒ) :
   · obtain ⟨γ, rfl⟩ := isCusp_SL2Z_iff'.mp hc
     simpa only [← IsBoundedAt.slash, isBoundedAt_infty] using fun hfc ↦ ⟨γ, rfl, hfc⟩
   · rintro ⟨γ, rfl, b⟩
-    simpa only [← IsBoundedAt.slash, isBoundedAt_infty] using b
+    simpa [← IsBoundedAt.slash, isBoundedAt_infty] using b
 
 lemma isZeroAt_iff_exists_SL2Z (hc : IsCusp c 𝒮ℒ) :
     IsZeroAt c f k ↔ ∃ γ : SL(2, ℤ), mapGL ℝ γ • ∞ = c ∧ IsZeroAtImInfty (f ∣[k] γ) := by
