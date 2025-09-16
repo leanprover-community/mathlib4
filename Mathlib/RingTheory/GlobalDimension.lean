@@ -216,7 +216,7 @@ lemma projectiveDimension_eq_iSup_localizedModule_prime [Small.{v, u} R] [IsNoet
   have aux (n : ℕ) : projectiveDimension M ≤ n ↔ ⨆ (p : PrimeSpectrum R), projectiveDimension
     (M.localizedModule p.1.primeCompl) ≤ n := by
     simp only [projectiveDimension_le_iff, iSup_le_iff]
-    induction' n with n ih generalizing M
+    induction n generalizing M
     · simp only [HasProjectiveDimensionLE, zero_add, ← hasProjectiveDimensionLT_one_iff]
       refine ⟨fun h p ↦ ?_, fun h ↦ ?_⟩
       · let _ : Small.{v, u} (Localization p.asIdeal.primeCompl) :=
@@ -237,7 +237,8 @@ lemma projectiveDimension_eq_iSup_localizedModule_prime [Small.{v, u} R] [IsNoet
           (Localization.AtPrime p) (IsLocalizedModule.linearEquiv p.primeCompl
           (M.localizedModule_mkLinearMap p.primeCompl)
           (LocalizedModule.mkLinearMap p.primeCompl M)))
-    · rcases Module.Finite.exists_fin' R M with ⟨m, f', hf'⟩
+    · rename_i n ih _
+      rcases Module.Finite.exists_fin' R M with ⟨m, f', hf'⟩
       let f := f'.comp ((Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)).trans
         (Finsupp.linearEquivFunOnFinite R R (Fin m))).1
       have surjf : Function.Surjective f := by simpa [f] using hf'
@@ -317,7 +318,7 @@ lemma projectiveDimension_eq_iSup_localizedModule_maximal [Small.{v, u} R] [IsNo
   have aux (n : ℕ) : projectiveDimension M ≤ n ↔ ⨆ (p : MaximalSpectrum R), projectiveDimension
     (M.localizedModule p.1.primeCompl) ≤ n := by
     simp only [projectiveDimension_le_iff, iSup_le_iff]
-    induction' n with n ih generalizing M
+    induction n generalizing M
     · simp only [HasProjectiveDimensionLE, zero_add, ← hasProjectiveDimensionLT_one_iff]
       refine ⟨fun h p ↦ ?_, fun h ↦ ?_⟩
       · let _ : Small.{v, u} (Localization p.asIdeal.primeCompl) :=
@@ -337,7 +338,8 @@ lemma projectiveDimension_eq_iSup_localizedModule_maximal [Small.{v, u} R] [IsNo
           (Localization.AtPrime p) (IsLocalizedModule.linearEquiv p.primeCompl
           (M.localizedModule_mkLinearMap p.primeCompl)
           (LocalizedModule.mkLinearMap p.primeCompl M)))
-    · rcases Module.Finite.exists_fin' R M with ⟨m, f', hf'⟩
+    · rename_i n ih _
+      rcases Module.Finite.exists_fin' R M with ⟨m, f', hf'⟩
       let f := f'.comp ((Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)).trans
         (Finsupp.linearEquivFunOnFinite R R (Fin m))).1
       have surjf : Function.Surjective f := by simpa [f] using hf'
@@ -419,12 +421,13 @@ lemma projectiveDimension_le_projectiveDimension_of_isLocalizedModule [Small.{v,
     simp only [projectiveDimension_le_iff]
     let _ : Small.{v, u} (Localization S) :=
       small_of_surjective Localization.mkHom_surjective
-    induction' n with n ih generalizing M
+    induction n generalizing M
     · simp only [HasProjectiveDimensionLE, zero_add, ← hasProjectiveDimensionLT_one_iff]
       rw [← IsProjective.iff_projective, ← IsProjective.iff_projective]
       intro _
       exact Module.projective_of_isLocalizedModule S (M.localizedModule_mkLinearMap S)
-    · rcases ModuleCat.enoughProjectives.1 M with ⟨⟨P, f⟩⟩
+    · rename_i n ih
+      rcases ModuleCat.enoughProjectives.1 M with ⟨⟨P, f⟩⟩
       let T := ShortComplex.mk (kernel.ι f) f (kernel.condition f)
       have T_exact : T.ShortExact := {
         exact := ShortComplex.exact_kernel f
@@ -547,11 +550,12 @@ open Limits in
 lemma ext_subsingleton_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ)
     (h : ∀ I : Ideal R, Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M (n + 1))) :
     ∀ N : ModuleCat.{v} R, Subsingleton (Ext.{w} N M (n + 1)) := by
-  induction' n with n ih generalizing M
+  induction n generalizing M
   · have : Injective M := injective_of_quotients_ext_one_subsingleton R M h
     intro N
     exact subsingleton_of_forall_eq 0 (fun e ↦ Ext.eq_zero_of_injective e)
-  · let ei : EnoughInjectives (ModuleCat R) := inferInstance
+  · rename_i n ih
+    let ei : EnoughInjectives (ModuleCat R) := inferInstance
     rcases ei.1 M with ⟨⟨I, inj, f, mono⟩⟩
     let S := ShortComplex.mk f (cokernel.π f) (cokernel.condition f)
     have S_exact : S.ShortExact := {
