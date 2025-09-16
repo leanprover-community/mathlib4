@@ -5,8 +5,7 @@ Authors: Anatole Dedeker, Etienne Marion, Florestan Martin-Baillon, Vincent Guir
 -/
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Algebra.Group.Defs
-import Mathlib.Topology.Maps.Proper.Basic
-import Mathlib.Topology.Maps.OpenQuotient
+import Mathlib.Topology.LocalAtTarget
 
 /-!
 # Proper group action
@@ -168,7 +167,9 @@ theorem properSMul_of_isClosedEmbedding {H : Type*} [Group H] [MulAction H X] [T
 instance {H : Subgroup G} [ProperSMul G X] [H_closed : IsClosed (H : Set G)] : ProperSMul H X :=
   properSMul_of_isClosedEmbedding H.subtype H_closed.isClosedEmbedding_subtypeVal fun _ _ ↦ rfl
 
-@[to_additive]
+/-- The action `G ↷ G` by left translations is proper. -/
+@[to_additive
+/-- The action `G ↷ G` by left translations is proper. -/]
 instance [IsTopologicalGroup G] : ProperSMul G G where
   isProperMap_smul_pair := by
     let Φ : G × G ≃ₜ G × G :=
@@ -181,7 +182,9 @@ instance [IsTopologicalGroup G] : ProperSMul G G where
     exact Φ.isProperMap
 
 open MulOpposite in
-@[to_additive]
+/-- The action `Gᵐᵒᵖ ↷ G` by right translations is proper. -/
+@[to_additive
+/-- The action `Gᵐᵒᵖ ↷ G` by right translations is proper. -/]
 instance [IsTopologicalGroup G] : ProperSMul Gᵐᵒᵖ G where
   isProperMap_smul_pair := by
     let Φ : Gᵐᵒᵖ × G ≃ₜ G × G :=
@@ -193,7 +196,11 @@ instance [IsTopologicalGroup G] : ProperSMul Gᵐᵒᵖ G where
       continuous_invFun := by fun_prop }
     exact Φ.isProperMap
 
-@[to_additive]
+/-- If `G` acts on `X` properly, then the map `G × T → X × T, (g, t) ↦ (g • t, t)` is still
+proper for *any* subset `T` of `X`. -/
+@[to_additive
+/-- If `G` acts on `X` properly, then the map `G × T → X × T, (g, t) ↦ (g +ᵥ t, t)` is still
+proper for *any* subset `T` of `X`. -/]
 lemma ProperSMul.isProperMap_smul_pair_set [ProperSMul G X] {t : Set X} :
     IsProperMap (fun (gx : G × t) ↦ ((gx.1 • gx.2, gx.2) : X × t)) := by
   let Φ : G × X → X × X := fun gx ↦ (gx.1 • gx.2, gx.2)
@@ -208,7 +215,18 @@ lemma ProperSMul.isProperMap_smul_pair_set [ProperSMul G X] {t : Set X} :
   exact β.symm.isProperMap.comp (Φ_proper.restrictPreimage (snd ⁻¹' t)) |>.comp α.isProperMap
 
 open Pointwise in
-@[to_additive]
+/-- If `G` acts on `X` properly, the set `s • t` is closed when `s : Set G` is *closed* and
+`t : Set X` is *compact*.
+
+See also `IsClosed.smul_left_of_isCompact` for a version with the assumptions on `s` and `t`
+reversed. -/
+@[to_additive
+/-- If `G` acts on `X` properly, the set `s +ᵥ t` is closed when `s : Set G` is *closed* and
+`t : Set X` is *compact*. In particular, this applies when the action comes from an
+`IsTopologicalAddTorsor`.
+
+See also `IsClosed.vadd_left_of_isCompact` for a version with the assumptions on `s` and `t`
+reversed. -/]
 theorem IsClosed.smul_right_of_isCompact [ProperSMul G X] {s : Set G} {t : Set X} (hs : IsClosed s)
     (ht : IsCompact t) : IsClosed (s • t) := by
   let Ψ : G × t → X × t := fun gx ↦ (gx.1 • gx.2, gx.2)
@@ -220,3 +238,9 @@ theorem IsClosed.smul_right_of_isCompact [ProperSMul G X] {s : Set G} {t : Set X
   rw [this]
   have : CompactSpace t := isCompact_iff_compactSpace.mp ht
   exact (isProperMap_fst.comp Ψ_proper).isClosedMap _ (hs.preimage continuous_fst)
+
+/-! One may expect `IsClosed.smul_right_of_isCompact` to hold for arbitrary continuous actions,
+but such a lemma can't be true in this level of generality. For a counterexample, consider
+`ℚ` acting on `ℝ` by translation, and let `s : Set ℚ := univ`, `t : set ℝ := {0}`. Then `s` is
+closed and `t` is compact, but `s +ᵥ t` is the set of all rationals, which is definitely not
+closed in `ℝ`. -/

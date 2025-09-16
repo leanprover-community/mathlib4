@@ -69,13 +69,10 @@ closed, but such a lemma can't be true in this level of generality. For a counte
 `ℚ` acting on `ℝ` by translation, and let `s : Set ℚ := univ`, `t : set ℝ := {0}`. Then `s` is
 closed and `t` is compact, but `s +ᵥ t` is the set of all rationals, which is definitely not
 closed in `ℝ`.
-To fix the proof, we would need to make two additional assumptions:
-- for any `x ∈ t`, `s • {x}` is closed
-- for any `x ∈ t`, there is a continuous function `g : s • {x} → s` such that, for all
-  `y ∈ s • {x}`, we have `y = (g y) • x`
-These are fairly specific hypotheses so we don't state this version of the lemmas, but an
-interesting fact is that these two assumptions are verified in the case of an
-`IsTopologicalAddTorsor`. We prove this special case in `IsClosed.vadd_right_of_isCompact`. -/
+
+To fix the proof, one needs to assume that the action is **proper** (in the sense of `ProperSMul`),
+see `IsClosed.smul_right_of_isCompact`. In particular, this applies in the case of an
+`IsTopologicalAddTorsor`. -/
 
 @[to_additive]
 theorem MulAction.isClosedMap_quotient [CompactSpace α] :

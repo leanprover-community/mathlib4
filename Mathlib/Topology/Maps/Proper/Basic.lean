@@ -324,22 +324,6 @@ theorem isProperMap_snd [CompactSpace X] :
     IsProperMap (Prod.snd : X × Y → Y) :=
   Homeomorph.punitProd Y |>.isProperMap.comp ((isProperMap_const ()).prodMap isProperMap_id)
 
-/-- The restriction of a proper map to a closed subset is proper. -/
-lemma IsProperMap.restrictPreimage (S : Set Y) (hf : IsProperMap f) :
-    IsProperMap (S.restrictPreimage f) where
-  toContinuous := by fun_prop
-  clusterPt_of_mapClusterPt 𝓕 y hy := by
-    let 𝓕' : Filter X := map (↑) 𝓕
-    have hy' : MapClusterPt (y : Y) 𝓕' f := by
-      have := hy.tendsto_comp <| continuous_subtype_val.tendsto y
-      exact .of_comp tendsto_map this
-    rcases hf.clusterPt_of_mapClusterPt hy' with ⟨x, hxy, hx⟩
-    refine ⟨⟨x, show f x ∈ S from hxy ▸ y.mem⟩, ?_, ?_⟩
-    · ext
-      exact hxy
-    · rwa [ClusterPt, nhds_subtype, ← map_neBot_iff ((↑) : f ⁻¹' S → X), Filter.push_pull',
-        ← ClusterPt]
-
 /-- A proper map `f : X → Y` is **universally closed**: for any topological space `Z`, the map
 `Prod.map f id : X × Z → Y × Z` is closed. We will prove in `isProperMap_iff_universally_closed`
 that proper maps are exactly continuous maps which have this property, but this result should be

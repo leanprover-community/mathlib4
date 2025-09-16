@@ -5,6 +5,7 @@ Authors: Attila Gáspár
 -/
 import Mathlib.Algebra.AddTorsor.Basic
 import Mathlib.Topology.Algebra.Group.Pointwise
+import Mathlib.Topology.Algebra.ProperAction.Basic
 
 /-!
 # Topological torsors of additive groups
@@ -84,21 +85,17 @@ def Homeomorph.vaddConst (p : P) : V ≃ₜ P where
   continuous_toFun := by fun_prop
   continuous_invFun := by fun_prop
 
-section Pointwise
-
-open Pointwise
-
-theorem IsClosed.vadd_right_of_isCompact {s : Set V} {t : Set P} (hs : IsClosed s)
-    (ht : IsCompact t) : IsClosed (s +ᵥ t) := by
-  have ⟨p⟩ : Nonempty P := inferInstance
-  have cont : Continuous (· -ᵥ p) := by fun_prop
-  have := IsTopologicalAddTorsor.to_isTopologicalAddGroup V P
-  convert (hs.add_right_of_isCompact <| ht.image cont).preimage cont
-  rw [Set.eq_preimage_iff_image_eq <| by exact (Equiv.vaddConst p).symm.bijective,
-    ← Set.image2_vadd, Set.image_image2, ← Set.image2_add, Set.image2_image_right]
-  simp only [vadd_vsub_assoc]
-
-end Pointwise
+/-- If `P` is a topological torsor over `V`, the action of `V` on `P` is proper. -/
+instance : ProperVAdd V P where
+  isProperMap_vadd_pair := by
+    let Φ : V × P ≃ₜ P × P :=
+    { toFun vp := (vp.1 +ᵥ vp.2, vp.2)
+      invFun pq := (pq.1 -ᵥ pq.2, pq.2)
+      left_inv _ := by simp
+      right_inv _ := by simp
+      continuous_toFun := by fun_prop
+      continuous_invFun := by fun_prop }
+    exact Φ.isProperMap
 
 end AddTorsor
 
