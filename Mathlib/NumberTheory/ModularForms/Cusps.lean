@@ -71,8 +71,8 @@ lemma isCusp_iff_of_relIndex_ne_zero {𝒢 𝒢' : Subgroup (GL (Fin 2) ℝ)}
 @[deprecated (since := "2025-09-13")]
 alias isCusp_iff_of_relindex_ne_zero := isCusp_iff_of_relIndex_ne_zero
 
-lemma Commensurable.isCusp_iff {𝒢 𝒢' : Subgroup (GL (Fin 2) ℝ)}
-    (h𝒢 : Commensurable 𝒢 𝒢') {c : OnePoint ℝ} :
+lemma Subgroup.Commensurable.isCusp_iff {𝒢 𝒢' : Subgroup (GL (Fin 2) ℝ)}
+    (h𝒢 : 𝒢.Commensurable 𝒢') {c : OnePoint ℝ} :
     IsCusp c 𝒢 ↔ IsCusp c 𝒢' := by
   rw [← isCusp_iff_of_relIndex_ne_zero inf_le_left, isCusp_iff_of_relIndex_ne_zero inf_le_right]
   · simpa [Subgroup.inf_relIndex_right] using h𝒢.1
