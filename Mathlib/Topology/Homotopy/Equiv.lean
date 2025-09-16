@@ -138,10 +138,10 @@ def trans (h₁ : X ≃ₕ Y) (h₂ : Y ≃ₕ Z) : X ≃ₕ Z where
   invFun := h₁.invFun.comp h₂.invFun
   left_inv := by
     refine Homotopic.trans ?_ h₁.left_inv
-    exact ((Homotopic.refl _).hcomp h₂.left_inv).hcomp (Homotopic.refl _)
+    exact .comp (.refl _) (.comp h₂.left_inv (.refl _))
   right_inv := by
     refine Homotopic.trans ?_ h₂.right_inv
-    exact ((Homotopic.refl _).hcomp h₁.right_inv).hcomp (Homotopic.refl _)
+    exact .comp (.refl _) <| .comp h₁.right_inv (.refl _)
 
 theorem symm_trans (h₁ : X ≃ₕ Y) (h₂ : Y ≃ₕ Z) : (h₁.trans h₂).symm = h₂.symm.trans h₁.symm := rfl
 
