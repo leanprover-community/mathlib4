@@ -67,10 +67,10 @@ lemma IsZeroAt.add {f' : ℍ → ℂ} (hf : IsZeroAt c f k) (hf' : IsZeroAt c f'
     IsZeroAt c (f + f') k :=
   fun g hg ↦ by simpa using (hf g hg).add (hf' g hg)
 
-lemma isBoundedAt_infty : IsBoundedAt ∞ f k ↔ IsBoundedAtImInfty f :=
+lemma isBoundedAt_infty_iff : IsBoundedAt ∞ f k ↔ IsBoundedAtImInfty f :=
   ⟨fun h ↦ by simpa using h 1 (by simp), fun h _ hg ↦ h.slash _ (smul_infty_eq_self_iff.mp hg)⟩
 
-lemma isZeroAt_infty : IsZeroAt ∞ f k ↔ IsZeroAtImInfty f :=
+lemma isZeroAt_infty_iff : IsZeroAt ∞ f k ↔ IsZeroAtImInfty f :=
   ⟨fun h ↦ by simpa using h 1 (by simp), fun h _ hg ↦ h.slash _ (smul_infty_eq_self_iff.mp hg)⟩
 
 /-- To check that `f` is bounded at `c`, it suffices for `f ∣[k] g` to be bounded at `∞` for any
@@ -99,21 +99,21 @@ lemma isZeroAt_iff_exists_SL2Z (hc : IsCusp c 𝒮ℒ) :
     IsZeroAt c f k ↔ ∃ γ : SL(2, ℤ), mapGL ℝ γ • ∞ = c ∧ IsZeroAtImInfty (f ∣[k] γ) := by
   constructor
   · obtain ⟨γ, rfl⟩ := isCusp_SL2Z_iff'.mp hc
-    simpa only [← IsZeroAt.slash, isZeroAt_infty] using fun hfc ↦ ⟨γ, rfl, hfc⟩
+    simpa [← IsZeroAt.slash, isZeroAt_infty] using fun hfc ↦ ⟨γ, rfl, hfc⟩
   · rintro ⟨γ, rfl, b⟩
-    simpa only [← IsZeroAt.slash, isZeroAt_infty] using b
+    simpa [← IsZeroAt.slash, isZeroAt_infty] using b
 
 lemma isBoundedAt_iff_forall_SL2Z (hc : IsCusp c 𝒮ℒ) :
     IsBoundedAt c f k ↔ ∀ γ : SL(2, ℤ), mapGL ℝ γ • ∞ = c → IsBoundedAtImInfty (f ∣[k] γ) := by
   refine ⟨fun hc _ hγ ↦ by simpa using hc _ hγ, fun h ↦ ?_⟩
   obtain ⟨γ, rfl⟩ := isCusp_SL2Z_iff'.mp hc
-  simpa only [← IsBoundedAt.slash, isBoundedAt_infty] using h γ rfl
+  simpa [← IsBoundedAt.slash, isBoundedAt_infty] using h γ rfl
 
 lemma isZeroAt_iff_forall_SL2Z (hc : IsCusp c 𝒮ℒ) :
     IsZeroAt c f k ↔ ∀ γ : SL(2, ℤ), mapGL ℝ γ • ∞ = c → IsZeroAtImInfty (f ∣[k] γ) := by
   refine ⟨fun hc _ hγ ↦ by simpa using hc _ hγ, fun h ↦ ?_⟩
   obtain ⟨γ, rfl⟩ := isCusp_SL2Z_iff'.mp hc
-  simpa only [← IsZeroAt.slash, isZeroAt_infty] using h γ rfl
+  simpa [← IsZeroAt.slash, isZeroAt_infty] using h γ rfl
 
 end SL2Z
 
