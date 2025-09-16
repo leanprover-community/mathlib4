@@ -63,12 +63,18 @@ variable {s : Set (β × γ)}
 (see `ProbabilityTheory.Kernel.lintegral_compProd`).
 If either of the kernels is not s-finite, `compProd` is given the junk value 0. -/
 noncomputable def compProd (κ : Kernel α β) (η : Kernel (α × β) γ) : Kernel α (β × γ) :=
-  (swap γ β) ∘ₖ (η ∥ₖ Kernel.id)
-    ∘ₖ (deterministic MeasurableEquiv.prodAssoc.symm (MeasurableEquiv.measurable _))
+  swap γ β ∘ₖ (η ∥ₖ Kernel.id)
+    ∘ₖ deterministic MeasurableEquiv.prodAssoc.symm (MeasurableEquiv.measurable _)
     ∘ₖ (Kernel.id ∥ₖ copy β) ∘ₖ (Kernel.id ∥ₖ κ) ∘ₖ copy α
 
 @[inherit_doc]
 scoped[ProbabilityTheory] infixl:100 " ⊗ₖ " => ProbabilityTheory.Kernel.compProd
+
+lemma compProd_def (κ : Kernel α β) (η : Kernel (α × β) γ) :
+    κ ⊗ₖ η =
+      swap γ β ∘ₖ (η ∥ₖ Kernel.id)
+        ∘ₖ deterministic MeasurableEquiv.prodAssoc.symm (MeasurableEquiv.measurable _)
+        ∘ₖ (Kernel.id ∥ₖ copy β) ∘ₖ (Kernel.id ∥ₖ κ) ∘ₖ copy α := rfl
 
 @[simp]
 theorem compProd_of_not_isSFiniteKernel_left (κ : Kernel α β) (η : Kernel (α × β) γ)

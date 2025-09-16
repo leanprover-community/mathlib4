@@ -9,13 +9,13 @@ import Mathlib.Probability.Kernel.Composition.Prod
 /-!
 # Lemmas relating different ways to compose kernels
 
-This file contains lemmas about the composition of kernels that do not fit in any of
-the other files in this directory, because they involve several types of compositions/products.
+This file contains lemmas about the composition of kernels that involve several types of
+compositions/products.
 
 ## Main statements
 
+* `comp_eq_snd_compProd`: `η ∘ₖ κ = snd (κ ⊗ₖ prodMkLeft α η)`
 * `parallelComp_comp_parallelComp`: `(η ∥ₖ η') ∘ₖ (κ ∥ₖ κ') = (η ∘ₖ κ) ∥ₖ (η' ∘ₖ κ')`
-* `parallelComp_comp_copy`: `(κ ∥ₖ η) ∘ₖ (copy α) = κ ×ₖ η`
 * `deterministic_comp_copy`: for a deterministic kernel, copying then applying the kernel to
   the two copies is the same as first applying the kernel then copying. That is, if `κ` is
   a deterministic kernel, `(κ ∥ₖ κ) ∘ₖ copy α = copy β ∘ₖ κ`.
