@@ -104,7 +104,7 @@ lemma prod_attach_eq_prod_dite [Fintype ι] (s : Finset ι) (f : s → M) [Decid
     ∏ i ∈ s.attach, f i = ∏ i, if h : i ∈ s then f ⟨i, h⟩ else 1 := by
   rw [Finset.prod_dite, Finset.univ_eq_attach, Finset.prod_const_one, mul_one]
   congr
-  · ext; simp
+  · simp
   · ext; simp
   · apply Function.hfunext <;> simp +contextual [Subtype.heq_iff_coe_eq]
 
@@ -113,7 +113,7 @@ theorem prod_dite_eq [DecidableEq ι] (s : Finset ι) (a : ι) (b : ∀ x : ι, 
     ∏ x ∈ s, (if h : a = x then b x h else 1) = ite (a ∈ s) (b a rfl) 1 := by
   split_ifs with h
   · rw [Finset.prod_eq_single a, dif_pos rfl]
-    · intros _ _ h
+    · intro _ _ h
       rw [dif_neg]
       exact h.symm
     · simp [h]
@@ -125,7 +125,7 @@ theorem prod_dite_eq' [DecidableEq ι] (s : Finset ι) (a : ι) (b : ∀ x : ι,
     ∏ x ∈ s, (if h : x = a then b x h else 1) = ite (a ∈ s) (b a rfl) 1 := by
   split_ifs with h
   · rw [Finset.prod_eq_single a, dif_pos rfl]
-    · intros _ _ h
+    · intro _ _ h
       rw [dif_neg]
       exact h
     · simp [h]
@@ -141,10 +141,10 @@ theorem prod_ite_eq [DecidableEq ι] (s : Finset ι) (a : ι) (b : ι → M) :
 alternative is `1` has value either the term at that index or `1`.
 
 The difference with `Finset.prod_ite_eq` is that the arguments to `Eq` are swapped. -/
-@[to_additive (attr := simp) "A sum taken over a conditional whose condition is an equality
+@[to_additive (attr := simp) /-- A sum taken over a conditional whose condition is an equality
 test on the index and whose alternative is `0` has value either the term at that index or `0`.
 
-The difference with `Finset.sum_ite_eq` is that the arguments to `Eq` are swapped."]
+The difference with `Finset.sum_ite_eq` is that the arguments to `Eq` are swapped. -/]
 theorem prod_ite_eq' [DecidableEq ι] (s : Finset ι) (a : ι) (b : ι → M) :
     (∏ x ∈ s, ite (x = a) (b x) 1) = ite (a ∈ s) (b a) 1 :=
   prod_dite_eq' s a fun x _ => b x
@@ -213,7 +213,7 @@ theorem dvd_prod_of_mem (f : ι → M) {a : ι} {s : Finset ι} (ha : a ∈ s) :
 theorem prod_update_of_notMem [DecidableEq ι] {s : Finset ι} {i : ι} (h : i ∉ s) (f : ι → M)
     (b : M) : ∏ x ∈ s, Function.update f i b x = ∏ x ∈ s, f x := by
   apply prod_congr rfl
-  intros j hj
+  intro j hj
   have : j ≠ i := by
     rintro rfl
     exact h hj
@@ -231,7 +231,7 @@ theorem prod_update_of_mem [DecidableEq ι] {s : Finset ι} {i : ι} (h : i ∈ 
   simp [h]
 
 /-- See also `Finset.prod_ite_zero`. -/
-@[to_additive "See also `Finset.sum_boole`."]
+@[to_additive /-- See also `Finset.sum_boole`. -/]
 theorem prod_ite_one (s : Finset ι) (p : ι → Prop) [DecidablePred p]
     (h : ∀ i ∈ s, ∀ j ∈ s, p i → p j → i = j) (a : M) :
     ∏ i ∈ s, ite (p i) a 1 = ite (∃ i ∈ s, p i) a 1 := by
@@ -272,32 +272,34 @@ lemma prod_ite_mem (s : Finset ι) (f : ι → M) : ∏ i, (if i ∈ s then f i 
   simp
 
 /-- See also `Finset.prod_dite_eq`. -/
-@[to_additive "See also `Finset.sum_dite_eq`."] lemma prod_dite_eq (i : ι) (f : ∀ j, i = j → M) :
+@[to_additive /-- See also `Finset.sum_dite_eq`. -/]
+lemma prod_dite_eq (i : ι) (f : ∀ j, i = j → M) :
     ∏ j, (if h : i = j then f j h else 1) = f i rfl := by
   rw [Finset.prod_dite_eq, if_pos (mem_univ _)]
 
 /-- See also `Finset.prod_dite_eq'`. -/
-@[to_additive "See also `Finset.sum_dite_eq'`."] lemma prod_dite_eq' (i : ι) (f : ∀ j, j = i → M) :
+@[to_additive /-- See also `Finset.sum_dite_eq'`. -/]
+lemma prod_dite_eq' (i : ι) (f : ∀ j, j = i → M) :
     ∏ j, (if h : j = i then f j h else 1) = f i rfl := by
   rw [Finset.prod_dite_eq', if_pos (mem_univ _)]
 
 /-- See also `Finset.prod_ite_eq`. -/
-@[to_additive "See also `Finset.sum_ite_eq`."]
+@[to_additive /-- See also `Finset.sum_ite_eq`. -/]
 lemma prod_ite_eq (i : ι) (f : ι → M) : ∏ j, (if i = j then f j else 1) = f i := by
   rw [Finset.prod_ite_eq, if_pos (mem_univ _)]
 
 /-- See also `Finset.prod_ite_eq'`. -/
-@[to_additive "See also `Finset.sum_ite_eq'`."]
+@[to_additive /-- See also `Finset.sum_ite_eq'`. -/]
 lemma prod_ite_eq' (i : ι) (f : ι → M) : ∏ j, (if j = i then f j else 1) = f i := by
   rw [Finset.prod_ite_eq', if_pos (mem_univ _)]
 
 /-- See also `Finset.prod_pi_mulSingle`. -/
-@[to_additive "See also `Finset.sum_pi_single`."]
+@[to_additive /-- See also `Finset.sum_pi_single`. -/]
 lemma prod_pi_mulSingle {M : ι → Type*} [∀ i, CommMonoid (M i)] (i : ι) (f : ∀ i, M i) :
     ∏ j, Pi.mulSingle j (f j) i = f i := prod_dite_eq _ _
 
 /-- See also `Finset.prod_pi_mulSingle'`. -/
-@[to_additive "See also `Finset.sum_pi_single'`."]
+@[to_additive /-- See also `Finset.sum_pi_single'`. -/]
 lemma prod_pi_mulSingle' (i : ι) (a : M) : ∏ j, Pi.mulSingle i a j = a := prod_dite_eq' _ _
 
 end Fintype

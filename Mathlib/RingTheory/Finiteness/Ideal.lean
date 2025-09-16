@@ -80,7 +80,7 @@ lemma exists_pow_le_of_le_radical_of_fg {R : Type*} [CommSemiring R] {I J : Idea
       Set.singleton_subset_iff, SetLike.mem_coe] at hJ
     obtain ⟨n, hn⟩ := hJ
     refine ⟨n, by simpa [Ideal.span_singleton_pow, Ideal.span_le]⟩
-  · intros I₁ I₂ h₁ h₂ hJ
+  · intro I₁ I₂ h₁ h₂ hJ
     obtain ⟨n₁, hn₁⟩ := h₁ (le_sup_left.trans hJ)
     obtain ⟨n₂, hn₂⟩ := h₂ (le_sup_right.trans hJ)
     use n₁ + n₂

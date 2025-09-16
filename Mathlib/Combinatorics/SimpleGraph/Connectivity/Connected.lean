@@ -3,7 +3,6 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkDecomp
 import Mathlib.Combinatorics.SimpleGraph.Paths
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
@@ -185,6 +184,16 @@ lemma Preconnected.support_eq_univ [Nontrivial V] {G : SimpleGraph V}
   cases p with
   | nil => contradiction
   | @cons _ w => exact ⟨w, ‹_›⟩
+
+lemma Preconnected.degree_pos_of_nontrivial [Nontrivial V] {G : SimpleGraph V} (h : G.Preconnected)
+    (v : V) [Fintype (G.neighborSet v)] : 0 < G.degree v := by
+  simp [degree_pos_iff_mem_support, h.support_eq_univ]
+
+lemma Preconnected.minDegree_pos_of_nontrivial [Nontrivial V] [Fintype V] {G : SimpleGraph V}
+    [DecidableRel G.Adj] (h : G.Preconnected) : 0 < G.minDegree := by
+  obtain ⟨v, hv⟩ := G.exists_minimal_degree_vertex
+  rw [hv]
+  exact h.degree_pos_of_nontrivial v
 
 lemma adj_of_mem_walk_support {G : SimpleGraph V} {u v : V} (p : G.Walk u v) (hp : ¬p.Nil) {x : V}
     (hx : x ∈ p.support) : ∃ y ∈ p.support, G.Adj x y := by
@@ -468,8 +477,8 @@ def isoEquivSupp (φ : G ≃g G') (C : G.ConnectedComponent) :
     C.supp ≃ (φ.connectedComponentEquiv C).supp where
   toFun v := ⟨φ v, ConnectedComponent.iso_image_comp_eq_map_iff_eq_comp.mpr v.prop⟩
   invFun v' := ⟨φ.symm v', ConnectedComponent.iso_inv_image_comp_eq_iff_eq_map.mpr v'.prop⟩
-  left_inv v := Subtype.ext_val (φ.toEquiv.left_inv ↑v)
-  right_inv v := Subtype.ext_val (φ.toEquiv.right_inv ↑v)
+  left_inv v := Subtype.ext (φ.toEquiv.left_inv ↑v)
+  right_inv v := Subtype.ext (φ.toEquiv.right_inv ↑v)
 
 lemma mem_coe_supp_of_adj {v w : V} {H : Subgraph G} {c : ConnectedComponent H.coe}
     (hv : v ∈ (↑) '' (c : Set H.verts)) (hw : w ∈ H.verts)
@@ -515,11 +524,7 @@ lemma reachable_of_mem_supp {G : SimpleGraph V} (C : G.ConnectedComponent) {u v 
   exact ConnectedComponent.exact (hv ▸ hu)
 
 lemma mem_supp_of_adj_mem_supp {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
-    (hu : u ∈ C.supp) (hadj : G.Adj u v) : v ∈ C.supp := by
-  have hC : G.connectedComponentMk u = G.connectedComponentMk v :=
-    connectedComponentMk_eq_of_adj hadj
-  rw [hu] at hC
-  exact hC.symm
+    (hu : u ∈ C.supp) (hadj : G.Adj u v) : v ∈ C.supp := (mem_supp_congr_adj C hadj).mp hu
 
 /--
 Given a connected component `C` of a simple graph `G`, produce the induced graph on `C`.
@@ -586,6 +591,18 @@ lemma connected_toSimpleGraph (C : ConnectedComponent G) : (C.toSimpleGraph).Con
 @[deprecated (since := "2025-05-08")] alias connected_induce_supp := connected_toSimpleGraph
 
 end ConnectedComponent
+
+/-- Given graph homomorphisms from each connected component of `G` to `H` this is the graph
+homomorphism from `G` to `H` -/
+@[simps]
+def homOfConnectedComponents (G : SimpleGraph V) {H : SimpleGraph V'}
+    (C : (c : G.ConnectedComponent) → c.toSimpleGraph →g H) : G →g H where
+  toFun := fun x ↦ (C (G.connectedComponentMk _)) _
+  map_rel' := fun hab ↦ by
+    have h : (G.connectedComponentMk _).toSimpleGraph.Adj ⟨_, rfl⟩
+        ⟨_, ((G.connectedComponentMk _).mem_supp_congr_adj hab).1 rfl⟩ := by simpa using hab
+    convert (C (G.connectedComponentMk _)).map_rel h using 3 <;>
+      rw [ConnectedComponent.connectedComponentMk_eq_of_adj hab]
 
 -- TODO: Extract as lemma about general equivalence relation
 lemma pairwise_disjoint_supp_connectedComponent (G : SimpleGraph V) :

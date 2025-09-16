@@ -3,7 +3,6 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
-import Mathlib.Algebra.Group.Torsion
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
@@ -90,13 +89,10 @@ lemma zpow_le_zpow_iff_left (hn : 0 < n) : a ^ n ≤ b ^ n ↔ a ≤ b :=
 lemma zpow_lt_zpow_iff_left (hn : 0 < n) : a ^ n < b ^ n ↔ a < b :=
   (zpow_left_strictMono α hn).lt_iff_lt
 
-@[to_additive]
-instance : IsMulTorsionFree α where pow_left_injective _ hn := (pow_left_strictMono hn).injective
-
 variable (α) in
 /-- A nontrivial densely linear ordered commutative group can't be a cyclic group. -/
 @[to_additive
-  "A nontrivial densely linear ordered additive commutative group can't be a cyclic group."]
+  /-- A nontrivial densely linear ordered additive commutative group can't be a cyclic group. -/]
 theorem not_isCyclic_of_denselyOrdered [DenselyOrdered α] [Nontrivial α] : ¬IsCyclic α := by
   intro h
   rcases exists_zpow_surjective α with ⟨a, ha⟩

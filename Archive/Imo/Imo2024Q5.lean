@@ -234,7 +234,7 @@ lemma find?_eq_eq_find?_le {l : List (Cell N)} {r : Fin (N + 2)} (hne : l ≠ []
       simp only [h, decide_false, Bool.false_eq_true, not_false_eq_true, List.find?_cons_of_neg, h']
       rcases tail with ⟨⟩ | ⟨htail, ttail⟩
       · simp
-      · simp only [List.chain'_cons] at ha
+      · simp only [List.chain'_cons_cons] at ha
         rcases ha with ⟨ha1, ha2⟩
         simp only [List.head_cons] at hf
         simp only [ne_eq, reduceCtorEq, not_false_eq_true, List.head_cons, ha2, true_implies] at hi

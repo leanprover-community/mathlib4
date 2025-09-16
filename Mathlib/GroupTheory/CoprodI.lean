@@ -92,14 +92,7 @@ inductive Monoid.CoprodI.Rel : FreeMonoid (Σ i, M i) → FreeMonoid (Σ i, M i)
 
 /-- The free product (categorical coproduct) of an indexed family of monoids. -/
 def Monoid.CoprodI : Type _ := (conGen (Monoid.CoprodI.Rel M)).Quotient
--- The `Monoid` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance : Monoid (Monoid.CoprodI M) := by
-  delta Monoid.CoprodI; infer_instance
-
-instance : Inhabited (Monoid.CoprodI M) :=
-  ⟨1⟩
+deriving Monoid, Inhabited
 
 namespace Monoid.CoprodI
 
@@ -129,8 +122,7 @@ theorem of_apply {i} (m : M i) : of m = Con.mk' _ (FreeMonoid.of <| Sigma.mk i m
 variable {N : Type*} [Monoid N]
 
 /-- See note [partially-applied ext lemmas]. -/
--- Porting note: higher `ext` priority
-@[ext 1100]
+@[ext 1100] -- This needs a higher `ext` priority
 theorem ext_hom (f g : CoprodI M →* N) (h : ∀ i, f.comp (of : M i →* _) = g.comp of) : f = g :=
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
     FreeMonoid.hom_eq fun ⟨i, x⟩ => by
@@ -352,7 +344,7 @@ theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
   rintro ⟨m, w, h⟩ ⟨m', w', h'⟩ he
   by_cases hm : m = 1 <;> by_cases hm' : m' = 1
   · simp only [rcons, dif_pos hm, dif_pos hm'] at he
-    aesop
+    simp_all
   · exfalso
     simp only [rcons, dif_pos hm, dif_neg hm'] at he
     rw [he] at h
@@ -363,7 +355,7 @@ theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
     exact h' rfl
   · have : m = m' ∧ w.toList = w'.toList := by
       simpa [cons, rcons, dif_neg hm, dif_neg hm', eq_self_iff_true, Subtype.mk_eq_mk,
-        heq_iff_eq, ← Subtype.ext_iff_val] using he
+        heq_iff_eq, ← Subtype.ext_iff] using he
     rcases this with ⟨rfl, h⟩
     congr
     exact Word.ext h
@@ -696,7 +688,7 @@ theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i 
     rcases l with - | ⟨y, l⟩
     · refine ⟨x.1, x.1, singleton x.2 hnot1.1, ?_⟩
       simp [toWord]
-    · rw [List.chain'_cons] at hchain
+    · rw [List.chain'_cons_cons] at hchain
       specialize hi hnot1.2 hchain.2 (by rintro ⟨rfl⟩)
       obtain ⟨i, j, w', hw' : w'.toList = y::l⟩ := hi
       obtain rfl : y = ⟨i, w'.head⟩ := by simpa [hw'] using w'.toList_head?

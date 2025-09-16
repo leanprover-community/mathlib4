@@ -88,7 +88,7 @@ protected theorem Polynomial.abc
     obtain ⟨_, gc⟩ := hbc.wronskian_eq_zero_iff.mp wbc.symm
     exact ⟨ga, gb, gc⟩
   · left
-    -- use the subcall three times, using the symmetry in `a, b, c`
+    -- use `abc_subcall` three times, using the symmetry in `a, b, c`
     refine ⟨?_, ?_, ?_⟩
     · rw [mul_rotate] at abc_dr_dvd_w ⊢
       apply abc_subcall wbc <;> assumption

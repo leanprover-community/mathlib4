@@ -20,7 +20,7 @@ definition, which is made irreducible for this purpose.
 Since everything runs in parallel for quotients of `R`-algebras, we do that case at the same time.
 -/
 
-assert_not_exists Star.star
+assert_not_exists TrivialStar
 
 universe uR uS uT uA u₄
 
@@ -242,8 +242,6 @@ theorem sub_quot {R : Type uR} [Ring R] (r : R → R → Prop) {a b} :
 
 theorem smul_quot [Algebra S R] {n : S} {a : R} :
     (n • ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (n • a)⟩ := by
-  change smul r _ _ = _
-  rw [smul]
   rfl
 
 instance instIsScalarTower [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T R]

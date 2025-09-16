@@ -41,7 +41,7 @@ theorem padicValRat_two_harmonic (n : ℕ) : padicValRat 2 (harmonic n) = -Nat.l
 /-- The 2-adic norm of the n-th harmonic number is 2 raised to the logarithm of n in base 2. -/
 lemma padicNorm_two_harmonic {n : ℕ} (hn : n ≠ 0) :
     ‖(harmonic n : ℚ_[2])‖ = 2 ^ (Nat.log 2 n) := by
-  rw [padicNormE.eq_padicNorm, padicNorm.eq_zpow_of_nonzero (harmonic_pos hn).ne',
+  rw [Padic.eq_padicNorm, padicNorm.eq_zpow_of_nonzero (harmonic_pos hn).ne',
     padicValRat_two_harmonic, neg_neg, zpow_natCast, Rat.cast_pow, Rat.cast_natCast, Nat.cast_ofNat]
 
 /-- The n-th harmonic number is not an integer for n ≥ 2. -/

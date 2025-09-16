@@ -23,7 +23,7 @@ formalise as `ℤᵐ⁰ := WithZero (Multiplicative ℤ)`. It is important to be
 
 ## Notation
 
-In locale `WithZero`:
+In scope `WithZero`:
 * `Mᵐ⁰` for `WithZero (Multiplicative M)`
 
 ## Main definitions
@@ -358,6 +358,11 @@ def exp (a : M) : Mᵐ⁰ := coe <| .ofAdd a
 
 @[simp] lemma exp_ne_zero {a : M} : exp a ≠ 0 := by simp [exp]
 
+lemma exp_injective : Injective (exp : M → Mᵐ⁰) :=
+  Multiplicative.ofAdd.injective.comp WithZero.coe_injective
+
+@[simp] lemma exp_inj {x y : M} : exp x = exp y ↔ x = y := exp_injective.eq_iff
+
 variable [AddMonoid M]
 
 /-- The logarithm as a function `Mᵐ⁰ → M` with junk value `log 0 = 0`. -/
@@ -370,13 +375,20 @@ def log (x : Mᵐ⁰) : M := x.recZeroCoe 0 Multiplicative.toAdd
 @[simp] lemma log_zero : log 0 = (0 : M) := rfl
 
 @[simp] lemma exp_zero : exp (0 : M) = 1 := rfl
+@[simp] lemma exp_eq_one {x : M} : exp x = 1 ↔ x = 0 := by
+  rw [← exp_zero, exp_inj]
+
 @[simp] lemma log_one : log 1 = (0 : M) := rfl
 
-lemma exp_add (a b : M) : exp (a + b) = exp a * exp b := rfl
+@[simp] lemma exp_add (a b : M) : exp (a + b) = exp a * exp b := rfl
+
+@[simp]
 lemma log_mul {x y : Mᵐ⁰} (hx : x ≠ 0) (hy : y ≠ 0) : log (x * y) = log x + log y := by
   lift x to Multiplicative M using hx; lift y to Multiplicative M using hy; rfl
 
-lemma exp_nsmul (n : ℕ) (a : M) : exp (n • a) = exp a ^ n := rfl
+@[simp← ] lemma exp_nsmul (n : ℕ) (a : M) : exp (n • a) = exp a ^ n := rfl
+
+@[simp]
 lemma log_pow : ∀ (x : Mᵐ⁰) (n : ℕ), log (x ^ n) = n • log x
   | 0, 0 => by simp
   | 0, n + 1 => by simp
@@ -407,16 +419,22 @@ def logEquiv : (Gᵐ⁰)ˣ ≃ G := unitsWithZeroEquiv.toEquiv.trans Multiplicat
 
 lemma logEquiv_unitsMk0 (x : Gᵐ⁰) (hx) : logEquiv (.mk0 x hx) = log x := logEquiv_apply _
 
-lemma exp_sub (a b : G) : exp (a - b) = exp a / exp b := rfl
+@[simp] lemma exp_sub (a b : G) : exp (a - b) = exp a / exp b  := rfl
+
+@[simp]
 lemma log_div {x y : Gᵐ⁰} (hx : x ≠ 0) (hy : y ≠ 0) : log (x / y) = log x - log y := by
   lift x to Multiplicative G using hx; lift y to Multiplicative G using hy; rfl
 
-lemma exp_neg (a : G) : exp (-a) = (exp a)⁻¹ := rfl
+@[simp] lemma exp_neg (a : G) : exp (-a) = (exp a)⁻¹  := rfl
+
+@[simp]
 lemma log_inv : ∀ x : Gᵐ⁰, log x⁻¹ = -log x
   | 0 => by simp
   | (x : Multiplicative G) => rfl
 
-lemma exp_zsmul (n : ℤ) (a : G) : exp (n • a) = exp a ^ n := rfl
+@[simp← ] lemma exp_zsmul (n : ℤ) (a : G) : exp (n • a) = exp a ^ n := rfl
+
+@[simp]
 lemma log_zpow (x : Gᵐ⁰) (n : ℤ) : log (x ^ n) = n • log x := by cases n <;> simp [log_pow, log_inv]
 
 end AddGroup

@@ -3,6 +3,7 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Order.Floor.Semiring
 import Mathlib.Data.Nat.Log
 
@@ -38,11 +39,11 @@ def digits (b : ℕ) (q : ℚ) (n : ℕ) : ℕ :=
 * For `Int.log`:
   * `Int.zpow_log_le_self`, `Int.lt_zpow_succ_log_self`: the bounds formed by `Int.log`,
     `(b : R) ^ log b r ≤ r < (b : R) ^ (log b r + 1)`.
-  * `Int.zpow_log_gi`: the galois coinsertion between `zpow` and `Int.log`.
+  * `Int.zpow_log_gi`: the Galois coinsertion between `zpow` and `Int.log`.
 * For `Int.clog`:
   * `Int.zpow_pred_clog_lt_self`, `Int.self_le_zpow_clog`: the bounds formed by `Int.clog`,
     `(b : R) ^ (clog b r - 1) < r ≤ (b : R) ^ clog b r`.
-  * `Int.clog_zpow_gi`:  the galois insertion between `Int.clog` and `zpow`.
+  * `Int.clog_zpow_gi`:  the Galois insertion between `Int.clog` and `zpow`.
 * `Int.neg_log_inv_eq_clog`, `Int.neg_clog_inv_eq_log`: the link between the two definitions.
 -/
 
@@ -145,17 +146,18 @@ theorem log_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : log b (b ^ z : R) = z := by
 @[mono, gcongr]
 theorem log_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ ≤ r₂) : log b r₁ ≤ log b r₂ := by
   rcases le_total r₁ 1 with h₁ | h₁ <;> rcases le_total r₂ 1 with h₂ | h₂
-  · rw [log_of_right_le_one _ h₁, log_of_right_le_one _ h₂]
-    gcongr
+  · have h₀' : 0 < r₂ := lt_of_lt_of_le h₀ h
+    rw [log_of_right_le_one _ h₁, log_of_right_le_one _ h₂, neg_le_neg_iff, Nat.cast_le]
+    exact Nat.clog_mono_right b <| Nat.ceil_mono <| (inv_le_inv₀ h₀' h₀).2 h
   · rw [log_of_right_le_one _ h₁, log_of_one_le_right _ h₂]
     exact (neg_nonpos.mpr (Int.natCast_nonneg _)).trans (Int.natCast_nonneg _)
   · obtain rfl := le_antisymm h (h₂.trans h₁)
     rfl
-  · rw [log_of_one_le_right _ h₁, log_of_one_le_right _ h₂]
-    gcongr
+  · rw [log_of_one_le_right _ h₁, log_of_one_le_right _ h₂, Nat.cast_le]
+    exact Nat.log_mono_right (Nat.floor_mono h)
 
 variable (R) in
-/-- Over suitable subtypes, `zpow` and `Int.log` form a galois coinsertion -/
+/-- Over suitable subtypes, `zpow` and `Int.log` form a Galois coinsertion -/
 def zpowLogGi {b : ℕ} (hb : 1 < b) :
     GaloisCoinsertion
       (fun z : ℤ =>
@@ -268,12 +270,12 @@ theorem clog_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : clog b (b ^ z : R) = z := b
 @[mono]
 theorem clog_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ ≤ r₂) :
     clog b r₁ ≤ clog b r₂ := by
+  have h₀' : 0 < r₂ := lt_of_lt_of_le h₀ h
   rw [← neg_log_inv_eq_clog, ← neg_log_inv_eq_clog, neg_le_neg_iff]
-  gcongr
-  exact inv_pos.2 (h₀.trans_le h)
+  exact log_mono_right (inv_pos_of_pos h₀') <| (inv_le_inv₀ h₀' h₀).2 h
 
 variable (R) in
-/-- Over suitable subtypes, `Int.clog` and `zpow` form a galois insertion -/
+/-- Over suitable subtypes, `Int.clog` and `zpow` form a Galois insertion -/
 def clogZPowGi {b : ℕ} (hb : 1 < b) :
     GaloisInsertion (fun r : Set.Ioi (0 : R) => Int.clog b (r : R)) fun z : ℤ =>
       ⟨(b : R) ^ z, zpow_pos (mod_cast zero_lt_one.trans hb) z⟩ :=

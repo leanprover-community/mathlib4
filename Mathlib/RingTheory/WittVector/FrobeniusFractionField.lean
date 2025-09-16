@@ -167,7 +167,7 @@ theorem solution_spec' {a₁ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (a₂ : 𝕎
     · skip
     · rw [hq]
   rw [pow_succ', hq', this]
-  field_simp [ha₁, mul_comm]
+  field_simp
 
 end RecursionBase
 
@@ -220,6 +220,8 @@ theorem frobenius_frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 �
 
 local notation "φ" => IsFractionRing.ringEquivOfRingEquiv (frobeniusEquiv p k)
 
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
+set_option linter.unusedSimpArgs false in
 theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) (hr' : r'.coeff 0 ≠ 0)
     (hq' : q'.coeff 0 ≠ 0) (hq : (p : 𝕎 k) ^ n * q' ∈ nonZeroDivisors (𝕎 k)) :
     let b : 𝕎 k := frobeniusRotation p hr' hq'
@@ -229,22 +231,17 @@ theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) 
       (p : Localization (nonZeroDivisors (𝕎 k))) ^ (m - n : ℤ) *
         algebraMap (𝕎 k) (FractionRing (𝕎 k)) b := by
   intro b
-  have key : WittVector.frobenius b * (p : 𝕎 k) ^ m * r' * (p : 𝕎 k) ^ n =
-      (p : 𝕎 k) ^ m * b * ((p : 𝕎 k) ^ n * q') := by
-    have H := congr_arg (fun x : 𝕎 k => x * (p : 𝕎 k) ^ m * (p : 𝕎 k) ^ n)
-      (frobenius_frobeniusRotation p hr' hq')
-    dsimp at H
-    refine (Eq.trans ?_ H).trans ?_ <;> ring
+  have key : WittVector.frobenius b * r' = q' * b := by
+    linear_combination frobenius_frobeniusRotation p hr' hq'
   have hq'' : algebraMap (𝕎 k) (FractionRing (𝕎 k)) q' ≠ 0 := by
     have hq''' : q' ≠ 0 := fun h => hq' (by simp [h])
     simpa only [Ne, map_zero] using
       (IsFractionRing.injective (𝕎 k) (FractionRing (𝕎 k))).ne hq'''
   rw [zpow_sub₀ (FractionRing.p_nonzero p k)]
-  field_simp [FractionRing.p_nonzero p k]
+  simp [field, FractionRing.p_nonzero p k]
   convert congr_arg (fun x => algebraMap (𝕎 k) (FractionRing (𝕎 k)) x) key using 1
-  · simp only [RingHom.map_mul, RingHom.map_pow, map_natCast]
-    ring
-  · simp only [RingHom.map_mul, RingHom.map_pow, map_natCast]
+  · simp only [RingHom.map_mul]
+  · simp only [RingHom.map_mul]
 
 theorem exists_frobenius_solution_fractionRing {a : FractionRing (𝕎 k)} (ha : a ≠ 0) :
     ∃ᵉ (b ≠ 0) (m : ℤ), φ b * a = (p : FractionRing (𝕎 k)) ^ m * b := by

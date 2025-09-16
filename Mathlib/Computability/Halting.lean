@@ -128,26 +128,43 @@ nonrec theorem sumCasesOn {f : α → β ⊕ γ} {g : α → β →. σ} {h : α
           (sumCasesOn_right hf (const Option.none).to₂ (option_some_iff.2 hh).to₂)).of_eq
       fun a => by cases f a <;> simp only [Bool.cond_true, Bool.cond_false]
 
-@[deprecated (since := "2025-02-21")] alias sum_casesOn := Partrec.sumCasesOn
-
 end Partrec
 
 /-- A computable predicate is one whose indicator function is computable. -/
 def ComputablePred {α} [Primcodable α] (p : α → Prop) :=
-  ∃ _ : DecidablePred p, Computable fun a => decide (p a)
+  ∃ (_ : DecidablePred p), Computable fun a => decide (p a)
+
+section decide
+
+variable {α} [Primcodable α]
+
+protected lemma ComputablePred.decide {p : α → Prop} [DecidablePred p] (hp : ComputablePred p) :
+    Computable (fun a => decide (p a)) := by
+  convert hp.choose_spec
+
+lemma Computable.computablePred {p : α → Prop} [DecidablePred p]
+    (hp : Computable (fun a => decide (p a))) : ComputablePred p :=
+  ⟨inferInstance, hp⟩
+
+lemma computablePred_iff_computable_decide {p : α → Prop} [DecidablePred p] :
+    ComputablePred p ↔ Computable (fun a => decide (p a)) where
+  mp := ComputablePred.decide
+  mpr := Computable.computablePred
+
+lemma PrimrecPred.computablePred {α} [Primcodable α] {p : α → Prop} :
+    (hp : PrimrecPred p) → ComputablePred p
+  | ⟨_, hp⟩ => hp.to_comp.computablePred
+
+end decide
 
 /-- A recursively enumerable predicate is one which is the domain of a computable partial function.
 -/
 def REPred {α} [Primcodable α] (p : α → Prop) :=
   Partrec fun a => Part.assert (p a) fun _ => Part.some ()
 
-@[deprecated (since := "2025-02-06")] alias RePred := REPred
-
 theorem REPred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : REPred p) (H : ∀ a, p a ↔ q a) :
     REPred q :=
   (funext fun a => propext (H a) : p = q) ▸ hp
-
-@[deprecated (since := "2025-02-06")] alias RePred.of_eq := REPred.of_eq
 
 theorem Partrec.dom_re {α β} [Primcodable α] [Primcodable β] {f : α →. β} (h : Partrec f) :
     REPred fun a => (f a).Dom :=
@@ -170,22 +187,16 @@ theorem computable_iff {p : α → Prop} :
   ⟨fun ⟨_, h⟩ => ⟨_, h, funext fun _ => propext (Bool.decide_iff _).symm⟩, by
     rintro ⟨f, h, rfl⟩; exact ⟨by infer_instance, by simpa using h⟩⟩
 
-protected theorem not {p : α → Prop} (hp : ComputablePred p) : ComputablePred fun a => ¬p a := by
-  obtain ⟨f, hf, rfl⟩ := computable_iff.1 hp
-  exact
-    ⟨by infer_instance,
-      (cond hf (const false) (const true)).of_eq fun n => by
-        simp only [Bool.not_eq_true]
-        cases f n <;> rfl⟩
+protected theorem not {p : α → Prop} :
+    (hp : ComputablePred p) → ComputablePred fun a => ¬p a
+  | ⟨_, hp⟩ => Computable.computablePred <| Primrec.not.to_comp.comp hp |>.of_eq <| by simp
 
 /-- The computable functions are closed under if-then-else definitions
 with computable predicates. -/
 theorem ite {f₁ f₂ : ℕ → ℕ} (hf₁ : Computable f₁) (hf₂ : Computable f₂)
     {c : ℕ → Prop} [DecidablePred c] (hc : ComputablePred c) :
     Computable fun k ↦ if c k then f₁ k else f₂ k := by
-  simp_rw [← Bool.cond_decide]
-  obtain ⟨inst, hc⟩ := hc
-  convert hc.cond hf₁ hf₂
+  simpa [Bool.cond_decide] using hc.decide.cond hf₁ hf₂
 
 theorem to_re {p : α → Prop} (hp : ComputablePred p) : REPred p := by
   obtain ⟨f, hf, rfl⟩ := computable_iff.1 hp
@@ -296,7 +307,7 @@ theorem to_part {n f} (pf : @Partrec' n f) : _root_.Partrec f := by
   | rfind _ hf =>
     have := hf.comp (vector_cons.comp snd fst)
     have :=
-      ((Primrec.eq.comp _root_.Primrec.id (_root_.Primrec.const 0)).to_comp.comp
+      ((Primrec.eq.decide.comp _root_.Primrec.id (_root_.Primrec.const 0)).to_comp.comp
         this).to₂.partrec₂
     exact _root_.Partrec.rfind this
 

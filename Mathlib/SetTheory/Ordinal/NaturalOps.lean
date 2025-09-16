@@ -5,6 +5,11 @@ Authors: Violeta Hernández Palacios
 -/
 import Mathlib.SetTheory.Ordinal.Family
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.NatOrdinal` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Natural operations on ordinals
@@ -49,19 +54,11 @@ noncomputable section
 
 /-- A type synonym for ordinals with natural addition and multiplication. -/
 def NatOrdinal : Type _ :=
-  Ordinal deriving Zero, Inhabited, One, WellFoundedRelation
--- The `LinearOrder, `SuccOrder` instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
+  Ordinal
+deriving Zero, Inhabited, One, WellFoundedRelation, Uncountable,
+  LinearOrder, SuccOrder, OrderBot, NoMaxOrder, ZeroLEOneClass
 
-instance NatOrdinal.instLinearOrder : LinearOrder NatOrdinal := Ordinal.instLinearOrder
-instance NatOrdinal.instSuccOrder : SuccOrder NatOrdinal := Ordinal.instSuccOrder
-instance NatOrdinal.instOrderBot : OrderBot NatOrdinal := Ordinal.instOrderBot
-instance NatOrdinal.instNoMaxOrder : NoMaxOrder NatOrdinal := Ordinal.instNoMaxOrder
-instance NatOrdinal.instZeroLEOneClass : ZeroLEOneClass NatOrdinal := Ordinal.instZeroLEOneClass
 instance NatOrdinal.instNeZeroOne : NeZero (1 : NatOrdinal) := Ordinal.instNeZeroOne
-
-instance NatOrdinal.uncountable : Uncountable NatOrdinal :=
-  Ordinal.uncountable
 
 /-- The identity function between `Ordinal` and `NatOrdinal`. -/
 @[match_pattern]
@@ -167,7 +164,7 @@ theorem toNatOrdinal_min (a b : Ordinal) :
   rfl
 
 /-! We place the definitions of `nadd` and `nmul` before actually developing their API, as this
-guarantees we only need to open the `NaturalOps` locale once. -/
+guarantees we only need to open the `NaturalOps` scope once. -/
 
 /-- Natural addition on ordinals `a ♯ b`, also known as the Hessenberg sum, is recursively defined
 as the least ordinal greater than `a' ♯ b` and `a ♯ b'` for all `a' < a` and `b' < b`. In contrast
@@ -525,8 +522,6 @@ theorem nmul_one (a : Ordinal) : a ⨳ 1 = a := by
   convert csInf_Ici
   ext b
   refine ⟨fun H ↦ le_of_forall_lt (a := a) fun c hc ↦ ?_, fun ha c hc ↦ ?_⟩
-  -- Porting note: had to add arguments to `nmul_one` in the next two lines
-  -- for the termination checker.
   · simpa [nmul_one c] using H c hc
   · simpa [nmul_one c] using hc.trans_le ha
 termination_by a

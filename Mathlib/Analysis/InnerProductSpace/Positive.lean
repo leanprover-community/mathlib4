@@ -5,6 +5,7 @@ Authors: Anatole Dedecker
 -/
 import Mathlib.Analysis.InnerProductSpace.Adjoint
 import Mathlib.Analysis.InnerProductSpace.Spectrum
+import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-!
 # Positive operators
@@ -168,6 +169,44 @@ theorem IsIdempotentElem.isPositive_iff_isSymmetric {T : E →ₗ[𝕜] E} (hT :
   rw [← hT.eq, Module.End.mul_apply, h]
   exact inner_self_nonneg
 
+theorem isPositive_linearIsometryEquiv_conj_iff {T : E →ₗ[𝕜] E} (f : E ≃ₗᵢ[𝕜] F) :
+    IsPositive (f.toLinearMap ∘ₗ T ∘ₗ f.symm.toLinearMap) ↔ IsPositive T := by
+  simp_rw [IsPositive, isSymmetric_linearIsometryEquiv_conj_iff, and_congr_right_iff,
+    LinearIsometryEquiv.toLinearEquiv_symm, coe_comp, LinearEquiv.coe_coe,
+    LinearIsometryEquiv.coe_toLinearEquiv, LinearIsometryEquiv.coe_symm_toLinearEquiv,
+    Function.comp_apply, LinearIsometryEquiv.inner_map_eq_flip]
+  exact fun _ => ⟨fun h x => by simpa using h (f x), fun h x => h _⟩
+
+open scoped ComplexOrder in
+/-- `A.toEuclideanLin` is positive if and only if `A` is positive semi-definite. -/
+@[simp] theorem _root_.Matrix.isPositive_toEuclideanLin_iff {n : Type*} [Fintype n] [DecidableEq n]
+    {A : Matrix n n 𝕜} : A.toEuclideanLin.IsPositive ↔ A.PosSemidef := by
+  simp_rw [LinearMap.IsPositive, ← Matrix.isHermitian_iff_isSymmetric, inner_re_symm,
+    EuclideanSpace.inner_eq_star_dotProduct, Matrix.piLp_ofLp_toEuclideanLin, Matrix.toLin'_apply,
+    dotProduct_comm (A.mulVec _), Matrix.PosSemidef, and_congr_right_iff,
+    RCLike.nonneg_iff (K := 𝕜)]
+  refine fun hA ↦ (EuclideanSpace.equiv n 𝕜).forall_congr' fun x ↦ ?_
+  simp [hA.im_star_dotProduct_mulVec_self]
+
+open ComplexOrder in
+/-- `A.toMatrix` is positive semi-definite if and only if `A` is positive. -/
+@[simp] theorem posSemidef_toMatrix_iff {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {A : E →ₗ[𝕜] E} (b : OrthonormalBasis ι 𝕜 E) :
+    (A.toMatrix b.toBasis b.toBasis).PosSemidef ↔ A.IsPositive := by
+  rw [← Matrix.isPositive_toEuclideanLin_iff, (by exact Matrix.toLin'_toMatrix' _ :
+    (A.toMatrix b.toBasis b.toBasis).toEuclideanLin =
+      b.repr.toLinearMap ∘ₗ A ∘ₗ b.repr.symm.toLinearMap), isPositive_linearIsometryEquiv_conj_iff]
+
+/-- A symmetric projection is positive. -/
+@[aesop 10% apply, grind →]
+theorem IsPositive.of_isSymmetricProjection {p : E →ₗ[𝕜] E} (hp : p.IsSymmetricProjection) :
+    p.IsPositive :=
+  hp.isIdempotentElem.isPositive_iff_isSymmetric.mpr hp.isSymmetric
+
+/-- A star projection operator is positive. -/
+@[deprecated (since := "19-08-2025")]
+alias IsPositive.of_isStarProjection := IsPositive.of_isSymmetricProjection
+
 end LinearMap
 
 namespace ContinuousLinearMap
@@ -198,13 +237,13 @@ lemma _root_.LinearMap.isPositive_toContinuousLinearMap_iff
     [FiniteDimensional 𝕜 E] (T : E →ₗ[𝕜] E) :
     have : CompleteSpace E := FiniteDimensional.complete 𝕜 _
     T.toContinuousLinearMap.IsPositive ↔ T.IsPositive := by
-  simp_rw [IsPositive, LinearMap.IsPositive, reApplyInnerSelf, isSelfAdjoint_iff_isSymmetric]
-  rfl
+  simp only [IsPositive, isSelfAdjoint_iff_isSymmetric, coe_toContinuousLinearMap, reApplyInnerSelf,
+    coe_toContinuousLinearMap', LinearMap.IsPositive]
 
 lemma isPositive_toLinearMap_iff (T : E →L[𝕜] E) :
     (T : E →ₗ[𝕜] E).IsPositive ↔ T.IsPositive := by
-  rw [LinearMap.IsPositive, coe_coe, IsPositive, ← isSelfAdjoint_iff_isSymmetric]
-  rfl
+  simp only [LinearMap.IsPositive, ← isSelfAdjoint_iff_isSymmetric, coe_coe, IsPositive,
+    reApplyInnerSelf]
 
 alias ⟨_, IsPositive.toLinearMap⟩ := isPositive_toLinearMap_iff
 
@@ -258,11 +297,19 @@ theorem IsPositive.conj_adjoint {T : E →L[𝕜] E} (hT : T.IsPositive) (S : E 
   rw [reApplyInnerSelf, comp_apply, ← adjoint_inner_right]
   exact hT.re_inner_nonneg_left _
 
+theorem isPositive_self_comp_adjoint (S : E →L[𝕜] F) :
+    (S ∘L S†).IsPositive := by
+  simpa using isPositive_one.conj_adjoint S
+
 @[aesop safe apply]
 theorem IsPositive.adjoint_conj {T : E →L[𝕜] E} (hT : T.IsPositive) (S : F →L[𝕜] E) :
     (S† ∘L T ∘L S).IsPositive := by
   convert hT.conj_adjoint (S†)
   rw [adjoint_adjoint]
+
+theorem isPositive_adjoint_comp_self (S : E →L[𝕜] F) :
+    (S† ∘L S).IsPositive := by
+  simpa using isPositive_one.adjoint_conj S
 
 section LinearMap
 
@@ -278,11 +325,19 @@ theorem _root_.LinearMap.IsPositive.conj_adjoint {T : E →ₗ[𝕜] E}
   simpa [← isPositive_toContinuousLinearMap_iff] using
     ((T.isPositive_toContinuousLinearMap_iff.mpr hT).conj_adjoint S.toContinuousLinearMap)
 
+theorem _root_.LinearMap.isPositive_self_comp_adjoint (S : E →ₗ[𝕜] F) :
+    (S ∘ₗ S.adjoint).IsPositive := by
+  simpa using LinearMap.isPositive_one.conj_adjoint S
+
 @[aesop safe apply]
 theorem _root_.LinearMap.IsPositive.adjoint_conj {T : E →ₗ[𝕜] E}
     (hT : T.IsPositive) (S : F →ₗ[𝕜] E) : (S.adjoint ∘ₗ T ∘ₗ S).IsPositive := by
   convert hT.conj_adjoint S.adjoint
   rw [LinearMap.adjoint_adjoint]
+
+theorem _root_.LinearMap.isPositive_adjoint_comp_self (S : E →ₗ[𝕜] F) :
+    (S.adjoint ∘ₗ S).IsPositive := by
+  simpa using LinearMap.isPositive_one.adjoint_conj S
 
 end LinearMap
 
@@ -315,7 +370,6 @@ lemma isUnit_of_forall_le_norm_inner_map (f : E →L[𝕜] E) {c : ℝ≥0} (hc 
   rw [isUnit_iff_bijective, bijective_iff_dense_range_and_antilipschitz]
   have h_anti : AntilipschitzWith c⁻¹ f := antilipschitz_of_forall_le_inner_map f hc h
   refine ⟨?_, ⟨_, h_anti⟩⟩
-  have _inst := h_anti.completeSpace_range_clm
   rw [Submodule.topologicalClosure_eq_top_iff, Submodule.eq_bot_iff]
   intro x hx
   have : ‖x‖ ^ 2 * c = 0 := le_antisymm (by simpa only [hx (f x) ⟨x, rfl⟩, norm_zero] using h x)
@@ -372,29 +426,19 @@ theorem IsPositive.of_isStarProjection {p : E →L[𝕜] E}
   hp.isIdempotentElem.isPositive_iff_isSelfAdjoint.mpr hp.isSelfAdjoint
 
 /-- For an idempotent operator `p`, TFAE:
+* `(range p)ᗮ = ker p`
 * `p` is normal
 * `p` is self-adjoint
-* `p` is positive
-* `(range p)ᗮ = ker p` -/
+* `p` is positive -/
 theorem IsIdempotentElem.TFAE {p : E →L[𝕜] E} (hp : IsIdempotentElem p) :
-    [IsStarNormal p, IsSelfAdjoint p, p.IsPositive,
-      (LinearMap.range p)ᗮ = LinearMap.ker p].TFAE := by
-  tfae_have 1 ↔ 2 := hp.isSelfAdjoint_iff_isStarNormal.symm
-  tfae_have 2 ↔ 3 := hp.isPositive_iff_isSelfAdjoint.symm
-  tfae_have 2 ↔ 4 := p.isSelfAdjoint_iff_isSymmetric.eq ▸
+    [(LinearMap.range p)ᗮ = LinearMap.ker p,
+      IsStarNormal p,
+      IsSelfAdjoint p,
+      p.IsPositive].TFAE := by
+  tfae_have 2 ↔ 3 := hp.isSelfAdjoint_iff_isStarNormal.symm
+  tfae_have 3 ↔ 4 := hp.isPositive_iff_isSelfAdjoint.symm
+  tfae_have 3 ↔ 1 := p.isSelfAdjoint_iff_isSymmetric.eq ▸
     (ContinuousLinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range hp)
   tfae_finish
 
 end ContinuousLinearMap
-
-namespace LinearMap
-
-/-- A star projection operator is positive. -/
-@[aesop 10% apply, grind →]
-theorem IsPositive.of_isStarProjection [FiniteDimensional 𝕜 E] {T : E →ₗ[𝕜] E}
-    (hT : IsStarProjection T) : T.IsPositive :=
-  have := FiniteDimensional.complete 𝕜 E
-  T.isPositive_toContinuousLinearMap_iff.mp (ContinuousLinearMap.IsPositive.of_isStarProjection
-    (isStarProjection_toContinuousLinearMap_iff.mpr hT))
-
-end LinearMap

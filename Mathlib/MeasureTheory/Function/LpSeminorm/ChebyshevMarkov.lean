@@ -81,9 +81,6 @@ theorem MemLp.meas_ge_lt_top' {μ : Measure α} {f : α → E} (hℒp : MemLp f 
   · simp [h]
   exact hℒp.meas_ge_lt_top'_enorm hp_ne_zero hp_ne_top hε (by simp)
 
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.meas_ge_lt_top' := MemLp.meas_ge_lt_top'
-
 theorem MemLp.meas_ge_lt_top_enorm {μ : Measure α} {f : α → ε'} (hℒp : MemLp f p μ)
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {ε : ℝ≥0} (hε : ε ≠ 0) :
     μ { x | ε ≤ ‖f x‖ₑ } < ∞ :=
@@ -94,8 +91,5 @@ theorem MemLp.meas_ge_lt_top {μ : Measure α} {f : α → E} (hℒp : MemLp f p
     μ { x | ε ≤ ‖f x‖₊ } < ∞ := by
   simp_rw [← ENNReal.coe_le_coe]
   apply hℒp.meas_ge_lt_top' hp_ne_zero hp_ne_top (by simp [hε])
-
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.meas_ge_lt_top := MemLp.meas_ge_lt_top
 
 end MeasureTheory

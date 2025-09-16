@@ -175,6 +175,22 @@ end ListMultiset
 
 end ConditionallyCompleteLinearOrder
 
+namespace Finite
+
+variable [Finite ι] [ConditionallyCompleteLattice α] (f : ι → α)
+
+lemma le_ciSup (i : ι) : f i ≤ ⨆ j, f j := by
+  suffices BddAbove (range f) from _root_.le_ciSup this i
+  let : Fintype ι := Fintype.ofFinite ι
+  use Finset.sup' Finset.univ ⟨i, Finset.mem_univ i⟩ f
+  simp only [mem_upperBounds, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
+  exact fun j ↦ Finset.le_sup' f <| Finset.mem_univ j
+
+lemma ciInf_le (i : ι) : ⨅ j, f j ≤ f i :=
+  le_ciSup (α := αᵒᵈ) f i
+
+end Finite
+
 /-!
 ### Relation between `sSup` / `sInf` and `Finset.sup'` / `Finset.inf'`
 

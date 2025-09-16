@@ -26,7 +26,7 @@ namespace ModN
 instance : Module (ZMod n) (ModN G n) := QuotientAddGroup.zmodModule (by simp)
 
 /-- The universal property of `ModN G n` in terms of monoids: Monoid homomorphisms from `ModN G n`
-are the same as monoid homormorphisms from `G` whose values are `n`-torsion. -/
+are the same as monoid homomorphisms from `G` whose values are `n`-torsion. -/
 protected def liftEquiv [AddMonoid M] : (ModN G n →+ M) ≃ {φ : G →+ M // ∀ g, n • φ g = 0} where
   toFun f := ⟨f.comp (QuotientAddGroup.mk' _), fun g ↦ by
     let Gn : AddSubgroup G := (LinearMap.range (LinearMap.lsmul ℤ G n)).toAddSubgroup
@@ -43,7 +43,7 @@ protected def liftEquiv [AddMonoid M] : (ModN G n →+ M) ≃ {φ : G →+ M // 
   right_inv φ := by aesop
 
 /-- The universal property of `ModN G n` in terms of `ZMod n`-modules: `ZMod n`-linear maps from
-`ModN G n` are the same as monoid homormorphisms from `G` whose values are `n`-torsion. -/
+`ModN G n` are the same as monoid homomorphisms from `G` whose values are `n`-torsion. -/
 protected def liftEquiv' [AddCommGroup H] [Module (ZMod n) H] :
     (ModN G n →ₗ[ZMod n] H) ≃ {φ : G →+ H // ∀ g, n • φ g = 0} :=
   (AddMonoidHom.toZModLinearMapEquiv n).symm.toEquiv.trans ModN.liftEquiv

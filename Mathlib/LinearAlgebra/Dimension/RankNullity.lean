@@ -109,9 +109,6 @@ theorem exists_linearIndepOn_of_lt_rank [StrongRankCondition R]
     rwa [linearIndepOn_iff_image (hsec'.symm ▸ injective_id).injOn.image_of_comp,
       ← image_comp, hsec', image_id]
 
-@[deprecated (since := "2025-02-17")] alias
-    exists_linearIndependent_of_lt_rank := exists_linearIndepOn_of_lt_rank
-
 /-- Given a family of `n` linearly independent vectors in a space of dimension `> n`, one may extend
 the family by another vector while retaining linear independence. -/
 theorem exists_linearIndependent_cons_of_lt_rank [StrongRankCondition R] {n : ℕ} {v : Fin n → M}

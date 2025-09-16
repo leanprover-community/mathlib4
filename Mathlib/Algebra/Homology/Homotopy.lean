@@ -263,7 +263,6 @@ theorem nullHomotopicMap_comp (hom : ∀ i j, C.X i ⟶ D.X j) (g : D ⟶ E) :
 of complexes. -/
 theorem nullHomotopicMap'_comp (hom : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) (g : D ⟶ E) :
     nullHomotopicMap' hom ≫ g = nullHomotopicMap' fun i j hij => hom i j hij ≫ g.f j := by
-  ext n
   rw [nullHomotopicMap', nullHomotopicMap_comp]
   congr
   ext i j
@@ -283,7 +282,6 @@ theorem comp_nullHomotopicMap (f : C ⟶ D) (hom : ∀ i j, D.X i ⟶ E.X j) :
 of complexes. -/
 theorem comp_nullHomotopicMap' (f : C ⟶ D) (hom : ∀ i j, c.Rel j i → (D.X i ⟶ E.X j)) :
     f ≫ nullHomotopicMap' hom = nullHomotopicMap' fun i j hij => f.f i ≫ hom i j hij := by
-  ext n
   rw [nullHomotopicMap', comp_nullHomotopicMap]
   congr
   ext i j
@@ -305,7 +303,6 @@ theorem map_nullHomotopicMap' {W : Type*} [Category W] [Preadditive W] (G : V �
     (hom : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) :
     (G.mapHomologicalComplex c).map (nullHomotopicMap' hom) =
       nullHomotopicMap' fun i j hij => by exact G.map (hom i j hij) := by
-  ext n
   rw [nullHomotopicMap', map_nullHomotopicMap]
   congr
   ext i j
@@ -337,14 +334,14 @@ the degreewise morphisms induced by the null homotopic maps constructed
 with `nullHomotopicMap` or `nullHomotopicMap'` -/
 
 
--- Cannot be @[simp] because `k₀` and `k₂` can not be inferred by `simp`.
+-- Cannot be @[simp] because `k₀` and `k₂` cannot be inferred by `simp`.
 theorem nullHomotopicMap_f {k₂ k₁ k₀ : ι} (r₂₁ : c.Rel k₂ k₁) (r₁₀ : c.Rel k₁ k₀)
     (hom : ∀ i j, C.X i ⟶ D.X j) :
     (nullHomotopicMap hom).f k₁ = C.d k₁ k₀ ≫ hom k₀ k₁ + hom k₁ k₂ ≫ D.d k₂ k₁ := by
   dsimp only [nullHomotopicMap]
   rw [dNext_eq hom r₁₀, prevD_eq hom r₂₁]
 
--- Cannot be @[simp] because `k₀` and `k₂` can not be inferred by `simp`.
+-- Cannot be @[simp] because `k₀` and `k₂` cannot be inferred by `simp`.
 theorem nullHomotopicMap'_f {k₂ k₁ k₀ : ι} (r₂₁ : c.Rel k₂ k₁) (r₁₀ : c.Rel k₁ k₀)
     (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) :
     (nullHomotopicMap' h).f k₁ = C.d k₁ k₀ ≫ h k₀ k₁ r₁₀ + h k₁ k₂ r₂₁ ≫ D.d k₂ k₁ := by
@@ -353,7 +350,7 @@ theorem nullHomotopicMap'_f {k₂ k₁ k₀ : ι} (r₂₁ : c.Rel k₂ k₁) (r
   split_ifs
   rfl
 
--- Cannot be @[simp] because `k₁` can not be inferred by `simp`.
+-- Cannot be @[simp] because `k₁` cannot be inferred by `simp`.
 theorem nullHomotopicMap_f_of_not_rel_left {k₁ k₀ : ι} (r₁₀ : c.Rel k₁ k₀)
     (hk₀ : ∀ l : ι, ¬c.Rel k₀ l) (hom : ∀ i j, C.X i ⟶ D.X j) :
     (nullHomotopicMap hom).f k₀ = hom k₀ k₁ ≫ D.d k₁ k₀ := by
@@ -361,7 +358,7 @@ theorem nullHomotopicMap_f_of_not_rel_left {k₁ k₀ : ι} (r₁₀ : c.Rel k�
   rw [prevD_eq hom r₁₀, dNext, AddMonoidHom.mk'_apply, C.shape, zero_comp, zero_add]
   exact hk₀ _
 
--- Cannot be @[simp] because `k₁` can not be inferred by `simp`.
+-- Cannot be @[simp] because `k₁` cannot be inferred by `simp`.
 theorem nullHomotopicMap'_f_of_not_rel_left {k₁ k₀ : ι} (r₁₀ : c.Rel k₁ k₀)
     (hk₀ : ∀ l : ι, ¬c.Rel k₀ l) (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) :
     (nullHomotopicMap' h).f k₀ = h k₀ k₁ r₁₀ ≫ D.d k₁ k₀ := by
@@ -370,7 +367,7 @@ theorem nullHomotopicMap'_f_of_not_rel_left {k₁ k₀ : ι} (r₁₀ : c.Rel k�
   split_ifs
   rfl
 
--- Cannot be @[simp] because `k₀` can not be inferred by `simp`.
+-- Cannot be @[simp] because `k₀` cannot be inferred by `simp`.
 theorem nullHomotopicMap_f_of_not_rel_right {k₁ k₀ : ι} (r₁₀ : c.Rel k₁ k₀)
     (hk₁ : ∀ l : ι, ¬c.Rel l k₁) (hom : ∀ i j, C.X i ⟶ D.X j) :
     (nullHomotopicMap hom).f k₁ = C.d k₁ k₀ ≫ hom k₀ k₁ := by
@@ -378,7 +375,7 @@ theorem nullHomotopicMap_f_of_not_rel_right {k₁ k₀ : ι} (r₁₀ : c.Rel k�
   rw [dNext_eq hom r₁₀, prevD, AddMonoidHom.mk'_apply, D.shape, comp_zero, add_zero]
   exact hk₁ _
 
--- Cannot be @[simp] because `k₀` can not be inferred by `simp`.
+-- Cannot be @[simp] because `k₀` cannot be inferred by `simp`.
 theorem nullHomotopicMap'_f_of_not_rel_right {k₁ k₀ : ι} (r₁₀ : c.Rel k₁ k₀)
     (hk₁ : ∀ l : ι, ¬c.Rel l k₁) (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) :
     (nullHomotopicMap' h).f k₁ = C.d k₁ k₀ ≫ h k₀ k₁ r₁₀ := by
@@ -483,9 +480,6 @@ def mkInductiveAux₂ :
     let I := mkInductiveAux₁ e zero --comm_zero
       one comm_one succ n
     ⟨(P.xNextIso rfl).hom ≫ I.1, I.2.1 ≫ (Q.xPrevIso rfl).inv, by simpa using I.2.2⟩
-
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11647): during the port we marked these lemmas
--- with `@[eqns]` to emulate the old Lean 3 behaviour.
 
 @[simp] theorem mkInductiveAux₂_zero :
     mkInductiveAux₂ e zero comm_zero one comm_one succ 0 =
@@ -611,9 +605,6 @@ def mkCoinductiveAux₂ :
   | n + 1 =>
     let I := mkCoinductiveAux₁ e zero one comm_one succ n
     ⟨I.1 ≫ (Q.xPrevIso rfl).inv, (P.xNextIso rfl).hom ≫ I.2.1, by simpa using I.2.2⟩
-
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11647): during the port we marked these lemmas with `@[eqns]`
--- to emulate the old Lean 3 behaviour.
 
 @[simp] theorem mkCoinductiveAux₂_zero :
     mkCoinductiveAux₂ e zero comm_zero one comm_one succ 0 =

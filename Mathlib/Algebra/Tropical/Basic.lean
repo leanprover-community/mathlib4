@@ -207,7 +207,7 @@ theorem trop_coe_ne_zero (x : R) : trop (x : WithTop R) ≠ 0 :=
   nofun
 
 @[simp]
-theorem zero_ne_trop_coe (x : R) : (0 : Tropical (WithTop R)) ≠ trop x :=
+theorem zero_ne_trop_coe (x : R) : 0 ≠ (trop x : Tropical (WithTop R)) :=
   nofun
 
 @[simp]

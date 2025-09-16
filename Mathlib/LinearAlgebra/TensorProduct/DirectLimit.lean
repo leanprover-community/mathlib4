@@ -68,17 +68,13 @@ variable {M} in
   rw [toDirectLimit, lift.tmul, lift_of]
   rfl
 
+attribute [local ext] TensorProduct.ext in
 /--
 `limᵢ (Gᵢ ⊗ M)` and `(limᵢ Gᵢ) ⊗ M` are isomorphic as modules
 -/
 noncomputable def directLimitLeft :
-    DirectLimit G f ⊗[R] M ≃ₗ[R] DirectLimit (G · ⊗[R] M) (f ▷ M) := by
-  refine LinearEquiv.ofLinear (toDirectLimit f M) (fromDirectLimit f M) ?_ (ext ?_)
-  · ext ⟨x⟩
-    exact x.induction_on (by simp) (fun i x ↦ x.induction_on (by simp)
-      (fun _ _ ↦ by rw [quotMk_of]; simp) <| by simp+contextual) (by simp+contextual)
-  · ext ⟨x⟩ m
-    exact x.induction_on (by simp) (fun _ _ ↦ by rw [quotMk_of]; simp) (by simp+contextual)
+    DirectLimit G f ⊗[R] M ≃ₗ[R] DirectLimit (G · ⊗[R] M) (f ▷ M) :=
+  LinearEquiv.ofLinear (toDirectLimit f M) (fromDirectLimit f M) (by ext; simp) (by ext; simp)
 
 @[simp] lemma directLimitLeft_tmul_of {i : ι} (g : G i) (m : M) :
     directLimitLeft f M (of _ _ _ _ _ g ⊗ₜ m) = of _ _ _ (f ▷ M) _ (g ⊗ₜ m) :=

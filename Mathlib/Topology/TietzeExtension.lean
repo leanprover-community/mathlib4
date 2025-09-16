@@ -97,7 +97,7 @@ theorem ContinuousMap.exists_forall_mem_restrict_eq (hs : IsClosed s)
     {t : Set Y} (hf : ∀ x, f x ∈ t) [ht : TietzeExtension.{u, v} t] :
     ∃ (g : C(X, Y)), (∀ x, g x ∈ t) ∧ g.restrict s = f := by
   obtain ⟨g, hg⟩ := mk _ (map_continuous f |>.codRestrict hf) |>.exists_restrict_eq hs
-  exact ⟨comp ⟨Subtype.val, by continuity⟩ g, by simp, by ext x; congrm(($(hg) x : Y))⟩
+  exact ⟨comp ⟨Subtype.val, by fun_prop⟩ g, by simp, by ext x; congrm(($(hg) x : Y))⟩
 
 /-- This theorem is not intended to be used directly because it is rare for a set alone to
 satisfy `[TietzeExtension t]`. For example, `Metric.ball` in `ℝ` only satisfies it when
@@ -110,7 +110,7 @@ theorem ContinuousMap.exists_extension_forall_mem (he : IsClosedEmbedding e)
     {t : Set Y} (hf : ∀ x, f x ∈ t) [ht : TietzeExtension.{u, v} t] :
     ∃ (g : C(X, Y)), (∀ x, g x ∈ t) ∧ g.comp ⟨e, he.continuous⟩ = f := by
   obtain ⟨g, hg⟩ := mk _ (map_continuous f |>.codRestrict hf) |>.exists_extension he
-  exact ⟨comp ⟨Subtype.val, by continuity⟩ g, by simp, by ext x; congrm(($(hg) x : Y))⟩
+  exact ⟨comp ⟨Subtype.val, by fun_prop⟩ g, by simp, by ext x; congrm(($(hg) x : Y))⟩
 
 instance Pi.instTietzeExtension {ι : Type*} {Y : ι → Type v} [∀ i, TopologicalSpace (Y i)]
     [∀ i, TietzeExtension.{u} (Y i)] : TietzeExtension.{u} (∀ i, Y i) where
@@ -173,8 +173,7 @@ theorem tietze_extension_step (f : X →ᵇ ℝ) (e : C(X, Y)) (he : IsClosedEmb
   have h23 : 0 < (2 / 3 : ℝ) := by norm_num1
   -- In the trivial case `f = 0`, we take `g = 0`
   rcases eq_or_ne f 0 with (rfl | hf)
-  · use 0
-    simp
+  · simp
   replace hf : 0 < ‖f‖ := norm_pos_iff.2 hf
   /- Otherwise, the closed sets `e '' (f ⁻¹' (Iic (-‖f‖ / 3)))` and `e '' (f ⁻¹' (Ici (‖f‖ / 3)))`
     are disjoint, hence by Urysohn's lemma there exists a function `g` that is equal to `-‖f‖ / 3`
@@ -258,7 +257,8 @@ theorem exists_extension_norm_eq_of_isClosedEmbedding' (f : X →ᵇ ℝ) (e : C
     refine
       (dist_le_of_le_geometric_of_tendsto₀ _ _ (by norm_num1)
         hg_dist hg_cau.tendsto_limUnder).trans_eq ?_
-    field_simp [show (3 - 2 : ℝ) = 1 by norm_num1]
+    field_simp
+    ring
   · rw [← hge]
     exact norm_compContinuous_le _ _
 
@@ -328,7 +328,7 @@ theorem exists_extension_forall_exists_le_ge_of_isClosedEmbedding [Nonempty X] (
   have hac : a < c := left_lt_add_div_two.2 hlt
   have hcb : c < b := add_div_two_lt_right.2 hlt
   have hsub : c - a = b - c := by
-    field_simp [c]
+    simp [c]
     ring
   /- Due to `exists_extension_forall_mem_Icc_of_isClosedEmbedding`, there exists an extension `g`
     such that `g y ∈ [a, b]` for all `y`. However, if `a` and/or `b` do not belong to the range of

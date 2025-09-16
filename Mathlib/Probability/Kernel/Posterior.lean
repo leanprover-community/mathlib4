@@ -300,4 +300,24 @@ lemma posterior_eq_withDensity_of_countable {Ω : Type*} [Countable Ω] [Measura
 
 end CountableOrCountablyGenerated
 
+section Bool
+
+lemma posterior_boolKernel_apply_false (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    (π : Measure Bool) [IsFiniteMeasure π] :
+    ∀ᵐ x ∂Kernel.boolKernel μ ν ∘ₘ π, ((Kernel.boolKernel μ ν)†π) x {false}
+      = π {false} * μ.rnDeriv (Kernel.boolKernel μ ν ∘ₘ π) x := by
+  filter_upwards [posterior_eq_withDensity_of_countable (Kernel.boolKernel μ ν) π] with x hx
+  rw [hx]
+  simp
+
+lemma posterior_boolKernel_apply_true (μ ν : Measure 𝓧) [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    (π : Measure Bool) [IsFiniteMeasure π] :
+    ∀ᵐ x ∂Kernel.boolKernel μ ν ∘ₘ π, ((Kernel.boolKernel μ ν)†π) x {true}
+      = π {true} * ν.rnDeriv (Kernel.boolKernel μ ν ∘ₘ π) x := by
+  filter_upwards [posterior_eq_withDensity_of_countable (Kernel.boolKernel μ ν) π] with x hx
+  rw [hx]
+  simp
+
+end Bool
+
 end ProbabilityTheory

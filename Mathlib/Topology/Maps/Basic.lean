@@ -72,10 +72,7 @@ lemma IsInducing.of_comp_iff (hg : IsInducing g) : IsInducing (g ∘ f) ↔ IsIn
 
 lemma IsInducing.of_comp (hf : Continuous f) (hg : Continuous g) (hgf : IsInducing (g ∘ f)) :
     IsInducing f :=
-  ⟨le_antisymm (by rwa [← continuous_iff_le_induced])
-      (by
-        rw [hgf.eq_induced, ← induced_compose]
-        exact induced_mono hg.le_induced)⟩
+  ⟨le_antisymm hf.le_induced (by grw [hgf.eq_induced, ← induced_compose, ← hg.le_induced])⟩
 
 lemma isInducing_iff_nhds : IsInducing f ↔ ∀ x, 𝓝 x = comap f (𝓝 (f x)) :=
   (isInducing_iff _).trans (induced_iff_nhds_eq f)
@@ -246,9 +243,7 @@ protected theorem comp (hg : IsQuotientMap g) (hf : IsQuotientMap f) : IsQuotien
 protected theorem of_comp (hf : Continuous f) (hg : Continuous g)
     (hgf : IsQuotientMap (g ∘ f)) : IsQuotientMap g :=
   ⟨hgf.1.of_comp,
-    le_antisymm
-      (by rw [hgf.eq_coinduced, ← coinduced_compose]; exact coinduced_mono hf.coinduced_le)
-      hg.coinduced_le⟩
+    le_antisymm (by grw [hgf.eq_coinduced, ← coinduced_compose, hf.coinduced_le]) hg.coinduced_le⟩
 
 theorem of_inverse {g : Y → X} (hf : Continuous f) (hg : Continuous g) (h : LeftInverse g f) :
     IsQuotientMap g := .of_comp hf hg <| h.comp_eq_id.symm ▸ IsQuotientMap.id
@@ -293,7 +288,7 @@ theorem range_mem_nhds (hf : IsOpenMap f) (x : X) : range f ∈ 𝓝 (f x) :=
 
 theorem mapsTo_interior (hf : IsOpenMap f) {s : Set X} {t : Set Y} (h : MapsTo f s t) :
     MapsTo f (interior s) (interior t) :=
-  mapsTo'.2 <|
+  mapsTo_iff_image_subset.2 <|
     interior_maximal (h.mono interior_subset Subset.rfl).image_subset (hf _ isOpen_interior)
 
 theorem image_interior_subset (hf : IsOpenMap f) (s : Set X) :
@@ -459,7 +454,7 @@ theorem IsClosedMap.lift'_closure_map_eq
     (f_closed : IsClosedMap f) (f_cont : Continuous f) (F : Filter X) :
     (map f F).lift' closure = map f (F.lift' closure) := by
   rw [map_lift'_eq2 (monotone_closure Y), map_lift'_eq (monotone_closure X)]
-  congr
+  congr 1
   ext s : 1
   exact f_closed.closure_image_eq_of_continuous f_cont s
 

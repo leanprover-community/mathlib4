@@ -30,10 +30,10 @@ variable (g : S) [IsLocalization.Away g T] (P : Generators R S ι)
 
 lemma comp_localizationAway_ker (P : Generators R S ι) (f : P.Ring)
     (h : algebraMap P.Ring S f = g) :
-    ((Generators.localizationAway g).comp P).ker =
-      Ideal.map ((Generators.localizationAway (S := T) g).toComp P).toAlgHom P.ker ⊔
+    ((Generators.localizationAway T g).comp P).ker =
+      Ideal.map ((Generators.localizationAway T g).toComp P).toAlgHom P.ker ⊔
         Ideal.span {rename Sum.inr f * X (Sum.inl ()) - 1} := by
-  have : (localizationAway (S := T) g).ker = Ideal.map ((localizationAway g).ofComp P).toAlgHom
+  have : (localizationAway T g).ker = Ideal.map ((localizationAway T g).ofComp P).toAlgHom
       (Ideal.span {MvPolynomial.rename Sum.inr f * MvPolynomial.X (Sum.inl ()) - 1}) := by
     rw [Ideal.map_span, Set.image_singleton, map_sub, map_mul, map_one, ker_localizationAway,
       Hom.toAlgHom_X, toAlgHom_ofComp_rename, h, ofComp_val, Sum.elim_inl]
@@ -47,7 +47,7 @@ variable (T) in
 `f` is a pre-image of `g` in `R[X]`, this is the `R`-algebra map `R[X,Y] →ₐ[R] (R[X]/I²)[1/f]`
 defined via mapping `Y` to `1/f`. -/
 noncomputable
-def compLocalizationAwayAlgHom : ((Generators.localizationAway g (S := T)).comp P).Ring →ₐ[R]
+def compLocalizationAwayAlgHom : ((Generators.localizationAway T g).comp P).Ring →ₐ[R]
       Localization.Away (Ideal.Quotient.mk (P.ker ^ 2) (P.σ g)) :=
   aeval (R := R) (S₁ := Localization.Away _)
     (Sum.elim
@@ -56,7 +56,7 @@ def compLocalizationAwayAlgHom : ((Generators.localizationAway g (S := T)).comp 
 
 @[simp]
 lemma compLocalizationAwayAlgHom_toAlgHom_toComp (x : P.Ring) :
-    compLocalizationAwayAlgHom T g P (((localizationAway g (S := T)).toComp P).toAlgHom x) =
+    compLocalizationAwayAlgHom T g P (((localizationAway T g).toComp P).toAlgHom x) =
       algebraMap P.Ring _ x := by
   simp only [toComp_toAlgHom, compLocalizationAwayAlgHom, comp,
     localizationAway, AlgHom.toRingHom_eq_coe, aeval_rename,
@@ -70,14 +70,15 @@ lemma compLocalizationAwayAlgHom_X_inl : compLocalizationAwayAlgHom T g P (X (Su
 
 lemma compLocalizationAwayAlgHom_relation_eq_zero :
     compLocalizationAwayAlgHom T g P (rename Sum.inr (P.σ g) * X (Sum.inl ()) - 1) = 0 := by
-  rw [map_sub, map_one, map_mul, ← toComp_toAlgHom (Generators.localizationAway g (S := T)) P]
-  change (compLocalizationAwayAlgHom T g P) (((localizationAway g).toComp P).toAlgHom _) * _ - _ = _
+  rw [map_sub, map_one, map_mul, ← toComp_toAlgHom (Generators.localizationAway T g) P]
+  change (compLocalizationAwayAlgHom T g P)
+    (((localizationAway T g).toComp P).toAlgHom _) * _ - _ = _
   rw [compLocalizationAwayAlgHom_toAlgHom_toComp, compLocalizationAwayAlgHom_X_inl,
     IsScalarTower.algebraMap_apply P.Ring (P.Ring ⧸ P.ker ^ 2) (Localization.Away _)]
   simp
 
 lemma sq_ker_comp_le_ker_compLocalizationAwayAlgHom :
-    ((localizationAway g (S := T)).comp P).ker ^ 2 ≤
+    ((localizationAway T g).comp P).ker ^ 2 ≤
       RingHom.ker (compLocalizationAwayAlgHom T g P) := by
   have hsple {x} (hx : x ∈ Ideal.span {(rename Sum.inr) (P.σ g) * X (Sum.inl ()) - 1}) :
         (compLocalizationAwayAlgHom T g P) x = 0 := by
@@ -111,9 +112,9 @@ canonical `S`-presentation of `T`. Denote by `J` the kernel of the composition
 lemma liftBaseChange_injective_of_isLocalizationAway :
     Function.Injective (LinearMap.liftBaseChange T
       (Extension.Cotangent.map
-        ((Generators.localizationAway g (S := T)).toComp P).toExtensionHom)) := by
-  set Q := Generators.localizationAway g (S := T)
-  algebraize [((Generators.localizationAway g (S := T)).toComp P).toAlgHom.toRingHom]
+        ((Generators.localizationAway T g).toComp P).toExtensionHom)) := by
+  set Q := Generators.localizationAway T g
+  algebraize [((Generators.localizationAway T g).toComp P).toAlgHom.toRingHom]
   let f : P.Ring ⧸ P.ker ^ 2 := P.σ g
   let π := compLocalizationAwayAlgHom T g P
   refine IsLocalizedModule.injective_of_map_zero (Submonoid.powers g)

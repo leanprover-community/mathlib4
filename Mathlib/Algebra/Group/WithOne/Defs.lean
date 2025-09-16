@@ -34,7 +34,7 @@ universe u v w
 variable {α : Type u}
 
 /-- Add an extra element `1` to a type -/
-@[to_additive "Add an extra element `0` to a type"]
+@[to_additive /-- Add an extra element `0` to a type -/]
 def WithOne (α) :=
   Option α
 
@@ -82,7 +82,7 @@ instance instNontrivial [Nonempty α] : Nontrivial (WithOne α) :=
   Option.nontrivial
 
 /-- The canonical map from `α` into `WithOne α` -/
-@[to_additive (attr := coe) "The canonical map from `α` into `WithZero α`"]
+@[to_additive (attr := coe, match_pattern) /-- The canonical map from `α` into `WithZero α` -/]
 def coe : α → WithOne α :=
   Option.some
 
@@ -122,7 +122,7 @@ lemma recOneCoe_coe {motive : WithOne α → Sort*} (h₁ h₂) (a : α) :
 
 /-- Deconstruct an `x : WithOne α` to the underlying value in `α`, given a proof that `x ≠ 1`. -/
 @[to_additive unzero
-      "Deconstruct an `x : WithZero α` to the underlying value in `α`, given a proof that `x ≠ 0`."]
+/-- Deconstruct an `x : WithZero α` to the underlying value in `α`, given a proof that `x ≠ 0`. -/]
 def unone : ∀ {x : WithOne α}, x ≠ 1 → α | (x : α), _ => x
 
 @[to_additive (attr := simp) unzero_coe]

@@ -71,8 +71,8 @@ grind_pattern Disjoint.mono_left => a ≤ b, Disjoint b c
 grind_pattern Disjoint.mono_left => a ≤ b, Disjoint a c
 grind_pattern Disjoint.mono_left => Disjoint b c, Disjoint a c
 
-theorem Disjoint.mono_right : b ≤ c → Disjoint a c → Disjoint a b :=
-  Disjoint.mono le_rfl
+theorem Disjoint.mono_right (h : b ≤ c) : Disjoint a c → Disjoint a b :=
+  Disjoint.mono le_rfl h
 
 grind_pattern Disjoint.mono_right => b ≤ c, Disjoint a c
 grind_pattern Disjoint.mono_right => b ≤ c, Disjoint a b

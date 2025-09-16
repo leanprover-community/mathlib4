@@ -399,12 +399,10 @@ protected theorem postcomp_uniformContinuous [UniformSpace γ] {f : γ → β}
     UniformContinuous (ofFun ∘ (f ∘ ·) ∘ toFun : (α →ᵤ γ) → α →ᵤ β) := by
   -- This is a direct consequence of `UniformFun.comap_eq`
     refine uniformContinuous_iff.mpr ?_
-    exact (UniformFun.mono (uniformContinuous_iff.mp hf)).trans_eq UniformFun.comap_eq
-    -- Porting note: the original calc proof below gives a deterministic timeout
-    --calc
-    --  𝒰(α, γ, _) ≤ 𝒰(α, γ, ‹UniformSpace β›.comap f) :=
-    --    UniformFun.mono (uniformContinuous_iff.mp hf)
-    --  _ = 𝒰(α, β, _).comap (f ∘ ·) := @UniformFun.comap_eq α β γ _ f
+    calc
+      𝒰(α, γ, _) ≤ 𝒰(α, γ, ‹UniformSpace β›.comap f) :=
+        UniformFun.mono (uniformContinuous_iff.mp hf)
+      _ = 𝒰(α, β, _).comap (f ∘ ·) := by exact UniformFun.comap_eq
 
 /-- Turn a uniform isomorphism `γ ≃ᵤ β` into a uniform isomorphism `(α →ᵤ γ) ≃ᵤ (α →ᵤ β)` by
 post-composing. -/

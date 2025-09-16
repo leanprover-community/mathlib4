@@ -552,7 +552,7 @@ theorem isEmbedding_restrictScalars :
 @[continuity, fun_prop]
 theorem continuous_restrictScalars :
     Continuous (restrictScalars 𝕜' : (E →L[𝕜] F) → (E →L[𝕜'] F)) :=
-   (isEmbedding_restrictScalars _).continuous
+  (isEmbedding_restrictScalars _).continuous
 
 variable (𝕜 E F)
 variable (𝕜'' : Type*) [Ring 𝕜'']

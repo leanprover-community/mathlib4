@@ -42,6 +42,12 @@ theorem ker_modByMonicHom {q : R[X]} (hq : q.Monic) :
     LinearMap.ker (Polynomial.modByMonicHom q) = (Ideal.span {q}).restrictScalars R :=
   Submodule.ext fun _ => (mem_ker_modByMonic hq).trans Ideal.mem_span_singleton.symm
 
+@[simp]
+lemma ker_constantCoeff : RingHom.ker constantCoeff = .span {(X : R[X])} := by
+  refine le_antisymm (fun p hp ↦ ?_) (by simp [Ideal.span_le])
+  simp only [RingHom.mem_ker, constantCoeff_apply, ← Polynomial.X_dvd_iff] at hp
+  rwa [Ideal.mem_span_singleton]
+
 open Algebra in
 lemma _root_.Algebra.mem_ideal_map_adjoin {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
     (x : S) (I : Ideal R) {y : adjoin R ({x} : Set S)} :

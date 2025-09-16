@@ -109,7 +109,7 @@ construction for the Besicovitch covering theorem. It depends on some parameter 
 This is a family of balls (indexed by `i : Fin N.succ`, with center `c i` and radius `r i`) such
 that the last ball intersects all the other balls (condition `inter`),
 and given any two balls there is an order between them, ensuring that the first ball does not
-contain the center of the other one, and the radius of the second ball can not be larger than
+contain the center of the other one, and the radius of the second ball cannot be larger than
 the radius of the first ball (up to a factor `τ`). This order corresponds to the order of choice
 in the inductive construction: otherwise, the second ball would have been chosen before.
 This is the condition `h`.
@@ -294,7 +294,7 @@ theorem lastStep_nonempty :
   simp only [iUnionUpTo, not_exists, exists_prop, mem_iUnion, not_and,
     Subtype.exists] at A
   specialize A x H
-  simp? [hxy] at A says simp only [hxy, mem_ball, dist_self, not_lt] at A
+  replace A : p.r (p.index y) ≤ 0 := by simpa [hxy] using A
   exact (lt_irrefl _ ((p.rpos (p.index y)).trans_le A)).elim
 
 /-- Every point is covered by chosen balls, before `p.lastStep`. -/

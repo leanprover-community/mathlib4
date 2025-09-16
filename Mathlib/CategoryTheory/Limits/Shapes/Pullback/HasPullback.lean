@@ -21,13 +21,13 @@ pullacks.
 * `pullback f g`: Given a `HasPullback f g` instance, this function returns the choice of a limit
   object corresponding to the pullback of `f` and `g`. It fits into the following diagram:
 ```
-  pullback f g ---pullback.snd f g---> Y
+  pullback f g ---pullback.fst f g---> X
       |                                |
       |                                |
-pullback.snd f g                       g
+pullback.snd f g                       f
       |                                |
       v                                v
-      X --------------f--------------> Z
+      Y --------------g--------------> Z
 ```
 
 * `HasPushout f g`: this is an abbreviation for `HasColimit (span f g)`, and is a typeclass used to
@@ -39,10 +39,10 @@ pullback.snd f g                       g
 ```
       X --------------f--------------> Y
       |                                |
-      g                          pushout.inr f g
+      g                          pushout.inl f g
       |                                |
       v                                v
-      Z ---pushout.inl f g---> pushout f g
+      Z ---pushout.inr f g---> pushout f g
 ```
 
 # Main results & API
@@ -121,13 +121,13 @@ abbrev pushout.inr {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) [HasPushout f g] : Z 
   colimit.ι (span f g) WalkingSpan.right
 
 /-- A pair of morphisms `h : W ⟶ X` and `k : W ⟶ Y` satisfying `h ≫ f = k ≫ g` induces a morphism
-    `pullback.lift : W ⟶ pullback f g`. -/
+`pullback.lift : W ⟶ pullback f g`. -/
 abbrev pullback.lift {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] (h : W ⟶ X)
     (k : W ⟶ Y) (w : h ≫ f = k ≫ g := by cat_disch) : W ⟶ pullback f g :=
   limit.lift _ (PullbackCone.mk h k w)
 
 /-- A pair of morphisms `h : Y ⟶ W` and `k : Z ⟶ W` satisfying `f ≫ h = g ≫ k` induces a morphism
-    `pushout.desc : pushout f g ⟶ W`. -/
+`pushout.desc : pushout f g ⟶ W`. -/
 abbrev pushout.desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (h : Y ⟶ W) (k : Z ⟶ W)
     (w : f ≫ h = g ≫ k := by cat_disch) : pushout f g ⟶ W :=
   colimit.desc _ (PushoutCocone.mk h k w)
@@ -177,14 +177,14 @@ theorem pushout.inr_desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f
   colimit.ι_desc _ _
 
 /-- A pair of morphisms `h : W ⟶ X` and `k : W ⟶ Y` satisfying `h ≫ f = k ≫ g` induces a morphism
-    `l : W ⟶ pullback f g` such that `l ≫ pullback.fst = h` and `l ≫ pullback.snd = k`. -/
+`l : W ⟶ pullback f g` such that `l ≫ pullback.fst = h` and `l ≫ pullback.snd = k`. -/
 def pullback.lift' {W X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] (h : W ⟶ X) (k : W ⟶ Y)
     (w : h ≫ f = k ≫ g) :
       { l : W ⟶ pullback f g // l ≫ pullback.fst f g = h ∧ l ≫ pullback.snd f g = k } :=
   ⟨pullback.lift h k w, pullback.lift_fst _ _ _, pullback.lift_snd _ _ _⟩
 
 /-- A pair of morphisms `h : Y ⟶ W` and `k : Z ⟶ W` satisfying `f ≫ h = g ≫ k` induces a morphism
-    `l : pushout f g ⟶ W` such that `pushout.inl _ _ ≫ l = h` and `pushout.inr _ _ ≫ l = k`. -/
+`l : pushout f g ⟶ W` such that `pushout.inl _ _ ≫ l = h` and `pushout.inr _ _ ≫ l = k`. -/
 def pullback.desc' {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] (h : Y ⟶ W) (k : Z ⟶ W)
     (w : f ≫ h = g ≫ k) :
       { l : pushout f g ⟶ W // pushout.inl _ _ ≫ l = h ∧ pushout.inr _ _ ≫ l = k } :=
@@ -201,7 +201,7 @@ theorem pushout.condition {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f 
   PushoutCocone.condition _
 
 /-- Two morphisms into a pullback are equal if their compositions with the pullback morphisms are
-    equal -/
+equal -/
 @[ext 1100]
 theorem pullback.hom_ext {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullback f g] {W : C}
     {k l : W ⟶ pullback f g} (h₀ : k ≫ pullback.fst f g = l ≫ pullback.fst f g)
@@ -214,7 +214,7 @@ def pullbackIsPullback {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
   PullbackCone.mkSelfIsLimit <| pullback.isLimit f g
 
 /-- Two morphisms out of a pushout are equal if their compositions with the pushout morphisms are
-    equal -/
+equal -/
 @[ext 1100]
 theorem pushout.hom_ext {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout f g] {W : C}
     {k l : pushout f g ⟶ W} (h₀ : pushout.inl _ _ ≫ k = pushout.inl _ _ ≫ l)

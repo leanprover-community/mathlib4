@@ -81,7 +81,7 @@ elab "#find_syntax " id:str d:(&" approx")? : command => do
     -- then we include an entry into the final message.
     if 2 ≤ (nm.toString.splitOn id.getString).length || 2 ≤ (rem.splitOn id.getString).length then
       let mod := (← findModuleOf? nm).getD (← getMainModule)
-      match_results := match_results.insert mod <| (match_results.findD mod #[]).push (nm, rem.trim)
+      match_results := match_results.insert mod <| (match_results.getD mod #[]).push (nm, rem.trim)
   -- We sort the messages to produce a more stable output.
   let sorted_results := match_results.toArray.qsort (·.1.lt ·.1)
   let sorted_results := sorted_results.map fun (mod, msgs) => (mod, msgs.qsort (·.1.lt ·.1))

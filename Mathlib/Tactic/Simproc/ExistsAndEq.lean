@@ -31,9 +31,9 @@ partial def findImpEqProof (p : Expr) :
   lambdaTelescope p fun xs body => do
     let #[x] := xs | return none
     withLocalDecl .anonymous .default body fun h => withNewMCtxDepth do
-      let .some ⟨res, proof⟩ ← go x h | return none
+      let some ⟨res, proof⟩ ← go x h | return none
       let pf1 ← mkLambdaFVars #[x, h] proof
-      return .some ⟨res, ← mkAppM ``exists_of_imp_eq #[res, pf1]⟩
+      return some ⟨res, ← mkAppM ``exists_of_imp_eq #[res, pf1]⟩
 where
   /-- Traverses the expression `h`, branching at each `And`, to find a proof of `x = a`
   for some `a`. -/
@@ -43,15 +43,15 @@ where
       if !(← isDefEq (← inferType x) β) then
         return none
       if (← isDefEq x a) && !(b.containsFVar x.fvarId!) then
-        return .some ⟨b, ← mkAppM ``Eq.symm #[h]⟩
+        return some ⟨b, ← mkAppM ``Eq.symm #[h]⟩
       if (← isDefEq x b) && !(a.containsFVar x.fvarId!) then
-        return .some ⟨a, h⟩
+        return some ⟨a, h⟩
       else
-        return .none
+        return none
     | (``And, #[_, _]) =>
-      if let .some res ← go x (← mkAppM ``And.left #[h]) then
+      if let some res ← go x (← mkAppM ``And.left #[h]) then
         return res
-      if let .some res ← go x (← mkAppM ``And.right #[h]) then
+      if let some res ← go x (← mkAppM ``And.right #[h]) then
         return res
       return none
     | _ => return none
@@ -64,6 +64,6 @@ If so, it replaces all occurrences of `a` with `a'` and removes the quantifier. 
 simproc existsAndEq (Exists (fun _ => And _ _)) := fun e => do
   match e.getAppFnArgs with
   | (``Exists, #[_, p]) =>
-    let .some ⟨res, pf⟩ ← existsAndEq.findImpEqProof p | return .continue
+    let some ⟨res, pf⟩ ← existsAndEq.findImpEqProof p | return .continue
     return .visit {expr := mkApp p res, proof? := pf}
   | _ => return .continue

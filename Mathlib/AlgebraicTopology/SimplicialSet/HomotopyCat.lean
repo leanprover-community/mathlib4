@@ -6,11 +6,11 @@ Authors: Mario Carneiro, Emily Riehl, Joël Riou
 
 import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
-import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
-import Mathlib.CategoryTheory.Category.Cat.Terminal
+import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
 import Mathlib.CategoryTheory.Category.ReflQuiv
 import Mathlib.Combinatorics.Quiver.ReflQuiver
-
+import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
+import Mathlib.CategoryTheory.Category.Cat.Terminal
 
 /-!
 
@@ -48,33 +48,6 @@ section
 type. -/
 def OneTruncation₂ (S : SSet.Truncated 2) := S _⦋0⦌₂
 
-/-- Abbreviations for face maps in the 2-truncated simplex category. -/
-abbrev δ₂ {n} (i : Fin (n + 2)) (hn := by decide) (hn' := by decide) :
-    (⟨⦋n⦌, hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨⦋n + 1⦌, hn'⟩ := SimplexCategory.δ i
-
-/-- Abbreviations for degeneracy maps in the 2-truncated simplex category. -/
-abbrev σ₂ {n} (i : Fin (n + 1)) (hn := by decide) (hn' := by decide) :
-    (⟨⦋n + 1⦌, hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨⦋n⦌, hn'⟩ := SimplexCategory.σ i
-
-@[reassoc (attr := simp)]
-lemma δ₂_zero_comp_σ₂_zero {n} (hn := by decide) (hn' := by decide) :
-    δ₂ (n := n) 0 hn hn' ≫ σ₂ 0 hn' hn = 𝟙 _ := SimplexCategory.δ_comp_σ_self
-
-@[reassoc]
-lemma δ₂_zero_comp_σ₂_one : δ₂ (0 : Fin 3) ≫ σ₂ 1 = σ₂ 0 ≫ δ₂ 0 :=
-  SimplexCategory.δ_comp_σ_of_le (i := 0) (j := 0) (Fin.zero_le _)
-
-@[reassoc (attr := simp)]
-lemma δ₂_one_comp_σ₂_zero {n} (hn := by decide) (hn' := by decide) :
-    δ₂ (n := n) 1 hn hn' ≫ σ₂ 0 hn' hn = 𝟙 _ := SimplexCategory.δ_comp_σ_succ
-
-@[reassoc (attr := simp)]
-lemma δ₂_two_comp_σ₂_one : δ₂ (2 : Fin 3) ≫ σ₂ 1 = 𝟙 _ := SimplexCategory.δ_comp_σ_succ' (by decide)
-
-@[reassoc]
-lemma δ₂_two_comp_σ₂_zero : δ₂ (2 : Fin 3) ≫ σ₂ 0 = σ₂ 0 ≫ δ₂ 1 :=
-  SimplexCategory.δ_comp_σ_of_gt' (by decide)
-
 /-- The hom-types of the refl quiver underlying a simplicial set `S` are types of edges in `S _⦋1⦌₂`
 together with source and target equalities. -/
 @[ext]
@@ -90,7 +63,7 @@ structure OneTruncation₂.Hom {S : SSet.Truncated 2} (X Y : OneTruncation₂ S)
 instance (S : SSet.Truncated 2) : ReflQuiver (OneTruncation₂ S) where
   Hom X Y := SSet.OneTruncation₂.Hom X Y
   id X :=
-    { edge := S.map (SSet.σ₂ (n := 0) 0).op X
+    { edge := S.map (σ₂ (n := 0) 0).op X
       src_eq := by
         simp only [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_one_comp_σ₂_zero,
           op_id, FunctorToTypes.map_id_apply]
@@ -100,7 +73,7 @@ instance (S : SSet.Truncated 2) : ReflQuiver (OneTruncation₂ S) where
 
 @[simp]
 lemma OneTruncation₂.id_edge {S : SSet.Truncated 2} (X : OneTruncation₂ S) :
-    OneTruncation₂.Hom.edge (𝟙rq X) = S.map (SSet.σ₂ 0).op X := rfl
+    OneTruncation₂.Hom.edge (𝟙rq X) = S.map (σ₂ 0).op X := rfl
 
 /-- The functor that carries a 2-truncated simplicial set to its underlying refl quiver. -/
 @[simps]

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
 import Mathlib.Algebra.Group.Action.Pi
+import Mathlib.Algebra.Group.Finsupp
 import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Data.Finsupp.Single
 
 /-!
 # Scalar multiplication on `Finsupp`

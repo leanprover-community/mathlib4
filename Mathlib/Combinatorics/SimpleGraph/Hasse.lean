@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Combinatorics.SimpleGraph.Prod
-import Mathlib.Data.Fin.SuccPred
+import Mathlib.Data.Fin.SuccPredOrder
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.SuccPred.Relation
 import Mathlib.Tactic.FinCases

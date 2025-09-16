@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.WithTerminal.Basic
 Given categories `C` and `J`, an object `X : C` and a functor `K : J ⥤ Over X`,
 it has an obvious lift `liftFromOver K : WithTerminal J ⥤ C`, namely, send the terminal
 object to `X`. These two functors have equivalent categories of cones (`coneEquiv`).
-As a corollary, the limit of `K` is the limit of `liftFromOver K`, and viceversa.
+As a corollary, the limit of `K` is the limit of `liftFromOver K`, and vice-versa.
 -/
 
 open CategoryTheory Limits

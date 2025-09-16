@@ -41,7 +41,7 @@ theorem mem_derangements_iff_fixedPoints_eq_empty {f : Perm α} :
 /-- If `α` is equivalent to `β`, then `derangements α` is equivalent to `derangements β`. -/
 def Equiv.derangementsCongr (e : α ≃ β) : derangements α ≃ derangements β :=
   e.permCongr.subtypeEquiv fun {f} => e.forall_congr <| by
-   intro b; simp only [ne_eq, permCongr_apply, symm_apply_apply, EmbeddingLike.apply_eq_iff_eq]
+    intro b; simp only [ne_eq, permCongr_apply, symm_apply_apply, EmbeddingLike.apply_eq_iff_eq]
 
 namespace derangements
 
@@ -81,7 +81,6 @@ def atMostOneFixedPointEquivSum_derangements [DecidableEq α] (a : α) :
       (Equiv.sumCompl _).symm
     _ ≃ { f : Perm α // fixedPoints f ⊆ {a} ∧ a ∈ fixedPoints f } ⊕
           { f : Perm α // fixedPoints f ⊆ {a} ∧ a ∉ fixedPoints f } := by
-      -- Porting note: `subtypeSubtypeEquivSubtypeInter` no longer works with placeholder `_`s.
       refine Equiv.sumCongr ?_ ?_
       · exact subtypeSubtypeEquivSubtypeInter
           (fun x : Perm α => fixedPoints x ⊆ {a})

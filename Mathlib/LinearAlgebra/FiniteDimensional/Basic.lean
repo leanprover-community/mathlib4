@@ -30,7 +30,7 @@ and `LinearMap.comp_eq_id_comm`.
 
 You should not assume that there has been any effort to state lemmas as generally as possible.
 
-Plenty of the results hold for general fg modules or notherian modules, and they can be found in
+Plenty of the results hold for general fg modules or Noetherian modules, and they can be found in
 `Mathlib/LinearAlgebra/FreeModule/Finite/Rank.lean` and `Mathlib/RingTheory/Noetherian.lean`.
 -/
 

@@ -59,12 +59,12 @@ class PreservesColimit (K : J ⥤ C) (F : C ⥤ D) : Prop where
   preserves {c : Cocone K} (hc : IsColimit c) : Nonempty (IsColimit (F.mapCocone c))
 
 /-- We say that `F` preserves limits of shape `J` if `F` preserves limits for every diagram
-    `K : J ⥤ C`, i.e., `F` maps limit cones over `K` to limit cones. -/
+`K : J ⥤ C`, i.e., `F` maps limit cones over `K` to limit cones. -/
 class PreservesLimitsOfShape (J : Type w) [Category.{w'} J] (F : C ⥤ D) : Prop where
   preservesLimit : ∀ {K : J ⥤ C}, PreservesLimit K F := by infer_instance
 
 /-- We say that `F` preserves colimits of shape `J` if `F` preserves colimits for every diagram
-    `K : J ⥤ C`, i.e., `F` maps colimit cocones over `K` to colimit cocones. -/
+`K : J ⥤ C`, i.e., `F` maps colimit cocones over `K` to colimit cocones. -/
 class PreservesColimitsOfShape (J : Type w) [Category.{w'} J] (F : C ⥤ D) : Prop where
   preservesColimit : ∀ {K : J ⥤ C}, PreservesColimit K F := by infer_instance
 
@@ -567,7 +567,7 @@ lemma reflectsLimit_of_reflectsIsomorphisms (F : J ⥤ C) (G : C ⥤ D) [G.Refle
     change IsIso ((Cones.forget _).map ((limit.isLimit F).liftConeMorphism c))
     suffices IsIso (IsLimit.liftConeMorphism (limit.isLimit F) c) from by
       apply (Cones.forget F).map_isIso _
-    suffices IsIso (Prefunctor.map (Cones.functoriality F G).toPrefunctor
+    suffices IsIso ((Cones.functoriality F G).map
       (IsLimit.liftConeMorphism (limit.isLimit F) c)) from by
         apply isIso_of_reflects_iso _ (Cones.functoriality F G)
     exact t.hom_isIso (isLimitOfPreserves G (limit.isLimit F)) _
@@ -670,7 +670,7 @@ lemma reflectsColimit_of_reflectsIsomorphisms (F : J ⥤ C) (G : C ⥤ D) [G.Ref
     change IsIso ((Cocones.forget _).map ((colimit.isColimit F).descCoconeMorphism c))
     suffices IsIso (IsColimit.descCoconeMorphism (colimit.isColimit F) c) from by
       apply (Cocones.forget F).map_isIso _
-    suffices IsIso (Prefunctor.map (Cocones.functoriality F G).toPrefunctor
+    suffices IsIso ((Cocones.functoriality F G).map
       (IsColimit.descCoconeMorphism (colimit.isColimit F) c)) from by
         apply isIso_of_reflects_iso _ (Cocones.functoriality F G)
     exact (isColimitOfPreserves G (colimit.isColimit F)).hom_isIso t _

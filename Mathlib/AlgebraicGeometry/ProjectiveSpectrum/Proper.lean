@@ -321,7 +321,8 @@ lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
       CommRingCat.ofHom (fromZeroRingHom 𝒜 _) ≫ Spec.preimage φ := by
     apply Spec.map_injective
     simp only [Spec.map_comp, Spec.map_preimage, ← w.w]
-    rw [← Proj.awayι_toSpecZero, IsOpenImmersion.lift_fac_assoc]
+    rw [← Proj.awayι_toSpecZero _ _ (hxd i i.2), IsOpenImmersion.lift_fac_assoc]
+    exact Nat.zero_lt_of_ne_zero (hd i i.2)
   obtain ⟨i₀, φ', hφ, hφ'⟩ :=
     valuativeCriterion_existence_aux 𝒜 (Spec.preimage i₂).hom x (↑) (by simpa using hx) i
       (O := O) (K := K) (Spec.preimage φ).hom congr(($H).hom)
@@ -346,7 +347,8 @@ lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
     apply IsFractionRing.injective O K
     refine (DFunLike.congr_fun hφ'' (fromZeroRingHom 𝒜 _ _)).trans ?_
     simp only [RingHom.coe_comp, Function.comp_apply]
-    rw [awayMap_fromZeroRingHom, ← awayMap_fromZeroRingHom 𝒜 _ rfl, ← RingHom.comp_apply, hφ]
+    rw [awayMap_fromZeroRingHom, ← awayMap_fromZeroRingHom 𝒜 (hxd i₀ i₀.2) rfl,
+      ← RingHom.comp_apply, hφ]
     exact congr($(H.symm) x)
 
 instance [Algebra.FiniteType (𝒜 0) A] : UniversallyClosed (Proj.toSpecZero 𝒜) := by

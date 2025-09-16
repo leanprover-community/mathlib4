@@ -193,7 +193,7 @@ private theorem aux_sum_eq_pow (n : ℕ) :
       (n • f x ^ (n - 1)) • f' := by
   simp_rw [op_smul_eq_smul, smul_smul, ← pow_add, ← Finset.sum_smul]
   rw [Finset.sum_eq_card_nsmul, Finset.card_range, smul_assoc]
-  intros a ha
+  intro a ha
   congr
   exact add_tsub_cancel_of_le (Nat.le_pred_of_lt <| Finset.mem_range.1 ha)
 

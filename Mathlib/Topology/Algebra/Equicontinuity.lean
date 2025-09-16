@@ -7,7 +7,7 @@ import Mathlib.Topology.Algebra.UniformConvergence
 import Mathlib.Topology.UniformSpace.Equicontinuity
 
 /-!
-# Algebra-related equicontinuity criterions
+# Algebra-related equicontinuity criteria
 -/
 
 

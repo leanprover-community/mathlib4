@@ -3,11 +3,11 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
+import Mathlib.Analysis.Complex.ExponentialBounds
 import Mathlib.Analysis.InnerProductSpace.Convex
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Combinatorics.Additive.AP.Three.Defs
 import Mathlib.Combinatorics.Pigeonhole
-import Mathlib.Data.Complex.ExponentialBounds
 
 /-!
 # Behrend's bound on Roth numbers
@@ -231,7 +231,7 @@ that we then optimize by tweaking the parameters. The (almost) optimal parameter
 
 theorem exists_large_sphere_aux (n d : ℕ) : ∃ k ∈ range (n * (d - 1) ^ 2 + 1),
     (↑(d ^ n) / ((n * (d - 1) ^ 2 :) + 1) : ℝ) ≤ #(sphere n d k) := by
-  refine exists_le_card_fiber_of_nsmul_le_card_of_maps_to (fun x hx => ?_) nonempty_range_succ ?_
+  refine exists_le_card_fiber_of_nsmul_le_card_of_maps_to (fun x hx => ?_) nonempty_range_add_one ?_
   · rw [mem_range, Nat.lt_succ_iff]
     exact sum_sq_le_of_mem_box hx
   · rw [card_range, nsmul_eq_mul, mul_div_assoc', cast_add_one, mul_div_cancel_left₀, card_box]
@@ -288,7 +288,8 @@ theorem le_sqrt_log (hN : 4096 ≤ N) : log (2 / (1 - 2 / exp 1)) * (69 / 50) �
   calc
     _ ≤ log (2 ^ 3) * (69 / 50) := by
       gcongr
-      · field_simp [show 2 < Real.exp 1 from lt_trans (by norm_num1) exp_one_gt_d9]
+      · field_simp
+        simp (disch := positivity) [show 2 < Real.exp 1 from lt_trans (by norm_num1) exp_one_gt_d9]
       · norm_num1
         exact two_div_one_sub_two_div_e_le_eight
     _ ≤ √(log (2 ^ 12)) := by
@@ -388,14 +389,11 @@ theorem le_N (hN : 2 ≤ N) : (2 * dValue N - 1) ^ nValue N ≤ N := by
 
 theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (nValue N : ℝ)⁻¹ / exp 1 < dValue N := by
   apply div_lt_floor _
-  rw [← log_le_log_iff, log_rpow, mul_comm, ← div_eq_mul_inv]
-  · apply le_trans _ (div_le_div_of_nonneg_left _ _ (ceil_lt_mul _).le)
+  rw [← log_le_log_iff, log_rpow, mul_comm, ← div_eq_mul_inv, nValue]
+  · grw [ceil_lt_mul]
     · rw [mul_comm, ← div_div, div_sqrt, le_div_iff₀]
       · norm_num [le_sqrt_log hN]
       · norm_num1
-    · apply log_nonneg
-      rw [one_le_cast]
-      exact hN.trans' (by norm_num1)
     · rw [cast_pos, lt_ceil, cast_zero, Real.sqrt_pos]
       refine log_pos ?_
       rw [one_lt_cast]

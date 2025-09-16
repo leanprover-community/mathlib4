@@ -115,7 +115,7 @@ lemma inf_mul_sup [MulLeftMono α] (a b : α) : (a ⊓ b) * (a ⊔ b) = a * b :=
 
 /-- Every lattice ordered commutative group is a distributive lattice. -/
 -- Non-comm case needs cancellation law https://ncatlab.org/nlab/show/distributive+lattice
-@[to_additive "Every lattice ordered commutative additive group is a distributive lattice"]
+@[to_additive /-- Every lattice ordered commutative additive group is a distributive lattice -/]
 def CommGroup.toDistribLattice (α : Type*) [Lattice α] [CommGroup α]
     [MulLeftMono α] : DistribLattice α where
   le_sup_inf x y z := by

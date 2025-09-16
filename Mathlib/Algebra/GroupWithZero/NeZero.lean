@@ -41,10 +41,8 @@ section GroupWithZero
 
 variable {G₀ : Type*} [GroupWithZero G₀] {a : G₀}
 
--- Porting note: used `simpa` to prove `False` in lean3
 theorem inv_ne_zero (h : a ≠ 0) : a⁻¹ ≠ 0 := fun a_eq_0 => by
-  have := mul_inv_cancel₀ h
-  simp only [a_eq_0, mul_zero, zero_ne_one] at this
+  simpa [a_eq_0] using mul_inv_cancel₀ h
 
 @[simp high] -- should take priority over `IsUnit.inv_mul_cancel`
 theorem inv_mul_cancel₀ (h : a ≠ 0) : a⁻¹ * a = 1 :=

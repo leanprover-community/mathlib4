@@ -57,7 +57,7 @@ protected def scheme (X : LocallyRingedSpace.{u})
     refine SheafedSpace.forgetToPresheafedSpace.preimageIso ?_
     apply PresheafedSpace.IsOpenImmersion.isoOfRangeEq (PresheafedSpace.ofRestrict _ _) f.1
     · exact Subtype.range_coe_subtype
-    · exact Opens.isOpenEmbedding _ -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11187): was `infer_instance`
+    · exact Opens.isOpenEmbedding _
 
 end LocallyRingedSpace.IsOpenImmersion
 
@@ -189,8 +189,6 @@ theorem app_invApp' (U) (hU : U ≤ f.opensRange) :
 theorem appIso_inv_app (U) :
     (f.appIso U).inv ≫ f.app (f ''ᵁ U) = X.presheaf.map (eqToHom (preimage_image_eq f U)).op :=
   (PresheafedSpace.IsOpenImmersion.invApp_app _ _).trans (by rw [eqToHom_op])
-
-@[deprecated (since := "2025-02-11")] alias appIso_inv_app_apply' := appIso_inv_app_apply
 
 @[reassoc (attr := simp), elementwise nosimp]
 lemma appLE_appIso_inv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] {U : Y.Opens}
@@ -627,11 +625,7 @@ lemma isoOfRangeEq_inv_fac {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z)
 theorem app_eq_invApp_app_of_comp_eq_aux {X Y U : Scheme.{u}} (f : Y ⟶ U) (g : U ⟶ X) (fg : Y ⟶ X)
     (H : fg = f ≫ g) [h : IsOpenImmersion g] (V : U.Opens) :
     f ⁻¹ᵁ V = fg ⁻¹ᵁ (g ''ᵁ V) := by
-  subst H
-  rw [Scheme.comp_base, Opens.map_comp_obj]
-  congr 1
-  ext1
-  exact (Set.preimage_image_eq _ h.base_open.injective).symm
+  simp_all
 
 /-- The `fg` argument is to avoid nasty stuff about dependent types. -/
 theorem app_eq_appIso_inv_app_of_comp_eq {X Y U : Scheme.{u}} (f : Y ⟶ U) (g : U ⟶ X) (fg : Y ⟶ X)

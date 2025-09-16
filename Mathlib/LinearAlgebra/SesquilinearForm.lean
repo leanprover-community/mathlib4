@@ -190,13 +190,13 @@ section Symmetric
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] {I : R →+* R} {B : M →ₛₗ[I] M →ₗ[R] R}
 
 /-- The proposition that a sesquilinear form is symmetric -/
-def IsSymm (B : M →ₛₗ[I] M →ₗ[R] R) : Prop :=
-  ∀ x y, I (B x y) = B y x
+structure IsSymm (B : M →ₛₗ[I] M →ₗ[R] R) : Prop where
+  protected eq : ∀ x y, I (B x y) = B y x
+
+theorem isSymm_def {B : M →ₛₗ[I] M →ₗ[R] R} : B.IsSymm ↔ ∀ x y, I (B x y) = B y x :=
+  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
 namespace IsSymm
-
-protected theorem eq (H : B.IsSymm) (x y) : I (B x y) = B y x :=
-  H x y
 
 theorem isRefl (H : B.IsSymm) : B.IsRefl := fun x y H1 ↦ by
   rw [← H.eq]
@@ -205,22 +205,22 @@ theorem isRefl (H : B.IsSymm) : B.IsRefl := fun x y H1 ↦ by
 theorem ortho_comm (H : B.IsSymm) {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
   H.isRefl.ortho_comm
 
-theorem domRestrict (H : B.IsSymm) (p : Submodule R M) : (B.domRestrict₁₂ p p).IsSymm :=
-  fun _ _ ↦ by
-  simp_rw [domRestrict₁₂_apply]
-  exact H _ _
+theorem domRestrict (H : B.IsSymm) (p : Submodule R M) : (B.domRestrict₁₂ p p).IsSymm where
+  eq _ _ := by
+    simp_rw [domRestrict₁₂_apply]
+    exact H.eq _ _
 
 end IsSymm
 
 @[simp]
-theorem isSymm_zero : (0 : M →ₛₗ[I] M →ₗ[R] R).IsSymm := fun _ _ => map_zero _
+theorem isSymm_zero : (0 : M →ₛₗ[I] M →ₗ[R] R).IsSymm := ⟨fun _ _ => map_zero _⟩
 
 theorem BilinMap.isSymm_iff_eq_flip {N : Type*} [AddCommMonoid N] [Module R N]
     {B : LinearMap.BilinMap R M N} : (∀ x y, B x y = B y x) ↔ B = B.flip := by
   simp [LinearMap.ext_iff₂]
 
 theorem isSymm_iff_eq_flip {B : LinearMap.BilinForm R M} : B.IsSymm ↔ B = B.flip :=
-  BilinMap.isSymm_iff_eq_flip
+  isSymm_def.trans BilinMap.isSymm_iff_eq_flip
 
 end Symmetric
 
@@ -264,10 +264,7 @@ variable [CommSemiring R] [AddCommGroup M] [Module R M] [CommSemiring R₁] [Add
 
 theorem neg (H : B.IsAlt) (x y : M₁) : -B x y = B y x := by
   have H1 : B (y + x) (y + x) = 0 := self_eq_zero H (y + x)
-  simp? [map_add, self_eq_zero H] at H1 says
-    simp only [map_add, add_apply, self_eq_zero H, zero_add, add_zero] at H1
-  rw [add_eq_zero_iff_neg_eq] at H1
-  exact H1
+  simpa [map_add, self_eq_zero H, add_eq_zero_iff_neg_eq] using H1
 
 theorem isRefl (H : B.IsAlt) : B.IsRefl := by
   intro x y h
@@ -869,7 +866,7 @@ lemma apply_mul_apply_le_of_forall_zero_le (hs : ∀ x, 0 ≤ B x x) (x y : M) :
 /-- The **Cauchy-Schwarz inequality** for positive semidefinite symmetric forms. -/
 lemma apply_sq_le_of_symm (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) (x y : M) :
     (B x y) ^ 2 ≤ (B x x) * (B y y) := by
-  rw [show (B x y) ^ 2 = (B x y) * (B y x) by rw [sq, ← hB, RingHom.id_apply]]
+  rw [show (B x y) ^ 2 = (B x y) * (B y x) by rw [sq, ← hB.eq, RingHom.id_apply]]
   exact apply_mul_apply_le_of_forall_zero_le B hs x y
 
 /-- The equality case of **Cauchy-Schwarz**. -/
@@ -923,7 +920,7 @@ forms. -/
 lemma apply_sq_lt_iff_linearIndependent_of_symm [NoZeroSMulDivisors R M]
     (hp : ∀ x, x ≠ 0 → 0 < B x x) (hB : B.IsSymm) (x y : M) :
     (B x y) ^ 2 < (B x x) * (B y y) ↔ LinearIndependent R ![x, y] := by
-  rw [show (B x y) ^ 2 = (B x y) * (B y x) by rw [sq, ← hB, RingHom.id_apply]]
+  rw [show (B x y) ^ 2 = (B x y) * (B y x) by rw [sq, ← hB.eq, RingHom.id_apply]]
   exact apply_mul_apply_lt_iff_linearIndependent B hp x y
 
 lemma apply_apply_same_eq_zero_iff (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) {x : M} :

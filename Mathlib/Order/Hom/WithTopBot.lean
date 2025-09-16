@@ -57,11 +57,38 @@ def _root_.Function.Embedding.coeWithTop : α ↪ WithTop α where
   inj' := WithTop.coe_injective
 
 /-- The coercion `α → WithTop α` bundled as monotone map. -/
-@[simps]
+@[simps -fullyApplied]
 def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithTop α where
   toFun := (↑)
   inj' := WithTop.coe_injective
   map_rel_iff' := WithTop.coe_le_coe
+
+/-- Any `OrderTop` is equivalent to `WithTop` of the subtype excluding `⊤`.
+
+See also `Equiv.optionSubtypeNe`. -/
+def subtypeOrderIso [PartialOrder α] [OrderTop α] [DecidablePred (· = (⊤ : α))] :
+    WithTop {a : α // a ≠ ⊤} ≃o α where
+  toFun a := (a.map (↑)).untopD ⊤
+  invFun a := if h : a = ⊤ then ⊤ else .some ⟨a, h⟩
+  left_inv
+  | .some ⟨a, h⟩ => by simp [h]
+  | ⊤ => by simp
+  right_inv a := by dsimp only; split_ifs <;> simp [*]
+  map_rel_iff' {a b} := match a, b with
+  | .some a, .some b => by simp
+  | ⊤, .some ⟨b, h⟩ => by simp [h]
+  | a, ⊤ => by simp
+
+@[simp]
+theorem subtypeOrderIso_apply_coe [PartialOrder α] [OrderTop α] [DecidablePred (· = (⊤ : α))]
+    (a : {a : α // a ≠ ⊤}) :
+  subtypeOrderIso (a : WithTop {a : α // a ≠ ⊤}) = a := rfl
+
+theorem subtypeOrderIso_symm_apply [PartialOrder α] [OrderTop α] [DecidablePred (· = (⊤ : α))]
+    {a : α} (h : a ≠ ⊤) :
+    (subtypeOrderIso).symm a = (⟨a, h⟩ : {a : α // a ≠ ⊤}) := by
+  rw [OrderIso.symm_apply_eq]
+  rfl
 
 end WithTop
 
@@ -103,11 +130,28 @@ def _root_.Function.Embedding.coeWithBot : α ↪ WithBot α where
   inj' := WithBot.coe_injective
 
 /-- The coercion `α → WithBot α` bundled as monotone map. -/
-@[simps]
+@[simps -fullyApplied]
 def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithBot α where
   toFun := (↑)
   inj' := WithBot.coe_injective
   map_rel_iff' := WithBot.coe_le_coe
+
+/-- Any `OrderBot` is equivalent to `WithBot` of the subtype excluding `⊥`.
+
+See also `Equiv.optionSubtypeNe`. -/
+def subtypeOrderIso [PartialOrder α] [OrderBot α] [DecidablePred (· = (⊥ : α))] :
+    WithBot {a : α // a ≠ ⊥} ≃o α := (WithTop.subtypeOrderIso (α := αᵒᵈ)).dual
+
+@[simp]
+theorem subtypeOrderIso_apply_coe [PartialOrder α] [OrderBot α] [DecidablePred (· = (⊥ : α))]
+    (a : {a : α // a ≠ ⊥}) :
+  subtypeOrderIso (a : WithTop {a : α // a ≠ ⊥}) = a := rfl
+
+theorem subtypeOrderIso_symm_apply [PartialOrder α] [OrderBot α] [DecidablePred (· = (⊥ : α))]
+    {a : α} (h : a ≠ ⊥) :
+    (subtypeOrderIso).symm a = (⟨a, h⟩ : {a : α // a ≠ ⊥}) := by
+  rw [OrderIso.symm_apply_eq]
+  rfl
 
 end WithBot
 
@@ -143,17 +187,10 @@ protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β where
 protected def withTopMap (f : α ↪o β) : WithTop α ↪o WithTop β :=
   { f.dual.withBotMap.dual with toFun := WithTop.map f }
 
-/-- Coercion `α → WithBot α` as an `OrderEmbedding`. -/
-@[simps -fullyApplied]
-protected def withBotCoe : α ↪o WithBot α where
-  toFun := .some
-  inj' := Option.some_injective _
-  map_rel_iff' := WithBot.coe_le_coe
-
-/-- Coercion `α → WithTop α` as an `OrderEmbedding`. -/
-@[simps -fullyApplied]
-protected def withTopCoe : α ↪o WithTop α :=
-  { (OrderEmbedding.withBotCoe (α := αᵒᵈ)).dual with toFun := .some }
+@[deprecated (since := "2025-08-21")] protected alias withBotCoe := WithBot.coeOrderHom
+@[deprecated (since := "2025-08-21")] alias withBotCoe_apply := WithBot.coeOrderHom_apply
+@[deprecated (since := "2025-08-21")] protected alias withTopCoe := WithTop.coeOrderHom
+@[deprecated (since := "2025-08-21")] alias withTopCoe_apply := WithTop.coeOrderHom_apply
 
 end OrderEmbedding
 

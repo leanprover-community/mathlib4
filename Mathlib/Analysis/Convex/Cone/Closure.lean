@@ -58,7 +58,7 @@ lemma toConvexCone_closure_pointed (K : PointedCone 𝕜 E) : (K : ConvexCone �
 /-- The closure of a pointed cone inside a topological space as a pointed cone. This
 construction is mainly used for defining maps between proper cones. -/
 protected def closure (K : PointedCone 𝕜 E) : PointedCone 𝕜 E :=
-  ConvexCone.toPointedCone K.toConvexCone_closure_pointed
+  K.toConvexCone.closure.toPointedCone K.toConvexCone_closure_pointed
 
 @[simp, norm_cast]
 theorem coe_closure (K : PointedCone 𝕜 E) : (K.closure : Set E) = closure K :=

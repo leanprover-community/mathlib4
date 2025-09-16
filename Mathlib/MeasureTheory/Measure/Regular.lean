@@ -893,7 +893,6 @@ instance smul [h : InnerRegularCompactLTTop μ] (c : ℝ≥0∞) : InnerRegularC
   by_cases h'c : c = ∞
   · constructor
     intro s hs r hr
-    simp only [h'c] at hr
     by_cases h's : μ s = 0
     · simp [h's] at hr
     · simp [h'c, h's] at hs

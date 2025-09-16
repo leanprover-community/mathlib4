@@ -497,7 +497,7 @@ theorem ContinuousMap.algHom_ext_map_X {A : Type*} [Semiring A]
   suffices (⊤ : Subalgebra ℝ C(s, ℝ)) ≤ AlgHom.equalizer φ ψ from
     AlgHom.ext fun x => this (by trivial)
   rw [← polynomialFunctions.topologicalClosure s]
-  exact Subalgebra.topologicalClosure_minimal (polynomialFunctions s)
+  exact Subalgebra.topologicalClosure_minimal
     (polynomialFunctions.le_equalizer s φ ψ h) (isClosed_eq hφ hψ)
 
 /-- Continuous star algebra homomorphisms from `C(s, 𝕜)` into a star `𝕜`-algebra `A` which agree

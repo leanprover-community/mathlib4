@@ -38,8 +38,6 @@ namespace NNReal
 variable {x y : ℝ≥0}
 
 /-- Square root of a nonnegative real number. -/
--- Porting note (kmill): `pp_nodot` has no effect here
--- unless RFC https://github.com/leanprover/lean4/issues/6178 leads to dot notation pp for CoeFun
 @[pp_nodot]
 noncomputable def sqrt : ℝ≥0 ≃o ℝ≥0 :=
   OrderIso.symm <| powOrderIso 2 two_ne_zero
@@ -190,6 +188,9 @@ theorem sqrt_lt_sqrt_iff_of_pos (hy : 0 < y) : √x < √y ↔ x < y := by
 theorem sqrt_le_sqrt (h : x ≤ y) : √x ≤ √y := by
   rw [Real.sqrt, Real.sqrt, NNReal.coe_le_coe, NNReal.sqrt_le_sqrt]
   exact toNNReal_le_toNNReal h
+
+theorem sqrt_monotone : Monotone Real.sqrt :=
+  fun _ _ ↦ sqrt_le_sqrt
 
 @[gcongr, bound]
 theorem sqrt_lt_sqrt (hx : 0 ≤ x) (h : x < y) : √x < √y :=

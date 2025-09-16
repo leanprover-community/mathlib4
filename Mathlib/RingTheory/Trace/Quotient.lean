@@ -201,17 +201,11 @@ lemma Algebra.trace_quotient_eq_of_isDedekindDomain (x) [IsDedekindDomain R] [Is
     Submonoid.map_le_of_le_comap _ <| p.primeCompl_le_nonZeroDivisors.trans
       (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _
         (FaithfulSMul.algebraMap_injective _ _))
-  haveI : IsDomain Sₚ := IsLocalization.isDomain_of_le_nonZeroDivisors S e
+  haveI : IsDomain Sₚ := IsLocalization.isDomain_of_le_nonZeroDivisors _ e
   haveI : NoZeroSMulDivisors Rₚ Sₚ := by
     rw [NoZeroSMulDivisors.iff_algebraMap_injective, RingHom.injective_iff_ker_eq_bot,
       RingHom.ker_eq_bot_iff_eq_zero]
-    intro x hx
-    obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective p.primeCompl x
-    simp only [Sₚ, RingHom.algebraMap_toAlgebra, IsLocalization.map_mk',
-      IsLocalization.mk'_eq_zero_iff, mul_eq_zero, Subtype.exists, exists_prop] at hx ⊢
-    obtain ⟨_, ⟨a, ha, rfl⟩, H⟩ := hx
-    simp only [(injective_iff_map_eq_zero' _).mp (FaithfulSMul.algebraMap_injective R S)] at H
-    refine ⟨a, ha, H⟩
+    simp
   haveI : Module.Finite Rₚ Sₚ := .of_isLocalization R S p.primeCompl
   haveI : IsIntegrallyClosed Sₚ := isIntegrallyClosed_of_isLocalization _ _ e
   have : IsPrincipalIdealRing Rₚ := by

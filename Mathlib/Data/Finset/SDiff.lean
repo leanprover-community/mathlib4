@@ -11,7 +11,7 @@ import Mathlib.Data.Finset.Lattice.Lemmas
 ## Main declarations
 
 * `Finset.instSDiff`: Defines the set difference `s \ t` for finsets `s` and `t`.
-* `Finset.instGeneralizedBooleanAlgebra`: Finsets almost have a boolean algebra structure
+* `Finset.instGeneralizedBooleanAlgebra`: Finsets almost have a Boolean algebra structure
 
 ## Tags
 
@@ -169,6 +169,8 @@ theorem insert_sdiff_of_notMem (s : Finset α) {t : Finset α} {x : α} (h : x �
 @[deprecated (since := "2025-05-23")] alias insert_sdiff_of_not_mem := insert_sdiff_of_notMem
 
 theorem insert_sdiff_of_mem (s : Finset α) {x : α} (h : x ∈ t) : insert x s \ t = s \ t := by grind
+
+@[simp] lemma insert_sdiff_self_of_mem (ha : a ∈ s) : insert a (s \ {a}) = s := by grind
 
 @[simp] lemma insert_sdiff_cancel (ha : a ∉ s) : insert a s \ s = {a} := by grind
 

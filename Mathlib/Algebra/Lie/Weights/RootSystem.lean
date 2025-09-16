@@ -369,7 +369,6 @@ lemma reflectRoot_isNonZero (α β : Weight K H L) (hβ : β.IsNonZero) :
   have : β (coroot α) = 0 := by
     by_cases hα : α.IsZero
     · simp [coroot_eq_zero_iff.mpr hα]
-    apply add_left_injective (β (coroot α))
     simpa [root_apply_coroot hα, mul_two] using congr_fun (sub_eq_zero.mp e) (coroot α)
   have : reflectRoot α β = β := by ext; simp [reflectRoot, this]
   exact hβ (this ▸ e)
@@ -381,7 +380,7 @@ field of characteristic zero, relative to a splitting Cartan subalgebra. -/
 def rootSystem :
     RootSystem H.root K (Dual K H) H :=
   RootSystem.mk'
-    IsReflexive.toPerfectPairingDual
+    .id
     { toFun := (↑)
       inj' := by
         intro α β h; ext x; simpa using LinearMap.congr_fun h x  }
@@ -402,8 +401,7 @@ lemma corootForm_rootSystem_eq_killing :
   rw [restrict_killingForm_eq_sum, RootPairing.CorootForm, ← Finset.sum_coe_sort (s := H.root)]
   rfl
 
-@[simp] lemma rootSystem_toPerfectPairing_apply (f x) : (rootSystem H).toPerfectPairing f x = f x :=
-  rfl
+@[simp] lemma rootSystem_toLinearMap_apply (f x) : (rootSystem H).toLinearMap f x = f x := rfl
 @[simp] lemma rootSystem_pairing_apply (α β) : (rootSystem H).pairing β α = β.1 (coroot α.1) := rfl
 @[simp] lemma rootSystem_root_apply (α) : (rootSystem H).root α = α := rfl
 @[simp] lemma rootSystem_coroot_apply (α) : (rootSystem H).coroot α = coroot α := rfl
@@ -425,7 +423,7 @@ instance : (rootSystem H).IsReduced where
 
 section IsSimple
 
--- Note that after #10068 (Cartan's criterion) is complete we can omit `[IsKilling K L]`
+-- Note that after https://github.com/leanprover-community/mathlib4/issues/10068 (Cartan's criterion) is complete we can omit `[IsKilling K L]`
 variable [IsSimple K L]
 
 open Weight in
@@ -463,7 +461,7 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
         simp at this; exact this)
       have := s₂ i j h₁ h₂
       rw [h_eq, coe_neg, Pi.neg_apply, root_apply_coroot j_non_zero] at this
-      field_simp at this
+      simp at this
     have r₂ : r ∈ H.root := by simp [isNonZero_iff_ne_zero, r₁]
     cases Classical.em (⟨r, r₂⟩ ∈ Φ) with
     | inl hl =>

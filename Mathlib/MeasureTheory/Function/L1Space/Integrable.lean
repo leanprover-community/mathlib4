@@ -218,7 +218,7 @@ lemma integrable_norm_rpow_iff {f : α → β} {p : ℝ≥0∞}
 theorem Integrable.mono_measure {f : α → ε} (h : Integrable f ν) (hμ : μ ≤ ν) : Integrable f μ :=
   ⟨h.aestronglyMeasurable.mono_measure hμ, h.hasFiniteIntegral.mono_measure hμ⟩
 
-theorem Integrable.of_measure_le_smul {ε} [TopologicalSpace ε] [ENormedAddMonoid ε]
+theorem Integrable.of_measure_le_smul {ε} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
     {μ' : Measure α} {c : ℝ≥0∞} (hc : c ≠ ∞) (hμ'_le : μ' ≤ c • μ)
     {f : α → ε} (hf : Integrable f μ) : Integrable f μ' := by
   rw [← memLp_one_iff_integrable] at hf ⊢
@@ -276,7 +276,7 @@ theorem integrable_finset_sum_measure [PseudoMetrizableSpace ε]
 
 section
 
-variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
 
 @[fun_prop]
 theorem Integrable.smul_measure {f : α → ε} (h : Integrable f μ) {c : ℝ≥0∞} (hc : c ≠ ∞) :
@@ -352,6 +352,11 @@ theorem MeasurePreserving.integrable_comp {ν : Measure δ} {g : δ → ε} {f :
   rw [← hf.map_eq] at hg ⊢
   exact (integrable_map_measure hg hf.measurable.aemeasurable).symm
 
+theorem MeasurePreserving.integrable_comp_of_integrable {ν : Measure δ} {g : δ → ε} {f : α → δ}
+    (hf : MeasurePreserving f μ ν) (hg : Integrable g ν) :
+    Integrable (g ∘ f) μ :=
+  hf.integrable_comp hg.aestronglyMeasurable |>.mpr hg
+
 theorem MeasurePreserving.integrable_comp_emb {f : α → δ} {ν} (h₁ : MeasurePreserving f μ ν)
     (h₂ : MeasurableEmbedding f) {g : δ → ε} : Integrable (g ∘ f) μ ↔ Integrable g ν :=
   h₁.map_eq ▸ Iff.symm h₂.integrable_map_iff
@@ -363,9 +368,9 @@ theorem lintegral_edist_lt_top {f g : α → β} (hf : Integrable f μ) (hg : In
       simp_rw [Pi.zero_apply, ← hasFiniteIntegral_iff_edist]
       exact ⟨hf.hasFiniteIntegral, hg.hasFiniteIntegral⟩)
 
-section ENormedAddMonoid
+section ESeminormedAddMonoid
 
-variable {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε']
+variable {ε' : Type*} [TopologicalSpace ε'] [ESeminormedAddMonoid ε']
 
 variable (α ε') in
 @[simp]
@@ -395,11 +400,11 @@ lemma Integrable.of_subsingleton_codomain [Subsingleton ε'] {f : α → ε'} :
     Integrable f μ :=
   integrable_zero _ _ _ |>.congr <| .of_forall fun _ ↦ Subsingleton.elim _ _
 
-end ENormedAddMonoid
+end ESeminormedAddMonoid
 
-section ENormedAddCommMonoid
+section ESeminormedAddCommMonoid
 
-variable {ε' : Type*} [TopologicalSpace ε'] [ENormedAddCommMonoid ε'] [ContinuousAdd ε']
+variable {ε' : Type*} [TopologicalSpace ε'] [ESeminormedAddCommMonoid ε'] [ContinuousAdd ε']
 
 @[fun_prop]
 theorem integrable_finset_sum' {ι} (s : Finset ι) {f : ι → α → ε'}
@@ -412,7 +417,7 @@ theorem integrable_finset_sum {ι} (s : Finset ι) {f : ι → α → ε'}
     (hf : ∀ i ∈ s, Integrable (f i) μ) : Integrable (fun a => ∑ i ∈ s, f i a) μ := by
   simpa only [← Finset.sum_apply] using integrable_finset_sum' s hf
 
-end ENormedAddCommMonoid
+end ESeminormedAddCommMonoid
 
 /-- If `f` is integrable, then so is `-f`.
 See `Integrable.neg'` for the same statement, but formulated with `x ↦ - f x` instead of `-f`. -/
@@ -840,9 +845,6 @@ theorem memL1_smul_of_L1_withDensity {f : α → ℝ≥0} (f_meas : Measurable f
   memLp_one_iff_integrable.2 <|
     (integrable_withDensity_iff_integrable_smul f_meas).1 <| memLp_one_iff_integrable.1 (Lp.memLp u)
 
-@[deprecated (since := "2025-02-21")]
-alias memL1_smul_of_ℒ1_withDensity := memL1_smul_of_L1_withDensity
-
 variable (μ)
 
 /-- The map `u ↦ f • u` is an isometry between the `L^1` spaces for `μ.withDensity f` and `μ`. -/
@@ -907,9 +909,6 @@ theorem mem_L1_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hfm : AEMeasu
   exact ⟨(AEMeasurable.ennreal_toReal hfm).aestronglyMeasurable,
     hasFiniteIntegral_toReal_of_lintegral_ne_top hfi⟩
 
-@[deprecated (since := "2025-02-21")]
-alias mem_ℒ1_toReal_of_lintegral_ne_top := mem_L1_toReal_of_lintegral_ne_top
-
 theorem integrable_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ)
     (hfi : ∫⁻ x, f x ∂μ ≠ ∞) : Integrable (fun x ↦ (f x).toReal) μ :=
   memLp_one_iff_integrable.1 <| mem_L1_toReal_of_lintegral_ne_top hfm hfi
@@ -947,7 +946,7 @@ end PosPart
 section IsBoundedSMul
 
 variable {𝕜 : Type*}
-  {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+  {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
 
 @[fun_prop]
 theorem Integrable.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β] (c : 𝕜)

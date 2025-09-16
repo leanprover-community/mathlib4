@@ -22,6 +22,8 @@ which can be found in  `CategoryTheory.Conj`.
 -/
 
 
+set_option mathlib.tactic.category.grind true
+
 universe v u
 
 namespace CategoryTheory
@@ -57,6 +59,10 @@ theorem homCongr_symm {X₁ Y₁ X₂ Y₂ : C} (α : X₁ ≅ X₂) (β : Y₁ 
     (α.homCongr β).symm = α.symm.homCongr β.symm :=
   rfl
 
+attribute [grind _=_] Iso.trans_assoc
+attribute [grind =] Iso.symm_self_id Iso.self_symm_id Iso.refl_trans Iso.trans_refl
+
+attribute [local grind =] Function.LeftInverse Function.RightInverse in
 /-- If `X` is isomorphic to `X₁` and `Y` is isomorphic to `Y₁`, then
 there is a bijection between `X ≅ Y` and `X₁ ≅ Y₁`. -/
 @[simps]
@@ -87,7 +93,6 @@ theorem map_homCongr {X Y X₁ Y₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) (f 
 
 theorem map_isoCongr {X Y X₁ Y₁ : C} (α : X ≅ X₁) (β : Y ≅ Y₁) (f : X ≅ Y) :
     F.mapIso (Iso.isoCongr α β f) = Iso.isoCongr (F.mapIso α) (F.mapIso β) (F.mapIso f) := by
-  ext
   simp
 
 end Functor

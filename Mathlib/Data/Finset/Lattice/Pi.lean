@@ -24,8 +24,9 @@ variable [DistribLattice α] [BoundedOrder α] [DecidableEq ι]
 theorem inf_sup {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → α) :
     (s.inf fun i => (t i).sup (f i)) =
       (s.pi t).sup fun g => s.attach.inf fun i => f _ <| g _ i.2 := by
-  induction' s using Finset.induction with i s hi ih
-  · simp
+  induction s using Finset.induction with
+  | empty => simp
+  | insert i s hi ih => ?_
   rw [inf_insert, ih, attach_insert, sup_inf_sup]
   refine eq_of_forall_ge_iff fun c => ?_
   simp only [Finset.sup_le_iff, mem_product, mem_pi, and_imp, Prod.forall,

@@ -156,9 +156,7 @@ theorem max_eq_top [OrderTop α] {a b : α} : max a b = ⊤ ↔ a = ⊤ ∨ b = 
 
 @[aesop (rule_sets := [finiteness]) safe apply]
 lemma max_ne_top [OrderTop α] {a b : α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) : max a b ≠ ⊤ := by
-  by_contra h
-  obtain (h | h) := max_eq_top.mp h
-  all_goals simp_all
+  grind [max_eq_top]
 
 end LinearOrder
 

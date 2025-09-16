@@ -9,7 +9,7 @@ import Mathlib.LinearAlgebra.Dimension.Finrank
 import Mathlib.LinearAlgebra.InvariantBasisNumber
 
 /-!
-# Lemmas about rank and finrank in rings satisfying strong rank condition.
+# Lemmas about rank and `finrank` in rings satisfying strong rank condition.
 
 ## Main statements
 
@@ -30,7 +30,7 @@ For modules over rings satisfying the strong rank condition
   then the cardinality of `s` is bounded by the cardinality of `b`.
 
 For modules over rings with invariant basis number
-(including all commutative rings and all noetherian rings)
+(including all commutative rings and all Noetherian rings)
 
 * `mk_eq_mk_of_basis`: the dimension theorem, any two bases of the same vector space have the same
   cardinality.

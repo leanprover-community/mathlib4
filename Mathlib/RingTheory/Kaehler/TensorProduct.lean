@@ -7,7 +7,7 @@ import Mathlib.RingTheory.Kaehler.Basic
 import Mathlib.RingTheory.Localization.BaseChange
 
 /-!
-# Kaehler differential module under base change
+# Kähler differential module under base change
 
 ## Main results
 - `KaehlerDifferential.tensorKaehlerEquiv`: `(S ⊗[R] Ω[A⁄R]) ≃ₗ[S] Ω[B⁄S]` for `B = S ⊗[R] A`.

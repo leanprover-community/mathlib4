@@ -42,7 +42,7 @@ lemma isProjectiveMeasureFamily_map_restrict (hX : ∀ t, AEMeasurable (X t) P) 
     IsProjectiveMeasureFamily (fun I ↦ P.map (fun ω ↦ I.restrict (X · ω))) := by
   intro I J hJI
   rw [AEMeasurable.map_map_of_aemeasurable (Finset.measurable_restrict₂ _).aemeasurable]
-  · rfl
+  · simp [Finset.restrict_def, Finset.restrict₂_def, Function.comp_def]
   · exact aemeasurable_pi_lambda _ fun _ ↦ hX _
 
 /-- The projective limit of the finite dimensional distributions of a stochastic process is the law
@@ -50,8 +50,8 @@ of the process. -/
 lemma isProjectiveLimit_map (hX : AEMeasurable (fun ω ↦ (X · ω)) P) :
     IsProjectiveLimit (P.map (fun ω ↦ (X · ω))) (fun I ↦ P.map (fun ω ↦ I.restrict (X · ω))) := by
   intro I
-  rw [AEMeasurable.map_map_of_aemeasurable (Finset.measurable_restrict _).aemeasurable hX]
-  rfl
+  rw [AEMeasurable.map_map_of_aemeasurable (Finset.measurable_restrict _).aemeasurable hX,
+    Function.comp_def]
 
 /-- Two stochastic processes have same law iff they have the same
 finite dimensional distributions. -/
@@ -61,11 +61,9 @@ lemma map_eq_iff_forall_finset_map_restrict_eq [IsFiniteMeasure P]
     ↔ ∀ I : Finset T, P.map (fun ω ↦ I.restrict (X · ω)) = P.map (fun ω ↦ I.restrict (Y · ω)) := by
   refine ⟨fun h I ↦ ?_, fun h ↦ ?_⟩
   · have hX' : P.map (fun ω ↦ I.restrict (X · ω)) = (P.map (fun ω ↦ (X · ω))).map I.restrict := by
-      rw [AEMeasurable.map_map_of_aemeasurable (by fun_prop) hX]
-      rfl
+      rw [AEMeasurable.map_map_of_aemeasurable (by fun_prop) hX, Function.comp_def]
     have hY' : P.map (fun ω ↦ I.restrict (Y · ω)) = (P.map (fun ω ↦ (Y · ω))).map I.restrict := by
-      rw [AEMeasurable.map_map_of_aemeasurable (by fun_prop) hY]
-      rfl
+      rw [AEMeasurable.map_map_of_aemeasurable (by fun_prop) hY, Function.comp_def]
     rw [hX', hY', h]
   · have hX' := isProjectiveLimit_map hX
     simp_rw [h] at hX'

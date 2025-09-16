@@ -500,7 +500,7 @@ noncomputable
 def RationalMap.toPartialMap [IsReduced X] [Y.IsSeparated] (f : X ⤏ Y) : X.PartialMap Y := by
   refine ⟨f.domain, f.dense_domain, f.openCoverDomain.glueMorphisms
     (fun x ↦ (X.isoOfEq x.2.choose_spec.2).inv ≫ x.2.choose.hom) ?_⟩
-  intros x y
+  intro x y
   let g (x : f.openCoverDomain.J) := x.2.choose
   have hg₁ (x) : (g x).toRationalMap = f := x.2.choose_spec.1
   have hg₂ (x) : (g x).domain = x.1 := x.2.choose_spec.2

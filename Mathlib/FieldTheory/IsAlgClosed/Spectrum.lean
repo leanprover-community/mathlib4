@@ -122,6 +122,9 @@ theorem map_polynomial_aeval_of_nonempty [IsAlgClosed 𝕜] (a : A) (p : 𝕜[X]
 theorem pow_image_subset (a : A) (n : ℕ) : (fun x => x ^ n) '' σ a ⊆ σ (a ^ n) := by
   simpa only [eval_pow, eval_X, aeval_X_pow] using subset_polynomial_aeval a (X ^ n : 𝕜[X])
 
+theorem pow_mem_pow (a : A) (n : ℕ) {k : 𝕜} (hk : k ∈ σ a) : k ^ n ∈ σ (a ^ n) :=
+  pow_image_subset a n ⟨k, ⟨hk, rfl⟩⟩
+
 /-- A specialization of `spectrum.map_polynomial_aeval_of_nonempty` to monic monomials for
 convenience. -/
 theorem map_pow_of_pos [IsAlgClosed 𝕜] (a : A) {n : ℕ} (hn : 0 < n) :

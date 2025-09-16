@@ -52,14 +52,17 @@ lemma smul_left_injective' [SMul M α] [FaithfulSMul M α] : Injective ((· • 
   fun _ _ h ↦ FaithfulSMul.eq_of_smul_eq_smul (congr_fun h)
 
 /-- `Monoid.toMulAction` is faithful on cancellative monoids. -/
-@[to_additive "`AddMonoid.toAddAction` is faithful on additive cancellative monoids."]
+@[to_additive /-- `AddMonoid.toAddAction` is faithful on additive cancellative monoids. -/]
 instance RightCancelMonoid.faithfulSMul [RightCancelMonoid α] : FaithfulSMul α α :=
   ⟨fun h ↦ mul_right_cancel (h 1)⟩
 
 /-- `Monoid.toOppositeMulAction` is faithful on cancellative monoids. -/
-@[to_additive " `AddMonoid.toOppositeAddAction` is faithful on additive cancellative monoids. "]
-instance LefttCancelMonoid.to_faithfulSMul_mulOpposite [LeftCancelMonoid α] : FaithfulSMul αᵐᵒᵖ α :=
+@[to_additive /-- `AddMonoid.toOppositeAddAction` is faithful on additive cancellative monoids. -/]
+instance LeftCancelMonoid.to_faithfulSMul_mulOpposite [LeftCancelMonoid α] : FaithfulSMul αᵐᵒᵖ α :=
   ⟨fun h ↦ MulOpposite.unop_injective <| mul_left_cancel (h 1)⟩
+
+@[deprecated (since := "2025-09-15")]
+alias LefttCancelMonoid.to_faithfulSMul_mulOpposite := LeftCancelMonoid.to_faithfulSMul_mulOpposite
 
 instance (R : Type*) [MulOneClass R] : FaithfulSMul R R := ⟨fun {r₁ r₂} h ↦ by simpa using h 1⟩
 
@@ -70,3 +73,12 @@ lemma faithfulSMul_iff_injective_smul_one (R A : Type*)
   · simp only at hr
     rw [← one_mul a, ← smul_mul_assoc, ← smul_mul_assoc, hr]
   · simpa using hr 1
+
+/--
+Let `Q / P / N / M` be a tower. If `Q / N / M`, `Q / P / M` and `Q / P / N` are
+scalar towers, then `P / N / M` is also a scalar tower.
+-/
+@[to_additive] lemma IsScalarTower.to₁₂₃ (M N P Q)
+    [SMul M N] [SMul M P] [SMul M Q] [SMul N P] [SMul N Q] [SMul P Q] [FaithfulSMul P Q]
+    [IsScalarTower M N Q] [IsScalarTower M P Q] [IsScalarTower N P Q] : IsScalarTower M N P where
+  smul_assoc m n p := by simp_rw [← (smul_left_injective' (α := Q)).eq_iff, smul_assoc]

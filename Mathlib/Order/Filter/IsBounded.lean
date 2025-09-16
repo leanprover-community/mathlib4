@@ -91,9 +91,7 @@ variable [Preorder α] {f : Filter β} {u : β → α} {s : Set β}
 
 lemma IsBoundedUnder.eventually_le (h : IsBoundedUnder (· ≤ ·) f u) :
     ∃ a, ∀ᶠ x in f, u x ≤ a := by
-  obtain ⟨a, ha⟩ := h
-  use a
-  exact eventually_map.1 ha
+  tauto
 
 lemma IsBoundedUnder.eventually_ge (h : IsBoundedUnder (· ≥ ·) f u) :
     ∃ a, ∀ᶠ x in f, a ≤ u x :=
@@ -373,7 +371,7 @@ end add_and_sum
 section add_and_sum
 
 variable {α : Type*} {R : Type*} [LinearOrder R] [Add R] {f : Filter α} [f.NeBot]
-  [CovariantClass R R (fun a b ↦ a + b) (· ≤ ·)] [CovariantClass R R (fun a b ↦ b + a) (· ≤ ·)]
+  [AddLeftMono R] [AddRightMono R]
   {u v : α → R}
 
 lemma isCoboundedUnder_ge_add (hu : f.IsBoundedUnder (· ≤ ·) u)

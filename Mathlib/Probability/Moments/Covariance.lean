@@ -3,9 +3,7 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Etienne Marion
 -/
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
-import Mathlib.Probability.Notation
+import Mathlib.Probability.Independence.Integration
 
 /-!
 # Covariance
@@ -45,6 +43,20 @@ scoped notation "cov[" X ", " Y "; " μ "]" => ProbabilityTheory.covariance X Y 
 /-- The covariance of the real-valued random variables `X` and `Y`
 according to the volume measure. -/
 scoped notation "cov[" X ", " Y "]" => cov[X, Y; MeasureTheory.MeasureSpace.volume]
+
+lemma covariance_eq_sub [IsProbabilityMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
+     cov[X, Y; μ] = μ[X * Y] - μ[X] * μ[Y] := by
+   simp_rw [covariance, sub_mul, mul_sub]
+   repeat rw [integral_sub]
+   · simp_rw [integral_mul_const, integral_const_mul, integral_const, measureReal_univ_eq_one,
+       one_smul]
+     simp
+   · exact hY.const_mul _ |>.integrable (by simp)
+   · exact integrable_const _
+   · exact hX.integrable_mul hY
+   · exact hX.mul_const _ |>.integrable (by simp)
+   · exact (hX.integrable_mul hY).sub (hX.mul_const _ |>.integrable (by simp))
+   · exact (hY.const_mul _ |>.integrable (by simp)).sub (integrable_const _)
 
 @[simp] lemma covariance_zero_left : cov[0, Y; μ] = 0 := by simp [covariance]
 
@@ -266,5 +278,27 @@ lemma covariance_map_fun {Z : Ω' → Ω} (hX : AEStronglyMeasurable X (μ.map Z
   covariance_map hX hY hZ
 
 end Map
+
+lemma IndepFun.covariance_eq_zero (h : IndepFun X Y μ) (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) :
+     cov[X, Y; μ] = 0 := by
+   by_cases h' : ∀ᵐ ω ∂μ, X ω = 0
+   · refine integral_eq_zero_of_ae ?_
+     filter_upwards [h'] with ω hω
+     simp [hω, integral_eq_zero_of_ae h']
+   have := hX.isProbabilityMeasure_of_indepFun X Y (by simp) (by simp) h' h
+   rw [covariance_eq_sub hX hY, h.integral_mul_eq_mul_integral
+       hX.aestronglyMeasurable hY.aestronglyMeasurable, sub_self]
+
+section Prod
+
+variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {ν : Measure Ω'}
+  [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {X : Ω → ℝ} {Y : Ω' → ℝ}
+
+lemma covariance_fst_snd_prod (hfμ : MemLp X 2 μ) (hgν : MemLp Y 2 ν) :
+    cov[fun p ↦ X p.1, fun p ↦ Y p.2; μ.prod ν] = 0 :=
+  (indepFun_prod₀ hfμ.aemeasurable hgν.aemeasurable).covariance_eq_zero
+    (hfμ.comp_fst ν) (hgν.comp_snd μ)
+
+end Prod
 
 end ProbabilityTheory

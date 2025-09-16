@@ -109,7 +109,7 @@ theorem comp {Kg : ℝ≥0} {g : β → γ} (hg : AntilipschitzWith Kg g) {Kf : 
     (hf : AntilipschitzWith Kf f) : AntilipschitzWith (Kf * Kg) (g ∘ f) := fun x y =>
   calc
     edist x y ≤ Kf * edist (f x) (f y) := hf x y
-    _ ≤ Kf * (Kg * edist (g (f x)) (g (f y))) := mul_left_mono (hg _ _)
+    _ ≤ Kf * (Kg * edist (g (f x)) (g (f y))) := mul_right_mono (hg _ _)
     _ = _ := by rw [ENNReal.coe_mul, mul_assoc]; rfl
 
 theorem restrict (hf : AntilipschitzWith K f) (s : Set α) : AntilipschitzWith K (s.restrict f) :=

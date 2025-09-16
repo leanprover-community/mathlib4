@@ -245,7 +245,7 @@ theorem comap_bot (f : F) : comap f ⊥ = ker f :=
 
 @[simp]
 theorem ker_subtype : ker p.subtype = ⊥ :=
-  ker_eq_bot_of_injective fun _ _ => Subtype.ext_val
+  ker_eq_bot_of_injective fun _ _ => Subtype.ext
 
 @[simp]
 theorem ker_inclusion (p p' : Submodule R M) (h : p ≤ p') : ker (inclusion h) = ⊥ := by

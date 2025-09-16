@@ -214,7 +214,7 @@ variable {m n : ℕ}
 
 @[grind =]
 lemma odd_iff : Odd n ↔ n % 2 = 1 :=
-  ⟨fun ⟨m, hm⟩ ↦ by omega, fun h ↦ ⟨n / 2, by grind⟩⟩
+  ⟨fun ⟨m, hm⟩ ↦ by omega, fun h ↦ ⟨n / 2, by omega⟩⟩
 
 instance : DecidablePred (Odd : ℕ → Prop) := fun _ ↦ decidable_of_iff _ odd_iff.symm
 
@@ -291,6 +291,9 @@ lemma two_mul_div_two_add_one_of_odd (h : Odd n) : 2 * (n / 2) + 1 = n := by gri
 lemma div_two_mul_two_add_one_of_odd (h : Odd n) : n / 2 * 2 + 1 = n := by grind
 
 lemma one_add_div_two_mul_two_of_odd (h : Odd n) : 1 + n / 2 * 2 = n := by grind
+
+lemma two_dvd_mul_add_one (k : ℕ) : 2 ∣ k * (k + 1) :=
+  even_iff_two_dvd.mp (even_mul_succ_self k)
 
 -- Here are examples of how `parity_simps` can be used with `Nat`.
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by

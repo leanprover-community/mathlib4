@@ -732,7 +732,7 @@ theorem mem_atomise :
 
 theorem atomise_empty (hs : s.Nonempty) : (atomise s ∅).parts = {s} := by
   simp only [atomise, powerset_empty, image_singleton, notMem_empty, IsEmpty.forall_iff,
-    imp_true_iff, filter_True]
+    imp_true_iff, filter_true]
   exact erase_eq_of_notMem (notMem_singleton.2 hs.ne_empty.symm)
 
 theorem card_atomise_le : #(atomise s F).parts ≤ 2 ^ #F :=

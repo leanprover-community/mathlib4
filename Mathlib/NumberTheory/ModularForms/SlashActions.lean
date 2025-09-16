@@ -130,7 +130,6 @@ theorem SL_slash (γ : SL(2, ℤ)) : f ∣[k] γ = f ∣[k] (γ : GL (Fin 2) ℝ
 
 theorem SL_slash_def (γ : SL(2, ℤ)) :
     f ∣[k] γ = fun τ ↦ f (γ • τ) * denom γ τ ^ (-k) := by
-  ext
   simp [SL_slash, slash_def, σ]
 
 theorem SL_slash_apply (γ : SL(2, ℤ)) (τ : ℍ) :
@@ -153,7 +152,7 @@ theorem is_invariant_const (A : SL(2, ℤ)) (x : ℂ) :
 theorem is_invariant_one (A : SL(2, ℤ)) : (1 : ℍ → ℂ) ∣[(0 : ℤ)] A = (1 : ℍ → ℂ) :=
   is_invariant_const _ _
 
-/-- Variant of `is_invariant_one` with the left hand side in simp normal form. -/
+/-- Variant of `is_invariant_one` with the left-hand side in simp normal form. -/
 @[simp]
 theorem is_invariant_one' (A : SL(2, ℤ)) : (1 : ℍ → ℂ) ∣[(0 : ℤ)] (A : GL (Fin 2) ℝ) = 1 := by
   simpa using is_invariant_one A

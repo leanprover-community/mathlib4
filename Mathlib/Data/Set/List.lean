@@ -46,8 +46,6 @@ theorem range_list_getElem? :
   · exact ⟨_, getElem?_eq_none_iff.mpr le_rfl⟩
   · exact range_subset_iff.2 fun k => ⟨_, getElem?_eq_getElem _⟩
 
-@[deprecated (since := "2025-02-15")] alias range_list_get? := range_list_getElem?
-
 @[simp]
 theorem range_list_getD (d : α) : (range fun n : Nat => l[n]?.getD d) = insert d { x | x ∈ l } :=
   calc

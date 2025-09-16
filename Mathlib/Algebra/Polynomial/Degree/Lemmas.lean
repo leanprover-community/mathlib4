@@ -155,9 +155,10 @@ theorem coeff_mul_of_natDegree_le (pm : p.natDegree ≤ m) (qn : q.natDegree ≤
 
 theorem coeff_pow_of_natDegree_le (pn : p.natDegree ≤ n) :
     (p ^ m).coeff (m * n) = p.coeff n ^ m := by
-  induction' m with m hm
-  · simp
-  · rw [pow_succ, pow_succ, ← hm, Nat.succ_mul, coeff_mul_of_natDegree_le _ pn]
+  induction m with
+  | zero => simp
+  | succ m hm =>
+    rw [pow_succ, pow_succ, ← hm, Nat.succ_mul, coeff_mul_of_natDegree_le _ pn]
     refine natDegree_pow_le.trans (le_trans ?_ (le_refl _))
     exact mul_le_mul_of_nonneg_left pn m.zero_le
 
@@ -183,9 +184,10 @@ theorem degree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
     (h : Set.Pairwise { i | i ∈ s ∧ f i ≠ 0 } (Ne on degree ∘ f)) :
     degree (s.sum f) = s.sup fun i => degree (f i) := by
   classical
-  induction' s using Finset.induction_on with x s hx IH
-  · simp
-  · simp only [hx, Finset.sum_insert, not_false_iff, Finset.sup_insert]
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert x s hx IH =>
+    simp only [hx, Finset.sum_insert, not_false_iff, Finset.sup_insert]
     specialize IH (h.mono fun _ => by simp +contextual)
     rcases lt_trichotomy (degree (f x)) (degree (s.sum f)) with (H | H | H)
     · rw [← IH, sup_eq_right.mpr H.le, degree_add_eq_right_of_degree_lt H]
@@ -273,7 +275,6 @@ theorem natDegree_map_eq_iff {f : R →+* S} {p : Polynomial R} :
     natDegree (map f p) = natDegree p ↔ f (p.leadingCoeff) ≠ 0 ∨ natDegree p = 0 := by
   rcases eq_or_ne (natDegree p) 0 with h|h
   · simp_rw [h, ne_eq, or_true, iff_true, ← Nat.le_zero, ← h, natDegree_map_le]
-  have h2 : p ≠ 0 := by rintro rfl; simp at h
   simp_all [natDegree, WithBot.unbotD_eq_unbotD_iff]
 
 theorem natDegree_pos_of_nextCoeff_ne_zero (h : p.nextCoeff ≠ 0) : 0 < p.natDegree := by

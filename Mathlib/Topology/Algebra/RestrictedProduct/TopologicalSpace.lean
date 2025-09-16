@@ -326,7 +326,7 @@ properties when each `A i` is an open subset of `R i`. The key fact is that each
 `Πʳ i, [R i, A i]`.
 
 This allows us to prove a "universal property with parameters", expressing that for any
-arbitrary topolgical space `X` (of "parameters"), the product `X × Πʳ i, [R i, A i]`
+arbitrary topological space `X` (of "parameters"), the product `X × Πʳ i, [R i, A i]`
 is still the inductive limit of the `X × Πʳ i, [R i, A i]_[𝓟 S]` for `S` cofinite.
 
 This fact, which is **not true** for a general inductive limit, will allow us to prove continuity
@@ -609,9 +609,9 @@ instance isTopologicalRing [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)]
 Assume also that all but finitely many `A i`s are compact.
 Then the restricted product `Πʳ i, [R i, A i]` is a locally compact group. -/
 @[to_additive
-"Assume that each `R i` is a locally compact additive group with `A i` an open subgroup.
+/-- Assume that each `R i` is a locally compact additive group with `A i` an open subgroup.
 Assume also that all but finitely many `A i`s are compact.
-Then the restricted product `Πʳ i, [R i, A i]` is a locally compact additive group."]
+Then the restricted product `Πʳ i, [R i, A i]` is a locally compact additive group. -/]
 theorem locallyCompactSpace_of_group [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)]
     [∀ i, IsTopologicalGroup (R i)] [∀ i, LocallyCompactSpace (R i)]
     (hBcompact : ∀ᶠ i in cofinite, IsCompact (B i : Set (R i))) :

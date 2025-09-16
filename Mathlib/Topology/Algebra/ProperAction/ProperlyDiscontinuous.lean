@@ -21,7 +21,7 @@ weakly locally compact.
 
 ## Tags
 
-grouup action, proper action, properly discontinuous, compactly generated
+group action, proper action, properly discontinuous, compactly generated
 -/
 
 variable {G X : Type*} [Group G] [MulAction G X] [TopologicalSpace G] [TopologicalSpace X]
@@ -50,7 +50,7 @@ theorem properlyDiscontinuousSMul_iff_properSMul [T2Space X] [DiscreteTopology G
       ⟨(continuous_prod_of_discrete_left.2 continuous_const_smul).prodMk (by fun_prop),
       fun K hK ↦ ?_⟩
     -- We set `K' := pr₁(K) ∪ pr₂(K)`, which is compact because `K` is compact and `pr₁` and
-    -- `pr₂` are continuous. We halso have that `K ⊆ K' × K'`, and `K` is closed because `X` is T2.
+    -- `pr₂` are continuous. We also have that `K ⊆ K' × K'`, and `K` is closed because `X` is T2.
     -- Therefore `f ⁻¹ (K)` is also closed and `f ⁻¹ (K) ⊆ f ⁻¹ (K' × K')`, thus it suffices to
     -- show that `f ⁻¹ (K' × K')` is compact.
     let K' := fst '' K ∪ snd '' K

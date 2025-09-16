@@ -110,10 +110,10 @@ lead to a diamond since a topological field would inherit two `HSpace` structure
 `MulOneClass` and one from the `AddZeroClass`. In the case of a group, we make
 `IsTopologicalGroup.hSpace` an instance." -/
 @[to_additive
-      "The definition `toHSpace` is not an instance because it comes together with a
+      /-- The definition `toHSpace` is not an instance because it comes together with a
       multiplicative version which would lead to a diamond since a topological field would inherit
       two `HSpace` structures, one from the `MulOneClass` and one from the `AddZeroClass`.
-      In the case of an additive group, we make `IsTopologicalAddGroup.hSpace` an instance."]
+      In the case of an additive group, we make `IsTopologicalAddGroup.hSpace` an instance. -/]
 def toHSpace (M : Type u) [MulOneClass M] [TopologicalSpace M] [ContinuousMul M] : HSpace M where
   hmul := ⟨Function.uncurry Mul.mul, continuous_mul⟩
   e := 1

@@ -81,13 +81,11 @@ theorem ext (A₁ A₂ : IndexSet Δ) (h₁ : A₁.1 = A₂.1) (h₂ : A₁.e �
 instance : Fintype (IndexSet Δ) :=
   Fintype.ofInjective
     (fun A =>
-      ⟨⟨A.1.unop.len, Nat.lt_succ_iff.mpr (len_le_of_epi (inferInstance : Epi A.e))⟩,
+      ⟨⟨A.1.unop.len, Nat.lt_succ_iff.mpr (len_le_of_epi A.e)⟩,
         A.e.toOrderHom⟩ :
       IndexSet Δ → Sigma fun k : Fin (Δ.unop.len + 1) => Fin (Δ.unop.len + 1) → Fin (k + 1))
     (by
-      rintro ⟨Δ₁, α₁⟩ ⟨Δ₂, α₂⟩ h₁
-      induction' Δ₁ using Opposite.rec with Δ₁
-      induction' Δ₂ using Opposite.rec with Δ₂
+      rintro ⟨⟨Δ₁⟩, α₁⟩ ⟨⟨Δ₂⟩, α₂⟩ h₁
       simp only [unop_op, Sigma.mk.inj_iff, Fin.mk.injEq] at h₁
       have h₂ : Δ₁ = Δ₂ := by
         ext1
@@ -145,7 +143,7 @@ theorem eqId_iff_len_le : A.EqId ↔ Δ.unop.len ≤ A.1.unop.len := by
   constructor
   · intro h
     rw [h]
-  · exact le_antisymm (len_le_of_epi (inferInstance : Epi A.e))
+  · exact le_antisymm (len_le_of_epi A.e)
 
 theorem eqId_iff_mono : A.EqId ↔ Mono A.e := by
   constructor
@@ -154,9 +152,9 @@ theorem eqId_iff_mono : A.EqId ↔ Mono A.e := by
     subst h
     dsimp only [id, e]
     infer_instance
-  · intro h
+  · intro
     rw [eqId_iff_len_le]
-    exact len_le_of_mono h
+    exact len_le_of_mono A.e
 
 /-- Given `A : IndexSet Δ₁`, if `p.unop : unop Δ₂ ⟶ unop Δ₁` is an epi, this
 is the obvious element in `A : IndexSet Δ₂` associated to the composition
@@ -246,11 +244,10 @@ theorem hom_ext' {Z : C} {Δ : SimplexCategoryᵒᵖ} (f g : X.obj Δ ⟶ Z)
   Cofan.IsColimit.hom_ext (s.isColimit Δ) _ _ h
 
 theorem hom_ext (f g : X ⟶ Y) (h : ∀ n : ℕ, s.φ f n = s.φ g n) : f = g := by
-  ext Δ
+  ext ⟨Δ⟩
   apply s.hom_ext'
   intro A
-  induction' Δ using Opposite.rec with Δ
-  induction' Δ using SimplexCategory.rec with n
+  induction Δ using SimplexCategory.rec with | _ n
   dsimp
   simp only [s.cofan_inj_comp_app, h]
 

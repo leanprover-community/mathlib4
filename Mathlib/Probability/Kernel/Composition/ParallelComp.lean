@@ -130,12 +130,10 @@ instance [IsZeroOrMarkovKernel κ] [IsZeroOrMarkovKernel η] : IsZeroOrMarkovKer
   all_goals simpa using by infer_instance
 
 instance [IsFiniteKernel κ] [IsFiniteKernel η] : IsFiniteKernel (κ ∥ₖ η) := by
-  refine ⟨⟨IsFiniteKernel.bound κ * IsFiniteKernel.bound η,
-    ENNReal.mul_lt_top (IsFiniteKernel.bound_lt_top κ) (IsFiniteKernel.bound_lt_top η),
-    fun a ↦ ?_⟩⟩
+  refine ⟨⟨κ.bound * η.bound, ENNReal.mul_lt_top κ.bound_lt_top η.bound_lt_top, fun a ↦ ?_⟩⟩
   calc (κ ∥ₖ η) a Set.univ
   _ = κ a.1 Set.univ * η a.2 Set.univ := parallelComp_apply_univ
-  _ ≤ IsFiniteKernel.bound κ * IsFiniteKernel.bound η := by
+  _ ≤ κ.bound * η.bound := by
     gcongr
     · exact measure_le_bound κ a.1 Set.univ
     · exact measure_le_bound η a.2 Set.univ

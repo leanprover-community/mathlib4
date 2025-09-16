@@ -75,6 +75,5 @@ These invariants are maintained by `assert_not_exists` statements, and exist in 
 #guard_msgs in
 assert_not_exists
   commandAssert_not_imported_
-  Rat
   commandAssert_not_exists_
   I_do_not_exist

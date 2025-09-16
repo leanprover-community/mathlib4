@@ -47,9 +47,9 @@ variable {ι α β : Type*}
 section SMul
 variable [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]
   [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
-  [Module α β] [OrderedSMul α β] {s : Finset ι} {σ : Perm ι} {f : ι → α} {g : ι → β}
+  [Module α β] [PosSMulMono α β] {s : Finset ι} {σ : Perm ι} {f : ι → α} {g : ι → β}
 
-/-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (eg they are both
+/-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (e.g. they are both
 monotone/antitone), the scalar product of their sum is less than the size of the set times their
 scalar product. -/
 theorem MonovaryOn.sum_smul_sum_le_card_smul_sum (hfg : MonovaryOn f g s) :
@@ -60,7 +60,7 @@ theorem MonovaryOn.sum_smul_sum_le_card_smul_sum (hfg : MonovaryOn f g s) :
   exact sum_le_card_nsmul _ _ _ fun n _ ↦
     hfg.sum_smul_comp_perm_le_sum_smul fun x hx ↦ hs fun h ↦ hx <| IsFixedPt.perm_pow h _
 
-/-- **Chebyshev's Sum Inequality**: When `f` and `g` antivary together (eg one is monotone, the
+/-- **Chebyshev's Sum Inequality**: When `f` and `g` antivary together (e.g. one is monotone, the
 other is antitone), the scalar product of their sum is less than the size of the set times their
 scalar product. -/
 theorem AntivaryOn.card_smul_sum_le_sum_smul_sum (hfg : AntivaryOn f g s) :
@@ -69,14 +69,14 @@ theorem AntivaryOn.card_smul_sum_le_sum_smul_sum (hfg : AntivaryOn f g s) :
 
 variable [Fintype ι]
 
-/-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (eg they are both
+/-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (e.g. they are both
 monotone/antitone), the scalar product of their sum is less than the size of the set times their
 scalar product. -/
 theorem Monovary.sum_smul_sum_le_card_smul_sum (hfg : Monovary f g) :
     (∑ i, f i) • ∑ i, g i ≤ Fintype.card ι • ∑ i, f i • g i :=
   (hfg.monovaryOn _).sum_smul_sum_le_card_smul_sum
 
-/-- **Chebyshev's Sum Inequality**: When `f` and `g` antivary together (eg one is monotone, the
+/-- **Chebyshev's Sum Inequality**: When `f` and `g` antivary together (e.g. one is monotone, the
 other is antitone), the scalar product of their sum is less than the size of the set times their
 scalar product. -/
 theorem Antivary.card_smul_sum_le_sum_smul_sum (hfg : Antivary f g) :
@@ -96,7 +96,7 @@ section Mul
 variable [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]
   {s : Finset ι} {σ : Perm ι} {f g : ι → α}
 
-/-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (eg they are both
+/-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (e.g. they are both
 monotone/antitone), the product of their sum is less than the size of the set times their scalar
 product. -/
 theorem MonovaryOn.sum_mul_sum_le_card_mul_sum (hfg : MonovaryOn f g s) :
@@ -104,7 +104,7 @@ theorem MonovaryOn.sum_mul_sum_le_card_mul_sum (hfg : MonovaryOn f g s) :
   rw [← nsmul_eq_mul]
   exact hfg.sum_smul_sum_le_card_smul_sum
 
-/-- **Chebyshev's Sum Inequality**: When `f` and `g` antivary together (eg one is monotone, the
+/-- **Chebyshev's Sum Inequality**: When `f` and `g` antivary together (e.g. one is monotone, the
 other is antitone), the product of their sum is greater than the size of the set times their scalar
 product. -/
 theorem AntivaryOn.card_mul_sum_le_sum_mul_sum (hfg : AntivaryOn f g s) :
@@ -136,14 +136,14 @@ theorem sq_sum_le_card_mul_sum_sq : (∑ i ∈ s, f i) ^ 2 ≤ #s * ∑ i ∈ s,
 
 variable [Fintype ι]
 
-/-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (eg they are both
+/-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (e.g. they are both
 monotone/antitone), the product of their sum is less than the size of the set times their scalar
 product. -/
 theorem Monovary.sum_mul_sum_le_card_mul_sum (hfg : Monovary f g) :
     (∑ i, f i) * ∑ i, g i ≤ Fintype.card ι * ∑ i, f i * g i :=
   (hfg.monovaryOn _).sum_mul_sum_le_card_mul_sum
 
-/-- **Chebyshev's Sum Inequality**: When `f` and `g` antivary together (eg one is monotone, the
+/-- **Chebyshev's Sum Inequality**: When `f` and `g` antivary together (e.g. one is monotone, the
 other is antitone), the product of their sum is less than the size of the set times their scalar
 product. -/
 theorem Antivary.card_mul_sum_le_sum_mul_sum (hfg : Antivary f g) :

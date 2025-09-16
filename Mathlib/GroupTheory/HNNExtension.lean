@@ -150,7 +150,7 @@ variable {A B}
 
 /-- To avoid duplicating code, we define `toSubgroup A B u` and `toSubgroupEquiv u`
 where `u : ℤˣ` is `1` or `-1`. `toSubgroup A B u` is `A` when `u = 1` and `B` when `u = -1`,
-and `toSubgroupEquiv` is the group ismorphism from `toSubgroup A B u` to `toSubgroup A B (-u)`.
+and `toSubgroupEquiv` is the group isomorphism from `toSubgroup A B u` to `toSubgroup A B (-u)`.
 It is defined to be `φ` when `u = 1` and `φ⁻¹` when `u = -1`. -/
 def toSubgroupEquiv (u : ℤˣ) : toSubgroup A B u ≃* toSubgroup A B (-u) :=
   if hu : u = 1 then hu ▸ φ else by
@@ -383,7 +383,7 @@ noncomputable def unitsSMul (u : ℤˣ) (w : NormalWord d) : NormalWord d :=
         have := h this x
         simp_all [Int.units_ne_iff_eq_neg])
 
-/-- A condition for not cancelling whose hypothese are the same as those of the `cons` function. -/
+/-- A condition for not cancelling whose hypotheses are the same as those of the `cons` function. -/
 theorem not_cancels_of_cons_hyp (u : ℤˣ) (w : NormalWord d)
     (h2 : ∀ u' ∈ Option.map Prod.fst w.toList.head?,
       w.head ∈ toSubgroup A B u → u = u') :
@@ -601,7 +601,7 @@ theorem of_injective : Function.Injective (of : G → HNNExtension G A B φ) := 
   rcases TransversalPair.nonempty G A B with ⟨d⟩
   refine Function.Injective.of_comp
     (f := ((· • ·) : HNNExtension G A B φ → NormalWord d → NormalWord d)) ?_
-  intros _ _ h
+  intro _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
     by simp_all [funext_iff, of_smul_eq_smul])
 

@@ -11,6 +11,11 @@ namespace Cache.Requests
 
 open System (FilePath)
 
+-- FRO cache may be flaky: https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/The.20cache.20doesn't.20work/near/411058849
+initialize useFROCache : Bool ← do
+  let froCache ← IO.getEnv "USE_FRO_CACHE"
+  return froCache == some "1" || froCache == some "true"
+
 /--
 Structure to hold repository information with priority ordering
 -/
@@ -117,6 +122,28 @@ def extractPRNumber (ref : String) : Option Nat := do
   else
     none
 
+/-- Check if we're in a detached HEAD state at a nightly-testing tag -/
+def isDetachedAtNightlyTesting (mathlibDepPath : FilePath) : IO Bool := do
+  -- Get the current commit hash and check if it's a nightly-testing tag
+  let currentCommit ← IO.Process.output
+    {cmd := "git", args := #["rev-parse", "HEAD"], cwd := mathlibDepPath}
+  if currentCommit.exitCode == 0 then
+    let commitHash := currentCommit.stdout.trim
+    let tagInfo ← IO.Process.output
+      {cmd := "git", args := #["name-rev", "--tags", commitHash], cwd := mathlibDepPath}
+    if tagInfo.exitCode == 0 then
+      let parts := tagInfo.stdout.trim.splitOn " "
+      -- git name-rev returns "commit_hash tags/tag_name" or just "commit_hash undefined" if no tag
+      if parts.length >= 2 && parts[1]!.startsWith "tags/" then
+        let tagName := parts[1]!.drop 5  -- Remove "tags/" prefix
+        return tagName.startsWith "nightly-testing-"
+      else
+        return false
+    else
+      return false
+  else
+    return false
+
 /--
 Attempts to determine the GitHub repository of a version of Mathlib from its Git remote.
 If the current commit coincides with a PR ref, it will determine the source fork
@@ -134,11 +161,19 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
   if currentBranch.exitCode == 0 then
     let branchName := currentBranch.stdout.trim.stripPrefix "heads/"
     IO.println s!"Current branch: {branchName}"
+
+    -- Check if we're in a detached HEAD state at a nightly-testing tag
+    let isDetachedAtNightlyTesting ← if branchName == "HEAD" then
+      isDetachedAtNightlyTesting mathlibDepPath
+    else
+      pure false
+
     -- Check if we're on a branch that should use nightly-testing remote
     let shouldUseNightlyTesting := branchName == "nightly-testing" ||
                                   branchName.startsWith "lean-pr-testing-" ||
                                   branchName.startsWith "batteries-pr-testing-" ||
-                                  branchName.startsWith "bump/"
+                                  branchName.startsWith "bump/" ||
+                                  isDetachedAtNightlyTesting
 
     if shouldUseNightlyTesting then
       -- Try to use nightly-testing remote
@@ -146,7 +181,8 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
         s!"Branch '{branchName}' should use the nightly-testing remote, but it's not configured.\n\
           Please add the nightly-testing remote pointing to the nightly testing repository:\n\
           git remote add nightly-testing https://github.com/leanprover-community/mathlib4-nightly-testing.git"
-      IO.println s!"Using cache from nightly-testing remote: {repo}"
+      let cacheService := if useFROCache then "Cloudflare" else "Azure"
+      IO.println s!"Using cache ({cacheService}) from nightly-testing remote: {repo}"
       return {repo := repo, useFirst := true}
 
     -- Only search for PR refs if we're not on a regular branch like master, bump/*, or nightly-testing*
@@ -207,11 +243,9 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
 
   let repo ← getRepoFromRemote mathlibDepPath remoteName
     s!"Ensure Git is installed and the '{remoteName}' remote points to its GitHub repository."
-  IO.println s!"Using cache from {remoteName}: {repo}"
+  let cacheService := if useFROCache then "Cloudflare" else "Azure"
+  IO.println s!"Using cache ({cacheService}) from {remoteName}: {repo}"
   return {repo := repo, useFirst := false}
-
--- FRO cache is flaky so disable until we work out the kinks: https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/The.20cache.20doesn't.20work/near/411058849
-def useFROCache : Bool := false
 
 /-- Public URL for mathlib cache -/
 def URL : String :=
@@ -236,7 +270,7 @@ Given a file name like `"1234.tar.gz"`, makes the URL to that file on the server
 The `f/` prefix means that it's a common file for caching.
 -/
 def mkFileURL (repo URL fileName : String) : String :=
-  let pre := if repo == MATHLIBREPO then "" else s!"{repo}/"
+  let pre := if !useFROCache && repo == MATHLIBREPO then "" else s!"{repo}/"
   s!"{URL}/f/{pre}{fileName}"
 
 section Get
@@ -277,6 +311,73 @@ def downloadFile (repo : String) (hash : UInt64) : IO Bool := do
     IO.FS.removeFile partPath
     pure false
 
+private structure TransferState where
+  last : Nat
+  success : Nat
+  failed : Nat
+  done : Nat
+  speed : Nat
+
+def monitorCurl (args : Array String) (size : Nat)
+    (caption : String) (speedVar : String) (removeOnError := false) : IO TransferState := do
+  let mkStatus success failed done speed := Id.run do
+    let speed :=
+      if speed != 0 then
+        s!", {speed / 1000} KB/s"
+      else ""
+    let mut msg := s!"\r{caption}: {success} file(s) [attempted {done}/{size} = {100*done/size}%{speed}]"
+    if failed != 0 then
+      msg := msg ++ s!", {failed} failed"
+    return msg
+  let init : TransferState := ⟨← IO.monoMsNow, 0, 0, 0, 0⟩
+  let s@{success, failed, done, speed, ..} ← IO.runCurlStreaming args init fun a line => do
+    let mut {last, success, failed, done, speed} := a
+    -- output errors other than 404 and remove corresponding partial downloads
+    let line := line.trim
+    if !line.isEmpty then
+      match Lean.Json.parse line with
+      | .ok result =>
+        match result.getObjValAs? Nat "http_code" with
+        | .ok 200 =>
+          if let .ok fn := result.getObjValAs? String "filename_effective" then
+            if (← System.FilePath.pathExists fn) && fn.endsWith ".part" then
+              IO.FS.rename fn (fn.dropRight 5)
+          success := success + 1
+        | .ok 404 => pure ()
+        | code? =>
+          failed := failed + 1
+          let mkFailureMsg code? fn? msg? : String := Id.run do
+            let mut msg := "Transfer failed"
+            if let .ok fn := fn? then
+              msg := s!"{fn}: {msg}"
+            if let .ok code := code? then
+              msg := s!"{msg} (error code: {code})"
+            if let .ok errMsg := msg? then
+              msg := s!"{msg}: {errMsg}"
+            return msg
+          let msg? := result.getObjValAs? String "errormsg"
+          let fn? :=  result.getObjValAs? String "filename_effective"
+          IO.println (mkFailureMsg code? fn? msg?)
+          if let .ok fn := fn? then
+            if removeOnError then
+              -- `curl --remove-on-error` can already do this, but only from 7.83 onwards
+              if (← System.FilePath.pathExists fn) then
+                IO.FS.removeFile fn
+        done := done + 1
+        let now ← IO.monoMsNow
+        if now - last ≥ 100 then -- max 10/s update rate
+          speed := match result.getObjValAs? Nat speedVar with
+            | .ok speed => speed | .error _ => speed
+          IO.eprint (mkStatus success failed done speed)
+          last := now
+       | .error e =>
+        IO.println s!"Non-JSON output from curl:\n  {line}\n{e}"
+    pure {last, success, failed, done, speed}
+  if done > 0 then
+    -- to avoid confusingly moving on without finishing the count
+    IO.eprintln (mkStatus success failed done speed)
+  return s
+
 /-- Call `curl` to download files from the server to `CACHEDIR` (`.cache`).
 Exit the process with exit code 1 if any files failed to download. -/
 def downloadFiles
@@ -294,43 +395,8 @@ def downloadFiles
           "--silent",
           "--retry", "5", -- there seem to be some intermittent failures
           "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
-      let (_, success, failed, done) ←
-          IO.runCurlStreaming args (← IO.monoMsNow, 0, 0, 0) fun a line => do
-        let mut (last, success, failed, done) := a
-        -- output errors other than 404 and remove corresponding partial downloads
-        let line := line.trim
-        if !line.isEmpty then
-          let result ← IO.ofExcept <| Lean.Json.parse line
-          match result.getObjValAs? Nat "http_code" with
-          | .ok 200 =>
-            if let .ok fn := result.getObjValAs? String "filename_effective" then
-              if (← System.FilePath.pathExists fn) && fn.endsWith ".part" then
-                IO.FS.rename fn (fn.dropRight 5)
-            success := success + 1
-          | .ok 404 => pure ()
-          | _ =>
-            failed := failed + 1
-            if let .ok e := result.getObjValAs? String "errormsg" then
-              IO.println e
-            -- `curl --remove-on-error` can already do this, but only from 7.83 onwards
-            if let .ok fn := result.getObjValAs? String "filename_effective" then
-              if (← System.FilePath.pathExists fn) then
-                IO.FS.removeFile fn
-          done := done + 1
-          let now ← IO.monoMsNow
-          if now - last ≥ 100 then -- max 10/s update rate
-            let mut msg := s!"\rDownloaded: {success} file(s) [attempted {done}/{size} = {100*done/size}%]"
-            if failed != 0 then
-              msg := msg ++ s!", {failed} failed"
-            IO.eprint msg
-            last := now
-        pure (last, success, failed, done)
-      if done > 0 then
-        -- to avoid confusingly moving on without finishing the count
-        let mut msg := s!"\rDownloaded: {success} file(s) [attempted {done}/{size} = {100*done/size}%] ({100*success/done}% success)"
-        if failed != 0 then
-          msg := msg ++ s!", {failed} failed"
-        IO.eprintln msg
+      let {success, failed, done, ..} ←
+        monitorCurl args size "Downloaded" "speed_download" (removeOnError := true)
       IO.FS.removeFile IO.CURLCFG
       if warnOnMissing && success + failed < done then
         IO.eprintln "Warning: some files were not found in the cache."
@@ -459,12 +525,11 @@ def putFiles
       #["-H", "x-ms-blob-type: BlockBlob"]
     else
       #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
-    let out ← IO.runCurl (stderrAsErr := false) (args ++ #[
+    let args := args ++ #[
+      "-X", "PUT", "--parallel",
       "--retry", "5", -- there seem to be some intermittent failures
-      "-X", "PUT", "--parallel", "-K", IO.CURLCFG.toString])
-    if out.trim != "" then
-      IO.println s!"Output from curl:"
-      IO.println out
+      "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
+    discard <| monitorCurl args size "Uploaded" "speed_upload"
     IO.FS.removeFile IO.CURLCFG
   else IO.println "No files to upload"
 

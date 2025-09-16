@@ -181,7 +181,7 @@ respectively.  Then
   o(‖∫ x in ua..va, (1:ℝ) ∂μ‖ + ‖∫ x in ub..vb, (1:ℝ) ∂μ‖)`
 as `ua` and `va` tend to `la` while `ub` and `vb` tend to `lb`.
 
-This theorem is formulated with integral of constants instead of measures in the right hand sides
+This theorem is formulated with integral of constants instead of measures in the right-hand sides
 for two reasons: first, this way we avoid `min`/`max` in the statements; second, often it is
 possible to write better `simp` lemmas for these integrals, see `integral_const` and
 `integral_const_of_cdf`.
@@ -591,7 +591,7 @@ theorem integral_hasStrictFDerivAt_of_tendsto_ae (hf : IntervalIntegrable f volu
       (continuous_snd.snd.tendsto ((a, b), (a, b)))
       (continuous_fst.snd.tendsto ((a, b), (a, b)))
   refine .of_isLittleO <| (this.congr_left ?_).trans_isBigO ?_
-  · intro x; simp [sub_smul]
+  · simp [sub_smul]
   · exact isBigO_fst_prod.norm_left.add isBigO_snd_prod.norm_left
 
 /-- **Fundamental theorem of calculus-1**, strict differentiability in both endpoints.
@@ -795,7 +795,7 @@ theorem integral_hasFDerivWithinAt_of_tendsto_ae (hf : IntervalIntegrable f volu
       (tendsto_const_pure.mono_right FTCFilter.pure_le : Tendsto _ _ (𝓝[s] a)) tendsto_fst
       (tendsto_const_pure.mono_right FTCFilter.pure_le : Tendsto _ _ (𝓝[t] b)) tendsto_snd
   refine .of_isLittleO <| (this.congr_left ?_).trans_isBigO ?_
-  · intro x; simp [sub_smul]
+  · simp [sub_smul]
   · exact isBigO_fst_prod.norm_left.add isBigO_snd_prod.norm_left
 
 /-- Let `f` be a measurable function integrable on `a..b`. The function `(u, v) ↦ ∫ x in u..v, f x`
@@ -951,8 +951,8 @@ a real-valued function `g`, it suffices to show that `g b - g a ≤ (∫ x in a.
 positive `ε`. To prove this, choose a lower-semicontinuous function `G'` with `g' < G'` and with
 integral close to that of `g'` (its existence is guaranteed by the Vitali-Carathéodory theorem).
 It satisfies `g t - g a ≤ ∫ x in a..t, G' x` for all `t ∈ [a, b]`: this inequality holds at `a`,
-and if it holds at `t` then it holds for `u` close to `t` on its right, as the left hand side
-increases by `g u - g t ∼ (u -t) g' t`, while the right hand side increases by
+and if it holds at `t` then it holds for `u` close to `t` on its right, as the left-hand side
+increases by `g u - g t ∼ (u -t) g' t`, while the right-hand side increases by
 `∫ x in t..u, G' x` which is roughly at least `∫ x in t..u, G' t = (u - t) G' t`, by lower
 semicontinuity. As  `g' t < G' t`, this gives the conclusion. One can therefore push progressively
 this inequality to the right until the point `b`, where it gives the desired conclusion.
@@ -1116,7 +1116,7 @@ theorem integral_eq_sub_of_hasDeriv_right_of_le (hab : a ≤ b) (hcont : Continu
   rw [← g.intervalIntegral_comp_comm f'int, g.map_sub]
   exact integral_eq_sub_of_hasDeriv_right_of_le_real hab (g.continuous.comp_continuousOn hcont)
     (fun x hx => g.hasFDerivAt.comp_hasDerivWithinAt x (hderiv x hx))
-    (g.integrable_comp ((intervalIntegrable_iff_integrableOn_Icc_of_le hab).1 f'int))
+    (g.integrable_comp ((intervalIntegrable_iff_integrableOn_Icc_of_le hab enorm_ne_top).1 f'int))
 
 /-- Fundamental theorem of calculus-2: If `f : ℝ → E` is continuous on `[a, b]` and
   has a right derivative at `f' x` for all `x` in `[a, b)`, and `f'` is integrable on `[a, b]` then

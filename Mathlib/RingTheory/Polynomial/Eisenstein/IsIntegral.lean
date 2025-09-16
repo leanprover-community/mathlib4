@@ -80,11 +80,13 @@ theorem cyclotomic_prime_pow_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] (
     refine (cyclotomic.monic _ ℤ).comp (monic_X_add_C 1) fun h => ?_
     rw [natDegree_X_add_C] at h
     exact zero_ne_one h.symm
-  · induction' n with n hn
-    · intro i hi
+  · induction n with
+    | zero =>
+      intro i hi
       rw [Nat.zero_add, pow_one] at hi ⊢
       exact (cyclotomic_comp_X_add_one_isEisensteinAt p).mem hi
-    · intro i hi
+    | succ n hn =>
+      intro i hi
       rw [Ideal.submodule_span_eq, Ideal.mem_span_singleton, ← ZMod.intCast_zmod_eq_zero_iff_dvd,
         show ↑(_ : ℤ) = Int.castRingHom (ZMod p) _ by rfl, ← coeff_map, map_comp, map_cyclotomic,
         Polynomial.map_add, map_X, Polynomial.map_one, pow_add, pow_one,
@@ -157,7 +159,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
     ring_nf
     rw [mul_comm _ 2, pow_mul, neg_one_sq, one_pow, mul_one]
   -- We claim the quotient of `Q^n * _` by `p^n` is the following `r`:
-  have aux : ∀ i ∈ (range (Q.natDegree + 1)).erase 0, B.dim ≤ i + n := by grind [Finset.mem_erase]
+  have aux : ∀ i ∈ (range (Q.natDegree + 1)).erase 0, B.dim ≤ i + n := by grind
   have hintsum :
     IsIntegral R
       (z * B.gen ^ n - ∑ x ∈ (range (Q.natDegree + 1)).erase 0, Q.coeff x • f (x + n)) := by
@@ -253,10 +255,12 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
   -- It is enough to prove that all coefficients of `Q` are divisible by `p`, by induction.
   -- The base case is `dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt`.
   refine mem_adjoin_of_dvd_coeff_of_dvd_aeval hp.ne_zero (fun i => ?_) hQ
-  induction' i using Nat.case_strong_induction_on with j hind
-  · intro _
+  induction i using Nat.case_strong_induction_on with
+  | hz =>
+    intro
     exact dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt hp hBint hQ hzint hei
-  · intro hj
+  | hi j hind =>
+    intro hj
     convert hp.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd (n := n) _ hndiv
     -- Two technical results we will need about `P.natDegree` and `Q.natDegree`.
     have H := degree_modByMonic_lt Q₁ (minpoly.monic hBint)
@@ -279,7 +283,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
         (mem_range_succ_iff.2
           (le_trans (mem_range_succ_iff.1 hk) (succ_le_iff.1 (mem_range_succ_iff.1 hj)).le)),
         Algebra.smul_def, Algebra.smul_def, RingHom.map_mul, mul_assoc]
-    -- Since `minpoly R B.gen` is Eiseinstein, we can find `f : ℕ → L` such that
+    -- Since `minpoly R B.gen` is Eisenstein, we can find `f : ℕ → L` such that
     -- `(map (algebraMap R L) (minpoly R B.gen)).nat_degree ≤ i` implies `f i ∈ adjoin R {B.gen}`
     -- and `(algebraMap R L) p * f i = B.gen ^ i`. We will also need `hf₁`, a reformulation of this
     -- property.
@@ -361,9 +365,10 @@ theorem mem_adjoin_of_smul_prime_pow_smul_of_minpoly_isEisensteinAt {B : PowerBa
     (hp : Prime p) (hBint : IsIntegral R B.gen) {n : ℕ} {z : L} (hzint : IsIntegral R z)
     (hz : p ^ n • z ∈ adjoin R ({B.gen} : Set L)) (hei : (minpoly R B.gen).IsEisensteinAt 𝓟) :
     z ∈ adjoin R ({B.gen} : Set L) := by
-  induction' n with n hn
-  · simpa using hz
-  · rw [_root_.pow_succ', mul_smul] at hz
+  induction n with
+  | zero => simpa using hz
+  | succ n hn =>
+    rw [_root_.pow_succ', mul_smul] at hz
     exact
       hn (mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt hp hBint (hzint.smul _) hz hei)
 

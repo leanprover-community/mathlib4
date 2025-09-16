@@ -85,7 +85,7 @@ theorem isReflection_inv : cs.IsReflection t⁻¹ := by rwa [ht.inv]
 
 theorem odd_length : Odd (ℓ t) := by
   suffices cs.lengthParity t = Multiplicative.ofAdd 1 by
-    simpa [lengthParity_eq_ofAdd_length, ZMod.eq_one_iff_odd]
+    simpa [lengthParity_eq_ofAdd_length, ZMod.natCast_eq_one_iff_odd]
   rcases ht with ⟨w, i, rfl⟩
   simp [lengthParity_simple]
 
@@ -262,7 +262,7 @@ theorem getD_rightInvSeq (ω : List B) (j : ℕ) :
       simp [ih j']
 
 lemma getElem_rightInvSeq (ω : List B) (j : ℕ) (h : j < ω.length) :
-    (ris ω)[j]'(by simp[h]) =
+    (ris ω)[j]'(by simp [h]) =
     (π (ω.drop (j + 1)))⁻¹
       * (Option.map (cs.simple) ω[j]?).getD 1
       * π (ω.drop (j + 1)) := by
@@ -286,7 +286,7 @@ theorem getD_leftInvSeq (ω : List B) (j : ℕ) :
       simp [← mul_assoc, wordProd_cons]
 
 lemma getElem_leftInvSeq (ω : List B) (j : ℕ) (h : j < ω.length) :
-    (lis ω)[j]'(by simp[h]) =
+    (lis ω)[j]'(by simp [h]) =
     cs.wordProd (List.take j ω) * s ω[j] * (cs.wordProd (List.take j ω))⁻¹ := by
   rw [← List.getD_eq_getElem (lis ω) 1, getD_leftInvSeq]
   simp [h]
@@ -453,8 +453,8 @@ lemma getElem_succ_leftInvSeq_alternatingWord
     (i j : B) (p k : ℕ) (h : k + 1 < 2 * p) :
     (lis (alternatingWord i j (2 * p)))[k + 1]'(by simpa using h) =
     MulAut.conj (s i) ((lis (alternatingWord j i (2 * p)))[k]'(by simp; omega)) := by
-  rw [cs.getElem_leftInvSeq (alternatingWord i j (2 * p)) (k + 1) (by simp[h]),
-    cs.getElem_leftInvSeq (alternatingWord j i (2 * p)) k (by simp[]; omega)]
+  rw [cs.getElem_leftInvSeq (alternatingWord i j (2 * p)) (k + 1) (by simp [h]),
+    cs.getElem_leftInvSeq (alternatingWord j i (2 * p)) k (by simp; omega)]
   simp only [MulAut.conj, listTake_succ_alternatingWord i j p k h, cs.wordProd_cons, mul_assoc,
     mul_inv_rev, inv_simple, MonoidHom.coe_mk, OneHom.coe_mk, MulEquiv.coe_mk, Equiv.coe_fn_mk,
     mul_right_inj, mul_left_inj]

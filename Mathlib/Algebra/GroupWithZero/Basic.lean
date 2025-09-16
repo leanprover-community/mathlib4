@@ -287,7 +287,6 @@ instance (priority := 100) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ 
       by_cases h : a = 0
       · simp [h]
       · exact left_inv_eq_right_inv (inv_mul_cancel₀ <| inv_ne_zero h) (inv_mul_cancel₀ h)
-        ,
     mul_inv_rev := fun a b => by
       by_cases ha : a = 0
       · simp [ha]
@@ -300,9 +299,9 @@ instance (priority := 100) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ 
 -- see Note [lower instance priority]
 instance (priority := 10) GroupWithZero.toCancelMonoidWithZero : CancelMonoidWithZero G₀ :=
   { (‹_› : GroupWithZero G₀) with
-    mul_left_cancel_of_ne_zero := @fun x hx y z h => by
+    mul_left_cancel_of_ne_zero {x} hx y z h := by
       dsimp only at h; rw [← inv_mul_cancel_left₀ hx y, h, inv_mul_cancel_left₀ hx z],
-    mul_right_cancel_of_ne_zero := @fun x hx y z h => by
+    mul_right_cancel_of_ne_zero {x} hx y z h := by
       dsimp only at h; rw [← mul_inv_cancel_right₀ hx y, h, mul_inv_cancel_right₀ hx z] }
 
 end GroupWithZero

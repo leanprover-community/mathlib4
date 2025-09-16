@@ -9,7 +9,7 @@ import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Algebra.Ring.Equiv
 
 /-!
-# Semiring, ring etc structures on `R × S`
+# Semiring, ring etc. structures on `R × S`
 
 In this file we define two-binop (`Semiring`, `Ring` etc) structures on `R × S`. We also prove
 trivial `simp` lemmas, and define the following operations on `RingHom`s and similarly for

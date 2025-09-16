@@ -65,6 +65,14 @@ theorem insert_eq (a : α) (s : Finset α) : insert a s = {a} ∪ s :=
   rfl
 
 @[simp]
+lemma singleton_union (x : α) (s : Finset α) : {x} ∪ s = insert x s :=
+  rfl
+
+@[simp]
+lemma union_singleton (x : α) (s : Finset α) : s ∪ {x} = insert x s := by
+  rw [Finset.union_comm, singleton_union]
+
+@[simp]
 theorem insert_union (a : α) (s t : Finset α) : insert a s ∪ t = insert a (s ∪ t) := by
   simp only [insert_eq, union_assoc]
 
@@ -175,8 +183,8 @@ variable [DecidableEq α] {l l' : List α}
 
 @[simp]
 theorem toFinset_append : toFinset (l ++ l') = l.toFinset ∪ l'.toFinset := by
-  induction' l with hd tl hl
-  · simp
-  · simp [hl]
+  induction l with
+  | nil => simp
+  | cons hd tl hl => simp [hl]
 
 end List

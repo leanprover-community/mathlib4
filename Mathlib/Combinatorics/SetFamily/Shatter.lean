@@ -111,7 +111,7 @@ lemma card_le_card_shatterer (𝒜 : Finset (Finset α)) : #𝒜 ≤ #𝒜.shatt
   refine memberFamily_induction_on 𝒜 ?_ ?_ ?_
   · simp
   · rfl
-  intros a 𝒜 ih₀ ih₁
+  intro a 𝒜 ih₀ ih₁
   set ℬ : Finset (Finset α) :=
     ((memberSubfamily a 𝒜).shatterer ∩ (nonMemberSubfamily a 𝒜).shatterer).image (insert a)
   have hℬ : #ℬ = #((memberSubfamily a 𝒜).shatterer ∩ (nonMemberSubfamily a 𝒜).shatterer) := by
@@ -151,7 +151,7 @@ lemma card_le_card_shatterer (𝒜 : Finset (Finset α)) : #𝒜 ≤ #𝒜.shatt
       rwa [insert_inter_of_notMem hu.2, hsu, erase_eq_self]
 
 lemma Shatters.of_compression (hs : (𝓓 a 𝒜).Shatters s) : 𝒜.Shatters s := by
-  intros t ht
+  intro t ht
   obtain ⟨u, hu, rfl⟩ := hs ht
   rw [Down.mem_compression] at hu
   obtain hu | hu := hu

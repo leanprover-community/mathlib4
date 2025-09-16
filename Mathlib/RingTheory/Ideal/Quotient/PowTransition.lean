@@ -28,7 +28,7 @@ to `R ⧸ I ^ n` induced by the natural inclusion `I ^ n → I ^ m`.
 /- Since `Mathlib/LinearAlgebra/Quotient/Basic.lean` and
 `Mathlib/RingTheory/Ideal/Quotient/Defs.lean` do not import each other, and the first file that
 imports both of them is `Mathlib/RingTheory/Ideal/Quotient/Operations.lean`, which has already
-established the first isomophism theorem and Chinese remainder theorem, we put these pure technical
+established the first isomorphism theorem and Chinese remainder theorem, we put these pure technical
 lemmas that involves both `Submodule.mapQ` and `Ideal.Quotient.factor` in this file. -/
 
 open Ideal Quotient

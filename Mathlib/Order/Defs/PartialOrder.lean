@@ -42,10 +42,12 @@ class Preorder (α : Type*) extends LE α, LT α where
   lt := fun a b => a ≤ b ∧ ¬b ≤ a
   lt_iff_le_not_ge : ∀ a b : α, a < b ↔ a ≤ b ∧ ¬b ≤ a := by intros; rfl
 
-instance [Preorder α] : Lean.Grind.Preorder α where
+instance [Preorder α] : Std.LawfulOrderLT α where
+  lt_iff := Preorder.lt_iff_le_not_ge
+
+instance [Preorder α] : Std.IsPreorder α where
   le_refl := Preorder.le_refl
-  le_trans := Preorder.le_trans _ _ _
-  lt_iff_le_not_le := Preorder.lt_iff_le_not_ge _ _
+  le_trans := Preorder.le_trans
 
 @[deprecated (since := "2025-05-11")] alias Preorder.lt_iff_le_not_le := Preorder.lt_iff_le_not_ge
 
@@ -161,8 +163,8 @@ section PartialOrder
 class PartialOrder (α : Type*) extends Preorder α where
   le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
 
-instance [PartialOrder α] : Lean.Grind.PartialOrder α where
-  le_antisymm := PartialOrder.le_antisymm _ _
+instance [PartialOrder α] : Std.IsPartialOrder α where
+  le_antisymm := PartialOrder.le_antisymm
 
 variable [PartialOrder α] {a b : α}
 

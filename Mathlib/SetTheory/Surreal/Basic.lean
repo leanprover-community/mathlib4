@@ -5,6 +5,11 @@ Authors: Mario Carneiro, Kim Morrison
 -/
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.SetTheory.Game.Ordinal
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Surreal.Basic` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Surreal numbers

@@ -98,9 +98,10 @@ theorem Duplicate.mono_sublist {l' : List α} (hx : x ∈+ l) (h : l <+ l') : x 
 
 /-- The contrapositive of `List.nodup_iff_sublist`. -/
 theorem duplicate_iff_sublist : x ∈+ l ↔ [x, x] <+ l := by
-  induction' l with y l IH
-  · simp
-  · by_cases hx : x = y
+  induction l with
+  | nil => simp
+  | cons y l IH =>
+    by_cases hx : x = y
     · simp [hx, cons_sublist_cons, singleton_sublist]
     · rw [duplicate_cons_iff_of_ne hx, IH]
       refine ⟨sublist_cons_of_sublist y, fun h => ?_⟩

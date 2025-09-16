@@ -59,7 +59,7 @@ abbrev grothendieckTopology : GrothendieckTopology Scheme.{u} :=
 
 Note: The assumption `IsJointlySurjectivePreserving ⊤` is mathematically unneeded, and only here
 to reduce imports. To satisfy it, use `AlgebraicGeometry.Scheme.isJointlySurjectivePreserving`. -/
-def surjectiveFamiliesPretopology [IsJointlySurjectivePreserving ⊤] : Pretopology Scheme.{u} where
+def jointlySurjectivePretopology [IsJointlySurjectivePreserving ⊤] : Pretopology Scheme.{u} where
   coverings X S :=
     ∀ x : X, ∃ (Y : Scheme.{u}) (y : Y) (f : Y ⟶ X) (hf : S f), f.base y = x
   has_isos X Y f hf x := by
@@ -77,10 +77,32 @@ def surjectiveFamiliesPretopology [IsJointlySurjectivePreserving ⊤] : Pretopol
     use Z, z, g ≫ f
     simpa [hz, hy] using Presieve.bind_comp f hf hg
 
+@[deprecated (since := "2025-08-18")] alias surjectiveFamiliesPretopology :=
+  jointlySurjectivePretopology
+
+/-- The jointly surjective topology on `Scheme` is defined by the same condition as the jointly
+surjective pretopology. -/
+def jointlySurjectiveTopology [IsJointlySurjectivePreserving ⊤] :
+    GrothendieckTopology Scheme.{u} :=
+  jointlySurjectivePretopology.toGrothendieck.copy (fun X s ↦ jointlySurjectivePretopology X ↑s) <|
+    funext fun _ ↦ Set.ext fun s ↦
+      ⟨fun ⟨_, hp, hps⟩ x ↦ let ⟨Y, y, u, hu, hyx⟩ := hp x; ⟨Y, y, u, hps _ hu, hyx⟩,
+      fun hs ↦ ⟨s, hs, le_rfl⟩⟩
+
+theorem mem_jointlySurjectiveTopology_iff_jointlySurjectivePretopology
+    [IsJointlySurjectivePreserving ⊤] {X : Scheme.{u}} {s : Sieve X} :
+    s ∈ jointlySurjectiveTopology X ↔ jointlySurjectivePretopology X ↑s :=
+  Iff.rfl
+
+lemma jointlySurjectiveTopology_eq_toGrothendieck_jointlySurjectivePretopology
+    [IsJointlySurjectivePreserving ⊤] :
+    jointlySurjectiveTopology.{u} = jointlySurjectivePretopology.toGrothendieck :=
+  GrothendieckTopology.copy_eq
+
 lemma pretopology_le_inf [IsJointlySurjectivePreserving ⊤] :
-    pretopology P ≤ surjectiveFamiliesPretopology ⊓ P.pretopology := by
+    pretopology P ≤ jointlySurjectivePretopology ⊓ P.pretopology := by
   rintro X S ⟨𝒰, rfl⟩
-  refine ⟨fun x ↦ ?_, fun ⟨i⟩ ↦ 𝒰.map_prop i⟩
+  refine ⟨fun x ↦ ?_, fun _ _ ⟨i⟩ ↦ 𝒰.map_prop i⟩
   obtain ⟨a, ha⟩ := 𝒰.covers x
   refine ⟨𝒰.obj (𝒰.f x), a, 𝒰.map (𝒰.f x), ⟨_⟩, ha⟩
 
@@ -94,7 +116,7 @@ in the intersection can have up to `Type (u + 1)` many components, while in the 
 of `AlgebraicGeometry.Scheme.pretopology` we only allow `Type u` many components.
 -/
 lemma grothendieckTopology_eq_inf [IsJointlySurjectivePreserving ⊤] :
-    grothendieckTopology P = (surjectiveFamiliesPretopology ⊓ P.pretopology).toGrothendieck := by
+    grothendieckTopology P = (jointlySurjectivePretopology ⊓ P.pretopology).toGrothendieck := by
   apply le_antisymm ((Pretopology.gi Scheme.{u}).gc.monotone_l (pretopology_le_inf P))
   intro X S ⟨T, ⟨hs, hP⟩, hle⟩
   let _ : Type (u + 1) := Presieve X

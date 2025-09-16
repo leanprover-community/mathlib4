@@ -78,11 +78,9 @@ instance : SubringClass (ValuationSubring K) K where
 theorem toSubring_injective : Function.Injective (toSubring : ValuationSubring K → Subring K) :=
   fun x y h => by cases x; cases y; congr
 
-instance : CommRing A :=
-  show CommRing A.toSubring by infer_instance
+instance : CommRing A := inferInstanceAs <| CommRing A.toSubring
 
-instance : IsDomain A :=
-  show IsDomain A.toSubring by infer_instance
+instance : IsDomain A := inferInstanceAs <| IsDomain A.toSubring
 
 instance : Top (ValuationSubring K) :=
   Top.mk <| { (⊤ : Subring K) with mem_or_inv_mem' := fun _ => Or.inl trivial }
@@ -114,15 +112,14 @@ instance : ValuationRing A where
     · use ⟨a / b, hh⟩
       right
       ext
-      field_simp
-    · rw [show (a / b : K)⁻¹ = b / a by field_simp] at hh
+      simp [field]
+    · rw [show (a / b : K)⁻¹ = b / a by simp] at hh
       use ⟨b / a, hh⟩
       left
       ext
-      field_simp
+      simp [field]
 
-instance : Algebra A K :=
-  show Algebra A.toSubring K by infer_instance
+instance : Algebra A K := inferInstanceAs <| Algebra A.toSubring K
 
 -- Porting note: Somehow it cannot find this instance and I'm too lazy to debug. wrong prio?
 instance isLocalRing : IsLocalRing A := ValuationRing.isLocalRing A
@@ -144,12 +141,7 @@ instance : IsFractionRing A K where
 /-- The value group of the valuation associated to `A`. Note: it is actually a group with zero. -/
 def ValueGroup :=
   ValuationRing.ValueGroup A K
--- The `LinearOrderedCommGroupWithZero` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance : LinearOrderedCommGroupWithZero (ValueGroup A) := by
-  unfold ValueGroup
-  infer_instance
+deriving LinearOrderedCommGroupWithZero
 
 /-- Any valuation subring of `K` induces a natural valuation on `K`. -/
 def valuation : Valuation K A.ValueGroup :=
@@ -185,7 +177,7 @@ theorem valuation_eq_one_iff (a : A) : IsUnit a ↔ A.valuation a = 1 :=
       rw [c, A.valuation.map_zero] at h
       exact zero_ne_one h
     have ha' : (a : K)⁻¹ ∈ A := by rw [← valuation_le_one_iff, map_inv₀, h, inv_one]
-    apply isUnit_of_mul_eq_one a ⟨a⁻¹, ha'⟩; ext; field_simp⟩
+    apply isUnit_of_mul_eq_one a ⟨a⁻¹, ha'⟩; ext; simp [field]⟩
 
 theorem valuation_lt_one_or_eq_one (a : A) : A.valuation a < 1 ∨ A.valuation a = 1 :=
   lt_or_eq_of_le (A.valuation_le_one a)
@@ -319,8 +311,8 @@ theorem ofPrime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) :
         not_not]
       change IsUnit (⟨x⁻¹, h hr⟩ : S)
       apply isUnit_of_mul_eq_one _ (⟨x, hx⟩ : S)
-      ext; field_simp
-    · field_simp
+      ext; simp [field]
+    · simp
 
 theorem ofPrime_le_of_le (P Q : Ideal A) [P.IsPrime] [Q.IsPrime] (h : P ≤ Q) :
     ofPrime A Q ≤ ofPrime A P := fun _x ⟨a, s, hs, he⟩ => ⟨a, s, fun c => hs (h c), he⟩
@@ -518,7 +510,7 @@ variable {A}
 /-- The elements of `A.nonunits` are those of the maximal ideal of `A` after coercion to `K`.
 
 See also `mem_nonunits_iff_exists_mem_maximalIdeal`, which gets rid of the coercion to `K`,
-at the expense of a more complicated right hand side.
+at the expense of a more complicated right-hand side.
 -/
 theorem coe_mem_nonunits_iff {a : A} : (a : K) ∈ A.nonunits ↔ a ∈ IsLocalRing.maximalIdeal A :=
   (valuation_lt_one_iff _ _).symm
@@ -531,7 +523,7 @@ theorem nonunits_subset : (A.nonunits : Set K) ⊆ A :=
 
 /-- The elements of `A.nonunits` are those of the maximal ideal of `A`.
 
-See also `coe_mem_nonunits_iff`, which has a simpler right hand side but requires the element
+See also `coe_mem_nonunits_iff`, which has a simpler right-hand side but requires the element
 to be in `A` already.
 -/
 theorem mem_nonunits_iff_exists_mem_maximalIdeal {a : K} :

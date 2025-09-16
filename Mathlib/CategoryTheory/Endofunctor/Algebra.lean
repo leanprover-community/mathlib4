@@ -131,9 +131,7 @@ def forget (F : C ⥤ C) : Algebra F ⥤ C where
 /-- An algebra morphism with an underlying isomorphism hom in `C` is an algebra isomorphism. -/
 theorem iso_of_iso (f : A₀ ⟶ A₁) [IsIso f.1] : IsIso f :=
   ⟨⟨{ f := inv f.1
-      h := by
-        rw [IsIso.eq_comp_inv f.1, Category.assoc, ← f.h]
-        simp }, by cat_disch, by cat_disch⟩⟩
+      h := by simp }, by cat_disch, by cat_disch⟩⟩
 
 instance forget_reflects_iso : (forget F).ReflectsIsomorphisms where reflects := iso_of_iso
 
@@ -473,8 +471,7 @@ def algebraCoalgebraEquiv (adj : F ⊣ G) : Algebra F ≌ Coalgebra G where
   counitIso := AlgCoalgEquiv.counitIso adj
   functor_unitIso_comp A := by
     ext
-    -- Porting note: why doesn't `simp` work here?
-    exact Category.comp_id _
+    simp
 
 end Adjunction
 

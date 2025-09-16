@@ -44,7 +44,7 @@ open MulAction
 variable (M : Type*) {α : Type*} [Monoid M] [MulAction M α]
 
 /-- The submonoid fixing a set under a `MulAction`. -/
-@[to_additive "The additive submonoid fixing a set under an `AddAction`."]
+@[to_additive /-- The additive submonoid fixing a set under an `AddAction`. -/]
 def fixingSubmonoid (s : Set α) : Submonoid M where
   carrier := { ϕ : M | ∀ x : s, ϕ • (x : α) = x }
   one_mem' _ := one_smul _ _
@@ -105,7 +105,7 @@ open MulAction
 variable (M : Type*) {α : Type*} [Group M] [MulAction M α]
 
 /-- The subgroup fixing a set under a `MulAction`. -/
-@[to_additive "The additive subgroup fixing a set under an `AddAction`."]
+@[to_additive /-- The additive subgroup fixing a set under an `AddAction`. -/]
 def fixingSubgroup (s : Set α) : Subgroup M :=
   { fixingSubmonoid M s with inv_mem' := fun hx z => by rw [inv_smul_eq_iff, hx z] }
 
@@ -164,7 +164,7 @@ theorem fixedPoints_subgroup_iSup {ι : Sort*} {P : ι → Subgroup M} :
     fixedPoints (↥(iSup P)) α = ⋂ i, fixedPoints (P i) α :=
   (fixingSubgroup_fixedPoints_gc M α).u_iInf
 
-/-- The orbit of the fixing subgroup of `sᶜ` (ie. the moving subgroup of `s`) is a subset of `s` -/
+/-- The orbit of the fixing subgroup of `sᶜ` (i.e. the moving subgroup of `s`) is a subset of `s` -/
 @[to_additive]
 theorem orbit_fixingSubgroup_compl_subset {s : Set α} {a : α} (a_in_s : a ∈ s) :
     MulAction.orbit (fixingSubgroup M sᶜ) a ⊆ s := by

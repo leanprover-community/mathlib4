@@ -43,7 +43,7 @@ lemma tensorUnit_isSheaf : Presheaf.IsSheaf J (𝟙_ (Cᵒᵖ ⥤ A)) := by
 `CartesianMonoidalCategory` structure on `A`-valued sheaves. -/
 noncomputable instance cartesianMonoidalCategory : CartesianMonoidalCategory (Sheaf J A) :=
   .ofChosenFiniteProducts
-   ({ cone := asEmptyCone { val := 𝟙_ (Cᵒᵖ ⥤ A), cond := tensorUnit_isSheaf _}
+    ({cone := asEmptyCone { val := 𝟙_ (Cᵒᵖ ⥤ A), cond := tensorUnit_isSheaf _}
       isLimit.lift f := ⟨toUnit f.pt.val⟩
       isLimit.fac := by rintro _ ⟨⟨⟩⟩
       isLimit.uniq x f h := Sheaf.hom_ext _ _ (toUnit_unique f.val _) })
@@ -77,7 +77,7 @@ variable {W : Sheaf J A} (f : W ⟶ X) (g : W ⟶ Y)
 
 end Sheaf
 
-/-- The inclusion from sheaves to presheaves is monoidal with respect to the cartesian monoidal
+/-- The inclusion from sheaves to presheaves is monoidal with respect to the Cartesian monoidal
 structures. -/
 noncomputable instance sheafToPresheafMonoidal : (sheafToPresheaf J A).Monoidal :=
   Functor.CoreMonoidal.toMonoidal

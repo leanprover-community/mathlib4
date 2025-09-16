@@ -32,7 +32,7 @@ variable {ι α β R S : Type*} {X : ι → Type*}
 section LiminfLimsupAdd
 
 variable [AddCommGroup α] [ConditionallyCompleteLinearOrder α] [DenselyOrdered α]
-  [CovariantClass α α (fun a b ↦ a + b) fun x1 x2 ↦ x1 ≤ x2]
+  [AddLeftMono α]
   {f : Filter ι} [f.NeBot] {u v : ι → α}
 
 lemma le_limsup_add (h₁ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f u := by isBoundedDefault)

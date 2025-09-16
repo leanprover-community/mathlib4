@@ -107,18 +107,18 @@ theorem n_le_N {m n : ℕ} (h1 : NatPredicate N m n) : n ≤ N := mod_cast h1.n_
 /-
 Now we can use induction to show that solutions must be Fibonacci numbers.
 -/
-theorem imp_fib {n : ℕ} : ∀ m : ℕ, NatPredicate N m n → ∃ k : ℕ, m = fib k ∧ n = fib (k + 1) := by
-  refine Nat.strong_induction_on n ?_
-  intro n h1 m h2
-  have h3 : m ≤ n := h2.m_le_n
-  obtain (rfl : 1 = n) | (h4 : 1 < n) := (succ_le_iff.mpr h2.n_pos).eq_or_lt
+theorem imp_fib {n : ℕ} (m : ℕ) (h : NatPredicate N m n) :
+    ∃ k : ℕ, m = fib k ∧ n = fib (k + 1) := by
+  induction n using Nat.strong_induction_on generalizing m with | h n ih => ?_
+  have h3 : m ≤ n := h.m_le_n
+  obtain (rfl : 1 = n) | (h4 : 1 < n) := (succ_le_iff.mpr h.n_pos).eq_or_lt
   · use 1
-    have h5 : 1 ≤ m := succ_le_iff.mpr h2.m_pos
+    have h5 : 1 ≤ m := succ_le_iff.mpr h.m_pos
     simpa using h3.antisymm h5
   · obtain (rfl : m = n) | (h6 : m < n) := h3.eq_or_lt
-    · exact absurd h2.eq_imp_1 (Nat.ne_of_gt h4)
-    · have h7 : NatPredicate N (n - m) m := h2.reduction h4
-      obtain ⟨k : ℕ, hnm : n - m = fib k, rfl : m = fib (k + 1)⟩ := h1 m h6 (n - m) h7
+    · exact absurd h.eq_imp_1 (Nat.ne_of_gt h4)
+    · have h7 : NatPredicate N (n - m) m := h.reduction h4
+      obtain ⟨k : ℕ, hnm : n - m = fib k, rfl : m = fib (k + 1)⟩ := ih m h6 (n - m) h7
       use k + 1, rfl
       rw [fib_add_two, ← hnm, tsub_add_cancel_of_le h3]
 
@@ -184,7 +184,4 @@ Now we just have to demonstrate that 987 and 1597 are in fact the largest Fibona
 numbers in this range, and thus provide the maximum of `specifiedSet`.
 -/
 theorem imo1981_q3 : IsGreatest (specifiedSet 1981) 3524578 := by
-  have := fun h => @solution_greatest 1981 16 h 3524578
-  simp +decide at this
-  apply this
-  simp +decide [problemPredicate_iff]
+  simpa +decide [problemPredicate_iff] using (@solution_greatest 1981 16 · 3524578)

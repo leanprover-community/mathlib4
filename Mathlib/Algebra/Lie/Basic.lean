@@ -3,7 +3,6 @@ Copyright (c) 2019 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Module.Submodule.Equiv
 import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Algebra.Module.Rat
@@ -227,6 +226,15 @@ theorem lie_jacobi : ⁅x, ⁅y, z⁆⁆ + ⁅y, ⁅z, x⁆⁆ + ⁅z, ⁅x, y�
   rw [← neg_neg ⁅x, y⁆, lie_neg z, lie_skew y x, ← lie_skew, lie_lie]
   abel
 
+variable (L M) in
+/-- The Lie bracket as a biadditive map.
+
+Usually one will have coefficients and `LieModule.toEnd` will be more useful. -/
+@[simps] def LieRingModule.toEnd : L →+ M →+ M where
+  toFun x := ⟨⟨fun m ↦ ⁅x, m⁆, lie_zero x⟩, LieRingModule.lie_add x⟩
+  map_zero' := by ext n; exact zero_lie n
+  map_add' y z := by ext n; exact add_lie y z n
+
 instance LieRing.instLieAlgebra : LieAlgebra ℤ L where lie_smul n x y := lie_zsmul x y n
 
 instance : LieModule ℤ L M where
@@ -296,18 +304,15 @@ def LieRing.toNonUnitalNonAssocRing : NonUnitalNonAssocRing L :=
 
 variable {ι κ : Type*}
 
-theorem sum_lie (s : Finset ι) (f : ι → L) (a : L) : ⁅∑ i ∈ s, f i, a⁆ = ∑ i ∈ s, ⁅f i, a⁆ :=
-  let _i := LieRing.toNonUnitalNonAssocRing L
-  s.sum_mul f a
+theorem sum_lie (s : Finset ι) (f : ι → L) (m : M) : ⁅∑ i ∈ s, f i, m⁆ = ∑ i ∈ s, ⁅f i, m⁆ :=
+  map_sum ((LieRingModule.toEnd L M).flip m) f s
 
-theorem lie_sum (s : Finset ι) (f : ι → L) (a : L) : ⁅a, ∑ i ∈ s, f i⁆ = ∑ i ∈ s, ⁅a, f i⁆ :=
-  let _i := LieRing.toNonUnitalNonAssocRing L
-  s.mul_sum f a
+theorem lie_sum (s : Finset ι) (f : ι → M) (a : L) : ⁅a, ∑ i ∈ s, f i⁆ = ∑ i ∈ s, ⁅a, f i⁆ :=
+  map_sum (LieRingModule.toEnd L M a) f s
 
-theorem sum_lie_sum {κ : Type*} (s : Finset ι) (t : Finset κ) (f : ι → L) (g : κ → L) :
-    ⁅(∑ i ∈ s, f i), ∑ j ∈ t, g j⁆ = ∑ i ∈ s, ∑ j ∈ t, ⁅f i, g j⁆ :=
-  let _i := LieRing.toNonUnitalNonAssocRing L
-  s.sum_mul_sum t f g
+theorem sum_lie_sum {κ : Type*} (s : Finset ι) (t : Finset κ) (f : ι → L) (g : κ → M) :
+    ⁅(∑ i ∈ s, f i), ∑ j ∈ t, g j⁆ = ∑ i ∈ s, ∑ j ∈ t, ⁅f i, g j⁆ := by
+  simp_rw [sum_lie, lie_sum]
 
 end BasicProperties
 
@@ -433,7 +438,6 @@ theorem coe_mk (f : L₁ → L₂) (h₁ h₂ h₃) : ((⟨⟨⟨f, h₁⟩, h�
 def comp (f : L₂ →ₗ⁅R⁆ L₃) (g : L₁ →ₗ⁅R⁆ L₂) : L₁ →ₗ⁅R⁆ L₃ :=
   { LinearMap.comp f.toLinearMap g.toLinearMap with
     map_lie' := by
-      intros x y
       simp }
 
 theorem comp_apply (f : L₂ →ₗ⁅R⁆ L₃) (g : L₁ →ₗ⁅R⁆ L₂) (x : L₁) : f.comp g x = f (g x) :=
@@ -461,7 +465,7 @@ def inverse (f : L₁ →ₗ⁅R⁆ L₂) (g : L₂ → L₁) (h₁ : Function.L
     (h₂ : Function.RightInverse g f) : L₂ →ₗ⁅R⁆ L₁ :=
   { LinearMap.inverse f.toLinearMap g h₁ h₂ with
     map_lie' := by
-      intros x y
+      intro x y
       calc
         g ⁅x, y⁆ = g ⁅f (g x), f (g y)⁆ := by conv_lhs => rw [← h₂ x, ← h₂ y]
         _ = g (f ⁅g x, g y⁆) := by rw [map_lie]
@@ -654,7 +658,7 @@ noncomputable def ofBijective (f : L₁ →ₗ⁅R⁆ L₂) (h : Function.Biject
   { LinearEquiv.ofBijective (f : L₁ →ₗ[R] L₂)
       h with
     toFun := f
-    map_lie' := by intros x y; exact f.map_lie x y }
+    map_lie' := by intro x y; exact f.map_lie x y }
 
 end LieEquiv
 
@@ -779,7 +783,6 @@ theorem coe_linear_mk (f : M →ₗ[R] N) (h) : ((⟨f, h⟩ : M →ₗ⁅R,L⁆
 def comp (f : N →ₗ⁅R,L⁆ P) (g : M →ₗ⁅R,L⁆ N) : M →ₗ⁅R,L⁆ P :=
   { LinearMap.comp f.toLinearMap g.toLinearMap with
     map_lie' := by
-      intros x m
       simp }
 
 theorem comp_apply (f : N →ₗ⁅R,L⁆ P) (g : M →ₗ⁅R,L⁆ N) (m : M) : f.comp g m = f (g m) :=
@@ -799,7 +802,7 @@ def inverse (f : M →ₗ⁅R,L⁆ N) (g : N → M) (h₁ : Function.LeftInverse
     (h₂ : Function.RightInverse g f) : N →ₗ⁅R,L⁆ M :=
   { LinearMap.inverse f.toLinearMap g h₁ h₂ with
     map_lie' := by
-      intros x n
+      intro x n
       calc
         g ⁅x, n⁆ = g ⁅x, f (g n)⁆ := by rw [h₂]
         _ = g (f ⁅x, g n⁆) := by rw [map_lie]

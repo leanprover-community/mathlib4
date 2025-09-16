@@ -67,10 +67,10 @@ theorem hasDerivAt_bernoulliFun (k : ℕ) (x : ℝ) :
 theorem antideriv_bernoulliFun (k : ℕ) (x : ℝ) :
     HasDerivAt (fun x => bernoulliFun (k + 1) x / (k + 1)) (bernoulliFun k x) x := by
   convert (hasDerivAt_bernoulliFun (k + 1) x).div_const _ using 1
-  field_simp [Nat.cast_add_one_ne_zero k]
+  simp [Nat.cast_add_one_ne_zero k]
 
 theorem integral_bernoulliFun_eq_zero {k : ℕ} (hk : k ≠ 0) :
-    ∫ x : ℝ in (0)..1, bernoulliFun k x = 0 := by
+    ∫ x : ℝ in 0..1, bernoulliFun k x = 0 := by
   rw [integral_eq_sub_of_hasDerivAt (fun x _ => antideriv_bernoulliFun k x)
       ((Polynomial.continuous _).intervalIntegrable _ _)]
   rw [bernoulliFun_eval_one]
@@ -131,8 +131,7 @@ theorem bernoulliFourierCoeff_eq {k : ℕ} (hk : k ≠ 0) (n : ℤ) :
     · exfalso; exact (ne_of_gt (Nat.lt_succ_iff.mpr hk)) h
     · rw [h'k, Nat.factorial_succ, zero_sub, Nat.cast_mul, pow_add, pow_one, neg_div, mul_neg,
         mul_neg, mul_neg, neg_neg, neg_mul, neg_mul, neg_mul, div_neg]
-      field_simp [Int.cast_ne_zero.mpr hn, I_ne_zero]
-      ring_nf
+      field_simp
 
 end BernoulliFourierCoeffs
 
@@ -330,7 +329,7 @@ section Examples
 theorem hasSum_zeta_two : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 2) (π ^ 2 / 6) := by
   convert hasSum_zeta_nat one_ne_zero using 1; rw [mul_one]
   rw [bernoulli_eq_bernoulli'_of_ne_one (by decide : 2 ≠ 1), bernoulli'_two]
-  norm_num [Nat.factorial]; field_simp; ring
+  norm_num [Nat.factorial]; field_simp
 
 theorem hasSum_zeta_four : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 4) (π ^ 4 / 90) := by
   convert hasSum_zeta_nat two_ne_zero using 1; norm_num

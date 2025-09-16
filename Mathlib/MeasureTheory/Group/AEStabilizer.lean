@@ -36,7 +36,7 @@ variable (G : Type*) {α : Type*} [Group G] [MulAction G α]
 namespace MulAction
 
 /-- A.e. stabilizer of a set under a group action. -/
-@[to_additive (attr := simps) "A.e. stabilizer of a set under an additive group action."]
+@[to_additive (attr := simps) /-- A.e. stabilizer of a set under an additive group action. -/]
 def aestabilizer (s : Set α) : Subgroup G where
   carrier := {g | g • s =ᵐ[μ] s}
   one_mem' := by simp

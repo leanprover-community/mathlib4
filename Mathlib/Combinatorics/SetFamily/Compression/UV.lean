@@ -30,12 +30,12 @@ minimise the shadow.
 
 ## Notation
 
-`𝓒` (typed with `\MCC`) is notation for `UV.compression` in locale `FinsetFamily`.
+`𝓒` (typed with `\MCC`) is notation for `UV.compression` in scope `FinsetFamily`.
 
 ## Notes
 
 Even though our emphasis is on `Finset α`, we define UV-compressions more generally in a generalized
-boolean algebra, so that one can use it for `Set α`.
+Boolean algebra, so that one can use it for `Set α`.
 
 ## References
 
@@ -64,7 +64,7 @@ theorem sup_sdiff_injOn [GeneralizedBooleanAlgebra α] (u v : α) :
 -- The namespace is here to distinguish from other compressions.
 namespace UV
 
-/-! ### UV-compression in generalized boolean algebras -/
+/-! ### UV-compression in generalized Boolean algebras -/
 
 
 section GeneralizedBooleanAlgebra
@@ -293,7 +293,7 @@ lemma _root_.Set.Sized.uvCompression (huv : #u = #v) (h𝒜 : (𝒜 : Set (Finse
 
 private theorem aux (huv : ∀ x ∈ u, ∃ y ∈ v, IsCompressed (u.erase x) (v.erase y) 𝒜) :
     v = ∅ → u = ∅ := by
-  rintro rfl; refine eq_empty_of_forall_notMem fun a ha ↦ ?_; obtain ⟨_, ⟨⟩, -⟩ := huv a ha
+  grind
 
 /-- UV-compression reduces the size of the shadow of `𝒜` if, for all `x ∈ u` there is `y ∈ v` such
 that `𝒜` is `(u.erase x, v.erase y)`-compressed. This is the key fact about compression for

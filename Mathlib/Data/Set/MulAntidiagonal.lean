@@ -19,8 +19,8 @@ variable [Mul α] {s s₁ s₂ t t₁ t₂ : Set α} {a : α} {x : α × α}
 /-- `Set.mulAntidiagonal s t a` is the set of all pairs of an element in `s` and an element in `t`
 that multiply to `a`. -/
 @[to_additive
-      "`Set.addAntidiagonal s t a` is the set of all pairs of an element in `s` and an
-      element in `t` that add to `a`."]
+      /-- `Set.addAntidiagonal s t a` is the set of all pairs of an element in `s` and an
+      element in `t` that add to `a`. -/]
 def mulAntidiagonal (s t : Set α) (a : α) : Set (α × α) :=
   { x | x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 * x.2 = a }
 
@@ -38,7 +38,7 @@ theorem mulAntidiagonal_mono_right (h : t₁ ⊆ t₂) :
 
 end Mul
 
--- The left hand side is not in simp normal form, see variant below.
+-- The left-hand side is not in simp normal form, see variant below.
 @[to_additive]
 theorem swap_mem_mulAntidiagonal [CommMagma α] {s t : Set α} {a : α} {x : α × α} :
     x.swap ∈ Set.mulAntidiagonal s t a ↔ x ∈ Set.mulAntidiagonal t s a := by

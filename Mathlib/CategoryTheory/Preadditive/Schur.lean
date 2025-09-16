@@ -93,12 +93,6 @@ end
 variable (𝕜 : Type*) [Field 𝕜]
 variable [IsAlgClosed 𝕜] [Linear 𝕜 C]
 
--- Porting note: the defeq issue in lean3 described below is no longer a problem in Lean4.
--- In the proof below we have some difficulty using `I : FiniteDimensional 𝕜 (X ⟶ X)`
--- where we need a `FiniteDimensional 𝕜 (End X)`.
--- These are definitionally equal, but without eta reduction Lean can't see this.
--- To get around this, we use `convert I`,
--- then check the various instances agree field-by-field,
 -- We prove this with the explicit `isIso_iff_nonzero` assumption,
 -- rather than just `[Simple X]`, as this form is useful for
 -- Müger's formulation of semisimplicity.

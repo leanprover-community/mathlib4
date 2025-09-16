@@ -37,7 +37,6 @@ instance Multiplicative.smul [VAdd α β] : SMul (Multiplicative α) β where sm
 
 @[simp] lemma ofAdd_smul [VAdd α β] (a : α) (b : β) : ofAdd a • b = a +ᵥ b := rfl
 
--- Porting note: I don't know why `one_smul` can do without an explicit α and `mul_smul` can't.
 instance Additive.addAction [Monoid α] [MulAction α β] : AddAction (Additive α) β where
   zero_vadd := MulAction.one_smul
   add_vadd := MulAction.mul_smul (α := α)

@@ -63,7 +63,7 @@ structure Subgraph {V : Type u} (G : SimpleGraph V) where
   Adj : V → V → Prop
   adj_sub : ∀ {v w : V}, Adj v w → G.Adj v w
   edge_vert : ∀ {v w : V}, Adj v w → v ∈ verts
-  symm : Symmetric Adj := by aesop_graph -- Porting note: Originally `by obviously`
+  symm : Symmetric Adj := by aesop_graph
 
 initialize_simps_projections SimpleGraph.Subgraph (Adj → adj)
 
@@ -202,7 +202,7 @@ def IsInduced (G' : Subgraph G) : Prop :=
   ⟨coe_adj_sub _ _ _, hG' a.2 b.2⟩
 
 /-- `H.support` is the set of vertices that form edges in the subgraph `H`. -/
-def support (H : Subgraph G) : Set V := Rel.dom {(v, w) | H.Adj v w}
+def support (H : Subgraph G) : Set V := SetRel.dom {(v, w) | H.Adj v w}
 
 theorem mem_support (H : Subgraph G) {v : V} : v ∈ H.support ↔ ∃ w, H.Adj v w := Iff.rfl
 
@@ -564,7 +564,7 @@ def _root_.SimpleGraph.toSubgraph (H : SimpleGraph V) (h : H ≤ G) : G.Subgraph
   symm := H.symm
 
 theorem support_mono {H H' : Subgraph G} (h : H ≤ H') : H.support ⊆ H'.support :=
-  Rel.dom_mono fun _ hvw ↦ h.2 hvw
+  SetRel.dom_mono fun _ hvw ↦ h.2 hvw
 
 theorem _root_.SimpleGraph.toSubgraph.isSpanning (H : SimpleGraph V) (h : H ≤ G) :
     (toSubgraph H h).IsSpanning :=
@@ -895,8 +895,7 @@ theorem subgraphOfAdj_symm {v w : V} (hvw : G.Adj v w) :
 theorem map_subgraphOfAdj (f : G →g G') {v w : V} (hvw : G.Adj v w) :
     Subgraph.map f (G.subgraphOfAdj hvw) = G'.subgraphOfAdj (f.map_adj hvw) := by
   ext
-  · grind [Subgraph.map_verts, subgraphOfAdj_verts, Set.mem_image, Set.mem_insert_iff,
-      Set.mem_singleton_iff]
+  · grind [Subgraph.map_verts, subgraphOfAdj_verts]
   · grind [Relation.Map, Subgraph.map_adj, subgraphOfAdj_adj, Sym2.eq, Sym2.rel_iff]
 
 theorem neighborSet_subgraphOfAdj_subset {u v w : V} (hvw : G.Adj v w) :
@@ -937,7 +936,7 @@ theorem singletonSubgraph_snd_le_subgraphOfAdj {u v : V} {h : G.Adj u v} :
 
 @[simp]
 lemma support_subgraphOfAdj {u v : V} (h : G.Adj u v) :
-    (G.subgraphOfAdj h).support = {u , v} := by
+    (G.subgraphOfAdj h).support = {u, v} := by
   ext
   rw [Subgraph.mem_support]
   simp only [subgraphOfAdj_adj, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]

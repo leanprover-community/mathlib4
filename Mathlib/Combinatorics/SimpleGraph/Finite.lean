@@ -22,9 +22,9 @@ finitely many neighbors.
 
 * `SimpleGraph.edgeFinset` is the `Finset` of edges in a graph, if `edgeSet` is finite
 * `SimpleGraph.neighborFinset` is the `Finset` of vertices adjacent to a given vertex,
-   if `neighborSet` is finite
+  if `neighborSet` is finite
 * `SimpleGraph.incidenceFinset` is the `Finset` of edges containing a given vertex,
-   if `incidenceSet` is finite
+  if `incidenceSet` is finite
 
 ## Naming conventions
 
@@ -64,6 +64,11 @@ theorem mem_edgeFinset : e ∈ G.edgeFinset ↔ e ∈ G.edgeSet :=
 
 theorem not_isDiag_of_mem_edgeFinset : e ∈ G.edgeFinset → ¬e.IsDiag :=
   not_isDiag_of_mem_edgeSet _ ∘ mem_edgeFinset.1
+
+/-- Mapping an edge to a finite set produces a finset of size `2`. -/
+theorem card_toFinset_mem_edgeFinset [DecidableEq V] (e : G.edgeFinset) :
+    (e : Sym2 V).toFinset.card = 2 :=
+  Sym2.card_toFinset_of_not_isDiag e.val (G.not_isDiag_of_mem_edgeFinset e.prop)
 
 theorem edgeFinset_inj : G₁.edgeFinset = G₂.edgeFinset ↔ G₁ = G₂ := by simp
 
@@ -126,6 +131,18 @@ theorem card_edgeFinset_le_card_choose_two : #G.edgeFinset ≤ (Fintype.card V).
 
 end EdgeFinset
 
+namespace Iso
+
+variable {G} {W : Type*} {G' : SimpleGraph W}
+
+theorem card_edgeFinset_eq (f : G ≃g G') [Fintype G.edgeSet] [Fintype G'.edgeSet] :
+    #G.edgeFinset = #G'.edgeFinset := by
+  apply Finset.card_eq_of_equiv
+  simp only [Set.mem_toFinset]
+  exact f.mapEdgeSet
+
+end Iso
+
 section FiniteAt
 
 /-!
@@ -141,7 +158,7 @@ Use `neighborFinset_eq_filter` to rewrite this definition as a `Finset.filter` e
 
 variable (v) [Fintype (G.neighborSet v)]
 
-/-- `G.neighbors v` is the `Finset` version of `G.Adj v` in case `G` is
+/-- `G.neighborFinset v` is the `Finset` version of `G.neighborSet v` in case `G` is
 locally finite at `v`. -/
 def neighborFinset : Finset V :=
   (G.neighborSet v).toFinset
@@ -225,6 +242,12 @@ theorem incidenceFinset_subset [DecidableEq V] [Fintype G.edgeSet] :
     G.incidenceFinset v ⊆ G.edgeFinset :=
   Set.toFinset_subset_toFinset.mpr (G.incidenceSet_subset v)
 
+/-- The degree of a vertex is at most the number of edges. -/
+theorem degree_le_card_edgeFinset [DecidableEq V] [Fintype G.edgeSet] :
+    G.degree v ≤ #G.edgeFinset := by
+  rw [← card_incidenceFinset_eq_degree]
+  exact card_le_card (G.incidenceFinset_subset v)
+
 variable {G v}
 
 /-- If `G ≤ H` then `G.degree v ≤ H.degree v` for any vertex `v`. -/
@@ -286,7 +309,7 @@ theorem complete_graph_degree [DecidableEq V] (v : V) :
 
 @[simp]
 theorem bot_degree (v : V) : (⊥ : SimpleGraph V).degree v = 0 := by
-  simp_rw [degree, neighborFinset_eq_filter, bot_adj, filter_False]
+  simp_rw [degree, neighborFinset_eq_filter, bot_adj, filter_false]
   exact Finset.card_empty
 
 theorem IsRegularOfDegree.top [DecidableEq V] :
@@ -338,6 +361,17 @@ lemma minDegree_le_minDegree {H : SimpleGraph V} [DecidableRel G.Adj] [Decidable
     exact fun v ↦ (G.minDegree_le_degree v).trans (G.degree_le_of_le hle)
   · rw [not_nonempty_iff] at hne
     simp
+
+/-- In a nonempty graph, the minimal degree is less than the number of vertices. -/
+theorem minDegree_lt_card [DecidableRel G.Adj] [Nonempty V] :
+    G.minDegree < Fintype.card V := by
+  obtain ⟨v, hδ⟩ := G.exists_minimal_degree_vertex
+  rw [hδ, ← card_neighborFinset_eq_degree, ← card_univ]
+  have h : v ∉ G.neighborFinset v :=
+    (G.mem_neighborFinset v v).not.mpr (G.loopless v)
+  contrapose! h
+  rw [eq_of_subset_of_card_le (subset_univ _) h]
+  exact mem_univ v
 
 /-- The maximum degree of all vertices (and `0` if there are no vertices).
 The key properties of this are given in `exists_maximal_degree_vertex`, `degree_le_maxDegree`
@@ -523,5 +557,22 @@ theorem degree_induce_support (v : G.support) :
   degree_induce_of_support_subset subset_rfl v
 
 end Support
+
+section Map
+
+variable [Fintype V] {W : Type*} [Fintype W] [DecidableEq W]
+
+@[simp]
+theorem edgeFinset_map (f : V ↪ W) (G : SimpleGraph V) [DecidableRel G.Adj] :
+    (G.map f).edgeFinset = G.edgeFinset.map f.sym2Map := by
+  rw [Finset.map_eq_image, ← Set.toFinset_image, Set.toFinset_inj]
+  exact G.edgeSet_map f
+
+theorem card_edgeFinset_map (f : V ↪ W) (G : SimpleGraph V) [DecidableRel G.Adj] :
+    #(G.map f).edgeFinset = #G.edgeFinset := by
+  rw [edgeFinset_map]
+  exact G.edgeFinset.card_map f.sym2Map
+
+end Map
 
 end SimpleGraph

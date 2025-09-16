@@ -219,10 +219,7 @@ an arbitrarily chosen injective object under `cokernel f`.
 -/
 def syzygies : C :=
   under (cokernel f)
--- The `Injective` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance : Injective <| syzygies f := injective_under (cokernel f)
+deriving Injective
 
 /-- When `C` has enough injective,
 `Injective.d f : Y ⟶ syzygies f` is the composition

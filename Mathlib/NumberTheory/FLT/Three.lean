@@ -647,7 +647,8 @@ private lemma formula2 :
     calc _ = S.X^3 *(S.u₂*S.u₂⁻¹)*(η^3*S.u₁)*(λ^((S.multiplicity-1)*3)*λ):= by push_cast; ring
     _ = S.X^3*S.u₁*λ^(3*S.multiplicity-2) := by simp [hζ.toInteger_cube_eq_one, ← pow_succ, this]
   · ring
-  · field_simp [u₄_def]
+  · simp only [u₄_def, inv_eq_one_div, mul_div_assoc', mul_one, val_div_eq_divp, Units.val_mul,
+      IsUnit.unit_spec, divp_mul_eq_mul_divp, divp_eq_iff_mul_eq]
     ring
 
 private lemma lambda_sq_div_u₅_mul : λ ^ 2 ∣ S.u₅ * (λ ^ (S.multiplicity - 1) * S.X) ^ 3 := by

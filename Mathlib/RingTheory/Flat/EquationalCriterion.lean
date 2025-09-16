@@ -223,9 +223,6 @@ theorem exists_factorization_of_apply_eq_zero_of_free [Flat R M] {N : Type*} [Ad
     (f := e.symm f) (x := x ∘ₗ e) (by simpa using h)
   ⟨k, a ∘ₗ e.symm, y, by rwa [← comp_assoc, LinearEquiv.eq_comp_toLinearMap_symm], haf⟩
 
-@[deprecated (since := "2025-01-03")] alias exists_factorization_of_apply_eq_zero :=
-  exists_factorization_of_apply_eq_zero_of_free
-
 private theorem exists_factorization_of_comp_eq_zero_of_free_aux [Flat R M] {K : Type*} {n : ℕ}
     [AddCommGroup K] [Module R K] [Module.Finite R K] {f : K →ₗ[R] Fin n →₀ R}
     {x : (Fin n →₀ R) →ₗ[R] M} (h : x ∘ₗ f = 0) :

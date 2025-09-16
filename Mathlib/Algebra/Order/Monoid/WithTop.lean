@@ -22,14 +22,15 @@ instance isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMo
   add_le_add_left _ _ := add_le_add_left
 
 instance canonicallyOrderedAdd [Add α] [Preorder α] [CanonicallyOrderedAdd α] :
-    CanonicallyOrderedAdd (WithTop α) :=
-  { WithTop.existsAddOfLE with
-    le_self_add := fun a b =>
-      match a, b with
-      | ⊤, ⊤ => le_rfl
-      | (a : α), ⊤ => le_top
-      | (a : α), (b : α) => WithTop.coe_le_coe.2 le_self_add
-      | ⊤, (b : α) => le_rfl }
+    CanonicallyOrderedAdd (WithTop α) where
+  le_self_add
+  | ⊤, _ => le_rfl
+  | (a : α), ⊤ => le_top
+  | (a : α), (b : α) => WithTop.coe_le_coe.2 le_self_add
+  le_add_self
+  | ⊤, ⊤ | ⊤, (b : α) => le_rfl
+  | (a : α), ⊤ => le_top
+  | (a : α), (b : α) => WithTop.coe_le_coe.2 le_add_self
 
 end WithTop
 
