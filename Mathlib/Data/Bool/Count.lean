@@ -23,13 +23,18 @@ theorem count_not_add_count (l : List Bool) (b : Bool) : count (!b) l + count b 
   have := length_eq_countP_add_countP (l := l) (· == !b)
   aesop (add simp this)
 
+grind_pattern count_not_add_count => count (!b) l
+
 @[simp]
 theorem count_add_count_not (l : List Bool) (b : Bool) : count b l + count (!b) l = length l := by
-  rw [add_comm, count_not_add_count]
+  grind
 
 @[simp]
 theorem count_false_add_count_true (l : List Bool) : count false l + count true l = length l :=
   count_not_add_count l true
+
+grind_pattern count_false_add_count_true => count false l
+grind_pattern count_false_add_count_true => count true l
 
 @[simp]
 theorem count_true_add_count_false (l : List Bool) : count true l + count false l = length l :=
@@ -52,8 +57,7 @@ theorem count_not_eq_count (hl : Chain' (· ≠ ·) l) (h2 : Even (length l)) (b
   rcases l with - | ⟨x, l⟩
   · rfl
   rw [length_cons, Nat.even_add_one, Nat.not_even_iff] at h2
-  suffices count (!x) (x :: l) = count x (x :: l) by
-    cases b <;> cases x <;> (try exact this) <;> exact this.symm
+  suffices count (!x) (x :: l) = count x (x :: l) by grind
   rw [count_cons_of_ne x.not_ne_self.symm, hl.count_not, h2, count_cons_self]
 
 theorem count_false_eq_count_true (hl : Chain' (· ≠ ·) l) (h2 : Even (length l)) :
