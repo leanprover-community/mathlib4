@@ -9,18 +9,11 @@ import Mathlib.CategoryTheory.Monoidal.Category
 /-!
 # Monoidal Structure on FinStoch
 
-This file defines the monoidal category structure on `FinStoch`, showing that
-finite stochastic matrices form a symmetric monoidal category.
+Defines the monoidal category structure on `FinStoch`.
 
-## Mathematical perspective
-
-The monoidal structure on FinStoch models parallel composition of random processes.
-The tensor product runs two random processes independently. The structural
-isomorphisms (associator, unitors) preserve outcomes regardless of grouping.
-
-All structural isomorphisms are deterministic; they rearrange data without
-adding randomness. Thus the categorical structure preserves information;
-only morphisms within the category add randomness.
+The tensor product models parallel composition of random processes.
+Structural isomorphisms (associator, unitors) rearrange data without
+adding randomness - they are deterministic.
 
 ## Main definitions
 
@@ -32,38 +25,11 @@ only morphisms within the category add randomness.
 
 ## Implementation notes
 
-### Deterministic structural maps
-
 We build structural isomorphisms using explicit stochastic matrices that
-give probability 1 to the right rearrangement and 0 elsewhere. This
-makes them deterministic in the Markov category sense (preserve copying).
+give probability 1 to the correct rearrangement and 0 elsewhere.
 
-### Proof strategy
-
-The proofs follow this pattern:
-1. Use `Finset.sum_eq_single` to isolate the unique non-zero contribution
-2. Handle the exceptional cases (which contribute 0)
-3. For inverse proofs, use `ite_cond_congr` to align tuple equality conditions
-
-The `ite_cond_congr` technique works around Lean distinguishing between
-`x = x'` and `((), x) = ((), x')` as propositions, though they're logically
-the same. This rewriting makes the if-then-else conditions match.
-
-### Coherence proofs
-
-All naturality and coherence conditions are proven:
-- Naturality: Structural maps commute with arbitrary morphisms
-- Pentagon/triangle: Mac Lane's coherence conditions hold
-
-The proofs track composition using sums.
-
-## Design rationale
-
-We build structural isomorphisms explicitly rather than deriving them
-from a product structure because:
-1. It shows they're deterministic
-2. It matches actual computation
-3. It provides concrete foundations for the Markov category instance
+Proofs use `Finset.sum_eq_single` to isolate non-zero contributions.
+For inverse proofs, we use `ite_cond_congr` to handle tuple equality.
 
 ## References
 
@@ -81,11 +47,9 @@ open FinStoch
 
 universe u
 
-/-- The associator isomorphism rearranges `((X ⊗ Y) ⊗ Z)` to `(X ⊗ (Y ⊗ Z))`.
+/-- Rearranges `((X ⊗ Y) ⊗ Z)` to `(X ⊗ (Y ⊗ Z))`.
 
-This map sends `((x,y),z) ↦ (x,(y,z))` with probability 1. It only changes
-the tuple structure, not the data. This proves that grouping doesn't affect
-the outcome when we compose three processes in parallel. -/
+Sends `((x,y),z) ↦ (x,(y,z))` with probability 1. -/
 def associator (X Y Z : FinStoch) :
     (tensorObj (tensorObj X Y) Z) ≅ (tensorObj X (tensorObj Y Z)) where
   hom := ⟨fun ⟨⟨x, y⟩, z⟩ ⟨x', ⟨y', z'⟩⟩ =>
@@ -273,7 +237,7 @@ def leftUnitor (X : FinStoch) : (tensorObj tensorUnit X) ≅ X where
       · -- Case: ((), x) ≠ ((), x')
         simp only [Prod.mk.injEq, true_and] at h
         push_neg at h
-        -- First match gives 0 because x ≠ x'
+        -- Zero when x ≠ x'
         simp only [h, if_false, zero_mul]
     · intro h
       exfalso
@@ -358,7 +322,7 @@ def rightUnitor (X : FinStoch) : (tensorObj X tensorUnit) ≅ X where
       · -- Case: (x, ()) ≠ (x', ())
         simp only [Prod.mk.injEq, and_true] at h
         push_neg at h
-        -- First match gives 0 because x ≠ x'
+        -- Zero when x ≠ x'
         simp only [h, if_false, zero_mul]
     · intro h
       exfalso
