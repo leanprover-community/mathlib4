@@ -67,7 +67,7 @@ If a function `f : ℂ → ℝ` is harmonic on an open ball, then `f` is the rea
 `F : ℂ → ℂ` that is holomorphic on the ball.
 -/
 theorem harmonic_is_realOfHolomorphic {z : ℂ} {R : ℝ} (hf : HarmonicOnNhd f (ball z R)) :
-    ∃ F, (AnalyticOnNhd ℂ F (ball z R)) ∧ ((ball z R).EqOn (Complex.reCLM ∘ F) f) := by
+    ∃ F : ℂ → ℂ, (AnalyticOnNhd ℂ F (ball z R)) ∧ ((ball z R).EqOn (fun z ↦ (F z).re) f) := by
   by_cases hR : R ≤ 0
   · simp [ball_eq_empty.2 hR]
   let g := ofRealCLM ∘ (fderiv ℝ f · 1) - I • ofRealCLM ∘ (fderiv ℝ f · I)
@@ -82,6 +82,7 @@ theorem harmonic_is_realOfHolomorphic {z : ℂ} {R : ℝ} (hf : HarmonicOnNhd f 
   have h₃F : DifferentiableOn ℝ F (ball z R) :=
     h₂F.restrictScalars (𝕜 := ℝ) (𝕜' := ℂ)
   use F, h₂F.analyticOnNhd isOpen_ball
+  rw [(by aesop : (fun z ↦ (F z).re) = Complex.reCLM ∘ F)]
   intro x hx
   apply (convex_ball z R).eqOn_of_fderivWithin_eq (𝕜 := ℝ) (x := z)
   · exact reCLM.differentiable.comp_differentiableOn h₃F
