@@ -154,34 +154,8 @@ open scoped Topology
 
 variable {R S : Type*} [Field R] [Field S] [LinearOrder S] {v w : AbsoluteValue R S}
   [TopologicalSpace S] [IsStrictOrderedRing S] [Archimedean S] [_i : OrderTopology S]
-
-/--
-`v (1 / (1 + a ^n))` tends to `1` whenever `v : AbsoluteValue R S` for fields `R` and `S`, provided
-`v a < 1`.
--/
-private theorem tendsto_div_one_add_pow_nhds_one {v : AbsoluteValue R S} {a : R} (ha : v a < 1) :
-    atTop.Tendsto (fun (n : ℕ) ↦ v (1 / (1 + a ^ n))) (𝓝 1) := by
-  simp_rw [map_div₀ v, v.map_one]
-  apply one_div_one (G := S) ▸ Tendsto.div tendsto_const_nhds _ one_ne_zero
-  have h_add := tendsto_pow_atTop_nhds_zero_of_lt_one (v.nonneg _) ha |>.const_add (1 : S)
-  have h_sub := tendsto_pow_atTop_nhds_zero_of_lt_one (v.nonneg _) ha |>.const_sub 1
-  exact tendsto_of_tendsto_of_tendsto_of_le_of_le (by simpa using h_sub) (by simpa using h_add)
-    (fun n ↦ le_trans (by rw [map_one, map_pow]) (v.le_add _ _))
-    (fun n ↦ le_trans (v.add_le _ _) (by rw [map_one, map_pow]))
-
-/--
-`v (1 / (1 + a ^n))` tends to `0` whenever `v : AbsoluteValue R S` for fields `R` and `S`, provided
-`1 < v a`.
--/
-private theorem tendsto_div_one_add_pow_nhds_zero {v : AbsoluteValue R S} {a : R} (ha : 1 < v a) :
-    Filter.Tendsto (fun (n : ℕ) ↦ v (1 / (1 + a ^ n))) Filter.atTop (𝓝 0) := by
-  simp_rw [div_eq_mul_inv, one_mul, map_inv₀, fun n ↦ add_comm 1 (a ^ n)]
-  refine (tendsto_atTop_mono (fun n ↦ v.le_add _ _) ?_).inv_tendsto_atTop
-  simpa using tendsto_atTop_add_right_of_le _ _ (tendsto_pow_atTop_atTop_of_one_lt ha)
-    (fun _ ↦ le_rfl) |>.congr fun n ↦ (sub_eq_add_neg (v a ^ n) 1).symm
-
-variable {ι : Type*} [Fintype ι] [DecidableEq ι] {v : ι → AbsoluteValue R S}
-  {w : AbsoluteValue R S} {a b : R} {i : ι}
+  {ι : Type*} [Fintype ι] [DecidableEq ι] {v : ι → AbsoluteValue R S} {w : AbsoluteValue R S}
+  {a b : R} {i : ι}
 
 /--
 - `v i, w`: absolute values on a field $R$.
@@ -244,11 +218,6 @@ private theorem exists_one_lt_lt_one_pi_of_one_lt (ha : 1 < v i a) (haj : ∀ j 
   · exact hrₙ j hj _ <| le_max_iff.2 <| Or.inl <|
       Finset.le_sup_dite_neg (fun j ↦ j = i) (Finset.mem_univ j) _
   · exact hrN _ <| le_max_iff.2 (.inr le_rfl)
-
-theorem _root_.Fintype.card_subtype_or_eq {α : Type*} [Fintype α] [DecidableEq α] {a b : α}
-    (h : a ≠ b) : Fintype.card { c : α // c = a ∨ c = b } = 2 := by
-  simpa using Fintype.card_subtype_or_disjoint _ _ <| fun p hpa hpb ↦
-    le_bot_iff.2 <| funext fun c ↦ by simpa using fun hpc ↦ h (hpa _ hpc ▸ hpb _ hpc)
 
 open Fintype Subtype in
 /--

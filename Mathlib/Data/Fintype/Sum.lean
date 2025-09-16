@@ -135,6 +135,11 @@ theorem Fintype.card_subtype_or_disjoint (p q : α → Prop) (h : Disjoint p q) 
     convert Fintype.card_congr (subtypeOrEquiv p q h)
     simp
 
+theorem Fintype.card_subtype_or_eq {α : Type*} [Fintype α] [DecidableEq α] {a b : α}
+    (h : a ≠ b) : Fintype.card { c : α // c = a ∨ c = b } = 2 := by
+  simpa using Fintype.card_subtype_or_disjoint _ _ <| fun p hpa hpb ↦
+    le_bot_iff.2 <| funext fun c ↦ by simpa using fun hpc ↦ h (hpa _ hpc ▸ hpb _ hpc)
+
 section
 
 @[simp]
