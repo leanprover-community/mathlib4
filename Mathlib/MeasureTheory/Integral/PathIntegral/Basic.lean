@@ -82,7 +82,8 @@ variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace �
 
 /-- The function `t ↦ ω (γ t) (γ' t)` which appears in the definition of a path integral.
 
-This definition is used to factor out common parts of lemmas about `Pa -/
+This definition is used to factor out common parts of lemmas
+about `PathIntegrable` and `pathIntegral`. -/
 @[irreducible]
 noncomputable def pathIntegralFun (ω : E → E →L[𝕜] F) (γ : Path a b) (t : ℝ) : F :=
   letI : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
@@ -251,7 +252,7 @@ protected theorem PathIntegrable.trans (h₁ : PathIntegrable ω γab) (h₂ : P
     (h₂.intervalIntegrable_pathIntegralFun_trans_right γab)
 
 theorem pathIntegral_trans (h₁ : PathIntegrable ω γab) (h₂ : PathIntegrable ω γbc) :
-    ∫ᵖ x in γab.trans γbc, ω x = pathIntegral ω γab + pathIntegral ω γbc := by
+    ∫ᵖ x in γab.trans γbc, ω x = (∫ᵖ x in γab, ω x) + ∫ᵖ x in γbc, ω x := by
   let instF := NormedSpace.restrictScalars ℝ 𝕜 F
   rw [pathIntegral_def, ← intervalIntegral.integral_add_adjacent_intervals
     (h₁.intervalIntegrable_pathIntegralFun_trans_left γbc)
