@@ -425,9 +425,9 @@ def modulesOSForbidden (opts : LinterOptions) (modules : Array Lean.Name) : IO N
         else if s.contains '.' then
           isBad := true
           IO.eprintln s!"error: module name '{name}' contains forbidden character '.'"
-        else if s.contains ' ' || s.contains '\t' then
+        else if s.contains ' ' || s.contains '\t' || s.contains '\n' then
           isBad := true
-          IO.eprintln s!"error: module name '{name}' contains a space"
+          IO.eprintln s!"error: module name '{name}' contains a whitespace character"
         for c in forbiddenCharacters do
           if s.contains c then
             badChars := c.toString :: badChars
