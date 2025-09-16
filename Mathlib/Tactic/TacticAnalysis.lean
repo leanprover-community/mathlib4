@@ -272,7 +272,7 @@ structure ComplexConfig where
   -/
   trigger (context : Option ctx) (currentTactic : Syntax) : TriggerCondition ctx
   /-- Code to run in the context of the tactic, for example an alternative tactic. -/
-  test (context : ctx) (goal : MVarId) : MetaM out
+  test (ctxI : ContextInfo) (i : TacticInfo) (context : ctx) (goal : MVarId) : CommandElabM out
   /-- Decides what to report to the user. -/
   tell (stx : Syntax) (originalSubgoals : List MVarId) (originalHeartbeats : Nat)
     (new : out) (newHeartbeats : Nat) : CommandElabM (Option MessageData)
@@ -294,7 +294,7 @@ def testTacticSeq (config : ComplexConfig) (tacticSeq : Array (TSyntax `tactic))
         catch e =>
           logWarning m!"original tactic '{stx}' failed: {e.toMessageData}"
           return [goal]
-      let (new, newHeartbeats) ← withHeartbeats <| ctxI.runTactic i goal <| config.test ctx
+      let (new, newHeartbeats) ← withHeartbeats <| config.test ctxI i ctx goal
       if let some msg ← config.tell stx oldGoals oldHeartbeats new newHeartbeats  then
         logWarning msg
 
