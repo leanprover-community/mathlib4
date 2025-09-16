@@ -20,7 +20,7 @@ We also expand the API around `C^n` functions.
 
 Similar results are given for `C^n` functions on domains.
 
-## Notations
+## Notation
 
 We use the notation `E [×n]→L[𝕜] F` for the space of continuous multilinear maps on `E^n` with
 values in `F`. This is the space in which the `n`-th derivative of a function from `E` to `F` lives.
