@@ -24,9 +24,6 @@ lemma IsRegularLocalRing.of_isField (h : IsField R) : IsRegularLocalRing R := by
   apply (isRegularLocalRing_def R).mpr
   simp [maximalIdeal_eq_bot]
 
-instance (S : Type*) [Field S] : IsRegularLocalRing S :=
-  IsRegularLocalRing.of_isField S (Field.toIsField S)
-
 lemma IsRegularRing.of_isField (h : IsField R) : IsRegularRing R := by
   let _ : Field R := h.toField
   refine (isRegularRing_iff R).mpr (fun p hp ↦ ?_)
@@ -70,9 +67,6 @@ lemma IsRegularRing.of_isPID [IsDomain R] [IsPrincipalIdealRing R] : IsRegularRi
       simp only [hx, Ideal.submodule_span_eq, Ideal.map_span, Set.image_singleton]
       exact le_of_le_of_eq (Submodule.spanFinrank_span_le_ncard_of_finite
         (Set.finite_singleton _)) (Set.ncard_singleton _)
-
-instance [IsRegularRing R] (n : ℕ) : IsRegularRing (MvPolynomial (Fin n) R) :=
-  MvPolynomial.isRegularRing_of_isRegularRing R n
 
 theorem Hilberts_Syzygy (k : Type u) [Field k] [Small.{v, u} k] (n : ℕ) :
     globalDimension.{v} (MvPolynomial (Fin n) k) = n := by
