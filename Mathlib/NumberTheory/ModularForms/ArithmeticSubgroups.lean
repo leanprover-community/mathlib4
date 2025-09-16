@@ -5,7 +5,7 @@ Authors: David Loeffler
 -/
 import Mathlib.Data.Real.Basic
 import Mathlib.GroupTheory.Commensurable
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Topology
+import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 import Mathlib.Topology.Algebra.Ring.Real
 import Mathlib.Topology.Instances.Matrix
