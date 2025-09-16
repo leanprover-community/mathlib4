@@ -1,13 +1,12 @@
 /-
-Copyright (c) 2025 Imperial College London. All rights reserved.
+Copyright (c) 2025 Ruben Van de Velde and David Ledvinka. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Imperial College London FLT Project Contributors
+Authors: Ruben Van de Velde and David Ledvinka
 -/
 import Mathlib.Algebra.Group.Pi.Units
 import Mathlib.Algebra.Group.Submonoid.Units
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Algebra.ContinuousMonoidHom
-import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # Topological properties of units
@@ -20,12 +19,14 @@ open Units
 
 /-- If a submonoid is open in a topological monoid, then its units form an open subset
 of the units of the monoid. -/
-lemma Submonoid.units_isOpen {M : Type*} [TopologicalSpace M] [Monoid M]
+@[to_additive]
+lemma Submonoid.isOpen_units {M : Type*} [TopologicalSpace M] [Monoid M]
   {U : Submonoid M} (hU : IsOpen (U : Set M)) : IsOpen (U.units : Set Mˣ) :=
   (hU.preimage Units.continuous_val).inter (hU.preimage Units.continuous_coe_inv)
 
 /-- The monoid homeomorphism between the units of a product of topological monoids
 and the product of the units of the monoids. -/
+@[to_additive]
 def ContinuousMulEquiv.piUnits {ι : Type*}
     {M : ι → Type*} [(i : ι) → Monoid (M i)] [(i : ι) → TopologicalSpace (M i)] :
     (Π i, M i)ˣ ≃ₜ* Π i, (M i)ˣ where
