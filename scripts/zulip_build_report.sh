@@ -1,4 +1,5 @@
 #!/bin/bash
+shopt -s extglob
 
 lean_outfile=$1
 
@@ -15,22 +16,22 @@ counts=()
 # Panics are reported as an info message.
 # They should be very prominent when debugging, so treat them differently.
 if panic_lines=$(grep '^info: .*PANIC at ' <<<"${filtered_out}"); then
-  panic_descriptions=${panic_lines//^info: [^:]*:[0-9]*:[0-9]*: //}
+  panic_descriptions=${panic_lines//info: *([^:]):*([0-9]):*([0-9]): }
   counts+=( "$(printf 'Panics: %d' "$(wc -l <<<"${panic_lines}")")" )
   echo "$(wc -l <<<"${panic_lines}") lines of panic" >&2
 fi
 if error_lines=$(grep '^error: ' <<<"${filtered_out}"); then
-  error_descriptions=${error_lines//^error: [^:]*:[0-9]*:[0-9]*: //}
+  error_descriptions=${error_lines//error: *([^:]):*([0-9]):*([0-9]): }
   counts+=( "$(printf 'Errors: %d' "$(wc -l <<<"${error_lines}")")" )
   echo "$(wc -l <<<"${error_lines}") lines of errors" >&2
 fi
 if warning_lines=$(grep '^warning: ' <<<"${filtered_out}"); then
-  warning_descriptions=${warning_lines//^warning: [^:]*:[0-9]*:[0-9]*: //}
+  warning_descriptions=${warning_lines//warning: *([^:]):*([0-9]):*([0-9]): }
   counts+=( "$(printf 'Warnings: %d' "$(wc -l <<<"${warning_lines}")")" )
   echo "$(wc -l <<<"${warning_lines}") lines of warnings" >&2
 fi
 if info_lines=$(grep '^info: ' <<<"${filtered_out}" | grep -v 'PANIC at '); then
-  info_descriptions=${info_lines//^info: [^:]*:[0-9]*:[0-9]*: //}
+  info_descriptions=${info_lines//info: *([^:]):*([0-9]):*([0-9]): }
   counts+=( "$(printf 'Info messages: %d' "$(wc -l <<<"${info_lines}")")" )
   echo "$(wc -l <<<"${info_lines}") lines of info" >&2
 fi
