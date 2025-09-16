@@ -78,7 +78,7 @@ theorem log_stirlingSeq_diff_hasSum (m : ℕ) :
     rw [← pow_mul, pow_add]
     push_cast
     field_simp
-  · have h (x) (hx : x ≠ (0 : ℝ)) : 1 + x⁻¹ = (x + 1) / x := by field_simp [hx]
+  · have h (x) (hx : x ≠ (0 : ℝ)) : 1 + x⁻¹ = (x + 1) / x := by field_simp
     simp (disch := positivity) only [log_stirlingSeq_formula, log_div, log_mul, log_exp,
       factorial_succ, cast_mul, cast_succ, range_one, sum_singleton, h]
     ring

@@ -33,11 +33,11 @@ theorem isPrimitiveRoot_exp_of_coprime (i n : ℕ) (h0 : n ≠ 0) (hi : i.Coprim
     IsPrimitiveRoot (exp (2 * π * I * (i / n))) n := by
   rw [IsPrimitiveRoot.iff_def]
   simp only [← exp_nat_mul, exp_eq_one_iff]
-  have hn0 : (n : ℂ) ≠ 0 := mod_cast h0
   constructor
   · use i
-    simp [field, mul_comm (i : ℂ), mul_comm (n : ℂ)]
+    simp (discharger := norm_cast) [field]
   · simp only [forall_exists_index]
+    have hn0 : (n : ℂ) ≠ 0 := mod_cast h0
     rintro l k hk
     field_simp at hk
     norm_cast at hk
