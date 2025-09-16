@@ -110,8 +110,9 @@ def minSqFacAux : ℕ → ℕ → Option ℕ
         exact Nat.minFac_lemma n k h
       if k ∣ n then
         let n' := n / k
-        have : Nat.sqrt n' - k < Nat.sqrt n + 2 - k :=
-        lt_of_le_of_lt (by gcongr; apply div_le_self) this
+        have : Nat.sqrt n' - k < Nat.sqrt n + 2 - k := by
+          revert this; gcongr -- TODO: use `gconvert`
+          apply div_le_self
         if k ∣ n' then some k else minSqFacAux n' (k + 2)
       else minSqFacAux n (k + 2)
 termination_by n k => sqrt n + 2 - k
@@ -160,8 +161,8 @@ theorem minSqFacAux_has_prop {n : ℕ} (k) (n0 : 0 < n) (i) (e : k = 2 * i + 3)
     intro n' nd' nk
     have hn' := le_of_dvd n0 nd'
     refine
-      have : Nat.sqrt n' - k < Nat.sqrt n + 2 - k :=
-        lt_of_le_of_lt (by gcongr) (Nat.minFac_lemma n k h)
+      have : Nat.sqrt n' - k < Nat.sqrt n + 2 - k := by
+        have := (Nat.minFac_lemma n k h); revert this; gcongr -- TODO: use `gconvert`
       @minSqFacAux_has_prop n' (k + 2) (pos_of_dvd_of_pos nd' n0) (i + 1)
         (by simp [e, left_distrib]) fun m m2 d => ?_
     rcases Nat.eq_or_lt_of_le (ih m m2 (dvd_trans d nd')) with me | ml
