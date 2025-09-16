@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
+import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 import Mathlib.Topology.Algebra.Group.AddTorsor
 
 /-!
@@ -62,6 +63,21 @@ theorem lineMap_continuous {p q : P} :
     Continuous (lineMap p q : R →ᵃ[R] P) := by
   rw [coe_lineMap]
   fun_prop
+
+variable {α : Type*} {l : Filter α}
+
+open Topology Filter
+
+theorem _root_.Filter.Tendsto.lineMap {f₁ f₂ : α → P} {g : α → R} {p₁ p₂ : P} {c : R}
+    (h₁ : Tendsto f₁ l (𝓝 p₁)) (h₂ : Tendsto f₂ l (𝓝 p₂)) (hg : Tendsto g l (𝓝 c)) :
+    Tendsto (fun x => AffineMap.lineMap (f₁ x) (f₂ x) (g x)) l (𝓝 <| AffineMap.lineMap p₁ p₂ c) :=
+  (hg.smul (h₂.vsub h₁)).vadd h₁
+
+theorem _root_.Filter.Tendsto.midpoint [Invertible (2 : R)] {f₁ f₂ : α → P} {p₁ p₂ : P}
+    (h₁ : Tendsto f₁ l (𝓝 p₁)) (h₂ : Tendsto f₂ l (𝓝 p₂)) :
+    Tendsto (fun x => midpoint R (f₁ x) (f₂ x)) l (𝓝 <| midpoint R p₁ p₂) :=
+  h₁.lineMap h₂ tendsto_const_nhds
+
 
 end Ring
 
