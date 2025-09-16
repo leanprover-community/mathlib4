@@ -23,7 +23,7 @@ we say that it is a non-archimedean local field if the topology comes from the g
 and it is locally compact and non-discrete.
 
 This implies the following typeclasses via `inferInstance`
-- `ValuativeTopology K`
+- `IsValuativeTopology K`
 - `LocallyCompactSpace K`
 - `IsTopologicalDivisionRing K`
 - `ValuativeRel.IsNontrivial K`
