@@ -546,49 +546,6 @@ theorem isNontrivial : v.1.IsNontrivial :=
 
 variable {v}
 
-open scoped Topology
-
-open Filter in
-/--
-- $K$: field;
-- $v$: infinite place of $K$;
-- $c \in K$;
-- $1 < v(c)$;
-- $w(c) > 1$ for any infinite place $w\neq v$.
-
-There is a sequence in $K$ that tends to $1$ with respect
-to $v$ and tends to $0$ with respect to all other $w\neq v$.
-
-Such a sequence is given by $\frac{1}{1 + c ^ {-n}}$.
--/
-theorem exists_tendsto_one_tendsto_zero {v : InfinitePlace K} {c : K} (hv : 1 < v c)
-    (h : ∀ w : InfinitePlace K, w ≠ v → w c < 1) :
-    ∃ a : ℕ → K, atTop.Tendsto ((WithAbs.equiv v.1).symm ∘ a) (𝓝 1) ∧
-      (∀ w ≠ v, atTop.Tendsto ((WithAbs.equiv w.1).symm ∘ a) (𝓝 0)) := by
-  refine ⟨fun n => 1 / (1 + c⁻¹ ^ n), ?_, fun w hwv => ?_⟩
-  · nth_rw 3 [show (1 : WithAbs v.1) = 1 / 1 by norm_num]
-    apply Tendsto.div tendsto_const_nhds _ one_ne_zero
-    nth_rw 2 [← add_zero (1 : WithAbs v.1)]
-    apply Tendsto.const_add
-    rw [tendsto_zero_iff_norm_tendsto_zero]
-    have hx₁ := map_inv₀ v _ ▸ inv_lt_one_of_one_lt₀ hv
-    simpa using tendsto_pow_atTop_nhds_zero_of_lt_one (AbsoluteValue.nonneg _ _) hx₁
-  · simp_rw [div_eq_mul_inv, one_mul]
-    rw [tendsto_zero_iff_norm_tendsto_zero]
-    simp only [inv_pow, Function.comp_apply, map_inv₀]
-    simp_rw [norm_inv]
-    apply Tendsto.inv_tendsto_atTop
-    have (a : WithAbs w.1) (n : ℕ) : ‖a ^ n‖ - 1 ≤  ‖1 + a ^ n‖  := by
-      simp_rw [add_comm, ← norm_one (α := WithAbs w.1), tsub_le_iff_right]
-      exact norm_le_add_norm_add _ _
-    simp only [map_add, map_one, map_inv₀, map_pow, ← inv_pow]
-    apply tendsto_atTop_mono (this _) (tendsto_atTop_add_right_of_le _ (-1) _ (fun _ => le_rfl))
-    refine tendsto_atTop_of_geom_le (c := w c⁻¹) (by simp) ?_ (fun n => ?_)
-    · exact map_inv₀ w _ ▸ (one_lt_inv₀ (w.1.pos fun h ↦ by simp_all; linarith)).2 (h w hwv)
-    · simp only [map_inv₀, norm_inv, norm_pow]
-      rw [pow_add, pow_one, mul_comm]
-      exact le_rfl
-
 noncomputable instance [NumberField K] : DecidableEq (InfinitePlace K) :=
   (Fintype.equivFin _).decidableEq
 
@@ -598,6 +555,7 @@ noncomputable instance [NumberField K] : DecidableEq (InfinitePlace K) :=
 
 -/
 
+open scoped Topology in
 open Filter in
 variable (K) in
 /--
@@ -614,11 +572,29 @@ theorem denseRange_algebraMap_pi [NumberField K] :
   refine Metric.denseRange_iff.2 fun z r hr ↦ ?_
   -- For some `v`, by previous results we can select a sequence `xᵥₙ → 1` in `v`'s topology
   -- and `→ 0` in any other infinite place topology
-  choose _ hx using AbsoluteValue.exists_one_lt_lt_one_pi_of_not_isEquiv isNontrivial
+  choose a hx using AbsoluteValue.exists_one_lt_lt_one_pi_of_not_isEquiv isNontrivial
     (fun _ _ hwv ↦ (eq_iff_isEquiv (K := K)).not.1 hwv)
-  choose x h using fun v ↦ exists_tendsto_one_tendsto_zero (hx v).1 (hx v).2
+  let c : ℕ → K → K := fun n a ↦ 1 / (1 + a ^ n)
+  have hc₁ {a : K} (v : InfinitePlace K) (ha : v a < 1) :
+      atTop.Tendsto (fun n ↦ (WithAbs.equiv v.1).symm <| c n a) (𝓝 1) := by
+    simp only [c, one_div, map_inv₀]
+    refine inv_one (G := WithAbs v.1) ▸ (tendsto_inv_iff₀ one_ne_zero).2 ?_
+    rw [tendsto_iff_norm_sub_tendsto_zero]
+    simp only [inv_one, map_add, map_one, map_pow, add_sub_cancel_left, norm_pow,
+      tendsto_pow_atTop_nhds_zero_iff, abs_norm]
+    rw [WithAbs.norm_eq_abv, RingEquiv.apply_symm_apply]
+    exact ha
+  have hc₀ {a : K} (w : InfinitePlace K) (ha : 1 < w a) :
+      atTop.Tendsto (fun n ↦ (WithAbs.equiv w.1).symm <| c n a) (𝓝 0) := by
+    rw [tendsto_zero_iff_norm_tendsto_zero]
+    simp_rw [WithAbs.norm_eq_abv w.1, c]
+    simp_rw [div_eq_mul_inv, one_mul, map_inv₀, fun n ↦ add_comm 1 (a ^ n)]
+    simp_rw [RingEquiv.apply_symm_apply]
+    refine (tendsto_atTop_mono (fun n ↦ w.1.le_add _ _) ?_).inv_tendsto_atTop
+    simpa using tendsto_atTop_add_right_of_le _ _ (tendsto_pow_atTop_atTop_of_one_lt ha)
+      (fun _ ↦ le_rfl) |>.congr fun n ↦ (sub_eq_add_neg (w a ^ n) 1).symm
   -- Define the sequence `yₙ = ∑ v, xᵥₙ * zᵥ` in `K`
-  let y := fun n ↦ ∑ v, (WithAbs.equiv v.1).symm (x v n) * z v
+  let y := fun n ↦ ∑ v, (WithAbs.equiv v.1).symm (c n (a v)⁻¹) * z v
   -- At each place `w` the limit of `y` with respect to `w`'s topology is `z w`.
   have : atTop.Tendsto (fun n w ↦ (WithAbs.equiv w.1).symm (y n)) (𝓝 z) := by
     refine tendsto_pi_nhds.2 fun w ↦ ?_
@@ -627,13 +603,28 @@ theorem denseRange_algebraMap_pi [NumberField K] :
     refine tendsto_finset_sum _ fun v _ ↦ ?_
     by_cases hw : w = v
     · -- because `x w → 1` in `w`'s topology
-      simp only [hw, if_true, ← congrArg (β := ℕ → K) x hw, ← congrArg z hw]
-      nth_rw 2 [← one_mul (z w)]
-      exact Tendsto.mul_const _ (h w).1
+      --simp only [hw, if_true, ← congrArg (β := ℕ → K) (c hw, ← congrArg z hw]
+      simp only [hw, if_true]
+      nth_rw 2 [← one_mul (z v)]
+      have : v (a v)⁻¹ < 1 := by
+        simp
+        rw [inv_lt_one_iff₀]
+        right
+        exact (hx v).1
+      exact Tendsto.mul_const _ (hw ▸ hc₁ v this)
     · -- while `x v → 0` in `w`'s topology (v ≠ w)
       simp only [hw, if_false]
       rw [← zero_mul (z v)]
-      exact Tendsto.mul_const _ <| (h v).2 w hw
+      have : 1 < w (a v)⁻¹ := by
+        simp
+        rw [one_lt_inv_iff₀]
+        refine ⟨?_, (hx v).2 w hw⟩
+        rw [w.pos_iff]
+        intro ha
+        have := ha ▸ (hx v).1
+        simp at this
+        linarith
+      exact Tendsto.mul_const _ <| hc₀ w this
   let ⟨N, h⟩ := Metric.tendsto_atTop.1 this r hr
   exact ⟨y N, dist_comm z (algebraMap K _ (y N)) ▸ h N le_rfl⟩
 
