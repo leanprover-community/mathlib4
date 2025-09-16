@@ -65,7 +65,7 @@ theorem IsLinearSet.singleton (a) : IsLinearSet ({a} : Set M) :=
 theorem IsLinearSet.closure_finset (s : Finset M) : IsLinearSet (closure (s : Set M) : Set M) :=
   ⟨0, s, by simp⟩
 
-theorem IsLinearSet.closure_of_finite {s : Set M} (hs : s.Finite) :
+theorem IsLinearSet.closure_of_finite (hs : s.Finite) :
     IsLinearSet (closure s : Set M) :=
   ⟨0, s, hs, by simp⟩
 
@@ -115,7 +115,7 @@ theorem IsSemilinearSet.closure_finset (s : Finset M) :
     IsSemilinearSet (closure (s : Set M) : Set M) :=
   (IsLinearSet.closure_finset s).isSemilinearSet
 
-theorem IsSemilinearSet.closure_of_finite {s : Set M} (hs : s.Finite) :
+theorem IsSemilinearSet.closure_of_finite (hs : s.Finite) :
     IsSemilinearSet (closure s : Set M) :=
   (IsLinearSet.closure_of_finite hs).isSemilinearSet
 
