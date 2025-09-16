@@ -1,12 +1,12 @@
 import Std
 import Batteries
-import Mathlib.AdicSpace
-import Mathlib.AdicSpace.AdicSpace
-import Mathlib.AdicSpace.HuberPair
-import Mathlib.AdicSpace.Spa.RationalOpenData
-import Mathlib.AdicSpace.Spa.StalkValuation
-import Mathlib.AdicSpace.Spa.StructurePresheaf
-import Mathlib.AdicSpace.Spv
+-- import Mathlib.AdicSpace
+-- import Mathlib.AdicSpace.AdicSpace
+-- import Mathlib.AdicSpace.HuberPair
+-- import Mathlib.AdicSpace.Spa.RationalOpenData
+-- import Mathlib.AdicSpace.Spa.StalkValuation
+-- import Mathlib.AdicSpace.Spa.StructurePresheaf
+-- import Mathlib.AdicSpace.Spv
 import Mathlib.Algebra.AddConstMap.Basic
 import Mathlib.Algebra.AddConstMap.Equiv
 import Mathlib.Algebra.AddTorsor.Basic

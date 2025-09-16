@@ -1,4 +1,3 @@
-import Mathlib
 import Mathlib.AdicSpace.HuberPair
 
 universe u
