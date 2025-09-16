@@ -27,7 +27,7 @@ formulae for group operations in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine
 ## Main statements
 
 * `WeierstrassCurve.Affine.equation_iff_nonsingular`: an elliptic curve in affine coordinates is
-    nonsingular at every point.
+  nonsingular at every point.
 
 ## Implementation notes
 

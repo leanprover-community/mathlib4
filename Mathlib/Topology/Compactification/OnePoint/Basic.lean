@@ -310,10 +310,10 @@ theorem nhdsNE_infty_eq : 𝓝[≠] (∞ : OnePoint X) = map (↑) (coclosedComp
   refine (nhdsWithin_basis_open ∞ _).ext (hasBasis_coclosedCompact.map _) ?_ ?_
   · rintro s ⟨hs, hso⟩
     refine ⟨_, (isOpen_iff_of_mem hs).mp hso, ?_⟩
-    simp [Subset.rfl]
+    simp
   · rintro s ⟨h₁, h₂⟩
     refine ⟨_, ⟨mem_compl infty_notMem_image_coe, isOpen_compl_image_coe.2 ⟨h₁, h₂⟩⟩, ?_⟩
-    simp [compl_image_coe, ← diff_eq, subset_preimage_image]
+    simp [compl_image_coe, ← diff_eq]
 
 @[deprecated (since := "2025-03-02")]
 alias nhdsWithin_compl_infty_eq := nhdsNE_infty_eq
@@ -368,7 +368,7 @@ theorem tendsto_nhds_infty {α : Type*} {f : OnePoint X → α} {l : Filter α} 
       ∀ s ∈ l, f ∞ ∈ s ∧ ∃ t : Set X, IsClosed t ∧ IsCompact t ∧ MapsTo (f ∘ (↑)) tᶜ s :=
   tendsto_nhds_infty'.trans <| by
     simp only [tendsto_pure_left, hasBasis_coclosedCompact.tendsto_left_iff, forall_and,
-      and_assoc, exists_prop]
+      and_assoc]
 
 theorem continuousAt_infty' {Y : Type*} [TopologicalSpace Y] {f : OnePoint X → Y} :
     ContinuousAt f ∞ ↔ Tendsto (f ∘ (↑)) (coclosedCompact X) (𝓝 (f ∞)) :=
@@ -435,7 +435,6 @@ noncomputable def continuousMapDiscreteEquiv (Y : Type*) [DiscreteTopology X] [T
         ⟨fun x ↦ f x, ⟨f ∞, continuous_iff_from_discrete f |>.mp <| map_continuous f⟩⟩
       exact Classical.choose_spec f'.property
     · simp
-  right_inv _ := rfl
 
 lemma continuous_iff_from_nat {Y : Type*} [TopologicalSpace Y] (f : OnePoint ℕ → Y) :
     Continuous f ↔ Tendsto (fun x : ℕ ↦ f x) atTop (𝓝 (f ∞)) := by
@@ -458,9 +457,7 @@ noncomputable def continuousMapNatEquiv (Y : Type*) [TopologicalSpace Y] [T2Spac
     C(OnePoint ℕ, Y) ≃ { f : ℕ → Y // ∃ L, Tendsto (f ·) atTop (𝓝 L) } := by
   refine (continuousMapDiscreteEquiv ℕ Y).trans {
     toFun := fun ⟨f, hf⟩ ↦ ⟨f, by rwa [← Nat.cofinite_eq_atTop]⟩
-    invFun := fun ⟨f, hf⟩ ↦ ⟨f, by rwa [Nat.cofinite_eq_atTop]⟩
-    left_inv := fun _ ↦ rfl
-    right_inv := fun _ ↦ rfl }
+    invFun := fun ⟨f, hf⟩ ↦ ⟨f, by rwa [Nat.cofinite_eq_atTop]⟩ }
 
 /-- If `X` is not a compact space, then the natural embedding `X → OnePoint X` has dense range.
 -/

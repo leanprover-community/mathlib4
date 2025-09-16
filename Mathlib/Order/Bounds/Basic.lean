@@ -198,11 +198,11 @@ theorem lowerBounds_mono ⦃s t : Set α⦄ (hst : s ⊆ t) ⦃a b⦄ (hab : a �
   lowerBounds_mono_set hst <| lowerBounds_mono_mem hab hb
 
 /-- If `s ⊆ t` and `t` is bounded above, then so is `s`. -/
-theorem BddAbove.mono ⦃s t : Set α⦄ (h : s ⊆ t) : BddAbove t → BddAbove s :=
+@[gcongr] theorem BddAbove.mono ⦃s t : Set α⦄ (h : s ⊆ t) : BddAbove t → BddAbove s :=
   Nonempty.mono <| upperBounds_mono_set h
 
 /-- If `s ⊆ t` and `t` is bounded below, then so is `s`. -/
-theorem BddBelow.mono ⦃s t : Set α⦄ (h : s ⊆ t) : BddBelow t → BddBelow s :=
+@[gcongr] theorem BddBelow.mono ⦃s t : Set α⦄ (h : s ⊆ t) : BddBelow t → BddBelow s :=
   Nonempty.mono <| lowerBounds_mono_set h
 
 /-- If `a` is a least upper bound for sets `s` and `p`, then it is a least upper bound for any
@@ -552,29 +552,14 @@ theorem lowerBounds_singleton : lowerBounds {a} = Iic a :=
 -/
 
 
-theorem bddAbove_Icc : BddAbove (Icc a b) :=
-  ⟨b, fun _ => And.right⟩
-
-theorem bddBelow_Icc : BddBelow (Icc a b) :=
-  ⟨a, fun _ => And.left⟩
-
-theorem bddAbove_Ico : BddAbove (Ico a b) :=
-  bddAbove_Icc.mono Ico_subset_Icc_self
-
-theorem bddBelow_Ico : BddBelow (Ico a b) :=
-  bddBelow_Icc.mono Ico_subset_Icc_self
-
-theorem bddAbove_Ioc : BddAbove (Ioc a b) :=
-  bddAbove_Icc.mono Ioc_subset_Icc_self
-
-theorem bddBelow_Ioc : BddBelow (Ioc a b) :=
-  bddBelow_Icc.mono Ioc_subset_Icc_self
-
-theorem bddAbove_Ioo : BddAbove (Ioo a b) :=
-  bddAbove_Icc.mono Ioo_subset_Icc_self
-
-theorem bddBelow_Ioo : BddBelow (Ioo a b) :=
-  bddBelow_Icc.mono Ioo_subset_Icc_self
+@[simp] lemma bddAbove_Icc : BddAbove (Icc a b) := ⟨b, fun _ => And.right⟩
+@[simp] lemma bddBelow_Icc : BddBelow (Icc a b) := ⟨a, fun _ => And.left⟩
+@[simp] lemma bddAbove_Ico : BddAbove (Ico a b) := bddAbove_Icc.mono Ico_subset_Icc_self
+@[simp] lemma bddBelow_Ico : BddBelow (Ico a b) := bddBelow_Icc.mono Ico_subset_Icc_self
+@[simp] lemma bddAbove_Ioc : BddAbove (Ioc a b) := bddAbove_Icc.mono Ioc_subset_Icc_self
+@[simp] lemma bddBelow_Ioc : BddBelow (Ioc a b) := bddBelow_Icc.mono Ioc_subset_Icc_self
+@[simp] lemma bddAbove_Ioo : BddAbove (Ioo a b) := bddAbove_Icc.mono Ioo_subset_Icc_self
+@[simp] lemma bddBelow_Ioo : BddBelow (Ioo a b) := bddBelow_Icc.mono Ioo_subset_Icc_self
 
 theorem isGreatest_Icc (h : a ≤ b) : IsGreatest (Icc a b) b :=
   ⟨right_mem_Icc.2 h, fun _ => And.right⟩
@@ -977,3 +962,8 @@ theorem isGreatest_compl [HeytingAlgebra α] (a : α) :
 theorem isLeast_hnot [CoheytingAlgebra α] (a : α) :
     IsLeast {w | Codisjoint a w} (￢a) := by
   simpa only [CoheytingAlgebra.top_sdiff, codisjoint_iff_le_sup] using isLeast_sdiff ⊤ a
+
+instance Nat.instDecidableIsLeast (p : ℕ → Prop) (n : ℕ) [DecidablePred p] :
+    Decidable (IsLeast { n : ℕ | p n } n) :=
+  decidable_of_iff (p n ∧ ∀ k < n, ¬p k) <| .and .rfl <| by
+    simp [mem_lowerBounds, @imp_not_comm _ (p _)]

@@ -70,7 +70,7 @@ export ZeroMemClass (zero_mem)
 
 attribute [to_additive] OneMemClass
 
-attribute [aesop safe apply (rule_sets := [SetLike])] one_mem zero_mem
+attribute [simp, aesop safe (rule_sets := [SetLike])] one_mem zero_mem
 
 section
 
@@ -110,7 +110,7 @@ class AddSubmonoidClass (S : Type*) (M : outParam Type*) [AddZeroClass M] [SetLi
 
 attribute [to_additive] Submonoid SubmonoidClass
 
-@[to_additive (attr := aesop safe apply (rule_sets := [SetLike]))]
+@[to_additive (attr := aesop 90% (rule_sets := [SetLike]))]
 theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x : M}
     (hx : x ∈ S) : ∀ n : ℕ, x ^ n ∈ S
   | 0 => by
@@ -131,8 +131,8 @@ initialize_simps_projections Submonoid (carrier → coe, as_prefix coe)
 initialize_simps_projections AddSubmonoid (carrier → coe, as_prefix coe)
 
 /-- The actual `Submonoid` obtained from an element of a `SubmonoidClass` -/
-@[to_additive (attr := simps) "The actual `AddSubmonoid` obtained from an element of a
-`AddSubmonoidClass`"]
+@[to_additive (attr := simps) /-- The actual `AddSubmonoid` obtained from an element of a
+`AddSubmonoidClass` -/]
 def ofClass {S M : Type*} [Monoid M] [SetLike S M] [SubmonoidClass S M] (s : S) : Submonoid M :=
   ⟨⟨s, MulMemClass.mul_mem⟩, OneMemClass.one_mem s⟩
 
@@ -167,12 +167,12 @@ theorem mk_le_mk {s t : Subsemigroup M} (h_one) (h_one') : mk s h_one ≤ mk t h
   Iff.rfl
 
 /-- Two submonoids are equal if they have the same elements. -/
-@[to_additive (attr := ext) "Two `AddSubmonoid`s are equal if they have the same elements."]
+@[to_additive (attr := ext) /-- Two `AddSubmonoid`s are equal if they have the same elements. -/]
 theorem ext {S T : Submonoid M} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
   SetLike.ext h
 
 /-- Copy a submonoid replacing `carrier` with a set that is equal to it. -/
-@[to_additive "Copy an additive submonoid replacing `carrier` with a set that is equal to it."]
+@[to_additive /-- Copy an additive submonoid replacing `carrier` with a set that is equal to it. -/]
 protected def copy (S : Submonoid M) (s : Set M) (hs : s = S) : Submonoid M where
   carrier := s
   one_mem' := show 1 ∈ s from hs.symm ▸ S.one_mem'
@@ -191,24 +191,24 @@ theorem copy_eq {s : Set M} (hs : s = S) : S.copy s hs = S :=
 variable (S)
 
 /-- A submonoid contains the monoid's 1. -/
-@[to_additive "An `AddSubmonoid` contains the monoid's 0."]
+@[to_additive /-- An `AddSubmonoid` contains the monoid's 0. -/]
 protected theorem one_mem : (1 : M) ∈ S :=
   one_mem S
 
 /-- A submonoid is closed under multiplication. -/
-@[to_additive "An `AddSubmonoid` is closed under addition."]
+@[to_additive /-- An `AddSubmonoid` is closed under addition. -/]
 protected theorem mul_mem {x y : M} : x ∈ S → y ∈ S → x * y ∈ S :=
   mul_mem
 
 /-- The submonoid `M` of the monoid `M`. -/
-@[to_additive "The additive submonoid `M` of the `AddMonoid M`."]
+@[to_additive /-- The additive submonoid `M` of the `AddMonoid M`. -/]
 instance : Top (Submonoid M) :=
   ⟨{  carrier := Set.univ
       one_mem' := Set.mem_univ 1
       mul_mem' := fun _ _ => Set.mem_univ _ }⟩
 
 /-- The trivial submonoid `{1}` of a monoid `M`. -/
-@[to_additive "The trivial `AddSubmonoid` `{0}` of an `AddMonoid` `M`."]
+@[to_additive /-- The trivial `AddSubmonoid` `{0}` of an `AddMonoid` `M`. -/]
 instance : Bot (Submonoid M) :=
   ⟨{  carrier := {1}
       one_mem' := Set.mem_singleton 1
@@ -237,7 +237,7 @@ theorem coe_bot : ((⊥ : Submonoid M) : Set M) = {1} :=
   rfl
 
 /-- The inf of two submonoids is their intersection. -/
-@[to_additive "The inf of two `AddSubmonoid`s is their intersection."]
+@[to_additive /-- The inf of two `AddSubmonoid`s is their intersection. -/]
 instance : Min (Submonoid M) :=
   ⟨fun S₁ S₂ =>
     { carrier := S₁ ∩ S₂
@@ -260,7 +260,7 @@ theorem subsingleton_iff : Subsingleton (Submonoid M) ↔ Subsingleton M :=
         mem_bot.mp <| Subsingleton.elim (⊤ : Submonoid M) ⊥ ▸ mem_top i
       (this x).trans (this y).symm⟩,
     fun _ =>
-    ⟨fun x y => Submonoid.ext fun i => Subsingleton.elim 1 i ▸ by simp [Submonoid.one_mem]⟩⟩
+    ⟨fun x y => Submonoid.ext fun i => Subsingleton.elim 1 i ▸ by simp⟩⟩
 
 @[to_additive (attr := simp)]
 theorem nontrivial_iff : Nontrivial (Submonoid M) ↔ Nontrivial M :=
@@ -285,7 +285,7 @@ variable [MulOneClass N]
 open Submonoid
 
 /-- The submonoid of elements `x : M` such that `f x = g x` -/
-@[to_additive "The additive submonoid of elements `x : M` such that `f x = g x`"]
+@[to_additive /-- The additive submonoid of elements `x : M` such that `f x = g x` -/]
 def eqLocusM (f g : M →* N) : Submonoid M where
   carrier := { x | f x = g x }
   one_mem' := by rw [Set.mem_setOf_eq, f.map_one, g.map_one]
@@ -308,7 +308,7 @@ namespace OneMemClass
 variable {A M₁ : Type*} [SetLike A M₁] [One M₁] [hA : OneMemClass A M₁] (S' : A)
 
 /-- A submonoid of a monoid inherits a 1. -/
-@[to_additive "An `AddSubmonoid` of an `AddMonoid` inherits a zero."]
+@[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits a zero. -/]
 instance one : One S' :=
   ⟨⟨1, OneMemClass.one_mem S'⟩⟩
 
@@ -358,27 +358,27 @@ theorem mk_pow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] {S 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a unital magma inherits a unital magma structure. -/
 @[to_additive
-      "An `AddSubmonoid` of a unital additive magma inherits a unital additive magma structure."]
+  /-- An `AddSubmonoid` of a unital additive magma inherits a unital additive magma structure. -/]
 instance (priority := 75) toMulOneClass {M : Type*} [MulOneClass M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : MulOneClass S := fast_instance%
   Subtype.coe_injective.mulOneClass Subtype.val rfl (fun _ _ => rfl)
 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a monoid inherits a monoid structure. -/
-@[to_additive "An `AddSubmonoid` of an `AddMonoid` inherits an `AddMonoid` structure."]
+@[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits an `AddMonoid` structure. -/]
 instance (priority := 75) toMonoid {M : Type*} [Monoid M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : Monoid S := fast_instance%
   Subtype.coe_injective.monoid Subtype.val rfl (fun _ _ => rfl) (fun _ _ => rfl)
 
 -- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
 /-- A submonoid of a `CommMonoid` is a `CommMonoid`. -/
-@[to_additive "An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`."]
+@[to_additive /-- An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`. -/]
 instance (priority := 75) toCommMonoid {M} [CommMonoid M] {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : CommMonoid S := fast_instance%
   Subtype.coe_injective.commMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
-@[to_additive "The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`."]
+@[to_additive /-- The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`. -/]
 def subtype : S' →* M where
   toFun := Subtype.val; map_one' := rfl; map_mul' _ _ := by simp
 
@@ -403,12 +403,12 @@ namespace Submonoid
 variable {M : Type*} [MulOneClass M] (S : Submonoid M)
 
 /-- A submonoid of a monoid inherits a multiplication. -/
-@[to_additive "An `AddSubmonoid` of an `AddMonoid` inherits an addition."]
+@[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits an addition. -/]
 instance mul : Mul S :=
   ⟨fun a b => ⟨a.1 * b.1, S.mul_mem a.2 b.2⟩⟩
 
 /-- A submonoid of a monoid inherits a 1. -/
-@[to_additive "An `AddSubmonoid` of an `AddMonoid` inherits a zero."]
+@[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits a zero. -/]
 instance one : One S :=
   ⟨⟨_, S.one_mem⟩⟩
 
@@ -438,7 +438,7 @@ theorem one_def : (1 : S) = ⟨1, S.one_mem⟩ :=
 
 /-- A submonoid of a unital magma inherits a unital magma structure. -/
 @[to_additive
-      "An `AddSubmonoid` of a unital additive magma inherits a unital additive magma structure."]
+  /-- An `AddSubmonoid` of a unital additive magma inherits a unital additive magma structure. -/]
 instance toMulOneClass {M : Type*} [MulOneClass M] (S : Submonoid M) :
     MulOneClass S := fast_instance%
   Subtype.coe_injective.mulOneClass Subtype.val rfl fun _ _ => rfl
@@ -449,17 +449,35 @@ protected theorem pow_mem {M : Type*} [Monoid M] (S : Submonoid M) {x : M} (hx :
   pow_mem hx n
 
 /-- A submonoid of a monoid inherits a monoid structure. -/
-@[to_additive "An `AddSubmonoid` of an `AddMonoid` inherits an `AddMonoid` structure."]
+@[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits an `AddMonoid` structure. -/]
 instance toMonoid {M : Type*} [Monoid M] (S : Submonoid M) : Monoid S := fast_instance%
   Subtype.coe_injective.monoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
 
 /-- A submonoid of a `CommMonoid` is a `CommMonoid`. -/
-@[to_additive "An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`."]
+@[to_additive /-- An `AddSubmonoid` of an `AddCommMonoid` is an `AddCommMonoid`. -/]
 instance toCommMonoid {M} [CommMonoid M] (S : Submonoid M) : CommMonoid S := fast_instance%
   Subtype.coe_injective.commMonoid Subtype.val rfl (fun _ _ => rfl) fun _ _ => rfl
 
+/-- A submonoid of a left cancellative unital magma inherits left cancellation. -/
+@[to_additive
+  /-- An `AddSubmonoid` of a left cancellative unital additive magma inherits left cancellation. -/]
+instance isLeftCancelMul [IsLeftCancelMul M] (S : Submonoid M) : IsLeftCancelMul S :=
+  Subtype.coe_injective.isLeftCancelMul Subtype.val fun _ _ => rfl
+
+/-- A submonoid of a right cancellative unital magma inherits right cancellation. -/
+@[to_additive
+  /-- An `AddSubmonoid` of a right cancellative unital additive magma inherits right
+  cancellation. -/]
+instance isRightCancelMul [IsRightCancelMul M] (S : Submonoid M) : IsRightCancelMul S :=
+  Subtype.coe_injective.isRightCancelMul Subtype.val fun _ _ => rfl
+
+/-- A submonoid of a cancellative unital magma inherits cancellation. -/
+@[to_additive
+/-- An `AddSubmonoid` of a cancellative unital additive magma inherits cancellation. -/]
+instance isCancelMul [IsCancelMul M] (S : Submonoid M) : IsCancelMul S where
+
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
-@[to_additive "The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`."]
+@[to_additive /-- The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`. -/]
 def subtype : S →* M where
   toFun := Subtype.val; map_one' := rfl; map_mul' _ _ := by simp
 

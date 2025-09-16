@@ -57,9 +57,9 @@ variable {N : Type*} {P : Type*} [Group N] [Group P] (K : Subgroup G)
 open Subgroup
 
 /-- The range of a monoid homomorphism from a group is a subgroup. -/
-@[to_additive "The range of an `AddMonoidHom` from an `AddGroup` is an `AddSubgroup`."]
+@[to_additive /-- The range of an `AddMonoidHom` from an `AddGroup` is an `AddSubgroup`. -/]
 def range (f : G →* N) : Subgroup N :=
-  Subgroup.copy ((⊤ : Subgroup G).map f) (Set.range f) (by simp [Set.ext_iff])
+  Subgroup.copy ((⊤ : Subgroup G).map f) (Set.range f) (by simp)
 
 @[to_additive (attr := simp)]
 theorem coe_range (f : G →* N) : (f.range : Set N) = Set.range f :=
@@ -89,8 +89,8 @@ theorem restrict_range (f : G →* N) : (f.restrict K).range = K.map f := by
 /-- The canonical surjective group homomorphism `G →* f(G)` induced by a group
 homomorphism `G →* N`. -/
 @[to_additive
-      "The canonical surjective `AddGroup` homomorphism `G →+ f(G)` induced by a group
-      homomorphism `G →+ N`."]
+      /-- The canonical surjective `AddGroup` homomorphism `G →+ f(G)` induced by a group
+      homomorphism `G →+ N`. -/]
 def rangeRestrict (f : G →* N) : G →* f.range :=
   codRestrict f _ fun x => ⟨x, rfl⟩
 
@@ -127,16 +127,12 @@ theorem range_eq_top {N} [Group N] {f : G →* N} :
     f.range = (⊤ : Subgroup N) ↔ Function.Surjective f :=
   SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_range, coe_top]) Set.range_eq_univ
 
-@[deprecated (since := "2024-11-11")] alias range_top_iff_surjective := range_eq_top
-
 /-- The range of a surjective monoid homomorphism is the whole of the codomain. -/
 @[to_additive (attr := simp)
-  "The range of a surjective `AddMonoid` homomorphism is the whole of the codomain."]
+  /-- The range of a surjective `AddMonoid` homomorphism is the whole of the codomain. -/]
 theorem range_eq_top_of_surjective {N} [Group N] (f : G →* N) (hf : Function.Surjective f) :
     f.range = (⊤ : Subgroup N) :=
   range_eq_top.2 hf
-
-@[deprecated (since := "2024-11-11")] alias range_top_of_surjective := range_eq_top_of_surjective
 
 @[to_additive (attr := simp)]
 theorem range_one : (1 : G →* N).range = ⊥ :=
@@ -148,12 +144,6 @@ theorem _root_.Subgroup.range_subtype (H : Subgroup G) : H.subtype.range = H :=
 
 @[to_additive]
 alias _root_.Subgroup.subtype_range := Subgroup.range_subtype
-
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated Subgroup.range_subtype (since := "2024-11-26")] _root_.Subgroup.subtype_range
-attribute [deprecated AddSubgroup.range_subtype (since := "2024-11-26")]
-_root_.AddSubgroup.subtype_range
 
 @[to_additive (attr := simp)]
 theorem _root_.Subgroup.inclusion_range {H K : Subgroup G} (h_le : H ≤ K) :
@@ -169,7 +159,7 @@ theorem subgroupOf_range_eq_of_le {G₁ G₂ : Type*} [Group G₁] [Group G₂] 
   simp [Subtype.ext_iff]
 
 /-- Computable alternative to `MonoidHom.ofInjective`. -/
-@[to_additive "Computable alternative to `AddMonoidHom.ofInjective`."]
+@[to_additive /-- Computable alternative to `AddMonoidHom.ofInjective`. -/]
 def ofLeftInverse {f : G →* N} {g : N →* G} (h : Function.LeftInverse g f) : G ≃* f.range :=
   { f.rangeRestrict with
     toFun := f.rangeRestrict
@@ -177,8 +167,7 @@ def ofLeftInverse {f : G →* N} {g : N →* G} (h : Function.LeftInverse g f) :
     left_inv := h
     right_inv := by
       rintro ⟨x, y, rfl⟩
-      apply Subtype.ext
-      rw [coe_rangeRestrict, Function.comp_apply, Subgroup.coe_subtype, Subtype.coe_mk, h] }
+      solve_by_elim }
 
 @[to_additive (attr := simp)]
 theorem ofLeftInverse_apply {f : G →* N} {g : N →* G} (h : Function.LeftInverse g f) (x : G) :
@@ -191,8 +180,8 @@ theorem ofLeftInverse_symm_apply {f : G →* N} {g : N →* G} (h : Function.Lef
   rfl
 
 /-- The range of an injective group homomorphism is isomorphic to its domain. -/
-@[to_additive "The range of an injective additive group homomorphism is isomorphic to its
-domain."]
+@[to_additive /-- The range of an injective additive group homomorphism is isomorphic to its
+domain. -/]
 noncomputable def ofInjective {f : G →* N} (hf : Function.Injective f) : G ≃* f.range :=
   MulEquiv.ofBijective (f.codRestrict f.range fun x => ⟨x, rfl⟩)
     ⟨fun _ _ h => hf (Subtype.ext_iff.mp h), by
@@ -224,8 +213,8 @@ variable {M : Type*} [MulOneClass M]
 /-- The multiplicative kernel of a monoid homomorphism is the subgroup of elements `x : G` such that
 `f x = 1` -/
 @[to_additive
-      "The additive kernel of an `AddMonoid` homomorphism is the `AddSubgroup` of elements
-      such that `f x = 0`"]
+      /-- The additive kernel of an `AddMonoid` homomorphism is the `AddSubgroup` of elements
+      such that `f x = 0` -/]
 def ker (f : G →* M) : Subgroup G :=
   { MonoidHom.mker f with
     inv_mem' := fun {x} (hx : f x = 1) =>
@@ -293,6 +282,12 @@ theorem ker_one : (1 : G →* M).ker = ⊤ :=
 theorem ker_id : (MonoidHom.id G).ker = ⊥ :=
   rfl
 
+@[to_additive] theorem ker_eq_top_iff {f : G →* M} : f.ker = ⊤ ↔ f = 1 := by
+  simp [ker, ← top_le_iff, SetLike.le_def, f.ext_iff]
+
+@[to_additive] theorem range_eq_bot_iff {f : G →* G'} : f.range = ⊥ ↔ f = 1 := by
+  rw [← le_bot_iff, f.range_eq_map, map_le_iff_le_comap, top_le_iff, comap_bot, ker_eq_top_iff]
+
 @[to_additive]
 theorem ker_eq_bot_iff (f : G →* M) : f.ker = ⊥ ↔ Function.Injective f :=
   ⟨fun h x y hxy => by rwa [eq_iff, h, mem_bot, inv_mul_eq_one, eq_comm] at hxy, fun h =>
@@ -338,7 +333,7 @@ section EqLocus
 variable {M : Type*} [Monoid M]
 
 /-- The subgroup of elements `x : G` such that `f x = g x` -/
-@[to_additive "The additive subgroup of elements `x : G` such that `f x = g x`"]
+@[to_additive /-- The additive subgroup of elements `x : G` such that `f x = g x` -/]
 def eqLocus (f g : G →* M) : Subgroup G :=
   { eqLocusM f g with inv_mem' := eq_on_inv f g }
 
@@ -348,8 +343,8 @@ theorem eqLocus_same (f : G →* N) : f.eqLocus f = ⊤ :=
 
 /-- If two monoid homomorphisms are equal on a set, then they are equal on its subgroup closure. -/
 @[to_additive
-      "If two monoid homomorphisms are equal on a set, then they are equal on its subgroup
-      closure."]
+      /-- If two monoid homomorphisms are equal on a set, then they are equal on its subgroup
+      closure. -/]
 theorem eqOn_closure {f g : G →* M} {s : Set G} (h : Set.EqOn f g s) : Set.EqOn f g (closure s) :=
   show closure s ≤ f.eqLocus g from (closure_le _).2 h
 
@@ -401,7 +396,7 @@ theorem map_comap_eq (H : Subgroup N) : map f (comap f H) = f.range ⊓ H :=
 @[to_additive]
 theorem comap_map_eq (H : Subgroup G) : comap f (map f H) = H ⊔ f.ker := by
   refine le_antisymm ?_ (sup_le (le_comap_map _ _) (ker_le_comap _ _))
-  intro x hx; simp only [exists_prop, mem_map, mem_comap] at hx
+  intro x hx; simp only [mem_map, mem_comap] at hx
   rcases hx with ⟨y, hy, hy'⟩
   rw [← mul_inv_cancel_left y x]
   exact mul_mem_sup hy (by simp [mem_ker, hy'])
@@ -471,6 +466,27 @@ theorem map_subtype_le_map_subtype {G' : Subgroup G} {H K : Subgroup G'} :
     H.map G'.subtype ≤ K.map G'.subtype ↔ H ≤ K :=
   map_le_map_iff_of_injective G'.subtype_injective
 
+/-- Subgroups of the subgroup `H` are considered as subgroups that are less than or equal to
+`H`. -/
+@[to_additive (attr := simps apply_coe) /-- Additive subgroups of the subgroup `H` are considered as
+additive subgroups that are less than or equal to `H`. -/]
+def MapSubtype.orderIso (H : Subgroup G) : Subgroup ↥H ≃o { H' : Subgroup G // H' ≤ H } where
+  toFun H' := ⟨H'.map H.subtype, map_subtype_le H'⟩
+  invFun sH' := sH'.1.subgroupOf H
+  left_inv H' := comap_map_eq_self_of_injective H.subtype_injective H'
+  right_inv sH' := Subtype.ext (map_subgroupOf_eq_of_le sH'.2)
+  map_rel_iff' := by simp
+
+@[to_additive (attr := simp)]
+lemma MapSubtype.orderIso_symm_apply (H : Subgroup G) (sH' : { H' : Subgroup G // H' ≤ H }) :
+    (MapSubtype.orderIso H).symm sH' = sH'.1.subgroupOf H :=
+  rfl
+
+@[to_additive]
+protected lemma «forall» {H : Subgroup G} {P : Subgroup H → Prop} :
+    (∀ H' : Subgroup H, P H') ↔ (∀ H' ≤ H, P (H'.subgroupOf H)) := by
+  simp [(MapSubtype.orderIso H).forall_congr_left]
+
 @[to_additive]
 theorem map_lt_map_iff_of_injective {f : G →* N} (hf : Function.Injective f) {H K : Subgroup G} :
     H.map f < K.map f ↔ H < K :=
@@ -486,7 +502,7 @@ theorem map_injective {f : G →* N} (h : Function.Injective f) : Function.Injec
   Function.LeftInverse.injective <| comap_map_eq_self_of_injective h
 
 /-- Given `f(A) = f(B)`, `ker f ≤ A`, and `ker f ≤ B`, deduce that `A = B`. -/
-@[to_additive "Given `f(A) = f(B)`, `ker f ≤ A`, and `ker f ≤ B`, deduce that `A = B`."]
+@[to_additive /-- Given `f(A) = f(B)`, `ker f ≤ A`, and `ker f ≤ B`, deduce that `A = B`. -/]
 theorem map_injective_of_ker_le {H K : Subgroup G} (hH : f.ker ≤ H) (hK : f.ker ≤ K)
     (hf : map f H = map f K) : H = K := by
   apply_fun comap f at hf
@@ -498,11 +514,7 @@ theorem ker_subgroupMap : (f.subgroupMap H).ker = f.ker.subgroupOf H :=
 
 @[to_additive]
 theorem closure_preimage_eq_top (s : Set G) : closure ((closure s).subtype ⁻¹' s) = ⊤ := by
-  apply map_injective (closure s).subtype_injective
-  rw [MonoidHom.map_closure, ← MonoidHom.range_eq_map, range_subtype,
-    Set.image_preimage_eq_of_subset]
-  rw [coe_subtype, Subtype.range_coe_subtype]
-  exact subset_closure
+  simp
 
 @[to_additive]
 theorem comap_sup_eq_of_le_range {H K : Subgroup N} (hH : H ≤ f.range) (hK : K ≤ f.range) :

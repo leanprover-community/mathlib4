@@ -68,7 +68,7 @@ def getLakefileLeanOptions : IO Lean.Options := do
       exe.config.leanOptions
     else
       #[]
-  return toLeanOptions (rootOpts ++ defaultOpts)
+  return Lean.LeanOptions.toOptions (rootOpts.appendArray defaultOpts)
 
 /-- Check that `Mathlib.Init` is transitively imported in all of Mathlib -/
 register_option linter.checkInitImports : Bool := { defValue := false }
@@ -101,8 +101,11 @@ def missingInitImports (opts : LinterOptions) : IO Nat := do
   let initImports ← findImports ("Mathlib" / "Init.lean")
   let mismatch := importsHeaderLinter.filter (fun mod ↦
     ![`Mathlib, `Mathlib.Tactic, `Mathlib.Init].contains mod && !initImports.contains mod)
-    -- This file is transitively imported by `Mathlib.Init`.
+    -- These files are transitively imported by `Mathlib.Init`.
     |>.erase `Mathlib.Tactic.DeclarationNames
+    |>.erase `Mathlib.Lean.Elab.Tactic.Meta
+    |>.erase `Mathlib.Lean.ContextInfo
+    |>.erase `Mathlib.Tactic.Linter.DirectoryDependency
   if mismatch.size > 0 then
     IO.eprintln s!"error: the following {mismatch.size} module(s) import the `header` linter \
       directly, but should import Mathlib.Init instead: {mismatch}\n\
@@ -208,7 +211,9 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
     IO.eprintln s!"warning: nolints file could not be read; treating as empty: {filename}"
     pure #[]
   let numberErrors := (← lintModules opts nolints allModuleNames style fix)
-    + (← missingInitImports opts) + (← undocumentedScripts opts) + (← modulesNotUpperCamelCase opts allModuleNames)
+    + (← missingInitImports opts).toUInt32 + (← undocumentedScripts opts).toUInt32
+    + (← modulesNotUpperCamelCase opts allModuleNames).toUInt32
+    + (← modulesOSForbidden opts allModuleNames).toUInt32
   -- If run with the `--fix` argument, return a zero exit code.
   -- Otherwise, make sure to return an exit code of at most 125,
   -- so this return value can be used further in shell scripts.
