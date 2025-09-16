@@ -169,7 +169,7 @@ open Lean.Meta Qq SimpleGraph
 /-- Extension for the `positivity` tactic: `SimpleGraph.triangleRemovalBound ε` is positive
 if `ε` is.
 
-This exploits the positiveness of the junk value of `triangleRemovalBound ε` for `ε ≥ 1`. -/
+This exploits the positivity of the junk value of `triangleRemovalBound ε` for `ε ≥ 1`. -/
 @[positivity triangleRemovalBound _]
 def evalTriangleRemovalBound : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
