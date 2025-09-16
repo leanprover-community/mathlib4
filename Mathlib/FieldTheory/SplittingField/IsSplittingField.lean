@@ -81,12 +81,10 @@ theorem splits_iff (f : K[X]) [IsSplittingField K L f] :
         rw [RingEquiv.toRingHom_trans]
         exact splits_comp_of_splits _ _ (splits L f)⟩
 
-theorem IsScalarTower.splits (f : F[X]) (x : K) [IsSplittingField K L (mapAlg F K f)] :
+theorem IsScalarTower.splits (f : F[X]) [IsSplittingField K L (mapAlg F K f)] :
     Splits (RingHom.id L) (mapAlg F L f) := by
-  have := minpoly F x
-  rw [Polynomial.mapAlg_comp K L f, mapAlg_eq_map, splits_map_iff,
-    RingHomCompTriple.comp_eq]
-  exact IsSplittingField.splits _ _
+  rw [mapAlg_comp K L f, mapAlg_eq_map, splits_id_iff_splits]
+  apply IsSplittingField.splits
 
 theorem mul (f g : F[X]) (hf : f ≠ 0) (hg : g ≠ 0) [IsSplittingField F K f]
     [IsSplittingField K L (g.map <| algebraMap F K)] : IsSplittingField F L (f * g) :=
@@ -129,9 +127,9 @@ theorem finiteDimensional (f : K[X]) [IsSplittingField K L f] : FiniteDimensiona
       else IsAlgebraic.isIntegral ⟨f, hf, (mem_rootSet'.mp hy).2⟩⟩
 
 theorem IsScalarTower.isAlgebraic [Algebra F K] [Algebra F L] [Algebra.IsAlgebraic F K]
-    [IsScalarTower F K L] (x : K) [IsSplittingField K L (mapAlg F K (minpoly F x))] :
+    [IsScalarTower F K L] (f : K[X]) [IsSplittingField K L f] :
     Algebra.IsAlgebraic F L := by
-  let _ : FiniteDimensional K L := IsSplittingField.finiteDimensional _ (mapAlg F K (minpoly F x))
+  have : FiniteDimensional K L := IsSplittingField.finiteDimensional L f
   exact Algebra.IsAlgebraic.trans F K L
 
 theorem of_algEquiv [Algebra K F] (p : K[X]) (f : F ≃ₐ[K] L) [IsSplittingField K F p] :
