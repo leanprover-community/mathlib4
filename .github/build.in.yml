@@ -681,9 +681,7 @@ jobs:
     needs: [style_lint, build, post_steps]
     runs-on: ubuntu-latest
     steps:
-      # This action is used to determine the PR metadata in the event of a push.
-      - if: github.event_name != 'pull_request_target'
-        id: PR_from_push
+      - id: PR_from_push
         uses: 8BitJonny/gh-get-current-pr@4056877062a1f3b624d5d4c2bedefa9cf51435c9 # 4.0.0
         # TODO: this may not work properly if the same commit is pushed to multiple branches:
         # https://github.com/8BitJonny/gh-get-current-pr/issues/8
@@ -692,6 +690,7 @@ jobs:
           # Only return if PR is still open
           filterOutClosed: true
 
+      # TODO: delete this step and rename `PR_from_push` to `PR` if the above step seems to work properly
       # Combine the output from the previous action with the metadata supplied by GitHub itself.
       # Note that if we fall back to github.event.pull_request data, the list of labels is generated when this workflow is triggered
       # and not updated afterwards!
