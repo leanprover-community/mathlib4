@@ -442,11 +442,8 @@ end WithZero
 
 namespace MonoidWithZeroHom
 
-variable {G₀ : Type*} [GroupWithZero G₀]
-
-protected lemma map_eq_zero_iff {M₀ : Type*} [MulZeroOneClass M₀] [Nontrivial M₀]
-    {f : G₀ →*₀ M₀} {x : G₀} :
-    f x = 0 ↔ x = 0 := by
+protected lemma map_eq_zero_iff {G₀ : Type*} [GroupWithZero G₀] {M₀ : Type*} [MulZeroOneClass M₀]
+    [Nontrivial M₀] {f : G₀ →*₀ M₀} {x : G₀} : f x = 0 ↔ x = 0 := by
   refine ⟨?_, by simp +contextual⟩
   contrapose!
   intro hx H
