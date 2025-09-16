@@ -21,11 +21,11 @@ Then `L/K` is cyclic iff
 - `autEquivRootsOfUnity`:
 Given an instance `IsSplittingField K L (X ^ n - C a)`
 (perhaps via `isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top`),
-then the galois group is isomorphic to `rootsOfUnity n K`, by sending
+then the Galois group is isomorphic to `rootsOfUnity n K`, by sending
 `σ ↦ σ α / α` for `α ^ n = a`, and the inverse is given by `μ ↦ (α ↦ μ • α)`.
 
 - `autEquivZmod`:
-Furthermore, given an explicit choice `ζ` of a primitive `n`-th root of unity, the galois group is
+Furthermore, given an explicit choice `ζ` of a primitive `n`-th root of unity, the Galois group is
 then isomorphic to `Multiplicative (ZMod n)` whose inverse is given by
 `i ↦ (α ↦ ζⁱ • α)`.
 
@@ -112,7 +112,7 @@ theorem X_pow_sub_C_irreducible_of_odd
       simpa only [degree_zero, degree_X_pow_sub_C hp.pos,
         WithBot.natCast_ne_bot] using congr_arg degree (hx.symm.trans (dif_neg h))
     apply IH (Nat.odd_mul.mp hn).2
-    intros q hq hqn b hb
+    intro q hq hqn b hb
     apply ha q hq (dvd_mul_of_dvd_right hqn p) (Algebra.norm _ b)
     rw [← map_pow, hb, ← adjoin.powerBasis_gen this,
       Algebra.PowerBasis.norm_gen_eq_coeff_zero_minpoly]
@@ -133,7 +133,7 @@ theorem X_pow_sub_C_irreducible_of_prime_pow
     {p : ℕ} (hp : p.Prime) (hp' : p ≠ 2) (n : ℕ) {a : K} (ha : ∀ b : K, b ^ p ≠ a) :
     Irreducible (X ^ (p ^ n) - C a) := by
   apply X_pow_sub_C_irreducible_of_odd (hp.odd_of_ne_two hp').pow
-  intros q hq hq'
+  intro q hq hq'
   simpa [(Nat.prime_dvd_prime_iff_eq hq hp).mp (hq.dvd_of_dvd_pow hq')] using ha
 
 theorem X_pow_sub_C_irreducible_iff_of_prime_pow
@@ -147,7 +147,7 @@ end Irreducible
 /-!
 ### Galois Group of `K[n√a]`
 We first develop the theory for a specific `K[n√a] := AdjoinRoot (X ^ n - C a)`.
-The main result is the description of the galois group: `autAdjoinRootXPowSubCEquiv`.
+The main result is the description of the Galois group: `autAdjoinRootXPowSubCEquiv`.
 -/
 
 variable {n : ℕ} (hζ : (primitiveRoots n K).Nonempty)
@@ -485,7 +485,7 @@ lemma exists_root_adjoin_eq_top_of_isCyclic [IsGalois K L] [IsCyclic (L ≃ₐ[K
   · -- Since `σ` does not fix `K⟮α⟯`, `K⟮α⟯` is `L`.
     apply IsGalois.intermediateFieldEquivSubgroup.injective
     rw [map_top, eq_top_iff]
-    intros σ' hσ'
+    intro σ' hσ'
     obtain ⟨n, rfl : σ ^ n = σ'⟩ := mem_powers_iff_mem_zpowers.mpr (hσ σ')
     have := hσ' ⟨v, IntermediateField.mem_adjoin_simple_self K v⟩
     simp only [AlgEquiv.smul_def, hv'] at this
@@ -502,7 +502,7 @@ lemma irreducible_X_pow_sub_C_of_root_adjoin_eq_top
   have : X ^ (finrank K L) - C a = minpoly K α := by
     refine minpoly.unique _ _ (monic_X_pow_sub_C _ finrank_pos.ne.symm) ?_ ?_
     · simp only [aeval_def, eval₂_sub, eval₂_X_pow, ha, eval₂_C, sub_self]
-    · intros q hq hq'
+    · intro q hq hq'
       refine le_trans ?_ (degree_le_of_dvd (minpoly.dvd _ _ hq') hq.ne_zero)
       rw [degree_X_pow_sub_C finrank_pos,
         degree_eq_natDegree (minpoly.ne_zero (IsIntegral.of_finite K α)),

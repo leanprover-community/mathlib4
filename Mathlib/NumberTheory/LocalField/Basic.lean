@@ -3,9 +3,9 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
 import Mathlib.Topology.Algebra.Valued.LocallyCompact
 import Mathlib.Topology.Algebra.Valued.ValuativeRel
-import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
 
 /-!
 
@@ -145,7 +145,7 @@ instance : CompleteSpace K :=
   letI : (Valued.v (R := K)).RankOne :=
     ⟨IsRankLeOne.nonempty.some.emb, IsRankLeOne.nonempty.some.strictMono⟩
   open scoped Valued in
-  have : ProperSpace K := ProperSpace.of_nontriviallyNormedField_of_weaklyLocallyCompactSpace K
+  have : ProperSpace K := .of_nontriviallyNormedField_of_weaklyLocallyCompactSpace K
   (properSpace_iff_completeSpace_and_isDiscreteValuationRing_integer_and_finite_residueField.mp
     inferInstance).1
 

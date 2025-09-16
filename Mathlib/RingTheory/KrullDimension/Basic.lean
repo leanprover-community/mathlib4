@@ -14,7 +14,7 @@ import Mathlib.RingTheory.Spectrum.Prime.Basic
 /-!
 # Krull dimensions of (commutative) rings
 
-Given a commutative ring, its ring theoretic Krull dimension is the order theoretic Krull dimension
+Given a commutative ring, its ring-theoretic Krull dimension is the order-theoretic Krull dimension
 of its prime spectrum. Unfolding this definition, it is the length of the longest sequence(s) of
 prime ideals ordered by strict inclusion.
 -/
@@ -22,7 +22,7 @@ prime ideals ordered by strict inclusion.
 open Order
 
 /--
-The ring theoretic Krull dimension is the Krull dimension of its spectrum ordered by inclusion.
+The ring-theoretic Krull dimension is the Krull dimension of its spectrum ordered by inclusion.
 -/
 noncomputable def ringKrullDim (R : Type*) [CommSemiring R] : WithBot ℕ∞ :=
   krullDim (PrimeSpectrum R)
@@ -108,7 +108,7 @@ lemma Ring.KrullDimLE.mk₀ (H : ∀ I : Ideal R, I.IsPrime → I.IsMaximal) : R
 lemma Ideal.isMaximal_of_isPrime [Ring.KrullDimLE 0 R] (I : Ideal R) [I.IsPrime] : I.IsMaximal :=
   Ring.krullDimLE_zero_iff.mp ‹_› I ‹_›
 
-/-- Also see `Ideal.IsPrime.isMaximal` for the analogous statement for dedekind domains. -/
+/-- Also see `Ideal.IsPrime.isMaximal` for the analogous statement for Dedekind domains. -/
 lemma Ideal.IsPrime.isMaximal' [Ring.KrullDimLE 0 R] {I : Ideal R} (hI : I.IsPrime) : I.IsMaximal :=
   I.isMaximal_of_isPrime
 

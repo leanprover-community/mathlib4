@@ -3,7 +3,7 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.RingTheory.Valuation.ValuativeRel
+import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 import Mathlib.Topology.Algebra.Valued.ValuationTopology
 import Mathlib.Topology.Algebra.WithZeroTopology
 
@@ -83,6 +83,11 @@ theorem hasBasis_nhds (x : R) :
       fun γ : (ValueGroupWithZero R)ˣ => { z | v (z - x) < γ } := by
   simp [Filter.hasBasis_iff, mem_nhds_iff']
 
+lemma hasBasis_nhds' (x : R) :
+    (𝓝 x).HasBasis (· ≠ 0) ({ y | v (y - x) < · }) :=
+  (hasBasis_nhds x).to_hasBasis (fun γ _ ↦ ⟨γ, by simp⟩)
+    fun γ hγ ↦ ⟨.mk0 γ hγ, by simp⟩
+
 variable (R) in
 theorem hasBasis_nhds_zero :
     (𝓝 (0 : R)).HasBasis (fun _ => True)
@@ -91,7 +96,7 @@ theorem hasBasis_nhds_zero :
 
 variable (R) in
 lemma hasBasis_nhds_zero' :
-    (𝓝 0).HasBasis (· ≠ 0) ({ x : R | valuation _ x < · }) :=
+    (𝓝 0).HasBasis (· ≠ 0) ({ x | v x < · }) :=
   (hasBasis_nhds_zero R).to_hasBasis (fun γ _ ↦ ⟨γ, by simp⟩)
     fun γ hγ ↦ ⟨.mk0 γ hγ, by simp⟩
 
@@ -117,13 +122,6 @@ instance (priority := low) : IsTopologicalRing R :=
   letI := IsTopologicalAddGroup.toUniformSpace R
   letI := isUniformAddGroup_of_addCommGroup (G := R)
   inferInstance
-
-lemma hasBasis_nhds_sub (x : R) :
-    (𝓝 x).HasBasis (· ≠ 0) ({ y : R | valuation _ (y - x) < · }) := by
-  convert (hasBasis_nhds_zero' R).comap (Equiv.addRight (-x)) using 1
-  · refine .trans ?_ ((Homeomorph.addRight (-x)).comap_nhds_eq 0).symm
-    simp [Homeomorph.addRight_symm]
-  · simp [sub_eq_add_neg]
 
 theorem isOpen_ball (r : ValueGroupWithZero R) :
     IsOpen {x | v x < r} := by

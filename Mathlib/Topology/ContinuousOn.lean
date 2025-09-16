@@ -601,9 +601,12 @@ theorem continuousOn_iff_continuous_restrict :
 
 alias ⟨ContinuousOn.restrict, _⟩ := continuousOn_iff_continuous_restrict
 
-theorem ContinuousOn.restrict_mapsTo {t : Set β} (hf : ContinuousOn f s) (ht : MapsTo f s t) :
+theorem ContinuousOn.mapsToRestrict {t : Set β} (hf : ContinuousOn f s) (ht : MapsTo f s t) :
     Continuous (ht.restrict f s t) :=
   hf.restrict.codRestrict _
+
+@[deprecated (since := "05-09-2025")]
+alias ContinuousOn.restrict_mapsTo := ContinuousOn.mapsToRestrict
 
 theorem continuousOn_iff' :
     ContinuousOn f s ↔ ∀ t : Set β, IsOpen t → ∃ u, IsOpen u ∧ f ⁻¹' t ∩ s = u ∩ s := by
@@ -1165,6 +1168,18 @@ theorem isOpenMap_prod_of_discrete_right [DiscreteTopology β] {f : α × β →
     IsOpenMap f ↔ ∀ b, IsOpenMap (f ⟨·, b⟩) := by
   simp_rw [isOpenMap_iff_nhds_le, Prod.forall, forall_swap (α := α) (β := β), nhds_prod_eq,
     nhds_discrete, prod_pure, map_map]; rfl
+
+theorem ContinuousOn.uncurry_left {f : α → β → γ} {sα : Set α} {sβ : Set β} (a : α) (ha : a ∈ sα)
+    (h : ContinuousOn f.uncurry (sα ×ˢ sβ)) : ContinuousOn (f a) sβ := by
+  let g : β → γ := f.uncurry ∘ (fun b => (a, b))
+  refine ContinuousOn.congr (f := g) ?_ (fun y => by simp [g])
+  exact ContinuousOn.comp h (by fun_prop) (by grind [Set.MapsTo])
+
+theorem ContinuousOn.uncurry_right {f : α → β → γ} {sα : Set α} {sβ : Set β} (b : β) (ha : b ∈ sβ)
+    (h : ContinuousOn f.uncurry (sα ×ˢ sβ)) : ContinuousOn (fun a => f a b) sα := by
+  let g : α → γ := f.uncurry ∘ (fun a => (a, b))
+  refine ContinuousOn.congr (f := g) ?_ (fun y => by simp [g])
+  exact ContinuousOn.comp h (by fun_prop) (by grind [Set.MapsTo])
 
 /-!
 ### Pi

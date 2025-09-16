@@ -75,7 +75,7 @@ partial def evalNatPow (a b : Q(ℕ)) : (c : Q(ℕ)) × Q(Nat.pow $a $b = $c) :=
     haveI : $b =Q 1 := ⟨⟩
     ⟨a, q(natPow_one)⟩
   else
-    let ⟨c, p⟩ := go b.natLit!.log2 a (mkRawNatLit 1) a b _ .rfl
+    let ⟨c, p⟩ := go b.natLit!.log2 a q(nat_lit 1) a b _ .rfl
     ⟨c, q(($p).run)⟩
 where
   /-- Invariants: `a ^ b₀ = c₀`, `depth > 0`, `b >>> depth = b₀`, `p := Nat.pow $a $b₀ = $c₀` -/
@@ -261,7 +261,7 @@ theorem isRat_zpow_neg {α : Type*} [DivisionRing α] {a : α} {b : ℤ} {nb : �
   rwa [pb.out, Int.cast_negOfNat, zpow_neg, zpow_natCast]
 
 #adaptation_note /-- https://github.com/leanprover/lean4/pull/4096
-the repeated
+the two
 ```
 have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
 h.check
@@ -278,52 +278,40 @@ def evalZPow : NormNumExt where eval {u α} e := do
   match rb with
   | .isBool .. | .isNNRat _ .. | .isNegNNRat _ .. => failure
   | .isNat sβ nb pb =>
+    have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
+    h.check
     match ← derive q($a ^ $nb) with
     | .isBool .. => failure
     | .isNat sα' ne' pe' =>
-      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
-      h.check
       assumeInstancesCommute
       return .isNat sα' ne' q(isNat_zpow_pos $pb $pe')
     | .isNegNat sα' ne' pe' =>
-      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
-      h.check
       let _c ← synthInstanceQ q(DivisionRing $α)
       assumeInstancesCommute
       return .isNegNat sα' ne' q(isInt_zpow_pos $pb $pe')
     | .isNNRat dsα' qe' nume' dene' pe' =>
-      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
-      h.check
       assumeInstancesCommute
       return .isNNRat dsα' qe' nume' dene' q(isNNRat_zpow_pos $pb $pe')
     | .isNegNNRat dα' qe' nume' dene' pe' =>
-      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
-      h.check
       assumeInstancesCommute
       let proof := q(isRat_zpow_pos $pb $pe')
       return .isRat dα' qe' nume' dene' proof
   | .isNegNat sβ nb pb =>
+    have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
+    h.check
     match ← derive q(($a ^ $nb)⁻¹) with
     | .isBool .. => failure
     | .isNat sα' ne' pe' =>
-      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
-      h.check
       assumeInstancesCommute
       return .isNat sα' ne' q(isNat_zpow_neg $pb $pe')
     | .isNegNat sα' ne' pe' =>
-      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
-      h.check
       let _c ← synthInstanceQ q(DivisionRing $α)
       assumeInstancesCommute
       return .isNegNat sα' ne' q(isInt_zpow_neg $pb $pe')
     | .isNNRat dsα' qe' nume' dene' pe' =>
-      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
-      h.check
       assumeInstancesCommute
       return .isNNRat dsα' qe' nume' dene' q(isNNRat_zpow_neg $pb $pe')
     | .isNegNNRat dα' qe' nume' dene' pe' =>
-      have h : $e =Q (HPow.hPow (γ := $α) $a $b) := ⟨⟩
-      h.check
       assumeInstancesCommute
       return .isRat dα' qe' q(.negOfNat $nume') dene' q(isRat_zpow_neg $pb $pe')
 

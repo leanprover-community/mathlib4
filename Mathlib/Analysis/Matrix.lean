@@ -174,7 +174,6 @@ theorem norm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖ = ‖v�
   congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_diagonal v
 
 /-- Note this is safe as an instance as it carries no data. -/
--- Porting note: not yet implemented: `@[nolint fails_quickly]`
 instance [Nonempty n] [DecidableEq n] [One α] [NormOneClass α] : NormOneClass (Matrix n n α) :=
   ⟨(norm_diagonal _).trans <| norm_one⟩
 
@@ -280,7 +279,6 @@ variable [SeminormedAddCommGroup α]
 
 theorem linfty_opNorm_def (A : Matrix m n α) :
     ‖A‖ = ((Finset.univ : Finset m).sup fun i : m => ∑ j : n, ‖A i j‖₊ : ℝ≥0) := by
-  -- Porting note: added
   change ‖fun i => toLp 1 (A i)‖ = _
   simp [Pi.norm_def, PiLp.nnnorm_eq_of_L1]
 
@@ -545,7 +543,6 @@ variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
 
 theorem frobenius_nnnorm_def (A : Matrix m n α) :
     ‖A‖₊ = (∑ i, ∑ j, ‖A i j‖₊ ^ (2 : ℝ)) ^ (1 / 2 : ℝ) := by
-  -- Porting note: added, along with `WithLp.equiv_symm_pi_apply` below
   change ‖toLp 2 fun i => toLp 2 fun j => A i j‖₊ = _
   simp_rw [PiLp.nnnorm_eq_of_L2, NNReal.sq_sqrt, NNReal.sqrt_eq_rpow, NNReal.rpow_two,
     PiLp.toLp_apply]

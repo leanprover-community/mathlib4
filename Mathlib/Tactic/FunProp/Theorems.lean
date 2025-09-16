@@ -70,17 +70,17 @@ def detectLambdaTheoremArgs (f : Expr) (ctxVars : Array Expr) :
 
   match f with
   | .lam _ _ xBody _ =>
-    unless xBody.hasLooseBVars do return .some .const
+    unless xBody.hasLooseBVars do return some .const
     match xBody with
-    | .bvar 0 => return .some .id
-    | .app (.bvar 0) (.fvar _) =>  return .some .apply
+    | .bvar 0 => return some .id
+    | .app (.bvar 0) (.fvar _) =>  return some .apply
     | .app (.fvar fId) (.app (.fvar gId) (.bvar 0)) =>
       -- fun x => f (g x)
-      let .some argId_f := ctxVars.findIdx? (fun x => x == (.fvar fId)) | return none
-      let .some argId_g := ctxVars.findIdx? (fun x => x == (.fvar gId)) | return none
-      return .some <| .comp argId_f argId_g
+      let some argId_f := ctxVars.findIdx? (fun x => x == (.fvar fId)) | return none
+      let some argId_g := ctxVars.findIdx? (fun x => x == (.fvar gId)) | return none
+      return some <| .comp argId_f argId_g
     | .lam _ _ (.app (.app (.fvar _) (.bvar 1)) (.bvar 0)) _ =>
-      return .some .pi
+      return some .pi
     | _ => return none
   | _ => return none
 
@@ -309,12 +309,12 @@ type of theorem it is. -/
 def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : MetaM Theorem := do
   let info ← getConstInfo declName
   forallTelescope info.type fun xs b => do
-    let .some (decl,f) ← getFunProp? b
+    let some (decl,f) ← getFunProp? b
       | throwError "unrecognized function property `{← ppExpr b}`"
     let funPropName := decl.funPropName
     let fData? ←
       withConfig (fun cfg => { cfg with zeta := false}) <| getFunctionData? f defaultUnfoldPred
-    if let .some thmArgs ← detectLambdaTheoremArgs (← fData?.get) xs then
+    if let some thmArgs ← detectLambdaTheoremArgs (← fData?.get) xs then
       return .lam {
         funPropName := funPropName
         thmName := declName
