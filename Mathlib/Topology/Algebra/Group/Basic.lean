@@ -733,7 +733,7 @@ lemma IsTopologicalGroup.isInducing_iff_nhds_one
   ext; simp
 
 @[to_additive]
-lemma TopologicalGroup.isOpenMap_iff_nhds_one
+lemma IsTopologicalGroup.isOpenMap_iff_nhds_one
     {H : Type*} [Monoid H] [TopologicalSpace H] [ContinuousConstSMul H H]
     {F : Type*} [FunLike F G H] [MonoidHomClass F G H] {f : F} :
     IsOpenMap f ↔ 𝓝 1 ≤ .map f (𝓝 1) := by
