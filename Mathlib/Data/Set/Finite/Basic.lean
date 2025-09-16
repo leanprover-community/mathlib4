@@ -538,7 +538,6 @@ protected theorem Infinite.nonempty {s : Set α} (h : s.Infinite) : s.Nonempty :
 theorem finite_singleton (a : α) : ({a} : Set α).Finite :=
   toFinite _
 
-@[simp]
 protected theorem Finite.insert (a : α) {s : Set α} (hs : s.Finite) : (insert a s).Finite :=
   (finite_singleton a).union hs
 
