@@ -428,7 +428,7 @@ run_cmd
   checkGuessName "MulEquiv.symmInvFun" "AddEquiv.symmInvFun"
   checkGuessName "IsScalarTower" "VAddAssocClass"
   checkGuessName "isScalarTower" "vaddAssocClass"
-  checkGuessName "AddTSupport" "TSupport"
+  checkGuessName "eventuallyLE_one_mul_atBot" "eventuallyLE_zero_add_atBot"
 
 end guessName
 
