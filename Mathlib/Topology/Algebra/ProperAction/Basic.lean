@@ -193,30 +193,9 @@ instance [IsTopologicalGroup G] : ProperSMul Gᵐᵒᵖ G where
       continuous_invFun := by fun_prop }
     exact Φ.isProperMap
 
-open Function Pointwise in
 @[to_additive]
-theorem IsClosed.smul_left_of_isCompact [ContinuousInv G] [ContinuousSMul G X]
-    {s : Set G} {t : Set X} (ht : IsClosed t) (hs : IsCompact s) :
-    IsClosed (s • t) := by
-  let Φ : s × X ≃ₜ s × X :=
-  { toFun := fun gx ↦ (gx.1, (gx.1 : G) • gx.2)
-    invFun := fun gx ↦ (gx.1, (gx.1 : G)⁻¹ • gx.2)
-    left_inv := fun _ ↦ by simp
-    right_inv := fun _ ↦ by simp
-    continuous_toFun := by fun_prop
-    continuous_invFun := by fun_prop }
-  have : s • t = (snd ∘ Φ) '' (snd ⁻¹' t) :=
-    subset_antisymm
-      (smul_subset_iff.mpr fun g hg x hx ↦ mem_image_of_mem (snd ∘ Φ) (x := ⟨⟨g, hg⟩, x⟩) hx)
-      (image_subset_iff.mpr fun ⟨⟨g, hg⟩, x⟩ hx ↦ smul_mem_smul hg hx)
-  rw [this]
-  have : CompactSpace s := isCompact_iff_compactSpace.mp hs
-  exact (isProperMap_snd.comp Φ.isProperMap).isClosedMap _ (ht.preimage continuous_snd)
-
-open Function Pointwise in
-@[to_additive]
-theorem IsClosed.smul_right_of_isCompact [ProperSMul G X] {s : Set G} {t : Set X} (hs : IsClosed s)
-    (ht : IsCompact t) : IsClosed (s • t) := by
+lemma ProperSMul.isProperMap_smul_pair_set [ProperSMul G X] {t : Set X} :
+    IsProperMap (fun (gx : G × t) ↦ ((gx.1 • gx.2, gx.2) : X × t)) := by
   let Φ : G × X → X × X := fun gx ↦ (gx.1 • gx.2, gx.2)
   have Φ_proper : IsProperMap Φ := ProperSMul.isProperMap_smul_pair
   let α : G × t ≃ₜ (Φ ⁻¹' (snd ⁻¹' t)) :=
@@ -226,9 +205,14 @@ theorem IsClosed.smul_right_of_isCompact [ProperSMul G X] {s : Set G} {t : Set X
   let β : X × t ≃ₜ (snd ⁻¹' t) :=
     Homeomorph.Set.univ X |>.symm.prodCongr (.refl t) |>.trans
       ((Homeomorph.Set.prod _ t).symm) |>.trans (Homeomorph.setCongr univ_prod)
+  exact β.symm.isProperMap.comp (Φ_proper.restrictPreimage (snd ⁻¹' t)) |>.comp α.isProperMap
+
+open Pointwise in
+@[to_additive]
+theorem IsClosed.smul_right_of_isCompact [ProperSMul G X] {s : Set G} {t : Set X} (hs : IsClosed s)
+    (ht : IsCompact t) : IsClosed (s • t) := by
   let Ψ : G × t → X × t := fun gx ↦ (gx.1 • gx.2, gx.2)
-  have Ψ_proper : IsProperMap Ψ :=
-    β.symm.isProperMap.comp (Φ_proper.restrictPreimage (snd ⁻¹' t)) |>.comp α.isProperMap
+  have Ψ_proper : IsProperMap Ψ := ProperSMul.isProperMap_smul_pair_set
   have : s • t = (fst ∘ Ψ) '' (fst ⁻¹' s) :=
     subset_antisymm
       (smul_subset_iff.mpr fun g hg x hx ↦ mem_image_of_mem (fst ∘ Ψ) (x := ⟨g, ⟨x, hx⟩⟩) hg)
