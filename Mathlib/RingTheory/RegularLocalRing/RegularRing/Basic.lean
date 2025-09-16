@@ -5,7 +5,7 @@ Authors: Nailin Guan
 -/
 import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.RingTheory.RegularLocalRing.Defs
-
+import Mathlib.Tactic.Cases
 /-!
 
 # Define Regular Ring
@@ -120,14 +120,16 @@ theorem Polynomial.isRegularRing_of_isRegularRing [IsRegularRing R] :
       apply isUnit_of_mul_eq_one _ (C (Localization.mk 1 ⟨y, mem⟩))
       simp [← eq, S, ← map_mul, ← Localization.mk_one_eq_algebraMap, Localization.mk_mul]
     surj' z := by
-      induction' z using Polynomial.induction_on' with f g hf hg n a
-      · rcases hf with ⟨⟨x1, y1⟩, h1⟩
+      induction z using Polynomial.induction_on'
+      · rename_i _ _ f g hf hg
+        rcases hf with ⟨⟨x1, y1⟩, h1⟩
         rcases hg with ⟨⟨x2, y2⟩, h2⟩
         use (x2 * y1.1 + x1 * y2.1, y1 * y2)
         simp only [Submonoid.coe_mul, map_mul, add_mul, map_add]
         nth_rw 4 [mul_comm]
         simp [← mul_assoc, h1, h2, add_comm]
-      · rcases Localization.mkHom_surjective a with ⟨⟨x, y⟩, h⟩
+      · rename_i _ _ n a
+        rcases Localization.mkHom_surjective a with ⟨⟨x, y⟩, h⟩
         have : y.1 ∉ q := y.2
         use ((monomial n) x, ⟨C y.1, by simpa [pc]⟩)
         simp only [← h, Localization.mkHom_apply, algebraMap_def, coe_mapRingHom, map_C, ←
@@ -182,7 +184,8 @@ theorem Polynomial.isRegularRing_of_isRegularRing [IsRegularRing R] :
 
 lemma MvPolynomial.isRegularRing_of_isRegularRing [IsRegularRing R] (n : ℕ) :
     IsRegularRing (MvPolynomial (Fin n) R) := by
-  induction' n with n ih
+  induction n
   · exact isRegularRing_of_ringEquiv (isEmptyRingEquiv R (Fin 0)).symm
-  · let _ := Polynomial.isRegularRing_of_isRegularRing (MvPolynomial (Fin n) R)
+  · rename_i n ih
+    let _ := Polynomial.isRegularRing_of_isRegularRing (MvPolynomial (Fin n) R)
     exact isRegularRing_of_ringEquiv (MvPolynomial.finSuccEquiv R n).toRingEquiv.symm
