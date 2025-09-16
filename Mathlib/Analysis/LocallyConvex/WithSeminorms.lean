@@ -151,30 +151,7 @@ theorem basisSets_smul (U) (hU : U ∈ p.basisSets) :
   refine Set.Subset.trans (ball_smul_ball (s.sup p) √r √r) ?_
   rw [hU, Real.mul_self_sqrt (le_of_lt hr)]
 
-/-- If a family of seminorms is continuous, then their basis sets are neighborhoods of zero. -/
-lemma basisSets_mem_nhds {𝕜 E ι : Type*} [NormedField 𝕜]
-    [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] (p : SeminormFamily 𝕜 E ι)
-    (hp : ∀ i, Continuous (p i)) (U : Set E) (hU : U ∈ p.basisSets) : U ∈ 𝓝 (0 : E) := by
-  obtain ⟨s, r, hr, rfl⟩ := p.basisSets_iff.mp hU
-  clear hU
-  refine Seminorm.ball_mem_nhds ?_ hr
-  classical
-  induction s using Finset.induction_on with
-  | empty => simpa using continuous_zero
-  | insert a s _ hs =>
-    simp only [Finset.sup_insert, coe_sup]
-    exact Continuous.max (hp a) hs
-
-end SeminormFamily
-
-end FilterBasis
-
-section
-
-namespace SeminormFamily
-
 variable [NormedField 𝕜] [AddCommGroup F] [Module 𝕜 F] (p : SeminormFamily 𝕜 F ι)
-
 
 theorem basisSets_smul_left (x : 𝕜) (U : Set F) (hU : U ∈ p.basisSets) :
     ∃ V ∈ p.addGroupFilterBasis.sets, V ⊆ (fun y : F => x • y) ⁻¹' U := by
@@ -214,9 +191,23 @@ theorem filter_eq_iInf (p : SeminormFamily 𝕜 F ι) :
         ⟨Metric.ball 0 r, Metric.ball_mem_nhds 0 hr,
           Eq.subset (p i).ball_zero_eq_preimage_ball.symm⟩
 
+/-- If a family of seminorms is continuous, then their basis sets are neighborhoods of zero. -/
+lemma basisSets_mem_nhds {𝕜 E ι : Type*} [NormedField 𝕜]
+    [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] (p : SeminormFamily 𝕜 E ι)
+    (hp : ∀ i, Continuous (p i)) (U : Set E) (hU : U ∈ p.basisSets) : U ∈ 𝓝 (0 : E) := by
+  obtain ⟨s, r, hr, rfl⟩ := p.basisSets_iff.mp hU
+  clear hU
+  refine Seminorm.ball_mem_nhds ?_ hr
+  classical
+  induction s using Finset.induction_on with
+  | empty => simpa using continuous_zero
+  | insert a s _ hs =>
+    simp only [Finset.sup_insert, coe_sup]
+    exact Continuous.max (hp a) hs
+
 end SeminormFamily
 
-end
+end FilterBasis
 
 section Bounded
 
