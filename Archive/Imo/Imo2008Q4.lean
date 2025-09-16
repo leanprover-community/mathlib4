@@ -45,7 +45,7 @@ theorem imo2008_q4 (f : ℝ → ℝ) (H₁ : ∀ x > 0, f x > 0) :
     · intro w x y z hw hx hy hz hprod
       rw [h w hw, h x hx, h (y ^ 2) (pow_pos hy 2), h (z ^ 2) (pow_pos hz 2)]
       field_simp
-      grind
+      grobner
   -- proof that the only solutions are f(x) = x or f(x) = 1/x
   intro H₂
   have h₀ : f 1 ≠ 0 := ne_of_gt (H₁ 1 zero_lt_one)
