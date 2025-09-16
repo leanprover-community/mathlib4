@@ -247,6 +247,7 @@ theorem hasEigenvector_eigenvectorBasis (hT : T.IsSymmetric) (hn : Module.finran
   rw [eigenvalues_def, eigenvectorBasis_def, OrthonormalBasis.reindex_apply]
   apply hasEigenvector_eigenvectorBasis_helper
 
+/-- `LinearMap.Symmetric.eigenvectorBasis` as a `LinearMap.Eigenbasis`. -/
 noncomputable def eigenbasis (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) :
     Eigenbasis (Fin n) T :=
   .mk (b := (hT.eigenvectorBasis hn).toBasis) (μ := (↑) ∘ hT.eigenvalues hn) <| fun i ↦ by
