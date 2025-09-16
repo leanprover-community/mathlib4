@@ -7,6 +7,7 @@ import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
+import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 import Mathlib.Topology.Instances.RealVectorSpace
 
 
