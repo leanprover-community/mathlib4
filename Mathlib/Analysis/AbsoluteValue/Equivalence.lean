@@ -173,7 +173,7 @@ private theorem tendsto_div_one_add_pow_nhds_one {v : AbsoluteValue R S} {a : R}
 The limit $v \left(\frac{1}{1 + a ^ n}\right)\to 0$, for an absolute value $v$ on a field
 $F$ if $1 < v(a)$.
 -/
-private theorem tendsto_pow_div_one_add_pow_zero {v : AbsoluteValue R S} {a : R} (ha : 1 < v a) :
+theorem tendsto_pow_div_one_add_pow_zero {v : AbsoluteValue R S} {a : R} (ha : 1 < v a) :
     Filter.Tendsto (fun (n : ℕ) ↦ v (1 / (1 + a ^ n))) Filter.atTop (𝓝 0) := by
   simp_rw [div_eq_mul_inv, one_mul, map_inv₀, fun n ↦ add_comm 1 (a ^ n)]
   refine (tendsto_atTop_mono (fun n ↦ v.le_add _ _) ?_).inv_tendsto_atTop

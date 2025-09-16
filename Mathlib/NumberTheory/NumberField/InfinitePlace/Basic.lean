@@ -570,61 +570,28 @@ theorem denseRange_algebraMap_pi [NumberField K] :
   -- We have to show that for some `(zᵥ)ᵥ` there is a `y` in `K` that is arbitrarily close to `z`
   -- under the embedding `y ↦ (y)ᵥ`
   refine Metric.denseRange_iff.2 fun z r hr ↦ ?_
-  -- For some `v`, by previous results we can select a sequence `xᵥₙ → 1` in `v`'s topology
-  -- and `→ 0` in any other infinite place topology
+  -- For some `v`, by previous results we can select a `aᵥ : K` for each infinite place `v`
+  -- such that `1 < v aᵥ` while `w aᵥ < 1` for all `w ≠ v`
   choose a hx using AbsoluteValue.exists_one_lt_lt_one_pi_of_not_isEquiv isNontrivial
     (fun _ _ hwv ↦ (eq_iff_isEquiv (K := K)).not.1 hwv)
-  let c : ℕ → K → K := fun n a ↦ 1 / (1 + a ^ n)
-  have hc₁ {a : K} (v : InfinitePlace K) (ha : v a < 1) :
-      atTop.Tendsto (fun n ↦ (WithAbs.equiv v.1).symm <| c n a) (𝓝 1) := by
-    simp only [c, one_div, map_inv₀]
-    refine inv_one (G := WithAbs v.1) ▸ (tendsto_inv_iff₀ one_ne_zero).2 ?_
-    rw [tendsto_iff_norm_sub_tendsto_zero]
-    simp only [inv_one, map_add, map_one, map_pow, add_sub_cancel_left, norm_pow,
-      tendsto_pow_atTop_nhds_zero_iff, abs_norm]
-    rw [WithAbs.norm_eq_abv, RingEquiv.apply_symm_apply]
-    exact ha
-  have hc₀ {a : K} (w : InfinitePlace K) (ha : 1 < w a) :
-      atTop.Tendsto (fun n ↦ (WithAbs.equiv w.1).symm <| c n a) (𝓝 0) := by
-    rw [tendsto_zero_iff_norm_tendsto_zero]
-    simp_rw [WithAbs.norm_eq_abv w.1, c]
-    simp_rw [div_eq_mul_inv, one_mul, map_inv₀, fun n ↦ add_comm 1 (a ^ n)]
-    simp_rw [RingEquiv.apply_symm_apply]
-    refine (tendsto_atTop_mono (fun n ↦ w.1.le_add _ _) ?_).inv_tendsto_atTop
-    simpa using tendsto_atTop_add_right_of_le _ _ (tendsto_pow_atTop_atTop_of_one_lt ha)
-      (fun _ ↦ le_rfl) |>.congr fun n ↦ (sub_eq_add_neg (w a ^ n) 1).symm
-  -- Define the sequence `yₙ = ∑ v, xᵥₙ * zᵥ` in `K`
-  let y := fun n ↦ ∑ v, (WithAbs.equiv v.1).symm (c n (a v)⁻¹) * z v
+  -- Define the sequence `yₙ = ∑ v, 1 / (1 + aᵥ^(-n)) * zᵥ` in `K`
+  let y := fun n ↦ ∑ v, (1 / (1 + (a v)⁻¹ ^ n)) * WithAbs.equiv v.1 (z v)
   -- At each place `w` the limit of `y` with respect to `w`'s topology is `z w`.
   have : atTop.Tendsto (fun n w ↦ (WithAbs.equiv w.1).symm (y n)) (𝓝 z) := by
     refine tendsto_pi_nhds.2 fun w ↦ ?_
-    simp_rw [← Finset.sum_ite_eq_of_mem _ _ _ (Finset.mem_univ w)]
-    -- In `w`'s topology we have that `x v n * z v → z v`  if `v = w` else `→ 0`
+    simp_rw [← Fintype.sum_pi_single w z, y, map_sum, map_mul]
     refine tendsto_finset_sum _ fun v _ ↦ ?_
     by_cases hw : w = v
-    · -- because `x w → 1` in `w`'s topology
-      --simp only [hw, if_true, ← congrArg (β := ℕ → K) (c hw, ← congrArg z hw]
-      simp only [hw, if_true]
+    · rw [hw]; simp only [Pi.single_apply v (z v), if_true, RingEquiv.symm_apply_apply]
       nth_rw 2 [← one_mul (z v)]
-      have : v (a v)⁻¹ < 1 := by
-        simp
-        rw [inv_lt_one_iff₀]
-        right
-        exact (hx v).1
-      exact Tendsto.mul_const _ (hw ▸ hc₁ v this)
-    · -- while `x v → 0` in `w`'s topology (v ≠ w)
-      simp only [hw, if_false]
-      rw [← zero_mul (z v)]
-      have : 1 < w (a v)⁻¹ := by
-        simp
-        rw [one_lt_inv_iff₀]
-        refine ⟨?_, (hx v).2 w hw⟩
-        rw [w.pos_iff]
-        intro ha
-        have := ha ▸ (hx v).1
-        simp at this
-        linarith
-      exact Tendsto.mul_const _ <| hc₀ w this
+      have : v (a v)⁻¹ < 1 := by simpa [inv_lt_one_iff₀] using .inr (hx v).1
+      exact (WithAbs.tendsto_one_div_one_add_pow_nhds_one (hw ▸ this)).mul_const _
+    · simp only [Pi.single_apply v (z v), hw, if_false]
+      rw [← zero_mul <| (WithAbs.equiv w.1).symm (WithAbs.equiv v.1 (z v))]
+      have : 1 < w (a v)⁻¹ := by simpa [one_lt_inv_iff₀] using
+        ⟨w.pos_iff.2 fun ha ↦ by linarith [map_zero v ▸ ha ▸ (hx v).1], (hx v).2 w hw⟩
+      exact (tendsto_zero_iff_norm_tendsto_zero.2 <| by
+        simpa [WithAbs.norm_eq_abv] using w.1.tendsto_pow_div_one_add_pow_zero this).mul_const _
   let ⟨N, h⟩ := Metric.tendsto_atTop.1 this r hr
   exact ⟨y N, dist_comm z (algebraMap K _ (y N)) ▸ h N le_rfl⟩
 
