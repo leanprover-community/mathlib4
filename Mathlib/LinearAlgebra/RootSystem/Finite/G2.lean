@@ -174,7 +174,7 @@ To see that this lemma fails for `𝔤₂`, let `α` (short) and `β` (long) be 
 `α` and `α + β` provide a counterexample. -/
 lemma chainBotCoeff_if_one_zero [P.IsNotG2] (h : P.root i + P.root j ∈ range P.root) :
     P.chainBotCoeff i j = if P.pairingIn ℤ i j = 0 then 1 else 0 := by
-  have _i := P.reflexive_left
+  have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
   have aux₁ := P.linearIndependent_of_add_mem_range_root' h
   have aux₂ := P.chainBotCoeff_add_chainTopCoeff_le_two i j
   have aux₃ : 1 ≤ P.chainTopCoeff i j := P.one_le_chainTopCoeff_of_root_add_mem h
@@ -264,7 +264,6 @@ variable [Finite ι] [CharZero R] [IsDomain R]
 lemma pairingIn_short_long :
     P.pairingIn ℤ (short P) (long P) = - 1 := by
   have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed (long P) (short P)
-  have := pairingIn_long_short (P := P)
   aesop
 
 @[simp]
@@ -295,7 +294,7 @@ lemma threeShortAddTwoLongRoot_eq :
 
 lemma linearIndependent_short_long :
     LinearIndependent R ![shortRoot P, longRoot P] := by
-  have := P.reflexive_left
+  have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
   simp [P.linearIndependent_iff_coxeterWeightIn_ne_four ℤ, coxeterWeightIn]
 
 /-- The coefficients of each root in the `𝔤₂` root pairing, relative to the base. -/
@@ -522,7 +521,7 @@ private lemma isOrthogonal_short_and_long_aux {a b c d e f a' b' c' d' e' f' : �
 lemma isOrthogonal_short_and_long {i : ι} (hi : P.root i ∉ allRoots P) :
     P.IsOrthogonal i (short P) ∧ P.IsOrthogonal i (long P) := by
   suffices P.pairingIn ℤ i (short P) = 0 ∧ P.pairingIn ℤ i (long P) = 0 by
-    have := P.reflexive_left
+    have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
     simpa [isOrthogonal_iff_pairing_eq_zero, ← P.algebraMap_pairingIn ℤ]
   simp only [mem_cons, not_mem_nil, or_false, not_or] at hi
   obtain ⟨h₁, h₂, h₃, h₄, h₅, h₆, h₇, h₈, h₉, h₁₀, h₁₁, h₁₂⟩ := hi
@@ -566,7 +565,7 @@ lemma mem_allRoots (i : ι) :
   obtain ⟨h₁, h₂⟩ := isOrthogonal_short_and_long P hi
   have : Fintype ι := Fintype.ofFinite ι
   have B := (P.posRootForm ℤ).toInvariantForm
-  have := P.reflexive_left
+  have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
   rw [isOrthogonal_iff_pairing_eq_zero, ← B.apply_root_root_zero_iff] at h₁ h₂
   have key : B.form (P.root i) = 0 := by
     ext x
@@ -575,8 +574,8 @@ lemma mem_allRoots (i : ι) :
     induction hx using Submodule.span_induction with
     | zero => simp
     | mem => aesop
-    | add => aesop
-    | smul => aesop
+    | add => simp_all
+    | smul => simp_all
   simpa using LinearMap.congr_fun key (P.root i)
 
 open scoped Classical in

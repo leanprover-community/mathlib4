@@ -73,6 +73,10 @@ def keys (s : AList β) : List α :=
 theorem keys_nodup (s : AList β) : s.keys.Nodup :=
   s.nodupKeys
 
+@[simp]
+theorem keys_mk (l : List (Sigma β)) (h) : (AList.mk l h).keys = l.keys :=
+  rfl
+
 /-! ### mem -/
 
 
@@ -85,6 +89,10 @@ theorem mem_keys {a : α} {s : AList β} : a ∈ s ↔ a ∈ s.keys :=
 
 theorem mem_of_perm {a : α} {s₁ s₂ : AList β} (p : s₁.entries ~ s₂.entries) : a ∈ s₁ ↔ a ∈ s₂ :=
   (p.map Sigma.fst).mem_iff
+
+@[simp]
+theorem mem_mk {l : List (Sigma β)} {h} {x : α} : x ∈ AList.mk l h ↔ x ∈ l.keys :=
+  .rfl
 
 /-! ### empty -/
 

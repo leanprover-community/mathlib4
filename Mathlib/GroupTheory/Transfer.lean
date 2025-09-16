@@ -213,7 +213,7 @@ theorem transfer_eq_pow [FiniteIndex H] (g : G)
       Nat.card_eq_fintype_card, Fintype.card_congr (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)),
       Fintype.card_sigma, ← Finset.prod_pow_eq_pow_sum, ← Finset.prod_map_toList]
     simp only [Subgroup.val_list_prod, List.map_map, ← minimalPeriod_eq_card]
-    congr
+    congr 2
     funext
     apply key
 
@@ -310,19 +310,19 @@ theorem normalizer_le_centralizer (hP : IsCyclic P) : P.normalizer ≤ centraliz
     rw [Subsingleton.elim P.normalizer (centralizer P)]
   have := Fact.mk (Nat.minFac_prime hn)
   have key := card_dvd_of_injective _ (QuotientGroup.kerLift_injective P.normalizerMonoidHom)
-  rw [normalizerMonoidHom_ker, ← index, ← relindex] at key
-  refine relindex_eq_one.mp (Nat.eq_one_of_dvd_coprimes ?_ dvd_rfl key)
+  rw [normalizerMonoidHom_ker, ← index, ← relIndex] at key
+  refine relIndex_eq_one.mp (Nat.eq_one_of_dvd_coprimes ?_ dvd_rfl key)
   obtain ⟨k, hk⟩ := P.2.exists_card_eq
   rcases eq_zero_or_pos k with h0 | h0
   · rw [hP.card_mulAut, hk, h0, pow_zero, Nat.totient_one]
     apply Nat.coprime_one_right
   rw [hP.card_mulAut, hk, Nat.totient_prime_pow Fact.out h0]
   refine (Nat.Coprime.pow_right _ ?_).mul_right ?_
-  · apply Nat.Coprime.coprime_dvd_left (relindex_dvd_of_le_left P.normalizer P.le_centralizer)
-    apply Nat.Coprime.coprime_dvd_left (relindex_dvd_index_of_le P.le_normalizer)
+  · apply Nat.Coprime.coprime_dvd_left (relIndex_dvd_of_le_left P.normalizer P.le_centralizer)
+    apply Nat.Coprime.coprime_dvd_left (relIndex_dvd_index_of_le P.le_normalizer)
     rw [Nat.coprime_comm, Nat.Prime.coprime_iff_not_dvd Fact.out]
     exact P.not_dvd_index
-  · apply Nat.Coprime.coprime_dvd_left (relindex_dvd_card (centralizer P) P.normalizer)
+  · apply Nat.Coprime.coprime_dvd_left (relIndex_dvd_card (centralizer P) P.normalizer)
     apply Nat.Coprime.coprime_dvd_left (card_subgroup_dvd_card P.normalizer)
     have h1 := Nat.gcd_dvd_left (Nat.card G) ((Nat.card G).minFac - 1)
     have h2 := Nat.gcd_le_right (n := (Nat.card G).minFac - 1) (Nat.card G)

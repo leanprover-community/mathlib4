@@ -9,7 +9,6 @@ import Init.Data.List.Nat.Pairwise
 import Init.Data.List.Nat.Range
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.RingTheory.Localization.NormTrace
-import Mathlib.Analysis.Normed.Field.Lemmas
 
 /-!
 # Number field discriminant
@@ -54,11 +53,15 @@ theorem discr_eq_discr_of_algEquiv {L : Type*} [Field L] [NumberField L] (f : K 
     ← discr_eq_discr L ((RingOfIntegers.basis K).map f₀)]
   change _ = algebraMap ℤ ℚ _
   rw [← Algebra.discr_localizationLocalization ℤ (nonZeroDivisors ℤ) L]
-  congr
+  congr 1
   ext
   simp only [Function.comp_apply, integralBasis_apply, Basis.localizationLocalization_apply,
     Basis.map_apply]
   rfl
+
+theorem discr_eq_discr_of_ringEquiv {L : Type*} [Field L] [NumberField L] (f : K ≃+* L) :
+    discr K = discr L :=
+  discr_eq_discr_of_algEquiv _ <| AlgEquiv.ofRingEquiv (f := f) fun _ ↦ by simp
 
 end NumberField
 
