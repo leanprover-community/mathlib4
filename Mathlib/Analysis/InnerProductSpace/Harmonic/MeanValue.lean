@@ -12,16 +12,14 @@ import Mathlib.Analysis.InnerProductSpace.Harmonic.Analytic
 
 open InnerProductSpace Metric Real
 
-variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {f : ℂ → ℝ} {c : ℂ} {R : ℝ}
+variable {f : ℂ → ℝ} {c : ℂ} {R : ℝ}
 
 /--
 The **Mean Value Property** of harmonic functions: If `f : ℂ → ℝ` is harmonic in a neighborhood of a
 closed disc of radius `R` and center `c`, then the circle average `circleAverage f c R` equals `f
 c`.
 -/
-theorem circleAverage_of_harmonic (hf : HarmonicOnNhd f (closedBall c |R|)) :
+theorem HarmonicOnNhd.circleAverage_eq (hf : HarmonicOnNhd f (closedBall c |R|)) :
     circleAverage f c R = f c := by
   obtain ⟨e, h₁e, h₂e⟩ := (isCompact_closedBall c |R|).exists_thickening_subset_open
     (isOpen_setOf_harmonicAt f) hf

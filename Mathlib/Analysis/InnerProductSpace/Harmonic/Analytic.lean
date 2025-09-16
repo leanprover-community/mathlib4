@@ -63,7 +63,7 @@ theorem HarmonicAt.analyticAt_complex_partial (hf : HarmonicAt f x) :
     ((isOpen_setOf_harmonicAt f).mem_nhds hf)
 
 /-
-If a function `f : ℂ → ℝ' is harmonic on an open ball, then `f` is the real part of a function
+If a function `f : ℂ → ℝ` is harmonic on an open ball, then `f` is the real part of a function
 `F : ℂ → ℂ` that is holomorphic on the ball.
 -/
 theorem harmonic_is_realOfHolomorphic {z : ℂ} {R : ℝ} (hf : HarmonicOnNhd f (ball z R)) :
@@ -84,8 +84,7 @@ theorem harmonic_is_realOfHolomorphic {z : ℂ} {R : ℝ} (hf : HarmonicOnNhd f 
   use F, h₂F.analyticOnNhd isOpen_ball
   intro x hx
   apply (convex_ball z R).eqOn_of_fderivWithin_eq (𝕜 := ℝ) (x := z)
-  · apply reCLM.differentiable.differentiableOn.comp (t := Set.univ) h₃F
-    tauto
+  · exact reCLM.differentiable.comp_differentiableOn h₃F
   · exact fun y hy ↦ (ContDiffAt.differentiableAt (hf y hy).1 one_le_two).differentiableWithinAt
   · exact isOpen_ball.uniqueDiffOn
   · intro y hy
