@@ -48,7 +48,7 @@ theorem imo2008_q4 (f : ℝ → ℝ) (H₁ : ∀ x > 0, f x > 0) :
       grind
   -- proof that the only solutions are f(x) = x or f(x) = 1/x
   intro H₂
-  have h₀ : f 1 ≠ 0 := by specialize H₁ 1 zero_lt_one; grind
+  have h₀ : f 1 ≠ 0 := ne_of_gt (H₁ 1 zero_lt_one)
   have h₁ : f 1 = 1 := by
     specialize H₂ 1 1 1 1 zero_lt_one zero_lt_one zero_lt_one
     grind
