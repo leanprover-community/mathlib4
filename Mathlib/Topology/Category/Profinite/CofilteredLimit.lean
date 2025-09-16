@@ -45,9 +45,7 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
     change TopologicalSpace.IsTopologicalBasis {W : Set (F.obj i) | IsClopen W}
     apply isTopologicalBasis_isClopen
   · rintro i j f V (hV : IsClopen _)
-    exact ⟨hV.1.preimage ((F ⋙ toTopCat).map f).hom.continuous,
-      hV.2.preimage ((F ⋙ toTopCat).map f).hom.continuous⟩
-    -- Porting note: `<;> continuity` fails
+    refine ⟨hV.1.preimage ?_, hV.2.preimage ?_⟩ <;> continuity
   -- Using this, since `U` is open, we can write `U` as a union of clopen sets all of which
   -- are preimages of clopens from the factors in the limit.
   obtain ⟨S, hS, h⟩ := hB.open_eq_sUnion hU.2
@@ -69,7 +67,6 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
     dsimp only
     rwa [← (hV ⟨T, hT⟩).2]
   have := hU.1.isCompact.elim_finite_subcover (fun s : S => C.π.app (j s) ⁻¹' V s) hUo hsU
-  -- Porting note: same remark as after `hB`
   -- We thus obtain a finite set `G : Finset J` and a clopen set of `F.obj j` for each
   -- `j ∈ G` such that `U` is the union of the preimages of these clopen sets.
   obtain ⟨G, hG⟩ := this
@@ -86,8 +83,7 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
     intro s hs
     dsimp [W]
     rw [dif_pos hs]
-    exact ⟨(hV s).1.1.preimage (F.map _).hom.continuous,
-      (hV s).1.2.preimage (F.map _).hom.continuous⟩
+    refine ⟨(hV s).1.1.preimage ?_, (hV s).1.2.preimage ?_⟩ <;> fun_prop
   · ext x
     constructor
     · intro hx
