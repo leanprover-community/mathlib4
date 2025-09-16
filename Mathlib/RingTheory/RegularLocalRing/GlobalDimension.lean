@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
 import Mathlib.RingTheory.RegularLocalRing.Basic
-import Mathlib.RingTheory.GlobalDimension
 import Mathlib.RingTheory.CohenMacaulay.Maximal
 import Mathlib.RingTheory.Regular.AuslanderBuchsbaum
 /-!
@@ -24,7 +23,7 @@ open IsLocalRing CategoryTheory
 lemma finite_projectiveDimension_of_isRegularLocalRing_aux [IsRegularLocalRing R] [Small.{v, u} R]
     (M : ModuleCat.{v} R) [Module.Finite R M] (i : ℕ) : IsLocalRing.depth M + i ≥ ringKrullDim R →
     ∃ n, HasProjectiveDimensionLE M n := by
-  induction' i with i ih generalizing M
+  induction i generalizing M
   · simp only [CharP.cast_eq_zero, add_zero, ge_iff_le]
     intro le
     by_cases ntr : Nontrivial M
@@ -36,7 +35,8 @@ lemma finite_projectiveDimension_of_isRegularLocalRing_aux [IsRegularLocalRing R
       have := CategoryTheory.Limits.IsZero.hasProjectiveDimensionLT_zero this
       use 0
       exact CategoryTheory.instHasProjectiveDimensionLTSucc M 0
-  · rw [Nat.cast_add, Nat.cast_one, ge_iff_le, add_comm _ 1, ← add_assoc]
+  · rename_i i ih _
+    rw [Nat.cast_add, Nat.cast_one, ge_iff_le, add_comm _ 1, ← add_assoc]
     intro le
     by_cases ntr : Nontrivial M
     · rcases Module.Finite.exists_fin' R M with ⟨n, f', hf'⟩
