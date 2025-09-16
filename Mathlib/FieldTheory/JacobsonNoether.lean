@@ -28,7 +28,7 @@ the noncommutative division algebra `D` with center `k`.
   being a field `L`), if the center of `D` over `L` is `L`,
   then there exist an element `x` of `D \ L` that is separable over `L`.
 
-## Notations
+## Notation
 
 - `D` is a noncommutative division algebra
 - `k` is the center of `D`

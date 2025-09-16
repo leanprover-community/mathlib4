@@ -42,7 +42,7 @@ More advanced theorems about these definitions are located in other files in `Ma
 - `Set.seq`: monadic `seq` operation on sets;
   we don't use monadic notation to ensure support for maps between different universes.
 
-## Notations
+## Notation
 
 - `f '' s`: image of a set;
 - `f ⁻¹' s`: preimage of a set;

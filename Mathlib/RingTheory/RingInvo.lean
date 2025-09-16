@@ -12,7 +12,7 @@ import Mathlib.Algebra.Ring.Opposite
 This file defines a ring involution as a structure extending `R ≃+* Rᵐᵒᵖ`,
 with the additional fact `f.involution : (f (f x).unop).unop = x`.
 
-## Notations
+## Notation
 
 We provide a coercion to a function `R → Rᵐᵒᵖ`.
 

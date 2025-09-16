@@ -26,7 +26,7 @@ See `NumberTheory.Zsqrtd.QuadraticReciprocity` for:
 * `prime_iff_mod_four_eq_three_of_nat_prime`:
   A prime natural number is prime in `ℤ[i]` if and only if it is `3` mod `4`
 
-## Notations
+## Notation
 
 This file uses the local notation `ℤ[i]` for `GaussianInt`
 

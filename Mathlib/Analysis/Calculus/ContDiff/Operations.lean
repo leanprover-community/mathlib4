@@ -12,7 +12,7 @@ import Mathlib.Analysis.Calculus.Deriv.Inverse
 We prove that the usual operations (addition, multiplication, difference, composition, and
 so on) preserve `C^n` functions.
 
-## Notations
+## Notation
 
 We use the notation `E [×n]→L[𝕜] F` for the space of continuous multilinear maps on `E^n` with
 values in `F`. This is the space in which the `n`-th derivative of a function from `E` to `F` lives.
