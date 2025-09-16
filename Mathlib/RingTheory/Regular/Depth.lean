@@ -324,12 +324,13 @@ noncomputable def addEquivHomQuotientRegularExt {rs : List R} (hr : IsWeaklyRegu
     (h : ∀ r : R, r ∈ rs → r ∈ Module.annihilator R N) :
     (N →ₗ[R] M ⧸ (ofList rs • ⊤ : Submodule R M)) ≃+ Ext.{w} N M rs.length := by
   generalize h' : rs.length = n
-  induction' n with n hn generalizing M rs
+  induction n generalizing M rs
   · rw [List.length_eq_zero_iff.mp h', ofList_nil, Submodule.bot_smul]
     let e : (N →ₗ[R] (M ⧸ (⊥ : Submodule R M))) ≃ₗ[R] (N →ₗ[R] M) :=
       LinearEquiv.congrRight (Submodule.quotEquivOfEqBot (⊥ : Submodule R M) rfl)
     exact e.toAddEquiv.trans (ModuleCat.homAddEquiv.symm.trans Ext.addEquiv₀.symm)
-  · have h_left_subsingleton : Subsingleton (Ext.{w} N M n) := by
+  · rename_i n hn
+    have h_left_subsingleton : Subsingleton (Ext.{w} N M n) := by
       let equiv : (N →ₗ[R] M ⧸ (ofList (rs.take n) • (⊤ : Submodule R M))) ≃+ Ext.{w} N M n := by
         apply hn (M := M) (rs := rs.take n)
         · refine (RingTheory.Sequence.isWeaklyRegular_iff M _).mpr (fun i hi ↦ ?_)
