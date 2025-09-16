@@ -31,27 +31,31 @@ the map `G → (conjAct G)` to obtain our commensurator as a subgroup of `G`.
 
 variable {G : Type*} [Group G]
 
+
 /-- Two subgroups `H K` of `G` are commensurable if `H ⊓ K` has finite index in both `H` and `K` -/
-def Commensurable (H K : Subgroup G) : Prop :=
+@[to_additive]
+def Subgroup.Commensurable (H K : Subgroup G) : Prop :=
   H.relIndex K ≠ 0 ∧ K.relIndex H ≠ 0
 
-namespace Commensurable
+namespace Subgroup.Commensurable
 
 open Pointwise
 
-@[refl]
+@[to_additive (attr := refl)]
 protected theorem refl (H : Subgroup G) : Commensurable H H := by simp [Commensurable]
 
+@[to_additive]
 theorem comm {H K : Subgroup G} : Commensurable H K ↔ Commensurable K H := and_comm
 
-@[symm]
+@[to_additive (attr := symm)]
 theorem symm {H K : Subgroup G} : Commensurable H K → Commensurable K H := And.symm
 
-@[trans]
+@[to_additive (attr := trans)]
 theorem trans {H K L : Subgroup G} (hhk : Commensurable H K) (hkl : Commensurable K L) :
     Commensurable H L :=
   ⟨Subgroup.relIndex_ne_zero_trans hhk.1 hkl.1, Subgroup.relIndex_ne_zero_trans hkl.2 hhk.2⟩
 
+@[to_additive]
 theorem equivalence : Equivalence (@Commensurable G _) :=
   ⟨Commensurable.refl, fun h => Commensurable.symm h, fun h₁ h₂ => Commensurable.trans h₁ h₂⟩
 
@@ -101,4 +105,4 @@ theorem eq {H K : Subgroup G} (hk : Commensurable H K) : commensurator H = comme
     let hx := (commensurable_conj x).1 hk
     ⟨fun h => hx.symm.trans (h.trans hk), fun h => hx.trans (h.trans hk.symm)⟩
 
-end Commensurable
+end Subgroup.Commensurable

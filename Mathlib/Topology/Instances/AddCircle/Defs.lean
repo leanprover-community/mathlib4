@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Algebra.Ring.AddAut
 import Mathlib.Data.Nat.Totient
 import Mathlib.GroupTheory.Divisible
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+import Mathlib.Topology.Algebra.IsUniformGroup.DiscreteSubgroup
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.IsLocalHomeomorph
 import Mathlib.Topology.Order.T5
