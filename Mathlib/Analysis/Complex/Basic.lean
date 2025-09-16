@@ -40,6 +40,10 @@ We also register the fact that `ℂ` is an `RCLike` field.
 
 assert_not_exists Absorbs
 
+/-- A shortcut instance to ensure computability; otherwise we get the noncomputable instance
+`Complex.instNormedField.toNormedModule.toModule`. -/
+instance Complex.instModuleSelf : Module ℂ ℂ := delta% inferInstance
+
 noncomputable section
 
 namespace Complex
