@@ -149,54 +149,53 @@ of capital letters should be lower-cased) and the output should be in `UpperCame
 (e.g. `LTZero`).
 When applying the dictionary, we lower-case the output if the input was also given in lower-case.
 -/
-def abbreviationDict : String → Option String
-  | "isCancelAdd"      => "IsCancelAdd"
-  | "isLeftCancelAdd"  => "IsLeftCancelAdd"
-  | "isRightCancelAdd" => "IsRightCancelAdd"
-  | "cancelAdd"        => "AddCancel"
-  | "leftCancelAdd"    => "AddLeftCancel"
-  | "rightCancelAdd"   => "AddRightCancel"
-  | "cancelCommAdd"    => "AddCancelComm"
-  | "commAdd"          => "AddComm"
-  | "zero_le"          => "Nonneg"
-  | "zeroLE"           => "Nonneg"
-  | "zero_lt"          => "Pos"
-  | "zeroLT"           => "Pos"
-  | "lezero"           => "Nonpos"
-  | "le_zero"          => "Nonpos"
-  | "ltzero"           => "Neg"
-  | "lt_zero"          => "neg"
-  | "addSingle"        => "Single"
-  | "add_single"       => "Single"
-  | "addSupport"       => "Support"
-  | "add_support"      => "Support"
-  | "addTSupport"      => "TSupport"
-  | "add_tsupport"     => "TSupport"
-  | "addIndicator"     => "Indicator"
-  | "add_indicator"    => "Indicator"
-  | "isEven"           => "Even"
-  -- "Regular" is well-used in mathlib with various meanings (e.g. in
-  -- measure theory) and a direct translation
-  -- "regular" --> "addRegular" in `nameDict` above seems error-prone.
-  | "isRegular"        => "IsAddRegular"
-  | "isLeftRegular"    => "IsAddLeftRegular"
-  | "isRightRegular"   => "IsAddRightRegular"
-  | "hasFundamentalDomain" => "HasAddFundamentalDomain"
-  | "quotientMeasure"  => "AddQuotientMeasure"
-  | "negFun"           => "InvFun"
-  | "uniqueProds"      => "UniqueSums"
-  | "orderOf"          => "AddOrderOf"
-  | "zeroLePart"       => "PosPart"
-  | "leZeroPart"       => "NegPart"
-  | "isScalarTower"    => "VAddAssocClass"
-  | "isOfFinOrder"     => "IsOfFinAddOrder"
-  | "isCentralScalar"  => "IsCentralVAdd"
-  | "function_addSemiconj" => "Function_semiconj"
-  | "function_addCommute"  => "Function_commute"
-  | "divisionAddMonoid"    => "SubtractionMonoid"
-  | "subNegZeroAddMonoid"  => "SubNegZeroMonoid"
-  | "modularCharacter" => "AddModularCharacter"
-  | _                  => none
+def abbreviationDict : Std.HashMap String String :=
+  .ofList [("isCancelAdd", "IsCancelAdd"),
+    ("isLeftCancelAdd", "IsLeftCancelAdd"),
+    ("isRightCancelAdd", "IsRightCancelAdd"),
+    ("cancelAdd", "AddCancel"),
+    ("leftCancelAdd", "AddLeftCancel"),
+    ("rightCancelAdd", "AddRightCancel"),
+    ("cancelCommAdd", "AddCancelComm"),
+    ("commAdd", "AddComm"),
+    ("zero_le", "Nonneg"),
+    ("zeroLE", "Nonneg"),
+    ("zero_lt", "Pos"),
+    ("zeroLT", "Pos"),
+    ("lezero", "Nonpos"),
+    ("le_zero", "Nonpos"),
+    ("ltzero", "Neg"),
+    ("lt_zero", "Neg"),
+    ("addSingle", "Single"),
+    ("add_single", "Single"),
+    ("addSupport", "Support"),
+    ("add_support", "Support"),
+    ("addTSupport", "TSupport"),
+    ("add_tsupport", "TSupport"),
+    ("addIndicator", "Indicator"),
+    ("add_indicator", "Indicator"),
+    ("isEven", "Even"),
+    -- "Regular" is well-used in mathlib with various meanings (e.g. in
+    -- measure theory) and a direct translation
+    -- "regular" --> "addRegular" in `nameDict` above seems error-prone.
+    ("isRegular", "IsAddRegular"),
+    ("isLeftRegular", "IsAddLeftRegular"),
+    ("isRightRegular", "IsAddRightRegular"),
+    ("hasFundamentalDomain", "HasAddFundamentalDomain"),
+    ("quotientMeasure", "AddQuotientMeasure"),
+    ("negFun", "InvFun"),
+    ("uniqueProds", "UniqueSums"),
+    ("orderOf", "AddOrderOf"),
+    ("zeroLePart", "PosPart"),
+    ("leZeroPart", "NegPart"),
+    ("isScalarTower", "VAddAssocClass"),
+    ("isOfFinOrder", "IsOfFinAddOrder"),
+    ("isCentralScalar", "IsCentralVAdd"),
+    ("function_addSemiconj", "Function_semiconj"),
+    ("function_addCommute", "Function_commute"),
+    ("divisionAddMonoid", "SubtractionMonoid"),
+    ("subNegZeroAddMonoid", "SubNegZeroMonoid"),
+    ("modularCharacter", "AddModularCharacter")]
 
 /-- Helper for `fixAbbreviation`.
 Note: this function has a quadratic number of recursive calls, but is not a performance
@@ -213,7 +212,7 @@ def fixAbbreviationAux : List String → List String → String
     replaced by `Nonpos`. -/
     if pre == "_" && (t.get 0).isUpper then
       s[0]! ++ fixAbbreviationAux (s.drop 1 ++ l) []
-    else match abbreviationDict t.decapitalizeSeq with
+    else match abbreviationDict.get? t.decapitalizeSeq with
     | some post => decapitalizeLike t post ++ fixAbbreviationAux l []
     | none      => fixAbbreviationAux l s
   termination_by l s => (l.length + s.length, l.length)
