@@ -6,6 +6,7 @@ Authors: Nailin Guan, Yongle Hu
 import Mathlib.RingTheory.KrullDimension.Regular
 import Mathlib.RingTheory.Regular.Flat
 import Mathlib.RingTheory.Regular.Ischebeck
+import Mathlib.Tactic.Cases
 
 /-!
 # Definition of Cohen-Macaulay Ring
@@ -190,13 +191,15 @@ lemma isLocalizedModule_quotSMulTop_isLocalizedModule_map (x : R)
       ⟨LinearMap.ext (fun x ↦ by simpa using DFunLike.congr hs1 (Eq.refl x)),
         LinearMap.ext (fun x ↦ by simpa using DFunLike.congr hs2 (Eq.refl x))⟩⟩
   surj' y := by
-    induction' y using Submodule.Quotient.induction_on with y
+    induction y using Submodule.Quotient.induction_on
+    rename_i y
     rcases IsLocalizedModule.surj' (S := p.primeCompl) (f := f) y with ⟨z, hz⟩
     use (Submodule.Quotient.mk z.1, z.2)
     simp [← hz]
   exists_of_eq {y1 y2} h := by
-    induction' y1 using Submodule.Quotient.induction_on with y1
-    induction' y2 using Submodule.Quotient.induction_on with y2
+    induction y1 using Submodule.Quotient.induction_on
+    induction y2 using Submodule.Quotient.induction_on
+    rename_i y1 y2
     simp only [LinearMap.coe_mk, LinearMap.coe_toAddHom, Submodule.mapQ_apply] at h
     have h := (Submodule.Quotient.mk_eq_zero _).mp (sub_eq_zero_of_eq h)
     rcases (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp h with ⟨m, _, hm⟩
@@ -258,7 +261,7 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
   have : p.depth M ≠ ⊤ :=
     ne_top_of_le_ne_top (depth_ne_top M) (ideal_depth_le_depth p Ideal.IsPrime.ne_top' M)
   rcases ENat.ne_top_iff_exists.mp this with ⟨n, hn⟩
-  induction' n with n ih generalizing M Mₚ
+  induction n generalizing M Mₚ
   · simp only [← hn, CharP.cast_eq_zero, WithBot.coe_zero]
     have min : p ∈ (Module.annihilator R M).minimalPrimes := by
       simp only [CharP.cast_eq_zero, Ideal.depth] at hn
@@ -310,7 +313,8 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
       · simpa using IsLocalRing.closedPoint_mem_support Rₚ Mₚ
     have : Unique (Module.support Rₚ Mₚ) := by simpa [this] using Set.uniqueSingleton _
     exact Order.krullDim_eq_zero_of_unique
-  · have : Subsingleton ((ModuleCat.of R (Shrink.{v} (R ⧸ p))) →ₗ[R] M) := by
+  · rename_i n ih _ _ _ _ _ _ _
+    have : Subsingleton ((ModuleCat.of R (Shrink.{v} (R ⧸ p))) →ₗ[R] M) := by
       by_contra ntr
       rw [not_subsingleton_iff_nontrivial, ← moduleDepth_eq_zero_of_hom_nontrivial] at ntr
       simp [Ideal.depth, ntr] at hn
