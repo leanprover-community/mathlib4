@@ -1001,12 +1001,7 @@ variable {p : α → Bool}
 
 -- Cannot be @[simp] because `a` cannot be inferred by `simp`.
 theorem length_eraseP_add_one {l : List α} {a} (al : a ∈ l) (pa : p a) :
-<<<<<<< HEAD
     (l.eraseP p).length + 1 = l.length := by grind
-=======
-    (l.eraseP p).length + 1 = l.length := by
-  grind
->>>>>>> master
 
 end eraseP
 
