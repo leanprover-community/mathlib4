@@ -28,25 +28,22 @@ variable {R : Type*} [CommRing R] {P : RingPreordering R}
 
 namespace RingPreordering
 
-@[mono]
-theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : RingPreordering R → _) :=
-  fun _ _ => id
+theorem toSubsemiring_le_toSubsemiring {P₁ P₂ : RingPreordering R} :
+    P₁.toSubsemiring ≤ P₂.toSubsemiring ↔ P₁ ≤ P₂ := .rfl
 
 theorem toSubsemiring_lt_toSubsemiring {P₁ P₂ : RingPreordering R} :
     P₁.toSubsemiring < P₂.toSubsemiring ↔ P₁ < P₂ := .rfl
 
-@[gcongr]
-alias ⟨_, GCongr.toSubsemiring_lt_toSubsemiring⟩ := toSubsemiring_lt_toSubsemiring
+@[gcongr] alias ⟨_, GCongr.toSubsemiring_le_toSubsemiring⟩ := toSubsemiring_le_toSubsemiring
+@[gcongr] alias ⟨_, GCongr.toSubsemiring_lt_toSubsemiring⟩ := toSubsemiring_lt_toSubsemiring
 
 @[mono]
 theorem toSubsemiring_mono : Monotone (toSubsemiring : RingPreordering R → _) :=
-  toSubsemiring_strictMono.monotone
+  fun _ _ => id
 
-theorem toSubsemiring_le_toSubsemiring {P₁ P₂ : RingPreordering R} :
-    P₁.toSubsemiring ≤ P₂.toSubsemiring ↔ P₁ ≤ P₂ := .rfl
-
-@[gcongr]
-alias ⟨_, GCongr.toSubsemiring_le_toSubsemiring⟩ := toSubsemiring_le_toSubsemiring
+@[mono]
+theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : RingPreordering R → _) :=
+  fun _ _ => id
 
 @[aesop unsafe 90% apply (rule_sets := [SetLike])]
 theorem unitsInv_mem {a : Rˣ} (ha : ↑a ∈ P) : ↑a⁻¹ ∈ P := by
