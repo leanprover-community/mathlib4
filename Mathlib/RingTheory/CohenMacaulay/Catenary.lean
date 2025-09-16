@@ -40,9 +40,10 @@ lemma Ideal.ofList_height_eq_length_of_isWeaklyRegular (rs : List R) (reg : IsWe
     (h : Ideal.ofList rs ≠ ⊤) : (Ideal.ofList rs).height = rs.length := by
   apply le_antisymm (Ideal.ofList_height_le_length rs h)
   generalize len : rs.length = n
-  induction' n with n hn generalizing rs
+  induction n generalizing rs
   · simp
-  · simp only [Nat.cast_add, Nat.cast_one, height, le_iInf_iff]
+  · rename_i n hn
+    simp only [Nat.cast_add, Nat.cast_one, height, le_iInf_iff]
     intro p hp
     let _ := hp.1.1
     have : Ideal.ofList (rs.take n) ≤ p :=
@@ -102,7 +103,7 @@ lemma maximalIdeal_mem_ofList_append_minimalPrimes_of_ofList_height_eq_length [I
     rw [← WithBot.coe_inj, WithBot.coe_unbot] at hd
     exact hd.symm
   generalize len : d - rs.length = k
-  induction' k with k hk generalizing rs
+  induction k generalizing rs
   · have : Ideal.ofList rs ≤ maximalIdeal R := (span_le.mpr mem)
     have netop : Ideal.ofList rs ≠ ⊤ := (lt_of_le_of_lt this IsPrime.ne_top'.lt_top).ne_top
     have coe_eq : (d : WithBot ℕ∞) = (d : ℕ∞) := rfl
@@ -115,7 +116,8 @@ lemma maximalIdeal_mem_ofList_append_minimalPrimes_of_ofList_height_eq_length [I
     apply Ideal.mem_minimalPrimes_of_height_eq this
     rw [ht, le_antisymm le len, ← WithBot.coe_le_coe]
     simp [hd, coe_eq]
-  · classical
+  · rename_i k hk
+    classical
     have : Ideal.ofList rs ≤ maximalIdeal R := (span_le.mpr mem)
     have netop : Ideal.ofList rs ≠ ⊤ := (lt_of_le_of_lt this IsPrime.ne_top'.lt_top).ne_top
     have coe_eq : (d : WithBot ℕ∞) = (d : ℕ∞) := rfl
@@ -187,9 +189,10 @@ lemma isRegular_of_maximalIdeal_mem_ofList_minimalPrimes
     (dim : rs.length = ringKrullDim R) : IsRegular R rs := by
   refine ⟨?_, by simpa using (ne_top_of_le_ne_top Ideal.IsPrime.ne_top' mem.1.2).symm⟩
   generalize len : rs.length = n
-  induction' n with n hn generalizing R rs
+  induction n generalizing R rs
   · simp [List.length_eq_zero_iff.mp len]
-  · match rs with
+  · rename_i n hn _ _ _
+    match rs with
     | [] => simp at len
     | x :: rs' =>
       simp only [List.length_cons, Nat.add_right_cancel_iff] at len
