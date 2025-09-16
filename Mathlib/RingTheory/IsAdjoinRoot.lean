@@ -89,7 +89,6 @@ we have `IsAdjoinRootMonic.powerBasis`.
 Bundling `Monic` into this structure is very useful when working with explicit `f`s such as
 `X^2 - C a * X - C b` since it saves you carrying around the proofs of monicity.
 -/
--- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
 structure IsAdjoinRootMonic {R : Type u} (S : Type v) [CommSemiring R] [Semiring S] [Algebra R S]
     (f : R[X]) extends IsAdjoinRoot S f where
   monic : Monic f
@@ -698,7 +697,7 @@ theorem Algebra.adjoin.powerBasis'_minpoly_gen [IsDomain R] [IsDomain S] [NoZero
       (degree_pos hx').ne'
   rw [← minpolyGen_eq, adjoin.powerBasis', minpolyGen_map, minpolyGen_eq,
     AdjoinRoot.powerBasis'_gen, ← isAdjoinRoot_root_eq_root _,
-    ← isAdjoinRootMonic_toAdjoinRoot,
+    ← isAdjoinRootMonic_toAdjoinRoot _ (monic hx'),
     minpoly_eq (AdjoinRoot.isAdjoinRootMonic _ (monic hx')) (irreducible hx')]
 
 end Algebra

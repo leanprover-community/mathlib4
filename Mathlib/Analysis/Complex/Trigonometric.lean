@@ -771,14 +771,6 @@ nonrec theorem sinh_three_mul : sinh (3 * x) = 4 * sinh x ^ 3 + 3 * sinh x := by
 
 open IsAbsoluteValue Nat
 
-private theorem add_one_lt_exp_of_pos {x : ℝ} (hx : 0 < x) : x + 1 < exp x :=
-  (by nlinarith : x + 1 < 1 + x + x ^ 2 / 2).trans_le (quadratic_le_exp_of_nonneg hx.le)
-
-private theorem add_one_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) : x + 1 ≤ exp x := by
-  rcases eq_or_lt_of_le hx with (rfl | h)
-  · simp
-  exact (add_one_lt_exp_of_pos h).le
-
 /-- `Real.cosh` is always positive -/
 theorem cosh_pos (x : ℝ) : 0 < Real.cosh x :=
   (cosh_eq x).symm ▸ half_pos (add_pos (exp_pos x) (exp_pos (-x)))
@@ -940,10 +932,5 @@ theorem norm_exp (z : ℂ) : ‖exp z‖ = Real.exp z.re := by
 
 theorem norm_exp_eq_iff_re_eq {x y : ℂ} : ‖exp x‖ = ‖exp y‖ ↔ x.re = y.re := by
   rw [norm_exp, norm_exp, Real.exp_eq_exp]
-
-@[deprecated (since := "2025-02-16")] alias abs_cos_add_sin_mul_I := norm_cos_add_sin_mul_I
-@[deprecated (since := "2025-02-16")] alias abs_exp_ofReal_mul_I := norm_exp_ofReal_mul_I
-@[deprecated (since := "2025-02-16")] alias abs_exp := norm_exp
-@[deprecated (since := "2025-02-16")] alias abs_exp_eq_iff_re_eq := norm_exp_eq_iff_re_eq
 
 end Complex

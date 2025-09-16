@@ -47,10 +47,9 @@ variable [Monoid G] {a b x y : G} {n m : ℕ}
 
 section IsOfFinOrder
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
 @[to_additive]
 theorem isPeriodicPt_mul_iff_pow_eq_one (x : G) : IsPeriodicPt (x * ·) n 1 ↔ x ^ n = 1 := by
-  rw [IsPeriodicPt, IsFixedPt, mul_left_iterate]; beta_reduce; rw [mul_one]
+  rw [IsPeriodicPt, IsFixedPt, mul_left_iterate_apply_one]
 
 /-- `IsOfFinOrder` is a predicate on an element `x` of a monoid to be of finite order, i.e. there
 exists `n ≥ 1` such that `x ^ n = 1`. -/
@@ -181,8 +180,7 @@ protected lemma IsOfFinOrder.orderOf_pos (h : IsOfFinOrder x) : 0 < orderOf x :=
 @[to_additive addOrderOf_nsmul_eq_zero]
 theorem pow_orderOf_eq_one (x : G) : x ^ orderOf x = 1 := by
   convert Eq.trans _ (isPeriodicPt_minimalPeriod (x * ·) 1)
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed in the middle of the rewrite
-  rw [orderOf, mul_left_iterate]; beta_reduce; rw [mul_one]
+  rw [orderOf, mul_left_iterate_apply_one]
 
 @[to_additive]
 theorem orderOf_eq_zero (h : ¬IsOfFinOrder x) : orderOf x = 0 := by
@@ -266,7 +264,7 @@ theorem orderOf_pow_dvd (n : ℕ) : orderOf (x ^ n) ∣ orderOf x := by
 
 @[to_additive]
 lemma pow_injOn_Iio_orderOf : (Set.Iio <| orderOf x).InjOn (x ^ ·) := by
-  simpa only [mul_left_iterate, mul_one]
+  simpa only [mul_left_iterate_apply_one]
     using iterate_injOn_Iio_minimalPeriod (f := (x * ·)) (x := 1)
 
 @[to_additive]
@@ -639,7 +637,7 @@ lemma zpow_mod_orderOf (x : G) (z : ℤ) : x ^ (z % (orderOf x : ℤ)) = x ^ z :
   calc
     x ^ (z % (orderOf x : ℤ)) = x ^ (z % orderOf x + orderOf x * (z / orderOf x) : ℤ) := by
         simp [zpow_add, zpow_mul, pow_orderOf_eq_one]
-    _ = x ^ z := by rw [Int.emod_add_ediv]
+    _ = x ^ z := by rw [Int.emod_add_mul_ediv]
 
 @[to_additive (attr := simp) zsmul_smul_addOrderOf]
 theorem zpow_pow_orderOf : (x ^ i) ^ orderOf x = 1 := by
@@ -1234,7 +1232,7 @@ lemma charP_of_ne_zero (hn : card R = p) (hR : ∀ i < p, (i : R) = 0 → i = 0)
       rw [← Nat.mod_add_div n p, Nat.cast_add, Nat.cast_mul, H, zero_mul, add_zero] at h
       rw [Nat.dvd_iff_mod_eq_zero]
       apply hR _ (Nat.mod_lt _ _) h
-      rw [← hn, gt_iff_lt, Fintype.card_pos_iff]
+      rw [← hn, Fintype.card_pos_iff]
       exact ⟨0⟩
     · rintro ⟨n, rfl⟩
       rw [Nat.cast_mul, H, zero_mul]
