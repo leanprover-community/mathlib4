@@ -275,25 +275,28 @@ structure ComplexConfig where
   test (context : ctx) (goal : MVarId) : MetaM out
   /-- Decides what to report to the user. -/
   tell (stx : Syntax) (originalSubgoals : List MVarId) (originalHeartbeats : Nat)
-    (new : out) (newHeartbeats : Nat) : Option MessageData
+    (new : out) (newHeartbeats : Nat) : CommandElabM (Option MessageData)
 
 /-- Test the `config` against a sequence of tactics, using the context info and tactic info
 from the start of the sequence. -/
 def testTacticSeq (config : ComplexConfig) (tacticSeq : Array (TSyntax `tactic))
     (ctxI : ContextInfo) (i : TacticInfo) (ctx : config.ctx) :
     CommandElabM Unit := do
-  let stx ← `(tactic| $(tacticSeq);*)
-  -- TODO: support more than 1 goal. Probably by requiring all tests to succeed in a row
-  if let [goal] := i.goalsBefore then
-    let (oldGoals, oldHeartbeats) ← withHeartbeats <|
-      try
-        ctxI.runTacticCode i goal stx
-      catch e =>
-        logWarningAt stx m!"original tactic '{stx}' failed: {e.toMessageData}"
-        return [goal]
-    let (new, newHeartbeats) ← withHeartbeats <| ctxI.runTactic i goal <| config.test ctx
-    if let some msg := config.tell stx oldGoals oldHeartbeats new newHeartbeats  then
-      logWarningAt stx msg
+  /- Syntax quotations use the current ref's position info even for nodes which do not usually
+  carry position info. We set the ref here to ensure we log messages on the correct range. -/
+  withRef (mkNullNode tacticSeq) do
+    let stx ← `(tactic| $tacticSeq;*)
+    -- TODO: support more than 1 goal. Probably by requiring all tests to succeed in a row
+    if let [goal] := i.goalsBefore then
+      let (oldGoals, oldHeartbeats) ← withHeartbeats <|
+        try
+          ctxI.runTacticCode i goal stx
+        catch e =>
+          logWarning m!"original tactic '{stx}' failed: {e.toMessageData}"
+          return [goal]
+      let (new, newHeartbeats) ← withHeartbeats <| ctxI.runTactic i goal <| config.test ctx
+      if let some msg ← config.tell stx oldGoals oldHeartbeats new newHeartbeats  then
+        logWarning msg
 
 /-- Run the `config` against a sequence of tactics, using the `trigger` to determine which
 subsequences should be `test`ed. -/
