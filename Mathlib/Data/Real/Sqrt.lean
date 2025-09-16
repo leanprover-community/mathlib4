@@ -167,10 +167,10 @@ theorem sqrt_mul_self_eq_abs (x : ℝ) : √(x * x) = |x| := by
 
 theorem sqrt_sq_eq_abs (x : ℝ) : √(x ^ 2) = |x| := by rw [sq, sqrt_mul_self_eq_abs]
 
-@[simp]
+@[simp, grind =]
 theorem sqrt_zero : √0 = 0 := by simp [Real.sqrt]
 
-@[simp]
+@[simp, grind =]
 theorem sqrt_one : √1 = 1 := by simp [Real.sqrt]
 
 @[simp]
@@ -246,6 +246,16 @@ theorem sqrt_eq_zero' : √x = 0 ↔ x ≤ 0 := by
 theorem sqrt_ne_zero (h : 0 ≤ x) : √x ≠ 0 ↔ x ≠ 0 := by rw [not_iff_not, sqrt_eq_zero h]
 
 theorem sqrt_ne_zero' : √x ≠ 0 ↔ 0 < x := by rw [← not_le, not_iff_not, sqrt_eq_zero']
+
+/-- Variant of `sq_sqrt` without a non-negativity assumption on `x`. -/
+theorem sq_sqrt' : √x ^ 2 = max x 0 := by
+  rcases lt_trichotomy x 0 with _ | _ | _ <;> grind [sqrt_eq_zero', sq_sqrt]
+
+-- Add the rule for `√x ^ 2` to the grind whiteboard whenever we see a real square root.
+grind_pattern sq_sqrt' => √x
+
+-- Check that `grind` can discharge non-zero goals for square roots of positive numerals.
+example : √7 ≠ 0 := by grind
 
 @[simp]
 theorem sqrt_pos : 0 < √x ↔ 0 < x :=

@@ -86,14 +86,8 @@ lemma lt_of_not_ge (h : ¬b ≤ a) : a < b := lt_of_le_not_ge (le_of_not_ge h) h
 
 @[deprecated (since := "2025-05-11")] alias le_of_not_le := le_of_not_ge
 
-lemma lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a :=
-  Or.elim (le_total a b)
-    (fun h : a ≤ b =>
-      Or.elim (Decidable.lt_or_eq_of_le h) (fun h : a < b => Or.inl h) fun h : a = b =>
-        Or.inr (Or.inl h))
-    fun h : b ≤ a =>
-    Or.elim (Decidable.lt_or_eq_of_le h) (fun h : b < a => Or.inr (Or.inr h)) fun h : b = a =>
-      Or.inr (Or.inl h.symm)
+lemma lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a := by
+  grind [le_total, Decidable.lt_or_eq_of_le]
 
 lemma le_of_not_gt (h : ¬b < a) : a ≤ b :=
   match lt_trichotomy a b with
@@ -137,7 +131,9 @@ theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α}
     (H : d < c → b < a) (h : a ≤ b) : c ≤ d :=
   le_of_not_gt fun h' => not_le_of_gt (H h') h
 
+@[grind =]
 lemma min_def (a b : α) : min a b = if a ≤ b then a else b := by rw [LinearOrder.min_def a]
+@[grind =]
 lemma max_def (a b : α) : max a b = if a ≤ b then b else a := by rw [LinearOrder.max_def a]
 
 lemma min_le_left (a b : α) : min a b ≤ a := by
