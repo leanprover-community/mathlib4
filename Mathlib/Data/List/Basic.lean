@@ -1032,12 +1032,7 @@ theorem erase_getElem [DecidableEq ι] {l : List ι} {i : ℕ} (hi : i < l.lengt
   | cons a l IH => cases i with grind
 
 theorem length_eraseIdx_add_one {l : List ι} {i : ℕ} (h : i < l.length) :
-<<<<<<< HEAD
     (l.eraseIdx i).length + 1 = l.length := by grind
-=======
-    (l.eraseIdx i).length + 1 = l.length := by
-  grind
->>>>>>> master
 
 end Erase
 
