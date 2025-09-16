@@ -65,7 +65,7 @@ lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
       have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
       contrapose! hk'; exact (P.pairingIn_neg_two_neg_two_iff ℤ i k).mp ⟨h, hk'⟩
     have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i k
-    aesop -- #24551 (this should be faster)
+    aesop -- https://github.com/leanprover-community/mathlib4/issues/24551 (this should be faster)
   replace hki : P.pairing k i = -1 := by rw [← P.algebraMap_pairingIn ℤ, hki]; simp
   have : P.pairingIn ℤ l i = 1 - P.pairingIn ℤ j i := by
     apply algebraMap_injective ℤ R
