@@ -42,6 +42,13 @@ class Preorder (α : Type*) extends LE α, LT α where
   lt := fun a b => a ≤ b ∧ ¬b ≤ a
   lt_iff_le_not_ge : ∀ a b : α, a < b ↔ a ≤ b ∧ ¬b ≤ a := by intros; rfl
 
+instance [Preorder α] : Std.LawfulOrderLT α where
+  lt_iff := Preorder.lt_iff_le_not_ge
+
+instance [Preorder α] : Std.IsPreorder α where
+  le_refl := Preorder.le_refl
+  le_trans := Preorder.le_trans
+
 @[deprecated (since := "2025-05-11")] alias Preorder.lt_iff_le_not_le := Preorder.lt_iff_le_not_ge
 
 variable [Preorder α] {a b c : α}
@@ -110,14 +117,14 @@ alias not_lt_of_gt := lt_asymm
 lemma le_of_lt_or_eq (h : a < b ∨ a = b) : a ≤ b := h.elim le_of_lt le_of_eq
 lemma le_of_eq_or_lt (h : a = b ∨ a < b) : a ≤ b := h.elim le_of_eq le_of_lt
 
-instance (priority := 900) : @Trans α α α LE.le LE.le LE.le := ⟨le_trans⟩
-instance (priority := 900) : @Trans α α α LT.lt LT.lt LT.lt := ⟨lt_trans⟩
-instance (priority := 900) : @Trans α α α LT.lt LE.le LT.lt := ⟨lt_of_lt_of_le⟩
-instance (priority := 900) : @Trans α α α LE.le LT.lt LT.lt := ⟨lt_of_le_of_lt⟩
-instance (priority := 900) : @Trans α α α GE.ge GE.ge GE.ge := ⟨ge_trans⟩
-instance (priority := 900) : @Trans α α α GT.gt GT.gt GT.gt := ⟨gt_trans⟩
-instance (priority := 900) : @Trans α α α GT.gt GE.ge GT.gt := ⟨lt_of_lt_of_le'⟩
-instance (priority := 900) : @Trans α α α GE.ge GT.gt GT.gt := ⟨lt_of_le_of_lt'⟩
+instance : @Trans α α α LE.le LE.le LE.le := ⟨le_trans⟩
+instance : @Trans α α α LT.lt LT.lt LT.lt := ⟨lt_trans⟩
+instance : @Trans α α α LT.lt LE.le LT.lt := ⟨lt_of_lt_of_le⟩
+instance : @Trans α α α LE.le LT.lt LT.lt := ⟨lt_of_le_of_lt⟩
+instance : @Trans α α α GE.ge GE.ge GE.ge := ⟨ge_trans⟩
+instance : @Trans α α α GT.gt GT.gt GT.gt := ⟨gt_trans⟩
+instance : @Trans α α α GT.gt GE.ge GT.gt := ⟨lt_of_lt_of_le'⟩
+instance : @Trans α α α GE.ge GT.gt GT.gt := ⟨lt_of_le_of_lt'⟩
 
 /-- `<` is decidable if `≤` is. -/
 def decidableLTOfDecidableLE [DecidableLE α] : DecidableLT α
@@ -156,6 +163,9 @@ section PartialOrder
 class PartialOrder (α : Type*) extends Preorder α where
   le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
 
+instance [PartialOrder α] : Std.IsPartialOrder α where
+  le_antisymm := PartialOrder.le_antisymm
+
 variable [PartialOrder α] {a b : α}
 
 lemma le_antisymm : a ≤ b → b ≤ a → a = b := PartialOrder.le_antisymm _ _
@@ -183,7 +193,6 @@ protected lemma Decidable.lt_or_eq_of_le [DecidableLE α] (hab : a ≤ b) : a < 
 
 protected lemma Decidable.le_iff_lt_or_eq [DecidableLE α] : a ≤ b ↔ a < b ∨ a = b :=
   ⟨Decidable.lt_or_eq_of_le, le_of_lt_or_eq⟩
-
 
 lemma lt_or_eq_of_le : a ≤ b → a < b ∨ a = b := open scoped Classical in Decidable.lt_or_eq_of_le
 lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := open scoped Classical in Decidable.le_iff_lt_or_eq

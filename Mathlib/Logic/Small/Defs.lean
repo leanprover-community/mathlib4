@@ -52,7 +52,7 @@ theorem Shrink.ext {α : Type v} [Small.{w} α] {x y : Shrink α}
   simpa using w
 
 -- It would be nice to mark this as `aesop cases` if
--- https://github.com/JLimperg/aesop/issues/59
+-- https://github.com/leanprover-community/aesop/issues/59
 -- is resolved.
 @[induction_eliminator]
 protected noncomputable def Shrink.rec {α : Type*} [Small.{w} α] {F : Shrink α → Sort v}
@@ -89,6 +89,9 @@ instance (priority := 100) small_succ (α : Type v) : Small.{v+1} α :=
 
 instance small_ulift (α : Type u) [Small.{v} α] : Small.{v} (ULift.{w} α) :=
   small_map Equiv.ulift
+
+instance small_plift (α : Type u) [Small.{v} α] : Small.{v} (PLift α) :=
+  small_map Equiv.plift
 
 theorem small_type : Small.{max (u + 1) v} (Type u) :=
   small_max.{max (u + 1) v} _

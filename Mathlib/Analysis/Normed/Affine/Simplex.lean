@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.LinearAlgebra.AffineSpace.Independent
+import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 
 /-!
 # Simplices in torsors over normed spaces.
@@ -128,14 +128,14 @@ lemma Regular.equilateral {s : Simplex R P n} (hr : s.Regular) : s.Equilateral :
     simp_rw [← Function.comp_apply (f := x), ← hx]
     simp only [comp_apply, Equiv.swap_apply_left]
     convert rfl
-    rw [Equiv.swap_apply_of_ne_of_ne (by norm_num [hn]) (by omega)]
+    rw [Equiv.swap_apply_of_ne_of_ne (by simp [hn]) (by omega)]
   · rcases hr ((Equiv.swap 0 i).trans (Equiv.swap 1 j)) with ⟨x, hx⟩
     nth_rw 2 [← x.dist_eq]
     simp_rw [← Function.comp_apply (f := x), ← hx]
     simp only [Equiv.coe_trans, comp_apply, Equiv.swap_apply_left]
     convert rfl
     · exact Equiv.swap_apply_of_ne_of_ne hi hij
-    · rw [Equiv.swap_apply_of_ne_of_ne (by norm_num [hn]) (Ne.symm hi)]
+    · rw [Equiv.swap_apply_of_ne_of_ne (by simp [hn]) (Ne.symm hi)]
       simp
 
 end Simplex

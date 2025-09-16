@@ -3,11 +3,11 @@ Copyright (c) 2023 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.NumberTheory.KummerDedekind
 import Mathlib.NumberTheory.RamificationInertia.Unramified
 import Mathlib.RingTheory.Finiteness.Quotient
 import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 import Mathlib.RingTheory.Trace.Quotient
+import Mathlib.RingTheory.Conductor
 
 /-!
 # The different ideal
@@ -30,6 +30,8 @@ import Mathlib.RingTheory.Trace.Quotient
 ## TODO
 - Show properties of the different ideal
 -/
+
+open Module
 
 universe u
 
@@ -84,11 +86,11 @@ lemma le_traceDual_traceDual {I : Submodule B L} :
 
 @[simp]
 lemma restrictScalars_traceDual {I : Submodule B L} :
-  Iᵛ.restrictScalars A = (Algebra.traceForm K L).dualSubmodule (I.restrictScalars A) := rfl
+    Iᵛ.restrictScalars A = (Algebra.traceForm K L).dualSubmodule (I.restrictScalars A) := rfl
 
 @[simp]
 lemma traceDual_bot :
-    (⊥ : Submodule B L)ᵛ = ⊤ := by ext; simpa [mem_traceDual, -RingHom.mem_range] using zero_mem _
+    (⊥ : Submodule B L)ᵛ = ⊤ := by ext; simp [mem_traceDual, -RingHom.mem_range]
 
 open scoped Classical in
 lemma traceDual_top' :
@@ -192,7 +194,7 @@ lemma isIntegral_discr_mul_of_mem_traceDual
   apply IsIntegral.algebraMap
   rw [cramer_apply]
   apply IsIntegral.det
-  intros j k
+  intro j k
   rw [updateCol_apply]
   split
   · rw [mul_assoc]
@@ -210,7 +212,7 @@ variable [IsDomain A] [IsFractionRing B L] [Nontrivial B] [NoZeroDivisors B]
 namespace FractionalIdeal
 
 open scoped Classical in
-/-- The dual of a non-zero fractional ideal is the dual of the submodule under the traceform. -/
+/-- The dual of a non-zero fractional ideal is the dual of the submodule under the trace form. -/
 noncomputable
 def dual (I : FractionalIdeal B⁰ L) :
     FractionalIdeal B⁰ L :=
@@ -504,7 +506,8 @@ lemma traceForm_dualSubmodule_adjoin
   let pb := (Algebra.adjoin.powerBasis' hKx).map
     ((Subalgebra.equivOfEq _ _ hx).trans (Subalgebra.topEquiv))
   have pbgen : pb.gen = x := by simp [pb]
-  have hpb : ⇑(LinearMap.BilinForm.dualBasis (traceForm K L) _ pb.basis) = _ :=
+  have hnondeg : (traceForm K L).Nondegenerate := traceForm_nondegenerate K L
+  have hpb : ⇑(LinearMap.BilinForm.dualBasis (traceForm K L) hnondeg pb.basis) = _ :=
     _root_.funext (traceForm_dualBasis_powerBasis_eq pb)
   have : (Subalgebra.toSubmodule (Algebra.adjoin A {x})) =
       Submodule.span A (Set.range pb.basis) := by
@@ -518,7 +521,7 @@ lemma traceForm_dualSubmodule_adjoin
     exact ⟨fun ⟨a, b, c⟩ ↦ ⟨⟨a, b⟩, c⟩, fun ⟨⟨a, b⟩, c⟩ ↦ ⟨a, b, c⟩⟩
   clear_value pb
   conv_lhs => rw [this]
-  rw [← span_coeff_minpolyDiv hAx, LinearMap.BilinForm.dualSubmodule_span_of_basis,
+  rw [← span_coeff_minpolyDiv hAx, LinearMap.BilinForm.dualSubmodule_span_of_basis _ hnondeg,
     Submodule.smul_span, hpb]
   change _ = Submodule.span A (_ '' _)
   simp only [← Set.range_comp, smul_eq_mul, div_eq_inv_mul, pbgen,
@@ -637,7 +640,7 @@ lemma pow_sub_one_dvd_differentIdeal_aux
       exact ⟨intTrace A B z, this z hz, rfl⟩
     rwa [mul_comm, ← smul_eq_mul, ← LinearMap.map_smul, Algebra.smul_def, mul_comm,
       ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B L, ← hz']
-  intros x hx
+  intro x hx
   rw [← Ideal.Quotient.eq_zero_iff_mem, ← trace_quotient_eq_of_isDedekindDomain,
     ← isNilpotent_iff_eq_zero]
   refine trace_isNilpotent_of_isNilpotent ⟨e, ?_⟩
@@ -680,7 +683,7 @@ theorem not_dvd_differentIdeal_of_intTrace_not_mem
   replace H := (mul_le_mul_right' H Q).trans_eq hP
   replace H := (FractionalIdeal.coeIdeal_le_coeIdeal' _ (P := L) le_rfl).mpr H
   rw [FractionalIdeal.coeIdeal_mul, coeIdeal_differentIdeal A K] at H
-  replace H := FractionalIdeal.mul_le_mul_left H (FractionalIdeal.dual A K 1)
+  replace H := mul_le_mul_left' H (FractionalIdeal.dual A K 1)
   simp only [ne_eq, FractionalIdeal.dual_eq_zero_iff, one_ne_zero, not_false_eq_true,
     mul_inv_cancel_left₀] at H
   apply hx
@@ -795,7 +798,7 @@ lemma dvd_differentIdeal_of_not_isSeparable
       exact ⟨Algebra.intTrace A B z, this z hz, rfl⟩
     rwa [mul_comm, ← smul_eq_mul, ← LinearMap.map_smul, Algebra.smul_def, mul_comm,
       ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B L, ← hz']
-  intros x hx
+  intro x hx
   rw [← Ideal.Quotient.eq_zero_iff_mem, ← Algebra.trace_quotient_eq_of_isDedekindDomain]
   letI : Algebra (A ⧸ p) (B ⧸ a) :=
     Ideal.Quotient.algebraQuotientOfLEComap (Ideal.map_le_iff_le_comap.mp

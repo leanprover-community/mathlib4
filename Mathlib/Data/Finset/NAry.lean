@@ -70,11 +70,9 @@ theorem image₂_subset (hs : s ⊆ s') (ht : t ⊆ t') : image₂ f s t ⊆ ima
   rw [← coe_subset, coe_image₂, coe_image₂]
   exact image2_subset hs ht
 
-@[gcongr]
 theorem image₂_subset_left (ht : t ⊆ t') : image₂ f s t ⊆ image₂ f s t' :=
   image₂_subset Subset.rfl ht
 
-@[gcongr]
 theorem image₂_subset_right (hs : s ⊆ s') : image₂ f s t ⊆ image₂ f s' t :=
   image₂_subset hs Subset.rfl
 
@@ -91,8 +89,6 @@ lemma forall_mem_image₂ {p : γ → Prop} :
 lemma exists_mem_image₂ {p : γ → Prop} :
     (∃ z ∈ image₂ f s t, p z) ↔ ∃ x ∈ s, ∃ y ∈ t, p (f x y) := by
   simp_rw [← mem_coe, coe_image₂, exists_mem_image2]
-
-@[deprecated (since := "2024-11-23")] alias forall_image₂_iff := forall_mem_image₂
 
 @[simp]
 theorem image₂_subset_iff : image₂ f s t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, f x y ∈ u :=
@@ -436,10 +432,11 @@ applications are disjoint (but not necessarily distinct!), then the size of `t` 
 theorem card_dvd_card_image₂_right (hf : ∀ a ∈ s, Injective (f a))
     (hs : ((fun a => t.image <| f a) '' s).PairwiseDisjoint id) : #t ∣ #(image₂ f s t) := by
   classical
-  induction' s using Finset.induction with a s _ ih
-  · simp
+  induction s using Finset.induction with
+  | empty => simp
+  | insert a s _ ih => ?_
   specialize ih (forall_of_forall_insert hf)
-    (hs.subset <| Set.image_subset _ <| coe_subset.2 <| subset_insert _ _)
+    (hs.subset <| Set.image_mono <| coe_subset.2 <| subset_insert _ _)
   rw [image₂_insert_left]
   by_cases h : Disjoint (image (f a) t) (image₂ f s t)
   · rw [card_union_of_disjoint h]

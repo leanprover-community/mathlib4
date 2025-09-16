@@ -30,7 +30,7 @@ instance small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] 
   suffices (proj S T).obj ⁻¹' 𝒢 = Set.range fun f : Σ G : 𝒢, S ⟶ T.obj G => mk f.2 by
     rw [this]
     infer_instance
-  exact Set.ext fun X => ⟨fun h => ⟨⟨⟨_, h⟩, X.hom⟩, (eq_mk _).symm⟩, by aesop_cat⟩
+  exact Set.ext fun X => ⟨fun h => ⟨⟨⟨_, h⟩, X.hom⟩, (eq_mk _).symm⟩, by cat_disch⟩
 
 end StructuredArrow
 
@@ -43,7 +43,7 @@ instance small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] 
   suffices (proj S T).obj ⁻¹' 𝒢 = Set.range fun f : Σ G : 𝒢, S.obj G ⟶ T => mk f.2 by
     rw [this]
     infer_instance
-  exact Set.ext fun X => ⟨fun h => ⟨⟨⟨_, h⟩, X.hom⟩, (eq_mk _).symm⟩, by aesop_cat⟩
+  exact Set.ext fun X => ⟨fun h => ⟨⟨⟨_, h⟩, X.hom⟩, (eq_mk _).symm⟩, by cat_disch⟩
 
 end CostructuredArrow
 

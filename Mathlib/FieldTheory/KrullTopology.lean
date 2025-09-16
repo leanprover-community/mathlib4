@@ -43,7 +43,7 @@ all intermediate fields `E` with `E/K` finite dimensional.
   intermediate field `L`, the `[L : k]` as a natural number is equal to the index of the
   fixing subgroup of `L`.
 
-## Notations
+## Notation
 
 - In docstrings, we will write `Gal(L/E)` to denote the fixing subgroup of an intermediate field
   `E`. That is, `Gal(L/E)` is the subgroup of `L ≃ₐ[K] L` consisting of automorphisms that fix
@@ -315,9 +315,7 @@ theorem finrank_eq_fixingSubgroup_index (L : IntermediateField k K) [IsGalois k 
   have h := Module.finrank_mul_finrank k ↥L' ↥E
   classical
   rw [← IsGalois.card_fixingSubgroup_eq_finrank L', ← IsGalois.card_aut_eq_finrank k E] at h
-  nth_rw 2 [Fintype.card_eq_nat_card] at h
-  rw [← L'.fixingSubgroup.index_mul_card, Nat.card_eq_fintype_card,
-    Nat.mul_left_inj Fintype.card_ne_zero] at h
+  rw [← L'.fixingSubgroup.index_mul_card,  Nat.mul_left_inj Finite.card_pos.ne'] at h
   rw [(restrict_algEquiv hle).toLinearEquiv.finrank_eq, h, ← L'.map_fixingSubgroup_index K]
   congr 2
   exact lift_restrict hle

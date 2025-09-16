@@ -107,7 +107,7 @@ lemma range_weylGroup_weightHom :
     induction hw using Subgroup.closure_induction'' with
     | one =>
       change ((Equiv.weightHom P).restrict P.weylGroup) 1 ∈ _
-      simpa only [map_one] using Subgroup.one_mem _
+      simp only [map_one, one_mem]
     | mem w' hw' =>
       obtain ⟨i, rfl⟩ := hw'
       simp only [MonoidHom.restrict_apply, Equiv.weightHom_apply, Equiv.reflection_weightEquiv]
@@ -133,7 +133,7 @@ lemma range_weylGroup_coweightHom :
     induction hw using Subgroup.closure_induction'' with
     | one =>
       change ((Equiv.coweightHom P).restrict P.weylGroup) 1 ∈ _
-      simpa only [map_one] using Subgroup.one_mem _
+      simp only [map_one, one_mem]
     | mem w' hw' =>
       obtain ⟨i, rfl⟩ := hw'
       simp only [MonoidHom.restrict_apply, Equiv.coweightHom_apply, Equiv.reflection_coweightEquiv]
@@ -161,7 +161,7 @@ lemma range_weylGroupToPerm :
     induction hw using Subgroup.closure_induction'' with
     | one =>
       change ((Equiv.indexHom P).restrict P.weylGroup) 1 ∈ _
-      simpa only [map_one] using Subgroup.one_mem _
+      simp only [map_one, one_mem]
     | mem w' hw' =>
       obtain ⟨i, rfl⟩ := hw'
       simp only [MonoidHom.restrict_apply, Equiv.indexHom_apply, Equiv.reflection_indexEquiv]
@@ -185,5 +185,17 @@ def weylGroupCorootRep : Representation R P.weylGroup.op N :=
 lemma weylGroup_apply_root (g : P.weylGroup) (i : ι) :
     g • P.root i = P.root (P.weylGroupToPerm g i) :=
   Hom.root_weightMap_apply _ _ _ _
+
+@[simp]
+lemma InvariantForm.apply_weylGroup_smul {B : P.InvariantForm} (g : P.weylGroup) (x y : M) :
+    B.form (g • x) (g • y) = B.form x y := by
+  revert x y
+  obtain ⟨g, hg⟩ := g
+  induction hg using weylGroup.induction with
+  | mem i => simp
+  | one => simp
+  | mul g₁ g₂ hg₁ hg₂ hg₁' hg₂' =>
+    intro x y
+    rw [← Submonoid.mk_mul_mk _ _ _ hg₁ hg₂, mul_smul, mul_smul, hg₁', hg₂']
 
 end RootPairing

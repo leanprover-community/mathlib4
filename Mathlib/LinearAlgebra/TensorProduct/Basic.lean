@@ -80,7 +80,7 @@ def TensorProduct : Type _ :=
 set_option quotPrecheck false in
 @[inherit_doc TensorProduct] scoped[TensorProduct] infixl:100 " ⊗ " => TensorProduct _
 
-@[inherit_doc] scoped[TensorProduct] notation:100 M " ⊗[" R "] " N:100 => TensorProduct R M N
+@[inherit_doc] scoped[TensorProduct] notation:100 M:100 " ⊗[" R "] " N:101 => TensorProduct R M N
 
 namespace TensorProduct
 
@@ -126,7 +126,19 @@ def tmul (m : M) (n : N) : M ⊗[R] N :=
 infixl:100 " ⊗ₜ " => tmul _
 
 /-- The canonical function `M → N → M ⊗ N`. -/
-notation:100 x " ⊗ₜ[" R "] " y:100 => tmul R x y
+notation:100 x:100 " ⊗ₜ[" R "] " y:101 => tmul R x y
+
+/-- Produces an arbitrary representation of the form `mₒ ⊗ₜ n₀ + ...`. -/
+unsafe instance [Repr M] [Repr N] : Repr (M ⊗[R] N) where
+  reprPrec mn p :=
+    let parts := mn.unquot.toList.map fun (mi, ni) =>
+      Std.Format.group f!"{reprPrec mi 100} ⊗ₜ {reprPrec ni 101}"
+    match parts with
+    | [] => f!"0"
+    | [part] => if p > 100 then Std.Format.bracketFill "(" part ")" else .fill part
+    | parts =>
+      (if p > 65 then (Std.Format.bracketFill "(" · ")") else (.fill ·)) <|
+        .joinSep parts f!" +{Std.Format.line}"
 
 @[elab_as_elim, induction_eliminator]
 protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
@@ -605,7 +617,7 @@ theorem curry_apply (f : M ⊗ N →ₗ[R] P) (m : M) (n : N) : curry f m n = f 
 theorem curry_injective : Function.Injective (curry : (M ⊗[R] N →ₗ[R] P) → M →ₗ[R] N →ₗ[R] P) :=
   fun _ _ H => ext H
 
-theorem ext_threefold {g h : (M ⊗[R] N) ⊗[R] P →ₗ[R] Q}
+theorem ext_threefold {g h : M ⊗[R] N ⊗[R] P →ₗ[R] Q}
     (H : ∀ x y z, g (x ⊗ₜ y ⊗ₜ z) = h (x ⊗ₜ y ⊗ₜ z)) : g = h := by
   ext x y z
   exact H x y z
@@ -616,14 +628,14 @@ theorem ext_threefold' {g h : M ⊗[R] (N ⊗[R] P) →ₗ[R] Q}
   exact H x y z
 
 -- We'll need this one for checking the pentagon identity!
-theorem ext_fourfold {g h : ((M ⊗[R] N) ⊗[R] P) ⊗[R] Q →ₗ[R] S}
+theorem ext_fourfold {g h : M ⊗[R] N ⊗[R] P ⊗[R] Q →ₗ[R] S}
     (H : ∀ w x y z, g (w ⊗ₜ x ⊗ₜ y ⊗ₜ z) = h (w ⊗ₜ x ⊗ₜ y ⊗ₜ z)) : g = h := by
   ext w x y z
   exact H w x y z
 
 /-- Two linear maps (M ⊗ N) ⊗ (P ⊗ Q) → S which agree on all elements of the
 form (m ⊗ₜ n) ⊗ₜ (p ⊗ₜ q) are equal. -/
-theorem ext_fourfold' {φ ψ : (M ⊗[R] N) ⊗[R] P ⊗[R] Q →ₗ[R] S}
+theorem ext_fourfold' {φ ψ : M ⊗[R] N ⊗[R] (P ⊗[R] Q) →ₗ[R] S}
     (H : ∀ w x y z, φ (w ⊗ₜ x ⊗ₜ (y ⊗ₜ z)) = ψ (w ⊗ₜ x ⊗ₜ (y ⊗ₜ z))) : φ = ψ := by
   ext m n p q
   exact H m n p q
@@ -719,17 +731,19 @@ lemma map_comm (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (x : N ⊗[R] M) :
     map f g (TensorProduct.comm R N M x) = TensorProduct.comm R Q P (map g f x) :=
   DFunLike.congr_fun (map_comp_comm_eq _ _) _
 
-theorem map_range_eq_span_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
+theorem range_map (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
+    range (map f g) = .map₂ (mk R _ _) (range f) (range g) := by
+  simp_rw [← Submodule.map_top, Submodule.map₂_map_map, ← map₂_mk_top_top_eq_top,
+    Submodule.map_map₂]
+  rfl
+
+theorem range_map_eq_span_tmul (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     range (map f g) = Submodule.span R { t | ∃ m n, f m ⊗ₜ g n = t } := by
   simp only [← Submodule.map_top, ← span_tmul_eq_top, Submodule.map_span]
   congr; ext t
-  constructor
-  · rintro ⟨_, ⟨⟨m, n, rfl⟩, rfl⟩⟩
-    use m, n
-    simp only [map_tmul]
-  · rintro ⟨m, n, rfl⟩
-    refine ⟨_, ⟨⟨m, n, rfl⟩, ?_⟩⟩
-    simp only [map_tmul]
+  simp
+
+@[deprecated (since := "2025-09-07")] alias map_range_eq_span_tmul := range_map_eq_span_tmul
 
 /-- Given submodules `p ⊆ P` and `q ⊆ Q`, this is the natural map: `p ⊗ q → P ⊗ Q`. -/
 @[simp]
@@ -737,30 +751,39 @@ def mapIncl (p : Submodule R P) (q : Submodule R Q) : p ⊗[R] q →ₗ[R] P ⊗
   map p.subtype q.subtype
 
 lemma range_mapIncl (p : Submodule R P) (q : Submodule R Q) :
-    LinearMap.range (mapIncl p q) = Submodule.span R (Set.image2 (· ⊗ₜ ·) p q) := by
-  rw [mapIncl, map_range_eq_span_tmul]
-  congr; ext; simp
+    LinearMap.range (mapIncl p q) = .map₂ (mk R _ _) p q := by
+  simp_rw [mapIncl, range_map, Submodule.range_subtype]
 
 theorem map₂_eq_range_lift_comp_mapIncl (f : P →ₗ[R] Q →ₗ[R] M)
     (p : Submodule R P) (q : Submodule R Q) :
     Submodule.map₂ f p q = LinearMap.range (lift f ∘ₗ mapIncl p q) := by
-  simp_rw [LinearMap.range_comp, range_mapIncl, Submodule.map_span,
-    Set.image_image2, Submodule.map₂_eq_span_image2, lift.tmul]
+  simp_rw [LinearMap.range_comp, range_mapIncl, Submodule.map_map₂]
+  rfl
 
 section
 
-variable {P' Q' : Type*}
+variable {M₁ M₂ M₃ N₁ N₂ N₃ P' Q' : Type*}
 variable [AddCommMonoid P'] [Module R P']
 variable [AddCommMonoid Q'] [Module R Q']
+  [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid N₁] [Module R N₁]
+  [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid N₂] [Module R N₂]
+  [AddCommMonoid M₃] [Module R M₃] [AddCommMonoid N₃] [Module R N₃]
 
-theorem map_comp (f₂ : P →ₗ[R] P') (f₁ : M →ₗ[R] P) (g₂ : Q →ₗ[R] Q') (g₁ : N →ₗ[R] Q) :
-    map (f₂.comp f₁) (g₂.comp g₁) = (map f₂ g₂).comp (map f₁ g₁) :=
-  ext' fun _ _ => rfl
+lemma map_comp (f₂ : M₂ →ₗ[R] M₃) (g₂ : N₂ →ₗ[R] N₃) (f₁ : M₁ →ₗ[R] M₂) (g₁ : N₁ →ₗ[R] N₂) :
+    map (f₂ ∘ₗ f₁) (g₂ ∘ₗ g₁) = map f₂ g₂ ∘ₗ map f₁ g₁ := ext' fun _ _ => rfl
+
+lemma map_map (f₂ : M₂ →ₗ[R] M₃) (g₂ : N₂ →ₗ[R] N₃) (f₁ : M₁ →ₗ[R] M₂) (g₁ : N₁ →ₗ[R] N₂)
+    (x : M₁ ⊗ N₁) : map f₂ g₂ (map f₁ g₁ x) = map (f₂ ∘ₗ f₁) (g₂ ∘ₗ g₁) x :=
+  DFunLike.congr_fun (map_comp ..).symm x
+
+lemma range_map_mono {a : M₁ →ₗ[R] M₂} {b : M₃ →ₗ[R] M₂} {c : N₁ →ₗ[R] N₂} {d : N₃ →ₗ[R] N₂}
+    (hab : range a ≤ range b) (hcd : range c ≤ range d) : range (map a c) ≤ range (map b d) := by
+  simp_rw [range_map]
+  exact Submodule.map₂_le_map₂ hab hcd
 
 lemma range_mapIncl_mono {p p' : Submodule R P} {q q' : Submodule R Q} (hp : p ≤ p') (hq : q ≤ q') :
-    LinearMap.range (mapIncl p q) ≤ LinearMap.range (mapIncl p' q') := by
-  simp_rw [range_mapIncl]
-  exact Submodule.span_mono (Set.image2_subset hp hq)
+    LinearMap.range (mapIncl p q) ≤ LinearMap.range (mapIncl p' q') :=
+  range_map_mono (by simpa) (by simpa)
 
 theorem lift_comp_map (i : P →ₗ[R] Q →ₗ[R] Q') (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     (lift i).comp (map f g) = lift ((i.comp f).compl₂ g) :=
@@ -779,7 +802,7 @@ protected theorem map_one : map (1 : M →ₗ[R] M) (1 : N →ₗ[R] N) = 1 :=
 
 protected theorem map_mul (f₁ f₂ : M →ₗ[R] M) (g₁ g₂ : N →ₗ[R] N) :
     map (f₁ * f₂) (g₁ * g₂) = map f₁ g₁ * map f₂ g₂ :=
-  map_comp f₁ f₂ g₁ g₂
+  map_comp ..
 
 @[simp]
 protected theorem map_pow (f : M →ₗ[R] M) (g : N →ₗ[R] N) (n : ℕ) :
@@ -879,6 +902,9 @@ def congr (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) : M ⊗[R] N ≃ₗ[R] P ⊗[R
   LinearEquiv.ofLinear (map f g) (map f.symm g.symm)
     (ext' fun m n => by simp)
     (ext' fun m n => by simp)
+
+@[simp]
+lemma toLinearMap_congr (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) : (congr f g).toLinearMap = map f g := rfl
 
 @[simp]
 theorem congr_tmul (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) (m : M) (n : N) :
@@ -1120,9 +1146,19 @@ theorem map_comp_rTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (f' : S →ₗ[
   simp only [rTensor, ← map_comp, comp_id]
 
 @[simp]
+theorem map_rTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (f' : S →ₗ[R] M) (x : S ⊗[R] N) :
+    map f g (f'.rTensor _ x) = map (f.comp f') g x :=
+  LinearMap.congr_fun (map_comp_rTensor _ _ _ _) x
+
+@[simp]
 theorem map_comp_lTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (g' : S →ₗ[R] N) :
     (map f g).comp (g'.lTensor _) = map f (g.comp g') := by
   simp only [lTensor, ← map_comp, comp_id]
+
+@[simp]
+lemma map_lTensor (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (g' : S →ₗ[R] N) (x : M ⊗[R] S) :
+    map f g (g'.lTensor M x) = map f (g ∘ₗ g') x :=
+  LinearMap.congr_fun (map_comp_lTensor _ _ _ _) x
 
 @[simp]
 theorem rTensor_comp_map (f' : P →ₗ[R] S) (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
@@ -1130,9 +1166,19 @@ theorem rTensor_comp_map (f' : P →ₗ[R] S) (f : M →ₗ[R] P) (g : N →ₗ[
   simp only [rTensor, ← map_comp, id_comp]
 
 @[simp]
+lemma rTensor_map (f' : P →ₗ[R] S) (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (x : M ⊗[R] N) :
+    f'.rTensor Q (map f g x) = map (f' ∘ₗ f) g x :=
+  LinearMap.congr_fun (rTensor_comp_map _ _ f g) x
+
+@[simp]
 theorem lTensor_comp_map (g' : Q →ₗ[R] S) (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     (g'.lTensor _).comp (map f g) = map f (g'.comp g) := by
   simp only [lTensor, ← map_comp, id_comp]
+
+@[simp]
+lemma lTensor_map (g' : Q →ₗ[R] S) (f : M →ₗ[R] P) (g : N →ₗ[R] Q) (x : M ⊗[R] N) :
+    g'.lTensor P (map f g x) = map f (g' ∘ₗ g) x :=
+  LinearMap.congr_fun (lTensor_comp_map _ _ f g) x
 
 variable {M}
 
@@ -1262,8 +1308,8 @@ section Ring
 
 variable {R : Type*} [CommSemiring R]
 variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*} {S : Type*}
-variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [AddCommGroup Q] [AddCommGroup S]
-variable [Module R M] [Module R N] [Module R P] [Module R Q] [Module R S]
+variable [AddCommGroup M] [AddCommMonoid N] [AddCommGroup P] [AddCommMonoid Q]
+variable [Module R M] [Module R N] [Module R P] [Module R Q]
 
 namespace TensorProduct
 
@@ -1310,11 +1356,11 @@ instance addCommGroup : AddCommGroup (M ⊗[R] N) :=
 theorem neg_tmul (m : M) (n : N) : (-m) ⊗ₜ n = -m ⊗ₜ[R] n :=
   rfl
 
-theorem tmul_neg (m : M) (n : N) : m ⊗ₜ (-n) = -m ⊗ₜ[R] n :=
-  (mk R M N _).map_neg _
+theorem tmul_neg (m : M) (p : P) : m ⊗ₜ (-p) = -m ⊗ₜ[R] p :=
+  (mk R M P _).map_neg _
 
-theorem tmul_sub (m : M) (n₁ n₂ : N) : m ⊗ₜ (n₁ - n₂) = m ⊗ₜ[R] n₁ - m ⊗ₜ[R] n₂ :=
-  (mk R M N _).map_sub _ _
+theorem tmul_sub (m : M) (p₁ p₂ : P) : m ⊗ₜ (p₁ - p₂) = m ⊗ₜ[R] p₁ - m ⊗ₜ[R] p₂ :=
+  (mk R M P _).map_sub _ _
 
 theorem sub_tmul (m₁ m₂ : M) (n : N) : (m₁ - m₂) ⊗ₜ n = m₁ ⊗ₜ[R] n - m₂ ⊗ₜ[R] n :=
   (mk R M N).map_sub₂ _ _ _
@@ -1327,8 +1373,8 @@ When `R` is a `Ring` we get the required `TensorProduct.compatible_smul` instanc
 `IsScalarTower`, but when it is only a `Semiring` we need to build it from scratch.
 The instance diamond in `compatible_smul` doesn't matter because it's in `Prop`.
 -/
-instance CompatibleSMul.int : CompatibleSMul R ℤ M N :=
-  ⟨fun r m n =>
+instance CompatibleSMul.int : CompatibleSMul R ℤ M P :=
+  ⟨fun r m p =>
     Int.induction_on r (by simp) (fun r ih => by simpa [add_smul, tmul_add, add_tmul] using ih)
       fun r ih => by simpa [sub_smul, tmul_sub, sub_tmul] using ih⟩
 
@@ -1346,9 +1392,9 @@ theorem lTensor_sub (f g : N →ₗ[R] P) : (f - g).lTensor M = f.lTensor M - g.
   exact (lTensorHom (R := R) (N := N) (P := P) M).map_sub f g
 
 @[simp]
-theorem rTensor_sub (f g : N →ₗ[R] P) : (f - g).rTensor M = f.rTensor M - g.rTensor M := by
+theorem rTensor_sub (f g : N →ₗ[R] P) : (f - g).rTensor Q = f.rTensor Q - g.rTensor Q := by
   simp only [← coe_rTensorHom]
-  exact (rTensorHom (R := R) (N := N) (P := P) M).map_sub f g
+  exact (rTensorHom (R := R) (N := N) (P := P) Q).map_sub f g
 
 @[simp]
 theorem lTensor_neg (f : N →ₗ[R] P) : (-f).lTensor M = -f.lTensor M := by
@@ -1356,9 +1402,9 @@ theorem lTensor_neg (f : N →ₗ[R] P) : (-f).lTensor M = -f.lTensor M := by
   exact (lTensorHom (R := R) (N := N) (P := P) M).map_neg f
 
 @[simp]
-theorem rTensor_neg (f : N →ₗ[R] P) : (-f).rTensor M = -f.rTensor M := by
+theorem rTensor_neg (f : N →ₗ[R] P) : (-f).rTensor Q = -f.rTensor Q := by
   simp only [← coe_rTensorHom]
-  exact (rTensorHom (R := R) (N := N) (P := P) M).map_neg f
+  exact (rTensorHom (R := R) (N := N) (P := P) Q).map_neg f
 
 end LinearMap
 
