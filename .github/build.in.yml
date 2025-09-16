@@ -186,6 +186,33 @@ jobs:
           cd pr-branch
           lake env
 
+      - name: validate lake-manifest.json inputRevs
+        # Only enforce this on the main mathlib4 repository, not on nightly-testing
+        if: github.repository == 'leanprover-community/mathlib4'
+        shell: bash
+        run: |
+          cd pr-branch
+
+          # Check that all inputRevs in lake-manifest.json match the required pattern
+          echo "Validating lake-manifest.json inputRevs..."
+
+          # Extract all inputRevs from the manifest
+          invalid_revs=$(jq -r '.packages[].inputRev // empty' lake-manifest.json | \
+            grep -v -E '^(main|master|v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?)$' || true)
+
+          if [ -n "$invalid_revs" ]; then
+            echo "❌ Error: Found invalid inputRevs in lake-manifest.json:"
+            echo "$invalid_revs"
+            echo ""
+            echo "All inputRevs must be one of:"
+            echo "  - 'main'"
+            echo "  - 'master'"
+            echo "  - 'vX.Y.Z' (semantic version, e.g., v1.2.3 or v1.2.3-pre)"
+            exit 1
+          else
+            echo "✅ All inputRevs in lake-manifest.json are valid"
+          fi
+
       - name: get cache (1/3 - setup and initial fetch)
         id: get_cache_part1_setup
         shell: bash # only runs `cache get` from `master-branch`, so doesn't need to be inside landrun
