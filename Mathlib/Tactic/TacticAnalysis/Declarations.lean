@@ -16,14 +16,16 @@ import Lean.Elab.Command
 This file defines passes to run from the tactic analysis framework.
 -/
 
-namespace Mathlib.TacticAnalysis
+open Lean Meta
 
-open Lean Meta Mathlib Elab.Command
+namespace Mathlib.TacticAnalysis
 
 inductive TerminalReplacementOutcome where
 | success (stx : TSyntax `tactic)
 | remainingGoals (stx : TSyntax `tactic) (goals : List MessageData)
 | error (stx : TSyntax `tactic) (msg : MessageData)
+
+open Elab.Command
 
 /--
 Define a pass that tries replacing one terminal tactic with another.
@@ -97,6 +99,7 @@ def terminalReplacement (oldTacticName newTacticName : String) (oldTacticKind : 
         return none
     }
 
+
 /--
 Define a pass that tries replacing a specific tactic with `grind`.
 
@@ -113,6 +116,10 @@ def grindReplacementWith (tacticName : String) (tacticKind : SyntaxNodeKind)
     TacticAnalysis.Config :=
   terminalReplacement tacticName "grind" tacticKind (fun _ _ => `(tactic| grind))
     reportFailure reportSuccess reportSlowdown maxSlowdown
+
+end Mathlib.TacticAnalysis
+
+open Mathlib TacticAnalysis
 
 /-- Debug `grind` by identifying places where it does not yet supersede `linarith`. -/
 register_option linter.tacticAnalysis.regressions.linarithToGrind : Bool := {
@@ -281,5 +288,3 @@ def introMerge : TacticAnalysis.Config := .ofComplex {
       return none
   tell _stx _old _oldHeartbeats new _newHeartbeats := pure <|
     if let some tac := new then m!"Try this: {tac}" else none}
-
-end Mathlib.TacticAnalysis
