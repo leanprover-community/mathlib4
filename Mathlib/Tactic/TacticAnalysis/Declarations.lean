@@ -20,7 +20,8 @@ open Lean Meta
 
 namespace Mathlib.TacticAnalysis
 
-inductive TerminalReplacementOutcome where
+/-- Helper structure for the return type of the `test` function in `terminalReplacement`. -/
+private inductive TerminalReplacementOutcome where
 | success (stx : TSyntax `tactic)
 | remainingGoals (stx : TSyntax `tactic) (goals : List MessageData)
 | error (stx : TSyntax `tactic) (msg : MessageData)
