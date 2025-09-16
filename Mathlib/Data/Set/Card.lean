@@ -79,6 +79,8 @@ theorem encard_eq_coe_toFinset_card (s : Set α) [Fintype s] : encard s = s.toFi
 
 @[simp] theorem toENat_cardinalMk (s : Set α) : (Cardinal.mk s).toENat = s.encard := rfl
 
+@[simp] lemma _root_.ENat.card_set_eq_encard {α : Type*} (s : Set α) : ENat.card s = s.encard := rfl
+
 theorem toENat_cardinalMk_subtype (P : α → Prop) :
     (Cardinal.mk {x // P x}).toENat = {x | P x}.encard :=
   rfl
@@ -552,6 +554,8 @@ lemma ncard_le_encard (s : Set α) : s.ncard ≤ s.encard := ENat.coe_toNat_le_s
 @[simp] theorem _root_.Nat.card_coe_set_eq (s : Set α) : Nat.card s = s.ncard := rfl
 
 @[deprecated (since := "2025-07-05")] alias Nat.card_coe_set_eq := _root_.Nat.card_coe_set_eq
+
+@[simp] lemma _root_.Nat.card_set_eq_ncard {α : Type*} (s : Set α) : Nat.card s = s.ncard := rfl
 
 theorem ncard_eq_toFinset_card (s : Set α) (hs : s.Finite := by toFinite_tac) :
     s.ncard = hs.toFinset.card := by
