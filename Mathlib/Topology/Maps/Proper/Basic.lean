@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Etienne Marion
 -/
 import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.Topology.Filter
 
 /-!
 # Proper maps between topological spaces
