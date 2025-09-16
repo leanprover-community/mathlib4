@@ -945,22 +945,21 @@ theorem piCongr'_symm_apply_symm_apply (f : ∀ b, Z b) (b : β) :
 
 end
 
+variable {α : Type*} {β : Type*} {f : α → β}
+
 /-- A family of equivalences `∀ a, γ₁ a ≃ γ₂ a` generates an equivalence between the product
 over the fibers of a function `f : α → β` on index types. -/
-def piCongrSigmaFiber {α β : Type*} {f : α → β} {γ₁ γ₂ : α → Sort*}
-    (e : (a : α) → γ₁ a ≃ γ₂ a) :
+def piCongrSigmaFiber {γ₁ γ₂ : α → Sort*} (e : (a : α) → γ₁ a ≃ γ₂ a) :
     ((σ : (y : β) × { x : α // f x = y }) → γ₁ σ.2.1) ≃ ((a : α) → γ₂ a) :=
   piCongrLeft γ₁ (sigmaFiberEquiv f) |>.trans (piCongrRight e)
 
 @[simp]
-theorem piCongrSigmaFiber_apply {α β : Type*} {f : α → β} {γ₁ γ₂ : α → Sort*}
-    (e : (a : α) → γ₁ a ≃ γ₂ a)
+theorem piCongrSigmaFiber_apply {γ₁ γ₂ : α → Sort*} (e : (a : α) → γ₁ a ≃ γ₂ a)
     (g : (σ : (y : β) × { x : α // f x = y }) → γ₁ σ.2.1) (a : α) :
     piCongrSigmaFiber e g a = e a (g ⟨f a, ⟨a, rfl⟩⟩) := rfl
 
 @[simp]
-theorem piCongrSigmaFiber_symm_apply {α β : Type*} {f : α → β} {γ₁ γ₂ : α → Sort*}
-    (e : (a : α) → γ₁ a ≃ γ₂ a)
+theorem piCongrSigmaFiber_symm_apply {γ₁ γ₂ : α → Sort*} (e : (a : α) → γ₁ a ≃ γ₂ a)
     (g : (a : α) → γ₂ a) (σ : (y : β) × { x : α // f x = y }) :
     (piCongrSigmaFiber e).symm g σ = (e σ.2.1).symm (g σ.2.1) := rfl
 
@@ -968,7 +967,7 @@ theorem piCongrSigmaFiber_symm_apply {α β : Type*} {f : α → β} {γ₁ γ�
 between the product over the fiber of `b` under `f` given as
 `∀ (σ : { a : α // f a = b }) → γ₁ σ.1) ≃ γ₂ b` lifts to an equivalence over the products
 `∀ a, γ₁ a ≃ ∀ b, γ₂ b`. -/
-def piCongrFiberwise {α β : Type*} {γ₁ : α → Type*} {γ₂ : β → Type*} {f : α → β}
+def piCongrFiberwise {γ₁ : α → Type*} {γ₂ : β → Type*} {f : α → β}
     (e : (b : β) → ((σ : { a : α // f a = b }) → γ₁ σ.1) ≃ γ₂ b) :
     ((a : α) → γ₁ a) ≃ ((b : β) → γ₂ b) :=
   ((piCongrSigmaFiber (fun _ => Equiv.refl _)).symm.trans
@@ -976,12 +975,12 @@ def piCongrFiberwise {α β : Type*} {γ₁ : α → Type*} {γ₂ : β → Type
       (piCongrRight e)
 
 @[simp]
-theorem piCongrFiberwise_apply {α β : Type*} {γ₁ : α → Type*} {γ₂ : β → Type*} {f : α → β}
+theorem piCongrFiberwise_apply {γ₁ : α → Type*} {γ₂ : β → Type*} {f : α → β}
     (e : (b : β) → ((σ : { a : α // f a = b }) → γ₁ σ.1) ≃ γ₂ b) (g : (a : α) → γ₁ a) (b : β) :
     piCongrFiberwise e g b = e b fun σ => g σ.1 := rfl
 
 @[simp]
-theorem piCongrFiberwise_symm_apply {α β : Type*} {γ₁ : α → Type*} {γ₂ : β → Type*} {f : α → β}
+theorem piCongrFiberwise_symm_apply {γ₁ : α → Type*} {γ₂ : β → Type*} {f : α → β}
     (e : (b : β) → ((σ : { a : α // f a = b }) → γ₁ σ.1) ≃ γ₂ b) (g : (b : β) → γ₂ b) (a : α) :
     (piCongrFiberwise e).symm g a = (e (f a)).symm (g (f a)) ⟨a, rfl⟩ := rfl
 
