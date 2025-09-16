@@ -404,9 +404,10 @@ def modulesOSForbidden (opts : LinterOptions) (modules : Array Lean.Name) : IO N
     "COM9", "COM¹", "COM²", "COM³", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8",
     "LPT9", "LPT¹", "LPT²", "LPT³"
   ]
-  -- We also check for the exclamation mark (which is not forbidden on Windows, but e.g. on Nix OS).
+  -- We also check for the exclamation mark (which is not forbidden on Windows, but e.g. on Nix OS),
+  -- but do so below (with a custom error message).
   let forbiddenCharacters := [
-    '<', '>', '"', '/', '\\', '|', '?', '*', ' ',
+    '<', '>', '"', '/', '\\', '|', '?', '*',
   ]
   let mut badNamesNum := 0
   for name in modules do
@@ -424,6 +425,9 @@ def modulesOSForbidden (opts : LinterOptions) (modules : Array Lean.Name) : IO N
         else if s.contains '.' then
           isBad := true
           IO.eprintln s!"error: module name '{name}' contains forbidden character '.'"
+        else if s.contains ' ' || s.contains '\t' then
+          isBad := true
+          IO.eprintln s!"error: module name '{name}' contains a space"
         for c in forbiddenCharacters do
           if s.contains c then
             badChars := c.toString :: badChars
