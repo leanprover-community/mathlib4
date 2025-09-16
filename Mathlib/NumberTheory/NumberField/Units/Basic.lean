@@ -106,6 +106,11 @@ protected theorem complexEmbedding_injective (φ : K →+* ℂ) :
     Function.Injective (Units.complexEmbedding φ) :=
   (map_injective φ.injective).comp (map_injective RingOfIntegers.coe_injective)
 
+@[simp]
+protected theorem complexEmbedding_inj (φ : K →+* ℂ) (u v : (𝓞 K)ˣ) :
+    Units.complexEmbedding φ u = Units.complexEmbedding φ v ↔ u = v :=
+  (Units.complexEmbedding_injective φ).eq_iff
+
 open NumberField.InfinitePlace
 
 variable (K)
