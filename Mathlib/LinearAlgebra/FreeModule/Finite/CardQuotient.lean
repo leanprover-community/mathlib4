@@ -100,22 +100,28 @@ theorem AddSubgroup.index_eq_natAbs_det {E : Type*} [AddCommGroup E] {ι : Type*
   have : Module.Finite ℤ E := Module.Finite.of_basis bE
   (Submodule.natAbs_det_basis_change bE N.toIntSubmodule bN).symm
 
-theorem AddSubgroup.relindex_eq_natAbs_det {E : Type*} [AddCommGroup E]
+theorem AddSubgroup.relIndex_eq_natAbs_det {E : Type*} [AddCommGroup E]
     (L₁ L₂ : AddSubgroup E) (H : L₁ ≤ L₂) {ι : Type*} [DecidableEq ι] [Fintype ι]
     (b₁ : Basis ι ℤ L₁.toIntSubmodule) (b₂ : Basis ι ℤ L₂.toIntSubmodule) :
-    L₁.relindex L₂ = (b₂.det (fun i ↦ ⟨b₁ i, (H (SetLike.coe_mem _))⟩)).natAbs := by
-  rw [relindex, index_eq_natAbs_det b₂ _ (b₁.map (addSubgroupOfEquivOfLe H).toIntLinearEquiv.symm)]
+    L₁.relIndex L₂ = (b₂.det (fun i ↦ ⟨b₁ i, (H (SetLike.coe_mem _))⟩)).natAbs := by
+  rw [relIndex, index_eq_natAbs_det b₂ _ (b₁.map (addSubgroupOfEquivOfLe H).toIntLinearEquiv.symm)]
   rfl
 
-theorem AddSubgroup.relindex_eq_abs_det {E : Type*} [AddCommGroup E] [Module ℚ E]
+@[deprecated (since := "2025-08-12")]
+alias AddSubgroup.relindex_eq_natAbs_det := AddSubgroup.relIndex_eq_natAbs_det
+
+theorem AddSubgroup.relIndex_eq_abs_det {E : Type*} [AddCommGroup E] [Module ℚ E]
     (L₁ L₂ : AddSubgroup E) (H : L₁ ≤ L₂) {ι : Type*} [DecidableEq ι] [Fintype ι]
     (b₁ b₂ : Basis ι ℚ E) (h₁ : L₁ = .closure (Set.range b₁)) (h₂ : L₂ = .closure (Set.range b₂)) :
-    L₁.relindex L₂ = |b₂.det b₁| := by
-  rw [AddSubgroup.relindex_eq_natAbs_det L₁ L₂ H (b₁.addSubgroupOfClosure L₁ h₁)
+    L₁.relIndex L₂ = |b₂.det b₁| := by
+  rw [AddSubgroup.relIndex_eq_natAbs_det L₁ L₂ H (b₁.addSubgroupOfClosure L₁ h₁)
     (b₂.addSubgroupOfClosure L₂ h₂), Nat.cast_natAbs, Int.cast_abs]
   change |algebraMap ℤ ℚ _| = _
   rw [Basis.det_apply, Basis.det_apply, RingHom.map_det]
   congr; ext
   simp [Basis.toMatrix_apply]
+
+@[deprecated (since := "2025-08-12")]
+alias AddSubgroup.relindex_eq_abs_det := AddSubgroup.relIndex_eq_abs_det
 
 end AddSubgroup

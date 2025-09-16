@@ -56,9 +56,8 @@ inductive Hom : WidePullbackShape J → WidePullbackShape J → Type w
   | term : ∀ j : J, Hom (some j) none
   deriving DecidableEq
 
--- This is relying on an automatically generated instance name, generated in a `deriving` handler.
--- See https://github.com/leanprover/lean4/issues/2343
-attribute [nolint unusedArguments] instDecidableEqHom
+-- See https://github.com/leanprover/lean4/issues/10295
+attribute [nolint unusedArguments] instDecidableEqHom.decEq
 
 instance struct : CategoryStruct (WidePullbackShape J) where
   Hom := Hom
@@ -158,9 +157,8 @@ inductive Hom : WidePushoutShape J → WidePushoutShape J → Type w
   | init : ∀ j : J, Hom none (some j)
   deriving DecidableEq
 
--- This is relying on an automatically generated instance name, generated in a `deriving` handler.
--- See https://github.com/leanprover/lean4/issues/2343
-attribute [nolint unusedArguments] instDecidableEqHom
+-- See https://github.com/leanprover/lean4/issues/10295
+attribute [nolint unusedArguments] instDecidableEqHom.decEq
 
 instance struct : CategoryStruct (WidePushoutShape J) where
   Hom := Hom
