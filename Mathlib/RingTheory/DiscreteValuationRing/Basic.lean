@@ -485,7 +485,7 @@ def quotient (x y : R) : R :=
 
 /-- A noncomputable remainder to define the Euclidean domain structure. -/
 def remainder (x y : R) : R :=
-  x - y * quotient x y
+  open Classical in if y ∣ x then 0 else x
 
 /-- A modification of the valuation, sending `0` to `⊥` instead of `⊤`. -/
 def toWithBotNat (x : R) : WithBot ℕ :=
@@ -531,14 +531,14 @@ def toEuclideanDomain : EuclideanDomain R where
   r_wellFounded := WellFounded.onFun wellFounded_lt
   quotient_zero x := by simp [quotient]
   remainder_lt x y hy := by
-    rw [remainder, quotient, if_neg hy]
+    rw [remainder]
     split_ifs with hyx
-    · rwa [← hyx.choose_spec, sub_self, toWithBotNat_zero, bot_lt_toWithBotNat_iff]
-    · rw [mul_zero, sub_zero, lt_iff_not_ge]
-      exact mt (dvd_of_toWithBotNat_le_toWithBotNat _ _ hy) hyx
+    · rwa [toWithBotNat_zero, bot_lt_toWithBotNat_iff]
+    · exact lt_iff_not_ge.mpr (mt (dvd_of_toWithBotNat_le_toWithBotNat _ _ hy) hyx)
   quotient_mul_add_remainder_eq x y := by
     rw [remainder, quotient]
-    split_ifs with h₁ h₂
+    split_ifs with h₁ h₂ h₂
+    · rw [h₁, zero_dvd_iff] at h₂; rw [h₁, h₂]; ring
     · rw [h₁]; ring
     · rw [← h₂.choose_spec]; ring
     · ring
