@@ -80,9 +80,9 @@ noncomputable instance monTypeInhabited : Inhabited (Mon_ (Type u)) :=
 
 namespace CommMonTypeEquivalenceCommMon
 
-instance commMonCommMonoid (A : Type u) [MonObj A] [IsCommMon A] : CommMonoid A :=
+instance commMonCommMonoid (A : Type u) [MonObj A] [IsCommMonObj A] : CommMonoid A :=
   { MonTypeEquivalenceMon.monMonoid A with
-    mul_comm := fun x y => by convert congr_fun (IsCommMon.mul_comm A) (y, x) }
+    mul_comm := fun x y => by convert congr_fun (IsCommMonObj.mul_comm A) (y, x) }
 
 /-- Converting a commutative monoid object in `Type` to a bundled commutative monoid.
 -/

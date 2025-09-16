@@ -130,6 +130,9 @@ structure Comp : Type where
   coeffs : Linexp
 deriving Inhabited, Repr
 
+-- See https://github.com/leanprover/lean4/issues/10295
+attribute [nolint unusedArguments] Mathlib.Tactic.Linarith.instReprComp.repr
+
 /-- `c.vars` returns the list of variables that appear in the linear expression contained in `c`. -/
 def Comp.vars : Comp → List Nat := Linexp.vars ∘ Comp.coeffs
 

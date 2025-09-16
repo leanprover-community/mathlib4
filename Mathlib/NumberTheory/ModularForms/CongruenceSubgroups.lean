@@ -343,7 +343,7 @@ lemma isArithmetic_conj_SL2Z (g : GL (Fin 2) ℚ) :
 lemma _root_.Subgroup.IsArithmetic.conj (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsArithmetic]
     (g : GL (Fin 2) ℚ) :
     (toConjAct (g.map (Rat.castHom ℝ)) • 𝒢).IsArithmetic :=
-  ⟨((Subgroup.Commensurable.commensurable_conj _).mp Subgroup.IsArithmetic.is_commensurable).trans
+  ⟨(Subgroup.IsArithmetic.is_commensurable.conj _).trans
     (isArithmetic_conj_SL2Z g).is_commensurable⟩
 
 /-- If `Γ` is a congruence subgroup, then so is `g⁻¹ Γ g ∩ SL(2, ℤ)` for any `g ∈ GL(2, ℚ)`. -/

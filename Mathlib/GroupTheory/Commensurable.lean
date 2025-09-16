@@ -26,14 +26,18 @@ commensurable with `H`.
 We define the commensurator of a subgroup `H` of `G` by first defining it as a subgroup of
 `(conjAct G)`, which we call `commensurator'` and then taking the pre-image under
 the map `G → (conjAct G)` to obtain our commensurator as a subgroup of `G`.
--/
 
+We define `Commensurable` both for additive and multiplicative groups (in the `AddSubgroup` and
+`Subgroup` namespaces respectively); but `Commensurator` is not additivized, since it is not an
+interesting concept for abelian groups, and it would be unusual to write a non-abelian group
+additively.
+-/
 
 variable {G : Type*} [Group G]
 
-
-/-- Two subgroups `H K` of `G` are commensurable if `H ⊓ K` has finite index in both `H` and `K` -/
-@[to_additive]
+/-- Two subgroups `H K` of `G` are commensurable if `H ⊓ K` has finite index in both `H` and `K`. -/
+@[to_additive /-- Two subgroups `H K` of `G` are commensurable if `H ⊓ K` has finite index in both
+`H` and `K`. -/]
 def Subgroup.Commensurable (H K : Subgroup G) : Prop :=
   H.relIndex K ≠ 0 ∧ K.relIndex H ≠ 0
 
@@ -73,6 +77,11 @@ theorem commensurable_conj {H K : Subgroup G} (g : ConjAct G) :
     Commensurable H K ↔ Commensurable (g • H) (g • K) :=
   and_congr (not_iff_not.mpr (Eq.congr_left (Cardinal.toNat_congr (quotConjEquiv H K g))))
     (not_iff_not.mpr (Eq.congr_left (Cardinal.toNat_congr (quotConjEquiv K H g))))
+
+/-- Alias for the forward direction of `commensurable_conj` to allow dot-notation -/
+theorem conj {H K : Subgroup G} (h : Commensurable H K) (g : ConjAct G) :
+    Commensurable (g • H) (g • K) :=
+  (commensurable_conj g).mp h
 
 theorem commensurable_inv (H : Subgroup G) (g : ConjAct G) :
     Commensurable (g • H) H ↔ Commensurable H (g⁻¹ • H) := by rw [commensurable_conj, inv_smul_smul]
