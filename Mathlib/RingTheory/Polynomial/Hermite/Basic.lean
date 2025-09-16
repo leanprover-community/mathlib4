@@ -185,7 +185,7 @@ theorem coeff_hermite_of_even_add {n k : ℕ} (hnk : Even (n + k)) :
   · rw [Nat.even_add, ← Nat.even_sub h_le] at hnk
     obtain ⟨m, hm⟩ := hnk
     -- Porting note: linarith failed to find a contradiction by itself
-    rw [(by omega : n = 2 * m + k),
+    rw [(by cutsat : n = 2 * m + k),
       Nat.add_sub_cancel, Nat.mul_div_cancel_left _ (Nat.succ_pos 1), coeff_hermite_explicit]
   · simp [Nat.choose_eq_zero_of_lt h_lt, coeff_hermite_of_lt h_lt]
 

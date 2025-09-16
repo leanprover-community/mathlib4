@@ -318,7 +318,7 @@ theorem inv_ofNat_num (a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ℚ)⁻¹.num = 1 :
   simp only [num_inv, num_ofNat, den_ofNat, Nat.cast_one, mul_one, Int.sign_eq_one_iff_pos,
     gt_iff_lt]
   change 0 < (a : ℤ)
-  omega
+  cutsat
 
 theorem inv_intCast_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.natAbs := by simp
 

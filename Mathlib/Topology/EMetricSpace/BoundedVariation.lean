@@ -379,7 +379,7 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
       · gcongr
         rintro i hi
         simp only [Finset.mem_union, Finset.mem_range, Finset.mem_Ico] at hi ⊢
-        omega
+        cutsat
       · refine Finset.disjoint_left.2 fun i hi h'i => ?_
         simp only [Finset.mem_Ico, Finset.mem_range] at hi h'i
         exact hi.not_gt (Nat.lt_of_succ_le h'i.left)

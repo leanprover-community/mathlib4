@@ -217,7 +217,7 @@ lemma summable_inv_of_isBigO_rpow_inv {α : Type*} [NormedField α] [CompleteSpa
 lemma linear_right_summable (z : ℂ) (c : ℤ) {k : ℤ} (hk : 2 ≤ k) :
     Summable fun d : ℤ ↦ ((c * z + d) ^ k)⁻¹ := by
   apply summable_inv_of_isBigO_rpow_inv (a := k) (by norm_cast)
-  lift k to ℕ using (by omega)
+  lift k to ℕ using (by cutsat)
   simp only [zpow_natCast, Int.cast_natCast, Real.rpow_natCast, ← inv_pow, ← abs_inv]
   apply (linear_inv_isBigO_right c z).abs_right.pow
 
@@ -225,7 +225,7 @@ lemma linear_right_summable (z : ℂ) (c : ℤ) {k : ℤ} (hk : 2 ≤ k) :
 lemma linear_left_summable {z : ℂ} (hz : z ≠ 0) (d : ℤ) {k : ℤ} (hk : 2 ≤ k) :
     Summable fun c : ℤ ↦ ((c * z + d) ^ k)⁻¹ := by
   apply summable_inv_of_isBigO_rpow_inv (a := k) (by norm_cast)
-  lift k to ℕ using (by omega)
+  lift k to ℕ using (by cutsat)
   simp only [zpow_natCast, Int.cast_natCast, Real.rpow_natCast, ← inv_pow, ← abs_inv]
   apply (linear_inv_isBigO_left d hz).abs_right.pow
 

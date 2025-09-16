@@ -411,9 +411,9 @@ lemma norm_iteratedFDeriv_fourierPowSMulRight
     gcongr with i hi
     · rw [← Nat.cast_pow, Nat.cast_le]
       calc n.descFactorial i ≤ n ^ i := Nat.descFactorial_le_pow _ _
-      _ ≤ (n + 1) ^ i := by gcongr; omega
+      _ ≤ (n + 1) ^ i := by gcongr; cutsat
       _ ≤ (n + 1) ^ k := by gcongr; exacts [le_add_self, Finset.mem_range_succ_iff.mp hi]
-    · exact hv _ (by omega) _ (by omega)
+    · exact hv _ (by cutsat) _ (by cutsat)
   _ = (2 * n + 2) ^ k * (‖L‖^n * C) := by
     simp only [← Finset.sum_mul, ← Nat.cast_sum, Nat.sum_range_choose, mul_one, ← mul_assoc,
       Nat.cast_pow, Nat.cast_ofNat, Nat.cast_add, Nat.cast_one, ← mul_pow, mul_add]

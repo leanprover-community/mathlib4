@@ -204,7 +204,7 @@ theorem getElem?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
         rw [Nat.sub_lt_iff_lt_add hm']
         exact Nat.add_lt_add hlt hml
       conv_rhs => rw [Nat.add_comm m, ← mod_add_mod, mod_eq_sub_mod hm', mod_eq_of_lt this]
-      omega
+      cutsat
     · rwa [Nat.sub_lt_iff_lt_add' hm, length_drop, Nat.sub_add_cancel hlt.le]
 
 theorem getElem_rotate (l : List α) (n : ℕ) (k : Nat) (h : k < (l.rotate n).length) :

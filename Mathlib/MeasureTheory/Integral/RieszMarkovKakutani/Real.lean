@@ -128,7 +128,7 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
     intro x hx
     rw [mem_setOf_eq, and_assoc] at hx
     simp_rw [mem_setOf_eq, not_and_or, not_lt, not_le, or_assoc]
-    rcases (by omega : m < n ∨ n < m) with hc | hc
+    rcases (by cutsat : m < n ∨ n < m) with hc | hc
     · left
       exact le_trans hx.2.1 (le_tsub_of_add_le_right (hy hc))
     · right; left
@@ -316,7 +316,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
   · -- Rough bound of the sum
     have h : ∑ n : Fin N, y n ≤ N * b := by
       have (n : Fin N) := calc y n
-        _ ≤ a + ε' * N := by simp_all [y, show (n : ℝ) + 1 ≤ N by norm_cast; omega]
+        _ ≤ a + ε' * N := by simp_all [y, show (n : ℝ) + 1 ≤ N by norm_cast; cutsat]
         _ = b := by simp [field, ε']
       have : ∑ n, y n ≤ ∑ n, b := Finset.sum_le_sum (fun n ↦ fun _ ↦ this n)
       simp_all

@@ -97,7 +97,7 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
     · simp only [Complex.ofReal_cos, Complex.ofReal_sin]
       rw [mul_neg, mul_neg, ← sub_eq_add_neg, Function.comp_apply]
       congr 1
-      · rw [← pow_succ', Nat.sub_add_cancel (by omega : 1 ≤ n)]
+      · rw [← pow_succ', Nat.sub_add_cancel (by cutsat : 1 ≤ n)]
       · have : ((n - 1 : ℕ) : ℂ) = (n : ℂ) - 1 := by
           rw [Nat.cast_sub (one_le_two.trans hn), Nat.cast_one]
         rw [Nat.sub_sub, this]
@@ -160,7 +160,7 @@ theorem integral_cos_mul_cos_pow_even (n : ℕ) (hz : z ≠ 0) :
         ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (2 * n + 2)) =
       (2 * n + 1 : ℂ) / (2 * n + 2) *
         ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (2 * n) := by
-  convert integral_cos_mul_cos_pow (by omega : 2 ≤ 2 * n + 2) hz using 3
+  convert integral_cos_mul_cos_pow (by cutsat : 2 ≤ 2 * n + 2) hz using 3
   · simp only [Nat.cast_add, Nat.cast_mul, Nat.cast_two]
     nth_rw 2 [← mul_one (2 : ℂ)]
     rw [← mul_add, mul_pow, ← div_div]

@@ -109,7 +109,7 @@ theorem exists_pow_lt_of_one_lt (hx : 1 < x) : ∀ n : ℕ, ∃ y : M, 1 < y ∧
     obtain ⟨z, hz, hzy⟩ := exists_pow_two_le_of_one_lt hy
     refine ⟨z, hz, hyx.trans_le' ?_⟩
     calc z ^ (n + 2)
-      _ ≤ z ^ (2 * (n + 1)) := pow_right_monotone hz.le (by omega)
+      _ ≤ z ^ (2 * (n + 1)) := pow_right_monotone hz.le (by cutsat)
       _ = (z ^ 2) ^ (n + 1) := by rw [pow_mul]
       _ ≤ y ^ (n + 1) := pow_le_pow_left' hzy (n + 1)
 

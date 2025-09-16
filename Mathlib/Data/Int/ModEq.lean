@@ -90,7 +90,7 @@ theorem mod_modEq (a n) : a % n ≡ a [ZMOD n] :=
 
 @[simp]
 theorem neg_modEq_neg : -a ≡ -b [ZMOD n] ↔ a ≡ b [ZMOD n] := by
-  simp only [modEq_iff_dvd, (by omega : -b - -a = -(b - a)), Int.dvd_neg]
+  simp only [modEq_iff_dvd, (by cutsat : -b - -a = -(b - a)), Int.dvd_neg]
 
 @[simp]
 theorem modEq_neg : a ≡ b [ZMOD -n] ↔ a ≡ b [ZMOD n] := by simp [modEq_iff_dvd]
@@ -112,7 +112,7 @@ protected theorem mul_right' (h : a ≡ b [ZMOD n]) : a * c ≡ b * c [ZMOD n * 
 
 @[gcongr]
 protected theorem add (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a + c ≡ b + d [ZMOD n] :=
-  modEq_iff_dvd.2 <| by convert Int.dvd_add h₁.dvd h₂.dvd using 1; omega
+  modEq_iff_dvd.2 <| by convert Int.dvd_add h₁.dvd h₂.dvd using 1; cutsat
 
 protected theorem add_left (c : ℤ) (h : a ≡ b [ZMOD n]) : c + a ≡ c + b [ZMOD n] :=
   ModEq.rfl.add h
@@ -122,7 +122,7 @@ protected theorem add_right (c : ℤ) (h : a ≡ b [ZMOD n]) : a + c ≡ b + c [
 
 protected theorem add_left_cancel (h₁ : a ≡ b [ZMOD n]) (h₂ : a + c ≡ b + d [ZMOD n]) :
     c ≡ d [ZMOD n] :=
-  have : d - c = b + d - (a + c) - (b - a) := by omega
+  have : d - c = b + d - (a + c) - (b - a) := by cutsat
   modEq_iff_dvd.2 <| by
     rw [this]
     exact Int.dvd_sub h₂.dvd h₁.dvd

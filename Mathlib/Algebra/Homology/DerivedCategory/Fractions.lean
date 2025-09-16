@@ -164,7 +164,7 @@ lemma subsingleton_hom_of_isStrictlyLE_of_isStrictlyGE (X Y : CochainComplex C �
     ext i
     by_cases hi : a < i
     · apply (X'.isZero_of_isStrictlyLE a i hi).eq_of_src
-    · apply (Y.isZero_of_isStrictlyGE b i (by omega)).eq_of_tgt
+    · apply (Y.isZero_of_isStrictlyGE b i (by cutsat)).eq_of_tgt
   rw [this, Q.map_zero, comp_zero]
 
 end DerivedCategory

@@ -122,7 +122,7 @@ theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
   rw [div_le_div_iff₀ h₃ h₁]
   ring_nf
   norm_cast
-  omega
+  cutsat
 
 /-- For any `n`, we have `log_stirlingSeq 1 - log_stirlingSeq n ≤ 1/4 * ∑' 1/k^2` -/
 theorem log_stirlingSeq_bounded_aux :

@@ -142,7 +142,7 @@ lemma height_le {a : α} {n : ℕ∞} (h : ∀ (p : LTSeries α), p.last = a →
   · simp_all
   -- We replace the last element in the series with `a`
   let p' := p.eraseLast.snoc a (lt_of_lt_of_le (p.eraseLast_last_rel_last (by simp_all)) hlast)
-  rw [show p.length = p'.length by simp [p']; omega]
+  rw [show p.length = p'.length by simp [p']; cutsat]
   apply h
   simp [p']
 
@@ -193,15 +193,15 @@ lemma length_le_height {p : LTSeries α} {x : α} (hlast : p.last ≤ x) :
   by_cases hlen0 : p.length ≠ 0
   · let p' := p.eraseLast.snoc x (by
       apply lt_of_lt_of_le
-      · apply p.step ⟨p.length - 1, by omega⟩
+      · apply p.step ⟨p.length - 1, by cutsat⟩
       · convert hlast
         simp only [Fin.succ_mk, RelSeries.last, Fin.last]
-        congr; omega)
+        congr; cutsat)
     suffices p'.length ≤ height x by
       simp [p'] at this
       convert this
       norm_cast
-      omega
+      cutsat
     refine le_iSup₂_of_le p' ?_ le_rfl
     simp [p']
   · simp_all
@@ -245,7 +245,7 @@ lemma height_eq_index_of_length_eq_height_last {p : LTSeries α} (h : p.length =
   have hp'' := length_le_height_last (p := p'.smash (p.drop i) (by simpa))
   simp [← h] at hp''; clear h
   norm_cast at *
-  omega
+  cutsat
 
 /--
 In a maximally long series, i.e one as long as the coheight of the first element, the coheight of
@@ -351,16 +351,16 @@ lemma exists_series_of_le_height (a : α) {n : ℕ} (h : n ≤ height a) :
     rintro m ⟨⟨p, rfl⟩, hp⟩
     simp only at hp
     by_contra! hnm
-    apply ha (p.drop ⟨m-n, by omega⟩) (by simp) (by simp; omega)
+    apply ha (p.drop ⟨m-n, by cutsat⟩) (by simp) (by simp; cutsat)
   | coe m =>
     rw [ha, Nat.cast_le] at h
     rw [height_eq_iSup_last_eq, iSup_subtype'] at ha
     obtain ⟨⟨p, hlast⟩, hlen⟩ := exists_eq_iSup_of_iSup_eq_coe ha
     simp only [Nat.cast_inj] at hlen
-    use p.drop ⟨m-n, by omega⟩
+    use p.drop ⟨m-n, by cutsat⟩
     constructor
     · simp [hlast]
-    · simp [hlen]; omega
+    · simp [hlen]; cutsat
 
 lemma exists_series_of_le_coheight (a : α) {n : ℕ} (h : n ≤ coheight a) :
     ∃ p : LTSeries α, p.head = a ∧ p.length = n := by
@@ -385,7 +385,7 @@ lemma height_eq_iSup_lt_height (x : α) : height x = ⨆ y < x, height y + 1 := 
     | zero => simp
     | succ n =>
       apply le_iSup_of_le p.eraseLast.last
-      apply le_iSup_of_le (by rw [← hp]; exact p.eraseLast_last_rel_last (by omega))
+      apply le_iSup_of_le (by rw [← hp]; exact p.eraseLast_last_rel_last (by cutsat))
       rw [height_add_const]
       apply le_iSup₂_of_le p.eraseLast (by rfl) (by simp [hlen])
   · apply iSup₂_le; intro y hyx
@@ -511,7 +511,7 @@ lemma height_eq_coe_iff {x : α} {n : ℕ} :
     simp only [hfin, true_and]
     congr! 3
     rename_i y _
-    cases height y <;> simp; norm_cast; omega
+    cases height y <;> simp; norm_cast; cutsat
 
 lemma coheight_eq_coe_iff {x : α} {n : ℕ} :
     coheight x = n ↔
@@ -530,7 +530,7 @@ lemma height_eq_coe_iff_minimal_le_height {a : α} {n : ℕ} :
       simp_all [minimal_iff_forall_lt]
     simp only [not_lt, top_le_iff, height_eq_top_iff] at hfin
     obtain ⟨p, rfl, hp⟩ := hfin (n + 1)
-    use p.eraseLast.last, p.eraseLast_last_rel_last (by omega)
+    use p.eraseLast.last, p.eraseLast_last_rel_last (by cutsat)
     simpa [hp] using length_le_height_last (p := p.eraseLast)
 
 /-- The elements of finite coheight `n` are the maximal elements among those of coheight `≥ n`. -/
@@ -948,7 +948,7 @@ proof_wanted coheight_of_linearOrder {α : Type*} [LinearOrder α] (a : α) :
       exact (f 1).prop
     · suffices f i < f (i + 1) by simp [Fin.ext_iff, hzero, this]
       apply hstrictmono
-      omega
+      cutsat
 
 @[simp] lemma height_of_noMinOrder [NoMinOrder α] (a : α) : height a = ⊤ :=
   -- Implementation note: Here it's a bit easier to define the coheight variant first
@@ -979,11 +979,11 @@ lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
     -- essentially p' := (p.drop 1).map unbot
     let p' : LTSeries α := {
       length := p.length - 1
-      toFun := fun ⟨i, hi⟩ => (p ⟨i+1, by omega⟩).unbot (by
+      toFun := fun ⟨i, hi⟩ => (p ⟨i+1, by cutsat⟩).unbot (by
         apply ne_bot_of_gt (a := p.head)
         apply p.strictMono
         exact compare_gt_iff_gt.mp rfl)
-      step := fun i => by simpa [WithBot.unbot_lt_iff] using p.step ⟨i + 1, by omega⟩ }
+      step := fun i => by simpa [WithBot.unbot_lt_iff] using p.step ⟨i + 1, by cutsat⟩ }
     have hlast' : p'.last = x := by
       simp only [p', RelSeries.last, WithBot.unbot_eq_iff, ← hlast, Fin.last]
       congr
@@ -1093,7 +1093,7 @@ lemma height_le_of_krullDim_preimage_le (x : α) :
     have := (LTSeries.length_le_krullDim q).trans (h (f x))
     simp only [RelSeries.drop_length, Nat.cast_le, tsub_le_iff_right, q', i, q] at this
     have : p.length > m := ENat.coe_lt_coe.mp ((le_add_left le_rfl).trans_lt h_len)
-    omega
+    cutsat
 
 include h in
 lemma coheight_le_of_krullDim_preimage_le (x : α) :

@@ -76,7 +76,7 @@ theorem σ_comp_πSummand_id_eq_zero {n : ℕ} (i : Fin (n + 1)) :
   rw [IndexSet.eqId_iff_len_eq]
   have h := SimplexCategory.len_le_of_epi A.e
   dsimp at h ⊢
-  omega
+  cutsat
 
 /-- If a simplicial object `X` in an additive category is split,
 then `PInfty` vanishes on all the summands of `X _⦋n⦌` which do

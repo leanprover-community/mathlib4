@@ -523,7 +523,7 @@ lemma ExcenterExists.touchpoint_injective {signs : Finset (Fin (n + 1))}
         exact ⟨h', this⟩
       rw [← norm_eq_zero, ← dist_eq_norm_vsub, h.dist_excenter] at h0
       exact h.exradius_pos.ne' h0
-    obtain ⟨k, hki, hkj⟩ : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_and_ne_of_two_lt i j (by omega)
+    obtain ⟨k, hki, hkj⟩ : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_and_ne_of_two_lt i j (by cutsat)
     have hu : Set.range s.points =
         Set.range (s.faceOpposite i).points ∪ Set.range (s.faceOpposite j).points := by
       simp only [range_faceOpposite_points, ← Set.image_union, ← Set.compl_inter]

@@ -82,7 +82,7 @@ theorem hasEigenvalue_of_isRoot (h : (minpoly K f).IsRoot μ) : f.HasEigenvalue 
   have h_deg := minpoly.degree_le_of_ne_zero K f p_ne_0 this
   rw [hp, degree_mul, degree_X_sub_C, Polynomial.degree_eq_natDegree p_ne_0] at h_deg
   norm_cast at h_deg
-  omega
+  cutsat
 
 theorem hasEigenvalue_iff_isRoot : f.HasEigenvalue μ ↔ (minpoly K f).IsRoot μ :=
   ⟨isRoot_of_hasEigenvalue, hasEigenvalue_of_isRoot⟩

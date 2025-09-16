@@ -590,7 +590,7 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
         Int.natCast_natAbs, smul_eq_mul],
       ← Int.eq_natAbs_of_nonneg ha.le, smul_eq_mul]
     -- and now it's easy
-    omega
+    cutsat
 
 section AbsoluteValue
 

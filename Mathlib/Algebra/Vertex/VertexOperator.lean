@@ -72,7 +72,7 @@ theorem ncoeff_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
 theorem coeff_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
     (h : n < HahnSeries.order ((HahnModule.of R).symm (A x))) : coeff A n x = 0 := by
   rw [coeff_eq_ncoeff, ncoeff_eq_zero_of_lt_order A (-n - 1) x]
-  omega
+  cutsat
 
 /-- Given an endomorphism-valued function on integers satisfying a pointwise bounded-pole condition,
 we produce a vertex operator. -/

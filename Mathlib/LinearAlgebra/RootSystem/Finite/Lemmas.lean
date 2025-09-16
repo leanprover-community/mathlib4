@@ -87,7 +87,7 @@ lemma coxeterWeightIn_mem_set_of_isCrystallographic :
   have : P.coxeterWeightIn ℤ i j ≤ 4 := P.coxeterWeightIn_le_four ℤ i j
   simp only [hcn, mem_insert_iff, mem_singleton_iff] at this ⊢
   norm_cast at this ⊢
-  omega
+  cutsat
 
 variable [IsDomain R]
 
@@ -208,7 +208,7 @@ lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i �
       simp_all
     simp_rw [coxeterWeightIn, Int.mul_mem_one_two_three_iff, mem_insert_iff, mem_singleton_iff,
       Prod.mk.injEq] at this
-    omega
+    cutsat
   · -- The case where the two roots are linearly dependent
     have : (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈ ({(1, 4), (2, 2), (4, 1)} : Set _) := by
       have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
