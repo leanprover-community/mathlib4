@@ -15,7 +15,7 @@ which is a proxy for the "internal hom" functor Hom(F ⊗ coyoneda(-), G). This 
 that the functor category `C ⥤ D` is enriched over `C ⥤ Type max v' v u`. This is also useful
 for showing that `C ⥤ Type max w v u` is monoidal closed.
 
-See `Mathlib.CategoryTheory.Closed.FunctorToTypes`.
+See `Mathlib/CategoryTheory/Closed/FunctorToTypes.lean`.
 
 -/
 
@@ -37,7 +37,7 @@ structure HomObj (A : C ⥤ Type w) where
   /-- The morphism `F.obj c ⟶ G.obj c` associated with `a : A.obj c`. -/
   app (c : C) (a : A.obj c) : F.obj c ⟶ G.obj c
   naturality {c d : C} (f : c ⟶ d) (a : A.obj c) :
-    F.map f ≫ app d (A.map f a) = app c a ≫ G.map f := by aesop_cat
+    F.map f ≫ app d (A.map f a) = app c a ≫ G.map f := by cat_disch
 
 /-- When `F`, `G`, and `A` are all functors `C ⥤ Type w`, then `HomObj F G A` is in
 bijection with `F ⊗ A ⟶ G`. -/
@@ -99,7 +99,7 @@ def homObjFunctor : (C ⥤ Type w)ᵒᵖ ⥤ Type max w v' u where
 
 /-- Composition of `homObjFunctor` with the co-Yoneda embedding, i.e. Hom(F ⊗ coyoneda(-), G).
 When `F G : C ⥤ Type max v' v u`, this is the internal hom of `F` and `G`: see
-`Mathlib.CategoryTheory.Closed.FunctorToTypes`. -/
+`Mathlib/CategoryTheory/Closed/FunctorToTypes.lean`. -/
 def functorHom (F G : C ⥤ D) : C ⥤ Type max v' v u := coyoneda.rightOp ⋙ homObjFunctor.{v} F G
 
 variable {F G} in
@@ -149,7 +149,6 @@ def natTransEquiv : (𝟙_ (C ⥤ Type max v' v u) ⟶ F.functorHom G) ≃ (F �
     have := HomObj.congr_app (congr_fun (f.naturality φ) PUnit.unit) Y (𝟙 Y)
     dsimp [functorHom, homObjFunctor] at this
     aesop
-  right_inv _ := rfl
 
 end CategoryTheory.Functor
 

@@ -24,7 +24,7 @@ variable {α : Type*}
 `invariants f` is the σ-algebra of measurable sets that are invariant under `f`.
 
 A set `s` is `(invariants f)`-measurable
-iff it is meaurable w.r.t. the canonical σ-algebra on `α` and `f ⁻¹' s = s`. -/
+iff it is measurable w.r.t. the canonical σ-algebra on `α` and `f ⁻¹' s = s`. -/
 def invariants [m : MeasurableSpace α] (f : α → α) : MeasurableSpace α :=
   { m ⊓ ⟨fun s ↦ f ⁻¹' s = s, by simp, by simp, fun f hf ↦ by simp [hf]⟩ with
     MeasurableSet' := fun s ↦ MeasurableSet[m] s ∧ f ⁻¹' s = s }
@@ -32,7 +32,7 @@ def invariants [m : MeasurableSpace α] (f : α → α) : MeasurableSpace α :=
 variable [MeasurableSpace α]
 
 /-- A set `s` is `(invariants f)`-measurable
-iff it is meaurable w.r.t. the canonical σ-algebra on `α` and `f ⁻¹' s = s`. -/
+iff it is measurable w.r.t. the canonical σ-algebra on `α` and `f ⁻¹' s = s`. -/
 theorem measurableSet_invariants {f : α → α} {s : Set α} :
     MeasurableSet[invariants f] s ↔ MeasurableSet s ∧ f ⁻¹' s = s :=
   .rfl
@@ -62,5 +62,11 @@ theorem measurable_invariants_dom {f : α → α} {g : α → β} :
 theorem measurable_invariants_of_semiconj {fa : α → α} {fb : β → β} {g : α → β} (hg : Measurable g)
     (hfg : Semiconj g fa fb) : @Measurable _ _ (invariants fa) (invariants fb) g := fun s hs ↦
   ⟨hg hs.1, by rw [← preimage_comp, hfg.comp_eq, preimage_comp, hs.2]⟩
+
+theorem comp_eq_of_measurable_invariants {f : α → α} {g : α → β} [MeasurableSingletonClass β]
+    (h : Measurable[invariants f] g) : g ∘ f = g := by
+  funext x
+  suffices x ∈ f⁻¹' (g⁻¹' {g x}) by simpa
+  rw [(h <| measurableSet_singleton (g x)).2, Set.mem_preimage, Set.mem_singleton_iff]
 
 end MeasurableSpace

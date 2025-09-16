@@ -2,7 +2,13 @@ name: Label New Contributors
 
 # Written with ChatGPT: https://chat.openai.com/share/3777ceb1-d722-4705-bacd-ba3f04b387be
 
-on: pull_request
+on: pull_request_target
+
+# Limit permissions for GITHUB_TOKEN for the entire workflow
+permissions:
+  contents: read
+  pull-requests: write  # Only allow PR comments/labels
+  # All other permissions are implicitly 'none'
 
 jobs:
   label-and-report-new-contributor:

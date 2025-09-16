@@ -59,7 +59,7 @@ lemma sum_Ico_le_integral_of_le
   ∑ i ∈ Finset.Ico a b, f i
   _ = ∑ i ∈ Finset.Ico a b, (∫ x in (i : ℝ)..(i + 1 : ℕ), f i) := by simp
   _ ≤ ∑ i ∈ Finset.Ico a b, (∫ x in (i : ℝ)..(i + 1 : ℕ), g x) := by
-    apply Finset.sum_le_sum (fun i hi ↦ ?_)
+    gcongr with i hi
     apply intervalIntegral.integral_mono_on_of_le_Ioo (by simp) (by simp) (A _ hi) (fun x hx ↦ ?_)
     exact h _ (by simpa using hi) _ (Ioo_subset_Ico_self hx)
   _ = ∫ x in a..b, g x := by

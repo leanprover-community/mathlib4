@@ -14,8 +14,8 @@ free (finite) modules over any commutative ring.
 
 ## Main results
 
- * `LinearMap.det_zero''`: The determinant of the constant zero map is zero, in a finite free
-   nontrivial module.
+* `LinearMap.det_zero''`: The determinant of the constant zero map is zero, in a finite free
+  nontrivial module.
 -/
 
 

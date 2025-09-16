@@ -48,7 +48,7 @@ def leftAdjointOfStructuredArrowInitialsAux (A : C) (B : D) :
   left_inv g := by
     let B' : StructuredArrow A G := StructuredArrow.mk ((⊥_ StructuredArrow A G).hom ≫ G.map g)
     let g' : ⊥_ StructuredArrow A G ⟶ B' := StructuredArrow.homMk g rfl
-    have : initial.to _ = g' := by aesop_cat
+    have : initial.to _ = g' := by cat_disch
     change CommaMorphism.right (initial.to B') = _
     rw [this]
     rfl
@@ -89,12 +89,12 @@ def rightAdjointOfCostructuredArrowTerminalsAux (B : D) (A : C) :
     (G.obj B ⟶ A) ≃ (B ⟶ (⊤_ CostructuredArrow G A).left) where
   toFun g := CommaMorphism.left (terminal.from (CostructuredArrow.mk g))
   invFun g := G.map g ≫ (⊤_ CostructuredArrow G A).hom
-  left_inv := by aesop_cat
+  left_inv := by cat_disch
   right_inv g := by
     let B' : CostructuredArrow G A :=
       CostructuredArrow.mk (G.map g ≫ (⊤_ CostructuredArrow G A).hom)
     let g' : B' ⟶ ⊤_ CostructuredArrow G A := CostructuredArrow.homMk g rfl
-    have : terminal.from _ = g' := by aesop_cat
+    have : terminal.from _ = g' := by cat_disch
     change CommaMorphism.left (terminal.from B') = _
     rw [this]
     rfl

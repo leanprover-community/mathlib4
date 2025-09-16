@@ -89,7 +89,7 @@ example (x : ℕ) (h : x < 2) (H : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) 
 
 example (H : ∀ y, ∃ (x : ℕ) (h : x < y), Classical.choose (⟨x, h⟩ : ∃ x, x < y) < y) :
     ∀ y, ∃ (x : ℕ) (h : x < y), Classical.choose (⟨x, h⟩ : ∃ x, x < y) < y := by
-  generalize_proofs (config := { abstract := false })
+  generalize_proofs -abstract
   guard_target =ₛ ∀ y, ∃ (x : ℕ) (h : x < y), Classical.choose (⟨x, h⟩ : ∃ x, x < y) < y
   generalize_proofs a at H ⊢
   guard_hyp a :ₛ ∀ (y w : ℕ), w < y → ∃ x, x < y
@@ -189,3 +189,27 @@ example (P : True → Sort*) (p : True → P (by decide)) : True := by
   exact h
 
 end
+
+/-!
+Extracting proofs from under let bindings
+-/
+/--
+trace: pf✝ : ∀ (n : ℕ), 0 < n + 1
+⊢ have n := 0;
+  ↑⟨0, ⋯⟩ = 0
+-/
+#guard_msgs in
+example : have n := 0; (⟨0, id (by simp)⟩ : Fin (n + 1)).val = 0 := by
+  generalize_proofs
+  trace_state
+  rfl
+/--
+trace: pf✝ : ∀ (n : ℕ), 0 < n + 1
+⊢ have n := 0;
+  ↑⟨0, ⋯⟩ = 0
+-/
+#guard_msgs in
+example : have n := 0; (⟨0, id (by simp)⟩ : Fin (n + 1)).val = 0 := by
+  generalize_proofs
+  trace_state
+  rfl

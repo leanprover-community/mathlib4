@@ -401,7 +401,7 @@ Try to apply `Function.hfunext`, returning the new goals if it succeeds.
 Like `Lean.MVarId.obviousFunext?`, we only do so if at least one side of the `HEq` is a lambda.
 This prevents unfolding of things like `Set`.
 
-Need to have `Mathlib.Logic.Function.Basic` imported for this to succeed.
+Need to have `Mathlib/Logic/Function/Basic.lean` imported for this to succeed.
 -/
 def Lean.MVarId.obviousHfunext? (mvarId : MVarId) : MetaM (Option (List MVarId)) :=
   mvarId.withContext <| observing? do
@@ -414,7 +414,7 @@ This is a non-dependent version of `pi_congr` that allows the domains to be diff
 private theorem implies_congr' {α α' : Sort u} {β β' : Sort v} (h : α = α') (h' : α' → β = β') :
     (α → β) = (α' → β') := by
   cases h
-  show (∀ (x : α), (fun _ => β) x) = _
+  change (∀ (x : α), (fun _ => β) x) = _
   rw [funext h']
 
 /-- A version of `Lean.MVarId.congrImplies?` that uses `implies_congr'`
@@ -494,8 +494,8 @@ def CongrMetaM.nextPattern : CongrMetaM (Option (TSyntax `rcasesPat)) := do
     else
       (none, s)
 
-private theorem heq_imp_of_eq_imp {α : Sort*} {x y : α} {p : HEq x y → Prop}
-    (h : (he : x = y) → p (heq_of_eq he)) (he : HEq x y) : p he := by
+private theorem heq_imp_of_eq_imp {α : Sort*} {x y : α} {p : x ≍ y → Prop}
+    (h : (he : x = y) → p (heq_of_eq he)) (he : x ≍ y) : p he := by
   cases he
   exact h rfl
 
@@ -510,9 +510,9 @@ that is trivial. If there are any patterns in the current `CongrMetaM` state the
 of `Lean.MVarId.intros` it does `Lean.Elab..Tactic.RCases.rintro`.
 
 Cleaning up includes:
-- deleting hypotheses of the form `HEq x x`, `x = x`, and `x ↔ x`.
+- deleting hypotheses of the form `x ≍ x`, `x = x`, and `x ↔ x`.
 - deleting Prop hypotheses that are already in the local context.
-- converting `HEq x y` to `x = y` if possible.
+- converting `x ≍ y` to `x = y` if possible.
 - converting `x = y` to `x ↔ y` if possible.
 -/
 partial
@@ -712,7 +712,7 @@ while `congr! 2` produces the intended `⊢ x + y = y + x`.
 
 The `congr!` tactic also takes a configuration option, for example
 ```lean
-congr! (config := {transparency := .default}) 2
+congr! (transparency := .default) 2
 ```
 This overrides the default, which is to apply congruence lemmas at reducible transparency.
 

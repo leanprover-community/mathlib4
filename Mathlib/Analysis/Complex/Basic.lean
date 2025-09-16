@@ -3,11 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Analysis.Complex.Order
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Data.Complex.BigOperators
-import Mathlib.Data.Complex.Module
-import Mathlib.Data.Complex.Order
-import Mathlib.Topology.Algebra.InfiniteSum.Field
+import Mathlib.LinearAlgebra.Complex.Module
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Instances.RealVectorSpace
 import Mathlib.Topology.MetricSpace.ProperSpace.Real
@@ -40,6 +39,10 @@ We also register the fact that `ℂ` is an `RCLike` field.
 
 
 assert_not_exists Absorbs
+
+/-- A shortcut instance to ensure computability; otherwise we get the noncomputable instance
+`Complex.instNormedField.toNormedModule.toModule`. -/
+instance Complex.instModuleSelf : Module ℂ ℂ := delta% inferInstance
 
 noncomputable section
 
@@ -78,9 +81,6 @@ instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [Semin
 -- normed ring structure and that file does not know about rings
 @[simp 1100, norm_cast] lemma nnnorm_intCast (n : ℤ) : ‖(n : ℂ)‖₊ = ‖n‖₊ := by
   ext; exact norm_intCast n
-
-@[deprecated (since := "2025-02-16")] alias comap_abs_nhds_zero := comap_norm_nhds_zero
-@[deprecated (since := "2025-02-16")] alias continuous_abs := continuous_norm
 
 @[continuity, fun_prop]
 theorem continuous_normSq : Continuous normSq := by
@@ -129,9 +129,6 @@ theorem equivRealProdCLM_symm_apply (p : ℝ × ℝ) :
 instance : ProperSpace ℂ := lipschitz_equivRealProd.properSpace
   equivRealProdCLM.toHomeomorph.isProperMap
 
-@[deprecated (since := "2025-02-16")] alias tendsto_abs_cocompact_atTop :=
-  tendsto_norm_cocompact_atTop
-
 /-- The `normSq` function on `ℂ` is proper. -/
 theorem tendsto_normSq_cocompact_atTop : Tendsto normSq (cocompact ℂ) atTop := by
   simpa [norm_mul_self_eq_normSq]
@@ -149,8 +146,6 @@ theorem continuous_re : Continuous re :=
 
 lemma uniformlyContinuous_re : UniformContinuous re :=
   reCLM.uniformContinuous
-
-@[deprecated (since := "2024-11-04")] alias uniformlyContinous_re := uniformlyContinuous_re
 
 @[simp]
 theorem reCLM_coe : (reCLM : ℂ →ₗ[ℝ] ℝ) = reLm :=
@@ -170,8 +165,6 @@ theorem continuous_im : Continuous im :=
 
 lemma uniformlyContinuous_im : UniformContinuous im :=
   imCLM.uniformContinuous
-
-@[deprecated (since := "2024-11-04")] alias uniformlyContinous_im := uniformlyContinuous_im
 
 @[simp]
 theorem imCLM_coe : (imCLM : ℂ →ₗ[ℝ] ℝ) = imLm :=
@@ -321,6 +314,8 @@ theorem _root_.RCLike.re_eq_complex_re : ⇑(RCLike.re : ℂ →+ ℝ) = Complex
 theorem _root_.RCLike.im_eq_complex_im : ⇑(RCLike.im : ℂ →+ ℝ) = Complex.im :=
   rfl
 
+theorem _root_.RCLike.ofReal_eq_complex_ofReal : (RCLike.ofReal : ℝ → ℂ) = Complex.ofReal := rfl
+
 -- TODO: Replace `mul_conj` and `conj_mul` once `norm` has replaced `abs`
 lemma mul_conj' (z : ℂ) : z * conj z = ‖z‖ ^ 2 := RCLike.mul_conj z
 lemma conj_mul' (z : ℂ) : conj z * z = ‖z‖ ^ 2 := RCLike.conj_mul z
@@ -332,6 +327,20 @@ lemma exists_norm_eq_mul_self (z : ℂ) : ∃ c, ‖c‖ = 1 ∧ ‖z‖ = c * z
 
 lemma exists_norm_mul_eq_self (z : ℂ) : ∃ c, ‖c‖ = 1 ∧ c * ‖z‖ = z :=
   RCLike.exists_norm_mul_eq_self _
+
+lemma im_eq_zero_iff_isSelfAdjoint (x : ℂ) : Complex.im x = 0 ↔ IsSelfAdjoint x := by
+  rw [← RCLike.im_eq_complex_im]
+  exact RCLike.im_eq_zero_iff_isSelfAdjoint
+
+lemma re_eq_ofReal_of_isSelfAdjoint {x : ℂ} {y : ℝ} (hx : IsSelfAdjoint x) :
+    Complex.re x = y ↔ x = y := by
+  rw [← RCLike.re_eq_complex_re]
+  exact RCLike.re_eq_ofReal_of_isSelfAdjoint hx
+
+lemma ofReal_eq_re_of_isSelfAdjoint {x : ℂ} {y : ℝ} (hx : IsSelfAdjoint x) :
+    y = Complex.re x ↔ y = x := by
+  rw [← RCLike.re_eq_complex_re]
+  exact RCLike.ofReal_eq_re_of_isSelfAdjoint hx
 
 /-- The natural isomorphism between `𝕜` satisfying `RCLike 𝕜` and `ℂ` when
 `RCLike.im RCLike.I = 1`. -/
@@ -390,6 +399,19 @@ lemma orderClosedTopology : OrderClosedTopology ℂ where
     refine IsClosed.inter (isClosed_le ?_ ?_) (isClosed_eq ?_ ?_) <;> continuity
 
 scoped[ComplexOrder] attribute [instance] Complex.orderClosedTopology
+
+theorem norm_of_nonneg' {x : ℂ} (hx : 0 ≤ x) : ‖x‖ = x := by
+  rw [← RCLike.ofReal_eq_complex_ofReal]
+  exact RCLike.norm_of_nonneg' hx
+
+lemma re_nonneg_iff_nonneg {x : ℂ} (hx : IsSelfAdjoint x) : 0 ≤ re x ↔ 0 ≤ x := by
+  rw [← RCLike.re_eq_complex_re]
+  exact RCLike.re_nonneg_of_nonneg hx
+
+@[gcongr]
+lemma re_le_re {x y : ℂ} (h : x ≤ y) : re x ≤ re y := by
+  rw [RCLike.le_iff_re_im] at h
+  exact h.1
 
 end ComplexOrder
 
@@ -483,10 +505,6 @@ end RCLike
 
 namespace Complex
 
-@[deprecated (since := "2025-02-16")] alias hasProd_abs := HasProd.norm
-@[deprecated (since := "2025-02-16")] alias multipliable_abs := Multipliable.norm
-@[deprecated (since := "2025-02-16")] alias abs_tprod := norm_tprod
-
 /-!
 We have to repeat the lemmas about `RCLike.re` and `RCLike.im` as they are not syntactic
 matches for `Complex.re` and `Complex.im`.
@@ -557,6 +575,16 @@ def slitPlane : Set ℂ := {z | 0 < z.re ∨ z.im ≠ 0}
 
 lemma mem_slitPlane_iff {z : ℂ} : z ∈ slitPlane ↔ 0 < z.re ∨ z.im ≠ 0 := Set.mem_setOf
 
+/- If `z` is non-zero, then either `z` or `-z` is in `slitPlane`. -/
+lemma mem_slitPlane_or_neg_mem_slitPlane {z : ℂ} (hz : z ≠ 0) :
+    z ∈ slitPlane ∨ -z ∈ slitPlane := by
+  rw [mem_slitPlane_iff, mem_slitPlane_iff]
+  rw [ne_eq, Complex.ext_iff] at hz
+  push_neg at hz
+  simp_all only [ne_eq, zero_re, zero_im, neg_re, Left.neg_pos_iff, neg_im, neg_eq_zero]
+  by_contra! contra
+  exact hz (le_antisymm contra.1.1 contra.2.1) contra.1.2
+
 lemma slitPlane_eq_union : slitPlane = {z | 0 < z.re} ∪ {z | z.im ≠ 0} := Set.setOf_or.symm
 
 lemma isOpen_slitPlane : IsOpen slitPlane :=
@@ -572,7 +600,9 @@ lemma neg_ofReal_mem_slitPlane {x : ℝ} : -↑x ∈ slitPlane ↔ x < 0 := by
 @[simp] lemma one_mem_slitPlane : 1 ∈ slitPlane := ofReal_mem_slitPlane.2 one_pos
 
 @[simp]
-lemma zero_not_mem_slitPlane : 0 ∉ slitPlane := mt ofReal_mem_slitPlane.1 (lt_irrefl _)
+lemma zero_notMem_slitPlane : 0 ∉ slitPlane := mt ofReal_mem_slitPlane.1 (lt_irrefl _)
+
+@[deprecated (since := "2025-05-23")] alias zero_not_mem_slitPlane := zero_notMem_slitPlane
 
 @[simp]
 lemma natCast_mem_slitPlane {n : ℕ} : ↑n ∈ slitPlane ↔ n ≠ 0 := by
@@ -589,7 +619,7 @@ protected lemma compl_Iic_zero : (Set.Iic 0)ᶜ = slitPlane := Set.ext fun _ ↦
   mem_slitPlane_iff_not_le_zero.symm
 
 lemma slitPlane_ne_zero {z : ℂ} (hz : z ∈ slitPlane) : z ≠ 0 :=
-  ne_of_mem_of_not_mem hz zero_not_mem_slitPlane
+  ne_of_mem_of_not_mem hz zero_notMem_slitPlane
 
 /-- The slit plane includes the open unit ball of radius `1` around `1`. -/
 lemma ball_one_subset_slitPlane : Metric.ball 1 1 ⊆ slitPlane := fun z hz ↦ .inl <|

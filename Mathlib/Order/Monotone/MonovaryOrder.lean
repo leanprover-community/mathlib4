@@ -29,7 +29,7 @@ def MonovaryOrder (i j : ι) : Prop :=
 instance : IsStrictTotalOrder ι (MonovaryOrder f g) where
   trichotomous i j := by
     convert trichotomous_of (Prod.Lex (· < ·) <| Prod.Lex (· < ·) WellOrderingRel) _ _
-    · simp only [Prod.ext_iff, ← and_assoc, imp_and, eq_iff_iff, iff_and_self]
+    · simp only [Prod.ext_iff, ← and_assoc, imp_and, iff_and_self]
       exact ⟨congr_arg _, congr_arg _⟩
     · infer_instance
   irrefl i := by rw [MonovaryOrder]; exact irrefl _

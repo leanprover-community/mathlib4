@@ -21,7 +21,7 @@ compact open set is compact open.
 
 ## TODO
 
-Once we have `SpectralSpace`, `IsSpectralMap` should move to `Mathlib.Topology.Spectral.Basic`.
+Once we have `SpectralSpace`, `IsSpectralMap` should move to `Mathlib/Topology/Spectral/Basic.lean`.
 -/
 
 
@@ -38,7 +38,7 @@ compact open set is compact open. -/
 @[stacks 005A, stacks 08YG]
 structure IsSpectralMap (f : α → β) : Prop extends Continuous f where
   /-- A function between topological spaces is spectral if it is continuous and the preimage of
-   every compact open set is compact open. -/
+  every compact open set is compact open. -/
   isCompact_preimage_of_isOpen ⦃s : Set β⦄ : IsOpen s → IsCompact s → IsCompact (f ⁻¹' s)
 
 theorem IsCompact.preimage_of_isOpen (hf : IsSpectralMap f) (h₀ : IsCompact s) (h₁ : IsOpen s) :
@@ -165,7 +165,7 @@ theorem comp_apply (f : SpectralMap β γ) (g : SpectralMap α β) (a : α) : (f
 
 theorem coe_comp_continuousMap (f : SpectralMap β γ) (g : SpectralMap α β) :
     f ∘ g = (f : ContinuousMap β γ) ∘ (g : ContinuousMap α β) :=
-   rfl
+  rfl
 
 @[simp]
 theorem coe_comp_continuousMap' (f : SpectralMap β γ) (g : SpectralMap α β) :

@@ -32,7 +32,7 @@ variable [DecidableEq α] [AddGroupWithOne R]
 /-- $\#(s \setminus \{a\}) = \#s - 1$ if $a \in s$.
   This result is casted to any additive group with 1,
   so that we don't have to work with `ℕ`-subtraction. -/
-@[simp]
+-- @[simp] -- removed because LHS is not in simp normal form
 theorem cast_card_erase_of_mem (hs : a ∈ s) : (#(s.erase a) : R) = #s - 1 := by
   rw [← card_erase_add_one hs, cast_add, cast_one, eq_sub_iff_add_eq]
 
@@ -43,6 +43,6 @@ lemma cast_card_union : (#(s ∪ t) : R) = #s + #t - #(s ∩ t) := by
   rw [eq_sub_iff_add_eq, ← cast_add, card_union_add_card_inter, cast_add]
 
 lemma cast_card_sdiff (h : s ⊆ t) : (#(t \ s) : R) = #t - #s := by
-  rw [card_sdiff h, Nat.cast_sub (card_mono h)]
+  rw [card_sdiff_of_subset h, Nat.cast_sub (card_mono h)]
 
 end Finset

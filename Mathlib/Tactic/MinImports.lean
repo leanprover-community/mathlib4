@@ -5,9 +5,11 @@ Authors: Damiano Testa
 -/
 import Lean.Elab.DefView
 import Lean.Util.CollectAxioms
-import Mathlib.Init
 import ImportGraph.Imports
 import ImportGraph.RequiredModules
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+import Mathlib.Tactic.Linter.Header
 
 /-! # `#min_imports in` a command to find minimal imports
 
@@ -229,7 +231,7 @@ Assuming that `importNames` are module names,
 it returns the `NameSet` consisting of a minimal collection of module names whose transitive
 closure is enough to parse (and elaborate) `cmd`. -/
 def getIrredundantImports (env : Environment) (importNames : NameSet) : NameSet :=
-  importNames.diff (env.findRedundantImports importNames.toArray)
+  importNames \ (env.findRedundantImports importNames.toArray)
 
 /-- `minImpsCore stx id` is the internal function to elaborate the `#min_imports in` command.
 It collects the irredundant imports to parse and elaborate `stx` and logs

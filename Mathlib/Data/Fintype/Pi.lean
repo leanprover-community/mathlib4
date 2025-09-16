@@ -32,12 +32,12 @@ def piFinset (t : ∀ a, Finset (δ a)) : Finset (∀ a, δ a) :=
 @[simp]
 theorem mem_piFinset {t : ∀ a, Finset (δ a)} {f : ∀ a, δ a} : f ∈ piFinset t ↔ ∀ a, f a ∈ t a := by
   constructor
-  · simp only [piFinset, mem_map, and_imp, forall_prop_of_true, exists_prop, mem_univ, exists_imp,
+  · simp only [piFinset, mem_map, and_imp, forall_prop_of_true, mem_univ, exists_imp,
       mem_pi]
     rintro g hg hgf a
     rw [← hgf]
     exact hg a
-  · simp only [piFinset, mem_map, forall_prop_of_true, exists_prop, mem_univ, mem_pi]
+  · simp only [piFinset, mem_map, forall_prop_of_true, mem_univ, mem_pi]
     exact fun hf => ⟨fun a _ => f a, hf, rfl⟩
 
 @[simp]
@@ -105,9 +105,11 @@ lemma eval_image_piFinset_const {β} [DecidableEq β] (t : Finset β) (a : α) :
 
 variable [∀ a, DecidableEq (δ a)]
 
-lemma filter_piFinset_of_not_mem (t : ∀ a, Finset (δ a)) (a : α) (x : δ a) (hx : x ∉ t a) :
+lemma filter_piFinset_of_notMem (t : ∀ a, Finset (δ a)) (a : α) (x : δ a) (hx : x ∉ t a) :
     {f ∈ piFinset t | f a = x} = ∅ := by
   simp only [filter_eq_empty_iff, mem_piFinset]; rintro f hf rfl; exact hx (hf _)
+
+@[deprecated (since := "2025-05-23")] alias filter_piFinset_of_not_mem := filter_piFinset_of_notMem
 
 -- TODO: This proof looks like a good example of something that `aesop` can't do but should
 lemma piFinset_update_eq_filter_piFinset_mem (s : ∀ i, Finset (δ i)) (i : α) {t : Finset (δ i)}
