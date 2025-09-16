@@ -94,7 +94,8 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
         simp only [ Submodule.coe_span_eq_span_of_surjective R (ResidueField R)
           IsLocalRing.residue_surjective, Finset.coe_sort_coe, SetLike.coe_set_eq]
         ext x
-        induction' x using Submodule.Quotient.induction_on with x
+        induction x using Submodule.Quotient.induction_on
+        rename_i x
         simp only [Ideal.mapCotangent, LinearMap.mem_ker, f]
         change (maximalIdeal (R ⧸ Ideal.span S.toSet)).toCotangent ⟨(Ideal.Quotient.mkₐ R
           (Ideal.span S.toSet)) x, _⟩ = 0 ↔ (maximalIdeal R).toCotangent x ∈ _
@@ -125,7 +126,8 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
         constructor
         · rw [← AddMonoidHom.ker_eq_bot_iff, eq_bot_iff]
           intro x hx
-          induction' x using QuotientAddGroup.induction_on with x
+          induction x using QuotientAddGroup.induction_on
+          rename_i x
           have : x ∈ (LinearMap.ker f : Set (maximalIdeal R).Cotangent) := LinearMap.mem_ker.mpr hx
           rw [ker] at this
           exact AddSubgroup.mem_bot.mpr ((QuotientAddGroup.eq_zero_iff _).mpr this)
@@ -140,10 +142,11 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
         AddEquiv.ofBijective f' bij
       have rk := rank_eq_of_equiv_equiv (ResidueField.map (Ideal.Quotient.mk (Ideal.span S.toSet)))
         e (ResidueField.map_bijective_of_surjective _ Ideal.Quotient.mk_surjective) (fun r m ↦ by
-          induction' m using Submodule.Quotient.induction_on with m
+          induction m using Submodule.Quotient.induction_on
+          induction r using Submodule.Quotient.induction_on
           rw [← Submodule.Quotient.mk_smul]
           simp only [Finset.coe_sort_coe, AddEquiv.ofBijective_apply, e, f']
-          induction' r using Submodule.Quotient.induction_on with r
+          rename_i m r
           change f (r • m) = (ResidueField.map (Ideal.Quotient.mk (Ideal.span S.toSet)))
             (IsLocalRing.residue R r) • (f m)
           simp only [map_smul]
@@ -210,13 +213,14 @@ lemma exist_nat_eq [FiniteRingKrullDim R] : ∃ n : ℕ, ringKrullDim R = n := b
 open Pointwise in
 theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
   obtain ⟨n, hn⟩ := exist_nat_eq R
-  induction' n with n ih generalizing R
+  induction n generalizing R
   · simp only [← (isRegularLocalRing_def R).mp ‹_›, CharP.cast_eq_zero, Nat.cast_eq_zero] at hn
     have : maximalIdeal R = ⊥ := by
       rw [← Submodule.spanRank_eq_zero_iff_eq_bot, Submodule.fg_iff_spanRank_eq_spanFinrank.mpr
         ((isNoetherianRing_iff_ideal_fg R).mp inferInstance _), hn, Nat.cast_zero]
     exact (isField_iff_maximalIdeal_eq.mpr this).isDomain
-  · obtain ⟨x, xmem, xnmem⟩ : ∃ x ∈ maximalIdeal R,
+  · rename_i n ih _ _
+    obtain ⟨x, xmem, xnmem⟩ : ∃ x ∈ maximalIdeal R,
       x ∉ ⋃ I ∈ {(maximalIdeal R) ^ 2} ∪ minimalPrimes R, I := by
       by_contra! h
       have fin : ({(maximalIdeal R) ^ 2} ∪ minimalPrimes R).Finite :=
