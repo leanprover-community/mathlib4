@@ -543,18 +543,20 @@ end Liminf
 
 section tsum
 
-variable {f g : α → ℝ≥0∞}
+variable {f g : α → ℝ≥0∞} {L : Filter (Finset α)}
 
 @[norm_cast]
-protected theorem hasSum_coe {f : α → ℝ≥0} {r : ℝ≥0} :
-    HasSum (fun a => (f a : ℝ≥0∞)) ↑r ↔ HasSum f r := by
-  simp only [HasSum, ← coe_finset_sum, tendsto_coe]
+protected theorem hasSumFilter_coe {f : α → ℝ≥0} {r : ℝ≥0} :
+    HasSumFilter L (fun a => (f a : ℝ≥0∞)) ↑r ↔ HasSumFilter L f r := by
+  simp only [HasSumFilter, ← coe_finset_sum, tendsto_coe]
 
-protected theorem tsum_coe_eq {f : α → ℝ≥0} (h : HasSum f r) : (∑' a, (f a : ℝ≥0∞)) = r :=
-  (ENNReal.hasSum_coe.2 h).tsum_eq
+protected theorem tsumFilter_coe_eq [L.NeBot] {f : α → ℝ≥0} (h : HasSumFilter L f r) :
+    (∑'[L] a, (f a : ℝ≥0∞)) = r :=
+  (ENNReal.hasSumFilter_coe.2 h).tsumFilter_eq
 
-protected theorem coe_tsum {f : α → ℝ≥0} : Summable f → ↑(tsum f) = ∑' a, (f a : ℝ≥0∞)
-  | ⟨r, hr⟩ => by rw [hr.tsum_eq, ENNReal.tsum_coe_eq hr]
+protected theorem coe_tsumFilter [L.NeBot] {f : α → ℝ≥0} : SummableFilter L f →
+    ↑(tsumFilter L f) = ∑'[L] a, (f a : ℝ≥0∞)
+  | ⟨r, hr⟩ => by rw [hr.tsumFilter_eq, ENNReal.tsumFilter_coe_eq hr]
 
 protected theorem hasSum : HasSum f (⨆ s : Finset α, ∑ a ∈ s, f a) :=
   tendsto_atTop_iSup fun _ _ => Finset.sum_le_sum_of_subset
@@ -566,14 +568,15 @@ protected theorem summable : Summable f :=
 macro_rules | `(tactic| gcongr_discharger) => `(tactic| apply ENNReal.summable)
 
 theorem tsum_coe_ne_top_iff_summable {f : β → ℝ≥0} : (∑' b, (f b : ℝ≥0∞)) ≠ ∞ ↔ Summable f := by
-  refine ⟨fun h => ?_, fun h => ENNReal.coe_tsum h ▸ ENNReal.coe_ne_top⟩
+  refine ⟨fun h => ?_, fun h => by
+    rw [tsum, ← (ENNReal.coe_tsumFilter h)]; apply ENNReal.coe_ne_top⟩
   lift ∑' b, (f b : ℝ≥0∞) to ℝ≥0 using h with a ha
-  refine ⟨a, ENNReal.hasSum_coe.1 ?_⟩
+  refine ⟨a, ENNReal.hasSumFilter_coe.1 ?_⟩
   rw [ha]
   exact ENNReal.summable.hasSum
 
 protected theorem tsum_eq_iSup_sum : ∑' a, f a = ⨆ s : Finset α, ∑ a ∈ s, f a :=
-  ENNReal.hasSum.tsum_eq
+  ENNReal.hasSum.tsumFilter_eq
 
 protected theorem tsum_eq_iSup_sum' {ι : Type*} (s : ι → Finset α) (hs : ∀ t, ∃ i, t ⊆ s i) :
     ∑' a, f a = ⨆ i, ∑ a ∈ s i, f a := by
@@ -609,10 +612,10 @@ protected theorem tsum_comm {f : α → β → ℝ≥0∞} : ∑' a, ∑' b, f a
   ENNReal.summable.tsum_comm' (fun _ => ENNReal.summable) fun _ => ENNReal.summable
 
 protected theorem tsum_add : ∑' a, (f a + g a) = ∑' a, f a + ∑' a, g a :=
-  ENNReal.summable.tsum_add ENNReal.summable
+  ENNReal.summable.tsumFilter_add ENNReal.summable
 
 protected theorem tsum_le_tsum (h : ∀ a, f a ≤ g a) : ∑' a, f a ≤ ∑' a, g a :=
-  ENNReal.summable.tsum_le_tsum h ENNReal.summable
+  ENNReal.summable.tsumFilter_le_tsumFilter h ENNReal.summable
 
 protected theorem sum_le_tsum {f : α → ℝ≥0∞} (s : Finset α) : ∑ x ∈ s, f x ≤ ∑' x, f x :=
   ENNReal.summable.sum_le_tsum s (fun _ _ => zero_le _)
@@ -676,7 +679,7 @@ protected theorem tsum_mul_left : ∑' i, a * f i = a * ∑' i, f i := by
     have : Tendsto (fun s : Finset α => ∑ j ∈ s, a * f j) atTop (𝓝 (a * ∑' i, f i)) := by
       simp only [← Finset.mul_sum]
       exact ENNReal.Tendsto.const_mul ENNReal.summable.hasSum (Or.inl hf)
-    exact HasSum.tsum_eq this
+    exact HasSumFilter.tsumFilter_eq this
 
 protected theorem tsum_mul_right : ∑' i, f i * a = (∑' i, f i) * a := by
   simp [mul_comm, ENNReal.tsum_mul_left]
@@ -728,12 +731,12 @@ theorem tendsto_tsum_compl_atTop_zero {α : Type*} {f : α → ℝ≥0∞} (hf :
     Tendsto (fun s : Finset α => ∑' b : { x // x ∉ s }, f b) atTop (𝓝 0) := by
   lift f to α → ℝ≥0 using ENNReal.ne_top_of_tsum_ne_top hf
   convert ENNReal.tendsto_coe.2 (NNReal.tendsto_tsum_compl_atTop_zero f)
-  rw [ENNReal.coe_tsum]
+  rw [ENNReal.coe_tsumFilter]
   exact NNReal.summable_comp_injective (tsum_coe_ne_top_iff_summable.1 hf) Subtype.coe_injective
 
 protected theorem tsum_apply {ι α : Type*} {f : ι → α → ℝ≥0∞} {x : α} :
     (∑' i, f i) x = ∑' i, f i x :=
-  tsum_apply <| Pi.summable.mpr fun _ => ENNReal.summable
+  tsumFilter_apply <| Pi.summableFilter.mpr fun _ => ENNReal.summable
 
 theorem tsum_sub {f : ℕ → ℝ≥0∞} {g : ℕ → ℝ≥0∞} (h₁ : ∑' i, g i ≠ ∞) (h₂ : g ≤ f) :
     ∑' i, (f i - g i) = ∑' i, f i - ∑' i, g i :=
@@ -814,10 +817,10 @@ theorem finset_card_const_le_le_of_tsum_le {ι : Type*} {a : ι → ℝ≥0∞} 
 
 theorem tsum_fiberwise (f : β → ℝ≥0∞) (g : β → γ) :
     ∑' x, ∑' b : g ⁻¹' {x}, f b = ∑' i, f i := by
-  apply HasSum.tsum_eq
+  apply HasSumFilter.tsumFilter_eq
   let equiv := Equiv.sigmaFiberEquiv g
   apply (equiv.hasSum_iff.mpr ENNReal.summable.hasSum).sigma
-  exact fun _ ↦ ENNReal.summable.hasSum_iff.mpr rfl
+  exact fun _ ↦ ENNReal.summable.hasSumFilter_iff.mpr rfl
 
 end tsum
 
@@ -829,7 +832,7 @@ theorem tendsto_toReal_iff {ι} {fi : Filter ι} {f : ι → ℝ≥0∞} (hf : �
 
 theorem tsum_coe_ne_top_iff_summable_coe {f : α → ℝ≥0} :
     (∑' a, (f a : ℝ≥0∞)) ≠ ∞ ↔ Summable fun a => (f a : ℝ) := by
-  rw [NNReal.summable_coe]
+  rw [Summable, NNReal.summableFilter_coe, ← summable_iff_summableFilter]
   exact tsum_coe_ne_top_iff_summable
 
 theorem tsum_coe_eq_top_iff_not_summable_coe {f : α → ℝ≥0} :
@@ -839,7 +842,7 @@ theorem tsum_coe_eq_top_iff_not_summable_coe {f : α → ℝ≥0} :
 theorem hasSum_toReal {f : α → ℝ≥0∞} (hsum : ∑' x, f x ≠ ∞) :
     HasSum (fun x => (f x).toReal) (∑' x, (f x).toReal) := by
   lift f to α → ℝ≥0 using ENNReal.ne_top_of_tsum_ne_top hsum
-  simp only [coe_toReal, ← NNReal.coe_tsum, NNReal.hasSum_coe]
+  simp only [coe_toReal, ← NNReal.coe_tsumFilter, NNReal.hasSumFilter_coe]
   exact (tsum_coe_ne_top_iff_summable.1 hsum).hasSum
 
 theorem summable_toReal {f : α → ℝ≥0∞} (hsum : ∑' x, f x ≠ ∞) : Summable fun x => (f x).toReal :=
@@ -851,8 +854,8 @@ namespace NNReal
 
 theorem tsum_eq_toNNReal_tsum {f : β → ℝ≥0} : ∑' b, f b = (∑' b, (f b : ℝ≥0∞)).toNNReal := by
   by_cases h : Summable f
-  · rw [← ENNReal.coe_tsum h, ENNReal.toNNReal_coe]
-  · have A := tsum_eq_zero_of_not_summable h
+  · simp_rw [tsum, ← ENNReal.coe_tsumFilter h, ENNReal.toNNReal_coe]
+  · have A := tsumFilter_eq_zero_of_not_summableFilter h
     simp only [← ENNReal.tsum_coe_ne_top_iff_summable, Classical.not_not] at h
     simp only [h, ENNReal.toNNReal_top, A]
 
@@ -860,10 +863,10 @@ theorem tsum_eq_toNNReal_tsum {f : β → ℝ≥0} : ∑' b, f b = (∑' b, (f b
 theorem exists_le_hasSum_of_le {f g : β → ℝ≥0} {r : ℝ≥0} (hgf : ∀ b, g b ≤ f b) (hfr : HasSum f r) :
     ∃ p ≤ r, HasSum g p :=
   have : (∑' b, (g b : ℝ≥0∞)) ≤ r := by
-    refine hasSum_le (fun b => ?_) ENNReal.summable.hasSum (ENNReal.hasSum_coe.2 hfr)
+    refine hasSumFilter_le (fun b => ?_) ENNReal.summable.hasSum (ENNReal.hasSumFilter_coe.2 hfr)
     exact ENNReal.coe_le_coe.2 (hgf _)
   let ⟨p, Eq, hpr⟩ := ENNReal.le_coe_iff.1 this
-  ⟨p, hpr, ENNReal.hasSum_coe.1 <| Eq ▸ ENNReal.summable.hasSum⟩
+  ⟨p, hpr, ENNReal.hasSumFilter_coe.1 <| Eq ▸ ENNReal.summable.hasSum⟩
 
 /-- Comparison test of convergence of `ℝ≥0`-valued series. -/
 theorem summable_of_le {f g : β → ℝ≥0} (hgf : ∀ b, g b ≤ f b) : Summable f → Summable g
@@ -874,14 +877,14 @@ theorem summable_of_le {f g : β → ℝ≥0} (hgf : ∀ b, g b ≤ f b) : Summa
 /-- Summable non-negative functions have countable support -/
 theorem _root_.Summable.countable_support_nnreal (f : α → ℝ≥0) (h : Summable f) :
     f.support.Countable := by
-  rw [← NNReal.summable_coe] at h
+  rw [Summable, ← NNReal.summableFilter_coe, ← summable_iff_summableFilter] at h
   simpa [support] using h.countable_support
 
 /-- A series of non-negative real numbers converges to `r` in the sense of `HasSum` if and only if
 the sequence of partial sum converges to `r`. -/
 theorem hasSum_iff_tendsto_nat {f : ℕ → ℝ≥0} {r : ℝ≥0} :
     HasSum f r ↔ Tendsto (fun n : ℕ => ∑ i ∈ Finset.range n, f i) atTop (𝓝 r) := by
-  rw [← ENNReal.hasSum_coe, ENNReal.hasSum_iff_tendsto_nat]
+  simp_rw [HasSum, ← ENNReal.hasSumFilter_coe, ENNReal.hasSum_iff_tendsto_nat]
   simp only [← ENNReal.coe_finset_sum]
   exact ENNReal.tendsto_coe
 
@@ -916,11 +919,11 @@ theorem tsum_comp_le_tsum_of_inj {β : Type*} {f : α → ℝ≥0} (hf : Summabl
 theorem summable_sigma {β : α → Type*} {f : (Σ x, β x) → ℝ≥0} :
     Summable f ↔ (∀ x, Summable fun y => f ⟨x, y⟩) ∧ Summable fun x => ∑' y, f ⟨x, y⟩ := by
   constructor
-  · simp only [← NNReal.summable_coe, NNReal.coe_tsum]
+  · simp only [← NNReal.summableFilter_coe, NNReal.coe_tsumFilter, ← summable_iff_summableFilter]
     exact fun h => ⟨h.sigma_factor, h.sigma⟩
   · rintro ⟨h₁, h₂⟩
     simpa only [← ENNReal.tsum_coe_ne_top_iff_summable, ENNReal.tsum_sigma',
-      ENNReal.coe_tsum (h₁ _)] using h₂
+      ENNReal.coe_tsumFilter (h₁ _)] using h₂
 
 theorem indicator_summable {f : α → ℝ≥0} (hf : Summable f) (s : Set α) :
     Summable (s.indicator f) := by
@@ -948,7 +951,8 @@ theorem tendsto_sum_nat_add (f : ℕ → ℝ≥0) : Tendsto (fun i => ∑' k, f 
 nonrec theorem hasSum_lt {f g : α → ℝ≥0} {sf sg : ℝ≥0} {i : α} (h : ∀ a : α, f a ≤ g a)
     (hi : f i < g i) (hf : HasSum f sf) (hg : HasSum g sg) : sf < sg := by
   have A : ∀ a : α, (f a : ℝ) ≤ g a := fun a => NNReal.coe_le_coe.2 (h a)
-  have : (sf : ℝ) < sg := hasSum_lt A (NNReal.coe_lt_coe.2 hi) (hasSum_coe.2 hf) (hasSum_coe.2 hg)
+  have : (sf : ℝ) < sg := hasSum_lt A (NNReal.coe_lt_coe.2 hi) (hasSumFilter_coe.2 hf)
+    (hasSumFilter_coe.2 hg)
   exact NNReal.coe_lt_coe.1 this
 
 @[mono]
@@ -983,18 +987,18 @@ namespace ENNReal
 
 theorem tsum_toNNReal_eq {f : α → ℝ≥0∞} (hf : ∀ a, f a ≠ ∞) :
     (∑' a, f a).toNNReal = ∑' a, (f a).toNNReal :=
-  (congr_arg ENNReal.toNNReal (tsum_congr fun x => (coe_toNNReal (hf x)).symm)).trans
+  (congr_arg ENNReal.toNNReal (tsumFilter_congr fun x => (coe_toNNReal (hf x)).symm)).trans
     NNReal.tsum_eq_toNNReal_tsum.symm
 
 theorem tsum_toReal_eq {f : α → ℝ≥0∞} (hf : ∀ a, f a ≠ ∞) :
     (∑' a, f a).toReal = ∑' a, (f a).toReal := by
-  simp only [ENNReal.toReal, tsum_toNNReal_eq hf, NNReal.coe_tsum]
+  simp only [ENNReal.toReal, tsum_toNNReal_eq hf, NNReal.coe_tsumFilter]
 
 theorem tendsto_sum_nat_add (f : ℕ → ℝ≥0∞) (hf : ∑' i, f i ≠ ∞) :
     Tendsto (fun i => ∑' k, f (k + i)) atTop (𝓝 0) := by
   lift f to ℕ → ℝ≥0 using ENNReal.ne_top_of_tsum_ne_top hf
   replace hf : Summable f := tsum_coe_ne_top_iff_summable.1 hf
-  simp only [← ENNReal.coe_tsum, NNReal.summable_nat_add _ hf, ← ENNReal.coe_zero]
+  simp only [← ENNReal.coe_tsumFilter, NNReal.summable_nat_add _ hf, ← ENNReal.coe_zero]
   exact mod_cast NNReal.tendsto_sum_nat_add f
 
 theorem tsum_le_of_sum_range_le {f : ℕ → ℝ≥0∞} {c : ℝ≥0∞}
@@ -1005,14 +1009,16 @@ theorem hasSum_lt {f g : α → ℝ≥0∞} {sf sg : ℝ≥0∞} {i : α} (h : �
     (hsf : sf ≠ ∞) (hf : HasSum f sf) (hg : HasSum g sg) : sf < sg := by
   by_cases hsg : sg = ∞
   · exact hsg.symm ▸ lt_of_le_of_ne le_top hsf
-  · have hg' : ∀ x, g x ≠ ∞ := ENNReal.ne_top_of_tsum_ne_top (hg.tsum_eq.symm ▸ hsg)
+  · have hg' : ∀ x, g x ≠ ∞ := by
+      have := ENNReal.ne_top_of_tsum_ne_top (hg.tsumFilter_eq.symm ▸ hsg)
+      apply this
     lift f to α → ℝ≥0 using fun x =>
       ne_of_lt (lt_of_le_of_lt (h x) <| lt_of_le_of_ne le_top (hg' x))
     lift g to α → ℝ≥0 using hg'
     lift sf to ℝ≥0 using hsf
     lift sg to ℝ≥0 using hsg
     simp only [coe_le_coe, coe_lt_coe] at h hi ⊢
-    exact NNReal.hasSum_lt h hi (ENNReal.hasSum_coe.1 hf) (ENNReal.hasSum_coe.1 hg)
+    exact NNReal.hasSum_lt h hi (ENNReal.hasSumFilter_coe.1 hf) (ENNReal.hasSumFilter_coe.1 hg)
 
 theorem tsum_lt_tsum {f g : α → ℝ≥0∞} {i : α} (hfi : tsum f ≠ ∞) (h : ∀ a : α, f a ≤ g a)
     (hi : f i < g i) : ∑' x, f x < ∑' x, g x :=
@@ -1023,19 +1029,21 @@ end ENNReal
 theorem tsum_comp_le_tsum_of_inj {β : Type*} {f : α → ℝ} (hf : Summable f) (hn : ∀ a, 0 ≤ f a)
     {i : β → α} (hi : Function.Injective i) : tsum (f ∘ i) ≤ tsum f := by
   lift f to α → ℝ≥0 using hn
-  rw [NNReal.summable_coe] at hf
-  simpa only [Function.comp_def, ← NNReal.coe_tsum] using NNReal.tsum_comp_le_tsum_of_inj hf hi
+  rw [Summable, NNReal.summableFilter_coe] at hf
+  simpa only [Function.comp_def, ← NNReal.coe_tsumFilter] using
+    NNReal.tsum_comp_le_tsum_of_inj hf hi
 
 /-- Comparison test of convergence of series of non-negative real numbers. -/
 theorem Summable.of_nonneg_of_le {f g : β → ℝ} (hg : ∀ b, 0 ≤ g b) (hgf : ∀ b, g b ≤ f b)
     (hf : Summable f) : Summable g := by
   lift f to β → ℝ≥0 using fun b => (hg b).trans (hgf b)
   lift g to β → ℝ≥0 using hg
-  rw [NNReal.summable_coe] at hf ⊢
+  rw [Summable, NNReal.summableFilter_coe] at hf ⊢
   exact NNReal.summable_of_le (fun b => NNReal.coe_le_coe.1 (hgf b)) hf
 
 theorem Summable.toNNReal {f : α → ℝ} (hf : Summable f) : Summable fun n => (f n).toNNReal := by
-  apply NNReal.summable_coe.1
+  apply NNReal.summableFilter_coe.1
+  rw [← summable_iff_summableFilter]
   refine .of_nonneg_of_le (fun n => NNReal.coe_nonneg _) (fun n => ?_) hf.abs
   simp only [le_abs_self, Real.coe_toNNReal', max_le_iff, abs_nonneg, and_self_iff]
 
@@ -1058,12 +1066,13 @@ the sequence of partial sum converges to `r`. -/
 theorem hasSum_iff_tendsto_nat_of_nonneg {f : ℕ → ℝ} (hf : ∀ i, 0 ≤ f i) (r : ℝ) :
     HasSum f r ↔ Tendsto (fun n : ℕ => ∑ i ∈ Finset.range n, f i) atTop (𝓝 r) := by
   lift f to ℕ → ℝ≥0 using hf
-  simp only [HasSum, ← NNReal.coe_sum, NNReal.tendsto_coe']
+  simp only [HasSumFilter, ← NNReal.coe_sum, NNReal.tendsto_coe']
   exact exists_congr fun hr => NNReal.hasSum_iff_tendsto_nat
 
 theorem ENNReal.ofReal_tsum_of_nonneg {f : α → ℝ} (hf_nonneg : ∀ n, 0 ≤ f n) (hf : Summable f) :
     ENNReal.ofReal (∑' n, f n) = ∑' n, ENNReal.ofReal (f n) := by
-  simp_rw [ENNReal.ofReal, ENNReal.tsum_coe_eq (NNReal.hasSum_real_toNNReal_of_nonneg hf_nonneg hf)]
+  simp_rw [ENNReal.ofReal, ENNReal.tsumFilter_coe_eq
+    (NNReal.hasSum_real_toNNReal_of_nonneg hf_nonneg hf)]
 
 section
 
@@ -1162,7 +1171,7 @@ theorem cauchySeq_of_edist_le_of_summable {f : ℕ → α} (d : ℕ → ℝ≥0)
   -- Actually we need partial sums of `d` to be a Cauchy sequence.
   replace hd : CauchySeq fun n : ℕ ↦ ∑ x ∈ Finset.range n, d x :=
     let ⟨_, H⟩ := hd
-    H.tendsto_sum_nat.cauchySeq
+    (hasSum_iff_hasSumFilter.mpr H).tendsto_sum_nat.cauchySeq
   -- Now we take the same `N` as in one of the definitions of a Cauchy sequence.
   refine (Metric.cauchySeq_iff'.1 hd ε (NNReal.coe_pos.2 εpos)).imp fun N hN n hn ↦ ?_
   specialize hN n hn
