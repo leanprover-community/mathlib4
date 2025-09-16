@@ -254,6 +254,10 @@ instance pi {ι : Type*} {M : ι → Type*} [_root_.Finite ι] [∀ i, AddCommMo
     rw [← Submodule.pi_top]
     exact Submodule.fg_pi fun i => (h i).1⟩
 
+theorem of_pi {ι : Type*} (M : ι → Type*) [(i : ι) → AddCommMonoid (M i)] [(i : ι) → Module R (M i)]
+    [Module.Finite R ((i : ι) → M i)] (i : ι) : Module.Finite R (M i) :=
+  Module.Finite.of_surjective _ <| LinearMap.proj_surjective i
+
 variable (R)
 
 instance self : Module.Finite R R :=
