@@ -352,10 +352,9 @@ lemma mapRangeAlgHom_single (f : A →ₐ[R] B) (m : M) (a : A) :
 
 variable (M) in
 /-- The algebra isomorphism of monoid algebras induced by an isomorphism of the base algebras. -/
--- @[to_additive] failed... hmm
--- @[to_additive (attr := simps apply)
--- /-- The algebra isomorphism of additive monoid algebras induced by an isomorphism of the base
--- algebras. -/]
+@[to_additive (dont_translate := R) (attr := simps apply)
+/-- The algebra isomorphism of additive monoid algebras induced by an isomorphism of the base
+algebras. -/]
 noncomputable def mapRangeAlgEquiv (f : A ≃ₐ[R] B) :
     MonoidAlgebra A M ≃ₐ[R] MonoidAlgebra B M where
   __ := mapRangeAlgHom (R := R) M f
