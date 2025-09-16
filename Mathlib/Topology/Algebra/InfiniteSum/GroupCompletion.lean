@@ -13,17 +13,21 @@ import Mathlib.Topology.Algebra.InfiniteSum.Group
 open UniformSpace.Completion
 
 variable {α β : Type*} [AddCommGroup α] [UniformSpace α] [IsUniformAddGroup α]
+  {L : Filter (Finset β)}
+
 
 /-- A function `f` has a sum in an uniform additive group `α` if and only if it has that sum in the
 completion of `α`. -/
-theorem hasSum_iff_hasSum_compl (f : β → α) (a : α) :
-    HasSum (toCompl ∘ f) a ↔ HasSum f a := (isDenseInducing_toCompl α).hasSum_iff f a
+theorem hasSumFilter_iff_hasSum_compl (f : β → α) (a : α) :
+    HasSumFilter L (toCompl ∘ f) a ↔ HasSumFilter L f a :=
+  (isDenseInducing_toCompl α).hasSumFilter_iff f a
 
 /-- A function `f` is summable in a uniform additive group `α` if and only if it is summable in
 `Completion α` and its sum in `Completion α` lies in the range of `toCompl : α →+ Completion α`. -/
-theorem summable_iff_summable_compl_and_tsum_mem (f : β → α) :
-    Summable f ↔ Summable (toCompl ∘ f) ∧ ∑' i, toCompl (f i) ∈ Set.range toCompl :=
-  (isDenseInducing_toCompl α).summable_iff_tsum_comp_mem_range f
+theorem summableFilter_iff_summableFilter_compl_and_tsumFilter_mem [L.NeBot] (f : β → α) :
+    SummableFilter L f ↔ SummableFilter L (toCompl ∘ f) ∧
+    ∑'[L] i, toCompl (f i) ∈ Set.range toCompl :=
+  (isDenseInducing_toCompl α).summableFilter_iff_tsumFilter_comp_mem_range f
 
 /-- A function `f` is summable in a uniform additive group `α` if and only if the net of its partial
 sums is Cauchy and its sum in `Completion α` lies in the range of `toCompl : α →+ Completion α`.
@@ -35,9 +39,10 @@ theorem summable_iff_cauchySeq_finset_and_tsum_mem (f : β → α) :
   classical
   constructor
   · rintro ⟨a, ha⟩
-    exact ⟨ha.cauchySeq, ((summable_iff_summable_compl_and_tsum_mem f).mp ⟨a, ha⟩).2⟩
+    exact ⟨ha.cauchySeq,
+      ((summableFilter_iff_summableFilter_compl_and_tsumFilter_mem f).mp ⟨a, ha⟩).2⟩
   · rintro ⟨h_cauchy, h_tsum⟩
-    apply (summable_iff_summable_compl_and_tsum_mem f).mpr
+    apply (summableFilter_iff_summableFilter_compl_and_tsumFilter_mem f).mpr
     constructor
     · apply summable_iff_cauchySeq_finset.mpr
       simp_rw [Function.comp_apply, ← map_sum]
@@ -46,5 +51,6 @@ theorem summable_iff_cauchySeq_finset_and_tsum_mem (f : β → α) :
 
 /-- If a function `f` is summable in a uniform additive group `α`, then its sum in `α` is the same
 as its sum in `Completion α`. -/
-theorem Summable.toCompl_tsum {f : β → α} (hf : Summable f) : ∑' i, toCompl (f i) = ∑' i, f i :=
-  (hf.map_tsum toCompl (continuous_coe α)).symm
+theorem SummableFilter.toCompl_tsumFilter [L.NeBot] {f : β → α} (hf : SummableFilter L f) :
+    ∑'[L] i, toCompl (f i) = ∑'[L] i, f i :=
+  (hf.map_tsumFilter toCompl (continuous_coe α)).symm
