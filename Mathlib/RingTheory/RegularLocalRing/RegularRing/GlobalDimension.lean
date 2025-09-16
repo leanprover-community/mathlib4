@@ -23,9 +23,6 @@ theorem IsRegularRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegularRi
     [IsNoetherianRing R] : globalDimension.{v} R = ringKrullDim R := by
   by_cases ntr : Nontrivial R
   · rw [globalDimension_eq_iSup_loclization_maximal]
-    have : ↑(⨆ (I : Ideal R), ⨆ (x : I.IsMaximal), I.primeHeight) = ringKrullDim R :=
-      --Ideal.sup_primeHeight_of_maximal_eq_ringKrullDim
-      sorry
     let _ : Nonempty (Subtype (Ideal.IsMaximal (α := R))) :=
       nonempty_subtype.mpr (Ideal.exists_maximal R)
     let f := fun (x : Subtype (Ideal.IsMaximal (α := R))) ↦
@@ -37,7 +34,7 @@ theorem IsRegularRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegularRi
       refine mem_upperBounds.mpr (fun x ⟨y, hy⟩ ↦ ?_)
       let _ := Ideal.IsMaximal.isPrime y.2
       simpa [← hy, WithBot.le_unbot_iff] using Ideal.primeHeight_le_ringKrullDim
-    rw [← this, iSup_subtype', WithBot.coe_iSup bdd]
+    rw [← Ideal.sup_primeHeight_of_maximal_eq_ringKrullDim, iSup_subtype', WithBot.coe_iSup bdd]
     apply le_antisymm
     · simp only [iSup_le_iff]
       intro p
