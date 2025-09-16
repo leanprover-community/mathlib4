@@ -23,10 +23,21 @@ example (x : ℚ) :
   algebra with ℚ
 
 example (x : ℚ) :
-    (X 1 + 2) * (X 1 + C x) = 0 := by
+    (X 1 + 2) * (X 1 + C x) * (X 4 + X 1) = 0 := by
   simp_rw [← MvPolynomial.algebraMap_eq, Algebra.algebraMap_eq_smul_one]
   algebra_nf with ℚ
   simp only [smul_eq_C_mul, mul_one]
   sorry
 
 end MvPolynomial
+
+open Polynomial
+
+example (x : ℚ) (n : ℕ):
+    (X^n + 43: Polynomial ℤ).map (algebraMap ℤ ℚ) + (X : Polynomial ℚ) = 2 * (X : Polynomial ℚ) := by
+  simp
+  algebra_nf with ℚ
+  sorry
+
+
+attribute [local instance] Polynomial.algebra

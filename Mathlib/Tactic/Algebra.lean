@@ -26,6 +26,8 @@ TODOs:
 * `polynomial(_nf)` tactics that do some preprocessing to deal with `monomial` and `Polynomial.C`
 * `match_coefficients` tactic that normalizes polynomials and matches corresponding coefficients.
 * Handle `algebraMap` in some way. Either with a preprocessing step or as a special case in `eval`
+* Handle expressions specific to `Polynomial`: Simplify Polynomial.map (note it sends X ↦ X),
+  and handle the Algebra (Polynomial _) (Polynomial _) instance gracefully.
 
 -/
 
@@ -68,8 +70,6 @@ end
 
 variable {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
   {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (a : Q($A))
-
-
 
 def one : Ring.ExSum q($sA) q(Nat.rawCast (nat_lit 1) + 0 : $A) :=
   .add (.const (e := q(Nat.rawCast (nat_lit 1) : $A)) 1 none) .zero
