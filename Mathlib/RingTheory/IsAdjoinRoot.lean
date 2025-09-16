@@ -521,6 +521,9 @@ include h in
 theorem finrank [StrongRankCondition R] : Module.finrank R S = f.natDegree :=
   (powerBasis h).finrank
 
+/--
+See `finrank_quotient_span_eq_natDegree` for a more general version over a field.
+-/
 theorem _root_.finrank_quotient_span_eq_natDegree' [StrongRankCondition R] (hf : f.Monic) :
     Module.finrank R (R[X] ⧸ Ideal.span {f}) = f.natDegree :=
   (AdjoinRoot.isAdjoinRootMonic _ hf).finrank

@@ -548,6 +548,9 @@ theorem minpoly_powerBasis_gen_of_monic (hf : f.Monic) (hf' : f ≠ 0 := hf.ne_z
     minpoly K (powerBasis hf').gen = f := by
   rw [minpoly_powerBasis_gen hf', hf.leadingCoeff, inv_one, C.map_one, mul_one]
 
+/--
+See `finrank_quotient_span_eq_natDegree'` for a version over a ring when `f` is monic.
+-/
 theorem _root_.finrank_quotient_span_eq_natDegree {f : K[X]} :
     Module.finrank K (K[X] ⧸ Ideal.span {f}) = f.natDegree := by
   by_cases hf : f = 0
