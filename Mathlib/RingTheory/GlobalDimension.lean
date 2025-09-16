@@ -252,11 +252,12 @@ open Limits in
 lemma ext_subsingleton_of_quotients [Small.{v} R] (M : ModuleCat.{v} R) (n : ℕ)
     (h : ∀ I : Ideal R, Subsingleton (Ext.{w} (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M (n + 1))) :
     ∀ N : ModuleCat.{v} R, Subsingleton (Ext.{w} N M (n + 1)) := by
-  induction' n with n ih generalizing M
+  induction n generalizing M
   · have : Injective M := injective_of_quotients_ext_one_subsingleton R M h
     intro N
     exact subsingleton_of_forall_eq 0 (fun e ↦ Ext.eq_zero_of_injective e)
-  · let ei : EnoughInjectives (ModuleCat R) := inferInstance
+  · rename_i n ih
+    let ei : EnoughInjectives (ModuleCat R) := inferInstance
     rcases ei.1 M with ⟨⟨I, inj, f, mono⟩⟩
     let S := ShortComplex.mk f (cokernel.π f) (cokernel.condition f)
     have S_exact : S.ShortExact := {
