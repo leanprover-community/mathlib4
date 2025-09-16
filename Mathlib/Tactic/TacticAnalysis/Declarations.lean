@@ -7,7 +7,6 @@ import Mathlib.Tactic.TacticAnalysis
 import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.MinImports
 import Lean.Elab.Tactic.Meta
-import Lean.Meta.Tactic.ExposeNames
 import Lean.Elab.Command
 
 /-!
@@ -88,6 +87,7 @@ def terminalReplacement (oldTacticName newTacticName : String) (oldTacticKind : 
       else
         return none
     | .success newStx => do
+      -- TODO: we should add a "Try this:" suggestion with code action.
       let msg := if (← liftCoreM <| PrettyPrinter.ppTactic newStx).pretty = newTacticName then
         m!"`{newTacticName}` can replace `{stx}`"
       else
