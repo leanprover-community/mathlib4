@@ -78,7 +78,7 @@ operations on filters, without directly manipulating entourages.
 * `UniformContinuous f` is a predicate saying a function `f : α → β` between uniform spaces
   is uniformly continuous : `∀ r ∈ 𝓤 β, ∀ᶠ (x : α × α) in 𝓤 α, (f x.1, f x.2) ∈ r`
 
-## Notations
+## Notation
 
 Localized in `Uniformity`, we have the notation `𝓤 X` for the uniformity on a uniform space `X`,
 and `○` for composition of relations, seen as terms with type `Set (X × X)`.

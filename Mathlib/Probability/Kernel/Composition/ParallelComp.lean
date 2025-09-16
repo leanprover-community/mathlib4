@@ -20,7 +20,7 @@ Two kernels `κ : Kernel α β` and `η : Kernel γ δ` can be applied in parall
   of two s-finite kernels. We define a notation `κ ∥ₖ η = parallelComp κ η`.
   `∫⁻ bd, g bd ∂(κ ∥ₖ η) ac = ∫⁻ b, ∫⁻ d, g (b, d) ∂η ac.2 ∂κ ac.1`
 
-## Notations
+## Notation
 
 * `κ ∥ₖ η = ProbabilityTheory.Kernel.parallelComp κ η`
 

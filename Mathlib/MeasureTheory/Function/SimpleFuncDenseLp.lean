@@ -34,7 +34,7 @@ by a sequence of simple functions.
 
 For `E` finite-dimensional, simple functions `α →ₛ E` are dense in L^∞ -- prove this.
 
-## Notations
+## Notation
 
 * `α →ₛ β` (local notation): the type of simple functions `α → β`.
 * `α →₁ₛ[μ] E`: the type of `L1` simple functions `α → β`.

@@ -39,7 +39,7 @@ We also define a predicate saying that `f ∘ torusMap c R` is integrable on the
 * `torusIntegral_dim0`, `torusIntegral_dim1`, `torusIntegral_succ`: formulas for `torusIntegral`
   in cases of dimension `0`, `1`, and `n + 1`.
 
-## Notations
+## Notation
 
 - `ℝ⁰`, `ℝ¹`, `ℝⁿ`, `ℝⁿ⁺¹`: local notation for `Fin 0 → ℝ`, `Fin 1 → ℝ`, `Fin n → ℝ`, and
   `Fin (n + 1) → ℝ`, respectively;

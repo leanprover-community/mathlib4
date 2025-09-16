@@ -25,7 +25,7 @@ This ensures `simp` works with entries only when (some) entries are already give
 In other words, this notation will only appear in the output of `simp` if it
 already appears in the input.
 
-## Notations
+## Notation
 
 The main new notation is `![a, b]`, which gets expanded to `vecCons a (vecCons b vecEmpty)`.
 

@@ -27,7 +27,7 @@ Any injective function `Fin m → Fin n` gives rise to a `PEquiv`, whose matrix 
 map from R^m → R^n represented by the same function. The transpose of this matrix is the right
 inverse of this map, sending anything not in the image to zero.
 
-## notations
+## Notation
 
 This file uses `ᵀ` for `Matrix.transpose`.
 -/

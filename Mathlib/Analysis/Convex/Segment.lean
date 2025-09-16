@@ -14,7 +14,7 @@ In a 𝕜-vector space, we define the following objects and properties.
 * `segment 𝕜 x y`: Closed segment joining `x` and `y`.
 * `openSegment 𝕜 x y`: Open segment joining `x` and `y`.
 
-## Notations
+## Notation
 
 We provide the following notation:
 * `[x -[𝕜] y] = segment 𝕜 x y` in scope `Convex`
