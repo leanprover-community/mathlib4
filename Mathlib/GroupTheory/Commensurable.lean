@@ -115,4 +115,3 @@ theorem eq {H K : Subgroup G} (hk : Commensurable H K) : commensurator H = comme
     ⟨fun h => hx.symm.trans (h.trans hk), fun h => hx.trans (h.trans hk.symm)⟩
 
 end Subgroup.Commensurable
-#lint
