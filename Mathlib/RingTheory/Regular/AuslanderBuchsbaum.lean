@@ -374,14 +374,15 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
     Nat.find hfinprojdim + IsLocalRing.depth M =
     IsLocalRing.depth.{v} (ModuleCat.of R (Shrink.{v} R)) := by
     generalize h: Nat.find hfinprojdim = n
-    induction' n with n ih generalizing M
+    induction n generalizing M
     · simp only [CharP.cast_eq_zero, IsLocalRing.depth, Ideal.depth, moduleDepth, zero_add]
       have pdz: HasProjectiveDimensionLE M (Nat.find hfinprojdim) := Nat.find_spec hfinprojdim
       simp only [HasProjectiveDimensionLE, h, zero_add] at pdz
       have : Module.Free R M := M.free_of_projective_of_isLocalRing
       congr! 5
       apply finte_free_ext_vanish_iff
-    · by_cases eq0 : n = 0
+    · rename_i n ih _ _
+      by_cases eq0 : n = 0
       · simp only [eq0, zero_add, Nat.find_eq_iff, Nat.lt_one_iff, forall_eq, Nat.cast_one] at h ⊢
         exact AuslanderBuchsbaum_one M h.1 h.2
       · rcases Basis.exists_basis (R ⧸ maximalIdeal R) (M ⧸ maximalIdeal R • (⊤ : Submodule R M))
