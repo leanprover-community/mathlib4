@@ -531,6 +531,8 @@
   ["Mathlib.Analysis.Normed.Module.Basic"],
   "Mathlib.Analysis.LocallyConvex.Basic":
   ["Mathlib.Analysis.Normed.Module.Basic"],
+  "Mathlib.Analysis.InnerProductSpace.StarOrder":
+  ["Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap"],
   "Mathlib.Analysis.InnerProductSpace.PiL2": ["Mathlib.Util.Superscript"],
   "Mathlib.Analysis.InnerProductSpace.Defs": ["Mathlib.Data.Complex.Basic"],
   "Mathlib.Analysis.Distribution.SchwartzSpace": ["Mathlib.Tactic.MoveAdd"],
@@ -540,6 +542,8 @@
   "Mathlib.Analysis.Complex.IsIntegral": ["Mathlib.Analysis.Complex.Basic"],
   "Mathlib.Analysis.CStarAlgebra.Unitization":
   ["Mathlib.Analysis.CStarAlgebra.Classes"],
+  "Mathlib.Analysis.CStarAlgebra.GelfandDuality":
+  ["Mathlib.Analysis.CStarAlgebra.ContinuousMap"],
   "Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique":
   ["Mathlib.Analysis.InnerProductSpace.Basic"],
   "Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital":
