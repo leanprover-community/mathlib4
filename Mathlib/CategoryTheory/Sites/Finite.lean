@@ -14,6 +14,7 @@ contain only finitely many arrows.
 
 ## Main Definitions
 
+- `CategoryTheory.Precoverage.finite`: The finite precoverage on a category.
 - `CategoryTheory.Pretopology.finite`: The finite pretopology on a category.
 -/
 
@@ -21,75 +22,47 @@ universe v v₁ u u₁
 
 namespace CategoryTheory
 
-open Limits
+open Presieve
 
-namespace Presieve
+namespace Precoverage
 
-variable {C : Type u} [Category.{v} C] {X : C} (s : Presieve X)
-  {D : Type u₁} [Category.{v₁} D] (F : C ⥤ D)
+/-- The finite precoverage on a category consists of finite presieves, i.e. a presieve with finitely
+many maps after uncurrying. -/
+def finite (C : Type u) [Category.{v} C] : Precoverage C where
+  coverings X := { s : Presieve X | s.uncurry.Finite }
 
-@[ext] lemma ext {s₁ s₂ : Presieve X} (h : ∀ Y : C, @s₁ Y = @s₂ Y) : s₁ = s₂ :=
-  funext h
+variable {C : Type u} [Category.{v} C]
 
-/-- Uncurry a presieve to one set over the sigma type. -/
-def uncurry : Set (Σ Y, Y ⟶ X) :=
-  { u | s u.snd }
+@[simp] lemma mem_finite_iff {X : C} {s : Presieve X} :
+    s ∈ finite C X ↔ s.uncurry.Finite := Iff.rfl
 
-@[simp] theorem uncurry_singleton {Y : C} (u : Y ⟶ X) : (singleton u).uncurry = { ⟨Y, u⟩ } := by
-  ext ⟨Z, v⟩; constructor
-  · rintro ⟨⟩; rfl
-  · intro h
-    rw [Set.mem_singleton_iff, Sigma.ext_iff] at h
-    obtain ⟨rfl, h⟩ := h; subst h; constructor
+theorem ofArrows_mem_finite {X : C} {ι : Type*} [Finite ι] (Y : ι → C) (f : (i : ι) → Y i ⟶ X) :
+    ofArrows Y f ∈ finite C X := by
+  simpa using Set.finite_range _
 
-/-- The uncurried version of `pullbackArrows`. -/
-@[simp] noncomputable nonrec
-def _root_.Sigma.pullback [HasPullbacks C] {B : C} (b : B ⟶ X) (f : Σ Y, Y ⟶ X) : Σ Y, Y ⟶ B :=
-  ⟨pullback f.2 b, pullback.snd _ _⟩
+instance : (finite C).HasIsos where
+  mem_coverings_of_isIso := by simp
 
-@[simp] theorem uncurry_pullbackArrows [HasPullbacks C] {B : C} (b : B ⟶ X) :
-    (pullbackArrows b s).uncurry = Sigma.pullback b '' s.uncurry := by
-  ext ⟨Z, v⟩; constructor
-  · rintro ⟨Y, u, hu⟩; exact ⟨⟨Y, u⟩, hu, rfl⟩
-  · rintro ⟨⟨Y, u⟩, hu, h⟩
-    rw [Sigma.ext_iff] at h
-    obtain ⟨rfl, h⟩ := h
-    rw [heq_iff_eq] at h; subst h
-    exact ⟨Y, u, hu⟩
-
-/-- The uncurried version of composing on the right. -/
-@[simp]
-def _root_.Sigma.map_hom {Y : C} (u : Y ⟶ X) (f : Σ Z, Z ⟶ Y) : Σ Z, Z ⟶ X :=
-  ⟨f.1, f.2 ≫ u⟩
-
-@[simp] theorem uncurry_bind (t : ⦃Y : C⦄ → (f : Y ⟶ X) → s f → Presieve Y) :
-    (s.bind t).uncurry = ⋃ i ∈ s.uncurry, Sigma.map_hom i.2 '' (t _ ‹_›).uncurry := by
-  ext ⟨Z, v⟩; simp only [Set.mem_iUnion, Set.mem_image]; constructor
-  · rintro ⟨Y, g, f, hf, ht, hv⟩
-    exact ⟨⟨_, f⟩, hf, ⟨_, g⟩, ht, Sigma.ext rfl (heq_of_eq hv)⟩
-  · rintro ⟨⟨_, f⟩, hf, ⟨Y, g⟩, hg, h⟩
-    rw [Sigma.ext_iff] at h
-    obtain ⟨rfl, h⟩ := h
-    rw [heq_iff_eq] at h; subst h
-    exact ⟨_, _, _, _, hg, rfl⟩
-
-/-- This presieve generates `functorPushforward`. -/
-inductive map : Presieve (F.obj X) where
-  | of {Y : C} {u : Y ⟶ X} (h : s u) : map (F.map u)
-
-end Presieve
+end Precoverage
 
 namespace Pretopology
 
-open Presieve
+open Limits
 
 /-- The finite pretopology on a category consists of finite presieves, i.e. a presieve with finitely
 many maps after uncurrying. -/
+@[simps toPrecoverage]
 def finite (C : Type u) [Category.{v} C] [HasPullbacks C] : Pretopology C where
-  coverings X := { s : Presieve X | s.uncurry.Finite }
-  has_isos X Y f _ := by simp
+  __ := Precoverage.finite C
+  has_isos _ _ _ := Precoverage.mem_coverings_of_isIso _
   pullbacks X Y u s hs := by simpa using hs.image _
   transitive X s t hs ht := by simpa using hs.biUnion' fun _ _ ↦ (ht _ _).image _
+
+variable {C : Type u} [Category.{v} C] [HasPullbacks C]
+
+theorem ofArrows_mem_finite {X : C} {ι : Type*} [Finite ι] (Y : ι → C) (f : (i : ι) → Y i ⟶ X) :
+    ofArrows Y f ∈ (finite C).coverings X :=
+  Precoverage.ofArrows_mem_finite _ _
 
 end Pretopology
 

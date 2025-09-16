@@ -53,12 +53,6 @@ theorem Multipliable.tendsto_prod_tprod_nat {f : ℕ → M} (h : Multipliable f)
     Tendsto (fun n ↦ ∏ i ∈ range n, f i) atTop (𝓝 (∏' i, f i)) :=
   h.hasProd.tendsto_prod_nat
 
-@[deprecated (since := "2025-02-02")]
-alias HasProd.Multipliable.tendsto_prod_tprod_nat := Multipliable.tendsto_prod_tprod_nat
-
-@[deprecated (since := "2025-02-02")]
-alias HasSum.Multipliable.tendsto_sum_tsum_nat := Summable.tendsto_sum_tsum_nat
-
 namespace HasProd
 
 section ContinuousMul
@@ -532,6 +526,20 @@ lemma multipliable_int_iff_multipliable_nat_and_neg {f : ℤ → G} :
   refine ⟨fun p ↦ ⟨?_, ?_⟩, fun ⟨hf₁, hf₂⟩ ↦ Multipliable.of_nat_of_neg hf₁ hf₂⟩ <;>
   apply p.comp_injective
   exacts [Nat.cast_injective, neg_injective.comp Nat.cast_injective]
+
+-- We're not really using the ring structure here:
+-- we only use multiplication by `-1`, so perhaps this can be generalised further.
+theorem Summable.alternating {α} [Ring α]
+    [UniformSpace α] [IsUniformAddGroup α] [CompleteSpace α] {f : ℕ → α} (hf : Summable f) :
+    Summable (fun n => (-1) ^ n * f n) := by
+  apply Summable.even_add_odd
+  · simp only [even_two, Even.mul_right, Even.neg_pow, one_pow, one_mul]
+    exact hf.comp_injective (mul_right_injective₀ (two_ne_zero' ℕ))
+  · simp only [pow_add, even_two, Even.mul_right, Even.neg_pow, one_pow, pow_one, mul_neg, mul_one,
+      neg_mul, one_mul]
+    apply Summable.neg
+    apply hf.comp_injective
+    exact (add_left_injective 1).comp (mul_right_injective₀ (two_ne_zero' ℕ))
 
 end IsUniformGroup
 
