@@ -166,8 +166,7 @@ lemma piScalarRight_symm_single (x : N) (i : ι) :
 
 theorem piScalarRight_symm_algebraMap {N : Type*}
     [Semiring N] [Algebra R N] [Module S N] [IsScalarTower R S N] (x : ι → R) :
-    (TensorProduct.piScalarRight R S N ι).symm (fun i => algebraMap _ _ (x i)) =
-      1 ⊗ₜ[R] (∑ i, Pi.single i (x i)) := by
+    (TensorProduct.piScalarRight R S N ι).symm (fun i => algebraMap _ _ (x i)) = 1 ⊗ₜ[R] x := by
   simp [Algebra.algebraMap_eq_smul_one, LinearEquiv.symm_apply_eq]
 
 end TensorProduct
