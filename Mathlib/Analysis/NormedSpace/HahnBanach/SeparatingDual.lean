@@ -120,10 +120,7 @@ instance (W) [AddCommGroup W] [TopologicalSpace W] [Module R W] [Nontrivial W]
   obtain ⟨v, hv⟩ := exists_ne (0 : V)
   obtain ⟨w, hw⟩ := exists_ne (0 : W)
   obtain ⟨ψ, hψ⟩ := exists_ne_zero (R := R) hv
-  let φ := toSpanSingleton R (⟨w, Submodule.mem_span_singleton_self _⟩ : (R ∙ w))
-  refine ⟨(R ∙ w).subtypeL ∘L φ ∘L ψ, 0, DFunLike.ne_iff.mpr ⟨v, ?_⟩⟩
-  simpa [map_ne_zero_iff (R ∙ w).subtypeL <| (R ∙ w).subtype_injective,
-    map_ne_zero_iff φ <| smul_left_injective _ <| by simp [hw]]
+  exact ⟨ψ.smulRight w, 0, DFunLike.ne_iff.mpr ⟨v, by simp_all⟩⟩
 
 lemma exists_eq_one {x : V} (hx : x ≠ 0) :
     ∃ f : StrongDual R V, f x = 1 := by
