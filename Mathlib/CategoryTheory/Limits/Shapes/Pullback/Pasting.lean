@@ -309,7 +309,7 @@ def rightSquareIsPushout (H : IsColimit t₁) (H' : IsColimit (t₁.pasteHoriz t
     (by rw [reassoc_of% t₁.condition, ← hi₂, s.condition, Category.assoc])
   refine ⟨l, ?_, hl', ?_⟩
   -- To check that `l` is compatible with the projections, we use the universal property of `t₁`
-  · simp at hl hl'
+  · simp only [PushoutCocone.mk_pt, PushoutCocone.mk_ι_app, Category.assoc] at hl hl'
     apply PushoutCocone.IsColimit.hom_ext H hl
     rw [← Category.assoc, ← hi₂, t₂.condition, s.condition, Category.assoc, hl']
   -- Uniqueness of the lift follows from the universal property of the big square

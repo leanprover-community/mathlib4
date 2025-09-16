@@ -32,7 +32,7 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
 
 * Annihilators:
   * `Module.dualAnnihilator_gc R M` is the antitone Galois correspondence between
-    `Submodule.dualAnnihilator` and `Submodule.dualConnihilator`.
+    `Submodule.dualAnnihilator` and `Submodule.dualCoannihilator`.
 * Finite-dimensional vector spaces:
   * `Module.evalEquiv` is the equivalence `V ≃ₗ[K] Dual K (Dual K V)`
   * `Module.mapEvalEquiv` is the order isomorphism between subspaces of `V` and
@@ -489,7 +489,7 @@ theorem ker_dualMap_eq_dualAnnihilator_range :
     LinearMap.ker f.dualMap = (range f).dualAnnihilator := by
   ext
   simp_rw [mem_ker, LinearMap.ext_iff, Submodule.mem_dualAnnihilator,
-    ← SetLike.mem_coe, range_coe, Set.forall_mem_range]
+    ← SetLike.mem_coe, coe_range, Set.forall_mem_range]
   rfl
 
 theorem range_dualMap_le_dualAnnihilator_ker :

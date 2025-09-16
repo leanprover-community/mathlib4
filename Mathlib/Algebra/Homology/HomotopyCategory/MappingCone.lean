@@ -22,7 +22,11 @@ assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Limits
 
-variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
+-- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
+
+universe v v'
+
+variable {C D : Type*} [Category.{v} C] [Category.{v'} D] [Preadditive C] [Preadditive D]
 
 namespace CochainComplex
 
