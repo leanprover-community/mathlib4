@@ -94,12 +94,11 @@ theorem IntervalIntegrable.congr_ae {g : ℝ → ε} (hf : IntervalIntegrable f 
     IntervalIntegrable g μ a b := by
   rwa [← intervalIntegrable_congr_ae h]
 
-@[deprecated (since := "2025-05-13")]
-alias IntervalIntegrable.congr := IntervalIntegrable.congr_ae
-
 theorem intervalIntegrable_congr {g : ℝ → ε} (h : EqOn f g (Ι a b)) :
     IntervalIntegrable f μ a b ↔ IntervalIntegrable g μ a b :=
   intervalIntegrable_congr_ae <| (ae_restrict_mem measurableSet_uIoc).mono h
+
+alias ⟨IntervalIntegrable.congr, _⟩ := intervalIntegrable_congr
 
 /-- Interval integrability is invariant when functions change along discrete sets. -/
 theorem IntervalIntegrable.congr_codiscreteWithin {g : ℝ → ε} [NoAtoms μ]
