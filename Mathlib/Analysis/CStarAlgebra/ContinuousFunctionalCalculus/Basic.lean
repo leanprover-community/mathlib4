@@ -460,7 +460,7 @@ instance IsStarNormal.instIsometricContinuousFunctionalCalculus :
 instance IsSelfAdjoint.instIsometricContinuousFunctionalCalculus :
     IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint :=
   SpectrumRestricts.isometric_cfc Complex.reCLM Complex.isometry_ofReal (.zero _)
-    fun _ ↦ isSelfAdjoint_iff_isStarNormal_and_spectrumRestricts
+    fun _ ↦ isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts
 
 end Unital
 
