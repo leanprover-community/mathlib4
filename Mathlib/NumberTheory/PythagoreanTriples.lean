@@ -251,8 +251,7 @@ def circleEquivGen (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) :
     K ≃ { p : K × K // p.1 ^ 2 + p.2 ^ 2 = 1 ∧ p.2 ≠ -1 } where
   toFun x :=
     ⟨⟨2 * x / (1 + x ^ 2), (1 - x ^ 2) / (1 + x ^ 2)⟩, by
-      field_simp [hk x]
-      ring, by
+      field_simp [hk x]; ring, by
       simp only [Ne, div_eq_iff (hk x), neg_mul, one_mul, neg_add, sub_eq_add_neg, add_left_inj]
       simpa only [eq_neg_iff_add_eq_zero, one_pow] using hk 1⟩
   invFun p := (p : K × K).1 / ((p : K × K).2 + 1)
@@ -432,9 +431,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
     simp [field, v, w]
     simp only [sq]
     norm_cast
-  have hvz : v ≠ 0 := by
-    simp [field, v, -mul_eq_zero, -div_eq_zero_iff]
-    exact h0
+  have hvz : v ≠ 0 := by simp [field, v, -mul_eq_zero, -div_eq_zero_iff, h0]
   have hw1 : w ≠ -1 := by
     contrapose! hvz with hw1
     rw [hw1, neg_sq, one_pow, add_eq_right] at hq

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Normed.Operator.Banach
-import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
+import Mathlib.Analysis.Normed.Operator.NormedSpace
 import Mathlib.Topology.PartialHomeomorph
 /-!
 # Non-linear maps close to affine maps
@@ -34,7 +34,7 @@ lemmas. This approach makes it possible
 - to reuse parts of the proofs in the case if a function is not strictly differentiable. E.g., for a
   function `f : E × F → G` with estimates on `f x y₁ - f x y₂` but not on `f x₁ y - f x₂ y`.
 
-## Notations
+## Notation
 
 We introduce some `local notation` to make formulas shorter:
 
@@ -211,7 +211,9 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
   have D : ∀ n : ℕ, dist (f (u n)) y ≤ ((c : ℝ) * f'symm.nnnorm) ^ n * dist (f b) y ∧
       dist (u n) b ≤ f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) /
         (1 - (c : ℝ) * f'symm.nnnorm) * dist (f b) y := fun n ↦ by
-    induction' n with n IH; · simp [hu, le_refl]
+    induction n with
+    | zero => simp [hu, le_refl]
+    | succ n IH => ?_
     rw [usucc]
     have Ign : dist (g (u n)) b ≤ f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n.succ) /
         (1 - c * f'symm.nnnorm) * dist (f b) y :=

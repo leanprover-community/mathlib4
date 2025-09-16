@@ -55,6 +55,16 @@ variable {ι : Type*}
 theorem replicateRow_apply (v : n → α) (i : ι) (j) : replicateRow ι v i j = v j :=
   rfl
 
+@[simp]
+theorem vecMulVec_one [MulOneClass R] (x : n → R) :
+    vecMulVec x 1 = replicateCol m x := by
+  ext; simp [vecMulVec_apply]
+
+@[simp]
+theorem one_vecMulVec [MulOneClass R] (x : n → R) :
+    vecMulVec 1 x = replicateRow m x := by
+  ext; simp [vecMulVec_apply]
+
 theorem replicateCol_injective [Nonempty ι] :
     Function.Injective (replicateCol ι : (m → α) → Matrix m ι α) := by
   inhabit ι
@@ -346,6 +356,23 @@ theorem diagonal_updateRow_single [DecidableEq n] [Zero α] (v : n → α) (i : 
     (diagonal v).updateRow i (Pi.single i x) = diagonal (Function.update v i x) := by
   rw [← diagonal_transpose, updateRow_transpose, diagonal_updateCol_single, diagonal_transpose]
 
+@[simp]
+theorem updateRow_idem [DecidableEq m] (A : Matrix m n α) (i : m) (x y : n → α) :
+    (A.updateRow i x).updateRow i y = A.updateRow i y := Function.update_idem _ _ _
+
+theorem updateRow_comm [DecidableEq m] (A : Matrix m n α) {i i' : m} (h : i ≠ i') (x y : n → α) :
+    (A.updateRow i x).updateRow i' y = (A.updateRow i' y).updateRow i x :=
+  Function.update_comm h _ _ _
+
+@[simp]
+theorem updateCol_idem [DecidableEq n] (A : Matrix m n α) (j : n) (x y : m → α) :
+    (A.updateCol j x).updateCol j y = A.updateCol j y := by
+  simpa only [updateRow_transpose] using congr_arg transpose <| updateRow_idem Aᵀ j x y
+
+theorem updateCol_comm [DecidableEq n] (A : Matrix m n α) {j j' : n} (h : j ≠ j') (x y : m → α) :
+    (A.updateCol j x).updateCol j' y = (A.updateCol j' y).updateCol j x := by
+  simpa only [updateRow_transpose] using congr_arg transpose <| updateRow_comm Aᵀ h x y
+
 /-! Updating rows and columns commutes in the obvious way with reindexing the matrix. -/
 
 
@@ -419,6 +446,20 @@ theorem vecMul_updateCol [DecidableEq n] [Fintype m] [NonUnitalNonAssocSemiring 
   obtain rfl | hj := eq_or_ne j' j
   · simp [vecMul]
   · simp [vecMul, hj]
+
+theorem update_vecMulVec [DecidableEq m] [Mul α] (u : m → α) (v : n → α) (i : m) (a : α) :
+    vecMulVec (Function.update u i a) v = (vecMulVec u v).updateRow i (a • v) := by
+  ext i' j
+  obtain rfl | hi := eq_or_ne i' i
+  · simp [vecMulVec_apply]
+  · simp [vecMulVec_apply, hi]
+
+theorem vecMulVec_update [DecidableEq n] [Mul α] (u : m → α) (v : n → α) (j : n) (a : α) :
+    vecMulVec u (Function.update v j a) = (vecMulVec u v).updateCol j (MulOpposite.op a • u) := by
+  ext i j'
+  obtain rfl | hi := eq_or_ne j' j
+  · simp [vecMulVec_apply]
+  · simp [vecMulVec_apply, hi]
 
 theorem updateRow_mul [DecidableEq l] [Fintype m] [NonUnitalNonAssocSemiring α]
     (A : Matrix l m α) (i : l) (r : m → α) (B : Matrix m n α) :

@@ -3,7 +3,6 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Batteries.Data.Nat.Gcd
 import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Algebra.GroupWithZero.Nat
 import Mathlib.Algebra.Prime.Defs
@@ -121,15 +120,11 @@ theorem prime_def_lt' {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m → m <
 theorem prime_def_le_sqrt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m → m ≤ sqrt p → ¬m ∣ p :=
   prime_def_lt'.trans <|
     and_congr_right fun p2 =>
-      ⟨fun a m m2 l => a m m2 <| lt_of_le_of_lt l <| sqrt_lt_self p2, fun a =>
-        have : ∀ {m k : ℕ}, m ≤ k → 1 < m → p ≠ m * k := fun {m k} mk m1 e =>
-          a m m1 (le_sqrt.2 (e.symm ▸ Nat.mul_le_mul_left m mk)) ⟨k, e⟩
-        fun m m2 l ⟨k, e⟩ => by
-        rcases le_total m k with mk | km
-        · exact this mk m2 e
+      ⟨fun a m m2 l => a m m2 <| lt_of_le_of_lt l <| sqrt_lt_self p2, fun a m m2 l mdvd@⟨k, e⟩ => by
+        rcases le_sqrt_of_eq_mul e with hm | hk
+        · exact a m m2 hm mdvd
         · rw [mul_comm] at e
-          refine this km (Nat.lt_of_mul_lt_mul_right (a := m) ?_) e
-          rwa [one_mul, ← e]⟩
+          exact a k (Nat.lt_of_mul_lt_mul_right (a := m) (by rwa [one_mul, ← e])) hk ⟨m, e⟩⟩
 
 theorem prime_iff_not_exists_mul_eq {p : ℕ} :
     p.Prime ↔ 2 ≤ p ∧ ¬ ∃ m n, m < p ∧ n < p ∧ m * n = p := by

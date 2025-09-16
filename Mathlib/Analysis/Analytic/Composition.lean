@@ -226,7 +226,7 @@ protected def comp (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultilinear
     FormalMultilinearSeries 𝕜 E G := fun n => ∑ c : Composition n, q.compAlongComposition p c
 
 /-- The `0`-th coefficient of `q.comp p` is `q 0`. Since these maps are multilinear maps in zero
-variables, but on different spaces, we can not state this directly, so we state it when applied to
+variables, but on different spaces, we cannot state this directly, so we state it when applied to
 arbitrary vectors (which have to be the zero vector). -/
 theorem comp_coeff_zero (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultilinearSeries 𝕜 E F)
     (v : Fin 0 → E) (v' : Fin 0 → F) : (q.comp p) 0 v = q 0 v' := by
@@ -467,8 +467,8 @@ theorem comp_summable_nnreal (q : FormalMultilinearSeries 𝕜 F G) (p : FormalM
       _ ≤ Cp ^ n := pow_right_mono₀ hCp1 c.length_le
     calc
       ‖q.compAlongComposition p c‖₊ * r ^ n ≤
-          (‖q c.length‖₊ * ∏ i, ‖p (c.blocksFun i)‖₊) * r ^ n :=
-        mul_le_mul' (q.compAlongComposition_nnnorm p c) le_rfl
+          (‖q c.length‖₊ * ∏ i, ‖p (c.blocksFun i)‖₊) * r ^ n := by
+        grw [q.compAlongComposition_nnnorm p c]
       _ = ‖q c.length‖₊ * rq ^ n * ((∏ i, ‖p (c.blocksFun i)‖₊) * rp ^ n) * r0 ^ n := by
         ring
       _ ≤ Cq * Cp ^ n * r0 ^ n := mul_le_mul' (mul_le_mul' A B) le_rfl
@@ -885,7 +885,7 @@ theorem AnalyticOnNhd.comp' {s : Set E} {g : F → G} {f : E → F} (hg : Analyt
 theorem AnalyticOnNhd.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F}
     (hg : AnalyticOnNhd 𝕜 g t) (hf : AnalyticOnNhd 𝕜 f s) (st : Set.MapsTo f s t) :
     AnalyticOnNhd 𝕜 (g ∘ f) s :=
-  comp' (mono hg (Set.mapsTo'.mp st)) hf
+  comp' (mono hg (Set.mapsTo_iff_image_subset.mp st)) hf
 
 lemma AnalyticOnNhd.comp_analyticOn {f : F → G} {g : E → F} {s : Set F}
     {t : Set E} (hf : AnalyticOnNhd 𝕜 f s) (hg : AnalyticOn 𝕜 g t) (h : Set.MapsTo g t s) :
@@ -1066,9 +1066,10 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
     change
       sum (take (b.blocks.take i).sum a.blocks) =
         sum (take i (map sum (splitWrtComposition a.blocks b)))
-    induction' i with i IH
-    · rfl
-    · have A : i < b.length := Nat.lt_of_succ_lt hi
+    induction i with
+    | zero => rfl
+    | succ i IH =>
+      have A : i < b.length := Nat.lt_of_succ_lt hi
       have B : i < List.length (map List.sum (splitWrtComposition a.blocks b)) := by simp [A]
       have C : 0 < blocksFun b ⟨i, A⟩ := Composition.blocks_pos' _ _ _
       rw [sum_take_succ _ _ B, ← IH A C]

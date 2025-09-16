@@ -25,7 +25,7 @@ In this file we prove basic properties of the following notions defined elsewher
 
 We also prove various basic properties of the relation `Inseparable`.
 
-## Notations
+## Notation
 
 - `x ⤳ y`: notation for `Specializes x y`;
 - `x ~ᵢ y` is used as a local notation for `Inseparable x y`;
@@ -556,6 +556,12 @@ theorem continuous_mk : Continuous (mk : X → SeparationQuotient X) :=
 theorem mk_eq_mk : mk x = mk y ↔ (x ~ᵢ y) :=
   Quotient.eq''
 
+protected theorem «forall» {P : SeparationQuotient X → Prop} : (∀ x, P x) ↔ ∀ x, P (.mk x) :=
+  Quotient.forall
+
+protected theorem «exists» {P : SeparationQuotient X → Prop} : (∃ x, P x) ↔ ∃ x, P (.mk x) :=
+  Quotient.exists
+
 theorem surjective_mk : Surjective (mk : X → SeparationQuotient X) :=
   Quot.mk_surjective
 
@@ -571,6 +577,19 @@ instance [Inhabited X] : Inhabited (SeparationQuotient X) :=
 
 instance [Subsingleton X] : Subsingleton (SeparationQuotient X) :=
   surjective_mk.subsingleton
+
+@[simp]
+theorem inseparableSetoid_eq_top_iff {t : TopologicalSpace α} :
+    inseparableSetoid α = ⊤ ↔ t = ⊤ :=
+  Setoid.eq_top_iff.trans TopologicalSpace.eq_top_iff_forall_inseparable.symm
+
+theorem subsingleton_iff {t : TopologicalSpace α} :
+    Subsingleton (SeparationQuotient α) ↔ t = ⊤ :=
+  Quotient.subsingleton_iff.trans inseparableSetoid_eq_top_iff
+
+theorem nontrivial_iff {t : TopologicalSpace α} :
+    Nontrivial (SeparationQuotient α) ↔ t ≠ ⊤ := by
+  simpa only [not_subsingleton_iff_nontrivial] using subsingleton_iff.not
 
 @[to_additive] instance [One X] : One (SeparationQuotient X) := ⟨mk 1⟩
 

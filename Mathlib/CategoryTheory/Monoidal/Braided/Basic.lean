@@ -212,21 +212,18 @@ def BraidedCategory.ofFaithful {C D : Type*} [Category C] [Category D] [Monoidal
     BraidedCategory C where
   braiding := β
   braiding_naturality_left := by
-    unfold autoParam at w
     intros
     apply F.map_injective
     refine (cancel_epi (μ F ?_ ?_)).1 ?_
     rw [Functor.map_comp, ← μ_natural_left_assoc, w, Functor.map_comp,
       reassoc_of% w, braiding_naturality_left_assoc, μ_natural_right]
   braiding_naturality_right := by
-    unfold autoParam at w
     intros
     apply F.map_injective
     refine (cancel_epi (μ F ?_ ?_)).1 ?_
     rw [Functor.map_comp, ← μ_natural_right_assoc, w, Functor.map_comp,
       reassoc_of% w, braiding_naturality_right_assoc, μ_natural_left]
   hexagon_forward := by
-    unfold autoParam at w
     intros
     apply F.map_injective
     refine (cancel_epi (μ F _ _)).1 ?_
@@ -239,7 +236,6 @@ def BraidedCategory.ofFaithful {C D : Type*} [Category C] [Category D] [Monoidal
       reassoc_of% w, braiding_naturality_right_assoc,
       Functor.LaxMonoidal.associativity, hexagon_forward_assoc]
   hexagon_reverse := by
-    unfold autoParam at w
     intros
     apply F.map_injective
     refine (cancel_epi (μ F _ _)).1 ?_
