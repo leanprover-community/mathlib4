@@ -28,10 +28,10 @@ namespace SimpleGraph
 
 /-- An explicit form for the constant in the triangle removal lemma.
 
-Note that this depends on `SzemerediRegularity.bound`, which is a tower-type exponential. This means
+Note that this depends on `SzemerediRegularity.szBound`, which is a tower-type exponential. This means
 `triangleRemovalBound` is in practice absolutely tiny. -/
 noncomputable def triangleRemovalBound (ε : ℝ) : ℝ :=
-  min (2 * ⌈4/ε⌉₊^3)⁻¹ ((1 - ε/4) * (ε/(16 * bound (ε/8) ⌈4/ε⌉₊))^3)
+  min (2 * ⌈4/ε⌉₊^3)⁻¹ ((1 - ε/4) * (ε/(16 * szBound (ε/8) ⌈4/ε⌉₊))^3)
 
 lemma triangleRemovalBound_pos (hε : 0 < ε) (hε₁ : ε ≤ 1) : 0 < triangleRemovalBound ε := by
   have : 0 < 1 - ε / 4 := by linarith
@@ -54,8 +54,8 @@ private lemma aux {n k : ℕ} (hk : 0 < k) (hn : k ≤ n) : n < 2 * k * (n / k) 
   apply (mod_lt n hk).trans_le
   simpa using Nat.mul_le_mul_left k ((Nat.one_le_div_iff hk).2 hn)
 
-private lemma card_bound (hP₁ : P.IsEquipartition) (hP₃ : #P.parts ≤ bound (ε / 8) ⌈4 / ε⌉₊)
-    (hX : s ∈ P.parts) : card α / (2 * bound (ε / 8) ⌈4 / ε⌉₊ : ℝ) ≤ #s := by
+private lemma card_bound (hP₁ : P.IsEquipartition) (hP₃ : #P.parts ≤ szBound (ε / 8) ⌈4 / ε⌉₊)
+    (hX : s ∈ P.parts) : card α / (2 * szBound (ε / 8) ⌈4 / ε⌉₊ : ℝ) ≤ #s := by
   cases isEmpty_or_nonempty α
   · simp [Fintype.card_eq_zero]
   have := Finset.Nonempty.card_pos ⟨_, hX⟩
@@ -66,7 +66,7 @@ private lemma card_bound (hP₁ : P.IsEquipartition) (hP₃ : #P.parts ≤ bound
     _ ≤ (#s : ℝ) := mod_cast hP₁.average_le_card_part hX
 
 private lemma triangle_removal_aux (hε : 0 < ε) (hP₁ : P.IsEquipartition)
-    (hP₃ : #P.parts ≤ bound (ε / 8) ⌈4 / ε⌉₊)
+    (hP₃ : #P.parts ≤ szBound (ε / 8) ⌈4 / ε⌉₊)
     (ht : t ∈ (G.regularityReduced P (ε / 8) (ε / 4)).cliqueFinset 3) :
     triangleRemovalBound ε * card α ^ 3 ≤ #(G.cliqueFinset 3) := by
   rw [mem_cliqueFinset_iff, is3Clique_iff] at ht
@@ -83,10 +83,10 @@ private lemma triangle_removal_aux (hε : 0 < ε) (hP₁ : P.IsEquipartition)
   have : 0 ≤ 1 - 2 * (ε / 8) := by
     have : ε / 4 ≤ 1 := ‹ε / 4 ≤ _›.trans (by exact mod_cast G.edgeDensity_le_one _ _); linarith
   calc
-    _ ≤ (1 - ε/4) * (ε/(16 * bound (ε/8) ⌈4/ε⌉₊))^3 * card α ^ 3 := by
+    _ ≤ (1 - ε/4) * (ε/(16 * szBound (ε/8) ⌈4/ε⌉₊))^3 * card α ^ 3 := by
       gcongr; exact min_le_right _ _
-    _ = (1 - 2 * (ε / 8)) * (ε / 8) ^ 3 * (card α / (2 * bound (ε / 8) ⌈4 / ε⌉₊)) *
-          (card α / (2 * bound (ε / 8) ⌈4 / ε⌉₊)) * (card α / (2 * bound (ε / 8) ⌈4 / ε⌉₊)) := by
+    _ = (1 - 2 * (ε / 8)) * (ε / 8) ^ 3 * (card α / (2 * szBound (ε / 8) ⌈4 / ε⌉₊)) *
+        (card α / (2 * szBound (ε / 8) ⌈4 / ε⌉₊)) * (card α / (2 * szBound (ε / 8) ⌈4 / ε⌉₊)) := by
       ring
     _ ≤ (1 - 2 * (ε / 8)) * (ε / 8) ^ 3 * #s * #Y * #Z := by
       gcongr <;> exact card_bound hP₁ hP₃ ‹_›
