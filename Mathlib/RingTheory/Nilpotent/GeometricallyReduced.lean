@@ -14,12 +14,12 @@ import Mathlib.RingTheory.Henselian
 
 In this file we introduce geometrically reduced algebras.
 For a field `k`, we say that a `k`-algebra `A` is geometrically reduced (`IsGeometricallyReduced`)
-if the tensor product `A ⊗[k] AlgebraicClosure k` is reduced.
+if the tensor product `AlgebraicClosure k ⊗[k] A` is reduced.
 
 ## Main results
-- `FlatBaseChangeIsReduced.of_FG`: if `k` is a commutative ring and `A` and `C` are `k`-algebras,
-  such that `C ⊗[k] B` is reduced for all finitely generated `k` subalgebras `B` of `A`, then
-  `C ⊗[k] A` is reduced.
+- `IsReduced.tensor_of_flat_of_forall_fg`: if `R` is a commutative ring and `A` and `C` are
+  `R`-algebras, such that `C ⊗[R] B` is reduced for all finitely generated `R` subalgebras `B` of
+  `A`, then `C ⊗[R] A` is reduced.
 
 ## References
 - See [https://stacks.math.columbia.edu/tag/05DS] for some theory of geometrically reduced algebras.
@@ -36,8 +36,7 @@ variable {k A : Type*} [Field k] [Ring A] [Algebra k A]
 /-- The `k`-algebra `A` is geometrically reduced iff its base change to `AlgebraicClosure k` is
   reduced -/
 @[mk_iff]
-class IsGeometricallyReduced (k A : Type*) [Field k] [Ring A] [Algebra k A]
-    : Prop where
+class IsGeometricallyReduced (k A : Type*) [Field k] [Ring A] [Algebra k A] : Prop where
   reduced_algebraicClosure_tensor : IsReduced ((AlgebraicClosure k) ⊗[k] A)
 
 attribute [instance] IsGeometricallyReduced.reduced_algebraicClosure_tensor
@@ -55,6 +54,7 @@ lemma isGeometricallyReduced_of_injective {B : Type*} [Ring B] [Algebra k B] (f 
   ⟨isReduced_of_injective (Algebra.TensorProduct.map 1 f)
     (Module.Flat.lTensor_preserves_injective_linearMap _ hf)⟩
 
+variable (k) in
 theorem isReduced_of_isGeometricallyReduced [IsGeometricallyReduced k A] : IsReduced A :=
   isReduced_of_injective
     (Algebra.TensorProduct.includeRight : A →ₐ[k] (AlgebraicClosure k) ⊗[k] A)
@@ -62,10 +62,10 @@ theorem isReduced_of_isGeometricallyReduced [IsGeometricallyReduced k A] : IsRed
 
 -- If all finitely generated subalgebras of A are geometrically reduced, then A is geometrically
 -- reduced. The result is in https://stacks.math.columbia.edu/tag/030T
-theorem FlatBaseChangeIsReduced.of_FG {k A C : Type*}
-    [Ring A] [CommRing C] [CommRing k] [Algebra k A] [Algebra k C] [Module.Flat k C]
-    (h : ∀ B : Subalgebra k A, B.FG → IsReduced (C ⊗[k] B)) :
-    IsReduced (C ⊗[k] A) := by
+theorem IsReduced.tensor_of_flat_of_forall_fg {R A C : Type*}
+    [CommRing R] [CommRing C] [Ring A] [Algebra R A] [Algebra R C] [Module.Flat R C]
+    (h : ∀ B : Subalgebra R A, B.FG → IsReduced (C ⊗[R] B)) :
+    IsReduced (C ⊗[R] A) := by
   by_contra h_contra
   obtain ⟨x, hx⟩ := exists_isNilpotent_of_not_isReduced h_contra
   obtain ⟨D, hD⟩ := exists_fg_and_mem_baseChange x
@@ -74,7 +74,7 @@ theorem FlatBaseChangeIsReduced.of_FG {k A C : Type*}
     apply Module.Flat.lTensor_preserves_injective_linearMap
     exact (AlgHom.injective_codRestrict D.val D Subtype.property).mp fun ⦃a₁ a₂⦄ a ↦ a
   obtain ⟨z, rfl⟩ := hD.2
-  have h_notReduced : ¬IsReduced (C ⊗[k] D) := by
+  have h_notReduced : ¬IsReduced (C ⊗[R] D) := by
     simp_rw [isReduced_iff, not_forall]
     exact ⟨z, (IsNilpotent.map_iff h_inj).mp hx.right, (by simpa [·] using hx.1)⟩
   tauto
