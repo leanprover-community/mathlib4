@@ -571,7 +571,7 @@ noncomputable def ModularForm.translate [ModularFormClass F Γ k] (g : GL (Fin 2
   __ := SlashInvariantForm.translate f g
   bdd_at_cusps' {c} hc γ hγ := by
     rw [SlashInvariantForm.toFun_eq_coe, SlashInvariantForm.coe_translate,
-      ← SlashAction.slash_mul, ← isBoundedAt_infty, OnePoint.IsBoundedAt.slash]
+      ← SlashAction.slash_mul, ← isBoundedAt_infty_iff, ← OnePoint.IsBoundedAt.smul_iff]
     apply ModularFormClass.bdd_at_cusps f
     simpa [mul_smul, hγ] using hc.smul g
   holo' := (ModularFormClass.holo f).slash k g
@@ -588,7 +588,8 @@ noncomputable def CuspForm.translate [CuspFormClass F Γ k] (g : GL (Fin 2) ℝ)
   __ := ModularForm.translate f g
   zero_at_cusps' {c} hc γ hγ := by
     rw [SlashInvariantForm.toFun_eq_coe, ModularForm.toSlashInvariantForm_coe,
-      ModularForm.coe_translate, ← SlashAction.slash_mul, ← isZeroAt_infty, OnePoint.IsZeroAt.slash]
+      ModularForm.coe_translate, ← SlashAction.slash_mul, ← isZeroAt_infty_iff,
+      ← OnePoint.IsZeroAt.smul_iff]
     apply CuspFormClass.zero_at_cusps f
     simpa [mul_smul, hγ] using hc.smul g
 
@@ -607,7 +608,7 @@ variable {k F} {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.IsArithmetic] [FunLike F ℍ
 
 lemma ModularFormClass.bdd_at_infty_slash [ModularFormClass F Γ k]
     (f : F) (g : SL(2, ℤ)) : IsBoundedAtImInfty (f ∣[k] g) := by
-  rw [← OnePoint.isBoundedAt_infty, SL_slash, OnePoint.IsBoundedAt.slash]
+  rw [← OnePoint.isBoundedAt_infty_iff, SL_slash, ← OnePoint.IsBoundedAt.smul_iff]
   apply bdd_at_cusps f
   rw [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff']
   exact ⟨g, by simp [mapGL]⟩
@@ -618,7 +619,7 @@ lemma ModularFormClass.bdd_at_infty [ModularFormClass F Γ k]
 
 lemma CuspFormClass.zero_at_infty_slash [CuspFormClass F Γ k]
     (f : F) (g : SL(2, ℤ)) : IsZeroAtImInfty (f ∣[k] g) := by
-  rw [← OnePoint.isZeroAt_infty, SL_slash, OnePoint.IsZeroAt.slash]
+  rw [← OnePoint.isZeroAt_infty_iff, SL_slash, ← OnePoint.IsZeroAt.smul_iff]
   apply zero_at_cusps f
   rw [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff']
   exact ⟨g, by simp [mapGL]⟩
