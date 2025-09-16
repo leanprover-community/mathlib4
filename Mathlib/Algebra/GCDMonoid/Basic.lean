@@ -414,7 +414,7 @@ theorem gcd_mul_left' [GCDMonoid α] (a b c : α) :
   obtain ⟨d, eq⟩ := dvd_gcd (dvd_mul_right a b) (dvd_mul_right a c)
   apply associated_of_dvd_dvd
   · rw [eq]
-    apply mul_dvd_mul_left
+    gcongr
     exact
       dvd_gcd ((mul_dvd_mul_iff_left ha).1 <| eq ▸ gcd_dvd_left _ _)
         ((mul_dvd_mul_iff_left ha).1 <| eq ▸ gcd_dvd_right _ _)
@@ -808,59 +808,47 @@ theorem lcm_eq_of_associated_right [NormalizedGCDMonoid α] {m n : α} (h : Asso
   dvd_antisymm_of_normalize_eq (normalize_lcm _ _) (normalize_lcm _ _) (lcm_dvd_lcm dvd_rfl h.dvd)
     (lcm_dvd_lcm dvd_rfl h.symm.dvd)
 
--- TODO consider reorganizing and extracting the variables here
-/-
 section Divisibility
 
 variable [GCDMonoid α] {m n a b c : α}
- -/
 
--- adapted from `Nat.lcm_dvd_mul` in Lean 4's source
-@[simp] theorem lcm_dvd_mul [GCDMonoid α] (m n : α) : lcm m n ∣ m * n :=
+variable (m n) in
+@[simp] theorem lcm_dvd_mul : lcm m n ∣ m * n :=
   lcm_dvd (by simp) (by simp)
 
-/-- adapted from and similar to `dvd_mul_of_dvd_left` -/
-theorem dvd_lcm_of_dvd_left [GCDMonoid α] {a b : α} (h : a ∣ b) (c : α) : a ∣ lcm b c :=
+theorem dvd_lcm_of_dvd_left (h : a ∣ b) (c : α) : a ∣ lcm b c :=
   h.trans (dvd_lcm_left b c)
 
-/-- adapted from and similar to `Dvd.dvd.mul_right` -/
 alias Dvd.dvd.lcm_right := dvd_lcm_of_dvd_left
 
-/-- adapted from and similar to `dvd_of_mul_right_dvd` -/
-theorem dvd_of_lcm_right_dvd [GCDMonoid α] {a b c : α} (h : lcm a b ∣ c) : a ∣ c :=
+theorem dvd_of_lcm_right_dvd (h : lcm a b ∣ c) : a ∣ c :=
   (dvd_lcm_left a b).trans h
 
-/-- adapted from and similar to `dvd_mul_of_dvd_right` -/
-theorem dvd_lcm_of_dvd_right [GCDMonoid α] {a b : α} (h : a ∣ b) (c : α) : a ∣ lcm c b :=
+theorem dvd_lcm_of_dvd_right (h : a ∣ b) (c : α) : a ∣ lcm c b :=
   h.trans (dvd_lcm_right c b)
 
-/-- adapted from and similar to `Dvd.dvd.mul_left` -/
 alias Dvd.dvd.lcm_left := dvd_lcm_of_dvd_right
 
-/-- adapted from and similar to `dvd_of_mul_left_dvd` -/
-theorem dvd_of_lcm_left_dvd [GCDMonoid α] {a b c : α} (h : lcm a b ∣ c) : b ∣ c :=
+theorem dvd_of_lcm_left_dvd (h : lcm a b ∣ c) : b ∣ c :=
   (dvd_lcm_right a b).trans h
 
---end Divisibility
-
 namespace Prime
+variable {p : α} (hp : Prime p)
 
-variable [GCDMonoid α] {p a b : α} (hp : Prime p)
 include hp
 
-/-- adapted from and similar to `Prime.dvd_or_dvd` -/
 theorem dvd_or_dvd_of_dvd_lcm (h : p ∣ lcm a b) : p ∣ a ∨ p ∣ b :=
   dvd_or_dvd hp (h.trans (lcm_dvd_mul a b))
 
-/-- adapted from and similar to `Prime.dvd_mul` -/
 theorem dvd_lcm : p ∣ lcm a b ↔ p ∣ a ∨ p ∣ b :=
   ⟨hp.dvd_or_dvd_of_dvd_lcm, (Or.elim · (dvd_lcm_of_dvd_left · _) (dvd_lcm_of_dvd_right · _))⟩
 
-/-- adapted from and similar to `Prime.not_dvd_mul` -/
 theorem not_dvd_lcm (ha : ¬ p ∣ a) (hb : ¬ p ∣ b) : ¬ p ∣ lcm a b :=
   hp.dvd_lcm.not.mpr <| not_or.mpr ⟨ha, hb⟩
 
 end Prime
+
+end Divisibility
 
 end LCM
 

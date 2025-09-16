@@ -290,8 +290,6 @@ theorem existsUnique_iff_card_one {α} [Fintype α] (p : α → Prop) [Decidable
   simp only [Subset.antisymm_iff, subset_singleton_iff', singleton_subset_iff, and_comm,
     mem_filter_univ]
 
-@[deprecated (since := "2024-12-17")] alias exists_unique_iff_card_one := existsUnique_iff_card_one
-
 nonrec theorem two_lt_card_iff : 2 < card α ↔ ∃ a b c : α, a ≠ b ∧ a ≠ c ∧ b ≠ c := by
   simp_rw [← Finset.card_univ, two_lt_card_iff, mem_univ, true_and]
 
@@ -470,7 +468,7 @@ theorem Fintype.induction_subsingleton_or_nontrivial {P : ∀ (α) [Fintype α],
       (∀ (β) [Fintype β], Fintype.card β < Fintype.card α → P β) → P α) :
     P α := by
   obtain ⟨n, hn⟩ : ∃ n, Fintype.card α = n := ⟨Fintype.card α, rfl⟩
-  induction' n using Nat.strong_induction_on with n ih generalizing α
+  induction n using Nat.strong_induction_on generalizing α with | _ n ih
   rcases subsingleton_or_nontrivial α with hsing | hnontriv
   · apply hbase
   · apply hstep

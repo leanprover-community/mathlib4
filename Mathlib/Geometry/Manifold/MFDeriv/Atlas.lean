@@ -369,13 +369,9 @@ theorem TangentBundle.symmL_trivializationAt
     {x₀ x : M} (hx : x ∈ (chartAt H x₀).source) :
     (trivializationAt E (TangentSpace I) x₀).symmL 𝕜 x =
       mfderivWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm (range I) (extChartAt I x₀ x) := by
-  have : MDifferentiableWithinAt 𝓘(𝕜, E) I (extChartAt I x₀).symm (range I) (extChartAt I x₀ x) :=
-    mdifferentiableWithinAt_extChartAt_symm (by simp [hx])
-  simp? at this says
-    simp only [extChartAt, PartialHomeomorph.extend, PartialEquiv.coe_trans_symm,
-      PartialHomeomorph.coe_coe_symm, ModelWithCorners.toPartialEquiv_coe_symm,
-      PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe,
-      Function.comp_apply] at this
+  have : MDifferentiableWithinAt 𝓘(𝕜, E) I ((chartAt H x₀).symm ∘ I.symm) (range I)
+      (I (chartAt H x₀ x)) := by
+    simpa using mdifferentiableWithinAt_extChartAt_symm (by simp [hx])
   simp [hx, mfderivWithin, this]
 
 end extChartAt

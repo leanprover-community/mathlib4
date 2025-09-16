@@ -94,8 +94,6 @@ theorem map_addHaar {ι E F : Type*} [Fintype ι] [NormedAddCommGroup E] [Normed
     [BorelSpace F] [SecondCountableTopology F] [SigmaCompactSpace F]
     (b : Basis ι ℝ E) (f : E ≃L[ℝ] F) :
     map f b.addHaar = (b.map f.toLinearEquiv).addHaar := by
-  have : IsAddHaarMeasure (map f b.addHaar) :=
-    AddEquiv.isAddHaarMeasure_map b.addHaar f.toAddEquiv f.continuous f.symm.continuous
   rw [eq_comm, Basis.addHaar_eq_iff, Measure.map_apply f.continuous.measurable
     (PositiveCompacts.isCompact _).measurableSet, Basis.coe_parallelepiped, Basis.coe_map]
   erw [← image_parallelepiped, f.toEquiv.preimage_image, addHaar_self]
@@ -495,9 +493,6 @@ theorem addHaar_unitClosedBall_eq_addHaar_unitBall :
   filter_upwards [Ioo_mem_nhdsLT zero_lt_one] with r hr
   rw [← addHaar_closedBall' μ (0 : E) hr.1.le]
   exact measure_mono (closedBall_subset_ball hr.2)
-
-@[deprecated (since := "2024-12-01")]
-alias addHaar_closed_unit_ball_eq_addHaar_unit_ball := addHaar_unitClosedBall_eq_addHaar_unitBall
 
 theorem addHaar_closedBall (x : E) {r : ℝ} (hr : 0 ≤ r) :
     μ (closedBall x r) = ENNReal.ofReal (r ^ finrank ℝ E) * μ (ball 0 1) := by

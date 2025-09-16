@@ -281,7 +281,7 @@ theorem sum_pow_units [DecidableEq K] (i : ℕ) :
   let φ : Kˣ →* K :=
     { toFun := fun x => x ^ i
       map_one' := by simp
-      map_mul' := by intros; simp [mul_pow] }
+      map_mul' := by simp [mul_pow] }
   have : Decidable (φ = 1) := by classical infer_instance
   calc (∑ x : Kˣ, φ x) = if φ = 1 then Fintype.card Kˣ else 0 := sum_hom_units φ
       _ = if q - 1 ∣ i then -1 else 0 := by
@@ -355,6 +355,10 @@ variable (L : Type*) [Field L] [Algebra K L]
 theorem coe_frobeniusAlgEquivOfAlgebraic [Algebra.IsAlgebraic K L] :
     ⇑(frobeniusAlgEquivOfAlgebraic K L) = (· ^ q) := rfl
 
+lemma coe_frobeniusAlgEquivOfAlgebraic_iterate [Algebra.IsAlgebraic K L] (n : ℕ) :
+    (⇑(frobeniusAlgEquivOfAlgebraic K L))^[n] = (· ^ (Fintype.card K ^ n)) :=
+  pow_iterate (Fintype.card K) n
+
 variable [Finite L]
 
 open Polynomial in
@@ -396,6 +400,16 @@ instance (K L) [Finite L] [Field K] [Field L] [Algebra K L] : IsCyclic (L ≃ₐ
     have := Fintype.ofFinite K
     ⟨frobeniusAlgEquivOfAlgebraic K L,
       fun f ↦ have ⟨n, hn⟩ := (bijective_frobeniusAlgEquivOfAlgebraic_pow K L).2 f; ⟨n, hn⟩⟩
+
+open Polynomial in
+theorem minpoly_frobeniusAlgHom :
+    minpoly K (frobeniusAlgHom K L).toLinearMap = X ^ Module.finrank K L - 1 :=
+  minpoly.eq_of_linearIndependent _ _ (leadingCoeff_X_pow_sub_one Module.finrank_pos)
+    (LinearMap.ext fun x ↦ by simpa [sub_eq_zero, Module.End.coe_pow, orderOf_frobeniusAlgHom] using
+      congr($(pow_orderOf_eq_one (frobeniusAlgHom K L)) x)) _
+    (degree_X_pow_sub_C Module.finrank_pos _) <| by
+      simpa [← AlgHom.toEnd_apply, ← map_pow] using (linearIndependent_algHom_toLinearMap K L L
+        |>.restrict_scalars' K).comp _ (bijective_frobeniusAlgHom_pow K L).1
 
 end frobenius
 
@@ -532,7 +546,7 @@ theorem ZMod.pow_totient {n : ℕ} (x : (ZMod n)ˣ) : x ^ φ n = 1 := by
 /-- The **Fermat-Euler totient theorem**. `ZMod.pow_totient` is an alternative statement
   of the same theorem. -/
 theorem Nat.ModEq.pow_totient {x n : ℕ} (h : Nat.Coprime x n) : x ^ φ n ≡ 1 [MOD n] := by
-  rw [← ZMod.eq_iff_modEq_nat]
+  rw [← ZMod.natCast_eq_natCast_iff]
   let x' : Units (ZMod n) := ZMod.unitOfCoprime _ h
   have := ZMod.pow_totient x'
   apply_fun ((fun (x : Units (ZMod n)) => (x : ZMod n)) : Units (ZMod n) → ZMod n) at this
@@ -619,6 +633,39 @@ theorem Int.ModEq.pow_card_sub_one_eq_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ}
     · exact hpn.symm
   simpa [← ZMod.intCast_eq_intCast_iff] using ZMod.pow_card_sub_one_eq_one this
 
+theorem Int.prime_dvd_pow_sub_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ} (hpn : IsCoprime n p) :
+    (p : ℤ) ∣ n ^ (p - 1) - 1 :=
+  (ModEq.pow_card_sub_one_eq_one hp hpn).symm.dvd
+
+theorem Int.ModEq.pow_prime_eq_self {p : ℕ} (hp : Nat.Prime p) (n : ℤ) : n ^ p ≡ n [ZMOD p] := by
+  haveI : Fact p.Prime := ⟨hp⟩
+  simp [← ZMod.intCast_eq_intCast_iff]
+
+theorem Int.prime_dvd_pow_self_sub {p : ℕ} (hp : Nat.Prime p) (n : ℤ) : (p : ℤ) ∣ n ^ p - n :=
+  (ModEq.pow_prime_eq_self hp n).symm.dvd
+
+theorem Int.ModEq.pow_eq_pow {p x y : ℕ} (hp : Nat.Prime p) (h : p - 1 ∣ x - y) (hxy : y ≤ x)
+    (hy : 0 < y) (n : ℤ) : n ^ x ≡ n ^ y [ZMOD p] := by
+  rw [← Nat.mul_div_eq_iff_dvd] at h
+  by_cases hn : n ≡ 0 [ZMOD p]
+  · grw [hn, zero_pow (hy.trans_le hxy).ne', zero_pow hy.ne']
+  · rw [Int.modEq_zero_iff_dvd, ← (Nat.prime_iff_prime_int.mp hp).coprime_iff_not_dvd] at hn
+    grw [← pow_sub_mul_pow n hxy, ← h, pow_mul, Int.ModEq.pow_card_sub_one_eq_one hp hn.symm,
+      one_pow, one_mul]
+
+/-- **Fermat's Little Theorem**: for all `n : ℕ` coprime to `p`, we have
+`n ^ (p - 1) ≡ 1 [MOD p]`. -/
+theorem Nat.ModEq.pow_card_sub_one_eq_one {p : ℕ} (hp : p.Prime) {n : ℕ} (hpn : n.Coprime p) :
+    n ^ (p - 1) ≡ 1 [MOD p] := by
+  rw [← Int.natCast_modEq_iff, Nat.cast_pow, Nat.cast_one]
+  exact Int.ModEq.pow_card_sub_one_eq_one hp (isCoprime_iff_coprime.mpr hpn)
+
+/-- **Fermat's Little Theorem**: for all `n : ℕ` coprime to `p`, we have
+`(n ^ (p - 1) - 1) % p = 0`. -/
+theorem Nat.pow_card_sub_one_sub_one_mod_card {p : ℕ} (hp : p.Prime) {n : ℕ} (hpn : n.Coprime p) :
+    (n ^ (p - 1) - 1) % p = 0 :=
+  Nat.sub_mod_eq_zero_of_mod_eq (Nat.ModEq.pow_card_sub_one_eq_one hp hpn)
+
 theorem pow_pow_modEq_one (p m a : ℕ) : (1 + p * a) ^ (p ^ m) ≡ 1 [MOD p ^ m] := by
   induction m with
   | zero => exact Nat.modEq_one
@@ -646,7 +693,7 @@ theorem ZMod.eq_one_or_isUnit_sub_one {n p k : ℕ} [Fact p.Prime] (hn : n = p ^
   obtain ⟨a, rfl⟩ := ZMod.natCast_zmod_surjective a
   rw [← orderOf_eq_one_iff, or_iff_not_imp_right]
   refine fun h ↦ ha.eq_one_of_dvd ?_
-  rw [orderOf_dvd_iff_pow_eq_one, ← Nat.cast_pow, ← Nat.cast_one, ZMod.eq_iff_modEq_nat, hn]
+  rw [orderOf_dvd_iff_pow_eq_one, ← Nat.cast_pow, ← Nat.cast_one, ZMod.natCast_eq_natCast_iff, hn]
   replace ha0 : 1 ≤ a := by
     contrapose! ha0
     rw [Nat.lt_one_iff.mp ha0, Nat.cast_zero]

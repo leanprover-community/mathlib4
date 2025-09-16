@@ -58,7 +58,7 @@ namespace GromovHausdorff
 
 /-! In this section, we define the Gromov-Hausdorff space, denoted `GHSpace` as the quotient
 of nonempty compact subsets of `ℓ^∞(ℝ)` by identifying isometric sets.
-Using the Kuratwoski embedding, we get a canonical map `toGHSpace` mapping any nonempty
+Using the Kuratowski embedding, we get a canonical map `toGHSpace` mapping any nonempty
 compact type to `GHSpace`. -/
 section GHSpace
 
@@ -408,11 +408,7 @@ instance : MetricSpace GHSpace where
       funext
       simp only [comp_apply, Prod.fst_swap, Prod.snd_swap]
       congr
-      -- The next line had `singlePass := true` before https://github.com/leanprover-community/mathlib4/pull/9928,
-      -- then was changed to be `simp only [hausdorffDist_comm]`,
-      -- then `singlePass := true` was readded in https://github.com/leanprover-community/mathlib4/pull/8386 because of timeouts.
-      -- TODO: figure out what causes the slowdown and make it a `simp only` again?
-      simp +singlePass only [hausdorffDist_comm]
+      simp only [hausdorffDist_comm]
     simp only [dist, A, image_comp, image_swap_prod]
   eq_of_dist_eq_zero {x} {y} hxy := by
     /- To show that two spaces at zero distance are isometric,
@@ -489,8 +485,8 @@ end GHSpace --section
 end GromovHausdorff
 
 /-- In particular, nonempty compacts of a metric space map to `GHSpace`.
-    We register this in the `TopologicalSpace` namespace to take advantage
-    of the notation `p.toGHSpace`. -/
+We register this in the `TopologicalSpace` namespace to take advantage
+of the notation `p.toGHSpace`. -/
 def TopologicalSpace.NonemptyCompacts.toGHSpace {X : Type u} [MetricSpace X]
     (p : NonemptyCompacts X) : GromovHausdorff.GHSpace :=
   GromovHausdorff.toGHSpace p

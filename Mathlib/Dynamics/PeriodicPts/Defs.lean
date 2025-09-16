@@ -3,7 +3,6 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Batteries.Data.Nat.Gcd
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Sub.Basic
@@ -537,18 +536,18 @@ variable {M : Type u} [Monoid M] [MulAction M α]
 The period of a multiplicative action of `g` on `a` is the smallest positive `n` such that
 `g ^ n • a = a`, or `0` if such an `n` does not exist.
 -/
-@[to_additive "The period of an additive action of `g` on `a` is the smallest positive `n`
-such that `(n • g) +ᵥ a = a`, or `0` if such an `n` does not exist."]
+@[to_additive /-- The period of an additive action of `g` on `a` is the smallest positive `n`
+such that `(n • g) +ᵥ a = a`, or `0` if such an `n` does not exist. -/]
 noncomputable def period (m : M) (a : α) : ℕ := minimalPeriod (fun x => m • x) a
 
 /-- `MulAction.period m a` is definitionally equal to `Function.minimalPeriod (m • ·) a`. -/
-@[to_additive "`AddAction.period m a` is definitionally equal to
-`Function.minimalPeriod (m +ᵥ ·) a`"]
+@[to_additive /-- `AddAction.period m a` is definitionally equal to
+`Function.minimalPeriod (m +ᵥ ·) a` -/]
 theorem period_eq_minimalPeriod {m : M} {a : α} :
     MulAction.period m a = minimalPeriod (fun x => m • x) a := rfl
 
 /-- `m ^ (period m a)` fixes `a`. -/
-@[to_additive (attr := simp) "`(period m a) • m` fixes `a`."]
+@[to_additive (attr := simp) /-- `(period m a) • m` fixes `a`. -/]
 theorem pow_period_smul (m : M) (a : α) : m ^ (period m a) • a = a := by
   rw [period_eq_minimalPeriod, ← smul_iterate_apply, iterate_minimalPeriod]
 
@@ -588,7 +587,7 @@ theorem pow_mod_period_smul (n : ℕ) {m : M} {a : α} :
 @[to_additive (attr := simp)]
 theorem zpow_mod_period_smul (j : ℤ) {g : G} {a : α} :
     g ^ (j % (period g a : ℤ)) • a = g ^ j • a := by
-  conv_rhs => rw [← Int.emod_add_ediv j (period g a), zpow_add, mul_smul,
+  conv_rhs => rw [← Int.emod_add_mul_ediv j (period g a), zpow_add, mul_smul,
     zpow_smul_eq_iff_period_dvd.mpr (dvd_mul_right _ _)]
 
 @[to_additive (attr := simp)]

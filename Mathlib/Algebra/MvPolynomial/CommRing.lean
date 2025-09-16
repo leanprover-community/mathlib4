@@ -91,8 +91,6 @@ theorem degrees_sub_le [DecidableEq σ] {p q : MvPolynomial σ R} :
     (p - q).degrees ≤ p.degrees ∪ q.degrees := by
   simpa [degrees_def] using AddMonoidAlgebra.supDegree_sub_le
 
-@[deprecated (since := "2024-12-28")] alias degrees_sub := degrees_sub_le
-
 end Degrees
 
 section Degrees
@@ -178,7 +176,7 @@ theorem degreeOf_sub_lt {x : σ} {f g : MvPolynomial σ R} {k : ℕ} (h : 0 < k)
     (hg : ∀ m : σ →₀ ℕ, m ∈ g.support → k ≤ m x → coeff m f = coeff m g) :
     degreeOf x (f - g) < k := by
   rw [degreeOf_lt_iff h]
-  grind [degreeOf_lt_iff, mem_support_iff, coeff_sub, Finset.mem_union]
+  grind [degreeOf_lt_iff, mem_support_iff, coeff_sub]
 
 end DegreeOf
 
