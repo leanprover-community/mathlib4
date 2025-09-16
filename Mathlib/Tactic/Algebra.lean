@@ -16,7 +16,7 @@ attribute [local instance] monadLiftOptionMetaM
 
 /-
 TODOs:
-* Handle subtraction, negation, division, inversion.
+* Handle division, inversion.
 * Handle exponents with general natural expressions. Will have to decide what to do with the
   expression in the base. `Ring` distributes both addition in the exponents and products in the
   base, having put the base into ring normal form. Here we'd probably want to put the base into
@@ -38,6 +38,10 @@ set_option linter.style.longLine false
 
 open Ring in
 mutual
+
+/- If we want to support natural expressions in the exponentes to the fullest extent, we would
+need to create our own version of ExProd and ExBase, essentially reproducing the normal form of
+ring, except with the constants being replaced with `Ring.ExProd`.  -/
 
 /-- An expression of the form `r • a` -/
 inductive ExSMul : ∀ {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {_ : Q(CommSemiring $R)}
@@ -77,6 +81,10 @@ def one : Ring.ExSum q($sA) q(Nat.rawCast (nat_lit 1) + 0 : $A) :=
 /-- WARNING : n should be a natural literal. -/
 def mkNat (n : Q(ℕ)) : Ring.ExSum q($sA) q(Nat.rawCast $n + 0 : $A) :=
   .add (.const (e := q(Nat.rawCast ($n) : $A)) n.natLit! none) .zero
+
+-- omit sA in
+-- def mkInt (rA : Q(Ring $A)) (n : Q(ℤ)) (n' : ℤ) : Ring.ExSum q(inferInstance) q(Int.rawCast $n + 0 : $A) :=
+--   .add (α := q($A)) (sα := q(inferInstance)) (.const (e := q(Int.rawCast $n)) n' none) .zero
 
 def _root_.Mathlib.Tactic.Ring.ExProd.one : Ring.ExProd q($sA) q((nat_lit 1).rawCast : $A) :=
   .const 1 none
@@ -274,6 +282,24 @@ def evalMul {a b : Q($A)} (va : ExSum sAlg a) (vb : ExSum sAlg b) :
     let ⟨_, vd, pd⟩ ← evalAdd sAlg vc₁ vc₂
     return ⟨_, vd, q(sorry)⟩
 
+def evalNeg {a : Q($A)} (rR : Q(Ring $R)) (rA : Q(Ring $A)) (va : ExSum sAlg a) :
+    MetaM <| Result (ExSum sAlg) q(-$a) := do
+  match va with
+  | .zero => return ⟨_, .zero, (q(sorry))⟩
+  | .add va₁ va₂ =>
+    match va₁ with
+    | .smul vr va =>
+      let ⟨s, vs, pb₁⟩ ← Ring.evalNeg sR rR vr
+      let ⟨b₂, vb₂, pb₂⟩ ← evalNeg rR rA va₂
+      return ⟨_, .add (.smul vs va) vb₂, (q(sorry))⟩
+
+def evalSub {a b : Q($A)} (rR : Q(Ring $R)) (rA : Q(Ring $A))
+    (va : ExSum sAlg a) (vb : ExSum sAlg b) :
+    MetaM <| Result (ExSum sAlg) q($a - $b) := do
+  let ⟨_, vc, pc⟩ ← evalNeg sAlg rR rA vb
+  let ⟨_, vd, pd⟩ ← evalAdd sAlg va vc
+  return ⟨_, vd, q(sorry)⟩
+
 def _root_.Mathlib.Tactic.Ring.Cache.cast (c : Ring.Cache sR) :
   Ring.Cache sA where
     rα := c.rα
@@ -281,7 +307,7 @@ def _root_.Mathlib.Tactic.Ring.Cache.cast (c : Ring.Cache sR) :
     czα := c.czα
 
 variable {a} in
-def evalCast :
+def evalCast (c : Ring.Cache q($sR)) :
     NormNum.Result a → Option (Result (ExSum sAlg) a)
   | .isNat _ (.lit (.natVal 0)) p => do
     assumeInstancesCommute
@@ -292,9 +318,12 @@ def evalCast :
     -- TODO: extract proof
     pure ⟨_, (ExSMul.smul (mkNat lit) Ring.ExProd.one).toExSum,
       (q(by simp [← Algebra.algebraMap_eq_smul_one]; exact ($p).out))⟩
-  -- | .isNegNat rα lit p =>
-  --   pure ⟨_, (ExProd.mkNegNat _ rα lit.natLit!).2.toSum, (q(cast_neg $p) : Expr)⟩
-  -- We're not handling rational expressions in A.
+  | .isNegNat rA lit p => do
+    let some rR := c.rα | none
+    let ⟨r, vr⟩ := Ring.ExProd.mkNegNat sR rR lit.natLit!
+    have : $r =Q Int.rawCast (Int.negOfNat $lit) := ⟨⟩
+    pure ⟨_, (ExSMul.smul vr.toSum Ring.ExProd.one).toExSum, q(sorry)⟩
+  -- We don't handle rational expressions in A.
   | _ => none
 
 def evalPow {a : Q($A)} (b : ℕ) (va : ExSum sAlg a) :
@@ -316,14 +345,15 @@ def evalPow {a : Q($A)} (b : ℕ) (va : ExSum sAlg a) :
       return ⟨hf2, vhf2, q(sorry)⟩
 
 partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
-    {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (cacheR : Ring.Cache q($sR)) (e : Q($A)) :
+    {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (cacheR : Ring.Cache q($sR))
+    (cacheA : Ring.Cache q($sA)) (e : Q($A)) :
     AtomM (Result (ExSum sAlg) e) := Lean.withIncRecDepth do
   let els := do
-    try evalCast sAlg (← derive e)
+    try evalCast sAlg cacheR (← derive e)
     catch _ => evalAtom sAlg e
   let .const n _ := (← withReducible <| whnf e).getAppFn | els
-  match n with
-  | ``HSMul.hSMul | ``SMul.smul => match e with
+  match n, cacheA.rα, cacheA.dsα with
+  | ``HSMul.hSMul, _, _ | ``SMul.smul, _, _ => match e with
     | ~q(@HSMul.hSMul $R' $A' _ $inst $r' $a') =>
       if ! (← isDefEq R R') then
         -- TODO: Handle case if R extends R'
@@ -333,7 +363,7 @@ partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(Comm
       have r : Q($R) := r'
       have a : Q($A) := a'
       let ⟨_, vr, pr⟩ ← Ring.eval q($sR) cacheR q($r)
-      let ⟨_, va, pa⟩ ← eval q($sAlg) cacheR q($a)
+      let ⟨_, va, pa⟩ ← eval q($sAlg) cacheR cacheA q($a)
       let ⟨ef, vf, pf⟩ ← evalSMul sAlg vr va
       have : v =QL u_2 := ⟨⟩
       have : $A =Q $A' := ⟨⟩
@@ -342,22 +372,36 @@ partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(Comm
       have : $r =Q $r' := ⟨⟩
       return ⟨ef, vf, q(sorry)⟩
     | _ => els
-  | ``HAdd.hAdd | ``Add.add => match e with
+  | ``HAdd.hAdd, _, _ | ``Add.add, _, _ => match e with
     | ~q($a + $b) =>
-      let ⟨_, va, pa⟩ ← eval q($sAlg) cacheR q($a)
-      let ⟨_, vb, pb⟩ ← eval q($sAlg) cacheR q($b)
+      let ⟨_, va, pa⟩ ← eval q($sAlg) cacheR cacheA q($a)
+      let ⟨_, vb, pb⟩ ← eval q($sAlg) cacheR cacheA q($b)
       let ⟨_, vab, pab⟩ ← evalAdd q($sAlg) va vb
       return ⟨_, vab, q(sorry)⟩
     | _ => els
-  | ``HMul.hMul | ``Mul.mul => match e with
+  | ``Neg.neg, some rA, _ => match e with
+    | ~q(-$a) =>
+      let some rR := cacheR.rα | els
+      let ⟨_, va, pa⟩ ← eval sAlg cacheR cacheA a
+      let ⟨b, vb, p⟩ ← evalNeg sAlg rR rA va
+      pure ⟨b, vb, q(sorry)⟩
+  | ``HSub.hSub, some rA, _ | ``Sub.sub, some rA, _ => match e with
+    | ~q($a - $b) =>
+      let some rR := cacheR.rα | els
+      let ⟨_, va, pa⟩ ← eval sAlg cacheR cacheA a
+      let ⟨_, vb, pb⟩ ← eval sAlg cacheR cacheA b
+      let ⟨c, vc, p⟩ ← evalSub sAlg rR rA va vb
+      pure ⟨c, vc, q(sorry)⟩
+    | _ => els
+  | ``HMul.hMul, _, _ | ``Mul.mul, _, _ => match e with
     | ~q($a * $b) =>
-      let ⟨_, va, pa⟩ ← eval sAlg cacheR a
-      let ⟨_, vb, pb⟩ ← eval sAlg cacheR b
+      let ⟨_, va, pa⟩ ← eval sAlg cacheR cacheA a
+      let ⟨_, vb, pb⟩ ← eval sAlg cacheR cacheA b
       let ⟨_, vab, pab⟩ ← evalMul sAlg va vb
       return ⟨_, vab, q(sorry)⟩
     | _ =>
       els
-  | ``HPow.hPow | ``Pow.pow => match e with
+  | ``HPow.hPow, _, _ | ``Pow.pow, _, _ => match e with
     | ~q($a ^ ($eb : ℕ)) =>
       let ⟨blit, pf_isNat⟩ ← try NormNum.deriveNat eb q(Nat.instAddMonoidWithOne) catch
         | _ => throwError "Failed to normalize {eb} to a natural literal"
@@ -366,11 +410,11 @@ partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(Comm
         throwError s!"Failed to normalize {eb} to a natural literal 3"
       have b : ℕ := blit.natLit!
       have pb : Q($blit = $b) := q(sorry) -- q(($pf_isNat).out.trans $this)
-      let ⟨_, va, pa⟩ ← eval sAlg cacheR a
+      let ⟨_, va, pa⟩ ← eval sAlg cacheR cacheA a
       let ⟨c, vc, p⟩ ← evalPow sAlg b va
       return ⟨c, vc, q(sorry)⟩
     | _ => els
-  | _ =>
+  | _, _, _ =>
     els
 
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta Qq
@@ -433,8 +477,8 @@ def normalize (goal : MVarId) {u v : Lean.Level} (R : Q(Type u)) (A : Q(Type v))
   have e₂ : Q($A) := e₂
   let cr ← Ring.mkCache sR
   let ca ← Ring.mkCache sA
-  let (⟨a, exa, pa⟩ : Result (ExSum sAlg) e₁) ← eval sAlg cr e₁
-  let (⟨b, exb, pb⟩ : Result (ExSum sAlg) e₂) ← eval sAlg cr e₂
+  let (⟨a, exa, pa⟩ : Result (ExSum sAlg) e₁) ← eval sAlg cr ca e₁
+  let (⟨b, exb, pb⟩ : Result (ExSum sAlg) e₂) ← eval sAlg cr ca e₂
 
   let g' ← mkFreshExprMVarQ q($a = $b)
   goal.assign q(eq_congr $pa $pb $g' : $e₁ = $e₂)
@@ -454,7 +498,7 @@ def normalize (goal : MVarId) {u v : Lean.Level} (R : Q(Type u)) (A : Q(Type v))
 
 def isAtomOrDerivable (c : Ring.Cache sR) (e : Q($A)) : AtomM (Option (Option (Result (ExSum sAlg) e))) := do
   let els := try
-      pure <| some (evalCast sAlg (← derive e))
+      pure <| some (evalCast sAlg c (← derive e))
     catch _ => pure (some none)
   let .const n _ := (← withReducible <| whnf e).getAppFn | els
   match n, c.rα, c.dsα with
@@ -475,10 +519,11 @@ def evalExpr {u : Lean.Level} (R : Q(Type u)) (e : Expr) : AtomM Simp.Result := 
   let sA ← synthInstanceQ q(CommSemiring $A)
   let sR ← synthInstanceQ q(CommSemiring $R)
   let sAlg ← synthInstanceQ q(Algebra $R $A)
-  let c ← Ring.mkCache sR
+  let cr ← Ring.mkCache sR
+  let ca ← Ring.mkCache sA
   assumeInstancesCommute
-  let ⟨a, _, pa⟩ ← match ← isAtomOrDerivable q($sAlg) c q($e) with
-  | none => eval sAlg c e -- `none` indicates that `eval` will find something algebraic.
+  let ⟨a, _, pa⟩ ← match ← isAtomOrDerivable q($sAlg) cr q($e) with
+  | none => eval sAlg cr ca e -- `none` indicates that `eval` will find something algebraic.
   | some none => failure -- No point rewriting atoms
   | some (some r) => pure r -- Nothing algebraic for `eval` to use, but `norm_num` simplifies.
   pure { expr := a, proof? := pa }
@@ -526,10 +571,11 @@ where
   and returns a proof that they are equal (or fails). -/
   algCore {u v : Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
       {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (e₁ e₂ : Q($A)) : AtomM Q($e₁ = $e₂) := do
-    let c ← Ring.mkCache sR
+    let cr ← Ring.mkCache sR
+    let ca ← Ring.mkCache sA
     profileitM Exception "algebra" (← getOptions) do
-      let ⟨a, va, pa⟩ ← eval sAlg c e₁
-      let ⟨b, vb, pb⟩ ← eval sAlg c e₂
+      let ⟨a, va, pa⟩ ← eval sAlg cr ca e₁
+      let ⟨b, vb, pb⟩ ← eval sAlg cr ca e₂
       unless va.eq vb do
         let g ← mkFreshExprMVar (← (← Ring.ringCleanupRef.get) q($a = $b))
         throwError "algebra failed, algebra expressions not equal\n{g.mvarId!}"
@@ -587,8 +633,8 @@ example (x y : ℚ) : x + (y)*(x+y) = 0 := by
   algebra_nf with ℕ
   sorry
 
-example (x y : ℚ) : x + (x)*(x+y) = 0 := by
-  algebra_nf with ℕ
+example (x y : ℚ) : x + (x)*(x + -y) = 0 := by
+  algebra_nf with ℤ
   sorry
 
 
@@ -599,6 +645,10 @@ example (x y : ℚ) : (x * x + x * y) + (x * y + y * y) = 0 := by
 example (x y : ℚ) : (x + y)*(x+y) = x*x + 2 * x * y + y * y := by
   -- simp_rw [← SMul.smul_eq_hSMul]
   algebra with ℕ
+
+-- Handle negative integer constants
+example (x y : ℚ) : (x + (-3) * y)*(x+y) = x*x + (-2) * x * y + (-3) * y^2 := by
+  algebra with ℤ
 
 example (x y : ℚ) : (x+y)*x = 1 := by
   -- simp_rw [← SMul.smul_eq_hSMul]
@@ -622,6 +672,11 @@ example (x : ℚ) (hx : x = 0) : (x+1)^10 = 1 := by
 set_option linter.style.commandStart false
 
 example {a b : ℤ} (x y : ℚ) : (a + b) • (x + y) = b • x + a • (x + y) + b • y := by
+  -- ring does nothing
+  ring_nf
+  algebra with ℤ
+
+example {a b : ℤ} (x y : ℚ) : (a - b) • (x + y) = - b • x + a • (x + y) - b • y := by
   -- ring does nothing
   ring_nf
   algebra with ℤ
