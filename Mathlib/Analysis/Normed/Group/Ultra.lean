@@ -344,6 +344,30 @@ lemma norm_tprod_le_of_forall_le_of_nonneg {f : ι → M} {C : ℝ} (hC : 0 ≤ 
 lemma nnnorm_tprod_le_of_forall_le {f : ι → M} {C : ℝ≥0} (h : ∀ i, ‖f i‖₊ ≤ C) : ‖∏' i, f i‖₊ ≤ C :=
   (nnnorm_tprod_le f).trans (ciSup_le' h)
 
+@[to_additive]
+lemma nnnorm_prod_eq_sup_of_pairwise_ne {s : Finset ι} {f : ι → M}
+    (hs : Set.Pairwise s (fun i j ↦ ‖f i‖₊ ≠ ‖f j‖₊)) :
+    ‖∏ i ∈ s, f i‖₊ = s.sup (fun i ↦ ‖f i‖₊) := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha IH =>
+    rcases s.eq_empty_or_nonempty with rfl | hs'
+    · simp
+    specialize IH (hs.mono (by simp))
+    obtain ⟨j, hj, hj'⟩ : ∃ j ∈ s, ‖∏ i ∈ s, f i‖₊ = ‖f j‖₊ := by
+      simpa [IH] using s.exists_mem_eq_sup hs' _
+    suffices ‖f a‖₊ ≠ ‖∏ x ∈ s, f x‖₊ by simp [← IH, nnnorm_mul_eq_max_of_nnnorm_ne_nnnorm this]
+    rw [hj']
+    apply hs <;> grind
+
+@[to_additive]
+lemma norm_prod_eq_sup'_of_pairwise_ne {s : Finset ι} {f : ι → M} (hs' : s.Nonempty)
+    (hs : Set.Pairwise s (fun i j ↦ ‖f i‖ ≠ ‖f j‖)) :
+    ‖∏ i ∈ s, f i‖ = s.sup' hs' (fun i ↦ ‖f i‖) := by
+  rw [← coe_nnnorm', nnnorm_prod_eq_sup_of_pairwise_ne, ← Finset.sup'_eq_sup hs']
+  · exact s.comp_sup'_eq_sup'_comp hs' _ (by tauto)
+  · simpa [← NNReal.coe_inj] using hs
+
 end CommGroup
 
 end IsUltrametricDist
