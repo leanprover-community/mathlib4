@@ -53,26 +53,26 @@ open NormedField Set Seminorm TopologicalSpace Filter List Bornology
 
 open NNReal Pointwise Topology Uniformity
 
-variable {𝕜 𝕜₂ 𝕝 𝕝₂ E F G ι ι' : Type*}
+variable {R 𝕜 𝕜₂ 𝕝 𝕝₂ E F G ι ι' : Type*}
 
 section FilterBasis
 
-variable [SeminormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
-variable (𝕜 E ι)
+variable [SeminormedRing R] [AddCommGroup E] [Module R E]
+variable (R E ι)
 
 /-- An abbreviation for indexed families of seminorms. This is mainly to allow for dot-notation. -/
 abbrev SeminormFamily :=
-  ι → Seminorm 𝕜 E
+  ι → Seminorm R E
 
-variable {𝕜 E ι}
+variable {R E ι}
 
 namespace SeminormFamily
 
 /-- The sets of a filter basis for the neighborhood filter of 0. -/
-def basisSets (p : SeminormFamily 𝕜 E ι) : Set (Set E) :=
+def basisSets (p : SeminormFamily R E ι) : Set (Set E) :=
   ⋃ (s : Finset ι) (r) (_ : 0 < r), singleton (ball (s.sup p) (0 : E) r)
 
-variable (p : SeminormFamily 𝕜 E ι)
+variable (p : SeminormFamily R E ι)
 
 theorem basisSets_iff {U : Set E} :
     U ∈ p.basisSets ↔ ∃ (i : Finset ι) (r : ℝ), 0 < r ∧ U = ball (i.sup p) 0 r := by
@@ -132,7 +132,7 @@ protected def addGroupFilterBasis : AddGroupFilterBasis E :=
     p.basisSets_add p.basisSets_neg
 
 theorem basisSets_smul_right (v : E) (U : Set E) (hU : U ∈ p.basisSets) :
-    ∀ᶠ x : 𝕜 in 𝓝 0, x • v ∈ U := by
+    ∀ᶠ x : R in 𝓝 0, x • v ∈ U := by
   rcases p.basisSets_iff.mp hU with ⟨s, r, hr, hU⟩
   rw [hU, Filter.eventually_iff]
   simp_rw [(s.sup p).mem_ball_zero, map_smul_eq_mul]
@@ -144,7 +144,7 @@ theorem basisSets_smul_right (v : E) (U : Set E) (hU : U ∈ p.basisSets) :
   exact IsOpen.mem_nhds isOpen_univ (mem_univ 0)
 
 theorem basisSets_smul (U) (hU : U ∈ p.basisSets) :
-    ∃ V ∈ 𝓝 (0 : 𝕜), ∃ W ∈ p.addGroupFilterBasis.sets, V • W ⊆ U := by
+    ∃ V ∈ 𝓝 (0 : R), ∃ W ∈ p.addGroupFilterBasis.sets, V • W ⊆ U := by
   rcases p.basisSets_iff.mp hU with ⟨s, r, hr, hU⟩
   refine ⟨Metric.ball 0 √r, Metric.ball_mem_nhds 0 (Real.sqrt_pos.mpr hr), ?_⟩
   refine ⟨(s.sup p).ball 0 √r, p.basisSets_mem s (Real.sqrt_pos.mpr hr), ?_⟩
@@ -173,11 +173,11 @@ section
 
 namespace SeminormFamily
 
-variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-variable (p : SeminormFamily 𝕜 E ι)
+variable [NormedField 𝕜] [AddCommGroup F] [Module 𝕜 F] (p : SeminormFamily 𝕜 F ι)
 
-theorem basisSets_smul_left (x : 𝕜) (U : Set E) (hU : U ∈ p.basisSets) :
-    ∃ V ∈ p.addGroupFilterBasis.sets, V ⊆ (fun y : E => x • y) ⁻¹' U := by
+
+theorem basisSets_smul_left (x : 𝕜) (U : Set F) (hU : U ∈ p.basisSets) :
+    ∃ V ∈ p.addGroupFilterBasis.sets, V ⊆ (fun y : F => x • y) ⁻¹' U := by
   rcases p.basisSets_iff.mp hU with ⟨s, r, hr, hU⟩
   rw [hU]
   by_cases h : x ≠ 0
@@ -189,13 +189,13 @@ theorem basisSets_smul_left (x : 𝕜) (U : Set E) (hU : U ∈ p.basisSets) :
     preimage_const_of_mem, zero_smul]
 
 /-- The `moduleFilterBasis` induced by the filter basis `Seminorm.basisSets`. -/
-protected def moduleFilterBasis : ModuleFilterBasis 𝕜 E where
+protected def moduleFilterBasis : ModuleFilterBasis 𝕜 F where
   toAddGroupFilterBasis := p.addGroupFilterBasis
   smul' := p.basisSets_smul _
   smul_left' := p.basisSets_smul_left
   smul_right' := p.basisSets_smul_right
 
-theorem filter_eq_iInf (p : SeminormFamily 𝕜 E ι) :
+theorem filter_eq_iInf (p : SeminormFamily 𝕜 F ι) :
     p.moduleFilterBasis.toFilterBasis.filter = ⨅ i, (𝓝 0).comap (p i) := by
   refine le_antisymm (le_iInf fun i => ?_) ?_
   · rw [p.moduleFilterBasis.toFilterBasis.hasBasis.le_basis_iff
