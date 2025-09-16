@@ -17,9 +17,7 @@ the length of longest series of closed irreducible subsets ordered by inclusion.
 
 ## Main results
 
-- `topKrullDim_subspace_le`: For any subspace Y ⊆ X, we have dim(Y) ≤ dim(X)
-- Basic properties of maps between irreducible closed sets
-- Partial order structure on irreducible closed sets
+- `topologicalKrullDim_subspace_le`: For any subspace Y ⊆ X, we have dim(Y) ≤ dim(X)
 
 ## Implementation notes
 
