@@ -3,9 +3,9 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Topology
 import Mathlib.Topology.Algebra.IsUniformGroup.DiscreteSubgroup
 import Mathlib.Topology.Algebra.Ring.Real
+import Mathlib.Topology.Instances.Matrix
 import Mathlib.Topology.MetricSpace.Isometry
 
 /-!
@@ -59,14 +59,11 @@ local notation "SL" => SpecialLinearGroup
 
 variable {n : Type*} [Fintype n] [DecidableEq n]
 
-instance discreteSpecialLinearGroupRange : DiscreteTopology (mapGL (n := n) (R := ℤ) ℝ).range :=
+instance discreteSpecialLinearGroupIntRange : DiscreteTopology (mapGL (n := n) (R := ℤ) ℝ).range :=
   (isEmbedding_mapGL (Isometry.isEmbedding fun _ _ ↦ rfl)).toHomeomorph.discreteTopology
 
-lemma isClosed_range_mapGL : IsClosed ((mapGL (n := n) (R := ℤ) ℝ).range : Set (GL n ℝ)) :=
-  Subgroup.isClosed_of_discrete
-
-lemma isClosedEmbedding_mapGL : Topology.IsClosedEmbedding (mapGL ℝ : SL n ℤ → GL n ℝ) :=
-  ⟨isEmbedding_mapGL (Isometry.isEmbedding fun _ _ ↦ rfl), isClosed_range_mapGL⟩
+lemma isClosedEmbedding_mapGLInt : Topology.IsClosedEmbedding (mapGL ℝ : SL n ℤ → GL n ℝ) :=
+  ⟨isEmbedding_mapGL (Isometry.isEmbedding fun _ _ ↦ rfl), (mapGL ℝ).range.isClosed_of_discrete⟩
 
 end Matrix.SpecialLinearGroup
 
