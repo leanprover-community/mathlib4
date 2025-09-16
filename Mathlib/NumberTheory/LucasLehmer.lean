@@ -211,10 +211,8 @@ theorem residue_eq_zero_iff_sMod_eq_zero (p : ℕ) (w : 1 < p) :
   · -- We want to use that fact that `0 ≤ s_mod p (p-2) < 2^p - 1`
     -- and `lucas_lehmer_residue p = 0 → 2^p - 1 ∣ s_mod p (p-2)`.
     intro h
-    simp? [ZMod.intCast_zmod_eq_zero_iff_dvd] at h says
-      simp only [ZMod.intCast_zmod_eq_zero_iff_dvd, ofNat_pos, pow_pos, cast_pred,
-        cast_pow, cast_ofNat] at h
-    apply Int.eq_zero_of_dvd_of_nonneg_of_lt _ _ h <;> clear h
+    apply Int.eq_zero_of_dvd_of_nonneg_of_lt _ _
+      (by simpa [ZMod.intCast_zmod_eq_zero_iff_dvd] using h) <;> clear h
     · exact sMod_nonneg _ (by positivity) _
     · exact sMod_lt _ (by positivity) _
   · intro h
@@ -505,9 +503,7 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
         k * mersenne (p' + 2) * (ω : X (q (p' + 2))) ^ 2 ^ p' - 1 := by
   dsimp [lucasLehmerResidue] at h
   rw [sZMod_eq_s p'] at h
-  simp? [ZMod.intCast_zmod_eq_zero_iff_dvd] at h says
-    simp only [add_tsub_cancel_right, ZMod.intCast_zmod_eq_zero_iff_dvd, ofNat_pos, pow_succ_pos,
-      cast_pred, cast_pow, cast_ofNat] at h
+  replace h : 2 ^ (p' + 2) - 1 ∣ s p' := by simpa [ZMod.intCast_zmod_eq_zero_iff_dvd] using h
   obtain ⟨k, h⟩ := h
   use k
   replace h := congr_arg (fun n : ℤ => (n : X (q (p' + 2)))) h

@@ -89,6 +89,7 @@ import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.FastInstance
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FieldSimp.Discharger
+import Mathlib.Tactic.FieldSimp.Lemmas
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Find
 import Mathlib.Tactic.FindSyntax
@@ -194,12 +195,14 @@ import Mathlib.Tactic.NormNum.Inv
 import Mathlib.Tactic.NormNum.Irrational
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.LegendreSymbol
+import Mathlib.Tactic.NormNum.ModEq
 import Mathlib.Tactic.NormNum.NatFactorial
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatLog
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.OfScientific
 import Mathlib.Tactic.NormNum.Ordinal
+import Mathlib.Tactic.NormNum.Parity
 import Mathlib.Tactic.NormNum.Pow
 import Mathlib.Tactic.NormNum.PowMod
 import Mathlib.Tactic.NormNum.Prime

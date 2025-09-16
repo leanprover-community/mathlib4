@@ -67,8 +67,8 @@ def land : ℤ → ℤ → ℤ
   | -[m +1], -[n +1] => -[m ||| n +1]
 
 /-- `ldiff a b` performs bitwise set difference. For each corresponding
-  pair of bits taken as booleans, say `aᵢ` and `bᵢ`, it applies the
-  boolean operation `aᵢ ∧ ¬bᵢ` to obtain the `iᵗʰ` bit of the result. -/
+  pair of bits taken as Booleans, say `aᵢ` and `bᵢ`, it applies the
+  Boolean operation `aᵢ ∧ ¬bᵢ` to obtain the `iᵗʰ` bit of the result. -/
 def ldiff : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => Nat.ldiff m n
   | (m : ℕ), -[n +1] => m &&& n
@@ -370,7 +370,7 @@ theorem shiftRight_add' : ∀ (m : ℤ) (n k : ℕ), m >>> (n + k : ℤ) = (m >>
 set_option linter.deprecated false in
 @[deprecated "Use shifts by `Nat` instead, or restore this instance and fix the Mathlib API."
   (since := "2025-08-25")]
-theorem shiftLeft_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<< (n : ℤ)) <<< k
+theorem shiftLeft_add' : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<< (n : ℤ)) <<< k
   | (m : ℕ), n, (k : ℕ) =>
     congr_arg ofNat (by simp [Nat.shiftLeft_eq, Nat.pow_add, mul_assoc])
   | -[_+1], _, (k : ℕ) => congr_arg negSucc (Nat.shiftLeft'_add _ _ _ _)
@@ -379,7 +379,7 @@ theorem shiftLeft_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<
       (fun (i n : ℕ) =>
         by simp [← Nat.shiftLeft_sub _, Nat.add_sub_cancel_left])
       fun i n => by
-        dsimp
+        dsimp only [← Int.natCast_shiftRight]
         simp_rw [negSucc_eq, shiftLeft_neg, Nat.shiftLeft'_false, Nat.shiftRight_add,
           ← Nat.shiftLeft_sub _ le_rfl, Nat.sub_self, Nat.shiftLeft_zero, ← shiftRight_natCast,
           ← shiftRight_add', Nat.cast_one]
@@ -397,7 +397,7 @@ set_option linter.deprecated false in
 @[deprecated "Use shifts by `Nat` instead, or restore this instance and fix the Mathlib API."
   (since := "2025-08-25")]
 theorem shiftLeft_sub (m : ℤ) (n : ℕ) (k : ℤ) : m <<< (n - k) = (m <<< (n : ℤ)) >>> k :=
-  shiftLeft_add _ _ _
+  shiftLeft_add' _ _ _
 
 set_option linter.deprecated false in
 @[deprecated "Use shifts by `Nat` instead, or restore this instance and fix the Mathlib API."
@@ -415,7 +415,7 @@ theorem one_shiftLeft (n : ℕ) : 1 <<< (n : ℤ) = (2 ^ n : ℕ) :=
 set_option linter.deprecated false in
 @[deprecated "Use shifts by `Nat` instead, or restore this instance and fix the Mathlib API."
   (since := "2025-08-25")]
-theorem zero_shiftLeft : ∀ n : ℤ, 0 <<< n = 0
+theorem zero_shiftLeft' : ∀ n : ℤ, 0 <<< n = 0
   | (n : ℕ) => congr_arg ((↑) : ℕ → ℤ) (by simp)
   | -[_+1] => congr_arg ((↑) : ℕ → ℤ) (by simp)
 
@@ -424,6 +424,6 @@ set_option linter.deprecated false in
 @[deprecated "Use shifts by `Nat` instead, or restore this instance and fix the Mathlib API."
   (since := "2025-08-25")]
 theorem zero_shiftRight' (n : ℤ) : 0 >>> n = 0 :=
-  zero_shiftLeft _
+  zero_shiftLeft' _
 
 end Int
