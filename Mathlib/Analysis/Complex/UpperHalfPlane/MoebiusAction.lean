@@ -101,7 +101,8 @@ lemma moebius_im (g : GL (Fin 2) ℝ) (z : ℂ) :
   ring
 
 /-- Automorphism of `ℂ`: the identity if `0 < det g` and conjugation otherwise. -/
-def σ (g : GL (Fin 2) ℝ) : ℂ →+* ℂ := if 0 < g.det.val then RingHom.id ℂ else starRingEnd ℂ
+noncomputable def σ (g : GL (Fin 2) ℝ) : ℂ →+* ℂ :=
+  if 0 < g.det.val then RingHom.id ℂ else starRingEnd ℂ
 
 @[simp]
 lemma σ_ofReal (g : GL (Fin 2) ℝ) (y : ℝ) : σ g y = y := by
@@ -137,6 +138,10 @@ lemma σ_mul (g g' : GL (Fin 2) ℝ) (z : ℂ) : σ (g * g') z = σ g (σ g' z) 
   · simp [mul_pos h h', h, h']
 
 lemma σ_mul_comm (g h : GL (Fin 2) ℝ) (z : ℂ) : σ g (σ h z) = σ h (σ g z) := by
+  simp only [σ]
+  split_ifs <;> simp
+
+@[simp] lemma norm_σ (g : GL (Fin 2) ℝ) (z : ℂ) : ‖σ g z‖ = ‖z‖ := by
   simp only [σ]
   split_ifs <;> simp
 
@@ -245,8 +250,8 @@ lemma denom_one : denom 1 z = 1 := by
 
 section SLAction
 
-instance SLAction {R : Type*} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
-  MulAction.compHom ℍ <| SpecialLinearGroup.toGL.comp <| map (algebraMap R ℝ)
+noncomputable instance SLAction {R : Type*} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
+  MulAction.compHom ℍ <| SpecialLinearGroup.mapGL ℝ
 
 theorem coe_specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
     ↑(g • z) =
