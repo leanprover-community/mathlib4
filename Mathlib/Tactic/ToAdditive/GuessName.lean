@@ -199,7 +199,8 @@ def abbreviationDict : String → Option String
   | _                  => none
 
 /-- Helper for `fixAbbreviation`.
-Note: quadratic runtime in the length of the arguments, but that should be fine. -/
+Note: this function has a quadratic number of recursive calls, but is not a performance
+bottleneck. -/
 def fixAbbreviationAux : List String → List String → String
   | [], []     => ""
   | [], x::s   => x ++ fixAbbreviationAux s []
@@ -208,7 +209,8 @@ def fixAbbreviationAux : List String → List String → String
     let t := String.join s
     /- If a name starts with upper-case, and contains an underscore, it cannot match anything in
     the abbreviation dictionary. This is necessary to correctly translate something like
-    `fixAbbreviation ["eventually", "LE", "_", "zero"]`. -/
+    `fixAbbreviation ["eventually", "LE", "_", "one"]`, since otherwise the substring `LE_zero` gets
+    replaced by `Nonpos`. -/
     if pre == "_" && (t.get 0).isUpper then
       s[0]! ++ fixAbbreviationAux (s.drop 1 ++ l) []
     else match abbreviationDict t.decapitalizeSeq with
