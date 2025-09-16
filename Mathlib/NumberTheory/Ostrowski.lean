@@ -299,9 +299,7 @@ lemma apply_le_sum_digits (n : ℕ) {m : ℕ} (hm : 1 < m) :
   push_cast
   rw [map_mul, map_pow]
   refine mul_le_mul_of_nonneg_right ?_ <| pow_nonneg (f.nonneg _) i
-  #adaptation_note
-  /-- Remove `_root_` after nightly-2025-08-25-/
-  simp only [zero_le, _root_.zero_add, tsub_zero, true_and] at hia
+  simp only [zero_le, zero_add, tsub_zero, true_and] at hia
   exact (hcoef (List.mem_iff_get.mpr ⟨⟨i, hia.1⟩, hia.2.symm⟩)).le
 
 -- ## Step 1: if f is an AbsoluteValue and f n > 1 for some natural n, then f n > 1 for all n ≥ 2
