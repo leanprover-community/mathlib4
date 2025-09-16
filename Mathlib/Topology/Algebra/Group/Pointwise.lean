@@ -74,9 +74,8 @@ To fix the proof, we would need to make two additional assumptions:
 - for any `x ∈ t`, there is a continuous function `g : s • {x} → s` such that, for all
   `y ∈ s • {x}`, we have `y = (g y) • x`
 These are fairly specific hypotheses so we don't state this version of the lemmas, but an
-interesting fact is that these two assumptions are verified in the case of a `NormedAddTorsor`
-(or really, any `AddTorsor` with continuous `-ᵥ`). We prove this special case in
-`IsClosed.vadd_right_of_isCompact`. -/
+interesting fact is that these two assumptions are verified in the case of an
+`IsTopologicalAddTorsor`. We prove this special case in `IsClosed.vadd_right_of_isCompact`. -/
 
 @[to_additive]
 theorem MulAction.isClosedMap_quotient [CompactSpace α] :

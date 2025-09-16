@@ -213,7 +213,7 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
   let numberErrors := (← lintModules opts nolints allModuleNames style fix)
     + (← missingInitImports opts).toUInt32 + (← undocumentedScripts opts).toUInt32
     + (← modulesNotUpperCamelCase opts allModuleNames).toUInt32
-    + (← modulesForbiddenWindows opts allModuleNames).toUInt32
+    + (← modulesOSForbidden opts allModuleNames).toUInt32
   -- If run with the `--fix` argument, return a zero exit code.
   -- Otherwise, make sure to return an exit code of at most 125,
   -- so this return value can be used further in shell scripts.
