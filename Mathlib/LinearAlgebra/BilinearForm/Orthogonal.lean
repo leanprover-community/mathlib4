@@ -11,7 +11,7 @@ import Mathlib.LinearAlgebra.BilinearForm.Properties
 
 This file defines orthogonal bilinear forms.
 
-## Notations
+## Notation
 
 Given any term `B` of type `BilinForm`, due to a coercion, can use
 the notation `B x y` to refer to the function field, i.e. `B x y = B.bilin x y`.
@@ -255,7 +255,6 @@ theorem toLin_restrict_ker_eq_inf_orthogonal (B : BilinForm K V) (W : Subspace K
     (LinearMap.ker <| B.domRestrict W).map W.subtype = (W ⊓ B.orthogonal ⊤ : Subspace K V) := by
   ext x; constructor <;> intro hx
   · rcases hx with ⟨⟨x, hx⟩, hker, rfl⟩
-    erw [LinearMap.mem_ker] at hker
     constructor
     · simp [hx]
     · intro y _

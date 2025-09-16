@@ -14,12 +14,12 @@ This file defines what it means for a set over a first-order structure to be def
 ## Main Definitions
 
 - `Set.Definable` is defined so that `A.Definable L s` indicates that the
-  set `s` of a finite cartesian power of `M` is definable with parameters in `A`.
+  set `s` of a finite Cartesian power of `M` is definable with parameters in `A`.
 - `Set.Definable₁` is defined so that `A.Definable₁ L s` indicates that
   `(s : Set M)` is definable with parameters in `A`.
 - `Set.Definable₂` is defined so that `A.Definable₂ L s` indicates that
   `(s : Set (M × M))` is definable with parameters in `A`.
-- A `FirstOrder.Language.DefinableSet` is defined so that `L.DefinableSet A α` is the boolean
+- A `FirstOrder.Language.DefinableSet` is defined so that `L.DefinableSet A α` is the Boolean
   algebra of subsets of `α → M` defined by formulas with parameters in `A`.
 
 ## Main Results
