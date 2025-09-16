@@ -5,6 +5,7 @@ Authors: Violeta Hernández Palacios
 -/
 import Mathlib.Algebra.Order.Ring.Archimedean
 import Mathlib.Data.Real.Archimedean
+import Mathlib.RingTheory.Valuation.ValuationSubring
 
 /-!
 # Standard part function
@@ -23,11 +24,36 @@ Should we redefine `Hyperreal.st` in terms of `ArchimedeanClass.standardPart`?
 -/
 
 namespace ArchimedeanClass
-variable {K : Type*} [LinearOrder K] {x y : K}
+variable {K : Type*} [LinearOrder K] [Field K] [IsOrderedRing K] {x y : K}
 
-section Ring
-variable [CommRing K] [IsStrictOrderedRing K]
+variable (K) in
+/-- The valuation subring of elements in non-negative Archimedean classes. -/
+protected noncomputable abbrev Finite : ValuationSubring K :=
+  (addValuation K).toValuation.valuationSubring
 
+variable (K) in
+/-- The residue field of `ArchimedeanClass.Finite`. -/
+abbrev FiniteResidueField :=
+  IsLocalRing.ResidueField (ArchimedeanClass.Finite K)
+
+instance : LE (FiniteResidueField K) where
+  le := Quotient.lift₂ (fun x y ↦ IsLocalRing.residue _ x = IsLocalRing.residue _ y ∨ x < y) <| by
+    intro x₁ y₁ x₂ y₂ hx hy
+    have hx : IsLocalRing.residue _ x₁ = IsLocalRing.residue _ x₂ := Quotient.sound hx
+    have hy : IsLocalRing.residue _ y₁ = IsLocalRing.residue _ y₂ := Quotient.sound hy
+    apply propext
+    dsimp
+    rw [hx, hy]
+    apply or_congr_right'
+    congr 1
+    congr 1
+    apply or_congr
+    · congr 2
+
+
+#exit
+def FiniteResidueField.mk : ArchimedeanClass.Finite K →+*o FiniteResidueField K := sorry
+#exit
 private theorem exists_mk_sub_real_mul_gt' (f : ℝ →+* K) (hf : StrictMono f)
     (hx : 0 < x) (hy : 0 < y) (h : mk y ≤ mk x) :
     ∃ r : ℝ, mk y < mk (x - f r * y) := by
