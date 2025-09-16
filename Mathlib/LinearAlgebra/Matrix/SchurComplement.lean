@@ -403,10 +403,6 @@ theorem det_one_add_mul_comm (A : Matrix m n α) (B : Matrix n m α) :
 theorem det_mul_add_one_comm (A : Matrix m n α) (B : Matrix n m α) :
     det (A * B + 1) = det (B * A + 1) := by rw [add_comm, det_one_add_mul_comm, add_comm]
 
-theorem det_one_sub_mul_comm (A : Matrix m n α) (B : Matrix n m α) :
-    det (1 - A * B) = det (1 - B * A) := by
-  rw [sub_eq_add_neg, ← Matrix.neg_mul, det_one_add_mul_comm, Matrix.mul_neg, ← sub_eq_add_neg]
-
 /-- A special case of the **Matrix determinant lemma** for when `A = I`. -/
 theorem det_one_add_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] (u v : m → α) :
     det (1 + replicateCol ι u * replicateRow ι v) = 1 + v ⬝ᵥ u := by
