@@ -19,7 +19,7 @@ A lot of this file is now redundant following the replacement of the dedicated `
 structure with `LinearMap.BilinForm`, which is just an alias for `M →ₗ[R] M →ₗ[R] R`. For example
 `LinearMap.BilinForm.toLinHom` is now just the identity map. This redundant code should be removed.
 
-## Notations
+## Notation
 
 Given any term `B` of type `BilinForm`, due to a coercion, can use
 the notation `B x y` to refer to the function field, i.e. `B x y = B.bilin x y`.

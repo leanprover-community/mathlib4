@@ -29,7 +29,7 @@ binary tensor product in `LinearAlgebra/TensorProduct.lean`.
 * `PiTensorProduct.tmulEquiv` equivalence between a `TensorProduct` of `PiTensorProduct`s and
   a single `PiTensorProduct`.
 
-## Notations
+## Notation
 
 * `⨂[R] i, s i` is defined as localized notation in scope `TensorProduct`.
 * `⨂ₜ[R] i, f i` with `f : ∀ i, s i` is defined globally as the tensor product of all the `f i`'s.
