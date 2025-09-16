@@ -205,7 +205,7 @@ theorem inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p ∣ 
     inertiaDeg (span {(p : ℤ)}) ((primesOverSpanEquivMonicFactorsMod hp).symm
       ⟨Q.map (Int.castRingHom (ZMod p)), hQ⟩ : Ideal (𝓞 K)) =
         natDegree (Q.map (Int.castRingHom (ZMod p))) := by
-  -- Register this instance for `inertiaDeg_algebraMap` below
+  -- This is needed for `inertiaDeg_algebraMap` below to work
   have := liesOver_primesOverSpanEquivMonicFactorsMod_symm hp hQ
   rw [primesOverSpanEquivMonicFactorsMod_symm_apply_eq_span, inertiaDeg_algebraMap,
     ← finrank_quotient_span_eq_natDegree]
