@@ -164,7 +164,7 @@ lemma not_adj_trans (h : G.IsTuranMaximal r) (hts : ¬G.Adj t s) (hsu : ¬G.Adj 
     · simpa only [eq, not_adj_replaceVertex_same, false_iff]
     · rw [G.adj_replaceVertex_iff_of_ne s nst eq]
   have l2 : (G.replaceVertex s t).degree u = G.degree u - 1 := by
-    rw [degree, degree, ← card_singleton t, ← card_sdiff (by simp [h.symm])]
+    rw [degree, degree, ← card_singleton t, ← card_sdiff_of_subset (by simp [h.symm])]
     congr 1; ext v
     simp only [mem_neighborFinset, mem_sdiff, mem_singleton, replaceVertex]
     split_ifs <;> simp_all [adj_comm]
