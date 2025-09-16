@@ -15,7 +15,7 @@ We construct the subscheme associated to an ideal sheaf.
 ## Main definition
 * `AlgebraicGeometry.Scheme.IdealSheafData.subscheme`: The subscheme associated to an ideal sheaf.
 * `AlgebraicGeometry.Scheme.IdealSheafData.subschemeι`: The inclusion from the subscheme.
-* `AlgebraicGeometry.Scheme.Hom.image`: The scheme theoretical image of a morphism.
+* `AlgebraicGeometry.Scheme.Hom.image`: The scheme-theoretic image of a morphism.
 * `AlgebraicGeometry.Scheme.kerAdjunction`:
   The adjunction between taking kernels and taking the associated subscheme.
 
@@ -138,7 +138,7 @@ lemma glueDataObjMap_glueDataObjι {U V : X.affineOpens} (h : U ≤ V) :
   congr 1
   rw [Iso.eq_inv_comp, IsAffineOpen.isoSpec_hom, CommRingCat.ofHom_hom]
   erw [Scheme.Opens.toSpecΓ_SpecMap_map_assoc U.1 V.1 h]
-  rw [← IsAffineOpen.isoSpec_hom, Iso.hom_inv_id, Category.comp_id]
+  rw [← IsAffineOpen.isoSpec_hom V.2, Iso.hom_inv_id, Category.comp_id]
 
 lemma ideal_le_ker_glueDataObjι (U V : X.affineOpens) :
     I.ideal V ≤ RingHom.ker (U.1.ι.app V.1 ≫ (I.glueDataObjι U).app _).hom := by
@@ -613,10 +613,10 @@ open Limits
 
 variable {X Y : Scheme.{u}} (f : X.Hom Y) (U : Y.affineOpens)
 
-/-- The scheme theoretic image of a morphism. -/
+/-- The scheme-theoretic image of a morphism. -/
 abbrev Hom.image : Scheme.{u} := f.ker.subscheme
 
-/-- The embedding from the scheme theoretic image to the codomain. -/
+/-- The embedding from the scheme-theoretic image to the codomain. -/
 abbrev Hom.imageι : f.image ⟶ Y := f.ker.subschemeι
 
 lemma ideal_ker_le_ker_ΓSpecIso_inv_comp :
@@ -654,7 +654,7 @@ private lemma Hom.toImageAux_spec :
   simp only [Hom.toImageAux, Cover.ι_glueMorphisms_assoc]
   simp [IdealSheafData.glueDataObjι, Scheme.Hom.liftQuotient_comp_assoc, pullback.condition]
 
-/-- The morphism from the domain to the scheme theoretic image. -/
+/-- The morphism from the domain to the scheme-theoretic image. -/
 noncomputable
 def Hom.toImage : X ⟶ f.image :=
   f.toImageAux.copyBase (fun x ↦ ⟨f.base x, f.range_subset_ker_support ⟨x, rfl⟩⟩)
