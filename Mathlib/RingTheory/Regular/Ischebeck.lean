@@ -6,7 +6,6 @@ Authors: Nailin Guan
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 import Mathlib.RingTheory.Regular.Depth
 import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
-
 /-!
 
 # The Ischebeck theorem and its corollary
@@ -109,7 +108,8 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
     (Module.supportDim R N).unbot (Module.supportDim_ne_bot_of_nontrivial R N) := by
   generalize dim :
     ((Module.supportDim R N).unbot (Module.supportDim_ne_bot_of_nontrivial R N)).toNat = r
-  induction' r using Nat.strong_induction_on with r ihr generalizing N
+  induction r using Nat.strong_induction_on generalizing N
+  rename_i r ihr
   by_cases eq0 : r = 0
   · by_cases eqtop : (Module.supportDim R N).unbot (Module.supportDim_ne_bot_of_nontrivial R N) = ⊤
     · simp [eqtop]
@@ -179,7 +179,8 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
             let f := Quotient.factor ple
             have mem_ann : x ∈ Module.annihilator R (QuotSMulTop x L) := by
               apply Module.mem_annihilator.mpr (fun l ↦ ?_)
-              induction' l using Submodule.Quotient.induction_on with l
+              induction l using Submodule.Quotient.induction_on
+              rename_i l
               simpa [← Submodule.Quotient.mk_smul] using
                 Submodule.smul_mem_pointwise_smul l x ⊤ trivial
             have : Ideal.Quotient.mk p.asIdeal x ∈ nonZeroDivisors (R ⧸ p.asIdeal) := by
