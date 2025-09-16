@@ -118,7 +118,8 @@ protected alias ⟨_, Nonempty.encard_pos⟩ := encard_pos
 
 theorem encard_union_eq (h : Disjoint s t) : (s ∪ t).encard = s.encard + t.encard := by
   classical
-  simp [encard, ENat.card_congr (Equiv.Set.union h)]
+  unfold encard
+  simp [ENat.card_congr (Equiv.Set.union h), ENat.card_sum]
 
 theorem encard_ne_add_one (a : α) :
     ({x | x ≠ a}).encard + 1 = ENat.card α := by
@@ -168,7 +169,8 @@ theorem encard_le_coe_iff {k : ℕ} : s.encard ≤ k ↔ s.Finite ∧ ∃ (n₀ 
 
 @[simp]
 theorem encard_prod : (s ×ˢ t).encard = s.encard * t.encard := by
-  simp [Set.encard, ENat.card_congr (Equiv.Set.prod ..)]
+  unfold encard
+  simp [ENat.card_congr (Equiv.Set.prod ..)]
 
 section Lattice
 
