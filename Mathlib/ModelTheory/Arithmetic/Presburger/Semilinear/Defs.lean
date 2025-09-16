@@ -63,7 +63,7 @@ theorem IsLinearSet.singleton (a) : IsLinearSet ({a} : Set M) :=
   ⟨a, ∅, by simp⟩
 
 theorem IsLinearSet.closure_finset (s : Finset M) : IsLinearSet (closure (s : Set M) : Set M) :=
-  ⟨0, s, by simp [zero_vadd]⟩
+  ⟨0, s, by simp⟩
 
 theorem IsLinearSet.closure_of_finite {s : Set M} (hs : s.Finite) :
     IsLinearSet (closure s : Set M) :=
@@ -76,7 +76,7 @@ theorem isLinearSet_iff_exists_fg_eq_vadd :
 
 theorem IsLinearSet.of_fg {P : AddSubmonoid M} (hP : P.FG) : IsLinearSet (P : Set M) := by
   rw [isLinearSet_iff_exists_fg_eq_vadd]
-  exact ⟨0, P, hP, by rw [zero_vadd]⟩
+  exact ⟨0, P, hP, by simp⟩
 
 @[simp]
 protected theorem IsLinearSet.univ [AddMonoid.FG M] : IsLinearSet (univ : Set M) :=
@@ -224,7 +224,7 @@ protected lemma IsLinearSet.closure (hs : IsLinearSet s) : IsSemilinearSet (clos
     | zero => exact Or.inl rfl
     | add x y _ _ ih₁ ih₂ =>
       rcases ih₁ with rfl | ⟨x, hx, rfl⟩
-      · simpa only [zero_add]
+      · simpa
       · rcases ih₂ with rfl | ⟨y, hy, rfl⟩
         · exact Or.inr ⟨x, hx, by simp⟩
         · refine Or.inr ⟨_, add_mem (mem_closure_of_mem (mem_insert _ _)) (add_mem hx hy), ?_⟩
