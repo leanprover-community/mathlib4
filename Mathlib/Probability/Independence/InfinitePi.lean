@@ -38,7 +38,7 @@ lemma iIndepFun_iff_map_fun_eq_infinitePi_map₀ (mX : AEMeasurable (fun ω i �
     have _ i := isProbabilityMeasure_map (mX.eval i)
     refine eq_infinitePi _ fun s t ht ↦ ?_
     rw [iIndepFun_iff_finset] at h
-    have : s.toSet.pi t = s.restrict ⁻¹' ((@Set.univ s ).pi fun i ↦ t i) := by ext; simp
+    have : s.toSet.pi t = s.restrict ⁻¹' (Set.univ.pi fun i ↦ t i) := by ext; simp
     rw [this, ← map_apply, AEMeasurable.map_map_of_aemeasurable]
     · have : s.restrict ∘ (fun ω i ↦ X i ω) = fun ω i ↦ s.restrict X i ω := by ext; simp
       rw [this, (iIndepFun_iff_map_fun_eq_pi_map ?_).1 (h s), pi_pi]
@@ -84,7 +84,7 @@ lemma iIndepFun_infinitePi (mX : ∀ i, Measurable (X i)) :
   rw [infinitePi_map_pi _ mX]
   congr
   ext i : 1
-  rw [← (measurePreserving_eval_infinitePi μ i).map_eq, map_map (mX i) (by fun_prop)]
-  rfl
+  rw [← (measurePreserving_eval_infinitePi μ i).map_eq, map_map (mX i) (by fun_prop),
+    Function.comp_def]
 
 end ProbabilityTheory

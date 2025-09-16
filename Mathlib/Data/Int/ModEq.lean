@@ -62,7 +62,7 @@ end ModEq
 
 theorem modEq_comm : a ≡ b [ZMOD n] ↔ b ≡ a [ZMOD n] := ⟨ModEq.symm, ModEq.symm⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem natCast_modEq_iff {a b n : ℕ} : a ≡ b [ZMOD n] ↔ a ≡ b [MOD n] := by
   unfold ModEq Nat.ModEq; rw [← Int.ofNat_inj]; simp
 
@@ -163,9 +163,9 @@ protected theorem mul (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a * 
   (h₂.mul_left _).trans (h₁.mul_right _)
 
 @[gcongr] protected theorem pow (m : ℕ) (h : a ≡ b [ZMOD n]) : a ^ m ≡ b ^ m [ZMOD n] := by
-  induction' m with d hd; · rfl
-  rw [pow_succ, pow_succ]
-  exact hd.mul h
+  induction m with
+  | zero => rfl
+  | succ d hd => rw [pow_succ, pow_succ]; exact hd.mul h
 
 lemma of_mul_left (m : ℤ) (h : a ≡ b [ZMOD m * n]) : a ≡ b [ZMOD n] := by
   rw [modEq_iff_dvd] at *; exact (dvd_mul_left n m).trans h

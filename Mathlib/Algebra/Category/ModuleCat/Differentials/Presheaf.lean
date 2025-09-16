@@ -44,8 +44,8 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 namespace PresheafOfModules
 
 variable {S : Cᵒᵖ ⥤ CommRingCat.{u}} {F : C ⥤ D} {S' R : Dᵒᵖ ⥤ CommRingCat.{u}}
-   (M N : PresheafOfModules.{v} (R ⋙ forget₂ _ _))
-   (φ : S ⟶ F.op ⋙ R) (φ' : S' ⟶ R)
+  (M N : PresheafOfModules.{v} (R ⋙ forget₂ _ _))
+  (φ : S ⟶ F.op ⋙ R) (φ' : S' ⟶ R)
 
 /-- Given a morphism of presheaves of commutative rings `φ : S ⟶ F.op ⋙ R`,
 this is the type of relative `φ`-derivation of a presheaf of `R`-modules `M`. -/

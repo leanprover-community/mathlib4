@@ -29,6 +29,9 @@ variable (F : Type*) (Γ : outParam <| Subgroup SL(2, ℤ)) (k : outParam ℤ)
 
 /-- Functions `ℍ → ℂ` that are invariant under the `SlashAction`. -/
 structure SlashInvariantForm where
+  /-- The underlying function `ℍ → ℂ`.
+
+  Do NOT use directly. Use the coercion instead. -/
   toFun : ℍ → ℂ
   slash_action_eq' : ∀ γ ∈ Γ, toFun ∣[k] γ = toFun
 
@@ -221,11 +224,10 @@ noncomputable def translateGL [SlashInvariantFormClass F Γ k] (f : F) (g : GL (
     SlashInvariantForm (CongruenceSubgroup.conjGL Γ g) k where
   toFun := f ∣[k] g
   slash_action_eq' j hj := by
-    obtain ⟨y, hy, hy'⟩ := CongruenceSubgroup.mem_conjGL'.mp hj
-    simp only [ModularForm.SL_slash, ← hy', ← SlashAction.slash_mul, mul_assoc,
-      mul_inv_cancel_left]
-    rw [SlashAction.slash_mul, ← ModularForm.SL_slash,
-      SlashInvariantFormClass.slash_action_eq f _ hy]
+    obtain ⟨y, hy, hy'⟩ := CongruenceSubgroup.mem_conjGL.mp hj
+    rw [eq_mul_inv_iff_mul_eq] at hy'
+    rw [ModularForm.SL_slash, ← SlashAction.slash_mul, ← hy', SlashAction.slash_mul,
+      ← ModularForm.SL_slash, slash_action_eqn f _ hy]
 
 @[simp]
 lemma coe_translateGL [SlashInvariantFormClass F Γ k] (f : F) (g : GL (Fin 2) ℝ) :

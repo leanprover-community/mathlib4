@@ -271,7 +271,7 @@ lemma genEigenspace_top_eq_maxUnifEigenspaceIndex [IsNoetherian R M] (f : End R 
   simp only [genEigenspace, OrderHom.coe_mk, le_top, iSup_pos, OrderHom.comp_coe,
     Function.comp_def]
   rw [iSup_prod', iSup_subtype', ← sSup_range, ← sSup_range]
-  congr
+  congr 1
   aesop
 
 lemma genEigenspace_le_genEigenspace_maxUnifEigenspaceIndex [IsNoetherian R M] (f : End R M)
@@ -517,6 +517,10 @@ noncomputable abbrev maxGenEigenspaceIndex (f : End R M) (μ : R) :=
 theorem maxGenEigenspace_eq [IsNoetherian R M] (f : End R M) (μ : R) :
     maxGenEigenspace f μ = f.genEigenspace μ (maxGenEigenspaceIndex f μ) :=
   genEigenspace_top_eq_maxUnifEigenspaceIndex _ _
+
+theorem maxGenEigenspace_eq_maxGenEigenspace_zero (f : End R M) (μ : R) :
+    maxGenEigenspace f μ = maxGenEigenspace (f - μ • 1) 0 := by
+  ext; simp
 
 /-- A generalized eigenvalue for some exponent `k` is also
 a generalized eigenvalue for exponents larger than `k`. -/

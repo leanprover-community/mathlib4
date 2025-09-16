@@ -257,11 +257,10 @@ instance faithful_map [F₁.Faithful] [F₂.Faithful] : (map α β).Faithful whe
 
 instance full_map [F.Faithful] [F₁.Full] [F₂.Full] [IsIso α] [IsIso β] : (map α β).Full where
   map_surjective {X Y} φ :=
-   ⟨{ left := F₁.preimage φ.left
+    ⟨{left := F₁.preimage φ.left
       right := F₂.preimage φ.right
       w := F.map_injective (by
-        rw [← cancel_mono (β.app _), ← cancel_epi (α.app _), F.map_comp, F.map_comp,
-          assoc, assoc]
+        rw [← cancel_mono (β.app _), ← cancel_epi (α.app _), F.map_comp, F.map_comp, assoc, assoc]
         erw [← α.naturality_assoc, β.naturality]
         dsimp
         rw [F₁.map_preimage, F₂.map_preimage]
@@ -270,15 +269,15 @@ instance full_map [F.Faithful] [F₁.Full] [F₂.Full] [IsIso α] [IsIso β] : (
 instance essSurj_map [F₁.EssSurj] [F₂.EssSurj] [F.Full] [IsIso α] [IsIso β] :
     (map α β).EssSurj where
   mem_essImage X :=
-    ⟨{  left := F₁.objPreimage X.left
-        right := F₂.objPreimage X.right
-        hom := F.preimage ((inv α).app _ ≫ L'.map (F₁.objObjPreimageIso X.left).hom ≫
-          X.hom ≫ R'.map (F₂.objObjPreimageIso X.right).inv ≫ (inv β).app _) },
-            ⟨isoMk (F₁.objObjPreimageIso X.left) (F₂.objObjPreimageIso X.right) (by
-              dsimp
-              simp only [NatIso.isIso_inv_app, Functor.comp_obj, Functor.map_preimage, assoc,
-                IsIso.inv_hom_id, comp_id, IsIso.hom_inv_id_assoc]
-              rw [← R'.map_comp, Iso.inv_hom_id, R'.map_id, comp_id])⟩⟩
+    ⟨{left := F₁.objPreimage X.left
+      right := F₂.objPreimage X.right
+      hom := F.preimage ((inv α).app _ ≫ L'.map (F₁.objObjPreimageIso X.left).hom ≫
+        X.hom ≫ R'.map (F₂.objObjPreimageIso X.right).inv ≫ (inv β).app _) },
+          ⟨isoMk (F₁.objObjPreimageIso X.left) (F₂.objObjPreimageIso X.right) (by
+            dsimp
+            simp only [NatIso.isIso_inv_app, Functor.comp_obj, Functor.map_preimage, assoc,
+              IsIso.inv_hom_id, comp_id, IsIso.hom_inv_id_assoc]
+            rw [← R'.map_comp, Iso.inv_hom_id, R'.map_id, comp_id])⟩⟩
 
 noncomputable instance isEquivalenceMap
     [F₁.IsEquivalence] [F₂.IsEquivalence] [F.Faithful] [F.Full] [IsIso α] [IsIso β] :
