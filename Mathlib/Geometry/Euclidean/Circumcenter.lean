@@ -166,7 +166,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
       have hc : Fintype.card ι2 = m + 1 := by
         rw [Fintype.card_of_subtype {x | x ≠ i}]
         · rw [Finset.filter_not, Finset.filter_eq' _ i, if_pos (Finset.mem_univ _),
-            Finset.card_sdiff (Finset.subset_univ _), Finset.card_singleton, Finset.card_univ, hn]
+            Finset.card_sdiff, Finset.card_univ, hn]
           simp
         · simp
       haveI : Nonempty ι2 := Fintype.card_pos_iff.1 (hc.symm ▸ Nat.zero_lt_succ _)

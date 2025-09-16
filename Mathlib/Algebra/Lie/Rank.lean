@@ -197,7 +197,7 @@ open Module LieSubalgebra
 
 lemma finrank_engel (x : L) :
     finrank K (engel K x) = (ad K L x).charpoly.natTrailingDegree :=
-  (ad K L x).finrank_maxGenEigenspace
+  (ad K L x).finrank_maxGenEigenspace_zero_eq
 
 lemma rank_le_finrank_engel (x : L) :
     rank K L ≤ finrank K (engel K x) :=

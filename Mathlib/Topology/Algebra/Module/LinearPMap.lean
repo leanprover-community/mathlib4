@@ -5,6 +5,7 @@ Authors: Moritz Doll
 -/
 import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 # Partially defined linear operators over topological vector spaces
@@ -52,6 +53,7 @@ namespace LinearPMap
 
 /-! ### Closed and closable operators -/
 
+section Basic
 
 /-- An unbounded operator is closed iff its graph is closed. -/
 def IsClosed (f : E →ₗ.[R] F) : Prop :=
@@ -159,11 +161,21 @@ theorem closureHasCore (f : E →ₗ.[R] F) : f.closure.HasCore f.domain := by
   rw [f.le_closure.2 hyz]
   exact domRestrict_apply hyz
 
+end Basic
+
 /-! ### Topological properties of the inverse -/
 
 section Inverse
 
 variable {f : E →ₗ.[R] F}
+
+/-- The inverse of `f : LinearPMap` is closed if and only if `f` is closed. -/
+theorem inverse_closed_iff (hf : LinearMap.ker f.toFun = ⊥) : f.inverse.IsClosed ↔ f.IsClosed := by
+  rw [IsClosed, inverse_graph hf]
+  exact (ContinuousLinearEquiv.prodComm R E F).isClosed_image
+
+variable [ContinuousAdd E] [ContinuousAdd F]
+variable [TopologicalSpace R] [ContinuousSMul R E] [ContinuousSMul R F]
 
 /-- If `f` is invertible and closable as well as its closure being invertible, then
 the graph of the inverse of the closure is given by the closure of the graph of the inverse. -/
