@@ -60,8 +60,7 @@ variable [TopologicalSpace R] [ContinuousSMul R V]
 @[continuity, fun_prop]
 theorem lineMap_continuous {p q : P} :
     Continuous (lineMap p q : R →ᵃ[R] P) := by
-  eta_expand
-  simp only [lineMap_apply]
+  rw [coe_lineMap]
   fun_prop
 
 end Ring
@@ -72,8 +71,7 @@ variable [CommRing R] [Module R V] [ContinuousConstSMul R V]
 
 @[continuity, fun_prop]
 theorem homothety_continuous (x : P) (t : R) : Continuous <| homothety x t := by
-  eta_expand
-  simp only [homothety_apply]
+  rw [coe_homothety]
   fun_prop
 
 end CommRing
