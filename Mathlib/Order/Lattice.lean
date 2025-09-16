@@ -172,6 +172,7 @@ theorem sup_le_sup_left (h₁ : a ≤ b) (c) : c ⊔ a ≤ c ⊔ b :=
 theorem sup_le_sup_right (h₁ : a ≤ b) (c) : a ⊔ c ≤ b ⊔ c :=
   sup_le_sup h₁ le_rfl
 
+@[grind =]
 theorem sup_idem (a : α) : a ⊔ a = a := by simp
 
 instance : Std.IdempotentOp (α := α) (· ⊔ ·) := ⟨sup_idem⟩
@@ -362,6 +363,7 @@ theorem inf_le_inf_right (a : α) {b c : α} (h : b ≤ c) : b ⊓ a ≤ c ⊓ a
 theorem inf_le_inf_left (a : α) {b c : α} (h : b ≤ c) : a ⊓ b ≤ a ⊓ c :=
   inf_le_inf le_rfl h
 
+@[grind =]
 theorem inf_idem (a : α) : a ⊓ a = a := by simp
 
 instance : Std.IdempotentOp (α := α) (· ⊓ ·) := ⟨inf_idem⟩
