@@ -62,6 +62,9 @@ variable {α β : Type*} {s t : Set α}
 /-- The cardinality of a set as a term in `ℕ∞` -/
 noncomputable def encard (s : Set α) : ℕ∞ := ENat.card s
 
+@[simp]
+theorem _root_.ENat.card_coe_set_eq {α : Type*} (s : Set α) : ENat.card s = s.encard := rfl
+
 @[simp] theorem encard_univ_coe (s : Set α) : encard (univ : Set s) = encard s := by
   rw [encard, encard, ENat.card_congr (Equiv.Set.univ ↑s)]
 
@@ -116,7 +119,7 @@ protected alias ⟨_, Nonempty.encard_pos⟩ := encard_pos
 
 theorem encard_union_eq (h : Disjoint s t) : (s ∪ t).encard = s.encard + t.encard := by
   classical
-  simp [encard, ENat.card_congr (Equiv.Set.union h)]
+  simp [← ENat.card_coe_set_eq, ENat.card_congr (Equiv.Set.union h)]
 
 theorem encard_ne_add_one (a : α) :
     ({x | x ≠ a}).encard + 1 = ENat.card α := by
@@ -166,7 +169,7 @@ theorem encard_le_coe_iff {k : ℕ} : s.encard ≤ k ↔ s.Finite ∧ ∃ (n₀ 
 
 @[simp]
 theorem encard_prod : (s ×ˢ t).encard = s.encard * t.encard := by
-  simp [Set.encard, ENat.card_congr (Equiv.Set.prod ..)]
+  simp [← ENat.card_coe_set_eq, ENat.card_congr (Equiv.Set.prod ..)]
 
 section Lattice
 
