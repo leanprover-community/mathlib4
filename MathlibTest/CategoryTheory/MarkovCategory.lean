@@ -26,7 +26,7 @@ This file contains tests and examples for the Markov category implementation.
 
 universe u
 
-open CategoryTheory MarkovCategory
+open CategoryTheory MarkovCategory CopyDiscardCategory
 
 section BasicTests
 
@@ -46,7 +46,7 @@ section ComonoidLaws
 
 variable {C : Type u} [Category.{u} C] [MonoidalCategory.{u} C] [MarkovCategory C]
 
-open MonoidalCategory
+open MonoidalCategory CopyDiscardCategory
 
 /-- The copy operation is commutative -/
 example (X : C) : copyMor X ≫ (β_ X X).hom = copyMor X := copy_comm X
@@ -124,7 +124,7 @@ section SimpLemmas
 
 variable {C : Type u} [Category.{u} C] [MonoidalCategory C] [MarkovCategory C]
 
-open MonoidalCategory
+open MonoidalCategory CopyDiscardCategory
 
 /-- Test that simp lemmas work for counit laws -/
 example (X : C) : copyMor X ≫ (delMor X ▷ X) = (λ_ X).inv := by simp

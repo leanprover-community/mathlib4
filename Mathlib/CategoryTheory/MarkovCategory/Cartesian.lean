@@ -11,24 +11,16 @@ import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 /-!
 # Cartesian Categories as Markov Categories
 
-This file shows that cartesian monoidal categories (categories with finite products)
-are Markov categories where every morphism is deterministic.
+Shows that cartesian monoidal categories are Markov categories where morphisms are deterministic.
 
-## Mathematical significance
+Cartesian categories represent deterministic computation where functions have unique outputs
+and information can be duplicated freely. In this setting:
+- Copying is the diagonal morphism `Δ : X → X × X`
+- Deletion is the unique morphism to the terminal object
+- Every morphism preserves copying perfectly (is deterministic)
 
-Cartesian categories represent deterministic computation, e.g., the "classical" world where
-functions have unique outputs and information can be freely duplicated. By showing these
-form Markov categories, we see that:
-
-1. Markov categories generalize from deterministic to probabilistic settings
-2. The axioms of Markov categories, when specialized to the deterministic case,
-   recover the structure of products
-3. Probabilistic and deterministic computation share the same compositional structure
-
-In a cartesian setting, copying is the diagonal morphism
-`Δ : X → X × X` (which duplicates data) and deletion is the unique morphism
-to the terminal object (which discards data). There is no probabilistic
-branching. Every morphism preserves the copy operation perfectly.
+This shows that Markov categories generalize from deterministic to probabilistic settings,
+with cartesian categories as the "zero randomness" case.
 
 ## Main definitions
 
@@ -42,27 +34,6 @@ branching. Every morphism preserves the copy operation perfectly.
 * `copy_eq_diagonal` - The copy operation equals the diagonal
 * `del_eq_terminal` - The delete operation equals the terminal morphism
 
-## Implementation notes
-
-We use the existing `CartesianMonoidalCategory` structure which provides
-the monoidal structure from finite products. The braiding is constructed from
-the product projections and pairing: `swap(x,y) = (y,x)` using `⟨snd, fst⟩`.
-
-The proofs are straightforward because products naturally satisfy the comonoid
-axioms; this is the "canonical comonoid" that exists in any cartesian category.
-The use of `ext` (extensionality for products) reduces most proofs to the
-universal property of products.
-
-## Design rationale
-
-We define this as an instance rather than just a theorem because:
-1. It allows cartesian categories to automatically inherit all Markov category theory
-2. It provides the canonical test case; any construction or theorem in Markov
-   category theory MUST reduce to the correct classical result when specialized to
-   cartesian categories. If it doesn't, the construction is wrong.
-3. It validates the framework: Shows that Markov categories generalize
-   classical categories by including them as the "zero randomness" special case
-
 ## Tags
 
 Markov category, cartesian category, finite products, deterministic
@@ -74,27 +45,24 @@ open CategoryTheory MonoidalCategory Limits
 
 namespace CategoryTheory
 
+open CopyDiscardCategory
+
 variable {C : Type u} [Category.{v} C]
 
-/-- In a cartesian monoidal category, the diagonal provides the copy operation.
+/-- The diagonal morphism `⟨id, id⟩ : X → X × X` as the copy operation.
 
-This is `⟨id, id⟩ : X → X × X`, which duplicates the value.
-In the category of sets/types, this sends `x ↦ (x, x)`. -/
+In sets, this sends `x ↦ (x, x)`. -/
 def diagonalCopy [CartesianMonoidalCategory C] (X : C) : X ⟶ X ⊗ X :=
   CartesianMonoidalCategory.lift (𝟙 X) (𝟙 X)
 
-/-- In a cartesian monoidal category, the unique morphism to terminal provides delete.
-
-This discards information; there's no way to recover X from the terminal object.
-The uniqueness of this morphism is what makes the unit terminal. -/
+/-- The unique morphism to the terminal object as the delete operation. -/
 def terminalDelete [CartesianMonoidalCategory C] (X : C) : X ⟶ 𝟙_ C :=
   CartesianMonoidalCategory.toUnit X
 
-/-- A cartesian monoidal category forms a Markov category.
+/-- Cartesian monoidal categories are Markov categories.
 
-This is the key example showing that Markov categories include classical
-deterministic computation. All the probabilistic axioms hold when
-there's no randomness. -/
+This shows that Markov categories include deterministic computation:
+all axioms hold when there's no randomness. -/
 instance instMarkovCategoryOfCartesian [CartesianMonoidalCategory C] : MarkovCategory C where
   braiding X Y := ⟨CartesianMonoidalCategory.lift (CartesianMonoidalCategory.snd X Y)
                      (CartesianMonoidalCategory.fst X Y),
@@ -107,77 +75,77 @@ instance instMarkovCategoryOfCartesian [CartesianMonoidalCategory C] : MarkovCat
   copyMor := diagonalCopy
   delMor := terminalDelete
   copy_comm X := by
-    -- The diagonal is symmetric: (x,x) and (x,x) are the same regardless of swap
+    -- Diagonal is symmetric: swapping (x,x) gives (x,x)
     unfold diagonalCopy
     ext <;> simp [CartesianMonoidalCategory.lift_fst, CartesianMonoidalCategory.lift_snd]
   counit_comul X := by
-    -- (x,x) then delete first component gives x, matching the left unitor
+    -- Delete first of (x,x) gives x
     unfold diagonalCopy terminalDelete
     ext
     simp
   comul_counit X := by
-    -- (x,x) then delete second component gives x, matching the right unitor
+    -- Delete second of (x,x) gives x
     unfold diagonalCopy terminalDelete
     ext
     simp
   coassoc X := by
-    -- (x,x) then copy first vs copy second both give (x,x,x)
+    -- Copy either component of (x,x) gives (x,x,x)
     unfold diagonalCopy
     ext <;> simp [CartesianMonoidalCategory.lift_fst, CartesianMonoidalCategory.lift_snd]
   copy_tensor X Y := by
-    -- ((x,y), (x,y)) rearranges to ((x,x), (y,y)) via middleFourInterchange
+    -- Rearrange ((x,y), (x,y)) to ((x,x), (y,y))
     unfold diagonalCopy
     ext <;> simp [middleFourInterchange]
   del_tensor X Y := by
-    -- Unique morphism to terminal factors through product of terminals
+    -- Morphism to terminal is unique
     unfold terminalDelete
     apply CartesianMonoidalCategory.toUnit_unique
   del_natural f := by
-    -- Terminal object has exactly one morphism from any object
+    -- Morphism to terminal is unique
     unfold terminalDelete
     apply CartesianMonoidalCategory.toUnit_unique
 
 namespace CartesianMarkov
 
+open MarkovCategory
+
 variable [CartesianMonoidalCategory C]
 
-/-- In a cartesian category, every morphism is deterministic.
+/-- Every morphism in a cartesian category is deterministic.
 
-This is the key property that characterizes cartesian categories as Markov
-categories: all morphisms preserve copying perfectly, meaning there's no randomness. -/
+All morphisms preserve copying perfectly since there's no randomness. -/
 instance deterministic_of_cartesian {X Y : C} (f : X ⟶ Y) : Deterministic f where
   preserves_copy := by
-    -- f(x,x) = (f(x), f(x)) by the universal property of products
-    simp only [MarkovCategory.copyMor, diagonalCopy]
+    -- Products preserve: f(x,x) = (f(x), f(x))
+    simp only [copyMor, diagonalCopy]
     ext <;> simp [CartesianMonoidalCategory.lift_fst, CartesianMonoidalCategory.lift_snd]
 
-/-- The copy operation in a cartesian category is the diagonal -/
+/-- The copy operation equals the diagonal. -/
 @[simp]
 lemma copy_eq_diagonal (X : C) :
-    MarkovCategory.copyMor X = CartesianMonoidalCategory.lift (𝟙 X) (𝟙 X) := rfl
+    copyMor X = CartesianMonoidalCategory.lift (𝟙 X) (𝟙 X) := rfl
 
-/-- The delete operation in a cartesian category is the terminal morphism -/
+/-- The delete operation equals the terminal morphism. -/
 @[simp]
 lemma del_eq_terminal (X : C) :
-    MarkovCategory.delMor X = CartesianMonoidalCategory.toUnit X := rfl
+    delMor X = CartesianMonoidalCategory.toUnit X := rfl
 
-/-- First projection composed with copy gives identity -/
+/-- First projection after copy gives identity. -/
 @[simp, reassoc]
-lemma copy_fst (X : C) : MarkovCategory.copyMor X ≫ CartesianMonoidalCategory.fst X X = 𝟙 X := by
+lemma copy_fst (X : C) : copyMor X ≫ CartesianMonoidalCategory.fst X X = 𝟙 X := by
   simp [copy_eq_diagonal, CartesianMonoidalCategory.lift_fst]
 
-/-- Second projection composed with copy gives identity -/
+/-- Second projection after copy gives identity. -/
 @[simp, reassoc]
-lemma copy_snd (X : C) : MarkovCategory.copyMor X ≫ CartesianMonoidalCategory.snd X X = 𝟙 X := by
+lemma copy_snd (X : C) : copyMor X ≫ CartesianMonoidalCategory.snd X X = 𝟙 X := by
   simp [copy_eq_diagonal, CartesianMonoidalCategory.lift_snd]
 
-/-- The copy operation satisfies the universal property of the product.
+/-- The copy operation satisfies the universal property of products.
 
-This shows that in the cartesian setting, the Markov category copy operation
-is the categorical product structure. Two morphisms are equal if and
-only if they agree after copying (this is true only in deterministic settings). -/
+Two morphisms are equal if and only if they agree after copying
+(true only in deterministic settings). -/
 lemma copy_universal {X Y : C} (f g : Y ⟶ X) :
-    f = g ↔ f ≫ MarkovCategory.copyMor X = g ≫ MarkovCategory.copyMor X := by
+    f = g ↔ f ≫ copyMor X = g ≫ copyMor X := by
   constructor
   · intro h; rw [h]
   · intro h

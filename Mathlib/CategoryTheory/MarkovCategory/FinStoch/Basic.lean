@@ -11,24 +11,20 @@ import Mathlib.Data.NNReal.Basic
 /-!
 # Finite Stochastic Matrices
 
-This file defines the category of finite types with stochastic matrices as morphisms,
-providing a concrete model of a Markov category for probabilistic computations.
+The category of finite types with stochastic matrices as morphisms,
+providing a concrete Markov category for probabilistic computations.
 
-## Mathematical perspective
-
-FinStoch is the key example of a Markov category that handles real probability.
-Cartesian categories have only deterministic morphisms, but FinStoch includes
-both deterministic functions (permutation matrices) and random processes
-(matrices with mixed distributions). This makes it the place to test
-probabilistic reasoning in categories.
+FinStoch handles real probability, unlike cartesian categories which have only
+deterministic morphisms. It includes both deterministic functions (permutation matrices)
+and random processes (general stochastic matrices).
 
 A morphism `f : m → n` is a stochastic matrix where `f[i,j]` gives the probability
 of transitioning from state `i` to state `j`. Composition follows the Chapman-Kolmogorov
-equation from Markov chain theory, and tensor products model independent parallel processes.
+equation, and tensor products model independent parallel processes.
 
 ## Main definitions
 
-* `StochasticMatrix m n` - An `m × n` stochastic matrix where each row sums to 1
+* `StochasticMatrix m n` - An `m × n` matrix where each row sums to 1
 * `FinStoch` - The category of finite types with stochastic matrices as morphisms
 * `StochasticMatrix.id` - The identity stochastic matrix
 * `StochasticMatrix.comp` - Composition of stochastic matrices
@@ -36,38 +32,14 @@ equation from Markov chain theory, and tensor products model independent paralle
 
 ## Implementation notes
 
-### Row-stochastic convention
+We use row-stochastic matrices (rows sum to 1). This aligns with standard probability
+notation P(j|i) and makes matrix multiplication implement the Chapman-Kolmogorov equation.
 
-We use row-stochastic matrices (rows sum to 1) rather than column-stochastic.
-This choice aligns with:
-- Standard probability notation where P(j|i) is "probability of j given i"
-- Matrix multiplication naturally implementing the Chapman-Kolmogorov equation
-- The categorical convention where morphisms f : X → Y go from domain to codomain
+The row sum constraint is in the type, ensuring validity by construction.
+We use `NNReal` for entries to prevent negative probabilities at the type level.
 
-### Type-level validity
-
-The row sum constraint is embedded in the type rather than as a separate proposition.
-This design ensures every `StochasticMatrix` is valid by construction, eliminating
-runtime checks and simplifying proofs. The trade-off is that constructing matrices
-requires proving the constraint, but this is handled once at construction time.
-
-### NNReal for positivity
-
-We use `NNReal` (non-negative reals) for matrix entries to ensure non-negativity
-by construction. This prevents impossible "negative probabilities" at the type level.
-
-### Bundled instances
-
-We bundle `Fintype` and `DecidableEq` instances with `FinStoch` objects rather than
-relying on type class inference. This avoids diamond problems and ensures the
-categorical constructions work smoothly without instance resolution issues.
-
-## Examples
-
-The `Examples` section below demonstrates:
-* Fair coin flip: 50/50 probability distribution over Bool
-* Deterministic functions as stochastic matrices (permutation matrices)
-* The identity matrix as a special deterministic case
+We bundle `Fintype` and `DecidableEq` instances with `FinStoch` objects to avoid
+diamond problems in categorical constructions.
 
 ## References
 
@@ -83,17 +55,14 @@ namespace CategoryTheory.MarkovCategory
 
 universe u
 
-/-- A stochastic matrix represents a conditional probability distribution P(n|m).
+/-- A stochastic matrix representing a conditional probability distribution P(n|m).
 
-The matrix entry at position (i,j) gives the probability of transitioning from
-state i ∈ m to state j ∈ n. Each row forms a probability distribution over the
-output states, listing all possible outcomes for each input.
-
-This is also called a Markov kernel in probability theory. -/
+Entry (i,j) gives the probability of transitioning from state i to state j.
+Each row is a probability distribution over output states. -/
 structure StochasticMatrix (m n : Type u) [Fintype m] [Fintype n] where
-  /-- The underlying matrix of non-negative real values -/
+  /-- The matrix of non-negative reals -/
   toMatrix : Matrix m n NNReal
-  /-- Each row sums to 1, forming a probability distribution -/
+  /-- Each row sums to 1 -/
   row_sum : ∀ i : m, ∑ j : n, toMatrix i j = 1
 
 namespace StochasticMatrix
@@ -129,26 +98,22 @@ def comp (f : StochasticMatrix m n) (g : StochasticMatrix n p) : StochasticMatri
     -- equals summing first over j, then k (by Fubini/sum exchange)
     rw [Finset.sum_comm]
     simp only [← Finset.mul_sum]
-    -- Each row of g sums to 1, and f's row i sums to 1
+    -- Both matrices are stochastic
     simp only [g.row_sum, mul_one, f.row_sum]
 
-/-- Tensor product of stochastic matrices models independent parallel composition.
+/-- Tensor product of stochastic matrices (Kronecker product).
 
-For independent processes, P((Y₁,Y₂)|(X₁,X₂)) = P(Y₁|X₁) * P(Y₂|X₂).
-
-This is the Kronecker product from linear algebra, but interpreted probabilistically:
-it runs two independent stochastic processes in parallel. The key property is that
-the processes are independent; knowing the outcome of one gives no information about the other. -/
+Models independent parallel processes: P((Y₁,Y₂)|(X₁,X₂)) = P(Y₁|X₁) * P(Y₂|X₂). -/
 def tensor {m₁ n₁ m₂ n₂ : Type u} [Fintype m₁] [Fintype n₁] [Fintype m₂] [Fintype n₂]
     (f : StochasticMatrix m₁ n₁) (g : StochasticMatrix m₂ n₂) :
     StochasticMatrix (m₁ × m₂) (n₁ × n₂) where
   toMatrix := fun ij kl => f.toMatrix ij.1 kl.1 * g.toMatrix ij.2 kl.2
   row_sum := fun ij => by
     obtain ⟨i₁, i₂⟩ := ij
-    -- Sum over product = product of sums (independence!)
+    -- Sum over product = product of sums
     rw [← Finset.univ_product_univ, Finset.sum_product]
     rw [← Finset.sum_mul_sum]
-    -- Both processes have probability 1 total
+    -- Each row sums to 1
     simp only [f.row_sum i₁, g.row_sum i₂, one_mul]
 
 @[ext]
@@ -161,11 +126,8 @@ end StochasticMatrix
 
 /-- The category of finite types with stochastic matrices as morphisms.
 
-Objects are finite types representing state spaces. Morphisms are stochastic
-matrices representing probabilistic transitions. This forms a category because:
-- Identity matrices preserve states deterministically
-- Composition follows the Chapman-Kolmogorov equation
-- Associativity comes from matrix multiplication -/
+Objects are finite state spaces. Morphisms are stochastic matrices.
+Composition follows the Chapman-Kolmogorov equation. -/
 structure FinStoch : Type (u+1) where
   carrier : Type u
   [fintype : Fintype carrier]
@@ -191,7 +153,7 @@ instance : Category FinStoch where
     ext i j
     simp only [CategoryStruct.comp, StochasticMatrix.comp]
     simp only [CategoryStruct.id]
-    -- Identity picks out the i-th row of f
+    -- Identity matrix selects row i
     rw [Finset.sum_eq_single i]
     · simp [StochasticMatrix.id, one_mul]
     · intro k _ hk
@@ -206,7 +168,7 @@ instance : Category FinStoch where
     ext i j
     simp only [CategoryStruct.comp, StochasticMatrix.comp]
     simp only [CategoryStruct.id]
-    -- Identity picks out the j-th column of f
+    -- Identity matrix selects column j
     rw [Finset.sum_eq_single j]
     · simp [StochasticMatrix.id, mul_one]
     · intro k _ hk
@@ -220,23 +182,20 @@ instance : Category FinStoch where
     apply StochasticMatrix.ext
     ext i k
     simp only [CategoryStruct.comp, StochasticMatrix.comp]
-    -- Matrix multiplication is associative
+    -- Associativity of matrix multiplication
     simp only [Finset.sum_mul, Finset.mul_sum, mul_assoc]
-    -- We can sum over intermediate states in any order
+    -- Interchange summation order
     rw [Finset.sum_comm]
 
-/-- The tensor unit is the singleton type with a unique stochastic matrix structure.
+/-- The tensor unit: a singleton type.
 
-This represents a trivial one-state system with no randomness. It's the identity
-for tensor products: tensoring with Unit adds no states or randomness. -/
+Represents a one-state system. Identity for tensor products. -/
 def tensorUnit : FinStoch where
   carrier := Unit
 
-/-- The tensor product of objects is the product of their carrier types.
+/-- Tensor product of objects: the product of carrier types.
 
-This models compound systems: if X has m states and Y has n states,
-then X ⊗ Y has m×n states representing all possible combinations.
-For example, two coins give four states: (H,H), (H,T), (T,H), (T,T). -/
+If X has m states and Y has n states, X ⊗ Y has m×n states. -/
 def tensorObj (X Y : FinStoch) : FinStoch where
   carrier := X.carrier × Y.carrier
 
