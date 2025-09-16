@@ -825,6 +825,45 @@ theorem Antitone.tendsto_le_alternating_series
     exact hfa (by omega)
   exact ha.le_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; omega) tendsto_id)) _
 
+theorem Summable.tendsto_alternating_series_tsum
+    {E} [Ring E] [UniformSpace E] [IsUniformAddGroup E] [CompleteSpace E]
+    {f : ℕ → E} (hfs : Summable f) :
+    Tendsto (fun n => (∑ i ∈ range n, (-1) ^ i * f i)) atTop (𝓝 (∑' i : ℕ, (-1) ^ i * f i)) :=
+  Summable.tendsto_sum_tsum_nat hfs.alternating
+
+-- TODO: generalize to conditionally-convergent sums
+-- see https://github.com/leanprover-community/mathlib4/pull/29577#discussion_r2343447344
+theorem alternating_series_error_bound
+    {E} [Ring E] [LinearOrder E] [IsOrderedRing E]
+    [UniformSpace E] [IsUniformAddGroup E] [CompleteSpace E] [OrderClosedTopology E]
+    (f : ℕ → E) (hfa : Antitone f) (hfs : Summable f) (n : ℕ) :
+    |(∑' i : ℕ, (-1) ^ i * f i) - (∑ i ∈ range n, (-1) ^ i * f i)| ≤ f n := by
+  obtain h := hfs.tendsto_alternating_series_tsum
+  have upper := hfa.alternating_series_le_tendsto h
+  have lower := hfa.tendsto_le_alternating_series h
+  have I (n : ℕ) : 0 ≤ f n := by
+    apply le_of_tendsto hfs.tendsto_atTop_zero
+    filter_upwards [Ici_mem_atTop n] with m hm using hfa hm
+  obtain (h | h) := even_or_odd n
+  · obtain ⟨n, rfl⟩ := even_iff_exists_two_mul.mp h
+    specialize upper n
+    specialize lower n
+    simp only [sum_range_succ, even_two, Even.mul_right, Even.neg_pow, one_pow, one_mul] at lower
+    rw [abs_sub_le_iff]
+    constructor
+    · rwa [sub_le_iff_le_add, add_comm]
+    · rw [sub_le_iff_le_add, add_comm]
+      exact upper.trans (le_add_of_nonneg_right (I (2 * n)))
+  · obtain ⟨n, rfl⟩ := odd_iff_exists_bit1.mp h
+    specialize upper (n + 1)
+    specialize lower n
+    rw [Nat.mul_add, Finset.sum_range_succ] at upper
+    rw [abs_sub_le_iff]
+    constructor
+    · rw [sub_le_iff_le_add, add_comm]
+      exact lower.trans (le_add_of_nonneg_right (I (2 * n + 1)))
+    · simpa [Finset.sum_range_succ, add_comm, pow_add] using upper
+
 end
 
 /-!

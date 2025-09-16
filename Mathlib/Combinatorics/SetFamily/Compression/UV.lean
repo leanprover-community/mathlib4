@@ -280,8 +280,8 @@ variable [DecidableEq α] {𝒜 : Finset (Finset α)} {u v : Finset α} {r : ℕ
 theorem card_compress (huv : #u = #v) (a : Finset α) : #(compress u v a) = #a := by
   unfold compress
   split_ifs with h
-  · rw [card_sdiff (h.2.trans le_sup_left), sup_eq_union, card_union_of_disjoint h.1.symm, huv,
-      add_tsub_cancel_right]
+  · rw [card_sdiff_of_subset (h.2.trans le_sup_left), sup_eq_union,
+      card_union_of_disjoint h.1.symm, huv, add_tsub_cancel_right]
   · rfl
 
 lemma _root_.Set.Sized.uvCompression (huv : #u = #v) (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
