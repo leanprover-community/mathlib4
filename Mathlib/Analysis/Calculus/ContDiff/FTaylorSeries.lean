@@ -89,7 +89,7 @@ derivative, gives the same result. The key point for this is that taking the der
 with continuous linear equivalences. Therefore, we need to implement all our identifications with
 continuous linear equivs.
 
-## Notations
+## Notation
 
 We use the notation `E [×n]→L[𝕜] F` for the space of continuous multilinear maps on `E^n` with
 values in `F`. This is the space in which the `n`-th derivative of a function from `E` to `F` lives.

@@ -40,7 +40,7 @@ replace `x : ℝ` and `hx : 0 ≤ x` in the proof context with `x : ℝ≥0` whi
 of `x` with `↑x`. This tactic also works for a function `f : α → ℝ` with a hypothesis
 `hf : ∀ x, 0 ≤ f x`.
 
-## Notations
+## Notation
 
 This file defines `ℝ≥0` as a localized notation for `NNReal`.
 -/

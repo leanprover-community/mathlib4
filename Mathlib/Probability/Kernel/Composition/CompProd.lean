@@ -30,7 +30,7 @@ that convention because it fits better with the use of the name `comp` elsewhere
 * Instances stating that `IsMarkovKernel`, `IsZeroOrMarkovKernel`, `IsFiniteKernel` and
   `IsSFiniteKernel` are stable by composition-product.
 
-## Notations
+## Notation
 
 * `κ ⊗ₖ η = ProbabilityTheory.Kernel.compProd κ η`
 

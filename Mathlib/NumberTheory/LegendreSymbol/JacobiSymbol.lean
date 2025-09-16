@@ -50,7 +50,7 @@ We prove the main properties of the Jacobi symbol, including the following.
   reducing to the case `0 ≤ a < b` and `a`, `b` odd, and then swaps `a`, `b` and recurses using
   quadratic reciprocity.
 
-## Notations
+## Notation
 
 We define the notation `J(a | b)` for `jacobiSym a b`, localized to `NumberTheorySymbols`.
 

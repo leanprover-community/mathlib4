@@ -39,7 +39,7 @@ abstract two related kinds of ideas:
 * `Filter.IsCobounded r f` states that the filter `f` does not tend to infinity w.r.t. `r`.
   This is also called frequently bounded. Will be usually instantiated with `(· ≤ ·)` or `(· ≥ ·)`.
 
-## Notations
+## Notation
 
 * `∀ᶠ x in f, p x` : `f.Eventually p`;
 * `∃ᶠ x in f, p x` : `f.Frequently p`;

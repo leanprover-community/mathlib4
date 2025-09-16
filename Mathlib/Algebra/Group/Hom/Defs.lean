@@ -27,7 +27,7 @@ building blocks for other homomorphisms:
 * `AddHom`
 * `MulHom`
 
-## Notations
+## Notation
 
 * `→+`: Bundled `AddMonoid` homs. Also use for `AddGroup` homs.
 * `→*`: Bundled `Monoid` homs. Also use for `Group` homs.

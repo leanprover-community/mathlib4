@@ -33,10 +33,6 @@ with the respective topology instances on it.
 * The instance `WeakSpace.instTopologicalSpace` is the weak topology on `E`, i.e., the
   coarsest topology such that all `v : dual 𝕜 E` remain continuous.
 
-## Notations
-
-No new notation is introduced.
-
 ## References
 
 * [H. H. Schaefer, *Topological Vector Spaces*][schaefer1966]

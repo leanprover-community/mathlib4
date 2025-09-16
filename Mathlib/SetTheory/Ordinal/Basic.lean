@@ -50,7 +50,7 @@ A conditionally complete linear order with bot structure is registered on ordina
 `0`, the ordinal corresponding to the empty type, and `Inf` is the minimum for nonempty sets and `0`
 for the empty set by convention.
 
-## Notations
+## Notation
 
 * `ω` is a notation for the first infinite ordinal in the scope `Ordinal`.
 -/
