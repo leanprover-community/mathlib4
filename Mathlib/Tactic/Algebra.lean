@@ -381,6 +381,40 @@ def inferLevelQ (e : Expr) : MetaM (Σ u : Lean.Level, Q(Type u)) := do
   let some v := (← instantiateLevelMVars u).dec | throwError "not a Type{indentExpr e}"
   return ⟨v, e⟩
 
+section cleanup
+variable {R : Type*} [Semiring R] {n d : ℕ}
+
+theorem add_assoc_rev (a b c : R) : a + (b + c) = a + b + c := (add_assoc ..).symm
+theorem mul_assoc_rev (a b c : R) : a * (b * c) = a * b * c := (mul_assoc ..).symm
+theorem mul_neg {R} [Ring R] (a b : R) : a * -b = -(a * b) := by simp
+theorem add_neg {R} [Ring R] (a b : R) : a + -b = a - b := (sub_eq_add_neg ..).symm
+theorem nat_rawCast_0 : (Nat.rawCast 0 : R) = 0 := by simp
+theorem nat_rawCast_1 : (Nat.rawCast 1 : R) = 1 := by simp
+theorem nat_rawCast_2 [Nat.AtLeastTwo n] : (Nat.rawCast n : R) = OfNat.ofNat n := rfl
+theorem int_rawCast_neg {R} [Ring R] : (Int.rawCast (.negOfNat n) : R) = -Nat.rawCast n := by simp
+theorem nnrat_rawCast {R} [DivisionSemiring R] :
+    (NNRat.rawCast n d : R) = Nat.rawCast n / Nat.rawCast d := by simp
+theorem rat_rawCast_neg {R} [DivisionRing R] :
+    (Rat.rawCast (.negOfNat n) d : R) = Int.rawCast (.negOfNat n) / Nat.rawCast d := by simp
+
+end cleanup
+/-- A cleanup routine, which simplifies normalized expressions to a more human-friendly format. -/
+def cleanup (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
+  match cfg.mode with
+  | .raw => pure r
+  | .SOP => do
+    let thms : SimpTheorems := {}
+    let thms ← [``add_zero, ``add_assoc_rev, ``_root_.mul_one, ``mul_assoc_rev,
+      ``_root_.pow_one, ``mul_neg, ``add_neg, ``one_smul,
+      ``Nat.ofNat_nsmul_eq_mul].foldlM (·.addConst ·) thms
+    let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_neg,
+       ``nnrat_rawCast, ``rat_rawCast_neg].foldlM (·.addConst · (post := false)) thms
+    let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta }
+      (simpTheorems := #[thms])
+      (congrTheorems := ← getSimpCongrTheorems)
+    pure <| ←
+      r.mkEqTrans (← Simp.main r.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
+
 theorem eq_congr {R : Type*} {a b a' b' : R} (ha : a = a') (hb : b = b') (h : a' = b') : a = b := by
   subst ha hb
   exact h
@@ -416,12 +450,59 @@ def normalize (goal : MVarId) {u v : Lean.Level} (R : Q(Type u)) (A : Q(Type v))
   --   Tactic.pushGoals l
     -- NormNum.normNumAt g (← getSimpContext)
 
+
+
+def isAtomOrDerivable (c : Ring.Cache sR) (e : Q($A)) : AtomM (Option (Option (Result (ExSum sAlg) e))) := do
+  let els := try
+      pure <| some (evalCast sAlg (← derive e))
+    catch _ => pure (some none)
+  let .const n _ := (← withReducible <| whnf e).getAppFn | els
+  match n, c.rα, c.dsα with
+  | ``HAdd.hAdd, _, _ | ``Add.add, _, _
+  | ``HMul.hMul, _, _ | ``Mul.mul, _, _
+  | ``HSMul.hSMul, _, _
+  | ``HPow.hPow, _, _ | ``Pow.pow, _, _
+  | ``Neg.neg, some _, _
+  | ``HSub.hSub, some _, _ | ``Sub.sub, some _, _
+  | ``Inv.inv, _, some _
+  | ``HDiv.hDiv, _, some _ | ``Div.div, _, some _ => pure none
+  | _, _, _ => els
+
+def evalExpr {u : Lean.Level} (R : Q(Type u)) (e : Expr) : AtomM Simp.Result := do
+  let e ← withReducible <| whnf e
+  guard e.isApp -- all interesting ring expressions are applications
+  let ⟨v, A, e⟩ ← inferTypeQ' e
+  let sA ← synthInstanceQ q(CommSemiring $A)
+  let sR ← synthInstanceQ q(CommSemiring $R)
+  let sAlg ← synthInstanceQ q(Algebra $R $A)
+  let c ← Ring.mkCache sR
+  assumeInstancesCommute
+  let ⟨a, _, pa⟩ ← match ← isAtomOrDerivable q($sAlg) c q($e) with
+  | none => eval sAlg c e -- `none` indicates that `eval` will find something algebraic.
+  | some none => failure -- No point rewriting atoms
+  | some (some r) => pure r -- Nothing algebraic for `eval` to use, but `norm_num` simplifies.
+  pure { expr := a, proof? := pa }
+
+
+elab (name := algebraNF) "algebra_nf" tk:"!"? " with " R:term loc:(location)?  : tactic => do
+  -- let mut cfg ← elabConfig cfg
+  let mut cfg := {}
+  let ⟨u, R⟩ ← inferLevelQ (← elabTerm R none)
+  if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
+  let loc := (loc.map expandLocation).getD (.targets #[] true)
+  let s ← IO.mkRef {}
+  let m := AtomM.recurse s cfg.toConfig (evalExpr R) (cleanup cfg)
+  transformAtLocation (m ·) "ring_nf" loc cfg.failIfUnchanged false
+
+/-- Infer from the expression what base ring the normalization should use.
+ TODO: implement. -/
 def inferBase (e : Expr) :
     MetaM <| Σ u : Lean.Level, Q(Type u) := do
-  let some res := e.find? (fun e ↦ e.constName == ``HSMul.hSMul)
-    | throwError "Failed to infer base ring."
-  have ring := (res.getAppArgs)[0]!
-  inferLevelQ ring
+  return ⟨0, q(ℕ)⟩
+  -- let some res := e.find? (fun e ↦ e.constName == ``HSMul.hSMul)
+  --   | throwError "Failed to infer base ring."
+  -- have ring := (res.getAppArgs)[0]!
+  -- inferLevelQ ring
 
 /-- Frontend of `algebra`: attempt to close a goal `g`, assuming it is an equation of semirings. -/
 def proveEq (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) : AtomM Unit := do
@@ -456,8 +537,6 @@ where
       /- TODO: extract lemma -/
       return q(by simp_all)
 
-
-
 elab (name := algebra) "algebra":tactic =>
   withMainContext do
     let g ← getMainGoal
@@ -484,11 +563,11 @@ end Mathlib.Tactic.Algebra
 
 
 example (x : ℚ) :  x + x = (2 : ℤ) • x := by
-  algebra
+  algebra with ℤ
   -- match_scalars <;> simp
 
 example (x : ℚ) : x = 1 := by
-  algebra with ℕ
+  algebra_nf with ℕ
   sorry
 
 example (x y : ℚ) : x + y  = y + x := by
@@ -505,54 +584,44 @@ example (x : ℚ) : (x + x) + (x + x)  = x + x + x + x := by
   algebra with ℕ
 
 example (x y : ℚ) : x + (y)*(x+y) = 0 := by
-  algebra with ℕ
-  simp
+  algebra_nf with ℕ
   sorry
 
 example (x y : ℚ) : x + (x)*(x+y) = 0 := by
-  algebra ℕ, ℚ
-  simp
+  algebra_nf with ℕ
   sorry
 
 
 example (x y : ℚ) : (x * x + x * y) + (x * y + y * y) = 0 := by
-  algebra ℕ, ℚ
-  simp
+  algebra_nf with ℕ
   sorry
 
 example (x y : ℚ) : (x + y)*(x+y) = x*x + 2 * x * y + y * y := by
   -- simp_rw [← SMul.smul_eq_hSMul]
-  algebra ℕ, ℚ
-  rfl
-
---   sorry
-
---   -- match_scalars <;> simp
+  algebra with ℕ
 
 example (x y : ℚ) : (x+y)*x = 1 := by
   -- simp_rw [← SMul.smul_eq_hSMul]
-  algebra ℕ, ℚ
-  simp only [show Nat.rawCast 1 = 1 by rfl]
-  simp only [pow_one, Nat.rawCast, Nat.cast_one, mul_one, one_smul, Nat.cast_ofNat, Nat.cast_zero,
-    add_zero]
+  algebra_nf with ℕ
   sorry
 
 example (x y : ℚ) : (x+y)*y  = 1 := by
   -- simp_rw [← SMul.smul_eq_hSMul]
-  algebra ℕ, ℚ
-  simp only [show Nat.rawCast 1 = 1 by rfl]
-  simp only [pow_one, Nat.rawCast, Nat.cast_one, mul_one, one_smul, Nat.cast_ofNat, Nat.cast_zero,
-    add_zero]
+  algebra_nf with ℕ
   sorry
 
 
 example (x : ℚ) : (x + 1)^3 = x^3 + 3*x^2 + 3*x + 1 := by
-  algebra ℕ, ℚ
-  rfl
+  algebra with ℕ
 
 example (x : ℚ) (hx : x = 0) : (x+1)^10 = 1 := by
-  algebra ℕ, ℚ
-  -- ring_nf
-  simp [← add_assoc]
-
+  algebra_nf with ℕ
   simp [hx]
+
+-- TODO: Find out what's triggering this linter.
+set_option linter.style.commandStart false
+
+example {a b : ℤ} (x y : ℚ) : (a + b) • (x + y) = b • x + a • (x + y) + b • y := by
+  -- ring does nothing
+  ring_nf
+  algebra with ℤ
