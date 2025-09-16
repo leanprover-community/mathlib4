@@ -20,7 +20,7 @@ satisfy the type invariants.
 ## Main definitions
 
 * `Ordnode.Valid`: The validity predicate for an `Ordnode` subtree.
-* `Ordset α`: A well formed set of values of type `α`.
+* `Ordset α`: A well-formed set of values of type `α`.
 
 ## Implementation notes
 

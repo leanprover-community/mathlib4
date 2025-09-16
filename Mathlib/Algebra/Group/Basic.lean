@@ -181,6 +181,14 @@ lemma mul_right_iterate (a : M) : ∀ n : ℕ, (· * a)^[n] = (· * a ^ n)
   | 0 => by ext; simp
   | n + 1 => by simp [pow_succ', mul_right_iterate]
 
+/-- Version of `mul_left_iterate` that is fully applied, for `rw`. -/
+@[to_additive /-- Version of `add_left_iterate` that is fully applied, for `rw`. -/]
+lemma mul_left_iterate_apply (a b : M) : (a * ·)^[n] b = a ^ n * b := by simp
+
+/-- Version of `mul_right_iterate` that is fully applied, for `rw`. -/
+@[to_additive /-- Version of `add_right_iterate` that is fully applied, for `rw`. -/ ]
+lemma mul_right_iterate_apply (a b : M) : (· * a)^[n] b = b * a ^ n := by simp
+
 @[to_additive]
 lemma mul_left_iterate_apply_one (a : M) : (a * ·)^[n] 1 = a ^ n := by simp
 
@@ -868,7 +876,7 @@ lemma zpow_one_sub_natCast (a : G) (n : ℕ) : a ^ (1 - n : ℤ) = a / a ^ n := 
 theorem zpow_eq_zpow_emod {x : G} (m : ℤ) {n : ℤ} (h : x ^ n = 1) :
     x ^ m = x ^ (m % n) :=
   calc
-    x ^ m = x ^ (m % n + n * (m / n)) := by rw [Int.emod_add_ediv]
+    x ^ m = x ^ (m % n + n * (m / n)) := by rw [Int.emod_add_mul_ediv]
     _ = x ^ (m % n) := by simp [zpow_add, zpow_mul, h]
 
 theorem zpow_eq_zpow_emod' {x : G} (m : ℤ) {n : ℕ} (h : x ^ n = 1) :
