@@ -26,9 +26,9 @@ underlying spaces are normed.
 
 ## Main statements
 
-* `LinearPMap.closable_iff_exists_closed_extension`: an unbounded operator is closable iff it has a
+* `LinearPMap.isClosable_iff_exists_closed_extension`: an unbounded operator is closable iff it has a
   closed extension.
-* `LinearPMap.closable.existsUnique`: there exists a unique closure
+* `LinearPMap.IsClosable.existsUnique`: there exists a unique closure
 * `LinearPMap.closureHasCore`: the domain of `f` is a core of its closure
 
 ## References
