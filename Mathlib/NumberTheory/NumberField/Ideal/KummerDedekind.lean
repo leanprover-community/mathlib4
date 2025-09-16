@@ -190,7 +190,7 @@ theorem primesOverSpanEquivMonicFactorsMod_symm_apply_eq_span (hp : ¬ p ∣ exp
   rw [normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span,
     span_union, span_eq, map_span, Set.image_singleton, map_natCast, ← span_insert]
 
-theorem liesOver_primesOverSpanEquivMonicFactorsMod_symm (hp : ¬ ↑p ∣ exponent θ) {Q : ℤ[X]}
+theorem liesOver_primesOverSpanEquivMonicFactorsMod_symm (hp : ¬ p ∣ exponent θ) {Q : ℤ[X]}
     (hQ : Q.map (Int.castRingHom (ZMod p)) ∈ monicFactorsMod θ p) :
     LiesOver (span {(p : (𝓞 K)), aeval θ Q}) (span {(p : ℤ)}) := by
   rw [← Ideal.primesOverSpanEquivMonicFactorsMod_symm_apply_eq_span hp hQ]
@@ -207,11 +207,8 @@ theorem inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p ∣ 
         natDegree (Q.map (Int.castRingHom (ZMod p))) := by
   -- Register this instance for `inertiaDeg_algebraMap` below
   have := liesOver_primesOverSpanEquivMonicFactorsMod_symm hp hQ
-  have hQ' : Polynomial.map (Int.castRingHom (ZMod p)) Q ≠ 0 := by
-    contrapose! hQ
-    simpa [hQ] using zero_notMem_normalizedFactors _
   rw [primesOverSpanEquivMonicFactorsMod_symm_apply_eq_span, inertiaDeg_algebraMap,
-    ← finrank_quotient_span_eq_natDegree hQ']
+    ← finrank_quotient_span_eq_natDegree]
   refine Algebra.finrank_eq_of_equiv_equiv (Int.quotientSpanNatEquivZMod p) ?_ (by ext; simp)
   exact (ZModXQuotSpanEquivQuotSpanPair hp hQ).symm
 
@@ -234,8 +231,7 @@ theorem ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p
         ⟨Q.map (Int.castRingHom (ZMod p)), hQ⟩ : Ideal (𝓞 K)) =
           multiplicity (Q.map (Int.castRingHom (ZMod p)))
             ((minpoly ℤ θ).map (Int.castRingHom (ZMod p))) := by
-  rw [ramificationIdx_eq_multiplicity (RingHom.injective_int _) (by simp [NeZero.ne p])
-    inferInstance]
+  rw [ramificationIdx_eq_multiplicity (map_ne_bot_of_ne_bot (by simp [NeZero.ne p])) inferInstance]
   · apply multiplicity_eq_of_emultiplicity_eq
     rw [← emultiplicity_map_eq (mapEquiv (Int.quotientSpanNatEquivZMod p).symm),
       emultiplicity_factors_map_eq_emultiplicity inferInstance (by simp [NeZero.ne p])
@@ -245,7 +241,6 @@ theorem ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p
         Polynomial.map_map, Int.quotientSpanNatEquivZMod_comp_castRingHom, mapEquiv_apply]
     · rw [← mem_primesOver_iff_mem_normalizedFactors _ (by simp [NeZero.ne p])]
       exact ((primesOverSpanEquivMonicFactorsMod hp).symm ⟨_, hQ⟩).coe_prop
-  · exact ne_bot_of_liesOver_of_ne_bot (by simp [NeZero.ne p] : span {(p : ℤ)} ≠ ⊥) _
 
 theorem ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply' (hp : ¬ p ∣ exponent θ)
     {Q : (ZMod p)[X]} (hQ : Q ∈ monicFactorsMod θ p) :
