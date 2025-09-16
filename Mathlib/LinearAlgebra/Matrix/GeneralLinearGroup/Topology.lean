@@ -17,11 +17,8 @@ variable {n : Type*} [Fintype n] [DecidableEq n]
 /-- The determinant is continuous as a map from the general linear group to the units. -/
 @[continuity, fun_prop] protected lemma Matrix.GeneralLinearGroup.continuous_det :
     Continuous (det : GL n A → Aˣ) := by
-  rw [continuous_induced_rng, continuous_prodMk]
-  simp only [Function.comp_apply, Units.embedProduct_apply]
-  refine ⟨Units.continuous_val.matrix_det, MulOpposite.continuous_op.comp ?_⟩
-  simpa only [← map_inv, GeneralLinearGroup.val_det_apply]
-    using (Units.continuous_val.comp continuous_inv).matrix_det
+  simp_rw [Units.continuous_iff, ← map_inv]
+  constructor <;> fun_prop
 
 namespace Matrix.SpecialLinearGroup -- results on the map from `SL` to `GL`
 
@@ -29,9 +26,8 @@ local notation "SL" => SpecialLinearGroup
 
 /-- The natural map from `SL n A` to `GL n A` is continuous. -/
 lemma continuous_toGL : Continuous (toGL : SL n A → GL n A) := by
-  rw [continuous_induced_rng, continuous_prodMk]
-  refine ⟨continuous_induced_dom, MulOpposite.continuous_op.comp ?_⟩
-  simpa only [← map_inv, coe_GL_coe_matrix] using continuous_induced_dom.comp continuous_inv
+  simp_rw [Units.continuous_iff, ← map_inv]
+  constructor <;> fun_prop
 
 /-- The natural map from `SL n A` to `GL n A` is inducing, i.e. the topology on
 `SL n A` is the pullback of the topology from `GL n A`. -/
@@ -50,7 +46,7 @@ lemma isClosed_range_toGL [T0Space A] : IsClosed (Set.range (toGL : SL n A → G
   · apply isClosed_singleton.preimage GeneralLinearGroup.continuous_det
 
 /-- The natural inclusion of `SL n A` in `GL n A` is a closed embedding. -/
-lemma closedEmbedding_toGL [T0Space A] : Topology.IsClosedEmbedding (toGL : SL n A → GL n A) :=
+lemma isClosedEmbedding_toGL [T0Space A] : Topology.IsClosedEmbedding (toGL : SL n A → GL n A) :=
   ⟨isEmbedding_toGL, isClosed_range_toGL⟩
 
 section mapGL
