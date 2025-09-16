@@ -43,7 +43,7 @@ theorem exists_hasDerivWithinAt_eq_of_gt_of_lt (hab : a ≤ b)
         sub_mem_posTangentConeAt_of_segment_subset (segment_eq_Icc hab ▸ Subset.rfl)
       simpa only [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply]
         using hc.localize.hasFDerivWithinAt_nonneg (hg a (left_mem_Icc.2 hab)) this
-    rcases cmem.2.eq_or_gt with (rfl | hcb)
+    rcases cmem.2.eq_or_lt' with (rfl | hcb)
     -- Show that `c` can't be equal to `b`
     · refine absurd (sub_nonpos.1 <| nonpos_of_mul_nonneg_right ?_ (sub_lt_zero.2 hab'))
         (not_le_of_gt hmb)

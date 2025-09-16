@@ -57,7 +57,7 @@ private lemma exists_effectiveEpi (n : ℕ) (X : C) (y : (F.obj ⟨n⟩).val.obj
 private noncomputable def preimage (X : C) (y : (F.obj ⟨0⟩).val.obj ⟨X⟩) :
     (n : ℕ) → ((Y : C) × (F.obj ⟨n⟩).val.obj ⟨Y⟩)
   | 0 => ⟨X, y⟩
-  | (n+1) => ⟨(exists_effectiveEpi hF n (preimage X y n).1 (preimage X y n).2).choose,
+  | (n + 1) => ⟨(exists_effectiveEpi hF n (preimage X y n).1 (preimage X y n).2).choose,
       (exists_effectiveEpi hF n
         (preimage X y n).1 (preimage X y n).2).choose_spec.choose_spec.choose_spec.choose⟩
 
