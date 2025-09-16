@@ -147,11 +147,12 @@ lemma lemma222_3_to_4 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
     I • (⊤ : Submodule R M) < ⊤ → (∃ N : ModuleCat.{v} R, Nontrivial N ∧ Module.Finite R N ∧
     Module.support R N = PrimeSpectrum.zeroLocus I ∧ ∀ i < n, Subsingleton (Ext N M i)) →
     ∃ rs : List R, rs.length = n ∧ (∀ r ∈ rs, r ∈ I) ∧ IsRegular M rs := by
-  induction' n with n ih
+  induction n
   · intro M ntr M_fin smul_lt exist_N
     use []
     simp [isRegular_iff]
-  · intro M ntrM M_fin smul_lt exist_N
+  · rename_i n ih
+    intro M ntrM M_fin smul_lt exist_N
     rcases exist_N with ⟨N, ntr, fin, h_supp, h_ext⟩
     have h_supp' := h_supp
     rw [Module.support_eq_zeroLocus, PrimeSpectrum.zeroLocus_eq_iff] at h_supp'
@@ -199,9 +200,10 @@ lemma mono_of_mono (a : R) {k : ℕ} (kpos : k > 0) (i : ℕ) {M N : ModuleCat.{
     (f_mono : Mono (AddCommGrp.ofHom ((Ext.mk₀ (smulShortComplex M a).f).postcomp
     N (add_zero i)))) : Mono (AddCommGrp.ofHom ((Ext.mk₀ (smulShortComplex M (a ^ k)).f).postcomp
     N (add_zero i))) := by
-  induction' k with k ih
+  induction k
   · simp at kpos
-  · rw [pow_succ]
+  · rename_i k ih
+    rw [pow_succ]
     by_cases eq0 : k = 0
     · rw [eq0, pow_zero, one_mul]
       exact f_mono
@@ -223,9 +225,10 @@ lemma lemma222_4_to_1 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) (N : ModuleCa
     ∀ M : ModuleCat.{v} R, Nontrivial M → Module.Finite R M → I • (⊤ : Submodule R M) < ⊤ →
     (∃ rs : List R, rs.length = n ∧ (∀ r ∈ rs, r ∈ I) ∧ IsRegular M rs) →
     ∀ i < n, Subsingleton (Ext N M i) := by
-  induction' n with n ih
+  induction n
   · simp
-  · rintro M Mntr Mfin smul_lt ⟨rs, len, mem, reg⟩ i hi
+  · rename_i n ih
+    rintro M Mntr Mfin smul_lt ⟨rs, len, mem, reg⟩ i hi
     have le_rad := Nsupp
     rw [Module.support_eq_zeroLocus, PrimeSpectrum.zeroLocus_subset_zeroLocus_iff] at le_rad
     match rs with
@@ -769,10 +772,11 @@ lemma moduleDepth_quotient_regular_sequence_add_length_eq_moduleDepth (N M : Mod
     moduleDepth N (ModuleCat.of R (M ⧸ (Ideal.ofList rs) • (⊤ : Submodule R M))) + rs.length =
     moduleDepth N M := by
   generalize len : rs.length = n
-  induction' n with n hn generalizing M rs
+  induction n generalizing M rs
   · rw [List.length_eq_zero_iff.mp len, Ideal.ofList_nil, Submodule.bot_smul]
     simpa using moduleDepth_eq_of_iso_snd N (Submodule.quotEquivOfEqBot ⊥ rfl).toModuleIso
-  · match rs with
+  · rename_i n hn
+    match rs with
     | [] => simp at len
     | x :: rs' =>
       simp only [Nat.cast_add, Nat.cast_one]
@@ -935,14 +939,15 @@ lemma IsLocalRing.depth_quotient_regular_sequence_add_length_eq_depth [IsLocalRi
       (R ⧸ Ideal.ofList rs)) + rs.length =
     IsLocalRing.depth (ModuleCat.of R R) := by
   generalize len : rs.length = n
-  induction' n with n hn generalizing R rs
+  induction n generalizing R rs
   · let e : R ⧸ ofList rs ≃+* R :=
       (RingEquiv.ofBijective _ ((Ideal.Quotient.mk_bijective_iff_eq_bot (Ideal.ofList rs)).mpr
         (by simp [List.length_eq_zero_iff.mp len]))).symm
     have : IsLocalRing (R ⧸ ofList rs) := RingEquiv.isLocalRing e.symm
     have : IsNoetherianRing (R ⧸ ofList rs) := isNoetherianRing_of_ringEquiv R e.symm
     simpa using IsLocalRing.depth_eq_of_ringEquiv e
-  · match rs with
+  · rename_i n hn _ _ _
+    match rs with
     | [] => simp at len
     | x :: rs' =>
       let _ : IsLocalRing (R ⧸ Ideal.ofList (x :: rs')) :=
