@@ -129,8 +129,6 @@ open RingOfIntegers.HeightOneSpectrum Valuation.Completion
 noncomputable def FinitePlace.embedding : K →+* adicCompletion K v :=
   UniformSpace.Completion.coeRingHom.comp (WithVal.equiv (v.valuation K)).symm
 
-@[deprecated (since := "2025-02-28")] alias embedding := FinitePlace.embedding
-
 theorem FinitePlace.embedding_apply (x : K) :
     embedding v x = ↑((WithVal.equiv (v.valuation K)).symm x) := rfl
 
@@ -213,8 +211,6 @@ open FinitePlace
 theorem FinitePlace.norm_le_one (x : 𝓞 (WithVal (v.valuation K))) : ‖embedding v x‖ ≤ 1 := by
   rw [norm_def]
   exact v.adicAbv_coe_le_one (one_lt_absNorm_nnreal v) x
-
-@[deprecated (since := "2025-02-28")] alias norm_le_one := FinitePlace.norm_le_one
 
 /-- The `v`-adic norm of an integer is 1 if and only if it is not in the ideal. -/
 theorem FinitePlace.norm_eq_one_iff_notMem (x : 𝓞 K) :
