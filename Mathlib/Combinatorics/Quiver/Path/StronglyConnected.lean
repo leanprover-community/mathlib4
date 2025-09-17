@@ -5,7 +5,6 @@ Authors: Matteo Cipollina
 -/
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Combinatorics.Quiver.ConnectedComponent
-import Mathlib.Tactic
 
 /-!
 # Strongly Connected Quivers
