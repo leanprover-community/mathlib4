@@ -80,18 +80,7 @@ theorem image_subtype_ne_univ_eq_image_erase [Fintype α] [DecidableEq β] (k : 
 theorem image_subtype_univ_ssubset_image_univ [Fintype α] [DecidableEq β] (k : β) (b : α → β)
     (hk : k ∈ Finset.image b univ) (p : β → Prop) [DecidablePred p] (hp : ¬p k) :
     image (fun i : { a // p (b a) } => b ↑i) univ ⊂ image b univ := by
-  constructor
-  · intro x hx
-    rcases mem_image.1 hx with ⟨y, _, hy⟩
-    exact hy ▸ mem_image_of_mem b (mem_univ (y : α))
-  · intro h
-    rw [mem_image] at hk
-    rcases hk with ⟨k', _, hk'⟩
-    subst hk'
-    have := h (mem_image_of_mem b (mem_univ k'))
-    rw [mem_image] at this
-    rcases this with ⟨j, _, hj'⟩
-    exact hp (hj' ▸ j.2)
+  grind
 
 /-- Any injection from a finset `s` in a fintype `α` to a finset `t` of the same cardinality as `α`
 can be extended to a bijection between `α` and `t`. -/
@@ -99,10 +88,12 @@ theorem Finset.exists_equiv_extend_of_card_eq [Fintype α] [DecidableEq β] {t :
     (hαt : Fintype.card α = #t) {s : Finset α} {f : α → β} (hfst : Finset.image f s ⊆ t)
     (hfs : Set.InjOn f s) : ∃ g : α ≃ t, ∀ i ∈ s, (g i : β) = f i := by
   classical
-    induction' s using Finset.induction with a s has H generalizing f
-    · obtain ⟨e⟩ : Nonempty (α ≃ ↥t) := by rwa [← Fintype.card_eq, Fintype.card_coe]
+    induction s using Finset.induction generalizing f with
+    | empty =>
+      obtain ⟨e⟩ : Nonempty (α ≃ ↥t) := by rwa [← Fintype.card_eq, Fintype.card_coe]
       use e
       simp
+    | insert a s has H => ?_
     have hfst' : Finset.image f s ⊆ t := (Finset.image_mono _ (s.subset_insert a)).trans hfst
     have hfs' : Set.InjOn f s := hfs.mono (s.subset_insert a)
     obtain ⟨g', hg'⟩ := H hfst' hfs'

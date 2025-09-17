@@ -206,7 +206,8 @@ axiom f : ℕ → ℕ
 
 example {x y : ℕ} (h : f x ≤ f y) : f x ≤ f y := by
   success_if_fail_with_msg
-    "tactic 'gcongr' failed, there is no `@[gcongr]` lemma for relation 'LE.le' and constant 'GCongrTests.f'.
+    "Tactic `gcongr` failed: there is no `@[gcongr]` lemma for relation 'LE.le' and constant 'GCongrTests.f'.
+
 x y : ℕ
 h : GCongrTests.f x ≤ GCongrTests.f y
 ⊢ GCongrTests.f x ≤ GCongrTests.f y"
@@ -215,7 +216,8 @@ h : GCongrTests.f x ≤ GCongrTests.f y
 
 example {x y : ℕ} (h : f x ≤ f y) : f x ^ 2 ≤ f y ^ 2 := by
   success_if_fail_with_msg
-    "tactic 'gcongr' failed, there is no `@[gcongr]` lemma for relation 'LE.le' and constant 'GCongrTests.f'.
+    "Tactic `gcongr` failed: there is no `@[gcongr]` lemma for relation 'LE.le' and constant 'GCongrTests.f'.
+
 case hab
 x y : ℕ
 h : GCongrTests.f x ≤ GCongrTests.f y

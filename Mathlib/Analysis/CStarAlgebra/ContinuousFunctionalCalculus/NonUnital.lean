@@ -97,9 +97,6 @@ class ContinuousMapZero.UniqueHom (R A : Type*) [CommSemiring R] [StarRing R]
     (h : φ (⟨.restrict s <| .id R, h0⟩) = ψ (⟨.restrict s <| .id R, h0⟩)) :
     φ = ψ
 
-@[deprecated (since := "2025-01-10")] alias UniqueNonUnitalContinuousFunctionalCalculus :=
-  ContinuousMapZero.UniqueHom
-
 section Main
 
 variable {R A : Type*} {p : A → Prop} [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R]
@@ -322,7 +319,7 @@ lemma cfcₙ_congr {f g : R → R} {a : A} (hfg : (σₙ R a).EqOn f g) :
   by_cases h : p a ∧ ContinuousOn g (σₙ R a) ∧ g 0 = 0
   · rw [cfcₙ_apply f a (h.2.1.congr hfg) (hfg (quasispectrum.zero_mem R a) ▸ h.2.2) h.1,
       cfcₙ_apply g a h.2.1 h.2.2 h.1]
-    congr
+    congr 3
     exact Set.restrict_eq_iff.mpr hfg
   · simp only [not_and_or] at h
     obtain (ha | hg | h0) := h
@@ -386,7 +383,7 @@ lemma cfcₙ_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
       rw [sum_coe_sort s, hsum]
       exact continuousOn_finset_sum s fun i hi => hf i hi
     rw [← sum_coe_sort s, ← sum_coe_sort s]
-    rw [cfcₙ_apply_pi _ a _ (fun ⟨i, hi⟩ => hf i hi), ← map_sum, cfcₙ_apply _ a hf']
+    rw [cfcₙ_apply_pi _ a ha (fun ⟨i, hi⟩ => hf i hi), ← map_sum, cfcₙ_apply _ a hf']
     congr 1
     ext
     simp

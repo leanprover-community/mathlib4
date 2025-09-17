@@ -126,7 +126,6 @@ theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.car
       (fun n : Fin (Fintype.card σ + 1) => M.evalFrom s (x.take n)) (by simp)
   wlog hle : (n : ℕ) ≤ m generalizing n m
   · exact this m n hneq.symm heq.symm (le_of_not_ge hle)
-  have hm : (m : ℕ) ≤ Fintype.card σ := Fin.is_le m
   refine
     ⟨M.evalFrom s ((x.take m).take n), (x.take m).take n, (x.take m).drop n,
                     x.drop m, ?_, ?_, ?_, by rfl, ?_⟩
@@ -136,11 +135,7 @@ theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.car
   · intro h
     have hlen' := congr_arg List.length h
     simp only [List.length_drop, List.length, List.length_take] at hlen'
-    rw [min_eq_left, tsub_eq_zero_iff_le] at hlen'
-    · apply hneq
-      apply le_antisymm
-      assumption'
-    exact hm.trans hlen
+    omega
   have hq : M.evalFrom (M.evalFrom s ((x.take m).take n)) ((x.take m).drop n) =
       M.evalFrom s ((x.take m).take n) := by
     rw [List.take_take, min_eq_left hle, ← evalFrom_of_append, heq, ← min_eq_left hle, ←

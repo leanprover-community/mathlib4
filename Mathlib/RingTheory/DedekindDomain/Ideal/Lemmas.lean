@@ -8,6 +8,7 @@ import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.RingTheory.ChainOfDivisors
 import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
 import Mathlib.RingTheory.Spectrum.Maximal.Localization
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 
 /-!
 # Dedekind domains and ideals
@@ -124,6 +125,17 @@ nonrec theorem Ideal.mem_normalizedFactors_iff {p I : Ideal A} (hI : I ≠ ⊥) 
     simp only [hp, zero_notMem_normalizedFactors, zero_dvd_iff, hI, false_iff, not_and,
       not_false_eq_true, implies_true]
   · rwa [mem_normalizedFactors_iff hI, prime_iff_isPrime]
+
+variable (A) in
+open UniqueFactorizationMonoid in
+theorem Ideal.mem_primesOver_iff_mem_normalizedFactors {p : Ideal R} [h : p.IsMaximal]
+    [Algebra R A] [NoZeroSMulDivisors R A] (hp : p ≠ ⊥) {P : Ideal A} :
+    P ∈ p.primesOver A ↔ P ∈ normalizedFactors (Ideal.map (algebraMap R A) p) := by
+  rw [primesOver, Set.mem_setOf_eq, mem_normalizedFactors_iff (map_ne_bot_of_ne_bot hp),
+    liesOver_iff, under_def, and_congr_right_iff, map_le_iff_le_comap]
+  intro hP
+  refine ⟨fun h ↦ le_of_eq h, fun h' ↦ ((IsCoatom.le_iff_eq (isMaximal_def.mp h) ?_).mp h').symm⟩
+  exact comap_ne_top (algebraMap R A) (IsPrime.ne_top hP)
 
 theorem Ideal.pow_right_strictAnti (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
     StrictAnti (I ^ · : ℕ → Ideal A) :=
@@ -452,6 +464,15 @@ instance isMaximal : v.asIdeal.IsMaximal := v.isPrime.isMaximal v.ne_bot
 
 theorem prime : Prime v.asIdeal := Ideal.prime_of_isPrime v.ne_bot v.isPrime
 
+/--
+The (nonzero) prime elements of the monoid with zero `Ideal R` correspond
+to an element of type `HeightOneSpectrum R`.
+
+See `IsDedekindDomain.HeightOneSpectrum.prime` for the inverse direction. -/
+@[simps]
+def ofPrime {p : Ideal R} (hp : Prime p) : HeightOneSpectrum R :=
+  ⟨p, Ideal.isPrime_of_prime hp, hp.ne_zero⟩
+
 theorem irreducible : Irreducible v.asIdeal :=
   UniqueFactorizationMonoid.irreducible_iff_prime.mpr v.prime
 
@@ -595,7 +616,7 @@ theorem idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFact
   apply idealFactorsEquivOfQuotEquiv_is_dvd_iso f
 
 /-- The bijection between the sets of normalized factors of I and J induced by a ring
-    isomorphism `f : R/I ≅ A/J`. -/
+isomorphism `f : R/I ≅ A/J`. -/
 def normalizedFactorsEquivOfQuotEquiv (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
     { L : Ideal R | L ∈ normalizedFactors I } ≃ { M : Ideal A | M ∈ normalizedFactors J } where
   toFun j :=
@@ -894,7 +915,7 @@ section NormalizationMonoid
 variable [NormalizationMonoid R]
 
 /-- The bijection between the (normalized) prime factors of `r` and the (normalized) prime factors
-    of `span {r}` -/
+of `span {r}` -/
 noncomputable def normalizedFactorsEquivSpanNormalizedFactors {r : R} (hr : r ≠ 0) :
     { d : R | d ∈ normalizedFactors r } ≃
       { I : Ideal R | I ∈ normalizedFactors (Ideal.span ({r} : Set R)) } := by
@@ -920,8 +941,8 @@ noncomputable def normalizedFactorsEquivSpanNormalizedFactors {r : R} (hr : r �
             (mem_span_singleton.mpr (dvd_refl r)))
 
 /-- The bijection `normalizedFactorsEquivSpanNormalizedFactors` between the set of prime
-    factors of `r` and the set of prime factors of the ideal `⟨r⟩` preserves multiplicities. See
-    `count_normalizedFactorsSpan_eq_count` for the version stated in terms of multisets `count`. -/
+factors of `r` and the set of prime factors of the ideal `⟨r⟩` preserves multiplicities. See
+`count_normalizedFactorsSpan_eq_count` for the version stated in terms of multisets `count`. -/
 theorem emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_emultiplicity {r d : R}
     (hr : r ≠ 0) (hd : d ∈ normalizedFactors r) :
     emultiplicity d r =
@@ -931,7 +952,7 @@ theorem emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_emultiplici
     Subtype.coe_mk, Equiv.ofBijective_apply]
 
 /-- The bijection `normalized_factors_equiv_span_normalized_factors.symm` between the set of prime
-    factors of the ideal `⟨r⟩` and the set of prime factors of `r` preserves multiplicities. -/
+factors of the ideal `⟨r⟩` and the set of prime factors of `r` preserves multiplicities. -/
 theorem emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emultiplicity {r : R}
     (hr : r ≠ 0) (I : { I : Ideal R | I ∈ normalizedFactors (Ideal.span ({r} : Set R)) }) :
     emultiplicity ((normalizedFactorsEquivSpanNormalizedFactors hr).symm I : R) r =

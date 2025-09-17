@@ -439,8 +439,6 @@ instance instNonemptyTop [Nonempty α] : Nonempty (⊤ : Set α) :=
 
 theorem Nonempty.of_subtype [Nonempty (↥s)] : s.Nonempty := nonempty_subtype.mp ‹_›
 
-@[deprecated (since := "2024-11-23")] alias nonempty_of_nonempty_subtype := Nonempty.of_subtype
-
 /-! ### Lemmas about the empty set -/
 
 theorem empty_def : (∅ : Set α) = { _x : α | False } :=
@@ -982,11 +980,6 @@ theorem powerset_univ : 𝒫(univ : Set α) = univ :=
   eq_univ_of_forall subset_univ
 
 /-! ### Sets defined as an if-then-else -/
-
-@[deprecated _root_.mem_dite (since := "2025-01-30")]
-protected theorem mem_dite (p : Prop) [Decidable p] (s : p → Set α) (t : ¬ p → Set α) (x : α) :
-    (x ∈ if h : p then s h else t h) ↔ (∀ h : p, x ∈ s h) ∧ ∀ h : ¬p, x ∈ t h :=
-  _root_.mem_dite
 
 theorem mem_dite_univ_right (p : Prop) [Decidable p] (t : p → Set α) (x : α) :
     (x ∈ if h : p then t h else univ) ↔ ∀ h : p, x ∈ t h := by
