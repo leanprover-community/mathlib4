@@ -89,16 +89,16 @@ def mk' [Lattice α] (r : α → α → Prop) (h₁ : IsRefl α r)
           conv_lhs => rw [inf_comm]
           conv_rhs => rw [inf_comm]
           exact compatible_left_inf h2)
-      (compatible_left_inf h1)) (fun h1 h2 => by
+      (compatible_left_inf h1)) (by
+        intro w x y z h1 h2
         have compatible_left_sup {x y t : α} (hh : r x y) : r (x ⊔ t) (y ⊔ t) :=
           closed_interval h₂ h₄ ((x ⊓ y) ⊔ t) _ _ ((x ⊔ y) ⊔ t)
             (sup_le_sup_right inf_le_left _) (sup_le_sup_right le_sup_left _)
             (sup_le_sup_right inf_le_right _) (sup_le_sup_right le_sup_right _)
             (h₄ inf_le_sup (h₂.mp hh)).2
         exact transitive h₂ h₃ h₄ (by
-          conv_lhs => rw [sup_comm]
-          conv_rhs => rw [sup_comm]
-          exact compatible_left_sup h2) (compatible_left_sup h1))
+          simpa [sup_comm] using (compatible_left_sup h2 : r (y ⊔ w) (z ⊔ w)))
+          (compatible_left_sup h1))
 
 variable {β F : Type*} [FunLike F α β]
 
