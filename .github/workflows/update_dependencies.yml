@@ -23,21 +23,13 @@ jobs:
           use-github-cache: false
           use-mathlib-cache: false
 
-      - name: Get sha of branch
-        id: sha
-        run: |
-          SHA="$(git rev-parse --verify origin/update-dependencies-bot-use-only)"
-          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
-
       - name: Get PR and labels
-        if: ${{ steps.sha.outputs.sha }}
         id: PR # all the steps below are skipped if 'ready-to-merge' is in the list of labels found here
-        uses: 8BitJonny/gh-get-current-pr@08e737c57a3a4eb24cec6487664b243b77eb5e36 # 3.0.0
+        uses: 8BitJonny/gh-get-current-pr@4056877062a1f3b624d5d4c2bedefa9cf51435c9 # 4.0.0
         # TODO: this may not work properly if the same commit is pushed to multiple branches:
         # https://github.com/8BitJonny/gh-get-current-pr/issues/8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          sha: ${{ steps.sha.outputs.sha }}
           # Only return if PR is still open
           filterOutClosed: true
 
@@ -56,7 +48,7 @@ jobs:
 
       - name: Update dependencies
         if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
-        run: lake update
+        run: lake update -v
 
       - name: Check if lean-toolchain was modified
         if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}

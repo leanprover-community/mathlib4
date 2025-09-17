@@ -522,6 +522,18 @@ theorem ofFractionRing_algebraMap (x : K[X]) :
     ofFractionRing (algebraMap _ (FractionRing K[X]) x) = algebraMap _ _ x := by
   rw [← mk_one, mk_one']
 
+variable (K) in
+/--
+The equivalence between `RatFunc K` and the field of fractions of `K[X]`
+-/
+@[simps! apply]
+def toFractionRingAlgEquiv (R : Type*) [CommSemiring R] [Algebra R K[X]] :
+    RatFunc K ≃ₐ[R] FractionRing K[X] where
+  __ := RatFunc.toFractionRingRingEquiv K
+  commutes' r := by
+    change (RatFunc.mk (algebraMap R K[X] r) 1).toFractionRing = _
+    rw [mk_one']; rfl
+
 @[simp]
 theorem mk_eq_div (p q : K[X]) : RatFunc.mk p q = algebraMap _ _ p / algebraMap _ _ q := by
   simp only [mk_eq_div', ofFractionRing_div, ofFractionRing_algebraMap]
@@ -648,13 +660,13 @@ variable (K)
 
 /-- `RatFunc K` is the field of fractions of the polynomials over `K`. -/
 instance : IsFractionRing K[X] (RatFunc K) where
-  map_units' y := by
+  map_units y := by
     rw [← ofFractionRing_algebraMap]
     exact (toFractionRingRingEquiv K).symm.toRingHom.isUnit_map (IsLocalization.map_units _ y)
   exists_of_eq {x y} := by
     rw [← ofFractionRing_algebraMap, ← ofFractionRing_algebraMap]
     exact fun h ↦ IsLocalization.exists_of_eq ((toFractionRingRingEquiv K).symm.injective h)
-  surj' := by
+  surj := by
     rintro ⟨z⟩
     convert IsLocalization.surj K[X]⁰ z
     simp only [← ofFractionRing_algebraMap, ← ofFractionRing_mul,
@@ -799,7 +811,7 @@ def numDenom (x : RatFunc K) : K[X] × K[X] :=
         ⟨Polynomial.C (q / r).leadingCoeff⁻¹ * (p / r),
           Polynomial.C (q / r).leadingCoeff⁻¹ * (q / r)⟩)
   (by
-      intros p q a hq ha
+      intro p q a hq ha
       dsimp
       rw [if_neg hq, if_neg (mul_ne_zero ha hq)]
       have ha' : a.leadingCoeff ≠ 0 := Polynomial.leadingCoeff_ne_zero.mpr ha

@@ -127,7 +127,7 @@ lemma sum_inv_height_sq_smul_vsub_eq_zero :
                 (altitudeFoot_mem_affineSpan  _ _),
             ?_⟩
     rw [vectorSpan_range_eq_span_range_vsub_right_ne _ _ 0, Submodule.span_range_eq_iSup,
-      ← Submodule.iInf_orthogonal, Submodule.iInf_coe, Set.mem_iInter]
+      ← Submodule.iInf_orthogonal, Submodule.coe_iInf, Set.mem_iInter]
     intro i
     rcases i with ⟨i, hi⟩
     simpa only [SetLike.mem_coe, Submodule.mem_orthogonal_singleton_iff_inner_right, inner_sum]
@@ -573,7 +573,7 @@ lemma ExcenterExists.sign_signedInfDist_lineMap_excenter_touchpoint {signs : Fin
           rw [AffineMap.lineMap_apply_one] at h0
           exact h.touchpoint_notMem_affineSpan_of_ne hne h0
         · refine (h.isTangentAt_touchpoint j).isTangent.notMem_of_dist_lt ?_ h0
-          simp only [exsphere_center, dist_left_lineMap, Real.norm_eq_abs, h.dist_excenter,
+          simp only [exsphere_center, dist_lineMap_left, Real.norm_eq_abs, h.dist_excenter,
             exsphere_radius, h.exradius_pos, mul_lt_iff_lt_one_left]
           rw [abs_lt]
           rcases ht with ⟨ht0, ht1'⟩

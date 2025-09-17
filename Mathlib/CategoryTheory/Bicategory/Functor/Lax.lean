@@ -132,6 +132,27 @@ def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : LaxFunctor B B where
 instance : Inhabited (LaxFunctor B B) :=
   ⟨id B⟩
 
+/-- More flexible variant of `mapId`. (See the file `Bicategory.Functor.Strict`
+for applications to strict bicategories.) -/
+def mapId' {b : B} (f : b ⟶ b) (hf : f = 𝟙 b := by cat_disch) :
+    𝟙 (F.obj b) ⟶ F.map f :=
+  F.mapId _ ≫ F.map₂ (eqToHom (by rw [hf]))
+
+lemma mapId'_eq_mapId (b : B) :
+    F.mapId' (𝟙 b) rfl = F.mapId b := by
+  simp [mapId']
+
+/-- More flexible variant of `mapComp`. (See `Bicategory.Functor.Strict`
+for applications to strict bicategories.) -/
+def mapComp' {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) (fg : b₀ ⟶ b₂)
+    (h : f ≫ g = fg := by cat_disch) :
+    F.map f ≫ F.map g ⟶ F.map fg :=
+  F.mapComp f g ≫ F.map₂ (eqToHom (by rw [h]))
+
+lemma mapComp'_eq_mapComp {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) :
+    F.mapComp' f g _ rfl = F.mapComp f g := by
+  simp [mapComp']
+
 /-- Composition of lax functors. -/
 @[simps]
 def comp {D : Type u₃} [Bicategory.{w₃, v₃} D] (F : LaxFunctor B C) (G : LaxFunctor C D) :

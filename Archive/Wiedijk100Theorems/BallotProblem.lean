@@ -115,14 +115,14 @@ theorem counted_succ_succ (p q : ℕ) :
     obtain ⟨hl₀, hl₁, hl₂⟩ := hl
     obtain hlast | hlast := hl₂ (l.head hlnil) (List.head_mem hlnil)
     · refine Or.inl ⟨l.tail, ⟨?_, ?_, ?_⟩, ?_⟩
-      · rw [List.count_tail, hl₀, List.head?_eq_head, hlast, beq_self_eq_true, if_pos rfl,
+      · rw [List.count_tail, hl₀, List.head?_eq_head hlnil, hlast, beq_self_eq_true, if_pos rfl,
           Nat.add_sub_cancel]
-      · rw [List.count_tail, hl₁, List.head?_eq_head, hlast, if_neg (by decide), Nat.sub_zero]
+      · rw [List.count_tail, hl₁, List.head?_eq_head hlnil, hlast, if_neg (by decide), Nat.sub_zero]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.cons_head_tail]
     · refine Or.inr ⟨l.tail, ⟨?_, ?_, ?_⟩, ?_⟩
-      · rw [List.count_tail, hl₀, List.head?_eq_head, hlast, if_neg (by decide), Nat.sub_zero]
-      · rw [List.count_tail, hl₁, List.head?_eq_head, hlast, beq_self_eq_true, if_pos rfl,
+      · rw [List.count_tail, hl₀, List.head?_eq_head hlnil, hlast, if_neg (by decide), Nat.sub_zero]
+      · rw [List.count_tail, hl₁, List.head?_eq_head hlnil, hlast, beq_self_eq_true, if_pos rfl,
           Nat.add_sub_cancel]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.cons_head_tail]
@@ -340,7 +340,7 @@ theorem ballot_problem' :
         apply ne_of_gt
         norm_cast
         linarith
-      field_simp [h₄, h₅, h₆] at *
+      simp [field, h₄, h₅, h₆] at *
       ring
     all_goals exact ENNReal.mul_ne_top (measure_ne_top _ _) (by simp [Ne, ENNReal.div_eq_top])
 

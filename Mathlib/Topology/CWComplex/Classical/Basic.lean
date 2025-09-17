@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Hannah Scholz
 -/
 
-import Mathlib.Analysis.NormedSpace.Real
+import Mathlib.Analysis.Normed.Module.RCLike.Real
 import Mathlib.Data.ENat.Basic
 import Mathlib.Logic.Equiv.PartialEquiv
 import Mathlib.Topology.MetricSpace.ProperSpace.Real
@@ -115,9 +115,6 @@ class RelCWComplex.{u} {X : Type u} [TopologicalSpace X] (C : Set X) (D : outPar
   /-- The union of all closed cells equals `C`. Use `RelCWComplex.union` instead. -/
   union' : D ∪ ⋃ (n : ℕ) (j : cell n), map n j '' closedBall 0 1 = C
 
-@[deprecated (since := "2025-02-20")] alias
-RelCWComplex.mapsto := Topology.RelCWComplex.mapsTo
-
 /-- Characterizing when a subspace `C` of a topological space `X` is a CW complex. Note that this
 requires `C` to be closed. If `C` is not closed choose `X` to be `C`. -/
 class CWComplex.{u} {X : Type u} [TopologicalSpace X] (C : Set X) where
@@ -211,9 +208,6 @@ lemma CWComplex.mapsTo [CWComplex C] (n : ℕ) (i : cell C n) : ∃ I : Π m, Fi
   simp_rw [empty_union] at this
   exact this
 
-@[deprecated (since := "2025-02-20")] alias
-CWComplex.mapsto := Topology.CWComplex.mapsTo
-
 lemma RelCWComplex.pairwiseDisjoint [RelCWComplex C D] :
     (univ : Set (Σ n, cell C n)).PairwiseDisjoint (fun ni ↦ openCell ni.1 ni.2) :=
   RelCWComplex.pairwiseDisjoint'
@@ -232,21 +226,21 @@ lemma RelCWComplex.cellFrontier_subset_base_union_finite_closedCell [RelCWComple
     D ∪ ⋃ (m < n) (j ∈ I m), closedCell m j := by
   rcases mapsTo n i with ⟨I, hI⟩
   use I
-  rw [mapsTo'] at hI
+  rw [mapsTo_iff_image_subset] at hI
   exact hI
 
 lemma CWComplex.cellFrontier_subset_finite_closedCell [CWComplex C] (n : ℕ) (i : cell C n) :
     ∃ I : Π m, Finset (cell C m), cellFrontier n i ⊆ ⋃ (m < n) (j ∈ I m), closedCell m j := by
   rcases RelCWComplex.mapsTo n i with ⟨I, hI⟩
   use I
-  rw [mapsTo', empty_union] at hI
+  rw [mapsTo_iff_image_subset, empty_union] at hI
   exact hI
 
 lemma RelCWComplex.union [RelCWComplex C D] : D ∪ ⋃ (n : ℕ) (j : cell C n), closedCell n j = C :=
   RelCWComplex.union'
 
 lemma CWComplex.union [CWComplex C] : ⋃ (n : ℕ) (j : cell C n), closedCell n j = C := by
-  have := RelCWComplex.union' (C := C) (D := ∅)
+  have := RelCWComplex.union' (C := C)
   rw [empty_union] at this
   exact this
 
@@ -414,7 +408,7 @@ lemma RelCWComplex.union_iUnion_openCell_eq_complex [RelCWComplex C D] :
 
 lemma CWComplex.iUnion_openCell_eq_complex [CWComplex C] :
     ⋃ (n : ℕ) (j : cell C n), openCell n j = C := by
-  simpa using RelCWComplex.union_iUnion_openCell_eq_complex (C := C) (D := ∅)
+  simpa using RelCWComplex.union_iUnion_openCell_eq_complex (C := C)
 
 /-- The contrapositive of `disjoint_openCell_of_ne`. -/
 lemma RelCWComplex.eq_of_not_disjoint_openCell [RelCWComplex C D] {n : ℕ} {j : cell C n} {m : ℕ}
@@ -475,12 +469,33 @@ lemma RelCWComplex.isClosed_of_isClosed_inter_openCell_or_isClosed_inter_closedC
       exact (isClosed_inter_cellFrontier_succ_of_le_isClosed_inter_closedCell hn j hDA).union h1
     · exact h2
 
+/-- If for every cell either `A ∩ openCell n j` is empty or `A ∩ closedCell n j` is closed then
+`A` is closed. -/
+lemma RelCWComplex.isClosed_of_disjoint_openCell_or_isClosed_inter_closedCell
+    [RelCWComplex C D] [T2Space X] {A : Set X} (hAC : A ⊆ C) (hDA : IsClosed (A ∩ D))
+    (h : ∀ n (_ : 0 < n), ∀ (j : cell C n),
+    Disjoint A (openCell n j) ∨ IsClosed (A ∩ closedCell n j)) : IsClosed A := by
+  apply isClosed_of_isClosed_inter_openCell_or_isClosed_inter_closedCell hAC hDA
+  intro n hn j
+  rcases h n hn j with h | h
+  · left
+    rw [disjoint_iff_inter_eq_empty.1 h]
+    exact isClosed_empty
+  · exact Or.inr h
+
 /-- If for every cell either `A ∩ openCell n j` or `A ∩ closedCell n j` is closed then
 `A` is closed. -/
 lemma CWComplex.isClosed_of_isClosed_inter_openCell_or_isClosed_inter_closedCell
     [CWComplex C] [T2Space X] {A : Set X} (hAC : A ⊆ C) (h : ∀ n (_ : 0 < n), ∀ (j : cell C n),
     IsClosed (A ∩ openCell n j) ∨ IsClosed (A ∩ closedCell n j)) : IsClosed A :=
   RelCWComplex.isClosed_of_isClosed_inter_openCell_or_isClosed_inter_closedCell hAC (by simp) h
+
+/-- If for every cell either `A ∩ openCell n j` is empty or `A ∩ closedCell n j` is closed then
+`A` is closed. -/
+lemma CWComplex.isClosed_of_disjoint_openCell_or_isClosed_inter_closedCell
+    [CWComplex C] [T2Space X] {A : Set X} (hAC : A ⊆ C) (h : ∀ n (_ : 0 < n), ∀ (j : cell C n),
+    Disjoint A (openCell n j) ∨ IsClosed (A ∩ closedCell n j)) : IsClosed A :=
+  RelCWComplex.isClosed_of_disjoint_openCell_or_isClosed_inter_closedCell hAC (by simp) h
 
 /-- A version of `cellFrontier_subset_base_union_finite_closedCell` using open cells:
 The boundary of a cell is contained in a finite union of open cells of a lower dimension. -/
@@ -524,38 +539,230 @@ lemma CWComplex.cellFrontier_subset_finite_openCell [CWComplex C] (n : ℕ) (i :
     cellFrontier n i ⊆ ⋃ (m < n) (j ∈ I m), openCell m j := by
   simpa using RelCWComplex.cellFrontier_subset_finite_openCell n i
 
+section Subcomplex
+
+namespace RelCWComplex
+
+/-- A subcomplex is a closed subspace of a CW complex that is the union of open cells of the
+  CW complex. -/
+structure Subcomplex (C : Set X) {D : Set X} [RelCWComplex C D] where
+  /-- The underlying set of the subcomplex. -/
+  carrier : Set X
+  /-- The indexing set of cells of the subcomplex. -/
+  I : Π n, Set (cell C n)
+  /-- A subcomplex is closed. -/
+  closed' : IsClosed carrier
+  /-- The union of all open cells of the subcomplex equals the subcomplex. -/
+  union' : D ∪ ⋃ (n : ℕ) (j : I n), openCell (C := C) n j = carrier
+
+namespace Subcomplex
+
+variable [RelCWComplex C D]
+
+instance : SetLike (Subcomplex C) X where
+  coe E := E.carrier
+  coe_injective' E F h := by
+    obtain ⟨E, _, _, hE⟩ := E
+    obtain ⟨F, _, _, hF⟩ := F
+    congr
+    apply eq_of_eq_union_iUnion
+    rw [hE, hF]
+    simpa using h
+
+initialize_simps_projections Subcomplex (carrier → coe, as_prefix coe)
+
+lemma mem_carrier {E : Subcomplex C} {x : X} : x ∈ E.carrier ↔ x ∈ (E : Set X) := Iff.rfl
+
+lemma coe_eq_carrier {E : Subcomplex C} : (E : Set X) = E.carrier := rfl
+
+@[ext] lemma ext {E F : Subcomplex C} (h : ∀ x, x ∈ E ↔ x ∈ F) : E = F :=
+  SetLike.ext h
+
+lemma eq_iff (E F : Subcomplex C) : E = F ↔ (E : Set X) = F :=
+  SetLike.coe_injective.eq_iff.symm
+
+/-- Copy of a `Subcomplex` with a new `carrier` equal to the old one. Useful to fix definitional
+equalities. -/
+protected def copy (E : Subcomplex C) (F : Set X) (hF : F = E) (J : (n : ℕ) → Set (cell C n))
+    (hJ : J = E.I) : Subcomplex C :=
+  { carrier := F
+    I := J
+    closed' := hF.symm ▸ E.closed'
+    union' := hF.symm ▸ hJ ▸ E.union' }
+
+@[simp] lemma coe_copy (E : Subcomplex C) (F : Set X) (hF : F = E) (J : (n : ℕ) → Set (cell C n))
+    (hJ : J = E.I) : (E.copy F hF J hJ : Set X) = F :=
+  rfl
+
+lemma copy_eq (E : Subcomplex C) (F : Set X) (hF : F = E) (J : (n : ℕ) → Set (cell C n))
+    (hJ : J = E.I) : E.copy F hF J hJ = E :=
+  SetLike.coe_injective hF
+
+lemma union (E : Subcomplex C) :
+    D ∪ ⋃ (n : ℕ) (j : E.I n), openCell (C := C) n j.1 = E := by
+  rw [E.union']
+  rfl
+
+lemma closed (E : Subcomplex C) : IsClosed (E : Set X) := E.closed'
+
+end Subcomplex
+
+end RelCWComplex
+
+namespace CWComplex
+
+export RelCWComplex (Subcomplex)
+
+namespace Subcomplex
+
+export RelCWComplex.Subcomplex (I closed union mem_carrier coe_eq_carrier ext copy coe_copy copy_eq)
+
+end CWComplex.Subcomplex
+
+lemma CWComplex.Subcomplex.union {C : Set X} [CWComplex C] {E : Subcomplex C} :
+    ⋃ (n : ℕ) (j : E.I n), openCell (C := C) n j = E := by
+  have := RelCWComplex.Subcomplex.union E (C := C)
+  rw [empty_union] at this
+  exact this
+
+/-- An alternative version of `Subcomplex.mk`: Instead of requiring that `E` is closed it requires
+that for every cell of the subcomplex the corresponding closed cell is a subset of `E`. -/
+@[simps -isSimp]
+def RelCWComplex.Subcomplex.mk' [T2Space X] (C : Set X) {D : Set X} [RelCWComplex C D]
+    (E : Set X) (I : Π n, Set (cell C n))
+    (closedCell_subset : ∀ (n : ℕ) (i : I n), closedCell (C := C) n i ⊆ E)
+    (union : D ∪ ⋃ (n : ℕ) (j : I n), openCell (C := C) n j = E) : Subcomplex C where
+  carrier := E
+  I := I
+  closed' := by
+    have hEC : (E : Set X) ⊆ C := by
+      simp_rw [← union, ← union_iUnion_openCell_eq_complex (C := C)]
+      exact union_subset_union_right D
+        (iUnion_mono fun n ↦ iUnion_subset fun i ↦ subset_iUnion _ (i : cell C n))
+    apply isClosed_of_disjoint_openCell_or_isClosed_inter_closedCell hEC
+    · have : D ⊆ E := by
+        rw [← union]
+        exact subset_union_left
+      rw [inter_eq_right.2 this]
+      exact isClosedBase C
+    intro n _ j
+    by_cases h : j ∈ I n
+    · right
+      suffices closedCell n j ⊆ E by
+        rw [inter_eq_right.2 this]
+        exact isClosed_closedCell
+      exact closedCell_subset n ⟨j, h⟩
+    · left
+      simp_rw [← union, disjoint_union_left, disjoint_iUnion_left]
+      exact ⟨disjointBase n j |>.symm, fun _ _ ↦ disjoint_openCell_of_ne (by aesop)⟩
+  union' := union
+
+/-- An alternative version of `Subcomplex.mk`: Instead of requiring that `E` is closed it requires
+that for every cell of the subcomplex the corresponding closed cell is a subset of `E`. -/
+@[simps! -isSimp]
+def CWComplex.Subcomplex.mk' [T2Space X] (C : Set X) [CWComplex C] (E : Set X)
+    (I : Π n, Set (cell C n))
+    (closedCell_subset : ∀ (n : ℕ) (i : I n), closedCell (C := C) n i ⊆ E)
+    (union : ⋃ (n : ℕ) (j : I n), openCell (C := C) n j = E) : Subcomplex C :=
+  RelCWComplex.Subcomplex.mk' C E I closedCell_subset (by rw [empty_union]; exact union)
+
+/-- An alternative version of `Subcomplex.mk`: Instead of requiring that `E` is closed it requires
+that `E` is a CW-complex. -/
+@[simps -isSimp]
+def RelCWComplex.Subcomplex.mk'' [T2Space X] (C : Set X) {D : Set X} [RelCWComplex C D] (E : Set X)
+    (I : Π n, Set (cell C n)) [RelCWComplex E D]
+    (union : D ∪ ⋃ (n : ℕ) (j : I n), openCell (C := C) n j = E) : Subcomplex C where
+  carrier := E
+  I := I
+  closed' := isClosed
+  union' := union
+
+/-- An alternative version of `Subcomplex.mk`: Instead of requiring that `E` is closed it requires
+that `E` is a CW-complex. -/
+@[simps -isSimp]
+def CWComplex.Subcomplex.mk'' [T2Space X] (C : Set X) [h : CWComplex C] (E : Set X)
+    (I : Π n, Set (cell C n)) [CWComplex E]
+    (union : ⋃ (n : ℕ) (j : I n), openCell (C := C) n j = E) :
+    Subcomplex C where
+  carrier := E
+  I := I
+  closed' := RelCWComplex.isClosed
+  union' := by
+    rw [empty_union]
+    exact union
+
+lemma RelCWComplex.Subcomplex.subset_complex {C D : Set X} [RelCWComplex C D] (E : Subcomplex C) :
+    ↑E ⊆ C := by
+  simp_rw [← union, ← RelCWComplex.union_iUnion_openCell_eq_complex]
+  exact union_subset_union_right _ (iUnion_mono fun _ ↦ iUnion_mono' fun j ↦ ⟨j, subset_rfl⟩)
+
+lemma RelCWComplex.Subcomplex.base_subset {C D : Set X} [RelCWComplex C D] (E : Subcomplex C) :
+    D ⊆ E := by
+  simp_rw [← union]
+  exact subset_union_left
+
+namespace CWComplex.Subcomplex
+
+export RelCWComplex.Subcomplex (subset_complex base_subset)
+
+end CWComplex.Subcomplex
+
+end Subcomplex
+
+section skeleton
+
+variable [T2Space X]
+
+namespace RelCWComplex
+
 /-- A non-standard definition of the `n`-skeleton of a CW complex for `n ∈ ℕ ∪ {∞}`.
 This allows the base case of induction to be about the base instead of being about the union of
 the base and some points.
 The standard `skeleton` is defined in terms of `skeletonLT`. `skeletonLT` is preferred
 in statements. You should then derive the statement about `skeleton`. -/
-def RelCWComplex.skeletonLT (C : Set X) {D : Set X} [RelCWComplex C D] (n : ℕ∞) : Set X :=
-  D ∪ ⋃ (m : ℕ) (_ : m < n) (j : cell C m), closedCell m j
+@[simps! -isSimp, irreducible]
+def skeletonLT (C : Set X) {D : Set X} [RelCWComplex C D] (n : ℕ∞) : Subcomplex C :=
+    Subcomplex.mk' _ (D ∪ ⋃ (m : ℕ) (_ : m < n) (j : cell C m), closedCell m j)
+    (fun l ↦ {x : cell C l | l < n})
+    (by
+      intro l ⟨i, hi⟩
+      apply subset_union_of_subset_right
+      apply subset_iUnion₂_of_subset l hi
+      exact subset_iUnion _ _)
+    (by
+      rw [← RelCWComplex.iUnion_openCell_eq_iUnion_closedCell]
+      congrm D ∪ ?_
+      apply iUnion_congr fun m ↦ ?_
+      rw [iUnion_subtype, iUnion_comm]
+      rfl)
 
 /-- The `n`-skeleton of a CW complex, for `n ∈ ℕ ∪ {∞}`. For statements use `skeletonLT` instead
 and then derive the statement about `skeleton`. -/
-def RelCWComplex.skeleton (C : Set X) {D : Set X} [RelCWComplex C D] (n : ℕ∞) : Set X :=
+abbrev skeleton (C : Set X) {D : Set X} [RelCWComplex C D] (n : ℕ∞) : Subcomplex C :=
   skeletonLT C (n + 1)
+
+end RelCWComplex
 
 namespace CWComplex
 
-export RelCWComplex (skeletonLT skeleton)
+export RelCWComplex (skeletonLT coe_skeletonLT skeletonLT_I skeleton)
 
 end CWComplex
 
 lemma RelCWComplex.skeletonLT_zero_eq_base [RelCWComplex C D] : skeletonLT C 0 = D := by
-  simp only [skeletonLT, ENat.not_lt_zero, iUnion_of_empty, iUnion_empty, union_empty]
+  simp [coe_skeletonLT]
 
-lemma CWComplex.skeletonLT_zero_eq_empty [CWComplex C] : skeletonLT C 0 = ∅ :=
+lemma CWComplex.skeletonLT_zero_eq_empty [CWComplex C] : (skeletonLT C 0 : Set X) = ∅ :=
     RelCWComplex.skeletonLT_zero_eq_base
 
 @[simp] lemma RelCWComplex.skeletonLT_top [RelCWComplex C D] : skeletonLT C ⊤ = C := by
-  simp [skeletonLT, union]
+  simp [coe_skeletonLT, union]
 
 @[simp] lemma RelCWComplex.skeleton_top [RelCWComplex C D] : skeleton C ⊤ = C := skeletonLT_top
 
 lemma RelCWComplex.skeletonLT_mono [RelCWComplex C D] {n m : ℕ∞} (h : m ≤ n) :
-    skeletonLT C m ⊆ skeletonLT C n := by
+    (skeletonLT C m : Set X) ⊆ skeletonLT C n := by
+  simp_rw [coe_skeletonLT]
   apply union_subset_union_right
   intro x xmem
   simp_rw [mem_iUnion, exists_prop] at xmem ⊢
@@ -566,23 +773,16 @@ lemma RelCWComplex.skeletonLT_monotone [RelCWComplex C D] : Monotone (skeletonLT
   fun _ _ h ↦ skeletonLT_mono h
 
 lemma RelCWComplex.skeleton_mono [RelCWComplex C D] {n m : ℕ∞} (h : m ≤ n) :
-    skeleton C m ⊆ skeleton C n :=
+    (skeleton C m : Set X) ⊆ skeleton C n :=
   skeletonLT_mono (add_le_add_right h 1)
 
 lemma RelCWComplex.skeleton_monotone [RelCWComplex C D] : Monotone (skeleton C) :=
   fun _ _ h ↦ skeleton_mono h
 
-lemma RelCWComplex.skeletonLT_subset_complex [RelCWComplex C D] {n : ℕ∞} : skeletonLT C n ⊆ C := by
-  simp_rw [← skeletonLT_top (C := C) (D := D)]
-  exact skeletonLT_mono (OrderTop.le_top n)
-
-lemma RelCWComplex.skeleton_subset_complex [RelCWComplex C D] {n : ℕ∞} :
-    skeleton C n ⊆ C :=
-  skeletonLT_subset_complex
-
 lemma RelCWComplex.closedCell_subset_skeletonLT [RelCWComplex C D] (n : ℕ) (j : cell C n) :
     closedCell n j ⊆ skeletonLT C (n + 1) := by
   intro x xmem
+  rw [coe_skeletonLT]
   right
   simp_rw [mem_iUnion, exists_prop]
   refine ⟨n, (by norm_cast; exact lt_add_one n), ⟨j,xmem⟩⟩
@@ -603,6 +803,7 @@ lemma RelCWComplex.cellFrontier_subset_skeletonLT [RelCWComplex C D] (n : ℕ) (
     cellFrontier n j ⊆ skeletonLT C n := by
   obtain ⟨I, hI⟩ := cellFrontier_subset_base_union_finite_closedCell n j
   apply subset_trans hI
+  rw [coe_skeletonLT]
   apply union_subset_union_right
   intro x xmem
   simp only [mem_iUnion, exists_prop] at xmem ⊢
@@ -621,27 +822,22 @@ lemma RelCWComplex.iUnion_cellFrontier_subset_skeleton [RelCWComplex C D] (l : �
     ⋃ (j : cell C l), cellFrontier l j ⊆ skeleton C l :=
   (iUnion_cellFrontier_subset_skeletonLT l).trans (skeletonLT_mono le_self_add)
 
-lemma RelCWComplex.base_subset_skeletonLT [RelCWComplex C D] (n : ℕ∞) : D ⊆ skeletonLT C n :=
-  subset_union_left
-
-lemma RelCWComplex.base_subset_skeleton [RelCWComplex C D] (n : ℕ∞) : D ⊆ skeleton C n :=
-  base_subset_skeletonLT (n + 1)
-
 lemma RelCWComplex.skeletonLT_union_iUnion_closedCell_eq_skeletonLT_succ [RelCWComplex C D]
-    (n : ℕ) : skeletonLT C n ∪ ⋃ (j : cell C n), closedCell n j = skeletonLT C (n + 1) := by
-  rw [skeletonLT, skeletonLT, union_assoc]
+    (n : ℕ) :
+    (skeletonLT C n : Set X) ∪ ⋃ (j : cell C n), closedCell n j = skeletonLT C (n + 1) := by
+  rw [coe_skeletonLT, coe_skeletonLT, union_assoc]
   congr
   norm_cast
   exact (biUnion_lt_succ _ _).symm
 
 lemma RelCWComplex.skeleton_union_iUnion_closedCell_eq_skeleton_succ [RelCWComplex C D] (n : ℕ) :
-    skeleton C n ∪ ⋃ (j : cell C (n + 1)), closedCell (n + 1) j = skeleton C (n + 1) :=
+    (skeleton C n : Set X) ∪ ⋃ (j : cell C (n + 1)), closedCell (n + 1) j = skeleton C (n + 1) :=
   skeletonLT_union_iUnion_closedCell_eq_skeletonLT_succ _
 
 /-- A version of the definition of `skeletonLT` with open cells. -/
 lemma RelCWComplex.iUnion_openCell_eq_skeletonLT [RelCWComplex C D] (n : ℕ∞) :
     D ∪ ⋃ (m : ℕ) (_ : m < n) (j : cell C m), openCell m j = skeletonLT C n :=
-  RelCWComplex.iUnion_openCell_eq_iUnion_closedCell n
+  (coe_skeletonLT C _).symm ▸ RelCWComplex.iUnion_openCell_eq_iUnion_closedCell n
 
 lemma CWComplex.iUnion_openCell_eq_skeletonLT [CWComplex C] (n : ℕ∞) :
     ⋃ (m : ℕ) (_ : m < n) (j : cell C m), openCell m j = skeletonLT C n := by
@@ -657,25 +853,25 @@ lemma CWComplex.iUnion_openCell_eq_skeleton [CWComplex C] (n : ℕ∞) :
 
 lemma RelCWComplex.iUnion_skeletonLT_eq_complex [RelCWComplex C D] :
     ⋃ (n : ℕ), skeletonLT C n = C := by
-  apply subset_antisymm (iUnion_subset_iff.2 fun _ ↦ skeletonLT_subset_complex)
+  apply subset_antisymm (iUnion_subset_iff.2 fun _ ↦ (skeletonLT C _).subset_complex)
   simp_rw [← union_iUnion_openCell_eq_complex, union_subset_iff, iUnion₂_subset_iff]
-  exact ⟨subset_iUnion_of_subset 0 (base_subset_skeletonLT ↑0),
+  exact ⟨subset_iUnion_of_subset 0 (skeletonLT C 0).base_subset,
     fun n i ↦ subset_iUnion_of_subset _ (openCell_subset_skeletonLT n i)⟩
 
 lemma RelCWComplex.iUnion_skeleton_eq_complex [RelCWComplex C D] :
     ⋃ (n : ℕ), skeleton C n = C := by
-  apply subset_antisymm (iUnion_subset_iff.2 fun _ ↦ skeleton_subset_complex)
+  apply subset_antisymm (iUnion_subset_iff.2 fun _ ↦ (skeleton C _).subset_complex)
   simp_rw [← union_iUnion_openCell_eq_complex, union_subset_iff, iUnion₂_subset_iff]
-  exact ⟨subset_iUnion_of_subset 0 (base_subset_skeleton ↑0),
+  exact ⟨subset_iUnion_of_subset 0 (skeleton C 0).base_subset,
     fun n i ↦ subset_iUnion_of_subset _ (openCell_subset_skeleton n i)⟩
 
 lemma RelCWComplex.mem_skeletonLT_iff [RelCWComplex C D] {n : ℕ∞} {x : X} :
     x ∈ skeletonLT C n ↔ x ∈ D ∨ ∃ (m : ℕ) (_ : m < n) (j : cell C m), x ∈ openCell m j := by
-  simp [← iUnion_openCell_eq_skeletonLT]
+  simp [← SetLike.mem_coe, ← iUnion_openCell_eq_skeletonLT]
 
 lemma CWComplex.mem_skeletonLT_iff [CWComplex C] {n : ℕ∞} {x : X} :
     x ∈ skeletonLT C n ↔ ∃ (m : ℕ) (_ : m < n) (j : cell C m), x ∈ openCell m j := by
-  simp [← iUnion_openCell_eq_skeletonLT]
+  simp [← SetLike.mem_coe, ← iUnion_openCell_eq_skeletonLT]
 
 lemma RelCWComplex.mem_skeleton_iff [RelCWComplex C D] {n : ℕ∞} {x : X} :
     x ∈ skeleton C n ↔ x ∈ D ∨ ∃ (m : ℕ) (_ : m ≤ n) (j : cell C m), x ∈ openCell m j := by
@@ -692,7 +888,7 @@ lemma CWComplex.exists_mem_openCell_of_mem_skeleton [CWComplex C] {n : ℕ∞} {
 
 /-- A skeleton and an open cell of a higher dimension are disjoint. -/
 lemma RelCWComplex.disjoint_skeletonLT_openCell [RelCWComplex C D] {n : ℕ∞} {m : ℕ}
-    {j : cell C m} (hnm : n ≤ m) : Disjoint (skeletonLT C n) (openCell m j) := by
+    {j : cell C m} (hnm : n ≤ m) : Disjoint (skeletonLT C n : Set X) (openCell m j) := by
   -- This is a consequence of `iUnion_openCell_eq_skeletonLT` and `disjoint_openCell_of_ne`
   simp_rw [← iUnion_openCell_eq_skeletonLT, disjoint_union_left, disjoint_iUnion_left]
   refine ⟨(disjointBase m j).symm, ?_⟩
@@ -704,14 +900,14 @@ lemma RelCWComplex.disjoint_skeletonLT_openCell [RelCWComplex C D] {n : ℕ∞} 
 
 /-- A skeleton and an open cell of a higher dimension are disjoint. -/
 lemma RelCWComplex.disjoint_skeleton_openCell [RelCWComplex C D] {n : ℕ∞} {m : ℕ}
-    {j : cell C m} (nlem : n < m) : Disjoint (skeleton C n) (openCell m j) :=
+    {j : cell C m} (nlem : n < m) : Disjoint (skeleton C n : Set X) (openCell m j) :=
   disjoint_skeletonLT_openCell (Order.add_one_le_of_lt nlem)
 
 /-- A skeleton intersected with a closed cell of a higher dimension is the skeleton intersected with
 the boundary of the cell. -/
 lemma RelCWComplex.skeletonLT_inter_closedCell_eq_skeletonLT_inter_cellFrontier [RelCWComplex C D]
     {n : ℕ∞} {m : ℕ} {j : cell C m} (hnm : n ≤ m) :
-    skeletonLT C n ∩ closedCell m j = skeletonLT C n ∩ cellFrontier m j := by
+    (skeletonLT C n : Set X) ∩ closedCell m j = (skeletonLT C n : Set X) ∩ cellFrontier m j := by
   refine subset_antisymm ?_ (inter_subset_inter_right _ (cellFrontier_subset_closedCell _ _))
   rw [← cellFrontier_union_openCell_eq_closedCell, inter_union_distrib_left]
   apply union_subset (by rfl)
@@ -721,8 +917,10 @@ lemma RelCWComplex.skeletonLT_inter_closedCell_eq_skeletonLT_inter_cellFrontier 
 /-- Version of `skeletonLT_inter_closedCell_eq_skeletonLT_inter_cellFrontier` using `skeleton`. -/
 lemma RelCWComplex.skeleton_inter_closedCell_eq_skeleton_inter_cellFrontier [RelCWComplex C D]
     {n : ℕ∞} {m : ℕ} {j : cell C m} (hnm : n < m) :
-    skeleton C n ∩ closedCell m j = skeleton C n ∩ cellFrontier m j :=
+    (skeleton C n : Set X) ∩ closedCell m j = (skeleton C n : Set X) ∩ cellFrontier m j :=
   skeletonLT_inter_closedCell_eq_skeletonLT_inter_cellFrontier (Order.add_one_le_of_lt hnm)
+
+end skeleton
 
 lemma RelCWComplex.disjoint_interior_base_closedCell [T2Space X] [RelCWComplex C D] {n : ℕ}
     {j : cell C n} : Disjoint (interior D) (closedCell n j) := by
@@ -732,9 +930,9 @@ lemma RelCWComplex.disjoint_interior_base_closedCell [T2Space X] [RelCWComplex C
   rw [← closure_openCell_eq_closedCell, inter_comm,
     closure_inter_open_nonempty_iff isOpen_interior] at h
   rcases h with ⟨x, xmemcell, xmemD⟩
-  suffices x ∈ skeletonLT C 0 ∩ openCell n j by
+  suffices x ∈ (skeletonLT C 0 : Set X) ∩ openCell n j by
     rwa [(disjoint_skeletonLT_openCell n.cast_nonneg').inter_eq] at this
-  exact ⟨base_subset_skeletonLT 0 (interior_subset xmemD), xmemcell⟩
+  exact ⟨(skeletonLT C 0).base_subset (interior_subset xmemD), xmemcell⟩
 
 lemma RelCWComplex.disjoint_interior_base_iUnion_closedCell [T2Space X] [RelCWComplex C D] :
     Disjoint (interior D) (⋃ (n : ℕ) (j : cell C n), closedCell n j) := by
@@ -747,9 +945,9 @@ export RelCWComplex (pairwiseDisjoint disjoint_openCell_of_ne openCell_subset_cl
   cellFrontier_subset_closedCell cellFrontier_union_openCell_eq_closedCell map_zero_mem_openCell
   map_zero_mem_closedCell isCompact_closedCell isClosed_closedCell isCompact_cellFrontier
   isClosed_cellFrontier closure_openCell_eq_closedCell skeletonLT_top skeleton_top skeletonLT_mono
-  skeleton_mono skeletonLT_monotone skeleton_monotone skeletonLT_subset_complex
-  skeleton_subset_complex closedCell_subset_skeletonLT closedCell_subset_skeleton
-  closedCell_subset_complex openCell_subset_skeletonLT openCell_subset_skeleton
+  skeleton_mono skeletonLT_monotone skeleton_monotone closedCell_subset_skeletonLT
+  closedCell_subset_skeleton closedCell_subset_complex openCell_subset_skeletonLT
+  openCell_subset_skeleton
   openCell_subset_complex cellFrontier_subset_skeletonLT cellFrontier_subset_skeleton
   cellFrontier_subset_complex iUnion_cellFrontier_subset_skeletonLT
   iUnion_cellFrontier_subset_skeleton closedCell_zero_eq_singleton openCell_zero_eq_singleton

@@ -62,8 +62,7 @@ theorem AtPrime.nontrivial [IsLocalization.AtPrime S P] : Nontrivial S :=
 @[deprecated (since := "2025-07-31")] alias AtPrime.Nontrivial := IsLocalization.AtPrime.nontrivial
 
 theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
-  -- Porting note: since I couldn't get local instance running, I just specify it manually
-  letI := AtPrime.nontrivial S P
+  letI := AtPrime.nontrivial S P -- Can't be a local instance because we can't figure out `P`.
   IsLocalRing.of_nonunits_add
     (by
       intro x y hx hy hu
@@ -100,6 +99,15 @@ instance {R S : Type*} [CommRing R] [NoZeroDivisors R] {P : Ideal R} [CommRing S
     NoZeroSMulDivisors (Localization.AtPrime P)
     (Localization (Algebra.algebraMapSubmonoid S P.primeCompl)) :=
   NoZeroSMulDivisors_of_isLocalization R S _ _ P.primeCompl_le_nonZeroDivisors
+
+theorem _root_.IsLocalization.AtPrime.faithfulSMul (R : Type*) [CommRing R] [NoZeroDivisors R]
+    [Algebra R S] (P : Ideal R) [hp : P.IsPrime] [IsLocalization.AtPrime S P] :
+    FaithfulSMul R S := by
+  rw [faithfulSMul_iff_algebraMap_injective, IsLocalization.injective_iff_isRegular P.primeCompl]
+  exact fun ⟨_, h⟩ ↦ isRegular_of_ne_zero <| by aesop
+
+instance {R : Type*} [CommRing R] [NoZeroDivisors R] (P : Ideal R) [hp : P.IsPrime] :
+    FaithfulSMul R (Localization.AtPrime P) := IsLocalization.AtPrime.faithfulSMul _ _ P
 
 end Localization
 
@@ -176,7 +184,6 @@ theorem AtPrime.comap_maximalIdeal :
     Ideal.comap (algebraMap R (Localization.AtPrime I))
         (IsLocalRing.maximalIdeal (Localization I.primeCompl)) =
       I :=
-  -- Porting note: need to provide full name
   IsLocalization.AtPrime.comap_maximalIdeal _ _
 
 /-- The image of `I` in the localization at `I.primeCompl` is a maximal ideal, and in particular
@@ -184,10 +191,7 @@ it is the unique maximal ideal given by the local ring structure `AtPrime.isLoca
 theorem AtPrime.map_eq_maximalIdeal :
     Ideal.map (algebraMap R (Localization.AtPrime I)) I =
       IsLocalRing.maximalIdeal (Localization I.primeCompl) := by
-  convert congr_arg (Ideal.map (algebraMap R (Localization.AtPrime I)))
-  -- Porting note: `algebraMap R ...` can not be solve by unification
-    (AtPrime.comap_maximalIdeal (hI := hI)).symm
-  -- Porting note: can not find `hI`
+  convert congr_arg (Ideal.map _) AtPrime.comap_maximalIdeal.symm
   rw [map_comap I.primeCompl]
 
 lemma AtPrime.eq_maximalIdeal_iff_comap_eq {J : Ideal (Localization.AtPrime I)} :
@@ -245,7 +249,7 @@ theorem localRingHom_unique (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I =
 theorem localRingHom_id : localRingHom I I (RingHom.id R) (Ideal.comap_id I).symm = RingHom.id _ :=
   localRingHom_unique _ _ _ _ fun _ => rfl
 
--- Porting note: simplifier won't pick up this lemma, so deleted @[simp]
+-- `simp` can't figure out `J` so this can't be a `@[simp]` lemma.
 theorem localRingHom_comp {S : Type*} [CommSemiring S] (J : Ideal S) [hJ : J.IsPrime] (K : Ideal P)
     [hK : K.IsPrime] (f : R →+* S) (hIJ : I = J.comap f) (g : S →+* P) (hJK : J = K.comap g) :
     localRingHom I K (g.comp f) (by rw [hIJ, hJK, Ideal.comap_comap f g]) =
