@@ -89,10 +89,10 @@ noncomputable def pow (κ : Kernel α α) : ℕ → Kernel α α
 
 @[simp] lemma pow_zero (κ : Kernel α α) : κ.pow 0 = Kernel.id := rfl
 
-@[simp] lemma pow_one (κ : Kernel α α) : κ.pow 1 = κ := by simp [pow]
-
 @[simp] lemma pow_succ (κ : Kernel α α) (n : ℕ) : κ.pow (n + 1) = κ.pow n ∘ₖ κ := by
   cases n <;> simp [pow]
+
+@[simp] lemma pow_one (κ : Kernel α α) : κ.pow 1 = κ := by simp 
 
 end Pow
 
