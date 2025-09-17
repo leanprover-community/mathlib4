@@ -306,8 +306,7 @@ def Fix.drec {β : Fix F α → Type u}
     intro x' ih
     rw [Fix.rec_eq]
     dsimp
-    simp? [appendFun_id_id] at ih says
-      simp only [appendFun_id_id, MvFunctor.id_map] at ih
+    simp only [appendFun_id_id, MvFunctor.id_map] at ih
     congr
     conv =>
       rhs
