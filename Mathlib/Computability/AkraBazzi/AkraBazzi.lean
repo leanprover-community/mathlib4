@@ -188,7 +188,6 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_sub_smoothingFn (p : ℝ) :
         =ᶠ[atTop] fun z => z⁻¹ / (log z ^ 2) := by
       filter_upwards [eventually_deriv_one_sub_smoothingFn, eventually_gt_atTop 1] with x hx hx_pos
       have : 0 ≤ x⁻¹ / (log x ^ 2) := by
-        have hlog : 0 < log x := Real.log_pos hx_pos
         positivity
       simp only [hp, Real.rpow_zero, one_mul, hx, Real.norm_of_nonneg this]
     refine GrowsPolynomially.congr_of_eventuallyEq h₁ ?_
@@ -209,7 +208,6 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_add_smoothingFn (p : ℝ) :
         =ᶠ[atTop] fun z => z⁻¹ / (log z ^ 2) := by
       filter_upwards [eventually_deriv_one_add_smoothingFn, eventually_gt_atTop 1] with x hx hx_pos
       have : 0 ≤ x⁻¹ / (log x ^ 2) := by
-        have hlog : 0 < log x := Real.log_pos hx_pos
         positivity
       simp only [neg_div, norm_neg, hp, Real.rpow_zero,
         one_mul, hx, Real.norm_of_nonneg this]
@@ -608,6 +606,12 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
             · exact le_of_lt <| h_smoothing_gt_half n hn
       _ = C * ((1 - ε n) * asympBound g a b n) := by ring
 
+#adaptation_note
+/--
+This linter is only enabled on `nightly-testing`, but it causes a deterministic timeout there.
+Can this proof be refactored into some smaller pieces?
+-/
+set_option linter.tacticAnalysis.regressions.linarithToGrind false in
 /-- The main proof of the lower bound part of the Akra-Bazzi theorem. The factor
 `1 + ε n` does not change the asymptotic order, but is needed for the induction step to go
 through. -/

@@ -81,11 +81,11 @@ dimension, the transition function between two trivializations is not automatica
 map from the base `B` to the endomorphisms `F →L[R] F` of the fiber (considered with the
 operator-norm topology), and so the definition needs to be modified by restricting consideration to
 a family of trivializations (constituting the data) which are all mutually-compatible in this sense.
-The PRs https://github.com/leanprover-community/mathlib4/pull/13052 and
-https://github.com/leanprover-community/mathlib4/pull/13175 implemented this change.
+The PRs https://github.com/leanprover-community/mathlib/pull/13052 and
+https://github.com/leanprover-community/mathlib/pull/13175 implemented this change.
 
 There is still the choice about whether to hold this data at the level of fiber bundles or of vector
-bundles. As of PR https://github.com/leanprover-community/mathlib4/pull/17505, the data is all held
+bundles. As of PR https://github.com/leanprover-community/mathlib/pull/17505, the data is all held
 in `FiberBundle`, with `VectorBundle` a (propositional) mixin stating fiberwise-linearity.
 
 This allows bundles to carry instances of typeclasses in which the scalar field, `R`, does not
