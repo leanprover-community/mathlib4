@@ -814,7 +814,7 @@ def eqLocus (f g : R →+* S) : Subring R :=
   { (f : R →* S).eqLocusM g, (f : R →+ S).eqLocus g with carrier := { x | f x = g x } }
 
 @[simp]
-theorem mem_eqLocus {f g : R →+* S} {x} : x ∈ f.eqLocus g ↔ f x = g x := Iff.rfl
+theorem mem_eqLocus {f g : R →+* S} {x : R} : x ∈ f.eqLocus g ↔ f x = g x := Iff.rfl
 
 @[simp]
 theorem eqLocus_same (f : R →+* S) : f.eqLocus f = ⊤ :=

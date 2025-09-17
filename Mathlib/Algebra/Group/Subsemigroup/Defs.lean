@@ -237,7 +237,7 @@ def eqLocus (f g : M →ₙ* N) : Subsemigroup M where
   mul_mem' (hx : _ = _) (hy : _ = _) := by simp [*]
 
 @[to_additive (attr := simp)]
-theorem mem_eqLocus {f g : M →ₙ* N} {x} : x ∈ f.eqLocus g ↔ f x = g x := Iff.rfl
+theorem mem_eqLocus {f g : M →ₙ* N} {x : M} : x ∈ f.eqLocus g ↔ f x = g x := Iff.rfl
 
 @[to_additive]
 theorem eq_of_eqOn_top {f g : M →ₙ* N} (h : Set.EqOn f g (⊤ : Subsemigroup M)) : f = g :=
