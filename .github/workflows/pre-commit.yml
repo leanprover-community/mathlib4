@@ -11,6 +11,7 @@ on:
       # ignore staging branch used by bors, this is handled by bors.yml
       - 'staging'
       - 'master'
+  pull_request:
 
 # extracted from https://pre-commit.ci/lite
 jobs:
