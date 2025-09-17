@@ -447,7 +447,7 @@ theorem two_le_chromaticNumber_iff_ne_bot : 2 ≤ G.chromaticNumber ↔ G ≠ �
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · contrapose! h
     by_cases h' : IsEmpty V
-    · simp [chromaticNumber_eq_zero_of_isempty]
+    · simp [chromaticNumber_eq_zero_of_isEmpty]
     · simp [chromaticNumber_eq_one_iff.mpr ⟨h, by simpa using h'⟩]
   · obtain ⟨_, _, h⟩ := exists_adj_of_ne_bot h
     exact two_le_chromaticNumber_of_adj h
