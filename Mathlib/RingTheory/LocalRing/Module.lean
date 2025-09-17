@@ -35,11 +35,6 @@ open Module
 universe u
 variable {R M N P : Type*} [CommRing R]
 
--- complex imports make it difficult to find a good file to place in
-instance [IsLocalRing R] {n : ℕ} [Nontrivial (ZMod n)] (f : R →+* ZMod n) :
-    IsLocalHom f :=
-  (ZMod.ringHom_surjective f).isLocalHom
-
 section
 
 variable [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
