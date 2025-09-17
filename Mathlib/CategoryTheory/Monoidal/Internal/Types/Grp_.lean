@@ -59,10 +59,10 @@ noncomputable def grpTypeEquivalenceGrp : Grp_ (Type u) ≌ Grp.{u} where
     (fun A => MulEquiv.toGrpIso { Equiv.refl _ with map_mul' := fun _ _ => rfl })
     (by cat_disch)
 
-/-- The equivalences `Mon_ (Type u) ≌ MonCat.{u}` and `Grp_ (Type u) ≌ Grp.{u}`
-are naturally compatible with the forgetful functors to `MonCat` and `Mon_ (Type u)`.
+/-- The equivalences `Mon (Type u) ≌ MonCat.{u}` and `Grp_ (Type u) ≌ Grp.{u}`
+are naturally compatible with the forgetful functors to `MonCat` and `Mon (Type u)`.
 -/
 noncomputable def grpTypeEquivalenceGrpForget :
     GrpTypeEquivalenceGrp.functor ⋙ forget₂ Grp MonCat ≅
-      Grp_.forget₂Mon_ (Type u) ⋙ MonTypeEquivalenceMon.functor :=
+      Grp_.forget₂Mon (Type u) ⋙ MonTypeEquivalenceMon.functor :=
   Iso.refl _

@@ -18,6 +18,10 @@ section OrderedSemiring
 
 variable {R : Type*} [Semiring R] {S : Type*} [Semiring S] [PartialOrder S]
   (v w : AbsoluteValue R S)
+section OrderedSemiring
+
+variable {R : Type*} [Semiring R] {S : Type*} [Semiring S] [PartialOrder S]
+  (v w : AbsoluteValue R S)
 
 /-- Two absolute values `v` and `w` are *equivalent* if `v x ≤ v y` precisely when
 `w x ≤ w y`.
@@ -38,9 +42,9 @@ theorem IsEquiv.symm (h : v.IsEquiv w) : w.IsEquiv v := fun _ _ ↦ (h _ _).symm
 theorem IsEquiv.trans {u : AbsoluteValue R S} (h₁ : v.IsEquiv w)
     (h₂ : w.IsEquiv u) : v.IsEquiv u := fun _ _ ↦ (h₁ _ _).trans (h₂ _ _)
 
-@[deprecated (since := "2025-09-10")] alias isEquiv_refl := IsEquiv.refl
-@[deprecated (since := "2025-09-10")] alias isEquiv_symm := IsEquiv.symm
-@[deprecated (since := "2025-09-10")] alias isEquiv_trans := IsEquiv.trans
+@[deprecated (since := "2025-09-12")] alias isEquiv_refl := IsEquiv.refl
+@[deprecated (since := "2025-09-12")] alias isEquiv_symm := IsEquiv.symm
+@[deprecated (since := "2025-09-12")] alias isEquiv_trans := IsEquiv.trans
 
 instance : Setoid (AbsoluteValue R S) where
   r := IsEquiv
@@ -49,6 +53,8 @@ instance : Setoid (AbsoluteValue R S) where
     symm := .symm
     trans := .trans
   }
+
+theorem IsEquiv.le_iff_le (h : v.IsEquiv w) {x y : R} : v x ≤ v y ↔ w x ≤ w y := h ..
 
 theorem IsEquiv.lt_iff_lt (h : v.IsEquiv w) {x y : R} : v x < v y ↔ w x < w y :=
   lt_iff_lt_of_le_iff_le' (h y x) (h x y)
@@ -77,10 +83,11 @@ theorem IsEquiv.one_le_iff (h : v.IsEquiv w) {x : R} :
 theorem IsEquiv.eq_one_iff (h : v.IsEquiv w) {x : R} : v x = 1 ↔ w x = 1 := by
   simpa only [map_one] using h.eq_iff_eq (x := x) (y := 1)
 
-theorem IsEquiv.isNontrivial_iff {w : AbsoluteValue R S} (h : v.IsEquiv w) :
+theorem IsEquiv.isNontrivial_congr {w : AbsoluteValue R S} (h : v.IsEquiv w) :
     v.IsNontrivial ↔ w.IsNontrivial :=
   not_iff_not.1 <| by aesop (add simp [not_isNontrivial_iff, h.eq_one_iff])
-alias ⟨IsEquiv.isNontrivial, _⟩ := IsEquiv.isNontrivial_iff
+
+alias ⟨IsEquiv.isNontrivial, _⟩ := IsEquiv.isNontrivial_congr
 
 end OrderedSemiring
 
