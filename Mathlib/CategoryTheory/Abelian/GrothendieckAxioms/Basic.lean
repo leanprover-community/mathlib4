@@ -365,7 +365,7 @@ lemma hasExactColimitsOfShape_of_final [HasFiniteLimits C] {J J' : Type*} [Categ
 
 /-- `HasExactLimitsOfShape` can be "pushed forward" along initial functors -/
 lemma hasExactLimitsOfShape_of_initial [HasFiniteColimits C] {J J' : Type*} [Category J]
-    [Category J'] (F : J ⥤ J') [F.Initial]  [HasLimitsOfShape J' C] [HasLimitsOfShape J C]
+    [Category J'] (F : J ⥤ J') [F.Initial] [HasLimitsOfShape J' C] [HasLimitsOfShape J C]
     [HasExactLimitsOfShape J C] : HasExactLimitsOfShape J' C where
   preservesFiniteColimits :=
     letI : PreservesFiniteColimits ((whiskeringLeft J J' C).obj F) := ⟨fun _ ↦ inferInstance⟩

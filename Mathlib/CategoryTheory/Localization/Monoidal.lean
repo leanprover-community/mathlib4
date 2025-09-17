@@ -223,8 +223,10 @@ lemma tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : LocalizedMonoidal L W ε}
     (f₁ ≫ g₁) ⊗ₘ (f₂ ≫ g₂) = (f₁ ⊗ₘ f₂) ≫ (g₁ ⊗ₘ g₂) := by
   simp [monoidalCategoryStruct]
 
-lemma tensor_id (X₁ X₂ : LocalizedMonoidal L W ε) : 𝟙 X₁ ⊗ₘ 𝟙 X₂ = 𝟙 (X₁ ⊗ X₂) := by
+lemma id_tensorHom_id (X₁ X₂ : LocalizedMonoidal L W ε) : 𝟙 X₁ ⊗ₘ 𝟙 X₂ = 𝟙 (X₁ ⊗ X₂) := by
   simp [monoidalCategoryStruct]
+
+@[deprecated (since := "2025-07-14")] alias tensor_id := id_tensorHom_id
 
 @[reassoc]
 theorem whiskerLeft_comp (Q : LocalizedMonoidal L W ε) {X Y Z : LocalizedMonoidal L W ε}
@@ -263,7 +265,7 @@ lemma associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : LocalizedMonoidal L
 @[reassoc]
 lemma associator_naturality₁ {X₁ X₂ X₃ Y₁ : LocalizedMonoidal L W ε} (f₁ : X₁ ⟶ Y₁) :
     ((f₁ ▷ X₂) ▷ X₃) ≫ (α_ Y₁ X₂ X₃).hom = (α_ X₁ X₂ X₃).hom ≫ (f₁ ▷ (X₂ ⊗ X₃)) := by
-  simp only [← tensorHom_id, associator_naturality, tensor_id]
+  simp only [← tensorHom_id, associator_naturality, id_tensorHom_id]
 
 @[reassoc]
 lemma associator_naturality₂ {X₁ X₂ X₃ Y₂ : LocalizedMonoidal L W ε} (f₂ : X₂ ⟶ Y₂) :
@@ -273,7 +275,7 @@ lemma associator_naturality₂ {X₁ X₂ X₃ Y₂ : LocalizedMonoidal L W ε} 
 @[reassoc]
 lemma associator_naturality₃ {X₁ X₂ X₃ Y₃ : LocalizedMonoidal L W ε} (f₃ : X₃ ⟶ Y₃) :
     ((X₁ ⊗ X₂) ◁ f₃) ≫ (α_ X₁ X₂ Y₃).hom = (α_ X₁ X₂ X₃).hom ≫ (X₁ ◁ (X₂ ◁ f₃)) := by
-  simp only [← id_tensorHom, ← tensor_id, associator_naturality]
+  simp only [← id_tensorHom, ← id_tensorHom_id, associator_naturality]
 
 lemma pentagon_aux₁ {X₁ X₂ X₃ Y₁ : LocalizedMonoidal L W ε} (i : X₁ ≅ Y₁) :
     ((i.hom ▷ X₂) ▷ X₃) ≫ (α_ Y₁ X₂ X₃).hom ≫ (i.inv ▷ (X₂ ⊗ X₃)) = (α_ X₁ X₂ X₃).hom := by
@@ -308,10 +310,10 @@ lemma pentagon (Y₁ Y₂ Y₃ Y₄ : LocalizedMonoidal L W ε) :
         tensor_comp, ← associator_naturality_assoc, ← comp_id (𝟙 ((L').obj X₄)),
         ← tensor_comp_assoc, associator_naturality, comp_id, comp_id,
         ← tensor_comp_assoc, assoc, e₄.inv_hom_id, ← tensor_comp, e₁.inv_hom_id,
-        ← tensor_comp, e₂.inv_hom_id, e₃.inv_hom_id, tensor_id, tensor_id, comp_id]
+        ← tensor_comp, e₂.inv_hom_id, e₃.inv_hom_id, id_tensorHom_id, id_tensorHom_id, comp_id]
     · rw [assoc, associator_naturality_assoc, associator_naturality_assoc,
         ← tensor_comp, e₁.inv_hom_id, ← tensor_comp, e₂.inv_hom_id, ← tensor_comp,
-        e₃.inv_hom_id, e₄.inv_hom_id, tensor_id, tensor_id, tensor_id, comp_id]
+        e₃.inv_hom_id, e₄.inv_hom_id, id_tensorHom_id, id_tensorHom_id, id_tensorHom_id, comp_id]
   dsimp [Pentagon]
   have : ((L').obj X₁ ◁ (μ L W ε X₂ X₃).inv) ▷ (L').obj X₄ ≫
       (α_ ((L').obj X₁) ((L').obj X₂ ⊗ (L').obj X₃) ((L').obj X₄)).hom ≫
@@ -352,7 +354,7 @@ lemma triangle_aux₁ {X₁ X₂ X₃ Y₁ Y₂ Y₃ : LocalizedMonoidal L W ε}
   simp only [associator_naturality_assoc, ← tensor_comp, Iso.hom_inv_id, id_tensorHom,
     whiskerLeft_id, comp_id]
 
-lemma triangle_aux₂ {X Y  : LocalizedMonoidal L W ε} {X' Y' : C}
+lemma triangle_aux₂ {X Y : LocalizedMonoidal L W ε} {X' Y' : C}
     (e₁ : (L').obj X' ≅ X) (e₂ : (L').obj Y' ≅ Y) :
       e₁.hom ⊗ₘ (ε.hom ⊗ₘ e₂.hom) ≫ (λ_ Y).hom =
         (L').obj X' ◁ ((ε' L W ε).hom ▷ (L').obj Y' ≫
@@ -362,7 +364,7 @@ lemma triangle_aux₂ {X Y  : LocalizedMonoidal L W ε} {X' Y' : C}
   congr 3
   exact (comp_id _).symm
 
-lemma triangle_aux₃ {X Y  : LocalizedMonoidal L W ε} {X' Y' : C}
+lemma triangle_aux₃ {X Y : LocalizedMonoidal L W ε} {X' Y' : C}
     (e₁ : (L').obj X' ≅ X) (e₂ : (L').obj Y' ≅ Y) : (ρ_ X).hom ▷ _ =
       ((e₁.inv ⊗ₘ ε.inv) ⊗ₘ e₂.inv) ≫ _ ◁ e₂.hom ≫ ((μ L W ε X' (𝟙_ C)).hom ≫
         (L').map (ρ_ X').hom) ▷ Y ≫ e₁.hom ▷ Y := by
@@ -404,7 +406,7 @@ lemma triangle (X Y : LocalizedMonoidal L W ε) :
 noncomputable instance :
     MonoidalCategory (LocalizedMonoidal L W ε) where
   tensorHom_def := by intros; simp [monoidalCategoryStruct]
-  tensor_id := by intros; simp [monoidalCategoryStruct]
+  id_tensorHom_id := by intros; simp [monoidalCategoryStruct]
   tensor_comp := by intros; simp [monoidalCategoryStruct]
   whiskerLeft_id := by intros; simp [monoidalCategoryStruct]
   id_whiskerRight := by intros; simp [monoidalCategoryStruct]

@@ -27,42 +27,39 @@ def FormallyUnramified (f : R →+* S) : Prop :=
 
 lemma formallyUnramified_algebraMap [Algebra R S] :
     (algebraMap R S).FormallyUnramified ↔ Algebra.FormallyUnramified R S := by
-  delta FormallyUnramified
-  congr!
-  exact Algebra.algebra_ext _ _ fun _ ↦ rfl
+  rw [FormallyUnramified, toAlgebra_algebraMap]
 
 namespace FormallyUnramified
 
 lemma stableUnderComposition :
     StableUnderComposition FormallyUnramified := by
-  intros R S T _ _ _ f g _ _
+  intro R S T _ _ _ f g _ _
   algebraize [f, g, g.comp f]
   exact .comp R S T
 
 lemma respectsIso :
     RespectsIso FormallyUnramified := by
   refine stableUnderComposition.respectsIso ?_
-  intros R S _ _ e
+  intro R S _ _ e
   letI := e.toRingHom.toAlgebra
   exact Algebra.FormallyUnramified.of_surjective (Algebra.ofId R S) e.surjective
 
 lemma isStableUnderBaseChange :
     IsStableUnderBaseChange FormallyUnramified := by
   refine .mk respectsIso ?_
-  intros R S T _ _ _ _ _ h
-  change (algebraMap _ _).FormallyUnramified
-  rw [formallyUnramified_algebraMap] at h ⊢
+  introv H
+  rw [formallyUnramified_algebraMap] at H ⊢
   infer_instance
 
 lemma holdsForLocalizationAway :
     HoldsForLocalizationAway FormallyUnramified := by
-  intros R S _ _ _ r _
+  intro R S _ _ _ r _
   rw [formallyUnramified_algebraMap]
   exact .of_isLocalization (.powers r)
 
 lemma ofLocalizationPrime :
     OfLocalizationPrime FormallyUnramified := by
-  intros R S _ _ f H
+  intro R S _ _ f H
   algebraize [f]
   rw [FormallyUnramified, ← Algebra.unramifiedLocus_eq_univ_iff, Set.eq_univ_iff_forall]
   intro x
@@ -77,7 +74,7 @@ lemma ofLocalizationPrime :
 
 lemma ofLocalizationSpanTarget :
     OfLocalizationSpanTarget FormallyUnramified := by
-  intros R S _ _ f s hs H
+  intro R S _ _ f s hs H
   algebraize [f]
   rw [FormallyUnramified, ← Algebra.unramifiedLocus_eq_univ_iff, Set.eq_univ_iff_forall]
   intro x

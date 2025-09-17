@@ -244,7 +244,7 @@ theorem iff_union_singleton_one :
   by_cases hS : ∃ s ∈ S, s ≠ 0
   · exact iff_union_of_dvd _ _ (by simpa)
   · rw [eq_self_sdiff_zero S, eq_self_sdiff_zero (S ∪ {1}), union_diff_distrib,
-      show S \ {0} = ∅ by aesop, empty_union, show {1} \ {0} = {1} by aesop]
+      show S \ {0} = ∅ by aesop, empty_union, show {1} \ {0} = {1} by simp]
     refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩
     · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs _ ↦ ⟨1, by simp [mem_singleton_iff.1 hs]⟩, ?_⟩
       simp [adjoin_singleton_one, empty]
@@ -372,7 +372,7 @@ protected theorem finite [IsDomain B] [h₁ : Finite S] [h₂ : IsCyclotomicExte
     simp [← top_toSubmodule, ← empty, toSubmodule_bot, Submodule.one_eq_span]
   | @insert n S _ _ H =>
     by_cases hn : n = 0
-    · have : insert n S \ {0} = S \ {0} := by aesop
+    · have : insert n S \ {0} = S \ {0} := by simp_all
       rw [eq_self_sdiff_zero, this, ← eq_self_sdiff_zero] at h₂
       exact H A B
     have : IsCyclotomicExtension S A (adjoin A {b : B | ∃ n : ℕ, n ∈ S ∧ n ≠ 0 ∧ b ^ n = 1}) :=
@@ -465,6 +465,14 @@ theorem _root_.IsPrimitiveRoot.adjoin_isCyclotomicExtension {ζ : B} {n : ℕ} [
       · exact Subalgebra.algebraMap_mem _ _
       · exact Subalgebra.add_mem _ hb₁ hb₂
       · exact Subalgebra.mul_mem _ hb₁ hb₂ }
+
+variable {L} in
+theorem _root_.IsPrimitiveRoot.intermediateField_adjoin_isCyclotomicExtension
+    [Algebra.IsIntegral K L] {n : ℕ} [NeZero n] {ζ : L} (hζ : IsPrimitiveRoot ζ n) :
+    IsCyclotomicExtension {n} K (IntermediateField.adjoin K {ζ}) := by
+  change IsCyclotomicExtension {n} K (IntermediateField.adjoin K {ζ}).toSubalgebra
+  rw [IntermediateField.adjoin_simple_toSubalgebra_of_integral (IsIntegral.isIntegral ζ)]
+  exact hζ.adjoin_isCyclotomicExtension K
 
 end
 
@@ -563,10 +571,10 @@ theorem isGalois [IsCyclotomicExtension S K L] : IsGalois K L := by
   obtain ⟨i⟩ := nonempty_algEquiv_adjoin_of_isSepClosed S K L (AlgebraicClosure K)
   rw [i.transfer_normal, IntermediateField.normal_iff_forall_map_le]
   intro f x hx
-  change x ∈ IntermediateField.toSubalgebra _ at hx
-  rw [IntermediateField.toSubalgebra_map, Subalgebra.mem_map] at hx
+  rw [← IntermediateField.mem_toSubalgebra, IntermediateField.toSubalgebra_map,
+    Subalgebra.mem_map] at hx
   obtain ⟨y, hy, rfl⟩ := hx
-  change y ∈ IntermediateField.adjoin _ _ at hy
+  rw [IntermediateField.mem_toSubalgebra] at hy
   induction hy using IntermediateField.adjoin_induction with
   | mem x hx =>
     obtain ⟨n, hn, h1, h2⟩ := hx
@@ -672,6 +680,24 @@ instance isCyclotomicExtension [NeZero (n : K)] :
   · rw [← Algebra.eq_top_iff, ← SplittingField.adjoin_rootSet, eq_comm]
     exact IsCyclotomicExtension.adjoin_roots_cyclotomic_eq_adjoin_nth_roots hζ
 
+instance : IsCyclotomicExtension {0} K (CyclotomicField 0 K) where
+  exists_isPrimitiveRoot := by aesop
+  adjoin_roots x := by
+    have finrank : Module.finrank K (CyclotomicField 0 K) = 1 := by
+      have : Polynomial.IsSplittingField K K (Polynomial.cyclotomic 0 K) :=
+        Polynomial.isSplittingField_C 1
+      let e : K ≃ₗ[K] (CyclotomicField 0 K) :=
+        (Polynomial.IsSplittingField.algEquiv K (Polynomial.cyclotomic 0 K)).toLinearEquiv
+      simp [←LinearEquiv.finrank_eq e, finrank_self]
+    simp [Subalgebra.bot_eq_top_iff_finrank_eq_one.mpr finrank]
+
+omit [NeZero n]
+
+instance [CharZero K] : IsCyclotomicExtension {n} K (CyclotomicField n K) :=
+  match n with
+  | 0 => inferInstance
+  | _ + 1 => inferInstance
+
 instance [NumberField K] : NumberField (CyclotomicField n K) :=
   IsCyclotomicExtension.numberField {n} K _
 
@@ -688,13 +714,13 @@ section CyclotomicRing
 /-- If `K` is an `A`-algebra, the `A`-algebra structure on `CyclotomicField n K`.
 -/
 instance CyclotomicField.algebraBase : Algebra A (CyclotomicField n K) :=
-  SplittingField.algebra' (cyclotomic n K)
+  SplittingField.instAlgebra (cyclotomic n K)
 
 /-- Ensure there are no diamonds when `A = ℤ` but there are `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906 -/
 example : Ring.toIntAlgebra (CyclotomicField n ℚ) = CyclotomicField.algebraBase _ _ _ := rfl
 
 instance {R : Type*} [CommRing R] [Algebra R K] : IsScalarTower R K (CyclotomicField n K) :=
-  SplittingField.isScalarTower _
+  SplittingField.instIsScalarTower _
 
 instance [IsFractionRing A K] : NoZeroSMulDivisors A (CyclotomicField n K) := by
   rw [NoZeroSMulDivisors.iff_faithfulSMul, faithfulSMul_iff_algebraMap_injective,
@@ -780,12 +806,12 @@ instance isCyclotomicExtension [IsFractionRing A K] [NeZero ((n : ℕ) : A)] :
 
 instance [IsFractionRing A K] [IsDomain A] [NeZero (n : A)] :
     IsFractionRing (CyclotomicRing n A K) (CyclotomicField n K) where
-  map_units' := fun ⟨x, hx⟩ => by
+  map_units := fun ⟨x, hx⟩ => by
     rw [isUnit_iff_ne_zero]
     apply map_ne_zero_of_mem_nonZeroDivisors
     · apply adjoin_algebra_injective
     · exact hx
-  surj' x := by
+  surj x := by
     have : NeZero (n : K) := NeZero.nat_of_injective (IsFractionRing.injective A K)
     refine
       Algebra.adjoin_induction

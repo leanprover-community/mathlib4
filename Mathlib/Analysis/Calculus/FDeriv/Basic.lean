@@ -6,7 +6,7 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 import Mathlib.Analysis.Asymptotics.Lemmas
 import Mathlib.Analysis.Calculus.FDeriv.Defs
 import Mathlib.Analysis.Calculus.TangentCone
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Asymptotics
+import Mathlib.Analysis.Normed.Operator.Asymptotics
 
 /-!
 # The Fréchet derivative: basic properties
@@ -86,7 +86,7 @@ For a discussion of the definitions and their rationale, see the file docstring 
 
 To make sure that the simplifier can prove automatically that functions are differentiable, we tag
 many lemmas with the `simp` attribute, for instance those saying that the sum of differentiable
-functions is differentiable, as well as their product, their cartesian product, and so on. A notable
+functions is differentiable, as well as their product, their Cartesian product, and so on. A notable
 exception is the chain rule: we do not mark as a simp lemma the fact that, if `f` and `g` are
 differentiable, then their composition also is: `simp` would always be able to match this lemma,
 by taking `f` or `g` to be the identity. Instead, for every reasonable function (say, `exp`),
@@ -218,9 +218,6 @@ theorem HasFDerivWithinAt.mono_of_mem_nhdsWithin
     (h : HasFDerivWithinAt f f' t x) (hst : t ∈ 𝓝[s] x) :
     HasFDerivWithinAt f f' s x :=
   h.mono <| nhdsWithin_le_iff.mpr hst
-
-@[deprecated (since := "2024-10-31")]
-alias HasFDerivWithinAt.mono_of_mem := HasFDerivWithinAt.mono_of_mem_nhdsWithin
 
 nonrec theorem HasFDerivWithinAt.mono (h : HasFDerivWithinAt f f' t x) (hst : s ⊆ t) :
     HasFDerivWithinAt f f' s x :=
@@ -473,9 +470,6 @@ theorem DifferentiableWithinAt.mono_of_mem_nhdsWithin
     DifferentiableWithinAt 𝕜 f t x :=
   (h.hasFDerivWithinAt.mono_of_mem_nhdsWithin hst).differentiableWithinAt
 
-@[deprecated (since := "2024-10-31")]
-alias DifferentiableWithinAt.mono_of_mem := DifferentiableWithinAt.mono_of_mem_nhdsWithin
-
 theorem DifferentiableWithinAt.congr_nhds (h : DifferentiableWithinAt 𝕜 f s x) {t : Set E}
     (hst : 𝓝[s] x = 𝓝[t] x) : DifferentiableWithinAt 𝕜 f t x :=
   h.mono_of_mem_nhdsWithin <| hst ▸ self_mem_nhdsWithin
@@ -544,9 +538,6 @@ theorem fderivWithin_of_mem_nhdsWithin (st : t ∈ 𝓝[s] x) (ht : UniqueDiffWi
     (h : DifferentiableWithinAt 𝕜 f t x) : fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x :=
   ((DifferentiableWithinAt.hasFDerivWithinAt h).mono_of_mem_nhdsWithin st).fderivWithin ht
 
-@[deprecated (since := "2024-10-31")]
-alias fderivWithin_of_mem := fderivWithin_of_mem_nhdsWithin
-
 theorem fderivWithin_subset (st : s ⊆ t) (ht : UniqueDiffWithinAt 𝕜 s x)
     (h : DifferentiableWithinAt 𝕜 f t x) : fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x :=
   fderivWithin_of_mem_nhdsWithin (nhdsWithin_mono _ st self_mem_nhdsWithin) ht h
@@ -606,6 +597,55 @@ nonrec theorem DifferentiableAt.isBigO_sub {f : E → F} {x₀ : E} (h : Differe
   h.hasFDerivAt.isBigO_sub
 
 end FDerivProperties
+
+/-! ### Being differentiable on a union of open sets can be tested on each set -/
+section differentiableOn_union
+
+/-- If a function is differentiable on two open sets, it is also differentiable on their union. -/
+lemma DifferentiableOn.union_of_isOpen
+    (hf : DifferentiableOn 𝕜 f s) (hf' : DifferentiableOn 𝕜 f t)
+    (hs : IsOpen s) (ht : IsOpen t) :
+    DifferentiableOn 𝕜 f (s ∪ t) := by
+  intro x hx
+  obtain (hx | hx) := hx
+  · exact (hf x hx).differentiableAt (hs.mem_nhds hx) |>.differentiableWithinAt
+  · exact (hf' x hx).differentiableAt (ht.mem_nhds hx) |>.differentiableWithinAt
+
+/-- A function is differentiable on two open sets iff it is differentiable on their union. -/
+lemma differentiableOn_union_iff_of_isOpen (hs : IsOpen s) (ht : IsOpen t) :
+    DifferentiableOn 𝕜 f (s ∪ t) ↔ DifferentiableOn 𝕜 f s ∧ DifferentiableOn 𝕜 f t :=
+  ⟨fun h ↦ ⟨h.mono subset_union_left, h.mono subset_union_right⟩,
+    fun ⟨hfs, hft⟩ ↦ DifferentiableOn.union_of_isOpen hfs hft hs ht⟩
+
+lemma differentiable_of_differentiableOn_union_of_isOpen (hf : DifferentiableOn 𝕜 f s)
+    (hf' : DifferentiableOn 𝕜 f t) (hst : s ∪ t = univ) (hs : IsOpen s) (ht : IsOpen t) :
+    Differentiable 𝕜 f := by
+  rw [← differentiableOn_univ, ← hst]
+  exact hf.union_of_isOpen hf' hs ht
+
+/-- If a function is differentiable on open sets `s i`, it is differentiable on their union. -/
+lemma DifferentiableOn.iUnion_of_isOpen {ι : Type*} {s : ι → Set E}
+    (hf : ∀ i : ι, DifferentiableOn 𝕜 f (s i)) (hs : ∀ i, IsOpen (s i)) :
+    DifferentiableOn 𝕜 f (⋃ i, s i) := by
+  rintro x ⟨si, ⟨i, rfl⟩, hxsi⟩
+  exact (hf i).differentiableAt ((hs i).mem_nhds hxsi) |>.differentiableWithinAt
+
+/-- A function is differentiable on a union of open sets `s i`
+iff it is differentiable on each `s i`. -/
+lemma differentiableOn_iUnion_iff_of_isOpen {ι : Type*} {s : ι → Set E}
+    (hs : ∀ i, IsOpen (s i)) :
+    DifferentiableOn 𝕜 f (⋃ i, s i) ↔ ∀ i : ι, DifferentiableOn 𝕜 f (s i) :=
+  ⟨fun h i ↦ h.mono <| subset_iUnion_of_subset i fun _ a ↦ a,
+   fun h ↦ DifferentiableOn.iUnion_of_isOpen h hs⟩
+
+lemma differentiable_of_differentiableOn_iUnion_of_isOpen {ι : Type*} {s : ι → Set E}
+    (hf : ∀ i : ι, DifferentiableOn 𝕜 f (s i))
+    (hs : ∀ i, IsOpen (s i)) (hs' : ⋃ i, s i = univ) :
+    Differentiable 𝕜 f := by
+  rw [← differentiableOn_univ, ← hs']
+  exact DifferentiableOn.iUnion_of_isOpen hf hs
+
+end differentiableOn_union
 
 section Continuous
 

@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Data.Nat.Cast.Field
-import Mathlib.GroupTheory.Abelianization
-import Mathlib.GroupTheory.GroupAction.CardCommute
+import Mathlib.GroupTheory.Abelianization.Finite
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
@@ -196,7 +194,7 @@ theorem commProb_reciprocal (n : ℕ) :
   · have := div_two_lt h0
     rw [reciprocalFactors_even h0 h2, commProb_cons, commProb_reciprocal (n / 2),
         commProb_odd (by decide)]
-    field_simp [h0, h2.two_dvd]
+    simp [field, h2.two_dvd]
     norm_num
   · have := div_four_lt h0 h1
     rw [reciprocalFactors_odd h1 h2, commProb_cons, commProb_reciprocal (n / 4 + 1)]

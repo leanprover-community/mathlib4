@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
 import Mathlib.Topology.Algebra.MulAction
+import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.MetricSpace.Lipschitz
@@ -44,13 +45,10 @@ in the two arguments. -/
 class LipschitzMul [Monoid β] : Prop where
   lipschitz_mul : ∃ C, LipschitzWith C fun p : β × β => p.1 * p.2
 
-/-- The Lipschitz constant of an `AddMonoid` `β` satisfying `LipschitzAdd` -/
-def LipschitzAdd.C [AddMonoid β] [_i : LipschitzAdd β] : ℝ≥0 := Classical.choose _i.lipschitz_add
-
 variable [Monoid β]
 
 /-- The Lipschitz constant of a monoid `β` satisfying `LipschitzMul` -/
-@[to_additive existing] -- Porting note: had to add `LipschitzAdd.C`. to_additive silently failed
+@[to_additive /-- The Lipschitz constant of an `AddMonoid` `β` satisfying `LipschitzAdd` -/]
 def LipschitzMul.C [_i : LipschitzMul β] : ℝ≥0 := Classical.choose _i.lipschitz_mul
 
 variable {β}

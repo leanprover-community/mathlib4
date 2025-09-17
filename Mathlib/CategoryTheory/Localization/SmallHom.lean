@@ -50,7 +50,6 @@ lemma hasSmallLocalizedHom_iff :
     HasSmallLocalizedHom.{w} W X Y ↔ Small.{w} (L.obj X ⟶ L.obj Y) := by
   constructor
   · intro h
-    have := h.small
     exact small_map (homEquiv W W.Q L).symm
   · intro h
     exact ⟨small_map (homEquiv W W.Q L)⟩
@@ -72,12 +71,12 @@ lemma hasSmallLocalizedHom_iff_of_isos {X' Y' : C} (e : X ≅ X') (e' : Y ≅ Y'
   exact small_congr (Iso.homCongr (W.Q.mapIso e) (W.Q.mapIso e'))
 
 variable (X) in
-lemma hasSmallLocalizedHom_iff_target {Y Y' : C} (f : Y ⟶  Y') (hf : W f):
+lemma hasSmallLocalizedHom_iff_target {Y Y' : C} (f : Y ⟶ Y') (hf : W f) :
     HasSmallLocalizedHom.{w} W X Y ↔ HasSmallLocalizedHom.{w} W X Y' := by
   simp only [hasSmallLocalizedHom_iff W W.Q]
   exact small_congr (Iso.homCongr (Iso.refl _) (Localization.isoOfHom W.Q W f hf))
 
-lemma hasSmallLocalizedHom_iff_source {X' : C} (f : X ⟶  X') (hf : W f) (Y : C) :
+lemma hasSmallLocalizedHom_iff_source {X' : C} (f : X ⟶ X') (hf : W f) (Y : C) :
     HasSmallLocalizedHom.{w} W X Y ↔ HasSmallLocalizedHom.{w} W X' Y := by
   simp only [hasSmallLocalizedHom_iff W W.Q]
   exact small_congr (Iso.homCongr (Localization.isoOfHom W.Q W f hf) (Iso.refl _))
@@ -153,7 +152,6 @@ lemma equiv_comp (L : C ⥤ D) [L.IsLocalization W] {X Y Z : C} [HasSmallLocaliz
   obtain ⟨β, rfl⟩ := (equivShrink _).surjective β
   dsimp [equiv, comp]
   rw [Equiv.symm_apply_apply]
-  erw [(equivShrink _).symm_apply_apply, (equivShrink _).symm_apply_apply]
   simp only [homEquiv_refl, homEquiv_comp]
 
 section
@@ -167,7 +165,7 @@ lemma mk_comp_mk [HasSmallLocalizedHom.{w} W X Y] [HasSmallLocalizedHom.{w} W Y 
 
 @[simp]
 lemma comp_mk_id [HasSmallLocalizedHom.{w} W X Y] [HasSmallLocalizedHom.{w} W Y Y]
-    (α : SmallHom.{w} W X Y)  :
+    (α : SmallHom.{w} W X Y) :
     α.comp (mk W (𝟙 Y)) = α :=
   (equiv W W.Q).injective (by simp [equiv_comp])
 

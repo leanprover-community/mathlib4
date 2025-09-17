@@ -79,7 +79,7 @@ theorem lifts_iff_coeffs_subset_range (p : S[X]) :
   · intro h n
     by_cases hn : p.coeff n = 0
     · exact ⟨0, by simp [hn]⟩
-    · exact h <| coeff_mem_coeffs _ _ hn
+    · exact h <| coeff_mem_coeffs hn
 
 /-- If `(r : R)`, then `C (f r)` lifts. -/
 theorem C_mem_lifts (f : R →+* S) (r : R) : C (f r) ∈ lifts f :=
@@ -199,16 +199,6 @@ end Ring
 section Algebra
 
 variable {R : Type u} [CommSemiring R] {S : Type v} [Semiring S] [Algebra R S]
-
-/-- The map `R[X] → S[X]` as an algebra homomorphism. -/
-def mapAlg (R : Type u) [CommSemiring R] (S : Type v) [Semiring S] [Algebra R S] :
-    R[X] →ₐ[R] S[X] :=
-  @aeval _ S[X] _ _ _ (X : S[X])
-
-/-- `mapAlg` is the morphism induced by `R → S`. -/
-theorem mapAlg_eq_map (p : R[X]) : mapAlg R S p = map (algebraMap R S) p := by
-  simp only [mapAlg, aeval_def, eval₂_eq_sum, map, algebraMap_apply, RingHom.coe_comp]
-  ext; congr
 
 /-- A polynomial `p` lifts if and only if it is in the image of `mapAlg`. -/
 theorem mem_lifts_iff_mem_alg (R : Type u) [CommSemiring R] {S : Type v} [Semiring S] [Algebra R S]

@@ -48,6 +48,18 @@ theorem abs_le_right_of_norm (m n : ℤ) : |m| ≤ ‖![n, m]‖ := by
   rw [Int.abs_eq_natAbs]
   exact Preorder.le_refl _
 
+lemma abs_norm_eq_max_natAbs (n : ℕ) : ‖![1, (n + 1 : ℤ)]‖ = n + 1 := by
+  simp only [EisensteinSeries.norm_eq_max_natAbs, Matrix.cons_val_zero, Matrix.cons_val_one,
+    Matrix.cons_val_fin_one]
+  norm_cast
+  simp
+
+lemma abs_norm_eq_max_natAbs_neg (n : ℕ) : ‖![1, -(n + 1 : ℤ)]‖ = n + 1 := by
+  simp only [EisensteinSeries.norm_eq_max_natAbs, Matrix.cons_val_zero, Matrix.cons_val_one,
+    Matrix.cons_val_fin_one]
+  norm_cast
+  simp
+
 section bounding_functions
 
 /-- Auxiliary function used for bounding Eisenstein series, defined as
@@ -193,7 +205,7 @@ lemma summable_one_div_norm_rpow {k : ℝ} (hk : 2 < k) :
 /-- If the inverse of a function `isBigO` to `(|(n : ℝ)| ^ a)⁻¹` for `1 < a`, then the function is
 Summable. -/
 lemma summable_inv_of_isBigO_rpow_inv {α : Type*} [NormedField α] [CompleteSpace α]
-    {f  : ℤ → α} {a : ℝ} (hab : 1 < a)
+    {f : ℤ → α} {a : ℝ} (hab : 1 < a)
     (hf : (fun n ↦ (f n)⁻¹) =O[cofinite] fun n ↦ (|(n : ℝ)| ^ a)⁻¹) :
     Summable fun n ↦ (f n)⁻¹ :=
   summable_of_isBigO

@@ -88,7 +88,7 @@ include hfg
 /-- If `f(p(t) = g(q(t))` for two paths `p` and `q`, then the induced path homotopy classes
 `f(p)` and `g(p)` are the same as well, despite having a priori different types -/
 theorem heq_path_of_eq_image :
-    HEq ((πₘ (TopCat.ofHom f)).map ⟦p⟧) ((πₘ (TopCat.ofHom g)).map ⟦q⟧) := by
+    (πₘ (TopCat.ofHom f)).map ⟦p⟧ ≍ (πₘ (TopCat.ofHom g)).map ⟦q⟧ := by
   simp only [map_eq, ← Path.Homotopic.map_lift]; apply Path.Homotopic.hpath_hext; exact hfg
 
 private theorem start_path : f x₀ = g x₂ := by convert hfg 0 <;> simp only [Path.source]
@@ -231,7 +231,7 @@ open scoped ContinuousMap
 def equivOfHomotopyEquiv (hequiv : X ≃ₕ Y) : πₓ X ≌ πₓ Y := by
   apply CategoryTheory.Equivalence.mk (πₘ (TopCat.ofHom hequiv.toFun) : πₓ X ⥤ πₓ Y)
     (πₘ (TopCat.ofHom hequiv.invFun) : πₓ Y ⥤ πₓ X) <;>
-    simp only [Grpd.id_to_functor]
+    simp only [← Grpd.id_eq_id]
   · convert (asIso (homotopicMapsNatIso hequiv.left_inv.some)).symm
     exacts [((π).map_id X).symm, ((π).map_comp _ _).symm]
   · convert asIso (homotopicMapsNatIso hequiv.right_inv.some)

@@ -21,7 +21,7 @@ This file deals with the set of principal ideals of a `CommRing R`.
   the submonoid of principal ideals of `R`.
 
 * `Ideal.associatesNonZeroDivisorsMulEquivIsPrincipal`: the `MulEquiv` between the monoid of
-`Associates R⁰` and the submonoid of non-zero-divisors principal ideals of `R`.
+  `Associates R⁰` and the submonoid of non-zero-divisors principal ideals of `R`.
 -/
 
 variable {R : Type*} [CommRing R]
@@ -152,5 +152,29 @@ noncomputable def associatesNonZeroDivisorsMulEquivIsPrincipal :
     rw [Subtype.ext_iff, Subtype.ext_iff]
     erw [associatesNonZeroDivisorsEquivIsPrincipal_mul]
     rfl
+
+/-- A nonzero principal ideal in an integral domain `R` is isomorphic to `R` as a module.
+The isomorphism we choose here sends `1` to the generator chosen by `Ideal.generator`. -/
+noncomputable def isoBaseOfIsPrincipal {I : Ideal R}
+    [hprinc : I.IsPrincipal] (hI : I ≠ ⊥) : R ≃ₗ[R] I :=
+  letI x := IsPrincipal.generator I
+  have hx : x ≠ 0 := by
+    intro hx'
+    rw [← IsPrincipal.eq_bot_iff_generator_eq_zero] at hx'
+    exact hI hx'
+  (LinearEquiv.toSpanNonzeroSingleton R R x hx).trans
+    (LinearEquiv.ofEq (Submodule.span R {x}) I (IsPrincipal.span_singleton_generator I))
+
+@[simp]
+theorem isoBaseOfIsPrincipal_apply {I : Ideal R} [hprinc : I.IsPrincipal] (hI : I ≠ ⊥) (x : R) :
+    (Ideal.isoBaseOfIsPrincipal hI) x = x * IsPrincipal.generator I :=
+  rfl
+
+theorem subtype_isoBaseOfIsPrincipal_eq_mul {I : Ideal R}
+    [hprinc : I.IsPrincipal] (h : I ≠ ⊥) :
+    Submodule.subtype I ∘ₗ ↑(Ideal.isoBaseOfIsPrincipal h) =
+    LinearMap.mul R R (IsPrincipal.generator I) := by
+  ext
+  simp
 
 end Ideal

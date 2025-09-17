@@ -26,7 +26,7 @@ namespace NonUnitalStarSubalgebra
 
 section Semiring
 
-variable {R A : Type*} [CommSemiring R] [TopologicalSpace A] [Star A]
+variable {R A B : Type*} [CommSemiring R] [TopologicalSpace A] [Star A]
 variable [NonUnitalSemiring A] [Module R A] [IsTopologicalSemiring A] [ContinuousStar A]
 variable [ContinuousConstSMul R A]
 
@@ -58,6 +58,31 @@ See note [reducible non-instances] -/
 abbrev nonUnitalCommSemiringTopologicalClosure [T2Space A] (s : NonUnitalStarSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommSemiring s.topologicalClosure :=
   s.toNonUnitalSubalgebra.nonUnitalCommSemiringTopologicalClosure hs
+
+variable [TopologicalSpace B] [Star B] [NonUnitalSemiring B] [Module R B]
+    [IsTopologicalSemiring B] [ContinuousConstSMul R B] [ContinuousStar B]
+    (s : NonUnitalStarSubalgebra R A) {φ : A →⋆ₙₐ[R] B}
+
+lemma map_topologicalClosure_le (hφ : Continuous φ) :
+    map φ s.topologicalClosure ≤ (map φ s).topologicalClosure :=
+  image_closure_subset_closure_image hφ
+
+lemma topologicalClosure_map_le (hφ : IsClosedMap φ) :
+    (map φ s).topologicalClosure ≤ map φ s.topologicalClosure :=
+  hφ.closure_image_subset _
+
+lemma topologicalClosure_map (hφ : IsClosedMap φ) (hφ' : Continuous φ) :
+    (map φ s).topologicalClosure = map φ s.topologicalClosure :=
+  SetLike.coe_injective <| hφ.closure_image_eq_of_continuous hφ' _
+
+open NonUnitalStarAlgebra in
+-- we have to shadow the variables because some things currently require `StarRing`
+lemma topologicalClosure_adjoin_le_centralizer_centralizer (R : Type*) {A : Type*}
+    [CommSemiring R] [StarRing R] [TopologicalSpace A] [NonUnitalSemiring A] [StarRing A]
+    [Module R A] [IsTopologicalSemiring A] [ContinuousStar A] [ContinuousConstSMul R A]
+    [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A] [T2Space A] (s : Set A) :
+    (adjoin R s).topologicalClosure ≤ centralizer R (centralizer R s) :=
+  topologicalClosure_minimal _ (adjoin_le_centralizer_centralizer R s) (Set.isClosed_centralizer _)
 
 end Semiring
 
@@ -96,11 +121,11 @@ def elemental (x : A) : NonUnitalStarSubalgebra R A :=
 
 namespace elemental
 
-@[aesop safe apply (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike])]
 theorem self_mem (x : A) : x ∈ elemental R x :=
   le_topologicalClosure _ <| self_mem_adjoin_singleton R x
 
-@[aesop safe apply (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike])]
 theorem star_self_mem (x : A) : star x ∈ elemental R x :=
   le_topologicalClosure _ <| star_self_mem_adjoin_singleton R x
 
@@ -114,7 +139,7 @@ theorem le_iff_mem {x : A} {s : NonUnitalStarSubalgebra R A} (hs : IsClosed (s :
     elemental R x ≤ s ↔ x ∈ s :=
   ⟨fun h ↦ h (self_mem R x), fun h ↦ le_of_mem hs h⟩
 
-instance isClosed (x : A) : IsClosed (elemental R x : Set A) :=
+theorem isClosed (x : A) : IsClosed (elemental R x : Set A) :=
   isClosed_topologicalClosure _
 
 instance [T2Space A] {x : A} [IsStarNormal x] : NonUnitalCommSemiring (elemental R x) :=
@@ -145,6 +170,10 @@ theorem isClosedEmbedding_coe (x : A) : Topology.IsClosedEmbedding ((↑) : elem
   eq_induced := rfl
   injective := Subtype.coe_injective
   isClosed_range := by simpa using isClosed R x
+
+lemma le_centralizer_centralizer [T2Space A] (x : A) :
+    elemental R x ≤ centralizer R (centralizer R {x}) :=
+  topologicalClosure_adjoin_le_centralizer_centralizer ..
 
 end elemental
 

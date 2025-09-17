@@ -1,4 +1,3 @@
-import Mathlib.Tactic.FunProp.Differentiable
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
@@ -10,10 +9,10 @@ noncomputable
 def foo (x : ℝ) := x * (Real.log x) ^ 2 - Real.exp x / x
 
 example : ContinuousOn foo {0}ᶜ := by
-  unfold foo; fun_prop (disch:=aesop)
+  unfold foo; fun_prop (disch := aesop)
 
 example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) y := by
-  fun_prop (disch:=aesop)
+  fun_prop (disch := aesop)
 
 
 example : DifferentiableOn ℝ foo {0}ᶜ := by
@@ -80,5 +79,5 @@ example : AEMeasurable T := by
 private theorem t1 : (5: ℕ) + (1 : ℕ∞) ≤ (12 : WithTop ℕ∞) := by norm_cast
 
 example {f : ℝ → ℝ} (hf : ContDiff ℝ 12 f) :
-    Differentiable ℝ (iteratedDeriv 5 (fun x => f (2*(f (x + x))) + x)) := by
-  fun_prop (disch:=(exact t1))
+    Differentiable ℝ (iteratedDeriv 5 (fun x ↦ f (2 * (f (x + x))) + x)) := by
+  fun_prop (disch := (exact t1))

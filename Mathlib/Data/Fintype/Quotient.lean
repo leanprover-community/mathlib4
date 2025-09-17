@@ -58,7 +58,7 @@ lemma list_ind {l : List ι} {C : (∀ i ∈ l, Quotient (S i)) → Prop}
   |     [] => cast (congr_arg _ (funext₂ nofun)) (f nofun)
   | i :: l => by
     rw [← List.Pi.cons_eta q]
-    induction' List.Pi.head q using Quotient.ind with a
+    induction List.Pi.head q using Quotient.ind with | _ a
     refine @list_ind _ (fun q ↦ C (List.Pi.cons _ _ ⟦a⟧ q)) ?_ (List.Pi.tail q)
     intro as
     rw [List.Pi.cons_map a as (fun i ↦ Quotient.mk (S i))]
@@ -153,7 +153,7 @@ def finChoiceEquiv :
 def finHRecOn {C : (∀ i, Quotient (S i)) → Sort*}
     (q : ∀ i, Quotient (S i))
     (f : ∀ a : ∀ i, α i, C (⟦a ·⟧))
-    (h : ∀ (a b : ∀ i, α i), (∀ i, a i ≈ b i) → HEq (f a) (f b)) :
+    (h : ∀ (a b : ∀ i, α i), (∀ i, a i ≈ b i) → f a ≍ f b) :
     C q :=
   eval_finChoice q ▸ (finChoice q).hrecOn f h
 
@@ -165,7 +165,7 @@ def finRecOn {C : (∀ i, Quotient (S i)) → Sort*}
     (h : ∀ (a b : ∀ i, α i) (h : ∀ i, a i ≈ b i),
       Eq.ndrec (f a) (funext fun i ↦ Quotient.sound (h i)) = f b) :
     C q :=
-  finHRecOn q f (rec_heq_iff_heq.mp <| heq_of_eq <| h · · ·)
+  finHRecOn q f (eqRec_heq_iff_heq.mp <| heq_of_eq <| h · · ·)
 
 @[simp]
 lemma finHRecOn_mk {C : (∀ i, Quotient (S i)) → Sort*}

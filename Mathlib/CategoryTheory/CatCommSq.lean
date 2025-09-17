@@ -39,6 +39,16 @@ variable (T : C₁ ⥤ C₂) (L : C₁ ⥤ C₃) (R : C₂ ⥤ C₄) (B : C₃ �
 
 namespace CatCommSq
 
+/-- The vertical identity `CatCommSq` -/
+@[simps!]
+def vId : CatCommSq T (𝟭 C₁) (𝟭 C₂) T where
+  iso := (Functor.leftUnitor _) ≪≫ (Functor.rightUnitor _).symm
+
+/-- The horizontal identity `CatCommSq` -/
+@[simps!]
+def hId : CatCommSq (𝟭 C₁) L L (𝟭 C₃) where
+  iso := (Functor.rightUnitor _) ≪≫ (Functor.leftUnitor _).symm
+
 @[reassoc (attr := simp)]
 lemma iso_hom_naturality [h : CatCommSq T L R B] {x y : C₁} (f : x ⟶ y) :
     R.map (T.map f) ≫ (iso T L R B).hom.app y = (iso T L R B).hom.app x ≫ B.map (L.map f) :=
@@ -58,6 +68,14 @@ def hComp (T₁ : C₁ ⥤ C₂) (T₂ : C₂ ⥤ C₃) (V₁ : C₁ ⥤ C₄) (
     (associator _ _ _).symm ≪≫ isoWhiskerRight (iso T₁ V₁ V₂ B₁) B₂ ≪≫
     associator _ _ _
 
+/-- A variant of `hComp` where both squares can be explicitly provided. -/
+abbrev hComp' {T₁ : C₁ ⥤ C₂} {T₂ : C₂ ⥤ C₃} {V₁ : C₁ ⥤ C₄} {V₂ : C₂ ⥤ C₅} {V₃ : C₃ ⥤ C₆}
+    {B₁ : C₄ ⥤ C₅} {B₂ : C₅ ⥤ C₆} (S₁ : CatCommSq T₁ V₁ V₂ B₁) (S₂ : CatCommSq T₂ V₂ V₃ B₂) :
+    CatCommSq (T₁ ⋙ T₂) V₁ V₃ (B₁ ⋙ B₂) :=
+  letI := S₁
+  letI := S₂
+  hComp _ _ _ V₂ _ _ _
+
 /-- Vertical composition of 2-commutative squares -/
 @[simps!]
 def vComp (L₁ : C₁ ⥤ C₂) (L₂ : C₂ ⥤ C₃) (H₁ : C₁ ⥤ C₄) (H₂ : C₂ ⥤ C₅) (H₃ : C₃ ⥤ C₆)
@@ -66,6 +84,14 @@ def vComp (L₁ : C₁ ⥤ C₂) (L₂ : C₂ ⥤ C₃) (H₁ : C₁ ⥤ C₄) (
   iso := (associator _ _ _).symm ≪≫ isoWhiskerRight (iso H₁ L₁ R₁ H₂) R₂ ≪≫
       associator _ _ _ ≪≫ isoWhiskerLeft L₁ (iso H₂ L₂ R₂ H₃) ≪≫
       (associator _ _ _).symm
+
+/-- A variant of `vComp` where both squares can be explicitly provided. -/
+abbrev vComp' {L₁ : C₁ ⥤ C₂} {L₂ : C₂ ⥤ C₃} {H₁ : C₁ ⥤ C₄} {H₂ : C₂ ⥤ C₅} {H₃ : C₃ ⥤ C₆}
+    {R₁ : C₄ ⥤ C₅} {R₂ : C₅ ⥤ C₆} (S₁ : CatCommSq H₁ L₁ R₁ H₂) (S₂ : CatCommSq H₂ L₂ R₂ H₃) :
+    CatCommSq H₁ (L₁ ⋙ L₂) (R₁ ⋙ R₂) H₃ :=
+  letI := S₁
+  letI := S₂
+  vComp _ _ _ H₂ _ _ _
 
 section
 
@@ -128,7 +154,6 @@ lemma vInv_vInv (h : CatCommSq T L.functor R.functor B) :
   rw [vInv_iso_inv_app]
   rw [← cancel_mono (B.map (L.functor.map (NatTrans.app L.unitIso.hom X)))]
   rw [← Functor.comp_map]
-  erw [← (iso T L.functor R.functor B).hom.naturality (L.unitIso.hom.app X)]
   dsimp
   simp only [Functor.map_comp, Equivalence.fun_inv_map, Functor.comp_obj,
     Functor.id_obj, assoc, Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app, comp_id]

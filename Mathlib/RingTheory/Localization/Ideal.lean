@@ -291,7 +291,7 @@ lemma _root_.NoZeroSMulDivisors_of_isLocalization (Rₚ Sₚ : Type*) [CommRing 
     Submonoid.map_le_of_le_comap _ <| hM.trans
       (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _
         (FaithfulSMul.algebraMap_injective _ _))
-  have : IsDomain Sₚ := IsLocalization.isDomain_of_le_nonZeroDivisors S e
+  have : IsDomain Sₚ := IsLocalization.isDomain_of_le_nonZeroDivisors _ e
   have : algebraMap Rₚ Sₚ = IsLocalization.map (T := Algebra.algebraMapSubmonoid S M) Sₚ
     (algebraMap R S) (Submonoid.le_comap_map M) := by
     apply IsLocalization.ringHom_ext M
@@ -311,10 +311,10 @@ lemma of_surjective {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R' S']
     (f : R →+* R') (hf : Function.Surjective f) (g : S →+* S') (hg : Function.Surjective g)
     (H : g.comp (algebraMap R S) = (algebraMap _ _).comp f)
     (H' : RingHom.ker g ≤ (RingHom.ker f).map (algebraMap R S)) : IsLocalization (M.map f) S' where
-  map_units' := by
+  map_units := by
     rintro ⟨_, y, hy, rfl⟩
     simpa only [← RingHom.comp_apply, H] using (IsLocalization.map_units S ⟨y, hy⟩).map g
-  surj' := by
+  surj := by
     intro z
     obtain ⟨z, rfl⟩ := hg z
     obtain ⟨⟨r, s⟩, e⟩ := IsLocalization.surj M z
@@ -328,6 +328,12 @@ lemma of_surjective {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R' S']
       ← IsLocalization.mk'_one (M := M)] at e
     obtain ⟨r, hr, hr'⟩ := (IsLocalization.mk'_mem_map_algebraMap_iff M _ _ _ _).mp (H' e)
     exact ⟨⟨_, r, hr, rfl⟩, by simpa [sub_eq_zero, mul_sub] using hr'⟩
+
+open Algebra in
+instance {P : Ideal R} [P.IsPrime] [IsDomain R] [IsDomain S] [FaithfulSMul R S] :
+    IsDomain (Localization (algebraMapSubmonoid S P.primeCompl)) :=
+  isDomain_localization (map_le_nonZeroDivisors_of_injective _
+    (FaithfulSMul.algebraMap_injective R S) P.primeCompl_le_nonZeroDivisors)
 
 end CommRing
 

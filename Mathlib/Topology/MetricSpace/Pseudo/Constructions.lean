@@ -41,9 +41,6 @@ def Topology.IsInducing.comapPseudoMetricSpace {α β : Type*} [TopologicalSpace
     [m : PseudoMetricSpace β] {f : α → β} (hf : IsInducing f) : PseudoMetricSpace α :=
   .replaceTopology (.induced f m) hf.eq_induced
 
-@[deprecated (since := "2024-10-28")]
-alias Inducing.comapPseudoMetricSpace := IsInducing.comapPseudoMetricSpace
-
 /-- Pull back a pseudometric space structure by a uniform inducing map. This is a version of
 `PseudoMetricSpace.induced` useful in case if the domain already has a `UniformSpace`
 structure. -/
@@ -158,11 +155,11 @@ lemma Prod.dist_eq {x y : α × β} : dist x y = max (dist x.1 y.1) (dist x.2 y.
 
 @[simp]
 lemma dist_prod_same_left {x : α} {y₁ y₂ : β} : dist (x, y₁) (x, y₂) = dist y₁ y₂ := by
-  simp [Prod.dist_eq, dist_nonneg]
+  simp [Prod.dist_eq]
 
 @[simp]
 lemma dist_prod_same_right {x₁ x₂ : α} {y : β} : dist (x₁, y) (x₂, y) = dist x₁ x₂ := by
-  simp [Prod.dist_eq, dist_nonneg]
+  simp [Prod.dist_eq]
 
 lemma ball_prod_same (x : α) (y : β) (r : ℝ) : ball x r ×ˢ ball y r = ball (x, y) r :=
   ext fun z => by simp [Prod.dist_eq]

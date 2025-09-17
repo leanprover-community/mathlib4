@@ -58,7 +58,7 @@ properties of Hausdorff dimension.
   smooth map is dense provided that the dimension of the domain is strictly less than the dimension
   of the codomain.
 
-## Notations
+## Notation
 
 We use the following notation localized in `MeasureTheory`. It is defined in
 `MeasureTheory.Measure.Hausdorff`.
@@ -139,6 +139,21 @@ theorem le_dimH_of_hausdorffMeasure_ne_zero {s : Set X} {d : ℝ≥0} (h : μH[d
 theorem dimH_of_hausdorffMeasure_ne_zero_ne_top {d : ℝ≥0} {s : Set X} (h : μH[d] s ≠ 0)
     (h' : μH[d] s ≠ ∞) : dimH s = d :=
   le_antisymm (dimH_le_of_hausdorffMeasure_ne_top h') (le_dimH_of_hausdorffMeasure_ne_zero h)
+
+/-- The Hausdorff dimension of a set `s` is the infimum of all `d : ℝ≥0` such that the
+`d`-dimensional Hausdorff measure of `s` is zero. This infimum is taken in `ℝ≥0∞`.
+This gives an equivalent definition of the Hausdorff dimension. -/
+theorem dimH_eq_iInf (s : Set X) : dimH s = ⨅ (d : ℝ≥0) (_ : μH[d] s = 0), (d : ℝ≥0∞) := by
+  apply le_antisymm
+  · rw [dimH_def]
+    simp only [le_iInf_iff, iSup_le_iff, ENNReal.coe_le_coe]
+    intro i hi j hj
+    by_contra! hij
+    simpa [hi, hj] using hausdorffMeasure_mono hij.le s
+  · by_contra! h
+    rcases ENNReal.lt_iff_exists_nnreal_btwn.1 h with ⟨d', hdim_lt, hlt⟩
+    have h0 : μH[d'] s = 0 := hausdorffMeasure_of_dimH_lt hdim_lt
+    exact hlt.not_ge (iInf₂_le d' h0)
 
 end Measurable
 
@@ -462,6 +477,14 @@ theorem dimH_univ : dimH (univ : Set ℝ) = 1 := by
   rw [dimH_univ_eq_finrank ℝ, Module.finrank_self, Nat.cast_one]
 
 variable {E}
+
+/-- The Hausdorff dimension of any set in a finite-dimensional real normed space is finite. -/
+theorem dimH_lt_top (s : Set E) : dimH s < ⊤ := by calc
+  dimH s ≤ dimH (univ : Set E) := dimH_mono (subset_univ s)
+  _ = finrank ℝ E := dimH_univ_eq_finrank E
+  _ < ⊤ := by simp
+
+theorem dimH_ne_top (s : Set E) : dimH s ≠ ⊤ := (dimH_lt_top s).ne
 
 lemma hausdorffMeasure_of_finrank_lt [MeasurableSpace E] [BorelSpace E] {d : ℝ}
     (hd : finrank ℝ E < d) : (μH[d] : Measure E) = 0 := by
