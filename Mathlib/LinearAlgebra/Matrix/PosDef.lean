@@ -28,6 +28,9 @@ of quadratic forms. Most results require `𝕜 = ℝ` or `ℂ`.
   definite iff it has the form `Bᴴ * B` for some _invertible_ `B`.
 * `Matrix.PosSemidef.sqrt` : the unique positive semidefinite square root of a positive semidefinite
   matrix. (See `Matrix.PosSemidef.eq_sqrt_of_sq_eq` for the proof of uniqueness.)
+* `Matrix.PosSemidef.fromBlocks₁₁` and `Matrix.PosSemidef.fromBlocks₂₂`: If a matrix `A` is
+  positive definite, then `[A B; Bᴴ D]` is positive semidefinite if and only if `D - Bᴴ A⁻¹ B` is
+  positive semidefinite.
 -/
 
 open scoped ComplexOrder
