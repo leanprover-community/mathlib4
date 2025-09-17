@@ -43,7 +43,7 @@ instance hasColimitsOfShape_skeleton [HasColimitsOfShape J C] : HasColimitsOfSha
   hasColimitsOfShape_of_hasColimitsOfShape_createsColimitsOfShape (fromSkeleton C)
 
 instance hasColimitsOfSize_skeleton [HasColimitsOfSize.{w, w'} C] :
-    HasColimitsOfSize.{w,w'} (Skeleton C) :=
+    HasColimitsOfSize.{w, w'} (Skeleton C) :=
   hasColimits_of_hasColimits_createsColimits (fromSkeleton C)
 
 example [HasColimits C] : HasColimits (Skeleton C) := by infer_instance
