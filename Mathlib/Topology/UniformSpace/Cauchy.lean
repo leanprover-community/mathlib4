@@ -423,7 +423,7 @@ theorem cauchySeq_tendsto_of_complete [Preorder β] [CompleteSpace α] {u : β �
     (H : CauchySeq u) : ∃ x, Tendsto u atTop (𝓝 x) :=
   CompleteSpace.complete H
 
-/-- If `K` is a complete subset, then any cauchy sequence in `K` converges to a point in `K` -/
+/-- If `K` is a complete subset, then any Cauchy sequence in `K` converges to a point in `K` -/
 theorem cauchySeq_tendsto_of_isComplete [Preorder β] {K : Set α} (h₁ : IsComplete K)
     {u : β → α} (h₂ : ∀ n, u n ∈ K) (h₃ : CauchySeq u) : ∃ v ∈ K, Tendsto u atTop (𝓝 v) :=
   h₁ _ h₃ <| le_principal_iff.2 <| mem_map_iff_exists_image.2
@@ -602,8 +602,7 @@ theorem TotallyBounded.image [UniformSpace β] {f : α → β} {s : Set α} (hs 
   ⟨f '' c, hfc.image f, by
     simp only [mem_image, iUnion_exists, biUnion_and', iUnion_iUnion_eq_right, image_subset_iff,
       preimage_iUnion, preimage_setOf_eq]
-    simp? [subset_def] at hct says
-      simp only [mem_setOf_eq, subset_def, mem_iUnion, exists_prop] at hct
+    have hct : ∀ x ∈ s, ∃ i ∈ c, (f x, f i) ∈ t := by simpa [subset_def] using hct
     intro x hx
     simpa using hct x hx⟩
 
@@ -669,9 +668,14 @@ instance (priority := 100) complete_of_compact {α : Type u} [UniformSpace α] [
     CompleteSpace α :=
   ⟨fun hf => by simpa using (isCompact_iff_totallyBounded_isComplete.1 isCompact_univ).2 _ hf⟩
 
-theorem isCompact_of_totallyBounded_isClosed [CompleteSpace α] {s : Set α} (ht : TotallyBounded s)
-    (hc : IsClosed s) : IsCompact s :=
-  (@isCompact_iff_totallyBounded_isComplete α _ s).2 ⟨ht, hc.isComplete⟩
+theorem TotallyBounded.isCompact_of_isComplete {s : Set α} (ht : TotallyBounded s)
+    (hc : IsComplete s) : IsCompact s := isCompact_iff_totallyBounded_isComplete.mpr ⟨ht, hc⟩
+
+theorem TotallyBounded.isCompact_of_isClosed [CompleteSpace α] {s : Set α} (ht : TotallyBounded s)
+    (hc : IsClosed s) : IsCompact s := ht.isCompact_of_isComplete hc.isComplete
+
+@[deprecated (since := "2025-08-30")] alias isCompact_of_totallyBounded_isClosed :=
+    TotallyBounded.isCompact_of_isClosed
 
 /-- Every Cauchy sequence over `ℕ` is totally bounded. -/
 theorem CauchySeq.totallyBounded_range {s : ℕ → α} (hs : CauchySeq s) :
@@ -828,10 +832,8 @@ instance (priority := 100) firstCountableTopology : FirstCountableTopology α :=
 
 /-- A separable uniform space with countably generated uniformity filter is second countable:
 one obtains a countable basis by taking the balls centered at points in a dense subset,
-and with rational "radii" from a countable open symmetric antitone basis of `𝓤 α`. We do not
-register this as an instance, as there is already an instance going in the other direction
-from second countable spaces to separable spaces, and we want to avoid loops. -/
-theorem secondCountable_of_separable [SeparableSpace α] : SecondCountableTopology α := by
+and with rational "radii" from a countable open symmetric antitone basis of `𝓤 α`. -/
+instance secondCountable_of_separable [SeparableSpace α] : SecondCountableTopology α := by
   rcases exists_countable_dense α with ⟨s, hsc, hsd⟩
   obtain
     ⟨t : ℕ → Set (α × α), hto : ∀ i : ℕ, t i ∈ (𝓤 α).sets ∧ IsOpen (t i) ∧ IsSymmetricRel (t i),

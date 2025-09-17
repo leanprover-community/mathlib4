@@ -260,7 +260,22 @@ theorem mem_diag : x ∈ s.diag ↔ x.1 ∈ s ∧ x.1 = x.2 := by
 theorem mem_offDiag : x ∈ s.offDiag ↔ x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2 := by
   simp [offDiag, and_assoc]
 
+@[simp, grind =]
+theorem diag_nonempty : s.diag.Nonempty ↔ s.Nonempty := by
+  simp [Finset.Nonempty]
+
+@[simp, grind =]
+theorem diag_eq_empty : s.diag = ∅ ↔ s = ∅ := by
+  have := (diag_nonempty (s := s)).not
+  rwa [not_nonempty_iff_eq_empty, not_nonempty_iff_eq_empty] at this
+
 variable (s)
+
+@[simp]
+theorem image_diag [DecidableEq β] (f : α × α → β) (s : Finset α) :
+    s.diag.image f = s.image fun x ↦ f (x, x) := by
+  ext y
+  aesop
 
 @[simp, norm_cast]
 theorem coe_offDiag : (s.offDiag : Set (α × α)) = (s : Set α).offDiag :=
@@ -298,8 +313,7 @@ theorem offDiag_empty : (∅ : Finset α).offDiag = ∅ :=
 
 @[simp]
 theorem diag_union_offDiag : s.diag ∪ s.offDiag = s ×ˢ s := by
-  conv_rhs => rw [← filter_union_filter_neg_eq (fun a => a.1 = a.2) (s ×ˢ s)]
-  rfl
+  grind
 
 @[simp]
 theorem disjoint_diag_offDiag : Disjoint s.diag s.offDiag :=

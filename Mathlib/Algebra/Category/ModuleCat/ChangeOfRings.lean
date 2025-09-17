@@ -37,7 +37,7 @@ import Mathlib.LinearAlgebra.TensorProduct.Tower
 * `ModuleCat.restrictCoextendScalarsAdj`: given rings `R, S` and a ring homomorphism
   `f : R ⟶ S` then `coextendScalars f` is the right adjoint of `restrictScalars f`.
 
-## List of notations
+## Notation
 Let `R, S` be rings and `f : R →+* S`
 * if `M` is an `R`-module, `s : S` and `m : M`, then `s ⊗ₜ[R, f] m` is the pure tensor
   `s ⊗ m : S ⊗[R, f] M`.
@@ -290,8 +290,10 @@ section ModuleCat.Unbundled
 
 variable (M : Type v) [AddCommMonoid M] [Module R M]
 
--- This notation is necessary because we need to reason about `s ⊗ₜ m` where `s : S` and `m : M`;
--- without this notation, one needs to work with `s : (restrictScalars f).obj ⟨S⟩`.
+/-- Tensor product of elements along a base change.
+
+This notation is necessary because we need to reason about `s ⊗ₜ m` where `s : S` and `m : M`;
+without this notation, one needs to work with `s : (restrictScalars f).obj ⟨S⟩`. -/
 scoped[ChangeOfRings] notation:100 s:100 " ⊗ₜ[" R "," f "] " m:101 =>
   @TensorProduct.tmul R _ _ _ _ _ (Module.compHom _ f) _ s m
 
@@ -315,13 +317,11 @@ def map' {M1 M2 : ModuleCat.{v} R} (l : M1 ⟶ M2) : obj' f M1 ⟶ obj' f M2 :=
   ofHom (@LinearMap.baseChange R S M1 M2 _ _ ((algebraMap S _).comp f).toAlgebra _ _ _ _ l.hom)
 
 theorem map'_id {M : ModuleCat.{v} R} : map' f (𝟙 M) = 𝟙 _ := by
-  ext x
   simp [map', obj']
 
 theorem map'_comp {M₁ M₂ M₃ : ModuleCat.{v} R} (l₁₂ : M₁ ⟶ M₂) (l₂₃ : M₂ ⟶ M₃) :
     map' f (l₁₂ ≫ l₂₃) = map' f l₁₂ ≫ map' f l₂₃ := by
   ext x
-  dsimp only [map']
   induction x using TensorProduct.induction_on with
   | zero => rfl
   | tmul => rfl
@@ -554,11 +554,11 @@ The natural transformation from identity functor to the composition of restricti
 of scalars.
 -/
 @[simps]
-protected def unit' : 𝟭 (ModuleCat S) ⟶ restrictScalars f ⋙ coextendScalars f where
+protected noncomputable def unit' : 𝟭 (ModuleCat S) ⟶ restrictScalars f ⋙ coextendScalars f where
   app Y := ofHom (app' f Y)
   naturality Y Y' g :=
     hom_ext <| LinearMap.ext fun y : Y => LinearMap.ext fun s : S => by
-      -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10745): previously simp [CoextendScalars.map_apply]
+      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): previously simp [CoextendScalars.map_apply]
       simp only [ModuleCat.hom_comp, Functor.id_map, Functor.id_obj, Functor.comp_obj,
         Functor.comp_map, LinearMap.coe_comp, Function.comp, CoextendScalars.map_apply,
         restrictScalars.map_apply f]
@@ -597,7 +597,7 @@ def restrictCoextendScalarsAdj {R : Type u₁} {S : Type u₂} [Ring R] [Ring S]
         invFun := RestrictionCoextensionAdj.HomEquiv.toRestriction.{u₁,u₂,v} f
         left_inv := fun g => by ext; simp
         right_inv := fun g => hom_ext <| LinearMap.ext fun x => LinearMap.ext fun s : S => by
-          -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10745): once just simp
+          -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): once just simp
           rw [RestrictionCoextensionAdj.HomEquiv.fromRestriction_hom_apply_apply,
               RestrictionCoextensionAdj.HomEquiv.toRestriction_hom_apply, LinearMap.map_smulₛₗ,
               RingHom.id_apply, CoextendScalars.smul_apply', one_mul] }
@@ -658,7 +658,7 @@ def HomEquiv.evalAt {X : ModuleCat R} {Y : ModuleCat S} (s : S)
         dsimp only
         rw [map_add, smul_add] }
     (by
-      intros r x
+      intro r x
       rw [AddHom.toFun_eq_coe, AddHom.coe_mk, RingHom.id_apply,
         LinearMap.map_smul, smul_comm r s (g x : Y)] )
 
@@ -680,8 +680,7 @@ def HomEquiv.fromExtendScalars {X Y} (g : X ⟶ (restrictScalars f).obj Y) :
       rw [← add_smul]
     · ext x
       apply mul_smul (f r) s (g x)
-  · intros z₁ z₂
-    simp
+  · simp
   · intro s z
     change lift _ (s • z) = s • lift _ z
     induction z using TensorProduct.induction_on with

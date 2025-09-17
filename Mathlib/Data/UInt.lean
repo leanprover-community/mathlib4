@@ -32,25 +32,12 @@ run_cmd
   Lean.Elab.Command.elabCommand (← `(
     namespace $typeName
 
-      open $typeName (toBitVec_mul)
-      @[simp, int_toBitVec]
-      protected theorem toBitVec_pow (a : $typeName) (n : ℕ) :
-          (a ^ n).toBitVec = a.toBitVec ^ n := by
-        induction n with
-        | zero => simp
-        | succ n ih =>
-          change (a ^ n * a).toBitVec = _
-          rw [toBitVec_mul, ih]
-          rfl
-
       open $typeName (toBitVec_mul) in
       protected theorem toBitVec_nsmul (n : ℕ) (a : $typeName) :
           (n • a).toBitVec = n • a.toBitVec := by
-        change (n * a).toBitVec = n • a.toBitVec
         rw [Lean.Grind.Semiring.nsmul_eq_natCast_mul, toBitVec_mul,
           nsmul_eq_mul, BitVec.natCast_eq_ofNat]
         rfl
-
 
       attribute [local instance] natCast intCast
 
@@ -75,7 +62,7 @@ run_cmd
         change (z * a).toBitVec = BitVec.ofInt _ z * a.toBitVec
         rw [toBitVec_mul]
         congr 1
-        rw[toBitVec_intCast]
+        rw [toBitVec_intCast]
         rfl
 
     end $typeName
