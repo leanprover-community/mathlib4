@@ -280,6 +280,7 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
 
   -- The following are a list of existing non-dependent top-level directory pairs.
   (`Mathlib.Algebra, `Mathlib.AlgebraicGeometry),
+  (`Mathlib.Algebra, `Mathlib.Analysis),
   (`Mathlib.Algebra, `Mathlib.Computability),
   (`Mathlib.Algebra, `Mathlib.Condensed),
   (`Mathlib.Algebra, `Mathlib.Geometry),
@@ -582,6 +583,7 @@ outside `Mathlib/Algebra/Notation.lean`.
 -/
 def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Algebra.Lie, `Mathlib.RepresentationTheory),
+  (`Mathlib.Algebra.Module.ZLattice, `Mathlib.Analysis),
   (`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation),
   (`Mathlib.Deprecated, `Mathlib.Deprecated),
   (`Mathlib.Topology.Algebra, `Mathlib.Algebra),
