@@ -278,7 +278,6 @@ open Real
 
 variable {F : Type*} [Field F] {v w : AbsoluteValue F ℝ}
 
-open Real in
 theorem IsEquiv.log_div_log_pos (h : v.IsEquiv w) {a : F} (ha₀ : a ≠ 0) (ha₁ : w a ≠ 1) :
     0 < (w a).log / (v a).log := by
   rcases ha₁.lt_or_gt with hwa | hwa
