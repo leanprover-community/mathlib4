@@ -110,10 +110,24 @@ class IsStableUnderSup (J : Precoverage C) where
   sup_mem_coverings {X : C} {R S : Presieve X} (hR : R ∈ J X) (hS : S ∈ J X) :
     R ⊔ S ∈ J X
 
+/-- A precoverage has pullbacks, if every covering presieve has pullbacks along arbitrary
+morphisms. -/
+class HasPullbacks (J : Precoverage C) where
+  hasPullbacks_of_mem {X Y : C} {R : Presieve Y} (f : X ⟶ Y) (hR : R ∈ J Y) : R.HasPullbacks f
+
 alias mem_coverings_of_isIso := HasIsos.mem_coverings_of_isIso
 alias mem_coverings_of_isPullback := IsStableUnderBaseChange.mem_coverings_of_isPullback
 alias comp_mem_coverings := IsStableUnderComposition.comp_mem_coverings
 alias sup_mem_coverings := IsStableUnderSup.sup_mem_coverings
+alias hasPullbacks_of_mem := HasPullbacks.hasPullbacks_of_mem
+
+lemma pullbackArrows_mem {J : Precoverage C} [IsStableUnderBaseChange.{max u v} J]
+    {X Y : C} (f : X ⟶ Y) {R : Presieve Y} (hR : R ∈ J Y) [R.HasPullbacks f] :
+    R.pullbackArrows f ∈ J X := by
+  obtain ⟨ι, Z, g, rfl⟩ := R.exists_eq_ofArrows
+  have (i : ι) : Limits.HasPullback (g i) f := Presieve.hasPullback f (Presieve.ofArrows.mk i)
+  rw [← Presieve.ofArrows_pullback]
+  exact mem_coverings_of_isPullback _ hR _ _ _ fun i ↦ (IsPullback.of_hasPullback _ _).flip
 
 instance (J K : Precoverage C) [HasIsos J] [HasIsos K] : HasIsos (J ⊓ K) where
   mem_coverings_of_isIso f _ := ⟨mem_coverings_of_isIso f, mem_coverings_of_isIso f⟩
@@ -166,6 +180,21 @@ instance [PreservesLimitsOfShape WalkingCospan F] [IsStableUnderBaseChange.{w} J
     simp only [mem_comap_iff, Presieve.map_ofArrows] at hf ⊢
     exact mem_coverings_of_isPullback _ hf _ _ _
       fun i ↦ CategoryTheory.Functor.map_isPullback F (h i)
+
+variable (F) in
+lemma _root_.CategoryTheory.Limits.HasPullback.of_createsLimitsOfShape
+    [CreatesLimitsOfShape WalkingCospan F] {X Y S : C} (f : X ⟶ S) (g : Y ⟶ S)
+    [HasPullback (F.map f) (F.map g)] :
+    HasPullback f g :=
+  have : HasLimit (cospan f g ⋙ F) := hasLimit_of_iso (cospanCompIso F f g).symm
+  hasLimit_of_created _ F
+
+instance [CreatesLimitsOfShape WalkingCospan F] [HasPullbacks J] : HasPullbacks (J.comap F) where
+  hasPullbacks_of_mem {X Y} R f hR := by
+    refine ⟨fun {Z g} hg ↦ ?_⟩
+    have : (Presieve.map F R).HasPullbacks (F.map f) := J.hasPullbacks_of_mem (F.map f) hR
+    have : HasPullback (F.map g) (F.map f) := (R.map F).hasPullback _ (R.map_map hg)
+    exact HasPullback.of_createsLimitsOfShape F g f
 
 end Functoriality
 
