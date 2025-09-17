@@ -338,7 +338,7 @@ lemma commutes (S₁ S₂ T : Type*) [CommSemiring S₁]
     [IsLocalization M₁ S₁] [IsLocalization M₂ S₂]
     [IsLocalization (Algebra.algebraMapSubmonoid S₂ M₁) T] :
     IsLocalization (Algebra.algebraMapSubmonoid S₁ M₂) T where
-  map_units' := by
+  map_units := by
     rintro ⟨m, ⟨a, ha, rfl⟩⟩
     rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R S₂ T]
     exact IsUnit.map _ (IsLocalization.map_units _ ⟨a, ha⟩)

@@ -5,7 +5,8 @@ Authors: Jireh Loreaux
 -/
 
 import Mathlib.Analysis.Complex.Basic
-import Mathlib.Algebra.Star.NonUnitalSubalgebra
+import Mathlib.Topology.Algebra.NonUnitalStarAlgebra
+import Mathlib.Topology.Algebra.StarSubalgebra
 
 /-! # Classes of C⋆-algebras
 
@@ -68,6 +69,27 @@ instance NonUnitalStarSubalgebra.nonUnitalCommCStarAlgebra {S A : Type*}
   mul_comm _ _ := Subtype.ext <| mul_comm _ _
 
 noncomputable instance : CommCStarAlgebra ℂ where
+
+section Elemental
+
+variable {A : Type*}
+
+noncomputable instance [CStarAlgebra A] (x : A) :
+    CStarAlgebra (StarAlgebra.elemental ℂ x) :=
+  StarSubalgebra.cstarAlgebra _ (h_closed := StarAlgebra.elemental.isClosed ℂ x)
+
+noncomputable instance [NonUnitalCStarAlgebra A] (x : A) :
+    NonUnitalCStarAlgebra (NonUnitalStarAlgebra.elemental ℂ x) :=
+  NonUnitalStarSubalgebra.nonUnitalCStarAlgebra _
+    (h_closed := NonUnitalStarAlgebra.elemental.isClosed ℂ x)
+
+noncomputable instance [CStarAlgebra A] (x : A) [IsStarNormal x] :
+    CommCStarAlgebra (StarAlgebra.elemental ℂ x) where
+
+noncomputable instance [NonUnitalCStarAlgebra A] (x : A) [IsStarNormal x] :
+    NonUnitalCommCStarAlgebra (NonUnitalStarAlgebra.elemental ℂ x) where
+
+end Elemental
 
 section Pi
 

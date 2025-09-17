@@ -40,7 +40,7 @@ instance Algebra.idealMap_isLocalizedModule (I : Ideal R) :
       (by simpa [Algebra.smul_def] using congr(($e).1))),
       fun a ↦ ⟨⟨_, Ideal.mul_mem_left _ (map_units S x).unit⁻¹.1 a.2⟩,
         Subtype.ext (by simp [Algebra.smul_def, ← mul_assoc])⟩⟩
-  surj' y :=
+  surj y :=
     have ⟨x, hx⟩ := (mem_map_algebraMap_iff M S).mp y.property
     ⟨x, Subtype.ext (by simp [Submonoid.smul_def, Algebra.smul_def, mul_comm, hx])⟩
   exists_of_eq h := ⟨_, Subtype.ext (exists_of_eq congr(($h).1)).choose_spec⟩

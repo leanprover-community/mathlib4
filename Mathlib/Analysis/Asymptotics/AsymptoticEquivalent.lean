@@ -15,7 +15,7 @@ Unlike `Is(Little|Big)O` relations, this one requires `u` and `v` to have the sa
 While the definition only requires `β` to be a `NormedAddCommGroup`, most interesting properties
 require it to be a `NormedField`.
 
-## Notations
+## Notation
 
 We introduce the notation `u ~[l] v := IsEquivalent l u v`, which you can use by opening the
 `Asymptotics` locale.

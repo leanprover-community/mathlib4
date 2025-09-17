@@ -317,7 +317,7 @@ theorem kruskal_katona_lovasz_form (hir : i ≤ r) (hrk : r ≤ k) (hkn : k ≤ 
         obtain ⟨C, BsubC, hCrange, hcard⟩ := this
         rw [hB, ← Nat.add_sub_assoc hir, Nat.add_sub_cancel_left] at hcard
         refine ⟨C, mem_powersetCard.2 ⟨hCrange, hcard⟩, BsubC, ?_⟩
-        rw [card_sdiff BsubC, hcard, hB, Nat.sub_sub_self hir]
+        rw [card_sdiff_of_subset BsubC, hcard, hB, Nat.sub_sub_self hir]
       · rintro ⟨A, Ah, hBA, card_sdiff_i⟩
         rw [mem_powersetCard] at Ah
         refine ⟨hBA.trans Ah.1, eq_tsub_of_add_eq ?_⟩

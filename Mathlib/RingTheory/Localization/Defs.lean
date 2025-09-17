@@ -158,8 +158,8 @@ theorem injective_iff_isRegular : Injective (algebraMap R S) ↔ ∀ c : M, IsRe
 
 theorem of_le (N : Submonoid R) (h₁ : M ≤ N) (h₂ : ∀ r ∈ N, IsUnit (algebraMap R S r)) :
     IsLocalization N S where
-  map_units' r := h₂ r r.2
-  surj' s :=
+  map_units r := h₂ r r.2
+  surj s :=
     have ⟨⟨x, y, hy⟩, H⟩ := IsLocalization.surj M s
     ⟨⟨x, y, h₁ hy⟩, H⟩
   exists_of_eq {x y} := by
@@ -585,7 +585,6 @@ section
 variable (hy : M ≤ T.comap g)
 include hy
 
--- Porting note: added `simp` attribute, since it proves very similar lemmas marked `simp`
 @[simp]
 theorem map_eq (x) : map Q g hy ((algebraMap R S) x) = algebraMap P Q (g x) :=
   lift_eq (fun y => map_units _ ⟨g y, hy y.2⟩) x
@@ -685,8 +684,8 @@ end Map
 section at_units
 lemma at_units (S : Submonoid R)
     (hS : S ≤ IsUnit.submonoid R) : IsLocalization S R where
-  map_units' y := hS y.prop
-  surj' := fun s ↦ ⟨⟨s, 1⟩, by simp⟩
+  map_units y := hS y.prop
+  surj := fun s ↦ ⟨⟨s, 1⟩, by simp⟩
   exists_of_eq := fun {x y} (e : x = y) ↦ ⟨1, e ▸ rfl⟩
 
 end at_units
@@ -826,8 +825,6 @@ theorem mk_one_eq_algebraMap (x) : mk x 1 = algebraMap R (Localization M) x :=
 theorem mk_eq_mk'_apply (x y) : mk x y = IsLocalization.mk' (Localization M) x y := by
   rw [mk_eq_monoidOf_mk'_apply, mk', toLocalizationMap_eq_monoidOf]
 
--- Porting note: removed `simp`. Left-hand side can be simplified; not clear what normal form should
---be.
 theorem mk_eq_mk' : (mk : R → M → Localization M) = IsLocalization.mk' (Localization M) :=
   mk_eq_monoidOf_mk'
 
