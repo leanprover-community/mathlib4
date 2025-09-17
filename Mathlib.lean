@@ -6427,6 +6427,7 @@ import Mathlib.Topology.Bornology.Real
 import Mathlib.Topology.CWComplex.Abstract.Basic
 import Mathlib.Topology.CWComplex.Classical.Basic
 import Mathlib.Topology.CWComplex.Classical.Finite
+import Mathlib.Topology.CWComplex.Classical.Subcomplex
 import Mathlib.Topology.Category.Born
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.Topology.Category.CompHaus.EffectiveEpi
