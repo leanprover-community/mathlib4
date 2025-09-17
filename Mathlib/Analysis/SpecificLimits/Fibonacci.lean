@@ -6,6 +6,12 @@ Authors: Snir Broshi
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Data.Real.GoldenRatio
 
+/-!
+# The ratio of consecutive Fibonacci numbers
+
+We prove that the ratio of consecutive Fibonacci numbers tends to the golden ratio.
+-/
+
 
 open goldenRatio
 
