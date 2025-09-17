@@ -82,7 +82,7 @@ lemma union_eq_univ_of_forall_ncard_le (h₁ : G.IsBipartiteWith p₁ p₂)
   have := h₁.mem_of_adj <| G.mem_neighborFinset _ _ |>.mp (hf₂ x)
   grind
 
-lemma exists_bijective_of_forall_ncard_le [DecidablePred (· ∈ p₁)] (h₁ : G.IsBipartiteWith p₁ p₂)
+lemma exists_bijective_of_forall_ncard_le (h₁ : G.IsBipartiteWith p₁ p₂)
     (h₂ : ∀ s : Set V, s.ncard ≤ (⋃ x ∈ s, G.neighborSet x).ncard) :
     ∃ (h : p₁ → p₂), Function.Bijective h ∧ ∀ (a : p₁), G.Adj a (h a) := by
   obtain ⟨f, hf₁, hf₂⟩ := Finset.all_card_le_biUnion_card_iff_exists_injective
