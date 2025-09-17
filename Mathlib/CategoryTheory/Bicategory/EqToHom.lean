@@ -9,20 +9,21 @@ import Mathlib.CategoryTheory.Bicategory.Basic
 /-!
 # `eqToHom` in bicategories
 
-This file records some of the behavior of `eqToHom`-type of 1-morphisms and
+This file records some of the behavior of `eqToHom` 1-morphisms and
 2-morphisms in bicategories.
+
 Given an equality of objects `h : x = y` in a bicategory, there is a 1-morphism
 `eqToHom h : x ⟶ y` just like in an ordinary category. The definitional property
 of this morhism is that if `h : x = x`, `eqToHom h = 𝟙 x`. This is
 implemented as the `eqToHom` morphism in the `CategoryStruct` underlying the
 bicategory.
 
-Unlike the situation in ordinary category theory, these morphisms do not
+Unlike the situation in ordinary category theory, these 1-morphisms do not
 compose strictly: `eqToHom h.trans h'` is merely isomorphic to
 `eqToHom h ≫ eqToHom h'`. We define this isomorphism as
 `CategoryTheory.Bicategory.eqToHomTransIso`.
 
-Given equality of 1-morphisms, we show that various bicategorical
+Given an equality of 1-morphisms, we show that various bicategorical
 structure morphisms such as unitors, associators and whiskering conjugate
 well under `eqToHom`s.
 
@@ -40,10 +41,8 @@ variable {B : Type u} [Bicategory.{w, v} B]
 /-- In a bicategory, `eqToHom`s do not compose strictly,
 but they do up to isomorphism. -/
 def eqToHomTransIso {x y z : B} (e₁ : x = y) (e₂ : y = z) :
-    eqToHom (e₁.trans e₂) ≅ eqToHom e₁ ≫ eqToHom e₂ := by
-  subst e₁
-  subst e₂
-  exact (λ_ (𝟙 x)).symm
+    eqToHom (e₁.trans e₂) ≅ eqToHom e₁ ≫ eqToHom e₂ :=
+  e₂ ▸ e₁ ▸ (λ_ (𝟙 x)).symm
 
 @[simp]
 lemma eqToHomTransIso_refl_refl (x : B) :
@@ -52,14 +51,14 @@ lemma eqToHomTransIso_refl_refl (x : B) :
 
 lemma eqToHomTransIso_refl_right {x y : B} (e₁ : x = y) :
     eqToHomTransIso e₁ rfl = (ρ_ (eqToHom e₁)).symm := by
-  subst e₁
   ext
+  subst e₁
   simp
 
 lemma eqToHomTransIso_refl_left {x y : B} (e₁ : x = y) :
     eqToHomTransIso rfl e₁ = (λ_ (eqToHom e₁)).symm := by
-  subst e₁
   ext
+  subst e₁
   simp
 
 @[reassoc]
@@ -70,9 +69,7 @@ lemma associator_eqToHom_hom {x y z t : B}
       (eqToHomTransIso (e₁.trans e₂) e₃).inv ≫
       (eqToHomTransIso e₁ (e₂.trans e₃)).hom ≫
       eqToHom e₁ ◁ (eqToHomTransIso e₂ e₃).hom := by
-  subst e₁
-  subst e₂
-  subst e₃
+  subst_vars
   simp
 
 @[reassoc]
@@ -80,30 +77,24 @@ lemma associator_eqToHom_inv {x y z t : B}
     (e₁ : x = y) (e₂ : y = z) (e₃ : z = t) :
     (α_ (eqToHom e₁) (eqToHom e₂) (eqToHom e₃)).inv =
     eqToHom e₁ ◁ (eqToHomTransIso e₂ e₃).inv ≫
-    (eqToHomTransIso e₁ (e₂.trans e₃)).inv ≫
-    (eqToHomTransIso (e₁.trans e₂) e₃).hom ≫
-    (eqToHomTransIso e₁ e₂).hom ▷ eqToHom e₃ := by
-  subst e₁
-  subst e₂
-  subst e₃
+      (eqToHomTransIso e₁ (e₂.trans e₃)).inv ≫
+      (eqToHomTransIso (e₁.trans e₂) e₃).hom ≫
+      (eqToHomTransIso e₁ e₂).hom ▷ eqToHom e₃ := by
+  subst_vars
   simp
 
 lemma associator_hom_congr {x y z t : B} {f f' : x ⟶ y} {g g' : y ⟶ z}
     {h h' : z ⟶ t} (ef : f = f') (eg : g = g') (eh : h = h') :
     (α_ f g h).hom =
     eqToHom (by grind) ≫ (α_ f' g' h').hom ≫ eqToHom (by grind) := by
-  subst ef
-  subst eg
-  subst eh
+  subst_vars
   simp
 
 lemma associator_inv_congr {x y z t : B} {f f' : x ⟶ y} {g g' : y ⟶ z}
     {h h' : z ⟶ t} (ef : f = f') (eg : g = g') (eh : h = h') :
     (α_ f g h).inv =
     eqToHom (by grind) ≫ (α_ f' g' h').inv ≫ eqToHom (by grind) := by
-  subst ef
-  subst eg
-  subst eh
+  subst_vars
   simp
 
 lemma congr_whiskerLeft {x y : B} {f f' : x ⟶ y} (h : f = f') {z : B}
