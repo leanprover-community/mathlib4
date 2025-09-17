@@ -29,10 +29,12 @@ subfield `F` is (isomorphic to) the maximal real subfield of `K`.
 
 ## Implementation note
 
-Most result are proved under the general hypothesis: `K/F` quadratic extension of number fields
-with `F` totally real and `K` totally complex and then, if relevant, we deduce the special case
-`F = maximalRealSubfield K`. Results of the first kind live in the `NumberField.CMExtension`
-namespace whereas results of the second kind live in the `NumberField.IsCMField` namespace.
+Most results are proved for the case of a CM field, that is `K` is totally complex quadratic
+extension of its totally real. These results live in the `NumberField.IsCMField` namespace. Some
+results deal with the general case `K/F`, where `K` is totally complex, `F` is totally real and
+`K` is a quadratic extension of `F`, and live in the `NumberField.CMExtension` namespace. Note that
+results for the general case can be deduced for the CM case by using the isomorphism
+`equivMaximalRealSubfield` mentionned above.
 
 -/
 
