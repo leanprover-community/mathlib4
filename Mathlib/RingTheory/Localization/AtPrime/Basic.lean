@@ -180,11 +180,11 @@ variable (I : Ideal R) [hI : I.IsPrime]
 variable {I}
 
 /-- The unique maximal ideal of the localization at `I.primeCompl` lies over the ideal `I`. -/
-nonrec theorem AtPrime.comap_maximalIdeal :
+theorem AtPrime.comap_maximalIdeal :
     Ideal.comap (algebraMap R (Localization.AtPrime I))
         (IsLocalRing.maximalIdeal (Localization I.primeCompl)) =
       I :=
-  AtPrime.comap_maximalIdeal _ _
+  IsLocalization.AtPrime.comap_maximalIdeal _ _
 
 /-- The image of `I` in the localization at `I.primeCompl` is a maximal ideal, and in particular
 it is the unique maximal ideal given by the local ring structure `AtPrime.isLocalRing` -/
