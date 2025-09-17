@@ -18,10 +18,6 @@ section OrderedSemiring
 
 variable {R : Type*} [Semiring R] {S : Type*} [Semiring S] [PartialOrder S]
   (v w : AbsoluteValue R S)
-section OrderedSemiring
-
-variable {R : Type*} [Semiring R] {S : Type*} [Semiring S] [PartialOrder S]
-  (v w : AbsoluteValue R S)
 
 /-- Two absolute values `v` and `w` are *equivalent* if `v x ≤ v y` precisely when
 `w x ≤ w y`.
@@ -102,7 +98,7 @@ lemma isEquiv_trivial_iff_eq_trivial [DecidablePred fun x : R ↦ x = 0] [NoZero
     f.IsEquiv .trivial ↔ f = .trivial :=
   ⟨fun h ↦ by aesop (add simp [h.eq_one_iff, AbsoluteValue.trivial]), fun h ↦ h ▸ .rfl⟩
 
-@[deprecated (since := "2025-09-10")]
+@[deprecated (since := "2025-09-12")]
 alias eq_trivial_of_isEquiv_trivial := isEquiv_trivial_iff_eq_trivial
 
 variable [IsStrictOrderedRing S]
@@ -278,6 +274,8 @@ end LinearOrderedField
 
 section Real
 
+open Real
+
 variable {F : Type*} [Field F] {v w : AbsoluteValue F ℝ}
 
 open Real in
@@ -288,7 +286,6 @@ theorem IsEquiv.log_div_log_pos (h : v.IsEquiv w) {a : F} (ha₀ : a ≠ 0) (ha�
       (neg_pos_of_neg <| log_neg (v.pos ha₀) (h.lt_one_iff.2 hwa))
   · exact div_pos (log_pos <| hwa) (log_pos (h.one_lt_iff.2 hwa))
 
-open Real in
 /--
 If $v$ and $w$ are two real absolute values on a field $F$, equivalent in the sense that
 $v(x) \leq v(y)$ if and only if $w(x) \leq w(y)$, then $\frac{\log (v(a))}{\log (w(a))}$ is
@@ -320,7 +317,6 @@ theorem IsEquiv.log_div_log_eq_log_div_log (h : v.IsEquiv w)
     ← one_lt_div (zpow_pos (by linarith) _), ← map_pow, ← map_zpow₀, ← map_div₀] at hq₂
   exact not_lt_of_gt (h.lt_one_iff.1 hq₁) hq₂
 
-open Real in
 /--
 If `v` and `w` are two real absolute values on a field `F`, then `v` and `w` are equivalent if
 and only if there exists a positive real constant `c` such that for all `x : R`, `(f x)^c = g x`.
