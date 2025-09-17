@@ -32,7 +32,7 @@ of `sup` over `inf`, on the left or on the right.
 
 * `DistribLattice`: a type class for distributive lattices.
 
-## Notations
+## Notation
 
 * `a ⊔ b`: the supremum or join of `a` and `b`
 * `a ⊓ b`: the infimum or meet of `a` and `b`
@@ -1267,8 +1267,7 @@ instance [DistribLattice α] : DistribLattice (ULift.{v} α) :=
   ULift.down_injective.distribLattice _ down_sup down_inf
 
 instance [LinearOrder α] : LinearOrder (ULift.{v} α) :=
-  LinearOrder.liftWithOrd ULift.down ULift.down_injective down_sup down_inf
-    fun _x _y => (down_compare _ _).symm
+  ULift.down_injective.linearOrder _ down_le down_lt down_inf down_sup down_compare
 
 end ULift
 

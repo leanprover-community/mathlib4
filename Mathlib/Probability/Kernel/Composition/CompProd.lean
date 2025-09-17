@@ -30,7 +30,7 @@ that convention because it fits better with the use of the name `comp` elsewhere
 * Instances stating that `IsMarkovKernel`, `IsZeroOrMarkovKernel`, `IsFiniteKernel` and
   `IsSFiniteKernel` are stable by composition-product.
 
-## Notations
+## Notation
 
 * `κ ⊗ₖ η = ProbabilityTheory.Kernel.compProd κ η`
 
@@ -371,13 +371,13 @@ theorem compProd_restrict {s : Set β} {t : Set γ} (hs : MeasurableSet s) (ht :
 
 theorem compProd_restrict_left {s : Set β} (hs : MeasurableSet s) :
     Kernel.restrict κ hs ⊗ₖ η = Kernel.restrict (κ ⊗ₖ η) (hs.prod MeasurableSet.univ) := by
-  rw [← compProd_restrict]
-  · congr; exact Kernel.restrict_univ.symm
+  rw [← compProd_restrict hs MeasurableSet.univ]
+  congr; exact Kernel.restrict_univ.symm
 
 theorem compProd_restrict_right {t : Set γ} (ht : MeasurableSet t) :
     κ ⊗ₖ Kernel.restrict η ht = Kernel.restrict (κ ⊗ₖ η) (MeasurableSet.univ.prod ht) := by
-  rw [← compProd_restrict]
-  · congr; exact Kernel.restrict_univ.symm
+  rw [← compProd_restrict MeasurableSet.univ ht]
+  congr; exact Kernel.restrict_univ.symm
 
 end Restrict
 
@@ -524,13 +524,13 @@ instance IsZeroOrMarkovKernel.compProd (κ : Kernel α β) [IsZeroOrMarkovKernel
   all_goals simpa using by infer_instance
 
 theorem compProd_apply_univ_le (κ : Kernel α β) (η : Kernel (α × β) γ) [IsFiniteKernel η] (a : α) :
-    (κ ⊗ₖ η) a Set.univ ≤ κ a Set.univ * IsFiniteKernel.bound η := by
+    (κ ⊗ₖ η) a Set.univ ≤ κ a Set.univ * η.bound := by
   by_cases hκ : IsSFiniteKernel κ
   swap
   · rw [compProd_of_not_isSFiniteKernel_left _ _ hκ]
     simp
   rw [compProd_apply .univ]
-  let Cη := IsFiniteKernel.bound η
+  let Cη := η.bound
   calc
     ∫⁻ b, η (a, b) Set.univ ∂κ a ≤ ∫⁻ _, Cη ∂κ a :=
       lintegral_mono fun b => measure_le_bound η (a, b) Set.univ
@@ -539,12 +539,9 @@ theorem compProd_apply_univ_le (κ : Kernel α β) (η : Kernel (α × β) γ) [
 
 instance IsFiniteKernel.compProd (κ : Kernel α β) [IsFiniteKernel κ] (η : Kernel (α × β) γ)
     [IsFiniteKernel η] : IsFiniteKernel (κ ⊗ₖ η) :=
-  ⟨⟨IsFiniteKernel.bound κ * IsFiniteKernel.bound η,
-      ENNReal.mul_lt_top (IsFiniteKernel.bound_lt_top κ) (IsFiniteKernel.bound_lt_top η), fun a =>
-      calc
-        (κ ⊗ₖ η) a Set.univ ≤ κ a Set.univ * IsFiniteKernel.bound η := compProd_apply_univ_le κ η a
-        _ ≤ IsFiniteKernel.bound κ * IsFiniteKernel.bound η :=
-          mul_le_mul (measure_le_bound κ a Set.univ) le_rfl (zero_le _) (zero_le _)⟩⟩
+  ⟨⟨κ.bound * η.bound, ENNReal.mul_lt_top κ.bound_lt_top η.bound_lt_top, fun a =>
+      calc (κ ⊗ₖ η) a Set.univ ≤ κ a Set.univ * η.bound := compProd_apply_univ_le κ η a
+      _ ≤ κ.bound * η.bound := mul_le_mul (measure_le_bound κ a Set.univ) le_rfl zero_le' zero_le'⟩⟩
 
 instance IsSFiniteKernel.compProd (κ : Kernel α β) (η : Kernel (α × β) γ) :
     IsSFiniteKernel (κ ⊗ₖ η) := by
