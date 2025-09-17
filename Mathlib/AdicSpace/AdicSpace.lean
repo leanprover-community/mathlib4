@@ -155,7 +155,8 @@ instance : Category.{u} PreLVCRS.{u} where
 
 def LVCRS.IsAdicSpace (X : LVCRS.{u}) : Prop :=
   ∀ x : X, ∃ (U : OpenNhds x) (A : HuberPair.{u}),
-    (Nonempty (Spa.{u} A ≅ (X.toPreLVCRS.restrict U.isOpenEmbedding)))
+    (Nonempty (Spa.{u} A ≅ (X.toPreLVCRS.restrict U.isOpenEmbedding)) ∧
+      (Spa A).presheaf.IsSheaf) -- not in the perfectoid project, but Wedhorn requires this
 
 structure AdicSpace extends LVCRS where
   isAdic : toLVCRS.IsAdicSpace
