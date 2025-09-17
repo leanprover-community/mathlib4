@@ -194,9 +194,9 @@ def zmodRepr : ℕ :=
 theorem zmodRepr_spec : zmodRepr x < p ∧ x - zmodRepr x ∈ maximalIdeal ℤ_[p] :=
   Classical.choose_spec (existsUnique_mem_range x).exists
 
-theorem zmodRepr_unique (y : ℕ) (hy₁ : y < p) (hy₂ : x - y ∈ maximalIdeal ℤ_[p]) : y = zmodRepr x :=
+theorem zmodRepr_unique (y : ℕ) (hy₁ : y < p) (hy₂ : x - y ∈ maximalIdeal ℤ_[p]) : zmodRepr x = y :=
   have h := (Classical.choose_spec (existsUnique_mem_range x)).right
-  (h y ⟨hy₁, hy₂⟩).trans (h (zmodRepr x) (zmodRepr_spec x)).symm
+  ((h y ⟨hy₁, hy₂⟩).trans (h (zmodRepr x) (zmodRepr_spec x)).symm).symm
 
 theorem zmodRepr_lt_p : zmodRepr x < p :=
   (zmodRepr_spec _).1
@@ -205,7 +205,6 @@ theorem sub_zmodRepr_mem : x - zmodRepr x ∈ maximalIdeal ℤ_[p] :=
   (zmodRepr_spec _).2
 
 lemma zmodRepr_eq_zero_of_dvd {x : ℤ_[p]} (hx : (p : ℤ_[p]) ∣ x) : x.zmodRepr = 0 := by
-  rw [eq_comm]
   apply zmodRepr_unique _ _ (Nat.Prime.pos Fact.out)
   simp [maximalIdeal_eq_span_p, Ideal.mem_span_singleton, hx]
 
@@ -245,7 +244,6 @@ lemma norm_natCast_zmodRepr_eq (x : ℤ_[p]) :
 @[simp]
 lemma zmodRepr_natCast_zmodRepr (x : ℤ_[p]) :
     (x.zmodRepr : ℤ_[p]).zmodRepr = x.zmodRepr := by
-  rw [eq_comm]
   apply zmodRepr_unique _ _ (zmodRepr_lt_p _)
   simp
 
@@ -260,7 +258,6 @@ lemma norm_natCast_zmodRepr_eq_iff {x : ℤ_[p]} :
 lemma zmodRepr_natCast (n : ℕ) :
     zmodRepr (n : ℤ_[p]) = n % p := by
   nth_rw 1 [← Nat.mod_add_div n p]
-  rw [eq_comm]
   apply zmodRepr_unique
   · exact Nat.mod_lt _ (Nat.Prime.pos Fact.out)
   · simp [maximalIdeal_eq_span_p, Ideal.mem_span_singleton]
@@ -357,7 +354,7 @@ theorem ker_toZMod : RingHom.ker (toZMod : ℤ_[p] →+* ZMod p) = maximalIdeal 
 @[simp]
 lemma val_toZMod_eq_zmodSpec (x : ℤ_[p]) :
     (toZMod x).val = x.zmodRepr :=
-  zmodRepr_unique _ _ (ZMod.val_lt _) <| by simpa using toZMod_spec _
+  (zmodRepr_unique _ _ (ZMod.val_lt _) <| by simpa using toZMod_spec _).symm
 
 lemma zmodRepr_mul (x y : ℤ_[p]) : (x * y).zmodRepr = x.zmodRepr * y.zmodRepr % p := by
   simp [← val_toZMod_eq_zmodSpec, ZMod.val_mul]
