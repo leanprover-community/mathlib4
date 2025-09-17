@@ -28,8 +28,8 @@ namespace SimpleGraph
 
 /-- An explicit form for the constant in the triangle removal lemma.
 
-Note that this depends on `SzemerediRegularity.szBound`, which is a tower-type exponential. This means
-`triangleRemovalBound` is in practice absolutely tiny. -/
+Note that this depends on `SzemerediRegularity.szBound`, which is a tower-type exponential.
+This means `triangleRemovalBound` is in practice absolutely tiny. -/
 noncomputable def triangleRemovalBound (ε : ℝ) : ℝ :=
   min (2 * ⌈4/ε⌉₊^3)⁻¹ ((1 - ε/4) * (ε/(16 * szBound (ε/8) ⌈4/ε⌉₊))^3)
 
