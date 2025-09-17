@@ -524,38 +524,20 @@ noncomputable instance _root_.Module.End.instDivisionRing
 
 end LinearMap
 
--- Porting note: adding a namespace with all the new statements; existing result is not used in ML3
 namespace JordanHolderModule
-
--- Porting note: jordanHolderModule was timing out so outlining the fields
-
-/-- An isomorphism `X₂ / X₁ ∩ X₂ ≅ Y₂ / Y₁ ∩ Y₂` of modules for pairs
-`(X₁,X₂) (Y₁,Y₂) : Submodule R M` -/
-def Iso (X Y : Submodule R M × Submodule R M) : Prop :=
-  Nonempty <| (X.2 ⧸ X.1.comap X.2.subtype) ≃ₗ[R] Y.2 ⧸ Y.1.comap Y.2.subtype
-
-theorem iso_symm {X Y : Submodule R M × Submodule R M} : Iso X Y → Iso Y X :=
-  fun ⟨f⟩ => ⟨f.symm⟩
-
-theorem iso_trans {X Y Z : Submodule R M × Submodule R M} : Iso X Y → Iso Y Z → Iso X Z :=
-  fun ⟨f⟩ ⟨g⟩ => ⟨f.trans g⟩
-
-@[nolint unusedArguments]
-theorem second_iso {X Y : Submodule R M} (_ : X ⋖ X ⊔ Y) :
-    Iso (X,X ⊔ Y) (X ⊓ Y,Y) := by
-  constructor
-  rw [sup_comm, inf_comm]
-  dsimp
-  exact (LinearMap.quotientInfEquivSupQuotient Y X).symm
 
 instance instJordanHolderLattice : JordanHolderLattice (Submodule R M) where
   IsMaximal := (· ⋖ ·)
   lt_of_isMaximal := CovBy.lt
   sup_eq_of_isMaximal hxz hyz := WCovBy.sup_eq hxz.wcovBy hyz.wcovBy
   isMaximal_inf_left_of_isMaximal_sup := inf_covBy_of_covBy_sup_of_covBy_sup_left
-  Iso := Iso
-  iso_symm := iso_symm
-  iso_trans := iso_trans
-  second_iso := second_iso
+  Iso X Y := Nonempty <| (X.2 ⧸ X.1.comap X.2.subtype) ≃ₗ[R] Y.2 ⧸ Y.1.comap Y.2.subtype
+  iso_symm := fun ⟨f⟩ => ⟨f.symm⟩
+  iso_trans := fun ⟨f⟩ ⟨g⟩ => ⟨f.trans g⟩
+  second_iso {X} {Y} _ := by
+    constructor
+    rw [sup_comm, inf_comm]
+    dsimp
+    exact (LinearMap.quotientInfEquivSupQuotient Y X).symm
 
 end JordanHolderModule
