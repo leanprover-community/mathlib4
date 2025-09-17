@@ -1,4 +1,4 @@
-# Run pre-commit and in-place update PR on push
+name: Run pre-commit and in-place update PR on push
 
 on:
   push:
