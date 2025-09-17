@@ -634,7 +634,8 @@ theorem rescale_map_eq_map_rescale {A S : Type*} [CommSemiring A] [Algebra A R] 
     [Algebra A S] (φ : R →ₐ[A] S) (a : A) (f : R⟦X⟧) :
     rescale (algebraMap A S a) (PowerSeries.map φ f) =
       PowerSeries.map (φ : R →+* S) (rescale (algebraMap A R a) f) := by
-  rw [← rescale_map_eq_map_rescale_of_ringHom, RingHom.coe_coe, AlgHom.commutes]
+  convert rescale_map_eq_map_rescale_of_ringHom (φ : R →+* S) _ _
+  simp
 
 end CommSemiring
 

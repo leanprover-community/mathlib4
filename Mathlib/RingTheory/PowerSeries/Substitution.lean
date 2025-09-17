@@ -297,22 +297,15 @@ lemma rescale_eq_subst (r : R) (f : PowerSeries R) :
     PowerSeries.rescale r f = PowerSeries.subst (r • X : R⟦X⟧) f := by
   rw [rescale_eq, MvPowerSeries.rescale_eq_subst, X, subst, Pi.smul_def']
 
-theorem _root_.MvPowerSeries.rescaleUnit (a : R) (f : R⟦X⟧) :
-    MvPowerSeries.rescale (Function.const _ a) f = rescale a f := by
-  ext d
-  rw [coeff_rescale, coeff, MvPowerSeries.coeff_rescale]
-  simp
-
 /-- Rescale power series, as an `AlgHom` -/
-noncomputable def rescaleAlgHom (r : R) : R⟦X⟧ →ₐ[R] R⟦X⟧ :=
+noncomputable abbrev rescaleAlgHom (r : R) : R⟦X⟧ →ₐ[R] R⟦X⟧ :=
   MvPowerSeries.rescaleAlgHom (fun _ ↦ r)
 
 lemma rescaleAlgHom_def (r : R) (f : PowerSeries R) :
     rescaleAlgHom r f = MvPowerSeries.rescaleAlgHom (fun _ ↦ r) f := by
   simp only [rescaleAlgHom]
 
-theorem rescaleAlgHom_apply (r : R) :
-    (rescaleAlgHom r) = rescale r := by
+theorem rescaleAlgHom_apply (r : R) : rescaleAlgHom r = rescale r := by
   ext f
   rw [rescale_eq, RingHom.coe_coe, rescaleAlgHom_def, MvPowerSeries.rescaleAlgHom_apply]
 
@@ -323,12 +316,10 @@ lemma subst_linear_subst_scalar_comm (a : R) {σ : Type*} (p : MvPowerSeries σ 
     subst p (rescale a f) = MvPowerSeries.rescale (Function.const σ a) (subst p f) := by
   have hp : PowerSeries.HasSubst p := by
     apply HasSubst.of_constantCoeff_zero
-    rw [← MvPowerSeries.coeff_zero_eq_constantCoeff_apply]
-    apply MvPowerSeries.IsHomogeneous.coeff_eq_zero (p := 1) _ (by simp)
-    simp only [MvPowerSeries.IsHomogeneous, MvPowerSeries.IsWeightedHomogeneous, ne_eq]
-    intro d hd
-    convert hp_lin d hd using 1
-    simp [Finsupp.weight, Finsupp.linearCombination, Finsupp.degree, Finsupp.sum]
+    rw [← MvPowerSeries.coeff_zero_eq_constantCoeff_apply, MvPowerSeries.coeff_apply]
+    have : (p 0 ≠ 0) → (0 : σ →₀ ℕ).degree = 1 := hp_lin 0
+    have : Finsupp.degree (0 : σ →₀ ℕ) = 0 := Finsupp.degree_zero
+    grind
   rw [rescale_eq_subst, MvPowerSeries.rescale_eq_subst,
     subst_comp_subst_apply (HasSubst.smul_X' a) hp]
   nth_rewrite 3 [subst]
