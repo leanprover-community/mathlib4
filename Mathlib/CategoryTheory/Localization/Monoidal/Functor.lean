@@ -3,10 +3,8 @@ Copyright (c) 2025 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
 import Mathlib.CategoryTheory.Localization.Monoidal.Basic
 import Mathlib.CategoryTheory.Monoidal.Multifunctor
-import Mathlib.Combinatorics.Quiver.ReflQuiver
 /-!
 
 # Universal property of localized monoidal categories
