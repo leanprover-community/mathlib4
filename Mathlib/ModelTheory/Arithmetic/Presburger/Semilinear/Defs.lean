@@ -18,7 +18,7 @@ which are linear sets with linearly independent submonoid generators (periods).
 
 ## Main Definitions
 
-- `IsLinearSet`: a set is linear if is a coset of a finitely generated additive submonoid.
+- `IsLinearSet`: a set is linear if it is a coset of a finitely generated additive submonoid.
 - `IsSemilinearSet`: a set is semilinear if it is a finite union of linear sets.
 - `IsProperLinearSet`: a linear set is proper if its submonoid generators (periods) are linearly
   independent.
@@ -47,7 +47,7 @@ variable {M N ι κ F : Type*} [AddCommMonoid M] [AddCommMonoid N]
 
 open Set Pointwise AddSubmonoid
 
-/-- A set is linear if is a coset of a finitely generated additive submonoid. -/
+/-- A set is linear if it is a coset of a finitely generated additive submonoid. -/
 def IsLinearSet (s : Set M) : Prop :=
   ∃ (a : M) (t : Set M), t.Finite ∧ s = a +ᵥ (closure t : Set M)
 
@@ -260,6 +260,10 @@ theorem isProperLinearSet_iff :
 theorem IsProperLinearSet.isLinearSet (hs : IsProperLinearSet s) : IsLinearSet s := by
   rcases hs with ⟨a, t, ht, _, rfl⟩
   exact ⟨a, t, ht, rfl⟩
+
+@[simp]
+theorem IsProperLinearSet.singleton : IsProperLinearSet {a} :=
+  ⟨a, ∅, by simp⟩
 
 /-- A semilinear set is proper if it is a finite union of proper linear sets. -/
 def IsProperSemilinearSet (s : Set M) : Prop :=
