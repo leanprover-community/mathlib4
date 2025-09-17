@@ -9,27 +9,18 @@ import Mathlib.CategoryTheory.Monoidal.Category
 /-!
 # Monoidal Structure on FinStoch
 
-Defines the monoidal category structure on `FinStoch`.
-
-The tensor product models parallel composition of random processes.
-Structural isomorphisms (associator, unitors) rearrange data without
-adding randomness - they are deterministic.
+Tensor products model independent parallel processes.
 
 ## Main definitions
 
-* `associator` - The associativity isomorphism `(X ⊗ Y) ⊗ Z ≅ X ⊗ (Y ⊗ Z)`
-* `leftUnitor` - The left unit isomorphism `I ⊗ X ≅ X`
-* `rightUnitor` - The right unit isomorphism `X ⊗ I ≅ X`
-* `MonoidalCategoryStruct FinStoch` - The basic monoidal structure
-* `MonoidalCategory FinStoch` - Full monoidal category with coherence conditions
+* `associator` - Isomorphism `(X ⊗ Y) ⊗ Z ≅ X ⊗ (Y ⊗ Z)`
+* `leftUnitor` - Isomorphism `I ⊗ X ≅ X`
+* `rightUnitor` - Isomorphism `X ⊗ I ≅ X`
 
 ## Implementation notes
 
-We build structural isomorphisms using explicit stochastic matrices that
-give probability 1 to the correct rearrangement and 0 elsewhere.
-
-Proofs use `Finset.sum_eq_single` to isolate non-zero contributions.
-For inverse proofs, we use `ite_cond_congr` to handle tuple equality.
+Structural isomorphisms are deterministic (probability 1 for the correct rearrangement).
+Proofs use `Finset.sum_eq_single` to isolate non-zero terms.
 
 ## References
 
@@ -43,9 +34,11 @@ Markov category, monoidal category, stochastic matrix, tensor product
 
 namespace CategoryTheory.MarkovCategory
 
-open FinStoch
+open FinStoch MonoidalCategory
 
 universe u
+
+open FinStoch
 
 /-- Rearranges `((X ⊗ Y) ⊗ Z)` to `(X ⊗ (Y ⊗ Z))`.
 
@@ -354,8 +347,7 @@ instance : MonoidalCategory FinStoch where
                CategoryStruct.comp, StochasticMatrix.comp]
     -- (f ▷ X₂) ≫ (Y₁ ◁ g) expands to sum over intermediate states
     rw [Finset.sum_eq_single ⟨y₁, x₂⟩]
-    · -- The unique non-zero term when y₁' = y₁ and x₂' = x₂
-      simp only [StochasticMatrix.id, CategoryStruct.id]
+    · simp only [StochasticMatrix.id, CategoryStruct.id]
       by_cases h₁ : y₁ = y₁
       · by_cases h₂ : x₂ = x₂
         · simp [one_mul, mul_one]
@@ -365,23 +357,18 @@ instance : MonoidalCategory FinStoch where
       · -- Impossible: y₁ ≠ y₁
         exfalso
         exact h₁ rfl
-    · -- Other terms: show (y₁', x₂') ≠ (y₁, x₂) gives zero contribution
-      intro ⟨y₁', x₂'⟩ _ h_ne
+    · intro ⟨y₁', x₂'⟩ _ h_ne
       simp only [StochasticMatrix.id, CategoryStruct.id]
       -- At least one identity matrix is off-diagonal, contributing 0
       by_cases h₁ : y₁' = y₁
       · by_cases h₂ : x₂ = x₂'
-        · -- Would contradict h_ne: both coordinates match
-          exfalso
+        · exfalso
           apply h_ne
           congr 1
           · exact h₂.symm
-        · -- x₂ ≠ x₂': right identity gives 0
-          simp [h₂, zero_mul]
-      · -- y₁' ≠ y₁: left identity gives 0
-        simp [h₁, mul_zero]
-    · -- Membership: (y₁, x₂) is in the finite set Y₁ × X₂
-      intro h
+        · simp [h₂, zero_mul]
+      · simp [h₁, mul_zero]
+    · intro h
       exfalso
       exact h (Finset.mem_univ _)
   id_tensorHom_id := by
@@ -712,7 +699,7 @@ instance : MonoidalCategory FinStoch where
         have h_assoc2 : (MonoidalCategoryStruct.associator W
                          (MonoidalCategoryStruct.tensorObj X Y) Z).hom.toMatrix
                         ((w, (x, y)), z) (w, ((x, y), z)) = 1 := by
-          change (associator W (tensorObj X Y) Z).hom.toMatrix
+          change (associator W (FinStoch.tensorObj X Y) Z).hom.toMatrix
                  ((w, (x, y)), z) (w, ((x, y), z)) = 1
           simp only [associator]
           simp [and_self]
@@ -743,7 +730,7 @@ instance : MonoidalCategory FinStoch where
           have h_assoc4 : (MonoidalCategoryStruct.associator
                            (MonoidalCategoryStruct.tensorObj W X) Y Z).hom.toMatrix
                           (((w, x), y), z) ((w, x), (y, z)) = 1 := by
-            change (associator (tensorObj W X) Y Z).hom.toMatrix
+            change (associator (FinStoch.tensorObj W X) Y Z).hom.toMatrix
                    (((w, x), y), z) ((w, x), (y, z)) = 1
             simp only [associator]
             simp [and_self]
@@ -754,7 +741,7 @@ instance : MonoidalCategory FinStoch where
                                (MonoidalCategoryStruct.tensorObj Y Z)).hom.toMatrix
                               ((w, x), (y, z)) (w', (x', (y', z'))) =
                               if w = w' ∧ x = x' ∧ (y, z) = (y', z') then 1 else 0 := by
-            change (associator W X (tensorObj Y Z)).hom.toMatrix
+            change (associator W X (FinStoch.tensorObj Y Z)).hom.toMatrix
                    ((w, x), (y, z)) (w', (x', (y', z'))) = _
             simp only [associator]
           simp only [h_assoc5_eval]
@@ -790,7 +777,7 @@ instance : MonoidalCategory FinStoch where
           have h_assoc_zero : (MonoidalCategoryStruct.associator
                                (MonoidalCategoryStruct.tensorObj W X) Y Z).hom.toMatrix
                               (((w, x), y), z) ((w₁, x₁), (y₁, z₁)) = 0 := by
-            change (associator (tensorObj W X) Y Z).hom.toMatrix
+            change (associator (FinStoch.tensorObj W X) Y Z).hom.toMatrix
                    (((w, x), y), z) ((w₁, x₁), (y₁, z₁)) = 0
             simp only [associator]
             by_cases h : (w, x) = (w₁, x₁) ∧ y = y₁ ∧ z = z₁
@@ -813,7 +800,7 @@ instance : MonoidalCategory FinStoch where
         have h_assoc_zero : (MonoidalCategoryStruct.associator W
                              (MonoidalCategoryStruct.tensorObj X Y) Z).hom.toMatrix
                             ((w, (x, y)), z) (w₁, ((x₁, y₁), z₁)) = 0 := by
-          change (associator W (tensorObj X Y) Z).hom.toMatrix
+          change (associator W (FinStoch.tensorObj X Y) Z).hom.toMatrix
                  ((w, (x, y)), z) (w₁, ((x₁, y₁), z₁)) = 0
           simp only [associator]
           by_cases h : w = w₁ ∧ (x, y) = (x₁, y₁) ∧ z = z₁
