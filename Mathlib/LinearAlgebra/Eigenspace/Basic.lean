@@ -518,6 +518,10 @@ theorem maxGenEigenspace_eq [IsNoetherian R M] (f : End R M) (μ : R) :
     maxGenEigenspace f μ = f.genEigenspace μ (maxGenEigenspaceIndex f μ) :=
   genEigenspace_top_eq_maxUnifEigenspaceIndex _ _
 
+theorem maxGenEigenspace_eq_maxGenEigenspace_zero (f : End R M) (μ : R) :
+    maxGenEigenspace f μ = maxGenEigenspace (f - μ • 1) 0 := by
+  ext; simp
+
 /-- A generalized eigenvalue for some exponent `k` is also
 a generalized eigenvalue for exponents larger than `k`. -/
 theorem hasGenEigenvalue_of_hasGenEigenvalue_of_le {f : End R M} {μ : R} {k : ℕ}
