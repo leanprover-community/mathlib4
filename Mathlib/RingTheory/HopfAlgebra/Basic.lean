@@ -29,7 +29,7 @@ In this file we define `HopfAlgebra`, and provide instances for:
   the identity.
 
 (Note that all three facts have been proved for Hopf bimonoids in an arbitrary braided category,
-so we could deduce the facts here from an equivalence `HopfAlgCat R ≌ Hopf_ (ModuleCat R)`.)
+so we could deduce the facts here from an equivalence `HopfAlgCat R ≌ Hopf (ModuleCat R)`.)
 
 ## References
 
