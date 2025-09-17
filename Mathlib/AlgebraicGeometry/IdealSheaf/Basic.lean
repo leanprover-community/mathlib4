@@ -26,7 +26,7 @@ We define ideal sheaves of schemes and provide various constructors for it.
 
 ## Main results
 * `AlgebraicGeometry.Scheme.IdealSheafData.gc`:
-  `support` and `vanishingIdeal` forms a galois connection.
+  `support` and `vanishingIdeal` forms a Galois connection.
 * `AlgebraicGeometry.Scheme.Hom.support_ker`: The support of a kernel of a quasi-compact morphism
   is the closure of the range.
 
@@ -103,7 +103,7 @@ lemma ideal_ofIdeals_le (I : ∀ U : X.affineOpens, Ideal Γ(X, U)) :
     (ofIdeals I).ideal ≤ I :=
   sSup_le (Set.forall_mem_image.mpr fun _ ↦ id)
 
-/-- The galois coinsertion between ideal sheaves and arbitrary families of ideals. -/
+/-- The Galois coinsertion between ideal sheaves and arbitrary families of ideals. -/
 protected def gci : GaloisCoinsertion ideal (ofIdeals (X := X)) where
   choice I hI :=
   { ideal := I
@@ -390,14 +390,8 @@ section ofIsClosed
 
 open _root_.PrimeSpectrum TopologicalSpace
 
-lemma Scheme.zeroLocus_radical {U : X.Opens} (I : Ideal Γ(X, U)) :
-    X.zeroLocus (U := U) I.radical = X.zeroLocus (U := U) I := by
-  refine (X.zeroLocus_mono I.le_radical).antisymm ?_
-  simp only [Set.subset_def, mem_zeroLocus_iff, SetLike.mem_coe]
-  rintro x H f ⟨n, hn⟩ hx
-  rcases n.eq_zero_or_pos with rfl | hn'
-  · exact H f (by simpa using I.mul_mem_left f hn) hx
-  · exact H _ hn (X.basicOpen_pow f hn' ▸ hx)
+@[deprecated (since := "2025-08-10")] alias Scheme.zeroLocus_radical :=
+  AlgebraicGeometry.Scheme.zeroLocus_radical
 
 /-- The radical of a ideal sheaf. -/
 @[simps! ideal]
@@ -412,7 +406,7 @@ def radical (I : IdealSheafData X) : IdealSheafData X :=
       congr($(I.map_ideal_basicOpen U f).radical))
   I.supportSet
   (fun U x hx ↦ by
-    simp only [mem_supportSet_iff_of_mem hx, Scheme.zeroLocus_radical])
+    simp only [mem_supportSet_iff_of_mem hx, AlgebraicGeometry.Scheme.zeroLocus_radical])
 
 @[simp]
 lemma support_radical (I : IdealSheafData X) : I.radical.support = I.support := rfl
@@ -508,7 +502,7 @@ lemma le_support_iff_le_vanishingIdeal {I : X.IdealSheafData} {Z : Closeds X} :
 @[deprecated (since := "2025-05-16")]
 alias subset_support_iff_le_vanishingIdeal := le_support_iff_le_vanishingIdeal
 
-/-- `support` and `vanishingIdeal` forms a galois connection.
+/-- `support` and `vanishingIdeal` forms a Galois connection.
 This is the global version of `PrimeSpectrum.gc`. -/
 lemma gc : @GaloisConnection X.IdealSheafData (Closeds X)ᵒᵈ _ _ (support ·) (vanishingIdeal ·) :=
   fun _ _ ↦ le_support_iff_le_vanishingIdeal

@@ -50,10 +50,10 @@ instance (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     rw [← (Algebra.lmul _ _).commutes, Algebra.lmul_isUnit_iff, isUnit_iff_ne_zero, eq_intCast,
       Int.cast_ne_zero]
     exact nonZeroDivisors.coe_ne_zero x
-  surj' x := by
+  surj x := by
     obtain ⟨⟨a, _, d, hd, rfl⟩, h⟩ := IsLocalization.surj (Algebra.algebraMapSubmonoid (𝓞 K) ℤ⁰) x
     refine ⟨⟨⟨Ideal.absNorm I.1.num * (algebraMap _ K a), I.1.num_le ?_⟩, d * Ideal.absNorm I.1.num,
-      ?_⟩ , ?_⟩
+      ?_⟩, ?_⟩
     · simp_rw [FractionalIdeal.val_eq_coe, FractionalIdeal.coe_coeIdeal]
       refine (IsLocalization.mem_coeSubmodule _ _).mpr ⟨Ideal.absNorm I.1.num * a, ?_, ?_⟩
       · exact Ideal.mul_mem_right _ _ I.1.num.absNorm_mem

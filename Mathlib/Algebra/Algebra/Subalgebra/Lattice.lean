@@ -563,8 +563,9 @@ theorem adjoin_eq_span : Subalgebra.toSubmodule (adjoin R s) = span R (Submonoid
   · intro r hr
     rcases Subsemiring.mem_closure_iff_exists_list.1 hr with ⟨L, HL, rfl⟩
     clear hr
-    induction' L with hd tl ih
-    · exact zero_mem _
+    induction L with
+    | nil => exact zero_mem _
+    | cons hd tl ih => ?_
     rw [List.forall_mem_cons] at HL
     rw [List.map_cons, List.sum_cons]
     refine Submodule.add_mem _ ?_ (ih HL.2)
@@ -574,8 +575,9 @@ theorem adjoin_eq_span : Subalgebra.toSubmodule (adjoin R s) = span R (Submonoid
       rcases this with ⟨z, r, hr, hzr⟩
       rw [← hzr]
       exact smul_mem _ _ (subset_span hr)
-    induction' hd with hd tl ih
-    · exact ⟨1, 1, (Submonoid.closure s).one_mem', one_smul _ _⟩
+    induction hd with
+    | nil => exact ⟨1, 1, (Submonoid.closure s).one_mem', one_smul _ _⟩
+    | cons hd tl ih => ?_
     rw [List.forall_mem_cons] at HL
     rcases ih HL.2 with ⟨z, r, hr, hzr⟩
     rw [List.prod_cons, ← hzr]
@@ -607,7 +609,6 @@ theorem adjoin_span {s : Set A} : adjoin R (Submodule.span R s : Set A) = adjoin
 theorem adjoin_image (f : A →ₐ[R] B) (s : Set A) : adjoin R (f '' s) = (adjoin R s).map f :=
   le_antisymm (adjoin_le <| Set.image_mono subset_adjoin) <|
     Subalgebra.map_le.2 <| adjoin_le <| Set.image_subset_iff.1 <| by
-      -- Porting note: I don't understand how this worked in Lean 3 with just `subset_adjoin`
       simp only [Set.image_id', coe_carrier_toSubmonoid, Subalgebra.coe_toSubsemiring,
         Subalgebra.coe_comap]
       exact fun x hx => subset_adjoin ⟨x, hx, rfl⟩

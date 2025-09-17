@@ -623,8 +623,7 @@ theorem indepFun_iff_map_prod_eq_prod_map_map' {mβ : MeasurableSpace β} {mβ' 
 theorem indepFun_iff_map_prod_eq_prod_map_map {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [IsFiniteMeasure μ] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     IndepFun f g μ ↔ μ.map (fun ω ↦ (f ω, g ω)) = (μ.map f).prod (μ.map g) := by
-  apply indepFun_iff_map_prod_eq_prod_map_map' hf hg
-   <;> apply IsFiniteMeasure.toSigmaFinite
+  apply indepFun_iff_map_prod_eq_prod_map_map' hf hg <;> apply IsFiniteMeasure.toSigmaFinite
 
 theorem iIndepFun_iff_map_fun_eq_pi_map [Fintype ι] {β : ι → Type*}
     {m : ∀ i, MeasurableSpace (β i)} {f : Π i, Ω → β i} [IsProbabilityMeasure μ]
@@ -664,6 +663,62 @@ theorem IndepFun.congr {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
   refine Kernel.IndepFun.congr' hfg ?_ ?_ <;> simpa
 
 @[deprecated (since := "2025-03-18")] alias IndepFun.ae_eq := IndepFun.congr
+
+section Prod
+
+variable {Ω Ω' : Type*} {mΩ : MeasurableSpace Ω} {mΩ' : MeasurableSpace Ω'}
+    {μ : Measure Ω} {ν : Measure Ω'} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
+    {𝓧 𝓨 : Type*} [MeasurableSpace 𝓧] [MeasurableSpace 𝓨] {X : Ω → 𝓧} {Y : Ω' → 𝓨}
+
+/-- Given random variables `X : Ω → 𝓧` and `Y : Ω' → 𝓨`, they are independent when viewed as random
+variables defined on the product space `Ω × Ω'`. -/
+lemma indepFun_prod (mX : Measurable X) (mY : Measurable Y) :
+    IndepFun (fun ω ↦ X ω.1) (fun ω ↦ Y ω.2) (μ.prod ν) := by
+  refine indepFun_iff_map_prod_eq_prod_map_map (by fun_prop) (by fun_prop) |>.2 ?_
+  convert Measure.map_prod_map μ ν mX mY |>.symm
+  · rw [← Function.comp_def, ← Measure.map_map mX measurable_fst, Measure.map_fst_prod,
+      measure_univ, one_smul]
+  · rw [← Function.comp_def, ← Measure.map_map mY measurable_snd, Measure.map_snd_prod,
+      measure_univ, one_smul]
+
+/-- Given random variables `X : Ω → 𝓧` and `Y : Ω' → 𝓨`, they are independent when viewed as random
+variables defined on the product space `Ω × Ω'`. -/
+lemma indepFun_prod₀ (mX : AEMeasurable X μ) (mY : AEMeasurable Y ν) :
+    IndepFun (fun ω ↦ X ω.1) (fun ω ↦ Y ω.2) (μ.prod ν) := by
+  have : IndepFun (fun ω ↦ mX.mk X ω.1) (fun ω ↦ mY.mk Y ω.2) (μ.prod ν) :=
+    indepFun_prod mX.measurable_mk mY.measurable_mk
+  refine this.congr ?_ ?_
+  · rw [← Function.comp_def, ← Function.comp_def]
+    apply ae_eq_comp
+    · exact measurable_fst.aemeasurable
+    · rw [measurePreserving_fst.map_eq]
+      exact (AEMeasurable.ae_eq_mk mX).symm
+  · rw [← Function.comp_def, ← Function.comp_def]
+    apply ae_eq_comp
+    · exact measurable_snd.aemeasurable
+    · rw [measurePreserving_snd.map_eq]
+      exact (AEMeasurable.ae_eq_mk mY).symm
+
+variable {ι : Type*} [Fintype ι] {Ω : ι → Type*} {mΩ : ∀ i, MeasurableSpace (Ω i)}
+    {μ : (i : ι) → Measure (Ω i)} [∀ i, IsProbabilityMeasure (μ i)]
+    {𝓧 : ι → Type*} [∀ i, MeasurableSpace (𝓧 i)] {X : (i : ι) → Ω i → 𝓧 i}
+
+/-- Given random variables `X i : Ω i → 𝓧 i`, they are independent when viewed as random
+variables defined on the product space `Π i, Ω i`. -/
+lemma iIndepFun_pi (mX : ∀ i, AEMeasurable (X i) (μ i)) :
+    iIndepFun (fun i ω ↦ X i (ω i)) (Measure.pi μ) := by
+  refine iIndepFun_iff_map_fun_eq_pi_map ?_ |>.2 ?_
+  · exact fun i ↦ (mX i).comp_quasiMeasurePreserving (Measure.quasiMeasurePreserving_eval _ i)
+  rw [Measure.pi_map_pi mX]
+  congr
+  ext i : 1
+  rw [← (measurePreserving_eval μ i).map_eq, AEMeasurable.map_map_of_aemeasurable,
+    Function.comp_def]
+  · rw [(measurePreserving_eval μ i).map_eq]
+    exact mX i
+  · exact (measurable_pi_apply i).aemeasurable
+
+end Prod
 
 theorem IndepFun.comp {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'}
     {_mγ : MeasurableSpace γ} {_mγ' : MeasurableSpace γ'} {φ : β → γ} {ψ : β' → γ'}
@@ -936,7 +991,6 @@ lemma cond_iInter [Finite ι] (hY : ∀ i, Measurable (Y i))
       congr
       calc
         _ = (⋂ i, Y i ⁻¹' t i) ∩ ⋂ i, if i ∈ s then f i else .univ := by
-          congr
           simp only [Set.iInter_ite, Set.iInter_univ, Set.inter_univ]
         _ = ⋂ i, Y i ⁻¹' t i ∩ (if i ∈ s then f i else .univ) := by rw [Set.iInter_inter_distrib]
         _ = _ := Set.iInter_congr fun i ↦ by by_cases hi : i ∈ s <;> simp [hi, g]
