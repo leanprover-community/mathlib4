@@ -2467,6 +2467,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 import Mathlib.CategoryTheory.Limits.Sifted
+import Mathlib.CategoryTheory.Limits.Skeleton
 import Mathlib.CategoryTheory.Limits.SmallComplete
 import Mathlib.CategoryTheory.Limits.Types.ColimitType
 import Mathlib.CategoryTheory.Limits.Types.ColimitTypeFiltered
@@ -2562,6 +2563,7 @@ import Mathlib.CategoryTheory.Monoidal.Conv
 import Mathlib.CategoryTheory.Monoidal.DayConvolution
 import Mathlib.CategoryTheory.Monoidal.DayConvolution.Braided
 import Mathlib.CategoryTheory.Monoidal.DayConvolution.Closed
+import Mathlib.CategoryTheory.Monoidal.DayConvolution.DayFunctor
 import Mathlib.CategoryTheory.Monoidal.Discrete
 import Mathlib.CategoryTheory.Monoidal.End
 import Mathlib.CategoryTheory.Monoidal.ExternalProduct
