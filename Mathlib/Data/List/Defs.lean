@@ -36,7 +36,7 @@ def getI [Inhabited α] (l : List α) (n : Nat) : α :=
 
 /-- The head of a list, or the default element of the type is the list is `nil`. -/
 def headI [Inhabited α] : List α → α
-  | []       => default
+  | [] => default
   | (a :: _) => a
 
 @[simp] theorem headI_nil [Inhabited α] : ([] : List α).headI = default := rfl
@@ -114,6 +114,7 @@ end foldIdxM
 
 section mapIdxM
 
+-- This could be relaxed to `Applicative` but is `Monad` to match `List.mapIdxM`.
 variable {m : Type v → Type w} [Monad m]
 
 /-- Auxiliary definition for `mapIdxM'`. -/
@@ -402,9 +403,9 @@ def zipWith5 (f : α → β → γ → δ → ε → ζ) : List α → List β �
   | x :: xs, y :: ys, z :: zs, u :: us, v :: vs => f x y z u v :: zipWith5 f xs ys zs us vs
   | _, _, _, _, _ => []
 
-/-- Given a starting list `old`, a list of booleans and a replacement list `new`,
+/-- Given a starting list `old`, a list of Booleans and a replacement list `new`,
 read the items in `old` in succession and either replace them with the next element of `new` or
-not, according as to whether the corresponding boolean is `true` or `false`. -/
+not, according as to whether the corresponding Boolean is `true` or `false`. -/
 def replaceIf : List α → List Bool → List α → List α
   | l, _, [] => l
   | [], _, _ => []
@@ -414,7 +415,7 @@ def replaceIf : List α → List Bool → List α → List α
 /-- `iterate f a n` is `[a, f a, ..., f^[n - 1] a]`. -/
 @[simp]
 def iterate (f : α → α) (a : α) : (n : ℕ) → List α
-  | 0     => []
+  | 0 => []
   | n + 1 => a :: iterate f (f a) n
 
 /-- Tail-recursive version of `List.iterate`. -/
@@ -426,7 +427,7 @@ where
   @[simp, specialize]
   loop (a : α) (n : ℕ) (l : List α) : List α :=
     match n with
-    | 0     => reverse l
+    | 0 => reverse l
     | n + 1 => loop (f a) n (a :: l)
 
 theorem iterateTR_loop_eq (f : α → α) (a : α) (n : ℕ) (l : List α) :

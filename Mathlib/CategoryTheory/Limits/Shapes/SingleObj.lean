@@ -75,32 +75,37 @@ variable {G : Type v} [Group G] (J : SingleObj G ⥤ Type u)
 
 /-- The relation used to construct colimits in types for `J : SingleObj G ⥤ Type u` is
 equivalent to the `MulAction.orbitRel` equivalence relation on `J.obj (SingleObj.star G)`. -/
-lemma Types.Quot.Rel.iff_orbitRel (x y : J.obj (SingleObj.star G)) :
-    Types.Quot.Rel J ⟨SingleObj.star G, x⟩ ⟨SingleObj.star G, y⟩
-    ↔ MulAction.orbitRel G (J.obj (SingleObj.star G)) x y := by
-  have h (g : G) : y = g • x ↔ g • x = y := ⟨symm, symm⟩
+lemma colimitTypeRel_iff_orbitRel (x y : J.obj (SingleObj.star G)) :
+    J.ColimitTypeRel ⟨SingleObj.star G, x⟩ ⟨SingleObj.star G, y⟩ ↔
+      MulAction.orbitRel G (J.obj (SingleObj.star G)) x y := by
   conv => rhs; rw [Setoid.comm']
   change (∃ g : G, y = g • x) ↔ (∃ g : G, g • x = y)
-  conv => lhs; simp only [h]
+  grind
+
+@[deprecated (since := "2025-06-22")] alias Types.Quot.Rel.iff_orbitRel :=
+  colimitTypeRel_iff_orbitRel
 
 /-- The explicit quotient construction of the colimit of `J : SingleObj G ⥤ Type u` is
 equivalent to the quotient of `J.obj (SingleObj.star G)` by the induced action. -/
 @[simps]
-def Types.Quot.equivOrbitRelQuotient :
-    Types.Quot J ≃ MulAction.orbitRel.Quotient G (J.obj (SingleObj.star G)) where
+def colimitTypeRelEquivOrbitRelQuotient :
+    J.ColimitType ≃ MulAction.orbitRel.Quotient G (J.obj (SingleObj.star G)) where
   toFun := Quot.lift (fun p => ⟦p.2⟧) <| fun a b h => Quotient.sound <|
-    (Types.Quot.Rel.iff_orbitRel J a.2 b.2).mp h
+    (colimitTypeRel_iff_orbitRel J a.2 b.2).mp h
   invFun := Quot.lift (fun x => Quot.mk _ ⟨SingleObj.star G, x⟩) <| fun a b h =>
-    Quot.sound <| (Types.Quot.Rel.iff_orbitRel J a b).mpr h
+    Quot.sound <| (colimitTypeRel_iff_orbitRel J a b).mpr h
   left_inv := fun x => Quot.inductionOn x (fun _ ↦ rfl)
   right_inv := fun x => Quot.inductionOn x (fun _ ↦ rfl)
+
+@[deprecated (since := "2025-06-22")] alias Types.Quot.equivOrbitRelQuotient :=
+  colimitTypeRelEquivOrbitRelQuotient
 
 /-- The colimit of `J : SingleObj G ⥤ Type u` is equivalent to the quotient of
 `J.obj (SingleObj.star G)` by the induced action. -/
 @[simps!]
 noncomputable def Types.colimitEquivQuotient :
     colimit J ≃ MulAction.orbitRel.Quotient G (J.obj (SingleObj.star G)) :=
-  (Types.colimitEquivQuot J).trans (Types.Quot.equivOrbitRelQuotient J)
+  (Types.colimitEquivColimitType J).trans (colimitTypeRelEquivOrbitRelQuotient J)
 
 end Colimits
 

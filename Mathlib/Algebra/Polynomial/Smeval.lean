@@ -159,11 +159,8 @@ theorem smeval_sub : (p - q).smeval x = p.smeval x - q.smeval x := by
 theorem smeval_neg_nat (S : Type*) [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S] (q : ℕ[X])
     (n : ℕ) : q.smeval (-(n : S)) = q.smeval (-n : ℤ) := by
   rw [smeval_eq_sum, smeval_eq_sum]
-  simp only [Polynomial.smul_pow, sum_def, Int.cast_sum]
-  refine Finset.sum_congr rfl ?_
-  intro k _
-  rw [show -(n : S) = (-n : ℤ) by simp only [Int.cast_neg, Int.cast_natCast], nsmul_eq_mul,
-    ← AddGroupWithOne.intCast_ofNat, ← Int.cast_npow, ← Int.cast_mul, ← nsmul_eq_mul]
+  simp only [Polynomial.smul_pow, sum_def]
+  simp
 
 end Neg
 
@@ -187,7 +184,7 @@ theorem smeval_C_mul : (C r * p).smeval x = r • p.smeval x := by
 
 variable [NatPowAssoc S]
 
-theorem smeval_at_natCast (q : ℕ[X]) : ∀(n : ℕ), q.smeval (n : S) = q.smeval n := by
+theorem smeval_at_natCast (q : ℕ[X]) : ∀ (n : ℕ), q.smeval (n : S) = q.smeval n := by
   induction q using Polynomial.induction_on' with
   | add p q ph qh =>
     intro n

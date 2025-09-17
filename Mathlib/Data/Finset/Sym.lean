@@ -46,6 +46,9 @@ theorem mem_sym2_iff {m : Sym2 α} : m ∈ s.sym2 ↔ ∀ a ∈ m, a ∈ s := by
   rw [mem_mk, sym2_val, Multiset.mem_sym2_iff]
   simp only [mem_val]
 
+@[simp] lemma coe_sym2 {m : Finset α} : (m.sym2 : Set (Sym2 α)) = (m : Set α).sym2 :=
+  Set.ext fun z ↦ z.ind fun a b => by simp
+
 theorem sym2_cons (a : α) (s : Finset α) (ha : a ∉ s) :
     (s.cons a ha).sym2 = ((s.cons a ha).map <| Sym2.mkEmbedding a).disjUnion s.sym2 (by
       simp [Finset.disjoint_left, ha]) :=
@@ -55,7 +58,7 @@ theorem sym2_insert [DecidableEq α] (a : α) (s : Finset α) :
     (insert a s).sym2 = ((insert a s).image fun b => s(a, b)) ∪ s.sym2 := by
   obtain ha | ha := Decidable.em (a ∈ s)
   · simp only [insert_eq_of_mem ha, right_eq_union, image_subset_iff]
-    aesop
+    simp_all
   · simpa [map_eq_image] using sym2_cons a s ha
 
 theorem sym2_map (f : α ↪ β) (s : Finset α) : (s.map f).sym2 = s.sym2.map (.sym2Map f) :=
@@ -187,10 +190,12 @@ theorem sym_succ : s.sym (n + 1) = s.sup fun a ↦ (s.sym n).image <| Sym.cons a
 
 @[simp]
 theorem mem_sym_iff {m : Sym α n} : m ∈ s.sym n ↔ ∀ a ∈ m, a ∈ s := by
-  induction' n with n ih
-  · refine mem_singleton.trans ⟨?_, fun _ ↦ Sym.eq_nil_of_card_zero _⟩
+  induction n with
+  | zero =>
+    refine mem_singleton.trans ⟨?_, fun _ ↦ Sym.eq_nil_of_card_zero _⟩
     rintro rfl
     exact fun a ha ↦ (Finset.notMem_empty _ ha).elim
+  | succ n ih => ?_
   refine mem_sup.trans ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨a, ha, he⟩ b hb
     rw [mem_image] at he
@@ -267,7 +272,7 @@ theorem sym_filterNe_mem {m : Sym α n} (a : α) (h : m ∈ s.sym n) :
   in 1-1 correspondence with the disjoint union of the `n - i`th symmetric powers of `s`,
   for `0 ≤ i ≤ n`. -/
 @[simps]
-def symInsertEquiv (h : a ∉ s) : (insert a s).sym n ≃ Σi : Fin (n + 1), s.sym (n - i) where
+def symInsertEquiv (h : a ∉ s) : (insert a s).sym n ≃ Σ i : Fin (n + 1), s.sym (n - i) where
   toFun m := ⟨_, (m.1.filterNe a).2, by convert sym_filterNe_mem a m.2; rw [erase_insert h]⟩
   invFun m := ⟨m.2.1.fill a m.1, sym_fill_mem a m.2.2⟩
   left_inv m := Subtype.ext <| m.1.fill_filterNe a

@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Support
+import Mathlib.Algebra.Notation.Support
 import Mathlib.Topology.Inseparable
 import Mathlib.Topology.Piecewise
 import Mathlib.Topology.Separation.SeparatedNhds
@@ -90,26 +90,14 @@ protected theorem Topology.IsInducing.injective [TopologicalSpace Y] [T0Space X]
     (hf : IsInducing f) : Injective f := fun _ _ h =>
   (hf.inseparable_iff.1 <| .of_eq h).eq
 
-@[deprecated (since := "2024-10-28")] alias Inducing.injective := IsInducing.injective
-
 /-- A topology inducing map from a T₀ space is a topological embedding. -/
 protected theorem Topology.IsInducing.isEmbedding [TopologicalSpace Y] [T0Space X] {f : X → Y}
     (hf : IsInducing f) : IsEmbedding f :=
   ⟨hf, hf.injective⟩
 
-@[deprecated (since := "2024-10-28")] alias Inducing.isEmbedding := IsInducing.isEmbedding
-
-@[deprecated (since := "2024-10-26")]
-alias Inducing.embedding := Topology.IsInducing.isEmbedding
-
 lemma isEmbedding_iff_isInducing [TopologicalSpace Y] [T0Space X] {f : X → Y} :
     IsEmbedding f ↔ IsInducing f :=
   ⟨IsEmbedding.isInducing, IsInducing.isEmbedding⟩
-
-@[deprecated (since := "2024-10-28")] alias isEmbedding_iff_inducing := isEmbedding_iff_isInducing
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_iff_inducing := isEmbedding_iff_isInducing
 
 theorem t0Space_iff_nhds_injective (X : Type u) [TopologicalSpace X] :
     T0Space X ↔ Injective (𝓝 : X → Filter X) :=
@@ -204,7 +192,7 @@ theorem exists_isOpen_singleton_of_isOpen_finite [T0Space X] {s : Set X} (hfin :
   · rcases ihs t hts htne hto with ⟨x, hxt, hxo⟩
     exact ⟨x, hts.1 hxt, hxo⟩
   · -- Porting note: was `rcases minimal_nonempty_open_eq_singleton ho hne _ with ⟨x, hx⟩`
-    --               https://github.com/leanprover/std4/issues/116
+    --               https://github.com/leanprover-community/batteries/issues/116
     rsuffices ⟨x, hx⟩ : ∃ x, s.toSet = {x}
     · exact ⟨x, hx.symm ▸ rfl, hx ▸ ho⟩
     refine minimal_nonempty_open_eq_singleton ho hne ?_
@@ -225,9 +213,6 @@ theorem t0Space_of_injective_of_continuous [TopologicalSpace Y] {f : X → Y}
 protected theorem Topology.IsEmbedding.t0Space [TopologicalSpace Y] [T0Space Y] {f : X → Y}
     (hf : IsEmbedding f) : T0Space X :=
   t0Space_of_injective_of_continuous hf.injective hf.continuous
-
-@[deprecated (since := "2024-10-26")]
-alias Embedding.t0Space := IsEmbedding.t0Space
 
 protected theorem Homeomorph.t0Space [TopologicalSpace Y] [T0Space X] (h : X ≃ₜ Y) : T0Space Y :=
   h.symm.isEmbedding.t0Space
@@ -299,8 +284,6 @@ theorem Topology.IsInducing.r0Space [TopologicalSpace Y] {f : Y → X} (hf : IsI
   specializes_symmetric a b := by
     simpa only [← hf.specializes_iff] using Specializes.symm
 
-@[deprecated (since := "2024-10-28")] alias Inducing.r0Space := IsInducing.r0Space
-
 instance {p : X → Prop} : R0Space {x // p x} := IsInducing.subtypeVal.r0Space
 
 instance [TopologicalSpace Y] [R0Space Y] : R0Space (X × Y) where
@@ -327,8 +310,8 @@ variable (X) in
 Its cobounded filter is `Filter.coclosedCompact`.
 See also `Bornology.inCompact` the bornology of sets contained in a compact set. -/
 def Bornology.relativelyCompact : Bornology X where
-  cobounded' := Filter.coclosedCompact X
-  le_cofinite' := Filter.coclosedCompact_le_cofinite
+  cobounded := Filter.coclosedCompact X
+  le_cofinite := Filter.coclosedCompact_le_cofinite
 
 theorem Bornology.relativelyCompact.isBounded_iff {s : Set X} :
     @Bornology.IsBounded _ (Bornology.relativelyCompact X) s ↔ IsCompact (closure s) :=
@@ -371,7 +354,7 @@ theorem Ne.nhdsWithin_diff_singleton [T1Space X] {x y : X} (h : x ≠ y) (s : Se
   exact mem_nhdsWithin_of_mem_nhds (isOpen_ne.mem_nhds h)
 
 lemma nhdsWithin_compl_singleton_le [T1Space X] (x y : X) : 𝓝[{x}ᶜ] x ≤ 𝓝[{y}ᶜ] x := by
-  rcases eq_or_ne x y with rfl|hy
+  rcases eq_or_ne x y with rfl | hy
   · exact Eq.le rfl
   · rw [Ne.nhdsWithin_compl_singleton hy]
     exact nhdsWithin_le_nhds
@@ -529,9 +512,6 @@ theorem t1Space_of_injective_of_continuous [TopologicalSpace Y] {f : X → Y}
 protected theorem Topology.IsEmbedding.t1Space [TopologicalSpace Y] [T1Space Y] {f : X → Y}
     (hf : IsEmbedding f) : T1Space X :=
   t1Space_of_injective_of_continuous hf.injective hf.continuous
-
-@[deprecated (since := "2024-10-26")]
-alias Embedding.t1Space := IsEmbedding.t1Space
 
 protected theorem Homeomorph.t1Space [TopologicalSpace Y] [T1Space X] (h : X ≃ₜ Y) : T1Space Y :=
   h.symm.isEmbedding.t1Space
@@ -725,6 +705,21 @@ theorem continuousWithinAt_congr_set' [TopologicalSpace Y] [T1Space X]
   rw [← continuousWithinAt_insert_self (s := s), ← continuousWithinAt_insert_self (s := t)]
   exact continuousWithinAt_congr_set (eventuallyEq_insert h)
 
+theorem ContinuousWithinAt.eq_const_of_mem_closure [TopologicalSpace Y] [T1Space Y]
+    {f : X → Y} {s : Set X} {x : X} {c : Y} (h : ContinuousWithinAt f s x) (hx : x ∈ closure s)
+    (ht : ∀ y ∈ s, f y = c) : f x = c := by
+  rw [← Set.mem_singleton_iff, ← closure_singleton]
+  exact h.mem_closure hx ht
+
+@[deprecated (since := "2025-08-22")] alias ContinousWithinAt.eq_const_of_mem_closure :=
+  ContinuousWithinAt.eq_const_of_mem_closure
+
+theorem ContinuousWithinAt.eqOn_const_closure [TopologicalSpace Y] [T1Space Y]
+    {f : X → Y} {s : Set X} {c : Y} (h : ∀ x ∈ closure s, ContinuousWithinAt f s x)
+    (ht : s.EqOn f (fun _ ↦ c)) : (closure s).EqOn f (fun _ ↦ c) := by
+  intro x hx
+  apply ContinuousWithinAt.eq_const_of_mem_closure (h x hx) hx ht
+
 /-- To prove a function to a `T1Space` is continuous at some point `x`, it suffices to prove that
 `f` admits *some* limit at `x`. -/
 theorem continuousAt_of_tendsto_nhds [TopologicalSpace Y] [T1Space Y] {f : X → Y} {x : X} {y : Y}
@@ -820,7 +815,7 @@ theorem isOpen_inter_eq_singleton_of_mem_discrete {s : Set X} [DiscreteTopology 
 
 /-- For point `x` in a discrete subset `s` of a topological space, there is a set `U`
 such that
-1. `U` is a punctured neighborhood of `x` (ie. `U ∪ {x}` is a neighbourhood of `x`),
+1. `U` is a punctured neighborhood of `x` (i.e. `U ∪ {x}` is a neighbourhood of `x`),
 2. `U` is disjoint from `s`.
 -/
 theorem disjoint_nhdsWithin_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X} (hx : x ∈ s) :
@@ -838,6 +833,17 @@ theorem isClosedEmbedding_update {ι : Type*} {β : ι → Type*}
   rw [update_image]
   apply isClosed_set_pi
   simp [forall_update_iff, hs]
+
+lemma nhdsNE_le_cofinite {α : Type*} [TopologicalSpace α] [T1Space α] (a : α) :
+    𝓝[≠] a ≤ cofinite := by
+  refine le_cofinite_iff_compl_singleton_mem.mpr fun x ↦ ?_
+  rcases eq_or_ne a x with rfl | hx
+  exacts [self_mem_nhdsWithin, eventually_ne_nhdsWithin hx]
+
+lemma Function.update_eventuallyEq_nhdsNE
+    {α β : Type*} [TopologicalSpace α] [T1Space α] [DecidableEq α] (f : α → β) (a a' : α) (b : β) :
+    Function.update f a b =ᶠ[𝓝[≠] a'] f :=
+  (Function.update_eventuallyEq_cofinite f a b).filter_mono (nhdsNE_le_cofinite a')
 
 /-! ### R₁ (preregular) spaces -/
 
@@ -999,8 +1005,6 @@ theorem R1Space.of_continuous_specializes_imp [TopologicalSpace Y] {f : Y → X}
 
 theorem Topology.IsInducing.r1Space [TopologicalSpace Y] {f : Y → X} (hf : IsInducing f) :
     R1Space Y := .of_continuous_specializes_imp hf.continuous fun _ _ ↦ hf.specializes_iff.1
-
-@[deprecated (since := "2024-10-28")] alias Inducing.r1Space := IsInducing.r1Space
 
 protected theorem R1Space.induced (f : Y → X) : @R1Space Y (.induced f ‹_›) :=
   @IsInducing.r1Space _ _ _ _ (.induced f _) f (.induced f)

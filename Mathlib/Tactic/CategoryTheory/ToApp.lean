@@ -45,7 +45,7 @@ It is important here that the levels in the term are level metavariables, as oth
 not be reassignable to the corresponding levels of `Cat`. -/
 def toCatExpr (e : Expr) : MetaM Expr := do
   let (args, binderInfos, conclusion) ← forallMetaTelescope (← inferType e)
-  -- Find the expression corresponding to the bicategory, by anylizing `η = θ` (i.e. conclusion)
+  -- Find the expression corresponding to the bicategory, by analyzing `η = θ` (i.e. conclusion)
   let B ←
     match conclusion.getAppFnArgs with
     | (`Eq, #[_, η, _]) =>
@@ -64,7 +64,7 @@ def toCatExpr (e : Expr) : MetaM Expr := do
   -- Assign the right bicategory instance to `Cat.{v, u}`
   let some inst ← args.findM? fun x => do
       return (← inferType x).getAppFnArgs == (`CategoryTheory.Bicategory, #[B])
-    | throwError "Can not find the argument for the bicategory instance of the bicategory in which \
+    | throwError "Cannot find the argument for the bicategory instance of the bicategory in which \
       the equality is taking place."
   let _ ← isDefEq inst (.const ``CategoryTheory.Cat.bicategory [v, u])
   -- Construct the new expression
