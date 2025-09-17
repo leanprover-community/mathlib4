@@ -74,7 +74,7 @@ lemma relation_mem_ker (i) : P.relation i ∈ P.ker := by
   apply Ideal.subset_span
   use i
 
-/-- The polynomial algebra wrt a family of generators modulo a family of relations. -/
+/-- The polynomial algebra w.r.t. a family of generators modulo a family of relations. -/
 protected abbrev Quotient : Type (max w u) := P.Ring ⧸ P.ker
 
 /-- `P.Quotient` is `P.Ring`-isomorphic to `S` and in particular `R`-isomorphic to `S`. -/
@@ -399,7 +399,6 @@ private lemma aeval_comp_val_eq :
       (aevalTower (IsScalarTower.toAlgHom R S T) Q.val).comp (Q.aux P) := by
   ext i
   simp only [AlgHom.coe_comp, Function.comp_apply]
-  erw [Q.aux_X P i]
   cases i <;> simp
 
 private lemma span_range_relation_eq_ker_comp : Ideal.span

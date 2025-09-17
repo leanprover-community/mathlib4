@@ -83,7 +83,7 @@ open scoped Kronecker in
 /-- The kronecker product of two unitary matrices is unitary.
 
 This is stated for `unitary` instead of `unitaryGroup` as it holds even for
-non-commutive coefficients. -/
+non-commutative coefficients. -/
 theorem kronecker_mem_unitary {R m : Type*} [Semiring R] [StarRing R] [Fintype m]
     [DecidableEq m] {U₁ : Matrix n n R} {U₂ : Matrix m m R}
     (hU₁ : U₁ ∈ unitary (Matrix n n R)) (hU₂ : U₂ ∈ unitary (Matrix m m R)) :
@@ -117,7 +117,7 @@ def toLin' (A : unitaryGroup n α) :=
   Matrix.toLin' A.1
 
 theorem ext_iff (A B : unitaryGroup n α) : A = B ↔ ∀ i j, A i j = B i j :=
-  Subtype.ext_iff_val.trans ⟨fun h i j => congr_fun (congr_fun h i) j, Matrix.ext⟩
+  Subtype.ext_iff.trans ⟨fun h i j => congr_fun (congr_fun h i) j, Matrix.ext⟩
 
 @[ext]
 theorem ext (A B : unitaryGroup n α) : (∀ i j, A i j = B i j) → A = B :=

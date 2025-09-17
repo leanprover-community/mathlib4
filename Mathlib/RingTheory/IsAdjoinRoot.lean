@@ -89,7 +89,6 @@ we have `IsAdjoinRootMonic.powerBasis`.
 Bundling `Monic` into this structure is very useful when working with explicit `f`s such as
 `X^2 - C a * X - C b` since it saves you carrying around the proofs of monicity.
 -/
--- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
 structure IsAdjoinRootMonic {R : Type u} (S : Type v) [CommSemiring R] [Semiring S] [Algebra R S]
     (f : R[X]) extends IsAdjoinRoot S f where
   monic : Monic f
@@ -192,7 +191,7 @@ theorem adjoinRootAlgEquiv_apply_root : h.adjoinRootAlgEquiv (AdjoinRoot.root f)
 
 @[simp]
 theorem adjoinRootAlgEquiv_symm_apply_root : h.adjoinRootAlgEquiv.symm h.root = AdjoinRoot.root f :=
-    (AlgEquiv.symm_apply_eq h.adjoinRootAlgEquiv).mpr rfl
+  (AlgEquiv.symm_apply_eq h.adjoinRootAlgEquiv).mpr rfl
 
 variable (h' : IsAdjoinRoot T f)
 
@@ -404,7 +403,7 @@ end AdjoinRoot
 
 /-- If `S` is `R`-isomorphic to `R[X]/(f)`, then `S` is given by adjoining a root of `f`. -/
 abbrev IsAdjoinRoot.ofAdjoinRootEquiv (e : AdjoinRoot f ≃ₐ[R] S) : IsAdjoinRoot S f :=
-    ofAlgEquiv (AdjoinRoot.isAdjoinRoot f) e
+  ofAlgEquiv (AdjoinRoot.isAdjoinRoot f) e
 
 namespace IsAdjoinRootMonic
 
@@ -489,18 +488,12 @@ def basis : Basis (Fin (natDegree f)) R S :=
 
 @[simp]
 theorem basis_apply (i) : h.basis i = h.root ^ (i : ℕ) :=
-  Basis.apply_eq_iff.mpr <|
-    show (h.modByMonicHom (h.toIsAdjoinRoot.root ^ (i : ℕ))).toFinsupp.comapDomain _
-          Fin.val_injective.injOn = Finsupp.single _ _ by
-      ext j
-      rw [Finsupp.comapDomain_apply, modByMonicHom_root_pow]
-      · rw [X_pow_eq_monomial, toFinsupp_monomial, Finsupp.single_apply_left Fin.val_injective]
-      · exact i.is_lt
+  Basis.apply_eq_iff.mpr <| by simp [IsAdjoinRootMonic.basis]
 
 include h in
 theorem deg_pos [Nontrivial S] : 0 < natDegree f := by
   rcases h.basis.index_nonempty with ⟨⟨i, hi⟩⟩
-  exact (Nat.zero_le _).trans_lt hi
+  exact Nat.zero_lt_of_lt hi
 
 include h in
 theorem deg_ne_zero [Nontrivial S] : natDegree f ≠ 0 := h.deg_pos.ne'
@@ -516,8 +509,7 @@ def powerBasis : PowerBasis R S where
 @[simp]
 theorem basis_repr (x : S) (i : Fin (natDegree f)) :
     h.basis.repr x i = (h.modByMonicHom x).coeff (i : ℕ) := by
-  change (h.modByMonicHom x).toFinsupp.comapDomain _ Fin.val_injective.injOn i = _
-  rw [Finsupp.comapDomain_apply, Polynomial.toFinsupp_apply]
+  simp [IsAdjoinRootMonic.basis, toFinsupp_apply]
 
 theorem basis_one (hdeg : 1 < natDegree f) : h.basis ⟨1, hdeg⟩ = h.root := by
   rw [h.basis_apply, Fin.val_mk, pow_one]
@@ -527,7 +519,14 @@ theorem finite : Module.Finite R S := (powerBasis h).finite
 
 include h in
 theorem finrank [StrongRankCondition R] : Module.finrank R S = f.natDegree :=
-    (powerBasis h).finrank
+  (powerBasis h).finrank
+
+/--
+See `finrank_quotient_span_eq_natDegree` for a more general version over a field.
+-/
+theorem _root_.finrank_quotient_span_eq_natDegree' [StrongRankCondition R] (hf : f.Monic) :
+    Module.finrank R (R[X] ⧸ Ideal.span {f}) = f.natDegree :=
+  (AdjoinRoot.isAdjoinRootMonic _ hf).finrank
 
 /-- `IsAdjoinRootMonic.liftPolyₗ` lifts a linear map on polynomials to a linear map on `S`. -/
 @[simps!]
@@ -544,16 +543,13 @@ def coeff : S →ₗ[R] ℕ → R :=
 
 theorem coeff_apply_lt (z : S) (i : ℕ) (hi : i < natDegree f) :
     h.coeff z i = h.basis.repr z ⟨i, hi⟩ := by
-  simp only [coeff,
-    liftPolyₗ_apply, LinearMap.coe_mk, h.basis_repr]
-  rfl
+  simp [coeff]
 
 theorem coeff_apply_coe (z : S) (i : Fin (natDegree f)) : h.coeff z i = h.basis.repr z i :=
   h.coeff_apply_lt z i i.prop
 
 theorem coeff_apply_le (z : S) (i : ℕ) (hi : natDegree f ≤ i) : h.coeff z i = 0 := by
-  simp only [coeff,
-    liftPolyₗ_apply, LinearMap.coe_mk]
+  simp only [coeff, liftPolyₗ_apply, LinearMap.coe_mk, AddHom.coe_mk]
   nontriviality R
   exact
     Polynomial.coeff_eq_zero_of_degree_lt
@@ -702,13 +698,13 @@ open AdjoinRoot IsAdjoinRoot minpoly PowerBasis IsAdjoinRootMonic Algebra
 theorem Algebra.adjoin.powerBasis'_minpoly_gen [IsDomain R] [IsDomain S] [NoZeroSMulDivisors R S]
     [IsIntegrallyClosed R] {x : S} (hx' : IsIntegral R x) :
     minpoly R x = minpoly R (Algebra.adjoin.powerBasis' hx').gen := by
-  haveI := isDomain_of_prime (prime_of_isIntegrallyClosed hx')
-  haveI :=
+  have := isDomain_of_prime (prime_of_isIntegrallyClosed hx')
+  have :=
     noZeroSMulDivisors_of_prime_of_degree_ne_zero (prime_of_isIntegrallyClosed hx')
-      (ne_of_lt (degree_pos hx')).symm
+      (degree_pos hx').ne'
   rw [← minpolyGen_eq, adjoin.powerBasis', minpolyGen_map, minpolyGen_eq,
     AdjoinRoot.powerBasis'_gen, ← isAdjoinRoot_root_eq_root _,
-    ← isAdjoinRootMonic_toAdjoinRoot,
+    ← isAdjoinRootMonic_toAdjoinRoot _ (monic hx'),
     minpoly_eq (AdjoinRoot.isAdjoinRootMonic _ (monic hx')) (irreducible hx')]
 
 end Algebra
