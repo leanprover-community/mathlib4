@@ -208,7 +208,7 @@ def forget : Mod_ D A ⥤ D where
 
 section comap
 
-variable {A B : C} [MonObj A] [MonObj B] (f : A ⟶ B) [IsMon_Hom f]
+variable {A B : C} [MonObj A] [MonObj B] (f : A ⟶ B) [IsMonHom f]
 
 open MonoidalLeftAction in
 /-- When `M` is a `B`-module in `D` and `f : A ⟶ B` is a morphism of internal
@@ -219,7 +219,7 @@ def scalarRestriction (M : D) [ModObj B M] : ModObj A M where
   smul := f ⊵ₗ M ≫ γ[B, M]
   one_smul' := by
     rw [← comp_actionHomLeft_assoc]
-    rw [IsMon_Hom.one_hom, ModObj.one_smul]
+    rw [IsMonHom.one_hom, ModObj.one_smul]
   mul_smul' := by
     -- oh, for homotopy.io in a widget!
     slice_rhs 2 3 => rw [action_exchange]
@@ -229,7 +229,7 @@ def scalarRestriction (M : D) [ModObj B M] : ModObj A M where
     slice_rhs 2 4 => rw [← whiskerLeft_actionHomLeft]
     slice_rhs 1 2 => rw [← comp_actionHomLeft]
     rw [← comp_actionHomLeft, Category.assoc, ← comp_actionHomLeft_assoc,
-      IsMon_Hom.mul_hom, tensorHom_def, Category.assoc]
+      IsMonHom.mul_hom, tensorHom_def, Category.assoc]
 
 open MonoidalLeftAction in
 /-- If `g : M ⟶ N` is a `B`-linear morphisms of `B`-modules, then it induces an
@@ -252,7 +252,7 @@ lemma scalarRestriction_hom
 between the categories of module objects.
 -/
 @[simps]
-def comap {A B : C} [MonObj A] [MonObj B] (f : A ⟶ B) [IsMon_Hom f] :
+def comap {A B : C} [MonObj A] [MonObj B] (f : A ⟶ B) [IsMonHom f] :
     Mod_ D B ⥤ Mod_ D A where
   obj M :=
     letI := scalarRestriction f M.X

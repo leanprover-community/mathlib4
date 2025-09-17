@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Monoidal.Comon_
 /-!
 # The convolution monoid.
 
-When `M : Comon_ C` and `N : Mon_ C`, the morphisms `M.X ⟶ N.X` form a monoid (in Type).
+When `M : Comon C` and `N : Mon C`, the morphisms `M.X ⟶ N.X` form a monoid (in Type).
 -/
 
 universe v₁ u₁
