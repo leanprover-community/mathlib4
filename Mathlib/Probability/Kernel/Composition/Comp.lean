@@ -69,6 +69,27 @@ theorem comp_apply_univ_le (κ : Kernel α β) (η : Kernel β γ) (a : α) :
 
 @[simp] lemma comp_zero (κ : Kernel β γ) : κ ∘ₖ (0 : Kernel α β) = 0 := by ext; simp [comp_apply]
 
+@[simp] lemma id_comp (κ : Kernel α β) : Kernel.id ∘ₖ κ = κ := by
+  ext a s hs
+  simpa [comp_apply' _ _ _ hs, id_apply, Measure.dirac_apply' _ hs]
+    using lintegral_indicator_one hs
+
+@[simp] lemma comp_id (κ : Kernel β γ) : κ ∘ₖ Kernel.id = κ := by
+  ext a s hs
+  simp [comp_apply' _ _ _ hs, id_apply,
+    lintegral_dirac' a <| κ.measurable_coe hs]
+
+section Pow
+
+/-- Power of a kernel. -/
+noncomputable def pow (κ : Kernel α α) : ℕ → Kernel α α
+  | 0          => Kernel.id
+  | Nat.succ n => κ.pow n ∘ₖ κ
+
+@[simp] lemma pow_one (κ : Kernel α α) : κ.pow 1 = κ := by simp [pow]
+
+end Pow
+
 section Ae
 
 /-! ### `ae` filter of the composition -/
