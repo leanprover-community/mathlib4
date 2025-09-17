@@ -28,7 +28,6 @@ localization at an element.
 
 -/
 
--- Porting note: added to make the syntax work below.
 open scoped TensorProduct
 
 universe u
@@ -274,9 +273,6 @@ variable [Algebra R S] [Algebra R Sₘ] [Algebra S Sₘ] [Algebra R Rₘ] [Algeb
 variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
 variable [IsLocalization M Rₘ] [IsLocalization (M.map (algebraMap R S)) Sₘ]
 include M
-
--- Porting note: no longer supported
--- attribute [local elab_as_elim] Ideal.IsNilpotent.induction_on
 
 theorem of_isLocalization : FormallySmooth R Rₘ := by
   constructor
