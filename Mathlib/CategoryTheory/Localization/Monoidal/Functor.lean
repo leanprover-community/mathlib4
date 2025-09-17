@@ -5,6 +5,7 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Localization.Monoidal.Basic
 import Mathlib.CategoryTheory.Monoidal.Multifunctor
+
 /-!
 
 # Universal property of localized monoidal categories
