@@ -160,8 +160,9 @@ instance RelCWComplex.Subcomplex.finite_subcomplex_of_finite [T2Space X] [RelCWC
 namespace CWComplex.Subcomplex
 
 export RelCWComplex.Subcomplex (closedCell_subset_of_mem openCell_subset_of_mem
-  cellFrontier_subset_of_mem subset_complex finiteType_subcomplex_of_finiteType
-  finiteDimensional_subcomplex_of_finiteDimensional finite_subcomplex_of_finite)
+  cellFrontier_subset_of_mem disjoint_openCell_subcomplex_of_not_mem subset_complex
+  finiteType_subcomplex_of_finiteType finiteDimensional_subcomplex_of_finiteDimensional
+  finite_subcomplex_of_finite)
 
 end CWComplex.Subcomplex
 
