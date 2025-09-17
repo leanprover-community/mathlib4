@@ -196,7 +196,7 @@ theorem zmodRepr_spec : zmodRepr x < p ∧ x - zmodRepr x ∈ maximalIdeal ℤ_[
 
 theorem zmodRepr_unique (y : ℕ) (hy₁ : y < p) (hy₂ : x - y ∈ maximalIdeal ℤ_[p]) : zmodRepr x = y :=
   have h := (Classical.choose_spec (existsUnique_mem_range x)).right
-  ((h y ⟨hy₁, hy₂⟩).trans (h (zmodRepr x) (zmodRepr_spec x)).symm).symm
+  (h (zmodRepr x) (zmodRepr_spec x)).trans (h y ⟨hy₁, hy₂⟩).symm
 
 theorem zmodRepr_lt_p : zmodRepr x < p :=
   (zmodRepr_spec _).1
