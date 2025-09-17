@@ -86,14 +86,14 @@ section LinearOrder
 variable [LinearOrder α] [H : ∀ x, OrdConnected (Quotient.mk s ⁻¹' {x})]
 
 theorem mk_le_mk {x y : α} : Quotient.mk s x ≤ Quotient.mk s y ↔ x ≤ y ∨ x ≈ y := by
-  apply propext_iff.1
+  rw [← propext_iff]
   revert x y
   apply congrFun₂ (Relation.transGen_eq_self fun x y z h₁ h₂ ↦ ?_)
   cases h₁ <;> cases h₂ <;> rename_i h₁ h₂
   · exact .inl <| h₁.trans h₂
   · rw [or_iff_not_imp_left, not_le]
     rw [← Quotient.eq_iff_equiv] at *
-    exact fun h ↦ ((H _).out (h₂.symm) rfl ⟨h.le, h₁⟩).trans h₂
+    exact fun h ↦ ((H _).out h₂.symm rfl ⟨h.le, h₁⟩).trans h₂
   · rw [or_iff_not_imp_left, not_le]
     rw [← Quotient.eq_iff_equiv] at *
     exact fun h ↦ ((H _).out h₁.symm rfl ⟨h₂, h.le⟩).symm
