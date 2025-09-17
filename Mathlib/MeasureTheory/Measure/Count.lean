@@ -36,7 +36,7 @@ theorem le_count_apply : ∑' _ : s, (1 : ℝ≥0∞) ≤ count s :=
     _ ≤ count s := le_sum_apply _ _
 
 theorem count_apply (hs : MeasurableSet s) : count s = s.encard := by
-  simp [count, hs, ← tsum_subtype, Set.encard]
+  simp [count, hs, ← tsum_subtype]
 
 @[simp]
 theorem count_apply_finset' {s : Finset α} (hs : MeasurableSet (s : Set α)) :
