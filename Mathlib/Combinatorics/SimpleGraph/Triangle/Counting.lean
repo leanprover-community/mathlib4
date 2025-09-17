@@ -50,8 +50,8 @@ private lemma edgeDensity_badVertices_le (hε : 0 ≤ ε) (dst : 2 * ε ≤ G.ed
 
 private lemma card_badVertices_le (dst : 2 * ε ≤ G.edgeDensity s t) (hst : G.IsUniform ε s t) :
     #(badVertices G ε s t) ≤ #s * ε := by
-  have hε : ε ≤ 1 := (le_rfl.trans <| le_mul_of_one_le_left hst.pos.le (by norm_num)).trans
-    (dst.trans <| by exact_mod_cast edgeDensity_le_one _ _ _)
+  have hε : ε ≤ 1 := (le_mul_of_one_le_left hst.pos.le (by simp)).trans
+    (dst.trans <| mod_cast edgeDensity_le_one _ _ _)
   by_contra! h
   have : |(G.edgeDensity (badVertices G ε s t) t - G.edgeDensity s t : ℝ)| < ε :=
     hst (filter_subset _ _) Subset.rfl h.le (mul_le_of_le_one_right (Nat.cast_nonneg _) hε)
@@ -118,8 +118,8 @@ lemma triangle_counting'
       exact Eq.trans_le (by ring) (mul_le_mul_of_nonneg_right hX' <| by positivity)
     have i : badVertices G ε s t ∪ badVertices G ε s u ⊆ s :=
       union_subset (filter_subset _ _) (filter_subset _ _)
-    rw [sub_mul, one_mul, card_sdiff i, Nat.cast_sub (card_le_card i), sub_le_sub_iff_left,
-      mul_assoc, mul_comm ε, two_mul]
+    rw [sub_mul, one_mul, card_sdiff_of_subset i, Nat.cast_sub (card_le_card i),
+      sub_le_sub_iff_left, mul_assoc, mul_comm ε, two_mul]
     refine (Nat.cast_le.2 <| card_union_le _ _).trans ?_
     rw [Nat.cast_add]
     gcongr
@@ -137,14 +137,7 @@ private lemma triple_eq_triple_of_mem (hst : Disjoint s t) (hsu : Disjoint s u) 
     (x₁, y₁, z₁) = (x₂, y₂, z₂) := by
   simp only [Finset.Subset.antisymm_iff, subset_iff, mem_insert, mem_singleton, forall_eq_or_imp,
     forall_eq] at h
-  rw [disjoint_left] at hst hsu htu
-  rw [Prod.mk_inj, Prod.mk_inj]
-  simp only [and_assoc, @or_left_comm _ (y₁ = y₂), @or_comm _ (z₁ = z₂),
-    @or_left_comm _ (z₁ = z₂)] at h
-  refine ⟨h.1.resolve_right (not_or_intro ?_ ?_), h.2.1.resolve_right (not_or_intro ?_ ?_),
-    h.2.2.1.resolve_right (not_or_intro ?_ ?_)⟩ <;>
-  · rintro rfl
-    solve_by_elim
+  grind [disjoint_left]
 
 variable [Fintype α]
 

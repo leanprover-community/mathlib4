@@ -528,16 +528,12 @@ def fst : Submodule R (M × M₂) :=
 /-- `M` as a submodule of `M × N` is isomorphic to `M`. -/
 @[simps]
 def fstEquiv : Submodule.fst R M M₂ ≃ₗ[R] M where
-  -- Porting note: proofs were `tidy` or `simp`
   toFun x := x.1.1
-  invFun m := ⟨⟨m, 0⟩, by simp [fst]⟩
+  invFun m := ⟨⟨m, 0⟩, by aesop⟩
   map_add' := by simp
   map_smul' := by simp
-  left_inv := by
-    rintro ⟨⟨x, y⟩, hy⟩
-    simp only [fst, comap_bot, mem_ker, snd_apply] at hy
-    simpa only [Subtype.mk.injEq, Prod.mk.injEq, true_and] using hy.symm
-  right_inv := by rintro x; rfl
+  left_inv x := by aesop (add norm simp Submodule.fst)
+  right_inv x := by simp
 
 theorem fst_map_fst : (Submodule.fst R M M₂).map (LinearMap.fst R M M₂) = ⊤ := by
   aesop
@@ -552,15 +548,11 @@ def snd : Submodule R (M × M₂) :=
 /-- `N` as a submodule of `M × N` is isomorphic to `N`. -/
 @[simps]
 def sndEquiv : Submodule.snd R M M₂ ≃ₗ[R] M₂ where
-  -- Porting note: proofs were `tidy` or `simp`
   toFun x := x.1.2
-  invFun n := ⟨⟨0, n⟩, by simp [snd]⟩
+  invFun n := ⟨⟨0, n⟩, by aesop⟩
   map_add' := by simp
   map_smul' := by simp
-  left_inv := by
-    rintro ⟨⟨x, y⟩, hx⟩
-    simp only [snd, comap_bot, mem_ker, fst_apply] at hx
-    simpa only [Subtype.mk.injEq, Prod.mk.injEq, and_true] using hx.symm
+  left_inv x := by aesop (add norm simp Submodule.snd)
 
 theorem snd_map_fst : (Submodule.snd R M M₂).map (LinearMap.fst R M M₂) = ⊥ := by
   aesop (add simp snd)
@@ -666,10 +658,40 @@ theorem fst_comp_prodAssoc :
 
 theorem snd_comp_prodAssoc :
     (LinearMap.snd R M₁ (M₂ × M₃)).comp (prodAssoc R M₁ M₂ M₃).toLinearMap =
-    (LinearMap.snd R M₁ M₂).prodMap (LinearMap.id : M₃ →ₗ[R] M₃):= by
+    (LinearMap.snd R M₁ M₂).prodMap (LinearMap.id : M₃ →ₗ[R] M₃) := by
   ext <;> simp
 
 end prodAssoc
+
+section SkewSwap
+
+variable (R M N)
+variable [Semiring R]
+variable [AddCommGroup M] [AddCommGroup N]
+variable [Module R M] [Module R N]
+
+/-- The map `(x, y) ↦ (-y, x)` as a linear equivalence. -/
+protected def skewSwap : (M × N) ≃ₗ[R] (N × M) where
+  toFun x := (-x.2, x.1)
+  invFun x := (x.2, -x.1)
+  map_add' _ _ := by
+    simp [add_comm]
+  map_smul' _ _ := by
+    simp
+  left_inv _ := by
+    simp
+  right_inv _ := by
+    simp
+
+variable {R M N}
+
+@[simp]
+theorem skewSwap_apply (x : M × N) : LinearEquiv.skewSwap R M N x = (-x.2, x.1) := rfl
+
+@[simp]
+theorem skewSwap_symm_apply (x : N × M) : (LinearEquiv.skewSwap R M N).symm x = (x.2, -x.1) := rfl
+
+end SkewSwap
 
 section
 
@@ -821,24 +843,24 @@ namespace LinearMap
 /-!
 ## Tunnels and tailings
 
-NOTE: The proof of strong rank condition for noetherian rings is changed.
+NOTE: The proof of strong rank condition for Noetherian rings is changed.
 `LinearMap.tunnel` and `LinearMap.tailing` are not used in mathlib anymore.
 These are marked as deprecated with no replacements.
 If you use them in external projects, please consider using other arguments instead.
 
-Some preliminary work for establishing the strong rank condition for noetherian rings.
+Some preliminary work for establishing the strong rank condition for Noetherian rings.
 
 Given a morphism `f : M × N →ₗ[R] M` which is `i : Injective f`,
 we can find an infinite decreasing `tunnel f i n` of copies of `M` inside `M`,
 and sitting beside these, an infinite sequence of copies of `N`.
 
 We picturesquely name these as `tailing f i n` for each individual copy of `N`,
-and `tailings f i n` for the supremum of the first `n+1` copies:
+and `tailings f i n` for the supremum of the first `n + 1` copies:
 they are the pieces left behind, sitting inside the tunnel.
 
-By construction, each `tailing f i (n+1)` is disjoint from `tailings f i n`;
-later, when we assume `M` is noetherian, this implies that `N` must be trivial,
-and establishes the strong rank condition for any left-noetherian ring.
+By construction, each `tailing f i (n + 1)` is disjoint from `tailings f i n`;
+later, when we assume `M` is Noetherian, this implies that `N` must be trivial,
+and establishes the strong rank condition for any left-Noetherian ring.
 -/
 
 section Graph

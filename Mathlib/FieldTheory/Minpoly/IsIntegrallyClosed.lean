@@ -70,7 +70,6 @@ theorem isIntegrallyClosed_dvd {s : S} (hs : IsIntegral R s) {p : R[X]}
   let K := FractionRing R
   let L := FractionRing S
   let _ : Algebra K L := FractionRing.liftAlgebra R L
-  have := FractionRing.isScalarTower_liftAlgebra R L
   have : minpoly K (algebraMap S L s) ∣ map (algebraMap R K) (p %ₘ minpoly R s) := by
     rw [map_modByMonic _ (minpoly.monic hs), modByMonic_eq_sub_mul_div]
     · refine dvd_sub (minpoly.dvd K (algebraMap S L s) ?_) ?_
@@ -141,14 +140,20 @@ variable {x : S}
 theorem ToAdjoin.injective (hx : IsIntegral R x) : Function.Injective (Minpoly.toAdjoin R x) := by
   refine (injective_iff_map_eq_zero _).2 fun P₁ hP₁ => ?_
   obtain ⟨P, rfl⟩ := mk_surjective P₁
-  rwa [Minpoly.toAdjoin_apply', liftHom_mk, ← Subalgebra.coe_eq_zero, aeval_subalgebra_coe,
-    isIntegrallyClosed_dvd_iff hx, ← AdjoinRoot.mk_eq_zero] at hP₁
+  simp_all [← Subalgebra.coe_eq_zero, isIntegrallyClosed_dvd_iff hx]
 
 /-- The algebra isomorphism `AdjoinRoot (minpoly R x) ≃ₐ[R] adjoin R x` -/
-@[simps!]
 def equivAdjoin (hx : IsIntegral R x) : AdjoinRoot (minpoly R x) ≃ₐ[R] adjoin R ({x} : Set S) :=
   AlgEquiv.ofBijective (Minpoly.toAdjoin R x)
     ⟨minpoly.ToAdjoin.injective hx, Minpoly.toAdjoin.surjective R x⟩
+
+@[simp]
+theorem equivAdjoin_toAlgHom (hx : IsIntegral R x) : equivAdjoin hx = Minpoly.toAdjoin R x := rfl
+
+@[simp]
+theorem coe_equivAdjoin (hx : IsIntegral R x) : ⇑(equivAdjoin hx) = Minpoly.toAdjoin R x := rfl
+
+@[deprecated (since := "2025-07-21")] alias equivAdjoin_apply := coe_equivAdjoin
 
 /-- The `PowerBasis` of `adjoin R {x}` given by `x`. See `Algebra.adjoin.powerBasis` for a version
 over a field. -/

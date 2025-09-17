@@ -206,11 +206,7 @@ private lemma familyMeasure_compression_lt_familyMeasure {U V : Finset (Fin n)} 
     {hV : V.Nonempty} (h : max' U hU < max' V hV) {𝒜 : Finset (Finset (Fin n))} (a : 𝓒 U V 𝒜 ≠ 𝒜) :
     familyMeasure (𝓒 U V 𝒜) < familyMeasure 𝒜 := by
   rw [compression] at a ⊢
-  have q : ∀ Q ∈ {A ∈ 𝒜 | compress U V A ∉ 𝒜}, compress U V Q ≠ Q := by
-    simp_rw [mem_filter]
-    intro Q hQ h
-    rw [h] at hQ
-    exact hQ.2 hQ.1
+  have q : ∀ Q ∈ {A ∈ 𝒜 | compress U V A ∉ 𝒜}, compress U V Q ≠ Q := by grind
   have uA : {A ∈ 𝒜 | compress U V A ∈ 𝒜} ∪ {A ∈ 𝒜 | compress U V A ∉ 𝒜} = 𝒜 :=
     filter_union_filter_neg_eq _ _
   have ne₂ : {A ∈ 𝒜 | compress U V A ∉ 𝒜}.Nonempty := by
@@ -321,7 +317,7 @@ theorem kruskal_katona_lovasz_form (hir : i ≤ r) (hrk : r ≤ k) (hkn : k ≤ 
         obtain ⟨C, BsubC, hCrange, hcard⟩ := this
         rw [hB, ← Nat.add_sub_assoc hir, Nat.add_sub_cancel_left] at hcard
         refine ⟨C, mem_powersetCard.2 ⟨hCrange, hcard⟩, BsubC, ?_⟩
-        rw [card_sdiff BsubC, hcard, hB, Nat.sub_sub_self hir]
+        rw [card_sdiff_of_subset BsubC, hcard, hB, Nat.sub_sub_self hir]
       · rintro ⟨A, Ah, hBA, card_sdiff_i⟩
         rw [mem_powersetCard] at Ah
         refine ⟨hBA.trans Ah.1, eq_tsub_of_add_eq ?_⟩
@@ -371,12 +367,9 @@ theorem erdos_ko_rado {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
     rwa [card_compls, choose_symm_of_eq_add (tsub_add_tsub_cancel ‹r ≤ n› ‹1 ≤ r›).symm]
   -- and everything in 𝒜ᶜˢ has size n-r.
   have h𝒜bar : (𝒜ᶜˢ : Set (Finset (Fin n))).Sized (n - r) := by simpa using h₂.compls
-  have : n - 2 * r ≤ n - r := by
-    rw [tsub_le_tsub_iff_left ‹r ≤ n›]
-    exact Nat.le_mul_of_pos_left _ zero_lt_two
   -- We can use the Lovasz form of Kruskal-Katona to get |∂^[n-2k] 𝒜ᶜˢ| ≥ (n-1) choose r
-  have kk := kruskal_katona_lovasz_form ‹n - 2 * r ≤ n - r› ((tsub_le_tsub_iff_left ‹1 ≤ n›).2 h1r)
-      tsub_le_self h𝒜bar z.le
+  have kk := kruskal_katona_lovasz_form (i := n - 2 * r) (by omega)
+    ((tsub_le_tsub_iff_left ‹1 ≤ n›).2 h1r) tsub_le_self h𝒜bar z.le
   have : n - r - (n - 2 * r) = r := by omega
   rw [this] at kk
   -- But this gives a contradiction: `n choose r < |𝒜| + |∂^[n-2k] 𝒜ᶜˢ|`

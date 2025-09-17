@@ -33,7 +33,7 @@ the roots of the minimal polynomial of `s` over `R`.
   algebraically closed field
 * `traceForm_nondegenerate`: the trace form over a separable extension is a nondegenerate
   bilinear form
-* `traceForm_dualBasis_powerBasis_eq`: The dual basis of a powerbasis `{1, x, x²...}` under the
+* `traceForm_dualBasis_powerBasis_eq`: The dual basis of a power basis `{1, x, x²...}` under the
   trace form is `aᵢ / f'(x)`, with `f` being the minpoly of `x` and `f / (X - x) = ∑ aᵢxⁱ`.
 
 ## References
@@ -215,17 +215,15 @@ theorem trace_eq_sum_embeddings_gen (pb : PowerBasis K L)
     algebraMap K E (Algebra.trace K L pb.gen) =
       (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).sum fun σ => σ pb.gen := by
   letI := Classical.decEq E
-  -- Porting note: the following `letI` was not needed.
   letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
   rw [pb.trace_gen_eq_sum_roots hE, Fintype.sum_equiv pb.liftEquiv', Finset.sum_mem_multiset,
     Finset.sum_eq_multiset_sum, Multiset.toFinset_val, Multiset.dedup_eq_self.mpr _,
     Multiset.map_id]
   · exact nodup_roots ((separable_map _).mpr hfx)
-  -- Porting note: the following goal does not exist in mathlib3.
-  · exact (fun x => x.1)
+  swap
   · intro x; rfl
   · intro σ
-    rw [PowerBasis.liftEquiv'_apply_coe]
+    rw [PowerBasis.liftEquiv'_apply_coe, id_def]
 
 variable [IsAlgClosed E]
 
@@ -242,11 +240,8 @@ theorem sum_embeddings_eq_finrank_mul [FiniteDimensional K F] [Algebra.IsSeparab
       Finset.univ_sigma_univ, Finset.sum_sigma, ← Finset.sum_nsmul]
     · refine Finset.sum_congr rfl fun σ _ => ?_
       letI : Algebra L E := σ.toRingHom.toAlgebra
-      -- Porting note: `Finset.card_univ` was inside `simp only`.
-      simp only [Finset.sum_const]
-      congr
-      rw [← AlgHom.card L F E]
-      exact Finset.card_univ (α := F →ₐ[L] E)
+      simp only [Finset.sum_const, Finset.card_univ, ← AlgHom.card L F E]
+      congr!
     · intro σ
       simp only [algHomEquivSigma, Equiv.coe_fn_mk, AlgHom.restrictDomain, AlgHom.comp_apply,
         IsScalarTower.coe_toAlgHom']
@@ -271,7 +266,7 @@ theorem trace_eq_sum_automorphisms (x : L) [FiniteDimensional K L] [IsGalois K L
     simp only [algebraMap_eq_smul_one, smul_one_smul]
   · intro σ
     simp only [Normal.algHomEquivAut, AlgHom.restrictNormal', Equiv.coe_fn_mk,
-      AlgEquiv.coe_ofBijective, AlgHom.restrictNormal_commutes, id.map_eq_id, RingHom.id_apply]
+      AlgEquiv.coe_ofBijective, AlgHom.restrictNormal_commutes, algebraMap_self, RingHom.id_apply]
 
 end EqSumEmbeddings
 
@@ -529,7 +524,7 @@ theorem Algebra.trace_surjective [FiniteDimensional K L] [Algebra.IsSeparable K 
 variable {K L}
 
 /--
-The dual basis of a powerbasis `{1, x, x²...}` under the trace form is `aᵢ / f'(x)`,
+The dual basis of a power basis `{1, x, x²...}` under the trace form is `aᵢ / f'(x)`,
 with `f` being the minimal polynomial of `x` and `f / (X - x) = ∑ aᵢxⁱ`.
 -/
 lemma traceForm_dualBasis_powerBasis_eq [FiniteDimensional K L] [Algebra.IsSeparable K L]

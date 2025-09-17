@@ -128,11 +128,10 @@ theorem dickson_one_one_eval_add_inv (x y : R) (h : x * y = 1) :
 
 variable (R)
 
--- Porting note: Added 2 new theorems for convenience
-private theorem two_mul_C_half_eq_one [Invertible (2 : R)] : 2 * C (⅟ 2 : R) = 1 := by
+private theorem two_mul_C_half_eq_one [Invertible (2 : R)] : 2 * C (⅟2 : R) = 1 := by
   rw [two_mul, ← C_add, invOf_two_add_invOf_two, C_1]
 
-private theorem C_half_mul_two_eq_one [Invertible (2 : R)] : C (⅟ 2 : R) * 2 = 1 := by
+private theorem C_half_mul_two_eq_one [Invertible (2 : R)] : C (⅟2 : R) * 2 = 1 := by
   rw [mul_comm, two_mul_C_half_eq_one]
 
 theorem dickson_one_one_eq_chebyshev_C : ∀ n, dickson 1 (1 : R) n = Chebyshev.C R n
@@ -148,11 +147,11 @@ theorem dickson_one_one_eq_chebyshev_C : ∀ n, dickson 1 (1 : R) n = Chebyshev.
     ring
 
 theorem dickson_one_one_eq_chebyshev_T [Invertible (2 : R)] (n : ℕ) :
-    dickson 1 (1 : R) n = 2 * (Chebyshev.T R n).comp (C (⅟ 2) * X) :=
+    dickson 1 (1 : R) n = 2 * (Chebyshev.T R n).comp (C (⅟2) * X) :=
   (dickson_one_one_eq_chebyshev_C R n).trans (Chebyshev.C_eq_two_mul_T_comp_half_mul_X R n)
 
 theorem chebyshev_T_eq_dickson_one_one [Invertible (2 : R)] (n : ℕ) :
-    Chebyshev.T R n = C (⅟ 2) * (dickson 1 1 n).comp (2 * X) :=
+    Chebyshev.T R n = C (⅟2) * (dickson 1 1 n).comp (2 * X) :=
   dickson_one_one_eq_chebyshev_C R n ▸ Chebyshev.T_eq_half_mul_C_comp_two_mul_X R n
 
 theorem dickson_two_one_eq_chebyshev_S : ∀ n, dickson 2 (1 : R) n = Chebyshev.S R n
@@ -168,7 +167,7 @@ theorem dickson_two_one_eq_chebyshev_S : ∀ n, dickson 2 (1 : R) n = Chebyshev.
     ring
 
 theorem dickson_two_one_eq_chebyshev_U [Invertible (2 : R)] (n : ℕ) :
-    dickson 2 (1 : R) n = (Chebyshev.U R n).comp (C (⅟ 2) * X) :=
+    dickson 2 (1 : R) n = (Chebyshev.U R n).comp (C (⅟2) * X) :=
   (dickson_two_one_eq_chebyshev_S R n).trans (Chebyshev.S_eq_U_comp_half_mul_X R n)
 
 theorem chebyshev_U_eq_dickson_two_one (n : ℕ) :

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
-import Mathlib.RingTheory.DedekindDomain.Ideal
+import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 import Mathlib.RingTheory.Finiteness.Quotient
 import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 
@@ -134,7 +134,7 @@ variable (p) in
 lemma ramificationIdx_comap_eq [Algebra R S] (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
     ramificationIdx (algebraMap R S) p (P.comap e) = ramificationIdx (algebraMap R S₁) p P := by
   dsimp only [ramificationIdx]
-  congr
+  congr 1
   ext n
   simp only [Set.mem_setOf_eq, Ideal.map_le_iff_le_comap]
   rw [← comap_coe e, ← e.toRingEquiv_toRingHom, comap_coe, ← RingEquiv.symm_symm (e : S ≃+* S₁),
@@ -201,6 +201,17 @@ theorem ramificationIdx_eq_normalizedFactors_count [DecidableEq (Ideal S)]
       Multiset.nsmul_singleton, ← Multiset.le_count_iff_replicate_le]
   exact (Nat.lt_succ_self _).not_ge
 
+theorem ramificationIdx_eq_multiplicity (hp : map f p ≠ ⊥) (hP : P.IsPrime) :
+    ramificationIdx f p P = multiplicity P (Ideal.map f p) := by
+  classical
+  by_cases hP₂ : P = ⊥
+  · rw [hP₂, ← Ideal.zero_eq_bot, multiplicity_zero_eq_zero_of_ne_zero _ hp]
+    exact Ideal.ramificationIdx_of_not_le (mt le_bot_iff.mp hp)
+  rw [multiplicity_eq_of_emultiplicity_eq_some]
+  rw [ramificationIdx_eq_normalizedFactors_count hp hP hP₂, ← normalize_eq P,
+    ← UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors _ hp, normalize_eq]
+  exact irreducible_iff_prime.mpr <| prime_of_isPrime hP₂ hP
+
 theorem ramificationIdx_eq_factors_count [DecidableEq (Ideal S)]
     (hp0 : map f p ≠ ⊥) (hP : P.IsPrime) (hP0 : P ≠ ⊥) :
     ramificationIdx f p P = (factors (map f p)).count P := by
@@ -218,6 +229,12 @@ theorem ramificationIdx_ne_zero (hp0 : map f p ≠ ⊥) (hP : P.IsPrime) (le : m
   obtain ⟨P', hP', P'_eq⟩ :=
     exists_mem_normalizedFactors_of_dvd hp0 hPirr (Ideal.dvd_iff_le.mpr le)
   rwa [Multiset.count_ne_zero, associated_iff_eq.mp P'_eq]
+
+theorem ramificationIdx_ne_zero_of_liesOver [Algebra R S] [NoZeroSMulDivisors R S]
+    (P : Ideal S) [hP : P.IsPrime] {p : Ideal R} (hp : p ≠ ⊥) [hPp : P.LiesOver p] :
+    ramificationIdx (algebraMap R S) p P ≠ 0 :=
+  IsDedekindDomain.ramificationIdx_ne_zero (map_ne_bot_of_ne_bot hp) hP <|
+    map_le_iff_le_comap.mpr <| le_of_eq <| (liesOver_iff _ _).mp hPp
 
 open IsLocalRing in
 lemma ramificationIdx_eq_one_iff
@@ -273,10 +290,12 @@ theorem inertiaDeg_algebraMap [P.LiesOver p] [p.IsMaximal] :
   nontriviality S ⧸ P using inertiaDeg_of_subsingleton, finrank_zero_of_subsingleton
   rw [inertiaDeg, dif_pos (over_def P p).symm]
 
-theorem inertiaDeg_pos [p.IsMaximal] [Module.Finite R S]
-    [P.LiesOver p] : 0 < inertiaDeg p P :=
+theorem inertiaDeg_pos [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] : 0 < inertiaDeg p P :=
   haveI : Nontrivial (S ⧸ P) := Quotient.nontrivial_of_liesOver_of_isPrime P p
   finrank_pos.trans_eq (inertiaDeg_algebraMap p P).symm
+
+theorem inertiaDeg_ne_zero [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] : inertiaDeg p P ≠ 0 :=
+  (Nat.ne_of_lt (inertiaDeg_pos p P)).symm
 
 lemma inertiaDeg_comap_eq (e : S ≃ₐ[R] S₁) (P : Ideal S₁) [p.IsMaximal] :
     inertiaDeg p (P.comap e) = inertiaDeg p P := by
@@ -934,8 +953,6 @@ theorem inertiaDeg_algebra_tower (p : Ideal R) (P : Ideal S) (I : Ideal T) [p.Is
   letI : IsScalarTower (R ⧸ p) (S ⧸ P) (T ⧸ I) := IsScalarTower.of_algebraMap_eq <| by
     rintro ⟨x⟩; exact congr_arg _ (IsScalarTower.algebraMap_apply R S T x)
   exact (finrank_mul_finrank (R ⧸ p) (S ⧸ P) (T ⧸ I)).symm
-
-@[deprecated (since := "2024-12-09")] alias inertiaDeg_tower := inertiaDeg_algebra_tower
 
 end tower
 

@@ -110,7 +110,7 @@ protected alias ⟨_, ne_zero⟩ := AbsoluteValue.ne_zero_iff
 
 @[simp]
 protected theorem pos_iff {x : R} : 0 < abv x ↔ x ≠ 0 :=
-  (abv.nonneg x).gt_iff_ne.trans abv.ne_zero_iff
+  (abv.nonneg x).lt_iff_ne'.trans abv.ne_zero_iff
 protected alias ⟨_, pos⟩ := AbsoluteValue.pos_iff
 
 theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
@@ -246,9 +246,9 @@ open Int in
 /-- Values of an absolute value coincide on the image of `ℕ` in `R`
 if and only if they coincide on the image of `ℤ` in `R`. -/
 lemma eq_on_nat_iff_eq_on_int {f g : AbsoluteValue R S} :
-    (∀ n : ℕ , f n = g n) ↔ ∀ n : ℤ , f n = g n := by
+    (∀ n : ℕ, f n = g n) ↔ ∀ n : ℤ, f n = g n := by
   refine ⟨fun h z ↦ ?_, fun a n ↦ mod_cast a n⟩
-  obtain ⟨n , rfl | rfl⟩ := Int.eq_nat_or_neg z <;> simp [h n]
+  obtain ⟨n, rfl | rfl⟩ := Int.eq_nat_or_neg z <;> simp [h n]
 
 end OrderedCommRing
 

@@ -105,7 +105,7 @@ theorem map_comp [RingHomSurjective σ₂₃] [RingHomSurjective σ₁₃] (f : 
 
 @[gcongr]
 theorem map_mono {f : F} {p p' : Submodule R M} : p ≤ p' → map f p ≤ map f p' :=
-  image_subset _
+  image_mono
 
 @[simp]
 protected theorem map_zero : map (0 : M →ₛₗ[σ₁₂] M₂) p = ⊥ :=
@@ -124,9 +124,9 @@ theorem map_inf (f : F) {p q : Submodule R M} (hf : Injective f) :
     (p ⊓ q).map f = p.map f ⊓ q.map f :=
   SetLike.coe_injective <| Set.image_inter hf
 
-lemma map_iInf {ι : Type*} [Nonempty ι] {p : ι → Submodule R M} (f : F) (hf : Injective f) :
+lemma map_iInf {ι : Sort*} [Nonempty ι] {p : ι → Submodule R M} (f : F) (hf : Injective f) :
     (⨅ i, p i).map f = ⨅ i, (p i).map f :=
-  SetLike.coe_injective <| by simpa only [map_coe, iInf_coe] using hf.injOn.image_iInter_eq
+  SetLike.coe_injective <| by simpa only [map_coe, coe_iInf] using hf.injOn.image_iInter_eq
 
 theorem range_map_nonempty (N : Submodule R M) :
     (Set.range (fun ϕ => Submodule.map ϕ N : (M →ₛₗ[σ₁₂] M₂) → Submodule R₂ M₂)).Nonempty :=
@@ -457,14 +457,11 @@ theorem eq_zero_of_bot_submodule : ∀ b : (⊥ : Submodule R M), b = 0
 
 /-- The infimum of a family of invariant submodule of an endomorphism is also an invariant
 submodule. -/
-theorem _root_.LinearMap.iInf_invariant {σ : R →+* R} [RingHomSurjective σ] {ι : Sort*}
+theorem _root_.LinearMap.iInf_invariant {σ : R →+* R} {ι : Sort*}
     (f : M →ₛₗ[σ] M) {p : ι → Submodule R M} (hf : ∀ i, ∀ v ∈ p i, f v ∈ p i) :
     ∀ v ∈ iInf p, f v ∈ iInf p := by
-  have : ∀ i, (p i).map f ≤ p i := by
-    rintro i - ⟨v, hv, rfl⟩
-    exact hf i v hv
-  suffices (iInf p).map f ≤ iInf p by exact fun v hv => this ⟨v, hv, rfl⟩
-  exact le_iInf fun i => (Submodule.map_mono (iInf_le p i)).trans (this i)
+  simp only [mem_iInf]
+  exact fun v a i ↦ hf i v (a i)
 
 theorem disjoint_iff_comap_eq_bot {p q : Submodule R M} : Disjoint p q ↔ comap p.subtype q = ⊥ := by
   rw [← (map_injective_of_injective (show Injective p.subtype from Subtype.coe_injective)).eq_iff,
@@ -670,7 +667,7 @@ open Submodule
 
 theorem map_codRestrict [RingHomSurjective σ₂₁] (p : Submodule R M) (f : M₂ →ₛₗ[σ₂₁] M) (h p') :
     Submodule.map (codRestrict p f h) p' = comap p.subtype (p'.map f) :=
-  Submodule.ext fun ⟨x, hx⟩ => by simp [Subtype.ext_iff_val]
+  Submodule.ext fun ⟨x, hx⟩ => by simp [Subtype.ext_iff]
 
 theorem comap_codRestrict (p : Submodule R M) (f : M₂ →ₛₗ[σ₂₁] M) (hf p') :
     Submodule.comap (codRestrict p f hf) p' = Submodule.comap f (map p.subtype p') :=

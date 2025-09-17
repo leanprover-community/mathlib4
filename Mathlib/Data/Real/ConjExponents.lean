@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Data.ENNReal.Holder
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # Real conjugate exponents
@@ -159,7 +160,7 @@ theorem mul_eq_add : p * q = p + q := by
 
 theorem div_conj_eq_sub_one : p / q = p - 1 := by
   field_simp [h.symm.ne_zero]
-  rw [h.sub_one_mul_conj]
+  linear_combination -h.sub_one_mul_conj
 
 theorem inv_add_inv_ennreal : (ENNReal.ofReal p)⁻¹ + (ENNReal.ofReal q)⁻¹ = 1 := by
   rw [← ENNReal.ofReal_one, ← ENNReal.ofReal_inv_of_pos h.pos,
@@ -192,7 +193,7 @@ end HolderConjugate
 lemma holderConjugate_comm : p.HolderConjugate q ↔ q.HolderConjugate p := ⟨.symm, .symm⟩
 
 lemma holderConjugate_iff_eq_conjExponent (hp : 1 < p) : p.HolderConjugate q ↔ q = p / (p - 1) :=
-  ⟨HolderConjugate.conjugate_eq, fun h ↦ holderConjugate_iff.mpr ⟨hp, by field_simp [h]⟩⟩
+  ⟨HolderConjugate.conjugate_eq, fun h ↦ holderConjugate_iff.mpr ⟨hp, by simp [field, h]⟩⟩
 
 lemma HolderConjugate.conjExponent (h : 1 < p) : p.HolderConjugate (conjExponent p) :=
   (holderConjugate_iff_eq_conjExponent h).2 rfl
@@ -337,7 +338,7 @@ theorem mul_eq_add : p * q = p + q := by
 
 theorem div_conj_eq_sub_one : p / q = p - 1 := by
   field_simp [h.symm.ne_zero]
-  rw [h.sub_one_mul_conj]
+  linear_combination - h.sub_one_mul_conj
 
 lemma inv_add_inv_ennreal : (p⁻¹ + q⁻¹ : ℝ≥0∞) = 1 := by norm_cast; exact h.inv_add_inv_eq_one
 
@@ -414,7 +415,6 @@ lemma holderTriple_coe_iff {p q r : ℝ≥0} (hr : r ≠ 0) :
   · rw [holderTriple_iff]
     have hp := h.ne_zero
     have hq := h.symm.ne_zero
-    have hr := h.ne_zero'
     exact_mod_cast h.inv_add_inv_eq_inv
 
 alias ⟨_, _root_.NNReal.HolderTriple.coe_ennreal⟩ := holderTriple_coe_iff

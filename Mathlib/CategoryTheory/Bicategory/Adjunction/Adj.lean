@@ -82,7 +82,7 @@ structure Hom₂ (α β : a ⟶ b) where
   τl : α.l ⟶ β.l
   /-- the morphism in the opposite direction between right adjoints -/
   τr : β.r ⟶ α.r
-  conjugateEquiv_τl : conjugateEquiv β.adj α.adj τl = τr := by aesop_cat
+  conjugateEquiv_τl : conjugateEquiv β.adj α.adj τl = τr := by cat_disch
 
 lemma Hom₂.conjugateEquiv_symm_τr {α β : a ⟶ b} (p : Hom₂ α β) :
     (conjugateEquiv β.adj α.adj).symm p.τr = p.τl := by
