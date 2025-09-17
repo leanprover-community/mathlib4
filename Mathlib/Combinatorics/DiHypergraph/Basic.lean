@@ -5,7 +5,6 @@ Authors: Evan Spotte-Smith
 -/
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.Card
-import Mathlib.Combinatorics.Hypergraph.Basic
 
 /-!
 # Directed hypergraphs
