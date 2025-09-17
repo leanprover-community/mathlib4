@@ -238,10 +238,8 @@ lemma tendsto_pow_atTop_nhds_zero_iff_norm_lt_one {R : Type*} [SeminormedRing R]
 variable {R S : Type*} [Field R] [Field S] [LinearOrder S] {v w : AbsoluteValue R S}
   [TopologicalSpace S] [IsStrictOrderedRing S] [Archimedean S] [_i : OrderTopology S]
 
-/--
-The limit $v\left(\frac{1}{1 + a ^ n}\right)\to 1$, for an absolute value $v$ on a field
-$F$ if $v(a) < 1$.
--/
+/-- `v (1 / (1 + a ^n))` tends to `1` whenever `v : AbsoluteValue R S` for fields `R` and `S`,
+provided `v a < 1`. -/
 theorem AbsoluteValue.tendsto_div_one_add_pow_nhds_one {v : AbsoluteValue R S} {a : R}
     (ha : v a < 1) : atTop.Tendsto (fun (n : ℕ) ↦ v (1 / (1 + a ^ n))) (𝓝 1) := by
   simp_rw [map_div₀ v, v.map_one]
@@ -252,11 +250,9 @@ theorem AbsoluteValue.tendsto_div_one_add_pow_nhds_one {v : AbsoluteValue R S} {
     (fun n ↦ le_trans (by rw [map_one, map_pow]) (v.le_add _ _))
     (fun n ↦ le_trans (v.add_le _ _) (by rw [map_one, map_pow]))
 
-/--
-The limit $v \left(\frac{1}{1 + a ^ n}\right)\to 0$, for an absolute value $v$ on a field
-$F$ if $1 < v(a)$.
--/
-theorem AbsoluteValue.tendsto_pow_div_one_add_pow_zero {v : AbsoluteValue R S} {a : R}
+/-- `v (1 / (1 + a ^n))` tends to `0` whenever `v : AbsoluteValue R S` for fields `R` and `S`,
+provided `1 < v a`. -/
+theorem AbsoluteValue.tendsto_div_one_add_pow_nhds_zero {v : AbsoluteValue R S} {a : R}
     (ha : 1 < v a) : Filter.Tendsto (fun (n : ℕ) ↦ v (1 / (1 + a ^ n))) Filter.atTop (𝓝 0) := by
   simp_rw [div_eq_mul_inv, one_mul, map_inv₀, fun n ↦ add_comm 1 (a ^ n)]
   refine (tendsto_atTop_mono (fun n ↦ v.le_add _ _) ?_).inv_tendsto_atTop

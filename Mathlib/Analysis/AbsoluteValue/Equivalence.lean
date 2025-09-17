@@ -38,9 +38,9 @@ theorem IsEquiv.symm (h : v.IsEquiv w) : w.IsEquiv v := fun _ _ ↦ (h _ _).symm
 theorem IsEquiv.trans {u : AbsoluteValue R S} (h₁ : v.IsEquiv w)
     (h₂ : w.IsEquiv u) : v.IsEquiv u := fun _ _ ↦ (h₁ _ _).trans (h₂ _ _)
 
-@[deprecated (since := "2025-09-10")] alias isEquiv_refl := IsEquiv.refl
-@[deprecated (since := "2025-09-10")] alias isEquiv_symm := IsEquiv.symm
-@[deprecated (since := "2025-09-10")] alias isEquiv_trans := IsEquiv.trans
+@[deprecated (since := "2025-09-12")] alias isEquiv_refl := IsEquiv.refl
+@[deprecated (since := "2025-09-12")] alias isEquiv_symm := IsEquiv.symm
+@[deprecated (since := "2025-09-12")] alias isEquiv_trans := IsEquiv.trans
 
 instance : Setoid (AbsoluteValue R S) where
   r := IsEquiv
@@ -49,6 +49,8 @@ instance : Setoid (AbsoluteValue R S) where
     symm := .symm
     trans := .trans
   }
+
+theorem IsEquiv.le_iff_le (h : v.IsEquiv w) {x y : R} : v x ≤ v y ↔ w x ≤ w y := h ..
 
 theorem IsEquiv.lt_iff_lt (h : v.IsEquiv w) {x y : R} : v x < v y ↔ w x < w y :=
   lt_iff_lt_of_le_iff_le' (h y x) (h x y)
@@ -77,10 +79,11 @@ theorem IsEquiv.one_le_iff (h : v.IsEquiv w) {x : R} :
 theorem IsEquiv.eq_one_iff (h : v.IsEquiv w) {x : R} : v x = 1 ↔ w x = 1 := by
   simpa only [map_one] using h.eq_iff_eq (x := x) (y := 1)
 
-theorem IsEquiv.isNontrivial_iff {w : AbsoluteValue R S} (h : v.IsEquiv w) :
+theorem IsEquiv.isNontrivial_congr {w : AbsoluteValue R S} (h : v.IsEquiv w) :
     v.IsNontrivial ↔ w.IsNontrivial :=
   not_iff_not.1 <| by aesop (add simp [not_isNontrivial_iff, h.eq_one_iff])
-alias ⟨IsEquiv.isNontrivial, _⟩ := IsEquiv.isNontrivial_iff
+
+alias ⟨IsEquiv.isNontrivial, _⟩ := IsEquiv.isNontrivial_congr
 
 end OrderedSemiring
 
@@ -95,7 +98,7 @@ lemma isEquiv_trivial_iff_eq_trivial [DecidablePred fun x : R ↦ x = 0] [NoZero
     f.IsEquiv .trivial ↔ f = .trivial :=
   ⟨fun h ↦ by aesop (add simp [h.eq_one_iff, AbsoluteValue.trivial]), fun h ↦ h ▸ .rfl⟩
 
-@[deprecated (since := "2025-09-10")]
+@[deprecated (since := "2025-09-12")]
 alias eq_trivial_of_isEquiv_trivial := isEquiv_trivial_iff_eq_trivial
 
 variable [IsStrictOrderedRing S]
@@ -202,7 +205,7 @@ private theorem exists_one_lt_lt_one_pi_of_one_lt (ha : 1 < v i a) (haj : ∀ j 
   have hcⱼ (j : ι) (hj : j ≠ i) : atTop.Tendsto (fun n ↦ v j (c n)) (𝓝 0) := by
     have : 1 < v j a⁻¹ := map_inv₀ (v j) _ ▸
       (one_lt_inv₀ <| (v j).pos fun h ↦ by linarith [map_zero (v _) ▸ h ▸ ha]).2 (haj j hj)
-    simpa [c] using (tendsto_pow_div_one_add_pow_zero this).mul_const _
+    simpa [c] using (tendsto_div_one_add_pow_nhds_zero this).mul_const _
   have hcₙ : atTop.Tendsto (fun n ↦ w (c n)) (𝓝 (w b)) := by
     have : w a⁻¹ < 1 := map_inv₀ w _ ▸ inv_lt_one_of_one_lt₀ haw
     simpa [c] using (tendsto_div_one_add_pow_nhds_one this).mul_const (w b)
@@ -218,11 +221,6 @@ private theorem exists_one_lt_lt_one_pi_of_one_lt (ha : 1 < v i a) (haj : ∀ j 
   · exact hrₙ j hj _ <| le_max_iff.2 <| Or.inl <|
       Finset.le_sup_dite_neg (fun j ↦ j = i) (Finset.mem_univ j) _
   · exact hrN _ <| le_max_iff.2 (.inr le_rfl)
-
-theorem _root_.Fintype.card_subtype_or_eq {α : Type*} [Fintype α] [DecidableEq α] {a b : α}
-    (h : a ≠ b) : Fintype.card { c : α // c = a ∨ c = b } = 2 := by
-  simpa using Fintype.card_subtype_or_disjoint _ _ <| fun p hpa hpb ↦
-    le_bot_iff.2 <| funext fun c ↦ by simpa using fun hpc ↦ h (hpa _ hpc ▸ hpb _ hpc)
 
 open Fintype Subtype in
 /--
@@ -276,9 +274,10 @@ end LinearOrderedField
 
 section Real
 
+open Real
+
 variable {F : Type*} [Field F] {v w : AbsoluteValue F ℝ}
 
-open Real in
 theorem IsEquiv.log_div_log_pos (h : v.IsEquiv w) {a : F} (ha₀ : a ≠ 0) (ha₁ : w a ≠ 1) :
     0 < (w a).log / (v a).log := by
   rcases ha₁.lt_or_gt with hwa | hwa
@@ -286,7 +285,6 @@ theorem IsEquiv.log_div_log_pos (h : v.IsEquiv w) {a : F} (ha₀ : a ≠ 0) (ha�
       (neg_pos_of_neg <| log_neg (v.pos ha₀) (h.lt_one_iff.2 hwa))
   · exact div_pos (log_pos <| hwa) (log_pos (h.one_lt_iff.2 hwa))
 
-open Real in
 /--
 If $v$ and $w$ are two real absolute values on a field $F$, equivalent in the sense that
 $v(x) \leq v(y)$ if and only if $w(x) \leq w(y)$, then $\frac{\log (v(a))}{\log (w(a))}$ is
@@ -318,7 +316,6 @@ theorem IsEquiv.log_div_log_eq_log_div_log (h : v.IsEquiv w)
     ← one_lt_div (zpow_pos (by linarith) _), ← map_pow, ← map_zpow₀, ← map_div₀] at hq₂
   exact not_lt_of_gt (h.lt_one_iff.1 hq₁) hq₂
 
-open Real in
 /--
 If `v` and `w` are two real absolute values on a field `F`, then `v` and `w` are equivalent if
 and only if there exists a positive real constant `c` such that for all `x : R`, `(f x)^c = g x`.
@@ -335,7 +332,7 @@ theorem isEquiv_iff_exists_rpow_eq {v w : AbsoluteValue F ℝ} :
     rw [← h.symm.log_div_log_eq_log_div_log ha₀ ha₁ hb₀ hb₁, div_eq_inv_mul, rpow_mul (v.nonneg _),
       rpow_inv_log (v.pos hb₀) (h.eq_one_iff.not.2 hb₁), exp_one_rpow, exp_log (w.pos hb₀)]
   · exact ⟨1, zero_lt_one, funext fun x ↦ by rcases eq_or_ne x 0 with rfl | h₀ <;>
-      aesop (add simp [h.isNontrivial_iff])⟩
+      aesop (add simp [h.isNontrivial_congr])⟩
 
 end Real
 
