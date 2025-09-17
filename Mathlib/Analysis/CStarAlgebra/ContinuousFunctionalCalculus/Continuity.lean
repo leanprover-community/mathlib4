@@ -330,7 +330,8 @@ theorem continuousOn_cfc_nnreal {s : Set ℝ≥0} (hs : IsCompact s)
     intro x hx
     simpa
   refine continuousOn_cfc A (hs.image NNReal.continuous_coe) _ hf |>.mono fun a ha ↦ ?_
-  simp only [Set.mem_setOf_eq, nonneg_iff_isSelfAdjoint_and_spectrumRestricts] at ha ⊢
+  simp only [Set.mem_setOf_eq, nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts] at ha ⊢
+  rw [← SpectrumRestricts] at ha
   refine ⟨ha.1.1, ?_⟩
   rw [← ha.1.2.algebraMap_image]
   exact Set.image_mono ha.2
