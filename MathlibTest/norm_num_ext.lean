@@ -7,10 +7,12 @@ import Mathlib.Tactic.NormNum.BigOperators
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.ModEq
 import Mathlib.Tactic.NormNum.NatFactorial
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatLog
 import Mathlib.Tactic.NormNum.NatSqrt
+import Mathlib.Tactic.NormNum.Parity
 import Mathlib.Tactic.NormNum.Prime
 import Mathlib.Data.Rat.Floor
 import Mathlib.Tactic.NormNum.LegendreSymbol
@@ -292,13 +294,15 @@ example : @Squarefree ℕ Multiplicative.monoid 1 := by
   rintro x ⟨dx, hd⟩
   revert x dx
   rw [Multiplicative.ofAdd.surjective.forall₂]
-  intros x dx h
+  intro x dx h
   simp_rw [← ofAdd_add, Multiplicative.ofAdd.injective.eq_iff] at h
   cases x
   · simp [isUnit_one]
   · simp only [Nat.succ_add, Nat.add_succ] at h
     cases h
 -/
+
+section NatLog
 
 example : Nat.log 0 0 = 0 := by norm_num1
 example : Nat.log 0 1 = 0 := by norm_num1
@@ -312,6 +316,21 @@ example : Nat.log 2 2 = 1 := by norm_num1
 example : Nat.log 2 256 = 8 := by norm_num1
 example : Nat.log 10 10000000 = 7 := by norm_num1
 example : Nat.log 10 (10 ^ 7 + 2) + Nat.log 2 (2 ^ 30 + 3) = 7 + 30 := by norm_num1
+
+example : Nat.clog 0 0 = 0 := by norm_num1
+example : Nat.clog 0 1 = 0 := by norm_num1
+example : Nat.clog 0 100 = 0 := by norm_num1
+example : Nat.clog 1 0 = 0 := by norm_num1
+example : Nat.clog 1 1 = 0 := by norm_num1
+example : Nat.clog 1 100 = 0 := by norm_num1
+example : Nat.clog 10 0 = 0 := by norm_num1
+example : Nat.clog 10 3 = 1 := by norm_num1
+example : Nat.clog 2 2 = 1 := by norm_num1
+example : Nat.clog 2 256 = 8 := by norm_num1
+example : Nat.clog 10 10000000 = 7 := by norm_num1
+example : Nat.clog 10 (10 ^ 7 + 2) + Nat.clog 2 (2 ^ 30 + 3) = 8 + 31 := by norm_num1
+
+end NatLog
 
 example : Nat.fib 0 = 0 := by norm_num1
 example : Nat.fib 1 = 1 := by norm_num1
@@ -437,6 +456,24 @@ example : legendreSym 1000003 7 = -1 := by norm_num1
 
 end jacobi
 
+section even_odd
+
+example : Even 16 := by norm_num1
+example : ¬Even 17 := by norm_num1
+example : Even (16 : ℤ) := by norm_num1
+example : ¬Even (17 : ℤ) := by norm_num1
+example : Even (-20 : ℤ) := by norm_num1
+example : ¬Even (-21 : ℤ) := by norm_num1
+
+example : Odd 5 := by norm_num1
+example : ¬Odd 4 := by norm_num1
+example : Odd (5 : ℤ) := by norm_num1
+example : ¬Odd (4 : ℤ) := by norm_num1
+example : Odd (-5 : ℤ) := by norm_num1
+example : ¬Odd (-4 : ℤ) := by norm_num1
+
+end even_odd
+
 section mod
 
 example : (5 : ℕ) % 4 = 1 := by norm_num1
@@ -461,6 +498,19 @@ example : ¬ (2 : ℤ) ∣ 5 := by norm_num1
 example : (553105253 : ℤ) ∣ 553105253 * 776531401 := by norm_num1
 example : ¬ (553105253 : ℤ) ∣ 553105253 * 776531401 + 1 := by norm_num1
 
+example : 10 ≡ 7 [MOD 3] := by norm_num1
+example : ¬ (10 ≡ 7 [MOD 5]) := by norm_num1
+
+example : 10 ≡ 7 [ZMOD 3] := by norm_num1
+example : ¬ (10 ≡ 7 [ZMOD 5]) := by norm_num1
+example : -3 ≡ 7 [ZMOD 5] := by norm_num1
+example : ¬ (-3 ≡ 7 [ZMOD 50]) := by norm_num1
+
+example : 10 ≡ 7 [ZMOD -3] := by norm_num1
+example : ¬ (10 ≡ 7 [ZMOD -5]) := by norm_num1
+example : -3 ≡ 7 [ZMOD -5] := by norm_num1
+example : ¬ (-3 ≡ 7 [ZMOD -50]) := by norm_num1
+
 end mod
 
 section num_den
@@ -479,6 +529,7 @@ example : Real.sqrt 25 = 5 := by norm_num
 example : Real.sqrt (25 / 16) = 5 / 4 := by norm_num
 example : Real.sqrt (0.25) = 1/2 := by norm_num
 example : NNReal.sqrt 25 = 5 := by norm_num
+example : NNReal.sqrt (25 / 16) = 5 / 4 := by norm_num
 example : Real.sqrt (-37) = 0 := by norm_num
 example : Real.sqrt (-5 / 3) = 0 := by norm_num
 example : Real.sqrt 0 = 0 := by norm_num

@@ -43,7 +43,7 @@ private theorem Perfect.small_diam_aux (hC : Perfect C) (ε_pos : 0 < ε) {x : �
   have : x ∈ EMetric.ball x (ε / 2) := by
     apply EMetric.mem_ball_self
     rw [ENNReal.div_pos_iff]
-    exact ⟨ne_of_gt ε_pos, by norm_num⟩
+    exact ⟨ne_of_gt ε_pos, by simp⟩
   have := hC.closure_nhds_inter x xC this EMetric.isOpen_ball
   refine ⟨this.1, this.2, ?_, ?_⟩
   · rw [IsClosed.closure_subset_iff hC.closed]

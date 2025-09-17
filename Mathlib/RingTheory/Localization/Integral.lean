@@ -48,7 +48,7 @@ noncomputable def coeffIntegerNormalization (p : S[X]) (i : ℕ) : R :=
 
 theorem coeffIntegerNormalization_of_coeff_zero (p : S[X]) (i : ℕ) (h : coeff p i = 0) :
     coeffIntegerNormalization M p i = 0 := by
-  simp only [coeffIntegerNormalization, h, mem_support_iff, eq_self_iff_true, not_true, Ne,
+  simp only [coeffIntegerNormalization, h, mem_support_iff, not_true, Ne,
     dif_neg, not_false_iff]
 
 @[deprecated (since := "2025-05-23")]
@@ -102,8 +102,7 @@ theorem integerNormalization_eval₂_eq_zero (g : S →+* R') (p : S[X]) {x : R'
 
 theorem integerNormalization_aeval_eq_zero [Algebra R R'] [Algebra S R'] [IsScalarTower R S R']
     (p : S[X]) {x : R'} (hx : aeval x p = 0) : aeval x (integerNormalization M p) = 0 := by
-  rw [aeval_def, IsScalarTower.algebraMap_eq R S R',
-    integerNormalization_eval₂_eq_zero _ (algebraMap _ _) _ hx]
+  rwa [aeval_def, IsScalarTower.algebraMap_eq R S R', integerNormalization_eval₂_eq_zero]
 
 end IntegerNormalization
 
@@ -427,7 +426,7 @@ lemma isAlgebraic_of_isFractionRing {R S} (K L) [CommRing R] [CommRing S] [Field
   · apply IsIntegral.tower_top (R := R)
     apply IsIntegral.map (IsScalarTower.toAlgHom R S L)
     exact Algebra.IsIntegral.isIntegral x
-  · show IsIntegral _ _
+  · change IsIntegral _ _
     rw [← isAlgebraic_iff_isIntegral, ← IsAlgebraic.invOf_iff, isAlgebraic_iff_isIntegral]
     apply IsIntegral.tower_top (R := R)
     apply IsIntegral.map (IsScalarTower.toAlgHom R S L)

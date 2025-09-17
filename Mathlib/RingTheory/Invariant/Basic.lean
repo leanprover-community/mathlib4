@@ -3,6 +3,7 @@ Copyright (c) 2024 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
+import Mathlib.RingTheory.Invariant.Defs
 import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 
 /-!
@@ -11,8 +12,8 @@ import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 Given an extension of rings `B/A` and an action of `G` on `B`, we introduce a predicate
 `Algebra.IsInvariant A B G` which states that every fixed point of `B` lies in the image of `A`.
 
-The main application is in algebraic number theory, where `G := Gal(L/K)` is the galois group
-of some finite galois extension of number fields, and `A := 𝓞K` and `B := 𝓞L` are their ring of
+The main application is in algebraic number theory, where `G := Gal(L/K)` is the Galois group
+of some finite Galois extension of number fields, and `A := 𝓞K` and `B := 𝓞L` are their ring of
 integers. This main result in this file implies the existence of Frobenius elements in this setting.
 See `Mathlib/RingTheory/Frobenius.lean`.
 
@@ -36,19 +37,6 @@ If `Q` is a prime ideal of `B` lying over a prime ideal `P` of `A`, then
 -/
 
 open scoped Pointwise
-
-namespace Algebra
-
-variable (A B G : Type*) [CommSemiring A] [Semiring B] [Algebra A B]
-  [Group G] [MulSemiringAction G B]
-
-/-- An action of a group `G` on an extension of rings `B/A` is invariant if every fixed point of
-`B` lies in the image of `A`. The converse statement that every point in the image of `A` is fixed
-by `G` is `smul_algebraMap` (assuming `SMulCommClass A B G`). -/
-@[mk_iff] class IsInvariant : Prop where
-  isInvariant : ∀ b : B, (∀ g : G, g • b = b) → ∃ a : A, algebraMap A B a = b
-
-end Algebra
 
 section Galois
 
@@ -408,7 +396,7 @@ include G in
 For any domain `k` containing `B ⧸ Q`,
 any endomorphism of `k` can be restricted to an endomorphism of `B ⧸ Q`.
 
-This is basically the fact that `L/K` normal implies `κ(Q)/κ(P)` normal in the galois setting.
+This is basically the fact that `L/K` normal implies `κ(Q)/κ(P)` normal in the Galois setting.
 -/
 lemma Ideal.Quotient.exists_algHom_fixedPoint_quotient_under
     (σ : k →ₐ[A ⧸ P] k) :

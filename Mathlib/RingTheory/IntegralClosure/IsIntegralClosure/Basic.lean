@@ -9,6 +9,7 @@ import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
 import Mathlib.RingTheory.Polynomial.IntegralNormalization
 import Mathlib.RingTheory.Polynomial.ScaleRoots
+import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
 # # Integral closure as a characteristic predicate
@@ -248,40 +249,30 @@ theorem IsIntegral.det {n : Type*} [Fintype n] [DecidableEq n] {M : Matrix n n A
 theorem IsIntegral.pow_iff {x : A} {n : ℕ} (hn : 0 < n) : IsIntegral R (x ^ n) ↔ IsIntegral R x :=
   ⟨IsIntegral.of_pow hn, fun hx ↦ hx.pow n⟩
 
-open TensorProduct
+section Pushout
 
-theorem IsIntegral.tmul (x : A) {y : B} (h : IsIntegral R y) : IsIntegral A (x ⊗ₜ[R] y) := by
-  rw [← mul_one x, ← smul_eq_mul, ← smul_tmul']
-  exact smul _ (h.map_of_comp_eq (algebraMap R A)
-    (Algebra.TensorProduct.includeRight (R := R) (A := A) (B := B)).toRingHom
-    Algebra.TensorProduct.includeLeftRingHom_comp_algebraMap)
+variable (R S A) [Algebra R S] [int : Algebra.IsIntegral R S]
+variable (SA : Type*) [CommRing SA] [Algebra R SA] [Algebra S SA] [Algebra A SA]
+  [IsScalarTower R S SA] [IsScalarTower R A SA]
+
+theorem Algebra.IsPushout.isIntegral' [IsPushout R A S SA] : Algebra.IsIntegral A SA :=
+  (equiv R A S SA).isIntegral_iff.mp inferInstance
+
+theorem Algebra.IsPushout.isIntegral [h : IsPushout R S A SA] : Algebra.IsIntegral A SA :=
+  h.symm.isIntegral'
+
+attribute [local instance] Polynomial.algebra in
+instance : Algebra.IsIntegral R[X] S[X] := Algebra.IsPushout.isIntegral R _ S _
+
+attribute [local instance] MvPolynomial.algebraMvPolynomial in
+instance {σ} : Algebra.IsIntegral (MvPolynomial σ R) (MvPolynomial σ S) :=
+  Algebra.IsPushout.isIntegral R _ S _
+
+end Pushout
 
 section
 
 variable (p : R[X]) (x : S)
-
-/-- The monic polynomial whose roots are `p.leadingCoeff * x` for roots `x` of `p`. -/
-@[deprecated (since := "2024-11-30")]
-alias normalizeScaleRoots := integralNormalization
-
-@[deprecated (since := "2024-11-30")]
-alias normalizeScaleRoots_coeff_mul_leadingCoeff_pow :=
-  integralNormalization_coeff_mul_leadingCoeff_pow
-
-@[deprecated (since := "2024-11-30")]
-alias leadingCoeff_smul_normalizeScaleRoots := leadingCoeff_smul_integralNormalization
-
-@[deprecated (since := "2024-11-30")]
-alias normalizeScaleRoots_support := support_integralNormalization_subset
-
-@[deprecated (since := "2024-11-30")]
-alias normalizeScaleRoots_degree := integralNormalization_degree
-
-@[deprecated (since := "2024-11-30")]
-alias normalizeScaleRoots_eval₂_leadingCoeff_mul := integralNormalization_eval₂_leadingCoeff_mul
-
-@[deprecated (since := "2024-11-30")]
-alias normalizeScaleRoots_monic := monic_integralNormalization
 
 /-- Given a `p : R[X]` and a `x : S` such that `p.eval₂ f x = 0`,
 `f p.leadingCoeff * x` is integral. -/
@@ -346,15 +337,10 @@ section IsIntegralClosure
 
 instance integralClosure.isIntegralClosure (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] :
     IsIntegralClosure (integralClosure R A) R A where
-  algebraMap_injective' := Subtype.coe_injective
+  algebraMap_injective := Subtype.coe_injective
   isIntegral_iff {x} := ⟨fun h => ⟨⟨x, h⟩, rfl⟩, by rintro ⟨⟨_, h⟩, rfl⟩; exact h⟩
 
 namespace IsIntegralClosure
-
--- Porting note: added to work around missing infer kind support
-theorem algebraMap_injective (A R B : Type*) [CommRing R] [CommSemiring A] [CommRing B]
-    [Algebra R B] [Algebra A B] [IsIntegralClosure A R B] : Function.Injective (algebraMap A B) :=
-  algebraMap_injective' R
 
 variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B]
 variable [Algebra R B] [Algebra A B] [IsIntegralClosure A R B]
@@ -392,12 +378,12 @@ theorem mk'_one (h : IsIntegral R (1 : B) := isIntegral_one) : mk' A 1 h = 1 :=
 theorem mk'_zero (h : IsIntegral R (0 : B) := isIntegral_zero) : mk' A 0 h = 0 :=
   algebraMap_injective A R B <| by rw [algebraMap_mk', RingHom.map_zero]
 
--- Porting note: Left-hand side does not simplify @[simp]
+@[simp]
 theorem mk'_add (x y : B) (hx : IsIntegral R x) (hy : IsIntegral R y) :
     mk' A (x + y) (hx.add hy) = mk' A x hx + mk' A y hy :=
   algebraMap_injective A R B <| by simp only [algebraMap_mk', RingHom.map_add]
 
--- Porting note: Left-hand side does not simplify @[simp]
+@[simp]
 theorem mk'_mul (x y : B) (hx : IsIntegral R x) (hy : IsIntegral R y) :
     mk' A (x * y) (hx.mul hy) = mk' A x hx * mk' A y hy :=
   algebraMap_injective A R B <| by simp only [algebraMap_mk', RingHom.map_mul]

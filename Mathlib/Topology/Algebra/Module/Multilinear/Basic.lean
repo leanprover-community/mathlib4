@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 import Mathlib.LinearAlgebra.Multilinear.Basic
+import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # Continuous multilinear maps
@@ -103,16 +104,10 @@ theorem map_update_add [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x y : M₁
     f (update m i (x + y)) = f (update m i x) + f (update m i y) :=
   f.map_update_add' m i x y
 
-@[deprecated (since := "2024-11-03")]
-protected alias map_add := ContinuousMultilinearMap.map_update_add
-
 @[simp]
 theorem map_update_smul [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (c : R) (x : M₁ i) :
     f (update m i (c • x)) = c • f (update m i x) :=
   f.map_update_smul' m i c x
-
-@[deprecated (since := "2024-11-03")]
-protected alias map_smul := ContinuousMultilinearMap.map_update_smul
 
 theorem map_coord_zero {m : ∀ i, M₁ i} (i : ι) (h : m i = 0) : f m = 0 :=
   f.toMultilinearMap.map_coord_zero i h
@@ -209,7 +204,7 @@ linear map obtained by fixing all coordinates but `i` equal to those of `m`, and
   { f.toMultilinearMap.toLinearMap m i with
     cont := f.cont.comp (continuous_const.update i continuous_id) }
 
-/-- The cartesian product of two continuous multilinear maps, as a continuous multilinear map. -/
+/-- The Cartesian product of two continuous multilinear maps, as a continuous multilinear map. -/
 def prod (f : ContinuousMultilinearMap R M₁ M₂) (g : ContinuousMultilinearMap R M₁ M₃) :
     ContinuousMultilinearMap R M₁ (M₂ × M₃) :=
   { f.toMultilinearMap.prod g.toMultilinearMap with cont := f.cont.prodMk g.cont }
@@ -386,7 +381,7 @@ def linearDeriv : (∀ i, M₁ i) →L[R] M₂ := ∑ i : ι, (f.toContinuousLin
 lemma linearDeriv_apply : f.linearDeriv x y = ∑ i, f (Function.update x i (y i)) := by
   unfold linearDeriv toContinuousLinearMap
   simp only [ContinuousLinearMap.coe_sum', ContinuousLinearMap.coe_comp',
-    ContinuousLinearMap.coe_mk', LinearMap.coe_mk, LinearMap.coe_toAddHom, Finset.sum_apply]
+    ContinuousLinearMap.coe_mk', Finset.sum_apply]
   rfl
 
 end linearDeriv
@@ -467,9 +462,6 @@ variable [Ring R] [∀ i, AddCommGroup (M₁ i)] [AddCommGroup M₂] [∀ i, Mod
 theorem map_update_sub [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x y : M₁ i) :
     f (update m i (x - y)) = f (update m i x) - f (update m i y) :=
   f.toMultilinearMap.map_update_sub _ _ _ _
-
-@[deprecated (since := "2024-11-03")]
-protected alias map_sub := ContinuousMultilinearMap.map_update_sub
 
 section IsTopologicalAddGroup
 
@@ -587,24 +579,6 @@ def piLinearEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i
 
 end Module
 
-section CommAlgebra
-
-variable (R ι) (A : Type*) [Fintype ι] [CommSemiring R] [CommSemiring A] [Algebra R A]
-  [TopologicalSpace A] [ContinuousMul A]
-
-/-- The continuous multilinear map on `A^ι`, where `A` is a normed commutative algebra
-over `𝕜`, associating to `m` the product of all the `m i`.
-
-See also `ContinuousMultilinearMap.mkPiAlgebraFin`. -/
-protected def mkPiAlgebra : ContinuousMultilinearMap R (fun _ : ι => A) A where
-  cont := continuous_finset_prod _ fun _ _ => continuous_apply _
-  toMultilinearMap := MultilinearMap.mkPiAlgebra R ι A
-
-@[simp]
-theorem mkPiAlgebra_apply (m : ι → A) : ContinuousMultilinearMap.mkPiAlgebra R ι A m = ∏ i, m i :=
-  rfl
-
-end CommAlgebra
 
 section Algebra
 
@@ -630,6 +604,30 @@ theorem mkPiAlgebraFin_apply (m : Fin n → A) :
   rfl
 
 end Algebra
+
+section CommAlgebra
+
+variable (R ι) (A : Type*) [Fintype ι] [CommSemiring R] [CommSemiring A] [Algebra R A]
+  [TopologicalSpace A] [ContinuousMul A]
+
+/-- The continuous multilinear map on `A^ι`, where `A` is a normed commutative algebra
+over `𝕜`, associating to `m` the product of all the `m i`.
+
+See also `ContinuousMultilinearMap.mkPiAlgebraFin`. -/
+protected def mkPiAlgebra : ContinuousMultilinearMap R (fun _ : ι => A) A where
+  cont := continuous_finset_prod _ fun _ _ => continuous_apply _
+  toMultilinearMap := MultilinearMap.mkPiAlgebra R ι A
+
+@[simp]
+theorem mkPiAlgebra_apply (m : ι → A) : ContinuousMultilinearMap.mkPiAlgebra R ι A m = ∏ i, m i :=
+  rfl
+
+theorem mkPiAlgebra_eq_mkPiAlgebraFin {n : ℕ} : ContinuousMultilinearMap.mkPiAlgebra R (Fin n) A
+    = ContinuousMultilinearMap.mkPiAlgebraFin R n A := by
+  ext
+  simp [List.prod_ofFn]
+
+end CommAlgebra
 
 section SMulRight
 
