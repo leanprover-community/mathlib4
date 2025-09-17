@@ -318,11 +318,11 @@ theorem trans_assoc {δ} (ab : α ≃ β) (bc : β ≃ γ) (cd : γ ≃ δ) :
 
 theorem trans_cancel_left (e : α ≃ β) (f : β ≃ γ) (g : α ≃ γ) :
     e.trans f = g ↔ f = e.symm.trans g := by
-  constructor <;> (rintro rfl; simp [← Equiv.trans_assoc])
+  grind
 
 theorem trans_cancel_right (e : α ≃ β) (f : β ≃ γ) (g : α ≃ γ) :
     e.trans f = g ↔ e = g.trans f.symm := by
-  constructor <;> (rintro rfl; simp [Equiv.trans_assoc])
+  grind
 
 theorem leftInverse_symm (f : α ≃ β) : LeftInverse f.symm f := f.left_inv
 
