@@ -102,20 +102,20 @@ protected theorem eq (a b : V) :
 
 @[simp]
 theorem mk_eq_mk {a b : V} :
-    (StronglyConnectedComponent.mk a : StronglyConnectedComponent V) = 
-    StronglyConnectedComponent.mk b ↔ 
+    (StronglyConnectedComponent.mk a : StronglyConnectedComponent V) =
+    StronglyConnectedComponent.mk b ↔
     (Nonempty (Path a b) ∧ Nonempty (Path b a)) :=
   StronglyConnectedComponent.eq a b
 
-/-- In a strongly connected quiver with positive paths, every vertex has a self-loop 
+/-- In a strongly connected quiver with positive paths, every vertex has a self-loop
     (possibly of length > 1) -/
-theorem exists_self_path_of_isStronglyConnectedPos {V : Type*} [Quiver V] 
+theorem exists_self_path_of_isStronglyConnectedPos {V : Type*} [Quiver V]
     (h : IsStronglyConnectedPos V) (v : V) :
     ∃ p : Path v v, 0 < p.length := by
   exact exists_pos_length_cycle_of_isStronglyConnectedPos h v
 
 /-- Strong connectivity is transitive -/
-theorem isStronglyConnected_transitive {V : Type*} [Quiver V] 
+theorem isStronglyConnected_transitive {V : Type*} [Quiver V]
     (a b c : V) :
     Nonempty (Path a b) → Nonempty (Path b c) → Nonempty (Path a c) :=
   fun ⟨p⟩ ⟨q⟩ => ⟨p.comp q⟩
@@ -126,16 +126,16 @@ theorem stronglyConnectedComponent_eq_of_path {V : Type*} [Quiver V] {a b : V}
     (a : StronglyConnectedComponent V) = b :=
   (StronglyConnectedComponent.eq a b).2 ⟨hab, hba⟩
 
-/-- Vertices in the same SCC have paths in both directions -/  
+/-- Vertices in the same SCC have paths in both directions -/
 theorem exists_path_of_stronglyConnectedComponent_eq {V : Type*} [Quiver V] {a b : V}
     (h : (a : StronglyConnectedComponent V) = b) :
     (Nonempty (Path a b)) ∧ (Nonempty (Path b a)) :=
   (StronglyConnectedComponent.eq a b).1 h
 
-/-- A vertex forms a singleton strongly connected component iff 
+/-- A vertex forms a singleton strongly connected component iff
     no other vertex has bidirectional paths with it -/
 theorem stronglyConnectedComponent_singleton_iff {V : Type*} [Quiver V] (v : V) :
-    (∀ w : V, (w : StronglyConnectedComponent V) = v → w = v) ↔ 
+    (∀ w : V, (w : StronglyConnectedComponent V) = v → w = v) ↔
     (∀ w : V, w ≠ v → ¬(Nonempty (Path v w) ∧ Nonempty (Path w v))) := by
   constructor
   · intro h_singleton w hw_ne h_bidir
@@ -150,12 +150,12 @@ theorem stronglyConnectedComponent_singleton_iff {V : Type*} [Quiver V] (v : V) 
     grind
 
 /-- Strong connectivity implies weak connectivity -/
-theorem isPreconnected_of_isStronglyConnected {V : Type*} [Quiver V] 
+theorem isPreconnected_of_isStronglyConnected {V : Type*} [Quiver V]
     (h : IsStronglyConnected V) : IsPreconnected V :=
   h
 
 /-- Strong connectivity implies preconnectivity of the symmetrification -/
-theorem isPreconnected_symmetrify_of_isStronglyConnected {V : Type*} [Quiver V] 
+theorem isPreconnected_symmetrify_of_isStronglyConnected {V : Type*} [Quiver V]
     (h : IsStronglyConnected V) : @IsPreconnected (Symmetrify V) _ := by
   intro a b
   obtain ⟨p⟩ := h a b
@@ -164,10 +164,10 @@ theorem isPreconnected_symmetrify_of_isStronglyConnected {V : Type*} [Quiver V]
   | nil => exact ⟨Path.nil⟩
   | cons q e ih => exact ⟨ih.some.cons (Sum.inl e)⟩
 
-/-- If every vertex can reach every other vertex in the symmetrification, 
+/-- If every vertex can reach every other vertex in the symmetrification,
     then we have weak connectivity -/
-theorem weakly_connected_of_preconnected_symmetrify {V : Type*} [Quiver V] 
-    (h : @IsPreconnected (Symmetrify V) _) : 
+theorem weakly_connected_of_preconnected_symmetrify {V : Type*} [Quiver V]
+    (h : @IsPreconnected (Symmetrify V) _) :
     ∀ a b : V, Nonempty (@Path (Symmetrify V) _ a b) := h
 
 /-- Strong connectivity of a quiver implies its symmetrification is preconnected.
@@ -178,16 +178,16 @@ theorem isStronglyConnected_implies_symmetrify_preconnected {V : Type*} [Quiver 
 
 /-- A strongly connected quiver with positive paths is also strongly connected
     in the usual sense -/
-theorem isStronglyConnected_of_pos {V : Type*} [Quiver V] 
+theorem isStronglyConnected_of_pos {V : Type*} [Quiver V]
     (h : IsStronglyConnectedPos V) : IsStronglyConnected V := by
   intro i j
   obtain ⟨p, _⟩ := exists_pos_length_path_of_isStronglyConnectedPos h i j
   exact ⟨p⟩
 
-/-- If a strongly connected quiver has at least one edge, then it satisfies 
+/-- If a strongly connected quiver has at least one edge, then it satisfies
     strong connectivity with positive paths -/
-theorem isStronglyConnectedPos_of_hasEdge {V : Type*} [Quiver V] 
-    (h_sc : IsStronglyConnected V) 
+theorem isStronglyConnectedPos_of_hasEdge {V : Type*} [Quiver V]
+    (h_sc : IsStronglyConnected V)
     (h_edge : ∃ (i j : V), Nonempty (i ⟶ j)) :
     IsStronglyConnectedPos V := by
   obtain ⟨i₀, j₀, ⟨e₀⟩⟩ := h_edge
