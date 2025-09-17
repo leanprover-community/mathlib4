@@ -196,7 +196,7 @@ theorem coeFn_add (f g : Lp E p μ) : ⇑(f + g) =ᵐ[μ] f + g :=
 theorem coeFn_sub (f g : Lp E p μ) : ⇑(f - g) =ᵐ[μ] f - g :=
   AEEqFun.coeFn_sub _ _
 
-theorem const_mem_Lp (α) {_ : MeasurableSpace α} (μ : Measure α) (c : E) [IsFiniteMeasure μ] :
+theorem const_mem_Lp (α) {_ : MeasurableSpace α} (μ : Measure α) (c : E) [MemLp.Const E p μ] :
     @AEEqFun.const α _ _ μ _ c ∈ Lp E p μ :=
   (memLp_const c).eLpNorm_mk_lt_top
 
