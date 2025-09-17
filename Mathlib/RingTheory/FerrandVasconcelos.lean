@@ -298,6 +298,7 @@ lemma Ideal.spanFinrank_eq_finrank_quotient [IsLocalRing R] [IsNoetherianRing R]
       (I ⧸ maximalIdeal R • (⊤ : Submodule R I)) := by
   sorry
 
+open Pointwise in
 theorem Ferrand_Vasconcelos_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} R]
     {I : Ideal R} (netop : I ≠ ⊤)
     (h : ∃ n, HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} I)) n)
@@ -318,9 +319,48 @@ theorem Ferrand_Vasconcelos_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} 
       simp [← Submodule.spanRank_eq_zero_iff_eq_bot, hrank,
         Submodule.fg_iff_spanRank_eq_spanFinrank.mpr fg]
     rcases exist_isSMulRegular_of_exist_hasProjectiveDimensionLE I netop nebot h with
-      ⟨x, mem, nmem, reg⟩
+      ⟨x, mem, nmem, xreg⟩
+    let R' := R ⧸ Ideal.span {x}
+    let I' := I.map (Ideal.Quotient.mk (Ideal.span {x}))
+    have netop' : I' ≠ ⊤ := by
+      by_contra eqtop
+      absurd netop
 
-    sorry
+      sorry
+    let _ : IsLocalRing (R ⧸ Ideal.span {x}) :=
+      have : Nontrivial (R ⧸ Ideal.span {x}) := Ideal.Quotient.nontrivial
+        (by simpa [← Submodule.ideal_span_singleton_smul] using le_maximalIdeal netop mem)
+      have : IsLocalHom (Ideal.Quotient.mk (Ideal.span {x})) :=
+        IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
+      IsLocalRing.of_surjective _ Ideal.Quotient.mk_surjective
+    let _ : IsNoetherianRing (R ⧸ Ideal.span {x}) :=
+      isNoetherianRing_of_surjective _ _ _ Ideal.Quotient.mk_surjective
+    have fin : ∃ n, HasProjectiveDimensionLE
+      (ModuleCat.of (R ⧸ Ideal.span {x}) (Shrink.{v, u} I')) n := by
+      sorry
+    have free : Module.Free ((R ⧸ Ideal.span {x}) ⧸ I') I'.Cotangent := by
+      sorry
+    have rank : Submodule.spanFinrank I' = n := by
+      sorry
+    rcases ih netop' fin free rank with ⟨rs', reg, span⟩
+    rcases List.map_surjective_iff.mpr Ideal.Quotient.mk_surjective rs' with ⟨rs, hrs⟩
+    use x :: rs
+    have eq : Ideal.span {x} ⊔ Ideal.ofList rs = I := by
+      rw [← Ideal.mk_ker (I := Ideal.span {x}), sup_comm,
+        ← Ideal.comap_map_of_surjective' _ Ideal.Quotient.mk_surjective,
+        Ideal.map_ofList, hrs, span]
+      simpa [Ideal.comap_map_of_surjective' _ Ideal.Quotient.mk_surjective, I'] using
+        (Ideal.span_singleton_le_iff_mem I).mpr mem
+    simp only [isRegular_cons_iff, xreg, true_and, Ideal.ofList_cons, eq, and_true]
+    let e : QuotSMulTop x R ≃ₗ[R] (R ⧸ Ideal.span {x}) :=
+      Submodule.quotEquivOfEq _ _ (by simp [← Submodule.ideal_span_singleton_smul])
+    rw [LinearEquiv.isRegular_congr e]
+    constructor
+    · rw [← RingTheory.Sequence.isWeaklyRegular_map_algebraMap_iff (R ⧸ Ideal.span {x})]
+      simpa [hrs] using reg.1
+    · have : Ideal.ofList rs ≤ I := by simp [← eq]
+      apply (ne_top_of_le_ne_top _ (Submodule.smul_mono_left this)).symm
+      simpa using netop'
 
 theorem Ferrand_Vasconcelos [IsLocalRing R] [IsNoetherianRing R] [Small.{v} R]
     {I : Ideal R} (netop : I ≠ ⊤)
