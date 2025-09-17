@@ -655,11 +655,9 @@ lemma _root_.card_rootsOfUnity_eq_iff_exists_isPrimitiveRoot {n : ℕ} [NeZero n
     Fintype.card (rootsOfUnity n R) = n ↔ ∃ ζ : R, IsPrimitiveRoot ζ n := by
   refine ⟨fun h ↦ ?_, fun ⟨ζ, hζ⟩ ↦ hζ.card_rootsOfUnity⟩
   obtain ⟨⟨ζ, hζ'⟩, hζ⟩ := (rootsOfUnity.isCyclic R n).exists_ofOrder_eq_natCard
-  rw [Nat.card_eq_fintype_card, h] at hζ
+  rw [Nat.card_eq_fintype_card, h, ← IsPrimitiveRoot.iff_orderOf, ← coe_submonoidClass_iff,
+    ← IsPrimitiveRoot.coe_units_iff] at hζ
   use ζ
-  rw [IsPrimitiveRoot.coe_units_iff]
-  refine ⟨by simpa using hζ', fun _ hk ↦ ?_⟩
-  simp [← hζ, orderOf_dvd_iff_pow_eq_one, hk]
 
 lemma _root_.card_rootsOfUnity_eq_self_iff_forall_dvd_card_eq_self {n : ℕ} [NeZero n] :
     Nat.card (rootsOfUnity n R) = n ↔ ∀ m, m ∣ n → Nat.card (rootsOfUnity m R) = m := by
