@@ -15,7 +15,7 @@ This file defines strongly connected quivers and related concepts.
 ## Main definitions
 
 * `IsStronglyConnected V`: A quiver where every pair of vertices is connected by a path
-* `IsStronglyConnectedPos V`: A quiver where every pair of vertices is connected by a path of positive length  
+* `IsStronglyConnectedPos V`: A quiver where every pair of vertices is connected by a path of positive length
 * `StronglyConnectedComponent V`: The type of strongly connected components of a quiver
 * `stronglyConnectedSetoid V`: The equivalence relation defining strong connectivity
 
