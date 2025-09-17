@@ -26,7 +26,8 @@ lemma Submonoid.isOpen_units {M : Type*} [TopologicalSpace M] [Monoid M]
 
 /-- The monoid homeomorphism between the units of a product of topological monoids
 and the product of the units of the monoids. -/
-@[to_additive]
+@[to_additive /-- The additive monoid homeomorphism between the additive units of a product of
+topological additive monoids and the product of the additive units of the monoids. -/]
 def ContinuousMulEquiv.piUnits {ι : Type*}
     {M : ι → Type*} [(i : ι) → Monoid (M i)] [(i : ι) → TopologicalSpace (M i)] :
     (Π i, M i)ˣ ≃ₜ* Π i, (M i)ˣ where
