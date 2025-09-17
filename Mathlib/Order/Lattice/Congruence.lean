@@ -50,8 +50,10 @@ private lemma closed_interval [Lattice α] {r : α → α → Prop}
     (a b c d : α) (hab : a ≤ b) (hbd : b ≤ d) (hac : a ≤ c) (hcd : c ≤ d) (had : r a d) :
     r b c := by
   rw [h₂]
-  conv_lhs => rw [← inf_eq_left.mpr inf_le_sup]
-  conv_rhs => rw [← inf_eq_right.mpr (sup_le hbd hcd)]
+  suffices r (b ⊓ c ⊓ (b ⊔ c)) (d ⊓ (b ⊔ c)) by
+    simp at this
+    rw [ inf_eq_right.mpr (sup_le hbd hcd)] at this
+    exact this
   apply (h₄ (inf_le_of_left_le hbd) _).1
   simpa [sup_eq_right.mpr (le_inf hab hac), sup_eq_left.mpr (inf_le_of_left_le hbd)] using
     ((h₄ (le_trans hab hbd) had).2 : r (a ⊔ b ⊓ c) (d ⊔ b ⊓ c))
