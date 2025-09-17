@@ -5,6 +5,8 @@ Authors: Floris van Doorn, Yaël Dillies
 -/
 import Mathlib.Topology.Sets.Opens
 import Mathlib.Topology.Clopen
+import Mathlib.Topology.Homeomorph.Lemmas
+import Mathlib.Topology.Constructions
 
 /-!
 # Closed sets
@@ -429,6 +431,116 @@ variable (α) in
 order isomorphism. -/
 def orderIsoSubtype' : IrreducibleCloseds α ≃o { x : Set α // IsClosed x ∧ IsIrreducible x } :=
   equivSubtype'.toOrderIso (fun _ _ h ↦ h) (fun _ _ h ↦ h)
+
+/-! ### Partial order structure on irreducible closed sets -/
+
+instance : PartialOrder (IrreducibleCloseds α) where
+  le s t := s.carrier ⊆ t.carrier
+  le_refl s := Set.Subset.refl _
+  le_trans s t u hst htu := Set.Subset.trans hst htu
+  le_antisymm s t hst hts := IrreducibleCloseds.ext (Set.Subset.antisymm hst hts)
+
+/-- The partial order on `IrreducibleCloseds α` is given by subset inclusion
+of the underlying sets. -/
+lemma le_iff_subset {s t : IrreducibleCloseds α} :
+    s ≤ t ↔ s.carrier ⊆ t.carrier := by rfl
+
+/-- The strict partial order on `IrreducibleCloseds α` corresponds to strict
+subset inclusion of the underlying sets. -/
+lemma lt_iff_subset {s t : IrreducibleCloseds α} :
+    s < t ↔ s.carrier ⊂ t.carrier := by
+  constructor
+  · intro h_lt
+    have h_le := le_of_lt h_lt
+    have h_ne := ne_of_lt h_lt
+    rw [ssubset_iff_subset_ne]
+    exact ⟨by rwa [← le_iff_subset], mt IrreducibleCloseds.ext h_ne⟩
+  · intro h_ssubset
+    rw [lt_iff_le_and_ne]
+    rcases h_ssubset with ⟨h_subset, h_ne_carrier⟩
+    exact ⟨by rwa [le_iff_subset],
+      fun h_s_eq_t => h_ne_carrier (by rw [h_s_eq_t])⟩
+
+/-! ### Maps between irreducible closed sets -/
+
+variable {Y : Type*} [TopologicalSpace Y]
+
+/--
+Map induced on irreducible closed subsets by a closed continuous map `f`.
+This is just a wrapper around the image of `f` together with proofs that it
+preserves irreducibility (by continuity) and closedness (since `f` is closed).
+-/
+def map {f : α → Y} (hf1 : Continuous f) (hf2 : IsClosedMap f)
+    (c : IrreducibleCloseds α) :
+    IrreducibleCloseds Y where
+  carrier := f '' c
+  isIrreducible' := c.isIrreducible.image f hf1.continuousOn
+  isClosed' := hf2 c c.isClosed
+
+/--
+Taking images under a closed embedding is strictly monotone on the preorder of irreducible closeds.
+-/
+lemma map_strictMono {f : α → Y} (hf : Topology.IsClosedEmbedding f) :
+    StrictMono (map hf.continuous hf.isClosedMap) :=
+  fun ⦃_ _⦄ UltV ↦ hf.injective.image_strictMono UltV
+
+/-- The map on irreducible closed sets induced by an embedding `f`.
+This is a generalization of `IrreducibleCloseds.map` for embeddings that are not necessarily
+closed. We take the closure of the image to ensure the result is a closed set. -/
+def mapOfEmbedding {f : Y → α} (hf : Topology.IsEmbedding f)
+    (c : IrreducibleCloseds Y) : IrreducibleCloseds α where
+  carrier := closure (f '' c.carrier)
+  isIrreducible' := c.isIrreducible.image f (hf.continuous.continuousOn) |>.closure
+  isClosed' := isClosed_closure
+
+/-- The map `IrreducibleCloseds.mapOfEmbedding` is injective.
+This relies on the property of embeddings that a closed set in the domain is the preimage
+of the closure of its image. -/
+lemma mapOfEmbedding_injective {f : Y → α} (hf : Topology.IsEmbedding f) :
+    Function.Injective (mapOfEmbedding hf) := by
+  intro A B h_images_eq
+  ext x
+  have h_closures_eq : closure (f '' A.carrier) = closure (f '' B.carrier) :=
+    congrArg carrier h_images_eq
+  exact ⟨fun hx_in_A => by
+    change x ∈ B.carrier
+    rw [← B.isClosed.closure_eq, hf.closure_eq_preimage_closure_image, ← h_closures_eq]
+    simp_rw [mem_preimage]
+    exact subset_closure (mem_image_of_mem f hx_in_A),
+  fun hx_in_B => by
+    change x ∈ A.carrier
+    rw [← A.isClosed.closure_eq, hf.closure_eq_preimage_closure_image, h_closures_eq]
+    simp_rw [mem_preimage]
+    exact subset_closure (mem_image_of_mem f hx_in_B)⟩
+
+/-- The map `IrreducibleCloseds.mapOfEmbedding` is strictly monotone. -/
+lemma mapOfEmbedding_strictMono {f : Y → α} (hf : Topology.IsEmbedding f) :
+    StrictMono (mapOfEmbedding hf) := by
+  intro A B h_less_AB
+  rw [lt_iff_subset] at h_less_AB ⊢
+  exact ⟨closure_mono (image_mono (subset_of_ssubset h_less_AB)), fun h_contra_subset =>
+    (ne_of_lt (lt_iff_subset.mpr h_less_AB))
+    (mapOfEmbedding_injective hf (IrreducibleCloseds.ext
+      (Subset.antisymm (closure_mono (image_mono (subset_of_ssubset h_less_AB)))
+        h_contra_subset)))⟩
+
+/-! ### Maps for subspace embeddings -/
+
+/-- The canonical map from irreducible closed sets of a subspace `Y` to irreducible
+closed sets of the ambient space `α`, defined by taking the closure of the image
+under the inclusion map. This is an instance of `IrreducibleCloseds.mapOfEmbedding`. -/
+def mapIrreducibleClosed (Y : Set α) : IrreducibleCloseds Y → IrreducibleCloseds α :=
+  mapOfEmbedding Topology.IsEmbedding.subtypeVal
+
+/-- The map `mapIrreducibleClosed` is injective, as it's induced by an embedding. -/
+lemma mapIrreducibleClosed_injective (Y : Set α) :
+    Function.Injective (mapIrreducibleClosed Y) :=
+  mapOfEmbedding_injective Topology.IsEmbedding.subtypeVal
+
+/-- The canonical map `mapIrreducibleClosed` is strictly monotone. -/
+lemma mapIrreducibleClosed_strictMono (Y : Set α) :
+    StrictMono (mapIrreducibleClosed Y) :=
+  mapOfEmbedding_strictMono Topology.IsEmbedding.subtypeVal
 
 end IrreducibleCloseds
 
