@@ -22,7 +22,7 @@ As with `NonUnitalRingHom`, the multiplications are not assumed to be associativ
 
 ## Implementation
 
-This file is heavily inspired by `Mathlib.Algebra.Star.StarAlgHom`.
+This file is heavily inspired by `Mathlib/Algebra/Star/StarAlgHom.lean`.
 
 ## Tags
 
@@ -160,7 +160,7 @@ end
 /-- The composition of non-unital ⋆-ring homomorphisms, as a non-unital ⋆-ring homomorphism. -/
 def comp (f : B →⋆ₙ+* C) (g : A →⋆ₙ+* B) : A →⋆ₙ+* C :=
   { f.toNonUnitalRingHom.comp g.toNonUnitalRingHom with
-    map_star' := fun a => by simp [Function.comp_def, map_star, map_star] }
+    map_star' := fun a => by simp [map_star, map_star] }
 
 @[simp]
 theorem coe_comp (f : B →⋆ₙ+* C) (g : A →⋆ₙ+* B) : ⇑(comp f g) = f ∘ g :=

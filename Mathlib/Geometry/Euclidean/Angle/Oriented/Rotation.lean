@@ -111,8 +111,6 @@ theorem det_rotation (θ : Real.Angle) : LinearMap.det (o.rotation θ).toLinearM
 theorem linearEquiv_det_rotation (θ : Real.Angle) :
     LinearEquiv.det (o.rotation θ).toLinearEquiv = 1 :=
   Units.ext <| by
-    -- Porting note: Lean can't see through `LinearEquiv.coe_det` and needed the rewrite
-    -- in mathlib3 this was just `units.ext <| o.det_rotation θ`
     simpa only [LinearEquiv.coe_det, Units.val_one] using o.det_rotation θ
 
 /-- The inverse of `rotation` is rotation by the negation of the angle. -/
@@ -143,7 +141,7 @@ theorem rotation_pi_div_two : o.rotation (π / 2 : ℝ) = J := by
 theorem rotation_rotation (θ₁ θ₂ : Real.Angle) (x : V) :
     o.rotation θ₁ (o.rotation θ₂ x) = o.rotation (θ₁ + θ₂) x := by
   simp only [o.rotation_apply, Real.Angle.cos_add, Real.Angle.sin_add, LinearIsometryEquiv.map_add,
-    LinearIsometryEquiv.trans_apply, map_smul, rightAngleRotation_rightAngleRotation]
+    map_smul, rightAngleRotation_rightAngleRotation]
   module
 
 /-- Rotating twice is equivalent to rotating by the sum of the angles. -/
@@ -152,13 +150,10 @@ theorem rotation_trans (θ₁ θ₂ : Real.Angle) :
     (o.rotation θ₁).trans (o.rotation θ₂) = o.rotation (θ₂ + θ₁) :=
   LinearIsometryEquiv.ext fun _ => by rw [← rotation_rotation, LinearIsometryEquiv.trans_apply]
 
-/-- Rotating the first of two vectors by `θ` scales their Kahler form by `cos θ - sin θ * I`. -/
+/-- Rotating the first of two vectors by `θ` scales their Kähler form by `cos θ - sin θ * I`. -/
 @[simp]
 theorem kahler_rotation_left (x y : V) (θ : Real.Angle) :
     o.kahler (o.rotation θ x) y = conj (θ.toCircle : ℂ) * o.kahler x y := by
-  -- Porting note: this needed the `Complex.conj_ofReal` instead of `RCLike.conj_ofReal`;
-  -- I believe this is because the respective coercions are no longer defeq, and
-  -- `Real.Angle.coe_toCircle` uses the `Complex` version.
   simp only [o.rotation_apply, map_add, map_mul, LinearMap.map_smulₛₗ, RingHom.id_apply,
     LinearMap.add_apply, LinearMap.smul_apply, real_smul, kahler_rightAngleRotation_left,
     Real.Angle.coe_toCircle, Complex.conj_ofReal, conj_I]
@@ -178,13 +173,13 @@ theorem neg_rotation_neg_pi_div_two (x : V) :
 theorem neg_rotation_pi_div_two (x : V) : -o.rotation (π / 2 : ℝ) x = o.rotation (-π / 2 : ℝ) x :=
   (neg_eq_iff_eq_neg.mp <| o.neg_rotation_neg_pi_div_two _).symm
 
-/-- Rotating the first of two vectors by `θ` scales their Kahler form by `cos (-θ) + sin (-θ) * I`.
+/-- Rotating the first of two vectors by `θ` scales their Kähler form by `cos (-θ) + sin (-θ) * I`.
 -/
 theorem kahler_rotation_left' (x y : V) (θ : Real.Angle) :
     o.kahler (o.rotation θ x) y = (-θ).toCircle * o.kahler x y := by
   simp only [Real.Angle.toCircle_neg, Circle.coe_inv_eq_conj, kahler_rotation_left]
 
-/-- Rotating the second of two vectors by `θ` scales their Kahler form by `cos θ + sin θ * I`. -/
+/-- Rotating the second of two vectors by `θ` scales their Kähler form by `cos θ + sin θ * I`. -/
 @[simp]
 theorem kahler_rotation_right (x y : V) (θ : Real.Angle) :
     o.kahler x (o.rotation θ y) = θ.toCircle * o.kahler x y := by

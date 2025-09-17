@@ -19,14 +19,23 @@ variable {X : Type*} {Y : Type*} [TopologicalSpace X]
 
 section Profinite
 
-/-- A T1 space with a clopen basis is totally separated. -/
-theorem totallySeparatedSpace_of_t1_of_basis_clopen [T1Space X]
+/-- A T0 space with a clopen basis is totally separated. -/
+theorem totallySeparatedSpace_of_t0_of_basis_clopen [T0Space X]
     (h : IsTopologicalBasis { s : Set X | IsClopen s }) : TotallySeparatedSpace X := by
   constructor
   rintro x - y - hxy
-  rcases h.mem_nhds_iff.mp (isOpen_ne.mem_nhds hxy) with ⟨U, hU, hxU, hyU⟩
-  exact ⟨U, Uᶜ, hU.isOpen, hU.compl.isOpen, hxU, fun h => hyU h rfl, (union_compl_self U).superset,
-    disjoint_compl_right⟩
+  choose U hU using exists_isOpen_xor'_mem hxy
+  obtain ⟨hU₀, hU₁⟩ := hU
+  rcases hU₁ with hx | hy
+  · choose V hV using h.isOpen_iff.mp hU₀ x hx.1
+    exact ⟨V, Vᶜ, hV.1.isOpen, hV.1.compl.isOpen, hV.2.1, notMem_subset hV.2.2 hx.2,
+      (union_compl_self V).superset, disjoint_compl_right⟩
+  · choose V hV using h.isOpen_iff.mp hU₀ y hy.1
+    exact ⟨Vᶜ, V, hV.1.compl.isOpen, hV.1.isOpen, notMem_subset hV.2.2 hy.2, hV.2.1,
+      (union_comm _ _ ▸ union_compl_self V).superset, disjoint_compl_left⟩
+
+@[deprecated (since := "2025-09-11")]
+alias totallySeparatedSpace_of_t1_of_basis_clopen := totallySeparatedSpace_of_t0_of_basis_clopen
 
 variable [T2Space X] [CompactSpace X] [TotallyDisconnectedSpace X]
 
@@ -45,10 +54,10 @@ theorem nhds_basis_clopen (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s 
       have hdir : Directed Superset fun s : N => s.val := by
         rintro ⟨s, hs, hxs⟩ ⟨t, ht, hxt⟩
         exact ⟨⟨s ∩ t, hs.inter ht, ⟨hxs, hxt⟩⟩, inter_subset_left, inter_subset_right⟩
-      have h_nhd : ∀ y ∈ ⋂ s : N, s.val, U ∈ 𝓝 y := fun y y_in => by
+      have h_nhds : ∀ y ∈ ⋂ s : N, s.val, U ∈ 𝓝 y := fun y y_in => by
         rw [hx, mem_singleton_iff] at y_in
         rwa [y_in]
-      exact exists_subset_nhds_of_compactSpace hdir hNcl h_nhd
+      exact exists_subset_nhds_of_compactSpace hdir hNcl h_nhds
     · rintro ⟨V, ⟨hxV, -, V_op⟩, hUV : V ⊆ U⟩
       rw [mem_nhds_iff]
       exact ⟨V, hUV, V_op, hxV⟩⟩
@@ -109,11 +118,8 @@ theorem loc_compact_t2_tot_disc_iff_tot_sep :
     TotallyDisconnectedSpace H ↔ TotallySeparatedSpace H := by
   constructor
   · intro h
-    exact totallySeparatedSpace_of_t1_of_basis_clopen loc_compact_Haus_tot_disc_of_zero_dim
+    exact totallySeparatedSpace_of_t0_of_basis_clopen loc_compact_Haus_tot_disc_of_zero_dim
   apply TotallySeparatedSpace.totallyDisconnectedSpace
-
-@[deprecated (since := "2024-12-18")] alias compact_t2_tot_disc_iff_tot_sep :=
-  loc_compact_t2_tot_disc_iff_tot_sep
 
 /-- A totally disconnected compact Hausdorff space is totally separated. -/
 instance (priority := 100) [TotallyDisconnectedSpace H] : TotallySeparatedSpace H :=

@@ -8,7 +8,7 @@ import Mathlib.Logic.Function.FiberPartition
 /-!
 
 This file provides some API surrounding `Function.Fiber` (see
-`Mathlib.Logic.Function.FiberPartition`) in the presence of a topology on the domain of the
+`Mathlib/Logic/Function/FiberPartition.lean`) in the presence of a topology on the domain of the
 function.
 
 Note: this API is designed to be useful when defining the counit of the adjunction between

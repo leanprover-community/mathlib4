@@ -16,10 +16,11 @@ subquivers by definition contain all vertices.
 
 universe v u
 
-/-- A wide subquiver `H` of `G` picks out a set `H a b` of arrows from `a` to `b`
-    for every pair of vertices `a b`.
+/--
+A wide subquiver `H` of `G` picks out a set `H a b` of arrows from `a` to `b`
+for every pair of vertices `a b`.
 
-    NB: this does not work for `Prop`-valued quivers. It requires `G : Quiver.{v+1} V`. -/
+NB: this does not work for `Prop`-valued quivers. It requires `G : Quiver.{v+1} V`. -/
 def WideSubquiver (V) [Quiver.{v + 1} V] :=
   ∀ a b : V, Set (a ⟶ b)
 
@@ -49,7 +50,6 @@ noncomputable instance {V} [Quiver V] : Inhabited (WideSubquiver V) :=
 
 -- TODO Unify with `CategoryTheory.Arrow`? (The fields have been named to match.)
 /-- `Total V` is the type of _all_ arrows of `V`. -/
--- Porting note: no hasNonemptyInstance linter yet https://github.com/leanprover-community/mathlib4/issues/5171
 @[ext]
 structure Total (V : Type u) [Quiver.{v} V] : Sort max (u + 1) v where
   /-- the source vertex of an arrow -/
@@ -65,8 +65,6 @@ def wideSubquiverEquivSetTotal {V} [Quiver V] :
       Set (Total V) where
   toFun H := { e | e.hom ∈ H e.left e.right }
   invFun S a b := { e | Total.mk a b e ∈ S }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- An `L`-labelling of a quiver assigns to every arrow an element of `L`. -/
 def Labelling (V : Type u) [Quiver V] (L : Sort*) :=

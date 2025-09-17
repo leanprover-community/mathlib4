@@ -35,8 +35,7 @@ theorem limsup_trim (hm : m ≤ m0) {f : α → ℝ≥0∞} (hf : Measurable[m] 
   suffices h_meas_eq : μ { x | ¬f x ≤ a } = μ.trim hm { x | ¬f x ≤ a } by
     simp_rw [Set.mem_setOf_eq, ae_iff, h_meas_eq]
   refine (trim_measurableSet_eq hm ?_).symm
-  refine @MeasurableSet.compl _ _ m (@measurableSet_le ℝ≥0∞ _ _ _ _ m _ _ _ _ _ hf ?_)
-  exact @measurable_const _ _ _ m _
+  exact (measurableSet_le hf measurable_const).compl
 
 theorem essSup_trim (hm : m ≤ m0) {f : α → ℝ≥0∞} (hf : Measurable[m] f) :
     essSup f (μ.trim hm) = essSup f μ := by
@@ -63,8 +62,5 @@ theorem eLpNorm_trim_ae (hm : m ≤ m0) {f : α → ε} (hf : AEStronglyMeasurab
 theorem memLp_of_memLp_trim (hm : m ≤ m0) {f : α → ε} (hf : MemLp f p (μ.trim hm)) : MemLp f p μ :=
   ⟨aestronglyMeasurable_of_aestronglyMeasurable_trim hm hf.1,
     (le_of_eq (eLpNorm_trim_ae hm hf.1).symm).trans_lt hf.2⟩
-
-@[deprecated (since := "2025-02-21")]
-alias memℒp_of_memℒp_trim := memLp_of_memLp_trim
 
 end MeasureTheory
