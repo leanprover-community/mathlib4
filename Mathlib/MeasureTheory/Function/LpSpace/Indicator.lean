@@ -218,7 +218,7 @@ end IndicatorConstLp
 section const
 
 variable (μ p)
-variable [IsFiniteMeasure μ] (c : E)
+variable [MemLp.Const E p μ] (c : E)
 
 /-- Constant function as an element of `MeasureTheory.Lp` for a finite measure. -/
 protected def Lp.const : E →+ Lp E p μ where
