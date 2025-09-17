@@ -147,7 +147,7 @@ def QuotSMulTop_map (f : M →ₗ[R] N) :
     simp only [← hs, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]
     exact map_smul _ s m
 
-lemma QuotSMulTop_map_surjective (f : M →ₗ[R] N) (surj : Function.Surjective f) :
+lemma QuotSMulTop_map_surjective {f : M →ₗ[R] N} (surj : Function.Surjective f) :
     Function.Surjective (QuotSMulTop_map x f) := by
   intro y
   rcases Submodule.Quotient.mk_surjective _ y with ⟨y', hy'⟩
@@ -155,11 +155,29 @@ lemma QuotSMulTop_map_surjective (f : M →ₗ[R] N) (surj : Function.Surjective
   use Submodule.Quotient.mk z
   simp [QuotSMulTop_map, hz, hy']
 
-lemma QuotSMulTop_map_exact (f : M →ₗ[R] N) (g : N →ₗ[R] L) (exact : Function.Exact f g)
+lemma QuotSMulTop_map_exact {f : M →ₗ[R] N} {g : N →ₗ[R] L} (exact : Function.Exact f g)
     (surj : Function.Surjective g) :
     Function.Exact (QuotSMulTop_map x f) (QuotSMulTop_map x g) := by
-
-  sorry
+  apply Function.Exact.of_comp_of_mem_range
+  · have : g.comp f = 0 := by exact Function.Exact.linearMap_comp_eq_zero exact
+    simp only [QuotSMulTop_map, LinearMap.coe_mk, LinearMap.coe_toAddHom, ← LinearMap.coe_comp]
+    rw [← Submodule.mapQ_comp]
+    simp only [Function.Exact.linearMap_comp_eq_zero exact, Submodule.mapQ_zero]
+    rfl
+  · intro y hy
+    rcases Submodule.Quotient.mk_surjective _ y with ⟨y', hy'⟩
+    simp only [QuotSMulTop_map, ← hy', LinearMap.coe_mk, LinearMap.coe_toAddHom,
+      Submodule.mapQ_apply, Submodule.Quotient.mk_eq_zero, Submodule.mem_smul_pointwise_iff_exists,
+      Submodule.mem_top, true_and] at hy
+    rcases hy with ⟨l, hl⟩
+    rcases surj l with ⟨y'', hy''⟩
+    rw [← hy'', ← map_smul, ← LinearMap.sub_mem_ker_iff, exact.linearMap_ker_eq] at hl
+    rcases LinearMap.mem_range.mp hl with ⟨m, hm⟩
+    use Submodule.Quotient.mk (- m)
+    simp only [QuotSMulTop_map, Submodule.Quotient.mk_neg, map_neg, LinearMap.coe_mk,
+      LinearMap.coe_toAddHom, Submodule.mapQ_apply, hm, Submodule.Quotient.mk_sub,
+      hy', neg_sub, sub_eq_self, Submodule.Quotient.mk_eq_zero]
+    exact Submodule.smul_mem_pointwise_smul y'' x ⊤ trivial
 
 end
 
@@ -197,9 +215,9 @@ lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetheria
         zero := by
           ext x
           simp }
-      have S_exact' : Function.Exact (ConcreteCategory.hom S.f) (ConcreteCategory.hom S.g) := by
+      have S_exact' : Function.Exact (LinearMap.ker f).subtype f := by
         intro x
-        simp [S]
+        simp
       have S_exact : S.ShortExact := {
         exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr S_exact'
         mono_f := (ModuleCat.mono_iff_injective S.f).mpr (LinearMap.ker f).injective_subtype
@@ -207,10 +225,45 @@ lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetheria
       let _ : Module.Finite R S.X₂ := by
         simp [S, Module.Finite.equiv (Shrink.linearEquiv R R).symm, Finite.of_fintype (Fin m)]
       let _ : Module.Free R (Shrink.{v, u} R) :=  Module.Free.of_equiv (Shrink.linearEquiv R R).symm
-      let _ : Module.Free R S.X₂ := Module.Free.finsupp R (Shrink.{v, u} R) _
+      let free : Module.Free R S.X₂ := Module.Free.finsupp R (Shrink.{v, u} R) _
       have proj := ModuleCat.projective_of_categoryTheory_projective S.X₂
-
-      sorry
+      have reg2'' : IsSMulRegular (Fin m →₀ Shrink.{v, u} R) x := by
+        apply IsSMulRegular.of_right_eq_zero_of_smul (fun y hy ↦ ?_)
+        ext i
+        simp only [Finsupp.coe_zero, Pi.zero_apply, equivShrink_symm_zero]
+        apply IsSMulRegular.right_eq_zero_of_smul reg1
+        rw [← equivShrink_symm_smul, ← Finsupp.smul_apply, hy]
+        exact equivShrink_symm_zero
+      have reg2' : IsSMulRegular S.X₁ x := reg2''.submodule _ _
+      have Sx_exact' := QuotSMulTop_map_exact x S_exact' surjf
+      let Sx : ShortComplex (ModuleCat.{v} (R ⧸ Ideal.span {x})) := {
+        f := ModuleCat.ofHom.{v} (QuotSMulTop_map x (LinearMap.ker f).subtype)
+        g := ModuleCat.ofHom.{v} (QuotSMulTop_map x f)
+        zero := by
+          rw [← ModuleCat.ofHom_comp, Sx_exact'.linearMap_comp_eq_zero]
+          rfl }
+      have inj : Function.Injective (QuotSMulTop_map x (LinearMap.ker f).subtype) := by
+        rw [← LinearMap.ker_eq_bot, Submodule.eq_bot_iff]
+        intro y hy
+        rcases Submodule.Quotient.mk_surjective _ y with ⟨y', hy'⟩
+        simp only [QuotSMulTop_map, ← hy', LinearMap.mem_ker, LinearMap.coe_mk,
+          LinearMap.coe_toAddHom, Submodule.mapQ_apply, Submodule.subtype_apply,
+          Submodule.Quotient.mk_eq_zero, Submodule.mem_smul_pointwise_iff_exists] at hy
+        rcases hy with ⟨z, _, hz⟩
+        have := y'.2
+        rw [← hz, LinearMap.mem_ker, map_smul] at this
+        simp only [← hy', Submodule.Quotient.mk_eq_zero, Submodule.mem_smul_pointwise_iff_exists,
+          Submodule.mem_top, true_and, Subtype.exists, SetLike.mk_smul_mk, LinearMap.mem_ker]
+        use z, IsSMulRegular.right_eq_zero_of_smul reg2 this
+        exact Subtype.val_inj.mp hz
+      have Sx_exact : Sx.ShortExact := {
+        exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact Sx).mpr Sx_exact'
+        mono_f := (ModuleCat.mono_iff_injective Sx.f).mpr inj
+        epi_g := (ModuleCat.epi_iff_surjective Sx.g).mpr (QuotSMulTop_map_surjective x surjf)}
+      let _ := (free_iff_quotSMulTop_free R (Fin m →₀ Shrink.{v, u} R) mem reg2'').mpr free
+      have proj' := ModuleCat.projective_of_categoryTheory_projective Sx.X₂
+      exact ((S_exact.hasProjectiveDimensionLT_X₃_iff n proj).trans (ih S.X₁ reg2')).trans
+        (Sx_exact.hasProjectiveDimensionLT_X₃_iff n proj').symm
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
   by_cases eqbot : N = ⊥
   · simp only [eqbot, le_bot_iff, projectiveDimension_eq_bot_iff,
