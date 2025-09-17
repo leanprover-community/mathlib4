@@ -20,7 +20,7 @@ open Finset in
     [CommMonoid M] [CommMonoid N] [FunLike F M N] [MulHomClass F M N] {f : F}
     {S : Submonoid M} (hf : IsLocalizationMap S f) (n : ι → N) :
     ∃ (s : S) (x : ι → M), ∀ i, n i * f s = f (x i) := by
-  choose x hx using hf.surj'
+  choose x hx using hf.surj
   have ⟨_⟩ := nonempty_fintype ι
   classical
   refine ⟨∏ i : ι, (x (n i)).2, fun i ↦ (x (n i)).1 * ∏ j ∈ univ.erase i, (x (n j)).2, fun i ↦ ?_⟩
@@ -30,9 +30,9 @@ open Finset in
     [∀ i, CommMonoid (M i)] [∀ i, CommMonoid (N i)] (S : Π i, Submonoid (M i))
     {f : Π i, M i → N i} (hf : ∀ i, IsLocalizationMap (S i) (f i)) :
     IsLocalizationMap (Submonoid.pi .univ S) (Pi.map f) where
-  map_units' m := Pi.isUnit_iff.mpr fun i ↦ (hf i).map_units' ⟨_, m.2 i ⟨⟩⟩
-  surj' z := by
-    choose x hx using fun i ↦ (hf i).surj'
+  map_units m := Pi.isUnit_iff.mpr fun i ↦ (hf i).map_units ⟨_, m.2 i ⟨⟩⟩
+  surj z := by
+    choose x hx using fun i ↦ (hf i).surj
     exact ⟨⟨fun i ↦ (x i (z i)).1, ⟨_, fun i _ ↦ (x i (z i)).2.2⟩⟩, funext fun i ↦ hx i (z i)⟩
   exists_of_eq {x y} eq := by
     choose c hc using fun i ↦ (hf i).exists_of_eq congr($eq i)

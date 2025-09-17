@@ -109,13 +109,13 @@ section
 
 /-- Everything in the image of `algebraMap` is a unit. -/
 theorem map_units : ∀ y : M, IsUnit (algebraMap R S y) :=
-  Submonoid.IsLocalizationMap.map_units'
+  Submonoid.IsLocalizationMap.map_units
 
 variable (M) {S}
 /-- Every element in the localization can be expressed as a quotient of an element in the
 range of `algebraMap` by the image of an element of the submonoid. -/
 theorem surj : ∀ z : S, ∃ x : R × M, z * algebraMap R S x.2 = algebraMap R S x.1 :=
-  Submonoid.IsLocalizationMap.surj'
+  Submonoid.IsLocalizationMap.surj
 
 variable {M} in
 theorem exists_of_eq {x y : R} : algebraMap R S x = algebraMap R S y → ∃ c : M, c * x = c * y :=
@@ -127,7 +127,7 @@ variable (S)
 abbrev toLocalizationMap : M.LocalizationMap S where
   __ := algebraMap R S
   toFun := algebraMap R S
-  __ : IsLocalization M S := ‹_›
+  isLocalizationMap : IsLocalization M S := ‹_›
 
 @[deprecated (since := "2025-08-01")] alias toLocalizationWithZeroMap := toLocalizationMap
 
@@ -806,7 +806,7 @@ theorem mk_multiset_sum (l : Multiset R) (b : M) : mk l.sum b = (l.map fun a => 
   (mkAddMonoidHom b).map_multiset_sum l
 
 instance isLocalization : IsLocalization M (Localization M) :=
-  (Localization.monoidOf M).toIsLocalizationMap
+  (Localization.monoidOf M).isLocalizationMap
 
 instance [NoZeroDivisors R] : NoZeroDivisors (Localization M) := IsLocalization.noZeroDivisors M
 

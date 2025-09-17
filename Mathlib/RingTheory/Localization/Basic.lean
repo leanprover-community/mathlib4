@@ -342,7 +342,7 @@ lemma commutes (S₁ S₂ T : Type*) [CommSemiring S₁]
     rintro ⟨m, ⟨a, ha, rfl⟩⟩
     rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R S₂ T]
     exact IsUnit.map _ (IsLocalization.map_units _ ⟨a, ha⟩)
-  surj' a := by
+  surj a := by
     obtain ⟨⟨y, -, m, hm, rfl⟩, hy⟩ := surj (M := Algebra.algebraMapSubmonoid S₂ M₁) a
     rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R S₁ T] at hy
     obtain ⟨⟨z, n, hn⟩, hz⟩ := IsLocalization.surj (M := M₂) y
