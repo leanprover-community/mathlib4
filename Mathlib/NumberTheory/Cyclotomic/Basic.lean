@@ -806,12 +806,12 @@ instance isCyclotomicExtension [IsFractionRing A K] [NeZero ((n : ℕ) : A)] :
 
 instance [IsFractionRing A K] [IsDomain A] [NeZero (n : A)] :
     IsFractionRing (CyclotomicRing n A K) (CyclotomicField n K) where
-  map_units' := fun ⟨x, hx⟩ => by
+  map_units := fun ⟨x, hx⟩ => by
     rw [isUnit_iff_ne_zero]
     apply map_ne_zero_of_mem_nonZeroDivisors
     · apply adjoin_algebra_injective
     · exact hx
-  surj' x := by
+  surj x := by
     have : NeZero (n : K) := NeZero.nat_of_injective (IsFractionRing.injective A K)
     refine
       Algebra.adjoin_induction

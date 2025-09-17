@@ -268,13 +268,13 @@ theorem coe_algebraMap [CommSemiring R] :
 @[simps (rhsMd := .all) +simpRhs]
 instance of_powerSeries_localization [CommRing R] :
     IsLocalization (Submonoid.powers (PowerSeries.X : R⟦X⟧)) R⸨X⸩ where
-  map_units' := by
+  map_units := by
     rintro ⟨_, n, rfl⟩
     refine ⟨⟨single (n : ℤ) 1, single (-n : ℤ) 1, ?_, ?_⟩, ?_⟩
     · simp
     · simp
     · dsimp; rw [ofPowerSeries_X_pow]
-  surj' z := by
+  surj z := by
     by_cases h : 0 ≤ z.order
     · refine ⟨⟨PowerSeries.X ^ Int.natAbs z.order * powerSeriesPart z, 1⟩, ?_⟩
       simp only [RingHom.map_one, mul_one, RingHom.map_mul, coe_algebraMap, ofPowerSeries_X_pow,

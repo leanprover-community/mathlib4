@@ -62,10 +62,6 @@ variable {R : Type*}
 
 section
 
--- Porting note: not available in Lean 4
--- local reducible PowerSeries
-
-
 /--
 `R⟦X⟧` is notation for `PowerSeries R`,
 the semiring of formal power series in one variable over a semiring `R`.
