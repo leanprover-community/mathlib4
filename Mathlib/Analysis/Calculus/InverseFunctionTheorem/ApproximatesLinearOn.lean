@@ -34,7 +34,7 @@ lemmas. This approach makes it possible
 - to reuse parts of the proofs in the case if a function is not strictly differentiable. E.g., for a
   function `f : E × F → G` with estimates on `f x y₁ - f x y₂` but not on `f x₁ y - f x₂ y`.
 
-## Notations
+## Notation
 
 We introduce some `local notation` to make formulas shorter:
 

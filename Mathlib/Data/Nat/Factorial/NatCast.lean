@@ -102,8 +102,8 @@ lemma Nat.castChoose_eq {A : Type*} [CommSemiring A] {m : ℕ} {k : ℕ × ℕ}
     (hm : IsUnit (m ! : A)) (hk : k ∈ Finset.antidiagonal m) :
     (choose m k.1 : A) = ↑m ! * inverse ↑k.1! * inverse ↑k.2! := by
   rw [Finset.mem_antidiagonal] at hk
-  rw [eq_mul_inverse_iff_mul_eq, eq_mul_inverse_iff_mul_eq,
-    ← hk, ← Nat.cast_mul, ← Nat.cast_mul, add_comm, Nat.add_choose_mul_factorial_mul_factorial] <;>
-  apply hm.natCast_factorial_of_le <;>
-  rw [← hk];
+  subst hk
+  rw [eq_mul_inverse_iff_mul_eq, eq_mul_inverse_iff_mul_eq, ← Nat.cast_mul, ← Nat.cast_mul,
+    add_comm, Nat.add_choose_mul_factorial_mul_factorial] <;>
+    apply hm.natCast_factorial_of_le
   exacts [Nat.le_add_right k.1 k.2, Nat.le_add_left k.2 k.1]

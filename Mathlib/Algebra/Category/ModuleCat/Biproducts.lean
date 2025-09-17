@@ -63,7 +63,7 @@ theorem binaryProductLimitCone_cone_π_app_right (M N : ModuleCat.{v} R) :
   rfl
 
 /-- We verify that the biproduct in `ModuleCat R` is isomorphic to
-the cartesian product of the underlying types:
+the Cartesian product of the underlying types:
 -/
 noncomputable def biprodIsoProd (M N : ModuleCat.{v} R) :
     (M ⊞ N : ModuleCat.{v} R) ≅ ModuleCat.of R (M × N) :=
@@ -84,7 +84,7 @@ namespace HasLimit
 variable {J : Type w} (f : J → ModuleCat.{max w v} R)
 
 /-- The map from an arbitrary cone over an indexed family of abelian groups
-to the cartesian product of those groups.
+to the Cartesian product of those groups.
 -/
 @[simps!]
 def lift (s : Fan f) : s.pt ⟶ ModuleCat.of R (∀ j, f j) :=

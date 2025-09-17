@@ -15,7 +15,7 @@ We also define coercion to a function, and usual operations: composition, identi
 pointwise multiplication and pointwise inversion.
 
 
-## Notations
+## Notation
 
 * `→*₀`: `MonoidWithZeroHom`, the type of bundled `MonoidWithZero` homs. Also use for
   `GroupWithZero` homs.

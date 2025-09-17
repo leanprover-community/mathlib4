@@ -5,6 +5,7 @@ Authors: Joseph Myers, Yury Kudryashov
 -/
 import Mathlib.Algebra.AddTorsor.Defs
 import Mathlib.Algebra.Group.Action.Basic
+import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Group.End
 import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 
@@ -148,17 +149,22 @@ namespace Pi
 universe u v w
 
 variable {I : Type u} {fg : I → Type v} [∀ i, AddGroup (fg i)] {fp : I → Type w}
+  [∀ i, AddTorsor (fg i) (fp i)]
 
 open AddAction AddTorsor
 
 /-- A product of `AddTorsor`s is an `AddTorsor`. -/
-instance instAddTorsor [∀ i, AddTorsor (fg i) (fp i)] : AddTorsor (∀ i, fg i) (∀ i, fp i) where
-  vadd g p i := g i +ᵥ p i
-  zero_vadd p := funext fun i => zero_vadd (fg i) (p i)
-  add_vadd g₁ g₂ p := funext fun i => add_vadd (g₁ i) (g₂ i) (p i)
+instance instAddTorsor : AddTorsor (∀ i, fg i) (∀ i, fp i) where
   vsub p₁ p₂ i := p₁ i -ᵥ p₂ i
   vsub_vadd' p₁ p₂ := funext fun i => vsub_vadd (p₁ i) (p₂ i)
   vadd_vsub' g p := funext fun i => vadd_vsub (g i) (p i)
+
+@[simp]
+theorem vsub_apply (p q : ∀ i, fp i) (i : I) : (p -ᵥ q) i = p i -ᵥ q i :=
+  rfl
+
+theorem vsub_def (p q : ∀ i, fp i) : p -ᵥ q = fun i => p i -ᵥ q i :=
+  rfl
 
 end Pi
 

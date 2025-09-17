@@ -19,7 +19,7 @@ import Mathlib.Order.OmegaCompletePartialOrder
 
 * `Submodule.span s` is defined to be the smallest submodule containing the set `s`.
 
-## Notations
+## Notation
 
 * We introduce the notation `R ∙ v` for the span of a singleton, `Submodule.span R {v}`.  This is
   `\span`, not the same as the scalar multiplication `•`/`\bub`.

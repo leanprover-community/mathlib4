@@ -28,7 +28,7 @@ eigenvalue.
 * `spectrum.nonempty_of_isAlgClosed_of_finiteDimensional`: the spectrum is nonempty for any
   element of a nontrivial finite dimensional algebra over an algebraically closed field.
 
-## Notations
+## Notation
 
 * `σ a` : `spectrum R a` of `a : A`
 -/

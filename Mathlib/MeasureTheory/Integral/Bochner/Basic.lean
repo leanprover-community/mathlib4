@@ -111,7 +111,7 @@ univ = closure {s simple}
 ```
 Use `isClosed_property` or `DenseRange.induction_on` for this argument.
 
-## Notations
+## Notation
 
 * `α →ₛ E` : simple functions (defined in `Mathlib/MeasureTheory/Function/SimpleFunc.lean`)
 * `α →₁[μ] E` : functions in L1 space, i.e., equivalence classes of integrable functions (defined in

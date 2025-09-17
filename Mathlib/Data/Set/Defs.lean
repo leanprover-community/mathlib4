@@ -5,7 +5,6 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Init
 import Batteries.Util.ExtendedBinder
-import Lean.Elab.Term
 
 /-!
 # Sets

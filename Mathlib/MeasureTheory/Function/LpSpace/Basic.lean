@@ -27,7 +27,7 @@ that it is continuous. In particular,
 * `Lp.posPart` is the positive part of an `Lp` function.
 * `Lp.negPart` is the negative part of an `Lp` function.
 
-## Notations
+## Notation
 
 * `α →₁[μ] E` : the type `Lp E 1 μ`.
 * `α →₂[μ] E` : the type `Lp E 2 μ`.

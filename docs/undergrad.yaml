@@ -293,7 +293,7 @@ Single Variable Real Analysis:
     connected subsets of $\R$: 'setOf_isPreconnected_eq_of_ordered'
     additive subgroups of $\R$: 'AddSubgroup.dense_or_cyclic'
   Numerical series:
-    Convergence of real valued-series: 'https://en.wikipedia.org/wiki/Series_(mathematics)#Convergent_series'
+    Convergence of real-valued series: 'https://en.wikipedia.org/wiki/Series_(mathematics)#Convergent_series'
     Geometric series: 'tsum_geometric_of_norm_lt_one'
     convergence of $p$-series for $p>1$: 'Real.summable_one_div_nat_rpow'
     summation of comparison relations: 'http://braise.univ-rennes1.fr/donnees/ParamHTML/S%E9ries%20num%E9riques/Con/Sommation%20des%20relations%20de%20comparaison/cst.ps'
@@ -364,9 +364,9 @@ Single Variable Real Analysis:
 
 # 7.
 Single Variable Complex Analysis:
-  Complex Valued series:
+  Complex-valued series:
     radius of convergence: 'FormalMultilinearSeries.radius'
-#    properties of sums of complex valued series on their disks of convergence: (this is a heading?)
+#    properties of sums of complex-valued series on their disks of convergence: (this is a heading?)
     continuity: 'HasFPowerSeriesOnBall.continuousOn'
     differentiability with respect to the complex variable: 'HasFPowerSeriesOnBall.differentiableOn'
     antiderivative: ''
@@ -644,7 +644,7 @@ Numerical Analysis:
     spectral ray: ''
     singular value decomposition: ''
     example of discretisation matrix by finite differences of the laplacian in one dimension: ''
-  Iterative methods of solving systems of real and vector valued equations:
+  Iterative methods of solving systems of real and vector-valued equations:
     linear systems case: ''
     proper element search: ''
     brute force method: ''

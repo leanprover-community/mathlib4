@@ -110,7 +110,7 @@ private lemma pairwiseDisjoint_distinctPairs :
   rw [mem_offDiag] at hs ht
   obtain ⟨a, ha⟩ := Finpartition.nonempty_of_mem_parts _ huv₁.1
   obtain ⟨b, hb⟩ := Finpartition.nonempty_of_mem_parts _ huv₁.2
-  exact hst <| Subtype.ext_val <| Prod.ext
+  exact hst <| Subtype.ext <| Prod.ext
     (P.disjoint.elim_finset hs.1 ht.1 a (Finpartition.le _ huv₁.1 ha) <|
       Finpartition.le _ huv₂.1 ha) <|
         P.disjoint.elim_finset hs.2.1 ht.2.1 b (Finpartition.le _ huv₁.2 hb) <|
