@@ -160,8 +160,8 @@ lemma dpow'_norm_le_of_ne_zero {n : ℕ} (hn : n ≠ 0) {x : ℤ_[p]}
       simp only [norm_pos_iff, ne_eq, cast_eq_zero]
       exact factorial_ne_zero n
     rw [← zpow_neg_one, ← Nat.cast_one (R := ℤ), Padic.norm_le_pow_iff_norm_lt_pow_add_one]
-    simp only [inverse_eq_inv', padicNormE.mul, norm_inv, _root_.norm_pow, padic_norm_e_of_padicInt,
-      cast_one, Int.reduceNeg, neg_add_cancel, zpow_zero]
+    simp only [inverse_eq_inv', Padic.padicNormE.mul, norm_inv, _root_.norm_pow,
+      padic_norm_e_of_padicInt, cast_one, Int.reduceNeg, neg_add_cancel, zpow_zero]
     rw [norm_eq_zpow_neg_valuation hx0, inv_mul_lt_one₀ hnorm, Padic.norm_eq_zpow_neg_valuation
       (cast_ne_zero.mpr n.factorial_ne_zero), ← zpow_natCast, ← zpow_mul]
     gcongr
