@@ -87,10 +87,7 @@ theorem corners_theorem (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound ε �
     rwa [mul_le_iff_le_one_left] at this
     positivity
   have := noAccidental hA
-  rw [Nat.floor_lt' (by positivity), inv_lt_iff_one_lt_mul₀'] at hG
-  swap
-  · have := triangleRemovalBound_pos (ε := ε / 9) (by linarith) (by linarith)
-    linarith
+  rw [Nat.floor_lt' (by positivity), inv_lt_iff_one_lt_mul₀' (by positivity)] at hG
   refine hG.not_ge (le_of_mul_le_mul_right ?_ (by positivity : (0 : ℝ) < card G ^ 2))
   classical
   have h₁ := (farFromTriangleFree_graph hAε).le_card_cliqueFinset
