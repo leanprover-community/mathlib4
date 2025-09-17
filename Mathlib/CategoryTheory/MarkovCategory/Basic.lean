@@ -62,7 +62,7 @@ theorem unit_terminal (X : C) (f : X ⟶ 𝟙_ C) : f = ε[X] := by
        _ = ε[X] := discard_natural f
 
 /-- The monoidal unit is a terminal object. -/
-instance : IsTerminal (𝟙_ C : C) where
+def unit_isTerminal : IsTerminal (𝟙_ C : C) where
   lift := fun s => ε[s.pt] -- The unique morphism to 𝟙_ C is the counit
   fac := fun _ j => PEmpty.elim j.as -- Vacuous: no objects in empty diagram
   uniq := fun s m _ => (unit_terminal s.pt m) -- Uniqueness by unit_terminal
