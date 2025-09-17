@@ -303,7 +303,7 @@ theorem coeff_rename_eq_zero (f : σ → τ) (φ : MvPolynomial σ R) (d : τ �
   rw [Finset.mem_image] at H
   obtain ⟨u, hu, rfl⟩ := H
   specialize h u rfl
-  simp? at h hu says simp only [Finsupp.mem_support_iff, ne_eq] at h hu
+  rw [Finsupp.mem_support_iff] at hu
   contradiction
 
 theorem coeff_rename_ne_zero (f : σ → τ) (φ : MvPolynomial σ R) (d : τ →₀ ℕ)
