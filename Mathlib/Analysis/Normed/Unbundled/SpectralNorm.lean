@@ -924,7 +924,7 @@ theorem spectralNorm_pow_natDegree_eq_prod_roots (x : L) {E : Type*} [Field E] [
     have h_deg' : (minpoly K x).natDegree = (mapAlg K E (minpoly K x)).natDegree := by
       rw [mapAlg_eq_map, natDegree_map]
     rw [h_deg', eq_comm, ← splits_iff_card_roots]
-    exact IsSplittingField.IsScalarTower.splits E x
+    exact IsSplittingField.IsScalarTower.splits (K := L) E (minpoly K x)
   rw [map_multiset_prod, ← Multiset.prod_replicate]
   apply congr_arg
   ext r
@@ -964,9 +964,11 @@ theorem spectralNorm_eq_root_zero_coeff (x : L) :
   · simp only [hx0, minpoly.zero, coeff_X_zero, norm_zero, natDegree_X, div_self, ne_eq,
       one_ne_zero, not_false_iff, spectralNorm_zero, Nat.cast_one, div_self, Real.rpow_one]
   · set E := (mapAlg K L (minpoly K x)).SplittingField
-    have h_algE : Algebra.IsAlgebraic K E := IsSplittingField.IsScalarTower.isAlgebraic _ x
     have hspl : Splits (RingHom.id E) (mapAlg K E (minpoly K x)) :=
-      IsSplittingField.IsScalarTower.splits E x
+      IsSplittingField.IsScalarTower.splits (K := L) E (minpoly K x)
+    have : Algebra.IsAlgebraic L E :=
+      IsSplittingField.IsScalarTower.isAlgebraic E (mapAlg K L (minpoly K x))
+    have : Algebra.IsAlgebraic K E := Algebra.IsAlgebraic.trans K L E
     rw [one_div, Real.eq_rpow_inv (spectralNorm_nonneg x) (norm_nonneg ((minpoly K x).coeff 0)),
       Real.rpow_natCast, @spectralNorm.eq_of_tower K _ E,
       ← @spectralNorm_extends K _ L _ _ ((minpoly K x).coeff 0),
