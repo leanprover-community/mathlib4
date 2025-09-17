@@ -50,7 +50,7 @@ Uniqueness of the conditional expectation
 * `ae_eq_condExp_of_forall_setIntegral_eq`: an a.e. `m`-measurable function which verifies the
   equality of integrals is a.e. equal to `condExp`.
 
-## Notations
+## Notation
 
 For a measure `μ` defined on a measurable space structure `m₀`, another measurable space structure
 `m` with `hm : m ≤ m₀` (a sub-σ-algebra) and a function `f`, we define the notation

@@ -147,7 +147,7 @@ theorem continuous_lift (f : C(I × A, X)) {g : I × A → E} (g_lifts : p ∘ g
 theorem monodromy_theorem {γ₀ γ₁ : C(I, X)} (γ : γ₀.HomotopyRel γ₁ {0,1}) (Γ : I → C(I, E))
     (Γ_lifts : ∀ t s, p (Γ t s) = γ (t, s)) (Γ_0 : ∀ t, Γ t 0 = Γ 0 0) (t : I) :
     Γ t 1 = Γ 0 1 := by
-  have := homeo.continuous_lift sep (γ.comp .prodSwap) (g := fun st ↦ Γ st.2 st.1) ?_ ?_ ?_
+  have := homeo.continuous_lift sep (.comp γ .prodSwap) (g := fun st ↦ Γ st.2 st.1) ?_ ?_ ?_
   · apply sep.const_of_comp homeo.isLocallyInjective (this.comp (.prodMk_right 1))
     intro t t'; change p (Γ _ _) = p (Γ _ _); simp_rw [Γ_lifts, γ.eq_fst _ (.inr rfl)]
   · ext; apply Γ_lifts

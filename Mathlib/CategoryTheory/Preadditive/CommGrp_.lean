@@ -34,7 +34,7 @@ instance (X : C) : GrpObj X where
 
 variable [BraidedCategory C]
 
-instance (X : C) : IsCommMon X where
+instance (X : C) : IsCommMonObj X where
   mul_comm := by simp [add_comm]
 
 variable (C) in

@@ -235,7 +235,7 @@ def functor : CommMon_ (C ⥤ D) ⥤ C ⥤ CommMon_ D where
     { (monFunctorCategoryEquivalence C D).functor.obj A.toMon_ with
       obj := fun X =>
         { ((monFunctorCategoryEquivalence C D).functor.obj A.toMon_).obj X with
-          comm := { mul_comm := congr_app (IsCommMon.mul_comm A.X) X } } }
+          comm := { mul_comm := congr_app (IsCommMonObj.mul_comm A.X) X } } }
   map f := { app := fun X => ((monFunctorCategoryEquivalence C D).functor.map f).app X }
 
 /-- Functor translating a functor into the category of commutative monoid objects
@@ -245,7 +245,7 @@ to a commutative monoid object in the functor category
 def inverse : (C ⥤ CommMon_ D) ⥤ CommMon_ (C ⥤ D) where
   obj F :=
     { (monFunctorCategoryEquivalence C D).inverse.obj (F ⋙ CommMon_.forget₂Mon_ D) with
-      comm := { mul_comm := by ext X; exact IsCommMon.mul_comm (F.obj X).X } }
+      comm := { mul_comm := by ext X; exact IsCommMonObj.mul_comm (F.obj X).X } }
   map α := (monFunctorCategoryEquivalence C D).inverse.map (Functor.whiskerRight α _)
 
 /-- The unit for the equivalence `CommMon_ (C ⥤ D) ≌ C ⥤ CommMon_ D`.
