@@ -451,8 +451,6 @@ protected lemma map_eq_zero_iff {G₀ M₀ : Type*} [GroupWithZero G₀] [MulZer
   apply one_ne_zero (α := M₀)
   rw [← map_one f, ← Units.mul_inv x, map_mul, H, zero_mul]
 
-variable {M₀ N₀}
-
 @[simp]
 lemma one_apply_val_unit {M₀ N₀ : Type*} [MonoidWithZero M₀] [MulZeroOneClass N₀]
     [DecidablePred fun x : M₀ ↦ x = 0] [Nontrivial M₀] [NoZeroDivisors M₀] (x : M₀ˣ) :
