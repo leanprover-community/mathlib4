@@ -140,7 +140,7 @@ theorem sin_pi_mul_ne_zero (hx : x ∈ ℂ_ℤ) : Complex.sin (π * x) ≠ 0 := 
   exact Injective.ne (mul_right_injective₀ (ofReal_ne_zero.mpr Real.pi_ne_zero)) (by aesop)
 
 lemma cot_pi_mul_contDiffWithinAt (k : ℕ∞) (hx : x ∈ ℂ_ℤ) :
-  ContDiffWithinAt ℂ k (fun x ↦ (↑π * x).cot) ℍₒ x := by
+    ContDiffWithinAt ℂ k (fun x ↦ (↑π * x).cot) ℍₒ x := by
   simp_rw [Complex.cot, Complex.cos, Complex.sin]
   exact ContDiffWithinAt.div (by fun_prop) (by fun_prop) (sin_pi_mul_ne_zero hx)
 
@@ -260,16 +260,18 @@ lemma eqOn_iteratedDeriv_cotTerm (d : ℕ) : EqOn (iteratedDeriv k (fun z ↦ co
       ((isOpen_compl_range_intCast).mem_nhds hz)
 
 lemma eqOn_iteratedDerivWithin_cotTerm_integerComplement (d : ℕ) :
-    EqOn (iteratedDerivWithin k (fun z ↦ cotTerm z d) ℂ_ℤ)
-    (fun z ↦ (-1) ^ k * k ! * ((z + (d + 1)) ^ (-1 - k : ℤ) +
-    (z - (d + 1)) ^ (-1 - k : ℤ))) ℂ_ℤ := by
+    EqOn
+      (iteratedDerivWithin k (fun z ↦ cotTerm z d) ℂ_ℤ)
+      (fun z ↦ (-1) ^ k * k ! * ((z + (d + 1)) ^ (-1 - k : ℤ) + (z - (d + 1)) ^ (-1 - k : ℤ)))
+      ℂ_ℤ := by
   apply Set.EqOn.trans (iteratedDerivWithin_of_isOpen isOpen_compl_range_intCast)
   exact eqOn_iteratedDeriv_cotTerm ..
 
 lemma eqOn_iteratedDerivWithin_cotTerm_upperHalfPlaneSet (d : ℕ) :
-    EqOn (iteratedDerivWithin k (fun z ↦ cotTerm z d) ℍₒ)
-    (fun z ↦ (-1) ^ k * k ! * ((z + (d + 1)) ^ (-1 - k : ℤ) +
-    (z - (d + 1)) ^ (-1 - k : ℤ))) ℍₒ := by
+    EqOn
+      (iteratedDerivWithin k (fun z ↦ cotTerm z d) ℍₒ)
+      (fun z ↦ (-1) ^ k * k ! * ((z + (d + 1)) ^ (-1 - k : ℤ) + (z - (d + 1)) ^ (-1 - k : ℤ)))
+      ℍₒ := by
   apply Set.EqOn.trans (upperHalfPlane_inter_integerComplement ▸
     iteratedDerivWithin_congr_right_of_isOpen (fun z ↦ cotTerm z d) k
     isOpen_upperHalfPlaneSet (isOpen_compl_range_intCast))
@@ -345,8 +347,8 @@ variable {z : ℂ}
 
 -- We have this auxiliary ugly version on the lhs so the the rhs looks nicer.
 private lemma aux_iteratedDeriv_tsum_cotTerm {k : ℕ} (hk : 1 ≤ k) (hz : z ∈ ℍₒ) :
-    (-1) ^ k * (k !) * z ^ (-1 - k : ℤ) + iteratedDerivWithin k
-    (fun z ↦ ∑' n : ℕ, cotTerm z n) ℍₒ z =
+    (-1) ^ k * (k !) * z ^ (-1 - k : ℤ) +
+      iteratedDerivWithin k (fun z ↦ ∑' n : ℕ, cotTerm z n) ℍₒ z =
     (-1) ^ k * k ! * ∑' n : ℤ, (z + n) ^ (-1 - k : ℤ) := by
   rw [iteratedDerivWithin_tsum k isOpen_upperHalfPlaneSet hz
     (fun t ht ↦ Summable_cotTerm (coe_mem_integerComplement ⟨t, ht⟩))
