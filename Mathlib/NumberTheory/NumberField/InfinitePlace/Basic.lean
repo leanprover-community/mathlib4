@@ -560,38 +560,40 @@ open Filter in
 variable (K) in
 /--
 *Weak approximation for infinite places*
-The number field $K$ is dense in $\prod_v (K, v)$, where $v$ ranges over the infinite places
-of $K$ and $(K, v)$ denotes $K$ equipped with the topology induced by $v$. In other words,
-for any $(x_v)_v$, with $x_v\in K$, there exists a $y\in K$ such that each $|y - x_v|_v$ is
-arbitrarily small.
+The number field `K` is dense when embedded diagonally in the product
+`(v : InfinitePlace K) → WithAbs v.1`, in which `WithAbs v.1` represents `K` equipped with the
+topology coming from the infinite place `v`.
 -/
 theorem denseRange_algebraMap_pi [NumberField K] :
     DenseRange <| algebraMap K ((v : InfinitePlace K) → WithAbs v.1) := by
-  -- We have to show that for some `(zᵥ)ᵥ` there is a `y` in `K` that is arbitrarily close to `z`
-  -- under the embedding `y ↦ (y)ᵥ`
+  -- We have to show that given `(zᵥ)ᵥ` with `zᵥ : WithAbs v.1`, there is a `y : K` that is
+  -- arbitrarily close to each `zᵥ` in `v`'s topology.
   refine Metric.denseRange_iff.2 fun z r hr ↦ ?_
-  -- For some `v`, by previous results we can select a `aᵥ : K` for each infinite place `v`
-  -- such that `1 < v aᵥ` while `w aᵥ < 1` for all `w ≠ v`
+  -- Given `v`, by previous results we can select a `aᵥ : K` for each infinite place `v`
+  -- such that `1 < v aᵥ` while `w aᵥ < 1` for all `w ≠ v`.
   choose a hx using AbsoluteValue.exists_one_lt_lt_one_pi_of_not_isEquiv isNontrivial
     (fun _ _ hwv ↦ (eq_iff_isEquiv (K := K)).not.1 hwv)
-  -- Define the sequence `yₙ = ∑ v, 1 / (1 + aᵥ^(-n)) * zᵥ` in `K`
+  -- Define the sequence `yₙ = ∑ v, 1 / (1 + aᵥ ^ (-n)) * zᵥ` in `K`
   let y := fun n ↦ ∑ v, (1 / (1 + (a v)⁻¹ ^ n)) * WithAbs.equiv v.1 (z v)
-  -- At each place `w` the limit of `y` with respect to `w`'s topology is `z w`.
-  have : atTop.Tendsto (fun n w ↦ (WithAbs.equiv w.1).symm (y n)) (𝓝 z) := by
-    refine tendsto_pi_nhds.2 fun w ↦ ?_
-    simp_rw [← Fintype.sum_pi_single w z, y, map_sum, map_mul]
-    refine tendsto_finset_sum _ fun v _ ↦ ?_
-    by_cases hw : w = v
-    · rw [hw]; simp only [Pi.single_apply v (z v), if_true, RingEquiv.symm_apply_apply]
+  -- At each place `v` the limit of `y` with respect to `v`'s topology is `zᵥ`.
+  have : atTop.Tendsto (fun n v ↦ (WithAbs.equiv v.1).symm (y n)) (𝓝 z) := by
+    refine tendsto_pi_nhds.2 fun v ↦ ?_
+    simp_rw [← Fintype.sum_pi_single v z, y, map_sum, map_mul]
+    refine tendsto_finset_sum _ fun w _ ↦ ?_
+    by_cases hw : v = w
+    · -- Because `1 / (1 + aᵥ ^ (-n)) → 1` in `WithAbs v.1`.
+      rw [← hw]; simp only [Pi.single_apply v (z v), if_true, RingEquiv.symm_apply_apply]
       nth_rw 2 [← one_mul (z v)]
       have : v (a v)⁻¹ < 1 := by simpa [inv_lt_one_iff₀] using .inr (hx v).1
       exact (WithAbs.tendsto_one_div_one_add_pow_nhds_one (hw ▸ this)).mul_const _
-    · simp only [Pi.single_apply v (z v), hw, if_false]
-      rw [← zero_mul <| (WithAbs.equiv w.1).symm (WithAbs.equiv v.1 (z v))]
-      have : 1 < w (a v)⁻¹ := by simpa [one_lt_inv_iff₀] using
-        ⟨w.pos_iff.2 fun ha ↦ by linarith [map_zero v ▸ ha ▸ (hx v).1], (hx v).2 w hw⟩
+    · -- And `1 / (1 + aᵥ ^ (-n)) → 0` in `WithAbs w.1` when `w ≠ v`.
+      simp only [Pi.single_apply w (z w), hw, if_false]
+      rw [← zero_mul <| (WithAbs.equiv v.1).symm (WithAbs.equiv w.1 (z w))]
+      have : 1 < v (a w)⁻¹ := by simpa [one_lt_inv_iff₀] using
+        ⟨v.pos_iff.2 fun ha ↦ by linarith [map_zero w ▸ ha ▸ (hx w).1], (hx w).2 v hw⟩
       exact (tendsto_zero_iff_norm_tendsto_zero.2 <| by
-        simpa [WithAbs.norm_eq_abv] using w.1.tendsto_pow_div_one_add_pow_zero this).mul_const _
+        simpa [WithAbs.norm_eq_abv] using v.1.tendsto_div_one_add_pow_nhds_zero this).mul_const _
+  -- So taking a sufficiently large index of the sequence `yₙ` gives the desired term.
   let ⟨N, h⟩ := Metric.tendsto_atTop.1 this r hr
   exact ⟨y N, dist_comm z (algebraMap K _ (y N)) ▸ h N le_rfl⟩
 
