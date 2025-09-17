@@ -223,13 +223,9 @@ lemma norm_natCast_zmodRepr_eq_one_iff {x : ℤ_[p]} :
   rcases eq_or_ne ‖(x.zmodRepr : ℤ_[p])‖ ‖x‖ with H | H
   · rw [H]
   · have := x.norm_sub_zmodRepr_lt_one
-    constructor <;> intro h <;> rw [← h]
-    · rw [eq_comm, ← norm_neg]
-      apply eq_of_norm_add_lt_left
-      simpa [neg_add_eq_sub, ← h] using this
-    · rw [← norm_neg]
-      apply eq_of_norm_add_lt_right
-      simpa [neg_add_eq_sub, ← h] using this
+    constructor <;> intro h <;> rw [← h] at this ⊢
+    · exact norm_eq_of_norm_sub_lt_right this
+    · exact (norm_eq_of_norm_sub_lt_left this).symm
 
 lemma zmodRepr_eq_zero_iff_dvd {x : ℤ_[p]} :
     x.zmodRepr = 0 ↔ (p : ℤ_[p]) ∣ x := by
