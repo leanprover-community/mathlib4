@@ -78,6 +78,9 @@ lemma Subgroup.Commensurable.isCusp_iff {𝒢 𝒢' : Subgroup (GL (Fin 2) ℝ)}
   · simpa [Subgroup.inf_relIndex_right] using h𝒢.1
   · simpa [Subgroup.inf_relIndex_left] using h𝒢.2
 
+@[deprecated (since := "2025-09-17")]
+alias Commensurable.isCusp_iff := Subgroup.Commensurable.isCusp_iff
+
 /-- The cusps of `SL(2, ℤ)` are precisely the elements of `ℙ¹(ℚ)`. -/
 lemma isCusp_SL2Z_iff {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ c ∈ Set.range (OnePoint.map Rat.cast) := by
   constructor

@@ -99,6 +99,56 @@ def bifunctorComp₂₃Iso (F : C₁ ⥤ C₂₃ ⥤ E) (G₂₃ : C₂ ⥤ C₃
   NatIso.ofComponents (fun _ ↦ NatIso.ofComponents (fun _ ↦
     NatIso.ofComponents (fun _ ↦ Iso.refl _)))
 
+/--
+Flip the first and third arguments in a trifunctor.
+-/
+@[simps!]
+def flip₁₃ (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ E) : C₃ ⥤ C₂ ⥤ C₁ ⥤ E where
+  obj G := {
+    obj H := {
+      obj K := ((F.obj K).obj H).obj G
+      map f := ((F.map f).app _).app _ }
+    map g := { app X := ((F.obj X).map g).app _ } }
+  map h := { app X := { app Y := ((F.obj Y).obj X).map h } }
+
+/--
+Flip the first and third arguments in a trifunctor, as a functor.
+-/
+@[simps!]
+def flip₁₃Functor : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ (C₃ ⥤ C₂ ⥤ C₁ ⥤ E) where
+  obj F := F.flip₁₃
+  map f := {
+    app X := {
+      app Y := {
+        app Z := ((f.app _).app _).app _
+        naturality _ _ g := by
+          simp [← NatTrans.comp_app] } } }
+
+/--
+Flip the second and third arguments in a trifunctor.
+-/
+@[simps!]
+def flip₂₃ (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ E) : C₁ ⥤ C₃ ⥤ C₂ ⥤ E where
+  obj G := (F.obj G).flip
+  map f := (flipFunctor _ _ _).map (F.map f)
+
+/--
+Flip the second and third arguments in a trifunctor, as a functor.
+-/
+@[simps!]
+def flip₂₃Functor : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ (C₁ ⥤ C₃ ⥤ C₂ ⥤ E) where
+  obj F := F.flip₂₃
+  map f := {
+    app X := {
+      app Y := {
+        app Z := ((f.app _).app _).app _
+        naturality _ _ g := by
+          simp [← NatTrans.comp_app] } }
+    naturality _ _ g := by
+      ext
+      simp only [flip₂₃_obj_obj_obj, NatTrans.comp_app, flip₂₃_map_app_app]
+      simp [← NatTrans.comp_app] }
+
 end Functor
 
 end CategoryTheory
