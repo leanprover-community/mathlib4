@@ -42,8 +42,6 @@ of sets in form `{ x | ∃ y, p x y }`.
 * [Samuel Eilenberg and M. P. Schützenberger, *Rational Sets in Commutative Monoids*][eilenberg1969]
 -/
 
-universe u v
-
 variable {M N ι κ F : Type*} [AddCommMonoid M] [AddCommMonoid N]
   [FunLike F M N] [AddMonoidHomClass F M N] {a : M} {s s₁ s₂ : Set M}
 
