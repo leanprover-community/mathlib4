@@ -407,9 +407,11 @@ theorem span_singleton_mul_span_singleton (r s : R) [(span {r}).IsTwoSided] :
 
 theorem span_singleton_pow (s : R) [(span {s}).IsTwoSided] (n : ℕ) :
     span {s} ^ n = (span {s ^ n} : Ideal R) := by
-  induction' n with n ih; · simp [Submodule.pow_zero, Set.singleton_one]
-  obtain rfl | ne := eq_or_ne n 0; · simp [Submodule.pow_one]
-  simp only [Submodule.pow_succ' _ ne, pow_succ', ih, span_singleton_mul_span_singleton]
+  induction n with
+  | zero => simp [Submodule.pow_zero, Set.singleton_one]
+  | succ n ih =>
+    obtain rfl | ne := eq_or_ne n 0; · simp [Submodule.pow_one]
+    simp only [Submodule.pow_succ' _ ne, pow_succ', ih, span_singleton_mul_span_singleton]
 
 theorem mem_mul_span_singleton {x y : R} {I : Ideal R} [I.IsTwoSided] :
     x ∈ I * span {y} ↔ ∃ z ∈ I, z * y = x :=
