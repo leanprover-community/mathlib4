@@ -463,7 +463,7 @@ theorem notMem_keys_kerase (a) {l : List (Sigma β)} (nd : l.NodupKeys) :
   induction l with
   | nil => simp
   | cons hd tl ih =>
-    simp? at nd says simp only [nodupKeys_cons] at nd
+    simp only [nodupKeys_cons] at nd
     by_cases h : a = hd.1
     · subst h
       simp [nd.1]
@@ -673,7 +673,7 @@ theorem NodupKeys.kunion (nd₁ : l₁.NodupKeys) (nd₂ : l₂.NodupKeys) : (ku
   induction l₁ generalizing l₂ with
   | nil => simp only [nil_kunion, nd₂]
   | cons s l₁ ih =>
-    simp? at nd₁ says simp only [nodupKeys_cons] at nd₁
+    simp only [nodupKeys_cons] at nd₁
     simp [nd₁.1, nd₂, ih nd₁.2 (nd₂.kerase s.1)]
 
 theorem Perm.kunion_right {l₁ l₂ : List (Sigma β)} (p : l₁ ~ l₂) (l) :
