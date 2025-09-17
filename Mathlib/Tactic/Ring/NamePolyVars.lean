@@ -110,7 +110,7 @@ def Lean.TSyntax.parsePolyIdents : TSyntax ``poly_idents → Option (String ⊕ 
   | `(poly_idents| $vs:ident,*) => pure (Sum.inr (vs.getElems.map fun v ↦ v.getId.toString))
   | _ => .none
 
-/-- An unambiguous term declaration, which is `_`, an identifier, or a term enclosed in brackets -/
+/-- An unambiguously bracketed term, which is `_`, an identifier, or a term enclosed in brackets -/
 syntax term_decl := hole <|> ident <|> ("(" term ")")
 
 /-- A type synonym for a term declaration, used to avoid ambiguity in the syntax. -/
@@ -155,22 +155,15 @@ elab "register_poly_vars " mv?:optConfig opening:str closing:str
   have closing := closing.getString
   have mv? := (← elabMvConfig mv?).mv
   have declared := notationTableExt.getState (← getEnv)
-  if declared.keys.all fun s ↦ s.opening ≠ opening then
-    elabCommand <| ← `(command|/-- Register an open bracket for polynomial-like notation. -/
+  if declared.keys.all (·.opening ≠ opening) then
+    elabCommand <| ← `(command|/-- An opening bracket of a polynomial-like notation -/
       syntax $(quote opening):str : poly_opening)
-  if declared.keys.all fun s ↦ s.closing ≠ closing then
-    elabCommand <| ← `(command|/-- Register a closing bracket for polynomial-like notation. -/
+  if declared.keys.all (·.closing ≠ closing) then
+    elabCommand <| ← `(command|/-- A closing bracket of a polynomial-like notation -/
       syntax $(quote closing):str : poly_closing)
   -- register the new syntax to the global table
   trace[name_poly_vars] m!"Registering new syntax: (mv := {mv?}) {opening} {closing}"
-  notationTableExt.add
-    ({  opening := opening
-        closing := closing
-        mv? := mv? },
-      { type := type
-        c := c
-        x := x })
-    .global
+  notationTableExt.add ({ opening, closing, mv? }, { type, c, x }) .global
   trace[name_poly_vars] m!"New table size: {(notationTableExt.getState (← getEnv)).size}"
 
 /-- A locally declared polynomial-like variable. -/
@@ -267,9 +260,8 @@ def Lean.TSyntax.processAndDeclarePolyesqueNotationInput (p : PolyesqueNotationI
 
 /-- A helper function to elaborate macro rules and trace their declarations. -/
 def elabMacroRulesAndTrace (p : Polyesque) (t : Term) : CommandElabM Unit := do
-  trace[«name_poly_vars»] m!"Declaring polynomial-like notation: {p}"
-  trace[«name_poly_vars»] m!"Result: {t}"
-  elabCommand <| ← `(command| local macro_rules | `(term| $p:polyesque) => `($t))
+  trace[name_poly_vars] m!"Declaring polynomial-like notation: {p}\nResult: {t}"
+  elabCommand <| ← `(command| local macro_rules | `($p:polyesque) => `($t))
 
 /-- Declare a local polynomial-like notation. Usage:
 ```lean
@@ -294,24 +286,24 @@ elab "name_poly_vars " head:term_decl noWs body:polyesque_notation_input+ : comm
     let processed ← p.processAndDeclarePolyesqueNotationInput terms functor
     terms := processed.2.1
     functor := processed.2.2
-    bodyVar := bodyVar ++ #[processed.1]
+    bodyVar := bodyVar.push processed.1
   have body := Syntax.TSepArray.ofElems (sep := "") bodyVar
-  let type : Term := ← match head with
+  let type : Term ← match head with
   | `(term_decl| $_:hole) => do
-    let typeHole := ← functor (← `(_))
-    elabMacroRulesAndTrace (← `(polyesque| _$body:polyesque_notation*)) (← `(term| $typeHole))
+    -- We make sure that if the `_` in `_[t]`is filled in, it gets hover information
+    elabMacroRulesAndTrace (← `(polyesque| $$h:hole$body:polyesque_notation*))
+      (← functor (← `($$h:hole)))
     elabMacroRulesAndTrace (← `(polyesque| $$i:ident$body:polyesque_notation*))
-      (← functor (← `(term| $$i:ident)))
+      (← functor (← `($$i:ident)))
     elabMacroRulesAndTrace (← `(polyesque| ($$t:term)$body:polyesque_notation*))
-      (← functor (← `(term| ($$t:term))))
-    return typeHole
+      (← functor (← `(($$t:term))))
+    functor (← `(_))
   | _ => do
-    let type := ← functor head.term
-    elabMacroRulesAndTrace (← `(polyesque| $head$body:polyesque_notation*)) (← `(term| $type))
-    return type
-  trace[«name_poly_vars»] m!"Terms:"
+    let type ← functor head.term
+    elabMacroRulesAndTrace (← `(polyesque| $head$body:polyesque_notation*)) type
+    pure type
   for (v, t) in terms do
-    elabCommand <| ← `(command| local macro_rules | `(term| $v:poly_var) => `(($t : $type)))
-    trace[«name_poly_vars»] m!"{v} : {t}"
+    elabCommand <| ← `(command| local macro_rules | `($v:poly_var) => `(($t : $type)))
+    trace[name_poly_vars] m!"Declaring variable {v} := {t}"
 
 end Mathlib.Tactic.NamePolyVars
