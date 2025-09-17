@@ -272,6 +272,6 @@ theorem hasSum_eval {α : Type*} {p : α → ContinuousMultilinearMap 𝕜 E F}
 
 theorem tsum_eval [T2Space F] {α : Type*} {p : α → ContinuousMultilinearMap 𝕜 E F} (hp : Summable p)
     (m : Π i, E i) : (∑' a, p a) m = ∑' a, p a m :=
-  (hasSum_eval hp.hasSum m).tsum_eq.symm
+  (hasSum_eval hp.hasSum m).tsumFilter_eq.symm
 
 end ContinuousMultilinearMap

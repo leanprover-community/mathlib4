@@ -58,7 +58,7 @@ lemma tendsto_tsum_of_dominated_convergence {α β G : Type*} {𝓕 : Filter α}
   intro ε hε
   let ⟨S, hS⟩ := h_sum
   obtain ⟨T, hT⟩ : ∃ (T : Finset β), dist (∑ b ∈ T, bound b) S < ε / 3 := by
-    rw [HasSum, Metric.tendsto_nhds] at hS
+    rw [HasSumFilter, Metric.tendsto_nhds] at hS
     classical exact Eventually.exists <| hS _ (by positivity)
   have h1 : ∑' (k : (Tᶜ : Set β)), bound k < ε / 3 := by
     calc _ ≤ ‖∑' (k : (Tᶜ : Set β)), bound k‖ := Real.le_norm_self _
@@ -68,7 +68,7 @@ lemma tendsto_tsum_of_dominated_convergence {α β G : Type*} {𝓕 : Filter α}
   have h2 : Tendsto (∑ k ∈ T, f · k) 𝓕 (𝓝 (T.sum g)) := tendsto_finset_sum _ (fun i _ ↦ hab i)
   rw [Metric.tendsto_nhds] at h2
   filter_upwards [h2 (ε / 3) (by positivity), h_suma, h_bound] with n hn h_suma h_bound
-  rw [dist_eq_norm, ← h_suma.of_norm.tsum_sub h_sumg.of_norm,
+  rw [dist_eq_norm, ← h_suma.of_norm.tsumFilter_sub h_sumg.of_norm,
     ← (h_suma.of_norm.sub h_sumg.of_norm).sum_add_tsum_compl (s := T),
     (by ring : ε = ε / 3 + (ε / 3 + ε / 3))]
   refine (norm_add_le _ _).trans_lt (add_lt_add ?_ ?_)

@@ -494,14 +494,14 @@ lemma HasFPowerSeriesWithinOnBall.pi
     apply FormalMultilinearSeries.le_radius_pi (fun i ↦ ?_)
     exact (hf i).r_le
   r_pos := hr
-  hasSum {_} m hy := Pi.hasSum.2 (fun i ↦ (hf i).hasSum m hy)
+  hasSum {_} m hy := Pi.hasSumFilter.2 (fun i ↦ (hf i).hasSum m hy)
 
 lemma hasFPowerSeriesWithinOnBall_pi_iff (hr : 0 < r) :
     HasFPowerSeriesWithinOnBall (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) s e r ↔
       ∀ i, HasFPowerSeriesWithinOnBall (f i) (p i) s e r where
   mp h i :=
     ⟨h.r_le.trans (FormalMultilinearSeries.radius_pi_le _ _), hr,
-      fun m hy ↦ Pi.hasSum.1 (h.hasSum m hy) i⟩
+      fun m hy ↦ Pi.hasSumFilter.1 (h.hasSum m hy) i⟩
   mpr h := .pi h hr
 
 lemma HasFPowerSeriesOnBall.pi
@@ -1284,7 +1284,7 @@ theorem HasFPowerSeriesWithinOnBall.unshift (hf : HasFPowerSeriesWithinOnBall f 
     apply HasSum.zero_add
     simp only [FormalMultilinearSeries.unshift, Nat.succ_eq_add_one,
       continuousMultilinearCurryRightEquiv_symm_apply', add_sub_cancel_left]
-    exact (ContinuousLinearMap.apply 𝕜 F y).hasSum (hf.hasSum hy h'y)
+    exact (ContinuousLinearMap.apply 𝕜 F y).hasSumFilter (hf.hasSum hy h'y)
 
 theorem HasFPowerSeriesOnBall.unshift (hf : HasFPowerSeriesOnBall f pf x r) :
     HasFPowerSeriesOnBall (fun y ↦ z + f y (y - x)) (pf.unshift z) x r where
@@ -1297,7 +1297,7 @@ theorem HasFPowerSeriesOnBall.unshift (hf : HasFPowerSeriesOnBall f pf x r) :
     apply HasSum.zero_add
     simp only [FormalMultilinearSeries.unshift, Nat.succ_eq_add_one,
       continuousMultilinearCurryRightEquiv_symm_apply', add_sub_cancel_left]
-    exact (ContinuousLinearMap.apply 𝕜 F y).hasSum (hf.hasSum hy)
+    exact (ContinuousLinearMap.apply 𝕜 F y).hasSumFilter (hf.hasSum hy)
 
 theorem HasFPowerSeriesWithinAt.unshift (hf : HasFPowerSeriesWithinAt f pf s x) :
     HasFPowerSeriesWithinAt (fun y ↦ z + f y (y - x)) (pf.unshift z) s x :=

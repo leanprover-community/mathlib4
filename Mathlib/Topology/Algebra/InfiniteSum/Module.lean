@@ -138,8 +138,8 @@ protected theorem ContinuousLinearMap.summableFilter {f : ι → M} (φ : M →S
 
 alias Summable.mapL := ContinuousLinearMap.summableFilter
 
-protected theorem ContinuousLinearMap.map_tsum [T2Space M₂] [L.NeBot] {f : ι → M} (φ : M →SL[σ] M₂)
-    (hf : SummableFilter L f) : φ (∑'[L] z, f z) = ∑'[L] z, φ (f z) :=
+protected theorem ContinuousLinearMap.map_tsumFilter [T2Space M₂] [L.NeBot] {f : ι → M}
+    (φ : M →SL[σ] M₂) (hf : SummableFilter L f) : φ (∑'[L] z, f z) = ∑'[L] z, φ (f z) :=
   (φ.hasSumFilter hf.hasSumFilter).tsumFilter_eq.symm
 
 /-- Applying a continuous linear map commutes with taking an (infinite) sum. -/

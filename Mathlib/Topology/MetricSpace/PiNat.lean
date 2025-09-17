@@ -823,8 +823,8 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
           min_le_right _ _
     calc dist x z ≤ ∑' i, (min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) +
           min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i))) :=
-        (dist_summable x z).tsum_le_tsum I ((dist_summable x y).add (dist_summable y z))
-      _ = dist x y + dist y z := (dist_summable x y).tsum_add (dist_summable y z)
+        (dist_summable x z).tsumFilter_le_tsumFilter I ((dist_summable x y).add (dist_summable y z))
+      _ = dist x y + dist y z := (dist_summable x y).tsumFilter_add (dist_summable y z)
   eq_of_dist_eq_zero hxy := by
     ext1 n
     rw [← dist_le_zero, ← hxy]

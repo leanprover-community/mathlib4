@@ -34,6 +34,7 @@ theorem HasSumFilter.mul_right (a₂) (hf : HasSumFilter L f a₁) :
     HasSumFilter L (fun i ↦ f i * a₂) (a₁ * a₂) := by
   simpa only using hf.map (AddMonoidHom.mulRight a₂) (continuous_id.mul continuous_const)
 
+--make alias
 theorem SummableFilter.mul_left (a) (hf : SummableFilter L f) : SummableFilter L fun i ↦ a * f i :=
   (hf.hasSumFilter.mul_left _).summableFilter
 

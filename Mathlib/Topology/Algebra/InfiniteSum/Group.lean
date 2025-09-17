@@ -172,13 +172,13 @@ theorem tprodFilter_inv [L.NeBot] : ∏'[L] b, (f b)⁻¹ = (∏'[L] b, f b)⁻�
       tprodFilter_eq_one_of_not_multipliableFilter (mt MultipliableFilter.of_inv hf)]
 
 @[to_additive]
-protected theorem MultipliableFilter.tprod_div [L.NeBot] (hf : MultipliableFilter L f)
+protected theorem MultipliableFilter.tprodFilter_div [L.NeBot] (hf : MultipliableFilter L f)
     (hg : MultipliableFilter L g) : ∏'[L] b, (f b / g b) = (∏'[L] b, f b) / ∏'[L] b, g b :=
   (hf.hasProdFilter.div hg.hasProdFilter).tprodFilter_eq
 
-@[deprecated (since := "2025-04-12")] alias tsum_sub := SummableFilter.tsum_sub
+@[deprecated (since := "2025-04-12")] alias tsum_sub := SummableFilter.tsumFilter_sub
 @[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_div :=
-  MultipliableFilter.tprod_div
+  MultipliableFilter.tprodFilter_div
 
 @[to_additive]
 protected theorem Multipliable.prod_mul_tprod_compl {s : Finset β} (hf : Multipliable f) :

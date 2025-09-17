@@ -37,7 +37,7 @@ theorem tendstoUniformlyOn_tsum {f : α → β → F} (hu : Summable u) {s : Set
   rw [dist_eq_norm, ← A.of_norm.sum_add_tsum_subtype_compl t, add_sub_cancel_left]
   apply lt_of_le_of_lt _ ht
   apply (norm_tsum_le_tsum_norm (A.subtype _)).trans
-  exact (A.subtype _).tsum_le_tsum (fun n => hfu _ _ hx) (hu.subtype _)
+  exact (A.subtype _).tsumFilter_le_tsumFilter (fun n => hfu _ _ hx) (hu.subtype _)
 
 /-- An infinite sum of functions with summable sup norm is the uniform limit of its partial sums.
 Version relative to a set, with index set `ℕ`. -/
@@ -69,7 +69,7 @@ theorem tendstoUniformlyOn_tsum_of_cofinite_eventually {ι : Type*} {f : ι → 
   rw [dist_eq_norm, ← A.of_norm.sum_add_tsum_subtype_compl n, add_sub_cancel_left]
   apply lt_of_le_of_lt _ (ht n (Finset.union_subset_right hn))
   apply (norm_tsum_le_tsum_norm (A.subtype _)).trans
-  apply (A.subtype _).tsum_le_tsum _ (hu.subtype _)
+  apply (A.subtype _).tsumFilter_le_tsumFilter _ (hu.subtype _)
   simp only [comp_apply, Subtype.forall, imp_false]
   apply fun i hi => HN i ?_ x hx
   have :  i ∉ hN.toFinset := fun hg ↦ hi (Finset.union_subset_left hn hg)

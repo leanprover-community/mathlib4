@@ -61,7 +61,7 @@ theorem HasProdUniformlyOn.multipliableUniformlyOn (h : HasProdUniformlyOn f g �
 @[to_additive]
 lemma hasProdUniformlyOn_iff_tendstoUniformlyOn : HasProdUniformlyOn f g 𝔖 ↔
     ∀ s ∈ 𝔖, TendstoUniformlyOn (fun I b ↦ ∏ i ∈ I, f i b) g atTop s := by
-  simpa [HasProdUniformlyOn, HasProd, ← UniformOnFun.ofFun_prod, Finset.prod_fn] using
+  simpa [HasProdUniformlyOn, HasProdFilter, ← UniformOnFun.ofFun_prod, Finset.prod_fn] using
     UniformOnFun.tendsto_iff_tendstoUniformlyOn
 
 @[to_additive]
@@ -95,7 +95,7 @@ theorem HasProdUniformlyOn.hasProd (h : HasProdUniformlyOn f g 𝔖) (hs : s ∈
 @[to_additive]
 theorem HasProdUniformlyOn.tprod_eqOn [T2Space α] (h : HasProdUniformlyOn f g 𝔖) (hs : s ∈ 𝔖) :
     s.EqOn (∏' b, f b ·) g :=
-  fun _ hx ↦ (h.hasProd hs hx).tprod_eq
+  fun _ hx ↦ (h.hasProd hs hx).tprodFilter_eq
 
 @[to_additive]
 theorem HasProdUniformlyOn.tprod_eq [T2Space α] (h : HasProdUniformlyOn f g 𝔖)
@@ -217,12 +217,12 @@ theorem MultipliableLocallyUniformlyOn.multipliable
 theorem MultipliableLocallyUniformlyOn.hasProdLocallyUniformlyOn [T2Space α]
     (h : MultipliableLocallyUniformlyOn f s) :
     HasProdLocallyUniformlyOn f (∏' i, f i ·) s :=
-  match h with | ⟨_, hg⟩ => hg.congr_right fun _ hb ↦ (hg.hasProd hb).tprod_eq.symm
+  match h with | ⟨_, hg⟩ => hg.congr_right fun _ hb ↦ (hg.hasProd hb).tprodFilter_eq.symm
 
 @[to_additive]
 theorem HasProdLocallyUniformlyOn.tprod_eqOn [T2Space α]
     (h : HasProdLocallyUniformlyOn f g s) : Set.EqOn (∏' i, f i ·) g s :=
-  fun _ hx ↦ (h.hasProd hx).tprod_eq
+  fun _ hx ↦ (h.hasProd hx).tprodFilter_eq
 
 @[to_additive]
 lemma MultipliableLocallyUniformlyOn_congr [T2Space α]

@@ -400,6 +400,9 @@ theorem tprodFilter_congr {f g : β → α}
     (hfg : ∀ b, f b = g b) : ∏'[L] b, f b = ∏'[L] b, g b :=
   congr_arg (tprodFilter L) (funext hfg)
 
+alias tprod_congr := tprodFilter_congr
+alias tsum_congr := tsumFilter_congr
+
 @[to_additive]
 theorem tprod_congr₂ {f g : γ → β → α} {L' : Filter (Finset γ)}
     (hfg : ∀ b c, f b c = g b c) : ∏'[L] c, ∏'[L'] b, f b c = ∏'[L] c, ∏'[L'] b, g b c :=

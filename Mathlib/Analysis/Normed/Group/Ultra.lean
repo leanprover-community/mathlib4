@@ -313,7 +313,7 @@ lemma norm_tprod_le (f : ι → M) : ‖∏' i, f i‖ ≤ ⨆ i, ‖f i‖ := b
     simp only [tprod_empty, norm_one', Real.iSup_of_isEmpty, le_refl]
   by_cases h : Multipliable f; swap
   · -- Silly case #2 : the product is divergent
-    rw [tprod_eq_one_of_not_multipliable h, norm_one']
+    rw [tprod, tprodFilter_eq_one_of_not_multipliableFilter h, norm_one']
     by_cases h_bd : BddAbove (Set.range fun i ↦ ‖f i‖)
     · exact le_ciSup_of_le h_bd hι.some (norm_nonneg' _)
     · rw [Real.iSup_of_not_bddAbove h_bd]

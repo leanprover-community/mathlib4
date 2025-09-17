@@ -20,15 +20,16 @@ section NormMulClass
 variable {α E : Type*} [SeminormedCommRing E] [NormMulClass E] [NormOneClass E]
  {f : α → E} {x : E}
 
+--the .notation seems to not be working here. Why?
 nonrec theorem HasProd.norm (hfx : HasProd f x) : HasProd (‖f ·‖) ‖x‖ := by
-  simp only [HasProd, ← norm_prod]
+  simp only [HasProdFilter, ← norm_prod]
   exact hfx.norm
 
 theorem Multipliable.norm (hf : Multipliable f) : Multipliable (‖f ·‖) :=
-  let ⟨x, hx⟩ := hf; ⟨‖x‖, hx.norm⟩
+  let ⟨x, hx⟩ := hf;  ⟨‖x‖, HasProd.norm hx⟩
 
 protected theorem Multipliable.norm_tprod (hf : Multipliable f) : ‖∏' i, f i‖ = ∏' i, ‖f i‖ :=
-  hf.hasProd.norm.tprod_eq.symm
+  hf.hasProd.norm.tprodFilter_eq.symm
 
 @[deprecated (since := "2025-04-12")] alias norm_tprod := Multipliable.norm_tprod
 

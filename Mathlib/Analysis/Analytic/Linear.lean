@@ -36,7 +36,7 @@ protected theorem hasFiniteFPowerSeriesOnBall (f : E →L[𝕜] F) (x : E) :
   r_le := by simp
   r_pos := ENNReal.coe_lt_top
   hasSum := fun _ => (hasSum_nat_add_iff' 2).1 <| by
-    simp [Finset.sum_range_succ, hasSum_zero, fpowerSeries]
+    simp [Finset.sum_range_succ, hasSumFilter_zero, fpowerSeries]
   finite := by
     intro m hm
     match m with
@@ -125,7 +125,7 @@ protected theorem hasFPowerSeriesOnBall_bilinear (f : E →L[𝕜] F →L[𝕜] 
     hasSum := fun _ =>
       (hasSum_nat_add_iff' 3).1 <| by
         simp only [Finset.sum_range_succ, Prod.fst_add, Prod.snd_add, f.map_add_add]
-        simp [fpowerSeriesBilinear, hasSum_zero] }
+        simp [fpowerSeriesBilinear, hasSumFilter_zero] }
 
 protected theorem hasFPowerSeriesAt_bilinear (f : E →L[𝕜] F →L[𝕜] G) (x : E × F) :
     HasFPowerSeriesAt (fun x : E × F => f x.1 x.2) (f.fpowerSeriesBilinear x) x :=

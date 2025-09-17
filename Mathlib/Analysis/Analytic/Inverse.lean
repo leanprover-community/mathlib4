@@ -579,7 +579,7 @@ lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
       (f (x + y)) := by
     have cau : CauchySeq fun s : Finset (Σ n, Composition n) =>
         ∑ i ∈ s, q.compAlongComposition p i.2 fun _j => y := by
-      apply cauchySeq_finset_of_norm_bounded (NNReal.summable_coe.2 hr1) _
+      apply cauchySeq_finset_of_norm_bounded (NNReal.summableFilter_coe.2 hr1) _
       simp only [coe_nnnorm, NNReal.coe_mul, NNReal.coe_pow]
       rintro ⟨n, c⟩
       calc

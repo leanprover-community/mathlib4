@@ -123,7 +123,7 @@ theorem tsum_of_enorm_bounded {f : ι → ε} {g : ι → ℝ≥0∞} {a : ℝ�
     (h : ∀ i, ‖f i‖ₑ ≤ g i) : ‖∑' i : ι, f i‖ₑ ≤ a := by
   by_cases hf : Summable f
   · exact hf.hasSum.enorm_le_of_bounded hg h
-  · simp [tsum_eq_zero_of_not_summable hf]
+  · simp [tsumFilter_eq_zero_of_not_summableFilter hf]
 
 theorem enorm_tsum_le_tsum_enorm {f : ι → ε} :
     ‖∑' i, f i‖ₑ ≤ ∑' i, ‖f i‖ₑ :=
@@ -136,7 +136,7 @@ theorem tsum_of_norm_bounded {f : ι → E} {g : ι → ℝ} {a : ℝ} (hg : Has
     (h : ∀ i, ‖f i‖ ≤ g i) : ‖∑' i : ι, f i‖ ≤ a := by
   by_cases hf : Summable f
   · exact hf.hasSum.norm_le_of_bounded hg h
-  · rw [tsum_eq_zero_of_not_summable hf, norm_zero]
+  · rw [tsum, tsumFilter_eq_zero_of_not_summableFilter hf, norm_zero]
     classical exact ge_of_tendsto' hg fun s => sum_nonneg fun i _hi => (norm_nonneg _).trans (h i)
 
 /-- If `∑' i, ‖f i‖` is summable, then `‖∑' i, f i‖ ≤ (∑' i, ‖f i‖)`. Note that we do not assume
@@ -151,7 +151,7 @@ do not assume that `∑' i, f i` is summable, and it might not be the case if `�
 space. -/
 theorem tsum_of_nnnorm_bounded {f : ι → E} {g : ι → ℝ≥0} {a : ℝ≥0} (hg : HasSum g a)
     (h : ∀ i, ‖f i‖₊ ≤ g i) : ‖∑' i : ι, f i‖₊ ≤ a := by
-  simp only [← NNReal.coe_le_coe, ← NNReal.hasSum_coe, coe_nnnorm] at *
+  simp only [← NNReal.coe_le_coe, ← NNReal.hasSumFilter_coe, coe_nnnorm] at *
   exact tsum_of_norm_bounded hg h
 
 /-- If `∑' i, ‖f i‖₊` is summable, then `‖∑' i, f i‖₊ ≤ ∑' i, ‖f i‖₊`. Note that
@@ -176,7 +176,7 @@ theorem Summable.of_norm_bounded_eventually_nat {f : ℕ → E} {g : ℕ → ℝ
 
 theorem Summable.of_nnnorm_bounded {f : ι → E} {g : ι → ℝ≥0} (hg : Summable g)
     (h : ∀ i, ‖f i‖₊ ≤ g i) : Summable f :=
-  .of_norm_bounded (NNReal.summable_coe.2 hg) h
+  .of_norm_bounded (NNReal.summableFilter_coe.2 hg) h
 
 theorem Summable.of_norm {f : ι → E} (hf : Summable fun a => ‖f a‖) : Summable f :=
   .of_norm_bounded hf fun _i => le_rfl

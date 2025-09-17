@@ -216,6 +216,9 @@ theorem HasProdFilter.tprodFilter_eq (ha : HasProdFilter L f a) [L.NeBot] : ∏'
 
 @[deprecated (since := "2025-09-15")] alias HasProd.tprod_eq := HasProdFilter.tprodFilter_eq
 
+alias HasProdFilter.tprod_eq := HasProdFilter.tprodFilter_eq
+alias HasSumFilter.tsum_eq := HasSumFilter.tsumFilter_eq
+
 @[to_additive]
 theorem MultipliableFilter.hasProdFilter_iff (h : MultipliableFilter L f) [L.NeBot] :
     HasProdFilter L f a ↔ ∏'[L] b, f b = a := by

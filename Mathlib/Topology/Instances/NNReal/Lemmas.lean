@@ -133,6 +133,7 @@ theorem hasSum_real_toNNReal_of_nonneg [L.NeBot] {f : α → ℝ} (hf_nonneg : �
     HasSumFilter L (fun n => Real.toNNReal (f n)) (Real.toNNReal (∑'[L] n, f n)) :=
   hf.hasSumFilter.toNNReal hf_nonneg
 
+--make alias
 @[norm_cast]
 theorem summableFilter_coe [L.NeBot] {f : α → ℝ≥0} :
     (SummableFilter L fun a => (f a : ℝ)) ↔ SummableFilter L f := by

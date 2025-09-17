@@ -18,7 +18,7 @@ variable {α β : Type*} [AddCommGroup α] [UniformSpace α] [IsUniformAddGroup 
 
 /-- A function `f` has a sum in an uniform additive group `α` if and only if it has that sum in the
 completion of `α`. -/
-theorem hasSumFilter_iff_hasSum_compl (f : β → α) (a : α) :
+theorem hasSumFilter_iff_hasSumFilter_compl (f : β → α) (a : α) :
     HasSumFilter L (toCompl ∘ f) a ↔ HasSumFilter L f a :=
   (isDenseInducing_toCompl α).hasSumFilter_iff f a
 
