@@ -9,9 +9,10 @@ import Mathlib.RingTheory.Extension.Presentation.Basic
 # Presentations on subrings
 
 In this file we establish the API for realising a presentation over a
-subring of `R`. If `P` is a presentation of `S` as an `R`-algebra, any
+subring of `R`. We define a property `HasCoeffs R₀` for a presentation `P` to mean
+the (sub)ring `R₀` contains the coefficients of the relations of `P`.
 subring `R₀` of `R` that contains the coefficients of the relations
-of `P` is called a core of the presentation. In this case there exists an `R₀`-algebra `S₀`
+In this case there exists a model of `S` over `R₀`, i.e., there exists an `R₀`-algebra `S₀`
 such that `S` is isomorphic to `R ⊗[R₀] S₀`.
 
 If the presentation is finite, `R₀` may be chosen as a Noetherian ring. In this case,
@@ -63,82 +64,75 @@ instance [Finite σ] : FiniteType ℤ P.Core := .adjoin_of_finite P.finite_coeff
 
 variable (P) in
 /--
-A ring `R₀` is a core for the presentation `P` if the coefficients of the relations of `P`
+A ring `R₀` has the coefficients of the presentation `P` if the coefficients of the relations of `P`
 lie in the image of `R₀` in `R`.
 The smallest subring of `R` satisfying this is given by `Algebra.Presentation.Core P`.
 -/
-class IsCore (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] where
+class HasCoeffs (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S]
+    [IsScalarTower R₀ R S] where
   coeffs_subset_range : P.coeffs ⊆ Set.range (algebraMap R₀ R)
 
-instance : P.IsCore P.Core where
+instance : P.HasCoeffs P.Core where
   coeffs_subset_range := by
     refine subset_trans P.coeffs_subset_core ?_
     simp [Core, Subalgebra.algebraMap_eq]
 
 variable (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S]
-
-lemma aeval_map_core (x : MvPolynomial ι R₀) :
-    MvPolynomial.aeval P.val (MvPolynomial.map (algebraMap R₀ R) x) =
-      MvPolynomial.aeval P.val x := by
-  induction x using MvPolynomial.induction_on
-  · simp [IsScalarTower.algebraMap_apply R₀ R S]
-  · simp_all
-  · simp_all
-
-variable [P.IsCore R₀]
+  [P.HasCoeffs R₀]
 
 lemma coeffs_subset_range : (P.coeffs : Set R) ⊆ Set.range (algebraMap R₀ R) :=
-  IsCore.coeffs_subset_range
+  HasCoeffs.coeffs_subset_range
 
-lemma IsCore.of_isScalarTower {R₁ : Type*} [CommRing R₁] [Algebra R₀ R₁] [Algebra R₁ R]
+lemma HasCoeffs.of_isScalarTower {R₁ : Type*} [CommRing R₁] [Algebra R₀ R₁] [Algebra R₁ R]
     [IsScalarTower R₀ R₁ R] [Algebra R₁ S] [IsScalarTower R₁ R S] :
-    P.IsCore R₁ := by
+    P.HasCoeffs R₁ := by
   refine ⟨subset_trans (P.coeffs_subset_range R₀) ?_⟩
   simp [IsScalarTower.algebraMap_eq R₀ R₁ R, RingHom.coe_comp, Set.range_comp]
 
-instance (s : Set R) : P.IsCore (Algebra.adjoin R₀ s) := IsCore.of_isScalarTower R₀
+instance (s : Set R) : P.HasCoeffs (Algebra.adjoin R₀ s) := HasCoeffs.of_isScalarTower R₀
 
-lemma IsCore.coeffs_relation_mem_range (x : σ) :
+lemma HasCoeffs.coeffs_relation_mem_range (x : σ) :
     ↑(P.relation x).coeffs ⊆ Set.range (algebraMap R₀ R) :=
-  subset_trans (P.coeffs_relation_subset_coeffs x) IsCore.coeffs_subset_range
+  subset_trans (P.coeffs_relation_subset_coeffs x) HasCoeffs.coeffs_subset_range
 
-lemma IsCore.relation_mem_range_map (x : σ) :
+lemma HasCoeffs.relation_mem_range_map (x : σ) :
     P.relation x ∈ Set.range (MvPolynomial.map (algebraMap R₀ R)) := by
   rw [MvPolynomial.mem_range_map_iff_coeffs_subset]
-  exact IsCore.coeffs_relation_mem_range R₀ x
+  exact HasCoeffs.coeffs_relation_mem_range R₀ x
 
 /-- The `r`-th relation of `P` as a polynomial in `R₀`. This is the (arbitrary) choice of a
 pre-image under the map `R₀[X] → R[X]`. -/
-noncomputable def coreRelation (r : σ) : MvPolynomial ι R₀ :=
-  (IsCore.relation_mem_range_map (P := P) R₀ r).choose
+noncomputable def relationOfHasCoeffs (r : σ) : MvPolynomial ι R₀ :=
+  (HasCoeffs.relation_mem_range_map (P := P) R₀ r).choose
 
-lemma map_coreRelation (r : σ) :
-    MvPolynomial.map (algebraMap R₀ R) (P.coreRelation R₀ r) = P.relation r :=
-  (IsCore.relation_mem_range_map R₀ r).choose_spec
+lemma map_relationOfHasCoeffs (r : σ) :
+    MvPolynomial.map (algebraMap R₀ R) (P.relationOfHasCoeffs R₀ r) = P.relation r :=
+  (HasCoeffs.relation_mem_range_map R₀ r).choose_spec
 
 @[simp]
-lemma aeval_val_coreRelation (r : σ) :
-    (MvPolynomial.aeval P.val) (P.coreRelation R₀ r) = 0 := by
-  rw [← aeval_map_core, map_coreRelation, aeval_val_relation]
+lemma aeval_val_relationOfHasCoeffs (r : σ) :
+    (MvPolynomial.aeval P.val) (P.relationOfHasCoeffs R₀ r) = 0 := by
+  rw [← MvPolynomial.aeval_map_algebraMap R, map_relationOfHasCoeffs, aeval_val_relation]
 
 @[simp]
 lemma algebraTensorAlgEquiv_symm_relation (r : σ) :
     (MvPolynomial.algebraTensorAlgEquiv R₀ R).symm (P.relation r) =
-      1 ⊗ₜ P.coreRelation R₀ r := by
-  rw [← map_coreRelation R₀, MvPolynomial.algebraTensorAlgEquiv_symm_map]
+      1 ⊗ₜ P.relationOfHasCoeffs R₀ r := by
+  rw [← map_relationOfHasCoeffs R₀, MvPolynomial.algebraTensorAlgEquiv_symm_map]
 
-/-- The model of `S` over a core `R₀` is `R₀[X]` quotiented by the same relations. -/
-abbrev CoreModel : Type _ :=
-  MvPolynomial ι R₀ ⧸ (Ideal.span <| Set.range (P.coreRelation R₀))
+/-- The model of `S` over a `R₀` that contains the coefficients of `P` is `R₀[X]` quotiented by the
+same relations. -/
+abbrev modelOfHasCoeffs : Type _ :=
+  MvPolynomial ι R₀ ⧸ (Ideal.span <| Set.range (P.relationOfHasCoeffs R₀))
 
-instance [Finite ι] [Finite σ] : Algebra.FinitePresentation R₀ (P.CoreModel R₀) := by
+instance [Finite ι] [Finite σ] : Algebra.FinitePresentation R₀ (P.modelOfHasCoeffs R₀) := by
   classical
   cases nonempty_fintype σ
-  exact .quotient ⟨Finset.image (P.coreRelation R₀) .univ, by simp⟩
+  exact .quotient ⟨Finset.image (P.relationOfHasCoeffs R₀) .univ, by simp⟩
 
 variable (P) in
-/-- (Implementation detail): The underlying `AlgHom` of `tensorCoreModelEquiv`. -/
-noncomputable def tensorCoreModelHom : R ⊗[R₀] P.CoreModel R₀ →ₐ[R] S :=
+/-- (Implementation detail): The underlying `AlgHom` of `tensorModelOfHasCoeffsEquiv`. -/
+noncomputable def tensorModelOfHasCoeffsHom : R ⊗[R₀] P.modelOfHasCoeffs R₀ →ₐ[R] S :=
   Algebra.TensorProduct.lift (Algebra.ofId R S)
     (Ideal.Quotient.liftₐ _ (MvPolynomial.aeval P.val) <| by
       simp_rw [← RingHom.mem_ker, ← SetLike.le_def, Ideal.span_le]
@@ -147,13 +141,13 @@ noncomputable def tensorCoreModelHom : R ⊗[R₀] P.CoreModel R₀ →ₐ[R] S 
     fun _ _ ↦ Commute.all _ _
 
 @[simp]
-lemma tensorCoreModelHom_tmul (x : R) (y : MvPolynomial ι R₀) :
-    P.tensorCoreModelHom R₀ (x ⊗ₜ y) = algebraMap R S x * MvPolynomial.aeval P.val y :=
+lemma tensorModelOfHasCoeffsHom_tmul (x : R) (y : MvPolynomial ι R₀) :
+    P.tensorModelOfHasCoeffsHom R₀ (x ⊗ₜ y) = algebraMap R S x * MvPolynomial.aeval P.val y :=
   rfl
 
 variable (P) in
-/-- (Implementation detail): The inverse of `tensorCoreModelHom`. -/
-noncomputable def tensorCoreModelInv : S →ₐ[R] R ⊗[R₀] P.CoreModel R₀ :=
+/-- (Implementation detail): The inverse of `tensorModelOfHasCoeffsHom`. -/
+noncomputable def tensorModelOfHasCoeffsInv : S →ₐ[R] R ⊗[R₀] P.modelOfHasCoeffs R₀ :=
   (Ideal.Quotient.liftₐ _
     ((Algebra.TensorProduct.map (.id R R) (Ideal.Quotient.mkₐ _ _)).comp
       (MvPolynomial.algebraTensorAlgEquiv R₀ R).symm.toAlgHom) <| by
@@ -167,42 +161,44 @@ noncomputable def tensorCoreModelInv : S →ₐ[R] R ⊗[R₀] P.CoreModel R₀ 
     (P.quotientEquiv.restrictScalars R).symm.toAlgHom
 
 @[simp]
-lemma tensorCoreModelInv_aeval_val (x : MvPolynomial ι R₀) :
-    P.tensorCoreModelInv R₀ (MvPolynomial.aeval P.val x) = 1 ⊗ₜ[R₀] (Ideal.Quotient.mk _ x) := by
-  rw [← aeval_map_core, ← Generators.algebraMap_apply, ← quotientEquiv_mk]
-  simp [tensorCoreModelInv, -quotientEquiv_symm, -quotientEquiv_mk]
+lemma tensorModelOfHasCoeffsInv_aeval_val (x : MvPolynomial ι R₀) :
+    P.tensorModelOfHasCoeffsInv R₀ (MvPolynomial.aeval P.val x) =
+      1 ⊗ₜ[R₀] (Ideal.Quotient.mk _ x) := by
+  rw [← MvPolynomial.aeval_map_algebraMap R, ← Generators.algebraMap_apply, ← quotientEquiv_mk]
+  simp [tensorModelOfHasCoeffsInv, -quotientEquiv_symm, -quotientEquiv_mk]
 
 private lemma hom_comp_inv :
-    (P.tensorCoreModelHom R₀).comp (P.tensorCoreModelInv R₀) = AlgHom.id R S := by
+    (P.tensorModelOfHasCoeffsHom R₀).comp (P.tensorModelOfHasCoeffsInv R₀) = AlgHom.id R S := by
   have h : Function.Surjective
       ((P.quotientEquiv.restrictScalars R).toAlgHom.comp (Ideal.Quotient.mkₐ _ _)) :=
     (P.quotientEquiv.restrictScalars R).surjective.comp Ideal.Quotient.mk_surjective
-  simp only [← AlgHom.cancel_right h, tensorCoreModelInv, AlgEquiv.toAlgHom_eq_coe, AlgHom.id_comp]
+  simp only [← AlgHom.cancel_right h, tensorModelOfHasCoeffsInv, AlgEquiv.toAlgHom_eq_coe,
+    AlgHom.id_comp]
   rw [AlgHom.comp_assoc, AlgHom.comp_assoc, ← AlgHom.comp_assoc _ _ (Ideal.Quotient.mkₐ R P.ker),
     AlgEquiv.symm_comp, AlgHom.id_comp]
   ext x
   simp
 
 private lemma inv_comp_hom :
-    (P.tensorCoreModelInv R₀).comp (P.tensorCoreModelHom R₀) = AlgHom.id R _ := by
+    (P.tensorModelOfHasCoeffsInv R₀).comp (P.tensorModelOfHasCoeffsHom R₀) = AlgHom.id R _ := by
   ext x
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
   simp
 
 /-- The natural isomorphism `R ⊗[R₀] S₀ ≃ₐ[R] S`. -/
-noncomputable def tensorCoreModelEquiv : R ⊗[R₀] P.CoreModel R₀ ≃ₐ[R] S :=
-  AlgEquiv.ofAlgHom (P.tensorCoreModelHom R₀) (P.tensorCoreModelInv R₀)
+noncomputable def tensorModelOfHasCoeffsEquiv : R ⊗[R₀] P.modelOfHasCoeffs R₀ ≃ₐ[R] S :=
+  AlgEquiv.ofAlgHom (P.tensorModelOfHasCoeffsHom R₀) (P.tensorModelOfHasCoeffsInv R₀)
     (P.hom_comp_inv R₀) (P.inv_comp_hom R₀)
 
 @[simp]
-lemma tensorCoreModelEquiv_tmul (x : R) (y : MvPolynomial ι R₀) :
-    P.tensorCoreModelEquiv R₀ (x ⊗ₜ y) = algebraMap R S x * MvPolynomial.aeval P.val y :=
+lemma tensorModelOfHasCoeffsEquiv_tmul (x : R) (y : MvPolynomial ι R₀) :
+    P.tensorModelOfHasCoeffsEquiv R₀ (x ⊗ₜ y) = algebraMap R S x * MvPolynomial.aeval P.val y :=
   rfl
 
 @[simp]
-lemma tensorCoreModelEquiv_symm_tmul (x : MvPolynomial ι R₀) :
-    (P.tensorCoreModelEquiv R₀).symm (MvPolynomial.aeval P.val x) =
+lemma tensorModelOfHasCoeffsEquiv_symm_tmul (x : MvPolynomial ι R₀) :
+    (P.tensorModelOfHasCoeffsEquiv R₀).symm (MvPolynomial.aeval P.val x) =
       1 ⊗ₜ[R₀] (Ideal.Quotient.mk _ x) :=
-  tensorCoreModelInv_aeval_val _ x
+  tensorModelOfHasCoeffsInv_aeval_val _ x
 
 end Algebra.Presentation

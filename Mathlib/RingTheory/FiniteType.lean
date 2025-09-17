@@ -211,10 +211,8 @@ theorem _root_.Subalgebra.fg_iff_finiteType (S : Subalgebra R A) : S.FG ↔ Alge
 
 lemma adjoin_of_finite {A : Type*} [CommSemiring A] [Algebra R A] {t : Set A} (h : Set.Finite t) :
     FiniteType R (Algebra.adjoin R t) := by
-  rw [Algebra.adjoin_eq_range]
-  have : Finite t := Set.Finite.to_subtype h
-  exact .of_surjective (.rangeRestrict (MvPolynomial.aeval Subtype.val))
-    (AlgHom.rangeRestrict_surjective _)
+  rw [← Subalgebra.fg_iff_finiteType]
+  exact ⟨h.toFinset, by simp⟩
 
 end FiniteType
 
