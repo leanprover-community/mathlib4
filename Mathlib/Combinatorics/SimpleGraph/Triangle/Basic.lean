@@ -208,7 +208,7 @@ private lemma farFromTriangleFree_of_disjoint_triangles_aux {tris : Finset (Fins
     (htris : tris ⊆ G.cliqueFinset 3)
     (pd : (tris : Set (Finset α)).Pairwise fun x y ↦ (x ∩ y : Set α).Subsingleton) (hHG : H ≤ G)
     (hH : H.CliqueFree 3) : #tris ≤ #G.edgeFinset - #H.edgeFinset := by
-  rw [← card_sdiff (edgeFinset_mono hHG), ← card_attach]
+  rw [← card_sdiff_of_subset (edgeFinset_mono hHG), ← card_attach]
   by_contra! hG
   have ⦃t⦄ (ht : t ∈ tris) :
     ∃ x y, x ∈ t ∧ y ∈ t ∧ x ≠ y ∧ s(x, y) ∈ G.edgeFinset \ H.edgeFinset := by
@@ -238,7 +238,7 @@ lemma farFromTriangleFree_of_disjoint_triangles (tris : Finset (Finset α))
     (tris_big : ε * (card α ^ 2 : ℕ) ≤ #tris) :
     G.FarFromTriangleFree ε := by
   rw [farFromTriangleFree_iff]
-  intros H _ hG hH
+  intro H _ hG hH
   rw [← Nat.cast_sub (card_le_card <| edgeFinset_mono hG)]
   exact tris_big.trans
     (Nat.cast_le.2 <| farFromTriangleFree_of_disjoint_triangles_aux htris pd hG hH)
@@ -268,7 +268,7 @@ lemma FarFromTriangleFree.lt_half (hG : G.FarFromTriangleFree ε) : ε < 2⁻¹ 
   calc
     _ ≤ 2 * (completeGraph α).edgeFinset.card := by gcongr; exact le_top
     _ < card α ^ 2 := ?_
-  rw [edgeFinset_top, filter_not, card_sdiff (subset_univ _), Finset.card_univ, Sym2.card]
+  rw [edgeFinset_top, filter_not, card_sdiff_of_subset (subset_univ _), Finset.card_univ, Sym2.card]
   simp_rw [choose_two_right, Nat.add_sub_cancel, Nat.mul_comm _ (card α),
     funext (propext <| Sym2.isDiag_iff_mem_range_diag ·), univ_filter_mem_range, mul_tsub,
     Nat.mul_div_cancel' (card α).even_mul_succ_self.two_dvd]

@@ -62,10 +62,7 @@ local notation3 "up" => 2 + f.totalDegree
 
 variable {f v} in
 private lemma lt_up (vlt : ∀ i, v i < up) : ∀ l ∈ ofFn v, l < up := by
-  intro l h
-  rw [mem_ofFn] at h
-  obtain ⟨y, rfl⟩ := h
-  exact vlt y
+  grind
 
 /-- `r` maps `(i : Fin (n + 1))` to `up ^ i`. -/
 local notation3 "r" => fun (i : Fin (n + 1)) ↦ up ^ i.1

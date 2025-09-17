@@ -10,7 +10,7 @@ import Mathlib.Topology.UniformSpace.Cauchy
 # Sequences in topological spaces
 
 In this file we prove theorems about relations
-between closure/compactness/continuity etc and their sequential counterparts.
+between closure/compactness/continuity etc. and their sequential counterparts.
 
 ## Main definitions
 
