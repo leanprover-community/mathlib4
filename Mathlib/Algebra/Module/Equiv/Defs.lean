@@ -352,11 +352,9 @@ theorem apply_symm_apply (c : M₂) : e (e.symm c) = c :=
 theorem symm_apply_apply (b : M) : e.symm (e b) = b :=
   e.left_inv b
 
-@[simp]
 theorem comp_symm : e.toLinearMap ∘ₛₗ e.symm.toLinearMap = LinearMap.id :=
   LinearMap.ext e.apply_symm_apply
 
-@[simp]
 theorem symm_comp : e.symm.toLinearMap ∘ₛₗ e.toLinearMap = LinearMap.id :=
   LinearMap.ext e.symm_apply_apply
 
@@ -393,6 +391,11 @@ theorem eq_symm_comp {α : Type*} (f : α → M₁) (g : α → M₂) : f = e₁
 
 theorem symm_comp_eq {α : Type*} (f : α → M₁) (g : α → M₂) : e₁₂.symm ∘ g = f ↔ g = e₁₂ ∘ f :=
   e₁₂.toEquiv.symm_comp_eq f g
+
+@[simp]
+theorem comp_coe (f : M₁ ≃ₛₗ[σ₁₂] M₂) (f' : M₂ ≃ₛₗ[σ₂₃] M₃) :
+    (f' : M₂ →ₛₗ[σ₂₃] M₃).comp (f : M₁ →ₛₗ[σ₁₂] M₂) = (f.trans f' : M₁ ≃ₛₗ[σ₁₃] M₃) :=
+  rfl
 
 lemma trans_assoc (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ₂₃] M₃) (e₃₄ : M₃ ≃ₛₗ[σ₃₄] M₄) :
     (e₁₂.trans e₂₃).trans e₃₄ = e₁₂.trans (e₂₃.trans e₃₄) := rfl
@@ -478,11 +481,6 @@ theorem refl_toLinearMap [Module R M] : (LinearEquiv.refl R M : M →ₗ[R] M) =
   rfl
 
 @[simp]
-theorem comp_coe [Module R M] [Module R M₂] [Module R M₃] (f : M ≃ₗ[R] M₂) (f' : M₂ ≃ₗ[R] M₃) :
-    (f' : M₂ →ₗ[R] M₃).comp (f : M →ₗ[R] M₂) = (f.trans f' : M ≃ₗ[R] M₃) :=
-  rfl
-
-@[simp]
 theorem mk_coe (f h₁ h₂) : (LinearEquiv.mk e f h₁ h₂ : M ≃ₛₗ[σ] M₂) = e :=
   ext fun _ ↦ rfl
 
@@ -527,10 +525,16 @@ theorem symm_mk (f h₁ h₂ h₃ h₄) :
         invFun := e } :=
   rfl
 
-@[simp]
+/-- For a more powerful version, see `coe_symm_mk'`. -/
 theorem coe_symm_mk [Module R M] [Module R M₂]
     {to_fun inv_fun map_add map_smul left_inv right_inv} :
     ⇑(⟨⟨⟨to_fun, map_add⟩, map_smul⟩, inv_fun, left_inv, right_inv⟩ : M ≃ₗ[R] M₂).symm = inv_fun :=
+  rfl
+
+@[simp]
+theorem coe_symm_mk' [Module R M] [Module R M₂]
+    {f inv_fun left_inv right_inv} :
+    ⇑(⟨f, inv_fun, left_inv, right_inv⟩ : M ≃ₗ[R] M₂).symm = inv_fun :=
   rfl
 
 protected theorem bijective : Function.Bijective e :=
@@ -549,6 +553,17 @@ protected theorem image_symm_eq_preimage (s : Set M₂) : e.symm '' s = e ⁻¹'
   e.toEquiv.symm.image_eq_preimage s
 
 end
+
+/-- `Equiv.cast (congrArg _ h)` as a linear equiv.
+
+Note that unlike `Equiv.cast`, this takes an equality of indices rather than an equality of types,
+to avoid having to deal with an equality of the algebraic structure itself. -/
+@[simps!]
+protected def cast {ι : Type*} {M : ι → Type*}
+    [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] {i j : ι} (h : i = j) :
+    M i ≃ₗ[R] M j where
+  toAddEquiv := AddEquiv.cast h
+  map_smul' _ _ := by cases h; rfl
 
 /-- Interpret a `RingEquiv` `f` as an `f`-semilinear equiv. -/
 @[simps]

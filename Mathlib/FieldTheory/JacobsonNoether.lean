@@ -28,7 +28,7 @@ the noncommutative division algebra `D` with center `k`.
   being a field `L`), if the center of `D` over `L` is `L`,
   then there exist an element `x` of `D \ L` that is separable over `L`.
 
-## Notations
+## Notation
 
 - `D` is a noncommutative division algebra
 - `k` is the center of `D`
@@ -163,7 +163,7 @@ theorem exists_separable_and_not_isCentral (H : k ≠ (⊤ : Subring D)) :
   rw [mul_sub, ← mul_assoc, inv_mul_cancel₀ ha₀, one_mul, ← mul_assoc, sub_eq_iff_eq_add] at deq
   obtain ⟨r, hr⟩ := exists_pow_mem_center_of_inseparable p d insep
   apply_fun (· ^ (p ^ r)) at deq
-  rw [add_pow_expChar_pow_of_commute p r (Commute.one_left _) , one_pow,
+  rw [add_pow_expChar_pow_of_commute p r (Commute.one_left _), one_pow,
     GroupWithZero.conj_pow₀ ha₀, ← hr.comm, mul_assoc, inv_mul_cancel₀ ha₀, mul_one,
     right_eq_add] at deq
   exact one_ne_zero deq

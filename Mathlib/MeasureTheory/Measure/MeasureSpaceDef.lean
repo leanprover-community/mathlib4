@@ -123,7 +123,7 @@ def ofMeasurable (m : ∀ s : Set α, MeasurableSet s → ℝ≥0∞) (m0 : m �
   { toOuterMeasure := inducedOuterMeasure m _ m0
     m_iUnion := fun f hf hd =>
       show inducedOuterMeasure m _ m0 (iUnion f) = ∑' i, inducedOuterMeasure m _ m0 (f i) by
-        rw [inducedOuterMeasure_eq m0 mU, mU hf hd]
+        rw [inducedOuterMeasure_eq m0 mU (MeasurableSet.iUnion hf), mU hf hd]
         congr; funext n; rw [inducedOuterMeasure_eq m0 mU]
     trim_le := le_inducedOuterMeasure.2 fun s hs ↦ by
       rw [OuterMeasure.trim_eq _ hs, inducedOuterMeasure_eq m0 mU hs] }
@@ -146,6 +146,8 @@ theorem ext_iff' : μ₁ = μ₂ ↔ ∀ s, μ₁ s = μ₂ s :=
 
 theorem outerMeasure_le_iff {m : OuterMeasure α} : m ≤ μ.1 ↔ ∀ s, MeasurableSet s → m s ≤ μ s := by
   simpa only [μ.trimmed] using OuterMeasure.le_trim_iff (m₂ := μ.1)
+
+lemma mono_null ⦃s t : Set α⦄ (h : s ⊆ t) (ht : μ t = 0) : μ s = 0 := measure_mono_null h ht
 
 end Measure
 
