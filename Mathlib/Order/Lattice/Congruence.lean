@@ -22,7 +22,7 @@ import Mathlib.Order.Hom.Lattice
 
 ## References
 
-* [Grätzer et al, *General lattice theory*][Grätzer2003]
+* [Grätzer et al, *General lattice theory*][Gratzer2003]
 
 ## Tags
 
