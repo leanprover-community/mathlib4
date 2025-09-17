@@ -321,17 +321,6 @@ theorem chromaticNumber_le_one_of_subsingleton (G : SimpleGraph V) [Subsingleton
   cases Subsingleton.elim v w
   simp
 
-theorem chromaticNumber_eq_zero_of_isempty (G : SimpleGraph V) [IsEmpty V] :
-    G.chromaticNumber = 0 := by
-  rw [← nonpos_iff_eq_zero, ← Nat.cast_zero, chromaticNumber_le_iff_colorable]
-  apply colorable_of_isEmpty
-
-theorem isEmpty_of_chromaticNumber_eq_zero (G : SimpleGraph V) [Finite V]
-    (h : G.chromaticNumber = 0) : IsEmpty V := by
-  have h' := G.colorable_chromaticNumber_of_fintype
-  rw [h] at h'
-  exact G.isEmpty_of_colorable_zero h'
-
 theorem chromaticNumber_pos [Nonempty V] {n : ℕ} (hc : G.Colorable n) : 0 < G.chromaticNumber := by
   rw [hc.chromaticNumber_eq_sInf, Nat.cast_pos]
   apply le_csInf (colorable_set_nonempty_of_colorable hc)
@@ -347,6 +336,18 @@ theorem colorable_of_chromaticNumber_ne_top (h : G.chromaticNumber ≠ ⊤) :
   rw [chromaticNumber_ne_top_iff_exists] at h
   obtain ⟨n, hn⟩ := h
   exact colorable_chromaticNumber hn
+
+theorem chromaticNumber_eq_zero_of_isEmpty [IsEmpty V] : G.chromaticNumber = 0 := by
+  rw [← nonpos_iff_eq_zero, ← Nat.cast_zero, chromaticNumber_le_iff_colorable]
+  apply colorable_of_isEmpty
+
+@[deprecated (since := "2025-09-15")]
+alias chromaticNumber_eq_zero_of_isempty := chromaticNumber_eq_zero_of_isEmpty
+
+theorem isEmpty_of_chromaticNumber_eq_zero (h : G.chromaticNumber = 0) : IsEmpty V := by
+  have := colorable_of_chromaticNumber_ne_top (h ▸ ENat.zero_ne_top)
+  rw [h] at this
+  exact G.isEmpty_of_colorable_zero this
 
 theorem Colorable.mono_left {G' : SimpleGraph V} (h : G ≤ G') {n : ℕ} (hc : G'.Colorable n) :
     G.Colorable n :=

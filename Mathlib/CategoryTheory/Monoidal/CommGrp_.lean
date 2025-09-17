@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Monoidal.CommMon_
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
-open CategoryTheory Category Limits MonoidalCategory CartesianMonoidalCategory Mon_ Grp_ CommMon_
+open CategoryTheory Category Limits MonoidalCategory CartesianMonoidalCategory Mon Grp_ CommMon
 open MonObj
 
 variable (C : Type u₁) [Category.{v₁} C] [CartesianMonoidalCategory.{v₁} C] [BraidedCategory C]
@@ -36,10 +36,14 @@ def toGrp_ (A : CommGrp_ C) : Grp_ C := ⟨A.X⟩
 
 /-- A commutative group object is a commutative monoid object. -/
 @[simps X]
-def toCommMon_ (A : CommGrp_ C) : CommMon_ C := ⟨A.X⟩
+def toCommMon (A : CommGrp_ C) : CommMon C := ⟨A.X⟩
+
+@[deprecated (since := "2025-09-15")] alias toCommMon_ := toCommMon
 
 /-- A commutative group object is a monoid object. -/
-abbrev toMon_ (A : CommGrp_ C) : Mon_ C := (toCommMon_ A).toMon_
+abbrev toMon (A : CommGrp_ C) : Mon C := (toCommMon A).toMon
+
+@[deprecated (since := "2025-09-15")] alias toMon_ := toMon
 
 variable (C) in
 /-- The trivial commutative group object. -/
@@ -54,24 +58,24 @@ instance : Category (CommGrp_ C) :=
 
 omit [BraidedCategory C] in
 @[simp]
-theorem id_hom (A : Grp_ C) : Mon_.Hom.hom (𝟙 A) = 𝟙 A.X :=
+theorem id_hom (A : Grp_ C) : Mon.Hom.hom (𝟙 A) = 𝟙 A.X :=
   rfl
 
 @[simp]
 theorem comp_hom {R S T : CommGrp_ C} (f : R ⟶ S) (g : S ⟶ T) :
-    Mon_.Hom.hom (f ≫ g) = f.hom ≫ g.hom :=
+    Mon.Hom.hom (f ≫ g) = f.hom ≫ g.hom :=
   rfl
 
 @[ext]
 theorem hom_ext {A B : CommGrp_ C} (f g : A ⟶ B) (h : f.hom = g.hom) : f = g :=
-  Mon_.Hom.ext h
+  Mon.Hom.ext h
 
 @[simp]
-lemma id' (A : CommGrp_ C) : (𝟙 A : A.toMon_ ⟶ A.toMon_) = 𝟙 (A.toMon_) := rfl
+lemma id' (A : CommGrp_ C) : (𝟙 A : A.toMon ⟶ A.toMon) = 𝟙 (A.toMon) := rfl
 
 @[simp]
 lemma comp' {A₁ A₂ A₃ : CommGrp_ C} (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
-    ((f ≫ g : A₁ ⟶ A₃) : A₁.toMon_ ⟶ A₃.toMon_) = @CategoryStruct.comp (Mon_ C) _ _ _ _ f g := rfl
+    ((f ≫ g : A₁ ⟶ A₃) : A₁.toMon ⟶ A₃.toMon) = @CategoryStruct.comp (Mon C) _ _ _ _ f g := rfl
 
 section
 
@@ -103,28 +107,33 @@ theorem forget₂Grp_map_hom {A B : CommGrp_ C} (f : A ⟶ B) : ((forget₂Grp_ 
 
 /-- The forgetful functor from commutative group objects to commutative monoid objects. -/
 @[simps! obj_X]
-def forget₂CommMon_ : CommGrp_ C ⥤ CommMon_ C :=
-  inducedFunctor CommGrp_.toCommMon_
+def forget₂CommMon : CommGrp_ C ⥤ CommMon C :=
+  inducedFunctor CommGrp_.toCommMon
+
+@[deprecated (since := "2025-09-15")] alias forget₂CommMon_ := forget₂CommMon
 
 /-- The forgetful functor from commutative group objects to commutative monoid objects is fully
 faithful. -/
-def fullyFaithfulForget₂CommMon_ : (forget₂CommMon_ C).FullyFaithful :=
+def fullyFaithfulForget₂CommMon : (forget₂CommMon C).FullyFaithful :=
   fullyFaithfulInducedFunctor _
 
-instance : (forget₂CommMon_ C).Full := InducedCategory.full _
-instance : (forget₂CommMon_ C).Faithful := InducedCategory.faithful _
+@[deprecated (since := "2025-09-15")]
+alias fullyFaithfulForget₂CommMon_ := fullyFaithfulForget₂CommMon
+
+instance : (forget₂CommMon C).Full := InducedCategory.full _
+instance : (forget₂CommMon C).Faithful := InducedCategory.faithful _
 
 @[simp]
-theorem forget₂CommMon_obj_one (A : CommGrp_ C) : η[((forget₂CommMon_ C).obj A).X] = η[A.X] :=
+theorem forget₂CommMon_obj_one (A : CommGrp_ C) : η[((forget₂CommMon C).obj A).X] = η[A.X] :=
   rfl
 
 @[simp]
-theorem forget₂CommMon_obj_mul (A : CommGrp_ C) : μ[((forget₂CommMon_ C).obj A).X] = μ[A.X] :=
+theorem forget₂CommMon_obj_mul (A : CommGrp_ C) : μ[((forget₂CommMon C).obj A).X] = μ[A.X] :=
   rfl
 
 @[simp]
 theorem forget₂CommMon_map_hom {A B : CommGrp_ C} (f : A ⟶ B) :
-    ((forget₂CommMon_ C).map f).hom = f.hom :=
+    ((forget₂CommMon C).map f).hom = f.hom :=
   rfl
 
 /-- The forgetful functor from commutative group objects to the ambient category. -/
@@ -138,7 +147,7 @@ instance : (forget C).Faithful where
 theorem forget₂Grp_comp_forget : forget₂Grp_ C ⋙ Grp_.forget C = forget C := rfl
 
 @[simp]
-theorem forget₂CommMon_comp_forget : forget₂CommMon_ C ⋙ CommMon_.forget C = forget C := rfl
+theorem forget₂CommMon_comp_forget : forget₂CommMon C ⋙ CommMon.forget C = forget C := rfl
 
 instance {G H : CommGrp_ C} {f : G ⟶ H} [IsIso f] : IsIso f.hom :=
   inferInstanceAs <| IsIso <| (forget C).map f
@@ -149,18 +158,18 @@ end
 underlying objects. -/
 @[simps!]
 def mkIso' {G H : C} (e : G ≅ H) [GrpObj G] [IsCommMonObj G] [GrpObj H] [IsCommMonObj H]
-    [IsMon_Hom e.hom] : mk G ≅ mk H :=
+    [IsMonHom e.hom] : mk G ≅ mk H :=
   (fullyFaithfulForget₂Grp_ C).preimageIso (Grp_.mkIso' e)
 
 /-- Construct an isomorphism of group objects by giving an isomorphism between the underlying
 objects and checking compatibility with unit and multiplication only in the forward direction. -/
 abbrev mkIso {G H : CommGrp_ C} (e : G.X ≅ H.X) (one_f : η[G.X] ≫ e.hom = η[H.X] := by cat_disch)
     (mul_f : μ[G.X] ≫ e.hom = (e.hom ⊗ₘ e.hom) ≫ μ[H.X] := by cat_disch) : G ≅ H :=
-  have : IsMon_Hom e.hom := ⟨one_f, mul_f⟩
+  have : IsMonHom e.hom := ⟨one_f, mul_f⟩
   mkIso' e
 
 instance uniqueHomFromTrivial (A : CommGrp_ C) : Unique (trivial C ⟶ A) :=
-  Mon_.uniqueHomFromTrivial A.toMon_
+  Mon.uniqueHomFromTrivial A.toMon
 
 instance : HasInitial (CommGrp_ C) :=
   hasInitial_of_unique (trivial C)
@@ -189,7 +198,7 @@ def mapCommGrp : CommGrp_ C ⥤ CommGrp_ D where
             dsimp
             rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMonObj.mul_comm] } }
   map f := F.mapMon.map f
-  map_id X := show F.mapMon.map (𝟙 X.toGrp_.toMon_) = _ by cat_disch
+  map_id X := show F.mapMon.map (𝟙 X.toGrp_.toMon) = _ by cat_disch
 
 protected instance Faithful.mapCommGrp [F.Faithful] : F.mapCommGrp.Faithful where
   map_injective hfg := F.mapMon.map_injective hfg
