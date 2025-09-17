@@ -8,13 +8,13 @@ axiom Polynomial : Type → Type
 axiom Polynomial.C {R : Type} : R → Polynomial R
 axiom Polynomial.X {R : Type} : Polynomial R
 
-register_poly_vars "[" X "]" Polynomial Polynomial.C Polynomial.X
+register_poly_vars "[" "]" Polynomial Polynomial.C Polynomial.X
 
 axiom MvPolynomial : Type → Type → Type
 axiom MvPolynomial.C {σ R : Type} : R → MvPolynomial σ R
 axiom MvPolynomial.X {σ R : Type} (i : σ) : MvPolynomial σ R
 
-register_poly_vars "[" X, ... "]" MvPolynomial MvPolynomial.C MvPolynomial.X
+register_poly_vars (mv := true) "[" "]" MvPolynomial MvPolynomial.C MvPolynomial.X
 
 section Test1
 
@@ -27,6 +27,13 @@ noncomputable example : Vector (R[a,b][C]) 3 :=
   have : (Polynomial.C (MvPolynomial.X 0) : R[a,b][C]) = a := rfl
   have : (Polynomial.C (MvPolynomial.X 1) : R[a,b][C]) = b := rfl
   have : (Polynomial.X : R[a,b][C]) = C := rfl
+  #v[a, b, C]
+
+noncomputable example : Vector ((Fin 37)[a,b][C]) 3 :=
+  have : Polynomial (MvPolynomial (Fin 2) (Fin 37)) = (Fin 37)[a,b][C] := rfl
+  have : (Polynomial.C (MvPolynomial.X 0) : (Fin 37)[a,b][C]) = a := rfl
+  have : (Polynomial.C (MvPolynomial.X 1) : (Fin 37)[a,b][C]) = b := rfl
+  have : (Polynomial.X : (Fin 37)[a,b][C]) = C := rfl
   #v[a, b, C]
 
 end Test1
@@ -43,5 +50,11 @@ noncomputable example : Vector (R[a,b][C]) 3 :=
   have : Polynomial.C (MvPolynomial.X 1) = b := rfl
   have : Polynomial.X = C := rfl
   #v[a, b, C]
+
+name_poly_vars R[t,]
+
+/-- info: MvPolynomial.X 0 : MvPolynomial (Fin 1) R -/
+#guard_msgs in
+#check t
 
 end Test2
