@@ -21,9 +21,8 @@ Copy-discard categories where deletion is natural for all morphisms.
 
 ## Implementation notes
 
-Natural deletion forces probabilistic interpretation: morphisms
-preserve normalization. The unit being terminal follows from
-naturality of deletion.
+Natural deletion forces probabilistic interpretation: morphisms preserve normalization. The unit
+being terminal follows from naturality of deletion.
 
 ## References
 
