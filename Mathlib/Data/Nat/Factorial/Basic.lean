@@ -346,6 +346,9 @@ theorem descFactorial_eq_zero_iff_lt {n : ℕ} : ∀ {k : ℕ}, n.descFactorial 
       Nat.sub_eq_zero_iff_le, Nat.lt_iff_le_and_ne, or_iff_left_iff_imp, and_imp]
     exact fun h _ => h
 
+@[simp]
+lemma descFactorial_pos {n k : ℕ} : 0 < n.descFactorial k ↔ k ≤ n := by simp [Nat.pos_iff_ne_zero]
+
 alias ⟨_, descFactorial_of_lt⟩ := descFactorial_eq_zero_iff_lt
 
 theorem add_descFactorial_eq_ascFactorial (n : ℕ) : ∀ k : ℕ,
@@ -434,13 +437,12 @@ theorem descFactorial_le_pow (n : ℕ) : ∀ k : ℕ, n.descFactorial k ≤ n ^ 
     rw [descFactorial_succ, Nat.pow_succ, Nat.mul_comm _ n]
     exact Nat.mul_le_mul (Nat.sub_le _ _) (descFactorial_le_pow _ k)
 
-theorem descFactorial_lt_pow {n : ℕ} (hn : 1 ≤ n) : ∀ {k : ℕ}, 2 ≤ k → n.descFactorial k < n ^ k
+theorem descFactorial_lt_pow {n : ℕ} (hn : n ≠ 0) : ∀ {k : ℕ}, 2 ≤ k → n.descFactorial k < n ^ k
   | 0 => by rintro ⟨⟩
   | 1 => by intro; contradiction
   | k + 2 => fun _ => by
     rw [descFactorial_succ, pow_succ', Nat.mul_comm, Nat.mul_comm n]
-    exact Nat.mul_lt_mul_of_le_of_lt (descFactorial_le_pow _ _) (Nat.sub_lt hn k.zero_lt_succ)
-      (Nat.pow_pos (Nat.lt_of_succ_le hn))
+    exact Nat.mul_lt_mul_of_le_of_lt (descFactorial_le_pow _ _) (by omega) (Nat.pow_pos <| by omega)
 
 end DescFactorial
 

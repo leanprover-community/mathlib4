@@ -832,10 +832,8 @@ instance (priority := 100) firstCountableTopology : FirstCountableTopology α :=
 
 /-- A separable uniform space with countably generated uniformity filter is second countable:
 one obtains a countable basis by taking the balls centered at points in a dense subset,
-and with rational "radii" from a countable open symmetric antitone basis of `𝓤 α`. We do not
-register this as an instance, as there is already an instance going in the other direction
-from second countable spaces to separable spaces, and we want to avoid loops. -/
-theorem secondCountable_of_separable [SeparableSpace α] : SecondCountableTopology α := by
+and with rational "radii" from a countable open symmetric antitone basis of `𝓤 α`. -/
+instance secondCountable_of_separable [SeparableSpace α] : SecondCountableTopology α := by
   rcases exists_countable_dense α with ⟨s, hsc, hsd⟩
   obtain
     ⟨t : ℕ → Set (α × α), hto : ∀ i : ℕ, t i ∈ (𝓤 α).sets ∧ IsOpen (t i) ∧ IsSymmetricRel (t i),
