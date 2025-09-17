@@ -21,11 +21,15 @@ Comonoids where comultiplication is symmetric: swapping outputs gives the same r
 
 ## Implementation notes
 
-We extend ComonObj and add the commutativity axiom. This requires
-a braided monoidal category for the braiding isomorphism.
+We extend ComonObj and add the commutativity axiom. This requires a braided monoidal category for
+the braiding isomorphism.
 
-In cartesian monoidal categories, every object has a unique
-commutative comonoid structure (diagonal and terminal morphisms).
+Unlike the specific `ComonObj (𝟙_ C)` instance which was removed from mathlib to avoid conflicts,
+`CommComonObj` remains a type class because it describes a property of comonoid structures rather
+than providing a specific comonoid structure that could conflict with others.
+
+In cartesian monoidal categories, every object has a unique commutative comonoid structure
+(diagonal and terminal morphisms).
 
 ## Tags
 
