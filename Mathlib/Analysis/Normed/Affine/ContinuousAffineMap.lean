@@ -8,15 +8,11 @@ import Mathlib.Analysis.Normed.Operator.NormedSpace
 import Mathlib.Analysis.Normed.Group.AddTorsor
 
 /-!
-# Continuous affine maps between normed spaces.
+# Norm on the continuous affine maps between normed vector spaces.
 
-This file develops the theory of continuous affine maps between affine spaces modelled on normed
-spaces.
-
-In the particular case that the affine spaces are just normed vector spaces `V`, `W`, we define a
-norm on the space of continuous affine maps by defining the norm of `f : V →ᴬ[𝕜] W` to be
-`‖f‖ = max ‖f 0‖ ‖f.cont_linear‖`. This is chosen so that we have a linear isometry:
-`(V →ᴬ[𝕜] W) ≃ₗᵢ[𝕜] W × (V →L[𝕜] W)`.
+We define a norm on the space of continuous affine maps between normed vector spaces by defining the
+norm of `f : V →ᴬ[𝕜] W` to be `‖f‖ = max ‖f 0‖ ‖f.cont_linear‖`. This is chosen so that we have a
+linear isometry: `(V →ᴬ[𝕜] W) ≃ₗᵢ[𝕜] W × (V →L[𝕜] W)`.
 
 The abstract picture is that for an affine space `P` modelled on a vector space `V`, together with
 a vector space `W`, there is an exact sequence of `𝕜`-modules: `0 → C → A → L → 0` where `C`, `A`
