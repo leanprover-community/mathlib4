@@ -194,7 +194,6 @@ theorem isStronglyConnectedPos_of_hasEdge {V : Type*} [Quiver V]
   intro i j
   obtain ⟨p₁⟩ := h_sc i i₀
   obtain ⟨p₂⟩ := h_sc j₀ j
-  -- Path from i to j via the edge e₀
   let p : Path i j := p₁.comp (e₀.toPath.comp p₂)
   have hp_pos : 0 < p.length := by
     simp [p, Path.length_comp]
