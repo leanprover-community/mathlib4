@@ -140,6 +140,7 @@ theorem ker_toSpanSingleton_isMaximal {m : M} (hm : m ≠ 0) :
   rw [Ideal.isMaximal_def, ← isSimpleModule_iff_isCoatom]
   exact congr (quotKerEquivOfSurjective _ <| toSpanSingleton_surjective R hm)
 
+open scoped IsSimpleOrder in
 instance : IsNoetherian R M := isNoetherian_iff'.mpr inferInstance
 
 end IsSimpleModule
@@ -186,6 +187,37 @@ theorem IsSemisimpleModule.of_sSup_simples_eq_top
     (h : sSup { m : Submodule R M | IsSimpleModule R m } = ⊤) : IsSemisimpleModule R M where
   __ := complementedLattice_of_sSup_atoms_eq_top (by simp_rw [← h, isSimpleModule_iff_isAtom])
 
+namespace Module.Finite
+
+variable (R₀ P : Type*) [Semiring R₀] [AddCommMonoid P] [Module R P]
+
+section
+
+variable [Module R₀ P] [SMulCommClass R R₀ P] [Module.Finite R₀ (M →ₗ[R] P)]
+
+theorem of_isComplemented_domain (h : IsComplemented m) : Module.Finite R₀ (m →ₗ[R] P) :=
+  .of_surjective (.lcomp R₀ P ..) (LinearMap.surjective_comp_subtype_of_isComplemented h)
+
+instance [IsSemisimpleModule R M] : Module.Finite R₀ (m →ₗ[R] P) :=
+  .of_isComplemented_domain _ _ (exists_isCompl m)
+
+end
+
+section
+
+variable [Module R₀ M] [SMulCommClass R R₀ M] [SMul R₀ R]
+  [IsScalarTower R₀ R M] [Module.Finite R₀ (P →ₗ[R] M)]
+
+theorem of_isComplemented_codomain (h : IsComplemented m) : Module.Finite R₀ (P →ₗ[R] m) :=
+  .of_surjective (.compRight ..) (LinearMap.surjective_comp_linearProjOfIsCompl h.choose_spec)
+
+instance [IsSemisimpleModule R M] : Module.Finite R₀ (P →ₗ[R] m) :=
+  .of_isComplemented_codomain _ _ (exists_isCompl m)
+
+end
+
+end Module.Finite
+
 namespace IsSemisimpleModule
 
 theorem eq_bot_or_exists_simple_le (N : Submodule R M) [IsSemisimpleModule R N] :
@@ -201,19 +233,17 @@ theorem extension_property {P} [AddCommGroup P] [Module R P] (f : N →ₗ[R] M)
     (hf : Function.Injective f) (g : N →ₗ[R] P) :
     ∃ h : M →ₗ[R] P, h ∘ₗ f = g :=
   have ⟨m, compl⟩ := exists_isCompl (LinearMap.range f)
-  ⟨g ∘ₗ LinearMap.linearProjOfIsCompl _ f hf compl, by ext; simp⟩
+  ⟨g ∘ₗ f.linearProjOfIsCompl _ hf compl, by ext; simp⟩
 
-theorem lifting_property (f : M →ₗ[R] N) (hf : Function.Surjective f) :
-    ∃ h : N →ₗ[R] M, f ∘ₗ h = LinearMap.id := by
+theorem lifting_property {P} [AddCommGroup P] [Module R P] (f : M →ₗ[R] N)
+    (hf : Function.Surjective f) (g : P →ₗ[R] N) :
+    ∃ h : P →ₗ[R] M, f ∘ₗ h = g := by
   have ⟨m, compl⟩ := exists_isCompl (LinearMap.ker f)
-  use Submodule.subtype _ ∘ₗ ((f.quotKerEquivOfSurjective hf).symm ≪≫ₗ
-    Submodule.quotientEquivOfIsCompl _ m compl).toLinearMap
-  ext x
-  dsimp
-  obtain ⟨z, rfl⟩ := hf x
-  rw [← LinearMap.sub_mem_ker_iff, ← Submodule.Quotient.mk_eq_zero, ← Submodule.mkQ_apply,
-    map_sub, Submodule.mkQ_apply, Submodule.mkQ_apply, Submodule.mk_quotientEquivOfIsCompl_apply,
-    ← LinearMap.quotKerEquivOfSurjective_apply_mk f hf, LinearEquiv.symm_apply_apply, sub_self]
+  let e := (Submodule.quotientEquivOfIsCompl _ m compl).symm ≪≫ₗ f.quotKerEquivOfSurjective hf
+  refine ⟨Submodule.subtype _ ∘ₗ e.symm.toLinearMap ∘ₗ g, LinearMap.ext fun x ↦ ?_⟩
+  obtain ⟨z, eq⟩ := e.surjective (g x)
+  simp only [LinearMap.comp_apply, ← eq, LinearEquiv.coe_coe, e.symm_apply_apply]
+  simp [e]
 
 theorem sSup_simples_le (N : Submodule R M) :
     sSup { m : Submodule R M | IsSimpleModule R m ∧ m ≤ N } = N := by

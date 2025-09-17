@@ -65,7 +65,7 @@ open scoped nonZeroDivisors
 
 variable {X : TopCat.{w}} {C : Type u} [Category.{v} C]
 
--- note: this was specialized to `CommRingCat` in #19757
+-- note: this was specialized to `CommRingCat` in https://github.com/leanprover-community/mathlib4/issues/19757
 /-- A subpresheaf with a submonoid structure on each of the components. -/
 structure SubmonoidPresheaf (F : X.Presheaf CommRingCat) where
   /-- The submonoid structure for each component -/
@@ -251,7 +251,7 @@ def commRingYoneda : TopCommRingCat.{u} ⥤ TopCat.{u}ᵒᵖ ⥤ CommRingCat.{u}
 /-- The presheaf (of commutative rings), consisting of functions on an open set `U ⊆ X` with
 values in some topological commutative ring `T`.
 
-For example, we could construct the presheaf of continuous complex valued functions of `X` as
+For example, we could construct the presheaf of continuous complex-valued functions of `X` as
 ```
 presheafToTopCommRing X (TopCommRingCat.of ℂ)
 ```

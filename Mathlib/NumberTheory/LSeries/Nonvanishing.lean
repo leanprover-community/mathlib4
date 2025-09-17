@@ -150,7 +150,7 @@ private lemma F_eq_LSeries (B : BadChar N) {s : ℂ} (hs : 1 < s.re) :
     simp only [ne_eq, hs', not_false_eq_true, Function.update_of_ne, B.χ.LFunction_eq_LSeries hs]
     congr 1
     · simp_rw [← LSeries_zeta_eq_riemannZeta hs, ← natCoe_apply]
-    · exact LSeries_congr s B.χ.apply_eq_toArithmeticFunction_apply
+    · exact LSeries_congr B.χ.apply_eq_toArithmeticFunction_apply s
   -- summability side goals from `LSeries_convolution'`
   · exact LSeriesSummable_zeta_iff.mpr hs
   · exact (LSeriesSummable_congr _ fun h ↦ (B.χ.apply_eq_toArithmeticFunction_apply h).symm).mpr <|

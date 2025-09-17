@@ -51,6 +51,17 @@ class IsPrincipal (S : Submodule R M) : Prop where
 
 instance (x : R) : (span R {x}).IsPrincipal := ⟨x, rfl⟩
 
+namespace IsPrincipal
+
+/-- `generator I`, if `I` is a principal submodule, is an `x ∈ M` such that `span R {x} = I` -/
+noncomputable def generator (S : Submodule R M) [S.IsPrincipal] : M :=
+  Classical.choose (principal S)
+
+theorem span_singleton_generator (S : Submodule R M) [S.IsPrincipal] : span R {generator S} = S :=
+  (Classical.choose_spec (principal S)).symm
+
+end IsPrincipal
+
 end
 
 variable {s t : Set M}
@@ -556,7 +567,7 @@ theorem subset_span_finite_of_subset_span {s : Set M} {t : Finset M} (ht : (t : 
   | insert a t hat IH =>
     obtain ⟨T, hTs, htT⟩ := IH (by simp_all [Set.insert_subset_iff])
     obtain ⟨T', hT's, haT'⟩ := mem_span_finite_of_mem_span (ht (Finset.mem_insert_self _ _))
-    refine ⟨T ∪ T', by aesop, ?_⟩
+    refine ⟨T ∪ T', by simp_all, ?_⟩
     simp only [Finset.coe_insert, Finset.coe_union, span_union, insert_subset_iff, SetLike.mem_coe]
     exact ⟨mem_sup_right haT', htT.trans (le_sup_left (a := span R _))⟩
 

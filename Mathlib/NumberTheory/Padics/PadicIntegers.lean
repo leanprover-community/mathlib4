@@ -76,7 +76,7 @@ def subring : Subring ℚ_[p] where
   carrier := { x : ℚ_[p] | ‖x‖ ≤ 1 }
   zero_mem' := by simp
   one_mem' := by simp
-  add_mem' hx hy := (padicNormE.nonarchimedean _ _).trans <| max_le_iff.2 ⟨hx, hy⟩
+  add_mem' hx hy := (Padic.nonarchimedean _ _).trans <| max_le_iff.2 ⟨hx, hy⟩
   mul_mem' hx hy := (padicNormE.mul _ _).trans_le <| mul_le_one₀ hx (norm_nonneg _) hy
   neg_mem' hx := (norm_neg _).trans_le hx
 
@@ -190,10 +190,10 @@ variable {p}
 
 theorem norm_le_one (z : ℤ_[p]) : ‖z‖ ≤ 1 := z.2
 
-theorem nonarchimedean (q r : ℤ_[p]) : ‖q + r‖ ≤ max ‖q‖ ‖r‖ := padicNormE.nonarchimedean _ _
+theorem nonarchimedean (q r : ℤ_[p]) : ‖q + r‖ ≤ max ‖q‖ ‖r‖ := Padic.nonarchimedean _ _
 
 theorem norm_add_eq_max_of_ne {q r : ℤ_[p]} : ‖q‖ ≠ ‖r‖ → ‖q + r‖ = max ‖q‖ ‖r‖ :=
-  padicNormE.add_eq_max_of_ne
+  Padic.add_eq_max_of_ne
 
 theorem norm_eq_of_norm_add_lt_right {z1 z2 : ℤ_[p]} (h : ‖z1 + z2‖ < ‖z2‖) : ‖z1‖ = ‖z2‖ :=
   by_contra fun hne =>
@@ -212,7 +212,7 @@ theorem norm_intCast_eq_padic_norm (z : ℤ) : ‖(z : ℤ_[p])‖ = ‖(z : ℚ
 theorem norm_eq_padic_norm {q : ℚ_[p]} (hq : ‖q‖ ≤ 1) : @norm ℤ_[p] _ ⟨q, hq⟩ = ‖q‖ := rfl
 
 @[simp]
-theorem norm_p : ‖(p : ℤ_[p])‖ = (p : ℝ)⁻¹ := padicNormE.norm_p
+theorem norm_p : ‖(p : ℤ_[p])‖ = (p : ℝ)⁻¹ := Padic.norm_p
 
 theorem norm_p_pow (n : ℕ) : ‖(p : ℤ_[p]) ^ n‖ = (p : ℝ) ^ (-n : ℤ) := by simp
 
@@ -250,13 +250,33 @@ variable {p}
 
 theorem norm_int_lt_one_iff_dvd (k : ℤ) : ‖(k : ℤ_[p])‖ < 1 ↔ (p : ℤ) ∣ k :=
   suffices ‖(k : ℚ_[p])‖ < 1 ↔ ↑p ∣ k by rwa [norm_intCast_eq_padic_norm]
-  padicNormE.norm_int_lt_one_iff_dvd k
+  Padic.norm_intCast_lt_one_iff
 
 theorem norm_int_le_pow_iff_dvd {k : ℤ} {n : ℕ} :
     ‖(k : ℤ_[p])‖ ≤ (p : ℝ) ^ (-n : ℤ) ↔ (p ^ n : ℤ) ∣ k :=
   suffices ‖(k : ℚ_[p])‖ ≤ (p : ℝ) ^ (-n : ℤ) ↔ (p ^ n : ℤ) ∣ k by
     simpa [norm_intCast_eq_padic_norm]
-  padicNormE.norm_int_le_pow_iff_dvd _ _
+  Padic.norm_int_le_pow_iff_dvd _ _
+
+@[simp]
+lemma norm_natCast_eq_one_iff {n : ℕ} :
+    ‖(n : ℤ_[p])‖ = 1 ↔ p.Coprime n := by
+  rw [norm_def, coe_natCast, Padic.norm_natCast_eq_one_iff]
+
+@[simp]
+lemma norm_natCast_lt_one_iff {n : ℕ} :
+    ‖(n : ℤ_[p])‖ < 1 ↔ p ∣ n := by
+  rw [norm_def, coe_natCast, Padic.norm_natCast_lt_one_iff]
+
+@[simp]
+lemma norm_intCast_eq_one_iff {z : ℤ} :
+    ‖(z : ℤ_[p])‖ = 1 ↔ IsCoprime z p := by
+  rw [norm_def, coe_intCast, Padic.norm_intCast_eq_one_iff]
+
+@[simp]
+lemma norm_intCast_lt_one_iff {z : ℤ} :
+    ‖(z : ℤ_[p])‖ < 1 ↔ (p : ℤ) ∣ z := by
+  rw [norm_def, coe_intCast, Padic.norm_intCast_lt_one_iff]
 
 /-! ### Valuation on `ℤ_[p]` -/
 
@@ -309,7 +329,7 @@ theorem mul_inv : ∀ {z : ℤ_[p]}, ‖z‖ = 1 → z * z.inv = 1
     rw [norm_eq_padic_norm] at h
     dsimp only
     rw [dif_pos h]
-    apply Subtype.ext_iff_val.2
+    apply Subtype.ext_iff.2
     simp [mul_inv_cancel₀ hk]
 
 theorem inv_mul {z : ℤ_[p]} (hz : ‖z‖ = 1) : z.inv * z = 1 := by rw [mul_comm, mul_inv hz]
@@ -331,7 +351,7 @@ theorem norm_lt_one_mul {z1 z2 : ℤ_[p]} (hz2 : ‖z2‖ < 1) : ‖z1 * z2‖ <
     _ < 1 := mul_lt_one_of_nonneg_of_lt_one_right (norm_le_one _) (norm_nonneg _) hz2
 
 theorem mem_nonunits {z : ℤ_[p]} : z ∈ nonunits ℤ_[p] ↔ ‖z‖ < 1 := by
-  rw [lt_iff_le_and_ne]; simp [norm_le_one z, nonunits, isUnit_iff]
+  simp [norm_le_one z, nonunits, isUnit_iff]
 
 theorem not_isUnit_iff {z : ℤ_[p]} : ¬IsUnit z ↔ ‖z‖ < 1 := by
   simpa using mem_nonunits
@@ -512,7 +532,7 @@ instance isFractionRing : IsFractionRing ℤ_[p] ℚ_[p] where
           intro h0
           rw [h0, norm_zero] at hx
           exact hx zero_le_one
-        rw [ha, padicNormE.mul, padicNormE.norm_p_pow, Padic.norm_eq_zpow_neg_valuation hx,
+        rw [ha, padicNormE.mul, Padic.norm_p_pow, Padic.norm_eq_zpow_neg_valuation hx,
           ← zpow_add', hn_coe, neg_neg, neg_add_cancel, zpow_zero]
         exact Or.inl (Nat.cast_ne_zero.mpr (NeZero.ne p))
       use

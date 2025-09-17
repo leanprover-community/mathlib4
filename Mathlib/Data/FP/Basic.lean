@@ -88,7 +88,7 @@ theorem Float.Zero.valid : ValidFinite emin 0 :=
       simp only [emin, emax] at *
       omega
     le_trans C.precMax (Nat.le_mul_of_pos_left _ Nat.zero_lt_two),
-    by (rw [max_eq_right]; simp [sub_eq_add_neg, Int.ofNat_zero_le])⟩
+    by (simp [sub_eq_add_neg, Int.ofNat_zero_le])⟩
 
 @[nolint docBlame]
 def Float.zero (s : Bool) : Float :=
@@ -148,12 +148,11 @@ unsafe def nextUpPos (e m) (v : ValidFinite e m) : Float :=
 
 @[nolint docBlame]
 unsafe def nextDnPos (e m) (v : ValidFinite e m) : Float :=
-  match m with
+  match h : m with
   | 0 => nextUpPos _ _ Float.Zero.valid
   | Nat.succ m' =>
-    -- Porting note: was `m'.size = m.size`
-    if ss : m'.size = m'.succ.size then
-      Float.finite false e m' (by unfold ValidFinite at *; rw [ss]; exact v)
+    if ss : m'.size = m.size then
+      Float.finite false e m' (by subst h; unfold ValidFinite at *; rw [ss]; exact v)
     else
       if h : e = emin then Float.finite false emin m' lcProof
       else Float.finite false e.pred (2 * m' + 1) lcProof

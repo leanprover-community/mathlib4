@@ -215,7 +215,7 @@ instance commRingStructureSheafInTypeObj (U : (Opens (PrimeSpectrum.Top R))ᵒ�
 
 open PrimeSpectrum
 
-/-- The structure presheaf, valued in `CommRingCat`, constructed by dressing up the `Type` valued
+/-- The structure presheaf, valued in `CommRingCat`, constructed by dressing up the `Type`-valued
 structure presheaf.
 -/
 @[simps obj_carrier]
@@ -229,7 +229,7 @@ def structurePresheafInCommRing : Presheaf CommRingCat (PrimeSpectrum.Top R) whe
       map_mul' := fun _ _ => rfl }
 
 /-- Some glue, verifying that the structure presheaf valued in `CommRingCat` agrees
-with the `Type` valued structure presheaf.
+with the `Type`-valued structure presheaf.
 -/
 def structurePresheafCompForget :
     structurePresheafInCommRing R ⋙ forget CommRingCat ≅ (structureSheafInType R).1 :=

@@ -14,7 +14,7 @@ import Mathlib.Order.Interval.Set.Defs
 
 ### Finset constructions
 
-* `Finset.range`: For any `n : ℕ`, `range n` is equal to `{0, 1, ... , n - 1} ⊆ ℕ`.
+* `Finset.range`: For any `n : ℕ`, `range n` is equal to `{0, 1, ..., n - 1} ⊆ ℕ`.
   This convention is consistent with other languages and normalizes `card (range n) = n`.
   Beware, `n` is not in `range n`.
 
@@ -28,13 +28,13 @@ finite sets, finset
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
 assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice OrderedCommMonoid
 
-open Multiset Subtype Function
-
 universe u
 
 variable {α : Type*} {β : Type*} {γ : Type*}
 
 namespace Finset
+
+open Multiset Subtype Function
 
 /-! ### range -/
 
@@ -69,11 +69,11 @@ theorem range_zero : range 0 = ∅ :=
 theorem range_one : range 1 = {0} :=
   rfl
 
-theorem range_succ : range (succ n) = insert n (range n) :=
+theorem range_add_one : range (n + 1) = insert n (range n) :=
   eq_of_veq <| (Multiset.range_succ n).trans <| (ndinsert_of_notMem notMem_range_self).symm
 
-theorem range_add_one : range (n + 1) = insert n (range n) :=
-  range_succ
+@[deprecated range_add_one (since := "2025-09-08")]
+theorem range_succ : range (succ n) = insert n (range n) := range_add_one
 
 theorem notMem_range_self : n ∉ range n :=
   Multiset.notMem_range_self
@@ -84,12 +84,16 @@ theorem self_mem_range_succ (n : ℕ) : n ∈ range (n + 1) :=
   Multiset.self_mem_range_succ n
 
 @[simp]
-theorem range_subset {n m} : range n ⊆ range m ↔ n ≤ m :=
+theorem range_subset_range {n m} : range n ⊆ range m ↔ n ≤ m :=
   Multiset.range_subset
 
-theorem range_mono : Monotone range := fun _ _ => range_subset.2
+theorem range_subset {n s} : range n ⊆ s ↔ ∀ x, x < n → x ∈ s := by grind
 
-@[gcongr] alias ⟨_, _root_.GCongr.finset_range_subset_of_le⟩ := range_subset
+theorem subset_range {s n} : s ⊆ range n ↔ ∀ x, x ∈ s → x < n := by grind
+
+theorem range_mono : Monotone range := fun _ _ => range_subset_range.2
+
+@[gcongr] alias ⟨_, _root_.GCongr.finset_range_subset_of_le⟩ := range_subset_range
 
 theorem mem_range_succ_iff {a b : ℕ} : a ∈ Finset.range b.succ ↔ a ≤ b :=
   Finset.mem_range.trans Nat.lt_succ_iff
@@ -113,10 +117,13 @@ theorem range_eq_empty_iff : range n = ∅ ↔ n = 0 := by
   rw [← not_nonempty_iff_eq_empty, nonempty_range_iff, not_not]
 
 @[aesop safe apply (rule_sets := [finsetNonempty])]
-theorem nonempty_range_succ : (range <| n + 1).Nonempty :=
+theorem nonempty_range_add_one : (range <| n + 1).Nonempty :=
   nonempty_range_iff.2 n.succ_ne_zero
 
-lemma range_nontrivial {n : ℕ} (hn : 1 < n) : (Finset.range n).Nontrivial := by
+@[deprecated nonempty_range_add_one (since := "2025-09-08")]
+alias nonempty_range_succ := nonempty_range_add_one
+
+lemma range_nontrivial {n : ℕ} (hn : 1 < n) : (range n).Nontrivial := by
   rw [Finset.Nontrivial, Finset.coe_range]
   exact ⟨0, Nat.zero_lt_one.trans hn, 1, hn, Nat.zero_ne_one⟩
 
@@ -128,12 +135,14 @@ end Range
 
 end Finset
 
+open Finset
+
 /-- Equivalence between the set of natural numbers which are `≥ k` and `ℕ`, given by `n → n - k`. -/
 def notMemRangeEquiv (k : ℕ) : { n // n ∉ range k } ≃ ℕ where
   toFun i := i.1 - k
   invFun j := ⟨j + k, by simp⟩
   left_inv j := by
-    rw [Subtype.ext_iff_val]
+    rw [Subtype.ext_iff]
     apply Nat.sub_add_cancel
     simpa using j.2
   right_inv _ := Nat.add_sub_cancel_right _ _

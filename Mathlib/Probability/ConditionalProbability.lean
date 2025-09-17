@@ -30,7 +30,7 @@ This file uses the notation `μ[|s]` the measure of `μ` conditioned on `s`,
 and `μ[t|s]` for the probability of `t` given `s` under `μ` (equivalent to the
 application `μ[|s] t`).
 
-These notations are contained in the locale `ProbabilityTheory`.
+These notations are contained in the scope `ProbabilityTheory`.
 
 ## Implementation notes
 

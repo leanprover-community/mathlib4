@@ -33,7 +33,7 @@ open Filter Topology
 
 variable {R : Type*} {a b u₀ : R}
 
-/-- Arithmetic-geometric sequence with starting value `u₀` and recurence relation
+/-- Arithmetic-geometric sequence with starting value `u₀` and recurrence relation
 `u (n + 1) = a * u n + b`. -/
 def arithGeom [Mul R] [Add R] (a b u₀ : R) : ℕ → R
 | 0 => u₀
@@ -92,7 +92,6 @@ lemma arithGeom_same_eq_mul_div (ha : a ≠ 1) (n : ℕ) :
 lemma arithGeom_zero_eq_mul_div' (ha : a ≠ 1) (n : ℕ) :
     arithGeom a b 0 n = b * (1 - a ^ n) / (1 - a) := by
   rw [arithGeom_eq ha n]
-  have : 1 - a ≠ 0 := sub_ne_zero.mpr ha.symm
   field_simp
   ring
 

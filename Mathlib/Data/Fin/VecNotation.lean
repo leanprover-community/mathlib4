@@ -163,7 +163,7 @@ dsimproc cons_val (Matrix.vecCons _ _ _) := fun e => do
     let etailn_whnf : Q(ℕ) ← Meta.whnfD etailn
     if let Expr.lit (.natVal length) := etailn_whnf then
       pure (length, false, q(OfNat.ofNat $etailn_whnf))
-    else if let .some ((base : Q(ℕ)), offset) ← (Meta.isOffset? etailn_whnf).run then
+    else if let some ((base : Q(ℕ)), offset) ← (Meta.isOffset? etailn_whnf).run then
       let offset_e : Q(ℕ) := mkNatLit offset
       pure (offset, true, q($base + $offset))
     else
@@ -260,14 +260,17 @@ open Lean Qq in
 /-- `mkVecLiteralQ ![x, y, z]` produces the term `q(![$x, $y, $z])`. -/
 def _root_.PiFin.mkLiteralQ {u : Level} {α : Q(Type u)} {n : ℕ} (elems : Fin n → Q($α)) :
     Q(Fin $n → $α) :=
-  loop 0 (Nat.zero_le _) q(vecEmpty)
+  loop 0 q(vecEmpty)
 where
-  loop (i : ℕ) (hi : i ≤ n) (rest : Q(Fin $i → $α)) : let i' : Nat := i + 1; Q(Fin $(i') → $α) :=
+  /-- The core logic of `loop` is that `loop 0 ![] = ![a 0, a 1, a 2] = loop 1 ![a 2]`, where
+  recursion starts from the end. In this example, on the right-hand side, the variable `rest := 1`
+  tracks the length of the current generated notation `![a 2]`, and the last used index is
+  `n - rest` (`= 3 - 1 = 2`). -/
+  loop (i : ℕ) (rest : Q(Fin $i → $α)) : Q(Fin $n → $α) :=
     if h : i < n then
-      loop (i + 1) h q(vecCons $(elems (Fin.rev ⟨i, h⟩)) $rest)
+      loop (i + 1) q(vecCons $(elems (Fin.rev ⟨i, h⟩)) $rest)
     else
       rest
-attribute [nolint docBlame] _root_.PiFin.mkLiteralQ.loop
 
 open Lean Qq in
 protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToExpr (Fin n → α) :=
@@ -312,6 +315,11 @@ theorem vecAppend_apply_zero {α : Type*} {o : ℕ} (ho : o + 1 = m + 1 + n) (u 
 
 @[simp]
 theorem empty_vecAppend (v : Fin n → α) : vecAppend n.zero_add.symm ![] v = v := by
+  ext
+  simp [vecAppend_eq_ite]
+
+@[simp]
+theorem vecAppend_empty (v : Fin n → α) : vecAppend rfl v ![] = v := by
   ext
   simp [vecAppend_eq_ite]
 

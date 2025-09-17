@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä, Yury Kudryashov
 -/
 import Mathlib.Analysis.Normed.Module.Dual
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
+import Mathlib.Analysis.Normed.Operator.Completeness
 import Mathlib.Topology.Algebra.Module.WeakDual
 
 /-!
@@ -102,7 +102,7 @@ variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [Module R M]
 /-- For vector spaces `M`, there is a canonical map `StrongDual R M → WeakDual R M` (the "identity"
 mapping). It is a linear equivalence. -/
 def toWeakDual : StrongDual R M ≃ₗ[R] WeakDual R M :=
-  LinearEquiv.refl R (M →L[R] R)
+  LinearEquiv.refl R (StrongDual R M)
 
 @[deprecated (since := "2025-08-3")] alias _root_.NormedSpace.Dual.toWeakDual := toWeakDual
 

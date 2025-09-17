@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel, Mario Carneiro, Yury Kudryashov, Heather Macbeth
 -/
 import Mathlib.Algebra.Module.MinimalAxioms
 import Mathlib.Analysis.Normed.Order.Lattice
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
+import Mathlib.Analysis.Normed.Operator.Basic
 import Mathlib.Topology.ContinuousMap.Bounded.Basic
 
 /-!

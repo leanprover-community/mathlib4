@@ -68,7 +68,7 @@ namespace mapFun
 
 -- Porting note: switched the proof to tactic mode. I think that `ext` was the issue.
 theorem injective (f : α → β) (hf : Injective f) : Injective (mapFun f : 𝕎 α → 𝕎 β) := by
-  intros _ _ h
+  intro _ _ h
   ext p
   exact hf (congr_arg (fun x => coeff x p) h :)
 

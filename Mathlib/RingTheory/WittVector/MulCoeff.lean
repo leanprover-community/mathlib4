@@ -75,8 +75,7 @@ theorem wittPolyProdRemainder_vars (n : ℕ) :
   · apply Subset.trans (vars_pow _ _)
     apply Subset.trans (wittMul_vars _ _)
     apply product_subset_product (Subset.refl _)
-    simp only [mem_range, range_subset] at hx ⊢
-    exact hx
+    simpa using hx
 
 /-- `remainder p n` represents the remainder term from `mul_polyOfInterest_aux3`.
 `wittPolyProd p (n+1)` will have variables up to `n+1`,

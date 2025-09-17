@@ -12,12 +12,12 @@ import Mathlib.Tactic.FinCases
 /-!
 # Multicoequalizer diagrams in complete lattices
 
-We introduce the notion of bicartesian square (`Lattice.BicartSq`) in a lattice `T`.
+We introduce the notion of bi-Cartesian square (`Lattice.BicartSq`) in a lattice `T`.
 This consists of elements `x₁`, `x₂`, `x₃` and `x₄` such that `x₂ ⊔ x₃ = x₄` and
 `x₂ ⊓ x₃ = x₁`.
 
 It shall be shown (TODO) that if `T := Set X`, then the image of the
-associated commutative square in the category `Type _` is a bicartesian square
+associated commutative square in the category `Type _` is a bi-Cartesian square
 in a categorical sense (both pushout and pullback).
 
 More generally, if `T` is a complete lattice, `x : T`, `u : ι → T`, `v : ι → ι → T`,
@@ -38,7 +38,7 @@ namespace Lattice
 
 variable {T : Type u} (x₁ x₂ x₃ x₄ : T) [Lattice T]
 
-/-- A bicartesian square in a lattice consists of elements `x₁`, `x₂`, `x₃` and `x₄`
+/-- A bi-Cartesian square in a lattice consists of elements `x₁`, `x₂`, `x₃` and `x₄`
 such that `x₂ ⊔ x₃ = x₄` and `x₂ ⊓ x₃ = x₁`. -/
 structure BicartSq : Prop where
   max_eq : x₂ ⊔ x₃ = x₄
@@ -57,7 +57,7 @@ lemma le₁₃ : x₁ ≤ x₃ := by grind
 lemma le₂₄ : x₂ ≤ x₄ := by grind
 lemma le₃₄ : x₃ ≤ x₄ := by grind
 
-/-- The commutative square associated to a bicartesian square in a lattice. -/
+/-- The commutative square associated to a bi-Cartesian square in a lattice. -/
 lemma commSq : CommSq (homOfLE sq.le₁₂) (homOfLE sq.le₁₃)
     (homOfLE sq.le₂₄) (homOfLE sq.le₃₄) := ⟨rfl⟩
 

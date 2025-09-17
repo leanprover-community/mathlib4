@@ -209,7 +209,7 @@ theorem sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 
 /-- **Eisenstein's lemma** -/
 theorem eisenstein_lemma {p : ℕ} [Fact p.Prime] (hp : p ≠ 2) {a : ℕ} (ha1 : a % 2 = 1)
     (ha0 : (a : ZMod p) ≠ 0) : legendreSym p a = (-1) ^ ∑ x ∈ Ico 1 (p / 2).succ, x * a / p := by
-  haveI hp' : Fact (p % 2 = 1) := ⟨Nat.Prime.mod_two_eq_one_iff_ne_two.mpr hp⟩
+  haveI hp' : Fact (p % 2 = 1) := ⟨(Nat.Prime.mod_two_eq_one_iff_ne_two Fact.out).mpr hp⟩
   have ha0' : ((a : ℤ) : ZMod p) ≠ 0 := by norm_cast
   rw [neg_one_pow_eq_pow_mod_two, gauss_lemma hp ha0', neg_one_pow_eq_pow_mod_two,
     (by norm_cast : ((a : ℤ) : ZMod p) = (a : ZMod p)),

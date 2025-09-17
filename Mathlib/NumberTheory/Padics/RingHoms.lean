@@ -166,7 +166,7 @@ theorem exists_mem_range : ∃ n : ℕ, n < p ∧ x - n ∈ maximalIdeal ℤ_[p]
     rw [norm_sub_rev] at hr
     calc
       _ = ‖(r : ℚ_[p]) - x + x‖ := by ring_nf
-      _ ≤ _ := padicNormE.nonarchimedean _ _
+      _ ≤ _ := Padic.nonarchimedean _ _
       _ ≤ _ := max_le (le_of_lt hr) x.2
   obtain ⟨n, hzn, hnp, hn⟩ := exists_mem_range_of_norm_rat_le_one r H
   lift n to ℕ using hzn
@@ -175,7 +175,7 @@ theorem exists_mem_range : ∃ n : ℕ, n < p ∧ x - n ∈ maximalIdeal ℤ_[p]
   · exact mod_cast hnp
   simp only [norm_def, coe_sub, coe_natCast] at hn ⊢
   rw [show (x - n : ℚ_[p]) = x - r + (r - n) by ring]
-  apply lt_of_le_of_lt (padicNormE.nonarchimedean _ _)
+  apply lt_of_le_of_lt (Padic.nonarchimedean _ _)
   apply max_lt hr
   simpa using hn
 
@@ -693,9 +693,9 @@ lemma toZModPow_ofIntSeq_of_pow_dvd_sub
     have H' : ‖(p ^ n * e : ℚ_[p])‖ < ‖(((x.appr n) - f (N + n) : ℤ) : ℚ_[p])‖ := by
       refine LE.le.trans_lt ?_ H
       simpa using mul_le_mul_of_nonneg le_rfl e.2 (show 0 ≤ (↑p ^ n)⁻¹ by simp) zero_le_one
-    rw [padicNormE.add_eq_max_of_ne H'.ne, sup_eq_right.mpr H'.le] at hN
+    rw [Padic.add_eq_max_of_ne H'.ne, sup_eq_right.mpr H'.le] at hN
     exact lt_asymm hN H
-  rw [padicNormE.norm_int_le_pow_iff_dvd, ← Nat.cast_pow,
+  rw [Padic.norm_int_le_pow_iff_dvd, ← Nat.cast_pow,
     ← ZMod.intCast_eq_intCast_iff_dvd_sub, Int.cast_natCast] at this
   refine this.symm.trans ?_
   clear * - hi

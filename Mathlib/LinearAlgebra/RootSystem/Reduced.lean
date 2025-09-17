@@ -56,7 +56,7 @@ lemma isReduced_iff' : P.IsReduced ↔ ∀ i j : ι, i ≠ j →
 lemma IsReduced.linearIndependent [P.IsReduced] (h : i ≠ j) (h' : P.root i ≠ -P.root j) :
     LinearIndependent R ![P.root i, P.root j] := by
   have := IsReduced.eq_or_eq_neg (P := P) i j
-  aesop
+  simp_all
 
 lemma IsReduced.linearIndependent_iff [Nontrivial R] [P.IsReduced] :
     LinearIndependent R ![P.root i, P.root j] ↔ i ≠ j ∧ P.root i ≠ - P.root j := by

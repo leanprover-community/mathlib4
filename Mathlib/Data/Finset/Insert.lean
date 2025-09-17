@@ -395,7 +395,7 @@ theorem mem_insert_coe {s : Finset α} {x y : α} : x ∈ insert y s ↔ x ∈ i
   simp
 
 instance : LawfulSingleton α (Finset α) :=
-  ⟨fun a => by ext; simp⟩
+  ⟨fun a => by simp⟩
 
 @[simp]
 theorem insert_eq_of_mem (h : a ∈ s) : insert a s = s :=

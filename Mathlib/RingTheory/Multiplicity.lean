@@ -109,7 +109,7 @@ theorem multiplicity_le_emultiplicity :
   · simp [hf.emultiplicity_eq_multiplicity]
   · simp [hf, emultiplicity_eq_top.2]
 
--- Cannot be @[simp] because `β`, `c`, and `d` can not be inferred by `simp`.
+-- Cannot be @[simp] because `β`, `c`, and `d` cannot be inferred by `simp`.
 theorem multiplicity_eq_of_emultiplicity_eq {c d : β}
     (h : emultiplicity a b = emultiplicity c d) : multiplicity a b = multiplicity c d := by
   unfold multiplicity
@@ -700,9 +700,9 @@ theorem Finset.emultiplicity_prod {β : Type*} {p : α} (hp : Prime p) (s : Fins
 
 theorem emultiplicity_pow {p a : α} (hp : Prime p) {k : ℕ} :
     emultiplicity p (a ^ k) = k * emultiplicity p a := by
-  induction' k with k hk
-  · simp [emultiplicity_of_one_right hp.not_unit]
-  · simp [pow_succ, emultiplicity_mul hp, hk, add_mul]
+  induction k with
+  | zero => simp [emultiplicity_of_one_right hp.not_unit]
+  | succ k hk => simp [pow_succ, emultiplicity_mul hp, hk, add_mul]
 
 protected theorem FiniteMultiplicity.multiplicity_pow {p a : α} (hp : Prime p)
     (ha : FiniteMultiplicity p a) {k : ℕ} : multiplicity p (a ^ k) = k * multiplicity p a := by

@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen
+Authors: Anne Baanen, Edward van de Meent
 -/
 import Mathlib.Tactic.TacticAnalysis
 import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.MinImports
+import Lean.Elab.Tactic.Meta
 
 /-!
 # Tactic linters
@@ -21,12 +22,15 @@ Define a pass that tries replacing a specific tactic with `grind`.
 `tacticKind` is the `SyntaxNodeKind` for the tactic's main parser,
 for example `Mathlib.Tactic.linarith`.
 -/
-def grindReplacementWith (tacticKind : SyntaxNodeKind) : TacticAnalysis.Config := .ofComplex {
-  out := (List MVarId × MessageData)
+def grindReplacementWith (tacticKind : SyntaxNodeKind)
+    (reportFailure : Bool := true) (reportSuccess : Bool := false)
+    (reportSlowdown : Bool := false) (maxSlowdown : Float := 1) :
+    TacticAnalysis.Config := .ofComplex {
+  out := List MVarId × MessageData
   ctx := Syntax
   trigger _ stx := if stx.getKind == tacticKind
     then .accept stx else .skip
-  test stx goal := withOptions (fun opts => opts.set `grind.warning false) do
+  test stx goal := do
     let tac ← `(tactic| grind)
     try
       let (goals, _) ← Lean.Elab.runTactic goal tac
@@ -36,15 +40,20 @@ def grindReplacementWith (tacticKind : SyntaxNodeKind) : TacticAnalysis.Config :
       let ((sig, _, modules), _) ← (Mathlib.Tactic.ExtractGoal.goalSignature name goal).run
       let imports := modules.toList.map (s!"import {·}")
       return ([goal], m!"{"\n".intercalate imports}\n\ntheorem {sig} := by\n  fail_if_success grind\n  {stx}")
-  tell stx _old new :=
-    if new.1.1 != [] then
-      m!"'grind' failed where '{stx}' succeeded. Counterexample:\n{new.1.2}"
-    /-
+  tell stx _ oldHeartbeats new newHeartbeats :=
+    if let (_ :: _, counterexample ) := new then
+      if reportFailure then
+        some m!"'grind' failed where '{stx}' succeeded. Counterexample:\n{counterexample}"
+      else
+        none
     else
-      if old.2 * 2 < new.2 then
-        return m!"'grind' is slower than '{stx}': {new.2 / 1000} versus {old.2 / 1000} heartbeats"
-    -/
-    else none }
+      if reportSlowdown ∧ maxSlowdown * oldHeartbeats.toFloat < newHeartbeats.toFloat then
+        some m!"'grind' is slower than '{stx}': {newHeartbeats / 1000} versus {oldHeartbeats / 1000} heartbeats"
+      else if reportSuccess then
+        some m!"'grind' can replace '{stx}'"
+      else
+        none
+    }
 
 /-- Debug `grind` by identifying places where it does not yet supersede `linarith`. -/
 register_option linter.tacticAnalysis.linarithToGrind : Bool := {
@@ -60,7 +69,7 @@ register_option linter.tacticAnalysis.omegaToGrind : Bool := {
 }
 @[tacticAnalysis linter.tacticAnalysis.omegaToGrind,
   inherit_doc linter.tacticAnalysis.omegaToGrind]
-def omegaToGrind := grindReplacementWith `Lean.Parser.Tactic.ring
+def omegaToGrind := grindReplacementWith ``Lean.Parser.Tactic.omega
 
 /-- Debug `grind` by identifying places where it does not yet supersede `ring`. -/
 register_option linter.tacticAnalysis.ringToGrind : Bool := {
@@ -91,9 +100,9 @@ def rwMerge : TacticAnalysis.Config := .ofComplex {
       return (goals, ctxT.map (↑·))
     catch _e => -- rw throws an error if it fails to pattern-match.
       return ([goal], ctxT.map (↑·))
-  tell _stx _old new :=
-    if new.1.1.isEmpty then
-      m!"Try this: rw {new.1.2}"
+  tell _stx _old _oldHeartbeats new _newHeartbeats :=
+    if new.1.isEmpty then
+      m!"Try this: rw {new.2}"
     else none }
 
 /-- Suggest merging `tac; grind` into just `grind` if that also solves the goal. -/
@@ -108,14 +117,12 @@ def mergeWithGrind : TacticAnalysis.Config where
     if let #[(preCtx, preI), (_postCtx, postI)] := seq[0:2].array then
       if postI.stx.getKind == ``Lean.Parser.Tactic.grind then
         if let [goal] := preI.goalsBefore then
-          preCtx.runTactic preI goal <| fun goal => do
-            let tac := postI.stx
-            let (goals, _) ← try
-                Lean.Elab.runTactic goal tac
-              catch _e =>
-                pure ([goal], {})
-            if goals.isEmpty then
-              logWarningAt preI.stx m!"'{preI.stx}; grind' can be replaced with 'grind'"
+          let goals ← try
+            preCtx.runTacticCode preI goal postI.stx
+          catch _e =>
+            pure [goal]
+          if goals.isEmpty then
+            logWarningAt preI.stx m!"'{preI.stx}; grind' can be replaced with 'grind'"
 
 /-- Suggest replacing a sequence of tactics with `grind` if that also solves the goal. -/
 register_option linter.tacticAnalysis.terminalToGrind : Bool := {
@@ -144,27 +151,23 @@ def terminalToGrind : TacticAnalysis.Config where
           -- closes the goal like it does in userspace.
           let suffix := ⟨i.stx⟩ :: replaced
           let seq ← `(tactic| $suffix.toArray;*)
-          let (oldGoals, heartbeats) ← withHeartbeats <| ctx.runTactic i goal <| fun goal => do
-            let (goals, _) ←
-              try
-                Lean.Elab.runTactic goal seq
-              catch _e =>
-                pure ([goal], {})
-            return goals
+          let (oldGoals, heartbeats) ← withHeartbeats <|
+            try
+              ctx.runTacticCode i goal seq
+            catch _e =>
+              pure [goal]
           if !oldGoals.isEmpty then
             logWarningAt i.stx m!"Original tactics failed to solve the goal: {seq}"
           oldHeartbeats := heartbeats
 
           -- To check if `grind` can close the goal, run `grind` on the current goal
           -- and verify that no goals remain afterwards.
-          let (newGoals, heartbeats) ← withHeartbeats <| ctx.runTactic i goal <| fun goal => do
-            let tac ← `(tactic| grind)
-            let (goals, _) ←
-              try
-                Lean.Elab.runTactic goal tac
-              catch _e =>
-                pure ([goal], {})
-            return goals
+          let tac ← `(tactic| grind)
+          let (newGoals, heartbeats) ← withHeartbeats <|
+            try
+              ctx.runTacticCode i goal tac
+            catch _e =>
+              pure [goal]
           newHeartbeats := heartbeats
           if newGoals.isEmpty then
             success := true
@@ -180,3 +183,30 @@ def terminalToGrind : TacticAnalysis.Config where
       logWarningAt stx m!"replace the proof with 'grind': {seq}"
       if oldHeartbeats * 2 < newHeartbeats then
         logWarningAt stx m!"'grind' is slower than the original: {oldHeartbeats} -> {newHeartbeats}"
+
+-- TODO: add compatibility with `rintro` and `intros`
+/-- Suggest merging two adjacent `intro` tactics which don't pattern match. -/
+register_option linter.tacticAnalysis.introMerge : Bool := {
+  defValue := true
+}
+
+@[tacticAnalysis linter.tacticAnalysis.introMerge, inherit_doc linter.tacticAnalysis.introMerge]
+def introMerge : TacticAnalysis.Config := .ofComplex {
+  out := Option (TSyntax `tactic)
+  ctx := Array (Array Term)
+  trigger ctx stx :=
+    match stx with
+    | `(tactic| intro%$x $args*) => .continue ((ctx.getD #[]).push
+      -- if `intro` is used without arguments, treat it as `intro _`
+      <| if args.size = 0 then #[⟨mkHole x⟩] else args)
+    | _ => if let some args := ctx then if args.size > 1 then .accept args else .skip else .skip
+  test ctx goal := do
+    let ctxT := ctx.flatten
+    let tac ← `(tactic| intro $ctxT*)
+    try
+      let _ ← Lean.Elab.runTactic goal tac
+      return some tac
+    catch _e => -- if for whatever reason we can't run `intro` here.
+      return none
+  tell _stx _old _oldHeartbeats new _newHeartbeats :=
+    if let some tac := new then m!"Try this: {tac}" else none}

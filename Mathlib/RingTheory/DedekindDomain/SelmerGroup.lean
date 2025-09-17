@@ -123,12 +123,9 @@ theorem valuation_of_unit_eq (x : Rˣ) :
     change ¬v.valuation K (algebraMap R K x) < 1
     apply_fun v.intValuation at hx
     rw [map_one, map_mul] at hx
-    rw [not_lt, ← hx, ← mul_one <| v.valuation _ _, valuation_of_algebraMap,
-      mul_le_mul_left <| zero_lt_iff.2 <| left_ne_zero_of_mul_eq_one hx]
+    rw [not_lt, ← hx, ← mul_one <| v.valuation _ _, valuation_of_algebraMap]
+    gcongr
     exact v.intValuation_le_one _
-
--- Porting note: invalid attribute 'semireducible', declaration is in an imported module
--- attribute [local semireducible] MulOpposite
 
 /-- The multiplicative `v`-adic valuation on `Kˣ` modulo `n`-th powers. -/
 def valuationOfNeZeroMod (n : ℕ) : (K/n) →* Multiplicative (ZMod n) :=

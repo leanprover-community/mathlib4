@@ -518,6 +518,14 @@ theorem sup_le_inf : a ⊔ b ≤ a ⊓ b ↔ a = b := by simp [le_antisymm_iff, 
 @[simp] lemma sup_eq_inf : a ⊔ b = a ⊓ b ↔ a = b := eq_comm.trans inf_eq_sup
 @[simp] lemma inf_lt_sup : a ⊓ b < a ⊔ b ↔ a ≠ b := by rw [inf_le_sup.lt_iff_ne, Ne, inf_eq_sup]
 
+@[simp] lemma inf_left_le_sup_right : (a ⊓ b) ≤ (b ⊔ c) := le_trans inf_le_right le_sup_left
+
+@[simp] lemma inf_right_le_sup_right : (b ⊓ a) ≤ (b ⊔ c) := le_trans inf_le_left le_sup_left
+
+@[simp] lemma inf_left_le_sup_left : (a ⊓ b) ≤ (c ⊔ b) := le_trans inf_le_right le_sup_right
+
+@[simp] lemma inf_right_le_sup_left : (b ⊓ a) ≤ (c ⊔ b) := le_trans inf_le_left le_sup_right
+
 lemma inf_eq_and_sup_eq_iff : a ⊓ b = c ∧ a ⊔ b = c ↔ a = c ∧ b = c := by
   refine ⟨fun h ↦ ?_, ?_⟩
   · obtain rfl := sup_eq_inf.1 (h.2.trans h.1.symm)

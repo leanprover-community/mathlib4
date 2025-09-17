@@ -71,6 +71,11 @@ theorem norm_natCast_eq_mul_norm_one (α) [SeminormedRing α] [NormSMulClass ℤ
     ‖(n : α)‖ = n * ‖(1 : α)‖ := by
   simpa using norm_intCast_eq_abs_mul_norm_one α n
 
+@[simp]
+lemma norm_natCast {α : Type*} [SeminormedRing α] [NormOneClass α] [NormSMulClass ℤ α]
+    (a : ℕ) : ‖(a : α)‖ = a := by
+  simpa using norm_natCast_eq_mul_norm_one α a
+
 theorem eventually_nhds_norm_smul_sub_lt (c : 𝕜) (x : E) {ε : ℝ} (h : 0 < ε) :
     ∀ᶠ y in 𝓝 x, ‖c • (y - x)‖ < ε :=
   have : Tendsto (fun y ↦ ‖c • (y - x)‖) (𝓝 x) (𝓝 0) :=
@@ -260,6 +265,10 @@ theorem dist_algebraMap (x y : 𝕜) :
 @[simp]
 theorem norm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ := by
   rw [norm_algebraMap, norm_one, mul_one]
+
+@[simp]
+theorem Algebra.norm_smul_one_eq_norm [NormOneClass 𝕜'] (x : 𝕜) : ‖x • (1 : 𝕜')‖ = ‖x‖ := by
+  simp [norm_smul]
 
 /-- This is a simpler version of `nnnorm_algebraMap` when `‖1‖ = 1` in `𝕜'`. -/
 @[simp]

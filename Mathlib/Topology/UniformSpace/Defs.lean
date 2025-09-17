@@ -266,6 +266,20 @@ lemma IsSymmetricRel.preimage_prodMap {U : Set (β × β)} (ht : IsSymmetricRel 
     IsSymmetricRel (Prod.map f f ⁻¹' U) :=
   Set.ext fun _ ↦ ht.mk_mem_comm
 
+lemma IsSymmetricRel.image_prodMap {U : Set (α × α)} (ht : IsSymmetricRel U) (f : α → β) :
+    IsSymmetricRel (Prod.map f f '' U) := by
+  rw [IsSymmetricRel, ← image_swap_eq_preimage_swap, ← image_comp, ← Prod.map_comp_swap, image_comp,
+      image_swap_eq_preimage_swap, ht]
+
+lemma IsSymmetricRel.prod_subset_comm {s : Set (α × α)} {t u : Set α} (hs : IsSymmetricRel s) :
+    t ×ˢ u ⊆ s ↔ u ×ˢ t ⊆ s := by
+  rw [← hs.eq, ← image_subset_iff, image_swap_prod, hs.eq]
+
+lemma IsSymmetricRel.mem_filter_prod_comm {s : Set (α × α)} {f g : Filter α}
+    (hs : IsSymmetricRel s) :
+    s ∈ f ×ˢ g ↔ s ∈ g ×ˢ f := by
+  rw [← hs.eq, ← mem_map, ← prod_comm, hs.eq]
+
 /-- This core description of a uniform space is outside of the type class hierarchy. It is useful
   for constructions of uniform spaces, when the topology is derived from the uniform space. -/
 structure UniformSpace.Core (α : Type u) where

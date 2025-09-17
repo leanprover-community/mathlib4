@@ -245,7 +245,7 @@ theorem pow {n : ℕ} {a b : ℕ} (hn : 0 < n) (h : IsPrimitiveRoot ζ n) (hprod
 
 lemma injOn_pow {n : ℕ} {ζ : M} (hζ : IsPrimitiveRoot ζ n) :
     Set.InjOn (ζ ^ ·) (Finset.range n) := by
-  intros i hi j hj e
+  intro i hi j hj e
   rw [Finset.coe_range, Set.mem_Iio] at hi hj
   exact hζ.pow_inj hi hj e
 
@@ -636,7 +636,7 @@ theorem nthRoots_one_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
     (nthRoots n (1 : R)).Nodup :=
   h.nthRoots_nodup one_ne_zero
 
--- Cannot be @[simp] because `ζ` can not be inferred by `simp`.
+-- Cannot be @[simp] because `ζ` cannot be inferred by `simp`.
 theorem card_nthRootsFinset {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
     #(nthRootsFinset n (1 : R)) = n := by
   classical

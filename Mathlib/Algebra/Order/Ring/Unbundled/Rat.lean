@@ -12,7 +12,7 @@ import Mathlib.Data.Int.Order.Basic
 # The rational numbers possess a linear order
 
 This file constructs the order on `ℚ` and proves various facts relating the order to
-ring structure on `ℚ`. This only uses unbundled type classes, eg `CovariantClass`,
+ring structure on `ℚ`. This only uses unbundled type classes, e.g. `CovariantClass`,
 relating the order structure and algebra structure on `ℚ`.
 For the bundled `LinearOrderedCommRing` instance on `ℚ`, see `Algebra.Order.Ring.Rat`.
 
@@ -227,8 +227,7 @@ theorem div_lt_div_iff_mul_lt_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d
   simp only [lt_iff_le_not_ge]
   apply and_congr
   · simp [div_def', Rat.divInt_le_divInt b_pos d_pos]
-  · apply not_congr
-    simp [div_def', Rat.divInt_le_divInt d_pos b_pos]
+  · simp [div_def', Rat.divInt_le_divInt d_pos b_pos]
 
 theorem lt_one_iff_num_lt_denom {q : ℚ} : q < 1 ↔ q.num < q.den := by simp [Rat.lt_def]
 

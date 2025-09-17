@@ -264,7 +264,6 @@ variable [Finite ι] [CharZero R] [IsDomain R]
 lemma pairingIn_short_long :
     P.pairingIn ℤ (short P) (long P) = - 1 := by
   have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed (long P) (short P)
-  have := pairingIn_long_short (P := P)
   aesop
 
 @[simp]
@@ -575,8 +574,8 @@ lemma mem_allRoots (i : ι) :
     induction hx using Submodule.span_induction with
     | zero => simp
     | mem => aesop
-    | add => aesop
-    | smul => aesop
+    | add => simp_all
+    | smul => simp_all
   simpa using LinearMap.congr_fun key (P.root i)
 
 open scoped Classical in
