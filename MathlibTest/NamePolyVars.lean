@@ -60,3 +60,25 @@ name_poly_vars R[t,]
 #check t
 
 end Test2
+
+section Test3
+
+axiom AddMonoidAlgebra : Type → Type → Type
+
+syntax:max (priority := high) term noWs "[" term "]" : term
+
+macro_rules | `($k[$g]) => `(AddMonoidAlgebra $k $g)
+
+variable (R M : Type)
+
+name_poly_vars R[t]
+
+/-- info: AddMonoidAlgebra R M : Type -/
+#guard_msgs in
+#check R[M]
+
+/-- info: Polynomial R : Type -/
+#guard_msgs in
+#check R[t]
+
+end Test3

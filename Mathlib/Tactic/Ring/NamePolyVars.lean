@@ -173,7 +173,7 @@ structure Body : Type where
   /-- The names for the variables. -/
   vars : (String ⊕ Array String)
 
-syntax polyesque_notation := poly_opening vars poly_closing
+syntax polyesque_notation := atomic(poly_opening vars poly_closing)
 
 abbrev PolyesqueNotation : Type := TSyntax ``polyesque_notation
 
