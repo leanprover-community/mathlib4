@@ -879,17 +879,6 @@ theorem linearIndependent_iff_eq_zero_of_smul_mem_span :
         simp [hij]
       · simp [hl]⟩
 
-lemma LinearMap.injective_of_linearIndependent {N : Type*} [AddCommGroup N] [Module R N]
-    {f : M →ₗ[R] N} {ι : Type*} {v : ι → M}
-    (hv : Submodule.span R (.range v) = ⊤) (hli : LinearIndependent R (f ∘ v)) :
-    Function.Injective f := by
-  refine (injective_iff_map_eq_zero _).mpr fun x hx ↦ ?_
-  have : x ∈ Submodule.span R (.range v) := by rw [hv]; trivial
-  obtain ⟨c, rfl⟩ := Finsupp.mem_span_range_iff_exists_finsupp.mp this
-  simp only [map_finsuppSum, map_smul] at hx
-  obtain rfl := linearIndependent_iff.mp hli c hx
-  simp
-
 end Module
 
 /-!
