@@ -136,6 +136,7 @@ initialize notationTableExt : NotationTableExt ← registerSimpleScopedEnvExtens
 
 /-- The config for whether the notation is multivariate, stored as a `Bool`, default to `false`. -/
 structure MvConfig where
+  /-- Whether the notation is multivariate. -/
   mv : Bool := false
 
 /-- Elaborate the multivariable config. -/
