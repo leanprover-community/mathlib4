@@ -5,7 +5,7 @@ Authors: David Loeffler, Geoffrey Irving, Stefan Kebekus
 -/
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Linear
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
+import Mathlib.Analysis.Normed.Operator.Mul
 import Mathlib.Analysis.Normed.Ring.Units
 import Mathlib.Analysis.Analytic.OfScalars
 

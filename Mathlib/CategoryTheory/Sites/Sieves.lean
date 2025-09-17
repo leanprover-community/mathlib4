@@ -161,6 +161,14 @@ theorem pullback_singleton (g : Z ⟶ X) [HasPullback g f] :
 inductive ofArrows {ι : Type*} (Y : ι → C) (f : ∀ i, Y i ⟶ X) : Presieve X
   | mk (i : ι) : ofArrows _ _ (f i)
 
+lemma ofArrows.mk' {ι : Type*} {Y : ι → C} {f : ∀ i, Y i ⟶ X} {Z : C} {g : Z ⟶ X}
+    (i : ι) (h : Z = Y i) (hg : g = eqToHom h ≫ f i) :
+    ofArrows Y f g := by
+  subst h
+  simp only [eqToHom_refl, id_comp] at hg
+  subst hg
+  constructor
+
 theorem ofArrows_pUnit : (ofArrows _ fun _ : PUnit => f) = singleton f := by
   funext Y
   ext g
@@ -290,7 +298,79 @@ theorem image_mem_functorPushforward (R : Presieve X) {f : Y ⟶ X} (h : R f) :
     R.functorPushforward F (F.map f) :=
   ⟨Y, f, 𝟙 _, h, by simp⟩
 
+/-- This presieve generates `functorPushforward`.
+See `arrows_generate_map_eq_functorPushforward`. -/
+inductive map (s : Presieve X) : Presieve (F.obj X) where
+  | of {Y : C} {u : Y ⟶ X} (h : s u) : map s (F.map u)
+
+section
+
+variable {F}
+
+@[grind ←]
+lemma map_map {X Y : C} {f : Y ⟶ X} {R : Presieve X} (hf : R f) : R.map F (F.map f) :=
+  ⟨hf⟩
+
+@[simp]
+lemma map_ofArrows {X : C} {ι : Type*} {Y : ι → C} (f : ∀ i, Y i ⟶ X) :
+    (ofArrows Y f).map F = ofArrows _ (fun i ↦ F.map (f i)) := by
+  refine le_antisymm (fun Z g hg ↦ ?_) fun _ _ ⟨i⟩ ↦ map_map ⟨i⟩
+  obtain ⟨hu⟩ := hg
+  obtain ⟨i, rfl, rfl⟩ := Presieve.ofArrows_surj _ _ hu
+  simpa using ofArrows.mk i
+
+@[simp]
+lemma map_singleton {X Y : C} (f : X ⟶ Y) : (singleton f).map F = singleton (F.map f) := by
+  rw [← ofArrows_pUnit.{_, _, 0}, map_ofArrows, ofArrows_pUnit]
+
+end
+
 end FunctorPushforward
+
+section uncurry
+
+variable (s : Presieve X)
+
+/-- Uncurry a presieve to one set over the sigma type. -/
+def uncurry : Set (Σ Y, Y ⟶ X) :=
+  { u | s u.snd }
+
+@[simp] theorem uncurry_singleton {Y : C} (u : Y ⟶ X) : (singleton u).uncurry = { ⟨Y, u⟩ } := by
+  ext ⟨Z, v⟩; constructor
+  · rintro ⟨⟩; rfl
+  · intro h
+    rw [Set.mem_singleton_iff, Sigma.ext_iff] at h
+    obtain ⟨rfl, h⟩ := h; subst h; constructor
+
+@[simp] theorem uncurry_pullbackArrows [HasPullbacks C] {B : C} (b : B ⟶ X) :
+    (pullbackArrows b s).uncurry = (fun f ↦ ⟨pullback f.2 b, pullback.snd _ _⟩) '' s.uncurry := by
+  ext ⟨Z, v⟩; constructor
+  · rintro ⟨Y, u, hu⟩; exact ⟨⟨Y, u⟩, hu, rfl⟩
+  · rintro ⟨⟨Y, u⟩, hu, h⟩
+    rw [Sigma.ext_iff] at h
+    obtain ⟨rfl, h⟩ := h
+    rw [heq_iff_eq] at h; subst h
+    exact ⟨Y, u, hu⟩
+
+@[simp] theorem uncurry_bind (t : ⦃Y : C⦄ → (f : Y ⟶ X) → s f → Presieve Y) :
+    (s.bind t).uncurry = ⋃ i ∈ s.uncurry,
+      Sigma.map id (fun Z g ↦ (g ≫ i.2 : Z ⟶ X)) '' (t _ ‹_›).uncurry := by
+  ext ⟨Z, v⟩; simp only [Set.mem_iUnion, Set.mem_image]; constructor
+  · rintro ⟨Y, g, f, hf, ht, hv⟩
+    exact ⟨⟨_, f⟩, hf, ⟨_, g⟩, ht, Sigma.ext rfl (heq_of_eq hv)⟩
+  · rintro ⟨⟨_, f⟩, hf, ⟨Y, g⟩, hg, h⟩
+    rw [Sigma.ext_iff] at h
+    obtain ⟨rfl, h⟩ := h
+    rw [heq_iff_eq] at h; subst h
+    exact ⟨_, _, _, _, hg, rfl⟩
+
+@[simp] theorem uncurry_ofArrows {ι : Type*} (Y : ι → C) (f : (i : ι) → Y i ⟶ X) :
+    (ofArrows Y f).uncurry = Set.range fun i : ι ↦ ⟨_, f i⟩ := by
+  ext ⟨Z, v⟩; simp only [Set.mem_range, Sigma.mk.injEq]; constructor
+  · rintro ⟨i⟩; exact ⟨_, rfl, HEq.refl _⟩
+  · rintro ⟨i, rfl, h⟩; rw [← eq_of_heq h]; exact ⟨i⟩
+
+end uncurry
 
 end Presieve
 
@@ -350,7 +430,7 @@ protected def inter (S R : Sieve X) : Sieve X where
     simp [h₁, h₂]
 
 /-- Sieves on an object `X` form a complete lattice.
-We generate this directly rather than using the galois insertion for nicer definitional properties.
+We generate this directly rather than using the Galois insertion for nicer definitional properties.
 -/
 instance : CompleteLattice (Sieve X) where
   le S R := ∀ ⦃Y⦄ (f : Y ⟶ X), S f → R f
@@ -417,6 +497,12 @@ def generate (R : Presieve X) : Sieve X where
     rintro Y Z _ ⟨W, g, f, hf, rfl⟩ h
     exact ⟨_, h ≫ g, _, hf, by simp⟩
 
+theorem arrows_generate_map_eq_functorPushforward {s : Presieve X} :
+    (generate (s.map F)).arrows = s.functorPushforward F := by
+  refine funext fun Z ↦ Set.ext fun u ↦ ⟨?_, ?_⟩
+  · rintro ⟨_, _, _, ⟨hu⟩, rfl⟩; exact ⟨_, _, _, hu, rfl⟩
+  · rintro ⟨_, _, _, hu, rfl⟩; exact ⟨_, _, _, ⟨hu⟩, rfl⟩
+
 /-- Given a presieve on `X`, and a sieve on each domain of an arrow in the presieve, we can bind to
 produce a sieve on `X`.
 -/
@@ -440,7 +526,7 @@ theorem generate_le_iff (R : Presieve X) (S : Sieve X) : generate R ≤ S ↔ R 
     rintro ⟨Z, f, g, hg, rfl⟩
     exact S.downward_closed (ss Z hg) f⟩
 
-/-- Show that there is a galois insertion (generate, set_over). -/
+/-- Show that there is a Galois insertion (generate, set_over). -/
 def giGenerate : GaloisInsertion (generate : Presieve X → Sieve X) arrows where
   gc := generate_le_iff
   choice 𝒢 _ := generate 𝒢
@@ -709,6 +795,12 @@ def functorPushforward (R : Sieve X) : Sieve (F.obj X) where
     obtain ⟨X, α, β, hα, rfl⟩ := h
     exact ⟨X, α, g ≫ β, hα, by simp⟩
 
+theorem generate_map_eq_functorPushforward {s : Presieve X} :
+    generate (s.map F) = (generate s).functorPushforward F := by
+  ext
+  rw [arrows_generate_map_eq_functorPushforward]
+  simp [functorPushforward_extend_eq]
+
 @[simp]
 theorem functorPushforward_id (R : Sieve X) : R.functorPushforward (𝟭 _) = R := by
   ext X f
@@ -787,7 +879,7 @@ theorem image_mem_functorPushforward (R : Sieve X) {V} {f : V ⟶ X} (h : R f) :
     R.functorPushforward F (F.map f) :=
   ⟨V, f, 𝟙 _, h, by simp⟩
 
-/-- When `F` is essentially surjective and full, the galois connection is a galois insertion. -/
+/-- When `F` is essentially surjective and full, the Galois connection is a Galois insertion. -/
 def essSurjFullFunctorGaloisInsertion [F.EssSurj] [F.Full] (X : C) :
     GaloisInsertion (Sieve.functorPushforward F : Sieve X → Sieve (F.obj X))
       (Sieve.functorPullback F) := by
@@ -796,7 +888,7 @@ def essSurjFullFunctorGaloisInsertion [F.EssSurj] [F.Full] (X : C) :
   refine ⟨_, F.preimage ((F.objObjPreimageIso Y).hom ≫ f), (F.objObjPreimageIso Y).inv, ?_⟩
   simpa using hf
 
-/-- When `F` is fully faithful, the galois connection is a galois coinsertion. -/
+/-- When `F` is fully faithful, the Galois connection is a Galois coinsertion. -/
 def fullyFaithfulFunctorGaloisCoinsertion [F.Full] [F.Faithful] (X : C) :
     GaloisCoinsertion (Sieve.functorPushforward F : Sieve X → Sieve (F.obj X))
       (Sieve.functorPullback F) := by
@@ -882,7 +974,7 @@ theorem natTransOfLe_comm {S T : Sieve X} (h : S ≤ T) :
 instance functorInclusion_is_mono : Mono S.functorInclusion :=
   ⟨fun f g h => by
     ext Y y
-    simpa [Subtype.ext_iff_val] using congr_fun (NatTrans.congr_app h Y) y⟩
+    simpa [Subtype.ext_iff] using congr_fun (NatTrans.congr_app h Y) y⟩
 
 -- TODO: Show that when `f` is mono, this is right inverse to `functorInclusion` up to isomorphism.
 /-- A natural transformation to a representable functor induces a sieve. This is the left inverse of
