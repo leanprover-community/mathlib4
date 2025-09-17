@@ -52,7 +52,7 @@ noncomputable instance : Lifting₂ L' L' W W
 noncomputable instance : Lifting₂ L' L' W W
     ((((whiskeringLeft₂ _).obj (L' ⋙ F)).obj (L' ⋙ F)).obj (curriedTensor E))
     ((((whiskeringLeft₂ _).obj F).obj F).obj (curriedTensor E)) where
-  iso' := Iso.refl _
+  iso := Iso.refl _
 
 /--
 The natural isomorphism of bifunctors `F - ⊗ F - ≅ F (- ⊗ -)`, given that `L ⋙ F` is monoidal.
@@ -86,7 +86,7 @@ lemma μNatIso_hom_app_app (X Y : C) :
     ((μNatIso L W ε F).hom.app ((L').obj X)).app ((L').obj Y) =
       Functor.LaxMonoidal.μ (L' ⋙ F) X Y ≫
         F.map (Functor.OplaxMonoidal.δ L' X Y) := by
-  simp [μNatIso, lift₂NatIso, Lifting₂.iso, Lifting₂.iso']
+  simp [μNatIso, lift₂NatIso, Lifting₂.iso]
   rfl
 
 /--
