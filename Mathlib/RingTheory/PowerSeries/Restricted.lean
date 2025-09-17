@@ -29,25 +29,25 @@ open PowerSeries Filter
 open scoped Topology
 
 /-- A power series over `R` is restricted of paramerter `c` if we have the following limit. -/
-def IsRestricted (R : Type*) [NormedRing R] (f : PowerSeries R) (c : ℝ) :=
+def IsRestricted {R : Type*} [NormedRing R] (f : PowerSeries R) (c : ℝ) :=
   Tendsto (fun (i : ℕ) => (norm (coeff R i f)) * c^i) atTop (𝓝 0)
 
 namespace Restricted
 
-variable (R : Type*) [NormedRing R] (c : ℝ)
+variable {R : Type*} [NormedRing R] (c : ℝ)
 
-lemma isRestricted_iff (f : PowerSeries R) : IsRestricted R f c ↔ IsRestricted R f |c| := by
+lemma isRestricted_iff (f : PowerSeries R) : IsRestricted f c ↔ IsRestricted f |c| := by
   simp_rw [IsRestricted, NormedAddCommGroup.tendsto_atTop, sub_zero, norm_mul, norm_norm, norm_pow,
     Real.norm_eq_abs, abs_abs]
 
 /-- The set of restricted power series over `R` for a parameter `c`. -/
 def SetOf : Set (PowerSeries R) :=
-  {f : PowerSeries R | IsRestricted R f c}
+  {f : PowerSeries R | IsRestricted f c}
 
-lemma zero : IsRestricted R 0 c := by
+lemma zero : IsRestricted (0 : PowerSeries R) c := by
   simp_rw [IsRestricted, map_zero, norm_zero, zero_mul, tendsto_const_nhds_iff]
 
-lemma one : IsRestricted R 1 c := by
+lemma one : IsRestricted (1 : PowerSeries R) c := by
   simp_rw [IsRestricted, coeff_one, NormedAddCommGroup.tendsto_atTop, sub_zero, norm_mul, norm_norm,
     norm_pow, Real.norm_eq_abs]
   intro ε hε
@@ -59,8 +59,8 @@ lemma one : IsRestricted R 1 c := by
     exact Nat.not_succ_le_zero 0 hn
   simpa only [norm_zero, zero_mul]
 
-lemma add {f g : PowerSeries R} (hf : IsRestricted R f c) (hg : IsRestricted R g c) :
-    IsRestricted R (f + g) c := by
+lemma add {f g : PowerSeries R} (hf : IsRestricted f c) (hg : IsRestricted g c) :
+    IsRestricted (f + g) c := by
   simp only [IsRestricted, map_add, NormedAddCommGroup.tendsto_atTop] at hf hg ⊢
   intro ε hε
   obtain ⟨fN, hfN⟩ := hf (ε/2) (half_pos hε)
@@ -73,27 +73,27 @@ lemma add {f g : PowerSeries R} (hf : IsRestricted R f c) (hg : IsRestricted R g
     (by simpa only [add_halves] using (add_lt_add (hfN n (le_of_max_le_left hn))
     (hgN n (le_of_max_le_right hn))))
 
-lemma neg {f : PowerSeries R} (hf : IsRestricted R f c) : IsRestricted R (-f) c := by
+lemma neg {f : PowerSeries R} (hf : IsRestricted f c) : IsRestricted (-f) c := by
   simpa only [IsRestricted, map_neg, norm_neg] using hf
 
 /-- The set of restricted power series over `R` for a parameter `c` forms an additive subgroup of
     power series over `R`. -/
 def addsubgroup : AddSubgroup (PowerSeries R) where
-  carrier := (SetOf R c)
-  zero_mem' := zero R c
-  add_mem' := add R c
-  neg_mem' := neg R c
+  carrier := (SetOf c)
+  zero_mem' := zero c
+  add_mem' := add c
+  neg_mem' := neg c
 
 /-- The restricted power series over a normed ring `R` for a parameter `c ∈ ℝ` forms an additive
     group. -/
-instance IsGroup : AddGroup (SetOf R c) :=
-  AddSubgroup.toAddGroup (addsubgroup R c)
+instance IsGroup : AddGroup (SetOf (R := R) c) :=
+  AddSubgroup.toAddGroup (addsubgroup c)
 
 /-- The set of `‖coeff R i f‖ * c^i` for a given power series `f` and parameter `c`. -/
 def convergenceSet (f : PowerSeries R) : Set ℝ :=
   {‖coeff R i f‖ * c^i | i : ℕ}
 
-lemma BddAbove {f : PowerSeries R} (hf : IsRestricted R f c) : BddAbove (convergenceSet R c f) := by
+lemma BddAbove {f : PowerSeries R} (hf : IsRestricted f c) : BddAbove (convergenceSet c f) := by
   simp_rw [IsRestricted, NormedAddCommGroup.tendsto_atTop] at hf
   obtain ⟨N, hf⟩ := by simpa only [zero_lt_one, sub_zero, norm_mul, norm_norm, norm_pow,
     Real.norm_eq_abs, forall_const, abs_norm] using (hf 1)
@@ -112,9 +112,9 @@ lemma BddAbove {f : PowerSeries R} (hf : IsRestricted R f c) : BddAbove (converg
   · exact Or.inl (le_of_lt (lt_of_le_of_lt (mul_le_mul_of_nonneg_left
       (by simpa only [abs_pow] using le_abs_self (c ^ i)) (norm_nonneg _)) (hf i h)))
 
-lemma BddAbove_nneg {f : PowerSeries R} (hf : IsRestricted R f c) :
+lemma BddAbove_nneg {f : PowerSeries R} (hf : IsRestricted f c) :
      ∃ A, A > 0 ∧ ∀ i, ‖coeff R i f‖ * c^i ≤ A := by
-  obtain ⟨n, hn⟩ := by simpa only [bddAbove_def] using (BddAbove R c hf)
+  obtain ⟨n, hn⟩ := by simpa only [bddAbove_def] using (BddAbove c hf)
   simp_rw [convergenceSet, Set.mem_setOf_eq, forall_exists_index, forall_apply_eq_imp_iff] at hn
   rcases (eq_zero_or_neZero n) with h | h
   · refine ⟨n + 1, ⟨by simp_rw [h, zero_add, gt_iff_lt, zero_lt_one], fun i => le_trans (hn i)
@@ -126,11 +126,11 @@ variable [IsUltrametricDist R]
 
 open IsUltrametricDist
 
-lemma mul {f g : PowerSeries R} (hf : IsRestricted R f c) (hg : IsRestricted R g c) :
-    IsRestricted R (f * g) c := by
+lemma mul {f g : PowerSeries R} (hf : IsRestricted f c) (hg : IsRestricted g c) :
+    IsRestricted (f * g) c := by
   simp_rw [IsRestricted] at hf hg ⊢
-  obtain ⟨a, ha, fBound1⟩ := BddAbove_nneg R |c| ((isRestricted_iff R c f).mp hf)
-  obtain ⟨b, hb, gBound1⟩ := BddAbove_nneg R |c| ((isRestricted_iff R c g).mp hg)
+  obtain ⟨a, ha, fBound1⟩ := BddAbove_nneg |c| ((isRestricted_iff c f).mp hf)
+  obtain ⟨b, hb, gBound1⟩ := BddAbove_nneg |c| ((isRestricted_iff c g).mp hg)
   rw [NormedAddCommGroup.tendsto_atTop] at hf hg ⊢
   intro ε hε
   simp only [sub_zero, norm_mul, norm_pow, Real.norm_eq_abs, abs_norm] at hf hg ⊢
@@ -169,18 +169,18 @@ lemma mul {f g : PowerSeries R} (hf : IsRestricted R f c) (hg : IsRestricted R g
 /-- The set of restricted power series over `R` for a parameter `c` are a subring of power series
     over `R`. -/
 def subring : Subring (PowerSeries R) where
-  carrier := SetOf R c
-  zero_mem' := zero R c
-  add_mem' := add R c
-  neg_mem' := neg R c
-  one_mem' := one R c
-  mul_mem' := mul R c
+  carrier := SetOf c
+  zero_mem' := zero c
+  add_mem' := add c
+  neg_mem' := neg c
+  one_mem' := one c
+  mul_mem' := mul c
 
 /-- The restricted power series over a normed ring `R` with the ultrametric property forms a
     ring. -/
 noncomputable
-instance IsRing : Ring (SetOf R c) :=
-    Subring.toRing (subring R c)
+instance IsRing : Ring (SetOf (R := R) c) :=
+    Subring.toRing (subring c)
 
 end Restricted
 end PowerSeries
