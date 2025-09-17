@@ -50,7 +50,7 @@ variable {C : Type u₁} [Category.{v₁} C] {V : Type u₂} [Category.{v₂} V]
 lemma mk_functor (F : C ⥤ V) : (mk F).functor = F := rfl
 
 @[simp]
-lemma functor_mk (F : C ⊛⥤ V) : mk (F.functor) = F := rfl
+lemma functor_mk (F : C ⊛⥤ V) : mk F.functor = F := rfl
 
 /-- Morphisms of Day functors are natural transformations of the underlying
 functors. -/
@@ -145,21 +145,21 @@ theorem tensor_hom_ext {F G H : C ⊛⥤ V} {α β : F ⊗ G ⟶ H}
   ext ⟨x, y⟩
   exact h x y
 
-/-- A natural transformation `F.functor ⊠ G.functor ⟶ (tensor C) ⋙ H.functor`
+/-- A natural transformation `F.functor ⊠ G.functor ⟶ tensor C ⋙ H.functor`
 defines a morphism `F ⨂ G ⟶ H`. -/
 def tensorDesc {F G H : C ⊛⥤ V}
-    (α : F.functor ⊠ G.functor ⟶ (tensor C) ⋙ H.functor) :
+    (α : F.functor ⊠ G.functor ⟶ tensor C ⋙ H.functor) :
     F ⊗ G ⟶ H :=
   .mk <| (F ⊗ G).functor.descOfIsLeftKanExtension (η F G) H.functor α
 
 lemma η_comp_tensorDec {F G H : C ⊛⥤ V}
-    (α : F.functor ⊠ G.functor ⟶ (tensor C) ⋙ H.functor) :
-   (η F G) ≫ Functor.whiskerLeft _ (tensorDesc α).natTrans = α :=
+    (α : F.functor ⊠ G.functor ⟶ tensor C ⋙ H.functor) :
+   η F G ≫ Functor.whiskerLeft _ (tensorDesc α).natTrans = α :=
   Functor.descOfIsLeftKanExtension_fac _ _ _ _
 
 @[reassoc (attr := simp)]
 lemma η_comp_tensorDesc_app {F G H : C ⊛⥤ V}
-    (α : F.functor ⊠ G.functor ⟶ (tensor C) ⋙ H.functor) (x y : C) :
+    (α : F.functor ⊠ G.functor ⟶ tensor C ⋙ H.functor) (x y : C) :
    (η F G).app (x , y) ≫ (tensorDesc α).natTrans.app (x ⊗ y) = α.app (x, y) :=
   Functor.descOfIsLeftKanExtension_fac_app _ _ _ _ _
 
@@ -177,7 +177,7 @@ def isoPointwiseLeftKanExtension (F G : C ⊛⥤ V) :
 lemma η_comp_isoPointwiseLeftKanExtension_hom (F G : C ⊛⥤ V) (x y : C) :
     (η F G).app (x, y) ≫ (isoPointwiseLeftKanExtension F G).hom.app (x ⊗ y) =
     Limits.colimit.ι
-      ((CostructuredArrow.proj (tensor C) (x ⊗ y)) ⋙ F.functor ⊠ G.functor)
+      (CostructuredArrow.proj (tensor C) (x ⊗ y) ⋙ F.functor ⊠ G.functor)
       (.mk (Y := (x, y)) <| 𝟙 (x ⊗ y)) := by
   simpa [η, isoPointwiseLeftKanExtension] using
     Functor.descOfIsLeftKanExtension_fac_app
@@ -187,7 +187,7 @@ lemma η_comp_isoPointwiseLeftKanExtension_hom (F G : C ⊛⥤ V) (x y : C) :
 @[simp]
 lemma ι_comp_isoPointwiseLeftKanExtension_inv (F G : C ⊛⥤ V) (x y : C) :
     Limits.colimit.ι
-      ((CostructuredArrow.proj (tensor C) (x ⊗ y)) ⋙ F.functor ⊠ G.functor)
+      (CostructuredArrow.proj (tensor C) (x ⊗ y) ⋙ F.functor ⊠ G.functor)
         (.mk (Y := (x, y)) <| 𝟙 (x ⊗ y)) ≫
       (isoPointwiseLeftKanExtension F G).inv.app (x ⊗ y) =
     (η F G).app (x, y) := by
