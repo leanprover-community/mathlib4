@@ -58,7 +58,7 @@ lemma braidingNatIso_hom_app (X Y : C) :
   simp [braidingNatIso, lift₂NatIso]
   rfl
 
-@[reassoc
+@[reassoc]
 lemma braidingNatIso_hom_app_naturality_μ_left (X Y Z : C) :
     ((braidingNatIso L W ε).hom.app ((L').obj X)).app ((L').obj Y ⊗ (L').obj Z) ≫
       (Functor.LaxMonoidal.μ (L') Y Z) ▷ (L').obj X =
