@@ -214,6 +214,9 @@ protected theorem not_iff : ¬IsPrimitiveRoot ζ k ↔ orderOf ζ ≠ k :=
   ⟨fun h hk ↦ h <| hk ▸ IsPrimitiveRoot.orderOf ζ,
     fun h hk ↦ h.symm <| hk.unique <| IsPrimitiveRoot.orderOf ζ⟩
 
+protected theorem iff_orderOf : IsPrimitiveRoot ζ k ↔ orderOf ζ = k :=
+  not_iff_not.mp IsPrimitiveRoot.not_iff
+
 theorem pow_mul_pow_lcm {ζ' : M} {k' : ℕ} (hζ : IsPrimitiveRoot ζ k) (hζ' : IsPrimitiveRoot ζ' k')
     (hk : k ≠ 0) (hk' : k' ≠ 0) :
     IsPrimitiveRoot
@@ -633,6 +636,14 @@ theorem card_rootsOfUnity {ζ : R} {n : ℕ} [NeZero n] (h : IsPrimitiveRoot ζ 
   obtain ⟨ζ, hζ⟩ := h.isUnit <| NeZero.pos n
   rw [← hζ, IsPrimitiveRoot.coe_units_iff] at h
   exact h.card_rootsOfUnity'
+
+lemma _root_.card_rootsOfUnity_eq_iff_exists_isPrimitiveRoot {n : ℕ} [NeZero n] :
+    Fintype.card (rootsOfUnity n R) = n ↔ ∃ ζ : R, IsPrimitiveRoot ζ n := by
+  refine ⟨fun h ↦ ?_, fun ⟨ζ, hζ⟩ ↦ hζ.card_rootsOfUnity⟩
+  obtain ⟨⟨ζ, hζ'⟩, hζ⟩ := (rootsOfUnity.isCyclic R n).exists_ofOrder_eq_natCard
+  rw [Nat.card_eq_fintype_card, h, ← IsPrimitiveRoot.iff_orderOf, ← coe_submonoidClass_iff,
+    ← IsPrimitiveRoot.coe_units_iff] at hζ
+  use ζ
 
 /-- The cardinality of the multiset `nthRoots ↑n (1 : R)` is `n`
 if there is a primitive root of unity in `R`. -/
