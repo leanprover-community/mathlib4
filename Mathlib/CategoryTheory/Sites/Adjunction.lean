@@ -98,14 +98,6 @@ section ForgetToType
 
 variable [HasWeakSheafify J D] [HasForget D] [HasSheafCompose J (forget D)]
 
-@[deprecated (since := "2024-11-26")] alias composeAndSheafifyFromTypes := composeAndSheafify
-
-/-- The adjunction `composeAndSheafify J G ⊣ sheafForget J`. -/
-@[deprecated Sheaf.adjunction (since := "2024-11-26")] abbrev adjunctionToTypes
-    {G : Type max v₁ u₁ ⥤ D} (adj : G ⊣ forget D) :
-    composeAndSheafify J G ⊣ sheafForget J :=
-  adjunction _ adj
-
 example [(forget D).IsRightAdjoint] :
     (sheafForget.{_, _, _, _, max u₁ v₁} (D := D) J).IsRightAdjoint := by infer_instance
 

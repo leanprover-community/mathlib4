@@ -17,9 +17,9 @@ mixed space that is a fundamental domain for the action of `(𝓞 K)ˣ` modulo t
 ## Main definitions and results
 
 * `NumberField.mixedEmbedding.unitSMul`: the action of `(𝓞 K)ˣ` on the mixed space defined, for
-`u : (𝓞 K)ˣ`, by multiplication component by component with `mixedEmbedding K u`.
+  `u : (𝓞 K)ˣ`, by multiplication component by component with `mixedEmbedding K u`.
 
-* `NumberField.mixedEmbedding.fundamentalCone`: a cone in the mixed space, ie. a subset stable
+* `NumberField.mixedEmbedding.fundamentalCone`: a cone in the mixed space, i.e. a subset stable
   by multiplication by a nonzero real number, see `smul_mem_of_mem`, that is also a fundamental
   domain for the action of `(𝓞 K)ˣ` modulo torsion, see `exists_unit_smul_mem` and
   `torsion_unit_smul_mem_of_mem`.
@@ -170,7 +170,7 @@ open NumberField.Units NumberField.Units.dirichletUnitTheorem
 variable [NumberField K]
 
 open Classical in
-/-- The fundamental cone is a cone in the mixed space, ie. a subset fixed by multiplication by
+/-- The fundamental cone is a cone in the mixed space, i.e. a subset fixed by multiplication by
 a nonzero real number, see `smul_mem_of_mem`, that is also a fundamental domain for the action
 of `(𝓞 K)ˣ` modulo torsion, see `exists_unit_smul_mem` and `torsion_smul_mem_of_mem`. -/
 def fundamentalCone : Set (mixedSpace K) :=
@@ -271,9 +271,6 @@ theorem existsUnique_preimage_of_mem_integerSet {a : mixedSpace K} (ha : a ∈ i
   obtain ⟨_, ⟨x, rfl⟩⟩ := mem_integerSet.mp ha
   refine Function.Injective.existsUnique_of_mem_range ?_ (Set.mem_range_self x)
   exact (mixedEmbedding_injective K).comp RingOfIntegers.coe_injective
-
-@[deprecated (since := "2024-12-17")]
-alias exists_unique_preimage_of_mem_integerSet := existsUnique_preimage_of_mem_integerSet
 
 theorem ne_zero_of_mem_integerSet (a : integerSet K) : (a : mixedSpace K) ≠ 0 := by
   by_contra!
@@ -511,8 +508,8 @@ def idealSetEquiv : idealSet K J ≃
     {a : integerSet K | (preimageOfMemIntegerSet a : 𝓞 K) ∈ (J : Set (𝓞 K))} :=
   Equiv.ofBijective (fun a ↦ ⟨idealSetMap K J a, preimage_of_IdealSetMap K J a⟩)
     ⟨fun _ _ h ↦ (by
-        simp_rw [Subtype.ext_iff_val, idealSetMap_apply] at h
-        rwa [Subtype.ext_iff_val]),
+        simp_rw [Subtype.ext_iff, idealSetMap_apply] at h
+        rwa [Subtype.ext_iff]),
     fun ⟨a, ha₂⟩ ↦ ⟨⟨a.val, mem_idealSet.mpr ⟨a.prop.1,
         ⟨preimageOfMemIntegerSet a, ha₂, mixedEmbedding_preimageOfMemIntegerSet a⟩⟩⟩, rfl⟩⟩
 

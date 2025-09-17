@@ -233,7 +233,7 @@ def map (f : LatticeHom α β) (L : Sublattice α) : Sublattice β where
 lemma mem_map_of_mem (f : LatticeHom α β) {a : α} : a ∈ L → f a ∈ L.map f := mem_image_of_mem f
 lemma apply_coe_mem_map (f : LatticeHom α β) (a : L) : f a ∈ L.map f := mem_map_of_mem f a.prop
 
-lemma map_mono : Monotone (map f) := fun _ _ ↦ image_subset _
+lemma map_mono : Monotone (map f) := fun _ _ ↦ image_mono
 
 @[simp] lemma map_id : L.map (LatticeHom.id α) = L := SetLike.coe_injective <| image_id _
 

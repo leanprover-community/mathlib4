@@ -40,7 +40,7 @@ section Orbit
 variable {α}
 
 /-- The orbit of an element under an action. -/
-@[to_additive "The orbit of an element under an action."]
+@[to_additive /-- The orbit of an element under an action. -/]
 def orbit (a : α) :=
   Set.range fun m : M => m • a
 
@@ -105,13 +105,13 @@ end Orbit
 section FixedPoints
 
 /-- The set of elements fixed under the whole action. -/
-@[to_additive "The set of elements fixed under the whole action."]
+@[to_additive /-- The set of elements fixed under the whole action. -/]
 def fixedPoints : Set α :=
   { a : α | ∀ m : M, m • a = a }
 
 variable {M} in
 /-- `fixedBy m` is the set of elements fixed by `m`. -/
-@[to_additive "`fixedBy m` is the set of elements fixed by `m`."]
+@[to_additive /-- `fixedBy m` is the set of elements fixed by `m`. -/]
 def fixedBy (m : M) : Set α :=
   { x | m • x = x }
 
@@ -144,7 +144,7 @@ section Stabilizers
 variable {α}
 
 /-- The stabilizer of a point `a` as a submonoid of `M`. -/
-@[to_additive "The stabilizer of a point `a` as an additive submonoid of `M`."]
+@[to_additive /-- The stabilizer of a point `a` as an additive submonoid of `M`. -/]
 def stabilizerSubmonoid (a : α) : Submonoid M where
   carrier := { m | m • a = a }
   one_mem' := one_smul _ a
@@ -268,7 +268,7 @@ lemma mem_subgroup_orbit_iff {H : Subgroup G} {x : α} {a b : orbit G x} :
 variable (G α)
 
 /-- The relation 'in the same orbit'. -/
-@[to_additive "The relation 'in the same orbit'."]
+@[to_additive /-- The relation 'in the same orbit'. -/]
 def orbitRel : Setoid α where
   r a b := a ∈ orbit G b
   iseqv :=
@@ -284,8 +284,8 @@ theorem orbitRel_apply {a b : α} : orbitRel G α a b ↔ a ∈ orbit G b :=
 /-- When you take a set `U` in `α`, push it down to the quotient, and pull back, you get the union
 of the orbit of `U` under `G`. -/
 @[to_additive
-      "When you take a set `U` in `α`, push it down to the quotient, and pull back, you get the
-      union of the orbit of `U` under `G`."]
+/-- When you take a set `U` in `α`, push it down to the quotient, and pull back, you get the union
+of the orbit of `U` under `G`. -/]
 theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     letI := orbitRel G α
     Quotient.mk' ⁻¹' (Quotient.mk' '' U) = ⋃ g : G, (g • ·) '' U := by
@@ -332,14 +332,14 @@ variable (G α)
 
 /-- The quotient by `MulAction.orbitRel`, given a name to enable dot notation. -/
 @[to_additive
-    "The quotient by `AddAction.orbitRel`, given a name to enable dot notation."]
+    /-- The quotient by `AddAction.orbitRel`, given a name to enable dot notation. -/]
 abbrev orbitRel.Quotient : Type _ :=
   _root_.Quotient <| orbitRel G α
 
 variable {G α}
 
 /-- The orbit corresponding to an element of the quotient by `MulAction.orbitRel` -/
-@[to_additive "The orbit corresponding to an element of the quotient by `AddAction.orbitRel`"]
+@[to_additive /-- The orbit corresponding to an element of the quotient by `AddAction.orbitRel` -/]
 nonrec def orbitRel.Quotient.orbit (x : orbitRel.Quotient G α) : Set α :=
   Quotient.liftOn' x (orbit G) fun _ _ => MulAction.orbit_eq_iff.2
 
@@ -356,7 +356,7 @@ theorem orbitRel.Quotient.mem_orbit {a : α} {x : orbitRel.Quotient G α} :
   rfl
 
 /-- Note that `hφ = Quotient.out_eq'` is a useful choice here. -/
-@[to_additive "Note that `hφ = Quotient.out_eq'` is a useful choice here."]
+@[to_additive /-- Note that `hφ = Quotient.out_eq'` is a useful choice here. -/]
 theorem orbitRel.Quotient.orbit_eq_orbit_out (x : orbitRel.Quotient G α)
     {φ : orbitRel.Quotient G α → α} (hφ : letI := orbitRel G α; RightInverse φ Quotient.mk') :
     orbitRel.Quotient.orbit x = MulAction.orbit G (φ x) := by
@@ -453,10 +453,10 @@ local notation "Ω" => orbitRel.Quotient G α
 This version is expressed in terms of `MulAction.orbitRel.Quotient.orbit` instead of
 `MulAction.orbit`, to avoid mentioning `Quotient.out`. -/
 @[to_additive
-      "Decomposition of a type `X` as a disjoint union of its orbits under an additive group action.
+  /-- Decomposition of a type `X` as a disjoint union of its orbits under an additive group action.
 
-      This version is expressed in terms of `AddAction.orbitRel.Quotient.orbit` instead of
-      `AddAction.orbit`, to avoid mentioning `Quotient.out`. "]
+  This version is expressed in terms of `AddAction.orbitRel.Quotient.orbit` instead of
+  `AddAction.orbit`, to avoid mentioning `Quotient.out`. -/]
 def selfEquivSigmaOrbits' : α ≃ Σ ω : Ω, ω.orbit :=
   letI := orbitRel G α
   calc
@@ -466,9 +466,8 @@ def selfEquivSigmaOrbits' : α ≃ Σ ω : Ω, ω.orbit :=
         Equiv.subtypeEquivRight fun _ => orbitRel.Quotient.mem_orbit.symm
 
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action. -/
-@[to_additive
-      "Decomposition of a type `X` as a disjoint union of its orbits under an additive group
-      action."]
+@[to_additive /-- Decomposition of a type `X` as a disjoint union of its orbits under an additive
+group action. -/]
 def selfEquivSigmaOrbits : α ≃ Σ ω : Ω, orbit G ω.out :=
   (selfEquivSigmaOrbits' G α).trans <|
     Equiv.sigmaCongrRight fun _ =>
@@ -476,8 +475,9 @@ def selfEquivSigmaOrbits : α ≃ Σ ω : Ω, orbit G ω.out :=
 
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action.
 Phrased as a set union. See `MulAction.selfEquivSigmaOrbits` for the type isomorphism. -/
-@[to_additive "Decomposition of a type `X` as a disjoint union of its orbits under an additive group
-action. Phrased as a set union. See `AddAction.selfEquivSigmaOrbits` for the type isomorphism."]
+@[to_additive /-- Decomposition of a type `X` as a disjoint union of its orbits under an additive
+group action. Phrased as a set union. See `AddAction.selfEquivSigmaOrbits` for the type
+isomorphism. -/]
 lemma univ_eq_iUnion_orbit :
     Set.univ (α := α) = ⋃ x : Ω, x.orbit := by
   ext x
@@ -491,9 +491,8 @@ section Stabilizer
 variable (G) in
 /-- The stabilizer of an element under an action, i.e. what sends the element to itself.
 A subgroup. -/
-@[to_additive
-      "The stabilizer of an element under an action, i.e. what sends the element to itself.
-      An additive subgroup."]
+@[to_additive /-- The stabilizer of an element under an action, i.e. what sends the element to
+itself. An additive subgroup. -/]
 def stabilizer (a : α) : Subgroup G :=
   { stabilizerSubmonoid G a with
     inv_mem' := fun {m} (ha : m • a = a) => show m⁻¹ • a = a by rw [inv_smul_eq_iff, ha] }

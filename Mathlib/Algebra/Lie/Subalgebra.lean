@@ -143,7 +143,6 @@ theorem lie_mem {x y : L} (hx : x ∈ L') (hy : y ∈ L') : (⁅x, y⁆ : L) ∈
 theorem mem_carrier {x : L} : x ∈ L'.carrier ↔ x ∈ (L' : Set L) :=
   Iff.rfl
 
-@[simp]
 theorem mem_mk_iff (S : Set L) (h₁ h₂ h₃ h₄) {x : L} :
     x ∈ (⟨⟨⟨⟨S, h₁⟩, h₂⟩, h₃⟩, h₄⟩ : LieSubalgebra R L) ↔ x ∈ S :=
   Iff.rfl
@@ -152,7 +151,10 @@ theorem mem_mk_iff (S : Set L) (h₁ h₂ h₃ h₄) {x : L} :
 theorem mem_toSubmodule {x : L} : x ∈ (L' : Submodule R L) ↔ x ∈ L' :=
   Iff.rfl
 
-@[deprecated (since := "2024-12-30")] alias mem_coe_submodule := mem_toSubmodule
+@[simp]
+theorem mem_mk_iff' (p : Submodule R L) (h) {x : L} :
+    x ∈ (⟨p, h⟩ : LieSubalgebra R L) ↔ x ∈ p :=
+  Iff.rfl
 
 theorem mem_coe {x : L} : x ∈ (L' : Set L) ↔ x ∈ L' :=
   Iff.rfl
@@ -180,11 +182,7 @@ theorem mk_coe (S : Set L) (h₁ h₂ h₃ h₄) :
   rfl
 
 theorem toSubmodule_mk (p : Submodule R L) (h) :
-    (({ p with lie_mem' := h } : LieSubalgebra R L) : Submodule R L) = p := by
-  cases p
-  rfl
-
-@[deprecated (since := "2024-12-30")] alias coe_to_submodule_mk := toSubmodule_mk
+    (({ p with lie_mem' := h } : LieSubalgebra R L) : Submodule R L) = p := rfl
 
 theorem coe_injective : Function.Injective ((↑) : LieSubalgebra R L → Set L) :=
   SetLike.coe_injective
@@ -199,21 +197,13 @@ theorem toSubmodule_injective : Function.Injective ((↑) : LieSubalgebra R L �
   rw [← coe_set_eq]
   exact h
 
-@[deprecated (since := "2024-12-30")] alias to_submodule_injective := toSubmodule_injective
-
 @[simp]
 theorem toSubmodule_inj (L₁' L₂' : LieSubalgebra R L) :
     (L₁' : Submodule R L) = (L₂' : Submodule R L) ↔ L₁' = L₂' :=
   toSubmodule_injective.eq_iff
 
-@[deprecated (since := "2024-12-30")] alias coe_to_submodule_inj := toSubmodule_inj
-
-@[deprecated (since := "2024-12-29")] alias toSubmodule_eq_iff := toSubmodule_inj
-
 theorem coe_toSubmodule : ((L' : Submodule R L) : Set L) = L' :=
   rfl
-
-@[deprecated (since := "2024-12-30")] alias coe_to_submodule := coe_toSubmodule
 
 section LieModule
 
@@ -291,8 +281,10 @@ def range : LieSubalgebra R L₂ :=
         exact ⟨⁅x, y⁆, f.map_lie x y⟩ }
 
 @[simp]
-theorem range_coe : (f.range : Set L₂) = Set.range f :=
-  LinearMap.range_coe (f : L →ₗ[R] L₂)
+theorem coe_range : (f.range : Set L₂) = Set.range f :=
+  LinearMap.coe_range (f : L →ₗ[R] L₂)
+
+@[deprecated (since := "2025-08-31")] alias range_coe := coe_range
 
 @[simp]
 theorem mem_range (x : L₂) : x ∈ f.range ↔ ∃ y : L, f y = x :=
@@ -376,6 +368,8 @@ def comap : LieSubalgebra R L :=
       suffices ⁅f x, f y⁆ ∈ K₂ by simp [this]
       exact K₂.lie_mem hx hy }
 
+@[simp] lemma mem_comap {x : L} : x ∈ K₂.comap f ↔ f x ∈ K₂ := Iff.rfl
+
 section LatticeStructure
 
 open Set
@@ -391,9 +385,6 @@ theorem le_def : K ≤ K' ↔ (K : Set L) ⊆ K' :=
 theorem toSubmodule_le_toSubmodule : (K : Submodule R L) ≤ K' ↔ K ≤ K' :=
   Iff.rfl
 
-@[deprecated (since := "2024-12-30")]
-alias coe_submodule_le_coe_submodule := toSubmodule_le_toSubmodule
-
 instance : Bot (LieSubalgebra R L) :=
   ⟨0⟩
 
@@ -404,8 +395,6 @@ theorem bot_coe : ((⊥ : LieSubalgebra R L) : Set L) = {0} :=
 @[simp]
 theorem bot_toSubmodule : ((⊥ : LieSubalgebra R L) : Submodule R L) = ⊥ :=
   rfl
-
-@[deprecated (since := "2024-12-30")] alias bot_coe_submodule := bot_toSubmodule
 
 @[simp]
 theorem mem_bot (x : L) : x ∈ (⊥ : LieSubalgebra R L) ↔ x = 0 :=
@@ -421,8 +410,6 @@ theorem top_coe : ((⊤ : LieSubalgebra R L) : Set L) = univ :=
 @[simp]
 theorem top_toSubmodule : ((⊤ : LieSubalgebra R L) : Submodule R L) = ⊤ :=
   rfl
-
-@[deprecated (since := "2024-12-30")] alias top_coe_submodule := top_toSubmodule
 
 @[simp]
 theorem mem_top (x : L) : x ∈ (⊤ : LieSubalgebra R L) :=
@@ -441,34 +428,36 @@ instance : InfSet (LieSubalgebra R L) :=
   ⟨fun S ↦
     { sInf {(s : Submodule R L) | s ∈ S} with
       lie_mem' := @fun x y hx hy ↦ by
-        simp only [Submodule.mem_carrier, mem_iInter, Submodule.sInf_coe, mem_setOf_eq,
+        simp only [Submodule.mem_carrier, mem_iInter, Submodule.coe_sInf, mem_setOf_eq,
           forall_apply_eq_imp_iff₂, exists_imp, and_imp] at hx hy ⊢
         intro K hK
         exact K.lie_mem (hx K hK) (hy K hK) }⟩
 
 @[simp]
-theorem inf_coe : (↑(K ⊓ K') : Set L) = (K : Set L) ∩ (K' : Set L) :=
+theorem coe_inf : (↑(K ⊓ K') : Set L) = (K : Set L) ∩ (K' : Set L) :=
   rfl
+
+@[deprecated (since := "2025-08-31")] alias inf_coe := coe_inf
 
 @[simp]
 theorem sInf_toSubmodule (S : Set (LieSubalgebra R L)) :
     (↑(sInf S) : Submodule R L) = sInf {(s : Submodule R L) | s ∈ S} :=
   rfl
 
-@[deprecated (since := "2024-12-30")] alias sInf_coe_to_submodule := sInf_toSubmodule
-
 @[simp]
-theorem sInf_coe (S : Set (LieSubalgebra R L)) : (↑(sInf S) : Set L) = ⋂ s ∈ S, (s : Set L) := by
-  rw [← coe_toSubmodule, sInf_toSubmodule, Submodule.sInf_coe]
+theorem coe_sInf (S : Set (LieSubalgebra R L)) : (↑(sInf S) : Set L) = ⋂ s ∈ S, (s : Set L) := by
+  rw [← coe_toSubmodule, sInf_toSubmodule, Submodule.coe_sInf]
   ext x
   simp
+
+@[deprecated (since := "2025-08-31")] alias sInf_coe := coe_sInf
 
 theorem sInf_glb (S : Set (LieSubalgebra R L)) : IsGLB S (sInf S) := by
   have h : ∀ K K' : LieSubalgebra R L, (K : Set L) ≤ K' ↔ K ≤ K' := by
     intros
     exact Iff.rfl
   apply IsGLB.of_image @h
-  simp only [sInf_coe]
+  simp only [coe_sInf]
   exact isGLB_biInf
 
 /-- The set of Lie subalgebras of a Lie algebra form a complete lattice.
@@ -505,6 +494,7 @@ instance : IsOrderedAddMonoid (LieSubalgebra R L) where
 
 instance : CanonicallyOrderedAdd (LieSubalgebra R L) where
   exists_add_of_le {_a b} h := ⟨b, (sup_eq_right.2 h).symm⟩
+  le_add_self _ _ := le_sup_right
   le_self_add _ _ := le_sup_left
 
 @[simp]
@@ -515,8 +505,6 @@ theorem add_eq_sup : K + K' = K ⊔ K' :=
 theorem inf_toSubmodule :
     (↑(K ⊓ K') : Submodule R L) = (K : Submodule R L) ⊓ (K' : Submodule R L) :=
   rfl
-
-@[deprecated (since := "2024-12-30")] alias inf_coe_to_submodule := inf_toSubmodule
 
 @[simp]
 theorem mem_inf (x : L) : x ∈ K ⊓ K' ↔ x ∈ K ∧ x ∈ K' := by
@@ -615,7 +603,7 @@ def lieSpan : LieSubalgebra R L :=
 variable {R L s}
 
 theorem mem_lieSpan {x : L} : x ∈ lieSpan R L s ↔ ∀ K : LieSubalgebra R L, s ⊆ K → x ∈ K := by
-  rw [← SetLike.mem_coe, lieSpan, sInf_coe]
+  rw [← SetLike.mem_coe, lieSpan, coe_sInf]
   exact Set.mem_iInter₂
 
 theorem subset_lieSpan : s ⊆ lieSpan R L s := by
@@ -649,6 +637,25 @@ theorem coe_lieSpan_submodule_eq_iff {p : Submodule R L} :
     rw [← h, mem_toSubmodule]
     exact lie_mem _ (subset_lieSpan hm)
   · rw [← toSubmodule_mk p @h, coe_toSubmodule, toSubmodule_inj, lieSpan_eq]
+
+open Submodule in
+theorem coe_lieSpan_eq_span_of_forall_lie_eq_zero
+    {s : Set L} (hs : ∀ᵉ (x ∈ s) (y ∈ s), ⁅x, y⁆ = 0) :
+    lieSpan R L s = span R s := by
+  suffices ∀ {x y}, x ∈ span R s → y ∈ span R s → ⁅x, y⁆ ∈ span R s by
+    refine le_antisymm ?_ submodule_span_le_lieSpan
+    change _ ≤ ({ span R s with lie_mem' := this } : LieSubalgebra R L)
+    rw [lieSpan_le]
+    exact subset_span
+  intro x y hx hy
+  induction hx, hy using span_induction₂ with
+  | mem_mem x y hx hy => simp [hs x hx y hy]
+  | zero_left y hy => simp
+  | zero_right x hx => simp
+  | add_left x y z _ _ _ hx hy => simp [add_mem hx hy]
+  | add_right x y z _ _ _ hx hy => simp [add_mem hx hy]
+  | smul_left r x y _ _ h => simp [smul_mem _ r h]
+  | smul_right r x y _ _ h => simp [smul_mem _ r h]
 
 variable (R L)
 
