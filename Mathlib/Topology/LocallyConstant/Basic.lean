@@ -259,8 +259,6 @@ protected theorem continuous : Continuous f :=
 /-- As a shorthand, `LocallyConstant.toContinuousMap` is available as a coercion -/
 instance : Coe (LocallyConstant X Y) C(X, Y) := ⟨toContinuousMap⟩
 
--- Porting note: became a syntactic `rfl`
-
 @[simp] theorem coe_continuousMap : ((f : C(X, Y)) : X → Y) = (f : X → Y) := rfl
 
 theorem toContinuousMap_injective :
