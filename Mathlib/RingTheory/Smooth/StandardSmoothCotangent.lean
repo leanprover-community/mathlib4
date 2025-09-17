@@ -246,9 +246,20 @@ instance : Module.Free S (Generators.localizationAway S r).toExtension.Cotangent
   inferInstanceAs <|
     Module.Free S ((SubmersivePresentation.localizationAway S r).toExtension.Cotangent)
 
+variable (S) in
+/-- The image of `g * X - 1` in `I/I²` if `I` is the kernel of the canonical presentation
+of the localization of `S` away from `g`. -/
+noncomputable
+abbrev Generators.cMulXSubOneCotangent : (Generators.localizationAway S r).toExtension.Cotangent :=
+  Extension.Cotangent.mk ⟨C r * X () - 1, C_mul_X_sub_one_mem_ker _⟩
+
+lemma Generators.cMulXSubOneCotangent_eq :
+    cMulXSubOneCotangent S r = Extension.Cotangent.mk ⟨C r * X () - 1, C_mul_X_sub_one_mem_ker _⟩ :=
+  rfl
+
 lemma SubmersivePresentation.basisCotangent_localizationAway_apply (x : Unit) :
     (SubmersivePresentation.localizationAway S r).basisCotangent x =
-      .mk ⟨C r * X () - 1, Generators.C_mul_X_sub_one_mem_ker _⟩ :=
+      Generators.cMulXSubOneCotangent S r :=
   basisCotangent_apply _ _
 
 variable (S) in
@@ -269,7 +280,7 @@ def Generators.basisCotangentAway (r : R) [IsLocalization.Away r S] :
   (SubmersivePresentation.localizationAway S r).basisCotangent
 
 lemma Generators.basisCotangentAway_apply (x : Unit) :
-    basisCotangentAway S r x = .mk ⟨C r * X () - 1, C_mul_X_sub_one_mem_ker _⟩ :=
+    basisCotangentAway S r x = cMulXSubOneCotangent S r :=
   SubmersivePresentation.basisCotangent_apply _ _
 
 end LocalizationAway

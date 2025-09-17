@@ -164,13 +164,12 @@ variable (x : ((localizationAway T g).comp P).toExtension.Cotangent)
 
 /-- By construction, the section `cotangentCompAwaySec` sends `g * X - 1` to `x`. -/
 lemma cotangentCompAwaySec_apply :
-    cotangentCompAwaySec g P x
-      (Extension.Cotangent.mk ⟨C g * X () - 1, C_mul_X_sub_one_mem_ker _⟩) = x := by
+    cotangentCompAwaySec g P x (cMulXSubOneCotangent T g) = x := by
   rw [← basisCotangentAway_apply _ (), cotangentCompAwaySec, Module.Basis.constr_basis]
 
 variable {x}
   (hx : Extension.Cotangent.map ((localizationAway T g).ofComp P).toExtensionHom x =
-    .mk ⟨C g * X () - 1, C_mul_X_sub_one_mem_ker _⟩)
+    cMulXSubOneCotangent T g)
 
 include hx in
 /-- The section `cotangentCompAwaySec` is indeed a section of the canonical map `J/J² → K/K²`. -/
@@ -201,7 +200,7 @@ def cotangentCompLocalizationAwayEquiv :
 
 lemma cotangentCompLocalizationAwayEquiv_symm_inr :
     (cotangentCompLocalizationAwayEquiv g P hx).symm
-      (0, .mk ⟨C g * X () - 1, C_mul_X_sub_one_mem_ker _⟩) = x := by
+      (0, cMulXSubOneCotangent T g) = x := by
   simpa [cotangentCompLocalizationAwayEquiv, Function.Exact.splitSurjectiveEquiv] using
     cotangentCompAwaySec_apply g P x
 
