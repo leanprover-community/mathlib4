@@ -519,7 +519,9 @@ theorem liftAux.smul (r : R) (x) : liftAux f (r • x) = r • liftAux f x :=
 variable (f') in
 /-- Constructing a linear map `M ⊗ N → P` given a bilinear map `M → N → P` with the property that
 its composition with the canonical bilinear map `M → N → M ⊗ N` is
-the given bilinear map `M → N → P`. -/
+the given bilinear map `M → N → P`.
+
+This works for semilinear maps. -/
 def lift : M ⊗[R] N →ₛₗ[σ₁₂] P₂ :=
   { liftAux f' with map_smul' := liftAux.smulₛₗ }
 
