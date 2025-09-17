@@ -19,7 +19,7 @@ universe u
 
 namespace CategoryTheory
 
-open CategoryTheory Limits Opposite MonoidalCategory Functor Functor.Monoidal
+open CategoryTheory MonoidalCategory Functor Functor.Monoidal
 
 namespace Localization.Monoidal
 
