@@ -352,12 +352,12 @@ theorem ker_toZMod : RingHom.ker (toZMod : ℤ_[p] →+* ZMod p) = maximalIdeal 
     · apply sub_zmodRepr_mem
 
 @[simp]
-lemma val_toZMod_eq_zmodSpec (x : ℤ_[p]) :
+lemma val_toZMod_eq_zmodRepr (x : ℤ_[p]) :
     (toZMod x).val = x.zmodRepr :=
   (zmodRepr_unique _ _ (ZMod.val_lt _) <| by simpa using toZMod_spec _).symm
 
 lemma zmodRepr_mul (x y : ℤ_[p]) : (x * y).zmodRepr = x.zmodRepr * y.zmodRepr % p := by
-  simp [← val_toZMod_eq_zmodSpec, ZMod.val_mul]
+  simp [← val_toZMod_eq_zmodRepr, ZMod.val_mul]
 
 /-- The equivalence between the residue field of the `p`-adic integers and `ℤ/pℤ` -/
 def residueField : IsLocalRing.ResidueField ℤ_[p] ≃+* ZMod p :=
