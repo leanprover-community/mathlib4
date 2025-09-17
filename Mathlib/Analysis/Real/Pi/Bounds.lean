@@ -13,8 +13,8 @@ Notably, these include `pi_gt_sqrtTwoAddSeries` and `pi_lt_sqrtTwoAddSeries`,
 which bound `π` using series;
 numerical bounds on `π` such as `pi_gt_d2` and `pi_lt_d2` (more precise versions are given, too).
 
-See also `Mathlib/Data/Real/Pi/Leibniz.lean` and `Mathlib/Data/Real/Pi/Wallis.lean` for infinite
-formulas for `π`.
+See also `Mathlib/Analysis/Real/Pi/Leibniz.lean` and `Mathlib/Analysis/Real/Pi/Wallis.lean` for
+infinite formulas for `π`.
 -/
 
 open scoped Real
