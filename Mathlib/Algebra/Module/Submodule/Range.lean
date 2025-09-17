@@ -18,7 +18,7 @@ ring homomorphism.
 
 Note that this also means that dot notation (i.e. `f.range` for a linear map `f`) does not work.
 
-## Notations
+## Notation
 
 * We continue to use the notations `M →ₛₗ[σ] M₂` and `M →ₗ[R] M₂` for the type of semilinear
   (resp. linear) maps from `M` to `M₂` over the ring homomorphism `σ` (resp. over the ring `R`).
