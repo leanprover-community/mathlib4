@@ -517,7 +517,7 @@ Q536640:
   title: Hall's marriage theorem
   decls:
     - Finset.all_card_le_biUnion_card_iff_exists_injective
-    - SimpleGraph.exists_IsPerfectMatching_of_forall_ncard_le
+    - SimpleGraph.exists_isPerfectMatching_of_forall_ncard_le
   authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
 
 Q537618:
