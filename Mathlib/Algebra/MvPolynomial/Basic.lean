@@ -176,7 +176,7 @@ theorem algebraMap_apply [Algebra R S₁] (r : R) :
 def X (n : σ) : MvPolynomial σ R :=
   monomial (Finsupp.single n 1) 1
 
-register_poly_vars "[" X, ... "]" MvPolynomial MvPolynomial.C MvPolynomial.X
+register_poly_vars (mv := true) "[" "]" MvPolynomial MvPolynomial.C MvPolynomial.X
 
 theorem monomial_left_injective {r : R} (hr : r ≠ 0) :
     Function.Injective fun s : σ →₀ ℕ => monomial s r :=
