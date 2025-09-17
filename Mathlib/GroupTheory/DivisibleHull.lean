@@ -118,7 +118,7 @@ theorem mk_add_mk_left {m1 m2 : M} {s : ℕ+} :
 theorem coe_add {m1 m2 : M} : ↑(m1 + m2) = (↑m1 + ↑m2 : DivisibleHull M) := by simp [mk_add_mk_left]
 
 variable (M) in
-/-- Coercion from `M` to `DivisibleHull M` as a `AddMonoidHom`. -/
+/-- Coercion from `M` to `DivisibleHull M` as an `AddMonoidHom`. -/
 @[simps]
 def coeAddMonoidHom : M →+ DivisibleHull M where
   toFun := (↑)
@@ -157,9 +157,8 @@ end TorsionFree
 section Group
 variable {M : Type*} [AddCommGroup M]
 
-@[simp]
-theorem mk_neg (m : M) (s : ℕ+) : mk (-m) s = -mk m s :=
-  eq_neg_of_add_eq_zero_left (by simp [mk_add_mk_left])
+theorem neg_mk (m : M) (s : ℕ+) : -mk m s = mk (-m) s :=
+  (eq_neg_of_add_eq_zero_left (by simp [mk_add_mk_left])).symm
 
 noncomputable
 instance : SMul ℚ (DivisibleHull M) where
@@ -193,7 +192,7 @@ theorem qsmul_mk (a : ℚ) (m : M) (s : ℕ+) :
       rw [← natCast_zsmul]
       congr
       simpa using h
-    simp [nnqsmul_mk, this]
+    simp [nnqsmul_mk, this, ← neg_mk]
 
 noncomputable
 instance : Module ℚ (DivisibleHull M) where
@@ -281,28 +280,17 @@ instance : LinearOrder (DivisibleHull M) where
 theorem mk_lt_mk {m m' : M} {s s' : ℕ+} : mk m s < mk m' s' ↔ s'.val • m < s.val • m' := by
   simp_rw [lt_iff_not_ge, mk_le_mk]
 
--- An intermediate lemma for `IsOrderedCancelAddMonoid`.
--- For public API, use `_root_.add_lt_add_left`.
-private lemma aux_add_lt_add_left (a : DivisibleHull M) {b c : DivisibleHull M} (h : b < c) :
-    a + b < a + c := by
-  induction a with | mk ma sa
-  induction b with | mk mb sb
-  induction c with | mk mc sc
-  simp_rw [mk_add_mk]
-  rw [mk_lt_mk] at ⊢ h
-  simp_rw [PNat.mul_coe, mul_smul, smul_add, smul_smul]
-  have := add_lt_add_left (nsmul_lt_nsmul_right (sa * sa).ne_zero h) ((sa * sb * sc.val) • ma)
-  simp_rw [PNat.mul_coe, smul_smul] at this
-  convert this using 3 <;> ring
-
-instance : IsOrderedCancelAddMonoid (DivisibleHull M) where
-  add_le_add_left a b h c := by
-    obtain rfl | h := eq_or_lt_of_le h
-    · simp
-    exact (aux_add_lt_add_left c h).le
-  le_of_add_le_add_left a b c h := by
-    contrapose! h
-    exact aux_add_lt_add_left a h
+instance : IsOrderedCancelAddMonoid (DivisibleHull M) :=
+  .of_add_lt_add_left (fun a b c h ↦ by
+    induction a with | mk ma sa
+    induction b with | mk mb sb
+    induction c with | mk mc sc
+    simp_rw [mk_add_mk]
+    rw [mk_lt_mk] at ⊢ h
+    simp_rw [PNat.mul_coe, mul_smul, smul_add, smul_smul]
+    have := add_lt_add_left (nsmul_lt_nsmul_right (sa * sa).ne_zero h) ((sa * sb * sc.val) • ma)
+    simp_rw [PNat.mul_coe, smul_smul] at this
+    convert this using 3 <;> ring)
 
 instance : IsStrictOrderedModule ℚ≥0 (DivisibleHull M) where
   smul_lt_smul_of_pos_left a ha b c h := by
@@ -358,24 +346,24 @@ theorem archimedeanClassMk_mk_eq (m : M) (s s' : ℕ+) :
 variable (M) in
 /-- Forward direction of `archimedeanClassOrderIso`. -/
 private noncomputable
-def aux_archimedeanClassOrderHom : ArchimedeanClass M →o ArchimedeanClass (DivisibleHull M) :=
+def archimedeanClassOrderHom : ArchimedeanClass M →o ArchimedeanClass (DivisibleHull M) :=
   ArchimedeanClass.orderHom (coeOrderAddMonoidHom M)
 
 /-- See `archimedeanClassOrderIso_symm_apply` for public API. -/
 private theorem aux_archimedeanClassMk_mk (m : M) (s : ℕ+) :
-    ArchimedeanClass.mk (mk m s) = aux_archimedeanClassOrderHom M (ArchimedeanClass.mk m) := by
-  rw [aux_archimedeanClassOrderHom, ArchimedeanClass.orderHom_mk, coeOrderAddMonoidHom_apply]
+    ArchimedeanClass.mk (mk m s) = archimedeanClassOrderHom M (ArchimedeanClass.mk m) := by
+  rw [archimedeanClassOrderHom, ArchimedeanClass.orderHom_mk, coeOrderAddMonoidHom_apply]
   apply archimedeanClassMk_mk_eq
 
 /-- Use `Equiv.injective archimedeanClassOrderIso` for public API. -/
 private theorem aux_archimedeanClassOrderHom_injective :
-    Function.Injective (aux_archimedeanClassOrderHom M) :=
+    Function.Injective (archimedeanClassOrderHom M) :=
   ArchimedeanClass.orderHom_injective coeOrderAddMonoidHom_injective
 
 variable (M) in
 /-- Backward direction of `archimedeanClassOrderIso`. -/
 private noncomputable
-def aux_archimedeanClassOrderHomInv : ArchimedeanClass (DivisibleHull M) →o ArchimedeanClass M :=
+def archimedeanClassOrderHomInv : ArchimedeanClass (DivisibleHull M) →o ArchimedeanClass M :=
   ArchimedeanClass.liftOrderHom (fun x ↦ x.liftOn (fun m s ↦ ArchimedeanClass.mk m)
     (fun _ _ _ _ h ↦ by
       apply aux_archimedeanClassOrderHom_injective
@@ -385,23 +373,23 @@ def aux_archimedeanClassOrderHomInv : ArchimedeanClass (DivisibleHull M) →o Ar
       induction a with | mk _ _
       induction b with | mk _ _
       simp_rw [aux_archimedeanClassMk_mk] at h
-      simpa using ((aux_archimedeanClassOrderHom M).monotone.strictMono_of_injective
+      simpa using ((archimedeanClassOrderHom M).monotone.strictMono_of_injective
         aux_archimedeanClassOrderHom_injective).le_iff_le.mp h)
 
 variable (M) in
 /-- The Archimedean classes of `DivisibleHull M` are the same as those of `M`. -/
 noncomputable
 def archimedeanClassOrderIso : ArchimedeanClass M ≃o ArchimedeanClass (DivisibleHull M) := by
-  apply OrderIso.ofHomInv (aux_archimedeanClassOrderHom M) (aux_archimedeanClassOrderHomInv M)
+  apply OrderIso.ofHomInv (archimedeanClassOrderHom M) (archimedeanClassOrderHomInv M)
   · ext a
     induction a using ArchimedeanClass.ind with | mk a
     induction a with | mk m s
     suffices ArchimedeanClass.mk (mk m 1) = ArchimedeanClass.mk (mk m s) by
-      simpa [aux_archimedeanClassOrderHom, aux_archimedeanClassOrderHomInv]
+      simpa [archimedeanClassOrderHom, archimedeanClassOrderHomInv]
     simp_rw [aux_archimedeanClassMk_mk]
   · ext a
     induction a using ArchimedeanClass.ind with | mk _
-    simp [aux_archimedeanClassOrderHom, aux_archimedeanClassOrderHomInv]
+    simp [archimedeanClassOrderHom, archimedeanClassOrderHomInv]
 
 @[simp]
 theorem archimedeanClassOrderIso_apply (a : ArchimedeanClass M) :
