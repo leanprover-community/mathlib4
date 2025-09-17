@@ -79,25 +79,24 @@ def mk' [Lattice α] (r : α → α → Prop) (h₁ : IsRefl α r)
     (h₄ : ∀ ⦃x y t : α⦄, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t)) : LatticeCon α :=
   LatticeCon.mk (Setoid.mk r (Equivalence.mk h₁.refl
   (fun h => by rw [h₂, inf_comm, sup_comm, ← h₂]; exact h)
-  (fun hxy hxz => transitive h₂ h₃ h₄ hxy hxz))) (fun h1 h2 => by
+  (fun hxy hxz => transitive h₂ h₃ h₄ hxy hxz))) (by
+    intro w _ _ _ h1 h2
     have compatible_left_inf {x y t : α} (hh : r x y) : r (x ⊓ t) (y ⊓ t) :=
       closed_interval h₂ h₄ ((x ⊓ y) ⊓ t) _ _ ((x ⊔ y) ⊓ t)
             (inf_le_inf_right _ inf_le_left) (inf_le_inf_right _ le_sup_left)
             (inf_le_inf_right _ inf_le_right) (inf_le_inf_right _ le_sup_right)
             (h₄ inf_le_sup (h₂.mp hh)).1
     exact transitive h₂ h₃ h₄ (by
-          conv_lhs => rw [inf_comm]
-          conv_rhs => rw [inf_comm]
-          exact compatible_left_inf h2)
+          simpa [inf_comm w] using compatible_left_inf h2)
       (compatible_left_inf h1)) (by
-        intro w x y z h1 h2
+        intro w _ _ _ h1 h2
         have compatible_left_sup {x y t : α} (hh : r x y) : r (x ⊔ t) (y ⊔ t) :=
           closed_interval h₂ h₄ ((x ⊓ y) ⊔ t) _ _ ((x ⊔ y) ⊔ t)
             (sup_le_sup_right inf_le_left _) (sup_le_sup_right le_sup_left _)
             (sup_le_sup_right inf_le_right _) (sup_le_sup_right le_sup_right _)
             (h₄ inf_le_sup (h₂.mp hh)).2
         exact transitive h₂ h₃ h₄ (by
-          simpa [sup_comm] using (compatible_left_sup h2 : r (y ⊔ w) (z ⊔ w)))
+          simpa [sup_comm w] using compatible_left_sup h2)
           (compatible_left_sup h1))
 
 variable {β F : Type*} [FunLike F α β]
