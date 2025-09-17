@@ -34,9 +34,6 @@ open Matrix
 
 open LinearMap
 
--- disable this instance so we do not accidentally use it in lemmas.
-attribute [-instance] SpecialLinearGroup.instCoeFun
-
 /-- `GL n R` is the group of `n` by `n` `R`-matrices with unit determinant.
 Defined as a subtype of matrices -/
 abbrev GeneralLinearGroup (n : Type u) (R : Type v) [DecidableEq n] [Fintype n] [CommRing R] :
@@ -236,6 +233,17 @@ lemma mapGL_injective [FaithfulSMul R S] :
 lemma mapGL_coe_matrix (g : SpecialLinearGroup n R) :
     ((mapGL S g) : Matrix n n S) = g.map (algebraMap R S) :=
   rfl
+
+@[simp]
+lemma map_mapGL {T : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+    (g : SpecialLinearGroup n R) :
+    (mapGL S g).map (algebraMap S T) = mapGL T g := by
+  ext
+  simp [IsScalarTower.algebraMap_apply R S T]
+
+@[simp]
+lemma det_mapGL (g : SpecialLinearGroup n R) : (mapGL S g).det = 1 := by
+  simp [mapGL]
 
 end SpecialLinearGroup
 
