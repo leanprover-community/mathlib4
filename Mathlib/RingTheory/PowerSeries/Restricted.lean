@@ -105,8 +105,8 @@ open IsUltrametricDist
 lemma mul {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) :
     IsRestricted c (f * g) := by
   simp_rw [IsRestricted] at hf hg ⊢
-  obtain ⟨a, ha, fBound1⟩ := BddAbove_nneg |c| ((isRestricted_iff c f).mp hf)
-  obtain ⟨b, hb, gBound1⟩ := BddAbove_nneg |c| ((isRestricted_iff c g).mp hg)
+  obtain ⟨a, ha, fBound1⟩ := BddAbove_nneg |c| ((isRestricted_iff_abs c f).mp hf)
+  obtain ⟨b, hb, gBound1⟩ := BddAbove_nneg |c| ((isRestricted_iff_abs c g).mp hg)
   rw [NormedAddCommGroup.tendsto_atTop] at hf hg ⊢
   intro ε hε
   simp only [sub_zero, norm_mul, norm_pow, Real.norm_eq_abs, abs_norm] at hf hg ⊢
@@ -142,5 +142,5 @@ lemma mul {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) 
       (by simpa only [mul_div_left_comm] using ((mul_le_iff_le_one_right hε).mpr
       ((div_le_one₀ (lt_sup_of_lt_left ha)).mpr (le_max_left a b))))
 
-end Restricted
+end IsRestricted
 end PowerSeries
