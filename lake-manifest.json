@@ -69,7 +69,7 @@
    "name": "batteries",
    "manifestFile": "lake-manifest.json",
    "inputRev": "nightly-testing",
-   "inherited": true,
+   "inherited": false,
    "configFile": "lakefile.toml"},
   {"url": "https://github.com/leanprover/lean4-cli",
    "type": "git",
