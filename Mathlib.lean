@@ -4729,6 +4729,7 @@ import Mathlib.ModelTheory.Algebra.Ring.Basic
 import Mathlib.ModelTheory.Algebra.Ring.Definability
 import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 import Mathlib.ModelTheory.Arithmetic.Presburger.Basic
+import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Defs
 import Mathlib.ModelTheory.Basic
 import Mathlib.ModelTheory.Bundled
 import Mathlib.ModelTheory.Complexity
