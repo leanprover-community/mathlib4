@@ -790,7 +790,8 @@ theorem map_map (f₂ : M₂ →ₛₗ[σ₂₃] M₃) (g₂ : N₂ →ₛₗ[σ
     map f₂ g₂ (map f₁ g₁ x) = map (f₂ ∘ₛₗ f₁) (g₂ ∘ₛₗ g₁) x :=
   DFunLike.congr_fun (map_comp ..).symm x
 
-lemma range_map_mono {a : M₁ →ₗ[R] M₂} {b : M₃ →ₗ[R] M₂} {c : N₁ →ₗ[R] N₂} {d : N₃ →ₗ[R] N₂}
+lemma range_map_mono [Module R M₂] [Module R M₃] [Module R N₂] [Module R N₃]
+    {a : M →ₗ[R] M₂} {b : M₃ →ₗ[R] M₂} {c : N →ₗ[R] N₂} {d : N₃ →ₗ[R] N₂}
     (hab : range a ≤ range b) (hcd : range c ≤ range d) : range (map a c) ≤ range (map b d) := by
   simp_rw [range_map]
   exact Submodule.map₂_le_map₂ hab hcd
