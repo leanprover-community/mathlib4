@@ -292,6 +292,9 @@ def eqLocusM (f g : M →* N) : Submonoid M where
   mul_mem' (hx : _ = _) (hy : _ = _) := by simp [*]
 
 @[to_additive (attr := simp)]
+theorem mem_eqLocusM {f g : M →* N} {x : M} : x ∈ f.eqLocusM g ↔ f x = g x := Iff.rfl
+
+@[to_additive (attr := simp)]
 theorem eqLocusM_same (f : M →* N) : f.eqLocusM f = ⊤ :=
   SetLike.ext fun _ => eq_self_iff_true _
 
