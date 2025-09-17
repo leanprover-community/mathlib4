@@ -968,13 +968,33 @@ theorem norm_int_le_pow_iff_dvd (k : ℤ) (n : ℕ) :
   norm_cast
   rw [← padicNorm.dvd_iff_norm_le]
 
-theorem eq_of_norm_add_lt_right {z1 z2 : ℚ_[p]} (h : ‖z1 + z2‖ < ‖z2‖) : ‖z1‖ = ‖z2‖ :=
+theorem norm_eq_of_norm_add_lt_right {z1 z2 : ℚ_[p]} (h : ‖z1 + z2‖ < ‖z2‖) : ‖z1‖ = ‖z2‖ :=
   _root_.by_contradiction fun hne ↦
     not_lt_of_ge (by rw [add_eq_max_of_ne hne]; apply le_max_right) h
 
-theorem eq_of_norm_add_lt_left {z1 z2 : ℚ_[p]} (h : ‖z1 + z2‖ < ‖z1‖) : ‖z1‖ = ‖z2‖ :=
+@[deprecated (since := "2025-09-17")] alias eq_of_norm_add_lt_right := norm_eq_of_norm_add_lt_right
+
+theorem norm_eq_of_norm_add_lt_left {z1 z2 : ℚ_[p]} (h : ‖z1 + z2‖ < ‖z1‖) : ‖z1‖ = ‖z2‖ :=
   _root_.by_contradiction fun hne ↦
     not_lt_of_ge (by rw [add_eq_max_of_ne hne]; apply le_max_left) h
+
+@[deprecated (since := "2025-09-17")] alias eq_of_norm_add_lt_left := norm_eq_of_norm_add_lt_left
+
+theorem norm_eq_of_norm_sub_lt_right {z1 z2 : ℚ_[p]} (h : ‖z1 - z2‖ < ‖z2‖) : ‖z1‖ = ‖z2‖ := by
+  rw [← norm_neg z2]
+  apply norm_eq_of_norm_add_lt_right
+  simp [← sub_eq_add_neg, h]
+
+theorem norm_eq_of_norm_sub_lt_left {z1 z2 : ℚ_[p]} (h : ‖z1 - z2‖ < ‖z1‖) : ‖z1‖ = ‖z2‖ := by
+  rw [eq_comm]
+  apply norm_eq_of_norm_sub_lt_right
+  simpa [← norm_neg (z1 - _)] using h
+
+@[simp]
+lemma norm_natCast_p_sub_one :
+    ‖((p - 1 : ℕ) : ℚ_[p])‖ = 1 := by
+  rw [norm_natCast_eq_one_iff]
+  exact (coprime_self_sub_right hp.out.one_le).mpr p.coprime_one_right
 
 end NormedSpace
 
