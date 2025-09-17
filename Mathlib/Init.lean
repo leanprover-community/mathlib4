@@ -87,9 +87,9 @@ register_linter_set linter.mathlibStandardSet :=
 to catch any regressions.
 -/
 register_linter_set linter.nightlyRegressionSet :=
-  linter.tacticAnalysis.linarithToGrind
-  linter.tacticAnalysis.omegaToGrind
-  linter.tacticAnalysis.ringToGrind
+  linter.tacticAnalysis.regressions.linarithToGrind
+  linter.tacticAnalysis.regressions.omegaToCutsat
+  linter.tacticAnalysis.regressions.ringToGrind
 
 -- Check that all linter options mentioned in the mathlib standard linter set exist.
 open Lean Elab.Command Linter Mathlib.Linter Mathlib.Linter.Style
@@ -101,7 +101,9 @@ run_cmd liftTermElabM do
   let ls := linterSetsExt.getEntries env
   let some (_, mlLinters) := ls.find? (·.1 == ``linter.mathlibStandardSet) |
     throwError m!"'linter.mathlibStandardSet' is not defined."
-  for mll in mlLinters do
+  let some (_, nrLinters) := ls.find? (·.1 == ``linter.nightlyRegressionSet) |
+    throwError m!"'linter.nightlyRegressionSet is not defined."
+  for mll in mlLinters ∪ nrLinters do
     let [(mlRes, _)] ← realizeGlobalName mll |
       if !DefinedInScripts.contains mll then
         throwError "Unknown option '{mll}'!"

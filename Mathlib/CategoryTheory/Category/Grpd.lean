@@ -80,10 +80,16 @@ instance forgetToCat_faithful : forgetToCat.Faithful where
 
 /-- Convert arrows in the category of groupoids to functors,
 which sometimes helps in applying simp lemmas -/
-theorem hom_to_functor {C D E : Grpd.{v, u}} (f : C ⟶ D) (g : D ⟶ E) : f ≫ g = f ⋙ g :=
+theorem comp_eq_comp {C D E : Grpd.{v, u}} (f : C ⟶ D) (g : D ⟶ E) : f ≫ g = f ⋙ g :=
   rfl
 
 /-- Converts identity in the category of groupoids to the functor identity -/
+theorem id_eq_id {C : Grpd.{v, u}} : 𝟙 C = 𝟭 C  :=
+  rfl
+
+@[deprecated (since := "2025-09-04")] alias hom_to_functor := comp_eq_comp
+
+@[deprecated "Deprecated in favor of using `CategoryTheory.Grpd.id_eq_id`" (since := "2025-09-04")]
 theorem id_to_functor {C : Grpd.{v, u}} : 𝟭 C = 𝟙 C :=
   rfl
 
@@ -99,7 +105,7 @@ def piLimitFanIsLimit ⦃J : Type u⦄ (F : J → Grpd.{u, u}) : Limits.IsLimit 
     (by
       intros
       dsimp only [piLimitFan]
-      simp [hom_to_functor])
+      simp [comp_eq_comp])
     (by
       intro s m w
       apply Functor.pi_ext
