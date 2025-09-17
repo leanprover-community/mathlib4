@@ -57,7 +57,7 @@ theorem isLinearSet_iff :
   simp [IsLinearSet, Finset.exists]
 
 @[simp]
-theorem IsLinearSet.singleton (a) : IsLinearSet ({a} : Set M) :=
+theorem IsLinearSet.singleton (a : M) : IsLinearSet {a} :=
   ⟨a, ∅, by simp⟩
 
 theorem IsLinearSet.closure_finset (s : Finset M) : IsLinearSet (closure (s : Set M) : Set M) :=
@@ -106,7 +106,7 @@ theorem IsSemilinearSet.empty : IsSemilinearSet (∅ : Set M) :=
   ⟨∅, by simp⟩
 
 @[simp]
-theorem IsSemilinearSet.singleton (a) : IsSemilinearSet ({a} : Set M) :=
+theorem IsSemilinearSet.singleton (a : M) : IsSemilinearSet {a} :=
   (IsLinearSet.singleton a).isSemilinearSet
 
 theorem IsSemilinearSet.closure_finset (s : Finset M) :
@@ -262,7 +262,7 @@ theorem IsProperLinearSet.isLinearSet (hs : IsProperLinearSet s) : IsLinearSet s
   exact ⟨a, t, ht, rfl⟩
 
 @[simp]
-theorem IsProperLinearSet.singleton : IsProperLinearSet {a} :=
+theorem IsProperLinearSet.singleton (a : M) : IsProperLinearSet {a} :=
   ⟨a, ∅, by simp⟩
 
 /-- A semilinear set is proper if it is a finite union of proper linear sets. -/
