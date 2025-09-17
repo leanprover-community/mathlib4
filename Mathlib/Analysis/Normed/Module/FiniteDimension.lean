@@ -281,8 +281,7 @@ theorem isOpen_setOf_affineIndependent {ι : Type*} [Finite ι] :
     haveI : Fintype ι' := Subtype.fintype _
     convert_to
       IsOpen ((fun (p : ι → E) (i : ι') ↦ p i -ᵥ p i₀) ⁻¹' {p : ι' → E | LinearIndependent 𝕜 p})
-    refine isOpen_setOf_linearIndependent.preimage ?_
-    fun_prop
+    exact isOpen_setOf_linearIndependent.preimage (by fun_prop)
 
 namespace Module.Basis
 
