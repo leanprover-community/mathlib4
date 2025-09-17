@@ -52,7 +52,7 @@ structure NotationSignature where
   closing : String
   /-- Whether the notation is multivariate. -/
   mv? : Bool
-deriving Inhabited, DecidableEq, Hashable, Repr
+deriving Inhabited, DecidableEq, Hashable
 
 /-- The content of a polynomial-like notation, consisting of the `type` (e.g. `Polynomial`), the
 constant term `c` (e.g. `Polynomial.C`), and the formal variable(s) `x` (e.g. `Polynomial.X`). -/
@@ -63,14 +63,18 @@ structure Notation where
   c : Term
   /-- The formal variable(s) of the notation. -/
   x : Term
-deriving Inhabited, Repr
+deriving Inhabited
 
+/-- A syntax category for the opening bracket of a polynomial-like notation. -/
 declare_syntax_cat poly_opening
 
+/-- The opening bracket for polynomial-like notation. -/
 abbrev Opening : Type := TSyntax `poly_opening
 
+/-- A syntax category for the closing bracket of a polynomial-like notation. -/
 declare_syntax_cat poly_closing
 
+/-- The closing bracket for polynomial-like notation. -/
 abbrev Closing : Type := TSyntax `poly_closing
 
 /-- The category of polynomial-like variables. -/
@@ -79,11 +83,16 @@ declare_syntax_cat poly_var
 /-- A polynomial-like variable. -/
 abbrev PolyVar : Type := TSyntax `poly_var
 
+/-- `Opening`, `Closing`, and `PolyVar` are all dynamically defined syntax categories that will all
+contain only single atoms, and this function extracts the `String` of the single atoms. -/
 def Lean.TSyntax.toString {n : Name} (v : TSyntax n) : String :=
   match v.raw with
   | .node _ _ #[.atom _ str] => str
   | _ => ""
 
+/-- An auxiliary function to define an element of a dynamically defined syntax category, such as
+`PolyVar`, when that category contains only single atoms. The function `elabSyntax` returns the
+relevant `kind : SyntaxNodeKind`. -/
 def String.toTSyntax {n : Name} (s : String) (kind : SyntaxNodeKind) : TSyntax n :=
   ⟨mkNode kind #[mkAtom s]⟩
 
@@ -91,8 +100,11 @@ def String.toTSyntax {n : Name} (s : String) (kind : SyntaxNodeKind) : TSyntax n
 multivariate notation is `X,` with a trailing comma. -/
 syntax vars := sepBy(poly_var, ",", ",", allowTrailingSep)
 
+/-- A syntax for variables in a polynomial-like notation. The special case of one-variable
+multivariate notation is `X,` with a trailing comma. -/
 syntax poly_idents := sepBy(ident, ",", ",", allowTrailingSep)
 
+/-- Parse `poly_idents` into either a single identifier or an array of identifiers. -/
 def Lean.TSyntax.parsePolyIdents : TSyntax ``poly_idents → Option (String ⊕ Array String)
   | `(poly_idents| $v:ident) => pure (Sum.inl v.getId.toString)
   | `(poly_idents| $vs:ident,*) => pure (Sum.inr (vs.getElems.map fun v ↦ v.getId.toString))
@@ -122,10 +134,11 @@ initialize notationTableExt : NotationTableExt ← registerSimpleScopedEnvExtens
   { addEntry old new := insert new old
     initial := {} }
 
+/-- The config for whether the notation is multivariate, stored as a `Bool`, default to `false`. -/
 structure MvConfig where
   mv : Bool := false
-  deriving Repr
 
+/-- Elaborate the multivariable config. -/
 declare_command_config_elab elabMvConfig MvConfig
 
 /-- Usage:
@@ -173,14 +186,21 @@ structure Body : Type where
   /-- The names for the variables. -/
   vars : (String ⊕ Array String)
 
+/-- The syntax for using a declared polynomial-like notation, e.g. `[x,y]` or `[[t]]`, which uses
+`poly_var` instead of `ident`. -/
 syntax polyesque_notation := atomic(poly_opening vars poly_closing)
 
+/-- The syntax for using a declared polynomial-like notation, e.g. `[x,y]` or `[[t]]`. -/
 abbrev PolyesqueNotation : Type := TSyntax ``polyesque_notation
 
-syntax polyesque_notation_input := poly_opening poly_idents poly_closing
+/-- The syntax for declaring a polynomial-like notation, e.g. `[x,y]` or `[[t]]`, which uses
+`ident` instead of `poly_var`. -/
+syntax polyesque_notation_input := atomic(poly_opening poly_idents poly_closing)
 
+/-- The syntax for declaring a polynomial-like notation, e.g. `[x,y]` or `[[t]]`. -/
 abbrev PolyesqueNotationInput : Type := TSyntax ``polyesque_notation_input
 
+/-- Parse a `PolyesqueNotationInput` into its `Body`, `Opening`, and `Closing`. -/
 def Lean.TSyntax.parsePolyesqueNotationInput (p : PolyesqueNotationInput) :
     CoreM (Body × Opening × Closing) := do
   let `(polyesque_notation_input| $opening:poly_opening $v:poly_idents $closing:poly_closing) := p
@@ -217,32 +237,34 @@ syntax polyesque := term_decl noWs polyesque_notation+
 /-- The type of polynomial-like syntaxes. -/
 abbrev Polyesque : Type := TSyntax ``polyesque
 
+/-- The declared notations can be used later as terms. -/
 syntax:max polyesque : term
 
-syntax polyesque_input := term_decl noWs polyesque_notation_input+
-
-abbrev PolyesqueInput : Type := TSyntax ``polyesque_input
-
-def mkNotation (opening : Opening) (closing : Closing) (mv? : Bool) (polyVars : Array PolyVar) :
+/-- Dynamically build the syntax for a declared polynomial-like notation. -/
+def mkSyntax (opening : Opening) (closing : Closing) (mv? : Bool) (polyVars : Array PolyVar) :
     CoreM PolyesqueNotation := do
   have vars : TSyntax ``vars := ← match mv?, polyVars with
     | true, #[v] => `(vars|$v,)
     | _, _ => `(vars|$(Syntax.TSepArray.ofElems polyVars):poly_var,*)
   return ← `(polyesque_notation| $opening$vars$closing)
 
--- declare the variables
+/-- Given one segment (e.g. `[x,y]`) of the declaration, extract all the relevant information:
+the relevant functor (`MvPolynomial (Fin 2)`), the formal variables, and their meanings. Then,
+register the variables (`x` and `y`) as polynomial variables (`poly_var`). -/
 def Lean.TSyntax.processAndDeclarePolyesqueNotationInput (p : PolyesqueNotationInput)
     (terms : Array (PolyVar × Term)) (oldFunctor : Term → CommandElabM Term) :
     CommandElabM (PolyesqueNotation × Array (PolyVar × Term) × (Term → CommandElabM Term)) := do
   let (b, opening, closing) ← liftCoreM p.parsePolyesqueNotationInput
   let newVarTerm : Array (PolyVar × Term) ← (← liftCoreM b.mkX).mapM fun ⟨i, t⟩ ↦ do
+    -- Declares the new formal variables as `poly_var`.
     let kind ← elabSyntax <| ← `(command| local syntax $(quote i):str : poly_var)
     return (i.toTSyntax kind, t)
-  let newNotation ← liftCoreM <| mkNotation opening closing b.1.mv? (newVarTerm.map (·.1))
+  let newNotation ← liftCoreM <| mkSyntax opening closing b.1.mv? (newVarTerm.map (·.1))
   let terms := (← terms.mapM fun ⟨v, t⟩ ↦ return (v, ← liftCoreM <| b.mkC t)) ++ newVarTerm
   let newFunctor := fun type ↦ do `($(← liftCoreM b.mkFunctor) $(← oldFunctor type))
   return (newNotation, terms, newFunctor)
 
+/-- A helper function to elaborate macro rules and trace their declarations. -/
 def elabMacroRulesAndTrace (p : Polyesque) (t : Term) : CommandElabM Unit := do
   trace[«name_poly_vars»] m!"Declaring polynomial-like notation: {p}"
   trace[«name_poly_vars»] m!"Result: {t}"
