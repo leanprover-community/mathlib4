@@ -3,9 +3,10 @@ Copyright (c) 2025 Ilmārs Cīrulis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ilmārs Cīrulis, Alex Meiburg
 -/
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
+import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 import Mathlib.Analysis.NormedSpace.Normalize
+import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
+import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 
 /-!
 # The Triangle Inequality for Angles
@@ -24,29 +25,32 @@ variable [InnerProductSpace ℝ V]
 
 section UnitVectorAngles
 
-/-- Gets the orthogonal direction of one vector relative to another.
-The definition is only for `y` such that `‖y‖ = 1`. -/
-private noncomputable def ortho (y x : V) : V := x - ⟪x, y⟫ • y
+/-- Gets the orthogonal direction of one vector relative to another. -/
+private noncomputable def ortho (y x : V) : V := x - (ℝ ∙ y).starProjection x
 
-private lemma inner_ortho_nonneg {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) : 0 ≤ ⟪x, ortho y x⟫ := by
-  rw [ortho, inner_sub_right, inner_self_eq_one_of_norm_one hx, real_inner_smul_right, ← sq]
-  grw [sub_nonneg, sq_le_one_iff_abs_le_one, abs_real_inner_le_norm, hx, hy, one_mul]
+private lemma inner_ortho_nonneg_of_norm_one {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
+    0 ≤ ⟪x, ortho y x⟫ := by
+  rw [ortho, Submodule.starProjection_unit_singleton _ hy, inner_sub_right,
+    inner_self_eq_one_of_norm_one hx, real_inner_smul_right, real_inner_comm, sub_nonneg]
+  grw [← sq, sq_le_one_iff_abs_le_one, abs_real_inner_le_norm, hx, hy, one_mul]
 
-private lemma inner_normalize_ortho (x : V) {y : V} (hy : ‖y‖ = 1) :
+private lemma inner_normalize_ortho (x : V) {y : V} :
     ⟪y, normalize (ortho y x)⟫ = 0 := by
-  simp [ortho, NormedSpace.normalize, real_inner_smul_right, inner_sub_right,
-    inner_self_eq_one_of_norm_one hy, real_inner_comm]
+  simp only [NormedSpace.normalize, real_inner_smul_right, mul_eq_zero, inv_eq_zero, norm_eq_zero]
+  right; rw [ortho, real_inner_comm, Submodule.starProjection_inner_eq_zero]
+  exact Submodule.mem_span_singleton_self y
 
 private lemma inner_normalized_ortho_sq_add_inner_sq_eq_one {x y : V}
     (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     ⟪x, normalize (ortho y x)⟫ ^ 2 + ⟪x, y⟫ ^ 2 = 1 := by
-  rw [ortho, NormedSpace.normalize, real_inner_smul_right, inner_sub_right, real_inner_smul_right]
+  rw [NormedSpace.normalize, real_inner_smul_right, ortho, inner_sub_right,
+    Submodule.starProjection_unit_singleton _ hy, real_inner_smul_right]
   by_cases h₁ : x = y
   · simp_all
   by_cases h₂ : x = - y
   · simp_all
   rw [real_inner_self_eq_norm_sq, hx]
-  have H1 : ‖x - ⟪x, y⟫ • y‖ ≠ 0 := by
+  have H1 : ‖x - ⟪y, x⟫ • y‖ ≠ 0 := by
     simp only [ne_eq, norm_eq_zero, sub_eq_zero]
     intro H2
     rw [H2, norm_smul, hy, Real.norm_eq_abs, mul_one] at hx
@@ -67,16 +71,17 @@ private lemma inner_ortho_right_eq_sin_angle {x y : V} (hx : ‖x‖ = 1) (hy : 
   have H0 : 0 ≤ ⟪x, normalize (ortho y x)⟫ := by
     rw [NormedSpace.normalize, real_inner_smul_right]
     exact Left.mul_nonneg (inv_nonneg_of_nonneg (norm_nonneg (ortho y x)))
-      (inner_ortho_nonneg hx hy)
+      (inner_ortho_nonneg_of_norm_one hx hy)
   simp_all [abs_of_nonneg H0]
 
 private lemma angle_le_angle_add_angle_aux {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) :
     x = Real.cos (angle x y) • y + Real.sin (angle x y) • normalize (ortho y x) := by
-  rw [← inner_ortho_right_eq_sin_angle Hx Hy, ← inner_eq_cos_angle_of_norm_one Hx Hy]
+  rw [← inner_ortho_right_eq_sin_angle Hx Hy, ← inner_eq_cos_angle_of_norm_one Hx Hy,
+    ortho, Submodule.starProjection_unit_singleton _ Hy]
   by_cases hxy : x - ⟪x, y⟫ • y = 0
-  · simp [ortho, hxy, ← sub_eq_zero]
-  rw [ortho, NormedSpace.normalize, real_inner_smul_right, inner_sub_right, real_inner_smul_right,
-    real_inner_self_eq_norm_sq, Hx, ← sq, mul_smul, ← smul_assoc]
+  · simp [hxy, real_inner_comm, ← sub_eq_zero]
+  rw [NormedSpace.normalize, real_inner_smul_right, inner_sub_right, real_inner_smul_right,
+    real_inner_self_eq_norm_sq, Hx, real_inner_comm y, ← sq, mul_smul, ← smul_assoc]
   norm_num
   have H : 1 - ⟪x, y⟫ ^ 2 ≠ 0 := by
     rw [sub_ne_zero, ne_comm, sq_ne_one_iff]
@@ -93,7 +98,7 @@ private lemma angle_le_angle_add_angle_aux {x y : V} (Hx : ‖x‖ = 1) (Hy : �
       real_inner_smul_right, ← sq, real_inner_smul_left, real_inner_smul_left,
       real_inner_smul_right, inner_self_eq_one_of_norm_one Hy, real_inner_comm y x]
     ring
-  rw [H0]
+  rw [real_inner_comm x, H0]
   field_simp; simp
 
 lemma angle_le_angle_add_angle_of_norm_one {x y z : V}
