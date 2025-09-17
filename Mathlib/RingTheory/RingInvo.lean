@@ -87,7 +87,7 @@ def mk' (f : R →+* Rᵐᵒᵖ) (involution : ∀ r, (f (f r).unop).unop = r) :
 theorem involution (f : RingInvo R) (x : R) : (f (f x).unop).unop = x :=
   f.involution' x
 
--- Porting note: remove Coe instance, not needed
+-- We might want to restore the below instance if we remove `RingEquivClass.toRingEquiv`.
 -- instance hasCoeToRingEquiv : Coe (RingInvo R) (R ≃+* Rᵐᵒᵖ) :=
 --   ⟨RingInvo.toRingEquiv⟩
 

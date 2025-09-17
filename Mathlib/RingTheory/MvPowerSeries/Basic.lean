@@ -781,7 +781,6 @@ open Finsupp
 
 variable {σ : Type*} {R : Type*} [CommSemiring R] (φ ψ : MvPolynomial σ R)
 
--- Porting note: added so we can add the `@[coe]` attribute
 /-- The natural inclusion from multivariate polynomials into multivariate formal power series. -/
 @[coe]
 def toMvPowerSeries : MvPolynomial σ R → MvPowerSeries σ R :=

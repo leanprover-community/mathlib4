@@ -54,13 +54,13 @@ structure AkraBazziRecurrence {α : Type*} [Fintype α] [Nonempty α]
     (T : ℕ → ℝ) (g : ℝ → ℝ) (a : α → ℝ) (b : α → ℝ) (r : α → ℕ → ℕ) where
   /-- Point below which the recurrence is in the base case -/
   n₀ : ℕ
-  /-- `n₀` is positive. -/
+  /-- `n₀` is always positive -/
   n₀_gt_zero : 0 < n₀
   /-- The coefficients `a i` are positive. -/
   a_pos : ∀ i, 0 < a i
   /-- The coefficients `b i` are positive. -/
   b_pos : ∀ i, 0 < b i
-  /-- Each `b i` is less than 1. -/
+  /-- The coefficients `b i` are less than 1. -/
   b_lt_one : ∀ i, b i < 1
   /-- `g` is nonnegative -/
   g_nonneg : ∀ x ≥ 0, 0 ≤ g x

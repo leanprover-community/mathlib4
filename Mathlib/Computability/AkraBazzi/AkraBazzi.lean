@@ -45,6 +45,8 @@ prove the version with a sum here, as it is simpler and more relevant for algori
 
 ## TODO
 
+* Relax the assumption described in the introduction from `o(n / (log n)^2)` to
+  `O(n / (log n)^(1+ε))`, for some `ε > 0`.
 * Specialize this theorem to the very common case where the recurrence is of the form
   `T(n) = ℓ · T(r(n)) + g(n)`
   where `g(n) ∈ Θ(n^t)` for some `t`. (This is often called the "master theorem" in the literature.)
@@ -449,9 +451,8 @@ lemma base_nonempty {n : ℕ} (hn : 0 < n) : (Finset.Ico (⌊b (min_bi b) / 2 * 
                            _ = n := by simp
   exact_mod_cast this
 
-/-- The main proof of the upper-bound part of the Akra–Bazzi theorem. The factor
-`1 - ε n` does not change the asymptotic order, but it is needed for the induction step to go
-through. -/
+/-- The main proof of the upper-bound part of the Akra–Bazzi theorem. The factor `1 - ε n` does not
+change the asymptotic order, but it is needed for the induction step to go through. -/
 lemma T_isBigO_smoothingFn_mul_asympBound :
     T =O[atTop] (fun n => (1 - ε n) * asympBound g a b n) := by
   let b' := b (min_bi b) / 2
@@ -603,9 +604,8 @@ This linter is only enabled on `nightly-testing`, but it causes a deterministic 
 Can this proof be refactored into some smaller pieces?
 -/
 set_option linter.tacticAnalysis.regressions.linarithToGrind false in
-/-- The main proof of the lower-bound part of the Akra–Bazzi theorem. The factor
-`1 + ε n` does not change the asymptotic order, but it is needed for the induction step to go
-through. -/
+/-- The main proof of the lower-bound part of the Akra–Bazzi theorem. The factor `1 + ε n` does not
+change the asymptotic order, but it is needed for the induction step to go through. -/
 lemma smoothingFn_mul_asympBound_isBigO_T :
     (fun (n : ℕ) => (1 + ε n) * asympBound g a b n) =O[atTop] T := by
   let b' := b (min_bi b) / 2
