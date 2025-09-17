@@ -603,13 +603,16 @@ lemma c2_abs_val_pow : ↑|((c₂) ^ (n K q) : ℤ)| ≤ ((c₂) ^ (n K q) : ℤ
   · apply n_neq_0 K q hq0 h2mq
   · exact c2_abs_val K α' β' γ' q h2mq
 
+#check Real.rpow_le_rpow_of_exponent_le_or_ge
+
 include hirr htriv habc in
 lemma hAkl : ∀ (k : Fin (m K * n K q)) (l : Fin (q * q)),
   house ((algebraMap (𝓞 K) K)
   (A K α' β' γ' q hq0 h2mq k l)) ≤
-  (c₃) ^ (n K q : ℝ) * ↑(n K q : ℝ)^(((n K q - 1)/2) : ℝ) := by  {
-    simp (config := { unfoldPartialApp := true }) only [A, sys_coe]
-    simp only [RingOfIntegers.restrict, zsmul_eq_mul, RingOfIntegers.map_mk]
+  (c₃) ^ (n K q : ℝ) * ↑(n K q : ℝ)^(((n K q - 1)/2) : ℝ) := by {
+    --simp (config := { unfoldPartialApp := true }) only [A, sys_coe]
+    unfold A sys_coe
+    simp only [RingOfIntegers.restrict, RingOfIntegers.map_mk]
     intros u t
     let a : ℕ := (finProdFinEquiv.symm.1 t).1 + 1
     let b : ℕ := (finProdFinEquiv.symm.1 t).2 + 1
@@ -619,172 +622,254 @@ lemma hAkl : ∀ (k : Fin (m K * n K q)) (l : Fin (q * q)),
     have hlleqmk: l ≤ m K := by {
       exact bar' (finProdFinEquiv.symm.toFun u).1
     }
+    have c₁IsInt := c₁IsInt K α' β' γ' q u t hq0 h2mq
+    have Hint1 : IsIntegral ℤ (c₁  ^ (n K q - 1) • (↑a + b • β') ^ k) := by {
+      apply c₁b K α' β' γ' (n K q) (one_le_n K q hq0 h2mq)
+      apply (Nat.le_sub_one_of_lt (finProdFinEquiv.symm.1 u).2.isLt)
+      exact (Nat.le_add_left 1 (finProdFinEquiv.symm.1 t).1)
+      exact (Nat.le_add_left 1 (finProdFinEquiv.symm.1 t).2)
+    }
+    have Hint2 : IsIntegral ℤ (c₁  ^ (m K * q) • α' ^ (a * l)) := (c1a K α' β' γ' q u t hq0)
+    have Hint3 : IsIntegral ℤ (c₁  ^ (m K * q) • γ' ^ (b * l)) := (c1c K α' β' γ' q u t hq0)
+    unfold c_coeffs
+    rw [triple_comm K
+    (c₁^(n K q - 1) : ℤ)
+    (c₁^(m K * q) : ℤ)
+    (c₁^(m K * q) : ℤ)
+    (((a : ℕ) + b • β')^(k : ℕ))
+    (α' ^ (a * l))
+    (γ' ^ (b * (l)))]
+    have : 1 ≤ house (c₁  ^ (n K q - 1) • (↑a + b • β') ^ k) := by {
+      apply house_gt_one_of_isIntegral
+      apply Hint1
+      sorry
+    }
+    have : 1 ≤ house ((c₁  ^ (m K * q) • α' ^ (a * l))) := by {
+      apply house_gt_one_of_isIntegral
+      apply Hint2
+      sorry
+    }
+    have : 1 ≤ house ((c₁  ^ (m K * q) • γ' ^ (b * l))) := by {
+      apply house_gt_one_of_isIntegral
+      apply Hint3
+      sorry
+    }
+    sorry
+
+
+
+
+
+
+
+
+
+
     --have f : (-1 / 2 + ↑(n K q : ℝ) * (1 / 2)) = (((n K q : ℝ) - 1)/2) := by ring
-    calc
-         _ ≤ house (c_coeffs K α' β' γ' q : K) *
-             house ((a + b • β')) ^ k * house (α') ^ (a * l) * house (γ') ^ (b * l) := ?_
+    }
+    -- calc
+    --     _ ≤ house (c_coeffs K α' β' γ' q : K) *
+    --          house ((a + b • β')) ^ k * house (α') ^ (a * l) * house (γ') ^ (b * l) := ?_
 
-         _ ≤ house (((c₂) ^ (n K q) : ℤ) : K) * house ((a + b • β')) ^ k * house (α') ^ (a * l) *
-             house (γ') ^ (b * l) := ?_
+    --     _ ≤ house (((c₂) ^ (n K q) : ℤ) : K) * house ((a + b • β')) ^ k * house (α') ^ (a * l) *
+    --          house (γ') ^ (b * l) := ?_
 
-         _ ≤ ((c₂) ^ (n K q) : ℤ) * house ((a + b • β')) ^ k * house (α') ^ (a * l) *
-             house (γ') ^ (b * l) := ?_
+    --     _ ≤ ((c₂) ^ (n K q) : ℤ) * house ((a + b • β')) ^ k * house (α') ^ (a * l) *
+    --          house (γ') ^ (b * l) := ?_
 
-         --_ ≤ _ := sorry
+    --     _ ≤ ((c₂) ^ (n K q) : ℤ) * house (q + q • β') ^ (n K q - 1)
+    --       * house (α') ^ (m K * q) * house (γ') ^ (m K * q) := ?_
 
-        -- _ ≤ (c₃) := ?_
+    --      --_ ≤ _ := sorry
 
-        -- _ ≤ (c₃)^(n K q : ℝ) := ?_
+    --     -- _ ≤ (c₃) := ?_
 
-         _ ≤ (c₃)^(n K q : ℝ) * ↑(n K q : ℝ)^(((n K q - 1)/2) : ℝ) := ?_
+    --     -- _ ≤ (c₃)^(n K q : ℝ) := ?_
 
-    · apply house_sys_coe_bound
-    · rw [mul_assoc, mul_assoc, mul_assoc, mul_assoc]
-      apply mul_le_mul
-      · exact house_leq_house K α' β' γ' q h2mq
-      · rfl
-      · apply mul_nonneg
-        · apply pow_nonneg
-          · apply house_nonneg
-        · apply mul_nonneg
-          apply pow_nonneg
-          apply house_nonneg
-          apply pow_nonneg
-          apply house_nonneg
-      · apply house_nonneg
-    · rw [house_intCast (x := (c₂) ^ (n K q :ℕ))]
-      rw [mul_assoc, mul_assoc, mul_assoc, mul_assoc]
-      apply mul_le_mul
-      · norm_cast
-        apply c2_abs_val_pow K α' β' γ' q hq0 h2mq
-      · rfl
-      · apply mul_nonneg
-        · apply pow_nonneg
-          · apply house_nonneg
-        · apply mul_nonneg
-          apply pow_nonneg
-          apply house_nonneg
-          apply pow_nonneg
-          apply house_nonneg
-      · simp only [Int.cast_pow]
-        apply pow_nonneg
-        norm_cast
-        exact zero_leq_c₂ K α' β' γ' q h2mq
+    --     _ ≤ (c₃)^(n K q : ℝ) * ↑(n K q : ℝ)^(((n K q - 1)/2) : ℝ) := ?_
 
+    -- · apply house_sys_coe_bound
+    -- · rw [mul_assoc, mul_assoc, mul_assoc, mul_assoc]
+    --   apply mul_le_mul
+    --   · exact house_leq_house K α' β' γ' q h2mq
+    --   · rfl
+    --   · apply mul_nonneg
+    --     · apply pow_nonneg
+    --       · apply house_nonneg
+    --     · apply mul_nonneg
+    --       apply pow_nonneg
+    --       apply house_nonneg
+    --       apply pow_nonneg
+    --       apply house_nonneg
+    --   · apply house_nonneg
+    -- · rw [house_intCast (x := (c₂) ^ (n K q :ℕ))]
+    --   rw [mul_assoc, mul_assoc, mul_assoc, mul_assoc]
+    --   apply mul_le_mul
+    --   · norm_cast
+    --     apply c2_abs_val_pow K α' β' γ' q hq0 h2mq
+    --   · rfl
+    --   · apply mul_nonneg
+    --     · apply pow_nonneg
+    --       · apply house_nonneg
+    --     · apply mul_nonneg
+    --       apply pow_nonneg
+    --       apply house_nonneg
+    --       apply pow_nonneg
+    --       apply house_nonneg
+    --   · simp only [Int.cast_pow]
+    --     apply pow_nonneg
+    --     norm_cast
+    --     exact zero_leq_c₂ K α' β' γ' q h2mq
 
-    · simp only [house_intCast, Int.cast_abs]
-      unfold c₃
-      simp only [Int.cast_mul, Int.cast_pow, nsmul_eq_mul]
-      rw [← pow_add, ← pow_add]
-      simp only [le_sup_iff]
-      right
-      apply mul_le_mul
-      apply mul_le_mul
-      rw [mul_assoc]
-      apply mul_le_mul
-      · simp only [abs_pow, abs_abs]
-        unfold c₂
-        rw [← abs_pow]
-        apply abs_le_abs
-        simp only [le_sup_iff]
-        right
-        refine Bound.pow_le_pow_right_of_le_one_or_one_le ?_
-        left
-        constructor
-        · have : 1 ≤ ↑(c₁ K α' β' γ') := sorry
-          exact this
-        · unfold n
-          sorry
-        · trans
-          · have : -(c₁ : ℝ) ^ (n K q - 1 + m K * q + m K * q) ≤ 0 := by {
-            simp only [Left.neg_nonpos_iff]
-            apply pow_nonneg
-            simp only [Int.cast_nonneg]
-            unfold c₁
-            apply abs_nonneg
-            }
-            exact this
-          · simp only [le_sup_iff, zero_le_one, true_or]
-      · calc _ ≤ (house (a:K) + house (b * β')) ^ (k : ℝ) := by {
-                  apply Real.rpow_le_rpow
-                    (z := k)
-                    (x :=  house (↑a + ↑b * β'))
-                    (y  := (house ↑a + house (↑b * β')))
+    -- · rw [mul_assoc, mul_assoc, mul_assoc, mul_assoc]
+    --   apply mul_le_mul
+    --   · rfl
+    --   · apply mul_le_mul
+    --     · sorry
+    --     · apply mul_le_mul
+    --       · sorry
+    --       · sorry
+    --       · apply pow_nonneg
+    --         apply house_nonneg
+    --       · apply pow_nonneg
+    --         apply house_nonneg
+    --     · apply mul_nonneg
+    --       apply pow_nonneg
+    --       apply house_nonneg
+    --       apply pow_nonneg
+    --       apply house_nonneg
+    --     · apply pow_nonneg
+    --       apply house_nonneg
+    --   · apply mul_nonneg
+    --     apply pow_nonneg
+    --     apply house_nonneg
+    --     apply mul_nonneg
+    --     apply pow_nonneg
+    --     apply house_nonneg
+    --     apply pow_nonneg
+    --     apply house_nonneg
+    --   · simp only [Int.cast_pow]
+    --     norm_cast
+    --     apply pow_nonneg
+    --     apply zero_leq_c₂
+    --     exact h2mq
+    -- · sorry
+    -- }
 
 
-                  }
-             _ ≤ _ := by {sorry
+    -- · simp only [house_intCast, Int.cast_abs]
+    --   unfold c₃
+    --   simp only [Int.cast_mul, Int.cast_pow, nsmul_eq_mul]
+    --   rw [← pow_add, ← pow_add]
+    --   simp only [le_sup_iff]
+    --   right
+    --   apply mul_le_mul
+    --   apply mul_le_mul
+    --   rw [mul_assoc]
+    --   apply mul_le_mul
+    --   · simp only [abs_pow, abs_abs]
+    --     unfold c₂
+    --     rw [← abs_pow]
+    --     apply abs_le_abs
+    --     simp only [le_sup_iff]
+    --     right
+    --     refine Bound.pow_le_pow_right_of_le_one_or_one_le ?_
+    --     left
+    --     constructor
+    --     · have : 1 ≤ ↑(c₁ K α' β' γ') := sorry
+    --       exact this
+    --     · unfold n
+    --       sorry
+    --     · trans
+    --       · have : -(c₁ : ℝ) ^ (n K q - 1 + m K * q + m K * q) ≤ 0 := by {
+    --         simp only [Left.neg_nonpos_iff]
+    --         apply pow_nonneg
+    --         simp only [Int.cast_nonneg]
+    --         unfold c₁
+    --         apply abs_nonneg
+    --         }
+    --         exact this
+    --       · simp only [le_sup_iff, zero_le_one, true_or]
+    --   · calc _ ≤ (house (a:K) + house (b * β')) ^ (k : ℝ) := by {
+    --               apply Real.rpow_le_rpow
+    --                 (z := k)
+    --                 (x :=  house (↑a + ↑b * β'))
+    --                 (y  := (house ↑a + house (↑b * β')))
 
-             }
-      · apply pow_nonneg
-        apply house_nonneg
-      · simp only [abs_nonneg]
-      · have : (house α' ^ (a * l : ℝ) ≤ house α' ^ (2 * m K ^ 2 : ℝ))
-          → (house α' ^ (a * l) ≤ house α' ^ (2 * m K ^ 2)) := by {
-            intros H
-            norm_cast at H
-          }
-        apply this
-        apply Real.rpow_le_rpow_of_exponent_le
-        · refine house_gt_one_of_isIntegral ?_ ?_
-          · sorry
-          · sorry
-        · rw [pow_two]
-          rw [← mul_assoc]
-          apply mul_le_mul
-          · sorry
-          · exact Nat.cast_le.mpr hlleqmk
-          · exact Nat.cast_nonneg' l
-          · simp only [Nat.ofNat_pos, mul_nonneg_iff_of_pos_left, Nat.cast_nonneg]
-      · apply pow_nonneg
-        apply house_nonneg
-      · apply mul_nonneg
-        · apply mul_nonneg
-          · simp only [abs_nonneg]
-          · simp only [Nat.cast_nonneg]
-        · trans
-          · exact zero_le_one
-          · simp only [le_add_iff_nonneg_right]
-            apply house_nonneg
-      · have : house γ' ^ (b * l) = house γ' ^ ((b * l) : ℝ) := by {
-          norm_cast
-         }
-        rw [this]
-        have : house γ' ^ (2 * m K ^ 2) = house γ' ^ (2 * m K ^ 2 : ℝ) := by {norm_cast}
-        rw [this]
-        apply Real.rpow_le_rpow_of_exponent_le_or_ge
-        left
-        constructor
-        · refine house_gt_one_of_isIntegral ?_ ?_
-          · sorry
-          · sorry
-        · sorry
-      · apply pow_nonneg
-        apply house_nonneg
-      · apply mul_nonneg
-        · apply mul_nonneg
-          · apply mul_nonneg
-            · simp only [abs_nonneg]
-            · simp only [Nat.cast_nonneg]
-          · trans
-            · exact zero_le_one
-            · simp only [le_add_iff_nonneg_right]
-              apply house_nonneg
-        · apply pow_nonneg
-          apply house_nonneg
-    · nth_rw 1 [← Real.rpow_one ((c₃))]
-      apply Real.rpow_le_rpow_of_exponent_le
-      · apply le_max_left
-      · simp only [Nat.one_le_cast]; exact one_le_n K q hq0 h2mq
-    · nth_rw  1 [← mul_one (c₃ K α' β' γ' ^ (n K q : ℝ))]
-      apply mul_le_mul_of_nonneg_left
-      · apply Real.one_le_rpow
-        · simp only [Nat.one_le_cast]; exact one_le_n K q hq0 h2mq
-        · apply div_nonneg
-          · simp only [sub_nonneg, Nat.one_le_cast]; exact one_le_n K q hq0 h2mq
-          · exact zero_le_two
-      · apply Real.rpow_nonneg
-        · simp only [c₃, Nat.cast_add, Nat.cast_one, le_max_iff, zero_le_one, true_or]}
+
+    --               }
+    --          _ ≤ _ := by {sorry
+
+    --          }
+    --   · apply pow_nonneg
+    --     apply house_nonneg
+    --   · simp only [abs_nonneg]
+    --   · have : (house α' ^ (a * l : ℝ) ≤ house α' ^ (2 * m K ^ 2 : ℝ))
+    --       → (house α' ^ (a * l) ≤ house α' ^ (2 * m K ^ 2)) := by {
+    --         intros H
+    --         norm_cast at H
+    --       }
+    --     apply this
+    --     apply Real.rpow_le_rpow_of_exponent_le
+    --     · refine house_gt_one_of_isIntegral ?_ ?_
+    --       · sorry
+    --       · sorry
+    --     · rw [pow_two]
+    --       rw [← mul_assoc]
+    --       apply mul_le_mul
+    --       · sorry
+    --       · exact Nat.cast_le.mpr hlleqmk
+    --       · exact Nat.cast_nonneg' l
+    --       · simp only [Nat.ofNat_pos, mul_nonneg_iff_of_pos_left, Nat.cast_nonneg]
+    --   · apply pow_nonneg
+    --     apply house_nonneg
+    --   · apply mul_nonneg
+    --     · apply mul_nonneg
+    --       · simp only [abs_nonneg]
+    --       · simp only [Nat.cast_nonneg]
+    --     · trans
+    --       · exact zero_le_one
+    --       · simp only [le_add_iff_nonneg_right]
+    --         apply house_nonneg
+    --   · have : house γ' ^ (b * l) = house γ' ^ ((b * l) : ℝ) := by {
+    --       norm_cast
+    --      }
+    --     rw [this]
+    --     have : house γ' ^ (2 * m K ^ 2) = house γ' ^ (2 * m K ^ 2 : ℝ) := by {norm_cast}
+    --     rw [this]
+    --     apply Real.rpow_le_rpow_of_exponent_le_or_ge
+    --     left
+    --     constructor
+    --     · refine house_gt_one_of_isIntegral ?_ ?_
+    --       · sorry
+    --       · sorry
+    --     · sorry
+    --   · apply pow_nonneg
+    --     apply house_nonneg
+    --   · apply mul_nonneg
+    --     · apply mul_nonneg
+    --       · apply mul_nonneg
+    --         · simp only [abs_nonneg]
+    --         · simp only [Nat.cast_nonneg]
+    --       · trans
+    --         · exact zero_le_one
+    --         · simp only [le_add_iff_nonneg_right]
+    --           apply house_nonneg
+    --     · apply pow_nonneg
+    --       apply house_nonneg
+    -- · nth_rw 1 [← Real.rpow_one ((c₃))]
+    --   apply Real.rpow_le_rpow_of_exponent_le
+    --   · apply le_max_left
+    --   · simp only [Nat.one_le_cast]; exact one_le_n K q hq0 h2mq
+    -- · nth_rw  1 [← mul_one (c₃ K α' β' γ' ^ (n K q : ℝ))]
+    --   apply mul_le_mul_of_nonneg_left
+    --   · apply Real.one_le_rpow
+    --     · simp only [Nat.one_le_cast]; exact one_le_n K q hq0 h2mq
+    --     · apply div_nonneg
+    --       · simp only [sub_nonneg, Nat.one_le_cast]; exact one_le_n K q hq0 h2mq
+    --       · exact zero_le_two
+    --   · apply Real.rpow_nonneg
+    --     · simp only [c₃, Nat.cast_add, Nat.cast_one, le_max_iff, zero_le_one, true_or]}
 
 
 #exit
