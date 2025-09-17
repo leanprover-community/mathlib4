@@ -22,6 +22,10 @@ def testModulesOSForbidden : IO Unit := do
   assert!((← modulesOSForbidden opts #[`Mathlib.«B>ar<»]) == 1)
   assert!((← modulesOSForbidden opts #[`Mathlib.«Bar!»]) == 1)
   assert!((← modulesOSForbidden opts #[`Mathlib.«Qu<x!!»]) == 1)
+  assert!((← modulesOSForbidden opts #[`Mathlib.«Ba dname»]) == 1)
+  assert!((← modulesOSForbidden opts #[`Mathlib.«Bar dname»]) == 1)
+  assert!((← modulesOSForbidden opts #[`Mathlib.«Bar
+dname»]) == 1)
 
 /--
 info: error: module name 'Mathlib.Aux.Foo' contains component '[Aux]', which is forbidden in Windows filenames.
@@ -34,6 +38,10 @@ error: module name 'Mathlib.«B>ar<»' contains characters '[>, <]', which are f
 error: module name 'Mathlib.Bar!' contains forbidden character '!'
 error: module name 'Mathlib.«Qu<x!!»' contains forbidden character '!'
 error: module name 'Mathlib.«Qu<x!!»' contains character '[<]', which is forbidden in Windows filenames.
+error: module name 'Mathlib.«Ba dname»' contains a whitespace character
+error: module name 'Mathlib.«Bar dname»' contains a whitespace character
+error: module name 'Mathlib.«Bar
+dname»' contains a whitespace character
 -/
 #guard_msgs in
 #eval testModulesOSForbidden
