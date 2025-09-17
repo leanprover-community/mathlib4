@@ -10,13 +10,11 @@ import Mathlib.CategoryTheory.Functor.CurryingThree
 
 # Constructing braided categories from natural transformations between multifunctors
 
-This file provides an alternative constructor braided categories, given a braiding
+This file provides an alternative constructor for braided categories, given a braiding
 `β : -₁ ⊗ -₂ ≅ -₂ ⊗ -₁` as a natural isomorphism between bifunctors. The hexagon identities are
 phrased as equalities of natural transformations between trifunctors
 `(-₁ ⊗ -₂) ⊗ -₃ ⟶ -₂ ⊗ (-₃ ⊗ -₁)` and `-₁ ⊗ (-₂ ⊗ -₃) ⟶ (-₃ ⊗ -₁) ⊗ -₂`.
 
-Once we have more API for quadrifunctors, we can add constructors for monoidal category structures
-by phrasing the pentagon axiom as an equality of natural transformations between quadrifunctors.
 -/
 
 namespace CategoryTheory
