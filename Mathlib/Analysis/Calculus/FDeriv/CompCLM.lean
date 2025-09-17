@@ -14,6 +14,7 @@ see the module docstring of `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`.
 This file contains the usual formulas (and existence assertions) for the derivative of
 
 * composition of continuous linear maps
+* application of continuous linear maps to a constant
 -/
 
 
@@ -33,7 +34,6 @@ variable {s : Set E}
 section CLMCompApply
 
 /-! ### Derivative of the pointwise composition/application of continuous linear maps -/
-
 
 variable {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {c : E → G →L[𝕜] H}
   {c' : E →L[𝕜] G →L[𝕜] H} {d : E → F →L[𝕜] G} {d' : E →L[𝕜] F →L[𝕜] G} {u : E → G} {u' : E →L[𝕜] G}
