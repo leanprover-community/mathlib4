@@ -154,7 +154,7 @@ theorem content_eq_zero_iff {p : R[X]} : content p = 0 ↔ p = 0 := by
   · intro x
     simp [h]
 
--- Porting note: this reduced with simp so created `normUnit_content` and put simp on it
+-- `simp`-normal form is `normUnit_content`
 theorem normalize_content {p : R[X]} : normalize p.content = p.content :=
   Finset.normalize_gcd
 
