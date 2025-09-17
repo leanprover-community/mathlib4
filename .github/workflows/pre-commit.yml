@@ -1,0 +1,26 @@
+# Run pre-commit and in-place update PR on push
+
+on:
+  push:
+    branches-ignore:
+      # ignore tmp branches used by bors
+      - 'staging.tmp*'
+      - 'trying.tmp*'
+      - 'staging*.tmp'
+      - 'nolints'
+      # ignore staging branch used by bors, this is handled by bors.yml
+      - 'staging'
+      - 'master'
+
+# extracted from https://pre-commit.ci/lite
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: 3.x
+    - uses: pre-commit/action@v3.0.1
+    - uses: pre-commit-ci/lite-action@v1.1.0
+      if: always()
