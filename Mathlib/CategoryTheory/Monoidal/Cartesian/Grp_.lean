@@ -27,6 +27,9 @@ instance. -/
 @[simps]
 def Grp_.homMk (f : G ⟶ H) [IsMonHom f] : .mk G ⟶ Grp_.mk H := ⟨f⟩
 
+@[simp]
+lemma Grp_.homMk_hom' {G H : Grp_ C} (f : G ⟶ H) : homMk (G := G.X) (H := H.X) f.hom = f := rfl
+
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
 def GrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ Grp.{w}) (α : (F ⋙ forget _).RepresentableBy X) :
@@ -173,6 +176,9 @@ lemma GrpObj.comp_zpow (f : X ⟶ Y) (g : Y ⟶ G) : ∀ n : ℤ, f ≫ g ^ n = 
 @[deprecated (since := "2025-09-13")] alias Grp_Class.comp_zpow := GrpObj.comp_zpow
 
 lemma GrpObj.inv_eq_inv : ι = (𝟙 G)⁻¹ := by simp [Hom.inv_def]
+
+@[reassoc (attr := simp)]
+lemma GrpObj.one_inv : η[G] ≫ ι = η := by simp [GrpObj.inv_eq_inv, GrpObj.comp_inv, one_eq_one]
 
 @[deprecated (since := "2025-09-13")] alias Grp_Class.inv_eq_inv := GrpObj.inv_eq_inv
 
