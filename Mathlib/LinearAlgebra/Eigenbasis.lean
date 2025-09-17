@@ -255,7 +255,7 @@ def listProd : CommonEigenbasis ι (fun l : List α ↦ (l.map f).prod) where
 variable {b}
 
 /-- Any common eigenbasis of `f` is also a common eigenbasis of any subfamily of `f`. -/
-def comp {a' : Type*} {g : a' → α} : CommonEigenbasis ι (f ∘ g) where
+def comp {α' : Type*} {g : α' → α} : CommonEigenbasis ι (f ∘ g) where
   toBasis := B.toBasis
   μ := B.μ ∘ g
   apply_eq_smul a := B.apply_eq_smul (g a)
