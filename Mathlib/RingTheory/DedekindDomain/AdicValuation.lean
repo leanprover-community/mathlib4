@@ -533,6 +533,15 @@ instance adicCompletion.instIsScalarTower' :
     IsScalarTower R (v.adicCompletionIntegers K) (v.adicCompletion K) where
   smul_assoc x y z := by simp only [Algebra.smul_def]; apply mul_assoc
 
+variable {R} in
+open scoped algebraMap in
+theorem adicCompletionIntegers.exists_uniformizer :
+    ∃ π : v.adicCompletionIntegers K, Valued.v π.1 = Multiplicative.ofAdd (- 1 : ℤ) := by
+  obtain ⟨π, hπ⟩ := v.intValuation_exists_uniformizer
+  use π
+  rw [← hπ, ← ValuationSubring.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
+    Valuation.Completion.valued_eq_valuation, v.valuation_of_algebraMap]
+
 end AlgebraInstances
 
 open nonZeroDivisors algebraMap Valuation.Completion in

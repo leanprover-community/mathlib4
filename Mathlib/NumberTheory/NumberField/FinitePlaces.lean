@@ -63,7 +63,7 @@ instance : IsDiscreteValuationRing (v.valuation K).integer where
           ← ofAdd_zero]
 
 instance : IsPrincipalIdealRing (v.adicCompletionIntegers K) := by
-  unfold HeightOneSpectrum.adicCompletionIntegers
+  unfold HeightOneSpectrum.adicCompletionIntegers Valuation.Completion.integers
   rw [(Valuation.valuationSubring.integers (Valued.v)).isPrincipalIdealRing_iff_not_denselyOrdered,
     WithZero.denselyOrdered_set_iff_subsingleton]
   simpa using Valued.v.range_nontrivial
@@ -72,14 +72,14 @@ instance : IsPrincipalIdealRing (v.adicCompletionIntegers K) := by
 -- develop the API for a  completion of a base `IsDVR` ring
 instance : IsDiscreteValuationRing (v.adicCompletionIntegers K) where
   not_a_field' := by
-    unfold HeightOneSpectrum.adicCompletionIntegers
+    unfold HeightOneSpectrum.adicCompletionIntegers Valuation.Completion.integers
     simp only [ne_eq, Ideal.ext_iff, Valuation.mem_maximalIdeal_iff, Ideal.mem_bot, Subtype.ext_iff,
       ZeroMemClass.coe_zero, Subtype.forall, Valuation.mem_valuationSubring_iff, not_forall,
       exists_prop]
-    obtain ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
+    obtain ⟨π, hπ⟩ := HeightOneSpectrum.adicCompletionIntegers.exists_uniformizer K v
     use π
-    simp [hπ, - ofAdd_neg, ← WithZero.coe_one, ← ofAdd_zero,
-          ← (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).map_eq_zero_iff]
+    simp [hπ, ← WithZero.coe_one, - ofAdd_neg, ← ofAdd_zero,
+      ← (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).map_eq_zero_iff]
 
 end DVR
 
@@ -208,7 +208,7 @@ theorem RingOfIntegers.HeightOneSpectrum.adicAbv_intCast_le_one (n : ℤ) : adic
 open FinitePlace
 
 /-- The `v`-adic norm of an integer is at most 1. -/
-theorem FinitePlace.norm_le_one (x : 𝓞 (WithVal (v.valuation K))) : ‖embedding v x‖ ≤ 1 := by
+theorem FinitePlace.norm_le_one (x : 𝓞 K) : ‖embedding v x‖ ≤ 1 := by
   rw [norm_def]
   exact v.adicAbv_coe_le_one (one_lt_absNorm_nnreal v) x
 
