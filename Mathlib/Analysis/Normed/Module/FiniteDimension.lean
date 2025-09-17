@@ -282,8 +282,7 @@ theorem isOpen_setOf_affineIndependent {ι : Type*} [Finite ι] :
     convert_to
       IsOpen ((fun (p : ι → E) (i : ι') ↦ p i -ᵥ p i₀) ⁻¹' {p : ι' → E | LinearIndependent 𝕜 p})
     refine isOpen_setOf_linearIndependent.preimage ?_
-    exact continuous_pi fun i' ↦
-      (continuous_apply (π := fun _ : ι ↦ E) i'.1).vsub <| continuous_apply i₀
+    fun_prop
 
 namespace Module.Basis
 
