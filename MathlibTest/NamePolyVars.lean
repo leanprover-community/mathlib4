@@ -22,19 +22,21 @@ name_poly_vars _[a,b][C]
 
 variable (R : Type)
 
-noncomputable example : Vector (R[a,b][C]) 3 :=
-  have : Polynomial (MvPolynomial (Fin 2) R) = R[a,b][C] := rfl
+noncomputable example : Vector R[a,b][C] 3 :=
+  have : Polynomial (MvPolynomial (Fin 2) R) = R[a,b][C] := by with_reducible rfl
   have : (Polynomial.C (MvPolynomial.X 0) : R[a,b][C]) = a := rfl
   have : (Polynomial.C (MvPolynomial.X 1) : R[a,b][C]) = b := rfl
   have : (Polynomial.X : R[a,b][C]) = C := rfl
   #v[a, b, C]
 
-noncomputable example : Vector ((Fin 37)[a,b][C]) 3 :=
+noncomputable example : Vector (Fin 37)[a,b][C] 3 :=
   have : Polynomial (MvPolynomial (Fin 2) (Fin 37)) = (Fin 37)[a,b][C] := rfl
   have : (Polynomial.C (MvPolynomial.X 0) : (Fin 37)[a,b][C]) = a := rfl
   have : (Polynomial.C (MvPolynomial.X 1) : (Fin 37)[a,b][C]) = b := rfl
   have : (Polynomial.X : (Fin 37)[a,b][C]) = C := rfl
   #v[a, b, C]
+
+def «a,b» : Nat := 37
 
 end Test1
 
@@ -44,7 +46,7 @@ variable (R : Type)
 
 name_poly_vars R[a,b][C]
 
-noncomputable example : Vector (R[a,b][C]) 3 :=
+noncomputable example : Vector R[a,b][C] 3 :=
   have : Polynomial (MvPolynomial (Fin 2) R) = R[a,b][C] := rfl
   have : Polynomial.C (MvPolynomial.X 0) = a := rfl
   have : Polynomial.C (MvPolynomial.X 1) = b := rfl

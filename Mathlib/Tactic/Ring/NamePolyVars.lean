@@ -54,9 +54,8 @@ structure NotationSignature where
   mv? : Bool
 deriving Inhabited, DecidableEq, Hashable, Repr
 
-/-- A polynomial-like notation, consisting of the opening and closing brackets, a `Bool` to declare
-if it is multivariate, the `type` (e.g. `Polynomial`), the constant term `c` (e.g. `Polynomial.C`),
-and the formal variable(s) `x` (e.g. `Polynomial.X`). -/
+/-- The content of a polynomial-like notation, consisting of the `type` (e.g. `Polynomial`), the
+constant term `c` (e.g. `Polynomial.C`), and the formal variable(s) `x` (e.g. `Polynomial.X`). -/
 structure Notation where
   /-- The polynomial-like type of the notation. -/
   type : Term
@@ -188,10 +187,10 @@ def Lean.TSyntax.parsePolyesqueNotationInput (p : PolyesqueNotationInput) :
     | throwError m!"Unrecognised polynomial-like notation: {p}"
   have openingS := opening.toString
   have closingS := closing.toString
-  let .some vars := v.parsePolyIdents
+  let some vars := v.parsePolyIdents
     | throwError m!"Unrecognised variable notation: {v}"
   have mv? : Bool := vars.isRight
-  let .some n := (notationTableExt.getState (← getEnv)).get? ⟨openingS, closingS, mv?⟩
+  let some n := (notationTableExt.getState (← getEnv)).get? ⟨openingS, closingS, mv?⟩
     | throwError s!"Unrecognised polynomial-like syntax: (mv := {mv?}) {opening} {closing}"
   return (⟨⟨openingS, closingS, mv?⟩, n, vars⟩, opening, closing)
 
@@ -218,7 +217,7 @@ syntax polyesque := term_decl noWs polyesque_notation+
 /-- The type of polynomial-like syntaxes. -/
 abbrev Polyesque : Type := TSyntax ``polyesque
 
-syntax polyesque : term
+syntax:max polyesque : term
 
 syntax polyesque_input := term_decl noWs polyesque_notation_input+
 
