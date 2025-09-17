@@ -27,5 +27,5 @@ attribute [local simp] leftUnitor_hom
 attribute [local instance] ModObj.trivialAction in
 /-- Every object is a module over a monoid object via the trivial action. -/
 @[simps]
-def Mod_.trivialAction (M : Mon_ C) (X : C) : Mod_ C M.X where
+def Mod_.trivialAction (M : Mon C) (X : C) : Mod_ C M.X where
   X := X
