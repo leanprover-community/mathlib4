@@ -15,10 +15,10 @@ This file derives Hall's Marriage Theorem for bipartite graphs from the combinat
 
 ## Main statements
 
-* `SimpleGraph.exists_IsMatching_of_forall_ncard_le`: Hall's marriage theorem for a matching on a
-  single partition of a bipartite graph.
-* `SimpleGraph.exists_IsPerfectMatching_of_forall_ncard_le`: Hall's marriage theorem for a perfect
-  matching on a bipartite graph.
+* `exists_isMatching_of_forall_ncard_le`: Hall's marriage theorem for a matching on a single
+  partition of a bipartite graph.
+* `exists_isPerfectMatching_of_forall_ncard_le`: Hall's marriage theorem for a perfect matching on a
+  bipartite graph.
 
 ## Tags
 
@@ -52,7 +52,7 @@ variable [DecidableEq V] [G.LocallyFinite] {p₁ p₂ : Set V}
 /-- This is the version of **Hall's marriage theorem** for bipartite graphs that finds a matching
 for a single partition given that the neighborhood-condition only holds for elements of that
 partition. -/
-theorem exists_IsMatching_of_forall_ncard_le [DecidablePred (· ∈ p₁)] (h₁ : G.IsBipartiteWith p₁ p₂)
+theorem exists_isMatching_of_forall_ncard_le [DecidablePred (· ∈ p₁)] (h₁ : G.IsBipartiteWith p₁ p₂)
     (h₂ : ∀ s ⊆ p₁, s.ncard ≤ (⋃ x ∈ s, G.neighborSet x).ncard) :
     ∃ M : Subgraph G, p₁ ⊆ M.verts ∧ M.IsMatching := by
   obtain ⟨f, hf₁, hf₂⟩ := Finset.all_card_le_biUnion_card_iff_exists_injective
@@ -72,7 +72,6 @@ theorem exists_IsMatching_of_forall_ncard_le [DecidablePred (· ∈ p₁)] (h₁
     simp only [this, ↓reduceDIte, hx₁, hx₂, dite_else_false, forall_exists_index, true_and]
     exact fun _ _ k ↦ Subtype.ext_iff.mp <| hf₁ (hx₂ ▸ k)
 
-private
 lemma union_eq_univ_of_forall_ncard_le (h₁ : G.IsBipartiteWith p₁ p₂)
     (h₂ : ∀ s : Set V, s.ncard ≤ (⋃ x ∈ s, G.neighborSet x).ncard) : p₁ ∪ p₂ = Set.univ := by
   obtain ⟨f, _, hf₂⟩ := Finset.all_card_le_biUnion_card_iff_exists_injective
@@ -83,7 +82,6 @@ lemma union_eq_univ_of_forall_ncard_le (h₁ : G.IsBipartiteWith p₁ p₂)
   have := h₁.mem_of_adj <| G.mem_neighborFinset _ _ |>.mp (hf₂ x)
   grind
 
-private
 lemma exists_bijective_of_forall_ncard_le [DecidablePred (· ∈ p₁)] (h₁ : G.IsBipartiteWith p₁ p₂)
     (h₂ : ∀ s : Set V, s.ncard ≤ (⋃ x ∈ s, G.neighborSet x).ncard) :
     ∃ (h : p₁ → p₂), Function.Bijective h ∧ ∀ (a : p₁), G.Adj a (h a) := by
@@ -107,7 +105,7 @@ lemma exists_bijective_of_forall_ncard_le [DecidablePred (· ∈ p₁)] (h₁ : 
 
 /-- This is the version of **Hall's marriage theorem** for bipartite graphs that finds a perfect
 matching given that the neighborhood-condition holds globally. -/
-theorem exists_IsPerfectMatching_of_forall_ncard_le [DecidablePred (· ∈ p₁)]
+theorem exists_isPerfectMatching_of_forall_ncard_le [DecidablePred (· ∈ p₁)]
     (h₁ : G.IsBipartiteWith p₁ p₂) (h₂ : ∀ s : Set V, s.ncard ≤ (⋃ x ∈ s, G.neighborSet x).ncard) :
     ∃ M : Subgraph G, M.IsPerfectMatching := by
   obtain ⟨b, hb₁, hb₂⟩ := exists_bijective_of_forall_ncard_le h₁ h₂
