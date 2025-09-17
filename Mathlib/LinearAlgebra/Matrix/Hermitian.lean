@@ -283,17 +283,10 @@ namespace IsHermitian
 theorem fromBlocks₁₁ [Fintype m] [DecidableEq m] {A : Matrix m m α} (B : Matrix m n α)
     (D : Matrix n n α) (hA : A.IsHermitian) :
     (Matrix.fromBlocks A B Bᴴ D).IsHermitian ↔ (D - Bᴴ * A⁻¹ * B).IsHermitian := by
-  have hBAB : (Bᴴ * A⁻¹ * B).IsHermitian := by
-    apply isHermitian_conjTranspose_mul_mul
-    apply hA.inv
+  have hBAB : (Bᴴ * A⁻¹ * B).IsHermitian := isHermitian_conjTranspose_mul_mul _ hA.inv
   rw [isHermitian_fromBlocks_iff]
-  constructor
-  · intro h
-    apply IsHermitian.sub h.2.2.2 hBAB
-  · intro h
-    refine ⟨hA, rfl, conjTranspose_conjTranspose B, ?_⟩
-    rw [← sub_add_cancel D]
-    apply IsHermitian.add h hBAB
+  exact ⟨fun h ↦ h.2.2.2.sub hBAB, fun h ↦ ⟨hA, rfl, conjTranspose_conjTranspose B,
+    sub_add_cancel D _ ▸ h.add hBAB⟩⟩
 
 theorem fromBlocks₂₂ [Fintype n] [DecidableEq n] (A : Matrix m m α) (B : Matrix m n α)
     {D : Matrix n n α} (hD : D.IsHermitian) :

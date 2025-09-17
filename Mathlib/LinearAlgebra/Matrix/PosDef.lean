@@ -677,9 +677,8 @@ theorem fromBlocks₁₁ [DecidableEq m] {A : Matrix m m R'}
   constructor
   · refine fun h => ⟨h.1, fun x => ?_⟩
     have := h.2 (-((A⁻¹ * B) *ᵥ x) ⊕ᵥ x)
-    rw [dotProduct_mulVec, schur_complement_eq₁₁ B D _ _ hA.1, neg_add_cancel, dotProduct_zero,
-      zero_add] at this
-    rw [dotProduct_mulVec]; exact this
+    rwa [dotProduct_mulVec, schur_complement_eq₁₁ B D _ _ hA.1, neg_add_cancel, dotProduct_zero,
+      zero_add, ← dotProduct_mulVec] at this
   · refine fun h => ⟨h.1, fun x => ?_⟩
     rw [dotProduct_mulVec, ← Sum.elim_comp_inl_inr x, schur_complement_eq₁₁ B D _ _ hA.1]
     apply le_add_of_nonneg_of_le
