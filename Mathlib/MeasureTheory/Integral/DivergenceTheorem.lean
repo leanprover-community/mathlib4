@@ -27,7 +27,7 @@ is true if the function is not differentiable at countably many points of the in
 Once we prove the general theorem, we deduce corollaries for functions `ℝ → E` and pairs of
 functions `(ℝ × ℝ) → E`.
 
-## Notations
+## Notation
 
 We use the following local notation to make the statement more readable. Note that the documentation
 website shows the actual terms, not those abbreviated using local notations.

@@ -34,9 +34,6 @@ open Matrix
 
 open LinearMap
 
--- disable this instance so we do not accidentally use it in lemmas.
-attribute [-instance] SpecialLinearGroup.instCoeFun
-
 /-- `GL n R` is the group of `n` by `n` `R`-matrices with unit determinant.
 Defined as a subtype of matrices -/
 abbrev GeneralLinearGroup (n : Type u) (R : Type v) [DecidableEq n] [Fintype n] [CommRing R] :
