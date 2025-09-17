@@ -1124,4 +1124,3 @@ end PowerSeries
 end Comparison
 
 end LaurentSeries
-#lint
