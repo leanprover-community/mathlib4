@@ -77,11 +77,13 @@ theorem filter_coprime_Ico_eq_totient (a n : ℕ) :
 theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_ne_zero : a ≠ 0) :
     #{x ∈ Ico k (k + n) | a.Coprime x} ≤ totient a * (n / a + 1) := by
   conv_lhs => rw [← Nat.mod_add_div n a]
-  induction' n / a with i ih
-  · rw [← filter_coprime_Ico_eq_totient a k]
+  induction n / a with
+  | zero =>
+    rw [← filter_coprime_Ico_eq_totient a k]
     simp only [add_zero, mul_one, mul_zero, zero_add]
     gcongr
     exact le_of_lt (mod_lt n (pos_iff_ne_zero.mpr a_ne_zero))
+  | succ i ih => ?_
   simp only [mul_succ]
   simp_rw [← add_assoc] at ih ⊢
   calc
@@ -193,7 +195,7 @@ theorem totient_prime_pow_succ {p : ℕ} (hp : p.Prime) (n : ℕ) : φ (p ^ (n +
         rintro b ⟨h, rfl⟩
         rw [Nat.pow_succ]
         exact (mul_lt_mul_right hp.pos).2 h
-      rw [card_sdiff h2, Finset.card_image_of_injective _ h1, card_range, card_range, ←
+      rw [card_sdiff_of_subset h2, Finset.card_image_of_injective _ h1, card_range, card_range, ←
         one_mul (p ^ n), pow_succ', ← tsub_mul, one_mul, mul_comm]
 
 /-- When `p` is prime, then the totient of `p ^ n` is `p ^ (n - 1) * (p - 1)` -/

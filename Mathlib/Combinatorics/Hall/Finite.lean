@@ -140,7 +140,7 @@ theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
     simp [disj, card_image_of_injective _ Subtype.coe_injective, Nat.add_sub_cancel_left]
   rw [this, hus]
   refine (Nat.sub_le_sub_right (ht _) _).trans ?_
-  rw [← card_sdiff]
+  rw [← card_sdiff_of_subset]
   · gcongr
     intro t
     simp only [mem_biUnion, mem_sdiff, not_exists, mem_image, and_imp, mem_union,

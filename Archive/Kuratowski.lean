@@ -33,7 +33,7 @@ In another file it will be shown that the maximum can be realized in the real nu
   for an arbitrary set `s`, there are at most 14 distinct sets that can be obtained from `s` using
   the closure and complement operations (the **Kuratowski closure-complement theorem**).
 
-## Notations
+## Notation
 
 * `k`: the closure of a set.
 * `i`: the interior of a set.
@@ -79,8 +79,7 @@ theorem card_theFourteen (s : Set X) : (theFourteen s).card = 14 := rfl
 /-- If `t` is obtainable from `s` by the closure and complement operations,
 then it is in the multiset `theFourteen s`. -/
 theorem IsObtainable.mem_theFourteen {s t : Set X} (h : IsObtainable s t) : t ∈ theFourteen s := by
-  induction' h with _ _ mem _ _ mem
-  case base => exact .head _
+  induction h with | base => exact .head _ | closure _ mem => ?_ | complement _ mem => ?_
   all_goals repeat obtain _ | ⟨_, mem⟩ := mem; rotate_left
   all_goals simp [theFourteen]
 
