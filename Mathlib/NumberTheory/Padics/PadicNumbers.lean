@@ -979,9 +979,8 @@ theorem eq_of_norm_add_lt_left {z1 z2 : ℚ_[p]} (h : ‖z1 + z2‖ < ‖z1‖) 
 @[simp]
 lemma norm_natCast_p_sub_one :
     ‖((p - 1 : ℕ) : ℚ_[p])‖ = 1 := by
-  rw [← norm_one (α := ℚ_[p]), Nat.cast_sub (Nat.Prime.one_le Fact.out)]
-  apply eq_of_norm_add_lt_right
-  simp only [cast_one, sub_add_cancel, norm_one, norm_natCast_lt_one_iff, dvd_rfl]
+  rw [norm_natCast_eq_one_iff]
+  exact (coprime_self_sub_right hp.out.one_le).mpr p.coprime_one_right
 
 end NormedSpace
 

@@ -221,7 +221,7 @@ lemma norm_sub_zmodRepr_lt_one (x : ℤ_[p]) :
 lemma norm_natCast_zmodRepr_eq_one_iff {x : ℤ_[p]} :
     ‖(x.zmodRepr : ℤ_[p])‖ = 1 ↔ ‖x‖ = 1 := by
   rcases eq_or_ne ‖(x.zmodRepr : ℤ_[p])‖ ‖x‖ with H | H
-  · simp [H]
+  · rw [H]
   · have := x.norm_sub_zmodRepr_lt_one
     constructor <;> intro h <;> rw [← h]
     · rw [eq_comm, ← norm_neg]
@@ -233,10 +233,8 @@ lemma norm_natCast_zmodRepr_eq_one_iff {x : ℤ_[p]} :
 
 lemma zmodRepr_eq_zero_iff_dvd {x : ℤ_[p]} :
     x.zmodRepr = 0 ↔ (p : ℤ_[p]) ∣ x := by
-  refine ⟨?_, zmodRepr_eq_zero_of_dvd⟩
-  rw [← norm_lt_one_iff_dvd]
-  intro H
-  rw [← sub_zero x, ← Nat.cast_zero, ← H]
+  refine ⟨fun H ↦ ?_, zmodRepr_eq_zero_of_dvd⟩
+  rw [← norm_lt_one_iff_dvd, ← sub_zero x, ← Nat.cast_zero, ← H]
   exact norm_sub_zmodRepr_lt_one _
 
 lemma norm_natCast_zmodRepr_eq_one_iff_ne (x : ℤ_[p]) :
@@ -246,8 +244,7 @@ lemma norm_natCast_zmodRepr_eq_one_iff_ne (x : ℤ_[p]) :
 
 lemma norm_natCast_zmodRepr_eq (x : ℤ_[p]) :
     ‖(x.zmodRepr : ℤ_[p])‖ = 1 ∨ x.zmodRepr = 0 := by
-  rw [norm_natCast_zmodRepr_eq_one_iff_ne]
-  exact (em _).symm
+  grind [norm_natCast_zmodRepr_eq_one_iff_ne]
 
 @[simp]
 lemma zmodRepr_natCast_zmodRepr (x : ℤ_[p]) :
@@ -278,16 +275,8 @@ lemma zmodRepr_natCast_of_lt {n : ℕ} (hn : n < p) :
 
 lemma zmodRepr_natCast_ofNat {n : ℕ} (hn : ofNat(n) < p) :
     zmodRepr (ofNat(n) : ℤ_[p]) = ofNat(n) := by
-  rcases n with _|_|n
-  · rw [eq_comm]
-    apply zmodRepr_unique
-    · simpa using Nat.Prime.pos Fact.out
-    · simp
-  · rw [eq_comm]
-    apply zmodRepr_unique
-    · simpa using Nat.Prime.one_lt Fact.out
-    · simp
-  · rw [← Nat.cast_ofNat, zmodRepr_natCast_of_lt hn]
+  convert zmodRepr_natCast_of_lt hn
+  rcases n with _ | _ | n <;> simp
 
 lemma zmodRepr_units_ne_zero (x : ℤ_[p]ˣ) : x.val.zmodRepr ≠ 0 := by
   rw [ne_eq, zmodRepr_eq_zero_iff_dvd]
@@ -371,14 +360,11 @@ theorem ker_toZMod : RingHom.ker (toZMod : ℤ_[p] →+* ZMod p) = maximalIdeal 
 
 @[simp]
 lemma val_toZMod_eq_zmodSpec (x : ℤ_[p]) :
-    (toZMod x).val = x.zmodRepr := by
-  apply zmodRepr_unique
-  · exact ZMod.val_lt _
-  · simpa using toZMod_spec _
+    (toZMod x).val = x.zmodRepr :=
+  zmodRepr_unique _ _ (ZMod.val_lt _) <| by simpa using toZMod_spec _
 
 lemma zmodRepr_mul (x y : ℤ_[p]) : (x * y).zmodRepr = x.zmodRepr * y.zmodRepr % p := by
-  rw [← val_toZMod_eq_zmodSpec, ← val_toZMod_eq_zmodSpec, map_mul, ZMod.val_mul,
-    ← val_toZMod_eq_zmodSpec]
+  simp [← val_toZMod_eq_zmodSpec, ZMod.val_mul]
 
 /-- The equivalence between the residue field of the `p`-adic integers and `ℤ/pℤ` -/
 def residueField : IsLocalRing.ResidueField ℤ_[p] ≃+* ZMod p :=
