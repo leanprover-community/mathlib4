@@ -12,8 +12,8 @@ import Mathlib.RingTheory.PowerSeries.Basic
 /-!
 # Restricted power series
 
-We say a powerseries over a normed ring `R` is restricted for a parameter `c` if
-`‖coeff R i f‖ * c^i → 0`.
+`IsRestricted` : We say a powerseries over a normed ring `R` is restricted for a parameter `c` if
+`‖coeff R i f‖ * c ^ i → 0`.
 
 -/
 
@@ -22,32 +22,31 @@ namespace PowerSeries
 open PowerSeries Filter
 open scoped Topology
 
-/-- A power series over `R` is restricted of paramerter `c` if we have the following limit. -/
+/-- A power series over `R` is restricted of paramerter `c` if we have
+  `‖coeff R i f‖ * c ^ i → 0`. -/
 def IsRestricted {R : Type*} [NormedRing R] (c : ℝ) (f : PowerSeries R) :=
-  Tendsto (fun (i : ℕ) => (norm (coeff R i f)) * c^i) atTop (𝓝 0)
+  Tendsto (fun (i : ℕ) => (norm (coeff R i f)) * c ^ i) atTop (𝓝 0)
 
-namespace Restricted
+namespace IsRestricted
 
 variable {R : Type*} [NormedRing R] (c : ℝ)
 
-lemma isRestricted_iff (f : PowerSeries R) : IsRestricted c f ↔ IsRestricted |c| f := by
-  simp_rw [IsRestricted, NormedAddCommGroup.tendsto_atTop, sub_zero, norm_mul, norm_norm, norm_pow,
-    Real.norm_eq_abs, abs_abs]
+lemma isRestricted_iff {f : PowerSeries R} : IsRestricted c f ↔
+    ∀ ε, 0 < ε → ∃ N, ∀ n, N ≤ n → ‖‖(coeff R n) f‖ * c ^ n‖ < ε := by
+  simp [IsRestricted, NormedAddCommGroup.tendsto_atTop]
+
+lemma isRestricted_iff_abs (f : PowerSeries R) : IsRestricted c f ↔ IsRestricted |c| f := by
+  simp [IsRestricted, NormedAddCommGroup.tendsto_atTop]
 
 lemma zero : IsRestricted c (0 : PowerSeries R) := by
-  simp_rw [IsRestricted, map_zero, norm_zero, zero_mul, tendsto_const_nhds_iff]
+  simp [IsRestricted]
 
 lemma one : IsRestricted c (1 : PowerSeries R) := by
-  simp_rw [IsRestricted, coeff_one, NormedAddCommGroup.tendsto_atTop, sub_zero, norm_mul, norm_norm,
-    norm_pow, Real.norm_eq_abs]
-  intro ε hε
-  refine ⟨1, fun n hn => ?_ ⟩
+  simp only [isRestricted_iff, coeff_one, norm_mul, norm_pow, Real.norm_eq_abs]
+  refine fun _ _ ↦ ⟨1, fun n hn => ?_ ⟩
   split
-  · next h =>
-    by_contra
-    rw [h] at hn
-    exact Nat.not_succ_le_zero 0 hn
-  simpa only [norm_zero, zero_mul]
+  · omega
+  · simpa
 
 lemma add {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) :
     IsRestricted c (f + g) := by
