@@ -329,7 +329,7 @@ theorem mul_inv : ∀ {z : ℤ_[p]}, ‖z‖ = 1 → z * z.inv = 1
     rw [norm_eq_padic_norm] at h
     dsimp only
     rw [dif_pos h]
-    apply Subtype.ext_iff_val.2
+    apply Subtype.ext_iff.2
     simp [mul_inv_cancel₀ hk]
 
 theorem inv_mul {z : ℤ_[p]} (hz : ‖z‖ = 1) : z.inv * z = 1 := by rw [mul_comm, mul_inv hz]
@@ -513,10 +513,10 @@ theorem algebraMap_apply (x : ℤ_[p]) : algebraMap ℤ_[p] ℚ_[p] x = x :=
   rfl
 
 instance isFractionRing : IsFractionRing ℤ_[p] ℚ_[p] where
-  map_units' := fun ⟨x, hx⟩ => by
+  map_units := fun ⟨x, hx⟩ => by
     rwa [algebraMap_apply, isUnit_iff_ne_zero, PadicInt.coe_ne_zero, ←
       mem_nonZeroDivisors_iff_ne_zero]
-  surj' x := by
+  surj x := by
     by_cases hx : ‖x‖ ≤ 1
     · use (⟨x, hx⟩, 1)
       rw [Submonoid.coe_one, map_one, mul_one, PadicInt.algebraMap_apply, Subtype.coe_mk]

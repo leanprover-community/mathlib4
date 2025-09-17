@@ -24,7 +24,7 @@ a kernel from `α` to `β × γ`.
 * Instances stating that `IsMarkovKernel`, `IsZeroOrMarkovKernel`, `IsFiniteKernel` and
   `IsSFiniteKernel` are stable by product.
 
-## Notations
+## Notation
 
 * `κ ×ₖ η = ProbabilityTheory.Kernel.prod κ η`
 

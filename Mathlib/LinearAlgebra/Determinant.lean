@@ -182,7 +182,7 @@ end
 theorem det_eq_det_toMatrix_of_finset [DecidableEq M] {s : Finset M} (b : Basis s A M)
     (f : M →ₗ[A] M) : LinearMap.det f = Matrix.det (LinearMap.toMatrix b b f) := by
   have : ∃ s : Finset M, Nonempty (Basis s A M) := ⟨s, ⟨b⟩⟩
-  rw [LinearMap.coe_det, dif_pos, detAux_def'' _ b] <;> assumption
+  rw [LinearMap.coe_det, dif_pos this, detAux_def'' _ b]
 
 @[simp]
 theorem det_toMatrix (b : Basis ι A M) (f : M →ₗ[A] M) :
