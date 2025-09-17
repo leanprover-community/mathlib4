@@ -22,7 +22,7 @@ structure CommGrp_ where
   /-- The underlying object in the ambient monoidal category -/
   X : C
   [grp : GrpObj X]
-  [comm : IsCommMon X]
+  [comm : IsCommMonObj X]
 
 attribute [instance] CommGrp_.grp CommGrp_.comm
 
@@ -148,7 +148,7 @@ end
 /-- Construct an isomorphism of commutative group objects by giving a monoid isomorphism between the
 underlying objects. -/
 @[simps!]
-def mkIso' {G H : C} (e : G ≅ H) [GrpObj G] [IsCommMon G] [GrpObj H] [IsCommMon H]
+def mkIso' {G H : C} (e : G ≅ H) [GrpObj G] [IsCommMonObj G] [GrpObj H] [IsCommMonObj H]
     [IsMon_Hom e.hom] : mk G ≅ mk H :=
   (fullyFaithfulForget₂Grp_ C).preimageIso (Grp_.mkIso' e)
 
@@ -187,7 +187,7 @@ def mapCommGrp : CommGrp_ C ⥤ CommGrp_ D where
       comm :=
         { mul_comm := by
             dsimp
-            rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMon.mul_comm] } }
+            rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMonObj.mul_comm] } }
   map f := F.mapMon.map f
   map_id X := show F.mapMon.map (𝟙 X.toGrp_.toMon_) = _ by cat_disch
 

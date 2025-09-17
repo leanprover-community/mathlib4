@@ -213,7 +213,8 @@ lemma Iff.ne_right {α β : Sort*} {a b : α} {c d : β} : (a ≠ b ↔ c = d) �
 #adaptation_note
 /--
 2025-07-31. Upstream `Xor` has been renamed to `XorOp`.
-Anytime after v4.23.0-rc1 lands it should be okay to remove the deprecation, and then rename this.
+2025-09-16. The deprecation for `Xor` has been removed.
+Anytime after v4.25.0-rc1 lands we rename this back to `Xor`.
 -/
 /-- `Xor' a b` is the exclusive-or of propositions. -/
 def Xor' (a b : Prop) := (a ∧ ¬b) ∨ (b ∧ ¬a)
@@ -398,22 +399,17 @@ theorem congr_fun_rfl {α β : Sort*} (f : α → β) (a : α) : congr_fun (Eq.r
 theorem congr_fun_congr_arg {α β γ : Sort*} (f : α → β → γ) {a a' : α} (p : a = a') (b : β) :
     congr_fun (congr_arg f p) b = congr_arg (fun a ↦ f a b) p := rfl
 
-theorem Eq.rec_eq_cast {α : Sort _} {P : α → Sort _} {x y : α} (h : x = y) (z : P x) :
-    h ▸ z = cast (congr_arg P h) z := by induction h; rfl
+@[deprecated (since := "2025-09-16")] alias Eq.rec_eq_cast := eqRec_eq_cast
 
-theorem eqRec_heq' {α : Sort*} {a' : α} {motive : (a : α) → a' = a → Sort*}
-    (p : motive a' (rfl : a' = a')) {a : α} (t : a' = a) :
-    @Eq.rec α a' motive p a t ≍ p := by
-  subst t; rfl
+@[deprecated (since := "2025-09-16")] alias eqRec_heq' := eqRec_heq_self
 
 theorem rec_heq_of_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : C a} {y : β}
-    (e : a = b) (h : x ≍ y) : e ▸ x ≍ y := by subst e; exact h
+    (e : a = b) (h : x ≍ y) : e ▸ x ≍ y :=
+  eqRec_heq_iff_heq.mpr h
 
-theorem rec_heq_iff_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : C a} {y : β} {e : a = b} :
-    e ▸ x ≍ y ↔ x ≍ y := by subst e; rfl
+@[deprecated (since := "2025-09-16")] alias rec_heq_iff_heq := eqRec_heq_iff_heq
 
-theorem heq_rec_iff_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : β} {y : C a} {e : a = b} :
-    x ≍ e ▸ y ↔ x ≍ y := by subst e; rfl
+@[deprecated (since := "2025-09-16")] alias heq_rec_iff_heq := heq_eqRec_iff_heq
 
 @[simp]
 theorem cast_heq_iff_heq {α β γ : Sort _} (e : α = β) (a : α) (c : γ) :

@@ -61,7 +61,8 @@ variable {M X Y : C} [MonObj M]
 attribute [reassoc (attr := simp)] one_mul mul_one mul_assoc
 
 /-- Transfer `MonObj` along an isomorphism. -/
-@[simps]
+-- Note: The simps lemmas are not tagged simp because their `#discr_tree_simp_key` are too generic.
+@[simps! -isSimp]
 def ofIso (e : M ≅ X) : MonObj X where
   one := η[M] ≫ e.hom
   mul := (e.inv ⊗ₘ e.inv) ≫ μ[M] ≫ e.hom
@@ -162,6 +163,7 @@ instance : IsMon_Hom (𝟙 M) where
 
 instance (f : M ⟶ N) (g : N ⟶ O) [IsMon_Hom f] [IsMon_Hom g] : IsMon_Hom (f ≫ g) where
 
+attribute [local simp] MonObj.ofIso_one MonObj.ofIso_mul in
 instance isMon_Hom_ofIso (e : M ≅ X) : letI := MonObj.ofIso e; IsMon_Hom e.hom := by
   letI := MonObj.ofIso e; exact { }
 
@@ -463,6 +465,7 @@ faithful too. -/
 protected def FullyFaithful.mapMon (hF : F.FullyFaithful) : F.mapMon.FullyFaithful where
   preimage {X Y} f := .mk' <| hF.preimage f.hom
 
+attribute [local simp] MonObj.ofIso_one MonObj.ofIso_mul in
 open Monoidal in
 /-- The essential image of a fully faithful functor between cartesian-monoidal categories is the
 same on monoid objects as on objects. -/
@@ -952,34 +955,36 @@ section
 variable [BraidedCategory.{v₁} C]
 
 /-- Predicate for a monoid object to be commutative. -/
-class IsCommMon (X : C) [MonObj X] where
+class IsCommMonObj (X : C) [MonObj X] where
   mul_comm (X) : (β_ X X).hom ≫ μ = μ := by cat_disch
+
+@[deprecated (since := "2025-09-14")] alias IsCommMon := IsCommMonObj
 
 open scoped MonObj
 
-namespace IsCommMon
+namespace IsCommMonObj
 
 attribute [reassoc (attr := simp, mon_tauto)] mul_comm
 
 variable (M) in
 @[reassoc (attr := simp, mon_tauto)]
-lemma mul_comm' [IsCommMon M] : (β_ M M).inv ≫ μ = μ := by simp [← cancel_epi (β_ M M).hom]
+lemma mul_comm' [IsCommMonObj M] : (β_ M M).inv ≫ μ = μ := by simp [← cancel_epi (β_ M M).hom]
 
-instance : IsCommMon (𝟙_ C) where
+instance : IsCommMonObj (𝟙_ C) where
   mul_comm := by dsimp; rw [braiding_leftUnitor, unitors_equal]
 
-end IsCommMon
+end IsCommMonObj
 
 variable (M) in
 @[reassoc (attr := simp)]
-lemma MonObj.mul_mul_mul_comm [IsCommMon M] :
+lemma MonObj.mul_mul_mul_comm [IsCommMonObj M] :
     tensorμ M M M M ≫ (μ ⊗ₘ μ) ≫ μ = (μ ⊗ₘ μ) ≫ μ := by simp only [mon_tauto]
 
 @[deprecated (since := "2025-09-09")] alias Mon_Class.mul_mul_mul_comm := MonObj.mul_mul_mul_comm
 
 variable (M) in
 @[reassoc (attr := simp)]
-lemma MonObj.mul_mul_mul_comm' [IsCommMon M] :
+lemma MonObj.mul_mul_mul_comm' [IsCommMonObj M] :
     tensorδ M M M M ≫ (μ ⊗ₘ μ) ≫ μ = (μ ⊗ₘ μ) ≫ μ := by simp only [mon_tauto]
 
 @[deprecated (since := "2025-09-09")] alias Mon_Class.mul_mul_mul_comm' := MonObj.mul_mul_mul_comm'
@@ -989,7 +994,7 @@ end
 section SymmetricCategory
 variable [SymmetricCategory C] {M N W X Y Z : C} [MonObj M] [MonObj N]
 
-instance [IsCommMon M] [IsCommMon N] : IsCommMon (M ⊗ N) where
+instance [IsCommMonObj M] [IsCommMonObj N] : IsCommMonObj (M ⊗ N) where
   mul_comm := by
     simp [← IsIso.inv_comp_eq, tensorμ, ← associator_inv_naturality_left_assoc,
       ← associator_naturality_right_assoc, SymmetricCategory.braiding_swap_eq_inv_braiding M N,

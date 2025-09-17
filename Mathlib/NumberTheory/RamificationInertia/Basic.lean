@@ -201,6 +201,17 @@ theorem ramificationIdx_eq_normalizedFactors_count [DecidableEq (Ideal S)]
       Multiset.nsmul_singleton, ← Multiset.le_count_iff_replicate_le]
   exact (Nat.lt_succ_self _).not_ge
 
+theorem ramificationIdx_eq_multiplicity (hp : map f p ≠ ⊥) (hP : P.IsPrime) :
+    ramificationIdx f p P = multiplicity P (Ideal.map f p) := by
+  classical
+  by_cases hP₂ : P = ⊥
+  · rw [hP₂, ← Ideal.zero_eq_bot, multiplicity_zero_eq_zero_of_ne_zero _ hp]
+    exact Ideal.ramificationIdx_of_not_le (mt le_bot_iff.mp hp)
+  rw [multiplicity_eq_of_emultiplicity_eq_some]
+  rw [ramificationIdx_eq_normalizedFactors_count hp hP hP₂, ← normalize_eq P,
+    ← UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors _ hp, normalize_eq]
+  exact irreducible_iff_prime.mpr <| prime_of_isPrime hP₂ hP
+
 theorem ramificationIdx_eq_factors_count [DecidableEq (Ideal S)]
     (hp0 : map f p ≠ ⊥) (hP : P.IsPrime) (hP0 : P ≠ ⊥) :
     ramificationIdx f p P = (factors (map f p)).count P := by

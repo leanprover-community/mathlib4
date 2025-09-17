@@ -158,6 +158,9 @@ inductive Γ'
   | bit1
   deriving DecidableEq, Inhabited, Fintype
 
+-- A proof below relies on the value of that `deriving Inhabited` picks here.
+@[simp] theorem default_Γ' : (default : Γ') = .consₗ := rfl
+
 /-- The four stacks used by the program. `main` is used to store the input value in `trNormal`
 mode and the output value in `Λ'.ret` mode, while `stack` is used to keep all the data for the
 continuations. `rev` is used to store reversed lists when transferring values between stacks, and

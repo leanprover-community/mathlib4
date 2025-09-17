@@ -1236,9 +1236,10 @@ lemma map_LocalizedModules (g : M₀ →ₗ[R] M₁) (m : M₀) (s : S) :
 lemma map_iso_commute (g : M₀ →ₗ[R] M₁) : (map S f₀ f₁) g ∘ₗ (iso S f₀) =
     (iso S f₁) ∘ₗ (map S (mkLinearMap S M₀) (mkLinearMap S M₁)) g := by
   ext x
-  refine induction_on (fun m s ↦ ((Module.End.isUnit_iff _).1 (map_units f₁ s)).1 ?_) x
-  repeat rw [Module.algebraMap_end_apply, ← CompatibleSMul.map_smul, smul'_mk, ← mk_smul, mk_cancel]
-  simp -- Can't be combined with next simp. This uses map_apply, which would be preempted by map.
+  induction x using induction_on with | _ m s
+  refine ((Module.End.isUnit_iff _).1 (map_units f₁ s)).1 ?_
+  rw [Module.algebraMap_end_apply, Module.algebraMap_end_apply,
+    ← CompatibleSMul.map_smul, ← CompatibleSMul.map_smul, smul'_mk, ← mk_smul _ s.2, mk_cancel]
   simp [map, lift, iso_localizedModule_eq_refl, lift_mk]
 
 end IsLocalizedModule
@@ -1353,3 +1354,30 @@ instance [Subsingleton M] (S : Submonoid R) : Subsingleton (LocalizedModule S M)
   use 1, S.one_mem, Subsingleton.elim _ _
 
 end LocalizedModule
+
+namespace IsLocalizedModule
+
+variable {R M A N : Type*} [CommRing R] [AddCommMonoid M] [Module R M]
+  [CommRing A] [AddCommMonoid N] [Module A N] [Algebra R A] [Module R N] [IsScalarTower R A N]
+  (f : M →ₗ[R] N)
+
+theorem noZeroSMulDivisors (S : Submonoid R) [NoZeroSMulDivisors R M] [IsLocalization S A]
+    [IsLocalizedModule S f] : NoZeroSMulDivisors A N := by
+  rw [noZeroSMulDivisors_iff]
+  intro c x hcx
+  obtain ⟨a, s, rfl⟩ := IsLocalization.mk'_surjective S c
+  obtain ⟨⟨m, t⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f x
+  rw [Function.uncurry_apply_pair] at hcx ⊢
+  rw [mk'_smul_mk', mk'_eq_zero, IsLocalizedModule.eq_zero_iff S] at hcx
+  obtain ⟨u, hl⟩ := hcx
+  rw [← smul_assoc] at hl
+  obtain (hua | rfl) := NoZeroSMulDivisors.eq_zero_or_eq_zero_of_smul_eq_zero hl
+  · rw [IsLocalization.mk'_eq_zero_iff]
+    exact Or.inl ⟨u, hua⟩
+  · simp
+
+instance (S : Submonoid R) [NoZeroSMulDivisors R M] :
+    NoZeroSMulDivisors (Localization S) (LocalizedModule S M) :=
+  noZeroSMulDivisors (LocalizedModule.mkLinearMap S M) S
+
+end IsLocalizedModule
