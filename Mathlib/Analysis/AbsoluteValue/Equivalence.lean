@@ -152,9 +152,10 @@ end LinearOrderedSemifield
 
 section Real
 
+open Real
+
 variable {F : Type*} [Field F] {v w : AbsoluteValue F ℝ}
 
-open Real in
 theorem IsEquiv.log_div_log_pos (h : v.IsEquiv w) {a : F} (ha₀ : a ≠ 0) (ha₁ : w a ≠ 1) :
     0 < (w a).log / (v a).log := by
   rcases ha₁.lt_or_gt with hwa | hwa
@@ -162,7 +163,6 @@ theorem IsEquiv.log_div_log_pos (h : v.IsEquiv w) {a : F} (ha₀ : a ≠ 0) (ha�
       (neg_pos_of_neg <| log_neg (v.pos ha₀) (h.lt_one_iff.2 hwa))
   · exact div_pos (log_pos <| hwa) (log_pos (h.one_lt_iff.2 hwa))
 
-open Real in
 /--
 If $v$ and $w$ are two real absolute values on a field $F$, equivalent in the sense that
 $v(x) \leq v(y)$ if and only if $w(x) \leq w(y)$, then $\frac{\log (v(a))}{\log (w(a))}$ is
@@ -194,7 +194,6 @@ theorem IsEquiv.log_div_log_eq_log_div_log (h : v.IsEquiv w)
     ← one_lt_div (zpow_pos (by linarith) _), ← map_pow, ← map_zpow₀, ← map_div₀] at hq₂
   exact not_lt_of_gt (h.lt_one_iff.1 hq₁) hq₂
 
-open Real in
 /--
 If `v` and `w` are two real absolute values on a field `F`, then `v` and `w` are equivalent if
 and only if there exists a positive real constant `c` such that for all `x : R`, `(f x)^c = g x`.
