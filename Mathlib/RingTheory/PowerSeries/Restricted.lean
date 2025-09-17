@@ -15,12 +15,6 @@ import Mathlib.RingTheory.PowerSeries.Basic
 We say a powerseries over a normed ring `R` is restricted for a parameter `c` if
 `‖coeff R i f‖ * c^i → 0`.
 
-## Main results
-
-- `IsGroup`: for a normed ring `R` the set of restricted power series forms an additive group.
-- `IsRing`: if `R` is a normed ring with the ultrametric property then the set of restricted
-  power series forms a ring.
-
 -/
 
 namespace PowerSeries
