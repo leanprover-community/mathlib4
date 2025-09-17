@@ -32,9 +32,8 @@ namespace SimpleGraph
 variable {V : Type*} {G : SimpleGraph V}
 
 private
-abbrev hall_subgraph {p : Set V} [DecidablePred (· ∈ p)] (f : p → V)
-    (h : ∀ x : V, (h : x ∈ p) → f ⟨x, h⟩ ∉ p)
-    (h₂ : ∀ x : V, (h : x ∈ p) → G.Adj x (f ⟨x, h⟩)) : Subgraph G where
+abbrev hall_subgraph {p : Set V} [DecidablePred (· ∈ p)] (f : p → V) (h₁ : ∀ x : p, f x ∉ p)
+    (h₂ : ∀ x : p, G.Adj x (f x)) : Subgraph G where
   verts := p ∪ Set.range f
   Adj v w :=
     if h : v ∈ p then f ⟨v, h⟩ = w
@@ -42,10 +41,8 @@ abbrev hall_subgraph {p : Set V} [DecidablePred (· ∈ p)] (f : p → V)
     else False
   adj_sub {v w} h := by
     repeat' split at h
-    · have := h₂ v (by assumption)
-      rwa [← h]
-    · have := h₂ w (by assumption) |>.symm
-      rwa [← h]
+    · exact h ▸ h₂ ⟨v, by assumption⟩
+    · exact h ▸ h₂ ⟨w, by assumption⟩ |>.symm
     · contradiction
   edge_vert {v w} := by grind
   symm {x y} := by grind
@@ -63,15 +60,15 @@ theorem exists_IsMatching_of_forall_ncard_le [DecidablePred (· ∈ p₁)] (h₁
     have := h₂ (s.image Subtype.val) (by simp)
     rw [Set.ncard_coe_finset, Finset.card_image_of_injective _ Subtype.val_injective] at this
     simpa [← Set.ncard_coe_finset, neighborFinset_def]
-  have (x : V) (h : x ∈ p₁) : f ⟨x, h⟩ ∉ p₁ := h₁.disjoint |>.notMem_of_mem_right <|
-    isBipartiteWith_neighborSet_subset h₁ h <| Set.mem_toFinset.mp <| hf₂ ⟨x, h⟩
-  use hall_subgraph f this (fun v _ ↦ G.mem_neighborFinset _ _ |>.mp <| hf₂ ⟨v, by assumption⟩)
+  have (x : p₁) : f x ∉ p₁ := h₁.disjoint |>.notMem_of_mem_right <|
+    isBipartiteWith_neighborSet_subset h₁ x.2 <| Set.mem_toFinset.mp <| hf₂ x
+  use hall_subgraph f this (fun v ↦ G.mem_neighborFinset _ _ |>.mp <| hf₂ v)
   refine ⟨by simp, fun v hv ↦ ?_⟩
   simp only [Set.mem_union, Set.mem_range, Subtype.exists] at hv ⊢
   rcases hv with h' | ⟨x, hx₁, hx₂⟩
   · exact ⟨f ⟨v, h'⟩, by simp_all⟩
   · use x
-    have := hx₂ ▸ (this x hx₁)
+    have := hx₂ ▸ this ⟨x, hx₁⟩
     simp only [this, ↓reduceDIte, hx₁, hx₂, dite_else_false, forall_exists_index, true_and]
     exact fun _ _ k ↦ Subtype.ext_iff.mp <| hf₁ (hx₂ ▸ k)
 
@@ -103,8 +100,8 @@ lemma exists_bijective_of_forall_ncard_le [DecidablePred (· ∈ p₁)] (h₁ : 
   let f' (x : p₁) : p₂ := ⟨f x, by grind⟩
   let g' (x : p₂) : p₁ := ⟨f x, by grind⟩
   refine Embedding.schroeder_bernstein_of_rel (f := f') (g := g') ?_ ?_ (fun x y ↦ G.Adj x y) ?_ ?_
-  · exact Injective.of_comp (f := Subtype.val) <| hf₁.comp <| Subtype.val_injective
-  · exact Injective.of_comp (f := Subtype.val) <| hf₁.comp <| Subtype.val_injective
+  · exact Injective.of_comp (f := Subtype.val) <| hf₁.comp Subtype.val_injective
+  · exact Injective.of_comp (f := Subtype.val) <| hf₁.comp Subtype.val_injective
   · exact fun v ↦ mem_neighborFinset _ _ _ |>.mp (hf₂ v)
   · exact fun v ↦ mem_neighborFinset _ _ _ |>.mp (hf₂ v) |>.symm
 
@@ -114,12 +111,11 @@ theorem exists_IsPerfectMatching_of_forall_ncard_le [DecidablePred (· ∈ p₁)
     (h₁ : G.IsBipartiteWith p₁ p₂) (h₂ : ∀ s : Set V, s.ncard ≤ (⋃ x ∈ s, G.neighborSet x).ncard) :
     ∃ M : Subgraph G, M.IsPerfectMatching := by
   obtain ⟨b, hb₁, hb₂⟩ := exists_bijective_of_forall_ncard_le h₁ h₂
-  use hall_subgraph (fun v ↦ b v) (fun v hv ↦ h₁.disjoint.notMem_of_mem_right (b ⟨v, hv⟩).property)
-    (fun v hv ↦ hb₂ ⟨v, hv⟩)
+  use hall_subgraph (fun v ↦ b v) (fun v ↦ h₁.disjoint.notMem_of_mem_right (b v).property) hb₂
   have : p₁ ∪ Set.range (fun v ↦ (b v).1) = Set.univ := by
     rw [Set.range_comp', hb₁.surjective.range_eq, Subtype.coe_image_univ]
     exact union_eq_univ_of_forall_ncard_le h₁ h₂
-  refine ⟨fun v _ ↦ ?_, by simp [Subgraph.IsSpanning, this]⟩
+  refine ⟨fun v _ ↦ ?_, Subgraph.isSpanning_iff.mpr this⟩
   simp only [dite_else_false]
   split
   · exact existsUnique_eq'
