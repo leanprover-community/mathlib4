@@ -158,14 +158,12 @@ theorem pbind_eq_none {f : ∀ a : α, a ∈ x → Option β}
 
 theorem join_pmap_eq_pmap_join {f : ∀ a, p a → β} {x : Option (Option α)} (H) :
     (pmap (pmap f) x H).join = pmap f x.join fun a h ↦ H (some a) (mem_of_mem_join h) _ rfl := by
-  -- See https://github.com/leanprover/lean4/pull/10327
-  -- grind [cases Option]
-  rcases x with (_ | _ | x) <;> simp
+  grind [cases Option]
 
 theorem pmap_bind_id_eq_pmap_join {f : ∀ a, p a → β} {x : Option (Option α)} (H) :
     ((pmap (pmap f) x H).bind fun a ↦ a) =
       pmap f x.join fun a h ↦ H (some a) (mem_of_mem_join h) _ rfl := by
-  rcases x with (_ | _ | x) <;> simp
+  grind [cases Option]
 
 end pmap
 
