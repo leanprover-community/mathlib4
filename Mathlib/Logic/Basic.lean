@@ -50,6 +50,20 @@ theorem congr_arg_heq {β : α → Sort*} (f : ∀ a, β a) :
     ∀ {a₁ a₂ : α}, a₁ = a₂ → f a₁ ≍ f a₂
   | _, _, rfl => HEq.rfl
 
+theorem dcongr_heq.{u, v}
+    {α₁ α₂ : Sort u}
+    {β₁ : α₁ → Sort v} {β₂ : α₂ → Sort v}
+    {f₁ : ∀ a, β₁ a} {f₂ : ∀ a, β₂ a}
+    {a₁ : α₁} {a₂ : α₂}
+    (hargs : a₁ ≍ a₂)
+    (ht : ∀ t₁ t₂, t₁ ≍ t₂ → β₁ t₁ = β₂ t₂)
+    (hf : α₁ = α₂ → β₁ ≍ β₂ → f₁ ≍ f₂) :
+    f₁ a₁ ≍ f₂ a₂ := by
+  cases hargs
+  cases funext fun v => ht v v .rfl
+  cases hf rfl .rfl
+  rfl
+
 @[simp] theorem eq_iff_eq_cancel_left {b c : α} : (∀ {a}, a = b ↔ a = c) ↔ b = c :=
   ⟨fun h ↦ by rw [← h], fun h a ↦ by rw [h]⟩
 
@@ -425,6 +439,15 @@ variable {α β : Sort u} {e : β = α} {a : α} {b : β}
 lemma heq_of_eq_cast (e : β = α) : a = cast e b → a ≍ b := by rintro rfl; simp
 
 lemma eq_cast_iff_heq : a = cast e b ↔ a ≍ b := ⟨heq_of_eq_cast _, fun h ↦ by cases h; rfl⟩
+
+lemma heq_iff_exists_eq_cast :
+    a ≍ b ↔ ∃ (h : β = α), a = cast h b :=
+  ⟨fun h ↦ ⟨type_eq_of_heq h.symm, eq_cast_iff_heq.mpr h⟩,
+    by rintro ⟨rfl, h⟩; rw [h, cast_eq]⟩
+
+lemma heq_iff_exists_cast_eq :
+    a ≍ b ↔ ∃ (h : α = β), cast h a = b := by
+  simp only [heq_comm (a := a), heq_iff_exists_eq_cast, eq_comm]
 
 end Equality
 
