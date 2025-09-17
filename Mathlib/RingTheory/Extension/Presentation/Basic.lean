@@ -399,7 +399,6 @@ private lemma aeval_comp_val_eq :
       (aevalTower (IsScalarTower.toAlgHom R S T) Q.val).comp (Q.aux P) := by
   ext i
   simp only [AlgHom.coe_comp, Function.comp_apply]
-  erw [Q.aux_X P i]
   cases i <;> simp
 
 private lemma span_range_relation_eq_ker_comp : Ideal.span
