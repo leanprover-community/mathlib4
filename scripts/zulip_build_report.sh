@@ -4,7 +4,7 @@ shopt -s extglob
 lean_outfile=$1
 
 # Skip the lines about build progress.
-filtered_out=$(grep -v '^✔' "${lean_outfile}" | grep -v '^trace: ') 
+filtered_out=$(grep -v '^✔' "${lean_outfile}" | grep -v '^trace: ')
 echo "$(wc -l <<<"${filtered_out}") lines of output" >&2
 
 delimiter=$(cat /proc/sys/kernel/random/uuid)

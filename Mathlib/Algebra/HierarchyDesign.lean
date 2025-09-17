@@ -249,4 +249,3 @@ instance {G : Type*} [Group G] [IsKleinFour G] : IsAddKleinFour (Additive G)
 where the `Group G` instance appears in `IsKleinFour G`. Future work may be done to improve the
 type class synthesis order in this situation.
 -/
-
