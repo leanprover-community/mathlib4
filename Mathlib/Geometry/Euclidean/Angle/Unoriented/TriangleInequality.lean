@@ -120,7 +120,7 @@ lemma angle_le_angle_add_angle_of_norm_one {x y z : V}
     · simp_all
     by_cases H4 : ortho y z = 0
     · simp_all
-    exact neg_one_le_inner_of_norm_one
+    exact neg_one_le_real_inner_of_norm_one
       (norm_normalize_eq_one_iff.mpr H3) (norm_normalize_eq_one_iff.mpr H4)
   have H3 := mul_nonneg (sin_angle_nonneg x y) (sin_angle_nonneg y z)
   have H4 : Real.cos (angle x y + angle y z) ≤ Real.cos (angle x z) := by
