@@ -32,7 +32,7 @@ namespace Kernel
 /-- `φ`-irreducibility of a kernel `κ` (w.r.t. a measure `φ`). -/
 def IsIrreducible (φ : Measure α) (κ : Kernel α α) : Prop :=
   ∀ ⦃A⦄, MeasurableSet A → φ A > 0 →
-    ∃ (n : ℕ), ∀ a, κ.pow n.succ a A > 0
+    ∃ (n : ℕ+), ∀ a, κ.pow n a A > 0
 
 /-- Strongly `φ`-irreducibility of a kernel `κ` (w.r.t. a measure `φ`). -/
 def IsStronglyIrreducible (φ : Measure α) (κ : Kernel α α) : Prop :=
