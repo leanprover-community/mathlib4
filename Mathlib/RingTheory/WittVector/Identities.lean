@@ -35,7 +35,7 @@ local notation "𝕎" => WittVector p
 
 noncomputable section
 
--- Porting note: `ghost_calc` failure: `simp only []` and the manual instances had to be added.
+-- Porting note: `ghost_calc` failure: the manual instances had to be added.
 /-- The composition of Frobenius and Verschiebung is multiplication by `p`. -/
 theorem frobenius_verschiebung (x : 𝕎 R) : frobenius (verschiebung x) = x * p := by
   have : IsPoly p fun {R} [CommRing R] x ↦ frobenius (verschiebung x) :=
@@ -90,7 +90,7 @@ theorem FractionRing.p_nonzero [Nontrivial R] [CharP R p] : (p : FractionRing (�
 
 variable {p R}
 
--- Porting note: `ghost_calc` failure: `simp only []` and the manual instances had to be added.
+-- Porting note: `ghost_calc` failure: the manual instances had to be added.
 /-- The “projection formula” for Frobenius and Verschiebung. -/
 theorem verschiebung_mul_frobenius (x y : 𝕎 R) :
     verschiebung (x * frobenius y) = verschiebung x * y := by

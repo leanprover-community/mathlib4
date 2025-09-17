@@ -126,8 +126,8 @@ theorem vanishingIdeal_pointToPoint (V : Set (σ → K)) :
     PrimeSpectrum.vanishingIdeal (pointToPoint '' V) = MvPolynomial.vanishingIdeal k V :=
   le_antisymm
     (fun _ hp x hx =>
-      (((PrimeSpectrum.mem_vanishingIdeal _ _).1 hp) ⟨vanishingIdeal k {x}, by infer_instance⟩ <| by
-          exact ⟨x, ⟨hx, rfl⟩⟩) -- Porting note: tactic mode code compiles but term mode does not
+      (((PrimeSpectrum.mem_vanishingIdeal _ _).1 hp) ⟨vanishingIdeal k {x}, by infer_instance⟩
+        (⟨x, hx, rfl⟩ : _))
         x rfl)
     fun _ hp =>
     (PrimeSpectrum.mem_vanishingIdeal _ _).2 fun _ hI =>
@@ -175,8 +175,7 @@ theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal (MvPolynomial σ k)) :
   rw [← mem_vanishingIdeal_singleton_iff, Set.mem_singleton_iff.1 hy, ← hx]
   exact hJI hp
 
--- Porting note: marked this as high priority to short cut simplifier
-@[simp (high)]
+@[simp high] -- This needs to fire before `vanishingIdeal_zeroLocus_eq_radical`
 theorem IsPrime.vanishingIdeal_zeroLocus (P : Ideal (MvPolynomial σ k)) [h : P.IsPrime] :
     vanishingIdeal k (zeroLocus K P) = P :=
   Trans.trans (vanishingIdeal_zeroLocus_eq_radical P) h.radical
