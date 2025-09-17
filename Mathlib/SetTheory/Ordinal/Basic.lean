@@ -50,7 +50,7 @@ A conditionally complete linear order with bot structure is registered on ordina
 `0`, the ordinal corresponding to the empty type, and `Inf` is the minimum for nonempty sets and `0`
 for the empty set by convention.
 
-## Notations
+## Notation
 
 * `ω` is a notation for the first infinite ordinal in the scope `Ordinal`.
 -/
@@ -505,7 +505,7 @@ theorem relIso_enum {α β : Type u} {r : α → α → Prop} {s : β → β →
 noncomputable def enumIsoToType (o : Ordinal) : Set.Iio o ≃o o.toType where
   toFun x := enum (α := o.toType) (· < ·) ⟨x.1, type_toType _ ▸ x.2⟩
   invFun x := ⟨typein (α := o.toType) (· < ·) x, typein_lt_self x⟩
-  left_inv _ := Subtype.ext_val (typein_enum _ _)
+  left_inv _ := Subtype.ext (typein_enum _ _)
   right_inv _ := enum_typein _ _
   map_rel_iff' := enum_le_enum' _
 
@@ -525,12 +525,6 @@ instance small_Ioc (a b : Ordinal.{u}) : Small.{u} (Ioc a b) := small_subset Ioc
 def toTypeOrderBot {o : Ordinal} (ho : o ≠ 0) : OrderBot o.toType where
   bot := (enum (· < ·)) ⟨0, _⟩
   bot_le := enum_zero_le' (by rwa [Ordinal.pos_iff_ne_zero])
-
-/-- `o.toType` is an `OrderBot` whenever `0 < o`. -/
-@[deprecated "use toTypeOrderBot" (since := "2025-02-13")]
-def toTypeOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.toType where
-  bot := (enum (· < ·)) ⟨0, _⟩
-  bot_le := enum_zero_le' ho
 
 theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
     enum (α := o.toType) (· < ·) ⟨0, by rwa [type_toType]⟩ =

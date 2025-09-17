@@ -521,6 +521,13 @@ include h in
 theorem finrank [StrongRankCondition R] : Module.finrank R S = f.natDegree :=
   (powerBasis h).finrank
 
+/--
+See `finrank_quotient_span_eq_natDegree` for a more general version over a field.
+-/
+theorem _root_.finrank_quotient_span_eq_natDegree' [StrongRankCondition R] (hf : f.Monic) :
+    Module.finrank R (R[X] ⧸ Ideal.span {f}) = f.natDegree :=
+  (AdjoinRoot.isAdjoinRootMonic _ hf).finrank
+
 /-- `IsAdjoinRootMonic.liftPolyₗ` lifts a linear map on polynomials to a linear map on `S`. -/
 @[simps!]
 def liftPolyₗ {T : Type*} [AddCommGroup T] [Module R T] (g : R[X] →ₗ[R] T) : S →ₗ[R] T :=
@@ -697,7 +704,7 @@ theorem Algebra.adjoin.powerBasis'_minpoly_gen [IsDomain R] [IsDomain S] [NoZero
       (degree_pos hx').ne'
   rw [← minpolyGen_eq, adjoin.powerBasis', minpolyGen_map, minpolyGen_eq,
     AdjoinRoot.powerBasis'_gen, ← isAdjoinRoot_root_eq_root _,
-    ← isAdjoinRootMonic_toAdjoinRoot,
+    ← isAdjoinRootMonic_toAdjoinRoot _ (monic hx'),
     minpoly_eq (AdjoinRoot.isAdjoinRootMonic _ (monic hx')) (irreducible hx')]
 
 end Algebra
