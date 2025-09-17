@@ -114,12 +114,12 @@ def Lean.TSyntax.term : TermDecl → Term
 /-- The table for storing registered polynomial-like notations. We use the signature for lookup. -/
 abbrev NotationTable := Std.HashMap NotationSignature Notation
 
-/-- The environmental extension for registered polynomial-like notations. -/
+/-- The environment extension for registered polynomial-like notations. -/
 abbrev NotationTableExt := SimpleScopedEnvExtension (NotationSignature × Notation) NotationTable
 
 /-- Initialize the notation table extension. -/
 initialize notationTableExt : NotationTableExt ← registerSimpleScopedEnvExtension <|
-  { addEntry old new := insert (new.1, new.2) old
+  { addEntry old new := insert new old
     initial := {} }
 
 structure MvConfig where
