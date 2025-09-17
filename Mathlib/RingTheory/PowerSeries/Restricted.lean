@@ -36,7 +36,7 @@ namespace Restricted
 
 variable (R : Type*) [NormedRing R] (c : ℝ)
 
-lemma Equiv_cToAbs (f : PowerSeries R) : IsRestricted R f c ↔ IsRestricted R f |c| := by
+lemma isRestricted_iff (f : PowerSeries R) : IsRestricted R f c ↔ IsRestricted R f |c| := by
   simp_rw [IsRestricted, NormedAddCommGroup.tendsto_atTop, sub_zero, norm_mul, norm_norm, norm_pow,
     Real.norm_eq_abs, abs_abs]
 
@@ -52,7 +52,12 @@ lemma one : IsRestricted R 1 c := by
     norm_pow, Real.norm_eq_abs]
   intro ε hε
   refine ⟨1, fun n hn => ?_ ⟩
-  simpa only [Nat.ne_zero_of_lt hn, ↓reduceIte, norm_zero, zero_mul] using hε
+  split
+  · next h =>
+    by_contra
+    rw [h] at hn
+    exact Nat.not_succ_le_zero 0 hn
+  simpa only [norm_zero, zero_mul]
 
 lemma add {f g : PowerSeries R} (hf : IsRestricted R f c) (hg : IsRestricted R g c) :
     IsRestricted R (f + g) c := by
@@ -124,8 +129,8 @@ open IsUltrametricDist
 lemma mul {f g : PowerSeries R} (hf : IsRestricted R f c) (hg : IsRestricted R g c) :
     IsRestricted R (f * g) c := by
   simp_rw [IsRestricted] at hf hg ⊢
-  obtain ⟨a, ha, fBound1⟩ := BddAbove_nneg R |c| ((Equiv_cToAbs R c f).mp hf)
-  obtain ⟨b, hb, gBound1⟩ := BddAbove_nneg R |c| ((Equiv_cToAbs R c g).mp hg)
+  obtain ⟨a, ha, fBound1⟩ := BddAbove_nneg R |c| ((isRestricted_iff R c f).mp hf)
+  obtain ⟨b, hb, gBound1⟩ := BddAbove_nneg R |c| ((isRestricted_iff R c g).mp hg)
   rw [NormedAddCommGroup.tendsto_atTop] at hf hg ⊢
   intro ε hε
   simp only [sub_zero, norm_mul, norm_pow, Real.norm_eq_abs, abs_norm] at hf hg ⊢
