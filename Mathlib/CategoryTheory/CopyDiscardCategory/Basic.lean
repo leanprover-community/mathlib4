@@ -64,28 +64,6 @@ namespace CopyDiscardCategory
 
 variable [CopyDiscardCategory C]
 
-/-! ### Basic properties -/
-
-/-- Copy then discard left recovers original. -/
-@[simp]
-lemma copy_discard_left (X : C) : Δ[X] ≫ (ε[X] ▷ X) = (λ_ X).inv :=
-  counit_comul X
-
-/-- Copy then discard right recovers original. -/
-@[simp]
-lemma copy_discard_right (X : C) : Δ[X] ≫ (X ◁ ε[X]) = (ρ_ X).inv :=
-  comul_counit X
-
-/-- Copying is associative. -/
-@[simp]
-lemma copy_assoc (X : C) : Δ[X] ≫ (Δ[X] ▷ X) = Δ[X] ≫ (X ◁ Δ[X]) ≫ (α_ X X X).inv :=
-  comul_assoc_flip X
-
-/-- Swapping copies does nothing. -/
-@[simp]
-lemma copy_swap (X : C) : Δ[X] ≫ (β_ X X).hom = Δ[X] :=
-  isComm
-
 /-! ### Unit coherence -/
 
 /-- Counit on the monoidal unit is the identity. -/
@@ -100,10 +78,7 @@ lemma comul_unit : Δ[𝟙_ C] = (λ_ (𝟙_ C)).inv :=
 
 /-! ### Tensor product lemmas -/
 
-/-- How to copy tensor products. -/
-@[simp]
-lemma copy_tensor_simp (X Y : C) : Δ[X ⊗ Y] = (Δ[X] ⊗ₘ Δ[Y]) ≫ tensorμ X X Y Y :=
-  copy_tensor X Y
+-- Note: copy_tensor_simp was removed as it was redundant with copy_tensor
 
 /-- How to discard tensor products. -/
 @[simp]
