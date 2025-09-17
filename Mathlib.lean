@@ -2583,6 +2583,7 @@ import Mathlib.CategoryTheory.Monoidal.Limits.Preserves
 import Mathlib.CategoryTheory.Monoidal.Linear
 import Mathlib.CategoryTheory.Monoidal.Mod_
 import Mathlib.CategoryTheory.Monoidal.Mon_
+import Mathlib.CategoryTheory.Monoidal.Multifunctor
 import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Basic
 import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Symmetric
