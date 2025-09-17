@@ -23,7 +23,7 @@ bounds `n^r/r^r ≤ n.choose r ≤ e^r n^r/r^r` in the future.
 
 open Nat
 
-variable {α : Type*} [Semifield α] [LinearOrder α] [IsStrictOrderedRing α]
+variable {α : Type*} [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {n k : ℕ}
 
 namespace Nat
 
@@ -34,14 +34,24 @@ theorem choose_le_pow_div (r n : ℕ) : (n.choose r : α) ≤ (n ^ r : α) / r !
     exact n.descFactorial_le_pow r
   exact mod_cast r.factorial_pos
 
+lemma choose_lt_pow_div (hn : n ≠ 0) (hk : 2 ≤ k) : (n.choose k : α) < (n ^ k : α) / k ! := by
+  rw [lt_div_iff₀' (mod_cast k.factorial_pos)]
+  norm_cast
+  rw [← Nat.descFactorial_eq_factorial_mul_choose]
+  exact descFactorial_lt_pow hn hk
+
 lemma choose_le_descFactorial (n k : ℕ) : n.choose k ≤ n.descFactorial k := by
   rw [choose_eq_descFactorial_div_factorial]
   exact Nat.div_le_self _ _
 
-/-- This lemma was changed on 2024/08/29, the old statement is available
-in `Nat.choose_le_pow_div`. -/
+lemma choose_lt_descFactorial (hk : 2 ≤ k) (hkn : k ≤ n) : n.choose k < n.descFactorial k := by
+  rw [choose_eq_descFactorial_div_factorial]; exact Nat.div_lt_self (by simpa) (by simpa)
+
 lemma choose_le_pow (n k : ℕ) : n.choose k ≤ n ^ k :=
   (choose_le_descFactorial n k).trans (descFactorial_le_pow n k)
+
+lemma choose_lt_pow (hn : n ≠ 0) (hk : 2 ≤ k) : n.choose k < n ^ k :=
+  (choose_le_descFactorial n k).trans_lt (descFactorial_lt_pow hn hk)
 
 -- horrific casting is due to ℕ-subtraction
 theorem pow_le_choose (r n : ℕ) : ((n + 1 - r : ℕ) ^ r : α) / r ! ≤ n.choose r := by

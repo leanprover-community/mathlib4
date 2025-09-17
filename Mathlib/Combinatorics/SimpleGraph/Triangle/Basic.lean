@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Data.Finset.Sym
+import Mathlib.Data.Nat.Choose.Bounds
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
 
@@ -252,29 +253,14 @@ end DecidableEq
 
 variable [Nonempty α]
 
-lemma FarFromTriangleFree.lt_half (hG : G.FarFromTriangleFree ε) : ε < 2⁻¹ := by
-  classical
-  by_contra! hε
-  refine lt_irrefl (ε * card α ^ 2) ?_
-  have hε₀ : 0 < ε := hε.trans_lt' (by simp)
-  rw [inv_le_iff_one_le_mul₀ (zero_lt_two' 𝕜)] at hε
+lemma FarFromTriangleFree.lt_half (hε : G.FarFromTriangleFree ε) : ε < 2⁻¹ := by
+  refine lt_of_mul_lt_mul_right (α := 𝕜) (a := Fintype.card α ^ 2) ?_ (by positivity)
   calc
-    _ ≤ (#G.edgeFinset : 𝕜) := by
-      simpa using hG.le_card_sub_card bot_le (cliqueFree_bot (le_succ _))
-    _ ≤ ε * 2 * #G.edgeFinset := le_mul_of_one_le_left (by positivity) (by assumption)
-    _ < ε * card α ^ 2 := ?_
-  rw [mul_assoc, mul_lt_mul_left hε₀]
-  norm_cast
-  calc
-    _ ≤ 2 * (completeGraph α).edgeFinset.card := by gcongr; exact le_top
-    _ < card α ^ 2 := ?_
-  rw [edgeFinset_top, filter_not, card_sdiff_of_subset (subset_univ _), Finset.card_univ, Sym2.card]
-  simp_rw [choose_two_right, Nat.add_sub_cancel, Nat.mul_comm _ (card α),
-    funext (propext <| Sym2.isDiag_iff_mem_range_diag ·), univ_filter_mem_range, mul_tsub,
-    Nat.mul_div_cancel' (card α).even_mul_succ_self.two_dvd]
-  rw [card_image_of_injective _ Sym2.diag_injective, Finset.card_univ, mul_add_one (α := ℕ),
-    two_mul, sq, add_tsub_add_eq_tsub_right]
-  apply tsub_lt_self <;> positivity
+        ε * Fintype.card α ^ 2
+    _ ≤ #G.edgeFinset := by simpa using hε.le_card_edgeFinset (by simp)
+    _ ≤ (Fintype.card α).choose 2 := by gcongr; exact card_edgeFinset_le_card_choose_two
+    _ < 2⁻¹ * Fintype.card α ^ 2 := by
+      simpa [← div_eq_inv_mul] using Nat.choose_lt_pow_div (by positivity) le_rfl
 
 lemma FarFromTriangleFree.lt_one (hG : G.FarFromTriangleFree ε) : ε < 1 :=
   hG.lt_half.trans two_inv_lt_one
