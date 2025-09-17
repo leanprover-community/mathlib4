@@ -35,7 +35,7 @@ theorem tedious (m : ℕ) (k : Fin (m + 1)) : m - ((m + 1 - ↑k) + m) % (m + 1)
   obtain ⟨k, hk⟩ := k
   rw [Nat.lt_succ_iff, le_iff_exists_add] at hk
   rcases hk with ⟨c, rfl⟩
-  have : (k + c + 1 - k) + (k + c) = c + (k + c + 1) := by omega
+  have : (k + c + 1 - k) + (k + c) = c + (k + c + 1) := by cutsat
   rw [Fin.val_mk, this, Nat.add_mod_right, Nat.mod_eq_of_lt, Nat.add_sub_cancel]
   omega
 

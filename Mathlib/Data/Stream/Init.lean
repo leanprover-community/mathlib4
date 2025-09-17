@@ -120,6 +120,10 @@ theorem eq_or_mem_of_mem_cons {a b : α} {s : Stream' α} : (a ∈ b::s) → a =
 theorem mem_of_get_eq {n : ℕ} {s : Stream' α} {a : α} : a = get s n → a ∈ s := fun h =>
   Exists.intro n h
 
+theorem mem_iff_exists_get_eq {s : Stream' α} {a : α} : a ∈ s ↔ ∃ n, a = s.get n where
+  mp := by simp [Membership.mem, any_def]
+  mpr h := mem_of_get_eq h.choose_spec
+
 section Map
 
 variable (f : α → β)
@@ -231,9 +235,9 @@ theorem get_succ_iterate' (n : ℕ) (f : α → α) (a : α) :
 theorem tail_iterate (f : α → α) (a : α) : tail (iterate f a) = iterate f (f a) := by
   ext n
   rw [get_tail]
-  induction' n with n' ih
-  · rfl
-  · rw [get_succ_iterate', ih, get_succ_iterate']
+  induction n with
+  | zero => rfl
+  | succ n ih => rw [get_succ_iterate', ih, get_succ_iterate']
 
 theorem iterate_eq (f : α → α) (a : α) : iterate f a = a::iterate f (f a) := by
   rw [← Stream'.eta (iterate f a)]
@@ -307,9 +311,10 @@ theorem iterate_id (a : α) : iterate id a = const a :=
 
 theorem map_iterate (f : α → α) (a : α) : iterate f (f a) = map f (iterate f a) := by
   funext n
-  induction' n with n' ih
-  · rfl
-  · unfold map iterate get
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+    unfold map iterate get
     rw [map, get] at ih
     rw [iterate]
     exact congrArg f ih
@@ -340,13 +345,10 @@ end Corec'
 theorem unfolds_eq (g : α → β) (f : α → α) (a : α) : unfolds g f a = g a :: unfolds g f (f a) := by
   unfold unfolds; rw [corec_eq]
 
-theorem get_unfolds_head_tail : ∀ (n : ℕ) (s : Stream' α),
-    get (unfolds head tail s) n = get s n := by
-  intro n; induction' n with n' ih
-  · intro s
-    rfl
-  · intro s
-    rw [get_succ, get_succ, unfolds_eq, tail_cons, ih]
+theorem get_unfolds_head_tail (n : ℕ) (s : Stream' α) : get (unfolds head tail s) n = get s n := by
+  induction n generalizing s with
+  | zero => rfl
+  | succ n ih => rw [get_succ, get_succ, unfolds_eq, tail_cons, ih]
 
 theorem unfolds_head_eq : ∀ s : Stream' α, unfolds head tail s = s := fun s =>
   Stream'.ext fun n => get_unfolds_head_tail n s
@@ -451,14 +453,15 @@ theorem cons_append_stream (a : α) (l : List α) (s : Stream' α) :
     rw [List.cons_append, cons_append_stream, cons_append_stream, append_append_stream l₁]
 
 lemma get_append_left (h : n < x.length) : (x ++ₛ a).get n = x[n] := by
-  induction' x with b x ih generalizing n
-  · simp at h
-  · rcases n with (_ | n)
+  induction x generalizing n with
+  | nil => simp at h
+  | cons b x ih =>
+    rcases n with (_ | n)
     · simp
     · simp [ih n (by simpa using h), cons_append_stream]
 
 @[simp] lemma get_append_right : (x ++ₛ a).get (x.length + n) = a.get n := by
-  induction' x <;> simp [Nat.succ_add, *, cons_append_stream]
+  induction x <;> simp [Nat.succ_add, *, cons_append_stream]
 
 @[simp] lemma get_append_length : (x ++ₛ a).get x.length = a.get 0 := get_append_right 0 x a
 
@@ -534,13 +537,9 @@ theorem getElem?_take {s : Stream' α} : ∀ {k n}, k < n → (s.take n)[k]? = s
   | k+1, n+1, h => by
     rw [take_succ, List.getElem?_cons_succ, getElem?_take (Nat.lt_of_succ_lt_succ h), get_succ]
 
-@[deprecated (since := "2025-02-14")] alias get?_take := getElem?_take
-
 theorem getElem?_take_succ (n : ℕ) (s : Stream' α) :
     (take (succ n) s)[n]? = some (get s n) :=
   getElem?_take (Nat.lt_succ_self n)
-
-@[deprecated (since := "2025-02-14")] alias get?_take_succ := getElem?_take_succ
 
 @[simp] theorem dropLast_take {n : ℕ} {xs : Stream' α} :
     (Stream'.take n xs).dropLast = Stream'.take (n-1) xs := by
@@ -549,17 +548,13 @@ theorem getElem?_take_succ (n : ℕ) (s : Stream' α) :
   | succ n => rw [take_succ', List.dropLast_concat, Nat.add_one_sub_one]
 
 @[simp]
-theorem append_take_drop : ∀ (n : ℕ) (s : Stream' α),
-    appendStream' (take n s) (drop n s) = s := by
-  intro n
-  induction' n with n' ih
-  · intro s
-    rfl
-  · intro s
-    rw [take_succ, drop_succ, cons_append_stream, ih (tail s), Stream'.eta]
+theorem append_take_drop (n : ℕ) (s : Stream' α) : appendStream' (take n s) (drop n s) = s := by
+  induction n generalizing s with
+  | zero => rfl
+  | succ n ih =>rw [take_succ, drop_succ, cons_append_stream, ih (tail s), Stream'.eta]
 
 lemma append_take : x ++ (a.take n) = (x ++ₛ a).take (x.length + n) := by
-  induction' x <;> simp [take, Nat.add_comm, cons_append_stream, *]
+  induction x <;> simp [take, Nat.add_comm, cons_append_stream, *]
 
 @[simp] lemma take_get (h : m < (a.take n).length) : (a.take n)[m] = a.get m := by
   nth_rw 2 [← append_take_drop n a]; rw [get_append_left]
@@ -597,14 +592,12 @@ lemma drop_append_of_le_length (h : n ≤ x.length) :
 
 -- Take theorem reduces a proof of equality of infinite streams to an
 -- induction over all their finite approximations.
-theorem take_theorem (s₁ s₂ : Stream' α) : (∀ n : ℕ, take n s₁ = take n s₂) → s₁ = s₂ := by
-  intro h; apply Stream'.ext; intro n
-  induction' n with n _
-  · have aux := h 1
-    simp? [take] at aux says
-      simp only [take, List.cons.injEq, and_true] at aux
-    exact aux
-  · have h₁ : some (get s₁ (succ n)) = some (get s₂ (succ n)) := by
+theorem take_theorem (s₁ s₂ : Stream' α) (h : ∀ n : ℕ, take n s₁ = take n s₂) : s₁ = s₂ := by
+  ext n
+  induction n with
+  | zero => simpa [take] using h 1
+  | succ n =>
+    have h₁ : some (get s₁ (succ n)) = some (get s₂ (succ n)) := by
       rw [← getElem?_take_succ, ← getElem?_take_succ, h (succ (succ n))]
     injection h₁
 
@@ -615,16 +608,11 @@ protected theorem cycle_g_cons (a : α) (a₁ : α) (l₁ : List α) (a₀ : α)
 theorem cycle_eq : ∀ (l : List α) (h : l ≠ []), cycle l h = l ++ₛ cycle l h
   | [], h => absurd rfl h
   | List.cons a l, _ =>
-    have gen : ∀ l' a', corec Stream'.cycleF Stream'.cycleG (a', l', a, l) =
+    have gen (l' a') : corec Stream'.cycleF Stream'.cycleG (a', l', a, l) =
         (a'::l') ++ₛ corec Stream'.cycleF Stream'.cycleG (a, l, a, l) := by
-      intro l'
-      induction' l' with a₁ l₁ ih
-      · intros
-        rw [corec_eq]
-        rfl
-      · intros
-        rw [corec_eq, Stream'.cycle_g_cons, ih a₁]
-        rfl
+      induction l' generalizing a' with
+      | nil => rw [corec_eq]; rfl
+      | cons a₁ l₁ ih => rw [corec_eq, Stream'.cycle_g_cons, ih a₁]; rfl
     gen l a
 
 theorem mem_cycle {a : α} {l : List α} : ∀ h : l ≠ [], a ∈ l → a ∈ cycle l h := fun h ainl => by
@@ -638,12 +626,10 @@ theorem tails_eq (s : Stream' α) : tails s = tail s::tails (tail s) := by
   unfold tails; rw [corec_eq]; rfl
 
 @[simp]
-theorem get_tails : ∀ (n : ℕ) (s : Stream' α), get (tails s) n = drop n (tail s) := by
-  intro n; induction' n with n' ih
-  · intros
-    rfl
-  · intro s
-    rw [get_succ, drop_succ, tails_eq, tail_cons, ih]
+theorem get_tails (n : ℕ) (s : Stream' α) : get (tails s) n = drop n (tail s) := by
+  induction n generalizing s with
+  | zero => rfl
+  | succ n ih => rw [get_succ, drop_succ, tails_eq, tail_cons, ih]
 
 theorem tails_eq_iterate (s : Stream' α) : tails s = iterate tail (tail s) :=
   rfl
@@ -661,24 +647,19 @@ theorem tail_inits (s : Stream' α) :
 theorem inits_tail (s : Stream' α) : inits (tail s) = initsCore [head (tail s)] (tail (tail s)) :=
   rfl
 
-theorem cons_get_inits_core :
-    ∀ (a : α) (n : ℕ) (l : List α) (s : Stream' α),
-      (a::get (initsCore l s) n) = get (initsCore (a::l) s) n := by
-  intro a n
-  induction' n with n' ih
-  · intros
-    rfl
-  · intro l s
-    rw [get_succ, inits_core_eq, tail_cons, ih, inits_core_eq (a::l) s]
+theorem cons_get_inits_core (a : α) (n : ℕ) (l : List α) (s : Stream' α) :
+    (a :: get (initsCore l s) n) = get (initsCore (a :: l) s) n := by
+  induction n generalizing l s with
+  | zero => rfl
+  | succ n ih =>
+    rw [get_succ, inits_core_eq, tail_cons, ih, inits_core_eq (a :: l) s]
     rfl
 
 @[simp]
-theorem get_inits : ∀ (n : ℕ) (s : Stream' α), get (inits s) n = take (succ n) s := by
-  intro n; induction' n with n' ih
-  · intros
-    rfl
-  · intros
-    rw [get_succ, take_succ, ← ih, tail_inits, inits_tail, cons_get_inits_core]
+theorem get_inits (n : ℕ) (s : Stream' α) : get (inits s) n = take (succ n) s := by
+  induction n generalizing s with
+  | zero => rfl
+  | succ n ih => rw [get_succ, take_succ, ← ih, tail_inits, inits_tail, cons_get_inits_core]
 
 theorem inits_eq (s : Stream' α) :
     inits s = [head s]::map (List.cons (head s)) (inits (tail s)) := by
