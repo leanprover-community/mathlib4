@@ -434,7 +434,8 @@ noncomputable instance : (toMonoidalCategory L W ε).Monoidal :=
 
 local notation "L'" => toMonoidalCategory L W ε
 
-lemma associator_hom (X Y Z : C) : (α_ ((L').obj X) ((L').obj Y) ((L').obj Z)).hom =
+lemma associator_hom (X Y Z : C) :
+    (α_ ((L').obj X) ((L').obj Y) ((L').obj Z)).hom =
     (Functor.LaxMonoidal.μ (L') X Y) ▷ (L').obj Z ≫
       (Functor.LaxMonoidal.μ (L') (X ⊗ Y) Z) ≫
         (L').map (α_ X Y Z).hom ≫
@@ -442,7 +443,8 @@ lemma associator_hom (X Y Z : C) : (α_ ((L').obj X) ((L').obj Y) ((L').obj Z)).
             ((L').obj X) ◁ (Functor.OplaxMonoidal.δ (L') Y Z) := by
   simp
 
-lemma associator_inv (X Y Z : C) : (α_ ((L').obj X) ((L').obj Y) ((L').obj Z)).inv =
+lemma associator_inv (X Y Z : C) :
+    (α_ ((L').obj X) ((L').obj Y) ((L').obj Z)).inv =
     (L').obj X ◁ (Functor.LaxMonoidal.μ (L') Y Z) ≫
       (Functor.LaxMonoidal.μ (L') X (Y ⊗ Z)) ≫
         (L').map (α_ X Y Z).inv ≫
