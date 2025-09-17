@@ -3,6 +3,7 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Yury Kudryashov
 -/
+import Mathlib.Data.FunLike.Basic
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.Lift
 import Mathlib.Topology.Defs.Basic
@@ -132,5 +133,8 @@ theorem coe_injective : Function.Injective (DFunLike.coe : C(X, Y) → (X → Y)
 @[simp]
 theorem coe_mk (f : X → Y) (h : Continuous f) : ⇑(⟨f, h⟩ : C(X, Y)) = f :=
   rfl
+
+instance [Subsingleton Y] : Subsingleton C(X, Y) := DFunLike.subsingleton_cod
+instance [IsEmpty X] : Subsingleton C(X, Y) := DFunLike.subsingleton_dom
 
 end ContinuousMap

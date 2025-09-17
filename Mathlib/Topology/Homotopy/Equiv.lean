@@ -37,7 +37,13 @@ are both homotopic to corresponding identity maps.
 -/
 @[ext]
 structure HomotopyEquiv (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] where
+  /-- The forward map of an homotopy.
+
+  Do NOT use directly. Use the coercion instead. -/
   toFun : C(X, Y)
+  /-- The backward map of an homotopy.
+
+  Do NOT use `e.invFun` directly. Use the coercion of `e.symm` instead. -/
   invFun : C(Y, X)
   left_inv : (invFun.comp toFun).Homotopic (ContinuousMap.id X)
   right_inv : (toFun.comp invFun).Homotopic (ContinuousMap.id Y)
@@ -132,10 +138,10 @@ def trans (h₁ : X ≃ₕ Y) (h₂ : Y ≃ₕ Z) : X ≃ₕ Z where
   invFun := h₁.invFun.comp h₂.invFun
   left_inv := by
     refine Homotopic.trans ?_ h₁.left_inv
-    exact ((Homotopic.refl _).hcomp h₂.left_inv).hcomp (Homotopic.refl _)
+    exact .comp (.refl _) (.comp h₂.left_inv (.refl _))
   right_inv := by
     refine Homotopic.trans ?_ h₂.right_inv
-    exact ((Homotopic.refl _).hcomp h₁.right_inv).hcomp (Homotopic.refl _)
+    exact .comp (.refl _) <| .comp h₁.right_inv (.refl _)
 
 theorem symm_trans (h₁ : X ≃ₕ Y) (h₂ : Y ≃ₕ Z) : (h₁.trans h₂).symm = h₂.symm.trans h₁.symm := rfl
 

@@ -56,30 +56,33 @@ theorem bitIndices_bit_false (n : ℕ) :
   rw [← bitIndices_bit_false, bit_false]
 
 @[simp] theorem bitIndices_sorted {n : ℕ} : n.bitIndices.Sorted (· < ·) := by
-  induction' n using binaryRec with b n hs
-  · simp
-  suffices List.Pairwise (fun a b ↦ a < b) n.bitIndices by
-    cases b <;> simpa [List.Sorted, bit_false, bit_true, List.pairwise_map]
-  exact List.Pairwise.imp (by simp) hs
+  induction n using binaryRec with
+  | zero => simp
+  | bit b n hs =>
+    suffices List.Pairwise (fun a b ↦ a < b) n.bitIndices by
+      cases b <;> simpa [List.Sorted, bit_false, bit_true, List.pairwise_map]
+    exact List.Pairwise.imp (by simp) hs
 
 @[simp] theorem bitIndices_two_pow_mul (k n : ℕ) :
     bitIndices (2^k * n) = (bitIndices n).map (· + k) := by
-  induction' k with k ih
-  · simp
-  rw [add_comm, pow_add, pow_one, mul_assoc, bitIndices_two_mul, ih, List.map_map, comp_add_right]
-  simp [add_comm (a := 1)]
+  induction k with
+  | zero => simp
+  | succ k ih =>
+    rw [add_comm, pow_add, pow_one, mul_assoc, bitIndices_two_mul, ih, List.map_map, comp_add_right]
+    simp [add_comm (a := 1)]
 
 @[simp] theorem bitIndices_two_pow (k : ℕ) : bitIndices (2^k) = [k] := by
   rw [← mul_one (a := 2^k), bitIndices_two_pow_mul]; simp
 
 @[simp] theorem twoPowSum_bitIndices (n : ℕ) : (n.bitIndices.map (fun i ↦ 2 ^ i)).sum = n := by
-  induction' n using binaryRec with b n hs
-  · simp
-  have hrw : (fun i ↦ 2^i) ∘ (fun x ↦ x+1) = fun i ↦ 2 * 2 ^ i := by
-    ext i; simp [pow_add, mul_comm]
-  cases b
-  · simpa [hrw, List.sum_map_mul_left]
-  simp [hrw, List.sum_map_mul_left, hs, add_comm (a := 1)]
+  induction n using binaryRec with
+  | zero => simp
+  | bit b n hs =>
+    have hrw : (fun i ↦ 2^i) ∘ (fun x ↦ x+1) = fun i ↦ 2 * 2 ^ i := by
+      ext i; simp [pow_add, mul_comm]
+    cases b
+    · simpa [hrw, List.sum_map_mul_left]
+    simp [hrw, List.sum_map_mul_left, hs, add_comm (a := 1)]
 
 /-- Together with `Nat.twoPowSum_bitIndices`, this implies a bijection between `ℕ` and `Finset ℕ`.
 See `Finset.equivBitIndices` for this bijection. -/
@@ -98,7 +101,6 @@ theorem bitIndices_twoPowsum {L : List ℕ} (hL : List.Sorted (· < ·) L) :
       simp only [add_assoc, Function.comp_apply]; rw [tsub_add_cancel_of_le (haL _ hx)]
     simp [List.map_congr_left h']
   obtain ⟨L₀, hL₀, rfl⟩ := h'
-  have _ : L₀.length < (a :: (L₀.map (· + a + 1))).length := by simp
   have hrw : (2^·) ∘ (· + a + 1) = fun i ↦ 2^a * (2 * 2^i) := by
     ext x; simp only [Function.comp_apply, pow_add, pow_one]; ac_rfl
   simp only [List.map_cons, List.map_map, List.sum_map_mul_left, List.sum_cons, hrw]
@@ -112,7 +114,9 @@ theorem two_pow_le_of_mem_bitIndices (ha : a ∈ n.bitIndices) : 2^a ≤ n := by
   rw [← twoPowSum_bitIndices n]
   exact List.single_le_sum (by simp) _ <| mem_map_of_mem ha
 
-theorem not_mem_bitIndices_self (n : ℕ) : n ∉ n.bitIndices :=
-  fun h ↦ (n.lt_two_pow_self).not_le <| two_pow_le_of_mem_bitIndices h
+theorem notMem_bitIndices_self (n : ℕ) : n ∉ n.bitIndices :=
+  fun h ↦ (n.lt_two_pow_self).not_ge <| two_pow_le_of_mem_bitIndices h
+
+@[deprecated (since := "2025-05-23")] alias not_mem_bitIndices_self := notMem_bitIndices_self
 
 end Nat

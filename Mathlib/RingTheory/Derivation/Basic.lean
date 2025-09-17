@@ -133,13 +133,14 @@ theorem map_natCast (n : ℕ) : D (n : A) = 0 := by
 
 @[simp]
 theorem leibniz_pow (n : ℕ) : D (a ^ n) = n • a ^ (n - 1) • D a := by
-  induction' n with n ihn
-  · rw [pow_zero, map_one_eq_zero, zero_smul]
-  · rcases (zero_le n).eq_or_lt with (rfl | hpos)
+  induction n with
+  | zero => rw [pow_zero, map_one_eq_zero, zero_smul]
+  | succ n ihn =>
+    rcases (zero_le n).eq_or_lt with (rfl | hpos)
     · simp
     · have : a * a ^ (n - 1) = a ^ n := by rw [← pow_succ', Nat.sub_add_cancel hpos]
       simp only [pow_succ', leibniz, ihn, smul_comm a n (_ : M), smul_smul a, add_smul, this,
-        Nat.succ_eq_add_one, Nat.add_succ_sub_one, add_zero, one_nsmul]
+        Nat.add_succ_sub_one, add_zero, one_nsmul]
 
 open Polynomial in
 @[simp]
@@ -449,7 +450,7 @@ theorem leibniz_of_mul_eq_one {a b : A} (h : a * b = 1) : D a = -a ^ 2 • D b :
     _ = a • D (a * b) := by rw [leibniz, smul_add, add_comm]
     _ = 0 := by rw [h, map_one_eq_zero, smul_zero]
 
-theorem leibniz_invOf [Invertible a] : D (⅟ a) = -⅟ a ^ 2 • D a :=
+theorem leibniz_invOf [Invertible a] : D (⅟a) = -⅟a ^ 2 • D a :=
   D.leibniz_of_mul_eq_one <| invOf_mul_self a
 
 section Field

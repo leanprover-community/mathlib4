@@ -33,9 +33,9 @@ namespace Tree
 variable {A : Type*} {S T : tree A}
 
 lemma mem_of_append {x y : List A} (h : x ++ y ∈ T) : x ∈ T := by
-  induction' y with y ys ih generalizing x
-  · simpa using h
-  · exact T.prop (ih (by simpa))
+  induction y generalizing x with
+  | nil => simpa using h
+  | cons y ys ih => exact T.prop (ih (by simpa))
 
 lemma mem_of_prefix {x y : List A} (h' : x <+: y) (h : y ∈ T) : x ∈ T := by
   obtain ⟨_, rfl⟩ := h'; exact mem_of_append h
@@ -56,11 +56,11 @@ lemma take_mem {n : ℕ} (x : T) : x.val.take n ∈ T :=
 /-- A variant of `List.take` internally to a tree -/
 @[simps] def take (n : ℕ) (x : T) : T := ⟨x.val.take n, take_mem x⟩
 
-@[simp] lemma take_take (m n : ℕ) (x : T) :
-  take m (take n x) = take (m ⊓ n) x := by simp [Subtype.ext_iff, List.take_take]
+@[simp] lemma take_take (m n : ℕ) (x : T) : take m (take n x) = take (m ⊓ n) x := by
+  simp [Subtype.ext_iff, List.take_take]
 
 @[simp] lemma take_eq_take {x : T} {m n : ℕ} :
-  take m x = take n x ↔ m ⊓ x.val.length = n ⊓ x.val.length := by simp [Subtype.ext_iff]
+    take m x = take n x ↔ m ⊓ x.val.length = n ⊓ x.val.length := by simp [Subtype.ext_iff]
 
 -- ### `subAt`
 
@@ -93,16 +93,14 @@ def pullSub : tree A where
 
 variable {T x y}
 
-lemma mem_pullSub_short (hl : y.length ≤ x.length) :
-  y ∈ pullSub T x ↔ y <+: x ∧ [] ∈ T := by
+lemma mem_pullSub_short (hl : y.length ≤ x.length) : y ∈ pullSub T x ↔ y <+: x ∧ [] ∈ T := by
   simp [pullSub, List.take_of_length_le hl, List.drop_eq_nil_iff.mpr hl]
 
-lemma mem_pullSub_long (hl : x.length ≤ y.length) :
-  y ∈ pullSub T x ↔ ∃ z ∈ T, y = x ++ z where
+lemma mem_pullSub_long (hl : x.length ≤ y.length) : y ∈ pullSub T x ↔ ∃ z ∈ T, y = x ++ z where
   mp := by
     intro ⟨h1, h2⟩; use y.drop x.length, h2
     nth_rw 1 [← List.take_append_drop x.length y]
-    simpa [- List.take_append_drop, List.prefix_iff_eq_take, hl] using h1
+    simpa [-List.take_append_drop, List.prefix_iff_eq_take, hl] using h1
   mpr := by simp +contextual [pullSub]
 
 @[simp] lemma mem_pullSub_append : x ++ y ∈ pullSub T x ↔ y ∈ T := by simp [mem_pullSub_long]

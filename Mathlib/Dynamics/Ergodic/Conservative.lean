@@ -10,7 +10,7 @@ import Mathlib.Combinatorics.Pigeonhole
 /-!
 # Conservative systems
 
-In this file we define `f : α → α` to be a *conservative* system w.r.t a measure `μ` if `f` is
+In this file we define `f : α → α` to be a *conservative* system w.r.t. a measure `μ` if `f` is
 non-singular (`MeasureTheory.QuasiMeasurePreserving`) and for every measurable set `s` of
 positive measure at least one point `x ∈ s` returns back to `s` after some number of iterations of
 `f`. There are several properties that look like they are stronger than this one but actually follow
@@ -20,7 +20,7 @@ from it:
   `MeasureTheory.Conservative.exists_gt_measure_inter_ne_zero`: if `μ s ≠ 0`, then for infinitely
   many `n`, the measure of `s ∩ f^[n] ⁻¹' s` is positive.
 
-* `MeasureTheory.Conservative.measure_mem_forall_ge_image_not_mem_eq_zero`,
+* `MeasureTheory.Conservative.measure_mem_forall_ge_image_notMem_eq_zero`,
   `MeasureTheory.Conservative.ae_mem_imp_frequently_image_mem`: a.e. every point of `s` visits `s`
   infinitely many times (Poincaré recurrence theorem).
 
@@ -38,11 +38,11 @@ conservative dynamical system, Poincare recurrence theorem
 
 noncomputable section
 
-open Set Filter MeasureTheory Finset Function TopologicalSpace Topology
+namespace MeasureTheory
+
+open Set Filter Finset Function TopologicalSpace Topology
 
 variable {α : Type*} [MeasurableSpace α] {f : α → α} {s : Set α} {μ : Measure α}
-
-namespace MeasureTheory
 
 open Measure
 
@@ -136,7 +136,7 @@ theorem exists_gt_measure_inter_ne_zero (hf : Conservative f μ) (hs : NullMeasu
 
 /-- Poincaré recurrence theorem: given a conservative map `f` and a measurable set `s`, the set
 of points `x ∈ s` such that `x` does not return to `s` after `≥ n` iterations has measure zero. -/
-theorem measure_mem_forall_ge_image_not_mem_eq_zero (hf : Conservative f μ)
+theorem measure_mem_forall_ge_image_notMem_eq_zero (hf : Conservative f μ)
     (hs : NullMeasurableSet s μ) (n : ℕ) :
     μ ({ x ∈ s | ∀ m ≥ n, f^[m] x ∉ s }) = 0 := by
   by_contra H
@@ -148,13 +148,17 @@ theorem measure_mem_forall_ge_image_not_mem_eq_zero (hf : Conservative f μ)
   rcases nonempty_of_measure_ne_zero hm with ⟨x, ⟨_, hxn⟩, hxm, -⟩
   exact hxn m hmn.lt.le hxm
 
+@[deprecated (since := "2025-05-23")]
+alias measure_mem_forall_ge_image_not_mem_eq_zero := measure_mem_forall_ge_image_notMem_eq_zero
+
 /-- Poincaré recurrence theorem: given a conservative map `f` and a measurable set `s`,
 almost every point `x ∈ s` returns back to `s` infinitely many times. -/
 theorem ae_mem_imp_frequently_image_mem (hf : Conservative f μ) (hs : NullMeasurableSet s μ) :
     ∀ᵐ x ∂μ, x ∈ s → ∃ᶠ n in atTop, f^[n] x ∈ s := by
   simp only [frequently_atTop, @forall_swap (_ ∈ s), ae_all_iff]
   intro n
-  filter_upwards [measure_zero_iff_ae_nmem.1 (hf.measure_mem_forall_ge_image_not_mem_eq_zero hs n)]
+  filter_upwards [
+    measure_eq_zero_iff_ae_notMem.1 (hf.measure_mem_forall_ge_image_notMem_eq_zero hs n)]
   simp
 
 theorem inter_frequently_image_mem_ae_eq (hf : Conservative f μ) (hs : NullMeasurableSet s μ) :
@@ -216,7 +220,7 @@ protected theorem iterate (hf : Conservative f μ) (n : ℕ) : Conservative f^[n
   refine ⟨f^[k] x, hk, m, ?_, ?_⟩
   · intro hm
     rw [hm, mul_zero, eq_comm, tsub_eq_zero_iff_le] at this
-    exact this.not_lt hkl
+    exact this.not_gt hkl
   · rwa [← iterate_mul, this, ← iterate_add_apply, tsub_add_cancel_of_le]
     exact hkl.le
 

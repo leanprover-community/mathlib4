@@ -51,8 +51,8 @@ open scoped Pointwise NNReal ENNReal
 section
 
 /-- Measurability of the action of the topological group `G` on the left-coset space `G / Γ`. -/
-@[to_additive "Measurability of the action of the additive topological group `G` on the left-coset
-  space `G / Γ`."]
+@[to_additive /-- Measurability of the action of the additive topological group `G` on the
+  left-coset space `G / Γ`. -/]
 instance QuotientGroup.measurableSMul {G : Type*} [Group G] {Γ : Subgroup G} [MeasurableSpace G]
     [TopologicalSpace G] [IsTopologicalGroup G] [BorelSpace G] [BorelSpace (G ⧸ Γ)] :
     MeasurableSMul G (G ⧸ Γ) where
@@ -123,9 +123,9 @@ variable (ν : Measure G) [IsMulLeftInvariant ν]
 /-- If `μ` on `G ⧸ Γ` satisfies `QuotientMeasureEqMeasurePreimage` relative to a both left- and
   right-invariant measure on `G` and `Γ` is a normal subgroup, then `μ` is a left-invariant
   measure. -/
-@[to_additive "If `μ` on `G ⧸ Γ` satisfies `AddQuotientMeasureEqMeasurePreimage` relative to a both
-  left- and right-invariant measure on `G` and `Γ` is a normal subgroup, then `μ` is a
-  left-invariant measure."]
+@[to_additive /-- If `μ` on `G ⧸ Γ` satisfies `AddQuotientMeasureEqMeasurePreimage` relative to a
+  both left- and right-invariant measure on `G` and `Γ` is a normal subgroup, then `μ` is a
+  left-invariant measure. -/]
 lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotient
     [hasFun : HasFundamentalDomain Γ.op G ν] [QuotientMeasureEqMeasurePreimage ν μ] :
     μ.IsMulLeftInvariant where
@@ -148,11 +148,11 @@ set `V ⊆ G ⧸ Γ` along which the pullback of `μ` and `ν` agree (so the sca
 `μ` satisfies `QuotientMeasureEqMeasurePreimage`. The main tool of the proof is the uniqueness of
 left invariant measures, if normalized by a single positive finite-measured set. -/
 @[to_additive
-"Assume that a measure `μ` is `IsAddLeftInvariant`, that the action of `Γ` on `G` has a
+/-- Assume that a measure `μ` is `IsAddLeftInvariant`, that the action of `Γ` on `G` has a
 measurable fundamental domain `s` with positive finite volume, and that there is a single measurable
 set `V ⊆ G ⧸ Γ` along which the pullback of `μ` and `ν` agree (so the scaling is right). Then
 `μ` satisfies `AddQuotientMeasureEqMeasurePreimage`. The main tool of the proof is the uniqueness of
-left invariant measures, if normalized by a single positive finite-measured set."]
+left invariant measures, if normalized by a single positive finite-measured set. -/]
 theorem MeasureTheory.Measure.IsMulLeftInvariant.quotientMeasureEqMeasurePreimage_of_set {s : Set G}
     (fund_dom_s : IsFundamentalDomain Γ.op s ν) {V : Set (G ⧸ Γ)}
     (meas_V : MeasurableSet V) (neZeroV : μ V ≠ 0) (hV : μ V = ν (π ⁻¹' V ∩ s))
@@ -181,9 +181,9 @@ theorem MeasureTheory.Measure.IsMulLeftInvariant.quotientMeasureEqMeasurePreimag
 
 /-- If a measure `μ` is left-invariant and satisfies the right scaling condition, then it
   satisfies `QuotientMeasureEqMeasurePreimage`. -/
-@[to_additive "If a measure `μ` is
+@[to_additive /-- If a measure `μ` is
 left-invariant and satisfies the right scaling condition, then it satisfies
-`AddQuotientMeasureEqMeasurePreimage`."]
+`AddQuotientMeasureEqMeasurePreimage`. -/]
 theorem MeasureTheory.leftInvariantIsQuotientMeasureEqMeasurePreimage [IsFiniteMeasure μ]
     [hasFun : HasFundamentalDomain Γ.op G ν]
     (h : covolume Γ.op G ν = μ univ) : QuotientMeasureEqMeasurePreimage ν μ := by
@@ -214,10 +214,10 @@ local notation "π" => @QuotientGroup.mk G _ Γ
 fundamental domain, satisfies `QuotientMeasureEqMeasurePreimage` relative to a standardized choice
 of Haar measure on `G`, and assuming `μ` is finite, then `μ` is itself Haar.
 TODO: Is it possible to drop the assumption that `μ` is finite? -/
-@[to_additive "If a measure `μ` on the quotient `G ⧸ Γ` of an additive group `G` by a discrete
+@[to_additive /-- If a measure `μ` on the quotient `G ⧸ Γ` of an additive group `G` by a discrete
 normal subgroup `Γ` having fundamental domain, satisfies `AddQuotientMeasureEqMeasurePreimage`
 relative to a standardized choice of Haar measure on `G`, and assuming `μ` is finite, then `μ` is
-itself Haar."]
+itself Haar. -/]
 theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [LocallyCompactSpace G]
     [QuotientMeasureEqMeasurePreimage ν μ] [i : HasFundamentalDomain Γ.op G ν]
     [IsFiniteMeasure μ] : IsHaarMeasure μ := by
@@ -244,9 +244,9 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
     apply measure_mono
     refine interior_subset.trans ?_
     rw [QuotientGroup.coe_mk']
-    show (K : Set G) ⊆ π ⁻¹' (π '' K)
+    change (K : Set G) ⊆ π ⁻¹' (π '' K)
     exact subset_preimage_image π K
-  · show ν (π ⁻¹' (π '' K) ∩ s) ≠ ⊤
+  · change ν (π ⁻¹' (π '' K) ∩ s) ≠ ⊤
     apply ne_of_lt
     refine lt_of_le_of_lt ?_ finiteCovol.lt_top
     apply measure_mono
@@ -257,10 +257,10 @@ variable [SigmaFinite ν]
 /-- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
   right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ`,
   properly normalized, satisfies `QuotientMeasureEqMeasurePreimage`. -/
-@[to_additive "Given a normal
+@[to_additive /-- Given a normal
 subgroup `Γ` of an additive topological group `G` with Haar measure `μ`, which is also
 right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ`,
-properly normalized, satisfies `AddQuotientMeasureEqMeasurePreimage`."]
+properly normalized, satisfies `AddQuotientMeasureEqMeasurePreimage`. -/]
 theorem IsFundamentalDomain.QuotientMeasureEqMeasurePreimage_HaarMeasure {𝓕 : Set G}
     (h𝓕 : IsFundamentalDomain Γ.op 𝓕 ν) [IsMulLeftInvariant μ] [SigmaFinite μ]
     {V : Set (G ⧸ Γ)} (hV : (interior V).Nonempty) (meas_V : MeasurableSet V)
@@ -286,10 +286,10 @@ variable (K : PositiveCompacts (G ⧸ Γ))
 /-- Given a normal subgroup `Γ` of a topological group `G` with Haar measure `μ`, which is also
   right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ`,
   properly normalized, satisfies `QuotientMeasureEqMeasurePreimage`. -/
-@[to_additive "Given a
+@[to_additive /-- Given a
 normal subgroup `Γ` of an additive topological group `G` with Haar measure `μ`, which is also
 right-invariant, and a finite volume fundamental domain `𝓕`, the quotient map to `G ⧸ Γ`,
-properly normalized, satisfies `AddQuotientMeasureEqMeasurePreimage`."]
+properly normalized, satisfies `AddQuotientMeasureEqMeasurePreimage`. -/]
 theorem IsFundamentalDomain.QuotientMeasureEqMeasurePreimage_smulHaarMeasure {𝓕 : Set G}
     (h𝓕 : IsFundamentalDomain Γ.op 𝓕 ν) (h𝓕_finite : ν 𝓕 ≠ ⊤) :
     QuotientMeasureEqMeasurePreimage ν
@@ -332,10 +332,10 @@ local notation "μ_𝓕" => Measure.map (@QuotientGroup.mk G _ Γ) (μ.restrict 
 /-- The `essSup` of a function `g` on the quotient space `G ⧸ Γ` with respect to the pushforward
   of the restriction, `μ_𝓕`, of a right-invariant measure `μ` to a fundamental domain `𝓕`, is the
   same as the `essSup` of `g`'s lift to the universal cover `G` with respect to `μ`. -/
-@[to_additive "The `essSup` of a function `g` on the additive quotient space `G ⧸ Γ` with respect
+@[to_additive /-- The `essSup` of a function `g` on the additive quotient space `G ⧸ Γ` with respect
   to the pushforward of the restriction, `μ_𝓕`, of a right-invariant measure `μ` to a fundamental
   domain `𝓕`, is the same as the `essSup` of `g`'s lift to the universal cover `G` with respect
-  to `μ`."]
+  to `μ`. -/]
 lemma essSup_comp_quotientGroup_mk [μ.IsMulRightInvariant] {g : G ⧸ Γ → ℝ≥0∞}
     (g_ae_measurable : AEMeasurable g μ_𝓕) : essSup g μ_𝓕 = essSup (fun (x : G) ↦ g x) μ := by
   have hπ : Measurable (QuotientGroup.mk : G → G ⧸ Γ) := continuous_quotient_mk'.measurable
@@ -351,11 +351,11 @@ lemma essSup_comp_quotientGroup_mk [μ.IsMulRightInvariant] {g : G ⧸ Γ → �
   in the quotient which has `μ_𝓕`-measure zero, also has measure zero under the
   folding of `μ` under the quotient. Note that, if `Γ` is infinite, then the folded map
   will take the value `∞` on any open set in the quotient! -/
-@[to_additive "Given an additive quotient space `G ⧸ Γ` where `Γ` is `Countable`, and the
+@[to_additive /-- Given an additive quotient space `G ⧸ Γ` where `Γ` is `Countable`, and the
   restriction, `μ_𝓕`, of a right-invariant measure `μ` on `G` to a fundamental domain `𝓕`, a set
   in the quotient which has `μ_𝓕`-measure zero, also has measure zero under the
   folding of `μ` under the quotient. Note that, if `Γ` is infinite, then the folded map
-  will take the value `∞` on any open set in the quotient!"]
+  will take the value `∞` on any open set in the quotient! -/]
 lemma _root_.MeasureTheory.IsFundamentalDomain.absolutelyContinuous_map
     [μ.IsMulRightInvariant] :
     map (QuotientGroup.mk : G → G ⧸ Γ) μ ≪ map (QuotientGroup.mk : G → G ⧸ Γ) (μ.restrict 𝓕) := by
@@ -378,9 +378,9 @@ attribute [-instance] Quotient.instMeasurableSpace
 /-- This is a simple version of the **Unfolding Trick**: Given a subgroup `Γ` of a group `G`, the
   integral of a function `f` on `G` with respect to a right-invariant measure `μ` is equal to the
   integral over the quotient `G ⧸ Γ` of the automorphization of `f`. -/
-@[to_additive "This is a simple version of the **Unfolding Trick**: Given a subgroup `Γ` of an
+@[to_additive /-- This is a simple version of the **Unfolding Trick**: Given a subgroup `Γ` of an
   additive group `G`, the integral of a function `f` on `G` with respect to a right-invariant
-  measure `μ` is equal to the integral over the quotient `G ⧸ Γ` of the automorphization of `f`."]
+  measure `μ` is equal to the integral over the quotient `G ⧸ Γ` of the automorphization of `f`. -/]
 lemma QuotientGroup.integral_eq_integral_automorphize {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [μ.IsMulRightInvariant] {f : G → E}
     (hf₁ : Integrable f μ) (hf₂ : AEStronglyMeasurable (automorphize f) μ_𝓕) :

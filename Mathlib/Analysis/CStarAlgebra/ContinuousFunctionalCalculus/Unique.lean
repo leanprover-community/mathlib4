@@ -3,9 +3,9 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
 import Mathlib.Topology.ContinuousMap.StoneWeierstrass
-import Mathlib.Analysis.InnerProductSpace.Basic
 
 /-!
 # Uniqueness of the continuous functional calculus
@@ -306,7 +306,7 @@ noncomputable def realContinuousMapZeroOfNNReal (φ : C(X, ℝ≥0)₀ →⋆ₙ
     abel
   map_add' f g := by
     have := congr(φ $(f.toNNReal_add_add_neg_add_neg_eq g))
-    simp only [map_add, map_mul, sub_mul, mul_sub] at this ⊢
+    simp only [map_add] at this ⊢
     rw [← sub_eq_zero] at this ⊢
     rw [← this]
     abel

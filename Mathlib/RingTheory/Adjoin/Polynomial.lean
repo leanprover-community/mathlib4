@@ -28,29 +28,50 @@ variable {R : Type u} {S : Type v} {T : Type w} {A : Type z} {A' B : Type*} {a b
 
 section aeval
 
+open Algebra
+
 variable [CommSemiring R] [Semiring A] [CommSemiring A'] [Semiring B]
 variable [Algebra R A] [Algebra R B]
 variable {p q : R[X]} (x : A)
 
 @[simp]
-theorem adjoin_X : Algebra.adjoin R ({X} : Set R[X]) = ⊤ := by
+theorem adjoin_X : adjoin R ({X} : Set R[X]) = ⊤ := by
   refine top_unique fun p _hp => ?_
-  set S := Algebra.adjoin R ({X} : Set R[X])
-  rw [← sum_monomial_eq p]; simp only [← smul_X_eq_monomial, Sum]
-  exact S.sum_mem fun n _hn => S.smul_mem (S.pow_mem (Algebra.subset_adjoin rfl) _) _
+  set S := adjoin R ({X} : Set R[X])
+  rw [← sum_monomial_eq p]; simp only [← smul_X_eq_monomial]
+  exact S.sum_mem fun n _hn => S.smul_mem (S.pow_mem (subset_adjoin rfl) _) _
 
 variable (R)
 theorem _root_.Algebra.adjoin_singleton_eq_range_aeval (x : A) :
-    Algebra.adjoin R {x} = (Polynomial.aeval x).range := by
+    adjoin R {x} = (aeval x).range := by
   rw [← Algebra.map_top, ← adjoin_X, AlgHom.map_adjoin, Set.image_singleton, aeval_X]
 
 @[simp]
-theorem aeval_mem_adjoin_singleton :
-    aeval x p ∈ Algebra.adjoin R {x} := by
-  simpa only [Algebra.adjoin_singleton_eq_range_aeval] using Set.mem_range_self p
+theorem aeval_mem_adjoin_singleton : aeval x p ∈ adjoin R {x} := by
+  simp [adjoin_singleton_eq_range_aeval]
+
+theorem _root_.Algebra.adjoin_mem_exists_aeval {a : A} (h : a ∈ Algebra.adjoin R {x}) :
+    ∃ p : R[X], aeval x p = a := by
+  rw [Algebra.adjoin_singleton_eq_range_aeval] at h
+  simp_all
+
+theorem _root_.Algebra.adjoin_eq_exists_aeval (a : Algebra.adjoin R {x}) :
+    ∃ p : R[X], aeval x p = a := by
+  have : (a : A) ∈ Algebra.adjoin R {x} := by simp
+  set y := (a : A) with h
+  rw [Algebra.adjoin_singleton_eq_range_aeval] at this
+  simp_all
+
+@[elab_as_elim]
+theorem _root_.Algebra.adjoin_singleton_induction {M : (adjoin R {x}) → Prop}
+    (a : adjoin R {x}) (f : ∀ (p : Polynomial R),
+    M (⟨aeval x p, aeval_mem_adjoin_singleton R x⟩ : adjoin R {x})) :
+    M a := by
+  obtain ⟨p, hp⟩ := Algebra.adjoin_eq_exists_aeval _ x a
+  aesop
 
 instance instCommSemiringAdjoinSingleton :
-    CommSemiring <| Algebra.adjoin R {x} :=
+    CommSemiring <| adjoin R {x} :=
   { mul_comm := fun ⟨p, hp⟩ ⟨q, hq⟩ ↦ by
       obtain ⟨p', rfl⟩ := Algebra.adjoin_singleton_eq_range_aeval R x ▸ hp
       obtain ⟨q', rfl⟩ := Algebra.adjoin_singleton_eq_range_aeval R x ▸ hq

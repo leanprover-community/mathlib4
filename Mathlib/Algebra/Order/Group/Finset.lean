@@ -40,7 +40,7 @@ lemma toFinset_eq_singleton_iff (s : Multiset α) (a : α) :
       rw [← mem_toFinset, H, Finset.mem_singleton] at hy
       exact hy.symm
     have hx' : x ∉ s := fun h' ↦ hx <| by rwa [← mem_toFinset, H, Finset.mem_singleton] at h'
-    simp_rw [count_eq_zero_of_not_mem hx', hx, ite_false, Nat.mul_zero]
+    simp_rw [count_eq_zero_of_notMem hx', hx, ite_false, Nat.mul_zero]
   simpa only [toFinset_nsmul _ _ H.1, toFinset_singleton] using congr($(H.2).toFinset)
 
 lemma toFinset_card_eq_one_iff (s : Multiset α) :
@@ -54,8 +54,7 @@ variable {ι κ M G : Type*}
 
 lemma fold_max_add [LinearOrder M] [Add M] [AddRightMono M] (s : Finset ι) (a : WithBot M)
     (f : ι → M) : s.fold max ⊥ (fun i ↦ ↑(f i) + a) = s.fold max ⊥ ((↑) ∘ f) + a := by
-  classical
-    induction' s using Finset.induction_on with a s _ ih <;> simp [*, max_add_add_right]
+  classical induction s using Finset.induction_on <;> simp [*, max_add_add_right]
 
 @[to_additive nsmul_inf']
 lemma inf'_pow [LinearOrder M] [Monoid M] [MulLeftMono M] [MulRightMono M] (s : Finset ι)
@@ -70,12 +69,12 @@ lemma sup'_pow [LinearOrder M] [Monoid M] [MulLeftMono M] [MulRightMono M] (s : 
 section Group
 variable [Group G] [LinearOrder G]
 
-@[to_additive "Also see `Finset.sup'_add'` that works for canonically ordered monoids."]
+@[to_additive /-- Also see `Finset.sup'_add'` that works for canonically ordered monoids. -/]
 lemma sup'_mul [MulRightMono G] (s : Finset ι) (f : ι → G) (a : G) (hs) :
     s.sup' hs f * a = s.sup' hs fun i ↦ f i * a := map_finset_sup' (OrderIso.mulRight a) hs f
 
 set_option linter.docPrime false in
-@[to_additive "Also see `Finset.add_sup''` that works for canonically ordered monoids."]
+@[to_additive /-- Also see `Finset.add_sup''` that works for canonically ordered monoids. -/]
 lemma mul_sup' [MulLeftMono G] (s : Finset ι) (f : ι → G) (a : G) (hs) :
     a * s.sup' hs f = s.sup' hs fun i ↦ a * f i := map_finset_sup' (OrderIso.mulLeft a) hs f
 

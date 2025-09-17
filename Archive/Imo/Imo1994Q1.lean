@@ -78,7 +78,7 @@ theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : #A = m + 1)
     intro x hx
     simp only [Equiv.subLeft_apply, a, rev] at h
     simp only [mem_map, mem_Icc, mem_Ioc, Fin.zero_le, true_and, Equiv.subLeft_apply,
-      Function.Embedding.coeFn_mk, exists_prop, RelEmbedding.coe_toEmbedding, f, rev] at hx ⊢
+      Function.Embedding.coeFn_mk, RelEmbedding.coe_toEmbedding, f, rev] at hx ⊢
     rcases hx with ⟨i, ⟨hi, rfl⟩⟩
     have h1 : a i + a (Fin.last m - k) ≤ n := by unfold a; linarith only [h, a.monotone hi]
     have h2 : a i + a (Fin.last m - k) ∈ A := hadd _ (ha _) _ (ha _) h1

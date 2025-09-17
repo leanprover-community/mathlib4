@@ -68,27 +68,27 @@ theorem ore_right_cancel (r₁ r₂ : R) (s : S) (h : r₁ * s = r₂ * s) : ∃
   OreSet.ore_right_cancel r₁ r₂ s h
 
 /-- The Ore numerator of a fraction. -/
-@[to_additive AddOreLocalization.oreMin "The Ore minuend of a difference."]
+@[to_additive AddOreLocalization.oreMin /-- The Ore minuend of a difference. -/]
 def oreNum (r : R) (s : S) : R :=
   OreSet.oreNum r s
 
 /-- The Ore denominator of a fraction. -/
-@[to_additive AddOreLocalization.oreSubtra "The Ore subtrahend of a difference."]
+@[to_additive AddOreLocalization.oreSubtra /-- The Ore subtrahend of a difference. -/]
 def oreDenom (r : R) (s : S) : S :=
   OreSet.oreDenom r s
 
 /-- The Ore condition of a fraction, expressed in terms of `oreNum` and `oreDenom`. -/
 @[to_additive AddOreLocalization.add_ore_eq
-  "The Ore condition of a difference, expressed in terms of `oreMin` and `oreSubtra`."]
+  /-- The Ore condition of a difference, expressed in terms of `oreMin` and `oreSubtra`. -/]
 theorem ore_eq (r : R) (s : S) : oreDenom r s * r = oreNum r s * s :=
   OreSet.ore_eq r s
 
 /-- The Ore condition bundled in a sigma type. This is useful in situations where we want to obtain
 both witnesses and the condition for a given fraction. -/
 @[to_additive AddOreLocalization.addOreCondition
-  "The Ore condition bundled in a sigma type. This is useful in situations where we want to obtain
-both witnesses and the condition for a given difference."]
-def oreCondition (r : R) (s : S) : Σ'r' : R, Σ's' : S, s' * r = r' * s :=
+/-- The Ore condition bundled in a sigma type. This is useful in situations where we want to obtain
+both witnesses and the condition for a given difference. -/]
+def oreCondition (r : R) (s : S) : Σ' r' : R, Σ' s' : S, s' * r = r' * s :=
   ⟨oreNum r s, oreDenom r s, ore_eq r s⟩
 
 /-- The trivial submonoid is an Ore set. -/

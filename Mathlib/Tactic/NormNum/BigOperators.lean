@@ -240,14 +240,14 @@ def Finset.ProveEmptyOrConsResult.eq_trans {α : Q(Type u)} {s t : Q(Finset $α)
 
 lemma Finset.insert_eq_cons {α : Type*} [DecidableEq α] (a : α) (s : Finset α) (h : a ∉ s) :
     insert a s = Finset.cons a s h := by
-  ext; simp
+  simp
 
 lemma Finset.range_zero' {n : ℕ} (pn : NormNum.IsNat n 0) :
     Finset.range n = {} := by rw [pn.out, Nat.cast_zero, Finset.range_zero]
 
 lemma Finset.range_succ' {n nn n' : ℕ} (pn : NormNum.IsNat n nn) (pn' : nn = Nat.succ n') :
-    Finset.range n = Finset.cons n' (Finset.range n') Finset.not_mem_range_self := by
-  rw [pn.out, Nat.cast_id, pn', Finset.range_succ, Finset.insert_eq_cons]
+    Finset.range n = Finset.cons n' (Finset.range n') Finset.notMem_range_self := by
+  rw [pn.out, Nat.cast_id, pn', Finset.range_add_one, Finset.insert_eq_cons]
 
 lemma Finset.univ_eq_elems {α : Type*} [Fintype α] (elems : Finset α)
     (complete : ∀ x : α, x ∈ elems) :
@@ -262,7 +262,7 @@ partial def Finset.proveEmptyOrCons {α : Q(Type u)} (s : Q(Finset $α)) :
     MetaM (ProveEmptyOrConsResult s) :=
   match s.getAppFnArgs with
   | (``EmptyCollection.emptyCollection, _) => haveI : $s =Q {} := ⟨⟩; pure (.empty q(rfl))
-  | (``Finset.cons, #[_, (a : Q($α)), (s' : Q(Finset $α)), (h : Q(¬ $a ∈ $s'))]) =>
+  | (``Finset.cons, #[_, (a : Q($α)), (s' : Q(Finset $α)), (h : Q($a ∉ $s'))]) =>
     haveI : $s =Q .cons $a $s' $h := ⟨⟩
     pure (.cons a s' h q(.refl $s))
   | (``Finset.mk, #[_, (val : Q(Multiset $α)), (nd : Q(Multiset.Nodup $val))]) => do
@@ -315,7 +315,8 @@ def Result.eq_trans {α : Q(Type u)} {a b : Q($α)} (eq : Q($a = $b)) : Result b
   Result.isFalse (x := a) q($eq ▸ $proof)
   | .isNat inst lit proof => Result.isNat inst lit q($eq ▸ $proof)
   | .isNegNat inst lit proof => Result.isNegNat inst lit q($eq ▸ $proof)
-  | .isRat inst q n d proof => Result.isRat inst q n d q($eq ▸ $proof)
+  | .isNNRat inst q n d proof => Result.isNNRat inst q n d q($eq ▸ $proof)
+  | .isNegNNRat inst q n d proof => Result.isNegNNRat inst q n d q($eq ▸ $proof)
 
 protected lemma Finset.sum_empty {β α : Type*} [CommSemiring β] (f : α → β) :
     IsNat (Finset.sum ∅ f) 0 :=
@@ -369,8 +370,7 @@ partial def evalFinsetProd : NormNumExt where eval {u β} e := do
 
   evalFinsetBigop q(Finset.prod) f res_empty (fun {a s' h} res_fa res_prod_s' ↦ do
       let fa : Q($β) := Expr.app f a
-      let res ← evalMul.core q($fa * Finset.prod $s' $f) q(HMul.hMul) _ _ instS res_fa
-        res_prod_s'
+      let res ← res_fa.mul res_prod_s'
       let eq : Q(Finset.prod (Finset.cons $a $s' $h) $f = $fa * Finset.prod $s' $f) :=
         q(Finset.prod_cons $h)
       pure <| res.eq_trans eq)
@@ -391,13 +391,12 @@ partial def evalFinsetSum : NormNumExt where eval {u β} e := do
   have f : Q($α → $β) := f
   let instCS : Q(CommSemiring $β) ← synthInstanceQ q(CommSemiring $β) <|>
     throwError "not a commutative semiring: {β}"
-  let n : Q(ℕ) := mkRawNatLit 0
-  let pf : Q(IsNat (Finset.sum ∅ $f) $n) := q(@Finset.sum_empty $β $α $instCS $f)
-  let res_empty := Result.isNat _ n pf
+  let pf : Q(IsNat (Finset.sum ∅ $f) (nat_lit 0)) := q(@Finset.sum_empty $β $α $instCS $f)
+  let res_empty := Result.isNat _ _ q($pf)
 
   evalFinsetBigop q(Finset.sum) f res_empty (fun {a s' h} res_fa res_sum_s' ↦ do
       let fa : Q($β) := Expr.app f a
-      let res ← evalAdd.core q($fa + Finset.sum $s' $f) q(HAdd.hAdd) _ _ res_fa res_sum_s'
+      let res ← res_fa.add res_sum_s'
       let eq : Q(Finset.sum (Finset.cons $a $s' $h) $f = $fa + Finset.sum $s' $f) :=
         q(Finset.sum_cons $h)
       pure <| res.eq_trans eq)

@@ -45,7 +45,7 @@ in which case `piContent μ` is known to be a true measure (see `piContent_eq_me
 infinite product measure
 -/
 
-open MeasureTheory ProbabilityTheory Finset Filter Preorder MeasurableEquiv
+open ProbabilityTheory Finset Filter Preorder MeasurableEquiv
 
 open scoped ENNReal Topology
 
@@ -81,11 +81,10 @@ theorem piContent_eq_measure_pi [Fintype ι] {s : Set (Π i, X i)} (hs : Measura
     piContent μ s = Measure.pi μ s := by
   let e : @Finset.univ ι _ ≃ ι :=
     { toFun i := i
-      invFun i := ⟨i, mem_univ i⟩
-      left_inv := fun _ ↦ rfl
-      right_inv := fun _ ↦ rfl }
+      invFun i := ⟨i, mem_univ i⟩ }
   have : s = cylinder univ (MeasurableEquiv.piCongrLeft X e ⁻¹' s) := rfl
   nth_rw 1 [this]
+  dsimp [e]
   rw [piContent_cylinder _ (hs.preimage (by fun_prop)), ← Measure.pi_map_piCongrLeft e,
     ← Measure.map_apply (by fun_prop) hs]; rfl
 
@@ -156,7 +155,7 @@ lemma map_piSingleton (μ : (n : ℕ) → Measure (X n)) [∀ n, SigmaFinite (μ
   have : Subsingleton (Ioc n (n + 1)) := by rw [Nat.Ioc_succ_singleton]; infer_instance
   rw [Fintype.prod_subsingleton _ ⟨n + 1, mem_Ioc.2 (by omega)⟩,
     Measure.map_apply (by fun_prop) (.univ_pi hs)]
-  congr with x
+  congr 1 with x
   simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, forall_const, Subtype.forall,
     Nat.Ioc_succ_singleton, mem_singleton]
   exact ⟨fun h ↦ h (n + 1) rfl, fun h a b ↦ b.symm ▸ h⟩
@@ -169,7 +168,7 @@ are constant then their composition-product is the product measure. -/
 theorem partialTraj_const_restrict₂ {a b : ℕ} :
     (partialTraj (fun n ↦ const _ (μ (n + 1))) a b).map (restrict₂ Ioc_subset_Iic_self) =
     const _ (Measure.pi (fun i : Ioc a b ↦ μ i)) := by
-  obtain hab | hba := lt_or_le a b
+  obtain hab | hba := lt_or_ge a b
   · refine Nat.le_induction ?_ (fun n hn hind ↦ ?_) b (Nat.succ_le.2 hab) <;> ext1 x₀
     · rw [partialTraj_succ_self, ← map_comp_right, map_apply, prod_apply, map_apply, const_apply,
         const_apply, Measure.map_piSingleton, restrict₂_comp_IicProdIoc, Measure.map_snd_prod,
@@ -287,7 +286,7 @@ theorem piContent_tendsto_zero {A : ℕ → Set (Π i, X i)} (A_mem : ∀ n, A n
   -- first restricting to `tₙ` and then mapping by `gₙ`
   have r_comp_f n : (s n).restrict ∘ f = (g n) ∘ (fun (x : Π i : u, X i) i ↦ x i) := by
     ext x i
-    simp only [Function.comp_apply, Finset.restrict, subset_refl, Set.coe_inclusion,
+    simp only [Function.comp_apply, Finset.restrict,
       Equiv.piCongrLeft_apply, Equiv.coe_fn_symm_mk, f, aux, g, t]
     rw [dif_pos (Set.mem_iUnion.2 ⟨n, i.2⟩)]
   -- `Bₙ` is the same as `Aₙ` but in the product indexed by `u`
@@ -397,6 +396,32 @@ lemma infinitePi_pi {s : Finset ι} {t : (i : ι) → Set (X i)}
   · rw [univ_eq_attach, prod_attach _ (fun i ↦ (μ i) (t i))]
   · exact measurable_restrict _
   · exact .univ_pi fun i ↦ mt i.1 i.2
+
+lemma _root_.measurePreserving_eval_infinitePi (i : ι) :
+    MeasurePreserving (Function.eval i) (infinitePi μ) (μ i) where
+  measurable := by fun_prop
+  map_eq := by
+    ext s hs
+    have : @Function.eval ι X i =
+        (@Function.eval ({i} : Finset ι) (fun j ↦ X j) ⟨i, by simp⟩) ∘
+        (Finset.restrict {i}) := by ext; simp
+    rw [this, ← map_map, infinitePi_map_restrict, (measurePreserving_eval _ _).map_eq]
+    all_goals fun_prop
+
+lemma infinitePi_map_pi {Y : ι → Type*} [∀ i, MeasurableSpace (Y i)] {f : (i : ι) → X i → Y i}
+    (hf : ∀ i, Measurable (f i)) :
+    haveI (i : ι) : IsProbabilityMeasure ((μ i).map (f i)) :=
+      isProbabilityMeasure_map (hf i).aemeasurable
+    (infinitePi μ).map (fun x i ↦ f i (x i)) = infinitePi (fun i ↦ (μ i).map (f i)) := by
+  have (i : ι) : IsProbabilityMeasure ((μ i).map (f i)) :=
+    isProbabilityMeasure_map (hf i).aemeasurable
+  refine eq_infinitePi _ fun s t ht ↦ ?_
+  rw [map_apply (by fun_prop) (.pi s.countable_toSet ht)]
+  have : (fun (x : Π i, X i) i ↦ f i (x i)) ⁻¹' ((s : Set ι).pi t) =
+      (s : Set ι).pi (fun i ↦ (f i) ⁻¹' (t i)) := by ext x; simp
+  rw [this, infinitePi_pi _ (fun i hi ↦ hf i (ht i hi))]
+  refine Finset.prod_congr rfl fun i hi ↦ ?_
+  rw [map_apply (by fun_prop) (ht i hi)]
 
 /-- If we push the product measure forward by a reindexing equivalence, we get a product measure
 on the reindexed product. -/

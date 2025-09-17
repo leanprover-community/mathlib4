@@ -25,7 +25,7 @@ namespace ModuleCat
 variable {R : Type u} [Ring R]
 variable {G H : ModuleCat.{v} R} (f : G ⟶ H)
 
-attribute [local ext] Subtype.ext_val
+attribute [local ext] Subtype.ext
 
 section
 

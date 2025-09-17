@@ -39,8 +39,6 @@ theorem fermatNumber_strictMono : StrictMono fermatNumber := by
   simp only [fermatNumber, add_lt_add_iff_right, Nat.pow_lt_pow_iff_right (one_lt_two : 1 < 2),
     imp_self]
 
-@[deprecated (since := "2024-11-25")] alias strictMono_fermatNumber := fermatNumber_strictMono
-
 lemma fermatNumber_mono : Monotone fermatNumber := fermatNumber_strictMono.monotone
 lemma fermatNumber_injective : Injective fermatNumber := fermatNumber_strictMono.injective
 
@@ -58,8 +56,6 @@ theorem prod_fermatNumber (n : ℕ) : ∏ k ∈ range n, fermatNumber k = fermat
     (show 2 ^ 2 ^ n + 1 - 2 = 2 ^ 2 ^ n - 1 by omega), ← sq_sub_sq]
   ring_nf
   omega
-
-@[deprecated (since := "2024-11-25")] alias fermatNumber_product := prod_fermatNumber
 
 theorem fermatNumber_eq_prod_add_two (n : ℕ) :
     fermatNumber n = ∏ k ∈ range n, fermatNumber k + 2 := by
@@ -87,7 +83,7 @@ end Nat
 open Nat
 
 theorem Int.fermatNumber_eq_fermatNumber_sq_sub_two_mul_fermatNumber_sub_one_sq (n : ℕ) :
-    (fermatNumber (n + 2) : ℤ)  = (fermatNumber (n + 1)) ^ 2 - 2 * (fermatNumber n - 1) ^ 2 := by
+    (fermatNumber (n + 2) : ℤ) = (fermatNumber (n + 1)) ^ 2 - 2 * (fermatNumber n - 1) ^ 2 := by
   rw [Nat.fermatNumber_eq_fermatNumber_sq_sub_two_mul_fermatNumber_sub_one_sq,
     Nat.cast_sub <| two_mul_fermatNumber_sub_one_sq_le_fermatNumber_sq n]
   simp only [fermatNumber, push_cast, add_tsub_cancel_right]
@@ -157,7 +153,7 @@ lemma pow_pow_add_primeFactors_one_lt {a n p : ℕ} (hp : p.Prime) (hp2 : p ≠ 
   have : Fact p.Prime := Fact.mk hp
   have ha1 : (a : ZMod p) ^ (2 ^ n) = -1 := by
     rw [eq_neg_iff_add_eq_zero]
-    exact_mod_cast (natCast_zmod_eq_zero_iff_dvd (a ^ (2 ^ n) + 1) p).mpr hpdvd
+    exact_mod_cast (natCast_eq_zero_iff (a ^ (2 ^ n) + 1) p).mpr hpdvd
   have ha0 : (a : ZMod p) ≠ 0 := by
     intro h
     rw [h, zero_pow (pow_ne_zero n two_ne_zero), zero_eq_neg] at ha1
@@ -185,7 +181,7 @@ lemma fermat_primeFactors_one_lt (n p : ℕ) (hn : 1 < n) (hp : p.Prime)
   suffices h : p ∣ a.val ^ (2 ^ (n + 1)) + 1 by
     exact pow_pow_add_primeFactors_one_lt hp hp2 h
   rw [fermatNumber] at hpdvd
-  rw [← natCast_zmod_eq_zero_iff_dvd, Nat.cast_add _ 1, Nat.cast_one, Nat.cast_pow] at hpdvd ⊢
+  rw [← natCast_eq_zero_iff, Nat.cast_add _ 1, Nat.cast_one, Nat.cast_pow] at hpdvd ⊢
   rwa [natCast_val, ZMod.cast_id, pow_succ', pow_mul, sq, ← ha]
 
 
@@ -203,14 +199,14 @@ theorem prime_of_pow_sub_one_prime {a n : ℕ} (hn1 : n ≠ 1) (hP : (a ^ n - 1)
   have ha0 : 0 < a := one_pos.trans ha1
   have ha2 : a = 2 := by
     contrapose! hn1
-    let h := nat_sub_dvd_pow_sub_pow a 1 n
+    let h := Nat.sub_dvd_pow_sub_pow a 1 n
     rw [one_pow, hP.dvd_iff_eq (mt (Nat.sub_eq_iff_eq_add ha1.le).mp hn1), eq_comm] at h
     exact (pow_eq_self_iff ha1).mp (Nat.sub_one_cancel ha0 (pow_pos ha0 n) h).symm
   subst ha2
   refine ⟨rfl, Nat.prime_def.mpr ⟨(two_le_iff n).mpr ⟨hn0, hn1⟩, fun d hdn ↦ ?_⟩⟩
   have hinj : ∀ x y, 2 ^ x - 1 = 2 ^ y - 1 → x = y :=
     fun x y h ↦ Nat.pow_right_injective le_rfl (sub_one_cancel (pow_pos ha0 x) (pow_pos ha0 y) h)
-  let h := nat_sub_dvd_pow_sub_pow (2 ^ d) 1 (n / d)
+  let h := Nat.sub_dvd_pow_sub_pow (2 ^ d) 1 (n / d)
   rw [one_pow, ← pow_mul, Nat.mul_div_cancel' hdn] at h
   exact (hP.eq_one_or_self_of_dvd (2 ^ d - 1) h).imp (hinj d 1) (hinj d n)
 

@@ -20,7 +20,7 @@ field `K` and its torsion subgroup.
 ## Main results
 
 * `NumberField.isUnit_iff_norm`: an algebraic integer `x : 𝓞 K` is a unit if and only if
-`|norm ℚ x| = 1`.
+  `|norm ℚ x| = 1`.
 
 * `NumberField.Units.mem_torsion`: a unit `x : (𝓞 K)ˣ` is torsion iff `w x = 1` for all infinite
   places `w` of `K`.
@@ -65,7 +65,7 @@ instance : CoeHTC (𝓞 K)ˣ K :=
   ⟨fun x => algebraMap _ K (Units.val x)⟩
 
 theorem coe_injective : Function.Injective ((↑) : (𝓞 K)ˣ → K) :=
-  RingOfIntegers.coe_injective.comp Units.ext
+  RingOfIntegers.coe_injective.comp Units.val_injective
 
 variable {K}
 
@@ -196,7 +196,7 @@ theorem torsion_eq_one_or_neg_one_of_odd_finrank [NumberField K]
     · linarith [orderOf_pos_iff.2 ((CommGroup.mem_torsion _ x.1).1 x.2)]
     · exact Or.intro_left _ (orderOf_eq_one_iff.1 hi)
     · rw [← orderOf_units, CharP.orderOf_eq_two_iff 0 (by decide)] at hi
-      simp [← Units.eq_iff, ← Units.eq_iff, Units.val_neg, Units.val_one, hi]
+      simp [← Units.val_inj, ← Units.val_inj, Units.val_neg, Units.val_one, hi]
 
 theorem torsionOrder_eq_two_of_odd_finrank [NumberField K]
     (h : Odd (Module.finrank ℚ K)) : torsionOrder K = 2 := by

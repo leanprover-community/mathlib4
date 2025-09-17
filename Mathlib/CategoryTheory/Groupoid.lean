@@ -41,9 +41,9 @@ class Groupoid (obj : Type u) : Type max u (v + 1) extends Category.{v} obj wher
   /-- The inverse morphism -/
   inv : ∀ {X Y : obj}, (X ⟶ Y) → (Y ⟶ X)
   /-- `inv f` composed `f` is the identity -/
-  inv_comp : ∀ {X Y : obj} (f : X ⟶ Y), comp (inv f) f = id Y := by aesop_cat
+  inv_comp : ∀ {X Y : obj} (f : X ⟶ Y), comp (inv f) f = id Y := by cat_disch
   /-- `f` composed with `inv f` is the identity -/
-  comp_inv : ∀ {X Y : obj} (f : X ⟶ Y), comp f (inv f) = id X := by aesop_cat
+  comp_inv : ∀ {X Y : obj} (f : X ⟶ Y), comp f (inv f) = id X := by cat_disch
 
 initialize_simps_projections Groupoid (-Hom)
 
@@ -87,9 +87,7 @@ theorem Groupoid.reverse_eq_inv (f : X ⟶ Y) : Quiver.reverse f = Groupoid.inv 
   rfl
 
 instance functorMapReverse {D : Type*} [Groupoid D] (F : C ⥤ D) : F.toPrefunctor.MapReverse where
-  map_reverse' f := by
-    simp only [Quiver.reverse, Quiver.HasReverse.reverse', Groupoid.inv_eq_inv,
-      Functor.map_inv]
+  map_reverse' f := by simp
 
 variable (X Y)
 
@@ -98,8 +96,6 @@ variable (X Y)
 def Groupoid.isoEquivHom : (X ≅ Y) ≃ (X ⟶ Y) where
   toFun := Iso.hom
   invFun f := ⟨f, Groupoid.inv f, (by simp), (by simp)⟩
-  left_inv _ := Iso.ext rfl
-  right_inv _ := rfl
 
 variable (C)
 

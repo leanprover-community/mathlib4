@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Group.TypeTags.Hom
-import Mathlib.Algebra.Ring.Hom.Basic
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Algebra.Ring.Parity
 
@@ -59,7 +58,7 @@ variable [CharZero α] {m n : ℤ}
 @[simp] lemma cast_eq_zero : (n : α) = 0 ↔ n = 0 where
   mp h := by
     cases n
-    · erw [Int.cast_natCast] at h
+    · rw [ofNat_eq_coe, Int.cast_natCast] at h
       exact congr_arg _ (Nat.cast_eq_zero.1 h)
     · rw [cast_negSucc, neg_eq_zero, Nat.cast_eq_zero] at h
       contradiction
@@ -119,7 +118,7 @@ lemma _root_.Odd.intCast (hn : Odd n) : Odd (n : α) := hn.map (castRingHom α)
 end Ring
 
 theorem cast_dvd_cast [Ring α] (m n : ℤ) (h : m ∣ n) : (m : α) ∣ (n : α) :=
-  RingHom.map_dvd (Int.castRingHom α) h
+  map_dvd (Int.castRingHom α) h
 
 end cast
 
@@ -196,6 +195,17 @@ theorem eq_intCastAddHom (f : ℤ →+ A) (h1 : f 1 = 1) : f = Int.castAddHom A 
 
 end AddMonoidHom
 
+namespace AddEquiv
+variable {A : Type*}
+
+/-- Two additive monoid isomorphisms `f`, `g` from `ℤ` to an additive monoid are equal
+if `f 1 = g 1`. -/
+@[ext high]
+theorem ext_int [AddMonoid A] {f g : ℤ ≃+ A} (h1 : f 1 = g 1) : f = g :=
+  toAddMonoidHom_injective <| AddMonoidHom.ext_int h1
+
+end AddEquiv
+
 theorem eq_intCast' [AddGroupWithOne α] [FunLike F ℤ α] [AddMonoidHomClass F ℤ α]
     (f : F) (h₁ : f 1 = 1) :
     ∀ n : ℤ, f n = n :=
@@ -213,8 +223,6 @@ theorem Int.castAddHom_int : Int.castAddHom ℤ = AddMonoidHom.id ℤ :=
 namespace MonoidHom
 
 variable {M : Type*} [Monoid M]
-
-open Multiplicative
 
 @[ext]
 theorem ext_mint {f g : Multiplicative ℤ →* M} (h1 : f (ofAdd 1) = g (ofAdd 1)) : f = g :=

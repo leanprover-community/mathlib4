@@ -45,7 +45,7 @@ variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAd
 section UnifTight
 
 /- This follows closely the `UnifIntegrable` section
-from `Mathlib.MeasureTheory.Functions.UniformIntegrable`. -/
+from `Mathlib/MeasureTheory/Functions/UniformIntegrable.lean`. -/
 
 variable {f g : ι → α → β} {p : ℝ≥0∞}
 
@@ -94,7 +94,7 @@ protected theorem add (hf : UnifTight f p μ) (hg : UnifTight g p μ)
   rcases exists_Lp_half β μ p (coe_ne_zero.mpr hε.ne') with ⟨η, hη_pos, hη⟩
   by_cases hη_top : η = ∞
   · replace hη := hη_top ▸ hη
-    refine ⟨∅, (by measurability), fun i ↦ ?_⟩
+    refine ⟨∅, (by simp), fun i ↦ ?_⟩
     simp only [compl_empty, indicator_univ, Pi.add_apply]
     exact (hη (f i) (g i) (hf_meas i) (hg_meas i) le_top le_top).le
   obtain ⟨s, hμs, hsm, hfs, hgs⟩ :
@@ -128,7 +128,7 @@ protected theorem aeeq (hf : UnifTight f p μ) (hfg : ∀ n, f n =ᵐ[μ] g n) :
   obtain ⟨s, hμs, hfε⟩ := hf hε
   refine ⟨s, hμs, fun n => (le_of_eq <| eLpNorm_congr_ae ?_).trans (hfε n)⟩
   filter_upwards [hfg n] with x hx
-  simp only [indicator, mem_compl_iff, ite_not, hx]
+  simp only [indicator, mem_compl_iff, hx]
 
 end UnifTight
 
@@ -142,7 +142,7 @@ theorem unifTight_const {g : α → β} (hp_ne_top : p ≠ ∞) (hg : MemLp g p 
     UnifTight (fun _ : ι => g) p μ := by
   intro ε hε
   by_cases hε_top : ε = ∞
-  · exact ⟨∅, (by measurability), fun _ => hε_top.symm ▸ le_top⟩
+  · exact ⟨∅, (by simp), fun _ => hε_top.symm ▸ le_top⟩
   obtain ⟨s, _, hμs, hgε⟩ := hg.exists_eLpNorm_indicator_compl_lt hp_ne_top (coe_ne_zero.mpr hε.ne')
   exact ⟨s, ne_of_lt hμs, fun _ => hgε.le⟩
 
@@ -150,9 +150,9 @@ theorem unifTight_const {g : α → β} (hp_ne_top : p ≠ ∞) (hg : MemLp g p 
 theorem unifTight_of_subsingleton [Subsingleton ι] (hp_top : p ≠ ∞)
     {f : ι → α → β} (hf : ∀ i, MemLp (f i) p μ) : UnifTight f p μ := fun ε hε ↦ by
   by_cases hε_top : ε = ∞
-  · exact ⟨∅, by measurability, fun _ => hε_top.symm ▸ le_top⟩
+  · exact ⟨∅, by simp, fun _ => hε_top.symm ▸ le_top⟩
   by_cases hι : Nonempty ι
-  case neg => exact ⟨∅, (by measurability), fun i => False.elim <| hι <| Nonempty.intro i⟩
+  case neg => exact ⟨∅, (by simp), fun i => False.elim <| hι <| Nonempty.intro i⟩
   obtain ⟨i⟩ := hι
   obtain ⟨s, _, hμs, hfε⟩ := (hf i).exists_eLpNorm_indicator_compl_lt hp_top (coe_ne_zero.2 hε.ne')
   refine ⟨s, ne_of_lt hμs, fun j => ?_⟩
@@ -163,31 +163,25 @@ all sequences indexed by a finite type. -/
 private theorem unifTight_fin (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α → β}
     (hf : ∀ i, MemLp (f i) p μ) : UnifTight f p μ := by
   revert f
-  induction' n with n h
-  · intro f hf
-    exact unifTight_of_subsingleton hp_top hf
-  intro f hfLp ε hε
-  by_cases hε_top : ε = ∞
-  · exact ⟨∅, (by measurability), fun _ => hε_top.symm ▸ le_top⟩
-  let g : Fin n → α → β := fun k => f k
-  have hgLp : ∀ i, MemLp (g i) p μ := fun i => hfLp i
-  obtain ⟨S, hμS, hFε⟩ := h hgLp hε
-  obtain ⟨s, _, hμs, hfε⟩ :=
-    (hfLp n).exists_eLpNorm_indicator_compl_lt hp_top (coe_ne_zero.2 hε.ne')
-  refine ⟨s ∪ S, (by measurability), fun i => ?_⟩
-  by_cases hi : i.val < n
-  · rw [(_ : f i = g ⟨i.val, hi⟩)]
-    · rw [compl_union, ← indicator_indicator]
+  induction n with
+  | zero => exact fun {f} hf ↦ unifTight_of_subsingleton hp_top hf
+  | succ n h =>
+    intro f hfLp ε hε
+    by_cases hε_top : ε = ∞
+    · exact ⟨∅, (by simp), fun _ => hε_top.symm ▸ le_top⟩
+    let g : Fin n → α → β := fun k => f k.castSucc
+    have hgLp : ∀ i, MemLp (g i) p μ := fun i => hfLp i.castSucc
+    obtain ⟨S, hμS, hFε⟩ := h hgLp hε
+    obtain ⟨s, _, hμs, hfε⟩ :=
+      (hfLp (Fin.last n)).exists_eLpNorm_indicator_compl_lt hp_top (coe_ne_zero.2 hε.ne')
+    refine ⟨s ∪ S, (by measurability), fun i => ?_⟩
+    by_cases hi : i.val < n
+    · rw [show f i = g ⟨i.val, hi⟩ from rfl, compl_union, ← indicator_indicator]
       apply (eLpNorm_indicator_le _).trans
       exact hFε (Fin.castLT i hi)
-    · simp only [Fin.coe_eq_castSucc, Fin.castSucc_mk, g]
-  · rw [(_ : i = n)]
-    · rw [compl_union, inter_comm, ← indicator_indicator]
+    · obtain rfl : i = Fin.last n := Fin.ext (le_antisymm i.is_le (not_lt.mp hi))
+      rw [compl_union, inter_comm, ← indicator_indicator]
       exact (eLpNorm_indicator_le _).trans hfε.le
-    · have hi' := Fin.is_lt i
-      rw [Nat.lt_succ_iff] at hi'
-      rw [not_lt] at hi
-      simp [← le_antisymm hi' hi]
 
 /-- A finite sequence of Lp functions is uniformly tight. -/
 theorem unifTight_finite [Finite ι] (hp_top : p ≠ ∞) {f : ι → α → β}

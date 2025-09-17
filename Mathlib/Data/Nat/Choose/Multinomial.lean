@@ -3,14 +3,11 @@ Copyright (c) 2022 Pim Otte. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Pim Otte
 -/
-import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Order.Antidiag.Pi
+import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Data.Nat.Factorial.DoubleFactorial
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Finset.Sym
-import Mathlib.Data.Finsupp.Multiset
 
 /-!
 # Multinomial
@@ -158,11 +155,11 @@ theorem multinomial_update (a : α) (f : α →₀ ℕ) :
   simp only [multinomial_eq]
   classical
     by_cases h : a ∈ f.support
-    · rw [← Finset.insert_erase h, Nat.multinomial_insert (Finset.not_mem_erase a _),
+    · rw [← Finset.insert_erase h, Nat.multinomial_insert (Finset.notMem_erase a _),
         Finset.add_sum_erase _ f h, support_update_zero]
       congr 1
       exact Nat.multinomial_congr fun _ h ↦ (Function.update_of_ne (mem_erase.1 h).1 0 f).symm
-    rw [not_mem_support_iff] at h
+    rw [notMem_support_iff] at h
     rw [h, Nat.choose_zero_right, one_mul, ← h, update_self]
 
 end Finsupp
@@ -213,13 +210,14 @@ lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
     (∑ i ∈ s, f i) ^ n = ∑ k ∈ piAntidiag s n, multinomial s k *
       s.noncommProd (fun i ↦ f i ^ k i) (hc.mono' fun _ _ h ↦ h.pow_pow ..) := by
   classical
-  induction' s using Finset.cons_induction with a s has ih generalizing n
-  · cases n <;> simp
+  induction s using Finset.cons_induction generalizing n with
+  | empty => cases n <;> simp
+  | cons a s has ih => ?_
   rw [Finset.sum_cons, piAntidiag_cons, sum_disjiUnion]
-  simp only [sum_map, Function.Embedding.coeFn_mk, Pi.add_apply, multinomial_cons,
-    Pi.add_apply, eq_self_iff_true, if_true, Nat.cast_mul, noncommProd_cons, eq_self_iff_true,
+  simp only [sum_map, Pi.add_apply, multinomial_cons,
+    Pi.add_apply, if_true, Nat.cast_mul, noncommProd_cons,
     if_true, sum_add_distrib, sum_ite_eq', has, if_false, add_zero,
-    addLeftEmbedding_eq_addRightEmbedding, addRightEmbedding_apply]
+    addRightEmbedding_apply]
   suffices ∀ p : ℕ × ℕ, p ∈ antidiagonal n →
     ∑ g ∈ piAntidiag s p.2, ((g a + p.1 + s.sum g).choose (g a + p.1) : R) *
       multinomial s (g + fun i ↦ ite (i = a) p.1 0) *
@@ -256,8 +254,9 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
           k.1.1.multinomial *
             (k.1.1.map <| x).noncommProd
               (Multiset.map_set_pairwise <| hc.mono <| mem_sym_iff.1 k.2) := by
-  induction' s using Finset.induction with a s ha ih
-  · rw [sum_empty]
+  induction s using Finset.induction with
+  | empty =>
+    rw [sum_empty]
     rintro (_ | n)
     · rw [_root_.pow_zero, Fintype.sum_subsingleton]
       swap
@@ -268,6 +267,7 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
     · rw [_root_.pow_succ, mul_zero]
       haveI : IsEmpty (Finset.sym (∅ : Finset α) n.succ) := Finset.instIsEmpty
       apply (Fintype.sum_empty _).symm
+  | insert a s ha ih => ?_
   intro n; specialize ih (hc.mono <| s.subset_insert a)
   rw [sum_insert ha, (Commute.sum_right s _ _ _).add_pow, sum_range]; swap
   · exact fun _ hb => hc (mem_insert_self a s) (mem_insert_of_mem hb)
@@ -326,12 +326,12 @@ namespace Sym
 
 variable {n : ℕ} {α : Type*} [DecidableEq α]
 
-theorem multinomial_coe_fill_of_not_mem {m : Fin (n + 1)} {s : Sym α (n - m)} {x : α} (hx : x ∉ s) :
+theorem multinomial_coe_fill_of_notMem {m : Fin (n + 1)} {s : Sym α (n - m)} {x : α} (hx : x ∉ s) :
     (fill x m s : Multiset α).multinomial = n.choose m * (s : Multiset α).multinomial := by
   rw [Multiset.multinomial_filter_ne x]
   rw [← mem_coe] at hx
   refine congrArg₂ _ ?_ ?_
-  · rw [card_coe, count_coe_fill_self_of_not_mem hx]
+  · rw [card_coe, count_coe_fill_self_of_notMem hx]
   · refine congrArg _ ?_
     rw [coe_fill, coe_replicate, Multiset.filter_add]
     rw [Multiset.filter_eq_self.mpr]
@@ -339,5 +339,8 @@ theorem multinomial_coe_fill_of_not_mem {m : Fin (n + 1)} {s : Sym α (n - m)} {
       rw [Multiset.filter_eq_nil]
       exact fun j hj ↦ by simp [Multiset.mem_replicate.mp hj]
     · exact fun j hj h ↦ hx <| by simpa [h] using hj
+
+@[deprecated (since := "2025-05-23")]
+alias multinomial_coe_fill_of_not_mem := multinomial_coe_fill_of_notMem
 
 end Sym

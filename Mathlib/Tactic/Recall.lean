@@ -44,7 +44,8 @@ elab_rules : command
       | throwError "unknown constant '{declName}'"
     let declConst : Expr := mkConst declName <| info.levelParams.map Level.param
     discard <| liftTermElabM <| addTermInfo id declConst
-    let newId := mkIdentFrom id (← mkAuxName declName 1)
+    let newId := ({ namePrefix := declName : DeclNameGenerator }.mkUniqueName (← getEnv) `recall).1
+    let newId := mkIdentFrom id newId
     if let some val := val? then
       let some infoVal := info.value?
         | throwErrorAt val "constant '{declName}' has no defined value"

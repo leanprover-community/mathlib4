@@ -23,7 +23,7 @@ This file defines a few binary operations on `Finset α` for use in set family c
 
 ## Notation
 
-We define the following notation in locale `FinsetFamily`:
+We define the following notation in scope `FinsetFamily`:
 * `s ⊻ t` for `Finset.sups`
 * `s ⊼ t` for `Finset.infs`
 * `s ○ t` for `Finset.disjSups s t`
@@ -358,7 +358,7 @@ variable {𝒜 ℬ : Finset (Finset α)} {s t : Finset α}
 
 @[simp] lemma powerset_union (s t : Finset α) : (s ∪ t).powerset = s.powerset ⊻ t.powerset := by
   ext u
-  simp only [mem_sups, mem_powerset, le_eq_subset, sup_eq_union]
+  simp only [mem_sups, mem_powerset, sup_eq_union]
   refine ⟨fun h ↦ ⟨_, inter_subset_left (s₂ := u), _, inter_subset_left (s₂ := u), ?_⟩, ?_⟩
   · rwa [← union_inter_distrib_right, inter_eq_right]
   · rintro ⟨v, hv, w, hw, rfl⟩
@@ -366,7 +366,7 @@ variable {𝒜 ℬ : Finset (Finset α)} {s t : Finset α}
 
 @[simp] lemma powerset_inter (s t : Finset α) : (s ∩ t).powerset = s.powerset ⊼ t.powerset := by
   ext u
-  simp only [mem_infs, mem_powerset, le_eq_subset, inf_eq_inter]
+  simp only [mem_infs, mem_powerset, inf_eq_inter]
   refine ⟨fun h ↦ ⟨_, inter_subset_left (s₂ := u), _, inter_subset_left (s₂ := u), ?_⟩, ?_⟩
   · rwa [← inter_inter_distrib_right, inter_eq_right]
   · rintro ⟨v, hv, w, hw, rfl⟩
@@ -395,8 +395,6 @@ def disjSups : Finset α := {ab ∈ s ×ˢ t | Disjoint ab.1 ab.2}.image fun ab 
 
 @[inherit_doc]
 scoped[FinsetFamily] infixl:74 " ○ " => Finset.disjSups
-
-open FinsetFamily
 
 variable {s t u} {a b c : α}
 
@@ -473,8 +471,6 @@ instance : @Std.Commutative (Finset α) (· ○ ·) := ⟨disjSups_comm⟩
 
 end DisjSups
 
-open FinsetFamily
-
 section DistribLattice
 
 variable [DecidableEq α]
@@ -509,8 +505,6 @@ def diffs : Finset α → Finset α → Finset α := image₂ (· \ ·)
 scoped[FinsetFamily] infixl:74 " \\\\ " => Finset.diffs
   -- This notation is meant to have higher precedence than `\` and `⊓`, but still within the
   -- realm of other binary notation
-
-open FinsetFamily
 
 variable {s t} {a b c : α}
 
@@ -591,8 +585,6 @@ def compls : Finset α → Finset α := map ⟨compl, compl_injective⟩
 
 @[inherit_doc]
 scoped[FinsetFamily] postfix:max "ᶜˢ" => Finset.compls
-
-open FinsetFamily
 
 variable {s t} {a : α}
 

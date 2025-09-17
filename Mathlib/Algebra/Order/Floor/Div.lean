@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.GroupWithZero.Action.Pi
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Data.Finsupp.Order
+import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Data.Finsupp.SMulWithZero
+import Mathlib.Order.Preorder.Finsupp
 
 /-!
 # Flooring, ceiling division
@@ -122,7 +124,7 @@ variable [AddCommMonoid α] [LinearOrder α] [AddCommMonoid β] [PartialOrder β
   [PosSMulReflectLE α β] [FloorDiv α β] [CeilDiv α β] {a : α} {b : β}
 
 lemma floorDiv_le_ceilDiv : b ⌊/⌋ a ≤ b ⌈/⌉ a := by
-  obtain ha | ha := le_or_lt a 0
+  obtain ha | ha := le_or_gt a 0
   · simp [ha]
   · exact le_of_smul_le_smul_left ((smul_floorDiv_le ha).trans <| le_smul_ceilDiv ha) ha
 

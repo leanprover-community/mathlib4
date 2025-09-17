@@ -18,7 +18,7 @@ to an unprimed version of that declaration, or an explanation as to why no bette
 is possible.
 -/
 
-open Lean Elab
+open Lean Elab Linter
 
 namespace Mathlib.Linter
 
@@ -38,7 +38,7 @@ namespace DocPrime
 
 @[inherit_doc Mathlib.Linter.linter.docPrime]
 def docPrimeLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless Linter.getLinterValue linter.docPrime (← getOptions) do
+  unless getLinterValue linter.docPrime (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return
