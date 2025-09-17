@@ -15,7 +15,7 @@ This file defines the equivalence relation `a ≡ b [MOD n]` on the natural numb
 and proves basic properties about it such as the Chinese Remainder Theorem
 `modEq_and_modEq_iff_modEq_mul`.
 
-## Notations
+## Notation
 
 `a ≡ b [MOD n]` is notation for `Nat.ModEq n a b`, which is defined to mean `a % n = b % n`.
 
