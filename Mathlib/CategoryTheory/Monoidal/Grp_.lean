@@ -360,14 +360,14 @@ variable [BraidedCategory C] {G H H₁ H₂ : Grp_ C}
 @[simps! tensorObj_X tensorHom_hom]
 instance instMonoidalCategoryStruct : MonoidalCategoryStruct (Grp_ C) where
   tensorObj G H := ⟨G.X ⊗ H.X⟩
-  tensorHom := tensorHom (C := Mon_ C)
-  whiskerRight f G := whiskerRight (C := Mon_ C) f G.toMon_
-  whiskerLeft G _ _ f := MonoidalCategoryStruct.whiskerLeft (C := Mon_ C) G.toMon_ f
+  tensorHom := tensorHom (C := Mon C)
+  whiskerRight f G := whiskerRight (C := Mon C) f G.toMon
+  whiskerLeft G _ _ f := MonoidalCategoryStruct.whiskerLeft (C := Mon C) G.toMon f
   tensorUnit := ⟨𝟙_ C⟩
   associator X Y Z :=
-    (Grp_.fullyFaithfulForget₂Mon_ C).preimageIso (associator X.toMon_ Y.toMon_ Z.toMon_)
-  leftUnitor G := (Grp_.fullyFaithfulForget₂Mon_ C).preimageIso (leftUnitor G.toMon_)
-  rightUnitor G := (Grp_.fullyFaithfulForget₂Mon_ C).preimageIso (rightUnitor G.toMon_)
+    (Grp_.fullyFaithfulForget₂Mon C).preimageIso (associator X.toMon Y.toMon Z.toMon)
+  leftUnitor G := (Grp_.fullyFaithfulForget₂Mon C).preimageIso (leftUnitor G.toMon)
+  rightUnitor G := (Grp_.fullyFaithfulForget₂Mon C).preimageIso (rightUnitor G.toMon)
 
 @[simp] lemma tensorUnit_X : (𝟙_ (Grp_ C)).X = 𝟙_ C := rfl
 
@@ -397,21 +397,21 @@ instance instMonoidalCategory : MonoidalCategory (Grp_ C) where
 
 instance instCartesianMonoidalCategory : CartesianMonoidalCategory (Grp_ C) where
   isTerminalTensorUnit :=
-    .ofUniqueHom (fun G ↦ toUnit G.toMon_) fun G f ↦ by ext; exact toUnit_unique ..
-  fst G H := fst G.toMon_ H.toMon_
-  snd G H := snd G.toMon_ H.toMon_
+    .ofUniqueHom (fun G ↦ toUnit G.toMon) fun G f ↦ by ext; exact toUnit_unique ..
+  fst G H := fst G.toMon H.toMon
+  snd G H := snd G.toMon H.toMon
   tensorProductIsBinaryProduct G H :=
     BinaryFan.IsLimit.mk _ (fun {T} f g ↦ .mk (lift f.hom g.hom))
       (by aesop_cat) (by aesop_cat) (by aesop_cat)
-  fst_def G H := Mon_.Hom.ext <| fst_def _ _
-  snd_def G H := Mon_.Hom.ext <| snd_def _ _
+  fst_def G H := Mon.Hom.ext <| fst_def _ _
+  snd_def G H := Mon.Hom.ext <| snd_def _ _
 
 @[simp] lemma lift_hom (f : G ⟶ H₁) (g : G ⟶ H₂) : (lift f g).hom = lift f.hom g.hom := rfl
 @[simp] lemma fst_hom (G H : Grp_ C) : (fst G H).hom = fst G.X H.X := rfl
 @[simp] lemma snd_hom (G H : Grp_ C) : (snd G H).hom = snd G.X H.X := rfl
 
 @[simps]
-instance : (forget₂Mon_ C).Monoidal where
+instance : (forget₂Mon C).Monoidal where
   ε := 𝟙 _
   «μ» G H := 𝟙 _
   «η» := 𝟙 _
@@ -419,7 +419,7 @@ instance : (forget₂Mon_ C).Monoidal where
 
 attribute [local simp] MonObj.tensorObj.mul_def mul_eq_mul comp_mul in
 instance instBraidedCategory : BraidedCategory (Grp_ C) :=
-  .ofFaithful (forget₂Mon_ C) fun G H ↦ Grp_.mkIso (β_ G.X H.X)
+  .ofFaithful (forget₂Mon C) fun G H ↦ Grp_.mkIso (β_ G.X H.X)
 
 @[simp] lemma braiding_hom_hom (G H : Grp_ C) : (β_ G H).hom.hom = (β_ G.X H.X).hom := rfl
 @[simp] lemma braiding_inv_hom (G H : Grp_ C) : (β_ G H).inv.hom = (β_ G.X H.X).inv := rfl
