@@ -43,7 +43,6 @@ import Mathlib.Algebra.Algebra.TransferInstance
 import Mathlib.Algebra.Algebra.Unitization
 import Mathlib.Algebra.Algebra.ZMod
 import Mathlib.Algebra.AlgebraicCard
-import Mathlib.Algebra.ArithmeticGeometric
 import Mathlib.Algebra.Azumaya.Basic
 import Mathlib.Algebra.Azumaya.Defs
 import Mathlib.Algebra.Azumaya.Matrix
@@ -1996,6 +1995,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Sinc
+import Mathlib.Analysis.SpecificLimits.ArithmeticGeometric
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.SpecificLimits.FloorPow
 import Mathlib.Analysis.SpecificLimits.Normed
