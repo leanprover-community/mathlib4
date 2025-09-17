@@ -113,6 +113,10 @@ protected theorem pos_iff {x : R} : 0 < abv x ↔ x ≠ 0 :=
   (abv.nonneg x).lt_iff_ne'.trans abv.ne_zero_iff
 protected alias ⟨_, pos⟩ := AbsoluteValue.pos_iff
 
+@[simp]
+protected theorem nonpos_iff {x : R} : abv x ≤ 0 ↔ x = 0 := by
+  simp only [← abv.eq_zero, le_antisymm_iff, abv.nonneg, and_true]
+
 theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
   h <| by simp [← abv.map_mul]
 
@@ -350,6 +354,17 @@ omit [IsOrderedRing S] in
 lemma not_isNontrivial_apply {v : AbsoluteValue R S} (hv : ¬ v.IsNontrivial) {x : R} (hx : x ≠ 0) :
     v x = 1 :=
   v.not_isNontrivial_iff.mp hv _ hx
+
+omit [IsOrderedRing S] in
+theorem one_add_pow_le [IsDomain S] [Nontrivial R]
+    (a : R) (n : ℕ) (v : AbsoluteValue R S) :
+    v (1 + a ^ n) ≤ 1 + v a ^ n :=
+  le_trans (v.add_le _ _) (by rw [map_one, map_pow])
+
+theorem one_sub_pow_le {R S : Type*} [CommRing S] [PartialOrder S] [IsOrderedRing S] [Ring R]
+    [NoZeroDivisors S] [IsDomain S] [Nontrivial R] (a : R) (n : ℕ) (v : AbsoluteValue R S) :
+    1 - v a ^ n ≤ v (1 + a ^ n) :=
+  le_trans (by rw [map_one, map_pow]) (v.le_add 1 (a ^ n))
 
 end OrderedSemiring
 
