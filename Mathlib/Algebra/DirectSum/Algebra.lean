@@ -159,4 +159,3 @@ instance Algebra.directSumGAlgebra {R A : Type*} [AddMonoid ι] [CommSemiring R]
   commutes := fun _ ⟨_, _⟩ =>
     Sigma.ext ((zero_add _).trans (add_zero _).symm) (heq_of_eq <| Algebra.commutes _ _)
   smul_def := fun _ ⟨_, _⟩ => Sigma.ext (zero_add _).symm (heq_of_eq <| Algebra.smul_def _ _)
-
