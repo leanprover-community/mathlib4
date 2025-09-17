@@ -2289,6 +2289,8 @@ import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Groupoid.Basic
 import Mathlib.CategoryTheory.Groupoid.Discrete
 import Mathlib.CategoryTheory.Groupoid.FreeGroupoid
+import Mathlib.CategoryTheory.Groupoid.Grpd.Colimit
+import Mathlib.CategoryTheory.Groupoid.Grpd.Core
 import Mathlib.CategoryTheory.Groupoid.Subgroupoid
 import Mathlib.CategoryTheory.Groupoid.VertexGroup
 import Mathlib.CategoryTheory.GuitartExact.Basic
