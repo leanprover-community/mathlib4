@@ -36,11 +36,8 @@ submultiplicative: for a composition of maps, we have only `‖f.comp g‖ ≤ �
 
 namespace ContinuousAffineMap
 
-variable {𝕜 R V W W₂ P Q Q₂ : Type*}
-variable [NormedAddCommGroup V] [MetricSpace P] [NormedAddTorsor V P]
-variable [NormedAddCommGroup W] [MetricSpace Q] [NormedAddTorsor W Q]
-variable [NormedAddCommGroup W₂] [MetricSpace Q₂] [NormedAddTorsor W₂ Q₂]
-variable [NormedField R] [NormedSpace R V] [NormedSpace R W] [NormedSpace R W₂]
+variable {𝕜 V W W₂ : Type*}
+variable [NormedAddCommGroup V] [NormedAddCommGroup W] [NormedAddCommGroup W₂]
 variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [NormedSpace 𝕜 W₂]
 
 section NormedSpaceStructure
