@@ -25,7 +25,8 @@ Furthermore, we show that
 
 Despite the name, this file doesn't implement a `DivisibleBy` instance on `DivisibleHull`. This
 should be implemented on `LocalizedModule` in a more general setting (TODO: implement this).
-This file mainly focus on the specialization to `ℕ` and the linear order property introduced by it.
+This file mainly focuses on the specialization to `ℕ` and the linear order property introduced by
+it.
 
 ## Main declarations
 
