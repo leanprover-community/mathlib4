@@ -244,6 +244,83 @@ lemma delta_mul_delta {α β : Type*} [DecidableEq α] [DecidableEq β]
     · simp only [ha, ↓reduceIte, hb, mul_zero, and_false]
   · simp [ha, ↓reduceIte, mul_ite, mul_one, mul_zero, ite_self, false_and]
 
+/-! ### Extensionality lemmas for deterministic matrices -/
+
+/-- Tensor product of deterministic matrices is deterministic. -/
+theorem det_tensor_det {m₁ n₁ m₂ n₂ : Type u} [Fintype m₁] [Fintype n₁] [Fintype m₂] [Fintype n₂]
+    (f : StochasticMatrix m₁ n₁) (g : StochasticMatrix m₂ n₂)
+    [DecidableEq n₁] [DecidableEq n₂] [DecidableEq (n₁ × n₂)]
+    (hf : f.isDeterministic) (hg : g.isDeterministic) :
+    (tensor f g).isDeterministic := by
+  intro ⟨i₁, i₂⟩
+  -- The unique output is (f.apply hf i₁, g.apply hg i₂)
+  use (f.apply hf i₁, g.apply hg i₂)
+  constructor
+  · -- Show this output has value 1
+    simp only [tensor]
+    rw [apply_spec f hf i₁, apply_spec g hg i₂]
+    simp
+  · -- Show uniqueness
+    intro ⟨j₁, j₂⟩ hj
+    simp only [tensor] at hj
+    -- Since f and g are deterministic, the product equals 1 iff both equal 1
+    have h_prod : f.toMatrix i₁ j₁ * g.toMatrix i₂ j₂ = 1 := hj
+    -- In NNReal, a product equals 1 iff both factors equal 1
+    have h₁ : f.toMatrix i₁ j₁ = 1 := by
+      by_contra h_not_one
+      by_cases h_zero : f.toMatrix i₁ j₁ = 0
+      · rw [h_zero, zero_mul] at h_prod
+        simp at h_prod
+      · -- f.toMatrix i₁ j₁ is between 0 and 1 but not 0 or 1
+        -- Since f is deterministic, each entry is either 0 or 1
+        by_cases h_eq : j₁ = f.apply hf i₁
+        · subst h_eq
+          exact absurd (apply_spec f hf i₁) h_not_one
+        · have := apply_spec_ne f hf i₁ j₁ h_eq
+          exact absurd this h_zero
+    have h₂ : g.toMatrix i₂ j₂ = 1 := by
+      rw [h₁, one_mul] at h_prod
+      exact h_prod
+    -- By uniqueness of deterministic matrices
+    have hj₁ : j₁ = f.apply hf i₁ := (hf i₁).choose_spec.2 j₁ h₁
+    have hj₂ : j₂ = g.apply hg i₂ := (hg i₂).choose_spec.2 j₂ h₂
+    simp [hj₁, hj₂]
+
+/-- Apply function for tensor products of deterministic matrices. -/
+theorem apply_tensor {m₁ n₁ m₂ n₂ : Type u} [Fintype m₁] [Fintype n₁] [Fintype m₂] [Fintype n₂]
+    (f : StochasticMatrix m₁ n₁) (g : StochasticMatrix m₂ n₂)
+    [DecidableEq n₁] [DecidableEq n₂] [DecidableEq (n₁ × n₂)]
+    (hf : f.isDeterministic) (hg : g.isDeterministic) (i₁ : m₁) (i₂ : m₂) :
+    (tensor f g).apply (det_tensor_det f g hf hg) (i₁, i₂) =
+    (f.apply hf i₁, g.apply hg i₂) := by
+  -- By uniqueness in the proof of det_tensor_det
+  have h := (det_tensor_det f g hf hg (i₁, i₂)).choose_spec
+  have h_val : (tensor f g).toMatrix (i₁, i₂) (f.apply hf i₁, g.apply hg i₂) = 1 := by
+    simp only [tensor]
+    rw [apply_spec f hf i₁, apply_spec g hg i₂]
+    simp
+  exact h.2 _ h_val |>.symm
+
+/-- Two deterministic matrices are equal if their apply functions agree. -/
+theorem ext_deterministic {m n : Type u} [Fintype m] [Fintype n] [DecidableEq n]
+    {f g : StochasticMatrix m n} (hf : f.isDeterministic) (hg : g.isDeterministic) :
+    f = g ↔ ∀ i, f.apply hf i = g.apply hg i := by
+  constructor
+  · intro h i
+    subst h
+    rfl
+  · intro h
+    ext i j
+    by_cases hj : j = f.apply hf i
+    · rw [hj, apply_spec f hf i]
+      have : g.apply hg i = f.apply hf i := (h i).symm
+      rw [← this, apply_spec g hg i]
+    · rw [apply_spec_ne f hf i j hj]
+      have : j ≠ g.apply hg i := by
+        rw [← h i]
+        exact hj
+      rw [apply_spec_ne g hg i j this]
+
 end StochasticMatrix
 
 /-- FinStoch: finite types with stochastic matrices. -/

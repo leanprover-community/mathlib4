@@ -383,6 +383,94 @@ lemma rightUnitor_inv_matrix (X : FinStoch) (x : X.carrier)
   obtain ⟨x', ⟨⟩⟩ := xu
   simp only [rightUnitor]
 
+/-! ### Deterministic morphisms -/
+
+section Deterministic
+
+open StochasticMatrix
+
+/-- The associator is a deterministic morphism. -/
+lemma associator_isDeterministic (X Y Z : FinStoch) :
+    (α_ X Y Z).hom.isDeterministic := by
+  intro ⟨⟨x, y⟩, z⟩
+  use (x, (y, z))
+  constructor
+  · simp only [associator_matrix, and_self, if_true]
+  · intro ⟨x', ⟨y', z'⟩⟩ h
+    simp only [associator_matrix] at h
+    split_ifs at h with h_cond
+    · obtain ⟨hx, hy, hz⟩ := h_cond
+      simp [hx, hy, hz]
+    · simp at h
+
+/-- The inverse associator is a deterministic morphism. -/
+lemma associator_inv_isDeterministic (X Y Z : FinStoch) :
+    (α_ X Y Z).inv.isDeterministic := by
+  intro ⟨x, ⟨y, z⟩⟩
+  use ((x, y), z)
+  constructor
+  · simp only [associator_inv_matrix, and_self, if_true]
+  · intro ⟨⟨x', y'⟩, z'⟩ h
+    simp only [associator_inv_matrix] at h
+    split_ifs at h with h_cond
+    · obtain ⟨hx, hy, hz⟩ := h_cond
+      simp [hx, hy, hz]
+    · simp at h
+
+/-- The left unitor is a deterministic morphism. -/
+lemma leftUnitor_isDeterministic (X : FinStoch) :
+    (λ_ X).hom.isDeterministic := by
+  intro ⟨⟨⟩, x⟩
+  use x
+  constructor
+  · simp only [leftUnitor_matrix, if_true]
+  · intro x' h
+    simp only [leftUnitor_matrix] at h
+    split_ifs at h with h_cond
+    · exact h_cond.symm
+    · simp at h
+
+/-- The inverse left unitor is a deterministic morphism. -/
+lemma leftUnitor_inv_isDeterministic (X : FinStoch) :
+    (λ_ X).inv.isDeterministic := by
+  intro x
+  use (⟨⟩, x)
+  constructor
+  · simp only [leftUnitor_inv_matrix, if_true]
+  · intro ⟨⟨⟩, x'⟩ h
+    simp only [leftUnitor_inv_matrix] at h
+    split_ifs at h with h_cond
+    · simp [h_cond]
+    · simp at h
+
+/-- The right unitor is a deterministic morphism. -/
+lemma rightUnitor_isDeterministic (X : FinStoch) :
+    (ρ_ X).hom.isDeterministic := by
+  intro ⟨x, ⟨⟩⟩
+  use x
+  constructor
+  · simp only [rightUnitor_matrix, if_true]
+  · intro x' h
+    simp only [rightUnitor_matrix] at h
+    split_ifs at h with h_cond
+    · exact h_cond.symm
+    · simp at h
+
+/-- The inverse right unitor is a deterministic morphism. -/
+lemma rightUnitor_inv_isDeterministic (X : FinStoch) :
+    (ρ_ X).inv.isDeterministic := by
+  intro x
+  use (x, ⟨⟩)
+  constructor
+  · simp only [rightUnitor_inv_matrix, if_true]
+  · intro ⟨x', ⟨⟩⟩ h
+    simp only [rightUnitor_inv_matrix] at h
+    split_ifs at h with h_cond
+    · simp [h_cond]
+    · simp at h
+
+end Deterministic
+
 /-- FinStoch forms a monoidal category with all coherence conditions satisfied.
 This proves Mac Lane's pentagon and triangle identities hold for stochastic matrices. -/
 instance : MonoidalCategory FinStoch where
