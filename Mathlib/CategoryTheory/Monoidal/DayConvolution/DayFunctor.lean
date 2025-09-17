@@ -125,7 +125,7 @@ instance : LawfulDayConvolutionMonoidalCategoryStruct C V (C ⊛⥤ V) :=
 /-- The unit transformation exhibiting `(F ⊗ G).functor` as a left Kan extension of
 `F.functor ⊠ G.functor` along `tensor C`. -/
 def η (F G : C ⊛⥤ V) :
-    F.functor ⊠ G.functor ⟶ (tensor C) ⋙ (F ⊗ G).functor :=
+    F.functor ⊠ G.functor ⟶ tensor C ⋙ (F ⊗ G).functor :=
   LawfulDayConvolutionMonoidalCategoryStruct.convolutionExtensionUnit
     C V F G
 
