@@ -440,6 +440,15 @@ lemma heq_of_eq_cast (e : β = α) : a = cast e b → a ≍ b := by rintro rfl; 
 
 lemma eq_cast_iff_heq : a = cast e b ↔ a ≍ b := ⟨heq_of_eq_cast _, fun h ↦ by cases h; rfl⟩
 
+lemma heq_iff_exists_eq_cast :
+    a ≍ b ↔ ∃ (h : β = α), a = cast h b :=
+  ⟨fun h ↦ ⟨type_eq_of_heq h.symm, eq_cast_iff_heq.mpr h⟩,
+    by rintro ⟨rfl, h⟩; rw [h, cast_eq]⟩
+
+lemma heq_iff_exists_cast_eq :
+    a ≍ b ↔ ∃ (h : α = β), cast h a = b := by
+  simp only [heq_comm (a := a), heq_iff_exists_eq_cast, eq_comm]
+
 end Equality
 
 /-! ### Declarations about quantifiers -/
