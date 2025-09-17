@@ -141,6 +141,7 @@ end CondexpIndL1Fin
 
 section CondexpIndL1
 
+
 open scoped Classical in
 /-- Conditional expectation of the indicator of a set, as a function in L1. Its value for sets
 which are not both measurable and of finite measure is not used: we set it to 0. -/
