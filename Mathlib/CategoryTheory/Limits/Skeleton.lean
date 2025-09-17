@@ -34,7 +34,7 @@ instance hasLimitsOfShape_skeleton [HasLimitsOfShape J C] : HasLimitsOfShape J (
   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (fromSkeleton C)
 
 instance hasLimitsOfSize_skeleton [HasLimitsOfSize.{w, w'} C] :
-    HasLimitsOfSize.{w,w'} (Skeleton C) :=
+    HasLimitsOfSize.{w, w'} (Skeleton C) :=
   hasLimits_of_hasLimits_createsLimits (fromSkeleton C)
 
 example [HasLimits C] : HasLimits (Skeleton C) := by infer_instance
