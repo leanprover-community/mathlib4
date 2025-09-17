@@ -19,7 +19,7 @@ Turing machine for evaluating these functions. This amounts to a constructive pr
 
 ## Main definitions
 
-* `PartrecToTM2.tr`: A TM2 turing machine which can evaluate `code` programs
+* `PartrecToTM2.tr`: A TM2 Turing machine which can evaluate `code` programs
 
 -/
 
@@ -157,6 +157,9 @@ inductive Γ'
   | bit0
   | bit1
   deriving DecidableEq, Inhabited, Fintype
+
+-- A proof below relies on the value of that `deriving Inhabited` picks here.
+@[simp] theorem default_Γ' : (default : Γ') = .consₗ := rfl
 
 /-- The four stacks used by the program. `main` is used to store the input value in `trNormal`
 mode and the output value in `Λ'.ret` mode, while `stack` is used to keep all the data for the

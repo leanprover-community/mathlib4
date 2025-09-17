@@ -294,7 +294,7 @@ theorem lastStep_nonempty :
   simp only [iUnionUpTo, not_exists, exists_prop, mem_iUnion, not_and,
     Subtype.exists] at A
   specialize A x H
-  simp? [hxy] at A says simp only [hxy, mem_ball, dist_self, not_lt] at A
+  replace A : p.r (p.index y) ≤ 0 := by simpa [hxy] using A
   exact (lt_irrefl _ ((p.rpos (p.index y)).trans_le A)).elim
 
 /-- Every point is covered by chosen balls, before `p.lastStep`. -/
