@@ -88,14 +88,16 @@ open Finset in
 lemma hull_finsetInf (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
     hull T (inf F id) = T ↓∩ upperClosure F.toSet := by
   rw [coe_upperClosure]
-  induction' F using Finset.induction_on with a F' _ I4
-  · simp only [coe_empty, mem_empty_iff_false, iUnion_of_empty, iUnion_empty, Set.preimage_empty,
+  induction F using Finset.induction_on with
+  | empty =>
+    simp only [coe_empty, mem_empty_iff_false, iUnion_of_empty, iUnion_empty, Set.preimage_empty,
       inf_empty]
     by_contra hf
     rw [← Set.not_nonempty_iff_eq_empty, not_not] at hf
     obtain ⟨x, hx⟩ := hf
     exact (hT x (Subtype.coe_prop x)).1 (isMax_iff_eq_top.mpr (eq_top_iff.mpr hx))
-  · simp only [coe_insert, mem_insert_iff, mem_coe, iUnion_iUnion_eq_or_left, Set.preimage_union,
+  | insert a F' _ I4 =>
+    simp only [coe_insert, mem_insert_iff, mem_coe, iUnion_iUnion_eq_or_left, Set.preimage_union,
       preimage_iUnion, inf_insert, id_eq, hull_inf hT, I4]
 
 /- Every relative-open set of the form `T ↓∩ (↑(upperClosure F))ᶜ` for `F` finite is a relative-open
@@ -127,8 +129,8 @@ lemma isTopologicalBasis_relativeLower (hT : ∀ p ∈ T, InfPrime p) :
   · obtain ⟨F, hF⟩ := ha
     lift F to Finset α using hF.1
     use Finset.inf F id
-    rw [hull_finsetInf hT, ← hF.2]
-    rfl
+    ext
+    simp [hull_finsetInf hT, ← hF.2]
 
 end PrimitiveSpectrum
 
@@ -164,13 +166,13 @@ lemma isClosed_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀
 /-- For a subset `S` of `T`, `kernel S` is the infimum of `S` (considered as a set of `α`) -/
 abbrev kernel (S : Set T) := sInf (Subtype.val '' S)
 
-/- The pair of maps `kernel` and `hull` form an antitone Galois connection betwen the
+/- The pair of maps `kernel` and `hull` form an antitone Galois connection between the
 subsets of `T` and `α`. -/
 open OrderDual in
 theorem gc : GaloisConnection (α := Set T) (β := αᵒᵈ)
     (fun S => toDual (kernel S)) (fun a => hull T (ofDual a)) := fun S a => by
   simp only [toDual_sInf, sSup_le_iff, mem_preimage, mem_image, Subtype.exists, exists_and_right,
-      exists_eq_right, ← ofDual_le_ofDual, forall_exists_index, OrderDual.forall, ofDual_toDual]
+    exists_eq_right, ← ofDual_le_ofDual, forall_exists_index, OrderDual.forall, ofDual_toDual]
   exact ⟨fun h b hbS => h _ (Subtype.coe_prop b) hbS, fun h b _ hbS => h hbS⟩
 
 lemma gc_closureOperator (S : Set T) : gc.closureOperator S = hull T (kernel S) := by
@@ -196,7 +198,7 @@ def gi (hG : OrderGenerates T) : GaloisInsertion (α := Set T) (β := αᵒᵈ)
     obtain ⟨S, hS⟩ := hG a
     exact le_of_le_of_eq (sInf_le_sInf (image_val_mono (fun c hcS => mem_preimage.mpr (mem_Ici.mpr
       (by rw [hS]; exact CompleteSemilatticeInf.sInf_le _ _ (mem_image_of_mem Subtype.val hcS))))))
-      (hS.symm))
+      hS.symm)
 
 lemma kernel_hull (hG : OrderGenerates T) (a : α) : kernel (hull T a) = a := by
   conv_rhs => rw [← OrderDual.ofDual_toDual a, ← (gi hG).l_u_eq a]

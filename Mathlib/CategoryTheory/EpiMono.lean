@@ -32,6 +32,26 @@ instance op_mono_of_epi {A B : C} (f : A ⟶ B) [Epi f] : Mono f.op :=
 instance op_epi_of_mono {A B : C} (f : A ⟶ B) [Mono f] : Epi f.op :=
   ⟨fun _ _ eq => Quiver.Hom.unop_inj ((cancel_mono f).1 (Quiver.Hom.op_inj eq))⟩
 
+@[simp]
+lemma op_mono_iff {X Y : C} (f : X ⟶ Y) :
+    Mono f.op ↔ Epi f :=
+  ⟨fun _ ↦ unop_epi_of_mono f.op, fun _ ↦ inferInstance⟩
+
+@[simp]
+lemma op_epi_iff {X Y : C} (f : X ⟶ Y) :
+    Epi f.op ↔ Mono f :=
+  ⟨fun _ ↦ unop_mono_of_epi f.op, fun _ ↦ inferInstance⟩
+
+@[simp]
+lemma unop_mono_iff {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    Mono f.unop ↔ Epi f :=
+  ⟨fun _ ↦ op_epi_of_mono f.unop, fun _ ↦ inferInstance⟩
+
+@[simp]
+lemma unop_epi_iff {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    Epi f.unop ↔ Mono f :=
+  ⟨fun _ ↦ op_mono_of_epi f.unop, fun _ ↦ inferInstance⟩
+
 /-- A split monomorphism is a morphism `f : X ⟶ Y` with a given retraction `retraction f : Y ⟶ X`
 such that `f ≫ retraction f = 𝟙 X`.
 
@@ -42,7 +62,7 @@ structure SplitMono {X Y : C} (f : X ⟶ Y) where
   /-- The map splitting `f` -/
   retraction : Y ⟶ X
   /-- `f` composed with `retraction` is the identity -/
-  id : f ≫ retraction = 𝟙 X := by aesop_cat
+  id : f ≫ retraction = 𝟙 X := by cat_disch
 
 attribute [reassoc (attr := simp)] SplitMono.id
 
@@ -72,7 +92,7 @@ structure SplitEpi {X Y : C} (f : X ⟶ Y) where
   /-- The map splitting `f` -/
   section_ : Y ⟶ X
   /-- `section_` composed with `f` is the identity -/
-  id : section_ ≫ f = 𝟙 Y := by aesop_cat
+  id : section_ ≫ f = 𝟙 Y := by cat_disch
 
 attribute [reassoc (attr := simp)] SplitEpi.id
 
@@ -239,6 +259,36 @@ instance {X Y : C} (f : X ⟶ Y) [hf : IsSplitMono f] (F : C ⥤ D) : IsSplitMon
 
 instance {X Y : C} (f : X ⟶ Y) [hf : IsSplitEpi f] (F : C ⥤ D) : IsSplitEpi (F.map f) :=
   IsSplitEpi.mk' (hf.exists_splitEpi.some.map F)
+
+end
+
+section
+
+/-- When `f` is an epimorphism, `f ≫ g` is epic iff `g` is. -/
+@[simp]
+lemma epi_comp_iff_of_epi {X Y Z : C} (f : X ⟶ Y) [Epi f] (g : Y ⟶ Z) :
+    Epi (f ≫ g) ↔ Epi g :=
+  ⟨fun _ ↦ epi_of_epi f _, fun _ ↦ inferInstance⟩
+
+/-- When `g` is an isomorphism, `f ≫ g` is epic iff `f` is. -/
+@[simp]
+lemma epi_comp_iff_of_isIso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
+    Epi (f ≫ g) ↔ Epi f := by
+  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
+  simpa using (inferInstance : Epi ((f ≫ g) ≫ inv g ))
+
+/-- When `f` is an isomorphism, `f ≫ g` is monic iff `g` is. -/
+@[simp]
+lemma mono_comp_iff_of_isIso {X Y Z : C} (f : X ⟶ Y) [IsIso f] (g : Y ⟶ Z) :
+    Mono (f ≫ g) ↔ Mono g := by
+  refine ⟨fun h ↦ ?_, fun h ↦ inferInstance⟩
+  simpa using (inferInstance : Mono (inv f ≫ f ≫ g))
+
+/-- When `g` is a monomorphism, `f ≫ g` is monic iff `f` is. -/
+@[simp]
+lemma mono_comp_iff_of_mono {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Mono g] :
+    Mono (f ≫ g) ↔ Mono f :=
+  ⟨fun _ ↦ mono_of_mono _ g, fun _ ↦ inferInstance⟩
 
 end
 

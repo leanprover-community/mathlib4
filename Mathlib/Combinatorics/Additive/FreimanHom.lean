@@ -145,7 +145,7 @@ lemma IsMulFreimanIso.mul_eq_mul (hf : IsMulFreimanIso 2 A B f) {a b c d : α}
   refine hf.map_prod_eq_map_prod ?_ ?_ (card_pair _ _) (card_pair _ _) <;> simp [ha, hb, hc, hd]
 
 /-- Characterisation of `2`-Freiman homomorphisms. -/
-@[to_additive "Characterisation of `2`-Freiman homomorphisms."]
+@[to_additive /-- Characterisation of `2`-Freiman homomorphisms. -/]
 lemma isMulFreimanHom_two :
     IsMulFreimanHom 2 A B f ↔ MapsTo f A B ∧ ∀ a ∈ A, ∀ b ∈ A, ∀ c ∈ A, ∀ d ∈ A,
       a * b = c * d → f a * f b = f c * f d where
@@ -153,7 +153,7 @@ lemma isMulFreimanHom_two :
   mpr hf := ⟨hf.1, by aesop (add simp card_eq_two)⟩
 
 /-- Characterisation of `2`-Freiman homs. -/
-@[to_additive "Characterisation of `2`-Freiman isomorphisms."]
+@[to_additive /-- Characterisation of `2`-Freiman isomorphisms. -/]
 lemma isMulFreimanIso_two :
     IsMulFreimanIso 2 A B f ↔ BijOn f A B ∧ ∀ a ∈ A, ∀ b ∈ A, ∀ c ∈ A, ∀ d ∈ A,
       f a * f b = f c * f d ↔ a * b = c * d where
@@ -209,11 +209,11 @@ lemma isMulFreimanHom_const {b : β} (hb : b ∈ B) : IsMulFreimanHom n A B fun 
 
 @[to_additive (attr := simp)]
 lemma isMulFreimanHom_zero_iff : IsMulFreimanHom 0 A B f ↔ MapsTo f A B :=
-  ⟨fun h => h.mapsTo, fun h => ⟨h, by aesop⟩⟩
+  ⟨fun h => h.mapsTo, fun h => ⟨h, by simp_all⟩⟩
 
 @[to_additive (attr := simp)]
 lemma isMulFreimanIso_zero_iff : IsMulFreimanIso 0 A B f ↔ BijOn f A B :=
-  ⟨fun h => h.bijOn, fun h => ⟨h, by aesop⟩⟩
+  ⟨fun h => h.bijOn, fun h => ⟨h, by simp_all⟩⟩
 
 @[to_additive (attr := simp) isAddFreimanHom_one_iff]
 lemma isMulFreimanHom_one_iff : IsMulFreimanHom 1 A B f ↔ MapsTo f A B :=

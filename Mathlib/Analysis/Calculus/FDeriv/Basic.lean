@@ -6,7 +6,7 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 import Mathlib.Analysis.Asymptotics.Lemmas
 import Mathlib.Analysis.Calculus.FDeriv.Defs
 import Mathlib.Analysis.Calculus.TangentCone
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Asymptotics
+import Mathlib.Analysis.Normed.Operator.Asymptotics
 
 /-!
 # The Fréchet derivative: basic properties
@@ -86,7 +86,7 @@ For a discussion of the definitions and their rationale, see the file docstring 
 
 To make sure that the simplifier can prove automatically that functions are differentiable, we tag
 many lemmas with the `simp` attribute, for instance those saying that the sum of differentiable
-functions is differentiable, as well as their product, their cartesian product, and so on. A notable
+functions is differentiable, as well as their product, their Cartesian product, and so on. A notable
 exception is the chain rule: we do not mark as a simp lemma the fact that, if `f` and `g` are
 differentiable, then their composition also is: `simp` would always be able to match this lemma,
 by taking `f` or `g` to be the identity. Instead, for every reasonable function (say, `exp`),
@@ -218,9 +218,6 @@ theorem HasFDerivWithinAt.mono_of_mem_nhdsWithin
     (h : HasFDerivWithinAt f f' t x) (hst : t ∈ 𝓝[s] x) :
     HasFDerivWithinAt f f' s x :=
   h.mono <| nhdsWithin_le_iff.mpr hst
-
-@[deprecated (since := "2024-10-31")]
-alias HasFDerivWithinAt.mono_of_mem := HasFDerivWithinAt.mono_of_mem_nhdsWithin
 
 nonrec theorem HasFDerivWithinAt.mono (h : HasFDerivWithinAt f f' t x) (hst : s ⊆ t) :
     HasFDerivWithinAt f f' s x :=
@@ -473,9 +470,6 @@ theorem DifferentiableWithinAt.mono_of_mem_nhdsWithin
     DifferentiableWithinAt 𝕜 f t x :=
   (h.hasFDerivWithinAt.mono_of_mem_nhdsWithin hst).differentiableWithinAt
 
-@[deprecated (since := "2024-10-31")]
-alias DifferentiableWithinAt.mono_of_mem := DifferentiableWithinAt.mono_of_mem_nhdsWithin
-
 theorem DifferentiableWithinAt.congr_nhds (h : DifferentiableWithinAt 𝕜 f s x) {t : Set E}
     (hst : 𝓝[s] x = 𝓝[t] x) : DifferentiableWithinAt 𝕜 f t x :=
   h.mono_of_mem_nhdsWithin <| hst ▸ self_mem_nhdsWithin
@@ -543,9 +537,6 @@ theorem differentiableOn_of_locally_differentiableOn
 theorem fderivWithin_of_mem_nhdsWithin (st : t ∈ 𝓝[s] x) (ht : UniqueDiffWithinAt 𝕜 s x)
     (h : DifferentiableWithinAt 𝕜 f t x) : fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x :=
   ((DifferentiableWithinAt.hasFDerivWithinAt h).mono_of_mem_nhdsWithin st).fderivWithin ht
-
-@[deprecated (since := "2024-10-31")]
-alias fderivWithin_of_mem := fderivWithin_of_mem_nhdsWithin
 
 theorem fderivWithin_subset (st : s ⊆ t) (ht : UniqueDiffWithinAt 𝕜 s x)
     (h : DifferentiableWithinAt 𝕜 f t x) : fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x :=

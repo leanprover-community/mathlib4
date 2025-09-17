@@ -408,14 +408,14 @@ variable (E) in
 /-- Class used to create an inner product structure space on the fibers of a fiber bundle, without
 creating diamonds. Use as follows:
 * `instance : RiemannianBundle E := ⟨g⟩` where `g : RiemannianMetric E` registers the inner product
-space on the fibers;
+  space on the fibers;
 * `instance : RiemannianBundle E := ⟨g.toRiemannianMetric⟩` where
-`g : ContinuousRiemannianMetric F E` registers the inner product space on the fibers, and the fact
-that it varies continuously (i.e., a `[IsContinuousRiemannianBundle]` instance).
+  `g : ContinuousRiemannianMetric F E` registers the inner product space on the fibers, and the fact
+  that it varies continuously (i.e., a `[IsContinuousRiemannianBundle]` instance).
 * `instance : RiemannianBundle E := ⟨g.toRiemannianMetric⟩` where
-`g : ContMDiffRiemannianMetric IB n F E` registers the inner product space on the fibers, and the
-fact that it varies smoothly (and continuously), i.e., `[IsContMDiffRiemannianBundle]` and
-`[IsContinuousRiemannianBundle]` instances.
+  `g : ContMDiffRiemannianMetric IB n F E` registers the inner product space on the fibers, and the
+  fact that it varies smoothly (and continuously), i.e., `[IsContMDiffRiemannianBundle]` and
+  `[IsContinuousRiemannianBundle]` instances.
 -/
 class RiemannianBundle where
   /-- The family of inner products on the fibers -/

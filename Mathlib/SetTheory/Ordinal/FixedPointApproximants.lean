@@ -74,13 +74,12 @@ termination_by a
 decreasing_by exact h
 
 theorem lfpApprox_monotone : Monotone (lfpApprox f x) := by
-  intros a b h
+  intro a b h
   rw [lfpApprox, lfpApprox]
-  refine sSup_le_sSup ?h
-  apply sup_le_sup_right
-  simp only [exists_prop, Set.le_eq_subset, Set.setOf_subset_setOf, forall_exists_index, and_imp,
+  gcongr sSup (?_ ∪ {x})
+  simp only [exists_prop, Set.setOf_subset_setOf, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂]
-  intros a' h'
+  intro a' h'
   use a'
   exact ⟨lt_of_lt_of_le h' h, rfl⟩
 
@@ -101,7 +100,7 @@ theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
     · apply le_trans h
       apply Monotone.imp f.monotone
       exact le_lfpApprox f x
-    · intros a' h
+    · intro a' h
       apply f.2; apply lfpApprox_monotone; exact h
   · conv => right; rw [lfpApprox]
     apply le_sSup

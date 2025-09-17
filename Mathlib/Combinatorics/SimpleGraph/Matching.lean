@@ -127,12 +127,12 @@ lemma IsMatching.iSup {ι : Sort _} {f : ι → Subgraph G} (hM : (i : ι) → (
     (hd : Pairwise fun i j ↦ Disjoint (f i).support (f j).support) :
     (⨆ i, f i).IsMatching := by
   intro v hv
-  obtain ⟨i , hi⟩ := Set.mem_iUnion.mp (verts_iSup ▸ hv)
-  obtain ⟨w , hw⟩ := hM i hi
+  obtain ⟨i, hi⟩ := Set.mem_iUnion.mp (verts_iSup ▸ hv)
+  obtain ⟨w, hw⟩ := hM i hi
   use w
   refine ⟨iSup_adj.mpr ⟨i, hw.1⟩, ?_⟩
   intro y hy
-  obtain ⟨i' , hi'⟩ := iSup_adj.mp hy
+  obtain ⟨i', hi'⟩ := iSup_adj.mp hy
   by_cases heq : i = i'
   · exact hw.2 y (heq.symm ▸ hi')
   · have := hd heq
@@ -198,8 +198,8 @@ protected lemma IsMatching.map {G' : SimpleGraph W} {M : Subgraph G} (f : G →g
 @[simp]
 lemma Iso.isMatching_map {G' : SimpleGraph W} {M : Subgraph G} (f : G ≃g G') :
     (M.map f.toHom).IsMatching ↔ M.IsMatching where
-   mp h := by simpa [← map_comp] using h.map f.symm.toHom f.symm.injective
-   mpr := .map f.toHom f.injective
+  mp h := by simpa [← map_comp] using h.map f.symm.toHom f.symm.injective
+  mpr := .map f.toHom f.injective
 
 /--
 The subgraph `M` of `G` is a perfect matching on `G` if it's a matching and every vertex `G` is
@@ -221,10 +221,6 @@ theorem IsMatching.even_card [Fintype M.verts] (h : M.IsMatching) : Even M.verts
   rw [isMatching_iff_forall_degree] at h
   use M.coe.edgeFinset.card
   rw [← two_mul, ← M.coe.sum_degrees_eq_twice_card_edges]
-  -- Porting note: `SimpleGraph.Subgraph.coe_degree` does not trigger because it uses
-  -- instance arguments instead of implicit arguments for the first `Fintype` argument.
-  -- Using a `convert_to` to swap out the `Fintype` instance to the "right" one.
-  convert_to _ = Finset.sum Finset.univ fun v => SimpleGraph.degree (Subgraph.coe M) v using 3
   simp [h, Finset.card_univ]
 
 theorem isPerfectMatching_iff : M.IsPerfectMatching ↔ ∀ v, ∃! w, M.Adj v w := by
@@ -298,7 +294,7 @@ lemma odd_matches_node_outside [Finite V] {u : Set V}
   have hMmatch : (M.induce c.val.supp).IsMatching := by
     intro v hv
     obtain ⟨w, hw⟩ := hM.1 (hM.2 v)
-    obtain ⟨⟨v', hv'⟩, ⟨hv , rfl⟩⟩ := hv
+    obtain ⟨⟨v', hv'⟩, ⟨hv, rfl⟩⟩ := hv
     use w
     have hwnu : w ∉ u := fun hw' ↦ h w hw' ⟨v', hv'⟩ (hw.1) hv
     refine ⟨⟨⟨⟨v', hv'⟩, hv, rfl⟩, ?_, hw.1⟩, fun _ hy ↦ hw.2 _ hy.2.2⟩
@@ -375,7 +371,7 @@ lemma IsCycles.toSimpleGraph (c : G.ConnectedComponent) (h : G.IsCycles) :
   intro v ⟨w, hw⟩
   rw [mem_neighborSet, c.adj_spanningCoe_toSimpleGraph] at hw
   rw [← h ⟨w, hw.2⟩]
-  congr
+  congr 1
   ext w'
   simp only [mem_neighborSet, c.adj_spanningCoe_toSimpleGraph, hw, true_and]
 
@@ -408,7 +404,7 @@ lemma Walk.IsCycle.adj_toSubgraph_iff_of_isCycles [LocallyFinite G] {u} {p : G.W
         (Set.Nonempty.mono (p.toSubgraph.neighborSet_subset v) <|
           Set.nonempty_of_ncard_ne_zero <| by simp [
           hp.ncard_neighborSet_toSubgraph_eq_two (by aesop)]),
-      hp.ncard_neighborSet_toSubgraph_eq_two (by aesop)]
+      hp.ncard_neighborSet_toSubgraph_eq_two (by simp_all)]
 
 open scoped symmDiff
 
@@ -469,7 +465,7 @@ private lemma IsCycles.reachable_sdiff_toSubgraph_spanningCoe_aux [Fintype V] {v
   -- Construct the walk needed recursively by extending p
   have hle : (G \ (p.cons hw'2.symm).toSubgraph.spanningCoe) ≤ (G \ p.toSubgraph.spanningCoe) := by
     apply sdiff_le_sdiff (by rfl) ?hcd
-    aesop
+    simp
   have hp'p : (p.cons hw'2.symm).IsPath := by
     rw [Walk.cons_isPath_iff]
     refine ⟨hp, fun hw' ↦ ?_⟩
@@ -529,7 +525,7 @@ lemma IsCycles.exists_cycle_toSubgraph_verts_eq_connectedComponentSupp [Finite V
     simp_all
   use p.rotate hvp
   rw [← this]
-  exact ⟨hp.1.rotate _, by simp_all⟩
+  exact ⟨hp.1.rotate _, by simp⟩
 
 /--
 A graph `G` is alternating with respect to some other graph `G'`, if exactly every other edge in
@@ -566,7 +562,7 @@ lemma IsAlternating.sup_edge {u x : V} (halt : G.IsAlternating G') (hnadj : ¬G'
     rcases h2.1 with ⟨h2l1, h2l2⟩ | ⟨h2r1,h2r2⟩
     · subst h2l1 h2l2
       exact (hx' _ hww' hl.symm).symm
-    · aesop
+    · simp_all
   · rw [G'.adj_congr_of_sym2 (by aesop : s(v, w) = s(u, x))]
     simp only [hnadj, false_iff, not_not]
     rcases hr.1 with ⟨hrl1, hrl2⟩ | ⟨hrr1, hrr2⟩

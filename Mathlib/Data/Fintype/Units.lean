@@ -7,6 +7,7 @@ import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sum
 import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.Algebra.GroupWithZero.Units.Equiv
 
 /-!
 # fintype instances relating to units

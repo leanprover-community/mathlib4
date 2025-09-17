@@ -103,8 +103,6 @@ theorem exists_isInducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, IsInducing f :
     rw [hF, hF, hfε UV hy, hf0 UV hxU, Pi.zero_apply, dist_zero_right]
     exact le_abs_self _
 
-@[deprecated (since := "2024-10-28")] alias exists_inducing_l_infty := exists_isInducing_l_infty
-
 /-- *Urysohn's metrization theorem* (Tychonoff's version):
 a regular topological space with second countable topology `X` is metrizable,
 i.e., there exists a pseudometric space structure that generates the same topology. -/
@@ -127,9 +125,5 @@ same topology. -/
 instance (priority := 90) metrizableSpace_of_t3_secondCountable : MetrizableSpace X :=
   let ⟨_, hf⟩ := exists_embedding_l_infty X
   hf.metrizableSpace
-
--- The `alias` command creates a definition, triggering the defLemma linter.
-@[nolint defLemma, deprecated (since := "2024-11-13")] alias
-metrizableSpace_of_t3_second_countable := metrizableSpace_of_t3_secondCountable
 
 end TopologicalSpace

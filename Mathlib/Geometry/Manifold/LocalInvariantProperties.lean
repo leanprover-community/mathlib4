@@ -266,7 +266,7 @@ structure groupoid (by composition in the source space and in the target space),
 expressing it in charted spaces does not depend on the element of the maximal atlas one uses
 both in the source and in the target manifolds, provided they are defined around `x` and `g x`
 respectively, and provided `g` is continuous within `s` at `x` (otherwise, the local behavior
-of `g` at `x` can not be captured with a chart in the target). -/
+of `g` at `x` cannot be captured with a chart in the target). -/
 theorem liftPropWithinAt_indep_chart_aux (he : e ∈ G.maximalAtlas M) (xe : x ∈ e.source)
     (he' : e' ∈ G.maximalAtlas M) (xe' : x ∈ e'.source) (hf : f ∈ G'.maximalAtlas M')
     (xf : g x ∈ f.source) (hf' : f' ∈ G'.maximalAtlas M') (xf' : g x ∈ f'.source)
@@ -425,9 +425,6 @@ theorem liftPropWithinAt_mono_of_mem_nhdsWithin
   refine ⟨h.1.mono_of_mem_nhdsWithin hst, mono_of_mem_nhdsWithin ?_ h.2⟩
   simp_rw [← mem_map, (chartAt H x).symm.map_nhdsWithin_preimage_eq (mem_chart_target H x),
     (chartAt H x).left_inv (mem_chart_source H x), hst]
-
-@[deprecated (since := "2024-10-31")]
-alias liftPropWithinAt_mono_of_mem := liftPropWithinAt_mono_of_mem_nhdsWithin
 
 theorem liftPropWithinAt_mono (mono : ∀ ⦃s x t⦄ ⦃f : H → H'⦄, t ⊆ s → P f s x → P f t x)
     (h : LiftPropWithinAt P g s x) (hts : t ⊆ s) : LiftPropWithinAt P g t x := by
@@ -651,7 +648,7 @@ variable {H₁ : Type*} [TopologicalSpace H₁] {H₂ : Type*} [TopologicalSpace
 theorem HasGroupoid.comp
     (H : ∀ e ∈ G₂, LiftPropOn (IsLocalStructomorphWithinAt G₁) (e : H₂ → H₂) e.source) :
     @HasGroupoid H₁ _ H₃ _ (ChartedSpace.comp H₁ H₂ H₃) G₁ :=
-  let _ := ChartedSpace.comp H₁ H₂ H₃ -- Porting note: need this to synthesize `ChartedSpace H₁ H₃`
+  let _ := ChartedSpace.comp H₁ H₂ H₃
   { compatible := by
       rintro _ _ ⟨e, he, f, hf, rfl⟩ ⟨e', he', f', hf', rfl⟩
       apply G₁.locality

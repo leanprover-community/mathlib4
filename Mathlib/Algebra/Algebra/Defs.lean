@@ -257,6 +257,12 @@ theorem algebra_ext {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] (P Q :
   rcases Q with @⟨⟨Q⟩⟩
   congr
 
+/-- An auxiliary lemma used to prove theorems of the form
+`RingHom.X (algebraMap R S) ↔ Algebra.X R S`. -/
+lemma _root_.toAlgebra_algebraMap [Algebra R S] :
+    (algebraMap R S).toAlgebra = ‹_› :=
+  algebra_ext _ _ fun _ ↦ rfl
+
 -- see Note [lower instance priority]
 instance (priority := 200) toModule {R A} {_ : CommSemiring R} {_ : Semiring A} [Algebra R A] :
     Module R A where

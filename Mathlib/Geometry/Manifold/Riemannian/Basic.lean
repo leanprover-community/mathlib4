@@ -43,8 +43,8 @@ tangent bundle is well behaved (not necessary when `n` is concrete like 2 or 3 a
 automatic instances for these cases). One can require whatever regularity one wants in the
 `IsContMDiffRiemannianBundle` instance above, for example
 `[IsContMDiffRiemannianBundle I n E (fun (x : M) ↦ TangentSpace I x)]`, and one should also add
-`[IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace I x)]` (as above, Lean can not infer
-the latter from the former as it can not guess `n`).
+`[IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace I x)]` (as above, Lean cannot infer
+the latter from the former as it cannot guess `n`).
 -/
 
 open Bundle Bornology Set MeasureTheory Manifold Filter
@@ -70,7 +70,7 @@ the space is already endowed with an extended distance. We say that this is a Ri
 if the distance is given by the infimum of the lengths of `C^1` paths, measured using the norm in
 the tangent spaces.
 
-This is a `Prop` valued typeclass, on top of existing data.
+This is a `Prop`-valued typeclass, on top of existing data.
 
 If you need to *construct* a distance using a Riemannian structure,
 see `EmetricSpace.ofRiemannianMetric`. -/
@@ -93,7 +93,7 @@ two points is the infimum of the length of paths between these points.
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
 variable (F) in
-/-- The standard riemannian metric on a vector space with an inner product, given by this inner
+/-- The standard Riemannian metric on a vector space with an inner product, given by this inner
 product on each tangent space. -/
 noncomputable def riemannianMetricVectorSpace :
     ContMDiffRiemannianMetric 𝓘(ℝ, F) ω F (fun (x : F) ↦ TangentSpace 𝓘(ℝ, F) x) where
@@ -116,17 +116,8 @@ noncomputable def riemannianMetricVectorSpace :
     rw [contMDiffAt_section]
     convert contMDiffAt_const (c := innerSL ℝ)
     ext v w
-    simp? [hom_trivializationAt_apply, ContinuousLinearMap.inCoordinates,
-        Trivialization.linearMapAt_apply] says
-      simp only [hom_trivializationAt_apply, ContinuousLinearMap.inCoordinates,
-        TangentBundle.symmL_model_space, ContinuousLinearMap.coe_comp',
-        Trivialization.continuousLinearMapAt_apply, Function.comp_apply,
-        Trivialization.linearMapAt_apply, hom_trivializationAt_baseSet,
-        TangentBundle.trivializationAt_baseSet, PartialHomeomorph.refl_partialEquiv,
-        PartialEquiv.refl_source, PartialHomeomorph.singletonChartedSpace_chartAt_eq,
-        Trivial.fiberBundle_trivializationAt', Trivial.trivialization_baseSet, inter_self, mem_univ,
-        ↓reduceIte, Trivial.trivialization_apply]
-    rfl
+    simp [hom_trivializationAt_apply, ContinuousLinearMap.inCoordinates,
+      Trivialization.linearMapAt_apply, TangentSpace]
 
 noncomputable instance : RiemannianBundle (fun (x : F) ↦ TangentSpace 𝓘(ℝ, F) x) :=
   ⟨(riemannianMetricVectorSpace F).toRiemannianMetric⟩
@@ -395,7 +386,7 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
   We claim that points at Riemannian distance at most `r / C` of `x` are inside `u` (and therefore
   inside `s`). To prove this, consider a path of length at most `r / C` starting from `x`. While
   it stays inside `u`, then by the derivative control its image in the extended chart has length
-  at most `r`, so it can not exit the ball of radius `r`, which means that in the manifold it is
+  at most `r`, so it cannot exit the ball of radius `r`, which means that in the manifold it is
   inside `v` (which is strictly inside `u`). This means that the path will stay inside `u` for
   a little bit longer, by openness of `v`. Iterating this argument, it follows that the path will
   remain inside `u` for the whole time interval `[0, 1]`. In particular, its right endpoint is
@@ -405,7 +396,7 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
   `IsClosed.Icc_subset_of_forall_mem_nhdsGT_of_mem` which gives an induction-like principle over
   real intervals.
   -/
-    -- first introduce a neighborhood where the derivative of the extended chart is bounded by `C`
+  -- first introduce a neighborhood where the derivative of the extended chart is bounded by `C`
   rcases eventually_enorm_mfderiv_extChartAt_lt I x with ⟨C, C_pos, hC⟩
   -- let `u` be a closed neighborhood, inside `s`, with the derivative control
   obtain ⟨u, u_mem, u_closed, us, hu, uc⟩ : ∃ u ∈ 𝓝 x, IsClosed u ∧ u ⊆ s
@@ -443,12 +434,12 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
   rintro t₁ ⟨ht₁0, ht₁1⟩ t₁_mem
   suffices γ t₁ ∈ v from
     γ_smooth.continuous.continuousWithinAt <| mem_of_superset (v_open.mem_nhds this) hv
-  let γ' := (extChartAt I x) ∘ γ
+  let γ' := extChartAt I x ∘ γ
   have hC : ContMDiffOn 𝓘(ℝ) 𝓘(ℝ, E) 1 γ' (Icc 0 t₁) :=
     ContMDiffOn.comp (I' := I) (t := (chartAt H x).source) contMDiffOn_extChartAt
       γ_smooth.contMDiffOn (fun t' ht' ↦ uc' <| t₁_mem ht')
   have : ‖γ' t₁ - γ' 0‖ₑ < r := by
-    rcases ht₁0.eq_or_lt with rfl|h't'
+    rcases ht₁0.eq_or_lt with rfl | h't'
     · simp [r_pos]
     calc
       ‖γ' t₁ - γ' 0‖ₑ
@@ -482,7 +473,6 @@ lemma setOf_riemmanianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
           pathELength_eq_lintegral_mfderivWithin_Icc]
     _ ≤ C * pathELength I γ 0 1 := by
       gcongr
-      exact pathELength_mono le_rfl ht₁1.le
     _ < C * (r / C) := by
       gcongr
       · exact ENNReal.coe_ne_top
@@ -508,7 +498,7 @@ variable (M) in
 /-- The pseudoemetric space structure associated to a Riemannian metric on a manifold. Designed
 so that the topology is defeq to the original one.
 
-This should only be used when constructing data in specific situtations. To develop the theory,
+This should only be used when constructing data in specific situations. To develop the theory,
 one should rather assume that there is an already existing emetric space structure, which satisfies
 additionally the predicate `IsRiemannianManifold I M`. -/
 @[reducible] def PseudoEmetricSpace.ofRiemannianMetric [RegularSpace M] : PseudoEMetricSpace M :=
@@ -522,7 +512,7 @@ additionally the predicate `IsRiemannianManifold I M`. -/
 
 /-- Given a manifold with a Riemannian metric, consider the associated Riemannian distance. Then
 by definition the distance is the infimum of the length of paths between the points, i.e., the
-manifold satsifies the `IsRiemannianManifold I M` predicate. -/
+manifold satisfies the `IsRiemannianManifold I M` predicate. -/
 instance [RegularSpace M] :
     letI : PseudoEMetricSpace M := PseudoEmetricSpace.ofRiemannianMetric I M
     IsRiemannianManifold I M := by

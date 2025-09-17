@@ -287,7 +287,7 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
     exact (mem_iff_eq_image (g.val.app _ ∘ f) _ _).symm
 
 /--
-The unit of the adjunciton is given by mapping each element to the corresponding constant map.
+The unit of the adjunction is given by mapping each element to the corresponding constant map.
 -/
 @[simps]
 def unit : 𝟭 _ ⟶ functor P hs ⋙ (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u + 1}⟩ where

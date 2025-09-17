@@ -57,8 +57,8 @@ local notation "F" => FreeMonoidalCategory
 namespace FreeMonoidalCategory
 
 /-- Formal compositions and tensor products of identities, unitors and associators. The morphisms
-    of the free monoidal category are obtained as a quotient of these formal morphisms by the
-    relations defining a monoidal category. -/
+of the free monoidal category are obtained as a quotient of these formal morphisms by the
+relations defining a monoidal category. -/
 inductive Hom : F C → F C → Type u
   | id (X) : Hom X X
   | α_hom (X Y Z : F C) : Hom ((X.tensor Y).tensor Z) (X.tensor (Y.tensor Z))
@@ -75,7 +75,7 @@ inductive Hom : F C → F C → Type u
 local infixr:10 " ⟶ᵐ " => Hom
 
 /-- The morphisms of the free monoidal category satisfy 21 relations ensuring that the resulting
-    category is in fact a category and that it is monoidal. -/
+category is in fact a category and that it is monoidal. -/
 inductive HomEquiv : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (X ⟶ᵐ Y) → Prop
   | refl {X Y} (f : X ⟶ᵐ Y) : HomEquiv f f
   | symm {X Y} (f g : X ⟶ᵐ Y) : HomEquiv f g → HomEquiv g f
@@ -123,8 +123,8 @@ inductive HomEquiv : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (X ⟶ᵐ Y) → Prop
         ((Hom.ρ_hom X).whiskerRight Y)
 
 /-- We say that two formal morphisms in the free monoidal category are equivalent if they become
-    equal if we apply the relations that are true in a monoidal category. Note that we will prove
-    that there is only one equivalence class -- this is the monoidal coherence theorem. -/
+equal if we apply the relations that are true in a monoidal category. Note that we will prove
+that there is only one equivalence class -- this is the monoidal coherence theorem. -/
 def setoidHom (X Y : F C) : Setoid (X ⟶ᵐ Y) :=
   ⟨HomEquiv, ⟨HomEquiv.refl, HomEquiv.symm _ _, HomEquiv.trans⟩⟩
 
@@ -290,8 +290,7 @@ section
 open Hom
 
 /-- Auxiliary definition for `FreeMonoidalCategory.project`. -/
--- Porting note: here `@[simp]` generates a panic in
--- _private.Lean.Meta.Match.MatchEqs.0.Lean.Meta.Match.SimpH.substRHS
+@[simp]
 def projectMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (projectObj f X ⟶ projectObj f Y)
   | _, _, Hom.id _ => 𝟙 _
   | _, _, α_hom _ _ _ => (α_ _ _ _).hom
@@ -305,8 +304,8 @@ def projectMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (projectObj f X ⟶ projec
   | _, _, Hom.whiskerRight p X => projectMapAux p ▷ projectObj f X
   | _, _, Hom.tensor f g => projectMapAux f ⊗ₘ projectMapAux g
 
--- Porting note: this declaration generates the same panic.
 /-- Auxiliary definition for `FreeMonoidalCategory.project`. -/
+@[simp]
 def projectMap (X Y : F C) : (X ⟶ Y) → (projectObj f X ⟶ projectObj f Y) :=
   Quotient.lift (projectMapAux f) <| by
     intro f g h
@@ -366,8 +365,7 @@ instance : (project f).Monoidal :=
     { εIso := Iso.refl _
       μIso := fun _ _ ↦ Iso.refl _
   -- Porting note: `μIso_hom_natural_left` was proved in mathlib3 by tidy, using induction.
-  -- We probably don't expect `aesop_cat` to handle this yet, see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Aesop.20and.20cases
-  -- In any case I don't understand why we need to specify `using Quotient.recOn`.
+  -- We probably don't expect `cat_disch` to handle this yet, see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Aesop.20and.20cases
       μIso_hom_natural_left := fun f _ => by
         induction f using Quotient.recOn
         all_goals aesop

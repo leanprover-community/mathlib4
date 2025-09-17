@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
 import Mathlib.Data.List.Defs
-import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.Common
 
 /-!
@@ -74,7 +73,7 @@ lemma drop_length_sub_one {l : List α} (h : l ≠ []) : l.drop (l.length - 1) =
   | nil => aesop
   | cons a l ih =>
     by_cases hl : l = []
-    · aesop
+    · simp_all
     rw [length_cons, Nat.add_one_sub_one, List.drop_length_cons hl a]
     simp [getLast_cons, hl]
 
@@ -145,8 +144,6 @@ private theorem span.loop_eq_take_drop :
 @[simp]
 theorem span_eq_takeWhile_dropWhile (l : List α) : span p l = (takeWhile p l, dropWhile p l) := by
   simpa using span.loop_eq_take_drop p l []
-
-@[deprecated (since := "2025-02-07")] alias span_eq_take_drop := span_eq_takeWhile_dropWhile
 
 end Filter
 

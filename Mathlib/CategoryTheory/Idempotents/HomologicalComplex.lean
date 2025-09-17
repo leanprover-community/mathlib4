@@ -69,7 +69,7 @@ def obj (P : Karoubi (HomologicalComplex C c)) : HomologicalComplex (Karoubi C) 
     ⟨P.X.X n, P.p.f n, by
       simpa only [HomologicalComplex.comp_f] using HomologicalComplex.congr_hom P.idem n⟩
   d i j := { f := P.p.f i ≫ P.X.d i j }
-  shape i j hij := by simp only [hom_eq_zero_iff]; aesop_cat
+  shape i j hij := by simp only [hom_eq_zero_iff]; cat_disch
 
 /-- The functor `Karoubi (HomologicalComplex C c) ⥤ HomologicalComplex (Karoubi C) c`,
 on morphisms. -/
@@ -120,8 +120,8 @@ def inverse : HomologicalComplex (Karoubi C) c ⥤ Karoubi (HomologicalComplex C
 `Karoubi (HomologicalComplex C c) ≌ HomologicalComplex (Karoubi C) c`. -/
 @[simps!]
 def counitIso : inverse ⋙ functor ≅ 𝟭 (HomologicalComplex (Karoubi C) c) :=
-  eqToIso (Functor.ext (fun P => HomologicalComplex.ext (by aesop_cat) (by simp))
-    (by aesop_cat))
+  eqToIso (Functor.ext (fun P => HomologicalComplex.ext (by cat_disch) (by simp))
+    (by cat_disch))
 
 /-- The unit isomorphism of the equivalence
 `Karoubi (HomologicalComplex C c) ≌ HomologicalComplex (Karoubi C) c`. -/

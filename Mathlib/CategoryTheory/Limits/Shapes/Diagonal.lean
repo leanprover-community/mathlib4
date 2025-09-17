@@ -198,7 +198,7 @@ theorem pullback_fst_map_snd_isPullback :
         (by simp [condition])) :=
   IsPullback.of_iso_pullback ⟨by ext <;> simp [condition_assoc]⟩
     (pullbackDiagonalMapIso f i i₁ i₂).symm (pullbackDiagonalMapIso.inv_fst f i i₁ i₂)
-    (by aesop_cat)
+    (by cat_disch)
 
 end
 

@@ -113,7 +113,7 @@ private theorem card_nonuniformWitness_sdiff_biUnion_star (hV : V ∈ P.parts) (
   rw [sum_const]
   refine mul_le_mul_right' ?_ _
   have t := card_filter_atomise_le_two_pow (s := U) hX
-  refine t.trans (pow_right_mono₀ (by norm_num) <| tsub_le_tsub_right ?_ _)
+  refine t.trans (pow_right_mono₀ (by simp) <| tsub_le_tsub_right ?_ _)
   exact card_image_le.trans (card_le_card <| filter_subset _ _)
 
 private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ P.parts)
@@ -162,7 +162,7 @@ private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ 
     _ ≤ #((star hP G ε hU V).biUnion id) := by
       rw [sub_le_comm, ←
         cast_sub (card_le_card <| biUnion_star_subset_nonuniformWitness hP G ε hU V), ←
-        card_sdiff (biUnion_star_subset_nonuniformWitness hP G ε hU V)]
+        card_sdiff_of_subset (biUnion_star_subset_nonuniformWitness hP G ε hU V)]
       exact mod_cast card_nonuniformWitness_sdiff_biUnion_star hV hUV hunif
 
 /-! ### `chunk` -/
