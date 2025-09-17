@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä, Yury Kudryashov
 -/
 import Mathlib.Analysis.Normed.Module.Dual
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
+import Mathlib.Analysis.Normed.Operator.Completeness
 import Mathlib.Topology.Algebra.Module.WeakDual
 
 /-!
@@ -53,10 +53,6 @@ the weak-* topology on (its type synonym) `WeakDual 𝕜 E`:
   `WeakDual 𝕜 E` under the assumption of separability of `E`.
 * Add the sequential Banach-Alaoglu theorem: the dual unit ball of a separable normed space `E`
   is sequentially compact in the weak-star topology. This would follow from the metrizability above.
-
-## Notations
-
-No new notation is introduced.
 
 ## Implementation notes
 
