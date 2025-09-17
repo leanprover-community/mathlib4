@@ -31,6 +31,12 @@ lemma dvd_choose (hp : Prime p) (ha : a < p) (hab : b - a < p) (h : p ≤ b) : p
 lemma dvd_choose_self (hp : Prime p) (hk : k ≠ 0) (hkp : k < p) : p ∣ choose p k :=
   hp.dvd_choose hkp (sub_lt ((zero_le _).trans_lt hkp) <| zero_lt_of_ne_zero hk) le_rfl
 
+lemma coprime_choose_of_lt (hp : p.Prime) (hb : b < p) (ha : a ≤ b) :
+    p.Coprime (b.choose a) := by
+  rw [Nat.choose_eq_descFactorial_div_factorial]
+  exact (hp.coprime_descFactorial_of_lt_of_le hb ha).coprime_div_right
+    (Nat.factorial_dvd_descFactorial b a)
+
 end Prime
 
 end Nat
