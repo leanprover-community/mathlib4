@@ -29,7 +29,7 @@ import Mathlib.Order.Hom.Lattice
 Lattice, Congruence
 -/
 
-variable {α : Type*}
+variable {F α β : Type*} [Lattice α] [Lattice β]
 
 /-- An equivalence relation is a congruence relation for the latice structure if it is compatible
 with the `inf` and `sup` operations. -/
