@@ -411,6 +411,51 @@ theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} 
       IsLocalRing.of_surjective _ Ideal.Quotient.mk_surjective
     let _ : IsNoetherianRing (R ⧸ Ideal.span {x}) :=
       isNoetherianRing_of_surjective _ _ _ Ideal.Quotient.mk_surjective
+    let xm' := (Submodule.span (ResidueField R) {(maximalIdeal R).toCotangent ⟨x, mem⟩})
+    rcases xm'.exists_isCompl with ⟨J', ⟨inf, sup⟩⟩
+    let g : (maximalIdeal R) →ₛₗ[residue R] (maximalIdeal R).Cotangent := {
+      __ := (maximalIdeal R).toCotangent
+      map_smul' r m := by
+        simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, map_smul]
+        rfl }
+    have surjg : Function.Surjective g := sorry
+    have supeq : (J'.comap g) ⊔ Submodule.span R {⟨x, mem⟩} = ⊤ := by
+      let : RingHomSurjective (residue R) := ⟨residue_surjective⟩
+      rw [sup_comm, ← sup_eq_left.mpr (LinearMap.ker_le_comap g), ← sup_assoc,
+        ← Submodule.comap_map_eq, Submodule.map_sup, Submodule.map_span,
+        Submodule.map_comap_eq_of_surjective surjg]
+      simp only [LinearMap.coe_mk, LinearMap.coe_toAddHom, Set.image_singleton, g]
+      rw [codisjoint_iff.mp sup, Submodule.comap_top]
+    have infle : (J'.comap g) ⊓ Submodule.span R {⟨x, mem⟩} ≤
+      x • (⊤ : Submodule R (maximalIdeal R)) := by
+      intro y hy
+      simp only [Submodule.mem_inf, Submodule.mem_comap] at hy
+      rcases Submodule.mem_span_singleton.mp hy.2 with ⟨r, hr⟩
+      rw [← hr, LinearMap.map_smulₛₗ] at hy
+      simp only [LinearMap.coe_mk, LinearMap.coe_toAddHom, SetLike.mk_smul_mk, smul_eq_mul, g] at hy
+      have := Submodule.mem_inf.mpr ⟨Submodule.mem_span_singleton.mpr (by use (residue R) r), hy.1⟩
+      rw [disjoint_iff.mp inf, Submodule.mem_bot] at this
+      have eq0 : r ∈ maximalIdeal R := (residue_eq_zero_iff _).mp
+        ((smul_eq_zero_iff_left (by simpa [Ideal.toCotangent_eq_zero] using nmem)).mp this)
+      simp only [SetLike.mk_smul_mk, smul_eq_mul, ← Subtype.val_inj] at hr
+      have : y = x • ⟨r, eq0⟩ := by simpa [← Subtype.val_inj, mul_comm x r] using hr.symm
+      simpa [this] using Submodule.smul_mem_pointwise_smul (⟨r, eq0⟩ : maximalIdeal R) x ⊤ trivial
+    let e1 : Shrink.{v, u} (maximalIdeal R') ≃ₗ[R] ↥((J'.comap g) ⊔ (Submodule.span R {⟨x, mem⟩})) ⧸
+      (Submodule.span R {⟨x, mem⟩}).comap ((J'.comap g) ⊔ Submodule.span R {⟨x, mem⟩}).subtype :=
+      sorry
+    let e2 := LinearMap.quotientInfEquivSupQuotient (J'.comap g) (Submodule.span R {⟨x, mem⟩})
+    let i3 : (↥(J'.comap g) ⧸ (J'.comap g).comap (J'.comap g).subtype  ⊓
+      Submodule.comap (J'.comap g).subtype (Submodule.span R {⟨x, mem⟩})) →ₗ[R]
+      QuotSMulTop x (Shrink.{v, u} (maximalIdeal R)) := sorry
+    let i' : Shrink.{v, u} (maximalIdeal R') →ₗ[R]
+      QuotSMulTop x (Shrink.{v, u} (maximalIdeal R)) := sorry
+    let r' : QuotSMulTop x (Shrink.{v, u} (maximalIdeal R)) →ₗ[R]
+      Shrink.{v, u} (maximalIdeal R') := sorry
+    have retr  : Retract (ModuleCat.of (R ⧸ Ideal.span {x}) (Shrink.{v} (maximalIdeal R')))
+      (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x (Shrink.{v} (maximalIdeal R)))) := {
+      i := sorry
+      r := by sorry
+      retract := sorry }
     have fin : ∃ n, HasProjectiveDimensionLE
       (ModuleCat.of R' (Shrink.{v, u} (maximalIdeal R'))) n := by
       rcases h with ⟨n, hn⟩
@@ -422,11 +467,7 @@ theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} 
         (ModuleCat.of R (Shrink.{v} (maximalIdeal R))) x xreg xreg' mem,
         projectiveDimension_le_iff] at hn
       use n
-      have : Retract (ModuleCat.of (R ⧸ Ideal.span {x}) (Shrink.{v} (maximalIdeal R')))
-        (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x (Shrink.{v} (maximalIdeal R)))) := by
-
-        sorry
-      exact this.hasProjectiveDimensionLT (n + 1)
+      exact retr.hasProjectiveDimensionLT (n + 1)
     have rank : Submodule.spanFinrank (maximalIdeal R') = n := by
       let f := Ideal.mapCotangent (maximalIdeal R) (maximalIdeal (R ⧸ Ideal.span {x}))
           (Ideal.Quotient.mkₐ R (Ideal.span {x})) (fun x hx ↦ by simpa)
