@@ -125,8 +125,7 @@ theorem exists_approx_preimage_norm_le'
           simp only [x, f.map_sub]
           abel
         _ ≤ ‖f x₁ - (a + d • y)‖ + ‖f x₂ - a‖ := norm_sub_le _ _
-        _ ≤ δ + δ := by rw [dist_eq_norm'] at h₁ h₂; gcongr
-        _ = 2 * δ := (two_mul _).symm
+        _ ≤ 2 * δ := by grind [dist_eq_norm']
     have J : ‖f (σ' d⁻¹ • x) - y‖ ≤ 1 / 2 * ‖y‖ :=
       calc
         ‖f (σ' d⁻¹ • x) - y‖ = ‖d⁻¹ • f x - (d⁻¹ * d) • y‖ := by
