@@ -675,6 +675,10 @@ theorem eigenspaces_iSupIndep [NoZeroSMulDivisors R M] (f : End R M) :
     iSupIndep f.eigenspace :=
   (f.independent_genEigenspace 1).mono fun _ ↦ le_rfl
 
+/-- Proved in #29791 -/
+axiom iSupIndep_iInf_eigenspace [NoZeroSMulDivisors R M] {α : Type*} (f : α → End R M) :
+    iSupIndep fun μ : α → R ↦ ⨅ a : α, ((f a).eigenspace (μ a))
+
 /-- Eigenvectors corresponding to distinct eigenvalues of a linear operator are linearly
 independent. -/
 theorem eigenvectors_linearIndependent' {ι : Type*} [NoZeroSMulDivisors R M]
