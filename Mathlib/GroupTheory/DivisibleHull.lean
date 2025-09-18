@@ -249,13 +249,14 @@ private theorem lift_aux (m n m' n' : M) (s t s' t' : ℕ+)
 instance : LE (DivisibleHull M) where
   le x y := liftOn₂ x y (fun m s n t ↦ t.val • m ≤ s.val • n) lift_aux
 
+@[simp]
 theorem mk_le_mk {m m' : M} {s s' : ℕ+} :
     mk m s ≤ mk m' s' ↔ s'.val • m ≤ s.val • m' := by rfl
 
 instance : LinearOrder (DivisibleHull M) where
   le_refl a := by
     induction a with | mk m s
-    rw [mk_le_mk]
+    simp
   le_trans a b c hab hbc := by
     induction a with | mk ma sa
     induction b with | mk mb sb
@@ -281,6 +282,7 @@ instance : LinearOrder (DivisibleHull M) where
     unfold DecidableLE LE.le instLE liftOn₂ LocalizedModule.liftOn₂
     infer_instance
 
+@[simp]
 theorem mk_lt_mk {m m' : M} {s s' : ℕ+} : mk m s < mk m' s' ↔ s'.val • m < s.val • m' := by
   simp_rw [lt_iff_not_ge, mk_le_mk]
 
@@ -332,7 +334,7 @@ variable (M) in
 @[simps!]
 def coeOrderAddMonoidHom : M →+o DivisibleHull M where
   __ := coeAddMonoidHom M
-  monotone' a b h := by simpa [mk_le_mk] using h
+  monotone' a b h := by simpa using h
 
 theorem coeOrderAddMonoidHom_injective : Function.Injective (coeOrderAddMonoidHom M) :=
   coeAddMonoidHom_injective
@@ -386,13 +388,13 @@ noncomputable
 def archimedeanClassOrderIso : ArchimedeanClass M ≃o ArchimedeanClass (DivisibleHull M) := by
   apply OrderIso.ofHomInv (archimedeanClassOrderHom M) (archimedeanClassOrderHomInv M)
   · ext a
-    induction a using ArchimedeanClass.ind with | mk a
+    induction a with | mk a
     induction a with | mk m s
     suffices ArchimedeanClass.mk (mk m 1) = ArchimedeanClass.mk (mk m s) by
       simpa [archimedeanClassOrderHom, archimedeanClassOrderHomInv]
     simp_rw [aux_archimedeanClassMk_mk]
   · ext a
-    induction a using ArchimedeanClass.ind with | mk _
+    induction a with | mk _
     simp [archimedeanClassOrderHom, archimedeanClassOrderHomInv]
 
 @[simp]
