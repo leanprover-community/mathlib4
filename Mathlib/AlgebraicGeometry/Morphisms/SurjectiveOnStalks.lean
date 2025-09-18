@@ -16,7 +16,7 @@ We show that this class is stable under composition and base change.
 
 We also show that (`AlgebraicGeometry.SurjectiveOnStalks.isEmbedding_pullback`)
 if `Y ⟶ S` is surjective on stalks, then for every `X ⟶ S`, `X ×ₛ Y` is a subset of
-`X × Y` (cartesian product as topological spaces) with the induced topology.
+`X × Y` (Cartesian product as topological spaces) with the induced topology.
 -/
 
 open CategoryTheory CategoryTheory.Limits Topology
@@ -99,7 +99,7 @@ lemma mono_of_injective [SurjectiveOnStalks f] (hf : Function.Injective f.base) 
   · exact fun x ↦ ConcreteCategory.epi_of_surjective _ (f.stalkMap_surjective x)
 
 /-- If `Y ⟶ S` is surjective on stalks, then for every `X ⟶ S`, `X ×ₛ Y` is a subset of
-`X × Y` (cartesian product as topological spaces) with the induced topology. -/
+`X × Y` (Cartesian product as topological spaces) with the induced topology. -/
 lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [SurjectiveOnStalks g] :
     IsEmbedding (fun x ↦ ((pullback.fst f g).base x, (pullback.snd f g).base x)) := by
   let L := (fun x ↦ ((pullback.fst f g).base x, (pullback.snd f g).base x))
