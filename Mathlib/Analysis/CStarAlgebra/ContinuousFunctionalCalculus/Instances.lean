@@ -336,7 +336,7 @@ lemma cfcₙ_complex_eq_real {f : ℂ → ℂ} (a : A) (hf_real : ∀ x ∈ σ�
   refine cfcₙ_congr fun x hx ↦ ?_
   simp_rw [RCLike.star_def, RCLike.conj_eq_iff_re, RCLike.re_eq_complex_re,
     RCLike.ofReal_eq_complex_ofReal] at hf_real
-  rw [← QuasispectrumRestricts.real_iff.mp ha.quasispectrumRestricts.2 _ hx, hf_real _ hx]
+  rw [← QuasispectrumRestricts.real_iff.mp ha.quasispectrumRestricts _ hx, hf_real _ hx]
 
 end RealEqComplexNonUnital
 
