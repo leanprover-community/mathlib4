@@ -269,9 +269,12 @@ a lot of proving work). -/
 partial def evalLieLie (sα : Q(LieRing $α)) {a b : Q($α)} (va : ExLie sα a) (vb : ExLie sα b) :
     Lean.Core.CoreM <| Result (ExSum sα) q(⁅$a, $b⁆) := do
   Lean.Core.checkSystem decl_name%.toString
+  -- This function expects both arguments to be already in the basis.
   if !(va.isLyndon && vb.isLyndon) then unreachable!
   match va.cmp vb with
   | .eq =>
+    -- If `va` and `vb` are in the basis, and they have the same flattened list, then it can be
+    -- proved that they are in fact equal.
     if !(va.eq vb) then unreachable!
     haveI' : $a =Q $b := ⟨⟩
     return ⟨q(0), .zero, q(lie_self $a)⟩
@@ -295,6 +298,8 @@ partial def evalLieLie (sα : Q(LieRing $α)) {a b : Q($α)} (va : ExLie sα a) 
 /-- This function evaluates an expression of the form `⁅ExLie, ExSum⁆` into its normal form. -/
 partial def evalLie₁ (sα : Q(LieRing $α)) {a b : Q($α)} (va : ExLie sα a) (vb : ExSum sα b) :
     Lean.Core.CoreM <| Result (ExSum sα) q(⁅$a, $b⁆) := do
+  -- This function requires the first argument to be in the basis.
+  if !va.isLyndon then unreachable!
   match vb with
   | .zero =>
     return ⟨_, .zero, q(lie_zero $a)⟩
@@ -501,14 +506,14 @@ end execution
 section command
 
 /-- A Command which evaluates a `LieRing` expression to its Lyndon normal form. -/
-syntax (name := lie_reduce_cmd) "#LieReduce" term : command
+syntax (name := lie_reduce_cmd) "#lie_reduce" term : command
 
 open Command in
 @[command_elab lie_reduce_cmd] private def lieReduceCmdImpl :
   Command.CommandElab :=
   fun stx => withoutModifyingEnv <| runTermElabM fun _ => Term.withDeclName `_lie_reduce_cmd do
     match stx with
-    | `(#LieReduce $e) =>
+    | `(#lie_reduce $e) =>
       try
         let e ← Term.elabTerm e none
         let α ← inferType e

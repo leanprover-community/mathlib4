@@ -25,7 +25,7 @@ variable (a b c : L)
 info: the term is reduced to -6 • ⁅⁅a, b⁆, ⁅⁅a, b⁆, c⁆⁆ + (6 • ⁅⁅⁅a, b⁆, ⁅a, c⁆⁆, b⁆ + (-6 • ⁅⁅⁅a, b⁆, b⁆, ⁅a, c⁆⁆ + 0))
 -/
 #guard_msgs in
-#LieReduce ⁅⁅-2 • a, b⁆, ⁅a, ⁅3 • b, c⁆⁆⁆
+#lie_reduce ⁅⁅-2 • a, b⁆, ⁅a, ⁅3 • b, c⁆⁆⁆
 
 /-- info: Try this: 6 • ⁅⁅⁅⁅a, b⁆, ⁅a, c⁆⁆, b⁆, c⁆ +
   (-6 • ⁅⁅⁅⁅a, b⁆, b⁆, ⁅a, c⁆⁆, c⁆ + (-6 • ⁅⁅⁅⁅a, b⁆, c⁆, ⁅a, c⁆⁆, b⁆ + (6 • ⁅⁅⁅⁅a, b⁆, c⁆, b⁆, ⁅a, c⁆⁆ + 0))) -/
