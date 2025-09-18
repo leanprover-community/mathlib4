@@ -112,8 +112,7 @@ theorem exists_approx_preimage_norm_le'
     rw [← xz₁] at h₁
     rw [mem_ball, dist_eq_norm, sub_zero] at hx₁
     have : a ∈ ball a ε := by
-      simp only [mem_ball, dist_self]
-      exact εpos
+      simpa only [mem_ball, dist_self]
     rcases Metric.mem_closure_iff.1 (H this) _ δpos with ⟨z₂, z₂im, h₂⟩
     rcases (mem_image _ _ _).1 z₂im with ⟨x₂, hx₂, xz₂⟩
     rw [← xz₂] at h₂
@@ -136,12 +135,7 @@ theorem exists_approx_preimage_norm_le'
         _ = ‖d⁻¹ • (f x - d • y)‖ := by rw [mul_smul, smul_sub]
         _ = ‖d‖⁻¹ * ‖f x - d • y‖ := by rw [norm_smul, norm_inv]
         _ ≤ ‖d‖⁻¹ * (2 * δ) := by gcongr
-        _ = ‖d‖⁻¹ * ‖d‖ * ‖y‖ / 2 := by
-          simp only [δ]
-          ring
-        _ = ‖y‖ / 2 := by
-          simp [norm_eq_zero, hd]
-        _ = 1 / 2 * ‖y‖ := by ring
+        _ = 1 / 2 * ‖y‖ := by simpa [δ, field] using by norm_num
     rw [← dist_eq_norm] at J
     have K : ‖σ' d⁻¹ • x‖ ≤ (ε / 2)⁻¹ * ‖c‖ * 2 * ↑n * ‖y‖ :=
       calc
