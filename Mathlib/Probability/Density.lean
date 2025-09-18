@@ -329,9 +329,8 @@ theorem _root_.ProbabilityTheory.IndepFun.mul_hasPDF' [SFinite μ] [HasPDF X ℙ
   have : AEMeasurable Y ℙ := HasPDF.aemeasurable' μ
   rw [hasPDF_iff_of_aemeasurable (by fun_prop),
     hXY.map_mul_eq_map_mconv_map₀' (by fun_prop) (by fun_prop) σX σY]
-  constructor
-  · exact HaveLebesgueDecomposition.mconv HasPDF.absolutelyContinuous HasPDF.absolutelyContinuous
-  · apply mconv_absolutelyContinuous HasPDF.absolutelyContinuous
+  refine ⟨?_, mconv_absolutelyContinuous HasPDF.absolutelyContinuous⟩
+  apply HaveLebesgueDecomposition.mconv <;> exact HasPDF.absolutelyContinuous
 
 @[to_additive]
 theorem _root_.ProbabilityTheory.IndepFun.mul_hasPDF [SFinite μ] [HasPDF X ℙ μ] [HasPDF Y ℙ μ]
@@ -343,14 +342,14 @@ theorem _root_.ProbabilityTheory.IndepFun.pdf_mul_eq_mlconvolution_pdf' [SigmaFi
     [HasPDF X ℙ μ] [HasPDF Y ℙ μ] (σX : SigmaFinite (ℙ.map X)) (σY : SigmaFinite (ℙ.map Y))
     (hXY : IndepFun X Y ℙ) : pdf (X * Y) ℙ μ =ᵐ[μ] pdf X ℙ μ ⋆ₘₗ[μ] pdf Y ℙ μ := by
   rw [pdf, hXY.map_mul_eq_map_mconv_map₀' (HasPDF.aemeasurable' μ) (HasPDF.aemeasurable' μ) σX σY]
-  exact rnDeriv_mconv' HasPDF.absolutelyContinuous HasPDF.absolutelyContinuous
+  apply rnDeriv_mconv' <;> exact HasPDF.absolutelyContinuous
 
 @[to_additive]
 theorem _root_.ProbabilityTheory.IndepFun.pdf_mul_eq_mlconvolution_pdf [SFinite μ]
     [HasPDF X ℙ μ] [HasPDF Y ℙ μ] [IsFiniteMeasure ℙ] (hXY : IndepFun X Y ℙ) :
     pdf (X * Y) ℙ μ =ᵐ[μ] pdf X ℙ μ ⋆ₘₗ[μ] pdf Y ℙ μ := by
   rw [pdf, hXY.map_mul_eq_map_mconv_map₀ (HasPDF.aemeasurable' μ) (HasPDF.aemeasurable' μ)]
-  exact rnDeriv_mconv HasPDF.absolutelyContinuous HasPDF.absolutelyContinuous
+  apply rnDeriv_mconv <;> exact HasPDF.absolutelyContinuous
 
 end Group
 
