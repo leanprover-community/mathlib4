@@ -718,4 +718,35 @@ def InnerProductSpace.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
     @InnerProductSpace 𝕜 (n → 𝕜) _ (NormedAddCommGroup.ofMatrix hM).toSeminormedAddCommGroup :=
   InnerProductSpace.ofCore _
 
+/-- A positive definite matrix `M` induces a norm on `Matrix n n 𝕜`:
+`‖x‖ = sqrt (x * M * xᴴ).trace`. -/
+noncomputable def PosDef.matrixNormedAddCommGroup {M : Matrix n n 𝕜} (hM : M.PosDef) :
+    NormedAddCommGroup (Matrix n n 𝕜) :=
+  letI : InnerProductSpace.Core 𝕜 (Matrix n n 𝕜) :=
+  { inner x y := (y * M * xᴴ).trace
+    conj_inner_symm _ _ := by
+      simp only [mul_assoc, starRingEnd_apply, ← trace_conjTranspose, conjTranspose_mul,
+        conjTranspose_conjTranspose, hM.isHermitian.eq]
+    re_inner_nonneg x := by
+      obtain ⟨y, rfl⟩ := posSemidef_iff_eq_conjTranspose_mul_self.mp hM.posSemidef
+      simpa [mul_assoc] using RCLike.nonneg_iff.mp
+        (posSemidef_conjTranspose_mul_self (y * xᴴ)).trace_nonneg |>.1
+    add_left := by simp [mul_add]
+    smul_left := by simp
+    definite x hx := by
+      classical
+      obtain ⟨y, hy, rfl⟩ := Matrix.posDef_iff_eq_conjTranspose_mul_self.mp hM
+      rw [← mul_assoc, ← conjTranspose_conjTranspose x, ← conjTranspose_mul,
+        conjTranspose_conjTranspose, mul_assoc, trace_conjTranspose_mul_self_eq_zero_iff] at hx
+      lift y to (Matrix n n 𝕜)ˣ using hy
+      simpa [← mul_assoc] using congr(y⁻¹ * $hx) }
+  this.toNormedAddCommGroup
+
+/-- A positive definite matrix `M` induces an inner product on `Matrix n n 𝕜`:
+`⟪x, y⟫ = (y * M * xᴴ).trace`. -/
+def PosDef.matrixInnerProductSpace {M : Matrix n n 𝕜} (hM : M.PosDef) :
+    letI : NormedAddCommGroup (Matrix n n 𝕜) := hM.matrixNormedAddCommGroup
+    InnerProductSpace 𝕜 (Matrix n n 𝕜) :=
+  InnerProductSpace.ofCore _
+
 end Matrix
