@@ -39,8 +39,6 @@ lemma ord_one : ord R 1 = 0 := by
 
 end Ring
 
-
-
 variable [CommRing R] [Module R M]
 
 /--
