@@ -177,7 +177,8 @@ lemma exists_conjugate_abs_gt_one {α : 𝓞 K} (hα0 : α ≠ 0) :
   --     exact H σ
   -- linarith
   -- -- Therefore, there exists σ such that |σ α| > 1.
-  -- obtain ⟨σ, hσ⟩ := exists_gt_of_prod_le_and_one_le (Finset.univ) (fun σ => |α_conj σ|) h_abs_prod h_le
+  -- obtain ⟨σ, hσ⟩ := exists_gt_of_prod_le_and_one_le
+  -- (Finset.univ) (fun σ => |α_conj σ|) h_abs_prod h_le
   -- use σ
   -- exact hσ
 
@@ -189,13 +190,28 @@ lemma house_gt_one_of_isIntegral {α : K}
   sorry
   }
 
-lemma house_leq_pow (γ' : K) (x y : ℕ) (h : x ≤ y) (hg: γ' ≠ 0)  :
-house γ' ^ x ≤ house γ' ^ y := by {
+lemma house_alg_int_leq_pow (α : K) (n m : ℕ) (h : n ≤ m) (hα0 : α ≠ 0)
+   (H : IsIntegral ℤ α)  :
+house α ^ n ≤ house α ^ m := by {
   refine Bound.pow_le_pow_right_of_le_one_or_one_le ?_
   left
   constructor
   · apply house_gt_one_of_isIntegral
-    sorry
-    exact hg
-  · apply h
+    exact H
+    exact hα0
+  · apply h}
+
+lemma house_leq_pow_pow (α : K) (n : ℕ) (hn : n ≠ 0) (hα0 : α ≠ 0)
+   (H : IsIntegral ℤ α) :
+house α ≤ house α ^ n := by {
+  refine le_self_pow₀ ?_ ?_
+  · exact house_gt_one_of_isIntegral H hα0
+  · exact hn}
+
+lemma house_leq_one_pow (α : K) (n : ℕ) (hn : n ≠ 0) (hα0 : α ≠ 0)
+   (H : IsIntegral ℤ α) :
+  1 ≤ house α ^ n := by {
+  trans
+  · apply house_gt_one_of_isIntegral H hα0
+  · exact house_leq_pow_pow α n hn hα0 H
 }
