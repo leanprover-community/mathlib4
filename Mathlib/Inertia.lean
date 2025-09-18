@@ -8,5 +8,3 @@ variable (A K L B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Field K] [Fi
 
 def Ideal.inertiaSubgroup : Subgroup (B ≃ₐ[A] B) :=
     AddSubgroup.inertia P.toAddSubgroup (B ≃ₐ[A] B)
-
-
