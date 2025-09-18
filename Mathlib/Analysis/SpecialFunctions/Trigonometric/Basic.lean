@@ -114,8 +114,9 @@ theorem exists_cos_eq_zero : 0 ∈ cos '' Icc (1 : ℝ) 2 :=
   intermediate_value_Icc' (by simp) continuousOn_cos
     ⟨le_of_lt cos_two_neg, le_of_lt cos_one_pos⟩
 
-/-- The number π = 3.14159265... Defined here using choice as twice a zero of cos in [1,2], from
-which one can derive all its properties. For explicit bounds on π, see `Data.Real.Pi.Bounds`.
+/-- The number π = 3.14159265... Defined here using choice as twice a zero of cos in [1,2],
+from which one can derive all its properties. For explicit bounds on π,
+see `Mathlib/Analysis/Real/Pi/Bounds.lean`.
 
 Denoted `π`, once the `Real` namespace is opened. -/
 protected noncomputable def pi : ℝ :=
@@ -126,23 +127,23 @@ scoped notation "π" => Real.pi
 
 @[simp]
 theorem cos_pi_div_two : cos (π / 2) = 0 := by
-  rw [Real.pi, mul_div_cancel_left₀ _ (two_ne_zero' ℝ)]
+  rw [Real.pi, mul_div_cancel_left₀ _ two_ne_zero]
   exact (Classical.choose_spec exists_cos_eq_zero).2
 
 theorem one_le_pi_div_two : (1 : ℝ) ≤ π / 2 := by
-  rw [Real.pi, mul_div_cancel_left₀ _ (two_ne_zero' ℝ)]
+  rw [Real.pi, mul_div_cancel_left₀ _ two_ne_zero]
   exact (Classical.choose_spec exists_cos_eq_zero).1.1
 
 theorem pi_div_two_le_two : π / 2 ≤ 2 := by
-  rw [Real.pi, mul_div_cancel_left₀ _ (two_ne_zero' ℝ)]
+  rw [Real.pi, mul_div_cancel_left₀ _ two_ne_zero]
   exact (Classical.choose_spec exists_cos_eq_zero).1.2
 
 theorem two_le_pi : (2 : ℝ) ≤ π :=
-  (div_le_div_iff_of_pos_right (show (0 : ℝ) < 2 by simp)).1
-    (by rw [div_self (two_ne_zero' ℝ)]; exact one_le_pi_div_two)
+  (div_le_div_iff_of_pos_right zero_lt_two).1
+    (by rw [div_self two_ne_zero]; exact one_le_pi_div_two)
 
 theorem pi_le_four : π ≤ 4 :=
-  (div_le_div_iff_of_pos_right (show (0 : ℝ) < 2 by norm_num)).1
+  (div_le_div_iff_of_pos_right zero_lt_two).1
     (calc
       π / 2 ≤ 2 := pi_div_two_le_two
       _ = 4 / 2 := by norm_num)
@@ -205,11 +206,11 @@ namespace Real
 
 @[simp]
 theorem sin_pi : sin π = 0 := by
-  rw [← mul_div_cancel_left₀ π (two_ne_zero' ℝ), two_mul, add_div, sin_add, cos_pi_div_two]; simp
+  rw [← mul_div_cancel_left₀ π two_ne_zero, two_mul, add_div, sin_add, cos_pi_div_two]; simp
 
 @[simp]
 theorem cos_pi : cos π = -1 := by
-  rw [← mul_div_cancel_left₀ π (two_ne_zero' ℝ), mul_div_assoc, cos_two_mul, cos_pi_div_two]
+  rw [← mul_div_cancel_left₀ π two_ne_zero, mul_div_assoc, cos_two_mul, cos_pi_div_two]
   norm_num
 
 @[simp]
@@ -521,8 +522,8 @@ theorem cos_eq_one_iff (x : ℝ) : cos x = 1 ↔ ∃ n : ℤ, (n : ℝ) * (2 * �
           rwa [← mul_assoc, ← @Int.cast_two ℝ, ← Int.cast_mul,
             Int.ediv_mul_cancel (Int.dvd_iff_emod_eq_zero.2 hn0)])
         fun hn1 => by
-        rw [← Int.emod_add_ediv n 2, hn1, Int.cast_add, Int.cast_one, add_mul, one_mul, add_comm,
-              mul_comm (2 : ℤ), Int.cast_mul, mul_assoc, Int.cast_two] at hn
+        rw [← Int.emod_add_mul_ediv n 2, hn1, Int.cast_add, Int.cast_one, add_mul, one_mul,
+          add_comm, mul_comm (2 : ℤ), Int.cast_mul, mul_assoc, Int.cast_two] at hn
         rw [← hn, cos_int_mul_two_pi_add_pi] at h
         exact absurd h (by norm_num)⟩,
     fun ⟨_, hn⟩ => hn ▸ cos_int_mul_two_pi _⟩

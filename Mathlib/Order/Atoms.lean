@@ -549,7 +549,7 @@ end BooleanAlgebra
 
 namespace CompleteBooleanAlgebra
 
-/-- Every atomic complete boolean algebra is completely atomic.
+/-- Every atomic complete Boolean algebra is completely atomic.
 
 This is not made an instance to avoid typeclass loops. -/
 -- See note [reducible non-instances]
@@ -754,7 +754,7 @@ This is not an instance to prevent loops. -/
 protected def IsSimpleOrder.linearOrder [DecidableEq α] : LinearOrder α :=
   { (inferInstance : PartialOrder α) with
     le_total := fun a b => by rcases eq_bot_or_eq_top a with (rfl | rfl) <;> simp
-    -- Note from #23976: do we want this inlined or should this be a separate definition?
+    -- Note from https://github.com/leanprover-community/mathlib4/issues/23976: do we want this inlined or should this be a separate definition?
     toDecidableLE := fun a b =>
       if ha : a = ⊥ then isTrue (ha.le.trans bot_le)
       else

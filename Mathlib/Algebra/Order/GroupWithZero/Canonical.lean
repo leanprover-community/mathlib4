@@ -58,16 +58,20 @@ The following facts are true more generally in a (linearly) ordered commutative 
 /-- Pullback a `LinearOrderedCommMonoidWithZero` under an injective map.
 See note [reducible non-instances]. -/
 abbrev Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β] [Bot β] [One β]
-    [Mul β] [Pow β ℕ] [Max β] [Min β] (f : β → α) (hf : Function.Injective f) (zero : f 0 = 0)
+    [Mul β] [Pow β ℕ] [LE β] [LT β] [Max β] [Min β] [Ord β]
+    [DecidableEq β] [DecidableLE β] [DecidableLT β]
+    (f : β → α) (hf : Function.Injective f) (zero : f 0 = 0)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y))
-    (bot : f ⊥ = ⊥) : LinearOrderedCommMonoidWithZero β where
-  __ := LinearOrder.lift f hf hsup hinf
-  __ := hf.isOrderedMonoid f one mul npow
+    (bot : f ⊥ = ⊥)
+    (compare : ∀ x y, compare (f x) (f y) = compare x y) :
+    LinearOrderedCommMonoidWithZero β where
+  __ := hf.linearOrder f le lt hinf hsup compare
   __ := hf.commMonoidWithZero f zero one mul npow
-  zero_le_one :=
-      show f 0 ≤ f 1 by simp only [zero, one, LinearOrderedCommMonoidWithZero.zero_le_one]
-  bot_le a := show f ⊥ ≤ f a from bot ▸ bot_le
+  __ := Function.Injective.isOrderedMonoid f mul le
+  zero_le_one := le.1 <| by simp only [zero, one, LinearOrderedCommMonoidWithZero.zero_le_one]
+  bot_le a := le.1 <| bot ▸ bot_le
 
 @[simp] lemma zero_le' : 0 ≤ a := by
   simpa only [mul_zero, mul_one] using mul_le_mul_left' (zero_le_one' α) a
@@ -131,13 +135,13 @@ instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosReflectLE :
 instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulReflectLT :
     PosMulReflectLT α where elim _a _b _c := lt_of_mul_lt_mul_left'
 
-#adaptation_note /-- 2025-03-29 lean4#7717 Needed to add `dsimp only` -/
+#adaptation_note /-- 2025-03-29 https://github.com/leanprover/lean4/issues/7717 Needed to add `dsimp only` -/
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toPosMulStrictMono :
     PosMulStrictMono α where
   elim a b c hbc := by dsimp only; by_contra! h; exact hbc.not_ge <| (mul_le_mul_iff_right₀ a.2).1 h
 
-#adaptation_note /-- 2025-03-29 lean4#7717 Needed to add `dsimp only` -/
+#adaptation_note /-- 2025-03-29 https://github.com/leanprover/lean4/issues/7717 Needed to add `dsimp only` -/
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosStrictMono :
     MulPosStrictMono α where
@@ -490,14 +494,15 @@ protected lemma isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrder
 
 /-- Adding a new zero to a canonically ordered additive monoid produces another one. -/
 instance instCanonicallyOrderedAdd [AddZeroClass α] [Preorder α] [CanonicallyOrderedAdd α] :
-    CanonicallyOrderedAdd (WithZero α) :=
-  { WithZero.instExistsAddOfLE with
-    le_self_add := fun a b => by
-      induction a
-      · exact bot_le
-      induction b
-      · exact le_rfl
-      · exact WithZero.coe_le_coe.2 le_self_add }
+    CanonicallyOrderedAdd (WithZero α) where
+  le_add_self
+  | 0, _ => bot_le
+  | (a : α), 0 => le_rfl
+  | (a : α), (b : α) => WithZero.coe_le_coe.2 le_add_self
+  le_self_add
+  | 0, _ => bot_le
+  | (a : α), 0 => le_rfl
+  | (a : α), (b : α) => WithZero.coe_le_coe.2 le_self_add
 
 instance instLinearOrderedCommMonoidWithZero [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α] :
     LinearOrderedCommMonoidWithZero (WithZero α) where
