@@ -20,7 +20,7 @@ This operation, denoted by `⊗ₘ`, takes `μ : Measure α` and `κ : Kernel α
 
 * `Measure.compProd`: from `μ : Measure α` and `κ : Kernel α β`, get a `Measure (α × β)`.
 
-## Notations
+## Notation
 
 * `μ ⊗ₘ κ = μ.compProd κ`
 -/

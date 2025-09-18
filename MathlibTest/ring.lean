@@ -114,7 +114,14 @@ example : 22 + 7 * 4 + 3 * 8 = 0 + 7 * 4 + 46 := by
 
 -- Example with ring failing to discharge, to normalizing the goal
 
-/-- info: Try this: ring_nf -/
+/--
+info: Try this:
+  ring_nf
+  ⏎
+  The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+    ⏎
+  Note that `ring` works primarily in *commutative* rings. If you have a noncommutative ring, abelian group or module, consider using `noncomm_ring`, `abel` or `module` instead.
+-/
 #guard_msgs in
 example : (22 + 7 * 4 + 3 * 8 = 0 + 7 * 4 + 47) = (74 = 75) := by
   conv => ring
@@ -127,7 +134,14 @@ example (x : ℕ) : 22 + 7 * x + 3 * 8 = 0 + 7 * x + 46 := by
 
 -- Example with ring failing to discharge, to normalizing the goal
 
-/-- info: Try this: ring_nf -/
+/--
+info: Try this:
+  ring_nf
+  ⏎
+  The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+    ⏎
+  Note that `ring` works primarily in *commutative* rings. If you have a noncommutative ring, abelian group or module, consider using `noncomm_ring`, `abel` or `module` instead.
+-/
 #guard_msgs in
 example (x : ℕ) : (22 + 7 * x + 3 * 8 = 0 + 7 * x + 46 + 1)
                     = (7 * x + 46 = 7 * x + 47) := by

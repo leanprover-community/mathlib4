@@ -172,7 +172,7 @@ lemma inr_comp_cfcₙHom_eq_cfcₙAux {A : Type*} [NonUnitalCStarAlgebra A] (a :
       cfcₙAux (isStarNormal_inr (R := ℂ) (A := A)) a ha := by
   have h (a : A) := isStarNormal_inr (R := ℂ) (A := A) (a := a)
   refine @ContinuousMapZero.UniqueHom.eq_of_continuous_of_map_id
-    _ _ _ _ _ _ _ _ _ _ _ inferInstance inferInstance _ (σₙ ℂ a) _ _ rfl _ _ ?_ ?_ ?_
+    _ _ _ _ _ _ _ _ _ _ _ inferInstance inferInstance _ (σₙ ℂ a) _ _ _ _ ?_ ?_ ?_
   · change Continuous (fun f ↦ (cfcₙHom ha f : A⁺¹)); fun_prop
   · exact isClosedEmbedding_cfcₙAux @(h) a ha |>.continuous
   · trans (a : A⁺¹)
@@ -460,7 +460,7 @@ instance IsStarNormal.instIsometricContinuousFunctionalCalculus :
 instance IsSelfAdjoint.instIsometricContinuousFunctionalCalculus :
     IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint :=
   SpectrumRestricts.isometric_cfc Complex.reCLM Complex.isometry_ofReal (.zero _)
-    fun _ ↦ isSelfAdjoint_iff_isStarNormal_and_spectrumRestricts
+    fun _ ↦ isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts
 
 end Unital
 

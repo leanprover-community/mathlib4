@@ -50,10 +50,9 @@ variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
 
 theorem mapIdxMAux'_eq_mapIdxMGo {α} (f : ℕ → α → m PUnit) (as : List α) (arr : Array PUnit) :
     mapIdxMAux' f arr.size as = mapIdxM.go f as arr *> pure PUnit.unit := by
-  revert arr
-  induction as <;> intro arr
-  case nil => simp only [mapIdxMAux', mapIdxM.go, seqRight_eq, map_pure, seq_pure]
-  case cons head tail ih =>
+  induction as generalizing arr with
+  | nil => simp only [mapIdxMAux', mapIdxM.go, seqRight_eq, map_pure, seq_pure]
+  | cons head tail ih =>
     simp only [mapIdxMAux', seqRight_eq, map_eq_pure_bind, seq_eq_bind, bind_pure_unit,
       LawfulMonad.bind_assoc, pure_bind, mapIdxM.go]
     generalize (f (Array.size arr) head) = head

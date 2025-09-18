@@ -465,10 +465,9 @@ theorem IsQuadratic.inv {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ⁻¹ = �
   rcases hχ x with (h₀ | h₁ | h₂)
   · rw [h₀, Ring.inverse_zero]
   · rw [h₁, Ring.inverse_one]
-  · have : (-1 : R') = (-1 : R'ˣ) := by
-      simp -- Porting note: was `by norm_cast`
-    rw [h₂, this, Ring.inverse_unit (-1 : R'ˣ)]
-    rfl
+  · -- Porting note (#11573): was `by norm_cast`
+    have : (-1 : R') = (-1 : R'ˣ) := by norm_cast; simp
+    rw [h₂, this, Ring.inverse_unit (-1 : R'ˣ), inv_neg, inv_one]
 
 /-- The square of a quadratic character is the trivial character. -/
 theorem IsQuadratic.sq_eq_one {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ ^ 2 = 1 := by

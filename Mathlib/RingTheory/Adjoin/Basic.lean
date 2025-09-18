@@ -83,7 +83,7 @@ theorem adjoin_algebraMap_image_union_eq_adjoin_adjoin (s : Set S) (t : Set A) :
 theorem adjoin_adjoin_of_tower (s : Set A) : adjoin S (adjoin R s : Set A) = adjoin S s := by
   apply le_antisymm (adjoin_le _)
   · exact adjoin_mono subset_adjoin
-  · change adjoin R s ≤ (adjoin S s).restrictScalars R
+  · rw [← Subalgebra.coe_restrictScalars R (S := S), SetLike.coe_subset_coe]
     exact adjoin_le subset_adjoin
 
 theorem Subalgebra.restrictScalars_adjoin {s : Set A} :
@@ -120,6 +120,17 @@ variable (R s t)
 theorem adjoin_union_eq_adjoin_adjoin :
     adjoin R (s ∪ t) = (adjoin (adjoin R s) t).restrictScalars R := by
   simpa using adjoin_algebraMap_image_union_eq_adjoin_adjoin R s t
+
+/--
+If `A` is spanned over `R` by `s`, then the algebra spanned over `A` by `t` is the equal to the
+algebra spanned over `R` by `s ∪ t`.
+-/
+theorem adjoin_eq_adjoin_union [CommSemiring B] [Algebra R B] [Algebra A B]
+    [IsScalarTower R A B] (s : Set A) (t : Set B) (hS : adjoin R s = ⊤) :
+    (adjoin A t).restrictScalars R = adjoin R ((algebraMap A B '' s) ∪ t) := by
+  have := congr_arg (Subalgebra.map (IsScalarTower.toAlgHom R A B)) hS
+  rw [Algebra.map_top, AlgHom.map_adjoin, IsScalarTower.coe_toAlgHom'] at this
+  rw [adjoin_union_eq_adjoin_adjoin, this, ← IsScalarTower.adjoin_range_toAlgHom]
 
 variable {R}
 

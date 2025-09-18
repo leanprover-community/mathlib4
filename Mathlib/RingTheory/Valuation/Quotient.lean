@@ -78,8 +78,6 @@ variable {R Γ₀ : Type*}
 variable [CommRing R] [LinearOrderedAddCommMonoidWithTop Γ₀]
 variable (v : AddValuation R Γ₀)
 
--- attribute [local reducible] AddValuation -- Porting note: reducible not supported
-
 /-- If `hJ : J ⊆ supp v` then `onQuotVal hJ` is the induced function on `R / J` as a function.
 Note: it's just the function; the valuation is `onQuot hJ`. -/
 def onQuotVal {J : Ideal R} (hJ : J ≤ supp v) : R ⧸ J → Γ₀ :=

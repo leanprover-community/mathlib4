@@ -169,8 +169,8 @@ theorem spectrum_real_eq_range_eigenvalues :
   conv_lhs => rw [hA.spectral_theorem, ← spectrum.algebraMap_mem_iff 𝕜]
   simp
 
-@[deprecated (since := "14-08-2025")] alias eigenvalues_eq_spectrum_real :=
-  spectrum_real_eq_range_eigenvalues
+@[deprecated (since := "2025-08-14")]
+alias eigenvalues_eq_spectrum_real := spectrum_real_eq_range_eigenvalues
 
 /-- The eigenvalues of a Hermitian matrix `A` are all zero iff `A = 0`. -/
 theorem eigenvalues_eq_zero_iff :
@@ -201,8 +201,3 @@ theorem trace_eq_sum_eigenvalues [DecidableEq n] (hA : A.IsHermitian) :
 end IsHermitian
 
 end Matrix
-
-/-The following were removed as a result of the refactor, since they either were
-unused in the library, followed as immediate consequences of, or were replaced by
-above results (e.g. results about inverses don't need replacement because their unitary
-analogues have replaced them). -/

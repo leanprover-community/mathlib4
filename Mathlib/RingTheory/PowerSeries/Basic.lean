@@ -62,10 +62,6 @@ variable {R : Type*}
 
 section
 
--- Porting note: not available in Lean 4
--- local reducible PowerSeries
-
-
 /--
 `R⟦X⟧` is notation for `PowerSeries R`,
 the semiring of formal power series in one variable over a semiring `R`.
@@ -697,9 +693,7 @@ lemma coeff_one_pow (n : ℕ) (φ : R⟦X⟧) :
             conv => enter [1, 2, 1, 1, 2]; rw [← pow_one (a := constantCoeff φ)]
             rw [← pow_add (a := constantCoeff φ)]
             conv => enter [1, 2, 1, 1]; rw [Nat.sub_add_cancel h']
-            conv => enter [1, 2, 1]; rw [mul_comm]
-            rw [mul_assoc, ← one_add_mul, add_comm, mul_assoc]
-            conv => enter [1, 2]; rw [mul_comm]
+            ring
           exact h'
       · decide
 

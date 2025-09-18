@@ -329,7 +329,7 @@ theorem mi_xm_ne_one : (cs <| mi h v).xm ≠ 1 := by
   · apply lt_of_lt_of_le _ h.b_add_w_le_one
     · exact i
     · exact 0
-    rw [xm, mi_mem_bcubes.1, hi.1, _root_.add_lt_add_iff_left]
+    rw [xm, mi_mem_bcubes.1, hi.1, add_lt_add_iff_left]
     exact mi_strict_minimal h2i.symm hi
 
 /-- If `mi` lies on the boundary of the valley in dimension j, then this lemma expresses that all

@@ -261,4 +261,39 @@ theorem mk_Icc_real {a b : ℝ} (h : a < b) : #(Icc a b) = 𝔠 :=
 theorem mk_Ioc_real {a b : ℝ} (h : a < b) : #(Ioc a b) = 𝔠 :=
   le_antisymm (mk_real ▸ mk_set_le _) (mk_Ioo_real h ▸ mk_le_mk_of_subset Ioo_subset_Ioc_self)
 
+@[simp]
+lemma Real.Ioo_countable_iff {x y : ℝ} :
+    (Ioo x y).Countable ↔ y ≤ x := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
+  contrapose! h
+  rw [← Cardinal.le_aleph0_iff_set_countable, Cardinal.mk_Ioo_real h, not_le]
+  exact Cardinal.aleph0_lt_continuum
+
+@[simp]
+lemma Real.Ico_countable_iff {x y : ℝ} :
+    (Ico x y).Countable ↔ y ≤ x := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
+  contrapose! h
+  rw [← Cardinal.le_aleph0_iff_set_countable, Cardinal.mk_Ico_real h, not_le]
+  exact Cardinal.aleph0_lt_continuum
+
+@[simp]
+lemma Real.Ioc_countable_iff {x y : ℝ} :
+    (Ioc x y).Countable ↔ y ≤ x := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
+  contrapose! h
+  rw [← Cardinal.le_aleph0_iff_set_countable, Cardinal.mk_Ioc_real h, not_le]
+  exact Cardinal.aleph0_lt_continuum
+
+@[simp]
+lemma Real.Icc_countable_iff {x y : ℝ} :
+    (Icc x y).Countable ↔ y ≤ x := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by
+    rcases le_iff_eq_or_lt.mp h with heq | hlt
+    · simp [heq]
+    · simp [hlt]⟩
+  contrapose! h
+  rw [← Cardinal.le_aleph0_iff_set_countable, Cardinal.mk_Icc_real h, not_le]
+  exact Cardinal.aleph0_lt_continuum
+
 end Cardinal

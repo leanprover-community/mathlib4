@@ -211,8 +211,7 @@ for each number ≤ n.
 theorem exists_prime_lt_and_le_two_mul_succ {n} (q) {p : ℕ} (prime_p : Nat.Prime p)
     (covering : p ≤ 2 * q) (H : n < q → ∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n) (hn : n < p) :
     ∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n := by
-  by_cases h : p ≤ 2 * n; · exact ⟨p, prime_p, hn, h⟩
-  exact H (lt_of_mul_lt_mul_left' (lt_of_lt_of_le (not_le.1 h) covering))
+  grind
 
 /--
 **Bertrand's Postulate**: For any positive natural number, there is a prime which is greater than

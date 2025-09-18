@@ -84,8 +84,7 @@ theorem recF_eq_of_wEquiv (α : TypeVec n) {β : Type u} (u : F (α.append1 β) 
   apply q.P.w_cases _ x
   intro a₀ f'₀ f₀
   apply q.P.w_cases _ y
-  intro a₁ f'₁ f₁
-  intro h
+  intro a₁ f'₁ f₁ h
   -- Porting note: induction on h doesn't work.
   refine @WEquiv.recOn _ _ _ _ (fun a a' _ ↦ recF u a = recF u a') _ _ h ?_ ?_ ?_
   · intro a f' f₀ f₁ _h ih; simp only [recF_eq]
@@ -307,8 +306,7 @@ def Fix.drec {β : Fix F α → Type u}
     intro x' ih
     rw [Fix.rec_eq]
     dsimp
-    simp? [appendFun_id_id] at ih says
-      simp only [appendFun_id_id, MvFunctor.id_map] at ih
+    simp only [appendFun_id_id, MvFunctor.id_map] at ih
     congr
     conv =>
       rhs

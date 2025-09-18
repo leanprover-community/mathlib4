@@ -392,8 +392,7 @@ theorem lintegral_const_mul' (r : ℝ≥0∞) (f : α → ℝ≥0∞) (hr : r �
     rw [mul_comm]
     exact rinv
   have := lintegral_const_mul_le (μ := μ) r⁻¹ fun x => r * f x
-  simp? [(mul_assoc _ _ _).symm, rinv'] at this says
-    simp only [(mul_assoc _ _ _).symm, rinv', one_mul] at this
+  simp only [(mul_assoc _ _ _).symm, rinv'] at this
   simpa [(mul_assoc _ _ _).symm, rinv] using mul_le_mul_left' this r
 
 theorem lintegral_mul_const (r : ℝ≥0∞) {f : α → ℝ≥0∞} (hf : Measurable f) :

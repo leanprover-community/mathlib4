@@ -101,7 +101,6 @@ theorem bitIndices_twoPowsum {L : List ℕ} (hL : List.Sorted (· < ·) L) :
       simp only [add_assoc, Function.comp_apply]; rw [tsub_add_cancel_of_le (haL _ hx)]
     simp [List.map_congr_left h']
   obtain ⟨L₀, hL₀, rfl⟩ := h'
-  have _ : L₀.length < (a :: (L₀.map (· + a + 1))).length := by simp
   have hrw : (2^·) ∘ (· + a + 1) = fun i ↦ 2^a * (2 * 2^i) := by
     ext x; simp only [Function.comp_apply, pow_add, pow_one]; ac_rfl
   simp only [List.map_cons, List.map_map, List.sum_map_mul_left, List.sum_cons, hrw]
