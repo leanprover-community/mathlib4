@@ -42,7 +42,7 @@ open Limits Opposite
 variable {C : Type u} [Category.{v} C] (P : MorphismProperty C)
 
 /--
-Let `P` be a property of morphisms. `P.Ind` is satisfied for `f : X ⟶ Y`
+Let `P` be a property of morphisms. `P.ind` is satisfied for `f : X ⟶ Y`
 if there exists a family of natural maps `tᵢ : X ⟶ Yᵢ` and `sᵢ : Yᵢ ⟶ Y` indexed by `J`
 such that
 - `J` is filtered
