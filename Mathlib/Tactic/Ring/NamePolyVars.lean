@@ -208,11 +208,12 @@ def Lean.TSyntax.parsePolyesqueNotationInput (p : PolyesqueNotationInput) :
     | throwError s!"Unrecognised polynomial-like syntax: (mv := {mv?}) {opening} {closing}"
   return (⟨⟨openingS, closingS, mv?⟩, n, vars⟩, opening, closing)
 
-/-- Create the functor for a polynomial-like notation, e.g. `[a,b]` gives `MvPolynomial (Fin 2)`. -/
-def Body.mkFunctor (b : Body) : CoreM Term :=
+/-- Create the type for a polynomial-like notation, e.g. `[a,b]` gives `MvPolynomial (Fin 2) R`,
+where `R` is the previous type. -/
+def Body.mkType (b : Body) (type : Term) : CoreM Term :=
   match b.vars with
-  | Sum.inl _ => `($b.main.type)
-  | Sum.inr ns => `($b.main.type (Fin $(quote ns.size)))
+  | Sum.inl _ => `($b.main.type $type)
+  | Sum.inr ns => do `($b.main.type $(← `(Fin $(quote ns.size))) $type)
 
 /-- Create the constant term for a polynomial-like notation. -/
 def Body.mkC (b : Body) (term : Term) : CoreM Term :=
@@ -247,7 +248,8 @@ the relevant functor (`MvPolynomial (Fin 2)`), the formal variables, and their m
 register the variables (`x` and `y`) as polynomial variables (`poly_var`). -/
 def Lean.TSyntax.processAndDeclarePolyesqueNotationInput (p : PolyesqueNotationInput)
     (terms : Array (PolyVar × Term)) (oldFunctor : Term → CommandElabM Term) :
-    CommandElabM (PolyesqueNotation × Array (PolyVar × Term) × (Term → CommandElabM Term)) := do
+    CommandElabM (PolyesqueNotation × Array (PolyVar × Term) × (Term → CommandElabM Term) ×
+      Term) := do
   let (b, opening, closing) ← liftCoreM p.parsePolyesqueNotationInput
   let newVarTerm : Array (PolyVar × Term) ← (← liftCoreM b.mkX).mapM fun ⟨i, t⟩ ↦ do
     -- Declares the new formal variables as `poly_var`.
@@ -255,8 +257,8 @@ def Lean.TSyntax.processAndDeclarePolyesqueNotationInput (p : PolyesqueNotationI
     return (i.toTSyntax kind, t)
   let newNotation ← liftCoreM <| mkSyntax opening closing b.1.mv? (newVarTerm.map (·.1))
   let terms := (← terms.mapM fun ⟨v, t⟩ ↦ return (v, ← liftCoreM <| b.mkC t)) ++ newVarTerm
-  let newFunctor := fun type ↦ do `($(← liftCoreM b.mkFunctor) $(← oldFunctor type))
-  return (newNotation, terms, newFunctor)
+  let newFunctor := fun type ↦ do liftCoreM (b.mkType (← oldFunctor type))
+  return (newNotation, terms, newFunctor, b.main.type)
 
 /-- A helper function to elaborate macro rules and trace their declarations. -/
 def elabMacroRulesAndTrace (p : Polyesque) (t : Term) : CommandElabM Unit := do
@@ -282,28 +284,69 @@ elab "name_poly_vars " head:term_decl noWs body:polyesque_notation_input+ : comm
   let mut terms : Array (PolyVar × Term) := #[]
   let mut bodyVar : Array PolyesqueNotation := #[]
   let mut functor : Term → CommandElabM Term := pure
+  let mut lastHead : Term := default
   for p in body do
     let processed ← p.processAndDeclarePolyesqueNotationInput terms functor
     terms := processed.2.1
-    functor := processed.2.2
+    functor := processed.2.2.1
+    lastHead := processed.2.2.2
     bodyVar := bodyVar.push processed.1
   have body := Syntax.TSepArray.ofElems (sep := "") bodyVar
-  let type : Term ← match head with
+  let typeIdent ← functor (← `($$i:ident))
+  let polyesqueIdent : Polyesque ← `(polyesque| $$i:ident$body:polyesque_notation*)
+  let typeTerm ← functor (← `($$t:term))
+  let polyesqueTerm : Polyesque ← `(polyesque| ($$t:term)$body:polyesque_notation*)
+  let type : Term := ← match head with
   | `(term_decl| $_:hole) => do
-    -- We make sure that if the `_` in `_[t]`is filled in, it gets hover information
-    elabMacroRulesAndTrace (← `(polyesque| $$h:hole$body:polyesque_notation*))
-      (← functor (← `($$h:hole)))
-    elabMacroRulesAndTrace (← `(polyesque| $$i:ident$body:polyesque_notation*))
-      (← functor (← `($$i:ident)))
-    elabMacroRulesAndTrace (← `(polyesque| ($$t:term)$body:polyesque_notation*))
-      (← functor (← `(($$t:term))))
-    functor (← `(_))
+    let typeHole ← functor (← `(_))
+    let polyesqueHole : Polyesque ← `(polyesque| _$body:polyesque_notation*)
+    elabMacroRulesAndTrace polyesqueHole typeHole
+    elabMacroRulesAndTrace polyesqueIdent typeIdent
+    elabMacroRulesAndTrace polyesqueTerm typeTerm
+    -- if the head of the term is a constant, then deploy the unexpander.
+    match lastHead with
+    | `($c:ident) => do
+      trace[name_poly_vars] m!"Declaring unexpander for {c}"
+      elabCommand <| ← `(command|
+        @[local app_unexpander $c]
+        def unexpand : Lean.PrettyPrinter.Unexpander
+          | `($typeHole) => `($polyesqueHole:polyesque)
+          | `($typeIdent) => `($polyesqueIdent:polyesque)
+          | `($typeTerm) => `($polyesqueTerm:polyesque)
+          | _ => throw ())
+    | _ => pure ()
+    return typeHole
   | _ => do
     let type ← functor head.term
-    elabMacroRulesAndTrace (← `(polyesque| $head$body:polyesque_notation*)) type
-    pure type
+    let polyesque : Polyesque ← `(polyesque| $head$body:polyesque_notation*)
+    elabMacroRulesAndTrace polyesque type
+    -- if the head of the term is a constant, then deploy the unexpander.
+    match lastHead with
+    | `($c:ident) => do
+      trace[name_poly_vars] m!"Declaring unexpander for {c}"
+      match head with
+      | `(term_decl| $R:ident) => do
+        elabCommand <| ← `(command|
+          @[local app_unexpander $c]
+          def unexpand : Lean.PrettyPrinter.Unexpander
+            | `($typeIdent) => match i with
+              | `($R) => `($polyesqueIdent:polyesque)
+              | _ => throw ()
+            | _ => throw ())
+      | `(term_decl| ($R:term)) => do
+        elabCommand <| ← `(command|
+          @[local app_unexpander $c]
+          def unexpand : Lean.PrettyPrinter.Unexpander
+            | `($typeTerm) => match t with
+              | `($R) => `($polyesqueTerm:polyesque)
+              | _ => throw ()
+            | _ => throw ())
+      | _ => pure ()
+    | _ => pure ()
+    return type
+  trace[name_poly_vars] m!"Terms:"
   for (v, t) in terms do
     elabCommand <| ← `(command| local macro_rules | `($v:poly_var) => `(($t : $type)))
-    trace[name_poly_vars] m!"Declaring variable {v} := {t}"
+    trace[name_poly_vars] m!"Declaring polyesque variable {v} := {t}"
 
 end Mathlib.Tactic.NamePolyVars
