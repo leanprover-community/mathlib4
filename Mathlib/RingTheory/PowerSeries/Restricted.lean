@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.NatPowAssoc
 import Mathlib.Analysis.Normed.Group.Ultra
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.RingTheory.PowerSeries.Basic
+import Mathlib.Tactic.Bound
 
 /-!
 # Restricted power series
@@ -36,7 +37,7 @@ lemma isRestricted_iff {f : PowerSeries R} : IsRestricted c f ↔
   simp [IsRestricted, NormedAddCommGroup.tendsto_atTop]
 
 lemma isRestricted_iff_abs (f : PowerSeries R) : IsRestricted c f ↔ IsRestricted |c| f := by
-  simp [IsRestricted, NormedAddCommGroup.tendsto_atTop]
+  simp [isRestricted_iff]
 
 lemma zero : IsRestricted c (0 : PowerSeries R) := by
   simp [IsRestricted]
@@ -52,14 +53,13 @@ lemma add {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) 
     IsRestricted c (f + g) := by
   simp only [isRestricted_iff, map_add, norm_mul, norm_pow, Real.norm_eq_abs] at ⊢ hf hg
   intro ε hε
-  obtain ⟨fN, hfN⟩ := hf (ε/2) (half_pos hε)
-  obtain ⟨gN, hgN⟩ := hg (ε/2) (half_pos hε)
+  obtain ⟨fN, hfN⟩ := hf (ε / 2) (by positivity)
+  obtain ⟨gN, hgN⟩ := hg (ε / 2) (by positivity)
   simp only [abs_norm] at hfN hgN ⊢
-  refine ⟨max fN gN, fun n hn => ?_ ⟩
-  exact lt_of_le_of_lt  (by simpa only [right_distrib] using (mul_le_mul_of_nonneg_right
-    (norm_add_le (coeff R n f) (coeff R n g)) (pow_nonneg (abs_nonneg c) n)))
-    (by simpa only [add_halves] using (add_lt_add (hfN n (le_of_max_le_left hn))
-    (hgN n (le_of_max_le_right hn))))
+  refine ⟨max fN gN, fun n hn ↦ ?_ ⟩
+  calc _ ≤ ‖(coeff R n) f‖ * |c| ^ n + ‖(coeff R n) g‖ * |c| ^ n := by grw [norm_add_le, add_mul]
+       _ < ε / 2 + ε / 2 := by gcongr <;> grind
+       _ = ε := by ring
 
 lemma neg {f : PowerSeries R} (hf : IsRestricted c f) : IsRestricted c (-f) := by
   simpa [isRestricted_iff] using hf
@@ -67,33 +67,31 @@ lemma neg {f : PowerSeries R} (hf : IsRestricted c f) : IsRestricted c (-f) := b
 /-- The set of `‖coeff R i f‖ * c^i` for a given power series `f` and parameter `c`. -/
 def convergenceSet (f : PowerSeries R) : Set ℝ := {‖coeff R i f‖ * c^i | i : ℕ}
 
+open Finset in
 lemma convergenceSet_BddAbove {f : PowerSeries R} (hf : IsRestricted c f) :
   BddAbove (convergenceSet c f) := by
-  simp_rw [IsRestricted, NormedAddCommGroup.tendsto_atTop] at hf
-  obtain ⟨N, hf⟩ := by simpa only [zero_lt_one, sub_zero, norm_mul, norm_norm, norm_pow,
-    Real.norm_eq_abs, forall_const, abs_norm] using (hf 1)
-  simp_rw [bddAbove_def, convergenceSet]
-  use max 1 (Finset.max' (Finset.image (fun i => ‖coeff R i f‖ * c^i) (Finset.range (N+1)))
-    (by simp only [Finset.image_nonempty, Finset.nonempty_range_iff, ne_eq,
-    AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false,
-    not_false_eq_true]))
+  simp_rw [isRestricted_iff] at hf
+  obtain ⟨N, hf⟩ := by simpa using (hf 1)
+  rw [bddAbove_def, convergenceSet]
+  use max 1 (Finset.max' (Finset.image (fun i => ‖coeff R i f‖ * c^i) (range (N+1))) (by simp))
   simp only [Set.mem_setOf_eq, le_sup_iff, forall_exists_index, forall_apply_eq_imp_iff]
   intro i
-  rcases (Nat.le_total i N) with h | h
+  rcases le_total i N with h | h
   · right
     apply Finset.le_max'
     simp only [Finset.mem_image, Finset.mem_range]
-    exact ⟨i, by exact Order.lt_add_one_iff.mpr h, rfl⟩
-  · exact Or.inl (le_of_lt (lt_of_le_of_lt (mul_le_mul_of_nonneg_left
-      (by simpa only [abs_pow] using le_abs_self (c ^ i)) (norm_nonneg _)) (hf i h)))
+    exact ⟨i, Order.lt_add_one_iff.mpr h, rfl⟩
+  · left
+    calc _ ≤ ‖(coeff R i) f‖ * |c ^ i| := by bound
+         _ ≤ 1 := by simpa using (hf i h).le
 
-lemma convergenceSet_nneg_BddAbove {f : PowerSeries R} (hf : IsRestricted c f) :
-     ∃ A, A > 0 ∧ ∀ i, ‖coeff R i f‖ * c^i ≤ A := by
+lemma convergenceSet_leNNeg {f : PowerSeries R} (hf : IsRestricted c f) :
+    ∃ A > 0, ∀ i, ‖coeff R i f‖ * c ^ i ≤ A := by
   obtain ⟨n, hn⟩ := by simpa only [bddAbove_def] using (convergenceSet_BddAbove c hf)
   simp_rw [convergenceSet, Set.mem_setOf_eq, forall_exists_index, forall_apply_eq_imp_iff] at hn
   rcases (eq_zero_or_neZero n) with h | h
-  · exact ⟨n + 1, ⟨by aesop, fun i => le_trans (hn i) (by aesop)⟩⟩
-  · exact ⟨|n|, by aesop, fun i => le_trans (hn i) (le_abs_self n)⟩
+  · exact ⟨n + 1, ⟨by aesop, fun i ↦ by linarith [hn i]⟩⟩
+  · exact ⟨|n|, by aesop, fun i ↦ by linarith [hn i, le_abs_self n]⟩
 
 variable [IsUltrametricDist R]
 
@@ -101,8 +99,8 @@ open IsUltrametricDist
 
 lemma mul {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) :
     IsRestricted c (f * g) := by
-  obtain ⟨a, ha, fBound1⟩ := convergenceSet_nneg_BddAbove |c| ((isRestricted_iff_abs c f).mp hf)
-  obtain ⟨b, hb, gBound1⟩ := convergenceSet_nneg_BddAbove |c| ((isRestricted_iff_abs c g).mp hg)
+  obtain ⟨a, ha, fBound1⟩ := convergenceSet_leNNeg |c| ((isRestricted_iff_abs c f).mp hf)
+  obtain ⟨b, hb, gBound1⟩ := convergenceSet_leNNeg |c| ((isRestricted_iff_abs c g).mp hg)
   simp only [isRestricted_iff, norm_mul, norm_pow, Real.norm_eq_abs, abs_norm,
     PowerSeries.coeff_mul] at ⊢ hf hg
   intro ε hε
