@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: William Coram
 -/
 
-import Mathlib.Algebra.Group.NatPowAssoc
 import Mathlib.Analysis.Normed.Group.Ultra
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.RingTheory.PowerSeries.Basic
