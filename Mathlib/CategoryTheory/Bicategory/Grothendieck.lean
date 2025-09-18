@@ -237,7 +237,7 @@ theorem map_comp_forget (α : F ⟶ G) : map α ⋙ forget G = forget F := rfl
 section
 
 variable (F)
-(now covariant)
+
 /-- The natural isomorphism witnessing the pseudo-unity constraint of `Grothendieck.map`. -/
 def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ᶜ F) :=
   NatIso.ofComponents (fun _ ↦ eqToIso (by cat_disch))
