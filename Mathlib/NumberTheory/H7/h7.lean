@@ -1026,7 +1026,7 @@ lemma log_zero_zero : log α ≠ 0 := by
   rw [exp_log, exp_zero] at this
   apply htriv.2; exact this; exact htriv.1
 
-omit h2mq in
+omit h2mq hirr in
 lemma decompose_ij (i j : Fin (q * q)) : i = j ↔
   (finProdFinEquiv.symm.1 i).1 = (finProdFinEquiv.symm.1 j).1 ∧
     ((finProdFinEquiv.symm.1 i).2 : Fin q) = (finProdFinEquiv.symm.1 j).2 := by
@@ -1048,6 +1048,7 @@ def ρ : Fin (q * q) → ℂ := fun i => by
   let b : ℕ := (finProdFinEquiv.symm.1 i).2 + 1
   exact (a + (b • β)) * Complex.log α
 
+include hirr htriv in
 lemma hdist : ∀ (i j : Fin (q * q)), i ≠ j → ρ α β q i ≠ ρ α β q j := by
   intros i j hij
   rw [ne_eq, decompose_ij] at hij
@@ -1069,70 +1070,10 @@ lemma hdist : ∀ (i j : Fin (q * q)), i ≠ j → ρ α β q i ≠ ρ α β q j
       have hb := hirr (i1 - j1) (j2 - i2)
       rw [← ne_eq]
       change i1 + i2 • β ≠ j1 + j2 • β
-      intros H
-      have hb := hirr (i1 - j1) (j2 - i2)
-      apply hb
-      have h1 : i1 + i2 • β = j1 + j2 • β  ↔
-        (i1 + i2 • β) - (j1 + j2 • β) = 0 := Iff.symm sub_eq_zero
-      rw [h1] at H
-      have h2 : ↑i1 + ↑i2 • β - (↑j1 + ↑j2 • β) = 0 ↔
-         ↑i1 + i2 • β - ↑j1 - ↑j2 • β = 0 := by {
-          simp_all only [ne_eq, Equiv.toFun_as_coe,
-          finProdFinEquiv_symm_apply,
-          Fin.coe_divNat, Nat.cast_add,
-            Int.natCast_ediv, Nat.cast_one,
-            add_sub_add_right_eq_sub, Int.cast_sub,
-            Fin.coe_modNat, Int.natCast_emod,
-            nsmul_eq_mul, iff_true, sub_self,
-            add_sub_cancel_left]}
-      rw [h2] at H
-      have h3 : ↑i1 + i2 • β - ↑j1 - j2 • β = 0 ↔
-          ↑i1 - ↑j1 + ↑i2 • β - ↑j2 • β = 0 := by {
-        ring_nf}
-      rw [h3] at H
-      have hij2 : i2 ≠ j2 := by {
-        by_contra HC
-        apply Heq
-        refine Fin.eq_of_val_eq ?_
-        exact Nat.succ_inj'.mp HC
-        }
-      have h4 : ↑i1 - ↑j1 + ↑i2 • β - ↑j2 • β = 0 ↔
-        ↑i1 - ↑j1 + (i2 - ↑j2 : ℂ) • β = 0 := by {
-        rw [sub_eq_add_neg]
-        simp only [nsmul_eq_mul]
-        rw [← neg_mul, add_assoc, ← add_mul]
-        simp only [smul_eq_mul]
-        rw [← sub_eq_add_neg]}
-      rw [h4] at H
-      have h5 : ↑i1 - ↑j1 + (i2 - ↑j2 : ℂ) • β =0 ↔
-       ↑i1 - ↑j1 = - ((i2 - ↑j2 : ℂ) • β) := by {
-        rw [add_eq_zero_iff_eq_neg]}
-      rw [h5] at H
-      have h6 : ↑i1 - ↑j1 = - ((i2 - ↑j2 : ℂ) • β) ↔
-          ↑i1 - ↑j1 = (↑j2 - ↑i2 : ℂ) • β := by {
-        refine Eq.congr_right ?_
-        simp only [smul_eq_mul]
-        rw [← neg_mul]
-        simp only [neg_sub]}
-      rw [h6] at H
-      have h7 : ↑i1 - ↑j1 = (↑j2 - ↑i2 : ℂ) • β ↔
-         (↑i1 - ↑j1) /(↑j2 - ↑i2 : ℂ) =  β := by {
-        simp only [smul_eq_mul]
-        rw [div_eq_iff, mul_comm]
-        intros HC
-        apply hij2
-        rw [sub_eq_zero] at HC
-        simp only [Nat.cast_inj] at HC
-        exact HC.symm}
-      rw [h7] at H
-      rw [H.symm]
-      simp only [Int.cast_sub, Int.cast_natCast]
-
-
-      -- apply sum_b β (hirr := hirr) i1 i2 j1 j2
-      -- unfold i2 j2
-      -- simp only [Nat.add_right_cancel_iff]
-      -- exact Fin.val_ne_of_ne Heq
+      apply sum_b β (hirr := hirr) i1 i2 j1 j2
+      unfold i2 j2
+      simp only [Nat.add_right_cancel_iff]
+      exact Fin.val_ne_of_ne Heq
   · exact log_zero_zero α β hirr htriv
 
 def V := vandermonde (fun t => ρ α β q t)
