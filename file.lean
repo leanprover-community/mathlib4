@@ -184,6 +184,7 @@ protected theorem isOpenMap' (h : ∃ (n : ℕ) (x : _), x ∈ interior (closure
 
 end
 
+/-- Following [Rudin, *Functional Analysis* (Theorem 4.12 (b) => (c))][rudin1991] -/
 example {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [InnerProductSpace ℝ α]
     [InnerProductSpace ℝ β] [CompleteSpace β] [CompleteSpace α] (T : α →L[ℝ] β) {δ : ℝ} (h0 : δ > 0)
     (h : closure (T '' (Metric.ball (0 : α) 1)) ⊇ Metric.ball (0 : β) δ) :

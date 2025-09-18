@@ -77,15 +77,8 @@ variable [CompleteSpace F]
 
 namespace ContinuousLinearMap
 
-include σ' in
-/-- First step of the proof of the Banach open mapping theorem (using completeness of `F`):
-by Baire's theorem, there exists a ball in `E` whose image closure has nonempty interior.
-Rescaling everything, it follows that any `y ∈ F` is arbitrarily well approached by
-images of elements of norm at most `C * ‖y‖`.
-For further use, we will only need such an element whose image
-is within distance `‖y‖/2` of `y`, to apply an iterative process. -/
-theorem exists_approx_preimage_norm_le (surj : Surjective f) :
-    ∃ C ≥ 0, ∀ y, ∃ x, dist (f x) y ≤ 1 / 2 * ‖y‖ ∧ ‖x‖ ≤ C * ‖y‖ := by
+lemma noempty_interior_of_surj (surj : Surjective f) :
+    ∃ (n : ℕ) (x : _), x ∈ interior (closure (f '' ball 0 n)) :=
   have A : ⋃ n : ℕ, closure (f '' ball 0 n) = Set.univ := by
     refine Subset.antisymm (subset_univ _) fun y _ => ?_
     rcases surj y with ⟨x, hx⟩
@@ -93,10 +86,20 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
     refine mem_iUnion.2 ⟨n, subset_closure ?_⟩
     refine (mem_image _ _ _).2 ⟨x, ⟨?_, hx⟩⟩
     rwa [mem_ball, dist_eq_norm, sub_zero]
-  have : ∃ (n : ℕ) (x : _), x ∈ interior (closure (f '' ball 0 n)) :=
-    nonempty_interior_of_iUnion_of_closed (fun n => isClosed_closure) A
-  simp only [mem_interior_iff_mem_nhds, Metric.mem_nhds_iff] at this
-  rcases this with ⟨n, a, ε, ⟨εpos, H⟩⟩
+  nonempty_interior_of_iUnion_of_closed (fun n => isClosed_closure) A
+
+include σ' in
+/-- First step of the proof of the Banach open mapping theorem (using completeness of `F`):
+by Baire's theorem, there exists a ball in `E` whose image closure has nonempty interior.
+Rescaling everything, it follows that any `y ∈ F` is arbitrarily well approached by
+images of elements of norm at most `C * ‖y‖`.
+For further use, we will only need such an element whose image
+is within distance `‖y‖/2` of `y`, to apply an iterative process. -/
+theorem exists_approx_preimage_norm_le'
+    (h : ∃ (n : ℕ) (x : _), x ∈ interior (closure (f '' ball 0 n))) :
+    ∃ C ≥ 0, ∀ y, ∃ x, dist (f x) y ≤ 1 / 2 * ‖y‖ ∧ ‖x‖ ≤ C * ‖y‖ := by
+  simp only [mem_interior_iff_mem_nhds, Metric.mem_nhds_iff] at h
+  rcases h with ⟨n, a, ε, ⟨εpos, H⟩⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
   refine ⟨(ε / 2)⁻¹ * ‖c‖ * 2 * n, by positivity, fun y => ?_⟩
   rcases eq_or_ne y 0 with rfl | hy
@@ -153,6 +156,12 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
         _ = (ε / 2)⁻¹ * ‖c‖ * 2 * ↑n * ‖y‖ := by ring
     exact ⟨σ' d⁻¹ • x, J, K⟩
 
+include σ' in
+theorem exists_approx_preimage_norm_le (surj : Surjective f) :
+    ∃ C ≥ 0, ∀ y, ∃ x, dist (f x) y ≤ 1 / 2 * ‖y‖ ∧ ‖x‖ ≤ C * ‖y‖ :=
+  have h := noempty_interior_of_surj f surj
+  exists_approx_preimage_norm_le' f h
+
 variable [CompleteSpace E]
 
 section
@@ -160,9 +169,9 @@ include σ'
 
 /-- The Banach open mapping theorem: if a bounded linear map between Banach spaces is onto, then
 any point has a preimage with controlled norm. -/
-theorem exists_preimage_norm_le (surj : Surjective f) :
+theorem exists_preimage_norm_le' (h : ∃ (n : ℕ) (x : _), x ∈ interior (closure (f '' ball 0 n))) :
     ∃ C > 0, ∀ y, ∃ x, f x = y ∧ ‖x‖ ≤ C * ‖y‖ := by
-  obtain ⟨C, C0, hC⟩ := exists_approx_preimage_norm_le f surj
+  obtain ⟨C, C0, hC⟩ := exists_approx_preimage_norm_le' f h
   /- Second step of the proof: starting from `y`, we want an exact preimage of `y`. Let `g y` be
     the approximate preimage of `y` given by the first step, and `h y = y - f(g y)` the part that
     has no preimage yet. We will iterate this process, taking the approximate preimage of `h y`,
@@ -225,11 +234,19 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
   rw [sub_zero] at feq
   exact ⟨x, feq, x_ineq⟩
 
+/-- The Banach open mapping theorem: if a bounded linear map between Banach spaces is onto, then
+any point has a preimage with controlled norm. -/
+theorem exists_preimage_norm_le (surj : Surjective f) :
+    ∃ C > 0, ∀ y, ∃ x, f x = y ∧ ‖x‖ ≤ C * ‖y‖ :=
+  have h := noempty_interior_of_surj f surj
+  exists_preimage_norm_le' f h
+
 /-- The Banach open mapping theorem: a surjective bounded linear map between Banach spaces is
 open. -/
-protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
+protected theorem isOpenMap' (h : ∃ (n : ℕ) (x : _), x ∈ interior (closure (f '' ball 0 n))) :
+    IsOpenMap f := by
   intro s hs
-  rcases exists_preimage_norm_le f surj with ⟨C, Cpos, hC⟩
+  rcases exists_preimage_norm_le' f h with ⟨C, Cpos, hC⟩
   refine isOpen_iff.2 fun y yfs => ?_
   rcases yfs with ⟨x, xs, fxy⟩
   rcases isOpen_iff.1 hs x xs with ⟨ε, εpos, hε⟩
@@ -247,6 +264,12 @@ protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
         rwa [mem_ball, dist_eq_norm] at hz
       _ = ε := mul_div_cancel₀ _ (ne_of_gt Cpos)
   exact Set.mem_image_of_mem _ (hε this)
+
+/-- The Banach open mapping theorem: a surjective bounded linear map between Banach spaces is
+open. -/
+protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f :=
+  have h := noempty_interior_of_surj f surj
+  ContinuousLinearMap.isOpenMap' f h
 
 theorem isQuotientMap (surj : Surjective f) : IsQuotientMap f :=
   (f.isOpenMap surj).isQuotientMap f.continuous surj
