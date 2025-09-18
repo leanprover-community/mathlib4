@@ -115,7 +115,7 @@ theorem mk_add_mk_left {m1 m2 : M} {s : ℕ+} :
   rw [mk_add_mk, mk_eq_mk]
   exact ⟨1, by simp [smul_smul]⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_add {m1 m2 : M} : ↑(m1 + m2) = (↑m1 + ↑m2 : DivisibleHull M) := by simp [mk_add_mk_left]
 
 variable (M) in
