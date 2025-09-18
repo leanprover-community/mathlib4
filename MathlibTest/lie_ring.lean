@@ -27,6 +27,12 @@ info: the term is reduced to -6 • ⁅⁅a, b⁆, ⁅⁅a, b⁆, c⁆⁆ + (6 �
 #guard_msgs in
 #lie_reduce ⁅⁅-2 • a, b⁆, ⁅a, ⁅3 • b, c⁆⁆⁆
 
+/--
+info: the term is reduced to 1 • ⁅⁅⁅⁅a, b⁆, c⁆, ⁅a, c⁆⁆, b⁆ + (-1 • ⁅⁅⁅⁅a, b⁆, c⁆, b⁆, ⁅a, c⁆⁆ + 0)
+-/
+#guard_msgs in
+#lie_reduce ⁅⁅a, ⁅b, c⁆⁆, ⁅⁅a, b⁆, c⁆⁆
+
 /-- info: Try this: 6 • ⁅⁅⁅⁅a, b⁆, ⁅a, c⁆⁆, b⁆, c⁆ +
   (-6 • ⁅⁅⁅⁅a, b⁆, b⁆, ⁅a, c⁆⁆, c⁆ + (-6 • ⁅⁅⁅⁅a, b⁆, c⁆, ⁅a, c⁆⁆, b⁆ + (6 • ⁅⁅⁅⁅a, b⁆, c⁆, b⁆, ⁅a, c⁆⁆ + 0))) -/
 #guard_msgs in example : (lie_reduce% ⁅⁅2 • a, b⁆, ⁅⁅b, ⁅a, -3 • c⁆⁆, c⁆⁆) = ⁅⁅2 • a, b⁆, ⁅⁅b, ⁅a, -3 • c⁆⁆, c⁆⁆ := by
