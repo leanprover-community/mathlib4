@@ -98,3 +98,6 @@ lemma ord_of_isUnit (U : X.Opens)
   have : genericPoint X ⤳ x := genericPoint_specializes x
   rw [← TopCat.Presheaf.germ_stalkSpecializes X.presheaf hx' this]
   rfl
+
+end Scheme
+end AlgebraicGeometry
