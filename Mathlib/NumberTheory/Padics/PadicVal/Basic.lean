@@ -20,7 +20,7 @@ assumptions on `p`. The `p`-adic valuations on `ℕ` and `ℤ` agree with that o
 
 The valuation induces a norm on `ℚ`. This norm is defined in padicNorm.lean.
 
-## Notations
+## Notation
 
 This file uses the local notation `/.` for `Rat.mk`.
 
@@ -293,7 +293,7 @@ theorem padicValRat_le_padicValRat_iff {n₁ n₂ d₁ d₂ : ℤ} (hn₁ : n₁
     lhs
     rw [padicValRat.defn p (Rat.divInt_ne_zero_of_ne_zero hn₁ hd₁) rfl,
       padicValRat.defn p (Rat.divInt_ne_zero_of_ne_zero hn₂ hd₂) rfl, sub_le_iff_le_add', ←
-      add_sub_assoc, _root_.le_sub_iff_add_le]
+      add_sub_assoc, le_sub_iff_add_le]
     norm_cast
     rw [← multiplicity_mul (Nat.prime_iff_prime_int.1 hp.1) hf1, add_comm,
         ← multiplicity_mul (Nat.prime_iff_prime_int.1 hp.1) hf2,
