@@ -46,7 +46,7 @@ non-pointwise multiplication.
 * `Finsupp.embDomain`: Maps the domain of a `Finsupp` by an embedding.
 * `Finsupp.zipWith`: Postcomposition of two `Finsupp`s with a function `f` such that `f 0 0 = 0`.
 
-## Notations
+## Notation
 
 This file adds `α →₀ M` as a global notation for `Finsupp α M`.
 
