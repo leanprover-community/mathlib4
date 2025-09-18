@@ -22,8 +22,6 @@ where `𝓓` denote the different ideal.
 
 -/
 
-
-
 open nonZeroDivisors IntermediateField Algebra Module
 
 variable (A K L B : Type*) [CommRing A] [Field K] [Algebra A K] [IsFractionRing A K] [CommRing B]
