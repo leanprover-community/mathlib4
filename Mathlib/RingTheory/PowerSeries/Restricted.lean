@@ -44,7 +44,7 @@ lemma zero : IsRestricted c (0 : PowerSeries R) := by
 
 lemma one : IsRestricted c (1 : PowerSeries R) := by
   simp only [isRestricted_iff, coeff_one, norm_mul, norm_pow, Real.norm_eq_abs]
-  refine fun _ _ ↦ ⟨1, fun n hn => ?_ ⟩
+  refine fun _ _ ↦ ⟨1, fun n hn ↦ ?_ ⟩
   split
   · omega
   · simpa
@@ -104,35 +104,30 @@ lemma mul {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) 
   simp only [isRestricted_iff, norm_mul, norm_pow, Real.norm_eq_abs, abs_norm,
     PowerSeries.coeff_mul] at ⊢ hf hg
   intro ε hε
-  obtain ⟨Nf, fBound2⟩ := (hf (ε/ (max a b))) (div_pos hε (lt_sup_of_lt_left ha))
-  obtain ⟨Ng, gBound2⟩ := (hg (ε/ (max a b))) (div_pos hε (lt_sup_of_lt_left ha))
-  refine ⟨2 * max Nf Ng,  fun n hn => ?_⟩
-  obtain ⟨i, hi, ultrametric⟩ := exists_norm_finset_sum_le (Finset.antidiagonal n)
+  obtain ⟨Nf, fBound2⟩ := (hf (ε / (max a b))) (by positivity)
+  obtain ⟨Ng, gBound2⟩ := (hg (ε / (max a b))) (by positivity)
+  refine ⟨2 * max Nf Ng,  fun n hn ↦ ?_⟩
+  obtain ⟨⟨fst, snd⟩, hi, ultrametric⟩ := exists_norm_finset_sum_le (Finset.antidiagonal n)
     (fun a => (coeff R a.1) f * (coeff R a.2) g)
-  have InterimBound1 := mul_le_mul_of_nonneg_right ultrametric (pow_nonneg (abs_nonneg c) n)
-  have InterimBound2 := mul_le_mul_of_nonneg_right
-    (NormedRing.norm_mul_le ((coeff R i.1) f) ((coeff R i.2) g)) (pow_nonneg (abs_nonneg c) n)
-  have hi := by simpa only [Finset.mem_antidiagonal] using hi (⟨(0, n), by aesop⟩)
-  have : ‖(coeff R i.1) f‖ * ‖(coeff R i.2) g‖ * |c|^n =
-      ‖(coeff R i.1) f‖ * |c|^i.1 * (‖(coeff R i.2) g‖ * |c|^i.2) := by
-    ring_nf
-    simp_rw [mul_assoc, ← npow_add, hi]
-  simp only [this] at InterimBound2
-  have : i.1 ≥ max Nf Ng ∨ i.2 ≥ max Nf Ng := by
-    omega
+  obtain ⟨rfl⟩ := by simpa only [Finset.mem_antidiagonal] using hi (⟨(0, n), by aesop⟩)
+  calc _ ≤ ‖(coeff R fst) f * (coeff R snd) g‖ * |c| ^ (fst + snd) := by bound
+       _ ≤ ‖(coeff R fst) f‖ * |c| ^ fst * (‖(coeff R snd) g‖ * |c| ^ snd) := by
+        have := mul_le_mul_of_nonneg_right
+          (NormedRing.norm_mul_le ((coeff R fst) f) ((coeff R snd) g))
+          (pow_nonneg (abs_nonneg c) (fst + snd))
+        grind
+  have : fst ≥ max Nf Ng ∨ snd ≥ max Nf Ng := by omega
   rcases this with this | this
-  · have FinalBound := mul_lt_mul_of_lt_of_le_of_nonneg_of_pos ((fBound2 i.1)
-      (le_of_max_le_left this)) (gBound1 i.2) (Left.mul_nonneg (norm_nonneg ((coeff R i.1) f))
-      (pow_nonneg (abs_nonneg c) i.1)) hb
-    exact lt_of_lt_of_le (lt_of_le_of_lt (le_trans InterimBound1 InterimBound2) FinalBound)
-      (by simpa only [div_mul_comm] using ((mul_le_iff_le_one_left hε).mpr
-      ((div_le_one₀ (lt_sup_of_lt_left ha)).mpr (le_max_right a b))))
-  · have FinalBound := mul_lt_mul_of_le_of_lt_of_nonneg_of_pos (fBound1 i.1) ((gBound2 i.2)
-      (le_of_max_le_right this)) (Left.mul_nonneg (norm_nonneg ((coeff R i.2) g))
-      (pow_nonneg (abs_nonneg c) i.2)) ha
-    exact lt_of_lt_of_le (lt_of_le_of_lt (le_trans InterimBound1 InterimBound2) FinalBound)
-      (by simpa only [mul_div_left_comm] using ((mul_le_iff_le_one_right hε).mpr
-      ((div_le_one₀ (lt_sup_of_lt_left ha)).mpr (le_max_left a b))))
+  · calc _ < ε / max a b * b := mul_lt_mul_of_lt_of_le_of_nonneg_of_pos ((fBound2 fst) (by aesop))
+          (gBound1 snd) (by bound) hb
+         _ ≤ ε := by
+          simpa only [div_mul_comm] using ((mul_le_iff_le_one_left hε).mpr
+            ((div_le_one₀ (lt_sup_of_lt_left ha)).mpr (le_max_right a b)))
+  · calc _ < a * (ε / max a b) := mul_lt_mul_of_le_of_lt_of_nonneg_of_pos (fBound1 fst)
+          ((gBound2 snd) (by aesop)) (by bound) ha
+         _ ≤ ε := by
+          simpa only [mul_div_left_comm] using ((mul_le_iff_le_one_right hε).mpr
+            ((div_le_one₀ (lt_sup_of_lt_left ha)).mpr (le_max_left a b)))
 
 end IsRestricted
 end PowerSeries
