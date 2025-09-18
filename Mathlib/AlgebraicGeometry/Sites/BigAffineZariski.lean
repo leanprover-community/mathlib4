@@ -168,11 +168,11 @@ instance : standardOpenImmersion.op.IsStableUnderBaseChange :=
 
 /-- The standard pretopology on `CommRingCatᵒᵖ` consists standard open immersions, i.e. those
 that are localization maps away from some element. -/
-def standard : Pretopology CommRingCat.{u}ᵒᵖ :=
+def standardPretopology : Pretopology CommRingCat.{u}ᵒᵖ :=
   standardOpenImmersion.op.pretopology
 
 theorem isOpenImmersion_of_mem_standard {X Y : CommRingCat.{u}ᵒᵖ} {p : Presieve X}
-    (hp : p ∈ standard.coverings X) {u : Y ⟶ X} (hu : p u) :
+    (hp : p ∈ standardPretopology.coverings X) {u : Y ⟶ X} (hu : p u) :
     IsOpenImmersion (Scheme.Spec.map u) := by
   algebraize [u.unop.hom]
   obtain ⟨r, hr⟩ := hp hu
@@ -229,7 +229,7 @@ open TopologicalSpace
 
 /-- Intersection of standard, jointly surjective, and finite. -/
 def zariskiPretopology : Pretopology CommRingCat.{u}ᵒᵖ :=
-  standard ⊓ (jointlySurjective ⊓ .finite _)
+  standardPretopology ⊓ (jointlySurjective ⊓ .finite _)
 
 /-- The presieve that corresponds to an affine cover. -/
 def _root_.CategoryTheory.Presieve.ofAffineCover {X : CommRingCat.{u}ᵒᵖ}
