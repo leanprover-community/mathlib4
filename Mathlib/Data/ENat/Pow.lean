@@ -9,14 +9,17 @@ import Mathlib.Data.ENat.Basic
 /-!
 # Powers of extended natural numbers
 
-We define the power of an extended natural `x : ℕ∞` by another extended natural `y : ℕ∞`.
-When `y` is finite, it extends the exponentiation by natural numbers. When `y = ⊤`, this definition
-is compatible with cardinality `ENat.card`.
+We define the power of an extended natural `x : ℕ∞` by another extended natural `y : ℕ∞`. The
+definition is chosen such that `x ^ y` is the cardinality of `α → β`, when `β` has cardinality `x`
+and `α` has cardinality `y`:
 
-## TODO
+* When `y` is finite, it coincides with the exponentiation by natural numbers (e.g. `⊤ ^ 0 = 1`).
+* We set `0 ^ ⊤ = 0`, `1 ^ ⊤ = 1` and `x ^ ⊤ = ⊤` for `x > 1`.
 
-`ℝ≥0∞` powers of `ℝ≥0∞` numbers and coercion from `ℕ∞`: for `x`, `y : ℕ∞`, prove that
-`(x ^ y : ℝ≥0∞) = (x : ℝ≥0∞) ^ (y : ℝ≥0∞)`.
+## Naming convention
+
+The quantity `x ^ y` for `x`, `y : ℕ∞` is defined as a `Pow` instance. It is called `epow` in
+lemmas' names.
 -/
 
 namespace ENat
