@@ -6,8 +6,8 @@ Authors: Bhavik Mehta, Yaël Dillies
 import Mathlib.Analysis.Convex.Cone.Extension
 import Mathlib.Analysis.Convex.Gauge
 import Mathlib.Analysis.Normed.Order.Lattice
-import Mathlib.Analysis.NormedSpace.Extend
 import Mathlib.Analysis.RCLike.Lemmas
+import Mathlib.Analysis.RCLike.Extend
 
 /-!
 # Separation Hahn-Banach theorem
