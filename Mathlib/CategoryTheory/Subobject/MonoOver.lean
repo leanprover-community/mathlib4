@@ -50,7 +50,7 @@ open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C] {X Y Z : C}
 variable {D : Type u₂} [Category.{v₂} D]
 
-/-- The object property in `Over X` of being a monomorphism. -/
+/-- The object property in `Over X` of the structure morphism being a monomorphism. -/
 abbrev Over.isMonoOver (X : C) : ObjectProperty (Over X) :=
   fun f : Over X => Mono f.hom
 
@@ -213,7 +213,7 @@ section Limits
 
 variable {J : Type u₃} [Category.{v₃} J] (X : C)
 
-lemma closedUnderLimitsOfShape_of_isMonoOver :
+lemma closedUnderLimitsOfShape_isMonoOver :
     ClosedUnderLimitsOfShape J (Over.isMonoOver X) := by
   refine fun F _ hc p ↦ ⟨fun g h e ↦ ?_⟩
   apply IsLimit.hom_ext <| WithTerminal.isLimitEquiv.invFun hc
