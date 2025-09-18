@@ -4,7 +4,7 @@ open Function Metric Set Filter Finset Topology NNReal
 
 open scoped LinearMap
 
-example {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [InnerProductSpace ℝ α]
+lemma p12 {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [InnerProductSpace ℝ α]
     [InnerProductSpace ℝ β] (T : α →L[ℝ] β) {δ : ℝ} (h0 : δ > 0)
     (h : ∀ f : β →L[ℝ] ℝ , δ * ‖f‖ ≤ ‖f.comp T‖) :
     closure (T '' (Metric.ball (0 : α) 1)) ⊇ Metric.ball (0 : β) δ := fun y hy ↦ by
@@ -45,7 +45,7 @@ example {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [InnerPr
   contradiction
 
 /-- Following [Rudin, *Functional Analysis* (Theorem 4.12 (b) => (c))][rudin1991] -/
-example {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [InnerProductSpace ℝ α]
+lemma p23 {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [InnerProductSpace ℝ α]
     [InnerProductSpace ℝ β] [CompleteSpace β] [CompleteSpace α] (T : α →L[ℝ] β) {δ : ℝ} (h0 : δ > 0)
     (h : closure (T '' (Metric.ball (0 : α) 1)) ⊇ Metric.ball (0 : β) δ) :
     T '' (Metric.ball (0 : α) 1) ⊇ Metric.ball (0 : β) δ := by
@@ -64,8 +64,8 @@ example {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [InnerPr
   rw [this] at int_t
   exact fun _ a => interior_subset (int_t a)
 
-example {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [InnerProductSpace ℝ α]
-    [InnerProductSpace ℝ β] [CompleteSpace β] [CompleteSpace α] (T : α →L[ℝ] β) {δ : ℝ} (h0 : δ > 0)
+lemma p34 {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [InnerProductSpace ℝ α]
+    [InnerProductSpace ℝ β] (T : α →L[ℝ] β) {δ : ℝ} (h0 : δ > 0)
     (h : T '' (Metric.ball (0 : α) 1) ⊇ Metric.ball (0 : β) δ) : (⇑T).Surjective  := by
   intro y
   by_cases ch : y = 0
@@ -81,3 +81,76 @@ example {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [InnerPr
     obtain ⟨a, ain, ha⟩ : ε • y ∈ T '' (Metric.ball (0 : α) 1) := h this
     use (1 / ε) • a
     simpa [ha] using inv_smul_smul₀ (ne_of_lt εpos).symm y
+
+lemma p41 {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [InnerProductSpace ℝ α]
+    [InnerProductSpace ℝ β] [CompleteSpace β] [CompleteSpace α] (T : α →L[ℝ] β)
+    (surj : (⇑T).Surjective) : ∃ δ > 0, ∀ f : β →L[ℝ] ℝ , δ * ‖f‖ ≤ ‖f.comp T‖ := by
+  have : IsOpenMap T := ContinuousLinearMap.isOpenMap T surj
+  have ho : IsOpen (T '' (ball 0 1)) := this (ball 0 1) isOpen_ball
+  have : 0 ∈ T '' (ball 0 1) := by
+    use 0
+    simp
+  rw [Metric.isOpen_iff] at ho
+  obtain⟨δ, δpos, hδ⟩ : ∃ δ > 0, ball 0 δ ⊆ T '' (ball 0 1) := ho 0 this
+  have : ⇑T '' (closure (ball 0 1)) = closure (⇑T '' (ball 0 1)) := by
+    refine image_closure_of_isCompact ?_ ?_
+    · have : closure (ball (0 : α) 1) = closedBall 0 1 := by
+        refine closure_ball 0 (by simp)
+      rw [this]
+
+      sorry
+    · have : Continuous T := by
+        exact ContinuousLinearMap.continuous T
+      exact Continuous.continuousOn this
+  have : closure (ball 0 δ) ⊆ ⇑T '' (closure (ball 0 1)) := by
+
+    sorry
+  have : closedBall 0 δ ⊆ ⇑T '' closedBall 0 1 := by
+
+    sorry
+  use δ
+  constructor
+  · exact δpos
+  · intro f
+    rw [ContinuousLinearMap.norm_def (f.comp T)]
+    apply le_csInf ?_ ?_
+    · simp [Set.nonempty_def]
+      use ‖f‖ * ‖T‖
+      constructor
+      · positivity
+      · intro x
+        calc
+        _ ≤ ‖f‖ * ‖T x‖ := ContinuousLinearMap.le_opNorm f (T x)
+        _ ≤ ‖f‖ * (‖T‖ * ‖x‖) := by
+          have : ‖T x‖ ≤ ‖T‖ * ‖x‖ := ContinuousLinearMap.le_opNorm T x
+          refine mul_le_mul_of_nonneg ?_ this (by positivity) (by positivity)
+          simp
+        _ = _ := by
+          rw [mul_assoc]
+    · intro c ⟨cpos, hc⟩
+      have : ‖f‖ ≤ c / δ := by
+        refine ContinuousLinearMap.opNorm_le_bound' f ?_ ?_
+        · positivity
+        · intro x ne
+          obtain ⟨a, ha⟩ : ∃ a, T a = x := surj x
+          rw [← ha]
+          calc
+          _ ≤ c * ‖a‖ := by
+            exact hc a
+          _ ≤ _ := by
+            
+            sorry
+      sorry
+
+
+example {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [InnerProductSpace ℝ α]
+    [InnerProductSpace ℝ β] [CompleteSpace β] [CompleteSpace α] (T : α →L[ℝ] β) : List.TFAE [
+    ∃ δ > 0, ∀ f : β →L[ℝ] ℝ , δ * ‖f‖ ≤ ‖f.comp T‖,
+    ∃ δ > 0, closure (T '' (Metric.ball (0 : α) 1)) ⊇ Metric.ball (0 : β) δ,
+    ∃ δ > 0, T '' (Metric.ball (0 : α) 1) ⊇ Metric.ball (0 : β) δ,
+    (⇑T).Surjective] := by
+  tfae_have 1 → 2 := sorry
+  tfae_have 2 → 3 := sorry
+  tfae_have 3 → 4 := sorry
+  tfae_have 4 → 1 := p41 T
+  tfae_finish
