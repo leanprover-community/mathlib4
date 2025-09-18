@@ -14,7 +14,8 @@ This file defines strongly connected quivers and related concepts.
 ## Main definitions
 
 * `IsStronglyConnected V`: A quiver where every pair of vertices is connected by a path
-* `IsStronglyConnectedPos V`: A quiver where every pair of vertices is connected by a path of positive length
+* `IsStronglyConnectedPos V`: A quiver where every pair of vertices is connected by a path of
+positive length
 * `StronglyConnectedComponent V`: The type of strongly connected components of a quiver
 * `stronglyConnectedSetoid V`: The equivalence relation defining strong connectivity
 
@@ -48,7 +49,7 @@ def IsStronglyConnectedPos (V : Type*) [Quiver V] : Prop :=
   ∀ i j : V, Nonempty { p : Path i j // p.length > 0 }
 
 /-- Expand `IsStronglyConnectedPos` to an existential over paths with positive length. -/
-theorem isStronglyConnectedPos_iff_forall_exists_pos_length_path
+lemma isStronglyConnectedPos_iff_forall_exists_pos_length_path
     (V : Type*) [Quiver V] :
     IsStronglyConnectedPos V ↔ ∀ i j : V, ∃ p : Path i j, 0 < p.length := by
   constructor
@@ -60,13 +61,13 @@ theorem isStronglyConnectedPos_iff_forall_exists_pos_length_path
     exact ⟨⟨p, hp⟩⟩
 
 /-- From strong connectivity with positive paths, get a path of positive length from `i` to `j`. -/
-theorem exists_pos_length_path_of_isStronglyConnectedPos
+lemma exists_pos_length_path_of_isStronglyConnectedPos
     {V : Type*} [Quiver V] (h : IsStronglyConnectedPos V) (i j : V) :
     ∃ p : Path i j, 0 < p.length :=
   (isStronglyConnectedPos_iff_forall_exists_pos_length_path V).1 h i j
 
 /-- From strong connectivity with positive paths, get a cycle of positive length at any vertex. -/
-theorem exists_pos_length_cycle_of_isStronglyConnectedPos
+lemma exists_pos_length_cycle_of_isStronglyConnectedPos
     {V : Type*} [Quiver V] (h : IsStronglyConnectedPos V) (i : V) :
     ∃ p : Path i i, 0 < p.length :=
   exists_pos_length_path_of_isStronglyConnectedPos h i i
@@ -94,13 +95,13 @@ instance : CoeTC V (StronglyConnectedComponent V) := ⟨StronglyConnectedCompone
 
 instance [Inhabited V] : Inhabited (StronglyConnectedComponent V) := ⟨(default : V)⟩
 
-protected theorem eq (a b : V) :
+protected lemma eq (a b : V) :
   (a : StronglyConnectedComponent V) = b
     ↔ (Nonempty (Path a b) ∧ Nonempty (Path b a)) :=
   Quotient.eq''
 
 @[simp]
-theorem mk_eq_mk {a b : V} :
+lemma mk_eq_mk {a b : V} :
     (StronglyConnectedComponent.mk a : StronglyConnectedComponent V) =
     StronglyConnectedComponent.mk b ↔
     (Nonempty (Path a b) ∧ Nonempty (Path b a)) :=
@@ -108,32 +109,32 @@ theorem mk_eq_mk {a b : V} :
 
 /-- In a strongly connected quiver with positive paths, every vertex has a self-loop
     (possibly of length > 1) -/
-theorem exists_self_path_of_isStronglyConnectedPos {V : Type*} [Quiver V]
+lemma exists_self_path_of_isStronglyConnectedPos {V : Type*} [Quiver V]
     (h : IsStronglyConnectedPos V) (v : V) :
     ∃ p : Path v v, 0 < p.length := by
   exact exists_pos_length_cycle_of_isStronglyConnectedPos h v
 
 /-- Strong connectivity is transitive -/
-theorem isStronglyConnected_transitive {V : Type*} [Quiver V]
+lemma isStronglyConnected_transitive {V : Type*} [Quiver V]
     (a b c : V) :
     Nonempty (Path a b) → Nonempty (Path b c) → Nonempty (Path a c) :=
   fun ⟨p⟩ ⟨q⟩ => ⟨p.comp q⟩
 
 /-- If there's a path in both directions, vertices are in the same SCC -/
-theorem stronglyConnectedComponent_eq_of_path {V : Type*} [Quiver V] {a b : V}
+lemma stronglyConnectedComponent_eq_of_path {V : Type*} [Quiver V] {a b : V}
     (hab : Nonempty (Path a b)) (hba : Nonempty (Path b a)) :
     (a : StronglyConnectedComponent V) = b :=
   (StronglyConnectedComponent.eq a b).2 ⟨hab, hba⟩
 
 /-- Vertices in the same SCC have paths in both directions -/
-theorem exists_path_of_stronglyConnectedComponent_eq {V : Type*} [Quiver V] {a b : V}
+lemma exists_path_of_stronglyConnectedComponent_eq {V : Type*} [Quiver V] {a b : V}
     (h : (a : StronglyConnectedComponent V) = b) :
     (Nonempty (Path a b)) ∧ (Nonempty (Path b a)) :=
   (StronglyConnectedComponent.eq a b).1 h
 
 /-- A vertex forms a singleton strongly connected component iff
     no other vertex has bidirectional paths with it -/
-theorem stronglyConnectedComponent_singleton_iff {V : Type*} [Quiver V] (v : V) :
+lemma stronglyConnectedComponent_singleton_iff {V : Type*} [Quiver V] (v : V) :
     (∀ w : V, (w : StronglyConnectedComponent V) = v → w = v) ↔
     (∀ w : V, w ≠ v → ¬(Nonempty (Path v w) ∧ Nonempty (Path w v))) := by
   constructor
@@ -149,12 +150,12 @@ theorem stronglyConnectedComponent_singleton_iff {V : Type*} [Quiver V] (v : V) 
     grind
 
 /-- Strong connectivity implies weak connectivity -/
-theorem isPreconnected_of_isStronglyConnected {V : Type*} [Quiver V]
+lemma isPreconnected_of_isStronglyConnected {V : Type*} [Quiver V]
     (h : IsStronglyConnected V) : IsPreconnected V :=
   h
 
 /-- Strong connectivity implies preconnectivity of the symmetrification -/
-theorem isPreconnected_symmetrify_of_isStronglyConnected {V : Type*} [Quiver V]
+lemma isPreconnected_symmetrify_of_isStronglyConnected {V : Type*} [Quiver V]
     (h : IsStronglyConnected V) : @IsPreconnected (Symmetrify V) _ := by
   intro a b
   obtain ⟨p⟩ := h a b
@@ -165,19 +166,19 @@ theorem isPreconnected_symmetrify_of_isStronglyConnected {V : Type*} [Quiver V]
 
 /-- If every vertex can reach every other vertex in the symmetrification,
     then we have weak connectivity -/
-theorem weakly_connected_of_preconnected_symmetrify {V : Type*} [Quiver V]
+lemma weakly_connected_of_preconnected_symmetrify {V : Type*} [Quiver V]
     (h : @IsPreconnected (Symmetrify V) _) :
     ∀ a b : V, Nonempty (@Path (Symmetrify V) _ a b) := h
 
 /-- Strong connectivity of a quiver implies its symmetrification is preconnected.
     The converse is false in general. -/
-theorem isStronglyConnected_implies_symmetrify_preconnected {V : Type*} [Quiver V] :
+lemma isStronglyConnected_implies_symmetrify_preconnected {V : Type*} [Quiver V] :
     IsStronglyConnected V → @IsPreconnected (Symmetrify V) _ :=
   isPreconnected_symmetrify_of_isStronglyConnected
 
 /-- A strongly connected quiver with positive paths is also strongly connected
     in the usual sense -/
-theorem isStronglyConnected_of_pos {V : Type*} [Quiver V]
+lemma isStronglyConnected_of_pos {V : Type*} [Quiver V]
     (h : IsStronglyConnectedPos V) : IsStronglyConnected V := by
   intro i j
   obtain ⟨p, _⟩ := exists_pos_length_path_of_isStronglyConnectedPos h i j
@@ -185,7 +186,7 @@ theorem isStronglyConnected_of_pos {V : Type*} [Quiver V]
 
 /-- If a strongly connected quiver has at least one edge, then it satisfies
     strong connectivity with positive paths -/
-theorem isStronglyConnectedPos_of_hasEdge {V : Type*} [Quiver V]
+lemma isStronglyConnectedPos_of_hasEdge {V : Type*} [Quiver V]
     (h_sc : IsStronglyConnected V)
     (h_edge : ∃ (i j : V), Nonempty (i ⟶ j)) :
     IsStronglyConnectedPos V := by
@@ -196,6 +197,7 @@ theorem isStronglyConnectedPos_of_hasEdge {V : Type*} [Quiver V]
   let p : Path i j := p₁.comp (e₀.toPath.comp p₂)
   have hp_pos : 0 < p.length := by
     simp [p, Path.length_comp]
+    exact Nat.pos_of_neZero (p₁.length + (1 + p₂.length))
   exact ⟨⟨p, hp_pos⟩⟩
 
 end StronglyConnectedComponent
