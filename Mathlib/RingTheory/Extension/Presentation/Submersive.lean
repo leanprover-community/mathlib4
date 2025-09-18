@@ -144,6 +144,33 @@ lemma aevalDifferential_toMatrix'_eq_mapMatrix_jacobiMatrix :
 
 end Matrix
 
+section
+
+variable [Finite σ]
+
+lemma jacobian_eq_det_aevalDifferential : P.jacobian = P.aevalDifferential.det := by
+  classical
+  cases nonempty_fintype σ
+  simp [← LinearMap.det_toMatrix', P.aevalDifferential_toMatrix'_eq_mapMatrix_jacobiMatrix,
+    jacobian_eq_jacobiMatrix_det, RingHom.map_det, P.algebraMap_eq]
+
+lemma isUnit_jacobian_iff_aevalDifferential_bijective :
+    IsUnit P.jacobian ↔ Function.Bijective P.aevalDifferential := by
+  rw [P.jacobian_eq_det_aevalDifferential, ← LinearMap.isUnit_iff_isUnit_det]
+  exact Module.End.isUnit_iff P.aevalDifferential
+
+lemma isUnit_jacobian_of_linearIndependent_of_span_eq_top
+    (hli : LinearIndependent S (fun j i : σ ↦ aeval P.val <| pderiv (P.map i) (P.relation j)))
+    (hsp : Submodule.span S
+      (Set.range <| (fun j i : σ ↦ aeval P.val <| pderiv (P.map i) (P.relation j))) = ⊤) :
+    IsUnit P.jacobian := by
+  classical
+  rw [isUnit_jacobian_iff_aevalDifferential_bijective]
+  exact LinearMap.bijective_of_linearIndependent_of_span_eq_top (Pi.basisFun _ _).span_eq
+    (by convert hli; simp) (by convert hsp; simp)
+
+end
+
 section Constructions
 
 /-- If `algebraMap R S` is bijective, the empty generators are a pre-submersive
