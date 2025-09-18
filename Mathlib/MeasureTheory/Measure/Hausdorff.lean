@@ -84,7 +84,7 @@ measures.
 * `MeasureTheory.hausdorffMeasure_pi_real`: for a nonempty `ι`, `μH[card ι]` on `ι → ℝ` equals
   Lebesgue measure.
 
-## Notations
+## Notation
 
 We use the following notation localized in `MeasureTheory`.
 
