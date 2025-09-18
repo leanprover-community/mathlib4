@@ -93,7 +93,7 @@ lemma p41 {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [Inner
   rw [Metric.isOpen_iff] at ho
   obtain⟨δ, δpos, hδ⟩ : ∃ δ > 0, ball 0 δ ⊆ T '' (ball 0 1) := ho 0 this
   have : ∀ a : α , ‖T a‖ ≥ δ * ‖a‖ := by
-    
+
     sorry
   use δ
   constructor
@@ -124,6 +124,7 @@ lemma p41 {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [Inner
           calc
           _ ≤ c * ‖a‖ := hc a
           _ ≤ _ := by
+
             sorry
       sorry
 
