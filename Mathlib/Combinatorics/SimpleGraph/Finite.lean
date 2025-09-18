@@ -477,9 +477,7 @@ theorem Adj.card_commonNeighbors_lt_degree {G : SimpleGraph V} [DecidableRel G.A
 theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
     Fintype.card ((⊤ : SimpleGraph V).commonNeighbors v w) = Fintype.card V - 2 := by
   simp only [commonNeighbors_top_eq, ← Set.toFinset_card, Set.toFinset_diff]
-  rw [Finset.card_sdiff]
-  · simp [Finset.card_univ, h]
-  · simp only [Set.toFinset_subset_toFinset, Set.subset_univ]
+  simp [Finset.card_sdiff, h]
 
 end Finite
 
