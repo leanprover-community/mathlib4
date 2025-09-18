@@ -525,10 +525,11 @@ instance hasLimitsOfShape [HasLimitsOfShape J (Over X)] :
     HasLimitsOfShape J (Subobject X) := by
   apply hasLimitsOfShape_thinSkeleton
 
-instance hasFiniteLimits [HasFiniteWidePullbacks C] : HasFiniteLimits (Subobject X) where
-  out _ _ := by infer_instance
+instance hasFiniteLimits [HasFiniteLimits (Over X)] : HasFiniteLimits (Subobject X) where
+  out _ _ _ := by infer_instance
 
-instance hasLimits [HasWidePullbacks.{v₃} C] : HasLimitsOfSize.{v₃, v₃} (Subobject X) where
+instance hasLimits [HasLimitsOfSize.{v₃, v₃} (Over X)] :
+    HasLimitsOfSize.{v₃, v₃} (Subobject X) where
   has_limits_of_shape _ _ := by infer_instance
 
 end Limits

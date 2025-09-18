@@ -229,15 +229,11 @@ instance hasLimitsOfShape [HasLimitsOfShape J (Over X)] :
     HasLimitsOfShape J (MonoOver X) := by
   apply hasLimitsOfShape_of_closedUnderLimits (closedUnderLimitsOfShape_of_isMonoOver X)
 
-instance hasFiniteLimits [HasFiniteWidePullbacks C] : HasFiniteLimits (MonoOver X) where
-  out _ _ _ := by
-    have := Over.hasFiniteLimits (B := X)
-    apply hasLimitsOfShape X
+instance hasFiniteLimits [HasFiniteLimits (Over X)] : HasFiniteLimits (MonoOver X) where
+  out _ _ _ := by apply hasLimitsOfShape X
 
-instance hasLimits [HasWidePullbacks.{v₃} C] : HasLimitsOfSize.{v₃, v₃} (MonoOver X) where
-  has_limits_of_shape _ _ := by
-    have := Over.hasLimits (B := X)
-    apply hasLimitsOfShape X
+instance hasLimits [HasLimitsOfSize.{v₃, v₃} (Over X)] : HasLimitsOfSize.{v₃, v₃} (MonoOver X) where
+  has_limits_of_shape _ _ := by apply hasLimitsOfShape X
 
 end Limits
 
