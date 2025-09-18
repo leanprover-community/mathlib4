@@ -262,8 +262,7 @@ protected theorem isOpenMap' (h : ∃ (n : ℕ) (x : _), x ∈ interior (closure
 /-- The Banach open mapping theorem: a surjective bounded linear map between Banach spaces is
 open. -/
 protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f :=
-  have h := noempty_interior_of_surj f surj
-  ContinuousLinearMap.isOpenMap' f h
+  f.isOpenMap' <| f.noempty_interior_of_surj surj
 
 theorem isQuotientMap (surj : Surjective f) : IsQuotientMap f :=
   (f.isOpenMap surj).isQuotientMap f.continuous surj
