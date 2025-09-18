@@ -601,7 +601,7 @@ theorem ker_pow_constant {f : End K V} {k : ℕ}
 
 end End
 
-lemma toFiniteDimensional (K : Type*) {V : Type*}
+lemma mem_finiteDimensional_submodule (K : Type*) {V : Type*}
     [DivisionRing K] [AddCommGroup V] [Module K V]
     (e : V) : ∃ (E' : Submodule K V) (_ : FiniteDimensional K E'), e ∈ E' := by
   classical

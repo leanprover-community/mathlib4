@@ -67,7 +67,7 @@ theorem conj_inner (x y : E ⊗[𝕜] F) : starRingEnd 𝕜 (inner 𝕜 x y) = i
 
 section move
 
-lemma toFiniteDimensional {K V V' : Type*} [Field K] [AddCommGroup V]
+lemma mem_finiteDimensional_range_mapIncl {K V V' : Type*} [Field K] [AddCommGroup V]
     [AddCommGroup V'] [Module K V] [Module K V'] (z : V ⊗[K] V') :
     ∃ (E' : Submodule K V) (F' : Submodule K V')
     (_ : FiniteDimensional K E') (_ : FiniteDimensional K F'),
