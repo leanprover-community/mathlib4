@@ -387,7 +387,19 @@ theorem Ferrand_Vasconcelos_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} 
       isNoetherianRing_of_surjective _ _ _ Ideal.Quotient.mk_surjective
     have fin : ∃ n, HasProjectiveDimensionLE
       (ModuleCat.of (R ⧸ Ideal.span {x}) (Shrink.{v, u} I')) n := by
-      sorry
+      rcases h with ⟨n, hn⟩
+      let _ : Module.Finite R ↑(ModuleCat.of R (Shrink.{v, u} I)) :=
+        Module.Finite.equiv (Shrink.linearEquiv.{v} R I).symm
+      have xreg' : IsSMulRegular (Shrink.{v, u} I) x :=
+        ((Shrink.linearEquiv.{v} R I).isSMulRegular_congr x).mpr (xreg.submodule I x)
+      rw [← projectiveDimension_le_iff, projectiveDimension_eq_quotient R
+        (ModuleCat.of R (Shrink.{v} I)) x xreg xreg' (le_maximalIdeal netop mem),
+        projectiveDimension_le_iff] at hn
+      use n
+      have : Retract (ModuleCat.of (R ⧸ Ideal.span {x}) (Shrink.{v} I'))
+        (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x (Shrink.{v} I))) := by
+        sorry
+      exact this.hasProjectiveDimensionLT (n + 1)
     have free : Module.Free ((R ⧸ Ideal.span {x}) ⧸ I') I'.Cotangent := by
       sorry
     have rank : Submodule.spanFinrank I' = n := by
