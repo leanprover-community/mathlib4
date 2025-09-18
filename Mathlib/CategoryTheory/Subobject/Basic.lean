@@ -528,8 +528,8 @@ instance hasLimitsOfShape [HasLimitsOfShape J (Over X)] :
 instance hasFiniteLimits [HasFiniteLimits (Over X)] : HasFiniteLimits (Subobject X) where
   out _ _ _ := by infer_instance
 
-instance hasLimits [HasLimitsOfSize.{v₃, v₃} (Over X)] :
-    HasLimitsOfSize.{v₃, v₃} (Subobject X) where
+instance hasLimits [HasLimitsOfSize.{v₃, u₃} (Over X)] :
+    HasLimitsOfSize.{v₃, u₃} (Subobject X) where
   has_limits_of_shape _ _ := by infer_instance
 
 end Limits

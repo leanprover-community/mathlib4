@@ -51,7 +51,7 @@ variable {C : Type u₁} [Category.{v₁} C] {X Y Z : C}
 variable {D : Type u₂} [Category.{v₂} D]
 
 /-- The object property in `Over X` of being a monomorphism. -/
-abbrev Over.isMonoOver (X : C) : ObjectProperty (Over X) :=
+abbrev Over.isMono (X : C) : ObjectProperty (Over X) :=
   fun f : Over X => Mono f.hom
 
 /-- The category of monomorphisms into `X` as a full subcategory of the over category.
@@ -60,7 +60,7 @@ This isn't skeletal, so it's not a partial order.
 Later we define `Subobject X` as the quotient of this by isomorphisms.
 -/
 def MonoOver (X : C) :=
-  ObjectProperty.FullSubcategory (Over.isMonoOver X)
+  ObjectProperty.FullSubcategory (Over.isMono X)
 
 instance (X : C) : Category (MonoOver X) :=
   ObjectProperty.FullSubcategory.category _
@@ -214,14 +214,14 @@ section Limits
 variable {J : Type u₃} [Category.{v₃} J] (X : C)
 
 lemma closedUnderLimitsOfShape_of_isMonoOver :
-    ClosedUnderLimitsOfShape J (Over.isMonoOver X) := by
+    ClosedUnderLimitsOfShape J (Over.isMono X) := by
   refine fun F _ hc p ↦ ⟨fun g h e ↦ ?_⟩
   apply IsLimit.hom_ext <| WithTerminal.isLimitEquiv.invFun hc
   intro j; cases j with
   | of j => have := p j; rw [← cancel_mono ((F.obj j).hom)]; simpa
   | star => exact e
 
-instance hasLimit (F : J ⥤ MonoOver X) [HasLimit (F ⋙ (Over.isMonoOver X).ι)] :
+instance hasLimit (F : J ⥤ MonoOver X) [HasLimit (F ⋙ (Over.isMono X).ι)] :
     HasLimit F := by
   apply hasLimit_of_closedUnderLimits (closedUnderLimitsOfShape_of_isMonoOver X)
 
@@ -232,7 +232,7 @@ instance hasLimitsOfShape [HasLimitsOfShape J (Over X)] :
 instance hasFiniteLimits [HasFiniteLimits (Over X)] : HasFiniteLimits (MonoOver X) where
   out _ _ _ := by apply hasLimitsOfShape X
 
-instance hasLimits [HasLimitsOfSize.{v₃, v₃} (Over X)] : HasLimitsOfSize.{v₃, v₃} (MonoOver X) where
+instance hasLimits [HasLimitsOfSize.{v₃, u₃} (Over X)] : HasLimitsOfSize.{v₃, u₃} (MonoOver X) where
   has_limits_of_shape _ _ := by apply hasLimitsOfShape X
 
 end Limits
