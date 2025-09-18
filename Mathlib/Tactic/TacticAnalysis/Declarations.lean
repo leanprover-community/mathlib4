@@ -289,3 +289,30 @@ def introMerge : TacticAnalysis.Config := .ofComplex {
       return none
   tell _stx _old _oldHeartbeats new _newHeartbeats := pure <|
     if let some tac := new then m!"Try this: {tac}" else none}
+
+-- TODO: add compatibility with `rintro` and `intros`
+/-- Suggest merging two adjacent `intro` tactics which don't pattern match. -/
+register_option linter.tacticAnalysis.introMerge2 : Bool := {
+  defValue := true
+}
+
+@[tacticAnalysis linter.tacticAnalysis.introMerge2, inherit_doc linter.tacticAnalysis.introMerge2]
+def introMerge2 : TacticAnalysis.Config := .ofComplex {
+  out := Option (TSyntax `tactic)
+  ctx := Array (Array Term)
+  trigger ctx stx :=
+    match stx with
+    | `(tactic| intro%$x $args*) => .continue ((ctx.getD #[]).push
+      -- if `intro` is used without arguments, treat it as `intro _`
+      <| if args.size = 0 then #[⟨mkHole x⟩] else args)
+    | _ => if let some args := ctx then if args.size > 1 then .accept args else .skip else .skip
+  test ctx goal := do
+    let ctxT := ctx.flatten
+    let tac ← `(tactic| intro $ctxT*)
+    try
+      let _ ← Lean.Elab.runTactic goal tac
+      return some tac
+    catch _e => -- if for whatever reason we can't run `intro` here.
+      return none
+  tell _stx _old _oldHeartbeats new _newHeartbeats := pure <|
+    if let some tac := new then m!"Try this: {tac}" else none}
