@@ -203,8 +203,7 @@ theorem mem_orbit_of_mem_forwardOrbit {x₁ x₂ : α} (h : x₁ ∈ forwardOrbi
 
 end Orbit
 
-variable {β : Type*} [TopologicalSpace β] (ψ : Flow τ β)
-  {γ : Type*} [TopologicalSpace γ] (χ : Flow τ γ)
+variable {β γ : Type*} [TopologicalSpace β] [TopologicalSpace γ] (ψ : Flow τ β) (χ : Flow τ γ)
 
 /-- Given flows `ϕ` by `τ` on `α` and `ψ` by `τ` on `β`, a function `π : α → β` is called a
 *semiconjugacy* from `ϕ` to `ψ` if `π` is continuous and surjective, and `π ∘ (ϕ t) = (ψ t) ∘ π` for
