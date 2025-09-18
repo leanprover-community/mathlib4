@@ -275,7 +275,6 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin
     (AdjoinRoot.powerBasis' <| minpoly.monic <| Algebra.IsIntegral.isIntegral f).finite
   have : Module.Finite R S :=
     (AdjoinRoot.powerBasis' <| (minpoly.monic <| Algebra.IsIntegral.isIntegral g).map _).finite
-  have : IsScalarTower K R S := .of_algebraMap_eq fun _ ↦ rfl
   have : Module.Finite K S := .trans R S
   have : IsArtinianRing R := .of_finite K R
   have : IsReduced R := (Ideal.isRadical_iff_quotient_reduced _).mp <|

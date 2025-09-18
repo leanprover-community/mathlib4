@@ -105,7 +105,6 @@ lemma isQuotientMap_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [Qua
   · have _ : CompactSpace X := QuasiCompact.compactSpace_of_compactSpace f
     let 𝒰 := X.affineCover.finiteSubcover
     let p : ∐ (fun i : 𝒰.J ↦ 𝒰.obj i) ⟶ X := Sigma.desc (fun i ↦ 𝒰.map i)
-    have _ (i : 𝒰.J) : IsAffine (𝒰.obj i) := inferInstanceAs <| IsAffine (X.affineCover.obj _)
     refine this (f := (∐ (fun i : 𝒰.J ↦ 𝒰.obj i)).isoSpec.inv ≫ p ≫ f) _ _ ?_ ⟨_, rfl⟩
     rw [← Category.assoc, Scheme.comp_base, TopCat.coe_comp, Set.preimage_comp]
     exact hs.preimage (_ ≫ p).continuous

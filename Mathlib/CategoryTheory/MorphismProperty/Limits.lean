@@ -843,6 +843,17 @@ lemma universally_mk' (P : MorphismProperty C) [P.RespectsIso] {X Y : C} (g : X 
 
 end Universally
 
+variable (P : MorphismProperty C)
+
+/-- `P` has pullbacks if for every `f` satisfying `P`, pullbacks of arbitrary morphisms along `f`
+exist. -/
+protected class HasPullbacks : Prop where
+  hasPullback {X Y S : C} {f : X ⟶ S} (g : Y ⟶ S) : P f → HasPullback f g := by infer_instance
+
+instance [HasPullbacks C] : P.HasPullbacks where
+
+alias hasPullback := HasPullbacks.hasPullback
+
 end MorphismProperty
 
 end CategoryTheory

@@ -48,7 +48,7 @@ This file defines the group law on nonsingular points `W⟮F⟯` in affine coord
 * `WeierstrassCurve.Affine.Point.instAddCommGroup`: the type of nonsingular points `W⟮F⟯` in affine
   coordinates forms an abelian group under addition.
 
-## Notations
+## Notation
 
 * `W⟮K⟯`: the group of nonsingular points on `W` base changed to `K`.
 

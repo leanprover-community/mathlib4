@@ -606,8 +606,9 @@ lemma traceForm_dualSubmodule_adjoin
   let pb := (Algebra.adjoin.powerBasis' hKx).map
     ((Subalgebra.equivOfEq _ _ hx).trans (Subalgebra.topEquiv))
   have pbgen : pb.gen = x := by simp [pb]
-  have hpb : ⇑(LinearMap.BilinForm.dualBasis (traceForm K L) _ pb.basis) = _ :=
-    _root_.funext (Module.Basis.traceDual_powerBasis_eq pb)
+  have hnondeg : (traceForm K L).Nondegenerate := traceForm_nondegenerate K L
+  have hpb : ⇑(LinearMap.BilinForm.dualBasis (traceForm K L) hnondeg pb.basis) = _ :=
+    _root_.funext (traceForm_dualBasis_powerBasis_eq pb)
   have : (Subalgebra.toSubmodule (Algebra.adjoin A {x})) =
       Submodule.span A (Set.range pb.basis) := by
     rw [← span_range_natDegree_eq_adjoin (minpoly.monic hAx) (minpoly.aeval _ _)]
@@ -620,7 +621,7 @@ lemma traceForm_dualSubmodule_adjoin
     exact ⟨fun ⟨a, b, c⟩ ↦ ⟨⟨a, b⟩, c⟩, fun ⟨⟨a, b⟩, c⟩ ↦ ⟨a, b, c⟩⟩
   clear_value pb
   conv_lhs => rw [this]
-  rw [← span_coeff_minpolyDiv hAx, LinearMap.BilinForm.dualSubmodule_span_of_basis,
+  rw [← span_coeff_minpolyDiv hAx, LinearMap.BilinForm.dualSubmodule_span_of_basis _ hnondeg,
     Submodule.smul_span, hpb]
   change _ = Submodule.span A (_ '' _)
   simp only [← Set.range_comp, smul_eq_mul, div_eq_inv_mul, pbgen,
@@ -781,7 +782,7 @@ theorem not_dvd_differentIdeal_of_intTrace_not_mem
   replace H := (mul_le_mul_right' H Q).trans_eq hP
   replace H := (FractionalIdeal.coeIdeal_le_coeIdeal' _ (P := L) le_rfl).mpr H
   rw [FractionalIdeal.coeIdeal_mul, coeIdeal_differentIdeal A K] at H
-  replace H := FractionalIdeal.mul_le_mul_left H (FractionalIdeal.dual A K 1)
+  replace H := mul_le_mul_left' H (FractionalIdeal.dual A K 1)
   simp only [ne_eq, FractionalIdeal.dual_eq_zero_iff, one_ne_zero, not_false_eq_true,
     mul_inv_cancel_left₀] at H
   apply hx

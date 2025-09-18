@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Order.Module.OrderedSMul
+import Mathlib.Algebra.Order.Nonneg.Module
 import Mathlib.Data.Real.Archimedean
 
 /-!
@@ -40,7 +40,7 @@ replace `x : ℝ` and `hx : 0 ≤ x` in the proof context with `x : ℝ≥0` whi
 of `x` with `↑x`. This tactic also works for a function `f : α → ℝ` with a hypothesis
 `hf : ∀ x, 0 ≤ f x`.
 
-## Notations
+## Notation
 
 This file defines `ℝ≥0` as a localized notation for `NNReal`.
 -/
@@ -510,12 +510,9 @@ theorem coe_min (x y : ℝ≥0) : ((min x y : ℝ≥0) : ℝ) = min (x : ℝ) (y
 theorem zero_le_coe {q : ℝ≥0} : 0 ≤ (q : ℝ) :=
   q.2
 
-instance instOrderedSMul {M : Type*} [AddCommMonoid M] [PartialOrder M]
-    [Module ℝ M] [OrderedSMul ℝ M] :
-    OrderedSMul ℝ≥0 M where
-  smul_lt_smul_of_pos hab hc := (smul_lt_smul_of_pos_left hab (NNReal.coe_pos.2 hc) :)
-  lt_of_smul_lt_smul_of_pos {_ _ c} hab _ :=
-    lt_of_smul_lt_smul_of_nonneg_left (by exact hab) (NNReal.coe_nonneg c)
+instance instIsStrictOrderedModule {M : Type*} [AddCommMonoid M] [PartialOrder M]
+    [Module ℝ M] [IsStrictOrderedModule ℝ M] :
+    IsStrictOrderedModule ℝ≥0 M := Nonneg.instIsStrictOrderedModule
 
 end NNReal
 

@@ -19,7 +19,7 @@ In this file we introduce typeclasses and definitions for lattice operations.
 * `Top`: type class for the `⊤` notation
 * `Bot`: type class for the `⊥` notation
 
-## Notations
+## Notation
 
 * `xᶜ`: complement in a lattice;
 * `x ⊔ y`: supremum/join, which is notation for `max x y`;
@@ -134,7 +134,7 @@ class HImp (α : Type*) where
 
 The difference between `HasCompl` and `HNot` is that the former belongs to Heyting algebras,
 while the latter belongs to co-Heyting algebras. They are both pseudo-complements, but `compl`
-underestimates while `HNot` overestimates. In boolean algebras, they are equal.
+underestimates while `HNot` overestimates. In Boolean algebras, they are equal.
 See `hnot_eq_compl`.
 -/
 @[notation_class]

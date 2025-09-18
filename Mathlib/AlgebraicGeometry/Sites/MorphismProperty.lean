@@ -102,7 +102,7 @@ lemma jointlySurjectiveTopology_eq_toGrothendieck_jointlySurjectivePretopology
 lemma pretopology_le_inf [IsJointlySurjectivePreserving ⊤] :
     pretopology P ≤ jointlySurjectivePretopology ⊓ P.pretopology := by
   rintro X S ⟨𝒰, rfl⟩
-  refine ⟨fun x ↦ ?_, fun ⟨i⟩ ↦ 𝒰.map_prop i⟩
+  refine ⟨fun x ↦ ?_, fun _ _ ⟨i⟩ ↦ 𝒰.map_prop i⟩
   obtain ⟨a, ha⟩ := 𝒰.covers x
   refine ⟨𝒰.obj (𝒰.f x), a, 𝒰.map (𝒰.f x), ⟨_⟩, ha⟩
 

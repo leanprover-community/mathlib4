@@ -250,6 +250,7 @@ instance [∀ i, AddLeftMono (α i)] : CanonicallyOrderedAdd (Π₀ i, α i) whe
     exists g - f
     ext i
     exact (add_tsub_cancel_of_le <| h i).symm
+  le_add_self := fun _ _ _ ↦ le_add_self
   le_self_add := fun _ _ _ ↦ le_self_add
 
 variable {α} [DecidableEq ι]

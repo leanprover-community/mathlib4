@@ -184,7 +184,6 @@ lemma compactSpace_iff_exists :
     CompactSpace X ↔ ∃ R, ∃ f : Spec R ⟶ X, Function.Surjective f.base := by
   refine ⟨fun h ↦ ?_, fun ⟨R, f, hf⟩ ↦ ⟨hf.range_eq ▸ isCompact_range f.continuous⟩⟩
   let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
-  have (x : 𝒰.J) : IsAffine (𝒰.obj x) := X.isAffine_affineCover _
   refine ⟨Γ(∐ 𝒰.obj, ⊤), (∐ 𝒰.obj).isoSpec.inv ≫ Sigma.desc 𝒰.map, ?_⟩
   refine Function.Surjective.comp (g := (Sigma.desc 𝒰.map).base)
     (fun x ↦ ?_) (∐ 𝒰.obj).isoSpec.inv.surjective
@@ -309,8 +308,6 @@ lemma Scheme.isNilpotent_iff_basicOpen_eq_bot_of_isCompact {X : Scheme.{u}}
   have h : (1 : Γ(X, U)) |_ (X.basicOpen f) = 0 := by
     have e : X.basicOpen f ≤ ⊥ := by rw [hf]
     rw [← TopCat.Presheaf.restrict_restrict e bot_le]
-    have : Subsingleton Γ(X, ⊥) :=
-      CommRingCat.subsingleton_of_isTerminal X.sheaf.isTerminalOfEmpty
     rw [Subsingleton.eq_zero (1 |_ ⊥)]
     change X.presheaf.map _ 0 = 0
     rw [map_zero]

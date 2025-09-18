@@ -104,7 +104,6 @@ theorem finrank_dvd_of_le_left (h : F ≤ E) : finrank E L ∣ finrank F L := by
 
 theorem finrank_dvd_of_le_right (h : F ≤ E) : finrank K F ∣ finrank K E := by
   let _ := (inclusion h).toRingHom.toAlgebra
-  have : IsScalarTower K F E := IsScalarTower.of_algebraMap_eq fun x ↦ rfl
   exact Dvd.intro (finrank F E) (finrank_mul_finrank K F E)
 
 theorem finrank_le_of_le_left [FiniteDimensional F L] (h : F ≤ E) : finrank E L ≤ finrank F L :=

@@ -25,9 +25,9 @@ theorem Multiset.sum_smul {l : Multiset R} {x : M} : l.sum • x = (l.map fun r 
 
 theorem Multiset.sum_smul_sum {s : Multiset R} {t : Multiset M} :
     s.sum • t.sum = ((s ×ˢ t).map fun p : R × M ↦ p.fst • p.snd).sum := by
-  induction' s using Multiset.induction with a s ih
-  · simp
-  · simp [add_smul, ih, ← Multiset.smul_sum]
+  induction s using Multiset.induction with
+  | empty => simp
+  | cons a s ih => simp [add_smul, ih, ← Multiset.smul_sum]
 
 theorem Finset.sum_smul {f : ι → R} {s : Finset ι} {x : M} :
     (∑ i ∈ s, f i) • x = ∑ i ∈ s, f i • x := map_sum ((smulAddHom R M).flip x) f s

@@ -522,8 +522,6 @@ theorem nmul_one (a : Ordinal) : a ⨳ 1 = a := by
   convert csInf_Ici
   ext b
   refine ⟨fun H ↦ le_of_forall_lt (a := a) fun c hc ↦ ?_, fun ha c hc ↦ ?_⟩
-  -- Porting note: had to add arguments to `nmul_one` in the next two lines
-  -- for the termination checker.
   · simpa [nmul_one c] using H c hc
   · simpa [nmul_one c] using hc.trans_le ha
 termination_by a

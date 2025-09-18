@@ -258,18 +258,9 @@ theorem prod_sub_preimage_iff {W : Set γ} {f : α × β → γ} :
 theorem image_prodMk_subset_prod {f : α → β} {g : α → γ} {s : Set α} :
     (fun x => (f x, g x)) '' s ⊆ (f '' s) ×ˢ (g '' s) := by grind
 
-@[deprecated (since := "2025-02-22")]
-alias image_prod_mk_subset_prod := image_prodMk_subset_prod
-
 theorem image_prodMk_subset_prod_left (hb : b ∈ t) : (fun a => (a, b)) '' s ⊆ s ×ˢ t := by grind
 
-@[deprecated (since := "2025-02-22")]
-alias image_prod_mk_subset_prod_left := image_prodMk_subset_prod_left
-
 theorem image_prodMk_subset_prod_right (ha : a ∈ s) : Prod.mk a '' t ⊆ s ×ˢ t := by grind
-
-@[deprecated (since := "2025-02-22")]
-alias image_prod_mk_subset_prod_right := image_prodMk_subset_prod_right
 
 theorem prod_subset_preimage_fst (s : Set α) (t : Set β) : s ×ˢ t ⊆ Prod.fst ⁻¹' s :=
   inter_subset_left

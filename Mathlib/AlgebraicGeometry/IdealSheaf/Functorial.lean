@@ -15,7 +15,7 @@ We define the pullback and pushforward of ideal sheaves in this file.
 - `AlgebraicGeometry.Scheme.IdealSheafData.comap`: The pullback of an ideal sheaf.
 - `AlgebraicGeometry.Scheme.IdealSheafData.map`: The pushforward of an ideal sheaf.
 - `AlgebraicGeometry.Scheme.IdealSheafData.map_gc`:
-  The galois connection between pullback and pushforward.
+  The Galois connection between pullback and pushforward.
 
 -/
 
@@ -93,7 +93,7 @@ section gc
 
 variable (I I₁ I₂ : X.IdealSheafData) (J J₁ J₂ : Y.IdealSheafData) (f : X ⟶ Y)
 
-/-- Pushforward and pullback of ideal sheaves forms a galois connection. -/
+/-- Pushforward and pullback of ideal sheaves forms a Galois connection. -/
 lemma map_gc : GaloisConnection (comap · f) (map · f) := fun _ _ ↦ le_map_iff_comap_le.symm
 
 set_option linter.style.commandStart false

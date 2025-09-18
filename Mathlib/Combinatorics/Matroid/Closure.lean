@@ -91,8 +91,6 @@ structure IsFlat (M : Matroid α) (F : Set α) : Prop where
   subset_of_isBasis_of_isBasis : ∀ ⦃I X⦄, M.IsBasis I F → M.IsBasis I X → X ⊆ F
   subset_ground : F ⊆ M.E
 
-@[deprecated (since := "2025-02-14")] alias Flat := IsFlat
-
 attribute [aesop unsafe 20% (rule_sets := [Matroid])] IsFlat.subset_ground
 
 @[simp] lemma ground_isFlat (M : Matroid α) : M.IsFlat M.E :=

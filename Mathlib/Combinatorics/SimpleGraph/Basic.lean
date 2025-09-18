@@ -92,7 +92,7 @@ structure SimpleGraph (V : Type u) where
 
 initialize_simps_projections SimpleGraph (Adj → adj)
 
-/-- Constructor for simple graphs using a symmetric irreflexive boolean function. -/
+/-- Constructor for simple graphs using a symmetric irreflexive Boolean function. -/
 @[simps]
 def SimpleGraph.mk' {V : Type u} :
     {adj : V → V → Bool // (∀ x y, adj x y = adj y x) ∧ (∀ x, ¬ adj x x)} ↪ SimpleGraph V where

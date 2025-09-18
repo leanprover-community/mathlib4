@@ -244,9 +244,9 @@ def mkDivProof (iM : Q(CommGroupWithZero $M)) (l₁ l₂ : qNF M) :
 /-- Extract a common factor `L` of two products-of-powers `l₁` and `l₂` in `M`, in the sense that
 both `l₁` and `l₂` are quotients by `L` of products of *positive* powers.
 
-The boolean flag `nonzero` specifies whether we extract a *certified nonzero* (and therefore
+The Boolean flag `nonzero` specifies whether we extract a *certified nonzero* (and therefore
 potentially smaller) common factor. The metaprogram returns a "proof" that this common factor is
-nonzero, i.e. an expression `Q(NF.eval $(L.toNF) ≠ 0)`, but this will be junk if the boolean flag
+nonzero, i.e. an expression `Q(NF.eval $(L.toNF) ≠ 0)`, but this will be junk if the Boolean flag
 `nonzero` is set to `false`. -/
 partial def gcd (iM : Q(CommGroupWithZero $M)) (l₁ l₂ : qNF M)
     (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) (nonzero : Bool) :
@@ -405,7 +405,7 @@ partial def normalize (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type
       let pf_s ← mkDecideProofQ q($s ≠ 0)
       let ⟨G, pf_y⟩ ← Sign.pow iM y' g s
       let pf_y' := q(Eq.trans (congr_arg (· ^ $s) $pf_sgn) $pf_y)
-      pure ⟨q($y' ^ $s), ⟨G, pf_y'⟩, l.onExponent (HMul.hMul s), (q(NF.pow_eq_eval $pf_s $pf):)⟩
+      pure ⟨q($y' ^ $s), ⟨G, pf_y'⟩, l.onExponent (HSMul.hSMul s), (q(NF.pow_eq_eval $pf_s $pf):)⟩
   /- normalize a `(1:M)` -/
   | ~q(1) => pure ⟨q(1), ⟨Sign.plus,  q(rfl)⟩, [], q(NF.one_eq_eval $M)⟩
   /- normalize an addition: `a + b` -/

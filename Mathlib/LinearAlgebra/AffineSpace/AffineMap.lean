@@ -21,7 +21,7 @@ This file defines affine maps.
 * `AffineMap` is the type of affine maps between two affine spaces with the same ring `k`.  Various
   basic examples of affine maps are defined, including `const`, `id`, `lineMap` and `homothety`.
 
-## Notations
+## Notation
 
 * `P1 →ᵃ[k] P2` is a notation for `AffineMap k P1 P2`;
 * `AffineSpace V P`: a localized notation for `AddTorsor V P` defined in
@@ -603,10 +603,7 @@ lemma lineMap_mono [LinearOrder k] [Preorder V1] [AddRightMono V1] [SMulPosMono 
     {p₀ p₁ : V1} (h : p₀ ≤ p₁) :
     Monotone (lineMap (k := k) p₀ p₁) := by
   intro x y hxy
-  simp? [lineMap] says
-    simp only [lineMap, vsub_eq_sub, vadd_eq_add, coe_add, LinearMap.coe_toAffineMap,
-      LinearMap.coe_smulRight, LinearMap.id_coe, id_eq, coe_const, Pi.add_apply,
-      Function.const_apply, add_le_add_iff_right]
+  suffices x • (p₁ - p₀) ≤ y • (p₁ - p₀) by simpa [lineMap]
   gcongr
   simpa
 
@@ -614,10 +611,7 @@ lemma lineMap_anti [LinearOrder k] [Preorder V1] [AddLeftMono V1] [SMulPosMono k
     {p₀ p₁ : V1} (h : p₁ ≤ p₀) :
     Antitone (lineMap (k := k) p₀ p₁) := by
   intro x y hxy
-  simp? [lineMap] says
-    simp only [lineMap, vsub_eq_sub, vadd_eq_add, coe_add, LinearMap.coe_toAffineMap,
-      LinearMap.coe_smulRight, LinearMap.id_coe, id_eq, coe_const, Pi.add_apply,
-      Function.const_apply, add_le_add_iff_right]
+  suffices y • (p₁ - p₀) ≤ x • (p₁ - p₀) by simpa [lineMap]
   rw [← neg_le_neg_iff, ← smul_neg, ← smul_neg]
   gcongr
   simpa
@@ -819,6 +813,9 @@ def homothety (c : P1) (r : k) : P1 →ᵃ[k] P1 :=
 
 theorem homothety_def (c : P1) (r : k) :
     homothety c r = r • (id k P1 -ᵥ const k P1 c) +ᵥ const k P1 c :=
+  rfl
+
+theorem coe_homothety (c : P1) (r : k) : homothety c r = fun p => r • (p -ᵥ c) +ᵥ c :=
   rfl
 
 theorem homothety_apply (c : P1) (r : k) (p : P1) : homothety c r p = r • (p -ᵥ c : V1) +ᵥ c :=

@@ -15,9 +15,9 @@ of quadratic forms. Most results require `𝕜 = ℝ` or `ℂ`.
 
 ## Main definitions
 
-* `Matrix.PosDef` : a matrix `M : Matrix n n 𝕜` is positive definite if it is hermitian and `xᴴMx`
+* `Matrix.PosDef` : a matrix `M : Matrix n n 𝕜` is positive definite if it is Hermitian and `xᴴMx`
   is greater than zero for all nonzero `x`.
-* `Matrix.PosSemidef` : a matrix `M : Matrix n n 𝕜` is positive semidefinite if it is hermitian
+* `Matrix.PosSemidef` : a matrix `M : Matrix n n 𝕜` is positive semidefinite if it is Hermitian
   and `xᴴMx` is nonnegative for all `x`.
 
 ## Main results
@@ -393,11 +393,42 @@ theorem PosSemidef.toLinearMap₂'_zero_iff [DecidableEq n]
     Matrix.toLinearMap₂' 𝕜 A (star x) x = 0 ↔ A *ᵥ x = 0 := by
   simpa only [toLinearMap₂'_apply'] using hA.dotProduct_mulVec_zero_iff x
 
+theorem posSemidef_iff_isHermitian_and_spectrum_nonneg [DecidableEq n] {A : Matrix n n 𝕜} :
+    A.PosSemidef ↔ A.IsHermitian ∧ spectrum 𝕜 A ⊆ {a : 𝕜 | 0 ≤ a} := by
+  refine ⟨fun h => ⟨h.isHermitian, fun a => ?_⟩, fun ⟨h1, h2⟩ => ?_⟩
+  · simp only [h.isHermitian.spectrum_eq_image_range, Set.mem_image, Set.mem_range,
+      exists_exists_eq_and, Set.mem_setOf_eq, forall_exists_index]
+    rintro i rfl
+    exact_mod_cast h.eigenvalues_nonneg _
+  · rw [h1.posSemidef_iff_eigenvalues_nonneg]
+    intro i
+    simpa [h1.spectrum_eq_image_range] using @h2 (h1.eigenvalues i)
+
+theorem PosSemidef.commute_iff [DecidableEq n] {A B : Matrix n n 𝕜}
+    (hA : A.PosSemidef) (hB : B.PosSemidef) :
+    Commute A B ↔ (A * B).PosSemidef := by
+  rw [hA.isHermitian.commute_iff hB.isHermitian]
+  refine ⟨fun hAB => posSemidef_iff_isHermitian_and_spectrum_nonneg.mpr ⟨hAB, ?_⟩,
+    fun h => h.isHermitian⟩
+  obtain ⟨x, rfl⟩ := posSemidef_iff_eq_conjTranspose_mul_self.mp hA
+  obtain ⟨y, rfl⟩ := posSemidef_iff_eq_conjTranspose_mul_self.mp hB
+  have {s t} (u : Set 𝕜) (h : u ⊆ t := by simp) : s \ u ⊆ t \ u ↔ s ⊆ t := by
+    rw [Set.diff_subset_iff, Set.union_diff_cancel h]
+  rw [← mul_assoc, mul_assoc _ x, ← this {0}]
+  calc
+    _ = spectrum 𝕜 ((x * yᴴ)ᴴ * (x * yᴴ)) \ {0} := by
+      simp_rw [spectrum.nonzero_mul_comm _ y, conjTranspose_mul, conjTranspose_conjTranspose,
+        mul_assoc]
+    _ ⊆ {x : 𝕜 | 0 ≤ x} \ {0} := by
+      rw [this {0}]
+      exact posSemidef_iff_isHermitian_and_spectrum_nonneg.mp
+        (posSemidef_conjTranspose_mul_self _) |>.2
+
 /-!
 ## Positive definite matrices
 -/
 
-/-- A matrix `M : Matrix n n R` is positive definite if it is hermitian
+/-- A matrix `M : Matrix n n R` is positive definite if it is Hermitian
 and `xᴴMx` is greater than zero for all nonzero `x`. -/
 def PosDef (M : Matrix n n R) :=
   M.IsHermitian ∧ ∀ x : n → R, x ≠ 0 → 0 < star x ⬝ᵥ (M *ᵥ x)
@@ -630,6 +661,11 @@ theorem _root_.Matrix.PosSemidef.posDef_iff_isUnit [DecidableEq n] {x : Matrix n
   rw [← map_eq_zero_iff (f := (yᴴ * y).mulVecLin) (mulVec_injective_iff_isUnit.mpr h),
     mulVecLin_apply, ← mulVec_mulVec, hv, mulVec_zero]
 
+theorem commute_iff [DecidableEq n] {A B : Matrix n n 𝕜} (hA : A.PosDef) (hB : B.PosDef) :
+    Commute A B ↔ (A * B).PosDef := by
+  rw [hA.posSemidef.commute_iff hB.posSemidef]
+  exact ⟨fun h => h.posDef_iff_isUnit.mpr <| hA.isUnit.mul hB.isUnit, fun h => h.posSemidef⟩
+
 end PosDef
 
 end Matrix
@@ -680,6 +716,37 @@ noncomputable abbrev NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.P
 /-- A positive definite matrix `M` induces an inner product `⟪x, y⟫ = xᴴMy`. -/
 def InnerProductSpace.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
     @InnerProductSpace 𝕜 (n → 𝕜) _ (NormedAddCommGroup.ofMatrix hM).toSeminormedAddCommGroup :=
+  InnerProductSpace.ofCore _
+
+/-- A positive definite matrix `M` induces a norm on `Matrix n n 𝕜`:
+`‖x‖ = sqrt (x * M * xᴴ).trace`. -/
+noncomputable def PosDef.matrixNormedAddCommGroup {M : Matrix n n 𝕜} (hM : M.PosDef) :
+    NormedAddCommGroup (Matrix n n 𝕜) :=
+  letI : InnerProductSpace.Core 𝕜 (Matrix n n 𝕜) :=
+  { inner x y := (y * M * xᴴ).trace
+    conj_inner_symm _ _ := by
+      simp only [mul_assoc, starRingEnd_apply, ← trace_conjTranspose, conjTranspose_mul,
+        conjTranspose_conjTranspose, hM.isHermitian.eq]
+    re_inner_nonneg x := by
+      obtain ⟨y, rfl⟩ := posSemidef_iff_eq_conjTranspose_mul_self.mp hM.posSemidef
+      simpa [mul_assoc] using RCLike.nonneg_iff.mp
+        (posSemidef_conjTranspose_mul_self (y * xᴴ)).trace_nonneg |>.1
+    add_left := by simp [mul_add]
+    smul_left := by simp
+    definite x hx := by
+      classical
+      obtain ⟨y, hy, rfl⟩ := Matrix.posDef_iff_eq_conjTranspose_mul_self.mp hM
+      rw [← mul_assoc, ← conjTranspose_conjTranspose x, ← conjTranspose_mul,
+        conjTranspose_conjTranspose, mul_assoc, trace_conjTranspose_mul_self_eq_zero_iff] at hx
+      lift y to (Matrix n n 𝕜)ˣ using hy
+      simpa [← mul_assoc] using congr(y⁻¹ * $hx) }
+  this.toNormedAddCommGroup
+
+/-- A positive definite matrix `M` induces an inner product on `Matrix n n 𝕜`:
+`⟪x, y⟫ = (y * M * xᴴ).trace`. -/
+def PosDef.matrixInnerProductSpace {M : Matrix n n 𝕜} (hM : M.PosDef) :
+    letI : NormedAddCommGroup (Matrix n n 𝕜) := hM.matrixNormedAddCommGroup
+    InnerProductSpace 𝕜 (Matrix n n 𝕜) :=
   InnerProductSpace.ofCore _
 
 end Matrix

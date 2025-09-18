@@ -91,8 +91,6 @@ lemma norm_complexMGF_le_mgf : ‖complexMGF X μ z‖ ≤ mgf X μ z.re := by
   _ ≤ ∫ ω, ‖cexp (z.re * X ω) * cexp (z.im * I * X ω)‖ ∂μ := norm_integral_le_integral_norm _
   _ = ∫ ω, rexp (z.re * X ω) ∂μ := by simp [Complex.norm_exp]
 
-@[deprecated (since := "2025-02-17")] alias abs_complexMGF_le_mgf := norm_complexMGF_le_mgf
-
 lemma complexMGF_ofReal (x : ℝ) : complexMGF X μ x = mgf X μ x := by
   rw [complexMGF, mgf, ← integral_complex_ofReal]
   norm_cast

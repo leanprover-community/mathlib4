@@ -193,16 +193,12 @@ lemma sumElim_vecMul_fromRows [Fintype m₁] [Fintype m₂] (B₁ : Matrix m₁ 
   ext
   simp [Matrix.vecMul, fromRows, dotProduct]
 
-@[deprecated (since := "2025-02-21")] alias sum_elim_vecMul_fromRows := sumElim_vecMul_fromRows
-
 @[simp]
 lemma fromCols_mulVec_sumElim [Fintype n₁] [Fintype n₂]
     (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R) (v₁ : n₁ → R) (v₂ : n₂ → R) :
     fromCols A₁ A₂ *ᵥ Sum.elim v₁ v₂ = A₁ *ᵥ v₁ + A₂ *ᵥ v₂ := by
   ext
   simp [Matrix.mulVec, fromCols]
-
-@[deprecated (since := "2025-02-21")] alias fromCols_mulVec_sum_elim := fromCols_mulVec_sumElim
 
 @[simp]
 lemma fromRows_mul [Fintype n] (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) (B : Matrix n m R) :

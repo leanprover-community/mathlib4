@@ -166,9 +166,9 @@ section Iterate
 theorem ContMDiffOn.iterate {f : M → M} (hf : ContMDiffOn I I n f s)
     (hmaps : Set.MapsTo f s s) (k : ℕ) :
     ContMDiffOn I I n (f^[k]) s := by
-  induction' k with k h
-  · simpa using contMDiffOn_id
-  · simpa using h.comp hf hmaps
+  induction k with
+  | zero => simpa using contMDiffOn_id
+  | succ k h => simpa using h.comp hf hmaps
 
 /-- The iterates of `C^n` functions are `C^n`. -/
 theorem ContMDiff.iterate {f : M → M} (hf : ContMDiff I I n f) (k : ℕ) :

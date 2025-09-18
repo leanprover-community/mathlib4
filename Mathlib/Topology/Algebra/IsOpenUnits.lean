@@ -62,7 +62,7 @@ lemma IsOpenUnits.of_isAdic {R : Type*} [CommRing R] [TopologicalSpace R] [IsTop
     (hR : IsAdic I) (hI : I ≤ Ideal.jacobson ⊥) :
     IsOpenUnits R := by
   refine ⟨.of_continuous_injective_isOpenMap Units.continuous_val Units.val_injective ?_⟩
-  refine (TopologicalGroup.isOpenMap_iff_nhds_one (f := Units.coeHom R)).mpr ?_
+  refine (IsTopologicalGroup.isOpenMap_iff_nhds_one (f := Units.coeHom R)).mpr ?_
   rw [nhds_induced, nhds_prod_eq]
   simp only [Units.embedProduct_apply, Units.val_one, inv_one, MulOpposite.op_one]
   intro s hs

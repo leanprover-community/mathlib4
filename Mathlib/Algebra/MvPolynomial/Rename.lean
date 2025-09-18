@@ -139,7 +139,8 @@ theorem killCompl_C (r : R) : killCompl hf (C r) = C r := algHom_C _ _
 theorem killCompl_comp_rename : (killCompl hf).comp (rename f) = AlgHom.id R _ :=
   algHom_ext fun i => by
     dsimp
-    rw [rename, killCompl, aeval_X, comp_apply, aeval_X, dif_pos, Equiv.ofInjective_symm_apply]
+    rw [rename, killCompl, aeval_X, comp_apply, aeval_X, dif_pos ⟨i, rfl⟩,
+      Equiv.ofInjective_symm_apply]
 
 @[simp]
 theorem killCompl_rename_app (p : MvPolynomial σ R) : killCompl hf (rename f p) = p :=
@@ -302,7 +303,7 @@ theorem coeff_rename_eq_zero (f : σ → τ) (φ : MvPolynomial σ R) (d : τ �
   rw [Finset.mem_image] at H
   obtain ⟨u, hu, rfl⟩ := H
   specialize h u rfl
-  simp? at h hu says simp only [Finsupp.mem_support_iff, ne_eq] at h hu
+  rw [Finsupp.mem_support_iff] at hu
   contradiction
 
 theorem coeff_rename_ne_zero (f : σ → τ) (φ : MvPolynomial σ R) (d : τ →₀ ℕ)

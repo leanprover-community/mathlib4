@@ -12,8 +12,9 @@ import Mathlib.Order.Hom.Basic
 
 Apply a function to an equality or inequality in either a local hypothesis or the goal.
 
-## Porting notes
-When the `mono` tactic has been ported we can attempt to automatically discharge `Monotone f` goals.
+## Future work
+
+Using the `mono` tactic, we can attempt to automatically discharge `Monotone f` goals.
 -/
 
 namespace Mathlib.Tactic

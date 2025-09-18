@@ -86,15 +86,9 @@ theorem betaIntegral_convergent {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
   · norm_num
 
 theorem betaIntegral_symm (u v : ℂ) : betaIntegral v u = betaIntegral u v := by
-  rw [betaIntegral, betaIntegral]
-  have := intervalIntegral.integral_comp_mul_add (a := 0) (b := 1) (c := -1)
-    (fun x : ℝ => (x : ℂ) ^ (u - 1) * (1 - (x : ℂ)) ^ (v - 1)) neg_one_lt_zero.ne 1
-  rw [inv_neg, inv_one, neg_one_smul, ← intervalIntegral.integral_symm] at this
-  simp? at this says
-    simp only [neg_mul, one_mul, ofReal_add, ofReal_neg, ofReal_one, sub_add_cancel_right, neg_neg,
-      mul_one, neg_add_cancel, mul_zero, zero_add] at this
-  conv_lhs at this => arg 1; intro x; rw [add_comm, ← sub_eq_add_neg, mul_comm]
-  exact this
+  simpa [betaIntegral, ← intervalIntegral.integral_symm, add_comm, mul_comm, sub_eq_add_neg]
+    using intervalIntegral.integral_comp_mul_add (a := 0) (b := 1) (c := -1)
+      (fun x : ℝ => (x : ℂ) ^ (u - 1) * (1 - (x : ℂ)) ^ (v - 1)) neg_one_lt_zero.ne 1
 
 theorem betaIntegral_eval_one_right {u : ℂ} (hu : 0 < re u) : betaIntegral u 1 = 1 / u := by
   simp_rw [betaIntegral, sub_self, cpow_zero, mul_one]

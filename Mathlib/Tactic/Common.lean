@@ -31,7 +31,6 @@ import Mathlib.Tactic.ApplyAt
 import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ByContra
-import Mathlib.Tactic.Cases
 import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Check
 import Mathlib.Tactic.Choose
