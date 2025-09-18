@@ -49,7 +49,7 @@ open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C] {X Y Z : C}
 variable {D : Type u₂} [Category.{v₂} D]
 
-/-- The object property in `Over X` of being a monomorphism. -/
+/-- The object property in `Over X` of the structure morphism being a monomorphism. -/
 abbrev Over.isMono (X : C) : ObjectProperty (Over X) :=
   fun f : Over X => Mono f.hom
 
