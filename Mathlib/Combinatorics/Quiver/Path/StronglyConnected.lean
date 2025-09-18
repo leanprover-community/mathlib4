@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina
 -/
 import Mathlib.Combinatorics.Quiver.Path
-import Mathlib.Combinatorics.Quiver.ConnectedComponent
-
+import Mathlib.Combinatorics.Quiver.Symmetric
 /-!
 # Strongly Connected Quivers
 
