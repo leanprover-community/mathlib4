@@ -52,7 +52,7 @@ variable (C) in
 def ObjectProperty.isFinitelyPresentable : ObjectProperty C := fun X ↦ IsFinitelyPresentable.{w} X
 
 variable (C) in
-/-- A morphism `f : X ⟶ Y` is compact if `Y` is compact viewed as an object of `Under X`. -/
+/-- A morphism `f : X ⟶ Y` is finitely presentable if it is so as an object of `Under X`. -/
 def MorphismProperty.isFinitelyPresentable : MorphismProperty C :=
   fun _ _ f ↦ ObjectProperty.isFinitelyPresentable.{w} _ (CategoryTheory.Under.mk f)
 
