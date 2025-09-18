@@ -251,7 +251,6 @@ def inducedAddHom : α →+ β :=
   ⟨⟨inducedMap α β, inducedMap_zero α β⟩, inducedMap_add α β⟩
 
 /-- `inducedMap` as an `OrderRingHom`. -/
-@[simps!]
 def inducedOrderRingHom : α →+*o β :=
   { AddMonoidHom.mkRingHomOfMulSelfOfTwoNeZero (inducedAddHom α β) (by
       suffices ∀ x, 0 < x → inducedAddHom α β (x * x) = inducedAddHom α β x * inducedAddHom α β x by
