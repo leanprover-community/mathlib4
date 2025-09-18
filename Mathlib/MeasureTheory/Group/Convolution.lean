@@ -3,7 +3,7 @@ Copyright (c) 2023 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
-import Mathlib.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Group.Defs
 import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
@@ -144,6 +144,20 @@ instance probabilitymeasure_of_probabilitymeasures_mconv (μ : Measure M) (ν : 
     [MeasurableMul₂ M] [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
     IsProbabilityMeasure (μ ∗ₘ ν) :=
   MeasureTheory.isProbabilityMeasure_map (by fun_prop)
+
+@[to_additive]
+theorem mconv_absolutelyContinuous [MeasurableMul₂ M] {μ ν ρ : Measure M}
+    [IsMulLeftInvariant ρ] [SFinite ν] (hν : ν ≪ ρ) : μ ∗ₘ ν ≪ ρ := by
+  refine AbsolutelyContinuous.mk (fun s hs h ↦ ?_)
+  rw [← lintegral_indicator_one hs, lintegral_mconv (by measurability)]
+  conv in s.indicator 1 (_ * _) => change s.indicator 1 ((fun y ↦ x * y) y)
+  simp only [← Set.indicator_comp_right, Pi.one_comp]
+  conv in ∫⁻ _, _ ∂ν =>
+    rw [lintegral_indicator_one (by apply MeasurableSet.preimage hs (by fun_prop))]
+  have h0 (x : M) : ν (HMul.hMul x ⁻¹' s) = 0 := by
+    apply hν
+    rw [← map_apply (by fun_prop) hs, IsMulLeftInvariant.map_mul_left_eq_self, h]
+  simp [h0]
 
 @[to_additive]
 lemma map_mconv_monoidHom {M M' : Type*} {mM : MeasurableSpace M} [Monoid M] [MeasurableMul₂ M]
