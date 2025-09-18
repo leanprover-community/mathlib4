@@ -138,7 +138,7 @@ lemma p41 {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [Inner
           _ ≤ c * ‖a‖ := by
             exact hc a
           _ ≤ _ := by
-            
+
             sorry
       sorry
 
