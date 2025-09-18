@@ -459,6 +459,7 @@ section
 
 variable (α : Type*)
 
+/-- `R[Xᵢ, Y]` is an `R[Xᵢ]`-algebra. -/
 noncomputable def algebraOption : Algebra (MvPolynomial α R) (MvPolynomial (Option α) R) :=
   (MvPolynomial.rename some).toAlgebra
 

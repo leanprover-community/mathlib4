@@ -628,11 +628,11 @@ def equiv' (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g
   { AdjoinRoot.liftHom g pb.gen h₂ with
     toFun := AdjoinRoot.liftHom g pb.gen h₂
     invFun := pb.lift (root g) h₁
-    left_inv x := AdjoinRoot.induction_on _ x fun x => by simp
+    left_inv x := AdjoinRoot.induction_on _ x fun x => by rw [liftHom_mk, pb.lift_aeval, aeval_eq]
     right_inv := fun x => by
       nontriviality S
       obtain ⟨f, _hf, rfl⟩ := pb.exists_eq_aeval x
-      simp }
+      rw [pb.lift_aeval, aeval_eq, liftHom_mk] }
 
 -- This lemma should have the simp tag but this causes a lint issue.
 theorem equiv'_toAlgHom (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g = 0) :
@@ -885,7 +885,7 @@ noncomputable def quotientEquivQuotientMinpolyMap (pb : PowerBasis R S) (I : Ide
         (show ∀ x,
             (Ideal.quotientEquiv _ (Ideal.map (AdjoinRoot.of (minpoly R pb.gen)) I)
                   (AdjoinRoot.equiv' (minpoly R pb.gen) pb
-                        (by simp)
+                        (by rw [AdjoinRoot.aeval_eq, AdjoinRoot.mk_self])
                         (minpoly.aeval _ _)).symm.toRingEquiv
                   (by rw [Ideal.map_map, AlgEquiv.toRingEquiv_eq_coe,
                       ← AlgEquiv.coe_ringHom_commutes, ← AdjoinRoot.algebraMap_eq,
@@ -903,8 +903,8 @@ theorem quotientEquivQuotientMinpolyMap_apply_mk (pb : PowerBasis R S) (I : Idea
         (Ideal.span ({(minpoly R pb.gen).map (Ideal.Quotient.mk I)} : Set (Polynomial (R ⧸ I))))
           (g.map (Ideal.Quotient.mk I)) := by
   rw [PowerBasis.quotientEquivQuotientMinpolyMap, AlgEquiv.trans_apply, AlgEquiv.ofRingEquiv_apply,
-    quotientEquiv_mk, AlgEquiv.coe_ringEquiv']
-  simp
+    quotientEquiv_mk, AlgEquiv.coe_ringEquiv', AdjoinRoot.equiv'_symm_apply, PowerBasis.lift_aeval,
+    AdjoinRoot.aeval_eq, AdjoinRoot.quotEquivQuotMap_apply_mk]
 
 -- This lemma should have the simp tag but this causes a lint issue.
 theorem quotientEquivQuotientMinpolyMap_symm_apply_mk (pb : PowerBasis R S) (I : Ideal R)
