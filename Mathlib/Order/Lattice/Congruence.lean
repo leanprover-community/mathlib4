@@ -31,9 +31,10 @@ Lattice, Congruence
 
 variable {F α β : Type*} [Lattice α] [Lattice β]
 
+variable (α) in
 /-- An equivalence relation is a congruence relation for the latice structure if it is compatible
 with the `inf` and `sup` operations. -/
-structure LatticeCon (α) [Lattice α] extends Setoid α where
+structure LatticeCon extends Setoid α where
   inf : ∀ {w x y z}, r w x → r y z → r (w ⊓ y) (x ⊓ z)
   sup : ∀ {w x y z}, r w x → r y z → r (w ⊔ y) (x ⊔ z)
 
