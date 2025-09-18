@@ -50,9 +50,12 @@ namespace DivisibleHull
 /-- Create an element `m / s`. -/
 def mk (m : M) (s : ℕ+) : DivisibleHull M := LocalizedModule.mk m (↑ⁿ s)
 
+@[coe]
+abbrev coe (m : M) := mk m 1
+
 /-- Coercion from `M` to `DivisibleHull M` defined as `m ↦ m / 1`. -/
 instance : Coe M (DivisibleHull M) where
-  coe m := mk m 1
+  coe := coe
 
 @[simp]
 theorem mk_zero (s : ℕ+) : mk (0 : M) s = 0 := by simp [mk]
