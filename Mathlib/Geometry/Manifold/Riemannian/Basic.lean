@@ -374,6 +374,9 @@ lemma eventually_riemannianEDist_lt (x : M) {c : ℝ≥0∞} (hc : 0 < c) :
   · exact Or.inl (mod_cast C_pos.ne')
   · simp
 
+@[deprecated (since := "2025-09-18")]
+alias eventually_riemmanianEDist_lt := eventually_riemannianEDist_lt
+
 /-- Any neighborhood of `x` contains all the points which are close enough to `x` for the
 Riemannian distance, `ℝ≥0` version. -/
 lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} (hs : s ∈ 𝓝 x) :
@@ -382,6 +385,9 @@ lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
   bounded by some `C`, contained in `s`, then an open neighborhood `v` of `x` inside `u`,
   and finally `r` small enough that the ball of radius `r` in the extended chart is contained in
   the image of `v`.
+
+@[deprecated (since := "2025-09-18")]
+alias setOf_riemmanianEDist_lt_subset_nhds := setOf_riemannianEDist_lt_subset_nhds
 
   We claim that points at Riemannian distance at most `r / C` of `x` are inside `u` (and therefore
   inside `s`). To prove this, consider a path of length at most `r / C` starting from `x`. While
@@ -493,6 +499,9 @@ lemma setOf_riemannianEDist_lt_subset_nhds' [RegularSpace M] {x : M} {s : Set M}
     ∃ c > 0, {y | riemannianEDist I x y < c} ⊆ s := by
   rcases setOf_riemannianEDist_lt_subset_nhds I hs with ⟨c, c_pos, hc⟩
   exact ⟨c, mod_cast c_pos, hc⟩
+
+@[deprecated (since := "2025-09-18")]
+alias setOf_riemmanianEDist_lt_subset_nhds' := setOf_riemannianEDist_lt_subset_nhds'
 
 variable (M) in
 /-- The pseudoemetric space structure associated to a Riemannian metric on a manifold. Designed
