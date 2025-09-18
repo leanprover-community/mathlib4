@@ -99,11 +99,10 @@ theorem coeff_of_coeff (f : Γ → V →ₗ[R] W)
     (hf : ∀ (x : V), (Function.support (fun g => f g x)).IsPWO) : (of_coeff f hf).coeff = f :=
   rfl
 
-theorem coeff_smul (A : HVertexOperator Γ R V W) (r : R) : (r • A).coeff = r • (A.coeff) := by
-  simp
-
-theorem coeff_nsmul (A : HVertexOperator Γ R V W) {n : ℕ} : (n • A).coeff = n • (A.coeff) := by
-  simp
+@[simp]
+theorem of_coeff_coeff (A : HVertexOperator Γ R V W) :
+    of_coeff A.coeff A.coeff_isPWOsupport = A := by
+  rfl
 
 end Coeff
 
@@ -171,11 +170,11 @@ theorem extend_zero {f : Γ₁ ↪ Γ₂} :
 theorem support_arrowCongrLeft_coeff_injective {f : Γ₁ ↪ Γ₂} :
     Function.Injective fun (A : HVertexOperator Γ₁ R V W) ↦ (f.arrowCongrLeft A.coeff) := by
   intro A B h
-  ext v g
+  ext g v
   simp only [funext_iff] at h
   have h₁ := h (f g)
   simp only [arrowCongrLeft_coeff_apply] at h₁
-  rw [← coeff_apply_apply, h₁, coeff_apply_apply]
+  rw [h₁]
 
 theorem arrowCongrLeft_comp {Γ₃ : Type*} {f : Γ₁ ↪ Γ₂} {f' : Γ₂ ↪ Γ₃}
     (A : HVertexOperator Γ₁ R V W) :
@@ -601,7 +600,7 @@ theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)
       (HahnSeries.binomialPow R g g' n).coeff ij.1 •
         ((HahnModule.of R).symm (A v)).coeff ij.2) ?_ ?_
     · refine Finset.sum_of_injOn (fun k ↦ k) (Function.Injective.injOn fun ⦃x y⦄ a ↦ a) ?_ ?_ ?_
-      · rw [Set.mapsTo', Set.image_id', Finset.coe_subset]
+      · rw [Set.mapsTo_iff_image_subset, Set.image_id', Finset.coe_subset]
         intro ij hij
         obtain ⟨h₁, h₂, h₃⟩ := (Finset.mem_vaddAntidiagonal _ _ _).mp hij
         rw [HahnSeries.mem_support] at h₁
@@ -873,119 +872,5 @@ Define things like order of a pair, creativity?
 end Composition
 
 end TensorComp
-
-
-section Binomial -- delete this. Important adaptations go to VertexOperator.lean
-
-theorem toLex_vAdd_of_sub (k l m n : ℤ) :
-    toLex ((m : ℤ) , (n : ℤ)) +ᵥ toLex (k - m, l - n) = toLex (k, l) := by
-  rw [vadd_eq_add, ← toLex_add, Prod.mk_add_mk, Int.add_comm, Int.sub_add_cancel, Int.add_comm,
-    Int.sub_add_cancel]
---#find_home! toLex_vAdd_of_sub --[Mathlib.RingTheory.HahnSeries.Multiplication]
-
-variable [PartialOrder Γ] [AddCommMonoid Γ] [CommRing R]
-  [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
-
--- Don't bother defining this!!!
-
-/-- `-Y + X` as a unit of `R((X))((Y))` -/
-def subLeft (R) [CommRing R] : HahnSeries (ℤ ×ₗ ℤ) R :=
-  HahnSeries.binomialPow R (toLex (0, 1)) (toLex (1, 0)) (1 : ℤ) --(isUnit_neg_one (α := R)) (1 : R)
-
-theorem subLeft_eq : subLeft R = HahnSeries.single (toLex (0,1)) 1 -
-    HahnSeries.single (toLex (1,0)) (1 : R) := by
-  rw [subLeft, ← HahnSeries.binomialPow_one (R := ℤ) R lex_basis_lt, Int.natCast_one]
-theorem compHahnSeries_smul (r : R) (u : U) :
-    compHahnSeries A B (r • u) = r • compHahnSeries A B u := by
-  ext
-  simp only [compHahnSeries_coeff, map_smul, coeff_apply_apply, HahnSeries.coeff_smul]
-  rw [← HahnSeries.coeff_smul]
-
-/-- The composite of two heterogeneous vertex operators, as a heterogeneous vertex operator. -/
-@[simps]
-def comp : HVertexOperator (Γ' ×ₗ Γ) R U W where
-  toFun u := HahnModule.of R (HahnSeries.ofIterate (compHahnSeries A B u))
-  map_add' := by
-    intro u v
-    ext g
-    simp [HahnSeries.ofIterate]
-  map_smul' := by
-    intro r x
-    ext g
-    simp [HahnSeries.ofIterate]
-
-@[simp]
-theorem subLeft_leadingCoeff [Nontrivial R] : (subLeft R).leadingCoeff = (1 : R) := by
-  rw [subLeft_eq, HahnSeries.leadingCoeff_sub, HahnSeries.leadingCoeff_of_single]
-  rw [HahnSeries.orderTop_single one_ne_zero, HahnSeries.orderTop_single one_ne_zero,
-    WithTop.coe_lt_coe]
-  exact lex_basis_lt
-
-theorem subLeft_order [Nontrivial R] : (subLeft R).order = toLex (0,1) := by
-  rw [subLeft_eq, ← WithTop.coe_eq_coe, HahnSeries.order_eq_orderTop_of_ne_zero,
-    HahnSeries.orderTop_sub, HahnSeries.orderTop_single one_ne_zero]
-  · rw [HahnSeries.orderTop_single one_ne_zero, HahnSeries.orderTop_single one_ne_zero]
-    exact compareOfLessAndEq_eq_lt.mp rfl
-  · refine HahnSeries.leadingCoeff_ne_zero.mp ?_
-    rw [← subLeft_eq, subLeft_leadingCoeff]
-    exact one_ne_zero
-
-/-!
-@[simp]
-theorem coeff_subLeft_smul (A : HVertexOperator (ℤ ×ₗ ℤ) R V W) (k l : ℤ) :
-    ((subLeft R) • A).coeff (toLex (k, l)) =
-      A.coeff (toLex (k - 1, l)) - A.coeff (toLex (k, l - 1)) := by
-  rw [subLeft_eq, add_smul, coeff_add, Pi.add_apply]
-  ext v
-  simp only [LinearMap.add_apply, coeff_apply, LinearMap.smul_apply, LinearMap.sub_apply, smul_eq]
-  nth_rw 1 [← toLex_vAdd_of_sub k l 1 0]
-  rw [sub_zero, HahnModule.coeff_single_smul_vadd, one_smul, ← toLex_vAdd_of_sub k l 0 1,
-    sub_zero, HahnModule.coeff_single_smul_vadd, neg_one_smul, ← sub_eq_add_neg]
-
-
---describe coefficients of powers
-theorem coeff_subLeft_pow_smul (A : HVertexOperator (ℤ ×ₗ ℤ) R V W) (k l n : ℤ) :
-    ((subLeft R) ^ n • A).coeff (toLex (k, l)) = ∑??
--/
-
-/-- `X - Y` as a unit of `R((Y))((X))`. -/
-def subRight (R) [CommRing R] : HahnSeries (ℤ ×ᵣ ℤ) R :=
-    HahnSeries.binomialPow (Γ := ℤ ×ᵣ ℤ) R (toRevLex (1, 0)) (toRevLex (0, 1)) (1 : ℤ)
-
-/-!
-theorem subRight_eq : subRight R = HahnSeries.single (toRevLex (1,0)) (-1 : R) +
-    HahnSeries.single (toRevLex (0,1)) (1 : R) := by
-  rw [subRight]
-
-
-theorem subRight_leadingCoeff [Nontrivial R] : (subRight R).val.leadingCoeff = (1 : R) := by
-  rw [subRight_eq, add_comm, HahnSeries.leadingCoeff_single_add_single lex_basis_lt one_ne_zero]
-
-theorem subRight_order [Nontrivial R] : (subRight R).val.order = toLex (0,1) := by
-  rw [subRight_eq, add_comm, HahnSeries.order_single_add_single lex_basis_lt one_ne_zero]
-
-theorem subRight_smul_eq (A : HVertexOperator (ℤ ×ₗ ℤ) R V W) :
-    (subRight R) • A = (subRight R).val • A :=
-  rfl
-
-theorem coeff_subRight_smul (A : HVertexOperator (ℤ ×ₗ ℤ) R V W) (k l : ℤ) :
-    ((subRight R) • A).coeff (toLex (k, l)) =
-      A.coeff (toLex (k, l - 1)) - A.coeff (toLex (k - 1, l)) := by
-  rw [subRight_smul_eq, subRight_eq, add_smul, coeff_add, Pi.add_apply]
-  ext v
-  simp only [LinearMap.add_apply, coeff_apply, LinearMap.sub_apply, smul_eq]
-  nth_rw 1 [← toLex_vAdd_of_sub k l 1 0]
-  rw [sub_zero, HahnModule.coeff_single_smul_vadd, neg_one_smul, ← toLex_vAdd_of_sub k l 0 1,
-    sub_zero, HahnModule.coeff_single_smul_vadd, one_smul, neg_add_eq_sub]
-
---describe coefficients of powers
-
-theorem subLeft_smul_eq_subRight_smul (A B : HVertexOperator (ℤ ×ₗ ℤ) R V W)
-    (h : ∀ (k l : ℤ), A.coeff (toLex (k, l)) = B.coeff (toLex (l, k))) (k l : ℤ) :
-    ((subLeft R) • A).coeff (toLex (k, l)) = ((subRight R) • B).coeff (toLex (l, k)) := by
-  rw [subLeft_smul_eq, coeff_subLeft_smul, coeff_subRight_smul, h k (l-1), h (k-1) l]
--/
-
-end Binomial
 
 end HVertexOperator

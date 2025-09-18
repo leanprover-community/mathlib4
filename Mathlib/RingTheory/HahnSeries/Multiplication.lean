@@ -1027,18 +1027,13 @@ variable [Semiring R]
 theorem C_mul_eq_smul {r : R} {x : HahnSeries Γ R} : C r * x = r • x :=
   single_zero_mul_eq_smul
 
-@[simp]
-theorem single_pow (a : Γ) (n : ℕ) (r : R) : single a r ^ n = single (n • a) (r ^ n) := by
-  induction' n with n IH
-  · ext; simp only [pow_zero, coeff_one, zero_smul, single_zero_one]
-  · simp only [pow_succ, IH, single_mul_single, succ_nsmul]
-
 theorem pow_leadingCoeff {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
     {x : HahnSeries Γ R} (hx : ¬IsNilpotent x.leadingCoeff) (n : ℕ) :
     (x ^ n).leadingCoeff = (x.leadingCoeff) ^ n := by
-  induction' n with n ihn
-  · simp
-  · rw [pow_succ, leadingCoeff_mul_of_nonzero, ihn, pow_succ]
+  induction n with
+  | zero => simp
+  | succ n ihn =>
+    rw [pow_succ, leadingCoeff_mul_of_nonzero, ihn, pow_succ]
     rw [ihn, ← pow_succ]
     by_contra
     simp_all [IsNilpotent]
