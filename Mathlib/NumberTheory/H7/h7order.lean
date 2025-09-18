@@ -12,6 +12,7 @@ set_option linter.style.multiGoal false
 set_option linter.style.cases false
 set_option linter.unusedVariables false
 set_option linter.unusedSectionVars true
+set_option linter.style.commandStart false
 set_option linter.style.longFile 0
 
 open BigOperators Module.Free Fintype
@@ -19,15 +20,15 @@ open BigOperators Module.Free Fintype
 
 open Differentiable AnalyticAt
 
-lemma cexp_mul : deriv (fun x => cexp (c * x)) x = c * cexp (c * x) := by stop
+lemma cexp_mul : deriv (fun x => cexp (c * x)) x = c * cexp (c * x) := by
   change deriv (fun x => exp ((fun x => c * x) x)) x = c * exp (c * x)
   rw [deriv_cexp]
-  · rw [deriv_mul]
+  · rw [deriv_fun_mul]
     · simp only [deriv_const', zero_mul, deriv_id'', mul_one, zero_add]
       exact CommMonoid.mul_comm (cexp (c * x)) c
     · exact differentiableAt_const c
-    · exact differentiableAt_id'
-  · apply mul <| differentiable_const _; exact differentiable_id'
+    · exact differentiableAt_fun_id
+  · apply mul <| differentiable_const _; exact differentiable_fun_id
 
 theorem zero_if_order_inf : ∀ (f : ℂ → ℂ) (z : ℂ) (hf : ∀ z, AnalyticAt ℂ f z),
   (∀ z, f z = 0) → analyticOrderAt f z₀ = ⊤ := by
@@ -115,11 +116,11 @@ lemma order_gt_zero_then_deriv_n_neg_1 (f : ℂ → ℂ) z₀ (hf : AnalyticAt �
           simp_all only [gt_iff_lt, ne_eq, smul_eq_mul, and_self]
         · intros z Hz
           have Hderiv : deriv (fun z => (z - z₀)^n • g z) z =
-            (z - z₀) ^ (n - 1) * (↑n * g z) + (z - z₀) ^ (n - 1) * ((z - z₀) * deriv g z) := by { stop
-              simp_rw [deriv_smul]
-              simp only [deriv_smul,smul_eq_mul, differentiableAt_id', differentiableAt_const,
-                DifferentiableAt.sub, deriv_pow'', deriv_sub, deriv_id'', deriv_const', sub_zero,
-                mul_one]
+            (z - z₀) ^ (n - 1) * (↑n * g z) + (z - z₀) ^ (n - 1) * ((z - z₀) * deriv g z) := by {
+              simp only [smul_eq_mul]
+              rw [deriv_fun_mul]
+              simp only [differentiableAt_fun_id, differentiableAt_const, DifferentiableAt.fun_sub,
+                deriv_fun_pow'', deriv_fun_sub, deriv_id'', deriv_const', sub_zero, mul_one]
               · have : (z - z₀) ^ n * deriv g z + ↑n * (z - z₀) ^ (n - 1) * g z =
                 (z - z₀) ^ (n - 1) * ((z - z₀)) * deriv g z + ↑n * (z - z₀) ^ (n - 1) * g z := by {
                   simp only [add_left_inj, mul_eq_mul_right_iff]
@@ -128,12 +129,12 @@ lemma order_gt_zero_then_deriv_n_neg_1 (f : ℂ → ℂ) z₀ (hf : AnalyticAt �
                   rw [← pow_add]
                   rw [Nat.sub_add_cancel hn]
                 }
-                rw [this, add_comm]
+                simp [this, add_comm]
                 have : ↑n * (z - z₀) ^ (n - 1) = (z - z₀) ^ (n - 1) * ↑n  := by {
                    exact Nat.cast_comm n ((z - z₀) ^ (n - 1))}
                 rw [this, mul_assoc]
-                simp only [add_right_inj]
-                exact Mathlib.Tactic.Ring.mul_pf_left (z - z₀) (n - 1) rfl
+                ring
+                --exact Mathlib.Tactic.Ring.mul_pf_left (z - z₀) (n - 1) rfl
               · aesop
               · apply AnalyticAt.differentiableAt
                 simp only [interior_inter, mem_inter_iff] at Hz
@@ -174,28 +175,28 @@ lemma order_gt_zero_then_deriv_n_neg_1 (f : ℂ → ℂ) z₀ (hf : AnalyticAt �
     · exact AnalyticAt.deriv hf}
 
 lemma order_geq_k_then_deriv_n_neg_1 (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀) (k n : ℕ)  :
-   n = analyticOrderAt f z₀ → n > 0 → k ≤ n → analyticOrderAt (deriv^[k] f) z₀ = (n - k : ℕ) := by {stop
+   n = analyticOrderAt f z₀ → n > 0 → k ≤ n → analyticOrderAt (deriv^[k] f) z₀ = (n - k : ℕ) := by {
     revert n
-    -- induction' k with k hk
-    -- · intros n Hn Hpos Hk
-    --   simp only [Function.iterate_zero, id_eq, tsub_zero, Hn]
-    -- · intros n Hn Hpos Hk
-    --   have : analyticOrderAt (deriv (deriv^[k] f)) z₀ = ((n - k) - 1 : ℕ) := by {
-    --     apply order_gt_zero_then_deriv_n_neg_1
-    --     · exact iterated_deriv hf k
-    --     · apply hk
-    --       · assumption
-    --       · assumption
-    --       · linarith
-    --     · simp_all only [gt_iff_lt, ENat.coe_sub, tsub_pos_iff_lt]
-    --       exact Hk}
-    --   have h1 : (n - (k + 1))= (n - k - 1) := by {
-    --     simp_all only [gt_iff_lt, ENat.coe_sub, Nat.cast_one]; rfl}
-    --   rw [h1]
-    --   simp only at this
-    --   rw [← this]
-    --   congr
-    --   rw [Function.iterate_succ', Function.comp_apply]
+    induction' k with k hk
+    · intros n Hn Hpos Hk
+      simp only [Function.iterate_zero, id_eq, tsub_zero, Hn]
+    · intros n Hn Hpos Hk
+      have : analyticOrderAt (deriv (deriv^[k] f)) z₀ = ((n - k) - 1 : ℕ) := by {
+        apply order_gt_zero_then_deriv_n_neg_1
+        · exact iterated_deriv hf k
+        · apply hk
+          · assumption
+          · assumption
+          · linarith
+        · simp_all only [gt_iff_lt, ENat.coe_sub, tsub_pos_iff_lt]
+          exact Hk}
+      have h1 : (n - (k + 1))= (n - k - 1) := by {
+        simp_all only [gt_iff_lt, ENat.coe_sub, Nat.cast_one]; rfl}
+      rw [h1]
+      simp only at this
+      rw [← this]
+      congr
+      rw [Function.iterate_succ', Function.comp_apply]
       }
 
 lemma order_deriv_top : ∀ z₀ (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀), f z₀ = 0 →
@@ -240,7 +241,7 @@ lemma order_deriv_top : ∀ z₀ (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀),
         deriv_const', dist_self, lt_inf_iff, and_self, forall_const, r]
         obtain ⟨left, right⟩ := a
         apply this
-        simp_all only [Metric.mem_ball, lt_inf_iff, and_self, r]
+        simp_all only [Metric.mem_ball, lt_inf_iff, and_self]
     · simp only [Metric.isOpen_ball]
     · apply IsConnected.isPreconnected
       apply Metric.isConnected_ball
@@ -258,10 +259,10 @@ lemma order_deriv_top : ∀ z₀ (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀),
       have hf' : EqOn f ((fun _ ↦ (0 : ℂ))) (Metric.ball z₀ r) := by {
           unfold EqOn
           intros x1 hx1
-          simp only [r]
+          simp only
           apply hball
           simp only [Metric.mem_ball, r] at *
-          simp_all only [dist_self, gt_iff_lt, deriv_const', lt_inf_iff, r]
+          simp_all only [dist_self, gt_iff_lt, lt_inf_iff]
         }
       unfold EqOn at hf'
       have hf'' : derivWithin (fun _ => (0 : ℂ)) (Metric.ball z₀ r) x =
@@ -280,9 +281,8 @@ lemma order_deriv_top : ∀ z₀ (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀),
         simp only [derivWithin_fun_const, Pi.zero_apply, r]
       · rw [IsOpen.mem_nhds_iff]
         exact hx
-        simp_all only [Metric.mem_ball, dist_self, gt_iff_lt, lt_inf_iff,
-          deriv_const', and_imp, implies_true, and_self, r]
-        simp only [Metric.isOpen_ball, r]
+        simp_all only [Metric.mem_ball, dist_self, gt_iff_lt, lt_inf_iff, implies_true, r]
+        simp only [Metric.isOpen_ball]
           }
 
 lemma deriv_n_neg_1_then_order_gt_zero (f : ℂ → ℂ) z₀ (hf : AnalyticAt ℂ f z₀) (n : ℕ) :
@@ -291,36 +291,35 @@ lemma deriv_n_neg_1_then_order_gt_zero (f : ℂ → ℂ) z₀ (hf : AnalyticAt �
     intros hzero horder hn
     have : ∃ m, analyticOrderAt f z₀ = m := by simp
     obtain ⟨m, Hn'⟩ := this
-    sorry
-    -- cases' m with n'
-    -- · rw [← order_deriv_top] at Hn'
-    --   rw [horder] at Hn'
-    --   · by_contra hn'
-    --     simp_all only [gt_iff_lt, ENat.coe_sub, Nat.cast_one,
-    --       ENat.sub_eq_top_iff, ENat.coe_ne_top, ne_eq,
-    --       ENat.one_ne_top, not_false_eq_true, and_true]
-    --   · exact hf
-    --   · exact hzero
-    -- · cases' n' with n''
-    --   · norm_cast at hzero
-    --     have : analyticOrderAt f z₀ = 0 := by
-    --       {simp_all only [ENat.coe_sub, Nat.cast_one, gt_iff_lt,
-    --       CharP.cast_eq_zero]}
-    --     rw [AnalyticAt.analyticOrderAt_eq_zero hf] at this
-    --     by_contra H
-    --     · apply this
-    --       exact hzero
-    --   · have hnn : analyticOrderAt (deriv f) z₀ = ((n'' + 1) - 1 : ℕ) := by
-    --       refine order_gt_zero_then_deriv_n_neg_1 f z₀ hf (n'' + 1) Hn' ?_
-    --       aesop
-    --     simp only [horder] at hnn
-    --     have : n = n'' + 1 := by
-    --       norm_cast at hnn
-    --       simp at hnn
-    --       rw [← hnn]
-    --       exact (Nat.sub_eq_iff_eq_add hn).mp rfl
-    --     rw [this]
-    --     exact Hn'
+    cases' m with n'
+    · rw [← order_deriv_top] at Hn'
+      rw [horder] at Hn'
+      · by_contra hn'
+        simp_all only [gt_iff_lt, ENat.coe_sub, Nat.cast_one,
+          ENat.sub_eq_top_iff, ENat.coe_ne_top, ne_eq,
+          ENat.one_ne_top, not_false_eq_true, and_true]
+      · exact hf
+      · exact hzero
+    · cases' n' with n''
+      · norm_cast at hzero
+        have : analyticOrderAt f z₀ = 0 := by
+          {simp_all only [ENat.coe_sub, Nat.cast_one, gt_iff_lt,
+          CharP.cast_eq_zero]}
+        rw [AnalyticAt.analyticOrderAt_eq_zero hf] at this
+        by_contra H
+        · apply this
+          exact hzero
+      · have hnn : analyticOrderAt (deriv f) z₀ = ((n'' + 1) - 1 : ℕ) := by
+          refine order_gt_zero_then_deriv_n_neg_1 f z₀ hf (n'' + 1) Hn' ?_
+          aesop
+        simp only [horder] at hnn
+        have : n = n'' + 1 := by
+          norm_cast at hnn
+          simp at hnn
+          rw [← hnn]
+          exact (Nat.sub_eq_iff_eq_add hn).mp rfl
+        rw [this]
+        exact Hn'
   }
 
 lemma iterated_deriv_eq_zero_iff_order_eq_n :
@@ -329,71 +328,70 @@ lemma iterated_deriv_eq_zero_iff_order_eq_n :
     --(∀ k < n, analyticOrderAt (deriv^[k] f) z₀ = 0) ∧ (deriv^[n] f z₀ ≠ 0)
     ↔ analyticOrderAt f z₀ = n := by
   intros z₀ n
-  sorry
-  -- induction' n with n IH
-  -- · simp only [ne_eq, not_lt_zero', IsEmpty.forall_iff, implies_true,
-  --   Function.iterate_zero, id_eq, true_and, CharP.cast_eq_zero]
-  --   exact fun f hf ho ↦ Iff.symm (AnalyticAt.analyticOrderAt_eq_zero hf)
-  -- · intros f hf hfin
-  --   constructor
-  --   · intros H
-  --     obtain ⟨hz, hnz⟩:= H
-  --     have hfzero : f z₀ = 0 := by {
-  --       specialize hz 0 (Nat.zero_lt_succ n)
-  --       exact hz
-  --     }
-  --     have IH' := IH (deriv f) (AnalyticAt.deriv hf) ?_
-  --     · --obtain ⟨IH1, IH2⟩ := IH'
-  --       --[order_gt_zero_then_deriv_n_neg_1] at IH'
-  --       suffices analyticOrderAt (deriv f) z₀ = (n : ℕ) by
-  --         refine deriv_n_neg_1_then_order_gt_zero f z₀ hf (n + 1) hfzero this ?_
-  --         simp only [gt_iff_lt, lt_add_iff_pos_left, add_pos_iff, Nat.lt_one_iff, pos_of_gt,
-  --           or_true]
-  --       rw[← IH']
-  --       constructor
-  --       · have (k : ℕ) : deriv^[k] (deriv f) = deriv^[k+1] f := rfl
-  --         intro k hk
-  --         rw[this k]
-  --         specialize hz (k+1)
-  --         have : k+1 < n+1 := by omega
-  --         specialize hz this
-  --         exact hz
-  --       · exact hnz
-  --     · have := order_gt_zero_then_deriv_n_neg_1 f  z₀ hf
-  --       specialize hz 0 (by omega)
-  --       obtain ⟨r, hr⟩ := (WithTop.ne_top_iff_exists).mp hfin
-  --       specialize this r hr.symm
-  --       simp at hz
-  --       have r0 : r > 0 := by
-  --         suffices analyticOrderAt f z₀ > 0 by
-  --           suffices @WithTop.some ℕ r > 0 by exact ENat.coe_lt_coe.mp this
-  --           rw[hr]
-  --           exact this
-  --         have := analyticOrderAt_ne_zero.mpr ⟨hf, hz⟩
-  --         exact pos_of_ne_zero this
-  --       specialize this r0
-  --       rw[this]
-  --       exact ENat.coe_ne_top (r - 1)
-  --   · intros ho
-  --     constructor
-  --     · intros k hk
-  --       have thing := order_geq_k_then_deriv_n_neg_1 f hf k (n+1) ho.symm
-  --       have : n+1 > 0 := by omega
-  --       specialize thing this hk.le
-  --       have : n + 1 - k > 0 := by omega
-  --       have : analyticOrderAt (deriv^[k] f) z₀ ≠ 0 := by
-  --         rw[thing]
-  --         rw [@Nat.cast_ne_zero]
-  --         omega
-  --       rw[analyticOrderAt_ne_zero] at this
-  --       exact this.2
-  --     · have := order_geq_k_then_deriv_n_neg_1 f hf (n+1) (n+1) ho.symm (by omega) (by omega)
-  --       simp at this
-  --       rw[AnalyticAt.analyticOrderAt_eq_zero] at this
-  --       assumption
-  --       have (k : ℕ) : deriv^[k] (deriv f) = deriv^[k+1] f := rfl
-  --       rw[this]
-  --       exact iterated_deriv hf (n + 1)
+  induction' n with n IH
+  · simp only [ne_eq, not_lt_zero', IsEmpty.forall_iff, implies_true,
+    Function.iterate_zero, id_eq, true_and, CharP.cast_eq_zero]
+    exact fun f hf ho ↦ Iff.symm (AnalyticAt.analyticOrderAt_eq_zero hf)
+  · intros f hf hfin
+    constructor
+    · intros H
+      obtain ⟨hz, hnz⟩:= H
+      have hfzero : f z₀ = 0 := by {
+        specialize hz 0 (Nat.zero_lt_succ n)
+        exact hz
+      }
+      have IH' := IH (deriv f) (AnalyticAt.deriv hf) ?_
+      · --obtain ⟨IH1, IH2⟩ := IH'
+        --[order_gt_zero_then_deriv_n_neg_1] at IH'
+        suffices analyticOrderAt (deriv f) z₀ = (n : ℕ) by
+          refine deriv_n_neg_1_then_order_gt_zero f z₀ hf (n + 1) hfzero this ?_
+          simp only [gt_iff_lt, lt_add_iff_pos_left, add_pos_iff, Nat.lt_one_iff, pos_of_gt,
+            or_true]
+        rw[← IH']
+        constructor
+        · have (k : ℕ) : deriv^[k] (deriv f) = deriv^[k+1] f := rfl
+          intro k hk
+          rw[this k]
+          specialize hz (k+1)
+          have : k+1 < n+1 := by omega
+          specialize hz this
+          exact hz
+        · exact hnz
+      · have := order_gt_zero_then_deriv_n_neg_1 f  z₀ hf
+        specialize hz 0 (by omega)
+        obtain ⟨r, hr⟩ := (WithTop.ne_top_iff_exists).mp hfin
+        specialize this r hr.symm
+        simp at hz
+        have r0 : r > 0 := by
+          suffices analyticOrderAt f z₀ > 0 by
+            suffices @WithTop.some ℕ r > 0 by exact ENat.coe_lt_coe.mp this
+            rw[hr]
+            exact this
+          have := analyticOrderAt_ne_zero.mpr ⟨hf, hz⟩
+          exact pos_of_ne_zero this
+        specialize this r0
+        rw[this]
+        exact ENat.coe_ne_top (r - 1)
+    · intros ho
+      constructor
+      · intros k hk
+        have thing := order_geq_k_then_deriv_n_neg_1 f hf k (n+1) ho.symm
+        have : n+1 > 0 := by omega
+        specialize thing this hk.le
+        have : n + 1 - k > 0 := by omega
+        have : analyticOrderAt (deriv^[k] f) z₀ ≠ 0 := by
+          rw[thing]
+          rw [@Nat.cast_ne_zero]
+          omega
+        rw[analyticOrderAt_ne_zero] at this
+        exact this.2
+      · have := order_geq_k_then_deriv_n_neg_1 f hf (n+1) (n+1) ho.symm (by omega) (by omega)
+        simp at this
+        rw[AnalyticAt.analyticOrderAt_eq_zero] at this
+        assumption
+        have (k : ℕ) : deriv^[k] (deriv f) = deriv^[k+1] f := rfl
+        rw[this]
+        exact iterated_deriv hf (n + 1)
 
 lemma iterated_deriv_eq_zero_if_order_eq_n z₀ (n : ℕ) (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀) :
     analyticOrderAt f z₀ = n → (∀ k < n, deriv^[k] f z₀ = 0) ∧ (deriv^[n] f z₀ ≠ 0) := by
@@ -416,11 +414,10 @@ lemma iterated_deriv_eq_zero_imp_n_leq_order : ∀ (n : ℕ) z₀
     rw [Hm]
     rw [← iterated_deriv_eq_zero_iff_order_eq_n z₀ m f hf ho] at Hm
     rw [ENat.coe_le_coe]
-    sorry
-    -- cases' le_or_lt n m with h h
-    -- · exact h
-    -- · rcases Hm with ⟨_, h'⟩
-    --   cases (h' (hkn m h))
+    cases' le_or_gt n m with h h
+    · exact h
+    · rcases Hm with ⟨_, h'⟩
+      cases (h' (hkn m h))
 
 lemma shift_ball (x y z : ℂ) (renn : ENNReal) :
   x ∈ EMetric.ball y renn → z + x ∈ EMetric.ball (z + y) renn := by {
@@ -503,7 +500,7 @@ lemma HasFPowerSeriesWithout (f : ℂ → ℂ)
             obtain ⟨left, right⟩ := a
             obtain ⟨left_1, right_1⟩ := this_1
             apply hball
-            simp_all only [Metric.mem_ball, dist_self_add_left, r'']
+            simp_all only [Metric.mem_ball, dist_self_add_left]
           }
           aesop
         · simp_all only [ENNReal.some_eq_coe,
@@ -530,8 +527,8 @@ lemma AnalyticOnAt (f: ℂ → ℂ) (z : ℂ) (U : Set ℂ) (hU : U ∈ nhds z) 
     use p
     exact (HasFPowerSeriesWithout f p U z hU).mp hp}
 
-  lemma AnalyticOnEq (f g : ℂ → ℂ) (U : Set ℂ) :
-    (∀ z ∈ U, f z = g z) → AnalyticOn ℂ f U → AnalyticOn ℂ g U := by {
+lemma AnalyticOnEq (f g : ℂ → ℂ) (U : Set ℂ) :
+  (∀ z ∈ U, f z = g z) → AnalyticOn ℂ f U → AnalyticOn ℂ g U := by {
     intros Heq HA
     unfold AnalyticOn at *
     unfold AnalyticWithinAt at *

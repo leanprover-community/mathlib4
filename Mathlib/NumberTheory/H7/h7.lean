@@ -1048,8 +1048,7 @@ def ρ : Fin (q * q) → ℂ := fun i => by
   let b : ℕ := (finProdFinEquiv.symm.1 i).2 + 1
   exact (a + (b • β)) * Complex.log α
 
-include hirr htriv in
-lemma hdist : ∀ (i j : Fin (q * q)), i ≠ j → ρ α β q i ≠ ρ α β q j := by stop
+lemma hdist : ∀ (i j : Fin (q * q)), i ≠ j → ρ α β q i ≠ ρ α β q j := by
   intros i j hij
   rw [ne_eq, decompose_ij] at hij
   rw [not_and'] at hij
@@ -1070,10 +1069,70 @@ lemma hdist : ∀ (i j : Fin (q * q)), i ≠ j → ρ α β q i ≠ ρ α β q j
       have hb := hirr (i1 - j1) (j2 - i2)
       rw [← ne_eq]
       change i1 + i2 • β ≠ j1 + j2 • β
-      apply sum_b β (hirr := hirr) i1 i2 j1 j2
-      unfold i2 j2
-      simp only [Nat.add_right_cancel_iff]
-      exact Fin.val_ne_of_ne Heq
+      intros H
+      have hb := hirr (i1 - j1) (j2 - i2)
+      apply hb
+      have h1 : i1 + i2 • β = j1 + j2 • β  ↔
+        (i1 + i2 • β) - (j1 + j2 • β) = 0 := Iff.symm sub_eq_zero
+      rw [h1] at H
+      have h2 : ↑i1 + ↑i2 • β - (↑j1 + ↑j2 • β) = 0 ↔
+         ↑i1 + i2 • β - ↑j1 - ↑j2 • β = 0 := by {
+          simp_all only [ne_eq, Equiv.toFun_as_coe,
+          finProdFinEquiv_symm_apply,
+          Fin.coe_divNat, Nat.cast_add,
+            Int.natCast_ediv, Nat.cast_one,
+            add_sub_add_right_eq_sub, Int.cast_sub,
+            Fin.coe_modNat, Int.natCast_emod,
+            nsmul_eq_mul, iff_true, sub_self,
+            add_sub_cancel_left]}
+      rw [h2] at H
+      have h3 : ↑i1 + i2 • β - ↑j1 - j2 • β = 0 ↔
+          ↑i1 - ↑j1 + ↑i2 • β - ↑j2 • β = 0 := by {
+        ring_nf}
+      rw [h3] at H
+      have hij2 : i2 ≠ j2 := by {
+        by_contra HC
+        apply Heq
+        refine Fin.eq_of_val_eq ?_
+        exact Nat.succ_inj'.mp HC
+        }
+      have h4 : ↑i1 - ↑j1 + ↑i2 • β - ↑j2 • β = 0 ↔
+        ↑i1 - ↑j1 + (i2 - ↑j2 : ℂ) • β = 0 := by {
+        rw [sub_eq_add_neg]
+        simp only [nsmul_eq_mul]
+        rw [← neg_mul, add_assoc, ← add_mul]
+        simp only [smul_eq_mul]
+        rw [← sub_eq_add_neg]}
+      rw [h4] at H
+      have h5 : ↑i1 - ↑j1 + (i2 - ↑j2 : ℂ) • β =0 ↔
+       ↑i1 - ↑j1 = - ((i2 - ↑j2 : ℂ) • β) := by {
+        rw [add_eq_zero_iff_eq_neg]}
+      rw [h5] at H
+      have h6 : ↑i1 - ↑j1 = - ((i2 - ↑j2 : ℂ) • β) ↔
+          ↑i1 - ↑j1 = (↑j2 - ↑i2 : ℂ) • β := by {
+        refine Eq.congr_right ?_
+        simp only [smul_eq_mul]
+        rw [← neg_mul]
+        simp only [neg_sub]}
+      rw [h6] at H
+      have h7 : ↑i1 - ↑j1 = (↑j2 - ↑i2 : ℂ) • β ↔
+         (↑i1 - ↑j1) /(↑j2 - ↑i2 : ℂ) =  β := by {
+        simp only [smul_eq_mul]
+        rw [div_eq_iff, mul_comm]
+        intros HC
+        apply hij2
+        rw [sub_eq_zero] at HC
+        simp only [Nat.cast_inj] at HC
+        exact HC.symm}
+      rw [h7] at H
+      rw [H.symm]
+      simp only [Int.cast_sub, Int.cast_natCast]
+
+
+      -- apply sum_b β (hirr := hirr) i1 i2 j1 j2
+      -- unfold i2 j2
+      -- simp only [Nat.add_right_cancel_iff]
+      -- exact Fin.val_ne_of_ne Heq
   · exact log_zero_zero α β hirr htriv
 
 def V := vandermonde (fun t => ρ α β q t)
@@ -1098,29 +1157,27 @@ def iteratedDeriv_of_R (k : ℕ):
   deriv^[k] (fun x => (R) x) =
  fun x => ∑ t, (σ ((η) t)) *
     exp (ρ α β q t * x) * (ρ α β q t)^k := by
-  sorry
-  -- induction' k with k hk
-  -- · simp only [iteratedDeriv_zero, pow_zero, mul_one]; rfl
-  -- · rw [← iteratedDeriv_eq_iterate] at *
-  --   simp only [iteratedDeriv_succ]
-  --   conv => enter [1]; rw [hk]
-  --   ext x
-  --   stop
-  --   rw [deriv, fderiv_sum]
-  --   simp only [ContinuousLinearMap.coe_sum', Finset.sum_apply,
-  --     fderiv_eq_smul_deriv, deriv_mul_const_field', differentiableAt_const,
-  --     deriv_const_mul_field', smul_eq_mul, one_mul]
-  --   rw [Finset.sum_congr rfl]
-  --   intros t ht
-  --   rw [mul_assoc, mul_assoc, mul_eq_mul_left_iff, map_eq_zero]; left
-  --   rw [cexp_mul, mul_assoc, (pow_succ' (ρ α β q t) k)]
-  --   · rw [mul_comm, mul_assoc, mul_eq_mul_left_iff,
-  --        Eq.symm (pow_succ' (ρ α β q t) k)]; left; rfl
-  --   · intros i hi
-  --     apply mul ?_ (differentiable_const (ρ α β q i ^ k))
-  --     · apply mul <| differentiable_const _
-  --       apply Differentiable.cexp
-  --       apply mul (differentiable_const _) (differentiable_id')
+  induction' k with k hk
+  · simp only [iteratedDeriv_zero, pow_zero, mul_one]; rfl
+  · rw [← iteratedDeriv_eq_iterate] at *
+    simp only [iteratedDeriv_succ]
+    conv => enter [1]; rw [hk]
+    ext x
+    rw [deriv, fderiv_fun_sum]
+    simp only [ContinuousLinearMap.coe_sum', Finset.sum_apply,
+      fderiv_eq_smul_deriv, deriv_mul_const_field', differentiableAt_const,
+      deriv_const_mul_field', smul_eq_mul, one_mul]
+    rw [Finset.sum_congr rfl]
+    intros t ht
+    rw [mul_assoc, mul_assoc, mul_eq_mul_left_iff, map_eq_zero]; left
+    rw [cexp_mul, mul_assoc, (pow_succ' (ρ α β q t) k)]
+    · rw [mul_comm, mul_assoc, mul_eq_mul_left_iff,
+         Eq.symm (pow_succ' (ρ α β q t) k)]; left; rfl
+    · intros i hi
+      apply mul ?_ (differentiable_const (ρ α β q i ^ k))
+      · apply mul <| differentiable_const _
+        apply Differentiable.cexp
+        apply mul (differentiable_const _) (differentiable_fun_id)
 
 lemma iteratedDeriv_of_R_is_zero (hR : (R) = 0) :
   ∀ z, deriv^[k] (fun z => (R) z) z = 0 := by
@@ -1312,8 +1369,8 @@ lemma sys_coe_foo : ∀ (l' : Fin (m K)), (log α)^(-(k K q u) : ℤ) * deriv^[(
   left
   have := sys_coe_bar α β hirr htriv K σ α' β' γ' habc q u t
   unfold l at this
+  rw [mul_assoc]
   sorry
-  --rw [mul_assoc]
   --exact this
   }
 
@@ -1347,53 +1404,56 @@ include α β σ hq0 h2mq hd hirr htriv σ α' β' γ' habc h2mq  in
 lemma iteratedDeriv_vanishes :
   ∀ (l' : Fin (m K)) (k : Fin (n K q)), k < n K q →
   deriv^[k] (R α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq) (l' + 1) = 0 := by
-  sorry
-  -- intros l' k hl
-  -- have h1 := deriv_sum_blah α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq l' k
-  -- have : (σ (c_coeffs K α' β' γ' q) * (log α)^(-k : ℤ)) * deriv^[k]
-  --   (R α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq) (l' + 1) =
-  --   (σ (c_coeffs K α' β' γ' q) * (log α)^(-k : ℤ)) * 0 → deriv^[k]
-  --   (R α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq) (l' + 1) = 0 := by {
-  --     apply mul_left_cancel₀
-  --     by_contra H
-  --     simp only [Int.cast_mul, Int.cast_pow, map_mul, map_pow, map_intCast, zpow_neg,
-  --         zpow_natCast, mul_eq_zero, pow_eq_zero_iff', Int.cast_eq_zero, ne_eq, not_or,
-  --         or_self_right, inv_eq_zero] at H
-  --     cases' H with h1 h2
-  --     · cases' h1 with h1 h3
-  --       · apply c₁neq0 K α' β' γ'; exact h1.1
-  --       · apply c₁neq0 K α' β' γ'; exact h3.1
-  --     · apply (log_zero_zero α htriv); exact h2.1}
-  -- rw [this]
-  -- rw [mul_zero]
-  -- rw [mul_assoc]
-  -- rw [h1]
-  -- simp only [map_eq_zero, FaithfulSMul.algebraMap_eq_zero_iff]
-  -- have hMt0 := (applylemma82 α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq).choose_spec.2.1
-  -- rw [funext_iff] at hMt0
-  -- unfold η
-  -- simp only [ne_eq, Nat.cast_mul, Real.rpow_natCast, Pi.zero_apply] at this
-  -- simp_all only [Fin.is_lt, Int.cast_mul, Int.cast_pow, map_mul, map_pow,
-  -- map_intCast, zpow_neg, zpow_natCast, mul_zero, mul_eq_zero, pow_eq_zero_iff',
-  --   Int.cast_eq_zero, ne_eq, not_or, or_self_right, inv_eq_zero, Nat.cast_mul,
-  -- Real.rpow_natCast, Pi.zero_apply]
+  intros l' k hl
+  have h1 := deriv_sum_blah α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq l' k
+  have : (σ (c_coeffs K α' β' γ' q) * (log α)^(-k : ℤ)) * deriv^[k]
+    (R α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq) (l' + 1) =
+    (σ (c_coeffs K α' β' γ' q) * (log α)^(-k : ℤ)) * 0 → deriv^[k]
+    (R α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq) (l' + 1) = 0 := by {
+      apply mul_left_cancel₀
+      by_contra H
+      simp only [Int.cast_mul, Int.cast_pow, map_mul, map_pow, map_intCast, zpow_neg,
+          zpow_natCast, mul_eq_zero, pow_eq_zero_iff', Int.cast_eq_zero, ne_eq, not_or,
+          or_self_right, inv_eq_zero] at H
+      cases' H with h1 h2
+      · cases' h1 with h1 h3
+        · apply c₁neq0 K α' β' γ'; exact h1.1
+        · apply c₁neq0 K α' β' γ'; exact h3.1
+      · apply (log_zero_zero α β hirr htriv); exact h2.1}
+  rw [this]
+  rw [mul_zero]
+  rw [mul_assoc]
+  rw [h1]
+  simp only [map_eq_zero, FaithfulSMul.algebraMap_eq_zero_iff]
+  have hMt0 := (applylemma82 α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq).choose_spec.2.1
+  rw [funext_iff] at hMt0
+  unfold η
+  simp only [ne_eq, Nat.cast_mul, Real.rpow_natCast, Pi.zero_apply] at this
+  simp_all only [Fin.is_lt, Int.cast_mul, Int.cast_pow, map_mul, map_pow,
+  map_intCast, zpow_neg, zpow_natCast, mul_zero, mul_eq_zero, pow_eq_zero_iff',
+    Int.cast_eq_zero, ne_eq, not_or, or_self_right, inv_eq_zero, Nat.cast_mul,
+  Real.rpow_natCast, Pi.zero_apply]
 
 lemma R_analyt_at_point (point : ℕ) :
  AnalyticAt ℂ (R α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq) point := by
   apply Differentiable.analyticAt
   unfold R
-  sorry
-  -- apply Differentiable.analyticAt (sum fun _ _ =>
-  -- (differentiable_const _).mul
-  --   (differentiable_exp.comp ((differentiable_const _).mul differentiable_id')))
+  apply Differentiable.fun_sum
+  intros i hk
+  apply Differentiable.fun_mul
+  · apply differentiable_const
+  · apply (differentiable_exp.comp ((differentiable_const _).mul differentiable_fun_id))
 
 lemma analyticEverywhere : ∀ (z : ℂ),
-  AnalyticAt ℂ (R α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq) z := by { stop
+  AnalyticAt ℂ (R α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq) z := by
   intros z
   unfold R
-  apply Differentiable.analyticAt (sum fun _ _ =>
+  apply Differentiable.analyticAt
+  apply Differentiable.fun_sum
+  intros i hk
+  exact
   (differentiable_const _).mul
-    (differentiable_exp.comp ((differentiable_const _).mul differentiable_id')))}
+    (differentiable_exp.comp ((differentiable_const _).mul differentiable_fun_id))
 
 include htriv habc in
 lemma order_neq_top : ∀ (l' : Fin (m K)),
@@ -1424,10 +1484,9 @@ lemma Rorder_exists (z : ℂ) :
   have : (analyticOrderAt (R α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq) z) ≠ ⊤ := by
    exact order_neq_top_min_one α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq z
   revert this
-  sorry
-  -- cases'(analyticOrderAt (R α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq) z) with r
-  -- · intro this_1; simp_all only [ne_eq, not_true_eq_false]
-  -- · intros hr; use r; rfl
+  cases'(analyticOrderAt (R α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq) z) with r
+  · intro this_1; simp_all only [ne_eq, not_true_eq_false]
+  · intros hr; use r; rfl
     }
 
 def R_order (z : ℂ) : ℕ :=
@@ -1441,6 +1500,7 @@ lemma R_order_eq (z) :
     = R_order α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq z :=
     (Rorder_exists α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq z).choose_spec
 
+omit hirr in
 lemma exists_mem_finset_min' {γ : Type _} {β : Type _} [LinearOrder γ]
     [DecidableEq γ] (s : Finset β) (f : β → γ) (Hs : s.Nonempty) :
   ∃ x ∈ s, ∃ y, y = f x ∧ ∀ x' ∈ s, y ≤ f x' := by
@@ -1457,7 +1517,7 @@ lemma exists_mem_finset_min' {γ : Type _} {β : Type _} [LinearOrder γ]
 lemma exists_min_order_at :
   let s : Finset (Fin (m K)) := Finset.univ
   ∃ l₀ ∈ s, (∃ y, (analyticOrderAt R l₀) = y ∧
-   (∀ (l : Fin (m K)), l ∈ s → y ≤ (analyticOrderAt R l))) := by stop
+   (∀ (l : Fin (m K)), l ∈ s → y ≤ (analyticOrderAt R l))) := by
   intros s
   have Hs : s.Nonempty := by {
      refine univ_nonempty_iff.mpr ?_
@@ -1500,10 +1560,9 @@ lemma r_exists :
   have H := order_neq_top_min_one α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq l₀
   have : r' ≠ ⊤ := by rw [this] at H; exact H
   revert this
-  sorry
-  -- cases' r' with r
-  -- · intro this_1; simp_all only [ne_eq, not_true_eq_false]
-  -- · intros hr; use r; rfl
+  cases' r' with r
+  · intro this_1; simp_all only [ne_eq, not_true_eq_false]
+  · intros hr; use r; rfl
     }
 
 def r := (r_exists α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq).choose
@@ -1556,13 +1615,12 @@ lemma rneq0 : (r) ≠ 0 := by {
   have := (r_prop α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq).2
   have := foo' α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq
   have H := order_geq_n α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq l₀
+  simp_all only [Fin.is_lt, forall_const, ne_eq,
+    Nat.cast_eq_zero, not_false_eq_true]
+  simp_all only [ENat.coe_ne_top, not_false_eq_true, l₀, R, r]
+  intros HH
   sorry
-  -- simp_all only [Fin.is_lt, forall_const, ne_eq,
-  --   Nat.cast_eq_zero, not_false_eq_true]
-  -- simp_all only [ENat.coe_ne_top, not_false_eq_true, l₀, R, r]
-  -- intros HH
-
-  -- rw [AnalyticAt.analyticOrderAt_eq_zero] at H
+  --rw [AnalyticAt.analyticOrderAt_eq_zero] at H
 }
 
 lemma r_qeq_0 : 0 < (r) := by {
@@ -1591,29 +1649,28 @@ lemma sys_coe'_ne_zero : sys_coe' ≠ 0 := by
   simp only [Pi.zero_apply, mul_eq_zero, pow_eq_zero_iff',
     AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, or_self,
     not_false_eq_true, pow_eq_zero_iff] at H
-  sorry
-  -- cases' H with H1 H2
-  -- · cases' H1 with H1 H2
-  --   · rcases H1 with ⟨h1, h2⟩
-  --     apply β'_neq_zero α β hirr K σ α' β' γ' habc q t
-  --       ((r))
-  --     rw [h1]
-  --     simp only [pow_eq_zero_iff', ne_eq, true_and]
-  --     exact h2
-  --   · apply α'_neq_zero α β hirr htriv K σ α' β' γ' habc q u t
-  --     simp only [pow_eq_zero_iff', ne_eq, true_and]
-  --     simp_all only [Equiv.toFun_as_coe, finProdFinEquiv_symm_apply,
-  --     Fin.coe_divNat, ne_eq, mul_eq_zero,
-  --       Nat.add_eq_zero, Nat.div_eq_zero_iff, one_ne_zero, and_false,
-  --        Fin.val_eq_zero_iff, false_or, or_self,
-  --       not_false_eq_true, and_self]
-  -- · apply γ'_neq_zero α β hirr htriv K σ α' β' γ' habc q u t
-  --   simp only [pow_eq_zero_iff', ne_eq, true_and]
-  --   simp_all only [Equiv.toFun_as_coe, finProdFinEquiv_symm_apply,
-  --    Fin.coe_modNat, ne_eq, mul_eq_zero, Nat.add_eq_zero,
-  --     one_ne_zero, and_false, Fin.val_eq_zero_iff, false_or,
-  --     Fin.coe_divNat, Nat.div_eq_zero_iff, or_self,
-  --     not_false_eq_true, and_self]
+  cases' H with H1 H2
+  · cases' H1 with H1 H2
+    · rcases H1 with ⟨h1, h2⟩
+      apply β'_neq_zero α β hirr K σ α' β' γ' habc q t
+        ((r))
+      rw [h1]
+      simp only [pow_eq_zero_iff', ne_eq, true_and]
+      exact h2
+    · apply α'_neq_zero α β hirr htriv K σ α' β' γ' habc q u t
+      simp only [pow_eq_zero_iff', ne_eq, true_and]
+      simp_all only [Equiv.toFun_as_coe, finProdFinEquiv_symm_apply,
+      Fin.coe_divNat, ne_eq, mul_eq_zero,
+        Nat.add_eq_zero, Nat.div_eq_zero_iff, one_ne_zero, and_false,
+         Fin.val_eq_zero_iff, false_or, or_self,
+        not_false_eq_true, and_self]
+  · apply γ'_neq_zero α β hirr htriv K σ α' β' γ' habc q u t
+    simp only [pow_eq_zero_iff', ne_eq, true_and]
+    simp_all only [Equiv.toFun_as_coe, finProdFinEquiv_symm_apply,
+     Fin.coe_modNat, ne_eq, mul_eq_zero, Nat.add_eq_zero,
+      one_ne_zero, and_false, Fin.val_eq_zero_iff, false_or,
+      Fin.coe_divNat, Nat.div_eq_zero_iff, or_self,
+      not_false_eq_true, and_self]
 
 def ρᵣ : ℂ := (log α)^(-r : ℤ) * deriv^[r] (R) (l₀)
 
@@ -1801,175 +1858,173 @@ lemma ρ_is_int :
       rw [← pow_add]; ring}
   rw [this]
   let r := ((r))
-  sorry
-  -- cases' abs_choice (c₁ ^ r * c₁ ^
-  --   (m K * q) * c₁ ^ (m K * q)) with H1 H2
-  -- · rw [← mul_assoc, H1]
-  --   rw [Finset.smul_sum]
-  --   apply IsIntegral.sum
-  --   intros x hx
-  --   -- let a : ℕ := (finProdFinEquiv.symm.1 x).1 + 1
-  --   -- let b : ℕ := (finProdFinEquiv.symm.1 x).2 + 1
-  --   --let k : ℕ := (finProdFinEquiv.symm.1 u).2
-  --   rw [zsmul_eq_mul]
-  --   nth_rw 1 [mul_comm]
-  --   rw [mul_assoc]
-  --   apply IsIntegral.mul
-  --   · exact RingOfIntegers.isIntegral_coe
-  --      ((η) x)
-  --   · rw [mul_comm]
-  --     rw [← zsmul_eq_mul]
-  --     have := triple_comm K
-  --       (c₁^r : ℤ)
-  --       (c₁^(m K * q) : ℤ)
-  --       (c₁^(m K * q) : ℤ)
-  --       (((a q t : ℕ) + (b q t) • β')^r)
-  --       (α' ^ ((a q t) * l₀))
-  --       (γ' ^ ((b q t)* l₀))
-  --     have : IsIntegral ℤ
-  --       (((c₁ ^ r * c₁ ^ (m K * q) * c₁ ^ (m K * q)) •
-  --      let r := _root_.r α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq;
-  --      let l₀ := l₀
-  --     ((a q t) + (b q t) • β') ^ r * α' ^ ((a q t) * l₀ : ℕ) * γ' ^
-  --     ((b q t) * l₀))) =
-  --        IsIntegral ℤ (( c₁ ^ r • ((a q t) + (b q t) • β') ^ r
-  --          * c₁ ^ (m K * q) • α' ^ ((a q t) * l₀) *
-  --       c₁ ^ (m K * q) • γ' ^ ((b q t) * l₀))) := by {
-  --         rw [← this]
-  --         }
-  --     simp only
-  --     simp only at this
-  --     simp_rw [this]
-  --     apply IsIntegral.mul
-  --     · apply IsIntegral.mul
-  --       · simp only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow]
-  --         rw [← mul_pow]
-  --         apply IsIntegral.pow
-  --         rw [mul_add]
-  --         apply IsIntegral.add
-  --         · apply IsIntegral.mul <| IsIntegral.Cast _ _
-  --           · apply IsIntegral.Nat
-  --         · rw [mul_comm]
-  --           rw [mul_assoc]
-  --           apply IsIntegral.mul
-  --           · apply IsIntegral.Nat
-  --           · rw [mul_comm];
-  --             have := isIntegral_c₁β K α' β' γ'
-  --             simp only [zsmul_eq_mul] at this
-  --             exact this
-  --       · apply c₁ac K α' β' γ' α' (m K) q a l₀ ?_ ?_
-  --         · rw [mul_comm]
-  --           apply Nat.mul_le_mul
-  --           · simp only [Fin.is_le']
-  --           · sorry
-  --         · rw [← zsmul_eq_mul]; exact isIntegral_c₁α K α' β' γ'
-  --     · have : c₁ ^ (m K * q - (b * l₀)) *
-  --          (c₁ ^ (b * l₀)) =
-  --             (c₁ ^ ((m K * q))) := by {
-  --         rw [← pow_add,Nat.sub_add_cancel]
-  --         nth_rw 1 [mul_comm]
-  --         apply mul_le_mul
-  --         · simp only [Fin.is_le']
-  --         · change ↑(finProdFinEquiv.symm.toFun x).2 + 1 ≤ q
-  --           have : ↑(finProdFinEquiv.symm.toFun x).2 ≤ q := by {
-  --             exact Fin.is_le'
-  --           }
-  --           sorry
-  --         · simp only [zero_le]
-  --         · simp only [zero_le]
-  --          }
-  --       rw [← this]
-  --       simp only [zsmul_eq_mul, Int.cast_mul, Int.cast_pow]
-  --       rw [mul_assoc]
-  --       apply IsIntegral.mul
-  --       · apply IsIntegral.pow
-  --         · apply IsIntegral.Cast
-  --       · rw [← mul_pow]
-  --         apply IsIntegral.pow
-  --         · rw [← zsmul_eq_mul]; exact isIntegral_c₁γ K α' β' γ'
-  -- · rw [Finset.smul_sum]
-  --   apply IsIntegral.sum
-  --   intros x hx
-  --   rw [← mul_assoc, H2]
-  --   rw [zsmul_eq_mul]
-  --   nth_rw 1 [mul_comm]
-  --   rw [mul_assoc]
-  --   apply IsIntegral.mul
-  --   · exact RingOfIntegers.isIntegral_coe
-  --       ((η) x)
-  --   · rw [mul_comm]
-  --     let a : ℕ := (finProdFinEquiv.symm.1 x).1 + 1
-  --     let b : ℕ := (finProdFinEquiv.symm.1 x).2 + 1
-  --     --let l₀ : ℕ := (finProdFinEquiv.symm.1 u).1 + 1
-  --     rw [← zsmul_eq_mul]
-  --     have := triple_comm K
-  --       (c₁^r : ℤ)
-  --       (c₁^(m K * q) : ℤ)
-  --       (c₁^(m K * q) : ℤ)
-  --       (((a : ℕ) + b • β')^r)
-  --       (α' ^ (a * ( (l₀))))
-  --       (γ' ^ (b * ( (l₀))))
-  --     have : IsIntegral ℤ
-  --      (-(c₁ ^ r * c₁ ^ (m K * q) * c₁ ^ (m K * q)) •
-  --      let a : ℕ := (finProdFinEquiv.symm.toFun x).1 + 1;
-  --      let b : ℕ := (finProdFinEquiv.symm.toFun x).2 + 1;
-  --      let r := _root_.r α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq;
-  --     (↑a + b • β') ^ r * α' ^ (a * ((l₀))) * γ' ^ (b * ((l₀)))) =
-  --        IsIntegral ℤ ((c₁ ^ r • (↑a + b • β') ^ r
-  --          * c₁ ^ (m K * q) • α' ^ (a * ((l₀))) * c₁ ^ (m K * q) • γ' ^ (b * ((l₀))))) := by {
-  --         rw [← this]
-  --         rw [neg_smul]
-  --         rw [IsIntegral.neg_iff]}
-  --     rw [this]
-  --     apply IsIntegral.mul
-  --     · apply IsIntegral.mul
-  --       · simp only [nsmul_eq_mul, neg_smul, zsmul_eq_mul,
-  --           Int.cast_pow, IsIntegral.neg_iff]
-  --         rw [← mul_pow]
-  --         apply IsIntegral.pow
-  --         rw [mul_add]
-  --         · apply IsIntegral.add
-  --           · apply IsIntegral.mul <| IsIntegral.Cast _ _
-  --             · apply IsIntegral.Nat
-  --           ·rw [mul_comm, mul_assoc]
-  --            apply IsIntegral.mul <| IsIntegral.Nat _ _
-  --            rw [mul_comm, ← zsmul_eq_mul]
-  --            exact isIntegral_c₁β K α' β' γ'
-  --       · apply c₁ac K α' β' γ' α' (m K) q a
-  --            ((l₀)) ?_ ?_
-  --         · rw [mul_comm]
-  --           apply Nat.mul_le_mul
-  --           simp only [Fin.is_le']
-  --           unfold a
-  --           sorry
-  --             -- (Nat.add_le_of_le_sub (Nat.le_of_ble_eq_true rfl)
-  --             -- (Nat.le_sub_one_of_lt (finProdFinEquiv.symm.1 x).1.isLt))
-  --             -- (Nat.add_le_of_le_sub hq0 (Nat.le_sub_one_of_lt
-  --             -- (finProdFinEquiv.symm.1 x).1.isLt))
-  --         · rw [← zsmul_eq_mul]; exact isIntegral_c₁α K α' β' γ'
-  --     · have : c₁ ^ (m K * q - (b * ((l₀)))) * (c₁ ^ (b * ((l₀)))) =
-  --           (c₁ ^ ((m K * q))) := by {
-  --         rw [← pow_add, Nat.sub_add_cancel]
-  --         nth_rw 1 [mul_comm]
-  --         apply mul_le_mul
-  --         · exact Fin.is_le'
-  --         · change ↑(finProdFinEquiv.symm.toFun x).2 + 1 ≤ q
-  --           have : ↑(finProdFinEquiv.symm.toFun x).2 ≤ q := by {
-  --             exact Fin.is_le'
-  --           }
-  --           sorry
-  --         · simp only [zero_le]
-  --         · simp only [zero_le]
-  --          }
-  --       rw [← this]
-  --       simp only [zsmul_eq_mul, Int.cast_mul, Int.cast_pow]
-  --       rw [mul_assoc]
-  --       apply IsIntegral.mul
-  --       · apply IsIntegral.pow
-  --         · apply IsIntegral.Cast
-  --       · rw [← mul_pow]
-  --         apply IsIntegral.pow
-  --         · rw [← zsmul_eq_mul]; exact isIntegral_c₁γ K α' β' γ'
+  cases' abs_choice (c₁ ^ r * c₁ ^
+    (m K * q) * c₁ ^ (m K * q)) with H1 H2
+  · rw [← mul_assoc, H1]
+    rw [Finset.smul_sum]
+    apply IsIntegral.sum
+    intros x hx
+    -- let a : ℕ := (finProdFinEquiv.symm.1 x).1 + 1
+    -- let b : ℕ := (finProdFinEquiv.symm.1 x).2 + 1
+    --let k : ℕ := (finProdFinEquiv.symm.1 u).2
+    rw [zsmul_eq_mul]
+    nth_rw 1 [mul_comm]
+    rw [mul_assoc]
+    apply IsIntegral.mul
+    · exact RingOfIntegers.isIntegral_coe
+       ((η) x)
+    · rw [mul_comm]
+      rw [← zsmul_eq_mul]
+      have := triple_comm K
+        (c₁^r : ℤ)
+        (c₁^(m K * q) : ℤ)
+        (c₁^(m K * q) : ℤ)
+        (((a q t : ℕ) + (b q t) • β')^r)
+        (α' ^ ((a q t) * l₀))
+        (γ' ^ ((b q t)* l₀))
+      have : IsIntegral ℤ
+        (((c₁ ^ r * c₁ ^ (m K * q) * c₁ ^ (m K * q)) •
+       let r := _root_.r α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq;
+       let l₀ := l₀
+      ((a q t) + (b q t) • β') ^ r * α' ^ ((a q t) * l₀ : ℕ) * γ' ^
+      ((b q t) * l₀))) =
+         IsIntegral ℤ (( c₁ ^ r • ((a q t) + (b q t) • β') ^ r
+           * c₁ ^ (m K * q) • α' ^ ((a q t) * l₀) *
+        c₁ ^ (m K * q) • γ' ^ ((b q t) * l₀))) := by {
+          rw [← this]
+          }
+      simp only at this
+      simp_rw [this]
+      apply IsIntegral.mul
+      · apply IsIntegral.mul
+        · simp only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow]
+          rw [← mul_pow]
+          apply IsIntegral.pow
+          rw [mul_add]
+          apply IsIntegral.add
+          · apply IsIntegral.mul <| IsIntegral.Cast _ _
+            · apply IsIntegral.Nat
+          · rw [mul_comm]
+            rw [mul_assoc]
+            apply IsIntegral.mul
+            · apply IsIntegral.Nat
+            · rw [mul_comm];
+              have := isIntegral_c₁β K α' β' γ'
+              simp only [zsmul_eq_mul] at this
+              exact this
+        · apply c₁ac K α' β' γ' α' (m K) q a l₀ ?_ ?_
+          · rw [mul_comm]
+            apply Nat.mul_le_mul
+            · simp only [Fin.is_le']
+            · sorry
+          · rw [← zsmul_eq_mul]; exact isIntegral_c₁α K α' β' γ'
+      · have : c₁ ^ (m K * q - (b * l₀)) *
+           (c₁ ^ (b * l₀)) =
+              (c₁ ^ ((m K * q))) := by {
+          rw [← pow_add,Nat.sub_add_cancel]
+          nth_rw 1 [mul_comm]
+          apply mul_le_mul
+          · simp only [Fin.is_le']
+          · change ↑(finProdFinEquiv.symm.toFun x).2 + 1 ≤ q
+            have : ↑(finProdFinEquiv.symm.toFun x).2 ≤ q := by {
+              exact Fin.is_le'
+            }
+            sorry
+          · simp only [zero_le]
+          · simp only [zero_le]
+           }
+        rw [← this]
+        simp only [zsmul_eq_mul, Int.cast_mul, Int.cast_pow]
+        rw [mul_assoc]
+        apply IsIntegral.mul
+        · apply IsIntegral.pow
+          · apply IsIntegral.Cast
+        · rw [← mul_pow]
+          apply IsIntegral.pow
+          · rw [← zsmul_eq_mul]; exact isIntegral_c₁γ K α' β' γ'
+  · rw [Finset.smul_sum]
+    apply IsIntegral.sum
+    intros x hx
+    rw [← mul_assoc, H2]
+    rw [zsmul_eq_mul]
+    nth_rw 1 [mul_comm]
+    rw [mul_assoc]
+    apply IsIntegral.mul
+    · exact RingOfIntegers.isIntegral_coe
+        ((η) x)
+    · rw [mul_comm]
+      let a : ℕ := (finProdFinEquiv.symm.1 x).1 + 1
+      let b : ℕ := (finProdFinEquiv.symm.1 x).2 + 1
+      --let l₀ : ℕ := (finProdFinEquiv.symm.1 u).1 + 1
+      rw [← zsmul_eq_mul]
+      have := triple_comm K
+        (c₁^r : ℤ)
+        (c₁^(m K * q) : ℤ)
+        (c₁^(m K * q) : ℤ)
+        (((a : ℕ) + b • β')^r)
+        (α' ^ (a * ( (l₀))))
+        (γ' ^ (b * ( (l₀))))
+      have : IsIntegral ℤ
+       (-(c₁ ^ r * c₁ ^ (m K * q) * c₁ ^ (m K * q)) •
+       let a : ℕ := (finProdFinEquiv.symm.toFun x).1 + 1;
+       let b : ℕ := (finProdFinEquiv.symm.toFun x).2 + 1;
+       let r := _root_.r α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq;
+      (↑a + b • β') ^ r * α' ^ (a * ((l₀))) * γ' ^ (b * ((l₀)))) =
+         IsIntegral ℤ ((c₁ ^ r • (↑a + b • β') ^ r
+           * c₁ ^ (m K * q) • α' ^ (a * ((l₀))) * c₁ ^ (m K * q) • γ' ^ (b * ((l₀))))) := by {
+          rw [← this]
+          rw [neg_smul]
+          rw [IsIntegral.neg_iff]}
+      rw [this]
+      apply IsIntegral.mul
+      · apply IsIntegral.mul
+        · simp only [nsmul_eq_mul, neg_smul, zsmul_eq_mul,
+            Int.cast_pow, IsIntegral.neg_iff]
+          rw [← mul_pow]
+          apply IsIntegral.pow
+          rw [mul_add]
+          · apply IsIntegral.add
+            · apply IsIntegral.mul <| IsIntegral.Cast _ _
+              · apply IsIntegral.Nat
+            ·rw [mul_comm, mul_assoc]
+             apply IsIntegral.mul <| IsIntegral.Nat _ _
+             rw [mul_comm, ← zsmul_eq_mul]
+             exact isIntegral_c₁β K α' β' γ'
+        · apply c₁ac K α' β' γ' α' (m K) q a
+             ((l₀)) ?_ ?_
+          · rw [mul_comm]
+            apply Nat.mul_le_mul
+            simp only [Fin.is_le']
+            unfold a
+            sorry
+              -- (Nat.add_le_of_le_sub (Nat.le_of_ble_eq_true rfl)
+              -- (Nat.le_sub_one_of_lt (finProdFinEquiv.symm.1 x).1.isLt))
+              -- (Nat.add_le_of_le_sub hq0 (Nat.le_sub_one_of_lt
+              -- (finProdFinEquiv.symm.1 x).1.isLt))
+          · rw [← zsmul_eq_mul]; exact isIntegral_c₁α K α' β' γ'
+      · have : c₁ ^ (m K * q - (b * ((l₀)))) * (c₁ ^ (b * ((l₀)))) =
+            (c₁ ^ ((m K * q))) := by {
+          rw [← pow_add, Nat.sub_add_cancel]
+          nth_rw 1 [mul_comm]
+          apply mul_le_mul
+          · exact Fin.is_le'
+          · change ↑(finProdFinEquiv.symm.toFun x).2 + 1 ≤ q
+            have : ↑(finProdFinEquiv.symm.toFun x).2 ≤ q := by {
+              exact Fin.is_le'
+            }
+            sorry
+          · simp only [zero_le]
+          · simp only [zero_le]
+           }
+        rw [← this]
+        simp only [zsmul_eq_mul, Int.cast_mul, Int.cast_pow]
+        rw [mul_assoc]
+        apply IsIntegral.mul
+        · apply IsIntegral.pow
+          · apply IsIntegral.Cast
+        · rw [← mul_pow]
+          apply IsIntegral.pow
+          · rw [← zsmul_eq_mul]; exact isIntegral_c₁γ K α' β' γ'
 
 def c1ρ : 𝓞 K := RingOfIntegers.restrict _
   (fun _ => (ρ_is_int α β hirr htriv K σ hd α' β' γ' habc q u t hq0 h2mq)) ℤ
