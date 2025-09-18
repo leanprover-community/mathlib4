@@ -66,7 +66,8 @@ open Functor Category Opposite Discrete Bicategory StrongTrans
 
 variable {𝒮 : Type u₁} [Category.{v₁} 𝒮]
 
-/-- The type of objects in the fibered category associated to a presheaf valued in types. -/
+/-- The type of objects in the fibered category associated to a pseudofunctor from a
+1-category to Cat. -/
 @[ext]
 structure Grothendieck (F : Pseudofunctor (LocallyDiscrete 𝒮) Cat.{v₂, u₂}) where
   /-- The underlying object in the base category. -/
@@ -107,7 +108,8 @@ instance (X : ∫ F) : Inhabited (Hom X X) :=
 
 end Grothendieck
 
-/-- The type of objects in the fibered category associated to a presheaf valued in types. -/
+/-- The type of objects in the fibered category associated to a contravariant
+pseudofunctor from a 1-category to Cat. -/
 @[ext]
 structure CoGrothendieck (F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}) where
   /-- The underlying object in the base category. -/
@@ -235,7 +237,7 @@ theorem map_comp_forget (α : F ⟶ G) : map α ⋙ forget G = forget F := rfl
 section
 
 variable (F)
-
+(now covariant)
 /-- The natural isomorphism witnessing the pseudo-unity constraint of `Grothendieck.map`. -/
 def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ᶜ F) :=
   NatIso.ofComponents (fun _ ↦ eqToIso (by cat_disch))
