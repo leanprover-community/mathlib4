@@ -80,7 +80,7 @@ theorem mkRat_pos {a : ℤ} (ha : 0 < a) {b : ℕ} (hb : b ≠ 0) : 0 < mkRat a 
   (mkRat_pos_iff a hb).mpr ha
 
 theorem mkRat_nonpos_iff (a : ℤ) {b : ℕ} (hb : b ≠ 0) : mkRat a b ≤ 0 ↔ a ≤ 0 := by
-  grind [lt_iff_not_ge, mkRat_pos_iff]
+  grind [lt_iff_not_ge, !mkRat_pos_iff]
 
 theorem mkRat_nonpos {a : ℤ} (ha : a ≤ 0) (b : ℕ) : mkRat a b ≤ 0 := by
   obtain rfl | hb := eq_or_ne b 0
