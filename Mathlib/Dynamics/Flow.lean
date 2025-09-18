@@ -6,7 +6,6 @@ Authors: Jean Lo
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Algebra.Group.Defs
-import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Algebra.Order.Monoid.Submonoid
 
 /-!
@@ -158,7 +157,6 @@ section Orbit
 /-- The orbit of a point under a flow. -/
 def orbit (x : α) : Set α := ϕ.toAddAction.orbit _ x
 
-@[simp]
 theorem orbit_eq_range (x : α) : orbit ϕ x = Set.range (fun t => ϕ t x) := rfl
 
 theorem mem_orbit_iff {x₁ x₂ : α} : x₂ ∈ orbit ϕ x₁ ↔ ∃ t : τ, ϕ t x₁ = x₂ :=
@@ -184,65 +182,59 @@ theorem orbit_restrict (s : Set α) (hs : IsInvariant ϕ s) (x : s) :
 variable [Preorder τ] [AddLeftMono τ]
 
 /-- Restrict a flow by `τ` to a flow by the additive submonoid of nonnegative elements of `τ`. -/
-def fw : Flow (AddSubmonoid.nonneg τ) α := ϕ.restrictAddSubmonoid (AddSubmonoid.nonneg τ)
+def restrictNonneg : Flow (AddSubmonoid.nonneg τ) α := ϕ.restrictAddSubmonoid (.nonneg τ)
 
 /-- The forward orbit of a point under a flow. -/
-def fwOrbit (x : α) : Set α := orbit ϕ.fw x
+def forwardOrbit (x : α) : Set α := orbit ϕ.restrictNonneg x
 
-@[simp]
-theorem fwOrbit_eq_nonneg_range (x : α) :
-    fwOrbit ϕ x = Set.range (fun t : {t : τ // 0 ≤ t} => ϕ t x) := rfl
+theorem forwardOrbit_eq_range_nonneg (x : α) :
+    forwardOrbit ϕ x = Set.range (fun t : {t : τ // 0 ≤ t} => ϕ t x) := rfl
 
 /-- The forward orbit of a point under a flow `ϕ` is forward invariant under `ϕ`. -/
-theorem isFwInvariant_fwOrbit (x : α) : IsFwInvariant ϕ (fwOrbit ϕ x) :=
-  fun t ht => IsInvariant.isFwInvariant (isInvariant_orbit ϕ.fw x) (t := ⟨t, ht⟩) ht
+theorem isFwInvariant_forwardOrbit (x : α) : IsFwInvariant ϕ (forwardOrbit ϕ x) :=
+  fun t h => IsInvariant.isFwInvariant (isInvariant_orbit ϕ.restrictNonneg x) (t := ⟨t, h⟩) h
 
 /-- The forward orbit of a point `x` is contained in the orbit of `x`. -/
-theorem fwOrbit_subset_orbit (x : α) : fwOrbit ϕ x ⊆ orbit ϕ x :=
+theorem forwardOrbit_subset_orbit (x : α) : forwardOrbit ϕ x ⊆ orbit ϕ x :=
   ϕ.toAddAction.orbit_addSubmonoid_subset (AddSubmonoid.nonneg τ) x
 
-theorem mem_orbit_of_mem_fwOrbit {x₁ x₂ : α} (h : x₁ ∈ (fwOrbit ϕ x₂)) : x₁ ∈ orbit ϕ x₂ :=
-  ϕ.fwOrbit_subset_orbit x₂ h
+theorem mem_orbit_of_mem_forwardOrbit {x₁ x₂ : α} (h : x₁ ∈ forwardOrbit ϕ x₂) : x₁ ∈ orbit ϕ x₂ :=
+  ϕ.forwardOrbit_subset_orbit x₂ h
 
 end Orbit
 
 variable {β : Type*} [TopologicalSpace β] (ψ : Flow τ β)
   {γ : Type*} [TopologicalSpace γ] (χ : Flow τ γ)
 
-namespace ContinuousMap
-
-/-- Given flows `ϕ` by `τ` on `α` and `ψ` by `τ` on `β`, a continuous map `π : α → β` is called a
-*semiconjugacy* from `ϕ` to `ψ` if `π` is surjective and `π ∘ (ϕ t) = (ψ t) ∘ π` for all `t : τ`. -/
-structure IsSemiconjugacy (π : ContinuousMap α β) (ϕ : Flow τ α) (ψ : Flow τ β) : Prop where
+/-- Given flows `ϕ` by `τ` on `α` and `ψ` by `τ` on `β`, a function `π : α → β` is called a
+*semiconjugacy* from `ϕ` to `ψ` if `π` is continuous and surjective, and `π ∘ (ϕ t) = (ψ t) ∘ π` for
+all `t : τ`. -/
+structure IsSemiconjugacy (π : α → β) (ϕ : Flow τ α) (ψ : Flow τ β) : Prop where
+  cont : Continuous π
   surj : Function.Surjective π
   semiconj : ∀ t, Function.Semiconj π (ϕ t) (ψ t)
 
 /-- The composition of semiconjugacies is a semiconjugacy. -/
-theorem IsSemiconjugacy.comp {π : ContinuousMap α β} {ρ : ContinuousMap β γ}
-    (h₁ : IsSemiconjugacy π ϕ ψ) (h₂ : IsSemiconjugacy ρ ψ χ) : IsSemiconjugacy (ρ.comp π) ϕ χ :=
-  ⟨by simp [h₂.surj.comp h₁.surj], fun t => by simp [(h₂.semiconj t).comp_left (h₁.semiconj t)]⟩
+theorem IsSemiconjugacy.comp {π : α → β} {ρ : β → γ}
+    (h₁ : IsSemiconjugacy π ϕ ψ) (h₂ : IsSemiconjugacy ρ ψ χ) : IsSemiconjugacy (ρ ∘ π) ϕ χ :=
+  ⟨h₂.cont.comp h₁.cont, h₂.surj.comp h₁.surj, fun t => (h₂.semiconj t).comp_left (h₁.semiconj t)⟩
 
 /-- The identity is a semiconjugacy from `ϕ` to `ψ` if and only if `ϕ` and `ψ` are equal. -/
-theorem isSemiconjugacy_id_iff_eq (ϕ ψ : Flow τ α) : IsSemiconjugacy (ContinuousMap.id α)
-    ϕ ψ ↔ ϕ = ψ :=
-  ⟨fun h => ϕ.ext h.semiconj, fun h => Eq.recOn h ⟨surjective_id, by simp [Semiconj.id_left]⟩⟩
-
-end ContinuousMap
+theorem isSemiconjugacy_id_iff_eq (ϕ ψ : Flow τ α) : IsSemiconjugacy id ϕ ψ ↔ ϕ = ψ :=
+  ⟨fun h => ext h.semiconj, fun h => h.recOn ⟨continuous_id, surjective_id, fun _ => .id_left⟩⟩
 
 /-- A flow `ψ` is called a *factor* of `ϕ` if there exists a semiconjugacy from `ϕ` to `ψ`. -/
-def IsFactorOf (ψ : Flow τ β) (ϕ : Flow τ α) : Prop :=
-  ∃ π : ContinuousMap α β, ContinuousMap.IsSemiconjugacy π ϕ ψ
+def IsFactorOf (ψ : Flow τ β) (ϕ : Flow τ α) : Prop := ∃ π : α → β, IsSemiconjugacy π ϕ ψ
 
-theorem _root_.ContinuousMap.IsSemiconjugacy.isFactorOf {π : ContinuousMap α β}
-    (h : ContinuousMap.IsSemiconjugacy π ϕ ψ) : IsFactorOf ψ ϕ := ⟨π, h⟩
+theorem IsSemiconjugacy.isFactorOf {π : α → β} (h : IsSemiconjugacy π ϕ ψ) : IsFactorOf ψ ϕ :=
+  ⟨π, h⟩
 
 /-- Transitivity of factors of flows. -/
 theorem IsFactorOf.trans (h₁ : IsFactorOf ϕ ψ) (h₂ : IsFactorOf ψ χ) : IsFactorOf ϕ χ :=
-  h₁.elim fun π hπ => h₂.elim fun ρ hρ => ⟨π.comp ρ, hρ.comp χ ψ ϕ hπ⟩
+  h₁.elim fun π hπ => h₂.elim fun ρ hρ => ⟨π ∘ ρ, hρ.comp χ ψ ϕ hπ⟩
 
 /-- Every flow is a factor of itself. -/
-theorem IsFactorOf.self : IsFactorOf ϕ ϕ :=
-  ⟨ContinuousMap.id α, (ContinuousMap.isSemiconjugacy_id_iff_eq ϕ ϕ).mpr (by rfl)⟩
+theorem IsFactorOf.self : IsFactorOf ϕ ϕ := ⟨id, (isSemiconjugacy_id_iff_eq ϕ ϕ).mpr (by rfl)⟩
 
 end Flow
 
