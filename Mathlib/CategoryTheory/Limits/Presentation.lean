@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.CategoryTheory.Limits.Connected
+import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Presentable.Finite
 
 /-!
@@ -76,6 +77,15 @@ def ofIso (P : ColimitPresentation J X) {Y : C} (e : X ≅ Y) : ColimitPresentat
   ι := P.ι ≫ (Functor.const J).map e.hom
   isColimit := P.isColimit.ofIsoColimit (Cocones.ext e fun _ ↦ rfl)
 
+/-- Change the index category of a colimit presentation. -/
+@[simps]
+noncomputable
+def reindex (P : ColimitPresentation J X) {J' : Type*} [Category J'] (F : J' ⥤ J) [F.Final] :
+    ColimitPresentation J' X where
+  diag := F ⋙ P.diag
+  ι := F.whiskerLeft P.ι
+  isColimit := (Functor.Final.isColimitWhiskerEquiv F _).symm P.isColimit
+
 section
 
 variable {J : Type*} {I : J → Type*} [Category J] [∀ j, Category (I j)]
@@ -117,6 +127,12 @@ instance : Category (Total P) where
   Hom := Total.Hom
   id _ := { base := 𝟙 _, hom := 𝟙 _ }
   comp := Total.Hom.comp
+
+instance [LocallySmall.{w} C] [LocallySmall.{w} J] : LocallySmall.{w} (Total P) where
+  hom_small k l :=
+    let f (x : k ⟶ l) : (k.1 ⟶ l.1) × ((P k.1).diag.obj k.2 ⟶ (P l.1).diag.obj l.2) :=
+      (x.base, x.hom)
+    small_of_injective (f := f) (by grind [Function.Injective, Total.Hom.ext])
 
 section Small
 
