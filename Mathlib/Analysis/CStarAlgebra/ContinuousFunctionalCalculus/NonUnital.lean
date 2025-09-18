@@ -92,10 +92,14 @@ the Stone-Weierstrass theorem. -/
 class ContinuousMapZero.UniqueHom (R A : Type*) [CommSemiring R] [StarRing R]
     [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
     [TopologicalSpace A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] : Prop where
-  eq_of_continuous_of_map_id (s : Set R) [CompactSpace s] [Zero s] (h0 : (0 : s) = (0 : R))
+  eq_of_continuous_of_map_id (s : Set R) [CompactSpace s] [Fact (0 ∈ s)]
     (φ ψ : C(s, R)₀ →⋆ₙₐ[R] A) (hφ : Continuous φ) (hψ : Continuous ψ)
-    (h : φ (⟨.restrict s <| .id R, h0⟩) = ψ (⟨.restrict s <| .id R, h0⟩)) :
+    (h : φ (.id s) = ψ (.id s)) :
     φ = ψ
+
+instance {R A : Type*} [CommSemiring R] [NonUnitalRing A] [Module R A] [Nontrivial R] (a : A) :
+    Fact (0 ∈ σₙ R a) :=
+  ⟨quasispectrum.zero_mem R a⟩
 
 section Main
 
@@ -111,10 +115,9 @@ lemma NonUnitalContinuousFunctionalCalculus.isCompact_quasispectrum (a : A) :
 
 lemma NonUnitalStarAlgHom.ext_continuousMap [UniqueHom R A]
     (a : A) [CompactSpace (σₙ R a)] (φ ψ : C(σₙ R a, R)₀ →⋆ₙₐ[R] A)
-    (hφ : Continuous φ) (hψ : Continuous ψ)
-    (h : φ ⟨.restrict (σₙ R a) <| .id R, rfl⟩ = ψ ⟨.restrict (σₙ R a) <| .id R, rfl⟩) :
+    (hφ : Continuous φ) (hψ : Continuous ψ) (h : φ (.id (σₙ R a)) = ψ (.id (σₙ R a))) :
     φ = ψ :=
-  UniqueHom.eq_of_continuous_of_map_id _ (by simp) φ ψ hφ hψ h
+  UniqueHom.eq_of_continuous_of_map_id _ φ ψ hφ hψ h
 
 section cfcₙHom
 
@@ -139,8 +142,7 @@ lemma cfcₙHom_isClosedEmbedding :
 lemma cfcₙHom_continuous : Continuous (cfcₙHom ha : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) :=
   cfcₙHom_isClosedEmbedding ha |>.continuous
 
-lemma cfcₙHom_id :
-    cfcₙHom ha ⟨(ContinuousMap.id R).restrict <| σₙ R a, rfl⟩ = a :=
+lemma cfcₙHom_id : cfcₙHom ha (.id (σₙ R a)) = a :=
   (NonUnitalContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.1
 
 /-- The **spectral mapping theorem** for the non-unital continuous functional calculus. -/
@@ -155,7 +157,7 @@ lemma cfcₙHom_predicate (f : C(σₙ R a, R)₀) :
 open scoped NonUnitalContinuousFunctionalCalculus in
 lemma cfcₙHom_eq_of_continuous_of_map_id [UniqueHom R A]
     (φ : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) (hφ₁ : Continuous φ)
-    (hφ₂ : φ ⟨.restrict (σₙ R a) <| .id R, rfl⟩ = a) : cfcₙHom ha = φ :=
+    (hφ₂ : φ (.id _) = a) : cfcₙHom ha = φ :=
   (cfcₙHom ha).ext_continuousMap a φ (cfcₙHom_isClosedEmbedding ha).continuous hφ₁ <| by
     rw [cfcₙHom_id ha, hφ₂]
 
@@ -693,26 +695,20 @@ example, if it is necessary to use uniqueness of this continuous functional calc
 example can be found in the proof of `CFC.posPart_negPart_unique`. -/
 @[simps!]
 noncomputable def cfcₙHomSuperset {a : A} (ha : p a) {s : Set R} (hs : σₙ R a ⊆ s) :
-    letI : Zero s := ⟨0, hs (quasispectrum.zero_mem R a)⟩
+    haveI : Fact (0 ∈ s) := ⟨hs (quasispectrum.zero_mem R a)⟩
     C(s, R)₀ →⋆ₙₐ[R] A :=
-  letI : Zero s := ⟨0, hs (quasispectrum.zero_mem R a)⟩
+  have : Fact (0 ∈ s) := ⟨hs (quasispectrum.zero_mem R a)⟩
   cfcₙHom ha (R := R) |>.comp <| ContinuousMapZero.nonUnitalStarAlgHom_precomp R <|
     ⟨⟨_, continuous_id.subtype_map hs⟩, rfl⟩
 
 lemma cfcₙHomSuperset_continuous {a : A} (ha : p a) {s : Set R} (hs : σₙ R a ⊆ s) :
     Continuous (cfcₙHomSuperset ha hs) :=
-  letI : Zero s := ⟨0, hs (quasispectrum.zero_mem R a)⟩
+  have : Fact (0 ∈ s) := ⟨hs (quasispectrum.zero_mem R a)⟩
   (cfcₙHom_continuous ha).comp <| ContinuousMapZero.continuous_comp_left _
 
 lemma cfcₙHomSuperset_id {a : A} (ha : p a) {s : Set R} (hs : σₙ R a ⊆ s) :
-    letI : Zero s := ⟨0, hs (quasispectrum.zero_mem R a)⟩
-    cfcₙHomSuperset ha hs ⟨.restrict s <| .id R, rfl⟩ = a :=
-  cfcₙHom_id ha
-
-/-- this version uses `ContinuousMapZero.id`. -/
-lemma cfcₙHomSuperset_id' {a : A} (ha : p a) {s : Set R} (hs : σₙ R a ⊆ s) :
-    letI : Zero s := ⟨0, hs (quasispectrum.zero_mem R a)⟩
-    cfcₙHomSuperset ha hs (.id rfl) = a :=
+    haveI : Fact (0 ∈ s) := ⟨hs (quasispectrum.zero_mem R a)⟩
+    cfcₙHomSuperset ha hs (.id s) = a :=
   cfcₙHom_id ha
 
 end Superset
@@ -803,9 +799,7 @@ instance ContinuousFunctionalCalculus.toNonUnital :
 open scoped NonUnitalContinuousFunctionalCalculus in
 lemma cfcₙHom_eq_cfcₙHom_of_cfcHom [ContinuousMapZero.UniqueHom R A] {a : A}
     (ha : p a) : cfcₙHom (R := R) ha = cfcₙHom_of_cfcHom R ha := by
-  refine ContinuousMapZero.UniqueHom.eq_of_continuous_of_map_id
-      (σₙ R a) ?_ _ _ ?_ ?_ ?_
-  · simp
+  refine ContinuousMapZero.UniqueHom.eq_of_continuous_of_map_id (σₙ R a) _ _ ?_ ?_ ?_
   · exact (cfcₙHom_isClosedEmbedding (R := R) ha).continuous
   · exact (isClosedEmbedding_cfcₙHom_of_cfcHom ha).continuous
   · simpa only [cfcₙHom_id (R := R) ha] using (cfcHom_id ha).symm
