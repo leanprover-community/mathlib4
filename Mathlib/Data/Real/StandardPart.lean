@@ -32,7 +32,7 @@ Redefine `Hyperreal.st` in terms of `ArchimedeanClass.standardPart`.
 namespace ArchimedeanClass
 variable
   {K : Type*} [LinearOrder K] [Field K] [IsOrderedRing K] {x y : K}
-  {R : Type*} [LinearOrder R] [Field R] [IsOrderedRing R] [Archimedean R]
+  {R : Type*} [LinearOrder R] [CommRing R] [IsOrderedRing R] [Archimedean R]
 
 variable (K) in
 /-- The valuation subring of elements in non-negative Archimedean classes, i.e. elements bounded by
