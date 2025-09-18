@@ -12,7 +12,7 @@ import Mathlib.Order.Hom.Lattice
 
 ## Main definitions
 
-- `LatticeCon`: An equivalence relation is a congruence relation for the latice structure if it is
+- `LatticeCon`: An equivalence relation is a congruence relation for the lattice structure if it is
   compatible with the `inf` and `sup` operations.
 - `LatticeCon.ker`: The kernel of a lattice homomorphism as a lattice congruence.
 
