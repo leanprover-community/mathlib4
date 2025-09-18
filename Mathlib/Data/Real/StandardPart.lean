@@ -20,7 +20,7 @@ field, meaning we can uniquely embed it in the reals.
 
 Given a finite element of the field, the `ArchimedeanClass.standardPart` function returns the real
 number corresponding to this unique embedding. This function generalizes, among other things, the
-standard function on `Hyperreal`.
+standard part function on `Hyperreal`.
 
 ## Todo
 
