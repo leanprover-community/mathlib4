@@ -168,11 +168,10 @@ lemma continuous_map {f : M →* N} (hf : Continuous f) : Continuous (map f) :=
 lemma isOpenMap_map {f : M →* N} (hf_inj : Function.Injective f) (hf : IsOpenMap f) :
     IsOpenMap (map f) := by
   rintro _ ⟨U, hU, rfl⟩
-  let g : M × Mᵐᵒᵖ → N × Nᵐᵒᵖ := Prod.map f (opHomeomorph ∘ f ∘ opHomeomorph.symm)
   have hg_openMap := hf.prodMap <| opHomeomorph.isOpenMap.comp (hf.comp opHomeomorph.symm.isOpenMap)
-  refine ⟨g '' U, hg_openMap U hU, Set.ext fun y ↦ ?_⟩
+  refine ⟨_, hg_openMap U hU, Set.ext fun y ↦ ?_⟩
   simp only [embedProduct, OneHom.coe_mk, Set.mem_preimage, Set.mem_image, Prod.mk.injEq,
-    Prod.map, Prod.exists, MulOpposite.exists, MonoidHom.coe_mk, g]
+    Prod.map, Prod.exists, MulOpposite.exists, MonoidHom.coe_mk]
   refine ⟨fun ⟨a, b, h, ha, hb⟩ ↦ ⟨⟨a, b, hf_inj ?_, hf_inj ?_⟩, ?_⟩,
           fun ⟨x, hxV, hx⟩ ↦ ⟨x, x.inv, by simp [hxV, ← hx]⟩⟩ <;>
     simp_all
