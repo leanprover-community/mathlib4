@@ -8,6 +8,7 @@ import Mathlib.Data.DFinsupp.Sigma
 import Mathlib.Data.Finsupp.ToDFinsupp
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+import Mathlib.Tactic.Peel
 
 /-!
 # Properties of the module `Π₀ i, M i`
@@ -580,6 +581,39 @@ Note that this is not generally true for `[Semiring R]`; see
 theorem iSupIndep_iff_dfinsupp_lsum_injective (p : ι → Submodule R N) :
     iSupIndep p ↔ Function.Injective (lsum ℕ fun i => (p i).subtype) :=
   ⟨iSupIndep.dfinsupp_lsum_injective, iSupIndep_of_dfinsupp_lsum_injective p⟩
+
+theorem iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero (p : ι → Submodule R N) :
+    iSupIndep p ↔ ∀ (s : Finset ι) (v : ι → N),
+    (∀ i ∈ s, v i ∈ p i) → (∑ i ∈ s, v i = 0) → ∀ i ∈ s, v i = 0 := by
+  classical
+  rw [iSupIndep_iff_dfinsupp_lsum_injective]
+  constructor
+  · intro h s v hv hs i hi
+    dsimp only [Function.Injective, DFinsupp.lsum_apply_apply] at h
+    specialize h (a₁ := DFinsupp.mk s fun i ↦ ⟨v i, hv i (Finset.coe_mem i)⟩) (a₂ := 0) <| by
+      rw [DFinsupp.sumAddHom_apply, DFinsupp.sum, map_zero, ← hs]
+      apply Finset.sum_of_injOn id <;> simp [Set.MapsTo] <;> grind
+    simp [DFinsupp.ext_iff] at h
+    grind
+  · intros h f g hfg
+    specialize h (f - g).support ((f - g) · |>.1)
+    simp only [mem_support_toFun, SetLike.coe_mem, ZeroMemClass.coe_eq_zero,
+      _root_.not_imp_self, forall_const] at h
+    refine DFinsupp.ext fun i => sub_eq_zero.mp (h ?_ i)
+    rw [← sub_eq_zero, ← map_sub] at hfg
+    simpa [DFinsupp.sumAddHom_apply, DFinsupp.sum] using hfg
+
+theorem iSupIndep_iff_finset_sum_eq_imp_eq (p : ι → Submodule R N) :
+    iSupIndep p ↔ ∀ (s : Finset ι) (v w : ι → N),
+    (∀ i ∈ s, v i ∈ p i ∧ w i ∈ p i) → (∑ i ∈ s, v i = ∑ i ∈ s, w i) → ∀ i ∈ s, v i = w i := by
+  rw [iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero]
+  constructor <;> intro h
+  · intro s v w hvw
+    specialize h s (v - w) fun i hi => (p i).sub_mem (hvw i hi).1 (hvw i hi).2
+    simpa [sub_eq_zero] using h
+  · intro s v hv hv0
+    specialize h s v 0
+    simp_all
 
 /-- A family of additive subgroups over an additive group are independent if and only if
 `DFinsupp.sumAddHom` applied with `AddSubgroup.subtype` is injective. -/
