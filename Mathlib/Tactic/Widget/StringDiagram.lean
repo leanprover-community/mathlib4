@@ -49,12 +49,11 @@ and unitors from lean expressions. This operation is performed using the `Tactic
 function.
 
 A monoidal category can be viewed as a bicategory with a single object. The program in this
-file can also be used to display the string diagram for general bicategories (see the wip
-PR https://github.com/leanprover-community/mathlib4/pull/12107). With this in mind we will sometimes refer to objects and morphisms in monoidal
-categories as 1-morphisms and 2-morphisms respectively, borrowing the terminology of bicategories.
-Note that the relation between monoidal categories and bicategories is formalized in
-`Mathlib/CategoryTheory/Bicategory/SingleObj.lean`, although the string diagram widget does not use
-it directly.
+file can also be used to display the string diagram for general bicategories. With this in mind we
+will sometimes refer to objects and morphisms in monoidal categories as 1-morphisms and 2-morphisms
+respectively, borrowing the terminology of bicategories. Note that the relation between monoidal
+categories and bicategories is formalized in `Mathlib/CategoryTheory/Bicategory/SingleObj.lean`,
+although the string diagram widget does not use it directly.
 
 -/
 
