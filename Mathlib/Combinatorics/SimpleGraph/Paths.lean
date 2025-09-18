@@ -422,23 +422,12 @@ lemma IsCycle.getVert_sub_one_ne_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc
   intro h'
   have hl := hpc.three_le_length
   by_cases hi' : i ≥ p.length - 1
-<<<<<<< HEAD
-  · intro h'
-    rw [p.getVert_of_length_le (by cutsat : p.length ≤ i + 1),
+  · rw [p.getVert_of_length_le (by cutsat : p.length ≤ i + 1),
       hpc.getVert_endpoint_iff (by cutsat)] at h'
     cutsat
-  intro h'
   have := hpc.getVert_injOn' (by simp only [Set.mem_setOf_eq, Nat.sub_le_iff_le_add]; cutsat)
     (by simp only [Set.mem_setOf_eq]; cutsat) h'
   cutsat
-=======
-  · rw [p.getVert_of_length_le (by omega : p.length ≤ i + 1),
-      hpc.getVert_endpoint_iff (by omega)] at h'
-    omega
-  have := hpc.getVert_injOn' (by simp only [Set.mem_setOf_eq, Nat.sub_le_iff_le_add]; omega)
-    (by simp only [Set.mem_setOf_eq]; omega) h'
-  omega
->>>>>>> master
 
 @[deprecated (since := "2025-04-27")]
 alias IsCycle.getVert_sub_one_neq_getVert_add_one := IsCycle.getVert_sub_one_ne_getVert_add_one
