@@ -169,9 +169,22 @@ lemma al_leq_mq : a q t * l K q u ≤ (q + 1) * (m K + 1) := by
 lemma k_leq_n_sub_1 : (finProdFinEquiv.symm.1 u).2 ≤ n K q := Fin.is_le'
 
 abbrev c_coeffs0 := c₁^((finProdFinEquiv.symm.1 u).2 :ℕ)
-  * c₁^(a q t * l K q u) * c₁^(a q t * l K q u)
+  * c₁^(a q t * l K q u) * c₁^(b q t * l K q u)
 
 macro_rules | `(c_coeffs0) => `(c_coeffs0 K α' β' γ' q u t)
+
+open Nat in include hq0 in
+lemma c1a0 :
+ IsIntegral ℤ (c₁^((a q t) * (l K q u)) • (α' ^ ((a q t) * (l K q u) : ℕ))) := by
+  apply c₁ac K α' β' γ' α' (a q t) (l K q u) (a q t) ((l K q u)) ?_ ?_
+  · rw [mul_comm]
+  · rw [← zsmul_eq_mul]; exact isIntegral_c₁α K α' β' γ'
+
+open Nat in include hq0 in
+lemma c1c0 : IsIntegral ℤ (c₁ ^ ((b q t) * (l K q u)) • (γ'^ ((b q t) * (l K q u) : ℕ))) := by
+  apply c₁ac K α' β' γ' γ' (b q t)  (l K q u) (b q t) (l K q u) ?_ ?_
+  · rw [mul_comm]
+  · rw [← zsmul_eq_mul]; exact isIntegral_c₁γ K α' β' γ'
 
 open Nat in include hq0 in
 lemma c1a :
@@ -246,20 +259,31 @@ lemma c₁IsInt0 :
   let b : ℕ := (finProdFinEquiv.symm.1 t).2 + 1
   let k : ℕ := (finProdFinEquiv.symm.1 u).2
   let l : ℕ := (finProdFinEquiv.symm.1 u).1 + 1
+  unfold _root_.a _root_.l _root_.b
   rw [triple_comm K
     (c₁^(k) : ℤ)
     (c₁^(a*l) : ℤ)
-    (c₁^(a*l) : ℤ)
+    (c₁^(b*l) : ℤ)
     (((a : ℕ) + b • β')^(k : ℕ))
     (α' ^ (a * l))
     (γ' ^ (b * (l)))]
   rw [mul_assoc]
   apply IsIntegral.mul
-  · exact c₁b K α' β' γ' (n K q) (one_le_n K q hq0 h2mq)
-      (le_sub_one_of_lt (finProdFinEquiv.symm.1 u).2.isLt)
-      (le_add_left 1 (finProdFinEquiv.symm.1 t).1)
-      (le_add_left 1 (finProdFinEquiv.symm.1 t).2)
-  · exact IsIntegral.mul (c1a K α' β' γ' q u t hq0) (c1c K α' β' γ' q u t hq0)
+  simp only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow]
+  rw [Eq.symm (mul_pow (↑(c₁ K α' β' γ')) (↑a + ↑b * β') k)]
+  apply IsIntegral.pow
+  rw [mul_add]
+  apply IsIntegral.add
+  · norm_cast
+    exact IsIntegral.Cast K (c₁ K α' β' γ' * ↑a)
+  · rw [← mul_assoc]
+    nth_rw 2 [mul_comm]
+    rw [mul_assoc]
+    apply IsIntegral.mul
+    · exact IsIntegral.Nat K b
+    · rw [← zsmul_eq_mul]
+      exact isIntegral_c₁β K α' β' γ'
+  exact IsIntegral.mul (c1a0 K α' β' γ' q u t hq0) (c1c0 K α' β' γ' q u t hq0)
 
 open Nat in include hq0 h2mq in
 lemma c₁IsInt :
