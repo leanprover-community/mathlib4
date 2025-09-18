@@ -79,10 +79,11 @@ private lemma transitive {r : α → α → Prop}
 def mk' [Lattice α] (r : α → α → Prop) [h₁ : IsRefl α r]
     (h₂ : ∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y))
     (h₃ : ∀ ⦃x y z : α⦄, x ≤ y → y ≤ z → r x y → r y z → r x z)
-    (h₄ : ∀ ⦃x y t : α⦄, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t)) : LatticeCon α :=
-  LatticeCon.mk (Setoid.mk r (Equivalence.mk (by exact?)
-  (fun h => by simpa [h₂, inf_comm, sup_comm, ← h₂] using h)
-  (fun hxy hxz => transitive h₂ h₃ h₄ hxy hxz))) (by
+    (h₄ : ∀ ⦃x y t : α⦄, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t)) : LatticeCon α where
+  r := r
+  iseqv := Equivalence.mk h₁.refl (fun h => by simpa [h₂, inf_comm, sup_comm, ← h₂] using h)
+      (fun hxy hxz => transitive h₂ h₃ h₄ hxy hxz)
+  inf := by
     intro w _ _ _ h1 h2
     have compatible_left_inf {x y t : α} (hh : r x y) : r (x ⊓ t) (y ⊓ t) :=
       closed_interval h₂ h₄ ((x ⊓ y) ⊓ t) _ _ ((x ⊔ y) ⊓ t)
@@ -90,17 +91,17 @@ def mk' [Lattice α] (r : α → α → Prop) [h₁ : IsRefl α r]
             (inf_le_inf_right _ inf_le_right) (inf_le_inf_right _ le_sup_right)
             (h₄ inf_le_sup (h₂.mp hh)).1
     exact transitive h₂ h₃ h₄ (by
-          simpa [inf_comm w] using compatible_left_inf h2)
-      (compatible_left_inf h1)) (by
-        intro w _ _ _ h1 h2
-        have compatible_left_sup {x y t : α} (hh : r x y) : r (x ⊔ t) (y ⊔ t) :=
-          closed_interval h₂ h₄ ((x ⊓ y) ⊔ t) _ _ ((x ⊔ y) ⊔ t)
-            (sup_le_sup_right inf_le_left _) (sup_le_sup_right le_sup_left _)
-            (sup_le_sup_right inf_le_right _) (sup_le_sup_right le_sup_right _)
-            (h₄ inf_le_sup (h₂.mp hh)).2
-        exact transitive h₂ h₃ h₄ (by
-          simpa [sup_comm w] using compatible_left_sup h2)
-          (compatible_left_sup h1))
+          simpa [inf_comm w] using compatible_left_inf h2) (compatible_left_inf h1)
+  sup := by
+    intro w _ _ _ h1 h2
+    have compatible_left_sup {x y t : α} (hh : r x y) : r (x ⊔ t) (y ⊔ t) :=
+      closed_interval h₂ h₄ ((x ⊓ y) ⊔ t) _ _ ((x ⊔ y) ⊔ t)
+        (sup_le_sup_right inf_le_left _) (sup_le_sup_right le_sup_left _)
+        (sup_le_sup_right inf_le_right _) (sup_le_sup_right le_sup_right _)
+        (h₄ inf_le_sup (h₂.mp hh)).2
+    exact transitive h₂ h₃ h₄ (by
+      simpa [sup_comm w] using compatible_left_sup h2)
+      (compatible_left_sup h1)
 
 variable [FunLike F α β]
 
