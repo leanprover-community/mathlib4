@@ -134,6 +134,9 @@ theorem integrable_smul_LocallyIntegrable {f : X → E} (hf : LocallyIntegrable 
 variable [SMulCommClass ℝ 𝕜 E]
 
 variable (𝕜) {μ}
+
+/-- `testAgainstLocallyIntegrableₗ` wraps the integral against a locally  integrable function `f` on
+a fixed compact `K` as a `𝕜`-linear map on scalar valued bounded continuous functions -/
 noncomputable def testAgainstLocallyIntegrableₗ {f : X → E} (hf : LocallyIntegrable f μ)
   (K : Compacts X) :
     (X →ᵇ 𝕜) →ₗ[𝕜] E where
@@ -146,6 +149,8 @@ noncomputable def testAgainstLocallyIntegrableₗ {f : X → E} (hf : LocallyInt
     intro c φ
     simp_rw [coe_smul, RingHom.id_apply, ← integral_smul c (fun (x : X) ↦  φ x • f x), smul_assoc]
 
+/-- `testAgainstLocallyIntegrableₗ` wraps the integral against a locally  integrable function `f` on
+a fixed compact `K` as a continuous `𝕜`-linear map on scalar valued bounded continuous functions -/
 noncomputable def testAgainstLocallyIntegrableCLM {f : X → E} (hf : LocallyIntegrable f μ)
   (K : Compacts X) :
     (X →ᵇ 𝕜) →L[𝕜] E :=
