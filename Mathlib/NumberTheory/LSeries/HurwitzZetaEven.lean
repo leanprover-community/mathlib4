@@ -158,7 +158,7 @@ section asymp
 
 lemma hasSum_int_evenKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
     HasSum (fun n : ℤ ↦ rexp (-π * (n + a) ^ 2 * t)) (evenKernel a t) := by
-  rw [← hasSum_ofReal, evenKernel_def]
+  rw [HasSum, ← hasSumFilter_ofReal, evenKernel_def]
   have (n : ℤ) : cexp (-(π * (n + a) ^ 2 * t)) = cexp (-(π * a ^ 2 * t)) *
       jacobiTheta₂_term n (a * I * t) (I * t) := by
     rw [jacobiTheta₂_term, ← Complex.exp_add]
@@ -199,7 +199,7 @@ lemma hasSum_int_cosKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
 lemma hasSum_nat_cosKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
     HasSum (fun n : ℕ ↦ 2 * Real.cos (2 * π * a * (n + 1)) * rexp (-π * (n + 1) ^ 2 * t))
     (cosKernel a t - 1) := by
-  rw [← hasSum_ofReal, ofReal_sub, ofReal_one]
+  rw [HasSum, ← hasSumFilter_ofReal, ofReal_sub, ofReal_one]
   have := (hasSum_int_cosKernel a ht).nat_add_neg
   rw [← hasSum_nat_add_iff' 1] at this
   simp_rw [Finset.sum_range_one, Nat.cast_zero, neg_zero, Int.cast_zero, zero_pow two_ne_zero,
@@ -497,7 +497,8 @@ lemma hasSum_int_completedCosZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     refine ((hurwitzEvenFEPair a).symm.hasMellin (?_ : 1 / 2 < (s / 2).re)).2.symm
     rwa [div_ofNat_re, div_lt_div_iff_of_pos_right two_pos]]
   refine (hasSum_mellin_pi_mul_sq (zero_lt_one.trans hs) hF ?_).congr_fun fun n ↦ ?_
-  · apply (((summable_one_div_int_add_rpow 0 s.re).mpr hs).div_const 2).of_norm_bounded
+  · apply (summable_iff_summableFilter.mpr
+      (((summable_one_div_int_add_rpow 0 s.re).mpr hs).div_const 2)).of_norm_bounded
     intro i
     simp only [c, (by { push_cast; ring } : 2 * π * I * a * i = ↑(2 * π * a * i) * I), norm_div,
       RCLike.norm_ofNat, Complex.norm_exp_ofReal_mul_I, add_zero, norm_one,
@@ -527,7 +528,7 @@ lemma hasSum_int_completedHurwitzZetaEven (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   have hF (t : ℝ) (ht : 0 < t) : HasSum (fun n : ℤ ↦ if n + a = 0 then 0
       else (1 / 2 : ℂ) * rexp (-π * (n + a) ^ 2 * t))
       ((evenKernel a t - (if (a : UnitAddCircle) = 0 then 1 else 0 : ℝ)) / 2) := by
-    refine (ofReal_sub .. ▸ (hasSum_ofReal.mpr (hasSum_int_evenKernel₀ a ht)).div_const
+    refine (ofReal_sub .. ▸ (hasSumFilter_ofReal.mpr (hasSum_int_evenKernel₀ a ht)).div_const
       2).congr_fun fun n ↦ ?_
     split_ifs
     · rw [ofReal_zero, zero_div]
@@ -539,8 +540,8 @@ lemma hasSum_int_completedHurwitzZetaEven (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     rwa [div_ofNat_re, div_lt_div_iff_of_pos_right two_pos]]
   refine (hasSum_mellin_pi_mul_sq (zero_lt_one.trans hs) hF ?_).congr_fun fun n ↦ ?_
   · simp_rw [← mul_one_div ‖_‖]
-    apply Summable.mul_left
-    rwa [summable_one_div_int_add_rpow]
+    apply SummableFilter.mul_left
+    rwa [← summable_iff_summableFilter, summable_one_div_int_add_rpow]
   · rw [mul_one_div, div_right_comm]
 
 /-!

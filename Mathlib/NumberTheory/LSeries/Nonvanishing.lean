@@ -219,9 +219,9 @@ private lemma re_log_comb_nonneg' {a : ℝ} (ha₀ : 0 ≤ a) (ha₁ : a < 1) {z
     simp only [Complex.norm_of_nonneg ha₀, ha₁]
   have hac₁ : ‖a * z‖ < 1 := by rwa [norm_mul, hz, mul_one]
   have hac₂ : ‖a * z ^ 2‖ < 1 := by rwa [norm_mul, norm_pow, hz, one_pow, mul_one]
-  rw [← ((hasSum_re <| hasSum_taylorSeries_neg_log hac₀).mul_left 3).add
-    ((hasSum_re <| hasSum_taylorSeries_neg_log hac₁).mul_left 4) |>.add
-    (hasSum_re <| hasSum_taylorSeries_neg_log hac₂) |>.tsum_eq]
+  rw [← ((hasSumFilter_re <| hasSum_taylorSeries_neg_log hac₀).mul_left 3).add
+    ((hasSumFilter_re <| hasSum_taylorSeries_neg_log hac₁).mul_left 4) |>.add
+    (hasSumFilter_re <| hasSum_taylorSeries_neg_log hac₂) |>.tsum_eq]
   refine tsum_nonneg fun n ↦ ?_
   simp only [← ofReal_pow, div_natCast_re, ofReal_re, mul_pow, mul_re, ofReal_im, zero_mul,
     sub_zero]
@@ -285,15 +285,15 @@ lemma norm_LSeries_product_ge_one {x : ℝ} (hx : 0 < x) (y : ℝ) :
   have H₀ := summable_neg_log_one_sub_mul_prime_cpow (N := N) 1 h₀
   have H₁ := summable_neg_log_one_sub_mul_prime_cpow χ h₁
   have H₂ := summable_neg_log_one_sub_mul_prime_cpow (χ ^ 2) h₂
-  have hsum₀ := (hasSum_re H₀.hasSum).summable.mul_left 3
-  have hsum₁ := (hasSum_re H₁.hasSum).summable.mul_left 4
-  have hsum₂ := (hasSum_re H₂.hasSum).summable
+  have hsum₀ := (hasSumFilter_re H₀.hasSumFilter).summableFilter.mul_left 3
+  have hsum₁ := (hasSumFilter_re H₁.hasSumFilter).summableFilter.mul_left 4
+  have hsum₂ := (hasSumFilter_re H₂.hasSumFilter).summableFilter
   rw [← LSeries_eulerProduct_exp_log _ h₀, ← LSeries_eulerProduct_exp_log χ h₁,
     ← LSeries_eulerProduct_exp_log _ h₂]
   simp only [← exp_nat_mul, Nat.cast_ofNat, ← exp_add, norm_exp, add_re, mul_re,
     re_ofNat, im_ofNat, zero_mul, sub_zero, Real.one_le_exp_iff]
-  rw [re_tsum H₀, re_tsum H₁, re_tsum H₂, ← tsum_mul_left, ← tsum_mul_left,
-    ← hsum₀.tsum_add hsum₁, ← (hsum₀.add hsum₁).tsum_add hsum₂]
+  rw [re_tsumFilter H₀, re_tsumFilter H₁, re_tsumFilter H₂, ← tsum_mul_left, ← tsum_mul_left,
+    ← hsum₀.tsumFilter_add hsum₁, ← (hsum₀.add hsum₁).tsumFilter_add hsum₂]
   simpa only [neg_add_rev, neg_re, mul_neg, χ.pow_apply' two_ne_zero, ge_iff_le, add_re, one_re,
     ofReal_re, ofReal_add, ofReal_one] using
       tsum_nonneg fun (p : Nat.Primes) ↦ χ.re_log_comb_nonneg p.prop.two_le h₀ y

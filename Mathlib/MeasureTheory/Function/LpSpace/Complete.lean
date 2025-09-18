@@ -149,11 +149,11 @@ theorem completeSpace_lp_of_cauchy_complete_eLpNorm [hp : Fact (1 ≤ p)]
     have h_tsum_B1 : ∑' i, B1 i = ENNReal.ofReal M := by
       change (∑' n : ℕ, ENNReal.ofReal (B n)) = ENNReal.ofReal M
       rw [← hB.tsum_eq]
-      exact (ENNReal.ofReal_tsum_of_nonneg (fun n => le_of_lt (hB_pos n)) hB.summable).symm
+      exact (ENNReal.ofReal_tsum_of_nonneg (fun n => le_of_lt (hB_pos n)) hB.summableFilter).symm
     have h_sum := (@ENNReal.summable _ B1).hasSum
     rwa [h_tsum_B1] at h_sum
   have hB1 : ∑' i, B1 i < ∞ := by
-    rw [hB1_has.tsum_eq]
+    rw [tsum, hB1_has.tsum_eq]
     exact ENNReal.ofReal_lt_top
   let f1 : ℕ → α → E := fun n => f n
   refine H f1 (fun n => Lp.memLp (f n)) B1 hB1 fun N n m hn hm => ?_

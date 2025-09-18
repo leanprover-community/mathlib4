@@ -164,7 +164,9 @@ theorem summable_bernoulli_fourier {k : ℕ} (hk : 2 ≤ k) :
       ∀ n : ℤ, -(k ! : ℂ) / (2 * π * I * n) ^ k = -k ! / (2 * π * I) ^ k * (1 / (n : ℂ) ^ k) := by
     intro n; rw [mul_one_div, div_div, ← mul_pow]
   simp_rw [this]
-  refine Summable.mul_left _ <| .of_norm ?_
+  apply SummableFilter.mul_left
+  rw [← summable_iff_summableFilter]
+  refine  .of_norm ?_
   have : (fun x : ℤ => ‖1 / (x : ℂ) ^ k‖) = fun x : ℤ => |1 / (x : ℝ) ^ k| := by
     ext1 x
     simp only [one_div, norm_inv, norm_pow, norm_intCast, pow_abs, abs_inv]
@@ -245,7 +247,7 @@ theorem hasSum_one_div_nat_pow_mul_cos {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
         · rw [pow_mul, I_sq]
       ring
   have ofReal_two : ((2 : ℝ) : ℂ) = 2 := by norm_cast
-  convert ((hasSum_iff _ _).mp (this.div_const 2)).1 with n
+  convert ((hasSumFilter_iff _ _).mp (this.div_const 2)).1 with n
   · convert (ofReal_re _).symm
     rw [ofReal_mul]; rw [← mul_div]; congr
     · rw [ofReal_div, ofReal_one, ofReal_pow]; rfl
@@ -285,7 +287,7 @@ theorem hasSum_one_div_nat_pow_mul_sin {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
         · rw [pow_add, pow_one, pow_mul, I_sq]
       ring
   have ofReal_two : ((2 : ℝ) : ℂ) = 2 := by norm_cast
-  convert ((hasSum_iff _ _).mp (this.div_const (2 * I))).1
+  convert ((hasSumFilter_iff _ _).mp (this.div_const (2 * I))).1
   · convert (ofReal_re _).symm
     rw [ofReal_mul]; rw [← mul_div]; congr
     · rw [ofReal_div, ofReal_one, ofReal_pow]; rfl

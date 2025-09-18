@@ -196,8 +196,8 @@ lemma term_sum_of_lt (N : ℕ) {s : ℝ} (hs : 1 < s) :
 -/
 lemma term_tsum_of_lt {s : ℝ} (hs : 1 < s) :
     term_tsum s = (1 / (s - 1) - 1 / s * ∑' n : ℕ, 1 / (n + 1 : ℝ) ^ s) := by
-  apply HasSum.tsum_eq
-  rw [hasSum_iff_tendsto_nat_of_nonneg (fun n ↦ term_nonneg (n + 1) s)]
+  apply HasSumFilter.tsumFilter_eq
+  rw [← hasSum_iff_hasSumFilter, hasSum_iff_tendsto_nat_of_nonneg (fun n ↦ term_nonneg (n + 1) s)]
   change Tendsto (fun N ↦ term_sum s N) atTop _
   simp_rw [term_sum_of_lt _ hs]
   apply Tendsto.sub
@@ -293,7 +293,7 @@ lemma tendsto_riemannZeta_sub_one_div_nhds_right :
     apply ((Complex.continuous_ofReal.tendsto _).comp this).congr'
     filter_upwards [self_mem_nhdsWithin] with s hs
     simp only [Function.comp_apply, Complex.ofReal_sub, Complex.ofReal_div,
-      Complex.ofReal_one, sub_left_inj, Complex.ofReal_tsum]
+      Complex.ofReal_one, sub_left_inj, Complex.ofReal_tsumFilter]
     rw [zeta_eq_tsum_one_div_nat_add_one_cpow (by simpa using hs)]
     congr 1 with n
     rw [Complex.ofReal_cpow (by positivity)]
@@ -301,7 +301,7 @@ lemma tendsto_riemannZeta_sub_one_div_nhds_right :
   suffices aux2 : Tendsto (fun s : ℝ ↦ (∑' n : ℕ, 1 / (n + 1 : ℝ) ^ s) - 1 / (s - 1))
     (𝓝[>] 1) (𝓝 (1 - term_tsum 1)) by
     have := term_tsum_one.tsum_eq
-    rw [← term_tsum, eq_sub_iff_add_eq, ← eq_sub_iff_add_eq'] at this
+    rw [← tsum_iff_tsumFilter, ← term_tsum, eq_sub_iff_add_eq, ← eq_sub_iff_add_eq'] at this
     simpa only [this] using aux2
   apply Tendsto.congr'
   · filter_upwards [self_mem_nhdsWithin] with s hs using (zeta_limit_aux1 hs).symm

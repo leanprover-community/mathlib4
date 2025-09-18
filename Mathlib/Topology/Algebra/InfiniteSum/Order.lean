@@ -154,6 +154,9 @@ protected theorem MultipliableFilter.tprodFilter_le_tprodFilter (h : ∀ i, f i 
 @[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_le_tprod :=
   MultipliableFilter.tprodFilter_le_tprodFilter
 
+alias Multipliable.tprod_le_tprod := MultipliableFilter.tprodFilter_le_tprodFilter
+alias Summable.tsum_le_tsum := SummableFilter.tsumFilter_le_tsumFilter
+
 @[to_additive (attr := mono)]
 protected theorem MultipliableFilter.tprodFilter_mono (hf : MultipliableFilter L f) [L.NeBot]
     (hg : MultipliableFilter L g) (h : f ≤ g) : ∏'[L] n, f n ≤ ∏'[L] n, g n :=
@@ -196,6 +199,9 @@ theorem one_le_tprodFilter [L.NeBot] (h : ∀ i, 1 ≤ g i) : 1 ≤ ∏'[L] i, g
   by_cases hg : MultipliableFilter L g
   · exact hg.hasProdFilter.one_le h
   · rw [tprodFilter_eq_one_of_not_multipliableFilter hg]
+
+alias one_le_tprod := one_le_tprodFilter
+alias tsum_nonneg := tsumFilter_nonneg
 
 @[to_additive]
 theorem tprodFilter_le_one [L.NeBot] (h : ∀ i, f i ≤ 1) : ∏'[L] i, f i ≤ 1 := by

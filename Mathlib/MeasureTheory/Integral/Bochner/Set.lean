@@ -298,12 +298,12 @@ theorem hasSum_integral_iUnion {ι : Type*} [Countable ι] {s : ι → Set X}
 theorem integral_iUnion {ι : Type*} [Countable ι] {s : ι → Set X} (hm : ∀ i, MeasurableSet (s i))
     (hd : Pairwise (Disjoint on s)) (hfi : IntegrableOn f (⋃ i, s i) μ) :
     ∫ x in ⋃ n, s n, f x ∂μ = ∑' n, ∫ x in s n, f x ∂μ :=
-  (HasSum.tsum_eq (hasSum_integral_iUnion hm hd hfi)).symm
+  ((hasSum_integral_iUnion hm hd hfi).tsum_eq).symm
 
 theorem integral_iUnion_ae {ι : Type*} [Countable ι] {s : ι → Set X}
     (hm : ∀ i, NullMeasurableSet (s i) μ) (hd : Pairwise (AEDisjoint μ on s))
     (hfi : IntegrableOn f (⋃ i, s i) μ) : ∫ x in ⋃ n, s n, f x ∂μ = ∑' n, ∫ x in s n, f x ∂μ :=
-  (HasSum.tsum_eq (hasSum_integral_iUnion_ae hm hd hfi)).symm
+  ((hasSum_integral_iUnion_ae hm hd hfi).tsum_eq).symm
 
 theorem setIntegral_eq_zero_of_ae_eq_zero (ht_eq : ∀ᵐ x ∂μ, x ∈ t → f x = 0) :
     ∫ x in t, f x ∂μ = 0 := by
@@ -825,8 +825,8 @@ theorem integrableOn_iUnion_of_summable_integral_norm {f : X → E} {s : ι → 
     Summable fun i : ι =>
       (⟨∫ x : X in s i, ‖f x‖₊ ∂μ, integral_nonneg fun x => NNReal.coe_nonneg _⟩ :
         NNReal) := by
-    rw [← NNReal.summable_coe]; exact h
-  have S'' := ENNReal.tsum_coe_eq S'.hasSum
+    rw [Summable, ← NNReal.summable_coe]; exact h
+  have S'' := ENNReal.tsumFilter_coe_eq S'.hasSum
   simp_rw [ENNReal.coe_nnreal_eq, NNReal.coe_mk, coe_nnnorm] at S''
   convert ENNReal.ofReal_lt_top
 

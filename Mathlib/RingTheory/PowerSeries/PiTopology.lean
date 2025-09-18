@@ -216,7 +216,7 @@ theorem hasSum_of_monomials_self (f : PowerSeries R) :
 /-- If the coefficient space is T2, then the power series is `tsum` of its monomials -/
 theorem as_tsum [T2Space R] (f : PowerSeries R) :
     f = tsum fun d : ℕ => monomial d (coeff d f) :=
-  (HasSum.tsum_eq (hasSum_of_monomials_self f)).symm
+  ((hasSum_of_monomials_self f).tsum_eq).symm
 
 end Summable
 

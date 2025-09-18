@@ -197,8 +197,8 @@ lemma summable_one_div_norm_rpow {k : ℝ} (hk : 2 < k) :
       simp only [← Int.mem_box.mp p.2, Nat.cast_max, norm_eq_max_natAbs, Matrix.cons_val_zero,
         Matrix.cons_val_one]
     simp only [tsum_fintype, univ_eq_attach, sum_const, card_attach, nsmul_eq_mul]
-    apply ((Real.summable_nat_rpow.mpr (by linarith : 1 - k < -1)).mul_left
-      8).of_norm_bounded_eventually_nat
+    apply (summable_iff_summableFilter.mpr ((Real.summable_nat_rpow.mpr
+      (by linarith : 1 - k < -1)).mul_left 8)).of_norm_bounded_eventually_nat
     filter_upwards [Filter.eventually_gt_atTop 0] with n hn
     rw [Int.card_box hn.ne', Real.norm_of_nonneg (by positivity), sub_eq_add_neg,
       Real.rpow_add (Nat.cast_pos.mpr hn), Real.rpow_one, Nat.cast_mul, Nat.cast_ofNat, mul_assoc]

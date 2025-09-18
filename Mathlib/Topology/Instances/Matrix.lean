@@ -292,144 +292,150 @@ end Continuity
 
 section tsum
 
-variable [AddCommMonoid R] [TopologicalSpace R]
+variable [AddCommMonoid R] [TopologicalSpace R] {L : Filter (Finset X)}
 
-theorem HasSum.matrix_transpose {f : X → Matrix m n R} {a : Matrix m n R} (hf : HasSum f a) :
-    HasSum (fun x => (f x)ᵀ) aᵀ :=
+theorem HasSumFilter.matrix_transpose {f : X → Matrix m n R} {a : Matrix m n R}
+    (hf : HasSumFilter L f a) : HasSumFilter L (fun x => (f x)ᵀ) aᵀ :=
   (hf.map (Matrix.transposeAddEquiv m n R) continuous_id.matrix_transpose :)
 
-theorem Summable.matrix_transpose {f : X → Matrix m n R} (hf : Summable f) :
-    Summable fun x => (f x)ᵀ :=
-  hf.hasSum.matrix_transpose.summable
+theorem SummableFilter.matrix_transpose {f : X → Matrix m n R} (hf : SummableFilter L f) :
+    SummableFilter L fun x => (f x)ᵀ :=
+  hf.hasSumFilter.matrix_transpose.summableFilter
 
 @[simp]
-theorem summable_matrix_transpose {f : X → Matrix m n R} :
-    (Summable fun x => (f x)ᵀ) ↔ Summable f :=
-  Summable.map_iff_of_equiv (Matrix.transposeAddEquiv m n R)
+theorem summableFilter_matrix_transpose {f : X → Matrix m n R} :
+    (SummableFilter L fun x => (f x)ᵀ) ↔ SummableFilter L f :=
+  SummableFilter.map_iff_of_equiv (Matrix.transposeAddEquiv m n R)
     continuous_id.matrix_transpose continuous_id.matrix_transpose
 
-theorem Matrix.transpose_tsum [T2Space R] {f : X → Matrix m n R} : (∑' x, f x)ᵀ = ∑' x, (f x)ᵀ := by
-  by_cases hf : Summable f
-  · exact hf.hasSum.matrix_transpose.tsum_eq.symm
-  · have hft := summable_matrix_transpose.not.mpr hf
-    rw [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable hft, transpose_zero]
+theorem Matrix.transpose_tsumFilter [T2Space R] [L.NeBot] {f : X → Matrix m n R} :
+    (∑'[L] x, f x)ᵀ = ∑'[L] x, (f x)ᵀ := by
+  by_cases hf : SummableFilter L f
+  · exact hf.hasSumFilter.matrix_transpose.tsumFilter_eq.symm
+  · have hft := summableFilter_matrix_transpose.not.mpr hf
+    rw [tsumFilter_eq_zero_of_not_summableFilter hf, tsumFilter_eq_zero_of_not_summableFilter hft,
+      transpose_zero]
 
-theorem HasSum.matrix_conjTranspose [StarAddMonoid R] [ContinuousStar R] {f : X → Matrix m n R}
-    {a : Matrix m n R} (hf : HasSum f a) : HasSum (fun x => (f x)ᴴ) aᴴ :=
+theorem HasSumFilter.matrix_conjTranspose [StarAddMonoid R] [ContinuousStar R]
+    {f : X → Matrix m n R} {a : Matrix m n R} (hf : HasSumFilter L f a) :
+    HasSumFilter L (fun x => (f x)ᴴ) aᴴ :=
   (hf.map (Matrix.conjTransposeAddEquiv m n R) continuous_id.matrix_conjTranspose :)
 
-theorem Summable.matrix_conjTranspose [StarAddMonoid R] [ContinuousStar R] {f : X → Matrix m n R}
-    (hf : Summable f) : Summable fun x => (f x)ᴴ :=
-  hf.hasSum.matrix_conjTranspose.summable
+theorem SummableFilter.matrix_conjTranspose [StarAddMonoid R] [ContinuousStar R]
+    {f : X → Matrix m n R} (hf : SummableFilter L f) : SummableFilter L fun x => (f x)ᴴ :=
+  hf.hasSumFilter.matrix_conjTranspose.summableFilter
 
 @[simp]
-theorem summable_matrix_conjTranspose [StarAddMonoid R] [ContinuousStar R] {f : X → Matrix m n R} :
-    (Summable fun x => (f x)ᴴ) ↔ Summable f :=
-  Summable.map_iff_of_equiv (Matrix.conjTransposeAddEquiv m n R)
+theorem summableFilter_matrix_conjTranspose [StarAddMonoid R] [ContinuousStar R]
+    {f : X → Matrix m n R} : (SummableFilter L fun x => (f x)ᴴ) ↔ SummableFilter L f :=
+  SummableFilter.map_iff_of_equiv (Matrix.conjTransposeAddEquiv m n R)
     continuous_id.matrix_conjTranspose continuous_id.matrix_conjTranspose
 
-theorem Matrix.conjTranspose_tsum [StarAddMonoid R] [ContinuousStar R] [T2Space R]
-    {f : X → Matrix m n R} : (∑' x, f x)ᴴ = ∑' x, (f x)ᴴ := by
-  by_cases hf : Summable f
-  · exact hf.hasSum.matrix_conjTranspose.tsum_eq.symm
-  · have hft := summable_matrix_conjTranspose.not.mpr hf
-    rw [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable hft, conjTranspose_zero]
+theorem Matrix.conjTranspose_tsumFilter [StarAddMonoid R] [ContinuousStar R] [T2Space R] [L.NeBot]
+    {f : X → Matrix m n R} : (∑'[L] x, f x)ᴴ = ∑'[L] x, (f x)ᴴ := by
+  by_cases hf : SummableFilter L f
+  · exact hf.hasSumFilter.matrix_conjTranspose.tsumFilter_eq.symm
+  · have hft := summableFilter_matrix_conjTranspose.not.mpr hf
+    rw [tsumFilter_eq_zero_of_not_summableFilter hf, tsumFilter_eq_zero_of_not_summableFilter hft,
+      conjTranspose_zero]
 
-theorem HasSum.matrix_diagonal [DecidableEq n] {f : X → n → R} {a : n → R} (hf : HasSum f a) :
-    HasSum (fun x => diagonal (f x)) (diagonal a) :=
+theorem HasSumFilter.matrix_diagonal [DecidableEq n] {f : X → n → R} {a : n → R}
+    (hf : HasSumFilter L f a) : HasSumFilter L (fun x => diagonal (f x)) (diagonal a) :=
   hf.map (diagonalAddMonoidHom n R) continuous_id.matrix_diagonal
 
-theorem Summable.matrix_diagonal [DecidableEq n] {f : X → n → R} (hf : Summable f) :
-    Summable fun x => diagonal (f x) :=
-  hf.hasSum.matrix_diagonal.summable
+theorem SummableFilter.matrix_diagonal [DecidableEq n] {f : X → n → R} (hf : SummableFilter L f) :
+    SummableFilter L fun x => diagonal (f x) :=
+  hf.hasSumFilter.matrix_diagonal.summableFilter
 
 @[simp]
-theorem summable_matrix_diagonal [DecidableEq n] {f : X → n → R} :
-    (Summable fun x => diagonal (f x)) ↔ Summable f :=
-  Summable.map_iff_of_leftInverse (Matrix.diagonalAddMonoidHom n R) (Matrix.diagAddMonoidHom n R)
-    continuous_id.matrix_diagonal continuous_matrix_diag fun A => diag_diagonal A
+theorem summableFilter_matrix_diagonal [DecidableEq n] {f : X → n → R} :
+    (SummableFilter L fun x => diagonal (f x)) ↔ SummableFilter L f :=
+  SummableFilter.map_iff_of_leftInverse (Matrix.diagonalAddMonoidHom n R)
+    (Matrix.diagAddMonoidHom n R) continuous_id.matrix_diagonal continuous_matrix_diag
+    fun A => diag_diagonal A
 
-theorem Matrix.diagonal_tsum [DecidableEq n] [T2Space R] {f : X → n → R} :
-    diagonal (∑' x, f x) = ∑' x, diagonal (f x) := by
-  by_cases hf : Summable f
-  · exact hf.hasSum.matrix_diagonal.tsum_eq.symm
-  · have hft := summable_matrix_diagonal.not.mpr hf
-    rw [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable hft]
+theorem Matrix.diagonal_tsumFilter [DecidableEq n] [T2Space R] [L.NeBot] {f : X → n → R} :
+    diagonal (∑'[L] x, f x) = ∑'[L] x, diagonal (f x) := by
+  by_cases hf : SummableFilter L f
+  · exact hf.hasSumFilter.matrix_diagonal.tsumFilter_eq.symm
+  · have hft := summableFilter_matrix_diagonal.not.mpr hf
+    rw [tsumFilter_eq_zero_of_not_summableFilter hf, tsumFilter_eq_zero_of_not_summableFilter hft]
     exact diagonal_zero
 
-theorem HasSum.matrix_diag {f : X → Matrix n n R} {a : Matrix n n R} (hf : HasSum f a) :
-    HasSum (fun x => diag (f x)) (diag a) :=
+theorem HasSumFilter.matrix_diag {f : X → Matrix n n R} {a : Matrix n n R}
+    (hf : HasSumFilter L f a) : HasSumFilter L (fun x => diag (f x)) (diag a) :=
   hf.map (diagAddMonoidHom n R) continuous_matrix_diag
 
-theorem Summable.matrix_diag {f : X → Matrix n n R} (hf : Summable f) :
-    Summable fun x => diag (f x) :=
-  hf.hasSum.matrix_diag.summable
+theorem SummableFilter.matrix_diag {f : X → Matrix n n R} (hf : SummableFilter L f) :
+    SummableFilter L fun x => diag (f x) :=
+  hf.hasSumFilter.matrix_diag.summableFilter
 
 section BlockMatrices
 
-theorem HasSum.matrix_blockDiagonal [DecidableEq p] {f : X → p → Matrix m n R}
-    {a : p → Matrix m n R} (hf : HasSum f a) :
-    HasSum (fun x => blockDiagonal (f x)) (blockDiagonal a) :=
+theorem HasSumFilter.matrix_blockDiagonal [DecidableEq p] {f : X → p → Matrix m n R}
+    {a : p → Matrix m n R} (hf : HasSumFilter L f a) :
+    HasSumFilter L (fun x => blockDiagonal (f x)) (blockDiagonal a) :=
   hf.map (blockDiagonalAddMonoidHom m n p R) continuous_id.matrix_blockDiagonal
 
-theorem Summable.matrix_blockDiagonal [DecidableEq p] {f : X → p → Matrix m n R} (hf : Summable f) :
-    Summable fun x => blockDiagonal (f x) :=
-  hf.hasSum.matrix_blockDiagonal.summable
+theorem SummableFilter.matrix_blockDiagonal [DecidableEq p] {f : X → p → Matrix m n R}
+    (hf : SummableFilter L f) : SummableFilter L fun x => blockDiagonal (f x) :=
+  hf.hasSumFilter.matrix_blockDiagonal.summableFilter
 
-theorem summable_matrix_blockDiagonal [DecidableEq p] {f : X → p → Matrix m n R} :
-    (Summable fun x => blockDiagonal (f x)) ↔ Summable f :=
-  Summable.map_iff_of_leftInverse (blockDiagonalAddMonoidHom m n p R)
+theorem summableFilter_matrix_blockDiagonal [DecidableEq p] {f : X → p → Matrix m n R} :
+    (SummableFilter L fun x => blockDiagonal (f x)) ↔ SummableFilter L f :=
+  SummableFilter.map_iff_of_leftInverse (blockDiagonalAddMonoidHom m n p R)
     (blockDiagAddMonoidHom m n p R) continuous_id.matrix_blockDiagonal
     continuous_id.matrix_blockDiag fun A => blockDiag_blockDiagonal A
 
-theorem Matrix.blockDiagonal_tsum [DecidableEq p] [T2Space R] {f : X → p → Matrix m n R} :
-    blockDiagonal (∑' x, f x) = ∑' x, blockDiagonal (f x) := by
-  by_cases hf : Summable f
-  · exact hf.hasSum.matrix_blockDiagonal.tsum_eq.symm
-  · have hft := summable_matrix_blockDiagonal.not.mpr hf
-    rw [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable hft]
+theorem Matrix.blockDiagonal_tsumFilter [DecidableEq p] [T2Space R] [L.NeBot]
+    {f : X → p → Matrix m n R} : blockDiagonal (∑'[L] x, f x) = ∑'[L] x, blockDiagonal (f x) := by
+  by_cases hf : SummableFilter L f
+  · exact hf.hasSumFilter.matrix_blockDiagonal.tsumFilter_eq.symm
+  · have hft := summableFilter_matrix_blockDiagonal.not.mpr hf
+    rw [tsumFilter_eq_zero_of_not_summableFilter hf, tsumFilter_eq_zero_of_not_summableFilter hft]
     exact blockDiagonal_zero
 
-theorem HasSum.matrix_blockDiag {f : X → Matrix (m × p) (n × p) R} {a : Matrix (m × p) (n × p) R}
-    (hf : HasSum f a) : HasSum (fun x => blockDiag (f x)) (blockDiag a) :=
+theorem HasSumFilter.matrix_blockDiag {f : X → Matrix (m × p) (n × p) R}
+    {a : Matrix (m × p) (n × p) R} (hf : HasSumFilter L f a) :
+    HasSumFilter L (fun x => blockDiag (f x)) (blockDiag a) :=
   (hf.map (blockDiagAddMonoidHom m n p R) <| Continuous.matrix_blockDiag continuous_id :)
 
-theorem Summable.matrix_blockDiag {f : X → Matrix (m × p) (n × p) R} (hf : Summable f) :
-    Summable fun x => blockDiag (f x) :=
-  hf.hasSum.matrix_blockDiag.summable
+theorem SummableFilter.matrix_blockDiag {f : X → Matrix (m × p) (n × p) R}
+    (hf : SummableFilter L f) : SummableFilter L fun x => blockDiag (f x) :=
+  hf.hasSumFilter.matrix_blockDiag.summableFilter
 
-theorem HasSum.matrix_blockDiagonal' [DecidableEq l] {f : X → ∀ i, Matrix (m' i) (n' i) R}
-    {a : ∀ i, Matrix (m' i) (n' i) R} (hf : HasSum f a) :
-    HasSum (fun x => blockDiagonal' (f x)) (blockDiagonal' a) :=
+theorem HasSumFilter.matrix_blockDiagonal' [DecidableEq l] {f : X → ∀ i, Matrix (m' i) (n' i) R}
+    {a : ∀ i, Matrix (m' i) (n' i) R} (hf : HasSumFilter L f a) :
+    HasSumFilter L (fun x => blockDiagonal' (f x)) (blockDiagonal' a) :=
   hf.map (blockDiagonal'AddMonoidHom m' n' R) continuous_id.matrix_blockDiagonal'
 
-theorem Summable.matrix_blockDiagonal' [DecidableEq l] {f : X → ∀ i, Matrix (m' i) (n' i) R}
-    (hf : Summable f) : Summable fun x => blockDiagonal' (f x) :=
-  hf.hasSum.matrix_blockDiagonal'.summable
+theorem SummableFilter.matrix_blockDiagonal' [DecidableEq l] {f : X → ∀ i, Matrix (m' i) (n' i) R}
+    (hf : SummableFilter L f) : SummableFilter L fun x => blockDiagonal' (f x) :=
+  hf.hasSumFilter.matrix_blockDiagonal'.summableFilter
 
-theorem summable_matrix_blockDiagonal' [DecidableEq l] {f : X → ∀ i, Matrix (m' i) (n' i) R} :
-    (Summable fun x => blockDiagonal' (f x)) ↔ Summable f :=
-  Summable.map_iff_of_leftInverse (blockDiagonal'AddMonoidHom m' n' R)
+theorem summableFilter_matrix_blockDiagonal' [DecidableEq l] {f : X → ∀ i, Matrix (m' i) (n' i) R} :
+    (SummableFilter L fun x => blockDiagonal' (f x)) ↔ SummableFilter L f :=
+  SummableFilter.map_iff_of_leftInverse (blockDiagonal'AddMonoidHom m' n' R)
     (blockDiag'AddMonoidHom m' n' R) continuous_id.matrix_blockDiagonal'
     continuous_id.matrix_blockDiag' fun A => blockDiag'_blockDiagonal' A
 
-theorem Matrix.blockDiagonal'_tsum [DecidableEq l] [T2Space R]
+theorem Matrix.blockDiagonal'_tsumFilter [DecidableEq l] [T2Space R] [L.NeBot]
     {f : X → ∀ i, Matrix (m' i) (n' i) R} :
-    blockDiagonal' (∑' x, f x) = ∑' x, blockDiagonal' (f x) := by
-  by_cases hf : Summable f
-  · exact hf.hasSum.matrix_blockDiagonal'.tsum_eq.symm
-  · have hft := summable_matrix_blockDiagonal'.not.mpr hf
-    rw [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable hft]
+    blockDiagonal' (∑'[L] x, f x) = ∑'[L] x, blockDiagonal' (f x) := by
+  by_cases hf : SummableFilter L f
+  · exact hf.hasSumFilter.matrix_blockDiagonal'.tsumFilter_eq.symm
+  · have hft := summableFilter_matrix_blockDiagonal'.not.mpr hf
+    rw [tsumFilter_eq_zero_of_not_summableFilter hf, tsumFilter_eq_zero_of_not_summableFilter hft]
     exact blockDiagonal'_zero
 
-theorem HasSum.matrix_blockDiag' {f : X → Matrix (Σ i, m' i) (Σ i, n' i) R}
-    {a : Matrix (Σ i, m' i) (Σ i, n' i) R} (hf : HasSum f a) :
-    HasSum (fun x => blockDiag' (f x)) (blockDiag' a) :=
+theorem HasSumFilter.matrix_blockDiag' {f : X → Matrix (Σ i, m' i) (Σ i, n' i) R}
+    {a : Matrix (Σ i, m' i) (Σ i, n' i) R} (hf : HasSumFilter L f a) :
+    HasSumFilter L (fun x => blockDiag' (f x)) (blockDiag' a) :=
   hf.map (blockDiag'AddMonoidHom m' n' R) continuous_id.matrix_blockDiag'
 
-theorem Summable.matrix_blockDiag' {f : X → Matrix (Σ i, m' i) (Σ i, n' i) R} (hf : Summable f) :
-    Summable fun x => blockDiag' (f x) :=
-  hf.hasSum.matrix_blockDiag'.summable
+theorem SummableFilter.matrix_blockDiag' {f : X → Matrix (Σ i, m' i) (Σ i, n' i) R}
+    (hf : SummableFilter L f) : SummableFilter L fun x => blockDiag' (f x) :=
+  hf.hasSumFilter.matrix_blockDiag'.summableFilter
 
 end BlockMatrices
 

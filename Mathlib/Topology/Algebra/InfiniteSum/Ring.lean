@@ -113,6 +113,7 @@ theorem tsumFilter_mul_left [T2Space α] [L.NeBot] : ∑'[L] x, a * f x = a * �
   else by rw [tsumFilter_eq_zero_of_not_summableFilter hf,
               tsumFilter_eq_zero_of_not_summableFilter (mt (summableFilter_mul_left_iff ha).mp hf),
               mul_zero]
+alias tsum_mul_left := tsumFilter_mul_left
 
 theorem tsumFilter_mul_right [T2Space α] [L.NeBot] : ∑'[L] x, f x * a = (∑'[L] x, f x) * a := by
   classical
@@ -121,6 +122,8 @@ theorem tsumFilter_mul_right [T2Space α] [L.NeBot] : ∑'[L] x, f x * a = (∑'
   else by rw [tsumFilter_eq_zero_of_not_summableFilter hf,
              tsumFilter_eq_zero_of_not_summableFilter (mt (summableFilter_mul_right_iff ha).mp hf),
              zero_mul]
+
+alias tsum_mul_right := tsumFilter_mul_right
 
 theorem tsumFilter_div_const [T2Space α] [L.NeBot] : ∑'[L] x, f x / a = (∑'[L] x, f x) / a := by
   simpa only [div_eq_mul_inv] using tsumFilter_mul_right

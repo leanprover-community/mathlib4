@@ -169,13 +169,13 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       exact ne_of_gt ((S x).tsum_pos (fun i => mul_nonneg (rpos i).le (g_nonneg i x)) n I)
   · refine
       contDiff_tsum_of_eventually (fun n => (g_smooth n).const_smul (r n))
-        (fun k _ => (NNReal.hasSum_coe.2 δc).summable) ?_
+        (fun k _ => (NNReal.hasSumFilter_coe.2 δc).summableFilter) ?_
     intro i _
     simp only [Nat.cofinite_eq_atTop, Filter.eventually_atTop]
     exact ⟨i, fun n hn x => hr _ _ hn _⟩
   · rintro - ⟨y, rfl⟩
     refine ⟨tsum_nonneg fun n => mul_nonneg (rpos n).le (g_nonneg n y), le_trans ?_ c_lt.le⟩
-    have A : HasSum (fun n => (δ n : ℝ)) c := NNReal.hasSum_coe.2 δc
+    have A : HasSum (fun n => (δ n : ℝ)) c := NNReal.hasSumFilter_coe.2 δc
     simp only [Pi.smul_apply, smul_eq_mul, NNReal.val_eq_coe, ← A.tsum_eq]
     apply Summable.tsum_le_tsum _ (S y) A.summable
     intro n

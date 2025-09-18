@@ -351,11 +351,11 @@ namespace NNReal
 @[simp]
 theorem summable_rpow_inv {p : ℝ} :
     Summable (fun n => ((n : ℝ≥0) ^ p)⁻¹ : ℕ → ℝ≥0) ↔ 1 < p := by
-  simp [← NNReal.summable_coe]
+  simp [← NNReal.summableFilter_coe]
 
 @[simp]
 theorem summable_rpow {p : ℝ} : Summable (fun n => (n : ℝ≥0) ^ p : ℕ → ℝ≥0) ↔ p < -1 := by
-  simp [← NNReal.summable_coe]
+  simp [← NNReal.summableFilter_coe]
 
 theorem summable_one_div_rpow {p : ℝ} :
     Summable (fun n => 1 / (n : ℝ≥0) ^ p : ℕ → ℝ≥0) ↔ 1 < p := by
@@ -468,7 +468,7 @@ lemma Real.summable_one_div_int_add_rpow (a : ℝ) (s : ℝ) :
 theorem summable_pow_div_add {α : Type*} (x : α) [RCLike α] (q k : ℕ) (hq : 1 < q) :
     Summable fun n : ℕ => ‖(x / (↑n + k) ^ q)‖ := by
   simp_rw [norm_div]
-  apply Summable.const_div
+  apply SummableFilter.const_div
   simpa [hq, Nat.cast_add, one_div, norm_inv, norm_pow, RCLike.norm_natCast,
     Real.summable_nat_pow_inv, iff_true]
       using summable_nat_add_iff (f := fun x => ‖1 / (x ^ q : α)‖) k

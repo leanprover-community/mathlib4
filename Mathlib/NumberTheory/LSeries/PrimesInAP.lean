@@ -89,7 +89,7 @@ lemma tprod_eq_tprod_primes_of_mulSupport_subset_prime_powers {f : ℕ → α}
         using hfm.subtype _
   simp only [← tprod_subtype_eq_of_mulSupport_subset hf, Set.coe_setOf, ← prodNatEquiv.tprod_eq,
     ← hfm'.tprod_prod]
-  refine tprod_congr fun (p, k) ↦ congrArg f <| coe_prodNatEquiv_apply ..
+  refine tprodFilter_congr fun (p, k) ↦ congrArg f <| coe_prodNatEquiv_apply ..
 
 @[to_additive tsum_eq_tsum_primes_add_tsum_primes_of_support_subset_prime_powers]
 lemma tprod_eq_tprod_primes_mul_tprod_primes_of_mulSupport_subset_prime_powers {f : ℕ → α}
@@ -102,7 +102,7 @@ lemma tprod_eq_tprod_primes_mul_tprod_primes_of_mulSupport_subset_prime_powers {
   conv_lhs =>
     enter [1, p]; rw [(hfs' p).tprod_eq_zero_mul, zero_add, pow_one]
     enter [2, 1, k]; rw [add_assoc, one_add_one_eq_two]
-  exact (Multipliable.subtype hfm _).tprod_mul <|
+  exact (Multipliable.subtype hfm _).tprodFilter_mul <|
     Multipliable.prod (f := fun (pk : Nat.Primes × ℕ) ↦ f (pk.1 ^ (pk.2 + 2))) <|
     hfm.comp_injective <| Subtype.val_injective |>.comp
     Nat.Primes.prodNatEquiv.injective |>.comp <|
@@ -197,18 +197,20 @@ private lemma summable_F'' : Summable F'' := by
   have hp₁ (p : Nat.Primes) : (p : ℝ)⁻¹ < 1 :=
     (inv_lt_one₀ <| mod_cast p.prop.pos).mpr <| Nat.one_lt_cast.mpr <| p.prop.one_lt
   suffices Summable fun (pk : Nat.Primes × ℕ) ↦ (pk.1 : ℝ)⁻¹ ^ (pk.2 + 3 / 2 : ℝ) by
-    refine (Summable.mul_left 2 this).of_nonneg_of_le (fun pk ↦ ?_) (fun pk ↦ F''_le pk.1 pk.2)
+    refine (summable_iff_summableFilter.mpr (SummableFilter.mul_left 2 this)).of_nonneg_of_le
+      (fun pk ↦ ?_) (fun pk ↦ F''_le pk.1 pk.2)
     simp only [F'', Function.comp_apply, F', F₀, Prod.map_fst, id_eq, Prod.map_snd, Nat.cast_pow]
     have := vonMangoldt_nonneg (n := (pk.1 : ℕ) ^ (pk.2 + 2))
     positivity
   conv => enter [1, pk]; rw [Real.rpow_add <| hp₀ pk.1, Real.rpow_natCast]
   refine (summable_prod_of_nonneg (fun _ ↦ by positivity)).mpr ⟨(fun p ↦ ?_), ?_⟩
   · dsimp only -- otherwise the `exact` below times out
-    exact Summable.mul_right _ <| summable_geometric_of_lt_one (hp₀ p).le (hp₁ p)
+    exact SummableFilter.mul_right _ <| summable_geometric_of_lt_one (hp₀ p).le (hp₁ p)
   · dsimp only
-    conv => enter [1, p]; rw [tsum_mul_right, tsum_geometric_of_lt_one (hp₀ p).le (hp₁ p)]
-    refine (summable_rpow.mpr (by norm_num : -(3 / 2 : ℝ) < -1)).mul_left 2
-      |>.of_nonneg_of_le (fun p ↦ ?_) (fun p ↦ ?_)
+    conv => enter [1, p]; rw [tsum, tsumFilter_mul_right, ← tsum_iff_tsumFilter,
+      tsum_geometric_of_lt_one (hp₀ p).le (hp₁ p)]
+    refine (summable_iff_summableFilter.mpr ((summable_rpow.mpr
+      (by norm_num : -(3 / 2 : ℝ) < -1)).mul_left 2)) |>.of_nonneg_of_le (fun p ↦ ?_) (fun p ↦ ?_)
     · have := sub_pos.mpr (hp₁ p)
       positivity
     · rw [Real.inv_rpow p.val.cast_nonneg, Real.rpow_neg p.val.cast_nonneg]
@@ -374,7 +376,7 @@ lemma LFunctionResidueClassAux_real (ha : IsUnit a) {x : ℝ} (hx : 1 < x) :
   rw [eqOn_LFunctionResidueClassAux ha hx]
   simp only [sub_re, ofReal_sub]
   congr 1
-  · rw [LSeries, re_tsum <| LSeriesSummable_of_abscissaOfAbsConv_lt_re <|
+  · rw [LSeries, re_tsumFilter <| LSeriesSummable_of_abscissaOfAbsConv_lt_re <|
       (abscissaOfAbsConv_residueClass_le_one a).trans_lt <| by norm_cast]
     push_cast
     refine tsum_congr fun n ↦ ?_
@@ -396,7 +398,7 @@ lemma LSeries_residueClass_lower_bound (ha : IsUnit a) :
       ∑' n, residueClass a n / (n : ℝ) ^ x =
         (LFunctionResidueClassAux a x).re + (q.totient : ℝ)⁻¹ / (x - 1) := by
     refine ofReal_injective ?_
-    simp only [ofReal_tsum, ofReal_div, ofReal_cpow (Nat.cast_nonneg _), ofReal_natCast,
+    simp only [ofReal_tsumFilter, ofReal_div, ofReal_cpow (Nat.cast_nonneg _), ofReal_natCast,
       ofReal_add, ofReal_inv, ofReal_sub, ofReal_one]
     simp_rw [← LFunctionResidueClassAux_real ha hx,
       eqOn_LFunctionResidueClassAux ha <| Set.mem_setOf.mpr (ofReal_re x ▸ hx), sub_add_cancel,

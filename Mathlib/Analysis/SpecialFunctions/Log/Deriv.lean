@@ -320,7 +320,7 @@ theorem hasSum_log_one_add {a : ℝ} (h : 0 ≤ a) :
     HasSum (fun k : ℕ => (2 : ℝ) * (1 / (2 * k + 1)) * (a / (a + 2)) ^ (2 * k + 1))
       (log (1 + a)) := by
   obtain (rfl | ha0) := eq_or_ne a 0
-  · simp [hasSum_zero]
+  · simp [hasSumFilter_zero]
   · convert hasSum_log_one_add_inv (inv_pos.mpr (lt_of_le_of_ne h ha0.symm)) using 4
     all_goals simp [field, add_comm]
 

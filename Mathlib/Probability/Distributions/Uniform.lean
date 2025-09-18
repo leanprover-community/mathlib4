@@ -327,7 +327,7 @@ open scoped Classical in
   elements in `s` that are `a`. -/
 def ofMultiset (s : Multiset α) (hs : s ≠ 0) : PMF α :=
   ⟨fun a => s.count a / (Multiset.card s),
-    ENNReal.summable.hasSum_iff.2
+    ENNReal.summable.hasSumFilter_iff.2
       (calc
         (∑' b : α, (s.count b : ℝ≥0∞) / (Multiset.card s))
           = (Multiset.card s : ℝ≥0∞)⁻¹ * ∑' b, (s.count b : ℝ≥0∞) := by

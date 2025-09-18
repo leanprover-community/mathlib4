@@ -238,7 +238,7 @@ variable [Semiring R]
 /-- A multivariate power series is the sum (in the sense of summable families) of its monomials -/
 theorem hasSum_of_monomials_self (f : MvPowerSeries σ R) :
     HasSum (fun d : σ →₀ ℕ => monomial d (coeff d f)) f := by
-  rw [Pi.hasSum]
+  rw [HasSum, Pi.hasSumFilter]
   intro d
   convert hasSum_single d ?_ using 1
   · exact (coeff_monomial_same d _).symm
@@ -247,7 +247,7 @@ theorem hasSum_of_monomials_self (f : MvPowerSeries σ R) :
 /-- If the coefficient space is T2, then the multivariate power series is `tsum` of its monomials -/
 theorem as_tsum [T2Space R] (f : MvPowerSeries σ R) :
     f = tsum fun d : σ →₀ ℕ => monomial d (coeff d f) :=
-  (HasSum.tsum_eq (hasSum_of_monomials_self _)).symm
+  ((hasSum_of_monomials_self _).tsum_eq).symm
 
 end Topology
 

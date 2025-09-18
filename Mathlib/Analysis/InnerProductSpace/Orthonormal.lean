@@ -444,7 +444,7 @@ theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜
 /-- Bessel's inequality. -/
 theorem Orthonormal.tsum_inner_products_le (hv : Orthonormal 𝕜 v) :
     ∑' i, ‖⟪v i, x⟫‖ ^ 2 ≤ ‖x‖ ^ 2 := by
-  refine tsum_le_of_sum_le' ?_ fun s => hv.sum_inner_products_le x
+  refine tsumFilter_le_of_sum_le' ?_ fun s => hv.sum_inner_products_le x
   simp only [norm_nonneg, pow_nonneg]
 
 /-- The sum defined in Bessel's inequality is summable. -/

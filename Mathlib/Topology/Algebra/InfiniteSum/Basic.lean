@@ -34,6 +34,9 @@ variable {f g : β → α} {a b : α} {L : Filter (Finset β)}
 theorem hasProdFilter_one : HasProdFilter L (fun _ ↦ 1 : β → α) 1 := by
   simp [HasProdFilter, tendsto_const_nhds]
 
+alias hasProd_one := hasProdFilter_one
+alias hasSum_zero := hasProdFilter_one
+
 @[to_additive]
 theorem hasProdFilter_empty [IsEmpty β] : HasProdFilter L f 1 := by
   convert @hasProdFilter_one α β _ _ L
@@ -41,6 +44,9 @@ theorem hasProdFilter_empty [IsEmpty β] : HasProdFilter L f 1 := by
 @[to_additive]
 theorem multipliableFilter_one : MultipliableFilter L (fun _ ↦ 1 : β → α) :=
   hasProdFilter_one.multipliableFilter
+
+alias multipliable_one := multipliableFilter_one
+alias summable_zero := summableFilter_zero
 
 @[to_additive]
 theorem multipliableFilter_empty [IsEmpty β] : MultipliableFilter L f :=

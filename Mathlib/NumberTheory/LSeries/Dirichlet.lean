@@ -52,7 +52,7 @@ namespace ArithmeticFunction
 open LSeries Nat Complex
 
 lemma not_LSeriesSummable_moebius_at_one : ¬ LSeriesSummable ↗μ 1 := by
-  refine fun h ↦ not_summable_one_div_on_primes <| summable_ofReal.mp <| .of_neg ?_
+  refine fun h ↦ not_summable_one_div_on_primes <| summableFilter_ofReal.mp <| .of_neg ?_
   refine (h.indicator {n | n.Prime}).congr fun n ↦ ?_
   by_cases hn : n.Prime
   · simp [hn, hn.ne_zero, moebius_apply_prime hn, push_cast, neg_div]

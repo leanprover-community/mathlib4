@@ -77,15 +77,15 @@ variable [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] [∀ i, Fintype
   [Algebra 𝕂 𝔸] [T2Space 𝔸]
 
 theorem exp_diagonal (v : m → 𝔸) : exp 𝕂 (diagonal v) = diagonal (exp 𝕂 v) := by
-  simp_rw [exp_eq_tsum, diagonal_pow, ← diagonal_smul, ← diagonal_tsum]
+  simp_rw [exp_eq_tsum, diagonal_pow, ← diagonal_smul, ← diagonal_tsumFilter]
 
 theorem exp_blockDiagonal (v : m → Matrix n n 𝔸) :
     exp 𝕂 (blockDiagonal v) = blockDiagonal (exp 𝕂 v) := by
-  simp_rw [exp_eq_tsum, ← blockDiagonal_pow, ← blockDiagonal_smul, ← blockDiagonal_tsum]
+  simp_rw [exp_eq_tsum, ← blockDiagonal_pow, ← blockDiagonal_smul, ← blockDiagonal_tsumFilter]
 
 theorem exp_blockDiagonal' (v : ∀ i, Matrix (n' i) (n' i) 𝔸) :
     exp 𝕂 (blockDiagonal' v) = blockDiagonal' (exp 𝕂 v) := by
-  simp_rw [exp_eq_tsum, ← blockDiagonal'_pow, ← blockDiagonal'_smul, ← blockDiagonal'_tsum]
+  simp_rw [exp_eq_tsum, ← blockDiagonal'_pow, ← blockDiagonal'_smul, ← blockDiagonal'_tsumFilter]
 
 theorem exp_conjTranspose [StarRing 𝔸] [ContinuousStar 𝔸] (A : Matrix m m 𝔸) :
     exp 𝕂 Aᴴ = (exp 𝕂 A)ᴴ :=
@@ -103,7 +103,7 @@ variable [Fintype m] [DecidableEq m] [Field 𝕂] [CommRing 𝔸] [TopologicalSp
   [IsTopologicalRing 𝔸] [Algebra 𝕂 𝔸] [T2Space 𝔸]
 
 theorem exp_transpose (A : Matrix m m 𝔸) : exp 𝕂 Aᵀ = (exp 𝕂 A)ᵀ := by
-  simp_rw [exp_eq_tsum, transpose_tsum, transpose_smul, transpose_pow]
+  simp_rw [exp_eq_tsum, transpose_tsumFilter, transpose_smul, transpose_pow]
 
 theorem IsSymm.exp {A : Matrix m m 𝔸} (h : A.IsSymm) : (exp 𝕂 A).IsSymm :=
   (exp_transpose _ _).symm.trans <| congr_arg _ h

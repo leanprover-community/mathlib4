@@ -49,7 +49,7 @@ lemma NormedSpace.exp_continuousMap_eq (f : C(α, 𝕜)) :
   ext a
   simp only [NormedSpace.exp, FormalMultilinearSeries.sum]
   have h_sum := NormedSpace.expSeries_summable (𝕂 := 𝕜) f
-  simp_rw [← ContinuousMap.tsum_apply h_sum a, NormedSpace.expSeries_apply_eq]
+  simp_rw [← ContinuousMap.tsumFilter_apply h_sum a, NormedSpace.expSeries_apply_eq]
   simp [NormedSpace.exp_eq_tsum]
 
 end general_exponential

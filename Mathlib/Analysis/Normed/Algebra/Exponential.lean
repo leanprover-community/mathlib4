@@ -149,12 +149,12 @@ theorem exp_zero : exp 𝕂 (0 : 𝔸) = 1 := by
 
 @[simp]
 theorem exp_op [T2Space 𝔸] (x : 𝔸) : exp 𝕂 (MulOpposite.op x) = MulOpposite.op (exp 𝕂 x) := by
-  simp_rw [exp, expSeries_sum_eq, ← MulOpposite.op_pow, ← MulOpposite.op_smul, tsum_op]
+  simp_rw [exp, expSeries_sum_eq, ← MulOpposite.op_pow, ← MulOpposite.op_smul, tsumFilter_op]
 
 @[simp]
 theorem exp_unop [T2Space 𝔸] (x : 𝔸ᵐᵒᵖ) :
     exp 𝕂 (MulOpposite.unop x) = MulOpposite.unop (exp 𝕂 x) := by
-  simp_rw [exp, expSeries_sum_eq, ← MulOpposite.unop_pow, ← MulOpposite.unop_smul, tsum_unop]
+  simp_rw [exp, expSeries_sum_eq, ← MulOpposite.unop_pow, ← MulOpposite.unop_smul, tsumFilter_unop]
 
 theorem star_exp [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 𝔸] (x : 𝔸) :
     star (exp 𝕂 x) = exp 𝕂 (star x) := by
@@ -170,7 +170,7 @@ theorem _root_.IsSelfAdjoint.exp [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 
 theorem _root_.Commute.exp_right [T2Space 𝔸] {x y : 𝔸} (h : Commute x y) :
     Commute x (exp 𝕂 y) := by
   rw [exp_eq_tsum]
-  exact Commute.tsum_right x fun n => (h.pow_right n).smul_right _
+  exact Commute.tsumFilter_right x fun n => (h.pow_right n).smul_right _
 
 theorem _root_.Commute.exp_left [T2Space 𝔸] {x y : 𝔸} (h : Commute x y) : Commute (exp 𝕂 x) y :=
   (h.symm.exp_right 𝕂).symm

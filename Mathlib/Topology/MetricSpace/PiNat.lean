@@ -859,6 +859,7 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
             (Summable.sum_add_tsum_compl (dist_summable _ _)).symm
           _ ≤ (∑ i ∈ K, dist (x i) (y i)) +
                 ∑' i : ↑(K : Set ι)ᶜ, ((1 / 2) ^ encode (i : ι) : ℝ) := by
+            simp_rw [tsum]
             gcongr
             · apply min_le_right
             · apply Summable.subtype (dist_summable x y) (↑K : Set ι)ᶜ

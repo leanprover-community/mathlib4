@@ -114,7 +114,7 @@ theorem apply_eq_one_iff (p : PMF α) (a : α) : p a = 1 ↔ p.support = {a} := 
 
 theorem coe_le_one (p : PMF α) (a : α) : p a ≤ 1 := by
   classical
-  refine hasSum_le (fun b => ?_) (hasSum_ite_eq a (p a)) (hasSum_coe_one p)
+  refine hasSumFilter_le (fun b => ?_) (hasSum_ite_eq a (p a)) (hasSum_coe_one p)
   split_ifs with h <;> simp only [h, zero_le', le_rfl]
 
 theorem apply_ne_top (p : PMF α) (a : α) : p a ≠ ∞ :=
@@ -301,7 +301,7 @@ is the measure of the singleton set under the original measure. -/
 def toPMF [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α] (μ : Measure α)
     [h : IsProbabilityMeasure μ] : PMF α :=
   ⟨fun x => μ ({x} : Set α),
-    ENNReal.summable.hasSum_iff.2
+    ENNReal.summable.hasSumFilter_iff.2
       (_root_.trans
         (symm <|
           (tsum_indicator_apply_singleton μ Set.univ MeasurableSet.univ).symm.trans

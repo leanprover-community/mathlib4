@@ -89,8 +89,9 @@ theorem hasDerivAt_tsum_of_isPreconnected (hu : Summable u) (ht : IsOpen t)
     (hy : y ∈ t) : HasDerivAt (fun z => ∑' n, g n z) (∑' n, g' n y) y := by
   simp_rw [hasDerivAt_iff_hasFDerivAt] at hg ⊢
   convert hasFDerivAt_tsum_of_isPreconnected hu ht h't hg ?_ hy₀ hg0 hy
-  · exact (ContinuousLinearMap.smulRightL 𝕜 𝕜 F 1).map_tsum <|
-      .of_norm_bounded hu fun n ↦ hg' n y hy
+  ·  apply (ContinuousLinearMap.smulRightL 𝕜 𝕜 F 1).map_tsumFilter
+     rw [← summable_iff_summableFilter]
+     exact Summable.of_norm_bounded hu fun n ↦ hg' n y hy
   · simpa
 
 /-- Consider a series of functions `∑' n, f n x`. If the series converges at a
@@ -144,7 +145,8 @@ theorem differentiable_tsum (hu : Summable u) (hf : ∀ n x, HasFDerivAt (f n) (
     intro x
     exact (hasFDerivAt_tsum hu hf hf' hf0 x).differentiableAt
   · push_neg at h
-    have : (fun x => ∑' n, f n x) = 0 := by ext1 x; exact tsum_eq_zero_of_not_summable (h x)
+    have : (fun x => ∑' n, f n x) = 0 := by ext1 x; exact
+      tsumFilter_eq_zero_of_not_summableFilter (h x)
     rw [this]
     exact differentiable_const 0
 
@@ -193,7 +195,7 @@ theorem iteratedFDeriv_tsum (hf : ∀ i, ContDiff 𝕜 N (f i))
   | zero =>
     ext1 x
     simp_rw [iteratedFDeriv_zero_eq_comp]
-    exact (continuousMultilinearCurryFin0 𝕜 E F).symm.toContinuousLinearEquiv.map_tsum
+    exact (continuousMultilinearCurryFin0 𝕜 E F).symm.toContinuousLinearEquiv.map_tsumFilter
   | succ k IH =>
     have h'k : (k : ℕ∞) < N := lt_of_lt_of_le (WithTop.coe_lt_coe.2 (Nat.lt_succ_self _)) hk
     have A : Summable fun n => iteratedFDeriv 𝕜 k (f n) 0 :=
@@ -203,7 +205,7 @@ theorem iteratedFDeriv_tsum (hf : ∀ i, ContDiff 𝕜 N (f i))
         (mod_cast h'k)) _ A]
     · ext1 x
       exact (continuousMultilinearCurryLeftEquiv 𝕜
-        (fun _ : Fin (k + 1) => E) F).symm.toContinuousLinearEquiv.map_tsum
+        (fun _ : Fin (k + 1) => E) F).symm.toContinuousLinearEquiv.map_tsumFilter
     · intro n x
       simpa only [iteratedFDeriv_succ_eq_comp_left, LinearIsometryEquiv.norm_map, comp_apply]
         using h'f k.succ n x hk

@@ -139,6 +139,10 @@ notation3 "∏' "(...)", "r:67:(scoped f => tprod f) => r
 @[inherit_doc tsum]
 notation3 "∑' "(...)", "r:67:(scoped f => tsum f) => r
 
+@[to_additive]
+lemma tprod_iff_tprodFilter {f : β → α} :
+  ∏' b, f b = ∏' [atTop] b, f b := rfl
+
 variable {L : Filter (Finset β)} {f : β → α} {a : α} {s : Finset β}
 
 @[to_additive]
@@ -153,6 +157,9 @@ theorem HasProd.multipliable (h : HasProd f a) : Multipliable f :=
 theorem tprodFilter_eq_one_of_not_multipliableFilter (h : ¬MultipliableFilter L f) :
     ∏'[L] b, f b = 1 := by
   simp [tprodFilter_def, h]
+
+alias tprod_eq_one_of_not_multipliable := tprodFilter_eq_one_of_not_multipliableFilter
+alias tsum_eq_zero_of_not_summable := tsumFilter_eq_zero_of_not_summableFilter
 
 @[to_additive]
 theorem Function.Injective.hasProd_iff {g : γ → β} (hg : Injective g)
@@ -213,8 +220,6 @@ variable [T2Space α]
 @[to_additive]
 theorem HasProdFilter.tprodFilter_eq (ha : HasProdFilter L f a) [L.NeBot] : ∏'[L] b, f b = a :=
   (MultipliableFilter.hasProdFilter ha.multipliableFilter).unique ha
-
-@[deprecated (since := "2025-09-15")] alias HasProd.tprod_eq := HasProdFilter.tprodFilter_eq
 
 alias HasProdFilter.tprod_eq := HasProdFilter.tprodFilter_eq
 alias HasSumFilter.tsum_eq := HasSumFilter.tsumFilter_eq

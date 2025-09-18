@@ -22,7 +22,7 @@ theorem logDeriv_tprod_eq_tsum {ι : Type*} {s : Set ℂ} (hs : IsOpen s) {x : s
     (hm : Summable fun i ↦ logDeriv (f i) x) (htend : MultipliableLocallyUniformlyOn f s)
     (hnez : ∏' i, f i x ≠ 0) :
     logDeriv (∏' i, f i ·) x = ∑' i, logDeriv (f i) x := by
-  rw [Eq.comm, ← hm.hasSum_iff]
+  rw [Eq.comm, ← hm.hasSumFilter_iff]
   refine logDeriv_tendsto hs x htend.hasProdLocallyUniformlyOn (.of_forall <| by fun_prop) hnez
     |>.congr fun b ↦ ?_
   rw [logDeriv_prod _ _ _ (fun i _ ↦ hf i)

@@ -541,7 +541,7 @@ theorem inner_le_Lp_mul_Lq_tsum {f g : ι → ℝ≥0} {p q : ℝ} (hpq : p.Hold
     rintro a ⟨s, rfl⟩
     exact H₁ s
   have H₂ : Summable _ := (hasSum_of_isLUB _ (isLUB_ciSup bdd)).summable
-  exact ⟨H₂, H₂.tsum_le_of_sum_le H₁⟩
+  exact ⟨H₂, H₂.tsumFilter_le_of_sum_le H₁⟩
 
 theorem summable_mul_of_Lp_Lq {f g : ι → ℝ≥0} {p q : ℝ} (hpq : p.HolderConjugate q)
     (hf : Summable fun i => f i ^ p) (hg : Summable fun i => g i ^ q) :
@@ -561,9 +561,10 @@ theorem inner_le_Lp_mul_Lq_hasSum {f g : ι → ℝ≥0} {A B : ℝ≥0} {p q : 
     (hpq : p.HolderConjugate q) (hf : HasSum (fun i => f i ^ p) (A ^ p))
     (hg : HasSum (fun i => g i ^ q) (B ^ q)) : ∃ C, C ≤ A * B ∧ HasSum (fun i => f i * g i) C := by
   obtain ⟨H₁, H₂⟩ := inner_le_Lp_mul_Lq_tsum hpq hf.summable hg.summable
-  have hA : A = (∑' i : ι, f i ^ p) ^ (1 / p) := by rw [hf.tsum_eq, rpow_inv_rpow_self hpq.ne_zero]
+  have hA : A = (∑' i : ι, f i ^ p) ^ (1 / p) := by
+    rw [tsum, hf.tsum_eq, rpow_inv_rpow_self hpq.ne_zero]
   have hB : B = (∑' i : ι, g i ^ q) ^ (1 / q) := by
-    rw [hg.tsum_eq, rpow_inv_rpow_self hpq.symm.ne_zero]
+    rw [tsum, hg.tsum_eq, rpow_inv_rpow_self hpq.symm.ne_zero]
   refine ⟨∑' i, f i * g i, ?_, ?_⟩
   · simpa [hA, hB] using H₂
   · simpa only [rpow_self_rpow_inv hpq.ne_zero] using H₁.hasSum
@@ -650,7 +651,7 @@ theorem Lp_add_le_tsum {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Sum
   have H₂ : Summable _ := (hasSum_of_isLUB _ (isLUB_ciSup bdd)).summable
   refine ⟨H₂, ?_⟩
   rw [one_div, NNReal.rpow_inv_le_iff pos, ← one_div]
-  exact H₂.tsum_le_of_sum_le H₁
+  exact H₂.tsumFilter_le_of_sum_le H₁
 
 theorem summable_Lp_add {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Summable fun i => f i ^ p)
     (hg : Summable fun i => g i ^ p) : Summable fun i => (f i + g i) ^ p :=
@@ -661,6 +662,7 @@ theorem Lp_add_le_tsum' {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Su
     (∑' i, (f i + g i) ^ p) ^ (1 / p) ≤ (∑' i, f i ^ p) ^ (1 / p) + (∑' i, g i ^ p) ^ (1 / p) :=
   (Lp_add_le_tsum hp hf hg).2
 
+--why do we need to do tsum and then tsum_eq?
 /-- **Minkowski inequality**: the `L_p` seminorm of the infinite sum of two vectors is less than or
 equal to the infinite sum of the `L_p`-seminorms of the summands, if these infinite sums both
 exist. A version for `NNReal`-valued functions. For an alternative version, convenient if the
@@ -670,8 +672,8 @@ theorem Lp_add_le_hasSum {f g : ι → ℝ≥0} {A B : ℝ≥0} {p : ℝ} (hp : 
     ∃ C, C ≤ A + B ∧ HasSum (fun i => (f i + g i) ^ p) (C ^ p) := by
   have hp' : p ≠ 0 := (lt_of_lt_of_le zero_lt_one hp).ne'
   obtain ⟨H₁, H₂⟩ := Lp_add_le_tsum hp hf.summable hg.summable
-  have hA : A = (∑' i : ι, f i ^ p) ^ (1 / p) := by rw [hf.tsum_eq, rpow_inv_rpow_self hp']
-  have hB : B = (∑' i : ι, g i ^ p) ^ (1 / p) := by rw [hg.tsum_eq, rpow_inv_rpow_self hp']
+  have hA : A = (∑' i : ι, f i ^ p) ^ (1 / p) := by rw [tsum, hf.tsum_eq, rpow_inv_rpow_self hp']
+  have hB : B = (∑' i : ι, g i ^ p) ^ (1 / p) := by rw [tsum, hg.tsum_eq, rpow_inv_rpow_self hp']
   refine ⟨(∑' i, (f i + g i) ^ p) ^ (1 / p), ?_, ?_⟩
   · simpa [hA, hB] using H₂
   · simpa only [rpow_self_rpow_inv hp'] using H₁.hasSum

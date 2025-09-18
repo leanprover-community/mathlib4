@@ -206,7 +206,7 @@ section sum_formulas
 
 lemma hasSum_int_oddKernel (a : ℝ) {x : ℝ} (hx : 0 < x) :
     HasSum (fun n : ℤ ↦ (n + a) * rexp (-π * (n + a) ^ 2 * x)) (oddKernel ↑a x) := by
-  rw [← hasSum_ofReal, oddKernel_def' a x]
+  rw [HasSum, ← hasSumFilter_ofReal, oddKernel_def' a x]
   have h1 := hasSum_jacobiTheta₂_term (a * I * x) (by rwa [I_mul_im, ofReal_re])
   have h2 := hasSum_jacobiTheta₂'_term (a * I * x) (by rwa [I_mul_im, ofReal_re])
   refine (((h2.div_const (2 * π * I)).add (h1.mul_left ↑a)).mul_left
@@ -238,7 +238,7 @@ lemma hasSum_int_sinKernel (a : ℝ) {t : ℝ} (ht : 0 < t) : HasSum
 lemma hasSum_nat_sinKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
     HasSum (fun n : ℕ ↦ 2 * n * Real.sin (2 * π * a * n) * rexp (-π * n ^ 2 * t))
     (sinKernel ↑a t) := by
-  rw [← hasSum_ofReal]
+  rw [HasSum,← hasSumFilter_ofReal]
   have := (hasSum_int_sinKernel a ht).nat_add_neg
   simp only [Int.cast_zero, zero_mul, mul_zero, add_zero] at this
   refine this.congr_fun fun n ↦ ?_
@@ -396,7 +396,7 @@ lemma hasSum_int_completedSinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     rw [div_mul_eq_mul_div, div_mul_eq_mul_div, mul_right_comm (-I)]
   have h_sum : Summable fun i ↦ ‖c i‖ / |↑i| ^ s.re := by
     simp_rw [hc, div_right_comm]
-    apply Summable.div_const
+    apply SummableFilter.div_const
     apply Summable.of_nat_of_neg <;>
     simpa
   refine (mellin_div_const .. ▸ hasSum_mellin_pi_mul_sq' (zero_lt_one.trans hs) hF h_sum).congr_fun
@@ -431,12 +431,12 @@ lemma hasSum_int_completedHurwitzZetaOdd (a : ℝ) {s : ℂ} (hs : 1 < re s) :
   let c (n : ℤ) : ℂ := 1 / 2
   have hF t (ht : 0 < t) : HasSum (fun n ↦ c n * r n * rexp (-π * (r n) ^ 2 * t))
       (oddKernel a t / 2) := by
-    refine ((hasSum_ofReal.mpr (hasSum_int_oddKernel a ht)).div_const 2).congr_fun fun n ↦ ?_
+    refine ((hasSumFilter_ofReal.mpr (hasSum_int_oddKernel a ht)).div_const 2).congr_fun fun n ↦ ?_
     simp [r, c, push_cast, div_mul_eq_mul_div, -one_div]
   have h_sum : Summable fun i ↦ ‖c i‖ / |r i| ^ s.re := by
     simp_rw [c, ← mul_one_div ‖_‖]
-    apply Summable.mul_left
-    rwa [summable_one_div_int_add_rpow]
+    apply SummableFilter.mul_left
+    rwa [← summable_iff_summableFilter, summable_one_div_int_add_rpow]
   have := mellin_div_const .. ▸ hasSum_mellin_pi_mul_sq' (zero_lt_one.trans hs) hF h_sum
   refine this.congr_fun fun n ↦ ?_
   simp only [r, c, mul_one_div, div_mul_eq_mul_div, div_right_comm]

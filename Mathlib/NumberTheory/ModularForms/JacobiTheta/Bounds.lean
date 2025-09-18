@@ -83,8 +83,9 @@ def F_nat (k : ℕ) (a t : ℝ) : ℝ := ∑' n, f_nat k a t n
 
 lemma summable_f_nat (k : ℕ) (a : ℝ) {t : ℝ} (ht : 0 < t) : Summable (f_nat k a t) := by
   have : Summable fun n : ℕ ↦ n ^ k * exp (-π * (n + a) ^ 2 * t) := by
-    refine (((summable_pow_mul_jacobiTheta₂_term_bound (|a| * t) ht k).mul_right
-      (rexp (-π * a ^ 2 * t))).comp_injective Nat.cast_injective).of_norm_bounded (fun n ↦ ?_)
+    refine ((summable_iff_summableFilter.mpr
+      ((summable_pow_mul_jacobiTheta₂_term_bound (|a| * t) ht k).mul_right
+      (rexp (-π * a ^ 2 * t)))).comp_injective Nat.cast_injective).of_norm_bounded (fun n ↦ ?_)
     simp_rw [mul_assoc, Function.comp_apply, ← Real.exp_add, norm_mul, norm_pow, Int.cast_abs,
       Int.cast_natCast, norm_eq_abs, Nat.abs_cast, abs_exp]
     gcongr
@@ -94,7 +95,7 @@ lemma summable_f_nat (k : ℕ) (a : ℝ) {t : ℝ} (ht : 0 < t) : Summable (f_na
     refine mul_nonneg (mul_nonneg (by positivity) ?_) two_pos.le
     rw [← neg_le_iff_add_nonneg]
     apply neg_le_abs
-  apply (this.mul_left (2 ^ k)).of_norm_bounded_eventually_nat
+  apply (summable_iff_summableFilter.mpr (this.mul_left (2 ^ k))).of_norm_bounded_eventually_nat
   simp_rw [← mul_assoc, f_nat, norm_mul, norm_eq_abs, abs_exp,
     mul_le_mul_iff_of_pos_right (exp_pos _), ← mul_pow, abs_pow, two_mul]
   filter_upwards [eventually_ge_atTop (Nat.ceil |a|)] with n hn
@@ -160,7 +161,7 @@ lemma F_nat_one_le {a : ℝ} (ha : 0 ≤ a) {t : ℝ} (ht : 0 < t) :
   refine tsum_of_norm_bounded ?_ (f_le_g_nat 1 ha ht)
   unfold g_nat
   simp_rw [pow_one, add_mul]
-  apply HasSum.add
+  apply HasSumFilter.add
   · have h0' : ‖rexp (-π * t)‖ < 1 := by
       simpa only [norm_eq_abs, abs_exp] using exp_lt_aux ht
     convert (hasSum_coe_mul_geometric_of_norm_lt_one h0').mul_left (exp (-π * a ^ 2 * t)) using 1

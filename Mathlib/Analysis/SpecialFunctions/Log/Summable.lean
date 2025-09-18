@@ -39,7 +39,7 @@ lemma cexp_tsum_eq_tprod (hfn : ∀ i, f i ≠ 0) (hf : Summable fun i ↦ log (
 
 lemma summable_log_one_add_of_summable {f : ι → ℂ} (hf : Summable f) :
     Summable (fun i ↦ log (1 + f i)) := by
-  apply (hf.norm.mul_left _).of_norm_bounded_eventually
+  apply (summable_iff_summableFilter.mpr (hf.norm.mul_left _)).of_norm_bounded_eventually
   filter_upwards [hf.norm.tendsto_cofinite_zero.eventually_le_const one_half_pos] with i hi
     using norm_log_one_add_half_le_self hi
 
@@ -82,8 +82,8 @@ lemma rexp_tsum_eq_tprod (hfn : ∀ i, 0 < f i) (hf : Summable fun i ↦ log (f 
 open Complex in
 lemma summable_log_one_add_of_summable (hf : Summable f) :
     Summable (fun i ↦ log (1 + f i)) := by
-  rw [← summable_ofReal]
-  apply (Complex.summable_log_one_add_of_summable (summable_ofReal.mpr hf)).congr_cofinite
+  rw [Summable, ← summableFilter_ofReal]
+  apply (Complex.summable_log_one_add_of_summable (summableFilter_ofReal.mpr hf)).congr_cofinite
   filter_upwards [hf.tendsto_cofinite_zero.eventually_const_le neg_one_lt_zero] with i hi
   rw [ofReal_log, ofReal_add, ofReal_one]
   linarith

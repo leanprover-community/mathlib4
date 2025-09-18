@@ -30,17 +30,17 @@ lemma LSeries.term_add_apply (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
 lemma LSeriesHasSum.add {f g : ℕ → ℂ} {s a b : ℂ} (hf : LSeriesHasSum f s a)
     (hg : LSeriesHasSum g s b) :
     LSeriesHasSum (f + g) s (a + b) := by
-  simpa [LSeriesHasSum, term_add] using HasSum.add hf hg
+  simpa [LSeriesHasSum, term_add] using HasSumFilter.add hf hg
 
 lemma LSeriesSummable.add {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s)
     (hg : LSeriesSummable g s) :
     LSeriesSummable (f + g) s := by
-  simpa [LSeriesSummable, ← term_add_apply] using Summable.add hf hg
+  simpa [LSeriesSummable, ← term_add_apply] using SummableFilter.add hf hg
 
 @[simp]
 lemma LSeries_add {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s) (hg : LSeriesSummable g s) :
     LSeries (f + g) s = LSeries f s + LSeries g s := by
-  simpa [LSeries, term_add] using hf.tsum_add hg
+  simpa [LSeries, term_add] using hf.tsumFilter_add hg
 
 /-!
 ### Negation
@@ -55,11 +55,11 @@ lemma LSeries.term_neg_apply (f : ℕ → ℂ) (s : ℂ) (n : ℕ) : term (-f) s
 
 lemma LSeriesHasSum.neg {f : ℕ → ℂ} {s a : ℂ} (hf : LSeriesHasSum f s a) :
     LSeriesHasSum (-f) s (-a) := by
-  simpa [LSeriesHasSum, term_neg] using HasSum.neg hf
+  simpa [LSeriesHasSum, term_neg] using HasSumFilter.neg hf
 
 lemma LSeriesSummable.neg {f : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s) :
     LSeriesSummable (-f) s := by
-  simpa [LSeriesSummable, term_neg] using Summable.neg hf
+  simpa [LSeriesSummable, term_neg] using SummableFilter.neg hf
 
 @[simp]
 lemma LSeriesSummable.neg_iff {f : ℕ → ℂ} {s : ℂ} :
@@ -68,7 +68,7 @@ lemma LSeriesSummable.neg_iff {f : ℕ → ℂ} {s : ℂ} :
 
 @[simp]
 lemma LSeries_neg (f : ℕ → ℂ) (s : ℂ) : LSeries (-f) s = -LSeries f s := by
-  simp [LSeries, term_neg_apply, tsum_neg]
+  simp [LSeries, term_neg_apply, tsumFilter_neg]
 
 /-!
 ### Subtraction
@@ -84,17 +84,17 @@ lemma LSeries.term_sub_apply (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
 lemma LSeriesHasSum.sub {f g : ℕ → ℂ} {s a b : ℂ} (hf : LSeriesHasSum f s a)
     (hg : LSeriesHasSum g s b) :
     LSeriesHasSum (f - g) s (a - b) := by
-  simpa [LSeriesHasSum, term_sub] using HasSum.sub hf hg
+  simpa [LSeriesHasSum, term_sub] using HasSumFilter.sub hf hg
 
 lemma LSeriesSummable.sub {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s)
     (hg : LSeriesSummable g s) :
     LSeriesSummable (f - g) s := by
-  simpa [LSeriesSummable, ← term_sub_apply] using Summable.sub hf hg
+  simpa [LSeriesSummable, ← term_sub_apply] using SummableFilter.sub hf hg
 
 @[simp]
 lemma LSeries_sub {f g : ℕ → ℂ} {s : ℂ} (hf : LSeriesSummable f s) (hg : LSeriesSummable g s) :
     LSeries (f - g) s = LSeries f s - LSeries g s := by
-  simpa [LSeries, term_sub] using hf.tsum_sub hg
+  simpa [LSeries, term_sub] using hf.tsumFilter_sub hg
 
 /-!
 ### Scalar multiplication
@@ -149,15 +149,15 @@ variable {f S s}
 
 lemma LSeriesHasSum.sum {a : ι → ℂ} (hf : ∀ i ∈ S, LSeriesHasSum (f i) s (a i)) :
     LSeriesHasSum (∑ i ∈ S, f i) s (∑ i ∈ S, a i) := by
-  simpa [LSeriesHasSum, term_sum, Finset.sum_fn S fun i ↦ term (f i) s] using hasSum_sum hf
+  simpa [LSeriesHasSum, term_sum, Finset.sum_fn S fun i ↦ term (f i) s] using hasSumFilter_sum hf
 
 lemma LSeriesSummable.sum (hf : ∀ i ∈ S, LSeriesSummable (f i) s) :
     LSeriesSummable (∑ i ∈ S, f i) s := by
-  simpa [LSeriesSummable, ← term_sum_apply] using summable_sum hf
+  simpa [LSeriesSummable, ← term_sum_apply] using summableFilter_sum hf
 
 @[simp]
 lemma LSeries_sum (hf : ∀ i ∈ S, LSeriesSummable (f i) s) :
     LSeries (∑ i ∈ S, f i) s = ∑ i ∈ S, LSeries (f i) s := by
-  simpa [LSeries, term_sum] using Summable.tsum_finsetSum hf
+  simpa [LSeries, term_sum] using SummableFilter.tsumFilter_finsetSum hf
 
 end sum

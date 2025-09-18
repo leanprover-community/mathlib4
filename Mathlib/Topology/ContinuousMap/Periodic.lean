@@ -34,10 +34,10 @@ theorem periodic_tsum_comp_add_zsmul [AddCommGroup X] [ContinuousAdd X] [AddComm
     --   equiv.coe_add_right, comp_apply, coe_add_right, add_one_zsmul, add_comm (_ • p) p,
     --   ← add_assoc]
     -- However now the second `← tsum_apply` doesn't fire unless we use `erw`.
-    simp_rw [← tsum_apply h]
-    erw [← tsum_apply ((Equiv.addRight (1 : ℤ)).summable_iff.mpr h)]
+    simp_rw [← tsumFilter_apply h]
+    erw [← tsumFilter_apply ((Equiv.addRight (1 : ℤ)).summable_iff.mpr h)]
     simp [coe_addRight, add_one_zsmul, add_comm (_ • p) p, ← add_assoc]
-  · rw [tsum_eq_zero_of_not_summable h]
+  · rw [tsum, tsumFilter_eq_zero_of_not_summableFilter h]
     simp only [coe_zero, Pi.zero_apply]
 
 end Periodicity

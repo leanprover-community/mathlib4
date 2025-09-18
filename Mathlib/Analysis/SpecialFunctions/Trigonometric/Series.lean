@@ -147,7 +147,8 @@ lemma sinh_eq_tsum (r : ℝ) : sinh r = ∑' n, r ^ (2 * n + 1) / ↑(2 * n + 1)
 
 lemma cosh_le_exp_half_sq (x : ℝ) : cosh x ≤ exp (x ^ 2 / 2) := by
   rw [cosh_eq_tsum, exp_eq_exp_ℝ, exp_eq_tsum]
-  refine x.hasSum_cosh.summable.tsum_le_tsum (fun i ↦ ?_) <| expSeries_summable' (x ^ 2 / 2)
+  refine x.hasSum_cosh.summable.tsumFilter_le_tsumFilter (fun i ↦ ?_) <|
+    expSeries_summable' (x ^ 2 / 2)
   simp only [div_pow, pow_mul, smul_eq_mul, inv_mul_eq_div, div_div]
   gcongr
   norm_cast

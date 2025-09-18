@@ -141,6 +141,8 @@ theorem summableFilter_coe [L.NeBot] {f : α → ℝ≥0} :
   · exact fun ⟨a, ha⟩ => ⟨⟨a, ha.nonneg fun x => (f x).2⟩, hasSumFilter_coe.1 ha⟩
   · exact fun ⟨a, ha⟩ => ⟨a.1, hasSumFilter_coe.2 ha⟩
 
+alias summable_coe := summableFilter_coe
+
 theorem summableFilter_mk [L.NeBot] {f : α → ℝ} (hf : ∀ n, 0 ≤ f n) :
     (@SummableFilter ℝ≥0 _ _ _ L fun n => ⟨f n, hf n⟩) ↔ SummableFilter L f :=
   Iff.symm <| summableFilter_coe (f := fun x => ⟨f x, hf x⟩)

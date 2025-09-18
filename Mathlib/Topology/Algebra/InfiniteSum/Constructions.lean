@@ -322,6 +322,9 @@ theorem tprodFilter_apply [L.NeBot] [∀ x, T2Space (X x)] {f : ι → ∀ x, X 
     (hf : MultipliableFilter L f) : (∏'[L] i, f i) x = ∏'[L] i, f i x :=
   (Pi.hasProdFilter.mp hf.hasProdFilter x).tprodFilter_eq.symm
 
+alias tprod_apply := tprodFilter_apply
+alias tsum_apply := tsumFilter_apply
+
 end Pi
 
 

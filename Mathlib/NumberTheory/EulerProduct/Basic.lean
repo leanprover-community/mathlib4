@@ -173,7 +173,7 @@ theorem eulerProduct_hasProd (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
   change HasProd (F ∘ Subtype.val) _
   rw [hasProd_subtype_iff_mulIndicator,
     show Set.mulIndicator (fun p : ℕ ↦ Irreducible p) = {p | Nat.Prime p}.mulIndicator from rfl,
-    HasProd, Metric.tendsto_atTop]
+    HasProd, HasProdFilter, Metric.tendsto_atTop]
   intro ε hε
   obtain ⟨N₀, hN₀⟩ := norm_tsum_factoredNumbers_sub_tsum_lt hsum.of_norm hf₀ hε
   refine ⟨range N₀, fun s hs ↦ ?_⟩
@@ -220,7 +220,7 @@ multiplicative on coprime arguments, and `‖f ·‖` is summable, then
 `∏' p : {p : ℕ | p.Prime}, ∑' e, f (p ^ e) = ∑' n, f n`. -/
 theorem eulerProduct_tprod (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
     ∏' p : Primes, ∑' e, f (p ^ e) = ∑' n, f n :=
-  (eulerProduct_hasProd hf₁ hmul hsum hf₀).tprod_eq
+  (eulerProduct_hasProd hf₁ hmul hsum hf₀).tprodFilter_eq
 
 end EulerProduct
 
@@ -352,7 +352,7 @@ If `f : ℕ →*₀ F`, where `F` is a complete normed field and `‖f ·‖` is
 `∏' p : Nat.Primes, (1 - f p)⁻¹ = ∑' n, f n`. -/
 theorem eulerProduct_completely_multiplicative_tprod {f : ℕ →*₀ F} (hsum : Summable (‖f ·‖)) :
     ∏' p : Primes, (1 - f p)⁻¹ = ∑' n, f n :=
-  (eulerProduct_completely_multiplicative_hasProd hsum).tprod_eq
+  (eulerProduct_completely_multiplicative_hasProd hsum).tprodFilter_eq
 
 open Filter in
 /-- The *Euler Product* for completely multiplicative functions.

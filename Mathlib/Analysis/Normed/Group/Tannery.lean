@@ -64,18 +64,20 @@ lemma tendsto_tsum_of_dominated_convergence {α β G : Type*} {𝓕 : Filter α}
     calc _ ≤ ‖∑' (k : (Tᶜ : Set β)), bound k‖ := Real.le_norm_self _
          _ = ‖S - ∑ b ∈ T, bound b‖          := congrArg _ ?_
          _ < ε / 3                            := by rwa [dist_eq_norm, norm_sub_rev] at hT
-    simpa only [h_sum.sum_add_tsum_compl, eq_sub_iff_add_eq'] using hS.tsum_eq
+    simpa only [h_sum.sum_add_tsum_compl, eq_sub_iff_add_eq'] using hS.tsumFilter_eq
   have h2 : Tendsto (∑ k ∈ T, f · k) 𝓕 (𝓝 (T.sum g)) := tendsto_finset_sum _ (fun i _ ↦ hab i)
   rw [Metric.tendsto_nhds] at h2
   filter_upwards [h2 (ε / 3) (by positivity), h_suma, h_bound] with n hn h_suma h_bound
-  rw [dist_eq_norm, ← h_suma.of_norm.tsumFilter_sub h_sumg.of_norm,
-    ← (h_suma.of_norm.sub h_sumg.of_norm).sum_add_tsum_compl (s := T),
+  have := (summable_iff_summableFilter.mpr (h_suma.of_norm.sub h_sumg.of_norm)).sum_add_tsum_compl
+    (s := T)
+  simp_rw [tsum] at this
+  rw [dist_eq_norm, ← h_suma.of_norm.tsumFilter_sub h_sumg.of_norm, ← this,
     (by ring : ε = ε / 3 + (ε / 3 + ε / 3))]
   refine (norm_add_le _ _).trans_lt (add_lt_add ?_ ?_)
   · simpa only [dist_eq_norm, Finset.sum_sub_distrib] using hn
-  · rw [(h_suma.subtype _).of_norm.tsum_sub (h_sumg.subtype _).of_norm]
+  · rw [(h_suma.subtype _).of_norm.tsumFilter_sub (h_sumg.subtype _).of_norm]
     refine (norm_sub_le _ _).trans_lt (add_lt_add ?_ ?_)
     · refine ((norm_tsum_le_tsum_norm (h_suma.subtype _)).trans ?_).trans_lt h1
-      exact (h_suma.subtype _).tsum_le_tsum (h_bound ·) (h_sum.subtype _)
+      exact (h_suma.subtype _).tsumFilter_le_tsumFilter (h_bound ·) (h_sum.subtype _)
     · refine ((norm_tsum_le_tsum_norm <| h_sumg.subtype _).trans ?_).trans_lt h1
-      exact (h_sumg.subtype _).tsum_le_tsum (h_g_le ·) (h_sum.subtype _)
+      exact (h_sumg.subtype _).tsumFilter_le_tsumFilter (h_g_le ·) (h_sum.subtype _)
