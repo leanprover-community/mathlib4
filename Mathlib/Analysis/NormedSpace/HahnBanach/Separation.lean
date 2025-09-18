@@ -353,11 +353,6 @@ theorem geometric_hahn_banach' {B : Set E} (hs₁ : Convex ℝ B) (hs₂ : IsClo
   have (x : E): ‖((‖f x₀‖ / (s * f x₀)) • f) x‖ = ‖f x‖ / s := by
     have : ‖f x₀‖ > 0 := by linarith
     simp [abs_of_pos h1, field]
-  constructor
-  · rw [this]
-    exact (one_lt_div₀ h1).mpr h2
-  · intro b hb
-    rw [this, div_lt_one₀ h1]
-    exact h3 b hb
+  exact ⟨this _ ▸ (one_lt_div₀ h1).mpr h2, by simpa only [this, div_lt_one₀ h1] using h3⟩
 
 end RCLike
