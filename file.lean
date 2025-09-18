@@ -92,21 +92,8 @@ lemma p41 {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [Inner
     simp
   rw [Metric.isOpen_iff] at ho
   obtain⟨δ, δpos, hδ⟩ : ∃ δ > 0, ball 0 δ ⊆ T '' (ball 0 1) := ho 0 this
-  have : ⇑T '' (closure (ball 0 1)) = closure (⇑T '' (ball 0 1)) := by
-    refine image_closure_of_isCompact ?_ ?_
-    · have : closure (ball (0 : α) 1) = closedBall 0 1 := by
-        refine closure_ball 0 (by simp)
-      rw [this]
-
-      sorry
-    · have : Continuous T := by
-        exact ContinuousLinearMap.continuous T
-      exact Continuous.continuousOn this
-  have : closure (ball 0 δ) ⊆ ⇑T '' (closure (ball 0 1)) := by
-
-    sorry
-  have : closedBall 0 δ ⊆ ⇑T '' closedBall 0 1 := by
-
+  have : ∀ a : α , ‖T a‖ ≥ δ * ‖a‖ := by
+    
     sorry
   use δ
   constructor
@@ -135,10 +122,8 @@ lemma p41 {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [Inner
           obtain ⟨a, ha⟩ : ∃ a, T a = x := surj x
           rw [← ha]
           calc
-          _ ≤ c * ‖a‖ := by
-            exact hc a
+          _ ≤ c * ‖a‖ := hc a
           _ ≤ _ := by
-            
             sorry
       sorry
 
