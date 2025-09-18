@@ -77,6 +77,7 @@ variable [CompleteSpace F]
 
 namespace ContinuousLinearMap
 
+omit [RingHomIsometric σ] in
 lemma noempty_interior_of_surj (surj : Surjective f) :
     ∃ (n : ℕ) (x : _), x ∈ interior (closure (f '' ball 0 n)) :=
   have A : ⋃ n : ℕ, closure (f '' ball 0 n) = Set.univ := by
@@ -89,6 +90,7 @@ lemma noempty_interior_of_surj (surj : Surjective f) :
   nonempty_interior_of_iUnion_of_closed (fun n => isClosed_closure) A
 
 include σ' in
+omit [CompleteSpace F] in
 /-- First step of the proof of the Banach open mapping theorem (using completeness of `F`):
 by Baire's theorem, there exists a ball in `E` whose image closure has nonempty interior.
 Rescaling everything, it follows that any `y ∈ F` is arbitrarily well approached by
@@ -165,8 +167,9 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
 variable [CompleteSpace E]
 
 section
-include σ'
 
+include σ'
+omit [CompleteSpace F] in
 /-- The Banach open mapping theorem: if a bounded linear map between Banach spaces is onto, then
 any point has a preimage with controlled norm. -/
 theorem exists_preimage_norm_le' (h : ∃ (n : ℕ) (x : _), x ∈ interior (closure (f '' ball 0 n))) :
@@ -241,6 +244,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
   have h := noempty_interior_of_surj f surj
   exists_preimage_norm_le' f h
 
+omit [CompleteSpace F] in
 /-- The Banach open mapping theorem: a surjective bounded linear map between Banach spaces is
 open. -/
 protected theorem isOpenMap' (h : ∃ (n : ℕ) (x : _), x ∈ interior (closure (f '' ball 0 n))) :
