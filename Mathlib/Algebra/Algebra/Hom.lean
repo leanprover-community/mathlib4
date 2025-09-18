@@ -113,6 +113,8 @@ def Simps.apply {R : Type u} {α : Type v} {β : Type w} [CommSemiring R]
 
 initialize_simps_projections AlgHom (toFun → apply)
 
+@[simp] lemma coe_toRingHom' (f : A →ₐ[R] B) : ⇑f.toRingHom = ⇑f := rfl
+
 @[simp]
 protected theorem coe_coe {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f : F) :
     ⇑(f : A →ₐ[R] B) = f :=

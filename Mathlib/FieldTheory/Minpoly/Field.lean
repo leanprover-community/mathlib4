@@ -121,9 +121,9 @@ theorem map_algebraMap {F E A : Type*} [Field F] [Field E] [CommRing A]
 stronger assumptions on `B`. -/
 @[simp]
 lemma ker_aeval_eq_span_minpoly :
-    RingHom.ker (Polynomial.aeval x) = A[X] ∙ minpoly A x := by
+    (Polynomial.aeval x).ker = A[X] ∙ minpoly A x := by
   ext p
-  simp_rw [RingHom.mem_ker, ← minpoly.dvd_iff, Submodule.mem_span_singleton,
+  simp_rw [AlgHom.mem_ker, ← minpoly.dvd_iff, Submodule.mem_span_singleton,
     dvd_iff_exists_eq_mul_left, smul_eq_mul, eq_comm (a := p)]
 
 variable {A x}
