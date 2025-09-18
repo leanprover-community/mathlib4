@@ -143,7 +143,7 @@ theorem summable_iff_summable_coeff :
 /-- A family of `PowerSeries` is summable if their order tends to infinity. -/
 theorem summable_of_tendsto_order_atTop_nhds_top [LinearOrder ι] [LocallyFiniteOrderBot ι]
     (h : Tendsto (fun i ↦ (f i).order) atTop (𝓝 ⊤)) : Summable f := by
-  obtain hempty | hempty := isEmpty_or_nonempty ι
+  rcases isEmpty_or_nonempty ι with hempty | hempty
   · apply summable_empty
   rw [summable_iff_summable_coeff]
   intro n

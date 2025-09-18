@@ -274,7 +274,7 @@ variable [LinearOrder ι] [LocallyFiniteOrderBot ι]
 /-- A family of `MvPowerSeries` is summable if their weighted order tends to infinity. -/
 theorem summable_of_tendsto_weightedOrder_atTop_nhds_top {w : σ → ℕ}
     (h : Tendsto (fun i ↦ weightedOrder w (f i)) atTop (𝓝 ⊤)) : Summable f := by
-  obtain hempty | hempty := isEmpty_or_nonempty ι
+  rcases isEmpty_or_nonempty ι with hempty | hempty
   · apply summable_empty
   rw [summable_iff_summable_coeff]
   simp_rw [ENat.tendsto_nhds_top_iff_natCast_lt, Filter.eventually_atTop] at h
