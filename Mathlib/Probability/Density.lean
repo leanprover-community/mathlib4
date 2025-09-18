@@ -52,7 +52,7 @@ which we currently do not have.
 
 open scoped MeasureTheory NNReal ENNReal
 
-open TopologicalSpace MeasureTheory.Measure
+open TopologicalSpace MeasureTheory.Measure ProbabilityTheory
 
 noncomputable section
 
@@ -293,8 +293,6 @@ end Real
 
 section TwoVariables
 
-open ProbabilityTheory
-
 variable {F : Type*} [MeasurableSpace F] {ν : Measure F} {X : Ω → E} {Y : Ω → F}
 
 /-- Random variables are independent iff their joint density is a product of marginal densities. -/
@@ -317,6 +315,37 @@ theorem indepFun_iff_pdf_prod_eq_pdf_mul_pdf
     ((measurable_pdf Y ℙ ν).comp measurable_snd)).aemeasurable
 
 end TwoVariables
+
+section Group
+
+variable {G : Type*} [Group G] {mG : MeasurableSpace G} [MeasurableMul₂ G] [MeasurableInv G]
+  {μ : Measure G} [IsMulLeftInvariant μ] {X Y : Ω → G}
+
+@[to_additive]
+theorem _root_.ProbabilityTheory.IndepFun.mul_hasPDF' [SFinite μ] [HasPDF X ℙ μ] [HasPDF Y ℙ μ]
+    (σX : SigmaFinite (ℙ.map X)) (σY : SigmaFinite (ℙ.map Y)) (hXY : IndepFun X Y ℙ) :
+    HasPDF (X * Y) ℙ μ := by
+  have : AEMeasurable X ℙ := HasPDF.aemeasurable' μ
+  have : AEMeasurable Y ℙ := HasPDF.aemeasurable' μ
+  rw [hasPDF_iff_of_aemeasurable (by fun_prop),
+    hXY.map_mul_eq_map_mconv_map₀' (by fun_prop) (by fun_prop) σX σY]
+  constructor
+  · exact HaveLebesgueDecomposition.mconv HasPDF.absolutelyContinuous HasPDF.absolutelyContinuous
+  · apply mconv_absolutelyContinuous HasPDF.absolutelyContinuous
+
+@[to_additive]
+theorem _root_.ProbabilityTheory.IndepFun.mul_hasPDF [SFinite μ] [HasPDF X ℙ μ] [HasPDF Y ℙ μ]
+    [IsFiniteMeasure ℙ] (hXY : IndepFun X Y ℙ) : HasPDF (X * Y) ℙ μ := by
+  apply hXY.mul_hasPDF' <;> apply IsFiniteMeasure.toSigmaFinite
+
+@[to_additive]
+theorem _root_.ProbabilityTheory.IndepFun.mul_pdf' [SigmaFinite μ] [HasPDF X ℙ μ] [HasPDF Y ℙ μ]
+    (σX : SigmaFinite (ℙ.map X)) (σY : SigmaFinite (ℙ.map Y)) (hXY : IndepFun X Y ℙ):
+    pdf (X * Y) ℙ μ =ᵐ[μ] pdf X ℙ μ ⋆ₘₗ[μ] pdf Y ℙ μ := by
+  simp [pdf, hXY.map_mul_eq_map_mconv_map₀' (HasPDF.aemeasurable' μ) (HasPDF.aemeasurable' μ) σX σY]
+  exact rnDeriv_mconv' HasPDF.absolutelyContinuous HasPDF.absolutelyContinuous
+
+end Group
 
 end pdf
 
