@@ -608,7 +608,7 @@ lemma traceForm_dualSubmodule_adjoin
   have pbgen : pb.gen = x := by simp [pb]
   have hnondeg : (traceForm K L).Nondegenerate := traceForm_nondegenerate K L
   have hpb : ⇑(LinearMap.BilinForm.dualBasis (traceForm K L) hnondeg pb.basis) = _ :=
-    _root_.funext (traceForm_dualBasis_powerBasis_eq pb)
+    _root_.funext (Basis.traceDual_powerBasis_eq pb)
   have : (Subalgebra.toSubmodule (Algebra.adjoin A {x})) =
       Submodule.span A (Set.range pb.basis) := by
     rw [← span_range_natDegree_eq_adjoin (minpoly.monic hAx) (minpoly.aeval _ _)]

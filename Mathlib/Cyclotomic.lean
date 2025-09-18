@@ -50,32 +50,6 @@ example {A C : Type*} [CommRing A] [CommRing C] [Algebra A C] (B₁ B₂ : Subal
     rfl
   · exact CommGroup.torsion_map_injective <| Units.map_injective <| Subalgebra.inclusion_injective h
 
-theorem IsPrimitiveRoot.adjoin_pair_eq (A : Type*) {B : Type*} [CommSemiring A] [CommRing B]
-    [Algebra A B] [IsDomain B] {ζ₁ ζ₂ : B} {k₁ : ℕ} {k₂ : ℕ} (hζ₁ : IsPrimitiveRoot ζ₁ k₁)
-    (hζ₂ : IsPrimitiveRoot ζ₂ k₂) (hk₁ : k₁ ≠ 0) (hk₂ : k₂ ≠ 0)
-    {ζ : B} (hζ : IsPrimitiveRoot ζ (k₁.lcm k₂)) :
-    adjoin A {ζ₁, ζ₂} = adjoin A {ζ} := by
-  have : NeZero (k₁.lcm k₂) := ⟨Nat.lcm_ne_zero hk₁ hk₂⟩
-  refine le_antisymm (adjoin_le ?_) (adjoin_le ?_)
-  · refine Set.pair_subset_iff.mpr ⟨?_, ?_⟩
-    · obtain ⟨_, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one <|
-        (hζ₁.pow_eq_one_iff_dvd _).mpr <| k₁.dvd_lcm_left k₂
-      exact Subalgebra.pow_mem _ (self_mem_adjoin_singleton A _) _
-    · obtain ⟨_, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one <|
-        (hζ₂.pow_eq_one_iff_dvd _).mpr <| k₁.dvd_lcm_right k₂
-      exact Subalgebra.pow_mem _ (self_mem_adjoin_singleton A _) _
-  · have hζ' := IsPrimitiveRoot.pow_mul_pow_lcm hζ₁ hζ₂ hk₁ hk₂
-    obtain ⟨_, _, rfl⟩ := hζ'.eq_pow_of_pow_eq_one hζ.pow_eq_one
-    aesop
-
-theorem IsPrimitiveRoot.adjoin_pair_eq' (A : Type*) {B : Type*} [CommSemiring A] [CommRing B]
-    [Algebra A B] [IsDomain B] {ζ₁ ζ₂ : B} {k₁ : ℕ} {k₂ : ℕ} (hζ₁ : IsPrimitiveRoot ζ₁ k₁)
-    (hζ₂ : IsPrimitiveRoot ζ₂ k₂) (hk₁ : k₁ ≠ 0) (hk₂ : k₂ ≠ 0) :
-    adjoin A {ζ₁, ζ₂} =
-      adjoin A {ζ₁ ^ (k₁ / k₁.factorizationLCMLeft k₂) *
-        ζ₂ ^ (k₂ / k₁.factorizationLCMRight k₂)} :=
-  hζ₁.adjoin_pair_eq A hζ₂ hk₁ hk₂ <| pow_mul_pow_lcm hζ₁ hζ₂ hk₁ hk₂
-
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
 
 theorem IsCyclotomicExtension.mem_of_pow_eq_one {A : Type*} {B : Type*} [CommRing A] [CommRing B]
@@ -184,9 +158,10 @@ theorem IsCyclotomicExtension.lcm_sup [NeZero n₁] [NeZero n₂] :
   replace hζ₂ := hζ₂.map_of_injective (FaithfulSMul.algebraMap_injective T₂ B)
   rw [sup_comm, (singleton_iff_eq_adjoin n₁ T₁ hζ₁).mp hcycl₁,
     (singleton_iff_eq_adjoin n₂ T₂ hζ₂).mp hcycl₂, ← adjoin_union, Set.union_singleton]
-  rw [hζ₁.adjoin_pair_eq' A hζ₂ (NeZero.ne _) (NeZero.ne _)]
-  have : NeZero (n₁.lcm n₂) := ⟨Nat.lcm_ne_zero (NeZero.ne _) (NeZero.ne _)⟩
-  exact (hζ₁.pow_mul_pow_lcm hζ₂ (NeZero.ne n₁) (NeZero.ne n₂)).adjoin_isCyclotomicExtension A
+  rw [hζ₁.adjoin_pair_eq A hζ₂ (NeZero.ne _) (NeZero.ne _)]
+  · have : NeZero (n₁.lcm n₂) := ⟨Nat.lcm_ne_zero (NeZero.ne _) (NeZero.ne _)⟩
+    exact (hζ₁.pow_mul_pow_lcm hζ₂ (NeZero.ne n₁) (NeZero.ne n₂)).adjoin_isCyclotomicExtension A
+  exact hζ₁.pow_mul_pow_lcm hζ₂ (NeZero.ne n₁) (NeZero.ne n₂)
 
 end Subalgebra
 

@@ -388,7 +388,7 @@ def primesOverEquivPrimesOver : p.primesOver S ≃ (maximalIdeal Rₚ).primesOve
       have : (Ideal.map (algebraMap S Sₚ) P₂).IsPrime := isPrime_algebraMap_of_liesOver p _ _
       simpa [comap_map_eq_self_of_isMaximal _ IsPrime.ne_top', SetCoe.ext_iff]
         using congr_arg (comap (algebraMap S Sₚ) ·) <| Subtype.mk_eq_mk.mp h,
-    fun Q ↦ by simpa [Subtype.ext_iff_val] using exists_primesOver_map_eq_of_primesOver p Rₚ Sₚ Q⟩
+    fun Q ↦ by simpa [Subtype.ext_iff] using exists_primesOver_map_eq_of_primesOver p Rₚ Sₚ Q⟩
 
 @[simp]
 theorem primesOverEquivPrimesOver_apply (P : p.primesOver S) :

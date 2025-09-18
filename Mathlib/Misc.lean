@@ -33,19 +33,6 @@ theorem Nat.prod_primeFractors_pow_dvd_pow_totient (n : ℕ) :
 
 end Arithmetic
 
-open Module
-
-theorem IntermediateField.LinearDisjoint.finrank_left_eq_finrank {F E : Type*} [Field F] [Field E]
-    [Algebra F E] {A B : IntermediateField F E} [Module.Finite F A]
-    (h₁ : A.LinearDisjoint B) (h₂ : A ⊔ B = ⊤) : finrank A E = finrank F B := by
-  have := finrank_mul_finrank F A E ▸ finrank_top F E ▸ h₂ ▸ h₁.finrank_sup
-  rwa [mul_right_inj' (finrank_pos.ne')] at this
-
-theorem IntermediateField.LinearDisjoint.finrank_right_eq_finrank {F E : Type*} [Field F] [Field E]
-    [Algebra F E] {A B : IntermediateField F E} [Module.Finite F B]
-    (h₁ : A.LinearDisjoint B) (h₂ : A ⊔ B = ⊤) : finrank B E = finrank F A :=
-  h₁.symm.finrank_left_eq_finrank (by rwa [sup_comm])
-
 #exit
 section cyclotomic
 
