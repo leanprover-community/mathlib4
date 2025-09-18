@@ -24,7 +24,6 @@ here allows us to consider composites and scalar-multiply by multivariable Laure
   `X^n(1-Y/X)^n` in `R((X))((Y))`
 
 ## TODO
-* equiv for order equivalences, maps for order embeddings
 * curry for tensor product inputs
 * more API to make ext comparisons easier.
 * formal variable API, e.g., like the `T` function for Laurent polynomials and `X` for multivariable
@@ -75,14 +74,23 @@ theorem coeff_isPWOsupport (A : HVertexOperator Γ R V W) (v : V) :
     ((of R).symm (A v)).coeff.support.IsPWO :=
   ((of R).symm (A v)).isPWO_support'
 
+@[ext]
+theorem coeff_inj : Function.Injective (coeff : HVertexOperator Γ R V W →ₗ[R] Γ → (V →ₗ[R] W)) := by
+  intro _ _ h
+  ext v n
+  exact congrFun (congrArg DFunLike.coe (congrFun h n)) v
+
 /-- Given a coefficient function valued in linear maps satisfying a partially well-ordered support
 condition, we produce a heterogeneous vertex operator. -/
 @[simps]
-def of_coeff (f : Γ → V →ₗ[R] W) (hf : ∀ x : V , (Function.support (f · x)).IsPWO) :
+def of_coeff (f : Γ → V →ₗ[R] W) (hf : ∀ (x : V), (Function.support (f · x)).IsPWO) :
     HVertexOperator Γ R V W where
   toFun x := (of R) { coeff := fun g => f g x, isPWO_support' := hf x }
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
+
+@[deprecated (since := "2025-08-30")] alias coeff_add := map_add
+@[deprecated (since := "2025-08-30")] alias coeff_smul := map_smul
 
 @[deprecated (since := "2024-06-18")] alias _root_.VertexAlg.HetVertexOperator.of_coeff := of_coeff
 
@@ -887,6 +895,24 @@ def subLeft (R) [CommRing R] : HahnSeries (ℤ ×ₗ ℤ) R :=
 theorem subLeft_eq : subLeft R = HahnSeries.single (toLex (0,1)) 1 -
     HahnSeries.single (toLex (1,0)) (1 : R) := by
   rw [subLeft, ← HahnSeries.binomialPow_one (R := ℤ) R lex_basis_lt, Int.natCast_one]
+theorem compHahnSeries_smul (r : R) (u : U) :
+    compHahnSeries A B (r • u) = r • compHahnSeries A B u := by
+  ext
+  simp only [compHahnSeries_coeff, map_smul, coeff_apply_apply, HahnSeries.coeff_smul]
+  rw [← HahnSeries.coeff_smul]
+
+/-- The composite of two heterogeneous vertex operators, as a heterogeneous vertex operator. -/
+@[simps]
+def comp : HVertexOperator (Γ' ×ₗ Γ) R U W where
+  toFun u := HahnModule.of R (HahnSeries.ofIterate (compHahnSeries A B u))
+  map_add' := by
+    intro u v
+    ext g
+    simp [HahnSeries.ofIterate]
+  map_smul' := by
+    intro r x
+    ext g
+    simp [HahnSeries.ofIterate]
 
 @[simp]
 theorem subLeft_leadingCoeff [Nontrivial R] : (subLeft R).leadingCoeff = (1 : R) := by

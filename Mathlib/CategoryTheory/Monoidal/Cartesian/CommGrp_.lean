@@ -20,7 +20,7 @@ variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] [BraidedCat
 variable (X) in
 /-- Abbreviation for an unbundled commutative group object. It is a group object that is a
 commutative monoid object. -/
-class abbrev CommGrpObj := GrpObj X, IsCommMon X
+class abbrev CommGrpObj := GrpObj X, IsCommMonObj X
 
 @[deprecated (since := "2025-09-13")] alias CommGrp_Class := CommGrpObj
 
@@ -31,7 +31,7 @@ variable (X) in
 def CommGrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ CommGrp.{w})
     (α : (F ⋙ forget _).RepresentableBy X) : CommGrpObj X where
   __ := GrpObj.ofRepresentableBy X (F ⋙ forget₂ CommGrp Grp) α
-  __ := IsCommMon.ofRepresentableBy X (F ⋙ forget₂ CommGrp CommMonCat) α
+  __ := IsCommMonObj.ofRepresentableBy X (F ⋙ forget₂ CommGrp CommMonCat) α
 
 @[deprecated (since := "2025-09-13")]
 alias CommGrp_Class.ofRepresentableBy := CommGrpObj.ofRepresentableBy

@@ -497,11 +497,11 @@ theorem algebraMap_eq_toLaurent (f : R[X]) : algebraMap R[X] R[T;T⁻¹] f = toL
   rfl
 
 instance isLocalization : IsLocalization.Away (X : R[X]) R[T;T⁻¹] :=
-  { map_units' := fun ⟨t, ht⟩ => by
+  { map_units := fun ⟨t, ht⟩ => by
       obtain ⟨n, rfl⟩ := ht
       rw [algebraMap_eq_toLaurent, toLaurent_X_pow]
       exact isUnit_T ↑n
-    surj' f := by
+    surj f := by
       induction f using LaurentPolynomial.induction_on_mul_T with | _ f n
       have : X ^ n ∈ Submonoid.powers (X : R[X]) := ⟨n, rfl⟩
       refine ⟨(f, ⟨_, this⟩), ?_⟩
