@@ -286,6 +286,16 @@ lemma commute {f : α → End C M'} (B : CommonEigenbasis ι f) (i j : α) :
     Commute (f i) (f j) :=
   B.toBasis.ext fun k ↦ by simp [B.apply_eq_smul, smul_smul, mul_comm]
 
+lemma iSup_iInf_eigenspace {f : α → End R G} (B : CommonEigenbasis ι f) :
+    ⨆ μ : α → R, ⨅ a, (f a).eigenspace (μ a) = ⊤ := by
+  nontriviality R
+  rw [eq_top_iff, ← Basis.span_eq B.toBasis, Submodule.span_le, Set.range_subset_iff]
+  intro i
+  rw [SetLike.mem_coe]
+  apply Submodule.mem_iSup_of_mem (B.μ · i)
+  rw [Submodule.mem_iInf]
+  exact fun a ↦ (hasEigenvector_iff.mp (B.hasEigenVector_μ a i)).1
+
 end CommonEigenbasis
 
 namespace Eigenbasis
@@ -362,32 +372,46 @@ lemma isRoot_charpoly [Module.Finite R G] [Free R G] [Fintype ι] [DecidableEq �
   simp [B.charpoly_eq, IsRoot, eval_prod, Finset.prod_eq_zero (Finset.mem_univ i)]
 
 lemma iSup_eigenspace {f : End R G} (B : f.Eigenbasis ι) : ⨆ μ, f.eigenspace μ = ⊤ := by
-  nontriviality R
-  rw [eq_top_iff, ← Basis.span_eq B.toBasis, Submodule.span_le, Set.range_subset_iff]
-  exact fun i ↦ Submodule.mem_iSup_of_mem (B.μ i) (hasEigenvector_iff.mp (B.hasEigenVector_μ i)).1
+  simp [← CommonEigenbasis.iSup_iInf_eigenspace B, iSup_pi_unique]
 
 end Eigenbasis
 
-lemma exists_eigenbasis_iff_directSum_eigenspace [DecidableEq K] {f : End K V} :
-    (∃ ι : Type uV, Nonempty (f.Eigenbasis ι)) ↔ DirectSum.IsInternal f.eigenspace := by
+lemma exists_commonEigenbasis_iff_directSum_iInf_eigenspace [DecidableEq (α → K)] {f : α → End K V} :
+    (∃ ι : Type uV, Nonempty (CommonEigenbasis ι f)) ↔
+    DirectSum.IsInternal fun μ : α → K ↦ ⨅ a, (f a).eigenspace (μ a) := by
   -- There may be a shorter proof for fields, but this proof should work over PIDs too;
   -- see TODO notes for this file.
   constructor <;> intro h
   · obtain ⟨ι, ⟨D⟩⟩ := h
-    simp [DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top, eigenspaces_iSupIndep f,
-      D.iSup_eigenspace]
-  · let v := fun i ↦ (Free.exists_basis K (f.eigenspace i)).some.2
+    simp [DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top, D.iSup_iInf_eigenspace,
+      Module.End.iSupIndep_iInf_eigenspace]
+  · let N (μ : α → K) := ⨅ a, (f a).eigenspace (μ a)
+    let v (μ : α → K) := (Free.exists_basis K (N μ)).some.2
     let B' := h.collectedBasis v -- universe (max u v)
     let e := B'.indexEquiv (Free.exists_basis K V).some.2
     let B := B'.reindex e -- move to universe v
-    refine ⟨_, ⟨.mk (b := B) (μ := (e.symm · |>.1)) fun i ↦ ?_⟩⟩
+    refine ⟨_, ⟨B, fun a i ↦ (e.symm i).1 a, fun a i ↦ ?_⟩⟩
     rw [B'.reindex_apply, ← mem_eigenspace_iff]
-    exact h.collectedBasis_mem v _
+    exact (Submodule.mem_iInf _).mp (h.collectedBasis_mem v (e.symm i)) a
+
+lemma exists_commonEigenbasis_iff_iSup_iInf_eigenspace {f : α → End K V} :
+    (∃ ι : Type uV, Nonempty (CommonEigenbasis ι f)) ↔
+    ⨆ μ : α → K, ⨅ a, (f a).eigenspace (μ a) = ⊤ := by classical calc
+  _ ↔ DirectSum.IsInternal fun μ : α → K ↦ ⨅ a, (f a).eigenspace (μ a) :=
+    exists_commonEigenbasis_iff_directSum_eigenspace
+  _ ↔ _ := by
+    simp [DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top,
+      Module.End.iSupIndep_iInf_eigenspace]
 
 lemma exists_eigenbasis_iff_iSup_eigenspace {f : End K V} :
-    (∃ ι : Type uV, Nonempty (f.Eigenbasis ι)) ↔ ⨆ μ, f.eigenspace μ = ⊤ := by classical calc
-  _ ↔ DirectSum.IsInternal f.eigenspace := exists_eigenbasis_iff_directSum_eigenspace
+    (∃ ι : Type uV, Nonempty (f.Eigenbasis ι)) ↔ ⨆ μ, f.eigenspace μ = ⊤ := by
+  convert exists_commonEigenbasis_iff_iSup_iInf_eigenspace (f := fun _ : Unit ↦ f)
+  simp [iSup_pi_unique]
+
+lemma exists_eigenbasis_iff_directSum_eigenspace [DecidableEq K] {f : End K V} :
+    (∃ ι : Type uV, Nonempty (f.Eigenbasis ι)) ↔ DirectSum.IsInternal f.eigenspace := calc
+  _ ↔ ⨆ μ, f.eigenspace μ = ⊤ := exists_eigenbasis_iff_iSup_eigenspace
   _ ↔ _ := by
-    simp [DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top, eigenspaces_iSupIndep f]
+    simp [DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top, eigenspaces_iSupIndep]
 
 end LinearMap
