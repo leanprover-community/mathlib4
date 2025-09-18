@@ -171,7 +171,7 @@ to integrability of `f ∘ circleMap c R` whenever `R ≠ 0`. -/
 def CircleIntegrable (f : ℂ → E) (c : ℂ) (R : ℝ) : Prop :=
   IntervalIntegrable (fun θ : ℝ ↦ f (circleMap c R θ)) volume 0 (2 * π)
 
-theorem circleIntegrable_def (f : ℂ → E) (c : ℂ) (R : ℝ) : CircleIntegrable f c R =
+theorem circleIntegrable_def (f : ℂ → E) (c : ℂ) (R : ℝ) : CircleIntegrable f c R ↔
     IntervalIntegrable (fun θ : ℝ ↦ f (circleMap c R θ)) volume 0 (2 * π) := rfl
 
 @[simp]

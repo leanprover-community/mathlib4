@@ -38,7 +38,6 @@ noncomputable def logMahlerMeasure (p : ℂ[X]) := circleAverage (fun x ↦ log 
 
 theorem logMahlerMeasure_def (p : ℂ[X]) : p.logMahlerMeasure =
     circleAverage (fun x ↦ log ‖eval x p‖) 0 1 := rfl
-   -- (2 * π)⁻¹ * ∫ (x : ℝ) in (0)..(2 * π), log ‖eval (circleMap 0 1 x) p‖ := rfl
 
 @[simp]
 theorem logMahlerMeasure_zero : (0 : ℂ[X]).logMahlerMeasure = 0 := by
@@ -103,8 +102,8 @@ private lemma mahlerMeasure_integrable (p : ℂ[X]) :
 
 /-! The Mahler measure of the product of two polynomials is the product of their Mahler measures -/
 open intervalIntegral in
-theorem mahlerMeasure_mul (p q : ℂ[X]) : (p * q).mahlerMeasure =
-    p.mahlerMeasure * q.mahlerMeasure := by
+theorem mahlerMeasure_mul (p q : ℂ[X]) : 
+    (p * q).mahlerMeasure = p.mahlerMeasure * q.mahlerMeasure := by
   by_cases hpq : p * q = 0
   · simpa [hpq, mahlerMeasure_zero] using mul_eq_zero.mp hpq
   · rw [mul_eq_zero, not_or] at hpq
