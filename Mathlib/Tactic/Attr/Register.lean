@@ -106,7 +106,7 @@ default simp lemmas:
 ```
 -MonoidalCategory.whiskerLeft_id, -MonoidalCategory.id_whiskerRight,
 -MonoidalCategory.tensor_comp, -MonoidalCategory.tensor_comp_assoc,
--Mon_Class.mul_assoc, -Mon_Class.mul_assoc_assoc
+-MonObj.mul_assoc, -MonObj.mul_assoc_assoc
 ```
 
 The general algorithm it follows is to push the associators `α_` and commutators `β_` inwards until

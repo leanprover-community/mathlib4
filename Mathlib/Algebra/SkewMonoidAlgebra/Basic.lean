@@ -26,8 +26,8 @@ yields a not-necessarily-unital, not-necessarily-associative algebra.
 `k`-linear combinations of terms of `G`, endowed with a skewed convolution product.
 
 ## TODO
-- the algebra instance (see #10541)
-- lifting lemmas (see #10541)
+- the algebra instance (see https://github.com/leanprover-community/mathlib4/issues/10541)
+- lifting lemmas (see https://github.com/leanprover-community/mathlib4/issues/10541)
 -/
 
 

@@ -18,6 +18,10 @@ We motivate the form of the extension as follows. Note that `fc : F →ₗ[𝕜]
 `re fc`: for all `x : F`, `fc (I • x) = I * fc x`, so `im (fc x) = -re (fc (I • x))`. Therefore,
 given an `fr : F →ₗ[ℝ] ℝ`, we define `fc x = fr x - fr (I • x) * I`.
 
+In `Analysis/Normed/Module/RCLike/Extend.lean` we show that this extension is isometric.
+This is separate to avoid importing material about the operator norm into files about more
+elementary properties, like locally convex spaces.
+
 ## Main definitions
 
 * `LinearMap.extendTo𝕜`
