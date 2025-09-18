@@ -44,7 +44,7 @@ If `G` is finite and its order is nonzero in the field `k`, then every object of
 instance (V : Rep k G) : Injective V := by
   rw [← Rep.equivalenceModuleMonoidAlgebra.map_injective_iff,
     ← Module.injective_iff_injective_object]
-  exact Module.injective_of_semisimple_ring _ _
+  exact Module.injective_of_isSemisimpleRing _ _
 
 /--
 If `G` is finite and its order is nonzero in the field `k`, then every object of
@@ -54,7 +54,7 @@ If `G` is finite and its order is nonzero in the field `k`, then every object of
 instance (V : Rep k G) : Projective V := by
   rw [← Rep.equivalenceModuleMonoidAlgebra.map_projective_iff,
     ← IsProjective.iff_projective]
-  exact Module.projective_of_semisimple_ring _ _
+  exact Module.projective_of_isSemisimpleRing _ _
 
 end Rep
 
