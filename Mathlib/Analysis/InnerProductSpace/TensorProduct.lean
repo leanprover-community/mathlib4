@@ -31,39 +31,22 @@ instance instInner : Inner 𝕜 (E ⊗[𝕜] F) := ⟨fun x y =>
 theorem inner_tmul (x x' : E) (y y' : F) :
     inner 𝕜 (x ⊗ₜ[𝕜] y) (x' ⊗ₜ[𝕜] y') = inner 𝕜 x x' * inner 𝕜 y y' := rfl
 
-@[simp]
-theorem inner_add (x y z : E ⊗[𝕜] F) :
-    inner 𝕜 x (y + z) = inner 𝕜 x y + inner 𝕜 x z := by
-  simp [inner]
+@[simp] private protected theorem inner_add (x y z : E ⊗[𝕜] F) :
+    inner 𝕜 x (y + z) = inner 𝕜 x y + inner 𝕜 x z := by simp [inner]
+@[simp] private protected theorem add_inner (x y z : E ⊗[𝕜] F) :
+    inner 𝕜 (x + y) z = inner 𝕜 x z + inner 𝕜 y z := by simp [inner]
+@[simp] private protected theorem sum_inner {n : Type*} [Fintype n] (x : n → E ⊗[𝕜] F)
+    (y : E ⊗[𝕜] F) : inner 𝕜 (∑ i, x i) y = ∑ i, inner 𝕜 (x i) y := by simp [inner]
+@[simp] private protected theorem inner_sum {n : Type*} [Fintype n] (x : E ⊗[𝕜] F)
+    (y : n → E ⊗[𝕜] F) : inner 𝕜 x (∑ i, y i) = ∑ i, inner 𝕜 x (y i) := by simp [inner]
+@[simp] private protected theorem smul_inner (x y : E ⊗[𝕜] F) (c : 𝕜) :
+    inner 𝕜 (c • x) y = starRingEnd 𝕜 c * inner 𝕜 x y := by simp [inner]
+@[simp] private protected theorem inner_smul (x y : E ⊗[𝕜] F) (c : 𝕜) :
+    inner 𝕜 x (c • y) = c * inner 𝕜 x y := by simp [inner]
 
-@[simp]
-theorem add_inner (x y z : E ⊗[𝕜] F) :
-    inner 𝕜 (x + y) z = inner 𝕜 x z + inner 𝕜 y z := by
-  simp [inner]
-
-@[simp]
-theorem sum_inner {n : Type*} [Fintype n] (x : n → E ⊗[𝕜] F)
-    (y : E ⊗[𝕜] F) : inner 𝕜 (∑ i, x i) y = ∑ i, inner 𝕜 (x i) y := by
-  simp [inner]
-
-@[simp]
-theorem inner_sum {n : Type*} [Fintype n] (x : E ⊗[𝕜] F) (y : n → E ⊗[𝕜] F) :
-    inner 𝕜 x (∑ i, y i) = ∑ i, inner 𝕜 x (y i) := by
-  simp [inner]
-
-@[simp]
-theorem smul_inner (x y : E ⊗[𝕜] F) (c : 𝕜) :
-    inner 𝕜 (c • x) y = starRingEnd 𝕜 c * inner 𝕜 x y := by
-  simp [inner]
-
-@[simp]
-theorem inner_smul (x y : E ⊗[𝕜] F) (c : 𝕜) :
-    inner 𝕜 x (c • y) = c * inner 𝕜 x y := by
-  simp [inner]
-
-theorem conj_inner (x y : E ⊗[𝕜] F) : starRingEnd 𝕜 (inner 𝕜 x y) = inner 𝕜 y x :=
+private protected theorem conj_inner (x y : E ⊗[𝕜] F) : starRingEnd 𝕜 (inner 𝕜 x y) = inner 𝕜 y x :=
   x.induction_on (by simp [inner]) (y.induction_on (by simp [inner]) (fun x y => by simp)
-    (fun x y hx hy a b => by simp_all [inner])) (fun x y hx hy => by simp_all [inner])
+    (fun x y hx hy a b => by simp_all)) (fun x y hx hy => by simp_all)
 
 section move
 
@@ -71,13 +54,15 @@ lemma mem_finiteDimensional_range_mapIncl {K V V' : Type*} [Field K] [AddCommGro
     [AddCommGroup V'] [Module K V] [Module K V'] (z : V ⊗[K] V') :
     ∃ (E' : Submodule K V) (F' : Submodule K V')
     (_ : FiniteDimensional K E') (_ : FiniteDimensional K F'),
-    z ∈ range (mapIncl E' F') := by
-  induction' z using TensorProduct.induction_on with e f z₁ z₂ ih₁ ih₂
-  · exact ⟨⊥, ⊥, finiteDimensional_bot K V, finiteDimensional_bot K V', Submodule.zero_mem _⟩
-  · rcases Module.mem_finiteDimensional_submodule K e with ⟨E', iE', he⟩
+    z ∈ LinearMap.range (mapIncl E' F') :=
+  z.induction_on
+  ⟨⊥, ⊥, finiteDimensional_bot K V, finiteDimensional_bot K V', Submodule.zero_mem _⟩
+  fun e f => by
+    rcases Module.mem_finiteDimensional_submodule K e with ⟨E', iE', he⟩
     rcases Module.mem_finiteDimensional_submodule K f with ⟨F', iF', hf⟩
     exact ⟨E', F', iE', iF', ⟨⟨e, he⟩ ⊗ₜ ⟨f, hf⟩, rfl⟩⟩
-  · rcases ih₁ with ⟨E1, F1, _, _, ⟨z1, rfl⟩⟩
+  fun _ _ ih₁ ih₂ => by
+    rcases ih₁ with ⟨E1, F1, _, _, ⟨z1, rfl⟩⟩
     rcases ih₂ with ⟨E2, F2, _, _, ⟨z2, rfl⟩⟩
     exact ⟨E1 ⊔ E2, F1 ⊔ F2, E1.finiteDimensional_sup _, F1.finiteDimensional_sup _,
       Submodule.add_mem _
@@ -88,33 +73,24 @@ lemma mem_finiteDimensional_range_mapIncl {K V V' : Type*} [Field K] [AddCommGro
 
 end move
 
-lemma inner_coe_of_eq {x y : E ⊗[𝕜] F}
-    {E' : Submodule 𝕜 E} {F' : Submodule 𝕜 F} {x' y' : E' ⊗[𝕜] F'}
-    (hx : x = TensorProduct.map E'.subtype F'.subtype x')
-    (hy : y = TensorProduct.map E'.subtype F'.subtype y') :
-    inner 𝕜 x' y' = inner 𝕜 x y := by
-  rw [hx, hy]
-  revert x
-  induction' x' using TensorProduct.induction_on with e' f' x₁ x₂ ih₁ ih₂
-  · simp [inner]
-  · revert y
-    induction' y' using TensorProduct.induction_on with e'' f'' y₁ y₂ ih₁ ih₂
-    · simp [inner]
-    · intro x h y h'
-      rfl
-    · intro x hx y hy
-      simp_all
-  · intro x hx
-    simp_all
+lemma inner_coe_of_eq {E' : Submodule 𝕜 E} {F' : Submodule 𝕜 F} {x y : E' ⊗[𝕜] F'} :
+    inner 𝕜 x y = inner 𝕜 (mapIncl E' F' x) (mapIncl E' F' y) :=
+  x.induction_on (by simp [inner])
+  (y.induction_on (by simp [inner]) (by simp) (by simp_all)) (by simp_all)
 
-lemma inner_coe_of_mem_range {x y : E ⊗[𝕜] F}
-    {E' : Submodule 𝕜 E} {F' : Submodule 𝕜 F}
-    (hx : x ∈ LinearMap.range (TensorProduct.map E'.subtype F'.subtype))
-    (hy : y ∈ LinearMap.range (TensorProduct.map E'.subtype F'.subtype)) :
-    (inner 𝕜 hx.choose hy.choose) = (inner 𝕜 x y) :=
-  TensorProduct.inner_coe_of_eq (hx.choose_spec).symm (hy.choose_spec).symm
+lemma inner_coe_of_eq' {x y : E ⊗[𝕜] F}
+    {E' : Submodule 𝕜 E} {F' : Submodule 𝕜 F} {x' y' : E' ⊗[𝕜] F'}
+    (hx : x = mapIncl E' F' x') (hy : y = mapIncl E' F' y') :
+    inner 𝕜 x' y' = inner 𝕜 x y :=
+  hx ▸ hy ▸ inner_coe_of_eq
+
+lemma inner_coe_of_mem_range {x y : E ⊗[𝕜] F} {E' : Submodule 𝕜 E} {F' : Submodule 𝕜 F}
+    (hx : x ∈ LinearMap.range (mapIncl E' F')) (hy : y ∈ LinearMap.range (mapIncl E' F')) :
+    inner 𝕜 hx.choose hy.choose = inner 𝕜 x y :=
+  TensorProduct.inner_coe_of_eq' hx.choose_spec.symm hy.choose_spec.symm
 
 open scoped ComplexOrder
+open Module
 
 theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x = 0 := by
   obtain ⟨E', F', iE', iF', hz⟩ := x.mem_finiteDimensional_range_mapIncl
@@ -196,8 +172,8 @@ theorem inner_ext_threefold_iff {G : Type*} [NormedAddCommGroup G]
   simp_rw [← @sub_eq_zero 𝕜 _ _ (inner _ _ _), ← inner_sub_left]
   rw [← sub_eq_zero]
   refine ⟨fun h a b => by simp [h, inner_zero_left], fun h => (inner_ext_iff _ _).mpr fun z b => ?_⟩
-  exact b.induction_on (by simp) (by simp [h]) (fun c d hc hd => by
-    simp [tmul_add, inner_add_right, hc, hd])
+  exact z.induction_on (by simp) (by simp [h]) (fun c d hc hd => by
+    simp [add_tmul, inner_add_right, hc, hd])
 
 theorem inner_ext_threefold'_iff {G : Type*} [NormedAddCommGroup G]
     [InnerProductSpace 𝕜 G] (x y : (E ⊗[𝕜] F) ⊗[𝕜] G) :
@@ -242,6 +218,8 @@ end TensorProduct
 
 section OrthonormalBasis
 variable {ι₁ ι₂ : Type*} [DecidableEq ι₁] [DecidableEq ι₂]
+
+open Module
 
 theorem Basis.tensorProduct_orthonormal
     {b₁ : Basis ι₁ 𝕜 E} {b₂ : Basis ι₂ 𝕜 F} (hb₁ : Orthonormal 𝕜 b₁) (hb₂ : Orthonormal 𝕜 b₂) :
