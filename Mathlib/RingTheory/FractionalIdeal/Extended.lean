@@ -3,7 +3,9 @@ Copyright (c) 2024 James Sundstrom. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: James Sundstrom
 -/
-import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+import Mathlib.RingTheory.Algebraic.Integral
+import Mathlib.RingTheory.FractionalIdeal.Basic
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Extension of fractional ideals
