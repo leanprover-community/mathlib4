@@ -199,8 +199,7 @@ theorem mk_ne_zero_of_natDegree_lt (hf : Monic f) {g : R[X]} (h0 : g ≠ 0)
     (hd : natDegree g < natDegree f) : mk f g ≠ 0 :=
   mk_eq_zero.not.2 <| hf.not_dvd_of_natDegree_lt h0 hd
 
-@[simp]
-theorem aeval_eq [CommRing S] [Algebra R S] (f : S[X]) (p : R[X]) :
+theorem aeval_eq_of_algebra [CommRing S] [Algebra R S] (f : S[X]) (p : R[X]) :
     aeval (root f) p = mk f (map (algebraMap R S) p) := by
   induction p using Polynomial.induction_on with
   | C a =>
@@ -209,6 +208,10 @@ theorem aeval_eq [CommRing S] [Algebra R S] (f : S[X]) (p : R[X]) :
     simp
   | add p q _ _ => simp_all
   | monomial n a _ => simp_all [pow_add, ← mul_assoc]
+
+@[simp]
+theorem aeval_eq (p : R[X]) : aeval (root f) p = mk f p := by
+  rw [aeval_eq_of_algebra, Algebra.algebraMap_self, Polynomial.map_id]
 
 theorem adjoinRoot_eq_top : Algebra.adjoin R ({root f} : Set (AdjoinRoot f)) = ⊤ := by
   refine Algebra.eq_top_iff.2 fun x => ?_
@@ -518,7 +521,7 @@ theorem isIntegral_root (hf : f ≠ 0) : IsIntegral K (root f) :=
 theorem minpoly_root (hf : f ≠ 0) : minpoly K (root f) = f * C f.leadingCoeff⁻¹ := by
   have f'_monic : Monic _ := monic_mul_leadingCoeff_inv hf
   refine (minpoly.unique K _ f'_monic ?_ ?_).symm
-  · rw [map_mul, aeval_eq, Algebra.algebraMap_self, Polynomial.map_id, mk_self, zero_mul]
+  · rw [map_mul, aeval_eq, mk_self, zero_mul]
   intro q q_monic q_aeval
   have commutes : (lift (algebraMap K (AdjoinRoot f)) (root f) q_aeval).comp (mk q) = mk f := by
     ext
@@ -549,7 +552,7 @@ def powerBasisAux (hf : f ≠ 0) : Basis (Fin f.natDegree) K (AdjoinRoot f) := b
     apply (isIntegral_root hf).mem_span_pow
     obtain ⟨g⟩ := y
     use g
-    rw [aeval_eq, Algebra.algebraMap_self, Polynomial.map_id]
+    rw [aeval_eq]
     rfl
 
 /-- The power basis `1, root f, ..., root f ^ (d - 1)` for `AdjoinRoot f`,
@@ -823,7 +826,7 @@ def mapQuotientMkEquiv {S : Type*} [CommRing S] (I : Ideal S) (g : S[X]) :
       · rw [Ideal.map_le_iff_le_comap]
         intro x hx
         simp [IsScalarTower.algebraMap_apply S (S ⧸ I), Ideal.Quotient.eq_zero_iff_mem.mpr hx]
-      · simp [Ideal.span_le, Set.singleton_subset_iff]
+      · simp [Ideal.span_le, Set.singleton_subset_iff, aeval_eq_of_algebra]
   have h1 : v.comp u = AlgHom.id _ _ := AdjoinRoot.algHom_ext (by simp [u, v])
   have h2 : (u.comp v).restrictScalars S = AlgHom.id S _ :=
     Ideal.Quotient.algHom_ext _ (by ext; simp [u, v])

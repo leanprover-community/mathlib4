@@ -80,9 +80,8 @@ lemma isCoprime_iff_aeval_ne_zero (f g : K[X]) : IsCoprime f g ↔ ∀ {A : Type
     rw [h.left, h.right, map_zero, and_self]
   · rintro ⟨_, rfl⟩ ⟨_, rfl⟩
     replace h := not_and_or.mpr <| h <| AdjoinRoot.root x.factor
-    simp only [AdjoinRoot.aeval_eq, Algebra.algebraMap_self, Polynomial.map_id,
-      AdjoinRoot.mk_eq_zero, dvd_mul_of_dvd_left <| factor_dvd_of_not_isUnit hx,
-      true_and, not_true] at h
+    simp only [AdjoinRoot.aeval_eq, AdjoinRoot.mk_eq_zero,
+      dvd_mul_of_dvd_left <| factor_dvd_of_not_isUnit hx, true_and, not_true] at h
 
 /-- Divide a polynomial f by `X - C r` where `r` is a root of `f` in a bigger field extension. -/
 def removeFactor (f : K[X]) : Polynomial (AdjoinRoot <| factor f) :=
