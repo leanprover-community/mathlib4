@@ -336,10 +336,8 @@ theorem geometric_hahn_banach {B : Set E} (hs₁ : Convex ℝ B) (hs₂ : IsClos
   have r_pos : r > 0 := by simpa [hr] using fun nh ↦ by simp [nh, zero_in] at notin
   have norm_lt_r : ∀ x ∈ K, ‖x‖ < r := fun x hx ↦
     not_le.mp <| hr ▸ not_imp_not.mpr (mem_norm_le_of_balanced Balanced_K hx (f x₀)) notin
-  have compact_K : IsCompact K := by
-    refine Metric.isCompact_of_isClosed_isBounded isClosed_closure ?_
-    refine (Metric.isBounded_iff_subset_ball 0 (s := K)).mpr ?_
-    exact ⟨r, fun x hx ↦ mem_ball_zero_iff.mpr (norm_lt_r x hx)⟩
+  have compact_K : IsCompact K := Metric.isCompact_of_isClosed_isBounded isClosed_closure <|
+    (Metric.isBounded_iff_subset_ball 0).mpr ⟨r, fun x hx ↦ mem_ball_zero_iff.mpr (norm_lt_r x hx)⟩
   obtain ⟨s, s_pos, s_lt, hs⟩ : ∃ s, 0 < s ∧ s < r ∧ (∀ z ∈ K, ‖z‖ < s) :=
     closed_balanced_sep compact_K zero_in norm_lt_r
   use f, s
