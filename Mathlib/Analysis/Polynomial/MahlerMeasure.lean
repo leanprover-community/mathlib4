@@ -102,7 +102,7 @@ private lemma mahlerMeasure_integrable (p : ℂ[X]) :
 
 /-! The Mahler measure of the product of two polynomials is the product of their Mahler measures -/
 open intervalIntegral in
-theorem mahlerMeasure_mul (p q : ℂ[X]) : 
+theorem mahlerMeasure_mul (p q : ℂ[X]) :
     (p * q).mahlerMeasure = p.mahlerMeasure * q.mahlerMeasure := by
   by_cases hpq : p * q = 0
   · simpa [hpq, mahlerMeasure_zero] using mul_eq_zero.mp hpq
