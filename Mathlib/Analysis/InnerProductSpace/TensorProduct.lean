@@ -66,57 +66,25 @@ theorem conj_inner (x y : E ⊗[𝕜] F) : starRingEnd 𝕜 (inner 𝕜 x y) = i
     (fun x y hx hy a b => by simp_all [inner])) (fun x y hx hy => by simp_all [inner])
 
 section move
-section
-
-variable {R V V' : Type*} [CommSemiring R] [AddCommMonoid V] [AddCommMonoid V']
-  [Module R V] [Module R V']
-
-lemma map_subtype_left_mono {E' E'' : Submodule R V} (F' : Submodule R V')
-    (le1 : E' ≤ E'') :
-    LinearMap.range (TensorProduct.map E'.subtype F'.subtype) ≤
-      LinearMap.range (TensorProduct.map E''.subtype F'.subtype) := fun x hx => by
-  obtain ⟨x, rfl⟩ := hx
-  induction' x using TensorProduct.induction_on with e f x₁ x₂ ih₁ ih₂
-  · rw [map_zero]
-    exact Submodule.zero_mem _
-  · exact ⟨⟨e, le1 e.2⟩ ⊗ₜ f, rfl⟩
-  · rw [map_add]
-    exact Submodule.add_mem _ ih₁ ih₂
-
-lemma map_subtype_right_mono (E' : Submodule R V) {F' F'' : Submodule R V'}
-    (le2 : F' ≤ F'') :
-    LinearMap.range (TensorProduct.map E'.subtype F'.subtype) ≤
-      LinearMap.range (TensorProduct.map E'.subtype F''.subtype) := fun x hx => by
-  obtain ⟨x, rfl⟩ := hx
-  induction' x using TensorProduct.induction_on with e f x₁ x₂ ih₁ ih₂
-  · rw [map_zero]; exact Submodule.zero_mem _
-  · exact ⟨e ⊗ₜ ⟨f, le2 f.2⟩, rfl⟩
-  · rw [map_add]; exact Submodule.add_mem _ ih₁ ih₂
-
-end
 
 lemma toFiniteDimensional {K V V' : Type*} [Field K] [AddCommGroup V]
-    [AddCommGroup V'] [Module K V] [Module K V']
-    (z : V ⊗[K] V') : ∃ (E' : Submodule K V) (F' : Submodule K V')
+    [AddCommGroup V'] [Module K V] [Module K V'] (z : V ⊗[K] V') :
+    ∃ (E' : Submodule K V) (F' : Submodule K V')
     (_ : FiniteDimensional K E') (_ : FiniteDimensional K F'),
-    z ∈ LinearMap.range (TensorProduct.map E'.subtype F'.subtype) := by
+    z ∈ range (mapIncl E' F') := by
   induction' z using TensorProduct.induction_on with e f z₁ z₂ ih₁ ih₂
   · exact ⟨⊥, ⊥, finiteDimensional_bot K V, finiteDimensional_bot K V', Submodule.zero_mem _⟩
-  · rcases Module.toFiniteDimensional K e with ⟨E', iE', he⟩
-    rcases Module.toFiniteDimensional K f with ⟨F', iF', hf⟩
+  · rcases Module.mem_finiteDimensional_submodule K e with ⟨E', iE', he⟩
+    rcases Module.mem_finiteDimensional_submodule K f with ⟨F', iF', hf⟩
     exact ⟨E', F', iE', iF', ⟨⟨e, he⟩ ⊗ₜ ⟨f, hf⟩, rfl⟩⟩
-  · rcases ih₁ with ⟨E1, F1, iE1, iF1, ⟨z1, rfl⟩⟩
-    rcases ih₂ with ⟨E2, F2, iE2, iF2, ⟨z2, rfl⟩⟩
-    have le1 : LinearMap.range (TensorProduct.map E1.subtype F1.subtype) ≤
-        LinearMap.range (TensorProduct.map (E1 ⊔ E2).subtype (F1 ⊔ F2).subtype) :=
-      (TensorProduct.map_subtype_left_mono _ le_sup_left).trans
-        (TensorProduct.map_subtype_right_mono _ le_sup_left)
-    have le2 : LinearMap.range (TensorProduct.map E2.subtype F2.subtype) ≤
-        LinearMap.range (TensorProduct.map (E1 ⊔ E2).subtype (F1 ⊔ F2).subtype) :=
-      (TensorProduct.map_subtype_left_mono _ le_sup_right).trans
-        (TensorProduct.map_subtype_right_mono _ le_sup_right)
-    exact ⟨E1 ⊔ E2, F1 ⊔ F2, Submodule.finiteDimensional_sup _ _,
-      Submodule.finiteDimensional_sup _ _, Submodule.add_mem _ (le1 ⟨z1, rfl⟩) (le2 ⟨z2, rfl⟩)⟩
+  · rcases ih₁ with ⟨E1, F1, _, _, ⟨z1, rfl⟩⟩
+    rcases ih₂ with ⟨E2, F2, _, _, ⟨z2, rfl⟩⟩
+    exact ⟨E1 ⊔ E2, F1 ⊔ F2, E1.finiteDimensional_sup _, F1.finiteDimensional_sup _,
+      Submodule.add_mem _
+      ((range_mapIncl_mono le_sup_left (le_refl _)).trans
+        (range_mapIncl_mono (le_refl _) le_sup_left) ⟨z1, rfl⟩)
+      ((range_mapIncl_mono le_sup_right (le_refl _)).trans
+        (range_mapIncl_mono (le_refl _) le_sup_right) ⟨z2, rfl⟩)⟩
 
 end move
 
