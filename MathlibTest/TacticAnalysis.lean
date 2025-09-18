@@ -94,21 +94,33 @@ section introMerge
 
 set_option linter.tacticAnalysis.introMerge true
 
-/-- warning: Try this: intro a b -/
+/--
+warning: Try this: intro a b
+---
+warning: Try this: intro a b
+-/
 #guard_msgs in
 example : ∀ a b : Unit, a = b := by
   intro a
   intro b
   rfl
 
-/-- warning: Try this: intro _ b -/
+/--
+warning: Try this: intro _ b
+---
+warning: Try this: intro _ b
+-/
 #guard_msgs in
 example : ∀ a b : Unit, a = b := by
   intro
   intro b
   rfl
 
-/-- warning: Try this: intro a _ -/
+/--
+warning: Try this: intro a _
+---
+warning: Try this: intro a _
+-/
 #guard_msgs in
 example : ∀ a b : Unit, a = b := by
   intro a
