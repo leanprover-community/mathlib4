@@ -7,7 +7,8 @@ import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.AlgebraicGeometry.FunctionField
 import Mathlib.AlgebraicGeometry.Noetherian
 import Mathlib.Order.CompletePartialOrder
-import Mathlib.RingTheory.OrderOfVanishing
+import Mathlib.RingTheory.OrderOfVanishing.Basic
+import Mathlib.RingTheory.OrderOfVanishing.Properties
 
 /-!
 # Order of vansihing in a scheme
@@ -82,7 +83,7 @@ lemma ord_ne_zero {Z : X} (hZ : Order.coheight Z = 1)
 /--
 The order of vanishing of a unit is `1` everywhere.
 -/
-lemma Scheme.ord_unit [IsIntegral X] [IsLocallyNoetherian X] (U : X.Opens)
+lemma ord_of_isUnit (U : X.Opens)
     [Nonempty U] (f : Γ(X, U)) (hf : IsUnit f) (x : X) (hx : coheight x = 1) (hx' : x ∈ U) :
     Scheme.ord x hx (X.germToFunctionField U f) = 1 := by
   have : Ring.KrullDimLE 1 ↑(X.presheaf.stalk x) := krullDimLE_of_coheight hx
