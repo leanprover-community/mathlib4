@@ -339,11 +339,18 @@ theorem _root_.ProbabilityTheory.IndepFun.mul_hasPDF [SFinite μ] [HasPDF X ℙ 
   apply hXY.mul_hasPDF' <;> apply IsFiniteMeasure.toSigmaFinite
 
 @[to_additive]
-theorem _root_.ProbabilityTheory.IndepFun.mul_pdf' [SigmaFinite μ] [HasPDF X ℙ μ] [HasPDF Y ℙ μ]
-    (σX : SigmaFinite (ℙ.map X)) (σY : SigmaFinite (ℙ.map Y)) (hXY : IndepFun X Y ℙ):
-    pdf (X * Y) ℙ μ =ᵐ[μ] pdf X ℙ μ ⋆ₘₗ[μ] pdf Y ℙ μ := by
-  simp [pdf, hXY.map_mul_eq_map_mconv_map₀' (HasPDF.aemeasurable' μ) (HasPDF.aemeasurable' μ) σX σY]
+theorem _root_.ProbabilityTheory.IndepFun.pdf_mul_eq_mlconvolution_pdf' [SigmaFinite μ]
+    [HasPDF X ℙ μ] [HasPDF Y ℙ μ] (σX : SigmaFinite (ℙ.map X)) (σY : SigmaFinite (ℙ.map Y))
+    (hXY : IndepFun X Y ℙ) : pdf (X * Y) ℙ μ =ᵐ[μ] pdf X ℙ μ ⋆ₘₗ[μ] pdf Y ℙ μ := by
+  rw [pdf, hXY.map_mul_eq_map_mconv_map₀' (HasPDF.aemeasurable' μ) (HasPDF.aemeasurable' μ) σX σY]
   exact rnDeriv_mconv' HasPDF.absolutelyContinuous HasPDF.absolutelyContinuous
+
+@[to_additive]
+theorem _root_.ProbabilityTheory.IndepFun.pdf_mul_eq_mlconvolution_pdf [SFinite μ]
+    [HasPDF X ℙ μ] [HasPDF Y ℙ μ] [IsFiniteMeasure ℙ] (hXY : IndepFun X Y ℙ) :
+    pdf (X * Y) ℙ μ =ᵐ[μ] pdf X ℙ μ ⋆ₘₗ[μ] pdf Y ℙ μ := by
+  rw [pdf, hXY.map_mul_eq_map_mconv_map₀ (HasPDF.aemeasurable' μ) (HasPDF.aemeasurable' μ)]
+  exact rnDeriv_mconv HasPDF.absolutelyContinuous HasPDF.absolutelyContinuous
 
 end Group
 
