@@ -25,7 +25,7 @@ open scoped TensorProduct
 namespace TensorProduct
 
 instance instInner : Inner 𝕜 (E ⊗[𝕜] F) := ⟨fun x y =>
-  LinearMap.mul' 𝕜 𝕜 ((homTensorHomMap 𝕜 _ _ _ _ ((mapₛₗ (innerₛₗ 𝕜) (innerₛₗ 𝕜)) x)) y)⟩
+  LinearMap.mul' 𝕜 𝕜 ((homTensorHomMap 𝕜 _ _ _ _ ((map (innerₛₗ 𝕜) (innerₛₗ 𝕜)) x)) y)⟩
 
 @[simp]
 theorem inner_tmul (x x' : E) (y y' : F) :
