@@ -97,7 +97,7 @@ theorem ncoeff_of_coeff (f : ℤ → Module.End R V)
     (hf : ∀ (x : V), ∃ (n : ℤ), ∀ (m : ℤ), m < n → (f m) x = 0) (n : ℤ) :
     (of_coeff f hf) [[n]] = f (-n - 1) := by
   ext v
-  rw [ncoeff_apply, coeff_apply_apply_apply, of_coeff_apply_coeff]
+  rw [ncoeff_apply, coeff_apply_apply, of_coeff_apply_coeff]
 
 instance [CommRing R] [AddCommGroup V] [Module R V] : One (VertexOperator R V) where
   one := {
@@ -337,9 +337,9 @@ theorem finite_supp_ncoeff_ncoeff (m n : ℤ) (A B : VertexOperator R V) (v : V)
 theorem resProdLeft_add_right (n : ℤ) (A B C : VertexOperator R V) :
     A.resProdLeft n (B + C) = A.resProdLeft n B + A.resProdLeft n C := by
   ext v m
-  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdLeft_apply_ncoeff, ncoeff_add,
+  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdLeft_apply_ncoeff, map_add, Pi.add_apply,
     Module.End.smul_def, LinearMap.add_apply, smul_add, HahnModule.of_symm_add,
-    HahnSeries.coeff_add', Pi.add_apply]
+    HahnSeries.coeff_add']
   exact finsum_add_distrib (finite_supp_ncoeff_ncoeff m n A B v)
     (finite_supp_ncoeff_ncoeff m n A C v)
 
@@ -347,9 +347,9 @@ theorem resProdLeft_add_right (n : ℤ) (A B C : VertexOperator R V) :
 theorem resProdLeft_add_left (n : ℤ) (A B C : VertexOperator R V) :
     (A + B).resProdLeft n C = A.resProdLeft n C + B.resProdLeft n C := by
   ext v m
-  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdLeft_apply_ncoeff, ncoeff_add,
+  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdLeft_apply_ncoeff, map_add, Pi.add_apply,
     Module.End.smul_def, LinearMap.add_apply, smul_add, HahnModule.of_symm_add,
-    HahnSeries.coeff_add', Pi.add_apply]
+    HahnSeries.coeff_add']
   exact finsum_add_distrib (finite_supp_ncoeff_ncoeff m n A C v)
     (finite_supp_ncoeff_ncoeff m n B C v)
 
@@ -357,8 +357,8 @@ theorem resProdLeft_add_left (n : ℤ) (A B C : VertexOperator R V) :
 theorem resProdLeft_smul_right (n : ℤ) (A B : VertexOperator R V) (r : R) :
     A.resProdLeft n (r • B) = r • (A.resProdLeft n B) := by
   ext v m
-  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdLeft_apply_ncoeff, ncoeff_smul,
-    smul_assoc, Module.End.smul_def, map_smul, LinearMap.smul_apply, HahnModule.of_symm_smul,
+  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdLeft_apply_ncoeff, map_smul,
+    Pi.smul_apply, smul_assoc, Module.End.smul_def, LinearMap.smul_apply, HahnModule.of_symm_smul,
     HahnSeries.coeff_smul]
   simp_rw [smul_comm _ r]
   rw [smul_finsum' (M := V) r (finite_supp_ncoeff_ncoeff m n A B v)]
@@ -367,8 +367,8 @@ theorem resProdLeft_smul_right (n : ℤ) (A B : VertexOperator R V) (r : R) :
 theorem resProdLeft_smul_left (n : ℤ) (A B : VertexOperator R V) (r : R) :
     (r • A).resProdLeft n B = r • (A.resProdLeft n B) := by
   ext v m
-  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdLeft_apply_ncoeff, ncoeff_smul,
-    Module.End.smul_def, smul_assoc, LinearMap.smul_apply, HahnModule.of_symm_smul,
+  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdLeft_apply_ncoeff, map_smul,
+    Pi.smul_apply, Module.End.smul_def, smul_assoc, LinearMap.smul_apply, HahnModule.of_symm_smul,
     HahnSeries.coeff_smul]
   simp_rw [smul_comm _ r]
   rw [smul_finsum' (M := V) r (finite_supp_ncoeff_ncoeff m n A B v)]
@@ -474,9 +474,9 @@ theorem finite_supp_ncoeff_ncoeff_right (m n : ℤ) (A B : VertexOperator R V) (
 theorem resProdRight_add_right (n : ℤ) (A B C : VertexOperator R V) :
     A.resProdRight n (B + C) = A.resProdRight n B + A.resProdRight n C := by
   ext v m
-  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdRight_apply_ncoeff, ncoeff_add,
+  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdRight_apply_ncoeff, map_add, Pi.add_apply,
     Module.End.smul_def, LinearMap.add_apply, smul_add, HahnModule.of_symm_add,
-    HahnSeries.coeff_add', Pi.add_apply]
+    HahnSeries.coeff_add']
   rw [← smul_add]
   congr 1
   exact finsum_add_distrib (M := V) (finite_supp_ncoeff_ncoeff_right m n A B v)
@@ -486,9 +486,9 @@ theorem resProdRight_add_right (n : ℤ) (A B C : VertexOperator R V) :
 theorem resProdRight_add_left (n : ℤ) (A B C : VertexOperator R V) :
     (A + B).resProdRight n C = A.resProdRight n C + B.resProdRight n C := by
   ext v m
-  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdRight_apply_ncoeff, ncoeff_add,
+  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdRight_apply_ncoeff, map_add, Pi.add_apply,
     Module.End.smul_def, LinearMap.add_apply, smul_add, HahnModule.of_symm_add,
-    HahnSeries.coeff_add', Pi.add_apply]
+    HahnSeries.coeff_add']
   rw [← smul_add]
   congr 1
   exact finsum_add_distrib (M := V) (finite_supp_ncoeff_ncoeff_right m n A C v)
@@ -498,8 +498,8 @@ theorem resProdRight_add_left (n : ℤ) (A B C : VertexOperator R V) :
 theorem resProdRight_smul_right (n : ℤ) (A B : VertexOperator R V) (r : R) :
     A.resProdRight n (r • B) = r • (A.resProdRight n B) := by
   ext v m
-  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdRight_apply_ncoeff, ncoeff_smul,
-    Module.End.smul_def, smul_assoc, LinearMap.smul_apply, HahnModule.of_symm_smul,
+  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdRight_apply_ncoeff, map_smul,
+    Pi.smul_apply, Module.End.smul_def, smul_assoc, LinearMap.smul_apply, HahnModule.of_symm_smul,
     HahnSeries.coeff_smul]
   rw [smul_comm]
   congr 1
@@ -510,8 +510,8 @@ theorem resProdRight_smul_right (n : ℤ) (A B : VertexOperator R V) (r : R) :
 theorem resProdRight_smul_left (n : ℤ) (A B : VertexOperator R V) (r : R) :
     (r • A).resProdRight n B = r • (A.resProdRight n B) := by
   ext v m
-  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdRight_apply_ncoeff, ncoeff_smul,
-    smul_assoc, Module.End.smul_def, map_smul, LinearMap.smul_apply, HahnModule.of_symm_smul,
+  simp only [← coeff_apply_apply, coeff_eq_ncoeff, resProdRight_apply_ncoeff, map_smul,
+    Pi.smul_apply, smul_assoc, Module.End.smul_def, LinearMap.smul_apply, HahnModule.of_symm_smul,
     HahnSeries.coeff_smul]
   rw [smul_comm]
   congr 1
@@ -588,8 +588,8 @@ theorem resProd_ne_neg_one_one_left {n : ℤ} (hn : n ≠ -1) (A : VertexOperato
 theorem resProd_nat_one_right_apply (n : ℕ) (A : VertexOperator R V) :
     resProd n A 1 = 0 := by
   ext v m
-  rw [resProd_apply_apply, ← coeff_apply_apply, ← coeff_apply_apply, coeff_eq_ncoeff, ncoeff_sub,
-    LinearMap.sub_apply, resProdLeft_apply_ncoeff]
+  rw [resProd_apply_apply, ← coeff_apply_apply, ← coeff_apply_apply, coeff_eq_ncoeff, map_sub,
+    Pi.sub_apply, LinearMap.sub_apply, resProdLeft_apply_ncoeff]
   rw [finsum_eq_single _ m.toNat fun _ _ ↦ (by rw [one_ncoeff_ne_neg_one (by omega)]; simp)]
   by_cases h : m ≥ 0
   · rw [show -m - 1 + m.toNat = -1 by omega, one_ncoeff_neg_one, resProdRight_apply_ncoeff]
