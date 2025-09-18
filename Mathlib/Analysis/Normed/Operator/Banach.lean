@@ -79,7 +79,7 @@ namespace ContinuousLinearMap
 
 omit [RingHomIsometric σ] in
 lemma noempty_interior_of_surj (surj : Surjective f) :
-    ∃ (n : ℕ) (x : _), x ∈ interior (closure (f '' ball 0 n)) :=
+    ∃ (n : ℕ), (interior (closure (f '' ball 0 n))).Nonempty :=
   have A : ⋃ n : ℕ, closure (f '' ball 0 n) = Set.univ := by
     refine Subset.antisymm (subset_univ _) fun y _ => ?_
     rcases surj y with ⟨x, hx⟩
@@ -92,10 +92,11 @@ lemma noempty_interior_of_surj (surj : Surjective f) :
 include σ' in
 omit [CompleteSpace F] in
 theorem exists_approx_preimage_norm_le'
-    (h : ∃ (n : ℕ) (x : _), x ∈ interior (closure (f '' ball 0 n))) :
+    (h : ∃ (n : ℕ), (interior (closure (f '' ball 0 n))).Nonempty) :
     ∃ C ≥ 0, ∀ y, ∃ x, dist (f x) y ≤ 1 / 2 * ‖y‖ ∧ ‖x‖ ≤ C * ‖y‖ := by
+  rcases h with ⟨n, a, h⟩
   simp only [mem_interior_iff_mem_nhds, Metric.mem_nhds_iff] at h
-  rcases h with ⟨n, a, ε, ⟨εpos, H⟩⟩
+  rcases h with ⟨ε, εpos, H⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
   refine ⟨(ε / 2)⁻¹ * ‖c‖ * 2 * n, by positivity, fun y => ?_⟩
   rcases eq_or_ne y 0 with rfl | hy
@@ -170,7 +171,7 @@ section
 
 include σ'
 omit [CompleteSpace F] in
-theorem exists_preimage_norm_le' (h : ∃ (n : ℕ) (x : _), x ∈ interior (closure (f '' ball 0 n))) :
+theorem exists_preimage_norm_le' (h : ∃ (n : ℕ), (interior (closure (f '' ball 0 n))).Nonempty) :
     ∃ C > 0, ∀ y, ∃ x, f x = y ∧ ‖x‖ ≤ C * ‖y‖ := by
   obtain ⟨C, C0, hC⟩ := exists_approx_preimage_norm_le' f h
   /- Second step of the proof: starting from `y`, we want an exact preimage of `y`. Let `g y` be
