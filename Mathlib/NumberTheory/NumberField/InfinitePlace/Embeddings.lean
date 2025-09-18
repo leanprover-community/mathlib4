@@ -279,55 +279,52 @@ theorem conjugate_comp (σ : K →+* L) :
 
 variable [Algebra K L]
 
+variable (L) in
 /--
 If `L/K` and `ψ : K →+* ℂ`, `φ : L →+* ℂ`, then we say `φ` is an extension of `ψ` if
 `φ` restricted to `K` is `ψ`.
 -/
-abbrev IsExtension := φ.comp (algebraMap K L) = ψ
+abbrev Extension := { φ : L →+* ℂ // φ.comp (algebraMap K L) = ψ }
+
+theorem Extension.comp_eq (φ : Extension L ψ) :
+    φ.1.comp (algebraMap K L) = ψ := φ.2
 
 variable {φ ψ}
 
-theorem IsExtension.not_isExtension_conjugate (h : IsExtension ψ φ)
+theorem Extension.not_isExtension_conjugate (φ : Extension L ψ)
     (hf : ¬ComplexEmbedding.IsReal ψ) :
-    ¬IsExtension ψ (conjugate φ) := by
-  simp_all [ComplexEmbedding.isReal_iff]
+    (conjugate φ).comp (algebraMap K L) ≠ ψ := by
+  aesop
 
-theorem IsExtension.ne {ρ : L →+* ℂ} (hg : IsExtension ψ φ) (hr : ¬IsExtension ψ ρ) :
-    φ ≠ ρ := by
-  simp_all [← hg, RingHom.ext_iff]
-  let ⟨x, hx⟩ := hr
-  exact ⟨algebraMap K L x, by aesop⟩
-
-theorem IsExtension.not_isReal_of_not_isReal (h : IsExtension ψ φ)
-    (hf : ¬ComplexEmbedding.IsReal ψ) : ¬ComplexEmbedding.IsReal φ :=
-  mt (IsReal.comp _) (h ▸ hf)
+theorem Extension.not_isReal_of_not_isReal (φ : Extension L ψ)
+    (hf : ¬ComplexEmbedding.IsReal ψ) : ¬ComplexEmbedding.IsReal φ.1 :=
+  mt (IsReal.comp _) (φ.2 ▸ hf)
 
 variable (φ ψ)
 
+variable {ψ} in
 /--
 If `L/K` and `ψ : K →+* ℂ`, `φ : L →+* ℂ`, then `φ` is a _mixed extension_ of `ψ` if the
 image of `ψ` is real while the image of `φ` is complex.
 
 This is the complex embedding analogue of `InfinitePlace.RamifiedExtension`.
 -/
-abbrev IsMixedExtension :=
-  IsExtension ψ φ ∧ ComplexEmbedding.IsReal ψ ∧ ¬ComplexEmbedding.IsReal φ
+abbrev Extension.IsMixed (φ : Extension L ψ) :=
+  ComplexEmbedding.IsReal ψ ∧ ¬ComplexEmbedding.IsReal φ.1
 
 namespace IsMixedExtension
 
 variable {ψ φ}
 
-theorem isExtension (h : IsMixedExtension ψ φ) :
-    IsExtension ψ φ := h.1
+theorem Extension.IsMixed.isReal {φ : Extension L ψ} (h : φ.IsMixed) :
+    ComplexEmbedding.IsReal ψ := h.1
 
-theorem isReal (h : IsMixedExtension ψ φ) :
-    ComplexEmbedding.IsReal ψ := h.2.1
-
-theorem not_isReal (h : IsMixedExtension ψ φ) :
-    ¬ComplexEmbedding.IsReal φ := h.2.2
+theorem Extension.IsMixed.not_isReal {φ : Extension L ψ} (h : φ.IsMixed) :
+    ¬ComplexEmbedding.IsReal φ.1 := h.2
 
 end IsMixedExtension
 
+variable {ψ} in
 /--
 If `L/K` and `ψ : K →+* ℂ`, `φ : L →+* ℂ`, then `φ` is an _unmixed extension_ of `ψ` if `φ` is an
 extension of `ψ` but is not a mixed extension. In other words, the image of `ψ` is real
@@ -335,15 +332,21 @@ if and only if the image of `φ` is real.
 
 This is the complex embedding analogue of `InfinitePlace.UnramifiedExtension`.
 -/
-abbrev IsUnmixedExtension := IsExtension ψ φ ∧ ¬IsMixedExtension ψ φ
+abbrev Extension.IsUnmixed (φ : Extension L ψ) := ¬φ.IsMixed
 
 variable {ψ φ} in
-theorem IsUnmixedExtension.isReal_of_isReal (h : IsUnmixedExtension ψ φ)
+theorem Extension.IsUnmixed.isReal_of_isReal {φ : Extension L ψ} (h : φ.IsUnmixed)
     (hf : ComplexEmbedding.IsReal ψ) :
-    ComplexEmbedding.IsReal φ := by
-  simp only [IsUnmixedExtension, not_and, not_not] at h
-  exact h.2 h.1 hf
+    ComplexEmbedding.IsReal φ.1 := by
+  simp only [not_and, not_not] at h
+  exact h hf
 
+open scoped Classical in
+noncomputable def Extension.equivSum :
+    Extension L ψ ≃ { φ : Extension L ψ // φ.IsMixed } ⊕ { φ : Extension L ψ // φ.IsUnmixed } := by
+  exact (Equiv.sumCompl Extension.IsMixed).symm
+
+/-
 open scoped Classical in
 /--
 Let `ψ : K →+* ℂ` be a fixed complex embedding. The extensions `φ : L →+* ℂ` of `ψ` are the
@@ -356,7 +359,7 @@ noncomputable def isExtensionEquivSum (ψ : K →+* ℂ) :
     (Equiv.subtypeSubtypeEquivSubtypeInter _ fun φ => _ ∧ ¬IsReal φ)
     ((Equiv.subtypeSubtypeEquivSubtypeInter _ fun φ => ¬(_ ∧ ¬IsReal φ)).trans <|
       Equiv.subtypeEquiv (Equiv.refl _) fun _ => by aesop)
-
+-/
 end Extension
 
 end NumberField.ComplexEmbedding

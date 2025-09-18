@@ -527,12 +527,14 @@ variable {K : Type*} (L : Type*) [Field K] [Field L] [Algebra K L]
 If `L / K` are fields and `v` is an infinite place of `K`, then we say an infinite place `w`
 of `L` _extends_ `v` if `v` is the restriction of `w` to `K`.
 -/
-abbrev Extension (v : InfinitePlace K) :=
+protected abbrev Extension (v : InfinitePlace K) :=
   { w : InfinitePlace L // w.comap (algebraMap K L) = v }
 
 namespace Extension
 
 variable {L} {v : InfinitePlace K} (w : v.Extension L)
+
+theorem comap_eq : w.1.comap (algebraMap K L) = v := w.2
 
 theorem isComplex_of_isComplex (hv : v.IsComplex) :
      w.1.IsComplex := by
@@ -554,15 +556,17 @@ theorem mk_embedding_comp : mk (w.1.embedding.comp (algebraMap K L)) = v := by
 /-- If `w : InfinitePlace L` extends `v : InfinitePlace K`, then either `w.embedding`
 extends `v.embedding` as complex embeddings, or `conjugate w.embedding` extends `v.embedding`. -/
 theorem isExtension_or_isExtension_conjugate :
-    IsExtension v.embedding w.1.embedding ∨ IsExtension v.embedding (conjugate w.1.embedding) := by
+    w.1.embedding.comp (algebraMap K L) = v.embedding ∨
+      (conjugate w.1.embedding).comp (algebraMap K L) = v.embedding := by
   cases embedding_mk_eq (w.1.embedding.comp (algebraMap K L)) with
   | inl hl =>
     convert Or.inl <| hl ▸ congrArg InfinitePlace.embedding w.mk_embedding_comp
   | inr hr =>
     convert Or.inr <| hr ▸ congrArg InfinitePlace.embedding w.mk_embedding_comp
 
-theorem isExtension_conjugate_of_not_isExtension (h : ¬IsExtension v.embedding w.1.embedding) :
-     IsExtension v.embedding (conjugate w.1.embedding) :=
+theorem isExtension_conjugate_of_not_isExtension
+    (h : ¬w.1.embedding.comp (algebraMap K L) = v.embedding) :
+    (conjugate w.1.embedding).comp (algebraMap K L) = v.embedding :=
    w.isExtension_or_isExtension_conjugate.resolve_left h
 
 variable (L v)
@@ -575,9 +579,9 @@ If `w` is an infinite place of `L` lying above the infinite place `v` of
 `IsLift` is a class encoding the first case.
 -/
 class IsLift where
-  isExtension' : IsExtension v.embedding w.1.embedding
+  isExtension' : w.1.embedding.comp (algebraMap K L) = v.embedding
 
-theorem IsLift.isExtension [w.IsLift L v] : IsExtension v.embedding w.1.embedding :=
+theorem IsLift.isExtension [w.IsLift L v] : w.1.embedding.comp (algebraMap K L) = v.embedding :=
   IsLift.isExtension'
 
 /--
@@ -588,10 +592,10 @@ If `w` is an infinite place of `L` lying above the infinite place `v` of
 `IsConjugateLift` is a class encoding the second case.
 -/
 class IsConjugateLift where
-  isExtension' : IsExtension v.embedding (conjugate w.1.embedding)
+  isExtension' : (conjugate w.1.embedding).comp (algebraMap K L) = v.embedding
 
 theorem IsConjugateLift.isExtension [w.IsConjugateLift L v] :
-    IsExtension v.embedding (conjugate w.1.embedding) := IsConjugateLift.isExtension'
+    (conjugate w.1.embedding).comp (algebraMap K L) = v.embedding := IsConjugateLift.isExtension'
 
 theorem isLift_or_isConjugateLift (v : InfinitePlace K) (w : v.Extension L) :
     w.IsLift L v ∨ w.IsConjugateLift L v := by
