@@ -179,7 +179,7 @@ lemma lift_injective [Nonempty ι] [IsDirected ι (· ≤ ·)]
     (injective : ∀ i, Function.Injective <| g i) :
     Function.Injective (lift G f P g Hg) := by
   simp_rw [injective_iff_map_eq_zero] at injective ⊢
-  intros z hz
+  intro z hz
   induction z using DirectLimit.induction_on with
   | ih _ g => rw [lift_of] at hz; rw [injective _ g hz, map_zero]
 

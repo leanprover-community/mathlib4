@@ -289,7 +289,7 @@ private theorem mem_admissibleIndex_of_mem_box_aux₂ (x : ℝ) (a : ℤ) :
   have h : 0 < (n : ℝ) := Nat.cast_pos.mpr <| n.pos_of_neZero
   rw [sub_add_cancel, div_le_iff₀' h,
     show (n : ℝ) * a = (n * a : ℤ) by norm_cast,
-    Int.cast_le, Int.ceil_le, Int.cast_mul, Int.cast_natCast, mul_le_mul_left h]
+    Int.cast_le, Int.ceil_le, Int.cast_mul, Int.cast_natCast, mul_le_mul_iff_right₀ h]
 
 /-- If `B : BoxIntegral.Box` has integral vertices and contains the point `x`, then the index of
 `x` is admissible for `B`. -/
@@ -469,7 +469,6 @@ private theorem tendsto_card_div_pow₆ :
     (fun x ↦ (Nat.card ↑(s ∩ (⌈x⌉₊ : ℝ)⁻¹ • L) : ℝ) / ⌈x⌉₊ ^ card ι * (⌈x⌉₊ / x) ^ card ι)
           =ᶠ[atTop] (fun x ↦ (Nat.card ↑(s ∩ (⌈x⌉₊ : ℝ)⁻¹ • L) : ℝ) / x ^ card ι) := by
   filter_upwards [eventually_ge_atTop 1] with x hx
-  have : 0 < ⌊x⌋₊ := Nat.floor_pos.mpr hx
   rw [div_pow, mul_div, div_mul_cancel₀ _ (by positivity)]
 
 /-- A version of `tendsto_card_div_pow_atTop_volume` for a real variable. -/

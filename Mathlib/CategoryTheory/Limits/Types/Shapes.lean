@@ -69,7 +69,7 @@ theorem pi_lift_π_apply' {β : Type v} (f : β → Type v) {P : Type v}
   simp
 
 /-- A restatement of `Types.Limit.map_π_apply` that uses `Pi.π` and `Pi.map`. -/
-@[simp]
+-- Not `@[simp]` since `simp` can prove it.
 theorem pi_map_π_apply {β : Type v} [Small.{u} β] {f g : β → Type u}
     (α : ∀ j, f j ⟶ g j) (b : β) (x) :
     (Pi.π g b : ∏ᶜ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ᶜ f → f b) x) :=
@@ -172,14 +172,14 @@ def binaryProductLimit (X Y : Type u) : IsLimit (binaryProductCone X Y) where
   fac _ j := Discrete.recOn j fun j => WalkingPair.casesOn j rfl rfl
   uniq _ _ w := funext fun x => Prod.ext (congr_fun (w ⟨left⟩) x) (congr_fun (w ⟨right⟩) x)
 
-/-- The category of types has `X × Y`, the usual cartesian product,
+/-- The category of types has `X × Y`, the usual Cartesian product,
 as the binary product of `X` and `Y`.
 -/
 @[simps]
 def binaryProductLimitCone (X Y : Type u) : Limits.LimitCone (pair X Y) :=
   ⟨_, binaryProductLimit X Y⟩
 
-/-- The categorical binary product in `Type u` is cartesian product. -/
+/-- The categorical binary product in `Type u` is Cartesian product. -/
 noncomputable def binaryProductIso (X Y : Type u) : Limits.prod X Y ≅ X × Y :=
   limit.isoLimitCone (binaryProductLimitCone X Y)
 
@@ -339,7 +339,7 @@ def productLimitCone {J : Type v} (F : J → Type max v u) :
     { lift := fun s x j => s.π.app ⟨j⟩ x
       uniq := fun _ _ w => funext fun x => funext fun j => (congr_fun (w ⟨j⟩) x :) }
 
-/-- The categorical product in `Type max v u` is the type theoretic product `Π j, F j`. -/
+/-- The categorical product in `Type max v u` is the type-theoretic product `Π j, F j`. -/
 noncomputable def productIso {J : Type v} (F : J → Type max v u) : ∏ᶜ F ≅ ∀ j, F j :=
   limit.isoLimitCone (productLimitCone.{v, u} F)
 
@@ -372,7 +372,7 @@ noncomputable def productLimitCone :
         simpa using (congr_fun (w ⟨j⟩) x :) }
 
 /-- The categorical product in `Type u` indexed in `Type v`
-is the type theoretic product `Π j, F j`, after shrinking back to `Type u`. -/
+is the type-theoretic product `Π j, F j`, after shrinking back to `Type u`. -/
 noncomputable def productIso :
     (∏ᶜ F : Type u) ≅ Shrink.{u} (∀ j, F j) :=
   limit.isoLimitCone (productLimitCone.{v, u} F)
@@ -402,7 +402,7 @@ def coproductColimitCocone {J : Type v} (F : J → Type max v u) :
         funext ⟨j, x⟩
         exact congr_fun (w ⟨j⟩) x }
 
-/-- The categorical coproduct in `Type u` is the type theoretic coproduct `Σ j, F j`. -/
+/-- The categorical coproduct in `Type u` is the type-theoretic coproduct `Σ j, F j`. -/
 noncomputable def coproductIso {J : Type v} (F : J → Type max v u) : ∐ F ≅ Σ j, F j :=
   colimit.isoColimitCocone (coproductColimitCocone F)
 
@@ -753,7 +753,7 @@ lemma inl_rel'_inl_iff (x₁ y₁ : X₁) :
   · rintro (_ | ⟨_, _, h⟩)
     · exact Or.inl rfl
     · exact Or.inr ⟨_, _, h, rfl, rfl⟩
-  · rintro (rfl | ⟨_,_ , h, rfl, rfl⟩)
+  · rintro (rfl | ⟨_, _, h, rfl, rfl⟩)
     · apply Rel'.refl
     · exact Rel'.inl_inl _ _ h
 

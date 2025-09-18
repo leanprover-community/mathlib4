@@ -294,7 +294,7 @@ theorem RingHom.PropertyIsLocal.respectsIso (hP : RingHom.PropertyIsLocal @P) :
 -- Almost all arguments are implicit since this is not intended to use mid-proof.
 theorem RingHom.LocalizationPreserves.away (H : RingHom.LocalizationPreserves @P) :
     RingHom.LocalizationAwayPreserves P := by
-  intros R S _ _ f r R' S' _ _ _ _ _ _ hf
+  intro R S _ _ f r R' S' _ _ _ _ _ _ hf
   have : IsLocalization ((Submonoid.powers r).map f) S' := by rw [Submonoid.map_powers]; assumption
   exact H f (Submonoid.powers r) R' S' hf
 
@@ -368,7 +368,7 @@ lemma RingHom.OfLocalizationSpanTarget.ofIsLocalization
     (hT : ∀ r : s, ∃ (T : Type u) (_ : CommRing T) (_ : Algebra S T)
       (_ : IsLocalization.Away (r : S) T), P ((algebraMap S T).comp f)) : P f := by
   apply hP _ s hs
-  intros r
+  intro r
   obtain ⟨T, _, _, _, hT⟩ := hT r
   convert hP'.1 _
     (Localization.algEquiv (R := S) (Submonoid.powers (r : S)) T).symm.toRingEquiv hT

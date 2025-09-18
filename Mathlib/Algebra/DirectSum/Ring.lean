@@ -576,7 +576,7 @@ def liftRingHom :
       rw [← F.map_one]
       rfl,
       by
-      intros i j ai aj
+      intro i j ai aj
       simp only [AddMonoidHom.comp_apply, AddMonoidHom.coe_coe]
       rw [← F.map_mul (of A i ai), of_mul_of ai]⟩
   left_inv f := by

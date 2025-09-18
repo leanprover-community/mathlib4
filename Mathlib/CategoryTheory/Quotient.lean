@@ -110,7 +110,6 @@ theorem comp_mk {a b c : Quotient r} (f : a.as ⟶ b.as) (g : b.as ⟶ c.as) :
     comp r (Quot.mk _ f) (Quot.mk _ g) = Quot.mk _ (f ≫ g) :=
   rfl
 
--- Porting note: Had to manually add the proofs of `comp_id` `id_comp` and `assoc`
 instance category : Category (Quotient r) where
   Hom := Hom r
   id a := Quot.mk _ (𝟙 a.as)
@@ -152,8 +151,7 @@ protected theorem sound {a b : C} {f₁ f₂ : a ⟶ b} (h : r f₁ f₂) :
 lemma compClosure_iff_self [h : Congruence r] {X Y : C} (f g : X ⟶ Y) :
     CompClosure r f g ↔ r f g := by
   constructor
-  · intro hfg
-    induction' hfg with m m' hm
+  · rintro ⟨hfg⟩
     exact Congruence.compLeft _ (Congruence.compRight _ (by assumption))
   · exact CompClosure.of _ _ _
 
@@ -207,7 +205,7 @@ theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = 
     congr
   · rintro _ _ f
     dsimp [lift, Functor]
-    refine Quot.inductionOn f (fun _ ↦ ?_) -- Porting note: this line was originally an `apply`
+    refine Quot.inductionOn f fun _ ↦ ?_
     simp only [heq_eq_eq]
     congr
 
@@ -236,10 +234,8 @@ theorem lift_obj_functor_obj (X : C) :
     (lift r F H).obj ((functor r).obj X) = F.obj X := rfl
 
 theorem lift_map_functor_map {X Y : C} (f : X ⟶ Y) :
-    (lift r F H).map ((functor r).map f) = F.map f := by
-  rw [← NatIso.naturality_1 (lift.isLift r F H)]
-  dsimp [lift, functor]
-  simp
+    (lift r F H).map ((functor r).map f) = F.map f :=
+  rfl
 
 variable {r}
 

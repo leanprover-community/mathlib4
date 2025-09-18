@@ -61,7 +61,7 @@ noncomputable def isColimitPUnitCocone [IsConnected C] : IsColimit (pUnitCocone.
   fac s j := by
     ext ⟨⟩
     apply constant_of_preserves_morphisms (s.ι.app · PUnit.unit)
-    intros X Y f
+    intro X Y f
     exact congrFun (s.ι.naturality f).symm PUnit.unit
   uniq s m h := by
     ext ⟨⟩

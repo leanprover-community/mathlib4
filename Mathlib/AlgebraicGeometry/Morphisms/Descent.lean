@@ -47,7 +47,6 @@ lemma Scheme.exists_hom_isAffine_of_isLocalAtSource (X : Scheme.{u}) [CompactSpa
     ∃ (Y : Scheme.{u}) (p : Y ⟶ X), Surjective p ∧ P p ∧ IsAffine Y := by
   let 𝒰 := X.affineCover.finiteSubcover
   let p : ∐ (fun i : 𝒰.J ↦ 𝒰.obj i) ⟶ X := Sigma.desc (fun i ↦ 𝒰.map i)
-  have (i : 𝒰.J) : IsAffine (𝒰.obj i) := inferInstanceAs <| IsAffine (X.affineCover.obj _)
   refine ⟨_, p, ⟨fun x ↦ ?_⟩, ?_, inferInstance⟩
   · obtain ⟨i, x, rfl⟩ := X.affineCover.finiteSubcover.exists_eq x
     use (Sigma.ι (fun i ↦ X.affineCover.finiteSubcover.obj i) i).base x

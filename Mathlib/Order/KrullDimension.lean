@@ -539,14 +539,15 @@ lemma coheight_eq_coe_iff_maximal_le_coheight {a : α} {n : ℕ} :
   height_eq_coe_iff_minimal_le_height (α := αᵒᵈ)
 
 lemma one_lt_height_iff {x : α} : 1 < Order.height x ↔ ∃ y z, z < y ∧ y < x := by
-  rw [← ENat.add_one_le_iff ENat.one_ne_top, show 1 + 1 = (2 : ℕ∞) from rfl]
+  rw [← ENat.add_one_le_iff ENat.one_ne_top, one_add_one_eq_two]
   refine ⟨fun h ↦ ?_, ?_⟩
   · obtain ⟨p, hp, hlen⟩ := Order.exists_series_of_le_height x (n := 2) h
     refine ⟨p 1, p 0, p.rel_of_lt ?_, hp ▸ p.rel_of_lt ?_⟩ <;> simp [Fin.lt_def, hlen]
   · rintro ⟨y, z, hzy, hyx⟩
     let p : LTSeries α := RelSeries.fromListChain' [z, y, x] (List.cons_ne_nil z [y, x])
       (List.Chain'.cons_cons hzy <| List.chain'_pair.mpr hyx)
-    exact Order.length_le_height (p := p) (by rfl)
+    have : p.last = x := by simp [p, ← RelSeries.getLast_toList]
+    exact Order.length_le_height this.le
 
 end height
 
@@ -753,7 +754,7 @@ lemma _root_.LTSeries.height_last_longestOf [FiniteDimensionalOrder α] :
 The Krull dimension is the supremum of the elements' heights.
 
 This version of the lemma assumes that `α` is nonempty. In this case, the coercion from `ℕ∞` to
-`WithBot ℕ∞` is on the outside fo the right-hand side, which is usually more convenient.
+`WithBot ℕ∞` is on the outside of the right-hand side, which is usually more convenient.
 
 If `α` were empty, then `krullDim α = ⊥`. See `krullDim_eq_iSup_height` for the more general
 version, with the coercion under the supremum.

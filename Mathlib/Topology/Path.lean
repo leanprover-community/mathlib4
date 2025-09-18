@@ -373,6 +373,8 @@ def cast (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : Path x' y' where
   source' := by simp [hx]
   target' := by simp [hy]
 
+@[simp] theorem cast_rfl_rfl (γ : Path x y) : γ.cast rfl rfl = γ := rfl
+
 @[simp]
 theorem symm_cast {a₁ a₂ b₁ b₂ : X} (γ : Path a₂ b₂) (ha : a₁ = a₂) (hb : b₁ = b₂) :
     (γ.cast ha hb).symm = γ.symm.cast hb ha :=

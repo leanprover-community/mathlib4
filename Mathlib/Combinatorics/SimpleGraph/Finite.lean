@@ -131,6 +131,18 @@ theorem card_edgeFinset_le_card_choose_two : #G.edgeFinset ≤ (Fintype.card V).
 
 end EdgeFinset
 
+namespace Iso
+
+variable {G} {W : Type*} {G' : SimpleGraph W}
+
+theorem card_edgeFinset_eq (f : G ≃g G') [Fintype G.edgeSet] [Fintype G'.edgeSet] :
+    #G.edgeFinset = #G'.edgeFinset := by
+  apply Finset.card_eq_of_equiv
+  simp only [Set.mem_toFinset]
+  exact f.mapEdgeSet
+
+end Iso
+
 section FiniteAt
 
 /-!
@@ -297,7 +309,7 @@ theorem complete_graph_degree [DecidableEq V] (v : V) :
 
 @[simp]
 theorem bot_degree (v : V) : (⊥ : SimpleGraph V).degree v = 0 := by
-  simp_rw [degree, neighborFinset_eq_filter, bot_adj, filter_False]
+  simp_rw [degree, neighborFinset_eq_filter, bot_adj, filter_false]
   exact Finset.card_empty
 
 theorem IsRegularOfDegree.top [DecidableEq V] :
@@ -465,9 +477,7 @@ theorem Adj.card_commonNeighbors_lt_degree {G : SimpleGraph V} [DecidableRel G.A
 theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
     Fintype.card ((⊤ : SimpleGraph V).commonNeighbors v w) = Fintype.card V - 2 := by
   simp only [commonNeighbors_top_eq, ← Set.toFinset_card, Set.toFinset_diff]
-  rw [Finset.card_sdiff]
-  · simp [Finset.card_univ, h]
-  · simp only [Set.toFinset_subset_toFinset, Set.subset_univ]
+  simp [Finset.card_sdiff, h]
 
 end Finite
 
@@ -545,5 +555,22 @@ theorem degree_induce_support (v : G.support) :
   degree_induce_of_support_subset subset_rfl v
 
 end Support
+
+section Map
+
+variable [Fintype V] {W : Type*} [Fintype W] [DecidableEq W]
+
+@[simp]
+theorem edgeFinset_map (f : V ↪ W) (G : SimpleGraph V) [DecidableRel G.Adj] :
+    (G.map f).edgeFinset = G.edgeFinset.map f.sym2Map := by
+  rw [Finset.map_eq_image, ← Set.toFinset_image, Set.toFinset_inj]
+  exact G.edgeSet_map f
+
+theorem card_edgeFinset_map (f : V ↪ W) (G : SimpleGraph V) [DecidableRel G.Adj] :
+    #(G.map f).edgeFinset = #G.edgeFinset := by
+  rw [edgeFinset_map]
+  exact G.edgeFinset.card_map f.sym2Map
+
+end Map
 
 end SimpleGraph

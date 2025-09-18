@@ -344,6 +344,17 @@ theorem valuation_exists_uniformizer : ∃ π : K,
   rw [valuation_def, Valuation.extendToLocalization_apply_map_apply]
   exact hr
 
+lemma valuation_surjective :
+    Function.Surjective (v.valuation K) := by
+  intro x
+  induction x with
+  | zero => simp
+  | coe x =>
+    induction x with | ofAdd x
+    obtain ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
+    refine ⟨π ^ (- x), ?_⟩
+    simp [hπ, ← WithZero.coe_zpow, ← ofAdd_zsmul]
+
 /-- Uniformizers are nonzero. -/
 theorem valuation_uniformizer_ne_zero : Classical.choose (v.valuation_exists_uniformizer K) ≠ 0 :=
   haveI hu := Classical.choose_spec (v.valuation_exists_uniformizer K)
@@ -402,9 +413,9 @@ abbrev adicCompletion := (v.valuation K).Completion
 theorem valuedAdicCompletion_def {x : v.adicCompletion K} : Valued.v x = Valued.extension x :=
   rfl
 
--- Porting note: replaced by `Coe`
--- instance AdicCompletion.hasLiftT : HasLiftT K (v.adicCompletion K) :=
---   (inferInstance : HasLiftT K (@UniformSpace.Completion K v.adicValued.toUniformSpace))
+lemma valuedAdicCompletion_surjective :
+    Function.Surjective (Valued.v : (v.adicCompletion K) → ℤᵐ⁰) :=
+  Valued.valuedCompletion_surjective_iff.mpr (v.valuation_surjective K)
 
 /-- The ring of integers of `adicCompletion`. -/
 def adicCompletionIntegers : ValuationSubring (v.adicCompletion K) :=
@@ -628,7 +639,7 @@ theorem adicAbv_coe_lt_one_iff {b : NNReal} (hb : 1 < b) (r : R) :
 variable {R K} in
 theorem adicAbv_coe_eq_one_iff {b : NNReal} (hb : 1 < b) (r : R) :
     v.adicAbv hb (algebraMap R K r) = 1 ↔ r ∉ v.asIdeal := by
-  rw [← not_iff_not, not_not, ← v.adicAbv_coe_lt_one_iff (K := K), ne_iff_lt_iff_le]
+  rw [← not_iff_not, not_not, ← v.adicAbv_coe_lt_one_iff (K := K) hb, ne_iff_lt_iff_le]
   exact adicAbv_coe_le_one v hb r
 
 end AbsoluteValue

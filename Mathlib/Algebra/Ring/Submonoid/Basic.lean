@@ -20,7 +20,7 @@ and an element of `M` is contained in the additive closure of `M`. -/
 lemma mul_right_mem_add_closure (ha : a ∈ closure (S : Set R)) (hb : b ∈ S) :
     a * b ∈ closure (S : Set R) := by
   induction ha using closure_induction with
-  | mem r hr => exact AddSubmonoid.mem_closure.mpr fun y hy => hy (mul_mem hr hb)
+  | mem r hr => exact mem_closure.mpr fun y hy => hy (mul_mem hr hb)
   | zero => simp only [zero_mul, zero_mem _]
   | add r s _ _ hr hs => simpa only [add_mul] using add_mem hr hs
 
@@ -37,6 +37,6 @@ lemma mul_mem_add_closure (ha : a ∈ closure (S : Set R))
 submonoid `S` is contained in the additive closure of `S`. -/
 lemma mul_left_mem_add_closure (ha : a ∈ S) (hb : b ∈ closure (S : Set R)) :
     a * b ∈ closure (S : Set R) :=
-  mul_mem_add_closure (AddSubmonoid.mem_closure.mpr fun _sT hT => hT ha) hb
+  mul_mem_add_closure (mem_closure.mpr fun _sT hT => hT ha) hb
 
 end MulMemClass

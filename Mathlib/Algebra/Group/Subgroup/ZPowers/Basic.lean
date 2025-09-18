@@ -89,7 +89,7 @@ theorem Int.mem_zmultiples_iff {a b : ℤ} : b ∈ AddSubgroup.zmultiples a ↔ 
 @[simp]
 lemma Int.zmultiples_one : AddSubgroup.zmultiples (1 : ℤ) = ⊤ := by
   ext z
-  simpa only [AddSubgroup.mem_top, iff_true] using ⟨z, zsmul_int_one z⟩
+  simp [Int.mem_zmultiples_iff]
 
 theorem ofMul_image_zpowers_eq_zmultiples_ofMul {x : G} :
     Additive.ofMul '' (Subgroup.zpowers x : Set G) = AddSubgroup.zmultiples (Additive.ofMul x) := by
