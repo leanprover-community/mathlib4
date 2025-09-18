@@ -92,24 +92,6 @@ lemma of_nhds (h : ∀ x, ∃ s ∈ S, s ∈ 𝓝 x) : IsCoherentWith S :=
     let ⟨s, hsS, hsx⟩ := h x
     (hf s hsS).continuousAt hsx
 
-lemma of_open_cover (hSO : ∀ s ∈ S, IsOpen s) (hSU : ⋃₀ S = univ) : IsCoherentWith S :=
-  of_nhds (S := S) fun x ↦
-    let ⟨s, hsS, hsx⟩ := sUnion_eq_univ_iff.mp hSU x
-    ⟨s, hsS, hSO _ hsS |>.mem_nhds hsx⟩
-
--- lemma of_closed_cover (hSC : ∀ s ∈ S, IsClosed s) (hSU : ⋃ s ∈ S, sᶜ = univ) :
---     IsCoherentWith S := by
---   have hSc : IsCoherentWith { sᶜ | s ∈ S } := by
---     apply of_open_cover <;> simpa [sUnion_eq_iUnion, iUnion_subtype]
---   apply of_isClosed
---   intro t ht
---   simp_rw +contextual [(hSC _ _).inter_preimage_val_iff] at ht
---   rw [hSc.isClosed_iff]
---   simp
---   intro s hs
---   rw [← isOpen_compl_iff, ← preimage_compl, (hSC s hs).isOpen_compl.inter_preimage_val_iff,
---   ← compl_union, isOpen_compl_iff]
-
 /-- If a space `X` is coherent with an indexed family of subspaces `S` whose union is `X`, then the
  canonical inclusion from `Σ i, S i` to `X` is a quotient map. -/
 lemma isQuotientMap_sigma_desc'
