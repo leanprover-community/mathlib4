@@ -45,28 +45,6 @@ namespace Scheme
 
 variable {X : Scheme.{u}} {P : MorphismProperty Scheme.{u}}
 
-/-- An open immersion `u : U ⟶ Spec R` is covered by `Spec R[1/f]`. In other words, for every
-`p : U`, there is `f : R` such that `p ∈ D(f) ⊆ U`, i.e. such that `Spec R[1/f] ⟶ Spec R`
-factors through `u`. -/
-lemma Hom.exists_factor
-    {R : Type u} [CommRing R] {U : Scheme.{u}} (u : U ⟶ Spec (.of R)) [IsOpenImmersion u] (p : U) :
-    ∃ f : R, ∃ g : Spec (.of (Localization.Away f)) ⟶ U,
-      PrimeSpectrum.basicOpen f ≤ u.opensRange ∧
-      IsOpenImmersion g ∧
-      g ≫ u = Spec.map (ofHom (algebraMap R (Localization.Away f))) ∧
-      p ∈ Set.range g.base := by
-  obtain ⟨_, ⟨(f : R), rfl⟩, hpf, hfu⟩ :=
-    isTopologicalBasis_basic_opens.exists_subset_of_mem_open
-      (u := u.opensRange.1) ⟨p, rfl⟩ u.opensRange.2
-  let g := AlgebraicGeometry.IsOpenImmersion.lift u
-    (Spec.map (ofHom (algebraMap R (Localization.Away f))))
-    ((localization_away_comap_range (Localization.Away f) f).trans_subset hfu)
-  have hgu : g ≫ u = _ := IsOpenImmersion.lift_fac _ _ _
-  refine ⟨f, g, hfu, inferInstance, hgu, u.isOpenEmbedding.injective.mem_set_image.mp ?_⟩
-  rw [← Set.range_comp, ← ContinuousMap.coe_comp, ← TopCat.hom_comp, ← comp_coeBase, hgu,
-    Spec.map_base, hom_ofHom, TopCat.hom_ofHom]
-  convert hpf using 1; exact localization_away_comap_range _ _
-
 /-- Given a family of schemes with morphisms to `X` satisfying `P` that jointly cover `X`,
 `AffineCover.mkOfCovers` is an associated `P`-cover of `X`.
 
