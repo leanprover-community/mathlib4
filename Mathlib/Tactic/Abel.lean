@@ -488,7 +488,6 @@ It differs in
 -/
 def evalExpr (e : Expr) : AtomM Simp.Result := do
   let e ← withReducible <| whnf e
-  guard e.isApp -- all interesting group expressions are applications
   guard !(isAtom e)
   let (a, pa) ← eval e (← mkContext e)
   return { expr := a, proof? := pa }
