@@ -213,7 +213,7 @@ section Limits
 
 variable {J : Type u₃} [Category.{v₃} J] (X : C)
 
-lemma closedUnderLimitsOfShape_of_isMonoOver :
+lemma closedUnderLimitsOfShape_isMono :
     ClosedUnderLimitsOfShape J (Over.isMono X) := by
   refine fun F _ hc p ↦ ⟨fun g h e ↦ ?_⟩
   apply IsLimit.hom_ext <| WithTerminal.isLimitEquiv.invFun hc
@@ -223,11 +223,11 @@ lemma closedUnderLimitsOfShape_of_isMonoOver :
 
 instance hasLimit (F : J ⥤ MonoOver X) [HasLimit (F ⋙ (Over.isMono X).ι)] :
     HasLimit F := by
-  apply hasLimit_of_closedUnderLimits (closedUnderLimitsOfShape_of_isMonoOver X)
+  apply hasLimit_of_closedUnderLimits (closedUnderLimitsOfShape_isMono X)
 
 instance hasLimitsOfShape [HasLimitsOfShape J (Over X)] :
     HasLimitsOfShape J (MonoOver X) := by
-  apply hasLimitsOfShape_of_closedUnderLimits (closedUnderLimitsOfShape_of_isMonoOver X)
+  apply hasLimitsOfShape_of_closedUnderLimits (closedUnderLimitsOfShape_isMono X)
 
 instance hasFiniteLimits [HasFiniteLimits (Over X)] : HasFiniteLimits (MonoOver X) where
   out _ _ _ := by apply hasLimitsOfShape X
