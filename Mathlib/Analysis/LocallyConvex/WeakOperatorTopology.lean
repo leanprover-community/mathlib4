@@ -6,6 +6,7 @@ Authors: Frédéric Dupuis
 
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.LocallyConvex.SeparatingDual
+import Mathlib.Analysis.Normed.Operator.Basic
 
 /-!
 # The weak operator topology
