@@ -70,7 +70,7 @@ In fact, in an abelian category (I'm not sure in what generality beyond that),
 -/
 
 
-universe v₁ v₂ v₃ u₁ u₂ u₃
+universe w' w v₁ v₂ v₃ u₁ u₂ u₃
 
 noncomputable section
 
@@ -528,8 +528,8 @@ instance hasLimitsOfShape [HasLimitsOfShape J (Over X)] :
 instance hasFiniteLimits [HasFiniteLimits (Over X)] : HasFiniteLimits (Subobject X) where
   out _ _ _ := by infer_instance
 
-instance hasLimits [HasLimitsOfSize.{v₃, u₃} (Over X)] :
-    HasLimitsOfSize.{v₃, u₃} (Subobject X) where
+instance hasLimitsOfSize [HasLimitsOfSize.{w, w'} (Over X)] :
+    HasLimitsOfSize.{w, w'} (Subobject X) where
   has_limits_of_shape _ _ := by infer_instance
 
 end Limits

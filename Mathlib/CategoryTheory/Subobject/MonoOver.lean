@@ -6,7 +6,6 @@ Authors: Bhavik Mehta, Kim Morrison
 import Mathlib.CategoryTheory.Comma.Over.Pullback
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Restrict
-import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
 import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
@@ -39,7 +38,7 @@ and was ported to mathlib by Kim Morrison.
 -/
 
 
-universe v₁ v₂ v₃ u₁ u₂ u₃
+universe w' w v₁ v₂ v₃ u₁ u₂ u₃
 
 noncomputable section
 
@@ -232,7 +231,8 @@ instance hasLimitsOfShape [HasLimitsOfShape J (Over X)] :
 instance hasFiniteLimits [HasFiniteLimits (Over X)] : HasFiniteLimits (MonoOver X) where
   out _ _ _ := by apply hasLimitsOfShape X
 
-instance hasLimits [HasLimitsOfSize.{v₃, u₃} (Over X)] : HasLimitsOfSize.{v₃, u₃} (MonoOver X) where
+instance hasLimitsOfSize [HasLimitsOfSize.{w, w'} (Over X)] :
+    HasLimitsOfSize.{w, w'} (MonoOver X) where
   has_limits_of_shape _ _ := by apply hasLimitsOfShape X
 
 end Limits
