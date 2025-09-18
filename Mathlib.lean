@@ -2379,6 +2379,7 @@ import Mathlib.CategoryTheory.Limits.Presentation
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Bifunctor
 import Mathlib.CategoryTheory.Limits.Preserves.Creates.Finite
+import Mathlib.CategoryTheory.Limits.Preserves.Creates.Pullbacks
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory

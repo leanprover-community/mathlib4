@@ -3,6 +3,7 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
+import Mathlib.CategoryTheory.Limits.Preserves.Creates.Pullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Sites.Sieves
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
@@ -181,20 +182,12 @@ instance [PreservesLimitsOfShape WalkingCospan F] [IsStableUnderBaseChange.{w} J
     exact mem_coverings_of_isPullback _ hf _ _ _
       fun i ↦ CategoryTheory.Functor.map_isPullback F (h i)
 
-variable (F) in
-lemma _root_.CategoryTheory.Limits.HasPullback.of_createsLimitsOfShape
-    [CreatesLimitsOfShape WalkingCospan F] {X Y S : C} (f : X ⟶ S) (g : Y ⟶ S)
-    [HasPullback (F.map f) (F.map g)] :
-    HasPullback f g :=
-  have : HasLimit (cospan f g ⋙ F) := hasLimit_of_iso (cospanCompIso F f g).symm
-  hasLimit_of_created _ F
-
 instance [CreatesLimitsOfShape WalkingCospan F] [HasPullbacks J] : HasPullbacks (J.comap F) where
   hasPullbacks_of_mem {X Y} R f hR := by
     refine ⟨fun {Z g} hg ↦ ?_⟩
     have : (Presieve.map F R).HasPullbacks (F.map f) := J.hasPullbacks_of_mem (F.map f) hR
     have : HasPullback (F.map g) (F.map f) := (R.map F).hasPullback _ (R.map_map hg)
-    exact HasPullback.of_createsLimitsOfShape F g f
+    exact .of_createsLimit F g f
 
 end Functoriality
 
