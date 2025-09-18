@@ -41,11 +41,11 @@ structure LatticeCon extends Setoid α where
 namespace LatticeCon
 
 @[simp]
-lemma r_inf_sup_iff [Lattice α] (c : LatticeCon α) {x y : α} : c.r (x ⊓ y) (x ⊔ y) ↔ c.r x y where
+lemma r_inf_sup_iff (c : LatticeCon α) {x y : α} : c.r (x ⊓ y) (x ⊔ y) ↔ c.r x y where
   mp h := c.trans (by simpa using c.inf (c.refl x) (c.symm h)) (by simpa using c.inf h (c.refl y))
   mpr h := c.trans (by simpa using c.inf h (c.refl y)) (by simpa using c.sup (c.symm h) (c.refl y))
 
-private lemma closed_interval [Lattice α] {r : α → α → Prop}
+private lemma closed_interval {r : α → α → Prop}
     (h₂ : ∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y))
     (h₄ : ∀ ⦃x y t : α⦄, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t))
     (a b c d : α) (hab : a ≤ b) (hbd : b ≤ d) (hac : a ≤ c) (hcd : c ≤ d) (had : r a d) :
@@ -56,7 +56,7 @@ private lemma closed_interval [Lattice α] {r : α → α → Prop}
   simpa [sup_eq_right.mpr (le_inf hab hac), sup_eq_left.mpr (inf_le_of_left_le hbd)] using
     ((h₄ (le_trans hab hbd) had).2 : r (a ⊔ b ⊓ c) (d ⊔ b ⊓ c))
 
-private lemma transitive [Lattice α] {r : α → α → Prop}
+private lemma transitive {r : α → α → Prop}
     (h₂ : ∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y))
     (h₃ : ∀ ⦃x y z : α⦄, x ≤ y → y ≤ z → r x y → r y z → r x z)
     (h₄ : ∀ ⦃x y t : α⦄, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t)) :
@@ -102,7 +102,7 @@ def mk' [Lattice α] (r : α → α → Prop) (h₁ : IsRefl α r)
           simpa [sup_comm w] using compatible_left_sup h2)
           (compatible_left_sup h1))
 
-variable {β F : Type*} [FunLike F α β]
+variable [FunLike F α β]
 
 open Function
 
