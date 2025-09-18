@@ -12,7 +12,7 @@ import Mathlib.RingTheory.RootsOfUnity.Complex
 
 A CM-extension `K/F` of number fields is an extension where `K` is totally complex, `F` is
 totally real and `K` is a quadratic extension of `F`. In this situation, the totally real
-subfield `F` is (isomorphic to) the maximal real subfield of `K`.
+subfield `F` is (isomorphic to) the maximal real subfield `K⁺` of `K`.
 
 ## Main definitions
 
@@ -20,7 +20,7 @@ subfield `F` is (isomorphic to) the maximal real subfield of `K`.
   complex quadratic extension of its totally real subfield
 
 * `NumberField.CMExtension.equivMaximalRealSubfield`: Any field `F` such that `K/F` is a
-  CM-extension is isomorphic to the maximal real subfield of `K`.
+  CM-extension is isomorphic to the maximal real subfield `K⁺` of `K`.
 
 * `NumberField.IsCM.ofIsCMExtension`: Assume that there exists `F` such that `K/F` is a
   CM-extension. Then `K` is CM.
@@ -34,7 +34,7 @@ extension of its totally real. These results live in the `NumberField.IsCMField`
 results deal with the general case `K/F`, where `K` is totally complex, `F` is totally real and
 `K` is a quadratic extension of `F`, and live in the `NumberField.CMExtension` namespace. Note that
 results for the general case can be deduced for the CM case by using the isomorphism
-`equivMaximalRealSubfield` mentionned above.
+`equivMaximalRealSubfield` between `F` and `K⁺` mentioned above.
 
 -/
 
@@ -86,7 +86,7 @@ All the conjugations of a CM-field over its maximal real subfield are the same.
 -/
 theorem isConj_eq_isConj {φ ψ : K →+* ℂ} {σ τ : K ≃ₐ[K⁺] K}
     (hφ : IsConj φ σ) (hψ : IsConj ψ τ) : σ = τ := by
-  have : Nat.card (K ≃ₐ[maximalRealSubfield K] K) = 2 :=
+  have : Nat.card (K ≃ₐ[K⁺] K) = 2 :=
     (IsQuadraticExtension.finrank_eq_two K⁺ K) ▸ IsGalois.card_aut_eq_finrank K⁺ K
   rw [Nat.card_eq_two_iff' 1] at this
   exact ExistsUnique.unique this
@@ -124,6 +124,9 @@ theorem complexConj_ne_one :
     (exists_isConj K (Classical.choice (inferInstance : Nonempty _))).choose_spec).mpr <|
       IsTotallyComplex.complexEmbedding_not_isReal _
 
+@[simp]
+theorem complexConj_apply_eq_self (x : K⁺) : complexConj K x = x := AlgEquiv.commutes _ x
+
 /--
 The complex conjugation is an automorphism of degree `2`.
 -/
@@ -132,7 +135,7 @@ theorem orderOf_complexConj :
   orderOf_eq_prime_iff.mpr ⟨by ext; simp, complexConj_ne_one K⟩
 
 /--
-The complex conjugation generates the Galois group of `K/maximalRealSubfield K`.
+The complex conjugation generates the Galois group of `K/K⁺`.
 -/
 theorem zpowers_complexConj_eq_top :
     Subgroup.zpowers (complexConj K) = ⊤ := by
