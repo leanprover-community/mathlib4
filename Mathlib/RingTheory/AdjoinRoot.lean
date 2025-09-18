@@ -335,6 +335,26 @@ theorem noZeroSMulDivisors_of_prime_of_degree_ne_zero [IsDomain R] (hf : Prime f
 
 end Prime
 
+section
+
+/-- If `f = g`, `R` adjoint a root of `f` is isomorphic to `R` adjoint a root of `g`. -/
+def algEquivOfEq {f g : R[X]} (hfg : f = g) : AdjoinRoot f ≃ₐ[R] AdjoinRoot g :=
+  .ofAlgHom
+    (liftHom f (root g) (by simp [hfg]))
+    (liftHom g (root f) (by simp [hfg]))
+    (by ext; simp)
+    (by ext; simp)
+
+variable {f g : R[X]} (hfg : f = g)
+
+@[simp] lemma algEquivOfEq_root : algEquivOfEq hfg (root f) = root g := by
+  simp [algEquivOfEq]
+
+@[simp] lemma algEquivOfEq_symm_root : (algEquivOfEq hfg).symm (root g) = root f := by
+  simp [algEquivOfEq]
+
+end
+
 end CommRing
 
 section Irreducible
@@ -783,25 +803,7 @@ end
 
 section
 
-noncomputable local instance {S : Type*} [CommRing S] (I : Ideal S) (g : S[X]) :
-    Algebra (S ⧸ I) (S[X] ⧸ Ideal.map Polynomial.C I ⊔ Ideal.span {g}) :=
-  letI f : (S ⧸ I) →ₐ[S] (S[X] ⧸ Ideal.map Polynomial.C I ⊔ Ideal.span {g}) :=
-    Ideal.Quotient.liftₐ _ (Algebra.ofId _ _) fun a ha ↦ by
-      rw [Algebra.ofId_apply, IsScalarTower.algebraMap_apply S S[X],
-        Ideal.Quotient.algebraMap_eq, Polynomial.algebraMap_eq, Ideal.Quotient.eq_zero_iff_mem]
-      exact Ideal.mem_sup_left (Ideal.mem_map_of_mem Polynomial.C ha)
-  f.toAlgebra
-
-instance {S : Type*} [CommRing S] (I : Ideal S) (g : S[X]) :
-    IsScalarTower S (S ⧸ I) (S[X] ⧸ Ideal.map Polynomial.C I ⊔ Ideal.span {g}) :=
-  .of_algHom _
-
-@[simp]
-lemma Polynomial.aeval_quotientMk_X {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    (g : R[X]) (I : Ideal S[X]) :
-    Polynomial.aeval (Ideal.Quotient.mk I Polynomial.X) g =
-      Ideal.Quotient.mk I (Polynomial.map (algebraMap R S) g) := by
-  simp [← Ideal.Quotient.algebraMap_eq, aeval_algebraMap_apply, aeval_X_left_of_algebra_apply]
+attribute [local instance] algebraQuotientMapSupSpan
 
 /-- `S ⧸ I` adjoined a root of `g : S[X]` is `S ⧸ I`-equivalent to `S[X] ⧸ (I ⊔ g)`. -/
 noncomputable
@@ -827,6 +829,37 @@ def mapQuotientMkEquiv {S : Type*} [CommRing S] (I : Ideal S) (g : S[X]) :
     Ideal.Quotient.algHom_ext _ (by ext; simp [u, v])
   { __ := u, invFun := v, left_inv x := DFunLike.congr_fun h1 x,
     right_inv x := DFunLike.congr_fun h2 x }
+
+end
+
+section
+
+attribute [local instance] MvPolynomial.algebraOption MvPolynomial.algebraQuotientSpanToMvPolynomial
+  algebraQuotientMapSupSpan
+
+open MvPolynomial in
+/-- If `p` is a family of polynomials, `R[X₁, ..., Xₙ]/(p₁, ..., pₙ)` adjoint `pₙ₊₁`
+is isomorphic to `R[X₁, ..., Xₙ₊₁]/(p₁, ..., pₙ₊₁). -/
+noncomputable
+def spanToMvPolynomialEquiv {α R : Type*} [CommRing R] (p : Option α → R[X]) :
+    AdjoinRoot ((p none).map (algebraMap R
+      (MvPolynomial α R ⧸ (Ideal.span <| .range fun i ↦ (p (some i)).toMvPolynomial i))))
+        ≃ₐ[MvPolynomial α R ⧸ (Ideal.span <| .range fun i ↦ (p (some i)).toMvPolynomial i)]
+    MvPolynomial (Option α) R ⧸ (Ideal.span <| .range fun i ↦ (p i).toMvPolynomial i) := by
+  letI e := AdjoinRoot.mapQuotientMkEquiv
+    (.span (.range fun i ↦ (toMvPolynomial i) (p (some i)))) (Polynomial.map C (p none))
+  refine (algEquivOfEq ?_).trans (e.trans (AlgEquiv.restrictQuotient _ ?_))
+  · rw [IsScalarTower.algebraMap_eq R (MvPolynomial α R), Ideal.Quotient.algebraMap_eq,
+      MvPolynomial.algebraMap_eq, ← Polynomial.map_map]
+  refine Ideal.quotientEquivAlg _
+    (.span (.range fun i ↦ (toMvPolynomial i) (p i))) (optionEquivLeft' R α).symm ?_
+  rw [Ideal.map_sup, Ideal.map_span, Ideal.map_span, Ideal.map_span, ← Ideal.span_union,
+    ← Set.range_comp, ← Set.range_comp, Function.comp_def, Function.comp_def]
+  simp only [RingHom.coe_coe, coe_optionEquivLeft'_symm, optionEquivLeft_symm_apply,
+    Polynomial.aevalTower_C, rename_toMvPolynomial, Set.image_singleton, Set.union_singleton,
+    Option.range_eq]
+  congr 2
+  induction p none using Polynomial.induction_on <;> simp_all
 
 end
 
