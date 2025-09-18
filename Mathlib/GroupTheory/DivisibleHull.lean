@@ -155,6 +155,10 @@ theorem mk_left_injective (s : ℕ+) : Function.Injective (fun (m : M) ↦ mk m 
 theorem coe_injective : Function.Injective ((↑) : M → DivisibleHull M) :=
   mk_left_injective 1
 
+@[simp, norm_cast]
+theorem coe_inj {m m' : M} : (m : DivisibleHull M) = ↑m' ↔ m = m' :=
+  coe_injective.eq_iff
+
 theorem coeAddMonoidHom_injective : Function.Injective (coeAddMonoidHom M) := coe_injective
 
 end TorsionFree
@@ -241,8 +245,8 @@ private theorem lift_aux (m n m' n' : M) (s t s' t' : ℕ+)
     (h : mk m s = mk m' s') (h' : mk n t = mk n' t') :
     (t.val • m ≤ s.val • n) = (t'.val • m' ≤ s'.val • n') := by
   rw [mk_eq_mk_iff_smul_eq_smul] at h h'
-  rw [propext_iff, ← (nsmul_right_strictMono (mul_ne_zero s'.ne_zero t'.ne_zero)).le_iff_le]
-  convert (nsmul_right_strictMono (M := M) (mul_ne_zero s.ne_zero t.ne_zero)).le_iff_le using 2
+  rw [propext_iff, ← nsmul_le_nsmul_iff_right (mul_ne_zero s'.ne_zero t'.ne_zero)]
+  convert (nsmul_le_nsmul_iff_right (M := M) (mul_ne_zero s.ne_zero t.ne_zero)) using 2
   · simp_rw [smul_smul, mul_rotate s'.val, ← smul_smul, h, smul_smul]
     ring_nf
   · simp_rw [smul_smul, ← mul_rotate s'.val, ← smul_smul, ← h', smul_smul]
@@ -263,10 +267,9 @@ instance : LinearOrder (DivisibleHull M) where
     induction b with | mk mb sb
     induction c with | mk mc sc
     rw [mk_le_mk] at ⊢ hab hbc
-    rw [← (nsmul_right_strictMono (show sb.val ≠ 0 by simp)).le_iff_le, smul_comm _ _ ma,
-      smul_comm _ _ mc]
-    rw [← (nsmul_right_strictMono (show sc.val ≠ 0 by simp)).le_iff_le, smul_comm _ _ mb] at hab
-    rw [← (nsmul_right_strictMono (show sa.val ≠ 0 by simp)).le_iff_le] at hbc
+    rw [← nsmul_le_nsmul_iff_right (show sb.val ≠ 0 by simp), smul_comm _ _ ma, smul_comm _ _ mc]
+    rw [← nsmul_le_nsmul_iff_right (show sc.val ≠ 0 by simp), smul_comm _ _ mb] at hab
+    rw [← nsmul_le_nsmul_iff_right (show sa.val ≠ 0 by simp)] at hbc
     exact hab.trans hbc
   le_antisymm a b h h' := by
     induction a with | mk ma sa
