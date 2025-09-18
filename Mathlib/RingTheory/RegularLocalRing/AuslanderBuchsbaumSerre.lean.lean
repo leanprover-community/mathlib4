@@ -282,112 +282,55 @@ lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetheria
 
 variable {R}
 
-lemma exist_isSMulRegular_of_exist_hasProjectiveDimensionLE [IsLocalRing R] [IsNoetherianRing R]
-    [Small.{v} R] (I : Ideal R) (netop : I ≠ ⊤) (nebot : I ≠ ⊥)
-    (h : ∃ n, HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} I)) n) :
-    ∃ x ∈ I, x ∉ maximalIdeal R * I ∧ IsSMulRegular R x := by
-  --use prime avoidance to `mI` and associated primes of `R`
-  --for `I` containing regular element, see https://stacks.math.columbia.edu/tag/00N1
+lemma exist_isSMulRegular_of_exist_hasProjectiveDimensionLE_aux [IsLocalRing R] [IsNoetherianRing R]
+    [Small.{v} R] (nebot : maximalIdeal R ≠ ⊥)
+    (h : ∃ n, HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) n) :
+    ∃ x ∈ maximalIdeal R, IsSMulRegular R x := by
+
   sorry
 
-open Set in
-lemma Ideal.spanFinrank_eq_finrank_quotient [IsLocalRing R] [IsNoetherianRing R] (I : Ideal R) :
-    I.spanFinrank = Module.finrank (R ⧸ maximalIdeal R)
-      (I ⧸ maximalIdeal R • (⊤ : Submodule R I)) := by
-  --IsLocalRing.map_mkQ_eq_top
-  have eqtop (S : Set I) : Submodule.span R S = ⊤ ↔
-    Submodule.span R ((Submodule.subtype I) '' S) = I := by
-    simp only [← Submodule.map_span, ← I.range_subtype , ← Submodule.map_top,
-      (Submodule.map_injective_of_injective I.injective_subtype).eq_iff]
-  let f : I →ₛₗ[Ideal.Quotient.mk (maximalIdeal R)] (I ⧸ maximalIdeal R • (⊤ : Submodule R I)) := {
-    __ := Submodule.mkQ _
-    map_smul' r m := rfl }
-  let fg : Module.Finite (R ⧸ maximalIdeal R) (I ⧸ maximalIdeal R • (⊤ : Submodule R I)) :=
-    Module.Finite.of_surjective f (Submodule.mkQ_surjective _)
-  let _ : Module.Free (R ⧸ maximalIdeal R) (I ⧸ maximalIdeal R • (⊤ : Submodule R I)) :=
-    let _ : Field (R ⧸ maximalIdeal R) := Quotient.field (maximalIdeal R)
-    Module.Free.of_divisionRing (R ⧸ maximalIdeal R) (↥I ⧸ maximalIdeal R • ⊤)
-  let fg' : I.FG := (isNoetherianRing_iff_ideal_fg R).mp inferInstance _
-  have : Submodule.spanFinrank (⊤ : Submodule (R ⧸ maximalIdeal R)
-    (I ⧸ maximalIdeal R • (⊤ : Submodule R I))) = Module.rank (R ⧸ maximalIdeal R)
-    (I ⧸ maximalIdeal R • (⊤ : Submodule R I)) := by
-    rw [← Submodule.fg_iff_spanRank_eq_spanFinrank.mpr fg.1, Submodule.rank_eq_spanRank_of_free]
-  simp only [← Module.finrank_eq_rank, Nat.cast_inj] at this
-  rw [← this]
-  apply le_antisymm
-  · have span : Submodule.span R ((⊤ : Submodule (R ⧸ maximalIdeal R)
-      (I ⧸ maximalIdeal R • (⊤ : Submodule R I))).generators.image Quotient.out) = ⊤ := by
-      rw [← IsLocalRing.map_mkQ_eq_top, Submodule.map_span, ← Set.image_comp]
-      simp only [Function.comp_apply, Submodule.mkQ_apply, Submodule.Quotient.mk_out, image_id']
-      apply SetLike.coe_injective
-      rw [← Submodule.coe_span_eq_span_of_surjective R (R ⧸ maximalIdeal R)
-        Ideal.Quotient.mk_surjective, Submodule.span_generators]
-      simp
-    rw [eqtop, ← Set.image_comp] at span
-    rw [← Submodule.FG.generators_ncard fg.1, ← congrArg Submodule.spanFinrank span]
-    apply le_trans (Submodule.spanFinrank_span_le_ncard_of_finite
-      (Finite.image _ fg.1.finite_generators)) (Set.ncard_image_le fg.1.finite_generators)
-  · let G := ({x | ↑x ∈ I.generators} : Set I)
-    have : Submodule.span R G = ⊤ := by
-      simp only [eqtop, Submodule.subtype_apply, Ideal.submodule_span_eq, G]
-      convert I.span_generators
-      ext
-      simpa using fun a ↦ Submodule.FG.generators_mem I a
-    have fin : G.Finite := Set.Finite.of_injOn (by simp [MapsTo, G]) injOn_subtype_val
-        (Submodule.FG.finite_generators fg')
-    rw [← IsLocalRing.map_mkQ_eq_top, Submodule.map_span] at this
-    have eqtop : Submodule.span (R ⧸ maximalIdeal R)
-      ((maximalIdeal R • (⊤ : Submodule R I)).mkQ '' G) = ⊤ := by
-      apply SetLike.coe_injective
-      rw [Submodule.coe_span_eq_span_of_surjective R _ Ideal.Quotient.mk_surjective, this]
-      simp only [Submodule.top_coe]
-    rw [← Submodule.FG.generators_ncard fg', ← eqtop]
-    apply le_trans (Submodule.spanFinrank_span_le_ncard_of_finite (Finite.image _ fin))
-    exact le_trans (Set.ncard_image_le fin) (Set.ncard_le_ncard_of_injOn Subtype.val (by simp [G])
-      injOn_subtype_val (Submodule.FG.finite_generators fg'))
+lemma exist_isSMulRegular_of_exist_hasProjectiveDimensionLE [IsLocalRing R] [IsNoetherianRing R]
+    [Small.{v} R] (nebot : maximalIdeal R ≠ ⊥)
+    (h : ∃ n, HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) n) :
+    ∃ x ∈ maximalIdeal R, x ∉ maximalIdeal R ^ 2 ∧ IsSMulRegular R x := by
+  --use prime avoidance to `m^2` and associated primes of `R`
+
+  sorry
 
 open Pointwise in
-theorem Ferrand_Vasconcelos_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} R]
-    {I : Ideal R} (netop : I ≠ ⊤)
-    (h : ∃ n, HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} I)) n)
-    (free : Module.Free (R ⧸ I) I.Cotangent) (n : ℕ) : Submodule.spanFinrank I = n →
-    ∃ rs : List R, IsRegular R rs ∧ Ideal.ofList rs = I := by
-  induction n generalizing R I
+theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} R]
+    (h : ∃ n, HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) n)
+    (n : ℕ) : Submodule.spanFinrank (maximalIdeal R) = n →
+    ∃ rs : List R, IsRegular R rs ∧ Ideal.ofList rs = maximalIdeal R := by
+  induction n generalizing R
   · intro hrank
-    have : I.FG := (isNoetherianRing_iff_ideal_fg R).mp ‹_› I
-    have : Submodule.spanRank I = 0 := by
+    have : (maximalIdeal R).FG := (isNoetherianRing_iff_ideal_fg R).mp ‹_› _
+    have : Submodule.spanRank (maximalIdeal R) = 0 := by
       simp [Submodule.fg_iff_spanRank_eq_spanFinrank.mpr this, hrank]
     simp only [Submodule.spanRank_eq_zero_iff_eq_bot] at this
     use []
     simpa [this] using RingTheory.Sequence.IsRegular.nil R R
   · rename_i n ih _ _ _ _
-    have fg : I.FG := (isNoetherianRing_iff_ideal_fg R).mp ‹_› I
+    have fg : (maximalIdeal R).FG := (isNoetherianRing_iff_ideal_fg R).mp ‹_› _
     intro hrank
-    have nebot : I ≠ ⊥ := by
+    have nebot : maximalIdeal R ≠ ⊥ := by
       simp [← Submodule.spanRank_eq_zero_iff_eq_bot, hrank,
         Submodule.fg_iff_spanRank_eq_spanFinrank.mpr fg]
-    rcases exist_isSMulRegular_of_exist_hasProjectiveDimensionLE I netop nebot h with
+    rcases exist_isSMulRegular_of_exist_hasProjectiveDimensionLE nebot h with
       ⟨x, mem, nmem, xreg⟩
     let R' := R ⧸ Ideal.span {x}
-    let I' := I.map (Ideal.Quotient.mk (Ideal.span {x}))
-    have netop' : I.map (Ideal.Quotient.mk (Ideal.span {x})) ≠ ⊤ := by
-      by_contra eqtop
-      absurd netop
-      rw [← sup_eq_left.mpr ((Ideal.span_singleton_le_iff_mem I).mpr mem),
-        ← Ideal.mk_ker (I := Ideal.span {x}),
-        ← Ideal.comap_map_of_surjective' _ Ideal.Quotient.mk_surjective]
-      simp [eqtop]
     let _ : IsLocalRing (R ⧸ Ideal.span {x}) :=
       have : Nontrivial (R ⧸ Ideal.span {x}) := Ideal.Quotient.nontrivial
-        (by simpa [← Submodule.ideal_span_singleton_smul] using le_maximalIdeal netop mem)
+        (by simpa [← Submodule.ideal_span_singleton_smul] using mem)
       have : IsLocalHom (Ideal.Quotient.mk (Ideal.span {x})) :=
         IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
       IsLocalRing.of_surjective _ Ideal.Quotient.mk_surjective
     let _ : IsNoetherianRing (R ⧸ Ideal.span {x}) :=
       isNoetherianRing_of_surjective _ _ _ Ideal.Quotient.mk_surjective
     have fin : ∃ n, HasProjectiveDimensionLE
-      (ModuleCat.of (R ⧸ Ideal.span {x}) (Shrink.{v, u} I')) n := by
+      (ModuleCat.of R' (Shrink.{v, u} (R' ⧸ maximalIdeal R'))) n := by
       rcases h with ⟨n, hn⟩
+      /-
       let _ : Module.Finite R ↑(ModuleCat.of R (Shrink.{v, u} I)) :=
         Module.Finite.equiv (Shrink.linearEquiv.{v} R I).symm
       have xreg' : IsSMulRegular (Shrink.{v, u} I) x :=
@@ -400,19 +343,20 @@ theorem Ferrand_Vasconcelos_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} 
         (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x (Shrink.{v} I))) := by
         sorry
       exact this.hasProjectiveDimensionLT (n + 1)
-    have free : Module.Free ((R ⧸ Ideal.span {x}) ⧸ I') I'.Cotangent := by
+      -/
       sorry
-    have rank : Submodule.spanFinrank I' = n := by
+    have rank : Submodule.spanFinrank (maximalIdeal R') = n := by
       sorry
-    rcases ih netop' fin free rank with ⟨rs', reg, span⟩
+    rcases ih fin rank with ⟨rs', reg, span⟩
     rcases List.map_surjective_iff.mpr Ideal.Quotient.mk_surjective rs' with ⟨rs, hrs⟩
     use x :: rs
-    have eq : Ideal.span {x} ⊔ Ideal.ofList rs = I := by
+    have eq : Ideal.span {x} ⊔ Ideal.ofList rs = maximalIdeal R := by
       rw [← Ideal.mk_ker (I := Ideal.span {x}), sup_comm,
         ← Ideal.comap_map_of_surjective' _ Ideal.Quotient.mk_surjective,
         Ideal.map_ofList, hrs, span]
-      simpa [Ideal.comap_map_of_surjective' _ Ideal.Quotient.mk_surjective, I'] using
-        (Ideal.span_singleton_le_iff_mem I).mpr mem
+      /-simpa [Ideal.comap_map_of_surjective' _ Ideal.Quotient.mk_surjective] using
+        (Ideal.span_singleton_le_iff_mem ((maximalIdeal R))).mpr mem-/
+      sorry
     simp only [isRegular_cons_iff, xreg, true_and, Ideal.ofList_cons, eq, and_true]
     let e : QuotSMulTop x R ≃ₗ[R] (R ⧸ Ideal.span {x}) :=
       Submodule.quotEquivOfEq _ _ (by simp [← Submodule.ideal_span_singleton_smul])
@@ -420,13 +364,13 @@ theorem Ferrand_Vasconcelos_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} 
     constructor
     · rw [← RingTheory.Sequence.isWeaklyRegular_map_algebraMap_iff (R ⧸ Ideal.span {x})]
       simpa [hrs] using reg.1
-    · have : Ideal.ofList rs ≤ I := by simp [← eq]
+    · have : Ideal.ofList rs ≤ maximalIdeal R := by simp [← eq]
       apply (ne_top_of_le_ne_top _ (Submodule.smul_mono_left this)).symm
-      simpa using netop'
+      simp only [Ideal.smul_top_eq_map, Ideal.Quotient.algebraMap_eq, ne_eq,
+        Submodule.restrictScalars_eq_top_iff]
+      sorry
 
-theorem Ferrand_Vasconcelos [IsLocalRing R] [IsNoetherianRing R] [Small.{v} R]
-    {I : Ideal R} (netop : I ≠ ⊤)
-    (h : ∃ n, HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} I)) n)
-    (free : Module.Free (R ⧸ I) I.Cotangent) :
-    ∃ rs : List R, IsRegular R rs ∧ Ideal.ofList rs = I :=
-  Ferrand_Vasconcelos_aux  netop h free (Submodule.spanFinrank I) rfl
+theorem generate_by_regular [IsLocalRing R] [IsNoetherianRing R] [Small.{v} R]
+    (h : ∃ n, HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) n) :
+    ∃ rs : List R, IsRegular R rs ∧ Ideal.ofList rs = maximalIdeal R :=
+  generate_by_regular_aux  h (Submodule.spanFinrank (maximalIdeal R)) rfl
