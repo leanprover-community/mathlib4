@@ -1,9 +1,11 @@
 /-
 Copyright (c) 2025 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz, Kenny Lau
+Authors: Adam Topaz, Kenny Lau, Jovan Gerbscheid
 -/
-import Lean
+import Lean.Elab.Syntax
+import Lean.Elab.Tactic.Config
+import Mathlib.Init
 
 /-!
 The command `name_poly_vars` names variables in any combination of `Polynomial`, `MvPolynomial`,
@@ -96,11 +98,11 @@ relevant `kind : SyntaxNodeKind`. -/
 def String.toTSyntax {n : Name} (s : String) (kind : SyntaxNodeKind) : TSyntax n :=
   ⟨mkNode kind #[mkAtom s]⟩
 
-/-- A syntax for variables in a polynomial-like notation. The special case of one-variable
+/-- A list of variables in a polynomial-like notation. The special case of one-variable
 multivariate notation is `X,` with a trailing comma. -/
 syntax vars := sepBy(poly_var, ",", ",", allowTrailingSep)
 
-/-- A syntax for variables in a polynomial-like notation. The special case of one-variable
+/-- A list of variables in a polynomial-like notation. The special case of one-variable
 multivariate notation is `X,` with a trailing comma. -/
 syntax poly_idents := sepBy(ident, ",", ",", allowTrailingSep)
 
@@ -110,8 +112,10 @@ def Lean.TSyntax.parsePolyIdents : TSyntax ``poly_idents → Option (String ⊕ 
   | `(poly_idents| $vs:ident,*) => pure (Sum.inr (vs.getElems.map fun v ↦ v.getId.toString))
   | _ => .none
 
-/-- An unambiguously bracketed term, which is `_`, an identifier, or a term enclosed in brackets -/
+-- An unambiguously bracketed term, which is `_`, an identifier, or a term enclosed in brackets.
+-- This has no doc-string because that would show up in hover information.
 syntax term_decl := hole <|> ident <|> ("(" term ")")
+attribute [nolint docBlame] term_decl
 
 /-- A type synonym for a term declaration, used to avoid ambiguity in the syntax. -/
 abbrev TermDecl : Type := TSyntax ``term_decl
@@ -241,7 +245,7 @@ def mkSyntax (opening : Opening) (closing : Closing) (mv? : Bool) (polyVars : Ar
   have vars : TSyntax ``vars := ← match mv?, polyVars with
     | true, #[v] => `(vars|$v,)
     | _, _ => `(vars|$(Syntax.TSepArray.ofElems polyVars):poly_var,*)
-  return ← `(polyesque_notation| $opening$vars$closing)
+  `(polyesque_notation| $opening$vars$closing)
 
 /-- Given one segment (e.g. `[x,y]`) of the declaration, extract all the relevant information:
 the relevant functor (`MvPolynomial (Fin 2)`), the formal variables, and their meanings. Then,
@@ -287,9 +291,7 @@ elab "name_poly_vars " head:term_decl noWs body:polyesque_notation_input+ : comm
   let mut lastHead : Term := default
   for p in body do
     let processed ← p.processAndDeclarePolyesqueNotationInput terms functor
-    terms := processed.2.1
-    functor := processed.2.2.1
-    lastHead := processed.2.2.2
+    (terms, functor, lastHead) := processed.2
     bodyVar := bodyVar.push processed.1
   have body := Syntax.TSepArray.ofElems (sep := "") bodyVar
   let typeIdent ← functor (← `($$i:ident))
@@ -298,31 +300,26 @@ elab "name_poly_vars " head:term_decl noWs body:polyesque_notation_input+ : comm
   let polyesqueTerm : Polyesque ← `(polyesque| ($$t:term)$body:polyesque_notation*)
   let type : Term := ← match head with
   | `(term_decl| $_:hole) => do
-    let typeHole ← functor (← `(_))
-    let polyesqueHole : Polyesque ← `(polyesque| _$body:polyesque_notation*)
-    elabMacroRulesAndTrace polyesqueHole typeHole
+    elabMacroRulesAndTrace (← `(polyesque| $$h:hole$body:polyesque_notation*))
+      (← functor (← `($$h:hole)))
     elabMacroRulesAndTrace polyesqueIdent typeIdent
     elabMacroRulesAndTrace polyesqueTerm typeTerm
     -- if the head of the term is a constant, then deploy the unexpander.
-    match lastHead with
-    | `($c:ident) => do
+    if let `($c:ident) := lastHead then
       trace[name_poly_vars] m!"Declaring unexpander for {c}"
       elabCommand <| ← `(command|
         @[local app_unexpander $c]
         def unexpand : Lean.PrettyPrinter.Unexpander
-          | `($typeHole) => `($polyesqueHole:polyesque)
           | `($typeIdent) => `($polyesqueIdent:polyesque)
           | `($typeTerm) => `($polyesqueTerm:polyesque)
           | _ => throw ())
-    | _ => pure ()
-    return typeHole
+    functor (← `(_))
   | _ => do
     let type ← functor head.term
     let polyesque : Polyesque ← `(polyesque| $head$body:polyesque_notation*)
     elabMacroRulesAndTrace polyesque type
     -- if the head of the term is a constant, then deploy the unexpander.
-    match lastHead with
-    | `($c:ident) => do
+    if let `($c:ident) := lastHead then
       trace[name_poly_vars] m!"Declaring unexpander for {c}"
       match head with
       | `(term_decl| $R:ident) => do
@@ -342,9 +339,7 @@ elab "name_poly_vars " head:term_decl noWs body:polyesque_notation_input+ : comm
               | _ => throw ()
             | _ => throw ())
       | _ => pure ()
-    | _ => pure ()
     return type
-  trace[name_poly_vars] m!"Terms:"
   for (v, t) in terms do
     elabCommand <| ← `(command| local macro_rules | `($v:poly_var) => `(($t : $type)))
     trace[name_poly_vars] m!"Declaring polyesque variable {v} := {t}"
