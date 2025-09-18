@@ -47,25 +47,25 @@ variable (ϕ : τ → α → α) (s : Set α)
 theorem isInvariant_iff_image : IsInvariant ϕ s ↔ ∀ t, ϕ t '' s ⊆ s := by
   simp_rw [IsInvariant, mapsTo_iff_image_subset]
 
-/-- A set `s ⊆ α` is forward-invariant under `ϕ : τ → α → α` if `ϕ t s ⊆ s` for all `t ≥ 0`. -/
-def IsFwInvariant [Preorder τ] [Zero τ] (ϕ : τ → α → α) (s : Set α) : Prop :=
+/-- A set `s ⊆ α` is forward invariant under `ϕ : τ → α → α` if `ϕ t s ⊆ s` for all `t ≥ 0`. -/
+def IsForwardInvariant [Preorder τ] [Zero τ] (ϕ : τ → α → α) (s : Set α) : Prop :=
   ∀ ⦃t⦄, 0 ≤ t → MapsTo (ϕ t) s s
 
-theorem IsInvariant.isFwInvariant [Preorder τ] [Zero τ] {ϕ : τ → α → α} {s : Set α}
-    (h : IsInvariant ϕ s) : IsFwInvariant ϕ s := fun t _ht => h t
+theorem IsInvariant.isForwardInvariant [Preorder τ] [Zero τ] {ϕ : τ → α → α} {s : Set α}
+    (h : IsInvariant ϕ s) : IsForwardInvariant ϕ s := fun t _ht => h t
 
 /-- If `τ` is a `CanonicallyOrderedAdd` monoid (e.g., `ℕ` or `ℝ≥0`), then the notions
-`IsFwInvariant` and `IsInvariant` are equivalent. -/
-theorem IsFwInvariant.isInvariant [AddMonoid τ] [PartialOrder τ] [CanonicallyOrderedAdd τ]
+`IsForwardInvariant` and `IsInvariant` are equivalent. -/
+theorem IsForwardInvariant.isInvariant [AddMonoid τ] [PartialOrder τ] [CanonicallyOrderedAdd τ]
     {ϕ : τ → α → α} {s : Set α}
-    (h : IsFwInvariant ϕ s) : IsInvariant ϕ s := fun t => h (zero_le t)
+    (h : IsForwardInvariant ϕ s) : IsInvariant ϕ s := fun t => h (zero_le t)
 
 /-- If `τ` is a `CanonicallyOrderedAdd` monoid (e.g., `ℕ` or `ℝ≥0`), then the notions
-`IsFwInvariant` and `IsInvariant` are equivalent. -/
-theorem isFwInvariant_iff_isInvariant [AddMonoid τ] [PartialOrder τ] [CanonicallyOrderedAdd τ]
+`IsForwardInvariant` and `IsInvariant` are equivalent. -/
+theorem isForwardInvariant_iff_isInvariant [AddMonoid τ] [PartialOrder τ] [CanonicallyOrderedAdd τ]
     {ϕ : τ → α → α} {s : Set α} :
-    IsFwInvariant ϕ s ↔ IsInvariant ϕ s :=
-  ⟨IsFwInvariant.isInvariant, IsInvariant.isFwInvariant⟩
+    IsForwardInvariant ϕ s ↔ IsInvariant ϕ s :=
+  ⟨IsForwardInvariant.isInvariant, IsInvariant.isForwardInvariant⟩
 
 end Invariant
 
@@ -191,8 +191,8 @@ theorem forwardOrbit_eq_range_nonneg (x : α) :
     forwardOrbit ϕ x = Set.range (fun t : {t : τ // 0 ≤ t} => ϕ t x) := rfl
 
 /-- The forward orbit of a point under a flow `ϕ` is forward invariant under `ϕ`. -/
-theorem isFwInvariant_forwardOrbit (x : α) : IsFwInvariant ϕ (forwardOrbit ϕ x) :=
-  fun t h => IsInvariant.isFwInvariant (isInvariant_orbit ϕ.restrictNonneg x) (t := ⟨t, h⟩) h
+theorem isForwardInvariant_forwardOrbit (x : α) : IsForwardInvariant ϕ (forwardOrbit ϕ x) :=
+  fun t h => IsInvariant.isForwardInvariant (isInvariant_orbit ϕ.restrictNonneg x) (t := ⟨t, h⟩) h
 
 /-- The forward orbit of a point `x` is contained in the orbit of `x`. -/
 theorem forwardOrbit_subset_orbit (x : α) : forwardOrbit ϕ x ⊆ orbit ϕ x :=
