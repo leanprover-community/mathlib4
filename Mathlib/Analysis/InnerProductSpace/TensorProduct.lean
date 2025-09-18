@@ -73,18 +73,18 @@ lemma mem_finiteDimensional_range_mapIncl {K V V' : Type*} [Field K] [AddCommGro
 
 end move
 
-lemma inner_coe_of_eq {E' : Submodule 𝕜 E} {F' : Submodule 𝕜 F} {x y : E' ⊗[𝕜] F'} :
+private lemma inner_coe_of_eq {E' : Submodule 𝕜 E} {F' : Submodule 𝕜 F} {x y : E' ⊗[𝕜] F'} :
     inner 𝕜 x y = inner 𝕜 (mapIncl E' F' x) (mapIncl E' F' y) :=
   x.induction_on (by simp [inner])
   (y.induction_on (by simp [inner]) (by simp) (by simp_all)) (by simp_all)
 
-lemma inner_coe_of_eq' {x y : E ⊗[𝕜] F}
+private lemma inner_coe_of_eq' {x y : E ⊗[𝕜] F}
     {E' : Submodule 𝕜 E} {F' : Submodule 𝕜 F} {x' y' : E' ⊗[𝕜] F'}
     (hx : x = mapIncl E' F' x') (hy : y = mapIncl E' F' y') :
     inner 𝕜 x' y' = inner 𝕜 x y :=
   hx ▸ hy ▸ inner_coe_of_eq
 
-lemma inner_coe_of_mem_range {x y : E ⊗[𝕜] F} {E' : Submodule 𝕜 E} {F' : Submodule 𝕜 F}
+private lemma inner_coe_of_mem_range {x y : E ⊗[𝕜] F} {E' : Submodule 𝕜 E} {F' : Submodule 𝕜 F}
     (hx : x ∈ LinearMap.range (mapIncl E' F')) (hy : y ∈ LinearMap.range (mapIncl E' F')) :
     inner 𝕜 hx.choose hy.choose = inner 𝕜 x y :=
   TensorProduct.inner_coe_of_eq' hx.choose_spec.symm hy.choose_spec.symm
@@ -92,7 +92,7 @@ lemma inner_coe_of_mem_range {x y : E ⊗[𝕜] F} {E' : Submodule 𝕜 E} {F' :
 open scoped ComplexOrder
 open Module
 
-theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x = 0 := by
+private protected theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x = 0 := by
   obtain ⟨E', F', iE', iF', hz⟩ := x.mem_finiteDimensional_range_mapIncl
   rw [← inner_coe_of_mem_range hz hz] at hx
   let y := hz.choose
@@ -112,7 +112,7 @@ theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x = 0 := 
     simp only [hx, map_zero, Finsupp.coe_zero, Pi.zero_apply, implies_true]
   rw [← hz.choose_spec, ← hy, this, map_zero]
 
-theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
+private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
     0 ≤ RCLike.re (inner 𝕜 x x) := by
   obtain ⟨E', F', iE', iF', hz⟩ := x.mem_finiteDimensional_range_mapIncl
   rw [← inner_coe_of_mem_range hz hz]
