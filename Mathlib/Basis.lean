@@ -15,18 +15,57 @@ theorem Algebra.adjoin_trans {R S T : Type*} [CommSemiring R] [CommSemiring S] [
   rw [adjoin_union_eq_adjoin_adjoin, this, ← IsScalarTower.adjoin_range_toAlgHom]
 -- It's adjoin_algebraMap_image_union_eq_adjoin_adjoin
 
--- This probably true more generally and already proved somewhere...
+-- This is needed (maybe not this form though)
 attribute [local instance] FractionRing.liftAlgebra in
 theorem FractionRing.algEquiv_algebraMap_commutes (A B : Type*) [CommRing A] [IsDomain A]
     [CommRing B] [IsDomain B] (K L : Type*) [Field K]
     [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L] [IsFractionRing B L] [Algebra A B]
     [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L] [FaithfulSMul A B]
     (x : K) :
-     algebraMap (FractionRing A) (FractionRing B) ((FractionRing.algEquiv A K).symm x) =
+    algebraMap (FractionRing A) (FractionRing B) ((FractionRing.algEquiv A K).symm x) =
        (FractionRing.algEquiv B L).symm (algebraMap K L x) := by
   obtain ⟨r, s, -, rfl⟩ := IsFractionRing.div_surjective (A := A) x
   simp_rw [map_div₀, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B L,
     AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
+
+attribute [local instance] FractionRing.liftAlgebra in
+theorem FractionRing.algEquiv_algebraMap_commutes' (A : Type*) [CommRing A] [IsDomain A]
+    (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K]
+    [Algebra K L] [Algebra A L] [FaithfulSMul A L]
+    [IsScalarTower A K L] (x : K) :
+    algebraMap (FractionRing A) L ((FractionRing.algEquiv A K).symm x) =
+      algebraMap K L x := by
+  obtain ⟨r, s, -, rfl⟩ := IsFractionRing.div_surjective (A := A) x
+  rw [map_div₀, map_div₀, map_div₀, AlgEquiv.commutes, AlgEquiv.commutes,
+    ← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
+    ← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply]
+
+attribute [local instance] FractionRing.liftAlgebra in
+theorem toto (A B : Type*) [CommRing A] [IsDomain A] [CommRing B] [IsDomain B] (K L : Type*)
+  [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L] [IsFractionRing B L]
+  (f : K →+* L) (g : FractionRing A →+* FractionRing B)
+  (h : ∀ x, f (FractionRing.algEquiv A K (algebraMap A (FractionRing A) x)) =
+    FractionRing.algEquiv B L (g (algebraMap A (FractionRing A) x)))
+  (x) :
+  f ((FractionRing.algEquiv A K) x) =
+    (FractionRing.algEquiv B L) (g x) := by
+  obtain ⟨r, s, -, rfl⟩ := IsFractionRing.div_surjective (A := A) x
+  simp only [map_div₀, h]
+
+-- attribute [local instance] FractionRing.liftAlgebra in
+-- theorem FractionRing.algEquiv_algebraMap_commutes' (A B : Type*) [CommRing A] [IsDomain A]
+--     [CommRing B] [IsDomain B] (K L : Type*) [Field K]
+--     [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L] [IsFractionRing B L] [Algebra A B]
+--     [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L] [FaithfulSMul A B]
+--     (x) :
+--     algebraMap (FractionRing A) (FractionRing B) x =
+--        (FractionRing.algEquiv B L).symm (algebraMap K L (FractionRing.algEquiv A K x)) := by
+--   rw [toto A B K L _ (algebraMap (FractionRing A) (FractionRing B))]
+--   simp
+--   intro x
+--   rw [AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply,
+--     IsScalarTower.algebraMap_apply A B (FractionRing B), AlgEquiv.commutes,
+--     ← IsScalarTower.algebraMap_apply]
 
 end misc
 

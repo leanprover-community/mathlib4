@@ -571,6 +571,16 @@ theorem algEquiv_symm_mk' (K : Type*) [CommRing K] [Algebra A K] [IsFractionRing
   rw [Localization.mk_eq_mk'_apply]
   exact Localization.algEquiv_symm_mk' _ _
 
+omit [IsDomain A] in
+theorem algEquiv_symm_algebraMap (K : Type*) [CommRing K] [Algebra A K] [IsFractionRing A K]
+    (x : A) : (algEquiv A K).symm (algebraMap A K x) = algebraMap A (FractionRing A) x := by
+  rw [AlgEquiv.commutes]
+
+omit [IsDomain A] in
+theorem algEquiv_algebraMap (K : Type*) [CommRing K] [Algebra A K] [IsFractionRing A K] (x : A) :
+    algEquiv A K (algebraMap A (FractionRing A) x) = algebraMap A K x := by
+  rw [AlgEquiv.commutes]
+
 instance [Algebra R A] [FaithfulSMul R A] : FaithfulSMul R (FractionRing A) := by
   rw [faithfulSMul_iff_algebraMap_injective, IsScalarTower.algebraMap_eq R A]
   exact (FaithfulSMul.algebraMap_injective A (FractionRing A)).comp
