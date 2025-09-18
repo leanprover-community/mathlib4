@@ -117,7 +117,7 @@ lemma inner_coe_of_mem_range {x y : E ⊗[𝕜] F}
 open scoped ComplexOrder
 
 theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x = 0 := by
-  obtain ⟨E', F', iE', iF', hz⟩ := x.toFiniteDimensional
+  obtain ⟨E', F', iE', iF', hz⟩ := x.mem_finiteDimensional_range_mapIncl
   rw [← inner_coe_of_mem_range hz hz] at hx
   let y := hz.choose
   obtain e := stdOrthonormalBasis 𝕜 E'
@@ -138,7 +138,7 @@ theorem inner_definite (x : E ⊗[𝕜] F) (hx : inner 𝕜 x x = 0) : x = 0 := 
 
 theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
     0 ≤ RCLike.re (inner 𝕜 x x) := by
-  obtain ⟨E', F', iE', iF', hz⟩ := x.toFiniteDimensional
+  obtain ⟨E', F', iE', iF', hz⟩ := x.mem_finiteDimensional_range_mapIncl
   rw [← inner_coe_of_mem_range hz hz]
   let y := hz.choose
   obtain e := stdOrthonormalBasis 𝕜 E'
