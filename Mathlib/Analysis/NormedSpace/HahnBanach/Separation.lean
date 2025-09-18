@@ -341,7 +341,7 @@ theorem geometric_hahn_banach {B : Set E} (hs₁ : Convex ℝ B) (hs₂ : IsClos
   obtain ⟨s, s_pos, s_lt, hs⟩ : ∃ s, 0 < s ∧ s < r ∧ (∀ z ∈ K, ‖z‖ < s) :=
     closed_balanced_sep compact_K zero_in norm_lt_r
   use f, s
-  simpa [← hr, s_lt, s_pos] using fun b hb ↦ hs (f b) (subset_closure (mem_image_of_mem (⇑f) hb))
+  simpa [← hr, s_lt, s_pos] using fun b hb ↦ hs (f b) (subset_closure (mem_image_of_mem f hb))
 
 theorem geometric_hahn_banach' {B : Set E} (hs₁ : Convex ℝ B) (hs₂ : IsClosed B)
     (hs₃ : Balanced 𝕜 B) (hs₄ : B.Nonempty) (x₀ : E) (hx : x₀ ∉ B) :
