@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: James Sundstrom
 -/
 import Mathlib.RingTheory.FractionalIdeal.Basic
-import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Extension of fractional ideals
@@ -103,22 +102,6 @@ theorem extended_one : extended L hf (1 : FractionalIdeal M K) = 1 := by
   · rintro _ ⟨_, ⟨a, ha, rfl⟩, rfl⟩
     exact ⟨f a, ha, by rw [Algebra.linearMap_apply, Algebra.linearMap_apply, map_eq]⟩
 
-theorem extended_le_one_of_le_one (hI : I ≤ 1) : extended L hf I ≤ 1 := by
-  obtain ⟨J, rfl⟩ := le_one_iff_exists_coeIdeal.mp hI
-  intro x hx
-  simp only [val_eq_coe, coe_one]
-  simp only [val_eq_coe, mem_coe, mem_extended_iff, mem_span_image_iff_exists_fun,
-    Finset.univ_eq_attach] at hx
-  obtain ⟨s, hs, c, rfl⟩ := hx
-  refine Submodule.sum_smul_mem _ _ fun x h ↦ mem_one.mpr ?_
-  obtain ⟨a, ha⟩ : ∃ a, (algebraMap A K) a = ↑x := by
-    simpa [val_eq_coe, coe_one, mem_one] using hI <| hs x.prop
-  exact ⟨f a, by rw [← ha, map_eq]⟩
-
-theorem one_le_extended_of_one_le (hI : 1 ≤ I) : 1 ≤ extended L hf I := by
-  rw [one_le] at hI ⊢
-  exact (mem_extended_iff _ _ _ _).mpr <| subset_span ⟨1, hI, by rw [map_one]⟩
-
 theorem extended_add : (I + J).extended L hf = (I.extended L hf) + (J.extended L hf) := by
   apply coeToSubmodule_injective
   simp only [coe_extended_eq_span, coe_add, Submodule.add_eq_sup, ← span_union, ← Set.image_union]
@@ -181,9 +164,9 @@ section Algebra
 
 open scoped nonZeroDivisors
 
-variable {A K : Type*} (L B : Type*) [CommRing A] [CommRing B] [IsDomain B] [Algebra A B]
-  [NoZeroSMulDivisors A B] [Field K] [Field L] [Algebra A K] [Algebra B L] [IsFractionRing A K]
-  [IsFractionRing B L]
+variable {A K : Type*} (L B : Type*) [CommRing A] [CommRing B] [IsDomain B]
+  [Algebra A B] [NoZeroSMulDivisors A B] [Field K] [Field L] [Algebra A K] [Algebra B L]
+  [IsFractionRing A K] [IsFractionRing B L]
 
 /--
 The ring homomorphisme that extends a fractional ideal of `A` to a fractional ideal of `B` for
