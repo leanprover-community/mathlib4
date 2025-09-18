@@ -6,6 +6,7 @@ Authors: Anne Baanen
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.ZMod
+import Mathlib.Data.Nat.Factorization.Basic
 
 /-!
 # `ZMod n` and quotient groups / rings
@@ -75,5 +76,24 @@ def ZMod.prodEquivPi {ι : Type*} [Fintype ι] (a : ι → ℕ)
   quotEquivOfEq (iInf_span_singleton_natCast (R := ℤ) coprime) |>.symm.trans <|
   quotientInfRingEquivPiQuotient _ this |>.trans <|
   RingEquiv.piCongrRight fun i ↦ Int.quotientSpanNatEquivZMod (a i)
+
+def ZMod.equivPi_aux (N : ℕ) :
+    ZMod (∏ (p : N.primeFactors), (p : ℕ) ^ (N.factorization p))
+    ≃+* Π (p : N.primeFactors), ZMod (p ^ (N.factorization p)) :=
+  prodEquivPi (fun (p : N.primeFactors) ↦ (p : ℕ) ^ (N.factorization p))
+    (by
+      intro p1 p2 hp
+      refine Nat.Coprime.pow (N.factorization ↑p1) (N.factorization ↑p2) ?_
+      apply (Nat.coprime_primes _ _).mpr
+      · exact Subtype.coe_ne_coe.mpr hp
+      · exact Nat.prime_of_mem_primeFactors p1.2
+      · exact Nat.prime_of_mem_primeFactors p2.2)
+
+/-- The **Chinese remainder theorem**, version for `ZMod N`. -/
+def ZMod.equivPi (N : ℕ) (hN : N ≠ 0) :
+    ZMod N ≃+* Π (p : N.primeFactors), ZMod (p ^ (N.factorization p)) := by
+  let equiv := equivPi_aux N
+  rw [← Nat.prime_factorization hN] at equiv
+  exact equiv
 
 end ChineseRemainder

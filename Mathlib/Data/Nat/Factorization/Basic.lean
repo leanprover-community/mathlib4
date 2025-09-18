@@ -58,6 +58,12 @@ lemma prod_factorization_eq_prod_primeFactors {β : Type*} [CommMonoid β] (f : 
 lemma prod_primeFactors_prod_factorization {β : Type*} [CommMonoid β] (f : ℕ → β) :
     ∏ p ∈ n.primeFactors, f p = n.factorization.prod (fun p _ ↦ f p) := rfl
 
+lemma prime_factorization (hn : n ≠ 0) :
+    n = ∏ (p : n.primeFactors), (p : ℕ) ^ (n.factorization p) := by
+  nth_rw 1 [← factorization_prod_pow_eq_self hn]
+  rw [prod_factorization_eq_prod_primeFactors _]
+  exact prod_subtype n.primeFactors (fun _ ↦ Iff.rfl) fun a ↦ a ^ n.factorization a
+
 /-! ## Lemmas about factorizations of primes and prime powers -/
 
 /-- The multiplicity of prime `p` in `p` is `1` -/
