@@ -298,8 +298,8 @@ elab "name_poly_vars " head:term_decl noWs body:polyesque_notation_input+ : comm
   let polyesqueTerm : Polyesque ← `(polyesque| ($$t:term)$body:polyesque_notation*)
   let type : Term := ← match head with
   | `(term_decl| $_:hole) => do
-    let typeHole ← functor (← `($$h:hole))
-    let polyesqueHole : Polyesque ← `(polyesque| $$h:hole$body:polyesque_notation*)
+    let typeHole ← functor (← `(_))
+    let polyesqueHole : Polyesque ← `(polyesque| _$body:polyesque_notation*)
     elabMacroRulesAndTrace polyesqueHole typeHole
     elabMacroRulesAndTrace polyesqueIdent typeIdent
     elabMacroRulesAndTrace polyesqueTerm typeTerm
