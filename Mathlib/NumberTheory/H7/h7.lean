@@ -148,6 +148,13 @@ def a : ℕ := (finProdFinEquiv.symm.1 t).1 + 1
 def l : ℕ := (finProdFinEquiv.symm.1 u).1 + 1
 def b : ℕ := (finProdFinEquiv.symm.1 t).2 + 1
 
+def shift {n : ℕ} (t : Fin n) : ℕ := t + 1
+
+lemma foo'' {n : ℕ} (t : Fin n) : 1 ≤ t.val + 1 := by {
+  simp_all only [le_add_iff_nonneg_left, zero_le]}
+
+lemma bar' {n : ℕ} (t : Fin n) : t + 1 ≤ n := t.isLt
+
 lemma fin_n_plus_1_le_n_plus1 {n} (x : Fin n) :
    x + 1 ≤ n + 1 := by
     simp only [add_le_add_iff_right, Fin.is_le']
@@ -155,13 +162,35 @@ lemma fin_n_plus_1_le_n_plus1 {n} (x : Fin n) :
 lemma fin_le_val_last_u (u : Fin ((m K * n K q) + 1)) : u ≤ (m K * n K q) := by
   apply Fin.le_last
 
-lemma l_le_n : (finProdFinEquiv.symm.1 u).1 + 1 ≤ m K + 1 :=
-  fin_n_plus_1_le_n_plus1 (finProdFinEquiv.symm.toFun u).1
+lemma l_le_n : (finProdFinEquiv.symm.1 u).1 + 1 ≤ m K := by
+  exact bar' (finProdFinEquiv.symm.toFun u).1
 
-lemma al_leq_mq : a q t * l K q u ≤ (q + 1) * (m K + 1) := by
+lemma a_le_n : (finProdFinEquiv.symm.1 t).1 + 1 ≤ q := by
+  exact bar' (finProdFinEquiv.symm.toFun t).1
+
+lemma k_le_n_sub1 : (finProdFinEquiv.symm.1 u).2  ≤ (n K q - 1 : ℤ) := by
+  rw [sub_eq_add_neg]
+  have :
+  (finProdFinEquiv.symm.1 u).2 + (1 : ℤ) ≤ ↑(n K q) →
+  (finProdFinEquiv.symm.1 u).2 ≤ ↑(n K q) + (-1 : ℤ) := by {
+    simp only [Int.reduceNeg, le_add_neg_iff_add_le, Int.reduceAdd, Nat.ofNat_le_cast,
+      Nat.reduceAdd, imp_self]}
+  apply this
+  norm_cast
+  exact bar' (finProdFinEquiv.symm.toFun u).2
+
+lemma al_leq_mq : a q t * l K q u ≤ q * m K := by
   apply mul_le_mul
   · unfold a
-    exact fin_n_plus_1_le_n_plus1 (finProdFinEquiv.symm.toFun t).1
+    exact bar' (finProdFinEquiv.symm.toFun t).1
+  · exact l_le_n K q u
+  · simp only [zero_le]
+  · simp only [zero_le]
+
+lemma bl_leq_mq : b q t * l K q u ≤ q * m K := by
+  apply mul_le_mul
+  · unfold b
+    exact bar' (finProdFinEquiv.symm.toFun t).2
   · exact l_le_n K q u
   · simp only [zero_le]
   · simp only [zero_le]
@@ -317,7 +346,7 @@ lemma c₁neq0 : c₁ ≠ 0 := by
   simp_all only [ne_eq, mem_setOf_eq, abs_eq_zero, mul_eq_zero, or_self]
 
 include hirr htriv habc in
-lemma c₁αneq0 : c₁ K α' β' γ' • α' ≠ 0 := by {
+lemma c₁αneq0 : c₁ • α' ≠ 0 := by {
   simp only [zsmul_eq_mul, ne_eq, mul_eq_zero, Int.cast_eq_zero, not_or]
   constructor
   · rw [← ne_eq]
@@ -325,13 +354,22 @@ lemma c₁αneq0 : c₁ K α' β' γ' • α' ≠ 0 := by {
   · rw [← ne_eq]
     exact (hneq0 α β hirr htriv K σ α' β' γ' habc).1}
 
-lemma c_coeffs_neq_zero : c_coeffs K α' β' γ' q ≠ 0 :=
+include hirr htriv habc in
+lemma c₁cneq0 : c₁ • γ' ≠ 0 := by {
+  simp only [zsmul_eq_mul, ne_eq, mul_eq_zero, Int.cast_eq_zero, not_or]
+  constructor
+  · rw [← ne_eq]
+    exact c₁neq0 K α' β' γ'
+  · rw [← ne_eq]
+    exact (hneq0 α β hirr htriv K σ α' β' γ' habc).2.2}
+
+lemma c_coeffs_neq_zero : c_coeffs ≠ 0 :=
   mul_ne_zero (mul_ne_zero (pow_ne_zero _ (c₁neq0 K α' β' γ'))
     (pow_ne_zero _ (c₁neq0 K α' β' γ'))) (pow_ne_zero _ (c₁neq0 K α' β' γ'))
 
 def A : Matrix (Fin (m K * n K q)) (Fin (q * q)) (𝓞 K) :=
   fun i j => RingOfIntegers.restrict _
-   (fun _ => (c₁IsInt K α' β' γ' q i j hq0 h2mq)) ℤ
+   (fun _ => (c₁IsInt0 K α' β' γ' q i j hq0 h2mq)) ℤ
 
 include hirr htriv habc in
 lemma α'_neq_zero :
@@ -378,7 +416,8 @@ lemma β'_neq_zero (k : ℕ) :
     Int.cast_natCast, Int.cast_one, Int.reduceNeg, Int.cast_neg]
 
 include hirr
-lemma sum_b (i1 i2 j1 j2 : ℕ) (Heq : ¬i2 = j2) : i1 + i2 • β ≠ j1 + j2 • β := by {
+lemma sum_b
+   (i1 i2 j1 j2 : ℕ) (Heq : ¬i2 = j2) : i1 + i2 • β ≠ j1 + j2 • β := by {
       intros H
       have hb := hirr (i1 - j1) (j2 - i2)
       apply hb
@@ -437,14 +476,29 @@ lemma sum_b (i1 i2 j1 j2 : ℕ) (Heq : ¬i2 = j2) : i1 + i2 • β ≠ j1 + j2 �
       rw [H.symm]
       simp only [Int.cast_sub, Int.cast_natCast]}
 
-include σ in
-lemma b_sum_neq_0 : ↑q + q • β' ≠ 0 := by {
+include σ habc hirr hq0 in
+lemma b_sum_neq_0 : ↑q + q • β' ≠ 0 := by
   have := sum_b (σ β')
-  sorry
-}
+  have qneq0 : q ≠ 0 := Nat.ne_zero_of_lt hq0
+  have hirr' : ∀ (i j : ℤ), σ β' ≠ σ (↑i / ↑j) := by {
+    intros i j
+    simp only [map_div₀, map_intCast, ne_eq]
+    intros H
+    rw [← habc.2.1] at H
+    apply hirr i j
+    exact H}
+  simp only [map_div₀, map_intCast, ne_eq] at hirr'
+  have := this hirr' q q 0 0 qneq0
+  simp only [nsmul_eq_mul] at this
+  simp only [CharP.cast_eq_zero, zero_mul, add_zero] at this
+  intros H
+  apply this
+  apply_fun σ at H
+  simp only [nsmul_eq_mul, map_add, map_natCast, map_mul, map_zero] at H
+  exact H
 
 include hirr htriv habc in
-lemma one_leq_house_c₁β : 1 ≤ house ((c₁ • β')) := by {
+lemma one_leq_house_c₁β : 1 ≤ house ((c₁ • β')) := by
   apply house_gt_one_of_isIntegral
   exact isIntegral_c₁β K α' β' γ'
   simp only [zsmul_eq_mul, ne_eq, mul_eq_zero, Int.cast_eq_zero, not_or]
@@ -452,19 +506,19 @@ lemma one_leq_house_c₁β : 1 ≤ house ((c₁ • β')) := by {
   · rw [← ne_eq]
     exact c₁neq0 K α' β' γ'
   · rw [← ne_eq]
-    exact (hneq0 α β hirr htriv K σ α' β' γ' habc).2.1}
+    exact (hneq0 α β hirr htriv K σ α' β' γ' habc).2.1
 
 include hirr htriv habc in
-lemma one_leq_house_c₁α : 1 ≤ house ((c₁ • α')) := by {
+lemma one_leq_house_c₁α : 1 ≤ house ((c₁ • α')) := by
   apply house_gt_one_of_isIntegral
   exact isIntegral_c₁α K α' β' γ'
-  apply c₁αneq0 α β hirr htriv K σ α' β' γ' habc}
+  apply c₁αneq0 α β hirr htriv K σ α' β' γ' habc
 
 include hirr htriv habc in
 lemma house_bound_c₁α :
-  house ((c₁ • α'))^(a q t * l K q u) ≤ house ((c₁ • α'))^((m K + 1) * (q + 1)) := by {
+  house ((c₁ • α')) ^ (a q t * l K q u) ≤ house ((c₁ • α'))^((m K) * (q)) := by {
     apply house_alg_int_leq_pow
-    · rw [mul_comm (m K + 1) (q + 1)]
+    · rw [mul_comm (m K) (q)]
       exact al_leq_mq K q u t
     · apply c₁αneq0 α β hirr htriv K σ α' β' γ' habc
     · exact isIntegral_c₁α K α' β' γ' }
@@ -484,7 +538,7 @@ lemma isInt_β_bound : IsIntegral ℤ (c₁ • (↑q + q • β')) := by {
     rw [← zsmul_eq_mul]
     exact isIntegral_c₁β K α' β' γ'}
 
-include hirr htriv habc σ in
+include hirr htriv habc σ hq0 in
 lemma bound_c₁β : 1 ≤ house ((c₁ •(q + q • β'))) := by {
   apply house_gt_one_of_isIntegral
   exact isInt_β_bound K α' β' γ' q
@@ -493,7 +547,7 @@ lemma bound_c₁β : 1 ≤ house ((c₁ •(q + q • β'))) := by {
   · rw [← ne_eq]
     exact c₁neq0 K α' β' γ'
   · rw [← ne_eq]
-    apply b_sum_neq_0 β hirr K σ}
+    apply b_sum_neq_0 α β  hirr K σ α' β' γ' habc q hq0}
 
 include hirr htriv habc in
 lemma one_leq_house_c₁γ : 1 ≤ house ((c₁ • γ')) := by {
@@ -534,12 +588,23 @@ lemma hM_neq0 : A K α' β' γ' q hq0 h2mq ≠ 0 := by
   simp only [mul_eq_zero, pow_eq_zero_iff', Int.cast_eq_zero, ne_eq,
     not_or, or_self_right] at H
   rcases H
-  · rename_i H1; rcases H1
+  · rename_i H1; rcases H1;
     rename_i H1 ; rcases H1 with ⟨H1, H11⟩
     · apply c₁neq0 K α' β' γ'
       assumption
     · rename_i H11; apply c₁neq0 K α' β' γ'
       exact H11.1
+    rename_i h
+    simp_all only [ne_eq, map_eq_zero, t, u]
+    obtain ⟨left, right⟩ := htriv
+    obtain ⟨left_1, right_1⟩ := habc
+    obtain ⟨left_2, right_2⟩ := h
+    obtain ⟨left_3, right_1⟩ := right_1
+    subst left_3 left_1
+    apply c₁neq0 K α' β' γ'
+    exact h.1
+    apply c₁neq0 K α' β' γ'
+    exact h.1
   · rename_i H2;
     simp only [Nat.cast_add, Nat.cast_one, nsmul_eq_mul,
       mul_eq_zero, pow_eq_zero_iff', ne_eq,
@@ -705,14 +770,6 @@ lemma one_leq_c₃ : 1 ≤ c₃ := by {
           · exact h1
         simp only [Nat.ofNat_pos, mul_nonneg_iff_of_pos_left, Nat.cast_nonneg]}
 
-def shift {n : ℕ} (t : Fin n) : ℕ := t + 1
-
-lemma foo'' {n : ℕ} (t : Fin n) : (1) ≤ t.val + 1 := by {
-  simp_all only [le_add_iff_nonneg_left, zero_le]}
-
-omit h2mq hirr in
-lemma bar' {n : ℕ} (t : Fin n) : t + 1 ≤ n := t.isLt
-
 omit h2mq in
 theorem house_sys_coe_bound (α' β' γ' : K)
   (u : Fin (m K * n K q)) (t : Fin (q * q)) :
@@ -720,9 +777,9 @@ theorem house_sys_coe_bound (α' β' γ' : K)
   let b : ℕ := (finProdFinEquiv.symm.1 t).2 + 1
   let k : ℕ := (finProdFinEquiv.symm.1 u).2
   let l : ℕ := (finProdFinEquiv.symm.1 u).1 + 1
-  house (↑(c_coeffs K α' β' γ' q) * ((↑(a) + (↑b) • β') ^ ↑k *
+  house (↑(c_coeffs0 K α' β' γ' q u t) * ((↑(a) + (↑b) • β') ^ ↑k *
       α' ^ ((a) * (↑l)) * γ' ^ ((↑b) * (↑l)))) ≤
-  house (algebraMap ℤ K (c_coeffs K α' β' γ' q)) *
+  house (algebraMap ℤ K (c_coeffs0 K α' β' γ' q u t)) *
   house (↑a + b • β') ^ k * house α' ^ (a * l) * house γ' ^ (b * l) := by {
     intros a b k l
     trans
@@ -802,7 +859,7 @@ include hirr htriv habc in
 lemma hAkl : ∀ (k : Fin (m K * n K q)) (l : Fin (q * q)),
   house ((algebraMap (𝓞 K) K)
   (A K α' β' γ' q hq0 h2mq k l)) ≤
-  (c₃) ^ (n K q : ℝ) * ↑(n K q : ℝ)^(((n K q - 1)/2) : ℝ) := by {
+  (c₃) ^ (n K q : ℝ) * ↑(n K q : ℝ)^(((n K q - 1)/2) : ℝ) := by
     --simp (config := { unfoldPartialApp := true }) only [A, sys_coe]
     unfold A sys_coe
     simp only [RingOfIntegers.restrict, RingOfIntegers.map_mk]
@@ -811,266 +868,104 @@ lemma hAkl : ∀ (k : Fin (m K * n K q)) (l : Fin (q * q)),
     let b : ℕ := (finProdFinEquiv.symm.1 t).2 + 1
     let k : ℕ := (finProdFinEquiv.symm.1 u).2
     let l : ℕ := (finProdFinEquiv.symm.1 u).1 + 1
+
     have : 1 ≤ l := Nat.le_add_left 1 ↑(finProdFinEquiv.symm.toFun u).1
+
     have hlleqmk: l ≤ m K := by {
       exact bar' (finProdFinEquiv.symm.toFun u).1}
-    have c₁IsInt := c₁IsInt K α' β' γ' q u t hq0 h2mq
 
-    have Hint1 : IsIntegral ℤ (c₁  ^ (n K q - 1) • (↑a + b • β') ^ k) := by {
-      apply c₁b K α' β' γ' (n K q) (one_le_n K q hq0 h2mq)
-      apply (Nat.le_sub_one_of_lt (finProdFinEquiv.symm.1 u).2.isLt)
-      exact (Nat.le_add_left 1 (finProdFinEquiv.symm.1 t).1)
-      exact (Nat.le_add_left 1 (finProdFinEquiv.symm.1 t).2)}
+    -- have c₁IsInt := c₁IsInt K α' β' γ' q u t hq0 h2mq
 
-    have Hint2 : IsIntegral ℤ (c₁  ^ (m K * q) • α' ^ (a * l)) := (c1a K α' β' γ' q u t hq0)
+    -- have Hint1 : IsIntegral ℤ (c₁  ^ (n K q - 1) • (↑a + b • β') ^ k) := by {
+    --   apply c₁b K α' β' γ' (n K q) (one_le_n K q hq0 h2mq)
+    --   apply (Nat.le_sub_one_of_lt (finProdFinEquiv.symm.1 u).2.isLt)
+    --   exact (Nat.le_add_left 1 (finProdFinEquiv.symm.1 t).1)
+    --   exact (Nat.le_add_left 1 (finProdFinEquiv.symm.1 t).2)}
 
-    have Hint3 : IsIntegral ℤ (c₁  ^ (m K * q) • γ' ^ (b * l)) := (c1c K α' β' γ' q u t hq0)
+    -- have Hint2 : IsIntegral ℤ (c₁  ^ (a * l) • α' ^ (a * l)) := (c1a0 K α' β' γ' q u t hq0)
 
-    unfold c_coeffs
+    -- have Hint3 : IsIntegral ℤ (c₁  ^ (b * l) • γ' ^ (b * l)) := (c1c0 K α' β' γ' q u t hq0)
 
-    rw [triple_comm K
-    (c₁^(n K q - 1) : ℤ)
-    (c₁^(m K * q) : ℤ)
-    (c₁^(m K * q) : ℤ)
-    (((a : ℕ) + b • β')^(k : ℕ))
-    (α' ^ (a * l))
-    (γ' ^ (b * (l)))]
+    calc _ = house
+            (c₁ ^ k • (↑a + b • β') ^ k * c₁ ^ (a * l) • α' ^ (a * l) *
+             c₁ ^ (b * l) • γ' ^ (b * l))  := ?_
+         _ ≤ house (c₁ ^ k • (↑a + b • β') ^ k) *
+             house (c₁ ^ (a * l) • α' ^ (a * l)) *
+             house (c₁ ^ (b * l) • γ' ^ (b * l)) := ?_
+         _ ≤ house (c₁ • (↑a + b • β')) ^ k *
+             house (c₁ • α') ^ (a * l) *
+             house (c₁ • γ') ^ (b * l) := ?_
+         _ ≤ house (c₁ • (↑q + q • β')) ^ (n K q - 1) *
+             house (c₁ • α') ^ ((m K) * (q)) *
+             house (c₁ • γ') ^ ((m K) * (q)) := ?_
+         _ ≤ (c₃)^(n K q : ℝ) * ↑(n K q : ℝ)^(((n K q - 1)/2) : ℝ) := ?_
 
-    have HB : 1 ≤ house (c₁  ^ (n K q - 1) • (↑a + b • β') ^ k) := by {
-      --apply house_gt_one_of_isIntegral
-      --apply Hint1
-      sorry}
-    have HA : 1 ≤ house ((c₁  ^ (m K * q) • α' ^ (a * l))) := by {
-      --apply house_gt_one_of_isIntegral
-      --apply Hint2
-      sorry}
-    have HC : 1 ≤ house ((c₁  ^ (m K * q) • γ' ^ (b * l))) := by {
-      --apply house_gt_one_of_isIntegral
-      --apply Hint3
-      sorry}
-    have Hint2forBoundb : IsIntegral ℤ (c₁ ^ (n K q - 1) • (↑a + b • β') ^ (n K q - 1)) := sorry
-    have Hint2forBounda : IsIntegral ℤ (c₁ K α' β' γ' ^ (m K * q) • α' ^ (m K * q)) := sorry
-    have Hint2forBoundc : IsIntegral ℤ (c₁ K α' β' γ' ^ (m K * q) • γ' ^ (m K * q)) := sorry
-    have HAbig: 1 ≤ house ((c₁  ^ (m K * q) • α' ^ (m K * q))) := by {
-      --apply house_gt_one_of_isIntegral
-      --apply Hint2forBounda
-      sorry
-      }
-    have HCbig : 1 ≤ house ((c₁  ^ (m K * q) • γ' ^ (m K * q))) := by {
-      --apply house_gt_one_of_isIntegral
-      --apply Hint2forBoundc
-      sorry
-    }
-    have HBbig: 1 ≤ house (c₁  ^ (n K q - 1) • (↑a + b • β') ^ (n K q - 1)) := by {
-      --apply house_gt_one_of_isIntegral
-      --apply Hint2forBoundb
-      sorry
-    }
-
-
-    --have f : (-1 / 2 + ↑(n K q : ℝ) * (1 / 2)) = (((n K q : ℝ) - 1)/2) := by ring
-
-    calc
-        _ ≤ house (c_coeffs K α' β' γ' q : K) *
-             house ((a + b • β')) ^ k * house (α') ^ (a * l) * house (γ') ^ (b * l) := ?_
-        _ ≤ house (((c₂) ^ (n K q) : ℤ) : K) * house ((a + b • β')) ^ k * house (α') ^ (a * l) *
-             house (γ') ^ (b * l) := ?_
-        _ ≤ ((c₂) ^ (n K q) : ℤ) * house ((a + b • β')) ^ k * house (α') ^ (a * l) *
-             house (γ') ^ (b * l) := ?_
-        _ ≤ ((c₂) ^ (n K q) : ℤ) * house (q + q • β') ^ (n K q - 1)
-          * house (α') ^ (m K * q) * house (γ') ^ (m K * q) := ?_
-
-         --_ ≤ _ := sorry
-
-        -- _ ≤ (c₃) := ?_
-
-        -- _ ≤ (c₃)^(n K q : ℝ) := ?_
-
-        _ ≤ (c₃)^(n K q : ℝ) * ↑(n K q : ℝ)^(((n K q - 1)/2) : ℝ) := ?_
-
-    · sorry--apply house_sys_coe_bound
-    · rw [mul_assoc, mul_assoc, mul_assoc, mul_assoc]
+    · unfold c_coeffs0
+      unfold _root_.b _root_.l _root_.a
+      rw [triple_comm K (c₁^k : ℤ) (c₁^(a * l): ℤ) (c₁^(b * l) : ℤ)
+        (((a : ℕ) + b • β')^(k : ℕ)) (α' ^ (a * l)) (γ' ^ (b * l))]
+    · simp only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow]
+      trans
+      apply house_mul_le
+      · rw [← mul_assoc]
+        apply mul_le_mul_of_nonneg_right
+        · trans; rw [mul_assoc] ; apply house_mul_le
+        · apply house_nonneg
+    · simp only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow]
+      rw [← mul_pow]; rw [← mul_pow]; rw [← mul_pow]
       apply mul_le_mul
-      · exact house_leq_house K α' β' γ' q h2mq
-      · rfl
-      · apply mul_nonneg
-        · apply pow_nonneg
-          · apply house_nonneg
-        · apply mul_nonneg
-          apply pow_nonneg
-          apply house_nonneg
-          apply pow_nonneg
-          apply house_nonneg
-      · apply house_nonneg
-    · rw [house_intCast (x := (c₂) ^ (n K q :ℕ))]
-      rw [mul_assoc, mul_assoc, mul_assoc, mul_assoc]
-      apply mul_le_mul
-      · norm_cast
-        apply c2_abs_val_pow K α' β' γ' q hq0 h2mq
-      · rfl
-      · apply mul_nonneg
-        · apply pow_nonneg
-          · apply house_nonneg
-        · apply mul_nonneg
-          apply pow_nonneg
-          apply house_nonneg
-          apply pow_nonneg
-          apply house_nonneg
-      · simp only [Int.cast_pow]
-        apply pow_nonneg
-        norm_cast
-        exact zero_leq_c₂ K α' β' γ'
-
-    · rw [mul_assoc, mul_assoc, mul_assoc, mul_assoc]
-      apply mul_le_mul
-      · rfl
       · apply mul_le_mul
-        · sorry
-        · apply mul_le_mul
-          · sorry
-          · sorry
-          · apply pow_nonneg
-            apply house_nonneg
-          · apply pow_nonneg
-            apply house_nonneg
-        · apply mul_nonneg
-          apply pow_nonneg
-          apply house_nonneg
-          apply pow_nonneg
+        · apply house_pow_le
+        · apply house_pow_le
+        · apply house_nonneg
+        · apply pow_nonneg
+          · apply house_nonneg
+      · apply house_pow_le
+      · apply house_nonneg
+      · apply mul_nonneg
+        · apply pow_nonneg
           apply house_nonneg
         · apply pow_nonneg
           apply house_nonneg
+    · apply mul_le_mul
+      · apply mul_le_mul
+        · calc _ ≤ house (c₁ K α' β' γ' • (↑a + b • β')) ^ ((n K q) - 1):= ?_
+               _ ≤ house (c₁ K α' β' γ' • (↑q + q • β')) ^ ((n K q) - 1) := ?_
+          · simp only [nsmul_eq_mul, zsmul_eq_mul]
+            have : ↑(c₁ K α' β' γ') * (↑a + ↑b * β') ≠ 0 := sorry
+            have Hint: IsIntegral ℤ (↑(c₁ K α' β' γ') * (↑a + ↑b * β')) := sorry
+            have hkn := k_le_n_sub1 K q u
+            simp only [Int.natCast_emod] at this
+            have := house_alg_int_leq_pow (α := (↑(c₁ K α' β' γ') * (↑a + ↑b * β')))
+              k (n K q -1) sorry this Hint
+            exact this
+          · refine pow_le_pow_left₀ ?_ ?_ (n K q - 1)
+            · apply house_nonneg
+            · sorry
+        · apply house_alg_int_leq_pow
+          · rw [← mul_comm (q) (m K)]
+            exact al_leq_mq K q u t
+          · exact c₁αneq0 α β hirr htriv K σ α' β' γ' habc
+          · exact isIntegral_c₁α K α' β' γ'
+        · apply pow_nonneg
+          · apply house_nonneg
+        · apply pow_nonneg
+          · apply house_nonneg
+      · apply house_alg_int_leq_pow
+        · rw [← mul_comm (q) (m K)]
+          exact bl_leq_mq K q u t
+        · exact c₁cneq0 α β hirr htriv K σ α' β' γ' habc
+        · exact isIntegral_c₁γ K α' β' γ'
+      · apply pow_nonneg
+        apply house_nonneg
       · apply mul_nonneg
         apply pow_nonneg
         apply house_nonneg
-        apply mul_nonneg
         apply pow_nonneg
         apply house_nonneg
-        apply pow_nonneg
-        apply house_nonneg
-      · simp only [Int.cast_pow]
-        norm_cast
-        apply pow_nonneg
-        apply zero_leq_c₂
     · sorry
-    -- }
 
 
-    -- · simp only [house_intCast, Int.cast_abs]
-    --   unfold c₃
-    --   simp only [Int.cast_mul, Int.cast_pow, nsmul_eq_mul]
-    --   rw [← pow_add, ← pow_add]
-    --   simp only [le_sup_iff]
-    --   right
-    --   apply mul_le_mul
-    --   apply mul_le_mul
-    --   rw [mul_assoc]
-    --   apply mul_le_mul
-    --   · simp only [abs_pow, abs_abs]
-    --     unfold c₂
-    --     rw [← abs_pow]
-    --     apply abs_le_abs
-    --     simp only [le_sup_iff]
-    --     right
-    --     refine Bound.pow_le_pow_right_of_le_one_or_one_le ?_
-    --     left
-    --     constructor
-    --     · have : 1 ≤ ↑(c₁ K α' β' γ') := sorry
-    --       exact this
-    --     · unfold n
-    --       sorry
-    --     · trans
-    --       · have : -(c₁ : ℝ) ^ (n K q - 1 + m K * q + m K * q) ≤ 0 := by {
-    --         simp only [Left.neg_nonpos_iff]
-    --         apply pow_nonneg
-    --         simp only [Int.cast_nonneg]
-    --         unfold c₁
-    --         apply abs_nonneg
-    --         }
-    --         exact this
-    --       · simp only [le_sup_iff, zero_le_one, true_or]
-    --   · calc _ ≤ (house (a:K) + house (b * β')) ^ (k : ℝ) := by {
-    --               apply Real.rpow_le_rpow
-    --                 (z := k)
-    --                 (x :=  house (↑a + ↑b * β'))
-    --                 (y  := (house ↑a + house (↑b * β')))
-
-
-    --               }
-    --          _ ≤ _ := by {sorry
-
-    --          }
-    --   · apply pow_nonneg
-    --     apply house_nonneg
-    --   · simp only [abs_nonneg]
-    --   · have : (house α' ^ (a * l : ℝ) ≤ house α' ^ (2 * m K ^ 2 : ℝ))
-    --       → (house α' ^ (a * l) ≤ house α' ^ (2 * m K ^ 2)) := by {
-    --         intros H
-    --         norm_cast at H
-    --       }
-    --     apply this
-    --     apply Real.rpow_le_rpow_of_exponent_le
-    --     · refine house_gt_one_of_isIntegral ?_ ?_
-    --       · sorry
-    --       · sorry
-    --     · rw [pow_two]
-    --       rw [← mul_assoc]
-    --       apply mul_le_mul
-    --       · sorry
-    --       · exact Nat.cast_le.mpr hlleqmk
-    --       · exact Nat.cast_nonneg' l
-    --       · simp only [Nat.ofNat_pos, mul_nonneg_iff_of_pos_left, Nat.cast_nonneg]
-    --   · apply pow_nonneg
-    --     apply house_nonneg
-    --   · apply mul_nonneg
-    --     · apply mul_nonneg
-    --       · simp only [abs_nonneg]
-    --       · simp only [Nat.cast_nonneg]
-    --     · trans
-    --       · exact zero_le_one
-    --       · simp only [le_add_iff_nonneg_right]
-    --         apply house_nonneg
-    --   · have : house γ' ^ (b * l) = house γ' ^ ((b * l) : ℝ) := by {
-    --       norm_cast
-    --      }
-    --     rw [this]
-    --     have : house γ' ^ (2 * m K ^ 2) = house γ' ^ (2 * m K ^ 2 : ℝ) := by {norm_cast}
-    --     rw [this]
-    --     apply Real.rpow_le_rpow_of_exponent_le_or_ge
-    --     left
-    --     constructor
-    --     · refine house_gt_one_of_isIntegral ?_ ?_
-    --       · sorry
-    --       · sorry
-    --     · sorry
-    --   · apply pow_nonneg
-    --     apply house_nonneg
-    --   · apply mul_nonneg
-    --     · apply mul_nonneg
-    --       · apply mul_nonneg
-    --         · simp only [abs_nonneg]
-    --         · simp only [Nat.cast_nonneg]
-    --       · trans
-    --         · exact zero_le_one
-    --         · simp only [le_add_iff_nonneg_right]
-    --           apply house_nonneg
-    --     · apply pow_nonneg
-    --       apply house_nonneg
-    -- · nth_rw 1 [← Real.rpow_one ((c₃))]
-    --   apply Real.rpow_le_rpow_of_exponent_le
-    --   · apply le_max_left
-    --   · simp only [Nat.one_le_cast]; exact one_le_n K q hq0 h2mq
-    -- · nth_rw  1 [← mul_one (c₃ K α' β' γ' ^ (n K q : ℝ))]
-    --   apply mul_le_mul_of_nonneg_left
-    --   · apply Real.one_le_rpow
-    --     · simp only [Nat.one_le_cast]; exact one_le_n K q hq0 h2mq
-    --     · apply div_nonneg
-    --       · simp only [sub_nonneg, Nat.one_le_cast]; exact one_le_n K q hq0 h2mq
-    --       · exact zero_le_two
-    --   · apply Real.rpow_nonneg
-    --     · simp only [c₃, Nat.cast_add, Nat.cast_one, le_max_iff, zero_le_one, true_or]}
-  }
-#exit
 -- def c₄ : ℝ := ((c₂ K α' β' γ') * ((q : ℝ) + (q : ℝ) * house β')*
 --     (house α')^(Nat.sqrt (2*m K))*(house γ')^(Nat.sqrt (2*m K)))
 def applylemma82 := NumberField.house.exists_ne_zero_int_vec_house_le K
@@ -1154,7 +1049,7 @@ def ρ : Fin (q * q) → ℂ := fun i => by
   exact (a + (b • β)) * Complex.log α
 
 include hirr htriv in
-lemma hdist : ∀ (i j : Fin (q * q)), i ≠ j → ρ α β q i ≠ ρ α β q j := by
+lemma hdist : ∀ (i j : Fin (q * q)), i ≠ j → ρ α β q i ≠ ρ α β q j := by stop
   intros i j hij
   rw [ne_eq, decompose_ij] at hij
   rw [not_and'] at hij
@@ -1175,12 +1070,11 @@ lemma hdist : ∀ (i j : Fin (q * q)), i ≠ j → ρ α β q i ≠ ρ α β q j
       have hb := hirr (i1 - j1) (j2 - i2)
       rw [← ne_eq]
       change i1 + i2 • β ≠ j1 + j2 • β
-      apply sum_b β hirr K q h2mq i1 i2 j1 j2
+      apply sum_b β (hirr := hirr) i1 i2 j1 j2
       unfold i2 j2
-      simp only [
-        Nat.add_right_cancel_iff]
+      simp only [Nat.add_right_cancel_iff]
       exact Fin.val_ne_of_ne Heq
-  · exact log_zero_zero α htriv K q h2mq
+  · exact log_zero_zero α β hirr htriv
 
 def V := vandermonde (fun t => ρ α β q t)
 
@@ -1189,7 +1083,7 @@ lemma vandermonde_det_ne_zero : det (V α β q) ≠ 0 := by
   by_contra H
   rw [V, det_vandermonde_eq_zero_iff] at H
   rcases H with ⟨i, j, ⟨hij, hij'⟩⟩
-  apply hdist α β hirr htriv K q h2mq i j
+  apply hdist α β hirr htriv q i j
   intros H'
   · apply hij' H'
   · exact hij
@@ -1273,7 +1167,7 @@ include α β hirr htriv in
 lemma ηvec_eq_zero (hVecMulEq0 : (V α β q).vecMul (fun t => σ ((η) t )) = 0) :
     (fun t => σ ((η) t )) = 0 := by {
   apply eq_zero_of_vecMul_eq_zero
-    (vandermonde_det_ne_zero α β hirr htriv K q h2mq) hVecMulEq0}
+    (vandermonde_det_ne_zero α β hirr htriv q) hVecMulEq0}
 
 include α β hirr htriv K σ α' β' γ' in
 lemma hbound_sigma : (η) ≠ 0 := by
@@ -1860,7 +1754,7 @@ lemma ρᵣ_nonzero : ρᵣ ≠ 0 := by
   constructor
   · intros hlog
     by_contra H
-    apply log_zero_zero α htriv K q h2mq
+    apply log_zero_zero α β hirr htriv
     exact hlog
   · have := exists_nonzero_iteratedFDeriv
       α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq
@@ -2710,7 +2604,7 @@ lemma z_in_ks : z ∈ (ks K) ↔ ∃ k': Fin (m K), z = k' + 1 := by {
 
 def S.U : Set ℂ := (ks K)ᶜ
 
-omit h2mq in
+omit h2mq hirr in
 lemma S.U_is_open : IsOpen (S.U K) := by {
   unfold S.U
   rw [EMetric.isOpen_iff]
@@ -2735,7 +2629,7 @@ lemma S.U_is_open : IsOpen (S.U K) := by {
     sorry
 }
 
-omit h2mq in
+omit h2mq hirr in
 lemma S.U_nhds : z ∈ U K → (S.U K) ∈ nhds z :=
   IsOpen.mem_nhds (U_is_open K)
 
