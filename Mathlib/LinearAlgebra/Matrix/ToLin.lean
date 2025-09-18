@@ -321,6 +321,14 @@ theorem Matrix.mulVecLin_mul [Fintype m] (M : Matrix l m R) (N : Matrix m n R) :
     Matrix.mulVecLin (M * N) = (Matrix.mulVecLin M).comp (Matrix.mulVecLin N) :=
   LinearMap.ext fun _ ↦ (mulVec_mulVec _ _ _).symm
 
+@[simp]
+theorem Matrix.mulVecLin_pow [DecidableEq n] (M : Matrix n n R) (k : ℕ) :
+    (M ^ k).mulVecLin = M.mulVecLin ^ k :=
+  map_pow ({
+    toFun := mulVecLin,
+    map_one' := mulVecLin_one,
+    map_mul' := mulVecLin_mul } : Matrix n n R →* Module.End R (n → R)) _ _
+
 theorem Matrix.ker_mulVecLin_eq_bot_iff {M : Matrix m n R} :
     (LinearMap.ker M.mulVecLin) = ⊥ ↔ ∀ v, M *ᵥ v = 0 → v = 0 := by
   simp only [Submodule.eq_bot_iff, LinearMap.mem_ker, Matrix.mulVecLin_apply]
@@ -422,7 +430,7 @@ theorem Matrix.toLin'_apply (M : Matrix m n R) (v : n → R) : Matrix.toLin' M v
 @[simp]
 theorem LinearMap.toMatrix'_mulVec (f : (n → R) →ₗ[R] m → R) (v : n → R) :
     LinearMap.toMatrix' f *ᵥ v = f v := by
-  rw [← toLin'_apply, toLin'_toMatrix']
+  rw [← mulVecLin_apply, mulVecLin_toMatrix']
 
 @[deprecated Matrix.mulVecLin_one (since := "2025-05-09")]
 theorem Matrix.toLin'_one : Matrix.toLin' (1 : Matrix n n R) = LinearMap.id :=
@@ -442,14 +450,11 @@ theorem Matrix.toLin'_mul [Fintype m] [DecidableEq m] (M : Matrix l m R) (N : Ma
     Matrix.toLin' (M * N) = Matrix.toLin' M ∘ₗ Matrix.toLin' N :=
   Matrix.mulVecLin_mul _ _
 
-@[simp]
+@[deprecated Matrix.mulVecLin_pow (since := "2025-09-17")]
 theorem Matrix.toLin'_pow (M : Matrix n n R) (k : ℕ) :
-    (M ^ k).toLin' = M.toLin' ^ k := by
-  induction k with
-  | zero => simp [End.one_eq_id]
-  | succ n ih => rw [pow_succ, pow_succ, toLin'_mul, ih, Module.End.mul_eq_comp]
+    (M ^ k).toLin' = M.toLin' ^ k :=
+  M.mulVecLin_pow k
 
-@[simp]
 @[deprecated Matrix.mulVecLin_submatrix (since := "2025-05-09")]
 theorem Matrix.toLin'_submatrix [Fintype l] [DecidableEq l] (f₁ : m → k) (e₂ : n ≃ l)
     (M : Matrix k l R) :
