@@ -132,15 +132,15 @@ private protected theorem re_inner_self_nonneg (x : E ⊗[𝕜] F) :
   exact sq_nonneg _
 
 noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (E ⊗[𝕜] F) :=
-  @InnerProductSpace.Core.toNormedAddCommGroup 𝕜 (E ⊗[𝕜] F) _ _ _
+  letI : InnerProductSpace.Core 𝕜 (E ⊗[𝕜] F) :=
   { conj_inner_symm := fun x y => TensorProduct.conj_inner y x
     add_left := TensorProduct.add_inner
     smul_left := TensorProduct.smul_inner
     definite := TensorProduct.inner_definite
     re_inner_nonneg := TensorProduct.re_inner_self_nonneg }
+  this.toNormedAddCommGroup
 
-noncomputable instance instInnerProductSpace :
-    @InnerProductSpace 𝕜 (E ⊗[𝕜] F) _ _ :=
+instance instInnerProductSpace : InnerProductSpace 𝕜 (E ⊗[𝕜] F) :=
   InnerProductSpace.ofCore _
 
 @[simp]
