@@ -354,6 +354,61 @@ lemma Pretopology.toGrothendieck_toCoverage [HasPullbacks C] (J : Pretopology C)
   · refine Coverage.saturate_of_superset _ ?_ (.of _ _ hR)
     rwa [Sieve.generate_le_iff]
 
+namespace Precoverage
+
+/-- A precoverage with pullbacks defines a coverage. -/
+@[simps toPrecoverage]
+def toCoverage (J : Precoverage C) [J.HasPullbacks] [J.IsStableUnderBaseChange] :
+    Coverage C where
+  __ := J
+  pullback X Y f S hS := by
+    have : S.HasPullbacks f := J.hasPullbacks_of_mem _ hS
+    exact ⟨S.pullbackArrows f, J.pullbackArrows_mem _ hS,
+      Presieve.FactorsThruAlong.pullbackArrows f S⟩
+
+/-- A precoverage with pullbacks defines a Grothendieck topology. -/
+def toGrothendieck (J : Precoverage C) [J.HasPullbacks] [J.IsStableUnderBaseChange] :
+    GrothendieckTopology C :=
+  J.toCoverage.toGrothendieck
+
+lemma mem_toGrothendieck_iff {J : Precoverage C} [J.HasPullbacks] [J.IsStableUnderBaseChange]
+    {X : C} {S : Sieve X} :
+    S ∈ toGrothendieck J X ↔ J.toCoverage.Saturate X S :=
+  .rfl
+
+end Precoverage
+
+namespace GrothendieckTopology
+
+/-- The induced coverage by a Grothendieck topology as a precoverage. -/
+def toPrecoverage (J : GrothendieckTopology C) : Precoverage C :=
+  (Coverage.ofGrothendieck C J).toPrecoverage
+
+lemma mem_toPrecoverage_iff (J : GrothendieckTopology C) {S : C} (R : Presieve S) :
+    R ∈ toPrecoverage J S ↔ Sieve.generate R ∈ J S := .rfl
+
+instance (J : GrothendieckTopology C) : (toPrecoverage J).HasIsos where
+  mem_coverings_of_isIso f hf := by simp [mem_toPrecoverage_iff]
+
+instance (J : GrothendieckTopology C) : (toPrecoverage J).IsStableUnderComposition where
+  comp_mem_coverings {ι} S X f hf σ Y g hg := by
+    rw [mem_toPrecoverage_iff, ← Presieve.bindOfArrows_ofArrows]
+    exact J.bindOfArrows hf hg
+
+instance (J : GrothendieckTopology C) : (toPrecoverage J).IsStableUnderBaseChange where
+  mem_coverings_of_isPullback {ι} S X f hf Y g P p₁ p₂ h := by
+    rw [mem_toPrecoverage_iff, ← Sieve.ofArrows, Sieve.ofArrows_eq_pullback_of_isPullback _ h]
+    exact J.pullback_stable _ hf
+
+end GrothendieckTopology
+
+/-- `toGrothendieck` and `toPrecoverage` form a Galois connection on the domains where they are
+defined. -/
+lemma Precoverage.toGrothendieck_le_iff_le_toPrecoverage {K : Precoverage C}
+    {J : GrothendieckTopology C} [K.HasPullbacks] [K.IsStableUnderBaseChange] :
+    K.toGrothendieck ≤ J ↔ K ≤ J.toPrecoverage :=
+  (Coverage.gi C).gc _ _
+
 open Coverage
 
 namespace Presieve
