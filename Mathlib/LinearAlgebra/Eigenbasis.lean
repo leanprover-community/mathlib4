@@ -46,6 +46,8 @@ eigenbasis, common eigenbasis, diagonalization, simultaneous diagonalization, di
 * all diagonalizable linear maps are semisimple.
 * a family of linear maps is simultaneously diagonalizable iff they commute and are
   individually diagonalizable.
+  * there is some potentially relevant work in Analysis.InnerProductSpace.JointEigenspace,
+    which may be possible to generalize/connect to this API.
 * `IsIdempotentElem` implies diagonalizable (https://math.stackexchange.com/a/1017060/315369)
 * Generalize `exists_eigenbasis_iff_directSum_eigenspace` and
   `exists_eigenbasis_iff_iSup_eigenspace` to PIDs pending
@@ -350,23 +352,17 @@ lemma toMatrix_eq_diagonal [Fintype ι] [DecidableEq ι] {f : End C M'}
   simp [toMatrix_apply, B.apply_eq_smul j]
   grind [Finsupp.single_apply, diagonal_apply]
 
-/-- TODO: `[Nontrivial R]` golfed in #29420 -/
-lemma charpoly_eq [Nontrivial R] [Fintype ι] [DecidableEq ι] [Free R G] [Module.Finite R G]
-    {f : End R G} (B : f.Eigenbasis ι) :
-    f.charpoly = ∏ i, (X - .C (B.μ i)) := by
+lemma charpoly_eq [Fintype ι] [DecidableEq ι] [Free R G] [Module.Finite R G] {f : End R G}
+    (B : f.Eigenbasis ι) : f.charpoly = ∏ i, (X - .C (B.μ i)) := by
   rw [← f.charpoly_toMatrix B.toBasis, B.toMatrix_eq_diagonal, charpoly_diagonal]
 
 lemma splits_charpoly [Fintype ι] [DecidableEq ι] [Module.Finite K V] {f : End K V}
     (B : f.Eigenbasis ι) : f.charpoly.Splits (RingHom.id K) := by
   simp [B.charpoly_eq, splits_prod_iff, X_sub_C_ne_zero, splits_X_sub_C]
 
-/-- TODO: `[Nontrivial R]` golfed in #29420 -/
-lemma isRoot_charpoly [Nontrivial R] [IsDomain R] [Module.Finite R G] [Free R G]
-    [Fintype ι] [DecidableEq ι] {f : End R G} (B : f.Eigenbasis ι) (i : ι) :
-    f.charpoly.IsRoot (B.μ i) := by
-  rw [B.charpoly_eq, Polynomial.isRoot_prod]
-  use i
-  simp
+lemma isRoot_charpoly [Module.Finite R G] [Free R G] [Fintype ι] [DecidableEq ι]
+    {f : End R G} (B : f.Eigenbasis ι) (i : ι) : f.charpoly.IsRoot (B.μ i) := by
+  simp [B.charpoly_eq, IsRoot, eval_prod, Finset.prod_eq_zero (Finset.mem_univ i)]
 
 lemma iSup_eigenspace {f : End R G} (B : f.Eigenbasis ι) : ⨆ μ, f.eigenspace μ = ⊤ := by
   nontriviality R
