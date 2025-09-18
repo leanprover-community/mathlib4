@@ -102,26 +102,25 @@ private lemma mahlerMeasure_integrable (p : ℂ[X]) :
 
 /-! The Mahler measure of the product of two polynomials is the product of their Mahler measures -/
 open intervalIntegral in
-theorem mahlerMeasure_mul (p q : ℂ[X]) : 
+theorem mahlerMeasure_mul (p q : ℂ[X]) :
     (p * q).mahlerMeasure = p.mahlerMeasure * q.mahlerMeasure := by
   by_cases hpq : p * q = 0
   · simpa [hpq, mahlerMeasure_zero] using mul_eq_zero.mp hpq
-  · rw [mul_eq_zero, not_or] at hpq
-    simp only [mahlerMeasure, ne_eq, mul_eq_zero, hpq, or_self, not_false_eq_true, ↓reduceIte,
-      logMahlerMeasure, eval_mul, Complex.norm_mul, circleAverage_def, mul_inv_rev, smul_eq_mul]
-    rw [← exp_add, ← left_distrib]
-    congr
-    rw [← integral_add p.mahlerMeasure_integrable q.mahlerMeasure_integrable]
-    apply integral_congr_ae
-    rw [MeasureTheory.ae_iff]
-    apply Set.Finite.measure_zero _ MeasureTheory.volume
-    simp only [_root_.not_imp]
-    apply Set.Finite.of_finite_image (f := circleMap 0 1) _ <|
-      (injOn_circleMap_of_abs_sub_le one_ne_zero (by simp [le_of_eq, pi_nonneg])).mono
-      (fun _ h ↦ h.1)
-    apply (p * q).roots.finite_toSet.subset
-    rintro _ ⟨_, ⟨_, h⟩, _⟩
-    contrapose h
-    simp_all [log_mul]
+  rw [mul_eq_zero, not_or] at hpq
+  simp only [mahlerMeasure, ne_eq, mul_eq_zero, hpq, or_self, not_false_eq_true, ↓reduceIte,
+    logMahlerMeasure, eval_mul, Complex.norm_mul, circleAverage_def, mul_inv_rev, smul_eq_mul]
+  rw [← exp_add, ← left_distrib]
+  congr
+  rw [← integral_add p.mahlerMeasure_integrable q.mahlerMeasure_integrable]
+  apply integral_congr_ae
+  rw [MeasureTheory.ae_iff]
+  apply Set.Finite.measure_zero _ MeasureTheory.volume
+  simp only [_root_.not_imp]
+  apply Set.Finite.of_finite_image (f := circleMap 0 1) _ <|
+    (injOn_circleMap_of_abs_sub_le one_ne_zero (by simp [le_of_eq, pi_nonneg])).mono (fun _ h ↦ h.1)
+  apply (p * q).roots.finite_toSet.subset
+  rintro _ ⟨_, ⟨_, h⟩, _⟩
+  contrapose h
+  simp_all [log_mul]
 
 end Polynomial
