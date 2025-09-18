@@ -125,7 +125,7 @@ theorem adjoin_union_eq_adjoin_adjoin :
 If `A` is spanned over `R` by `s`, then the algebra spanned over `A` by `t` is the equal to the
 algebra spanned over `R` by `s ∪ t`.
 -/
-theorem adjoin_trans [CommSemiring B] [Algebra R B] [Algebra A B]
+theorem adjoin_eq_adjoin_union [CommSemiring B] [Algebra R B] [Algebra A B]
     [IsScalarTower R A B] (s : Set A) (t : Set B) (hS : adjoin R s = ⊤) :
     (adjoin A t).restrictScalars R = adjoin R ((algebraMap A B '' s) ∪ t) := by
   have := congr_arg (Subalgebra.map (IsScalarTower.toAlgHom R A B)) hS
