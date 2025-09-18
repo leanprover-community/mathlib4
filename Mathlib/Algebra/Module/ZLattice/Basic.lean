@@ -736,9 +736,9 @@ def ZLattice.comap_equiv (e : F ≃ₗ[K] E) :
   LinearEquiv.ofBijective
     ((e.symm.toLinearMap.restrictScalars ℤ).restrict
       (fun _ h ↦ by simpa [← SetLike.mem_coe] using h))
-    ⟨fun _ _ h ↦ Subtype.ext_iff_val.mpr (e.symm.injective (congr_arg Subtype.val h)),
+    ⟨fun _ _ h ↦ Subtype.ext_iff.mpr (e.symm.injective (congr_arg Subtype.val h)),
     fun ⟨x, hx⟩ ↦ ⟨⟨e x, by rwa [← SetLike.mem_coe, ZLattice.coe_comap] at hx⟩,
-      by simp [Subtype.ext_iff_val]⟩⟩
+      by simp [Subtype.ext_iff]⟩⟩
 
 @[simp]
 theorem ZLattice.comap_equiv_apply (e : F ≃ₗ[K] E) (x : L) :

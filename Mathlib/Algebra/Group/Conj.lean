@@ -85,9 +85,9 @@ theorem conj_mul {a b c : α} : b * a * b⁻¹ * (b * c * b⁻¹) = b * (a * c) 
 
 @[simp]
 theorem conj_pow {i : ℕ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻¹ := by
-  induction' i with i hi
-  · simp
-  · simp [pow_succ, hi]
+  induction i with
+  | zero => simp
+  | succ i hi => simp [pow_succ, hi]
 
 @[simp]
 theorem conj_zpow {i : ℤ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻¹ := by
