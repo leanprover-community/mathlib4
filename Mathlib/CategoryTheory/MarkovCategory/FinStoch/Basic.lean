@@ -5,6 +5,7 @@ Authors: Jacob Reinhold
 -/
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Data.Matrix.Basic
+import Mathlib.LinearAlgebra.Matrix.Kronecker
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.NNReal.Basic
 import Mathlib.Logic.Equiv.Basic
@@ -12,19 +13,19 @@ import Mathlib.Logic.Equiv.Basic
 /-!
 # Finite Stochastic Matrices
 
-FinStoch: finite types with stochastic matrices as morphisms.
+FinStoch: finite types with stochastic matrices.
 
 ## Main definitions
 
 * `StochasticMatrix m n` - Matrix where rows sum to 1
 * `FinStoch` - Category of finite types and stochastic matrices
-* `isDeterministic` - Predicate for deterministic matrices
-* `apply` - Extract function from deterministic matrix
+* `DetMorphism m n` - Deterministic matrix with underlying function
+* `isDeterministic` - Matrix has exactly one 1 per row
 
-## Implementation notes
+## Design
 
 Rows sum to 1. Entry (i,j) gives P(j|i).
-Uses `NNReal` to ensure non-negative probabilities.
+Uses NNReal to avoid negativity.
 
 ## References
 
@@ -33,7 +34,7 @@ Uses `NNReal` to ensure non-negative probabilities.
 
 ## Tags
 
-Markov category, stochastic matrix, probability
+Markov category, stochastic matrix
 -/
 
 namespace CategoryTheory.MarkovCategory
@@ -51,7 +52,7 @@ namespace StochasticMatrix
 
 variable {m n p : Type u} [Fintype m] [Fintype n] [Fintype p]
 
-/-- Identity matrix with 1 on diagonal, 0 elsewhere. -/
+/-- Identity matrix. -/
 def id (m : Type u) [Fintype m] [DecidableEq m] : StochasticMatrix m m where
   toMatrix := fun i j => if i = j then (1 : NNReal) else 0
   row_sum := fun i => by
@@ -63,7 +64,7 @@ def id (m : Type u) [Fintype m] [DecidableEq m] : StochasticMatrix m m where
       exfalso
       exact h (Finset.mem_univ _)
 
-/-- Composition via Chapman-Kolmogorov: P(Z|X) = ∑_Y P(Y|X) * P(Z|Y). -/
+/-- Composition: P(Z|X) = ∑_Y P(Y|X) * P(Z|Y). -/
 def comp (f : StochasticMatrix m n) (g : StochasticMatrix n p) : StochasticMatrix m p where
   toMatrix := fun i k => ∑ j : n, f.toMatrix i j * g.toMatrix j k
   row_sum := fun i => by
@@ -71,7 +72,7 @@ def comp (f : StochasticMatrix m n) (g : StochasticMatrix n p) : StochasticMatri
     simp only [← Finset.mul_sum]
     simp only [g.row_sum, mul_one, f.row_sum]
 
-/-- Kronecker product for independent processes. -/
+/-- Tensor product for independent processes. -/
 def tensor {m₁ n₁ m₂ n₂ : Type u} [Fintype m₁] [Fintype n₁] [Fintype m₂] [Fintype n₂]
     (f : StochasticMatrix m₁ n₁) (g : StochasticMatrix m₂ n₂) :
     StochasticMatrix (m₁ × m₂) (n₁ × n₂) where
@@ -90,21 +91,21 @@ theorem ext {f g : StochasticMatrix m n} (h : f.toMatrix = g.toMatrix) : f = g :
 
 /-! ### Deterministic matrices -/
 
-/-- A stochastic matrix is deterministic if each row has exactly one 1. -/
+/-- Each row has exactly one 1. -/
 def isDeterministic (f : StochasticMatrix m n) [DecidableEq n] : Prop :=
   ∀ i : m, ∃! j : n, f.toMatrix i j = 1
 
-/-- For deterministic matrices, get the unique output. -/
+/-- Extract function from deterministic matrix. -/
 noncomputable def apply (f : StochasticMatrix m n) [DecidableEq n]
     (h : f.isDeterministic) (i : m) : n :=
   (h i).choose
 
-/-- In a deterministic matrix, the chosen output has value 1. -/
+/-- Apply gives the unique 1. -/
 lemma apply_spec (f : StochasticMatrix m n) [DecidableEq n] (h : f.isDeterministic) (i : m) :
     f.toMatrix i (f.apply h i) = 1 :=
   (h i).choose_spec.1
 
-/-- In a deterministic matrix, non-chosen outputs have value 0. -/
+/-- Non-chosen outputs are 0. -/
 lemma apply_spec_ne (f : StochasticMatrix m n) [DecidableEq n] (h : f.isDeterministic) (i : m)
     (j : n) (hj : j ≠ f.apply h i) : f.toMatrix i j = 0 := by
   by_contra h_nonzero
@@ -323,6 +324,90 @@ theorem ext_deterministic {m n : Type u} [Fintype m] [Fintype n] [DecidableEq n]
 
 end StochasticMatrix
 
+/-! ### Deterministic morphisms as functions -/
+
+/-- Bundle for deterministic stochastic matrices with their underlying function. -/
+structure DetMorphism (m n : Type u) [Fintype m] [Fintype n] [DecidableEq n] where
+  /-- The underlying function -/
+  func : m → n
+  /-- The stochastic matrix representation -/
+  toStochastic : StochasticMatrix m n
+  /-- Proof that the matrix is deterministic -/
+  is_det : toStochastic.isDeterministic
+  /-- The function agrees with the matrix -/
+  spec : ∀ i, toStochastic.apply is_det i = func i
+
+namespace DetMorphism
+
+variable {m n p : Type u} [Fintype m] [Fintype n] [Fintype p] [DecidableEq n] [DecidableEq p]
+
+/-- Create deterministic morphism from function. -/
+def ofFunc (f : m → n) : DetMorphism m n :=
+  let mat : StochasticMatrix m n := {
+    toMatrix := fun i j => if f i = j then 1 else 0
+    row_sum := fun i => by
+      rw [Finset.sum_eq_single (f i)]
+      · simp
+      · intro j _ hj
+        simp only [if_neg (Ne.symm hj)]
+      · intro h; exfalso; exact h (Finset.mem_univ _)
+  }
+  let det : mat.isDeterministic := fun i => by
+    use f i
+    constructor
+    · simp [mat]
+    · intro j hj
+      simp [mat] at hj
+      exact hj.symm
+  { func := f
+    toStochastic := mat
+    is_det := det
+    spec := fun i => by
+      unfold StochasticMatrix.apply
+      -- The apply function returns the unique j with matrix entry 1
+      have h_det := det i
+      have h_spec := h_det.choose_spec
+      have h_one : mat.toMatrix i (f i) = 1 := by simp [mat]
+      exact h_spec.2 (f i) h_one |>.symm }
+
+/-- Identity as deterministic morphism. -/
+def id (m : Type u) [Fintype m] [DecidableEq m] : DetMorphism m m :=
+  ofFunc _root_.id
+
+/-- Composition of deterministic morphisms. -/
+def comp [DecidableEq (m × m)] (f : DetMorphism m n) (g : DetMorphism n p) : DetMorphism m p where
+  func := g.func ∘ f.func
+  toStochastic := StochasticMatrix.comp f.toStochastic g.toStochastic
+  is_det := StochasticMatrix.det_comp_det f.toStochastic g.toStochastic f.is_det g.is_det
+  spec := fun i => by
+    rw [StochasticMatrix.det_comp_eq_fun_comp _ _ f.is_det g.is_det]
+    simp [f.spec, g.spec]
+
+/-- Tensor product of deterministic morphisms. -/
+def tensor {m₁ n₁ m₂ n₂ : Type u} [Fintype m₁] [Fintype n₁] [Fintype m₂] [Fintype n₂]
+    [DecidableEq n₁] [DecidableEq n₂] [DecidableEq (n₁ × n₂)]
+    (f : DetMorphism m₁ n₁) (g : DetMorphism m₂ n₂) : DetMorphism (m₁ × m₂) (n₁ × n₂) where
+  func := fun ⟨i₁, i₂⟩ => (f.func i₁, g.func i₂)
+  toStochastic := StochasticMatrix.tensor f.toStochastic g.toStochastic
+  is_det := StochasticMatrix.det_tensor_det f.toStochastic g.toStochastic f.is_det g.is_det
+  spec := fun ⟨i₁, i₂⟩ => by
+    rw [StochasticMatrix.apply_tensor _ _ f.is_det g.is_det]
+    simp [f.spec, g.spec]
+
+/-- Extensionality for deterministic morphisms. -/
+@[ext]
+theorem ext (f g : DetMorphism m n) (h : f.func = g.func) : f = g := by
+  -- Two deterministic morphisms with the same function are equal
+  have h_apply : ∀ i, f.toStochastic.apply f.is_det i = g.toStochastic.apply g.is_det i := by
+    intro i
+    rw [f.spec, g.spec, h]
+  have h_mat := (StochasticMatrix.ext_deterministic f.is_det g.is_det).mpr h_apply
+  cases f; cases g
+  simp at h ⊢
+  exact ⟨h, h_mat⟩
+
+end DetMorphism
+
 /-- FinStoch: finite types with stochastic matrices. -/
 structure FinStoch : Type (u+1) where
   carrier : Type u
@@ -389,6 +474,60 @@ def tensorUnit : FinStoch where
 def tensorObj (X Y : FinStoch) : FinStoch where
   carrier := X.carrier × Y.carrier
 
+/-! ### Structural morphisms as deterministic morphisms -/
+
+section Structural
+
+/-- Associator as deterministic morphism. -/
+def associatorDet (X Y Z : FinStoch) :
+    DetMorphism ((X.tensorObj Y).tensorObj Z).carrier (X.tensorObj (Y.tensorObj Z)).carrier :=
+  DetMorphism.ofFunc fun ⟨⟨x, y⟩, z⟩ => (x, (y, z))
+
+/-- Inverse associator as deterministic morphism. -/
+def associatorInvDet (X Y Z : FinStoch) :
+    DetMorphism (X.tensorObj (Y.tensorObj Z)).carrier ((X.tensorObj Y).tensorObj Z).carrier :=
+  DetMorphism.ofFunc fun ⟨x, ⟨y, z⟩⟩ => ((x, y), z)
+
+/-- Left unitor as deterministic morphism. -/
+def leftUnitorDet (X : FinStoch) :
+    DetMorphism (tensorUnit.tensorObj X).carrier X.carrier :=
+  DetMorphism.ofFunc fun ⟨_, x⟩ => x
+
+/-- Inverse left unitor as deterministic morphism. -/
+def leftUnitorInvDet (X : FinStoch) :
+    DetMorphism X.carrier (tensorUnit.tensorObj X).carrier :=
+  DetMorphism.ofFunc fun x => ((), x)
+
+/-- Right unitor as deterministic morphism. -/
+def rightUnitorDet (X : FinStoch) :
+    DetMorphism (X.tensorObj tensorUnit).carrier X.carrier :=
+  DetMorphism.ofFunc fun ⟨x, _⟩ => x
+
+/-- Inverse right unitor as deterministic morphism. -/
+def rightUnitorInvDet (X : FinStoch) :
+    DetMorphism X.carrier (X.tensorObj tensorUnit).carrier :=
+  DetMorphism.ofFunc fun x => (x, ())
+
+/-- Swap/braiding as deterministic morphism. -/
+def swapDet (X Y : FinStoch) :
+    DetMorphism (X.tensorObj Y).carrier (Y.tensorObj X).carrier :=
+  DetMorphism.ofFunc fun ⟨x, y⟩ => (y, x)
+
+/-! ### Properties of structural morphisms -/
+
+/-- Associator and its inverse compose to identity. -/
+theorem associatorDet_comp_inv (X Y Z : FinStoch) :
+    (associatorDet X Y Z).func ∘ (associatorInvDet X Y Z).func = _root_.id := by
+  ext ⟨x, ⟨y, z⟩⟩
+  rfl
+
+/-- Swap is involutive. -/
+theorem swapDet_involutive (X Y : FinStoch) :
+    (swapDet X Y).func ∘ (swapDet Y X).func = _root_.id := by
+  ext ⟨x, y⟩
+  rfl
+
+end Structural
 
 end FinStoch
 
