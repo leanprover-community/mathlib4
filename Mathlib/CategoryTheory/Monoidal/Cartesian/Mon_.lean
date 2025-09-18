@@ -64,8 +64,7 @@ end MonObj
 namespace Mon
 variable [BraidedCategory C]
 
-attribute [local simp] tensorObj.one_def tensorObj.mul_def
-
+attribute [local simp] tensorObj.one_def tensorObj.mul_def in
 instance : CartesianMonoidalCategory (Mon C) where
   isTerminalTensorUnit := .ofUniqueHom (fun M ↦ ⟨toUnit _⟩) fun M f ↦ by ext; exact toUnit_unique ..
   fst M N := .mk (fst M.X N.X)
@@ -76,11 +75,24 @@ instance : CartesianMonoidalCategory (Mon C) where
   fst_def M N := by ext; simp [fst_def]; congr
   snd_def M N := by ext; simp [snd_def]; congr
 
-variable {M N₁ N₂ : Mon C}
+variable {M N N₁ N₂ : Mon C}
 
 @[simp] lemma lift_hom (f : M ⟶ N₁) (g : M ⟶ N₂) : (lift f g).hom = lift f.hom g.hom := rfl
 @[simp] lemma fst_hom (M N : Mon C) : (fst M N).hom = fst M.X N.X := rfl
 @[simp] lemma snd_hom (M N : Mon C) : (snd M N).hom = snd M.X N.X := rfl
+
+/-! ### Comm monoid objects are internal monoid objects -/
+
+/-- A commutative monoid object is a monoid object in the category of monoid objects. -/
+instance [IsCommMonObj M.X] : MonObj M where
+  one := .mk η[M.X]
+  mul := .mk μ[M.X]
+
+@[simp] lemma hom_η (M : Mon C) [IsCommMonObj M.X] : η[M].hom = η[M.X] := rfl
+@[simp] lemma hom_μ (M : Mon C) [IsCommMonObj M.X] : μ[M].hom = μ[M.X] := rfl
+
+/-- A commutative monoid object is a commutative monoid object in the category of monoid objects. -/
+instance [IsCommMonObj M.X] : IsCommMonObj M where
 
 end Mon
 
@@ -190,6 +202,16 @@ variable [BraidedCategory C]
 /-- If `M` is a commutative monoid object, then `Hom(X, M)` has a commutative monoid structure. -/
 abbrev Hom.commMonoid [IsCommMonObj M] : CommMonoid (X ⟶ M) where
   mul_comm f g := by simpa [-IsCommMonObj.mul_comm] using lift g f ≫= IsCommMonObj.mul_comm M
+
+namespace Mon.Hom
+variable {M N : Mon C} [IsCommMonObj N.X]
+
+@[simp] lemma hom_one : (1 : M ⟶ N).hom = 1 := rfl
+@[simp] lemma hom_mul (f g : M ⟶ N) : (f * g).hom = f.hom * g.hom := rfl
+@[simp] lemma hom_pow (f : M ⟶ N) (n : ℕ) : (f ^ n).hom = f.hom ^ n := by
+  induction n <;> simp [pow_succ, *]
+
+end Mon.Hom
 
 scoped[CategoryTheory.MonObj] attribute [instance] Hom.commMonoid
 
