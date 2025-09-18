@@ -232,8 +232,7 @@ theorem exists_preimage_norm_le' (h : ∃ (n : ℕ), (interior (closure (f '' ba
 any point has a preimage with controlled norm. -/
 theorem exists_preimage_norm_le (surj : Surjective f) :
     ∃ C > 0, ∀ y, ∃ x, f x = y ∧ ‖x‖ ≤ C * ‖y‖ :=
-  have h := noempty_interior_of_surj f surj
-  exists_preimage_norm_le' f h
+  f.exists_preimage_norm_le' <| f.noempty_interior_of_surj surj
 
 omit [CompleteSpace F] in
 protected theorem isOpenMap' (h : ∃ (n : ℕ) (x : _), x ∈ interior (closure (f '' ball 0 n))) :
