@@ -195,7 +195,7 @@ instance : Archimedean (FiniteResidueField K) where
       · exact abs_of_pos <| lt_of_mk_lt_mk hx
       · exact abs_of_pos <| lt_of_mk_lt_mk hy
 
-/-- An embedding from an Archimedean field into `K` gives rise to an embedding into
+/-- An embedding from an Archimedean field into `K` induces an embedding into
 `FiniteResidueField K`. -/
 @[simps!]
 def ofArchimedean (f : R →+*o K) : R →+*o FiniteResidueField K where
