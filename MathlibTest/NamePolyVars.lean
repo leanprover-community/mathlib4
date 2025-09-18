@@ -22,6 +22,10 @@ name_poly_vars _[a,b][C]
 
 variable (R : Type)
 
+/-- info: R[a,b][C] : Type -/
+#guard_msgs in
+#check R[a,b][C]
+
 noncomputable example : Vector R[a,b][C] 3 :=
   have : Polynomial (MvPolynomial (Fin 2) R) = R[a,b][C] := by with_reducible rfl
   have : (Polynomial.C (MvPolynomial.X 0) : R[a,b][C]) = a := rfl
@@ -38,11 +42,29 @@ noncomputable example : Vector (Fin 37)[a,b][C] 3 :=
 
 def «a,b» : Nat := 37
 
+name_poly_vars _[t][u]
+
+/-- info: R[t][u] : Type -/
+#guard_msgs in
+#check R[t][u]
+
+name_poly_vars _[q]
+
+/-- info: R[q] : Type -/
+#guard_msgs in
+#check R[q]
+
+name_poly_vars _[x,y]
+
+/-- info: R[x,y] : Type -/
+#guard_msgs in
+#check R[x,y]
+
 end Test1
 
 section Test2
 
-variable (R : Type)
+variable (R S : Type)
 
 name_poly_vars R[a,b][C]
 
@@ -55,9 +77,23 @@ noncomputable example : Vector R[a,b][C] 3 :=
 
 name_poly_vars R[t,]
 
-/-- info: MvPolynomial.X 0 : MvPolynomial (Fin 1) R -/
+/-- info: R[t,] : Type -/
+#guard_msgs in
+#check R[t,]
+
+/-- info: MvPolynomial.X 0 : R[t,] -/
 #guard_msgs in
 #check t
+
+name_poly_vars R[x,y,z]
+
+/-- info: R[x,y,z] : Type -/
+#guard_msgs in
+#check MvPolynomial (Fin 3) R
+
+/-- info: MvPolynomial (Fin 3) S : Type -/
+#guard_msgs in
+#check MvPolynomial (Fin 3) S
 
 end Test2
 
@@ -77,8 +113,18 @@ name_poly_vars R[t]
 #guard_msgs in
 #check R[M]
 
-/-- info: Polynomial R : Type -/
+/-- info: R[t] : Type -/
 #guard_msgs in
 #check R[t]
 
 end Test3
+
+section Test4
+
+name_poly_vars (Fin 37)[x,y,z][C]
+
+/-- info: (Fin 37)[x,y,z][C] : Type -/
+#guard_msgs in
+#check (Fin 37)[x,y,z][C]
+
+end Test4
