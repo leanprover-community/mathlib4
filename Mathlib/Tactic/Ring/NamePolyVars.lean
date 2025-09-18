@@ -300,7 +300,8 @@ elab "name_poly_vars " head:term_decl noWs body:polyesque_notation_input+ : comm
   let polyesqueTerm : Polyesque ← `(polyesque| ($$t:term)$body:polyesque_notation*)
   let type : Term := ← match head with
   | `(term_decl| $_:hole) => do
-    elabMacroRulesAndTrace (← `(polyesque| $$h:hole$body:polyesque_notation*)) (← `($$h:hole))
+    elabMacroRulesAndTrace (← `(polyesque| $$h:hole$body:polyesque_notation*))
+      (← functor (← `($$h:hole)))
     elabMacroRulesAndTrace polyesqueIdent typeIdent
     elabMacroRulesAndTrace polyesqueTerm typeTerm
     -- if the head of the term is a constant, then deploy the unexpander.
