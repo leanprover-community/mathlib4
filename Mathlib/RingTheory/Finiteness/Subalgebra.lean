@@ -3,7 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.RingTheory.Finiteness.Basic
 import Mathlib.RingTheory.Finiteness.Bilinear
 
@@ -20,7 +20,7 @@ open Submodule
 
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
-theorem fg_bot_toSubmodule  : (⊥ : Subalgebra R A).toSubmodule.FG :=
+theorem fg_bot_toSubmodule : (⊥ : Subalgebra R A).toSubmodule.FG :=
   ⟨{1}, by simp [Algebra.toSubmodule_bot, one_eq_span]⟩
 
 instance finite_bot : Module.Finite R (⊥ : Subalgebra R A) :=
@@ -36,7 +36,7 @@ theorem fg_unit {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] (I : (
   refine ⟨T, span_eq_of_le _ hT ?_⟩
   rw [← one_mul I, ← mul_one (span R (T : Set A))]
   conv_rhs => rw [← I.inv_mul, ← mul_assoc]
-  refine mul_le_mul_left (le_trans ?_ <| mul_le_mul_right <| span_le.mpr hT')
+  refine mul_le_mul_right' (le_trans ?_ <| mul_le_mul_left' (span_le.mpr hT') _) _
   rwa [Units.val_one, span_mul_span, one_le]
 
 theorem fg_of_isUnit {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] {I : Submodule R A}

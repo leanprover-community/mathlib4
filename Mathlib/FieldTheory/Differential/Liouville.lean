@@ -65,7 +65,7 @@ lemma IsLiouville.trans {A : Type*} [Field A] [Algebra K A] [Algebra F A]
       simp [hc]
     · intro
       apply_fun ((↑) : F → K)
-      · simp only [Function.comp_apply, coe_deriv, hc, algebraMap.coe_zero]
+      · simp only [coe_deriv, hc, algebraMap.coe_zero]
         apply hc₀
       · apply FaithfulSMul.algebraMap_injective
 
@@ -154,7 +154,7 @@ private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensiona
     exists ι, inferInstance, c₀, ?_, u₀, v₀
     · -- We need to prove that all `c₀` are constants.
       -- This is true because they are the division of a constant by
-      -- a natural nubmer (which is also constant)
+      -- a natural number (which is also constant)
       intro x
       simp [c₀, Derivation.leibniz_div, hc]
     · -- Proving that this works is mostly straightforward algebraic manipulation,
@@ -175,7 +175,7 @@ private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensiona
         enter [2, 1, 2, i, 2]
         equals ∑ x : K ≃ₐ[F] K, logDeriv (x (u i)) =>
           by_cases h : u i = 0 <;>
-          simp [logDeriv_prod_of_eq_zero, logDeriv_prod, h]
+          simp [logDeriv_prod, h]
       simp_rw [mul_sum]
       rw [sum_comm, ← sum_add_distrib]
       trans ∑ _ : (K ≃ₐ[F] K), a

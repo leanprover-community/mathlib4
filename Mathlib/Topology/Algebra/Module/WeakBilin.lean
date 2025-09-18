@@ -3,8 +3,8 @@ Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä, Moritz Doll
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Algebra.Module.LinearMap
+import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # Weak dual topology
@@ -34,10 +34,6 @@ We prove the following results characterizing the weak topology:
 * `tendsto_iff_forall_eval_tendsto`: Convergence in `WeakBilin B` can be characterized
   in terms of convergence of the evaluations at all points `y : F`.
 
-## Notations
-
-No new notation is introduced.
-
 ## References
 
 * [H. H. Schaefer, *Topological Vector Spaces*][schaefer1966]
@@ -63,15 +59,9 @@ section WeakTopology
 @[nolint unusedArguments]
 def WeakBilin [CommSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [AddCommMonoid F] [Module 𝕜 F]
     (_ : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) := E
+deriving AddCommMonoid, Module 𝕜
 
 namespace WeakBilin
-
--- Porting note: the next two instances should be derived from the definition
-instance instAddCommMonoid [CommSemiring 𝕜] [a : AddCommMonoid E] [Module 𝕜 E] [AddCommMonoid F]
-    [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : AddCommMonoid (WeakBilin B) := a
-
-instance instModule [CommSemiring 𝕜] [AddCommMonoid E] [m : Module 𝕜 E] [AddCommMonoid F]
-    [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : Module 𝕜 (WeakBilin B) := m
 
 instance instAddCommGroup [CommSemiring 𝕜] [a : AddCommGroup E] [Module 𝕜 E] [AddCommMonoid F]
     [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : AddCommGroup (WeakBilin B) := a
@@ -98,6 +88,7 @@ instance instTopologicalSpace : TopologicalSpace (WeakBilin B) :=
 theorem coeFn_continuous : Continuous fun (x : WeakBilin B) y => B x y :=
   continuous_induced_dom
 
+@[fun_prop]
 theorem eval_continuous (y : F) : Continuous fun x : WeakBilin B => B x y :=
   (continuous_pi_iff.mp (coeFn_continuous B)) y
 
@@ -109,9 +100,6 @@ theorem continuous_of_continuous_eval [TopologicalSpace α] {g : α → WeakBili
 theorem isEmbedding {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (hB : Function.Injective B) :
     IsEmbedding fun (x : WeakBilin B) y => B x y :=
   Function.Injective.isEmbedding_induced <| LinearMap.coe_injective.comp hB
-
-@[deprecated (since := "2024-10-26")]
-alias embedding := isEmbedding
 
 theorem tendsto_iff_forall_eval_tendsto {l : Filter α} {f : α → WeakBilin B} {x : WeakBilin B}
     (hB : Function.Injective B) :
@@ -136,6 +124,15 @@ instance instContinuousSMul [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (We
   simp only [Function.comp_apply, Pi.smul_apply, LinearMap.map_smulₛₗ, RingHom.id_apply,
     LinearMap.smul_apply]
 
+/--
+Map `F` into the topological dual of `E` with the weak topology induced by `F`
+-/
+def eval [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜] :
+    F →ₗ[𝕜] StrongDual 𝕜 (WeakBilin B) where
+  toFun f := ⟨B.flip f, by fun_prop⟩
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+
 end Semiring
 
 section Ring
@@ -147,9 +144,9 @@ variable [AddCommGroup F] [Module 𝕜 F]
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
-/-- `WeakBilin B` is a `TopologicalAddGroup`, meaning that addition and negation are
+/-- `WeakBilin B` is a `IsTopologicalAddGroup`, meaning that addition and negation are
 continuous. -/
-instance instTopologicalAddGroup [ContinuousAdd 𝕜] : TopologicalAddGroup (WeakBilin B) where
+instance instIsTopologicalAddGroup [ContinuousAdd 𝕜] : IsTopologicalAddGroup (WeakBilin B) where
   toContinuousAdd := by infer_instance
   continuous_neg := by
     refine continuous_induced_rng.2 (continuous_pi_iff.mpr fun y => ?_)

@@ -86,6 +86,40 @@ theorem commutative_ring_iff_abelian_lie_ring {A : Type v} [Ring A] :
   have h₂ : IsLieAbelian A ↔ ∀ a b : A, ⁅a, b⁆ = 0 := ⟨fun h => h.1, fun h => ⟨h⟩⟩
   simp only [h₁, h₂, LieRing.of_associative_ring_bracket, sub_eq_zero]
 
+@[simp] theorem LieSubalgebra.isLieAbelian_lieSpan_iff
+    {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] {s : Set L} :
+    IsLieAbelian (lieSpan R L s) ↔ ∀ᵉ (x ∈ s) (y ∈ s), ⁅x, y⁆ = 0 := by
+  refine ⟨fun h x hx y hy ↦ ?_, fun h ↦ ⟨fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ ?_⟩⟩
+  · let x' : lieSpan R L s := ⟨x, subset_lieSpan hx⟩
+    let y' : lieSpan R L s := ⟨y, subset_lieSpan hy⟩
+    suffices ⁅x', y'⁆ = 0 by simpa [x', y', Subtype.ext_iff, -trivial_lie_zero] using this
+    simp
+  · induction hx using lieSpan_induction with
+    | mem w hw =>
+      induction hy using lieSpan_induction with
+      | mem u hu => simpa [Subtype.ext_iff] using h w hw u hu
+      | zero => simp [Subtype.ext_iff]
+      | add u v _ _ hu hv =>
+        simp only [Subtype.ext_iff, coe_bracket, ZeroMemClass.coe_zero, lie_add] at hu hv ⊢
+        simp [hu, hv]
+      | smul t u _ hu =>
+        simp only [Subtype.ext_iff, coe_bracket, ZeroMemClass.coe_zero] at hu
+        simp [Subtype.ext_iff, hu]
+      | lie u v _ _ hu hv =>
+        simp only [Subtype.ext_iff, coe_bracket, ZeroMemClass.coe_zero] at hu hv ⊢
+        rw [leibniz_lie]
+        simp [hu, hv]
+    | zero => simp [Subtype.ext_iff]
+    | add u v _ _ hu hv =>
+      simp only [Subtype.ext_iff, coe_bracket, ZeroMemClass.coe_zero, add_lie] at hu hv ⊢
+      simp [hu, hv]
+    | smul t u _ hu =>
+      simp only [Subtype.ext_iff, coe_bracket, ZeroMemClass.coe_zero] at hu
+      simp [Subtype.ext_iff, hu]
+    | lie u v _ _ hu hv =>
+      simp only [Subtype.ext_iff, coe_bracket, ZeroMemClass.coe_zero] at hu hv ⊢
+      simp [hu, hv]
+
 section Center
 
 variable (R : Type u) (L : Type v) (M : Type w) (N : Type w₁)
@@ -161,8 +195,8 @@ def maxTrivHom (f : M →ₗ⁅R,L⁆ N) : maxTrivSubmodule R L M →ₗ⁅R,L�
   toFun m := ⟨f m, fun x =>
     (LieModuleHom.map_lie _ _ _).symm.trans <|
       (congr_arg f (m.property x)).trans (LieModuleHom.map_zero _)⟩
-  map_add' m n := by ext; simp [Function.comp_apply]
-  map_smul' t m := by ext; simp [Function.comp_apply]
+  map_add' m n := by ext; simp
+  map_smul' t m := by ext; simp
   map_lie' {x m} := by simp
 
 @[norm_cast, simp]
@@ -175,8 +209,8 @@ def maxTrivEquiv (e : M ≃ₗ⁅R,L⁆ N) : maxTrivSubmodule R L M ≃ₗ⁅R,L
   { maxTrivHom (e : M →ₗ⁅R,L⁆ N) with
     toFun := maxTrivHom (e : M →ₗ⁅R,L⁆ N)
     invFun := maxTrivHom (e.symm : N →ₗ⁅R,L⁆ M)
-    left_inv := fun m => by ext; simp [LieModuleEquiv.coe_toLieModuleHom]
-    right_inv := fun n => by ext; simp [LieModuleEquiv.coe_toLieModuleHom] }
+    left_inv := fun m => by ext; simp
+    right_inv := fun n => by ext; simp }
 
 @[norm_cast, simp]
 theorem coe_maxTrivEquiv_apply (e : M ≃ₗ⁅R,L⁆ N) (m : maxTrivSubmodule R L M) :
@@ -221,18 +255,10 @@ theorem toLinearMap_maxTrivLinearMapEquivLieModuleHom (f : maxTrivSubmodule R L 
     (maxTrivLinearMapEquivLieModuleHom (M := M) (N := N) f : M →ₗ[R] N) = (f : M →ₗ[R] N) := by
   ext; rfl
 
-@[deprecated (since := "2024-12-30")]
-alias coe_linearMap_maxTrivLinearMapEquivLieModuleHom :=
-  toLinearMap_maxTrivLinearMapEquivLieModuleHom
-
 @[simp]
 theorem toLinearMap_maxTrivLinearMapEquivLieModuleHom_symm (f : M →ₗ⁅R,L⁆ N) :
     (maxTrivLinearMapEquivLieModuleHom (M := M) (N := N) |>.symm f : M →ₗ[R] N) = (f : M →ₗ[R] N) :=
   rfl
-
-@[deprecated (since := "2024-12-30")]
-alias coe_linearMap_maxTrivLinearMapEquivLieModuleHom_symm :=
-  toLinearMap_maxTrivLinearMapEquivLieModuleHom_symm
 
 end LieModule
 

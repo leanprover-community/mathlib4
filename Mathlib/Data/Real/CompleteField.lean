@@ -11,9 +11,7 @@ import Mathlib.Data.Real.Sqrt
 -/
 
 /-- The reals are a conditionally complete linearly ordered field. -/
-noncomputable instance : ConditionallyCompleteLinearOrderedField ℝ :=
-  { (inferInstance : LinearOrderedField ℝ),
-    (inferInstance : ConditionallyCompleteLinearOrder ℝ) with }
+noncomputable instance : ConditionallyCompleteLinearOrderedField ℝ := { }
 
 /-- There exists no nontrivial ring homomorphism `ℝ →+* ℝ`. -/
 instance Real.RingHom.unique : Unique (ℝ →+* ℝ) where

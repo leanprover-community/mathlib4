@@ -83,14 +83,16 @@ lemma dens_ne_zero : dens s ≠ 0 ↔ s.Nonempty := dens_eq_zero.not.trans nonem
 protected alias ⟨_, Nonempty.dens_pos⟩ := dens_pos
 protected alias ⟨_, Nonempty.dens_ne_zero⟩ := dens_ne_zero
 
+@[gcongr]
 lemma dens_le_dens (h : s ⊆ t) : dens s ≤ dens t :=
   div_le_div_of_nonneg_right (mod_cast card_mono h) <| by positivity
 
+@[gcongr]
 lemma dens_lt_dens (h : s ⊂ t) : dens s < dens t :=
-  div_lt_div_of_pos_right (mod_cast card_strictMono h) <| by
-    cases isEmpty_or_nonempty α
-    · simp [Subsingleton.elim s t, ssubset_irrfl] at h
-    · exact mod_cast Fintype.card_pos
+  div_lt_div_of_pos_right (by gcongr) <| mod_cast calc
+    0 ≤ #s := Nat.zero_le _
+    _ < #t := by gcongr
+    _ ≤ Fintype.card α := card_le_univ t
 
 @[mono] lemma dens_mono : Monotone (dens : Finset α → ℚ≥0) := fun _ _ ↦ dens_le_dens
 @[mono] lemma dens_strictMono : StrictMono (dens : Finset α → ℚ≥0) := fun _ _ ↦ dens_lt_dens
@@ -100,7 +102,6 @@ lemma dens_map_le [Fintype β] (f : α ↪ β) : dens (s.map f) ≤ dens s := by
   · simp [Subsingleton.elim s ∅]
   simp_rw [dens, card_map]
   gcongr
-  · positivity
   · exact mod_cast Fintype.card_pos
   · exact Fintype.card_le_of_injective _ f.2
 
@@ -184,7 +185,7 @@ lemma dens_inter_add_dens_sdiff (s t : Finset α) : dens (s ∩ t) + dens (s \ t
 
 lemma dens_filter_add_dens_filter_not_eq_dens {α : Type*} [Fintype α] {s : Finset α}
     (p : α → Prop) [DecidablePred p] [∀ x, Decidable (¬p x)] :
-    dens (s.filter p) + dens (s.filter fun a ↦ ¬ p a) = dens s := by
+    dens {a ∈ s | p a} + dens {a ∈ s | ¬ p a} = dens s := by
   classical
   rw [← dens_union_of_disjoint (disjoint_filter_filter_neg ..), filter_union_filter_neg_eq]
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
 import Batteries.Tactic.Init
-import Mathlib.Tactic.PushNeg
+import Mathlib.Tactic.Push
 
 /-!
 # The `by_contra` tactic
@@ -40,8 +40,10 @@ example : 1 < 2 := by
 syntax (name := byContra!) "by_contra!" (ppSpace colGt binderIdent)? Term.optType : tactic
 
 macro_rules
-  | `(tactic| by_contra!%$tk $[_%$under]? $[: $ty]?) =>
-    `(tactic| by_contra! $(mkIdentFrom (under.getD tk) `this (canonical := true)):ident $[: $ty]?)
+  | `(tactic| by_contra! $[: $ty]?) =>
+    `(tactic| by_contra! $(mkIdent `this):ident $[: $ty]?)
+  | `(tactic| by_contra! _%$under $[: $ty]?) =>
+    `(tactic| by_contra! $(mkIdentFrom under `this):ident $[: $ty]?)
   | `(tactic| by_contra! $e:ident) => `(tactic| (by_contra $e:ident; try push_neg at $e:ident))
   | `(tactic| by_contra! $e:ident : $y) => `(tactic|
        (by_contra! h

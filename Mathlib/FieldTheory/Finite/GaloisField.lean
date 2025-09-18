@@ -6,6 +6,7 @@ Authors: Aaron Anderson, Alex J. Best, Johan Commelin, Eric Rodriguez, Ruben Van
 import Mathlib.Algebra.Algebra.ZMod
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.FieldTheory.Galois.Basic
+import Mathlib.RingTheory.Norm.Basic
 
 /-!
 # Galois fields
@@ -47,7 +48,7 @@ instance FiniteField.isSplittingField_sub (K F : Type*) [Field K] [Fintype K]
     · simp only [rootSet, aroots, Polynomial.map_pow, map_X, Polynomial.map_sub]
     · rw [FiniteField.roots_X_pow_card_sub_X, val_toFinset, coe_univ, Algebra.adjoin_univ]
 
-theorem galois_poly_separable {K : Type*} [Field K] (p q : ℕ) [CharP K p] (h : p ∣ q) :
+theorem galois_poly_separable {K : Type*} [CommRing K] (p q : ℕ) [CharP K p] (h : p ∣ q) :
     Separable (X ^ q - X : K[X]) := by
   use 1, X ^ q - X - 1
   rw [← CharP.cast_eq_zero_iff K[X] p] at h
@@ -60,30 +61,14 @@ variable (p : ℕ) [Fact p.Prime] (n : ℕ)
 Every field with the same cardinality is (non-canonically)
 isomorphic to this field. -/
 def GaloisField := SplittingField (X ^ p ^ n - X : (ZMod p)[X])
--- deriving Field -- Porting note: see https://github.com/leanprover-community/mathlib4/issues/5020
-
-instance : Field (GaloisField p n) :=
-  inferInstanceAs (Field (SplittingField _))
-
-instance : Inhabited (@GaloisField 2 (Fact.mk Nat.prime_two) 1) := ⟨37⟩
+deriving Inhabited, Field, CharP _ p,
+  Algebra (ZMod p),
+  Finite, FiniteDimensional (ZMod p),
+  IsSplittingField (ZMod p) _ (X ^ p ^ n - X)
 
 namespace GaloisField
 
 variable (p : ℕ) [h_prime : Fact p.Prime] (n : ℕ)
-
-instance : Algebra (ZMod p) (GaloisField p n) := SplittingField.algebra _
-
-instance : IsSplittingField (ZMod p) (GaloisField p n) (X ^ p ^ n - X) :=
-  Polynomial.IsSplittingField.splittingField _
-
-instance : CharP (GaloisField p n) p :=
-  (Algebra.charP_iff (ZMod p) (GaloisField p n) p).mp (by infer_instance)
-
-instance : FiniteDimensional (ZMod p) (GaloisField p n) := by
-  dsimp only [GaloisField]; infer_instance
-
-instance : Finite (GaloisField p n) :=
-  Module.finite_of_finite (ZMod p)
 
 theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = n := by
   haveI : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
@@ -99,7 +84,7 @@ theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = 
   suffices g_poly.rootSet (GaloisField p n) = Set.univ by
     simp_rw [this, ← Fintype.ofEquiv_card (Equiv.Set.univ _)] at key
     -- Porting note: prevents `card_eq_pow_finrank` from using a wrong instance for `Fintype`
-    rw [@card_eq_pow_finrank (ZMod p) _ _ _ _ _ (_), ZMod.card] at key
+    rw [@Module.card_eq_pow_finrank (K := ZMod p), ZMod.card] at key
     exact Nat.pow_right_injective (Nat.Prime.one_lt' p).out key
   rw [Set.eq_univ_iff_forall]
   suffices ∀ (x) (hx : x ∈ (⊤ : Subalgebra (ZMod p) (GaloisField p n))),
@@ -114,24 +99,24 @@ theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = 
   refine Subring.closure_induction ?_ ?_ ?_ ?_ ?_ ?_ hx
     <;> simp_rw [mem_rootSet_of_ne aux]
   · rintro x (⟨r, rfl⟩ | hx)
-    · simp only [g_poly, map_sub, map_pow, aeval_X]
+    · simp only [map_sub, map_pow, aeval_X]
       rw [← map_pow, ZMod.pow_card_pow, sub_self]
     · dsimp only [GaloisField] at hx
       rwa [mem_rootSet_of_ne aux] at hx
   · rw [← coeff_zero_eq_aeval_zero']
-    simp only [g_poly, coeff_X_pow, coeff_X_zero, sub_zero, _root_.map_eq_zero, ite_eq_right_iff,
+    simp only [coeff_X_pow, coeff_X_zero, sub_zero, _root_.map_eq_zero, ite_eq_right_iff,
       one_ne_zero, coeff_sub]
     intro hn
     exact Nat.not_lt_zero 1 (pow_eq_zero hn.symm ▸ hp)
-  · simp [g_poly]
-  · simp only [g_poly, aeval_X_pow, aeval_X, map_sub, add_pow_char_pow, sub_eq_zero]
+  · simp
+  · simp only [aeval_X_pow, aeval_X, map_sub, add_pow_char_pow, sub_eq_zero]
     intro x y _ _ hx hy
     rw [hx, hy]
   · intro x _ hx
     simp only [g_poly, sub_eq_zero, aeval_X_pow, aeval_X, map_sub, sub_neg_eq_add] at *
     rw [neg_pow, hx, neg_one_pow_char_pow]
     simp
-  · simp only [g_poly, aeval_X_pow, aeval_X, map_sub, mul_pow, sub_eq_zero]
+  · simp only [aeval_X_pow, aeval_X, map_sub, mul_pow, sub_eq_zero]
     intro x y _ _ hx hy
     rw [hx, hy]
 
@@ -153,8 +138,8 @@ theorem splits_zmod_X_pow_sub_X : Splits (RingHom.id (ZMod p)) (X ^ p - X) := by
 
 /-- A Galois field with exponent 1 is equivalent to `ZMod` -/
 def equivZmodP : GaloisField p 1 ≃ₐ[ZMod p] ZMod p :=
-  let h : (X ^ p ^ 1 : (ZMod p)[X]) = X ^ Fintype.card (ZMod p) := by rw [pow_one, ZMod.card p]
-  let inst : IsSplittingField (ZMod p) (ZMod p) (X ^ p ^ 1 - X) := by rw [h]; infer_instance
+  have h : (X ^ p ^ 1 : (ZMod p)[X]) = X ^ Fintype.card (ZMod p) := by rw [pow_one, ZMod.card p]
+  have inst : IsSplittingField (ZMod p) (ZMod p) (X ^ p ^ 1 - X) := by rw [h]; infer_instance
   (@IsSplittingField.algEquiv _ (ZMod p) _ _ _ (X ^ p ^ 1 - X : (ZMod p)[X]) inst).symm
 
 section Fintype
@@ -165,15 +150,9 @@ theorem _root_.FiniteField.splits_X_pow_card_sub_X :
     Splits (algebraMap (ZMod p) K) (X ^ Fintype.card K - X) :=
   (FiniteField.isSplittingField_sub K (ZMod p)).splits
 
-@[deprecated (since := "2024-11-12")]
-alias splits_X_pow_card_sub_X := FiniteField.splits_X_pow_card_sub_X
-
 theorem _root_.FiniteField.isSplittingField_of_card_eq (h : Fintype.card K = p ^ n) :
     IsSplittingField (ZMod p) K (X ^ p ^ n - X) :=
   h ▸ FiniteField.isSplittingField_sub K (ZMod p)
-
-@[deprecated (since := "2024-11-12")]
-alias isSplittingField_of_card_eq := FiniteField.isSplittingField_of_card_eq
 
 /-- Any finite field is (possibly non canonically) isomorphic to some Galois field. -/
 def algEquivGaloisFieldOfFintype (h : Fintype.card K = p ^ n) : K ≃ₐ[ZMod p] GaloisField p n :=
@@ -221,7 +200,45 @@ end GaloisField
 
 namespace FiniteField
 
-variable {K : Type*} [Field K] [Fintype K] {K' : Type*} [Field K'] [Fintype K']
+variable {K K' : Type*} [Field K] [Field K']
+
+section norm
+
+variable [Algebra K K'] [Finite K']
+
+theorem algebraMap_norm_eq_pow {x : K'} :
+    algebraMap K K' (Algebra.norm K x) = x ^ ((Nat.card K' - 1) / (Nat.card K - 1)) := by
+  have := Finite.of_injective _ (algebraMap K K').injective
+  have := Fintype.ofFinite K
+  have := Fintype.ofFinite K'
+  simp_rw [← Fintype.card_eq_nat_card, Algebra.norm_eq_prod_automorphisms,
+    ← (bijective_frobeniusAlgEquivOfAlgebraic_pow K K').prod_comp, AlgEquiv.coe_pow,
+    coe_frobeniusAlgEquivOfAlgebraic, pow_iterate, Finset.prod_pow_eq_pow_sum,
+    Fin.sum_univ_eq_sum_range, Nat.geomSum_eq Fintype.one_lt_card, ← Module.card_eq_pow_finrank]
+
+variable (K K')
+
+theorem unitsMap_norm_surjective : Function.Surjective (Units.map <| Algebra.norm K (S := K')) :=
+  have := Finite.of_injective_finite_range (algebraMap K K').injective
+  MonoidHom.surjective_of_card_ker_le_div _ <| by
+    simp_rw [Nat.card_units]
+    classical
+    have := Fintype.ofFinite K'ˣ
+    convert IsCyclic.card_pow_eq_one_le (α := K'ˣ) <| Nat.div_pos
+      (Nat.sub_le_sub_right (Nat.card_le_card_of_injective _ (algebraMap K K').injective) _) <|
+      Nat.sub_pos_of_lt Finite.one_lt_card
+    rw [← Set.ncard_coe_finset, ← SetLike.coe_sort_coe, Nat.card_coe_set_eq]; congr; ext
+    simp [Units.ext_iff, ← (algebraMap K K').injective.eq_iff, algebraMap_norm_eq_pow]
+
+theorem norm_surjective : Function.Surjective (Algebra.norm K (S := K')) := fun k ↦ by
+  obtain rfl | ne := eq_or_ne k 0
+  · exact ⟨0, Algebra.norm_zero ..⟩
+  have ⟨x, eq⟩ := unitsMap_norm_surjective K K' (Units.mk0 k ne)
+  exact ⟨x, congr_arg (·.1) eq⟩
+
+end norm
+
+variable [Fintype K] [Fintype K']
 
 /-- Uniqueness of finite fields:
   Any two finite fields of the same cardinality are (possibly non canonically) isomorphic -/

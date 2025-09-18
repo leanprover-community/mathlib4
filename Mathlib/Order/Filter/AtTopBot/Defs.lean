@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
+import Mathlib.Data.Set.Piecewise
 import Mathlib.Order.Filter.Basic
 
 /-!
@@ -42,9 +43,10 @@ theorem mem_atTop [Preorder α] (a : α) : { b : α | a ≤ b } ∈ @atTop α _ 
 theorem Ici_mem_atTop [Preorder α] (a : α) : Ici a ∈ (atTop : Filter α) :=
   mem_atTop a
 
-theorem Ioi_mem_atTop [Preorder α] [NoMaxOrder α] (x : α) : Ioi x ∈ (atTop : Filter α) :=
-  let ⟨z, hz⟩ := exists_gt x
-  mem_of_superset (mem_atTop z) fun _ h => lt_of_lt_of_le hz h
+theorem Ioi_mem_atTop [Preorder α] [NoTopOrder α] (x : α) : Ioi x ∈ (atTop : Filter α) :=
+  let ⟨z, hz⟩ := exists_not_le x
+  mem_of_superset (inter_mem (mem_atTop x) (mem_atTop z))
+    fun _ ⟨hxy, hzy⟩ => lt_of_le_not_ge hxy fun hyx => hz (hzy.trans hyx)
 
 theorem mem_atBot [Preorder α] (a : α) : { b : α | b ≤ a } ∈ @atBot α _ :=
   mem_iInf_of_mem a <| Subset.refl _
@@ -52,9 +54,10 @@ theorem mem_atBot [Preorder α] (a : α) : { b : α | b ≤ a } ∈ @atBot α _ 
 theorem Iic_mem_atBot [Preorder α] (a : α) : Iic a ∈ (atBot : Filter α) :=
   mem_atBot a
 
-theorem Iio_mem_atBot [Preorder α] [NoMinOrder α] (x : α) : Iio x ∈ (atBot : Filter α) :=
-  let ⟨z, hz⟩ := exists_lt x
-  mem_of_superset (mem_atBot z) fun _ h => lt_of_le_of_lt h hz
+theorem Iio_mem_atBot [Preorder α] [NoBotOrder α] (x : α) : Iio x ∈ (atBot : Filter α) :=
+  let ⟨z, hz⟩ := exists_not_ge x
+  mem_of_superset (inter_mem (mem_atBot x) (mem_atBot z))
+    fun _ ⟨hyx, hyz⟩ => lt_of_le_not_ge hyx fun hxy => hz (hxy.trans hyz)
 
 theorem eventually_ge_atTop [Preorder α] (a : α) : ∀ᶠ x in atTop, a ≤ x :=
   mem_atTop a
@@ -62,16 +65,16 @@ theorem eventually_ge_atTop [Preorder α] (a : α) : ∀ᶠ x in atTop, a ≤ x 
 theorem eventually_le_atBot [Preorder α] (a : α) : ∀ᶠ x in atBot, x ≤ a :=
   mem_atBot a
 
-theorem eventually_gt_atTop [Preorder α] [NoMaxOrder α] (a : α) : ∀ᶠ x in atTop, a < x :=
+theorem eventually_gt_atTop [Preorder α] [NoTopOrder α] (a : α) : ∀ᶠ x in atTop, a < x :=
   Ioi_mem_atTop a
 
-theorem eventually_ne_atTop [Preorder α] [NoMaxOrder α] (a : α) : ∀ᶠ x in atTop, x ≠ a :=
+theorem eventually_ne_atTop [Preorder α] [NoTopOrder α] (a : α) : ∀ᶠ x in atTop, x ≠ a :=
   (eventually_gt_atTop a).mono fun _ => ne_of_gt
 
-theorem eventually_lt_atBot [Preorder α] [NoMinOrder α] (a : α) : ∀ᶠ x in atBot, x < a :=
+theorem eventually_lt_atBot [Preorder α] [NoBotOrder α] (a : α) : ∀ᶠ x in atBot, x < a :=
   Iio_mem_atBot a
 
-theorem eventually_ne_atBot [Preorder α] [NoMinOrder α] (a : α) : ∀ᶠ x in atBot, x ≠ a :=
+theorem eventually_ne_atBot [Preorder α] [NoBotOrder α] (a : α) : ∀ᶠ x in atBot, x ≠ a :=
   (eventually_lt_atBot a).mono fun _ => ne_of_lt
 
 theorem _root_.IsTop.atTop_eq [Preorder α] {a : α} (ha : IsTop a) : atTop = 𝓟 (Ici a) :=
@@ -93,7 +96,7 @@ theorem Frequently.forall_exists_of_atBot [Preorder α] {p : α → Prop}
     (h : ∃ᶠ x in atBot, p x) (a : α) : ∃ b ≤ a, p b :=
   Frequently.forall_exists_of_atTop (α := αᵒᵈ) h _
 
-lemma atTop_eq_generate_of_forall_exists_le [LinearOrder α] {s : Set α} (hs : ∀ x, ∃ y ∈ s, x ≤ y) :
+lemma atTop_eq_generate_of_forall_exists_le [Preorder α] {s : Set α} (hs : ∀ x, ∃ y ∈ s, x ≤ y) :
     (atTop : Filter α) = generate (Ici '' s) := by
   rw [atTop_eq_generate_Ici]
   apply le_antisymm
@@ -125,8 +128,8 @@ theorem Monotone.piecewise_eventually_eq_iUnion {β : α → Type*} [Preorder ι
   · refine (eventually_ge_atTop i).mono fun j hij ↦ ?_
     simp only [Set.piecewise_eq_of_mem, hs hij hi, subset_iUnion _ _ hi]
   · filter_upwards with i
-    simp only [Set.piecewise_eq_of_not_mem, not_exists.1 ha i, mt mem_iUnion.1 ha,
-      not_false_eq_true, exists_false]
+    simp only [Set.piecewise_eq_of_notMem, not_exists.1 ha i, mt mem_iUnion.1 ha,
+      not_false_eq_true]
 
 theorem Antitone.piecewise_eventually_eq_iInter {β : α → Type*} [Preorder ι] {s : ι → Set α}
     [∀ i, DecidablePred (· ∈ s i)] [DecidablePred (· ∈ ⋂ i, s i)]

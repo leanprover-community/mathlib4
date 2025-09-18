@@ -3,7 +3,7 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection
+import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 import Mathlib.LinearAlgebra.Semisimple
 
 /-!
@@ -36,6 +36,6 @@ theorem isFinitelySemisimple :
   · simp [disjoint_iff, ← inf_assoc, Submodule.inf_orthogonal_eq_bot q]
   · suffices q ⊔ qᗮ = ⊤ by rw [← sup_inf_assoc_of_le _ hq₂, this, top_inf_eq p]
     replace hp₂ : Module.Finite 𝕜 q := Submodule.finiteDimensional_of_le hq₂
-    exact Submodule.sup_orthogonal_of_completeSpace
+    exact Submodule.sup_orthogonal_of_hasOrthogonalProjection
 
 end LinearMap.IsSymmetric

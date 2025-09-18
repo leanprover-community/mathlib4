@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Lean.Linter.Deprecated
-import Mathlib.Data.One.Defs
+import Mathlib.Data.Nat.Notation
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Tactic.TypeStar
@@ -81,7 +81,7 @@ def succ : PosNum → PosNum
   | bit1 n => bit0 (succ n)
   | bit0 n => bit1 n
 
-/-- Returns a boolean for whether the `PosNum` is `one`. -/
+/-- Returns a Boolean for whether the `PosNum` is `one`. -/
 def isOne : PosNum → Bool
   | 1 => true
   | _ => false
@@ -159,10 +159,10 @@ instance : LT PosNum :=
 instance : LE PosNum :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLT : DecidableRel (α := PosNum) (· < ·)
+instance decidableLT : DecidableLT PosNum
   | a, b => by dsimp [LT.lt]; infer_instance
 
-instance decidableLE : DecidableRel (α := PosNum) (· ≤ ·)
+instance decidableLE : DecidableLE PosNum
   | a, b => by dsimp [LE.le]; infer_instance
 
 end PosNum
@@ -270,10 +270,10 @@ instance : LT Num :=
 instance : LE Num :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLT : DecidableRel (α := Num) (· < ·)
+instance decidableLT : DecidableLT Num
   | a, b => by dsimp [LT.lt]; infer_instance
 
-instance decidableLE : DecidableRel (α := Num) (· ≤ ·)
+instance decidableLE : DecidableLE Num
   | a, b => by dsimp [LE.le]; infer_instance
 
 /-- Converts a `Num` to a `ZNum`. -/
@@ -479,10 +479,10 @@ instance : LT ZNum :=
 instance : LE ZNum :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLT : DecidableRel (α := ZNum) (· < ·)
+instance decidableLT : DecidableLT ZNum
   | a, b => by dsimp [LT.lt]; infer_instance
 
-instance decidableLE : DecidableRel (α := ZNum) (· ≤ ·)
+instance decidableLE : DecidableLE ZNum
   | a, b => by dsimp [LE.le]; infer_instance
 
 end ZNum
@@ -505,7 +505,7 @@ def divMod (d : PosNum) : PosNum → Num × Num
     divModAux d q (Num.bit1 r₁)
   | 1 => divModAux d 0 1
 
-/-- Division of `PosNum`, -/
+/-- Division of `PosNum` -/
 def div' (n d : PosNum) : Num :=
   (divMod d n).1
 
@@ -523,7 +523,7 @@ private def sqrtAux1 (b : PosNum) (r n : Num) : Num × Num :=
 private def sqrtAux : PosNum → Num → Num → Num
   | b@(bit0 b') => fun r n => let (r', n') := sqrtAux1 b r n; sqrtAux b' r' n'
   | b@(bit1 b') => fun r n => let (r', n') := sqrtAux1 b r n; sqrtAux b' r' n'
-  | 1           => fun r n => (sqrtAux1 1 r n).1
+  | 1 => fun r n => (sqrtAux1 1 r n).1
 
 end PosNum
 

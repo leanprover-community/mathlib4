@@ -28,17 +28,16 @@ section Semiring
 
 variable [Semiring S] (a b : ℕ)
 
--- Porting note: added type ascription around a + 1
-theorem cast_ascFactorial : (a.ascFactorial b : S) = (ascPochhammer S b).eval (a : S) := by
+theorem cast_ascFactorial : a.ascFactorial b = (ascPochhammer S b).eval (a : S) := by
   rw [← ascPochhammer_nat_eq_ascFactorial, ascPochhammer_eval_cast]
 
--- Porting note: added type ascription around a - (b - 1)
 theorem cast_descFactorial :
-    (a.descFactorial b : S) = (ascPochhammer S b).eval (a - (b - 1) : S) := by
+    a.descFactorial b = (ascPochhammer S b).eval (a - (b - 1) : S) := by
   rw [← ascPochhammer_eval_cast, ascPochhammer_nat_eq_descFactorial]
-  induction' b with b
-  · simp
-  · simp_rw [add_succ, Nat.add_one_sub_one]
+  induction b with
+  | zero => simp
+  | succ b =>
+    simp_rw [add_succ, Nat.add_one_sub_one]
     obtain h | h := le_total a b
     · rw [descFactorial_of_lt (lt_succ_of_le h), descFactorial_of_lt (lt_succ_of_le _)]
       rw [tsub_eq_zero_iff_le.mpr h, zero_add]

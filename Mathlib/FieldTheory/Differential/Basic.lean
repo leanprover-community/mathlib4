@@ -34,13 +34,12 @@ lemma logDeriv_one : logDeriv (1 : R) = 0 := by
 
 lemma logDeriv_mul (ha : a ≠ 0) (hb : b ≠ 0) : logDeriv (a * b) = logDeriv a + logDeriv b := by
   unfold logDeriv
-  field_simp
+  simp [field]
   ring
 
 lemma logDeriv_div (ha : a ≠ 0) (hb : b ≠ 0) : logDeriv (a / b) = logDeriv a - logDeriv b := by
   unfold logDeriv
-  field_simp [Derivation.leibniz_div, smul_sub]
-  ring
+  simp [field, Derivation.leibniz_div]
 
 @[simp]
 lemma logDeriv_pow (n : ℕ) (a : R) : logDeriv (a ^ n) = n * logDeriv a := by
@@ -61,7 +60,7 @@ lemma logDeriv_multisetProd {ι : Type*} (s : Multiset ι) {f : ι → R} (h : �
   induction s using Multiset.induction_on
   · simp
   · rename_i h₂
-    simp only [Function.comp_apply, Multiset.map_cons, Multiset.sum_cons, Multiset.prod_cons]
+    simp only [Multiset.map_cons, Multiset.sum_cons, Multiset.prod_cons]
     rw [← h₂]
     · apply logDeriv_mul
       · simp [h]
@@ -102,9 +101,7 @@ noncomputable instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
       apply dvd_mul_of_dvd_right
       rw [← AdjoinRoot.mk_eq_zero]
       unfold implicitDeriv
-      simp only [ne_eq, show p ≠ 0 from Irreducible.ne_zero Fact.out, not_false_eq_true,
-        AdjoinRoot.minpoly_root, show p.Monic from Fact.out, Monic.leadingCoeff, inv_one, map_one,
-        mul_one, AdjoinRoot.aeval_eq, Derivation.coe_add, Derivation.coe_smul, Pi.add_apply,
+      simp only [ AdjoinRoot.aeval_eq, Derivation.coe_add, Derivation.coe_smul, Pi.add_apply,
         Pi.smul_apply, Derivation.restrictScalars_apply, derivative'_apply, smul_eq_mul, map_add,
         map_mul, AdjoinRoot.mk_leftInverse Fact.out _]
       rw [div_mul_cancel₀, add_neg_cancel]
@@ -114,7 +111,7 @@ noncomputable instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
       · intro nh
         simp [natDegree_eq_zero_of_derivative_eq_zero nh] at this
       apply natDegree_derivative_lt
-      exact Nat.not_eq_zero_of_lt this)
+      exact Nat.ne_zero_of_lt this)
 
 instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
     DifferentialAlgebra F (AdjoinRoot p) where
@@ -126,7 +123,6 @@ instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
 variable {K : Type*} [Field K] [Algebra F K]
 
 variable (F K) in
-
 /--
 If `K` is a finite field extension of `F` then we can define a differential algebra on `K`, by
 choosing a primitive element of `K`, `k` and then using the equivalence to `AdjoinRoot (minpoly k)`.
@@ -175,7 +171,7 @@ noncomputable def uniqueDifferentialAlgebraFiniteDimensional [FiniteDimensional 
     · intro nh
       simp [natDegree_eq_zero_of_derivative_eq_zero nh] at this
     apply natDegree_derivative_lt
-    exact Nat.not_eq_zero_of_lt this
+    exact Nat.ne_zero_of_lt this
 
 noncomputable instance (B : IntermediateField F K) [FiniteDimensional F B] : Differential B :=
   differentialFiniteDimensional F B

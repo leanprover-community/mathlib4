@@ -58,13 +58,6 @@ abbrev ofHom {X Y : Type u} [Nonempty X] [LinearOrder X] [Fintype X]
     of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := NonemptyFinLinOrd) f
 
-variable {R} in
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (X Y : NonemptyFinLinOrd.{u}) (f : LinOrd.Hom X.toLinOrd Y.toLinOrd) :=
-  f.hom
-
-initialize_simps_projections PartOrd.Hom (hom' → hom)
-
 @[simp]
 lemma hom_id {X : NonemptyFinLinOrd} : (𝟙 X : X ⟶ X).hom = OrderHom.id := rfl
 
@@ -87,7 +80,7 @@ lemma hom_ext {X Y : NonemptyFinLinOrd} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f
 @[simp]
 lemma hom_ofHom {X Y : Type u} [Nonempty X] [LinearOrder X] [Fintype X] [Nonempty Y]
     [LinearOrder Y] [Fintype Y] (f : X →o Y) :
-  (ofHom f).hom = f := rfl
+    (ofHom f).hom = f := rfl
 
 @[simp]
 lemma ofHom_hom {X Y : NonemptyFinLinOrd} (f : X ⟶ Y) :
@@ -127,8 +120,7 @@ def dualEquiv : NonemptyFinLinOrd ≌ NonemptyFinLinOrd where
 theorem mono_iff_injective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
     Mono f ↔ Function.Injective f := by
   refine ⟨?_, ConcreteCategory.mono_of_injective f⟩
-  intro
-  intro a₁ a₂ h
+  intro _ a₁ a₂ h
   let X := of (ULift (Fin 1))
   let g₁ : X ⟶ A := ofHom ⟨fun _ => a₁, fun _ _ _ => by rfl⟩
   let g₂ : X ⟶ A := ofHom ⟨fun _ => a₂, fun _ _ _ => by rfl⟩
@@ -230,5 +222,5 @@ def nonemptyFinLinOrdDualCompForgetToFinPartOrd :
   hom.app X := FinPartOrd.ofHom OrderHom.id
   inv.app X := FinPartOrd.ofHom OrderHom.id
 
-/-- The generating arrow `i ⟶ i+1` in the category `Fin n`.-/
+/-- The generating arrow `i ⟶ i+1` in the category `Fin n` -/
 def Fin.hom_succ {n} (i : Fin n) : i.castSucc ⟶ i.succ := homOfLE (Fin.castSucc_le_succ i)

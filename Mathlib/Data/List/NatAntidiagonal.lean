@@ -18,8 +18,7 @@ Files `Data.Multiset.NatAntidiagonal` and `Data.Finset.NatAntidiagonal` successi
 `List` definition we have here into `Multiset` and `Finset`.
 -/
 
-
-open List Function Nat
+open Function
 
 namespace List
 
@@ -54,13 +53,13 @@ theorem antidiagonal_zero : antidiagonal 0 = [(0, 0)] :=
 
 /-- The antidiagonal of `n` does not contain duplicate entries. -/
 theorem nodup_antidiagonal (n : ℕ) : Nodup (antidiagonal n) :=
-  (nodup_range _).map ((@LeftInverse.injective ℕ (ℕ × ℕ) Prod.fst fun i ↦ (i, n - i)) fun _ ↦ rfl)
+  nodup_range.map ((@LeftInverse.injective ℕ (ℕ × ℕ) Prod.fst fun i ↦ (i, n - i)) fun _ ↦ rfl)
 
 @[simp]
 theorem antidiagonal_succ {n : ℕ} :
     antidiagonal (n + 1) = (0, n + 1) :: (antidiagonal n).map (Prod.map Nat.succ id) := by
   simp only [antidiagonal, range_succ_eq_map, map_cons, Nat.add_succ_sub_one,
-    Nat.add_zero, id, eq_self_iff_true, Nat.sub_zero, map_map, Prod.map_apply]
+    Nat.add_zero, id, Nat.sub_zero, map_map, Prod.map_apply]
   apply congr rfl (congr rfl _)
   ext; simp
 

@@ -13,9 +13,9 @@ decomposed as `S = LDLᴴ` where `L` is a lower-triangular matrix and `D` is a d
 
 ## Main definitions
 
- * `LDL.lower` is the lower triangular matrix `L`.
- * `LDL.lowerInv` is the inverse of the lower triangular matrix `L`.
- * `LDL.diag` is the diagonal matrix `D`.
+* `LDL.lower` is the lower triangular matrix `L`.
+* `LDL.lowerInv` is the inverse of the lower triangular matrix `L`.
+* `LDL.diag` is the diagonal matrix `D`.
 
 ## Main result
 
@@ -27,6 +27,7 @@ decomposed as `S = LDLᴴ` where `L` is a lower-triangular matrix and `D` is a d
 
 -/
 
+open Module
 
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {n : Type*} [LinearOrder n] [WellFoundedLT n] [LocallyFiniteOrderBot n]
@@ -34,12 +35,11 @@ variable {n : Type*} [LinearOrder n] [WellFoundedLT n] [LocallyFiniteOrderBot n]
 section set_options
 
 set_option quotPrecheck false
-local notation "⟪" x ", " y "⟫ₑ" =>
-  @inner 𝕜 _ _ ((WithLp.equiv 2 _).symm x) ((WithLp.equiv _ _).symm y)
+local notation "⟪" x ", " y "⟫ₑ" => inner 𝕜 (WithLp.toLp 2 x) (WithLp.toLp 2 y)
 
-open Matrix
+open Matrix InnerProductSpace
 
-open scoped Matrix ComplexOrder
+open scoped ComplexOrder
 
 variable {S : Matrix n n 𝕜} [Fintype n] (hS : S.PosDef)
 
@@ -92,14 +92,14 @@ by some lower triangular matrix and get a diagonal matrix. -/
 theorem LDL.diag_eq_lowerInv_conj : LDL.diag hS = LDL.lowerInv hS * S * (LDL.lowerInv hS)ᴴ := by
   ext i j
   by_cases hij : i = j
-  · simp only [diag, diagEntries, EuclideanSpace.inner_piLp_equiv_symm, star_star, hij,
-    diagonal_apply_eq, Matrix.mul_assoc]
+  · simp only [diag, diagEntries, EuclideanSpace.inner_toLp_toLp, star_star, hij,
+      diagonal_apply_eq, Matrix.mul_assoc, dotProduct_comm]
     rfl
   · simp only [LDL.diag, hij, diagonal_apply_ne, Ne, not_false_iff, mul_mul_apply]
     rw [conjTranspose, transpose_map, transpose_transpose, dotProduct_mulVec,
       (LDL.lowerInv_orthogonal hS fun h : j = i => hij h.symm).symm, ← inner_conj_symm,
-      mulVec_transpose, EuclideanSpace.inner_piLp_equiv_symm, ← RCLike.star_def, ←
-      star_dotProduct_star, dotProduct_comm, star_star]
+      mulVec_transpose, EuclideanSpace.inner_toLp_toLp, ← RCLike.star_def, ←
+      star_dotProduct_star, star_star]
     rfl
 
 /-- The lower triangular matrix `L` of the LDL decomposition. -/

@@ -1,7 +1,8 @@
-import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.LinearAlgebra.LinearIndependent.Defs
 
 set_option linter.style.setOption false
 set_option pp.unicode.fun true
+set_option linter.style.commandStart false
 
 variable {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V] {s : Set V} {x : V}
 

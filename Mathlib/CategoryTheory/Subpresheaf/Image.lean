@@ -5,6 +5,7 @@ Authors: Andrew Yang, Joël Riou
 -/
 import Mathlib.CategoryTheory.Subpresheaf.Basic
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+import Mathlib.CategoryTheory.Limits.Types.Colimits
 
 /-!
 # The image of a subpresheaf
@@ -90,6 +91,8 @@ lemma epi_iff_range_eq_top :
   simp [NatTrans.epi_iff_epi_app, epi_iff_surjective, Subpresheaf.ext_iff, funext_iff,
     Set.range_eq_univ]
 
+lemma range_eq_top [Epi p] : range p = ⊤ := by rwa [← epi_iff_range_eq_top]
+
 instance : Epi (toRange p) := by simp [epi_iff_range_eq_top]
 
 instance [Mono p] : IsIso (toRange p) := by
@@ -121,6 +124,10 @@ def image : Subpresheaf F' where
     exact ⟨F.map φ x, G.map φ hx, by apply FunctorToTypes.naturality⟩
 
 lemma image_top : (⊤ : Subpresheaf F).image f = range f := by aesop
+
+@[simp]
+lemma image_iSup {ι : Type*} (G : ι → Subpresheaf F) (f : F ⟶ F') :
+    (⨆ i, G i).image f = ⨆ i, (G i).image f := by aesop
 
 lemma image_comp (g : F' ⟶ F'') :
     G.image (f ≫ g) = (G.image f).image g := by aesop
@@ -165,7 +172,7 @@ lemma fromPreimage_ι (G : Subpresheaf F) (p : F' ⟶ F) :
 lemma preimage_eq_top_iff (G : Subpresheaf F) (p : F' ⟶ F) :
     G.preimage p = ⊤ ↔ range p ≤ G := by
   rw [← image_top, image_le_iff]
-  aesop
+  simp
 
 @[simp]
 lemma preimage_image_of_epi (G : Subpresheaf F) (p : F' ⟶ F) [hp : Epi p] :
@@ -180,11 +187,5 @@ lemma preimage_image_of_epi (G : Subpresheaf F) (p : F' ⟶ F) [hp : Epi p] :
 end preimage
 
 end Subpresheaf
-
-@[deprecated (since := "2025-01-25")] alias imagePresheaf := Subpresheaf.range
-@[deprecated (since := "2025-01-25")] alias imagePresheaf_id := Subpresheaf.range_id
-@[deprecated (since := "2025-01-25")] alias toImagePresheaf := Subpresheaf.toRange
-@[deprecated (since := "2025-01-25")] alias toImagePresheaf_ι := Subpresheaf.toRange_ι
-@[deprecated (since := "2025-01-25")] alias imagePresheaf_comp_le := Subpresheaf.range_comp_le
 
 end CategoryTheory

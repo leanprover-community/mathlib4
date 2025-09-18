@@ -8,11 +8,11 @@ import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.Algebra.Polynomial.Derivation
 
 /-!
-# The Kaehler differential module of polynomial algebras
+# The Kähler differential module of polynomial algebras
 -/
 
+open Algebra Module
 open scoped TensorProduct
-open Algebra
 
 universe u v
 
@@ -31,18 +31,18 @@ def KaehlerDifferential.mvPolynomialEquiv (σ : Type*) :
   right_inv := by
     intro x
     induction x using Finsupp.induction_linear with
-    | h0 => simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]; rw [map_zero, map_zero]
-    | hadd => simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, map_add] at *; simp only [*]
-    | hsingle a b => simp [LinearMap.map_smul, -map_smul]
+    | zero => simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]; rw [map_zero, map_zero]
+    | add => simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, map_add] at *; simp only [*]
+    | single a b => simp [-map_smul]
   left_inv := by
     intro x
     obtain ⟨x, rfl⟩ := linearCombination_surjective _ _ x
     induction x using Finsupp.induction_linear with
-    | h0 =>
+    | zero =>
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]
       rw [map_zero, map_zero, map_zero]
-    | hadd => simp only [map_add, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom] at *; simp only [*]
-    | hsingle a b =>
+    | add => simp only [map_add, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom] at *; simp only [*]
+    | single a b =>
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Finsupp.linearCombination_single,
         LinearMap.map_smul, Derivation.liftKaehlerDifferential_comp_D]
       congr 1
@@ -54,7 +54,7 @@ def KaehlerDifferential.mvPolynomialEquiv (σ : Type*) :
 /-- `{ dx | x ∈ σ }` forms a basis of the relative differential module
 of a polynomial algebra `R[σ]`. -/
 def KaehlerDifferential.mvPolynomialBasis (σ) :
-    Basis σ (MvPolynomial σ R) (Ω[MvPolynomial σ R⁄R]) :=
+    Basis σ (MvPolynomial σ R) Ω[MvPolynomial σ R⁄R] :=
   ⟨mvPolynomialEquiv R σ⟩
 
 lemma KaehlerDifferential.mvPolynomialBasis_repr_comp_D (σ) :
@@ -92,7 +92,7 @@ lemma KaehlerDifferential.mvPolynomialBasis_apply (σ) (i) :
     mvPolynomialBasis R σ i = D R (MvPolynomial σ R) (.X i) :=
   (mvPolynomialBasis_repr_symm_single R σ i 1).trans (one_smul _ _)
 
-instance (σ) : Module.Free (MvPolynomial σ R) (Ω[MvPolynomial σ R⁄R]) :=
+instance (σ) : Module.Free (MvPolynomial σ R) Ω[MvPolynomial σ R⁄R] :=
   .of_basis (KaehlerDifferential.mvPolynomialBasis R σ)
 
 end MvPolynomial
@@ -113,11 +113,12 @@ def KaehlerDifferential.polynomialEquiv : Ω[R[X]⁄R] ≃ₗ[R[X]] R[X] where
   left_inv := by
     intro x
     obtain ⟨x, rfl⟩ := linearCombination_surjective _ _ x
-    induction' x using Finsupp.induction_linear with x y hx hy x y
-    · simp
-    · simp only [map_add, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearMap.flip_apply,
+    induction x using Finsupp.induction_linear with
+    | zero => simp
+    | add x y hx hy =>
+      simp only [map_add, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearMap.flip_apply,
         AlgHom.toLinearMap_apply, lsmul_coe] at *; simp only [*]
-    · simp [polynomial_D_apply _ x]
+    | single x y => simp [polynomial_D_apply _ x]
   right_inv x := by simp
 
 lemma KaehlerDifferential.polynomialEquiv_comp_D :

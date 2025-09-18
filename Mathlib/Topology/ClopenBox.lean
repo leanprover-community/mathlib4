@@ -3,14 +3,15 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
+import Mathlib.Topology.Compactness.Bases
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Separation.Profinite
 import Mathlib.Topology.Sets.Closeds
 
 /-!
-# Clopen subsets in cartesian products
+# Clopen subsets in Cartesian products
 
-In general, a clopen subset in a cartesian product of topological spaces
+In general, a clopen subset in a Cartesian product of topological spaces
 cannot be written as a union of "clopen boxes",
 i.e. products of clopen subsets of the components (see [buzyakovaClopenBox] for counterexamples).
 
@@ -20,7 +21,7 @@ follows the one given in [buzyakovaClopenBox].
 
 We deduce that in a product of compact spaces, a clopen subset is a finite union of clopen boxes,
 and use that to prove that the property of having countably many clopens is preserved by taking
-cartesian products of compact spaces (this is relevant to the theory of light profinite sets).
+Cartesian products of compact spaces (this is relevant to the theory of light profinite sets).
 
 ## References
 
@@ -38,7 +39,7 @@ namespace TopologicalSpace.Clopens
 
 theorem exists_prod_subset (W : Clopens (X × Y)) {a : X × Y} (h : a ∈ W) :
     ∃ U : Clopens X, a.1 ∈ U ∧ ∃ V : Clopens Y, a.2 ∈ V ∧ U ×ˢ V ≤ W := by
-  have hp : Continuous (fun y : Y ↦ (a.1, y)) := Continuous.Prod.mk _
+  have hp : Continuous (fun y : Y ↦ (a.1, y)) := .prodMk_right _
   let V : Set Y := {y | (a.1, y) ∈ W}
   have hV : IsCompact V := (W.2.1.preimage hp).isCompact
   let U : Set X := {x | MapsTo (Prod.mk x) V W}
@@ -93,8 +94,5 @@ lemma countable_iff_secondCountable [T2Space X]
       ext1; change s.carrier = t.carrier
       rw [(this s).choose_spec, (this t).choose_spec, h]
     exact hf.countable
-
-@[deprecated (since := "2024-11-12")]
-alias countable_iff_second_countable := countable_iff_secondCountable
 
 end TopologicalSpace.Clopens

@@ -58,10 +58,10 @@ instance : OrderTopology { x // Irrational x } :=
     ⟨⟨z, hz⟩, hxz, hzy⟩
 
 instance : NoMaxOrder { x // Irrational x } :=
-  ⟨fun ⟨x, hx⟩ => ⟨⟨x + (1 : ℕ), hx.add_nat 1⟩, by simp⟩⟩
+  ⟨fun ⟨x, hx⟩ => ⟨⟨x + (1 : ℕ), hx.add_natCast 1⟩, by simp⟩⟩
 
 instance : NoMinOrder { x // Irrational x } :=
-  ⟨fun ⟨x, hx⟩ => ⟨⟨x - (1 : ℕ), hx.sub_nat 1⟩, by simp⟩⟩
+  ⟨fun ⟨x, hx⟩ => ⟨⟨x - (1 : ℕ), hx.sub_natCast 1⟩, by simp⟩⟩
 
 instance : DenselyOrdered { x // Irrational x } :=
   ⟨fun _ _ hlt =>

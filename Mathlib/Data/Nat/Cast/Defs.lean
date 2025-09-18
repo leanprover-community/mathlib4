@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
 -/
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Data.Nat.Init
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.OfNat
 
@@ -30,25 +31,6 @@ protected def Nat.unaryCast [One R] [Zero R] [Add R] : ℕ → R
   | 0 => 0
   | n + 1 => Nat.unaryCast n + 1
 
--- the following four declarations are not in mathlib3 and are relevant to the way numeric
--- literals are handled in Lean 4.
-
-/-- A type class for natural numbers which are greater than or equal to `2`. -/
-class Nat.AtLeastTwo (n : ℕ) : Prop where
-  prop : n ≥ 2
-
-instance instNatAtLeastTwo {n : ℕ} : Nat.AtLeastTwo (n + 2) where
-  prop := Nat.succ_le_succ <| Nat.succ_le_succ <| Nat.zero_le _
-
-namespace Nat.AtLeastTwo
-
-variable {n : ℕ} [n.AtLeastTwo]
-
-lemma one_lt : 1 < n := prop
-lemma ne_one : n ≠ 1 := Nat.ne_of_gt one_lt
-
-end Nat.AtLeastTwo
-
 /-- Recognize numeric literals which are at least `2` as terms of `R` via `Nat.cast`. This
 instance is what makes things like `37 : R` type check.  Note that `0` and `1` are not needed
 because they are recognized as terms of `R` (at least when `R` is an `AddMonoidWithOne`) through
@@ -70,12 +52,7 @@ Some discussion is [on Zulip here](https://leanprover.zulipchat.com/#narrow/stre
 -/
 
 @[simp, norm_cast] theorem Nat.cast_ofNat {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
-  (Nat.cast ofNat(n) : R) = ofNat(n) := rfl
-
-@[deprecated Nat.cast_ofNat (since := "2024-12-22")]
-theorem Nat.cast_eq_ofNat {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
-    (Nat.cast n : R) = OfNat.ofNat n :=
-  rfl
+    (Nat.cast ofNat(n) : R) = ofNat(n) := rfl
 
 /-! ### Additive monoids with one -/
 
@@ -169,13 +146,13 @@ theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) :
         rw [h1, Nat.add_comm 1, Nat.succ_mul, Nat.one_mul]
         simp only [Nat.cast_add, Nat.cast_one]
 
-theorem cast_two [AddMonoidWithOne R] : ((2 : ℕ) : R) = (2 : R) := rfl
+theorem cast_two [NatCast R] : ((2 : ℕ) : R) = (2 : R) := rfl
 
-theorem cast_three [AddMonoidWithOne R] : ((3 : ℕ) : R) = (3 : R) := rfl
+theorem cast_three [NatCast R] : ((3 : ℕ) : R) = (3 : R) := rfl
 
-theorem cast_four [AddMonoidWithOne R] : ((4 : ℕ) : R) = (4 : R) := rfl
+theorem cast_four [NatCast R] : ((4 : ℕ) : R) = (4 : R) := rfl
 
-attribute [simp, norm_cast] Int.natAbs_ofNat
+attribute [simp, norm_cast] Int.natAbs_natCast
 
 end Nat
 
@@ -187,9 +164,8 @@ protected abbrev AddMonoidWithOne.unary [AddMonoid R] [One R] : AddMonoidWithOne
 protected abbrev AddMonoidWithOne.binary [AddMonoid R] [One R] : AddMonoidWithOne R :=
   { ‹One R›, ‹AddMonoid R› with
     natCast := Nat.binCast,
-    natCast_zero := by simp only [Nat.binCast, Nat.cast],
+    natCast_zero := by simp only [Nat.binCast],
     natCast_succ := fun n => by
-      dsimp only [NatCast.natCast]
       letI : AddMonoidWithOne R := AddMonoidWithOne.unary
       rw [Nat.binCast_eq, Nat.binCast_eq, Nat.cast_succ] }
 

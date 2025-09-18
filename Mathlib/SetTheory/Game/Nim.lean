@@ -6,6 +6,11 @@ Authors: Fox Thomson, Markus Himmel
 import Mathlib.SetTheory.Game.Birthday
 import Mathlib.SetTheory.Game.Impartial
 import Mathlib.SetTheory.Nimber.Basic
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Game.Specific.Nim` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Nim and the Sprague-Grundy theorem
@@ -23,10 +28,9 @@ The pen-and-paper definition of nim defines the possible moves of `nim o` to be 
 However, this definition does not work for us because it would make the type of nim
 `Ordinal.{u} → SetTheory.PGame.{u + 1}`, which would make it impossible for us to state the
 Sprague-Grundy theorem, since that requires the type of `nim` to be
-`Ordinal.{u} → SetTheory.PGame.{u}`. For this reason, we
-instead use `o.toType` for the possible moves. You can use `to_left_moves_nim` and
-`to_right_moves_nim` to convert an ordinal less than `o` into a left or right move of `nim o`, and
-vice versa.
+`Ordinal.{u} → SetTheory.PGame.{u}`. For this reason, we instead use `o.toType` for the possible
+moves. We expose `toLeftMovesNim` and `toRightMovesNim` to conveniently convert an ordinal less than
+`o` into a left or right move of `nim o`, and vice versa.
 -/
 
 
@@ -50,20 +54,18 @@ noncomputable def nim (o : Ordinal.{u}) : PGame.{u} :=
 termination_by o
 decreasing_by all_goals exact ((enumIsoToType o).symm x).prop
 
-theorem nim_def (o : Ordinal) : nim o =
-    ⟨o.toType, o.toType,
-      fun x => nim ((enumIsoToType o).symm x).val,
-      fun x => nim ((enumIsoToType o).symm x).val⟩ := by
-  rw [nim]
+theorem leftMoves_nim (o : Ordinal) : (nim o).LeftMoves = o.toType := by rw [nim]; rfl
+theorem rightMoves_nim (o : Ordinal) : (nim o).RightMoves = o.toType := by rw [nim]; rfl
 
-theorem leftMoves_nim (o : Ordinal) : (nim o).LeftMoves = o.toType := by rw [nim_def]; rfl
-theorem rightMoves_nim (o : Ordinal) : (nim o).RightMoves = o.toType := by rw [nim_def]; rfl
+theorem moveLeft_nim_heq (o : Ordinal) :
+    (nim o).moveLeft ≍ fun i : o.toType => nim ((enumIsoToType o).symm i) := by rw [nim]; rfl
 
-theorem moveLeft_nim_hEq (o : Ordinal) :
-    HEq (nim o).moveLeft fun i : o.toType => nim ((enumIsoToType o).symm i) := by rw [nim_def]; rfl
+@[deprecated (since := "2025-07-05")] alias moveLeft_nim_hEq := moveLeft_nim_heq
 
-theorem moveRight_nim_hEq (o : Ordinal) :
-    HEq (nim o).moveRight fun i : o.toType => nim ((enumIsoToType o).symm i) := by rw [nim_def]; rfl
+theorem moveRight_nim_heq (o : Ordinal) :
+    (nim o).moveRight ≍ fun i : o.toType => nim ((enumIsoToType o).symm i) := by rw [nim]; rfl
+
+@[deprecated (since := "2025-07-05")] alias moveRight_nim_hEq := moveRight_nim_heq
 
 /-- Turns an ordinal less than `o` into a left move for `nim o` and vice versa. -/
 noncomputable def toLeftMovesNim {o : Ordinal} : Set.Iio o ≃ (nim o).LeftMoves :=
@@ -85,10 +87,7 @@ theorem toRightMovesNim_symm_lt {o : Ordinal} (i : (nim o).RightMoves) :
 
 @[simp]
 theorem moveLeft_nim {o : Ordinal} (i) : (nim o).moveLeft i = nim (toLeftMovesNim.symm i).val :=
-  (congr_heq (moveLeft_nim_hEq o).symm (cast_heq _ i)).symm
-
-@[deprecated moveLeft_nim (since := "2024-10-30")]
-alias moveLeft_nim' := moveLeft_nim
+  (congr_heq (moveLeft_nim_heq o).symm (cast_heq _ i)).symm
 
 theorem moveLeft_toLeftMovesNim {o : Ordinal} (i) :
     (nim o).moveLeft (toLeftMovesNim i) = nim i := by
@@ -96,10 +95,7 @@ theorem moveLeft_toLeftMovesNim {o : Ordinal} (i) :
 
 @[simp]
 theorem moveRight_nim {o : Ordinal} (i) : (nim o).moveRight i = nim (toRightMovesNim.symm i).val :=
-  (congr_heq (moveRight_nim_hEq o).symm (cast_heq _ i)).symm
-
-@[deprecated moveRight_nim (since := "2024-10-30")]
-alias moveRight_nim' := moveRight_nim
+  (congr_heq (moveRight_nim_heq o).symm (cast_heq _ i)).symm
 
 theorem moveRight_toRightMovesNim {o : Ordinal} (i) :
     (nim o).moveRight (toRightMovesNim i) = nim i := by
@@ -118,11 +114,11 @@ def rightMovesNimRecOn {o : Ordinal} {P : (nim o).RightMoves → Sort*} (i : (ni
   rw [← toRightMovesNim.apply_symm_apply i]; apply H
 
 instance isEmpty_nim_zero_leftMoves : IsEmpty (nim 0).LeftMoves := by
-  rw [nim_def]
+  rw [nim]
   exact isEmpty_toType_zero
 
 instance isEmpty_nim_zero_rightMoves : IsEmpty (nim 0).RightMoves := by
-  rw [nim_def]
+  rw [nim]
   exact isEmpty_toType_zero
 
 /-- `nim 0` has exactly the same moves as `0`. -/
@@ -164,7 +160,7 @@ theorem nim_one_moveRight (x) : (nim 1).moveRight x = nim 0 := by simp
 
 /-- `nim 1` has exactly the same moves as `star`. -/
 def nimOneRelabelling : nim 1 ≡r star := by
-  rw [nim_def]
+  rw [nim]
   refine ⟨?_, ?_, fun i => ?_, fun j => ?_⟩
   any_goals dsimp; apply Equiv.ofUnique
   all_goals simpa [enumIsoToType] using nimZeroRelabelling
@@ -174,8 +170,8 @@ theorem nim_one_equiv : nim 1 ≈ star :=
 
 @[simp]
 theorem nim_birthday (o : Ordinal) : (nim o).birthday = o := by
-  induction' o using Ordinal.induction with o IH
-  rw [nim_def, birthday_def]
+  induction o using Ordinal.induction with | _ o IH
+  rw [nim, birthday_def]
   dsimp
   rw [max_eq_right le_rfl]
   convert lsub_typein o with i
@@ -183,11 +179,11 @@ theorem nim_birthday (o : Ordinal) : (nim o).birthday = o := by
 
 @[simp]
 theorem neg_nim (o : Ordinal) : -nim o = nim o := by
-  induction' o using Ordinal.induction with o IH
-  rw [nim_def]; dsimp; congr <;> funext i <;> exact IH _ (Ordinal.typein_lt_self i)
+  induction o using Ordinal.induction with | _ o IH
+  rw [nim]; dsimp; congr <;> funext i <;> exact IH _ (Ordinal.typein_lt_self i)
 
-instance nim_impartial (o : Ordinal) : Impartial (nim o) := by
-  induction' o using Ordinal.induction with o IH
+instance impartial_nim (o : Ordinal) : Impartial (nim o) := by
+  induction o using Ordinal.induction with | _ o IH
   rw [impartial_def, neg_nim]
   refine ⟨equiv_rfl, fun i => ?_, fun i => ?_⟩ <;> simpa using IH _ (typein_lt_self _)
 
@@ -201,7 +197,7 @@ theorem nim_add_equiv_zero_iff (o₁ o₂ : Ordinal) : (nim o₁ + nim o₂ ≈ 
   constructor
   · refine not_imp_not.1 fun hne : _ ≠ _ => (Impartial.not_equiv_zero_iff (nim o₁ + nim o₂)).2 ?_
     wlog h : o₁ < o₂
-    · exact (fuzzy_congr_left add_comm_equiv).1 (this _ _ hne.symm (hne.lt_or_lt.resolve_left h))
+    · exact (fuzzy_congr_left add_comm_equiv).1 (this _ _ hne.symm (hne.lt_or_gt.resolve_left h))
     rw [Impartial.fuzzy_zero_iff_gf, zero_lf_le]
     use toLeftMovesAdd (Sum.inr <| toLeftMovesNim ⟨_, h⟩)
     · simpa using (Impartial.add_self (nim o₁)).2
@@ -232,12 +228,6 @@ theorem grundyValue_eq_sInf_moveLeft (G : PGame) :
     grundyValue G = sInf (Set.range (grundyValue ∘ G.moveLeft))ᶜ := by
   rw [grundyValue]; rfl
 
-set_option linter.deprecated false in
-@[deprecated grundyValue_eq_sInf_moveLeft (since := "2024-09-16")]
-theorem grundyValue_eq_mex_left (G : PGame) :
-    grundyValue G = Ordinal.mex fun i => grundyValue (G.moveLeft i) :=
-  grundyValue_eq_sInf_moveLeft G
-
 theorem grundyValue_ne_moveLeft {G : PGame} (i : G.LeftMoves) :
     grundyValue (G.moveLeft i) ≠ grundyValue G := by
   conv_rhs => rw [grundyValue_eq_sInf_moveLeft]
@@ -256,7 +246,7 @@ theorem exists_grundyValue_moveLeft_of_lt {G : PGame} {o : Nimber} (h : o < grun
     ∃ i, grundyValue (G.moveLeft i) = o := by
   rw [grundyValue_eq_sInf_moveLeft] at h
   by_contra ha
-  exact h.not_le (csInf_le' ha)
+  exact h.not_ge (csInf_le' ha)
 
 theorem grundyValue_le_of_forall_moveLeft {G : PGame} {o : Nimber}
     (h : ∀ i, grundyValue (G.moveLeft i) ≠ o) : G.grundyValue ≤ o := by
@@ -317,12 +307,6 @@ theorem grundyValue_eq_sInf_moveRight (G : PGame) [G.Impartial] :
   iterate 3 apply congr_arg
   ext i
   exact @grundyValue_neg _ (@Impartial.moveRight_impartial ⟨l, r, L, R⟩ _ _)
-
-set_option linter.deprecated false in
-@[deprecated grundyValue_eq_sInf_moveRight (since := "2024-09-16")]
-theorem grundyValue_eq_mex_right (G : PGame) [G.Impartial] :
-    grundyValue G = Ordinal.mex.{u, u} fun i => grundyValue (G.moveRight i) :=
-  grundyValue_eq_sInf_moveRight G
 
 theorem grundyValue_ne_moveRight {G : PGame} [G.Impartial] (i : G.RightMoves) :
     grundyValue (G.moveRight i) ≠ grundyValue G := by

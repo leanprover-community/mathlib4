@@ -3,7 +3,7 @@ Copyright (c) 2023 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
 import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
@@ -20,9 +20,10 @@ the underlying space is metrizable and separable.
 * `MeasureTheory.FiniteMeasure.prod`: The product of two finite measures.
 * `MeasureTheory.ProbabilityMeasure.prod`: The product of two probability measures.
 
-## TODO
+## Main results
 
-* Add continuous dependence of the product measures on the factors.
+`MeasureTheory.ProbabilityMeasure.continuous_prod`: the product probability measure depends
+continuously on the factors.
 
 -/
 
@@ -54,7 +55,8 @@ lemma prod_apply_symm (s : Set (α × β)) (s_mble : MeasurableSet s) :
     μ.prod ν s = ENNReal.toNNReal (∫⁻ y, μ.toMeasure ((fun x ↦ ⟨x, y⟩) ⁻¹' s) ∂ν) := by
   simp [coeFn_def, Measure.prod_apply_symm s_mble]
 
-lemma prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t := by simp [coeFn_def]
+@[simp] lemma prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t := by
+  simp [coeFn_def]
 
 @[simp] lemma mass_prod : (μ.prod ν).mass = μ.mass * ν.mass := by
   simp only [coeFn_def, mass, univ_prod_univ.symm, toMeasure_prod]
@@ -108,7 +110,8 @@ lemma prod_apply_symm (s : Set (α × β)) (s_mble : MeasurableSet s) :
     μ.prod ν s = ENNReal.toNNReal (∫⁻ y, μ.toMeasure ((fun x ↦ ⟨x, y⟩) ⁻¹' s) ∂ν) := by
   simp [coeFn_def, Measure.prod_apply_symm s_mble]
 
-lemma prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t := by simp [coeFn_def]
+@[simp] lemma prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t := by
+  simp [coeFn_def]
 
 /-- The first marginal of a product probability measure is the first probability measure. -/
 @[simp] lemma map_fst_prod : (μ.prod ν).map measurable_fst.aemeasurable = μ := by
@@ -125,7 +128,7 @@ lemma prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t 
 lemma map_prod_map {α' : Type*} [MeasurableSpace α'] {β' : Type*} [MeasurableSpace β']
     {f : α → α'} {g : β → β'} (f_mble : Measurable f) (g_mble : Measurable g) :
     (μ.map f_mble.aemeasurable).prod (ν.map g_mble.aemeasurable)
-      = (μ.prod ν).map (f_mble.prod_map g_mble).aemeasurable := by
+      = (μ.prod ν).map (f_mble.prodMap g_mble).aemeasurable := by
   apply Subtype.ext
   simp only [val_eq_to_measure, toMeasure_prod, toMeasure_map]
   rw [Measure.map_prod_map _ _ f_mble g_mble]
@@ -133,6 +136,50 @@ lemma map_prod_map {α' : Type*} [MeasurableSpace α'] {β' : Type*} [Measurable
 lemma prod_swap : (μ.prod ν).map measurable_swap.aemeasurable = ν.prod μ := by
   apply Subtype.ext
   simp [Measure.prod_swap]
+
+open TopologicalSpace
+
+/-- The map associating to two probability measures their product is a continuous map. -/
+@[fun_prop]
+theorem continuous_prod [TopologicalSpace α] [TopologicalSpace β] [SecondCountableTopology α]
+    [SecondCountableTopology β] [PseudoMetrizableSpace α] [PseudoMetrizableSpace β]
+    [OpensMeasurableSpace α] [OpensMeasurableSpace β] :
+    Continuous (fun (μ : ProbabilityMeasure α × ProbabilityMeasure β) ↦ μ.1.prod μ.2) := by
+  refine continuous_iff_continuousAt.2 (fun μ ↦ ?_)
+  /- It suffices to check the convergence along elements of a π-system containing arbitrarily
+  small neighborhoods of any point, by `tendsto_probabilityMeasure_of_tendsto_of_mem`.
+  We take as a π-system the sets of the form `a ×ˢ b` where `a` and `b` have null frontier. -/
+  let S : Set (Set (α × β)) := {t | ∃ (a : Set α) (b : Set β),
+    MeasurableSet a ∧ μ.1 (frontier a) = 0 ∧ MeasurableSet b ∧ μ.2 (frontier b) = 0
+    ∧ t = a ×ˢ b}
+  have : IsPiSystem S := by
+    rintro - ⟨a, b, ameas, ha, bmeas, hb, rfl⟩ - ⟨a', b', a'meas, ha', b'meas, hb', rfl⟩ -
+    refine ⟨a ∩ a', b ∩ b', ameas.inter a'meas, ?_, bmeas.inter b'meas, ?_, prod_inter_prod⟩
+    · rw [null_iff_toMeasure_null] at ha ha' ⊢
+      exact null_frontier_inter ha ha'
+    · rw [null_iff_toMeasure_null] at hb hb' ⊢
+      exact null_frontier_inter hb hb'
+  apply this.tendsto_probabilityMeasure_of_tendsto_of_mem
+  · rintro s ⟨a, b, ameas, -, bmeas, -, rfl⟩
+    exact ameas.prod bmeas
+  · letI : PseudoMetricSpace α := TopologicalSpace.pseudoMetrizableSpacePseudoMetric α
+    letI : PseudoMetricSpace β := TopologicalSpace.pseudoMetrizableSpacePseudoMetric β
+    intro u u_open x xu
+    obtain ⟨ε, εpos, hε⟩ : ∃ ε > 0, ball x ε ⊆ u := Metric.isOpen_iff.1 u_open x xu
+    rcases exists_null_frontier_thickening (μ.1 : Measure α) {x.1} εpos with ⟨r, hr, μr⟩
+    rcases exists_null_frontier_thickening (μ.2 : Measure β) {x.2} εpos with ⟨r', hr', μr'⟩
+    simp only [thickening_singleton] at μr μr'
+    refine ⟨ball x.1 r ×ˢ ball x.2 r', ⟨ball x.1 r, ball x.2 r', measurableSet_ball,
+      by simp [coeFn_def, μr], measurableSet_ball, by simp [coeFn_def, μr'], rfl⟩, ?_, ?_⟩
+    · exact (isOpen_ball.prod isOpen_ball).mem_nhds (by simp [hr.1, hr'.1])
+    · calc ball x.1 r ×ˢ ball x.2 r'
+      _ ⊆ ball x.1 ε ×ˢ ball x.2 ε := by gcongr; exacts [hr.2.le, hr'.2.le]
+      _ ⊆ _ := by rwa [ball_prod_same]
+  · rintro s ⟨a, b, ameas, ha, bmeas, hb, rfl⟩
+    simp only [prod_prod]
+    apply Filter.Tendsto.mul
+    · exact tendsto_measure_of_null_frontier_of_tendsto tendsto_id.fst_nhds ha
+    · exact tendsto_measure_of_null_frontier_of_tendsto tendsto_id.snd_nhds hb
 
 end ProbabilityMeasure -- namespace
 

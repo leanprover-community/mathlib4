@@ -20,37 +20,39 @@ which are lattices with only two elements, and related ideas.
 ## Main definitions
 
 ### Atoms and Coatoms
-  * `IsAtom a` indicates that the only element below `a` is `⊥`.
-  * `IsCoatom a` indicates that the only element above `a` is `⊤`.
+* `IsAtom a` indicates that the only element below `a` is `⊥`.
+* `IsCoatom a` indicates that the only element above `a` is `⊤`.
 
 ### Atomic and Atomistic Lattices
-  * `IsAtomic` indicates that every element other than `⊥` is above an atom.
-  * `IsCoatomic` indicates that every element other than `⊤` is below a coatom.
-  * `IsAtomistic` indicates that every element is the `sSup` of a set of atoms.
-  * `IsCoatomistic` indicates that every element is the `sInf` of a set of coatoms.
-  * `IsStronglyAtomic` indicates that for all `a < b`, there is some `x` with `a ⋖ x ≤ b`.
-  * `IsStronglyCoatomic` indicates that for all `a < b`, there is some `x` with `a ≤ x ⋖ b`.
+* `IsAtomic` indicates that every element other than `⊥` is above an atom.
+* `IsCoatomic` indicates that every element other than `⊤` is below a coatom.
+* `IsAtomistic` indicates that every element is the `sSup` of a set of atoms.
+* `IsCoatomistic` indicates that every element is the `sInf` of a set of coatoms.
+* `IsStronglyAtomic` indicates that for all `a < b`, there is some `x` with `a ⋖ x ≤ b`.
+* `IsStronglyCoatomic` indicates that for all `a < b`, there is some `x` with `a ≤ x ⋖ b`.
 
 ### Simple Lattices
-  * `IsSimpleOrder` indicates that an order has only two unique elements, `⊥` and `⊤`.
-  * `IsSimpleOrder.boundedOrder`
-  * `IsSimpleOrder.distribLattice`
-  * Given an instance of `IsSimpleOrder`, we provide the following definitions. These are not
-    made global instances as they contain data :
-    * `IsSimpleOrder.booleanAlgebra`
-    * `IsSimpleOrder.completeLattice`
-    * `IsSimpleOrder.completeBooleanAlgebra`
+* `IsSimpleOrder` indicates that an order has only two unique elements, `⊥` and `⊤`.
+* `IsSimpleOrder.boundedOrder`
+* `IsSimpleOrder.distribLattice`
+* Given an instance of `IsSimpleOrder`, we provide the following definitions. These are not
+  made global instances as they contain data :
+  * `IsSimpleOrder.booleanAlgebra`
+  * `IsSimpleOrder.completeLattice`
+  * `IsSimpleOrder.completeBooleanAlgebra`
 
 ## Main results
-  * `isAtom_dual_iff_isCoatom` and `isCoatom_dual_iff_isAtom` express the (definitional) duality
-   of `IsAtom` and `IsCoatom`.
-  * `isSimpleOrder_iff_isAtom_top` and `isSimpleOrder_iff_isCoatom_bot` express the
+* `isAtom_dual_iff_isCoatom` and `isCoatom_dual_iff_isAtom` express the (definitional) duality
+  of `IsAtom` and `IsCoatom`.
+* `isSimpleOrder_iff_isAtom_top` and `isSimpleOrder_iff_isCoatom_bot` express the
   connection between atoms, coatoms, and simple lattices
-  * `IsCompl.isAtom_iff_isCoatom` and `IsCompl.isCoatom_if_isAtom`: In a modular
+* `IsCompl.isAtom_iff_isCoatom` and `IsCompl.isCoatom_if_isAtom`: In a modular
   bounded lattice, a complement of an atom is a coatom and vice versa.
-  * `isAtomic_iff_isCoatomic`: A modular complemented lattice is atomic iff it is coatomic.
+* `isAtomic_iff_isCoatomic`: A modular complemented lattice is atomic iff it is coatomic.
 
 -/
+
+open Order
 
 variable {ι : Sort*} {α β : Type*}
 
@@ -77,7 +79,9 @@ theorem IsAtom.of_isAtom_coe_Iic {a : Set.Iic x} (ha : IsAtom a) : IsAtom (a : �
 theorem isAtom_iff_le_of_ge : IsAtom a ↔ a ≠ ⊥ ∧ ∀ b ≠ ⊥, b ≤ a → a ≤ b :=
   and_congr Iff.rfl <|
     forall_congr' fun b => by
-      simp only [Ne, @not_imp_comm (b = ⊥), Classical.not_imp, lt_iff_le_not_le]
+      simp only [Ne, @not_imp_comm (b = ⊥), Classical.not_imp, lt_iff_le_not_ge]
+
+lemma IsAtom.ne_bot (ha : IsAtom a) : a ≠ ⊥ := ha.1
 
 end Preorder
 
@@ -96,6 +100,13 @@ lemma IsAtom.bot_lt (h : IsAtom a) : ⊥ < a :=
 lemma IsAtom.le_iff_eq (ha : IsAtom a) (hb : b ≠ ⊥) : b ≤ a ↔ b = a :=
   ha.le_iff.trans <| or_iff_right hb
 
+lemma IsAtom.ne_iff_eq_bot (ha : IsAtom a) (hba : b ≤ a) : b ≠ a ↔ b = ⊥ where
+  mp := (ha.le_iff.1 hba).resolve_right
+  mpr := by rintro rfl; exact ha.ne_bot.symm
+
+lemma IsAtom.ne_bot_iff_eq (ha : IsAtom a) (hba : b ≤ a) : b ≠ ⊥ ↔ b = a :=
+  (ha.ne_iff_eq_bot hba).not_right.symm
+
 theorem IsAtom.Iic_eq (h : IsAtom a) : Set.Iic a = {⊥, a} :=
   Set.ext fun _ => h.le_iff
 
@@ -107,10 +118,12 @@ alias ⟨CovBy.is_atom, IsAtom.bot_covBy⟩ := bot_covBy_iff
 
 end PartialOrder
 
-theorem atom_le_iSup [Order.Frame α] {a : α} (ha : IsAtom a) {f : ι → α} :
-    a ≤ iSup f ↔ ∃ i, a ≤ f i := by
+section Frame
+variable [Frame α] {f : ι → α} {s : Set α} {a : α}
+
+protected lemma IsAtom.le_iSup (ha : IsAtom a) : a ≤ iSup f ↔ ∃ i, a ≤ f i := by
   refine ⟨?_, fun ⟨i, hi⟩ => le_trans hi (le_iSup _ _)⟩
-  show (a ≤ ⨆ i, f i) → _
+  change (a ≤ ⨆ i, f i) → _
   refine fun h => of_not_not fun ha' => ?_
   push_neg at ha'
   have ha'' : Disjoint a (⨆ i, f i) :=
@@ -120,6 +133,12 @@ theorem atom_le_iSup [Order.Frame α] {a : α} (ha : IsAtom a) {f : ι → α} :
   obtain rfl := le_bot_iff.1 (ha'' le_rfl h)
   exact ha.1 rfl
 
+@[deprecated (since := "2025-07-11")] alias atom_le_iSup := IsAtom.le_iSup
+
+protected lemma IsAtom.le_sSup (ha : IsAtom a) : a ≤ sSup s ↔ ∃ b ∈ s, a ≤ b := by
+  simp [sSup_eq_iSup', ha.le_iSup]
+
+end Frame
 end IsAtom
 
 section IsCoatom
@@ -158,6 +177,8 @@ theorem IsCoatom.of_isCoatom_coe_Ici {a : Set.Ici x} (ha : IsCoatom a) : IsCoato
 theorem isCoatom_iff_ge_of_le : IsCoatom a ↔ a ≠ ⊤ ∧ ∀ b ≠ ⊤, a ≤ b → b ≤ a :=
   isAtom_iff_le_of_ge (α := αᵒᵈ)
 
+lemma IsCoatom.ne_top (ha : IsCoatom a) : a ≠ ⊤ := ha.1
+
 end Preorder
 
 section PartialOrder
@@ -175,6 +196,13 @@ lemma IsCoatom.lt_top (h : IsCoatom a) : a < ⊤ :=
 
 lemma IsCoatom.le_iff_eq (ha : IsCoatom a) (hb : b ≠ ⊤) : a ≤ b ↔ b = a := ha.dual.le_iff_eq hb
 
+lemma IsCoatom.ne_iff_eq_top (ha : IsCoatom a) (hab : a ≤ b) : b ≠ a ↔ b = ⊤ where
+  mp := (ha.le_iff.1 hab).resolve_right
+  mpr := by rintro rfl; exact ha.ne_top.symm
+
+lemma IsCoatom.ne_top_iff_eq (ha : IsCoatom a) (hab : a ≤ b) : b ≠ ⊤ ↔ b = a :=
+  (ha.ne_iff_eq_top hab).not_right.symm
+
 theorem IsCoatom.Ici_eq (h : IsCoatom a) : Set.Ici a = {⊤, a} :=
   h.dual.Iic_eq
 
@@ -190,19 +218,19 @@ variable {A B : Type*} [SetLike A B]
 
 theorem isAtom_iff [OrderBot A] {K : A} :
     IsAtom K ↔ K ≠ ⊥ ∧ ∀ H g, H ≤ K → g ∉ H → g ∈ K → H = ⊥ := by
-  simp_rw [IsAtom, lt_iff_le_not_le, SetLike.not_le_iff_exists,
+  simp_rw [IsAtom, lt_iff_le_not_ge, SetLike.not_le_iff_exists,
     and_comm (a := _ ≤ _), and_imp, exists_imp, ← and_imp, and_comm]
 
 theorem isCoatom_iff [OrderTop A] {K : A} :
     IsCoatom K ↔ K ≠ ⊤ ∧ ∀ H g, K ≤ H → g ∉ K → g ∈ H → H = ⊤ := by
-  simp_rw [IsCoatom, lt_iff_le_not_le, SetLike.not_le_iff_exists,
+  simp_rw [IsCoatom, lt_iff_le_not_ge, SetLike.not_le_iff_exists,
     and_comm (a := _ ≤ _), and_imp, exists_imp, ← and_imp, and_comm]
 
 theorem covBy_iff {K L : A} :
     K ⋖ L ↔ K < L ∧ ∀ H g, K ≤ H → H ≤ L → g ∉ K → g ∈ H → H = L := by
   refine and_congr_right fun _ ↦ forall_congr' fun H ↦ not_iff_not.mp ?_
   push_neg
-  rw [lt_iff_le_not_le, lt_iff_le_and_ne, and_and_and_comm]
+  rw [lt_iff_le_not_ge, lt_iff_le_and_ne, and_and_and_comm]
   simp_rw [exists_and_left, and_assoc, and_congr_right_iff, ← and_assoc, and_comm, exists_and_left,
     SetLike.not_le_iff_exists, and_comm, implies_true]
 
@@ -211,7 +239,7 @@ theorem covBy_iff' {K L : A} :
     K ⋖ L ↔ K < L ∧ ∀ H g, K ≤ H → H ≤ L → g ∉ H → g ∈ L → H = K := by
   refine and_congr_right fun _ ↦ forall_congr' fun H ↦ not_iff_not.mp ?_
   push_neg
-  rw [lt_iff_le_and_ne, lt_iff_le_not_le, and_and_and_comm]
+  rw [lt_iff_le_and_ne, lt_iff_le_not_ge, and_and_and_comm]
   simp_rw [exists_and_left, and_assoc, and_congr_right_iff, ← and_assoc, and_comm, exists_and_left,
     SetLike.not_le_iff_exists, ne_comm, implies_true]
 
@@ -219,10 +247,18 @@ end SetLike
 
 end PartialOrder
 
-theorem iInf_le_coatom [Order.Coframe α] {a : α} (ha : IsCoatom a) {f : ι → α} :
-    iInf f ≤ a ↔ ∃ i, f i ≤ a :=
-  atom_le_iSup (α := αᵒᵈ) ha
+section Coframe
+variable [Coframe α] {f : ι → α} {s : Set α} {a : α}
 
+protected lemma IsCoatom.iInf_le (ha : IsCoatom a) : iInf f ≤ a ↔ ∃ i, f i ≤ a :=
+  IsAtom.le_iSup (α := αᵒᵈ) ha
+
+@[deprecated (since := "2025-07-11")] alias iInf_le_coatom := IsCoatom.iInf_le
+
+protected lemma IsCoatom.sInf_le (ha : IsCoatom a) : sInf s ≤ a ↔ ∃ b ∈ s, b ≤ a := by
+  simp [sInf_eq_iInf', ha.iInf_le]
+
+end Coframe
 end IsCoatom
 
 section PartialOrder
@@ -233,13 +269,13 @@ variable [PartialOrder α] {a b : α}
 theorem Set.Ici.isAtom_iff {b : Set.Ici a} : IsAtom b ↔ a ⋖ b := by
   rw [← bot_covBy_iff]
   refine (Set.OrdConnected.apply_covBy_apply_iff (OrderEmbedding.subtype fun c => a ≤ c) ?_).symm
-  simpa only [OrderEmbedding.subtype_apply, Subtype.range_coe_subtype] using Set.ordConnected_Ici
+  simpa only [OrderEmbedding.coe_subtype, Subtype.range_coe_subtype] using Set.ordConnected_Ici
 
 @[simp]
 theorem Set.Iic.isCoatom_iff {a : Set.Iic b} : IsCoatom a ↔ ↑a ⋖ b := by
   rw [← covBy_top_iff]
   refine (Set.OrdConnected.apply_covBy_apply_iff (OrderEmbedding.subtype fun c => c ≤ b) ?_).symm
-  simpa only [OrderEmbedding.subtype_apply, Subtype.range_coe_subtype] using Set.ordConnected_Iic
+  simpa only [OrderEmbedding.coe_subtype, Subtype.range_coe_subtype] using Set.ordConnected_Iic
 
 theorem covBy_iff_atom_Ici (h : a ≤ b) : a ⋖ b ↔ IsAtom (⟨b, h⟩ : Set.Ici a) := by simp
 
@@ -247,25 +283,52 @@ theorem covBy_iff_coatom_Iic (h : a ≤ b) : a ⋖ b ↔ IsCoatom (⟨a, h⟩ : 
 
 end PartialOrder
 
-section Pairwise
+section SemilatticeInf
+variable [SemilatticeInf α] [OrderBot α] {a b : α}
 
-theorem IsAtom.inf_eq_bot_of_ne [SemilatticeInf α] [OrderBot α] {a b : α} (ha : IsAtom a)
-    (hb : IsAtom b) (hab : a ≠ b) : a ⊓ b = ⊥ :=
-  hab.not_le_or_not_le.elim (ha.lt_iff.1 ∘ inf_lt_left.2) (hb.lt_iff.1 ∘ inf_lt_right.2)
+lemma IsAtom.not_disjoint_iff_le (ha : IsAtom a) : ¬ Disjoint a b ↔ a ≤ b := by
+  rw [disjoint_iff, ← inf_eq_left]; exact ha.ne_bot_iff_eq inf_le_left
 
-theorem IsAtom.disjoint_of_ne [SemilatticeInf α] [OrderBot α] {a b : α} (ha : IsAtom a)
-    (hb : IsAtom b) (hab : a ≠ b) : Disjoint a b :=
-  disjoint_iff.mpr (ha.inf_eq_bot_of_ne hb hab)
+lemma IsAtom.not_le_iff_disjoint (ha : IsAtom a) : ¬ a ≤ b ↔ Disjoint a b :=
+  ha.not_disjoint_iff_le.not_right.symm
 
-theorem IsCoatom.sup_eq_top_of_ne [SemilatticeSup α] [OrderTop α] {a b : α} (ha : IsCoatom a)
-    (hb : IsCoatom b) (hab : a ≠ b) : a ⊔ b = ⊤ :=
-  ha.dual.inf_eq_bot_of_ne hb.dual hab
+lemma IsAtom.disjoint_of_ne (ha : IsAtom a) (hb : IsAtom b) (hab : a ≠ b) : Disjoint a b := by
+  simp [← ha.not_le_iff_disjoint, hb.le_iff, hab, ha.ne_bot]
 
-theorem IsCoatom.codisjoint_of_ne [SemilatticeSup α] [OrderTop α] {a b : α} (ha : IsCoatom a)
-    (hb : IsCoatom b) (hab : a ≠ b) : Codisjoint a b :=
-  codisjoint_iff.mpr (ha.sup_eq_top_of_ne hb hab)
+@[deprecated disjoint_of_ne (since := "2025-07-11")]
+theorem IsAtom.inf_eq_bot_of_ne (ha : IsAtom a) (hb : IsAtom b) (hab : a ≠ b) : a ⊓ b = ⊥ :=
+  hab.not_le_or_not_ge.elim (ha.lt_iff.1 ∘ inf_lt_left.2) (hb.lt_iff.1 ∘ inf_lt_right.2)
 
-end Pairwise
+@[deprecated not_le_iff_disjoint (since := "2025-07-11")]
+theorem IsAtom.inf_eq_bot_iff (ha : IsAtom a) : a ⊓ b = ⊥ ↔ ¬ a ≤ b := by
+  by_cases hb : b = ⊥
+  · simpa [hb] using ha.1
+  · exact ⟨fun h ↦ inf_lt_left.mp (h ▸ bot_lt ha), fun h ↦ ha.2 _ (inf_lt_left.mpr h)⟩
+
+end SemilatticeInf
+
+section SemilatticeSup
+variable [SemilatticeSup α] [OrderTop α] {a b : α}
+
+lemma IsCoatom.not_codisjoint_iff_le (ha : IsCoatom a) : ¬ Codisjoint a b ↔ b ≤ a := by
+  rw [codisjoint_iff, ← sup_eq_left]; exact ha.ne_top_iff_eq le_sup_left
+
+lemma IsCoatom.not_le_iff_codisjoint (ha : IsCoatom a) : ¬ b ≤ a ↔ Codisjoint a b :=
+  ha.not_codisjoint_iff_le.not_right.symm
+
+lemma IsCoatom.codisjoint_of_ne (ha : IsCoatom a) (hb : IsCoatom b) (hab : a ≠ b) :
+    Codisjoint a b := by
+  simp [← ha.not_le_iff_codisjoint, hb.le_iff, hab, ha.ne_top]
+
+theorem IsCoatom.sup_eq_top_of_ne (ha : IsCoatom a) (hb : IsCoatom b) (hab : a ≠ b) : a ⊔ b = ⊤ :=
+  codisjoint_iff.1 <| ha.codisjoint_of_ne hb hab
+
+set_option linter.deprecated false in
+@[deprecated not_le_iff_codisjoint (since := "2025-07-11")]
+theorem IsCoatom.sup_eq_top_iff (ha : IsCoatom a) : a ⊔ b = ⊤ ↔ ¬ b ≤ a :=
+  ha.dual.inf_eq_bot_iff
+
+end SemilatticeSup
 
 end Atoms
 
@@ -486,13 +549,15 @@ end BooleanAlgebra
 
 namespace CompleteBooleanAlgebra
 
+/-- Every atomic complete Boolean algebra is completely atomic.
+
+This is not made an instance to avoid typeclass loops. -/
 -- See note [reducible non-instances]
 abbrev toCompleteAtomicBooleanAlgebra {α} [CompleteBooleanAlgebra α] [IsAtomic α] :
     CompleteAtomicBooleanAlgebra α where
   __ := ‹CompleteBooleanAlgebra α›
   iInf_iSup_eq f := BooleanAlgebra.eq_iff_atom_le_iff.2 fun a ha => by
-    simp only [le_iInf_iff, atom_le_iSup ha]
-    rw [Classical.skolem]
+    simp only [le_iInf_iff, ha.le_iSup, Classical.skolem]
 
 end CompleteBooleanAlgebra
 
@@ -500,75 +565,75 @@ end Atomic
 
 section Atomistic
 
-variable (α) [CompleteLattice α]
+variable (α) [PartialOrder α]
 
 /-- A lattice is atomistic iff every element is a `sSup` of a set of atoms. -/
-class IsAtomistic : Prop where
+@[mk_iff]
+class IsAtomistic [OrderBot α] : Prop where
   /-- Every element is a `sSup` of a set of atoms. -/
-  eq_sSup_atoms : ∀ b : α, ∃ s : Set α, b = sSup s ∧ ∀ a, a ∈ s → IsAtom a
+  isLUB_atoms : ∀ b : α, ∃ s : Set α, IsLUB s b ∧ ∀ a, a ∈ s → IsAtom a
 
 /-- A lattice is coatomistic iff every element is an `sInf` of a set of coatoms. -/
-class IsCoatomistic : Prop where
+@[mk_iff]
+class IsCoatomistic [OrderTop α] : Prop where
   /-- Every element is a `sInf` of a set of coatoms. -/
-  eq_sInf_coatoms : ∀ b : α, ∃ s : Set α, b = sInf s ∧ ∀ a, a ∈ s → IsCoatom a
+  isGLB_coatoms : ∀ b : α, ∃ s : Set α, IsGLB s b ∧ ∀ a, a ∈ s → IsCoatom a
 
-export IsAtomistic (eq_sSup_atoms)
+export IsAtomistic (isLUB_atoms)
 
-export IsCoatomistic (eq_sInf_coatoms)
+export IsCoatomistic (isGLB_coatoms)
 
 variable {α}
 
 @[simp]
-theorem isCoatomistic_dual_iff_isAtomistic : IsCoatomistic αᵒᵈ ↔ IsAtomistic α :=
-  ⟨fun h => ⟨fun b => by apply h.eq_sInf_coatoms⟩, fun h => ⟨fun b => by apply h.eq_sSup_atoms⟩⟩
+theorem isCoatomistic_dual_iff_isAtomistic [OrderBot α] : IsCoatomistic αᵒᵈ ↔ IsAtomistic α :=
+  ⟨fun h => ⟨fun b => by apply h.isGLB_coatoms⟩, fun h => ⟨fun b => by apply h.isLUB_atoms⟩⟩
 
 @[simp]
-theorem isAtomistic_dual_iff_isCoatomistic : IsAtomistic αᵒᵈ ↔ IsCoatomistic α :=
-  ⟨fun h => ⟨fun b => by apply h.eq_sSup_atoms⟩, fun h => ⟨fun b => by apply h.eq_sInf_coatoms⟩⟩
+theorem isAtomistic_dual_iff_isCoatomistic [OrderTop α] : IsAtomistic αᵒᵈ ↔ IsCoatomistic α :=
+  ⟨fun h => ⟨fun b => by apply h.isLUB_atoms⟩, fun h => ⟨fun b => by apply h.isGLB_coatoms⟩⟩
 
 namespace IsAtomistic
 
-instance _root_.OrderDual.instIsCoatomistic [h : IsAtomistic α] : IsCoatomistic αᵒᵈ :=
+instance _root_.OrderDual.instIsCoatomistic [OrderBot α] [h : IsAtomistic α] : IsCoatomistic αᵒᵈ :=
   isCoatomistic_dual_iff_isAtomistic.2 h
 
-variable [IsAtomistic α]
+variable [OrderBot α] [IsAtomistic α]
 
 instance (priority := 100) : IsAtomic α :=
   ⟨fun b => by
-    rcases eq_sSup_atoms b with ⟨s, rfl, hs⟩
-    rcases s.eq_empty_or_nonempty with h | h
-    · simp [h]
-    · exact Or.intro_right _ ⟨h.some, hs _ h.choose_spec, le_sSup h.choose_spec⟩⟩
+    rcases isLUB_atoms b with ⟨s, hsb, hs⟩
+    rcases s.eq_empty_or_nonempty with rfl | ⟨a, ha⟩
+    · simp_all
+    · exact Or.inr ⟨a, hs _ ha, hsb.1 ha⟩⟩
 
 end IsAtomistic
 
 section IsAtomistic
 
-variable [IsAtomistic α]
+variable [OrderBot α] [IsAtomistic α]
 
-@[simp]
-theorem sSup_atoms_le_eq (b : α) : sSup { a : α | IsAtom a ∧ a ≤ b } = b := by
-  rcases eq_sSup_atoms b with ⟨s, rfl, hs⟩
-  exact le_antisymm (sSup_le fun _ => And.right) (sSup_le_sSup fun a ha => ⟨hs a ha, le_sSup ha⟩)
+theorem isLUB_atoms_le (b : α) : IsLUB { a : α | IsAtom a ∧ a ≤ b } b := by
+  rcases isLUB_atoms b with ⟨s, hsb, hs⟩
+  exact ⟨fun c hc ↦ hc.2, fun c hc ↦ hsb.2 fun i hi ↦ hc ⟨hs _ hi, hsb.1 hi⟩⟩
 
-@[simp]
-theorem sSup_atoms_eq_top : sSup { a : α | IsAtom a } = ⊤ := by
-  refine Eq.trans (congr rfl (Set.ext fun x => ?_)) (sSup_atoms_le_eq ⊤)
-  exact (and_iff_left le_top).symm
+theorem isLUB_atoms_top [OrderTop α] : IsLUB { a : α | IsAtom a } ⊤ := by
+  simpa using isLUB_atoms_le (⊤ : α)
 
 theorem le_iff_atom_le_imp {a b : α} : a ≤ b ↔ ∀ c : α, IsAtom c → c ≤ a → c ≤ b :=
-  ⟨fun ab _ _ ca => le_trans ca ab, fun h => by
-    rw [← sSup_atoms_le_eq a, ← sSup_atoms_le_eq b]
-    exact sSup_le_sSup fun c hc => ⟨hc.1, h c hc.1 hc.2⟩⟩
+  ⟨fun hab _ _ hca ↦ hca.trans hab,
+   fun h ↦ (isLUB_atoms_le a).mono (isLUB_atoms_le b) fun _ ⟨h₁, h₂⟩ ↦ ⟨h₁, h _ h₁ h₂⟩⟩
 
 theorem eq_iff_atom_le_iff {a b : α} : a = b ↔ ∀ c, IsAtom c → (c ≤ a ↔ c ≤ b) := by
-  refine ⟨fun h => h ▸ by simp, fun h => ?_⟩
-  exact le_antisymm (le_iff_atom_le_imp.2 fun a ha hx => (h a ha).1 hx)
-    (le_iff_atom_le_imp.2 fun a ha hy => (h a ha).2 hy)
+  refine ⟨fun h => by simp [h], fun h => ?_⟩
+  rw [le_antisymm_iff, le_iff_atom_le_imp, le_iff_atom_le_imp]
+  simp_all
 
 end IsAtomistic
 
 namespace IsCoatomistic
+
+variable [OrderTop α]
 
 instance _root_.OrderDual.instIsAtomistic [h : IsCoatomistic α] : IsAtomistic αᵒᵈ :=
   isAtomistic_dual_iff_isCoatomistic.2 h
@@ -577,21 +642,51 @@ variable [IsCoatomistic α]
 
 instance (priority := 100) : IsCoatomic α :=
   ⟨fun b => by
-    rcases eq_sInf_coatoms b with ⟨s, rfl, hs⟩
-    rcases s.eq_empty_or_nonempty with h | h
-    · simp [h]
-    · exact Or.intro_right _ ⟨h.some, hs _ h.choose_spec, sInf_le h.choose_spec⟩⟩
+    rcases isGLB_coatoms b with ⟨s, hsb, hs⟩
+    rcases s.eq_empty_or_nonempty with rfl | ⟨a, ha⟩
+    · simp_all
+    · exact Or.inr ⟨a, hs _ ha, hsb.1 ha⟩⟩
 
 end IsCoatomistic
 
+section CompleteLattice
+
+@[simp]
+theorem sSup_atoms_le_eq {α} [CompleteLattice α] [IsAtomistic α] (b : α) :
+    sSup { a : α | IsAtom a ∧ a ≤ b } = b :=
+  (isLUB_atoms_le b).sSup_eq
+
+@[simp]
+theorem sSup_atoms_eq_top {α} [CompleteLattice α] [IsAtomistic α] :
+    sSup { a : α | IsAtom a } = ⊤ :=
+  isLUB_atoms_top.sSup_eq
+
+nonrec lemma CompleteLattice.isAtomistic_iff {α} [CompleteLattice α] :
+    IsAtomistic α ↔ ∀ b : α, ∃ s : Set α, b = sSup s ∧ ∀ a ∈ s, IsAtom a := by
+  simp_rw [isAtomistic_iff, isLUB_iff_sSup_eq, eq_comm]
+
+lemma eq_sSup_atoms {α} [CompleteLattice α] [IsAtomistic α] (b : α) :
+    ∃ s : Set α, b = sSup s ∧ ∀ a ∈ s, IsAtom a :=
+  CompleteLattice.isAtomistic_iff.1 ‹_› b
+
+nonrec lemma CompleteLattice.isCoatomistic_iff {α} [CompleteLattice α] :
+    IsCoatomistic α ↔ ∀ b : α, ∃ s : Set α, b = sInf s ∧ ∀ a ∈ s, IsCoatom a := by
+  simp_rw [isCoatomistic_iff, isGLB_iff_sInf_eq, eq_comm]
+
+lemma eq_sInf_coatoms {α} [CompleteLattice α] [IsCoatomistic α] (b : α) :
+    ∃ s : Set α, b = sInf s ∧ ∀ a ∈ s, IsCoatom a :=
+  CompleteLattice.isCoatomistic_iff.1 ‹_› b
+
+end CompleteLattice
+
 namespace CompleteAtomicBooleanAlgebra
 
-instance {α} [CompleteAtomicBooleanAlgebra α] : IsAtomistic α where
-  eq_sSup_atoms b := by
+instance {α} [CompleteAtomicBooleanAlgebra α] : IsAtomistic α :=
+  CompleteLattice.isAtomistic_iff.2 fun b ↦ by
     inhabit α
     refine ⟨{ a | IsAtom a ∧ a ≤ b }, ?_, fun a ha => ha.1⟩
     refine le_antisymm ?_ (sSup_le fun c hc => hc.2)
-    have : (⨅ c : α, ⨆ x, b ⊓ cond x c (cᶜ)) = b := by simp [iSup_bool_eq, iInf_const]
+    have : (⨅ c : α, ⨆ x, b ⊓ cond x c (cᶜ)) = b := by simp [iSup_bool_eq]
     rw [← this]; clear this
     simp_rw [iInf_iSup_eq, iSup_le_iff]; intro g
     if h : (⨅ a, b ⊓ cond (g a) a (aᶜ)) = ⊥ then simp [h] else
@@ -609,18 +704,23 @@ end CompleteAtomicBooleanAlgebra
 end Atomistic
 
 /-- An order is simple iff it has exactly two elements, `⊥` and `⊤`. -/
-class IsSimpleOrder (α : Type*) [LE α] [BoundedOrder α] extends Nontrivial α : Prop where
+@[mk_iff]
+class IsSimpleOrder (α : Type*) [LE α] [BoundedOrder α] : Prop extends Nontrivial α where
   /-- Every element is either `⊥` or `⊤` -/
   eq_bot_or_eq_top : ∀ a : α, a = ⊥ ∨ a = ⊤
 
 export IsSimpleOrder (eq_bot_or_eq_top)
 
+lemma IsSimpleOrder.of_forall_eq_top {α : Type*} [LE α] [BoundedOrder α] [Nontrivial α]
+    (h : ∀ a : α, a ≠ ⊥ → a = ⊤) :
+    IsSimpleOrder α where
+  eq_bot_or_eq_top a := or_iff_not_imp_left.mpr <| h a
+
 theorem isSimpleOrder_iff_isSimpleOrder_orderDual [LE α] [BoundedOrder α] :
     IsSimpleOrder α ↔ IsSimpleOrder αᵒᵈ := by
-  constructor <;> intro i <;> haveI := i
+  constructor <;> intro i
   · exact
-      { exists_pair_ne := @exists_pair_ne α _
-        eq_bot_or_eq_top := fun a => Or.symm (eq_bot_or_eq_top (OrderDual.ofDual a) : _ ∨ _) }
+      { eq_bot_or_eq_top := fun a => Or.symm (eq_bot_or_eq_top (OrderDual.ofDual a) : _ ∨ _) }
   · exact
       { exists_pair_ne := @exists_pair_ne αᵒᵈ _
         eq_bot_or_eq_top := fun a => Or.symm (eq_bot_or_eq_top (OrderDual.toDual a)) }
@@ -628,7 +728,7 @@ theorem isSimpleOrder_iff_isSimpleOrder_orderDual [LE α] [BoundedOrder α] :
 theorem IsSimpleOrder.bot_ne_top [LE α] [BoundedOrder α] [IsSimpleOrder α] : (⊥ : α) ≠ (⊤ : α) := by
   obtain ⟨a, b, h⟩ := exists_pair_ne α
   rcases eq_bot_or_eq_top a with (rfl | rfl) <;> rcases eq_bot_or_eq_top b with (rfl | rfl) <;>
-    first |simpa|simpa using h.symm
+    first | simpa | simpa using h.symm
 
 section IsSimpleOrder
 
@@ -654,22 +754,30 @@ This is not an instance to prevent loops. -/
 protected def IsSimpleOrder.linearOrder [DecidableEq α] : LinearOrder α :=
   { (inferInstance : PartialOrder α) with
     le_total := fun a b => by rcases eq_bot_or_eq_top a with (rfl | rfl) <;> simp
-    decidableLE := fun a b =>
+    -- Note from https://github.com/leanprover-community/mathlib4/issues/23976: do we want this inlined or should this be a separate definition?
+    toDecidableLE := fun a b =>
       if ha : a = ⊥ then isTrue (ha.le.trans bot_le)
       else
         if hb : b = ⊤ then isTrue (le_top.trans hb.ge)
         else
           isFalse fun H =>
             hb (top_unique (le_trans (top_le_iff.mpr (Or.resolve_left
-              (eq_bot_or_eq_top a) ha)) H)) }
+              (eq_bot_or_eq_top a) ha)) H))
+    toDecidableEq := ‹_› }
 
-@[simp]
 theorem isAtom_top : IsAtom (⊤ : α) :=
   ⟨top_ne_bot, fun a ha => Or.resolve_right (eq_bot_or_eq_top a) (ne_of_lt ha)⟩
 
 @[simp]
+theorem isAtom_iff_eq_top {a : α} : IsAtom a ↔ a = ⊤ :=
+  ⟨fun h ↦ (eq_bot_or_eq_top a).resolve_left h.1, (· ▸ isAtom_top)⟩
+
 theorem isCoatom_bot : IsCoatom (⊥ : α) :=
   isAtom_dual_iff_isCoatom.1 isAtom_top
+
+@[simp]
+theorem isCoatom_iff_eq_bot {a : α} : IsCoatom a ↔ a = ⊥ :=
+  ⟨fun h ↦ (eq_bot_or_eq_top a).resolve_right h.1, (· ▸ isCoatom_bot)⟩
 
 theorem bot_covBy_top : (⊥ : α) ⋖ ⊤ :=
   isAtom_top.bot_covBy
@@ -737,10 +845,10 @@ def orderIsoBool : α ≃o Bool :=
   { equivBool with
     map_rel_iff' := @fun a b => by
       rcases eq_bot_or_eq_top a with (rfl | rfl)
-      · simp [bot_ne_top]
+      · simp
       · rcases eq_bot_or_eq_top b with (rfl | rfl)
-        · simp [bot_ne_top.symm, bot_ne_top, Bool.false_lt_true]
-        · simp [bot_ne_top] }
+        · simp [bot_ne_top.symm, Bool.false_lt_true]
+        · simp }
 
 /-- A simple `BoundedOrder` is also a `BooleanAlgebra`. -/
 protected def booleanAlgebra {α} [DecidableEq α] [Lattice α] [BoundedOrder α] [IsSimpleOrder α] :
@@ -749,7 +857,7 @@ protected def booleanAlgebra {α} [DecidableEq α] [Lattice α] [BoundedOrder α
     compl := fun x => if x = ⊥ then ⊤ else ⊥
     sdiff := fun x y => if x = ⊤ ∧ y = ⊥ then ⊤ else ⊥
     sdiff_eq := fun x y => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl) <;> simp [bot_ne_top, SDiff.sdiff, compl]
+      rcases eq_bot_or_eq_top x with (rfl | rfl) <;> simp
     inf_compl_le_bot := fun x => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
       · simp
@@ -770,21 +878,21 @@ protected noncomputable def completeLattice : CompleteLattice α :=
     le_sSup := fun s x h => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
       · exact bot_le
-      · dsimp; rw [if_pos h]
+      · rw [if_pos h]
     sSup_le := fun s x h => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · dsimp; rw [if_neg]
+      · rw [if_neg]
         intro con
         exact bot_ne_top (eq_top_iff.2 (h ⊤ con))
       · exact le_top
     sInf_le := fun s x h => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · dsimp; rw [if_pos h]
+      · rw [if_pos h]
       · exact le_top
     le_sInf := fun s x h => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
       · exact bot_le
-      · dsimp; rw [if_neg]
+      · rw [if_neg]
         intro con
         exact top_ne_bot (eq_bot_iff.2 (h ⊥ con)) }
 
@@ -792,16 +900,7 @@ open Classical in
 /-- A simple `BoundedOrder` is also a `CompleteBooleanAlgebra`. -/
 protected noncomputable def completeBooleanAlgebra : CompleteBooleanAlgebra α :=
   { __ := IsSimpleOrder.completeLattice
-    __ := IsSimpleOrder.booleanAlgebra
-    iInf_sup_le_sup_sInf := fun x s => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · simp [bot_sup_eq, ← sInf_eq_iInf]
-      · simp only [top_le_iff, top_sup_eq, iInf_top, le_sInf_iff, le_refl]
-    inf_sSup_le_iSup_inf := fun x s => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · simp only [le_bot_iff, sSup_eq_bot, bot_inf_eq, iSup_bot, le_refl]
-      · simp only [top_inf_eq, ← sSup_eq_iSup]
-        exact le_rfl }
+    __ := IsSimpleOrder.booleanAlgebra }
 
 instance : ComplementedLattice α :=
   letI := IsSimpleOrder.completeBooleanAlgebra (α := α); inferInstance
@@ -810,21 +909,19 @@ end IsSimpleOrder
 
 namespace IsSimpleOrder
 
-variable [CompleteLattice α] [IsSimpleOrder α]
+variable [PartialOrder α] [BoundedOrder α] [IsSimpleOrder α]
 
---set_option default_priority 100
--- Porting note: not supported, done for each instance individually
+instance (priority := 100) : IsAtomistic α where
+  isLUB_atoms b := (eq_bot_or_eq_top b).elim (fun h ↦ ⟨∅, by simp [h]⟩) (fun h ↦ ⟨{⊤}, by simp [h]⟩)
 
-instance (priority := 100) : IsAtomistic α :=
-  ⟨fun b =>
-    (eq_bot_or_eq_top b).elim
-      (fun h => ⟨∅, ⟨h.trans sSup_empty.symm, fun _ ha => False.elim (Set.not_mem_empty _ ha)⟩⟩)
-      fun h =>
-      ⟨{⊤}, h.trans sSup_singleton.symm, fun _ ha =>
-        (Set.mem_singleton_iff.1 ha).symm ▸ isAtom_top⟩⟩
-
-instance : IsCoatomistic α :=
+instance (priority := 100) : IsCoatomistic α :=
   isAtomistic_dual_iff_isCoatomistic.1 (by infer_instance)
+
+@[simp] lemma bot_lt_iff_eq_top {a : α} : ⊥ < a ↔ a = ⊤ :=
+  ⟨eq_top_of_lt, fun h ↦ h ▸ bot_lt_top⟩
+
+@[simp] lemma lt_top_iff_eq_bot {a : α} : a < ⊤ ↔ a = ⊥ :=
+  ⟨eq_bot_of_lt, fun h ↦ h ▸ bot_lt_top⟩
 
 end IsSimpleOrder
 
@@ -980,32 +1077,38 @@ protected theorem isCoatomic_iff [OrderTop α] [OrderTop β] (f : α ≃o β) :
   simp only [← isAtomic_dual_iff_isCoatomic, f.dual.isAtomic_iff]
 
 end OrderIso
-section CompleteLattice
+section Lattice
 
-variable [CompleteLattice α]
+variable [Lattice α]
 
-/-- A complete upper-modular lattice that is atomistic is strongly atomic.
+/-- An upper-modular lattice that is atomistic is strongly atomic.
 Not an instance to prevent loops. -/
-theorem CompleteLattice.isStronglyAtomic [IsUpperModularLattice α] [IsAtomistic α] :
+theorem Lattice.isStronglyAtomic [OrderBot α] [IsUpperModularLattice α] [IsAtomistic α] :
     IsStronglyAtomic α where
   exists_covBy_le_of_lt a b hab := by
-    obtain ⟨s, rfl, h⟩ := eq_sSup_atoms b
-    refine by_contra fun hcon ↦ hab.not_le <| sSup_le_iff.2 fun x hx ↦ ?_
+    obtain ⟨s, hsb, h⟩ := isLUB_atoms b
+    refine by_contra fun hcon ↦ hab.not_ge <| (isLUB_le_iff hsb).2 fun x hx ↦ ?_
     simp_rw [not_exists, and_comm (b := _ ≤ _), not_and] at hcon
-    specialize hcon (x ⊔ a) (sup_le (le_sSup _ _ hx) hab.le)
+    specialize hcon (x ⊔ a) (sup_le (hsb.1 hx) hab.le)
     obtain (hbot | h_inf) := (h x hx).bot_covBy.eq_or_eq (c := x ⊓ a) (by simp) (by simp)
     · exact False.elim <| hcon <|
         (hbot ▸ IsUpperModularLattice.covBy_sup_of_inf_covBy) (h x hx).bot_covBy
     rwa [inf_eq_left] at h_inf
 
-/-- A complete lower-modular lattice that is coatomistic is strongly coatomic.
-Not an instance to prevent loops. -/
-theorem CompleteLattice.isStronglyCoatomic [IsLowerModularLattice α] [IsCoatomistic α] :
-    IsStronglyCoatomic α := by
-  rw [← isStronglyAtomic_dual_iff_is_stronglyCoatomic]
-  exact CompleteLattice.isStronglyAtomic
+@[deprecated (since := "2025-03-13")] alias CompleteLattice.isStronglyAtomic :=
+  Lattice.isStronglyAtomic
 
-end CompleteLattice
+/-- A lower-modular lattice that is coatomistic is strongly coatomic.
+Not an instance to prevent loops. -/
+theorem Lattice.isStronglyCoatomic [OrderTop α] [IsLowerModularLattice α]
+    [IsCoatomistic α] : IsStronglyCoatomic α := by
+  rw [← isStronglyAtomic_dual_iff_is_stronglyCoatomic]
+  exact Lattice.isStronglyAtomic
+
+@[deprecated (since := "2025-03-13")] alias CompleteLattice.isStronglyCoatomic :=
+  Lattice.isStronglyCoatomic
+
+end Lattice
 
 section IsModularLattice
 
@@ -1082,14 +1185,12 @@ end IsModularLattice
 
 namespace «Prop»
 
-@[simp] theorem isAtom_iff {p : Prop} : IsAtom p ↔ p := by
-  simp [IsAtom, show ⊥ = False from rfl, fun q r : Prop => show q < r ↔ _ ∧ _ from .rfl]
-
-@[simp] theorem isCoatom_iff {p : Prop} : IsCoatom p ↔ ¬ p := by
-  simp [IsCoatom, show ⊤ = True from rfl, fun q r : Prop => show q < r ↔ _ ∧ _ from .rfl]; tauto
-
 instance : IsSimpleOrder Prop where
   eq_bot_or_eq_top p := by simp [em']
+
+theorem isAtom_iff {p : Prop} : IsAtom p ↔ p := by simp
+
+theorem isCoatom_iff {p : Prop} : IsCoatom p ↔ ¬ p := by simp
 
 end «Prop»
 
@@ -1099,36 +1200,11 @@ universe u
 variable {ι : Type*} {π : ι → Type u}
 
 protected theorem eq_bot_iff [∀ i, Bot (π i)] {f : ∀ i, π i} : f = ⊥ ↔ ∀ i, f i = ⊥ :=
-  ⟨(· ▸ by simp), fun h => funext fun i => by simp [h]⟩
+  funext_iff
 
 theorem isAtom_iff {f : ∀ i, π i} [∀ i, PartialOrder (π i)] [∀ i, OrderBot (π i)] :
     IsAtom f ↔ ∃ i, IsAtom (f i) ∧ ∀ j, j ≠ i → f j = ⊥ := by
-  classical
-  constructor
-  case mpr =>
-    rintro ⟨i, ⟨hfi, hlt⟩, hbot⟩
-    refine ⟨fun h => hfi ((Pi.eq_bot_iff.1 h) _), fun g hgf => Pi.eq_bot_iff.2 fun j => ?_⟩
-    have ⟨hgf, k, hgfk⟩ := Pi.lt_def.1 hgf
-    obtain rfl : i = k := of_not_not fun hki => by rw [hbot _ (Ne.symm hki)] at hgfk; simp at hgfk
-    if hij : j = i then subst hij; refine hlt _ hgfk else
-    exact eq_bot_iff.2 <| le_trans (hgf _) (eq_bot_iff.1 (hbot _ hij))
-  case mp =>
-    rintro ⟨hbot, h⟩
-    have ⟨i, hbot⟩ : ∃ i, f i ≠ ⊥ := by rw [ne_eq, Pi.eq_bot_iff, not_forall] at hbot; exact hbot
-    refine ⟨i, ⟨hbot, ?c⟩, ?d⟩
-    case c =>
-      intro b hb
-      have := h (Function.update ⊥ i b)
-      simp only [lt_def, le_def, Pi.eq_bot_iff, and_imp, forall_exists_index] at this
-      simpa using this
-        (fun j => by by_cases h : j = i; { subst h; simpa using le_of_lt hb }; simp [h])
-        i (by simpa using hb) i
-    case d =>
-      intro j hj
-      have := h (Function.update ⊥ j (f j))
-      simp only [lt_def, le_def, Pi.eq_bot_iff, and_imp, forall_exists_index] at this
-      simpa using this (fun k => by by_cases h : k = j; { subst h; simp }; simp [h]) i
-        (by rwa [Function.update_of_ne (Ne.symm hj), bot_apply, bot_lt_iff_ne_bot]) j
+  simp only [← bot_covBy_iff, Pi.covBy_iff, bot_apply, eq_comm]
 
 theorem isAtom_single {i : ι} [DecidableEq ι] [∀ i, PartialOrder (π i)] [∀ i, OrderBot (π i)]
     {a : π i} (h : IsAtom a) : IsAtom (Function.update (⊥ : ∀ i, π i) i a) :=
@@ -1137,48 +1213,33 @@ theorem isAtom_single {i : ι} [DecidableEq ι] [∀ i, PartialOrder (π i)] [�
 theorem isAtom_iff_eq_single [DecidableEq ι] [∀ i, PartialOrder (π i)]
     [∀ i, OrderBot (π i)] {f : ∀ i, π i} :
     IsAtom f ↔ ∃ i a, IsAtom a ∧ f = Function.update ⊥ i a := by
-  constructor
-  case mp =>
-    intro h
-    have ⟨i, h, hbot⟩ := isAtom_iff.1 h
-    refine ⟨_, _, h, funext fun j => if hij : j = i then hij ▸ by simp else ?_⟩
-    rw [Function.update_of_ne hij, hbot _ hij, bot_apply]
-  case mpr =>
-    rintro ⟨i, a, h, rfl⟩
-    exact isAtom_single h
+  simp [← bot_covBy_iff, covBy_iff_exists_right_eq]
 
 instance isAtomic [∀ i, PartialOrder (π i)] [∀ i, OrderBot (π i)] [∀ i, IsAtomic (π i)] :
     IsAtomic (∀ i, π i) where
   eq_bot_or_exists_atom_le b := or_iff_not_imp_left.2 fun h =>
     have ⟨i, hi⟩ : ∃ i, b i ≠ ⊥ := not_forall.1 (h.imp Pi.eq_bot_iff.2)
     have ⟨a, ha, hab⟩ := (eq_bot_or_exists_atom_le (b i)).resolve_left hi
-    have : DecidableEq ι := open scoped Classical in inferInstance
-    ⟨Function.update ⊥ i a, isAtom_single ha, update_le_iff.2 ⟨hab, by simp⟩⟩
+    by classical exact ⟨Function.update ⊥ i a, isAtom_single ha, update_le_iff.2 ⟨hab, by simp⟩⟩
 
 instance isCoatomic [∀ i, PartialOrder (π i)] [∀ i, OrderTop (π i)] [∀ i, IsCoatomic (π i)] :
     IsCoatomic (∀ i, π i) :=
   isAtomic_dual_iff_isCoatomic.1 <|
     show IsAtomic (∀ i, (π i)ᵒᵈ) from inferInstance
 
-instance isAtomistic [∀ i, CompleteLattice (π i)] [∀ i, IsAtomistic (π i)] :
+instance isAtomistic [∀ i, PartialOrder (π i)] [∀ i, OrderBot (π i)] [∀ i, IsAtomistic (π i)] :
     IsAtomistic (∀ i, π i) where
-  eq_sSup_atoms s := by
+  isLUB_atoms s := by
     classical
-    refine ⟨{ f | IsAtom f ∧ f ≤ s }, ?_, by simp; tauto⟩
-    ext i
-    rw [← sSup_atoms_le_eq (s i)]
+    refine ⟨{f | IsAtom f ∧ f ≤ s}, ?_, by simp +contextual⟩
+    rw [isLUB_pi]
+    intro i
     simp_rw [isAtom_iff_eq_single]
-    refine le_antisymm ?le ?ge
-    case le =>
-      refine sSup_le fun a ⟨ha, hle⟩ => ?_
-      refine le_sSup ⟨⟨_, ⟨_, _, ha, rfl⟩, fun j => ?_⟩, by simp⟩
-      if hij : j = i then subst hij; simpa else simp [hij]
-    case ge =>
-      refine sSup_le ?_
-      rintro _ ⟨⟨_, ⟨j, a, ha, rfl⟩, hle⟩, rfl⟩
-      if hij : i = j then ?_ else simp [Function.update_of_ne hij]
-      subst hij; simp only [Function.update_self]
-      exact le_sSup ⟨ha, by simpa using hle i⟩
+    refine ⟨?_, ?_⟩
+    · rintro _ ⟨_, ⟨⟨_, _, _, rfl⟩, hs⟩, rfl⟩
+      exact hs i
+    · refine fun j hj ↦ (isLUB_atoms_le (s i)).2 fun x ⟨hx₁, hx₂⟩ ↦ ?_
+      exact hj ⟨Function.update ⊥ i x, ⟨⟨_, x, hx₁, rfl⟩, by simp [update_le_iff, hx₂]⟩, by simp⟩
 
 instance isCoatomistic [∀ i, CompleteLattice (π i)] [∀ i, IsCoatomistic (π i)] :
     IsCoatomistic (∀ i, π i) :=
@@ -1221,17 +1282,8 @@ theorem isCoatom_iff (s : Set α) : IsCoatom s ↔ ∃ x, s = {x}ᶜ := by
 theorem isCoatom_singleton_compl (x : α) : IsCoatom ({x}ᶜ : Set α) :=
   (isCoatom_iff {x}ᶜ).mpr ⟨x, rfl⟩
 
-instance : IsAtomistic (Set α) where
-  eq_sSup_atoms s :=
-    ⟨(fun x => {x}) '' s, by rw [sSup_eq_sUnion, sUnion_image, biUnion_of_singleton],
-      by { rintro _ ⟨x, _, rfl⟩
-           exact isAtom_singleton x }⟩
+instance : IsAtomistic (Set α) := inferInstance
 
-instance : IsCoatomistic (Set α) where
-  eq_sInf_coatoms s :=
-    ⟨(fun x => {x}ᶜ) '' sᶜ,
-      by { rw [sInf_eq_sInter, sInter_image, ← compl_iUnion₂, biUnion_of_singleton, compl_compl] },
-      by { rintro _ ⟨x, _, rfl⟩
-           exact isCoatom_singleton_compl x }⟩
+instance : IsCoatomistic (Set α) := inferInstance
 
 end Set

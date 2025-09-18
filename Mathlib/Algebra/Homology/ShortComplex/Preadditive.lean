@@ -168,10 +168,9 @@ lemma cyclesMap_sub : cyclesMap (φ - φ') = cyclesMap φ - cyclesMap φ' :=
 end
 
 instance leftHomologyFunctor_additive [HasKernels C] [HasCokernels C] :
-  (leftHomologyFunctor C).Additive where
+    (leftHomologyFunctor C).Additive where
 
-instance cyclesFunctor_additive [HasKernels C] [HasCokernels C] :
-  (cyclesFunctor C).Additive where
+instance cyclesFunctor_additive [HasKernels C] [HasCokernels C] : (cyclesFunctor C).Additive where
 
 end LeftHomology
 
@@ -279,10 +278,10 @@ lemma opcyclesMap_sub : opcyclesMap (φ - φ') = opcyclesMap φ - opcyclesMap φ
 end
 
 instance rightHomologyFunctor_additive [HasKernels C] [HasCokernels C] :
-  (rightHomologyFunctor C).Additive where
+    (rightHomologyFunctor C).Additive where
 
 instance opcyclesFunctor_additive [HasKernels C] [HasCokernels C] :
-  (opcyclesFunctor C).Additive where
+    (opcyclesFunctor C).Additive where
 
 end RightHomology
 
@@ -347,8 +346,7 @@ lemma homologyMap_sub : homologyMap (φ - φ') = homologyMap φ - homologyMap φ
 
 end
 
-instance homologyFunctor_additive [CategoryWithHomology C] :
-  (homologyFunctor C).Additive where
+instance homologyFunctor_additive [CategoryWithHomology C] : (homologyFunctor C).Additive where
 
 end Homology
 
@@ -363,17 +361,17 @@ in homology. -/
 structure Homotopy where
   /-- a morphism `S₁.X₁ ⟶ S₂.X₁` -/
   h₀ : S₁.X₁ ⟶ S₂.X₁
-  h₀_f : h₀ ≫ S₂.f = 0 := by aesop_cat
+  h₀_f : h₀ ≫ S₂.f = 0 := by cat_disch
   /-- a morphism `S₁.X₂ ⟶ S₂.X₁` -/
   h₁ : S₁.X₂ ⟶ S₂.X₁
   /-- a morphism `S₁.X₃ ⟶ S₂.X₂` -/
   h₂ : S₁.X₃ ⟶ S₂.X₂
   /-- a morphism `S₁.X₃ ⟶ S₂.X₃` -/
   h₃ : S₁.X₃ ⟶ S₂.X₃
-  g_h₃ : S₁.g ≫ h₃ = 0 := by aesop_cat
-  comm₁ : φ₁.τ₁ = S₁.f ≫ h₁ + h₀ + φ₂.τ₁ := by aesop_cat
-  comm₂ : φ₁.τ₂ = S₁.g ≫ h₂ + h₁ ≫ S₂.f + φ₂.τ₂ := by aesop_cat
-  comm₃ : φ₁.τ₃ = h₃ + h₂ ≫ S₂.g + φ₂.τ₃ := by aesop_cat
+  g_h₃ : S₁.g ≫ h₃ = 0 := by cat_disch
+  comm₁ : φ₁.τ₁ = S₁.f ≫ h₁ + h₀ + φ₂.τ₁ := by cat_disch
+  comm₂ : φ₁.τ₂ = S₁.g ≫ h₂ + h₁ ≫ S₂.f + φ₂.τ₂ := by cat_disch
+  comm₃ : φ₁.τ₃ = h₃ + h₂ ≫ S₂.g + φ₂.τ₃ := by cat_disch
 
 attribute [reassoc (attr := simp)] Homotopy.h₀_f Homotopy.g_h₃
 
@@ -529,8 +527,8 @@ def equivSubZero : Homotopy φ₁ φ₂ ≃ Homotopy (φ₁ - φ₂) 0 where
   toFun h := (h.sub (refl φ₂)).trans (ofEq (sub_self φ₂))
   invFun h := ((ofEq (sub_add_cancel φ₁ φ₂).symm).trans
     (h.add (refl φ₂))).trans (ofEq (zero_add φ₂))
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 variable {φ₁ φ₂}
 
@@ -547,7 +545,7 @@ variable (S₁ S₂)
 @[simps]
 def ofNullHomotopic (h₀ : S₁.X₁ ⟶ S₂.X₁) (h₀_f : h₀ ≫ S₂.f = 0)
     (h₁ : S₁.X₂ ⟶ S₂.X₁) (h₂ : S₁.X₃ ⟶ S₂.X₂) (h₃ : S₁.X₃ ⟶ S₂.X₃) (g_h₃ : S₁.g ≫ h₃ = 0) :
-  Homotopy (nullHomotopic _ _ h₀ h₀_f h₁ h₂ h₃ g_h₃) 0 where
+    Homotopy (nullHomotopic _ _ h₀ h₀_f h₁ h₂ h₃ g_h₃) 0 where
   h₀ := h₀
   h₁ := h₁
   h₂ := h₂
@@ -574,7 +572,7 @@ def LeftHomologyMapData.ofNullHomotopic
   commf' := by
     rw [← cancel_mono H₂.i, assoc, LeftHomologyData.liftK_i, LeftHomologyData.f'_i_assoc,
       nullHomotopic_τ₁, add_comp, add_comp, assoc, assoc, assoc, LeftHomologyData.f'_i,
-      self_eq_add_left, h₀_f]
+      right_eq_add, h₀_f]
   commπ := by
     rw [H₂.liftK_π_eq_zero_of_boundary (H₁.i ≫ h₁ ≫ S₂.f) (H₁.i ≫ h₁) (by rw [assoc]), comp_zero]
 

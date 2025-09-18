@@ -35,7 +35,7 @@ theorem CompactSpace.uniformContinuous_of_continuous [CompactSpace α] {f : α �
     (h : Continuous f) : UniformContinuous f :=
   calc map (Prod.map f f) (𝓤 α)
     = map (Prod.map f f) (𝓝ˢ (diagonal α)) := by rw [nhdsSet_diagonal_eq_uniformity]
-  _ ≤ 𝓝ˢ (diagonal β) := (h.prodMap h).tendsto_nhdsSet mapsTo_prod_map_diagonal
+  _ ≤ 𝓝ˢ (diagonal β) := (h.prodMap h).tendsto_nhdsSet mapsTo_prodMap_diagonal
   _ ≤ 𝓤 β := nhdsSet_diagonal_le_uniformity
 
 /-- Heine-Cantor: a continuous function on a compact set of a uniform space is uniformly
@@ -89,10 +89,10 @@ theorem HasCompactMulSupport.uniformContinuous_of_continuous {f : α → β} [On
 /-- A family of functions `α → β → γ` tends uniformly to its value at `x` if `α` is locally compact,
 `β` is compact and `f` is continuous on `U × (univ : Set β)` for some neighborhood `U` of `x`. -/
 theorem ContinuousOn.tendstoUniformly [LocallyCompactSpace α] [CompactSpace β] [UniformSpace γ]
-    {f : α → β → γ} {x : α} {U : Set α} (hxU : U ∈ 𝓝 x) (h : ContinuousOn (↿f) (U ×ˢ univ)) :
+    {f : α → β → γ} {x : α} {U : Set α} (hxU : U ∈ 𝓝 x) (h : ContinuousOn ↿f (U ×ˢ univ)) :
     TendstoUniformly f (f x) (𝓝 x) := by
   rcases LocallyCompactSpace.local_compact_nhds _ _ hxU with ⟨K, hxK, hKU, hK⟩
-  have : UniformContinuousOn (↿f) (K ×ˢ univ) :=
+  have : UniformContinuousOn ↿f (K ×ˢ univ) :=
     IsCompact.uniformContinuousOn_of_continuous (hK.prod isCompact_univ)
       (h.mono <| prod_mono hKU Subset.rfl)
   exact this.tendstoUniformly hxK
@@ -102,7 +102,7 @@ if `α` is weakly locally compact and `β` is compact. -/
 theorem Continuous.tendstoUniformly [WeaklyLocallyCompactSpace α] [CompactSpace β] [UniformSpace γ]
     (f : α → β → γ) (h : Continuous ↿f) (x : α) : TendstoUniformly f (f x) (𝓝 x) :=
   let ⟨K, hK, hxK⟩ := exists_compact_mem_nhds x
-  have : UniformContinuousOn (↿f) (K ×ˢ univ) :=
+  have : UniformContinuousOn ↿f (K ×ˢ univ) :=
     IsCompact.uniformContinuousOn_of_continuous (hK.prod isCompact_univ) h.continuousOn
   this.tendstoUniformly hxK
 
@@ -131,7 +131,7 @@ lemma IsCompact.mem_uniformity_of_prod
     refine ⟨w, hw, v, hv, fun p hp y hy ↦ ?_⟩
     have A : (f q x, f p y) ∈ u' := hvw (⟨hp, hy⟩ : (p, y) ∈ v ×ˢ w)
     have B : (f q x, f q y) ∈ u' := hvw (⟨mem_of_mem_nhdsWithin hq hv, hy⟩ : (q, y) ∈ v ×ˢ w)
-    exact hu' (prod_mk_mem_compRel (u'_symm A) B)
+    exact hu' (prodMk_mem_compRel (u'_symm A) B)
 
 section UniformConvergence
 

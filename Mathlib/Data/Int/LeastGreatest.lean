@@ -3,7 +3,8 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Algebra.Order.Group.OrderIso
+import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.Nat.Find
 import Mathlib.Order.Bounds.Defs
 
@@ -59,24 +60,22 @@ lemma isLeast_coe_leastOfBdd {P : ℤ → Prop} [DecidablePred P] (b : ℤ) (Hb 
   (leastOfBdd b Hb Hinh).2
 
 /--
-    If `P : ℤ → Prop` is a predicate such that the set `{m : P m}` is bounded below and nonempty,
-    then this set has the least element. This lemma uses classical logic to avoid assumption
-    `[DecidablePred P]`. See `Int.leastOfBdd` for a constructive counterpart. -/
+If `P : ℤ → Prop` is a predicate such that the set `{m : P m}` is bounded below and nonempty,
+then this set has the least element. This lemma uses classical logic to avoid assumption
+`[DecidablePred P]`. See `Int.leastOfBdd` for a constructive counterpart. -/
 theorem exists_least_of_bdd
     {P : ℤ → Prop}
-    (Hbdd : ∃ b : ℤ , ∀ z : ℤ , P z → b ≤ z)
-    (Hinh : ∃ z : ℤ , P z) : ∃ lb : ℤ , P lb ∧ ∀ z : ℤ , P z → lb ≤ z := by
+    (Hbdd : ∃ b : ℤ, ∀ z : ℤ, P z → b ≤ z)
+    (Hinh : ∃ z : ℤ, P z) : ∃ lb : ℤ, P lb ∧ ∀ z : ℤ, P z → lb ≤ z := by
   classical
-  let ⟨b , Hb⟩ := Hbdd
-  let ⟨lb , H⟩ := leastOfBdd b Hb Hinh
-  exact ⟨lb , H⟩
+  let ⟨b, Hb⟩ := Hbdd
+  let ⟨lb, H⟩ := leastOfBdd b Hb Hinh
+  exact ⟨lb, H⟩
 
 theorem coe_leastOfBdd_eq {P : ℤ → Prop} [DecidablePred P] {b b' : ℤ} (Hb : ∀ z : ℤ, P z → b ≤ z)
     (Hb' : ∀ z : ℤ, P z → b' ≤ z) (Hinh : ∃ z : ℤ, P z) :
     (leastOfBdd b Hb Hinh : ℤ) = leastOfBdd b' Hb' Hinh := by
-  rcases leastOfBdd b Hb Hinh with ⟨n, hn, h2n⟩
-  rcases leastOfBdd b' Hb' Hinh with ⟨n', hn', h2n'⟩
-  exact le_antisymm (h2n _ hn') (h2n' _ hn)
+  grind
 
 /-- A computable version of `exists_greatest_of_bdd`: given a decidable predicate on the
 integers, with an explicit upper bound and a proof that it is somewhere true, return
@@ -98,13 +97,13 @@ lemma isGreatest_coe_greatestOfBdd {P : ℤ → Prop} [DecidablePred P] (b : ℤ
   (greatestOfBdd b Hb Hinh).2
 
 /--
-    If `P : ℤ → Prop` is a predicate such that the set `{m : P m}` is bounded above and nonempty,
-    then this set has the greatest element. This lemma uses classical logic to avoid assumption
-    `[DecidablePred P]`. See `Int.greatestOfBdd` for a constructive counterpart. -/
+If `P : ℤ → Prop` is a predicate such that the set `{m : P m}` is bounded above and nonempty,
+then this set has the greatest element. This lemma uses classical logic to avoid assumption
+`[DecidablePred P]`. See `Int.greatestOfBdd` for a constructive counterpart. -/
 theorem exists_greatest_of_bdd
     {P : ℤ → Prop}
-    (Hbdd : ∃ b : ℤ , ∀ z : ℤ , P z → z ≤ b)
-    (Hinh : ∃ z : ℤ , P z) : ∃ ub : ℤ , P ub ∧ ∀ z : ℤ , P z → z ≤ ub := by
+    (Hbdd : ∃ b : ℤ, ∀ z : ℤ, P z → z ≤ b)
+    (Hinh : ∃ z : ℤ, P z) : ∃ ub : ℤ, P ub ∧ ∀ z : ℤ, P z → z ≤ ub := by
   classical
   let ⟨b, Hb⟩ := Hbdd
   let ⟨lb, H⟩ := greatestOfBdd b Hb Hinh
@@ -113,8 +112,6 @@ theorem exists_greatest_of_bdd
 theorem coe_greatestOfBdd_eq {P : ℤ → Prop} [DecidablePred P] {b b' : ℤ}
     (Hb : ∀ z : ℤ, P z → z ≤ b) (Hb' : ∀ z : ℤ, P z → z ≤ b') (Hinh : ∃ z : ℤ, P z) :
     (greatestOfBdd b Hb Hinh : ℤ) = greatestOfBdd b' Hb' Hinh := by
-  rcases greatestOfBdd b Hb Hinh with ⟨n, hn, h2n⟩
-  rcases greatestOfBdd b' Hb' Hinh with ⟨n', hn', h2n'⟩
-  exact le_antisymm (h2n' _ hn) (h2n _ hn')
+  grind
 
 end Int

@@ -3,8 +3,10 @@ Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-import Mathlib.Algebra.Order.Floor
-import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Algebra.Order.Floor.Semiring
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Order.Filter.AtTopBot.Finite
+import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # `a * c ^ n < (n - d)!` holds true for sufficiently large `n`.
@@ -13,7 +15,7 @@ import Mathlib.Order.Filter.AtTopBot.Basic
 open Filter
 open scoped Nat
 
-variable {K : Type*} [LinearOrderedRing K] [FloorSemiring K]
+variable {K : Type*} [Ring K] [LinearOrder K] [IsStrictOrderedRing K] [FloorSemiring K]
 
 theorem FloorSemiring.eventually_mul_pow_lt_factorial_sub (a c : K) (d : ℕ) :
     ∀ᶠ n in atTop, a * c ^ n < (n - d)! := by

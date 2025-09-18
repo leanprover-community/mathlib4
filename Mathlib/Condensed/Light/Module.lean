@@ -65,9 +65,6 @@ noncomputable example : Abelian LightCondAb := inferInstance
 
 namespace LightCondMod
 
--- Note: `simp` can prove this when stated for `LightCondensed C` for a concrete category `C`.
--- However, it doesn't seem to see through the abbreviation `LightCondMod`
-@[simp]
 lemma hom_naturality_apply {X Y : LightCondMod.{u} R} (f : X ⟶ Y) {S T : LightProfiniteᵒᵖ}
     (g : S ⟶ T) (x : X.val.obj S) : f.val.app T (X.val.map g x) = Y.val.map g (f.val.app S x) :=
   NatTrans.naturality_apply f.val g x

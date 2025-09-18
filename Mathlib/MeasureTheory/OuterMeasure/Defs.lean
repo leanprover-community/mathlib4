@@ -3,8 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Topology.Instances.ENNReal.Defs
 import Mathlib.Topology.Algebra.InfiniteSum.Defs
+import Mathlib.Topology.Order.Real
 
 /-!
 # Definitions of an outer measure and the corresponding `FunLike` class
@@ -32,6 +32,8 @@ We also define a typeclass `MeasureTheory.OuterMeasureClass`.
 
 outer measure
 -/
+
+assert_not_exists Module.Basis IsTopologicalRing UniformSpace
 
 open scoped ENNReal
 

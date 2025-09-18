@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
 import Mathlib.RingTheory.WittVector.FrobeniusFractionField
-import Mathlib.Algebra.Module.Rat
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
 /-!
 
@@ -35,7 +33,7 @@ The construction is described in Dupuis, Lewis, and Macbeth,
 
 ## Notation
 
-This file introduces notation in the locale `Isocrystal`.
+This file introduces notation in the scope `Isocrystal`.
 * `K(p, k)`: `FractionRing (WittVector p k)`
 * `φ(p, k)`: `WittVector.FractionRing.frobeniusRingHom p k`
 * `M →ᶠˡ[p, k] M₂`: `LinearMap (WittVector.FractionRing.frobeniusRingHom p k) M M₂`
@@ -115,15 +113,13 @@ open WittVector
 
 variable (V : Type*) [AddCommGroup V] [Isocrystal p k V]
 variable (V₂ : Type*) [AddCommGroup V₂] [Isocrystal p k V₂]
-variable {V}
 
+variable {V} in
 /--
 Project the Frobenius automorphism from an isocrystal. Denoted by `Φ(p, k)` when V can be inferred.
 -/
 def Isocrystal.frobenius : V ≃ᶠˡ[p, k] V :=
   Isocrystal.frob (p := p) (k := k) (V := V)
-
-variable (V)
 
 @[inherit_doc] scoped[Isocrystal] notation "Φ(" p ", " k ")" => WittVector.Isocrystal.frobenius p k
 
@@ -156,16 +152,7 @@ of slope `m : ℤ`.
 @[nolint unusedArguments]
 def StandardOneDimIsocrystal (_m : ℤ) : Type _ :=
   K(p, k)
-
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020): added
-section Deriving
-
-instance {m : ℤ} : AddCommGroup (StandardOneDimIsocrystal p k m) :=
-  inferInstanceAs (AddCommGroup K(p, k))
-instance {m : ℤ} : Module K(p, k) (StandardOneDimIsocrystal p k m) :=
-  inferInstanceAs (Module K(p, k) K(p, k))
-
-end Deriving
+deriving AddCommGroup, Module K(p, k)
 
 section PerfectRing
 
@@ -211,15 +198,13 @@ theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k
       rw [LinearMap.span_singleton_eq_range]
   refine ⟨⟨(LinearEquiv.smulOfNeZero K(p, k) _ _ hb).trans F, fun c ↦ ?_⟩⟩
   rw [LinearEquiv.trans_apply, LinearEquiv.trans_apply, LinearEquiv.smulOfNeZero_apply,
-    LinearEquiv.smulOfNeZero_apply, Units.smul_mk0, Units.smul_mk0, LinearEquiv.map_smul,
-    LinearEquiv.map_smul]
-  -- Porting note: was
-  -- simp only [hax, LinearEquiv.ofBijective_apply, LinearMap.toSpanSingleton_apply,
-  --   LinearEquiv.map_smulₛₗ, StandardOneDimIsocrystal.frobenius_apply, Algebra.id.smul_eq_mul]
-  rw [LinearEquiv.ofBijective_apply, LinearEquiv.ofBijective_apply]
-  erw [LinearMap.toSpanSingleton_apply K(p, k) V x c, LinearMap.toSpanSingleton_apply K(p, k) V x]
-  simp only [hax, LinearEquiv.ofBijective_apply, LinearMap.toSpanSingleton_apply,
-    LinearEquiv.map_smulₛₗ, StandardOneDimIsocrystal.frobenius_apply, Algebra.id.smul_eq_mul]
+    LinearEquiv.smulOfNeZero_apply, LinearEquiv.map_smul, LinearEquiv.map_smul,
+    LinearEquiv.ofBijective_apply, LinearEquiv.ofBijective_apply,
+    StandardOneDimIsocrystal.frobenius_apply]
+  unfold StandardOneDimIsocrystal
+  rw [LinearMap.toSpanSingleton_apply K(p, k) V x c, LinearMap.toSpanSingleton_apply K(p, k) V x]
+  simp only [hax,
+    LinearEquiv.map_smulₛₗ, Algebra.id.smul_eq_mul]
   simp only [← mul_smul]
   congr 1
   linear_combination φ(p, k) c * hmb

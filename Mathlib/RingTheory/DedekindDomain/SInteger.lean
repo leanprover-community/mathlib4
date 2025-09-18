@@ -18,30 +18,28 @@ This file defines the subalgebra of `S`-integers of `K` and the subgroup of `S`-
 
 ## Main definitions
 
- * `Set.integer`: `S`-integers.
- * `Set.unit`: `S`-units.
- * TODO: localised notation for `S`-integers.
+* `Set.integer`: `S`-integers.
+* `Set.unit`: `S`-units.
+* TODO: localised notation for `S`-integers.
 
 ## Main statements
 
- * `Set.unitEquivUnitsInteger`: `S`-units are units of `S`-integers.
- * TODO: proof that `S`-units is the kernel of a map to a product.
- * TODO: proof that `∅`-integers is the usual ring of integers.
- * TODO: finite generation of `S`-units and Dirichlet's `S`-unit theorem.
+* `Set.unitEquivUnitsInteger`: `S`-units are units of `S`-integers.
+* `IsDedekindDomain.integer_empty`: `∅`-integers is the usual ring of integers.
+* TODO: proof that `S`-units is the kernel of a map to a product.
+* TODO: finite generation of `S`-units and Dirichlet's `S`-unit theorem.
 
 ## References
 
- * [D Marcus, *Number Fields*][marcus1977number]
- * [J W S Cassels, A Frölich, *Algebraic Number Theory*][cassels1967algebraic]
- * [J Neukirch, *Algebraic Number Theory*][Neukirch1992]
+* [D Marcus, *Number Fields*][marcus1977number]
+* [J W S Cassels, A Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
+* [J Neukirch, *Algebraic Number Theory*][Neukirch1992]
 
 ## Tags
 
 S integer, S-integer, S unit, S-unit
 -/
 
-
-namespace Set
 
 noncomputable section
 
@@ -56,44 +54,65 @@ variable {R : Type u} [CommRing R] [IsDedekindDomain R]
 
 /-! ## `S`-integers -/
 
+namespace Set
 
 /-- The `R`-subalgebra of `S`-integers of `K`. -/
 @[simps!]
 def integer : Subalgebra R K :=
   {
-    (⨅ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation.valuationSubring.toSubring).copy
-        {x : K | ∀ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation x ≤ 1} <|
-      Set.ext fun _ => by simp [SetLike.mem_coe, Subring.mem_iInf] with
+    (⨅ (v) (_ : v ∉ S), (v.valuation K).valuationSubring.toSubring).copy
+        {x : K | ∀ (v) (_ : v ∉ S), v.valuation K x ≤ 1} <|
+      Set.ext fun _ => by simp [SetLike.mem_coe] with
     algebraMap_mem' := fun x v _ => v.valuation_le_one x }
 
 theorem integer_eq :
     (S.integer K).toSubring =
-      ⨅ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation.valuationSubring.toSubring :=
+      ⨅ (v) (_ : v ∉ S), (v.valuation K).valuationSubring.toSubring :=
   SetLike.ext' <| by ext; simp
 
 theorem integer_valuation_le_one (x : S.integer K) {v : HeightOneSpectrum R} (hv : v ∉ S) :
-    v.valuation (x : K) ≤ 1 :=
+    v.valuation K x ≤ 1 :=
   x.property v hv
 
+end Set
+
+namespace IsDedekindDomain
+
+variable (R)
+
+/-- If `S` is the whole set of places of `K`, then the `S`-integers are the whole of `K`. -/
+@[simp] lemma integer_univ : (Set.univ : Set (HeightOneSpectrum R)).integer K = ⊤ := by
+  ext
+  tauto
+
+/-- If `S` is the empty set, then the `S`-integers are the minimal `R`-subalgebra of `K` (which is
+just `R` itself, via `Algebra.botEquivOfInjective` and `IsFractionRing.injective`). -/
+@[simp] lemma integer_empty : (∅ : Set (HeightOneSpectrum R)).integer K = ⊥ := by
+  ext x
+  simp only [Set.integer, Set.mem_empty_iff_false, not_false_eq_true, true_implies]
+  refine ⟨HeightOneSpectrum.mem_integers_of_valuation_le_one K x, ?_⟩
+  rintro ⟨y, rfl⟩ v
+  exact v.valuation_le_one y
+
+end IsDedekindDomain
 /-! ## `S`-units -/
 
+namespace Set
 
 /-- The subgroup of `S`-units of `Kˣ`. -/
 @[simps!]
 def unit : Subgroup Kˣ :=
-  (⨅ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation.valuationSubring.unitGroup).copy
-      {x : Kˣ | ∀ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation (x : K) = 1} <|
+  (⨅ (v) (_ : v ∉ S), (v.valuation K).valuationSubring.unitGroup).copy
+      {x : Kˣ | ∀ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation K x = 1} <|
     Set.ext fun _ => by
-      -- Porting note: was
-      -- simpa only [SetLike.mem_coe, Subgroup.mem_iInf, Valuation.mem_unitGroup_iff]
       simp only [mem_setOf, SetLike.mem_coe, Subgroup.mem_iInf, Valuation.mem_unitGroup_iff]
 
 theorem unit_eq :
-    S.unit K = ⨅ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation.valuationSubring.unitGroup :=
+    S.unit K = ⨅ (v) (_ : v ∉ S), (v.valuation K).valuationSubring.unitGroup :=
   Subgroup.copy_eq _ _ _
 
 theorem unit_valuation_eq_one (x : S.unit K) {v : HeightOneSpectrum R} (hv : v ∉ S) :
-    v.valuation ((x : Kˣ) : K) = 1 :=
+    v.valuation K (x : Kˣ) = 1 :=
   x.property v hv
 
 /-- The group of `S`-units is the group of units of the ring of `S`-integers. -/
@@ -108,13 +127,7 @@ def unitEquivUnitsInteger : S.unit K ≃* (S.integer K)ˣ where
     fun v hv =>
       eq_one_of_one_le_mul_left (x.val.property v hv) (x.inv.property v hv) <|
         Eq.ge <| by
-          -- Porting note: was
-          -- rw [← map_mul]; convert v.valuation.map_one; exact subtype.mk_eq_mk.mp x.val_inv⟩
-          rw [Units.val_mk0, ← map_mul, Subtype.mk_eq_mk.mp x.val_inv, v.valuation.map_one]⟩
-  left_inv _ := by ext; rfl
-  right_inv _ := by ext; rfl
+          rw [← map_mul, Units.val_mk0, Subtype.mk_eq_mk.mp x.val_inv, map_one]⟩
   map_mul' _ _ := by ext; rfl
-
-end
 
 end Set

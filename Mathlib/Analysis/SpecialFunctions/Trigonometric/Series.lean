@@ -3,6 +3,7 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Yaël Dillies
 -/
+import Mathlib.Analysis.Complex.Trigonometric
 import Mathlib.Analysis.SpecialFunctions.Exponential
 
 /-!
@@ -146,7 +147,7 @@ lemma sinh_eq_tsum (r : ℝ) : sinh r = ∑' n, r ^ (2 * n + 1) / ↑(2 * n + 1)
 
 lemma cosh_le_exp_half_sq (x : ℝ) : cosh x ≤ exp (x ^ 2 / 2) := by
   rw [cosh_eq_tsum, exp_eq_exp_ℝ, exp_eq_tsum]
-  refine tsum_le_tsum (fun i ↦ ?_) x.hasSum_cosh.summable <| expSeries_summable' (x ^ 2 / 2)
+  refine x.hasSum_cosh.summable.tsum_le_tsum (fun i ↦ ?_) <| expSeries_summable' (x ^ 2 / 2)
   simp only [div_pow, pow_mul, smul_eq_mul, inv_mul_eq_div, div_div]
   gcongr
   norm_cast

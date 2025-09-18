@@ -19,7 +19,7 @@ In this file we prove the following lemma:
 multivariate polynomial, continuity
 -/
 
-variable {X σ : Type*} [TopologicalSpace X] [CommSemiring X] [TopologicalSemiring X]
+variable {X σ : Type*} [TopologicalSpace X] [CommSemiring X] [IsTopologicalSemiring X]
   (p : MvPolynomial σ X)
 
 theorem MvPolynomial.continuous_eval : Continuous fun x ↦ eval x p := by

@@ -3,11 +3,8 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Topology.Instances.Nat
 import Mathlib.Topology.MetricSpace.PiNat
-import Mathlib.Topology.MetricSpace.Isometry
-import Mathlib.Topology.MetricSpace.Gluing
+import Mathlib.Topology.Metrizable.CompletelyMetrizable
 import Mathlib.Topology.Sets.Opens
 
 /-!
@@ -21,10 +18,7 @@ In this file, we establish the basic properties of Polish spaces.
 
 * `PolishSpace α` is a mixin typeclass on a topological space, requiring that the topology is
   second-countable and compatible with a complete metric. To endow the space with such a metric,
-  use in a proof `letI := upgradePolishSpace α`.
-  We register an instance from complete second-countable metric spaces to Polish spaces, not the
-  other way around.
-* We register that countable products and sums of Polish spaces are Polish.
+  use in a proof `letI := upgradeIsCompletelyMetrizable α`.
 * `IsClosed.polishSpace`: a closed subset of a Polish space is Polish.
 * `IsOpen.polishSpace`: an open subset of a Polish space is Polish.
 * `exists_nat_nat_continuous_surjective`: any nonempty Polish space is the continuous image
@@ -57,107 +51,49 @@ variable {α : Type*} {β : Type*}
 
 /-- A Polish space is a topological space with second countable topology, that can be endowed
 with a metric for which it is complete.
-We register an instance from complete second countable metric space to polish space, and not the
-other way around as this is the most common use case.
 
-To endow a Polish space with a complete metric space structure, do `letI := upgradePolishSpace α`.
+To endow a Polish space with a complete metric space structure, do
+`letI := upgradeIsCompletelyMetrizable α`.
 -/
-class PolishSpace (α : Type*) [h : TopologicalSpace α]
-    extends SecondCountableTopology α : Prop where
-  complete : ∃ m : MetricSpace α, m.toUniformSpace.toTopologicalSpace = h ∧
-    @CompleteSpace α m.toUniformSpace
+class PolishSpace (α : Type*) [h : TopologicalSpace α] : Prop
+    extends SecondCountableTopology α, IsCompletelyMetrizableSpace α
 
-/-- A convenience class, for a Polish space endowed with a complete metric. No instance of this
-class should be registered: It should be used as `letI := upgradePolishSpace α` to endow a Polish
-space with a complete metric. -/
-class UpgradedPolishSpace (α : Type*) extends MetricSpace α, SecondCountableTopology α,
-  CompleteSpace α
+instance [TopologicalSpace α] [SeparableSpace α] [IsCompletelyMetrizableSpace α] :
+    PolishSpace α := by
+  letI := upgradeIsCompletelyMetrizable α
+  haveI := UniformSpace.secondCountable_of_separable α
+  constructor
 
-instance (priority := 100) PolishSpace.of_separableSpace_completeSpace_metrizable [UniformSpace α]
-    [SeparableSpace α] [CompleteSpace α] [(𝓤 α).IsCountablyGenerated] [T0Space α] :
-    PolishSpace α where
-  toSecondCountableTopology := UniformSpace.secondCountable_of_separable α
-  complete := ⟨UniformSpace.metricSpace α, rfl, ‹_›⟩
+@[deprecated (since := "2025-03-14")] alias UpgradedPolishSpace :=
+  UpgradedIsCompletelyMetrizableSpace
 
-/-- Construct on a Polish space a metric (compatible with the topology) which is complete. -/
-def polishSpaceMetric (α : Type*) [TopologicalSpace α] [h : PolishSpace α] : MetricSpace α :=
-  h.complete.choose.replaceTopology h.complete.choose_spec.1.symm
+@[deprecated (since := "2025-03-14")] alias polishSpaceMetric :=
+  completelyMetrizableMetric
 
-theorem complete_polishSpaceMetric (α : Type*) [ht : TopologicalSpace α] [h : PolishSpace α] :
-    @CompleteSpace α (polishSpaceMetric α).toUniformSpace := by
-  convert h.complete.choose_spec.2
-  exact MetricSpace.replaceTopology_eq _ _
+@[deprecated (since := "2025-03-14")] alias complete_polishSpaceMetric :=
+  complete_completelyMetrizableMetric
 
-/-- This definition endows a Polish space with a complete metric. Use it as:
-`letI := upgradePolishSpace α`. -/
-def upgradePolishSpace (α : Type*) [TopologicalSpace α] [PolishSpace α] :
-    UpgradedPolishSpace α :=
-  letI := polishSpaceMetric α
-  { complete_polishSpaceMetric α with }
+@[deprecated (since := "2025-03-14")] alias upgradePolishSpace :=
+  upgradeIsCompletelyMetrizable
 
 namespace PolishSpace
-
-instance (priority := 100) instMetrizableSpace (α : Type*) [TopologicalSpace α] [PolishSpace α] :
-    MetrizableSpace α := by
-  letI := upgradePolishSpace α
-  infer_instance
-
-/-- A countable product of Polish spaces is Polish. -/
-instance pi_countable {ι : Type*} [Countable ι] {E : ι → Type*} [∀ i, TopologicalSpace (E i)]
-    [∀ i, PolishSpace (E i)] : PolishSpace (∀ i, E i) := by
-  letI := fun i => upgradePolishSpace (E i)
-  infer_instance
-
-/-- A countable disjoint union of Polish spaces is Polish. -/
-instance sigma {ι : Type*} [Countable ι] {E : ι → Type*} [∀ n, TopologicalSpace (E n)]
-    [∀ n, PolishSpace (E n)] : PolishSpace (Σn, E n) :=
-  letI := fun n => upgradePolishSpace (E n)
-  letI : MetricSpace (Σn, E n) := Sigma.metricSpace
-  haveI : CompleteSpace (Σn, E n) := Sigma.completeSpace
-  inferInstance
-
-/-- The product of two Polish spaces is Polish. -/
-instance prod [TopologicalSpace α] [PolishSpace α] [TopologicalSpace β] [PolishSpace β] :
-    PolishSpace (α × β) :=
-  letI := upgradePolishSpace α
-  letI := upgradePolishSpace β
-  inferInstance
-
-/-- The disjoint union of two Polish spaces is Polish. -/
-instance sum [TopologicalSpace α] [PolishSpace α] [TopologicalSpace β] [PolishSpace β] :
-    PolishSpace (α ⊕ β) :=
-  letI := upgradePolishSpace α
-  letI := upgradePolishSpace β
-  inferInstance
 
 /-- Any nonempty Polish space is the continuous image of the fundamental space `ℕ → ℕ`. -/
 theorem exists_nat_nat_continuous_surjective (α : Type*) [TopologicalSpace α] [PolishSpace α]
     [Nonempty α] : ∃ f : (ℕ → ℕ) → α, Continuous f ∧ Surjective f :=
-  letI := upgradePolishSpace α
+  letI := upgradeIsCompletelyMetrizable α
   exists_nat_nat_continuous_surjective_of_completeSpace α
 
 /-- Given a closed embedding into a Polish space, the source space is also Polish. -/
 theorem _root_.Topology.IsClosedEmbedding.polishSpace [TopologicalSpace α] [TopologicalSpace β]
     [PolishSpace β] {f : α → β} (hf : IsClosedEmbedding f) : PolishSpace α := by
-  letI := upgradePolishSpace β
+  letI := upgradeIsCompletelyMetrizable β
   letI : MetricSpace α := hf.isEmbedding.comapMetricSpace f
   haveI : SecondCountableTopology α := hf.isEmbedding.secondCountableTopology
   have : CompleteSpace α := by
     rw [completeSpace_iff_isComplete_range hf.isEmbedding.to_isometry.isUniformInducing]
     exact hf.isClosed_range.isComplete
   infer_instance
-
-@[deprecated (since := "2024-10-20")]
-alias _root_.ClosedEmbedding.polishSpace := IsClosedEmbedding.polishSpace
-
-/-- Any countable discrete space is Polish. -/
-instance (priority := 50) polish_of_countable [TopologicalSpace α]
-    [h : Countable α] [DiscreteTopology α] : PolishSpace α := by
-  obtain ⟨f, hf⟩ := h.exists_injective_nat
-  have : IsClosedEmbedding f :=
-    .of_continuous_injective_isClosedMap continuous_of_discreteTopology hf
-      fun t _ ↦ isClosed_discrete _
-  exact this.polishSpace
 
 /-- Pulling back a Polish topology under an equiv gives again a Polish topology. -/
 theorem _root_.Equiv.polishSpace_induced [t : TopologicalSpace β] [PolishSpace β] (f : α ≃ β) :
@@ -169,10 +105,6 @@ theorem _root_.Equiv.polishSpace_induced [t : TopologicalSpace β] [PolishSpace 
 theorem _root_.IsClosed.polishSpace [TopologicalSpace α] [PolishSpace α] {s : Set α}
     (hs : IsClosed s) : PolishSpace s :=
   hs.isClosedEmbedding_subtypeVal.polishSpace
-
-instance instPolishSpaceUniv [TopologicalSpace α] [PolishSpace α] :
-    PolishSpace (univ : Set α) :=
-  isClosed_univ.polishSpace
 
 protected theorem _root_.CompletePseudometrizable.iInf {ι : Type*} [Countable ι]
     {t : ι → TopologicalSpace α} (ht₀ : ∃ t₀, @T2Space α t₀ ∧ ∀ i, t i ≤ t₀)
@@ -191,7 +123,7 @@ protected theorem iInf {ι : Type*} [Countable ι] {t : ι → TopologicalSpace 
   rcases ht₀ with ⟨i₀, hi₀⟩
   rcases CompletePseudometrizable.iInf ⟨t i₀, letI := t i₀; haveI := ht i₀; inferInstance, hi₀⟩
     fun i ↦
-      letI := t i; haveI := ht i; letI := upgradePolishSpace α
+      letI := t i; haveI := ht i; letI := upgradeIsCompletelyMetrizable α
       ⟨inferInstance, inferInstance, inferInstance, rfl⟩
     with ⟨u, hcomp, hcount, htop⟩
   rw [← htop]
@@ -222,11 +154,6 @@ To prove this fact, one needs to construct another metric, giving rise to the sa
 for which the open subset is complete. This is not obvious, as for instance `(0,1) ⊆ ℝ` is not
 complete for the usual metric of `ℝ`: one should build a new metric that blows up close to the
 boundary.
-
-Porting note: definitions and lemmas in this section now take `(s : Opens α)` instead of
-`{s : Set α} (hs : IsOpen s)` so that we can turn various definitions and lemmas into instances.
-Also, some lemmas used to assume `Set.Nonempty sᶜ` in Lean 3. In fact, this assumption is not
-needed, so it was dropped.
 -/
 
 namespace TopologicalSpace.Opens
@@ -242,7 +169,6 @@ namespace CompleteCopy
 /-- A distance on an open subset `s` of a metric space, designed to make it complete.  It is given
 by `dist' x y = dist x y + |1 / dist x sᶜ - 1 / dist y sᶜ|`, where the second term blows up close to
 the boundary to ensure that Cauchy sequences for `dist'` remain well inside `s`. -/
--- Porting note: in mathlib3 this was only a local instance.
 instance instDist : Dist (CompleteCopy s) where
   dist x y := dist x.1 y.1 + abs (1 / infDist x.1 sᶜ - 1 / infDist y.1 sᶜ)
 
@@ -258,14 +184,15 @@ instance [SecondCountableTopology α] : SecondCountableTopology (CompleteCopy s)
   inferInstanceAs (SecondCountableTopology s)
 instance : T0Space (CompleteCopy s) := inferInstanceAs (T0Space s)
 
-/-- A metric space structure on a subset `s` of a metric space, designed to make it complete
+/--
+A metric space structure on a subset `s` of a metric space, designed to make it complete
 if `s` is open. It is given by `dist' x y = dist x y + |1 / dist x sᶜ - 1 / dist y sᶜ|`, where the
 second term blows up close to the boundary to ensure that Cauchy sequences for `dist'` remain well
 inside `s`.
 
-Porting note: the definition changed to ensure that the `TopologicalSpace` structure on
-`TopologicalSpace.Opens.CompleteCopy s` is definitionally equal to the original one. -/
--- Porting note: in mathlib3 this was only a local instance.
+This definition ensures the `TopologicalSpace` structure on
+`TopologicalSpace.Opens.CompleteCopy s` is definitionally equal to the original one.
+-/
 instance instMetricSpace : MetricSpace (CompleteCopy s) := by
   refine @MetricSpace.ofT0PseudoMetricSpace (CompleteCopy s)
     (.ofDistTopology dist (fun _ ↦ ?_) (fun _ _ ↦ ?_) (fun x y z ↦ ?_) fun t ↦ ?_) _
@@ -292,14 +219,12 @@ instance instMetricSpace : MetricSpace (CompleteCopy s) := by
       simp only [dist_self, sub_self, abs_zero, zero_add] at this
       exact mem_of_superset (this <| gt_mem_nhds ε0) hε
 
--- Porting note: no longer needed because the topologies are defeq
-
 instance instCompleteSpace [CompleteSpace α] : CompleteSpace (CompleteCopy s) := by
   refine Metric.complete_of_convergent_controlled_sequences ((1 / 2) ^ ·) (by simp) fun u hu ↦ ?_
   have A : CauchySeq fun n => (u n).1 := by
     refine cauchySeq_of_le_tendsto_0 (fun n : ℕ => (1 / 2) ^ n) (fun n m N hNn hNm => ?_) ?_
     · exact (dist_val_le_dist (u n) (u m)).trans (hu N n m hNn hNm).le
-    · exact tendsto_pow_atTop_nhds_zero_of_lt_one (by norm_num) (by norm_num)
+    · exact tendsto_pow_atTop_nhds_zero_of_lt_one (by simp) (by norm_num)
   obtain ⟨x, xlim⟩ : ∃ x, Tendsto (fun n => (u n).1) atTop (𝓝 x) := cauchySeq_tendsto_of_complete A
   by_cases xs : x ∈ s
   · exact ⟨⟨x, xs⟩, tendsto_subtype_rng.2 xlim⟩
@@ -313,7 +238,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (CompleteCopy s) :
       _ < (1 / 2) ^ 0 := hu 0 0 n le_rfl n.zero_le
   have Cpos : 0 < C := lt_of_le_of_lt (div_nonneg zero_le_one infDist_nonneg) (hC 0)
   have Hmem : ∀ {y}, y ∈ s ↔ 0 < infDist y sᶜ := fun {y} ↦ by
-    rw [← s.isOpen.isClosed_compl.not_mem_iff_infDist_pos ⟨x, xs⟩]; exact not_not.symm
+    rw [← s.isOpen.isClosed_compl.notMem_iff_infDist_pos ⟨x, xs⟩]; exact not_not.symm
   have I : ∀ n, 1 / C ≤ infDist (u n).1 sᶜ := fun n ↦ by
     have : 0 < infDist (u n).1 sᶜ := Hmem.1 (u n).2
     rw [div_le_iff₀' Cpos]
@@ -327,7 +252,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (CompleteCopy s) :
 /-- An open subset of a Polish space is also Polish. -/
 theorem _root_.IsOpen.polishSpace {α : Type*} [TopologicalSpace α] [PolishSpace α] {s : Set α}
     (hs : IsOpen s) : PolishSpace s := by
-  letI := upgradePolishSpace α
+  letI := upgradeIsCompletelyMetrizable α
   lift s to Opens α using hs
   exact inferInstanceAs (PolishSpace s.CompleteCopy)
 
@@ -382,7 +307,7 @@ theorem _root_.IsOpen.isClopenable [TopologicalSpace α] [PolishSpace α] {s : S
     (hs : IsOpen s) : IsClopenable s := by
   simpa using hs.isClosed_compl.isClopenable.compl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize for free to `[Countable ι] {s : ι → Set α}`
+-- TODO: generalize for free to `[Countable ι] {s : ι → Set α}`
 theorem IsClopenable.iUnion [t : TopologicalSpace α] [PolishSpace α] {s : ℕ → Set α}
     (hs : ∀ n, IsClopenable (s n)) : IsClopenable (⋃ n, s n) := by
   choose m mt m_polish _ m_open using hs

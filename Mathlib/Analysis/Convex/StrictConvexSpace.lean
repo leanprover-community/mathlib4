@@ -3,8 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Normed
+import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Analysis.Normed.Module.Ray
+import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 
 /-!
 # Strictly convex spaces
@@ -58,17 +59,18 @@ require balls of positive radius with center at the origin to be strictly convex
 then prove that any closed ball is strictly convex in `strictConvex_closedBall` below.
 
 See also `StrictConvexSpace.of_strictConvex_unitClosedBall`. -/
-class StrictConvexSpace (𝕜 E : Type*) [NormedLinearOrderedField 𝕜] [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] : Prop where
+@[mk_iff]
+class StrictConvexSpace (𝕜 E : Type*) [NormedField 𝕜] [PartialOrder 𝕜]
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] : Prop where
   strictConvex_closedBall : ∀ r : ℝ, 0 < r → StrictConvex 𝕜 (closedBall (0 : E) r)
 
-variable (𝕜 : Type*) {E : Type*} [NormedLinearOrderedField 𝕜] [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E]
+variable (𝕜 : Type*) {E : Type*} [NormedField 𝕜] [PartialOrder 𝕜]
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- A closed ball in a strictly convex space is strictly convex. -/
 theorem strictConvex_closedBall [StrictConvexSpace 𝕜 E] (x : E) (r : ℝ) :
     StrictConvex 𝕜 (closedBall x r) := by
-  rcases le_or_lt r 0 with hr | hr
+  rcases le_or_gt r 0 with hr | hr
   · exact (subsingleton_closedBall x hr).strictConvex
   rw [← vadd_closedBall_zero]
   exact (StrictConvexSpace.strictConvex_closedBall r hr).vadd _
@@ -79,10 +81,6 @@ variable [NormedSpace ℝ E]
 theorem StrictConvexSpace.of_strictConvex_unitClosedBall [LinearMap.CompatibleSMul E E 𝕜 ℝ]
     (h : StrictConvex 𝕜 (closedBall (0 : E) 1)) : StrictConvexSpace 𝕜 E :=
   ⟨fun r hr => by simpa only [smul_unitClosedBall_of_nonneg hr.le] using h.smul r⟩
-
-@[deprecated (since := "2024-12-01")]
-alias StrictConvexSpace.of_strictConvex_closed_unit_ball :=
-  StrictConvexSpace.of_strictConvex_unitClosedBall
 
 /-- Strict convexity is equivalent to `‖a • x + b • y‖ < 1` for all `x` and `y` of norm at most `1`
 and all strictly positive `a` and `b` such that `a + b = 1`. This lemma shows that it suffices to

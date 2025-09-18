@@ -34,22 +34,11 @@ instance : HasFiniteBiproducts AddCommGrp :=
 /-- Construct limit data for a binary product in `AddCommGrp`, using
 `AddCommGrp.of (G × H)`.
 -/
-@[simps cone_pt isLimit_lift]
+@[simps! cone_pt isLimit_lift]
 def binaryProductLimitCone (G H : AddCommGrp.{u}) : Limits.LimitCone (pair G H) where
-  cone :=
-    { pt := AddCommGrp.of (G × H)
-      π :=
-        { app := fun j =>
-            Discrete.casesOn j fun j =>
-              WalkingPair.casesOn j (ofHom (AddMonoidHom.fst G H)) (ofHom (AddMonoidHom.snd G H))
-          naturality := by rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨⟨⟨⟩⟩⟩ <;> rfl } }
-  isLimit :=
-    { lift := fun s => ofHom <|
-        AddMonoidHom.prod (s.π.app ⟨WalkingPair.left⟩).hom (s.π.app ⟨WalkingPair.right⟩).hom
-      fac := by rintro s (⟨⟩ | ⟨⟩) <;> rfl
-      uniq := fun s m w => by
-        simp_rw [← w ⟨WalkingPair.left⟩, ← w ⟨WalkingPair.right⟩]
-        rfl }
+  cone := BinaryFan.mk (ofHom (AddMonoidHom.fst G H)) (ofHom (AddMonoidHom.snd G H))
+  isLimit := BinaryFan.IsLimit.mk _ (fun l r => ofHom (AddMonoidHom.prod l.hom r.hom))
+    (fun _ _ => rfl) (fun _ _ => rfl) (by cat_disch)
 
 @[simp]
 theorem binaryProductLimitCone_cone_π_app_left (G H : AddCommGrp.{u}) :
@@ -62,7 +51,7 @@ theorem binaryProductLimitCone_cone_π_app_right (G H : AddCommGrp.{u}) :
   rfl
 
 /-- We verify that the biproduct in `AddCommGrp` is isomorphic to
-the cartesian product of the underlying types:
+the Cartesian product of the underlying types:
 -/
 noncomputable def biprodIsoProd (G H : AddCommGrp.{u}) :
     (G ⊞ H : AddCommGrp) ≅ AddCommGrp.of (G × H) :=
@@ -83,7 +72,7 @@ namespace HasLimit
 variable {J : Type w} (f : J → AddCommGrp.{max w u})
 
 /-- The map from an arbitrary cone over an indexed family of abelian groups
-to the cartesian product of those groups.
+to the Cartesian product of those groups.
 -/
 @[simps!]
 def lift (s : Fan f) : s.pt ⟶ AddCommGrp.of (∀ j, f j) :=

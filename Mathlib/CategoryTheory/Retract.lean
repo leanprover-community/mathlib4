@@ -26,7 +26,7 @@ structure Retract (X Y : C) where
   i : X ⟶ Y
   /-- the split epimorphism -/
   r : Y ⟶ X
-  retract : i ≫ r = 𝟙 X := by aesop_cat
+  retract : i ≫ r = 𝟙 X := by cat_disch
 
 namespace Retract
 
@@ -65,6 +65,11 @@ def refl : Retract X X where
 def trans {Z : C} (h' : Retract Y Z) : Retract X Z where
   i := h.i ≫ h'.i
   r := h'.r ≫ h.r
+
+/-- If `e : X ≅ Y`, then `X` is a retract of `Y`. -/
+def ofIso (e : X ≅ Y) : Retract X Y where
+  i := e.hom
+  r := e.inv
 
 end Retract
 

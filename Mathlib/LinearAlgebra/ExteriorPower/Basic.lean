@@ -18,16 +18,16 @@ We study the exterior powers of a module `M` over a commutative ring `R`.
 * `exteriorPower.presentation R n M` is the standard presentation of the `R`-module `⋀[R]^n M`.
 
 * `exteriorPower.map n f : ⋀[R]^n M →ₗ[R] ⋀[R]^n N` is the linear map on `nth` exterior powers
-induced by a linear map `f : M →ₗ[R] N`. (See the file `Algebra.Category.ModuleCat.ExteriorPower`
-for the corresponding functor `ModuleCat R ⥤ ModuleCat R`.)
+  induced by a linear map `f : M →ₗ[R] N`. (See the file `Algebra.Category.ModuleCat.ExteriorPower`
+  for the corresponding functor `ModuleCat R ⥤ ModuleCat R`.)
 
 ## Theorems
 * `exteriorPower.ιMulti_span`: The image of `exteriorPower.ιMulti` spans `⋀[R]^n M`.
 
 * We construct `exteriorPower.alternatingMapLinearEquiv` which
-expresses the universal property of the exterior power as a
-linear equivalence `(M [⋀^Fin n]→ₗ[R] N) ≃ₗ[R] ⋀[R]^n M →ₗ[R] N` between
-alternating maps and linear maps from the exterior power.
+  expresses the universal property of the exterior power as a
+  linear equivalence `(M [⋀^Fin n]→ₗ[R] N) ≃ₗ[R] ⋀[R]^n M →ₗ[R] N` between
+  alternating maps and linear maps from the exterior power.
 
 -/
 
@@ -62,7 +62,7 @@ noncomputable def ιMulti_family {I : Type*} [LinearOrder I] (v : I → M)
   ιMulti R n fun i ↦ v <| Finset.orderIsoOfFin s.val s.property i
 
 @[simp] lemma ιMulti_family_apply_coe {I : Type*} [LinearOrder I] (v : I → M)
-  (s : {s : Finset I // Finset.card s = n}) :
+    (s : {s : Finset I // Finset.card s = n}) :
     ιMulti_family R n v s = ExteriorAlgebra.ιMulti_family R n v s := rfl
 
 variable (M)
@@ -109,7 +109,7 @@ variable {R} in
 /-- The solutions in a module `N` to the linear equations
 given by `exteriorPower.relations R ι M` identify to alternating maps to `N`. -/
 @[simps!]
-def relationsSolutionEquiv {ι : Type*} [DecidableEq ι] {M : Type*}
+noncomputable def relationsSolutionEquiv {ι : Type*} [DecidableEq ι] {M : Type*}
     [AddCommGroup M] [Module R M] :
     (relations R ι M).Solution N ≃ AlternatingMap R M N ι where
   toFun s :=
@@ -137,11 +137,9 @@ def relationsSolutionEquiv {ι : Type*} [DecidableEq ι] {M : Type*}
         · simp
         · simp
         · simpa using f.map_eq_zero_of_eq v hm hij }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The universal property of the exterior power. -/
-def isPresentationCore :
+noncomputable def isPresentationCore :
     (relationsSolutionEquiv.symm (ιMulti R n (M := M))).IsPresentationCore where
   desc s := LinearMap.comp (ExteriorAlgebra.liftAlternating
       (Function.update 0 n (relationsSolutionEquiv s))) (Submodule.subtype _)
@@ -244,7 +242,7 @@ lemma map_comp_ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) (f : M �
 
 @[simp]
 lemma map_apply_ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) (f : M →ₗ[R] N)
-  (s : {s : Finset I // s.card = n}) :
+    (s : {s : Finset I // s.card = n}) :
     (map n f) (ιMulti_family R n v s) = ιMulti_family R n (f ∘ v) s := by
   simp only [ιMulti_family, map, alternatingMapLinearEquiv_apply_ιMulti]
   rfl
@@ -258,5 +256,55 @@ theorem map_id :
 theorem map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] N') :
     map n (g ∘ₗ f) = map n g ∘ₗ map n f := by
   aesop
+
+/-! Linear equivalences in degrees 0 and 1. -/
+
+variable (R M) in
+/-- The linear equivalence ` ⋀[R]^0 M ≃ₗ[R] R`. -/
+@[simps! -isSimp symm_apply]
+noncomputable def zeroEquiv : ⋀[R]^0 M ≃ₗ[R] R :=
+  LinearEquiv.ofLinear
+    (alternatingMapLinearEquiv (AlternatingMap.constOfIsEmpty R _ _ 1))
+    { toFun := fun r ↦ r • (ιMulti _ _ (by rintro ⟨i, hi⟩; simp at hi))
+      map_add' := by intros; simp only [add_smul]
+      map_smul' := by intros; simp only [smul_eq_mul, mul_smul, RingHom.id_apply]}
+    (by aesop) (by aesop)
+
+@[simp]
+lemma zeroEquiv_ιMulti (f : Fin 0 → M) :
+    zeroEquiv R M (ιMulti _ _ f) = 1 := by
+  simp [zeroEquiv]
+
+lemma zeroEquiv_naturality (f : M →ₗ[R] N) :
+    (zeroEquiv R N).comp (map 0 f) = zeroEquiv R M := by aesop
+
+variable (R M) in
+/-- The linear equivalence `M ≃ₗ[R] ⋀[R]^1 M`. -/
+@[simps! -isSimp symm_apply]
+noncomputable def oneEquiv : ⋀[R]^1 M ≃ₗ[R] M :=
+  LinearEquiv.ofLinear
+    (alternatingMapLinearEquiv (AlternatingMap.ofSubsingleton R M M (0 : Fin 1) .id)) (by
+      have h (m : M) : (fun (_ : Fin 1) ↦ m) = update (fun _ ↦ 0) 0 m := by
+        ext i
+        fin_cases i
+        rfl
+      exact
+        { toFun := fun m ↦ ιMulti _ _ (fun _ ↦ m)
+          map_add' := fun m₁ m₂ ↦ by
+            rw [h]; nth_rw 2 [h]; nth_rw 3 [h]
+            simp only [Fin.isValue, AlternatingMap.map_update_add]
+          map_smul' := fun r m ↦ by
+            dsimp
+            rw [h]; nth_rw 2 [h]
+            simp only [Fin.isValue, AlternatingMap.map_update_smul] })
+    (by aesop) (by aesop)
+
+@[simp]
+lemma oneEquiv_ιMulti (f : Fin 1 → M) :
+    oneEquiv R M (ιMulti _ _ f) = f 0 := by
+  simp [oneEquiv]
+
+lemma oneEquiv_naturality (f : M →ₗ[R] N) :
+    (oneEquiv R N).comp (map 1 f) = f.comp (oneEquiv R M).toLinearMap := by aesop
 
 end exteriorPower

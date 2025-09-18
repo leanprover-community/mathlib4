@@ -63,8 +63,6 @@ theorem sigmaCurry_zero [∀ i j, Zero (δ i j)] :
 
 @[simp]
 theorem sigmaCurry_add [∀ i j, AddZeroClass (δ i j)] (f g : Π₀ (i : Σ _, _), δ i.1 i.2) :
-    #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-    we needed to add the `(_ : Π₀ (i) (j), δ i j)` type annotation. -/
     sigmaCurry (f + g) = (sigmaCurry f + sigmaCurry g : Π₀ (i) (j), δ i j) := by
   ext (i j)
   rfl
@@ -72,8 +70,6 @@ theorem sigmaCurry_add [∀ i j, AddZeroClass (δ i j)] (f g : Π₀ (i : Σ _, 
 @[simp]
 theorem sigmaCurry_smul [Monoid γ] [∀ i j, AddMonoid (δ i j)] [∀ i j, DistribMulAction γ (δ i j)]
     (r : γ) (f : Π₀ (i : Σ _, _), δ i.1 i.2) :
-    #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-    we needed to add the `(_ : Π₀ (i) (j), δ i j)` type annotation. -/
     sigmaCurry (r • f) = (r • sigmaCurry f : Π₀ (i) (j), δ i j) := by
   ext (i j)
   rfl
@@ -88,18 +84,16 @@ theorem sigmaCurry_single [∀ i, DecidableEq (α i)] [∀ i j, Zero (δ i j)]
   rw [sigmaCurry_apply]
   obtain rfl | hi := eq_or_ne i i'
   · rw [single_eq_same]
-    obtain rfl | hj := eq_or_ne j j'
+    obtain rfl | hj := eq_or_ne j' j
     · rw [single_eq_same, single_eq_same]
     · rw [single_eq_of_ne, single_eq_of_ne hj]
       simpa using hj
-  · rw [single_eq_of_ne, single_eq_of_ne hi, zero_apply]
-    simp [hi]
+  · simp [hi]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /-- The natural map between `Π₀ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
 `curry`. -/
 def sigmaUncurry [∀ i j, Zero (δ i j)] [DecidableEq ι] (f : Π₀ (i) (j), δ i j) :
-    Π₀ i : Σ_, _, δ i.1 i.2 where
+    Π₀ i : Σ _, _, δ i.1 i.2 where
   toFun i := f i.1 i.2
   support' :=
     f.support'.bind fun s =>
@@ -118,26 +112,22 @@ def sigmaUncurry [∀ i j, Zero (δ i j)] [DecidableEq ι] (f : Π₀ (i) (j), �
             | inr ha => right; simp [toFun_eq_coe (f i) ▸ ha]
           | inr hi => right; simp [toFun_eq_coe f ▸ hi]⟩
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
 theorem sigmaUncurry_apply [∀ i j, Zero (δ i j)]
     (f : Π₀ (i) (j), δ i j) (i : ι) (j : α i) :
     sigmaUncurry f ⟨i, j⟩ = f i j :=
   rfl
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
 theorem sigmaUncurry_zero [∀ i j, Zero (δ i j)] :
     sigmaUncurry (0 : Π₀ (i) (j), δ i j) = 0 :=
   rfl
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
 theorem sigmaUncurry_add [∀ i j, AddZeroClass (δ i j)] (f g : Π₀ (i) (j), δ i j) :
     sigmaUncurry (f + g) = sigmaUncurry f + sigmaUncurry g :=
   DFunLike.coe_injective rfl
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
 theorem sigmaUncurry_smul [Monoid γ] [∀ i j, AddMonoid (δ i j)]
     [∀ i j, DistribMulAction γ (δ i j)]
@@ -153,19 +143,17 @@ theorem sigmaUncurry_single [∀ i j, Zero (δ i j)] [∀ i, DecidableEq (α i)]
   rw [sigmaUncurry_apply]
   obtain rfl | hi := eq_or_ne i i'
   · rw [single_eq_same]
-    obtain rfl | hj := eq_or_ne j j'
+    obtain rfl | hj := eq_or_ne j' j
     · rw [single_eq_same, single_eq_same]
     · rw [single_eq_of_ne hj, single_eq_of_ne]
       simpa using hj
-  · rw [single_eq_of_ne hi, single_eq_of_ne, zero_apply]
-    simp [hi]
+  · simp [hi]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /-- The natural bijection between `Π₀ (i : Σ i, α i), δ i.1 i.2` and `Π₀ i (j : α i), δ i j`.
 
 This is the dfinsupp version of `Equiv.piCurry`. -/
 def sigmaCurryEquiv [∀ i j, Zero (δ i j)] [DecidableEq ι] :
-    (Π₀ i : Σ_, _, δ i.1 i.2) ≃ Π₀ (i) (j), δ i j where
+    (Π₀ i : Σ _, _, δ i.1 i.2) ≃ Π₀ (i) (j), δ i j where
   toFun := sigmaCurry
   invFun := sigmaUncurry
   left_inv f := by

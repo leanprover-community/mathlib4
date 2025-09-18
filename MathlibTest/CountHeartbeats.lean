@@ -1,24 +1,22 @@
 import Mathlib.Util.CountHeartbeats
 import Mathlib.Util.SleepHeartbeats
 
-set_option linter.style.header false
-
-/-- info: Used 7 heartbeats, which is less than the current maximum of 200000. -/
+/-- info: Used approximately 0 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
-#count_heartbeats in
+#count_heartbeats approximately in
 example (a : Nat) : a = a := rfl
 
-/-- info: Used 7 heartbeats, which is less than the minimum of 200000. -/
+/-- info: Used approximately 0 heartbeats, which is less than the minimum of 200000. -/
 #guard_msgs in
-guard_min_heartbeats in
+guard_min_heartbeats approximately in
 example (a : Nat) : a = a := rfl
 
-/-- info: Used 7 heartbeats, which is less than the minimum of 2000. -/
+/-- info: Used approximately 0 heartbeats, which is less than the minimum of 2000. -/
 #guard_msgs in
-guard_min_heartbeats 2000 in
+guard_min_heartbeats approximately 2000 in
 example (a : Nat) : a = a := rfl
 
-guard_min_heartbeats 1 in
+guard_min_heartbeats approximately 1 in
 example (a : Nat) : a = a := rfl
 
 /-!

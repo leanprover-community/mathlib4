@@ -64,13 +64,6 @@ abbrev ofHom {X Y : Type u} [PartialOrder X] [Fintype X] [PartialOrder Y] [Finty
     of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := FinPartOrd) f
 
-variable {R} in
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (X Y : FinPartOrd.{u}) (f : PartOrd.Hom X.toPartOrd Y.toPartOrd) :=
-  f.hom
-
-initialize_simps_projections PartOrd.Hom (hom' → hom)
-
 @[simp]
 lemma hom_id {X : FinPartOrd} : (𝟙 X : X ⟶ X).hom = OrderHom.id := rfl
 
@@ -92,8 +85,8 @@ lemma hom_ext {X Y : FinPartOrd} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
 
 @[simp]
 lemma hom_ofHom {X Y : Type u} [PartialOrder X] [Fintype X] [PartialOrder Y] [Fintype Y]
-    (f : X →o Y) :
-  (ofHom f).hom = f := rfl
+    (f : X →o Y) : (ofHom f).hom = f :=
+  rfl
 
 @[simp]
 lemma ofHom_hom {X Y : FinPartOrd} (f : X ⟶ Y) :

@@ -55,7 +55,7 @@ open Lean Elab Meta
 initialize registerTraceClass `Elab.congr
 
 /--
-`congr(expr)` generates an congruence from an expression containing
+`congr(expr)` generates a congruence from an expression containing
 congruence holes of the form `$h` or `$(h)`.
 In these congruence holes, `h : a = b` indicates that, in the generated congruence,
 on the left-hand side `a` is substituted for `$h`
@@ -104,7 +104,7 @@ We need to decouple these to support letting the proof's elaboration be deferred
 we know whether we want an iff, eq, or heq, while also allowing it to choose
 to elaborate as an iff, eq, or heq.
 Later, the congruence generator handles any discrepancies.
-See `Mathlib.Tactic.TermCongr.CongrResult`. -/
+See `Mathlib/Tactic/TermCongr/CongrResult.lean`. -/
 @[reducible, nolint unusedArguments]
 def cHole {α : Sort u} (val : α) {p : Prop} (_pf : p) : α := val
 
@@ -245,9 +245,9 @@ def ensureIff (pf : Expr) : MetaM Expr := do
 inductive CongrType
   | eq | heq
 
-/-- A congruence lemma between two expressions.
-The proof is generated dynamically, depending on whether the resulting lemma should be
-an `Eq` or a `HEq`.
+/--
+A congruence lemma between two expressions. The proof is generated dynamically, depending on
+whether the resulting lemma should be an `Eq` or a `HEq`.
 If generating a proof impossible, then the generator can throw an error.
 This can be due to either an `Eq` proof being impossible
 or due to the lhs/rhs not being defeq to the lhs/rhs of the generated proof,
@@ -255,10 +255,10 @@ which can happen for user-supplied congruence holes.
 
 This complexity is to support two features:
 
-1. The user is free to supply Iff, Eq, and HEq lemmas in congurence holes,
+1. The user is free to supply Iff, Eq, and HEq lemmas in congruence holes,
    and we're able to transform them into whatever is appropriate for a
    given congruence lemma.
-2. If the congrence hole is a metavariable, then we can specialize that
+2. If the congruence hole is a metavariable, then we can specialize that
    hole to an Iff, Eq, or HEq depending on what's necessary at that site. -/
 structure CongrResult where
   /-- The left-hand side of the congruence result. -/
@@ -288,7 +288,7 @@ def CongrResult.eq (res : CongrResult) : MetaM Expr := do
   | some pf => pf .eq
   | none => mkEqRefl res.lhs
 
-/-- Returns the proof that `HEq lhs rhs`. Fails if the `CongrResult` is inapplicable.
+/-- Returns the proof that `lhs ≍ rhs`. Fails if the `CongrResult` is inapplicable.
 If `pf? = none`, this returns the `rfl` proof. -/
 def CongrResult.heq (res : CongrResult) : MetaM Expr := do
   match res.pf? with
@@ -325,9 +325,13 @@ The `pf?` function is responsible for finally unifying the type of `pf` with `lh
 def CongrResult.mk' (lhs rhs : Expr) (pf : Expr) : CongrResult where
   lhs := lhs
   rhs := rhs
-  pf? := some fun
-    | .eq => do ensureSidesDefeq (← toEqPf)
-    | .heq => do ensureSidesDefeq (← toHEqPf)
+  pf? :=
+    if (isRefl? pf).isSome then
+      none
+    else
+      some fun
+      | .eq => do ensureSidesDefeq (← toEqPf)
+      | .heq => do ensureSidesDefeq (← toHEqPf)
 where
   /-- Given a `pf` of an `Iff`, `Eq`, or `HEq`, return a proof of `Eq`.
   If `pf` is not obviously any of these, weakly try inserting `propext` to make an `Iff`
@@ -448,13 +452,26 @@ def mkCongrOfCHole? (mvarCounterSaved : Nat) (lhs rhs : Expr) : MetaM (Option Co
     throwCongrEx lhs rhs "Left-hand side lost its congruence hole annotation."
   | none, none => return none
 
-/-- Walks along both `lhs` and `rhs` simultaneously to create a congruence lemma between them.
+/--
+Given two applications of the same arity, gives `Expr.getAppFn` of both,
+but if these functions are equal, gives the longest common prefix.
+-/
+private def getJointAppFns (e e' : Expr) : Expr × Expr :=
+  if e == e' then
+    (e, e)
+  else
+    match e, e' with
+    | .app f _, .app f' _ => getJointAppFns f f'
+    | _,        _         => (e, e')
 
-Where they are desynchronized, we fall back to the base case (using `CongrResult.mkDefault'`)
-since it's likely due to unification with the expected type,
-from `_` placeholders or implicit arguments being filled in. -/
-partial def mkCongrOf (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) :
-    MetaM CongrResult := do
+/-- Monad for `mkCongrOfAux`, for caching `CongrResult`s. -/
+abbrev M := MonadCacheT (Expr × Expr) CongrResult MetaM
+
+mutual
+
+/-- Implementation of `mkCongrOf`, with caching. -/
+partial def mkCongrOfAux (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) :
+    M CongrResult := do
   trace[Elab.congr] "mkCongrOf: {depth}, {lhs}, {rhs}, {(← mkFreshExprMVar none).mvarId!}"
   if depth > 1000 then
     throwError "congr(...) internal error: out of gas"
@@ -463,143 +480,220 @@ partial def mkCongrOf (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) :
   -- end up with congruence holes, so they indeed might need a nontrivial congruence.
   let lhs ← instantiateMVars lhs
   let rhs ← instantiateMVars rhs
-  if let some res ← mkCongrOfCHole? mvarCounterSaved lhs rhs then
-    trace[Elab.congr] "hole processing succeeded"
-    return res
-  if (hasCHole mvarCounterSaved lhs).isNone && (hasCHole mvarCounterSaved rhs).isNone then
-    -- It's safe to fastforward if the lhs and rhs are defeq and have no congruence holes.
-    -- This is more conservative than necessary since congruence holes might only be inside proofs.
-    if ← isDefEq lhs rhs then
-      return {lhs, rhs, pf? := none}
-  if ← (isProof lhs <||> isProof rhs) then
-    -- We don't want to look inside proofs at all.
-    return ← CongrResult.mkDefault lhs rhs
-  match lhs, rhs with
-  | .app .., .app .. =>
-    trace[Elab.congr] "app"
-    let arity := lhs.getAppNumArgs
-    unless arity == rhs.getAppNumArgs do
-      trace[Elab.congr] "app desync (arity)"
-      return ← CongrResult.mkDefault' mvarCounterSaved lhs rhs
-    let f := lhs.getAppFn
-    let f' := rhs.getAppFn
-    unless ← isDefEq (← inferType f) (← inferType f') do
-      trace[Elab.congr] "app desync (function types)"
-      return ← CongrResult.mkDefault' mvarCounterSaved lhs rhs
-    let fnRes ← mkCongrOf (depth + 1) mvarCounterSaved f f'
-    trace[Elab.congr] "mkCongrOf functions {f}, {f'} has isRfl = {fnRes.isRfl}"
-    if !fnRes.isRfl then
-      -- If there's a nontrivial proof, then since mkHCongrWithArity fixes the function
-      -- we need to handle this ourselves.
-      let lhs := mkAppN fnRes.lhs lhs.getAppArgs
-      let lhs' := mkAppN fnRes.rhs lhs.getAppArgs
-      let rhs := mkAppN fnRes.rhs rhs.getAppArgs
-      let mut pf ← fnRes.eq
-      for arg in lhs.getAppArgs do
-        pf ← mkCongrFun pf arg
-      let res1 := CongrResult.mk' lhs lhs' pf
-      let res2 ← mkCongrOf (depth + 1) mvarCounterSaved lhs' rhs
-      return res1.trans res2
-    let thm ← mkHCongrWithArity' fnRes.lhs arity
-    let mut args := #[]
-    let mut lhsArgs := #[]
-    let mut rhsArgs := #[]
-    let mut nontriv : Bool := false
-    for lhs' in lhs.getAppArgs, rhs' in rhs.getAppArgs, kind in thm.argKinds do
-      match kind with
-      | .eq =>
-        let res ← mkCongrOf (depth + 1) mvarCounterSaved lhs' rhs'
-        nontriv := nontriv || !res.isRfl
-        args := args |>.push res.lhs |>.push res.rhs |>.push (← res.eq)
-        lhsArgs := lhsArgs.push res.lhs
-        rhsArgs := rhsArgs.push res.rhs
-      | .heq =>
-        let res ← mkCongrOf (depth + 1) mvarCounterSaved lhs' rhs'
-        nontriv := nontriv || !res.isRfl
-        args := args |>.push res.lhs |>.push res.rhs |>.push (← res.heq)
-        lhsArgs := lhsArgs.push res.lhs
-        rhsArgs := rhsArgs.push res.rhs
-      | .subsingletonInst =>
-        -- Warning: we're not processing any congruence holes here.
-        -- Users shouldn't be intentionally placing them in such arguments anyway.
-        -- We can't throw an error because these arguments might incidentally have
-        -- congruence holes by unification.
-        nontriv := true
-        let lhs := removeCHoles lhs'
-        let rhs := removeCHoles rhs'
-        args := args |>.push lhs |>.push rhs
-        lhsArgs := lhsArgs.push lhs
-        rhsArgs := rhsArgs.push rhs
-      | _ => panic! "unexpected hcongr argument kind"
-    let lhs := mkAppN fnRes.lhs lhsArgs
-    let rhs := mkAppN fnRes.rhs rhsArgs
-    if nontriv then
-      return CongrResult.mk' lhs rhs (mkAppN thm.proof args)
-    else
-      -- `lhs` and `rhs` *should* be defeq, but use `mkDefault` just to be safe.
-      CongrResult.mkDefault lhs rhs
-  | .lam .., .lam .. =>
-    trace[Elab.congr] "lam"
-    let resDom ← mkCongrOf (depth + 1) mvarCounterSaved lhs.bindingDomain! rhs.bindingDomain!
-    -- We do not yet support congruences in the binding domain for lambdas.
-    discard <| resDom.defeq
-    withLocalDecl lhs.bindingName! lhs.bindingInfo! resDom.lhs fun x => do
-      let lhsb := lhs.bindingBody!.instantiate1 x
-      let rhsb := rhs.bindingBody!.instantiate1 x
-      let resBody ← mkCongrOf (depth + 1) mvarCounterSaved lhsb rhsb
-      let lhs ← mkLambdaFVars #[x] resBody.lhs
-      let rhs ← mkLambdaFVars #[x] resBody.rhs
-      if resBody.isRfl then
-        return {lhs, rhs, pf? := none}
-      else
-        let pf ← mkLambdaFVars #[x] (← resBody.eq)
-        return CongrResult.mk' lhs rhs (← mkAppM ``funext #[pf])
-  | .forallE .., .forallE .. =>
-    trace[Elab.congr] "forallE"
-    let resDom ← mkCongrOf (depth + 1) mvarCounterSaved lhs.bindingDomain! rhs.bindingDomain!
-    if lhs.isArrow && rhs.isArrow then
-      let resBody ← mkCongrOf (depth + 1) mvarCounterSaved lhs.bindingBody! rhs.bindingBody!
-      let lhs := Expr.forallE lhs.bindingName! resDom.lhs resBody.lhs lhs.bindingInfo!
-      let rhs := Expr.forallE rhs.bindingName! resDom.rhs resBody.rhs rhs.bindingInfo!
-      if resDom.isRfl && resBody.isRfl then
-        return {lhs, rhs, pf? := none}
-      else
-        return CongrResult.mk' lhs rhs (← mkImpCongr (← resDom.eq) (← resBody.eq))
-    else
-      -- We do not yet support congruences in the binding domain for dependent pi types.
+  checkCache (lhs, rhs) fun _ => do
+    if let some res ← mkCongrOfCHole? mvarCounterSaved lhs rhs then
+      trace[Elab.congr] "hole processing succeeded"
+      return res
+    if lhs == rhs then
+      -- There should not be any cHoles, but to be safe let's remove them.
+      return { lhs := removeCHoles lhs, rhs := removeCHoles rhs, pf? := none }
+    if (hasCHole mvarCounterSaved lhs).isNone && (hasCHole mvarCounterSaved rhs).isNone then
+      -- It's safe to fastforward if the lhs and rhs are defeq and have no congruence holes.
+      -- This is more conservative than necessary since congruence holes might only be inside
+      -- proofs, and it is OK to ignore these.
+      if ← isDefEq lhs rhs then
+        return { lhs, rhs, pf? := none }
+    if ← (isProof lhs <||> isProof rhs) then
+      -- We don't want to look inside proofs at all.
+      return ← CongrResult.mkDefault lhs rhs
+    match lhs, rhs with
+    | .app .., .app .. =>
+      mkCongrOfApp depth mvarCounterSaved lhs rhs
+    | .lam .., .lam .. =>
+      trace[Elab.congr] "lam"
+      let resDom ← mkCongrOfAux (depth + 1) mvarCounterSaved lhs.bindingDomain! rhs.bindingDomain!
+      -- We do not yet support congruences in the binding domain for lambdas.
       discard <| resDom.defeq
       withLocalDecl lhs.bindingName! lhs.bindingInfo! resDom.lhs fun x => do
         let lhsb := lhs.bindingBody!.instantiate1 x
         let rhsb := rhs.bindingBody!.instantiate1 x
-        let resBody ← mkCongrOf (depth + 1) mvarCounterSaved lhsb rhsb
-        let lhs ← mkForallFVars #[x] resBody.lhs
-        let rhs ← mkForallFVars #[x] resBody.rhs
+        let resBody ← mkCongrOfAux (depth + 1) mvarCounterSaved lhsb rhsb
+        let lhs ← mkLambdaFVars #[x] resBody.lhs
+        let rhs ← mkLambdaFVars #[x] resBody.rhs
         if resBody.isRfl then
           return {lhs, rhs, pf? := none}
         else
           let pf ← mkLambdaFVars #[x] (← resBody.eq)
-          return CongrResult.mk' lhs rhs (← mkAppM ``pi_congr #[pf])
-  | .letE .., .letE .. =>
-    trace[Elab.congr] "letE"
-    -- Just zeta reduce for now. Could look at `Lean.Meta.Simp.simp.simpLet`
-    let lhs := lhs.letBody!.instantiate1 lhs.letValue!
-    let rhs := rhs.letBody!.instantiate1 rhs.letValue!
-    mkCongrOf (depth + 1) mvarCounterSaved lhs rhs
-  | .mdata _ lhs', .mdata _ rhs' =>
-    trace[Elab.congr] "mdata"
-    let res ← mkCongrOf (depth + 1) mvarCounterSaved lhs' rhs'
-    return {res with lhs := lhs.updateMData! res.lhs, rhs := rhs.updateMData! res.rhs}
-  | .proj n1 i1 e1, .proj n2 i2 e2 =>
-    trace[Elab.congr] "proj"
-    -- Only handles defeq at the moment.
-    unless n1 == n2 && i1 == i2 do
-      throwCongrEx lhs rhs "Incompatible primitive projections"
-    let res ← mkCongrOf (depth + 1) mvarCounterSaved e1 e2
-    discard <| res.defeq
-    return {lhs := lhs.updateProj! res.lhs, rhs := rhs.updateProj! res.rhs, pf? := none}
-  | _, _ =>
-    trace[Elab.congr] "base case"
-    CongrResult.mkDefault' mvarCounterSaved lhs rhs
+          return CongrResult.mk' lhs rhs (← mkAppM ``funext #[pf])
+    | .forallE .., .forallE .. =>
+      trace[Elab.congr] "forallE"
+      let resDom ← mkCongrOfAux (depth + 1) mvarCounterSaved lhs.bindingDomain! rhs.bindingDomain!
+      if lhs.isArrow && rhs.isArrow then
+        let resBody ← mkCongrOfAux (depth + 1) mvarCounterSaved lhs.bindingBody! rhs.bindingBody!
+        let lhs := Expr.forallE lhs.bindingName! resDom.lhs resBody.lhs lhs.bindingInfo!
+        let rhs := Expr.forallE rhs.bindingName! resDom.rhs resBody.rhs rhs.bindingInfo!
+        if resDom.isRfl && resBody.isRfl then
+          return {lhs, rhs, pf? := none}
+        else
+          return CongrResult.mk' lhs rhs (← mkImpCongr (← resDom.eq) (← resBody.eq))
+      else
+        -- We do not yet support congruences in the binding domain for dependent pi types.
+        discard <| resDom.defeq
+        withLocalDecl lhs.bindingName! lhs.bindingInfo! resDom.lhs fun x => do
+          let lhsb := lhs.bindingBody!.instantiate1 x
+          let rhsb := rhs.bindingBody!.instantiate1 x
+          let resBody ← mkCongrOfAux (depth + 1) mvarCounterSaved lhsb rhsb
+          let lhs ← mkForallFVars #[x] resBody.lhs
+          let rhs ← mkForallFVars #[x] resBody.rhs
+          if resBody.isRfl then
+            return {lhs, rhs, pf? := none}
+          else
+            let pf ← mkLambdaFVars #[x] (← resBody.eq)
+            return CongrResult.mk' lhs rhs (← mkAppM ``pi_congr #[pf])
+    | .letE .., .letE .. =>
+      trace[Elab.congr] "letE"
+      -- Just zeta reduce for now. Could look at `Lean.Meta.Simp.simp.simpLet`
+      let lhs := lhs.letBody!.instantiate1 lhs.letValue!
+      let rhs := rhs.letBody!.instantiate1 rhs.letValue!
+      mkCongrOfAux (depth + 1) mvarCounterSaved lhs rhs
+    | .mdata _ lhs', .mdata _ rhs' =>
+      trace[Elab.congr] "mdata"
+      let res ← mkCongrOfAux (depth + 1) mvarCounterSaved lhs' rhs'
+      return {res with lhs := lhs.updateMData! res.lhs, rhs := rhs.updateMData! res.rhs}
+    | .proj n1 i1 e1, .proj n2 i2 e2 =>
+      trace[Elab.congr] "proj"
+      -- Only handles defeq at the moment.
+      unless n1 == n2 && i1 == i2 do
+        throwCongrEx lhs rhs "Incompatible primitive projections"
+      let res ← mkCongrOfAux (depth + 1) mvarCounterSaved e1 e2
+      discard <| res.defeq
+      return {lhs := lhs.updateProj! res.lhs, rhs := rhs.updateProj! res.rhs, pf? := none}
+    | _, _ =>
+      trace[Elab.congr] "base case"
+      CongrResult.mkDefault' mvarCounterSaved lhs rhs
+
+/--
+Generate congruence for applications `lhs` and `rhs`.
+Key detail: functions might be *overapplied* due to the values of their arguments.
+For example, `id id 2` is overapplied.
+To handle these, we need to segment the applications into their natural arities,
+since `mkHCongrWithArity'` does not know how to generate congruence lemmas for the overapplied case.
+-/
+partial def mkCongrOfApp (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) :
+    M CongrResult := do
+  -- Even if a function is being rewritten (e.g. with `f x = g`), both sides should have the same
+  -- number of arguments since there will be a cHole around both `f x` and `g`.
+  let arity := lhs.getAppNumArgs
+  trace[Elab.congr] "app, arity {arity}"
+  unless arity == rhs.getAppNumArgs do
+    trace[Elab.congr] "app desync (arity)"
+    return ← CongrResult.mkDefault' mvarCounterSaved lhs rhs
+  -- Optimization: congruences often have a shared prefix (e.g. some type parameters an instances)
+  -- so if there's a shared prefix we use it.
+  let mut (f, f') := getJointAppFns lhs rhs
+  let arity := arity - f.getAppNumArgs
+  trace[Elab.congr] "app, updated arity {arity}"
+  if f != f' then
+    unless ← isDefEq (← inferType f) (← inferType f') do
+      trace[Elab.congr] "app desync (function types)"
+      return ← CongrResult.mkDefault' mvarCounterSaved lhs rhs
+  -- First try using `congr`/`congrFun` to build a proof as far as possible.
+  -- We update `f`, `f'`, and `finfo` as we go.
+  let lhsArgs := lhs.getBoundedAppArgs arity
+  let rhsArgs := rhs.getBoundedAppArgs arity
+  let rec
+    /--
+    Argument processing loop
+    - `i` is index into `lhsArgs`/`rhsArgs`.
+    - `finfo` is the funinfo of `f` applied to the first `finfoIdx` arguments
+    - `f` and `f'` are the current head functions, after the first `i` arguments have been applied.
+    -/
+    go (i : Nat) (finfo : FunInfo) (finfoIdx : Nat) (f f' : Expr) (pf : Expr) :
+        M CongrResult := do
+      if i ≥ arity then
+        return CongrResult.mk' f f' pf
+      else
+        let mut finfo := finfo
+        let mut finfoIdx := finfoIdx
+        unless i - finfoIdx < finfo.getArity do
+          finfo ← getFunInfoNArgs f (arity - finfoIdx)
+          finfoIdx := i
+        let info := finfo.paramInfo[i - finfoIdx]!
+        let a := lhsArgs[i]!
+        let a' := rhsArgs[i]!
+        let ra ← mkCongrOfAux (depth + 1) mvarCounterSaved a a'
+        if ra.isRfl then
+          trace[Elab.congr] "app, arg {i} by rfl"
+          go (i + 1) finfo finfoIdx (.app f ra.lhs) (.app f' ra.rhs) (← mkCongrFun pf ra.lhs)
+        else if !info.hasFwdDeps then
+          trace[Elab.congr] "app, arg {i} by eq"
+          go (i + 1) finfo finfoIdx (.app f ra.lhs) (.app f' ra.rhs) (← mkCongr pf (← ra.eq))
+        else
+          -- Otherwise, we can make progress with an hcongr lemma.
+          if (isRefl? pf).isNone then
+            trace[Elab.congr] "app, hcongr needs transitivity"
+            -- If there's a nontrivial proof, then since `mkHCongrWithArity'` fixes the function,
+            -- we need to use transitivity to make the functions be the same.
+            let lhsArgs' := (lhsArgs.extract i).map removeCHoles
+            let lhs := mkAppN f lhsArgs'
+            let lhs' := mkAppN f' lhsArgs'
+            let mut pf' := pf
+            for arg in lhsArgs' do
+              pf' ← mkCongrFun pf' arg
+            let res1 := CongrResult.mk' lhs lhs' pf'
+            let res2 ← go i finfo finfoIdx f' f' (← mkEqRefl f')
+            return res1.trans res2
+          else
+            -- Get an accurate measure of the arity of `f`, following `getFunInfoNArgs`.
+            -- No need to update `finfo` itself.
+            let fArity ←
+              if finfoIdx == i then pure finfo.getArity
+              else withAtLeastTransparency .default do
+                forallBoundedTelescope (← inferType f) (some (arity - i)) fun xs _ => pure xs.size
+            trace[Elab.congr] "app, args {i}-{i+arity-1} by hcongr, {arity} arguments"
+            let thm ← mkHCongrWithArity' f fArity
+            let mut args := #[]
+            let mut lhsArgs' := #[]
+            let mut rhsArgs' := #[]
+            for lhs' in lhsArgs[i:], rhs' in rhsArgs[i:], kind in thm.argKinds do
+              match kind with
+              | .eq =>
+                let ares ← mkCongrOfAux (depth + 1) mvarCounterSaved lhs' rhs'
+                args := args |>.push ares.lhs |>.push ares.rhs |>.push (← ares.eq)
+                lhsArgs' := lhsArgs'.push ares.lhs
+                rhsArgs' := rhsArgs'.push ares.rhs
+              | .heq =>
+                let ares ← mkCongrOfAux (depth + 1) mvarCounterSaved lhs' rhs'
+                args := args |>.push ares.lhs |>.push ares.rhs |>.push (← ares.heq)
+                lhsArgs' := lhsArgs'.push ares.lhs
+                rhsArgs' := rhsArgs'.push ares.rhs
+              | .subsingletonInst =>
+                -- Warning: we're not processing any congruence holes here.
+                -- Users shouldn't be intentionally placing them in such arguments anyway.
+                -- We can't throw an error because these arguments might incidentally have
+                -- congruence holes by unification.
+                let lhs' := removeCHoles lhs'
+                let rhs' := removeCHoles rhs'
+                args := args |>.push lhs' |>.push rhs'
+                lhsArgs' := lhsArgs'.push lhs'
+                rhsArgs' := rhsArgs'.push rhs'
+              | _ => panic! "unexpected hcongr argument kind"
+            let lhs' := mkAppN f lhsArgs'
+            let rhs' := mkAppN f' rhsArgs'
+            let res := CongrResult.mk' lhs' rhs' (mkAppN thm.proof args)
+            if i + fArity < arity then
+              -- There are more arguments after this. The only way this can work is if
+              -- `res` can prove an equality.
+              go (i + fArity) finfo finfoIdx lhs' rhs' (← res.eq)
+            else
+              -- Otherwise, we can return `res`, which might only be a HEq.
+              return res
+  let res ← mkCongrOfAux (depth + 1) mvarCounterSaved f f'
+  let pf ← res.eq
+  go 0 (← getFunInfoNArgs f arity) 0 res.lhs res.rhs pf
+
+end
+
+/--
+Walks along both `lhs` and `rhs` simultaneously to create a congruence lemma between them.
+
+Where they are desynchronized, we fall back to the base case (using `CongrResult.mkDefault'`)
+since it's likely due to unification with the expected type,
+from `_` placeholders or implicit arguments being filled in.
+-/
+partial def mkCongrOf (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) :
+    MetaM CongrResult :=
+  mkCongrOfAux depth mvarCounterSaved lhs rhs |>.run
 
 /-! ### Elaborating congruence quotations -/
 

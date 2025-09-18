@@ -128,16 +128,13 @@ open Module Submodule in
 lemma orthogonal_isCompl_toSubmodule (I : LieIdeal K L) (hI : IsAtom I) :
     IsCompl I.toSubmodule (orthogonal Φ hΦ_inv I).toSubmodule := by
   rw [orthogonal_toSubmodule, LinearMap.BilinForm.isCompl_orthogonal_iff_disjoint hΦ_refl,
-      ← orthogonal_toSubmodule _ hΦ_inv, ← LieSubmodule.disjoint_iff_toSubmodule]
+      ← orthogonal_toSubmodule _ hΦ_inv, LieSubmodule.disjoint_toSubmodule]
   exact orthogonal_disjoint Φ hΦ_nondeg hΦ_inv hL I hI
-
-@[deprecated (since := "2024-12-30")]
-alias orthogonal_isCompl_coe_submodule := orthogonal_isCompl_toSubmodule
 
 open Module Submodule in
 lemma orthogonal_isCompl (I : LieIdeal K L) (hI : IsAtom I) :
     IsCompl I (orthogonal Φ hΦ_inv I) := by
-  rw [LieSubmodule.isCompl_iff_toSubmodule]
+  rw [← LieSubmodule.isCompl_toSubmodule]
   exact orthogonal_isCompl_toSubmodule Φ hΦ_nondeg hΦ_inv hΦ_refl hL I hI
 
 include hΦ_inv

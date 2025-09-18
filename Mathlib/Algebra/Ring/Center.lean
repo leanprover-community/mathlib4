@@ -11,8 +11,7 @@ import Mathlib.Data.Int.Cast.Lemmas
 
 -/
 
--- Guard against import creep
-assert_not_exists Finset Subsemigroup
+assert_not_exists RelIso Finset Subsemigroup Field
 
 variable {M : Type*}
 
@@ -22,15 +21,11 @@ variable (M)
 
 @[simp]
 theorem natCast_mem_center [NonAssocSemiring M] (n : ℕ) : (n : M) ∈ Set.center M where
-  comm _ := by rw [Nat.commute_cast]
+  comm _ := by rw [commute_iff_eq, Nat.commute_cast]
   left_assoc _ _ := by
     induction n with
     | zero => rw [Nat.cast_zero, zero_mul, zero_mul, zero_mul]
     | succ n ihn => rw [Nat.cast_succ, add_mul, one_mul, ihn, add_mul, add_mul, one_mul]
-  mid_assoc _ _ := by
-    induction n with
-    | zero => rw [Nat.cast_zero, zero_mul, mul_zero, zero_mul]
-    | succ n ihn => rw [Nat.cast_succ, add_mul, mul_add, add_mul, ihn, mul_add, one_mul, mul_one]
   right_assoc _ _ := by
     induction n with
     | zero => rw [Nat.cast_zero, mul_zero, mul_zero, mul_zero]
@@ -43,21 +38,13 @@ theorem ofNat_mem_center [NonAssocSemiring M] (n : ℕ) [n.AtLeastTwo] :
 
 @[simp]
 theorem intCast_mem_center [NonAssocRing M] (n : ℤ) : (n : M) ∈ Set.center M where
-  comm _ := by rw [Int.commute_cast]
+  comm _ := by rw [commute_iff_eq, Int.commute_cast]
   left_assoc _ _ := match n with
     | (n : ℕ) => by rw [Int.cast_natCast, (natCast_mem_center _ n).left_assoc _ _]
     | Int.negSucc n => by
       rw [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev, add_mul, add_mul, add_mul,
         neg_mul, one_mul, neg_mul 1, one_mul, ← neg_mul, add_right_inj, neg_mul,
         (natCast_mem_center _ n).left_assoc _ _, neg_mul, neg_mul]
-  mid_assoc _ _ := match n with
-    | (n : ℕ) => by rw [Int.cast_natCast, (natCast_mem_center _ n).mid_assoc _ _]
-    | Int.negSucc n => by
-        simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev]
-        rw [add_mul, mul_add, add_mul, mul_add, neg_mul, one_mul]
-        rw [neg_mul, mul_neg, mul_one, mul_neg, neg_mul, neg_mul]
-        rw [(natCast_mem_center _ n).mid_assoc _ _]
-        simp only [mul_neg]
   right_assoc _ _ := match n with
     | (n : ℕ) => by rw [Int.cast_natCast, (natCast_mem_center _ n).right_assoc _ _]
     | Int.negSucc n => by
@@ -69,18 +56,16 @@ variable {M}
 
 @[simp]
 theorem add_mem_center [Distrib M] {a b : M} (ha : a ∈ Set.center M) (hb : b ∈ Set.center M) :
-    a + b ∈ Set.center M  where
-  comm _ := by rw [add_mul, mul_add, ha.comm, hb.comm]
+    a + b ∈ Set.center M where
+  comm _ := by rw [commute_iff_eq, add_mul, mul_add, ha.comm, hb.comm]
   left_assoc _ _ := by rw [add_mul, ha.left_assoc, hb.left_assoc, ← add_mul, ← add_mul]
-  mid_assoc _ _ := by rw [mul_add, add_mul, ha.mid_assoc, hb.mid_assoc, ← mul_add, ← add_mul]
   right_assoc _ _ := by rw [mul_add, ha.right_assoc, hb.right_assoc, ← mul_add, ← mul_add]
 
 @[simp]
 theorem neg_mem_center [NonUnitalNonAssocRing M] {a : M} (ha : a ∈ Set.center M) :
     -a ∈ Set.center M where
-  comm _ := by rw [← neg_mul_comm, ← ha.comm, neg_mul_comm]
+  comm _ := by rw [commute_iff_eq, ← neg_mul_comm, ← ha.comm, neg_mul_comm]
   left_assoc _ _ := by rw [neg_mul, ha.left_assoc, neg_mul, neg_mul]
-  mid_assoc _ _ := by rw [← neg_mul_comm, ha.mid_assoc, neg_mul_comm, neg_mul]
   right_assoc _ _ := by rw [mul_neg, ha.right_assoc, mul_neg, mul_neg]
 
 end Set

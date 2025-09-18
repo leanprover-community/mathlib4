@@ -98,29 +98,33 @@ theorem disjoint_iff_not_le {f : Ultrafilter α} {g : Filter α} : Disjoint (↑
   rw [← inf_neBot_iff, neBot_iff, Ne, not_not, disjoint_iff]
 
 @[simp]
-theorem compl_not_mem_iff : sᶜ ∉ f ↔ s ∈ f :=
+theorem compl_notMem_iff : sᶜ ∉ f ↔ s ∈ f :=
   ⟨fun hsc =>
     le_principal_iff.1 <|
       f.le_of_inf_neBot ⟨fun h => hsc <| mem_of_eq_bot <| by rwa [compl_compl]⟩,
-    compl_not_mem⟩
+    compl_notMem⟩
+
+@[deprecated (since := "2025-05-23")] alias compl_not_mem_iff := compl_notMem_iff
 
 @[simp]
 theorem frequently_iff_eventually : (∃ᶠ x in f, p x) ↔ ∀ᶠ x in f, p x :=
-  compl_not_mem_iff
+  compl_notMem_iff
 
 alias ⟨_root_.Filter.Frequently.eventually, _⟩ := frequently_iff_eventually
 
-theorem compl_mem_iff_not_mem : sᶜ ∈ f ↔ s ∉ f := by rw [← compl_not_mem_iff, compl_compl]
+theorem compl_mem_iff_notMem : sᶜ ∈ f ↔ s ∉ f := by rw [← compl_notMem_iff, compl_compl]
+
+@[deprecated (since := "2025-05-23")] alias compl_mem_iff_not_mem := compl_mem_iff_notMem
 
 theorem diff_mem_iff (f : Ultrafilter α) : s \ t ∈ f ↔ s ∈ f ∧ t ∉ f :=
-  inter_mem_iff.trans <| and_congr Iff.rfl compl_mem_iff_not_mem
+  inter_mem_iff.trans <| and_congr Iff.rfl compl_mem_iff_notMem
 
 /-- If `sᶜ ∉ f ↔ s ∈ f`, then `f` is an ultrafilter. The other implication is given by
-`Ultrafilter.compl_not_mem_iff`. -/
+`Ultrafilter.compl_notMem_iff`. -/
 def ofComplNotMemIff (f : Filter α) (h : ∀ s, sᶜ ∉ f ↔ s ∈ f) : Ultrafilter α where
   toFilter := f
   neBot' := ⟨fun hf => by simp [hf] at h⟩
-  le_of_le _ _ hgf s hs := (h s).1 fun hsc => compl_not_mem hs (hgf hsc)
+  le_of_le _ _ hgf s hs := (h s).1 fun hsc => compl_notMem hs (hgf hsc)
 
 /-- If `f : Filter α` is an atom, then it is an ultrafilter. -/
 def ofAtom (f : Filter α) (hf : IsAtom f) : Ultrafilter α where
@@ -135,8 +139,10 @@ theorem ne_empty_of_mem (hs : s ∈ f) : s ≠ ∅ :=
   (nonempty_of_mem hs).ne_empty
 
 @[simp]
-theorem empty_not_mem : ∅ ∉ f :=
-  Filter.empty_not_mem (f : Filter α)
+theorem empty_notMem : ∅ ∉ f :=
+  Filter.empty_notMem (f : Filter α)
+
+@[deprecated (since := "2025-05-23")] alias empty_not_mem := empty_notMem
 
 @[simp]
 theorem le_sup_iff {u : Ultrafilter α} {f g : Filter α} : ↑u ≤ f ⊔ g ↔ ↑u ≤ f ∨ ↑u ≤ g :=
@@ -147,7 +153,7 @@ theorem union_mem_iff : s ∪ t ∈ f ↔ s ∈ f ∨ t ∈ f := by
   simp only [← mem_coe, ← le_principal_iff, ← sup_principal, le_sup_iff]
 
 theorem mem_or_compl_mem (f : Ultrafilter α) (s : Set α) : s ∈ f ∨ sᶜ ∈ f :=
-  or_iff_not_imp_left.2 compl_mem_iff_not_mem.2
+  or_iff_not_imp_left.2 compl_mem_iff_notMem.2
 
 protected theorem em (f : Ultrafilter α) (p : α → Prop) : (∀ᶠ x in f, p x) ∨ ∀ᶠ x in f, ¬p x :=
   f.mem_or_compl_mem { x | p x }
@@ -156,14 +162,14 @@ theorem eventually_or : (∀ᶠ x in f, p x ∨ q x) ↔ (∀ᶠ x in f, p x) �
   union_mem_iff
 
 theorem eventually_not : (∀ᶠ x in f, ¬p x) ↔ ¬∀ᶠ x in f, p x :=
-  compl_mem_iff_not_mem
+  compl_mem_iff_notMem
 
 theorem eventually_imp : (∀ᶠ x in f, p x → q x) ↔ (∀ᶠ x in f, p x) → ∀ᶠ x in f, q x := by
   simp only [imp_iff_not_or, eventually_or, eventually_not]
 
 /-- Pushforward for ultrafilters. -/
 nonrec def map (m : α → β) (f : Ultrafilter α) : Ultrafilter β :=
-  ofComplNotMemIff (map m f) fun s => @compl_not_mem_iff _ f (m ⁻¹' s)
+  ofComplNotMemIff (map m f) fun s => @compl_notMem_iff _ f (m ⁻¹' s)
 
 @[simp, norm_cast]
 theorem coe_map (m : α → β) (f : Ultrafilter α) : (map m f : Filter β) = Filter.map m ↑f :=
@@ -183,7 +189,7 @@ theorem map_id' (f : Ultrafilter α) : (f.map fun x => x) = f :=
 
 @[simp]
 nonrec theorem map_map (f : Ultrafilter α) (m : α → β) (n : β → γ) :
-  (f.map m).map n = f.map (n ∘ m) :=
+    (f.map m).map n = f.map (n ∘ m) :=
   coe_injective map_map
 
 /-- The pullback of an ultrafilter along an injection whose range is large with respect to the given
@@ -256,7 +262,7 @@ instance [Nonempty α] : Nonempty (Ultrafilter α) :=
 defined in terms of map and join. -/
 def bind (f : Ultrafilter α) (m : α → Ultrafilter β) : Ultrafilter β :=
   ofComplNotMemIff (Filter.bind ↑f fun x => ↑(m x)) fun s => by
-    simp only [mem_bind', mem_coe, ← compl_mem_iff_not_mem, compl_setOf, compl_compl]
+    simp only [mem_bind', mem_coe, ← compl_mem_iff_notMem, compl_setOf, compl_compl]
 
 instance instBind : Bind Ultrafilter :=
   ⟨@Ultrafilter.bind⟩
@@ -356,8 +362,6 @@ theorem forall_neBot_le_iff {g : Filter α} {p : Filter α → Prop} (hp : Monot
 end Filter
 
 namespace Ultrafilter
-
-open Filter
 
 variable {m : α → β} {s : Set α} {g : Ultrafilter β}
 

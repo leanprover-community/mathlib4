@@ -44,15 +44,17 @@ theorem smul_strictMono_right [SMul M α] [Preorder α] [CovariantClass M α HSM
 lemma le_pow_smul {G : Type*} [Monoid G] {α : Type*} [Preorder α] {g : G} {a : α}
     [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le]
     (h : a ≤ g • a) (n : ℕ) : a ≤ g ^ n • a := by
-  induction' n with n hn
-  · rw [pow_zero, one_smul]
-  · rw [pow_succ', mul_smul]
+  induction n with
+  | zero => rw [pow_zero, one_smul]
+  | succ n hn =>
+    rw [pow_succ', mul_smul]
     exact h.trans (smul_mono_right g hn)
 
 lemma pow_smul_le {G : Type*} [Monoid G] {α : Type*} [Preorder α] {g : G} {a : α}
     [MulAction G α] [CovariantClass G α HSMul.hSMul LE.le]
     (h : g • a ≤ a) (n : ℕ) : g ^ n • a ≤ a := by
-  induction' n with n hn
-  · rw [pow_zero, one_smul]
-  · rw [pow_succ', mul_smul]
+  induction n with
+  | zero => rw [pow_zero, one_smul]
+  | succ n hn =>
+    rw [pow_succ', mul_smul]
     exact (smul_mono_right g hn).trans h

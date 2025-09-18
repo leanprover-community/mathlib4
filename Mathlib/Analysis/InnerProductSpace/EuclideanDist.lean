@@ -24,7 +24,7 @@ open scoped Topology
 
 open Set
 
-variable {E : Type*} [AddCommGroup E] [TopologicalSpace E] [TopologicalAddGroup E] [T2Space E]
+variable {E : Type*} [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E] [T2Space E]
   [Module ℝ E] [ContinuousSMul ℝ E] [FiniteDimensional ℝ E]
 
 noncomputable section
@@ -44,11 +44,11 @@ is the distance between these points in the metric defined by some inner product
 nonrec def dist (x y : E) : ℝ :=
   dist (toEuclidean x) (toEuclidean y)
 
-/-- Closed ball w.r.t. the euclidean distance. -/
+/-- Closed ball w.r.t. the Euclidean distance. -/
 def closedBall (x : E) (r : ℝ) : Set E :=
   {y | dist y x ≤ r}
 
-/-- Open ball w.r.t. the euclidean distance. -/
+/-- Open ball w.r.t. the Euclidean distance. -/
 def ball (x : E) (r : ℝ) : Set E :=
   {y | dist y x < r}
 
@@ -63,7 +63,7 @@ theorem closedBall_eq_preimage (x : E) (r : ℝ) :
 theorem ball_subset_closedBall {x : E} {r : ℝ} : ball x r ⊆ closedBall x r := fun _ (hy : _ < r) =>
   le_of_lt hy
 
-theorem isOpen_ball {x : E} {r : ℝ} : IsOpen (ball x r) :=
+@[simp] theorem isOpen_ball {x : E} {r : ℝ} : IsOpen (ball x r) :=
   Metric.isOpen_ball.preimage toEuclidean.continuous
 
 theorem mem_ball_self {x : E} {r : ℝ} (hr : 0 < r) : x ∈ ball x r :=

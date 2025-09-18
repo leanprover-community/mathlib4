@@ -131,11 +131,8 @@ theorem _root_.IsCoprime.wronskian_eq_zero_iff
       apply hc.symm.dvd_of_dvd_mul_left
       rw [hw]; exact dvd_mul_left _ _
   mpr hdab := by
-    cases' hdab with hda hdb
+    obtain ⟨hda, hdb⟩ := hdab
     rw [wronskian]
     rw [hda, hdb]; simp only [MulZeroClass.mul_zero, MulZeroClass.zero_mul, sub_self]
-
-@[deprecated (since := "2024-11-06")]
-alias IsCoprime.wronskian_eq_zero_iff := IsCoprime.wronskian_eq_zero_iff
 
 end Polynomial

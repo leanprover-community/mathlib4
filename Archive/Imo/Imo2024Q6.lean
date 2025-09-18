@@ -184,8 +184,8 @@ lemma add_fExample (x y : ℚ) : x + fExample y = ⌊x⌋ + ⌊y⌋ + (Int.fract
   rw [add_comm, fExample_add]
   abel
 
-lemma fExample_int_add (x : ℤ) (y : ℚ) : fExample (x + y) = x + fExample y := by
-  simp_rw [fExample, Int.floor_int_add, Int.fract_int_add, ← add_sub_assoc]
+lemma fExample_intCast_add (x : ℤ) (y : ℚ) : fExample (x + y) = x + fExample y := by
+  simp_rw [fExample, Int.floor_intCast_add, Int.fract_intCast_add, ← add_sub_assoc]
   exact_mod_cast rfl
 
 lemma fExample_of_mem_Ico {x : ℚ} (h : x ∈ Set.Ico 0 1) : fExample x = -x := by
@@ -197,13 +197,13 @@ lemma apply_fExample_add_apply_of_fract_le {x y : ℚ} (h : Int.fract y ≤ Int.
   rw [← sub_nonneg] at h
   have h₁ : Int.fract x - Int.fract y < 1 :=
     (sub_le_self (Int.fract x) (Int.fract_nonneg y)).trans_lt (Int.fract_lt_one x)
-  rw [fExample_add, add_fExample, add_assoc, fExample_int_add, fExample_int_add,
+  rw [fExample_add, add_fExample, add_assoc, fExample_intCast_add, fExample_intCast_add,
       fExample_of_mem_Ico ⟨h, h₁⟩]
   abel
 
 lemma aquaesulian_fExample : Aquaesulian fExample := by
   intro x y
-  rcases lt_or_le (Int.fract x) (Int.fract y) with h | h
+  rcases lt_or_ge (Int.fract x) (Int.fract y) with h | h
   · rw [add_comm (fExample x), add_comm x]
     exact .inr (apply_fExample_add_apply_of_fract_le h.le)
   · exact .inl (apply_fExample_add_apply_of_fract_le h)
@@ -220,7 +220,7 @@ lemma floor_fExample (x : ℚ) :
   · simp only [h, if_true, fExample, sub_zero, Int.floor_intCast]
     rw [Int.fract, sub_eq_zero] at h
     exact h.symm
-  · simp only [h, if_false, fExample, sub_eq_add_neg, Int.floor_int_add, Int.cast_add,
+  · simp only [h, if_false, fExample, sub_eq_add_neg, Int.floor_intCast_add, Int.cast_add,
                add_right_inj]
     suffices ⌊-Int.fract x⌋ = -1 from mod_cast this
     rw [Int.floor_eq_iff]
@@ -245,8 +245,8 @@ lemma card_range_fExample : #(Set.range (fun x ↦ fExample x + fExample (-x))) 
     · rcases h with rfl | rfl
       · refine ⟨0, by simp [fExample]⟩
       · refine ⟨1 / 2, ?_⟩
-        rw [(by norm_num : (-(1 / 2) : ℚ) = (-1 : ℤ) + (1 / 2 : ℚ)), fExample_int_add,
-            fExample_of_mem_Ico ⟨by norm_num, by norm_num⟩]
+        rw [(by norm_num : (-(1 / 2) : ℚ) = (-1 : ℤ) + (1 / 2 : ℚ)), fExample_intCast_add,
+            fExample_of_mem_Ico ⟨by simp, by norm_num⟩]
         norm_num
   rw [h]
   simp

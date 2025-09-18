@@ -100,13 +100,14 @@ theorem Nat.Prime.mod_four_ne_three_of_dvd_isSquare_neg_one {p n : ℕ} (hpp : p
 theorem ZMod.isSquare_neg_one_iff {n : ℕ} (hn : Squarefree n) :
     IsSquare (-1 : ZMod n) ↔ ∀ {q : ℕ}, q.Prime → q ∣ n → q % 4 ≠ 3 := by
   refine ⟨fun H q hqp hqd => hqp.mod_four_ne_three_of_dvd_isSquare_neg_one hqd H, fun H => ?_⟩
-  induction' n using induction_on_primes with p n hpp ih
-  · exact False.elim (hn.ne_zero rfl)
-  · exact ⟨0, by simp only [mul_zero, eq_iff_true_of_subsingleton]⟩
-  · haveI : Fact p.Prime := ⟨hpp⟩
+  induction n using induction_on_primes with
+  | zero => exact False.elim (hn.ne_zero rfl)
+  | one => exact ⟨0, by simp only [mul_zero, eq_iff_true_of_subsingleton]⟩
+  | prime_mul p n hpp ih =>
+    haveI : Fact p.Prime := ⟨hpp⟩
     have hcp : p.Coprime n := by
       by_contra hc
-      exact hpp.not_unit (hn p <| mul_dvd_mul_left p <| hpp.dvd_iff_not_coprime.mpr hc)
+      exact hpp.not_isUnit (hn p <| mul_dvd_mul_left p <| hpp.dvd_iff_not_coprime.mpr hc)
     have hp₁ := ZMod.exists_sq_eq_neg_one_iff.mpr (H hpp (dvd_mul_right p n))
     exact ZMod.isSquare_neg_one_mul hcp hp₁
       (ih hn.of_mul_right fun hqp hqd => H hqp <| dvd_mul_of_dvd_right hqd _)
@@ -120,11 +121,11 @@ theorem ZMod.isSquare_neg_one_iff' {n : ℕ} (hn : Squarefree n) :
   refine ⟨?_, fun H q _ => H⟩
   intro H
   refine @induction_on_primes _ ?_ ?_ (fun p q hp hq hpq => ?_)
-  · exact fun _ => by norm_num
-  · exact fun _ => by norm_num
+  · exact fun _ => by simp
+  · exact fun _ => by simp
   · replace hp := H hp (dvd_of_mul_right_dvd hpq)
     replace hq := hq (dvd_of_mul_left_dvd hpq)
-    rw [show 3 = 3 % 4 by norm_num, Ne, ← ZMod.natCast_eq_natCast_iff'] at hp hq ⊢
+    rw [show 3 = 3 % 4 by simp, Ne, ← ZMod.natCast_eq_natCast_iff'] at hp hq ⊢
     rw [Nat.cast_mul]
     exact help p q hp hq
 
@@ -136,10 +137,11 @@ theorem ZMod.isSquare_neg_one_iff' {n : ℕ} (hn : Squarefree n) :
 /-- If `-1` is a square modulo the natural number `n`, then `n` is a sum of two squares. -/
 theorem Nat.eq_sq_add_sq_of_isSquare_mod_neg_one {n : ℕ} (h : IsSquare (-1 : ZMod n)) :
     ∃ x y : ℕ, n = x ^ 2 + y ^ 2 := by
-  induction' n using induction_on_primes with p n hpp ih
-  · exact ⟨0, 0, rfl⟩
-  · exact ⟨0, 1, rfl⟩
-  · haveI : Fact p.Prime := ⟨hpp⟩
+  induction n using induction_on_primes with
+  | zero => exact ⟨0, 0, rfl⟩
+  | one => exact ⟨0, 1, rfl⟩
+  | prime_mul p n hpp ih =>
+    haveI : Fact p.Prime := ⟨hpp⟩
     have hp : IsSquare (-1 : ZMod p) := ZMod.isSquare_neg_one_of_dvd ⟨n, rfl⟩ h
     obtain ⟨u, v, huv⟩ := Nat.Prime.sq_add_sq (ZMod.exists_sq_eq_neg_one_iff.mp hp)
     obtain ⟨x, y, hxy⟩ := ih (ZMod.isSquare_neg_one_of_dvd ⟨p, mul_comm _ _⟩ h)
@@ -196,7 +198,7 @@ section Main
 /-- A (positive) natural number `n` is a sum of two squares if and only if the exponent of
 every prime `q` such that `q % 4 = 3` in the prime factorization of `n` is even.
 (The assumption `0 < n` is not present, since for `n = 0`, both sides are satisfied;
-the right hand side holds, since `padicValNat q 0 = 0` by definition.) -/
+the right-hand side holds, since `padicValNat q 0 = 0` by definition.) -/
 theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
     (∃ x y : ℕ, n = x ^ 2 + y ^ 2) ↔ ∀ {q : ℕ}, q.Prime → q % 4 = 3 → Even (padicValNat q n) := by
   rcases n.eq_zero_or_pos with (rfl | hn₀)

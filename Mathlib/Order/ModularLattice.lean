@@ -3,6 +3,7 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Yaël Dillies
 -/
+import Mathlib.Data.Set.Monotone
 import Mathlib.Order.Cover
 import Mathlib.Order.LatticeIntervals
 import Mathlib.Order.GaloisConnection.Defs
@@ -82,7 +83,7 @@ class IsLowerModularLattice (α : Type*) [Lattice α] : Prop where
 
 /-- A modular lattice is one with a limited associativity between `⊓` and `⊔`. -/
 class IsModularLattice (α : Type*) [Lattice α] : Prop where
-/-- Whenever `x ≤ z`, then for any `y`, `(x ⊔ y) ⊓ z ≤ x ⊔ (y ⊓ z)`  -/
+/-- Whenever `x ≤ z`, then for any `y`, `(x ⊔ y) ⊓ z ≤ x ⊔ (y ⊓ z)` -/
   sup_inf_le_assoc_of_le : ∀ {x : α} (y : α) {z : α}, x ≤ z → (x ⊔ y) ⊓ z ≤ x ⊔ y ⊓ z
 
 section WeakUpperModular
@@ -220,22 +221,22 @@ theorem inf_lt_inf_of_lt_of_sup_le_sup (hxy : x < y) (hinf : y ⊔ z ≤ x ⊔ z
 
 theorem strictMono_inf_prod_sup : StrictMono fun x ↦ (x ⊓ z, x ⊔ z) := fun _x _y hxy ↦
   ⟨⟨inf_le_inf_right _ hxy.le, sup_le_sup_right hxy.le _⟩,
-    fun ⟨inf_le, sup_le⟩ ↦ (sup_lt_sup_of_lt_of_inf_le_inf hxy inf_le).not_le sup_le⟩
+    fun ⟨inf_le, sup_le⟩ ↦ (sup_lt_sup_of_lt_of_inf_le_inf hxy inf_le).not_ge sup_le⟩
 
 /-- A generalization of the theorem that if `N` is a submodule of `M` and
   `N` and `M / N` are both Artinian, then `M` is Artinian. -/
-theorem wellFounded_lt_exact_sequence {β γ : Type*} [PartialOrder β] [Preorder γ]
+theorem wellFounded_lt_exact_sequence {β γ : Type*} [Preorder β] [Preorder γ]
     [h₁ : WellFoundedLT β] [h₂ : WellFoundedLT γ] (K : α)
     (f₁ : β → α) (f₂ : α → β) (g₁ : γ → α) (g₂ : α → γ) (gci : GaloisCoinsertion f₁ f₂)
     (gi : GaloisInsertion g₂ g₁) (hf : ∀ a, f₁ (f₂ a) = a ⊓ K) (hg : ∀ a, g₁ (g₂ a) = a ⊔ K) :
     WellFoundedLT α :=
   StrictMono.wellFoundedLT (f := fun A ↦ (f₂ A, g₂ A)) fun A B hAB ↦ by
-    simp only [Prod.le_def, lt_iff_le_not_le, ← gci.l_le_l_iff, ← gi.u_le_u_iff, hf, hg]
+    simp only [Prod.le_def, lt_iff_le_not_ge, ← gci.l_le_l_iff, ← gi.u_le_u_iff, hf, hg]
     exact strictMono_inf_prod_sup hAB
 
 /-- A generalization of the theorem that if `N` is a submodule of `M` and
   `N` and `M / N` are both Noetherian, then `M` is Noetherian. -/
-theorem wellFounded_gt_exact_sequence {β γ : Type*} [Preorder β] [PartialOrder γ]
+theorem wellFounded_gt_exact_sequence {β γ : Type*} [Preorder β] [Preorder γ]
     [WellFoundedGT β] [WellFoundedGT γ] (K : α)
     (f₁ : β → α) (f₂ : α → β) (g₁ : γ → α) (g₂ : α → γ) (gci : GaloisCoinsertion f₁ f₂)
     (gi : GaloisInsertion g₂ g₁) (hf : ∀ a, f₁ (f₂ a) = a ⊓ K) (hg : ∀ a, g₁ (g₂ a) = a ⊔ K) :
@@ -259,7 +260,7 @@ def infIccOrderIsoIccSup (a b : α) : Set.Icc (a ⊓ b) a ≃o Set.Icc b (a ⊔ 
         change a ⊓ ↑x ⊔ b = ↑x
         rw [inf_comm, inf_sup_assoc_of_le _ x.prop.1, inf_eq_left.2 x.prop.2])
   map_rel_iff' {x y} := by
-    simp only [Subtype.mk_le_mk, Equiv.coe_fn_mk, le_sup_right]
+    simp only [Subtype.mk_le_mk, Equiv.coe_fn_mk]
     rw [← Subtype.coe_le_coe]
     refine ⟨fun h => ?_, fun h => sup_le_sup_right h _⟩
     rw [← sup_eq_right.2 x.prop.1, inf_sup_assoc_of_le _ x.prop.2, sup_comm, ←
@@ -379,7 +380,7 @@ lemma Set.Iic.isCompl_inf_inf_of_isCompl_of_le [Lattice α] [BoundedOrder α] [I
 
 namespace IsModularLattice
 
-variable [Lattice α] [IsModularLattice α] {a : α}
+variable [Lattice α] [IsModularLattice α] {a b c : α}
 
 instance isModularLattice_Iic : IsModularLattice (Set.Iic a) :=
   ⟨@fun x y z xz => (sup_inf_le_assoc_of_le (y : α) xz : (↑x ⊔ ↑y) ⊓ ↑z ≤ ↑x ⊔ ↑y ⊓ ↑z)⟩
@@ -391,35 +392,37 @@ section ComplementedLattice
 
 variable [BoundedOrder α] [ComplementedLattice α]
 
-instance complementedLattice_Iic : ComplementedLattice (Set.Iic a) :=
-  ⟨fun ⟨x, hx⟩ =>
-    let ⟨y, hy⟩ := exists_isCompl x
-    ⟨⟨y ⊓ a, Set.mem_Iic.2 inf_le_right⟩, by
-      constructor
-      · rw [disjoint_iff_inf_le]
-        change x ⊓ (y ⊓ a) ≤ ⊥
-        -- improve lattice subtype API
-        rw [← inf_assoc]
-        exact le_trans inf_le_left hy.1.le_bot
-      · rw [codisjoint_iff_le_sup]
-        change a ≤ x ⊔ y ⊓ a
-        -- improve lattice subtype API
-        rw [← sup_inf_assoc_of_le _ (Set.mem_Iic.1 hx), hy.2.eq_top, top_inf_eq]⟩⟩
+theorem exists_inf_eq_and_sup_eq (hb : a ≤ b) (hc : b ≤ c) : ∃ b', b ⊓ b' = a ∧ b ⊔ b' = c := by
+  obtain ⟨d, hdisjoint, hcodisjoint⟩ := exists_isCompl b
+  refine ⟨(d ⊔ a) ⊓ c, ?_, ?_⟩
+  · simpa [← inf_assoc, ← inf_sup_assoc_of_le _ hb, hdisjoint.eq_bot] using hb.trans hc
+  · simp [← sup_inf_assoc_of_le _ hc, ← sup_assoc, hcodisjoint.eq_top]
 
-instance complementedLattice_Ici : ComplementedLattice (Set.Ici a) :=
-  ⟨fun ⟨x, hx⟩ =>
-    let ⟨y, hy⟩ := exists_isCompl x
-    ⟨⟨y ⊔ a, Set.mem_Ici.2 le_sup_right⟩, by
-      constructor
-      · rw [disjoint_iff_inf_le]
-        change x ⊓ (y ⊔ a) ≤ a
-        -- improve lattice subtype API
-        rw [← inf_sup_assoc_of_le _ (Set.mem_Ici.1 hx), hy.1.eq_bot, bot_sup_eq]
-      · rw [codisjoint_iff_le_sup]
-        change ⊤ ≤ x ⊔ (y ⊔ a)
-        -- improve lattice subtype API
-        rw [← sup_assoc]
-        exact le_trans hy.2.top_le le_sup_left⟩⟩
+theorem exists_disjoint_and_sup_eq (h : a ≤ b) : ∃ a', Disjoint a a' ∧ a ⊔ a' = b := by
+  simp_rw [disjoint_iff]
+  apply exists_inf_eq_and_sup_eq (by simp) h
+
+theorem exists_inf_eq_and_codisjoint (h : a ≤ b) : ∃ b', b ⊓ b' = a ∧ Codisjoint b b' := by
+  simp_rw [codisjoint_iff]
+  apply exists_inf_eq_and_sup_eq h (by simp)
+
+instance complementedLattice_Icc [Fact (a ≤ b)] : ComplementedLattice (Set.Icc a b) where
+  exists_isCompl := fun ⟨x, ha, hb⟩ => by
+    simp_rw [Set.Icc.isCompl_iff]
+    obtain ⟨y, rfl, rfl⟩ := exists_inf_eq_and_sup_eq ha hb
+    exact ⟨⟨y, inf_le_right, le_sup_right⟩, rfl, rfl⟩
+
+instance complementedLattice_Iic : ComplementedLattice (Set.Iic a) where
+  exists_isCompl := fun ⟨x, hx⟩ => by
+    simp_rw [Set.Iic.isCompl_iff]
+    obtain ⟨y, hdisjoint, rfl⟩ := exists_disjoint_and_sup_eq hx
+    exact ⟨⟨y, le_sup_right⟩, hdisjoint, rfl⟩
+
+instance complementedLattice_Ici : ComplementedLattice (Set.Ici a) where
+  exists_isCompl := fun ⟨x, hx⟩ => by
+    simp_rw [Set.Ici.isCompl_iff]
+    obtain ⟨y, rfl, hcodisjoint⟩ := exists_inf_eq_and_codisjoint hx
+    exact ⟨⟨y, inf_le_right⟩, rfl, hcodisjoint⟩
 
 end ComplementedLattice
 

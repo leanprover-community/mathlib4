@@ -3,8 +3,9 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
-import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.Topology.Category.TopCat.Basic
+import Mathlib.CategoryTheory.Functor.EpiMono
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 /-!
 
 # Categories of Compact Hausdorff Spaces
@@ -128,7 +129,7 @@ section
 variable {X} {Y : Type u} [TopologicalSpace Y] [CompactSpace Y] [T2Space Y] [HasProp P Y]
 variable {Z : Type u} [TopologicalSpace Z] [CompactSpace Z] [T2Space Z] [HasProp P Z]
 
-/-- Typecheck a continous map as a morphism in the category `CompHausLike P`. -/
+/-- Typecheck a continuous map as a morphism in the category `CompHausLike P`. -/
 abbrev ofHom (f : C(X, Y)) : of P X ⟶ of P Y := ConcreteCategory.ofHom f
 
 @[simp] lemma hom_ofHom (f : C(X, Y)) : ConcreteCategory.hom (ofHom P f) = f := rfl
@@ -140,21 +141,9 @@ abbrev ofHom (f : C(X, Y)) : of P X ⟶ of P Y := ConcreteCategory.ofHom f
 
 end
 
--- Note (https://github.com/leanprover-community/mathlib4/issues/10754): Lean does not see through the forgetful functor here
-instance (X : CompHausLike.{u} P) : TopologicalSpace ((forget (CompHausLike P)).obj X) :=
-  inferInstanceAs (TopologicalSpace X.toTop)
-
--- Note (https://github.com/leanprover-community/mathlib4/issues/10754): Lean does not see through the forgetful functor here
-instance (X : CompHausLike.{u} P) : CompactSpace ((forget (CompHausLike P)).obj X) :=
-  inferInstanceAs (CompactSpace X.toTop)
-
--- Note (https://github.com/leanprover-community/mathlib4/issues/10754): Lean does not see through the forgetful functor here
-instance (X : CompHausLike.{u} P) : T2Space ((forget (CompHausLike P)).obj X) :=
-  inferInstanceAs (T2Space X.toTop)
-
 variable {P}
 
-/-- If `P` imples `P'`, then there is a functor from `CompHausLike P` to `CompHausLike P'`. -/
+/-- If `P` implies `P'`, then there is a functor from `CompHausLike P` to `CompHausLike P'`. -/
 @[simps map]
 def toCompHausLike {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
     CompHausLike P ⥤ CompHausLike P' where
@@ -167,7 +156,7 @@ section
 
 variable {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop)
 
-/-- If `P` imples `P'`, then the functor from `CompHausLike P` to `CompHausLike P'` is fully
+/-- If `P` implies `P'`, then the functor from `CompHausLike P` to `CompHausLike P'` is fully
 faithful. -/
 def fullyFaithfulToCompHausLike : (toCompHausLike h).FullyFaithful :=
   fullyFaithfulInducedFunctor _
@@ -183,7 +172,9 @@ variable (P)
 /-- The fully faithful embedding of `CompHausLike P` in `TopCat`. -/
 @[simps! map]
 def compHausLikeToTop : CompHausLike.{u} P ⥤ TopCat.{u} :=
-  inducedFunctor _ -- deriving Full, Faithful -- Porting note: deriving fails, adding manually.
+  inducedFunctor _
+-- The `Full, Faithful` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 example {P P' : TopCat → Prop} (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
     toCompHausLike h ⋙ compHausLikeToTop P' = compHausLikeToTop P := rfl
@@ -267,8 +258,6 @@ of topological spaces. -/
 def isoEquivHomeo {X Y : CompHausLike.{u} P} : (X ≅ Y) ≃ (X ≃ₜ Y) where
   toFun := homeoOfIso
   invFun := isoOfHomeo
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- A constant map as a morphism in `CompHausLike` -/
 def const {P : TopCat.{u} → Prop}

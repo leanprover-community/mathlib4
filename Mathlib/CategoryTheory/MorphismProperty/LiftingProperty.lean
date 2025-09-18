@@ -6,6 +6,7 @@ Authors: Jack McKoen, Joël Riou
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.MorphismProperty.Retract
 import Mathlib.CategoryTheory.LiftingProperties.Limits
+import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Left and right lifting properties
@@ -34,6 +35,14 @@ def llp : MorphismProperty C := fun _ _ f ↦
 right lifting property (rlp) with respect to `T`. -/
 def rlp : MorphismProperty C := fun _ _ f ↦
   ∀ ⦃X Y : C⦄ (g : X ⟶ Y) (_ : T g), HasLiftingProperty g f
+
+lemma llp_of_isIso {A B : C} (i : A ⟶ B) [IsIso i] :
+    T.llp i :=
+  fun _ _ _ _ ↦ inferInstance
+
+lemma rlp_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
+    T.rlp f :=
+  fun _ _ _ _ ↦ inferInstance
 
 instance llp_isStableUnderRetracts : T.llp.IsStableUnderRetracts where
   of_retract h hg _ _ f hf :=
@@ -70,14 +79,14 @@ instance rlp_isMultiplicative : T.rlp.IsMultiplicative where
     have := hj _ hp
     infer_instance
 
-lemma llp_isStableUnderCoproductsOfShape (J : Type*) :
+instance llp_isStableUnderCoproductsOfShape (J : Type*) :
     T.llp.IsStableUnderCoproductsOfShape J := by
   apply IsStableUnderCoproductsOfShape.mk
   intro A B _ _ f hf X Y p hp
   have := fun j ↦ hf j _ hp
   infer_instance
 
-lemma rlp_isStableUnderProductsOfShape (J : Type*) :
+instance rlp_isStableUnderProductsOfShape (J : Type*) :
     T.rlp.IsStableUnderProductsOfShape J := by
   apply IsStableUnderProductsOfShape.mk
   intro A B _ _ f hf X Y p hp
@@ -126,9 +135,7 @@ lemma rlp_pushouts : T.pushouts.rlp = T.rlp := by
 lemma colimitsOfShape_discrete_le_llp_rlp (J : Type w) :
     T.colimitsOfShape (Discrete J) ≤ T.rlp.llp := by
   intro A B i hi
-  exact (T.rlp.llp.isStableUnderColimitsOfShape_iff_colimitsOfShape_le (Discrete J)).1
-    (llp_isStableUnderCoproductsOfShape _ _) _
-      (colimitsOfShape_monotone T.le_llp_rlp _ _ hi)
+  exact MorphismProperty.colimitsOfShape_le _ (colimitsOfShape_monotone T.le_llp_rlp _ _ hi)
 
 lemma coproducts_le_llp_rlp : (coproducts.{w} T) ≤ T.rlp.llp := by
   intro A B i hi

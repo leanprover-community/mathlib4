@@ -50,7 +50,7 @@ def mk (d : B → M) (d_add : ∀ (b b' : B), d (b + b') = d b + d b' := by simp
     map_add' := d_add
     map_smul' := fun a b ↦ by
       dsimp
-      erw [d_mul, d_map, smul_zero, add_zero]
+      rw [RingHom.smul_toAlgebra, d_mul, d_map, smul_zero, add_zero]
       rfl
     map_one_eq_zero' := by
       dsimp

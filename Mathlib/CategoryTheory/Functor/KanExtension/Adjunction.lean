@@ -71,14 +71,14 @@ taking a colimit. -/
 noncomputable def leftKanExtensionObjIsoColimit [HasLeftKanExtension L F] (X : D) :
     (L.leftKanExtension F).obj X ≅ colimit (proj L X ⋙ F) :=
   LeftExtension.IsPointwiseLeftKanExtensionAt.isoColimit (F := F)
-   (isPointwiseLeftKanExtensionLeftKanExtensionUnit L F X)
+    (isPointwiseLeftKanExtensionLeftKanExtensionUnit L F X)
 
 @[reassoc (attr := simp)]
 lemma ι_leftKanExtensionObjIsoColimit_inv [HasLeftKanExtension L F] (X : D)
     (f : CostructuredArrow L X) :
     colimit.ι _ f ≫ (L.leftKanExtensionObjIsoColimit F X).inv =
     (L.leftKanExtensionUnit F).app f.left ≫ (L.leftKanExtension F).map f.hom := by
-  simp [leftKanExtensionObjIsoColimit, lanUnit]
+  simp [leftKanExtensionObjIsoColimit]
 
 @[reassoc (attr := simp)]
 lemma ι_leftKanExtensionObjIsoColimit_hom (X : D) (f : CostructuredArrow L X) :
@@ -104,9 +104,12 @@ lemma leftKanExtensionUnit_leftKanExtensionObjIsoColimit_hom (X : C) :
     (L.obj X) (CostructuredArrow.mk (𝟙 _))
 
 @[instance]
-theorem hasColimit_map_comp_ι_comp_grotendieckProj {X Y : D} (f : X ⟶ Y) :
+theorem hasColimit_map_comp_ι_comp_grothendieckProj {X Y : D} (f : X ⟶ Y) :
     HasColimit ((functor L).map f ⋙ Grothendieck.ι (functor L) Y ⋙ grothendieckProj L ⋙ F) :=
-  hasColimitOfIso (isoWhiskerRight (mapCompιCompGrothendieckProj L f) F)
+  hasColimit_of_iso (isoWhiskerRight (mapCompιCompGrothendieckProj L f) F)
+
+@[deprecated (since := "2025-07-27")]
+alias hasColimit_map_comp_ι_comp_grotendieckProj := hasColimit_map_comp_ι_comp_grothendieckProj
 
 /-- The left Kan extension of `F : C ⥤ H` along a functor `L : C ⥤ D` is isomorphic to the
 fiberwise colimit of the projection functor on the Grothendieck construction of the costructured
@@ -115,8 +118,9 @@ arrow category composed with `F`. -/
 noncomputable def leftKanExtensionIsoFiberwiseColimit [HasLeftKanExtension L F] :
     leftKanExtension L F ≅ fiberwiseColimit (grothendieckProj L ⋙ F) :=
   letI : ∀ X, HasColimit (Grothendieck.ι (functor L) X ⋙ grothendieckProj L ⋙ F) :=
-      fun X => hasColimitOfIso <| Iso.symm <| isoWhiskerRight (eqToIso ((functor L).map_id X)) _ ≪≫
-      Functor.leftUnitor (Grothendieck.ι (functor L) X ⋙ grothendieckProj L ⋙ F)
+      fun X => hasColimit_of_iso <| Iso.symm <|
+        isoWhiskerRight (eqToIso ((functor L).map_id X)) _ ≪≫
+        Functor.leftUnitor (Grothendieck.ι (functor L) X ⋙ grothendieckProj L ⋙ F)
   Iso.symm <| NatIso.ofComponents
     (fun X => HasColimit.isoOfNatIso (isoWhiskerRight (ιCompGrothendieckProj L X) F) ≪≫
       (leftKanExtensionObjIsoColimit L F X).symm)

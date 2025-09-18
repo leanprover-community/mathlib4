@@ -19,8 +19,8 @@ import Mathlib.Analysis.Complex.Basic
 section Generic
 
 variable {R A : Type*} {p : A → Prop} [CommRing R] [StarRing R] [MetricSpace R]
-variable [TopologicalRing R] [ContinuousStar R] [TopologicalSpace A] [Ring A] [StarRing A]
-variable [Algebra R A] [ContinuousFunctionalCalculus R p]
+variable [IsTopologicalRing R] [ContinuousStar R] [TopologicalSpace A] [Ring A] [StarRing A]
+variable [Algebra R A] [ContinuousFunctionalCalculus R A p]
 
 lemma cfc_unitary_iff (f : R → R) (a : A) (ha : p a := by cfc_tac)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) :
@@ -35,7 +35,7 @@ end Generic
 section Complex
 
 variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [Algebra ℂ A]
-  [ContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop)]
+  [ContinuousFunctionalCalculus ℂ A IsStarNormal]
 
 lemma unitary_iff_isStarNormal_and_spectrum_subset_unitary {u : A} :
     u ∈ unitary A ↔ IsStarNormal u ∧ spectrum ℂ u ⊆ unitary ℂ := by

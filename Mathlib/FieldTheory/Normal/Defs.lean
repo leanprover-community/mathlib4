@@ -24,10 +24,11 @@ open Polynomial IsScalarTower
 
 variable (F K : Type*) [Field F] [Field K] [Algebra F K]
 
-/-- Typeclass for normal field extension: `K` is a normal extension of `F` iff the minimal
-polynomial of every element `x` in `K` splits in `K`, i.e. every conjugate of `x` is in `K`. -/
+/-- Typeclass for normal field extensions: an algebraic extension of fields `K/F` is *normal*
+if the minimal polynomial of every element `x` in `K` splits in `K`, i.e. every `F`-conjugate
+of `x` is in `K`. -/
 @[stacks 09HM]
-class Normal extends Algebra.IsAlgebraic F K : Prop where
+class Normal : Prop extends Algebra.IsAlgebraic F K where
   splits' (x : K) : Splits (algebraMap F K) (minpoly F x)
 
 variable {F K}
@@ -59,7 +60,7 @@ variable (E : Type*) [Field E] [Algebra F E] [Algebra K E] [IsScalarTower F K E]
 @[stacks 09HN]
 theorem Normal.tower_top_of_normal [h : Normal F E] : Normal K E :=
   normal_iff.2 fun x => by
-    cases' h.out x with hx hhx
+    obtain ⟨hx, hhx⟩ := h.out x
     rw [algebraMap_eq F K E] at hhx
     exact
       ⟨hx.tower_top,
@@ -82,6 +83,17 @@ theorem Normal.of_algEquiv [h : Normal F E] (f : E ≃ₐ[F] E') : Normal F E' :
 
 theorem AlgEquiv.transfer_normal (f : E ≃ₐ[F] E') : Normal F E ↔ Normal F E' :=
   ⟨fun _ ↦ Normal.of_algEquiv f, fun _ ↦ Normal.of_algEquiv f.symm⟩
+
+theorem Normal.of_equiv_equiv {M N : Type*} [Field N] [Field M] [Algebra M N]
+    [Algebra.IsAlgebraic F E] [h : Normal F E] {f : F ≃+* M} {g : E ≃+* N}
+    (hcomp : (algebraMap M N).comp f = (g : E →+* N).comp (algebraMap F E)) :
+    Normal M N := by
+  rw [normal_iff] at h ⊢
+  intro x
+  rw [← g.apply_symm_apply x]
+  refine ⟨(h (g.symm x)).1.map_of_comp_eq _ _ hcomp, ?_⟩
+  rw [← minpoly.map_eq_of_equiv_equiv hcomp, Polynomial.splits_map_iff, hcomp]
+  exact Polynomial.splits_comp_of_splits _ _ (h (g.symm x)).2
 
 end NormalTower
 
@@ -177,7 +189,7 @@ lemma AlgEquiv.restrictNormalHom_apply (L : IntermediateField F K₁) [Normal F 
 variable (F K₁)
 
 /-- If `K₁/E/F` is a tower of fields with `E/F` normal then `AlgHom.restrictNormal'` is an
- equivalence. -/
+equivalence. -/
 @[simps, stacks 0BR4]
 def Normal.algHomEquivAut [Normal F E] : (E →ₐ[F] K₁) ≃ E ≃ₐ[F] E where
   toFun σ := AlgHom.restrictNormal' σ E
@@ -206,7 +218,7 @@ theorem AlgEquiv.restrictNormalHom_id (F K : Type*)
   dsimp only [restrictNormalHom, MonoidHom.mk'_apply, MonoidHom.id_apply]
   apply (algebraMap K K).injective
   rw [AlgEquiv.restrictNormal_commutes]
-  simp only [Algebra.id.map_eq_id, RingHom.id_apply]
+  simp only [Algebra.algebraMap_self, RingHom.id_apply]
 
 namespace IsScalarTower
 

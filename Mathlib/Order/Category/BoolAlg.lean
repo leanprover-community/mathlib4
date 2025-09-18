@@ -7,9 +7,9 @@ import Mathlib.Order.Category.HeytAlg
 import Mathlib.Order.Hom.CompleteLattice
 
 /-!
-# The category of boolean algebras
+# The category of Boolean algebras
 
-This defines `BoolAlg`, the category of boolean algebras.
+This defines `BoolAlg`, the category of Boolean algebras.
 -/
 
 
@@ -19,9 +19,9 @@ universe u
 
 open CategoryTheory
 
-/-- The category of boolean algebras. -/
+/-- The category of Boolean algebras. -/
 structure BoolAlg where
-  /-- The underlying boolean algebra. -/
+  /-- The underlying Boolean algebra. -/
   carrier : Type*
   [str : BooleanAlgebra carrier]
 
@@ -113,7 +113,8 @@ lemma hom_ext {X Y : BoolAlg} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
 
 @[simp]
 lemma hom_ofHom {X Y : Type u} [BooleanAlgebra X] [BooleanAlgebra Y] (f : BoundedLatticeHom X Y) :
-  (ofHom f).hom = f := rfl
+    (ofHom f).hom = f :=
+  rfl
 
 @[simp]
 lemma ofHom_hom {X Y : BoolAlg} (f : X ⟶ Y) :
@@ -132,14 +133,10 @@ lemma ofHom_apply {X Y : Type u} [BooleanAlgebra X] [BooleanAlgebra Y]
     (f : BoundedLatticeHom X Y) (x : X) :
     (ofHom f) x = f x := rfl
 
-@[simp]
 lemma inv_hom_apply {X Y : BoolAlg} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := by
-  rw [← comp_apply]
   simp
 
-@[simp]
 lemma hom_inv_apply {X Y : BoolAlg} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 instance : Inhabited BoolAlg :=

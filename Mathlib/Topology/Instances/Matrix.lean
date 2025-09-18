@@ -7,6 +7,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.Star
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
@@ -20,6 +21,11 @@ This file is a place to collect topological results about matrices.
 
 ## Main results
 
+* Sets of matrices:
+  * `IsOpen.matrix`: the set of finite matrices with entries in an open set
+    is itself an open set.
+  * `IsCompact.matrix`: the set of matrices with entries in a compact set
+    is itself a compact set.
 * Continuity:
   * `Continuous.matrix_det`: the determinant is continuous over a topological ring.
   * `Continuous.matrix_adjugate`: the adjugate is continuous over a topological ring.
@@ -41,6 +47,27 @@ instance [TopologicalSpace R] : TopologicalSpace (Matrix m n R) :=
 instance [TopologicalSpace R] [T2Space R] : T2Space (Matrix m n R) :=
   Pi.t2Space
 
+open Matrix
+
+instance [TopologicalSpace R] [DecidableEq n] [Fintype n] [CommRing R] :
+    TopologicalSpace (SpecialLinearGroup n R) :=
+  instTopologicalSpaceSubtype
+
+section Set
+
+theorem IsOpen.matrix [Fintype m] [Fintype n]
+    [TopologicalSpace R] {S : Set R} (hS : IsOpen S) :
+    IsOpen (S.matrix : Set (Matrix m n R)) :=
+  Set.matrix_eq_pi ▸
+    (isOpen_set_pi Set.finite_univ fun _ _ =>
+    isOpen_set_pi Set.finite_univ fun _ _ => hS).preimage continuous_id
+
+theorem IsCompact.matrix [TopologicalSpace R] {S : Set R} (hS : IsCompact S) :
+    IsCompact (S.matrix : Set (Matrix m n R)) :=
+  isCompact_pi_infinite fun _ => isCompact_pi_infinite fun _ => hS
+
+end Set
+
 /-! ### Lemmas about continuity of operations -/
 
 section Continuity
@@ -59,7 +86,7 @@ instance [Add R] [ContinuousAdd R] : ContinuousAdd (Matrix m n R) :=
 instance [Neg R] [ContinuousNeg R] : ContinuousNeg (Matrix m n R) :=
   Pi.continuousNeg
 
-instance [AddGroup R] [TopologicalAddGroup R] : TopologicalAddGroup (Matrix m n R) :=
+instance [AddGroup R] [IsTopologicalAddGroup R] : IsTopologicalAddGroup (Matrix m n R) :=
   Pi.topologicalAddGroup
 
 /-- To show a function into matrices is continuous it suffices to show the coefficients of the
@@ -92,14 +119,18 @@ instance [Star R] [ContinuousStar R] : ContinuousStar (Matrix m m R) :=
   ⟨continuous_id.matrix_conjTranspose⟩
 
 @[continuity, fun_prop]
-theorem Continuous.matrix_col {ι : Type*} {A : X → n → R} (hA : Continuous A) :
-    Continuous fun x => col ι (A x) :=
+theorem Continuous.matrix_replicateCol {ι : Type*} {A : X → n → R} (hA : Continuous A) :
+    Continuous fun x => replicateCol ι (A x) :=
   continuous_matrix fun i _ => (continuous_apply i).comp hA
 
+@[deprecated (since := "2025-03-15")] alias Continuous.matrix_col := Continuous.matrix_replicateCol
+
 @[continuity, fun_prop]
-theorem Continuous.matrix_row {ι : Type*} {A : X → n → R} (hA : Continuous A) :
-    Continuous fun x => row ι (A x) :=
+theorem Continuous.matrix_replicateRow {ι : Type*} {A : X → n → R} (hA : Continuous A) :
+    Continuous fun x => replicateRow ι (A x) :=
   continuous_matrix fun _ _ => (continuous_apply _).comp hA
+
+@[deprecated (since := "2025-03-15")] alias Continuous.matrix_row := Continuous.matrix_replicateRow
 
 @[continuity, fun_prop]
 theorem Continuous.matrix_diagonal [Zero R] [DecidableEq n] {A : X → n → R} (hA : Continuous A) :
@@ -107,11 +138,14 @@ theorem Continuous.matrix_diagonal [Zero R] [DecidableEq n] {A : X → n → R} 
   continuous_matrix fun i _ => ((continuous_apply i).comp hA).if_const _ continuous_zero
 
 @[continuity, fun_prop]
-theorem Continuous.matrix_dotProduct [Fintype n] [Mul R] [AddCommMonoid R] [ContinuousAdd R]
+protected theorem Continuous.dotProduct [Fintype n] [Mul R] [AddCommMonoid R] [ContinuousAdd R]
     [ContinuousMul R] {A : X → n → R} {B : X → n → R} (hA : Continuous A) (hB : Continuous B) :
-    Continuous fun x => dotProduct (A x) (B x) :=
-  continuous_finset_sum _ fun i _ =>
-    ((continuous_apply i).comp hA).mul ((continuous_apply i).comp hB)
+    Continuous fun x => A x ⬝ᵥ B x := by
+  dsimp only [dotProduct]
+  fun_prop
+
+@[deprecated (since := "2025-05-09")]
+alias Continuous.matrix_dotProduct := Continuous.dotProduct
 
 /-- For square matrices the usual `continuous_mul` can be used. -/
 @[continuity, fun_prop]
@@ -125,11 +159,11 @@ instance [Fintype n] [Mul R] [AddCommMonoid R] [ContinuousAdd R] [ContinuousMul 
     ContinuousMul (Matrix n n R) :=
   ⟨continuous_fst.matrix_mul continuous_snd⟩
 
-instance [Fintype n] [NonUnitalNonAssocSemiring R] [TopologicalSemiring R] :
-    TopologicalSemiring (Matrix n n R) where
+instance [Fintype n] [NonUnitalNonAssocSemiring R] [IsTopologicalSemiring R] :
+    IsTopologicalSemiring (Matrix n n R) where
 
-instance Matrix.topologicalRing [Fintype n] [NonUnitalNonAssocRing R] [TopologicalRing R] :
-    TopologicalRing (Matrix n n R) where
+instance Matrix.topologicalRing [Fintype n] [NonUnitalNonAssocRing R] [IsTopologicalRing R] :
+    IsTopologicalRing (Matrix n n R) where
 
 @[continuity, fun_prop]
 theorem Continuous.matrix_vecMulVec [Mul R] [ContinuousMul R] {A : X → m → R} {B : X → n → R}
@@ -140,13 +174,13 @@ theorem Continuous.matrix_vecMulVec [Mul R] [ContinuousMul R] {A : X → m → R
 theorem Continuous.matrix_mulVec [NonUnitalNonAssocSemiring R] [ContinuousAdd R] [ContinuousMul R]
     [Fintype n] {A : X → Matrix m n R} {B : X → n → R} (hA : Continuous A) (hB : Continuous B) :
     Continuous fun x => A x *ᵥ B x :=
-  continuous_pi fun i => ((continuous_apply i).comp hA).matrix_dotProduct hB
+  continuous_pi fun i => ((continuous_apply i).comp hA).dotProduct hB
 
 @[continuity, fun_prop]
 theorem Continuous.matrix_vecMul [NonUnitalNonAssocSemiring R] [ContinuousAdd R] [ContinuousMul R]
     [Fintype m] {A : X → m → R} {B : X → Matrix m n R} (hA : Continuous A) (hB : Continuous B) :
     Continuous fun x => A x ᵥ* B x :=
-  continuous_pi fun _i => hA.matrix_dotProduct <| continuous_pi fun _j => hB.matrix_elem _ _
+  continuous_pi fun _i => hA.dotProduct <| continuous_pi fun _j => hB.matrix_elem _ _
 
 @[continuity, fun_prop]
 theorem Continuous.matrix_submatrix {A : X → Matrix l n R} (hA : Continuous A) (e₁ : m → l)
@@ -173,7 +207,7 @@ theorem Continuous.matrix_trace [Fintype n] [AddCommMonoid R] [ContinuousAdd R]
   continuous_finset_sum _ fun _ _ => hA.matrix_elem _ _
 
 @[continuity, fun_prop]
-theorem Continuous.matrix_det [Fintype n] [DecidableEq n] [CommRing R] [TopologicalRing R]
+theorem Continuous.matrix_det [Fintype n] [DecidableEq n] [CommRing R] [IsTopologicalRing R]
     {A : X → Matrix n n R} (hA : Continuous A) : Continuous fun x => (A x).det := by
   simp_rw [Matrix.det_apply]
   refine continuous_finset_sum _ fun l _ => Continuous.const_smul ?_ _
@@ -187,29 +221,26 @@ theorem Continuous.matrix_updateCol [DecidableEq n] (i : n) {A : X → Matrix m 
     (continuous_apply k).comp <|
       ((continuous_apply _).comp hA).update i ((continuous_apply _).comp hB)
 
-@[deprecated (since := "2024-12-11")]
-alias Continuous.matrix_updateColumn := Continuous.matrix_updateCol
-
 @[continuity, fun_prop]
 theorem Continuous.matrix_updateRow [DecidableEq m] (i : m) {A : X → Matrix m n R} {B : X → n → R}
     (hA : Continuous A) (hB : Continuous B) : Continuous fun x => (A x).updateRow i (B x) :=
   hA.update i hB
 
 @[continuity, fun_prop]
-theorem Continuous.matrix_cramer [Fintype n] [DecidableEq n] [CommRing R] [TopologicalRing R]
+theorem Continuous.matrix_cramer [Fintype n] [DecidableEq n] [CommRing R] [IsTopologicalRing R]
     {A : X → Matrix n n R} {B : X → n → R} (hA : Continuous A) (hB : Continuous B) :
     Continuous fun x => cramer (A x) (B x) :=
   continuous_pi fun _ => (hA.matrix_updateCol _ hB).matrix_det
 
 @[continuity, fun_prop]
-theorem Continuous.matrix_adjugate [Fintype n] [DecidableEq n] [CommRing R] [TopologicalRing R]
+theorem Continuous.matrix_adjugate [Fintype n] [DecidableEq n] [CommRing R] [IsTopologicalRing R]
     {A : X → Matrix n n R} (hA : Continuous A) : Continuous fun x => (A x).adjugate :=
   continuous_matrix fun _j k =>
     (hA.matrix_transpose.matrix_updateCol k continuous_const).matrix_det
 
 /-- When `Ring.inverse` is continuous at the determinant (such as in a `NormedRing`, or a
 topological field), so is `Matrix.inv`. -/
-theorem continuousAt_matrix_inv [Fintype n] [DecidableEq n] [CommRing R] [TopologicalRing R]
+theorem continuousAt_matrix_inv [Fintype n] [DecidableEq n] [CommRing R] [IsTopologicalRing R]
     (A : Matrix n n R) (h : ContinuousAt Ring.inverse A.det) : ContinuousAt Inv.inv A :=
   (h.comp continuous_id.matrix_det.continuousAt).smul continuous_id.matrix_adjugate.continuousAt
 
@@ -247,7 +278,8 @@ theorem Continuous.matrix_blockDiagonal' [Zero R] [DecidableEq l]
     · exact continuous_const
 
 @[continuity, fun_prop]
-theorem Continuous.matrix_blockDiag' {A : X → Matrix (Σi, m' i) (Σi, n' i) R} (hA : Continuous A) :
+theorem Continuous.matrix_blockDiag'
+    {A : X → Matrix (Σ i, m' i) (Σ i, n' i) R} (hA : Continuous A) :
     Continuous fun x => blockDiag' (A x) :=
   continuous_pi fun _i => continuous_matrix fun _j _k => hA.matrix_elem _ _
 
@@ -390,12 +422,12 @@ theorem Matrix.blockDiagonal'_tsum [DecidableEq l] [T2Space R]
     rw [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable hft]
     exact blockDiagonal'_zero
 
-theorem HasSum.matrix_blockDiag' {f : X → Matrix (Σi, m' i) (Σi, n' i) R}
-    {a : Matrix (Σi, m' i) (Σi, n' i) R} (hf : HasSum f a) :
+theorem HasSum.matrix_blockDiag' {f : X → Matrix (Σ i, m' i) (Σ i, n' i) R}
+    {a : Matrix (Σ i, m' i) (Σ i, n' i) R} (hf : HasSum f a) :
     HasSum (fun x => blockDiag' (f x)) (blockDiag' a) :=
   hf.map (blockDiag'AddMonoidHom m' n' R) continuous_id.matrix_blockDiag'
 
-theorem Summable.matrix_blockDiag' {f : X → Matrix (Σi, m' i) (Σi, n' i) R} (hf : Summable f) :
+theorem Summable.matrix_blockDiag' {f : X → Matrix (Σ i, m' i) (Σ i, n' i) R} (hf : Summable f) :
     Summable fun x => blockDiag' (f x) :=
   hf.hasSum.matrix_blockDiag'.summable
 

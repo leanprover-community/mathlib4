@@ -116,8 +116,9 @@ lemma hom_ext {X Y : BddDistLat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
 
 @[simp]
 lemma hom_ofHom {X Y : Type u} [DistribLattice X] [BoundedOrder X] [DistribLattice Y]
-    [BoundedOrder Y](f : BoundedLatticeHom X Y) :
-  (ofHom f).hom = f := rfl
+    [BoundedOrder Y] (f : BoundedLatticeHom X Y) :
+    (ofHom f).hom = f :=
+  rfl
 
 @[simp]
 lemma ofHom_hom {X Y : BddDistLat} (f : X ⟶ Y) :
@@ -139,14 +140,10 @@ lemma ofHom_apply {X Y : Type u} [DistribLattice X] [BoundedOrder X] [DistribLat
     (f : BoundedLatticeHom X Y) (x : X) :
     (ofHom f) x = f x := rfl
 
-@[simp]
 lemma inv_hom_apply {X Y : BddDistLat} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := by
-  rw [← comp_apply]
   simp
 
-@[simp]
 lemma hom_inv_apply {X Y : BddDistLat} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 instance : Inhabited BddDistLat :=

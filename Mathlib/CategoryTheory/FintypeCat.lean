@@ -76,15 +76,14 @@ theorem id_apply (X : FintypeCat) (x : X) : (𝟙 X : X → X) x = x :=
 theorem comp_apply {X Y Z : FintypeCat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f ≫ g) x = g (f x) :=
   rfl
 
-@[simp]
+-- Isn't `@[simp]` because `simp` can prove it after importing `Mathlib.CategoryTheory.Elementwise`.
 lemma hom_inv_id_apply {X Y : FintypeCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x :=
   congr_fun f.hom_inv_id x
 
-@[simp]
+-- Isn't `@[simp]` because `simp` can prove it after importing `Mathlib.CategoryTheory.Elementwise`.
 lemma inv_hom_id_apply {X Y : FintypeCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y :=
   congr_fun f.inv_hom_id y
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma hom_ext {X Y : FintypeCat} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g := by
   funext
@@ -102,8 +101,8 @@ def equivEquivIso {A B : FintypeCat} : A ≃ B ≃ (A ≅ B) where
       invFun := i.inv
       left_inv := congr_fun i.hom_inv_id
       right_inv := congr_fun i.inv_hom_id }
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 instance (X Y : FintypeCat) : Finite (X ⟶ Y) :=
   inferInstanceAs <| Finite (X → Y)
@@ -214,7 +213,7 @@ universe v
 noncomputable def uSwitch : FintypeCat.{u} ⥤ FintypeCat.{v} where
   obj X := FintypeCat.of <| ULift.{v} (Fin (Fintype.card X))
   map {X Y} f x := ULift.up <| (Fintype.equivFin Y) (f ((Fintype.equivFin X).symm x.down))
-  map_comp {X Y Z} f g := by ext; simp
+  map_comp {X Y Z} f g := by funext; simp
 
 /-- Switching the universe of an object `X : FintypeCat.{u}` does not change `X` up to equivalence
 of types. This is natural in the sense that it commutes with `uSwitch.map f` for
@@ -237,11 +236,7 @@ lemma uSwitch_map_uSwitch_map {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
     uSwitch.map (uSwitch.map f) =
     (equivEquivIso ((uSwitch.obj X).uSwitchEquiv.trans X.uSwitchEquiv)).hom ≫
       f ≫ (equivEquivIso ((uSwitch.obj Y).uSwitchEquiv.trans
-      Y.uSwitchEquiv)).inv := by
-  ext x
-  simp only [comp_apply, equivEquivIso_apply_hom, Equiv.trans_apply]
-  rw [uSwitchEquiv_naturality f, ← uSwitchEquiv_naturality]
-  rfl
+      Y.uSwitchEquiv)).inv := rfl
 
 /-- `uSwitch.{u, v}` is an equivalence of categories with quasi-inverse `uSwitch.{v, u}`. -/
 noncomputable def uSwitchEquivalence : FintypeCat.{u} ≌ FintypeCat.{v} where

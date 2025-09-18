@@ -51,11 +51,11 @@ def checkComposition (e : Expr) : MetaM Unit := do
     | _ => throwError "In composition\n  {e}\nthe type of\n  {g}\nis not a morphism."
   | _ => throwError "{e} is not a composition."
 
-/-- Check the typing of categorical compositions in an expression.-/
+/-- Check the typing of categorical compositions in an expression. -/
 def checkCompositions (e : Expr) : MetaM Unit := do
   forEachComposition e checkComposition
 
-/-- Check the typing of categorical compositions in the goal.-/
+/-- Check the typing of categorical compositions in the goal. -/
 def checkCompositionsTac : TacticM Unit := withMainContext do
   let e ← getMainTarget
   checkCompositions e

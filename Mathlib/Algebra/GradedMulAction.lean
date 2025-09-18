@@ -15,7 +15,7 @@ has an additively-graded multiplicative action on `M`. The typeclasses are:
 * `GradedMonoid.GSMul A M`
 * `GradedMonoid.GMulAction A M`
 
-With the `SigmaGraded` locale open, these respectively imbue:
+With the `SigmaGraded` scope open, these respectively imbue:
 
 * `SMul (GradedMonoid A) (GradedMonoid M)`
 * `MulAction (GradedMonoid A) (GradedMonoid M)`
@@ -57,7 +57,7 @@ section Defs
 variable (A : ιA → Type*) (M : ιM → Type*)
 
 /-- A graded version of `SMul`. Scalar multiplication combines grades additively, i.e.
-if `a ∈ A i` and `m ∈ M j`, then `a • b` must be in `M (i + j)`-/
+if `a ∈ A i` and `m ∈ M j`, then `a • b` must be in `M (i + j)`. -/
 class GSMul [VAdd ιA ιM] where
   /-- The homogeneous multiplication map `smul` -/
   smul {i j} : A i → M j → M (i +ᵥ j)
@@ -134,8 +134,5 @@ theorem SetLike.IsHomogeneousElem.graded_smul [VAdd ιA ιB] [SMul R M] {A : ιA
     SetLike.IsHomogeneousElem A a → SetLike.IsHomogeneousElem B b →
     SetLike.IsHomogeneousElem B (a • b)
   | ⟨i, hi⟩, ⟨j, hj⟩ => ⟨i +ᵥ j, SetLike.GradedSMul.smul_mem hi hj⟩
-
-@[deprecated (since := "2025-01-31")] alias SetLike.Homogeneous.graded_smul :=
-  SetLike.IsHomogeneousElem.graded_smul
 
 end HomogeneousElements

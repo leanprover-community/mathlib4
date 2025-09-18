@@ -49,7 +49,7 @@ individual axioms. An `AB4` category is an _abelian_ category satisfying `AB4`, 
 
 namespace CategoryTheory
 
-open Limits
+open Limits Functor
 
 attribute [instance] comp_preservesFiniteLimits comp_preservesFiniteColimits
 
@@ -62,7 +62,7 @@ A category `C` is said to have exact colimits of shape `J` provided that colimit
 exist and are exact (in the sense that they preserve finite limits).
 -/
 class HasExactColimitsOfShape (J : Type u') [Category.{v'} J] (C : Type u) [Category.{v} C]
-    [HasColimitsOfShape J C]  where
+    [HasColimitsOfShape J C] where
   /-- Exactness of `J`-shaped colimits stated as `colim : (J ⥤ C) ⥤ C` preserving finite limits. -/
   preservesFiniteLimits : PreservesFiniteLimits (colim (J := J) (C := C))
 
@@ -186,7 +186,7 @@ lemma hasExactColimitsOfShape (adj : F ⊣ G) [G.Full] [G.Faithful]
       isoWhiskerLeft _ (preservesColimitNatIso F) ≪≫ (Functor.associator _ _ _).symm ≪≫
         isoWhiskerRight (whiskeringRightObjCompIso G F) _ ≪≫
         isoWhiskerRight ((whiskeringRight J D D).mapIso (asIso adj.counit)) _ ≪≫
-        isoWhiskerRight wiskeringRightObjIdIso _ ≪≫ colim.leftUnitor
+        isoWhiskerRight whiskeringRightObjIdIso _ ≪≫ colim.leftUnitor
     exact preservesLimit_of_natIso _ e⟩⟩
 
 /-- Let `adj : F ⊣ G` be an adjunction, with `F : C ⥤ D` coreflective.
@@ -204,7 +204,7 @@ lemma hasExactLimitsOfShape (adj : F ⊣ G) [F.Full] [F.Faithful]
         (Functor.associator _ _ _).symm ≪≫
         isoWhiskerRight (whiskeringRightObjCompIso F G) _ ≪≫
         isoWhiskerRight ((whiskeringRight J C C).mapIso (asIso adj.unit).symm) _ ≪≫
-        isoWhiskerRight wiskeringRightObjIdIso _ ≪≫ lim.leftUnitor
+        isoWhiskerRight whiskeringRightObjIdIso _ ≪≫ lim.leftUnitor
     exact preservesColimit_of_natIso _ e⟩⟩
 
 end Adjunction
@@ -365,7 +365,7 @@ lemma hasExactColimitsOfShape_of_final [HasFiniteLimits C] {J J' : Type*} [Categ
 
 /-- `HasExactLimitsOfShape` can be "pushed forward" along initial functors -/
 lemma hasExactLimitsOfShape_of_initial [HasFiniteColimits C] {J J' : Type*} [Category J]
-    [Category J'] (F : J ⥤ J') [F.Initial]  [HasLimitsOfShape J' C] [HasLimitsOfShape J C]
+    [Category J'] (F : J ⥤ J') [F.Initial] [HasLimitsOfShape J' C] [HasLimitsOfShape J C]
     [HasExactLimitsOfShape J C] : HasExactLimitsOfShape J' C where
   preservesFiniteColimits :=
     letI : PreservesFiniteColimits ((whiskeringLeft J J' C).obj F) := ⟨fun _ ↦ inferInstance⟩

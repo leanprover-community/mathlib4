@@ -102,6 +102,9 @@ variable (pres₁ : Presentation.{w₁₀, w₁₁} A M₁) (pres₂ : Presentat
 a presentation of `M₁` and a presentation of `M₂`. -/
 @[simps!]
 noncomputable def tensor : Presentation A (M₁ ⊗[A] M₂) where
+  G := _
+  R := _
+  relation := _
   toSolution := pres₁.toSolution.tensor pres₂.toSolution
   toIsPresentation := pres₁.toIsPresentation.tensor pres₂.toIsPresentation
 

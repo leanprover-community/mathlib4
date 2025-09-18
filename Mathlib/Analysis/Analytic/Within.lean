@@ -9,7 +9,7 @@ import Mathlib.Analysis.Analytic.ChangeOrigin
 /-!
 # Properties of analyticity restricted to a set
 
-From `Mathlib.Analysis.Analytic.Basic`, we have the definitions
+From `Mathlib/Analysis/Analytic/Basic.lean`, we have the definitions
 
 1. `AnalyticWithinAt 𝕜 f s x` means a power series at `x` converges to `f` on `𝓝[insert x s] x`.
 2. `AnalyticOn 𝕜 f s t` means `∀ x ∈ t, AnalyticWithinAt 𝕜 f s x`.
@@ -47,7 +47,7 @@ lemma analyticWithinAt_of_singleton_mem {f : E → F} {s : Set E} {x : E} (h : {
     hasSum := by
       intro y ys yr
       simp only [subset_singleton_iff, mem_inter_iff, and_imp] at st
-      simp only [mem_insert_iff, add_right_eq_self] at ys
+      simp only [mem_insert_iff, add_eq_left] at ys
       have : x + y = x := by
         rcases ys with rfl | ys
         · simp
@@ -71,16 +71,13 @@ lemma analyticOn_of_locally_analyticOn {f : E → F} {s : Set E}
         intro y ys yr
         simp only [EMetric.mem_ball, lt_min_iff, edist_lt_ofReal, dist_zero_right] at yr
         apply fp.hasSum
-        · simp only [mem_insert_iff, add_right_eq_self] at ys
+        · simp only [mem_insert_iff, add_eq_left] at ys
           rcases ys with rfl | ys
           · simp
-          · simp only [mem_insert_iff, add_right_eq_self, mem_inter_iff, ys, true_and]
+          · simp only [mem_insert_iff, add_eq_left, mem_inter_iff, ys, true_and]
             apply Or.inr (ru ?_)
             simp only [Metric.mem_ball, dist_self_add_left, yr]
         · simp only [EMetric.mem_ball, yr] }⟩
-
-@[deprecated (since := "2024-09-26")]
-alias analyticWithinOn_of_locally_analyticWithinOn := analyticOn_of_locally_analyticOn
 
 /-- On open sets, `AnalyticOnNhd` and `AnalyticOn` coincide -/
 lemma IsOpen.analyticOn_iff_analyticOnNhd {f : E → F} {s : Set E} (hs : IsOpen s) :
@@ -99,10 +96,6 @@ lemma IsOpen.analyticOn_iff_analyticOnNhd {f : E → F} {s : Set E} (hs : IsOpen
       apply mem_insert_of_mem
       apply rs
       simp only [Metric.mem_ball, dist_self_add_left, ym.1] }⟩
-
-@[deprecated (since := "2024-09-26")]
-alias IsOpen.analyticWithinOn_iff_analyticOn := IsOpen.analyticOn_iff_analyticOnNhd
-
 
 /-!
 ### Equivalence to analyticity of a local extension

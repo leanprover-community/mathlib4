@@ -3,7 +3,9 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.RelClasses
+import Mathlib.Logic.Function.Defs
+import Mathlib.Order.Defs.Unbundled
+import Batteries.Logic
 
 /-!
 # Lexicographic order on a sigma type
@@ -72,7 +74,8 @@ theorem Lex.mono_right (hs : ∀ i a b, s₁ i a b → s₂ i a b) {a b : Σ i, 
 theorem lex_swap : Lex (Function.swap r) s a b ↔ Lex r (fun i => Function.swap (s i)) b a := by
   constructor <;>
     · rintro (⟨a, b, h⟩ | ⟨a, b, h⟩)
-      exacts [Lex.left _ _ h, Lex.right _ _ h]
+      · exact Lex.left _ _ h
+      · exact Lex.right _ _ h
 
 instance [∀ i, IsRefl (α i) (s i)] : IsRefl _ (Lex r s) :=
   ⟨fun ⟨_, _⟩ => Lex.right _ _ <| refl _⟩

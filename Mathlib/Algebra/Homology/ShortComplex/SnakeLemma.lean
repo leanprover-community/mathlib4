@@ -72,8 +72,8 @@ structure SnakeInput where
   v₁₂ : L₁ ⟶ L₂
   /-- the morphism from the second row to the third row -/
   v₂₃ : L₂ ⟶ L₃
-  w₀₂ : v₀₁ ≫ v₁₂ = 0 := by aesop_cat
-  w₁₃ : v₁₂ ≫ v₂₃ = 0 := by aesop_cat
+  w₀₂ : v₀₁ ≫ v₁₂ = 0 := by cat_disch
+  w₁₃ : v₁₂ ≫ v₂₃ = 0 := by cat_disch
   /-- `L₀` is the kernel of `v₁₂ : L₁ ⟶ L₂`. -/
   h₀ : IsLimit (KernelFork.ofι _ w₀₂)
   /-- `L₃` is the cokernel of `v₁₂ : L₁ ⟶ L₂`. -/
@@ -290,12 +290,14 @@ lemma L₀X₂ToP_comp_φ₁ : S.L₀X₂ToP ≫ S.φ₁ = 0 := by
     pullback.lift_fst_assoc, w₀₂_τ₂, zero_comp]
 
 lemma L₀_g_δ : S.L₀.g ≫ S.δ = 0 := by
-  erw [← L₀X₂ToP_comp_pullback_snd, assoc, S.L₀'_exact.g_desc,
-    L₀X₂ToP_comp_φ₁_assoc, zero_comp]
+  rw [← L₀X₂ToP_comp_pullback_snd, assoc]
+  erw [S.L₀'_exact.g_desc]
+  rw [L₀X₂ToP_comp_φ₁_assoc, zero_comp]
 
 lemma δ_L₃_f : S.δ ≫ S.L₃.f = 0 := by
-  erw [← cancel_epi S.L₀'.g, S.L₀'_exact.g_desc_assoc, assoc, S.v₂₃.comm₁₂, S.φ₁_L₂_f_assoc,
-    φ₂, assoc, w₁₃_τ₂, comp_zero, comp_zero]
+  rw [← cancel_epi S.L₀'.g]
+  erw [S.L₀'_exact.g_desc_assoc]
+  simp [S.v₂₃.comm₁₂, φ₂]
 
 /-- The short complex `L₀.X₂ ⟶ L₀.X₃ ⟶ L₃.X₁`. -/
 @[simps]
@@ -376,6 +378,20 @@ lemma δ_eq {A : C} (x₃ : A ⟶ S.L₀.X₃) (x₂ : A ⟶ S.L₁.X₂) (x₁ 
   congr 1
   simp only [← cancel_mono S.L₂.f, assoc, φ₁_L₂_f, lift_φ₂, h₁]
 
+theorem mono_δ (h₀ : IsZero S.L₀.X₂) : Mono S.δ :=
+  (S.L₁'.exact_iff_mono (IsZero.eq_zero_of_src h₀ S.L₁'.f)).1 S.L₁'_exact
+
+theorem epi_δ (h₃ : IsZero S.L₃.X₂) : Epi S.δ :=
+  (S.L₂'.exact_iff_epi (IsZero.eq_zero_of_tgt h₃ S.L₂'.g)).1 S.L₂'_exact
+
+theorem isIso_δ (h₀ : IsZero S.L₀.X₂) (h₃ : IsZero S.L₃.X₂) : IsIso S.δ :=
+  @Balanced.isIso_of_mono_of_epi _ _ _ _ _ S.δ (S.mono_δ h₀) (S.epi_δ h₃)
+
+/-- When `L₀₂` and `L₃₂` are trivial, `δ` defines an isomorphism `L₀₃ ≅ L₃₁`. -/
+noncomputable def δIso (h₀ : IsZero S.L₀.X₂) (h₃ : IsZero S.L₃.X₂) :
+    S.L₀.X₃ ≅ S.L₃.X₁ :=
+  @asIso _ _ _ _ S.δ (SnakeInput.isIso_δ S h₀ h₃)
+
 variable (S₁ S₂ S₃ : SnakeInput C)
 
 /-- A morphism of snake inputs involve four morphisms of short complexes
@@ -390,9 +406,9 @@ structure Hom where
   f₂ : S₁.L₂ ⟶ S₂.L₂
   /-- a morphism between the third lines -/
   f₃ : S₁.L₃ ⟶ S₂.L₃
-  comm₀₁ : f₀ ≫ S₂.v₀₁ = S₁.v₀₁ ≫ f₁ := by aesop_cat
-  comm₁₂ : f₁ ≫ S₂.v₁₂ = S₁.v₁₂ ≫ f₂ := by aesop_cat
-  comm₂₃ : f₂ ≫ S₂.v₂₃ = S₁.v₂₃ ≫ f₃ := by aesop_cat
+  comm₀₁ : f₀ ≫ S₂.v₀₁ = S₁.v₀₁ ≫ f₁ := by cat_disch
+  comm₁₂ : f₁ ≫ S₂.v₁₂ = S₁.v₁₂ ≫ f₂ := by cat_disch
+  comm₂₃ : f₂ ≫ S₂.v₂₃ = S₁.v₂₃ ≫ f₃ := by cat_disch
 
 namespace Hom
 
@@ -476,7 +492,7 @@ noncomputable def functorP : SnakeInput C ⥤ C where
   map f := pullback.map _ _ _ _ f.f₁.τ₂ f.f₀.τ₃ f.f₁.τ₃ f.f₁.comm₂₃.symm
       (congr_arg ShortComplex.Hom.τ₃ f.comm₀₁.symm)
   map_id _ := by dsimp [P]; simp
-  map_comp _ _ := by dsimp [P]; aesop_cat
+  map_comp _ _ := by dsimp [P]; cat_disch
 
 @[reassoc]
 lemma naturality_φ₂ (f : S₁ ⟶ S₂) : S₁.φ₂ ≫ f.f₂.τ₂ = functorP.map f ≫ S₂.φ₂ := by

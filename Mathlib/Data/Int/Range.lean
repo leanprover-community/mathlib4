@@ -3,7 +3,8 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
-import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
 
 /-!
 # Intervals in ℤ
@@ -16,7 +17,6 @@ less than `n`.
 This could be unified with `Data.List.Intervals`. See the TODOs there.
 -/
 
--- Porting note: Many unfolds about `Lean.Internal.coeM`
 namespace Int
 
 /-- List enumerating `[m, n)`. This is the ℤ variant of `List.Ico`. -/
@@ -33,18 +33,10 @@ instance decidableLELT (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
   decidable_of_iff (∀ r ∈ range m n, P r) <| by simp only [mem_range_iff, and_imp]
 
 instance decidableLELE (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
-    Decidable (∀ r, m ≤ r → r ≤ n → P r) := by
-  -- Porting note: The previous code was:
-  -- decidable_of_iff (∀ r ∈ range m (n + 1), P r) <| by
-  --   simp only [mem_range_iff, and_imp, lt_add_one_iff]
-  --
-  -- This fails to synthesize an instance
-  -- `Decidable (∀ (r : ℤ), r ∈ range m (n + 1) → P r)`
-    apply decidable_of_iff (∀ r ∈ range m (n + 1), P r)
-    apply Iff.intro <;> intros h _ _
-    · intro _; apply h
-      simp_all only [mem_range_iff, and_imp, and_self, lt_add_one_iff]
-    · simp_all only [mem_range_iff, and_imp, lt_add_one_iff]
+    Decidable (∀ r, m ≤ r → r ≤ n → P r) :=
+  -- Add empty type ascription, otherwise it fails to find `Decidable` instance.
+  decidable_of_iff (∀ r ∈ range m (n + 1), P r :) <| by
+    simp only [mem_range_iff, and_imp, lt_add_one_iff]
 
 instance decidableLTLT (P : Int → Prop) [DecidablePred P] (m n : ℤ) :
     Decidable (∀ r, m < r → r < n → P r) :=

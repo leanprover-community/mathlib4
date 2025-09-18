@@ -31,23 +31,27 @@ open DFinsupp
 variable [DecidableEq ι]
 
 @[to_additive]
-theorem dfinsupp_prod_mem [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
+theorem dfinsuppProd_mem [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
     [CommMonoid γ] {S : Type*} [SetLike S γ] [SubmonoidClass S γ]
     (s : S) (f : Π₀ i, β i) (g : ∀ i, β i → γ)
     (h : ∀ c, f c ≠ 0 → g c (f c) ∈ s) : f.prod g ∈ s :=
   prod_mem fun _ hi => h _ <| mem_support_iff.1 hi
 
-theorem dfinsupp_sumAddHom_mem [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] {S : Type*}
+@[deprecated (since := "2025-04-06")] alias dfinsupp_prod_mem := dfinsuppProd_mem
+
+theorem dfinsuppSumAddHom_mem [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] {S : Type*}
     [SetLike S γ] [AddSubmonoidClass S γ] (s : S) (f : Π₀ i, β i) (g : ∀ i, β i →+ γ)
     (h : ∀ c, f c ≠ 0 → g c (f c) ∈ s) : DFinsupp.sumAddHom g f ∈ s := by
   classical
     rw [DFinsupp.sumAddHom_apply]
-    exact dfinsupp_sum_mem s f (g ·) h
+    exact dfinsuppSum_mem s f (g ·) h
+
+@[deprecated (since := "2025-04-06")] alias dfinsupp_sumAddHom_mem := dfinsuppSumAddHom_mem
 
 /-- The supremum of a family of commutative additive submonoids is equal to the range of
 `DFinsupp.sumAddHom`; that is, every element in the `iSup` can be produced from taking a finite
 number of non-zero elements of `S i`, coercing them to `γ`, and summing them. -/
-theorem AddSubmonoid.iSup_eq_mrange_dfinsupp_sumAddHom
+theorem AddSubmonoid.iSup_eq_mrange_dfinsuppSumAddHom
     [AddCommMonoid γ] (S : ι → AddSubmonoid γ) :
     iSup S = AddMonoidHom.mrange (DFinsupp.sumAddHom fun i => (S i).subtype) := by
   apply le_antisymm
@@ -55,13 +59,13 @@ theorem AddSubmonoid.iSup_eq_mrange_dfinsupp_sumAddHom
     intro i y hy
     exact ⟨DFinsupp.single i ⟨y, hy⟩, DFinsupp.sumAddHom_single _ _ _⟩
   · rintro x ⟨v, rfl⟩
-    exact dfinsupp_sumAddHom_mem _ v _ fun i _ => (le_iSup S i : S i ≤ _) (v i).prop
+    exact dfinsuppSumAddHom_mem _ v _ fun i _ => (le_iSup S i : S i ≤ _) (v i).prop
 
 /-- The bounded supremum of a family of commutative additive submonoids is equal to the range of
 `DFinsupp.sumAddHom` composed with `DFinsupp.filterAddMonoidHom`; that is, every element in the
 bounded `iSup` can be produced from taking a finite number of non-zero elements from the `S i` that
 satisfy `p i`, coercing them to `γ`, and summing them. -/
-theorem AddSubmonoid.bsupr_eq_mrange_dfinsupp_sumAddHom (p : ι → Prop) [DecidablePred p]
+theorem AddSubmonoid.bsupr_eq_mrange_dfinsuppSumAddHom (p : ι → Prop) [DecidablePred p]
     [AddCommMonoid γ] (S : ι → AddSubmonoid γ) :
     ⨆ (i) (_ : p i), S i =
       AddMonoidHom.mrange ((sumAddHom fun i => (S i).subtype).comp (filterAddMonoidHom _ p)) := by
@@ -70,15 +74,19 @@ theorem AddSubmonoid.bsupr_eq_mrange_dfinsupp_sumAddHom (p : ι → Prop) [Decid
     rw [AddMonoidHom.comp_apply, filterAddMonoidHom_apply, filter_single_pos _ _ hi]
     exact sumAddHom_single _ _ _
   · rintro x ⟨v, rfl⟩
-    refine dfinsupp_sumAddHom_mem _ _ _ fun i _ => ?_
+    refine dfinsuppSumAddHom_mem _ _ _ fun i _ => ?_
     refine AddSubmonoid.mem_iSup_of_mem i ?_
     by_cases hp : p i
     · simp [hp]
     · simp [hp]
 
+@[deprecated (since := "2025-04-06")]
+alias AddSubmonoid.bsupr_eq_mrange_dfinsupp_sumAddHom :=
+  AddSubmonoid.bsupr_eq_mrange_dfinsuppSumAddHom
+
 theorem AddSubmonoid.mem_iSup_iff_exists_dfinsupp [AddCommMonoid γ] (S : ι → AddSubmonoid γ)
     (x : γ) : x ∈ iSup S ↔ ∃ f : Π₀ i, S i, DFinsupp.sumAddHom (fun i => (S i).subtype) f = x :=
-  SetLike.ext_iff.mp (AddSubmonoid.iSup_eq_mrange_dfinsupp_sumAddHom S) x
+  SetLike.ext_iff.mp (AddSubmonoid.iSup_eq_mrange_dfinsuppSumAddHom S) x
 
 /-- A variant of `AddSubmonoid.mem_iSup_iff_exists_dfinsupp` with the RHS fully unfolded. -/
 theorem AddSubmonoid.mem_iSup_iff_exists_dfinsupp' [AddCommMonoid γ] (S : ι → AddSubmonoid γ)
@@ -92,4 +100,4 @@ theorem AddSubmonoid.mem_bsupr_iff_exists_dfinsupp (p : ι → Prop) [DecidableP
     [AddCommMonoid γ] (S : ι → AddSubmonoid γ) (x : γ) :
     (x ∈ ⨆ (i) (_ : p i), S i) ↔
       ∃ f : Π₀ i, S i, DFinsupp.sumAddHom (fun i => (S i).subtype) (f.filter p) = x :=
-  SetLike.ext_iff.mp (AddSubmonoid.bsupr_eq_mrange_dfinsupp_sumAddHom p S) x
+  SetLike.ext_iff.mp (AddSubmonoid.bsupr_eq_mrange_dfinsuppSumAddHom p S) x

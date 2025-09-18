@@ -33,7 +33,7 @@ variable {G : Type*} [Group G]
 
 /-- Two subgroups `H K` of `G` are commensurable if `H ⊓ K` has finite index in both `H` and `K` -/
 def Commensurable (H K : Subgroup G) : Prop :=
-  H.relindex K ≠ 0 ∧ K.relindex H ≠ 0
+  H.relIndex K ≠ 0 ∧ K.relIndex H ≠ 0
 
 namespace Commensurable
 
@@ -50,14 +50,14 @@ theorem symm {H K : Subgroup G} : Commensurable H K → Commensurable K H := And
 @[trans]
 theorem trans {H K L : Subgroup G} (hhk : Commensurable H K) (hkl : Commensurable K L) :
     Commensurable H L :=
-  ⟨Subgroup.relindex_ne_zero_trans hhk.1 hkl.1, Subgroup.relindex_ne_zero_trans hkl.2 hhk.2⟩
+  ⟨Subgroup.relIndex_ne_zero_trans hhk.1 hkl.1, Subgroup.relIndex_ne_zero_trans hkl.2 hhk.2⟩
 
 theorem equivalence : Equivalence (@Commensurable G _) :=
   ⟨Commensurable.refl, fun h => Commensurable.symm h, fun h₁ h₂ => Commensurable.trans h₁ h₂⟩
 
-/-- Equivalence of `K/H ⊓ K` with `gKg⁻¹/gHg⁻¹ ⊓ gKg⁻¹`-/
+/-- Equivalence of `K/H ⊓ K` with `gKg⁻¹/gHg⁻¹ ⊓ gKg⁻¹` -/
 def quotConjEquiv (H K : Subgroup G) (g : ConjAct G) :
-    K ⧸ H.subgroupOf K ≃ (g • K).1 ⧸ (g • H).subgroupOf (g • K) :=
+    K ⧸ H.subgroupOf K ≃ (g • K : Subgroup G) ⧸ (g • H).subgroupOf (g • K) :=
   Quotient.congr (K.equivSMul g).toEquiv fun a b => by
     dsimp
     rw [← Quotient.eq'', ← Quotient.eq'', QuotientGroup.eq, QuotientGroup.eq,

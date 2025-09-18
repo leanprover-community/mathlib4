@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Module.Defs
+import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Data.DFinsupp.Module
 
 /-!
@@ -49,9 +50,8 @@ def orderEmbeddingToFun : (Π₀ i, α i) ↪o ∀ i, α i where
 @[simp, norm_cast]
 lemma coe_orderEmbeddingToFun : ⇑(orderEmbeddingToFun (α := α)) = DFunLike.coe := rfl
 
--- Porting note: we added implicit arguments here in https://github.com/leanprover-community/mathlib4/pull/3414.
 theorem orderEmbeddingToFun_apply {f : Π₀ i, α i} {i : ι} :
-    (@orderEmbeddingToFun ι α _ _ f) i = f i :=
+    orderEmbeddingToFun f i = f i :=
   rfl
 
 end LE
@@ -123,18 +123,16 @@ end Zero
 
 /-! ### Algebraic order structures -/
 
+instance (α : ι → Type*) [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
+    [∀ i, IsOrderedAddMonoid (α i)] : IsOrderedAddMonoid (Π₀ i, α i) :=
+  { add_le_add_left := fun _ _ h c i ↦ add_le_add_left (h i) (c i) }
 
-instance (α : ι → Type*) [∀ i, OrderedAddCommMonoid (α i)] : OrderedAddCommMonoid (Π₀ i, α i) :=
-  { (inferInstance : AddCommMonoid (DFinsupp α)),
-    (inferInstance : PartialOrder (DFinsupp α)) with
-    add_le_add_left := fun _ _ h c i ↦ add_le_add_left (h i) (c i) }
+instance (α : ι → Type*) [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
+    [∀ i, IsOrderedCancelAddMonoid (α i)] :
+    IsOrderedCancelAddMonoid (Π₀ i, α i) :=
+  { le_of_add_le_add_left := fun _ _ _ H i ↦ le_of_add_le_add_left (H i) }
 
-instance (α : ι → Type*) [∀ i, OrderedCancelAddCommMonoid (α i)] :
-    OrderedCancelAddCommMonoid (Π₀ i, α i) :=
-  { (inferInstance : OrderedAddCommMonoid (DFinsupp α)) with
-    le_of_add_le_add_left := fun _ _ _ H i ↦ le_of_add_le_add_left (H i) }
-
-instance [∀ i, OrderedAddCommMonoid (α i)] [∀ i, AddLeftReflectLE (α i)] :
+instance [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, AddLeftReflectLE (α i)] :
     AddLeftReflectLE (Π₀ i, α i) :=
   ⟨fun _ _ _ H i ↦ le_of_add_le_add_left (H i)⟩
 
@@ -176,9 +174,7 @@ end Module
 
 section PartialOrder
 
--- Porting note: Split into 2 lines to satisfy the unusedVariables linter.
-variable (α)
-variable [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
+variable (α) [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
 
 instance : OrderBot (Π₀ i, α i) where
   bot := 0
@@ -203,7 +199,7 @@ variable [∀ (i) (x : α i), Decidable (x ≠ 0)] {f g : Π₀ i, α i} {s : Fi
 
 theorem le_iff' (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=
   ⟨fun h s _ ↦ h s, fun h s ↦
-    if H : s ∈ f.support then h s (hf H) else (not_mem_support_iff.1 H).symm ▸ zero_le (g s)⟩
+    if H : s ∈ f.support then h s (hf H) else (notMem_support_iff.1 H).symm ▸ zero_le (g s)⟩
 
 theorem le_iff : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g i :=
   le_iff' <| Subset.refl _
@@ -213,12 +209,9 @@ lemma support_monotone : Monotone (support (ι := ι) (β := α)) :=
 
 lemma support_mono (hfg : f ≤ g) : f.support ⊆ g.support := support_monotone hfg
 
-variable (α)
-
-instance decidableLE [∀ i, DecidableRel (@LE.le (α i) _)] : DecidableRel (@LE.le (Π₀ i, α i) _) :=
+variable (α) in
+instance decidableLE [∀ i, DecidableLE (α i)] : DecidableLE (Π₀ i, α i) :=
   fun _ _ ↦ decidable_of_iff _ le_iff.symm
-
-variable {α}
 
 end
 
@@ -229,9 +222,7 @@ theorem single_le_iff {f : Π₀ i, α i} {i : ι} {a : α i} :
 
 end LE
 
--- Porting note: Split into 2 lines to satisfy the unusedVariables linter.
-variable (α)
-variable [∀ i, Sub (α i)] [∀ i, OrderedSub (α i)] {f g : Π₀ i, α i} {i : ι} {a b : α i}
+variable (α) [∀ i, Sub (α i)] [∀ i, OrderedSub (α i)] {f g : Π₀ i, α i} {i : ι} {a b : α i}
 
 /-- This is called `tsub` for truncated subtraction, to distinguish it with subtraction in an
 additive group. -/
@@ -253,12 +244,13 @@ variable (α)
 instance : OrderedSub (Π₀ i, α i) :=
   ⟨fun _ _ _ ↦ forall_congr' fun _ ↦ tsub_le_iff_right⟩
 
-instance [∀ i, CovariantClass (α i) (α i) (· + ·) (· ≤ ·)] : CanonicallyOrderedAdd (Π₀ i, α i) where
+instance [∀ i, AddLeftMono (α i)] : CanonicallyOrderedAdd (Π₀ i, α i) where
   exists_add_of_le := by
     intro f g h
     exists g - f
     ext i
     exact (add_tsub_cancel_of_le <| h i).symm
+  le_add_self := fun _ _ _ ↦ le_add_self
   le_self_add := fun _ _ _ ↦ le_self_add
 
 variable {α} [DecidableEq ι]
@@ -266,7 +258,7 @@ variable {α} [DecidableEq ι]
 @[simp]
 theorem single_tsub : single i (a - b) = single i a - single i b := by
   ext j
-  obtain rfl | h := eq_or_ne i j
+  obtain rfl | h := eq_or_ne j i
   · rw [tsub_apply, single_eq_same, single_eq_same, single_eq_same]
   · rw [tsub_apply, single_eq_of_ne h, single_eq_of_ne h, single_eq_of_ne h, tsub_self]
 
@@ -294,8 +286,8 @@ theorem support_inf : (f ⊓ g).support = f.support ∩ g.support := by
 @[simp]
 theorem support_sup : (f ⊔ g).support = f.support ∪ g.support := by
   ext
-  simp only [Finset.mem_union, mem_support_iff, sup_apply, Ne, ← bot_eq_zero]
-  rw [_root_.sup_eq_bot_iff, not_and_or]
+  simp only [Finset.mem_union, mem_support_iff, sup_apply, Ne, ← nonpos_iff_eq_zero, sup_le_iff,
+    Classical.not_and_iff_not_or_not]
 
 nonrec theorem disjoint_iff : Disjoint f g ↔ Disjoint f.support g.support := by
   rw [disjoint_iff, disjoint_iff, DFinsupp.bot_eq_zero, ← DFinsupp.support_eq_empty,
