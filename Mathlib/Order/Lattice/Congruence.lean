@@ -18,7 +18,7 @@ import Mathlib.Order.Hom.Lattice
 
 ## Main statements
 
-- `LatticeCon.mk3`: Alternative conditions for a relation to be a lattice congruence.
+- `LatticeCon.mk'`: Alternative conditions for a relation to be a lattice congruence.
 
 ## References
 
