@@ -3,8 +3,7 @@ Copyright (c) 2024 James Sundstrom. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: James Sundstrom
 -/
-import Mathlib.RingTheory.FractionalIdeal.Basic
-import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 
 /-!
 # Extension of fractional ideals
@@ -200,6 +199,15 @@ theorem extendedHomₐ_eq_zero_iff {I : FractionalIdeal A⁰ K} :
 theorem extendedHomₐ_coeIdeal_eq_map (I : Ideal A) :
     (I : FractionalIdeal A⁰ K).extendedHomₐ L B =
       (I.map (algebraMap A B) : FractionalIdeal B⁰ L) := extended_coeIdeal_eq_map L _ I
+
+variable [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L] [IsDomain A]
+  [Algebra.IsIntegral A B]
+
+theorem coe_extendedHomₐ_eq_span (I : FractionalIdeal A⁰ K) :
+    extendedHomₐ L B I = span B (algebraMap K L '' I) := by
+  rw [extendedHom_apply, coe_extended_eq_span,
+    IsLocalization.algebraMap_eq_map_map_submonoid A⁰ B K L]
+  rfl
 
 end Algebra
 
