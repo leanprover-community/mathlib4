@@ -220,7 +220,7 @@ section const
 variable (μ p)
 variable [MemLp.Const E p μ] (c : E)
 
-/-- Constant function as an element of `MeasureTheory.Lp` for a finite measure. -/
+/-- Constant function as an element of `MeasureTheory.Lp`. -/
 protected def Lp.const : E →+ Lp E p μ where
   toFun c := ⟨AEEqFun.const α c, const_mem_Lp α μ c⟩
   map_zero' := rfl
