@@ -13,13 +13,13 @@ import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 Given a category `𝒮` and any pseudofunctor `F` from `𝒮` to `Cat`, we associate to it a category
 `∫ F`, equipped with a functor `∫ F ⥤ 𝒮`.
 
-The category `∫ᶜ F` is defined as follows:
+The category `∫ F` is defined as follows:
 * Objects: pairs `(S, a)` where `S` is an object of the base category and `a` is an object of the
   category `F(S)`.
 * Morphisms: morphisms `(R, b) ⟶ (S, a)` are defined as pairs `(f, h)` where `f : R ⟶ S` is a
   morphism in `𝒮` and `h : F(f)(a) ⟶ b`
 
-The projection functor `∫ᶜ F ⥤ 𝒮` is then given by projecting to the first factors, i.e.
+The projection functor `∫ F ⥤ 𝒮` is then given by projecting to the first factors, i.e.
 * On objects, it sends `(S, a)` to `S`
 * On morphisms, it sends `(f, h)` to `f`
 
