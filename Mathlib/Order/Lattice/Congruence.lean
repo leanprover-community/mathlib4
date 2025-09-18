@@ -83,7 +83,7 @@ def mk' [Lattice α] (r : α → α → Prop) [h₁ : IsRefl α r]
   r := r
   iseqv.refl := h₁.refl
   iseqv.symm h := by simpa [h₂, inf_comm, sup_comm, ← h₂] using h
-      (fun hxy hxz => transitive h₂ h₃ h₄ hxy hxz)
+  iseqv.trans hxy hxz := transitive h₂ h₃ h₄ hxy hxz
   inf := by
     intro w _ _ _ h1 h2
     have compatible_left_inf {x y t : α} (hh : r x y) : r (x ⊓ t) (y ⊓ t) :=
