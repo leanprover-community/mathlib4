@@ -45,39 +45,35 @@ theorem isPrimitiveRoot_exp_of_coprime (i n : ℕ) (h0 : n ≠ 0) (hi : i.Coprim
     exact hi.symm.dvd_of_dvd_mul_right this
 
 theorem isPrimitiveRoot_exp_two_rat (q : ℚ) : IsPrimitiveRoot (exp (2 * π * I * q)) q.den := by
-  nth_rw 1 [← Int.floor_add_fract q]
-  push_cast
-  rw [mul_add, Complex.exp_add, mul_comm _ (⌊q⌋ : ℂ), ← (Int.fract q).num_div_den]
-  rw [← Rat.add_intCast_den q (-⌊q⌋)]
-  simp
-  rw [Int.eq_natAbs_of_nonneg <| (Int.fract q).num_nonneg.mpr <| Int.fract_nonneg _]
-  rw [← sub_eq_add_neg]
-  exact isPrimitiveRoot_exp_of_coprime _ _ (Int.fract q).den_ne_zero (Int.fract q).reduced
+  convert isPrimitiveRoot_exp_of_coprime _ _ (Int.fract q).den_ne_zero (Int.fract q).reduced using 1
+  · nth_rw 1 [← Int.floor_add_fract q, ← (Int.fract q).num_div_den]
+    nth_rw 1 [Int.eq_natAbs_of_nonneg <| (Int.fract q).num_nonneg.mpr <| Int.fract_nonneg _]
+    rw [Rat.cast_add, Rat.cast_intCast, Rat.cast_div, Rat.cast_intCast]
+    simp [mul_add, mul_comm _ (⌊q⌋ : ℂ), Complex.exp_add]
+  · simp [← Rat.add_intCast_den q (-⌊q⌋), ← sub_eq_add_neg]
 
 theorem isPrimitiveRoot_exp_rat_of_even_num (q : ℚ) (h : Even q.num) :
     IsPrimitiveRoot (exp (π * I * q)) q.den := by
-  have ⟨n, h⟩ := even_iff_exists_two_nsmul _ |>.mp h
-  nth_rw 1 [← q.num_div_den]
-  rw [h]
-  simp
-  rw [show π * I * (2 * n / q.den) = 2 * π * I * (n / (q.den : ℤ) : ℚ) by simp; ring_nf]
-  rw [← Rat.divInt_eq_div]
-  have : q.num.natAbs = 2 * n.natAbs := by grind
-  rw [← Rat.mk_eq_divInt _ _ (by simp) <| Nat.Coprime.coprime_mul_left <| this ▸ q.reduced]
-  exact isPrimitiveRoot_exp_two_rat _
+  have ⟨n, hn⟩ := even_iff_exists_two_nsmul _ |>.mp h
+  convert isPrimitiveRoot_exp_two_rat (n / q.den : ℚ) using 1
+  · nth_rw 1 [← q.num_div_den]
+    simp [hn]
+    ring_nf
+  · rw [← Int.cast_natCast, ← Rat.divInt_eq_div, ← Rat.mk_eq_divInt _ _ (by simp) ?_]
+    refine Nat.Coprime.coprime_mul_left (k := 2) ?_
+    convert q.reduced
+    grind
 
 theorem isPrimitiveRoot_exp_rat_of_odd_num (q : ℚ) (h : Odd q.num) :
     IsPrimitiveRoot (exp (π * I * q)) (2 * q.den) := by
-  have := isPrimitiveRoot_exp_two_rat (q / 2)
-  push_cast at this
-  rw [show 2 * π * I * (q / 2) = π * I * q by ring_nf] at this
-  convert this
-  nth_rw 2 [← q.num_div_den]
-  rw [mul_comm, div_div]
-  rw [show (q.num / (q.den * 2) : ℚ) = q.num / (q.den * 2 : ℤ) by simp]
-  rw [← Rat.divInt_eq_div, show (q.den * 2 : ℤ) = (q.den * 2 : ℕ) by simp]
-  have := Nat.Coprime.mul_right q.reduced h.natAbs.coprime_two_right
-  rw [← Rat.mk_eq_divInt _ _ (by simp) this]
+  convert isPrimitiveRoot_exp_two_rat (q / 2) using 1
+  · push_cast
+    ring_nf
+  · nth_rw 2 [← q.num_div_den]
+    rw [mul_comm, div_div, ← Int.cast_ofNat, ← Int.cast_natCast, ← Int.cast_mul]
+    rw [← Rat.divInt_eq_div, ← Nat.cast_ofNat (R := ℤ), ← Nat.cast_mul]
+    rw [← Rat.mk_eq_divInt _ _ (by simp) ?_]
+    exact Nat.Coprime.mul_right q.reduced h.natAbs.coprime_two_right
 
 theorem isPrimitiveRoot_exp (n : ℕ) (h0 : n ≠ 0) : IsPrimitiveRoot (exp (2 * π * I / n)) n := by
   simpa only [Nat.cast_one, one_div] using
