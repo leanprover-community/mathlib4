@@ -36,16 +36,16 @@ it.
 
 -/
 
-variable (M : Type*) [AddCommMonoid M]
+variable {M : Type*} [AddCommMonoid M]
 
 local notation "↑ⁿ" => PNat.equivNonZeroDivisorsNat
 
+variable (M) in
 /-- The divisible hull of a `AddCommMonoid` (as a ℕ-module) is the localized module by
 `ℕ+` (implemented using `nonZeroDivisors ℕ`), thus a ℕ-divisble group, or a `ℚ≥0`-module. -/
 abbrev DivisibleHull := LocalizedModule (nonZeroDivisors ℕ) M
 
 namespace DivisibleHull
-variable {M}
 
 /-- Create an element `m / s`. -/
 def mk (m : M) (s : ℕ+) : DivisibleHull M := LocalizedModule.mk m (↑ⁿ s)
