@@ -288,8 +288,8 @@ it is the infimum of all Grothendieck topologies whose associated coverage conta
 theorem toGrothendieck_eq_sInf (K : Coverage C) : toGrothendieck _ K =
     sInf {J | K ≤ ofGrothendieck _ J } := by
   apply le_antisymm
-  · apply le_sInf; intro J hJ
-    intro X S hS
+  · apply le_sInf
+    intro J hJ X S hS
     induction hS with
     | of X S hS => apply hJ; assumption
     | top => apply J.top_mem

@@ -293,7 +293,7 @@ lemma pullbackAwayιIso_inv_fst :
 lemma pullbackAwayιIso_inv_snd :
     (pullbackAwayιIso 𝒜 f_deg hm g_deg hm' hx).inv ≫ Limits.pullback.snd _ _ =
       Spec.map (CommRingCat.ofHom (awayMap 𝒜 f_deg (hx.trans (mul_comm _ _)))) := by
-  rw [← pullbackAwayιIso_hom_SpecMap_awayMap_right, Iso.inv_hom_id_assoc]
+  rw [← pullbackAwayιIso_hom_SpecMap_awayMap_right (hx := hx) .., Iso.inv_hom_id_assoc]
 
 include hm' in
 lemma awayι_preimage_basicOpen :
