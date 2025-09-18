@@ -17,7 +17,7 @@ For a field `k`, we say that a `k`-algebra `A` is geometrically reduced (`IsGeom
 if the tensor product `AlgebraicClosure k ⊗[k] A` is reduced.
 
 ## Main results
-- `IsReduced.tensor_of_flat_of_forall_fg`: if `R` is a commutative ring and `A` and `C` are
+- `IsReduced.tensor_of_flat_of_forall_fg`: if `R` is a commutative semiring and `A` and `C` are
   `R`-algebras, such that `C ⊗[R] B` is reduced for all finitely generated `R` subalgebras `B` of
   `A`, then `C ⊗[R] A` is reduced.
 
@@ -42,12 +42,10 @@ class IsGeometricallyReduced (k A : Type*) [Field k] [Ring A] [Algebra k A] : Pr
 attribute [instance] IsGeometricallyReduced.reduced_algebraicClosure_tensor
 
 instance (k A K : Type*) [Field k] [Ring A] [Algebra k A] [Field K] [Algebra k K]
-    [IsAlgClosure k K] [IsGeometricallyReduced k A] : IsReduced (K ⊗[k] A) :=
+    [Algebra.IsAlgebraic k K] [IsGeometricallyReduced k A] : IsReduced (K ⊗[k] A) :=
   isReduced_of_injective
-    (Algebra.TensorProduct.map
-      ((↑(IsAlgClosure.equiv k K (AlgebraicClosure k)) : K →ₐ[k] AlgebraicClosure k)) 1)
-    (Module.Flat.rTensor_preserves_injective_linearMap _
-      <| EquivLike.injective (IsAlgClosure.equiv k K (AlgebraicClosure k)))
+    (Algebra.TensorProduct.map ((IsAlgClosed.lift : K →ₐ[k] AlgebraicClosure k)) 1)
+    (Module.Flat.rTensor_preserves_injective_linearMap _ (RingHom.injective _))
 
 lemma isGeometricallyReduced_of_injective {B : Type*} [Ring B] [Algebra k B] (f : A →ₐ[k] B)
     (hf : Function.Injective f) [IsGeometricallyReduced k B] : IsGeometricallyReduced k A :=
@@ -62,8 +60,9 @@ theorem isReduced_of_isGeometricallyReduced [IsGeometricallyReduced k A] : IsRed
 
 -- If all finitely generated subalgebras of A are geometrically reduced, then A is geometrically
 -- reduced. The result is in https://stacks.math.columbia.edu/tag/030T
-theorem IsReduced.tensor_of_flat_of_forall_fg {R A C : Type*}
-    [CommRing R] [CommRing C] [Ring A] [Algebra R A] [Algebra R C] [Module.Flat R C]
+@[stacks 030T]
+theorem IsReduced.tensor_of_flat_of_forall_fg {R C A : Type*}
+    [CommSemiring R] [CommSemiring C] [Semiring A] [Algebra R A] [Algebra R C] [Module.Flat R C]
     (h : ∀ B : Subalgebra R A, B.FG → IsReduced (C ⊗[R] B)) :
     IsReduced (C ⊗[R] A) := by
   by_contra h_contra
