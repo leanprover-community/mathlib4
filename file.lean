@@ -77,47 +77,44 @@ lemma p34 {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [Inner
     use (1 / ε) • a
     simpa [ha] using inv_smul_smul₀ (ne_of_lt εpos).symm y
 
+theorem ContinuousLinearMap.comp_le_opNorm {𝕜 𝕜₂ 𝕜₃: Type*} {E F G : Type*}
+    [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup G]
+    [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
+    [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₃ G] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃}
+    [RingHomIsometric σ₁₂] [RingHomIsometric σ₂₃] (f : E →SL[σ₁₂] F) (g : F →SL[σ₂₃] G) (x : E) :
+    ‖g (f x)‖ ≤ ‖g‖ * ‖f‖ * ‖x‖ := by calc
+  _ ≤ ‖g‖ * ‖f x‖ := g.le_opNorm (f x)
+  _ ≤ ‖g‖ * (‖f‖ * ‖x‖) :=
+    have : ‖f x‖ ≤ ‖f‖ * ‖x‖ := f.le_opNorm x
+    mul_le_mul_of_nonneg_left this (by positivity)
+  _ = _ := Eq.symm (mul_assoc ‖g‖ ‖f‖ ‖x‖)
+
 lemma p41 {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [InnerProductSpace ℝ α]
     [InnerProductSpace ℝ β] [CompleteSpace β] [CompleteSpace α] (T : α →L[ℝ] β)
     (surj : (⇑T).Surjective) : ∃ δ > 0, ∀ f : β →L[ℝ] ℝ , δ * ‖f‖ ≤ ‖f.comp T‖ := by
   have ho : IsOpen (T '' (ball 0 1)) := T.isOpenMap surj (ball 0 1) isOpen_ball
   rw [Metric.isOpen_iff] at ho
   obtain⟨δ, δpos, hδ⟩ : ∃ δ > 0, ball 0 δ ⊆ T '' (ball 0 1) := ho 0 ⟨0, by simp⟩
-  have : ∀ a : α , ‖T a‖ ≥ δ * ‖a‖ := by
-    have := closure_image_closure T.continuous (s := ball 0 1)
-    sorry
-  use δ
-  constructor
-  · exact δpos
-  · intro f
-    rw [ContinuousLinearMap.norm_def (f.comp T)]
-    apply le_csInf ?_ ?_
-    · simp [Set.nonempty_def]
-      use ‖f‖ * ‖T‖
-      constructor
-      · positivity
-      · intro x
-        calc
-        _ ≤ ‖f‖ * ‖T x‖ := ContinuousLinearMap.le_opNorm f (T x)
-        _ ≤ _ := by
-          have : ‖T x‖ ≤ ‖T‖ * ‖x‖ := ContinuousLinearMap.le_opNorm T x
-          rw [mul_assoc]
-          refine mul_le_mul_of_nonneg ?_ this (by positivity) (by positivity)
-          simp
-    · intro c ⟨cpos, hc⟩
-      have : ‖f‖ ≤ c / δ := by
-        refine ContinuousLinearMap.opNorm_le_bound' f ?_ ?_
-        · positivity
-        · intro x ne
-          obtain ⟨a, ha⟩ : ∃ a, T a = x := surj x
-          rw [← ha]
-          calc
-          _ ≤ c * ‖a‖ := hc a
-          _ ≤ _ := by
-
-            sorry
-      sorry
-
+  refine ⟨δ, δpos, fun f ↦ ?_⟩
+  rw [← (f.comp T).sSup_unit_ball_eq_norm, ← f.sSup_unit_ball_eq_norm]
+  have := Real.sSup_smul_of_nonneg (a := δ) (by positivity) ((fun x => ‖f x‖) '' ball 0 1)
+  rw [smul_eq_mul] at this
+  rw [← this]
+  refine csSup_le_csSup ?_ (by simp) ?_
+  · use ‖f‖ * ‖T‖
+    simp [upperBounds]
+    intro a ha
+    calc
+    _ ≤ ‖f‖ * ‖T‖ * ‖a‖ := T.comp_le_opNorm f a
+    _ ≤ ‖f‖ * ‖T‖ * 1 := mul_le_mul_of_nonneg_left (Std.le_of_lt ha) (by positivity)
+    _ = _ := MulOneClass.mul_one (‖f‖ * ‖T‖)
+  · intro y ⟨x, ⟨b, bin, beq⟩ ,eq⟩
+    have : δ • b ∈ ball 0 δ := by
+      simp [norm_smul, abs_of_pos δpos] at ⊢ bin
+      exact mul_lt_of_lt_one_right δpos bin
+    obtain ⟨c, cin, ceq⟩ := hδ this
+    use c
+    simpa [← eq, cin, ceq, beq] using Or.inl (Std.le_of_lt δpos)
 
 example {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [InnerProductSpace ℝ α]
     [InnerProductSpace ℝ β] [CompleteSpace β] [CompleteSpace α] (T : α →L[ℝ] β) : List.TFAE [
@@ -125,8 +122,8 @@ example {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [InnerPr
     ∃ δ > 0, closure (T '' (ball 0 1)) ⊇ ball 0 δ,
     ∃ δ > 0, T '' (ball 0 1) ⊇ ball 0 δ,
     (⇑T).Surjective] := by
-  tfae_have 1 → 2 := sorry
-  tfae_have 2 → 3 := sorry
-  tfae_have 3 → 4 := sorry
+  tfae_have 1 → 2 := fun ⟨δ, δpos, h⟩ ↦ ⟨δ, δpos, p12 T δpos h⟩
+  tfae_have 2 → 3 := fun ⟨δ, δpos, h⟩ ↦ ⟨δ, δpos, p23 T δpos h⟩
+  tfae_have 3 → 4 := fun ⟨δ, δpos, h⟩ ↦ p34 T δpos h
   tfae_have 4 → 1 := p41 T
   tfae_finish
