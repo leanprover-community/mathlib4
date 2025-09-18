@@ -36,9 +36,7 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
 abbrev mathlibLeanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩,
-    ⟨`maxSynthPendingDepth, .ofNat 3⟩,
-    ⟨`backward.grind.checkInferPatternDiscrepancy, true⟩,
-    ⟨`backward.grind.inferPattern, true⟩
+    ⟨`maxSynthPendingDepth, .ofNat 3⟩
   ] ++ -- options that are used in `lake build`
     mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
 
