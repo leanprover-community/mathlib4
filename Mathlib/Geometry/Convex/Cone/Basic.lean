@@ -247,20 +247,6 @@ theorem smul_mem_iff {c : 𝕜} (hc : 0 < c) {x : M} : c • x ∈ C ↔ x ∈ C
   ⟨fun h => inv_smul_smul₀ hc.ne' x ▸ C.smul_mem (inv_pos.2 hc) h, C.smul_mem hc⟩
 
 end MulAction
-
-section OrderedAddCommGroup
-
-variable [AddCommGroup M] [PartialOrder M] [Module 𝕜 M]
-
-/-- Constructs an ordered module given an `OrderedAddCommGroup`, a cone, and a proof that
-the order relation is the one defined by the cone.
--/
-theorem to_orderedSMul (C : ConvexCone 𝕜 M) (h : ∀ x y : M, x ≤ y ↔ y - x ∈ C) : OrderedSMul 𝕜 M :=
-  .mk' fun x y z xy hz ↦ by
-    rw [h (z • x) (z • y), ← smul_sub z y x]; exact C.smul_mem hz ((h x y).mp xy.le)
-
-end OrderedAddCommGroup
-
 end LinearOrderedField
 
 /-! ### Convex cones with extra properties -/

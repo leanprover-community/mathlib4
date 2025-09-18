@@ -57,9 +57,8 @@ variable {α : Type u}
 
 attribute [local simp] List.append_eq_has_append
 
--- Porting note: to_additive.map_namespace is not supported yet
--- worked around it by putting a few extra manual mappings (but not too many all in all)
--- run_cmd to_additive.map_namespace `FreeGroup `FreeAddGroup
+-- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20to_additive.2Emap_namespace
+run_cmd Lean.Elab.Command.liftCoreM <| ToAdditive.insertTranslation `FreeGroup `FreeAddGroup
 
 /-- Reduction step for the additive free group relation: `w + x + (-x) + v ~> w + v` -/
 inductive FreeAddGroup.Red.Step : List (α × Bool) → List (α × Bool) → Prop
@@ -68,7 +67,7 @@ inductive FreeAddGroup.Red.Step : List (α × Bool) → List (α × Bool) → Pr
 attribute [simp] FreeAddGroup.Red.Step.not
 
 /-- Reduction step for the multiplicative free group relation: `w * x * x⁻¹ * v ~> w * v` -/
-@[to_additive FreeAddGroup.Red.Step]
+@[to_additive]
 inductive FreeGroup.Red.Step : List (α × Bool) → List (α × Bool) → Prop
   | not {L₁ L₂ x b} : FreeGroup.Red.Step (L₁ ++ (x, b) :: (x, not b) :: L₂) (L₁ ++ L₂)
 
@@ -79,7 +78,7 @@ namespace FreeGroup
 variable {L L₁ L₂ L₃ L₄ : List (α × Bool)}
 
 /-- Reflexive-transitive closure of `Red.Step` -/
-@[to_additive FreeAddGroup.Red /-- Reflexive-transitive closure of `Red.Step` -/]
+@[to_additive /-- Reflexive-transitive closure of `Red.Step` -/]
 def Red : List (α × Bool) → List (α × Bool) → Prop :=
   ReflTransGen Red.Step
 
@@ -354,18 +353,18 @@ theorem antisymm (h₁₂ : Red L₁ L₂) (h₂₁ : Red L₂ L₁) : L₁ = L�
 
 end Red
 
-@[to_additive FreeAddGroup.equivalence_join_red]
+@[to_additive]
 theorem equivalence_join_red : Equivalence (Join (@Red α)) :=
   equivalence_join_reflTransGen fun _ b c hab hac =>
     match b, c, Red.Step.diamond hab hac rfl with
     | b, _, Or.inl rfl => ⟨b, by rfl, by rfl⟩
     | _, _, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, ReflTransGen.single hcd⟩
 
-@[to_additive FreeAddGroup.join_red_of_step]
+@[to_additive]
 theorem join_red_of_step (h : Red.Step L₁ L₂) : Join Red L₁ L₂ :=
   join_of_single reflexive_reflTransGen h.to_red
 
-@[to_additive FreeAddGroup.eqvGen_step_iff_join_red]
+@[to_additive]
 theorem eqvGen_step_iff_join_red : EqvGen Red.Step L₁ L₂ ↔ Join Red L₁ L₂ :=
   Iff.intro
     (fun h =>
@@ -378,7 +377,7 @@ theorem eqvGen_step_iff_join_red : EqvGen Red.Step L₁ L₂ ↔ Join Red L₁ L
 
 /-- Predicate asserting that the word `L` admits no reduction steps, i.e., no two neighboring
 elements of the word cancel. -/
-@[to_additive FreeAddGroup.IsReduced /-- Predicate asserting the word `L` admits no reduction steps,
+@[to_additive /-- Predicate asserting the word `L` admits no reduction steps,
 i.e., no two neighboring elements of the word cancel. -/]
 def IsReduced (L : List (α × Bool)) : Prop := L.Chain' fun a b ↦ a.1 = b.1 → a.2 = b.2
 
@@ -392,7 +391,7 @@ theorem IsReduced.nil : IsReduced ([] : List (α × Bool)) := chain'_nil
 @[to_additive (attr := simp)]
 theorem IsReduced.singleton {a : α × Bool} : IsReduced [a] := chain'_singleton a
 
-@[to_additive (attr := simp) FreeAddGroup.isReduced_cons_cons]
+@[to_additive (attr := simp)]
 theorem isReduced_cons_cons {a b : (α × Bool)} :
     IsReduced (a :: b :: L) ↔ (a.1 = b.1 → a.2 = b.2) ∧ IsReduced (b :: L) := chain'_cons_cons
 
@@ -415,7 +414,7 @@ lemma IsReduced.of_forall_not_step :
     rintro rfl
     exact hL₁ L₁ <| .not (L₁ := [])
 
-@[to_additive FreeAddGroup.isReduced_iff_not_step]
+@[to_additive]
 theorem isReduced_iff_not_step : IsReduced L₁ ↔ ∀ L₂, ¬ Red.Step L₁ L₂ where
   mp h _ := h.not_step
   mpr := .of_forall_not_step

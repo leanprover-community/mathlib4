@@ -326,7 +326,7 @@ def topology' {R M : Type*} [CommRing R] {_ : TopologicalSpace R} [AddCommGroup 
     (B : ModuleFilterBasis R M) : TopologicalSpace M :=
   B.toAddGroupFilterBasis.topology
 
-/-- A topological add group with a basis of `𝓝 0` satisfying the axioms of `ModuleFilterBasis`
+/-- A topological additive group with a basis of `𝓝 0` satisfying the axioms of `ModuleFilterBasis`
 is a topological module.
 
 This lemma is mathematically useless because one could obtain such a result by applying
