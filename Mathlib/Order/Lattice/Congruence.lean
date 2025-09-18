@@ -76,11 +76,11 @@ private lemma transitive {r : α → α → Prop}
           ((h₄ inf_le_sup (h₂.mp hxy)).2 : r (x ⊓ y ⊔ (y ⊔ z)) (x ⊔ y ⊔ (y ⊔ z)))))
 
 /-- Alternative conditions for a lattice congruence. -/
-def mk' [Lattice α] (r : α → α → Prop) (h₁ : IsRefl α r)
+def mk' [Lattice α] (r : α → α → Prop) [h₁ : IsRefl α r]
     (h₂ : ∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y))
     (h₃ : ∀ ⦃x y z : α⦄, x ≤ y → y ≤ z → r x y → r y z → r x z)
     (h₄ : ∀ ⦃x y t : α⦄, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t)) : LatticeCon α :=
-  LatticeCon.mk (Setoid.mk r (Equivalence.mk h₁.refl
+  LatticeCon.mk (Setoid.mk r (Equivalence.mk (by exact?)
   (fun h => by simpa [h₂, inf_comm, sup_comm, ← h₂] using h)
   (fun hxy hxz => transitive h₂ h₃ h₄ hxy hxz))) (by
     intro w _ _ _ h1 h2
