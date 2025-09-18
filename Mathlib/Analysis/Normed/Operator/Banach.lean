@@ -155,8 +155,7 @@ For further use, we will only need such an element whose image
 is within distance `‖y‖/2` of `y`, to apply an iterative process. -/
 theorem exists_approx_preimage_norm_le (surj : Surjective f) :
     ∃ C ≥ 0, ∀ y, ∃ x, dist (f x) y ≤ 1 / 2 * ‖y‖ ∧ ‖x‖ ≤ C * ‖y‖ :=
-  have h := noempty_interior_of_surj f surj
-  exists_approx_preimage_norm_le' f h
+  f.exists_approx_preimage_norm_le' <| f.noempty_interior_of_surj surj
 
 variable [CompleteSpace E]
 
