@@ -41,25 +41,30 @@ A nested Lie bracket expression is in the basis if one of the following is true:
 1. the expression is just a single variable, e.g. `x`
 2. the expression can be written as `⁅a₁, a₂⁆` (where `a₁` and `a₂` are both nested Lie brackets
 expressions), both `a₁` and `a₂` are in the basis, `a₁ < a₂` under the order described above, and
-either `a₁` is just a single variable or `a₁ = ⁅a₁₁, a₁₂⁆` and `a₁₂ < a₂` under the order described
+either `a₂` is just a single variable or `a₂ = ⁅a₂₁, a₂₂⁆` and `a₂₁ <= a₁` under the order described
 above.
 (`ExLie.isLyndon` returns true if the expression represented by the `ExLie` term is in the basis)
 
 The following algorithm gives us a way to write every nested Lie bracket representation into a
 linear combination of the elements in the basis (implemented in the function `evalLieLie`):
 For a given nested Lie bracket representation `⁅a, b⁆` (if it is just a single variable then it is
-already in the basis):
-1. If `a` is equal to `b`, then the value is 0.
+already in the basis) such that `a` and `b` are already in the basis (we can get that by recursively
+processing `a` and `b` first):
+1. If `a == b` in the order described above, then there is a theorem that guarantees different
+  elements in the basis will be flattened to different lists, so in this case we will have that `a`
+  is actually equal to `b` and the lie bracket evaluates to 0.
 2. If `a > b` under the order described above, then `⁅a, b⁆ = -⁅b, a⁆`, so we reduce to case 3.
 3. If `a < b`, then
   3.1. If `⁅a, b⁆` is in the basis, then we have finished.
-  3.2. Otherwise we will have `a = ⁅x, y⁆`, then we write
-    `⁅a, b⁆ = ⁅⁅x, y⁆, b⁆ = ⁅⁅x, b⁆, y⁆ + ⁅x, ⁅y, b⁆⁆`,
+  3.2. Otherwise we will have `b = ⁅x, y⁆`, then we write
+    `⁅a, b⁆ = ⁅a, ⁅x, y⁆⁆ = ⁅x, ⁅a, y⁆⁆ + ⁅⁅a, x⁆, y⁆`,
     and process the two remaining terms recursively using this algorithm.
 
 The tactic implicitly relies on the following hypotheses:
-1. The algorithm described above actually terminates.
-2. The elements we claim to be a basis actually forms a basis of the free Lie algebra.
+1. The theorem we referred to in case 1 of the algorithm holds, i.e. if `a` and `b` are elements in
+  the basis that flatten to the same list, then `a` is equal to `b`.
+2. The algorithm described above actually terminates.
+3. The elements we claim to be a basis actually forms a basis of the free Lie algebra.
   (So that we know the algorithm decides whether two terms are equal in the free Lie algebra)
 
 The proof of these hypotheses can be found in the reference.
@@ -139,9 +144,9 @@ def ExLie.isLyndon {u : Lean.Level} {α : Q(Type u)} {sα : Q(LieRing $α)} {a :
     ExLie sα a → Bool
   | .atom _ => true
   | .lie a₁ a₂ => a₁.isLyndon && a₂.isLyndon && (a₁.cmp a₂).isLT &&
-    match a₁ with
+    match a₂ with
     | .atom _ => true
-    | .lie _ y => (a₂.cmp y).isLE
+    | .lie x _ => (x.cmp a₁).isLE
 
 /-- Convert an `ExLie` element `v` to the `ExSum` element `(1 : ℤ) • v + 0`. -/
 def ExLie.toExSum {u : Lean.Level} {α : Q(Type u)} {sα : Q(LieRing $α)} {a : Q($α)}
@@ -251,10 +256,9 @@ private lemma lie_aux3 {L : Type*} [AddCommGroup L] (a : L) : a = (1 : ℤ) • 
 private lemma lie_aux4 {L : Type*} [LieRing L] (a b : L) {c₁ c₂ : L} :
     ⁅b, a⁆ = c₁ → (-1) • c₁ = c₂ → ⁅a, b⁆ = c₂ := fun h₁ h₂ ↦ (by subst_vars; simp)
 
-private lemma lie_aux5 {L : Type*} [LieRing L] {x y b c₁ c₂ c₃ c₄ c₅ : L} :
-    ⁅x, b⁆ = c₁ → ⁅c₁, y⁆ = c₂ → ⁅y, b⁆ = c₃ → ⁅x, c₃⁆ = c₄ → c₂ + c₄ = c₅ → ⁅⁅x, y⁆, b⁆ = c₅ := by
-  intros; subst_vars; rw [LieRing.leibniz_lie x y b, ← lie_skew y ⁅x, b⁆, ← add_assoc,
-  add_comm, ← add_assoc, neg_add_cancel, zero_add]
+private lemma lie_aux5 {L : Type*} [LieRing L] {a x y c₁ c₂ c₃ c₄ c₅ : L} :
+    ⁅a, y⁆ = c₁ → ⁅x, c₁⁆ = c₂ → ⁅a, x⁆ = c₃ → ⁅c₃, y⁆ = c₄ → c₂ + c₄ = c₅ → ⁅a, ⁅x, y⁆⁆ = c₅ := by
+  intros; subst_vars; rw [LieRing.leibniz_lie a x y, add_comm]
 
 mutual
 
@@ -265,24 +269,28 @@ a lot of proving work). -/
 partial def evalLieLie (sα : Q(LieRing $α)) {a b : Q($α)} (va : ExLie sα a) (vb : ExLie sα b) :
     Lean.Core.CoreM <| Result (ExSum sα) q(⁅$a, $b⁆) := do
   Lean.Core.checkSystem decl_name%.toString
-  if va.eq vb then
+  if !(va.isLyndon && vb.isLyndon) then unreachable!
+  match va.cmp vb with
+  | .eq =>
+    if !(va.eq vb) then unreachable!
     haveI' : $a =Q $b := ⟨⟩
     return ⟨q(0), .zero, q(lie_self $a)⟩
-  if (va.cmp vb).isGT then
+  | .gt =>
     let ⟨_, vc₁, pc₁⟩ ← evalLieLie sα vb va
     let ⟨_, vc₂, pc₂⟩ := evalSmul sα vc₁ (-1)
     return ⟨_, vc₂, q(lie_aux4 $a $b $pc₁ $pc₂)⟩
-  if (ExLie.lie va vb).isLyndon then
-    return ⟨q((1 : ℤ) • ⁅$a, $b⁆ + 0), (ExLie.lie va vb).toExSum, q(lie_aux3 ⁅$a, $b⁆)⟩
-  match va with
-  | .atom _ => unreachable!
-  | .lie (a := x) (b := y) vx vy =>
-    let ⟨_, vc₁, pc₁⟩ ← evalLieLie sα vx vb
-    let ⟨_, vc₂, pc₂⟩ ← evalLie₂ sα vc₁ vy
-    let ⟨_, vc₃, pc₃⟩ ← evalLieLie sα vy vb
-    let ⟨_, vc₄, pc₄⟩ ← evalLie₁ sα vx vc₃
-    let ⟨_, vc₅, pc₅⟩ ← evalAdd sα vc₂ vc₄
-    return ⟨_, vc₅, q(lie_aux5 $pc₁ $pc₂ $pc₃ $pc₄ $pc₅)⟩
+  | .lt =>
+    if (ExLie.lie va vb).isLyndon then
+      return ⟨q((1 : ℤ) • ⁅$a, $b⁆ + 0), (ExLie.lie va vb).toExSum, q(lie_aux3 ⁅$a, $b⁆)⟩
+    match vb with
+    | .atom _ => unreachable!
+    | .lie vx vy =>
+      let ⟨_, vc₁, pc₁⟩ ← evalLieLie sα va vy
+      let ⟨_, vc₂, pc₂⟩ ← evalLie₁ sα vx vc₁
+      let ⟨_, vc₃, pc₃⟩ ← evalLieLie sα va vx
+      let ⟨_, vc₄, pc₄⟩ ← evalLie₂ sα vc₃ vy
+      let ⟨_, vc₅, pc₅⟩ ← evalAdd sα vc₂ vc₄
+      return ⟨_, vc₅, q(lie_aux5 $pc₁ $pc₂ $pc₃ $pc₄ $pc₅)⟩
 
 /-- This function evaluates an expression of the form `⁅ExLie, ExSum⁆` into its normal form. -/
 partial def evalLie₁ (sα : Q(LieRing $α)) {a b : Q($α)} (va : ExLie sα a) (vb : ExSum sα b) :
