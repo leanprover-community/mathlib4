@@ -6,9 +6,12 @@ Authors: Bhavik Mehta, Kim Morrison
 import Mathlib.CategoryTheory.Comma.Over.Pullback
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Restrict
+import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
+import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+import Mathlib.CategoryTheory.WithTerminal.Cone
 
 /-!
 # Monomorphisms over a fixed object
@@ -36,7 +39,7 @@ and was ported to mathlib by Kim Morrison.
 -/
 
 
-universe v₁ v₂ u₁ u₂
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 noncomputable section
 
@@ -47,13 +50,17 @@ open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C] {X Y Z : C}
 variable {D : Type u₂} [Category.{v₂} D]
 
+/-- The object property in `Over X` of being a monomorphism. -/
+abbrev Over.isMonoOver (X : C) : ObjectProperty (Over X) :=
+  fun f : Over X => Mono f.hom
+
 /-- The category of monomorphisms into `X` as a full subcategory of the over category.
 This isn't skeletal, so it's not a partial order.
 
 Later we define `Subobject X` as the quotient of this by isomorphisms.
 -/
 def MonoOver (X : C) :=
-  ObjectProperty.FullSubcategory fun f : Over X => Mono f.hom
+  ObjectProperty.FullSubcategory (Over.isMonoOver X)
 
 instance (X : C) : Category (MonoOver X) :=
   ObjectProperty.FullSubcategory.category _
@@ -201,6 +208,38 @@ def slice {A : C} {f : Over A}
   counitIso :=
     MonoOver.liftComp _ _ _ _ ≪≫
       MonoOver.liftIso _ _ f.iteratedSliceEquiv.counitIso ≪≫ MonoOver.liftId
+
+section Limits
+
+variable {J : Type u₃} [Category.{v₃} J] (X : C)
+
+lemma closedUnderLimitsOfShape_of_isMonoOver :
+    ClosedUnderLimitsOfShape J (Over.isMonoOver X) := by
+  refine fun F _ hc p ↦ ⟨fun g h e ↦ ?_⟩
+  apply IsLimit.hom_ext <| WithTerminal.isLimitEquiv.invFun hc
+  intro j; cases j with
+  | of j => have := p j; rw [← cancel_mono ((F.obj j).hom)]; simpa
+  | star => exact e
+
+lemma hasLimit (F : J ⥤ MonoOver X) [HasLimit (F ⋙ (Over.isMonoOver X).ι)] :
+    HasLimit F := by
+  apply hasLimit_of_closedUnderLimits (closedUnderLimitsOfShape_of_isMonoOver X)
+
+lemma hasLimitsOfShape [HasLimitsOfShape J (Over X)] :
+    HasLimitsOfShape J (MonoOver X) := by
+  apply hasLimitsOfShape_of_closedUnderLimits (closedUnderLimitsOfShape_of_isMonoOver X)
+
+instance hasFiniteLimits [HasFiniteWidePullbacks C] : HasFiniteLimits (MonoOver X) where
+  out _ _ _ := by
+    have := Over.hasFiniteLimits (B := X)
+    apply hasLimitsOfShape X
+
+instance hasLimits [HasWidePullbacks.{v₃} C] : HasLimitsOfSize.{v₃, v₃} (MonoOver X) where
+  has_limits_of_shape _ _ := by
+    have := Over.hasLimits (B := X)
+    apply hasLimitsOfShape X
+
+end Limits
 
 section Pullback
 
