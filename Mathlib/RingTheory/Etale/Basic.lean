@@ -9,7 +9,7 @@ import Mathlib.RingTheory.Unramified.Basic
 
 /-!
 
-# Etale morphisms
+# Étale morphisms
 
 An `R`-algebra `A` is formally étale if for every `R`-algebra `B`,
 every square-zero ideal `I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists
@@ -24,8 +24,6 @@ localization at an element.
 
 -/
 
-
--- Porting note: added to make the syntax work below.
 open scoped TensorProduct
 
 universe u
@@ -141,9 +139,6 @@ variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
 variable [IsLocalization M Rₘ] [IsLocalization (M.map (algebraMap R S)) Sₘ]
 include M
 
--- Porting note: no longer supported
--- attribute [local elab_as_elim] Ideal.IsNilpotent.induction_on
-
 theorem of_isLocalization : FormallyEtale R Rₘ :=
   FormallyEtale.iff_unramified_and_smooth.mpr
     ⟨FormallyUnramified.of_isLocalization M, FormallySmooth.of_isLocalization M⟩
@@ -192,12 +187,12 @@ section Comp
 
 variable (R A B)
 
-/-- Etale is stable under composition. -/
+/-- Étale is stable under composition. -/
 theorem comp [Algebra A B] [IsScalarTower R A B] [Etale R A] [Etale A B] : Etale R B where
   formallyEtale := FormallyEtale.comp R A B
   finitePresentation := FinitePresentation.trans R A B
 
-/-- Etale is stable under base change. -/
+/-- Étale is stable under base change. -/
 instance baseChange [Etale R A] : Etale B (B ⊗[R] A) where
 
 end Comp
@@ -216,7 +211,7 @@ namespace RingHom
 variable {R S : Type u} [CommRing R] [CommRing S]
 
 /--
-A ring homomorphism `R →+* A` is formally etale if it is formally unramified and formally smooth.
+A ring homomorphism `R →+* A` is formally étale if it is formally unramified and formally smooth.
 See `Algebra.FormallyEtale`.
 -/
 @[algebraize Algebra.FormallyEtale]

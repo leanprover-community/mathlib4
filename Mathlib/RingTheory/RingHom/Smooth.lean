@@ -40,7 +40,7 @@ lemma FormallySmooth.holdsForLocalizationAway : HoldsForLocalizationAway @Formal
   fun _ _ _ _ _ r _ ↦ formallySmooth_algebraMap.mpr <| .of_isLocalization (.powers r)
 
 lemma FormallySmooth.stableUnderComposition : StableUnderComposition @FormallySmooth := by
-  intros R S T _ _ _ f g hf hg
+  intro R S T _ _ _ f g hf hg
   algebraize [f, g, g.comp f]
   exact .comp R S T
 
@@ -49,8 +49,7 @@ lemma FormallySmooth.respectsIso : RespectsIso @FormallySmooth :=
 
 lemma FormallySmooth.isStableUnderBaseChange : IsStableUnderBaseChange @FormallySmooth := by
   refine .mk respectsIso ?_
-  intros R S T _ _ _ _ _ H
-  change (algebraMap _ _).FormallySmooth
+  introv H
   rw [formallySmooth_algebraMap] at H ⊢
   infer_instance
 

@@ -10,7 +10,6 @@ import Mathlib.Order.Basic
 import Mathlib.Order.Bounds.Defs
 import Mathlib.Algebra.Group.Int.Defs
 import Mathlib.Data.Int.Basic
-import Batteries.Data.Nat.Gcd
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Nat.Defs
 
@@ -273,10 +272,10 @@ variable [GroupWithZero α] {a b : α} {m n : ℕ}
 protected lemma Commute.pow_eq_pow_iff_of_coprime (hab : Commute a b) (hmn : m.Coprime n) :
     a ^ m = b ^ n ↔ ∃ c, a = c ^ n ∧ b = c ^ m := by
   refine ⟨fun h ↦ ?_, by rintro ⟨c, rfl, rfl⟩; rw [← pow_mul, ← pow_mul']⟩
-  by_cases m = 0; · aesop
-  by_cases n = 0; · aesop
-  by_cases hb : b = 0; · exact ⟨0, by aesop⟩
-  by_cases ha : a = 0; · exact ⟨0, by have := h.symm; aesop⟩
+  by_cases m = 0; · simp_all
+  by_cases n = 0; · simp_all
+  by_cases hb : b = 0; · exact ⟨0, by simp_all⟩
+  by_cases ha : a = 0; · exact ⟨0, by have := h.symm; simp_all⟩
   refine ⟨a ^ Nat.gcdB m n * b ^ Nat.gcdA m n, ?_, ?_⟩ <;>
   · refine (pow_one _).symm.trans ?_
     conv_lhs => rw [← zpow_natCast, ← hmn, Nat.gcd_eq_gcd_ab]

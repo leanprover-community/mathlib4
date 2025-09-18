@@ -42,6 +42,12 @@ variable [LE α] {s t : NonemptyInterval α}
 theorem toProd_injective : Injective (toProd : NonemptyInterval α → α × α) :=
   fun s t h => by cases s; cases t; congr
 
+/-- Allow lifting a pair `(a, b)` with `a ≤ b` to `NonemptyInterval`
+in the `lift` tactic. -/
+instance instCanLift :
+    CanLift (α × α) (NonemptyInterval α) NonemptyInterval.toProd (fun x ↦ x.1 ≤ x.2) where
+  prf x hx := ⟨⟨x, hx⟩, rfl⟩
+
 /-- The injection that induces the order on intervals. -/
 def toDualProd : NonemptyInterval α → αᵒᵈ × α :=
   toProd

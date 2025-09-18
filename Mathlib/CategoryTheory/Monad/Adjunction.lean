@@ -40,7 +40,6 @@ namespace Adjunction
 /-- For a pair of functors `L : C ⥤ D`, `R : D ⥤ C`, an adjunction `h : L ⊣ R` induces a monad on
 the category `C`.
 -/
--- Porting note: Specifying simps projections manually to match mathlib3 behavior.
 @[simps! coe η μ]
 def toMonad (h : L ⊣ R) : Monad C where
   toFunctor := L ⋙ R
@@ -58,7 +57,6 @@ def toMonad (h : L ⊣ R) : Monad C where
 /-- For a pair of functors `L : C ⥤ D`, `R : D ⥤ C`, an adjunction `h : L ⊣ R` induces a comonad on
 the category `D`.
 -/
--- Porting note: Specifying simps projections manually to match mathlib3 behavior.
 @[simps coe ε δ]
 def toComonad (h : L ⊣ R) : Comonad D where
   toFunctor := R ⋙ L

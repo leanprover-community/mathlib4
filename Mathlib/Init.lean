@@ -20,7 +20,7 @@ import Mathlib.Tactic.Linter.UnusedTactic
 import Mathlib.Tactic.Linter.Style
 -- This import makes the `#min_imports` command available globally.
 import Mathlib.Tactic.MinImports
-import Mathlib.Tactic.TacticAnalysis
+import Mathlib.Tactic.TacticAnalysis.Declarations
 
 /-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
@@ -61,10 +61,10 @@ all these linters, or add the `weak.linter.mathlibStandardSet` option to their l
 register_linter_set linter.mathlibStandardSet :=
   linter.allScriptsDocumented
   linter.checkInitImports
-
   linter.hashCommand
   linter.oldObtain
   linter.style.cases
+  linter.style.induction
   linter.style.refine
   linter.style.commandStart
   linter.style.cdot
@@ -83,6 +83,14 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.maxHeartbeats
   -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
 
+/-- Define a set of linters that are used in the `nightly-testing` branch
+to catch any regressions.
+-/
+register_linter_set linter.nightlyRegressionSet :=
+  linter.tacticAnalysis.regressions.linarithToGrind
+  linter.tacticAnalysis.regressions.omegaToCutsat
+  linter.tacticAnalysis.regressions.ringToGrind
+
 -- Check that all linter options mentioned in the mathlib standard linter set exist.
 open Lean Elab.Command Linter Mathlib.Linter Mathlib.Linter.Style
 
@@ -93,7 +101,9 @@ run_cmd liftTermElabM do
   let ls := linterSetsExt.getEntries env
   let some (_, mlLinters) := ls.find? (·.1 == ``linter.mathlibStandardSet) |
     throwError m!"'linter.mathlibStandardSet' is not defined."
-  for mll in mlLinters do
+  let some (_, nrLinters) := ls.find? (·.1 == ``linter.nightlyRegressionSet) |
+    throwError m!"'linter.nightlyRegressionSet is not defined."
+  for mll in mlLinters ∪ nrLinters do
     let [(mlRes, _)] ← realizeGlobalName mll |
       if !DefinedInScripts.contains mll then
         throwError "Unknown option '{mll}'!"

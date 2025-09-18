@@ -79,7 +79,6 @@ namespace Units
 section Monoid
 variable [Monoid α]
 
--- Porting note: unclear whether this should be a `CoeHead` or `CoeTail`
 /-- A unit can be interpreted as a term in the base `Monoid`. -/
 @[to_additive /-- An additive unit can be interpreted as a term in the base `AddMonoid`. -/]
 instance : CoeHead αˣ α :=

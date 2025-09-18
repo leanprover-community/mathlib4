@@ -75,6 +75,11 @@ lemma natCard_rootsOfUnity (M : Type*) [CommMonoid M] (n : ℕ) [NeZero n]
     simp only [mem_rootsOfUnity]
     rw [← Units.val_inj, Units.val_pow_eq_pow_val, IsUnit.unit_spec, h.pow_eq_one, Units.val_one]
 
+lemma of_card_le {R : Type*} [CommRing R] [IsDomain R] {n : ℕ} [NeZero n]
+    (h : n ≤ Fintype.card (rootsOfUnity n R)) : HasEnoughRootsOfUnity R n where
+  prim := card_rootsOfUnity_eq_iff_exists_isPrimitiveRoot.mp (le_antisymm (card_rootsOfUnity R n) h)
+  cyc := rootsOfUnity.isCyclic R n
+
 end HasEnoughRootsOfUnity
 
 lemma MulEquiv.hasEnoughRootsOfUnity {n : ℕ} [NeZero n] {M N : Type*} [CommMonoid M]
@@ -90,7 +95,7 @@ lemma MulEquiv.hasEnoughRootsOfUnity {n : ℕ} [NeZero n] {M N : Type*} [CommMon
 
 section cyclic
 
-/-- The group of group homomorphims from a finite cyclic group `G` of order `n` into the
+/-- The group of group homomorphisms from a finite cyclic group `G` of order `n` into the
 group of units of a ring `M` with all roots of unity is isomorphic to `G` -/
 lemma IsCyclic.monoidHom_equiv_self (G M : Type*) [CommGroup G] [Finite G]
     [IsCyclic G] [CommMonoid M] [HasEnoughRootsOfUnity M (Nat.card G)] :
@@ -101,3 +106,7 @@ lemma IsCyclic.monoidHom_equiv_self (G M : Type*) [CommGroup G] [Finite G]
   exact ⟨e.trans (rootsOfUnityUnitsMulEquiv M (Nat.card G)) |>.trans (mulEquivOfCyclicCardEq hord)⟩
 
 end cyclic
+
+instance {M : Type*} [CommMonoid M] : HasEnoughRootsOfUnity M 1 where
+  prim := ⟨1, by simp⟩
+  cyc := isCyclic_of_subsingleton

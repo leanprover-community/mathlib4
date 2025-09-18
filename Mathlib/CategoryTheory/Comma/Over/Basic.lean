@@ -101,7 +101,7 @@ lemma homMk_eta {U V : Over X} (f : U ⟶ V) (h) :
 
 /-- This is useful when `homMk (· ≫ ·)` appears under `Functor.map` or a natural equivalence. -/
 lemma homMk_comp {U V W : Over X} (f : U.left ⟶ V.left) (g : V.left ⟶ W.left) (w_f w_g) :
-    homMk (f ≫ g) (by aesop) = homMk f w_f ≫ homMk g w_g := by
+    homMk (f ≫ g) (by simp_all) = homMk f w_f ≫ homMk g w_g := by
   ext
   simp
 
@@ -204,7 +204,7 @@ theorem mapId_eq (Y : T) : map (𝟙 Y) = 𝟭 _ := by
     dsimp [Over, Over.map, Comma.mapRight]
     simp only [Category.comp_id]
     exact rfl
-  · intros x y u
+  · intro x y u
     dsimp [Over, Over.map, Comma.mapRight]
     simp
 
@@ -215,10 +215,7 @@ def mapId (Y : T) : map (𝟙 Y) ≅ 𝟭 _ := eqToIso (mapId_eq Y)
 
 /-- Mapping by `f` and then forgetting is the same as forgetting. -/
 theorem mapForget_eq {X Y : T} (f : X ⟶ Y) :
-    (map f) ⋙ (forget Y) = (forget X) := by
-  fapply Functor.ext
-  · dsimp [Over, Over.map]; intro x; exact rfl
-  · intros x y u; simp
+    (map f) ⋙ (forget Y) = (forget X) := rfl
 
 /-- The natural isomorphism arising from `mapForget_eq`. -/
 def mapForget {X Y : T} (f : X ⟶ Y) :
@@ -429,6 +426,36 @@ def equivalenceOfIsTerminal (hX : IsTerminal X) : Over X ≌ T where
   unitIso := NatIso.ofComponents fun Y ↦ isoMk (.refl _) (hX.hom_ext _ _)
   counitIso := NatIso.ofComponents fun _ ↦ .refl _
 
+/-- The induced functor to `Over X` from a functor `J ⥤ C` and natural maps `sᵢ : X ⟶ Dᵢ`.
+For the converse direction see `CategoryTheory.WithTerminal.commaFromOver`. -/
+@[simps]
+protected def lift {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X) :
+    J ⥤ Over X where
+  obj j := mk (s.app j)
+  map f := homMk (D.map f)
+
+/-- The induced cone on `Over X` on the lifted functor. -/
+@[simps]
+def liftCone {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X)
+    (c : Cone D) (p : c.pt ⟶ X) (hp : ∀ j, c.π.app j ≫ s.app j = p) :
+    Cone (Over.lift D s) where
+  pt := mk p
+  π.app j := homMk (c.π.app j)
+
+/-- The lifted cone on `Over X` is a limit cone if the original cone was limiting
+and `J` is nonempty. -/
+def isLimitLiftCone {J : Type*} [Category J] [Nonempty J]
+    (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X)
+    (c : Cone D) (p : c.pt ⟶ X) (hp : ∀ j, c.π.app j ≫ s.app j = p)
+    (hc : IsLimit c) :
+    IsLimit (Over.liftCone D s c p hp) where
+  lift s := homMk (hc.lift ((forget _).mapCone s))
+    (by simpa [← hp (Classical.arbitrary J)] using Over.w (s.π.app _))
+  fac _ _ := by ext; simp [hc.fac]
+  uniq _ _ hm := by
+    ext
+    exact hc.hom_ext fun j ↦ by simpa [hc.fac] using congr($(hm j).left)
+
 end Over
 
 namespace CostructuredArrow
@@ -615,7 +642,7 @@ theorem mapId_eq (Y : T) : map (𝟙 Y) = 𝟭 _ := by
     dsimp [Under, Under.map, Comma.mapLeft]
     simp only [Category.id_comp]
     exact rfl
-  · intros x y u
+  · intro x y u
     dsimp [Under, Under.map, Comma.mapLeft]
     simp
 
@@ -625,10 +652,7 @@ def mapId (Y : T) : map (𝟙 Y) ≅ 𝟭 _ := eqToIso (mapId_eq Y)
 
 /-- Mapping by `f` and then forgetting is the same as forgetting. -/
 theorem mapForget_eq {X Y : T} (f : X ⟶ Y) :
-    (map f) ⋙ (forget X) = (forget Y) := by
-  fapply Functor.ext
-  · dsimp [Under, Under.map]; intro x; exact rfl
-  · intros x y u; simp
+    (map f) ⋙ (forget X) = (forget Y) := rfl
 
 /-- The natural isomorphism arising from `mapForget_eq`. -/
 def mapForget {X Y : T} (f : X ⟶ Y) :
@@ -801,6 +825,35 @@ def equivalenceOfIsInitial (hX : IsInitial X) : Under X ≌ T where
   inverse := { obj Y := mk (hX.to Y), map f := homMk f }
   unitIso := NatIso.ofComponents fun Y ↦ isoMk (.refl _) (hX.hom_ext _ _)
   counitIso := NatIso.ofComponents fun _ ↦ .refl _
+
+/-- The induced functor to `Under X` from a functor `J ⥤ C` and natural maps `sᵢ : X ⟶ Dᵢ`. -/
+@[simps]
+protected def lift {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D) :
+    J ⥤ Under X where
+  obj j := .mk (s.app j)
+  map f := Under.homMk (D.map f) (by simpa using (s.naturality f).symm)
+
+/-- The induced cocone on `Under X` from on the lifted functor. -/
+@[simps]
+def liftCocone {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D)
+    (c : Cocone D) (p : X ⟶ c.pt) (hp : ∀ j, s.app j ≫ c.ι.app j = p) :
+    Cocone (Under.lift D s) where
+  pt := mk p
+  ι.app j := homMk (c.ι.app j)
+
+/-- The lifted cocone on `Under X` is a colimit cocone if the original cocone was colimiting
+and `J` is nonempty. -/
+def isColimitLiftCocone {J : Type*} [Category J] [Nonempty J]
+    (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D)
+    (c : Cocone D) (p : X ⟶ c.pt) (hp : ∀ j, s.app j ≫ c.ι.app j = p)
+    (hc : IsColimit c) :
+    IsColimit (liftCocone D s c p hp) where
+  desc s := Under.homMk (hc.desc ((Under.forget _).mapCocone s))
+    (by simpa [← hp (Classical.arbitrary _)] using Under.w (s.ι.app _))
+  fac _ _ := by ext; simp [hc.fac]
+  uniq _ _ hm := by
+    ext
+    exact hc.hom_ext fun j ↦ by simpa [hc.fac] using congr($(hm j).right)
 
 end Under
 

@@ -182,6 +182,16 @@ variable [Monoid R] [StarMul R]
 theorem pow {x : R} (hx : IsSelfAdjoint x) (n : ℕ) : IsSelfAdjoint (x ^ n) := by
   simp only [isSelfAdjoint_iff, star_pow, hx.star_eq]
 
+@[grind =]
+lemma _root_.isSelfAdjoint_conjugate_iff_of_isUnit {a u : R} (hu : IsUnit u) :
+    IsSelfAdjoint (u * a * star u) ↔ IsSelfAdjoint a := by
+  simp [IsSelfAdjoint, mul_assoc, hu.mul_right_inj, hu.star.mul_left_inj]
+
+@[grind =]
+lemma _root_.isSelfAdjoint_conjugate_iff_of_isUnit' {a u : R} (hu : IsUnit u) :
+    IsSelfAdjoint (star u * a * u) ↔ IsSelfAdjoint a := by
+  simpa using isSelfAdjoint_conjugate_iff_of_isUnit hu.star
+
 end Monoid
 
 section Semiring

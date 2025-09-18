@@ -291,7 +291,7 @@ variable {C : Type u₁} [Category.{v₁} C]
 variable (J : GrothendieckTopology C)
 variable (A : Type u₂) [Category.{v₂} A]
 
-/-- The category of sheaves taking values in `A` on a grothendieck topology. -/
+/-- The category of sheaves taking values in `A` on a Grothendieck topology. -/
 structure Sheaf where
   /-- the underlying presheaf -/
   val : Cᵒᵖ ⥤ A
@@ -446,11 +446,11 @@ instance sheafHomHasZSMul : SMul ℤ (P ⟶ Q) where
     Sheaf.Hom.mk
       { app := fun U => n • f.1.app U
         naturality := fun U V i => by
-          induction' n with n ih n ih
-          · simp only [zero_smul, comp_zero, zero_comp]
-          · simpa only [add_zsmul, one_zsmul, comp_add, NatTrans.naturality, add_comp,
+          induction n with
+          | zero => simp only [zero_smul, comp_zero, zero_comp]
+          | succ n ih => simpa only [add_zsmul, one_zsmul, comp_add, NatTrans.naturality, add_comp,
               add_left_inj]
-          · simpa only [sub_smul, one_zsmul, comp_sub, NatTrans.naturality, sub_comp,
+          | pred n ih => simpa only [sub_smul, one_zsmul, comp_sub, NatTrans.naturality, sub_comp,
               sub_left_inj] using ih }
 
 instance : Sub (P ⟶ Q) where sub f g := Sheaf.Hom.mk <| f.1 - g.1
@@ -701,9 +701,9 @@ For a concrete category `(A, s)` where the forgetful functor `s : A ⥤ Type v` 
 reflects isomorphisms, and `A` has limits, an `A`-valued presheaf `P : Cᵒᵖ ⥤ A` is a sheaf iff its
 underlying `Type`-valued presheaf `P ⋙ s : Cᵒᵖ ⥤ Type` is a sheaf.
 
-Note this lemma applies for "algebraic" categories, eg groups, abelian groups and rings, but not
-for the category of topological spaces, topological rings, etc since reflecting isomorphisms doesn't
-hold.
+Note this lemma applies for "algebraic" categories, e.g. groups, abelian groups and rings, but not
+for the category of topological spaces, topological rings, etc. since reflecting isomorphisms does
+not hold.
 -/
 theorem isSheaf_iff_isSheaf_forget (s : A' ⥤ Type max v₁ u₁) [HasLimits A'] [PreservesLimits s]
     [s.ReflectsIsomorphisms] : IsSheaf J P' ↔ IsSheaf J (P' ⋙ s) := by
