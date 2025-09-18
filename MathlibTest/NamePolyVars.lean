@@ -37,6 +37,7 @@ noncomputable example : Vector R[a,b][C] 3 :=
   have : (Polynomial.C (MvPolynomial.X 0) : R[a,b][C]) = a := rfl
   have : (Polynomial.C (MvPolynomial.X 1) : R[a,b][C]) = b := rfl
   have : (Polynomial.X : R[a,b][C]) = C := rfl
+  have : _[a,b][C] = R[a,b][C] := rfl
   #v[a, b, C]
 
 noncomputable example : Vector (Fin 37)[a,b][C] 3 :=
@@ -44,6 +45,7 @@ noncomputable example : Vector (Fin 37)[a,b][C] 3 :=
   have : (Polynomial.C (MvPolynomial.X 0) : (Fin 37)[a,b][C]) = a := rfl
   have : (Polynomial.C (MvPolynomial.X 1) : (Fin 37)[a,b][C]) = b := rfl
   have : (Polynomial.X : (Fin 37)[a,b][C]) = C := rfl
+  have : _[a,b][C] = (Fin 37)[a,b][C] := rfl
   #v[a, b, C]
 
 def «a,b» : Nat := 37
