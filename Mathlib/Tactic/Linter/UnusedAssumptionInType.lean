@@ -38,7 +38,7 @@ def checkUnusedAssumptionInType (declInfo : ConstantInfo) (typesToAvoid : Array 
   let mut impossibleArgs ← forallTelescopeReducing type fun args ty ↦ do
     let argTys ← args.mapM inferType
     let ty ← ty.eraseProofs
-    return ← (args.zip argTys.zipWithIndex).filterMapM fun (arg, t, i) ↦ do
+    return ← (args.zip argTys.zipIdx).filterMapM fun (arg, t, i) ↦ do
       unless typesToAvoid.any t.cleanupAnnotations.getForallBody.isAppOf do return none
       let fv := arg.fvarId!
       if ty.containsFVar fv then return none
