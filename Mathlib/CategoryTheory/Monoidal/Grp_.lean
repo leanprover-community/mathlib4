@@ -548,16 +548,16 @@ open Monoidal LaxMonoidal
 
 noncomputable instance mapGrp.instMonoidal : F.mapGrp.Monoidal :=
   Functor.CoreMonoidal.toMonoidal
-  { εIso := (Grp_.fullyFaithfulForget₂Mon_ _).preimageIso (εIso F.mapMon)
-    μIso X Y := (Grp_.fullyFaithfulForget₂Mon_ _).preimageIso (μIso F.mapMon X.toMon_ Y.toMon_)
-    μIso_hom_natural_left f Z := by convert μ_natural_left F.mapMon f Z.toMon_ using 1
-    μIso_hom_natural_right Z f := by convert μ_natural_right F.mapMon Z.toMon_ f using 1
-    associativity X Y Z := by convert associativity F.mapMon X.toMon_ Y.toMon_ Z.toMon_ using 1
-    left_unitality X := by convert left_unitality F.mapMon X.toMon_ using 1
-    right_unitality X := by convert right_unitality F.mapMon X.toMon_ using 1 }
+  { εIso := (Grp_.fullyFaithfulForget₂Mon _).preimageIso (εIso F.mapMon)
+    μIso X Y := (Grp_.fullyFaithfulForget₂Mon _).preimageIso (μIso F.mapMon X.toMon Y.toMon)
+    μIso_hom_natural_left f Z := by convert μ_natural_left F.mapMon f Z.toMon using 1
+    μIso_hom_natural_right Z f := by convert μ_natural_right F.mapMon Z.toMon f using 1
+    associativity X Y Z := by convert associativity F.mapMon X.toMon Y.toMon Z.toMon using 1
+    left_unitality X := by convert left_unitality F.mapMon X.toMon using 1
+    right_unitality X := by convert right_unitality F.mapMon X.toMon using 1 }
 
 noncomputable instance mapGrp.instBraided : F.mapGrp.Braided where
-  braided X Y := by convert Braided.braided (F := F.mapMon) X.toMon_ Y.toMon_ using 1
+  braided X Y := by convert Braided.braided (F := F.mapMon) X.toMon Y.toMon using 1
 
 end Braided
 end Functor
