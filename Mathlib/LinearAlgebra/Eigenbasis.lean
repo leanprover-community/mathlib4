@@ -224,15 +224,6 @@ def pow (n : ℕ) : CommonEigenbasis ι (f ^ n) where
     | succ n h =>
       rw [pow_succ, Pi.mul_apply, End.mul_apply, B.apply_eq_smul, map_smul, h, smul_smul, pow_succ']
 
-/-- Any common eigenbasis of `f` is also a common eigenbasis of any sum of a list of `f`. -/
-def listSum : CommonEigenbasis ι (fun l : List α ↦ (l.map f).sum) where
-  toBasis := B.toBasis
-  μ l := (l.map B.μ).sum
-  apply_eq_smul l i := by
-    induction l with
-    | nil => simp
-    | cons a as ih => simp [B.apply_eq_smul, ih, add_smul]
-
 /-- Any common eigenbasis of `f` is also a common eigenbasis of any sum of a multiset of `f`. -/
 def multisetSum : CommonEigenbasis ι (fun s : Multiset α ↦ (s.map f).sum) where
   toBasis := B.toBasis
@@ -242,11 +233,17 @@ def multisetSum : CommonEigenbasis ι (fun s : Multiset α ↦ (s.map f).sum) wh
     | empty => simp
     | cons a as ih => simp [B.apply_eq_smul, ih, add_smul]
 
+/-- Any common eigenbasis of `f` is also a common eigenbasis of any sum of a list of `f`. -/
+def listSum : CommonEigenbasis ι (fun l : List α ↦ (l.map f).sum) where
+  toBasis := B.toBasis
+  μ l := (l.map B.μ).sum
+  apply_eq_smul l := B.multisetSum.apply_eq_smul l
+
 /-- Any common eigenbasis of `f` is also a common eigenbasis of any sum of a finset of `f`. -/
 def finsetSum : CommonEigenbasis ι (fun s : Finset α ↦ ∑ a ∈ s, f a) where
   toBasis := B.toBasis
   μ s := ∑ a ∈ s, B.μ a
-  apply_eq_smul s i := by simp [B.apply_eq_smul, Finset.sum_smul]
+  apply_eq_smul _ := B.multisetSum.apply_eq_smul _
 
 /-- Any common eigenbasis of `f` is also a common eigenbasis of any product of a list of `f`. -/
 def listProd : CommonEigenbasis ι (fun l : List α ↦ (l.map f).prod) where
@@ -260,7 +257,7 @@ def listProd : CommonEigenbasis ι (fun l : List α ↦ (l.map f).prod) where
 variable {b}
 
 /-- Any common eigenbasis of `f` is also a common eigenbasis of any subfamily of `f`. -/
-def comp {a' : Type*} {g : a' → α} : CommonEigenbasis ι (f ∘ g) where
+def comp {α' : Type*} {g : α' → α} : CommonEigenbasis ι (f ∘ g) where
   toBasis := B.toBasis
   μ := B.μ ∘ g
   apply_eq_smul a := B.apply_eq_smul (g a)
