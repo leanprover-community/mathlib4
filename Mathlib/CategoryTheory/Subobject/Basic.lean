@@ -3,6 +3,7 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Kim Morrison
 -/
+import Mathlib.CategoryTheory.Limits.Skeleton
 import Mathlib.CategoryTheory.Subobject.MonoOver
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
@@ -69,7 +70,7 @@ In fact, in an abelian category (I'm not sure in what generality beyond that),
 -/
 
 
-universe v₁ v₂ v₃ u₁ u₂
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 noncomputable section
 
@@ -518,11 +519,17 @@ def lowerEquivalence {A : C} {B : D} (e : MonoOver A ≌ MonoOver B) : Subobject
 
 section Limits
 
+variable {J : Type u₃} [Category.{v₃} J]
+
+instance hasLimitsOfShape [HasLimitsOfShape J (Over X)] :
+    HasLimitsOfShape J (Subobject X) := by
+  apply hasLimitsOfShape_thinSkeleton
+
 instance hasFiniteLimits [HasFiniteWidePullbacks C] : HasFiniteLimits (Subobject X) where
-  out _ _ _ := by sorry
+  out _ _ := by infer_instance
 
 instance hasLimits [HasWidePullbacks.{v₃} C] : HasLimitsOfSize.{v₃, v₃} (Subobject X) where
-  has_limits_of_shape _ _ := by sorry
+  has_limits_of_shape _ _ := by infer_instance
 
 end Limits
 

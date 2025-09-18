@@ -221,11 +221,11 @@ lemma closedUnderLimitsOfShape_of_isMonoOver :
   | of j => have := p j; rw [← cancel_mono ((F.obj j).hom)]; simpa
   | star => exact e
 
-lemma hasLimit (F : J ⥤ MonoOver X) [HasLimit (F ⋙ (Over.isMonoOver X).ι)] :
+instance hasLimit (F : J ⥤ MonoOver X) [HasLimit (F ⋙ (Over.isMonoOver X).ι)] :
     HasLimit F := by
   apply hasLimit_of_closedUnderLimits (closedUnderLimitsOfShape_of_isMonoOver X)
 
-lemma hasLimitsOfShape [HasLimitsOfShape J (Over X)] :
+instance hasLimitsOfShape [HasLimitsOfShape J (Over X)] :
     HasLimitsOfShape J (MonoOver X) := by
   apply hasLimitsOfShape_of_closedUnderLimits (closedUnderLimitsOfShape_of_isMonoOver X)
 
