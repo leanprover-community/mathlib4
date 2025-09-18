@@ -455,6 +455,40 @@ lemma totalDegree_coeff_optionEquivLeft_le
 
 end
 
+section
+
+variable (α : Type*)
+
+noncomputable def algebraOption : Algebra (MvPolynomial α R) (MvPolynomial (Option α) R) :=
+  (MvPolynomial.rename some).toAlgebra
+
+attribute [local instance] algebraOption
+
+@[simp]
+lemma algebraMap_option_apply (p : MvPolynomial α R) :
+    algebraMap (MvPolynomial α R) (MvPolynomial (Option α) R) p = rename some p :=
+  rfl
+
+/-- `MvPolynomial.optionEquivLeft` as an algebra homomorphism over `MvPolynomial α R`. -/
+noncomputable def optionEquivLeft' :
+    MvPolynomial (Option α) R ≃ₐ[MvPolynomial α R] (MvPolynomial α R)[X] where
+  __ := optionEquivLeft R α
+  commutes' p := by
+    induction p using MvPolynomial.induction_on with
+    | C a => simp [optionEquivLeft_C]
+    | add p q _ _ => simp_all
+    | mul_X p n hn => simp_all [optionEquivLeft_X_some]
+
+@[simp]
+lemma coe_optionEquivLeft' :
+    ⇑(optionEquivLeft' R α) = optionEquivLeft R α := rfl
+
+@[simp]
+lemma coe_optionEquivLeft'_symm :
+    ⇑(optionEquivLeft' R α).symm = (optionEquivLeft R α).symm := rfl
+
+end
+
 /-- The algebra isomorphism between multivariable polynomials in `Option S₁` and
 multivariable polynomials with coefficients in polynomials.
 -/
