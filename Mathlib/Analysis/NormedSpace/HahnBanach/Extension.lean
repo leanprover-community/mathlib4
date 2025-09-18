@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Heather Macbeth
 -/
 import Mathlib.Analysis.Convex.Cone.Extension
-import Mathlib.Analysis.Normed.Module.RCLike.Basic
 import Mathlib.Analysis.Normed.Module.RCLike.Extend
 import Mathlib.Analysis.RCLike.Lemmas
 
