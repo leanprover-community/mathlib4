@@ -17,10 +17,6 @@ here allows us to consider composites and scalar-multiply by multivariable Laure
 ## Main results
 * Ext
 ## TODO
-* `HahnSeries Γ R`-module structure on `HVertexOperator Γ R V W`
-  (needs https://github.com/leanprover-community/mathlib4/pull/19062.
-  This means we can consider products of the form `(X-Y)^n A(X)B(Y)` for all integers `n`,
-  where `(X-Y)^n` is expanded as `X^n(1-Y/X)^n` in `R((X))((Y))`.
 * curry for tensor product inputs
 * more API to make ext comparisons easier.
 * formal variable API, e.g., like the `T` function for Laurent polynomials.
@@ -66,6 +62,12 @@ theorem coeff_isPWOsupport (A : HVertexOperator Γ R V W) (v : V) :
     ((of R).symm (A v)).coeff.support.IsPWO :=
   ((of R).symm (A v)).isPWO_support'
 
+@[ext]
+theorem coeff_inj : Function.Injective (coeff : HVertexOperator Γ R V W →ₗ[R] Γ → (V →ₗ[R] W)) := by
+  intro _ _ h
+  ext v n
+  exact congrFun (congrArg DFunLike.coe (congrFun h n)) v
+
 /-- Given a coefficient function valued in linear maps satisfying a partially well-ordered support
 condition, we produce a heterogeneous vertex operator. -/
 @[simps]
@@ -75,9 +77,16 @@ def of_coeff (f : Γ → V →ₗ[R] W) (hf : ∀ x : V , (Function.support (f �
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
+@[deprecated (since := "2025-08-30")] alias coeff_add := map_add
+@[deprecated (since := "2025-08-30")] alias coeff_smul := map_smul
+
 @[simp]
 theorem coeff_of_coeff (f : Γ → V →ₗ[R] W)
     (hf : ∀ (x : V), (Function.support (fun g => f g x)).IsPWO) : (of_coeff f hf).coeff = f :=
+  rfl
+
+@[simp]
+theorem of_coeff_coeff (A : HVertexOperator Γ R V W) : of_coeff A.coeff A.coeff_isPWOsupport = A :=
   rfl
 
 end Coeff
@@ -280,11 +289,9 @@ def compHahnSeries (u : U) : HahnSeries Γ' (HahnSeries Γ W) where
   coeff g' := A (coeff B g' u)
   isPWO_support' := by
     refine Set.IsPWO.mono (((of R).symm (B u)).isPWO_support') ?_
-    simp_all only [coeff_apply_apply, Function.support_subset_iff, ne_eq, Function.mem_support]
+    simp only [coeff_apply_apply, Function.support_subset_iff, ne_eq, Function.mem_support]
     intro g' hg' hAB
-    apply hg'
-    simp_rw [hAB]
-    simp_all only [map_zero, not_true_eq_false]
+    exact hg' (by simp [hAB])
 
 @[simp]
 theorem compHahnSeries_add (u v : U) :
@@ -297,8 +304,7 @@ theorem compHahnSeries_add (u v : U) :
 theorem compHahnSeries_smul (r : R) (u : U) :
     compHahnSeries A B (r • u) = r • compHahnSeries A B u := by
   ext
-  simp only [compHahnSeries_coeff, LinearMapClass.map_smul, coeff_apply_apply,
-    HahnSeries.coeff_smul]
+  simp only [compHahnSeries_coeff, map_smul, coeff_apply_apply, HahnSeries.coeff_smul]
   rw [← HahnSeries.coeff_smul]
 
 /-- The composite of two heterogeneous vertex operators, as a heterogeneous vertex operator. -/
@@ -308,14 +314,11 @@ def comp : HVertexOperator (Γ' ×ₗ Γ) R U W where
   map_add' := by
     intro u v
     ext g
-    simp only [HahnSeries.ofIterate, compHahnSeries_add, Equiv.symm_apply_apply,
-      HahnModule.of_symm_add, HahnSeries.coeff_add', Pi.add_apply]
+    simp [HahnSeries.ofIterate]
   map_smul' := by
     intro r x
     ext g
-    simp only [HahnSeries.ofIterate, compHahnSeries_smul, HahnSeries.coeff_smul,
-      compHahnSeries_coeff, coeff_apply_apply, Equiv.symm_apply_apply, RingHom.id_apply,
-      of_symm_smul]
+    simp [HahnSeries.ofIterate]
 
 @[simp]
 theorem coeff_comp (g : Γ' ×ₗ Γ) :

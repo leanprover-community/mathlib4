@@ -195,7 +195,8 @@ theorem stoppedValue_min_ae_eq_condExp [SigmaFiniteFiltration μ ℱ] (h : Marti
       exact hx hx_mem.le
     apply Filter.EventuallyEq.trans _ ((condExp_min_stopping_time_ae_eq_restrict_le hτ hσ).trans _)
     · exact stoppedValue f τ
-    · rw [IsStoppingTime.measurableSpace_min hσ, IsStoppingTime.measurableSpace_min hτ, inf_comm]
+    · rw [IsStoppingTime.measurableSpace_min hσ hτ,
+        IsStoppingTime.measurableSpace_min hτ hσ, inf_comm]
     · have h1 : μ[stoppedValue f τ|hτ.measurableSpace] = stoppedValue f τ := by
         apply condExp_of_stronglyMeasurable hτ.measurableSpace_le
         · exact Measurable.stronglyMeasurable <|
