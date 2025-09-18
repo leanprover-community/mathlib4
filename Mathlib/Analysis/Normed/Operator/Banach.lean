@@ -91,12 +91,6 @@ lemma noempty_interior_of_surj (surj : Surjective f) :
 
 include σ' in
 omit [CompleteSpace F] in
-/-- First step of the proof of the Banach open mapping theorem (using completeness of `F`):
-by Baire's theorem, there exists a ball in `E` whose image closure has nonempty interior.
-Rescaling everything, it follows that any `y ∈ F` is arbitrarily well approached by
-images of elements of norm at most `C * ‖y‖`.
-For further use, we will only need such an element whose image
-is within distance `‖y‖/2` of `y`, to apply an iterative process. -/
 theorem exists_approx_preimage_norm_le'
     (h : ∃ (n : ℕ) (x : _), x ∈ interior (closure (f '' ball 0 n))) :
     ∃ C ≥ 0, ∀ y, ∃ x, dist (f x) y ≤ 1 / 2 * ‖y‖ ∧ ‖x‖ ≤ C * ‖y‖ := by
@@ -159,6 +153,12 @@ theorem exists_approx_preimage_norm_le'
     exact ⟨σ' d⁻¹ • x, J, K⟩
 
 include σ' in
+/-- First step of the proof of the Banach open mapping theorem (using completeness of `F`):
+by Baire's theorem, there exists a ball in `E` whose image closure has nonempty interior.
+Rescaling everything, it follows that any `y ∈ F` is arbitrarily well approached by
+images of elements of norm at most `C * ‖y‖`.
+For further use, we will only need such an element whose image
+is within distance `‖y‖/2` of `y`, to apply an iterative process. -/
 theorem exists_approx_preimage_norm_le (surj : Surjective f) :
     ∃ C ≥ 0, ∀ y, ∃ x, dist (f x) y ≤ 1 / 2 * ‖y‖ ∧ ‖x‖ ≤ C * ‖y‖ :=
   have h := noempty_interior_of_surj f surj
@@ -170,8 +170,6 @@ section
 
 include σ'
 omit [CompleteSpace F] in
-/-- The Banach open mapping theorem: if a bounded linear map between Banach spaces is onto, then
-any point has a preimage with controlled norm. -/
 theorem exists_preimage_norm_le' (h : ∃ (n : ℕ) (x : _), x ∈ interior (closure (f '' ball 0 n))) :
     ∃ C > 0, ∀ y, ∃ x, f x = y ∧ ‖x‖ ≤ C * ‖y‖ := by
   obtain ⟨C, C0, hC⟩ := exists_approx_preimage_norm_le' f h
@@ -245,8 +243,6 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
   exists_preimage_norm_le' f h
 
 omit [CompleteSpace F] in
-/-- The Banach open mapping theorem: a surjective bounded linear map between Banach spaces is
-open. -/
 protected theorem isOpenMap' (h : ∃ (n : ℕ) (x : _), x ∈ interior (closure (f '' ball 0 n))) :
     IsOpenMap f := by
   intro s hs
