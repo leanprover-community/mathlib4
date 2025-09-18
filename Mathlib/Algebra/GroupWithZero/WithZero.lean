@@ -442,7 +442,7 @@ end WithZero
 
 namespace MonoidWithZeroHom
 
-protected lemma map_eq_zero_iff {G₀ : Type*} [GroupWithZero G₀] {M₀ : Type*} [MulZeroOneClass M₀]
+protected lemma map_eq_zero_iff {G₀ M₀ : Type*} [GroupWithZero G₀] [MulZeroOneClass M₀]
     [Nontrivial M₀] {f : G₀ →*₀ M₀} {x : G₀} : f x = 0 ↔ x = 0 := by
   refine ⟨?_, by simp +contextual⟩
   contrapose!
@@ -450,8 +450,6 @@ protected lemma map_eq_zero_iff {G₀ : Type*} [GroupWithZero G₀] {M₀ : Type
   lift x to G₀ˣ using isUnit_iff_ne_zero.mpr hx
   apply one_ne_zero (α := M₀)
   rw [← map_one f, ← Units.mul_inv x, map_mul, H, zero_mul]
-
-variable {M₀ N₀}
 
 @[simp]
 lemma one_apply_val_unit {M₀ N₀ : Type*} [MonoidWithZero M₀] [MulZeroOneClass N₀]
