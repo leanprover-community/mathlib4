@@ -894,11 +894,11 @@ partial def applySimpleEqvs (e : Expr) : CCM Unit := do
     ```
     t ▸ p ≍ p
 
-    theorem eqRec_heq'.{l₁, l₂} : ∀ {A : Sort l₂} {a : A} {P : (a' : A) → a = a' → Sort l₁}
-      (p : P a) {a' : A} (H : a = a'), @Eq.rec.{l₁ l₂} A a P p a' H ≍ p
+    theorem eqRec_heq_self.{l₁, l₂} : ∀ {A : Sort l₁} {a : A} {P : (a' : A) → a = a' → Sort l₂}
+      (p : P a rfl) {a' : A} (H : a = a'), HEq (@Eq.rec.{l₁ l₂} A a P p a' H) p
     ```
     -/
-    let proof := mkApp6 (.const ``eqRec_heq' [l₁, l₂]) A a P p a' H
+    let proof := mkApp6 (.const ``eqRec_heq_self [l₁, l₂]) A a P p a' H
     pushHEq e p proof
 
   if let .app (.app (.app (.const ``Ne [l₁]) α) a) b := e then

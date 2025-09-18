@@ -185,6 +185,10 @@ def FixedPoints.intermediateField (M : Type*) [Monoid M] [MulSemiringAction M E]
     carrier := MulAction.fixedPoints M E
     algebraMap_mem' := fun a g => smul_algebraMap g a }
 
+@[simp] lemma FixedPoints.mem_intermediateField_iff
+    {M : Type*} [Monoid M] [MulSemiringAction M E] [SMulCommClass M F E] {x : E} :
+    x ∈ FixedPoints.intermediateField (F := F) M ↔ ∀ m : M, m • x = x := .rfl
+
 namespace IntermediateField
 
 /-- The intermediate field fixed by a subgroup. -/
