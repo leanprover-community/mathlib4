@@ -359,6 +359,11 @@ theorem AlgHom.card (K : Type*) [Field K] [IsAlgClosed K] [Algebra F K] :
     Fintype.card (E →ₐ[F] K) = finrank F E :=
   AlgHom.card_of_splits _ _ _ (fun _ ↦ IsAlgClosed.splits_codomain _)
 
+@[simp]
+theorem AlgHom.natCard (K : Type*) [Field K] [IsAlgClosed K] [Algebra F K] :
+    Nat.card (E →ₐ[F] K) = finrank F E :=
+  AlgHom.natCard_of_splits _ _ _ (fun _ ↦ IsAlgClosed.splits_codomain _)
+
 section iff
 
 namespace Field
