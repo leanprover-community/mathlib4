@@ -313,7 +313,7 @@ elab "name_poly_vars " head:term_decl noWs body:polyesque_notation_input+ : comm
           | `($typeIdent) => `($polyesqueIdent:polyesque)
           | `($typeTerm) => `($polyesqueTerm:polyesque)
           | _ => throw ())
-    `(_)
+    functor (← `(_))
   | _ => do
     let type ← functor head.term
     let polyesque : Polyesque ← `(polyesque| $head$body:polyesque_notation*)
