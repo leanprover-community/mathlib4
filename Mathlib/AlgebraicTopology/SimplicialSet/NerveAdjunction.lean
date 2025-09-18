@@ -76,8 +76,6 @@ def nerve₂Adj.counit : nerveFunctor₂ ⋙ hoFunctor₂.{u} ⟶ 𝟭 Cat where
   app _ := nerve₂Adj.counit.app _
   naturality _ _ _ := nerve₂Adj.counit.naturality _
 
-local notation (priority := high) "[" n "]" => SimplexCategory.mk n
-
 variable {C : Type u} [SmallCategory C] {X : SSet.Truncated.{u} 2}
     (F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C)
 
@@ -86,7 +84,7 @@ in a nerve can be recovered from the underlying ReflPrefunctor. -/
 def toNerve₂.mk.app (n : SimplexCategory.Truncated 2) :
     X.obj (op n) ⟶ (nerveFunctor₂.obj (Cat.of C)).obj (op n) := by
   obtain ⟨n, hn⟩ := n
-  induction' n using SimplexCategory.rec with n
+  induction n using SimplexCategory.rec with | _ n
   match n with
   | 0 => exact fun x => .mk₀ (F.obj x)
   | 1 => exact fun f => .mk₁ (F.map ⟨f, rfl, rfl⟩)
@@ -299,15 +297,15 @@ theorem toNerve₂.ext (F G : X ⟶ nerveFunctor₂.obj (Cat.of C))
   have eq₁ (x : X _⦋1⦌₂) : F.app (op ⦋1⦌₂) x = G.app (op ⦋1⦌₂) x :=
     congr((($hyp).map ⟨x, rfl, rfl⟩).1)
   ext ⟨⟨n, hn⟩⟩ x
-  induction' n using SimplexCategory.rec with n
+  induction n using SimplexCategory.rec with | _ n
   match n with
   | 0 => apply eq₀
   | 1 => apply eq₁
   | 2 =>
     apply Functor.hext (fun i : Fin 3 => ?_) (fun (i j : Fin 3) k => ?_)
     · let pt : ⦋0⦌₂ ⟶ ⦋2⦌₂ := SimplexCategory.const _ _ i
-      refine congr(($(congr_fun (F.naturality pt.op) x)).obj 0).symm.trans ?_
-      refine .trans ?_ congr(($(congr_fun (G.naturality pt.op) x)).obj 0)
+      refine congr(($(F.naturality pt.op) x).obj 0).symm.trans ?_
+      refine .trans ?_ congr(($(G.naturality pt.op) x).obj 0)
       exact congr($(eq₀ _).obj 0)
     · let ar : ⦋1⦌₂ ⟶ ⦋2⦌₂ := mkOfLe _ _ k.le
       have h1 := congr_arg_heq (fun x => x.map' 0 1) (congr_fun (F.naturality (op ar)) x)

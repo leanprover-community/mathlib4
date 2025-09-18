@@ -49,13 +49,7 @@ def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluatio
   Adjunction.mkOfHomEquiv
     { homEquiv := fun d F =>
         { toFun := fun f => Sigma.ι (fun _ => d) (𝟙 _) ≫ f.app c
-          invFun := fun f =>
-            { app := fun _ => Sigma.desc fun h => f ≫ F.map h
-              naturality := by
-                intros
-                dsimp
-                ext
-                simp }
+          invFun := fun f => { app := fun _ => Sigma.desc fun h => f ≫ F.map h }
           left_inv := by
             intro f
             ext x
@@ -64,10 +58,7 @@ def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluatio
             simp only [colimit.ι_desc, Cofan.mk_ι_app, Category.assoc, ← f.naturality,
               evaluationLeftAdjoint_obj_map, colimit.ι_desc_assoc,
               Discrete.functor_obj, Cofan.mk_pt, Category.id_comp]
-          right_inv := fun f => by
-            simp }
-      -- This used to be automatic before https://github.com/leanprover/lean4/pull/2644
-      homEquiv_naturality_right := by intros; simp }
+          right_inv := fun f => by simp } }
 
 instance evaluationIsRightAdjoint (c : C) : ((evaluation _ D).obj c).IsRightAdjoint  :=
   ⟨_, ⟨evaluationAdjunctionRight _ _⟩⟩
@@ -93,26 +84,14 @@ def evaluationRightAdjoint (c : C) : D ⥤ C ⥤ D where
   obj d :=
     { obj := fun t => ∏ᶜ fun _ : t ⟶ c => d
       map := fun f => Pi.lift fun g => Pi.π _ <| f ≫ g }
-  map f :=
-    { app := fun _ => Pi.lift fun g => Pi.π _ g ≫ f
-      naturality := by
-        intros
-        dsimp
-        ext
-        simp }
+  map f := { app := fun _ => Pi.lift fun g => Pi.π _ g ≫ f }
 
 /-- The adjunction showing that evaluation is a left adjoint. -/
 @[simps! unit_app_app counit_app]
 def evaluationAdjunctionLeft (c : C) : (evaluation _ _).obj c ⊣ evaluationRightAdjoint D c :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun F d =>
-        { toFun := fun f =>
-            { app := fun _ => Pi.lift fun g => F.map g ≫ f
-              naturality := by
-                intros
-                dsimp
-                ext
-                simp }
+        { toFun := fun f => { app := fun _ => Pi.lift fun g => F.map g ≫ f }
           invFun := fun f => f.app _ ≫ Pi.π _ (𝟙 _)
           left_inv := fun f => by simp
           right_inv := by
@@ -127,7 +106,7 @@ def evaluationAdjunctionLeft (c : C) : (evaluation _ _).obj c ⊣ evaluationRigh
 instance evaluationIsLeftAdjoint (c : C) : ((evaluation _ D).obj c).IsLeftAdjoint :=
   ⟨_, ⟨evaluationAdjunctionLeft _ _⟩⟩
 
-/-- See also the file `CategoryTheory.Limits.FunctorCategory.EpiMono`
+/-- See also the file `Mathlib/CategoryTheory/Limits/FunctorCategory/EpiMono.lean`
 for a similar result under a `HasPushouts` assumption. -/
 theorem NatTrans.epi_iff_epi_app' {F G : C ⥤ D} (η : F ⟶ G) : Epi η ↔ ∀ c, Epi (η.app c) := by
   constructor

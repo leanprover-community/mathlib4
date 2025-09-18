@@ -73,22 +73,22 @@ attribute [local instance] endofunctorMonoidalCategory
     (α ▷ H).app X = H.map (α.app X) := rfl
 
 @[simp] theorem endofunctorMonoidalCategory_associator_hom_app (F G H : C ⥤ C) (X : C) :
-  (α_ F G H).hom.app X = 𝟙 _ := rfl
+    (α_ F G H).hom.app X = 𝟙 _ := rfl
 
 @[simp] theorem endofunctorMonoidalCategory_associator_inv_app (F G H : C ⥤ C) (X : C) :
-  (α_ F G H).inv.app X = 𝟙 _ := rfl
+    (α_ F G H).inv.app X = 𝟙 _ := rfl
 
 @[simp] theorem endofunctorMonoidalCategory_leftUnitor_hom_app (F : C ⥤ C) (X : C) :
-  (λ_ F).hom.app X = 𝟙 _ := rfl
+    (λ_ F).hom.app X = 𝟙 _ := rfl
 
 @[simp] theorem endofunctorMonoidalCategory_leftUnitor_inv_app (F : C ⥤ C) (X : C) :
-  (λ_ F).inv.app X = 𝟙 _ := rfl
+    (λ_ F).inv.app X = 𝟙 _ := rfl
 
 @[simp] theorem endofunctorMonoidalCategory_rightUnitor_hom_app (F : C ⥤ C) (X : C) :
-  (ρ_ F).hom.app X = 𝟙 _ := rfl
+    (ρ_ F).hom.app X = 𝟙 _ := rfl
 
 @[simp] theorem endofunctorMonoidalCategory_rightUnitor_inv_app (F : C ⥤ C) (X : C) :
-  (ρ_ F).inv.app X = 𝟙 _ := rfl
+    (ρ_ F).inv.app X = 𝟙 _ := rfl
 
 namespace MonoidalCategory
 

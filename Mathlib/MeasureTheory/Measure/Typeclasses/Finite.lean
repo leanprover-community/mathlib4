@@ -138,6 +138,14 @@ but it holds for measures with the additional assumption that μ is finite. -/
 theorem Measure.le_of_add_le_add_left [IsFiniteMeasure μ] (A2 : μ + ν₁ ≤ μ + ν₂) : ν₁ ≤ ν₂ :=
   fun S => ENNReal.le_of_add_le_add_left (MeasureTheory.measure_ne_top μ S) (A2 S)
 
+lemma Measure.eq_of_le_of_measure_univ_eq [IsFiniteMeasure μ]
+    (hμν : μ ≤ ν) (h_univ : μ univ = ν univ) : μ = ν := by
+  refine le_antisymm hμν (le_intro fun s hs _ ↦ ?_)
+  by_contra! h_lt
+  have h_disj : Disjoint s sᶜ := disjoint_compl_right_iff_subset.mpr subset_rfl
+  rw [← union_compl_self s, measure_union h_disj hs.compl, measure_union h_disj hs.compl] at h_univ
+  exact ENNReal.add_lt_add_of_lt_of_le (measure_ne_top _ _) h_lt (hμν sᶜ) |>.not_ge h_univ.symm.le
+
 theorem summable_measure_toReal [hμ : IsFiniteMeasure μ] {f : ℕ → Set α}
     (hf₁ : ∀ i : ℕ, MeasurableSet (f i)) (hf₂ : Pairwise (Disjoint on f)) :
     Summable fun x => μ.real (f x) := by

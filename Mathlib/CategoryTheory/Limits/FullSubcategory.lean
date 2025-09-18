@@ -43,14 +43,14 @@ variable {C : Type u} [Category.{v} C] {J : Type w} [Category.{w'} J] {P : Objec
 theorem closedUnderLimitsOfShape_of_limit [P.IsClosedUnderIsomorphisms]
     (h : ∀ {F : J ⥤ C} [HasLimit F], (∀ j, P (F.obj j)) → P (limit F)) :
     ClosedUnderLimitsOfShape J P := by
-  intros F c hc hF
+  intro F c hc hF
   have : HasLimit F := ⟨_, hc⟩
   exact P.prop_of_iso ((limit.isLimit _).conePointUniqueUpToIso hc) (h hF)
 
 theorem closedUnderColimitsOfShape_of_colimit [P.IsClosedUnderIsomorphisms]
     (h : ∀ {F : J ⥤ C} [HasColimit F], (∀ j, P (F.obj j)) → P (colimit F)) :
     ClosedUnderColimitsOfShape J P := by
-  intros F c hc hF
+  intro F c hc hF
   have : HasColimit F := ⟨_, hc⟩
   exact P.prop_of_iso ((colimit.isColimit _).coconePointUniqueUpToIso hc) (h hF)
 

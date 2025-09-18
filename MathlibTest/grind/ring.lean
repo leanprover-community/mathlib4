@@ -15,6 +15,10 @@ notation "ℝ" => Real
 @[instance] axiom Real.linearOrder : LinearOrder ℝ
 @[instance] axiom Real.isStrictOrderedRing : IsStrictOrderedRing ℝ
 
+example (R : Type) [I : Ring R] :
+  @AddCommGroup.toGrindIntModule R (@Ring.toAddCommGroup R I) =
+    @Lean.Grind.Ring.toIntModule R (@Ring.toGrindRing R I) := rfl
+
 example {α} [CommRing α] (x y : α) : x + y + y - x = 2 * y := by grind
 example (x y : ℝ) : (x + y) ^ 3 = x ^ 3 + y ^ 3 + 3 * (x * y ^ 2 + x ^ 2 * y) := by grind
 example {α} [CommRing α] (x : α) : x ^ 2 = x * x := by grind

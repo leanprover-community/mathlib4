@@ -230,8 +230,7 @@ theorem dist_comm : G.dist u v = G.dist v u := by
   rw [dist, dist, edist_comm]
 
 lemma dist_ne_zero_iff_ne_and_reachable : G.dist u v ≠ 0 ↔ u ≠ v ∧ G.Reachable u v := by
-  rw [ne_eq, dist_eq_zero_iff_eq_or_not_reachable.not]
-  push_neg; rfl
+  simp
 
 lemma Reachable.of_dist_ne_zero (h : G.dist u v ≠ 0) : G.Reachable u v :=
   (dist_ne_zero_iff_ne_and_reachable.mp h).2
@@ -278,6 +277,17 @@ lemma dist_top_of_ne (h : u ≠ v) : (⊤ : SimpleGraph V).dist u v = 1 := by
 
 lemma dist_top [DecidableEq V] : (⊤ : SimpleGraph V).dist u v = (if u = v then 0 else 1) := by
   by_cases h : u = v <;> simp [h]
+
+lemma length_eq_dist_of_subwalk {u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
+    (h₁ : p₁.length = G.dist u v) (h₂ : p₂.IsSubwalk p₁) : p₂.length = G.dist u' v' := by
+  refine (dist_le _).eq_of_not_lt' fun hh ↦ ?_
+  obtain ⟨ru, rv, h⟩ := h₂
+  obtain ⟨s, _⟩ := p₂.reachable.exists_path_of_dist
+  let r := ru.append s |>.append rv
+  have : p₁.length = ru.length + p₂.length + rv.length := by simp [h]
+  have : r.length = ru.length + s.length + rv.length := by simp [r]
+  have := dist_le r
+  omega
 
 /-- Supergraphs have smaller or equal distances to their subgraphs. -/
 @[gcongr]

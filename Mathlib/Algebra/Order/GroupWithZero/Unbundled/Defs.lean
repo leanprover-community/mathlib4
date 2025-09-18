@@ -181,16 +181,16 @@ instance (priority := 100) MulRightStrictMono.toMulPosStrictMono [MulRightStrict
     MulPosStrictMono α where elim _ _ := ‹MulRightStrictMono α›.elim _
 
 instance (priority := 100) MulLeftMono.toPosMulReflectLT [MulLeftReflectLT α] :
-   PosMulReflectLT α where elim _ _ := ‹MulLeftReflectLT α›.elim _
+    PosMulReflectLT α where elim _ _ := ‹MulLeftReflectLT α›.elim _
 
 instance (priority := 100) MulRightMono.toMulPosReflectLT [MulRightReflectLT α] :
-   MulPosReflectLT α where elim _ _ := ‹MulRightReflectLT α›.elim _
+    MulPosReflectLT α where elim _ _ := ‹MulRightReflectLT α›.elim _
 
 instance (priority := 100) MulLeftStrictMono.toPosMulReflectLE [MulLeftReflectLE α] :
-   PosMulReflectLE α where elim _ _ := ‹MulLeftReflectLE α›.elim _
+    PosMulReflectLE α where elim _ _ := ‹MulLeftReflectLE α›.elim _
 
 instance (priority := 100) MulRightStrictMono.toMulPosReflectLE [MulRightReflectLE α] :
-   MulPosReflectLE α where elim _ _ := ‹MulRightReflectLE α›.elim _
+    MulPosReflectLE α where elim _ _ := ‹MulRightReflectLE α›.elim _
 
 @[gcongr]
 theorem mul_le_mul_of_nonneg_left [PosMulMono α] (h : b ≤ c) (a0 : 0 ≤ a) : a * b ≤ a * c :=
@@ -236,15 +236,21 @@ theorem mul_lt_mul_right [MulPosStrictMono α] [MulPosReflectLT α] (a0 : 0 < a)
   @rel_iff_cov α>0 α (fun x y => y * x) (· < ·) _ _ ⟨a, a0⟩ _ _
 
 @[simp]
-theorem mul_le_mul_left [PosMulMono α] [PosMulReflectLE α] (a0 : 0 < a) : a * b ≤ a * c ↔ b ≤ c :=
+theorem mul_le_mul_iff_right₀ [PosMulMono α] [PosMulReflectLE α] (a0 : 0 < a) :
+    a * b ≤ a * c ↔ b ≤ c :=
   @rel_iff_cov α>0 α (fun x y => x * y) (· ≤ ·) _ _ ⟨a, a0⟩ _ _
 
+@[deprecated (since := "2025-08-19")] alias mul_le_mul_left := mul_le_mul_iff_right₀
+
 @[simp]
-theorem mul_le_mul_right [MulPosMono α] [MulPosReflectLE α] (a0 : 0 < a) : b * a ≤ c * a ↔ b ≤ c :=
+theorem mul_le_mul_iff_left₀ [MulPosMono α] [MulPosReflectLE α] (a0 : 0 < a) :
+    b * a ≤ c * a ↔ b ≤ c :=
   @rel_iff_cov α>0 α (fun x y => y * x) (· ≤ ·) _ _ ⟨a, a0⟩ _ _
 
-alias mul_le_mul_iff_of_pos_left := mul_le_mul_left
-alias mul_le_mul_iff_of_pos_right := mul_le_mul_right
+@[deprecated (since := "2025-08-19")] alias mul_le_mul_right := mul_le_mul_iff_left₀
+
+alias mul_le_mul_iff_of_pos_left := mul_le_mul_iff_right₀
+alias mul_le_mul_iff_of_pos_right := mul_le_mul_iff_left₀
 alias mul_lt_mul_iff_of_pos_left := mul_lt_mul_left
 alias mul_lt_mul_iff_of_pos_right := mul_lt_mul_right
 
