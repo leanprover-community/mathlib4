@@ -159,8 +159,6 @@ theorem coe_injective : Function.Injective ((↑) : M → DivisibleHull M) :=
 theorem coe_inj {m m' : M} : (m : DivisibleHull M) = ↑m' ↔ m = m' :=
   coe_injective.eq_iff
 
-theorem coeAddMonoidHom_injective : Function.Injective (coeAddMonoidHom M) := coe_injective
-
 end TorsionFree
 
 section Group
@@ -340,9 +338,6 @@ def coeOrderAddMonoidHom : M →+o DivisibleHull M where
   __ := coeAddMonoidHom M
   monotone' a b h := by simpa using h
 
-theorem coeOrderAddMonoidHom_injective : Function.Injective (coeOrderAddMonoidHom M) :=
-  coeAddMonoidHom_injective
-
 /-- `ArchimedeanClass.mk` of an element from `DivisibleHull` only depends on the numerator. -/
 theorem archimedeanClassMk_mk_eq (m : M) (s s' : ℕ+) :
     ArchimedeanClass.mk (mk m s) = ArchimedeanClass.mk (mk m s') := by
@@ -368,7 +363,7 @@ private theorem aux_archimedeanClassMk_mk (m : M) (s : ℕ+) :
 /-- Use `Equiv.injective archimedeanClassOrderIso` for public API. -/
 private theorem aux_archimedeanClassOrderHom_injective :
     Function.Injective (archimedeanClassOrderHom M) :=
-  ArchimedeanClass.orderHom_injective coeOrderAddMonoidHom_injective
+  ArchimedeanClass.orderHom_injective coe_injective
 
 variable (M) in
 /-- Backward direction of `archimedeanClassOrderIso`. -/
