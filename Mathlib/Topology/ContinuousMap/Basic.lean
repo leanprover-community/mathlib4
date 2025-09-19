@@ -397,7 +397,7 @@ be lifted into a continuous map from `s` to `t`. -/
 def mapsTo (f : α → β) (s : Set α) (t : Set β) (h : MapsTo f s t) (hf : ContinuousOn f s) :
     C(s, t) where
   toFun := MapsTo.restrict f s t h
-  continuous_toFun := ContinuousOn.restrict_mapsTo hf _
+  continuous_toFun := ContinuousOn.mapsToRestrict hf _
 
 end Restrict
 
