@@ -90,7 +90,7 @@ theorem mconv_zero (μ : Measure M) : μ ∗ₘ (0 : Measure M) = (0 : Measure M
   unfold mconv
   simp
 
--- `mconv` needs an instance to get `SFinite (c • ν)` from `SFinite ν`,
+-- `mconv_smul_right` needs an instance to get `SFinite (c • ν)` from `SFinite ν`,
 -- hence it is placed in the `WithDensity` file, where the instance is defined.
 @[to_additive]
 theorem mconv_smul_left (μ : Measure M) (ν : Measure M) (s : ℝ≥0∞) :
