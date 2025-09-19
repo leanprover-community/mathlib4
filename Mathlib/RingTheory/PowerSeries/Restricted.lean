@@ -63,7 +63,8 @@ lemma add {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) 
 lemma neg {f : PowerSeries R} (hf : IsRestricted c f) : IsRestricted c (-f) := by
   simpa [isRestricted_iff] using hf
 
-/-- The set of `‖coeff R i f‖ * c^i` for a given power series `f` and parameter `c`. -/
+
+/-- The set of `‖coeff R i f‖ * c ^ i` for a given power series `f` and parameter `c`. -/
 def convergenceSet (f : PowerSeries R) : Set ℝ := {‖coeff R i f‖ * c^i | i : ℕ}
 
 open Finset in
@@ -72,13 +73,13 @@ lemma convergenceSet_BddAbove {f : PowerSeries R} (hf : IsRestricted c f) :
   simp_rw [isRestricted_iff] at hf
   obtain ⟨N, hf⟩ := by simpa using (hf 1)
   rw [bddAbove_def, convergenceSet]
-  use max 1 (Finset.max' (Finset.image (fun i => ‖coeff R i f‖ * c^i) (range (N+1))) (by simp))
+  use max 1 (max' (image (fun i ↦ ‖coeff R i f‖ * c ^ i) (range (N + 1))) (by simp))
   simp only [Set.mem_setOf_eq, le_sup_iff, forall_exists_index, forall_apply_eq_imp_iff]
   intro i
   rcases le_total i N with h | h
   · right
-    apply Finset.le_max'
-    simp only [Finset.mem_image, Finset.mem_range]
+    apply le_max'
+    simp only [mem_image, mem_range]
     exact ⟨i, Order.lt_add_one_iff.mpr h, rfl⟩
   · left
     calc _ ≤ ‖(coeff R i) f‖ * |c ^ i| := by bound
@@ -105,25 +106,26 @@ lemma mul {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) 
   intro ε hε
   obtain ⟨Nf, fBound2⟩ := (hf (ε / (max a b))) (by positivity)
   obtain ⟨Ng, gBound2⟩ := (hg (ε / (max a b))) (by positivity)
-  refine ⟨2 * max Nf Ng,  fun n hn ↦ ?_⟩
+  refine ⟨2 * max Nf Ng, fun n hn ↦ ?_⟩
   obtain ⟨⟨fst, snd⟩, hi, ultrametric⟩ := exists_norm_finset_sum_le (Finset.antidiagonal n)
-    (fun a => (coeff R a.1) f * (coeff R a.2) g)
-  obtain ⟨rfl⟩ := by simpa only [Finset.mem_antidiagonal] using hi (⟨(0, n), by aesop⟩)
+    (fun a ↦ (coeff R a.1) f * (coeff R a.2) g)
+  obtain ⟨rfl⟩ := by simpa using hi (⟨(0, n), by simp⟩)
   calc _ ≤ ‖(coeff R fst) f * (coeff R snd) g‖ * |c| ^ (fst + snd) := by bound
        _ ≤ ‖(coeff R fst) f‖ * |c| ^ fst * (‖(coeff R snd) g‖ * |c| ^ snd) := by
-        have := mul_le_mul_of_nonneg_right
-          (NormedRing.norm_mul_le ((coeff R fst) f) ((coeff R snd) g))
-          (pow_nonneg (abs_nonneg c) (fst + snd))
-        grind
-  have : fst ≥ max Nf Ng ∨ snd ≥ max Nf Ng := by omega
+        grw [norm_mul_le]; grind
+  have : max Nf Ng ≤ fst ∨ max Nf Ng ≤ snd := by omega
   rcases this with this | this
-  · calc _ < ε / max a b * b := mul_lt_mul_of_lt_of_le_of_nonneg_of_pos ((fBound2 fst) (by aesop))
-          (gBound1 snd) (by bound) hb
+  · calc _ < ε / max a b * b := by
+          grw [gBound1 snd]
+          gcongr
+          exact fBound2 fst (by omega)
          _ ≤ ε := by
           simpa only [div_mul_comm] using ((mul_le_iff_le_one_left hε).mpr
             ((div_le_one₀ (lt_sup_of_lt_left ha)).mpr (le_max_right a b)))
-  · calc _ < a * (ε / max a b) := mul_lt_mul_of_le_of_lt_of_nonneg_of_pos (fBound1 fst)
-          ((gBound2 snd) (by aesop)) (by bound) ha
+  · calc _ < a * (ε / max a b) := by
+          grw [fBound1 fst]
+          gcongr
+          exact gBound2 snd (by omega)
          _ ≤ ε := by
           simpa only [mul_div_left_comm] using ((mul_le_iff_le_one_right hε).mpr
             ((div_le_one₀ (lt_sup_of_lt_left ha)).mpr (le_max_left a b)))
