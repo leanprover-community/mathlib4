@@ -355,3 +355,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Name LastName, Another name, Name van LastName
 -/
 "
+
+#guard_msgs in
+#check_copyright
+"/-
+Copyright (c) 2024 Damiano Testa, another Name. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Áccented Ümlaut
+-/
+"

@@ -112,7 +112,9 @@ def toSyntax (s pattern : String) (offset : String.Pos := 0) : Syntax :=
 /--
 `fullNameExceptions` are exceptions to the very crude standardization of names that the linter uses.
 -/
-abbrev fullNameExceptions : Std.HashSet String := {}
+abbrev fullNameExceptions : Std.HashSet String :=
+  -- `Óscar Álvarez` should not count as an exception
+  {"PFR contributors", "Óscar Álvarez"}
 
 /--
 We split `authors` on `, ` and check that each resulting "author" is identified by a string
@@ -151,6 +153,8 @@ def checkNames (line authors : String) (offset : String.Pos) : Array (Syntax × 
         s!"We are aware that standardizing names is hard (https://www.kalzumeus.com/2010/06/17/falsehoods-programmers-believe-about-names/). \
         We are happy to add your name as an exception to the linter, though!")
   else return authorCheck
+
+#eval "Á".get 0 |>.isUpper
 
 /-- Return if `line` looks like a correct authors line in a copyright header.
 
