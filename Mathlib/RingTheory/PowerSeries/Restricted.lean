@@ -112,8 +112,6 @@ variable [IsUltrametricDist R]
 
 open IsUltrametricDist
 
--- (bddAbove_iff_exists_ge 1).mp
-
 lemma mul {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) :
     IsRestricted c (f * g) := by
   obtain ⟨a, ha, fBound1⟩ := (bddAbove_iff_exists_ge 1).mp (convergenceSet_BddAbove _
