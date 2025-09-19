@@ -39,7 +39,7 @@ namespace AlgebraicGeometry
 variable (P P' : MorphismProperty Scheme.{u})
 
 /--
-If `P` is local at the source, every quasi compact scheme is dominated by an
+If `P` is local at the source, every quasi-compact scheme is dominated by an
 affine scheme via `p : Y ⟶ X` such that `p` satisfies `P`.
 -/
 lemma Scheme.exists_hom_isAffine_of_isLocalAtSource (X : Scheme.{u}) [CompactSpace X]
