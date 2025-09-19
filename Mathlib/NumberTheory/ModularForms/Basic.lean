@@ -34,7 +34,7 @@ namespace UpperHalfPlane
 def J : GL (Fin 2) ℝ := .mkOfDetNeZero !![-1, 0; 0, 1] (by simp)
 
 lemma coe_J_smul (τ : ℍ) : (↑(J • τ) : ℂ) = -conj ↑τ := by
-  simp [UpperHalfPlane.coe_smul, σ, J, show ¬(1 : ℝ) < 0 by norm_num, num, denom]
+  simp [UpperHalfPlane.coe_smul, σ, J, show ¬(1 : ℝ) < 0 by simp, num, denom]
 
 lemma J_smul (τ : ℍ) : J • τ = ofComplex (-(conj ↑τ)) := by
   ext
