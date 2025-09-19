@@ -6,6 +6,7 @@ Authors: Jon Eugster, David Renshaw, Heather Macbeth, Michael Rothgang
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
+import Mathlib.Data.Real.Basic
 
 /-!
 # Tests for the `field_simp` tactic
@@ -451,6 +452,39 @@ example {x y z : ℚ} : (x / y ^ 2 = z / y) ↔ (x / y / y = z / y) := by
 
 end
 
+/-! Sometimes it takes iterated alternation betweeen `ring_nf` and `field_simp` in order to
+normalize properly.
+
+It is not clear whether or not this iterated alternation always achieves the "obvious" normalization
+eventually. Nor is it clear whether, if so, there are any bounds on how many iterations are needed.
+-/
+section
+
+-- modified from 2021 American Mathematics Competition 12B, problem 9
+example (P : ℝ → Prop) {x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
+    P ((4 * x + y) / x / (x / (3 * x + y)) - (5 * x + y) / x / (x / (2 * x + y))) := by
+  ring_nf
+  fail_if_success (guard_target = P 2) -- this simply records current behaviour, delete if needed
+  field_simp
+  fail_if_success (guard_target = P 2) -- this simply records current behaviour, delete if needed
+  ring_nf
+  fail_if_success (guard_target = P 2) -- this simply records current behaviour, delete if needed
+  field_simp
+  guard_target = P 2
+  exact test_sorry
+
+example (P : ℝ → Prop) {x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
+    P ((4 * x + y) / x / (x / (3 * x + y)) - (5 * x + y) / x / (x / (2 * x + y))) := by
+  field_simp
+  fail_if_success (guard_target = P 2) -- this simply records current behaviour, delete if needed
+  ring_nf
+  fail_if_success (guard_target = P 2) -- this simply records current behaviour, delete if needed
+  field_simp
+  guard_target = P 2
+  exact test_sorry
+
+end
+
 /-! From PluenneckeRuzsa: new `field_simp` doesn't handle variable exponents -/
 
 example (x y : ℚ≥0) (n : ℕ) (hx : x ≠ 0) : y * ((y / x) ^ n * x) = (y / x) ^ (n + 1) * x * x := by
@@ -545,7 +579,7 @@ example {K : Type*} [Field K] (n : ℕ) (w : K) (h0 : w ≠ 0) : w ^ n ≠ 0 := 
 
 example {K : Type*} [Field K] (n : ℕ) (w : K) (h0 : w ≠ 0) : w ^ n / w ^ n = n := by
   field_simp
-  guard_target = (1:K) = n
+  guard_target = (1 : K) = n
   exact test_sorry
 
 section
@@ -585,6 +619,19 @@ example (hK : ∀ ξ : K, 0 < ξ + 1) (x : K) : 1 / (x + 1) = 5 := by
   field_simp
   guard_target = 1 = (x + 1) * 5
   exact test_sorry
+
+/-- Test that the discharger can handle some casting -/
+example (n : ℕ) (h : n ≠ 0) : 1 / (n : K) * n = 1 := by
+  field_simp
+
+/-- Test that the discharger can handle some casting -/
+example (n : ℕ) (h : n ≠ 0) : 1 / (n : ℝ) * n = 1 := by
+  field_simp
+
+-- Minimised from Fourier/AddCircle.lean
+example (n : ℕ) (T : ℝ) {hT : T ≠ 0} (hn : n ≠ 0) {a : ℝ} :
+    (2 * a / T * (n * (T / 2 / n))) = a := by
+  field_simp
 
 end
 

@@ -23,15 +23,15 @@ variable {P : MorphismProperty Scheme.{u}} {S : Scheme.{u}} [IsLocalAtSource P] 
 /-- If `𝒰` is a cover of `S`, this is the single object cover where the covering
 object is the disjoint union. -/
 @[simps]
-noncomputable def sigma (𝒰 : Cover.{v} (precoverage P) S) : S.Cover (precoverage P) where
+noncomputable def sigma (𝒰 : Cover.{v} P S) : S.Cover P where
   I₀ := PUnit.{v + 1}
   X _ := ∐ 𝒰.X
   f _ := Sigma.desc 𝒰.f
-  mem₀ := by
-    rw [presieve₀_mem_precoverage_iff]
-    refine ⟨fun s ↦ ?_, fun _ ↦ IsLocalAtSource.sigmaDesc 𝒰.map_prop⟩
+  idx _ := default
+  covers s := by
     obtain ⟨i, y, rfl⟩ := 𝒰.exists_eq s
-    refine ⟨default, (Sigma.ι 𝒰.X i).base y, by simp [← Scheme.comp_base_apply]⟩
+    refine ⟨(Sigma.ι 𝒰.X i).base y, by simp [← Scheme.comp_base_apply]⟩
+  map_prop _ := IsLocalAtSource.sigmaDesc 𝒰.map_prop
 
 variable [P.IsMultiplicative] {𝒰 𝒱 : Scheme.Cover.{v} (precoverage P) S}
 

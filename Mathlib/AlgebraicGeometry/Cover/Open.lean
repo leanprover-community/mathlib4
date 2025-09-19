@@ -46,10 +46,9 @@ def affineCover (X : Scheme.{u}) : OpenCover X where
   X x := Spec (X.local_affine x).choose_spec.choose
   f x :=
     ⟨(X.local_affine x).choose_spec.choose_spec.some.inv ≫ X.toLocallyRingedSpace.ofRestrict _⟩
-  mem₀ := by
-    rw [presieve₀_mem_precoverage_iff]
-    refine ⟨fun x ↦ ?_, inferInstance⟩
-    use x
+  idx x := x
+  covers := by
+    intro x
     simp only [LocallyRingedSpace.comp_toShHom, SheafedSpace.comp_base, TopCat.hom_comp,
       ContinuousMap.coe_comp]
     rw [Set.range_comp, Set.range_eq_univ.mpr, Set.image_univ]
@@ -90,9 +89,8 @@ def OpenCover.finiteSubcover {X : Scheme.{u}} (𝒰 : OpenCover X) [H : CompactS
     { I₀ := t
       X := fun x => 𝒰.X (𝒰.idx x.1)
       f := fun x => 𝒰.f (𝒰.idx x.1)
-      mem₀ := by
-        rw [presieve₀_mem_precoverage_iff]
-        exact ⟨h, inferInstance⟩ }
+      idx := fun x => (h x).choose
+      covers := fun x => (h x).choose_spec }
 
 instance [H : CompactSpace X] : Fintype 𝒰.finiteSubcover.I₀ := by
   delta OpenCover.finiteSubcover; infer_instance
@@ -120,11 +118,11 @@ abbrev AffineOpenCover (X : Scheme.{u}) : Type _ :=
 
 namespace AffineOpenCover
 
-instance {X : Scheme.{u}} (𝒰 : X.AffineOpenCover) (j : 𝒰.J) : IsOpenImmersion (𝒰.map j) :=
+instance {X : Scheme.{u}} (𝒰 : X.AffineOpenCover) (j : 𝒰.I₀) : IsOpenImmersion (𝒰.f j) :=
   𝒰.map_prop j
 
 /-- The open cover associated to an affine open cover. -/
-@[simps! I₀ X f]
+@[simps! I₀ X f idx]
 def openCover {X : Scheme.{u}} (𝒰 : X.AffineOpenCover) : X.OpenCover :=
   AffineCover.cover 𝒰
 
@@ -133,11 +131,11 @@ end AffineOpenCover
 /-- A choice of an affine open cover of a scheme. -/
 @[simps]
 def affineOpenCover (X : Scheme.{u}) : X.AffineOpenCover where
-  obj := _
-  J := X.affineCover.I₀
-  map := X.affineCover.f
-  f x := (X.affineCover.exists_eq x).choose
-  covers x := (X.affineCover.exists_eq x).choose_spec
+  I₀ := X.affineCover.I₀
+  X _ := _
+  f := X.affineCover.f
+  idx := X.affineCover.idx
+  covers := X.affineCover.covers
 
 @[simp]
 lemma openCover_affineOpenCover (X : Scheme.{u}) : X.affineOpenCover.openCover = X.affineCover :=
@@ -148,11 +146,11 @@ The morphism in the category of open covers which proves that this is indeed a r
 `AlgebraicGeometry.Scheme.OpenCover.fromAffineRefinement`.
 -/
 def OpenCover.affineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) : X.AffineOpenCover where
-  obj := _
-  J := (𝓤.bind fun j => (𝓤.X j).affineCover).I₀
-  map := (𝓤.bind fun j => (𝓤.X j).affineCover).f
-  f := Cover.idx (𝓤.bind fun j => (𝓤.X j).affineCover)
-  covers := Cover.covers (𝓤.bind fun j => (𝓤.X j).affineCover)
+  I₀ := (𝓤.bind fun j => (𝓤.X j).affineCover).I₀
+  X _ := _
+  f := (𝓤.bind fun j => (𝓤.X j).affineCover).f
+  idx := (𝓤.bind fun j => (𝓤.X j).affineCover).idx
+  covers := (𝓤.bind fun j => (𝓤.X j).affineCover).covers
 
 /-- The pullback of the affine refinement is the pullback of the affine cover. -/
 def OpenCover.pullbackCoverAffineRefinementObjIso (f : X ⟶ Y) (𝒰 : Y.OpenCover) (i) :
@@ -194,10 +192,10 @@ lemma OpenCover.pullbackCoverAffineRefinementObjIso_inv_pullbackHom
 noncomputable
 def affineOpenCoverOfSpanRangeEqTop {R : CommRingCat} {ι : Type*} (s : ι → R)
     (hs : Ideal.span (Set.range s) = ⊤) : (Spec R).AffineOpenCover where
-  J := ι
-  obj i := .of (Localization.Away (s i))
-  map i := Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away (s i))))
-  f x := by
+  I₀ := ι
+  X i := .of (Localization.Away (s i))
+  f i := Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away (s i))))
+  idx x := by
     have : ∃ i, s i ∉ x.asIdeal := by
       by_contra! h; apply x.2.ne_top; rwa [← top_le_iff, ← hs, Ideal.span_le, Set.range_subset_iff]
     exact this.choose
@@ -242,7 +240,7 @@ lemma isNilpotent_of_isNilpotent_cover {X : Scheme.{u}} {U : X.Opens} (s : Γ(X,
     IsNilpotent s := by
   choose fn hfn using h
   have : Fintype 𝒰.I₀ := Fintype.ofFinite 𝒰.I₀
-  /- the maximum of all `fn i` (exists, because `𝒰.J` is finite) -/
+  /- the maximum of all `fn i` (exists, because `𝒰.I₀` is finite) -/
   let N : ℕ := Finset.sup Finset.univ fn
   have hfnleN (i : 𝒰.I₀) : fn i ≤ N := Finset.le_sup (Finset.mem_univ i)
   use N
@@ -258,9 +256,8 @@ def affineBasisCoverOfAffine (R : CommRingCat.{u}) : OpenCover (Spec R) where
   I₀ := R
   X r := Spec(Localization.Away r)
   f r := Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away r)))
-  mem₀ := by
-    rw [presieve₀_mem_precoverage_iff]
-    refine ⟨fun x ↦ ⟨1, ?_⟩, AlgebraicGeometry.Scheme.basic_open_isOpenImmersion⟩
+  idx _ := 1
+  covers r := by
     rw [Set.range_eq_univ.mpr ((TopCat.epi_iff_surjective _).mp _)]
     · exact trivial
     · infer_instance
@@ -282,8 +279,8 @@ theorem affineBasisCover_map_range (X : Scheme.{u}) (x : X)
     (r : (X.local_affine x).choose_spec.choose) :
     Set.range (X.affineBasisCover.f ⟨x, r⟩).base =
       (X.affineCover.f x).base '' (PrimeSpectrum.basicOpen r).1 := by
-  simp only [affineBasisCover, Precoverage.ZeroHypercover.bind_toPreZeroHypercover,
-    PreZeroHypercover.bind_f, comp_coeBase, TopCat.hom_comp, ContinuousMap.coe_comp, Set.range_comp]
+  simp only [affineBasisCover, Cover.bind_f, comp_coeBase, TopCat.hom_comp,
+    ContinuousMap.coe_comp, Set.range_comp]
   congr
   exact (PrimeSpectrum.localization_away_comap_range (Localization.Away r) r :)
 

@@ -332,10 +332,8 @@ def coprodOpenCover.{w} : (X ⨿ Y).OpenCover where
   I₀ := PUnit.{w + 1} ⊕ PUnit.{w + 1}
   X x := x.elim (fun _ ↦ X) (fun _ ↦ Y)
   f x := x.rec (fun _ ↦ coprod.inl) (fun _ ↦ coprod.inr)
-  mem₀ := by
-    rw [Scheme.presieve₀_mem_precoverage_iff]
-    refine ⟨fun x ↦ ?_, fun x ↦ x.rec (fun _ ↦ inferInstance) (fun _ ↦ inferInstance)⟩
-    use ((coprodMk X Y).symm x).elim (fun _ ↦ Sum.inl .unit) (fun _ ↦ Sum.inr .unit)
+  idx x := ((coprodMk X Y).symm x).elim (fun _ ↦ Sum.inl .unit) (fun _ ↦ Sum.inr .unit)
+  covers x := by
     obtain ⟨x, rfl⟩ := (coprodMk X Y).surjective x
     simp only [Sum.elim_inl, Sum.elim_inr, Set.mem_range]
     rw [Homeomorph.symm_apply_apply]

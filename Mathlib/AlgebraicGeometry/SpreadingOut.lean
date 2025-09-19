@@ -119,7 +119,7 @@ This is typically satisfied when `X` is integral or locally Noetherian.
 abbrev Scheme.IsGermInjective (X : Scheme.{u}) := ∀ x : X, X.IsGermInjectiveAt x
 
 lemma Scheme.IsGermInjective.of_openCover
-    {X : Scheme.{u}} (𝒰 : X.OpenCover) [∀ i, (𝒰.obj i).IsGermInjective] : X.IsGermInjective := by
+    {X : Scheme.{u}} (𝒰 : X.OpenCover) [∀ i, (𝒰.X i).IsGermInjective] : X.IsGermInjective := by
   intro x
   rw [← (𝒰.covers x).choose_spec]
   infer_instance
@@ -151,10 +151,10 @@ lemma Scheme.IsGermInjective.Spec
   exact ⟨⟨_, n, rfl⟩, hn⟩
 
 instance (priority := 100) [IsIntegral X] : X.IsGermInjective := by
-  refine fun x ↦ ⟨⟨(X.affineCover.map _).opensRange, X.affineCover.covers x,
-    (isAffineOpen_opensRange (X.affineCover.map _)), ?_⟩⟩
-  have : Nonempty (X.affineCover.map _).opensRange := ⟨⟨_, X.affineCover.covers x⟩⟩
-  have := (isAffineOpen_opensRange (X.affineCover.map _)).isLocalization_stalk
+  refine fun x ↦ ⟨⟨(X.affineCover.f x).opensRange, X.affineCover.covers x,
+    (isAffineOpen_opensRange (X.affineCover.f x)), ?_⟩⟩
+  have : Nonempty (X.affineCover.f x).opensRange := ⟨⟨_, X.affineCover.covers x⟩⟩
+  have := (isAffineOpen_opensRange (X.affineCover.f x)).isLocalization_stalk
     ⟨_, X.affineCover.covers x⟩
   exact @IsLocalization.injective _ _ _ _ _ (show _ from _) this
     (Ideal.primeCompl_le_nonZeroDivisors _)
@@ -162,7 +162,7 @@ instance (priority := 100) [IsIntegral X] : X.IsGermInjective := by
 instance (priority := 100) [IsLocallyNoetherian X] : X.IsGermInjective := by
   suffices ∀ (R : CommRingCat.{u}) (_ : IsNoetherianRing R), (Spec R).IsGermInjective by
     refine @Scheme.IsGermInjective.of_openCover _ (X.affineOpenCover.openCover) (fun i ↦ this _ ?_)
-    have := isLocallyNoetherian_of_isOpenImmersion (X.affineOpenCover.map i)
+    have := isLocallyNoetherian_of_isOpenImmersion (X.affineOpenCover.f i)
     infer_instance
   refine fun R hR ↦ Scheme.IsGermInjective.Spec fun I hI ↦ ?_
   let J := RingHom.ker <| algebraMap R (Localization.AtPrime I)

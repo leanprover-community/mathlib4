@@ -149,8 +149,7 @@ variable {β : Set α} {γ : Set β} {a : α}
 theorem mem_image_val_of_mem (ha : a ∈ β) (ha' : ⟨a, ha⟩ ∈ γ) : a ∈ (γ : Set α) :=
   ⟨_, ha', rfl⟩
 
-theorem image_val_subset : (γ : Set α) ⊆ β := by
-  rintro _ ⟨⟨_, ha⟩, _, rfl⟩; exact ha
+theorem image_val_subset : (γ : Set α) ⊆ β := Subtype.coe_image_subset _ _
 
 theorem mem_of_mem_image_val (ha : a ∈ (γ : Set α)) : ⟨a, image_val_subset ha⟩ ∈ γ := by
   rcases ha with ⟨_, ha, rfl⟩; exact ha

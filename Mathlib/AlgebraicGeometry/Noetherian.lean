@@ -125,23 +125,23 @@ theorem isLocallyNoetherian_iff_of_iSup_eq_top {ι} {S : ι → X.affineOpens}
 open CategoryTheory in
 /-- A version of `isLocallyNoetherian_iff_of_iSup_eq_top` using `Scheme.OpenCover`. -/
 theorem isLocallyNoetherian_iff_of_affine_openCover (𝒰 : Scheme.OpenCover.{v, u} X)
-    [∀ i, IsAffine (𝒰.obj i)] :
-    IsLocallyNoetherian X ↔ ∀ (i : 𝒰.J), IsNoetherianRing Γ(𝒰.obj i, ⊤) := by
+    [∀ i, IsAffine (𝒰.X i)] :
+    IsLocallyNoetherian X ↔ ∀ (i : 𝒰.I₀), IsNoetherianRing Γ(𝒰.X i, ⊤) := by
   constructor
   · intro h i
-    let U := Scheme.Hom.opensRange (𝒰.map i)
+    let U := Scheme.Hom.opensRange (𝒰.f i)
     have := h.component_noetherian ⟨U, isAffineOpen_opensRange _⟩
     apply isNoetherianRing_of_ringEquiv (R := Γ(X, U))
     apply CategoryTheory.Iso.commRingCatIsoToRingEquiv
-    exact (IsOpenImmersion.ΓIsoTop (𝒰.map i)).symm
+    exact (IsOpenImmersion.ΓIsoTop (𝒰.f i)).symm
   · intro hCNoeth
-    let fS i : X.affineOpens := ⟨Scheme.Hom.opensRange (𝒰.map i), isAffineOpen_opensRange _⟩
+    let fS i : X.affineOpens := ⟨Scheme.Hom.opensRange (𝒰.f i), isAffineOpen_opensRange _⟩
     apply isLocallyNoetherian_of_affine_cover (S := fS)
     · rw [← Scheme.OpenCover.iSup_opensRange 𝒰]
     intro i
-    apply isNoetherianRing_of_ringEquiv (R := Γ(𝒰.obj i, ⊤))
+    apply isNoetherianRing_of_ringEquiv (R := Γ(𝒰.X i, ⊤))
     apply CategoryTheory.Iso.commRingCatIsoToRingEquiv
-    exact IsOpenImmersion.ΓIsoTop (𝒰.map i)
+    exact IsOpenImmersion.ΓIsoTop (𝒰.f i)
 
 lemma isLocallyNoetherian_of_isOpenImmersion {Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f]
     [IsLocallyNoetherian Y] : IsLocallyNoetherian X := by
@@ -163,16 +163,16 @@ lemma isLocallyNoetherian_of_isOpenImmersion {Y : Scheme} (f : X ⟶ Y) [IsOpenI
     exact Set.subset_univ _
 
 /-- If `𝒰` is an open cover of a scheme `X`, then `X` is locally Noetherian if and only if
-`𝒰.obj i` are all locally Noetherian. -/
+`𝒰.X i` are all locally Noetherian. -/
 theorem isLocallyNoetherian_iff_openCover (𝒰 : Scheme.OpenCover X) :
-    IsLocallyNoetherian X ↔ ∀ (i : 𝒰.J), IsLocallyNoetherian (𝒰.obj i) := by
+    IsLocallyNoetherian X ↔ ∀ (i : 𝒰.I₀), IsLocallyNoetherian (𝒰.X i) := by
   constructor
   · intro h i
-    exact isLocallyNoetherian_of_isOpenImmersion (𝒰.map i)
+    exact isLocallyNoetherian_of_isOpenImmersion (𝒰.f i)
   · rw [isLocallyNoetherian_iff_of_affine_openCover (𝒰 := 𝒰.affineRefinement.openCover)]
     intro h i
     exact @isNoetherianRing_of_ringEquiv _ _ _ _
-      (IsOpenImmersion.ΓIsoTop (Scheme.Cover.map _ i.2)).symm.commRingCatIsoToRingEquiv
+      (IsOpenImmersion.ΓIsoTop (Scheme.Cover.f _ i.2)).symm.commRingCatIsoToRingEquiv
       (IsLocallyNoetherian.component_noetherian ⟨_, isAffineOpen_opensRange _⟩)
 
 /-- If `R` is a Noetherian ring, `Spec R` is a Noetherian topological space. -/
@@ -252,8 +252,8 @@ theorem isNoetherian_iff_of_finite_iSup_eq_top {ι} [Finite ι] {S : ι → X.af
 
 /-- A version of `isNoetherian_iff_of_finite_iSup_eq_top` using `Scheme.OpenCover`. -/
 theorem isNoetherian_iff_of_finite_affine_openCover {𝒰 : Scheme.OpenCover.{v, u} X}
-    [Finite 𝒰.J] [∀ i, IsAffine (𝒰.obj i)] :
-    IsNoetherian X ↔ ∀ (i : 𝒰.J), IsNoetherianRing Γ(𝒰.obj i, ⊤) := by
+    [Finite 𝒰.I₀] [∀ i, IsAffine (𝒰.X i)] :
+    IsNoetherian X ↔ ∀ (i : 𝒰.I₀), IsNoetherianRing Γ(𝒰.X i, ⊤) := by
   constructor
   · intro h i
     apply (isLocallyNoetherian_iff_of_affine_openCover _).mp
@@ -271,13 +271,13 @@ instance (priority := 100) IsNoetherian.noetherianSpace [IsNoetherian X] :
   apply TopologicalSpace.noetherian_univ_iff.mp
   let 𝒰 := X.affineCover.finiteSubcover
   rw [← 𝒰.iUnion_range]
-  suffices ∀ i : 𝒰.J, NoetherianSpace (Set.range <| (𝒰.map i).base) by
+  suffices ∀ i : 𝒰.I₀, NoetherianSpace (Set.range <| (𝒰.f i).base) by
     apply NoetherianSpace.iUnion
   intro i
   have : IsAffine (𝒰.X i) := by
     rw [X.affineCover.finiteSubcover_X]
     apply Scheme.isAffine_affineCover
-  let U : X.affineOpens := ⟨Scheme.Hom.opensRange (𝒰.map i), isAffineOpen_opensRange _⟩
+  let U : X.affineOpens := ⟨Scheme.Hom.opensRange (𝒰.f i), isAffineOpen_opensRange _⟩
   convert noetherianSpace_of_isAffineOpen U.1 U.2
   apply IsLocallyNoetherian.component_noetherian
 

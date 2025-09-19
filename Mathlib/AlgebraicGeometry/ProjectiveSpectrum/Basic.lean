@@ -293,7 +293,7 @@ lemma pullbackAwayιIso_inv_fst :
 lemma pullbackAwayιIso_inv_snd :
     (pullbackAwayιIso 𝒜 f_deg hm g_deg hm' hx).inv ≫ Limits.pullback.snd _ _ =
       Spec.map (CommRingCat.ofHom (awayMap 𝒜 f_deg (hx.trans (mul_comm _ _)))) := by
-  rw [← pullbackAwayιIso_hom_SpecMap_awayMap_right, Iso.inv_hom_id_assoc]
+  rw [← pullbackAwayιIso_hom_SpecMap_awayMap_right (hx := hx) .., Iso.inv_hom_id_assoc]
 
 include hm' in
 lemma awayι_preimage_basicOpen :
@@ -320,10 +320,10 @@ def openCoverOfISupEqTop {ι : Type*} (f : ι → A) {m : ι → ℕ}
     (f_deg : ∀ i, f i ∈ 𝒜 (m i)) (hm : ∀ i, 0 < m i)
     (hf : (HomogeneousIdeal.irrelevant 𝒜).toIdeal ≤ Ideal.span (Set.range f)) :
     (Proj 𝒜).AffineOpenCover where
-  J := ι
-  obj i := .of (Away 𝒜 (f i))
-  map i := awayι 𝒜 (f i) (f_deg i) (hm i)
-  f x := (mem_iSup.mp ((iSup_basicOpen_eq_top 𝒜 f hf).ge (Set.mem_univ x))).choose
+  I₀ := ι
+  X i := .of (Away 𝒜 (f i))
+  f i := awayι 𝒜 (f i) (f_deg i) (hm i)
+  idx x := (mem_iSup.mp ((iSup_basicOpen_eq_top 𝒜 f hf).ge (Set.mem_univ x))).choose
   covers x := by
     change x ∈ (awayι 𝒜 _ _ _).opensRange
     rw [opensRange_awayι]
@@ -458,8 +458,8 @@ lemma fromOfGlobalSections_preimage_basicOpen {r : A} {n : ℕ} (hn : 0 < n) (hr
     obtain ⟨i, x, rfl⟩ := (openCoverOfMapIrrelevantEqTop 𝒜 f hf).exists_eq x
     simp only [TopologicalSpace.Opens.map_coe, Set.mem_preimage, SetLike.mem_coe,
       ← Scheme.comp_base_apply, fromOfGlobalSections, Scheme.Cover.ι_glueMorphisms] at hx
-    simp only [ toBasicOpenOfGlobalSections, Scheme.isoOfEq_inv, Category.assoc,
-      basicOpenIsoSpec_inv_ι] at hx
+    simp only [openCoverOfMapIrrelevantEqTop, Scheme.openCoverOfISupEqTop_X,
+      toBasicOpenOfGlobalSections, Scheme.isoOfEq_inv, Category.assoc, basicOpenIsoSpec_inv_ι] at hx
     simp only [Scheme.comp_coeBase, Scheme.homOfLE_base, homOfLE_leOfHom, TopCat.hom_comp,
       ContinuousMap.comp_assoc, ContinuousMap.comp_apply, morphismRestrict_base,
       TopologicalSpace.Opens.carrier_eq_coe] at hx

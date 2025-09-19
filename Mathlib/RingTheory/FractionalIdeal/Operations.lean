@@ -623,9 +623,9 @@ theorem spanSingleton_mul_spanSingleton (x y : P) :
 
 @[simp]
 theorem spanSingleton_pow (x : P) (n : ℕ) : spanSingleton S x ^ n = spanSingleton S (x ^ n) := by
-  induction' n with n hn
-  · rw [pow_zero, pow_zero, spanSingleton_one]
-  · rw [pow_succ, hn, spanSingleton_mul_spanSingleton, pow_succ]
+  induction n with
+  | zero => rw [pow_zero, pow_zero, spanSingleton_one]
+  | succ n hn => rw [pow_succ, hn, spanSingleton_mul_spanSingleton, pow_succ]
 
 @[simp]
 theorem coeIdeal_span_singleton (x : R) :

@@ -30,13 +30,22 @@ for any pair of morphisms `f : X ⟶ S` and `g : Y ⟶ S` where `g` satisfies `P
 any pair of points `x : X` and `y : Y` with `f x = g y` can be lifted to a point
 of `X ×[S] Y`.
 
-In later files, this will be automatic, since this holds for any morphism `g`
-(see `AlgebraicGeometry.Scheme.isJointlySurjectivePreserving`). But at
-this early stage in the import tree, we only know it for open immersions. -/
-class IsJointlySurjectivePreserving (P : MorphismProperty Scheme.{u}) where
-  exists_preimage_fst_triplet_of_prop {X Y S : Scheme.{u}} {f : X ⟶ S} {g : Y ⟶ S} [HasPullback f g]
-    (hg : P g) (x : X) (y : Y) (h : f.base x = g.base y) :
-    ∃ a : ↑(pullback f g), (pullback.fst f g).base a = x
+The coverings are defined via existence of a `P`-cover. This is convenient in practice, as one
+directly has the cover available. For a pretopology generating the same Grothendieck topology, see
+`AlgebraicGeometry.Scheme.grothendieckTopology_eq_inf`.
+-/
+def pretopology : Pretopology Scheme.{u} where
+  coverings Y S := ∃ (U : Cover.{u} P Y), S = Presieve.ofArrows U.X U.f
+  has_isos _ _ f _ := ⟨coverOfIsIso f, (Presieve.ofArrows_pUnit _).symm⟩
+  pullbacks := by
+    rintro Y X f _ ⟨U, rfl⟩
+    exact ⟨U.pullbackCover' f, (Presieve.ofArrows_pullback _ _ _).symm⟩
+  transitive := by
+    rintro X _ T ⟨U, rfl⟩ H
+    choose V hV using H
+    use U.bind (fun j => V (U.f j) ⟨j⟩)
+    simpa only [Cover.bind, ← hV] using Presieve.ofArrows_bind U.X U.f _
+      (fun _ f H => (V f H).X) (fun _ f H => (V f H).f)
 
 variable (P : MorphismProperty Scheme.{u})
 
@@ -99,19 +108,76 @@ lemma ofArrows_mem_precoverage_iff {S : Scheme.{u}} {ι : Type*} {X : ι → Sch
 instance [P.IsStableUnderComposition] : (precoverage P).IsStableUnderComposition := by
   dsimp only [precoverage]; infer_instance
 
-instance [P.ContainsIdentities] [P.RespectsIso] : (precoverage P).HasIsos := by
-  dsimp only [precoverage]; infer_instance
+lemma pretopology_le_inf [IsJointlySurjectivePreserving ⊤] :
+    pretopology P ≤ jointlySurjectivePretopology ⊓ P.pretopology := by
+  rintro X S ⟨𝒰, rfl⟩
+  refine ⟨fun x ↦ ?_, fun _ _ ⟨i⟩ ↦ 𝒰.map_prop i⟩
+  obtain ⟨a, ha⟩ := 𝒰.covers x
+  refine ⟨𝒰.X (𝒰.idx x), a, 𝒰.f (𝒰.idx x), ⟨_⟩, ha⟩
 
-instance [IsJointlySurjectivePreserving P] [P.IsStableUnderBaseChange] :
-    (precoverage P).IsStableUnderBaseChange where
-  mem_coverings_of_isPullback {ι} S X f hf Y g T p₁ p₂ H := by
-    rw [ofArrows_mem_precoverage_iff] at hf ⊢
-    refine ⟨fun x ↦ ?_, fun i ↦ P.of_isPullback (H i).flip (hf.2 i)⟩
-    obtain ⟨i, y, hy⟩ := hf.1 (g.base x)
-    have := (H i).hasPullback
-    obtain ⟨w, hw⟩ := IsJointlySurjectivePreserving.exists_preimage_fst_triplet_of_prop (hf.2 i)
-      (f := g) x y hy.symm
-    use i, (H i).isoPullback.inv.base w
-    simpa [← Scheme.comp_base_apply]
+/--
+The Grothendieck topology defined by `P`-covers agrees with the Grothendieck
+topology induced by the intersection of the pretopology of surjective families with
+the pretopology defined by `P`.
+
+Note: Because of size issues, this does not hold on the level of pretopologies: A presieve
+in the intersection can have up to `Type (u + 1)` many components, while in the definition
+of `AlgebraicGeometry.Scheme.pretopology` we only allow `Type u` many components.
+-/
+lemma grothendieckTopology_eq_inf [IsJointlySurjectivePreserving ⊤] :
+    grothendieckTopology P = (jointlySurjectivePretopology ⊓ P.pretopology).toGrothendieck := by
+  apply le_antisymm ((Pretopology.gi Scheme.{u}).gc.monotone_l (pretopology_le_inf P))
+  intro X S ⟨T, ⟨hs, hP⟩, hle⟩
+  let _ : Type (u + 1) := Presieve X
+  let J := (Y : Scheme.{u}) × (Y ⟶ X)
+  choose Y y f hf hy using hs
+  let 𝒰 : Cover.{u} P X :=
+    { I₀ := X
+      X := Y
+      f := f
+      idx := id
+      covers := fun x ↦ ⟨y x, hy x⟩
+      map_prop := fun x ↦ hP (hf x)
+    }
+  refine ⟨Presieve.ofArrows 𝒰.X 𝒰.f, ⟨𝒰, rfl⟩, ?_⟩
+  rintro Z g ⟨x⟩
+  exact hle _ (hf x)
+
+variable {P}
+
+lemma pretopology_cover {Y : Scheme.{u}} (𝒰 : Cover.{u} P Y) :
+    pretopology P Y (Presieve.ofArrows 𝒰.X 𝒰.f) :=
+  ⟨𝒰, rfl⟩
+
+lemma grothendieckTopology_cover {X : Scheme.{u}} (𝒰 : Cover.{v} P X) :
+    grothendieckTopology P X (Sieve.generate (Presieve.ofArrows 𝒰.X 𝒰.f)) := by
+  let 𝒱 : Cover.{u} P X :=
+    { I₀ := X
+      X := fun x ↦ 𝒰.X (𝒰.idx x)
+      f := fun x ↦ 𝒰.f (𝒰.idx x)
+      idx := id
+      covers := 𝒰.covers
+      map_prop := fun _ ↦ 𝒰.map_prop _
+    }
+  refine ⟨_, pretopology_cover 𝒱, ?_⟩
+  rintro _ _ ⟨y⟩
+  exact ⟨_, 𝟙 _, 𝒰.f (𝒰.idx y), ⟨_⟩, by simp [𝒱]⟩
+
+section
+
+variable {Q : MorphismProperty Scheme.{u}} [Q.IsMultiplicative] [Q.RespectsIso]
+  [Q.IsStableUnderBaseChange] [IsJointlySurjectivePreserving Q]
+
+lemma pretopology_le_pretopology (hPQ : P ≤ Q) :
+    pretopology P ≤ pretopology Q := by
+  rintro X - ⟨𝒰, rfl⟩
+  use 𝒰.changeProp Q (fun j ↦ hPQ _ (𝒰.map_prop j))
+  rfl
+
+lemma grothendieckTopology_le_grothendieckTopology (hPQ : P ≤ Q) :
+    grothendieckTopology P ≤ grothendieckTopology Q :=
+  (Pretopology.gi Scheme.{u}).gc.monotone_l (pretopology_le_pretopology hPQ)
+
+end
 
 end AlgebraicGeometry.Scheme

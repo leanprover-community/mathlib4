@@ -124,8 +124,7 @@ def gluedScheme : Scheme := by
     D.toLocallyRingedSpaceGlueData.toGlueData.glued
   intro x
   obtain ⟨i, y, rfl⟩ := D.toLocallyRingedSpaceGlueData.ι_jointly_surjective x
-  obtain ⟨j, z, hz⟩ := (D.U i).affineCover.exists_eq y
-  refine ⟨_, ((D.U i).affineCover.f j).toLRSHom ≫
+  refine ⟨_, ((D.U i).affineCover.f y).toLRSHom ≫
     D.toLocallyRingedSpaceGlueData.toGlueData.ι i, ?_⟩
   constructor
   · simp only [LocallyRingedSpace.comp_toShHom, SheafedSpace.comp_base, TopCat.hom_comp,
@@ -251,9 +250,8 @@ def openCover (D : Scheme.GlueData) : OpenCover D.glued where
   I₀ := D.J
   X := D.U
   f := D.ι
-  mem₀ := by
-    rw [presieve₀_mem_precoverage_iff]
-    exact ⟨D.ι_jointly_surjective, inferInstance⟩
+  idx x := (D.ι_jointly_surjective x).choose
+  covers x := ⟨_, (D.ι_jointly_surjective x).choose_spec.choose_spec⟩
 
 end GlueData
 
@@ -410,7 +408,7 @@ instance : IsIso 𝒰.fromGlued :=
     apply PresheafedSpace.IsOpenImmersion.to_iso
   isIso_of_reflects_iso _ F
 
-/-- Given an open cover of `X`, and a morphism `𝒰.obj x ⟶ Y` for each open subscheme in the cover,
+/-- Given an open cover of `X`, and a morphism `𝒰.X x ⟶ Y` for each open subscheme in the cover,
 such that these morphisms are compatible in the intersection (pullback), we may glue the morphisms
 together into a morphism `X ⟶ Y`.
 
@@ -452,11 +450,7 @@ end Cover
 lemma hom_ext_of_forall {X Y : Scheme} (f g : X ⟶ Y)
     (H : ∀ x : X, ∃ U : X.Opens, x ∈ U ∧ U.ι ≫ f = U.ι ≫ g) : f = g := by
   choose U hxU hU using H
-  let 𝒰 : X.OpenCover := {
-    I₀ := X, X i := (U i), f i := (U i).ι,
-    mem₀ := by
-      rw [presieve₀_mem_precoverage_iff]
-      refine ⟨fun x ↦ ⟨x, by simpa using hxU x⟩, inferInstance⟩ }
+  let 𝒰 : X.OpenCover := { I₀ := X, X i := (U i), f i := (U i).ι, idx x := x, covers := by simpa }
   exact 𝒰.hom_ext _ _ hU
 
 /-!
@@ -761,6 +755,10 @@ def openCover : (colimit F).OpenCover :=
     (fun _ ↦ F.mapIso (eqToIso (by simp [GlueData.openCover, glueData]))) fun i ↦ by
   change colimit.ι F i = _ ≫ (glueData F).ι (equivShrink J i) ≫ _
   simp [← Category.assoc, ← Iso.comp_inv_eq, cocone]
+
+@[simp] lemma openCover_I₀ : (openCover F).I₀ = J := rfl
+@[simp] lemma openCover_X : (openCover F).X = F.obj := rfl
+@[simp] lemma openCover_f : (openCover F).f = colimit.ι F := rfl
 
 instance (i) : IsOpenImmersion (colimit.ι F i) :=
   inferInstanceAs (IsOpenImmersion ((openCover F).f i))

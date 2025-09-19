@@ -23,7 +23,7 @@ variable (W : MorphismProperty Scheme.{u})
 /-- The source (Zariski-)local closure of `P` is satisfied if there exists
 an open cover of the source on which `P` is satisfied. -/
 def sourceLocalClosure (P : MorphismProperty Scheme.{u}) : MorphismProperty Scheme.{u} :=
-  fun X _ f ↦ ∃ (𝒰 : Scheme.Cover.{u} (Scheme.precoverage W) X), ∀ (i : 𝒰.I₀), P (𝒰.f i ≫ f)
+  fun X _ f ↦ ∃ (𝒰 : Scheme.Cover.{u} W X), ∀ (i : 𝒰.I₀), P (𝒰.f i ≫ f)
 
 namespace sourceLocalClosure
 

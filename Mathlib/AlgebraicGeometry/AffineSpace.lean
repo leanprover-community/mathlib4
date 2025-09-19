@@ -406,8 +406,8 @@ lemma isOpenMap_over : IsOpenMap (𝔸(n; S) ↘ S).base := by
   wlog hS : ∃ R, S = Spec R
   · refine (IsLocalAtTarget.iff_of_openCover (P := topologically @IsOpenMap) S.affineCover).mpr ?_
     intro i
-    have := this (n := n) (S.affineCover.obj i) ⟨_, rfl⟩
-    rwa [← (isPullback_map (n := n)  (S.affineCover.map i)).isoPullback_hom_snd,
+    have := this (n := n) (S.affineCover.X i) ⟨_, rfl⟩
+    rwa [← (isPullback_map (n := n)  (S.affineCover.f i)).isoPullback_hom_snd,
       MorphismProperty.cancel_left_of_respectsIso (P := topologically @IsOpenMap)] at this
   obtain ⟨R, rfl⟩ := hS
   rw [← MorphismProperty.cancel_left_of_respectsIso (P := topologically @IsOpenMap)
@@ -434,8 +434,8 @@ lemma isIntegralHom_over_iff_isEmpty : IsIntegralHom (𝔸(n; S) ↘ S) ↔ IsEm
     wlog hS : ∃ R, S = Spec R
     · obtain ⟨x⟩ := ‹Nonempty S›
       obtain ⟨y, hy⟩ := S.affineCover.covers x
-      exact this (S.affineCover.obj _) (MorphismProperty.IsStableUnderBaseChange.of_isPullback
-        (isPullback_map (S.affineCover.map _)) h) ⟨y⟩ ⟨_, rfl⟩
+      exact this (S.affineCover.X x) (MorphismProperty.IsStableUnderBaseChange.of_isPullback
+        (isPullback_map (S.affineCover.f x)) h) ⟨y⟩ ⟨_, rfl⟩
     obtain ⟨R, rfl⟩ := hS
     have : Nontrivial R := (subsingleton_or_nontrivial R).resolve_left fun H ↦
         not_isEmpty_of_nonempty (Spec R) (inferInstanceAs (IsEmpty (PrimeSpectrum R)))

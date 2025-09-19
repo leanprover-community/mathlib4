@@ -474,12 +474,10 @@ def openCoverOfLeft (𝒰 : OpenCover X) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover
       𝒰.I₀ (fun i => pullback (𝒰.f i ≫ f) g)
       (fun i => pullback.map _ _ _ _ (𝒰.f i) (𝟙 _) (𝟙 _) (Category.comp_id _) (by simp))
       (Equiv.refl 𝒰.I₀) fun _ => Iso.refl _
-  rintro i
-  dsimp [Precoverage.ZeroHypercover.bind]
-  apply pullback.hom_ext <;> simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
-    GlueData.openCover, gluing_U, gluing_ι, p1, MultispanShape.prod_R, GlueData.diagram_right, p2,
-    Category.id_comp, Category.assoc, limit.isoLimitCone_inv_π, colimit.ι_desc, Multicofork.ofπ_pt,
-    Multicofork.ofπ_ι_app] <;> rfl
+  rintro (i : 𝒰.I₀)
+  simp_rw [Cover.pushforwardIso_I₀, Cover.pushforwardIso_f, GlueData.openCover_f,
+    GlueData.openCover_I₀, gluing_J]
+  exact pullback.hom_ext (by simp [p1]) (by simp [p2])
 
 /-- Given an open cover `{ Yᵢ }` of `Y`, then `X ×[Z] Y` is covered by `X ×[Z] Yᵢ`. -/
 @[simps! I₀ X f]
@@ -499,7 +497,7 @@ def openCoverOfRight (𝒰 : OpenCover Y) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
 def openCoverOfLeftRight (𝒰X : X.OpenCover) (𝒰Y : Y.OpenCover) (f : X ⟶ Z) (g : Y ⟶ Z) :
     (pullback f g).OpenCover := by
   fapply
-    Cover.copy ((openCoverOfLeft 𝒰X f g).bind fun x => openCoverOfRight 𝒰Y (𝒰X.f x ≫ f) g)
+    ((openCoverOfLeft 𝒰X f g).bind fun x => openCoverOfRight 𝒰Y (𝒰X.f x ≫ f) g).copy
       (𝒰X.I₀ × 𝒰Y.I₀) (fun ij => pullback (𝒰X.f ij.1 ≫ f) (𝒰Y.f ij.2 ≫ g))
       (fun ij =>
         pullback.map _ _ _ _ (𝒰X.f ij.1) (𝒰Y.f ij.2) (𝟙 _) (Category.comp_id _)
@@ -516,7 +514,7 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
   haveI := ((IsPullback.of_hasPullback (pullback.snd g (𝒰.f i))
     (pullback.snd f (𝒰.f i))).paste_horiz (IsPullback.of_hasPullback _ _)).flip
   refine
-    @coverOfIsIso (P := @IsOpenImmersion) _ _ _ _ _
+    @coverOfIsIso _ _ _ _ _
       (f := (pullbackSymmetry (pullback.snd f (𝒰.f i)) (pullback.snd g (𝒰.f i))).hom ≫
         (limit.isoLimitCone ⟨_, this.isLimit⟩).inv ≫
         pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) ?_ ?_)

@@ -137,7 +137,7 @@ lemma comp_toGlued_eq {U : Scheme} {i j : ι} (a : U ⟶ X i) (b : U ⟶ X j)
   exact ((glueData hf).glue_condition i j).symm.trans (by simp [toGlued])
 
 @[simp]
-lemma glueData_openCover_map : (glueData hf).openCover.map j = toGlued hf j := rfl
+lemma glueData_openCover_map : (glueData hf).openCover.f j = toGlued hf j := rfl
 
 instance : Sheaf.IsLocallyInjective (yonedaGluedToSheaf hf) where
   equalizerSieve_mem := by

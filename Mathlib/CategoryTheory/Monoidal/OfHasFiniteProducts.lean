@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 # The natural monoidal structure on any category with finite (co)products.
 
 A category with a monoidal structure provided in this way
-is sometimes called a (co)cartesian category,
+is sometimes called a (co-)Cartesian category,
 although this is also sometimes used to mean a finitely complete category.
 (See <https://ncatlab.org/nlab/show/cartesian+category>.)
 

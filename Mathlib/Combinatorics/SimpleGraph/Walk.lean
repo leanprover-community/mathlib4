@@ -427,7 +427,7 @@ theorem concatRec_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
   trans concatRecAux @Hnil @Hconcat (cons h.symm p.reverse)
   · congr
     simp
-  · rw [concatRecAux, rec_heq_iff_heq]
+  · rw [concatRecAux, eqRec_heq_iff_heq]
     congr <;> simp
 
 end ConcatRec
@@ -524,6 +524,13 @@ theorem tail_support_append {u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
 
 theorem support_eq_cons {u v : V} (p : G.Walk u v) : p.support = u :: p.support.tail := by
   cases p <;> simp
+
+theorem support_eq_concat {u v : V} (p : G.Walk u v) : p.support = p.support.dropLast.concat v := by
+  cases p with
+  | nil => rfl
+  | cons h p =>
+    obtain ⟨_, _, _, hq⟩ := exists_cons_eq_concat h p
+    simp [hq]
 
 @[simp]
 theorem start_mem_support {u v : V} (p : G.Walk u v) : u ∈ p.support := by cases p <;> simp
@@ -1090,11 +1097,11 @@ lemma concat_dropLast (p : G.Walk u v) (hp : G.Adj p.penultimate v) :
 
 @[simp] lemma cons_support_tail (p : G.Walk u v) (hp : ¬p.Nil) :
     u :: p.tail.support = p.support := by
-  rw [← support_cons, cons_tail_eq _ hp]
+  rw [← support_cons (p.adj_snd hp), cons_tail_eq _ hp]
 
 @[simp] lemma length_tail_add_one {p : G.Walk u v} (hp : ¬ p.Nil) :
     p.tail.length + 1 = p.length := by
-  rw [← length_cons, cons_tail_eq _ hp]
+  rw [← length_cons (p.adj_snd hp), cons_tail_eq _ hp]
 
 protected lemma Nil.tail {p : G.Walk v w} (hp : p.Nil) : p.tail.Nil := by cases p <;> aesop
 

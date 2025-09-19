@@ -158,7 +158,7 @@ theorem f_add_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y)
   | succ n hn =>
     have : x + n.succ = x + n + 1 := by push_cast; ring
     rw [this, hf_feq, hn]
-    · rw [Finset.range_succ, Finset.sum_insert Finset.notMem_range_self]
+    · rw [Finset.range_add_one, Finset.sum_insert Finset.notMem_range_self]
       abel
     · linarith [(Nat.cast_nonneg n : 0 ≤ (n : ℝ))]
 
@@ -346,7 +346,7 @@ theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by
 
 theorem Gamma_strictMonoOn_Ici : StrictMonoOn Gamma (Ici 2) := by
   convert
-    convexOn_Gamma.strict_mono_of_lt (by norm_num : (0 : ℝ) < 3 / 2)
+    convexOn_Gamma.strict_mono_of_lt (by simp : (0 : ℝ) < 3 / 2)
       (by norm_num : (3 / 2 : ℝ) < 2) (Gamma_two.symm ▸ Gamma_three_div_two_lt_one)
   symm
   rw [inter_eq_right]

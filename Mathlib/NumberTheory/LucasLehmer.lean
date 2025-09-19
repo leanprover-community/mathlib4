@@ -185,7 +185,7 @@ theorem sMod_lt (p : ℕ) (hp : p ≠ 0) (i : ℕ) : sMod p i < 2 ^ p - 1 := by
 
 theorem sZMod_eq_s (p' : ℕ) (i : ℕ) : sZMod (p' + 2) i = (s i : ZMod (2 ^ (p' + 2) - 1)) := by
   induction i with
-  | zero => dsimp [s, sZMod]; norm_num
+  | zero => dsimp [s, sZMod]; simp
   | succ i ih => push_cast [s, sZMod, ih]; rfl
 
 -- These next two don't make good `norm_cast` lemmas.
@@ -211,13 +211,8 @@ theorem residue_eq_zero_iff_sMod_eq_zero (p : ℕ) (w : 1 < p) :
   · -- We want to use that fact that `0 ≤ s_mod p (p-2) < 2^p - 1`
     -- and `lucas_lehmer_residue p = 0 → 2^p - 1 ∣ s_mod p (p-2)`.
     intro h
-    --Simp is inconsistent about using pow_pos or pow_succ_pos, which leads to noise in the
-    --"simp? says" linter everytime the environment changes a little. By adding pow_pos as
-    --an explicit argument, it takes priority and we avoid the noise.
-    simp? [ZMod.intCast_zmod_eq_zero_iff_dvd, pow_pos] at h says
-      simp only [ZMod.intCast_zmod_eq_zero_iff_dvd, ofNat_pos, pow_pos, cast_pred,
-        cast_pow, cast_ofNat] at h
-    apply Int.eq_zero_of_dvd_of_nonneg_of_lt _ _ h <;> clear h
+    apply Int.eq_zero_of_dvd_of_nonneg_of_lt _ _
+      (by simpa [ZMod.intCast_zmod_eq_zero_iff_dvd] using h) <;> clear h
     · exact sMod_nonneg _ (by positivity) _
     · exact sMod_lt _ (by positivity) _
   · intro h

@@ -18,7 +18,7 @@ ends can be organised as data that exhibit `F` as monoidal closed in `C ⥤ V` f
 the Day convolution monoidal structure.
 
 ## TODOs
-* When `LawfulDayConvolutionMonoidalStruct` (#26820) lands, transport the
+* When `LawfulDayConvolutionMonoidalStruct` (https://github.com/leanprover-community/mathlib4/issues/26820) lands, transport the
   constructions here to produce actual `CategoryTheory.MonoidalClosed` instances.
 -/
 

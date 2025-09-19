@@ -224,7 +224,7 @@ lemma det_one_add_X_smul (M : Matrix n n R) :
   convert (divX_mul_X_add _).symm
   rw [coeff_zero_eq_eval_zero, eval_det_add_X_smul, det_one, eval_one]
 
-/-- The first two terms of the taylor expansion of `det (1 + r • M)` at `r = 0`. -/
+/-- The first two terms of the Taylor expansion of `det (1 + r • M)` at `r = 0`. -/
 lemma det_one_add_smul (r : R) (M : Matrix n n R) :
     det (1 + r • M) =
       1 + trace M * r + (det (1 + (X : R[X]) • M.map C)).divX.divX.eval r * r ^ 2 := by

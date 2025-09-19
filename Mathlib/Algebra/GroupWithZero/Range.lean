@@ -135,14 +135,14 @@ lemma valueMonoid_eq_valueGroup' : (valueMonoid f : Set Bˣ) = valueGroup f := b
 
 lemma valueGroup_eq_range : Units.val '' (valueGroup f) = (range f \ {0}) := by
   ext x
+  simp only [mem_diff, mem_range, mem_singleton_iff, ← valueMonoid_eq_valueGroup' f, mem_image,
+    SetLike.mem_coe, mem_valueMonoid_iff, mem_preimage, mem_range]
   constructor
   · rintro ⟨y, hy, rfl⟩
-    simp only [mem_diff, mem_range, mem_singleton_iff, Units.ne_zero, not_false_eq_true, and_true]
-    obtain ⟨a, _⟩ := (valueMonoid_eq_valueGroup' f).symm ▸ hy
-    use a
+    simp only [Units.ne_zero, not_false_eq_true, and_true, hy]
   · rintro ⟨⟨y, hy⟩, hx₀⟩
     refine ⟨Units.mk0 x hx₀, ?_, rfl⟩
-    simpa [← valueMonoid_eq_valueGroup', Units.val_mk0, mem_range] using ⟨y, hy⟩
+    simpa [Units.val_mk0, mem_range] using ⟨y, hy⟩
 
 end GroupWithZero
 section CommGroupWithZero

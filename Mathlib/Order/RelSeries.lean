@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Rel
 import Mathlib.Order.OrderIsoNat
 
