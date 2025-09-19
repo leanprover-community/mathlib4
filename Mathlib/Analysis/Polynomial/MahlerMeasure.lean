@@ -32,12 +32,14 @@ namespace Polynomial
 
 open Real
 
+variable (p : ℂ[X])
+
 /-- The logarithmic Mahler measure of a polynomial `p` defined as
 `(2 * π)⁻¹ * ∫ x ∈ (0, 2 * π), log ‖p (e ^ (i * x))‖` -/
-noncomputable def logMahlerMeasure (p : ℂ[X]) : ℝ := circleAverage (fun x ↦ log ‖eval x p‖) 0 1
+noncomputable def logMahlerMeasure : ℝ := circleAverage (fun x ↦ log ‖eval x p‖) 0 1
 
-theorem logMahlerMeasure_def (p : ℂ[X]) :
-    p.logMahlerMeasure = circleAverage (fun x ↦ log ‖eval x p‖) 0 1 := rfl
+theorem logMahlerMeasure_def : p.logMahlerMeasure = circleAverage (fun x ↦ log ‖eval x p‖) 0 1 :=
+  rfl
 
 @[simp]
 theorem logMahlerMeasure_zero : (0 : ℂ[X]).logMahlerMeasure = 0 := by
@@ -61,14 +63,15 @@ theorem logMahlerMeasure_monomial (n : ℕ) (z : ℂ) : (monomial n z).logMahler
 
 /-- The Mahler measure of a polynomial `p` defined as `e ^ (logMahlerMeasure p)` if `p` is nonzero
 and `0` otherwise -/
-noncomputable def mahlerMeasure (p : ℂ[X]) := if p ≠ 0 then exp (p.logMahlerMeasure) else 0
+noncomputable def mahlerMeasure : ℝ := if p ≠ 0 then exp (p.logMahlerMeasure) else 0
 
-theorem mahlerMeasure_def_of_ne_zero {p : ℂ[X]} (hp : p ≠ 0) : p.mahlerMeasure =
-    exp ((2 * π)⁻¹ * ∫ (x : ℝ) in (0)..(2 * π), log ‖eval (circleMap 0 1 x) p‖) :=
-  by simp [mahlerMeasure, hp, logMahlerMeasure_def, circleAverage_def]
+variable {p} in
+theorem mahlerMeasure_def_of_ne_zero (hp : p ≠ 0) : p.mahlerMeasure =
+    exp ((2 * π)⁻¹ * ∫ (x : ℝ) in (0)..(2 * π), log ‖eval (circleMap 0 1 x) p‖) := by
+  simp [mahlerMeasure, hp, logMahlerMeasure_def, circleAverage_def]
 
-theorem logMahlerMeasure_eq_log_MahlerMeasure {p : ℂ[X]} :
-    p.logMahlerMeasure = log p.mahlerMeasure := by
+variable {p} in
+theorem logMahlerMeasure_eq_log_MahlerMeasure : p.logMahlerMeasure = log p.mahlerMeasure := by
   rw [mahlerMeasure]
   split_ifs <;> simp_all [logMahlerMeasure_def, circleAverage_def]
 
@@ -85,16 +88,16 @@ theorem mahlerMeasure_const (z : ℂ) : (C z).mahlerMeasure = ‖z‖ := by
   · simp [h]
   · simp [h, exp_log]
 
-theorem mahlerMeasure_nonneg (p : ℂ[X]) : 0 ≤ p.mahlerMeasure := by
+theorem mahlerMeasure_nonneg : 0 ≤ p.mahlerMeasure := by
   by_cases hp : p = 0 <;> simp [hp, mahlerMeasure_def_of_ne_zero, exp_nonneg]
 
 @[simp]
-theorem mahlerMeasure_eq_zero_iff (p : ℂ[X]) : p.mahlerMeasure = 0 ↔ p = 0 := by
+theorem mahlerMeasure_eq_zero_iff : p.mahlerMeasure = 0 ↔ p = 0 := by
   refine ⟨?_, by simp_all [mahlerMeasure_zero]⟩
   contrapose
   exact fun h ↦ by simp [mahlerMeasure_def_of_ne_zero h]
 
-lemma intervalIntegrable_mahlerMeasure (p : ℂ[X]) :
+lemma intervalIntegrable_mahlerMeasure :
     IntervalIntegrable (fun x ↦ log ‖p.eval (circleMap 0 1 x)‖) MeasureTheory.volume 0 (2 * π) := by
   rw [← circleIntegrable_def fun z ↦ log ‖p.eval z‖]
   exact circleIntegrable_log_norm_meromorphicOn
@@ -111,7 +114,7 @@ theorem mahlerMeasure_mul (p q : ℂ[X]) :
     logMahlerMeasure, eval_mul, Complex.norm_mul, circleAverage_def, mul_inv_rev, smul_eq_mul]
   rw [← exp_add, ← left_distrib]
   congr
-  rw [← integral_add p.mahlerMeasure_integrable q.mahlerMeasure_integrable]
+  rw [← integral_add p.intervalIntegrable_mahlerMeasure q.intervalIntegrable_mahlerMeasure]
   apply integral_congr_ae
   rw [MeasureTheory.ae_iff]
   apply Set.Finite.measure_zero _ MeasureTheory.volume
