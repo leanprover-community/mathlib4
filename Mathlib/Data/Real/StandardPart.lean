@@ -27,12 +27,12 @@ standard part function on `Hyperreal`.
 Redefine `Hyperreal.st` in terms of `ArchimedeanClass.standardPart`.
 -/
 
-/-! ### Finite residue field -/
-
 namespace ArchimedeanClass
 variable
   {K : Type*} [LinearOrder K] [Field K] [IsOrderedRing K] {x y : K}
   {R : Type*} [LinearOrder R] [CommRing R] [IsOrderedRing R] [Archimedean R]
+
+/-! ### Finite residue field -/
 
 variable (K) in
 /-- The valuation subring of elements in non-negative Archimedean classes, i.e. elements bounded by
