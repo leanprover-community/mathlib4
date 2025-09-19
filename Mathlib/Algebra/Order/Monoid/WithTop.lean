@@ -61,12 +61,3 @@ protected theorem le_add_self [AddCommMagma α] [LE α] [CanonicallyOrderedAdd �
     exact le_add_self
 
 end WithBot
-
--- @[to_additive]
--- lemma IsOrderedMonoid.comap {G H F : Type*} [CommMonoid G] [CommMonoid H] [LinearOrder G]
---     [PartialOrder H] [IsOrderedMonoid H] [FunLike F G H] [MonoidHomClass F G H]
---     {f : F} (hf : StrictMono f) :
---     IsOrderedMonoid G where
---   mul_le_mul_left _ _ h _ := by
---     simp_rw [← hf.le_iff_le, map_mul] at h ⊢
---     simpa using mul_le_mul_left' h _
