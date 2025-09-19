@@ -320,10 +320,10 @@ def openCoverOfISupEqTop {ι : Type*} (f : ι → A) {m : ι → ℕ}
     (f_deg : ∀ i, f i ∈ 𝒜 (m i)) (hm : ∀ i, 0 < m i)
     (hf : (HomogeneousIdeal.irrelevant 𝒜).toIdeal ≤ Ideal.span (Set.range f)) :
     (Proj 𝒜).AffineOpenCover where
-  J := ι
-  obj i := .of (Away 𝒜 (f i))
-  map i := awayι 𝒜 (f i) (f_deg i) (hm i)
-  f x := (mem_iSup.mp ((iSup_basicOpen_eq_top 𝒜 f hf).ge (Set.mem_univ x))).choose
+  I₀ := ι
+  X i := .of (Away 𝒜 (f i))
+  f i := awayι 𝒜 (f i) (f_deg i) (hm i)
+  idx x := (mem_iSup.mp ((iSup_basicOpen_eq_top 𝒜 f hf).ge (Set.mem_univ x))).choose
   covers x := by
     change x ∈ (awayι 𝒜 _ _ _).opensRange
     rw [opensRange_awayι]
@@ -440,8 +440,8 @@ def fromOfGlobalSections : X ⟶ Proj 𝒜 := by
   refine (openCoverOfMapIrrelevantEqTop 𝒜 f hf).glueMorphisms
     (fun ri ↦ toBasicOpenOfGlobalSections 𝒜 f rfl ri.2.2.1 ri.2.2.2 ≫ Scheme.Opens.ι _) ?_
   rintro x y
-  let e : pullback ((openCoverOfMapIrrelevantEqTop 𝒜 f hf).map x)
-      ((openCoverOfMapIrrelevantEqTop 𝒜 f hf).map y) ≅ (X.basicOpen (f (x.snd.fst * y.snd.fst))) :=
+  let e : pullback ((openCoverOfMapIrrelevantEqTop 𝒜 f hf).f x)
+      ((openCoverOfMapIrrelevantEqTop 𝒜 f hf).f y) ≅ (X.basicOpen (f (x.snd.fst * y.snd.fst))) :=
     (isPullback_opens_inf _ _).isoPullback.symm ≪≫ X.isoOfEq (by simp)
   rw [← cancel_epi e.inv]
   trans toBasicOpenOfGlobalSections 𝒜 f rfl (Nat.add_pos_left x.2.2.1 y.1)
@@ -458,7 +458,7 @@ lemma fromOfGlobalSections_preimage_basicOpen {r : A} {n : ℕ} (hn : 0 < n) (hr
     obtain ⟨i, x, rfl⟩ := (openCoverOfMapIrrelevantEqTop 𝒜 f hf).exists_eq x
     simp only [TopologicalSpace.Opens.map_coe, Set.mem_preimage, SetLike.mem_coe,
       ← Scheme.comp_base_apply, fromOfGlobalSections, Scheme.Cover.ι_glueMorphisms] at hx
-    simp only [openCoverOfMapIrrelevantEqTop, Scheme.openCoverOfISupEqTop_obj,
+    simp only [openCoverOfMapIrrelevantEqTop, Scheme.openCoverOfISupEqTop_X,
       toBasicOpenOfGlobalSections, Scheme.isoOfEq_inv, Category.assoc, basicOpenIsoSpec_inv_ι] at hx
     simp only [Scheme.comp_coeBase, Scheme.homOfLE_base, homOfLE_leOfHom, TopCat.hom_comp,
       ContinuousMap.comp_assoc, ContinuousMap.comp_apply, morphismRestrict_base,
@@ -477,8 +477,8 @@ lemma fromOfGlobalSections_preimage_basicOpen {r : A} {n : ℕ} (hn : 0 < n) (hr
       PrimeSpectrum.basicOpen_le_basicOpen_iff, IsLocalization.mk'_mem_iff]
     exact Ideal.pow_mem_of_mem _ (Ideal.le_radical (Ideal.mem_span_singleton_self _)) _ i.2.2.1
   · intro x hx
-    let I : (openCoverOfMapIrrelevantEqTop 𝒜 f hf).J := ⟨n, r, hn, hr⟩
-    obtain ⟨x, rfl⟩ : x ∈ ((openCoverOfMapIrrelevantEqTop 𝒜 f hf).map I).opensRange := by
+    let I : (openCoverOfMapIrrelevantEqTop 𝒜 f hf).I₀ := ⟨n, r, hn, hr⟩
+    obtain ⟨x, rfl⟩ : x ∈ ((openCoverOfMapIrrelevantEqTop 𝒜 f hf).f I).opensRange := by
       simpa [openCoverOfMapIrrelevantEqTop] using hx
     simp only [TopologicalSpace.Opens.map_coe, Set.mem_preimage, SetLike.mem_coe,
       ← Scheme.comp_base_apply, fromOfGlobalSections, Scheme.Cover.ι_glueMorphisms]
@@ -510,8 +510,8 @@ lemma fromOfGlobalSections_toSpecZero
   simp only [fromOfGlobalSections, toBasicOpenOfGlobalSections, CommRingCat.ofHom_comp,
     Category.assoc, Scheme.Cover.ι_glueMorphisms_assoc, basicOpenIsoSpec_inv_ι_assoc,
     awayι_toSpecZero, Iso.inv_comp_eq]
-  simp only [openCoverOfMapIrrelevantEqTop, Scheme.openCoverOfISupEqTop_obj,
-    Scheme.openCoverOfISupEqTop_map, Scheme.isoOfEq_hom_ι_assoc, ← morphismRestrict_ι_assoc]
+  simp only [openCoverOfMapIrrelevantEqTop, Scheme.openCoverOfISupEqTop_X,
+    Scheme.openCoverOfISupEqTop_f, Scheme.isoOfEq_hom_ι_assoc, ← morphismRestrict_ι_assoc]
   congr 1
   simp only [basicOpenIsoSpecAway, ← CommRingCat.ofHom_comp, ← Spec.map_comp, ← Iso.eq_inv_comp,
     IsOpenImmersion.isoOfRangeEq_inv_fac_assoc, ← HomogeneousLocalization.algebraMap_eq]

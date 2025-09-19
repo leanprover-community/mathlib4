@@ -95,8 +95,8 @@ lemma isQuotientMap_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [Qua
     rw [𝒰.isOpenCover_opensRange.isOpen_iff_inter]
     intro i
     rw [Scheme.Hom.coe_opensRange, ← Set.image_preimage_eq_inter_range]
-    apply (𝒰.map i).isOpenEmbedding.isOpenMap
-    refine this (f := pullback.fst (𝒰.map i) f) _ ?_ ⟨_, rfl⟩
+    apply (𝒰.f i).isOpenEmbedding.isOpenMap
+    refine this (f := pullback.fst (𝒰.f i) f) _ ?_ ⟨_, rfl⟩
     rw [← Set.preimage_comp, ← TopCat.coe_comp, ← Scheme.comp_base, pullback.condition,
       Scheme.comp_base, TopCat.coe_comp, Set.preimage_comp]
     exact hs.preimage (Scheme.Hom.continuous _)
@@ -104,8 +104,8 @@ lemma isQuotientMap_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [Qua
   wlog hX : ∃ S, X = Spec S
   · have _ : CompactSpace X := QuasiCompact.compactSpace_of_compactSpace f
     let 𝒰 := X.affineCover.finiteSubcover
-    let p : ∐ (fun i : 𝒰.J ↦ 𝒰.obj i) ⟶ X := Sigma.desc (fun i ↦ 𝒰.map i)
-    refine this (f := (∐ (fun i : 𝒰.J ↦ 𝒰.obj i)).isoSpec.inv ≫ p ≫ f) _ _ ?_ ⟨_, rfl⟩
+    let p : ∐ (fun i : 𝒰.I₀ ↦ 𝒰.X i) ⟶ X := Sigma.desc (fun i ↦ 𝒰.f i)
+    refine this (f := (∐ (fun i : 𝒰.I₀ ↦ 𝒰.X i)).isoSpec.inv ≫ p ≫ f) _ _ ?_ ⟨_, rfl⟩
     rw [← Category.assoc, Scheme.comp_base, TopCat.coe_comp, Set.preimage_comp]
     exact hs.preimage (_ ≫ p).continuous
   obtain ⟨S, rfl⟩ := hX
