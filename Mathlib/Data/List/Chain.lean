@@ -152,174 +152,174 @@ theorem chain_eq_iff_eq_replicate {a : α} {l : List α} :
     rw [chain_cons]
     simp +contextual [eq_comm, replicate_succ, chain_eq_iff_eq_replicate]
 
-theorem Chain'.imp {S : α → α → Prop} (H : ∀ a b, R a b → S a b) {l : List α} (p : Chain' R l) :
-    Chain' S l := by cases l <;> [trivial; exact Chain.imp H p]
+theorem IsChain.imp {S : α → α → Prop} (H : ∀ a b, R a b → S a b) {l : List α} (p : IsChain R l) :
+    IsChain S l := by cases l <;> [trivial; exact Chain.imp H p]
 
-theorem Chain'.iff {S : α → α → Prop} (H : ∀ a b, R a b ↔ S a b) {l : List α} :
-    Chain' R l ↔ Chain' S l :=
-  ⟨Chain'.imp fun a b => (H a b).1, Chain'.imp fun a b => (H a b).2⟩
+theorem IsChain.iff {S : α → α → Prop} (H : ∀ a b, R a b ↔ S a b) {l : List α} :
+    IsChain R l ↔ IsChain S l :=
+  ⟨IsChain.imp fun a b => (H a b).1, IsChain.imp fun a b => (H a b).2⟩
 
-theorem Chain'.iff_mem : ∀ {l : List α}, Chain' R l ↔ Chain' (fun x y => x ∈ l ∧ y ∈ l ∧ R x y) l
+theorem IsChain.iff_mem : ∀ {l : List α}, IsChain R l ↔ IsChain (fun x y => x ∈ l ∧ y ∈ l ∧ R x y) l
   | [] => Iff.rfl
   | _ :: _ =>
     ⟨fun h => (Chain.iff_mem.1 h).imp fun _ _ ⟨h₁, h₂, h₃⟩ => ⟨h₁, mem_cons.2 (Or.inr h₂), h₃⟩,
-      Chain'.imp fun _ _ h => h.2.2⟩
+      IsChain.imp fun _ _ h => h.2.2⟩
 
 @[simp]
-theorem chain'_nil : Chain' R [] :=
+theorem isChain_nil : IsChain R [] :=
   trivial
 
 @[simp]
-theorem chain'_singleton (a : α) : Chain' R [a] :=
+theorem isChain_singleton (a : α) : IsChain R [a] :=
   Chain.nil
 
 @[simp]
-theorem chain'_cons_cons {x y l} : Chain' R (x :: y :: l) ↔ R x y ∧ Chain' R (y :: l) :=
+theorem isChain_cons_cons {x y l} : IsChain R (x :: y :: l) ↔ R x y ∧ IsChain R (y :: l) :=
   chain_cons
 
-@[deprecated (since := "2025-08-12")] alias chain'_cons := chain'_cons_cons
+@[deprecated (since := "2025-08-12")] alias isChain_cons := isChain_cons_cons
 
-theorem chain'_isInfix : ∀ l : List α, Chain' (fun x y => [x, y] <:+: l) l
-  | [] => chain'_nil
-  | [_] => chain'_singleton _
+theorem isChain_isInfix : ∀ l : List α, IsChain (fun x y => [x, y] <:+: l) l
+  | [] => isChain_nil
+  | [_] => isChain_singleton _
   | a :: b :: l =>
-    chain'_cons_cons.2
-      ⟨⟨[], l, by simp⟩, (chain'_isInfix (b :: l)).imp fun _ _ h => h.trans ⟨[a], [], by simp⟩⟩
+    isChain_cons_cons.2
+      ⟨⟨[], l, by simp⟩, (isChain_isInfix (b :: l)).imp fun _ _ h => h.trans ⟨[a], [], by simp⟩⟩
 
-theorem chain'_split {a : α} :
-    ∀ {l₁ l₂ : List α}, Chain' R (l₁ ++ a :: l₂) ↔ Chain' R (l₁ ++ [a]) ∧ Chain' R (a :: l₂)
-  | [], _ => (and_iff_right (chain'_singleton a)).symm
+theorem isChain_split {a : α} :
+    ∀ {l₁ l₂ : List α}, IsChain R (l₁ ++ a :: l₂) ↔ IsChain R (l₁ ++ [a]) ∧ IsChain R (a :: l₂)
+  | [], _ => (and_iff_right (isChain_singleton a)).symm
   | _ :: _, _ => chain_split
 
 @[simp]
-theorem chain'_append_cons_cons {b c : α} {l₁ l₂ : List α} :
-    Chain' R (l₁ ++ b :: c :: l₂) ↔ Chain' R (l₁ ++ [b]) ∧ R b c ∧ Chain' R (c :: l₂) := by
-  rw [chain'_split, chain'_cons_cons]
+theorem isChain_append_cons_cons {b c : α} {l₁ l₂ : List α} :
+    IsChain R (l₁ ++ b :: c :: l₂) ↔ IsChain R (l₁ ++ [b]) ∧ R b c ∧ IsChain R (c :: l₂) := by
+  rw [isChain_split, isChain_cons_cons]
 
-theorem chain'_iff_forall_rel_of_append_cons_cons {l : List α} :
-    Chain' R l ↔ ∀ ⦃a b l₁ l₂⦄, l = l₁ ++ a :: b :: l₂ → R a b := by
-  refine ⟨fun h _ _ _ _ eq => (chain'_append_cons_cons.mp (eq ▸ h)).2.1, ?_⟩
+theorem isChain_iff_forall_rel_of_append_cons_cons {l : List α} :
+    IsChain R l ↔ ∀ ⦃a b l₁ l₂⦄, l = l₁ ++ a :: b :: l₂ → R a b := by
+  refine ⟨fun h _ _ _ _ eq => (isChain_append_cons_cons.mp (eq ▸ h)).2.1, ?_⟩
   induction l with
-  | nil => exact fun _ ↦ chain'_nil
+  | nil => exact fun _ ↦ isChain_nil
   | cons head tail ih =>
     match tail with
-    | nil => exact fun _ ↦ chain'_singleton head
+    | nil => exact fun _ ↦ isChain_singleton head
     | cons head' tail =>
-      refine fun h ↦ chain'_cons_cons.mpr ⟨h (nil_append _).symm, ih fun ⦃a b l₁ l₂⦄ eq => ?_⟩
+      refine fun h ↦ isChain_cons_cons.mpr ⟨h (nil_append _).symm, ih fun ⦃a b l₁ l₂⦄ eq => ?_⟩
       apply h
       rw [eq, cons_append]
 
-theorem chain'_map (f : β → α) {l : List β} :
-    Chain' R (map f l) ↔ Chain' (fun a b : β => R (f a) (f b)) l := by
+theorem isChain_map (f : β → α) {l : List β} :
+    IsChain R (map f l) ↔ IsChain (fun a b : β => R (f a) (f b)) l := by
   cases l <;> [rfl; exact chain_map _]
 
-theorem chain'_of_chain'_map {S : β → β → Prop} (f : α → β) (H : ∀ a b : α, S (f a) (f b) → R a b)
-    {l : List α} (p : Chain' S (map f l)) : Chain' R l :=
-  ((chain'_map f).1 p).imp H
+theorem isChain_of_isChain_map {S : β → β → Prop} (f : α → β) (H : ∀ a b : α, S (f a) (f b) → R a b)
+    {l : List α} (p : IsChain S (map f l)) : IsChain R l :=
+  ((isChain_map f).1 p).imp H
 
-theorem chain'_map_of_chain' {S : β → β → Prop} (f : α → β) (H : ∀ a b : α, R a b → S (f a) (f b))
-    {l : List α} (p : Chain' R l) : Chain' S (map f l) :=
-  (chain'_map f).2 <| p.imp H
+theorem isChain_map_of_chain' {S : β → β → Prop} (f : α → β) (H : ∀ a b : α, R a b → S (f a) (f b))
+    {l : List α} (p : IsChain R l) : IsChain S (map f l) :=
+  (isChain_map f).2 <| p.imp H
 
-theorem Pairwise.chain' : ∀ {l : List α}, Pairwise R l → Chain' R l
+theorem Pairwise.chain' : ∀ {l : List α}, Pairwise R l → IsChain R l
   | [], _ => trivial
   | _ :: _, h => Pairwise.chain h
 
-theorem chain'_iff_pairwise [IsTrans α R] : ∀ {l : List α}, Chain' R l ↔ Pairwise R l
+theorem isChain_iff_pairwise [IsTrans α R] : ∀ {l : List α}, IsChain R l ↔ Pairwise R l
   | [] => (iff_true_intro Pairwise.nil).symm
   | _ :: _ => chain_iff_pairwise
 
-protected theorem Chain'.sublist [IsTrans α R] (hl : l₂.Chain' R) (h : l₁ <+ l₂) : l₁.Chain' R := by
-  rw [chain'_iff_pairwise] at hl ⊢
+protected theorem IsChain.sublist [IsTrans α R] (hl : l₂.IsChain R) (h : l₁ <+ l₂) : l₁.IsChain R := by
+  rw [isChain_iff_pairwise] at hl ⊢
   exact hl.sublist h
 
-theorem Chain'.cons_cons {x y l} (h₁ : R x y) (h₂ : Chain' R (y :: l)) : Chain' R (x :: y :: l) :=
-  chain'_cons_cons.2 ⟨h₁, h₂⟩
+theorem IsChain.cons_cons {x y l} (h₁ : R x y) (h₂ : IsChain R (y :: l)) : IsChain R (x :: y :: l) :=
+  isChain_cons_cons.2 ⟨h₁, h₂⟩
 
-@[deprecated (since := "2025-08-12")] alias Chain'.cons := Chain'.cons_cons
+@[deprecated (since := "2025-08-12")] alias IsChain.cons := IsChain.cons_cons
 
-theorem Chain'.tail : ∀ {l}, Chain' R l → Chain' R l.tail
+theorem IsChain.tail : ∀ {l}, IsChain R l → IsChain R l.tail
   | [], _ => trivial
   | [_], _ => trivial
-  | _ :: _ :: _, h => (chain'_cons_cons.mp h).right
+  | _ :: _ :: _, h => (isChain_cons_cons.mp h).right
 
-theorem Chain'.rel_head {x y l} (h : Chain' R (x :: y :: l)) : R x y :=
+theorem IsChain.rel_head {x y l} (h : IsChain R (x :: y :: l)) : R x y :=
   rel_of_chain_cons h
 
-theorem Chain'.rel_head? {x l} (h : Chain' R (x :: l)) ⦃y⦄ (hy : y ∈ head? l) : R x y := by
+theorem IsChain.rel_head? {x l} (h : IsChain R (x :: l)) ⦃y⦄ (hy : y ∈ head? l) : R x y := by
   rw [← cons_head?_tail hy] at h
   exact h.rel_head
 
-theorem Chain'.cons' {x} : ∀ {l : List α}, Chain' R l → (∀ y ∈ l.head?, R x y) → Chain' R (x :: l)
-  | [], _, _ => chain'_singleton x
+theorem IsChain.cons' {x} : ∀ {l : List α}, IsChain R l → (∀ y ∈ l.head?, R x y) → IsChain R (x :: l)
+  | [], _, _ => isChain_singleton x
   | _ :: _, hl, H => hl.cons_cons <| H _ rfl
 
-lemma Chain'.cons_of_ne_nil {x : α} {l : List α} (l_ne_nil : l ≠ [])
-    (hl : Chain' R l) (h : R x (l.head l_ne_nil)) : Chain' R (x :: l) := by
+lemma IsChain.cons_of_ne_nil {x : α} {l : List α} (l_ne_nil : l ≠ [])
+    (hl : IsChain R l) (h : R x (l.head l_ne_nil)) : IsChain R (x :: l) := by
   refine hl.cons' fun y hy ↦ ?_
   convert h
   simpa [l.head?_eq_head l_ne_nil] using hy.symm
 
-theorem chain'_cons' {x l} : Chain' R (x :: l) ↔ (∀ y ∈ head? l, R x y) ∧ Chain' R l :=
+theorem isChain_cons' {x l} : IsChain R (x :: l) ↔ (∀ y ∈ head? l, R x y) ∧ IsChain R l :=
   ⟨fun h => ⟨h.rel_head?, h.tail⟩, fun ⟨h₁, h₂⟩ => h₂.cons' h₁⟩
 
-theorem chain'_append :
+theorem isChain_append :
     ∀ {l₁ l₂ : List α},
-      Chain' R (l₁ ++ l₂) ↔ Chain' R l₁ ∧ Chain' R l₂ ∧ ∀ x ∈ l₁.getLast?, ∀ y ∈ l₂.head?, R x y
+      IsChain R (l₁ ++ l₂) ↔ IsChain R l₁ ∧ IsChain R l₂ ∧ ∀ x ∈ l₁.getLast?, ∀ y ∈ l₂.head?, R x y
   | [], l => by simp
-  | [a], l => by simp [chain'_cons', and_comm]
+  | [a], l => by simp [isChain_cons', and_comm]
   | a :: b :: l₁, l₂ => by
-    rw [cons_append, cons_append, chain'_cons_cons, chain'_cons_cons, ← cons_append, chain'_append,
+    rw [cons_append, cons_append, isChain_cons_cons, isChain_cons_cons, ← cons_append, isChain_append,
       and_assoc]
     simp
 
-theorem Chain'.append (h₁ : Chain' R l₁) (h₂ : Chain' R l₂)
-    (h : ∀ x ∈ l₁.getLast?, ∀ y ∈ l₂.head?, R x y) : Chain' R (l₁ ++ l₂) :=
-  chain'_append.2 ⟨h₁, h₂, h⟩
+theorem IsChain.append (h₁ : IsChain R l₁) (h₂ : IsChain R l₂)
+    (h : ∀ x ∈ l₁.getLast?, ∀ y ∈ l₂.head?, R x y) : IsChain R (l₁ ++ l₂) :=
+  isChain_append.2 ⟨h₁, h₂, h⟩
 
-theorem Chain'.left_of_append (h : Chain' R (l₁ ++ l₂)) : Chain' R l₁ :=
-  (chain'_append.1 h).1
+theorem IsChain.left_of_append (h : IsChain R (l₁ ++ l₂)) : IsChain R l₁ :=
+  (isChain_append.1 h).1
 
-theorem Chain'.right_of_append (h : Chain' R (l₁ ++ l₂)) : Chain' R l₂ :=
-  (chain'_append.1 h).2.1
+theorem IsChain.right_of_append (h : IsChain R (l₁ ++ l₂)) : IsChain R l₂ :=
+  (isChain_append.1 h).2.1
 
-theorem Chain'.infix (h : Chain' R l) (h' : l₁ <:+: l) : Chain' R l₁ := by
+theorem IsChain.infix (h : IsChain R l) (h' : l₁ <:+: l) : IsChain R l₁ := by
   rcases h' with ⟨l₂, l₃, rfl⟩
   exact h.left_of_append.right_of_append
 
-theorem Chain'.suffix (h : Chain' R l) (h' : l₁ <:+ l) : Chain' R l₁ :=
+theorem IsChain.suffix (h : IsChain R l) (h' : l₁ <:+ l) : IsChain R l₁ :=
   h.infix h'.isInfix
 
-theorem Chain'.prefix (h : Chain' R l) (h' : l₁ <+: l) : Chain' R l₁ :=
+theorem IsChain.prefix (h : IsChain R l) (h' : l₁ <+: l) : IsChain R l₁ :=
   h.infix h'.isInfix
 
-theorem Chain'.drop (h : Chain' R l) (n : ℕ) : Chain' R (drop n l) :=
+theorem IsChain.drop (h : IsChain R l) (n : ℕ) : IsChain R (drop n l) :=
   h.suffix (drop_suffix _ _)
 
-theorem Chain'.init (h : Chain' R l) : Chain' R l.dropLast :=
+theorem IsChain.init (h : IsChain R l) : IsChain R l.dropLast :=
   h.prefix l.dropLast_prefix
 
-theorem Chain'.take (h : Chain' R l) (n : ℕ) : Chain' R (take n l) :=
+theorem IsChain.take (h : IsChain R l) (n : ℕ) : IsChain R (take n l) :=
   h.prefix (take_prefix _ _)
 
-theorem chain'_pair {x y} : Chain' R [x, y] ↔ R x y := by
-  simp only [chain'_singleton, chain'_cons_cons, and_true]
+theorem isChain_pair {x y} : IsChain R [x, y] ↔ R x y := by
+  simp only [isChain_singleton, isChain_cons_cons, and_true]
 
-theorem Chain'.imp_head {x y} (h : ∀ {z}, R x z → R y z) {l} (hl : Chain' R (x :: l)) :
-    Chain' R (y :: l) :=
+theorem IsChain.imp_head {x y} (h : ∀ {z}, R x z → R y z) {l} (hl : IsChain R (x :: l)) :
+    IsChain R (y :: l) :=
   hl.tail.cons' fun _ hz => h <| hl.rel_head? hz
 
-protected theorem Chain'.getElem (h : List.Chain' R l) (n : ℕ) (h' : n + 1 < l.length) :
+protected theorem IsChain.getElem (h : List.IsChain R l) (n : ℕ) (h' : n + 1 < l.length) :
     R l[n] l[n + 1] :=
-  chain'_pair.mp <| h.infix ⟨l.take n, l.drop (n + 2), by simp⟩
+  isChain_pair.mp <| h.infix ⟨l.take n, l.drop (n + 2), by simp⟩
 
-theorem chain'_of_not (h : ¬List.Chain' R l) :
+theorem isChain_of_not (h : ¬List.IsChain R l) :
     ∃ n : ℕ, ∃ h : n + 1 < l.length, ¬R l[n] l[n + 1] := by
   contrapose! h
   induction l with
   | nil => simp
   | cons head tail ih =>
-      refine List.chain'_cons'.mpr ⟨fun y yh ↦ ?_, ?_⟩
+      refine List.isChain_cons'.mpr ⟨fun y yh ↦ ?_, ?_⟩
       · by_cases h' : tail.length = 0
         · simp [List.eq_nil_iff_length_eq_zero.mpr h'] at yh
         · simp only [head?_eq_getElem?, Option.mem_def] at yh
@@ -330,54 +330,54 @@ theorem chain'_of_not (h : ¬List.Chain' R l) :
         have := h (n + 1) (by rw [length_cons]; omega)
         simpa using this
 
-theorem chain'_iff_forall_getElem :
-    Chain' R l ↔ ∀ (n : ℕ) (h : n + 1 < l.length), R l[n] l[n + 1] := by
-  refine ⟨Chain'.getElem, fun h ↦ ?_⟩
+theorem isChain_iff_forall_getElem :
+    IsChain R l ↔ ∀ (n : ℕ) (h : n + 1 < l.length), R l[n] l[n + 1] := by
+  refine ⟨IsChain.getElem, fun h ↦ ?_⟩
   contrapose! h
-  exact chain'_of_not h
+  exact isChain_of_not h
 
-theorem chain'_reverse : ∀ {l}, Chain' R (reverse l) ↔ Chain' (flip R) l
+theorem isChain_reverse : ∀ {l}, IsChain R (reverse l) ↔ IsChain (flip R) l
   | [] => Iff.rfl
-  | [a] => by simp only [chain'_singleton, reverse_singleton]
+  | [a] => by simp only [isChain_singleton, reverse_singleton]
   | a :: b :: l => by
-    rw [chain'_cons_cons, reverse_cons, reverse_cons, append_assoc, cons_append, nil_append,
-      chain'_split, ← reverse_cons, @chain'_reverse (b :: l), and_comm, chain'_pair, flip]
+    rw [isChain_cons_cons, reverse_cons, reverse_cons, append_assoc, cons_append, nil_append,
+      isChain_split, ← reverse_cons, @isChain_reverse (b :: l), and_comm, isChain_pair, flip]
 
-theorem chain'_iff_get {R} : ∀ {l : List α}, Chain' R l ↔
+theorem isChain_iff_get {R} : ∀ {l : List α}, IsChain R l ↔
     ∀ (i : ℕ) (h : i < length l - 1),
       R (get l ⟨i, by omega⟩) (get l ⟨i + 1, by omega⟩)
   | [] => iff_of_true (by simp) (fun _ h => by simp at h)
   | [a] => iff_of_true (by simp) (fun _ h => by simp at h)
   | a :: b :: t => by
-    rw [← and_forall_add_one, chain'_cons_cons, chain'_iff_get]
+    rw [← and_forall_add_one, isChain_cons_cons, isChain_iff_get]
     simp
 
 /-- If `l₁ l₂` and `l₃` are lists and `l₁ ++ l₂` and `l₂ ++ l₃` both satisfy
-  `Chain' R`, then so does `l₁ ++ l₂ ++ l₃` provided `l₂ ≠ []` -/
-theorem Chain'.append_overlap {l₁ l₂ l₃ : List α} (h₁ : Chain' R (l₁ ++ l₂))
-    (h₂ : Chain' R (l₂ ++ l₃)) (hn : l₂ ≠ []) : Chain' R (l₁ ++ l₂ ++ l₃) :=
+  `IsChain R`, then so does `l₁ ++ l₂ ++ l₃` provided `l₂ ≠ []` -/
+theorem IsChain.append_overlap {l₁ l₂ l₃ : List α} (h₁ : IsChain R (l₁ ++ l₂))
+    (h₂ : IsChain R (l₂ ++ l₃)) (hn : l₂ ≠ []) : IsChain R (l₁ ++ l₂ ++ l₃) :=
   h₁.append h₂.right_of_append <| by
-    simpa only [getLast?_append_of_ne_nil _ hn] using (chain'_append.1 h₂).2.2
+    simpa only [getLast?_append_of_ne_nil _ hn] using (isChain_append.1 h₂).2.2
 
-lemma chain'_flatten : ∀ {L : List (List α)}, [] ∉ L →
-    (Chain' R L.flatten ↔ (∀ l ∈ L, Chain' R l) ∧
-    L.Chain' (fun l₁ l₂ => ∀ᵉ (x ∈ l₁.getLast?) (y ∈ l₂.head?), R x y))
+lemma isChain_flatten : ∀ {L : List (List α)}, [] ∉ L →
+    (IsChain R L.flatten ↔ (∀ l ∈ L, IsChain R l) ∧
+    L.IsChain (fun l₁ l₂ => ∀ᵉ (x ∈ l₁.getLast?) (y ∈ l₂.head?), R x y))
 | [], _ => by simp
 | [l], _ => by simp [flatten]
 | (l₁ :: l₂ :: L), hL => by
     rw [mem_cons, not_or, ← Ne] at hL
-    rw [flatten, chain'_append, chain'_flatten hL.2, forall_mem_cons, chain'_cons_cons]
+    rw [flatten, isChain_append, isChain_flatten hL.2, forall_mem_cons, isChain_cons_cons]
     rw [mem_cons, not_or, ← Ne] at hL
     simp only [forall_mem_cons, and_assoc, flatten, head?_append_of_ne_nil _ hL.2.1.symm]
     exact Iff.rfl.and (Iff.rfl.and <| Iff.rfl.and and_comm)
 
-theorem chain'_attachWith {l : List α} {p : α → Prop} (h : ∀ x ∈ l, p x)
+theorem isChain_attachWith {l : List α} {p : α → Prop} (h : ∀ x ∈ l, p x)
     {r : {a // p a} → {a // p a} → Prop} :
-    (l.attachWith p h).Chain' r ↔ l.Chain' fun a b ↦ ∃ ha hb, r ⟨a, ha⟩ ⟨b, hb⟩ := by
+    (l.attachWith p h).IsChain r ↔ l.IsChain fun a b ↦ ∃ ha hb, r ⟨a, ha⟩ ⟨b, hb⟩ := by
   induction l with
   | nil => rfl
   | cons a l IH =>
-    rw [attachWith_cons, chain'_cons', chain'_cons', IH, and_congr_left]
+    rw [attachWith_cons, isChain_cons', isChain_cons', IH, and_congr_left]
     simp_rw [head?_attachWith]
     intros
     constructor <;>
@@ -387,9 +387,9 @@ theorem chain'_attachWith {l : List α} {p : α → Prop} (h : ∀ x ∈ l, p x)
       exact ⟨h a mem_cons_self, hb', hc ⟨b, hb'⟩ rfl⟩
     · cases l <;> aesop
 
-theorem chain'_attach {l : List α} {r : {a // a ∈ l} → {a // a ∈ l} → Prop} :
-    l.attach.Chain' r ↔ l.Chain' fun a b ↦ ∃ ha hb, r ⟨a, ha⟩ ⟨b, hb⟩ :=
-  chain'_attachWith fun _ ↦ id
+theorem isChain_attach {l : List α} {r : {a // a ∈ l} → {a // a ∈ l} → Prop} :
+    l.attach.IsChain r ↔ l.IsChain fun a b ↦ ∃ ha hb, r ⟨a, ha⟩ ⟨b, hb⟩ :=
+  isChain_attachWith fun _ ↦ id
 
 /-- If `a` and `b` are related by the reflexive transitive closure of `r`, then there is an
 `r`-chain starting from `a` and ending on `b`.
@@ -416,12 +416,12 @@ theorem Chain.induction (p : α → Prop) (l : List α) (h : Chain r a l)
     simp only [mem_cons, forall_eq_or_imp]
     exact ⟨carries hab initial, h_ind (carries hab initial)⟩
 
-/-- A version of `List.Chain.induction` for `List.Chain'`
+/-- A version of `List.Chain.induction` for `List.IsChain`
 -/
-theorem Chain'.induction (p : α → Prop) (l : List α) (h : Chain' r l)
+theorem IsChain.induction (p : α → Prop) (l : List α) (h : IsChain r l)
     (carries : ∀ ⦃x y : α⦄, r x y → p x → p y) (initial : (lne : l ≠ []) → p (l.head lne)) :
     ∀ i ∈ l, p i := by
-  unfold Chain' at h
+  unfold IsChain at h
   split at h
   · simp
   · simp_all only [ne_eq, not_false_eq_true, head_cons, true_implies, mem_cons, forall_eq_or_imp,
@@ -435,8 +435,8 @@ That is, we can propagate the predicate up the chain.
 theorem Chain.backwards_induction (p : α → Prop) (l : List α) (h : Chain r a l)
     (hb : getLast (a :: l) (cons_ne_nil _ _) = b) (carries : ∀ ⦃x y : α⦄, r x y → p y → p x)
     (final : p b) : ∀ i ∈ a :: l, p i := by
-  have : Chain' (flip (flip r)) (a :: l) := by simpa [Chain']
-  replace this := chain'_reverse.mpr this
+  have : IsChain (flip (flip r)) (a :: l) := by simpa [IsChain]
+  replace this := isChain_reverse.mpr this
   simp_rw +singlePass [← List.mem_reverse]
   apply this.induction _ _ (fun _ _ h ↦ carries h)
   simpa only [ne_eq, reverse_eq_nil_iff, not_false_eq_true, head_reverse, forall_true_left, hb,
@@ -461,11 +461,11 @@ theorem relationReflTransGen_of_exists_chain (l : List α) (hl₁ : Chain r a l)
   Chain.backwards_induction_head _ l hl₁ hl₂ (fun _ _ => Relation.ReflTransGen.head)
     Relation.ReflTransGen.refl
 
-theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
-    (ha : List.Chain' (· > ·) (a :: as)) (hm : List.Chain' (· > ·) m) (hmas : m ≤ as) :
-    List.Chain' (· > ·) (a :: m) := by
+theorem IsChain.cons_of_le [LinearOrder α] {a : α} {as m : List α}
+    (ha : List.IsChain (· > ·) (a :: as)) (hm : List.IsChain (· > ·) m) (hmas : m ≤ as) :
+    List.IsChain (· > ·) (a :: m) := by
   cases m with
-  | nil => simp only [List.chain'_singleton]
+  | nil => simp only [List.isChain_singleton]
   | cons b bs =>
     apply hm.cons_cons
     cases as with
@@ -473,7 +473,7 @@ theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
       simp only [le_iff_lt_or_eq, reduceCtorEq, or_false] at hmas
       exact (List.not_lt_nil _ hmas).elim
     | cons a' as =>
-      rw [List.chain'_cons_cons] at ha
+      rw [List.isChain_cons_cons] at ha
       refine lt_of_le_of_lt ?_ ha.1
       rw [le_iff_lt_or_eq] at hmas
       rcases hmas with hmas | hmas
@@ -484,47 +484,47 @@ theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
         exact (List.lt_iff_lex_lt _ _).mp (List.Lex.rel hh)
       · simp_all only [List.cons.injEq, le_refl]
 
-lemma Chain'.chain {α : Type*} {R : α → α → Prop} {l : List α} {v : α}
-    (hl : l.Chain' R) (hv : (lne : l ≠ []) → R v (l.head lne)) : l.Chain R v := by
+lemma IsChain.chain {α : Type*} {R : α → α → Prop} {l : List α} {v : α}
+    (hl : l.IsChain R) (hv : (lne : l ≠ []) → R v (l.head lne)) : l.Chain R v := by
   rw [List.chain_iff_get]
   constructor
   · intro h
     rw [List.get_mk_zero]
     apply hv
-  · exact List.chain'_iff_get.mp hl
+  · exact List.isChain_iff_get.mp hl
 
-lemma Chain'.iterate_eq_of_apply_eq {α : Type*} {f : α → α} {l : List α}
-    (hl : l.Chain' (fun x y ↦ f x = y)) (i : ℕ) (hi : i < l.length) :
+lemma IsChain.iterate_eq_of_apply_eq {α : Type*} {f : α → α} {l : List α}
+    (hl : l.IsChain (fun x y ↦ f x = y)) (i : ℕ) (hi : i < l.length) :
     f^[i] l[0] = l[i] := by
   induction i with
   | zero => rfl
   | succ i h =>
     rw [Function.iterate_succ', Function.comp_apply, h (by omega)]
-    rw [List.chain'_iff_get] at hl
+    rw [List.isChain_iff_get] at hl
     apply hl
     omega
 
-theorem chain'_replicate_of_rel (n : ℕ) {a : α} (h : r a a) : Chain' r (replicate n a) :=
+theorem isChain_replicate_of_rel (n : ℕ) {a : α} (h : r a a) : IsChain r (replicate n a) :=
   match n with
-  | 0 => chain'_nil
+  | 0 => isChain_nil
   | n + 1 => chain_replicate_of_rel n h
 
-theorem chain'_eq_iff_eq_replicate {l : List α} :
-    Chain' (· = ·) l ↔ ∀ a ∈ l.head?, l = replicate l.length a :=
+theorem isChain_eq_iff_eq_replicate {l : List α} :
+    IsChain (· = ·) l ↔ ∀ a ∈ l.head?, l = replicate l.length a :=
   match l with
   | [] => by simp
-  | a :: l => by simp [Chain', chain_eq_iff_eq_replicate, replicate_succ]
+  | a :: l => by simp [IsChain, chain_eq_iff_eq_replicate, replicate_succ]
 
 end List
 
 
-/-! In this section, we consider the type of `r`-decreasing chains (`List.Chain' (flip r)`)
+/-! In this section, we consider the type of `r`-decreasing chains (`List.IsChain (flip r)`)
   equipped with lexicographic order `List.Lex r`. -/
 
 variable {α : Type*} (r : α → α → Prop)
 
 /-- The type of `r`-decreasing chains -/
-abbrev List.chains := { l : List α // l.Chain' (flip r) }
+abbrev List.chains := { l : List α // l.IsChain (flip r) }
 
 /-- The lexicographic order on the `r`-decreasing chains -/
 abbrev List.lex_chains (l m : List.chains r) : Prop := List.Lex r l.val m.val
@@ -543,13 +543,13 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
   induction acc generalizing l with
   | intro a _ ih =>
     /- Bundle l with a proof that it is r-decreasing to form l' -/
-    have hl' := (List.chain'_cons'.1 hl).2
+    have hl' := (List.isChain_cons'.1 hl).2
     let l' : List.chains r := ⟨l, hl'⟩
     have : Acc (List.lex_chains r) l' := by
       rcases l with - | ⟨b, l⟩
       · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
       /- l' is accessible by induction hypothesis -/
-      · apply ih b (List.chain'_cons_cons.1 hl).1
+      · apply ih b (List.isChain_cons_cons.1 hl).1
     /- make l' a free variable and induct on l' -/
     revert hl
     rw [(by rfl : l = l'.1)]
@@ -561,7 +561,7 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
       rintro ⟨_ | ⟨b, m⟩, hm⟩ (_ | hr | hr)
       · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
       · apply ih b hr
-      · apply ihl ⟨m, (List.chain'_cons'.1 hm).2⟩ hr
+      · apply ihl ⟨m, (List.isChain_cons'.1 hm).2⟩ hr
 
 /-- If `r` is well-founded, the lexicographic order on `r`-decreasing chains is also. -/
 theorem WellFounded.list_chain' (hwf : WellFounded r) :

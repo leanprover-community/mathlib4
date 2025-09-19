@@ -99,11 +99,11 @@ theorem primeFactorsList_chain {n : ℕ} :
 theorem primeFactorsList_chain_2 (n) : List.Chain (· ≤ ·) 2 (primeFactorsList n) :=
   primeFactorsList_chain fun _ pp _ => pp.two_le
 
-theorem primeFactorsList_chain' (n) : List.Chain' (· ≤ ·) (primeFactorsList n) :=
-  @List.Chain'.tail _ _ (_ :: _) (primeFactorsList_chain_2 _)
+theorem primeFactorsList_chain' (n) : List.IsChain (· ≤ ·) (primeFactorsList n) :=
+  @List.IsChain.tail _ _ (_ :: _) (primeFactorsList_chain_2 _)
 
 theorem primeFactorsList_sorted (n : ℕ) : List.Sorted (· ≤ ·) (primeFactorsList n) :=
-  List.chain'_iff_pairwise.1 (primeFactorsList_chain' _)
+  List.isChain_iff_pairwise.1 (primeFactorsList_chain' _)
 
 /-- `primeFactorsList` can be constructed inductively by extracting `minFac`, for sufficiently
 large `n`. -/

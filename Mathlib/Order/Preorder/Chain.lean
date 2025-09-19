@@ -218,7 +218,7 @@ structure Flag (α : Type*) [LE α] where
   /-- The `carrier` of a flag is the underlying set. -/
   carrier : Set α
   /-- By definition, a flag is a chain -/
-  Chain' : IsChain (· ≤ ·) carrier
+  IsChain : IsChain (· ≤ ·) carrier
   /-- By definition, a flag is a maximal chain -/
   max_chain' : ∀ ⦃s⦄, IsChain (· ≤ ·) s → carrier ⊆ s → carrier = s
 
@@ -247,11 +247,11 @@ theorem coe_mk (s : Set α) (h₁ h₂) : (mk s h₁ h₂ : Set α) = s :=
   rfl
 
 @[simp]
-theorem mk_coe (s : Flag α) : mk (s : Set α) s.Chain' s.max_chain' = s :=
+theorem mk_coe (s : Flag α) : mk (s : Set α) s.IsChain s.max_chain' = s :=
   ext rfl
 
 theorem chain_le (s : Flag α) : IsChain (· ≤ ·) (s : Set α) :=
-  s.Chain'
+  s.IsChain
 
 protected theorem maxChain (s : Flag α) : IsMaxChain (· ≤ ·) (s : Set α) :=
   ⟨s.chain_le, s.max_chain'⟩

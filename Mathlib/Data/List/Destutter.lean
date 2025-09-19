@@ -17,7 +17,7 @@ Note that we make no guarantees of being the longest sublist with this property;
 ## Main statements
 
 * `List.destutter_sublist`: `l.destutter` is a sublist of `l`.
-* `List.destutter_is_chain'`: `l.destutter` satisfies `Chain' R`.
+* `List.destutter_is_chain'`: `l.destutter` satisfies `IsChain R`.
 * Analogies of these theorems for `List.destutter'`, which is the `destutter` equivalent of `Chain`.
 
 ## Tags
@@ -84,7 +84,7 @@ theorem destutter'_is_chain : ∀ l : List α, ∀ {a b}, R a b → (l.destutter
       exact ⟨h, destutter'_is_chain l hbc⟩
     · exact destutter'_is_chain l h
 
-theorem destutter'_is_chain' (a) : (l.destutter' R a).Chain' R := by
+theorem destutter'_is_chain' (a) : (l.destutter' R a).IsChain R := by
   induction l generalizing a with
   | nil => simp
   | cons b l hl =>
@@ -103,7 +103,7 @@ theorem destutter'_of_chain (h : l.Chain R a) : l.destutter' R a = a :: l := by
 @[simp]
 theorem destutter'_eq_self_iff (a) : l.destutter' R a = a :: l ↔ l.Chain R a :=
   ⟨fun h => by
-    suffices Chain' R (a::l) by
+    suffices IsChain R (a::l) by
       assumption
     rw [← h]
     exact l.destutter'_is_chain' R a, destutter'_of_chain _ _⟩
@@ -134,16 +134,16 @@ theorem destutter_sublist : ∀ l : List α, l.destutter R <+ l
   | [] => Sublist.slnil
   | h :: l => l.destutter'_sublist R h
 
-theorem destutter_is_chain' : ∀ l : List α, (l.destutter R).Chain' R
-  | [] => List.chain'_nil
+theorem destutter_is_chain' : ∀ l : List α, (l.destutter R).IsChain R
+  | [] => List.isChain_nil
   | h :: l => l.destutter'_is_chain' R h
 
-theorem destutter_of_chain' : ∀ l : List α, l.Chain' R → l.destutter R = l
+theorem destutter_of_chain' : ∀ l : List α, l.IsChain R → l.destutter R = l
   | [], _ => rfl
   | _ :: l, h => l.destutter'_of_chain _ h
 
 @[simp]
-theorem destutter_eq_self_iff : ∀ l : List α, l.destutter R = l ↔ l.Chain' R
+theorem destutter_eq_self_iff : ∀ l : List α, l.destutter R = l ↔ l.IsChain R
   | [] => by simp
   | a :: l => l.destutter'_eq_self_iff R a
 
@@ -240,8 +240,8 @@ gives a list of maximal length over any chain.
 
 In other words, `l.destutter R` is an `R`-chain sublist of `l`, and is at least as long as any other
 `R`-chain sublist. -/
-lemma Chain'.length_le_length_destutter [IsEquiv α Rᶜ] :
-    ∀ {l₁ l₂ : List α}, l₁ <+ l₂ → l₁.Chain' R → l₁.length ≤ (l₂.destutter R).length
+lemma IsChain.length_le_length_destutter [IsEquiv α Rᶜ] :
+    ∀ {l₁ l₂ : List α}, l₁ <+ l₂ → l₁.IsChain R → l₁.length ≤ (l₂.destutter R).length
   -- `l₁ := []`, `l₂ := []`
   | [], [], _, _ => by simp
   -- `l₁ := l₁`, `l₂ := a :: l₂`
@@ -263,8 +263,8 @@ lemma Chain'.length_le_length_destutter [IsEquiv α Rᶜ] :
 
 In other words, `l.destutter (· ≠ ·)` is a `≠`-chain sublist of `l`, and is at least as long as any
 other `≠`-chain sublist. -/
-lemma Chain'.length_le_length_destutter_ne [DecidableEq α] (hl : l₁ <+ l₂)
-    (hl₁ : l₁.Chain' (· ≠ ·)) : l₁.length ≤ (l₂.destutter (· ≠ ·)).length :=
+lemma IsChain.length_le_length_destutter_ne [DecidableEq α] (hl : l₁ <+ l₂)
+    (hl₁ : l₁.IsChain (· ≠ ·)) : l₁.length ≤ (l₂.destutter (· ≠ ·)).length :=
   hl₁.length_le_length_destutter hl
 
 end List

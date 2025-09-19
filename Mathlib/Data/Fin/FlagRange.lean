@@ -50,7 +50,7 @@ Then the range of `f` is a `Flag α`. -/
 def Flag.rangeFin (f : Fin (n + 1) → α) (h0 : f 0 = ⊥) (hlast : f (.last n) = ⊤)
     (hcovBy : ∀ k : Fin n, f k.castSucc ⩿ f k.succ) : Flag α where
   carrier := range f
-  Chain' := (IsMaxChain.range_fin_of_covBy h0 hlast hcovBy).1
+  IsChain := (IsMaxChain.range_fin_of_covBy h0 hlast hcovBy).1
   max_chain' := (IsMaxChain.range_fin_of_covBy h0 hlast hcovBy).2
 
 @[simp] theorem Flag.mem_rangeFin {x h0 hlast hcovBy} :

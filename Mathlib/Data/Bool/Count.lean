@@ -48,11 +48,11 @@ theorem Chain.count_not :
     rw [Bool.not_not, count_cons_self, count_cons_of_ne x.not_ne_self.symm,
       Chain.count_not (chain_of_chain_cons h), length, add_assoc, Nat.mod_two_add_succ_mod_two]
 
-namespace Chain'
+namespace IsChain
 
 variable {l : List Bool}
 
-theorem count_not_eq_count (hl : Chain' (· ≠ ·) l) (h2 : Even (length l)) (b : Bool) :
+theorem count_not_eq_count (hl : IsChain (· ≠ ·) l) (h2 : Even (length l)) (b : Bool) :
     count (!b) l = count b l := by
   rcases l with - | ⟨x, l⟩
   · rfl
@@ -60,11 +60,11 @@ theorem count_not_eq_count (hl : Chain' (· ≠ ·) l) (h2 : Even (length l)) (b
   suffices count (!x) (x :: l) = count x (x :: l) by grind
   rw [count_cons_of_ne x.not_ne_self.symm, hl.count_not, h2, count_cons_self]
 
-theorem count_false_eq_count_true (hl : Chain' (· ≠ ·) l) (h2 : Even (length l)) :
+theorem count_false_eq_count_true (hl : IsChain (· ≠ ·) l) (h2 : Even (length l)) :
     count false l = count true l :=
   hl.count_not_eq_count h2 true
 
-theorem count_not_le_count_add_one (hl : Chain' (· ≠ ·) l) (b : Bool) :
+theorem count_not_le_count_add_one (hl : IsChain (· ≠ ·) l) (b : Bool) :
     count (!b) l ≤ count b l + 1 := by
   rcases l with - | ⟨x, l⟩
   · exact zero_le _
@@ -74,19 +74,19 @@ theorem count_not_le_count_add_one (hl : Chain' (· ≠ ·) l) (b : Bool) :
   · rw [Bool.not_not, count_cons_self, count_cons_of_ne x.not_ne_self.symm, hl.count_not]
     omega
 
-theorem count_false_le_count_true_add_one (hl : Chain' (· ≠ ·) l) :
+theorem count_false_le_count_true_add_one (hl : IsChain (· ≠ ·) l) :
     count false l ≤ count true l + 1 :=
   hl.count_not_le_count_add_one true
 
-theorem count_true_le_count_false_add_one (hl : Chain' (· ≠ ·) l) :
+theorem count_true_le_count_false_add_one (hl : IsChain (· ≠ ·) l) :
     count true l ≤ count false l + 1 :=
   hl.count_not_le_count_add_one false
 
-theorem two_mul_count_bool_of_even (hl : Chain' (· ≠ ·) l) (h2 : Even (length l)) (b : Bool) :
+theorem two_mul_count_bool_of_even (hl : IsChain (· ≠ ·) l) (h2 : Even (length l)) (b : Bool) :
     2 * count b l = length l := by
   rw [← count_not_add_count l b, hl.count_not_eq_count h2, two_mul]
 
-theorem two_mul_count_bool_eq_ite (hl : Chain' (· ≠ ·) l) (b : Bool) :
+theorem two_mul_count_bool_eq_ite (hl : IsChain (· ≠ ·) l) (b : Bool) :
     2 * count b l =
       if Even (length l) then length l else
       if Option.some b == l.head? then length l + 1 else length l - 1 := by
@@ -96,25 +96,25 @@ theorem two_mul_count_bool_eq_ite (hl : Chain' (· ≠ ·) l) (b : Bool) :
     · exact (h2 .zero).elim
     simp only [if_neg h2, count_cons, mul_add, head?]
     rw [length_cons, Nat.even_add_one, not_not] at h2
-    replace hl : l.Chain' (· ≠ ·) := hl.tail
+    replace hl : l.IsChain (· ≠ ·) := hl.tail
     rw [hl.two_mul_count_bool_of_even h2]
     cases b <;> cases x <;> split_ifs <;> simp <;> contradiction
 
-theorem length_sub_one_le_two_mul_count_bool (hl : Chain' (· ≠ ·) l) (b : Bool) :
+theorem length_sub_one_le_two_mul_count_bool (hl : IsChain (· ≠ ·) l) (b : Bool) :
     length l - 1 ≤ 2 * count b l := by
   rw [hl.two_mul_count_bool_eq_ite]
   split_ifs <;> simp [Nat.le_succ_of_le]
 
-theorem length_div_two_le_count_bool (hl : Chain' (· ≠ ·) l) (b : Bool) :
+theorem length_div_two_le_count_bool (hl : IsChain (· ≠ ·) l) (b : Bool) :
     length l / 2 ≤ count b l := by
   rw [Nat.div_le_iff_le_mul_add_pred two_pos, ← tsub_le_iff_right]
   exact length_sub_one_le_two_mul_count_bool hl b
 
-theorem two_mul_count_bool_le_length_add_one (hl : Chain' (· ≠ ·) l) (b : Bool) :
+theorem two_mul_count_bool_le_length_add_one (hl : IsChain (· ≠ ·) l) (b : Bool) :
     2 * count b l ≤ length l + 1 := by
   rw [hl.two_mul_count_bool_eq_ite]
   split_ifs <;> simp [Nat.le_succ_of_le]
 
-end Chain'
+end IsChain
 
 end List

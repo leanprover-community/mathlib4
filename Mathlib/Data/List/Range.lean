@@ -27,19 +27,19 @@ variable {α : Type u}
 theorem getElem_range'_1 {n m} (i) (H : i < (range' n m).length) :
     (range' n m)[i] = n + i := by simp
 
-theorem chain'_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
-    Chain' r (range n.succ) ↔ ∀ m < n, r m m.succ := by
+theorem isChain_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
+    IsChain r (range n.succ) ↔ ∀ m < n, r m m.succ := by
   rw [range_succ]
   induction n with
   | zero => simp
   | succ n hn =>
     rw [range_succ]
-    simp only [append_assoc, singleton_append, chain'_append_cons_cons, chain'_singleton, and_true]
+    simp only [append_assoc, singleton_append, isChain_append_cons_cons, isChain_singleton, and_true]
     rw [hn, forall_lt_succ_right]
 
 theorem chain_range_succ (r : ℕ → ℕ → Prop) (n a : ℕ) :
     Chain r a (range n.succ) ↔ r a 0 ∧ ∀ m < n, r m m.succ := by
-  rw [range_succ_eq_map, chain_cons, and_congr_right_iff, ← chain'_range_succ, range_succ_eq_map]
+  rw [range_succ_eq_map, chain_cons, and_congr_right_iff, ← isChain_range_succ, range_succ_eq_map]
   exact fun _ => Iff.rfl
 
 section Ranges

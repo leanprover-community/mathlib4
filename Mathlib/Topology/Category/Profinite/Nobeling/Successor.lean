@@ -404,7 +404,7 @@ theorem mem_C'_eq_false : ∀ x, x ∈ C' C ho → x (term I ho) = false := by
 
 /-- `List.tail` as a `Products`. -/
 def Products.Tail (l : Products I) : Products I :=
-  ⟨l.val.tail, List.Chain'.tail l.prop⟩
+  ⟨l.val.tail, List.IsChain.tail l.prop⟩
 
 theorem Products.max_eq_o_cons_tail [Inhabited I] (l : Products I) (hl : l.val ≠ [])
     (hlh : l.val.head! = term I ho) : l.val = term I ho :: l.Tail.val := by
@@ -412,7 +412,7 @@ theorem Products.max_eq_o_cons_tail [Inhabited I] (l : Products I) (hl : l.val �
   simp [Tail]
 
 theorem Products.max_eq_o_cons_tail' [Inhabited I] (l : Products I) (hl : l.val ≠ [])
-    (hlh : l.val.head! = term I ho) (hlc : List.Chain' (· > ·) (term I ho :: l.Tail.val)) :
+    (hlh : l.val.head! = term I ho) (hlc : List.IsChain (· > ·) (term I ho :: l.Tail.val)) :
     l = ⟨term I ho :: l.Tail.val, hlc⟩ := by
   simp_rw [← max_eq_o_cons_tail ho l hl hlh, Subtype.coe_eta]
 
@@ -438,14 +438,14 @@ theorem GoodProducts.max_eq_o_cons_tail (l : MaxProducts C ho) :
     (head!_eq_o_of_maxProducts _ hsC ho l)
 
 theorem Products.evalCons {I} [LinearOrder I] {C : Set (I → Bool)} {l : List I} {a : I}
-    (hla : (a::l).Chain' (· > ·)) : Products.eval C ⟨a::l,hla⟩ =
-    (e C a) * Products.eval C ⟨l,List.Chain'.sublist hla (List.tail_sublist (a::l))⟩ := by
+    (hla : (a::l).IsChain (· > ·)) : Products.eval C ⟨a::l,hla⟩ =
+    (e C a) * Products.eval C ⟨l,List.IsChain.sublist hla (List.tail_sublist (a::l))⟩ := by
   simp only [eval.eq_1, List.map, List.prod_cons]
 
 theorem Products.max_eq_eval [Inhabited I] (l : Products I) (hl : l.val ≠ [])
     (hlh : l.val.head! = term I ho) :
     Linear_CC' C hsC ho (l.eval C) = l.Tail.eval (C' C ho) := by
-  have hlc : ((term I ho) :: l.Tail.val).Chain' (· > ·) := by
+  have hlc : ((term I ho) :: l.Tail.val).IsChain (· > ·) := by
     rw [← max_eq_o_cons_tail ho l hl hlh]; exact l.prop
   rw [max_eq_o_cons_tail' ho l hl hlh hlc, Products.evalCons]
   ext x
@@ -486,20 +486,20 @@ theorem max_eq_eval_unapply :
   exact max_eq_eval _ _ _ _
 
 include hsC in
-theorem chain'_cons_of_lt (l : MaxProducts C ho)
+theorem isChain_cons_of_lt (l : MaxProducts C ho)
     (q : Products I) (hq : q < l.val.Tail) :
-    List.Chain' (fun x x_1 ↦ x > x_1) (term I ho :: q.val) := by
+    List.IsChain (fun x x_1 ↦ x > x_1) (term I ho :: q.val) := by
   have : Inhabited I := ⟨term I ho⟩
-  rw [List.chain'_iff_pairwise]
+  rw [List.isChain_iff_pairwise]
   simp only [gt_iff_lt, List.pairwise_cons]
   refine ⟨fun a ha ↦ lt_of_le_of_lt (Products.rel_head!_of_mem ha) ?_,
-    List.chain'_iff_pairwise.mp q.prop⟩
+    List.isChain_iff_pairwise.mp q.prop⟩
   refine lt_of_le_of_lt (Products.head!_le_of_lt hq (q.val.ne_nil_of_mem ha)) ?_
   by_cases hM : l.val.Tail.val = []
   · rw [Products.lt_iff_lex_lt, hM] at hq
     simp only [List.not_lex_nil] at hq
   · have := l.val.prop
-    rw [max_eq_o_cons_tail C hsC ho l, List.chain'_iff_pairwise] at this
+    rw [max_eq_o_cons_tail C hsC ho l, List.isChain_iff_pairwise] at this
     exact List.rel_of_pairwise_cons this (List.head!_mem_self hM)
 
 include hsC in
@@ -541,7 +541,7 @@ theorem maxTail_isGood (l : MaxProducts C ho)
     rw [Finsupp.mem_supported] at hmmem
     have hx'' : q < l.val.Tail := hmmem hq
     have : ∃ (p : Products I), p.val ≠ [] ∧ p.val.head! = term I ho ∧ q = p.Tail :=
-      ⟨⟨term I ho :: q.val, chain'_cons_of_lt C hsC ho l q hx''⟩,
+      ⟨⟨term I ho :: q.val, isChain_cons_of_lt C hsC ho l q hx''⟩,
         ⟨List.cons_ne_nil _ _, by simp only [List.head!_cons],
         by simp only [Products.Tail, List.tail_cons, Subtype.coe_eta]⟩⟩
     obtain ⟨p, hp⟩ := this
@@ -580,7 +580,7 @@ theorem maxTail_isGood (l : MaxProducts C ho)
     apply Submodule.subset_span
     rw [Finsupp.mem_supported] at hmmem
     rw [← Finsupp.mem_support_iff] at hq
-    refine ⟨⟨term I ho :: q.val, chain'_cons_of_lt C hsC ho l q (hmmem hq)⟩, ⟨?_, rfl⟩⟩
+    refine ⟨⟨term I ho :: q.val, isChain_cons_of_lt C hsC ho l q (hmmem hq)⟩, ⟨?_, rfl⟩⟩
     simp only [Products.lt_iff_lex_lt, Set.mem_setOf_eq]
     rw [max_eq_o_cons_tail C hsC ho l]
     exact List.Lex.cons ((Products.lt_iff_lex_lt q l.val.Tail).mp (hmmem hq))

@@ -612,7 +612,7 @@ theorem chain_adj_support {u v w : V} (h : G.Adj u v) :
   | nil => List.Chain.cons h List.Chain.nil
   | cons h' p => List.Chain.cons h (chain_adj_support h' p)
 
-theorem chain'_adj_support {u v : V} : ∀ (p : G.Walk u v), List.Chain' G.Adj p.support
+theorem isChain_adj_support {u v : V} : ∀ (p : G.Walk u v), List.IsChain G.Adj p.support
   | nil => List.Chain.nil
   | cons h p => chain_adj_support h p
 
@@ -622,7 +622,7 @@ theorem chain_dartAdj_darts {d : G.Dart} {v w : V} (h : d.snd = v) (p : G.Walk v
   | nil => exact List.Chain.nil
   | cons h' p ih => exact List.Chain.cons h (ih rfl)
 
-theorem chain'_dartAdj_darts {u v : V} : ∀ (p : G.Walk u v), List.Chain' G.DartAdj p.darts
+theorem isChain_dartAdj_darts {u v : V} : ∀ (p : G.Walk u v), List.IsChain G.DartAdj p.darts
   | nil => trivial
   -- Porting note: needed to defer `rfl` to help elaboration
   | cons h p => chain_dartAdj_darts (by rfl) p
