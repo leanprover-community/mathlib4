@@ -205,7 +205,8 @@ def prodSwap : C(α × β, β × α) := .prodMk .snd .fst
 end Prod
 
 section Sum
-variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+variable {X Y Z W : Type*}
+  [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace W]
 
 /-- `Sum.inl : X → X ⊕ Y` as a bundled continuous map. -/
 def inl : C(X, X ⊕ Y) where
@@ -226,40 +227,32 @@ lemma coe_inr : ⇑(inr : C(Y, X ⊕ Y)) = Sum.inr := rfl
 /-- A continuous map from a sum can be defined by its action on the summands.
 This is `Continuous.sumElim` bundled into a continuous map. -/
 @[simps]
-def sum {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-    (f : C(X, Z)) (g : C(Y, Z)) : C(X ⊕ Y, Z) where
+def sumElim (f : C(X, Z)) (g : C(Y, Z)) : C(X ⊕ Y, Z) where
   toFun := fun x ↦ Sum.elim f.toFun g.toFun x
   continuous_toFun := Continuous.sumElim f.continuous g.continuous
 
 @[simp]
-lemma sum_comp_inl {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-    (f : C(X, Z)) (g : C(Y, Z)) : (sum f g) ∘ Sum.inl = f := by
+lemma sumElim_comp_inl (f : C(X, Z)) (g : C(Y, Z)) : (sumElim f g) ∘ Sum.inl = f := by
   ext x; simp
 
 @[simp]
-lemma sum_comp_inr {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-    (f : C(X, Z)) (g : C(Y, Z)) : (sum f g) ∘ Sum.inr = g := by
+lemma sumElim_comp_inr (f : C(X, Z)) (g : C(Y, Z)) : (sumElim f g) ∘ Sum.inr = g := by
   ext x; simp
-
 
 /-- A continuous map between sums can be defined fiberwise by its action on the summands.
 This is `Continuous.sumMap` bundled into a continuous map. -/
 @[simps]
-def sumMap {X Y Z W : Type*}
-    [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace W]
-    (f : C(X, Z)) (g : C(Y, W)) : C(X ⊕ Y, Z ⊕ W) where
+def sumMap (f : C(X, Z)) (g : C(Y, W)) : C(X ⊕ Y, Z ⊕ W) where
   toFun := Sum.map f g
 
 @[simp]
-lemma sumMap_comp_inl {X Y Z W : Type*}
-    [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace W]
-    (f : C(X, Z)) (g : C(Y, W)) : (sumMap f g) ∘ Sum.inl = Sum.inl ∘ f := by
+lemma sumMap_comp_inl (f : C(X, Z)) (g : C(Y, W)) :
+    (sumMap f g) ∘ Sum.inl = Sum.inl ∘ f := by
   ext x; simp
 
 @[simp]
-lemma sumMap_comp_inr {X Y Z W : Type*}
-    [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace W]
-    (f : C(X, Z)) (g : C(Y, W)) : (sumMap f g) ∘ Sum.inr = Sum.inr ∘ g := by
+lemma sumMap_comp_inr (f : C(X, Z)) (g : C(Y, W)) :
+    (sumMap f g) ∘ Sum.inr = Sum.inr ∘ g := by
   ext x; simp
 
 end Sum
