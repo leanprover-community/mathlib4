@@ -875,7 +875,7 @@ theorem sin_pos_of_pos_of_le_two {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 2) : 0 < si
   have : x / 2 ≤ 1 := (div_le_iff₀ (by simp)).mpr (by simpa)
   calc
     0 < 2 * sin (x / 2) * cos (x / 2) :=
-      mul_pos (mul_pos (by norm_num) (sin_pos_of_pos_of_le_one (half_pos hx0) this))
+      mul_pos (mul_pos (by simp) (sin_pos_of_pos_of_le_one (half_pos hx0) this))
         (cos_pos_of_le_one (by rwa [abs_of_nonneg (le_of_lt (half_pos hx0))]))
     _ = sin x := by rw [← sin_two_mul, two_mul, add_halves]
 

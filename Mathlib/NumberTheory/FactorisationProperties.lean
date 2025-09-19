@@ -76,7 +76,7 @@ theorem deficient_three : Deficient 3 := by norm_num [Deficient]
 
 theorem abundant_twelve : Abundant 12 := by
   rw [Abundant, show properDivisors 12 = {1,2,3,4,6} by rfl]
-  norm_num
+  simp
 
 theorem weird_seventy : Weird 70 := by
   rw [Weird, Abundant, not_pseudoperfect_iff_forall]

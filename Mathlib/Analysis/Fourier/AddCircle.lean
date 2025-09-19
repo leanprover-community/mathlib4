@@ -383,7 +383,7 @@ theorem tsum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
   simp_rw [← fourierBasis_repr]
   have H₁ : ‖fourierBasis.repr f‖ ^ 2 = ∑' i, ‖fourierBasis.repr f i‖ ^ 2 := by
     apply_mod_cast lp.norm_rpow_eq_tsum ?_ (fourierBasis.repr f)
-    norm_num
+    simp
   have H₂ : ‖fourierBasis.repr f‖ ^ 2 = ‖f‖ ^ 2 := by simp
   have H₃ := congr_arg RCLike.re (@L2.inner_def (AddCircle T) ℂ ℂ _ _ _ _ _ f f)
   rw [← integral_re] at H₃

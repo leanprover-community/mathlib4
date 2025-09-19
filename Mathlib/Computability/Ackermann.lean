@@ -223,10 +223,10 @@ theorem ack_succ_right_le_ack_succ_left (m n : ℕ) : ack m (n + 1) ≤ ack (m +
 -- All the inequalities from this point onwards are specific to the main proof.
 private theorem sq_le_two_pow_add_one_minus_three (n : ℕ) : n ^ 2 ≤ 2 ^ (n + 1) - 3 := by
   induction n with
-  | zero => norm_num
+  | zero => simp
   | succ k hk =>
     rcases k with - | k
-    · norm_num
+    · simp
     · rw [add_sq, Nat.pow_succ 2, mul_comm _ 2, two_mul (2 ^ _),
           add_tsub_assoc_of_le, add_comm (2 ^ _), add_assoc]
       · apply Nat.add_le_add hk

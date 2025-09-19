@@ -64,7 +64,7 @@ theorem norm_sub_sq_eq_norm_sq_add_norm_sq_sub_two_mul_norm_mul_norm_mul_cos_ang
 theorem sin_angle_mul_norm_eq_sin_angle_mul_norm (x y : V) :
     Real.sin (angle x y) * ‖x‖ = Real.sin (angle y (x - y)) * ‖x - y‖ := by
   obtain rfl | hy := eq_or_ne y 0
-  · norm_num
+  · simp
   obtain rfl | hx := eq_or_ne x 0
   · simp [angle_neg_right, angle_self hy]
   obtain rfl | hxy := eq_or_ne x y

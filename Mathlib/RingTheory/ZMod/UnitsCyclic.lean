@@ -244,7 +244,7 @@ lemma orderOf_one_add_four_mul (a : ℤ) (ha : Odd a) (n : ℕ) :
 
 theorem orderOf_five (n : ℕ) :
     orderOf (5 : ZMod (2 ^ (n + 2))) = 2 ^ n := by
-  convert orderOf_one_add_four_mul 1 (by norm_num) n
+  convert orderOf_one_add_four_mul 1 (by simp) n
   norm_num
 
 end PrimePow
