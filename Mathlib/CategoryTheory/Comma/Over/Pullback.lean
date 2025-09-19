@@ -80,18 +80,14 @@ def pullbackId {X : C} [∀ {Z} (g : Z ⟶ X), HasPullback g (𝟙 X)] : pullbac
 
 /-- pullback commutes with composition (up to natural isomorphism). -/
 def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
-    [∀ {W} (h : W ⟶ Y), HasPullback h f] [∀ {W} (h : W ⟶ Z), HasPullback h g]
-    : pullback (f ≫ g) ≅ pullback g ⋙ pullback f :=
+    [∀ {W} (h : W ⟶ Y), HasPullback h f] [∀ {W} (h : W ⟶ Z), HasPullback h g] :
+    pullback (f ≫ g) ≅ pullback g ⋙ pullback f :=
   conjugateIsoEquiv (mapPullbackAdj _) ((mapPullbackAdj _).comp (mapPullbackAdj _))
     (Over.mapComp _ _).symm
 
 instance pullbackIsRightAdjoint {X Y : C} (f : X ⟶ Y) [∀ {W} (h : W ⟶ Y), HasPullback h f] :
     (pullback f).IsRightAdjoint :=
   ⟨_, ⟨mapPullbackAdj f⟩⟩
-
-section
-
-variable [HasPullbacks C]
 
 open pullback in
 /-- If `F` is a left adjoint and its source category has pullbacks, then so is
@@ -100,15 +96,14 @@ open pullback in
 If the right adjoint of `F` is `G`, then the right adjoint of `post F` is given by
 `(Y ⟶ F X) ↦ (G Y ⟶ X ×_{G F X} G Y ⟶ X)`. -/
 @[simps!]
-def postAdjunctionLeft {X : C} {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) :
+def postAdjunctionLeft [HasPullbacks C] {X : C} {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) :
     post F ⊣ post G ⋙ pullback (a.unit.app X) :=
   ((mapPullbackAdj (a.unit.app X)).comp (postAdjunctionRight a)).ofNatIsoLeft <|
     NatIso.ofComponents fun Y ↦ isoMk (.refl _)
 
-instance isLeftAdjoint_post {F : C ⥤ D} [F.IsLeftAdjoint] : (post (X := X) F).IsLeftAdjoint :=
+instance isLeftAdjoint_post [HasPullbacks C] {F : C ⥤ D} [F.IsLeftAdjoint] :
+    (post (X := X) F).IsLeftAdjoint :=
   let ⟨G, ⟨a⟩⟩ := ‹F.IsLeftAdjoint›; ⟨_, ⟨postAdjunctionLeft a⟩⟩
-
-end
 
 open Limits
 
