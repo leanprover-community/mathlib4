@@ -56,7 +56,8 @@ end Map
 
 section Pullback
 
-variable [HasPullbacks T] [P.IsStableUnderBaseChange] [Q.IsStableUnderBaseChange]
+variable [∀ {W} (h : W ⟶ Y), HasPullback h f] [P.IsStableUnderBaseChange]
+  [Q.IsStableUnderBaseChange]
 
 /-- If `P` and `Q` are stable under base change and pullbacks exist in `T`,
 this is the functor `P.Over Q Y ⥤ P.Over Q X` given by base change along `f`. -/
@@ -129,5 +130,8 @@ noncomputable def Over.mapPullbackAdj [Q.HasOfPostcompProperty Q] (hPf : P f) (h
             · simpa using h.w.symm } }
 
 end Adjunction
+
+class IsClosedUnderPushforward : Prop where
+  asldkfj {X Y : T} (f : X ⟶ Y) : (Over.pullback P Q f).IsLeftAdjoint
 
 end CategoryTheory.MorphismProperty
