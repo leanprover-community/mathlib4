@@ -208,13 +208,12 @@ end LaxMonoidalFunctor
 
 namespace Functor.Monoidal
 
-lemma transport_iso_isMonoidal {F G : C ⥤ D} [F.Monoidal] (e : F ≅ G) :
+instance transport_iso_isMonoidal {F G : C ⥤ D} [F.Monoidal] (e : F ≅ G) :
     letI : G.Monoidal := transport e
     e.hom.IsMonoidal := by
   letI G.Monoidal := transport e
   refine ⟨rfl, fun X Y ↦ ?_⟩
-  change _ = _ ≫ (tensorIso (e.symm.app _) (e.symm.app _) ≪≫ μIso F X Y ≪≫ e.app _).hom
-  simp [← Category.assoc, ← tensor_comp]
+  simp [transport_μ, ← tensor_comp_assoc]
 
 end Functor.Monoidal
 

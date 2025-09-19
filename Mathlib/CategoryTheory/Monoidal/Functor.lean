@@ -1230,10 +1230,9 @@ Transport the structure of a monoidal functor along a natural isomorphism of fun
 def transport {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G) : G.Monoidal :=
   (coreMonoidalTransport i).toMonoidal
 
-lemma transport_μ {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G)
-    (X Y : C) : letI := transport i
-  LaxMonoidal.μ G X Y =
-    (i.inv.app X ⊗ₘ i.inv.app Y) ≫ LaxMonoidal.μ F X Y ≫ i.hom.app (X ⊗ Y) := rfl
+lemma transport_μ {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G) (X Y : C) : letI := transport i
+    LaxMonoidal.μ G X Y = (i.inv.app X ⊗ₘ i.inv.app Y) ≫ LaxMonoidal.μ F X Y ≫ i.hom.app (X ⊗ Y) :=
+  rfl
 
 end Functor.Monoidal
 
