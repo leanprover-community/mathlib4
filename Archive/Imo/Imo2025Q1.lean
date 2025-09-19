@@ -79,12 +79,8 @@ abbrev Plane := EuclideanSpace ℝ (Fin 2)
 abbrev AffSubOfPlane := AffineSubspace ℝ Plane
 
 /-- Two vectors are equal iff their x and y coordinates are equal. -/
-lemma vec_eq (x1 x2 y1 y2 : ℝ) : !₂[x1, y1] = !₂[x2, y2] ↔ (x1 = x2 ∧ y1 = y2) := by
-  constructor
-  · intro h
-    apply_fun (fun w ↦ (w.ofLp 0, w.ofLp 1)) at h
-    simpa using h
-  · simp (config := { contextual := true })
+lemma vec_eq (x1 x2 y1 y2 : ℝ) : !₂[x1, y1] = !₂[x2, y2] ↔ (x1 = x2 ∧ y1 = y2) :=
+  ⟨fun h ↦ by apply_fun (fun w ↦ (w.ofLp 0, w.ofLp 1)) at h; simpa using h, by simp +contextual⟩
 
 /-- Get the x coordinate of a vector. -/
 lemma vec_repr_x (x y : ℝ) : !₂[x, y] 0 = x := by simp
@@ -92,16 +88,14 @@ lemma vec_repr_x (x y : ℝ) : !₂[x, y] 0 = x := by simp
 lemma vec_repr_y (x y : ℝ) : !₂[x, y] 1 = y := by simp
 
 /-- Represent a vector as a pair of real numbers -/
-lemma vec_repr (x : Plane) : x = !₂[x 0, x 1] := by
-  ext i; fin_cases i <;> simp
+lemma vec_repr (x : Plane) : x = !₂[x 0, x 1] := FinVec.etaExpand_eq _ |>.symm
 
 /-- Multiply a vector by a scalar. -/
-lemma vec_mul (k x y : ℝ) : k • !₂[x, y] = !₂[k * x, k * y] := by
-  ext i; fin_cases i <;> simp
+lemma vec_mul (k x y : ℝ) : k • !₂[x, y] = !₂[k * x, k * y] := FinVec.etaExpand_eq _ |>.symm
 
 /-- Compute the difference of two vectors -/
-lemma vec_sub (x1 y1 x2 y2 : ℝ) : !₂[x1, y1] - !₂[x2, y2] = !₂[x1 - x2, y1 - y2] := by
-  ext i; fin_cases i <;> simp
+lemma vec_sub (x1 y1 x2 y2 : ℝ) : !₂[x1, y1] - !₂[x2, y2] = !₂[x1 - x2, y1 - y2] :=
+  FinVec.etaExpand_eq _ |>.symm
 
 /-- The "line" `ax + by + c = 0`. ("line" means except for the degenerate case `a = 0 ∧ b = 0`)
 Note: We don't enforce `a ≠ 0 ∨ b ≠ 0`. -/
@@ -110,12 +104,7 @@ noncomputable def line (a b c : ℝ) : AffSubOfPlane where
   smul_vsub_vadd_mem r p₁ p₂ p₃ hp₁ hp₂ hp₃ := by
     simp only [Fin.isValue, vsub_eq_sub, vadd_eq_add, Set.mem_setOf_eq, PiLp.add_apply,
       PiLp.smul_apply, PiLp.sub_apply, smul_eq_mul]
-    simp_all only [Fin.isValue, Set.mem_setOf_eq]
-    calc
-    _ = r * (a * p₁ 0 + b * p₁ 1 + c) -
-        r * (a * p₂ 0 + b * p₂ 1 + c) +
-        (a * p₃ 0 + b * p₃ 1 + c) := by ring
-    _ = 0 := by rw [hp₁, hp₂, hp₃]; ring
+    grind
 
 /-- Check if a point `(x, y)` belongs to the line `a * x + b * y + c = 0`. -/
 lemma point_on_line (x y a b c : ℝ) : !₂[x, y] ∈ line a b c ↔ a * x + b * y + c = 0 := by
@@ -140,8 +129,8 @@ lemma line_direction (a b c : ℝ) (h : a ≠ 0 ∨ b ≠ 0) (w : Plane) :
   have hv_nonempty := line_nonempty a b c h
   constructor
   · intro hw
-    rw [AffineSubspace.mem_direction_iff_eq_vsub hv_nonempty] at hw
-    obtain ⟨w1, hw1, w2, hw2, hw12⟩ := hw
+    obtain ⟨w1, hw1, w2, hw2, hw12⟩ :=
+      (AffineSubspace.mem_direction_iff_eq_vsub hv_nonempty _).mp hw
     rw [vec_repr w1, point_on_line] at hw1
     rw [vec_repr w2, point_on_line] at hw2
     simp only [vsub_eq_sub] at hw12
@@ -150,35 +139,27 @@ lemma line_direction (a b c : ℝ) (h : a ≠ 0 ∨ b ≠ 0) (w : Plane) :
       · rw [hw12]
         nth_rw 2 [vec_repr w1, vec_repr w2]
         rw [vec_mul, vec_sub, vec_eq]
-        constructor
-        · field_simp; linarith
-        · field_simp
+        constructor <;> (field_simp; try linarith)
     · use (w2 0 - w1 0) / b
       · rw [hw12]
         nth_rw 2 [vec_repr w1, vec_repr w2]
         rw [vec_mul, vec_sub, vec_eq]
-        constructor
-        · field_simp; linarith
-        · field_simp; linarith
+        constructor <;> (field_simp; try linarith)
   · intro ⟨k, hkw⟩
     rw [AffineSubspace.mem_direction_iff_eq_vsub hv_nonempty]
     simp only [Set.Nonempty, SetLike.mem_coe] at hv_nonempty
     obtain ⟨v1, hv1⟩ := hv_nonempty
     use v1
-    constructor
-    · exact hv1
-    · use v1 - w; constructor
-      · rw [vec_repr v1, point_on_line] at hv1
-        rw [vec_repr v1, ← hkw, vec_mul, vec_sub, point_on_line]
-        ring_nf; exact hv1
-      · simp
+    refine ⟨hv1, v1 - w, ?_, by simp⟩
+    rw [vec_repr v1, point_on_line] at hv1
+    rw [vec_repr v1, ← hkw, vec_mul, vec_sub, point_on_line]
+    ring_nf; exact hv1
 
 /-- The rank of the line `a * x + b * y + c = 0` is `1` when `a` and `b` are not both zero -/
 lemma line_rank (a b c : ℝ) (h : a ≠ 0 ∨ b ≠ 0) : finrank ℝ (line a b c).direction = 1 := by
   have hv_mem : !₂[-b, a] ∈ AffineSubspace.direction (line a b c) := by
-    rw [line_direction]
-    · use 1; rw [vec_mul, vec_eq]; simp
-    · exact h
+    rw [line_direction (h := h)]
+    use 1; simp
   rw [finrank_eq_one_iff']
   use ⟨!₂[-b, a], hv_mem⟩
   constructor
@@ -206,16 +187,13 @@ These lines are named `edgeLine n 0`, `edgeLine n 1`, `edgeLine n 2`, resp. -/
 noncomputable def edgeLine (n : ℕ) (d : Fin 3) := line' (edgeCoeffs n d)
 
 /-- The y axis is the line `x = 0`. -/
-lemma y_ax_line : line 1 0 0 = yAxis := by
-  simp [line, yAxis]
+lemma y_ax_line : line 1 0 0 = yAxis := by simp [line, yAxis]
 
 /-- The x axis is the line `y = 0` -/
-lemma x_ax_line : line 0 1 0 = xAxis := by
-  simp [line, xAxis]
+lemma x_ax_line : line 0 1 0 = xAxis := by simp [line, xAxis]
 
 /-- The line `x + y = 0` -/
-lemma xy0_line : line 1 1 0 = linexy0 := by
-  simp [line, linexy0]
+lemma xy0_line : line 1 1 0 = linexy0 := by simp [line, linexy0]
 
 /-- Preparation lemma for checking if two lines are parallel -/
 lemma line_para' (a b a' b' : ℝ) (h' : a' ≠ 0 ∨ b' ≠ 0)
@@ -227,14 +205,10 @@ lemma line_para' (a b a' b' : ℝ) (h' : a' ≠ 0 ∨ b' ≠ 0)
   obtain ha | hb := h'
   · use k * a / a'
     rw [vec_mul, vec_repr w, vec_eq]
-    constructor <;> field_simp
-    · rw [←hk1, mul_assoc, hab]; ring
-    · rw [←hk2, ]
+    grind
   · use k * b / b'
     rw [vec_mul, vec_repr w, vec_eq]
-    constructor <;> field_simp
-    · rw [←hk1]; ring
-    · rw [←hk2, mul_assoc _ a _, hab]; ring
+    grind
 
 /-- Two non-degenerate lines `a * x + b * y + c = 0` and `a' * x + b' * y + c = 0`
 are parallel iff `a * b' = a' * b`. -/
@@ -248,8 +222,7 @@ lemma line_para (a b c a' b' c' : ℝ) (h : a ≠ 0 ∨ b ≠ 0) (h' : a' ≠ 0 
       rw [line_direction a b c h w]
       use 1
       simp [w]
-    rw [hp] at this
-    rw [line_direction a' b' c' h' w] at this
+    rw [hp, line_direction a' b' c' h' w] at this
     dsimp only [w] at this
     obtain ⟨k, hk⟩ := this
     rw [vec_mul, vec_eq] at hk
@@ -260,17 +233,10 @@ lemma line_para (a b c a' b' c' : ℝ) (h : a ≠ 0 ∨ b ≠ 0) (h' : a' ≠ 0 
     constructor
     · ext w
       rw [line_direction a b c h w, line_direction a' b' c' h' w]
-      constructor
-      · exact line_para' a b a' b' h' hab w
-      · exact line_para' a' b' a b h hab.symm w
-    · rw [← AffineSubspace.coe_eq_bot_iff, ← AffineSubspace.coe_eq_bot_iff]
-      have : SetLike.coe (line a b c) ≠ ∅ := by
-        rw [← Set.nonempty_iff_ne_empty]
-        exact line_nonempty a b c h
-      have : SetLike.coe (line a' b' c') ≠ ∅ := by
-        rw [← Set.nonempty_iff_ne_empty]
-        exact line_nonempty a' b' c' h'
-      tauto
+      exact ⟨line_para' a b a' b' h' hab w, line_para' a' b' a b h hab.symm w⟩
+    · have := line_nonempty a b c h
+      have := line_nonempty a' b' c' h'
+      simp_all [Set.nonempty_iff_ne_empty, ← AffineSubspace.coe_eq_bot_iff]
 
 /-- If the line `a * x + b * y + c` is parallel to `L`,
 and both lines go through `(x1, y1)`, `(x2, y2)`,
@@ -278,8 +244,7 @@ then `a * (x2 - x1) + b * (y2 - y1) = 0`. -/
 lemma line_para_two_points (a b c : ℝ) (h : a ≠ 0 ∨ b ≠ 0) (L : AffSubOfPlane) (x1 y1 x2 y2 : ℝ) :
     line a b c ∥ L → !₂[x1, y1] ∈ L → !₂[x2, y2] ∈ L → a * (x2 - x1) + b * (y2 - y1) = 0 := by
   by_cases hxy : x1 = x2 ∧ y1 = y2
-  · rw [show x2 - x1 = 0 by simp [hxy], show y2 - y1 = 0 by simp [hxy]]
-    simp
+  · simp [show x2 - x1 = 0 by simp [hxy], show y2 - y1 = 0 by simp [hxy]]
   · rw [AffineSubspace.parallel_iff_direction_eq_and_eq_bot_iff_eq_bot]
     intro ⟨hp, _⟩ h1 h2
     let w := !₂[x2 - x1, y2 - y1]
@@ -287,14 +252,10 @@ lemma line_para_two_points (a b c : ℝ) (h : a ≠ 0 ∨ b ≠ 0) (L : AffSubOf
       rw [AffineSubspace.mem_direction_iff_eq_vsub _]
       · use !₂[x2, y2]; simp only [h2, vsub_eq_sub, true_and]
         use !₂[x1, y1]; simp only [h1, true_and]
-        dsimp only [w]; rw [vec_sub, vec_eq]; simp
+        simp [w, vec_sub]
       · simp only [Set.Nonempty, SetLike.mem_coe]; use !₂[x1, y1]
-    rw [← hp, line_direction] at this
-    · dsimp only [w] at this
-      obtain ⟨k, hk⟩ := this
-      rw [vec_mul, vec_eq] at hk
-      rw [← hk.left, ← hk.right]; ring
-    · tauto
+    rw [← hp, line_direction (h := by tauto)] at this
+    grind [vec_mul, vec_eq]
 
 /-- If the linex `a * x + b * y + c = 0` and `a' * x + b' * y + c = 0` are equal,
 then `a * b' = a' * b ∧ a * c' = a' * c ∧ b * c' = b' * c`. -/
@@ -303,46 +264,27 @@ lemma line_eq_check (a b c a' b' c' : ℝ) (h : a ≠ 0 ∨ b ≠ 0) (h' : a' �
     a * b' = a' * b ∧ a * c' = a' * c ∧ b * c' = b' * c := by
   have hab : a * b' = a' * b := by rw [← line_para a b c a' b' c' h h', heq]
   rw [AffineSubspace.ext_iff, Set.ext_iff] at heq
-  constructor
-  · exact hab
-  · by_cases ha : a = 0
-    · have hb : b ≠ 0 := by tauto
-      have ha' : a' = 0 := by rw [ha] at hab; simp only [zero_mul, zero_eq_mul] at hab; tauto
-      simp only [ha, zero_mul, ha', true_and]
-      specialize heq !₂[0, -c / b]
+  refine ⟨hab, ?_⟩
+  by_cases ha : a = 0
+  · specialize heq !₂[0, -c / b]
+    rw [AffineSubspace.mem_coe, AffineSubspace.mem_coe, point_on_line, point_on_line] at heq
+    grind
+  · constructor
+    · specialize heq !₂[-c / a, 0]
       rw [AffineSubspace.mem_coe, AffineSubspace.mem_coe, point_on_line, point_on_line] at heq
-      have : a * 0 + b * (-c / b) + c = 0 := by field_simp; ring
-      replace heq := (heq.mp) this; simp only [mul_zero, zero_add] at heq
-      calc
-      _ = b * (-(b' * (-c / b))) := by congr 1; linarith
-      _ = b' * c := by field_simp
-    · constructor
-      · specialize heq !₂[-c / a, 0]
+      grind
+    · by_cases hb : b = 0
+      · grind
+      · specialize heq !₂[0, -c / b]
         rw [AffineSubspace.mem_coe, AffineSubspace.mem_coe, point_on_line, point_on_line] at heq
-        have : a * (-c / a) + b * 0 + c = 0 := by field_simp; ring
-        replace heq := (heq.mp) this; simp only [mul_zero, add_zero] at heq
-        calc
-        _ = a * (-(a' * (-c / a))) := by congr 1; linarith
-        _ = a' * c := by field_simp
-      · by_cases hb : b = 0
-        · have hb' : b' = 0 := by rw [hb] at hab; simp only [mul_zero, mul_eq_zero] at hab; tauto
-          simp [hb, hb']
-        · specialize heq !₂[0, -c / b]
-          rw [AffineSubspace.mem_coe, AffineSubspace.mem_coe, point_on_line, point_on_line] at heq
-          have : a * 0 + b * (-c / b) + c = 0 := by field_simp; ring
-          replace heq := (heq.mp) this; simp only [mul_zero, zero_add] at heq
-          calc
-          _ = b * (-(b' * (-c / b))) := by congr 1; linarith
-          _ = b' * c := by field_simp
+        grind
 
 /-- Preparation lemma for `get_line_eq`. -/
-lemma line_contains (L L' : AffSubOfPlane) (hL : finrank ℝ L.direction = 1) (a b : Plane) :
-    (a ≠ b → a ∈ L → b ∈ L → a ∈ L' → b ∈ L' → L ≤ L') := by
-  intro hab ha hb ha' hb'
+lemma line_contains (L L' : AffSubOfPlane) (hL : finrank ℝ L.direction = 1) (a b : Plane)
+    (hab : a ≠ b) (ha : a ∈ L) (hb : b ∈ L) (ha' : a ∈ L') (hb' : b ∈ L') : L ≤ L' := by
   rw [AffineSubspace.le_def']
   intro x hx
-  rw [finrank_eq_one_iff'] at hL
-  obtain ⟨v, hv0, hv⟩ := hL
+  obtain ⟨v, hv0, hv⟩ := finrank_eq_one_iff'.mp hL
   have L_nonempty : (SetLike.coe L).Nonempty := by simp only [Set.Nonempty, SetLike.mem_coe]; use a
   obtain ⟨k, hk⟩ :=
     hv ⟨a -ᵥ b, by rw [AffineSubspace.mem_direction_iff_eq_vsub L_nonempty]; use a; simp [ha, hb]⟩
@@ -352,8 +294,7 @@ lemma line_contains (L L' : AffSubOfPlane) (hL : finrank ℝ L.direction = 1) (a
   apply_fun (·.val) at hq; simp only [SetLike.val_smul, vsub_eq_sub] at hq
   have hk0 : k ≠ 0 := by
     intro hkC; simp only [hkC, zero_smul] at hk
-    have : a = b := by rw [← sub_eq_zero]; exact hk.symm
-    contradiction
+    grind
   have x_a_expr : x - a = (q / k) • (a - b) := by rw [← hk, ← hq, ← mul_smul]; congr 1; field_simp
   have := L'.smul_vsub_vadd_mem (q / k) (p₁ := a) (p₂ := b) (p₃ := a) ha' hb' ha'
   simpa [← x_a_expr] using this
@@ -381,11 +322,8 @@ noncomputable def eqAffSubOfPlane : DecidableEq AffSubOfPlane := Classical.decEq
 lemma sunny_slope (a b c : ℝ) (h : a ≠ 0 ∨ b ≠ 0) :
     Sunny (line a b c) ↔ a ≠ 0 ∧ b ≠ 0 ∧ a ≠ b := by
   dsimp only [Sunny]
-  rw [← x_ax_line, ← y_ax_line, ← xy0_line]
-  rw [line_para, line_para, line_para]
-  · simp only [mul_one, zero_mul, mul_zero, one_mul, ne_eq, and_congr_right_iff,
-      and_congr_left_iff]
-    tauto
+  rw [← x_ax_line, ← y_ax_line, ← xy0_line, line_para, line_para, line_para]
+  · grind
   all_goals (first | assumption | simp)
 
 /-- The integer grid consisting of (a, b), where a, b are positive integers and a + b ≤ n + 1. -/
@@ -416,8 +354,7 @@ structure coverConfig where
   sunny_count : have := sunnyPred; #{l ∈ lines | Sunny l} = nS
 
 lemma coverConfig.nS_leq_n (C : coverConfig) : C.nS ≤ C.n := by
-  rw [← C.sunny_count, ← C.lines_count]
-  simp [Finset.card_filter_le]
+  simp [← C.sunny_count, ← C.lines_count, Finset.card_filter_le]
 
 /-- `shiftSet v g` is the result of shifting every point in `g` by the vector `v`. -/
 def shiftSet (v : Plane) (g : Set Plane) : Set Plane :=
@@ -456,9 +393,8 @@ lemma grid_shift (n : ℕ) (d : Fin 3) :
         add_eq_left] at ha; contradiction
       use a - 1
       constructor
-      · field_simp
-        apply_fun (·-1) at ha
-        simpa using ha
+      · rw [show a = a - 1 + 1 by omega] at ha
+        grind
       · use b
         constructor <;> (try (first | assumption | omega))
     · have : b ≠ 1 := by intro hC; rw [hC] at hb; simp only [Fin.isValue, Nat.cast_one,
@@ -468,9 +404,8 @@ lemma grid_shift (n : ℕ) (d : Fin 3) :
       · exact ha
       · use b - 1
         constructor
-        · field_simp
-          apply_fun (·-1) at hb
-          simpa using hb
+        · rw [show b = b - 1 + 1 by omega] at hb
+          grind
         · constructor <;> (try (first | assumption | omega))
     · have : a + b ≠ n + 2 := by
         intro hC; rw [ha, hb] at h2; norm_cast at h2; omega
@@ -559,21 +494,15 @@ def shiftLines (v : Plane) (lines : Finset AffSubOfPlane) : Finset AffSubOfPlane
 
 /-- `shiftLine (-v)` is the inverse of `shiftLine v`. -/
 lemma shift_line_inv (v : Plane) (L : AffSubOfPlane) : (shiftLine (-v)) ((shiftLine v) L) = L := by
-  dsimp only [shiftLine, Function.Embedding.coeFn_mk, shiftLineMap]
-  rw [AffineSubspace.map_map, ←affine_trans, ←AffineEquiv.constVAdd_add]
-  simp
+  simp [shiftLine, Function.Embedding.coeFn_mk, shiftLineMap, AffineSubspace.map_map,
+    ← affine_trans, ← AffineEquiv.constVAdd_add]
 
 /-- If `L` is sunny, then so is its shift. -/
 lemma shift_sunny (v : Plane) (L : AffSubOfPlane) : Sunny L → Sunny (shiftLine v L) := by
   rw [Sunny, Sunny]
   have (L' : AffSubOfPlane) : L ∥ L' ↔ shiftLine v L ∥ L' := by
-    constructor
-    · intro h
-      apply AffineSubspace.Parallel.trans _ h
-      symm; apply shift_para
-    · intro h
-      apply AffineSubspace.Parallel.trans _ h
-      apply shift_para
+    exact ⟨fun h ↦ AffineSubspace.Parallel.trans (shift_para _ _).symm h,
+      fun h ↦ AffineSubspace.Parallel.trans (shift_para _ _) h⟩
   rw [← this, ← this, ← this]
   tauto
 
@@ -595,13 +524,10 @@ def coverConfig.shift (C : coverConfig) (v : Plane) : coverConfig where
     simp only [shiftSet, AffineEquiv.constVAdd_apply, vadd_eq_add, Set.image_add_left,
       Set.mem_preimage] at hx
     obtain ⟨l, hl1, hl2⟩ := C.lines_cover (-v + x) hx
-    use l; constructor
-    · assumption
-    · simp only [shiftLine, Function.Embedding.coeFn_mk, shiftLineMap, AffineSubspace.mem_map,
-        AffineEquiv.coe_toAffineMap, AffineEquiv.constVAdd_apply, vadd_eq_add]
-      use -v + x; constructor
-      · assumption
-      · simp
+    refine ⟨l, by assumption, ?_⟩
+    simp only [shiftLine, Function.Embedding.coeFn_mk, shiftLineMap, AffineSubspace.mem_map,
+      AffineEquiv.coe_toAffineMap, AffineEquiv.constVAdd_apply, vadd_eq_add]
+    exact ⟨-v + x, by assumption, by simp⟩
   sunny_count := by
     intro
     simp only [shiftLines]
@@ -613,9 +539,7 @@ def coverConfig.shift (C : coverConfig) (v : Plane) : coverConfig where
     · intro L hL
       simp only [Finset.mem_filter] at hL
       simp only [Finset.mem_filter, Finset.mem_map']
-      constructor
-      · tauto
-      · apply shift_sunny; tauto
+      exact ⟨by tauto, by apply shift_sunny; tauto⟩
     · intro L' hL'; simp only [Finset.mem_filter, Finset.mem_map] at hL'
       obtain ⟨⟨L, hL1, hL2⟩, hS'⟩ := hL'
       simp only [Finset.mem_filter, hS', shift_sunny, and_true]
@@ -631,9 +555,8 @@ noncomputable def coverConfig.removeLine (C : coverConfig) (L : AffSubOfPlane) (
   n := C.n - 1
   nS := C.nS
   lines_count := by simp [C.lines_count, hL]
-  lines_rank := by
-    intro L' hL'
-    exact C.lines_rank L' (by simp only [Finset.mem_erase, ne_eq] at hL'; tauto)
+  lines_rank := fun L' hL' ↦ C.lines_rank L'
+    (by simp only [Finset.mem_erase, ne_eq] at hL'; tauto)
   lines_cover := by
     intro x hx
     simp only [Set.mem_diff, SetLike.mem_coe] at hx
@@ -669,7 +592,7 @@ noncomputable def reduce (C : coverGridConfig) (d : Fin 3) (hd : C.edgeLine d �
     (C.tocoverConfig.removeLine (C.edgeLine d) hd edge_not_sunny).shift (gridShift d)
   g_is_grid := by
     simp only [coverConfig.shift, coverConfig.removeLine]
-    have : C.n > 0 := by rw [← C.lines_count]; simp; use C.edgeLine d
+    have : C.n > 0 := by simp [← C.lines_count]; use C.edgeLine d
     have : C.n = C.n - 1 + 1 := by omega
     convert grid_shift (C.n - 1) d
     · rw [C.g_is_grid, ← this]
@@ -868,8 +791,7 @@ lemma coverGridNoEdgeConfig.cover_no_edge_line_surj (C : coverGridNoEdgeConfig) 
     simp only [Finset.mem_map, Finset.mem_univ, Function.Embedding.coeFn_mk, true_and,
       R] at hx
     obtain ⟨i, hi⟩ := hx;
-    rw [← hi]
-    simp [C.find_line_edge_correct]
+    simp [← hi, C.find_line_edge_correct]
   apply Finset.eq_of_subset_of_card_le <;> try (first | assumption | omega)
   have := C.lines_count
   omega
@@ -1052,7 +974,7 @@ lemma coverGridNoEdgeConfig.cover_no_edge_4_impossible (C : coverGridNoEdgeConfi
   have := eqAffSubOfPlane
   have : #(C.lines \ C.corner_set) ≥ 1 := by
     calc
-    _ = #C.lines - #(C.corner_set) := by apply Finset.card_sdiff; exact C.corner_set_subset_lines
+    _ = #C.lines - #(C.corner_set) := Finset.card_sdiff_of_subset C.corner_set_subset_lines
     _ ≥ C.n - 3 := by rw [C.lines_count, C.corner_set_card]
     _ ≥ 1 := by omega
   simp only [ge_iff_le, Finset.one_le_card] at this
@@ -1115,9 +1037,9 @@ end FindLines
 lemma coverGridNoEdgeConfig.cover_edge (C : coverGridNoEdgeConfig) : C.n = 3 ∧ C.nS = 3 := by
   have : C.n ≥ 3 := by
     calc
-    _ = #C.lines := by exact C.lines_count.symm
-    _ ≥ #C.corner_set := by exact Finset.card_le_card C.corner_set_subset_lines
-    _ = 3 := by exact C.corner_set_card
+    _ = #C.lines := C.lines_count.symm
+    _ ≥ #C.corner_set := Finset.card_le_card C.corner_set_subset_lines
+    _ = 3 := C.corner_set_card
   by_cases C.n = 3
   · have := C.cover_no_edge_3_lines; tauto
   · have : C.n ≥ 4 := by omega
@@ -1128,13 +1050,12 @@ lemma coverGridNoEdgeConfig.cover_edge (C : coverGridNoEdgeConfig) : C.n = 3 ∧
 Proved by induction on `n` of the above fact for all `coverGridNoEdgeConfig`. -/
 lemma coverGridConfig.any_cover (C : coverGridConfig) :
     (C.nS ≤ C.n ∧ (C.nS = 0 ∨ C.nS = 1 ∨ C.nS = 3)) := by
-  suffices ∀ (n : ℕ), (n = C.n → (C.nS ≤ C.n ∧ (C.nS = 0 ∨ C.nS = 1 ∨ C.nS = 3))) by
-    exact this C.n rfl
+  suffices ∀ (n : ℕ), (n = C.n → (C.nS ≤ C.n ∧ (C.nS = 0 ∨ C.nS = 1 ∨ C.nS = 3))) from this C.n rfl
   intro n
   induction n generalizing C with
   | zero =>
     have := C.nS_leq_n
-    intro hn0
+    intros
     omega
   | succ n ih =>
     have := C.nS_leq_n
@@ -1223,13 +1144,12 @@ noncomputable def threeSunnyLine (d : Fin 3) := line' (threeSunnyLineCoeffs d)
 lemma threeSunnyLineInj : Function.Injective threeSunnyLine := by
   intro d e h
   fin_cases d
+  all_goals fin_cases e
+  any_goals rfl
   all_goals
-    fin_cases e
-    any_goals rfl
-    all_goals
-      simp only [threeSunnyLine, line', threeSunnyLineCoeffs] at h
-      apply line_eq_check at h <;> norm_num
-      norm_num at h
+    simp only [threeSunnyLine, line', threeSunnyLineCoeffs] at h
+    apply line_eq_check at h <;> norm_num
+    norm_num at h
 
 /-- The set of lines of a 3 sunny solution -/
 noncomputable def threeSunnyLines :=
@@ -1251,8 +1171,7 @@ lemma grid3Points (x : Plane) : x ∈ grid 3 ↔
   simp only [grid, Fin.isValue, Nat.reduceAdd, exists_and_left, Set.mem_setOf_eq]
   constructor
   · intro ⟨a, ha, b, hb, ha0, hb0, hab⟩
-    rw [vec_repr x]
-    rw [ha, hb, vec_eq, vec_eq, vec_eq, vec_eq, vec_eq, vec_eq]
+    rw [vec_repr x, ha, hb, vec_eq, vec_eq, vec_eq, vec_eq, vec_eq, vec_eq]
     norm_cast
     omega
   · intro hx
@@ -1299,7 +1218,7 @@ noncomputable def threeSunny : strongCoverGridConfig where
       rw [← hd]
       exact hS d
     _ = 3 := by simp [threeSunnyLines]
-  g_is_grid := by rfl
+  g_is_grid := rfl
   lines_used := by
     simp only [grid3Points, threeSunnyLinesMem, threeSunnyLine, line', threeSunnyLineCoeffs]
     rintro L (hL | hL | hL)
@@ -1338,7 +1257,7 @@ noncomputable def strongCoverGridConfig.extend (C : strongCoverGridConfig) :
     rw [hLd, edgeLine, line', edgeCoeffs, sunny_slope] at hLS
     · replace hLS := hLS.right.right; contradiction
     · simp
-  g_is_grid := by rfl
+  g_is_grid := rfl
   lines_used := by
     intro L hL
     by_cases hE : L = edgeLine (C.n + 1) 2
@@ -1358,8 +1277,7 @@ noncomputable def strongCoverGridConfig.extend (C : strongCoverGridConfig) :
       use x; simp only [hx2, and_true]
       have := grid_remove_diag C.n
       rw [← C.g_is_grid] at this
-      rw [← this] at hx1
-      rw [Set.mem_diff] at hx1
+      rw [← this, Set.mem_diff] at hx1
       tauto
   where hNew : edgeLine (C.n + 1) 2 ∉ C.lines := by {
     intro hC
@@ -1367,8 +1285,7 @@ noncomputable def strongCoverGridConfig.extend (C : strongCoverGridConfig) :
     simp only [C.g_is_grid, grid, Fin.isValue, exists_and_left, Set.mem_setOf_eq] at hx1
     obtain ⟨a, ha, b, hb, ha0, hb0, hab⟩ := hx1
     have : (a : ℝ) + b ≤ (C.n + 1 : ℕ) := by norm_cast
-    rw [vec_repr x, edgeLine, line', point_on_line, edgeCoeffs] at hx2
-    rw [ha, hb] at hx2
+    rw [vec_repr x, edgeLine, line', point_on_line, edgeCoeffs, ha, hb] at hx2
     linarith}
 
 /-- It is possible to have a `strongCoverGridConfig`, whenever `nS ≤ n` and
@@ -1422,21 +1339,19 @@ theorem result (n : Set.Ici 3) :
         rw [← ha, ← hb, show !₂[x 0, x 1] = x by ext i; fin_cases i <;> simp] at h3
         exact h3
       sunny_count := h4
-      g_is_grid := by rfl
+      g_is_grid := rfl
       }
     have := C.any_cover
     tauto
   · intro hS
-    have : n.val ≥ 3 := by exact n.property
+    have : n.val ≥ 3 := n.property
     have : nS ≤ n.val := by omega
     obtain ⟨C, h⟩ := existsStrongCover n nS this hS
     use C.lines
     simp only [C.lines_count, h, C.sunny_count, and_true, true_and]
-    constructor
-    · intro L hL; exact C.lines_rank L hL
-    · intro a b ha0 hb0 hab
-      convert C.lines_cover !₂[(a : ℝ), (b : ℝ)] _
-      rw [C.g_is_grid, point_in_grid]
-      omega
+    refine ⟨fun L hL ↦ C.lines_rank L hL, fun a b ha0 hb0 hab ↦ ?_⟩
+    convert C.lines_cover !₂[(a : ℝ), (b : ℝ)] _
+    rw [C.g_is_grid, point_in_grid]
+    omega
 
 end Imo2025Q1
