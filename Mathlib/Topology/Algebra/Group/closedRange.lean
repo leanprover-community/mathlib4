@@ -81,7 +81,7 @@ lemma p34 {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [Inner
     use (1 / ε) • a
     simpa [ha] using inv_smul_smul₀ (ne_of_lt εpos).symm y
 
-theorem ContinuousLinearMap.comp_le_opNorm {𝕜 𝕜₂ 𝕜₃: Type*} {E F G : Type*}
+theorem ContinuousLinearMap.comp_le_opNorm {𝕜 𝕜₂ 𝕜₃ : Type*} {E F G : Type*}
     [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup G]
     [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
     [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₃ G] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃}
