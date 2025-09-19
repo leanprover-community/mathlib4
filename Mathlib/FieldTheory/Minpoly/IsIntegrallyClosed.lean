@@ -106,6 +106,26 @@ theorem IsIntegrallyClosed.degree_le_of_ne_zero {s : S} (hs : IsIntegral R s) {p
   norm_cast
   exact natDegree_le_of_dvd ((isIntegrallyClosed_dvd_iff hs _).mp hp) hp0
 
+/-- If an element `x` is a root of a irreducible polynomial `p`, then 'x' is integral
+iff the leadingcoeff of 'p' is unit. -/
+theorem IsIntegrallyClosed.isIntegral_iff_leadingCoeff_isUnit {x : S} {p : R[X]}
+    (hirr : Irreducible p) (hp : p.aeval x = 0) :
+    IsIntegral R x ↔ IsUnit p.leadingCoeff  := by
+  constructor
+  · intro int_a
+    obtain ⟨g, hg⟩ := minpoly.isIntegrallyClosed_dvd int_a hp
+    have := Irreducible.isUnit_or_isUnit hirr hg
+    simp only [minpoly.not_isUnit R x, false_or] at this
+    obtain ⟨r, uni_r, geq⟩ := Polynomial.isUnit_iff.mp this
+    apply_fun leadingCoeff at hg
+    rw [hg, leadingCoeff_mul, ← geq, leadingCoeff_C, minpoly.monic int_a, one_mul]
+    exact uni_r
+  · rintro f_uni
+    obtain ⟨r, hr, _⟩ := (isUnit_iff_exists.mp f_uni)
+    refine ⟨p * C r, monic_mul_C_of_leadingCoeff_mul_eq_one hr, ?_⟩
+    rw [eval₂_mul, mul_eq_zero]; left
+    exact hp
+
 /-- The minimal polynomial of an element `x` is uniquely characterized by its defining property:
 if there is another monic polynomial of minimal degree that has `x` as a root, then this polynomial
 is equal to the minimal polynomial of `x`. See also `minpoly.unique` which relaxes the
