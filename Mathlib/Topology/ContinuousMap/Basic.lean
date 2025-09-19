@@ -205,7 +205,8 @@ def prodSwap : C(α × β, β × α) := .prodMk .snd .fst
 end Prod
 
 section Sum
-variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+variable {X Y Z : Type*}
+  [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 /-- `Sum.inl : X → X ⊕ Y` as a bundled continuous map. -/
 def inl : C(X, X ⊕ Y) where
@@ -226,8 +227,7 @@ lemma coe_inr : ⇑(inr : C(Y, X ⊕ Y)) = Sum.inr := rfl
 /-- A continuous map from a sum can be defined by its action on the summands.
 This is `Continuous.sumElim` bundled into a continuous map. -/
 @[simps]
-def sumElim {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-    (f : C(X, Z)) (g : C(Y, Z)) : C(X ⊕ Y, Z) where
+def sumElim (f : C(X, Z)) (g : C(Y, Z)) : C(X ⊕ Y, Z) where
   toFun := fun x ↦ Sum.elim f.toFun g.toFun x
   continuous_toFun := Continuous.sumElim f.continuous g.continuous
 
