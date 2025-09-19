@@ -7,7 +7,7 @@ Authors: Damiano Testa
 import Mathlib.Tactic.Linter.Header
 import Lake
 import Mathlib.Tactic.Linter.Header
-import /- -/ Mathlib.Tactic -- the `TextBased` linter does not flag this `broadImport`
+--import /- -/ Mathlib.Tactic -- the `TextBased` linter does not flag this `broadImport`
 import Mathlib.Tactic.Have
 import Mathlib.Deprecated.Aliases
 
@@ -55,11 +55,12 @@ open Lean Elab Command in
 `#check_copyright cop` takes as input the `String` `cop`, expected to be a copyright statement.
 It logs details of what the linter would report if the `cop` is "malformed".
 -/
-elab "#check_copyright " cop:str : command => do
-  let cop := cop.getString
+elab "#check_copyright " copStx:str : command => do
+  let cop := copStx.getString
+  let offset := copStx.raw.getPos?.get! + ⟨1⟩
   for (s, m) in Mathlib.Linter.copyrightHeaderChecks cop do
     if let some rg := s.getRange? then
-      logInfo
+      logInfoAt (.ofRange ({start := rg.start + offset, stop := rg.stop + offset}))
         m!"Text: `{replaceMultilineComments s.getAtomVal}`\n\
            Range: {(rg.start, rg.stop)}\n\
            Message: '{replaceMultilineComments m}'"
@@ -110,6 +111,14 @@ info: Text: `Authors: Name LastName
 Here comes an implicit docstring which doesn't belong here!`
 Range: (126, 209)
 Message: 'If an authors line spans multiple lines, each line but the last must end with a trailing comma'
+---
+info: Text: `here!`
+Range: (204, 209)
+Message: 'Last names such as 'here!' should start with a capital letter. If 'here!' is your last name, please ask to add your name as an exception for this linter.'
+---
+info: Text: `Authors`
+Range: (126, 133)
+Message: 'We are aware that standardizing names is hard (https:||www.kalzumeus.com|2010|06|17|falsehoods-programmers-believe-about-names|). We are happy to add your name as an exception to the linter, though!'
 -/
 #guard_msgs in
 #check_copyright
@@ -127,6 +136,14 @@ info: Text: `Authors: Name LastName
 Here comes an implicit docstring which shouldn't be here!`
 Range: (126, 206)
 Message: 'If an authors line spans multiple lines, each line but the last must end with a trailing comma'
+---
+info: Text: `here!`
+Range: (201, 206)
+Message: 'Last names such as 'here!' should start with a capital letter. If 'here!' is your last name, please ask to add your name as an exception for this linter.'
+---
+info: Text: `Authors`
+Range: (126, 133)
+Message: 'We are aware that standardizing names is hard (https:||www.kalzumeus.com|2010|06|17|falsehoods-programmers-believe-about-names|). We are happy to add your name as an exception to the linter, though!'
 -/
 #guard_msgs in
 #check_copyright
@@ -318,5 +335,23 @@ Copyright (c) 2024 Damiano Testa
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Name LastName
   and others.
+-/
+"
+
+/--
+info: Text: `name`
+Range: (172, 176)
+Message: 'Last names such as 'name' should start with a capital letter. If 'name' is your last name, please ask to add your name as an exception for this linter.'
+---
+info: Text: `Authors`
+Range: (140, 147)
+Message: 'We are aware that standardizing names is hard (https:||www.kalzumeus.com|2010|06|17|falsehoods-programmers-believe-about-names|). We are happy to add your name as an exception to the linter, though!'
+-/
+#guard_msgs in
+#check_copyright
+"/-
+Copyright (c) 2024 Damiano Testa, another Name. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Name LastName, Another name, Name van LastName
 -/
 "

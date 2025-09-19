@@ -109,6 +109,49 @@ def toSyntax (s pattern : String) (offset : String.Pos := 0) : Syntax :=
   let fin := (((s.splitOn pattern).getD 0 "") ++ pattern).endPos + offset
   mkAtomFrom (.ofRange ⟨beg, fin⟩) pattern
 
+/--
+`fullNameExceptions` are exceptions to the very crude standardization of names that the linter uses.
+-/
+abbrev fullNameExceptions : Std.HashSet String := {}
+
+/--
+We split `authors` on `, ` and check that each resulting "author" is identified by a string
+containing at least one internal space and such that the first and last word are capitalized.
+We allow names contained in `fullNameExceptions` to bypass these checks.
+
+The `line` and `offset` inputs are used to compute the position information of the `Syntax`,
+in the same way as `authorsLineChecks`.
+-/
+def checkNames (line authors : String) (offset : String.Pos) : Array (Syntax × String) := Id.run do
+  let authors := authors.splitOn ", "
+  let mut authorCheck := #[]
+  for author in authors do
+    if author ∈ fullNameExceptions then
+      continue
+    let names := author.splitOn " "
+    if names.length < 2 then
+      authorCheck := authorCheck.push (toSyntax line author offset,
+        s!"Each author should be identified by their full name. If '{author}' is your full name, \
+          please ask to add your name as an exception for this linter.")
+    else
+      let first := names[0]!
+      if !(first.get 0).isUpper then
+        authorCheck := authorCheck.push (toSyntax line first offset,
+          s!"First names such as '{first}' should start with a capital letter. \
+          If '{first}' is your first name, \
+          please ask to add your name as an exception for this linter.")
+      let last := names.getLast!
+      if !(last.get 0).isUpper then
+        authorCheck := authorCheck.push (toSyntax line last offset,
+          s!"Last names such as '{last}' should start with a capital letter. \
+          If '{last}' is your last name, \
+          please ask to add your name as an exception for this linter.")
+  if !authorCheck.isEmpty then
+    return authorCheck.push  (toSyntax line "Authors" offset,
+        s!"We are aware that standardizing names is hard (https://www.kalzumeus.com/2010/06/17/falsehoods-programmers-believe-about-names/). \
+        We are happy to add your name as an exception to the linter, though!")
+  else return authorCheck
+
 /-- Return if `line` looks like a correct authors line in a copyright header.
 
 The `offset` input is used to shift the position information of the `Syntax` that the command
@@ -134,7 +177,10 @@ def authorsLineChecks (line : String) (offset : String.Pos) : Array (Syntax × S
     stxs := stxs.push
       (toSyntax line "." offset,
        s!"Please, do not end the authors' line with a period.")
-  return stxs
+  -- If there are no previous exceptions, then we try to validate the names.
+  if !stxs.isEmpty then
+    return stxs
+  return checkNames line (line.drop "Authors: ".length) offset
 
 /-- The main function to validate the copyright string.
 The input is the copyright string, the output is an array of `Syntax × String` encoding:
