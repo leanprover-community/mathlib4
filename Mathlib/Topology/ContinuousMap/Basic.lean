@@ -232,19 +232,17 @@ lemma coe_inr : ⇑(inr : C(Y, X ⊕ Y)) = Sum.inr := rfl
 /-- A continuous map from a sum can be defined by its action on the summands.
 This is `Continuous.sumElim` bundled into a continuous map. -/
 @[simps]
-def sum {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+def sumElim {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
     (f : C(X, Z)) (g : C(Y, Z)) : C(X ⊕ Y, Z) where
   toFun := fun x ↦ Sum.elim f.toFun g.toFun x
   continuous_toFun := Continuous.sumElim f.continuous g.continuous
 
 @[simp]
-lemma sum_comp_inl {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-    (f : C(X, Z)) (g : C(Y, Z)) : (sum f g) ∘ Sum.inl = f := by
+lemma sumElim_comp_inl (f : C(X, Z)) (g : C(Y, Z)) : (sumElim f g) ∘ Sum.inl = f := by
   ext x; simp
 
 @[simp]
-lemma sum_comp_inr {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-    (f : C(X, Z)) (g : C(Y, Z)) : (sum f g) ∘ Sum.inr = g := by
+lemma sumElim_comp_inr (f : C(X, Z)) (g : C(Y, Z)) : (sumElim f g) ∘ Sum.inr = g := by
   ext x; simp
 
 
