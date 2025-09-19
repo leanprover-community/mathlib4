@@ -681,7 +681,7 @@ theorem smul_eq_intCast {R} [Ring R] {a' b c : R} {a : ℤ} (_ : ((a : ℤ) : R)
 polynomial expressions.
 
 * `a • b = a * b` if `α = ℤ`
-* `a • b = ↑a * b` otherwise
+* `a • b = a' * b` otherwise, where `a'` is `↑a` with the coercion pushed as deep as possible.
 -/
 def evalZSMul {a : Q(ℤ)} {b : Q($α)} (rα : Q(Ring $α)) (va : ExSum sℤ a) (vb : ExSum sα b) :
     AtomM (Result (ExSum sα) q($a • $b)) := do
