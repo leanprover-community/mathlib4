@@ -691,13 +691,13 @@ theorem _root_.Matrix.PosSemidef.posDef_iff_isUnit [DecidableEq n] {x : Matrix n
   rw [← map_eq_zero_iff (f := (yᴴ * y).mulVecLin) (mulVec_injective_iff_isUnit.mpr h),
     mulVecLin_apply, ← mulVec_mulVec, hv, mulVec_zero]
 
-variable [DecidableEq n]
-
 theorem commute_iff {A B : Matrix n n 𝕜} (hA : A.PosDef) (hB : B.PosDef) :
     Commute A B ↔ (A * B).PosDef := by
   classical
   rw [hA.posSemidef.commute_iff hB.posSemidef]
   exact ⟨fun h => h.posDef_iff_isUnit.mpr <| hA.isUnit.mul hB.isUnit, fun h => h.posSemidef⟩
+
+variable [DecidableEq n]
 
 theorem _root_.Matrix.IsUnit.posDef_conjugate_iff' {x U : Matrix n n R} (hU : IsUnit U) :
     PosDef (star U * x * U) ↔ x.PosDef := by
