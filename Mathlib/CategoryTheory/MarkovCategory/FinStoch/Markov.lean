@@ -18,7 +18,8 @@ FinStoch forms a Markov category where discard is natural for all morphisms.
 
 ## Implementation notes
 
-Discard naturality follows from probability normalization: all stochastic matrices have row sums equal to 1.
+Discard naturality follows from probability normalization: all stochastic matrices have row sums
+equal to 1.
 
 ## Tags
 
@@ -62,8 +63,27 @@ theorem copy_not_natural : ∃ (X Y : FinStoch) (f : X ⟶ Y),
     rw [h]
   simp only [CategoryStruct.comp, StochasticMatrix.comp, ComonObj.comul, copy,
              MonoidalCategoryStruct.tensorHom, StochasticMatrix.tensor] at this
+  -- Simplify the left side first
+  have left_zero : (∑ x, f.toMatrix () x * if x = true ∧ x = false then 1 else 0) = 0 := by
+    simp only [Finset.sum_eq_zero_iff]
+    intro x _
+    simp only [mul_ite, mul_one, mul_zero]
+    -- The condition x = true ∧ x = false is never true
+    simp only [ite_eq_right_iff]
+    intro h
+    simp_all only [one_div, instTensorUnit_comul, Fintype.univ_bool, Bool.eq_true_and_eq_false_self,
+      ↓reduceIte, mul_zero, Finset.sum_const_zero, and_self, Finset.mem_insert,
+      Finset.mem_singleton, Bool.true_eq_false, or_false, X, Y, f]
   -- Left: f then copy gives 0 (can't be in two different states)
   -- Right: copy then f⊗f gives 1/4 (independent coin flips)
-  sorry -- Proof details
+  rw [left_zero] at this
+    -- If the right side has any non-zero terms, we get contradiction
+  -- For example, if the sum includes a term where j₁ = j₂ = ()
+  have right_nonzero : (∑ x, (match x with | (j₁, j₂) => if () = j₁ ∧ () = j₂ then 1 else 0) *
+    (f.toMatrix x.1 true * f.toMatrix x.2 false)) ≠ 0 := by
+    -- Show there's at least one non-zero term
+    norm_num
+  -- Contradiction: 0 ≠ 0
+  exact right_nonzero this.symm
 
 end CategoryTheory.MarkovCategory
