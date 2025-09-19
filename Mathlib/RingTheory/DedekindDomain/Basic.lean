@@ -155,6 +155,7 @@ instance (priority := 100) IsPrincipalIdealRing.isDedekindDomain
   { PrincipalIdealRing.isNoetherianRing, Ring.DimensionLEOne.principal_ideal_ring A,
     UniqueFactorizationMonoid.instIsIntegrallyClosed with }
 
+variable {R} in
 theorem IsLocalRing.primesOver_eq [IsLocalRing A] [IsDedekindDomain A] [Algebra R A]
     [FaithfulSMul R A] [Module.Finite R A] {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
     Ideal.primesOver p A = {IsLocalRing.maximalIdeal A} := by

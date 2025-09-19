@@ -1011,11 +1011,11 @@ theorem coe_primesOverFinset : primesOverFinset p B = primesOver p B := by
     (fun ⟨hPp, h⟩ => ⟨hPp, ⟨hpm.eq_of_le (comap_ne_top _ hPp.ne_top) (le_comap_of_map_le h)⟩⟩)
     (fun ⟨hPp, h⟩ => ⟨hPp, map_le_of_le_comap h.1.le⟩)
 
-variable {R : Type*} [CommRing R] (S : Type*) [CommRing S] [Algebra R S] {p : Ideal R} in
-theorem IsLocalRing.primesOverFinset_eq [IsLocalRing S] [IsDedekindDomain S]
-    [FaithfulSMul R S] [Module.Finite R S] [p.IsMaximal] (hp0 : p ≠ ⊥) :
-    primesOverFinset p S = {IsLocalRing.maximalIdeal S} := by
-  rw [← Finset.coe_eq_singleton, coe_primesOverFinset hp0, IsLocalRing.primesOver_eq S hp0]
+variable {R} (A) in
+theorem IsLocalRing.primesOverFinset_eq [IsLocalRing A] [IsDedekindDomain A]
+    [Algebra R A] [FaithfulSMul R A] [Module.Finite R A] {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
+    primesOverFinset p A = {IsLocalRing.maximalIdeal A} := by
+  rw [← Finset.coe_eq_singleton, coe_primesOverFinset hp0, IsLocalRing.primesOver_eq A hp0]
 
 variable (p) [Algebra.IsIntegral A B]
 
