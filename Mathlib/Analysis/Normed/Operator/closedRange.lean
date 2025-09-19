@@ -9,6 +9,13 @@ import Mathlib.Analysis.Normed.Operator.Banach
 import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 
+/-!
+# closed range theorem
+
+This file contains the closed range theorem
+reference : [Rudin, *Functional Analysis* (Theorem 4.12)][rudin1991]
+-/
+
 open Metric
 
 lemma p12 {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [InnerProductSpace ℝ α]
