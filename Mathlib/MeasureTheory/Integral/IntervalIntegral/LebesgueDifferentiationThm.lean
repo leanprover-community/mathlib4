@@ -18,8 +18,8 @@ open MeasureTheory Set Filter Function IsUnifLocDoublingMeasure
 open scoped Topology
 
 /-- The interval version of the *Lebesgue Differentiation Theorem*: if `f : ℝ → ℝ` is locally
-integrable and `c : ℝ`, then for almost every `x`, the derivative of `∫ (t : ℝ) in c..x, f t` at `x`
-is equal to `f x`. -/
+integrable and `c : ℝ`, then for almost every `x`, the derivative of `∫ (t : ℝ) in c..x, f t` at
+`x` is equal to `f x`. -/
 theorem LocallyIntegrable.ae_eq_deriv_integral {f : ℝ → ℝ} (hf : LocallyIntegrable f volume)
     (c : ℝ) :
     ∀ᵐ x, HasDerivAt (fun x => ∫ (t : ℝ) in c..x, f t) (f x) x := by
