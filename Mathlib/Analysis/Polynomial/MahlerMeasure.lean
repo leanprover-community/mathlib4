@@ -34,10 +34,10 @@ open Real
 
 /-- The logarithmic Mahler measure of a polynomial `p` defined as
 `(2 * π)⁻¹ * ∫ x ∈ (0, 2 * π), log ‖p (e ^ (i * x))‖` -/
-noncomputable def logMahlerMeasure (p : ℂ[X]) := circleAverage (fun x ↦ log ‖eval x p‖) 0 1
+noncomputable def logMahlerMeasure (p : ℂ[X]) : ℝ := circleAverage (fun x ↦ log ‖eval x p‖) 0 1
 
-theorem logMahlerMeasure_def (p : ℂ[X]) : p.logMahlerMeasure =
-    circleAverage (fun x ↦ log ‖eval x p‖) 0 1 := rfl
+theorem logMahlerMeasure_def (p : ℂ[X]) :
+    p.logMahlerMeasure = circleAverage (fun x ↦ log ‖eval x p‖) 0 1 := rfl
 
 @[simp]
 theorem logMahlerMeasure_zero : (0 : ℂ[X]).logMahlerMeasure = 0 := by
@@ -94,7 +94,7 @@ theorem mahlerMeasure_eq_zero_iff (p : ℂ[X]) : p.mahlerMeasure = 0 ↔ p = 0 :
   contrapose
   exact fun h ↦ by simp [mahlerMeasure_def_of_ne_zero h]
 
-private lemma mahlerMeasure_integrable (p : ℂ[X]) :
+lemma intervalIntegrable_mahlerMeasure (p : ℂ[X]) :
     IntervalIntegrable (fun x ↦ log ‖p.eval (circleMap 0 1 x)‖) MeasureTheory.volume 0 (2 * π) := by
   rw [← circleIntegrable_def fun z ↦ log ‖p.eval z‖]
   exact circleIntegrable_log_norm_meromorphicOn
