@@ -281,8 +281,7 @@ theorem map_proj (cond : LEComap f A B) (x : X) : map f cond (A.proj x) = B.proj
 @[simp]
 theorem map_id : map _ (leComap_id A) = id := by ext ⟨⟩; rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: figure out why `simpNF` says this is a bad `@[simp]` lemma
--- See https://github.com/leanprover-community/batteries/issues/365
+/- This can't be a `@[simp]` lemma since `h1` and `h2` can't be found by unification in a Prop. -/
 theorem map_comp (h1 : LEComap g B C) (h2 : LEComap f A B) :
     map (g.comp f) (h1.comp h2) = map g h1 ∘ map f h2 := by
   ext ⟨⟩

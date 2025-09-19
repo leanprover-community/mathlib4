@@ -63,7 +63,7 @@ private theorem cyclotomic_neg_one_pos {n : ℕ} (hn : 2 < n) {R}
 theorem cyclotomic_pos {n : ℕ} (hn : 2 < n) {R}
     [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] (x : R) :
     0 < eval x (cyclotomic n R) := by
-  induction' n using Nat.strong_induction_on with n ih
+  induction n using Nat.strong_induction_on with | _ n ih
   have hn' : 0 < n := pos_of_gt hn
   have hn'' : 1 < n := one_lt_two.trans hn
   have := prod_cyclotomic_eq_geom_sum hn' R

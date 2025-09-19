@@ -197,7 +197,7 @@ omit [Fintype n] in
 theorem Nondegenerate.smul_iff [Finite n] {A : Type*} [CommRing A] [IsDomain A]
     {M : Matrix n n A} {t : A} (h : t ≠ 0) :
     (t • M).Nondegenerate ↔ M.Nondegenerate := by
-  simp_rw [Nondegenerate, smul_mulVec_assoc, dotProduct_smul]
+  simp_rw [Nondegenerate, smul_mulVec, dotProduct_smul]
   refine ⟨fun hM v hv ↦ hM v fun w ↦ ?_, fun hM v hv ↦ hM v fun w ↦ ?_⟩
   · simp [hv]
   · exact (mul_eq_zero_iff_left h).mp <| hv w
@@ -222,7 +222,7 @@ lemma det_ne_zero_of_sum_col_pos [DecidableEq n]
     obtain ⟨v, ⟨h_vnz, h_vA⟩⟩ := Matrix.exists_vecMul_eq_zero_iff.mpr h2
     wlog h_sup : 0 < Finset.sup' Finset.univ Finset.univ_nonempty v
     · refine this h1 inferInstance h2 (-1 • v) (by simp [*]) ?_ ?_
-      · rw [Matrix.vecMul_smul, h_vA, smul_zero]
+      · rw [Matrix.smul_vecMul, h_vA, smul_zero]
       · obtain ⟨i, hi⟩ := Function.ne_iff.mp h_vnz
         simp_rw [Finset.lt_sup'_iff, Finset.mem_univ, true_and] at h_sup ⊢
         simp_rw [not_exists, not_lt] at h_sup
@@ -231,7 +231,7 @@ lemma det_ne_zero_of_sum_col_pos [DecidableEq n]
         exact Ne.lt_of_le hi (h_sup i)
     · obtain ⟨j₀, -, h_j₀⟩ := Finset.exists_mem_eq_sup' Finset.univ_nonempty v
       refine ⟨j₀, ?_⟩
-      rw [← mul_le_mul_left (h_j₀ ▸ h_sup), Finset.mul_sum, mul_zero]
+      rw [← mul_le_mul_iff_right₀ (h_j₀ ▸ h_sup), Finset.mul_sum, mul_zero]
       rw [show 0 = ∑ i, v i * A i j₀ from (congrFun h_vA j₀).symm]
       refine Finset.sum_le_sum (fun i hi => ?_)
       by_cases h : i = j₀

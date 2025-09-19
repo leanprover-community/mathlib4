@@ -43,14 +43,12 @@ theorem coeff_add (p q : R[X]) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q
 @[simp]
 theorem coeff_smul [SMulZeroClass S R] (r : S) (p : R[X]) (n : ℕ) :
     coeff (r • p) n = r • coeff p n := by
-  rcases p with ⟨⟩
-  simp_rw [← ofFinsupp_smul, coeff]
-  exact Finsupp.smul_apply _ _ _
+  rfl
 
 theorem support_smul [SMulZeroClass S R] (r : S) (p : R[X]) :
     support (r • p) ⊆ support p := by
   intro i hi
-  simp? [mem_support_iff] at hi ⊢ says simp only [mem_support_iff, coeff_smul, ne_eq] at hi ⊢
+  rw [mem_support_iff] at hi ⊢
   contrapose! hi
   simp [hi]
 
@@ -128,6 +126,9 @@ def constantCoeff : R[X] →+* R where
   map_mul' := mul_coeff_zero
   map_zero' := coeff_zero 0
   map_add' p q := coeff_add p q 0
+
+lemma constantCoeff_surjective : Function.Surjective (constantCoeff (R := R)) :=
+  fun x ↦ ⟨C x, by simp⟩
 
 theorem isUnit_C {x : R} : IsUnit (C x) ↔ IsUnit x :=
   ⟨fun h => (congr_arg IsUnit coeff_C_zero).mp (h.map <| @constantCoeff R _), fun h => h.map C⟩

@@ -7,6 +7,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.Star
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
@@ -46,9 +47,15 @@ instance [TopologicalSpace R] : TopologicalSpace (Matrix m n R) :=
 instance [TopologicalSpace R] [T2Space R] : T2Space (Matrix m n R) :=
   Pi.t2Space
 
+open Matrix
+
+instance [TopologicalSpace R] [DecidableEq n] [Fintype n] [CommRing R] :
+    TopologicalSpace (SpecialLinearGroup n R) :=
+  instTopologicalSpaceSubtype
+
 section Set
 
-theorem IsOpen.matrix [Fintype m] [Fintype n]
+theorem IsOpen.matrix [Finite m] [Finite n]
     [TopologicalSpace R] {S : Set R} (hS : IsOpen S) :
     IsOpen (S.matrix : Set (Matrix m n R)) :=
   Set.matrix_eq_pi ▸

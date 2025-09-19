@@ -290,8 +290,7 @@ section
 open Hom
 
 /-- Auxiliary definition for `FreeMonoidalCategory.project`. -/
--- Porting note: here `@[simp]` generates a panic in
--- _private.Lean.Meta.Match.MatchEqs.0.Lean.Meta.Match.SimpH.substRHS
+@[simp]
 def projectMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (projectObj f X ⟶ projectObj f Y)
   | _, _, Hom.id _ => 𝟙 _
   | _, _, α_hom _ _ _ => (α_ _ _ _).hom
@@ -305,8 +304,8 @@ def projectMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (projectObj f X ⟶ projec
   | _, _, Hom.whiskerRight p X => projectMapAux p ▷ projectObj f X
   | _, _, Hom.tensor f g => projectMapAux f ⊗ₘ projectMapAux g
 
--- Porting note: this declaration generates the same panic.
 /-- Auxiliary definition for `FreeMonoidalCategory.project`. -/
+@[simp]
 def projectMap (X Y : F C) : (X ⟶ Y) → (projectObj f X ⟶ projectObj f Y) :=
   Quotient.lift (projectMapAux f) <| by
     intro f g h
@@ -367,7 +366,6 @@ instance : (project f).Monoidal :=
       μIso := fun _ _ ↦ Iso.refl _
   -- Porting note: `μIso_hom_natural_left` was proved in mathlib3 by tidy, using induction.
   -- We probably don't expect `cat_disch` to handle this yet, see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Aesop.20and.20cases
-  -- In any case I don't understand why we need to specify `using Quotient.recOn`.
       μIso_hom_natural_left := fun f _ => by
         induction f using Quotient.recOn
         all_goals aesop

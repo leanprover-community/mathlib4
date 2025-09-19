@@ -13,7 +13,7 @@ import Mathlib.Algebra.Order.Group.Lattice
 The absolute value of an element in a group which is also a lattice is its supremum with its
 negation. This generalizes the usual absolute value on real numbers (`|x| = max x (-x)`).
 
-## Notations
+## Notation
 
 - `|a|`: The *absolute value* of an element `a` of an additive lattice ordered group
 - `|a|ₘ`: The *absolute value* of an element `a` of a multiplicative lattice ordered group
@@ -30,7 +30,7 @@ section Group
 variable [Group α] {a b : α}
 
 /-- `mabs a`, denoted `|a|ₘ`, is the absolute value of `a`. -/
-@[to_additive "`abs a`, denoted `|a|`, is the absolute value of `a`"]
+@[to_additive /-- `abs a`, denoted `|a|`, is the absolute value of `a` -/]
 def mabs (a : α) : α := a ⊔ a⁻¹
 
 @[inherit_doc mabs]
@@ -116,7 +116,7 @@ variable [CommGroup α] [MulLeftMono α]
 
 -- Banasiak Proposition 2.12, Zaanen 2nd lecture
 /-- The absolute value satisfies the triangle inequality. -/
-@[to_additive "The absolute value satisfies the triangle inequality."]
+@[to_additive /-- The absolute value satisfies the triangle inequality. -/]
 lemma mabs_mul_le (a b : α) : |a * b|ₘ ≤ |a|ₘ * |b|ₘ := by
   apply sup_le
   · exact mul_le_mul' (le_mabs_self a) (le_mabs_self b)

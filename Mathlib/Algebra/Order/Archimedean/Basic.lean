@@ -91,8 +91,8 @@ variable [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [MulArchimedean G]
 
 /-- An archimedean decidable linearly ordered `CommGroup` has a version of the floor: for
 `a > 1`, any `g` in the group lies between some two consecutive powers of `a`. -/
-@[to_additive "An archimedean decidable linearly ordered `AddCommGroup` has a version of the floor:
-for `a > 0`, any `g` in the group lies between some two consecutive multiples of `a`. -/"]
+@[to_additive /-- An archimedean decidable linearly ordered `AddCommGroup` has a version of the
+floor: for `a > 0`, any `g` in the group lies between some two consecutive multiples of `a`. -/]
 theorem existsUnique_zpow_near_of_one_lt {a : G} (ha : 1 < a) (g : G) :
     ∃! k : ℤ, a ^ k ≤ g ∧ g < a ^ (k + 1) := by
   let s : Set ℤ := { n : ℤ | a ^ n ≤ g }
@@ -407,20 +407,21 @@ theorem exists_rat_lt (x : K) : ∃ q : ℚ, (q : K) < x :=
   let ⟨n, h⟩ := exists_int_lt x
   ⟨n, by rwa [Rat.cast_intCast]⟩
 
-theorem exists_rat_btwn {x y : K} (h : x < y) : ∃ q : ℚ, x < q ∧ (q : K) < y := by
-  obtain ⟨n, nh⟩ := exists_nat_gt (y - x)⁻¹
+theorem exists_div_btwn {x y : K} {n : ℕ} (h : x < y) (nh : (y - x)⁻¹ < n) :
+    ∃ z : ℤ, x < (z : K) / n ∧ (z : K) / n < y := by
   obtain ⟨z, zh⟩ := exists_floor (x * n)
-  refine ⟨(z + 1 : ℤ) / n, ?_⟩
+  refine ⟨z + 1, ?_⟩
   have n0' := (inv_pos.2 (sub_pos.2 h)).trans nh
-  have n0 := Nat.cast_pos.1 n0'
-  rw [Rat.cast_div_of_ne_zero, Rat.cast_natCast, Rat.cast_intCast, div_lt_iff₀ n0']
-  · refine ⟨(lt_div_iff₀ n0').2 <| (lt_iff_lt_of_le_iff_le (zh _)).1 (lt_add_one _), ?_⟩
-    rw [Int.cast_add, Int.cast_one]
-    refine lt_of_le_of_lt (add_le_add_right ((zh _).1 le_rfl) _) ?_
-    rwa [← lt_sub_iff_add_lt', ← sub_mul, ← div_lt_iff₀' (sub_pos.2 h), one_div]
-  · rw [Rat.den_intCast, Nat.cast_one]
-    exact one_ne_zero
-  · positivity
+  rw [div_lt_iff₀ n0']
+  refine ⟨(lt_div_iff₀ n0').2 <| (lt_iff_lt_of_le_iff_le (zh _)).1 (lt_add_one _), ?_⟩
+  rw [Int.cast_add, Int.cast_one]
+  grw [(zh _).1 le_rfl]
+  rwa [← lt_sub_iff_add_lt', ← sub_mul, ← div_lt_iff₀' (sub_pos.2 h), one_div]
+
+theorem exists_rat_btwn {x y : K} (h : x < y) : ∃ q : ℚ, x < q ∧ q < y := by
+  obtain ⟨n, nh⟩ := exists_nat_gt (y - x)⁻¹
+  obtain ⟨z, zh, zh'⟩ := exists_div_btwn h nh
+  refine ⟨(z : ℚ) / n, ?_, ?_⟩ <;> simpa
 
 theorem exists_rat_mem_uIoo {x y : K} (h : x ≠ y) : ∃ q : ℚ, ↑q ∈ Set.uIoo x y :=
   exists_rat_btwn (min_lt_max.mpr h)

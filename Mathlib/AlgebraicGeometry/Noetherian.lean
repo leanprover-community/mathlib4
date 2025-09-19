@@ -60,7 +60,7 @@ variable {R : Type u} [CommRing R] (S : Finset R) (hS : Ideal.span (α := R) S =
 
 include hS hN in
 /-- Let `R` be a ring, and `f i` a finite collection of elements of `R` generating the unit ideal.
-If the localization of `R` at each `f i` is noetherian, so is `R`.
+If the localization of `R` at each `f i` is Noetherian, so is `R`.
 
 We follow the proof given in [Har77], Proposition II.3.2 -/
 theorem isNoetherianRing_of_away : IsNoetherianRing R := by
@@ -113,7 +113,7 @@ theorem isLocallyNoetherian_of_affine_cover {ι} {S : ι → X.affineOpens}
   | hU => exact hS' _
 
 /-- A scheme is locally Noetherian if and only if it is covered by affine opens whose sections
-are noetherian rings.
+are Noetherian rings.
 
 See [Har77], Proposition II.3.2. -/
 theorem isLocallyNoetherian_iff_of_iSup_eq_top {ι} {S : ι → X.affineOpens}
@@ -162,8 +162,8 @@ lemma isLocallyNoetherian_of_isOpenImmersion {Y : Scheme} (f : X ⟶ Y) [IsOpenI
       Set.inter_eq_right, Set.image_subset_iff, Set.preimage_range]
     exact Set.subset_univ _
 
-/-- If `𝒰` is an open cover of a scheme `X`, then `X` is locally noetherian if and only if
-`𝒰.obj i` are all locally noetherian. -/
+/-- If `𝒰` is an open cover of a scheme `X`, then `X` is locally Noetherian if and only if
+`𝒰.obj i` are all locally Noetherian. -/
 theorem isLocallyNoetherian_iff_openCover (𝒰 : Scheme.OpenCover X) :
     IsLocallyNoetherian X ↔ ∀ (i : 𝒰.J), IsLocallyNoetherian (𝒰.obj i) := by
   constructor
@@ -175,7 +175,7 @@ theorem isLocallyNoetherian_iff_openCover (𝒰 : Scheme.OpenCover X) :
       (IsOpenImmersion.ΓIsoTop (Scheme.Cover.map _ i.2)).symm.commRingCatIsoToRingEquiv
       (IsLocallyNoetherian.component_noetherian ⟨_, isAffineOpen_opensRange _⟩)
 
-/-- If `R` is a noetherian ring, `Spec R` is a noetherian topological space. -/
+/-- If `R` is a Noetherian ring, `Spec R` is a Noetherian topological space. -/
 instance {R : CommRingCat} [IsNoetherianRing R] :
     NoetherianSpace (Spec R) := by
   convert PrimeSpectrum.instNoetherianSpace (R := R)
@@ -229,7 +229,7 @@ instance (priority := 100) IsLocallyNoetherian.quasiSeparatedSpace [IsLocallyNoe
 class IsNoetherian (X : Scheme) : Prop extends IsLocallyNoetherian X, CompactSpace X
 
 /-- A scheme is Noetherian if and only if it is covered by finitely many affine opens whose
-sections are noetherian rings. -/
+sections are Noetherian rings. -/
 theorem isNoetherian_iff_of_finite_iSup_eq_top {ι} [Finite ι] {S : ι → X.affineOpens}
     (hS : (⨆ i, S i : X.Opens) = ⊤) :
     IsNoetherian X ↔ ∀ i, IsNoetherianRing Γ(X, S i) := by
