@@ -101,12 +101,14 @@ private lemma le_card_mul_inv_eq (hA : #(B * A) ≤ K * #A) (hx : x ∈ B⁻¹ *
     (2 - K) * #A ≤ #{ab ∈ A ×ˢ A | ab.1 * ab.2⁻¹ = x} := by
   simp only [mem_mul, mem_inv, exists_exists_and_eq_and] at hx
   obtain ⟨a, ha, b, hb, rfl⟩ := hx
+  rw [card_mul_inv_eq_convolution_inv]
   simpa [card_smul_inter_smul] using le_card_smul_inter_smul hA ha hb
 
 private lemma lt_card_mul_inv_eq (hA : #(B * A) < K * #A) (hx : x ∈ B⁻¹ * B) :
     (2 - K) * #A < #{ab ∈ A ×ˢ A | ab.1 * ab.2⁻¹ = x} := by
   simp only [mem_mul, mem_inv, exists_exists_and_eq_and] at hx
   obtain ⟨a, ha, b, hb, rfl⟩ := hx
+  rw [card_mul_inv_eq_convolution_inv]
   simpa [card_smul_inter_smul] using lt_card_smul_inter_smul hA ha hb
 
 private lemma mul_inv_eq_inv_mul_of_doubling_lt_two_aux (h : #(A * A) < 2 * #A) :
@@ -442,8 +444,8 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
   have K_pos : 0 < K := by positivity
   have hK₀ : 0 < K := by positivity
   have hKφ' : 0 < φ - K := by linarith
-  have hKψ' : 0 < K - ψ := by linarith [goldConj_neg]
-  have hK₂' : 0 < 2 - K := by linarith [gold_lt_two]
+  have hKψ' : 0 < K - ψ := by linarith [Real.goldenConj_neg]
+  have hK₂' : 0 < 2 - K := by linarith [Real.goldenRatio_lt_two]
   have const_pos : 0 < K * (2 - K) / ((φ - K) * (K - ψ)) := by positivity
   -- We dispatch the trivial case `A = ∅` separately.
   obtain rfl | A_nonempty := A.eq_empty_or_nonempty
@@ -476,9 +478,9 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
         have : (#S : ℝ) ≠ 0 := by positivity
         simp [this]
   -- Write `r(z)` the number of representations of `z ∈ S` as `x * y⁻¹` for `x, y ∈ A`.
-  let r z : ℕ := A.convolution A z
+  let r z : ℕ := A.convolution A⁻¹ z
   -- `r` is invariant under inverses.
-  have r_inv z : r z⁻¹ = r z := A.convolution_inv A z
+  have r_inv z : r z⁻¹ = r z := by simp [r, inv_inv]
   -- We show that every `z ∈ S` with at least `(K - 1)|A|` representations lies in `H`,
   -- and that such `z` make up a proportion of at least `(2 - K) / ((φ - K) * (K - ψ))` of `S`.
   calc
@@ -495,17 +497,18 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
     have ineq : #A * #A ≤ ((2 - K) * l + (K - 1) * #S) * #A := by
       calc
             (#A : ℝ) * #A
-        _ = #(A ×ˢ A) := by simp
+        _ = #A * #A⁻¹ := by simp
+        _ = #(A ×ˢ A⁻¹) := by simp
         _ = ∑ z ∈ S, ↑(r z) := by
           norm_cast
           exact card_eq_sum_card_fiberwise fun xy hxy ↦
-            mul_mem_mul (mem_product.mp hxy).1 (inv_mem_inv (mem_product.mp hxy).2)
+            mul_mem_mul (mem_product.mp hxy).1 (mem_product.mp hxy).2
         _ = ∑ z ∈ S with (K - 1) * #A < r z, ↑(r z) + ∑ z ∈ S with r z ≤ (K - 1) * #A, ↑(r z) := by
           norm_cast; simp_rw [← not_lt, sum_filter_add_sum_filter_not]
         _ ≤ ∑ z ∈ S with (K - 1) * #A < r z, ↑(#A)
           + ∑ z ∈ S with r z ≤ (K - 1) * #A, (K - 1) * #A := by
           gcongr with z hz z hz
-          · exact A.convolution_le_card_left A z
+          · exact convolution_le_card_left
           · simp_all
         _ = l * #A + (#S - l) * (K - 1) * #A := by
           simp [hk, ← not_lt, mul_assoc,
@@ -525,8 +528,8 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
           (φ - K) * (K - ψ) / ((2 - K) * K) * #S
       _ = (φ - K) * (K - ψ) * #S / ((2 - K) * K) := div_mul_eq_mul_div ..
       _ ≤ (2 - K) * K * l / ((2 - K) * K) := by
-        have := gold_mul_goldConj
-        have := gold_add_goldConj
+        have := Real.goldenRatio_mul_goldenConj
+        have := Real.goldenRatio_add_goldenConj
         rw [show (φ - K) * (K - ψ) = 1 - (K - 1) * K by grind]
         gcongr ?_ / _
         linarith [ineq]
@@ -539,10 +542,11 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
     rw [mem_stabilizer_finset']
     rintro w hw
     -- Since `w ∈ S` and `|A⁻¹ * A| ≤ K|A|`, we know that `r(w) ≥ (2 - K)|A|`.
-    have hrw : (2 - K) * #A ≤ r w := le_card_mul_inv_eq hA₁ (by simpa)
+    have hrw : (2 - K) * #A ≤ r w := by
+      simpa [card_mul_inv_eq_convolution_inv] using le_card_mul_inv_eq hA₁ (by simpa)
     -- But also `r(z⁻¹) = r(z) > (K - 1)|A|`.
     rw [← r_inv] at hrz
-    simp only [r, convolution, ← card_inter_smul] at hrz hrw
+    simp only [r, ← card_inter_smul] at hrz hrw
     -- By inclusion-exclusion, we get that `(z⁻¹ •> A) ∩ (w •> A)` is non-empty.
     have : (0 : ℝ) < #((z⁻¹ •> A) ∩ (w •> A)) := by
       have : (#((A ∩ z⁻¹ •> A) ∩ (A ∩ w •> A)) : ℝ) ≤ #(z⁻¹ •> A ∩ w •> A) := by
