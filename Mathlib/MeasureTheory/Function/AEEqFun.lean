@@ -206,7 +206,7 @@ variable [TopologicalSpace γ] [MeasurableSpace β] {ν : MeasureTheory.Measure 
 
 open MeasureTheory.Measure (QuasiMeasurePreserving)
 
-/-- Composition of an almost everywhere equal function and a quasi measure preserving function.
+/-- Composition of an almost everywhere equal function and a quasi-measure-preserving function.
 
 See also `AEEqFun.compMeasurePreserving`. -/
 def compQuasiMeasurePreserving (g : β →ₘ[ν] γ) (f : α → β) (hf : QuasiMeasurePreserving f μ ν) :
@@ -237,7 +237,7 @@ section compMeasurePreserving
 variable [TopologicalSpace γ] [MeasurableSpace β] {ν : MeasureTheory.Measure β}
   {f : α → β} {g : β → γ}
 
-/-- Composition of an almost everywhere equal function and a quasi measure preserving function.
+/-- Composition of an almost everywhere equal function and a quasi-measure-preserving function.
 
 This is an important special case of `AEEqFun.compQuasiMeasurePreserving`. We use a separate
 definition so that lemmas that need `f` to be measure preserving can be `@[simp]` lemmas. -/
