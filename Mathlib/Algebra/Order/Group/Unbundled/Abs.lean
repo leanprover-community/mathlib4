@@ -45,7 +45,7 @@ Tries to add discretionary parentheses in unparsable cases. -/
 def mabs.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $a) =>
     match a with
-    | `(|$_|ₘ) | `(-$_) => `(|($a)|ₘ)
+    | `(|$_|) | `(|$_|ₘ) | `(-$_) => `(|($a)|ₘ)
     | _ => `(|$a|ₘ)
   | _ => throw ()
 
@@ -55,7 +55,7 @@ Tries to add discretionary parentheses in unparsable cases. -/
 def abs.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $a) =>
     match a with
-    | `(|$_|) | `(-$_) => `(|($a)|)
+    | `(|$_|) | `(|$_|ₘ) | `(-$_) => `(|($a)|)
     | _ => `(|$a|)
   | _ => throw ()
 
