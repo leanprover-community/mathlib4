@@ -12,6 +12,7 @@ import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.Algebra.Module.SpanRank
 import Mathlib.RingTheory.LocalRing.Module
 import Mathlib.RingTheory.Regular.AuslanderBuchsbaum
+import Mathlib.RingTheory.Regular.Ischebeck
 import Mathlib.RingTheory.RegularLocalRing.Basic
 /-!
 
@@ -656,6 +657,20 @@ theorem IsRegularLocalRing.of_maximalIdeal_hasProjectiveDimensionLE
     [IsLocalRing R] [IsNoetherianRing R] [Small.{v} R]
     (h : ∃ n, HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} (maximalIdeal R))) n) :
     IsRegularLocalRing R := by
+  classical
   rcases generate_by_regular h with ⟨rs, reg, span⟩
+  apply of_span_eq R rs.toFinset.toSet rs.toFinset.finite_toSet
+    (by simpa only [List.coe_toFinset] using span)
+  rw [Set.ncard_coe_finset rs.toFinset]
+  apply le_trans (Nat.cast_le.mpr rs.toFinset_card_le)
+  let _ : Module.Finite R (ModuleCat.of R (Shrink.{v, u} R)) :=
+    Module.Finite.equiv (Shrink.linearEquiv.{v} R R).symm
+  apply le_trans _ (depth_le_ringKrullDim (ModuleCat.of R (Shrink.{v, u} R)))
 
-  sorry
+  have : (rs.length : WithBot ℕ∞) = (rs.length : ℕ∞) := rfl
+  rw [IsLocalRing.depth_eq_sSup_length_regular, this, WithBot.coe_le_coe]
+  apply le_sSup
+  use rs, ((Shrink.linearEquiv.{v} R R).isRegular_congr rs).mpr reg
+  simp only [← span, exists_prop, and_true]
+  intro r hr
+  exact Ideal.subset_span hr
