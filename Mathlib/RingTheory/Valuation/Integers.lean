@@ -298,14 +298,14 @@ variable {R : Type u} {Γ₀ : Type v} [Ring R] [LinearOrderedCommGroupWithZero 
 variable (v : Valuation R Γ₀)
 local notation "𝓞" => v.integer
 
-/-- The submodule of over the valuation subring whose valuation is less than or equal to a
+/-- The `v.integer`-submodule of `R` of elements whose valuation is less than or equal to a
 certain value. -/
 def leSubmodule (γ : Γ₀) : Submodule 𝓞 R where
   __ := leAddSubgroup v γ
   smul_mem' r x h := by
     simpa [Subring.smul_def] using mul_le_of_le_one_of_le r.prop h
 
-/-- The submodule of over the valuation subring whose valuation is less than a certain unit. -/
+/-- The `v.integer`-submodule of `R` of elements whose valuation is less than a certain unit. -/
 def ltSubmodule (γ : Γ₀ˣ) : Submodule 𝓞 R where
   __ := ltAddSubgroup v γ
   smul_mem' r x h := by
