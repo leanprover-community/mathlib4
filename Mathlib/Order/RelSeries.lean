@@ -312,14 +312,18 @@ def append (p q : RelSeries r) (connect : p.last ~[r] q.head) : RelSeries r wher
 
 lemma append_apply_left (p q : RelSeries r) (connect : p.last ~[r] q.head)
     (i : Fin (p.length + 1)) :
-    p.append q connect ((i.castAdd (q.length + 1)).cast (by dsimp; omega)) = p i := by
+    p.append q connect
+      ((i.castAdd (q.length + 1)).cast (by dsimp; omega) : Fin ((p.append q connect).length + 1))
+        = p i := by
   delta append
   simp only [Function.comp_apply]
   convert Fin.append_left _ _ _
 
 lemma append_apply_right (p q : RelSeries r) (connect : p.last ~[r] q.head)
     (i : Fin (q.length + 1)) :
-    p.append q connect ((i.natAdd (p.length + 1)).cast (by dsimp; omega)) = q i := by
+    p.append q connect
+      ((i.natAdd (p.length + 1)).cast (by dsimp; omega) : Fin ((p.append q connect).length + 1))
+        = q i := by
   delta append
   simp only [Function.comp_apply]
   convert Fin.append_right _ _ _
