@@ -219,7 +219,7 @@ lemma smallGrothendieckTopology_eq_toGrothendieck_smallPretopology [P.HasOfPostc
 variable {P Q}
 
 lemma mem_toGrothendieck_smallPretopology (X : Q.Over ⊤ S) (R : Sieve X) :
-    R ∈ (S.smallPretopology P Q).toGrothendieck _ X ↔
+    R ∈ (S.smallPretopology P Q).toGrothendieck X ↔
       ∀ x : X.left, ∃ (Y : Q.Over ⊤ S) (f : Y ⟶ X) (y : Y.left),
         R f ∧ P f.left ∧ f.left.base y = x := by
   rw [Pretopology.mem_toGrothendieck]
