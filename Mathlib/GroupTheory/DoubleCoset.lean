@@ -292,13 +292,11 @@ theorem union_image_mk (H K : Subgroup G) :
 
 theorem union_image_mk_leftRel (H K : Subgroup G) :
     ⋃ (q : Quotient H K), Quot.mk (QuotientGroup.leftRel K) ''
-    (doubleCoset (Quotient.out q : G) H K) = Set.univ := by
-  exact (union_image_mk H K).1
+    (doubleCoset (Quotient.out q : G) H K) = Set.univ := (union_image_mk H K).1
 
 theorem union_image_mk_rightRel (H K : Subgroup G) :
     ⋃ (q : Quotient H K), Quot.mk (QuotientGroup.rightRel H) ''
-    (doubleCoset (Quotient.out q : G) H K) = Set.univ := by
-  exact (union_image_mk H K).2
+    (doubleCoset (Quotient.out q : G) H K) = Set.univ := (union_image_mk H K).2
 
 theorem union_finset_leftRel_cover (H K : Subgroup G)
     (t : Finset (Quotient H K)) (ht : Set.univ ⊆ ⋃ i ∈ t,
