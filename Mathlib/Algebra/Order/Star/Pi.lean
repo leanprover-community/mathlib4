@@ -11,7 +11,7 @@ import Mathlib.Algebra.Star.Pi
 # Pi-types of star-ordered rings
 -/
 
-variable {ι : Type*} [Fintype ι]
+variable {ι : Type*} [Finite ι]
   {A : ι → Type*} [Π i, PartialOrder (A i)] [Π i, NonUnitalSemiring (A i)]
   [Π i, StarRing (A i)] [Π i, StarOrderedRing (A i)]
 
