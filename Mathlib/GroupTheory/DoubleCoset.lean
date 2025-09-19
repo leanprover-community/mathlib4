@@ -329,9 +329,8 @@ theorem union_finset_rightRel_cover (H K : Subgroup G)
   refine (Set.ne_univ_iff_exists_notMem _).mpr ⟨Quot.mk (⇑(QuotientGroup.rightRel H)) x, ?_⟩
   simp only [Set.mem_iUnion, Set.mem_image, exists_prop, not_exists, not_and]
   intro y hy q hq
-  contrapose hx
-  simp only [Set.mem_iUnion, exists_prop, not_exists, not_and, not_forall, not_not]
-  simp only [not_not] at hx
+  contrapose! hx
+  simp only [Set.mem_iUnion, exists_prop]
   refine ⟨y, hy, ?_⟩
   rw [← doubleCoset_eq_of_mem hq]
   apply mem_doubleCoset.mpr
