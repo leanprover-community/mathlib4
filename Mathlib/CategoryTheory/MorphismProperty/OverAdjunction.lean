@@ -140,16 +140,30 @@ end Adjunction
 
 /-- A class of maps `P` that is stable under base change is also stable under pushforward
 if whenever pullbacks along `f` exist,
-the pullback functor `Over.pullback P ⊤ f` is a left adjoint -/
-class IsStableUnderPushforward [P.IsStableUnderBaseChange] : Prop where
+the pullback functor `Over.pullback P ⊤ f` is a left adjoint. -/
+class IsStableUnderPushforward : Prop extends P.IsStableUnderBaseChange where
   pullback_isLeftAdjoint {X Y : T} (f : X ⟶ Y) [∀ {W : T} (h : W ⟶ Y), HasPullback h f] :
   (Over.pullback P ⊤ f).IsLeftAdjoint
 
+/-- A chosen right adjoint to the pullback functor. -/
+noncomputable def Over.pushforward [P.IsStableUnderPushforward]
+    {X Y : T} (f : X ⟶ Y) [∀ {W : T} (h : W ⟶ Y), HasPullback h f] :
+    P.Over ⊤ X ⥤ P.Over ⊤ Y :=
+  have : (Over.pullback P ⊤ f).IsLeftAdjoint := IsStableUnderPushforward.pullback_isLeftAdjoint f
+  (Over.pullback P ⊤ f).rightAdjoint
+
 /-- A class of maps `P` that is stable under base change is also stable under pushforward
 if whenever pullbacks along `f` exist and `f` satisfies `P`,
-the pullback functor `Over.pullback P ⊤ f` is a left adjoint -/
-class IsClosedUnderPushforward [P.IsStableUnderBaseChange] : Prop where
-  pullback_isLeftAdjoint {X Y : T} (f : X ⟶ Y) (h : P f) [∀ {W : T} (h : W ⟶ Y), HasPullback h f] :
-  (Over.pullback P ⊤ f).IsLeftAdjoint
+the pullback functor `Over.pullback P ⊤ f` is a left adjoint. -/
+class IsClosedUnderPushforward : Prop extends P.IsStableUnderBaseChange where
+  pullback_isLeftAdjoint {X Y : T} (f : X ⟶ Y) (h : P f)
+  [∀ {W : T} (h : W ⟶ Y), HasPullback h f] : (Over.pullback P ⊤ f).IsLeftAdjoint
+
+/-- A chosen right adjoint to the pullback functor. -/
+noncomputable def Over.IsClosedUnderPushforward.pushforward [P.IsClosedUnderPushforward]
+    {X Y : T} (f : X ⟶ Y) (h : P f) [∀ {W : T} (h : W ⟶ Y), HasPullback h f] :
+    P.Over ⊤ X ⥤ P.Over ⊤ Y :=
+  have : (Over.pullback P ⊤ f).IsLeftAdjoint := IsClosedUnderPushforward.pullback_isLeftAdjoint f h
+  (Over.pullback P ⊤ f).rightAdjoint
 
 end CategoryTheory.MorphismProperty
