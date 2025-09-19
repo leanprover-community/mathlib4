@@ -74,6 +74,18 @@ lemma add {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) 
 lemma neg {f : PowerSeries R} (hf : IsRestricted c f) : IsRestricted c (-f) := by
   simpa [isRestricted_iff] using hf
 
+lemma smul {f : PowerSeries R} (hf : IsRestricted c f) (r : R) : IsRestricted c (r • f) := by
+  if h : r = 0 then (simpa [h] using zero c) else
+  simp_rw [isRestricted_iff, norm_mul, norm_pow, Real.norm_eq_abs, abs_norm] at ⊢ hf
+  intro ε _
+  obtain ⟨n, hn⟩ := hf (ε / ‖r‖) (by positivity)
+  refine ⟨n, fun N hN ↦ ?_⟩
+  calc _ ≤ ‖r‖ * ‖(coeff R N) f‖ * |c| ^ N :=
+        mul_le_mul_of_nonneg (norm_mul_le _ _) (by simp) (by simp) (by simp)
+       _ < ‖r‖ * (ε / ‖r‖) := by
+        rw [mul_assoc]; aesop
+       _ = ε := mul_div_cancel₀ _ (by aesop)
+
 
 /-- The set of `‖coeff R i f‖ * c ^ i` for a given power series `f` and parameter `c`. -/
 def convergenceSet (f : PowerSeries R) : Set ℝ := {‖coeff R i f‖ * c^i | i : ℕ}
