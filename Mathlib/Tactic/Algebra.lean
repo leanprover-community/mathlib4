@@ -494,7 +494,40 @@ def normalize (goal : MVarId) {u v : Lean.Level} (R : Q(Type u)) (A : Q(Type v))
   --   Tactic.pushGoals l
     -- NormNum.normNumAt g (← getSimpContext)
 
+/-- Infer from the expression what base ring the normalization should use.
+ TODO: Find a better way to do this. -/
+partial def inferBaseAux (e : Expr) :
+    OptionT MetaM <|  Σ u : Lean.Level, Q(Type u) := do
+  let .const n _ := (← withReducible <| whnf e).getAppFn | failure
+  IO.println s!"Inferring base of {← ppExpr e} with head constant {n}"
+  -- IO.println s!"{e}"
+  match_expr e with
+  | SMul.smul R _ _ _ _ =>
+    IO.println s!"Found ring {← ppExpr R} in smul"
+    return ←inferLevelQ R
+  | HSMul.hSMul R _ _ _ _ _ =>
+    IO.println f!"Found ring {← ppExpr R} in hsmul"
+    return ←inferLevelQ R
+  | Eq _ a b => (inferBaseAux a) <|> (inferBaseAux b)
+  | HAdd.hAdd _ _ _ _ a b => inferBaseAux a <|> inferBaseAux b
+  | Add.add _ _ _ a b => inferBaseAux a <|> inferBaseAux b
+  | HMul.hMul _ _ _ _ a b => inferBaseAux a <|> inferBaseAux b
+  | Mul.mul _ _ _ a b => inferBaseAux a <|> inferBaseAux b
+  | HSub.hSub _ _ _ _ a b => inferBaseAux a <|> inferBaseAux b
+  | Sub.sub _ _ _ a b => inferBaseAux a <|> inferBaseAux b
+  | HPow.hPow _ _ _ _ a _ => inferBaseAux a
+  /- Should it try to be clever here and return q(ℤ)
+    instead of q(ℕ) if there's negation or subtraction?
+    Maybe not... what if there's natural number subtraction. And if the desired ring doesn't
+    appear in an smul / algebraMap the user shouldn't be too surprised that the tactic failed. -/
+  | Neg.neg _ _ a => inferBaseAux a
+  | _ =>
+    IO.println s!"Could not match {← ppExpr e}"
+    failure
 
+def inferBase (e : Expr) :
+    MetaM <| Σ u : Lean.Level, Q(Type u) := do
+  return (← (inferBaseAux e).run).getD ⟨0, q(ℕ)⟩
 
 def isAtomOrDerivable (c : Ring.Cache sR) (e : Q($A)) : AtomM (Option (Option (Result (ExSum sAlg) e))) := do
   let els := try
@@ -528,8 +561,20 @@ def evalExpr {u : Lean.Level} (R : Q(Type u)) (e : Expr) : AtomM Simp.Result := 
   | some (some r) => pure r -- Nothing algebraic for `eval` to use, but `norm_num` simplifies.
   pure { expr := a, proof? := pa }
 
+def evalExprInfer (e : Expr) : AtomM Simp.Result := do
+  let ⟨_, R⟩ ← inferBase e
+  evalExpr R e
 
-elab (name := algebraNF) "algebra_nf" tk:"!"? " with " R:term loc:(location)?  : tactic => do
+elab (name := algebraNF) "algebra_nf" tk:"!"? loc:(location)?  : tactic => do
+  -- let mut cfg ← elabConfig cfg
+  let mut cfg := {}
+  if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
+  let loc := (loc.map expandLocation).getD (.targets #[] true)
+  let s ← IO.mkRef {}
+  let m := AtomM.recurse s cfg.toConfig (evalExprInfer) (cleanup cfg)
+  transformAtLocation (m ·) "ring_nf" loc cfg.failIfUnchanged false
+
+elab (name := algebraNFWith) "algebra_nf" tk:"!"? " with " R:term loc:(location)?  : tactic => do
   -- let mut cfg ← elabConfig cfg
   let mut cfg := {}
   let ⟨u, R⟩ ← inferLevelQ (← elabTerm R none)
@@ -538,16 +583,6 @@ elab (name := algebraNF) "algebra_nf" tk:"!"? " with " R:term loc:(location)?  :
   let s ← IO.mkRef {}
   let m := AtomM.recurse s cfg.toConfig (evalExpr R) (cleanup cfg)
   transformAtLocation (m ·) "ring_nf" loc cfg.failIfUnchanged false
-
-/-- Infer from the expression what base ring the normalization should use.
- TODO: implement. -/
-def inferBase (e : Expr) :
-    MetaM <| Σ u : Lean.Level, Q(Type u) := do
-  return ⟨0, q(ℕ)⟩
-  -- let some res := e.find? (fun e ↦ e.constName == ``HSMul.hSMul)
-  --   | throwError "Failed to infer base ring."
-  -- have ring := (res.getAppArgs)[0]!
-  -- inferLevelQ ring
 
 /-- Frontend of `algebra`: attempt to close a goal `g`, assuming it is an equation of semirings. -/
 def proveEq (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) : AtomM Unit := do
@@ -558,7 +593,8 @@ def proveEq (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) : AtomM 
   let ⟨u, R⟩ ←
     match base with
       | .some p => do pure p
-      | none => do inferBase (← g.getType)
+      | none => do
+        pure (← inferBase (← g.getType))
   have A : Q(Type v) := α
   let sA ← synthInstanceQ q(CommSemiring $A)
   let sR ← synthInstanceQ q(CommSemiring $R)
@@ -596,7 +632,7 @@ elab (name := algebra_over) "algebra" " with " R:term : tactic =>
 
 
 example {x : ℚ} {y : ℤ} : y • x + (1:ℤ) • x = (1 + y) • x := by
-  algebra with ℤ
+  algebra
 
 example {S R A : Type*} [CommSemiring S] [CommSemiring R] [CommSemiring A] [Algebra S R]
     [Algebra R A] [Algebra S A] [IsScalarTower S R A] {r : R} {s : S} {a₁ a₂ : A} :
@@ -608,8 +644,9 @@ example {S R A : Type*} [CommSemiring S] [CommSemiring R] [CommSemiring A] [Alge
 end Mathlib.Tactic.Algebra
 
 
+-- why doesn't match_expr match on the HSMul.hSmul expression?????
 example (x : ℚ) :  x + x = (2 : ℤ) • x := by
-  algebra with ℤ
+  algebra
   -- match_scalars <;> simp
 
 example (x : ℚ) : x = 1 := by
@@ -617,34 +654,35 @@ example (x : ℚ) : x = 1 := by
   sorry
 
 example (x y : ℚ) : x + y  = y + x := by
-  algebra with ℕ
+  algebra
 
 example (x y : ℚ) : x + y*x + x + y  = (x + x) + (x*y + y) := by
-  algebra with ℕ
+  algebra
 
 -- BUG: ExProd.one doesn't match with the empty product in sums.
 example (x : ℚ) : x + x + x  = 3 * x := by
-  algebra with ℕ
+  algebra
 
 example (x : ℚ) : (x + x) + (x + x)  = x + x + x + x := by
-  algebra with ℕ
+  algebra
 
 example (x y : ℚ) : x + (y)*(x+y) = 0 := by
-  algebra_nf with ℕ
+  algebra_nf
   sorry
 
 example (x y : ℚ) : x + (x)*(x + -y) = 0 := by
+  -- NOTE:
   algebra_nf with ℤ
   sorry
 
 
 example (x y : ℚ) : (x * x + x * y) + (x * y + y * y) = 0 := by
-  algebra_nf with ℕ
+  algebra_nf
   sorry
 
 example (x y : ℚ) : (x + y)*(x+y) = x*x + 2 * x * y + y * y := by
   -- simp_rw [← SMul.smul_eq_hSMul]
-  algebra with ℕ
+  algebra
 
 -- Handle negative integer constants
 example (x y : ℚ) : (x + (-3) * y)*(x+y) = x*x + (-2) * x * y + (-3) * y^2 := by
@@ -652,7 +690,7 @@ example (x y : ℚ) : (x + (-3) * y)*(x+y) = x*x + (-2) * x * y + (-3) * y^2 := 
 
 example (x y : ℚ) : (x+y)*x = 1 := by
   -- simp_rw [← SMul.smul_eq_hSMul]
-  algebra_nf with ℕ
+  algebra_nf
   sorry
 
 example (x y : ℚ) : (x+y)*y  = 1 := by
@@ -662,10 +700,10 @@ example (x y : ℚ) : (x+y)*y  = 1 := by
 
 
 example (x : ℚ) : (x + 1)^3 = x^3 + 3*x^2 + 3*x + 1 := by
-  algebra with ℕ
+  algebra
 
 example (x : ℚ) (hx : x = 0) : (x+1)^10 = 1 := by
-  algebra_nf with ℕ
+  algebra_nf
   simp [hx]
 
 -- TODO: Find out what's triggering this linter.
@@ -674,9 +712,9 @@ set_option linter.style.commandStart false
 example {a b : ℤ} (x y : ℚ) : (a + b) • (x + y) = b • x + a • (x + y) + b • y := by
   -- ring does nothing
   ring_nf
-  algebra with ℤ
+  algebra
 
 example {a b : ℤ} (x y : ℚ) : (a - b) • (x + y) = - b • x + a • (x + y) - b • y := by
   -- ring does nothing
   ring_nf
-  algebra with ℤ
+  algebra
