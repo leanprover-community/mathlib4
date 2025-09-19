@@ -74,8 +74,6 @@ instance : LieRing E.L := E.instLieRing
 
 instance : LieAlgebra R E.L := E.instLieAlgebra
 
-instance : LieHom R E.L M := E.proj
-
 namespace Extension
 
 /-- `Extension`s are equivalent iff there is a homomorphism making a commuting diagram. -/
