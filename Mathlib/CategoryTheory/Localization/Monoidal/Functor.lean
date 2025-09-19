@@ -11,9 +11,8 @@ import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 
 # Universal property of localized monoidal categories
 
-This file proves that, given a localization functor `L : C ⥤ D`, such that `C` is a monoidal
-category, and a functor `F : D ⥤ E` to a monoidal category, such that `L ⋙ F` is monoidal,
-then `F` is monoidal with respect to the localized monoidal structure on `D`. See
+This file proves that, given a monoidal localization functor `L : C ⥤ D`, and a functor
+`F : D ⥤ E` to a monoidal category, such that `L ⋙ F` is monoidal, then `F` is monoidal. See
 `CategoryTheory.Localization.Monoidal.functorMonoidalOfComp`.
 -/
 
