@@ -133,7 +133,7 @@ def seminormFromConst : RingSeminorm R where
     intro n
     have h_add : f ((x + y) * c ^ n) ≤ f (x * c ^ n) + f (y * c ^ n) := by
       simp only [add_mul, map_add_le_add f _ _]
-    simp only [seminormFromConst_seq, div_add_div_same]
+    simp only [seminormFromConst_seq, ← add_div]
     gcongr
   neg' x := by
     apply tendsto_nhds_unique_of_eventuallyEq (seminormFromConst_isLimit hf1 hc hpm (-x))
