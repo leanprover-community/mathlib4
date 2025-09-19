@@ -127,9 +127,9 @@ lemma isFinite_iff_locallyOfFiniteType_of_jacobsonSpace
   wlog hY : ∃ S, Y = Spec S generalizing X Y
   · rw [IsLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
       IsLocalAtTarget.iff_of_openCover (P := @LocallyOfFiniteType) Y.affineCover]
-    have inst (i) := ((Y.affineCover.pullbackCover f).map i).isOpenEmbedding.injective.subsingleton
-    have inst (i) := isReduced_of_isOpenImmersion ((Y.affineCover.pullbackCover f).map i)
-    have inst (i) := JacobsonSpace.of_isOpenEmbedding (Y.affineCover.map i).isOpenEmbedding
+    have inst (i) := ((Y.affineCover.pullbackCover f).f i).isOpenEmbedding.injective.subsingleton
+    have inst (i) := isReduced_of_isOpenImmersion ((Y.affineCover.pullbackCover f).f i)
+    have inst (i) := JacobsonSpace.of_isOpenEmbedding (Y.affineCover.f i).isOpenEmbedding
     exact forall_congr' fun i ↦ this ⟨_, rfl⟩
   obtain ⟨S, rfl⟩ := hY
   wlog hX : ∃ R, X = Spec R generalizing X
