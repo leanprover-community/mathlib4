@@ -1136,20 +1136,20 @@ theorem finrank_eq_four [StrongRankCondition R] : Module.finrank R ℍ[R] = 4 :=
 
 @[simp] theorem im_star : (star a).im = -a.im := QuaternionAlgebra.im_star a
 
-theorem self_add_star' : a + star a = ↑(2 * a.re) :=
-  by simpa using QuaternionAlgebra.self_add_star' a
+theorem self_add_star' : a + star a = ↑(2 * a.re) := by
+  simpa using QuaternionAlgebra.self_add_star' a
 
-theorem self_add_star : a + star a = 2 * a.re :=
-  by simpa using QuaternionAlgebra.self_add_star a
+theorem self_add_star : a + star a = 2 * a.re := by
+  simpa using QuaternionAlgebra.self_add_star a
 
-theorem star_add_self' : star a + a = ↑(2 * a.re) :=
-  by simpa using QuaternionAlgebra.star_add_self' a
+theorem star_add_self' : star a + a = ↑(2 * a.re) := by
+  simpa using QuaternionAlgebra.star_add_self' a
 
-theorem star_add_self : star a + a = 2 * a.re :=
-  by simpa using QuaternionAlgebra.star_add_self a
+theorem star_add_self : star a + a = 2 * a.re := by
+  simpa using QuaternionAlgebra.star_add_self a
 
-theorem star_eq_two_re_sub : star a = ↑(2 * a.re) - a :=
-  by simpa using QuaternionAlgebra.star_eq_two_re_sub a
+theorem star_eq_two_re_sub : star a = ↑(2 * a.re) - a := by
+  simpa using QuaternionAlgebra.star_eq_two_re_sub a
 
 @[simp, norm_cast]
 theorem star_coe : star (x : ℍ[R]) = x :=
