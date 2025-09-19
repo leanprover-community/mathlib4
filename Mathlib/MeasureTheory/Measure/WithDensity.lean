@@ -719,7 +719,7 @@ variable {M : Type*} [Monoid M] [MeasurableSpace M]
 
 -- `mconv_smul_left` is in the `Convolution` file. This lemma is here because this is the file in
 -- which we prove the instance that gives `SFinite (c • ν)`.
-@[to_additive]
+@[to_additive conv_smul_right]
 lemma Measure.mconv_smul_right (μ : Measure M) (ν : Measure M) [SFinite ν] (s : ℝ≥0∞) :
     μ ∗ₘ (s • ν) = s • (μ ∗ₘ ν) := by
   unfold mconv
