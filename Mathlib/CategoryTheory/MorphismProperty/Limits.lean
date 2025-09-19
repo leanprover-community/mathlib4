@@ -196,8 +196,11 @@ theorem baseChange_obj [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S)
     P ((Over.pullback f).obj X).hom :=
   pullback_snd X.hom f H
 
--- instance [∀ {W} (h : W ⟶ S), HasPullback h f] {X Y Z W} (f : ) :
---   HasPullback h (pullback.fst g f)
+instance {C : Type*} [Category C] {X Y Z W : C} (f : X ⟶ Y)
+    [∀ {W} (h : W ⟶ Y), HasPullback h f] (g : Z ⟶ Y) (h : W ⟶ Z) :
+    HasPullback h (pullback.fst g f) :=
+  IsPullback.hasPullback (IsPullback.of_bot' (IsPullback.of_hasPullback (h ≫ g) f)
+    (IsPullback.of_hasPullback g f))
 
 theorem baseChange_map [IsStableUnderBaseChange P] {S S' : C} (f : S' ⟶ S)
     [∀ {W} (h : W ⟶ S), HasPullback h f] {X Y : Over S} (g : X ⟶ Y)
