@@ -481,9 +481,10 @@ lemma coeffs_map (f : R →+* S₁) (p : MvPolynomial σ R) [DecidableEq S₁] :
           disjoint_support_monomial ha hs
 
 @[simp]
-lemma coe_coeffs_map (f : R →+* S₁) (p : MvPolynomial σ R) [DecidableEq S₁] :
-    ((map f p).coeffs : Set S₁) ⊆ f '' p.coeffs :=
-  subset_trans (coeffs_map f p) (Finset.coe_image (f := f) ▸ .rfl)
+lemma coe_coeffs_map (f : R →+* S₁) (p : MvPolynomial σ R) :
+    ((map f p).coeffs : Set S₁) ⊆ f '' p.coeffs := by
+  classical
+  exact mod_cast coeffs_map f p
 
 lemma mem_range_map_iff_coeffs_subset {f : R →+* S₁} {x : MvPolynomial σ S₁} :
     x ∈ Set.range (MvPolynomial.map f) ↔ (x.coeffs : Set _) ⊆ .range f := by
