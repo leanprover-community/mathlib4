@@ -55,7 +55,7 @@ instance [TopologicalSpace R] [DecidableEq n] [Fintype n] [CommRing R] :
 
 section Set
 
-theorem IsOpen.matrix [Fintype m] [Fintype n]
+theorem IsOpen.matrix [Finite m] [Finite n]
     [TopologicalSpace R] {S : Set R} (hS : IsOpen S) :
     IsOpen (S.matrix : Set (Matrix m n R)) :=
   Set.matrix_eq_pi ▸
