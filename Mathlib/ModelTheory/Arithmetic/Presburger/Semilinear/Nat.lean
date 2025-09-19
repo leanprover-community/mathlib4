@@ -23,10 +23,10 @@ set difference.
 
 ## Main Results
 
-- `Nat.addSubmonoidFG_eqLocusM`: a verison of *Gordan's lemma*, `{ x | f x = g x }` is a finitely
-  generated `AddSubmonoid` in `ℕ ^ k`.
-- `Nat.isSemilinearSet_setOf_eq`: the set of solutions of a linear equation `a + f x = b + g y` is a
-  semilinear set.
+- `Nat.addSubmonoidFG_eqLocusM`: a verison of *Gordan's lemma*, `AddMonoidHom.eqLocusM` is finitely
+  generated in `ℕ ^ k`.
+- `Nat.isSemilinearSet_setOf_eq`: the set of solutions of a linear equation `a + f x = b + g y` in
+  `ℕ ^ k` is semilinear.
 - `Nat.isSemilinearSet_inter`, `Nat.isSemilinearSet_compl`, `Nat.isSemilinearSet_diff`: semilinear
   sets in `ℕ ^ k` are closed under intersection, complement and set difference.
 
@@ -73,13 +73,12 @@ theorem Nat.addSubmonoidFG_of_subtractive [Finite ι] {P : AddSubmonoid (ι → 
         exact (pos_of_ne_zero hz₃).not_ge
     · exact ih _ hz₂ hz₃ hz₁.le hz₁.not_ge
 
-/-- A verison of *Gordan's lemma*: `{ x | f x = g x }` is a finitely generated `AddSubmonoid` in
-`ℕ ^ k`. -/
+/-- A verison of *Gordan's lemma*: `AddMonoidHom.eqLocusM` is finitely generated in `ℕ ^ k`. -/
 theorem Nat.addSubmonoidFG_eqLocusM [Finite ι] [IsCancelAdd M] (f g : (ι → ℕ) →+ M) :
     (f.eqLocusM g).FG :=
   addSubmonoidFG_of_subtractive (by simp_all)
 
-/-- The set of solutions of a linear equation `a + f x = b + g y` is a semilinear set. -/
+/-- The set of solutions of a linear equation `a + f x = b + g y` in `ℕ ^ k` is semilinear. -/
 theorem Nat.isSemilinearSet_setOf_eq [Finite ι] [IsCancelAdd M] {F : Type*} [FunLike F (ι → ℕ) M]
     [AddMonoidHomClass F (ι → ℕ) M] (a b : M) (f g : F) :
     IsSemilinearSet { x | a + f x = b + g x } := by
