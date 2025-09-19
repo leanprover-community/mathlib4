@@ -406,6 +406,65 @@ theorem ext (f g : DetMorphism m n) (h : f.func = g.func) : f = g := by
   simp at h ⊢
   exact ⟨h, h_mat⟩
 
+/-! ### Helper lemmas for reasoning about DetMorphisms -/
+
+/-- Matrix entry of a DetMorphism. -/
+@[simp]
+lemma toMatrix_apply (f : DetMorphism m n) (i : m) (j : n) :
+    f.toStochastic.toMatrix i j = if f.func i = j then 1 else 0 := by
+  by_cases h : f.func i = j
+  · rw [if_pos h]
+    have hj : j = f.toStochastic.apply f.is_det i := by
+      rw [f.spec i]
+      exact h.symm
+    rw [hj]
+    exact StochasticMatrix.apply_spec f.toStochastic f.is_det i
+  · rw [if_neg h]
+    have hne : j ≠ f.toStochastic.apply f.is_det i := by
+      rw [f.spec i]
+      exact Ne.symm h
+    exact StochasticMatrix.apply_spec_ne f.toStochastic f.is_det i j hne
+
+/-- Composition of DetMorphisms as matrices. -/
+lemma comp_toMatrix [DecidableEq (m × m)] (f : DetMorphism m n) (g : DetMorphism n p)
+    (i : m) (k : p) :
+    (comp f g).toStochastic.toMatrix i k = if g.func (f.func i) = k then 1 else 0 := by
+  simp only [comp]
+  exact toMatrix_apply (comp f g) i k
+
+/-- Tensor product of DetMorphisms as matrices. -/
+lemma tensor_toMatrix {m₁ n₁ m₂ n₂ : Type u} [Fintype m₁] [Fintype n₁]
+    [Fintype m₂] [Fintype n₂] [DecidableEq n₁] [DecidableEq n₂] [DecidableEq (n₁ × n₂)]
+    (f : DetMorphism m₁ n₁) (g : DetMorphism m₂ n₂)
+    (i : m₁ × m₂) (j : n₁ × n₂) :
+    (tensor f g).toStochastic.toMatrix i j =
+    if (f.func i.1, g.func i.2) = j then 1 else 0 := by
+  simp only [tensor]
+  exact toMatrix_apply (tensor f g) i j
+
+/-- Identity composition left. -/
+@[simp]
+lemma id_comp [DecidableEq m] [DecidableEq (m × m)] (f : DetMorphism m n) :
+    comp (id m) f = f := by
+  ext i
+  simp [comp, id, ofFunc]
+
+omit [DecidableEq n] in
+/-- Identity composition right. -/
+@[simp]
+lemma comp_id [DecidableEq (m × m)] [DecidableEq n] (f : DetMorphism m n) :
+    comp f (id n) = f := by
+  ext i
+  simp [comp, id, ofFunc]
+
+/-- Composition is associative. -/
+lemma comp_assoc {q : Type u} [Fintype q] [DecidableEq q]
+    [DecidableEq (m × m)] [DecidableEq (n × n)]
+    (f : DetMorphism m n) (g : DetMorphism n p) (h : DetMorphism p q) :
+    comp (comp f g) h = comp f (comp g h) := by
+  ext i
+  simp [comp]
+
 end DetMorphism
 
 /-- FinStoch: finite types with stochastic matrices. -/
