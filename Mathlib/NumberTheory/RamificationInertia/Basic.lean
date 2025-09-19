@@ -904,17 +904,8 @@ lemma sum_ramification_inertia_of_isLocalRing
     ramificationIdx (algebraMap R S) p (IsLocalRing.maximalIdeal S) *
       p.inertiaDeg (IsLocalRing.maximalIdeal S) = Module.finrank K L := by
   have := FaithfulSMul.of_field_isFractionRing R S K L
-  rw [← sum_ramification_inertia S p K L hp0]
-  symm
-  apply Finset.sum_eq_single_of_mem
-  · rw [← Finset.mem_coe, coe_primesOverFinset hp0]
-    obtain ⟨w', hmax, hover⟩ := Ideal.exists_ideal_liesOver_maximal_of_isIntegral p S
-    rw [← IsLocalRing.eq_maximalIdeal hmax]
-    exact ⟨hmax.isPrime, hover⟩
-  · intro b hb hnw
-    absurd hnw
-    rw [← Finset.mem_coe, coe_primesOverFinset hp0] at hb
-    exact IsLocalRing.eq_maximalIdeal <| Ideal.primesOver.isMaximal ⟨b, hb⟩
+  simp_rw [← sum_ramification_inertia S p K L hp0, IsLocalRing.primesOverFinset_eq S hp0,
+    Finset.sum_singleton]
 
 end FactorsMap
 
