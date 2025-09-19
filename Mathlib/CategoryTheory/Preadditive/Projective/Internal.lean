@@ -6,13 +6,15 @@ Authors: Dagur Asgeirsson, Jonas van der Schaaf
 import Mathlib.CategoryTheory.Retract
 import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+
 /-!
 
 # Internal projectivity
 
-This file defines internal projectivity and provides explicit characterizations of
-internal projectivity in the category of light condensed modules over a commutative ring.
-
+This file defines internal projectivity of objects `P` in a category `C` as a class
+`InternallyProjective P`. This means that the functor taking internal homs out of `P`
+preserves epimorphisms. It also proves that a retract of an internally projective object
+is internally projective (see `InternallyProjective.ofRetract`).
 -/
 
 noncomputable section
