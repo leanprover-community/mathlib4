@@ -666,7 +666,6 @@ theorem IsRegularLocalRing.of_maximalIdeal_hasProjectiveDimensionLE
   let _ : Module.Finite R (ModuleCat.of R (Shrink.{v, u} R)) :=
     Module.Finite.equiv (Shrink.linearEquiv.{v} R R).symm
   apply le_trans _ (depth_le_ringKrullDim (ModuleCat.of R (Shrink.{v, u} R)))
-
   have : (rs.length : WithBot ℕ∞) = (rs.length : ℕ∞) := rfl
   rw [IsLocalRing.depth_eq_sSup_length_regular, this, WithBot.coe_le_coe]
   apply le_sSup
@@ -674,3 +673,12 @@ theorem IsRegularLocalRing.of_maximalIdeal_hasProjectiveDimensionLE
   simp only [← span, exists_prop, and_true]
   intro r hr
   exact Ideal.subset_span hr
+
+theorem IsRegularLocalRing.of_globalDimension_lt_top [IsLocalRing R] [IsNoetherianRing R]
+    [Small.{v} R] (h : globalDimension.{v} R < ⊤) : IsRegularLocalRing R := by
+  apply IsRegularLocalRing.of_maximalIdeal_hasProjectiveDimensionLE
+  rw [← projectiveDimension_ne_top_iff]
+  by_contra eqtop
+  absurd h
+  simp only [globalDimension, ← eqtop, not_lt]
+  exact le_iSup _ (ModuleCat.of R (Shrink.{v} (maximalIdeal R)))
