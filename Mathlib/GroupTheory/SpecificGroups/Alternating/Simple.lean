@@ -136,8 +136,7 @@ theorem normal_subgroup_inf_stabilizer_ne_bot (h6 : 6 ≤ Fintype.card α)
   obtain ⟨j, hjσ, hja⟩ := hσs
   have hxy := calc (2 : ℕ)
     _ = 6 - Multiset.card {a, σ a, j, σ j} := rfl
-    _ ≤ card α - Multiset.card {a, σ a, j, σ j} := by
-      apply Nat.sub_le_sub_right; omega
+    _ ≤ card α - Multiset.card {a, σ a, j, σ j} := by omega
     _ ≤ card α - Finset.card {a, σ a, j, σ j} := by
       apply Nat.sub_le_sub_left
       convert Multiset.toFinset_card_le {a, σ a, j, σ j} using 2
