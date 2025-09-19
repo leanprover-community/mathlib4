@@ -3,16 +3,9 @@ Copyright (c) 2025 Yizheng Zhu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yizheng Zhu
 -/
-import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Calculus.Deriv.Slope
 import Mathlib.MeasureTheory.Covering.OneDim
-import Mathlib.MeasureTheory.Covering.DensityTheorem
-import Mathlib.MeasureTheory.Covering.Differentiation
-import Mathlib.MeasureTheory.Covering.Vitali
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathlib.MeasureTheory.Measure.MeasureSpace
 
 /-!
 # Lebesgue Differentiation Theorem (Interval Version)
