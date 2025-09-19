@@ -92,16 +92,16 @@ theorem ext {f g : StochasticMatrix m n} (h : f.toMatrix = g.toMatrix) : f = g :
 /-! ### Deterministic matrices -/
 
 /-- Each row has exactly one 1. -/
-def isDeterministic (f : StochasticMatrix m n) [DecidableEq n] : Prop :=
+def isDeterministic (f : StochasticMatrix m n) : Prop :=
   ∀ i : m, ∃! j : n, f.toMatrix i j = 1
 
 /-- Extract function from deterministic matrix. -/
-noncomputable def apply (f : StochasticMatrix m n) [DecidableEq n]
+noncomputable def apply (f : StochasticMatrix m n)
     (h : f.isDeterministic) (i : m) : n :=
   (h i).choose
 
 /-- Apply gives the unique 1. -/
-lemma apply_spec (f : StochasticMatrix m n) [DecidableEq n] (h : f.isDeterministic) (i : m) :
+lemma apply_spec (f : StochasticMatrix m n) (h : f.isDeterministic) (i : m) :
     f.toMatrix i (f.apply h i) = 1 :=
   (h i).choose_spec.1
 
@@ -142,7 +142,7 @@ lemma apply_spec_ne (f : StochasticMatrix m n) [DecidableEq n] (h : f.isDetermin
 
 /-- Matrix entry is 1 iff it's the unique output. -/
 @[simp]
-lemma det_matrix_eq_one_iff (f : StochasticMatrix m n) [DecidableEq n] (h : f.isDeterministic)
+lemma det_matrix_eq_one_iff (f : StochasticMatrix m n) (h : f.isDeterministic)
     (i : m) (j : n) : f.toMatrix i j = 1 ↔ j = f.apply h i := by
   constructor
   · intro hj
@@ -170,7 +170,7 @@ lemma id_isDeterministic (m : Type u) [Fintype m] [DecidableEq m] :
 
 /-- Deterministic matrices compose to deterministic matrices. -/
 theorem det_comp_det (f : StochasticMatrix m n) (g : StochasticMatrix n p)
-    [DecidableEq n] [DecidableEq p] (hf : f.isDeterministic) (hg : g.isDeterministic) :
+    [DecidableEq n] (hf : f.isDeterministic) (hg : g.isDeterministic) :
     (comp f g).isDeterministic := by
   intro i
   use g.apply hg (f.apply hf i)
@@ -207,7 +207,7 @@ theorem det_comp_det (f : StochasticMatrix m n) (g : StochasticMatrix n p)
 
 /-- Composition of deterministic matrices equals function composition. -/
 theorem det_comp_eq_fun_comp (f : StochasticMatrix m n) (g : StochasticMatrix n p)
-    [DecidableEq n] [DecidableEq p] (hf : f.isDeterministic) (hg : g.isDeterministic) (i : m) :
+    [DecidableEq n] (hf : f.isDeterministic) (hg : g.isDeterministic) (i : m) :
     (comp f g).apply (det_comp_det f g hf hg) i = g.apply hg (f.apply hf i) := by
   -- By det_comp_det, the unique 1 in row i of comp f g is at column g.apply hg (f.apply hf i)
   -- The apply function returns this unique column
@@ -250,7 +250,7 @@ lemma delta_mul_delta {α β : Type*} [DecidableEq α] [DecidableEq β]
 /-- Tensor product of deterministic matrices is deterministic. -/
 theorem det_tensor_det {m₁ n₁ m₂ n₂ : Type u} [Fintype m₁] [Fintype n₁] [Fintype m₂] [Fintype n₂]
     (f : StochasticMatrix m₁ n₁) (g : StochasticMatrix m₂ n₂)
-    [DecidableEq n₁] [DecidableEq n₂] [DecidableEq (n₁ × n₂)]
+    [DecidableEq n₁]
     (hf : f.isDeterministic) (hg : g.isDeterministic) :
     (tensor f g).isDeterministic := by
   intro ⟨i₁, i₂⟩
@@ -290,7 +290,7 @@ theorem det_tensor_det {m₁ n₁ m₂ n₂ : Type u} [Fintype m₁] [Fintype n�
 /-- Apply function for tensor products of deterministic matrices. -/
 theorem apply_tensor {m₁ n₁ m₂ n₂ : Type u} [Fintype m₁] [Fintype n₁] [Fintype m₂] [Fintype n₂]
     (f : StochasticMatrix m₁ n₁) (g : StochasticMatrix m₂ n₂)
-    [DecidableEq n₁] [DecidableEq n₂] [DecidableEq (n₁ × n₂)]
+    [DecidableEq n₁]
     (hf : f.isDeterministic) (hg : g.isDeterministic) (i₁ : m₁) (i₂ : m₂) :
     (tensor f g).apply (det_tensor_det f g hf hg) (i₁, i₂) =
     (f.apply hf i₁, g.apply hg i₂) := by
@@ -375,7 +375,7 @@ def id (m : Type u) [Fintype m] [DecidableEq m] : DetMorphism m m :=
   ofFunc _root_.id
 
 /-- Composition of deterministic morphisms. -/
-def comp [DecidableEq (m × m)] (f : DetMorphism m n) (g : DetMorphism n p) : DetMorphism m p where
+def comp (f : DetMorphism m n) (g : DetMorphism n p) : DetMorphism m p where
   func := g.func ∘ f.func
   toStochastic := StochasticMatrix.comp f.toStochastic g.toStochastic
   is_det := StochasticMatrix.det_comp_det f.toStochastic g.toStochastic f.is_det g.is_det
@@ -426,7 +426,7 @@ lemma toMatrix_apply (f : DetMorphism m n) (i : m) (j : n) :
     exact StochasticMatrix.apply_spec_ne f.toStochastic f.is_det i j hne
 
 /-- Composition of DetMorphisms as matrices. -/
-lemma comp_toMatrix [DecidableEq (m × m)] (f : DetMorphism m n) (g : DetMorphism n p)
+lemma comp_toMatrix (f : DetMorphism m n) (g : DetMorphism n p)
     (i : m) (k : p) :
     (comp f g).toStochastic.toMatrix i k = if g.func (f.func i) = k then 1 else 0 := by
   simp only [comp]
@@ -444,7 +444,7 @@ lemma tensor_toMatrix {m₁ n₁ m₂ n₂ : Type u} [Fintype m₁] [Fintype n�
 
 /-- Identity composition left. -/
 @[simp]
-lemma id_comp [DecidableEq m] [DecidableEq (m × m)] (f : DetMorphism m n) :
+lemma id_comp [DecidableEq m] (f : DetMorphism m n) :
     comp (id m) f = f := by
   ext i
   simp [comp, id, ofFunc]
@@ -452,14 +452,13 @@ lemma id_comp [DecidableEq m] [DecidableEq (m × m)] (f : DetMorphism m n) :
 omit [DecidableEq n] in
 /-- Identity composition right. -/
 @[simp]
-lemma comp_id [DecidableEq (m × m)] [DecidableEq n] (f : DetMorphism m n) :
+lemma comp_id [DecidableEq n] (f : DetMorphism m n) :
     comp f (id n) = f := by
   ext i
   simp [comp, id, ofFunc]
 
 /-- Composition is associative. -/
 lemma comp_assoc {q : Type u} [Fintype q] [DecidableEq q]
-    [DecidableEq (m × m)] [DecidableEq (n × n)]
     (f : DetMorphism m n) (g : DetMorphism n p) (h : DetMorphism p q) :
     comp (comp f g) h = comp f (comp g h) := by
   ext i
@@ -469,8 +468,11 @@ end DetMorphism
 
 /-- FinStoch: finite types with stochastic matrices. -/
 structure FinStoch : Type (u+1) where
+  /-- The underlying finite type. -/
   carrier : Type u
+  /-- Proof that the carrier is finite. -/
   [fintype : Fintype carrier]
+  /-- Decidable equality for the carrier type. -/
   [decidableEq : DecidableEq carrier]
 
 namespace FinStoch

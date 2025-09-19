@@ -75,7 +75,6 @@ lemma id_matrix {X : FinStoch} (x x' : X.carrier) :
   simp only [CategoryStruct.id, StochasticMatrix.id]
 
 /-- The associator morphism applied to matrix elements. -/
-@[simp]
 lemma associator_toMatrix {X Y Z : FinStoch} (xyz : ((X ⊗ Y) ⊗ Z).carrier)
     (xyz' : (X ⊗ (Y ⊗ Z)).carrier) :
     (α_ X Y Z).hom.toMatrix xyz xyz' =
