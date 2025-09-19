@@ -386,8 +386,8 @@ theorem exists_mem_of_measure_ne_zero_of_ae (hs : μ s ≠ 0) {p : α → Prop}
   rw [← μ.restrict_apply_self, ← frequently_ae_mem_iff] at hs
   exact (hs.and_eventually hp).exists
 
-/-- If a quasi measure preserving map `f` maps a set `s` to a set `t`,
-then it is quasi measure preserving with respect to the restrictions of the measures. -/
+/-- If a quasi-measure-preserving map `f` maps a set `s` to a set `t`,
+then it is quasi-measure-preserving with respect to the restrictions of the measures. -/
 theorem QuasiMeasurePreserving.restrict {ν : Measure β} {f : α → β}
     (hf : QuasiMeasurePreserving f μ ν) {t : Set β} (hmaps : MapsTo f s t) :
     QuasiMeasurePreserving f (μ.restrict s) (ν.restrict t) where
