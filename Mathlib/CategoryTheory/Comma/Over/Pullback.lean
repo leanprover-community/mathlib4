@@ -46,13 +46,11 @@ namespace Over
 
 open Limits
 
-variable {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
-  [∀ {W} (h : W ⟶ Y), HasPullback h f] [∀ {W} (h : W ⟶ Z), HasPullback h g]
-
 /-- In a category with pullbacks, a morphism `f : X ⟶ Y` induces a functor `Over Y ⥤ Over X`,
 by pulling back a morphism along `f`. -/
 @[simps! +simpRhs obj_left obj_hom map_left]
-def pullback : Over Y ⥤ Over X where
+def pullback {X Y : C} (f : X ⟶ Y) [∀ {W} (h : W ⟶ Y), HasPullback h f] :
+    Over Y ⥤ Over X where
   obj g := Over.mk (pullback.snd g.hom f)
   map := fun g {h} {k} =>
     Over.homMk (pullback.lift (pullback.fst _ _ ≫ k.left) (pullback.snd _ _)
@@ -60,7 +58,7 @@ def pullback : Over Y ⥤ Over X where
 
 /-- `Over.map f` is left adjoint to `Over.pullback f`. -/
 @[simps! unit_app counit_app]
-def mapPullbackAdj :
+def mapPullbackAdj {X Y : C} (f : X ⟶ Y) [∀ {W} (h : W ⟶ Y), HasPullback h f] :
     Over.map f ⊣ pullback f :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun x y =>
@@ -81,16 +79,15 @@ def pullbackId {X : C} [∀ {Z} (g : Z ⟶ X), HasPullback g (𝟙 X)] : pullbac
   conjugateIsoEquiv (mapPullbackAdj (𝟙 _)) (Adjunction.id (C := Over _)) (Over.mapId _).symm
 
 /-- pullback commutes with composition (up to natural isomorphism). -/
-def pullbackComp : pullback (f ≫ g) ≅ pullback g ⋙ pullback f :=
+def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [∀ {W} (h : W ⟶ Y), HasPullback h f] [∀ {W} (h : W ⟶ Z), HasPullback h g] :
+    pullback (f ≫ g) ≅ pullback g ⋙ pullback f :=
   conjugateIsoEquiv (mapPullbackAdj _) ((mapPullbackAdj _).comp (mapPullbackAdj _))
     (Over.mapComp _ _).symm
 
-instance pullbackIsRightAdjoint : (pullback f).IsRightAdjoint :=
+instance pullbackIsRightAdjoint {X Y : C} (f : X ⟶ Y) [∀ {W} (h : W ⟶ Y), HasPullback h f] :
+    (pullback f).IsRightAdjoint :=
   ⟨_, ⟨mapPullbackAdj f⟩⟩
-
-section
-
-variable [HasPullbacks C]
 
 open pullback in
 /-- If `F` is a left adjoint and its source category has pullbacks, then so is
@@ -99,15 +96,14 @@ open pullback in
 If the right adjoint of `F` is `G`, then the right adjoint of `post F` is given by
 `(Y ⟶ F X) ↦ (G Y ⟶ X ×_{G F X} G Y ⟶ X)`. -/
 @[simps!]
-def postAdjunctionLeft {X : C} {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) :
+def postAdjunctionLeft [HasPullbacks C] {X : C} {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) :
     post F ⊣ post G ⋙ pullback (a.unit.app X) :=
   ((mapPullbackAdj (a.unit.app X)).comp (postAdjunctionRight a)).ofNatIsoLeft <|
     NatIso.ofComponents fun Y ↦ isoMk (.refl _)
 
-instance isLeftAdjoint_post {F : C ⥤ D} [F.IsLeftAdjoint] : (post (X := X) F).IsLeftAdjoint :=
+instance isLeftAdjoint_post [HasPullbacks C] {F : C ⥤ D} [F.IsLeftAdjoint] :
+    (post (X := X) F).IsLeftAdjoint :=
   let ⟨G, ⟨a⟩⟩ := ‹F.IsLeftAdjoint›; ⟨_, ⟨postAdjunctionLeft a⟩⟩
-
-end
 
 open Limits
 
@@ -118,7 +114,7 @@ noncomputable def forgetMapTerminal {T : C} (hT : IsTerminal T) :
   NatIso.ofComponents fun X ↦ .refl _
 
 section HasBinaryProducts
-variable [HasBinaryProducts C] (X)
+variable [HasBinaryProducts C]
 
 /--
 The functor from `C` to `Over X` which sends `Y : C` to `π₁ : X ⨯ Y ⟶ X`, sometimes denoted `X*`.
@@ -144,13 +140,11 @@ end Over
 
 namespace Under
 
-variable {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
-  [∀ {W} (h : X ⟶ W), HasPushout h f] [∀ {W} (h : Y ⟶ W), HasPushout h g]
-
 /-- When `C` has pushouts, a morphism `f : X ⟶ Y` induces a functor `Under X ⥤ Under Y`,
 by pushing a morphism forward along `f`. -/
 @[simps]
-def pushout : Under X ⥤ Under Y where
+def pushout {X Y : C} (f : X ⟶ Y) [∀ {W} (h : X ⟶ W), HasPushout h f] :
+    Under X ⥤ Under Y where
   obj x := Under.mk (pushout.inr x.hom f)
   map := fun x {x'} {u} =>
     Under.homMk (pushout.desc (u.right ≫ pushout.inl _ _) (pushout.inr _ _)
@@ -158,7 +152,8 @@ def pushout : Under X ⥤ Under Y where
 
 /-- `Under.pushout f` is left adjoint to `Under.map f`. -/
 @[simps! unit_app counit_app]
-def mapPushoutAdj : pushout f ⊣ map f :=
+def mapPushoutAdj {X Y : C} (f : X ⟶ Y) [∀ {W} (h : X ⟶ W), HasPushout h f] :
+    pushout f ⊣ map f :=
   Adjunction.mkOfHomEquiv {
     homEquiv := fun x y => {
       toFun := fun u => Under.homMk (pushout.inl _ _ ≫ u.right) <| by
@@ -184,14 +179,17 @@ def pushoutId {X : C} [∀ {Z} (g : X ⟶ Z), HasPushout g (𝟙 X)] : pushout (
     (Under.mapId X).symm
 
 /-- pushout commutes with composition (up to natural isomorphism). -/
-def pushoutComp : pushout (f ≫ g) ≅ pushout f ⋙ pushout g :=
+def pushoutComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [∀ {W} (h : X ⟶ W), HasPushout h f] [∀ {W} (h : Y ⟶ W), HasPushout h g] :
+    pushout (f ≫ g) ≅ pushout f ⋙ pushout g :=
   (conjugateIsoEquiv ((mapPushoutAdj _).comp (mapPushoutAdj _)) (mapPushoutAdj _) ).symm
     (mapComp f g).symm
 
 @[deprecated (since := "2025-04-15")]
 noncomputable alias pullbackComp := pushoutComp
 
-instance pushoutIsLeftAdjoint : (pushout f).IsLeftAdjoint :=
+instance pushoutIsLeftAdjoint {X Y : C} (f : X ⟶ Y) [∀ {W} (h : X ⟶ W), HasPushout h f] :
+    (pushout f).IsLeftAdjoint :=
   ⟨_, ⟨mapPushoutAdj f⟩⟩
 
 open pushout in
@@ -218,7 +216,7 @@ noncomputable def forgetMapInitial {I : C} (hI : IsInitial I) :
   NatIso.ofComponents fun X ↦ .refl _
 
 section HasBinaryCoproducts
-variable [HasBinaryCoproducts C] (X)
+variable [HasBinaryCoproducts C]
 
 /-- The functor from `C` to `Under X` which sends `Y : C` to `in₁ : X ⟶ X ⨿ Y`. -/
 @[simps! obj_left obj_hom map_left]
