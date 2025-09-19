@@ -1,0 +1,293 @@
+/-
+Copyright (c) 2025 Moritz Doll. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Moritz Doll
+-/
+import Mathlib.Analysis.Distribution.SchwartzSpace
+import Mathlib.Analysis.LocallyConvex.WeakOperatorTopology
+import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+import Mathlib.MeasureTheory.Function.Holder
+
+/-!
+# TemperedDistribution
+
+## Main definitions
+
+* `TemperedDistribution 𝕜 E F V`: The space `𝓢(E, F) →L[𝕜] V` with the weak operator topology
+* `TemperedDistribution.derivCLM`: The one-dimensional distributional derivative
+* `TemperedDistribution.pderivCLM`: Partial distributional derivatives
+* `SchwartzMap.toTemperedDistributionCLM`: The canonical embedding of `𝓢(E, F)` into
+`𝓢'(𝕜, E, F →L[𝕜] V, V)`.
+* `Function.HasTemperateGrowth.toTemperedDistribution`: Every function of temperate growth is a
+tempered distribution.
+* `MeasureTheory.Measure.HasTemperateGrowth`: Every measure of temperate growth is a tempered
+distribution.
+
+## Main statements
+
+* `derivCLM_toTemperedDistributionCLM_eq`: The equality of the distributional derivative and the
+classical derivative.
+
+## Notation
+
+* `𝓢'(𝕜, E, F, V)`: The space of tempered distributions `TemperedDistribution 𝕜 E F V` localized
+in `SchwartzSpace`
+
+
+
+## Implementation details
+
+
+
+## References
+
+* [F. Bar, *Quuxes*][bibkey]
+
+## Tags
+
+Foobars, barfoos
+-/
+
+noncomputable section
+
+open SchwartzMap ContinuousLinearMap
+
+open scoped Nat NNReal ContDiff
+
+variable {𝕜 𝕜' D E F G V : Type*}
+variable [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable (𝕜)
+variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable (E F V)
+variable [NormedAddCommGroup V] [NormedSpace 𝕜 V] [NormedSpace ℝ V] [SMulCommClass ℝ 𝕜 V]
+
+abbrev TemperedDistribution := 𝓢(E, F) →WOT[𝕜] V
+
+scoped[SchwartzMap] notation "𝓢'(" 𝕜 ", " E ", " F ", " V ")" => TemperedDistribution 𝕜 E F V
+
+
+variable {𝕜 E F V}
+
+namespace SchwartzMap
+
+theorem hasTemperateGrowth (f : 𝓢(E, F)) : Function.HasTemperateGrowth f := by
+  constructor
+  · exact smooth f ⊤
+  intro n
+  rcases f.decay 0 n with ⟨C, Cpos, hC⟩
+  use 0, C
+  intro x
+  specialize hC x
+  simp only [pow_zero, one_mul, mul_one] at hC ⊢
+  assumption
+
+def pairingLM : 𝓢(E, F) →ₗ[𝕜] 𝓢(E, F →L[𝕜] V) →L[𝕜] 𝓢(E, V) where
+  toFun f := bilinLeftCLM (.id 𝕜 _) f.hasTemperateGrowth
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+
+theorem pairingLM_apply (f : 𝓢(E, F)) (g : 𝓢(E, F →L[𝕜] V)) :
+  pairingLM f g = fun x => g x (f x) := rfl
+
+@[simp]
+theorem pairingLM_apply_apply (f : 𝓢(E, F)) (g : 𝓢(E, F →L[𝕜] V)) (x : E) :
+  pairingLM f g x = g x (f x) := rfl
+
+open scoped ENNReal
+open MeasureTheory
+
+theorem memLp_of_bilin (L : E →L[ℝ] F →L[ℝ] V) (f : 𝓢(ℝ, E)) (g : 𝓢(ℝ, F)) (p : ℝ≥0∞) :
+    MemLp (fun x ↦ L (f x) (g x)) p := by
+  exact MeasureTheory.MemLp.of_bilin (r := p) (L · ·) ‖L‖₊ (f.memLp p) (g.memLp ∞)
+    (L.aestronglyMeasurable_comp₂ (f.memLp p).1 (g.memLp ∞).1) (.of_forall fun _ ↦ L.le_opNorm₂ _ _)
+
+theorem hasDerivAt (f : 𝓢(ℝ, F)) (x : ℝ) : HasDerivAt f (deriv f x) x := by
+  simp only [hasDerivAt_deriv_iff]
+  exact f.differentiableAt
+
+theorem integral_bilinear_deriv_right_eq_neg_left (f : 𝓢(ℝ, E)) (g : 𝓢(ℝ, F))
+    (L : E →L[ℝ] F →L[ℝ] V) :
+    ∫ (x : ℝ), (L (f x)) (deriv g x) = -∫ (x : ℝ), (L (deriv f x)) (g x) := by
+  apply MeasureTheory.integral_bilinear_hasDerivAt_right_eq_neg_left_of_integrable f.hasDerivAt
+    g.hasDerivAt
+  all_goals rw [← memLp_one_iff_integrable]
+  · exact (memLp_of_bilin L f (derivCLM ℝ g) 1)
+  · exact (memLp_of_bilin L (derivCLM ℝ f) g 1)
+  · exact (memLp_of_bilin L f g 1)
+
+theorem integral_clm_comp_deriv_right_eq_neg_left (f : 𝓢(ℝ, F)) (g : 𝓢(ℝ, F →L[𝕜] V)) :
+    ∫ (x : ℝ), (g x) (deriv f x) = -∫ (x : ℝ), (deriv g x) (f x) :=
+  integral_bilinear_deriv_right_eq_neg_left g f
+    ((ContinuousLinearMap.id 𝕜 (F →L[𝕜] V)).bilinearRestrictScalars ℝ)
+
+end SchwartzMap
+
+
+
+
+theorem choose_le_two_pow' (n k : ℕ) : n.choose k ≤ 2 ^ n := by
+  by_cases hk : 0 < k
+  · by_cases hn : 0 < n
+    · exact (Nat.choose_le_two_pow _ _ hn).le
+    · have : n.choose k = 0 := by
+        convert Nat.choose_zero_succ (k - 1)
+        · exact Nat.eq_zero_of_not_pos hn
+        · exact (Nat.sub_one_add_one_eq_of_pos hk).symm
+      simp [this]
+  · simpa [Nat.eq_zero_of_not_pos hk] using Nat.one_le_two_pow
+
+def pairingCLM (g : 𝓢(E, F →L[𝕜] V)) : 𝓢(E, F) →L[𝕜] 𝓢(E, V) :=
+  mkCLM (fun f => pairingLM f g)
+  (fun _ _ _ => by simp only [map_add, ContinuousLinearMap.add_apply, SchwartzMap.add_apply,
+    pairingLM_apply_apply])
+  (fun _ _ _ => by simp only [map_smul, coe_smul', Pi.smul_apply, SchwartzMap.smul_apply,
+    pairingLM_apply_apply, RingHom.id_apply])
+  (fun f => by
+    apply ((ContinuousLinearMap.restrictScalarsL _ F _ ℝ ℝ).contDiff.fun_comp
+      (g.smooth ⊤)).clm_apply (f.smooth ⊤))
+  (by
+      intro (k, n)
+      simp only [pairingLM_apply]
+      use Finset.Iic (k, n), (Finset.card (Finset.range (n+1))) • ((2 ^ n) *
+        (((Finset.Iic (0, n)).sup (schwartzSeminormFamily 𝕜 _ _)) g) * (2 ^ k)), by positivity
+      intro f x
+      have := ((ContinuousLinearMap.id 𝕜 (F →L[𝕜] V)).bilinearRestrictScalars
+          ℝ).norm_iteratedFDeriv_le_of_bilinear_of_le_one (g.smooth ⊤) (f.smooth ⊤) x (n := n) (by
+        simp only [WithTop.le_def, WithTop.coe_eq_coe, forall_eq', le_top, and_true]
+        use n
+        simp only [WithTop.coe_natCast]) (by simp [ContinuousLinearMap.norm_id_le])
+      simp only [bilinearRestrictScalars_apply_apply, coe_id', id_eq] at this
+      grw [this]
+      rw [Finset.mul_sum, smul_mul_assoc]
+      apply Finset.sum_le_card_nsmul
+      intro i hi
+      simp only [Finset.mem_range] at hi
+      have hg : ‖iteratedFDeriv ℝ i g x‖ ≤
+          ((Finset.Iic (0, n)).sup (schwartzSeminormFamily 𝕜 _ _)) g := by
+        grw [norm_iteratedFDeriv_le_seminorm 𝕜 g]
+        rw [← schwartzSeminormFamily_apply]
+        apply Seminorm.le_finset_sup_apply
+        simp only [Finset.mem_Iic, Prod.mk_le_mk, le_refl, true_and]
+        exact Nat.le_of_lt_succ hi
+      grw [choose_le_two_pow' _ _, hg]
+      move_mul [((Finset.Iic (0, n)).sup (schwartzSeminormFamily 𝕜 _ _)) g]
+      apply mul_le_mul_of_nonneg_right _ (apply_nonneg _ _)
+      simp only [Nat.cast_pow, Nat.cast_ofNat]
+      move_mul [2 ^ n]
+      have hf : ‖x‖ ^ k * ‖iteratedFDeriv ℝ (n - i) f x‖ ≤
+          ((Finset.Iic (k, n)).sup (schwartzSeminormFamily 𝕜 _ _)) f := by
+        grw [le_seminorm 𝕜]
+        rw [← schwartzSeminormFamily_apply]
+        apply Seminorm.le_finset_sup_apply
+        simp only [Finset.mem_Iic, Prod.mk_le_mk, le_refl, tsub_le_iff_right,
+          le_add_iff_nonneg_right, zero_le, and_self]
+      grw [hf]
+      move_mul [((Finset.Iic (k, n)).sup (schwartzSeminormFamily 𝕜 _ _)) f]
+      apply mul_le_mul_of_nonneg_right _ (apply_nonneg _ _)
+      exact le_mul_of_one_le_right (pow_nonneg zero_le_two _) (one_le_pow₀ one_le_two))
+
+variable [MeasurableSpace E]
+
+open MeasureTheory MeasureTheory.Measure
+
+variable {μ : Measure E} [hμ : μ.HasTemperateGrowth]
+variable [BorelSpace E] [SecondCountableTopology E]
+
+variable (𝕜 F μ) in
+def MeasureTheory.Measure.toTemperedDistribution : 𝓢'(𝕜, E, F, F) :=
+  (toWOT _ _ _) (integralCLM 𝕜 μ)
+
+variable (𝕜) in
+@[simp]
+theorem MeasureTheory.Measure.toTemperedDistribution_apply (g : 𝓢(E, F)) :
+    Measure.toTemperedDistribution 𝕜 F μ g = ∫ (x : E), g x ∂μ := by
+  rfl
+
+namespace Function.HasTemperateGrowth
+
+variable (𝕜 V) in
+def toTemperedDistribution {f : E → F} (hf : f.HasTemperateGrowth) : 𝓢'(𝕜, E, F →L[𝕜] V, V) :=
+    (ContinuousLinearMap.toWOT _ _ _) ((integralCLM 𝕜 μ).comp (bilinLeftCLM (.id 𝕜 _) hf))
+
+@[simp]
+theorem toTemperedDistribution_apply {f : E → F} (hf : f.HasTemperateGrowth) (g : 𝓢(E, F →L[𝕜] V)) :
+    toTemperedDistribution 𝕜 V (μ := μ) hf g = ∫ (x : E), (g x) (f x) ∂μ := by
+  rfl
+
+end Function.HasTemperateGrowth
+
+namespace SchwartzMap
+
+variable (𝕜 E F V) in
+def toTemperedDistributionCLM : 𝓢(E, F) →L[𝕜] 𝓢'(𝕜, E, F →L[𝕜] V, V) where
+  toFun f := (ContinuousLinearMap.toWOT _ _ _) ((SchwartzMap.integralCLM 𝕜 μ).comp (pairingLM f))
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+  cont := by
+    apply ContinuousLinearMapWOT.continuous_of_dual_apply_continuous
+    intro g y
+    exact y.cont.comp ((SchwartzMap.integralCLM 𝕜 μ).cont.comp (pairingCLM g).cont)
+
+variable (f : 𝓢(E, F)) (g : 𝓢(E, F →L[𝕜] V)) (x : E)
+
+@[simp]
+theorem toTemperedDistributionCLM_apply_apply (f : 𝓢(E, F)) (g : 𝓢(E, F →L[𝕜] V)) :
+    toTemperedDistributionCLM 𝕜 E F V (μ := μ) f g = ∫ (x : E), (g x) (f x) ∂μ := by
+  rfl
+
+end SchwartzMap
+
+def mkCLM (A : (𝓢(E, F) →L[𝕜] V) →ₗ[𝕜] (𝓢(E, F) →L[𝕜] V))
+  (hbound : ∀ (f : 𝓢(E, F)) (a : V →L[𝕜] 𝕜), ∃ (s : Finset (𝓢(E, F) × (V →L[𝕜] 𝕜))) (C : ℝ≥0),
+  ∀ (B : 𝓢(E, F) →L[𝕜] V), ∃ (g : 𝓢(E, F)) (b : V →L[𝕜] 𝕜) (_hb : (g, b) ∈ s),
+  ‖a ((A B) f)‖ ≤ C • ‖b (B g)‖) : 𝓢'(𝕜, E, F, V) →L[𝕜] 𝓢'(𝕜, E, F, V) where
+  __ := (toWOT _ _ _).toLinearMap.comp (A.comp (toWOT _ _ _).symm.toLinearMap)
+  cont := by
+    apply Seminorm.continuous_from_bounded ContinuousLinearMapWOT.withSeminorms
+      ContinuousLinearMapWOT.withSeminorms
+    intro (f, a)
+    rcases hbound f a with ⟨s, C, h⟩
+    use s, C
+    rw [← Seminorm.finset_sup_smul]
+    intro B
+    rcases h ((toWOT _ _ _).symm B) with ⟨g, b, hb, h'⟩
+    refine le_trans ?_ (Seminorm.le_finset_sup_apply hb)
+    unfold ContinuousLinearMapWOT.seminormFamily
+    simpa using h'
+
+/-- The 1-dimensional derivative on Schwartz space as a continuous `𝕜`-linear map. -/
+def derivCLM : 𝓢'(𝕜, ℝ, F, V) →L[𝕜] 𝓢'(𝕜, ℝ, F, V) :=
+  mkCLM
+    {toFun f := f.comp (-SchwartzMap.derivCLM 𝕜), map_add' f g := by simp [add_comm],
+      map_smul' := by simp}
+    (by
+      intro f a
+      use {(SchwartzMap.derivCLM 𝕜 f, a)}, 1
+      exact fun _ ↦ ⟨SchwartzMap.derivCLM 𝕜 f, a, by simp, by simp⟩)
+
+@[simp]
+theorem derivCLM_apply_apply (f : 𝓢'(𝕜, ℝ, F, V)) (g : 𝓢(ℝ, F)) :
+    derivCLM f g = f (-derivCLM 𝕜 g) := rfl
+
+open scoped ENNReal
+
+/-- The distributional derivative and the classical derivative coincide on `𝓢(ℝ, F)`. -/
+theorem derivCLM_toTemperedDistributionCLM_eq (f : 𝓢(ℝ, F)) :
+    derivCLM (toTemperedDistributionCLM 𝕜 ℝ F V (μ := volume) f) =
+    toTemperedDistributionCLM 𝕜 ℝ F V (μ := volume) (SchwartzMap.derivCLM 𝕜 f) := by
+  ext
+  simp [integral_clm_comp_deriv_right_eq_neg_left, integral_neg]
+
+variable (𝕜) in
+def TemperedDistribution.pderivCLM (m : E) : 𝓢'(𝕜, E, F, V) →L[𝕜] 𝓢'(𝕜, E, F, V) :=
+  mkCLM
+    {toFun f := f.comp (-SchwartzMap.pderivCLM 𝕜 m), map_add' f g := by simp [add_comm],
+      map_smul' := by simp }
+    (by
+      intro f a
+      use {(SchwartzMap.pderivCLM 𝕜 m f, a)}, 1
+      exact fun _ ↦ ⟨SchwartzMap.pderivCLM 𝕜 m f, a, by simp, by simp⟩)
+
+lemma pderivCLM_apply (m : E) (f : 𝓢'(𝕜, E, F, V)) (g : 𝓢(E, F)) :
+    TemperedDistribution.pderivCLM 𝕜 m f g = f (-SchwartzMap.pderivCLM 𝕜 m g) := by rfl
