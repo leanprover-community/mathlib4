@@ -12,7 +12,7 @@ import Mathlib.Tactic.Bound
 /-!
 # Restricted power series
 
-`IsRestricted` : We say a powerseries over a normed ring `R` is restricted for a parameter `c` if
+`IsRestricted` : We say a power series over a normed ring `R` is restricted for a parameter `c` if
 `‖coeff R i f‖ * c ^ i → 0`.
 
 -/
