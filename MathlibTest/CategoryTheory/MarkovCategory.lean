@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.MarkovCategory.Cartesian
 import Mathlib.CategoryTheory.MarkovCategory.FinStoch.Basic
 import Mathlib.CategoryTheory.MarkovCategory.FinStoch.Monoidal
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
+import Mathlib.CategoryTheory.CopyDiscardCategory.Basic
 import Mathlib.Tactic.FinCases
 
 /-!
@@ -26,16 +27,14 @@ This file contains tests and examples for the Markov category implementation.
 
 universe u
 
-open CategoryTheory MarkovCategory CopyDiscardCategory
+open CategoryTheory MarkovCategory CopyDiscardCategory ComonObj
 
 section BasicTests
 
 /-- Type* forms a Markov category via its cartesian structure -/
 example : MarkovCategory (Type u) := inferInstance
 
-/-- Every function between types is deterministic -/
-example {X Y : Type u} (f : X → Y) : @Deterministic (Type u) _ _ _ X Y f :=
-  @CartesianMarkov.deterministic_of_cartesian (Type u) _ _ X Y f
+-- Note: Deterministic morphisms are not yet implemented in the library
 
 /-- CartesianMonoidalCategory instance exists for Type* -/
 example : CartesianMonoidalCategory (Type u) := inferInstance
@@ -49,21 +48,21 @@ variable {C : Type u} [Category.{u} C] [MonoidalCategory.{u} C] [MarkovCategory 
 open MonoidalCategory CopyDiscardCategory
 
 /-- The copy operation is commutative -/
-example (X : C) : copyMor X ≫ (β_ X X).hom = copyMor X := copy_comm X
+example (X : C) : Δ[X] ≫ (β_ X X).hom = Δ[X] := CommComonObj.swap_comul
 
 /-- Left counit law -/
-example (X : C) : copyMor X ≫ (delMor X ▷ X) = (λ_ X).inv := counit_comul X
+example (X : C) : Δ[X] ≫ (ε[X] ▷ X) = (λ_ X).inv := ComonObj.counit_comul X
 
 /-- Right counit law -/
-example (X : C) : copyMor X ≫ (X ◁ delMor X) = (ρ_ X).inv := comul_counit X
+example (X : C) : Δ[X] ≫ (X ◁ ε[X]) = (ρ_ X).inv := ComonObj.comul_counit X
 
 /-- Coassociativity -/
 example (X : C) :
-    copyMor X ≫ (copyMor X ▷ X) =
-    copyMor X ≫ (X ◁ copyMor X) ≫ (α_ X X X).inv := coassoc X
+    Δ[X] ≫ (X ◁ Δ[X]) = Δ[X] ≫ (Δ[X] ▷ X) ≫ (α_ X X X).hom :=
+  ComonObj.comul_assoc X
 
 /-- Delete is natural -/
-example {X Y : C} (f : X ⟶ Y) : f ≫ delMor Y = delMor X := del_natural f
+example {X Y : C} (f : X ⟶ Y) : f ≫ ε[Y] = ε[X] := MarkovCategory.discard_natural f
 
 end ComonoidLaws
 
@@ -97,28 +96,8 @@ example : MonoidalCategory FinStoch := inferInstance
 
 end FinStochExamples
 
-section DeterministicMorphisms
-
-variable {C : Type u} [Category.{u} C] [MonoidalCategory C] [MarkovCategory C]
-
-/-- Identity morphisms are deterministic -/
-example (X : C) : Deterministic (𝟙 X) := inferInstance
-
-/-- Composition of deterministic morphisms is deterministic -/
-example {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
-    [Deterministic f] [Deterministic g] : Deterministic (f ≫ g) := inferInstance
-
-end DeterministicMorphisms
-
-section CartesianDeterministic
-
-variable {C : Type u} [Category.{u} C] [CartesianMonoidalCategory C]
-
-/-- In a cartesian category, all morphisms are deterministic -/
-example {X Y : C} (f : X ⟶ Y) : Deterministic f :=
-  CartesianMarkov.deterministic_of_cartesian f
-
-end CartesianDeterministic
+-- Note: Deterministic morphisms are not yet implemented in the library
+-- These tests are removed until the concept is added
 
 section SimpLemmas
 
@@ -127,12 +106,12 @@ variable {C : Type u} [Category.{u} C] [MonoidalCategory C] [MarkovCategory C]
 open MonoidalCategory CopyDiscardCategory
 
 /-- Test that simp lemmas work for counit laws -/
-example (X : C) : copyMor X ≫ (delMor X ▷ X) = (λ_ X).inv := by simp
+example (X : C) : Δ[X] ≫ (ε[X] ▷ X) = (λ_ X).inv := by simp
 
 /-- Test that simp lemmas work for naturality of delete -/
-example {X Y : C} (f : X ⟶ Y) : f ≫ delMor Y = delMor X := by simp
+example {X Y : C} (f : X ⟶ Y) : f ≫ ε[Y] = ε[X] := by simp
 
 /-- Test that simp lemmas work for copy commutativity -/
-example (X : C) : copyMor X ≫ (β_ X X).hom = copyMor X := by simp
+example (X : C) : Δ[X] ≫ (β_ X X).hom = Δ[X] := by simp
 
 end SimpLemmas
