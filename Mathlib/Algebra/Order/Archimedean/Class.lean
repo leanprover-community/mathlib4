@@ -329,12 +329,24 @@ theorem min_le_mk_mul (a b : M) : min (mk a) (mk b) ≤ mk (a * b) := by
   exact h1.not_gt h2
 
 @[to_additive]
+theorem min_le_mk_div (a b : M) : min (mk a) (mk b) ≤ mk (a / b) := by
+  simpa [div_eq_mul_inv] using min_le_mk_mul (a := a) (b := b⁻¹)
+
+@[to_additive]
 theorem mk_left_le_mk_mul (hab : mk a ≤ mk b) : mk a ≤ mk (a * b) := by
   simpa [hab] using min_le_mk_mul (a := a) (b := b)
 
 @[to_additive]
 theorem mk_right_le_mk_mul (hba : mk b ≤ mk a) : mk b ≤ mk (a * b) := by
   simpa [hba] using min_le_mk_mul (a := a) (b := b)
+
+@[to_additive]
+theorem mk_left_le_mk_div (hab : mk a ≤ mk b) : mk a ≤ mk (a / b) := by
+  simpa [div_eq_mul_inv, hab] using mk_left_le_mk_mul (a := a) (b := b⁻¹)
+
+@[to_additive]
+theorem mk_right_le_mk_div (hba : mk b ≤ mk a) : mk b ≤ mk (a / b) := by
+  simpa [div_eq_mul_inv, hba] using mk_right_le_mk_mul (a := a) (b := b⁻¹)
 
 @[to_additive]
 theorem mk_mul_eq_mk_left (h : mk a < mk b) : mk (a * b) = mk a := by
@@ -349,6 +361,14 @@ theorem mk_mul_eq_mk_left (h : mk a < mk b) : mk (a * b) = mk a := by
 @[to_additive]
 theorem mk_mul_eq_mk_right (h : mk b < mk a) : mk (a * b) = mk b :=
   mul_comm a b ▸ mk_mul_eq_mk_left h
+
+@[to_additive]
+theorem mk_div_eq_mk_left (h : mk a < mk b) : mk (a / b) = mk a := by
+  simpa [h, div_eq_mul_inv] using mk_mul_eq_mk_left (a := a) (b := b⁻¹)
+
+@[to_additive]
+theorem mk_div_eq_mk_right (h : mk b < mk a) : mk (a / b) = mk b := by
+  simpa [h, div_eq_mul_inv] using mk_mul_eq_mk_right (a := a) (b := b⁻¹)
 
 /-- The product over a set of an elements in distinct classes is in the lowest class. -/
 @[to_additive /-- The sum over a set of an elements in distinct classes is in the lowest class. -/]
