@@ -813,11 +813,11 @@ def im (x : ℍ[R]) : ℍ[R] := QuaternionAlgebra.im x
 
 @[simp] theorem re_add_im : ↑a.re + a.im = a := QuaternionAlgebra.re_add_im a
 
-@[simp] theorem sub_im_self : a - a.im = a.re := QuaternionAlgebra.sub_self_im a
+@[simp] theorem sub_im_self : a - a.im = a.re := QuaternionAlgebra.sub_im_self a
 
 @[deprecated (since := "2025-08-31")] alias sub_self_im := sub_im_self
 
-@[simp] theorem sub_re_self : a - ↑a.re = a.im := QuaternionAlgebra.sub_self_re a
+@[simp] theorem sub_re_self : a - ↑a.re = a.im := QuaternionAlgebra.sub_re_self a
 
 @[deprecated (since := "2025-08-31")] alias sub_self_re := sub_re_self
 
@@ -908,7 +908,7 @@ theorem coe_one : ((1 : R) : ℍ[R]) = 1 := rfl
 
 @[deprecated (since := "2025-08-31")] alias add_imK := imK_add
 
-@[simp] theorem im_add : (a + b).im = a.im + b.im := QuaternionAlgebra.add_im a b
+@[simp] theorem im_add : (a + b).im = a.im + b.im := QuaternionAlgebra.im_add a b
 
 @[deprecated (since := "2025-08-31")] alias add_im := im_add
 
@@ -1137,19 +1137,19 @@ theorem finrank_eq_four [StrongRankCondition R] : Module.finrank R ℍ[R] = 4 :=
 @[simp] theorem im_star : (star a).im = -a.im := QuaternionAlgebra.im_star a
 
 theorem self_add_star' : a + star a = ↑(2 * a.re) :=
-  QuaternionAlgebra.self_add_star' a
+  by simpa using QuaternionAlgebra.self_add_star' a
 
 theorem self_add_star : a + star a = 2 * a.re :=
-  QuaternionAlgebra.self_add_star a
+  by simpa using QuaternionAlgebra.self_add_star a
 
 theorem star_add_self' : star a + a = ↑(2 * a.re) :=
-  QuaternionAlgebra.star_add_self' a
+  by simpa using QuaternionAlgebra.star_add_self' a
 
 theorem star_add_self : star a + a = 2 * a.re :=
-  QuaternionAlgebra.star_add_self a
+  by simpa using QuaternionAlgebra.star_add_self a
 
 theorem star_eq_two_re_sub : star a = ↑(2 * a.re) - a :=
-  QuaternionAlgebra.star_eq_two_re_sub a
+  by simpa using QuaternionAlgebra.star_eq_two_re_sub a
 
 @[simp, norm_cast]
 theorem star_coe : star (x : ℍ[R]) = x :=
