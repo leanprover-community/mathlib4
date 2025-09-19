@@ -222,7 +222,7 @@ lemma pairing_one_four_iff' (h2 : IsSMulRegular R (2 : R)) :
   have _i : NoZeroSMulDivisors ℤ N := NoZeroSMulDivisors.int_of_charZero R N
   refine ⟨fun ⟨h₁, h₂⟩ ↦ ?_, fun h ↦ ?_⟩
   · have : ¬ LinearIndependent R ![P.root i, P.root j] := by
-      rw [← coxeterWeight_eq_four_iff_not_linearIndependent, coxeterWeight, h₁, h₂]; norm_num
+      rw [← coxeterWeight_eq_four_iff_not_linearIndependent, coxeterWeight, h₁, h₂]; simp
     replace this := P.pairing_smul_root_eq_of_not_linearIndependent this
     rw [h₂, show (4 : R) = 2 * 2 by norm_num, mul_smul] at this
     exact smul_right_injective M two_ne_zero this.symm
