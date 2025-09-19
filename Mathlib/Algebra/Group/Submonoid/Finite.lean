@@ -80,8 +80,8 @@ theorem closure_pi [Finite η] {s : Π i, Set (f i)} (hs : ∀ i, 1 ∈ s i) :
     (closure_le.2 <| pi_subset_pi_iff.2 <| .inl fun _ _ => subset_closure)
     (by
       classical
-      apply pi_le_iff.mpr fun i => map_le_of_le_comap _ <| closure_le.2 fun _x hx =>
-      subset_closure <| mem_univ_pi.mpr fun j => by
+      exact pi_le_iff.mpr fun i => map_le_of_le_comap _ <| closure_le.2 fun _x hx =>
+          subset_closure <| mem_univ_pi.mpr fun j => by
         by_cases H : j = i
         · subst H
           simpa
