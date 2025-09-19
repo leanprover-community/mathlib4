@@ -376,8 +376,8 @@ lemma iSup_eigenspace {f : End R G} (B : f.Eigenbasis ι) : ⨆ μ, f.eigenspace
 
 end Eigenbasis
 
-lemma exists_commonEigenbasis_iff_directSum_iInf_eigenspace [DecidableEq (α → K)] {f : α → End K V} :
-    (∃ ι : Type uV, Nonempty (CommonEigenbasis ι f)) ↔
+lemma exists_commonEigenbasis_iff_directSum_iInf_eigenspace [DecidableEq (α → K)]
+    {f : α → End K V} : (∃ ι : Type uV, Nonempty (CommonEigenbasis ι f)) ↔
     DirectSum.IsInternal fun μ : α → K ↦ ⨅ a, (f a).eigenspace (μ a) := by
   -- There may be a shorter proof for fields, but this proof should work over PIDs too;
   -- see TODO notes for this file.
@@ -398,7 +398,7 @@ lemma exists_commonEigenbasis_iff_iSup_iInf_eigenspace {f : α → End K V} :
     (∃ ι : Type uV, Nonempty (CommonEigenbasis ι f)) ↔
     ⨆ μ : α → K, ⨅ a, (f a).eigenspace (μ a) = ⊤ := by classical calc
   _ ↔ DirectSum.IsInternal fun μ : α → K ↦ ⨅ a, (f a).eigenspace (μ a) :=
-    exists_commonEigenbasis_iff_directSum_eigenspace
+    exists_commonEigenbasis_iff_directSum_iInf_eigenspace
   _ ↔ _ := by
     simp [DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top,
       Module.End.iSupIndep_iInf_eigenspace]
