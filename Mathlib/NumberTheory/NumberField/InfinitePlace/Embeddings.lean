@@ -273,19 +273,15 @@ lemma orderOf_isConj_two_of_ne_one (hσ : IsConj φ σ) (hσ' : σ ≠ 1) :
     orderOf σ = 2 :=
   orderOf_eq_prime_iff.mpr ⟨by ext; simpa using isConj_apply_apply hσ _, hσ'⟩
 
-end ComplexEmbedding
-
 variable {K : Type*} (L : Type*) [Field K] [Field L] (ψ : K →+* ℂ) [Algebra K L]
 
 /-- If `L/K` and `ψ : K →+* ℂ`, then the type of `ComplexExtension L ψ` consists of all
 `φ : L →+* ℂ` such that `φ.comp (algebraMap K L) = ψ`. -/
-abbrev ComplexExtension := { φ : L →+* ℂ // φ.comp (algebraMap K L) = ψ }
+protected abbrev Extension := { φ : L →+* ℂ // φ.comp (algebraMap K L) = ψ }
 
-namespace ComplexExtension
+namespace Extension
 
-open ComplexEmbedding
-
-variable (φ : ComplexExtension L ψ) {L ψ}
+variable (φ : ComplexEmbedding.Extension L ψ) {L ψ}
 
 theorem comp_eq : φ.1.comp (algebraMap K L) = ψ := φ.2
 
@@ -319,4 +315,4 @@ abbrev IsUnmixed := ¬φ.IsMixed
 theorem IsUnmixed.isReal_iff_isReal (h : φ.IsUnmixed) : IsReal ψ ↔ IsReal φ.1 := by
   aesop (add simp [IsReal.comp])
 
-end NumberField.ComplexExtension
+end NumberField.ComplexEmbedding.Extension
