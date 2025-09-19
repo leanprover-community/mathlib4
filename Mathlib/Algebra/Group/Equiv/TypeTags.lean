@@ -67,10 +67,15 @@ def AddEquiv.toMultiplicativeRight [MulOneClass G] [AddZeroClass H] :
     right_inv := f.right_inv
     map_add' := map_mul f }
 
+@[deprecated (since := "2025-09-19")]
+alias AddEquiv.toMultiplicative' := AddEquiv.toMultiplicativeRight
+
 /-- Reinterpret `G ≃* Multiplicative H` as `Additive G ≃+ H`. -/
 abbrev MulEquiv.toAdditiveLeft [MulOneClass G] [AddZeroClass H] :
     G ≃* Multiplicative H ≃ (Additive G ≃+ H) :=
   AddEquiv.toMultiplicativeRight.symm
+
+@[deprecated (since := "2025-09-19")] alias MulEquiv.toAdditive' := MulEquiv.toAdditiveLeft
 
 /-- Reinterpret `G ≃+ Additive H` as `Multiplicative G ≃* H`. -/
 @[simps]
@@ -89,10 +94,15 @@ def AddEquiv.toMultiplicativeLeft [AddZeroClass G] [MulOneClass H] :
     right_inv := f.right_inv
     map_add' := map_mul f }
 
+@[deprecated (since := "2025-09-19")]
+alias AddEquiv.toMultiplicative'' := AddEquiv.toMultiplicativeLeft
+
 /-- Reinterpret `Multiplicative G ≃* H` as `G ≃+ Additive H` as. -/
 abbrev MulEquiv.toAdditiveRight [AddZeroClass G] [MulOneClass H] :
     Multiplicative G ≃* H ≃ (G ≃+ Additive H) :=
   AddEquiv.toMultiplicativeLeft.symm
+
+@[deprecated (since := "2025-09-19")] alias MulEquiv.toAdditive'' := MulEquiv.toAdditiveRight
 
 /-- The multiplicative version of an additivized monoid is mul-equivalent to itself. -/
 @[simps! apply symm_apply]
