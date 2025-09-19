@@ -68,7 +68,7 @@ lemma RelCWComplex.Subcomplex.disjoint_openCell_subcomplex_of_not_mem [RelCWComp
   simp_rw [← union, disjoint_union_right, disjoint_iUnion_right]
   exact ⟨disjointBase n i , fun _ _ ↦ disjoint_openCell_of_ne (by aesop)⟩
 
-lemma RelCWComplex.Subcomplex.cell_mem_of_mem [T2Space X] [RelCWComplex C D] (E : Subcomplex C)
+lemma RelCWComplex.Subcomplex.cell_mem_of_mem [RelCWComplex C D] (E : Subcomplex C)
     {n} {i : cell C n} {x} (hxE : x ∈ E) (hxo : x ∈ openCell n i) : i ∈ E.I n := by
   by_contra! h!
   exact disjoint_openCell_subcomplex_of_not_mem E h! |>.notMem_of_mem_left hxo hxE
