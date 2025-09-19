@@ -209,7 +209,7 @@ theorem toList_comp (p : Path a b) : ∀ {c} (q : Path b c), (p.comp q).toList =
 
 theorem isChain_toList_nonempty :
     ∀ {b} (p : Path a b), (b :: p.toList).IsChain (fun x y => Nonempty (y ⟶ x))
-  | _, nil => .nil
+  | _, nil => .singleton b
   | _, cons p f => p.isChain_toList_nonempty.cons₂ ⟨f⟩
 
 @[deprecated (since := "2025-09-19")]
