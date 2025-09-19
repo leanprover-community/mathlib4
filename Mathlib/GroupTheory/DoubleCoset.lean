@@ -345,7 +345,7 @@ theorem union_finset_rightRel_cover (H K : Subgroup G)
     obtain ⟨a, ha⟩ : ∃ a : H, a * x = q := by
       obtain ⟨a', ha'⟩ := (Quotient.eq).mp hx
       exact ⟨a', by simpa using ha'⟩
-    exact ⟨⟨ a⁻¹, by simp only [inv_mem_iff, SetLike.coe_mem]⟩, eq_inv_mul_of_mul_eq ha⟩
+    exact ⟨⟨a⁻¹, by simp only [inv_mem_iff, SetLike.coe_mem]⟩, eq_inv_mul_of_mul_eq ha⟩
   refine ⟨a.1, ?_⟩
   simp only [Subtype.coe_prop, SetLike.mem_coe, true_and]
   exact ⟨1, Subgroup.one_mem K, by simpa using ha⟩
