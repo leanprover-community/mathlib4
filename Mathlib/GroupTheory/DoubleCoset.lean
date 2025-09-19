@@ -271,9 +271,13 @@ theorem iUnion_finset_quotToDoubleCoset (H K : Subgroup G) :
     use Finset.univ
     simpa using union_quotToDoubleCoset H K
 
-theorem union_image_mk_leftRel (H K : Subgroup G) :
+theorem union_image_mk (H K : Subgroup G) :
     ⋃ (q : Quotient H K), Quot.mk (QuotientGroup.leftRel K) ''
+    (doubleCoset (Quotient.out q : G) H K) = Set.univ ∧
+    ⋃ (q : Quotient H K), Quot.mk (QuotientGroup.rightRel H) ''
     (doubleCoset (Quotient.out q : G) H K) = Set.univ := by
+  constructor
+  all_goals
   have cover := union_quotToDoubleCoset H K
   apply Set.Subset.antisymm_iff.mpr
   simp only [Set.subset_univ, true_and]
@@ -286,20 +290,15 @@ theorem union_image_mk_leftRel (H K : Subgroup G) :
     exact ⟨y, by simpa using cover⟩
   exact ⟨i, y, hi, hy⟩
 
+theorem union_image_mk_leftRel (H K : Subgroup G) :
+    ⋃ (q : Quotient H K), Quot.mk (QuotientGroup.leftRel K) ''
+    (doubleCoset (Quotient.out q : G) H K) = Set.univ := by
+  exact (union_image_mk H K).1
+
 theorem union_image_mk_rightRel (H K : Subgroup G) :
     ⋃ (q : Quotient H K), Quot.mk (QuotientGroup.rightRel H) ''
     (doubleCoset (Quotient.out q : G) H K) = Set.univ := by
-  have cover := union_quotToDoubleCoset H K
-  apply Set.Subset.antisymm_iff.mpr
-  simp only [Set.subset_univ, true_and]
-  intro x hx
-  simp only [Set.mem_iUnion, Set.mem_image]
-  obtain ⟨y, hy⟩ := Quot.exists_rep x
-  have ⟨i, hi⟩ : ∃ i : Quotient H K, y ∈ doubleCoset (Quotient.out i) H K  := by
-    contrapose cover
-    refine (Set.ne_univ_iff_exists_notMem _).mpr ?_
-    exact ⟨y, by simpa using cover⟩
-  exact ⟨i, y, hi, hy⟩
+  exact (union_image_mk H K).2
 
 theorem union_finset_leftRel_cover (H K : Subgroup G)
     (t : Finset (Quotient H K)) (ht : Set.univ ⊆ ⋃ i ∈ t,
