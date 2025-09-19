@@ -1,4 +1,9 @@
-import Mathlib
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.Normed.Module.Convex
+import Mathlib.Analysis.Normed.Operator.Banach
+import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
+import Mathlib.Data.Real.StarOrdered
 
 open Function Metric Set
 
@@ -45,8 +50,7 @@ lemma p12 {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [Inner
 /-- Following [Rudin, *Functional Analysis* (Theorem 4.12 (b) => (c))][rudin1991] -/
 lemma p23 {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [InnerProductSpace ℝ α]
     [InnerProductSpace ℝ β] [CompleteSpace β] [CompleteSpace α] (T : α →L[ℝ] β) {δ : ℝ}
-    (h0 : δ > 0) (h : closure (T '' (ball 0 1)) ⊇ ball 0 δ) :
-    T '' (ball 0 1) ⊇ ball 0 δ := by
+    (h0 : δ > 0) (h : closure (T '' (ball 0 1)) ⊇ ball 0 δ) : T '' (ball 0 1) ⊇ ball 0 δ := by
   have int_t : interior (closure (⇑T '' ball 0 1)) ⊇ ball 0 δ :=
     (IsOpen.subset_interior_iff isOpen_ball).mpr h
   have convex_t : Convex ℝ ((T '' (ball 0 1))) :=
@@ -84,9 +88,7 @@ theorem ContinuousLinearMap.comp_le_opNorm {𝕜 𝕜₂ 𝕜₃: Type*} {E F G 
     [RingHomIsometric σ₁₂] [RingHomIsometric σ₂₃] (f : E →SL[σ₁₂] F) (g : F →SL[σ₂₃] G) (x : E) :
     ‖g (f x)‖ ≤ ‖g‖ * ‖f‖ * ‖x‖ := by calc
   _ ≤ ‖g‖ * ‖f x‖ := g.le_opNorm (f x)
-  _ ≤ ‖g‖ * (‖f‖ * ‖x‖) :=
-    have : ‖f x‖ ≤ ‖f‖ * ‖x‖ := f.le_opNorm x
-    mul_le_mul_of_nonneg_left this (by positivity)
+  _ ≤ ‖g‖ * (‖f‖ * ‖x‖) := mul_le_mul_of_nonneg_left (f.le_opNorm x) (by positivity)
   _ = _ := Eq.symm (mul_assoc ‖g‖ ‖f‖ ‖x‖)
 
 lemma p41 {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [InnerProductSpace ℝ α]
