@@ -87,11 +87,12 @@ lemma convergenceSet_BddAbove {f : PowerSeries R} (hf : IsRestricted c f) :
 
 lemma convergenceSet_leNNeg {f : PowerSeries R} (hf : IsRestricted c f) :
     ∃ A > 0, ∀ i, ‖coeff R i f‖ * c ^ i ≤ A := by
-  obtain ⟨n, hn⟩ := by simpa only [bddAbove_def] using (convergenceSet_BddAbove c hf)
-  simp_rw [convergenceSet, Set.mem_setOf_eq, forall_exists_index, forall_apply_eq_imp_iff] at hn
-  rcases (eq_zero_or_neZero n) with h | h
-  · exact ⟨n + 1, ⟨by aesop, fun i ↦ by linarith [hn i]⟩⟩
-  · exact ⟨|n|, by aesop, fun i ↦ by linarith [hn i, le_abs_self n]⟩
+  obtain ⟨x, hx, h⟩ := (bddAbove_iff_exists_ge 1).mp (convergenceSet_BddAbove c hf)
+  use x
+  constructor
+  · bound
+  · simp only [convergenceSet, Set.mem_setOf_eq, forall_exists_index, forall_apply_eq_imp_iff] at h
+    exact h
 
 variable [IsUltrametricDist R]
 
