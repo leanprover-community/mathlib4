@@ -5,6 +5,7 @@ Authors: Miguel Marco
 -/
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Functor
+import Mathlib.Tactic.HigherOrder
 
 /-!
 # Sets in subtypes
