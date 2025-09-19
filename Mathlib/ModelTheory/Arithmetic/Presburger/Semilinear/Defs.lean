@@ -203,7 +203,7 @@ theorem IsSemilinearSet.proj {s : Set (ι ⊕ κ → M)} (hs : IsSemilinearSet s
     refine ⟨y ∘ Sum.inr, ?_⟩
     simpa [LinearMap.funLeft]
 
-/-- A variant of `Semilinear.proj` for backward reasoning. -/
+/-- A variant of `IsSemilinearSet.proj` for backward reasoning. -/
 theorem IsSemilinearSet.proj' {p : (ι → M) → (κ → M) → Prop} :
     IsSemilinearSet { x | p (x ∘ Sum.inl) (x ∘ Sum.inr) } → IsSemilinearSet { x | ∃ y, p x y } :=
   proj
