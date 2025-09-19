@@ -548,16 +548,6 @@ def _root_.Homeomorph.Set.preimageVal {s t : Set α} (h : s ⊆ t) : s ≃ₜ t 
   invFun := preimageValIncl
   continuous_invFun := ContinuousMap.continuous _
 
-open Set in
-lemma _root_.Topology.IsEmbedding.inclPreimageVal {s t : Set α} (h : s ⊆ t) :
-    Topology.IsEmbedding (inclPreimageVal h) where
-  eq_induced := by
-    ext u
-    simp_rw [isOpen_induced_iff, ContinuousMap.inclPreimageVal, ContinuousMap.coe_mk]
-    unfold inclusionPreimageVal
-    simp [preimage_preimage]
-  injective x y heq := by simpa [inclusionPreimageVal, Subtype.val_inj] using heq
-
 end preimage_val
 
 end ContinuousMap
