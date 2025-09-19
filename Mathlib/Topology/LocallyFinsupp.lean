@@ -64,6 +64,10 @@ theorem supportDiscreteWithin_iff_locallyFiniteWithin [T1Space X] [Zero Y] {f : 
     exact (h ·)
   rw [EventuallyEq, Filter.Eventually, codiscreteWithin_iff_locallyFiniteComplementWithin, this]
 
+/--
+A function `f : X → Y` has locally finite support if for every `z : X`, there is a
+neighbourhood `t` around `z` such that `t ∩ f.support` is finite.
+-/
 class LocallyFiniteSupport [Zero Y] (f : X → Y) : Prop where
   support_locally_finite' : ∀ z : X, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support)
 
@@ -71,10 +75,8 @@ lemma LocallyFiniteSupport.support_locally_finite [Zero Y] (f : X → Y) [Locall
     ∀ z : X, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support) := support_locally_finite'
 
 lemma LocallyFiniteSupport.iff_support_locally_finite [Zero Y] (f : X → Y) :
-    LocallyFiniteSupport f ↔ ∀ z : X, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support) := by
-  constructor
-  · exact fun p ↦ p.support_locally_finite'
-  · exact fun p ↦ ⟨p⟩
+    LocallyFiniteSupport f ↔ ∀ z : X, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support) :=
+  ⟨fun p ↦ p.support_locally_finite', fun p ↦ ⟨p⟩⟩
 
 lemma LocallyFiniteSupport.iff_support_locallyFinite [Zero Y] (f : X → Y) :
     LocallyFinite (fun s : f.support ↦ ({s.val} : Set X)) ↔
