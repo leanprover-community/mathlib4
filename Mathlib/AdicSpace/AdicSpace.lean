@@ -110,7 +110,7 @@ noncomputable def Spa (A : HuberPair.{u}) : PreLVCRS.{u} where
   presheaf := spa.presheaf A
   complete := sorry
   isLocalRing := sorry
-  valuation := spa.stalk_valuation A
+  valuation := spa.presheaf.stalk_valuation A
   valuation_continuous := sorry
   supp_maximal := sorry
 

@@ -33,30 +33,12 @@ lemma HuberRing.exists_pod_subset (A : Type u) [HuberRing A] (U : Set A) (hU : U
     (_ : IsTopologicalRing A₀) (rod : ringOfDefinition A₀ A),
     letI := rod.toAlgebra
     (algebraMap A₀ A) '' (rod.J) ⊆ U := by
-  sorry
--- begin
---   -- We start by unpacking the fact that A is a Huber ring.
---   unfreezeI,
---   rcases ‹Huber_ring A› with ⟨_, _, _, ⟨A₀, _, _, _, ⟨⟨alg, emb, J, fin, top⟩⟩⟩⟩,
---   resetI,
---   rw is_ideal_adic_iff at top,
---   cases top with H₁ H₂,
---   -- There exists an n such that J^n ⊆ U. Choose such an n.
---   cases H₂ (algebra_map A ⁻¹' U) _ with n hn,
---   -- Now it is time to pack everything up again.
---   refine ⟨A₀, ‹_›, ‹_›, ‹_›, ⟨⟨alg, emb, _, _, _⟩, _⟩⟩,
---   { -- We have to use the ideal J^(n+1), because A₀ is not J^0-adic.
---     exact J^(n+1) },
---   { exact submodule.fg_pow J fin _, },
---   { apply is_ideal_adic_pow top, apply nat.succ_pos },
---   { show algebra_map A '' ↑(J ^ (n + 1)) ⊆ U,
---     rw set.image_subset_iff,
---     exact set.subset.trans (ideal.pow_le_pow $ nat.le_succ n) hn },
---   { apply emb.continuous.tendsto,
---     convert hU,
---     haveI : is_ring_hom (algebra.to_fun A : A₀ → A) := algebra.is_ring_hom,
---     exact is_ring_hom.map_zero _ }
--- end
+  obtain ⟨A₀, _, _, _, ⟨⟨alg, emb, J, fin, top⟩⟩⟩ := HuberRing.pod (R := A)
+  obtain ⟨_, H⟩ := isAdic_iff.mp top
+  obtain ⟨n, hn⟩ := H (algebraMap A₀ A ⁻¹' U) (emb.continuous.tendsto _ (by simpa using hU))
+  refine ⟨A₀, _, _, _, ⟨⟨alg, emb, J ^ (n + 1), Submodule.FG.pow fin _,
+    is_ideal_adic_pow top (by grind)⟩, ?_⟩⟩
+  simpa using .trans (Ideal.pow_le_pow_right (by grind)) hn
 
 structure IsRingOfIntegralElements (R₀ : Type u) (R : Type u)
     [CommRing R₀] [TopologicalSpace R₀] [HuberRing R] [Algebra R₀ R] : Prop extends
