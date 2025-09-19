@@ -92,7 +92,7 @@ theorem coprime_of_probablePrime {n b : ℕ} (h : ProbablePrime n b) (h₁ : 1 �
     omega
   -- If `n = 1`, then it follows trivially that `n` is coprime with `b`.
   · rw [show n = 1 by omega]
-    norm_num
+    simp
 
 theorem probablePrime_iff_modEq (n : ℕ) {b : ℕ} (h : 1 ≤ b) :
     ProbablePrime n b ↔ b ^ (n - 1) ≡ 1 [MOD n] := by

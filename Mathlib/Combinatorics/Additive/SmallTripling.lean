@@ -150,7 +150,7 @@ lemma small_alternating_pow_of_small_tripling (hm : 3 ≤ m) (hA : #(A ^ 3) ≤ 
   have : K ^ 2 ≤ K ^ 3 := by
     gcongr
     · exact hK₁
-    · norm_num
+    · simp
   obtain ⟨hδ₀ | hδ₀, hδ₁ | hδ₁, hδ₂ | hδ₂⟩ := hδ <;> simp [hδ₀, hδ₁, hδ₂]
   · simp [pow_succ] at hA
     nlinarith
