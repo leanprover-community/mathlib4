@@ -119,59 +119,59 @@ section of_injective
 
 open Scheme Pullback
 
-variable (𝒰 : Y.OpenCover) (𝒱 : ∀ i, (pullback f (𝒰.map i)).OpenCover)
+variable (𝒰 : Y.OpenCover) (𝒱 : ∀ i, (pullback f (𝒰.f i)).OpenCover)
 
 lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
     (hf : Function.Injective f.base) :
     diagonalCoverDiagonalRange f 𝒰 𝒱 = ⊤ := by
   rw [← top_le_iff]
   rintro x -
-  simp only [diagonalCoverDiagonalRange, openCoverOfBase_J, openCoverOfBase_obj,
-    openCoverOfLeftRight_J, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.coe_opensRange, Opens.coe_mk,
+  simp only [diagonalCoverDiagonalRange, openCoverOfBase_I₀, openCoverOfBase_X,
+    openCoverOfLeftRight_I₀, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.coe_opensRange, Opens.coe_mk,
     Set.mem_iUnion, Set.mem_range, Sigma.exists]
   have H : (pullback.fst f f).base x = (pullback.snd f f).base x :=
     hf (by rw [← Scheme.comp_base_apply, ← Scheme.comp_base_apply, pullback.condition])
-  let i := 𝒰.f (f.base ((pullback.fst f f).base x))
-  obtain ⟨y : 𝒰.obj i, hy : (𝒰.map i).base y = f.base _⟩ :=
+  let i := 𝒰.idx (f.base ((pullback.fst f f).base x))
+  obtain ⟨y : 𝒰.X i, hy : (𝒰.f i).base y = f.base _⟩ :=
     𝒰.covers (f.base ((pullback.fst f f).base x))
   obtain ⟨z, hz₁, hz₂⟩ := exists_preimage_pullback _ _ hy.symm
-  let j := (𝒱 i).f z
-  obtain ⟨w : (𝒱 i).obj j, hy : ((𝒱 i).map j).base w = z⟩ := (𝒱 i).covers z
+  let j := (𝒱 i).idx z
+  obtain ⟨w : (𝒱 i).X j, hy : ((𝒱 i).f j).base w = z⟩ := (𝒱 i).covers z
   refine ⟨i, j, ?_⟩
   simp_rw [diagonalCover_map]
   change x ∈ Set.range _
-  dsimp only [diagonalCover, Cover.bind_obj, openCoverOfLeftRight_obj]
+  dsimp only [diagonalCover, Cover.bind_X, openCoverOfLeftRight_X]
   rw [range_map]
   simp [← H, ← hz₁, ← hy]
 
 lemma Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange :
     Set.range (pullback.diagonal f).base ⊆ diagonalCoverDiagonalRange f 𝒰 𝒱 := by
   rintro _ ⟨x, rfl⟩
-  simp only [diagonalCoverDiagonalRange, openCoverOfBase_J, openCoverOfBase_obj,
-    openCoverOfLeftRight_J, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.coe_opensRange, Opens.coe_mk,
+  simp only [diagonalCoverDiagonalRange, openCoverOfBase_I₀, openCoverOfBase_X,
+    openCoverOfLeftRight_I₀, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.coe_opensRange, Opens.coe_mk,
     Set.mem_iUnion, Set.mem_range, Sigma.exists]
-  let i := 𝒰.f (f.base x)
-  obtain ⟨y : 𝒰.obj i, hy : (𝒰.map i).base y = f.base x⟩ := 𝒰.covers (f.base x)
+  let i := 𝒰.idx (f.base x)
+  obtain ⟨y : 𝒰.X i, hy : (𝒰.f i).base y = f.base x⟩ := 𝒰.covers (f.base x)
   obtain ⟨z, hz₁, hz₂⟩ := exists_preimage_pullback _ _ hy.symm
-  let j := (𝒱 i).f z
-  obtain ⟨w : (𝒱 i).obj j, hy : ((𝒱 i).map j).base w = z⟩ := (𝒱 i).covers z
-  refine ⟨i, j, (pullback.diagonal ((𝒱 i).map j ≫ pullback.snd f (𝒰.map i))).base w, ?_⟩
+  let j := (𝒱 i).idx z
+  obtain ⟨w : (𝒱 i).X j, hy : ((𝒱 i).f j).base w = z⟩ := (𝒱 i).covers z
+  refine ⟨i, j, (pullback.diagonal ((𝒱 i).f j ≫ pullback.snd f (𝒰.f i))).base w, ?_⟩
   rw [← hz₁, ← hy, ← Scheme.comp_base_apply, ← Scheme.comp_base_apply]
-  dsimp only [diagonalCover, Cover.pullbackHom, Cover.bind_obj, openCoverOfLeftRight_obj]
+  dsimp only [diagonalCover, Cover.pullbackHom, Cover.bind_X, openCoverOfLeftRight_X]
   rw [← Scheme.comp_base_apply]
   congr 5
   apply pullback.hom_ext <;> simp
 
 lemma isClosedImmersion_diagonal_restrict_diagonalCoverDiagonalRange
-    [∀ i, IsAffine (𝒰.obj i)] [∀ i j, IsAffine ((𝒱 i).obj j)] :
+    [∀ i, IsAffine (𝒰.X i)] [∀ i j, IsAffine ((𝒱 i).X j)] :
     IsClosedImmersion (pullback.diagonal f ∣_ diagonalCoverDiagonalRange f 𝒰 𝒱) := by
-  let U : (Σ i, (𝒱 i).J) → (diagonalCoverDiagonalRange f 𝒰 𝒱).toScheme.Opens := fun i ↦
-    (diagonalCoverDiagonalRange f 𝒰 𝒱).ι ⁻¹ᵁ ((diagonalCover f 𝒰 𝒱).map ⟨i.1, i.2, i.2⟩).opensRange
+  let U : (Σ i, (𝒱 i).I₀) → (diagonalCoverDiagonalRange f 𝒰 𝒱).toScheme.Opens := fun i ↦
+    (diagonalCoverDiagonalRange f 𝒰 𝒱).ι ⁻¹ᵁ ((diagonalCover f 𝒰 𝒱).f ⟨i.1, i.2, i.2⟩).opensRange
   have hU (i) : (diagonalCoverDiagonalRange f 𝒰 𝒱).ι ''ᵁ U i =
-      ((diagonalCover f 𝒰 𝒱).map ⟨i.1, i.2, i.2⟩).opensRange := by
+      ((diagonalCover f 𝒰 𝒱).f ⟨i.1, i.2, i.2⟩).opensRange := by
     rw [TopologicalSpace.Opens.functor_obj_map_obj, inf_eq_right, Hom.image_top_eq_opensRange,
       Opens.opensRange_ι]
-    exact le_iSup (fun i : Σ i, (𝒱 i).J ↦ ((diagonalCover f 𝒰 𝒱).map ⟨i.1, i.2, i.2⟩).opensRange) i
+    exact le_iSup (fun i : Σ i, (𝒱 i).I₀ ↦ ((diagonalCover f 𝒰 𝒱).f ⟨i.1, i.2, i.2⟩).opensRange) i
   have hf : iSup U = ⊤ := (TopologicalSpace.Opens.map_iSup _ _).symm.trans
     (diagonalCoverDiagonalRange f 𝒰 𝒱).ι_preimage_self
   rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := @IsClosedImmersion) _ hf]
@@ -186,7 +186,7 @@ lemma isSeparated_of_injective (hf : Function.Injective f.base) :
     IsSeparated f := by
   constructor
   let 𝒰 := Y.affineCover
-  let 𝒱 (i) := (pullback f (𝒰.map i)).affineCover
+  let 𝒱 (i) := (pullback f (𝒰.f i)).affineCover
   refine IsLocalAtTarget.of_iSup_eq_top (fun i : PUnit.{0} ↦ ⊤) (by simp) fun _ ↦ ?_
   rw [← diagonalCoverDiagonalRange_eq_top_of_injective f 𝒰 𝒱 hf]
   exact isClosedImmersion_diagonal_restrict_diagonalCoverDiagonalRange f 𝒰 𝒱

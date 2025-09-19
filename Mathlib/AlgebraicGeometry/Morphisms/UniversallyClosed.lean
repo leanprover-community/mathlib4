@@ -103,10 +103,10 @@ lemma compactSpace_of_universallyClosed
     {K} [Field K] (f : X ⟶ Spec(K)) [UniversallyClosed f] : CompactSpace X := by
   classical
   let 𝒰 : X.OpenCover := X.affineCover
-  let U (i : 𝒰.J) : X.Opens := (𝒰.map i).opensRange
-  let T : Scheme := Spec(MvPolynomial 𝒰.J K)
+  let U (i : 𝒰.I₀) : X.Opens := (𝒰.f i).opensRange
+  let T : Scheme := Spec(MvPolynomial 𝒰.I₀ K)
   let q : T ⟶ Spec(K) := Spec.map (CommRingCat.ofHom MvPolynomial.C)
-  let Ti (i : 𝒰.J) : T.Opens := basicOpen (MvPolynomial.X i)
+  let Ti (i : 𝒰.I₀) : T.Opens := basicOpen (MvPolynomial.X i)
   let fT : pullback f q ⟶ T := pullback.snd f q
   let p : pullback f q ⟶ X := pullback.fst f q
   let Z : Set (pullback f q :) := (⨆ i, fT ⁻¹ᵁ (Ti i) ⊓ p ⁻¹ᵁ (U i) : (pullback f q).Opens)ᶜ
@@ -114,23 +114,23 @@ lemma compactSpace_of_universallyClosed
     simp only [Z, isClosed_compl_iff, Opens.coe_iSup, Opens.coe_inf, Opens.map_coe]
     exact isOpen_iUnion fun i ↦ (fT.continuous.1 _ (Ti i).2).inter (p.continuous.1 _ (U i).2)
   let Zc : T.Opens := ⟨(fT.base '' Z)ᶜ, (fT.isClosedMap _ hZ).isOpen_compl⟩
-  let ψ : MvPolynomial 𝒰.J K →ₐ[K] K := MvPolynomial.aeval (fun _ ↦ 1)
+  let ψ : MvPolynomial 𝒰.I₀ K →ₐ[K] K := MvPolynomial.aeval (fun _ ↦ 1)
   let t : T := (Spec.map <| CommRingCat.ofHom ψ.toRingHom).base default
-  have ht (i : 𝒰.J) : t ∈ Ti i := show ψ (.X i) ≠ 0 by simp [ψ]
+  have ht (i : 𝒰.I₀) : t ∈ Ti i := show ψ (.X i) ≠ 0 by simp [ψ]
   have htZc : t ∈ Zc := by
     intro ⟨z, hz, hzt⟩
     suffices ∃ i, fT.base z ∈ Ti i ∧ p.base z ∈ U i from hz (by simpa)
-    exact ⟨𝒰.f (p.base z), hzt ▸ ht _, by simpa [U] using 𝒰.covers (p.base z)⟩
+    exact ⟨𝒰.idx (p.base z), hzt ▸ ht _, by simpa [U] using 𝒰.covers (p.base z)⟩
   obtain ⟨U', ⟨g, rfl⟩, htU', hU'le⟩ := Opens.isBasis_iff_nbhd.mp isBasis_basic_opens htZc
-  let σ : Finset 𝒰.J := MvPolynomial.vars g
-  let φ : MvPolynomial 𝒰.J K →+* MvPolynomial 𝒰.J K :=
-    (MvPolynomial.aeval fun i : 𝒰.J ↦ if i ∈ σ then MvPolynomial.X i else 0).toRingHom
+  let σ : Finset 𝒰.I₀ := MvPolynomial.vars g
+  let φ : MvPolynomial 𝒰.I₀ K →+* MvPolynomial 𝒰.I₀ K :=
+    (MvPolynomial.aeval fun i : 𝒰.I₀ ↦ if i ∈ σ then MvPolynomial.X i else 0).toRingHom
   let t' : T := (Spec.map (CommRingCat.ofHom φ)).base t
   have ht'g : t' ∈ PrimeSpectrum.basicOpen g :=
     show φ g ∉ t.asIdeal from (show φ g = g from aeval_ite_mem_eq_self g subset_rfl).symm ▸ htU'
   have h : t' ∉ fT.base '' Z := hU'le ht'g
   suffices ⋃ i ∈ σ, (U i).1 = Set.univ from
-    ⟨this ▸ Finset.isCompact_biUnion _ fun i _ ↦ isCompact_range (𝒰.map i).continuous⟩
+    ⟨this ▸ Finset.isCompact_biUnion _ fun i _ ↦ isCompact_range (𝒰.f i).continuous⟩
   rw [Set.iUnion₂_eq_univ_iff]
   contrapose! h
   obtain ⟨x, hx⟩ := h

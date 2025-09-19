@@ -43,17 +43,17 @@ lemma Scheme.nonempty_of_isLimit [IsCofilteredOrEmpty I]
   · have i := Nonempty.some ‹Nonempty I›
     have : IsCofiltered I := ⟨⟩
     let 𝒰 := (D.obj i).affineCover.finiteSubcover
-    have (i' : _) : IsAffine (𝒰.obj i') := inferInstanceAs (IsAffine (Spec _))
+    have (i' : _) : IsAffine (𝒰.X i') := inferInstanceAs (IsAffine (Spec _))
     obtain ⟨j, H⟩ :
-        ∃ j : 𝒰.J, ∀ {i'} (f : i' ⟶ i), Nonempty ((𝒰.pullbackCover (D.map f)).obj j) := by
+        ∃ j : 𝒰.I₀, ∀ {i'} (f : i' ⟶ i), Nonempty ((𝒰.pullbackCover (D.map f)).X j) := by
       simp_rw [← not_isEmpty_iff]
       by_contra! H
       choose i' f hf using H
       let g (j) := IsCofiltered.infTo (insert i (Finset.univ.image i'))
-        (Finset.univ.image fun j : 𝒰.J ↦ ⟨_, _, by simp, by simp, f j⟩) (X := j)
-      have (j : 𝒰.J) : IsEmpty ((𝒰.pullbackCover (D.map (g i (by simp)))).obj j) := by
-        let F : (𝒰.pullbackCover (D.map (g i (by simp)))).obj j ⟶
-            (𝒰.pullbackCover (D.map (f j))).obj j :=
+        (Finset.univ.image fun j : 𝒰.I₀ ↦ ⟨_, _, by simp, by simp, f j⟩) (X := j)
+      have (j : 𝒰.I₀) : IsEmpty ((𝒰.pullbackCover (D.map (g i (by simp)))).X j) := by
+        let F : (𝒰.pullbackCover (D.map (g i (by simp)))).X j ⟶
+            (𝒰.pullbackCover (D.map (f j))).X j :=
           pullback.map _ _ _ _ (D.map (g _ (by simp))) (𝟙 _) (𝟙 _) (by
             rw [← D.map_comp, IsCofiltered.infTo_commutes]
             · simp [g]
@@ -63,11 +63,11 @@ lemma Scheme.nonempty_of_isLimit [IsCofilteredOrEmpty I]
       obtain ⟨x, -⟩ :=
         (𝒰.pullbackCover (D.map (g i (by simp)))).covers (Nonempty.some inferInstance)
       exact (this _).elim x
-    let F := Over.post D ⋙ Over.pullback (𝒰.map j) ⋙ Over.forget _
+    let F := Over.post D ⋙ Over.pullback (𝒰.f j) ⋙ Over.forget _
     have (i' : _) : IsAffine (F.obj i') :=
-      have : IsAffineHom (pullback.snd (D.map i'.hom) (𝒰.map j)) :=
+      have : IsAffineHom (pullback.snd (D.map i'.hom) (𝒰.f j)) :=
         MorphismProperty.pullback_snd _ _ inferInstance
-      isAffine_of_isAffineHom (pullback.snd (D.map i'.hom) (𝒰.map j))
+      isAffine_of_isAffineHom (pullback.snd (D.map i'.hom) (𝒰.f j))
     have (i' : _) : Nonempty (F.obj i') := H i'.hom
     let e : F ⟶ (F ⋙ Scheme.Γ.rightOp) ⋙ Scheme.Spec := Functor.whiskerLeft F ΓSpec.adjunction.unit
     have (i : _) : IsIso (e.app i) := IsAffine.affine
@@ -82,7 +82,7 @@ lemma Scheme.nonempty_of_isLimit [IsCofilteredOrEmpty I]
       exact CommRingCat.FilteredColimits.nontrivial
         (isColimitCoconeLeftOpOfCone _ (limit.isLimit (F ⋙ Scheme.Γ.rightOp)))
     let α : F ⟶ Over.forget _ ⋙ D := Functor.whiskerRight
-      (Functor.whiskerLeft (Over.post D) (Over.mapPullbackAdj (𝒰.map j)).counit) (Over.forget _)
+      (Functor.whiskerLeft (Over.post D) (Over.mapPullbackAdj (𝒰.f j)).counit) (Over.forget _)
     exact this.map (((Functor.Initial.isLimitWhiskerEquiv (Over.forget i) c).symm hc).lift
         ((Cones.postcompose α).obj c'.1)).base
 

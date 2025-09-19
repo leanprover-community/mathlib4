@@ -163,7 +163,7 @@ open Limits Scheme.Pullback in
 @[stacks 01KJ]
 instance : IsImmersion (pullback.diagonal f) := by
   let 𝒰 := Y.affineCover
-  let 𝒱 (i) := (pullback f (𝒰.map i)).affineCover
+  let 𝒱 (i) := (pullback f (𝒰.f i)).affineCover
   have H : pullback.diagonal f ⁻¹ᵁ diagonalCoverDiagonalRange f 𝒰 𝒱 = ⊤ :=
     top_le_iff.mp fun _ _ ↦ range_diagonal_subset_diagonalCoverDiagonalRange _ _ _ ⟨_, rfl⟩
   have := isClosedImmersion_diagonal_restrict_diagonalCoverDiagonalRange f 𝒰 𝒱
