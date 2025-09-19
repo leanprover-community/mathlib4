@@ -12,6 +12,8 @@ import Mathlib.RingTheory.Regular.Category
 import Mathlib.RingTheory.Support
 import Mathlib.RingTheory.Spectrum.Prime.Topology
 import Mathlib.Algebra.Category.Grp.Zero
+import Mathlib.RingTheory.KrullDimension.Module
+import Mathlib.RingTheory.KrullDimension.Field
 import Mathlib.Tactic.ENatToNat
 /-!
 
