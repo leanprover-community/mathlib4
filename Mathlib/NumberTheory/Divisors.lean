@@ -138,8 +138,8 @@ theorem mem_divisorsAntidiagonal {x : ℕ × ℕ} :
 @[simp]
 lemma toFinset_divisorsAntidiagonalList {n : ℕ} :
     n.divisorsAntidiagonalList.toFinset = n.divisorsAntidiagonal := by
-  rw [divisorsAntidiagonalList, divisorsAntidiagonal, List.toFinset_filterMap (f_inj := by aesop),
-    List.toFinset_range'_1_1]
+  rw [divisorsAntidiagonalList, divisorsAntidiagonal, List.toFinset_filterMap
+    (f_inj := by simp_all), List.toFinset_range'_1_1]
 
 lemma sorted_divisorsAntidiagonalList_fst {n : ℕ} :
     n.divisorsAntidiagonalList.Sorted (·.fst < ·.fst) := by
@@ -203,6 +203,7 @@ theorem divisor_le {m : ℕ} : n ∈ divisors m → n ≤ m := by
   · simp only [mem_divisors, Nat.succ_ne_zero m, and_true, Ne, not_false_iff]
     exact Nat.le_of_dvd (Nat.succ_pos m)
 
+@[gcongr]
 theorem divisors_subset_of_dvd {m : ℕ} (hzero : n ≠ 0) (h : m ∣ n) : divisors m ⊆ divisors n :=
   Finset.subset_iff.2 fun _x hx => Nat.mem_divisors.mpr ⟨(Nat.mem_divisors.mp hx).1.trans h, hzero⟩
 
@@ -316,12 +317,6 @@ theorem divisorsAntidiagonal_one : divisorsAntidiagonal 1 = {(1, 1)} := by
 theorem swap_mem_divisorsAntidiagonal {x : ℕ × ℕ} :
     x.swap ∈ divisorsAntidiagonal n ↔ x ∈ divisorsAntidiagonal n := by
   rw [mem_divisorsAntidiagonal, mem_divisorsAntidiagonal, mul_comm, Prod.swap]
-
-/-- `Nat.swap_mem_divisorsAntidiagonal` with the LHS in simp normal form. -/
-@[deprecated swap_mem_divisorsAntidiagonal (since := "2025-02-17")]
-theorem swap_mem_divisorsAntidiagonal_aux {x : ℕ × ℕ} :
-    x.snd * x.fst = n ∧ ¬n = 0 ↔ x ∈ divisorsAntidiagonal n := by
-  rw [mem_divisorsAntidiagonal, mul_comm]
 
 lemma prodMk_mem_divisorsAntidiag {x y : ℕ} (hn : n ≠ 0) :
     (x, y) ∈ n.divisorsAntidiagonal ↔ x * y = n := by simp [hn]
@@ -569,10 +564,7 @@ theorem image_div_divisors_eq_divisors (n : ℕ) :
     rintro ⟨h1, -⟩
     exact ⟨n / a, mem_divisors.mpr ⟨div_dvd_of_dvd h1, hn⟩, Nat.div_div_self h1 hn⟩
 
-/- Porting note: Removed simp; simp_nf linter:
-Left-hand side does not simplify, when using the simp lemma on itself.
-This usually means that it will never apply. -/
-@[to_additive sum_div_divisors]
+@[to_additive (attr := simp) sum_div_divisors]
 theorem prod_div_divisors {α : Type*} [CommMonoid α] (n : ℕ) (f : ℕ → α) :
     (∏ d ∈ n.divisors, f (n / d)) = n.divisors.prod f := by
   by_cases hn : n = 0; · simp [hn]

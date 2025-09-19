@@ -314,7 +314,7 @@ lemma le_iff_norm_sqrt_mul_rpow {a b : A} (hbu : IsUnit b) (ha : 0 ≤ a) (hb : 
 lemma le_iff_norm_sqrt_mul_sqrt_inv {a : A} {b : Aˣ} (ha : 0 ≤ a) (hb : 0 ≤ (b : A)) :
     a ≤ b ↔ ‖sqrt a * sqrt (↑b⁻¹ : A)‖ ≤ 1 := by
   rw [CFC.sqrt_eq_rpow (a := (↑b⁻¹ : A)), ← CFC.rpow_neg_one_eq_inv b,
-    CFC.rpow_rpow (b : A) _ _ (by simp) (by norm_num), le_iff_norm_sqrt_mul_rpow b.isUnit ha hb]
+    CFC.rpow_rpow (b : A) _ _ (by simp) (by simp), le_iff_norm_sqrt_mul_rpow b.isUnit ha hb]
   norm_num
 
 namespace CStarAlgebra
@@ -442,7 +442,7 @@ lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
     simp only [Set.mem_image, Set.mem_setOf_eq, Set.mem_inter_iff, Set.mem_range, ← exists_and_left]
     congr! 2 with x
     exact and_congr_left fun h ↦ by simp [← h]
-  simp only [nonneg_iff_isSelfAdjoint_and_spectrumRestricts,
+  simp only [nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts,
     and_congr_right (SpectrumRestricts.nnreal_iff_nnnorm · le_rfl), Set.setOf_and]
   refine isClosed_eq ?_ ?_ |>.inter <| isClosed_le ?_ ?_
   all_goals fun_prop

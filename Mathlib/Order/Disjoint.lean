@@ -66,8 +66,8 @@ theorem disjoint_bot_right : Disjoint a ⊥ := fun _ _ hbot ↦ hbot
 theorem Disjoint.mono_left (h : a ≤ b) : Disjoint b c → Disjoint a c :=
   Disjoint.mono h le_rfl
 
-theorem Disjoint.mono_right : b ≤ c → Disjoint a c → Disjoint a b :=
-  Disjoint.mono le_rfl
+theorem Disjoint.mono_right (h : b ≤ c) : Disjoint a c → Disjoint a b :=
+  Disjoint.mono le_rfl h
 
 @[simp]
 theorem disjoint_self : Disjoint a a ↔ a = ⊥ :=
@@ -207,8 +207,6 @@ def Codisjoint (a b : α) : Prop :=
 
 theorem codisjoint_comm : Codisjoint a b ↔ Codisjoint b a :=
   forall_congr' fun _ ↦ forall_swap
-
-@[deprecated (since := "2024-11-23")] alias Codisjoint_comm := codisjoint_comm
 
 @[symm]
 theorem Codisjoint.symm ⦃a b : α⦄ : Codisjoint a b → Codisjoint b a :=

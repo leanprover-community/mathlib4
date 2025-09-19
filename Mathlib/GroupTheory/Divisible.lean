@@ -12,7 +12,8 @@ import Mathlib.Tactic.NormNum.Eq
 /-!
 # Divisible Group and rootable group
 
-In this file, we define a divisible add monoid and a rootable monoid with some basic properties.
+In this file, we define a divisible additive monoid and a rootable monoid with some basic
+properties.
 
 ## Main definition
 
@@ -29,19 +30,19 @@ In this file, we define a divisible add monoid and a rootable monoid with some b
 
 For additive monoids and groups:
 
-* `divisibleByOfSMulRightSurj` : the constructive definition of divisiblity is implied by
+* `divisibleByOfSMulRightSurj` : the constructive definition of divisibility is implied by
   the condition that `n • x = a` has solutions for all `n ≠ 0` and `a ∈ A`.
-* `smul_right_surj_of_divisibleBy` : the constructive definition of divisiblity implies
+* `smul_right_surj_of_divisibleBy` : the constructive definition of divisibility implies
   the condition that `n • x = a` has solutions for all `n ≠ 0` and `a ∈ A`.
 * `Prod.divisibleBy` : `A × B` is divisible for any two divisible additive monoids.
 * `Pi.divisibleBy` : any product of divisible additive monoids is divisible.
-* `AddGroup.divisibleByIntOfDivisibleByNat` : for additive groups, int divisiblity is implied
-  by nat divisiblity.
-* `AddGroup.divisibleByNatOfDivisibleByInt` : for additive groups, nat divisiblity is implied
-  by int divisiblity.
-* `AddCommGroup.divisibleByIntOfSMulTopEqTop`: the constructive definition of divisiblity
+* `AddGroup.divisibleByIntOfDivisibleByNat` : for additive groups, int divisibility is implied
+  by nat divisibility.
+* `AddGroup.divisibleByNatOfDivisibleByInt` : for additive groups, nat divisibility is implied
+  by int divisibility.
+* `AddCommGroup.divisibleByIntOfSMulTopEqTop`: the constructive definition of divisibility
   is implied by the condition that `n • A = A` for all `n ≠ 0`.
-* `AddCommGroup.smul_top_eq_top_of_divisibleBy_int`: the constructive definition of divisiblity
+* `AddCommGroup.smul_top_eq_top_of_divisibleBy_int`: the constructive definition of divisibility
   implies the condition that `n • A = A` for all `n ≠ 0`.
 * `divisibleByIntOfCharZero` : any field of characteristic zero is divisible.
 * `QuotientAddGroup.divisibleBy` : quotient group of divisible group is divisible.
@@ -50,16 +51,16 @@ For additive monoids and groups:
 
 and their multiplicative counterparts:
 
-* `rootableByOfPowLeftSurj` : the constructive definition of rootablity is implied by the
+* `rootableByOfPowLeftSurj` : the constructive definition of rootability is implied by the
   condition that `xⁿ = y` has solutions for all `n ≠ 0` and `a ∈ A`.
-* `pow_left_surj_of_rootableBy` : the constructive definition of rootablity implies the
+* `pow_left_surj_of_rootableBy` : the constructive definition of rootability implies the
   condition that `xⁿ = y` has solutions for all `n ≠ 0` and `a ∈ A`.
 * `Prod.rootableBy` : any product of two rootable monoids is rootable.
 * `Pi.rootableBy` : any product of rootable monoids is rootable.
-* `Group.rootableByIntOfRootableByNat` : in groups, int rootablity is implied by nat
-  rootablity.
-* `Group.rootableByNatOfRootableByInt` : in groups, nat rootablity is implied by int
-  rootablity.
+* `Group.rootableByIntOfRootableByNat` : in groups, int rootability is implied by nat
+  rootability.
+* `Group.rootableByNatOfRootableByInt` : in groups, nat rootability is implied by int
+  rootability.
 * `QuotientGroup.rootableBy` : quotient group of rootable group is rootable.
 * `Function.Surjective.rootableBy` : if `A` is rootable and `A →* B` is surjective, then `B` is
   rootable.
@@ -113,9 +114,8 @@ theorem pow_left_surj_of_rootableBy [RootableBy A α] {n : α} (hn : n ≠ 0) :
 A `Monoid A` is `α`-rootable iff the `pow _ n` function is surjective, i.e. the constructive version
 implies the textbook approach.
 -/
-@[to_additive divisibleByOfSMulRightSurj
-      "An `AddMonoid A` is `α`-divisible iff `n • _` is a surjective function, i.e. the constructive
-      version implies the textbook approach."]
+@[to_additive divisibleByOfSMulRightSurj /-- An `AddMonoid A` is `α`-divisible iff `n • _` is a
+surjective function, i.e. the constructive version implies the textbook approach. -/]
 noncomputable def rootableByOfPowLeftSurj
     (H : ∀ {n : α}, n ≠ 0 → Function.Surjective (fun a => a ^ n : A → A)) : RootableBy A α where
   root a n := @dite _ (n = 0) (Classical.dec _) (fun _ => (1 : A)) fun hn => (H hn a).choose
@@ -188,7 +188,7 @@ end AddCommGroup
 instance (priority := 100) divisibleByIntOfCharZero {𝕜} [DivisionRing 𝕜] [CharZero 𝕜] :
     DivisibleBy 𝕜 ℤ where
   div q n := q / n
-  div_zero q := by norm_num
+  div_zero q := by simp
   div_cancel {n} q hn := by
     rw [zsmul_eq_mul, (Int.cast_commute n _).eq, div_mul_cancel₀ q (Int.cast_ne_zero.mpr hn)]
 
@@ -199,7 +199,7 @@ variable (A : Type*) [Group A]
 open Int in
 /-- A group is `ℤ`-rootable if it is `ℕ`-rootable.
 -/
-@[to_additive "An additive group is `ℤ`-divisible if it is `ℕ`-divisible."]
+@[to_additive /-- An additive group is `ℤ`-divisible if it is `ℕ`-divisible. -/]
 def rootableByIntOfRootableByNat [RootableBy A ℕ] : RootableBy A ℤ where
   root a z :=
     match z with
@@ -214,13 +214,14 @@ def rootableByIntOfRootableByNat [RootableBy A ℕ] : RootableBy A ℤ where
 
 /-- A group is `ℕ`-rootable if it is `ℤ`-rootable
 -/
-@[to_additive "An additive group is `ℕ`-divisible if it `ℤ`-divisible."]
+@[to_additive /-- An additive group is `ℕ`-divisible if it `ℤ`-divisible. -/]
 def rootableByNatOfRootableByInt [RootableBy A ℤ] : RootableBy A ℕ where
   root a n := RootableBy.root a (n : ℤ)
   root_zero a := RootableBy.root_zero a
   root_cancel {n} a hn := by
-    -- Porting note: replaced `norm_num`
-    simpa only [zpow_natCast] using RootableBy.root_cancel a (show (n : ℤ) ≠ 0 from mod_cast hn)
+    have := RootableBy.root_cancel a (show (n : ℤ) ≠ 0 from mod_cast hn)
+    norm_num at this
+    exact this
 
 end Group
 
@@ -234,8 +235,8 @@ variable (f : A → B)
 If `f : A → B` is a surjective homomorphism and `A` is `α`-rootable, then `B` is also `α`-rootable.
 -/
 @[to_additive
-      "If `f : A → B` is a surjective homomorphism and `A` is `α`-divisible, then `B` is also
-      `α`-divisible."]
+      /-- If `f : A → B` is a surjective homomorphism and `A` is `α`-divisible, then `B` is also
+      `α`-divisible. -/]
 noncomputable def Function.Surjective.rootableBy (hf : Function.Surjective f)
     (hpow : ∀ (a : A) (n : α), f (a ^ n) = f a ^ n) : RootableBy B α :=
   rootableByOfPowLeftSurj _ _ fun {n} hn x =>
@@ -255,7 +256,7 @@ section Quotient
 variable (α : Type*) {A : Type*} [CommGroup A] (B : Subgroup A)
 
 /-- Any quotient group of a rootable group is rootable. -/
-@[to_additive "Any quotient group of a divisible group is divisible"]
+@[to_additive /-- Any quotient group of a divisible group is divisible -/]
 noncomputable instance QuotientGroup.rootableBy [RootableBy A ℕ] : RootableBy (A ⧸ B) ℕ :=
   QuotientGroup.mk_surjective.rootableBy _ fun _ _ => rfl
 

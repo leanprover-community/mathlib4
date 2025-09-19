@@ -3,7 +3,6 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes
 -/
-import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Data.Fintype.Inv
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
@@ -31,7 +30,7 @@ integral domain, finite integral domain, finite field
 
 section
 
-open Finset Polynomial Function Nat
+open Finset Polynomial Function
 
 section CancelMonoidWithZero
 
@@ -61,9 +60,8 @@ theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type*} [CommSemiring R] [IsD
   refine exists_eq_pow_of_mul_eq_pow (isUnit_of_dvd_one ?_) h
   obtain ⟨x, y, hxy⟩ := cp
   rw [← hxy]
-  exact  -- Porting note: added `GCDMonoid.` twice
-    dvd_add (dvd_mul_of_dvd_right (GCDMonoid.gcd_dvd_left _ _) _)
-      (dvd_mul_of_dvd_right (GCDMonoid.gcd_dvd_right _ _) _)
+  exact dvd_add (dvd_mul_of_dvd_right (gcd_dvd_left _ _) _)
+    (dvd_mul_of_dvd_right (gcd_dvd_right _ _) _)
 
 nonrec
 theorem Finset.exists_eq_pow_of_mul_eq_pow_of_coprime {ι R : Type*} [CommSemiring R] [IsDomain R]
@@ -140,11 +138,9 @@ section
 variable (S : Subgroup Rˣ) [Finite S]
 
 /-- A finite subgroup of the units of an integral domain is cyclic. -/
-instance subgroup_units_cyclic : IsCyclic S := by
-  -- Porting note: the original proof used a `coe`, but I was not able to get it to work.
-  apply isCyclic_of_subgroup_isDomain (R := R) (G := S) _ _
-  · exact MonoidHom.mk (OneHom.mk (fun s => ↑s.val) rfl) (by simp)
-  · exact Units.val_injective.comp Subtype.val_injective
+instance subgroup_units_cyclic : IsCyclic S :=
+  isCyclic_of_subgroup_isDomain { toFun s := (s.val : R), map_one' := rfl, map_mul' := by simp }
+    (Units.val_injective.comp Subtype.val_injective)
 
 end
 
@@ -161,11 +157,9 @@ theorem div_eq_quo_add_rem_div (f : R[X]) {g : R[X]} (hg : g.Monic) :
   refine ⟨f /ₘ g, f %ₘ g, ?_, ?_⟩
   · exact degree_modByMonic_lt _ hg
   · have hg' : algebraMap R[X] K g ≠ 0 :=
-      -- Porting note: the proof was `by exact_mod_cast Monic.ne_zero hg`
       (map_ne_zero_iff _ (IsFractionRing.injective R[X] K)).mpr (Monic.ne_zero hg)
-    field_simp [hg']
-    -- Porting note: `norm_cast` was here, but does nothing.
-    rw [add_comm, mul_comm, ← map_mul, ← map_add, modByMonic_add_div f hg]
+    field_simp
+    rw [add_comm, ← map_mul, ← map_add, modByMonic_add_div f hg]
 
 end Polynomial
 
@@ -220,8 +214,8 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
             (by simpa using pow_injOn_Iio_orderOf)
             (fun b _ => let ⟨n, hn⟩ := hx b
               ⟨n % orderOf x, mem_range.2 (Nat.mod_lt _ (orderOf_pos _)),
-               -- Porting note: have to use `dsimp` to apply the function
-               by dsimp at hn ⊢; rw [pow_mod_orderOf, hn]⟩)
+               -- Porting note: have to `beta_reduce` to apply the function
+               by beta_reduce at hn ⊢; rw [pow_mod_orderOf, hn]⟩)
             (by simp only [imp_true_iff, Subgroup.coe_pow,
                 Units.val_pow_eq_pow_val])
       _ = 0 := ?_
@@ -236,7 +230,7 @@ theorem sum_hom_units (f : G →* R) [Decidable (f = 1)] :
     ∑ g : G, f g = if f = 1 then Fintype.card G else 0 := by
   split_ifs with h
   · simp [h]
-  · rw [cast_zero] -- Porting note: added
+  · rw [Nat.cast_zero]
     exact sum_hom_units_eq_zero f h
 
 end

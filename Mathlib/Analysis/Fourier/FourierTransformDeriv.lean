@@ -265,8 +265,7 @@ theorem fourierIntegral_fderiv [MeasurableSpace V] [BorelSpace V] [FiniteDimensi
   have A x : fderiv ℝ g x y = - 2 * ↑π * I * L y w * g x :=
     fderiv_fourierChar_neg_bilinear_left_apply _ _ _ _
   rw [integral_smul_fderiv_eq_neg_fderiv_smul_of_integrable, ← integral_neg]
-  · congr with x
-    simp only [A, neg_mul, neg_smul, neg_neg]
+  · simp only [A, neg_mul, neg_smul, neg_neg]
   · have : Integrable (fun x ↦ (-(2 * ↑π * I * ↑((L y) w)) • ((g x : ℂ) • f x))) μ :=
       ((fourierIntegral_convergent_iff' _ _).2 hf).smul _
     convert this using 2 with x
@@ -670,14 +669,14 @@ variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDim
   [MeasurableSpace V] [BorelSpace V] {f : V → E}
 
 /-- The Fréchet derivative of the Fourier transform of `f` is the Fourier transform of
-    `fun v ↦ -2 * π * I ⟪v, ⬝⟫ f v`. -/
+`fun v ↦ -2 * π * I ⟪v, ⬝⟫ f v`. -/
 theorem hasFDerivAt_fourierIntegral
     (hf_int : Integrable f) (hvf_int : Integrable (fun v ↦ ‖v‖ * ‖f v‖)) (x : V) :
     HasFDerivAt (𝓕 f) (𝓕 (fourierSMulRight (innerSL ℝ) f) x) x :=
   VectorFourier.hasFDerivAt_fourierIntegral (innerSL ℝ) hf_int hvf_int x
 
 /-- The Fréchet derivative of the Fourier transform of `f` is the Fourier transform of
-    `fun v ↦ -2 * π * I ⟪v, ⬝⟫ f v`. -/
+`fun v ↦ -2 * π * I ⟪v, ⬝⟫ f v`. -/
 theorem fderiv_fourierIntegral
     (hf_int : Integrable f) (hvf_int : Integrable (fun v ↦ ‖v‖ * ‖f v‖)) :
     fderiv ℝ (𝓕 f) = 𝓕 (fourierSMulRight (innerSL ℝ) f) :=
@@ -747,7 +746,7 @@ lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le
   rcases eq_or_ne w 0 with rfl | hw
   · simp [hn]
     positivity
-  rw [mul_le_mul_left (pow_pos (by simp [hw]) n)] at Z
+  rw [mul_le_mul_iff_right₀ (pow_pos (by simp [hw]) n)] at Z
   apply Z.trans
   conv_rhs => rw [← mul_one π]
   simp only [mul_assoc]

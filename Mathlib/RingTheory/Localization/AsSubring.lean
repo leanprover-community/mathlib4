@@ -60,7 +60,7 @@ instance isLocalization_range_mapToFractionRing (B : Type*) [CommRing B] [Algebr
     [IsLocalization S B] (hS : S ≤ A⁰) : IsLocalization S (mapToFractionRing K S B hS).range :=
   IsLocalization.isLocalization_of_algEquiv S <|
     show B ≃ₐ[A] _ from AlgEquiv.ofBijective (mapToFractionRing K S B hS).rangeRestrict (by
-      refine ⟨fun a b h => ?_, Set.surjective_onto_range⟩
+      refine ⟨fun a b h => ?_, Set.rangeFactorization_surjective⟩
       refine (IsLocalization.lift_injective_iff _).2 (fun a b => ?_) (Subtype.ext_iff.1 h)
       exact ⟨fun h => congr_arg _ (IsLocalization.injective _ hS h),
         fun h => congr_arg _ (IsFractionRing.injective A K h)⟩)

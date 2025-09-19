@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.Algebra.Polynomial.BigOperators
+import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
@@ -17,7 +17,7 @@ import Mathlib.RingTheory.Noetherian.Basic
 * `MvPolynomial.isDomain`:
   If a ring is an integral domain, then so is its polynomial ring over finitely many variables.
 * `Polynomial.isNoetherianRing`:
-  Hilbert basis theorem, that if a ring is noetherian then so is its polynomial ring.
+  Hilbert basis theorem, that if a ring is Noetherian then so is its polynomial ring.
 -/
 
 noncomputable section
@@ -108,10 +108,7 @@ theorem degreeLT_eq_span_X_pow [DecidableEq R] {n : ℕ} :
     refine Submodule.sum_mem _ fun k hk => ?_
     have := WithBot.coe_lt_coe.1 ((Finset.sup_lt_iff <| WithBot.bot_lt_coe n).1 hp k hk)
     rw [← C_mul_X_pow_eq_monomial, C_mul']
-    refine
-      Submodule.smul_mem _ _
-        (Submodule.subset_span <|
-          Finset.mem_coe.2 <| Finset.mem_image.2 ⟨_, Finset.mem_range.2 this, rfl⟩)
+    refine Submodule.smul_mem _ _ (Submodule.subset_span <| by grind)
   rw [Submodule.span_le, Finset.coe_image, Set.image_subset_iff]
   intro k hk
   apply mem_degreeLT.2
@@ -263,10 +260,11 @@ theorem geom_sum_X_comp_X_add_one_eq_sum (n : ℕ) :
         imp_true_iff]
     · simp +contextual only [Nat.lt_add_one_iff, Nat.choose_eq_zero_of_lt,
         Nat.cast_zero, Finset.mem_range, not_lt, if_true, imp_true_iff]
-  induction' n with n ih generalizing i
-  · dsimp; simp only [zero_comp, coeff_zero, Nat.cast_zero]
-  · simp only [geom_sum_succ', ih, add_comp, X_pow_comp, coeff_add, Nat.choose_succ_succ,
-    Nat.cast_add, coeff_X_add_one_pow]
+  induction n generalizing i with
+  | zero => dsimp; simp only [zero_comp, coeff_zero, Nat.cast_zero]
+  | succ n ih =>
+    simp only [geom_sum_succ', ih, add_comp, X_pow_comp, coeff_add, Nat.choose_succ_succ,
+      Nat.cast_add, coeff_X_add_one_pow]
 
 theorem Monic.geom_sum {P : R[X]} (hP : P.Monic) (hdeg : 0 < P.natDegree) {n : ℕ} (hn : n ≠ 0) :
     (∑ i ∈ range n, P ^ i).Monic := by
@@ -306,7 +304,7 @@ def restriction (p : R[X]) : Polynomial (Subring.closure (↑p.coeffs : Set R)) 
       (⟨p.coeff i,
           letI := Classical.decEq R
           if H : p.coeff i = 0 then H.symm ▸ (Subring.closure _).zero_mem
-          else Subring.subset_closure (p.coeff_mem_coeffs _ H)⟩ :
+          else Subring.subset_closure (p.coeff_mem_coeffs H)⟩ :
         Subring.closure (↑p.coeffs : Set R))
 
 @[simp]
@@ -374,7 +372,7 @@ def toSubring (hp : (↑p.coeffs : Set R) ⊆ T) : T[X] :=
     monomial i
       (⟨p.coeff i,
         letI := Classical.decEq R
-        if H : p.coeff i = 0 then H.symm ▸ T.zero_mem else hp (p.coeff_mem_coeffs _ H)⟩ : T)
+        if H : p.coeff i = 0 then H.symm ▸ T.zero_mem else hp (p.coeff_mem_coeffs H)⟩ : T)
 
 variable (hp : (↑p.coeffs : Set R) ⊆ T)
 
@@ -575,7 +573,7 @@ theorem leadingCoeffNth_mono {m n : ℕ} (H : m ≤ n) : I.leadingCoeffNth m ≤
   rcases hr with ⟨p, hpI, hpdeg, rfl⟩
   refine ⟨p * X ^ (n - m), I.mul_mem_right _ hpI, ?_, leadingCoeff_mul_X_pow⟩
   refine le_trans (degree_mul_le _ _) ?_
-  refine le_trans (add_le_add hpdeg (degree_X_pow_le _)) ?_
+  grw [hpdeg, degree_X_pow_le]
   rw [← Nat.cast_add, add_tsub_cancel_of_le H]
 
 theorem mem_leadingCoeff (x) : x ∈ I.leadingCoeff ↔ ∃ p ∈ I, Polynomial.leadingCoeff p = x := by
@@ -598,18 +596,18 @@ theorem _root_.Polynomial.coeff_prod_mem_ideal_pow_tsub {ι : Type*} (s : Finset
     (I : Ideal R) (n : ι → ℕ) (h : ∀ i ∈ s, ∀ (k), (f i).coeff k ∈ I ^ (n i - k)) (k : ℕ) :
     (s.prod f).coeff k ∈ I ^ (s.sum n - k) := by
   classical
-    induction' s using Finset.induction with a s ha hs generalizing k
-    · rw [sum_empty, prod_empty, coeff_one, zero_tsub, pow_zero, Ideal.one_eq_top]
+    induction s using Finset.induction generalizing k with
+    | empty =>
+      rw [sum_empty, prod_empty, coeff_one, zero_tsub, pow_zero, Ideal.one_eq_top]
       exact Submodule.mem_top
-    · rw [sum_insert ha, prod_insert ha, coeff_mul]
+    | insert a s ha hs =>
+      rw [sum_insert ha, prod_insert ha, coeff_mul]
       apply sum_mem
       rintro ⟨i, j⟩ e
       obtain rfl : i + j = k := mem_antidiagonal.mp e
       apply Ideal.pow_le_pow_right add_tsub_add_le_tsub_add_tsub
       rw [pow_add]
-      exact
-        Ideal.mul_mem_mul (h _ (Finset.mem_insert.mpr <| Or.inl rfl) _)
-          (hs (fun i hi k => h _ (Finset.mem_insert.mpr <| Or.inr hi) _) j)
+      exact Ideal.mul_mem_mul (by grind) (by grind)
 
 end CommSemiring
 
@@ -767,9 +765,10 @@ private theorem prime_C_iff_of_fintype {R : Type u} (σ : Type v) {r : R} [CommR
   convert_to Prime (C r) ↔ _
   · congr!
     simp only [renameEquiv_apply, algHom_C, algebraMap_eq]
-  · induction' Fintype.card σ with d hd
-    · exact MulEquiv.prime_iff (isEmptyAlgEquiv R (Fin 0)).symm (p := r)
-    · convert MulEquiv.prime_iff (finSuccEquiv R d).symm (p := Polynomial.C (C r))
+  · induction Fintype.card σ with
+    | zero => exact MulEquiv.prime_iff (isEmptyAlgEquiv R (Fin 0)).symm (p := r)
+    | succ d hd =>
+      convert MulEquiv.prime_iff (finSuccEquiv R d).symm (p := Polynomial.C (C r))
       · simp [← finSuccEquiv_comp_C_eq_C]
       · simp [← hd, Polynomial.prime_C_iff]
 
@@ -850,7 +849,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
         rw [this]
         intro p hp
         generalize hn : p.natDegree = k
-        induction' k using Nat.strong_induction_on with k ih generalizing p
+        induction k using Nat.strong_induction_on generalizing p with | _ k ih
         rcases le_or_gt k N with h | h
         · subst k
           refine hs2 ⟨Polynomial.mem_degreeLE.2
@@ -918,9 +917,6 @@ theorem disjoint_ker_aeval_of_isCoprime (f : M →ₗ[R] M) {p q : R[X]} (hpq : 
     LinearMap.mem_ker.1 (Submodule.mem_inf.1 hv).2] using
     congr_arg (fun p : R[X] => aeval f p v) hpq'.symm
 
-@[deprecated (since := "2025-01-23")]
-alias disjoint_ker_aeval_of_coprime := disjoint_ker_aeval_of_isCoprime
-
 theorem sup_aeval_range_eq_top_of_isCoprime (f : M →ₗ[R] M) {p q : R[X]} (hpq : IsCoprime p q) :
     LinearMap.range (aeval f p) ⊔ LinearMap.range (aeval f q) = ⊤ := by
   rw [eq_top_iff]
@@ -933,9 +929,6 @@ theorem sup_aeval_range_eq_top_of_isCoprime (f : M →ₗ[R] M) {p q : R[X]} (hp
   use LinearMap.mem_range.2 ⟨aeval f q' v, by simp only [Module.End.mul_apply, aeval_mul]⟩
   simpa only [mul_comm p p', mul_comm q q', aeval_one, aeval_add] using
     congr_arg (fun p : R[X] => aeval f p v) hpq'
-
-@[deprecated (since := "2025-01-23")]
-alias sup_aeval_range_eq_top_of_coprime := sup_aeval_range_eq_top_of_isCoprime
 
 theorem sup_ker_aeval_le_ker_aeval_mul {f : M →ₗ[R] M} {p q : R[X]} :
     LinearMap.ker (aeval f p) ⊔ LinearMap.ker (aeval f q) ≤ LinearMap.ker (aeval f (p * q)) := by
@@ -1008,8 +1001,8 @@ theorem isNoetherianRing_fin [IsNoetherianRing R] :
       (MvPolynomial.finSuccEquiv _ n).toRingEquiv.symm
       (@Polynomial.isNoetherianRing (MvPolynomial (Fin n) R) _ isNoetherianRing_fin)
 
-/-- The multivariate polynomial ring in finitely many variables over a noetherian ring
-is itself a noetherian ring. -/
+/-- The multivariate polynomial ring in finitely many variables over a Noetherian ring
+is itself a Noetherian ring. -/
 instance isNoetherianRing [Finite σ] [IsNoetherianRing R] :
     IsNoetherianRing (MvPolynomial σ R) := by
   cases nonempty_fintype σ

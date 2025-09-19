@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Sites.Coherent.Basic
-/-!
+import Mathlib.Data.Finite.Sigma
 
+/-!
 # Description of the covering sieves of the extensive topology
 
 This file characterises the covering sieves of the extensive topology.

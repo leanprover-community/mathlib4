@@ -27,7 +27,8 @@ variable (f : F →* G) (g : G →* H)
 
 open scoped Classical in
 /-- If `F` and `H` are finite such that `ker(G →* H) ≤ im(F →* G)`, then `G` is finite. -/
-@[to_additive "If `F` and `H` are finite such that `ker(G →+ H) ≤ im(F →+ G)`, then `G` is finite."]
+@[to_additive
+/-- If `F` and `H` are finite such that `ker(G →+ H) ≤ im(F →+ G)`, then `G` is finite. -/]
 noncomputable def fintypeOfKerLeRange (h : g.ker ≤ f.range) : Fintype G :=
   @Fintype.ofEquiv _ _
     (@instFintypeProd _ _ (Fintype.ofInjective _ <| kerLift_injective g) <|
@@ -35,18 +36,19 @@ noncomputable def fintypeOfKerLeRange (h : g.ker ≤ f.range) : Fintype G :=
     groupEquivQuotientProdSubgroup.symm
 
 /-- If `F` and `H` are finite such that `ker(G →* H) = im(F →* G)`, then `G` is finite. -/
-@[to_additive "If `F` and `H` are finite such that `ker(G →+ H) = im(F →+ G)`, then `G` is finite."]
+@[to_additive
+/-- If `F` and `H` are finite such that `ker(G →+ H) = im(F →+ G)`, then `G` is finite. -/]
 noncomputable def fintypeOfKerEqRange (h : g.ker = f.range) : Fintype G :=
   fintypeOfKerLeRange _ _ h.le
 
 /-- If `ker(G →* H)` and `H` are finite, then `G` is finite. -/
-@[to_additive "If `ker(G →+ H)` and `H` are finite, then `G` is finite."]
+@[to_additive /-- If `ker(G →+ H)` and `H` are finite, then `G` is finite. -/]
 noncomputable def fintypeOfKerOfCodom [Fintype g.ker] : Fintype G :=
   fintypeOfKerLeRange ((topEquiv : _ ≃* G).toMonoidHom.comp <| inclusion le_top) g fun x hx =>
     ⟨⟨x, hx⟩, rfl⟩
 
 /-- If `F` and `coker(F →* G)` are finite, then `G` is finite. -/
-@[to_additive "If `F` and `coker(F →+ G)` are finite, then `G` is finite."]
+@[to_additive /-- If `F` and `coker(F →+ G)` are finite, then `G` is finite. -/]
 noncomputable def fintypeOfDomOfCoker [Normal f.range] [Fintype <| G ⧸ f.range] : Fintype G :=
   fintypeOfKerLeRange _ (mk' f.range) fun x => (eq_one_iff x).mp
 

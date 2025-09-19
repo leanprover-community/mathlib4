@@ -32,8 +32,6 @@ namespace Scheme
 /-- An open cover of a scheme `X` is a cover where all component maps are open immersions. -/
 abbrev OpenCover (X : Scheme.{u}) : Type _ := Cover.{v} @IsOpenImmersion X
 
-@[deprecated (since := "2024-11-06")] alias OpenCover.IsOpen := Cover.map_prop
-
 variable {X Y Z : Scheme.{u}} (𝒰 : OpenCover X) (f : X ⟶ Z) (g : Y ⟶ Z)
 variable [∀ x, HasPullback (𝒰.map x ≫ f) g]
 
@@ -281,8 +279,7 @@ theorem affineBasisCover_map_range (X : Scheme.{u}) (x : X)
       (X.affineCover.map x).base '' (PrimeSpectrum.basicOpen r).1 := by
   simp only [affineBasisCover, Cover.bind_map, comp_coeBase, TopCat.hom_comp,
     ContinuousMap.coe_comp, Set.range_comp]
-  -- Porting note: `congr` fails to see the goal is comparing image of the same function
-  refine congr_arg (_ '' ·) ?_
+  congr
   exact (PrimeSpectrum.localization_away_comap_range (Localization.Away r) r :)
 
 theorem affineBasisCover_is_basis (X : Scheme.{u}) :

@@ -407,7 +407,7 @@ class IsLocal (P : AffineTargetMorphismProperty) : Prop where
   to_basicOpen :
     ∀ {X Y : Scheme} [IsAffine Y] (f : X ⟶ Y) (r : Γ(Y, ⊤)), P f → P (f ∣_ Y.basicOpen r)
   /-- `P` for `f` if `P` holds for `f` restricted to basic sets of a spanning set of the global
-    sections -/
+  sections -/
   of_basicOpenCover :
     ∀ {X Y : Scheme} [IsAffine Y] (f : X ⟶ Y) (s : Finset Γ(Y, ⊤))
       (_ : Ideal.span (s : Set Γ(Y, ⊤)) = ⊤), (∀ r : s, P (f ∣_ Y.basicOpen r.1)) → P f
@@ -430,7 +430,7 @@ def IsStableUnderBaseChange (P : AffineTargetMorphismProperty) : Prop :=
 lemma IsStableUnderBaseChange.mk (P : AffineTargetMorphismProperty) [P.toProperty.RespectsIso]
     (H : ∀ ⦃X Y S : Scheme⦄ [IsAffine S] [IsAffine X] (f : X ⟶ S) (g : Y ⟶ S),
       P g → P (pullback.fst f g)) : P.IsStableUnderBaseChange := by
-  intros Z X Y S _ _ f g f' g' h hg
+  intro Z X Y S _ _ f g f' g' h hg
   rw [← P.cancel_left_of_respectsIso h.isoPullback.inv, h.isoPullback_inv_fst]
   exact H f g hg
 

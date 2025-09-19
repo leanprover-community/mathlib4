@@ -140,8 +140,8 @@ theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
     simp [disj, card_image_of_injective _ Subtype.coe_injective, Nat.add_sub_cancel_left]
   rw [this, hus]
   refine (Nat.sub_le_sub_right (ht _) _).trans ?_
-  rw [← card_sdiff]
-  · refine (card_le_card ?_).trans le_rfl
+  rw [← card_sdiff_of_subset]
+  · gcongr
     intro t
     simp only [mem_biUnion, mem_sdiff, not_exists, mem_image, and_imp, mem_union,
       exists_imp]
@@ -184,10 +184,6 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
     rwa [Fintype.card_coe, card_compl_lt_iff_nonempty]
   rcases ih t'' card_ι''_le (hall_cond_of_compl hus ht) with ⟨f'', hf'', hsf''⟩
   -- Put them together
-  have f'_mem_biUnion : ∀ (x') (hx' : x' ∈ s), f' ⟨x', hx'⟩ ∈ s.biUnion t := by
-    intro x' hx'
-    rw [mem_biUnion]
-    exact ⟨x', hx', hsf' _⟩
   have f''_notMem_biUnion : ∀ (x'') (hx'' : x'' ∉ s), f'' ⟨x'', hx''⟩ ∉ s.biUnion t := by
     intro x'' hx''
     have h := hsf'' ⟨x'', hx''⟩
@@ -195,10 +191,7 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
     exact h.2
   have im_disj :
       ∀ (x' x'' : ι) (hx' : x' ∈ s) (hx'' : x'' ∉ s), f' ⟨x', hx'⟩ ≠ f'' ⟨x'', hx''⟩ := by
-    intro x x' hx' hx'' h
-    apply f''_notMem_biUnion x' hx''
-    rw [← h]
-    apply f'_mem_biUnion x
+    grind
   refine ⟨fun x => if h : x ∈ s then f' ⟨x, h⟩ else f'' ⟨x, h⟩, ?_, ?_⟩
   · refine hf'.dite _ hf'' (@fun x x' => im_disj x x' _ _)
   · intro x

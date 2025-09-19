@@ -107,11 +107,11 @@ def LocallyFiniteOrder.orderAddMonoidHom :
 
 @[simp]
 lemma LocallyFiniteOrder.orderAddMonoidHom_toAddMonoidHom :
-  orderAddMonoidHom G = addMonoidHom G := rfl
+    orderAddMonoidHom G = addMonoidHom G := rfl
 
 @[simp]
 lemma LocallyFiniteOrder.orderAddMonoidHom_apply (x : G) :
-  orderAddMonoidHom G x = addMonoidHom G x := rfl
+    orderAddMonoidHom G x = addMonoidHom G x := rfl
 
 lemma LocallyFiniteOrder.orderAddMonoidHom_strictMono :
     StrictMono (orderAddMonoidHom G) := by
@@ -158,7 +158,7 @@ def LocallyFiniteOrder.orderAddMonoidEquiv [Nontrivial G] :
     · simp [orderAddMonoidHom, addMonoidHom, hb]
 
 lemma LocallyFiniteOrder.orderAddMonoidEquiv_apply [Nontrivial G] (x : G) :
-  orderAddMonoidEquiv G x = addMonoidHom G x := rfl
+    orderAddMonoidEquiv G x = addMonoidHom G x := rfl
 
 /-- Any linearly ordered abelian group that is locally finite embeds to `Multiplicative ℤ`. -/
 noncomputable

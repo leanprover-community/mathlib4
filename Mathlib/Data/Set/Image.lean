@@ -210,6 +210,9 @@ theorem image_congr' {f g : α → β} {s : Set α} (h : ∀ x : α, f x = g x) 
 @[gcongr]
 lemma image_mono (h : s ⊆ t) : f '' s ⊆ f '' t := by grind
 
+/-- `Set.image` is monotone. See `Set.image_mono` for the statement in terms of `⊆`. -/
+lemma monotone_image : Monotone (image f) := fun _ _ => image_mono
+
 theorem image_comp (f : β → γ) (g : α → β) (a : Set α) : f ∘ g '' a = f '' (g '' a) := by aesop
 
 theorem image_comp_eq {g : β → γ} : image (g ∘ f) = image g ∘ image f := by grind
@@ -230,13 +233,9 @@ theorem _root_.Function.Commute.set_image {f g : α → α} (h : Function.Commut
     Function.Commute (image f) (image g) :=
   Function.Semiconj.set_image h
 
-/-- Image is monotone with respect to `⊆`. See `Set.monotone_image` for the statement in
-terms of `≤`. -/
-@[gcongr]
-theorem image_subset {a b : Set α} (f : α → β) (h : a ⊆ b) : f '' a ⊆ f '' b := by grind
-
-/-- `Set.image` is monotone. See `Set.image_subset` for the statement in terms of `⊆`. -/
-lemma monotone_image {f : α → β} : Monotone (image f) := fun _ _ => image_subset _
+@[deprecated image_mono (since := "2025-08-01")]
+theorem image_subset {a b : Set α} (f : α → β) (h : a ⊆ b) : f '' a ⊆ f '' b :=
+  image_mono h
 
 theorem image_union (f : α → β) (s t : Set α) : f '' (s ∪ t) = f '' s ∪ f '' t := by grind
 
@@ -244,7 +243,7 @@ theorem image_union (f : α → β) (s t : Set α) : f '' (s ∪ t) = f '' s ∪
 theorem image_empty (f : α → β) : f '' ∅ = ∅ := by grind
 
 theorem image_inter_subset (f : α → β) (s t : Set α) : f '' (s ∩ t) ⊆ f '' s ∩ f '' t :=
-  subset_inter (image_subset _ inter_subset_left) (image_subset _ inter_subset_right)
+  subset_inter (image_mono inter_subset_left) (image_mono inter_subset_right)
 
 theorem image_inter_on {f : α → β} {s t : Set α} (h : ∀ x ∈ t, ∀ y ∈ s, f x = f y → x = y) :
     f '' (s ∩ t) = f '' s ∩ f '' t :=
@@ -351,7 +350,7 @@ theorem image_compl_eq {f : α → β} {s : Set α} (H : Bijective f) : f '' s�
 
 theorem subset_image_diff (f : α → β) (s t : Set α) : f '' s \ f '' t ⊆ f '' (s \ t) := by
   rw [diff_subset_iff, ← image_union, union_diff_self]
-  exact image_subset f subset_union_right
+  exact image_mono subset_union_right
 
 open scoped symmDiff in
 theorem subset_image_symmDiff : (f '' s) ∆ (f '' t) ⊆ f '' s ∆ t :=
@@ -491,9 +490,7 @@ lemma forall_subset_image_iff {p : Set β → Prop} : (∀ t ⊆ f '' s, p t) �
   simp [subset_image_iff]
 
 theorem image_subset_image_iff {f : α → β} (hf : Injective f) : f '' s ⊆ f '' t ↔ s ⊆ t := by
-  refine Iff.symm <| (Iff.intro (image_subset f)) fun h => ?_
-  rw [← preimage_image_eq s hf, ← preimage_image_eq t hf]
-  exact preimage_mono h
+  grind [Set.image_subset_iff, Set.preimage_image_eq]
 
 theorem prod_quotient_preimage_eq_image [s : Setoid α] (g : Quotient s → β) {h : α → β}
     (Hh : h = g ∘ Quotient.mk'') (r : Set (β × β)) :
@@ -515,8 +512,11 @@ theorem imageFactorization_eq {f : α → β} {s : Set α} :
     Subtype.val ∘ imageFactorization f s = f ∘ Subtype.val :=
   funext fun _ => rfl
 
-theorem surjective_onto_image {f : α → β} {s : Set α} : Surjective (imageFactorization f s) :=
+theorem imageFactorization_surjective {f : α → β} {s : Set α} :
+    Surjective (imageFactorization f s) :=
   fun ⟨_, ⟨a, ha, rfl⟩⟩ => ⟨⟨a, ha⟩, rfl⟩
+
+@[deprecated (since := "2025-08-18")] alias surjective_onto_image := imageFactorization_surjective
 
 /-- If the only elements outside `s` are those left fixed by `σ`, then mapping by `σ` has no effect.
 -/
@@ -541,9 +541,23 @@ theorem powerset_insert (s : Set α) (a : α) : 𝒫 insert a s = 𝒫 s ∪ ins
     by_cases hs : a ∈ t
     · right
       refine ⟨t \ {a}, by grind⟩
-    · left
-      grind
+    · grind
   · grind
+
+theorem disjoint_powerset_insert {s : Set α} {a : α} (h : a ∉ s) :
+    Disjoint (𝒫 s) (insert a '' 𝒫 s) := by
+  rw [Set.disjoint_iff_forall_ne]
+  refine fun u u_mem v v_mem ↦ (ne_of_mem_of_not_mem' ?_
+    (Set.notMem_subset (Set.subset_of_mem_powerset u_mem) h)).symm
+  simp only [mem_powerset_iff, mem_image] at v_mem
+  obtain ⟨_, _, eq⟩ := v_mem
+  simp [← eq]
+
+theorem powerset_insert_injOn {s : Set α} {a : α} (h : a ∉ s) :
+    Set.InjOn (insert a) (𝒫 s) := fun u u_mem v v_mem eq ↦ by
+  rw [Subset.antisymm_iff] at eq ⊢
+  rwa [Set.insert_subset_insert_iff <| Set.notMem_subset ((mem_powerset_iff _ _).mp v_mem) h,
+  Set.insert_subset_insert_iff <| Set.notMem_subset ((mem_powerset_iff _ _).mp u_mem) h] at eq
 
 /-! ### Lemmas about range of a function. -/
 
@@ -564,8 +578,6 @@ theorem exists_subtype_range_iff {p : range f → Prop} :
 
 theorem range_eq_univ : range f = univ ↔ Surjective f :=
   eq_univ_iff_forall
-
-@[deprecated (since := "2024-11-11")] alias range_iff_surjective := range_eq_univ
 
 alias ⟨_, _root_.Function.Surjective.range_eq⟩ := range_eq_univ
 
@@ -588,7 +600,7 @@ theorem preimage_eq_univ_iff {f : α → β} {s} : f ⁻¹' s = univ ↔ range f
   rw [← univ_subset_iff, ← image_subset_iff, image_univ]
 
 theorem image_subset_range (f : α → β) (s) : f '' s ⊆ range f := by
-  rw [← image_univ]; exact image_subset _ (subset_univ _)
+  rw [← image_univ]; exact image_mono (subset_univ _)
 
 theorem mem_range_of_mem_image (f : α → β) (s) {x : β} (h : x ∈ f '' s) : x ∈ range f :=
   image_subset_range f s h
@@ -868,7 +880,10 @@ theorem rangeFactorization_coe (f : ι → β) (a : ι) : (rangeFactorization f 
 @[simp]
 theorem coe_comp_rangeFactorization (f : ι → β) : (↑) ∘ rangeFactorization f = f := rfl
 
-theorem surjective_onto_range : Surjective (rangeFactorization f) := fun ⟨_, ⟨i, rfl⟩⟩ => ⟨i, rfl⟩
+theorem rangeFactorization_surjective : Surjective (rangeFactorization f) :=
+  fun ⟨_, ⟨i, rfl⟩⟩ => ⟨i, rfl⟩
+
+@[deprecated (since := "2025-08-18")] alias surjective_onto_range := rangeFactorization_surjective
 
 theorem image_eq_range (f : α → β) (s : Set α) : f '' s = range fun x : s => f x := by
   ext
@@ -1190,7 +1205,7 @@ lemma preimage_val_subset_preimage_val_iff (s t u : Set α) :
     (Subtype.val ⁻¹' t : Set s) ⊆ Subtype.val ⁻¹' u ↔ s ∩ t ⊆ s ∩ u := by
   constructor
   · rw [← image_preimage_coe, ← image_preimage_coe]
-    exact image_subset _
+    exact image_mono
   · intro h x a
     exact (h ⟨x.2, a⟩).2
 

@@ -69,6 +69,16 @@ def X : RatFunc K :=
 theorem algebraMap_X : algebraMap K[X] (RatFunc K) Polynomial.X = X :=
   rfl
 
+@[simp]
+theorem algebraMap_monomial (n : ℕ) (a : K) :
+    algebraMap K[X] (RatFunc K) (Polynomial.monomial n a) = C a * X ^ n := by
+  simp [← Polynomial.C_mul_X_pow_eq_monomial]
+
+@[simp]
+theorem aeval_X_left_eq_algebraMap (p : K[X]) :
+    p.aeval (X : RatFunc K) = algebraMap K[X] (RatFunc K) p := by
+  induction p using Polynomial.induction_on' <;> simp_all
+
 end Domain
 
 section Field
@@ -175,6 +185,16 @@ theorem eval_mul {x y : RatFunc K} (hx : Polynomial.eval₂ f a (denom x) ≠ 0)
 end Field
 
 end Eval
+
+section Algebra
+
+variable [CommRing K] [IsDomain K]
+
+lemma transcendental_X : Transcendental K (X : RatFunc K) := by
+  rw [← RatFunc.algebraMap_X, transcendental_algebraMap_iff (algebraMap_injective K)]
+  exact Polynomial.transcendental_X K
+
+end Algebra
 
 end RatFunc
 
@@ -300,8 +320,8 @@ open Polynomial
 instance : Valued (RatFunc K) ℤᵐ⁰ := Valued.mk' ((idealX K).valuation _)
 
 @[simp]
-theorem WithZero.valued_def {x : RatFunc K} :
-    @Valued.v (RatFunc K) _ _ _ _ x = (idealX K).valuation _ x := rfl
+theorem v_def {x : RatFunc K} :
+    Valued.v x = (idealX K).valuation _ x := rfl
 
 end RatFunc
 

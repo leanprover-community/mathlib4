@@ -56,13 +56,13 @@ theorem ShortComplex.mapToComposableArrows_app_2 {S₁ S₂ : ShortComplex C} (�
 @[simp]
 theorem ShortComplex.mapToComposableArrows_id {S₁ : ShortComplex C} :
     (ShortComplex.mapToComposableArrows (𝟙 S₁)) = 𝟙 S₁.toComposableArrows := by
-  aesop_cat
+  cat_disch
 
 @[simp]
 theorem ShortComplex.mapToComposableArrows_comp {S₁ S₂ S₃ : ShortComplex C} (φ : S₁ ⟶ S₂)
     (ψ : S₂ ⟶ S₃) : ShortComplex.mapToComposableArrows (φ ≫ ψ) =
       ShortComplex.mapToComposableArrows φ ≫ ShortComplex.mapToComposableArrows ψ := by
-  aesop_cat
+  cat_disch
 
 namespace ComposableArrows
 
@@ -98,9 +98,7 @@ lemma isComplex_iff_of_iso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂
   ⟨isComplex_of_iso e, isComplex_of_iso e.symm⟩
 
 lemma isComplex₀ (S : ComposableArrows C 0) : S.IsComplex where
-  -- See https://github.com/leanprover/lean4/issues/2862
-  -- Without `decide := true`, simp gets stuck at `hi : autoParam False _auto✝`
-  zero i hi := by simp +decide at hi
+  zero i hi := by simp at hi
 
 lemma isComplex₁ (S : ComposableArrows C 1) : S.IsComplex where
   zero i hi := by omega
@@ -186,7 +184,6 @@ lemma exact_iff_of_iso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂) :
 
 lemma exact₀ (S : ComposableArrows C 0) : S.Exact where
   toIsComplex := S.isComplex₀
-  -- See https://github.com/leanprover/lean4/issues/2862
   exact i hi := by simp at hi
 
 lemma exact₁ (S : ComposableArrows C 1) : S.Exact where
@@ -209,7 +206,7 @@ lemma isComplex₂_mk (S : ComposableArrows C 2) (w : S.map' 0 1 ≫ S.map' 1 2 
 
 lemma _root_.CategoryTheory.ShortComplex.isComplex_toComposableArrows (S : ShortComplex C) :
     S.toComposableArrows.IsComplex :=
-  -- Disable `Fin.reduceFinMk` because otherwise `Precompose.map_one_succ` does not apply. (#27382)
+  -- Disable `Fin.reduceFinMk` because otherwise `Precompose.map_one_succ` does not apply. (https://github.com/leanprover-community/mathlib4/issues/27382)
   isComplex₂_mk _ (by simp [-Fin.reduceFinMk])
 
 lemma exact₂_iff (S : ComposableArrows C 2) (hS : S.IsComplex) :
