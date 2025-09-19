@@ -223,23 +223,6 @@ def extractp (p : α → Prop) [DecidablePred p] : List α → Option α × List
 instance instSProd : SProd (List α) (List β) (List (α × β)) where
   sprod := List.product
 
-section Chain
-
-instance decidableChain {R : α → α → Prop} [DecidableRel R] (a : α) (l : List α) :
-    Decidable (Chain R a l) := by
-  induction l generalizing a with
-  | nil => exact decidable_of_decidable_of_iff (p := True) (by simp)
-  | cons b as ih =>
-    haveI := ih; exact decidable_of_decidable_of_iff (p := (R a b ∧ Chain R b as)) (by simp)
-
-instance decidableChain' {R : α → α → Prop} [DecidableRel R] (l : List α) :
-    Decidable (Chain' R l) := by
-  cases l
-  · exact inferInstanceAs (Decidable True)
-  · exact inferInstanceAs (Decidable (Chain _ _ _))
-
-end Chain
-
 /-- `dedup l` removes duplicates from `l` (taking only the last occurrence).
   Defined as `pwFilter (≠)`.
 
