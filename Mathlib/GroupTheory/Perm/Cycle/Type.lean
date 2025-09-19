@@ -502,7 +502,7 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
     Exists.imp (fun g hg => orderOf_eq_prime ?_ fun hg' => hv2 ?_)
       (List.rotate_one_eq_self_iff_eq_replicate.mp (Subtype.ext_iff.mp (Subtype.ext_iff.mp hv1)))
   · rw [← List.prod_replicate, ← v.1.2, ← hg, show v.val.val.prod = 1 from v.2]
-  · rw [Subtype.ext_iff_val, Subtype.ext_iff_val, hg, hg', v.1.2]
+  · rw [Subtype.ext_iff, Subtype.ext_iff, hg, hg', v.1.2]
     simp only [v₀, List.Vector.replicate]
 
 -- TODO: Make the `Finite` version of this theorem the default

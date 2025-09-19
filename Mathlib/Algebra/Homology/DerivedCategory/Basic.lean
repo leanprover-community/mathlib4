@@ -273,11 +273,10 @@ lemma singleFunctorsPostcompQIso_hom_hom (n : ℤ) :
 
 lemma singleFunctorsPostcompQIso_inv_hom (n : ℤ) :
     (singleFunctorsPostcompQIso C).inv.hom n = 𝟙 _ := by
-  ext X
   dsimp [singleFunctorsPostcompQIso, HomotopyCategory.singleFunctorsPostcompQuotientIso,
     quotientCompQhIso, HomologicalComplexUpToQuasiIso.quotientCompQhIso]
   erw [CategoryTheory.Functor.map_id]
-  rw [SingleFunctors.id_hom, NatTrans.id_app]
+  rw [SingleFunctors.id_hom]
   erw [Category.id_comp, Category.id_comp]
   rfl
 

@@ -307,9 +307,6 @@ theorem getLast_append_of_right_ne_nil (l₁ l₂ : List α) (h : l₂ ≠ []) :
   | nil => simp
   | cons _ _ ih => simp only [cons_append]; rw [List.getLast_cons]; exact ih
 
-@[deprecated (since := "2025-02-06")]
-alias getLast_append' := getLast_append_of_right_ne_nil
-
 theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (by simp) = a := by
   simp
 
@@ -331,9 +328,6 @@ theorem getLast_replicate_succ (m : ℕ) (a : α) :
     (replicate (m + 1) a).getLast (ne_nil_of_length_eq_add_one length_replicate) = a := by
   simp only [replicate_succ']
   exact getLast_append_singleton _
-
-@[deprecated (since := "2025-02-07")]
-alias getLast_filter' := getLast_filter_of_pos
 
 /-! ### getLast? -/
 
@@ -447,8 +441,8 @@ theorem tail_append_singleton_of_ne_nil {a : α} {l : List α} (h : l ≠ nil) :
 theorem cons_head?_tail : ∀ {l : List α} {a : α}, a ∈ head? l → a :: tail l = l
   | [], a, h => by contradiction
   | b :: l, a, h => by
-    simp? at h says simp only [head?_cons, Option.mem_def, Option.some.injEq] at h
-    simp [h]
+    have : b = a := by simpa using h
+    simp [this]
 
 theorem head!_mem_head? [Inhabited α] : ∀ {l : List α}, l ≠ [] → head! l ∈ head? l
   | [], h => by contradiction
@@ -464,8 +458,6 @@ theorem head!_mem_self [Inhabited α] {l : List α} (h : l ≠ nil) : l.head! �
 theorem get_eq_getElem? (l : List α) (i : Fin l.length) :
     l.get i = l[i]?.get (by simp) := by
   simp
-
-@[deprecated (since := "2025-02-15")] alias get_eq_get? := get_eq_getElem?
 
 theorem exists_mem_iff_getElem {l : List α} {p : α → Prop} :
     (∃ x ∈ l, p x) ↔ ∃ (i : ℕ) (_ : i < l.length), p l[i] := by
@@ -489,18 +481,9 @@ theorem Sublist.cons_cons {l₁ l₂ : List α} (a : α) (s : l₁ <+ l₂) : a 
   Sublist.cons₂ _ s
 
 lemma cons_sublist_cons' {a b : α} : a :: l₁ <+ b :: l₂ ↔ a :: l₁ <+ l₂ ∨ a = b ∧ l₁ <+ l₂ := by
-  constructor
-  · rintro (_ | _)
-    · exact Or.inl ‹_›
-    · exact Or.inr ⟨rfl, ‹_›⟩
-  · rintro (h | ⟨rfl, h⟩)
-    · exact h.cons _
-    · rwa [cons_sublist_cons]
+  grind
 
 theorem sublist_cons_of_sublist (a : α) (h : l₁ <+ l₂) : l₁ <+ a :: l₂ := h.cons _
-
-@[deprecated (since := "2025-02-07")]
-alias sublist_nil_iff_eq_nil := sublist_nil
 
 @[simp] lemma sublist_singleton {l : List α} {a : α} : l <+ [a] ↔ l = [] ∨ l = [a] := by
   constructor <;> rintro (_ | _) <;> aesop
@@ -536,23 +519,11 @@ theorem idxOf_of_notMem {l : List α} {a : α} : a ∉ l → idxOf a l = length 
 @[deprecated (since := "2025-05-23")] alias idxOf_of_not_mem := idxOf_of_notMem
 
 theorem idxOf_append_of_mem {a : α} (h : a ∈ l₁) : idxOf a (l₁ ++ l₂) = idxOf a l₁ := by
-  induction l₁ with
-  | nil =>
-    exfalso
-    exact not_mem_nil h
-  | cons d₁ t₁ ih =>
-    rw [List.cons_append]
-    by_cases hh : d₁ = a
-    · iterate 2 rw [idxOf_cons_eq _ hh]
-    rw [idxOf_cons_ne _ hh, idxOf_cons_ne _ hh, ih (mem_of_ne_of_mem (Ne.symm hh) h)]
+  grind
 
 theorem idxOf_append_of_notMem {a : α} (h : a ∉ l₁) :
     idxOf a (l₁ ++ l₂) = l₁.length + idxOf a l₂ := by
-  induction l₁ with
-  | nil => rw [List.nil_append, List.length, Nat.zero_add]
-  | cons d₁ t₁ ih =>
-    rw [List.cons_append, idxOf_cons_ne _ (ne_of_not_mem_cons h).symm, List.length,
-      ih (not_mem_of_not_mem_cons h), Nat.succ_add]
+  grind
 
 @[deprecated (since := "2025-05-23")] alias idxOf_append_of_not_mem := idxOf_append_of_notMem
 
@@ -585,9 +556,6 @@ theorem ext_getElem?' {l₁ l₂ : List α} (h' : ∀ n < max l₁.length l₂.l
   · exact h' n hn
   · simp_all [Nat.max_le]
 
-@[deprecated (since := "2025-02-15")] alias ext_get?' := ext_getElem?'
-@[deprecated (since := "2025-02-15")] alias ext_get?_iff := List.ext_getElem?_iff
-
 theorem ext_get_iff {l₁ l₂ : List α} :
     l₁ = l₂ ↔ l₁.length = l₂.length ∧ ∀ n h₁ h₂, get l₁ ⟨n, h₁⟩ = get l₂ ⟨n, h₂⟩ := by
   constructor
@@ -599,8 +567,6 @@ theorem ext_get_iff {l₁ l₂ : List α} :
 theorem ext_getElem?_iff' {l₁ l₂ : List α} : l₁ = l₂ ↔
     ∀ n < max l₁.length l₂.length, l₁[n]? = l₂[n]? :=
   ⟨by rintro rfl _ _; rfl, ext_getElem?'⟩
-
-@[deprecated (since := "2025-02-15")] alias ext_get?_iff' := ext_getElem?_iff'
 
 /-- If two lists `l₁` and `l₂` are the same length and `l₁[n]! = l₂[n]!` for all `n`,
 then the lists are equal. -/
@@ -623,9 +589,7 @@ theorem idxOf_get [DecidableEq α] {a : α} {l : List α} (h) : get l ⟨idxOf a
 @[simp]
 theorem getElem?_idxOf [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
     l[idxOf a l]? = some a := by
-  rw [getElem?_eq_getElem, getElem_idxOf (idxOf_lt_length_iff.2 h)]
-
-@[deprecated (since := "2025-02-15")] alias idxOf_get? := getElem?_idxOf
+  rw [getElem?_eq_getElem (idxOf_lt_length_iff.2 h), getElem_idxOf]
 
 theorem idxOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy : y ∈ l) :
     idxOf x l = idxOf y l ↔ x = y :=
@@ -1019,8 +983,6 @@ theorem mem_of_mem_filter {a : α} {l} (h : a ∈ filter p l) : a ∈ l :=
 theorem mem_filter_of_mem {a : α} {l} (h₁ : a ∈ l) (h₂ : p a) : a ∈ filter p l :=
   mem_filter.2 ⟨h₁, h₂⟩
 
-@[deprecated (since := "2025-02-07")] alias monotone_filter_left := filter_subset
-
 variable (p)
 
 theorem monotone_filter_right (l : List α) ⦃p q : α → Bool⦄
@@ -1042,8 +1004,6 @@ lemma map_filter {f : α → β} (hf : Injective f) (l : List α)
     [DecidablePred fun b => ∃ a, p a ∧ f a = b] :
     (l.filter p).map f = (l.map f).filter fun b => ∃ a, p a ∧ f a = b := by
   simp [comp_def, filter_map, hf.eq_iff]
-
-@[deprecated (since := "2025-02-07")] alias map_filter' := map_filter
 
 lemma filter_attach' (l : List α) (p : {a // a ∈ l} → Bool) [DecidableEq α] :
     l.attach.filter p =
@@ -1081,9 +1041,7 @@ variable {p : α → Bool}
 -- Cannot be @[simp] because `a` cannot be inferred by `simp`.
 theorem length_eraseP_add_one {l : List α} {a} (al : a ∈ l) (pa : p a) :
     (l.eraseP p).length + 1 = l.length := by
-  let ⟨_, l₁, l₂, _, _, h₁, h₂⟩ := exists_of_eraseP al pa
-  rw [h₂, h₁, length_append, length_append]
-  rfl
+  grind
 
 end eraseP
 
@@ -1123,8 +1081,7 @@ theorem erase_getElem [DecidableEq ι] {l : List ι} {i : ℕ} (hi : i < l.lengt
 
 theorem length_eraseIdx_add_one {l : List ι} {i : ℕ} (h : i < l.length) :
     (l.eraseIdx i).length + 1 = l.length := by
-  rw [length_eraseIdx]
-  split <;> omega
+  grind
 
 end Erase
 

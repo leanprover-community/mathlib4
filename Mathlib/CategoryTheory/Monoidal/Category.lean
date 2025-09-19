@@ -1041,7 +1041,7 @@ section ObjectProperty
 /-- The restriction of a monoidal category along an object property
 that's closed under the monoidal structure. -/
 -- See note [reducible non instances]
-noncomputable abbrev MonoidalCategory.fullSubcategory
+abbrev MonoidalCategory.fullSubcategory
     {C : Type u} [Category.{v} C] [MonoidalCategory C] (P : ObjectProperty C)
     (tensorUnit : P (𝟙_ C))
     (tensorObj : ∀ X Y, P X → P Y → P (X ⊗ Y)) :

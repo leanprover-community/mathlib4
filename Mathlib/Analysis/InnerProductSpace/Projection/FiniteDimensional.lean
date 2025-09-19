@@ -7,7 +7,7 @@ import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
 import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 import Mathlib.Algebra.DirectSum.Decomposition
-import Mathlib.Analysis.NormedSpace.RCLike
+import Mathlib.Analysis.Normed.Module.RCLike.Basic
 
 /-!
 # Orthogonal projections in finite-dimensional spaces

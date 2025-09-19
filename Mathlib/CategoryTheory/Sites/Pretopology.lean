@@ -141,7 +141,7 @@ def ofGrothendieck (J : GrothendieckTopology C) : Pretopology C where
     rintro Y g ⟨W, h, g, hg, rfl⟩
     exact ⟨_, h, _, ⟨_, _, _, hf, hg, rfl⟩, by simp⟩
 
-/-- We have a galois insertion from pretopologies to Grothendieck topologies. -/
+/-- We have a Galois insertion from pretopologies to Grothendieck topologies. -/
 def gi : GaloisInsertion (toGrothendieck C) (ofGrothendieck C) where
   gc K J := by
     constructor
@@ -267,14 +267,11 @@ end Pretopology
 /-- If `J` is a precoverage that has isomorphisms and is stable under composition and
 base change, it defines a pretopology. -/
 @[simps toPrecoverage]
-def Precoverage.toPretopology [HasPullbacks C] (J : Precoverage C) [J.HasIsos]
+def Precoverage.toPretopology [Limits.HasPullbacks C] (J : Precoverage C) [J.HasIsos]
     [J.IsStableUnderBaseChange] [J.IsStableUnderComposition] : Pretopology C where
   __ := J
   has_isos X Y f hf := mem_coverings_of_isIso f
-  pullbacks X Y f R hR := by
-    obtain ⟨ι, Z, g, rfl⟩ := R.exists_eq_ofArrows
-    rw [← Presieve.ofArrows_pullback]
-    exact mem_coverings_of_isPullback _ hR _ _ _ fun i ↦ (IsPullback.of_hasPullback _ _).flip
+  pullbacks X Y f R hR := J.pullbackArrows_mem f hR
   transitive X R Ti hR hTi := by
     obtain ⟨ι, Z, g, rfl⟩ := R.exists_eq_ofArrows
     choose κ W p hp using fun ⦃Y⦄ (f : Y ⟶ X) hf ↦ (Ti f hf).exists_eq_ofArrows

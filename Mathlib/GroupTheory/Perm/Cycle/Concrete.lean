@@ -219,16 +219,8 @@ theorem length_toList_pos_of_mem_support (h : x ∈ p.support) : 0 < length (toL
 theorem getElem_toList (n : ℕ) (hn : n < length (toList p x)) :
     (toList p x)[n] = (p ^ n) x := by simp [toList]
 
-@[deprecated getElem_toList (since := "2025-02-17")]
-theorem get_toList (n : ℕ) (hn : n < length (toList p x)) :
-    (toList p x).get ⟨n, hn⟩ = (p ^ n) x := by simp [toList]
-
 theorem toList_getElem_zero (h : x ∈ p.support) :
     (toList p x)[0]'(length_toList_pos_of_mem_support _ _ h) = x := by simp [toList]
-
-@[deprecated toList_getElem_zero (since := "2025-02-17")]
-theorem toList_get_zero (h : x ∈ p.support) :
-    (toList p x).get ⟨0, (length_toList_pos_of_mem_support _ _ h)⟩ = x := by simp [toList]
 
 variable {p} {x}
 

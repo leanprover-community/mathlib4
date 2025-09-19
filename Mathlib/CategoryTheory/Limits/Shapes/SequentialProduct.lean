@@ -71,9 +71,10 @@ lemma functorMap_commSq_aux {n m k : ℕ} (h : n ≤ m) (hh : ¬(k < m)) :
       eqToHom (functorObj_eq_neg (by omega : ¬(k < n))) =
         (Pi.π (fun i ↦ if _ : i < m then M i else N i) k) ≫
           eqToHom (functorObj_eq_neg hh) := by
-  induction' h using Nat.leRec with m h ih
-  · simp
-  · specialize ih (by omega)
+  induction h using Nat.leRec with
+  | refl => simp
+  | @le_succ_of_le m h ih =>
+    specialize ih (by omega)
     have : homOfLE (by omega : n ≤ m + 1) =
         homOfLE (by omega : n ≤ m) ≫ homOfLE (by omega : m ≤ m + 1) := by simp
     rw [this, op_comp, Functor.map_comp]
@@ -172,9 +173,10 @@ noncomputable def isLimit : IsLimit (cone f) where
       simp only [Functor.const_obj_obj, Functor.ofOpSequence_obj, homOfLE_leOfHom,
         Category.assoc]
       congr
-      induction' hh using Nat.leRec with n hh ih
-      · simp
-      · have : homOfLE (Nat.le_succ_of_le hh) = homOfLE hh ≫ homOfLE (Nat.le_succ n) := by simp
+      induction hh using Nat.leRec with
+      | refl => simp
+      | @le_succ_of_le n hh ih =>
+        have : homOfLE (Nat.le_succ_of_le hh) = homOfLE hh ≫ homOfLE (Nat.le_succ n) := by simp
         rw [this, op_comp, Functor.map_comp]
         simp only [Functor.ofOpSequence_obj, Nat.succ_eq_add_one, homOfLE_leOfHom,
           Functor.ofOpSequence_map_homOfLE_succ, Category.assoc]
