@@ -99,8 +99,7 @@ theorem Submonoid.FG.biSup {ι : Type*} {s : Set ι} (hs : s.Finite) (P : ι →
 @[to_additive]
 theorem Submonoid.FG.iSup {ι : Sort*} [Finite ι] (P : ι → Submonoid M) (hP : ∀ i, (P i).FG) :
     (iSup P).FG := by
-  haveI := Fintype.ofFinite (PLift ι)
-  simpa [iSup_plift_down] using biSup_finset Finset.univ (P ∘ PLift.down) fun i _ => hP i.down
+  simpa [iSup_plift_down] using biSup Set.finite_univ (P ∘ PLift.down) fun i _ => hP i.down
 
 /-- The product of two finitely generated submonoids is finitely generated. -/
 @[to_additive prod
@@ -332,8 +331,7 @@ theorem Subgroup.FG.biSup {ι : Type*} {s : Set ι} (hs : s.Finite) (P : ι → 
 @[to_additive]
 theorem Subgroup.FG.iSup {ι : Sort*} [Finite ι] (P : ι → Subgroup G) (hP : ∀ i, (P i).FG) :
     (iSup P).FG := by
-  haveI := Fintype.ofFinite (PLift ι)
-  simpa [iSup_plift_down] using biSup_finset Finset.univ (P ∘ PLift.down) fun i _ => hP i.down
+  simpa [iSup_plift_down] using biSup Set.finite_univ (P ∘ PLift.down) fun i _ => hP i.down
 
 /-- The product of two finitely generated subgroups is finitely generated. -/
 @[to_additive prod
