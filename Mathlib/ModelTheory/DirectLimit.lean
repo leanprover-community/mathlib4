@@ -128,11 +128,8 @@ def setoid [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] :
       @fun ⟨i, x⟩ ⟨j, y⟩ ⟨k, z⟩ ⟨ij, hiij, hjij, hij⟩ ⟨jk, hjjk, hkjk, hjk⟩ => by
         obtain ⟨ijk, hijijk, hjkijk⟩ := directed_of (· ≤ ·) ij jk
         refine ⟨ijk, le_trans hiij hijijk, le_trans hkjk hjkijk, ?_⟩
-        rw [← DirectedSystem.map_map, hij, DirectedSystem.map_map]
-        · symm
-          rw [← DirectedSystem.map_map, ← hjk, DirectedSystem.map_map]
-          assumption
-        assumption⟩
+        rw [← DirectedSystem.map_map _ hiij hijijk, hij, DirectedSystem.map_map]
+        rw [← DirectedSystem.map_map _ hkjk hjkijk, ← hjk, DirectedSystem.map_map]⟩
 
 /-- The structure on the `Σ`-type which becomes the structure on the direct limit after quotienting.
 -/
@@ -244,7 +241,7 @@ theorem relMap_quotient_mk'_sigma_mk' {n : ℕ} {R : L.Relations n} {i : ι} {x 
   rw [relMap_quotient_mk']
   obtain ⟨k, _, _⟩ :=
     directed_of (· ≤ ·) i (Classical.choose (Finite.bddAbove_range fun _ : Fin n => i))
-  rw [relMap_equiv_unify G f R (fun a => .mk f i (x a)) i]
+  rw [relMap_equiv_unify G f R (fun a => .mk f i (x a)) i (fun _ ⟨_, hj⟩ => le_of_eq hj.symm)]
   rw [unify_sigma_mk_self]
 
 theorem exists_quotient_mk'_sigma_mk'_eq {α : Type*} [Finite α] (x : α → DirectLimit G f) :

@@ -56,14 +56,15 @@ theorem isFiniteLength_of_exists_compositionSeries
     rw [← s_last]
     suffices ∀ i, IsFiniteLength R (s i) from this (Fin.last _)
     intro i
-    induction' i using Fin.induction with i ih
-    · change IsFiniteLength R s.head; rw [s_head]; exact .of_subsingleton
-    let cov := s.step i
-    have := (covBy_iff_quot_is_simple cov.le).mp cov
-    have := ((s i.castSucc).comap (s i.succ).subtype).equivMapOfInjective
-      _ (Submodule.injective_subtype _)
-    rw [Submodule.map_comap_subtype, inf_of_le_right cov.le] at this
-    exact .of_simple_quotient (this.symm.isFiniteLength ih)
+    induction i using Fin.induction with
+    | zero => change IsFiniteLength R s.head; rw [s_head]; exact .of_subsingleton
+    | succ i ih =>
+      let cov := s.step i
+      have := (covBy_iff_quot_is_simple cov.le).mp cov
+      have := ((s i.castSucc).comap (s i.succ).subtype).equivMapOfInjective
+        _ (Submodule.injective_subtype _)
+      rw [Submodule.map_comap_subtype, inf_of_le_right cov.le] at this
+      exact .of_simple_quotient (this.symm.isFiniteLength ih)
 
 theorem isFiniteLength_iff_isNoetherian_isArtinian :
     IsFiniteLength R M ↔ IsNoetherian R M ∧ IsArtinian R M :=

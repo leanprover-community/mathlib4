@@ -254,6 +254,14 @@ instance pi {ι : Type*} {M : ι → Type*} [_root_.Finite ι] [∀ i, AddCommMo
     rw [← Submodule.pi_top]
     exact Submodule.fg_pi fun i => (h i).1⟩
 
+theorem of_pi {ι : Type*} (M : ι → Type*) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+    [Module.Finite R (∀ i, M i)] (i : ι) : Module.Finite R (M i) :=
+  Module.Finite.of_surjective _ <| LinearMap.proj_surjective i
+
+theorem pi_iff {ι : Type*} {M : ι → Type*} [_root_.Finite ι] [∀ i, AddCommMonoid (M i)]
+    [∀ i, Module R (M i)] : Module.Finite R (∀ i, M i) ↔ ∀ i, Module.Finite R (M i) :=
+  ⟨fun _ i => of_pi M i, fun _ => inferInstance⟩
+
 variable (R)
 
 instance self : Module.Finite R R :=
@@ -268,8 +276,7 @@ theorem of_restrictScalars_finite (R A M : Type*) [Semiring R] [Semiring A] [Add
   obtain ⟨S, hSfin, hSgen⟩ := hM
   refine ⟨S, hSfin, eq_top_iff.2 ?_⟩
   have := Submodule.span_le_restrictScalars R A S
-  rw [hSgen] at this
-  exact this
+  rwa [hSgen] at this
 
 variable {R M}
 
@@ -278,6 +285,8 @@ theorem equiv [Module.Finite R M] (e : M ≃ₗ[R] N) : Module.Finite R N :=
 
 theorem equiv_iff (e : M ≃ₗ[R] N) : Module.Finite R M ↔ Module.Finite R N :=
   ⟨fun _ ↦ equiv e, fun _ ↦ equiv e.symm⟩
+
+instance [Module.Finite R M] : Module.Finite R Mᵐᵒᵖ := equiv (MulOpposite.opLinearEquiv R)
 
 instance ulift [Module.Finite R M] : Module.Finite R (ULift M) := equiv ULift.moduleEquiv.symm
 
