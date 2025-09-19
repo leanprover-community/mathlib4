@@ -13,7 +13,7 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 The absolute value of an element in a group which is also a lattice is its supremum with its
 negation. This generalizes the usual absolute value on real numbers (`|x| = max x (-x)`).
 
-## Notations
+## Notation
 
 - `|a|`: The *absolute value* of an element `a` of an additive lattice ordered group
 - `|a|ₘ`: The *absolute value* of an element `a` of a multiplicative lattice ordered group
