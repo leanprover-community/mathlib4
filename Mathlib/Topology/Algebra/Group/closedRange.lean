@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 Yi Yuan. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yi Yuan
+-/
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Analysis.Normed.Operator.Banach
@@ -5,9 +10,7 @@ import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 import Mathlib.Data.Real.StarOrdered
 
-open Function Metric Set
-
-open scoped LinearMap
+open Metric
 
 lemma p12 {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [InnerProductSpace ℝ α]
     [InnerProductSpace ℝ β] (T : α →L[ℝ] β) {δ : ℝ} (h0 : δ > 0)
@@ -49,7 +52,7 @@ lemma p12 {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [Inner
 
 /-- Following [Rudin, *Functional Analysis* (Theorem 4.12 (b) => (c))][rudin1991] -/
 lemma p23 {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [InnerProductSpace ℝ α]
-    [InnerProductSpace ℝ β] [CompleteSpace β] [CompleteSpace α] (T : α →L[ℝ] β) {δ : ℝ}
+    [InnerProductSpace ℝ β] [CompleteSpace α] (T : α →L[ℝ] β) {δ : ℝ}
     (h0 : δ > 0) (h : closure (T '' (ball 0 1)) ⊇ ball 0 δ) : T '' (ball 0 1) ⊇ ball 0 δ := by
   have int_t : interior (closure (⇑T '' ball 0 1)) ⊇ ball 0 δ :=
     (IsOpen.subset_interior_iff isOpen_ball).mpr h
@@ -118,8 +121,9 @@ lemma p41 {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [Inner
     use c
     simpa [← eq, cin, ceq, beq] using Or.inl (Std.le_of_lt δpos)
 
-example {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β] [InnerProductSpace ℝ α]
-    [InnerProductSpace ℝ β] [CompleteSpace β] [CompleteSpace α] (T : α →L[ℝ] β) : List.TFAE [
+lemma closedrange {α β : Type*} [NormedAddCommGroup α] [NormedAddCommGroup β]
+    [InnerProductSpace ℝ α] [InnerProductSpace ℝ β] [CompleteSpace β] [CompleteSpace α]
+    (T : α →L[ℝ] β) : List.TFAE [
     ∃ δ > 0, ∀ f : β →L[ℝ] ℝ , δ * ‖f‖ ≤ ‖f.comp T‖,
     ∃ δ > 0, closure (T '' (ball 0 1)) ⊇ ball 0 δ,
     ∃ δ > 0, T '' (ball 0 1) ⊇ ball 0 δ,
