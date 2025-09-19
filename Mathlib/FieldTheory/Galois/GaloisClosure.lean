@@ -54,7 +54,6 @@ lemma val_injective : Function.Injective (toIntermediateField (k := k) (K := K))
   simpa only [mk.injEq] using eq
 
 /-- Turns the collection of finite Galois IntermediateFields of `K/k` into a lattice. -/
-
 instance (L₁ L₂ : IntermediateField k K) [IsGalois k L₁] [IsGalois k L₂] :
     IsGalois k ↑(L₁ ⊔ L₂) where
 
@@ -125,7 +124,7 @@ lemma subset_adjoin [IsGalois k K] (s : Set K) [Finite s] :
 theorem adjoin_simple_le_iff [IsGalois k K] {x : K} {L : FiniteGaloisIntermediateField k K} :
     adjoin k {x} ≤ L ↔ x ∈ L.toIntermediateField := by
   simp only [le_iff, adjoin_val, IntermediateField.normalClosure_le_iff_of_normal,
-    IntermediateField.adjoin_le_iff, Set.le_eq_subset, Set.singleton_subset_iff, SetLike.mem_coe]
+    IntermediateField.adjoin_le_iff, Set.singleton_subset_iff, SetLike.mem_coe]
 
 @[simp]
 theorem adjoin_map [IsGalois k K] (f : K →ₐ[k] K) (s : Set K) [Finite s] :

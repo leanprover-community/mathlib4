@@ -40,7 +40,7 @@ with target `X` all satisfying `P`.
 
 This is merely a coverage in the pretopology defined by `P`, and it would be optimal
 if we could reuse the existing API about pretopologies, However, the definitions of sieves and
-grothendieck topologies uses `Prop`s, so that the actual open sets and immersions are hard to
+Grothendieck topologies uses `Prop`s, so that the actual open sets and immersions are hard to
 obtain. Also, since such a coverage in the pretopology usually contains a proper class of
 immersions, it is quite hard to glue them, reason about finite covers, etc.
 
@@ -75,6 +75,9 @@ theorem Cover.iUnion_range {X : Scheme.{u}} (𝒰 : X.Cover P) :
 
 lemma Cover.exists_eq (𝒰 : X.Cover P) (x : X) : ∃ i y, (𝒰.map i).base y = x :=
   ⟨_, 𝒰.covers x⟩
+
+instance Cover.nonempty_of_nonempty [Nonempty X] (𝒰 : X.Cover P) : Nonempty 𝒰.J :=
+  Nonempty.map 𝒰.f ‹_›
 
 /-- Given a family of schemes with morphisms to `X` satisfying `P` that jointly
 cover `X`, `Cover.mkOfCovers` is an associated `P`-cover of `X`. -/
@@ -308,6 +311,29 @@ def AffineCover.cover {X : Scheme.{u}} (𝒰 : X.AffineCover P) : X.Cover P wher
   covers := 𝒰.covers
   map_prop := 𝒰.map_prop
 
+/-- Replace the index type of a cover by an equivalent one. -/
+@[simps]
+def Cover.reindex (𝒰 : Cover.{v} P X) {ι : Type*} (e : ι ≃ 𝒰.J) : Cover P X where
+  J := ι
+  obj := 𝒰.obj ∘ e
+  map i := 𝒰.map (e i)
+  f := e.symm ∘ 𝒰.f
+  covers x := by
+    convert 𝒰.covers _
+    dsimp only [Function.comp_apply]
+    rw [Equiv.apply_symm_apply]
+  map_prop i := 𝒰.map_prop _
+
+/-- Any `v`-cover `𝒰` induces a `u`-cover indexed by the points of `X`. -/
+@[simps!]
+def Cover.ulift (𝒰 : Cover.{v} P X) : Cover.{u} P X where
+  J := X
+  obj x := 𝒰.obj (𝒰.f x)
+  map x := 𝒰.map (𝒰.f x)
+  f := id
+  covers := 𝒰.covers
+  map_prop _ := 𝒰.map_prop _
+
 section category
 
 /--
@@ -315,13 +341,14 @@ A morphism between covers `𝒰 ⟶ 𝒱` indicates that `𝒰` is a refinement 
 Since covers of schemes are indexed, the definition also involves a map on the
 indexing types.
 -/
+@[ext]
 structure Cover.Hom {X : Scheme.{u}} (𝒰 𝒱 : Cover.{v} P X) where
   /-- The map on indexing types associated to a morphism of covers. -/
   idx : 𝒰.J → 𝒱.J
   /-- The morphism between open subsets associated to a morphism of covers. -/
   app (j : 𝒰.J) : 𝒰.obj j ⟶ 𝒱.obj (idx j)
   app_prop (j : 𝒰.J) : P (app j) := by infer_instance
-  w (j : 𝒰.J) : app j ≫ 𝒱.map _ = 𝒰.map _ := by aesop_cat
+  w (j : 𝒰.J) : app j ≫ 𝒱.map _ = 𝒰.map _ := by cat_disch
 
 attribute [reassoc (attr := simp)] Cover.Hom.w
 

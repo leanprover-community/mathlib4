@@ -25,7 +25,6 @@ namespace Condensed
 
 variable (A : Type u') [Category.{v'} A] {FA : A → A → Type*} {CA : A → Type v'}
 variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory.{v'} A FA]
-
   [HasFunctorialSurjectiveInjectiveFactorization A]
 
 variable {X Y : Condensed.{u} A} (f : X ⟶ Y)

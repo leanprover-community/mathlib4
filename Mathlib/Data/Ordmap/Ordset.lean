@@ -8,10 +8,10 @@ import Mathlib.Data.Ordmap.Invariants
 /-!
 # Verification of `Ordnode`
 
-This file uses the invariants defined in `Mathlib.Data.Ordmap.Invariants` to construct `Ordset α`,
-a wrapper around `Ordnode α` which includes the correctness invariant of the type. It exposes
-parallel operations like `insert` as functions on `Ordset` that do the same thing but bundle the
-correctness proofs.
+This file uses the invariants defined in `Mathlib/Data/Ordmap/Invariants.lean` to construct
+`Ordset α`, a wrapper around `Ordnode α` which includes the correctness invariant of the type.
+It exposes parallel operations like `insert` as functions on `Ordset` that do the same thing but
+bundle the correctness proofs.
 
 The advantage is that it is possible to, for example, prove that the result of `find` on `insert`
 will actually find the element, while `Ordnode` cannot guarantee this if the input tree did not
@@ -20,7 +20,7 @@ satisfy the type invariants.
 ## Main definitions
 
 * `Ordnode.Valid`: The validity predicate for an `Ordnode` subtree.
-* `Ordset α`: A well formed set of values of type `α`.
+* `Ordset α`: A well-formed set of values of type `α`.
 
 ## Implementation notes
 
@@ -180,17 +180,13 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
     rw [l0, m1.1, m1.2]; revert r0; rcases size r with (_ | _ | _) <;>
       [decide; decide; (intro r0; unfold BalancedSz delta; omega)]
   · rcases Nat.eq_zero_or_pos (size r) with r0 | r0
-    · rw [r0] at mr₂; cases not_le_of_lt Hm mr₂
+    · rw [r0] at mr₂; cases not_le_of_gt Hm mr₂
     rw [hm.2.size_eq] at lr₁ lr₂ mr₁ mr₂
     by_cases mm : size ml + size mr ≤ 1
-    · have r1 :=
-        le_antisymm
-          ((mul_le_mul_left (by decide)).1 (le_trans mr₁ (Nat.succ_le_succ mm) : _ ≤ ratio * 1)) r0
+    · dsimp [delta, ratio] at lr₁ mr₁
+      have r1 : r.size = 1 := by omega
+      have l1 : l.size = 1 := by omega
       rw [r1, add_assoc] at lr₁
-      have l1 :=
-        le_antisymm
-          ((mul_le_mul_left (by decide)).1 (le_trans lr₁ (add_le_add_right mm 2) : _ ≤ delta * 1))
-          l0
       rw [l1, r1]
       revert mm; cases size ml <;> cases size mr <;> intro mm
       · decide
@@ -207,9 +203,9 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
       rw [mul_left_comm, mul_add] at this
       have := le_trans this (add_le_add_left mr₁ _)
       rw [← Nat.succ_mul] at this
-      exact (mul_le_mul_left (by decide)).1 this
+      exact (mul_le_mul_iff_right₀ (by decide)).1 this
     refine ⟨Or.inr ⟨?_, ?_⟩, Or.inr ⟨?_, ?_⟩, Or.inr ⟨?_, ?_⟩⟩
-    · refine (mul_le_mul_left (by decide)).1 (le_trans this ?_)
+    · refine (mul_le_mul_iff_right₀ (by decide)).1 (le_trans this ?_)
       rw [two_mul, Nat.succ_le_iff]
       refine add_lt_add_of_lt_of_le ?_ mm₂
       simpa using (mul_lt_mul_right ml0).2 (by decide : 1 < 3)
@@ -239,10 +235,7 @@ theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : V
   rw [hr.2.size_eq] at H3
   replace H3 : 2 * (size rl + size rr) ≤ 9 * size l + 3 ∨ size rl + size rr ≤ 2 :=
     H3.imp (@Nat.le_of_add_le_add_right _ 2 _) Nat.le_of_succ_le_succ
-  have H3_0 : size l = 0 → size rl + size rr ≤ 2 := by
-    intro l0; rw [l0] at H3
-    exact
-      (or_iff_right_of_imp fun h => (mul_le_mul_left (by decide)).1 (le_trans h (by decide))).1 H3
+  have H3_0 (l0 : size l = 0) : size rl + size rr ≤ 2 := by omega
   have H3p : size l > 0 → 2 * (size rl + size rr) ≤ 9 * size l + 3 := fun l0 : 1 ≤ size l =>
     (or_iff_left_of_imp <| by omega).1 H3
   have ablem : ∀ {a b : ℕ}, 1 ≤ a → a + b ≤ 2 → b ≤ 1 := by omega
@@ -495,13 +488,13 @@ theorem insertWith.valid_aux [IsTotal α (· ≤ ·)] [DecidableLE α] (f : α �
       rcases hf _ ⟨h_1, h_2⟩ with ⟨xf, fx⟩
       refine
         ⟨⟨⟨lx.mono_right (le_trans h_2 xf), xr.mono_left (le_trans fx h_1)⟩, hs, hb⟩, Or.inl rfl⟩
-    · rcases insertWith.valid_aux f x hf h.left bl (lt_of_le_not_le h_1 h_2) with ⟨vl, e⟩
+    · rcases insertWith.valid_aux f x hf h.left bl (lt_of_le_not_ge h_1 h_2) with ⟨vl, e⟩
       suffices H : _ by
         refine ⟨vl.balanceL h.right H, ?_⟩
         rw [size_balanceL vl.3 h.3.2.2 vl.2 h.2.2.2 H, h.2.size_eq]
         exact (e.add_right _).add_right _
       exact Or.inl ⟨_, e, h.3.1⟩
-    · have : y < x := lt_of_le_not_le ((total_of (· ≤ ·) _ _).resolve_left h_1) h_1
+    · have : y < x := lt_of_le_not_ge ((total_of (· ≤ ·) _ _).resolve_left h_1) h_1
       rcases insertWith.valid_aux f x hf h.right this br with ⟨vr, e⟩
       suffices H : _ by
         refine ⟨h.left.balanceR vr H, ?_⟩
@@ -725,8 +718,7 @@ instance mem.decidable (x : α) (s : Ordset α) : Decidable (x ∈ s) :=
   instDecidableEqBool _ _
 
 theorem pos_size_of_mem {x : α} {t : Ordset α} (h_mem : x ∈ t) : 0 < size t := by
-  simp? [Membership.mem, mem] at h_mem says
-    simp only [Membership.mem, mem, Bool.decide_eq_true] at h_mem
+  simp only [Membership.mem, mem, Bool.decide_eq_true] at h_mem
   apply Ordnode.pos_size_of_mem t.property.sz h_mem
 
 end

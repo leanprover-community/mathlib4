@@ -10,7 +10,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 # Multiplication by a nonzero element in a `GroupWithZero` is a permutation.
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 variable {G₀ : Type*}
 
@@ -23,8 +23,6 @@ elements. -/
 @[simps] def _root_.unitsEquivNeZero : G₀ˣ ≃ {a : G₀ // a ≠ 0} where
   toFun a := ⟨a, a.ne_zero⟩
   invFun a := Units.mk0 _ a.prop
-  left_inv _ := Units.ext rfl
-  right_inv _ := rfl
 
 /-- Left multiplication by a nonzero element in a `GroupWithZero` is a permutation of the
 underlying type. -/

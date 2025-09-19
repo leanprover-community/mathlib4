@@ -14,13 +14,13 @@ This file proves relations between the various set intervals in a successor/pred
 ## Notes
 
 Please keep in sync with:
-* `Mathlib.Algebra.Order.Interval.Finset.SuccPred`
-* `Mathlib.Algebra.Order.Interval.Set.SuccPred`
-* `Mathlib.Order.Interval.Finset.SuccPred`
+* `Mathlib/Algebra/Order/Interval/Finset/SuccPred.lean`
+* `Mathlib/Algebra/Order/Interval/Set/SuccPred.lean`
+* `Mathlib/Order/Interval/Finset/SuccPred.lean`
 
 ## TODO
 
-Copy over `insert` lemmas from `Mathlib.Order.Interval.Finset.Nat`.
+Copy over `insert` lemmas from `Mathlib/Order/Interval/Finset/Nat.lean`.
 -/
 
 assert_not_exists MonoidWithZero
@@ -67,7 +67,7 @@ lemma insert_Icc_succ_left_eq_Icc (h : a ≤ b) : insert a (Icc (succ a) b) = Ic
 
 lemma insert_Icc_right_eq_Icc_succ (h : a ≤ succ b) :
     insert (succ b) (Icc a b) = Icc a (succ b) := by
-  ext x; simp [or_and_left, le_succ_iff_eq_or_le]; aesop
+  ext x; simp [or_and_left, le_succ_iff_eq_or_le]; simp_all
 
 @[deprecated (since := "2025-04-19")]
 alias insert_Icc_eq_Icc_succ_right := insert_Icc_right_eq_Icc_succ
@@ -153,11 +153,11 @@ lemma Ioc_pred_pred_eq_Ico_of_not_isMin (ha : ¬ IsMin a) (b : α) :
 /-! ##### Inserting into intervals -/
 
 lemma insert_Icc_pred_right_eq_Icc (h : a ≤ b) : insert b (Icc a (pred b)) = Icc a b := by
-  ext x; simp [or_and_left, eq_comm (a := b), ← le_iff_eq_or_le_pred]; aesop
+  ext x; simp [or_and_left, ← le_iff_eq_or_le_pred]; simp_all
 
 lemma insert_Icc_left_eq_Icc_pred (h : pred a ≤ b) :
     insert (pred a) (Icc a b) = Icc (pred a) b := by
-  ext x; simp [or_and_left, pred_le_iff_eq_or_le]; aesop
+  ext x; simp [or_and_left, pred_le_iff_eq_or_le]; simp_all
 
 @[deprecated (since := "2025-04-19")]
 alias insert_Icc_eq_Icc_pred_left := insert_Icc_left_eq_Icc_pred

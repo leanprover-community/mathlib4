@@ -23,13 +23,13 @@ example : ¬(p ∧ q) → (p → ¬q) := by
   guard_hyp h : p → ¬q
   exact h
 
-example : (∀(x : α), ¬ p' x) → ¬ ∃(x : α), p' x := by
+example : (∀ (x : α), ¬ p' x) → ¬ ∃ (x : α), p' x := by
   intro h
   push_neg
   guard_target = ∀ (x : α), ¬p' x
   exact h
 
-example : (¬ ∀(x : α), p' x) → (∃(x : α), ¬ p' x) := by
+example : (¬ ∀ (x : α), p' x) → (∃ (x : α), ¬ p' x) := by
   intro h
   push_neg at h
   guard_hyp h : ∃ (x : α), ¬p' x
@@ -81,7 +81,7 @@ example (x y : β) (h : y < x) : ¬¬¬ (x ≤ y) := by
   exact h
 
 set_option linter.unusedVariables false in
-example (x y : β) (h₁ : ¬¬¬(x < y)) (h₂ : ¬∃ (x y : Nat), x = y) : ¬ ∀(x y : Nat), x = y := by
+example (x y : β) (h₁ : ¬¬¬(x < y)) (h₂ : ¬∃ (x y : Nat), x = y) : ¬ ∀ (x y : Nat), x = y := by
   push_neg at *
   guard_target = ∃ (x y : Nat), x ≠ y
   guard_hyp h₁ : y ≤ x
@@ -89,7 +89,7 @@ example (x y : β) (h₁ : ¬¬¬(x < y)) (h₂ : ¬∃ (x y : Nat), x = y) : ¬
   exact ⟨0, 1, by simp⟩
 
 set_option linter.unusedVariables false in
-example (x y : β) (h₁ : ¬¬¬(x < y)) (h₂ : ¬∃ (x y : Nat), x = y) : ¬ ∀(x y : Nat), x = y := by
+example (x y : β) (h₁ : ¬¬¬(x < y)) (h₂ : ¬∃ (x y : Nat), x = y) : ¬ ∀ (x y : Nat), x = y := by
   push_neg at h₁ h₂ ⊢
   guard_target = ∃ (x y : Nat), x ≠ y
   guard_hyp h₁ : y ≤ x
@@ -135,6 +135,26 @@ example (h : p ∧ q) : ¬¬(p ∧ q) := by
   push_neg
   guard_target =ₛ r
   exact h
+
+-- new error message as of https://github.com/leanprover-community/mathlib4/issues/27562
+/-- error: push_neg made no progress anywhere -/
+#guard_msgs in
+example {P : Prop} (h : P) : P := by push_neg at *
+
+-- new behaviour as of https://github.com/leanprover-community/mathlib4/issues/27562
+-- (Previously, because of a metavariable instantiation issue, the tactic succeeded as a no-op.)
+/-- error: push_neg made no progress at h -/
+#guard_msgs in
+example {x y : ℕ} : True := by
+  have h : x ≤ y := test_sorry
+  push_neg at h
+
+-- new behaviour as of https://github.com/leanprover-community/mathlib4/issues/27562 (previously the tactic succeeded as a no-op)
+/-- error: cannot run push_neg at inductive_proof, it is an implementation detail -/
+#guard_msgs in
+def inductive_proof : True := by
+  push_neg at inductive_proof
+  trivial
 
 section use_distrib
 set_option push_neg.use_distrib true

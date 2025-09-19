@@ -91,9 +91,7 @@ lemma coeff_minpolyDiv_mem_adjoin (x : S) (i) :
   apply this (natDegree (minpolyDiv R x) + 1)
   rw [coeff_eq_zero_of_natDegree_lt]
   · exact zero_mem _
-  · refine (Nat.le_add_left _ i).trans_lt ?_
-    rw [← add_assoc]
-    exact Nat.lt_succ_self _
+  · omega
 
 section IsIntegral
 variable (hx : IsIntegral R x)
@@ -209,9 +207,9 @@ lemma sum_smul_minpolyDiv_eq_X_pow (E) [Field E] [Algebra K E] [IsAlgClosed E]
     exact (Algebra.IsSeparable.isSeparable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
   · refine (Polynomial.natDegree_sub_le _ _).trans_lt
       (max_lt ((Polynomial.natDegree_sum_le _ _).trans_lt ?_) ?_)
-    · simp only [AlgEquiv.toAlgHom_eq_coe, Polynomial.map_smul,
-        map_div₀, map_pow, RingHom.coe_coe, AlgHom.coe_coe, Function.comp_apply,
-        Finset.mem_univ, forall_true_left, true_and, Finset.fold_max_lt, AlgHom.card]
+    · simp only [Polynomial.map_smul,
+        map_div₀, map_pow, RingHom.coe_coe, Function.comp_apply,
+        Finset.mem_univ, forall_true_left, Finset.fold_max_lt, AlgHom.card]
       refine ⟨finrank_pos, ?_⟩
       intro σ
       exact ((Polynomial.natDegree_smul_le _ _).trans natDegree_map_le).trans_lt

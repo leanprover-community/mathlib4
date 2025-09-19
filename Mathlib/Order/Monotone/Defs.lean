@@ -3,6 +3,7 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yaël Dillies
 -/
+import Mathlib.Data.Set.Operations
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Coe
@@ -330,7 +331,7 @@ theorem injective_of_le_imp_le [PartialOrder α] [Preorder β] (f : α → β)
 
 section Composition
 
-variable [Preorder α] [Preorder β] [Preorder γ] {g : β → γ} {f : α → β} {s : Set α}
+variable [Preorder α] [Preorder β] [Preorder γ] {g : β → γ} {f : α → β} {s : Set α} {t : Set β}
 
 protected theorem Monotone.comp (hg : Monotone g) (hf : Monotone f) : Monotone (g ∘ f) :=
   fun _ _ h ↦ hg (hf h)
@@ -392,6 +393,20 @@ theorem StrictAnti.comp_strictMonoOn (hg : StrictAnti g) (hf : StrictMonoOn f s)
     StrictAntiOn (g ∘ f) s :=
   fun _ ha _ hb h ↦ hg (hf ha hb h)
 
+lemma StrictMonoOn.comp (hg : StrictMonoOn g t) (hf : StrictMonoOn f s) (hs : Set.MapsTo f s t) :
+    StrictMonoOn (g ∘ f) s := fun _x hx _y hy hxy ↦ hg (hs hx) (hs hy) <| hf hx hy hxy
+
+lemma StrictMonoOn.comp_strictAntiOn (hg : StrictMonoOn g t) (hf : StrictAntiOn f s)
+    (hs : Set.MapsTo f s t) : StrictAntiOn (g ∘ f) s := fun _x hx _y hy hxy ↦
+  hg (hs hy) (hs hx) <| hf hx hy hxy
+
+lemma StrictAntiOn.comp (hg : StrictAntiOn g t) (hf : StrictAntiOn f s) (hs : Set.MapsTo f s t) :
+    StrictMonoOn (g ∘ f) s := fun _x hx _y hy hxy ↦ hg (hs hy) (hs hx) <| hf hx hy hxy
+
+lemma StrictAntiOn.comp_strictMonoOn (hg : StrictAntiOn g t) (hf : StrictMonoOn f s)
+    (hs : Set.MapsTo f s t) : StrictAntiOn (g ∘ f) s := fun _x hx _y hy hxy ↦
+  hg (hs hx) (hs hy) <| hf hx hy hxy
+
 end Composition
 
 /-! ### Monotonicity in linear orders  -/
@@ -408,18 +423,18 @@ variable [Preorder β] {f : α → β} {s : Set α}
 open Ordering
 
 theorem Monotone.reflect_lt (hf : Monotone f) {a b : α} (h : f a < f b) : a < b :=
-  lt_of_not_ge fun h' ↦ h.not_le (hf h')
+  lt_of_not_ge fun h' ↦ h.not_ge (hf h')
 
 theorem Antitone.reflect_lt (hf : Antitone f) {a b : α} (h : f a < f b) : b < a :=
-  lt_of_not_ge fun h' ↦ h.not_le (hf h')
+  lt_of_not_ge fun h' ↦ h.not_ge (hf h')
 
 theorem MonotoneOn.reflect_lt (hf : MonotoneOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s)
     (h : f a < f b) : a < b :=
-  lt_of_not_ge fun h' ↦ h.not_le <| hf hb ha h'
+  lt_of_not_ge fun h' ↦ h.not_ge <| hf hb ha h'
 
 theorem AntitoneOn.reflect_lt (hf : AntitoneOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s)
     (h : f a < f b) : b < a :=
-  lt_of_not_ge fun h' ↦ h.not_le <| hf ha hb h'
+  lt_of_not_ge fun h' ↦ h.not_ge <| hf ha hb h'
 
 end Preorder
 
@@ -439,6 +454,14 @@ variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] {f : α → γ}
 theorem monotone_fst : Monotone (@Prod.fst α β) := fun _ _ ↦ And.left
 
 theorem monotone_snd : Monotone (@Prod.snd α β) := fun _ _ ↦ And.right
+
+theorem monotone_prodMk_iff {f : γ → α} {g : γ → β} :
+    Monotone (fun x => (f x, g x)) ↔ Monotone f ∧ Monotone g := by
+  simp_rw [Monotone, Prod.mk_le_mk, forall_and]
+
+theorem Monotone.prodMk {f : γ → α} {g : γ → β} (hf : Monotone f) (hg : Monotone g) :
+    Monotone (fun x => (f x, g x)) :=
+  monotone_prodMk_iff.2 ⟨hf, hg⟩
 
 theorem Monotone.prodMap (hf : Monotone f) (hg : Monotone g) : Monotone (Prod.map f g) :=
   fun _ _ h ↦ ⟨hf h.1, hg h.2⟩

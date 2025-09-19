@@ -94,8 +94,8 @@ structure AState where
 /--
 Monad used to abstract proofs, to prepare for generalization.
 Has a cache (of expr/type? pairs),
-and it also has a reader context `Mathlib.Tactic.GeneralizeProofs.AContext`
-and a state `Mathlib.Tactic.GeneralizeProofs.AState`.
+and it also has a reader context `Mathlib/Tactic/GeneralizeProofs/AContext.lean`
+and a state `Mathlib/Tactic/GeneralizeProofs/AState.lean`.
 -/
 abbrev MAbs := ReaderT AContext <| MonadCacheT (Expr × Option Expr) Expr <| StateRefT AState MetaM
 
@@ -257,10 +257,10 @@ where
                 else
                   pure none
               mkLambdaFVars #[x] (← visit (b.instantiate1 x) ty'?)
-          | .letE n t v b _ =>
+          | .letE n t v b nondep =>
             let t' ← visit t none
-            withLetDecl n t' (← visit v t') fun x ↦ MAbs.withLocal x do
-              mkLetFVars #[x] (← visit (b.instantiate1 x) ty?)
+            mapLetDecl n t' (← visit v t') (nondep := nondep) fun x ↦ MAbs.withLocal x do
+              visit (b.instantiate1 x) ty?
           | .app .. =>
             e.withApp fun f args ↦ do
               let f' ← visit f none
@@ -390,10 +390,10 @@ where
       if fvars.contains fvar then
         -- This is one of the hypotheses that was intentionally reverted.
         let tgt ← instantiateMVars <| ← g.getType
-        let ty := tgt.bindingDomain!.cleanupAnnotations
+        let ty := (if tgt.isLet then tgt.letType! else tgt.bindingDomain!).cleanupAnnotations
         if ← pure tgt.isLet <&&> Meta.isProp ty then
           -- Clear the proof value (using proof irrelevance) and `go` again
-          let tgt' := Expr.forallE tgt.bindingName! ty tgt.bindingBody! .default
+          let tgt' := Expr.forallE tgt.letName! ty tgt.letBody! .default
           let g' ← mkFreshExprSyntheticOpaqueMVar tgt' tag
           g.assign <| .app g' tgt.letValue!
           return ← go g'.mvarId! i hs
@@ -419,10 +419,10 @@ where
               -- Make this prop available as a proof
               MGen.insertFVar t' (.fvar fvar')
             go g' (i + 1) (hs ++ hs')
-        | .letE n t v b _ =>
+        | .letE n t v b nondep =>
           withGeneralizedProofs t none fun hs' pfs' t' => do
             withGeneralizedProofs v t' fun hs'' pfs'' v' => do
-              let tgt' := Expr.letE n t' v' b false
+              let tgt' := Expr.letE n t' v' b nondep
               let g' ← mkFreshExprSyntheticOpaqueMVar tgt' tag
               g.assign <| mkAppN (← mkLambdaFVars (hs' ++ hs'') g') (pfs' ++ pfs'')
               let (fvar', g') ← g'.mvarId!.intro1P
@@ -488,7 +488,7 @@ and furthermore if `h` duplicates a preceding local hypothesis then it is elimin
 
 The tactic is able to abstract proofs from under binders, creating universally quantified
 proofs in the local context.
-To disable this, use `generalize_proofs (config := { abstract := false })`.
+To disable this, use `generalize_proofs -abstract`.
 The tactic is also set to recursively abstract proofs from the types of the generalized proofs.
 This can be controlled with the `maxDepth` configuration option,
 with `generalize_proofs (config := { maxDepth := 0 })` turning this feature off.

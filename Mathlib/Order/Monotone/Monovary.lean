@@ -330,19 +330,19 @@ theorem AntivaryOn.comp_antitoneOn_right (h : AntivaryOn f g s) (hg : AntitoneOn
 
 @[symm]
 protected theorem Monovary.symm (h : Monovary f g) : Monovary g f := fun _ _ hf =>
-  le_of_not_lt fun hg => hf.not_le <| h hg
+  le_of_not_gt fun hg => hf.not_ge <| h hg
 
 @[symm]
 protected theorem Antivary.symm (h : Antivary f g) : Antivary g f := fun _ _ hf =>
-  le_of_not_lt fun hg => hf.not_le <| h hg
+  le_of_not_gt fun hg => hf.not_ge <| h hg
 
 @[symm]
 protected theorem MonovaryOn.symm (h : MonovaryOn f g s) : MonovaryOn g f s := fun _ hi _ hj hf =>
-  le_of_not_lt fun hg => hf.not_le <| h hj hi hg
+  le_of_not_gt fun hg => hf.not_ge <| h hj hi hg
 
 @[symm]
 protected theorem AntivaryOn.symm (h : AntivaryOn f g s) : AntivaryOn g f s := fun _ hi _ hj hf =>
-  le_of_not_lt fun hg => hf.not_le <| h hi hj hg
+  le_of_not_gt fun hg => hf.not_ge <| h hi hj hg
 
 end LinearOrder
 

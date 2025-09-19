@@ -17,11 +17,11 @@ See `Algebra.RingQuot` for quotients of non-commutative rings.
 
 ## Main definitions
 
- - `Ideal.instHasQuotient`: the quotient of a commutative ring `R` by an ideal `I : Ideal R`
- - `Ideal.Quotient.commRing`: the ring structure of the ideal quotient
- - `Ideal.Quotient.mk`: map an element of `R` to the quotient `R ⧸ I`
- - `Ideal.Quotient.lift`: turn a map `R → S` into a map `R ⧸ I → S`
- - `Ideal.quotEquivOfEq`: quotienting by equal ideals gives isomorphic rings
+- `Ideal.instHasQuotient`: the quotient of a commutative ring `R` by an ideal `I : Ideal R`
+- `Ideal.Quotient.commRing`: the ring structure of the ideal quotient
+- `Ideal.Quotient.mk`: map an element of `R` to the quotient `R ⧸ I`
+- `Ideal.Quotient.lift`: turn a map `R → S` into a map `R ⧸ I → S`
+- `Ideal.quotEquivOfEq`: quotienting by equal ideals gives isomorphic rings
 -/
 
 

@@ -63,7 +63,7 @@ theorem radon_partition {f : ι → E} (h : ¬ AffineIndependent 𝕜 f) :
   refine centerMass_mem_convexHull_of_nonpos _ (fun _ hi ↦ (mem_filter.mp hi).2.le) ?_
     (fun _i hi ↦ mem_image_of_mem _ fun hi' ↦ ?_)
   · linarith only [hI, hJI]
-  · exact (mem_filter.mp hi').2.not_lt (mem_filter.mp hi).2
+  · exact (mem_filter.mp hi').2.not_gt (mem_filter.mp hi).2
 
 open Module
 
@@ -85,14 +85,15 @@ theorem helly_theorem' {F : ι → Set E} {s : Finset ι}
     (h_inter : ∀ I ⊆ s, #I ≤ finrank 𝕜 E + 1 → (⋂ i ∈ I, F i).Nonempty) :
     (⋂ i ∈ s, F i).Nonempty := by
   classical
-  obtain h_card | h_card := lt_or_le #s (finrank 𝕜 E + 1)
+  obtain h_card | h_card := lt_or_ge #s (finrank 𝕜 E + 1)
   · exact helly_theorem_corner (le_of_lt h_card) h_inter
   generalize hn : #s = n
   rw [hn] at h_card
-  induction' n, h_card using Nat.le_induction with k h_card hk generalizing ι
-  · exact helly_theorem_corner (le_of_eq hn) h_inter
+  induction n, h_card using Nat.le_induction generalizing ι with
+  | base => exact helly_theorem_corner (le_of_eq hn) h_inter
   /- Construct a family of vectors indexed by `ι` such that the vector corresponding to `i : ι`
   is an arbitrary element of the intersection of all `F j` except `F i`. -/
+  | succ k h_card hk =>
   let a (i : s) : E := Set.Nonempty.some (s := ⋂ j ∈ s.erase i, F j) <| by
     apply hk (s := s.erase i)
     · exact fun i hi ↦ h_convex i (mem_of_mem_erase hi)

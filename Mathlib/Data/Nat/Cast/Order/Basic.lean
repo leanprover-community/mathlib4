@@ -3,10 +3,10 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Data.Nat.Cast.NeZero
 import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Cast.NeZero
 import Mathlib.Order.Hom.Basic
 
 /-!
@@ -86,6 +86,9 @@ theorem one_lt_cast : 1 < (n : α) ↔ 1 < n := by rw [← cast_one, cast_lt]
 
 @[simp, norm_cast]
 theorem one_le_cast : 1 ≤ (n : α) ↔ 1 ≤ n := by rw [← cast_one, cast_le]
+
+theorem one_le_cast_iff_ne_zero : 1 ≤ (n : α) ↔ n ≠ 0 :=
+  one_le_cast.trans one_le_iff_ne_zero
 
 @[simp, norm_cast]
 theorem cast_lt_one : (n : α) < 1 ↔ n = 0 := by

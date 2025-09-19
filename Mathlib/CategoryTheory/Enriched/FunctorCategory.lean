@@ -30,7 +30,7 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory.Enriched.FunctorCategory
 
-open Category MonoidalCategory Limits
+open Category MonoidalCategory Limits Functor
 
 variable (V : Type u₁) [Category.{v₁} V] [MonoidalCategory V]
   {C : Type u₂} [Category.{v₂} C] {J : Type u₃} [Category.{v₃} J]
@@ -129,9 +129,9 @@ variable [HasEnrichedHom V F₁ F₂] [HasEnrichedHom V F₂ F₃] [HasEnrichedH
 
 /-- The composition for the `V`-enrichment of the category `J ⥤ C`. -/
 noncomputable def enrichedComp : enrichedHom V F₁ F₂ ⊗ enrichedHom V F₂ F₃ ⟶ enrichedHom V F₁ F₃ :=
-  end_.lift (fun j ↦ (end_.π _ j ⊗ end_.π _ j) ≫ eComp V _ _ _) (fun i j f ↦ by
+  end_.lift (fun j ↦ (end_.π _ j ⊗ₘ end_.π _ j) ≫ eComp V _ _ _) (fun i j f ↦ by
     dsimp
-    trans (end_.π (diagram V F₁ F₂) i ⊗ end_.π (diagram V F₂ F₃) j) ≫
+    trans (end_.π (diagram V F₁ F₂) i ⊗ₘ end_.π (diagram V F₂ F₃) j) ≫
       (ρ_ _).inv ▷ _ ≫ (_ ◁ (eHomEquiv V (F₂.map f))) ▷ _ ≫ eComp V _ (F₂.obj i) _ ▷ _ ≫
         eComp V _ (F₂.obj j) _
     · have := end_.condition (diagram V F₂ F₃) f
@@ -161,14 +161,14 @@ noncomputable def enrichedComp : enrichedHom V F₁ F₂ ⊗ enrichedHom V F₂ 
 @[reassoc (attr := simp)]
 lemma enrichedComp_π (j : J) :
     enrichedComp V F₁ F₂ F₃ ≫ end_.π _ j =
-      (end_.π (diagram V F₁ F₂) j ⊗ end_.π (diagram V F₂ F₃) j) ≫ eComp V _ _ _ := by
+      (end_.π (diagram V F₁ F₂) j ⊗ₘ end_.π (diagram V F₂ F₃) j) ≫ eComp V _ _ _ := by
   simp [enrichedComp]
 
 variable {F₁ F₂ F₃}
 
 @[reassoc]
 lemma homEquiv_comp (f : F₁ ⟶ F₂) (g : F₂ ⟶ F₃) :
-    (homEquiv V) (f ≫ g) = (λ_ (𝟙_ V)).inv ≫ ((homEquiv V) f ⊗ (homEquiv V) g) ≫
+    (homEquiv V) (f ≫ g) = (λ_ (𝟙_ V)).inv ≫ ((homEquiv V) f ⊗ₘ (homEquiv V) g) ≫
     enrichedComp V F₁ F₂ F₃ := by
   ext j
   simp only [homEquiv_apply_π, NatTrans.comp_app, eHomEquiv_comp, assoc,
@@ -393,13 +393,13 @@ noncomputable def functorEnrichedComp [HasFunctorEnrichedHom V F₁ F₂]
 lemma functorEnriched_id_comp [HasFunctorEnrichedHom V F₁ F₂] [HasFunctorEnrichedHom V F₁ F₁] :
     (λ_ (functorEnrichedHom V F₁ F₂)).inv ≫
       functorEnrichedId V F₁ ▷ functorEnrichedHom V F₁ F₂ ≫
-        functorEnrichedComp V F₁ F₁ F₂ = 𝟙 (functorEnrichedHom V F₁ F₂) := by aesop_cat
+        functorEnrichedComp V F₁ F₁ F₂ = 𝟙 (functorEnrichedHom V F₁ F₂) := by cat_disch
 
 @[reassoc (attr := simp)]
 lemma functorEnriched_comp_id [HasFunctorEnrichedHom V F₁ F₂] [HasFunctorEnrichedHom V F₂ F₂] :
     (ρ_ (functorEnrichedHom V F₁ F₂)).inv ≫
       functorEnrichedHom V F₁ F₂ ◁ functorEnrichedId V F₂ ≫
-        functorEnrichedComp V F₁ F₂ F₂ = 𝟙 (functorEnrichedHom V F₁ F₂) := by aesop_cat
+        functorEnrichedComp V F₁ F₂ F₂ = 𝟙 (functorEnrichedHom V F₁ F₂) := by cat_disch
 
 @[reassoc]
 lemma functorEnriched_assoc [HasFunctorEnrichedHom V F₁ F₂] [HasFunctorEnrichedHom V F₂ F₃]
@@ -433,7 +433,7 @@ noncomputable def functorHomEquiv [HasFunctorEnrichedHom V F₁ F₂] [HasEnrich
   (homEquiv V).trans (isLimitConeFunctorEnrichedHom V F₁ F₂).homEquiv
 
 lemma functorHomEquiv_id [HasFunctorEnrichedHom V F₁ F₁] [HasEnrichedHom V F₁ F₁] :
-    (functorHomEquiv V) (𝟙 F₁) = functorEnrichedId V F₁ := by aesop_cat
+    (functorHomEquiv V) (𝟙 F₁) = functorEnrichedId V F₁ := by cat_disch
 
 variable {F₁ F₂ F₃} in
 lemma functorHomEquiv_comp [HasFunctorEnrichedHom V F₁ F₂] [HasEnrichedHom V F₁ F₂]
@@ -441,7 +441,7 @@ lemma functorHomEquiv_comp [HasFunctorEnrichedHom V F₁ F₂] [HasEnrichedHom V
     [HasFunctorEnrichedHom V F₁ F₃] [HasEnrichedHom V F₁ F₃]
     (f : F₁ ⟶ F₂) (g : F₂ ⟶ F₃) :
     (functorHomEquiv V) (f ≫ g) = (λ_ (𝟙_ (J ⥤ V))).inv ≫
-      ((functorHomEquiv V) f ⊗ (functorHomEquiv V) g) ≫ functorEnrichedComp V F₁ F₂ F₃ := by
+      ((functorHomEquiv V) f ⊗ₘ (functorHomEquiv V) g) ≫ functorEnrichedComp V F₁ F₂ F₃ := by
   ext j
   dsimp
   ext k

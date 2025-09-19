@@ -102,7 +102,7 @@ lemma isRatCondKernelCDFAux_density_Iic (κ : Kernel α (γ × ℝ)) [IsFiniteKe
       a s' ?_ ?_ (fun _ ↦ measurableSet_Iic)
     · exact fun i j hij ↦ Iic_subset_Iic.mpr (by exact mod_cast hs_mono hij)
     · ext x
-      simp only [mem_iUnion, mem_Iic, mem_univ, iff_true]
+      simp only [mem_iUnion, mem_univ, iff_true]
       rw [tendsto_atTop_atTop] at hs_tendsto
       have ⟨q, hq⟩ := exists_rat_gt x
       obtain ⟨i, hi⟩ := hs_tendsto q
@@ -392,7 +392,6 @@ section CountableOrCountablyGenerated
 variable [h : CountableOrCountablyGenerated α β] (κ : Kernel α (β × Ω)) [IsFiniteKernel κ]
 
 open Classical in
-
 /-- Conditional kernel of a kernel `κ : Kernel α (β × Ω)`: a Markov kernel such that
 `fst κ ⊗ₖ condKernel κ = κ` (see `MeasureTheory.Measure.compProd_fst_condKernel`).
 It exists whenever `Ω` is standard Borel and either `α` is countable

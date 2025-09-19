@@ -83,7 +83,7 @@ instance Monad.algebraPreadditive : Preadditive (Monad.Algebra T) where
       zsmul_neg' := by
         intros
         ext
-        simp only [negSucc_zsmul, neg_inj, ← Nat.cast_smul_eq_nsmul ℤ]
+        simp only [negSucc_zsmul, ← Nat.cast_smul_eq_nsmul ℤ]
       neg_add_cancel := by
         intros
         ext
@@ -163,7 +163,7 @@ instance Comonad.coalgebraPreadditive : Preadditive (Comonad.Coalgebra U) where
       zsmul_neg' := by
         intros
         ext
-        simp only [negSucc_zsmul, neg_inj, ← Nat.cast_smul_eq_nsmul ℤ]
+        simp only [negSucc_zsmul, ← Nat.cast_smul_eq_nsmul ℤ]
       neg_add_cancel := by
         intros
         ext

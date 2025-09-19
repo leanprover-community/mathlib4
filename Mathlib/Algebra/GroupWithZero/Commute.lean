@@ -12,7 +12,7 @@ import Mathlib.Tactic.Nontriviality
 
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 variable {M₀ G₀ : Type*}
 variable [MonoidWithZero M₀]

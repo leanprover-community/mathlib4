@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Paul Lezeau
 -/
 import Mathlib.Data.Set.NAry
-import Mathlib.Order.Bounds.Defs
+import Mathlib.Order.Bounds.Basic
 
 /-!
 
@@ -221,11 +221,11 @@ variable [LinearOrder α] [Preorder β] {f : α → β} {a : α} {s : Set α}
 
 lemma StrictAnti.mem_upperBounds_image (hf : StrictAnti f) :
     f a ∈ upperBounds (f '' s) ↔ a ∈ lowerBounds s := by
-  simp [upperBounds, lowerBounds, hf.le_iff_le]
+  simp [upperBounds, lowerBounds, hf.le_iff_ge]
 
 lemma StrictAnti.mem_lowerBounds_image (hf : StrictAnti f) :
     f a ∈ lowerBounds (f '' s) ↔ a ∈ upperBounds s := by
-  simp [upperBounds, lowerBounds, hf.le_iff_le]
+  simp [upperBounds, lowerBounds, hf.le_iff_ge]
 
 lemma StrictAnti.map_isLeast (hf : StrictAnti f) : IsLeast (f '' s) (f a) ↔ IsGreatest s a := by
   simp [IsLeast, IsGreatest, hf.injective.eq_iff, hf.mem_lowerBounds_image]
@@ -495,6 +495,12 @@ theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
 theorem isGLB_prod {s : Set (α × β)} (p : α × β) :
     IsGLB s p ↔ IsGLB (Prod.fst '' s) p.1 ∧ IsGLB (Prod.snd '' s) p.2 :=
   @isLUB_prod αᵒᵈ βᵒᵈ _ _ _ _
+
+lemma Monotone.upperBounds_image_of_directedOn_prod {γ : Type*} [Preorder γ] {g : α × β → γ}
+    (hg : Monotone g) {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
+    upperBounds (g '' d) = upperBounds (g '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := le_antisymm
+  (upperBounds_mono_of_isCofinalFor (hd.isCofinalFor_fst_image_prod_snd_image.image_of_monotone hg))
+  (upperBounds_mono_set (image_mono subset_fst_image_prod_snd_image))
 
 end Prod
 

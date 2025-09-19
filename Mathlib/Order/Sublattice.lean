@@ -173,13 +173,15 @@ def topEquiv : (⊤ : Sublattice α) ≃o α where
 @[simp, norm_cast] lemma coe_eq_univ : L = (univ : Set α) ↔ L = ⊤ := by rw [← coe_top, coe_inj]
 @[simp, norm_cast] lemma coe_eq_empty : L = (∅ : Set α) ↔ L = ⊥ := by rw [← coe_bot, coe_inj]
 
-@[simp] lemma not_mem_bot (a : α) : a ∉ (⊥ : Sublattice α) := id
+@[simp] lemma notMem_bot (a : α) : a ∉ (⊥ : Sublattice α) := id
 @[simp] lemma mem_top (a : α) : a ∈ (⊤ : Sublattice α) := mem_univ _
 @[simp] lemma mem_inf : a ∈ L ⊓ M ↔ a ∈ L ∧ a ∈ M := Iff.rfl
 @[simp] lemma mem_sInf {S : Set (Sublattice α)} : a ∈ sInf S ↔ ∀ L ∈ S, a ∈ L := by
   rw [← SetLike.mem_coe]; simp
 @[simp] lemma mem_iInf {f : ι → Sublattice α} : a ∈ ⨅ i, f i ↔ ∀ i, a ∈ f i := by
   rw [← SetLike.mem_coe]; simp
+
+@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 /-- Sublattices of a lattice form a complete lattice. -/
 instance instCompleteLattice : CompleteLattice (Sublattice α) where
@@ -231,7 +233,7 @@ def map (f : LatticeHom α β) (L : Sublattice α) : Sublattice β where
 lemma mem_map_of_mem (f : LatticeHom α β) {a : α} : a ∈ L → f a ∈ L.map f := mem_image_of_mem f
 lemma apply_coe_mem_map (f : LatticeHom α β) (a : L) : f a ∈ L.map f := mem_map_of_mem f a.prop
 
-lemma map_mono : Monotone (map f) := fun _ _ ↦ image_subset _
+lemma map_mono : Monotone (map f) := fun _ _ ↦ image_mono
 
 @[simp] lemma map_id : L.map (LatticeHom.id α) = L := SetLike.coe_injective <| image_id _
 
@@ -313,11 +315,9 @@ attribute [norm_cast] coe_prod
 lemma prod_mono {L₁ L₂ : Sublattice α} {M₁ M₂ : Sublattice β} (hL : L₁ ≤ L₂) (hM : M₁ ≤ M₂) :
     L₁.prod M₁ ≤ L₂.prod M₂ := Set.prod_mono hL hM
 
-@[gcongr]
 lemma prod_mono_left {L₁ L₂ : Sublattice α} {M : Sublattice β} (hL : L₁ ≤ L₂) :
     L₁.prod M ≤ L₂.prod M := prod_mono hL le_rfl
 
-@[gcongr]
 lemma prod_mono_right {M₁ M₂ : Sublattice β} (hM : M₁ ≤ M₂) : L.prod M₁ ≤ L.prod M₂ :=
   prod_mono le_rfl hM
 

@@ -69,7 +69,7 @@ theorem pderiv_monomial {i : σ} :
     ← (monomial _).map_smul]
   refine (Finset.sum_eq_single i (fun j _ hne => ?_) fun hi => ?_).trans ?_
   · simp [Pi.single_eq_of_ne hne]
-  · rw [Finsupp.not_mem_support_iff] at hi; simp [hi]
+  · rw [Finsupp.notMem_support_iff] at hi; simp [hi]
   · simp
 
 lemma X_mul_pderiv_monomial {i : σ} {m : σ →₀ ℕ} {r : R} :
@@ -86,7 +86,7 @@ theorem pderiv_one {i : σ} : pderiv i (1 : MvPolynomial σ R) = 0 := pderiv_C
 
 @[simp]
 theorem pderiv_X [DecidableEq σ] (i j : σ) :
-    pderiv i (X j : MvPolynomial σ R) = Pi.single (f := fun _ => _) i 1 j := by
+    pderiv i (X j : MvPolynomial σ R) = Pi.single (M := fun _ => _) i 1 j := by
   rw [pderiv_def, mkDerivation_X]
 
 @[simp]
@@ -96,9 +96,12 @@ theorem pderiv_X_self (i : σ) : pderiv i (X i : MvPolynomial σ R) = 1 := by cl
 theorem pderiv_X_of_ne {i j : σ} (h : j ≠ i) : pderiv i (X j : MvPolynomial σ R) = 0 := by
   classical simp [h]
 
-theorem pderiv_eq_zero_of_not_mem_vars {i : σ} {f : MvPolynomial σ R} (h : i ∉ f.vars) :
+theorem pderiv_eq_zero_of_notMem_vars {i : σ} {f : MvPolynomial σ R} (h : i ∉ f.vars) :
     pderiv i f = 0 :=
   derivation_eq_zero_of_forall_mem_vars fun _ hj => pderiv_X_of_ne <| ne_of_mem_of_not_mem hj h
+
+@[deprecated (since := "2025-05-23")]
+alias pderiv_eq_zero_of_not_mem_vars := pderiv_eq_zero_of_notMem_vars
 
 theorem pderiv_monomial_single {i : σ} {n : ℕ} : pderiv i (monomial (single i n) a) =
     monomial (single i (n - 1)) (a * n) := by simp
@@ -130,7 +133,7 @@ lemma pderiv_rename {τ : Type*} {f : σ → τ} (hf : Function.Injective f)
   | add p q hp hq => simp [hp, hq]
   | mul_X p a h =>
     simp only [map_mul, MvPolynomial.rename_X, Derivation.leibniz, MvPolynomial.pderiv_X,
-      Pi.single_apply, hf.eq_iff, smul_eq_mul, mul_ite, mul_one, mul_zero, h, map_add, add_left_inj]
+      Pi.single_apply, hf.eq_iff, smul_eq_mul, mul_ite, mul_one, mul_zero, h, map_add]
     split_ifs <;> simp
 
 lemma aeval_sumElim_pderiv_inl {S τ : Type*} [CommRing S] [Algebra R S]
@@ -144,8 +147,6 @@ lemma aeval_sumElim_pderiv_inl {S τ : Type*} [CommRing S] [Algebra R S]
   | mul_X p q h =>
     simp only [Derivation.leibniz, pderiv_X, smul_eq_mul, map_add, map_mul, aeval_X, h]
     cases q <;> simp [Pi.single_apply]
-
-@[deprecated (since := "2025-02-21")] alias aeval_sum_elim_pderiv_inl := aeval_sumElim_pderiv_inl
 
 end PDeriv
 

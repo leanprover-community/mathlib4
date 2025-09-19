@@ -16,7 +16,7 @@ import Mathlib.RingTheory.FiniteLength
 ## Main results
 - `Module.length`: `Module.length R M` is the length of `M` as an `R`-module.
 - `Module.length_pos`: The length of a nontrivial module is positive
-- `Module.length_ne_top`: The length of an artinian and noetherian module is finite.
+- `Module.length_ne_top`: The length of an Artinian and Noetherian module is finite.
 - `Module.length_eq_add_of_exact`: Length is additive in exact sequences.
 
 -/
@@ -68,8 +68,7 @@ lemma Module.length_compositionSeries (s : CompositionSeries (Submodule R M)) (h
   have := (isFiniteLength_iff_isNoetherian_isArtinian.mp H).2
   rw [← WithBot.coe_inj, Module.coe_length]
   apply le_antisymm
-  · let s' := s.map (β := Submodule R M) (s := (· < ·)) ⟨id, fun h ↦ h.1⟩
-    exact (Order.LTSeries.length_le_krullDim s')
+  · exact (Order.LTSeries.length_le_krullDim <| s.map ⟨id, fun h ↦ h.1⟩)
   · rw [Order.krullDim, iSup_le_iff]
     intro t
     refine WithBot.coe_le_coe.mpr ?_
@@ -92,7 +91,10 @@ lemma Module.length_ne_top_iff : Module.length R M ≠ ⊤ ↔ IsFiniteLength R 
   refine ⟨fun h ↦ ?_, fun H ↦ ?_⟩
   · rw [length_ne_top_iff_finiteDimensionalOrder] at h
     rw [isFiniteLength_iff_isNoetherian_isArtinian, isNoetherian_iff, isArtinian_iff]
-    exact ⟨Rel.wellFounded_swap_of_finiteDimensional _, Rel.wellFounded_of_finiteDimensional _⟩
+    let R : SetRel (Submodule R M) (Submodule R M) :=
+      {(N₁, N₂) : Submodule R M × Submodule R M | N₁ < N₂}
+    change R.inv.IsWellFounded ∧ R.IsWellFounded
+    exact ⟨.of_finiteDimensional R.inv, .of_finiteDimensional R⟩
   · obtain ⟨s, hs₁, hs₂⟩ := isFiniteLength_iff_exists_compositionSeries.mp H
     rw [← length_compositionSeries s hs₁ hs₂]
     simp
@@ -156,7 +158,7 @@ lemma Module.length_eq_add_of_exact :
         t.map ⟨Submodule.map f, Submodule.map_covBy_of_injective hf⟩
       have hfg : Submodule.map f ⊤ = Submodule.comap g ⊥ := by
         rw [Submodule.map_top, Submodule.comap_bot, LinearMap.exact_iff.mp H]
-      let r := t'.smash s' (by simpa [s', t', hs₁, ht₂])
+      let r := t'.smash s' (by simpa [s', t', hs₁, ht₂] using hfg)
       rw [← Module.length_compositionSeries s hs₁ hs₂,
         ← Module.length_compositionSeries t ht₁ ht₂,
         ← Module.length_compositionSeries r
@@ -257,7 +259,7 @@ lemma Module.length_of_free_of_finite
 lemma Module.length_eq_one_iff :
     Module.length R M = 1 ↔ IsSimpleModule R M := by
   rw [← WithBot.coe_inj, Module.coe_length, WithBot.coe_one,
-    Order.krullDim_eq_one_iff_of_boundedOrder]
+    Order.krullDim_eq_one_iff_of_boundedOrder, isSimpleModule_iff]
 
 variable (R M) in
 @[simp]

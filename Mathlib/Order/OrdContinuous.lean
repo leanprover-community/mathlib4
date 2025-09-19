@@ -90,7 +90,7 @@ theorem le_iff (hf : LeftOrdContinuous f) (h : Injective f) {x y} : f x ≤ f y 
   simp only [← sup_eq_right, ← hf.map_sup, h.eq_iff]
 
 theorem lt_iff (hf : LeftOrdContinuous f) (h : Injective f) {x y} : f x < f y ↔ x < y := by
-  simp only [lt_iff_le_not_le, hf.le_iff h]
+  simp only [lt_iff_le_not_ge, hf.le_iff h]
 
 variable (f)
 

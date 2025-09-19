@@ -8,6 +8,8 @@ import Mathlib.Algebra.GroupWithZero.Hom
 
 /-! # Isomorphisms of monoids with zero -/
 
+assert_not_exists Ring
+
 namespace MulEquivClass
 variable {F α β : Type*} [EquivLike F α β]
 
@@ -26,3 +28,31 @@ instance (priority := 100) toMonoidWithZeroHomClass
   { MulEquivClass.instMonoidHomClass F, MulEquivClass.toZeroHomClass with }
 
 end MulEquivClass
+
+namespace MulEquiv
+
+variable {G H : Type*} [MulZeroOneClass G] [MulZeroOneClass H]
+
+/-- An isomorphism of monoids with zero can be treated as a homomorphism preserving zero.
+This is a helper projection that utilizes the `MonoidWithZeroHomClass` instance. -/
+def toMonoidWithZeroHom (f : G ≃* H) : G →*₀ H := f
+
+@[simp] lemma toMonoidWithZeroHom_apply (f : G ≃* H) (x : G) : f.toMonoidWithZeroHom x = f x := rfl
+
+lemma toMonoidWithZeroHom_injective (f : G ≃* H) :
+    Function.Injective f.toMonoidWithZeroHom :=
+  f.injective
+
+lemma toMonoidWithZeroHom_surjective (f : G ≃* H) :
+    Function.Surjective f.toMonoidWithZeroHom :=
+  f.surjective
+
+lemma toMonoidWithZeroHom_bijective (f : G ≃* H) :
+    Function.Bijective f.toMonoidWithZeroHom :=
+  f.bijective
+
+@[simp] lemma toMonoidWithZeroHom_inj {f g : G ≃* H} :
+    f.toMonoidWithZeroHom = g.toMonoidWithZeroHom ↔ f = g := by
+  simp [MonoidWithZeroHom.ext_iff, MulEquiv.ext_iff]
+
+end MulEquiv

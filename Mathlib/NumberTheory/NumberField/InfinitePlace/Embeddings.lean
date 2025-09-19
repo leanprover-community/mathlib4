@@ -112,7 +112,7 @@ theorem pow_eq_one_of_norm_eq_one {x : K} (hxi : IsIntegral ℤ x) (hx : ∀ φ 
     @Set.Infinite.exists_ne_map_eq_of_mapsTo _ _ _ _ (x ^ · : ℕ → K) Set.infinite_univ
       (by exact fun a _ => ⟨hxi.pow a, fun φ => by simp [hx φ]⟩) (finite_of_norm_le K A (1 : ℝ))
   wlog hlt : b < a
-  · exact this K A hxi hx b a habne.symm h.symm (habne.lt_or_lt.resolve_right hlt)
+  · exact this K A hxi hx b a habne.symm h.symm (habne.lt_or_gt.resolve_right hlt)
   refine ⟨a - b, tsub_pos_of_lt hlt, ?_⟩
   rw [← Nat.sub_add_cancel hlt.le, pow_add, mul_left_eq_self₀] at h
   refine h.resolve_right fun hp => ?_
@@ -142,9 +142,8 @@ open Complex NumberField
 
 open scoped ComplexConjugate
 
-variable {K : Type*} [Field K] {k : Type*} [Field k]
+variable (K : Type*) [Field K] {k : Type*} [Field k]
 
-variable (K) in
 /--
 A (random) lift of the complex embedding `φ : k →+* ℂ` to an extension `K` of `k`.
 -/
@@ -162,7 +161,9 @@ theorem lift_comp_algebraMap [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →
 @[simp]
 theorem lift_algebraMap_apply [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) (x : k) :
     lift K φ (algebraMap k K x) = φ x :=
-  RingHom.congr_fun (lift_comp_algebraMap φ) x
+  RingHom.congr_fun (lift_comp_algebraMap K φ) x
+
+variable {K}
 
 /-- The conjugate of a complex embedding as a complex embedding. -/
 abbrev conjugate (φ : K →+* ℂ) : K →+* ℂ := star φ
@@ -187,9 +188,9 @@ def IsReal.embedding {φ : K →+* ℂ} (hφ : IsReal φ) : K →+* ℝ where
   map_one' := by simp only [map_one, one_re]
   map_mul' := by
     simp only [Complex.conj_eq_iff_im.mp (RingHom.congr_fun hφ _), map_mul, mul_re,
-      mul_zero, tsub_zero, eq_self_iff_true, forall_const]
+      mul_zero, tsub_zero, forall_const]
   map_zero' := by simp only [map_zero, zero_re]
-  map_add' := by simp only [map_add, add_re, eq_self_iff_true, forall_const]
+  map_add' := by simp only [map_add, add_re, forall_const]
 
 @[simp]
 theorem IsReal.coe_embedding_apply {φ : K →+* ℂ} (hφ : IsReal φ) (x : K) :
@@ -243,10 +244,28 @@ lemma isConj_one_iff : IsConj φ (1 : K ≃ₐ[k] K) ↔ IsReal φ := Iff.rfl
 
 alias ⟨_, IsReal.isConjGal_one⟩ := ComplexEmbedding.isConj_one_iff
 
+lemma isConj_ne_one_iff (hσ : IsConj φ σ) :
+    σ ≠ 1 ↔ ¬ IsReal φ :=
+  not_iff_not.mpr ⟨fun h ↦ isConj_one_iff.mp (h ▸ hσ),
+    fun h ↦ (IsConj.ext_iff hσ).mpr h.isConjGal_one⟩
+
 lemma IsConj.symm (hσ : IsConj φ σ) :
     IsConj φ σ.symm := RingHom.ext fun x ↦ by simpa using congr_arg star (hσ.eq (σ.symm x))
 
 lemma isConj_symm : IsConj φ σ.symm ↔ IsConj φ σ :=
   ⟨IsConj.symm, IsConj.symm⟩
+
+lemma isConj_apply_apply (hσ : IsConj φ σ) (x : K) :
+    σ (σ x) = x := by
+  simp [← φ.injective.eq_iff, hσ.eq]
+
+theorem IsConj.comp (hσ : IsConj φ σ) (ν : K ≃ₐ[k] K) :
+    IsConj (φ.comp ν) (ν⁻¹ * σ * ν) := by
+  ext
+  simpa [← AlgEquiv.mul_apply, ← mul_assoc] using RingHom.congr_fun hσ _
+
+lemma orderOf_isConj_two_of_ne_one (hσ : IsConj φ σ) (hσ' : σ ≠ 1) :
+    orderOf σ = 2 :=
+  orderOf_eq_prime_iff.mpr ⟨by ext; simpa using isConj_apply_apply hσ _, hσ'⟩
 
 end NumberField.ComplexEmbedding
