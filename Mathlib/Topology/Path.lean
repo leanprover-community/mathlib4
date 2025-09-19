@@ -113,6 +113,11 @@ When you delete this deprecated lemma, please rename `Path.coe_mk'` to `Path.coe
 theorem coe_mk : ⇑(γ : C(I, X)) = γ :=
   rfl
 
+@[simp]
+theorem range_coe : range ((↑) : Path x y → C(I, X)) = {f | f 0 = x ∧ f 1 = y} :=
+  Subset.antisymm (range_subset_iff.mpr fun γ ↦ ⟨γ.source, γ.target⟩) fun f ⟨hf₀, hf₁⟩ ↦
+    ⟨⟨f, hf₀, hf₁⟩, rfl⟩
+
 /-- Any function `φ : Π (a : α), Path (x a) (y a)` can be seen as a function `α × I → X`. -/
 instance instHasUncurryPath {α : Type*} {x y : α → X} :
     HasUncurry (∀ a : α, Path (x a) (y a)) (α × I) X :=
