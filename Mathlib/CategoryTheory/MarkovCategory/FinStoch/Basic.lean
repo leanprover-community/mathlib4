@@ -12,30 +12,19 @@ import Mathlib.Logic.Equiv.Basic
 /-!
 # Finite Stochastic Matrices
 
-The category of finite types with stochastic matrices as morphisms.
-
-FinStoch has both deterministic morphisms (permutation matrices) and
-random processes (stochastic matrices), unlike cartesian categories.
-
-Entry `f[i,j]` gives the probability of going from state `i` to state `j`.
-Composition follows Chapman-Kolmogorov. Tensor products model independent processes.
+FinStoch: finite types with stochastic matrices as morphisms.
 
 ## Main definitions
 
-* `StochasticMatrix m n` - Matrix where each row sums to 1
-* `FinStoch` - Category of finite types with stochastic matrices
-* `StochasticMatrix.id` - Identity matrix
-* `StochasticMatrix.comp` - Matrix composition
-* `StochasticMatrix.tensor` - Kronecker product
+* `StochasticMatrix m n` - Matrix where rows sum to 1
+* `FinStoch` - Category of finite types and stochastic matrices
+* `isDeterministic` - Predicate for deterministic matrices
+* `apply` - Extract function from deterministic matrix
 
 ## Implementation notes
 
-Rows sum to 1 (row-stochastic). This matches P(j|i) notation.
-Matrix multiplication implements Chapman-Kolmogorov.
-
-Row sums enforced in the type. `NNReal` prevents negative probabilities.
-
-`Fintype` and `DecidableEq` bundled with `FinStoch` to avoid diamonds.
+Rows sum to 1. Entry (i,j) gives P(j|i).
+Uses `NNReal` to ensure non-negative probabilities.
 
 ## References
 
@@ -44,16 +33,14 @@ Row sums enforced in the type. `NNReal` prevents negative probabilities.
 
 ## Tags
 
-Markov category, stochastic matrix, probability, category theory
+Markov category, stochastic matrix, probability
 -/
 
 namespace CategoryTheory.MarkovCategory
 
 universe u
 
-/-- Stochastic matrix representing P(n|m).
-
-Entry (i,j) is the probability from state i to state j. Each row sums to 1. -/
+/-- Stochastic matrix where rows sum to 1. Entry (i,j) is P(j|i). -/
 structure StochasticMatrix (m n : Type u) [Fintype m] [Fintype n] where
   /-- The matrix of non-negative reals -/
   toMatrix : Matrix m n NNReal
@@ -64,21 +51,19 @@ namespace StochasticMatrix
 
 variable {m n p : Type u} [Fintype m] [Fintype n] [Fintype p]
 
-/-- Identity matrix. Each state stays in itself with probability 1. -/
+/-- Identity matrix with 1 on diagonal, 0 elsewhere. -/
 def id (m : Type u) [Fintype m] [DecidableEq m] : StochasticMatrix m m where
   toMatrix := fun i j => if i = j then (1 : NNReal) else 0
   row_sum := fun i => by
     rw [Finset.sum_eq_single i]
-    · simp
+    · simp only [↓reduceIte]
     · intro j _ hj
-      simp [if_neg (Ne.symm hj)]
+      simp only [if_neg (Ne.symm hj)]
     · intro h
       exfalso
       exact h (Finset.mem_univ _)
 
-/-- Composition via Chapman-Kolmogorov: P(Z|X) = ∑_Y P(Y|X) * P(Z|Y).
-
-To get from X to Z, sum over all paths through Y. -/
+/-- Composition via Chapman-Kolmogorov: P(Z|X) = ∑_Y P(Y|X) * P(Z|Y). -/
 def comp (f : StochasticMatrix m n) (g : StochasticMatrix n p) : StochasticMatrix m p where
   toMatrix := fun i k => ∑ j : n, f.toMatrix i j * g.toMatrix j k
   row_sum := fun i => by
@@ -86,7 +71,7 @@ def comp (f : StochasticMatrix m n) (g : StochasticMatrix n p) : StochasticMatri
     simp only [← Finset.mul_sum]
     simp only [g.row_sum, mul_one, f.row_sum]
 
-/-- Kronecker product. Models independent processes: P((Y₁,Y₂)|(X₁,X₂)) = P(Y₁|X₁) * P(Y₂|X₂). -/
+/-- Kronecker product for independent processes. -/
 def tensor {m₁ n₁ m₂ n₂ : Type u} [Fintype m₁] [Fintype n₁] [Fintype m₂] [Fintype n₂]
     (f : StochasticMatrix m₁ n₁) (g : StochasticMatrix m₂ n₂) :
     StochasticMatrix (m₁ × m₂) (n₁ × n₂) where
@@ -103,9 +88,165 @@ theorem ext {f g : StochasticMatrix m n} (h : f.toMatrix = g.toMatrix) : f = g :
   cases g
   congr
 
+/-! ### Deterministic matrices -/
+
+/-- A stochastic matrix is deterministic if each row has exactly one 1. -/
+def isDeterministic (f : StochasticMatrix m n) [DecidableEq n] : Prop :=
+  ∀ i : m, ∃! j : n, f.toMatrix i j = 1
+
+/-- For deterministic matrices, get the unique output. -/
+noncomputable def apply (f : StochasticMatrix m n) [DecidableEq n]
+    (h : f.isDeterministic) (i : m) : n :=
+  (h i).choose
+
+/-- In a deterministic matrix, the chosen output has value 1. -/
+lemma apply_spec (f : StochasticMatrix m n) [DecidableEq n] (h : f.isDeterministic) (i : m) :
+    f.toMatrix i (f.apply h i) = 1 :=
+  (h i).choose_spec.1
+
+/-- In a deterministic matrix, non-chosen outputs have value 0. -/
+lemma apply_spec_ne (f : StochasticMatrix m n) [DecidableEq n] (h : f.isDeterministic) (i : m)
+    (j : n) (hj : j ≠ f.apply h i) : f.toMatrix i j = 0 := by
+  by_contra h_nonzero
+  push_neg at h_nonzero
+  have h_sum := f.row_sum i
+  have h_unique := (h i).choose_spec.2
+  by_cases h_one : f.toMatrix i j = 1
+  · exact hj (h_unique j h_one)
+  · -- Since row sums to 1 and has unique 1, all other entries must be 0
+    have h_apply_one := apply_spec f h i
+    -- The sum equals 1 and one entry is 1, so all others must be 0
+    have h_sum_eq : ∑ k : n, f.toMatrix i k = 1 := f.row_sum i
+    -- Split the sum: chosen entry + rest
+    have h_split : ∑ k : n, f.toMatrix i k =
+        f.toMatrix i (f.apply h i) + ∑ k ∈ Finset.univ.erase (f.apply h i), f.toMatrix i k := by
+      rw [← Finset.sum_erase_add _ _ (Finset.mem_univ (f.apply h i))]
+      ring
+    -- Substitute known values
+    rw [h_split] at h_sum_eq
+    rw [h_apply_one] at h_sum_eq
+    -- So the rest sums to 0: 1 + rest = 1 implies rest = 0
+    have h_others_zero : ∑ k ∈ Finset.univ.erase (f.apply h i), f.toMatrix i k = 0 := by
+      grind only
+    -- Non-negative terms summing to 0 means each is 0
+    have h_all_zero : ∀ k ∈ Finset.univ.erase (f.apply h i), f.toMatrix i k = 0 := by
+      have h_nonneg : ∀ k ∈ Finset.univ.erase (f.apply h i), 0 ≤ f.toMatrix i k := by
+        intro k _
+        exact (f.toMatrix i k).2
+      exact Finset.sum_eq_zero_iff_of_nonneg h_nonneg |>.mp h_others_zero
+    -- j is different from f.apply h i, so it's in the erased set
+    have h_j_in : j ∈ Finset.univ.erase (f.apply h i) := by
+      simp only [Finset.mem_erase, ne_eq, hj, not_false_eq_true, Finset.mem_univ, and_self]
+    exact h_nonzero (h_all_zero j h_j_in)
+
+/-- Matrix entry is 1 iff it's the unique output. -/
+@[simp]
+lemma det_matrix_eq_one_iff (f : StochasticMatrix m n) [DecidableEq n] (h : f.isDeterministic)
+    (i : m) (j : n) : f.toMatrix i j = 1 ↔ j = f.apply h i := by
+  constructor
+  · intro hj
+    exact (h i).choose_spec.2 j hj
+  · intro hj
+    rw [hj]
+    exact apply_spec f h i
+
+/-- All other entries are 0. -/
+@[simp]
+lemma det_matrix_eq_zero_of_ne (f : StochasticMatrix m n) [DecidableEq n] (h : f.isDeterministic)
+    (i : m) (j : n) (hne : j ≠ f.apply h i) : f.toMatrix i j = 0 :=
+  apply_spec_ne f h i j hne
+
+/-- Identity matrix is deterministic. -/
+lemma id_isDeterministic (m : Type u) [Fintype m] [DecidableEq m] :
+    (id m).isDeterministic := by
+  intro i
+  use i
+  constructor
+  · simp only [id, ↓reduceIte]
+  · intro j hj
+    simp only [id, ite_eq_left_iff, zero_ne_one, imp_false, Decidable.not_not] at hj
+    exact hj.symm
+
+/-- Deterministic matrices compose to deterministic matrices. -/
+theorem det_comp_det (f : StochasticMatrix m n) (g : StochasticMatrix n p)
+    [DecidableEq n] [DecidableEq p] (hf : f.isDeterministic) (hg : g.isDeterministic) :
+    (comp f g).isDeterministic := by
+  intro i
+  use g.apply hg (f.apply hf i)
+  constructor
+  · simp only [comp]
+    rw [Finset.sum_eq_single (f.apply hf i)]
+    · simp [apply_spec f hf i, apply_spec g hg (f.apply hf i)]
+    · intro j _ hj
+      simp [apply_spec_ne f hf i j hj]
+    · intro h; exfalso; exact h (Finset.mem_univ _)
+  · intro k hk
+    simp only [comp] at hk
+    -- The sum equals 1, so there's exactly one j with f(i,j) * g(j,k) = 1
+    -- This means f(i,j) = 1 and g(j,k) = 1
+    have h_exist : ∃ j : n, f.toMatrix i j = 1 ∧ g.toMatrix j k = 1 := by
+      by_contra h_none
+      push_neg at h_none
+      -- The sum simplifies because f is deterministic
+      have h_sum_simp : ∑ j : n, f.toMatrix i j * g.toMatrix j k = g.toMatrix (f.apply hf i) k := by
+        rw [Finset.sum_eq_single (f.apply hf i)]
+        · simp only [apply_spec f hf i, one_mul]
+        · intro j _ hj
+          simp only [apply_spec_ne f hf i j hj, zero_mul]
+        · intro h; exfalso; exact h (Finset.mem_univ _)
+      -- So g(f.apply hf i, k) = 1
+      rw [h_sum_simp] at hk
+      -- But h_none says if f(i, f.apply hf i) = 1 then g(f.apply hf i, k) ≠ 1
+      have : g.toMatrix (f.apply hf i) k ≠ 1 := h_none _ (apply_spec f hf i)
+      exact this hk
+    obtain ⟨j, hf_j, hg_j⟩ := h_exist
+    have h_j_unique : j = f.apply hf i := (hf i).choose_spec.2 j hf_j
+    rw [h_j_unique] at hg_j
+    exact (hg (f.apply hf i)).choose_spec.2 k hg_j
+
+/-- Composition of deterministic matrices equals function composition. -/
+theorem det_comp_eq_fun_comp (f : StochasticMatrix m n) (g : StochasticMatrix n p)
+    [DecidableEq n] [DecidableEq p] (hf : f.isDeterministic) (hg : g.isDeterministic) (i : m) :
+    (comp f g).apply (det_comp_det f g hf hg) i = g.apply hg (f.apply hf i) := by
+  -- By det_comp_det, the unique 1 in row i of comp f g is at column g.apply hg (f.apply hf i)
+  -- The apply function returns this unique column
+  have h_unique := (det_comp_det f g hf hg i).choose_spec
+  -- We know comp f g has value 1 at g.apply hg (f.apply hf i)
+  have h_one : (comp f g).toMatrix i (g.apply hg (f.apply hf i)) = 1 := by
+    simp only [comp]
+    rw [Finset.sum_eq_single (f.apply hf i)]
+    · simp [apply_spec f hf i, apply_spec g hg (f.apply hf i)]
+    · intro j _ hj
+      simp [apply_spec_ne f hf i j hj]
+    · intro h; exfalso; exact h (Finset.mem_univ _)
+  -- By uniqueness, apply must return this value
+  have h_eq := h_unique.2 _ h_one
+  exact h_eq.symm
+
+/-! ### Helper lemmas for sums -/
+
+/-- Sum of delta function equals 1 at unique point. -/
+lemma sum_delta {α : Type*} [Fintype α] [DecidableEq α] (a : α) :
+    ∑ x : α, (if x = a then (1 : NNReal) else 0) = 1 := by
+  rw [Finset.sum_eq_single a]
+  · simp only [↓reduceIte]
+  · intro b _ hb; simp only [hb, ↓reduceIte]
+  · intro h; exfalso; exact h (Finset.mem_univ _)
+
+/-- Product of delta functions. -/
+lemma delta_mul_delta {α β : Type*} [DecidableEq α] [DecidableEq β]
+    (a a' : α) (b b' : β) :
+    (if a = a' then (1 : NNReal) else 0) * (if b = b' then 1 else 0) =
+    if a = a' ∧ b = b' then 1 else 0 := by
+  by_cases ha : a = a'
+  · by_cases hb : b = b'
+    · simp only [ha, ↓reduceIte, hb, mul_one, and_self]
+    · simp only [ha, ↓reduceIte, hb, mul_zero, and_false]
+  · simp [ha, ↓reduceIte, mul_ite, mul_one, mul_zero, ite_self, false_and]
+
 end StochasticMatrix
 
-/-- Category of finite types with stochastic matrices as morphisms. -/
+/-- FinStoch: finite types with stochastic matrices. -/
 structure FinStoch : Type (u+1) where
   carrier : Type u
   [fintype : Fintype carrier]
@@ -117,7 +258,7 @@ instance (X : FinStoch) : Fintype X.carrier := X.fintype
 
 instance (X : FinStoch) : DecidableEq X.carrier := X.decidableEq
 
-/-- Morphisms in FinStoch are stochastic matrices. -/
+/-- Morphisms are stochastic matrices. -/
 abbrev Hom (X Y : FinStoch) := StochasticMatrix X.carrier Y.carrier
 
 instance : CategoryStruct FinStoch where
@@ -148,9 +289,9 @@ instance : Category FinStoch where
     simp only [CategoryStruct.id]
     -- Identity selects column j
     rw [Finset.sum_eq_single j]
-    · simp [StochasticMatrix.id, mul_one]
+    · simp only [StochasticMatrix.id, ↓reduceIte, mul_one]
     · intro k _ hk
-      simp [StochasticMatrix.id, mul_zero]
+      simp only [StochasticMatrix.id, mul_ite, mul_one, mul_zero, ite_eq_right_iff]
       intro h
       exact absurd h.symm (Ne.symm hk)
     · intro h
@@ -163,11 +304,11 @@ instance : Category FinStoch where
     simp only [Finset.sum_mul, Finset.mul_sum, mul_assoc]
     rw [Finset.sum_comm]
 
-/-- Tensor unit. A singleton type. -/
+/-- Singleton type as tensor unit. -/
 def tensorUnit : FinStoch where
   carrier := Unit
 
-/-- Tensor product. If X has m states and Y has n states, X ⊗ Y has m×n states. -/
+/-- Tensor product of objects. -/
 def tensorObj (X Y : FinStoch) : FinStoch where
   carrier := X.carrier × Y.carrier
 
