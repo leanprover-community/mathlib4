@@ -120,6 +120,10 @@ theorem eq_or_mem_of_mem_cons {a b : α} {s : Stream' α} : (a ∈ b::s) → a =
 theorem mem_of_get_eq {n : ℕ} {s : Stream' α} {a : α} : a = get s n → a ∈ s := fun h =>
   Exists.intro n h
 
+theorem mem_iff_exists_get_eq {s : Stream' α} {a : α} : a ∈ s ↔ ∃ n, a = s.get n where
+  mp := by simp [Membership.mem, any_def]
+  mpr h := mem_of_get_eq h.choose_spec
+
 section Map
 
 variable (f : α → β)

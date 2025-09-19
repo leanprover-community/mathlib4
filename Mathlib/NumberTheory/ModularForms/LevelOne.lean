@@ -43,14 +43,14 @@ lemma wt_eq_zero_of_eq_const {f : F} {c : ℂ} (hf : ⇑f = Function.const _ c) 
     k = 0 ∨ c = 0 := by
   have Smem := Subgroup.mem_map_of_mem (mapGL ℝ) (mem_Gamma_one S)
   have hI := slash_action_eqn'' f Smem I
-  have h2I2 := slash_action_eqn'' f Smem ⟨2 * Complex.I, by norm_num⟩
+  have h2I2 := slash_action_eqn'' f Smem ⟨2 * Complex.I, by simp⟩
   simp_rw [hf, Function.const, mapGL, MonoidHom.comp_apply, algebraMap_int_eq, denom_S,
     coe_mk_subtype] at hI h2I2
   nth_rw 1 [h2I2] at hI
   simp only [mul_zpow, coe_I, mul_eq_mul_right_iff, mul_left_eq_self₀] at hI
   refine hI.imp_left (Or.casesOn · (fun H ↦ ?_) (False.elim ∘ zpow_ne_zero k I_ne_zero))
   rwa [← ofReal_ofNat, ← ofReal_zpow, ← ofReal_one, ofReal_inj,
-    zpow_eq_one_iff_right₀ (by norm_num) (by norm_num)] at H
+    zpow_eq_one_iff_right₀ (by simp) (by simp)] at H
 
 end SlashInvariantForm
 
