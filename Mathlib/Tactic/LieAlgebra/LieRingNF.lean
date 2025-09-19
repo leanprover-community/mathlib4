@@ -39,6 +39,9 @@ structure Config extends AtomM.Recurse.Config where
   mode : LieRingMode := LieRingMode.simple
   deriving Inhabited, BEq, Repr
 
+-- See https://github.com/leanprover/lean4/issues/10295
+attribute [nolint unusedArguments] Mathlib.Tactic.LieRingNF.instReprConfig.repr
+
 /-- Default elaborator of `LieRingNF.config` -/
 declare_config_elab elabConfig Config
 
