@@ -139,7 +139,7 @@ theorem IsSemilinearSet.sUnion {S : Set (Set M)} (hS : S.Finite)
     (hS' : ∀ s ∈ S, IsSemilinearSet s) : IsSemilinearSet (⋃₀ S) := by
   induction S, hS using Finite.induction_on with
   | empty => simp
-  | insert S _ ih =>
+  | insert _ _ ih =>
     simp_rw [mem_insert_iff, forall_eq_or_imp] at hS'
     simpa using hS'.1.union (ih hS'.2)
 
@@ -243,7 +243,7 @@ protected theorem IsSemilinearSet.closure (hs : IsSemilinearSet s) :
   rcases hs with ⟨S, hS, hS', rfl⟩
   induction S, hS using Finite.induction_on with
   | empty => simp
-  | insert S _ ih =>
+  | insert _ _ ih =>
     simp_rw [mem_insert_iff, forall_eq_or_imp] at hS'
     simpa [closure_union, coe_sup] using hS'.1.closure.add (ih hS'.2)
 
@@ -295,7 +295,7 @@ theorem IsProperSemilinearSet.sUnion {S : Set (Set M)} (hS : S.Finite)
     (hS' : ∀ s ∈ S, IsProperSemilinearSet s) : IsProperSemilinearSet (⋃₀ S) := by
   induction S, hS using Finite.induction_on with
   | empty => simp
-  | insert S _ ih =>
+  | insert _ _ ih =>
     simp_rw [mem_insert_iff, forall_eq_or_imp] at hS'
     simpa using hS'.1.union (ih hS'.2)
 
