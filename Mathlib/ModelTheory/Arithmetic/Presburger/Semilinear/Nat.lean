@@ -165,7 +165,7 @@ theorem Nat.isSemilinearSet_sInter [Finite ι] {S : Set (Set (ι → ℕ))} (hS 
     (hS' : ∀ s ∈ S, IsSemilinearSet s) : IsSemilinearSet (⋂₀ S) := by
   induction S, hS using Finite.induction_on with
   | empty => simp
-  | insert S _ ih =>
+  | insert _ _ ih =>
     simp_rw [mem_insert_iff, forall_eq_or_imp] at hS'
     simpa using isSemilinearSet_inter hS'.1 (ih hS'.2)
 
