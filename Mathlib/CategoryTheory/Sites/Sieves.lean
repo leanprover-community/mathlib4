@@ -3,7 +3,7 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Edward Ayers
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.Data.Set.BooleanAlgebra
 
 /-!
@@ -161,6 +161,14 @@ theorem pullback_singleton (g : Z ⟶ X) [HasPullback g f] :
 inductive ofArrows {ι : Type*} (Y : ι → C) (f : ∀ i, Y i ⟶ X) : Presieve X
   | mk (i : ι) : ofArrows _ _ (f i)
 
+lemma ofArrows.mk' {ι : Type*} {Y : ι → C} {f : ∀ i, Y i ⟶ X} {Z : C} {g : Z ⟶ X}
+    (i : ι) (h : Z = Y i) (hg : g = eqToHom h ≫ f i) :
+    ofArrows Y f g := by
+  subst h
+  simp only [eqToHom_refl, id_comp] at hg
+  subst hg
+  constructor
+
 theorem ofArrows_pUnit : (ofArrows _ fun _ : PUnit => f) = singleton f := by
   funext Y
   ext g
@@ -218,6 +226,14 @@ This contains a sieve obtained by `Sieve.bind` and `Sieve.ofArrows`, see
 inductive bindOfArrows {ι : Type*} {X : C} (Y : ι → C)
     (f : ∀ i, Y i ⟶ X) (R : ∀ i, Presieve (Y i)) : Presieve X
   | mk (i : ι) {Z : C} (g : Z ⟶ Y i) (hg : R i g) : bindOfArrows Y f R (g ≫ f i)
+
+lemma bindOfArrows_ofArrows {ι : Type*} {S : C} {X : ι → C} (f : (i : ι) → X i ⟶ S)
+    {σ : ι → Type*} {Y : (i : ι) → σ i → C} (g : (i : ι) → (j : σ i) → Y i j ⟶ X i) :
+    Presieve.bindOfArrows X f (fun i ↦ .ofArrows (Y i) (g i)) =
+      Presieve.ofArrows (fun p : Σ i, σ i ↦ Y p.1 p.2) (fun p ↦ g p.1 p.2 ≫ f p.1) := by
+  refine le_antisymm ?_ (fun _ _ ⟨p⟩ ↦ ⟨p.1, _, ⟨p.2⟩⟩)
+  rintro W u ⟨i, v, ⟨j⟩⟩
+  exact ⟨Sigma.mk i j⟩
 
 /-- Given a presieve on `F(X)`, we can define a presieve on `X` by taking the preimage via `F`. -/
 def functorPullback (R : Presieve (F.obj X)) : Presieve X := fun _ f => R (F.map f)
@@ -294,6 +310,31 @@ theorem image_mem_functorPushforward (R : Presieve X) {f : Y ⟶ X} (h : R f) :
 See `arrows_generate_map_eq_functorPushforward`. -/
 inductive map (s : Presieve X) : Presieve (F.obj X) where
   | of {Y : C} {u : Y ⟶ X} (h : s u) : map s (F.map u)
+
+section
+
+variable {F}
+
+@[grind ←]
+lemma map_map {X Y : C} {f : Y ⟶ X} {R : Presieve X} (hf : R f) : R.map F (F.map f) :=
+  ⟨hf⟩
+
+@[simp]
+lemma map_ofArrows {X : C} {ι : Type*} {Y : ι → C} (f : ∀ i, Y i ⟶ X) :
+    (ofArrows Y f).map F = ofArrows _ (fun i ↦ F.map (f i)) := by
+  refine le_antisymm (fun Z g hg ↦ ?_) fun _ _ ⟨i⟩ ↦ map_map ⟨i⟩
+  obtain ⟨hu⟩ := hg
+  obtain ⟨i, rfl, rfl⟩ := Presieve.ofArrows_surj _ _ hu
+  simpa using ofArrows.mk i
+
+@[simp]
+lemma map_singleton {X Y : C} (f : X ⟶ Y) : (singleton f).map F = singleton (F.map f) := by
+  rw [← ofArrows_pUnit.{_, _, 0}, map_ofArrows, ofArrows_pUnit]
+
+lemma map_functorPullback {X : C} (R : Presieve (F.obj X)) : (R.functorPullback F).map F ≤ R :=
+  fun _ _ ⟨hu⟩ ↦ hu
+
+end
 
 end FunctorPushforward
 
@@ -746,6 +787,17 @@ theorem functorPullback_comp (R : Sieve ((F ⋙ G).obj X)) :
   ext
   rfl
 
+lemma generate_functorPullback_le {X : C} (R : Presieve (F.obj X)) :
+     generate (R.functorPullback F) ≤ functorPullback F (generate R) := by
+  rw [generate_le_iff]
+  intro Z g hg
+  exact le_generate _ _ hg
+
+lemma functorPullback_pullback {X Y : C} (f : X ⟶ Y) (S : Sieve (F.obj Y)) :
+    functorPullback F (pullback (F.map f) S) = pullback f (functorPullback F S) := by
+  ext
+  simp
+
 theorem functorPushforward_extend_eq {R : Presieve X} :
     (generate R).arrows.functorPushforward F = R.functorPushforward F := by
   funext Y
@@ -970,6 +1022,19 @@ theorem sieveOfSubfunctor_functorInclusion : sieveOfSubfunctor S.functorInclusio
 
 instance functorInclusion_top_isIso : IsIso (⊤ : Sieve X).functorInclusion :=
   ⟨⟨{ app := fun _ a => ⟨a, ⟨⟩⟩ }, rfl, rfl⟩⟩
+
+lemma ofArrows_eq_pullback_of_isPullback {ι : Type*} {S : C} {X : ι → C} (f : (i : ι) → X i ⟶ S)
+    {Y : C} {g : Y ⟶ S} {P : ι → C} {p₁ : (i : ι) → P i ⟶ Y} {p₂ : (i : ι) → P i ⟶ X i}
+    (h : ∀ (i : ι), IsPullback (p₁ i) (p₂ i) g (f i)) :
+    Sieve.ofArrows P p₁ = Sieve.pullback g (Sieve.ofArrows X f) := by
+  refine le_antisymm ?_ ?_
+  · rw [Sieve.ofArrows, Sieve.generate_le_iff]
+    rintro - - ⟨i⟩
+    use X i, p₂ i, f i, ⟨i⟩
+    exact (h i).w.symm
+  · rintro W u ⟨Z, v, s, ⟨i⟩, heq⟩
+    use P i, (h i).lift u v heq.symm, p₁ i, ⟨i⟩
+    simp
 
 end Sieve
 
