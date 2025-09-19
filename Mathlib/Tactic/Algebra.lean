@@ -50,8 +50,8 @@ inductive ExSMul : ∀ {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {_ : Q
     {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)}
       {sR : Q(CommSemiring $R)}
       {sA : Q(CommSemiring $A)}
-      {sAlg : Q(Algebra $R $A)} {r : Q($R)} {a : Q($A)} (vr : Ring.ExSum q($sR) q($r))
-      (va : Ring.ExProd q($sA) q($a))
+      {sAlg : Q(Algebra $R $A)} {r : Q($R)} {a : Q($A)} (vr : Ring.ExSum q($sR) r)
+      (va : Ring.ExProd q($sA) a)
       : ExSMul q($sAlg) q($r • $a : $A)
 
 /-- A polynomial expression, which is a sum of monomials. -/
@@ -67,7 +67,7 @@ inductive ExSum : ∀ {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {_ : Q(
   | add {v w: Lean.Level} {R : Q(Type v)} {A : Q(Type w)}
     {sR : Q(CommSemiring $R)} {sA : Q(CommSemiring $A)}
     {a b : Q($A)} {sAlg : Q(Algebra $R $A)} :
-    ExSMul q($sAlg) q($a) → ExSum q($sAlg) q($b) →
+    ExSMul q($sAlg) a → ExSum q($sAlg) b →
       ExSum q($sAlg) q($a + $b)
 
 end
@@ -629,6 +629,55 @@ elab (name := algebra_over) "algebra" " with " R:term : tactic =>
     let ⟨u, R⟩ ← inferLevelQ (← elabTerm R none)
     let g ← getMainGoal
     AtomM.run .default (proveEq (some ⟨u, R⟩) g)
+
+def ExSMul.equateZero (va : ExSMul q($sAlg) a) : MetaM <| Q($a = 0) × MVarId := match va with
+  | .smul (r := r) vr va => do
+    let pf ← mkFreshExprMVarQ q($r = 0)
+    return ⟨q(sorry), pf.mvarId!⟩
+
+def equateZero {a : Q($A)} (va : ExSum q($sAlg) a) :
+    MetaM <| Q($a = 0) × List MVarId := match va with
+  | .zero => do
+    return ⟨q(rfl), []⟩
+  | .add va₁ va₂ => do
+    let ⟨pf, id⟩ ← va₁.equateZero
+    let ⟨pf', mvars⟩ ← equateZero va₂
+    return ⟨q(sorry), id :: mvars⟩
+
+def equateScalars {a b : Q($A)} (va : ExSum q($sAlg) a) (vb : ExSum q($sAlg) b) :
+    MetaM <| Q($a = $b) × List MVarId := do
+  match va, vb with
+  | .zero, .zero => do
+    return ⟨q(rfl), []⟩
+  | va, .zero => do
+    equateZero _ va
+  | .zero, vb => do
+    let ⟨pf, mvars⟩ ← equateZero _ vb
+    return ⟨q(Eq.symm $pf), mvars⟩
+  | .add (a := a₁) (b := a₂) va₁ va₂, .add (a := b₁) (b := b₂) vb₁ vb₂ =>
+    match va₁, vb₁ with
+    | .smul (r := r) vr va, .smul (r := s) vs vb =>
+      match va.cmp vb with
+      | .lt =>
+        let pr ← mkFreshExprMVarQ q($r = 0)
+        let ⟨pf, ids⟩ ← equateScalars va₂ (.add (.smul vs vb) vb₂)
+        return ⟨q(sorry), pr.mvarId! :: ids⟩
+      | .gt =>
+        let ps ← mkFreshExprMVarQ q($s = 0)
+        let ⟨pf, ids⟩ ← equateScalars (.add (.smul vr va) va₂) vb₂
+        return ⟨q(sorry), ps.mvarId! :: ids⟩
+      | .eq =>
+        let ⟨pf, ids⟩ ← equateScalars va₂ vb₂
+        if vr.eq vs then
+          have : $r =Q $s := ⟨⟩
+          return ⟨(q(sorry)), ids⟩
+        let pab ← mkFreshExprMVarQ q($r = $s)
+        return ⟨q(sorry), pab.mvarId! :: ids⟩
+
+
+elab (name := matchScalarsAlg) "match_scalars_alg":tactic =>
+
+  sorry
 
 
 example {x : ℚ} {y : ℤ} : y • x + (1:ℤ) • x = (1 + y) • x := by
