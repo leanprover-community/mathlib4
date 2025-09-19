@@ -29,7 +29,7 @@ Note: these results can be further generalized to non-cancellative monoids; see
 * [Samuel Eilenberg and M. P. Schützenberger, *Rational Sets in Commutative Monoids*][eilenberg1969]
 -/
 
-variable {M N : Type*} [AddCommMonoid M] [AddCommMonoid N] {s s₁ s₂ : Set M}
+variable {M N ι : Type*} [AddCommMonoid M] [AddCommMonoid N] {s s₁ s₂ : Set M}
 
 open Set Pointwise AddSubmonoid
 
@@ -101,8 +101,34 @@ theorem IsSemilinearSet.diff (hs₁ : IsSemilinearSet s₁) (hs₂ : IsSemilinea
   apply image
   apply Nat.isSemilinearSet_diff <;> apply Nat.isSemilinearSet_preimage <;> assumption
 
+variable [AddMonoid.FG M]
+
+theorem IsSemilinearSet.sInter {S : Set (Set M)} (hS : S.Finite)
+    (hS' : ∀ s ∈ S, IsSemilinearSet s) : IsSemilinearSet (⋂₀ S) := by
+  induction S, hS using Finite.induction_on with
+  | empty => simp
+  | insert _ _ ih =>
+    simp_rw [mem_insert_iff, forall_eq_or_imp] at hS'
+    simpa using hS'.1.inter (ih hS'.2)
+
+theorem IsSemilinearSet.iInter [Finite ι] {s : ι → Set M} (hs : ∀ i, IsSemilinearSet (s i)) :
+    IsSemilinearSet (⋂ i, s i) := by
+  rw [← sInter_range]
+  apply sInter (finite_range s)
+  simpa
+
+theorem IsSemilinearSet.biInter {s : Set ι} {t : ι → Set M} (hs : s.Finite)
+    (ht : ∀ i ∈ s, IsSemilinearSet (t i)) : IsSemilinearSet (⋂ i ∈ s, t i) := by
+  rw [← sInter_image]
+  apply sInter (hs.image t)
+  simpa
+
+theorem IsSemilinearSet.biInter_finset {s : Finset ι} {t : ι → Set M}
+    (ht : ∀ i ∈ s, IsSemilinearSet (t i)) : IsSemilinearSet (⋂ i ∈ s, t i) :=
+  biInter s.finite_toSet ht
+
 /-- Semilinear sets in a finitely generated monoid are closed under complement. -/
-theorem IsSemilinearSet.compl [AddMonoid.FG M] (hs : IsSemilinearSet s) : IsSemilinearSet sᶜ := by
+theorem IsSemilinearSet.compl (hs : IsSemilinearSet s) : IsSemilinearSet sᶜ := by
   rw [compl_eq_univ_diff]
   exact diff .univ hs
 
