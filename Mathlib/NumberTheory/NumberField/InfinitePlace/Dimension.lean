@@ -5,6 +5,7 @@ Authors: Salvatore Mercuri
 -/
 import Mathlib.NumberTheory.NumberField.Completion
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
+import Mathlib.NumberTheory.RamificationInertia.Basic
 
 /-!
 # Dimensions of completions at infinite places
@@ -360,12 +361,13 @@ theorem card_isUnramified_add_two_mul_card_isRamified [NumberField K] [NumberFie
 
 open scoped Classical in
 theorem sum_ramificationIdx_eq [NumberField K] [NumberField L] :
-    ∑ w : v.Extension L, w.1.ramificationIdx K = Module.finrank K L := by
+    ∑ w : v.Extension L, (⊥ : Ideal v.Completion).inertiaDeg (⊥ : Ideal w.1.Completion) = Module.finrank K L := by
   rw [Fintype.sum_equiv (Equiv.sumCompl fun w ↦ w.1.IsUnramified K).symm _
-    ((fun w ↦ w.1.ramificationIdx K) ∘ (Equiv.sumCompl fun w : v.Extension L ↦ w.1.IsUnramified K))
-    (fun _ => by simp)]
+    ((fun w ↦ (⊥ : Ideal v.Completion).inertiaDeg (⊥ : Ideal w.1.Completion)) ∘ (Equiv.sumCompl fun w : v.Extension L ↦ w.1.IsUnramified K))
+    (fun _ => by rw [Function.comp_apply, Equiv.apply_symm_apply])]
   simp only [Function.comp_apply, Fintype.sum_sum_type, Equiv.sumCompl_apply_inl,
     Equiv.sumCompl_apply_inr]
+  -- TODO : move later after inertiaDeg_eq_one
   rw [Finset.sum_congr rfl (fun x _ => ramificationIdx_eq_one K x.2),
     Finset.sum_congr rfl (fun x _ => ramificationIdx_eq_two K x.2),
     Finset.sum_const, Finset.sum_const, ← Fintype.card, ← Fintype.card, smul_eq_mul, mul_one,
@@ -426,16 +428,9 @@ def algEquivComplexOfComplexStar [hv : Fact v.IsComplex] :
   AlgEquiv.ofRingEquiv (f := (ringEquivComplexOfIsComplex hv.elim).trans starRingAut)
     (fun _ => rfl)
 
-instance {L : Type*} [Field L] [Algebra K L] (w : v.Extension L) :
-    Algebra v.Completion w.1.Completion := by
-  exact mapOfComp (L := WithAbs w.1.1) (comp_of_comap_eq w.2) |>.toAlgebra
-
 namespace RamifiedExtension
 
 variable {w : v.Extension L}
-
-instance : Algebra v.Completion w.1.Completion :=
-  inferInstanceAs (Algebra v.Completion (w : v.Extension L).1.Completion)
 
 open UniformSpace.Completion in
 theorem extensionEmbedding_algebraMap (h : w.1.IsRamified K) (x : v.Completion) :
@@ -470,11 +465,29 @@ def algEquivComplex [Fact (w.1.IsRamified K)] : w.1.Completion ≃ₐ[v.Completi
 variable (w) in
 /-- If `w` is a ramified extension of `v`, then the `v.Completion`-dimension of `w.Completion`
 is `2`. -/
-theorem finrank_eq_two [Fact v.IsReal] [Fact (w.1.IsRamified K)] :
+theorem finrank_eq_two [Fact (w.1.IsRamified K)] :
     Module.finrank v.Completion w.1.Completion = 2 := by
+  have : Fact v.IsReal := ⟨w.2 ▸ (isRamified_iff.1 (Fact.out)).2⟩
   rw [algEquivComplex w |>.toLinearEquiv.finrank_eq, ← Module.finrank_mul_finrank v.Completion ℝ ℂ,
     ← algEquivRealOfReal v |>.toLinearEquiv.finrank_eq, Module.finrank_self,
     Complex.finrank_real_complex, one_mul]
+
+theorem inertiaDeg_eq_two [Fact (w.1.IsRamified K)] :
+    (⊥ : Ideal v.Completion).inertiaDeg (⊥ : Ideal w.1.Completion) = 2 := by
+  unfold Ideal.inertiaDeg
+  have : Ideal.comap (algebraMap v.Completion w.1.Completion) ⊥ = ⊥ := by
+    rw [Ideal.comap_bot_of_injective]
+    exact FaithfulSMul.algebraMap_injective _ _
+  split_ifs
+  · rw [← finrank_eq_two w]
+    have := Algebra.finrank_eq_of_equiv_equiv (RingEquiv.quotientBot v.Completion)
+      (RingEquiv.quotientBot w.1.Completion)
+    apply this
+    rw [RingHom.algebraMap_toAlgebra]
+    ext
+    simp
+    rfl
+  · exact absurd this ‹_›
 
 end RamifiedExtension
 
@@ -581,20 +594,38 @@ theorem finrank_eq_one [Fact (w.1.IsUnramified K)] :
       rw [algEquivComplexStar w |>.toLinearEquiv.finrank_eq,
        ← algEquivComplexOfComplex v |>.toLinearEquiv.finrank_eq, Module.finrank_self]
 
+theorem inertiaDeg_eq_one [Fact (w.1.IsUnramified K)] :
+    (⊥ : Ideal v.Completion).inertiaDeg (⊥ : Ideal w.1.Completion) = 1 := by
+  unfold Ideal.inertiaDeg
+  have : Ideal.comap (algebraMap v.Completion w.1.Completion) ⊥ = ⊥ := by
+    rw [Ideal.comap_bot_of_injective]
+    exact FaithfulSMul.algebraMap_injective _ _
+  split_ifs
+  · rw [← finrank_eq_one w]
+    have := Algebra.finrank_eq_of_equiv_equiv (RingEquiv.quotientBot v.Completion)
+      (RingEquiv.quotientBot w.1.Completion)
+    apply this
+    rw [RingHom.algebraMap_toAlgebra]
+    ext
+    simp
+    rfl
+  · exact absurd this ‹_›
+
 end UnramifiedExtension
 
 variable (w : v.Extension L)
 
+-- TODO don't need this, it's just the definition.
 theorem finrank_eq_ramificationIdx :
-    Module.finrank v.Completion w.1.Completion = ramificationIdx K w.1 := by
+    Module.finrank v.Completion w.1.Completion =
+      (⊥ : Ideal v.Completion).inertiaDeg (⊥ : Ideal w.1.Completion) := by
   by_cases h : w.1.IsRamified K
   · --et w := w.toRamifiedExtension h
     --have : Fact v.IsReal := ⟨w.isReal⟩
-    have : Fact v.IsReal := ⟨w.2 ▸ (isRamified_iff.1 h).2⟩
     have : Fact (w.1.IsRamified K) := ⟨by simpa using h⟩
     --change Module.finrank v.Completion w.1.Completion = ramificationIdx K w.1
-    simp [ramificationIdx, RamifiedExtension.finrank_eq_two w, Fact.out]
+    rw [RamifiedExtension.inertiaDeg_eq_two, RamifiedExtension.finrank_eq_two w]
   · have : Fact (w.1.IsUnramified K) := ⟨by simpa using h⟩
-    simp [ramificationIdx, Fact.out, UnramifiedExtension.finrank_eq_one w]
+    rw [UnramifiedExtension.inertiaDeg_eq_one, UnramifiedExtension.finrank_eq_one w]
 
 end NumberField.InfinitePlace.Completion

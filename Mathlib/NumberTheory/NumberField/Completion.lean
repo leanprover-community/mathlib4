@@ -7,6 +7,7 @@ import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Analysis.Normed.Module.Completion
 import Mathlib.Analysis.Normed.Field.WithAbs
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
 
 /-!
 # The completion of a number field at an infinite place
@@ -180,5 +181,9 @@ def ringEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion �
 def isometryEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion ≃ᵢ ℝ where
   toEquiv := ringEquivRealOfIsReal hv
   isometry_toFun := isometry_extensionEmbedding_of_isReal hv
+
+instance {L : Type*} [Field L] [Algebra K L] (w : v.Extension L) :
+    Algebra v.Completion w.1.Completion := by
+  exact mapOfComp (L := WithAbs w.1.1) (comp_of_comap_eq w.2) |>.toAlgebra
 
 end NumberField.InfinitePlace.Completion
