@@ -63,9 +63,20 @@ theorem choose_succ_le_two_pow (n k : ℕ) : (n + 1).choose k ≤ 2 ^ n := by
       · rw [choose_succ_succ', two_pow_succ]
         exact Nat.add_le_add (choose_succ_le_two_pow n k) (choose_succ_le_two_pow n (k + 1))
 
-theorem choose_le_two_pow (n k : ℕ) (p : 0 < n) : n.choose k < 2 ^ n := by
+theorem choose_lt_two_pow (n k : ℕ) (p : 0 < n) : n.choose k < 2 ^ n := by
   refine lt_of_le_of_lt ?_ (Nat.two_pow_pred_lt_two_pow p)
   rw [← Nat.sub_add_cancel p]
   exact choose_succ_le_two_pow (n - 1) k
+
+theorem choose_le_two_pow (n k : ℕ) : n.choose k ≤ 2 ^ n := by
+  by_cases hk : 0 < k
+  · by_cases hn : 0 < n
+    · exact (Nat.choose_lt_two_pow _ _ hn).le
+    · have : n.choose k = 0 := by
+        convert Nat.choose_zero_succ (k - 1)
+        · exact Nat.eq_zero_of_not_pos hn
+        · exact (Nat.sub_one_add_one_eq_of_pos hk).symm
+      simp [this]
+  · simpa [Nat.eq_zero_of_not_pos hk] using Nat.one_le_two_pow
 
 end Nat
