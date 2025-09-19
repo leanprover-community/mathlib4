@@ -174,5 +174,4 @@ theorem preimage_liftCover (t : Set β) : liftCover S f hf hS ⁻¹' t = ⋃ i, 
 @[simp]
 theorem liftCover_restrict {i : ι} : (S i).restrict (liftCover S f hf hS) = f i := by ext x; simp
 
-
 end Set
