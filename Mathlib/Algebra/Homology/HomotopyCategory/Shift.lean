@@ -198,7 +198,7 @@ def shiftEval (n i i' : ℤ) (hi : n + i = i') :
       HomologicalComplex.eval C (ComplexShape.up ℤ) i ≅
       HomologicalComplex.eval C (ComplexShape.up ℤ) i' :=
   NatIso.ofComponents (fun K => K.XIsoOfEq (by dsimp; rw [← hi, add_comm i]))
-    (by intros; simp)
+    (by simp)
 
 end CochainComplex
 

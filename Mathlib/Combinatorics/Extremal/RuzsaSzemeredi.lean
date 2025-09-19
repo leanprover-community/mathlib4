@@ -213,7 +213,7 @@ theorem rothNumberNat_le_ruzsaSzemerediNumberNat' :
       norm_num
       norm_cast
       rw [← mul_add_one]
-      exact (Nat.lt_mul_div_succ _ <| by norm_num).le
+      exact (Nat.lt_mul_div_succ _ <| by simp).le
     · norm_cast
       exact rothNumberNat_le_ruzsaSzemerediNumberNat _
 
@@ -246,7 +246,7 @@ theorem ruzsaSzemerediNumberNat_asymptotic_lower_bound :
     refine (IsBigO.mul ?_ ?_).mul ?_
     · trans fun n ↦ n / 3
       · simp_rw [div_eq_inv_mul]
-        exact (isBigO_refl ..).const_mul_right (by norm_num)
+        exact (isBigO_refl ..).const_mul_right (by simp)
       refine IsLittleO.right_isBigO_sub ?_
       simpa [div_eq_inv_mul, Function.comp_def] using
         .atTop_of_const_mul₀ zero_lt_three (by simp [tendsto_natCast_atTop_atTop])
@@ -257,7 +257,7 @@ theorem ruzsaSzemerediNumberNat_asymptotic_lower_bound :
     · rw [isBigO_exp_comp_exp_comp]
       refine ⟨0, ?_⟩
       simp only [neg_mul, eventually_map, Pi.sub_apply, sub_neg_eq_add, neg_add_le_iff_le_add,
-        add_zero, ofNat_pos, _root_.mul_le_mul_left, eventually_atTop]
+        add_zero, ofNat_pos, mul_le_mul_iff_right₀, eventually_atTop]
       refine ⟨9, fun x hx ↦ ?_⟩
       gcongr
       · simp

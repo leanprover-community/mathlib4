@@ -34,7 +34,7 @@ namespace UpperHalfPlane
 def J : GL (Fin 2) ℝ := .mkOfDetNeZero !![1, 0; 0, -1] (by simp)
 
 lemma coe_J_smul (τ : ℍ) : (↑(J • τ) : ℂ) = -conj ↑τ := by
-  simp [UpperHalfPlane.coe_smul, σ, J, if_neg (show ¬(1 : ℝ) < 0 by norm_num), num, denom, div_neg]
+  simp [UpperHalfPlane.coe_smul, σ, J, if_neg (show ¬(1 : ℝ) < 0 by simp), num, denom, div_neg]
 
 lemma J_smul (τ : ℍ) : J • τ = ofComplex (-(conj ↑τ)) := by
   ext
@@ -66,8 +66,7 @@ private lemma MDifferentiable.slash_of_pos {f : ℍ → ℂ} (hf : MDifferentiab
 
 private lemma slash_J (f : ℍ → ℂ) (k : ℤ) :
     f ∣[k] J = fun τ : ℍ ↦ -conj (f <| ofComplex <| -(conj ↑τ)) := by
-  ext τ
-  simp [slash_def, J_smul, mul_assoc, ← zpow_add₀ (by norm_num : (-1 : ℂ) ≠ 0),
+  simp [slash_def, J_smul, mul_assoc, ← zpow_add₀ (by simp : (-1 : ℂ) ≠ 0),
     (by ring : k - 1 + -k = -1), -zpow_neg, zpow_neg_one]
 
 /-- The weight `k` slash action of the negative-determinant matrix `J` preserves holomorphic
@@ -80,7 +79,7 @@ private lemma MDifferentiable.slashJ {f : ℍ → ℂ} (hf : MDifferentiable �
     simp [ofComplex_apply_of_im_pos hz]
   refine .congr (fun z hz ↦ DifferentiableAt.differentiableWithinAt ?_) this
   have : 0 < (-conj z).im := by simpa using hz
-  have := hf.differentiableAt ((Complex.continuous_im.isOpen_preimage _ isOpen_Ioi).mem_nhds this)
+  have := hf.differentiableAt (isOpen_upperHalfPlaneSet.mem_nhds this)
   simpa using (this.comp _ differentiable_neg.differentiableAt).star_star.neg
 
 /-- The weight `k` slash action of `GL(2, ℝ)` preserves holomorphic functions. -/

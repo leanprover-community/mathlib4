@@ -36,13 +36,13 @@ section MulLeftMono
 variable [LE α] [MulLeftMono α] {a b c : α}
 
 /-- Uses `left` co(ntra)variant. -/
-@[to_additive (attr := simp) "Uses `left` co(ntra)variant."]
+@[to_additive (attr := simp) /-- Uses `left` co(ntra)variant. -/]
 theorem Left.inv_le_one_iff : a⁻¹ ≤ 1 ↔ 1 ≤ a := by
   rw [← mul_le_mul_iff_left a]
   simp
 
 /-- Uses `left` co(ntra)variant. -/
-@[to_additive (attr := simp) "Uses `left` co(ntra)variant."]
+@[to_additive (attr := simp) /-- Uses `left` co(ntra)variant. -/]
 theorem Left.one_le_inv_iff : 1 ≤ a⁻¹ ↔ a ≤ 1 := by
   rw [← mul_le_mul_iff_left a]
   simp
@@ -79,12 +79,12 @@ section MulLeftStrictMono
 variable [LT α] [MulLeftStrictMono α] {a b c : α}
 
 /-- Uses `left` co(ntra)variant. -/
-@[to_additive (attr := simp) Left.neg_pos_iff "Uses `left` co(ntra)variant."]
+@[to_additive (attr := simp) Left.neg_pos_iff /-- Uses `left` co(ntra)variant. -/]
 theorem Left.one_lt_inv_iff : 1 < a⁻¹ ↔ a < 1 := by
   rw [← mul_lt_mul_iff_left a, mul_inv_cancel, mul_one]
 
 /-- Uses `left` co(ntra)variant. -/
-@[to_additive (attr := simp) "Uses `left` co(ntra)variant."]
+@[to_additive (attr := simp) /-- Uses `left` co(ntra)variant. -/]
 theorem Left.inv_lt_one_iff : a⁻¹ < 1 ↔ 1 < a := by
   rw [← mul_lt_mul_iff_left a, mul_inv_cancel, mul_one]
 
@@ -120,13 +120,13 @@ section MulRightMono
 variable [LE α] [MulRightMono α] {a b c : α}
 
 /-- Uses `right` co(ntra)variant. -/
-@[to_additive (attr := simp) "Uses `right` co(ntra)variant."]
+@[to_additive (attr := simp) /-- Uses `right` co(ntra)variant. -/]
 theorem Right.inv_le_one_iff : a⁻¹ ≤ 1 ↔ 1 ≤ a := by
   rw [← mul_le_mul_iff_right a]
   simp
 
 /-- Uses `right` co(ntra)variant. -/
-@[to_additive (attr := simp) "Uses `right` co(ntra)variant."]
+@[to_additive (attr := simp) /-- Uses `right` co(ntra)variant. -/]
 theorem Right.one_le_inv_iff : 1 ≤ a⁻¹ ↔ a ≤ 1 := by
   rw [← mul_le_mul_iff_right a]
   simp
@@ -166,12 +166,12 @@ section MulRightStrictMono
 variable [LT α] [MulRightStrictMono α] {a b c : α}
 
 /-- Uses `right` co(ntra)variant. -/
-@[to_additive (attr := simp) "Uses `right` co(ntra)variant."]
+@[to_additive (attr := simp) /-- Uses `right` co(ntra)variant. -/]
 theorem Right.inv_lt_one_iff : a⁻¹ < 1 ↔ 1 < a := by
   rw [← mul_lt_mul_iff_right a, inv_mul_cancel, one_mul]
 
 /-- Uses `right` co(ntra)variant. -/
-@[to_additive (attr := simp) Right.neg_pos_iff "Uses `right` co(ntra)variant."]
+@[to_additive (attr := simp) Right.neg_pos_iff /-- Uses `right` co(ntra)variant. -/]
 theorem Right.one_lt_inv_iff : 1 < a⁻¹ ↔ a < 1 := by
   rw [← mul_lt_mul_iff_right a, inv_mul_cancel, one_mul]
 
@@ -603,7 +603,7 @@ theorem one_lt_div' : 1 < a / b ↔ b < a := by
 
 alias ⟨lt_of_sub_pos, sub_pos_of_lt⟩ := sub_pos
 
-@[to_additive (attr := simp) sub_neg "For `a - -b = a + b`, see `sub_neg_eq_add`."]
+@[to_additive (attr := simp) sub_neg /-- For `a - -b = a + b`, see `sub_neg_eq_add`. -/]
 theorem div_lt_one' : a / b < 1 ↔ a < b := by
   rw [← mul_lt_mul_iff_right b, one_mul, div_eq_mul_inv, inv_mul_cancel_right]
 

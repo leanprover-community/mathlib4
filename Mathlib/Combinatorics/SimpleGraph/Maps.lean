@@ -52,12 +52,10 @@ the adjacency relation.
 This is injective (see `SimpleGraph.map_injective`). -/
 protected def map (f : V ↪ W) (G : SimpleGraph V) : SimpleGraph W where
   Adj := Relation.Map G.Adj f f
-  symm a b := by -- Porting note: `obviously` used to handle this
-    rintro ⟨v, w, h, rfl, rfl⟩
-    use w, v, h.symm, rfl
-  loopless a := by -- Porting note: `obviously` used to handle this
-    rintro ⟨v, w, h, rfl, h'⟩
-    exact h.ne (f.injective h'.symm)
+  symm a b := by
+    rintro ⟨v, w, h, _⟩
+    aesop (add norm unfold Relation.Map) (add forward safe Adj.symm)
+  loopless a := by aesop (add norm unfold Relation.Map)
 
 instance instDecidableMapAdj {f : V ↪ W} {a b} [Decidable (Relation.Map G.Adj f f a b)] :
     Decidable ((G.map f).Adj a b) := ‹Decidable (Relation.Map G.Adj f f a b)›
@@ -66,6 +64,20 @@ instance instDecidableMapAdj {f : V ↪ W} {a b} [Decidable (Relation.Map G.Adj 
 theorem map_adj (f : V ↪ W) (G : SimpleGraph V) (u v : W) :
     (G.map f).Adj u v ↔ ∃ u' v' : V, G.Adj u' v' ∧ f u' = u ∧ f v' = v :=
   Iff.rfl
+
+theorem edgeSet_map (f : V ↪ W) (G : SimpleGraph V) :
+    (G.map f).edgeSet = f.sym2Map '' G.edgeSet := by
+  ext v
+  induction v
+  rw [mem_edgeSet, map_adj, Set.mem_image]
+  constructor
+  · intro ⟨a, b, hadj, ha, hb⟩
+    use s(a, b), hadj
+    rw [Embedding.sym2Map_apply, Sym2.map_pair_eq, ha, hb]
+  · intro ⟨e, hadj, he⟩
+    induction e
+    rw [Embedding.sym2Map_apply, Sym2.map_pair_eq, Sym2.eq_iff] at he
+    exact he.elim (fun ⟨h, h'⟩ ↦ ⟨_, _, hadj, h, h'⟩) (fun ⟨h', h⟩ ↦ ⟨_, _, hadj.symm, h, h'⟩)
 
 lemma map_adj_apply {G : SimpleGraph V} {f : V ↪ W} {a b : V} :
     (G.map f).Adj (f a) (f b) ↔ G.Adj a b := by simp
@@ -79,6 +91,10 @@ theorem map_monotone (f : V ↪ W) : Monotone (SimpleGraph.map f) := by
 
 @[simp] lemma map_map (f : V ↪ W) (g : W ↪ X) : (G.map f).map g = G.map (f.trans g) :=
   SimpleGraph.ext <| Relation.map_map _ _ _ _ _
+
+theorem support_map (f : V ↪ W) (G : SimpleGraph V) :
+    (G.map f).support = f '' G.support := by
+  ext; simp [mem_support]; tauto
 
 /-- Given a function, there is a contravariant induced map on graphs by pulling back the
 adjacency relation.
@@ -138,7 +154,7 @@ theorem map_comap_le (f : V ↪ W) (G : SimpleGraph W) : (G.comap f).map f ≤ G
   rw [map_le_iff_le_comap]
 
 lemma le_comap_of_subsingleton (f : V → W) [Subsingleton V] : G ≤ G'.comap f := by
-  intros v w; simp [Subsingleton.elim v w]
+  intro v w; simp [Subsingleton.elim v w]
 
 lemma map_le_of_subsingleton (f : V ↪ W) [Subsingleton V] : G.map f ≤ G' := by
   rw [map_le_iff_le_comap]; apply le_comap_of_subsingleton

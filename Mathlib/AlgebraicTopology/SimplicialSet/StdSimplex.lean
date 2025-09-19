@@ -28,10 +28,7 @@ namespace SSet
 /-- The functor `SimplexCategory ⥤ SSet` which sends `⦋n⦌` to the standard simplex `Δ[n]` is a
 cosimplicial object in the category of simplicial sets. (This functor is essentially given by the
 Yoneda embedding). -/
-def stdSimplex : CosimplicialObject SSet.{u} :=
-  yoneda ⋙ uliftFunctor
-
-@[deprecated (since := "2025-01-23")] alias standardSimplex := stdSimplex
+def stdSimplex : CosimplicialObject SSet.{u} := uliftYoneda
 
 @[inherit_doc SSet.stdSimplex]
 scoped[Simplicial] notation3 "Δ[" n "]" => SSet.stdSimplex.obj (SimplexCategory.mk n)
@@ -106,7 +103,7 @@ lemma map_apply {m₁ m₂ : SimplexCategoryᵒᵖ} (f : m₁ ⟶ m₂) {n : Sim
 /-- The canonical bijection `(stdSimplex.obj n ⟶ X) ≃ X.obj (op n)`. -/
 def _root_.SSet.yonedaEquiv {X : SSet.{u}} {n : SimplexCategory} :
     (stdSimplex.obj n ⟶ X) ≃ X.obj (op n) :=
-  yonedaCompUliftFunctorEquiv X n
+  uliftYonedaEquiv
 
 lemma yonedaEquiv_map {n m : SimplexCategory} (f : n ⟶ m) :
     yonedaEquiv.{u} (stdSimplex.map f) = objEquiv.symm f :=
@@ -213,7 +210,7 @@ lemma face_eq_ofSimplex {n : ℕ} (S : Finset (Fin (n + 1))) (m : ℕ) (e : Fin 
           e.toOrderEmbedding.toOrderHom)) := by
   apply le_antisymm
   · rintro ⟨k⟩ x hx
-    induction' k using SimplexCategory.rec with k
+    induction k using SimplexCategory.rec with | _ k
     rw [mem_face_iff] at hx
     let φ : Fin (k + 1) →o S :=
       { toFun i := ⟨x i, hx i⟩
@@ -243,7 +240,7 @@ def faceRepresentableBy {n : ℕ} (S : Finset (Fin (n + 1)))
         ext i : 3
         apply e.symm_apply_apply
       right_inv := fun ⟨x, hx⟩ ↦ by
-        induction' j using SimplexCategory.rec with j
+        induction j using SimplexCategory.rec with | _ j
         dsimp
         ext i : 2
         exact congr_arg Subtype.val
@@ -297,7 +294,5 @@ noncomputable def stdSimplex : SimplexCategory ⥤ SSet.Augmented.{u} where
       right := terminal.from _ }
 
 end Augmented
-
-@[deprecated (since := "2025-01-26")] alias asOrderHom := stdSimplex.asOrderHom
 
 end SSet

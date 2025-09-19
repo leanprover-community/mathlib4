@@ -3,7 +3,7 @@ Copyright (c) 2024 Colin Jones. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Colin Jones
 -/
-import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.NumberTheory.Divisors
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Linarith
@@ -76,7 +76,7 @@ theorem deficient_three : Deficient 3 := by norm_num [Deficient]
 
 theorem abundant_twelve : Abundant 12 := by
   rw [Abundant, show properDivisors 12 = {1,2,3,4,6} by rfl]
-  norm_num
+  simp
 
 theorem weird_seventy : Weird 70 := by
   rw [Weird, Abundant, not_pseudoperfect_iff_forall]

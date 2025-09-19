@@ -72,7 +72,8 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
   -- By assumption, `f n` has integral at least `r`.
   have hrf n : r ≤ ∫⁻ a, f n a ∂μ := by
     simp_rw [hfapp]
-    rw [lintegral_const_mul _ (Finset.measurable_sum _ fun _ _ ↦ measurable_one.indicator <| hs _),
+    rw [lintegral_const_mul _ <| Finset.measurable_fun_sum _
+        fun _ _ ↦ measurable_one.indicator <| hs _,
       lintegral_finset_sum _ fun _ _ ↦ measurable_one.indicator (hs _)]
     simp only [lintegral_indicator_one (hs _)]
     rw [← ENNReal.div_eq_inv_mul, ENNReal.le_div_iff_mul_le (by simp) (by simp), ← nsmul_eq_mul']

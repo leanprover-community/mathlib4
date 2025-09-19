@@ -7,6 +7,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.Star
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
@@ -46,9 +47,15 @@ instance [TopologicalSpace R] : TopologicalSpace (Matrix m n R) :=
 instance [TopologicalSpace R] [T2Space R] : T2Space (Matrix m n R) :=
   Pi.t2Space
 
+open Matrix
+
+instance [TopologicalSpace R] [DecidableEq n] [Fintype n] [CommRing R] :
+    TopologicalSpace (SpecialLinearGroup n R) :=
+  instTopologicalSpaceSubtype
+
 section Set
 
-theorem IsOpen.matrix [Fintype m] [Fintype n]
+theorem IsOpen.matrix [Finite m] [Finite n]
     [TopologicalSpace R] {S : Set R} (hS : IsOpen S) :
     IsOpen (S.matrix : Set (Matrix m n R)) :=
   Set.matrix_eq_pi ▸
@@ -213,9 +220,6 @@ theorem Continuous.matrix_updateCol [DecidableEq n] (i : n) {A : X → Matrix m 
   continuous_matrix fun _j k =>
     (continuous_apply k).comp <|
       ((continuous_apply _).comp hA).update i ((continuous_apply _).comp hB)
-
-@[deprecated (since := "2024-12-11")]
-alias Continuous.matrix_updateColumn := Continuous.matrix_updateCol
 
 @[continuity, fun_prop]
 theorem Continuous.matrix_updateRow [DecidableEq m] (i : m) {A : X → Matrix m n R} {B : X → n → R}
