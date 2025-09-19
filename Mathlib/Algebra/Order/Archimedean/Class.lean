@@ -265,6 +265,13 @@ theorem mk_le_mk : mk a ≤ mk b ↔ ∃ n, |b|ₘ ≤ |a|ₘ ^ n := .rfl
 @[to_additive]
 theorem mk_lt_mk : mk a < mk b ↔ ∀ n, |b|ₘ ^ n < |a|ₘ := .rfl
 
+@[to_additive]
+theorem mk_le_mk_iff_lt (ha : a ≠ 1) : mk a ≤ mk b ↔ ∃ n, |b|ₘ < |a|ₘ ^ n := by
+  refine ⟨fun ⟨n, hn⟩ ↦ ⟨n + 1, hn.trans_lt ?_⟩, fun ⟨n, hn⟩ ↦ ?_⟩
+  · rw [pow_succ]
+    exact lt_mul_of_one_lt_right' _ (one_lt_mabs.mpr ha)
+  · exact ⟨n, hn.le⟩
+
 /-- 1 is in its own class (see `MulArchimedeanClass.mk_eq_top_iff`),
 which is also the largest class. -/
 @[to_additive /-- 0 is in its own class (see `ArchimedeanClass.mk_eq_top_iff`),
