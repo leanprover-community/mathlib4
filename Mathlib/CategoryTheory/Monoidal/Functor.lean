@@ -1187,7 +1187,7 @@ variable {C D}
 /--
 Auxiliary definition for `Functor.Monoidal.transport`
 -/
-@[simps!?]
+@[simps!]
 def coreMonoidalTransport {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G) : G.CoreMonoidal where
   εIso := εIso F ≪≫ i.app _
   μIso X Y := tensorIso (i.symm.app _) (i.symm.app _) ≪≫ μIso F X Y ≪≫ i.app _
