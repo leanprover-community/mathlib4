@@ -452,6 +452,39 @@ example {x y z : ℚ} : (x / y ^ 2 = z / y) ↔ (x / y / y = z / y) := by
 
 end
 
+/-! Sometimes it takes iterated alternation betweeen `ring_nf` and `field_simp` in order to
+normalize properly.
+
+It is not clear whether or not this iterated alternation always achieves the "obvious" normalization
+eventually. Nor is it clear whether, if so, there are any bounds on how many iterations are needed.
+-/
+section
+
+-- modified from 2021 American Mathematics Competition 12B, problem 9
+example (P : ℝ → Prop) {x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
+    P ((4 * x + y) / x / (x / (3 * x + y)) - (5 * x + y) / x / (x / (2 * x + y))) := by
+  ring_nf
+  fail_if_success (guard_target = P 2) -- this simply records current behaviour, delete if needed
+  field_simp
+  fail_if_success (guard_target = P 2) -- this simply records current behaviour, delete if needed
+  ring_nf
+  fail_if_success (guard_target = P 2) -- this simply records current behaviour, delete if needed
+  field_simp
+  guard_target = P 2
+  exact test_sorry
+
+example (P : ℝ → Prop) {x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
+    P ((4 * x + y) / x / (x / (3 * x + y)) - (5 * x + y) / x / (x / (2 * x + y))) := by
+  field_simp
+  fail_if_success (guard_target = P 2) -- this simply records current behaviour, delete if needed
+  ring_nf
+  fail_if_success (guard_target = P 2) -- this simply records current behaviour, delete if needed
+  field_simp
+  guard_target = P 2
+  exact test_sorry
+
+end
+
 /-! From PluenneckeRuzsa: new `field_simp` doesn't handle variable exponents -/
 
 example (x y : ℚ≥0) (n : ℕ) (hx : x ≠ 0) : y * ((y / x) ^ n * x) = (y / x) ^ (n + 1) * x * x := by
