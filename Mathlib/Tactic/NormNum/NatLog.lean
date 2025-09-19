@@ -76,7 +76,7 @@ theorem nat_clog_helper {b m n : ℕ} (hb : Nat.blt 1 b = true)
   rw [Nat.blt_eq] at hb
   rw [Nat.blt_eq, Nat.pow_lt_iff_lt_clog hb] at h₁
   rw [Nat.ble_eq, Nat.le_pow_iff_clog_le hb] at h₂
-  omega
+  cutsat
 
 private theorem isNat_clog : {b nb n nn k : ℕ} → IsNat b nb → IsNat n nn →
     Nat.clog nb nn = k → IsNat (Nat.clog b n) k
@@ -99,7 +99,7 @@ def proveNatClog (eb en : Q(ℕ)) : (ek : Q(ℕ)) × Q(Nat.clog $eb $en = $ek) :
   else
     match h : Nat.clog b n with
     | 0 => False.elim <|
-      Nat.ne_of_gt (Nat.clog_pos (by omega) (by omega)) h
+      Nat.ne_of_gt (Nat.clog_pos (by cutsat) (by cutsat)) h
     | k + 1 =>
       have ek : Q(ℕ) := mkRawNatLit k
       have ek1 : Q(ℕ) := mkRawNatLit (k + 1)

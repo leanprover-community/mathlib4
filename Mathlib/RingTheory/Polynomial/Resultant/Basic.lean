@@ -69,17 +69,17 @@ sylvesterDeriv (f : R[X]) :
     Matrix (Fin (f.natDegree - 1 + f.natDegree)) (Fin (f.natDegree - 1 + f.natDegree)) R :=
   letI n := f.natDegree
   if hn : n = 0 then 0
-  else (f.sylvester f.derivative n (n - 1)).updateRow ⟨2 * n - 2, by omega⟩
+  else (f.sylvester f.derivative n (n - 1)).updateRow ⟨2 * n - 2, by cutsat⟩
     (fun j ↦ if ↑j = n - 2 then 1 else (if ↑j = 2 * n - 2 then n else 0))
 
 /-- We can get the usual Sylvester matrix of `f` and `f.derivative` back from the modified one
 by multiplying the last row by the leading coefficient of `f`. -/
 lemma sylvesterDeriv_updateRow (f : R[X]) (hf : 0 < f.natDegree) :
-    (sylvesterDeriv f).updateRow ⟨2 * f.natDegree - 2, by omega⟩
-      (f.leadingCoeff • (sylvesterDeriv f ⟨2 * f.natDegree - 2, by omega⟩)) =
+    (sylvesterDeriv f).updateRow ⟨2 * f.natDegree - 2, by cutsat⟩
+      (f.leadingCoeff • (sylvesterDeriv f ⟨2 * f.natDegree - 2, by cutsat⟩)) =
     (sylvester f f.derivative f.natDegree (f.natDegree - 1)) := by
   by_cases hn : f.natDegree = 0
-  · ext ⟨i, hi⟩; omega
+  · ext ⟨i, hi⟩; cutsat
   ext ⟨i, hi⟩ ⟨j, hj⟩
   rw [sylvesterDeriv, dif_neg hn]
   rcases ne_or_eq i (2 * f.natDegree - 2) with hi' | rfl
@@ -92,9 +92,9 @@ lemma sylvesterDeriv_updateRow (f : R[X]) (hf : 0 < f.natDegree) :
       mul_ite, mul_one, mul_zero, Matrix.of_apply, Fin.castLT_mk, tsub_le_iff_right, Fin.cast_mk,
       Fin.subNat_mk, dite_eq_ite]
     split_ifs
-    on_goal 2 => rw [show f.natDegree = 1 by omega]
+    on_goal 2 => rw [show f.natDegree = 1 by cutsat]
     on_goal 3 =>
-      rw [← Nat.cast_one (R := R), ← Nat.cast_add, show f.natDegree = 1 by omega]
+      rw [← Nat.cast_one (R := R), ← Nat.cast_add, show f.natDegree = 1 by cutsat]
       norm_num
     on_goal 6 =>
       rw [← Nat.cast_one (R := R), ← Nat.cast_add]
@@ -149,12 +149,12 @@ noncomputable def disc (f : R[X]) : R :=
 /-- The discriminant of a linear polynomial is `1`. -/
 lemma disc_of_degree_eq_one {f : R[X]} (hf : f.degree = 1) : disc f = 1 := by
   rw [← Nat.cast_one, degree_eq_iff_natDegree_eq_of_pos one_pos] at hf
-  let e : Fin (f.natDegree - 1 + f.natDegree) ≃ Fin 1 := finCongr (by omega)
+  let e : Fin (f.natDegree - 1 + f.natDegree) ≃ Fin 1 := finCongr (by cutsat)
   have : f.sylvesterDeriv.reindex e e = !![1] := by
-    have : NeZero (f.natDegree - 1 + f.natDegree) := ⟨by omega⟩
+    have : NeZero (f.natDegree - 1 + f.natDegree) := ⟨by cutsat⟩
     ext ⟨i, hi⟩ ⟨j, hj⟩
-    obtain ⟨rfl⟩ : i = 0 := by omega
-    obtain ⟨rfl⟩ : j = 0 := by omega
+    obtain ⟨rfl⟩ : i = 0 := by cutsat
+    obtain ⟨rfl⟩ : j = 0 := by cutsat
     simp [e, sylvesterDeriv, mul_comm, hf]
   simp [disc, ← Matrix.det_reindex_self e, this, hf]
 
@@ -162,7 +162,7 @@ lemma disc_of_degree_eq_one {f : R[X]} (hf : f.degree = 1) : disc f = 1 := by
 lemma disc_of_degree_eq_two {f : R[X]} (hf : f.degree = 2) :
     disc f = f.coeff 1 ^ 2 - 4 * f.coeff 0 * f.coeff 2 := by
   rw [← Nat.cast_two, degree_eq_iff_natDegree_eq_of_pos two_pos] at hf
-  let e : Fin (f.natDegree - 1 + f.natDegree) ≃ Fin 3 := finCongr (by omega)
+  let e : Fin (f.natDegree - 1 + f.natDegree) ≃ Fin 3 := finCongr (by cutsat)
   rw [disc, ← Matrix.det_reindex_self e]
   have : f.sylvesterDeriv.reindex e e =
     !![f.coeff 0,     f.coeff 1,         0;

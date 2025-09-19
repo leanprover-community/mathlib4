@@ -118,7 +118,7 @@ protected theorem Chain.rel [IsTrans α R] (hl : l.Chain R a) (hb : b ∈ l) : R
 theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
     (∀ h : 0 < length l, R a (get l ⟨0, h⟩)) ∧
       ∀ (i : ℕ) (h : i < l.length - 1),
-        R (get l ⟨i, by omega⟩) (get l ⟨i+1, by omega⟩)
+        R (get l ⟨i, by cutsat⟩) (get l ⟨i+1, by cutsat⟩)
   | a, [] => iff_of_true (by simp) ⟨fun h => by simp at h, fun _ h => by simp at h⟩
   | a, b :: t => by
     rw [chain_cons, @chain_iff_get _ _ t]
@@ -130,14 +130,14 @@ theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
       intro i w
       rcases i with - | i
       · apply h0
-      · exact h i (by simp only [length_cons] at w; omega)
+      · exact h i (by simp only [length_cons] at w; cutsat)
     rintro ⟨h0, h⟩; constructor
     · apply h0
       simp
     constructor
     · apply h 0
     intro i w
-    exact h (i+1) (by simp only [length_cons]; omega)
+    exact h (i+1) (by simp only [length_cons]; cutsat)
 
 theorem chain_replicate_of_rel (n : ℕ) {a : α} (h : r a a) : Chain r a (replicate n a) :=
   match n with
@@ -324,10 +324,10 @@ theorem chain'_of_not (h : ¬List.Chain' R l) :
         · simp [List.eq_nil_iff_length_eq_zero.mpr h'] at yh
         · simp only [head?_eq_getElem?, Option.mem_def] at yh
           obtain ⟨_, rfl⟩ := getElem?_eq_some_iff.mp yh
-          have := h 0 (by rw [length_cons]; omega)
+          have := h 0 (by rw [length_cons]; cutsat)
           rwa [getElem_cons_zero] at this
       · refine ih (fun n h' ↦ ?_)
-        have := h (n + 1) (by rw [length_cons]; omega)
+        have := h (n + 1) (by rw [length_cons]; cutsat)
         simpa using this
 
 theorem chain'_iff_forall_getElem :
@@ -345,7 +345,7 @@ theorem chain'_reverse : ∀ {l}, Chain' R (reverse l) ↔ Chain' (flip R) l
 
 theorem chain'_iff_get {R} : ∀ {l : List α}, Chain' R l ↔
     ∀ (i : ℕ) (h : i < length l - 1),
-      R (get l ⟨i, by omega⟩) (get l ⟨i + 1, by omega⟩)
+      R (get l ⟨i, by cutsat⟩) (get l ⟨i + 1, by cutsat⟩)
   | [] => iff_of_true (by simp) (fun _ h => by simp at h)
   | [a] => iff_of_true (by simp) (fun _ h => by simp at h)
   | a :: b :: t => by
@@ -499,10 +499,10 @@ lemma Chain'.iterate_eq_of_apply_eq {α : Type*} {f : α → α} {l : List α}
   induction i with
   | zero => rfl
   | succ i h =>
-    rw [Function.iterate_succ', Function.comp_apply, h (by omega)]
+    rw [Function.iterate_succ', Function.comp_apply, h (by cutsat)]
     rw [List.chain'_iff_get] at hl
     apply hl
-    omega
+    cutsat
 
 theorem chain'_replicate_of_rel (n : ℕ) {a : α} (h : r a a) : Chain' r (replicate n a) :=
   match n with

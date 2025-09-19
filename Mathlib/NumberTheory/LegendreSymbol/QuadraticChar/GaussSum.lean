@@ -42,11 +42,11 @@ theorem FiniteField.isSquare_two_iff :
   by_cases hF : ringChar F = 2
   · have h := FiniteField.even_card_of_char_two hF
     simp only [FiniteField.isSquare_of_char_two hF, true_iff]
-    omega
+    cutsat
   · have h := FiniteField.odd_card_of_char_ne_two hF
     rw [← quadraticChar_one_iff_isSquare (Ring.two_ne_zero hF), quadraticChar_two hF,
       χ₈_nat_eq_if_mod_eight]
-    omega
+    cutsat
 
 /-- The value of the quadratic character at `-2` -/
 theorem quadraticChar_neg_two [DecidableEq F] (hF : ringChar F ≠ 2) :
@@ -61,11 +61,11 @@ theorem FiniteField.isSquare_neg_two_iff :
   by_cases hF : ringChar F = 2
   · have h := FiniteField.even_card_of_char_two hF
     simp only [FiniteField.isSquare_of_char_two hF, true_iff]
-    omega
+    cutsat
   · have h := FiniteField.odd_card_of_char_ne_two hF
     rw [← quadraticChar_one_iff_isSquare (neg_ne_zero.mpr (Ring.two_ne_zero hF)),
       quadraticChar_neg_two hF, χ₈'_nat_eq_if_mod_eight]
-    omega
+    cutsat
 
 /-- The relation between the values of the quadratic character of one field `F` at the
 cardinality of another field `F'` and of the quadratic character of `F'` at the cardinality

@@ -30,7 +30,7 @@ theorem shiftLeft'_ne_zero_left (b) {m} (h : m ≠ 0) (n) : shiftLeft' b m n ≠
 
 theorem shiftLeft'_tt_ne_zero (m) : ∀ {n}, (n ≠ 0) → shiftLeft' true m n ≠ 0
   | 0, h => absurd rfl h
-  | succ _, _ => by dsimp [shiftLeft', bit]; omega
+  | succ _, _ => by dsimp [shiftLeft', bit]; cutsat
 
 /-! ### `size` -/
 

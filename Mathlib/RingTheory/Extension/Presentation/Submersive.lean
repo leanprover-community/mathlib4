@@ -247,7 +247,7 @@ lemma dimension_comp_eq_dimension_add_dimension [Finite ι] [Finite ι'] [Finite
   have : Nat.card σ' ≤ Nat.card ι' :=
     card_relations_le_card_vars_of_isFinite Q
   simp only [Nat.card_sum]
-  omega
+  cutsat
 
 section
 

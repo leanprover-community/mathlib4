@@ -292,7 +292,7 @@ theorem mem_upShadow_iff_exists_mem_card_add :
       rfl
     · rintro ⟨t, ht, hts, hcard⟩
       obtain ⟨u, htu, hus, hu⟩ := Finset.exists_subsuperset_card_eq hts (Nat.le_add_right _ 1)
-        (by omega)
+        (by cutsat)
       refine ⟨u, mem_upShadow_iff_exists_mem_card_add_one.2 ⟨t, ht, htu, hu⟩, hus, ?_⟩
       rw [hu, ← hcard, add_right_comm]
       rfl

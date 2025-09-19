@@ -469,7 +469,7 @@ theorem forall_mem_iff_getElem {l : List α} {p : α → Prop} :
   simp [mem_iff_getElem, @forall_swap α]
 
 theorem get_tail (l : List α) (i) (h : i < l.tail.length)
-    (h' : i + 1 < l.length := (by simp only [length_tail] at h; omega)) :
+    (h' : i + 1 < l.length := (by simp only [length_tail] at h; cutsat)) :
     l.tail.get ⟨i, h⟩ = l.get ⟨i + 1, h'⟩ := by
   simp
 
@@ -604,11 +604,11 @@ theorem get_reverse' (l : List α) (n) (hn') :
     l.reverse.get n = l.get ⟨l.length - 1 - n, hn'⟩ := by
   simp
 
-theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0, by omega⟩] := by
+theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0, by cutsat⟩] := by
   refine ext_get (by convert h) fun n h₁ h₂ => ?_
   simp
   congr
-  omega
+  cutsat
 
 end deprecated
 
@@ -922,9 +922,9 @@ end FoldlMFoldrM
 theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {l : List α} (hx : x ∈ l) :
     SizeOf.sizeOf x < SizeOf.sizeOf l := by
   induction l with | nil => ?_ | cons h t ih => ?_ <;> cases hx <;> rw [cons.sizeOf_spec]
-  · omega
+  · cutsat
   · specialize ih ‹_›
-    omega
+    cutsat
 
 /-! ### filter -/
 

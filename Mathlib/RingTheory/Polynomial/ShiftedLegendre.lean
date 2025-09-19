@@ -58,7 +58,7 @@ theorem factorial_mul_shiftedLegendre_eq (n : ℕ) : (n ! : ℤ[X]) * (shiftedLe
     congr! 1 with x _
     rw [show (n.choose x • (-1) ^ x : ℤ[X]) = C (n.choose x • (-1) ^ x) by simp,
       iterate_derivative_C_mul, iterate_derivative_X_pow_eq_smul,
-      descFactorial_eq_div (by omega), show n + x - n = x by omega]
+      descFactorial_eq_div (by cutsat), show n + x - n = x by cutsat]
     simp only [Int.reduceNeg, nsmul_eq_mul, eq_intCast, Int.cast_mul, Int.cast_natCast,
       Int.cast_pow, Int.cast_neg, Int.cast_one, zsmul_eq_mul]
     ring

@@ -132,7 +132,7 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.r
           mul_one, C_eq_zero, leadingCoeff_eq_zero]
       · apply head.ne_zero_of_degree_gt
         rw [← head_degree_eq]
-        exact natDegree_pos_iff_degree_pos.mp (by omega)
+        exact natDegree_pos_iff_degree_pos.mp (by cutsat)
     -- and that they have matching leading coefficients
     have hPhead : P.leadingCoeff = head.leadingCoeff := by
       rw [degree_eq_natDegree, head_degree_eq_natDegree] at head_degree_eq

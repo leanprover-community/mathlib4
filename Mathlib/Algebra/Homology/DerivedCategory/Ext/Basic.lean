@@ -75,11 +75,11 @@ lemma hasExt_iff [HasDerivedCategory.{w'} C] :
       rw [← cancel_mono ((Q.commShiftIso b).inv.app _),
         ← cancel_epi ((Q.commShiftIso a).hom.app _)]
       have : (((CochainComplex.singleFunctor C 0).obj X)⟦a⟧).IsStrictlyLE (-a) :=
-        CochainComplex.isStrictlyLE_shift _ 0 _ _ (by omega)
+        CochainComplex.isStrictlyLE_shift _ 0 _ _ (by cutsat)
       have : (((CochainComplex.singleFunctor C 0).obj Y)⟦b⟧).IsStrictlyGE (-b) :=
-        CochainComplex.isStrictlyGE_shift _ 0 _ _ (by omega)
+        CochainComplex.isStrictlyGE_shift _ 0 _ _ (by cutsat)
       apply (subsingleton_hom_of_isStrictlyLE_of_isStrictlyGE _ _ (-a) (-b) (by
-        omega)).elim
+        cutsat)).elim
 
 lemma hasExt_of_hasDerivedCategory [HasDerivedCategory.{w} C] : HasExt.{w} C := by
   rw [hasExt_iff.{w}]
@@ -108,13 +108,13 @@ variable {X Y Z T : C}
 /-- The composition of `Ext`. -/
 noncomputable def comp {a b : ℕ} (α : Ext X Y a) (β : Ext Y Z b) {c : ℕ} (h : a + b = c) :
     Ext X Z c :=
-  SmallShiftedHom.comp α β (by omega)
+  SmallShiftedHom.comp α β (by cutsat)
 
 lemma comp_assoc {a₁ a₂ a₃ a₁₂ a₂₃ a : ℕ} (α : Ext X Y a₁) (β : Ext Y Z a₂) (γ : Ext Z T a₃)
     (h₁₂ : a₁ + a₂ = a₁₂) (h₂₃ : a₂ + a₃ = a₂₃) (h : a₁ + a₂ + a₃ = a) :
-    (α.comp β h₁₂).comp γ (show a₁₂ + a₃ = a by omega) =
-      α.comp (β.comp γ h₂₃) (by omega) :=
-  SmallShiftedHom.comp_assoc _ _ _ _ _ _ (by omega)
+    (α.comp β h₁₂).comp γ (show a₁₂ + a₃ = a by cutsat) =
+      α.comp (β.comp γ h₂₃) (by cutsat) :=
+  SmallShiftedHom.comp_assoc _ _ _ _ _ _ (by cutsat)
 
 @[simp]
 lemma comp_assoc_of_second_deg_zero
@@ -122,7 +122,7 @@ lemma comp_assoc_of_second_deg_zero
     (h₁₃ : a₁ + a₃ = a₁₃) :
     (α.comp β (add_zero _)).comp γ h₁₃ = α.comp (β.comp γ (zero_add _)) h₁₃ := by
   apply comp_assoc
-  omega
+  cutsat
 
 @[simp]
 lemma comp_assoc_of_third_deg_zero
@@ -130,7 +130,7 @@ lemma comp_assoc_of_third_deg_zero
     (h₁₂ : a₁ + a₂ = a₁₂) :
     (α.comp β h₁₂).comp γ (add_zero _) = α.comp (β.comp γ (add_zero _)) h₁₂ := by
   apply comp_assoc
-  omega
+  cutsat
 
 section
 
@@ -150,7 +150,7 @@ noncomputable abbrev hom {a : ℕ} (α : Ext X Y a) :
 
 @[simp]
 lemma comp_hom {a b : ℕ} (α : Ext X Y a) (β : Ext Y Z b) {c : ℕ} (h : a + b = c) :
-    (α.comp β h).hom = α.hom.comp β.hom (by omega) := by
+    (α.comp β h).hom = α.hom.comp β.hom (by cutsat) := by
   apply SmallShiftedHom.equiv_comp
 
 @[ext]
@@ -178,7 +178,7 @@ lemma mk₀_comp_mk₀_assoc (f : X ⟶ Y) (g : Y ⟶ Z) {n : ℕ} (α : Ext Z T
     (mk₀ f).comp ((mk₀ g).comp α (zero_add n)) (zero_add n) =
       (mk₀ (f ≫ g)).comp α (zero_add n) := by
   rw [← mk₀_comp_mk₀, comp_assoc]
-  omega
+  cutsat
 
 
 variable (X Y) in

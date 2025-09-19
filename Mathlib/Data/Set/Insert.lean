@@ -264,7 +264,7 @@ theorem setOf_mem_list_eq_singleton_of_nodup {l : List α} (H : l.Nodup) {a : α
   · rw [setOf_mem_list_eq_replicate]
     rintro ⟨n, hn, rfl⟩
     simp only [List.nodup_replicate] at H
-    simp [show n = 1 by omega]
+    simp [show n = 1 by cutsat]
   · rintro rfl
     simp
 
