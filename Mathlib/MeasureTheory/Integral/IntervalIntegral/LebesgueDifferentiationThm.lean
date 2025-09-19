@@ -24,15 +24,16 @@ open MeasureTheory Set Filter Function IsUnifLocDoublingMeasure
 
 open scoped Topology
 
-/-- The interval version of the *Lebesgue Differentiation Theorem*: if `f : ℝ → ℝ` is integrable and
-`c : ℝ`, then for almost every `x`, the derivative of `∫ (t : ℝ) in c..x, f t` at `x`
+/-- The interval version of the *Lebesgue Differentiation Theorem*: if `f : ℝ → ℝ` is locally
+integrable and `c : ℝ`, then for almost every `x`, the derivative of `∫ (t : ℝ) in c..x, f t` at `x`
 is equal to `f x`. -/
-theorem Integrable.ae_eq_deriv_integral {f : ℝ → ℝ} (hf : Integrable f volume) (c : ℝ) :
+theorem LocallyIntegrable.ae_eq_deriv_integral {f : ℝ → ℝ} (hf : LocallyIntegrable f volume)
+    (c : ℝ) :
     ∀ᵐ x, HasDerivAt (fun x => ∫ (t : ℝ) in c..x, f t) (f x) x := by
-  have hg (x y : ℝ) : IntervalIntegrable f volume x y := by
-    have : IntegrableOn f Set.univ volume := by simpa
-    constructor <;> simp [this.mono_set]
-  have LDT := (vitaliFamily volume 1).ae_tendsto_average hf.locallyIntegrable
+  have hg (x y : ℝ) : IntervalIntegrable f volume x y :=
+    intervalIntegrable_iff.mpr <|
+      (hf.integrableOn_isCompact isCompact_uIcc).mono_set uIoc_subset_uIcc
+  have LDT := (vitaliFamily volume 1).ae_tendsto_average hf
   have {a b : ℝ} : ∫ (t : ℝ) in Ioc a b, f t = ∫ (t : ℝ) in Icc a b, f t :=
     integral_Icc_eq_integral_Ioc (x := a) (y := b) (X := ℝ) |>.symm
   filter_upwards [LDT] with x hx
@@ -62,10 +63,10 @@ theorem IntervalIntegrable.ae_eq_deriv_integral {f : ℝ → ℝ} {a b c : ℝ}
   have h₁ : ∀ᵐ x, x ≠ a := by simp [ae_iff, measure_singleton]
   have h₂ : ∀ᵐ x, x ≠ b := by simp [ae_iff, measure_singleton]
   let g (x : ℝ) := if x ∈ Ioc a b then f x else 0
-  have hg : Integrable g volume :=
+  have hg : LocallyIntegrable g volume :=
     integrableOn_congr_fun (by grind [EqOn]) (by simp) |>.mpr hf.left
-      |>.integrable_of_forall_notMem_eq_zero (by grind)
-  filter_upwards [Integrable.ae_eq_deriv_integral hg c, h₁, h₂] with x hx _ _ _
+      |>.integrable_of_forall_notMem_eq_zero (by grind) |>.locallyIntegrable
+  filter_upwards [LocallyIntegrable.ae_eq_deriv_integral hg c, h₁, h₂] with x hx _ _ _
   refine HasDerivWithinAt.hasDerivAt (s := Ioo a b) ?_ <| Ioo_mem_nhds (by grind) (by grind)
   rw [show f x = g x by grind]
   refine hx.hasDerivWithinAt.congr (fun y hy ↦ ?_) ?_
