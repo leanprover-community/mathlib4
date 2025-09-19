@@ -319,14 +319,8 @@ def cycleIcc (i j : Fin n) : Perm (Fin n) where
     ⟨k + 1, (Nat.lt_of_le_of_lt (Nat.add_one_le_of_lt hk) j.isLt)⟩ else if k = j then i else k
   invFun k := if j < k then k else if i < k then
     ⟨k - 1, Nat.lt_of_le_of_lt (Nat.sub_le k 1) k.isLt⟩ else if k = i then j else k
-  left_inv _ := by
-    simp_rw [Fin.lt_def, Fin.ext_iff]
-    simp only [apply_ite Fin.val, apply_dite Fin.val]
-    split_ifs <;> omega
-  right_inv _ := by
-    simp_rw [Fin.lt_def, Fin.ext_iff]
-    simp only [apply_ite Fin.val, apply_dite Fin.val]
-    split_ifs <;> omega
+  left_inv _ := by simp only [Fin.ext_iff]; grind
+  right_inv _ := by simp only [Fin.ext_iff]; grind
 
 lemma cycleIcc_def_le {i j : Fin n} (hij : i ≤ j) : cycleIcc i j =
     (cycleRange ((j - i).castLT (sub_val_lt_sub hij))).extendDomain
