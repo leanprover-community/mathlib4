@@ -3,7 +3,6 @@ Copyright (c) 2025 Dexin Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dexin Zhang
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Algebra.Order.Sub.Prod
 import Mathlib.Algebra.Order.Sub.Unbundled.Hom
@@ -27,8 +26,8 @@ set difference.
   generated `AddSubmonoid` in `ℕ ^ k`.
 - `Nat.isSemilinearSet_setOf_eq`: the set of solutions of a linear equation `a + f x = b + g y` is a
   semilinear set.
-- `Nat.isSemilinear_inter`, `Nat.isSemilinear_compl`, `Nat.isSemilinear_diff`: semilinear sets
-  in `ℕ ^ k` are closed under intersection, complement and set difference.
+- `Nat.isSemilinearSet_inter`, `Nat.isSemilinearSet_compl`, `Nat.isSemilinearSet_diff`: semilinear
+  sets in `ℕ ^ k` are closed under intersection, complement and set difference.
 
 ## References
 
@@ -149,7 +148,7 @@ lemma Nat.isSemilinearSet_inter_of_isLinearSet [Finite ι] (hs₁ : IsLinearSet 
   simp_rw [← setOf_and, exists_and_exists_comm]
   refine IsSemilinearSet.proj' (IsSemilinearSet.proj' ?_)
   convert isSemilinearSet_setOf_mulVec_eq (κ := (ι ⊕ Fin n) ⊕ Fin m) (Sum.elim u v) 0
-    (fromBlocks (fromCols 0 A) 0 0 B) (fromBlocks (fromCols 1 0) 0 (fromCols 1 0) 0) with x
+    (fromBlocks (fromCols 0 A) 0 0 B) (fromBlocks (fromCols 1 0) 0 (fromCols 1 0) 0)
   simp [fromBlocks_mulVec, fromCols_mulVec, ← Sum.elim_add_add, Sum.elim_eq_iff]
 
 /-- Semilinear sets in `ℕ ^ k` are closed under intersection. -/
@@ -182,16 +181,16 @@ theorem Nat.isSemilinearSet_biInter_finset [Finite κ] {s : Finset ι} {t : ι �
 /-! ### Semilinear sets in `ℕ ^ k` are closed under complement and set difference
 
 We first show that the complement of a proper linear set `s` in `ℕ ^ k` is semilinear, through
-serveral private defintions:
+several private defintions:
 
 1. `base`, `periods`: the base vector and the set of periods of the proper linear set `s`.
 2. `basisSet`, `basis`: the linearly independent periods of `s` can be extended to a basis of
-  `ℚ ^ k`;
+  `ℚ ^ k`.
 3. `fundamentalDomain`: the set of vectors in `ℕ ^ k`, starting from `base`, with coordinates under
-  `basis` in `[0, 1) ^ k`;
-3. `floor`, `fract`: every vector in `ℕ ^ k` can be decomposed into a `ℤ`-linear combination of
-  `basisSet` and a vector in `fundamentalDomain`;
-4. `setOfFractNe`, `setOfFloorNeg`, `setOfFloorPos`: the complement of `s` is decomposed into three
+  `basis` in `[0, 1) ^ k`.
+4. `floor`, `fract`: every vector in `ℕ ^ k` can be decomposed into a `ℤ`-linear combination of
+  `basisSet` and a vector in `fundamentalDomain`.
+5. `setOfFractNe`, `setOfFloorNeg`, `setOfFloorPos`: the complement of `s` is decomposed into three
   semilinear sets.
 
 Closure of semilinear sets under complement and set difference follows.
@@ -216,8 +215,7 @@ private theorem toRatVec_nonneg (x : ι → ℕ) : 0 ≤ toRatVec x := by
 
 private theorem linearIndepOn_toRatVec {s : Set (ι → ℕ)} (hs : LinearIndepOn ℕ id s) :
     LinearIndepOn ℚ toRatVec s := by
-  rw [LinearIndepOn, ← LinearIndependent.iff_fractionRing ℤ ℚ, ← LinearIndepOn,
-    linearIndepOn_iff'']
+  rw [LinearIndepOn, ← LinearIndependent.iff_fractionRing ℤ ℚ, ← LinearIndepOn, linearIndepOn_iff'']
   intro t f ht hf heq i hi
   rw [linearIndepOn_iff_linearIndepOn_finset] at hs
   specialize hs t ht
@@ -226,9 +224,8 @@ private theorem linearIndepOn_toRatVec {s : Set (ι → ℕ)} (hs : LinearIndepO
   · simp_rw [← toRatVec_inj, map_sum]
     rw [← sub_eq_zero, ← Finset.sum_sub_distrib, ← heq]
     refine Finset.sum_congr rfl fun j hj => ?_
-    conv_rhs => rw [← (f j).toNat_sub_toNat_neg, sub_smul]
-    simp_rw [map_nsmul, natCast_zsmul]
-    simp
+    conv_rhs => rw [← (f j).toNat_sub_toNat_neg]
+    simp only [sub_smul, map_nsmul, natCast_zsmul, Function.comp_apply, id_eq]
   · rw [← (f i).toNat_sub_toNat_neg, sub_eq_zero, Int.natCast_inj]
     simpa using hs
 
@@ -278,10 +275,10 @@ private theorem span_basisSet : span ℚ (toRatVec '' hs.basisSet) = ⊤ := by
   apply (span_mono (image_mono subset_union_right)).trans'
   rw [top_le_iff]
   convert (Pi.basisFun ℚ ι).span_eq
-  ext x
+  ext
   simp only [mem_image, mem_range, exists_exists_eq_and]
-  congr! with i
-  ext j
+  congr!
+  ext
   simp [toRatVec, Pi.basisFun_apply, Pi.single_apply]
 
 private noncomputable def basis : Basis hs.basisSet ℚ (ι → ℚ) :=
@@ -399,7 +396,7 @@ private theorem fract_add_of_mem_closure {x y} (hy : y ∈ closure hs.basisSet) 
   rw [mem_closure_fintype] at hy
   rcases hy with ⟨f, t, ht, hf, rfl⟩
   rw [← toRatVec_inj, hs.toRatVec_fract_eq, hs.toRatVec_fract_eq]
-  congr! 3 with i
+  congr! 3
   rw [map_add, ← sub_add_eq_add_sub]
   simp [-nsmul_eq_mul, ← hs.basis_apply, Finsupp.single_apply]
 
@@ -447,11 +444,11 @@ private theorem mem_iff_fract_eq_and_floor_nonneg (x) :
       · simp [(hx₂ i).2 hi]
     · simp [fun i => Int.toNat_eq_zero.2 (neg_nonpos.2 (hx₂ i).1)]
 
-private noncomputable def setOfFractNe : Set (ι → ℕ) := {x | hs.fract x ≠ hs.base}
+private noncomputable def setOfFractNe : Set (ι → ℕ) := { x | hs.fract x ≠ hs.base }
 
 private theorem isSemilinearSet_setOfFractNe : IsSemilinearSet hs.setOfFractNe := by
-  convert_to IsSemilinearSet (⋃ u ∈ hs.fundamentalDomain \ {hs.base}, {x |
-    ∃ y ∈ closure hs.basisSet, ∃ y' ∈ closure hs.basisSet, x + y' = u + y}) using 1
+  convert_to IsSemilinearSet (⋃ u ∈ hs.fundamentalDomain \ {hs.base}, { x |
+    ∃ y ∈ closure hs.basisSet, ∃ y' ∈ closure hs.basisSet, x + y' = u + y }) using 1
   · ext x
     simp only [setOfFractNe, mem_iUnion, mem_setOf_eq, exists_prop]
     constructor
@@ -478,13 +475,12 @@ private theorem isSemilinearSet_setOfFractNe : IsSemilinearSet hs.setOfFractNe :
     haveI := Fintype.ofFinite ι
     convert Nat.isSemilinearSet_setOf_mulVec_eq (κ := (ι ⊕ ι) ⊕ ι) 0 i
       (Matrix.fromCols (Matrix.fromCols 1 0) 1) (Matrix.fromCols (Matrix.fromCols 0 1) 0)
-      using 4 with x <;> simp [fromCols_mulVec]
+      using 4 <;> simp [fromCols_mulVec]
 
 private noncomputable def setOfFloorNeg : Set (ι → ℕ) :=
-  {x | hs.fract x = hs.base ∧ ∃ i, hs.floor x i < 0}
+  { x | hs.fract x = hs.base ∧ ∃ i, hs.floor x i < 0 }
 
-private theorem isSemilinearSet_setOfFloorNeg :
-    IsSemilinearSet hs.setOfFloorNeg := by
+private theorem isSemilinearSet_setOfFloorNeg : IsSemilinearSet hs.setOfFloorNeg := by
   classical
   convert_to IsSemilinearSet (⋃ i : hs.basisSet, { x | ∃ y ∈ closure {i.1},
     ∃ z ∈ closure (hs.basisSet \ {i.1}), ∃ z' ∈ closure (hs.basisSet \ {i.1}),
@@ -544,10 +540,9 @@ private theorem isSemilinearSet_setOfFloorNeg :
       <;> simp [add_comm _ i.1, add_assoc, fromCols_mulVec]
 
 private noncomputable def setOfFloorPos : Set (ι → ℕ) :=
-  {x | hs.fract x = hs.base ∧ ∃ i, i.1 ∉ hs.periods ∧ 0 < hs.floor x i}
+  { x | hs.fract x = hs.base ∧ ∃ i, i.1 ∉ hs.periods ∧ 0 < hs.floor x i }
 
-private theorem isSemilinearSet_setOfFloorPos :
-    IsSemilinearSet hs.setOfFloorPos := by
+private theorem isSemilinearSet_setOfFloorPos : IsSemilinearSet hs.setOfFloorPos := by
   classical
   convert_to IsSemilinearSet (⋃ i ∈ { i : hs.basisSet | i.1 ∉ hs.periods },
     { x | ∃ y ∈ closure {i.1}, ∃ z ∈ closure (hs.basisSet \ {i.1}),
@@ -558,8 +553,7 @@ private theorem isSemilinearSet_setOfFloorPos :
     · intro ⟨hx, i, hi, hi'⟩
       refine ⟨i, hi, ((hs.floor x i).toNat - 1) • i.1, ?_,
           ∑ j ∈ Finset.univ.erase i, (hs.floor x j).toNat • j.1, ?_,
-          ∑ j ∈ Finset.univ.erase i, (- hs.floor x j).toNat • j.1, ?_,
-          ?_⟩
+          ∑ j ∈ Finset.univ.erase i, (- hs.floor x j).toNat • j.1, ?_, ?_⟩
       · exact nsmul_mem (mem_closure_of_mem (mem_singleton i.1)) _
       · refine sum_mem fun j hj => nsmul_mem (mem_closure_of_mem ?_) _
         simpa [Subtype.val_inj] using hj
@@ -609,11 +603,9 @@ end IsProperLinearSet
 
 lemma Nat.isSemilinearSet_compl_of_isProperLinearSet [Finite ι] (hs : IsProperLinearSet s) :
     IsSemilinearSet sᶜ := by
-  classical
-  haveI := Fintype.ofFinite ι
   convert hs.isSemilinearSet_setOfFractNe.union <| hs.isSemilinearSet_setOfFloorNeg.union <|
     hs.isSemilinearSet_setOfFloorPos using 1
-  ext x
+  ext
   simp only [mem_compl_iff, hs.mem_iff_fract_eq_and_floor_nonneg, IsProperLinearSet.setOfFractNe,
     IsProperLinearSet.setOfFloorNeg, IsProperLinearSet.setOfFloorPos, mem_union, mem_setOf_eq]
   grind
