@@ -398,10 +398,10 @@ lemma mul_def (q r : ℚ≥0) : q * r = divNat (q.num * r.num) (q.den * r.den) :
   ext; simp [Rat.mul_eq_mkRat, Rat.mkRat_eq_divInt, num_coe, den_coe]
 
 theorem lt_def {p q : ℚ≥0} : p < q ↔ p.num * q.den < q.num * p.den := by
-  rw [← NNRat.coe_lt_coe, Rat.lt_def]; norm_cast
+  rw [← NNRat.coe_lt_coe, Rat.lt_iff]; norm_cast
 
 theorem le_def {p q : ℚ≥0} : p ≤ q ↔ p.num * q.den ≤ q.num * p.den := by
-  rw [← NNRat.coe_le_coe, Rat.le_def]; norm_cast
+  rw [← NNRat.coe_le_coe, Rat.le_iff]; norm_cast
 
 end NNRat
 
