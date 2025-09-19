@@ -5758,6 +5758,7 @@ import Mathlib.RingTheory.Regular.Ischebeck
 import Mathlib.RingTheory.Regular.RegularSequence
 import Mathlib.RingTheory.RegularLocalRing.Basic
 import Mathlib.RingTheory.RegularLocalRing.Defs
+import Mathlib.RingTheory.RegularLocalRing.AuslanderBuchsbaumSerre
 import Mathlib.RingTheory.RegularLocalRing.GlobalDimension
 import Mathlib.RingTheory.RegularLocalRing.RegularRing.Basic
 import Mathlib.RingTheory.RegularLocalRing.RegularRing.GlobalDimension
