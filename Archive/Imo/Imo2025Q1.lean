@@ -161,11 +161,9 @@ lemma line_rank (a b c : ℝ) (h : a ≠ 0 ∨ b ≠ 0) : finrank ℝ (line a b 
     rw [line_direction (h := h)]
     use 1; simp
   rw [finrank_eq_one_iff']
-  use ⟨!₂[-b, a], hv_mem⟩
-  constructor
-  · simp; tauto
-  · simp only [SetLike.mk_smul_mk, Subtype.forall, Subtype.mk.injEq]
-    intro w; exact (line_direction a b c h w).mp
+  refine ⟨⟨!₂[-b, a], hv_mem⟩, by simp; tauto, ?_⟩
+  simp only [SetLike.mk_smul_mk, Subtype.forall, Subtype.mk.injEq]
+  exact fun w ↦ (line_direction a b c h w).mp
 
 /-- The coeffecients of a line a * x + b * y + c = 0 -/
 structure LineCoeffs where
@@ -201,7 +199,6 @@ lemma line_para' (a b a' b' : ℝ) (h' : a' ≠ 0 ∨ b' ≠ 0)
     (∃ (k : ℝ), k • !₂[-b, a] = w) → (∃ (k : ℝ), k • !₂[-b', a'] = w) := by
   intro ⟨k, hk₁⟩
   rw [vec_mul, vec_repr w, vec_eq] at hk₁
-  obtain ⟨hk₁, hk₂⟩ := hk₁
   obtain ha | hb := h'
   · use k * a / a'
     rw [vec_mul, vec_repr w, vec_eq]
@@ -223,12 +220,7 @@ lemma line_para (a b c a' b' c' : ℝ) (h : a ≠ 0 ∨ b ≠ 0) (h' : a' ≠ 0 
       use 1
       simp [w]
     rw [hp, line_direction a' b' c' h' w] at this
-    dsimp only [w] at this
-    obtain ⟨k, hk⟩ := this
-    rw [vec_mul, vec_eq] at hk
-    obtain ⟨hk₁, hk₂⟩ := hk
-    replace hk₁ : k * b' = b := by linarith
-    rw [← hk₁, ← hk₂]; ring
+    grind [vec_mul, vec_eq]
   · intro hab
     constructor
     · ext w
@@ -267,17 +259,14 @@ lemma line_eq_check (a b c a' b' c' : ℝ) (h : a ≠ 0 ∨ b ≠ 0) (h' : a' �
   refine ⟨hab, ?_⟩
   by_cases ha : a = 0
   · specialize heq !₂[0, -c / b]
-    rw [AffineSubspace.mem_coe, AffineSubspace.mem_coe, point_on_line, point_on_line] at heq
-    grind
+    grind [AffineSubspace.mem_coe, AffineSubspace.mem_coe, point_on_line, point_on_line]
   · constructor
     · specialize heq !₂[-c / a, 0]
-      rw [AffineSubspace.mem_coe, AffineSubspace.mem_coe, point_on_line, point_on_line] at heq
-      grind
+      grind [AffineSubspace.mem_coe, AffineSubspace.mem_coe, point_on_line, point_on_line]
     · by_cases hb : b = 0
       · grind
       · specialize heq !₂[0, -c / b]
-        rw [AffineSubspace.mem_coe, AffineSubspace.mem_coe, point_on_line, point_on_line] at heq
-        grind
+        grind [AffineSubspace.mem_coe, AffineSubspace.mem_coe, point_on_line, point_on_line]
 
 /-- Preparation lemma for `get_line_eq`. -/
 lemma line_contains (L L' : AffSubOfPlane) (hL : finrank ℝ L.direction = 1) (a b : Plane)
@@ -389,32 +378,22 @@ lemma grid_shift (n : ℕ) (d : Fin 3) :
         zero_add] at ha
       simp only [gridShift, Fin.isValue, PiLp.toLp_apply, Matrix.cons_val_one, neg_neg,
         Matrix.cons_val_fin_one, neg_zero, zero_add] at hb
-    · have : a ≠ 1 := by intro hC; rw [hC] at ha; simp only [Fin.isValue, Nat.cast_one,
+    · have : a ≠ 1 := by intro hC; simp only [hC, Fin.isValue, Nat.cast_one,
         add_eq_left] at ha; contradiction
-      use a - 1
-      constructor
+      refine ⟨a - 1, ?_, b, ?_⟩
       · rw [show a = a - 1 + 1 by omega] at ha
         grind
-      · use b
-        constructor <;> (try (first | assumption | omega))
-    · have : b ≠ 1 := by intro hC; rw [hC] at hb; simp only [Fin.isValue, Nat.cast_one,
+      · constructor <;> (try (first | assumption | omega))
+    · have : b ≠ 1 := by intro hC; simp only [hC, Fin.isValue, Nat.cast_one,
       add_eq_left] at hb; rw [hb] at h₂; simp at h₂
-      use a
-      constructor
-      · exact ha
-      · use b - 1
-        constructor
-        · rw [show b = b - 1 + 1 by omega] at hb
-          grind
-        · constructor <;> (try (first | assumption | omega))
+      refine ⟨a, ha, b - 1, ?_, ?_⟩
+      · rw [show b = b - 1 + 1 by omega] at hb
+        grind
+      · constructor <;> (try (first | assumption | omega))
     · have : a + b ≠ n + 2 := by
         intro hC; rw [ha, hb] at h₂; norm_cast at h₂; omega
-      use a
-      constructor
-      · exact ha
-      · use b; constructor
-        · exact hb
-        · constructor <;> (try (first | assumption | omega))
+      refine ⟨a, ha, b, hb, ?_⟩
+      constructor <;> (try (first | assumption | omega))
   · intro ⟨a, ha, b, hb, ha₀, hb₀, hab⟩
     fin_cases d
     · constructor
@@ -500,8 +479,8 @@ lemma shift_line_inv (v : Plane) (L : AffSubOfPlane) : (shiftLine (-v)) ((shiftL
 /-- If `L` is sunny, then so is its shift. -/
 lemma shift_sunny (v : Plane) (L : AffSubOfPlane) : Sunny L → Sunny (shiftLine v L) := by
   rw [Sunny, Sunny]
-  have (L' : AffSubOfPlane) : L ∥ L' ↔ shiftLine v L ∥ L' := by
-    exact ⟨fun h ↦ AffineSubspace.Parallel.trans (shift_para _ _).symm h,
+  have (L' : AffSubOfPlane) : L ∥ L' ↔ shiftLine v L ∥ L' :=
+    ⟨fun h ↦ AffineSubspace.Parallel.trans (shift_para _ _).symm h,
       fun h ↦ AffineSubspace.Parallel.trans (shift_para _ _) h⟩
   rw [← this, ← this, ← this]
   tauto
@@ -516,8 +495,7 @@ def coverConfig.shift (C : coverConfig) (v : Plane) : coverConfig where
   lines_rank := by
     simp only [shiftLines, Finset.mem_map, forall_exists_index, and_imp,forall_apply_eq_imp_iff₂]
     intro l hl
-    rw [← AffineSubspace.Parallel.direction_eq (shift_para v l)]
-    exact C.lines_rank l hl
+    exact (shift_para v l).direction_eq ▸ C.lines_rank l hl
   lines_cover := by
     simp only [shiftLines, Finset.mem_map, exists_exists_and_eq_and]
     intro x hx
@@ -530,8 +508,7 @@ def coverConfig.shift (C : coverConfig) (v : Plane) : coverConfig where
     exact ⟨-v + x, by assumption, by simp⟩
   sunny_count := by
     intro
-    simp only [shiftLines]
-    rw [← C.sunny_count]
+    simp only [shiftLines, ← C.sunny_count]
     symm
     have := eqAffSubOfPlane
     apply Finset.card_bij'
@@ -543,7 +520,7 @@ def coverConfig.shift (C : coverConfig) (v : Plane) : coverConfig where
     · intro L' hL'; simp only [Finset.mem_filter, Finset.mem_map] at hL'
       obtain ⟨⟨L, _, hL₂⟩, hS'⟩ := hL'
       simp only [Finset.mem_filter, hS', shift_sunny, and_true]
-      rw [← hL₂, shift_line_inv]; assumption
+      rwa [← hL₂, shift_line_inv]
     · intros; rw [shift_line_inv]
     · intros; nth_rw 1 [show v = -(-v) by simp]; rw [shift_line_inv]
 
@@ -659,26 +636,16 @@ lemma line_sunny_two_points (L : AffSubOfPlane) (x₁ y₁ x₂ y₂ : ℝ)
     (h₁ : !₂[x₁, y₁] ∈ L) (h₂ : !₂[x₂, y₂] ∈ L)
     (hx : x₁ ≠ x₂) (hy : y₁ ≠ y₂) (hxy : x₂ - x₁ ≠ y₁ - y₂) : Sunny L := by
   rw [Sunny]
-  constructor
-  · rw [← x_ax_line]
-    intro hp
-    symm at hp
-    have := line_para_two_points 0 1 0 (by simp) L x₁ y₁ x₂ y₂ hp h₁ h₂
+  refine ⟨x_ax_line ▸ ?_, y_ax_line ▸ ?_, xy0_line ▸ ?_⟩ <;> (intro hp; symm at hp)
+  · have := line_para_two_points 0 1 0 (by simp) L x₁ y₁ x₂ y₂ hp h₁ h₂
     have : y₁ = y₂ := by linarith
     contradiction
-  · constructor
-    · rw [← y_ax_line]
-      intro hp
-      symm at hp
-      have := line_para_two_points 1 0 0 (by simp) L x₁ y₁ x₂ y₂ hp h₁ h₂
-      have : x₁ = x₂ := by linarith
-      contradiction
-    · rw [← xy0_line]
-      intro hp
-      symm at hp
-      have := line_para_two_points 1 1 0 (by simp) L x₁ y₁ x₂ y₂ hp h₁ h₂
-      have : x₂ - x₁ = y₁ - y₂ := by linarith
-      contradiction
+  · have := line_para_two_points 1 0 0 (by simp) L x₁ y₁ x₂ y₂ hp h₁ h₂
+    have : x₁ = x₂ := by linarith
+    contradiction
+  · have := line_para_two_points 1 1 0 (by simp) L x₁ y₁ x₂ y₂ hp h₁ h₂
+    have : x₂ - x₁ = y₁ - y₂ := by linarith
+    contradiction
 
 section FindLines
 
@@ -722,7 +689,7 @@ lemma coverGridConfig.edge_point_in_grid (C : coverGridConfig) (d : Fin 3) (i : 
     C.edgePoint d i ∈ C.g := by
   rw [C.g_is_grid]
   dsimp only [edgePoint]
-  fin_cases d <;> (simp only; rw [point_in_grid]; omega)
+  fin_cases d <;> (simp only [point_in_grid]; omega)
 
 /-- The points on the three edges of a `coverGridConfig` are on their edge lines. -/
 lemma coverGridConfig.edge_point_on_line (C : coverGridConfig) (d : Fin 3) (i : Fin C.n) :
@@ -742,7 +709,7 @@ noncomputable def coverGridConfig.findLineEdge (C : coverGridConfig) (d : Fin 3)
 lemma coverGridConfig.find_line_edge_correct (C : coverGridConfig) (d : Fin 3) (i : Fin C.n) :
     C.findLineEdge d i ∈ C.lines ∧ C.edgePoint d i ∈ C.findLineEdge d i := by
   rw [findLineEdge]
-  refine C.find_line_correct ?_ ?_
+  exact C.find_line_correct _ _
 
 /-- A `coverGridConfig` with the additional requirements that `n > 1` and `lines` doesn't contain
 an edge. Note: we need `n > 1` to have three corners in the grid. -/
@@ -766,8 +733,8 @@ lemma coverGridNoEdgeConfig.cover_no_edge_line_inj (C : coverGridNoEdgeConfig) (
     (C.edgePoint d i) (C.edgePoint d j) (C.edge_point_in_grid d i) (C.edge_point_in_grid d j)
   · dsimp only [coverGridConfig.edgePoint]; fin_cases d <;> try (
       simp only
-      intro hC'; rw [vec_eq] at hC'; obtain ⟨hC'1, hC'2⟩ := hC'
-      norm_cast at hC'1; norm_cast at hC'2
+      intro hC'; rw [vec_eq] at hC'; obtain ⟨hC'₁, hC'₂⟩ := hC'
+      norm_cast at hC'₁ hC'₂
       omega )
   · assumption
   · dsimp [edgeCoeffs]; fin_cases d <;> simp
@@ -777,20 +744,14 @@ lemma coverGridNoEdgeConfig.cover_no_edge_line_inj (C : coverGridNoEdgeConfig) (
 /-- If `lines` does not contain an edge line of `grid n`, then for every edge, every line in
 `lines` must be chosen by a point on that edge. -/
 lemma coverGridNoEdgeConfig.cover_no_edge_line_surj (C : coverGridNoEdgeConfig) (d : Fin 3) :
-    Finset.map
-      ⟨ C.findLineEdge d,
-        C.cover_no_edge_line_inj d⟩
-      Finset.univ = C.lines := by
-  set R := Finset.map
-    ⟨ C.findLineEdge d,
-      C.cover_no_edge_line_inj d⟩
-    Finset.univ
+    Finset.map ⟨C.findLineEdge d, C.cover_no_edge_line_inj d⟩ Finset.univ = C.lines := by
+  set R := Finset.map ⟨C.findLineEdge d, C.cover_no_edge_line_inj d⟩ Finset.univ
   have : #R = C.n := by simp [R]
   have : R ⊆ C.lines := by
     intro x hx
     simp only [Finset.mem_map, Finset.mem_univ, Function.Embedding.coeFn_mk, true_and,
       R] at hx
-    obtain ⟨i, hi⟩ := hx;
+    obtain ⟨i, hi⟩ := hx
     simp [← hi, C.find_line_edge_correct]
   apply Finset.eq_of_subset_of_card_le <;> try (first | assumption | omega)
   have := C.lines_count
@@ -839,8 +800,7 @@ noncomputable def coverGridNoEdgeConfig.findLineCorner (C : coverGridNoEdgeConfi
 `C.cornerPoint c`. -/
 lemma coverGridNoEdgeConfig.find_line_corner_correct (C : coverGridNoEdgeConfig)
   (c : Fin 3) :
-    C.findLineCorner c ∈ C.lines ∧
-    C.cornerPoint c ∈ C.findLineCorner c := by
+    C.findLineCorner c ∈ C.lines ∧ C.cornerPoint c ∈ C.findLineCorner c := by
   fin_cases c <;>
     (dsimp only [findLineCorner, cornerPoint]; exact C.find_line_edge_correct  _ _)
 
@@ -913,17 +873,16 @@ lemma coverGridNoEdgeConfig.corner_set_subset_lines (C : coverGridNoEdgeConfig) 
 lemma coverGridNoEdgeConfig.cover_no_edge_3_lines (C : coverGridNoEdgeConfig)
     (hn3 : C.n = 3) : C.nS = 3 := by
   have Leq : C.corner_set = C.lines := by
-    apply Finset.eq_of_subset_of_card_le
-    · exact C.corner_set_subset_lines
-    · rw [C.lines_count, hn3, C.corner_set_card]
+    refine Finset.eq_of_subset_of_card_le C.corner_set_subset_lines ?_
+    rw [C.lines_count, hn3, C.corner_set_card]
   let line_edge_middle_to_corner (d : Fin 3) : Fin 3 := match d with
     | 0 => 2
     | 1 => 1
     | 2 => 0
   have line_edge_middle (d : Fin 3) :
       C.findLineEdge d ⟨1, by omega⟩ = C.findLineCorner (line_edge_middle_to_corner d) := by
-    have : C.findLineEdge d ⟨1, by omega⟩ ∈ C.corner_set := by
-      rw [Leq]; exact (C.find_line_edge_correct _ _).left
+    have : C.findLineEdge d ⟨1, by omega⟩ ∈ C.corner_set :=
+      Leq ▸ (C.find_line_edge_correct _ _).left
     simp only [coverGridNoEdgeConfig.corner_set, Finset.mem_map, Finset.mem_univ,
       Function.Embedding.coeFn_mk, true_and] at this
     obtain ⟨i, hi⟩ := this
@@ -980,22 +939,20 @@ lemma coverGridNoEdgeConfig.cover_no_edge_4_impossible (C : coverGridNoEdgeConfi
   simp only [ge_iff_le, Finset.one_le_card] at this
   obtain ⟨L', hL'⟩ := Finset.Nonempty.exists_mem this
   simp only [Finset.mem_sdiff] at hL'
-  have hL'0 (d : Fin 3) : ∃ i, (C.findLineEdge d i = L' ∧
+  have hL'₀ (d : Fin 3) : ∃ i, (C.findLineEdge d i = L' ∧
       i ≠ C.edgeEndpointIndex 0 ∧ i ≠ C.edgeEndpointIndex 1) := by
     rw [← C.cover_no_edge_line_surj d, Finset.mem_map] at hL'
     obtain ⟨⟨i, hi₁⟩, hi₂⟩ := hL'; simp only [Finset.mem_univ, Function.Embedding.coeFn_mk,
       true_and] at hi₁
-    use i; constructor; assumption
-    constructor
+    refine ⟨i, by assumption, ?_, ?_⟩
     all_goals
       by_contra hC
       have : L' ∈ C.corner_set := by
-        rw [← hi₁, hC]
-        rw [← C.find_line_corner_eq_edge d _]
-        refine C.corner_set_members ?_
+        rw [← hi₁, hC, ← C.find_line_corner_eq_edge d _]
+        exact C.corner_set_members _
       tauto
-  rw [coverGridNoEdgeConfig.edgeEndpointIndex, coverGridNoEdgeConfig.edgeEndpointIndex] at hL'0
-  choose iFunc hiFunc₁ hiFunc₂ hiFunc₃ using hL'0
+  rw [coverGridNoEdgeConfig.edgeEndpointIndex, coverGridNoEdgeConfig.edgeEndpointIndex] at hL'₀
+  choose iFunc hiFunc₁ hiFunc₂ hiFunc₃ using hL'₀
   have not_left_endpoint (d : Fin 3): (iFunc d).val > 0 := by
     by_contra
     have hC : (iFunc d).val = 0 := by omega
@@ -1020,9 +977,8 @@ lemma coverGridNoEdgeConfig.cover_no_edge_4_impossible (C : coverGridNoEdgeConfi
     rw [← hiFunc₁ 2]
     convert (C.find_line_edge_correct 2 (iFunc 2)).right
     dsimp only [coverGridConfig.edgePoint]
-    rw [vec_eq]; constructor
-    · rfl
-    · norm_cast; omega
+    rw [vec_eq]
+    exact ⟨rfl, by norm_cast; omega⟩
   have := C.lines_rank
   apply not_colinear_nat L' (C.n - 1) (iFunc 0) (iFunc 1) (iFunc 2)
   any_goals
@@ -1214,9 +1170,7 @@ noncomputable def threeSunny : strongCoverGridConfig where
       congr 1; ext l
       simp only [threeSunnyLines, Finset.mem_filter, Finset.mem_map, Finset.mem_univ,
         Function.Embedding.coeFn_mk, true_and, and_iff_left_iff_imp, forall_exists_index]
-      intro d hd
-      rw [← hd]
-      exact hS d
+      exact fun d hd ↦ hd ▸ hS d
     _ = 3 := by simp [threeSunnyLines]
   g_is_grid := rfl
   lines_used := by
@@ -1254,15 +1208,13 @@ noncomputable def strongCoverGridConfig.extend (C : strongCoverGridConfig) :
     simp only [Fin.isValue, Finset.mem_filter, Finset.mem_cons,
     and_congr_left_iff, or_iff_right_iff_imp]
     intro hLS hLd
-    rw [hLd, edgeLine, line', edgeCoeffs, sunny_slope] at hLS
-    · replace hLS := hLS.right.right; contradiction
-    · simp
+    rw [hLd, edgeLine, line', edgeCoeffs, sunny_slope (h := by simp)] at hLS
+    replace hLS := hLS.right.right; contradiction
   g_is_grid := rfl
   lines_used := by
     intro L hL
     by_cases hE : L = edgeLine (C.n + 1) 2
-    · use !₂[1, C.n + 1]
-      constructor
+    · refine ⟨!₂[1, C.n + 1], ?_, ?_⟩
       · use 1; simp only [Fin.isValue, PiLp.toLp_apply, Matrix.cons_val_zero, Nat.cast_one,
           Matrix.cons_val_one, Matrix.cons_val_fin_one, zero_lt_one, true_and]
         use C.n + 1; simp only [Nat.cast_add, Nat.cast_one, lt_add_iff_pos_left, add_pos_iff,
