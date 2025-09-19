@@ -114,13 +114,13 @@ theorem IsIntegrallyClosed.isIntegral_iff_leadingCoeff_isUnit {x : S} {p : R[X]}
   constructor
   · intro int_a
     obtain ⟨g, hg⟩ := minpoly.isIntegrallyClosed_dvd int_a hp
-    have := Irreducible.isUnit_or_isUnit hirr hg
-    simp only [minpoly.not_isUnit R x, false_or] at this
-    obtain ⟨r, uni_r, geq⟩ := Polynomial.isUnit_iff.mp this
+    have huni : IsUnit g := (or_iff_right (minpoly.not_isUnit R x)).mp
+        (of_irreducible_mul (hg ▸ hirr))
+    obtain ⟨r, uni_r, geq⟩ := Polynomial.isUnit_iff.mp huni
     apply_fun leadingCoeff at hg
     rw [hg, leadingCoeff_mul, ← geq, leadingCoeff_C, minpoly.monic int_a, one_mul]
     exact uni_r
-  · rintro f_uni
+  · intro f_uni
     obtain ⟨r, hr, _⟩ := (isUnit_iff_exists.mp f_uni)
     refine ⟨p * C r, monic_mul_C_of_leadingCoeff_mul_eq_one hr, ?_⟩
     rw [eval₂_mul, mul_eq_zero]; left
