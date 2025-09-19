@@ -179,6 +179,7 @@ theorem natTrans₂_ext {τ τ' : F₁' ⟶ F₂'}
 /-- The natural isomorphism `F₁' ≅ F₂'` of bifunctors induced by a
 natural isomorphism `e : F₁ ≅ F₂` when `Lifting₂ L₁ L₂ W₁ W₂ F₁ F₁'`
 and `Lifting₂ L₁ L₂ W₁ W₂ F₂ F₂'` hold. -/
+@[simps]
 noncomputable def lift₂NatIso (e : F₁ ≅ F₂) : F₁' ≅ F₂' where
   hom := lift₂NatTrans L₁ L₂ W₁ W₂ F₁ F₂ F₁' F₂' e.hom
   inv := lift₂NatTrans L₁ L₂ W₁ W₂ F₂ F₁ F₂' F₁' e.inv

@@ -1187,6 +1187,7 @@ variable {C D}
 /--
 Auxiliary definition for `Functor.Monoidal.transport`
 -/
+@[simps!?]
 def coreMonoidalTransport {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G) : G.CoreMonoidal where
   εIso := εIso F ≪≫ i.app _
   μIso X Y := tensorIso (i.symm.app _) (i.symm.app _) ≪≫ μIso F X Y ≪≫ i.app _
@@ -1228,6 +1229,11 @@ Transport the structure of a monoidal functor along a natural isomorphism of fun
 -/
 def transport {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G) : G.Monoidal :=
   (coreMonoidalTransport i).toMonoidal
+
+lemma transport_μ {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G)
+    (X Y : C) : letI := transport i
+  LaxMonoidal.μ G X Y =
+    (i.inv.app X ⊗ₘ i.inv.app Y) ≫ LaxMonoidal.μ F X Y ≫ i.hom.app (X ⊗ Y) := rfl
 
 end Functor.Monoidal
 
