@@ -19,8 +19,8 @@ Tensor products model independent parallel processes.
 
 ## Implementation notes
 
-Structural isomorphisms are deterministic (probability 1 for the correct rearrangement).
-Proofs use `Finset.sum_eq_single` to isolate non-zero terms.
+Structural isomorphisms are deterministic.
+Use computational lemmas to simplify proofs.
 
 ## References
 
@@ -29,7 +29,7 @@ Proofs use `Finset.sum_eq_single` to isolate non-zero terms.
 
 ## Tags
 
-Markov category, monoidal category, stochastic matrix, tensor product
+Markov category, monoidal category, stochastic matrix
 -/
 
 namespace CategoryTheory.MarkovCategory
@@ -40,23 +40,22 @@ universe u
 
 open FinStoch
 
+/-! ### Helper lemmas for structural morphisms -/
+
 /-- Rearranges `((X ⊗ Y) ⊗ Z)` to `(X ⊗ (Y ⊗ Z))`.
 
-Sends `((x,y),z) ↦ (x,(y,z))` with probability 1. -/
+Maps `((x,y),z) ↦ (x,(y,z))` deterministically. -/
 def associator (X Y Z : FinStoch) :
     (tensorObj (tensorObj X Y) Z) ≅ (tensorObj X (tensorObj Y Z)) where
   hom := ⟨fun ⟨⟨x, y⟩, z⟩ ⟨x', ⟨y', z'⟩⟩ =>
     if x = x' ∧ y = y' ∧ z = z' then 1 else 0, fun ⟨⟨x, y⟩, z⟩ => by
-    -- The output (x,(y,z)) has probability 1, all others have 0
     rw [Finset.sum_eq_single ⟨x, ⟨y, z⟩⟩]
     · simp only [and_self, if_true]
-    · -- Other outputs have probability 0
-      intro b _ hb
+    · intro b _ hb
       obtain ⟨x', ⟨y', z'⟩⟩ := b
       simp only
       split_ifs with h
-      · -- Can't match if b ≠ target
-        obtain ⟨h1, h2, h3⟩ := h
+      · obtain ⟨h1, h2, h3⟩ := h
         exfalso
         apply hb
         congr 1
@@ -68,7 +67,6 @@ def associator (X Y Z : FinStoch) :
     · intro h; exfalso; exact h (Finset.mem_univ _)⟩
   inv := ⟨fun ⟨x, ⟨y, z⟩⟩ ⟨⟨x', y'⟩, z'⟩ =>
     if x = x' ∧ y = y' ∧ z = z' then 1 else 0, fun ⟨x, ⟨y, z⟩⟩ => by
-    -- Inverse map: (x,(y,z)) ↦ ((x,y),z)
     rw [Finset.sum_eq_single ⟨⟨x, y⟩, z⟩]
     · simp only [and_self, if_true]
     · intro b _ hb
@@ -94,32 +92,28 @@ def associator (X Y Z : FinStoch) :
     · simp only [and_self, if_true, one_mul]
       simp only [StochasticMatrix.id, CategoryStruct.id]
       by_cases h : ((x, y), z) = ((x', y'), z')
-      · simp [h]
+      · simp only [h, ↓reduceIte, NNReal.coe_one, NNReal.coe_eq_one, ite_eq_left_iff, not_and,
+                   zero_ne_one, imp_false, Classical.not_imp, Decidable.not_not]
         obtain ⟨⟨rfl, rfl⟩, rfl⟩ := h
-        simp [and_self]
-      · simp [h]
+        simp only [and_self]
+      · simp only [h, ↓reduceIte, NNReal.coe_zero, NNReal.coe_eq_zero, ite_eq_right_iff,
+                   one_ne_zero, imp_false, not_and]
         push_neg at h
-        simp [Prod.mk.injEq] at h
+        simp only [ne_eq, Prod.mk.injEq, not_and, and_imp] at h
         exact h
-    · -- Other intermediate states contribute 0
-      intro b _ hb
+    · intro b _ hb
       obtain ⟨x₁, ⟨y₁, z₁⟩⟩ := b
       simp only
       split_ifs with h h2
-      · -- Would contradict hb
-        obtain ⟨rfl, rfl, rfl⟩ := h
+      · obtain ⟨rfl, rfl, rfl⟩ := h
         exfalso
         exact hb rfl
-      · -- Would contradict hb
-        obtain ⟨rfl, rfl, rfl⟩ := h
+      · obtain ⟨rfl, rfl, rfl⟩ := h
         exfalso
         exact hb rfl
-      · -- Zero probability path
-        simp only [zero_mul]
-      · -- Zero probability path
-        simp only [zero_mul]
-    · -- State must exist in finite type
-      intro h
+      · simp only [zero_mul]
+      · simp only [zero_mul]
+    · intro h
       exfalso
       exact h (Finset.mem_univ _)
   inv_hom_id := by
@@ -130,14 +124,7 @@ def associator (X Y Z : FinStoch) :
     rw [Finset.sum_eq_single ⟨⟨x, y⟩, z⟩]
     · simp only [and_self, if_true, one_mul]
       simp only [StochasticMatrix.id, CategoryStruct.id]
-      by_cases h : (x, (y, z)) = (x', (y', z'))
-      · simp [h]
-        obtain ⟨rfl, ⟨rfl, rfl⟩⟩ := h
-        simp [and_self]
-      · simp [h]
-        push_neg at h
-        simp [Prod.mk.injEq] at h
-        exact h
+      grind only [cases Or]
     · intro b _ hb
       obtain ⟨⟨x₁, y₁⟩, z₁⟩ := b
       simp only
@@ -334,6 +321,68 @@ instance : MonoidalCategoryStruct FinStoch where
   leftUnitor := leftUnitor
   rightUnitor := rightUnitor
 
+/-! ### Simp lemmas for structural morphisms -/
+
+/-- Matrix entry for associator. -/
+@[simp]
+lemma associator_matrix (X Y Z : FinStoch) (xyz : ((X ⊗ Y) ⊗ Z).carrier)
+    (xyz' : (X ⊗ (Y ⊗ Z)).carrier) :
+    (MonoidalCategoryStruct.associator X Y Z).hom.toMatrix xyz xyz' =
+    if xyz.1.1 = xyz'.1 ∧ xyz.1.2 = xyz'.2.1 ∧ xyz.2 = xyz'.2.2 then 1 else 0 := by
+  change (associator X Y Z).hom.toMatrix xyz xyz' = _
+  obtain ⟨⟨x, y⟩, z⟩ := xyz
+  obtain ⟨x', ⟨y', z'⟩⟩ := xyz'
+  simp only [associator]
+
+/-- Matrix entry for inverse associator. -/
+@[simp]
+lemma associator_inv_matrix (X Y Z : FinStoch) (xyz : (X ⊗ (Y ⊗ Z)).carrier)
+    (xyz' : ((X ⊗ Y) ⊗ Z).carrier) :
+    (MonoidalCategoryStruct.associator X Y Z).inv.toMatrix xyz xyz' =
+    if xyz.1 = xyz'.1.1 ∧ xyz.2.1 = xyz'.1.2 ∧ xyz.2.2 = xyz'.2 then 1 else 0 := by
+  change (associator X Y Z).inv.toMatrix xyz xyz' = _
+  obtain ⟨x, ⟨y, z⟩⟩ := xyz
+  obtain ⟨⟨x', y'⟩, z'⟩ := xyz'
+  simp only [associator]
+
+/-- Matrix entry for left unitor. -/
+@[simp]
+lemma leftUnitor_matrix (X : FinStoch) (ux : (FinStoch.tensorUnit ⊗ X).carrier) (x : X.carrier) :
+    (MonoidalCategoryStruct.leftUnitor X).hom.toMatrix ux x =
+    if ux.2 = x then 1 else 0 := by
+  change (leftUnitor X).hom.toMatrix ux x = _
+  obtain ⟨⟨⟩, x'⟩ := ux
+  simp only [leftUnitor]
+
+/-- Matrix entry for inverse left unitor. -/
+@[simp]
+lemma leftUnitor_inv_matrix (X : FinStoch) (x : X.carrier)
+    (ux : (FinStoch.tensorUnit ⊗ X).carrier) :
+    (MonoidalCategoryStruct.leftUnitor X).inv.toMatrix x ux =
+    if x = ux.2 then 1 else 0 := by
+  change (leftUnitor X).inv.toMatrix x ux = _
+  obtain ⟨⟨⟩, x'⟩ := ux
+  simp only [leftUnitor]
+
+/-- Matrix entry for right unitor. -/
+@[simp]
+lemma rightUnitor_matrix (X : FinStoch) (xu : (X ⊗ FinStoch.tensorUnit).carrier) (x : X.carrier) :
+    (MonoidalCategoryStruct.rightUnitor X).hom.toMatrix xu x =
+    if xu.1 = x then 1 else 0 := by
+  change (rightUnitor X).hom.toMatrix xu x = _
+  obtain ⟨x', ⟨⟩⟩ := xu
+  simp only [rightUnitor]
+
+/-- Matrix entry for inverse right unitor. -/
+@[simp]
+lemma rightUnitor_inv_matrix (X : FinStoch) (x : X.carrier)
+    (xu : (X ⊗ FinStoch.tensorUnit).carrier) :
+    (MonoidalCategoryStruct.rightUnitor X).inv.toMatrix x xu =
+    if x = xu.1 then 1 else 0 := by
+  change (rightUnitor X).inv.toMatrix x xu = _
+  obtain ⟨x', ⟨⟩⟩ := xu
+  simp only [rightUnitor]
+
 /-- FinStoch forms a monoidal category with all coherence conditions satisfied.
 This proves Mac Lane's pentagon and triangle identities hold for stochastic matrices. -/
 instance : MonoidalCategory FinStoch where
@@ -350,7 +399,7 @@ instance : MonoidalCategory FinStoch where
     · simp only [StochasticMatrix.id, CategoryStruct.id]
       by_cases h₁ : y₁ = y₁
       · by_cases h₂ : x₂ = x₂
-        · simp [one_mul, mul_one]
+        · simp only [NNReal.coe_mul, ↓reduceIte, mul_one, one_mul]
         · -- Impossible: x₂ ≠ x₂
           exfalso
           exact h₂ rfl
@@ -366,8 +415,8 @@ instance : MonoidalCategory FinStoch where
           apply h_ne
           congr 1
           · exact h₂.symm
-        · simp [h₂, zero_mul]
-      · simp [h₁, mul_zero]
+        · simp only [h₂, ↓reduceIte, mul_zero, ite_mul, one_mul, zero_mul, mul_ite, ite_self]
+      · simp only [mul_ite, mul_one, mul_zero, h₁, ↓reduceIte, zero_mul]
     · intro h
       exfalso
       exact h (Finset.mem_univ _)
@@ -381,16 +430,16 @@ instance : MonoidalCategory FinStoch where
     by_cases hx : x = x'
     · by_cases hy : y = y'
       · -- Both match: prob 1 * 1 = 1
-        simp [hx, hy]
+        simp only [hx, ↓reduceIte, hy, mul_one, NNReal.coe_one]
       · -- x matches, y doesn't: prob 1 * 0 = 0
-        simp [hx, hy]
+        simp only [hx, ↓reduceIte, hy, mul_zero, NNReal.coe_zero]
         split_ifs with h
         · exfalso
           obtain ⟨_, h2⟩ := h
           exact hy rfl
         · rfl
     · -- x doesn't match: prob 0 * _ = 0
-      simp [hx]
+      simp only [hx, ↓reduceIte, mul_ite, mul_one, mul_zero, ite_self, NNReal.coe_zero]
       split_ifs with h
       · exfalso
         obtain ⟨h1, _⟩ := h
@@ -432,7 +481,7 @@ instance : MonoidalCategory FinStoch where
           simp only [Prod.mk.injEq] at h
           obtain ⟨_, h2⟩ := h
           exact hy h2
-        · simp [h]
+        · simp only [NNReal.coe_zero, h, ↓reduceIte]
     · -- x doesn't match: 0 * _ = 0
       simp only [hx, if_false, zero_mul]
       by_cases h : (x, y) = (x', y')
@@ -440,7 +489,7 @@ instance : MonoidalCategory FinStoch where
         simp only [Prod.mk.injEq] at h
         obtain ⟨h1, _⟩ := h
         exact hx h1
-      · simp [h]
+      · simp only [NNReal.coe_zero, h, ↓reduceIte]
   id_whiskerRight := by
     intros X Y
     apply StochasticMatrix.ext
@@ -452,7 +501,7 @@ instance : MonoidalCategory FinStoch where
     · by_cases hy : y = y'
       · -- Both match: 1 * 1 = 1
         subst hx hy
-        simp
+        simp only [↓reduceIte, mul_one, NNReal.coe_one]
       · -- x matches, y doesn't: 1 * 0 = 0
         subst hx
         simp only [hy, if_false, mul_zero]
@@ -461,7 +510,7 @@ instance : MonoidalCategory FinStoch where
           simp only [Prod.mk.injEq] at h
           obtain ⟨_, h2⟩ := h
           exact hy h2
-        · simp [h]
+        · simp only [NNReal.coe_zero, h, ↓reduceIte]
     · -- x doesn't match: 0 * _ = 0
       simp only [hx, if_false, zero_mul]
       by_cases h : (x, y) = (x', y')
@@ -469,7 +518,7 @@ instance : MonoidalCategory FinStoch where
         simp only [Prod.mk.injEq] at h
         obtain ⟨h1, _⟩ := h
         exact hx h1
-      · simp [h]
+      · simp only [NNReal.coe_zero, h, ↓reduceIte]
   associator_naturality := by
     -- Naturality follows from deterministic associator
     intros X₁ X₂ X₃ Y₁ Y₂ Y₃ f₁ f₂ f₃
@@ -482,22 +531,13 @@ instance : MonoidalCategory FinStoch where
     -- LHS: sum over intermediate ((y₁', y₂'), y₃')
     rw [Finset.sum_eq_single ⟨⟨y₁, y₂⟩, y₃⟩]
     · -- Main term: associator gives 1 for correct rearrangement
-      simp
+      simp only [associator_matrix, and_self, ↓reduceIte, mul_one, NNReal.coe_mul, ite_mul, one_mul,
+                 zero_mul, NNReal.coe_sum]
       -- RHS: sum over intermediate (x₁', (x₂', x₃'))
       rw [Finset.sum_eq_single ⟨x₁, ⟨x₂, x₃⟩⟩]
       · -- Main term: both associators give 1 for the deterministic rearrangement
-        -- Show both associator evaluations are 1
-        have h1 : (MonoidalCategoryStruct.associator Y₁ Y₂ Y₃).hom.toMatrix
-                    ((y₁, y₂), y₃) (y₁, y₂, y₃) = 1 := by
-          change (associator Y₁ Y₂ Y₃).hom.toMatrix ((y₁, y₂), y₃) (y₁, y₂, y₃) = 1
-          simp only [associator]
-          simp
-        have h2 : (MonoidalCategoryStruct.associator X₁ X₂ X₃).hom.toMatrix
-                    ((x₁, x₂), x₃) (x₁, x₂, x₃) = 1 := by
-          change (associator X₁ X₂ X₃).hom.toMatrix ((x₁, x₂), x₃) (x₁, x₂, x₃) = 1
-          simp only [associator]
-          simp
-        simp only [h1, h2]
+        -- Directly evaluate both sides
+        norm_num
         ring
       · -- Other terms: associator gives 0
         intro ⟨x₁', ⟨x₂', x₃'⟩⟩ _ h_ne
@@ -507,20 +547,10 @@ instance : MonoidalCategory FinStoch where
           exfalso
           apply h_ne
           simp [h]
-        · -- Associator gives 0, making the entire product 0
-          -- Show associator matrix entry is 0
-          have h_assoc_zero : (MonoidalCategoryStruct.associator X₁ X₂ X₃).hom.toMatrix
-                                ((x₁, x₂), x₃) (x₁', x₂', x₃') = 0 := by
-            change (associator X₁ X₂ X₃).hom.toMatrix ((x₁, x₂), x₃) (x₁', x₂', x₃') = 0
-            simp only [associator]
-            -- The condition x₁ = x₁' ∧ x₂ = x₂' ∧ x₃ = x₃' equals our h
-            have h' : ¬(x₁ = x₁' ∧ x₂ = x₂' ∧ x₃ = x₃') := by
-              intro h_eq
-              apply h
-              exact ⟨h_eq.1.symm, h_eq.2.1.symm, h_eq.2.2.symm⟩
-            simp only [h', if_false]
-          rw [h_assoc_zero]
-          simp [zero_mul]
+        · simp only [NNReal.coe_eq_zero, ite_eq_right_iff, mul_eq_zero, and_imp]
+          intro a_1 a_2 a_3
+          subst a_3 a_2 a_1
+          simp_all only [Finset.mem_univ, ne_eq, not_true_eq_false]
       · intro
         exfalso
         apply ‹_›
@@ -556,43 +586,16 @@ instance : MonoidalCategory FinStoch where
     rw [Finset.sum_eq_single ⟨⟨⟩, y⟩]
     · -- Main case: show LHS = RHS = f.toMatrix x y
       -- First simplify LHS tensor operation
-      simp only [MonoidalCategoryStruct.whiskerLeft, StochasticMatrix.tensor]
-      simp only [CategoryStruct.id, StochasticMatrix.id]
-      -- LHS: 1 * f[x,y] * leftUnitor_Y[((),y), y] = f[x,y] * 1 = f[x,y]
-      have h_left_unitor : (MonoidalCategoryStruct.leftUnitor Y).hom.toMatrix (⟨⟩, y) y = 1 := by
-        change (leftUnitor Y).hom.toMatrix (⟨⟩, y) y = 1
-        simp only [leftUnitor, if_true]
-      simp only [h_left_unitor, mul_one]
-      simp
-
-      -- Now show RHS = f.toMatrix x y
-      -- RHS: Sum over intermediate x' in X
-      rw [Finset.sum_eq_single x]
-      · -- Main term: leftUnitor_X[((),x), x] * f[x,y] = 1 * f[x,y] = f[x,y]
-        have h_right_unitor : (MonoidalCategoryStruct.leftUnitor X).hom.toMatrix (⟨⟩, x) x = 1 := by
-          change (leftUnitor X).hom.toMatrix (⟨⟩, x) x = 1
-          simp only [leftUnitor, if_true]
-        simp only [h_right_unitor]
-        simp
-      · -- Other terms: leftUnitor gives 0 for x' ≠ x
-        intro x' _ h_ne
-        have h_unitor_zero : (MonoidalCategoryStruct.leftUnitor X).hom.toMatrix (⟨⟩, x) x' = 0 := by
-          change (leftUnitor X).hom.toMatrix (⟨⟩, x) x' = 0
-          simp only [leftUnitor]
-          rw [if_neg h_ne.symm]
-        simp only [h_unitor_zero]
-        simp
-      · -- Membership
-        intro h
-        exfalso
-        exact h (Finset.mem_univ _)
+      simp only [MonoidalCategoryStruct.whiskerLeft, StochasticMatrix.tensor, CategoryStruct.id,
+                 StochasticMatrix.id, ↓reduceIte, one_mul, leftUnitor_matrix, mul_one, ite_mul,
+                 zero_mul, Finset.sum_ite_eq, Finset.mem_univ]
 
     · -- Other intermediate states contribute 0 to LHS
       intro ⟨⟨⟩, y'⟩ _ h_ne
       have h_neq : y' ≠ y := by
         intro h_eq
         apply h_ne
-        simp [h_eq]
+        simp only [h_eq]
       simp only [MonoidalCategoryStruct.whiskerLeft, StochasticMatrix.tensor]
       simp only [CategoryStruct.id, StochasticMatrix.id]
       have h_unitor_zero : (MonoidalCategoryStruct.leftUnitor Y).hom.toMatrix (⟨⟩, y') y = 0 := by
@@ -623,7 +626,6 @@ instance : MonoidalCategory FinStoch where
         change (rightUnitor Y).hom.toMatrix (y, ⟨⟩) y = 1
         simp only [rightUnitor, if_true]
       simp only [h_right_unitor, mul_one]
-      simp
 
       -- Now show RHS = f.toMatrix x y
       -- RHS: Sum over intermediate x' in X
@@ -633,8 +635,7 @@ instance : MonoidalCategory FinStoch where
           (MonoidalCategoryStruct.rightUnitor X).hom.toMatrix (x, ⟨⟩) x = 1 := by
           change (rightUnitor X).hom.toMatrix (x, ⟨⟩) x = 1
           simp only [rightUnitor, if_true]
-        simp only [h_right_unitor]
-        simp
+        simp only [↓reduceIte, mul_one, h_right_unitor, one_mul]
       · -- Other terms: rightUnitor gives 0 for x' ≠ x
         intro x' _ h_ne
         have h_unitor_zero :
@@ -642,8 +643,7 @@ instance : MonoidalCategory FinStoch where
           change (rightUnitor X).hom.toMatrix (x, ⟨⟩) x' = 0
           simp only [rightUnitor]
           rw [if_neg h_ne.symm]
-        simp only [h_unitor_zero]
-        simp
+        simp only [h_unitor_zero, zero_mul]
       · -- Membership
         intro h
         exfalso
@@ -654,7 +654,7 @@ instance : MonoidalCategory FinStoch where
       have h_neq : y' ≠ y := by
         intro h_eq
         apply h_ne
-        simp [h_eq]
+        simp only [h_eq]
       simp only [MonoidalCategoryStruct.whiskerRight, StochasticMatrix.tensor]
       simp only [CategoryStruct.id, StochasticMatrix.id]
       have h_unitor_zero : (MonoidalCategoryStruct.rightUnitor Y).hom.toMatrix (y', ⟨⟩) y = 0 := by
@@ -690,8 +690,7 @@ instance : MonoidalCategory FinStoch where
         have h_assoc1 : (MonoidalCategoryStruct.associator W X Y).hom.toMatrix
                         ((w, x), y) (w, (x, y)) = 1 := by
           change (associator W X Y).hom.toMatrix ((w, x), y) (w, (x, y)) = 1
-          simp only [associator]
-          simp [and_self]
+          simp only [associator, and_self, ↓reduceIte]
         simp only [h_assoc1, one_mul]
 
         -- (α_ W (X ⊗ Y) Z).hom
@@ -701,8 +700,7 @@ instance : MonoidalCategory FinStoch where
                         ((w, (x, y)), z) (w, ((x, y), z)) = 1 := by
           change (associator W (FinStoch.tensorObj X Y) Z).hom.toMatrix
                  ((w, (x, y)), z) (w, ((x, y), z)) = 1
-          simp only [associator]
-          simp [and_self]
+          simp only [associator, and_self, ↓reduceIte]
         simp only [h_assoc2, one_mul]
 
         -- W ◁ (α_ X Y Z).hom
@@ -749,7 +747,7 @@ instance : MonoidalCategory FinStoch where
           -- Both sides equal 1 if all coordinates match, 0 otherwise
           by_cases h : w = w' ∧ x = x' ∧ y = y' ∧ z = z'
           · obtain ⟨hw, hx, hy, hz⟩ := h
-            simp [hw, hx, hy, hz]
+            simp only [hw, ↓reduceIte, hx, hy, hz, and_self, mul_one, NNReal.coe_one]
           · push_neg at h
             -- At least one coordinate doesn't match, so result is 0
             by_cases hw : w = w'
@@ -763,13 +761,17 @@ instance : MonoidalCategory FinStoch where
                     exact hx
                     exact hy
                     exact hz'
-                  simp [hw, hx, hy, hz]
+                  simp only [hw, ↓reduceIte, hx, hy, hz, and_false, mul_zero, NNReal.coe_zero,
+                    Prod.mk.injEq]
                 · -- w, x match but y doesn't
-                  simp [hw, hx, hy]
+                  simp only [hw, ↓reduceIte, hx, hy, false_and, and_false, mul_zero,
+                    NNReal.coe_zero, Prod.mk.injEq]
               · -- w matches but x doesn't
-                simp [hw, hx]
+                simp only [hw, ↓reduceIte, hx, false_and, mul_zero, NNReal.coe_zero, Prod.mk.injEq,
+                  and_false]
             · -- w doesn't match
-              simp [hw]
+              simp only [hw, ↓reduceIte, mul_ite, mul_one, mul_zero, ite_self, NNReal.coe_zero,
+                Prod.mk.injEq, false_and]
 
         · -- Other RHS intermediate states give 0
           intro ⟨⟨w₁, x₁⟩, ⟨y₁, z₁⟩⟩ _ h_ne
@@ -785,12 +787,11 @@ instance : MonoidalCategory FinStoch where
               obtain ⟨⟨hw, hx⟩, hy, hz⟩ := h
               exfalso
               apply h_ne
-              simp [hy, hz]
+              simp only [hy, hz]
             · push_neg at h
-              simp
+              simp only [ite_eq_right_iff, one_ne_zero, imp_false, not_and]
               exact h
-          simp only [h_assoc_zero]
-          simp [zero_mul]
+          simp only [h_assoc_zero, associator_matrix, mul_ite, mul_one, mul_zero, ite_self]
 
         · intro h; exfalso; exact h (Finset.mem_univ _)
 
@@ -808,10 +809,10 @@ instance : MonoidalCategory FinStoch where
             obtain ⟨hw, ⟨hx, hy⟩, hz⟩ := h
             exfalso
             apply h_ne
-            simp [hw, hz]
+            simp only [hw, hz]
           · push_neg at h
             rw [if_neg]
-            simp
+            simp only [not_and]
             exact h
         simp only [h_assoc_zero, zero_mul]
 
@@ -841,8 +842,11 @@ instance : MonoidalCategory FinStoch where
         · -- Associator part matches, so identity part must not match
           have h_z : z₁ ≠ z := h_match h_assoc
           -- The product is associator * id_Z = 1 * 0 = 0
-          simp [mul_zero]
-          grind
+          simp only [associator_matrix, mul_ite, mul_one, mul_zero, ite_mul, one_mul, zero_mul,
+            ite_eq_right_iff, Finset.sum_eq_zero_iff, Finset.mem_univ, and_imp, forall_const]
+          intro a_1 a_2 a_3 a_4 i a_5 a_6 a_7
+          subst a_1 a_4 a_3 a_2 a_5 a_7
+          simp_all only [ne_eq, not_true_eq_false]
         · -- Associator part doesn't match, so it gives 0
           -- Show the associator gives 0
           · -- Associator part doesn't match, so it gives 0
@@ -855,7 +859,7 @@ instance : MonoidalCategory FinStoch where
               intro h_components
               obtain ⟨hw, hx, hy⟩ := h_components
               apply h_assoc
-              simp [hw, hx, hy]
+              simp only [hw, hx, hy]
             simp only [h_assoc_zero, zero_mul]
 
     · -- Membership
@@ -879,16 +883,14 @@ instance : MonoidalCategory FinStoch where
                        (MonoidalCategoryStruct.tensorUnit FinStoch) Y).hom.toMatrix
                        ((x, PUnit.unit), y) (x, PUnit.unit, y) = 1 := by
         change (associator X tensorUnit Y).hom.toMatrix ((x, ()), y) (x, ((), y)) = 1
-        simp only [associator]
-        simp [and_self]
+        simp only [associator, and_self, ↓reduceIte]
 
       -- Evaluate whiskerLeft = id_X ⊗ λ_Y at (x, ((), y)) → (x', y')
       simp only [MonoidalCategoryStruct.whiskerLeft, StochasticMatrix.tensor]
       simp only [CategoryStruct.id, StochasticMatrix.id]
 
       -- Simplify tuple projections
-      simp only [h_assoc]
-      simp
+      simp only [h_assoc, leftUnitor_matrix, mul_ite, mul_one, mul_zero, NNReal.coe_inj]
 
       -- Evaluate leftUnitor
       have h_left : (MonoidalCategoryStruct.leftUnitor Y).hom.toMatrix (PUnit.unit, y) y' =
@@ -896,29 +898,12 @@ instance : MonoidalCategory FinStoch where
         change (leftUnitor Y).hom.toMatrix ((), y) y' = if y = y' then 1 else 0
         simp only [leftUnitor]
 
-      simp only [h_left]
+      simp_all only [associator_matrix, and_self, ↓reduceIte, leftUnitor_matrix]
 
       -- Evaluate RHS: rightUnitor ⊗ id_Y
       simp only [MonoidalCategoryStruct.whiskerRight, StochasticMatrix.tensor]
       simp only [CategoryStruct.id, StochasticMatrix.id]
-
-      -- Evaluate rightUnitor
-      have h_right : (MonoidalCategoryStruct.rightUnitor X).hom.toMatrix (x, PUnit.unit) x' =
-                     if x = x' then 1 else 0 := by
-        change (rightUnitor X).hom.toMatrix (x, ()) x' = if x = x' then 1 else 0
-        simp only [rightUnitor]
-
-      simp only [h_right]
-
-      -- Both sides equal (if x = x' then 1 else 0) * (if y = y' then 1 else 0)
-      by_cases hx : x = x'
-      · by_cases hy : y = y'
-        · -- Both match: 1 * 1 = 1
-          simp [hx, hy]
-        · -- x matches, y doesn't: 1 * 0 = 0
-          simp [hx, hy]
-      · -- x doesn't match: 0 * _ = 0
-        simp [hx]
+      simp_all only [rightUnitor_matrix, mul_ite, mul_one, mul_zero]
 
     · -- Other intermediate states: associator gives 0
       intro ⟨x₁, ⟨⟨⟩, y₁⟩⟩ _ h_ne
@@ -928,21 +913,14 @@ instance : MonoidalCategory FinStoch where
                            ((x, PUnit.unit), y) (x₁, PUnit.unit, y₁) = 0 := by
         change (associator X tensorUnit Y).hom.toMatrix ((x, ()), y) (x₁, ((), y₁)) = 0
         simp only [associator]
-        -- Need to show ¬(x = x₁ ∧ () = () ∧ y = y₁)
-        by_cases h : x = x₁ ∧ y = y₁
-        · -- This would contradict h_ne
-          exfalso
-          obtain ⟨hx, hy⟩ := h
-          apply h_ne
-          simp [hx, hy]
-        · -- At least one doesn't match
-          push_neg at h
-          by_cases hx : x = x₁
-          · -- x matches but y doesn't
-            have hy : ¬(y = y₁) := h hx
-            simp [hx, hy]
-          · -- x doesn't match
-            simp [hx]
+        simp_all only [Finset.mem_univ, ne_eq, true_and, ite_eq_right_iff, one_ne_zero, imp_false,
+                       not_and]
+        intro a
+        subst a
+        apply Aesop.BuiltinRules.not_intro
+        intro a
+        subst a
+        simp_all only [not_true_eq_false]
 
       simp only [h_assoc_zero, zero_mul]
 
