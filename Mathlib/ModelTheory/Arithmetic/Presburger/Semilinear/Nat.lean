@@ -196,7 +196,7 @@ Closure of semilinear sets under complement and set difference follows.
 -/
 
 private def toRatVec : (ι → ℕ) →+ (ι → ℚ) :=
-  LinearMap.compLeft (Nat.castAddMonoidHom ℚ).toNatLinearMap ι
+  AddMonoidHom.compLeft (Nat.castAddMonoidHom ℚ) ι
 
 private theorem toRatVec_inj (x y : ι → ℕ) : toRatVec x = toRatVec y ↔ x = y := by
   refine ⟨fun h => ?_, congr_arg toRatVec⟩
@@ -204,7 +204,6 @@ private theorem toRatVec_inj (x y : ι → ℕ) : toRatVec x = toRatVec y ↔ x 
   simpa [toRatVec] using congr_fun h i
 
 private theorem toRatVec_mono (x y : ι → ℕ) : toRatVec x ≤ toRatVec y ↔ x ≤ y := by
-  rw [Pi.le_def, Pi.le_def]
   apply forall_congr'
   simp [toRatVec]
 
@@ -580,7 +579,7 @@ private theorem isSemilinearSet_setOfFloorPos : IsSemilinearSet hs.setOfFloorPos
           hs.floor_add_of_mem_closure diff_subset (notMem_diff_of_mem (mem_singleton i.1)) hz',
           add_assoc hs.base, ← succ_nsmul', hs.floor_add_nsmul_self, hs.floor_base, zero_add] at heq
         simp [heq]
-  · refine .biUnion (finite_univ.subset (subset_univ _)) fun i hi => .proj' ?_
+  · refine .biUnion (toFinite _) fun i hi => .proj' ?_
     rw [setOf_and]
     apply Nat.isSemilinearSet_inter <| Nat.isSemilinearSet_preimage
       (.closure_of_finite (finite_singleton _)) (LinearMap.funLeft ℕ ℕ Sum.inr)
