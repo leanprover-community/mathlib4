@@ -267,7 +267,7 @@ protected def abs : AbsoluteValue S S where
   toFun := abs
   nonneg' := abs_nonneg
   eq_zero' _ := abs_eq_zero
-  add_le' := abs_add
+  add_le' := abs_add_le
   map_mul' := abs_mul
 
 instance : Inhabited (AbsoluteValue S S) :=

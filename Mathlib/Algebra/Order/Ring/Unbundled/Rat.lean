@@ -110,19 +110,9 @@ instance instPreorder : Preorder ℚ := inferInstance
 
 /-! ### Miscellaneous lemmas -/
 
-protected lemma le_def : p ≤ q ↔ p.num * q.den ≤ q.num * p.den := by
-  rw [← num_divInt_den q, ← num_divInt_den p]
-  conv_rhs => simp only [num_divInt_den]
-  exact Rat.divInt_le_divInt (mod_cast p.pos) (mod_cast q.pos)
+@[deprecated (since := "2025-08-14")] alias le_def := Rat.le_iff
 
-protected lemma lt_def : p < q ↔ p.num * q.den < q.num * p.den := by
-  rw [lt_iff_le_and_ne, Rat.le_def]
-  suffices p ≠ q ↔ p.num * q.den ≠ q.num * p.den by
-    constructor <;> intro h
-    · exact lt_iff_le_and_ne.mpr ⟨h.left, this.mp h.right⟩
-    · have tmp := lt_iff_le_and_ne.mp h
-      exact ⟨tmp.left, this.mpr tmp.right⟩
-  exact not_iff_not.mpr eq_iff_mul_eq_mul
+@[deprecated (since := "2025-08-14")] alias lt_def := Rat.lt_iff
 
 instance : AddLeftMono ℚ where
   elim := fun _ _ _ h => Rat.add_le_add_left.2 h
@@ -139,7 +129,7 @@ theorem div_lt_div_iff_mul_lt_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d
   · simp [div_def', Rat.divInt_le_divInt b_pos d_pos]
   · simp [div_def', Rat.divInt_le_divInt d_pos b_pos]
 
-theorem lt_one_iff_num_lt_denom {q : ℚ} : q < 1 ↔ q.num < q.den := by simp [Rat.lt_def]
+theorem lt_one_iff_num_lt_denom {q : ℚ} : q < 1 ↔ q.num < q.den := by simp [Rat.lt_iff]
 
 theorem abs_def (q : ℚ) : |q| = q.num.natAbs /. q.den := by
   rcases le_total q 0 with hq | hq
