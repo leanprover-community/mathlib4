@@ -3,9 +3,7 @@ Copyright (c) 2025 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Kenny Lau, Jovan Gerbscheid
 -/
-import Lean.Elab.Syntax
-import Lean.Elab.Tactic.Config
-import Mathlib.Init
+import Mathlib.Util.Notation3
 
 /-!
 The command `name_poly_vars` names variables in any combination of `Polynomial`, `MvPolynomial`,
@@ -37,7 +35,7 @@ register_poly_vars "[" X, ... "]" MvPolynomial MvPolynomial.C MvPolynomial.X
 The registration is global and should only be done once for each functor.
 -/
 
-open Lean Elab Command Parser.Tactic
+open Lean Elab Command Parser.Tactic PrettyPrinter.Delaborator
 
 initialize registerTraceClass `name_poly_vars
 
@@ -91,12 +89,6 @@ def Lean.TSyntax.toString {n : Name} (v : TSyntax n) : String :=
   match v.raw with
   | .node _ _ #[.atom _ str] => str
   | _ => ""
-
-/-- An auxiliary function to define an element of a dynamically defined syntax category, such as
-`PolyVar`, when that category contains only single atoms. The function `elabSyntax` returns the
-relevant `kind : SyntaxNodeKind`. -/
-def String.toTSyntax {n : Name} (s : String) (kind : SyntaxNodeKind) : TSyntax n :=
-  ⟨mkNode kind #[mkAtom s]⟩
 
 /-- A list of variables in a polynomial-like notation. The special case of one-variable
 multivariate notation is `X,` with a trailing comma. -/
@@ -160,10 +152,12 @@ elab "register_poly_vars " mv?:optConfig opening:str closing:str
   have mv? := (← elabMvConfig mv?).mv
   have declared := notationTableExt.getState (← getEnv)
   if declared.keys.all (·.opening ≠ opening) then
-    elabCommand <| ← `(command|/-- An opening bracket of a polynomial-like notation -/
+    elabCommand <| ← `(command|
+      /-- An opening bracket of a polynomial-like notation -/
       syntax $(quote opening):str : poly_opening)
   if declared.keys.all (·.closing ≠ closing) then
-    elabCommand <| ← `(command|/-- A closing bracket of a polynomial-like notation -/
+    elabCommand <| ← `(command|
+      /-- A closing bracket of a polynomial-like notation -/
       syntax $(quote closing):str : poly_closing)
   -- register the new syntax to the global table
   trace[name_poly_vars] m!"Registering new syntax: (mv := {mv?}) {opening} {closing}"
@@ -214,24 +208,24 @@ def Lean.TSyntax.parsePolyesqueNotationInput (p : PolyesqueNotationInput) :
 
 /-- Create the type for a polynomial-like notation, e.g. `[a,b]` gives `MvPolynomial (Fin 2) R`,
 where `R` is the previous type. -/
-def Body.mkType (b : Body) (type : Term) : CoreM Term :=
+def Body.mkType (b : Body) (type : Term) : CommandElabM Term :=
   match b.vars with
   | Sum.inl _ => `($b.main.type $type)
   | Sum.inr ns => do `($b.main.type $(← `(Fin $(quote ns.size))) $type)
 
 /-- Create the constant term for a polynomial-like notation. -/
-def Body.mkC (b : Body) (term : Term) : CoreM Term :=
+def Body.mkC (b : Body) (term : Term) : CommandElabM Term :=
   `($b.main.c $term)
 
 /-- Create the formal variable term(s) for a polynomial-like notation. -/
-def Body.mkX (b : Body) : CoreM (Array (String × Term)) :=
+def Body.mkX (b : Body) : CommandElabM (Array (String × Term)) :=
   match b.vars with
   | Sum.inl n => return #[(n, b.main.x)]
   | Sum.inr ns => ns.zipIdx.mapM fun n ↦ return (n.fst, ← `($b.main.x $(quote n.snd)))
 
 /-- The syntax for polynomial-like notations, which is an unambiguous term declaration followed by
 one or more polynomial-like notations, e.g. `(Fin 37)[x,y,z][[t]]`. -/
-syntax polyesque := term_decl noWs polyesque_notation+
+syntax polyesque := term_decl (noWs polyesque_notation)+
 
 /-- The type of polynomial-like syntaxes. -/
 abbrev Polyesque : Type := TSyntax ``polyesque
@@ -240,8 +234,8 @@ abbrev Polyesque : Type := TSyntax ``polyesque
 syntax:max polyesque : term
 
 /-- Dynamically build the syntax for a declared polynomial-like notation. -/
-def mkSyntax (opening : Opening) (closing : Closing) (mv? : Bool) (polyVars : Array PolyVar) :
-    CoreM PolyesqueNotation := do
+def mkBracketStx (opening : Opening) (closing : Closing) (mv? : Bool) (polyVars : Array PolyVar) :
+    CommandElabM PolyesqueNotation := do
   have vars : TSyntax ``vars := ← match mv?, polyVars with
     | true, #[v] => `(vars|$v,)
     | _, _ => `(vars|$(Syntax.TSepArray.ofElems polyVars):poly_var,*)
@@ -255,14 +249,14 @@ def Lean.TSyntax.processAndDeclarePolyesqueNotationInput (p : PolyesqueNotationI
     CommandElabM (PolyesqueNotation × Array (PolyVar × Term) × (Term → CommandElabM Term) ×
       Term) := do
   let (b, opening, closing) ← liftCoreM p.parsePolyesqueNotationInput
-  let newVarTerm : Array (PolyVar × Term) ← (← liftCoreM b.mkX).mapM fun ⟨i, t⟩ ↦ do
+  let newTerms : Array (PolyVar × Term) ← (← b.mkX).mapM fun (s, t) ↦ do
     -- Declares the new formal variables as `poly_var`.
-    let kind ← elabSyntax <| ← `(command| local syntax $(quote i):str : poly_var)
-    return (i.toTSyntax kind, t)
-  let newNotation ← liftCoreM <| mkSyntax opening closing b.1.mv? (newVarTerm.map (·.1))
-  let terms := (← terms.mapM fun ⟨v, t⟩ ↦ return (v, ← liftCoreM <| b.mkC t)) ++ newVarTerm
-  let newFunctor := fun type ↦ do liftCoreM (b.mkType (← oldFunctor type))
-  return (newNotation, terms, newFunctor, b.main.type)
+    let kind ← elabSyntax <| ← `(command| local syntax $(quote s):str : poly_var)
+    return (⟨mkNode kind #[mkAtom s]⟩, t)
+  let bracketStx ← mkBracketStx opening closing b.1.mv? (newTerms.map (·.1))
+  let terms ← terms.mapM fun (v, t) ↦ return (v, ← b.mkC t)
+  let newFunctor := oldFunctor >=> b.mkType -- fun type ↦ do b.mkType (← oldFunctor type)
+  return (bracketStx, terms ++ newTerms, newFunctor, b.main.type)
 
 /-- A helper function to elaborate macro rules and trace their declarations. -/
 def elabMacroRulesAndTrace (p : Polyesque) (t : Term) : CommandElabM Unit := do
@@ -284,7 +278,7 @@ name_poly_vars _[a,b,c,d]
 #check S[a,b,c,d]
 ```
 -/
-elab "name_poly_vars " head:term_decl noWs body:polyesque_notation_input+ : command => do
+elab "name_poly_vars " head:term_decl body:(noWs polyesque_notation_input)+ : command => do
   let mut terms : Array (PolyVar × Term) := #[]
   let mut bodyVar : Array PolyesqueNotation := #[]
   let mut functor : Term → CommandElabM Term := pure
@@ -309,7 +303,7 @@ elab "name_poly_vars " head:term_decl noWs body:polyesque_notation_input+ : comm
       trace[name_poly_vars] m!"Declaring unexpander for {c}"
       elabCommand <| ← `(command|
         @[local app_unexpander $c]
-        def unexpand : Lean.PrettyPrinter.Unexpander
+        private aux_def unexpand : Lean.PrettyPrinter.Unexpander := fun
           | `($typeIdent) => `($polyesqueIdent:polyesque)
           | `($typeTerm) => `($polyesqueTerm:polyesque)
           | _ => throw ())
@@ -325,7 +319,7 @@ elab "name_poly_vars " head:term_decl noWs body:polyesque_notation_input+ : comm
       | `(term_decl| $R:ident) => do
         elabCommand <| ← `(command|
           @[local app_unexpander $c]
-          def unexpand : Lean.PrettyPrinter.Unexpander
+          private aux_def unexpand : Lean.PrettyPrinter.Unexpander := fun
             | `($typeIdent) => match i with
               | `($R) => `($polyesqueIdent:polyesque)
               | _ => throw ()
@@ -333,7 +327,7 @@ elab "name_poly_vars " head:term_decl noWs body:polyesque_notation_input+ : comm
       | `(term_decl| ($R:term)) => do
         elabCommand <| ← `(command|
           @[local app_unexpander $c]
-          def unexpand : Lean.PrettyPrinter.Unexpander
+          private aux_def unexpand : Lean.PrettyPrinter.Unexpander := fun
             | `($typeTerm) => match t with
               | `($R) => `($polyesqueTerm:polyesque)
               | _ => throw ()
@@ -341,7 +335,21 @@ elab "name_poly_vars " head:term_decl noWs body:polyesque_notation_input+ : comm
       | _ => pure ()
     return type
   for (v, t) in terms do
-    elabCommand <| ← `(command| local macro_rules | `($v:poly_var) => `(($t : $type)))
+    let val ← `(($t : $type))
+    elabCommand <| ← `(command| local macro_rules | `($v:poly_var) => `($val))
     trace[name_poly_vars] m!"Declaring polyesque variable {v} := {t}"
+    -- The following code is essentially copied from the `notation3` implementation
+    let some (keys, matcher) ←
+      runTermElabM fun _ => (Notation3.mkExprMatcher val #[]).run | continue
+    for key in keys do
+      let bodyCore ← `($matcher Notation3.MatchState.empty >>= fun _ => `($v:poly_var))
+      let body ← match key with
+        | .app _ arity => `(withOverApp $(quote arity) $bodyCore)
+        | _            => pure bodyCore
+      elabCommand <| ← `(command|
+        /-- Pretty printer defined by `name_poly_vars` command. -/
+        @[local delab $(mkIdent key.key)]
+        private aux_def delab_app : Delab :=
+          whenPPOption getPPNotation <| whenNotPPOption getPPExplicit <| $body)
 
 end Mathlib.Tactic.NamePolyVars
