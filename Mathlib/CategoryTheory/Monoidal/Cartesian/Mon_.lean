@@ -182,6 +182,8 @@ def FullyFaithful.homMulEquiv (hF : F.FullyFaithful) : (X ⟶ M) ≃* (F.obj X �
   __ := hF.homEquiv
   __ := F.homMonoidHom
 
+end CategoryTheory.Functor
+
 section BraidedCategory
 variable [BraidedCategory C]
 
