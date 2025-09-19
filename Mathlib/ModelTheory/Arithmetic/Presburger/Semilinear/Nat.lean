@@ -178,7 +178,8 @@ theorem Nat.isSemilinearSet_biInter_finset [Finite κ] {s : Finset ι} {t : ι �
     (ht : ∀ i ∈ s, IsSemilinearSet (t i)) : IsSemilinearSet (⋂ i ∈ s, t i) :=
   isSemilinearSet_biInter s.finite_toSet ht
 
-/-! ### Semilinear sets in `ℕ ^ k` are closed under complement and set difference
+/-!
+### Semilinear sets in `ℕ ^ k` are closed under complement and set difference
 
 We first show that the complement of a proper linear set `s` in `ℕ ^ k` is semilinear, through
 several private defintions:
@@ -197,7 +198,7 @@ Closure of semilinear sets under complement and set difference follows.
 -/
 
 private def toRatVec : (ι → ℕ) →+ (ι → ℚ) :=
-  LinearMap.compLeft (Nat.castAddMonoidHom ℚ).toNatLinearMap ι
+  (Nat.castAddMonoidHom ℚ).compLeft ι
 
 private theorem toRatVec_inj (x y : ι → ℕ) : toRatVec x = toRatVec y ↔ x = y := by
   refine ⟨fun h => ?_, congr_arg toRatVec⟩
@@ -205,7 +206,6 @@ private theorem toRatVec_inj (x y : ι → ℕ) : toRatVec x = toRatVec y ↔ x 
   simpa [toRatVec] using congr_fun h i
 
 private theorem toRatVec_mono (x y : ι → ℕ) : toRatVec x ≤ toRatVec y ↔ x ≤ y := by
-  rw [Pi.le_def, Pi.le_def]
   apply forall_congr'
   simp [toRatVec]
 
@@ -213,7 +213,7 @@ private theorem toRatVec_nonneg (x : ι → ℕ) : 0 ≤ toRatVec x := by
   rw [← map_zero toRatVec, toRatVec_mono]
   simp
 
-private theorem linearIndepOn_toRatVec {s : Set (ι → ℕ)} (hs : LinearIndepOn ℕ id s) :
+private theorem linearIndepOn_toRatVec (hs : LinearIndepOn ℕ id s) :
     LinearIndepOn ℚ toRatVec s := by
   rw [LinearIndepOn, ← LinearIndependent.iff_fractionRing ℤ ℚ, ← LinearIndepOn, linearIndepOn_iff'']
   intro t f ht hf heq i hi
@@ -581,7 +581,7 @@ private theorem isSemilinearSet_setOfFloorPos : IsSemilinearSet hs.setOfFloorPos
           hs.floor_add_of_mem_closure diff_subset (notMem_diff_of_mem (mem_singleton i.1)) hz',
           add_assoc hs.base, ← succ_nsmul', hs.floor_add_nsmul_self, hs.floor_base, zero_add] at heq
         simp [heq]
-  · refine .biUnion (finite_univ.subset (subset_univ _)) fun i hi => .proj' ?_
+  · refine .biUnion (toFinite _) fun i hi => .proj' ?_
     rw [setOf_and]
     apply Nat.isSemilinearSet_inter <| Nat.isSemilinearSet_preimage
       (.closure_of_finite (finite_singleton _)) (LinearMap.funLeft ℕ ℕ Sum.inr)
