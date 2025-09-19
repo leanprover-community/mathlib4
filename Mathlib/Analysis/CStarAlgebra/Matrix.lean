@@ -79,10 +79,7 @@ open scoped Matrix.Norms.Elementwise in
 /-- The entrywise sup norm of a unitary matrix is at most 1. -/
 theorem entrywise_sup_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Matrix.unitaryGroup n 𝕜) :
     ‖U‖ ≤ 1 := by
-  conv => -- Porting note: was `simp_rw [pi_norm_le_iff_of_nonneg zero_le_one]`
-    rw [pi_norm_le_iff_of_nonneg zero_le_one]
-    intro
-    rw [pi_norm_le_iff_of_nonneg zero_le_one]
+  simp_rw [pi_norm_le_iff_of_nonneg zero_le_one]
   intros
   exact entry_norm_bound_of_unitary hU _ _
 

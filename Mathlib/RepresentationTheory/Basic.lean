@@ -232,7 +232,7 @@ theorem ofModule_asAlgebraHom_apply_apply (r : MonoidAlgebra k G)
 
 @[simp]
 theorem ofModule_asModule_act (g : G) (x : RestrictScalars k (MonoidAlgebra k G) ρ.asModule) :
-    ofModule (k := k) (G := G) ρ.asModule g x = -- Porting note: more help with implicit
+    ofModule ρ.asModule g x =
       (RestrictScalars.addEquiv _ _ _).symm
         (ρ.asModuleEquiv.symm (ρ g (ρ.asModuleEquiv (RestrictScalars.addEquiv _ _ _ x)))) := by
   apply_fun RestrictScalars.addEquiv _ _ ρ.asModule using
@@ -476,26 +476,22 @@ theorem ofMulAction_apply {H : Type*} [MulAction G H] (g : G) (f : H →₀ k) (
     simp
   simp only [ofMulAction_def, Finsupp.lmapDomain_apply, Finsupp.mapDomain_apply, hg]
 
--- Porting note: did not need this in ML3; noncomputable because IR check complains
+-- Noncomputable since `MonoidAlgebra.instMul` is now noncomputable
 noncomputable instance :
     HMul (MonoidAlgebra k G) ((ofMulAction k G G).asModule) (MonoidAlgebra k G) :=
   inferInstanceAs <| HMul (MonoidAlgebra k G) (MonoidAlgebra k G) (MonoidAlgebra k G)
 
 theorem ofMulAction_self_smul_eq_mul (x : MonoidAlgebra k G) (y : (ofMulAction k G G).asModule) :
-    x • y = (x * y : MonoidAlgebra k G) := -- by
-  -- Porting note: trouble figuring out the motive
-  x.induction_on (p := fun z => z • y = z * y)
-    (fun g => by
-      change asAlgebraHom (ofMulAction k G G) _ _ = _
-      ext
-      -- Porting note: single_mul_apply not firing in simp without parentheses
-      simp [(MonoidAlgebra.single_mul_apply)]
-    )
-    (fun x y hx hy => by simp only [hx, hy, add_mul, add_smul]) fun r x hx => by
-    change asAlgebraHom (ofMulAction k G G) _ _ = _  -- Porting note: was simpa [← hx]
-    simp only [map_smul, smul_apply, Algebra.smul_mul_assoc]
-    rw [← hx]
-    rfl
+    x • y = (x * y : MonoidAlgebra k G) := by
+  induction x using MonoidAlgebra.induction_on with
+  | hM g =>
+    change asAlgebraHom (ofMulAction k G G) _ _ = _
+    ext
+    -- Porting note: single_mul_apply not firing in simp without parentheses, probably due to the
+    -- defeq abuse in `change` above.
+    simp [(MonoidAlgebra.single_mul_apply)]
+  | hadd x y hx hy => simp only [hx, hy, add_mul, add_smul]
+  | hsmul r x hx => simp [← hx]
 
 /-- If we equip `k[G]` with the `k`-linear `G`-representation induced by the left regular action of
 `G` on itself, the resulting object is isomorphic as a `k[G]`-module to `k[G]` with its natural
@@ -526,7 +522,7 @@ lemma leftRegular_norm_apply :
       linearCombination _ (fun _ => 1) := by
   ext i : 2
   simpa [Representation.norm] using Finset.sum_bijective _
-    (Group.mulRight_bijective i) (by aesop) (by aesop)
+    (Group.mulRight_bijective i) (by simp_all) (by simp_all)
 
 lemma leftRegular_norm_eq_zero_iff (x : G →₀ k) :
     (leftRegular k G).norm x = 0 ↔ x.linearCombination k (fun _ => (1 : k)) = 0 := by
@@ -551,11 +547,14 @@ lemma apply_eq_of_leftRegular_eq_of_generator (g : G) (hg : ∀ x, x ∈ Subgrou
     (x : G →₀ k) (hx : leftRegular k G g x = x) (γ : G) :
     x γ = x g := by
   rcases hg γ with ⟨i, rfl⟩
-  induction i with | zero => _ | succ n h => _ | pred n h => _
-  · simpa using (Finsupp.ext_iff.1 hx g)
-  · simpa [← h, zpow_natCast, zpow_add_one, pow_mul_comm', pow_succ'] using
+  induction i with
+  | zero =>
+    simpa using (Finsupp.ext_iff.1 hx g)
+  | succ n h =>
+    simpa [← h, zpow_natCast, zpow_add_one, pow_mul_comm', pow_succ'] using
       (Finsupp.ext_iff.1 hx (g ^ (n + 1))).symm
-  · simpa [zpow_sub, ← h, ← mul_inv_rev, ← pow_mul_comm']
+  | pred n h =>
+    simpa [zpow_sub, ← h, ← mul_inv_rev, ← pow_mul_comm']
       using Finsupp.ext_iff.1 hx (g ^ (-n : ℤ))
 
 end Cyclic
@@ -621,10 +620,7 @@ theorem tprod_apply (g : G) : (ρV ⊗ ρW) g = TensorProduct.map (ρV g) (ρW g
   rfl
 
 theorem smul_tprod_one_asModule (r : MonoidAlgebra k G) (x : V) (y : W) :
-    -- Porting note: required to since Lean 4 doesn't unfold asModule
-    let x' : ρV.asModule := x
-    let z : (ρV.tprod 1).asModule := x ⊗ₜ y
-    r • z = (r • x') ⊗ₜ y := by
+    r • (show (ρV.tprod 1).asModule from x ⊗ₜ y) = (r • show ρV.asModule from x) ⊗ₜ y := by
   change asAlgebraHom (ρV ⊗ 1) _ _ = asAlgebraHom ρV _ _ ⊗ₜ _
   simp only [asAlgebraHom_def, MonoidAlgebra.lift_apply, tprod_apply, MonoidHom.one_apply,
     LinearMap.finsupp_sum_apply, LinearMap.smul_apply, TensorProduct.map_tmul, Module.End.one_apply]
@@ -632,10 +628,7 @@ theorem smul_tprod_one_asModule (r : MonoidAlgebra k G) (x : V) (y : W) :
   rfl
 
 theorem smul_one_tprod_asModule (r : MonoidAlgebra k G) (x : V) (y : W) :
-    -- Porting note: required to since Lean 4 doesn't unfold asModule
-    let y' : ρW.asModule := y
-    let z : (1 ⊗ ρW).asModule := x ⊗ₜ y
-    r • z = x ⊗ₜ (r • y') := by
+    r • (show (1 ⊗ ρW).asModule from x ⊗ₜ y) = x ⊗ₜ (r • show ρW.asModule from y) := by
   change asAlgebraHom (1 ⊗ ρW) _ _ = _ ⊗ₜ asAlgebraHom ρW _ _
   simp only [asAlgebraHom_def, MonoidAlgebra.lift_apply, tprod_apply, MonoidHom.one_apply,
     LinearMap.finsupp_sum_apply, LinearMap.smul_apply, TensorProduct.map_tmul, Module.End.one_apply]

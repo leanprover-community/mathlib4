@@ -947,7 +947,6 @@ theorem biproduct.matrix_π (m : ∀ j k, f j ⟶ g k) (k : K) :
 @[reassoc (attr := simp)]
 theorem biproduct.ι_matrix (m : ∀ j k, f j ⟶ g k) (j : J) :
     biproduct.ι f j ≫ biproduct.matrix m = biproduct.lift fun k => m j k := by
-  ext
   simp [biproduct.matrix]
 
 /-- Extract the matrix components from a morphism of biproducts. -/

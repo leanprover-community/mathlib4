@@ -18,7 +18,7 @@ morphisms `F ⟶ G`. Informally, in degree `n`, this complex shall consist of
 cochains of degree `n` from `F` to `G`, i.e. arbitrary families for morphisms
 `F.X p ⟶ G.X (p + n)`. This complex shall be denoted `HomComplex F G`.
 
-In order to avoid type theoretic issues, a cochain of degree `n : ℤ`
+In order to avoid type-theoretic issues, a cochain of degree `n : ℤ`
 (i.e. a term of type of `Cochain F G n`) shall be defined here
 as the data of a morphism `F.X p ⟶ G.X q` for all triplets
 `⟨p, q, hpq⟩` where `p` and `q` are integers and `hpq : p + n = q`.

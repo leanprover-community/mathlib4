@@ -112,25 +112,24 @@ instance : ValuationRing A where
     · use ⟨a / b, hh⟩
       right
       ext
-      field_simp
+      simp [field]
     · rw [show (a / b : K)⁻¹ = b / a by simp] at hh
       use ⟨b / a, hh⟩
       left
       ext
-      field_simp
+      simp [field]
 
 instance : Algebra A K := inferInstanceAs <| Algebra A.toSubring K
 
--- Porting note: Somehow it cannot find this instance and I'm too lazy to debug. wrong prio?
-instance isLocalRing : IsLocalRing A := ValuationRing.isLocalRing A
+instance isLocalRing : IsLocalRing A := inferInstance
 
 @[simp]
 theorem algebraMap_apply (a : A) : algebraMap A K a = a := rfl
 
 instance : IsFractionRing A K where
-  map_units' := fun ⟨y, hy⟩ =>
+  map_units := fun ⟨y, hy⟩ =>
     (Units.mk0 (y : K) fun c => nonZeroDivisors.ne_zero hy <| Subtype.ext c).isUnit
-  surj' z := by
+  surj z := by
     by_cases h : z = 0; · use (0, 1); simp [h]
     rcases A.mem_or_inv_mem z with hh | hh
     · use (⟨z, hh⟩, 1); simp
@@ -177,7 +176,7 @@ theorem valuation_eq_one_iff (a : A) : IsUnit a ↔ A.valuation a = 1 :=
       rw [c, A.valuation.map_zero] at h
       exact zero_ne_one h
     have ha' : (a : K)⁻¹ ∈ A := by rw [← valuation_le_one_iff, map_inv₀, h, inv_one]
-    apply isUnit_of_mul_eq_one a ⟨a⁻¹, ha'⟩; ext; field_simp⟩
+    apply isUnit_of_mul_eq_one a ⟨a⁻¹, ha'⟩; ext; simp [field]⟩
 
 theorem valuation_lt_one_or_eq_one (a : A) : A.valuation a < 1 ∨ A.valuation a = 1 :=
   lt_or_eq_of_le (A.valuation_le_one a)
@@ -311,7 +310,7 @@ theorem ofPrime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) :
         not_not]
       change IsUnit (⟨x⁻¹, h hr⟩ : S)
       apply isUnit_of_mul_eq_one _ (⟨x, hx⟩ : S)
-      ext; field_simp
+      ext; simp [field]
     · simp
 
 theorem ofPrime_le_of_le (P Q : Ideal A) [P.IsPrime] [Q.IsPrime] (h : P ≤ Q) :
@@ -422,9 +421,7 @@ def unitGroupMulEquiv : A.unitGroup ≃* Aˣ where
   toFun x :=
     { val := ⟨(x : Kˣ), mem_of_valuation_le_one A _ x.prop.le⟩
       inv := ⟨((x⁻¹ : A.unitGroup) : Kˣ), mem_of_valuation_le_one _ _ x⁻¹.prop.le⟩
-      -- Porting note: was `Units.mul_inv x`
       val_inv := Subtype.ext (by simp)
-      -- Porting note: was `Units.inv_mul x`
       inv_val := Subtype.ext (by simp) }
   invFun x := ⟨Units.map A.subtype.toMonoidHom x, A.valuation_unit x⟩
   map_mul' a b := by ext; rfl
@@ -477,7 +474,6 @@ section nonunits
 /-- The nonunits of a valuation subring of `K`, as a subsemigroup of `K` -/
 def nonunits : Subsemigroup K where
   carrier := {x | A.valuation x < 1}
-  -- Porting note: added `Set.mem_setOf.mp`
   mul_mem' ha hb := (mul_lt_mul'' (Set.mem_setOf.mp ha) (Set.mem_setOf.mp hb)
     zero_le' zero_le').trans_eq <| mul_one _
 
@@ -657,10 +653,6 @@ def unitsModPrincipalUnitsEquivResidueFieldUnits :
     A.unitGroup ⧸ A.principalUnitGroup.comap A.unitGroup.subtype ≃* (IsLocalRing.ResidueField A)ˣ :=
   (QuotientGroup.quotientMulEquivOfEq A.ker_unitGroupToResidueFieldUnits.symm).trans
     (QuotientGroup.quotientKerEquivOfSurjective _ A.surjective_unitGroupToResidueFieldUnits)
-
-/-- Porting note: Lean needs to be reminded of this instance -/
-local instance : MulOneClass ({ x // x ∈ unitGroup A } ⧸
-    Subgroup.comap (Subgroup.subtype (unitGroup A)) (principalUnitGroup A)) := inferInstance
 
 theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk :
     (A.unitsModPrincipalUnitsEquivResidueFieldUnits : _ ⧸ Subgroup.comap _ _ →* _).comp

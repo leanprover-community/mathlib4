@@ -148,9 +148,11 @@ theorem subset_closedBall_norm [NormOneClass A] (a : A) : σ a ⊆ Metric.closed
 theorem isBounded (a : A) : Bornology.IsBounded (σ a) :=
   Metric.isBounded_closedBall.subset (subset_closedBall_norm_mul a)
 
-@[simp, grind]
+@[simp]
 protected theorem isCompact [ProperSpace 𝕜] (a : A) : IsCompact (σ a) :=
   Metric.isCompact_of_isClosed_isBounded (spectrum.isClosed a) (isBounded a)
+
+grind_pattern spectrum.isCompact => IsCompact (spectrum 𝕜 a)
 
 instance instCompactSpace [ProperSpace 𝕜] (a : A) : CompactSpace (spectrum 𝕜 a) :=
   isCompact_iff_compactSpace.mp <| spectrum.isCompact a
@@ -174,11 +176,13 @@ section QuasispectrumCompact
 variable {B : Type*} [NonUnitalNormedRing B] [NormedSpace 𝕜 B] [CompleteSpace B]
 variable [IsScalarTower 𝕜 B B] [SMulCommClass 𝕜 B B] [ProperSpace 𝕜]
 
-@[simp, grind]
+@[simp]
 theorem _root_.quasispectrum.isCompact (a : B) : IsCompact (quasispectrum 𝕜 a) := by
   rw [Unitization.quasispectrum_eq_spectrum_inr' 𝕜 𝕜,
     ← AlgEquiv.spectrum_eq (WithLp.unitizationAlgEquiv 𝕜).symm (a : Unitization 𝕜 B)]
   exact spectrum.isCompact _
+
+grind_pattern quasispectrum.isCompact => IsCompact (quasispectrum 𝕜 a)
 
 instance _root_.quasispectrum.instCompactSpace (a : B) :
     CompactSpace (quasispectrum 𝕜 a) :=
@@ -564,7 +568,7 @@ instance (priority := 100) [FunLike F A 𝕜] [AlgHomClass F 𝕜 A 𝕜] :
 
 /-- An algebra homomorphism into the base field, as a continuous linear map (since it is
 automatically bounded). -/
-def toContinuousLinearMap (φ : A →ₐ[𝕜] 𝕜) : A →L[𝕜] 𝕜 :=
+def toContinuousLinearMap (φ : A →ₐ[𝕜] 𝕜) : StrongDual 𝕜 A :=
   { φ.toLinearMap with cont := map_continuous φ }
 
 @[simp]

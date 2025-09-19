@@ -4,13 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Strahinja Gvozdić, Bhavik Mehta
 -/
 import Mathlib.Algebra.Group.Action.Pointwise.Finset
-import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Convolution
 
 This file defines convolution of finite subsets `A` and `B` of group `G` as the map `A ⋆ B : G → ℕ`
-that maps `x ∈ G` to the number of distinct representations of `x` in the form `x = ab⁻¹` for
+that maps `x ∈ G` to the number of distinct representations of `x` in the form `x = ab` for
 `a ∈ A`, `b ∈ B`. It is shown how convolution behaves under the change of order of `A` and `B`, as
 well as under the left and right actions on `A`, `B`, and the function argument.
 -/
@@ -21,76 +20,85 @@ open scoped Pointwise RightActions
 namespace Finset
 variable {G : Type*} [Group G] [DecidableEq G] {A B : Finset G} {s x y : G}
 
+/-- Given finite subsets `A` and `B` of a group `G`, convolution of `A` and `B` is a map `G → ℕ`
+that maps `x ∈ G` to the number of distinct representations of `x` in the form `x = ab`, where
+`a ∈ A`, `b ∈ B`. -/
+@[to_additive addConvolution /-- Given finite subsets `A` and `B` of an additive group `G`,
+convolution of `A` and `B` is a map `G → ℕ` that maps `x ∈ G` to the number of distinct
+representations of `x` in the form `x = a + b`, where `a ∈ A`, `b ∈ B`. -/]
+def convolution (A B : Finset G) : G → ℕ := fun x => #{ab ∈ A ×ˢ B | ab.1 * ab.2 = x}
+
+@[to_additive]
 lemma card_smul_inter_smul (A B : Finset G) (x y : G) :
-    #((x • A) ∩ (y • B)) = #{wz ∈ A ×ˢ B | wz.1 * wz.2⁻¹ = x⁻¹ * y} :=
-  card_nbij' (fun z ↦ (x⁻¹ * z, y⁻¹ * z)) (fun zw ↦ x • zw.1)
+    #((x • A) ∩ (y • B)) = A.convolution B⁻¹ (x⁻¹ * y) :=
+  card_nbij' (fun z ↦ (x⁻¹ * z, z⁻¹ * y)) (fun ab' ↦ x • ab'.1)
     (by simp +contextual [Set.MapsTo, Set.mem_smul_set_iff_inv_smul_mem, mul_assoc])
     (by simp +contextual [Set.MapsTo, Set.mem_smul_set_iff_inv_smul_mem]
-        simp +contextual [mul_inv_eq_iff_eq_mul, mul_assoc])
+        simp +contextual [← eq_mul_inv_iff_mul_eq, mul_assoc])
     (by simp [Set.LeftInvOn])
-    (by simp +contextual [Set.LeftInvOn, mul_inv_eq_iff_eq_mul, mul_assoc])
+    (by simp +contextual [Set.LeftInvOn, ← eq_mul_inv_iff_mul_eq, mul_assoc])
 
-lemma card_inter_smul (A B : Finset G) (x : G) :
-    #(A ∩ (x • B)) = #{yz ∈ A ×ˢ B | yz.1 * yz.2⁻¹ = x} := by
+@[to_additive]
+lemma card_inter_smul (A B : Finset G) (x : G) : #(A ∩ (x • B)) = A.convolution B⁻¹ x := by
   simpa using card_smul_inter_smul _ _ 1 x
 
-lemma card_inv_smul_inter (A B : Finset G) (x : G) :
-    #((x⁻¹ • A) ∩ B) = #{yz ∈ A ×ˢ B | yz.1 * yz.2⁻¹ = x} := by
-  simpa using card_smul_inter_smul _ _ x⁻¹ 1
+@[to_additive]
+lemma card_smul_inter (A B : Finset G) (x : G) : #((x • A) ∩ B) = A.convolution B⁻¹ x⁻¹ := by
+  simpa using card_smul_inter_smul _ _ x 1
 
-/-- Given finite subsets `A` and `B` of a group `G`, convolution of `A` and `B` is a map `G → ℕ`
-that maps `x ∈ G` to the number of distinct representations of `x` in the form `x = ab⁻¹`, where
-`a ∈ A`, `b ∈ B`. -/
-def convolution (A B : Finset G) : G → ℕ := fun x => #{ab ∈ A ×ˢ B | ab.1 * ab.2⁻¹ = x}
+@[to_additive card_add_neg_eq_addConvolution_neg]
+lemma card_mul_inv_eq_convolution_inv (A B : Finset G) (x : G) :
+    #{ab ∈ A ×ˢ B | ab.1 * ab.2⁻¹ = x} = A.convolution B⁻¹ x :=
+  card_nbij' (fun ab => (ab.1, ab.2⁻¹)) (fun ab => (ab.1, ab.2⁻¹))
+    (by simp [Set.MapsTo]) (by simp [Set.MapsTo])
+    (by simp [Set.LeftInvOn]) (by simp [Set.LeftInvOn])
 
-lemma convolution_eq_card_smul_inter_smul (A B : Finset G) (x y : G) :
-    A.convolution B (x⁻¹ * y) = #((x • A) ∩ (y • B)) := Eq.symm <| card_smul_inter_smul ..
+@[to_additive (attr := simp) addConvolution_pos]
+lemma convolution_pos : 0 < A.convolution B x ↔ x ∈ A * B := by
+  aesop (add simp [convolution, Finset.Nonempty, mem_mul])
 
-lemma convolution_eq_card_inter_smul (A B : Finset G) (x : G) :
-    A.convolution B x = #(A ∩ (x • B)) := Eq.symm <| card_inter_smul ..
+@[to_additive addConvolution_ne_zero]
+lemma convolution_ne_zero : A.convolution B x ≠ 0 ↔ x ∈ A * B := by
+  suffices A.convolution B x ≠ 0 ↔ 0 < A.convolution B x by simp [this]
+  omega
 
-lemma convolution_eq_card_inv_smul_inter (A B : Finset G) (x : G) :
-    A.convolution B x = #((x⁻¹ • A) ∩ B) := Eq.symm <| card_inv_smul_inter ..
+@[to_additive (attr := simp) addConvolution_eq_zero]
+lemma convolution_eq_zero : A.convolution B x = 0 ↔ x ∉ A * B := by
+  simp [← convolution_ne_zero]
 
-lemma convolution_nonneg (A B : Finset G) (x : G) : 0 ≤ A.convolution B x := zero_le _
+@[to_additive addConvolution_le_card_left]
+lemma convolution_le_card_left : A.convolution B x ≤ #A := by
+  rw [← inv_inv B, ← card_inter_smul]
+  exact card_le_card inter_subset_left
 
-lemma convolution_pos_of_mem (hx : x ∈ A * B⁻¹) :
-    0 < A.convolution B x := by
-  obtain ⟨a, ha, b, hb, h⟩ := mem_mul.mp hx
-  exact card_pos.mpr ⟨(a, b⁻¹),
-    by simp_all only [mem_inv', mem_filter, mem_product, and_self, inv_inv]⟩
+@[to_additive addConvolution_le_card_right]
+lemma convolution_le_card_right : A.convolution B x ≤ #B := by
+  rw [← inv_inv B, ← inv_inv x, ← card_smul_inter, card_inv]
+  exact card_le_card inter_subset_right
 
-lemma convolution_le_card_left (A B : Finset G) (x : G) : A.convolution B x ≤ #A := by
-  simp only [convolution_eq_card_inter_smul]
-  gcongr
-  exact inter_subset_left
+@[to_additive (attr := simp) addConvolution_neg]
+lemma convolution_inv (A B : Finset G) (x : G) : A.convolution B x⁻¹ = B⁻¹.convolution A⁻¹ x := by
+  nth_rw 1 [← inv_inv B]
+  rw [← card_smul_inter, ← card_inter_smul, inter_comm]
 
-lemma convolution_le_card_right (A B : Finset G) (x : G) : A.convolution B x ≤ #B := by
-  simp only [convolution_eq_card_inv_smul_inter]
-  gcongr
-  exact inter_subset_right
+@[to_additive (attr := simp) op_vadd_addConvolution_eq_addConvolution_vadd]
+lemma op_smul_convolution_eq_convolution_smul (A B : Finset G) (s : G) :
+    (A <• s).convolution B = A.convolution (s • B) := funext fun x => by
+  nth_rw 1 [← inv_inv B, ← inv_inv (s • B), inv_smul_finset_distrib s B, ← card_inter_smul,
+    ← card_inter_smul, smul_comm]
+  simp [← card_smul_finset (op s) (A ∩ _), smul_finset_inter]
 
-lemma convolution_inv (A B : Finset G) (x : G) :
-    A.convolution B x⁻¹ = B.convolution A x := by
-  rw [convolution_eq_card_inter_smul, convolution_eq_card_inv_smul_inter, inter_comm]
+@[to_additive (attr := simp) vadd_addConvolution_eq_addConvolution_neg_add]
+lemma smul_convolution_eq_convolution_inv_mul (A B : Finset G) (s x : G) :
+    (s •> A).convolution B x = A.convolution B (s⁻¹ * x) := by
+  nth_rw 1 [← inv_inv x, ← inv_inv (s⁻¹ * x)]
+  rw [← inv_inv B, ← card_smul_inter, ← card_smul_inter, mul_inv_rev, inv_inv, smul_smul]
 
-lemma convolution_op_smul_eq_op_smul_inv_convolution (A B : Finset G) (s : G) :
-    A.convolution (B <• s) = (A <• s⁻¹).convolution B := funext <| fun x => by
-  simp only [convolution_eq_card_inter_smul, smul_comm x (op s), inv_mul_cancel, one_smul,
-    ← card_smul_finset (op s⁻¹) (A ∩ x •> B <• s), op_inv, smul_finset_inter, smul_smul]
-
-lemma op_smul_convolution_eq_convolution_op_smul_inv (A B : Finset G) (s : G) :
-    (A <• s).convolution B = A.convolution (B <• s⁻¹) := by
-  simpa only [inv_inv] using Eq.symm <| convolution_op_smul_eq_op_smul_inv_convolution A B s⁻¹
-
-lemma convolution_mul_left_eq_inv_smul_convolution (A B : Finset G) (s x : G) :
-    A.convolution B (s * x) = (s⁻¹ •> A).convolution B x := by
-  simp only [convolution_eq_card_inter_smul, ← smul_smul, ← card_smul_finset s (s⁻¹ •> A ∩ x •> B),
-    smul_finset_inter, smul_inv_smul]
-
-lemma convolution_mul_right_eq_convolution_smul (A B : Finset G) (s x : G) :
-    A.convolution B (x * s) = A.convolution (s •> B) x := by
-  rw [← convolution_inv, mul_inv_rev, convolution_mul_left_eq_inv_smul_convolution,
-    inv_inv, convolution_inv]
+@[to_additive (attr := simp) addConvolution_op_vadd_eq_addConvolution_add_neg]
+lemma convolution_op_smul_eq_convolution_mul_inv (A B : Finset G) (s x : G) :
+    A.convolution (B <• s) x = A.convolution B (x * s⁻¹) := by
+  nth_rw 2 [← inv_inv B]
+  rw [← inv_inv (B <• s), inv_op_smul_finset_distrib, ← card_inter_smul, ← card_inter_smul,
+    smul_smul]
 
 end Finset

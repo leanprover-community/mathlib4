@@ -73,6 +73,9 @@ variable [Preorder α] [Preorder β] [Preorder γ]
 instance : FunLike (Chain α) ℕ α := inferInstanceAs <| FunLike (ℕ →o α) ℕ α
 instance : OrderHomClass (Chain α) ℕ α := inferInstanceAs <| OrderHomClass (ℕ →o α) ℕ α
 
+/-- See note [partially-applied ext lemmas]. -/
+@[ext] lemma ext ⦃f g : Chain α⦄ (h : ⇑f = ⇑g) : f = g := DFunLike.ext' h
+
 instance [Inhabited α] : Inhabited (Chain α) :=
   ⟨⟨default, fun _ _ _ => le_rfl⟩⟩
 
@@ -421,9 +424,7 @@ instance : OmegaCompletePartialOrder (α × β) where
   ωSup_le := fun _ _ h => ⟨ωSup_le _ _ fun i => (h i).1, ωSup_le _ _ fun i => (h i).2⟩
   le_ωSup c i := ⟨le_ωSup (c.map OrderHom.fst) i, le_ωSup (c.map OrderHom.snd) i⟩
 
-theorem ωSup_zip (c₀ : Chain α) (c₁ : Chain β) : ωSup (c₀.zip c₁) = (ωSup c₀, ωSup c₁) := by
-  apply eq_of_forall_ge_iff; rintro ⟨z₁, z₂⟩
-  simp [ωSup_le_iff, forall_and]
+theorem ωSup_zip (c₀ : Chain α) (c₁ : Chain β) : ωSup (c₀.zip c₁) = (ωSup c₀, ωSup c₁) := rfl
 
 end Prod
 
@@ -584,8 +585,7 @@ theorem ωSup_bind {β γ : Type v} (c : Chain α) (f : α →o Part β) (g : α
     simp only [Part.mem_bind_iff, Chain.map_coe,
       Function.comp_apply, OrderHom.partBind_coe]
     exact ⟨_, hb, hy⟩
-  · intro i
-    intro y hy
+  · intro i y hy
     simp only [Part.mem_bind_iff, Chain.map_coe,
       Function.comp_apply, OrderHom.partBind_coe] at hy
     rcases hy with ⟨b, hb₀, hb₁⟩

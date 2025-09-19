@@ -32,8 +32,9 @@ theorem Filter.tendsto_cocompact_mul_right₀ [ContinuousMul K] {a : K} (ha : a 
     Filter.Tendsto (fun x : K => x * a) (Filter.cocompact K) (Filter.cocompact K) :=
   Filter.tendsto_cocompact_mul_right (mul_inv_cancel₀ ha)
 
-/-- Compact Hausdorff topological fields are finite. -/
-instance (priority := 100) {K} [DivisionRing K] [TopologicalSpace K]
+/-- Compact Hausdorff topological fields are finite. This is not an instance, as it would apply to
+every `Finite` goal, causing slowly failing typeclass search in some cases. -/
+theorem DivisionRing.finite_of_compactSpace_of_t2Space {K} [DivisionRing K] [TopologicalSpace K]
     [IsTopologicalRing K] [CompactSpace K] [T2Space K] : Finite K := by
   suffices DiscreteTopology K by
     exact finite_of_compact_of_discrete
@@ -44,7 +45,7 @@ variable (K)
 
 /-- A topological division ring is a division ring with a topology where all operations are
 continuous, including inversion. -/
-class IsTopologicalDivisionRing : Prop extends IsTopologicalRing K, HasContinuousInv₀ K
+class IsTopologicalDivisionRing : Prop extends IsTopologicalRing K, ContinuousInv₀ K
 
 @[deprecated (since := "2025-03-25")] alias TopologicalDivisionRing := IsTopologicalDivisionRing
 
@@ -161,7 +162,7 @@ theorem IsPreconnected.eq_one_or_eq_neg_one_of_sq_eq [Ring 𝕜] [NoZeroDivisors
 /-- If `f, g` are functions `α → 𝕜`, both continuous on a preconnected set `S`, with
 `f ^ 2 = g ^ 2` on `S`, and `g z ≠ 0` all `z ∈ S`, then either `f = g` or `f = -g` on
 `S`. -/
-theorem IsPreconnected.eq_or_eq_neg_of_sq_eq [Field 𝕜] [HasContinuousInv₀ 𝕜] [ContinuousMul 𝕜]
+theorem IsPreconnected.eq_or_eq_neg_of_sq_eq [Field 𝕜] [ContinuousInv₀ 𝕜] [ContinuousMul 𝕜]
     (hS : IsPreconnected S) (hf : ContinuousOn f S) (hg : ContinuousOn g S)
     (hsq : EqOn (f ^ 2) (g ^ 2) S) (hg_ne : ∀ {x : α}, x ∈ S → g x ≠ 0) :
     EqOn f g S ∨ EqOn f (-g) S := by
@@ -173,7 +174,7 @@ theorem IsPreconnected.eq_or_eq_neg_of_sq_eq [Field 𝕜] [HasContinuousInv₀ �
 /-- If `f, g` are functions `α → 𝕜`, both continuous on a preconnected set `S`, with
 `f ^ 2 = g ^ 2` on `S`, and `g z ≠ 0` all `z ∈ S`, then as soon as `f = g` holds at
 one point of `S` it holds for all points. -/
-theorem IsPreconnected.eq_of_sq_eq [Field 𝕜] [HasContinuousInv₀ 𝕜] [ContinuousMul 𝕜]
+theorem IsPreconnected.eq_of_sq_eq [Field 𝕜] [ContinuousInv₀ 𝕜] [ContinuousMul 𝕜]
     (hS : IsPreconnected S) (hf : ContinuousOn f S) (hg : ContinuousOn g S)
     (hsq : EqOn (f ^ 2) (g ^ 2) S) (hg_ne : ∀ {x : α}, x ∈ S → g x ≠ 0) {y : α} (hy : y ∈ S)
     (hy' : f y = g y) : EqOn f g S := fun x hx => by

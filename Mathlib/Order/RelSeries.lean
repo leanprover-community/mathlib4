@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Rel
 import Mathlib.Order.OrderIsoNat
 
@@ -101,7 +102,7 @@ lemma toList_singleton (x : α) : (singleton r x).toList = [x] :=
 
 lemma toList_chain' (x : RelSeries r) : x.toList.Chain' (· ~[r] ·) := by
   rw [List.chain'_iff_get]
-  intros i h
+  intro i h
   convert x.step ⟨i, by simpa [toList] using h⟩ <;> apply List.get_ofFn
 
 lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m =>

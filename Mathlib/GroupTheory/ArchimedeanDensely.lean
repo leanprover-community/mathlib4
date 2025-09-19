@@ -15,7 +15,7 @@ import Mathlib.Order.Interval.Finset.DenselyOrdered
 
 This file proves a few additional facts about linearly ordered additive groups which satisfy the
   `Archimedean` property --
-  they are either order-isomorphic and additvely isomorphic to the integers,
+  they are either order-isomorphic and additively isomorphic to the integers,
   or they are densely ordered.
 
 They are placed here in a separate file (rather than incorporated as a continuation of
@@ -455,6 +455,12 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_disc
     intro a _ _ b _ hb0
     refine inv_strictAnti₀ ?_
     simp [zero_lt_iff, hb0]
+
+instance instWellFoundedGTWithZeroMultiplicativeIntLeOne :
+    WellFoundedGT { v : ℤᵐ⁰ // v ≤ 1 } :=
+  { wf :=
+    (LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete_of_ne_zero
+    one_ne_zero).mpr instNonemptyOfInhabited }
 
 end WellFounded
 
