@@ -169,6 +169,11 @@ variable {K}
 abbrev conjugate (φ : K →+* ℂ) : K →+* ℂ := star φ
 
 @[simp]
+theorem conjugate_comp (φ : K →+* ℂ) (σ : k →+* K) :
+    (conjugate φ).comp σ = conjugate (φ.comp σ) :=
+  rfl
+
+@[simp]
 theorem conjugate_coe_eq (φ : K →+* ℂ) (x : K) : (conjugate φ) x = conj (φ x) := rfl
 
 theorem place_conjugate (φ : K →+* ℂ) : place (conjugate φ) = place φ := by
@@ -268,4 +273,46 @@ lemma orderOf_isConj_two_of_ne_one (hσ : IsConj φ σ) (hσ' : σ ≠ 1) :
     orderOf σ = 2 :=
   orderOf_eq_prime_iff.mpr ⟨by ext; simpa using isConj_apply_apply hσ _, hσ'⟩
 
-end NumberField.ComplexEmbedding
+variable {K : Type*} (L : Type*) [Field K] [Field L] (ψ : K →+* ℂ) [Algebra K L]
+
+/-- If `L/K` and `ψ : K →+* ℂ`, then the type of `ComplexExtension L ψ` consists of all
+`φ : L →+* ℂ` such that `φ.comp (algebraMap K L) = ψ`. -/
+protected abbrev Extension := { φ : L →+* ℂ // φ.comp (algebraMap K L) = ψ }
+
+namespace Extension
+
+variable (φ : ComplexEmbedding.Extension L ψ) {L ψ}
+
+theorem comp_eq : φ.1.comp (algebraMap K L) = ψ := φ.2
+
+variable {φ}
+
+theorem conjugate_comp_ne (h : ¬IsReal ψ) : (conjugate φ).comp (algebraMap K L) ≠ ψ := by
+  simp_all [ComplexEmbedding.isReal_iff, comp_eq]
+
+theorem not_isReal_of_not_isReal (h : ¬IsReal ψ) : ¬IsReal φ.1 :=
+  mt (IsReal.comp _) (comp_eq φ ▸ h)
+
+variable (φ)
+
+/-- If `L/K`, `ψ : K →+* ℂ` and `φ : ComplexExtension L ψ` is an extension of `ψ`, then
+`φ.IsMixed` if the image of `ψ` is real while the image of `φ` is complex.
+
+This is the complex embedding analogue of ramified extensions of infinite places. It is not the
+same concept because conjugation of `φ` in this case leads to a non-extension of `ψ` but
+preserves extensions of associated infinite places, leading to a two-to-one isomorphism. -/
+abbrev IsMixed := IsReal ψ ∧ ¬IsReal φ.1
+
+/-- If `L/K`, `ψ : K →+* ℂ`, and `φ : ComplexExtension L ψ` is an extension of `ψ`, then
+`φ.IsUnmixed` if it is not mixed, i.e., the image of `ψ` is real if and only if the image of
+`φ` is real.
+
+This is the complex embedding analogue of `InfinitePlace.UnramifiedExtension`. In this case
+there is an isomorphism between complex extensions of `ψ` and unramified extensions of
+associated infinite places. -/
+abbrev IsUnmixed := ¬φ.IsMixed
+
+theorem IsUnmixed.isReal_iff_isReal (h : φ.IsUnmixed) : IsReal ψ ↔ IsReal φ.1 := by
+  aesop (add simp [IsReal.comp])
+
+end NumberField.ComplexEmbedding.Extension
