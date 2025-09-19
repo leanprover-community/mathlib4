@@ -183,9 +183,19 @@ open scoped ComplexOrder in
     {A : Matrix n n 𝕜} : A.toEuclideanLin.IsPositive ↔ A.PosSemidef := by
   simp_rw [LinearMap.IsPositive, ← Matrix.isHermitian_iff_isSymmetric, inner_re_symm,
     EuclideanSpace.inner_eq_star_dotProduct, Matrix.piLp_ofLp_toEuclideanLin, Matrix.toLin'_apply,
-    dotProduct_comm (A.mulVec _), Matrix.PosSemidef, and_congr_right_iff, RCLike.nonneg_iff (K:=𝕜)]
+    dotProduct_comm (A.mulVec _), Matrix.PosSemidef, and_congr_right_iff,
+    RCLike.nonneg_iff (K := 𝕜)]
   refine fun hA ↦ (EuclideanSpace.equiv n 𝕜).forall_congr' fun x ↦ ?_
   simp [hA.im_star_dotProduct_mulVec_self]
+
+open ComplexOrder in
+/-- `A.toMatrix` is positive semi-definite if and only if `A` is positive. -/
+@[simp] theorem posSemidef_toMatrix_iff {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {A : E →ₗ[𝕜] E} (b : OrthonormalBasis ι 𝕜 E) :
+    (A.toMatrix b.toBasis b.toBasis).PosSemidef ↔ A.IsPositive := by
+  rw [← Matrix.isPositive_toEuclideanLin_iff, (by exact Matrix.toLin'_toMatrix' _ :
+    (A.toMatrix b.toBasis b.toBasis).toEuclideanLin =
+      b.repr.toLinearMap ∘ₗ A ∘ₗ b.repr.symm.toLinearMap), isPositive_linearIsometryEquiv_conj_iff]
 
 /-- A symmetric projection is positive. -/
 @[aesop 10% apply, grind →]
@@ -416,16 +426,18 @@ theorem IsPositive.of_isStarProjection {p : E →L[𝕜] E}
   hp.isIdempotentElem.isPositive_iff_isSelfAdjoint.mpr hp.isSelfAdjoint
 
 /-- For an idempotent operator `p`, TFAE:
+* `(range p)ᗮ = ker p`
 * `p` is normal
 * `p` is self-adjoint
-* `p` is positive
-* `(range p)ᗮ = ker p` -/
+* `p` is positive -/
 theorem IsIdempotentElem.TFAE {p : E →L[𝕜] E} (hp : IsIdempotentElem p) :
-    [IsStarNormal p, IsSelfAdjoint p, p.IsPositive,
-      (LinearMap.range p)ᗮ = LinearMap.ker p].TFAE := by
-  tfae_have 1 ↔ 2 := hp.isSelfAdjoint_iff_isStarNormal.symm
-  tfae_have 2 ↔ 3 := hp.isPositive_iff_isSelfAdjoint.symm
-  tfae_have 2 ↔ 4 := p.isSelfAdjoint_iff_isSymmetric.eq ▸
+    [(LinearMap.range p)ᗮ = LinearMap.ker p,
+      IsStarNormal p,
+      IsSelfAdjoint p,
+      p.IsPositive].TFAE := by
+  tfae_have 2 ↔ 3 := hp.isSelfAdjoint_iff_isStarNormal.symm
+  tfae_have 3 ↔ 4 := hp.isPositive_iff_isSelfAdjoint.symm
+  tfae_have 3 ↔ 1 := p.isSelfAdjoint_iff_isSymmetric.eq ▸
     (ContinuousLinearMap.IsIdempotentElem.isSymmetric_iff_orthogonal_range hp)
   tfae_finish
 

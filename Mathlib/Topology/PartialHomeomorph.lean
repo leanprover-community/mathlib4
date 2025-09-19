@@ -1142,8 +1142,8 @@ def homeomorphOfImageSubsetSource {s : Set X} {t : Set Y} (hs : s ⊆ e.source) 
     invFun := MapsTo.restrict e.symm t s h₃
     left_inv := fun a => Subtype.ext (e.left_inv (hs a.2))
     right_inv := fun b => Subtype.eq <| e.right_inv (h₂ b.2)
-    continuous_toFun := (e.continuousOn.mono hs).restrict_mapsTo h₁
-    continuous_invFun := (e.continuousOn_symm.mono h₂).restrict_mapsTo h₃ }
+    continuous_toFun := (e.continuousOn.mono hs).mapsToRestrict h₁
+    continuous_invFun := (e.continuousOn_symm.mono h₂).mapsToRestrict h₃ }
 
 /-- A partial homeomorphism defines a homeomorphism between its source and target. -/
 @[simps!]
@@ -1386,7 +1386,7 @@ theorem subtypeRestr_symm_eqOn {U : Opens X} (hU : Nonempty U) :
   intro y hy
   rw [eq_comm, eq_symm_apply _ _ hy.1]
   · change restrict _ e _ = _
-    rw [← subtypeRestr_coe, (e.subtypeRestr hU).right_inv hy]
+    rw [← subtypeRestr_coe _ hU, (e.subtypeRestr hU).right_inv hy]
   · have := map_target _ hy; rwa [subtypeRestr_source] at this
 
 theorem subtypeRestr_symm_eqOn_of_le {U V : Opens X} (hU : Nonempty U) (hV : Nonempty V)
