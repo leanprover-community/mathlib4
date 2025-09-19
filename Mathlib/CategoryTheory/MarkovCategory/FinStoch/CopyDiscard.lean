@@ -170,9 +170,55 @@ instance (X : FinStoch) : ComonObj X where
           intro a; subst a
           intro a; subst a
           simp_all only [not_true_eq_false]
-    · -- Case when not all equal
-      simp_all only [not_and]
-      sorry
+    · -- Case when not all equal: both sides are 0
+      -- Show both sums equal 0
+      push_neg at h
+      -- Left side
+      trans 0
+      · rw [Fintype.sum_eq_zero]
+        intro ⟨k₁, k₂⟩
+        simp only
+        split_ifs with h1 h2 h3
+        · -- All conditions hold: k₁=j₁, k₂=j₂=j₃, i=k₁=k₂
+          -- This means i=j₁=j₂=j₃, contradicting h
+          subst h1
+          obtain ⟨h2a, h2b⟩ := h2
+          subst h2a h2b
+          obtain ⟨h3a, h3b⟩ := h3
+          subst h3a h3b
+          simp only [NNReal.coe_one]
+          exfalso
+          exact (h rfl rfl) rfl
+        · simp only [NNReal.coe_zero]
+        · simp only [NNReal.coe_zero]
+        · simp only [NNReal.coe_zero]
+      -- Right side
+      · symm
+        rw [Fintype.sum_eq_zero]
+        intro ⟨k₁, k₂⟩
+        simp only
+        by_cases hk : i = k₁ ∧ i = k₂
+        · -- First copy gives 1, show second sum is 0
+          simp only [hk]
+          obtain ⟨h1, h2⟩ := hk
+          subst h1 h2
+          simp only [and_self, if_true, NNReal.coe_one, one_mul]
+          rw [Fintype.sum_eq_zero]
+          intro ⟨⟨m₁, m₂⟩, m₃⟩
+          simp only
+          split_ifs with h_eq h_m3 h_m12
+          · -- All hold: (m₁,m₂,m₃)=(j₁,j₂,j₃), i=m₃, i=m₁=m₂
+            simp only at h_eq
+            simp_all only [ne_eq, NNReal.coe_one, one_ne_zero]
+            subst h_m3
+            obtain ⟨left, right⟩ := h_m12
+            subst right left
+            grind only
+          · simp only [NNReal.coe_zero]
+          · simp only [NNReal.coe_zero]
+          · simp only [NNReal.coe_zero]
+        · -- First copy gives 0
+          simp only [hk, if_false, NNReal.coe_zero, zero_mul]
 
 /-- The comonoid structure in FinStoch is commutative. -/
 instance (X : FinStoch) : CommComonObj X where
@@ -220,50 +266,6 @@ instance (X : FinStoch) : CommComonObj X where
         exact hne rfl
       · simp
 
-/-- Tensor coherence for copy. -/
-lemma copy_tensor_eq (X Y : FinStoch) :
-    Δ[X ⊗ Y] = (Δ[X] ⊗ₘ Δ[Y]) ≫ tensorμ X X Y Y := by
-  -- Δ[X ⊗ Y] maps (x,y) to ((x,y), (x,y))
-  -- (Δ[X] ⊗ Δ[Y]) maps (x,y) to ((x,x), (y,y))
-  -- tensorμ rearranges ((x,x), (y,y)) to ((x,y), (x,y))
-  apply StochasticMatrix.ext
-  ext ⟨x, y⟩ ⟨⟨x₁, y₁⟩, ⟨x₂, y₂⟩⟩
-  simp_all only [comul, copy, CategoryStruct.comp, StochasticMatrix.comp, tensorHom,
-    StochasticMatrix.tensor, NNReal.coe_sum, NNReal.coe_mul, tensorμ, MonoidalCategory.associator,
-    BraidedCategory.braiding, associator, associatorDet, DetMorphism.ofFunc, whiskerLeft,
-    DetMorphism.toMatrix_apply, id_matrix]
-  -- LHS: Δ[X ⊗ Y] gives 1 iff (x,y) = (x₁,y₁) = (x₂,y₂)
-  -- RHS: composition through tensorμ
-  -- The sum over intermediate states
-  split
-  next h =>
-    simp_all only [NNReal.coe_one]
-    obtain ⟨l, r⟩ := h
-    have : (x₁, y₁) = (x₂, y₂) := l.symm.trans r
-    simp only [Prod.ext_iff] at this l
-    rw [Fintype.sum_eq_single ⟨⟨x₁, x₂⟩, ⟨y₁, y₂⟩⟩]
-    · simp_all only [and_self]
-      obtain ⟨left, right⟩ := this
-      subst left right
-      rw [Fintype.sum_eq_single ⟨x, x, ⟨y, y⟩⟩]
-      · simp_all
-        sorry
-      · sorry
-    · sorry
-  next h =>
-    simp_all only [not_and, NNReal.coe_zero]
-    sorry
-
-/-- Tensor coherence for discard. -/
-lemma discard_tensor_eq (X Y : FinStoch) :
-    ε[X ⊗ Y] = (ε[X] ⊗ₘ ε[Y]) ≫ (λ_ (𝟙_ FinStoch)).hom := by
-  apply StochasticMatrix.ext
-  ext ⟨x, y⟩ unitor_fs
-  simp_all only [counit, discard, NNReal.coe_one, CategoryStruct.comp, StochasticMatrix.comp,
-    tensorHom, StochasticMatrix.tensor, mul_one, MonoidalCategoryStruct.leftUnitor, leftUnitor,
-    DetMorphism.toMatrix_apply, mul_ite, mul_zero, Finset.sum_boole, NNReal.coe_natCast]
-  norm_cast
-
 /-- Copy on unit equals left unitor inverse. -/
 lemma copy_unit_eq : Δ[𝟙_ FinStoch] = (λ_ (𝟙_ FinStoch)).inv := by
   apply StochasticMatrix.ext
@@ -282,8 +284,8 @@ lemma discard_unit_eq : ε[𝟙_ FinStoch] = 𝟙 (𝟙_ FinStoch) := by
 /-- FinStoch has copy-discard structure. -/
 instance : CopyDiscardCategory FinStoch where
   -- commComonObj uses inferInstance by default, which finds our instances above
-  copy_tensor := copy_tensor_eq
-  discard_tensor := discard_tensor_eq
+  copy_tensor := by simp only [Comon.tensorObj_comul, implies_true]
+  discard_tensor := by simp only [Comon.tensorObj_counit, implies_true]
   copy_unit := copy_unit_eq
   discard_unit := discard_unit_eq
 
