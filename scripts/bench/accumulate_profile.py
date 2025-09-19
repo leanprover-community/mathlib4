@@ -7,9 +7,10 @@ import sys
 
 cats = collections.defaultdict(lambda: 0)
 for line in sys.stdin:
-    sys.stderr.write(line)
-    if m := re.match("(.+?) ([\d.]+)(m?)s$", line):
+    if m := re.search(r"\t(.+?) ([\d.]+)(m?)s$", line) or \
+            re.search(r"(number of imported bytes|number of imported consts|number of imported entries):\s+(\d+)()$", line):
         cats[m[1].strip()] += float(m[2]) * (1e-3 if m[3] else 1)
+    sys.stderr.write(line)
 
 for cat in sorted(cats.keys()):
     cat2 = cat

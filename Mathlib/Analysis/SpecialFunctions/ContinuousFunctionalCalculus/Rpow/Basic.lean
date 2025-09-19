@@ -98,6 +98,14 @@ lemma nnrpow_nonneg {a : A} {x : ℝ≥0} : 0 ≤ a ^ x := cfcₙ_predicate _ a
 
 lemma nnrpow_def {a : A} {y : ℝ≥0} : a ^ y = cfcₙ (NNReal.nnrpow · y) a := rfl
 
+lemma nnrpow_eq_cfcₙ_real [T2Space A] [IsTopologicalRing A] (a : A)
+    (y : ℝ≥0) (ha : 0 ≤ a := by cfc_tac) : a ^ y = cfcₙ (fun x : ℝ => x ^ (y : ℝ)) a := by
+  rw [nnrpow_def, cfcₙ_nnreal_eq_real]
+  refine cfcₙ_congr ?_
+  intro x hx
+  have : 0 ≤ x := by grind
+  simp [this]
+
 lemma nnrpow_add {a : A} {x y : ℝ≥0} (hx : 0 < x) (hy : 0 < y) :
     a ^ (x + y) = a ^ x * a ^ y := by
   simp only [nnrpow_def]
@@ -175,7 +183,7 @@ lemma nnrpow_map_prod {a : A} {b : B} {x : ℝ≥0}
     nnrpow (a, b) x = (a ^ x, b ^ x) := by
   simp only [nnrpow_def]
   unfold nnrpow
-  refine cfcₙ_map_prod (S := ℝ) _ a b (by cfc_cont_tac) ?_
+  refine cfcₙ_map_prod (S := ℝ) _ a b (by fun_prop) ?_
   rw [Prod.le_def]
   constructor <;> simp [ha, hb]
 
@@ -219,9 +227,9 @@ section sqrt
 noncomputable def sqrt (a : A) : A := cfcₙ NNReal.sqrt a
 
 @[simp]
-lemma sqrt_nonneg {a : A} : 0 ≤ sqrt a := cfcₙ_predicate _ a
+lemma sqrt_nonneg (a : A) : 0 ≤ sqrt a := cfcₙ_predicate _ a
 
-lemma sqrt_eq_nnrpow {a : A} : sqrt a = a ^ (1 / 2 : ℝ≥0) := by
+lemma sqrt_eq_nnrpow (a : A) : sqrt a = a ^ (1 / 2 : ℝ≥0) := by
   simp only [sqrt]
   congr
   ext
@@ -313,6 +321,42 @@ lemma sqrt_map_pi {c : ∀ i, C i} (hc : ∀ i, 0 ≤ c i := by cfc_tac) :
   exact nnrpow_map_pi
 
 end pi
+
+/-- For an element `a` in a C⋆-algebra, TFAE:
+* `0 ≤ a`
+* `a = sqrt a * sqrt a`
+* `a = b * b` for some nonnegative `b`
+* `a = b * b` for some self-adjoint `b`
+* `a = star b * b` for some `b`
+* `a = b * star b` for some `b`
+* `a` is self-adjoint and has nonnegative spectrum -/
+theorem _root_.CStarAlgebra.nonneg_TFAE {a : A} :
+    [ 0 ≤ a,
+      a = sqrt a * sqrt a,
+      ∃ b : A, 0 ≤ b ∧ a = b * b,
+      ∃ b : A, IsSelfAdjoint b ∧ a = b * b,
+      ∃ b : A, a = star b * b,
+      ∃ b : A, a = b * star b,
+      IsSelfAdjoint a ∧ QuasispectrumRestricts a ContinuousMap.realToNNReal ].TFAE := by
+  tfae_have 1 ↔ 7 := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts
+  tfae_have 1 → 2 := fun h => sqrt_mul_sqrt_self a |>.symm
+  tfae_have 2 → 3 := fun h => ⟨sqrt a, sqrt_nonneg a, h⟩
+  tfae_have 3 → 4 := fun ⟨b, hb⟩ => ⟨b, hb.1.isSelfAdjoint, hb.2⟩
+  tfae_have 4 → 5 := fun ⟨b, hb⟩ => ⟨b, hb.1.symm ▸ hb.2⟩
+  tfae_have 5 → 6 := fun ⟨b, hb⟩ => ⟨star b, star_star b |>.symm ▸ hb⟩
+  tfae_have 6 → 1 := fun ⟨b, hb⟩ => hb ▸ mul_star_self_nonneg _
+  tfae_finish
+
+theorem _root_.CStarAlgebra.nonneg_iff_eq_sqrt_mul_sqrt {a : A} :
+    0 ≤ a ↔ a = sqrt a * sqrt a := CStarAlgebra.nonneg_TFAE.out 0 1
+theorem _root_.CStarAlgebra.nonneg_iff_eq_nonneg_mul_self {a : A} :
+    0 ≤ a ↔ ∃ b, 0 ≤ b ∧ a = b * b := CStarAlgebra.nonneg_TFAE.out 0 2
+theorem _root_.CStarAlgebra.nonneg_iff_eq_isSelfAdjoint_mul_self {a : A} :
+    0 ≤ a ↔ ∃ b, IsSelfAdjoint b ∧ a = b * b := CStarAlgebra.nonneg_TFAE.out 0 3
+theorem _root_.CStarAlgebra.nonneg_iff_eq_star_mul_self {a : A} :
+    0 ≤ a ↔ ∃ b, a = star b * b := CStarAlgebra.nonneg_TFAE.out 0 4
+theorem _root_.CStarAlgebra.nonneg_iff_eq_mul_star_self {a : A} :
+    0 ≤ a ↔ ∃ b, a = b * star b := CStarAlgebra.nonneg_TFAE.out 0 5
 
 end sqrt
 
@@ -536,7 +580,7 @@ lemma nnrpow_eq_rpow {a : A} {x : ℝ≥0} (hx : 0 < x) : a ^ x = a ^ (x : ℝ) 
 
 lemma sqrt_eq_rpow {a : A} : sqrt a = a ^ (1 / 2 : ℝ) := by
   have : a ^ (1 / 2 : ℝ) = a ^ ((1 / 2 : ℝ≥0) : ℝ) := rfl
-  rw [this, ← nnrpow_eq_rpow (by norm_num), sqrt_eq_nnrpow (A := A)]
+  rw [this, ← nnrpow_eq_rpow (by simp), sqrt_eq_nnrpow a]
 
 lemma sqrt_eq_cfc {a : A} : sqrt a = cfc NNReal.sqrt a := by
   unfold sqrt
@@ -568,7 +612,7 @@ lemma sqrt_rpow {a : A} {x : ℝ} (h : IsUnit a)
 lemma rpow_sqrt (a : A) (x : ℝ) (h : IsUnit a)
     (ha : 0 ≤ a := by cfc_tac) : (sqrt a) ^ x = a ^ (x / 2) := by
   rw [sqrt_eq_rpow, div_eq_mul_inv, one_mul,
-      rpow_rpow _ _ _ h (by norm_num), inv_mul_eq_div]
+      rpow_rpow _ _ _ h (by simp), inv_mul_eq_div]
 
 lemma sqrt_rpow_nnreal {a : A} {x : ℝ≥0} : sqrt (a ^ (x : ℝ)) = a ^ (x / 2 : ℝ) := by
   by_cases htriv : 0 ≤ a
@@ -585,11 +629,11 @@ lemma rpow_sqrt_nnreal {a : A} {x : ℝ≥0}
     (ha : 0 ≤ a := by cfc_tac) : (sqrt a) ^ (x : ℝ) = a ^ (x / 2 : ℝ) := by
   by_cases hx : x = 0
   case pos =>
-    have ha' : 0 ≤ sqrt a := sqrt_nonneg
+    have ha' : 0 ≤ sqrt a := sqrt_nonneg _
     simp [hx, rpow_zero _ ha', rpow_zero _ ha]
   case neg =>
     have h₁ : 0 ≤ (x : ℝ) := NNReal.zero_le_coe
-    rw [sqrt_eq_rpow, rpow_rpow_of_exponent_nonneg _ _ _ (by norm_num) h₁, one_div_mul_eq_div]
+    rw [sqrt_eq_rpow, rpow_rpow_of_exponent_nonneg _ _ _ (by simp) h₁, one_div_mul_eq_div]
 
 lemma isUnit_nnrpow_iff (a : A) (y : ℝ≥0) (hy : y ≠ 0) (ha : 0 ≤ a := by cfc_tac) :
     IsUnit (a ^ y) ↔ IsUnit a := by
@@ -604,7 +648,7 @@ lemma _root_.IsUnit.cfcNNRpow (a : A) (y : ℝ≥0) (ha_unit : IsUnit a) (hy : y
 
 lemma isUnit_sqrt_iff (a : A) (ha : 0 ≤ a := by cfc_tac) : IsUnit (sqrt a) ↔ IsUnit a := by
   rw [sqrt_eq_rpow]
-  exact isUnit_rpow_iff a _ (by norm_num) ha
+  exact isUnit_rpow_iff a _ (by simp) ha
 
 @[aesop safe apply]
 lemma _root_.IsUnit.cfcSqrt (a : A) (ha_unit : IsUnit a) (ha : 0 ≤ a := by cfc_tac) :

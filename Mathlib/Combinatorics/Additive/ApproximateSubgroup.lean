@@ -178,7 +178,7 @@ end IsApproximateSubgroup
 open Set in
 /-- A `1`-approximate subgroup is the same thing as a subgroup. -/
 @[to_additive (attr := simp)
-"A `1`-approximate subgroup is the same thing as a subgroup."]
+/-- A `1`-approximate subgroup is the same thing as a subgroup. -/]
 lemma isApproximateSubgroup_one {A : Set G} :
     IsApproximateSubgroup 1 (A : Set G) ↔ ∃ H : Subgroup G, H = A where
   mp hA := by

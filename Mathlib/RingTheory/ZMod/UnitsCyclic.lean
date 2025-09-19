@@ -14,7 +14,7 @@ import Mathlib.FieldTheory.Finite.Basic
 `ZMod.isCyclic_units_iff` : `(ZMod n)ˣ` is cyclic iff
 one of the following mutually exclusive cases happens:
   - `n = 0` (then `ZMod 0 ≃+* ℤ` and the group of units is cyclic of order 2);
-  - `n = `1`,  `2`  or `4`
+  - `n = 1`, `2` or `4`
   - `n` is a power `p ^ e` of an odd prime number, or twice such a power
   (with `1 ≤ e`).
 
@@ -33,7 +33,7 @@ The case of prime numbers is also an instance:
 * `ZMod.not_isCyclic_units_eight`: `(ZMod 8)ˣ` is not cyclic
 
 * `ZMod.orderOf_one_add_mul_prime`: the order of `1 + a * p`
-modulo `p ^ (n + 1)` is `p ^ n` when `p` does not divide `a`.
+  modulo `p ^ (n + 1)` is `p ^ n` when `p` does not divide `a`.
 
 * `ZMod.orderOf_five` : the order of `5` modulo `2 ^ (n + 3)` is `2 ^ (n + 1)`.
 
@@ -244,7 +244,7 @@ lemma orderOf_one_add_four_mul (a : ℤ) (ha : Odd a) (n : ℕ) :
 
 theorem orderOf_five (n : ℕ) :
     orderOf (5 : ZMod (2 ^ (n + 2))) = 2 ^ n := by
-  convert orderOf_one_add_four_mul 1 (by norm_num) n
+  convert orderOf_one_add_four_mul 1 (by simp) n
   norm_num
 
 end PrimePow
@@ -294,7 +294,7 @@ theorem not_isCyclic_units_of_mul_coprime (m n : ℕ)
 
 theorem isCyclic_units_iff_of_odd {n : ℕ} (hn : Odd n) :
     IsCyclic (ZMod n)ˣ ↔ ∃ (p m : ℕ), p.Prime ∧ Odd p ∧ n = p ^ m := by
-  have hn0 : n ≠ 0 := by rintro rfl; revert hn; decide
+  have hn0 : n ≠ 0 := by rintro rfl; exact Nat.not_odd_zero hn
   obtain rfl | h1 := eq_or_ne n 1
   · simp_rw [isCyclic_units_one, true_iff]
     exact ⟨3, 0, Nat.prime_three, by simp [Nat.odd_iff], by rw [pow_zero]⟩

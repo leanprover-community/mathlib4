@@ -30,7 +30,7 @@ instance : Neg αˣ :=
   ⟨fun u => ⟨-↑u, -↑u⁻¹, by simp, by simp⟩⟩
 
 /-- Representing an element of a ring's unit group as an element of the ring commutes with
-    mapping this element to its additive inverse. -/
+mapping this element to its additive inverse. -/
 @[simp, norm_cast]
 protected theorem val_neg (u : αˣ) : (↑(-u) : α) = -u :=
   rfl

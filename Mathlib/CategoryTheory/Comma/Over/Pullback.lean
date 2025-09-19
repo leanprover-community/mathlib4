@@ -26,7 +26,7 @@ In a category with binary products, for any object `X` the functor
 - `forgetAdjStar` is the adjunction  `forget X ⊣ star X`.
 
 ## TODO
-Show `star X` itself has a right adjoint provided `C` is cartesian closed and has pullbacks.
+Show `star X` itself has a right adjoint provided `C` is Cartesian closed and has pullbacks.
 -/
 
 noncomputable section
@@ -65,7 +65,7 @@ def mapPullbackAdj {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ pullback f :=
             Over.homMk (pullback.lift u.left x.hom <| by simp)
           invFun := fun v => Over.homMk (v.left ≫ pullback.fst _ _) <| by
             simp [← Over.w v, pullback.condition]
-          left_inv := by aesop_cat
+          left_inv := by cat_disch
           right_inv := fun v => by
             ext
             dsimp
@@ -165,7 +165,7 @@ def mapPushoutAdj {X Y : C} (f : X ⟶ Y) : pushout f ⊣ map f :=
         ext
         · simp
         · simpa using (Under.w u).symm
-      right_inv := by aesop_cat
+      right_inv := by cat_disch
     }
   }
 

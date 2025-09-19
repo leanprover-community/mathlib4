@@ -48,13 +48,13 @@ For a morphism property `P` local at the target and `f : X ⟶ Y`, we provide th
 
 For a morphism property `P` local at the source and `f : X ⟶ Y`, we provide these API lemmas:
 
-- `AlgebraicGeometry.IsLocalAtTarget.comp`:
+- `AlgebraicGeometry.IsLocalAtSource.comp`:
     `P` is preserved under composition with open immersions at the source.
-- `AlgebraicGeometry.IsLocalAtTarget.iff_of_iSup_eq_top`:
+- `AlgebraicGeometry.IsLocalAtSource.iff_of_iSup_eq_top`:
     `P f ↔ ∀ i, P (U.ι ≫ f)` for a family `U i` of open sets covering `X`.
-- `AlgebraicGeometry.IsLocalAtTarget.iff_of_openCover`:
+- `AlgebraicGeometry.IsLocalAtSource.iff_of_openCover`:
     `P f ↔ ∀ i, P (𝒰.map i ≫ f)` for `𝒰 : X.openCover`.
-- `AlgebraicGeometry.IsLocalAtTarget.of_isOpenImmersion`: If `P` contains identities then `P` holds
+- `AlgebraicGeometry.IsLocalAtSource.of_isOpenImmersion`: If `P` contains identities then `P` holds
     for open immersions.
 
 ## `AffineTargetMorphismProperty`
@@ -86,7 +86,7 @@ For `HasAffineProperty P Q` and `f : X ⟶ Y`, we provide these API lemmas:
     `P f ↔ ∀ i, Q (f ∣_ U i)` for a family `U i` of affine open sets covering `Y`.
 - `AlgebraicGeometry.HasAffineProperty.iff_of_openCover`:
     `P f ↔ ∀ i, P (𝒰.pullbackHom f i)` for affine open covers `𝒰` of `Y`.
-- `AlgebraicGeometry.HasAffineProperty.isStableUnderBaseChange_mk`:
+- `AlgebraicGeometry.HasAffineProperty.isStableUnderBaseChange`:
     If `Q` is stable under affine base change, then `P` is stable under arbitrary base change.
 -/
 
@@ -407,7 +407,7 @@ class IsLocal (P : AffineTargetMorphismProperty) : Prop where
   to_basicOpen :
     ∀ {X Y : Scheme} [IsAffine Y] (f : X ⟶ Y) (r : Γ(Y, ⊤)), P f → P (f ∣_ Y.basicOpen r)
   /-- `P` for `f` if `P` holds for `f` restricted to basic sets of a spanning set of the global
-    sections -/
+  sections -/
   of_basicOpenCover :
     ∀ {X Y : Scheme} [IsAffine Y] (f : X ⟶ Y) (s : Finset Γ(Y, ⊤))
       (_ : Ideal.span (s : Set Γ(Y, ⊤)) = ⊤), (∀ r : s, P (f ∣_ Y.basicOpen r.1)) → P f
@@ -430,7 +430,7 @@ def IsStableUnderBaseChange (P : AffineTargetMorphismProperty) : Prop :=
 lemma IsStableUnderBaseChange.mk (P : AffineTargetMorphismProperty) [P.toProperty.RespectsIso]
     (H : ∀ ⦃X Y S : Scheme⦄ [IsAffine S] [IsAffine X] (f : X ⟶ S) (g : Y ⟶ S),
       P g → P (pullback.fst f g)) : P.IsStableUnderBaseChange := by
-  intros Z X Y S _ _ f g f' g' h hg
+  intro Z X Y S _ _ f g f' g' h hg
   rw [← P.cancel_left_of_respectsIso h.isoPullback.inv, h.isoPullback_inv_fst]
   exact H f g hg
 

@@ -81,6 +81,12 @@ lemma map_single (i : m) (j : n) (a : α) {β : Type*} [Zero β]
 
 @[deprecated (since := "2025-05-05")] alias map_stdBasisMatrix := map_single
 
+theorem single_mem_matrix {S : Set α} (hS : 0 ∈ S) {i : m} {j : n} {a : α} :
+    Matrix.single i j a ∈ S.matrix ↔ a ∈ S := by
+  simp only [Set.mem_matrix, single, of_apply]
+  conv_lhs => intro _ _; rw [ite_mem]
+  simp [hS]
+
 end Zero
 
 theorem single_add [AddZeroClass α] (i : m) (j : n) (a b : α) :
@@ -96,7 +102,7 @@ theorem single_mulVec [NonUnitalNonAssocSemiring α] [Fintype m]
     mulVec (single i j c) x = Function.update (0 : n → α) i (c * x j) := by
   ext i'
   simp [single, mulVec, dotProduct]
-  rcases eq_or_ne i i' with rfl|h
+  rcases eq_or_ne i i' with rfl | h
   · simp
   simp [h, h.symm]
 
@@ -112,7 +118,6 @@ theorem matrix_eq_sum_single [AddCommMonoid α] [Fintype m] [Fintype n] (x : Mat
 
 theorem single_eq_single_vecMulVec_single [MulZeroOneClass α] (i : m) (j : n) :
     single i j (1 : α) = vecMulVec (Pi.single i 1) (Pi.single j 1) := by
-  ext i' j'
   simp [-mul_ite, single, vecMulVec, ite_and, Pi.single_apply, eq_comm]
 
 @[deprecated (since := "2025-05-05")]
@@ -203,16 +208,23 @@ def liftLinear : (m → n → α →ₗ[R] β) ≃ₗ[S] (Matrix m n α →ₗ[R
   LinearEquiv.piCongrRight (fun _ => LinearMap.lsum R _ S) ≪≫ₗ LinearMap.lsum R _ S ≪≫ₗ
     LinearEquiv.congrLeft _ _ (ofLinearEquiv _)
 
+-- not `simp` to let `liftLinear_single` fire instead
+theorem liftLinear_apply (f : m → n → α →ₗ[R] β) (M : Matrix m n α) :
+    liftLinear S f M = ∑ i, ∑ j, f i j (M i j) := by
+  simp [liftLinear, map_sum, LinearEquiv.congrLeft]
+
 @[simp]
-theorem liftLinear_piSingle (f : m → n → α →ₗ[R] β) (i : m) (j : n) (a : α) :
+theorem liftLinear_single (f : m → n → α →ₗ[R] β) (i : m) (j : n) (a : α) :
     liftLinear S f (Matrix.single i j a) = f i j a := by
   dsimp [liftLinear, -LinearMap.lsum_apply, LinearEquiv.congrLeft, LinearEquiv.piCongrRight]
   simp_rw [of_symm_single, LinearMap.lsum_piSingle]
 
+@[deprecated (since := "2025-08-13")] alias liftLinear_piSingle := liftLinear_single
+
 @[simp]
 theorem liftLinear_comp_singleLinearMap (f : m → n → α →ₗ[R] β) (i : m) (j : n) :
     liftLinear S f ∘ₗ Matrix.singleLinearMap _ i j = f i j :=
-  LinearMap.ext <| liftLinear_piSingle S f i j
+  LinearMap.ext <| liftLinear_single S f i j
 
 @[simp]
 theorem liftLinear_singleLinearMap [Module S α] [SMulCommClass R S α] :
@@ -347,7 +359,7 @@ variable [Fintype n] [Semiring α]
 theorem row_eq_zero_of_commute_single {i j k : n} {M : Matrix n n α}
     (hM : Commute (single i j 1) M) (hkj : k ≠ j) : M j k = 0 := by
   have := ext_iff.mpr hM i k
-  aesop
+  simp_all
 
 @[deprecated (since := "2025-05-05")]
 alias row_eq_zero_of_commute_stdBasisMatrix := row_eq_zero_of_commute_single
@@ -355,7 +367,7 @@ alias row_eq_zero_of_commute_stdBasisMatrix := row_eq_zero_of_commute_single
 theorem col_eq_zero_of_commute_single {i j k : n} {M : Matrix n n α}
     (hM : Commute (single i j 1) M) (hki : k ≠ i) : M k i = 0 := by
   have := ext_iff.mpr hM k j
-  aesop
+  simp_all
 
 @[deprecated (since := "2025-05-05")]
 alias col_eq_zero_of_commute_stdBasisMatrix := col_eq_zero_of_commute_single
@@ -363,7 +375,7 @@ alias col_eq_zero_of_commute_stdBasisMatrix := col_eq_zero_of_commute_single
 theorem diag_eq_of_commute_single {i j : n} {M : Matrix n n α}
     (hM : Commute (single i j 1) M) : M i i = M j j := by
   have := ext_iff.mpr hM i j
-  aesop
+  simp_all
 
 @[deprecated (since := "2025-05-05")]
 alias diag_eq_of_commute_stdBasisMatrix := diag_eq_of_commute_single
@@ -409,6 +421,37 @@ theorem mem_range_scalar_iff_commute_single' {M : Matrix n n α} :
 
 @[deprecated (since := "2025-05-05")]
 alias mem_range_scalar_iff_commute_stdBasisMatrix' := mem_range_scalar_iff_commute_single'
+
+/-- The center of `Matrix n n α` is equal to the image of the center of `α` under `scalar n`. -/
+theorem center_eq_scalar_image :
+    Set.center (Matrix n n α) = scalar n '' Set.center α := Set.ext fun x ↦ by
+  simp_rw [Set.mem_image, Semigroup.mem_center_iff]
+  refine ⟨fun hx ↦ ?_, fun ⟨x, hx, eq⟩ y ↦ eq ▸ scalar_commute x (hx · |>.symm) y |>.symm⟩
+  refine (isEmpty_or_nonempty n).elim (fun _ ↦ ⟨0, by simp [nontriviality]⟩) fun ⟨i⟩ ↦ ?_
+  obtain ⟨x, rfl⟩ := mem_range_scalar_iff_commute_single'.mpr fun _ _ ↦ hx _
+  exact ⟨x, by simpa using fun r ↦ congr($(hx (single i i r)) i i)⟩
+
+theorem submonoidCenter_eq_scalar_map :
+    Submonoid.center (Matrix n n α) = (Submonoid.center α).map (scalar n) :=
+  SetLike.coe_injective center_eq_scalar_image
+
+theorem subsemigroupCenter_eq_scalar_map :
+    Subsemigroup.center (Matrix n n α) = (Subsemigroup.center α).map (scalar n).toMulHom :=
+  SetLike.coe_injective center_eq_scalar_image
+
+theorem subsemiringCenter_eq_scalar_map :
+    Subsemiring.center (Matrix n n α) = (Subsemiring.center α).map (scalar n) :=
+  SetLike.coe_injective center_eq_scalar_image
+
+theorem subringCenter_eq_scalar_map [Ring R] :
+    Subring.center (Matrix n n R) = (Subring.center R).map (scalar n) :=
+  SetLike.coe_injective center_eq_scalar_image
+
+/-- For a commutative semiring `R`, the center of `Matrix n n R` is the range of `scalar n`
+(i.e., the span of `{1}`). -/
+@[simp] theorem center_eq_range [CommSemiring R] :
+    Set.center (Matrix n n R) = Set.range (scalar n) := by
+  rw [center_eq_scalar_image, Set.center_eq_univ, Set.image_univ]
 
 end Commute
 

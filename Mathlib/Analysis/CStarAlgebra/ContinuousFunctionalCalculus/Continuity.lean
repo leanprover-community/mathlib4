@@ -97,7 +97,7 @@ theorem tendsto_cfc_fun {l : Filter X} {F : X → R → R} {f : R → R} {a : A}
     intro t
     simp only [eventually_comap, Subtype.forall]
     peel h_tendsto t with ht x _
-    aesop
+    simp_all
   · simpa [cfc_apply_of_not_predicate a ha] using tendsto_const_nhds
 
 /-- If `f : X → R → R` tends to `f x₀` uniformly (along `𝓝 x₀`) on the spectrum of `a`,
@@ -330,7 +330,8 @@ theorem continuousOn_cfc_nnreal {s : Set ℝ≥0} (hs : IsCompact s)
     intro x hx
     simpa
   refine continuousOn_cfc A (hs.image NNReal.continuous_coe) _ hf |>.mono fun a ha ↦ ?_
-  simp only [Set.mem_setOf_eq, nonneg_iff_isSelfAdjoint_and_spectrumRestricts] at ha ⊢
+  simp only [Set.mem_setOf_eq, nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts] at ha ⊢
+  rw [← SpectrumRestricts] at ha
   refine ⟨ha.1.1, ?_⟩
   rw [← ha.1.2.algebraMap_image]
   exact Set.image_mono ha.2
@@ -450,7 +451,7 @@ theorem tendsto_cfcₙ_fun {l : Filter X} {F : X → R → R} {f : R → R} {a :
     intro t
     simp only [eventually_comap, Subtype.forall]
     peel h_tendsto t with ht x _
-    aesop
+    simp_all
   · simpa [cfcₙ_apply_of_not_predicate a ha] using tendsto_const_nhds
 
 /-- If `f : X → R → R` tends to `f x₀` uniformly (along `𝓝 x₀`) on the spectrum of `a`,
@@ -562,10 +563,9 @@ theorem continuous_cfcₙHomSuperset_left
     Continuous (fun x ↦ cfcₙHomSuperset (ha' x) (ha x) f) := by
   have : CompactSpace s := by rwa [isCompact_iff_compactSpace] at hs
   induction f using ContinuousMapZero.induction_on_of_compact with
-  | h0 => rfl
   | zero => simpa [map_zero] using continuous_const
-  | id => simpa only [cfcₙHomSuperset_id']
-  | star_id => simp only [map_star, cfcₙHomSuperset_id']; fun_prop
+  | id => simpa only [cfcₙHomSuperset_id]
+  | star_id => simp only [map_star, cfcₙHomSuperset_id]; fun_prop
   | add f g hf hg => simpa only [map_add] using hf.add hg
   | mul f g hf hg => simpa only [map_mul] using hf.mul hg
   | smul r f hf => simpa only [map_smul] using hf.const_smul r

@@ -26,7 +26,8 @@ variable {f g : E → F} {p pf pg : FormalMultilinearSeries 𝕜 E F} {x : E} {r
 
 theorem hasFiniteFPowerSeriesOnBall_const {c : F} {e : E} :
     HasFiniteFPowerSeriesOnBall (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e 1 ⊤ :=
-  ⟨hasFPowerSeriesOnBall_const, fun n hn ↦ constFormalMultilinearSeries_apply (id hn : 0 < n).ne'⟩
+  ⟨hasFPowerSeriesOnBall_const,
+    fun _ hn ↦ constFormalMultilinearSeries_apply_of_nonzero (Nat.ne_zero_of_lt hn)⟩
 
 theorem hasFiniteFPowerSeriesAt_const {c : F} {e : E} :
     HasFiniteFPowerSeriesAt (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e 1 :=
@@ -119,8 +120,6 @@ lemma cpolynomialAt : CPolynomialAt 𝕜 f x :=
 
 lemma cpolynomialOn : CPolynomialOn 𝕜 f s := fun _ _ ↦ f.cpolynomialAt
 
-@[deprecated (since := "2025-02-15")] alias cpolyomialOn := cpolynomialOn
-
 lemma analyticOnNhd : AnalyticOnNhd 𝕜 f s := f.cpolynomialOn.analyticOnNhd
 
 lemma analyticOn : AnalyticOn 𝕜 f s := f.analyticOnNhd.analyticOn
@@ -169,13 +168,16 @@ lemma cpolynomialAt_uncurry_of_multilinear :
   f.hasFiniteFPowerSeriesOnBall_uncurry_of_multilinear.cpolynomialAt_of_mem
     (by simp only [Metric.emetric_ball_top, Set.mem_univ])
 
-lemma cpolyomialOn_uncurry_of_multilinear :
+lemma cpolynomialOn_uncurry_of_multilinear :
     CPolynomialOn 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s :=
   fun _ _ ↦ f.cpolynomialAt_uncurry_of_multilinear
 
+@[deprecated (since := "2025-09-15")]
+alias cpolyomialOn_uncurry_of_multilinear := cpolynomialOn_uncurry_of_multilinear
+
 lemma analyticOnNhd_uncurry_of_multilinear :
     AnalyticOnNhd 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s :=
-  f.cpolyomialOn_uncurry_of_multilinear.analyticOnNhd
+  f.cpolynomialOn_uncurry_of_multilinear.analyticOnNhd
 
 lemma analyticOn_uncurry_of_multilinear :
     AnalyticOn 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s :=

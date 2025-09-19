@@ -37,7 +37,8 @@ open scoped NNReal
 /-- `x^n`, `n : ℕ` is strictly convex on `[0, +∞)` for all `n` greater than `2`. -/
 theorem strictConvexOn_pow {n : ℕ} (hn : 2 ≤ n) : StrictConvexOn ℝ (Ici 0) fun x : ℝ => x ^ n := by
   apply StrictMonoOn.strictConvexOn_of_deriv (convex_Ici _) (continuousOn_pow _)
-  rw [deriv_pow', interior_Ici]
+  eta_expand
+  simp_rw [deriv_pow_field, interior_Ici]
   exact fun x (hx : 0 < x) y _ hxy => mul_lt_mul_of_pos_left
     (pow_lt_pow_left₀ hxy hx.le <| Nat.sub_ne_zero_of_lt hn) (by positivity)
 
@@ -45,7 +46,8 @@ theorem strictConvexOn_pow {n : ℕ} (hn : 2 ≤ n) : StrictConvexOn ℝ (Ici 0)
 theorem Even.strictConvexOn_pow {n : ℕ} (hn : Even n) (h : n ≠ 0) :
     StrictConvexOn ℝ Set.univ fun x : ℝ => x ^ n := by
   apply StrictMono.strictConvexOn_univ_of_deriv (continuous_pow n)
-  rw [deriv_pow']
+  eta_expand
+  simp_rw [deriv_pow_field]
   replace h := Nat.pos_of_ne_zero h
   exact StrictMono.const_mul (Odd.strictMono_pow <| Nat.Even.sub_odd h hn <| Nat.odd_iff.2 rfl)
     (Nat.cast_pos.2 h)
@@ -59,8 +61,7 @@ theorem Finset.prod_nonneg_of_card_nonpos_even {α β : Type*}
       Finset.prod_nonneg fun x _ => by
         split_ifs with hx
         · simp [hx]
-        simp? at hx ⊢ says simp only [not_le, one_mul] at hx ⊢
-        exact le_of_lt hx
+        linarith
     _ = _ := by
       rw [Finset.prod_mul_distrib, Finset.prod_ite, Finset.prod_const_one, mul_one,
         Finset.prod_const, neg_one_pow_eq_pow_mod_two, Nat.even_iff.1 h0, pow_zero, one_mul]

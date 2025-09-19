@@ -80,7 +80,7 @@ lemma hom_ext {X Y : NonemptyFinLinOrd} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f
 @[simp]
 lemma hom_ofHom {X Y : Type u} [Nonempty X] [LinearOrder X] [Fintype X] [Nonempty Y]
     [LinearOrder Y] [Fintype Y] (f : X →o Y) :
-  (ofHom f).hom = f := rfl
+    (ofHom f).hom = f := rfl
 
 @[simp]
 lemma ofHom_hom {X Y : NonemptyFinLinOrd} (f : X ⟶ Y) :
@@ -120,8 +120,7 @@ def dualEquiv : NonemptyFinLinOrd ≌ NonemptyFinLinOrd where
 theorem mono_iff_injective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
     Mono f ↔ Function.Injective f := by
   refine ⟨?_, ConcreteCategory.mono_of_injective f⟩
-  intro
-  intro a₁ a₂ h
+  intro _ a₁ a₂ h
   let X := of (ULift (Fin 1))
   let g₁ : X ⟶ A := ofHom ⟨fun _ => a₁, fun _ _ _ => by rfl⟩
   let g₂ : X ⟶ A := ofHom ⟨fun _ => a₂, fun _ _ _ => by rfl⟩
