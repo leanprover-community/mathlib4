@@ -19,17 +19,17 @@ import Mathlib.Tactic.Bound
 
 namespace PowerSeries
 
+variable {R : Type*} [NormedRing R] (c : ℝ)
+
 open PowerSeries Filter
 open scoped Topology
 
 /-- A power series over `R` is restricted of paramerter `c` if we have
-  `‖coeff R i f‖ * c ^ i → 0`. -/
-def IsRestricted {R : Type*} [NormedRing R] (c : ℝ) (f : PowerSeries R) :=
+`‖coeff R i f‖ * c ^ i → 0`. -/
+def IsRestricted (f : PowerSeries R) :=
   Tendsto (fun (i : ℕ) => (norm (coeff R i f)) * c ^ i) atTop (𝓝 0)
 
 namespace IsRestricted
-
-variable {R : Type*} [NormedRing R] (c : ℝ)
 
 lemma isRestricted_iff {f : PowerSeries R} : IsRestricted c f ↔
     ∀ ε, 0 < ε → ∃ N, ∀ n, N ≤ n → ‖‖(coeff R n) f‖ * c ^ n‖ < ε := by
