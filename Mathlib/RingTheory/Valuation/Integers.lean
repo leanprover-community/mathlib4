@@ -359,9 +359,10 @@ lemma ltSubmodule_v_le_of_mem {K : Type*} [Field K] {v : Valuation K Γ₀}
 certain value. -/
 def leIdeal (γ : Γ₀) : Ideal 𝓞 where
   __ := AddSubgroup.addSubgroupOf (leAddSubgroup v γ) v.integer.toAddSubgroup
-  smul_mem' r x h := by
-    change v ((r : R) * x) ≤ γ -- not sure why simp can't get us to here
-    simpa [Subring.smul_def] using mul_le_of_le_one_of_le r.prop h
+  smul_mem' r x h :=
+    -- need to specify the subgroup, it is not inferred otherwise
+    (AddSubgroup.mem_addSubgroupOf (K := v.integer.toAddSubgroup)).mpr <| by
+      simpa using mul_le_of_le_one_of_le r.prop h
 
 /-- The ideal of elements of the valuation subring whose valuation is less than a certain unit. -/
 def ltIdeal (γ : Γ₀ˣ) : Ideal 𝓞 where
