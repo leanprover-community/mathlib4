@@ -625,10 +625,10 @@ section CommSemiring
 
 open Finset.HasAntidiagonal Finset
 
-variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
+variable {R : Type*} [CommSemiring R] {ι : Type*}
 
 /-- Coefficients of a product of power series -/
-theorem coeff_prod [DecidableEq σ]
+theorem coeff_prod [DecidableEq ι] [DecidableEq σ]
     (f : ι → MvPowerSeries σ R) (d : σ →₀ ℕ) (s : Finset ι) :
     coeff d (∏ j ∈ s, f j) =
       ∑ l ∈ finsuppAntidiag s d,
@@ -665,9 +665,9 @@ theorem coeff_prod [DecidableEq σ]
 
 theorem prod_monomial (f : ι → σ →₀ ℕ) (g : ι → R) (s : Finset ι) :
     ∏ i ∈ s, monomial (f i) (g i) = monomial (∑ i ∈ s, f i) (∏ i ∈ s, g i) := by
-  induction s using Finset.induction with
+  induction s using Finset.cons_induction with
   | empty => simp
-  | insert a s ha h => simp [ha, h, monomial_mul_monomial]
+  | cons a s ha h => simp [h, monomial_mul_monomial]
 
 /-- The `d`th coefficient of a power of a multivariate power series
 is the sum, indexed by `finsuppAntidiag (Finset.range n) d`, of products of coefficients -/
