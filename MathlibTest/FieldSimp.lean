@@ -471,7 +471,7 @@ example (P : ℝ → Prop) {x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
   fail_if_success (guard_target = P 2) -- this simply records current behaviour, delete if needed
   field_simp
   guard_target = P 2
-  sorry
+  exact test_sorry
 
 example (P : ℝ → Prop) {x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
     P ((4 * x + y) / x / (x / (3 * x + y)) - (5 * x + y) / x / (x / (2 * x + y))) := by
@@ -481,7 +481,7 @@ example (P : ℝ → Prop) {x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
   fail_if_success (guard_target = P 2) -- this simply records current behaviour, delete if needed
   field_simp
   guard_target = P 2
-  sorry
+  exact test_sorry
 
 end
 
