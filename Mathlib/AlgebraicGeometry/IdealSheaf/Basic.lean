@@ -675,7 +675,7 @@ lemma Hom.iUnion_support_ker_openCover_map_comp
     (f : X.Hom Y) [QuasiCompact f] (𝒰 : X.OpenCover) [Finite 𝒰.I₀] :
     ⋃ i, ((𝒰.f i ≫ f).ker.support : Set Y) = f.ker.support := by
   cases isEmpty_or_nonempty 𝒰.I₀
-  · have : IsEmpty X := ⟨fun x ↦ (IsEmpty.false (𝒰.idx x))⟩
+  · have : IsEmpty X := Function.isEmpty 𝒰.idx
     simp [ker_eq_top_of_isEmpty]
   suffices ∀ U : Y.affineOpens,
       (⋃ i, (𝒰.f i ≫ f).ker.support) ∩ U = (f.ker.support ∩ U : Set Y) by

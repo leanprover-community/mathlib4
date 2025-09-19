@@ -54,7 +54,7 @@ structure Cover (P : MorphismProperty Scheme.{u}) (S : Scheme.{u}) where
   X (j : I₀) : Scheme
   /-- the components map to `X` -/
   f (j : I₀) : X j ⟶ S
-  /-- given a point of `x : X`, `f x` is the index of the component which contains `x` -/
+  /-- given a point of `x : X`, `idx x` is the index of the component which contains `x` -/
   idx (x : S) : I₀
   /-- the components cover `X` -/
   covers (x : S) : x ∈ Set.range (f (idx x)).base
