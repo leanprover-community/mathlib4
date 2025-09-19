@@ -199,7 +199,7 @@ theorem isLimit_iff_isSheafFor_presieve :
     iff for every covering presieve `R` of `K`, the natural cone associated to `P` and
     `Sieve.generate R` is a limit cone. -/
 theorem isSheaf_iff_isLimit_pretopology [HasPullbacks C] (K : Pretopology C) :
-    IsSheaf (K.toGrothendieck C) P ↔
+    IsSheaf K.toGrothendieck P ↔
       ∀ ⦃X : C⦄ (R : Presieve X),
         R ∈ K X → Nonempty (IsLimit (P.mapCone (generate R).arrows.cocone.op)) := by
   dsimp [IsSheaf]
