@@ -154,8 +154,6 @@ def checkNames (line authors : String) (offset : String.Pos) : Array (Syntax × 
         We are happy to add your name as an exception to the linter, though!")
   else return authorCheck
 
-#eval "Á".get 0 |>.isUpper
-
 /-- Return if `line` looks like a correct authors line in a copyright header.
 
 The `offset` input is used to shift the position information of the `Syntax` that the command
