@@ -5,7 +5,6 @@ Authors: Josha Dekker
 -/
 import Mathlib.MeasureTheory.Group.Defs
 import Mathlib.MeasureTheory.Measure.Prod
-
 /-!
 # The multiplicative and additive convolution of measures
 
@@ -90,6 +89,14 @@ measure. -/]
 theorem mconv_zero (μ : Measure M) : μ ∗ₘ (0 : Measure M) = (0 : Measure M) := by
   unfold mconv
   simp
+
+-- `mconv` needs an instance to get `SFinite (c • ν)` from `SFinite ν`,
+-- hence it is placed in the `WithDensity` file, where the instance is defined.
+@[to_additive]
+theorem mconv_smul_left (μ : Measure M) (ν : Measure M) (s : ℝ≥0∞) :
+    s • μ ∗ₘ ν = s • (μ ∗ₘ ν) := by
+  unfold mconv
+  rw [← Measure.map_smul]
 
 @[to_additive]
 theorem mconv_add [MeasurableMul₂ M] (μ : Measure M) (ν : Measure M) (ρ : Measure M) [SFinite μ]
