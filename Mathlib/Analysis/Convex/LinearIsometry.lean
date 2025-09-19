@@ -1,8 +1,9 @@
 /-
-Copyright (c) 2022 Yury Kudryashov. All rights reserved.
+Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Analysis.Convex.ContinuousLinearEquiv
 import Mathlib.Analysis.Convex.StrictConvexSpace
 import Mathlib.Analysis.Normed.Operator.LinearIsometry
 
@@ -10,7 +11,6 @@ import Mathlib.Analysis.Normed.Operator.LinearIsometry
 # (Strict) convexity and linear isometries
 
 In this file we prove some basic lemmas about (strict) convexity and linear isometries.
-
 -/
 
 open Function Set Metric
@@ -26,14 +26,12 @@ variable {𝕜 E F : Type*}
 @[simp]
 lemma LinearIsometryEquiv.strictConvex_preimage {s : Set F} (e : E ≃ₗᵢ[𝕜] F) :
     StrictConvex 𝕜 (e ⁻¹' s) ↔ StrictConvex 𝕜 s :=
-  ⟨fun h ↦ LeftInverse.preimage_preimage e.right_inv s ▸
-    h.linear_preimage e.symm.toLinearIsometry.toLinearMap e.symm.continuous e.symm.injective,
-    fun h ↦ h.linear_preimage e.toLinearIsometry.toLinearMap e.continuous e.injective⟩
+  e.toContinuousLinearEquiv.strictConvex_preimage
 
 @[simp]
 lemma LinearIsometryEquiv.strictConvex_image {s : Set E} (e : E ≃ₗᵢ[𝕜] F) :
-    StrictConvex 𝕜 (e '' s) ↔ StrictConvex 𝕜 s := by
-  rw [e.image_eq_preimage, e.symm.strictConvex_preimage]
+    StrictConvex 𝕜 (e '' s) ↔ StrictConvex 𝕜 s :=
+  e.toContinuousLinearEquiv.strictConvex_image
 
 end SeminormedAddCommGroup
 
