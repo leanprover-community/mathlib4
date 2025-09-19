@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.Algebra.Module.FinitePresentation
-import Mathlib.RingTheory.IsAdjoinRoot
+import Mathlib.RingTheory.AdjoinRoot
 import Mathlib.RingTheory.MvPolynomial.Basic
 
 /-!
