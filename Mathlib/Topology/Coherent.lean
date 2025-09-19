@@ -198,7 +198,6 @@ variable {i : ι}
 theorem liftCover'_coe (x : S i) : hS.liftCover' surj φ hφ x = φ i x := by
   simp [IsCoherentWith.liftCover']
 
-@[simp]
 theorem liftCover'_of_mem {x : X} (hx : x ∈ S i) : hS.liftCover' surj φ hφ x = φ i ⟨x, hx⟩ :=
   hS.liftCover'_coe ⟨x, hx⟩
 
