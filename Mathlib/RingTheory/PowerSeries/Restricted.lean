@@ -48,6 +48,17 @@ lemma one : IsRestricted c (1 : PowerSeries R) := by
   · omega
   · simpa
 
+lemma monomials (n : ℕ) (a : R) : IsRestricted c (monomial R n a) := by
+  simp only [monomial_eq_mk, isRestricted_iff, coeff_mk, norm_mul, norm_pow,
+    Real.norm_eq_abs, abs_norm]
+  refine fun _ _ ↦ ⟨n + 1, fun _ _ ↦ ?_⟩
+  split
+  · omega
+  · simpa
+
+lemma constants (a : R) : IsRestricted c (C R a) := by
+  simpa [monomial_zero_eq_C_apply] using monomials c 0 a
+
 lemma add {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) :
     IsRestricted c (f + g) := by
   simp only [isRestricted_iff, map_add, norm_mul, norm_pow, Real.norm_eq_abs] at ⊢ hf hg
@@ -85,23 +96,20 @@ lemma convergenceSet_BddAbove {f : PowerSeries R} (hf : IsRestricted c f) :
     calc _ ≤ ‖(coeff R i) f‖ * |c ^ i| := by bound
          _ ≤ 1 := by simpa using (hf i h).le
 
-lemma convergenceSet_leNNeg {f : PowerSeries R} (hf : IsRestricted c f) :
-    ∃ A > 0, ∀ i, ‖coeff R i f‖ * c ^ i ≤ A := by
-  obtain ⟨x, hx, h⟩ := (bddAbove_iff_exists_ge 1).mp (convergenceSet_BddAbove c hf)
-  use x
-  constructor
-  · bound
-  · simp only [convergenceSet, Set.mem_setOf_eq, forall_exists_index, forall_apply_eq_imp_iff] at h
-    exact h
-
 variable [IsUltrametricDist R]
 
 open IsUltrametricDist
 
+-- (bddAbove_iff_exists_ge 1).mp
+
 lemma mul {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) :
     IsRestricted c (f * g) := by
-  obtain ⟨a, ha, fBound1⟩ := convergenceSet_leNNeg |c| ((isRestricted_iff_abs c f).mp hf)
-  obtain ⟨b, hb, gBound1⟩ := convergenceSet_leNNeg |c| ((isRestricted_iff_abs c g).mp hg)
+  obtain ⟨a, ha, fBound1⟩ := (bddAbove_iff_exists_ge 1).mp (convergenceSet_BddAbove _
+    ((isRestricted_iff_abs c f).mp hf))
+  obtain ⟨b, hb, gBound1⟩ := (bddAbove_iff_exists_ge 1).mp (convergenceSet_BddAbove _
+    ((isRestricted_iff_abs c g).mp hg))
+  simp only [convergenceSet, Set.mem_setOf_eq, forall_exists_index, forall_apply_eq_imp_iff]
+    at fBound1 gBound1
   simp only [isRestricted_iff, norm_mul, norm_pow, Real.norm_eq_abs, abs_norm,
     PowerSeries.coeff_mul] at ⊢ hf hg
   intro ε hε
@@ -121,15 +129,15 @@ lemma mul {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) 
           gcongr
           exact fBound2 fst (by omega)
          _ ≤ ε := by
-          simpa only [div_mul_comm] using ((mul_le_iff_le_one_left hε).mpr
-            ((div_le_one₀ (lt_sup_of_lt_left ha)).mpr (le_max_right a b)))
+          rw [div_mul_comm]
+          simpa only [div_mul_comm] using ((mul_le_iff_le_one_left hε).mpr (by bound))
   · calc _ < a * (ε / max a b) := by
           grw [fBound1 fst]
           gcongr
           exact gBound2 snd (by omega)
          _ ≤ ε := by
           simpa only [mul_div_left_comm] using ((mul_le_iff_le_one_right hε).mpr
-            ((div_le_one₀ (lt_sup_of_lt_left ha)).mpr (le_max_left a b)))
+            ((div_le_one₀ (by bound)).mpr (le_max_left a b)))
 
 end IsRestricted
 end PowerSeries
