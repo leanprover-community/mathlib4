@@ -145,16 +145,11 @@ def restrict₀ : A →*₀ ValueGroup₀ f where
 
 @[simp]
 lemma restrict₀_of_ne_zero {a : A} (h : f a ≠ 0) :
-    restrict₀ f a = (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f) :=
-  by simp [h]
-
-@[simp]
-lemma restrict₀_of_eq_zero {a : A} (h : f a = 0) :
-    restrict₀ f a = 0 := by simp [h]
+    restrict₀ f a = (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f) := by simp [h]
 
 lemma restrict₀_eq_zero_iff {a : A} : restrict₀ f a = 0 ↔ f a = 0 := by simp
 
-lemma restrict₀_eq (a : A) : valueGroup₀.embedding (restrict₀ f a) = f a := by
+lemma embedding_restrict₀ (a : A) : valueGroup₀.embedding (restrict₀ f a) = f a := by
   simp [restrict₀_apply]
   split_ifs <;>
   simp_all
@@ -182,14 +177,14 @@ lemma valueMonoid_eq_valueGroup' : (valueMonoid f : Set Bˣ) = valueGroup f := b
 
 lemma valueGroup_eq_range : Units.val '' (valueGroup f) = (range f \ {0}) := by
   ext x
+  simp only [mem_diff, mem_range, mem_singleton_iff, ← valueMonoid_eq_valueGroup' f, mem_image,
+    SetLike.mem_coe, mem_valueMonoid_iff, mem_preimage, mem_range]
   constructor
   · rintro ⟨y, hy, rfl⟩
-    simp only [mem_diff, mem_range, mem_singleton_iff, Units.ne_zero, not_false_eq_true, and_true]
-    obtain ⟨a, _⟩ := (valueMonoid_eq_valueGroup' f).symm ▸ hy
-    use a
+    simp only [Units.ne_zero, not_false_eq_true, and_true, hy]
   · rintro ⟨⟨y, hy⟩, hx₀⟩
     refine ⟨Units.mk0 x hx₀, ?_, rfl⟩
-    simpa [← valueMonoid_eq_valueGroup', Units.val_mk0, mem_range] using ⟨y, hy⟩
+    simpa [Units.val_mk0, mem_range] using ⟨y, hy⟩
 
 variable [DecidablePred fun b : B ↦ b = 0]
 
@@ -204,6 +199,10 @@ lemma restrict₀_range_eq_top : range (restrict₀ f) = ⊤ := by
     obtain ⟨v, hv⟩ := hu
     use v
     simp [restrict₀_apply, hv, Units.ne_zero, WithZero.coe]
+
+open Function
+
+variable [DecidablePred fun b : B ↦ b = 0]
 
 open Function
 

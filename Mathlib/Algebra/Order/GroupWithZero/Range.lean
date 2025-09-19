@@ -62,9 +62,11 @@ lemma valueGroup₀_OrderEmbedding'_mul (x y : ValueGroup₀ f) :
 
 instance : IsOrderedMonoid B := inferInstance
 
-instance : IsOrderedMonoid (WithZero Bˣ) := .comap WithZero.withZeroUnitsEquiv_strictMono
+instance : IsOrderedMonoid (WithZero Bˣ) := inferInstance
 
-instance : IsOrderedMonoid (ValueGroup₀ f) := .comap valueGroup₀_MonoidWithZeroHom_strictMono
+instance : IsOrderedMonoid (ValueGroup₀ f) :=
+  Function.Injective.isOrderedMonoid valueGroup₀_OrderEmbedding' valueGroup₀_OrderEmbedding'_mul
+    <| OrderEmbedding.le_iff_le valueGroup₀_OrderEmbedding'
 
 instance : LinearOrderedCommGroupWithZero (ValueGroup₀ f) where
   zero_le_one := by simp

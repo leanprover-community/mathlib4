@@ -92,14 +92,10 @@ lemma WithZero.withZeroUnitsEquiv_strictMono :
 
 /-- Given any linearly ordered commutative group with zero `α`, this is the order isomorphism
 between `WithZero αˣ` with `α`. -/
-@[simps!]
+-- @[simps!]
 def OrderIso.withZeroUnits : WithZero αˣ ≃o α where
   __ := withZeroUnitsEquiv
   map_rel_iff' := WithZero.withZeroUnitsEquiv_strictMono.le_iff_le
-
-lemma OrderIso.withZeroUnits_mul (x y : WithZero αˣ) :
-    OrderIso.withZeroUnits (x * y) = OrderIso.withZeroUnits x * OrderIso.withZeroUnits y :=
-  withZeroUnitsEquiv.map_mul _ _
 
 lemma WithZero.withZeroUnitsEquiv_symm_strictMono :
     StrictMono (withZeroUnitsEquiv (G := α)).symm :=
