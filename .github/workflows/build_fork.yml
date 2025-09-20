@@ -639,6 +639,12 @@ jobs:
         run: |
           lake build Batteries Qq Aesop ProofWidgets Plausible
 
+      - name: build AesopTest (nightly-testing only)
+        # Only run on the mathlib4-nightly-testing repository
+        if: github.repository == 'leanprover-community/mathlib4-nightly-testing'
+        run: |
+          lake build AesopTest
+
       # We no longer run `lean4checker` in regular CI, as it is quite expensive for little benefit.
       # Instead we run it in a cron job on master: see `lean4checker.yml`.
       # Output is posted to the zulip topic
