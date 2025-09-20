@@ -194,15 +194,86 @@ def zmodRepr : ℕ :=
 theorem zmodRepr_spec : zmodRepr x < p ∧ x - zmodRepr x ∈ maximalIdeal ℤ_[p] :=
   Classical.choose_spec (existsUnique_mem_range x).exists
 
-theorem zmodRepr_unique (y : ℕ) (hy₁ : y < p) (hy₂ : x - y ∈ maximalIdeal ℤ_[p]) : y = zmodRepr x :=
+theorem zmodRepr_unique (y : ℕ) (hy₁ : y < p) (hy₂ : x - y ∈ maximalIdeal ℤ_[p]) : zmodRepr x = y :=
   have h := (Classical.choose_spec (existsUnique_mem_range x)).right
-  (h y ⟨hy₁, hy₂⟩).trans (h (zmodRepr x) (zmodRepr_spec x)).symm
+  (h (zmodRepr x) (zmodRepr_spec x)).trans (h y ⟨hy₁, hy₂⟩).symm
 
 theorem zmodRepr_lt_p : zmodRepr x < p :=
   (zmodRepr_spec _).1
 
 theorem sub_zmodRepr_mem : x - zmodRepr x ∈ maximalIdeal ℤ_[p] :=
   (zmodRepr_spec _).2
+
+lemma zmodRepr_eq_zero_of_dvd {x : ℤ_[p]} (hx : (p : ℤ_[p]) ∣ x) : x.zmodRepr = 0 := by
+  apply zmodRepr_unique _ _ (Nat.Prime.pos Fact.out)
+  simp [maximalIdeal_eq_span_p, Ideal.mem_span_singleton, hx]
+
+@[simp]
+lemma zmodRepr_zero : (0 : ℤ_[p]).zmodRepr = 0 :=
+  zmodRepr_eq_zero_of_dvd (dvd_zero _)
+
+lemma norm_sub_zmodRepr_lt_one (x : ℤ_[p]) :
+    ‖x - x.zmodRepr‖ < 1 := by
+  rw [← mem_nonunits, ← IsLocalRing.mem_maximalIdeal]
+  exact sub_zmodRepr_mem _
+
+lemma norm_natCast_zmodRepr_eq_one_iff {x : ℤ_[p]} :
+    ‖(x.zmodRepr : ℤ_[p])‖ = 1 ↔ ‖x‖ = 1 := by
+  rcases eq_or_ne ‖(x.zmodRepr : ℤ_[p])‖ ‖x‖ with H | H
+  · rw [H]
+  · have := x.norm_sub_zmodRepr_lt_one
+    constructor <;> intro h <;> rw [← h] at this ⊢
+    · exact norm_eq_of_norm_sub_lt_right this
+    · exact (norm_eq_of_norm_sub_lt_left this).symm
+
+lemma zmodRepr_eq_zero_iff_dvd {x : ℤ_[p]} :
+    x.zmodRepr = 0 ↔ (p : ℤ_[p]) ∣ x := by
+  refine ⟨fun H ↦ ?_, zmodRepr_eq_zero_of_dvd⟩
+  rw [← norm_lt_one_iff_dvd, ← sub_zero x, ← Nat.cast_zero, ← H]
+  exact norm_sub_zmodRepr_lt_one _
+
+lemma norm_natCast_zmodRepr_eq_one_iff_ne (x : ℤ_[p]) :
+    ‖(x.zmodRepr : ℤ_[p])‖ = 1 ↔ x.zmodRepr ≠ 0 := by
+  rw [norm_natCast_zmodRepr_eq_one_iff, ne_eq, zmodRepr_eq_zero_iff_dvd, ← norm_lt_one_iff_dvd]
+  simp
+
+lemma norm_natCast_zmodRepr_eq (x : ℤ_[p]) :
+    ‖(x.zmodRepr : ℤ_[p])‖ = 1 ∨ x.zmodRepr = 0 := by
+  grind [norm_natCast_zmodRepr_eq_one_iff_ne]
+
+@[simp]
+lemma zmodRepr_natCast_zmodRepr (x : ℤ_[p]) :
+    (x.zmodRepr : ℤ_[p]).zmodRepr = x.zmodRepr := by
+  apply zmodRepr_unique _ _ (zmodRepr_lt_p _)
+  simp
+
+@[simp]
+lemma norm_natCast_zmodRepr_eq_iff {x : ℤ_[p]} :
+    ‖(x.zmodRepr : ℤ_[p])‖ = ‖x‖ ↔ ‖x‖ = 1 ∨ x = 0 := by
+  rcases norm_natCast_zmodRepr_eq x with h | h
+  · simp_all [eq_comm]
+  · rw [eq_comm, h]
+    simp [← norm_natCast_zmodRepr_eq_one_iff, h]
+
+lemma zmodRepr_natCast (n : ℕ) :
+    zmodRepr (n : ℤ_[p]) = n % p := by
+  nth_rw 1 [← Nat.mod_add_div n p]
+  apply zmodRepr_unique
+  · exact Nat.mod_lt _ (Nat.Prime.pos Fact.out)
+  · simp [maximalIdeal_eq_span_p, Ideal.mem_span_singleton]
+
+lemma zmodRepr_natCast_of_lt {n : ℕ} (hn : n < p) :
+    zmodRepr (n : ℤ_[p]) = n := by
+  rw [zmodRepr_natCast (p := p) n, Nat.mod_eq_of_lt hn]
+
+lemma zmodRepr_natCast_ofNat {n : ℕ} (hn : ofNat(n) < p) :
+    zmodRepr (ofNat(n) : ℤ_[p]) = ofNat(n) := by
+  convert zmodRepr_natCast_of_lt hn
+  rcases n with _ | _ | n <;> simp
+
+lemma zmodRepr_units_ne_zero (x : ℤ_[p]ˣ) : x.val.zmodRepr ≠ 0 := by
+  rw [ne_eq, zmodRepr_eq_zero_iff_dvd]
+  exact irreducible_p.not_dvd_isUnit x.isUnit
 
 /-- `toZModHom` is an auxiliary constructor for creating ring homs from `ℤ_[p]` to `ZMod v`.
 -/
@@ -279,6 +350,14 @@ theorem ker_toZMod : RingHom.ker (toZMod : ℤ_[p] →+* ZMod p) = maximalIdeal 
     convert zmod_congr_of_sub_mem_max_ideal x _ 0 _ h
     · norm_cast
     · apply sub_zmodRepr_mem
+
+@[simp]
+lemma val_toZMod_eq_zmodRepr (x : ℤ_[p]) :
+    (toZMod x).val = x.zmodRepr :=
+  (zmodRepr_unique _ _ (ZMod.val_lt _) <| by simpa using toZMod_spec _).symm
+
+lemma zmodRepr_mul (x y : ℤ_[p]) : (x * y).zmodRepr = x.zmodRepr * y.zmodRepr % p := by
+  simp [← val_toZMod_eq_zmodRepr, ZMod.val_mul]
 
 /-- The equivalence between the residue field of the `p`-adic integers and `ℤ/pℤ` -/
 def residueField : IsLocalRing.ResidueField ℤ_[p] ≃+* ZMod p :=
@@ -373,6 +452,10 @@ theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p :
     · simp only [Int.natAbs_natCast, zero_pow hc0, sub_zero, ZMod.cast_zero, mul_zero]
       rw [unitCoeff_spec hc']
       exact (dvd_pow_self (p : ℤ_[p]) hc0).mul_left _
+
+lemma toZMod_eq_residueField_comp_residue :
+    toZMod (p := p) = residueField.toRingHom.comp (IsLocalRing.residue _) :=
+  rfl
 
 /-- A ring hom from `ℤ_[p]` to `ZMod (p^n)`, with underlying function `PadicInt.appr n`. -/
 def toZModPow (n : ℕ) : ℤ_[p] →+* ZMod (p ^ n) :=
