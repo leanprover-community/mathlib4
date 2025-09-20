@@ -287,7 +287,7 @@ end NormedSpace
 
 end Fintype
 
-/-- A finite dimensional inner product space has a canonical measure, the Lebesgue measure giving
+/-- A finite-dimensional inner product space has a canonical measure, the Lebesgue measure giving
 volume `1` to the parallelepiped spanned by any orthonormal basis. We define the measure using
 some arbitrary choice of orthonormal basis. The fact that it works with any orthonormal basis
 is proved in `orthonormalBasis.volume_parallelepiped`.

@@ -56,7 +56,7 @@ instance rclike_to_real : FiniteDimensional ℝ K := ⟨{1, I}, by simp [span_on
 variable (K E)
 variable [NormedAddCommGroup E] [NormedSpace K E]
 
-/-- A finite dimensional vector space over an `RCLike` is a proper metric space.
+/-- A finite-dimensional vector space over an `RCLike` is a proper metric space.
 
 This is not an instance because it would cause a search for `FiniteDimensional ?x E` before
 `RCLike ?x`. -/

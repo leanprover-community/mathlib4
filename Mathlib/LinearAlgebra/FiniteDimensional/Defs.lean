@@ -8,9 +8,9 @@ import Mathlib.LinearAlgebra.Dimension.Free
 import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
-# Finite dimensional vector spaces
+# Finite-dimensional vector spaces
 
-This file defines finite dimensional vector spaces and shows our definition is equivalent to
+This file defines finite-dimensional vector spaces and shows our definition is equivalent to
 alternative definitions.
 
 ## Main definitions
@@ -28,7 +28,7 @@ that all these points of view are equivalent, with the following lemmas
 (in the namespace `FiniteDimensional`):
 
 - `Module.finBasis` and `Module.finBasisOfFinrankEq`
-  are bases for finite dimensional vector spaces, where the index type
+  are bases for finite-dimensional vector spaces, where the index type
   is `Fin` (in `Mathlib/LinearAlgebra/Dimension/Free.lean`)
 - `fintypeBasisIndex` states that a finite-dimensional
   vector space has a finite basis
@@ -41,7 +41,7 @@ that all these points of view are equivalent, with the following lemmas
 - `IsNoetherian.iff_fg` states that the space is finite-dimensional if and only if
   it is Noetherian (in `Mathlib/FieldTheory/Finiteness.lean`)
 
-We make use of `finrank`, the dimension of a finite dimensional space, returning a `Nat`, as
+We make use of `finrank`, the dimension of a finite-dimensional space, returning a `Nat`, as
 opposed to `Module.rank`, which returns a `Cardinal`. When the space has infinite dimension, its
 `finrank` is by convention set to `0`. `finrank` is not defined using `FiniteDimensional`.
 For basic results that do not need the `FiniteDimensional` class, import

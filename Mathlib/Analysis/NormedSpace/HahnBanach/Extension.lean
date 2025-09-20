@@ -113,7 +113,7 @@ open Module
 
 /-- Corollary of the **Hahn-Banach theorem**: if `f : p → F` is a continuous linear map
 from a submodule of a normed space `E` over `𝕜`, `𝕜 = ℝ` or `𝕜 = ℂ`,
-with a finite dimensional range, then `f` admits an extension to a continuous linear map `E → F`.
+with a finite-dimensional range, then `f` admits an extension to a continuous linear map `E → F`.
 
 Note that contrary to the case `F = 𝕜`, see `exists_extension_norm_eq`,
 we provide no estimates on the norm of the extension.
@@ -131,7 +131,7 @@ lemma ContinuousLinearMap.exist_extension_of_finiteDimensional_range {p : Submod
   ext x
   simp [fi, e, hgf]
 
-/-- A finite dimensional submodule over `ℝ` or `ℂ` is `Submodule.ClosedComplemented`. -/
+/-- A finite-dimensional submodule over `ℝ` or `ℂ` is `Submodule.ClosedComplemented`. -/
 lemma Submodule.ClosedComplemented.of_finiteDimensional (p : Submodule 𝕜 F)
     [FiniteDimensional 𝕜 p] : p.ClosedComplemented :=
   let ⟨g, hg⟩ := (ContinuousLinearMap.id 𝕜 p).exist_extension_of_finiteDimensional_range
