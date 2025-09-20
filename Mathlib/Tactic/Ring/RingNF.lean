@@ -66,6 +66,9 @@ structure Config extends AtomM.Recurse.Config where
   mode := RingMode.SOP
   deriving Inhabited, BEq, Repr
 
+-- See https://github.com/leanprover/lean4/issues/10295
+attribute [nolint unusedArguments] Mathlib.Tactic.RingNF.instReprConfig.repr
+
 /-- Function elaborating `RingNF.Config`. -/
 declare_config_elab elabConfig Config
 
@@ -235,3 +238,9 @@ macro (name := ringConv) "ring" : conv =>
 end RingNF
 
 end Mathlib.Tactic
+
+/-!
+We register `ring` with the `hint` tactic.
+-/
+
+register_hint ring
