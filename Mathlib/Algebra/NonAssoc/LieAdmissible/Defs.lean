@@ -3,6 +3,7 @@ Copyright (c) 2025 Nikolas Tapia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nikolas Tapia
 -/
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Lie.Basic
 import Mathlib.Algebra.NonAssoc.PreLie.Basic
 /-!
@@ -80,11 +81,9 @@ instance instLieAlgebra [LieAdmissibleRing L] [LieAdmissibleAlgebra R L] : LieAl
 
 end LieAdmissibleAlgebra
 
-end instances
-
 namespace LeftPreLieRing
 
-variable {L : Type*} [LeftPreLieRing L]
+variable [LeftPreLieRing L]
 
 /-- `LeftPreLieRings` are examples of `LieAdmissibleRings` by the commutatitvity assumption on the
 associator. -/
@@ -99,7 +98,7 @@ end LeftPreLieRing
 
 namespace LeftPreLieAlgebra
 
-variable {R L : Type*} [CommRing R] [LeftPreLieRing L] [LeftPreLieAlgebra R L]
+variable [LeftPreLieRing L] [LeftPreLieAlgebra R L]
 
 instance instLieAdmissibleAlgebra : LieAdmissibleAlgebra R L where
 
@@ -107,7 +106,7 @@ end LeftPreLieAlgebra
 
 namespace RightPreLieRing
 
-variable {L : Type*} [RightPreLieRing L]
+variable [RightPreLieRing L]
 
 /-- `RightPreLieRings` are examples of `LieAdmissibleRings` by the commutatitvity assumption on
 the associator. -/
@@ -122,8 +121,30 @@ end RightPreLieRing
 
 namespace RightPreLieAlgebra
 
-variable {R L : Type*} [CommRing R] [RightPreLieRing L] [RightPreLieAlgebra R L]
+variable [RightPreLieRing L] [RightPreLieAlgebra R L]
 
 instance instLieAdmissibleAlgebra : LieAdmissibleAlgebra R L where
 
 end RightPreLieAlgebra
+
+namespace Ring
+
+variable [Ring L]
+
+instance instLieAdmissibleRing : LieAdmissibleRing L where
+  assoc_def := by
+    suffices ∀ a b c : L, associator a b c = 0 by simp
+    simp
+
+end Ring
+
+namespace Algebra
+
+variable [Ring L] [Algebra R L]
+
+instance instLieAdmissibleAlgebra : LieAdmissibleAlgebra R L where
+  smul_comm := by simp
+
+end Algebra
+
+end instances
