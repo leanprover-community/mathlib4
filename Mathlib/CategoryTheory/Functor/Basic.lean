@@ -98,6 +98,12 @@ section
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {E : Type u₃} [Category.{v₃} E]
 
+irreducible_def compMap (F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ⟶ Y) :
+   G.obj (F.obj X) ⟶ G.obj (F.obj Y) :=
+  G.map (F.map f)
+
+attribute [simp] compMap_def
+
 /-- The prefunctor between the underlying quivers. -/
 @[simps]
 def toPrefunctor (F : C ⥤ D) : Prefunctor C D := { F with }
@@ -111,14 +117,16 @@ theorem congr_map (F : C ⥤ D) {X Y : C} {f g : X ⟶ Y}
 @[simps obj]
 def comp (F : C ⥤ D) (G : D ⥤ E) : C ⥤ E where
   obj X := G.obj (F.obj X)
-  map f := G.map (F.map f)
+  map f := compMap F G f
+  map_comp := by intros; simp [F.map_comp, G.map_comp]
+  map_id := by intro; simp
 
 /-- Notation for composition of functors. -/
 scoped [CategoryTheory] infixr:80 " ⋙ " => Functor.comp
 
 @[simp]
 theorem comp_map (F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ⟶ Y) :
-    (F ⋙ G).map f = G.map (F.map f) := rfl
+    (F ⋙ G).map f = G.map (F.map f) := compMap_def F G f
 
 attribute [grind =] comp_obj
 attribute [grind =] comp_map
@@ -126,9 +134,11 @@ attribute [grind =] comp_map
 -- These are not simp lemmas because rewriting along equalities between functors
 -- is not necessarily a good idea.
 -- Natural isomorphisms are also provided in `Whiskering.lean`.
-protected theorem comp_id (F : C ⥤ D) : F ⋙ 𝟭 D = F := by cases F; rfl
+protected theorem comp_id (F : C ⥤ D) : F ⋙ 𝟭 D = F := by
+  simp [comp]
 
-protected theorem id_comp (F : C ⥤ D) : 𝟭 C ⋙ F = F := by cases F; rfl
+protected theorem id_comp (F : C ⥤ D) : 𝟭 C ⋙ F = F := by
+  simp [comp]
 
 @[simp]
 theorem map_dite (F : C ⥤ D) {X Y : C} {P : Prop} [Decidable P]
@@ -138,7 +148,9 @@ theorem map_dite (F : C ⥤ D) {X Y : C} {P : Prop} [Decidable P]
 
 @[simp]
 theorem toPrefunctor_comp (F : C ⥤ D) (G : D ⥤ E) :
-    F.toPrefunctor.comp G.toPrefunctor = (F ⋙ G).toPrefunctor := rfl
+    F.toPrefunctor.comp G.toPrefunctor = (F ⋙ G).toPrefunctor := by
+  simp [Functor.comp, Prefunctor.comp]
+  rfl
 
 end
 
