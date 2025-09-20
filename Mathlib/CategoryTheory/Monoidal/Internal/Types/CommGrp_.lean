@@ -71,10 +71,10 @@ noncomputable def commGrpTypeEquivalenceCommGrpForgetGrp :
       CommGrp_.forget₂Grp_ (Type u) ⋙ GrpTypeEquivalenceGrp.functor :=
   Iso.refl _
 
-/-- The equivalences `CommMon_ (Type u) ≌ CommMonCat.{u}` and `CommGrp_ (Type u) ≌ CommGrp.{u}`
+/-- The equivalences `CommMon (Type u) ≌ CommMonCat.{u}` and `CommGrp_ (Type u) ≌ CommGrp.{u}`
 are naturally compatible with the forgetful functors to `Grp` and `Grp_ (Type u)`.
 -/
 noncomputable def commGrpTypeEquivalenceCommGrpForgetCommMon :
     CommGrpTypeEquivalenceCommGrp.functor ⋙ forget₂ CommGrp CommMonCat ≅
-      CommGrp_.forget₂CommMon_ (Type u) ⋙ CommMonTypeEquivalenceCommMon.functor :=
+      CommGrp_.forget₂CommMon (Type u) ⋙ CommMonTypeEquivalenceCommMon.functor :=
   Iso.refl _
