@@ -176,5 +176,30 @@ lemma mem_closure_finset {s : Finset M} :
     simp +contextual [Function.support_subset_iff'.1 hf]
   mpr := by rintro ⟨n, -, rfl⟩; exact prod_mem _ fun x hx ↦ pow_mem (subset_closure hx) _
 
+/-- A variant of `Submonoid.mem_closure_finset` using `s` as the index type. -/
+@[to_additive /-- A variant of `AddSubmonoid.mem_closure_finset` using `s` as the index type. -/]
+theorem mem_closure_finset' {s : Finset M} :
+    x ∈ closure s ↔ ∃ f : s → ℕ, ∏ a : s, a.1 ^ f a = x := by
+  conv_lhs => rw [mem_closure_finset]
+  constructor
+  · rintro ⟨f, _, rfl⟩
+    exact ⟨f ∘ Subtype.val, Finset.prod_coe_sort s (f := fun a => a ^ f a)⟩
+  · intro ⟨f, hx⟩
+    classical
+    refine ⟨fun a => if h : a ∈ s then f ⟨a, h⟩ else 0, ?_, ?_⟩
+    · aesop
+    · rw [← Finset.prod_attach]
+      simpa
+
+@[to_additive]
+theorem mem_closure_fintype {s : Set M} [Fintype s] :
+    x ∈ closure s ↔ ∃ f : s → ℕ, ∏ a : s, a.1 ^ f a = x := by
+  conv_lhs =>
+    rw [← s.coe_toFinset, mem_closure_finset',
+      Equiv.subtypeEquivRight (fun _ => Set.mem_toFinset) |>.piCongrLeft (fun _ => ℕ)
+        |>.exists_congr_left]
+  congr! 3
+  apply Finset.prod_equiv <| Equiv.subtypeEquivRight fun _ => Set.mem_toFinset <;> simp
+
 end CommMonoid
 end Submonoid
