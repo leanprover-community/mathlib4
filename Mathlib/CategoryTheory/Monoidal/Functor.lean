@@ -1088,11 +1088,8 @@ lemma counitInv_app_comp_functor_map_η_inverse :
 lemma counitInv_app_tensor_comp_functor_map_δ_inverse (X Y : C) :
     e.counitInv.app (e.functor.obj X ⊗ e.functor.obj Y) ≫
       e.functor.map (δ e.inverse (e.functor.obj X) (e.functor.obj Y)) =
-      μ e.functor X Y ≫ e.functor.map (e.unitIso.hom.app X ⊗ₘ e.unitIso.hom.app Y) := by
-  rw [← cancel_epi (δ e.functor _ _), Monoidal.δ_μ_assoc]
-  apply e.inverse.map_injective
-  simp [← cancel_epi (e.unitIso.hom.app (X ⊗ Y)), Functor.map_comp,
-    unitIso_hom_app_tensor_comp_inverse_map_δ_functor_assoc]
+      μ e.functor X Y ≫ e.functor.map (e.unitIso.hom.app X ⊗ₘ e.unitIso.hom.app Y) :=
+  counitIso_inv_app_tensor_comp_functor_map_δ_inverse e X Y
 
 @[reassoc (attr := simp)]
 lemma ε_comp_map_ε : ε e.inverse ≫ e.inverse.map (ε e.functor) = e.unit.app (𝟙_ C) :=
