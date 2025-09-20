@@ -72,6 +72,10 @@ theorem isPeriodicPt_zero (f : α → α) (x : α) : IsPeriodicPt f 0 x :=
 
 namespace IsPeriodicPt
 
+@[nontriviality]
+theorem of_subsingleton [Subsingleton α] (f : α → α) (n : ℕ) (x : α) : IsPeriodicPt f n x :=
+  IsFixedPt.of_subsingleton _ _
+
 instance [DecidableEq α] {f : α → α} {n : ℕ} {x : α} : Decidable (IsPeriodicPt f n x) :=
   IsFixedPt.decidable
 
@@ -332,6 +336,7 @@ theorem iterate_eq_iterate_iff_of_lt_minimalPeriod {m n : ℕ} (hm : m < minimal
   ((is_periodic_id _ _).minimalPeriod_le Nat.one_pos).antisymm
     (Nat.succ_le_of_lt ((is_periodic_id _ _).minimalPeriod_pos Nat.one_pos))
 
+@[simp]
 theorem minimalPeriod_eq_one_iff_isFixedPt : minimalPeriod f x = 1 ↔ IsFixedPt f x := by
   refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [← iterate_one f]
@@ -341,6 +346,10 @@ theorem minimalPeriod_eq_one_iff_isFixedPt : minimalPeriod f x = 1 ↔ IsFixedPt
   · exact
       ((h.isPeriodicPt 1).minimalPeriod_le Nat.one_pos).antisymm
         (Nat.succ_le_of_lt ((h.isPeriodicPt 1).minimalPeriod_pos Nat.one_pos))
+
+@[nontriviality]
+theorem minimalPeriod_eq_one_of_subsingleton [Subsingleton α] : minimalPeriod f x = 1 := by
+  simp [nontriviality]
 
 theorem IsPeriodicPt.eq_zero_of_lt_minimalPeriod (hx : IsPeriodicPt f n x)
     (hn : n < minimalPeriod f x) : n = 0 :=
