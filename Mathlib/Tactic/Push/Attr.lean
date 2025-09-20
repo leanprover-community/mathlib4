@@ -32,8 +32,7 @@ def Head.toString : Head → String
 instance : ToString Head := ⟨Head.toString⟩
 
 /-- Returns the head of an expression. -/
-def Head.ofExpr? (e : Expr) : Option Head :=
-  match e with
+def Head.ofExpr? : Expr → Option Head
   | .app f _ => f.getAppFn.constName?.map .name
   | .lam .. => some .lambda
   | .forallE .. => some .forall

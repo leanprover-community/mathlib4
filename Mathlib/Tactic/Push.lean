@@ -212,7 +212,8 @@ To instead move a constant closer to the head of the expression, use the `pull` 
 
 To push a constant at a hypothesis, use the `push ... at h` or `push ... at *` syntax.
 -/
-elab (name := push) "push " disch?:(discharger)? head:(colGt term) loc:(location)? : tactic => do
+elab (name := push) "push" disch?:(discharger)? head:(ppSpace colGt term) loc:(location)? :
+    tactic => do
   let disch? ← disch?.mapM elabDischarger
   let head ← elabHead head
   let loc := (loc.map expandLocation).getD (.targets #[] true)
@@ -259,7 +260,8 @@ that actually moves the given constant away from the head. For example
 
 TODO: add a `@[pull]` attribute to add `pull` lemmas without using `@[push]`.
 -/
-elab (name := pull) "pull " disch?:(discharger)? head:(colGt term) loc:(location)? : tactic => do
+elab (name := pull) "pull" disch?:(discharger)? head:(ppSpace colGt term) loc:(location)? :
+    tactic => do
   let disch? ← disch?.mapM elabDischarger
   let head ← elabHead head
   let loc := (loc.map expandLocation).getD (.targets #[] true)
@@ -274,7 +276,7 @@ simproc_decl _root_.pullFun (_) := pullStep .lambda
 section Conv
 
 @[inherit_doc push]
-elab "push " disch?:(discharger)? head:(colGt term) : conv => withMainContext do
+elab "push" disch?:(discharger)? head:(ppSpace colGt term) : conv => withMainContext do
   let disch? ← disch?.mapM elabDischarger
   let head ← elabHead head
   Conv.applySimpResult (← pushCore head (← instantiateMVars (← Conv.getLhs)) disch?)
@@ -288,7 +290,7 @@ which will print the `push head` form of `e`.
 
 `#push` understands local variables, so you can use them to introduce parameters.
 -/
-macro (name := pushCommand) tk:"#push " head:ident e:term : command =>
+macro (name := pushCommand) tk:"#push " head:ident ppSpace e:term : command =>
   `(command| #conv%$tk push $head:ident => $e)
 
 /--
@@ -300,7 +302,7 @@ which will print the `push_neg` form of `e`.
 macro (name := pushNegCommand) tk:"#push_neg " e:term : command => `(command| #push%$tk Not $e)
 
 @[inherit_doc pull]
-elab "pull " disch?:(discharger)? head:(colGt term) : conv => withMainContext do
+elab "pull" disch?:(discharger)? head:(ppSpace colGt term) : conv => withMainContext do
   let disch? ← disch?.mapM elabDischarger
   let head ← elabHead head
   Conv.applySimpResult (← pullCore head (← instantiateMVars (← Conv.getLhs)) disch?)
@@ -311,7 +313,7 @@ which will print the `pull head` form of `e`.
 
 `#pull` understands local variables, so you can use them to introduce parameters.
 -/
-macro (name := pullCommand) tk:"#pull " head:ident e:term : command =>
+macro (name := pullCommand) tk:"#pull " head:ident ppSpace e:term : command =>
   `(command| #conv%$tk pull $head:ident => $e)
 
 end Conv
