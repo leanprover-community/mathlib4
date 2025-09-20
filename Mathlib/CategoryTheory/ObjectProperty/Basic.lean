@@ -23,7 +23,7 @@ for predicates `C → Prop`.
 
 -/
 
-universe v v' u u'
+universe w v v' u u'
 
 namespace CategoryTheory
 
@@ -65,6 +65,10 @@ class Is (P : ObjectProperty C) (X : C) : Prop where
 lemma prop_of_is (P : ObjectProperty C) (X : C) [P.Is X] : P X := by rwa [← P.is_iff]
 
 lemma is_of_prop (P : ObjectProperty C) {X : C} (hX : P X) : P.Is X := by rwa [P.is_iff]
+
+/-- A property of objects is small relative to a universe `w`
+if the corresponding subtype is. -/
+protected abbrev Small (P : ObjectProperty C) : Prop := _root_.Small.{w} (Subtype P)
 
 end ObjectProperty
 

@@ -52,6 +52,9 @@ initialize_simps_projections ColimitPresentation (-isColimit)
 abbrev cocone (pres : ColimitPresentation J X) : Cocone pres.diag :=
   Cocone.mk _ pres.ι
 
+lemma hasColimit (pres : ColimitPresentation J X) : HasColimit pres.diag :=
+  ⟨_, pres.isColimit⟩
+
 /-- The canonical colimit presentation of any object over a point. -/
 @[simps]
 noncomputable
@@ -69,6 +72,15 @@ def map (P : ColimitPresentation J X) {D : Type*} [Category D] (F : C ⥤ D)
   diag := P.diag ⋙ F
   ι := Functor.whiskerRight P.ι F ≫ (F.constComp _ _).hom
   isColimit := (isColimitOfPreserves F P.isColimit).ofIsoColimit (Cocones.ext (.refl _) (by simp))
+
+/-- If `P` is a colimit presentation of `X`, it is possible to define another
+colimit presentation of `X` where `P.diag` is replaced by an isomorphic functor. -/
+@[simps]
+def chgDiag (P : ColimitPresentation J X) {F : J ⥤ C} (e : F ≅ P.diag) :
+    ColimitPresentation J X where
+  diag := F
+  ι := e.hom ≫ P.ι
+  isColimit := (IsColimit.precomposeHomEquiv e _).2 P.isColimit
 
 /-- Map a colimit presentation under an isomorphism. -/
 @[simps]
