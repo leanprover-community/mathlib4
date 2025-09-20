@@ -31,9 +31,18 @@ end EmbeddingLike
 
 variable [EquivLike F α β]
 
+/-- Turn an element of a type `F` satisfying `MulEquivClass F α β` into an actual
+`MulEquiv`. This is declared as the default coercion from `F` to `α ≃* β`. -/
+@[to_additive (attr := simps!)
+"Turn an element of a type `F` satisfying `AddEquivClass F α β` into an actual
+`AddEquiv`. This is declared as the default coercion from `F` to `α ≃+ β`."]
+def MulEquiv.ofClass [Mul α] [Mul β] [MulEquivClass F α β] (f : F) : α ≃* β where
+  __ : α ≃ β := .ofClass f
+  __ : α →ₙ* β := .ofClass f
+
 @[to_additive]
-theorem MulEquivClass.toMulEquiv_injective [Mul α] [Mul β] [MulEquivClass F α β] :
-    Function.Injective ((↑) : F → α ≃* β) :=
+theorem MulEquiv.ofClass_injective [Mul α] [Mul β] [MulEquivClass F α β] :
+    Function.Injective (.ofClass : F → α ≃* β) :=
   fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃* β ↦ e.toFun a) e
 
 namespace MulEquiv
