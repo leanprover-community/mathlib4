@@ -314,79 +314,75 @@ variable {n : ℕ} {i j k : Fin n}
 unchanged when `i < j` and returning the dummy value `id` when `i > j`.
 In other words, it rotates elements in `[i, j]` one step to the right.
 -/
-/- `cycleIcc` is defined in two steps:
-1. The first part is `cycleRange ((j - i).castLT (sub_val_lt_sub hij))`, which is an element of
-`Perm (Fin (n - i))`. It rotates the sequence `(0 1 ... j-i)` while leaving `(j-i+1 ... n-i)`
-unchanged.
-2. Since `natAdd_castLEEmb (Nat.sub_le n i) : Fin (n - i) ↪ Fin n` maps each `x` to `x + i`, we can
-embed the first part into `Fin n` using `extendDomain` to obtain an element of `Perm (Fin n)`.
-This yields the cycle `(i i+1 ... j)` while leaving `(0 ... i-1)` and `(j+1 ... n-1)` unchanged.
--/
-def cycleIcc (i j : Fin n) : Perm (Fin n) := if hij : i ≤ j then (cycleRange ((j - i).castLT
-  (sub_val_lt_sub hij))).extendDomain (natAdd_castLEEmb (Nat.sub_le n i)).toEquivRange else 1
+def cycleIcc (i j : Fin n) : Perm (Fin n) where
+  toFun k := if k < i then k else if hk : k < j then
+    ⟨k + 1, (Nat.lt_of_le_of_lt (Nat.add_one_le_of_lt hk) j.isLt)⟩ else if k = j then i else k
+  invFun k := if j < k then k else if i < k then
+    ⟨k - 1, Nat.lt_of_le_of_lt (Nat.sub_le k 1) k.isLt⟩ else if k = i then j else k
+  left_inv _ := by simp only [Fin.ext_iff]; grind
+  right_inv _ := by simp only [Fin.ext_iff]; grind
 
-@[simp]
 lemma cycleIcc_def_le {i j : Fin n} (hij : i ≤ j) : cycleIcc i j =
     (cycleRange ((j - i).castLT (sub_val_lt_sub hij))).extendDomain
-      (natAdd_castLEEmb (Nat.sub_le n i)).toEquivRange := by simp [cycleIcc, hij]
+      (natAdd_castLEEmb (Nat.sub_le n i)).toEquivRange := by
+  ext k
+  simp only [cycleIcc, Equiv.coe_fn_mk, apply_ite Fin.val, apply_dite Fin.val]
+  by_cases hki : k < i
+  · refine (if_pos hki).trans (congrArg Fin.val (Perm.extendDomain_apply_not_subtype _ _ ?_)).symm
+    rwa [range_natAdd_castLEEmb, Set.mem_setOf, Nat.not_le,
+      Nat.sub_sub_self (Nat.le_of_lt i.isLt), ← Fin.lt_def]
+  rw [if_neg hki]
+  rw [Fin.lt_def, Nat.not_lt] at hki
+  have ui : k = (natAdd_castLEEmb (Nat.sub_le n i)).toEquivRange
+      ⟨k - i, Nat.sub_lt_sub_right hki k.isLt⟩ := by
+    ext
+    simp [Nat.sub_sub_self, hki]
+  conv_rhs => rw [ui, Perm.extendDomain_apply_image]
+  rw [Function.Embedding.toEquivRange_apply, natAdd_castLEEmb_apply_val,
+    Fin.cycleRange_apply]
+  simp_rw [Fin.lt_def, Fin.ext_iff, apply_ite Fin.val, Fin.coe_castLT, Fin.sub_val_of_le hij,
+    Nat.sub_lt_sub_iff_right hki, Nat.sub_eq_iff_eq_add hki, Nat.sub_add_cancel (Fin.le_def.1 hij),
+    ite_add]
+  rw [Nat.sub_sub_self (Nat.le_of_lt i.isLt), dite_eq_ite, Fin.val_zero, Nat.zero_add,
+    Nat.sub_add_cancel hki]
+  refine ite_congr rfl (fun h => ?_) (fun _ => rfl)
+  have hk : k - i + 1 < n - i := by
+    rw [← Nat.sub_add_comm hki, Nat.sub_lt_sub_iff_right (Nat.le_trans hki (Nat.le_add_right k 1))]
+    exact Nat.lt_of_le_of_lt (Nat.add_one_le_of_lt h) j.isLt
+  rw [Fin.val_add_one_of_lt' hk, Nat.add_right_comm]
+  simp [hki]
 
 @[simp]
 theorem cycleIcc_def_gt (hij : i < j) : cycleIcc j i = 1 := by
-  simp [cycleIcc, hij]
+  ext k
+  simp only [cycleIcc, coe_fn_mk, Perm.coe_one, id_eq, apply_ite Fin.val, apply_dite Fin.val]
+  split_ifs <;> omega
 
 @[simp]
-theorem cycleIcc_def_gt' (hij : ¬ j ≤ i) : cycleIcc j i = 1 := by
-  simp [cycleIcc, hij]
+theorem cycleIcc_def_gt' (hij : ¬ j ≤ i) : cycleIcc j i = 1 :=
+  cycleIcc_def_gt (lt_of_not_ge hij)
 
 theorem cycleIcc_of_lt (h : k < i) : (cycleIcc i j) k = k := by
-  by_cases hij : i ≤ j
-  · simpa [hij] using Perm.extendDomain_apply_not_subtype _ _ (by
-      simpa [range_natAdd_castLEEmb] using by omega)
-  · simp [hij]
+  simp [cycleIcc, h]
 
 lemma cycleIcc_to_cycleRange (hij : i ≤ j)
     (kin : k ∈ Set.range (natAdd_castLEEmb (Nat.sub_le n i))) : (cycleIcc i j) k =
     (natAdd_castLEEmb (Nat.sub_le n i)) (((j - i).castLT (sub_val_lt_sub hij)).cycleRange
     ((natAdd_castLEEmb (Nat.sub_le n i)).toEquivRange.symm ⟨k, kin⟩)) := by
   simp [hij, ((j - i).castLT (sub_val_lt_sub hij)).cycleRange.extendDomain_apply_subtype
-    (natAdd_castLEEmb _).toEquivRange kin]
+    (natAdd_castLEEmb _).toEquivRange kin, cycleIcc_def_le]
 
 theorem cycleIcc_of_gt (h : j < k) : (cycleIcc i j) k = k := by
-  by_cases hij : i ≤ j
-  · have kin : k ∈ Set.range (natAdd_castLEEmb (Nat.sub_le n i)) := by
-      simpa [range_natAdd_castLEEmb] using by omega
-    have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)
-      = subNat i.1 (k.cast (by omega)) (by simpa using by omega) := by
-      simpa [symm_apply_eq] using eq_of_val_eq (by simpa using by omega)
-    simp only [cycleIcc_to_cycleRange hij kin, natAdd_castLEEmb, this,
-      Function.Embedding.trans_apply, addNatEmb_apply, coe_toEmbedding, finCongr_apply]
-    rw [cycleRange_of_gt]
-    · exact eq_of_val_eq (by simpa using by omega)
-    · exact lt_def.mpr (by simpa [sub_val_of_le hij] using by omega)
-  · simp [hij]
+  simp [cycleIcc, h.not_gt, h.ne']
 
 @[simp]
 theorem cycleIcc_of_le_of_le (hik : i ≤ k) (hkj : k ≤ j) [NeZero n] :
     (cycleIcc i j) k = if k = j then i else k + 1 := by
-  have hij : i ≤ j := le_trans hik hkj
-  have kin : k ∈ Set.range (natAdd_castLEEmb (Nat.sub_le n i)) := by
-    simpa [range_natAdd_castLEEmb] using by omega
-  have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)
-      = subNat i.1 (k.cast (by omega)) (by simpa using by omega) := by
-    simpa [symm_apply_eq] using eq_of_val_eq (by simpa using by omega)
-  simp only [cycleIcc_to_cycleRange hij kin, natAdd_castLEEmb, this, Function.Embedding.trans_apply,
-    addNatEmb_apply, coe_toEmbedding, finCongr_apply]
-  refine eq_of_val_eq ?_
-  split_ifs with ch
-  · have : subNat i.1 (j.cast (by omega)) (by simp [hij]) = (j - i).castLT (sub_val_lt_sub hij) :=
-      eq_of_val_eq (by simp [sub_val_of_le hij])
-    simpa [ch, cycleRange_of_eq this] using by omega
-  · have : subNat i.1 (k.cast (by omega)) (by simp [hik]) < (j - i).castLT (sub_val_lt_sub hij) :=
-      by simpa [lt_iff_val_lt_val, sub_val_of_le hij] using by omega
-    rw [cycleRange_of_lt this, subNat]
-    simp only [coe_cast, add_def, val_one', Nat.add_mod_mod, addNat_mk, cast_mk]
-    rw [Nat.mod_eq_of_lt (by omega), Nat.mod_eq_of_lt (by omega)]
-    omega
+  obtain hkj | rfl := hkj.lt_or_eq
+  · simp_rw [cycleIcc, Equiv.coe_fn_mk, if_neg hik.not_gt, dif_pos hkj, if_neg hkj.ne]
+    generalize_proofs lt
+    rw [Fin.ext_iff, Fin.val_add_one_of_lt' lt]
+  · simp [cycleIcc, hik]
 
 theorem cycleIcc_of_ge_of_lt (hik : i ≤ k) (hkj : k < j) [NeZero n] : (cycleIcc i j) k = k + 1 := by
   simp [cycleIcc_of_le_of_le hik (le_of_lt hkj), Fin.ne_of_lt hkj]
@@ -394,22 +390,19 @@ theorem cycleIcc_of_ge_of_lt (hik : i ≤ k) (hkj : k < j) [NeZero n] : (cycleIc
 theorem cycleIcc_of_last (hij : i ≤ j) [NeZero n] : (cycleIcc i j) j = i := by
   simp [cycleIcc_of_le_of_le hij (ge_of_eq rfl)]
 
-theorem cycleIcc_eq [NeZero n] : cycleIcc i i = 1 := by
+theorem cycleIcc_eq : cycleIcc i i = 1 := by
   ext k
-  simp only [Perm.coe_one, id_eq]
-  rcases lt_trichotomy k i with ch | ch | ch
-  · simp [- cycleIcc_def_le, cycleIcc_of_lt, ch]
-  · simp [- cycleIcc_def_le, ch]
-  · simp [- cycleIcc_def_le, cycleIcc_of_gt, ch]
+  simp only [cycleIcc, coe_fn_mk, Perm.coe_one, id_eq, apply_ite Fin.val, apply_dite Fin.val]
+  split_ifs <;> omega
 
 @[simp]
-theorem cycleIcc_ge (hij : i ≤ j) [NeZero n] : cycleIcc j i = 1 := by
+theorem cycleIcc_ge (hij : i ≤ j) : cycleIcc j i = 1 := by
   rcases Fin.lt_or_eq_of_le hij with hij | hij
   · simp [hij]
   · rw [hij, ← cycleIcc_eq]
 
 theorem sign_cycleIcc_of_le (hij : i ≤ j) : Perm.sign (cycleIcc i j) = (-1) ^ (j - i : ℕ) := by
-  simp [hij, sub_val_of_le hij]
+  simp [hij, sub_val_of_le hij, cycleIcc_def_le]
 
 theorem sign_cycleIcc_of_eq : Perm.sign (cycleIcc i i) = 1 := by
   rw [sign_cycleIcc_of_le (Fin.ge_of_eq rfl), tsub_self, pow_zero]
@@ -420,23 +413,23 @@ theorem sign_cycleIcc_of_ge (hij : i ≤ j) : Perm.sign (cycleIcc j i) = 1 := by
   · rw [hij, sign_cycleIcc_of_eq]
 
 theorem isCycle_cycleIcc (hij : i < j) : (cycleIcc i j).IsCycle := by
-  simpa [le_of_lt hij] using Equiv.Perm.IsCycle.extendDomain
+  simpa [le_of_lt hij, cycleIcc_def_le] using Equiv.Perm.IsCycle.extendDomain
     (natAdd_castLEEmb _).toEquivRange (isCycle_cycleRange (castLT_sub_nezero hij))
 
 theorem cycleType_cycleIcc_of_lt (hij : i < j) :
     Perm.cycleType (cycleIcc i j) = {(j - i + 1: ℕ)} := by
-  simpa [le_of_lt hij, cycleType_cycleRange (castLT_sub_nezero hij)] using sub_val_of_le
-    (le_of_lt hij)
+  simpa [le_of_lt hij, cycleType_cycleRange (castLT_sub_nezero hij), cycleIcc_def_le]
+    using sub_val_of_le (le_of_lt hij)
 
-theorem cycleType_cycleIcc_of_ge (hij : i ≤ j) [NeZero n] : Perm.cycleType (cycleIcc j i) = ∅ := by
+theorem cycleType_cycleIcc_of_ge (hij : i ≤ j) : Perm.cycleType (cycleIcc j i) = ∅ := by
   simpa using cycleIcc_ge hij
 
 theorem cycleIcc_zero_eq_cycleRange (i : Fin n) [NeZero n] : cycleIcc 0 i = cycleRange i := by
   ext x
   rcases lt_trichotomy x i with ch | ch | ch
-  · simp [- cycleIcc_def_le, cycleIcc_of_ge_of_lt (zero_le x) ch, cycleRange_of_lt ch]
-  · simp [- cycleIcc_def_le, ch]
-  · simp [- cycleIcc_def_le, cycleIcc_of_gt ch, cycleRange_of_gt ch]
+  · simp [cycleIcc_of_ge_of_lt (zero_le x) ch, cycleRange_of_lt ch]
+  · simp [ch]
+  · simp [cycleIcc_of_gt ch, cycleRange_of_gt ch]
 
 theorem cycleIcc.trans [NeZero n] (hij : i ≤ j) (hjk : j ≤ k) :
     (cycleIcc i j) ∘ (cycleIcc j k) = (cycleIcc i k) := by
@@ -454,11 +447,11 @@ theorem cycleIcc.trans [NeZero n] (hij : i ≤ j) (hjk : j ≤ k) :
     · exact val_eq_of_eq (cycleIcc_of_last hij)
     · simp [cycleIcc_of_gt (lt_of_le_of_lt ch2 (lt_add_one_of_succ_lt (by omega)))]
 
-theorem cycleIcc.trans_left_one [NeZero n] (hij : i ≤ j) :
+theorem cycleIcc.trans_left_one (hij : i ≤ j) :
     (cycleIcc j i) ∘ (cycleIcc i k) = cycleIcc i k := by
   simp [hij]
 
-theorem cycleIcc.trans_right_one [NeZero n] (hjk : j ≤ k) :
+theorem cycleIcc.trans_right_one (hjk : j ≤ k) :
     (cycleIcc i k) ∘ (cycleIcc k j) = cycleIcc i k := by
   simp [hjk]
 
