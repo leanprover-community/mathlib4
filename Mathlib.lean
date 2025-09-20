@@ -3720,6 +3720,7 @@ import Mathlib.Deprecated.RingHom
 import Mathlib.Dynamics.BirkhoffSum.Average
 import Mathlib.Dynamics.BirkhoffSum.Basic
 import Mathlib.Dynamics.BirkhoffSum.NormedSpace
+import Mathlib.Dynamics.BirkhoffSum.Pointwise
 import Mathlib.Dynamics.BirkhoffSum.QuasiMeasurePreserving
 import Mathlib.Dynamics.Circle.RotationNumber.TranslationNumber
 import Mathlib.Dynamics.Ergodic.Action.Basic
