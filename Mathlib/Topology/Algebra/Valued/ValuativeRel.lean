@@ -6,6 +6,7 @@ Authors: Yakov Pechersky
 import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 import Mathlib.Topology.Algebra.Valued.ValuationTopology
 import Mathlib.Topology.Algebra.WithZeroTopology
+import Mathlib.Topology.UniformSpace.Ultra.Basic
 
 /-!
 
@@ -17,6 +18,33 @@ so that downstream files can refer to `ValuativeRel R`,
 to facilitate a refactor.
 
 -/
+
+namespace Valuation
+
+variable {R Γ₀ : Type*} [Ring R] [LinearOrderedCommMonoidWithZero Γ₀]
+  (v : Valuation R Γ₀)
+
+lemma isSymmetricRel_uniformity_ball_lt (r : Γ₀) :
+    IsSymmetricRel { p : R × R | v (p.2 - p.1) < r } := by
+  simp [IsSymmetricRel, Valuation.map_sub_swap]
+
+lemma isSymmetricRel_uniformity_ball_le (r : Γ₀) :
+    IsSymmetricRel { p : R × R | v (p.2 - p.1) ≤ r } := by
+  simp [IsSymmetricRel, Valuation.map_sub_swap]
+
+lemma isTransitiveRel_uniformity_ball_lt (r : Γ₀) :
+    IsTransitiveRel { p : R × R | v (p.2 - p.1) < r } := by
+  intro _ _ _ h h'
+  refine (Valuation.map_add_lt v h h').trans_eq' ?_
+  simp
+
+lemma isTransitiveRel_uniformity_ball_le (r : Γ₀) :
+    IsTransitiveRel { p : R × R | v (p.2 - p.1) ≤ r } := by
+  intro _ _ _ h h'
+  refine (Valuation.map_add_le v h h').trans_eq' ?_
+  simp
+
+end Valuation
 
 namespace IsValuativeTopology
 
@@ -39,14 +67,22 @@ theorem of_zero [ContinuousConstVAdd R R]
     simpa [← vadd_mem_nhds_vadd_iff (t := s) (-x), ← image_vadd, ← image_subset_iff] using
       h₀ ((x + ·) ⁻¹' s)
 
+/-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order to
+prove `IsValuativeTopology R`. -/
+lemma of_hasBasis_zero [ContinuousConstVAdd R R]
+    (h : (𝓝 (0 : R)).HasBasis (fun _ ↦ True) fun γ : (ValueGroupWithZero R)ˣ ↦ { x | v x < γ }) :
+    IsValuativeTopology R :=
+  .of_zero <| by simp [h.mem_iff]
+
 end
 
-variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R] [IsValuativeTopology R]
+variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R]
 
-open ValuativeRel TopologicalSpace Filter Topology Set
+open ValuativeRel TopologicalSpace Filter Topology Set Uniformity
 
 local notation "v" => valuation R
 
+variable [IsValuativeTopology R]
 /-- A version mentioning subtraction. -/
 lemma mem_nhds_iff' {s : Set R} {x : R} :
     s ∈ 𝓝 (x : R) ↔
@@ -103,21 +139,67 @@ instance (priority := low) isTopologicalAddGroup : IsTopologicalAddGroup R := by
   · simpa [ContinuousAt] using (cts_add.1 x₀).continuousAt (x := (0 : R))
   · simpa [ContinuousAt] using (cts_add.1 (-x₀)).continuousAt (x := x₀)
 
-instance (priority := low) : IsTopologicalRing R :=
-  letI := IsTopologicalAddGroup.toUniformSpace R
-  letI := isUniformAddGroup_of_addCommGroup (G := R)
-  inferInstance
+instance (priority := low) : IsTopologicalRing R := by
+  convert (valuation R).subgroups_basis.toRingFilterBasis.isTopologicalRing
+  rw [TopologicalSpace.ext_iff_nhds]
+  intro x
+  ext s
+  simp [(RingSubgroupsBasis.hasBasis_nhds _ _).mem_iff, mem_nhds_iff, Valuation.ltAddSubgroup,
+    neg_add_eq_sub]
+
+/-- A ring with a topological additive structure and a valuative relationship is
+a uniform space made up of entourages of the form `{ (x, y) | v (y - x) < γ }`.
+However, this is not a global instance to prevent timeouts in typeclass inference,
+since otherwise, TC search for `UniformSpace R` will start exploring `IsValuativeTopology R`. -/
+local instance : UniformSpace R := IsTopologicalAddGroup.toUniformSpace R
+
+open Uniformity in
+theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ => True)
+    fun γ : (ValueGroupWithZero R)ˣ => { p : R × R | v (p.2 - p.1) < γ } := by
+  rw [uniformity_eq_comap_nhds_zero']
+  exact (hasBasis_nhds_zero R).comap _
+
+instance (priority := low) : IsUniformAddGroup R := isUniformAddGroup_of_addCommGroup
+instance (priority := low) : IsUltraUniformity R := by
+  refine .mk_of_hasBasis hasBasis_uniformity ?_ ?_
+  · intros
+    ext ⟨x, y⟩
+    simp only [preimage_setOf_eq, Prod.snd_swap, Prod.fst_swap, mem_setOf_eq]
+    rw [← Valuation.map_neg, neg_sub]
+  · intro _ _ _ _ _ h h'
+    simp only [mem_setOf_eq] at h h' ⊢
+    have := Valuation.map_add_lt _ h h'
+    ring_nf at this
+    rwa [neg_add_eq_sub] at this
+
+lemma uniformity_ball_lt_mem_uniformity {r : ValueGroupWithZero R} (hr : r ≠ 0) :
+    { p : R × R | v (p.2 - p.1) < r } ∈ 𝓤 R := by
+  rw [hasBasis_uniformity.mem_iff]
+  use Units.mk0 r hr
+  simp
+
+lemma uniformity_ball_le_mem_uniformity {r : ValueGroupWithZero R} (hr : r ≠ 0) :
+    { p : R × R | v (p.2 - p.1) ≤ r } ∈ 𝓤 R := by
+  rw [hasBasis_uniformity.mem_iff]
+  rcases le_or_gt 1 r with hr1 | hr1
+  · use 1
+    simp only [Units.val_one, setOf_subset_setOf, Prod.forall, true_and]
+    intro _ _ h
+    exact hr1.trans' h.le
+  · lift r to (ValueGroupWithZero R)ˣ using IsUnit.mk0 r hr
+    use r ^ 2
+    simp only [Units.val_pow_eq_pow_val, setOf_subset_setOf, Prod.forall, true_and]
+    intro _ _ h
+    refine (h.trans ?_).le
+    exact pow_lt_self_of_lt_one₀ (by simp) hr1 (by simp)
 
 theorem isOpen_ball (r : ValueGroupWithZero R) :
     IsOpen {x | v x < r} := by
-  rw [isOpen_iff_mem_nhds]
   rcases eq_or_ne r 0 with rfl | hr
   · simp
-  · intro x hx
-    rw [mem_nhds_iff']
-    simp only [setOf_subset_setOf]
-    exact ⟨Units.mk0 _ hr,
-      fun y hy => (sub_add_cancel y x).symm ▸ ((v).map_add _ x).trans_lt (max_lt hy hx)⟩
+  · convert ((v).isTransitiveRel_uniformity_ball_lt r).isOpen_ball_of_mem_uniformity 0
+      (uniformity_ball_lt_mem_uniformity hr)
+    simp [UniformSpace.ball]
 
 @[deprecated (since := "2025-08-01")]
 alias _root_.ValuativeTopology.isOpen_ball := isOpen_ball
@@ -126,8 +208,10 @@ theorem isClosed_ball (r : ValueGroupWithZero R) :
     IsClosed {x | v x < r} := by
   rcases eq_or_ne r 0 with rfl | hr
   · simp
-  · exact AddSubgroup.isClosed_of_isOpen (Valuation.ltAddSubgroup v (Units.mk0 r hr))
-      (isOpen_ball _)
+  · convert UniformSpace.isClosed_ball_of_isSymmetricRel_of_isTransitiveRel_of_mem_uniformity
+      0 ((v).isSymmetricRel_uniformity_ball_lt r) ((v).isTransitiveRel_uniformity_ball_lt r)
+      (uniformity_ball_lt_mem_uniformity hr)
+    simp [UniformSpace.ball]
 
 @[deprecated (since := "2025-08-01")]
 alias _root_.ValuativeTopology.isClosed_ball := isClosed_ball
@@ -141,12 +225,9 @@ alias _root_.ValuativeTopology.isClopen_ball := isClopen_ball
 
 lemma isOpen_closedBall {r : ValueGroupWithZero R} (hr : r ≠ 0) :
     IsOpen {x | v x ≤ r} := by
-  rw [isOpen_iff_mem_nhds]
-  intro x hx
-  rw [mem_nhds_iff']
-  simp only [setOf_subset_setOf]
-  exact ⟨Units.mk0 _ hr, fun y hy => (sub_add_cancel y x).symm ▸
-    le_trans ((v).map_add _ _) (max_le (le_of_lt hy) hx)⟩
+  convert ((v).isTransitiveRel_uniformity_ball_le r).isOpen_ball_of_mem_uniformity 0
+    (uniformity_ball_le_mem_uniformity hr)
+  simp [UniformSpace.ball]
 
 @[deprecated (since := "2025-08-01")]
 alias _root_.ValuativeTopology.isOpen_closedBall := isOpen_closedBall
@@ -202,6 +283,8 @@ lemma continuous_valuation : Continuous v := by
 end IsValuativeTopology
 
 namespace ValuativeRel
+
+variable {R : Type*} [CommRing R]
 
 @[inherit_doc]
 scoped notation "𝒪[" R "]" => Valuation.integer (valuation R)
