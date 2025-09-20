@@ -92,6 +92,13 @@ noncomputable def bilinearCompOfLinear (a b c : ℕ) (h : a + b = c) :
   map_add' := by aesop
   map_smul' := by aesop
 
+noncomputable def linearEquiv₀ : Ext X Y 0 ≃ₗ[R] (X ⟶ Y) where
+  __ := addEquiv₀
+  map_smul' r x := by
+    rcases (Ext.mk₀_bijective _ _).2 x with ⟨y, hy⟩
+    simp [← hy]
+    sorry
+
 end CommRing
 
 end Ext
