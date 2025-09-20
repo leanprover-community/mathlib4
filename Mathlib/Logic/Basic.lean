@@ -89,7 +89,7 @@ and it is questionable whether making `Nat.prime` a class is desirable at all.
 The compromise is to add the assumption `[Fact p.prime]` to `ZMod.field`.
 
 In particular, this class is not intended for turning the type class system
-into an automated theorem prover for first order logic. -/
+into an automated theorem prover for first-order logic. -/
 class Fact (p : Prop) : Prop where
   /-- `Fact.out` contains the unwrapped witness for the fact represented by the instance of
   `Fact p`. -/
