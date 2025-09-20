@@ -192,8 +192,7 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
           (zero.eq_zero_of_tgt _)
         ext a
         change x • a = Ext.bilinearCompOfLinear R _ _ _ _ _ _ (zero_add i)
-          ((Ext.homEquiv₀_linearHom R).symm
-          (ModuleCat.homLinearEquiv.symm (S := R) (x • LinearMap.id))) a
+          ((Ext.linearEquiv₀ R).symm (ModuleCat.homLinearEquiv.symm (S := R) (x • LinearMap.id))) a
         simp only [map_smul, smul_apply]
         congr
         exact (Ext.mk₀_id_comp a).symm
