@@ -9,7 +9,7 @@ set_option linter.unusedVariables false
 /-! # Basic tests for the flexible linter
 
 This file contains basic tests for the flexible linter, which do not require any advanced imports.
-Anything which requires groups, rings or algebraic structures is considered advanced, and 
+Anything which requires groups, rings or algebraic structures is considered advanced, and
 tests for these can be found in `MathlibTest/ImportHeavyFlexibleLinter.lean`
 
 -/
