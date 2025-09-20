@@ -66,8 +66,8 @@ lemma insert_Icc_succ_left_eq_Icc (h : a ≤ b) : insert a (Icc (succ a) b) = Ic
   ext x; simp [or_and_left, eq_comm, ← le_iff_eq_or_succ_le]; aesop
 
 lemma insert_Icc_right_eq_Icc_succ (h : a ≤ succ b) :
-    insert (succ b) (Icc a b) = Icc a (succ b) := by
-  ext x; simp [or_and_left, le_succ_iff_eq_or_le]; simp_all
+    insert (succ b) (Icc a b) = Icc a (succ b) :=
+  (Icc_succ_right h).symm
 
 @[deprecated (since := "2025-04-19")]
 alias insert_Icc_eq_Icc_succ_right := insert_Icc_right_eq_Icc_succ
@@ -156,8 +156,8 @@ lemma insert_Icc_pred_right_eq_Icc (h : a ≤ b) : insert b (Icc a (pred b)) = I
   ext x; simp [or_and_left, ← le_iff_eq_or_le_pred]; simp_all
 
 lemma insert_Icc_left_eq_Icc_pred (h : pred a ≤ b) :
-    insert (pred a) (Icc a b) = Icc (pred a) b := by
-  ext x; simp [or_and_left, pred_le_iff_eq_or_le]; simp_all
+    insert (pred a) (Icc a b) = Icc (pred a) b :=
+  (Icc_pred_left h).symm
 
 @[deprecated (since := "2025-04-19")]
 alias insert_Icc_eq_Icc_pred_left := insert_Icc_left_eq_Icc_pred
