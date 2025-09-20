@@ -208,7 +208,7 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
     · refine (mul_le_mul_iff_right₀ (by decide)).1 (le_trans this ?_)
       rw [two_mul, Nat.succ_le_iff]
       refine add_lt_add_of_lt_of_le ?_ mm₂
-      simpa using (mul_lt_mul_right ml0).2 (by decide : 1 < 3)
+      simpa using mul_lt_mul_of_pos_right (by decide : 1 < 3) ml0
     · exact Nat.le_of_lt_succ (Valid'.node4L_lemma₁ lr₂ mr₂ mm₁)
     · exact Valid'.node4L_lemma₂ mr₂
     · exact Valid'.node4L_lemma₃ mr₁ mm₁
@@ -243,7 +243,7 @@ theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : V
     absurd (le_trans (le_trans (Nat.mul_le_mul_left _ l0) H2) hb) (by decide)
   rw [Ordnode.rotateL_node]; split_ifs with h
   · have rr0 : size rr > 0 :=
-      (mul_lt_mul_left (by decide)).1 (lt_of_le_of_lt (Nat.zero_le _) h : ratio * 0 < _)
+      (mul_lt_mul_iff_right₀ (by decide)).1 (lt_of_le_of_lt (Nat.zero_le _) h : ratio * 0 < _)
     suffices BalancedSz (size l) (size rl) ∧ BalancedSz (size l + size rl + 1) (size rr) by
       exact hl.node3L hr.left hr.right this.1 this.2
     rcases Nat.eq_zero_or_pos (size l) with l0 | l0
