@@ -12,7 +12,7 @@ import Mathlib.ModelTheory.Satisfiability
 
 /-!
 
-# The First Order Theory of Algebraically Closed Fields
+# The First-Order Theory of Algebraically Closed Fields
 
 This file defines the theory of algebraically closed fields of characteristic `p`, as well
 as proving completeness of the theory and the Lefschetz Principle.
@@ -36,7 +36,7 @@ defined saying that these assumptions imply `Theory.field.Model K` and `(Theory.
 
 ## References
 
-The first order theory of algebraically closed fields, along with the Lefschetz Principle and
+The first-order theory of algebraically closed fields, along with the Lefschetz Principle and
 the Ax-Grothendieck Theorem were first formalized in Lean 3 by Joseph Hua
 [here](https://github.com/Jlh18/ModelTheoryInLean8) with the master's thesis
 [here](https://github.com/Jlh18/ModelTheory8Report)
@@ -218,7 +218,7 @@ theorem finite_ACF_prime_not_realize_of_ACF_zero_realize
   intro p hp
   exact Theory.models_of_models_theory (fun ψ hψ => hs p ψ hψ hp) h
 
-/-- The **Lefschetz principle**. A first order sentence is modeled by the theory
+/-- The **Lefschetz principle**. A first-order sentence is modeled by the theory
 of algebraically closed fields of characteristic zero if and only if it is modeled by
 the theory of algebraically closed fields of characteristic `p` for infinitely many `p`. -/
 theorem ACF_zero_realize_iff_infinite_ACF_prime_realize {φ : Language.ring.Sentence} :
@@ -230,7 +230,7 @@ theorem ACF_zero_realize_iff_infinite_ACF_prime_realize {φ : Language.ring.Sent
       fun p : Nat.Primes => (ACF_isComplete (Or.inl p.2)).models_not_iff] using
     finite_ACF_prime_not_realize_of_ACF_zero_realize φ.not
 
-/-- Another statement of the **Lefschetz principle**. A first order sentence is modeled by the
+/-- Another statement of the **Lefschetz principle**. A first-order sentence is modeled by the
 theory of algebraically closed fields of characteristic zero if and only if it is modeled by the
 theory of algebraically closed fields of characteristic `p` for all but finitely many primes `p`.
 -/
