@@ -151,7 +151,7 @@ include σ' in
 by Baire's theorem, there exists a ball in `E` whose image closure has nonempty interior.
 Rescaling everything, it follows that any `y ∈ F` is arbitrarily well approached by
 images of elements of norm at most `C * ‖y‖`.
-For further use, we will only need such an element whose image
+For later use, we will only need such an element whose image
 is within distance `‖y‖/2` of `y`, to apply an iterative process. -/
 theorem exists_approx_preimage_norm_le (surj : Surjective f) :
     ∃ C ≥ 0, ∀ y, ∃ x, dist (f x) y ≤ 1 / 2 * ‖y‖ ∧ ‖x‖ ≤ C * ‖y‖ :=
