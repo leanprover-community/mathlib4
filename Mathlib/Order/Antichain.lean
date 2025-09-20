@@ -11,14 +11,14 @@ import Mathlib.Order.Preorder.Chain
 
 This file defines antichains. An antichain is a set where any two distinct elements are not related.
 If the relation is `(≤)`, this corresponds to incomparability and usual order antichains. If the
-relation is `G.adj` for `G : SimpleGraph α`, this corresponds to independent sets of `G`.
+relation is `G.Adj` for `G : SimpleGraph α`, this corresponds to independent sets of `G`.
 
 ## Definitions
 
 * `IsAntichain r s`: Any two elements of `s : Set α` are unrelated by `r : α → α → Prop`.
 * `IsStrongAntichain r s`: Any two elements of `s : Set α` are not related by `r : α → α → Prop`
   to a common element.
-* `IsAntichain.mk r s`: Turns `s` into an antichain by keeping only the "maximal" elements.
+* `IsMaximalAntichain r s`: An antichain such that no antichain strictly including `s` exists.
 -/
 
 assert_not_exists CompleteLattice
@@ -232,11 +232,19 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α]
+variable [PartialOrder α] [PartialOrder β] {f : α → β} {s : Set α}
 
 theorem isAntichain_iff_forall_not_lt :
     IsAntichain (· ≤ ·) s ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → ¬a < b :=
   ⟨fun hs _ ha _ => hs.not_lt ha, fun hs _ ha _ hb h h' => hs ha hb <| h'.lt_of_ne h⟩
+
+lemma IsAntichain.of_strictMonoOn_antitoneOn (hf : StrictMonoOn f s) (hf' : AntitoneOn f s) :
+    IsAntichain (· ≤ ·) s :=
+  fun _a ha _b hb hab' hab ↦ (hf ha hb <| hab.lt_of_ne hab').not_ge (hf' ha hb hab)
+
+lemma IsAntichain.of_monotoneOn_strictAntiOn (hf : MonotoneOn f s) (hf' : StrictAntiOn f s) :
+    IsAntichain (· ≤ ·) s :=
+  fun _a ha _b hb hab' hab ↦ (hf ha hb hab).not_gt (hf' ha hb <| hab.lt_of_ne hab')
 
 end PartialOrder
 
@@ -300,15 +308,41 @@ theorem Set.Subsingleton.isStrongAntichain (hs : s.Subsingleton) (r : α → α 
     IsStrongAntichain r s :=
   hs.pairwise _
 
-variable [PartialOrder α] [PartialOrder β] {f : α → β} {s : Set α}
+/-! ### Maximal antichains -/
 
-lemma IsAntichain.of_strictMonoOn_antitoneOn (hf : StrictMonoOn f s) (hf' : AntitoneOn f s) :
-    IsAntichain (· ≤ ·) s :=
-  fun _a ha _b hb hab' hab ↦ (hf ha hb <| hab.lt_of_ne hab').not_ge (hf' ha hb hab)
+/-- An antichain `s` is a maximal antichain if there does not exists an antichain strictly including
+`s`. -/
+def IsMaxAntichain (r : α → α → Prop) (s : Set α) : Prop :=
+  IsAntichain r s ∧ ∀ ⦃t⦄, IsAntichain r t → s ⊆ t → s = t
 
-lemma IsAntichain.of_monotoneOn_strictAntiOn (hf : MonotoneOn f s) (hf' : StrictAntiOn f s) :
-    IsAntichain (· ≤ ·) s :=
-  fun _a ha _b hb hab' hab ↦ (hf ha hb hab).not_gt (hf' ha hb <| hab.lt_of_ne hab')
+namespace IsMaxAntichain
+
+theorem isAntichain (h : IsMaxAntichain r s) : IsAntichain r s :=
+  h.1
+
+protected theorem image {s : β → β → Prop} (e : r ≃r s) {c : Set α} (hc : IsMaxAntichain r c) :
+    IsMaxAntichain s (e '' c) where
+  left := hc.isAntichain.image _ fun _ _ ↦ e.map_rel_iff'.mp
+  right t ht hf := by
+    rw [← e.coe_fn_toEquiv, ← e.toEquiv.eq_preimage_iff_image_eq, preimage_equiv_eq_image_symm]
+    exact hc.2 (ht.image _ fun _ _ ↦ e.symm.map_rel_iff.mp)
+      ((e.toEquiv.subset_symm_image _ _).2 hf)
+
+protected theorem isEmpty_iff (h : IsMaxAntichain r s) : IsEmpty α ↔ IsEmpty s := by
+  refine ⟨fun _ ↦ isEmpty_coe_sort.mpr s.eq_empty_of_isEmpty, fun h' ↦ ?_⟩
+  by_contra! hh
+  obtain ⟨x⟩ := not_isEmpty_iff.mp hh
+  simp only [IsMaxAntichain, isEmpty_coe_sort.mp h', IsAntichain.empty, empty_subset, forall_const,
+    true_and] at h
+  exact singleton_ne_empty x (h IsAntichain.singleton).symm
+
+protected theorem nonempty_iff (h : IsMaxAntichain r s) : Nonempty α ↔ Nonempty s := by
+  grind [not_nonempty_iff, IsMaxAntichain.isEmpty_iff]
+
+protected theorem symm (h : IsMaxAntichain r s) : IsMaxAntichain (flip r) s :=
+  ⟨h.isAntichain.flip, fun _ ht₁ ht₂ ↦ h.2 ht₁.flip ht₂⟩
+
+end IsMaxAntichain
 
 end General
 
