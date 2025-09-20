@@ -149,9 +149,7 @@ theorem IsStableUnderBaseChange.mk (h₁ : RespectsIso @P)
   have hemul (x y : _) : e (x * y) = e x * e y := by simp_rw [hef, map_mul]
   convert h₁.1 _ { e with map_mul' := hemul } (h₂ H)
   ext x
-  change _ = e (x ⊗ₜ[R] 1)
-  -- Porting note: Had `dsimp only [e]` here, which didn't work anymore
-  rw [h.symm.1.equiv_tmul, Algebra.smul_def, AlgHom.toLinearMap_apply, map_one, mul_one]
+  simp [e, h.symm.1.equiv_tmul, Algebra.smul_def]
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra
 
