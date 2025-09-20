@@ -13,9 +13,9 @@ Given a property of object `P : ObjectProperty C` and a category `J`,
 we introduce two properties of objects `P.strictColimitsOfShape J`
 and `P.colimitsOfShape J`. The former contains exactly the objects
 of the form `colimit F` for any functor `F : J ⥤ C` that has
-a colimit and such that `F.obj j` satisfies `P` for any `h`, while
+a colimit and such that `F.obj j` satisfies `P` for any `j`, while
 the latter contains all the objects that are isomorphic to
-the these "chosen" objects `colimit F`.
+these "chosen" objects `colimit F`.
 
 Under certain circumstances, the type of objects satisfying
 `P.strictColimitsOfShape J` is small: the main reason this variant is
