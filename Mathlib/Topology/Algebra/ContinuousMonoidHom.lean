@@ -543,10 +543,12 @@ instance {M N} [Unique M] [Unique N] [Mul M] [Mul N]
 end unique
 
 /-- A family indexed by a type with a unique element
-is `ContinuousMulEquiv` to the element at the single index. -/
+is `ContinuousMulEquiv` to the element at the single index. 
+This is the topological version of `MulEquiv.piUnique`. -/
 @[to_additive (attr := simps!)
 /-- A family indexed by a type with a unique element
-is `ContinuousAddEquiv` to the element at the single index. -/]
+is `ContinuousAddEquiv` to the element at the single index.
+This is the topological equivalent of `AddEquiv.piUnique`. -/]
 def piUnique {ι : Type*} (M : ι → Type*) [(j : ι) → Mul (M j)]
     [(j : ι) → TopologicalSpace (M j)] [Unique ι] :
     ((j : ι) → M j) ≃ₜ* M default where
