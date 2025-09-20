@@ -5,6 +5,7 @@ Authors: David Wärn
 -/
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.EqToHom
+import Mathlib.CategoryTheory.Groupoid
 
 /-!
 # Quotient category
@@ -117,6 +118,35 @@ instance category : Category (Quotient r) where
   comp_id f := Quot.inductionOn f <| by simp
   id_comp f := Quot.inductionOn f <| by simp
   assoc f g h := Quot.inductionOn f <| Quot.inductionOn g <| Quot.inductionOn h <| by simp
+
+noncomputable section
+
+variable {G : Type*} [Groupoid G] (r : HomRel G)
+
+/-- Inverse of a map in the quotient category of a groupoid. -/
+protected def inv {X Y : Quotient r} (f : X ⟶ Y) : Y ⟶ X :=
+  Quot.liftOn f (fun f' => Quot.mk _ (Groupoid.inv f')) (fun _ _ con => by
+    rcases con with ⟨ _, f, g, _, hfg ⟩
+    have := Quot.sound <| CompClosure.intro (Groupoid.inv g) f g (Groupoid.inv f) hfg
+    simp only [Groupoid.inv_eq_inv, IsIso.hom_inv_id, Category.comp_id,
+      IsIso.inv_hom_id_assoc] at this
+    simp only [Groupoid.inv_eq_inv, IsIso.inv_comp, Category.assoc]
+    repeat rw [← comp_mk]
+    rw [this])
+
+@[simp]
+theorem inv_mk {X Y : Quotient r} (f : X.as ⟶ Y.as) :
+    Quotient.inv r (Quot.mk _ f) = Quot.mk _ (Groupoid.inv f) :=
+  rfl
+
+/-- The quotient of a groupoid is a groupoid. -/
+instance groupoid : Groupoid (Quotient r) where
+  inv f := Quotient.inv r f
+  inv_comp f := Quot.inductionOn f <| by simp [CategoryStruct.comp, CategoryStruct.id]
+  comp_inv f := Quot.inductionOn f <| by simp [CategoryStruct.comp, CategoryStruct.id]
+
+end
+
 
 /-- The functor from a category to its quotient. -/
 def functor : C ⥤ Quotient r where
