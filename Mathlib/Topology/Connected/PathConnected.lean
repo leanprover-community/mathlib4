@@ -427,8 +427,8 @@ theorem IsPathConnected.preimage_coe {U W : Set X} (hW : IsPathConnected W) (hWU
 theorem IsPathConnected.exists_path_through_family {n : ℕ}
     {s : Set X} (h : IsPathConnected s) (p : Fin (n + 1) → X) (hp : ∀ i, p i ∈ s) :
     ∃ γ : Path (p 0) (p (last n)), range γ ⊆ s ∧ ∀ i, p i ∈ range γ := by
-  cases p using snocCases
-  case h p x =>
+  cases p using snocCases with
+  | h p x =>
   simp only [forall_fin_succ', snoc_castSucc, snoc_last, Path.cast_coe,
     Path.target_mem_range, and_true] at hp ⊢
   obtain ⟨hp, hx⟩ := hp
