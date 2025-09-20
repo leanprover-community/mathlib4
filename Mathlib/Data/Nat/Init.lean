@@ -437,15 +437,15 @@ abbrev instAtLeastTwo (n : ℕ) : Nat.AtLeastTwo (n + 2) where
 
 instance (n : ℕ) [NeZero n] : (n + 1).AtLeastTwo := ⟨by have := NeZero.ne n; omega⟩
 
-instance (priority := 100) toNeZero (n : ℕ) [n.AtLeastTwo] : NeZero n :=
-  ⟨Nat.ne_of_gt (Nat.le_of_lt one_lt)⟩
-
 namespace AtLeastTwo
 
 variable {n : ℕ} [n.AtLeastTwo]
 
 lemma one_lt : 1 < n := prop
 lemma ne_one : n ≠ 1 := Nat.ne_of_gt one_lt
+
+instance (priority := 100) toNeZero (n : ℕ) [n.AtLeastTwo] : NeZero n :=
+  ⟨Nat.ne_of_gt (Nat.le_of_lt one_lt)⟩
 
 end AtLeastTwo
 
