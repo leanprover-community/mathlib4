@@ -62,7 +62,10 @@ example (α : Type) (inst1 inst2 : BEq α) [@LawfulBEq α inst1] [@LawfulBEq α 
 /-!
 `subsingleton` suggests `rfl` when it fails
 -/
-/-- info: Try this: rfl -/
+/--
+info: Try this:
+  rfl
+-/
 #guard_msgs in
 example : 1 + 1 = 2 := by
   subsingleton
@@ -75,7 +78,10 @@ example : 1 + 1 = 2 := by
   guard_target =ₛ 1 + 1 = 2
   rfl
 
-/-- info: Try this: (intros; rfl) -/
+/--
+info: Try this:
+  (intros; rfl)
+-/
 #guard_msgs in
 example : ∀ (n : Nat), n = n := by
   subsingleton
