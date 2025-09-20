@@ -41,6 +41,8 @@ universe u
 
 open FinStoch
 
+
+
 /-! ### Structural isomorphisms using DetMorphism -/
 
 /-- Rearranges `((X ⊗ Y) ⊗ Z)` to `(X ⊗ (Y ⊗ Z))`. -/
@@ -52,23 +54,20 @@ def associator (X Y Z : FinStoch) :
     apply StochasticMatrix.ext
     ext ⟨⟨x, y⟩, z⟩ ⟨⟨x', y'⟩, z'⟩
     simp only [CategoryStruct.comp, StochasticMatrix.comp]
+    -- Associator is deterministic: ((x,y),z) → (x,(y,z)) → ((x,y),z)
+    -- The only non-zero path is through the intermediate (x,(y,z))
     rw [Finset.sum_eq_single ⟨x, ⟨y, z⟩⟩]
-    · simp only [associatorDet, associatorInvDet, DetMorphism.ofFunc]
-      cat_disch
-    · intro b _ hb
-      simp only [associatorDet, associatorInvDet, DetMorphism.ofFunc]
-      cat_disch
+    · simp only [associatorDet, associatorInvDet, DetMorphism.ofFunc]; cat_disch
+    · intro b _ hb; simp only [associatorDet, associatorInvDet, DetMorphism.ofFunc]; cat_disch
     · intro h; exfalso; exact h (Finset.mem_univ _)
   inv_hom_id := by
     apply StochasticMatrix.ext
     ext ⟨x, ⟨y, z⟩⟩ ⟨x', ⟨y', z'⟩⟩
     simp only [CategoryStruct.comp, StochasticMatrix.comp]
+    -- Inverse path: (x,(y,z)) → ((x,y),z) → (x,(y,z))
     rw [Finset.sum_eq_single ⟨⟨x, y⟩, z⟩]
-    · simp only [associatorInvDet, associatorDet, DetMorphism.ofFunc]
-      cat_disch
-    · intro b _ hb
-      simp only [associatorInvDet, associatorDet, DetMorphism.ofFunc]
-      cat_disch
+    · simp only [associatorInvDet, associatorDet, DetMorphism.ofFunc]; cat_disch
+    · intro b _ hb; simp only [associatorInvDet, associatorDet, DetMorphism.ofFunc]; cat_disch
     · intro h; exfalso; exact h (Finset.mem_univ _)
 
 /-- Removes trivial left factor from `I ⊗ X` to get `X`. -/
@@ -79,21 +78,19 @@ def leftUnitor (X : FinStoch) : (tensorObj tensorUnit X) ≅ X where
     apply StochasticMatrix.ext
     ext ⟨⟨⟩, x⟩ ⟨⟨⟩, x'⟩
     simp only [CategoryStruct.comp, StochasticMatrix.comp]
+    -- ((),x) → x → ((),x) is identity
     rw [Finset.sum_eq_single x]
-    · simp only [leftUnitorDet, leftUnitorInvDet, DetMorphism.ofFunc]
-      cat_disch
-    · simp only [leftUnitorDet, leftUnitorInvDet, DetMorphism.ofFunc]
-      cat_disch
+    · simp only [leftUnitorDet, leftUnitorInvDet, DetMorphism.ofFunc]; cat_disch
+    · intro b _ hb; simp only [leftUnitorDet, leftUnitorInvDet, DetMorphism.ofFunc]; cat_disch
     · intro h; exfalso; exact h (Finset.mem_univ _)
   inv_hom_id := by
     apply StochasticMatrix.ext
     ext x x'
     simp only [CategoryStruct.comp, StochasticMatrix.comp]
+    -- x → ((),x) → x is identity
     rw [Finset.sum_eq_single ⟨⟨⟩, x⟩]
-    · simp only [leftUnitorInvDet, leftUnitorDet, DetMorphism.ofFunc]
-      cat_disch
-    · simp only [leftUnitorDet, leftUnitorInvDet, DetMorphism.ofFunc]
-      cat_disch
+    · simp only [leftUnitorInvDet, leftUnitorDet, DetMorphism.ofFunc]; cat_disch
+    · intro b _ hb; simp only [leftUnitorInvDet, leftUnitorDet, DetMorphism.ofFunc]; cat_disch
     · intro h; exfalso; exact h (Finset.mem_univ _)
 
 /-- Removes trivial right factor from `X ⊗ I` to get `X`. -/
@@ -105,20 +102,16 @@ def rightUnitor (X : FinStoch) : (tensorObj X tensorUnit) ≅ X where
     ext ⟨x, ⟨⟩⟩ ⟨x', ⟨⟩⟩
     simp only [CategoryStruct.comp, StochasticMatrix.comp]
     rw [Finset.sum_eq_single x]
-    · simp only [rightUnitorDet, rightUnitorInvDet, DetMorphism.ofFunc]
-      cat_disch
-    · simp only [rightUnitorDet, rightUnitorInvDet, DetMorphism.ofFunc]
-      cat_disch
+    · simp only [rightUnitorDet, rightUnitorInvDet, DetMorphism.ofFunc]; cat_disch
+    · intro b _ hb; simp only [rightUnitorDet, rightUnitorInvDet, DetMorphism.ofFunc]; cat_disch
     · intro h; exfalso; exact h (Finset.mem_univ _)
   inv_hom_id := by
     apply StochasticMatrix.ext
     ext x x'
     simp only [CategoryStruct.comp, StochasticMatrix.comp]
     rw [Finset.sum_eq_single ⟨x, ⟨⟩⟩]
-    · simp only [rightUnitorDet, rightUnitorInvDet, DetMorphism.ofFunc]
-      cat_disch
-    · simp only [rightUnitorDet, rightUnitorInvDet, DetMorphism.ofFunc]
-      cat_disch
+    · simp only [rightUnitorInvDet, rightUnitorDet, DetMorphism.ofFunc]; cat_disch
+    · intro b _ hb; simp only [rightUnitorInvDet, rightUnitorDet, DetMorphism.ofFunc]; cat_disch
     · intro h; exfalso; exact h (Finset.mem_univ _)
 
 /-- Basic monoidal structure on FinStoch using tensor products. -/
@@ -142,6 +135,7 @@ lemma associator_matrix (X Y Z : FinStoch) (xyz : ((X ⊗ Y) ⊗ Z).carrier)
     if xyz.1.1 = xyz'.1 ∧ xyz.1.2 = xyz'.2.1 ∧ xyz.2 = xyz'.2.2 then 1 else 0 := by
   simp only [MonoidalCategoryStruct.associator, associator, DetMorphism.toMatrix_apply]
   simp only [associatorDet, DetMorphism.ofFunc]
+  -- The associator permutation: ((x,y),z) ↦ (x,(y,z))
   aesop
 
 /-- Matrix entry for left unitor. -/
@@ -166,37 +160,6 @@ lemma rightUnitor_matrix (X : FinStoch) (xu : (X ⊗ FinStoch.tensorUnit).carrie
   obtain ⟨x', ⟨⟩⟩ := xu
   simp only
 
-/-! ### Deterministic morphisms -/
-
-section Deterministic
-
-open StochasticMatrix
-
-/-- The associator is deterministic. -/
-lemma associator_isDeterministic (X Y Z : FinStoch) :
-    (α_ X Y Z).hom.isDeterministic := (associatorDet X Y Z).is_det
-
-/-- The inverse associator is deterministic. -/
-lemma associator_inv_isDeterministic (X Y Z : FinStoch) :
-    (α_ X Y Z).inv.isDeterministic := (associatorInvDet X Y Z).is_det
-
-/-- The left unitor is deterministic. -/
-lemma leftUnitor_isDeterministic (X : FinStoch) :
-    (λ_ X).hom.isDeterministic := (leftUnitorDet X).is_det
-
-/-- The inverse left unitor is deterministic. -/
-lemma leftUnitor_inv_isDeterministic (X : FinStoch) :
-    (λ_ X).inv.isDeterministic := (leftUnitorInvDet X).is_det
-
-/-- The right unitor is deterministic. -/
-lemma rightUnitor_isDeterministic (X : FinStoch) :
-    (ρ_ X).hom.isDeterministic := (rightUnitorDet X).is_det
-
-/-- The inverse right unitor is deterministic. -/
-lemma rightUnitor_inv_isDeterministic (X : FinStoch) :
-    (ρ_ X).inv.isDeterministic := (rightUnitorInvDet X).is_det
-
-end Deterministic
 
 /-- FinStoch forms a monoidal category. -/
 instance : MonoidalCategory FinStoch where
@@ -207,6 +170,7 @@ instance : MonoidalCategory FinStoch where
     simp only [MonoidalCategoryStruct.tensorHom, StochasticMatrix.tensor,
                MonoidalCategoryStruct.whiskerRight, MonoidalCategoryStruct.whiskerLeft,
                CategoryStruct.comp, StochasticMatrix.comp]
+    -- f ⊗ g = (f ⊗ id) ∘ (id ⊗ g) = f(x₁,y₁) * g(x₂,y₂)
     rw [Finset.sum_eq_single ⟨y₁, x₂⟩]
     · simp only [StochasticMatrix.id, CategoryStruct.id]
       cat_disch
@@ -298,6 +262,8 @@ instance : MonoidalCategory FinStoch where
     ext ⟨⟨x₁, x₂⟩, x₃⟩ ⟨y₁, ⟨y₂, y₃⟩⟩
     simp only [CategoryStruct.comp, StochasticMatrix.comp,
                MonoidalCategoryStruct.tensorHom, StochasticMatrix.tensor]
+    -- Naturality: α ∘ (f₁⊗f₂⊗f₃) = (f₁⊗(f₂⊗f₃)) ∘ α
+    -- Both paths factor through the same intermediate states
     rw [Finset.sum_eq_single ⟨⟨y₁, y₂⟩, y₃⟩]
     · simp [associator_matrix]
       rw [Finset.sum_eq_single ⟨x₁, ⟨x₂, x₃⟩⟩]
@@ -314,7 +280,8 @@ instance : MonoidalCategory FinStoch where
       · exfalso
         apply h_ne
         simp only [h]
-      · have h_assoc_zero : (MonoidalCategoryStruct.associator Y₁ Y₂ Y₃).hom.toMatrix
+      · -- Associator is deterministic, gives 0 for non-matching indices
+        have h_assoc_zero : (MonoidalCategoryStruct.associator Y₁ Y₂ Y₃).hom.toMatrix
                               ((y₁', y₂'), y₃') (y₁, y₂, y₃) = 0 := by
           simp [associator_matrix, h]
         rw [h_assoc_zero, mul_zero]
@@ -376,18 +343,18 @@ instance : MonoidalCategory FinStoch where
     intros W X Y Z
     apply StochasticMatrix.ext
     ext ⟨⟨⟨w, x⟩, y⟩, z⟩ ⟨w', ⟨x', ⟨y', z'⟩⟩⟩
-    -- Both paths map ((w,x),y,z) to (w,(x,(y,z))) deterministically
+    -- Pentagon coherence: both paths from ((w,x),y,z) to (w,(x,(y,z))) are equal
     simp only [CategoryStruct.comp, StochasticMatrix.comp]
-    -- Left path through the pentagon
+    -- Left path: ((w,x),y,z) → (w,(x,y),z) → (w,((x,y),z)) → (w,(x,(y,z)))
     rw [Finset.sum_eq_single ⟨⟨w, ⟨x, y⟩⟩, z⟩]
     · rw [Finset.sum_eq_single ⟨w, ⟨⟨x, y⟩, z⟩⟩]
-      · -- Right path
+      · -- Right path: ((w,x),y,z) → ((w,x),(y,z)) → (w,(x,(y,z)))
         rw [Finset.sum_eq_single ⟨⟨w, x⟩, ⟨y, z⟩⟩]
-        · -- Evaluate all morphisms
+        · -- Both paths use deterministic permutations
           simp only [MonoidalCategoryStruct.whiskerRight, MonoidalCategoryStruct.whiskerLeft,
                      StochasticMatrix.tensor, associator_matrix,
                      CategoryStruct.id, StochasticMatrix.id]
-          -- Check equality conditions
+          -- All components must match for non-zero contribution
           by_cases hw : w = w'
           · by_cases hx : x = x'
             · by_cases hy : y = y'
@@ -445,9 +412,10 @@ instance : MonoidalCategory FinStoch where
     intros X Y
     apply StochasticMatrix.ext
     ext ⟨⟨x, ⟨⟩⟩, y⟩ ⟨x', y'⟩
-    -- Both sides map ((x,()),y) to (x,y) deterministically
+    -- Triangle coherence: associator and unitors interact correctly
+    -- Both paths: ((x,()),y) → (x,y) via different unit eliminations
     simp only [CategoryStruct.comp, StochasticMatrix.comp]
-    -- The unique intermediate is (x,((),y))
+    -- Unique intermediate state is (x,((),y))
     rw [Finset.sum_eq_single ⟨x, ⟨⟨⟩, y⟩⟩]
     · simp only [associator_matrix, MonoidalCategoryStruct.whiskerLeft,
                  MonoidalCategoryStruct.whiskerRight, StochasticMatrix.tensor,

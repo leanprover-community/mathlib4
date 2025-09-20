@@ -58,6 +58,7 @@ variable {m n p : Type u} [Fintype m] [Fintype n] [Fintype p]
 def id (m : Type u) [Fintype m] [DecidableEq m] : StochasticMatrix m m where
   toMatrix := fun i j => if i = j then (1 : NNReal) else 0
   row_sum := fun i => by
+    -- Exactly one 1 in row i (at position i), all others are 0
     rw [Finset.sum_eq_single i]
     · simp
     · intro j _ hj
@@ -70,6 +71,7 @@ def id (m : Type u) [Fintype m] [DecidableEq m] : StochasticMatrix m m where
 def comp (f : StochasticMatrix m n) (g : StochasticMatrix n p) : StochasticMatrix m p where
   toMatrix := fun i k => ∑ j : n, f.toMatrix i j * g.toMatrix j k
   row_sum := fun i => by
+    -- ∑_k ∑_j f(i,j)*g(j,k) = ∑_j f(i,j) * ∑_k g(j,k) = ∑_j f(i,j) * 1 = 1
     rw [Finset.sum_comm]
     simp [← Finset.mul_sum, g.row_sum, f.row_sum]
 
@@ -80,6 +82,8 @@ def tensor {m₁ n₁ m₂ n₂ : Type u} [Fintype m₁] [Fintype n₁] [Fintype
   toMatrix := fun ij kl => f.toMatrix ij.1 kl.1 * g.toMatrix ij.2 kl.2
   row_sum := fun ij => by
     obtain ⟨i₁, i₂⟩ := ij
+    -- Independence: P(k₁,k₂|i₁,i₂) = P(k₁|i₁) * P(k₂|i₂)
+    -- So ∑_(k₁,k₂) P(k₁|i₁)*P(k₂|i₂) = (∑_k₁ P(k₁|i₁)) * (∑_k₂ P(k₂|i₂)) = 1 * 1
     rw [← Finset.univ_product_univ, Finset.sum_product, ← Finset.sum_mul_sum]
     simp [f.row_sum i₁, g.row_sum i₂]
 
@@ -113,29 +117,27 @@ lemma apply_spec_ne (f : StochasticMatrix m n) [DecidableEq n] (h : f.isDetermin
   have h_sum := f.row_sum i
   have h_unique := (h i).choose_spec.2
   by_cases h_one : f.toMatrix i j = 1
-  · exact hj (h_unique j h_one)
-  · -- Since row sums to 1 and has unique 1, all other entries must be 0
+  · -- If f(i,j) = 1, then j must be the unique choice
+    exact hj (h_unique j h_one)
+  · -- Key insight: row has exactly one 1, everything else is 0
     have h_apply_one := apply_spec f h i
-    -- The sum equals 1 and one entry is 1, so all others must be 0
     have h_sum_eq : ∑ k : n, f.toMatrix i k = 1 := f.row_sum i
-    -- Split the sum: chosen entry + rest
+    -- Split sum into the chosen entry plus all others
     have h_split : ∑ k : n, f.toMatrix i k =
         f.toMatrix i (f.apply h i) + ∑ k ∈ Finset.univ.erase (f.apply h i), f.toMatrix i k := by
       rw [← Finset.sum_erase_add _ _ (Finset.mem_univ (f.apply h i))]
       ring
-    -- Substitute known values
     rw [h_split] at h_sum_eq
     rw [h_apply_one] at h_sum_eq
-    -- So the rest sums to 0: 1 + rest = 1 implies rest = 0
+    -- Since 1 + rest = 1, we get rest = 0
     have h_others_zero : ∑ k ∈ Finset.univ.erase (f.apply h i), f.toMatrix i k = 0 := by
       grind only
-    -- Non-negative terms summing to 0 means each is 0
+    -- Non-negative reals summing to 0 means each is 0
     have h_all_zero : ∀ k ∈ Finset.univ.erase (f.apply h i), f.toMatrix i k = 0 := by
       have h_nonneg : ∀ k ∈ Finset.univ.erase (f.apply h i), 0 ≤ f.toMatrix i k := by
         intro k _
         exact (f.toMatrix i k).2
       exact Finset.sum_eq_zero_iff_of_nonneg h_nonneg |>.mp h_others_zero
-    -- j is different from f.apply h i, so it's in the erased set
     have h_j_in : j ∈ Finset.univ.erase (f.apply h i) := by
       simp [hj]
     exact h_nonzero (h_all_zero j h_j_in)
@@ -173,9 +175,11 @@ theorem det_comp_det (f : StochasticMatrix m n) (g : StochasticMatrix n p)
     [DecidableEq n] (hf : f.isDeterministic) (hg : g.isDeterministic) :
     (comp f g).isDeterministic := by
   intro i
+  -- The composition follows the unique path i → f(i) → g(f(i))
   use g.apply hg (f.apply hf i)
   constructor
   · simp only [comp]
+    -- Only the j = f(i) term is non-zero in the sum
     rw [Finset.sum_eq_single (f.apply hf i)]
     · simp [apply_spec f hf i, apply_spec g hg (f.apply hf i)]
     · intro j _ hj
@@ -183,26 +187,25 @@ theorem det_comp_det (f : StochasticMatrix m n) (g : StochasticMatrix n p)
     · intro h; exfalso; exact h (Finset.mem_univ _)
   · intro k hk
     simp only [comp] at hk
-    -- The sum equals 1, so there's exactly one j with f(i,j) * g(j,k) = 1
-    -- This means f(i,j) = 1 and g(j,k) = 1
+    -- Product f(i,j) * g(j,k) equals 1 only when both are 1
     have h_exist : ∃ j : n, f.toMatrix i j = 1 ∧ g.toMatrix j k = 1 := by
       by_contra h_none
       push_neg at h_none
-      -- The sum simplifies because f is deterministic
+      -- Since f is deterministic, the sum collapses to g(f(i), k)
       have h_sum_simp : ∑ j : n, f.toMatrix i j * g.toMatrix j k = g.toMatrix (f.apply hf i) k := by
         rw [Finset.sum_eq_single (f.apply hf i)]
         · simp [apply_spec f hf i]
         · intro j _ hj
           simp [apply_spec_ne f hf i j hj]
         · intro h; exfalso; exact h (Finset.mem_univ _)
-      -- So g(f.apply hf i, k) = 1
       rw [h_sum_simp] at hk
-      -- But h_none says if f(i, f.apply hf i) = 1 then g(f.apply hf i, k) ≠ 1
       have : g.toMatrix (f.apply hf i) k ≠ 1 := h_none _ (apply_spec f hf i)
       exact this hk
     obtain ⟨j, hf_j, hg_j⟩ := h_exist
+    -- Since f is deterministic, j must be f(i)
     have h_j_unique : j = f.apply hf i := (hf i).choose_spec.2 j hf_j
     rw [h_j_unique] at hg_j
+    -- Since g is deterministic, k must be g(f(i))
     exact (hg (f.apply hf i)).choose_spec.2 k hg_j
 
 /-- Composition of deterministic matrices equals function composition. -/
@@ -229,6 +232,7 @@ theorem det_comp_eq_fun_comp (f : StochasticMatrix m n) (g : StochasticMatrix n 
 /-- Sum of delta function equals 1 at unique point. -/
 lemma sum_delta {α : Type*} [Fintype α] [DecidableEq α] (a : α) :
     ∑ x : α, (if x = a then (1 : NNReal) else 0) = 1 := by
+  -- Only the x = a term contributes 1, all others are 0
   rw [Finset.sum_eq_single a]
   · simp
   · intro b _ hb; simp [hb]
@@ -254,26 +258,22 @@ theorem det_tensor_det {m₁ n₁ m₂ n₂ : Type u} [Fintype m₁] [Fintype n�
     (hf : f.isDeterministic) (hg : g.isDeterministic) :
     (tensor f g).isDeterministic := by
   intro ⟨i₁, i₂⟩
-  -- The unique output is (f.apply hf i₁, g.apply hg i₂)
+  -- Tensor acts independently on each component
   use (f.apply hf i₁, g.apply hg i₂)
   constructor
-  · -- Show this output has value 1
-    simp only [tensor]
+  · simp only [tensor]
     rw [apply_spec f hf i₁, apply_spec g hg i₂]
     simp
-  · -- Show uniqueness
-    intro ⟨j₁, j₂⟩ hj
+  · intro ⟨j₁, j₂⟩ hj
     simp only [tensor] at hj
-    -- Since f and g are deterministic, the product equals 1 iff both equal 1
     have h_prod : f.toMatrix i₁ j₁ * g.toMatrix i₂ j₂ = 1 := hj
-    -- In NNReal, a product equals 1 iff both factors equal 1
+    -- In NNReal, product = 1 iff both factors = 1
     have h₁ : f.toMatrix i₁ j₁ = 1 := by
       by_contra h_not_one
       by_cases h_zero : f.toMatrix i₁ j₁ = 0
       · rw [h_zero, zero_mul] at h_prod
         simp at h_prod
-      · -- f.toMatrix i₁ j₁ is between 0 and 1 but not 0 or 1
-        -- Since f is deterministic, each entry is either 0 or 1
+      · -- Deterministic means each entry is 0 or 1
         by_cases h_eq : j₁ = f.apply hf i₁
         · subst h_eq
           exact absurd (apply_spec f hf i₁) h_not_one
@@ -282,7 +282,7 @@ theorem det_tensor_det {m₁ n₁ m₂ n₂ : Type u} [Fintype m₁] [Fintype n�
     have h₂ : g.toMatrix i₂ j₂ = 1 := by
       rw [h₁, one_mul] at h_prod
       exact h_prod
-    -- By uniqueness of deterministic matrices
+    -- Uniqueness forces j₁ = f(i₁) and j₂ = g(i₂)
     have hj₁ : j₁ = f.apply hf i₁ := (hf i₁).choose_spec.2 j₁ h₁
     have hj₂ : j₂ = g.apply hg i₂ := (hg i₂).choose_spec.2 j₂ h₂
     simp [hj₁, hj₂]
@@ -346,6 +346,7 @@ def ofFunc (f : m → n) : DetMorphism m n :=
   let mat : StochasticMatrix m n := {
     toMatrix := fun i j => if f i = j then 1 else 0
     row_sum := fun i => by
+      -- Only f(i) gets 1, all others get 0
       rw [Finset.sum_eq_single (f i)]
       · simp
       · intro j _ hj
@@ -364,7 +365,7 @@ def ofFunc (f : m → n) : DetMorphism m n :=
     is_det := det
     spec := fun i => by
       unfold StochasticMatrix.apply
-      -- The apply function returns the unique j with matrix entry 1
+      -- apply returns the unique j where the matrix is 1
       have h_det := det i
       have h_spec := h_det.choose_spec
       have h_one : mat.toMatrix i (f i) = 1 := by simp [mat]
@@ -494,7 +495,7 @@ instance : Category FinStoch where
     apply StochasticMatrix.ext
     ext i j
     simp only [CategoryStruct.comp, StochasticMatrix.comp, CategoryStruct.id]
-    -- Identity selects row i
+    -- id(i,k) * f(k,j) is non-zero only when k = i
     rw [Finset.sum_eq_single i]
     · simp [StochasticMatrix.id]
     · intro k _ hk
@@ -508,7 +509,7 @@ instance : Category FinStoch where
     apply StochasticMatrix.ext
     ext i j
     simp only [CategoryStruct.comp, StochasticMatrix.comp, CategoryStruct.id]
-    -- Identity selects column j
+    -- f(i,k) * id(k,j) is non-zero only when k = j
     rw [Finset.sum_eq_single j]
     · simp [StochasticMatrix.id]
     · intro k _ hk
@@ -522,6 +523,7 @@ instance : Category FinStoch where
     apply StochasticMatrix.ext
     ext i k
     simp only [CategoryStruct.comp, StochasticMatrix.comp]
+    -- Both (f;g);h and f;(g;h) equal ∑_j,k f(i,j)*g(j,k)*h(k,l)
     simp only [Finset.sum_mul, Finset.mul_sum, mul_assoc]
     rw [Finset.sum_comm]
 

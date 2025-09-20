@@ -10,17 +10,26 @@ import Mathlib.CategoryTheory.CopyDiscardCategory.Basic
 # Copy-Discard Structure on FinStoch
 
 FinStoch has copy and discard operations making it a copy-discard category.
+These operations are fundamental for Markov categories.
 
 ## Main definitions
 
-* `copy` - Diagonal embedding
-* `discard` - Map to singleton
-* `ComonObj` instances
-* `CopyDiscardCategory FinStoch`
+* `copy` - Diagonal embedding Δ: X → X ⊗ X mapping i ↦ (i,i)
+* `discard` - Terminal morphism ε: X → 𝟙 (constant map)
+* `ComonObj` - Every object has comonoid structure via copy and discard
+* `CopyDiscardCategory FinStoch` - The full copy-discard structure
+
+## Mathematical interpretation
+
+In probability theory:
+- Copy represents duplicating a random variable (perfect correlation)
+- Discard represents forgetting information (marginalization)
+- The axioms ensure these operations interact coherently
 
 ## Implementation notes
 
-Copy duplicates states (diagonal), discard maps all states to the unit.
+Copy and discard are deterministic morphisms (permutation matrices).
+This simplifies proofs as sums reduce to single non-zero terms.
 
 ## Tags
 
@@ -33,18 +42,22 @@ open FinStoch MonoidalCategory ComonObj
 
 universe u
 
-/-- Copy: diagonal embedding. Maps a state to both copies of itself. -/
+/-- Copy: diagonal embedding. Maps a state to both copies of itself.
+The copy morphism Δ: X → X ⊗ X maps i ↦ (i,i) deterministically. -/
 def copy (X : FinStoch) : X ⟶ X ⊗ X where
   toMatrix := fun i (j₁, j₂) => if i = j₁ ∧ i = j₂ then 1 else 0
   row_sum := fun i => by
+    -- Unique non-zero entry at (i,i)
     rw [Fintype.sum_eq_single ⟨i, i⟩]
     · simp
     · aesop
 
-/-- Discard: map to singleton. All states map to the unique unit state. -/
+/-- Discard: map to singleton. All states map to the unique unit state.
+The discard morphism ε: X → 𝟙 is the constant map with value 1. -/
 def discard (X : FinStoch) : X ⟶ tensorUnit where
   toMatrix := fun i _ => 1
   row_sum := fun i => by
+    -- Sum over singleton is 1
     rw [Fintype.sum_eq_single ⟨⟩]
     simp_all
     intro x
@@ -62,9 +75,8 @@ instance (X : FinStoch) : ComonObj X where
     simp only [CategoryStruct.comp, StochasticMatrix.comp, copy, whiskerRight, discard,
                MonoidalCategoryStruct.leftUnitor, leftUnitor, StochasticMatrix.tensor,
                CategoryStruct.id, StochasticMatrix.id, leftUnitorInvDet, DetMorphism.ofFunc]
-    -- Goal: Σ_{(j₁,j₂)} copy(i)(j₁,j₂) · (discard ⊗ id)(j₁,j₂)(unit_,x) = λ⁻¹(i)(unit_,x)
-    -- LHS = Σ_{(j₁,j₂)} [i=j₁∧i=j₂] · 1 · [j₂=x] = [i=x]
-    -- RHS = λ⁻¹(i)(unit_,x) = [i=x]
+    -- Δ ≫ (ε ▷ id) ≫ λ⁻¹ = id
+    -- Path: i → (i,i) → (*,i) → i, which is identity
     rw [Fintype.sum_eq_single ⟨i, x⟩]
     · simp
       split_ifs with h h'
@@ -81,11 +93,8 @@ instance (X : FinStoch) : ComonObj X where
     simp_all [CategoryStruct.comp, StochasticMatrix.comp, copy, whiskerLeft,
               StochasticMatrix.tensor, CategoryStruct.id, StochasticMatrix.id, discard,
               MonoidalCategoryStruct.rightUnitor, rightUnitor]
-    -- The composition: copy ≫ (id ⊗ discard) ≫ rightUnitor
-    -- First: copy(i) gives (i,i)
-    -- Second: (id ⊗ discard)(i,i) gives (i,*)
-    -- Third: rightUnitor(i,*) gives i
-    -- Overall: identity morphism
+    -- Δ ≫ (id ◁ ε) ≫ ρ⁻¹ = id
+    -- Path: i → (i,i) → (i,*) → i, which is identity
     rw [Finset.sum_eq_single ⟨i, x⟩]
     · simp_all [rightUnitorInvDet, DetMorphism.ofFunc]
       grind only [cases Or]
@@ -98,8 +107,8 @@ instance (X : FinStoch) : ComonObj X where
     simp_all [CategoryStruct.comp, StochasticMatrix.comp, copy, whiskerLeft,
               StochasticMatrix.tensor, CategoryStruct.id, StochasticMatrix.id, whiskerRight,
               MonoidalCategoryStruct.associator, associator, associatorDet, DetMorphism.ofFunc]
-    -- Both sides give 1 if i = j₁ = j₂ = j₃, else 0
-    -- Show both paths equal this value
+    -- Coassociativity: Δ ≫ (Δ ▷ id) ≫ α = Δ ≫ (id ◁ Δ)
+    -- Both give 1 iff i = j₁ = j₂ = j₃
     by_cases h : i = j₁ ∧ i = j₂ ∧ i = j₃
     · -- Case when all are equal to i
       obtain ⟨h1, h2, h3⟩ := h
@@ -155,9 +164,8 @@ instance (X : FinStoch) : CommComonObj X where
     apply StochasticMatrix.ext
     ext i ⟨j₁, j₂⟩
     simp_all [CategoryStruct.comp, StochasticMatrix.comp]
-    -- Copy is commutative: Δ ≫ β = Δ
-    -- LHS: copy(i) gives (i,i), then swap gives (i,i)
-    -- RHS: copy(i) gives (j₁,j₂) which is 1 iff i = j₁ = j₂
+    -- Cocommutativity: Δ ≫ β = Δ
+    -- Since Δ maps i ↦ (i,i) and swap(i,i) = (i,i), the composition equals Δ
     rw [Fintype.sum_eq_single ⟨i, i⟩]
     · -- At (i,i): copy gives 1, swap keeps (i,i) → (i,i) with prob 1
       simp [comul, copy]
