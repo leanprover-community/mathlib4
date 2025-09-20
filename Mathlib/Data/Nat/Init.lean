@@ -432,7 +432,7 @@ instance decidableLoHiLe (lo hi : ℕ) (P : ℕ → Prop) [DecidablePred P] :
 class AtLeastTwo (n : ℕ) : Prop where
   prop : 2 ≤ n
 
-instance instAtLeastTwo {n : ℕ} : Nat.AtLeastTwo (n + 2) where
+abbrev instAtLeastTwo {n : ℕ} : Nat.AtLeastTwo (n + 2) where
   prop := Nat.succ_le_succ <| Nat.succ_le_succ <| Nat.zero_le _
 
 instance {n : ℕ} [NeZero n] : (n + 1).AtLeastTwo := ⟨by have := NeZero.ne n; omega⟩
