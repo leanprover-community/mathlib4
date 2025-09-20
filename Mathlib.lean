@@ -3747,6 +3747,7 @@ import Mathlib.Dynamics.TopologicalEntropy.DynamicalEntourage
 import Mathlib.Dynamics.TopologicalEntropy.NetEntropy
 import Mathlib.Dynamics.TopologicalEntropy.Semiconj
 import Mathlib.Dynamics.TopologicalEntropy.Subset
+import Mathlib.Dynamics.Transitive
 import Mathlib.FieldTheory.AbelRuffini
 import Mathlib.FieldTheory.AbsoluteGaloisGroup
 import Mathlib.FieldTheory.AlgebraicClosure
