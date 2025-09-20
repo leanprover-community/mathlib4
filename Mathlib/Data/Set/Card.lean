@@ -173,9 +173,8 @@ section Lattice
 theorem encard_le_encard (h : s ⊆ t) : s.encard ≤ t.encard := by
   rw [← union_diff_cancel h, encard_union_eq disjoint_sdiff_right]; exact le_self_add
 
-@[simp] theorem encard_le_card : s.encard ≤ ENat.card α := by
-  rw [← Set.encard_univ]
-  exact Set.encard_le_encard (fun _ a ↦ trivial)
+@[simp] theorem encard_le_card : s.encard ≤ ENat.card α :=
+  encard_univ _ ▸ encard_le_encard (fun _ _ ↦ trivial)
 
 theorem encard_mono {α : Type*} : Monotone (encard : Set α → ℕ∞) :=
   fun _ _ ↦ encard_le_encard
