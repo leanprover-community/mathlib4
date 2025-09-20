@@ -26,7 +26,7 @@ local instance [Small.{v} R] : CategoryTheory.HasExt.{max u v} (ModuleCat.{v} R)
 instance [Small.{v} R] [IsNoetherianRing R] (N M : ModuleCat.{v} R)
     [Module.Finite R N] [Module.Finite R M] (i : ℕ) : Module.Finite R (Ext.{max u v} N M i) := by
   induction i generalizing N
-  · exact Module.Finite.equiv Ext.linearEquiv₀.symm
+  · exact Module.Finite.equiv (LinearEquiv.symm Ext.linearEquiv₀)
   · rename_i n ih _
     rcases Module.Finite.exists_fin' R N with ⟨m, f', hf'⟩
     let f := f'.comp ((Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)).trans
