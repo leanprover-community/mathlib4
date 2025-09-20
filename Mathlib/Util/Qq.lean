@@ -5,6 +5,7 @@ Authors: Kim Morrison, Alex J. Best, Yaël Dillies
 -/
 import Mathlib.Init
 import Qq
+import Lean.Expr
 
 /-!
 # Extra `Qq` helpers
@@ -60,5 +61,17 @@ def mkSetLiteralQ {u v : Level} {α : Q(Type u)} (β : Q(Type v))
   | [] => q(∅)
   | [x] => q({$x})
   | x :: xs => q(Insert.insert $x $(mkSetLiteralQ β xs))
+
+/-- Returns the natural number literal `n` as used in the frontend. It is a `OfNat.ofNat`
+application. Recall that all theorems and definitions containing numeric literals are encoded using
+`OfNat.ofNat` applications in the frontend.
+
+This is a Qq version of `Lean.mkNatLit`. -/
+def mkNatLitQ (n : Nat) : Q(Nat) := mkNatLit n
+
+/-- Returns the integer literal `n`.
+
+This is a Qq version of `Lean.mkIntLit`. -/
+def mkIntLitQ (n : Int) : Q(Int) := mkIntLit n
 
 end Qq
