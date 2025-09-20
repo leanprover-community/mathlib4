@@ -14,9 +14,7 @@ open Set
 variable {α β : Type*}
 
 theorem WithBot.range_eq (f : WithBot α → β) :
-    range f = insert (f ⊥) (range (f ∘ WithBot.some : α → β)) :=
-  Option.range_eq f
+    range f = insert (f ⊥) (range (f ∘ WithBot.some : α → β)) := by grind [cases WithBot]
 
 theorem WithTop.range_eq (f : WithTop α → β) :
-    range f = insert (f ⊤) (range (f ∘ WithBot.some : α → β)) :=
-  Option.range_eq f
+    range f = insert (f ⊤) (range (f ∘ WithBot.some : α → β)) := WithBot.range_eq f

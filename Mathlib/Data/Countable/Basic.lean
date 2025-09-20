@@ -70,15 +70,23 @@ instance Sum.uncountable_inr [Uncountable β] : Uncountable (α ⊕ β) :=
 instance Option.instCountable [Countable α] : Countable (Option α) :=
   Countable.of_equiv _ (Equiv.optionEquivSumPUnit.{0, _} α).symm
 
-instance WithTop.instCountable [Countable α] : Countable (WithTop α) := Option.instCountable
-instance WithBot.instCountable [Countable α] : Countable (WithBot α) := Option.instCountable
-instance ENat.instCountable : Countable ℕ∞ := Option.instCountable
+instance WithTop.instCountable [Countable α] : Countable (WithTop α) :=
+  Countable.of_equiv _ WithTop.equivOption.symm
+
+instance WithBot.instCountable [Countable α] : Countable (WithBot α) :=
+  Countable.of_equiv _ WithBot.equivOption.symm
+
+instance ENat.instCountable : Countable ℕ∞ :=
+  Countable.of_equiv _ WithTop.equivOption.symm
 
 instance Option.instUncountable [Uncountable α] : Uncountable (Option α) :=
   Injective.uncountable fun _ _ ↦ Option.some_inj.1
 
-instance WithTop.instUncountable [Uncountable α] : Uncountable (WithTop α) := Option.instUncountable
-instance WithBot.instUncountable [Uncountable α] : Uncountable (WithBot α) := Option.instUncountable
+instance WithTop.instUncountable [Uncountable α] : Uncountable (WithTop α) :=
+  Injective.uncountable fun _ _ ↦ WithTop.coe_inj.1
+
+instance WithBot.instUncountable [Uncountable α] : Uncountable (WithBot α) :=
+  Injective.uncountable fun _ _ ↦ WithBot.coe_inj.1
 
 instance [Countable α] [Countable β] : Countable (α × β) := by
   rcases exists_injective_nat α with ⟨f, hf⟩
