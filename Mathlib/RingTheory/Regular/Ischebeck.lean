@@ -12,75 +12,6 @@ import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 
 -/
 
-namespace CategoryTheory
-
-universe w v u
-
-open Abelian Limits ZeroObject Abelian.Ext
-
-variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
-
-variable (X I P Y : C)
-
-section Injective
-
-instance Abelian.Ext.subsingleton_of_injective [Injective I] (n : ℕ) [hn : NeZero n] :
-    Subsingleton (Ext X I n) := by
-  rw [← Nat.succ_pred_eq_of_ne_zero hn.1]
-  exact subsingleton_of_forall_eq 0 eq_zero_of_injective
-
-variable {S : ShortComplex C} (hS : S.ShortExact) [Injective S.X₂]
-  (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁) [NeZero n₀]
-
-noncomputable def injective_dim_shifting : Ext X S.X₃ n₀ ≃+ Ext X S.X₁ n₁ :=
-  have : NeZero n₁ := by
-    rw [← h]
-    infer_instance
-  have : IsIso (AddCommGrp.ofHom (hS.extClass.postcomp X h)) :=
-    ComposableArrows.Exact.isIso_map' (covariantSequence_exact X hS n₀ n₁ h) 1 (by decide)
-      (IsZero.eq_zero_of_src (AddCommGrp.of (Ext X S.X₂ n₀)).isZero_of_subsingleton _)
-      (IsZero.eq_zero_of_tgt (AddCommGrp.of (Ext X S.X₂ n₁)).isZero_of_subsingleton _)
-  (CategoryTheory.asIso (AddCommGrp.ofHom (hS.extClass.postcomp X h))).addCommGroupIsoToAddEquiv
-
-lemma injective_dim_shifting_apply (e : Ext X S.X₃ n₀) :
-  injective_dim_shifting X hS n₀ n₁ h e = hS.extClass.postcomp X h e := rfl
-
-end Injective
-
-section Projective
-
-omit [HasExt C] in
-theorem shortExact_kernel_of_epi {X Y : C} (e : X ⟶ Y) [he : Epi e] :
-    (ShortComplex.mk (kernel.ι e) e (kernel.condition e)).ShortExact where
-  exact := ShortComplex.exact_kernel e
-  mono_f := equalizer.ι_mono
-  epi_g := he
-
-instance Abelian.Ext.subsingleton_of_projective [Projective P] (n : ℕ) [hn : NeZero n] :
-    Subsingleton (Ext P Y n) := by
-  rw [← Nat.succ_pred_eq_of_ne_zero hn.1]
-  exact subsingleton_of_forall_eq 0 eq_zero_of_projective
-
-variable {S : ShortComplex C} (hS : S.ShortExact) [Projective S.X₂]
-  (n₀ n₁ : ℕ) (h : 1 + n₀ = n₁) [NeZero n₀]
-
-noncomputable def projective_dim_shifting : Ext S.X₁ Y n₀ ≃+ Ext S.X₃ Y n₁ :=
-  have : NeZero n₁ := by
-    rw [← h]
-    infer_instance
-  have : IsIso (AddCommGrp.ofHom (hS.extClass.precomp Y h)) :=
-    ComposableArrows.Exact.isIso_map' (contravariantSequence_exact hS Y n₀ n₁ h) 1 (by decide)
-      (IsZero.eq_zero_of_src (AddCommGrp.of (Ext S.X₂ Y n₀)).isZero_of_subsingleton _)
-      (IsZero.eq_zero_of_tgt (AddCommGrp.of (Ext S.X₂ Y n₁)).isZero_of_subsingleton _)
-  (CategoryTheory.asIso (AddCommGrp.ofHom (hS.extClass.precomp Y h))).addCommGroupIsoToAddEquiv
-
-lemma projective_dim_shifting_apply (e : Ext S.X₁ Y n₀) :
-  projective_dim_shifting Y hS n₀ n₁ h e = hS.extClass.precomp Y h e := rfl
-
-end Projective
-
-end CategoryTheory
-
 open IsLocalRing LinearMap ModuleCat Pointwise
 open RingTheory.Sequence Ideal CategoryTheory Abelian Limits
 
@@ -93,7 +24,45 @@ local instance [Small.{v} R] : CategoryTheory.HasExt.{max u v} (ModuleCat.{v} R)
   CategoryTheory.hasExt_of_enoughProjectives.{max u v} (ModuleCat.{v} R)
 
 instance [Small.{v} R] [IsNoetherianRing R] (N M : ModuleCat.{v} R)
-    [Module.Finite R N] [Module.Finite R M] (i : ℕ) : Module.Finite R (Ext.{max u v} N M i) := sorry
+    [Module.Finite R N] [Module.Finite R M] (i : ℕ) : Module.Finite R (Ext.{max u v} N M i) := by
+  induction i generalizing N
+  · have : Module.Finite R (N →ₗ[R] M) := inferInstance
+    sorry
+  · rename_i n ih _
+    rcases Module.Finite.exists_fin' R N with ⟨m, f', hf'⟩
+    let f := f'.comp ((Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)).trans
+      (Finsupp.linearEquivFunOnFinite R R (Fin m))).1
+    have surjf : Function.Surjective f := by simpa [f] using hf'
+    let S : ShortComplex (ModuleCat.{v} R) := {
+      f := ModuleCat.ofHom.{v} (LinearMap.ker f).subtype
+      g := ModuleCat.ofHom.{v} f
+      zero := by
+        ext x
+        simp }
+    have S_exact' : Function.Exact (ConcreteCategory.hom S.f) (ConcreteCategory.hom S.g) := by
+      intro x
+      simp [S]
+    have S_exact : S.ShortExact := {
+      exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr S_exact'
+      mono_f := (ModuleCat.mono_iff_injective S.f).mpr (LinearMap.ker f).injective_subtype
+      epi_g := (ModuleCat.epi_iff_surjective S.g).mpr surjf}
+    let _ : Module.Finite R S.X₂ := by
+      simp [S, Module.Finite.equiv (Shrink.linearEquiv R R).symm, Finite.of_fintype (Fin m)]
+    let _ : Module.Free R (Shrink.{v, u} R) :=  Module.Free.of_equiv (Shrink.linearEquiv R R).symm
+    let _ : Module.Free R S.X₂ := Module.Free.finsupp R (Shrink.{v, u} R) _
+    have proj := ModuleCat.projective_of_categoryTheory_projective S.X₂
+    have : Subsingleton (Ext S.X₂ M (n + 1)) :=
+      subsingleton_of_forall_eq 0 Ext.eq_zero_of_projective
+    have epi := (Ext.contravariant_sequence_exact₃' S_exact M n (n + 1) (add_comm 1 n)).epi_f
+      (IsZero.eq_zero_of_tgt (AddCommGrp.of (Ext S.X₂ M (n + 1))).isZero_of_subsingleton _)
+    have surj : Function.Surjective (S_exact.extClass.precomp M (add_comm 1 n)) :=
+      (AddCommGrp.epi_iff_surjective _).mp epi
+    let f : Ext S.X₁ M n →ₗ[R] Ext S.X₃ M (n + 1) := {
+      __ := S_exact.extClass.precomp M (add_comm 1 n)
+      map_smul' r x := by
+        --simp (would work after lemmas set up)
+        sorry }
+    exact Module.Finite.of_surjective f surj
 
 lemma quotSMulTop_nontrivial [IsLocalRing R] {x : R} (mem : x ∈ maximalIdeal R)
     (L : Type*) [AddCommGroup L] [Module R L] [Module.Finite R L] [Nontrivial L] :
