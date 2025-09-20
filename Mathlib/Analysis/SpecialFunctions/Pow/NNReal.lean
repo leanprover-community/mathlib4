@@ -44,6 +44,8 @@ theorem coe_rpow (x : ℝ≥0) (y : ℝ) : ((x ^ y : ℝ≥0) : ℝ) = (x : ℝ)
 theorem rpow_zero (x : ℝ≥0) : x ^ (0 : ℝ) = 1 :=
   NNReal.eq <| Real.rpow_zero _
 
+theorem rpow_zero_pos (x : ℝ≥0) : 0 < x ^ (0 : ℝ) := by rw [rpow_zero]; exact one_pos
+
 @[simp]
 theorem rpow_eq_zero_iff {x : ℝ≥0} {y : ℝ} : x ^ y = 0 ↔ x = 0 ∧ y ≠ 0 := by
   rw [← NNReal.coe_inj, coe_rpow, ← NNReal.coe_eq_zero]
@@ -455,6 +457,8 @@ theorem rpow_zero {x : ℝ≥0∞} : x ^ (0 : ℝ) = 1 := by
   cases x <;>
     · dsimp only [(· ^ ·), Pow.pow, rpow]
       simp
+
+theorem rpow_zero_pos (x : ℝ≥0∞) : 0 < x ^ (0 : ℝ) := by rw [rpow_zero]; exact one_pos
 
 theorem top_rpow_def (y : ℝ) : (⊤ : ℝ≥0∞) ^ y = if 0 < y then ⊤ else if y = 0 then 1 else 0 :=
   rfl
@@ -969,6 +973,11 @@ lemma add_rpow_le_two_rpow_mul_rpow_add_rpow {p : ℝ} (a b : ℝ≥0∞) (hp : 
   _ = 2 ^ p * max (a ^ p) (b ^ p) := by rw [max_rpow hp]
   _ ≤ 2 ^ p * (a ^ p + b ^ p) := by gcongr; apply max_le_add_of_nonneg <;> simp
 
+theorem nonneg (x : ℝ≥0∞) : 0 ≤ x := by
+  cases x
+  · exact le_top
+  · exact zero_le _
+
 end ENNReal
 
 -- Porting note(https://github.com/leanprover-community/mathlib4/issues/6038): restore
@@ -1062,3 +1071,65 @@ end ENNReal
 -- end Tactic
 
 -- end Tactics
+
+/-! ### Positivity extension -/
+
+namespace Mathlib.Meta.Positivity
+open Lean Meta Qq
+
+/-- Extension for the `positivity` tactic: exponentiation by a real is positive (namely 1)
+when the exponent is zero.
+This is the `NNReal` analogue of `evalRpowZero` for `Real`. -/
+@[positivity (_ : ℝ≥0) ^ (0 : ℝ)]
+def evalNNRealRpowZero : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℝ≥0), ~q($a ^ (0 : ℝ)) =>
+    assertInstancesCommute
+    pure (.positive q(NNReal.rpow_zero_pos $a))
+  | _, _, _ => throwError "not NNReal.rpow"
+
+/-- Extension for the `positivity` tactic: exponentiation by a real number is nonnegative when
+the base is nonnegative and positive when the base is positive.
+This is the `NNReal` analogue of `evalRpow` for `Real`. -/
+@[positivity (_ : ℝ≥0) ^ (_ : ℝ)]
+def evalNNRealRpow : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ≥0), ~q($a ^ ($b : ℝ)) =>
+    let ra ← core q(inferInstance) q(inferInstance) a
+    assertInstancesCommute
+    match ra with
+    | .positive pa =>
+        pure (.positive q(NNReal.rpow_pos $pa))
+    | _ => pure (.nonnegative q(NNReal.coe_nonneg $e))
+  | _, _, _ => throwError "not NNReal.rpow"
+
+/-- Extension for the `positivity` tactic: exponentiation by a real is positive (namely 1)
+when the exponent is zero.
+This is the `ENNReal` analogue of `evalRpowZero` for `Real`. -/
+@[positivity (_ : ℝ≥0∞) ^ (0 : ℝ)]
+def evalENNRealRpowZero : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℝ≥0∞), ~q($a ^ (0 : ℝ)) =>
+    assertInstancesCommute
+    pure (.positive q(ENNReal.rpow_zero_pos $a))
+  | _, _, _ => throwError "not ENNReal.rpow"
+
+/-- Extension for the `positivity` tactic: exponentiation by a real number is nonnegative when
+the base is nonnegative and positive when the base is positive.
+This is the `ENNReal` analogue of `evalRpow` for `Real`. -/
+@[positivity (_ : ℝ≥0∞) ^ (_ : ℝ)]
+def evalENNRealRpow : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ≥0∞), ~q($a ^ ($b : ℝ)) =>
+    let ra ← core q(inferInstance) q(inferInstance) a
+    let rb ← core q(inferInstance) q(inferInstance) b
+    assertInstancesCommute
+    match ra, rb with
+    | .positive pa, .positive pb =>
+        pure (.positive q(ENNReal.rpow_pos_of_nonneg $pa <| le_of_lt $pb))
+    | .positive pa, .nonnegative pb =>
+        pure (.positive q(ENNReal.rpow_pos_of_nonneg $pa $pb))
+    | _, _ => pure <| .nonnegative q(ENNReal.nonneg $e)
+  | _, _, _ => throwError "not ENNReal.rpow"
+
+end Mathlib.Meta.Positivity
