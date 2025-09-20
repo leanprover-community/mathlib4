@@ -5,14 +5,54 @@ Authors: Anne Baanen
 -/
 import Mathlib.Algebra.GroupWithZero.Invertible
 import Mathlib.Algebra.Ring.Defs
+
 /-!
-# Theorems about invertible elements in rings
+# Theorems about additively and multiplicatively invertible elements in rings
 
 -/
 
-universe u
+variable {R : Type*}
 
-variable {R : Type u}
+section NonUnitalNonAssocSemiring
+
+variable [NonUnitalNonAssocSemiring R] (x : AddUnits R) (y : R)
+
+/-- Multiplying an additive unit from the left produces another additive unit. -/
+@[simps] def AddUnits.mulLeft : AddUnits R where
+  val := y * x.val
+  neg := y * x.neg
+  val_neg := by simp [← mul_add]
+  neg_val := by simp [← mul_add]
+
+/-- Multiplying an additive unit from the right produces another additive unit. -/
+@[simps] def AddUnits.mulRight : AddUnits R where
+  val := x.val * y
+  neg := x.neg * y
+  val_neg := by simp [← add_mul]
+  neg_val := by simp [← add_mul]
+
+variable {x y}
+
+theorem AddUnits.neg_mul_left : -(x.mulLeft y) = (-x).mulLeft y := rfl
+theorem AddUnits.neg_mul_right : -(x.mulRight y) = (-x).mulRight y := rfl
+
+theorem AddUnits.neg_mul_eq_mul_neg {x y : AddUnits R} : (↑(-x) * y : R) = x * ↑(-y) := by
+  rw [← neg_eq_val_neg, ← val_neg_mulRight]
+  apply AddUnits.neg_eq_of_add_eq_zero_left
+  simp [← mul_add]
+
+theorem AddUnits.neg_mul_neg {x y : AddUnits R} : ↑(-x) * ↑(-y) = (x * y : R) := by
+  rw [← val_mulLeft, ← val_mulLeft, ← AddUnits.ext_iff, ← neg_inj, ← y.neg_mul_left, neg_neg]
+  apply AddUnits.ext
+  simp [neg_mul_eq_mul_neg]
+
+theorem IsAddUnit.mul_left {x : R} (h : IsAddUnit x) (y : R) : IsAddUnit (y * x) :=
+  (h.addUnit.mulLeft y).isAddUnit
+
+theorem IsAddUnit.mul_right {x : R} (h : IsAddUnit x) (y : R) : IsAddUnit (x * y) :=
+  (h.addUnit.mulRight y).isAddUnit
+
+end NonUnitalNonAssocSemiring
 
 /-- `-⅟a` is the inverse of `-a` -/
 def invertibleNeg [Mul R] [One R] [HasDistribNeg R] (a : R) [Invertible a] : Invertible (-a) :=
