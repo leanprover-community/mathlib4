@@ -23,7 +23,7 @@ The converse is true for an ergodic action and a null-measurable set.
 We define the a.e. stabilizer as a bundled `Subgroup`,
 thus we do not deal with monoid actions.
 
-Also, many lemmas in this file are true for a *quasi measure-preserving* action,
+Also, many lemmas in this file are true for a *quasi-measure-preserving* action,
 but we don't have the corresponding typeclass.
 -/
 
