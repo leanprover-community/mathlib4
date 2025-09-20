@@ -13,7 +13,7 @@ import Mathlib.Algebra.Order.Group.Lattice
 The absolute value of an element in a group which is also a lattice is its supremum with its
 negation. This generalizes the usual absolute value on real numbers (`|x| = max x (-x)`).
 
-## Notations
+## Notation
 
 - `|a|`: The *absolute value* of an element `a` of an additive lattice ordered group
 - `|a|ₘ`: The *absolute value* of an element `a` of a multiplicative lattice ordered group
@@ -41,11 +41,11 @@ macro:max atomic("|" noWs) a:term noWs "|" : term => `(abs $a)
 
 /-- Unexpander for the notation `|a|ₘ` for `mabs a`.
 Tries to add discretionary parentheses in unparsable cases. -/
-@[app_unexpander abs]
+@[app_unexpander mabs]
 def mabs.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $a) =>
     match a with
-    | `(|$_|ₘ) | `(-$_) => `(|($a)|ₘ)
+    | `(|$_|) | `(|$_|ₘ) | `(-$_) => `(|($a)|ₘ)
     | _ => `(|$a|ₘ)
   | _ => throw ()
 
@@ -55,7 +55,7 @@ Tries to add discretionary parentheses in unparsable cases. -/
 def abs.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $a) =>
     match a with
-    | `(|$_|) | `(-$_) => `(|($a)|)
+    | `(|$_|) | `(|$_|ₘ) | `(-$_) => `(|($a)|)
     | _ => `(|$a|)
   | _ => throw ()
 
