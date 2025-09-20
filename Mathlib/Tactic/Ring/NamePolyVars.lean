@@ -41,8 +41,6 @@ initialize registerTraceClass `name_poly_vars
 
 namespace Mathlib.Tactic.NamePolyVars
 
-open Mathlib.Tactic.NamePolyVars
-
 /-- The signature of a polynomial-like notation, consisting of the opening and closing brackets,
 and a `Bool` to declare if it is multivariate. -/
 structure NotationSignature where
@@ -79,7 +77,7 @@ abbrev PolyVar : Type := TSyntax `poly_var
 
 /-- `poly_opening`, `poly_closing`, and `poly_var` are syntax categories that will all
 contain only single atoms, and this function extracts the `String` of the single atoms. -/
-def Lean.TSyntax.toString {n : Name} (v : TSyntax n) : String :=
+def parseBracket {n : Name} (v : TSyntax n) : String :=
   match v.raw with
   | .node _ _ #[.atom _ str] => str
   | _ => ""
@@ -93,7 +91,7 @@ multivariate notation is `X,` with a trailing comma. -/
 syntax poly_idents := sepBy(ident, ",", ",", allowTrailingSep)
 
 /-- Parse `poly_idents` into either a single identifier or an array of identifiers. -/
-def Lean.TSyntax.parsePolyIdents : TSyntax ``poly_idents → Option (String ⊕ Array String)
+def parsePolyIdents : TSyntax ``poly_idents → Option (String ⊕ Array String)
   | `(poly_idents| $v:ident) => pure (Sum.inl v.getId.toString)
   | `(poly_idents| $vs:ident,*) => pure (Sum.inr (vs.getElems.map fun v ↦ v.getId.toString))
   | _ => .none
@@ -103,11 +101,8 @@ def Lean.TSyntax.parsePolyIdents : TSyntax ``poly_idents → Option (String ⊕ 
 syntax term_decl := hole <|> ident <|> ("(" term ")")
 attribute [nolint docBlame] term_decl
 
-/-- A type synonym for a term declaration, used to avoid ambiguity in the syntax. -/
-abbrev TermDecl : Type := TSyntax ``term_decl
-
-/-- Convert a `TermDecl` to a term. -/
-def Lean.TSyntax.term : TermDecl → Term
+/-- Convert a `term_decl` to a `term`. -/
+def termDeclToTerm : TSyntax ``term_decl → Term
   | `(term_decl| $u:hole) => ⟨u.raw⟩
   | `(term_decl| $k:ident) => ⟨k.raw⟩
   | `(term_decl| ($u:term)) => u
@@ -181,13 +176,13 @@ syntax polyesque_notation := atomic(poly_opening poly_vars poly_closing)
 syntax polyesque_notation_input := atomic(poly_opening poly_idents poly_closing)
 
 /-- Parse a `polyesque_notation_input` into its `Body`, `poly_opening`, and `poly_closing`. -/
-def Lean.TSyntax.parsePolyesqueNotationInput (p : TSyntax ``polyesque_notation_input) :
-    CoreM (Body × TSyntax `poly_opening × TSyntax `poly_closing) := do
+def parsePolyesqueNotationInput (p : TSyntax ``polyesque_notation_input) :
+    CommandElabM (Body × TSyntax `poly_opening × TSyntax `poly_closing) := do
   let `(polyesque_notation_input| $opening:poly_opening $v:poly_idents $closing:poly_closing) := p
     | throwError m!"Unrecognised polynomial-like notation: {p}"
-  have openingS := opening.toString
-  have closingS := closing.toString
-  let some vars := v.parsePolyIdents
+  have openingS := parseBracket opening
+  have closingS := parseBracket closing
+  let some vars := parsePolyIdents v
     | throwError m!"Unrecognised variable notation: {v}"
   have mv? : Bool := vars.isRight
   let some n := (notationTableExt.getState (← getEnv)).get? ⟨openingS, closingS, mv?⟩
@@ -229,11 +224,11 @@ def mkBracketStx (opening : TSyntax `poly_opening) (closing : TSyntax `poly_clos
 /-- Given one segment (e.g. `[x,y]`) of the declaration, extract all the relevant information:
 the relevant functor (`MvPolynomial (Fin 2)`), the formal variables, and their meanings. Then,
 register the variables (`x` and `y`) as polynomial variables (`poly_var`). -/
-def Lean.TSyntax.processAndDeclarePolyesqueNotationInput (p : TSyntax ``polyesque_notation_input)
+def processAndDeclarePolyesqueNotationInput (p : TSyntax ``polyesque_notation_input)
     (terms : Array (TSyntax `poly_var × Term)) (oldFunctor : Term → CommandElabM Term) :
     CommandElabM (TSyntax ``polyesque_notation × Array (TSyntax `poly_var × Term) ×
       (Term → CommandElabM Term) × Term) := do
-  let (b, opening, closing) ← liftCoreM p.parsePolyesqueNotationInput
+  let (b, opening, closing) ← parsePolyesqueNotationInput p
   let newTerms : Array (TSyntax `poly_var × Term) ← (← b.mkX).mapM fun (s, t) ↦ do
     -- Declares the new formal variables as `poly_var`.
     let kind ← elabSyntax <| ← `(command| local syntax $(quote s):str : poly_var)
@@ -269,7 +264,7 @@ elab "name_poly_vars " head:term_decl body:(noWs polyesque_notation_input)+ : co
   let mut functor : Term → CommandElabM Term := pure
   let mut lastHead : Term := default
   for p in body do
-    let processed ← p.processAndDeclarePolyesqueNotationInput terms functor
+    let processed ← processAndDeclarePolyesqueNotationInput p terms functor
     (terms, functor, lastHead) := processed.2
     bodyVar := bodyVar.push processed.1
   have body := Syntax.TSepArray.ofElems (sep := "") bodyVar
@@ -294,7 +289,7 @@ elab "name_poly_vars " head:term_decl body:(noWs polyesque_notation_input)+ : co
           | _ => throw ())
     functor (← `(_))
   | _ => do
-    let type ← functor head.term
+    let type ← functor (termDeclToTerm head)
     let polyesque ← `(polyesque| $head$body:polyesque_notation*)
     elabMacroRulesAndTrace polyesque type
     -- if the head of the term is a constant, then deploy the unexpander.
