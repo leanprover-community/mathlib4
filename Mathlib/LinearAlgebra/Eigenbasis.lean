@@ -384,7 +384,7 @@ lemma exists_commonEigenbasis_iff_directSum_iInf_eigenspace [DecidableEq (α →
   constructor <;> intro h
   · obtain ⟨ι, ⟨D⟩⟩ := h
     simp [DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top, D.iSup_iInf_eigenspace,
-      Module.End.iSupIndep_iInf_eigenspace]
+      eigenspaces_iSupIndep, iSupIndep.iInf]
   · let N (μ : α → K) := ⨅ a, (f a).eigenspace (μ a)
     let v (μ : α → K) := (Free.exists_basis K (N μ)).some.2
     let B' := h.collectedBasis v -- universe (max u v)
@@ -401,7 +401,7 @@ lemma exists_commonEigenbasis_iff_iSup_iInf_eigenspace {f : α → End K V} :
     exists_commonEigenbasis_iff_directSum_iInf_eigenspace
   _ ↔ _ := by
     simp [DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top,
-      Module.End.iSupIndep_iInf_eigenspace]
+      eigenspaces_iSupIndep, iSupIndep.iInf]
 
 lemma exists_eigenbasis_iff_iSup_eigenspace {f : End K V} :
     (∃ ι : Type uV, Nonempty (f.Eigenbasis ι)) ↔ ⨆ μ, f.eigenspace μ = ⊤ := by

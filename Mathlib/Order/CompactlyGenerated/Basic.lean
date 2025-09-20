@@ -546,6 +546,10 @@ instance (priority := 100) isAtomistic_of_complementedLattice [ComplementedLatti
         rw [← Subtype.coe_le_coe, Subtype.coe_mk]
         exact le_sSup ⟨ha.of_isAtom_coe_Iic, a.2⟩, fun _ => And.left⟩
 
+/-- Proved in #29791 -/
+axiom iSupIndep.iInf {ι : Type*} {β : ι → Type*} (f : (i : ι) → β i → α)
+    (h_indep : ∀ a : ι, iSupIndep (f a)) : iSupIndep (fun b : (a : ι) → β a ↦ ⨅ a, f a (b a))
+
 /-!
 Now we will prove that a compactly generated modular atomistic lattice is a complemented lattice.
 Most explicitly, every element is the complement of a supremum of independent atoms.
