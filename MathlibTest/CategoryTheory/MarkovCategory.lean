@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.MarkovCategory.FinStoch.Basic
 import Mathlib.CategoryTheory.MarkovCategory.FinStoch.Monoidal
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
 import Mathlib.CategoryTheory.CopyDiscardCategory.Basic
+import Mathlib.LinearAlgebra.Matrix.Notation
 import Mathlib.Tactic.FinCases
 
 /-!
@@ -72,13 +73,10 @@ open FinStoch StochasticMatrix
 
 /-- A simple 2x2 stochastic matrix representing a coin flip -/
 noncomputable def coinFlip : StochasticMatrix (Fin 2) (Fin 2) where
-  toMatrix := ![
-    ![1/2, 1/2],  -- From state 0: 50% chance to stay, 50% to flip
-    ![1/3, 2/3]   -- From state 1: 33% to flip, 67% to stay
-  ]
+  toMatrix := !![1/2, 1/2; 1/3, 2/3]
   row_sum := by
     intro i
-    fin_cases i <;> simp only [Finset.sum] <;> norm_num
+    fin_cases i <;> simp only [Matrix.of_apply] <;> norm_num
 
 /-- The identity matrix is stochastic -/
 def identityStochastic : StochasticMatrix (Fin 3) (Fin 3) :=
@@ -95,9 +93,6 @@ example : Category FinStoch := inferInstance
 example : MonoidalCategory FinStoch := inferInstance
 
 end FinStochExamples
-
--- Note: Deterministic morphisms are not yet implemented in the library
--- These tests are removed until the concept is added
 
 section SimpLemmas
 
