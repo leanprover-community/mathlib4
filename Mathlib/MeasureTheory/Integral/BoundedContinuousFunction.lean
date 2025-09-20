@@ -6,6 +6,9 @@ Authors: Kalle Kytölä
 import Mathlib.MeasureTheory.Integral.Bochner.Basic
 import Mathlib.Topology.ContinuousMap.Bounded.Normed
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+
 
 /-!
 # Integration of bounded continuous functions
@@ -114,6 +117,59 @@ lemma isBounded_range_integral
   obtain ⟨i, hi⟩ := hv
   rw [← hi]
   apply f.norm_integral_le_norm (μs i)
+
+variable {𝕜 : Type*} [NormedField 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
+variable [LocallyCompactSpace X] [T2Space X] [SecondCountableTopology X]
+
+open TopologicalSpace LocallyIntegrableOn
+
+omit [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E] [NormedSpace ℝ E] in
+theorem integrable_smul_LocallyIntegrable {f : X → E} (hf : LocallyIntegrable f μ)
+  (K : Compacts X) (φ : X →ᵇ 𝕜) :
+    Integrable (fun x ↦ (φ x) • (f x)) (μ.restrict K) := by
+  refine integrableOn_isCompact ?_ K.isCompact
+  exact LocallyIntegrableOn.continuousOn_smul K.isCompact.isClosed.isLocallyClosed
+    (hf.locallyIntegrableOn K) φ.continuous.continuousOn
+
+variable [SMulCommClass ℝ 𝕜 E]
+
+variable (𝕜) {μ}
+
+/-- `testAgainstLocallyIntegrableₗ` wraps the integral against a locally  integrable function `f` on
+a fixed compact `K` as a `𝕜`-linear map on scalar valued bounded continuous functions -/
+noncomputable def testAgainstLocallyIntegrableₗ {f : X → E} (hf : LocallyIntegrable f μ)
+  (K : Compacts X) :
+    (X →ᵇ 𝕜) →ₗ[𝕜] E where
+  toFun := fun φ : (X →ᵇ 𝕜) ↦ ∫ (x : X), φ x • f x ∂(μ.restrict K)
+  map_add' := by
+    intro φ Φ
+    simp_rw [add_apply, add_smul, integral_add (integrable_smul_LocallyIntegrable μ hf K φ)
+      (integrable_smul_LocallyIntegrable μ hf K Φ)]
+  map_smul' := by
+    intro c φ
+    simp_rw [coe_smul, RingHom.id_apply, ← integral_smul c (fun (x : X) ↦  φ x • f x), smul_assoc]
+
+/-- `testAgainstLocallyIntegrableₗ` wraps the integral against a locally  integrable function `f` on
+a fixed compact `K` as a continuous `𝕜`-linear map on scalar valued bounded continuous functions -/
+noncomputable def testAgainstLocallyIntegrableCLM {f : X → E} (hf : LocallyIntegrable f μ)
+  (K : Compacts X) :
+    (X →ᵇ 𝕜) →L[𝕜] E :=
+  (testAgainstLocallyIntegrableₗ 𝕜 hf K).mkContinuous (∫ x, ‖f x‖ ∂(μ.restrict K))
+  (by
+    intro φ
+    have hf' : Integrable f (μ.restrict K) :=
+      integrableOn_isCompact (hf.locallyIntegrableOn K) K.isCompact
+    set g := fun x ↦ ‖φ‖ * ‖f x‖ with g_def
+    have hg : Integrable g (μ.restrict K) := (Integrable.norm hf').const_mul _
+    have h : ∀ᵐ (x : X) ∂(μ.restrict K), ‖(fun a ↦ (φ a) • f a) x‖ ≤ g x := by
+      apply ae_of_all
+      intro x
+      simp only [g, norm_smul]
+      bound [φ.norm_coe_le_norm x]
+    apply le_trans (norm_integral_le_of_norm_le hg h)
+    rw [mul_comm, integral_const_mul_of_integrable hf'.norm]
+  )
+
 
 end BochnerIntegral
 
