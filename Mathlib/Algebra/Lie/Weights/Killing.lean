@@ -521,7 +521,7 @@ lemma traceForm_eq_zero_of_mem_ker_of_mem_span_coroot {α : Weight K H L} {x y :
   else
     have hβ : β.IsNonZero := by
       contrapose! hα
-      simp only [not_not, ← coroot_eq_zero_iff] at hα ⊢
+      simp only [← coroot_eq_zero_iff] at hα ⊢
       rwa [hyp]
     have : α.ker = β.ker := by
       rw [← orthogonal_span_coroot_eq_ker α, hyp, orthogonal_span_coroot_eq_ker]
