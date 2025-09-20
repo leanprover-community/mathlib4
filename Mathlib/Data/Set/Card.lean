@@ -177,6 +177,9 @@ section Lattice
 theorem encard_le_encard (h : s ⊆ t) : s.encard ≤ t.encard := by
   rw [← union_diff_cancel h, encard_union_eq disjoint_sdiff_right]; exact le_self_add
 
+@[simp] theorem encard_le_card : s.encard ≤ ENat.card α :=
+  encard_univ _ ▸ encard_le_encard (fun _ _ ↦ trivial)
+
 theorem encard_mono {α : Type*} : Monotone (encard : Set α → ℕ∞) :=
   fun _ _ ↦ encard_le_encard
 
@@ -595,6 +598,9 @@ theorem ncard_mono [Finite α] : @Monotone (Set α) _ _ _ ncard := fun _ _ ↦ n
 @[deprecated (since := "2025-07-05")] alias ncard_coe_Finset := ncard_coe_finset
 
 @[simp] theorem ncard_univ (α : Type*) : (univ : Set α).ncard = Nat.card α := Nat.card_univ
+
+@[simp] theorem ncard_le_card [Finite α] : s.ncard ≤ Nat.card α :=
+  ncard_univ _ ▸ ncard_le_ncard (fun _ _ ↦ trivial) finite_univ
 
 @[simp] theorem ncard_empty (α : Type*) : (∅ : Set α).ncard = 0 := by
   rw [ncard_eq_zero]
