@@ -144,6 +144,11 @@ lemma toLp_apply [Fact (1 ≤ p)] (h_Lp : MemLp id p μ) (L : StrongDual 𝕜 E)
     L.toLp μ p = MemLp.toLp L (h_Lp.continuousLinearMap_comp L) := by
   simp [toLp, h_Lp]
 
+lemma toLp_apply_ae [Fact (1 ≤ p)] (h_Lp : MemLp id p μ) (L : StrongDual 𝕜 E) :
+    L.toLp μ p =ᵐ[μ] L := by
+  rw [toLp_apply h_Lp L]
+  exact MemLp.coeFn_toLp (h_Lp.continuousLinearMap_comp L)
+
 @[simp]
 lemma toLp_of_not_memLp [Fact (1 ≤ p)] (h_Lp : ¬ MemLp id p μ) (L : StrongDual 𝕜 E) :
     L.toLp μ p = 0 := by
