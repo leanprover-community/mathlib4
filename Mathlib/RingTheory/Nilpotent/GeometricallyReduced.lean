@@ -17,9 +17,9 @@ For a field `k`, we say that a `k`-algebra `A` is geometrically reduced (`IsGeom
 if the tensor product `AlgebraicClosure k ⊗[k] A` is reduced.
 
 ## Main results
-- `IsReduced.tensor_of_flat_of_forall_fg`: if `R` is a commutative semiring and `A` and `C` are
-  `R`-algebras, such that `C ⊗[R] B` is reduced for all finitely generated `R` subalgebras `B` of
-  `A`, then `C ⊗[R] A` is reduced.
+- `IsGeometricallyReduced.of_forall_fg`: for a field `k` and a commutative `k`-algebra `A`, if all
+  finitely generated subalgebras `B` of `A` are geometrically reduced, then `A` is geometrically
+  reduced.
 
 ## References
 - See [https://stacks.math.columbia.edu/tag/05DS] for some theory of geometrically reduced algebras.
@@ -61,19 +61,8 @@ theorem isReduced_of_isGeometricallyReduced [IsGeometricallyReduced k A] : IsRed
 -- If all finitely generated subalgebras of A are geometrically reduced, then A is geometrically
 -- reduced. The result is in https://stacks.math.columbia.edu/tag/030T
 @[stacks 030T]
-theorem IsReduced.tensor_of_flat_of_forall_fg {R C A : Type*}
-    [CommSemiring R] [CommSemiring C] [Semiring A] [Algebra R A] [Algebra R C] [Module.Flat R C]
-    (h : ∀ B : Subalgebra R A, B.FG → IsReduced (C ⊗[R] B)) :
-    IsReduced (C ⊗[R] A) := by
-  by_contra h_contra
-  obtain ⟨x, hx⟩ := exists_isNilpotent_of_not_isReduced h_contra
-  obtain ⟨D, hD⟩ := exists_fg_and_mem_baseChange x
-  have h_inj : Function.Injective
-      (Algebra.TensorProduct.map (AlgHom.id C C ) D.val) := by
-    apply Module.Flat.lTensor_preserves_injective_linearMap
-    exact (AlgHom.injective_codRestrict D.val D Subtype.property).mp fun ⦃a₁ a₂⦄ a ↦ a
-  obtain ⟨z, rfl⟩ := hD.2
-  have h_notReduced : ¬IsReduced (C ⊗[R] D) := by
-    simp_rw [isReduced_iff, not_forall]
-    exact ⟨z, (IsNilpotent.map_iff h_inj).mp hx.right, (by simpa [·] using hx.1)⟩
-  tauto
+theorem IsGeometricallyReduced.of_forall_fg
+    (h : ∀ B : Subalgebra k A, B.FG → IsGeometricallyReduced k B) :
+    IsGeometricallyReduced k A := by
+  simp_rw [isGeometricallyReduced_iff] at h
+  exact ⟨IsReduced.tensor_of_flat_of_forall_fg h⟩
