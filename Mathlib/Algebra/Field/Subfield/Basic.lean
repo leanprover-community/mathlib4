@@ -465,6 +465,9 @@ def eqLocusField (f g : K →+* L) : Subfield K where
   inv_mem' _ := eq_on_inv₀ f g
   carrier := { x | f x = g x }
 
+@[simp]
+theorem mem_eqLocusField {f g : K →+* L} {x : K} : x ∈ f.eqLocusField g ↔ f x = g x := Iff.rfl
+
 /-- If two ring homomorphisms are equal on a set, then they are equal on its subfield closure. -/
 theorem eqOn_field_closure {f g : K →+* L} {s : Set K} (h : Set.EqOn f g s) :
     Set.EqOn f g (closure s) :=
