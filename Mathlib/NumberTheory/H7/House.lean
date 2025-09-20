@@ -214,10 +214,11 @@ variable {A : ℝ} (habs : ∀ k l, (house ((algebraMap (𝓞 K) K) (a k l))) �
 variable [DecidableEq (K →+* ℂ)]
 
 /-- `c₂` is the product of the maximum of `1` and `c`, and `supOfBasis`. -/
-abbrev c₂ := max 1 (c K) * (supOfBasis K)
+abbrev c₂ := max 1 (c K) * (max 1 (supOfBasis K))
 
-private theorem c₂_nonneg : 0 ≤ c₂ K :=
-  mul_nonneg (le_trans zero_le_one (le_max_left ..)) (supOfBasis_nonneg _)
+private theorem c₂_nonneg : 0 ≤ c₂ K := by
+  apply mul_nonneg (le_trans zero_le_one (le_max_left ..))
+  apply (le_trans zero_le_one (le_max_left ..))
 
 variable [Fintype α] (cardα : Fintype.card α = p) (Apos : 0 ≤ A)
   (hxbound : ‖x‖ ≤ (q * finrank ℚ K * ‖asiegel K a‖) ^ ((p : ℝ) / (q - p)))
@@ -251,8 +252,14 @@ private theorem asiegel_remark : ‖asiegel K a‖ ≤ c₂ K * A := by
     ·  apply mul_le_mul_of_nonneg_left ?_ (mul_nonneg (c_nonneg K) Apos)
        · simp only [supOfBasis, le_sup'_iff, mem_univ]; use lu.2
     · rw [mul_right_comm]
-      exact mul_le_mul_of_nonneg_right
-        (mul_le_mul_of_nonneg_right (le_max_right ..) (supOfBasis_nonneg K)) Apos
+      apply mul_le_mul_of_nonneg_right ?_ Apos
+      unfold c₂
+      apply  mul_le_mul
+      · apply le_max_right
+      · apply le_max_right
+      · exact supOfBasis_nonneg K
+      · apply (le_trans zero_le_one (le_max_left ..))
+       --(le_max_right ..) (supOfBasis_nonneg K)) Apos
   · rw [mul_nonneg_iff]; left; exact ⟨c₂_nonneg K, Apos⟩
 
 /-- `c₁ K` is the product of `finrank ℚ K` and  `c₂ K` and depends on `K`. -/
@@ -284,7 +291,13 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
     rw [Embeddings.card, mul_comm _ (supOfBasis K), c₂, c₁, ← mul_assoc]
     apply mul_le_mul
     · apply mul_le_mul_of_nonneg_left ?_ (Nat.cast_nonneg' _)
-      · exact le_mul_of_one_le_left (supOfBasis_nonneg K) (le_max_left ..)
+      · nth_rw 1 [← mul_one (a:=supOfBasis K)]
+        rw [mul_comm]
+        apply mul_le_mul
+        · apply le_max_left ..
+        · apply le_max_right ..
+        · apply (supOfBasis_nonneg _)
+        · exact (le_trans zero_le_one (le_max_left ..))
     · apply Real.rpow_le_rpow (mul_nonneg (mul_nonneg (Nat.cast_nonneg' _) (Nat.cast_nonneg' _))
         (norm_nonneg _))
       · rw [← mul_assoc, mul_assoc (_*_)]
@@ -294,8 +307,12 @@ private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
     · apply Real.rpow_nonneg
       exact mul_nonneg (mul_nonneg (Nat.cast_nonneg' _) (Nat.cast_nonneg' _))
         (norm_nonneg _)
-    · exact mul_nonneg (Nat.cast_nonneg' _) (mul_nonneg (le_trans zero_le_one (le_max_left ..))
-        (supOfBasis_nonneg _))
+    · apply mul_nonneg (Nat.cast_nonneg' _)
+      apply mul_nonneg (le_trans zero_le_one (le_max_left ..))
+      apply (le_trans zero_le_one (le_max_left ..))
+      -- apply (le_trans zero_le_one (le_max_left ..))
+      -- --  (mul_nonneg (le_trans zero_le_one (le_max_left ..))
+      -- --   (supOfBasis_nonneg _))
   · rw [mul_comm (q : ℝ) (c₁ K)]; rfl
 
 include hpq h0p cardα cardβ ha habs in
