@@ -210,6 +210,21 @@ def ofArchimedean (f : R →+*o K) : R →+*o FiniteResidueField K where
     exact mk.map_mul ⟨_, Finite.mem_map_of_archimedean f x⟩ ⟨_, Finite.mem_map_of_archimedean f y⟩
   monotone' x y h := mk.monotone' <| f.monotone' h
 
+@[simp]
+theorem ofArchimedean_apply (f : R →+*o K) (r : R) :
+    ofArchimedean f r = mk ⟨f r, Finite.mem_map_of_archimedean f r⟩ := rfl
+
+theorem ofArchimedean_injective (f : R →+*o K) : Function.Injective (ofArchimedean f) := by
+  rw [injective_iff_map_eq_zero]
+  intro r hr
+  contrapose! hr
+  rw [ofArchimedean_apply, mk_ne_zero, mk_map_of_archimedean' f hr]
+
+@[simp]
+theorem ofArchimedean_inj (f : R →+*o K) {x y : R} :
+    ofArchimedean f x = ofArchimedean f y ↔ x = y :=
+  (ofArchimedean_injective f).eq_iff
+
 end FiniteResidueField
 
 /-! ### Standard part -/
@@ -306,10 +321,26 @@ theorem standardPart_ratCast (q : ℚ) : standardPart (q : K) = q := by
     · rw [mk_intCast hn]
     · rw [mk_natCast hd, neg_zero]
 
+theorem ofArchimedean_standardPart (f : ℝ →+*o K) (hx : 0 ≤ mk x) :
+    FiniteResidueField.ofArchimedean f (standardPart x) = FiniteResidueField.mk ⟨x, hx⟩ := by
+  rw [standardPart, dif_pos hx, ← OrderRingHom.comp_apply, ← OrderRingHom.comp_assoc,
+    OrderRingHom.comp_apply, OrderRingHom.apply_eq_self]
+
 @[simp]
 theorem standardPart_real (f : ℝ →+*o K) (r : ℝ) : standardPart (f r) = r := by
   rw [standardPart, dif_pos]
-  exact r.ringHom_apply
-    ((LinearOrderedField.inducedOrderRingHom _ ℝ).comp (FiniteResidueField.ofArchimedean f))
+  exact OrderRingHom.apply_eq_self
+    ((LinearOrderedField.inducedOrderRingHom _ ℝ).comp (FiniteResidueField.ofArchimedean f)) r
+
+theorem mk_sub_pos_iff (f : ℝ →+*o K) {r : ℝ} (hx : 0 ≤ mk x) :
+    0 < mk (x - f r) ↔ standardPart x = r := by
+  refine (FiniteResidueField.mk_eq_zero
+    (x := (⟨x, hx⟩ : ArchimedeanClass.Finite K) -
+      ⟨_, Finite.mem_map_of_archimedean f r⟩)).symm.trans ?_
+  rw [map_sub, ← FiniteResidueField.ofArchimedean_apply, ← ofArchimedean_standardPart f hx,
+    sub_eq_zero, FiniteResidueField.ofArchimedean_inj f]
+
+theorem mk_sub_standardPart_pos (f : ℝ →+*o K) (hx : 0 ≤ mk x) : 0 < mk (x - f (standardPart x)) :=
+  (mk_sub_pos_iff f hx).2 rfl
 
 end ArchimedeanClass

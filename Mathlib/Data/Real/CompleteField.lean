@@ -18,8 +18,3 @@ instance Real.RingHom.unique : Unique (ℝ →+* ℝ) where
   default := RingHom.id ℝ
   uniq f := congr_arg OrderRingHom.toRingHom (@Subsingleton.elim (ℝ →+*o ℝ) _
       ⟨f, ringHom_monotone (fun r hr => ⟨√r, sq_sqrt hr⟩) f⟩ default)
-
-theorem Real.ringHom_apply (f : ℝ →+* ℝ) (r : ℝ) : f r = r := by
-  conv_rhs => rw [← RingHom.id_apply r]
-  congr
-  exact Unique.eq_default _
