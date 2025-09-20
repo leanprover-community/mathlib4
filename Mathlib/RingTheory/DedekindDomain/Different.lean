@@ -852,7 +852,7 @@ theorem not_dvd_differentIdeal_iff
         apply Ideal.ramificationIdx_spec
         · simp [Ideal.map_le_iff_le_comap]
         · contrapose! H
-          rw [← pow_one P, show 1 = 2 - 1 by norm_num]
+          rw [← pow_one P, show 1 = 2 - 1 by simp]
           apply pow_sub_one_dvd_differentIdeal _ _ _ hp
           simpa [Ideal.dvd_iff_le] using H
   · intro H

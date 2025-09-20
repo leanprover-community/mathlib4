@@ -238,3 +238,9 @@ macro (name := ringConv) "ring" : conv =>
 end RingNF
 
 end Mathlib.Tactic
+
+/-!
+We register `ring` with the `hint` tactic.
+-/
+
+register_hint ring

@@ -648,7 +648,7 @@ lemma _root_.IsUnit.cfcNNRpow (a : A) (y : ℝ≥0) (ha_unit : IsUnit a) (hy : y
 
 lemma isUnit_sqrt_iff (a : A) (ha : 0 ≤ a := by cfc_tac) : IsUnit (sqrt a) ↔ IsUnit a := by
   rw [sqrt_eq_rpow]
-  exact isUnit_rpow_iff a _ (by norm_num) ha
+  exact isUnit_rpow_iff a _ (by simp) ha
 
 @[aesop safe apply]
 lemma _root_.IsUnit.cfcSqrt (a : A) (ha_unit : IsUnit a) (ha : 0 ≤ a := by cfc_tac) :
