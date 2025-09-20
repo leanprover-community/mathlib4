@@ -10,6 +10,7 @@ import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.Polynomial.Ideal
+import Mathlib.RingTheory.Polynomial.Tower
 import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
@@ -23,6 +24,18 @@ open Polynomial
 namespace Polynomial
 
 variable {R : Type*} [CommRing R]
+
+@[simp]
+lemma aeval_quotientMk_X {S : Type*} [CommRing S] [Algebra R S]
+    (g : R[X]) (I : Ideal S[X]) :
+    aeval (Ideal.Quotient.mk I X) g = Ideal.Quotient.mk I (g.map (algebraMap R S)) := by
+  simp [← Ideal.Quotient.algebraMap_eq, aeval_algebraMap_apply, aeval_X_left_of_algebra_apply]
+
+@[simp]
+lemma aeval_quotientMk_mvPolynomialX {α : Type*} (I : Ideal (MvPolynomial α R)) (i : α)
+    (x : R[X]) :
+    aeval (Ideal.Quotient.mk I (.X i)) x = Ideal.Quotient.mk _ (x.toMvPolynomial i) := by
+  simp [← Ideal.Quotient.algebraMap_eq, aeval_algebraMap_apply, toMvPolynomial]
 
 /-- For a commutative ring $R$, evaluating a polynomial at an element $x \in R$ induces an
 isomorphism of $R$-algebras $R[X] / \langle X - x \rangle \cong R$. -/
@@ -63,6 +76,22 @@ noncomputable def quotientSpanCXSubCXSubCAlgEquiv {x : R} {y : R[X]} :
 lemma modByMonic_eq_zero_iff_quotient_eq_zero (p q : R[X]) (hq : q.Monic) :
     p %ₘ q = 0 ↔ (p : R[X] ⧸ Ideal.span {q}) = 0 := by
   rw [modByMonic_eq_zero_iff_dvd hq, Ideal.Quotient.eq_zero_iff_dvd]
+
+section
+
+/-- `R[X] / (I[X] ⊔ J)` is an `R ⧸ I` algebra. -/
+noncomputable def algebraQuotientMapSupSpan (I : Ideal R) (J : Ideal R[X]) :
+    Algebra (R ⧸ I) (R[X] ⧸ I.map C ⊔ J) :=
+  letI f : (R ⧸ I) →ₐ[R] (R[X] ⧸ I.map C ⊔ J) :=
+    Ideal.quotientMapₐ _ (Algebra.ofId _ _) <| Ideal.map_le_iff_le_comap.mp le_sup_left
+  f.toAlgebra
+
+attribute [local instance] algebraQuotientMapSupSpan
+
+instance (I : Ideal R) (J : Ideal R[X]) : IsScalarTower R (R ⧸ I) (R[X] ⧸ I.map C ⊔ J) :=
+  .of_algHom _
+
+end
 
 end Polynomial
 
@@ -273,5 +302,40 @@ noncomputable def quotientEquivQuotientMvPolynomial (I : Ideal R) :
       (eval₂Hom (C.comp (Ideal.Quotient.mk I)) X) fun _ ha => eval₂_C_mk_eq_zero ha
     left_inv := quotientEquivQuotientMvPolynomial_rightInverse I
     right_inv := quotientEquivQuotientMvPolynomial_leftInverse I }
+
+section
+
+variable {α R : Type*} [CommRing R] (p : Option α → R[X])
+
+/-- `R[X₁, ..., Xₙ₊₁] ⧸ (p₁, ..., pₙ₊₁)` is a `R[X₁, ..., Xₙ] ⧸ (p₁, ..., pₙ)`-algebra. -/
+noncomputable def algebraQuotientSpanToMvPolynomial :
+    Algebra (MvPolynomial α R ⧸ (Ideal.span (.range fun i ↦ (p (some i)).toMvPolynomial i)))
+      (MvPolynomial (Option α) R ⧸ (Ideal.span (.range fun i ↦ (p i).toMvPolynomial i))) :=
+  letI f := Ideal.quotientMapₐ _ (rename some) <| by
+    simp_rw [Ideal.span_le]
+    rintro - ⟨i, rfl⟩
+    simp only [Ideal.coe_comap, Set.mem_preimage, rename_toMvPolynomial, SetLike.mem_coe]
+    exact Ideal.subset_span ⟨i, rfl⟩
+  f.toRingHom.toAlgebra
+
+attribute [local instance] algebraQuotientSpanToMvPolynomial
+
+instance : IsScalarTower R
+    (MvPolynomial α R ⧸ Ideal.span (.range fun i ↦ toMvPolynomial i (p (some i))))
+      (MvPolynomial (Option α) R ⧸ Ideal.span (.range fun i ↦ toMvPolynomial i (p i))) :=
+  .of_algHom _
+
+attribute [local instance] MvPolynomial.algebraOption
+
+instance : IsScalarTower (MvPolynomial α R)
+    (MvPolynomial α R ⧸ Ideal.span (.range fun i ↦ (toMvPolynomial i) (p (some i))))
+      (MvPolynomial (Option α) R ⧸ Ideal.span (.range fun i ↦ (toMvPolynomial i) (p i))) := by
+  refine .of_algebraMap_eq' ?_
+  ext x
+  · simp [RingHom.algebraMap_toAlgebra,
+      IsScalarTower.algebraMap_apply R (MvPolynomial (Option α) R)]
+  · simp [RingHom.algebraMap_toAlgebra]
+
+end
 
 end MvPolynomial
