@@ -34,7 +34,7 @@ noncomputable section
 variable {k A : Type*} [Field k] [Ring A] [Algebra k A]
 
 /-- The `k`-algebra `A` is geometrically reduced iff its base change to `AlgebraicClosure k` is
-  reduced -/
+  reduced. -/
 @[mk_iff]
 class IsGeometricallyReduced (k A : Type*) [Field k] [Ring A] [Algebra k A] : Prop where
   reduced_algebraicClosure_tensor : IsReduced ((AlgebraicClosure k) ⊗[k] A)
@@ -58,8 +58,8 @@ theorem isReduced_of_isGeometricallyReduced [IsGeometricallyReduced k A] : IsRed
     (Algebra.TensorProduct.includeRight : A →ₐ[k] (AlgebraicClosure k) ⊗[k] A)
     (Algebra.TensorProduct.includeRight_injective <| FaithfulSMul.algebraMap_injective _ _)
 
--- If all finitely generated subalgebras of A are geometrically reduced, then A is geometrically
--- reduced. The result is in https://stacks.math.columbia.edu/tag/030T
+/-- If all finitely generated subalgebras of `A` are geometrically reduced, then `A` is
+  geometrically reduced. The result is in https://stacks.math.columbia.edu/tag/030T -/
 @[stacks 030T]
 theorem IsGeometricallyReduced.of_forall_fg
     (h : ∀ B : Subalgebra k A, B.FG → IsGeometricallyReduced k B) :
