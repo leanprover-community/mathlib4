@@ -288,11 +288,8 @@ to the multiplicative integers, or is densely ordered, exclusively. -/
 lemma LinearOrderedCommGroup.discrete_iff_not_denselyOrdered :
     Nonempty (G ≃*o Multiplicative ℤ) ↔ ¬ DenselyOrdered G := by
   let e : G ≃o Additive G := OrderIso.refl G
-  rw [denselyOrdered_iff_of_orderIsoClass e,
+  rw [denselyOrdered_iff_of_orderIsoClass e, ← OrderMonoidIso.toAdditiveLeft.nonempty_congr,
     ← LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered (Additive G)]
-  refine Nonempty.congr ?_ ?_ <;> intro f
-  · exact ⟨MulEquiv.toAdditive' f, by simp⟩
-  · exact ⟨MulEquiv.toAdditive'.symm f, by simp⟩
 
 /-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
 either isomorphic (and order-isomorphic) to `ℤᵐ⁰`, or is densely ordered. -/
