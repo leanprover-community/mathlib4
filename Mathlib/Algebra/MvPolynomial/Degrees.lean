@@ -120,7 +120,6 @@ theorem degrees_sum_le {ι : Type*} [DecidableEq σ] (s : Finset ι) (f : ι →
 
 theorem degrees_mul_le {p q : MvPolynomial σ R} : (p * q).degrees ≤ p.degrees + q.degrees := by
   classical
-  simp_rw [degrees_def]
   exact supDegree_mul_le (map_add _)
 
 theorem degrees_prod_le {ι : Type*} {s : Finset ι} {f : ι → MvPolynomial σ R} :

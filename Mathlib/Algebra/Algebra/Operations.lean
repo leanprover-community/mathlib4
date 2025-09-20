@@ -607,7 +607,6 @@ protected theorem pow_induction_on_right' {C : ∀ (n : ℕ) (x), x ∈ M ^ n �
     exact algebraMap r
   | succ n n_ih =>
     revert hx
-    simp_rw [pow_succ]
     exact fun hx ↦ Submodule.mul_induction_on' (fun m hm x ih => mul_mem _ _ hm (n_ih _) _ ih)
       (fun x hx y hy Cx Cy => add _ _ _ _ _ Cx Cy) hx
 
