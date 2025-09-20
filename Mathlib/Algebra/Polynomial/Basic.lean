@@ -841,7 +841,6 @@ theorem sum_eq_of_subset {S : Type*} [AddCommMonoid S] {p : R[X]} (f : ℕ → R
 theorem mul_eq_sum_sum :
     p * q = ∑ i ∈ p.support, q.sum fun j a => (monomial (i + j)) (p.coeff i * a) := by
   apply toFinsupp_injective
-  rcases p with ⟨⟩; rcases q with ⟨⟩
   simp_rw [sum, coeff, toFinsupp_sum, support, toFinsupp_mul, toFinsupp_monomial,
     AddMonoidAlgebra.mul_def, Finsupp.sum]
 
@@ -947,7 +946,6 @@ theorem support_erase (p : R[X]) (n : ℕ) : support (p.erase n) = (support p).e
 
 theorem monomial_add_erase (p : R[X]) (n : ℕ) : monomial n (coeff p n) + p.erase n = p :=
   toFinsupp_injective <| by
-    rcases p with ⟨⟩
     rw [toFinsupp_add, toFinsupp_monomial, toFinsupp_erase, coeff]
     exact Finsupp.single_add_erase _ _
 
