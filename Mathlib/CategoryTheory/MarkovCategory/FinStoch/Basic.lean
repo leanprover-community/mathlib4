@@ -4,11 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jacob Reinhold
 -/
 import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.Data.Matrix.Basic
-import Mathlib.LinearAlgebra.Matrix.Kronecker
 import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.NNReal.Basic
 import Mathlib.Logic.Equiv.Basic
+import Mathlib.Data.Fintype.Prod
+import Mathlib.Data.NNReal.Defs
+import Mathlib.LinearAlgebra.Matrix.Defs
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 # Finite Stochastic Matrices

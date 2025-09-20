@@ -5,6 +5,7 @@ Authors: Jacob Reinhold
 -/
 import Mathlib.CategoryTheory.MarkovCategory.FinStoch.Basic
 import Mathlib.CategoryTheory.Monoidal.Category
+import Mathlib.Data.NNReal.Basic
 
 /-!
 # Monoidal Structure on FinStoch
