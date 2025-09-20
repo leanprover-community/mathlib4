@@ -230,9 +230,6 @@ theorem ConvolutionExistsAt.of_norm' {x₀ : G}
   rw [mul_apply', ← mul_assoc]
   apply L.le_opNorm₂
 
-@[deprecated (since := "2025-02-07")]
-alias ConvolutionExistsAt.ofNorm' := ConvolutionExistsAt.of_norm'
-
 end
 
 section Left
@@ -260,9 +257,6 @@ theorem ConvolutionExistsAt.of_norm {x₀ : G}
     ConvolutionExistsAt f g x₀ L μ :=
   h.of_norm' L hmf <|
     hmg.mono_ac (quasiMeasurePreserving_sub_left_of_right_invariant μ x₀).absolutelyContinuous
-
-@[deprecated (since := "2025-02-07")]
-alias ConvolutionExistsAt.ofNorm := ConvolutionExistsAt.of_norm
 
 end Left
 
@@ -392,17 +386,10 @@ theorem _root_.HasCompactSupport.convolutionExists_left
     (hg : LocallyIntegrable g μ) : ConvolutionExists f g L μ := fun x₀ =>
   convolutionExistsAt_flip.mp <| hcf.convolutionExists_right L.flip hg hf x₀
 
-@[deprecated (since := "2025-02-06")]
-alias _root_.HasCompactSupport.convolutionExistsLeft := HasCompactSupport.convolutionExists_left
-
 theorem _root_.HasCompactSupport.convolutionExists_right_of_continuous_left
     (hcg : HasCompactSupport g) (hf : Continuous f) (hg : LocallyIntegrable g μ) :
     ConvolutionExists f g L μ := fun x₀ =>
   convolutionExistsAt_flip.mp <| hcg.convolutionExists_left_of_continuous_right L.flip hg hf x₀
-
-@[deprecated (since := "2025-02-06")]
-alias _root_.HasCompactSupport.convolutionExistsRightOfContinuousLeft :=
-  HasCompactSupport.convolutionExists_right_of_continuous_left
 
 end CommGroup
 
@@ -887,7 +874,7 @@ theorem convolution_assoc' (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z 
     _ = (f ⋆[L₃, ν] g ⋆[L₄, μ] k) x₀ := rfl
 
 /-- Convolution is associative. This requires that
-* all maps are a.e. strongly measurable w.r.t one of the measures
+* all maps are a.e. strongly measurable w.r.t. one of the measures
 * `f ⋆[L, ν] g` exists almost everywhere
 * `‖g‖ ⋆[μ] ‖k‖` exists almost everywhere
 * `‖f‖ ⋆[ν] (‖g‖ ⋆[μ] ‖k‖)` exists at `x₀` -/

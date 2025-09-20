@@ -62,7 +62,7 @@ instance (V : Rep k G) : Module k V := by
 /-- Specialize the existing `Action.ρ`, changing the type to `Representation k G V`.
 -/
 def ρ (V : Rep k G) : Representation k G V :=
--- Porting note: was `V.ρ`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): was `V.ρ`
   (ModuleCat.endRingEquiv V.V).toMonoidHom.comp (Action.ρ V)
 
 /-- Lift an unbundled representation to `Rep`. -/
@@ -200,7 +200,6 @@ def mkQ (W : Submodule k A) (le_comap : ∀ g, W ≤ W.comap (A.ρ g)) :
   hom := ModuleCat.ofHom <| Submodule.mkQ _
   comm _ := rfl
 
--- Porting note: the two following instances were found automatically in mathlib3
 instance : PreservesLimits (forget₂ (Rep k G) (ModuleCat.{u} k)) :=
   Action.preservesLimits_forget _ _
 
@@ -483,7 +482,7 @@ variable (A B : Rep k G) (α : Type u) [DecidableEq α]
 
 open ModuleCat.MonoidalCategory
 
--- the proof below can be simplified after #24823 is merged
+-- the proof below can be simplified after https://github.com/leanprover-community/mathlib4/issues/24823 is merged
 /-- Given representations `A, B` and a type `α`, this is the natural representation isomorphism
 `(α →₀ A) ⊗ B ≅ (A ⊗ B) →₀ α` sending `single x a ⊗ₜ b ↦ single x (a ⊗ₜ b)`. -/
 @[simps! hom_hom inv_hom]

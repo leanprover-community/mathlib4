@@ -308,45 +308,24 @@ theorem inv_natCast_den_of_pos {a : ℕ} (ha0 : 0 < a) : (a : ℚ)⁻¹.den = a 
   rw [← Int.ofNat_inj, ← Int.cast_natCast a, inv_intCast_den_of_pos]
   rwa [Int.natCast_pos]
 
-@[simp]
-theorem inv_intCast_num (a : ℤ) : (a : ℚ)⁻¹.num = Int.sign a := by
-  rcases lt_trichotomy a 0 with lt | rfl | gt
-  · obtain ⟨a, rfl⟩ : ∃ b, -b = a := ⟨-a, a.neg_neg⟩
-    simp at lt
-    simp [inv_intCast_num_of_pos lt, Int.sign_eq_one_iff_pos.mpr lt]
-  · simp
-  · simp [inv_intCast_num_of_pos gt, Int.sign_eq_one_iff_pos.mpr gt]
+theorem inv_intCast_num (a : ℤ) : (a : ℚ)⁻¹.num = Int.sign a := by simp
 
-@[simp]
-theorem inv_natCast_num (a : ℕ) : (a : ℚ)⁻¹.num = Int.sign a :=
-  inv_intCast_num a
+theorem inv_natCast_num (a : ℕ) : (a : ℚ)⁻¹.num = Int.sign a := by simp
 
-@[simp]
-theorem inv_ofNat_num (a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ℚ)⁻¹.num = 1 :=
-  inv_natCast_num_of_pos (Nat.pos_of_neZero a)
+theorem inv_ofNat_num (a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ℚ)⁻¹.num = 1 := by
+  -- This proof is quite unpleasant: golf / find better simp lemmas?
+  have : 2 ≤ a := Nat.AtLeastTwo.prop
+  simp only [num_inv, num_ofNat, den_ofNat, Nat.cast_one, mul_one, Int.sign_eq_one_iff_pos,
+    gt_iff_lt]
+  change 0 < (a : ℤ)
+  omega
 
-@[simp]
-theorem inv_intCast_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.natAbs := by
-  rw [← Int.ofNat_inj]
-  rcases lt_trichotomy a 0 with lt | rfl | gt
-  · obtain ⟨a, rfl⟩ : ∃ b, -b = a := ⟨-a, a.neg_neg⟩
-    simp at lt
-    rw [if_neg (by omega)]
-    simp only [Int.cast_neg, Rat.inv_neg, neg_den, inv_intCast_den_of_pos lt, Int.natAbs_neg]
-    exact Int.eq_natAbs_of_nonneg (by omega)
-  · simp
-  · rw [if_neg (by omega)]
-    simp only [inv_intCast_den_of_pos gt]
-    exact Int.eq_natAbs_of_nonneg (by omega)
+theorem inv_intCast_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.natAbs := by simp
 
-@[simp]
-theorem inv_natCast_den (a : ℕ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a := by
-  simpa [-inv_intCast_den, ofInt_eq_cast] using inv_intCast_den a
+theorem inv_natCast_den (a : ℕ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a := by simp
 
-@[simp]
-theorem inv_ofNat_den (a : ℕ) [a.AtLeastTwo] :
-    (ofNat(a) : ℚ)⁻¹.den = OfNat.ofNat a :=
-  inv_natCast_den_of_pos (Nat.pos_of_neZero a)
+theorem inv_ofNat_den (a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ℚ)⁻¹.den = OfNat.ofNat a := by
+  simp [den_inv, Int.natAbs_eq_iff]
 
 theorem den_inv_of_ne_zero {q : ℚ} (hq : q ≠ 0) : (q⁻¹).den = q.num.natAbs := by
   have hq' : q.num ≠ 0 := by simpa using hq
@@ -354,12 +333,6 @@ theorem den_inv_of_ne_zero {q : ℚ} (hq : q ≠ 0) : (q⁻¹).den = q.num.natAb
   norm_cast
   rw [one_mul, inv_intCast_num, Int.natAbs_mul, Int.natAbs_sign_of_ne_zero hq', mul_one,
     Int.natAbs_cast, q.reduced.symm, Nat.div_one]
-
-theorem num_inv (q : ℚ) : (q⁻¹).num = q.num.sign * q.den := by
-  rw [Rat.inv_def, Rat.divInt_eq_div, div_eq_mul_inv, Rat.mul_num, Rat.inv_intCast_num]
-  norm_cast
-  rw [one_mul, inv_intCast_den, Int.natAbs_mul, Int.natAbs_cast]
-  split <;> simp_all [Int.natAbs_sign_of_ne_zero, q.reduced.symm, mul_comm]
 
 protected theorem «forall» {p : ℚ → Prop} : (∀ r, p r) ↔ ∀ a b : ℤ, b ≠ 0 → p (a / b) where
   mp h _ _ _ := h _

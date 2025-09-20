@@ -158,7 +158,7 @@ theorem f_add_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y)
   | succ n hn =>
     have : x + n.succ = x + n + 1 := by push_cast; ring
     rw [this, hf_feq, hn]
-    · rw [Finset.range_succ, Finset.sum_insert Finset.notMem_range_self]
+    · rw [Finset.range_add_one, Finset.sum_insert Finset.notMem_range_self]
       abel
     · linarith [(Nat.cast_nonneg n : 0 ≤ (n : ℝ))]
 
@@ -247,10 +247,12 @@ theorem tendsto_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
         abel
     · rw [← sub_le_iff_le_add]; exact Nat.le_ceil _
   intro m
-  induction' m with m hm generalizing x
-  · rw [Nat.cast_zero, zero_add]
+  induction m generalizing x with
+  | zero =>
+    rw [Nat.cast_zero, zero_add]
     exact fun _ hx' => tendsto_logGammaSeq_of_le_one hf_conv (@hf_feq) hx hx'
-  · intro hy hy'
+  | succ m hm =>
+    intro hy hy'
     rw [Nat.cast_succ, ← sub_le_iff_le_add] at hy'
     rw [Nat.cast_succ, ← lt_sub_iff_add_lt] at hy
     specialize hm ((Nat.cast_nonneg _).trans_lt hy) hy hy'

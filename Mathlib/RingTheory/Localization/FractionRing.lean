@@ -6,6 +6,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 import Mathlib.Algebra.Ring.Hom.InjSurj
 import Mathlib.Algebra.Field.Equiv
 import Mathlib.Algebra.Field.Subfield.Basic
+import Mathlib.Algebra.Order.GroupWithZero.Submonoid
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.SimpleRing.Basic
@@ -40,8 +41,10 @@ variable [Algebra R S] {P : Type*} [CommRing P]
 variable {A : Type*} [CommRing A] (K : Type*)
 
 -- TODO: should this extend `Algebra` instead of assuming it?
+-- TODO: this was recently generalized from `CommRing` to `CommSemiring`, but all lemmas below are
+-- still stated for `CommRing`. Generalize these lemmas where it is appropriate.
 /-- `IsFractionRing R K` states `K` is the ring of fractions of a commutative ring `R`. -/
-abbrev IsFractionRing [CommRing K] [Algebra R K] :=
+abbrev IsFractionRing (R : Type*) [CommSemiring R] (K : Type*) [CommSemiring K] [Algebra R K] :=
   IsLocalization (nonZeroDivisors R) K
 
 instance {R : Type*} [Field R] : IsFractionRing R R :=
@@ -62,6 +65,22 @@ instance Rat.isFractionRing : IsFractionRing ℤ ℚ where
     rw [eq_intCast, eq_intCast, Int.cast_inj]
     rintro rfl
     use 1
+
+/-- As a corollary, `Rat` is also a localization at only positive integers. -/
+instance : IsLocalization (Submonoid.pos ℤ) ℚ where
+  map_units' y := by simpa using y.prop.ne'
+  surj' z := by
+    obtain ⟨⟨x1, x2⟩, hx⟩ := IsLocalization.surj (nonZeroDivisors ℤ) z
+    obtain hx2 | hx2 := lt_or_gt_of_ne (show x2.val ≠ 0 by simp)
+    · exact ⟨⟨-x1, ⟨-x2.val, by simpa using hx2⟩⟩, by simpa using hx⟩
+    · exact ⟨⟨x1, ⟨x2.val, hx2⟩⟩, hx⟩
+  exists_of_eq {x y} h := ⟨1, by simpa using Rat.intCast_inj.mp h⟩
+
+/-- `NNRat` is the ring of fractions of `Nat`. -/
+instance NNRat.isFractionRing : IsFractionRing ℕ ℚ≥0 where
+  map_units' y := by simp
+  surj' z := ⟨⟨z.num, ⟨z.den, by simp⟩⟩, by simp⟩
+  exists_of_eq {x y} h := ⟨1, by simpa using h⟩
 
 namespace IsFractionRing
 

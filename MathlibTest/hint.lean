@@ -145,6 +145,12 @@ example : natDegree ((X + 1) : Nat[X]) ≤ 1 := by hint
 end compute_degree
 
 section field_simp
+#adaptation_note
+/--
+As of nightly-2025-08-27,
+this test no longer reports `field_simp` amongst the successful tactics.
+-/
+
 /--
 info: Try these:
   • 🎉 exact

@@ -81,7 +81,7 @@ def stacksTagFn : ParserFn := fun c s =>
     else if tag.length != 4 then
       ParserState.mkUnexpectedError s "Stacks tags must be exactly 4 characters"
     else
-      mkNodeToken stacksTagKind i c s
+      mkNodeToken stacksTagKind i true c s
 
 @[inherit_doc stacksTagFn]
 def stacksTagNoAntiquot : Parser := {

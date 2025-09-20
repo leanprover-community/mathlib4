@@ -18,7 +18,7 @@ coefficients, and the `b_i`'s are reals `∈ (0,1)`. (Note that this can be impr
 `O(n / (log n)^(1+ε))`, this is left as future work.) These recurrences arise mainly in the
 analysis of divide-and-conquer algorithms such as mergesort or Strassen's algorithm for matrix
 multiplication.  This class of algorithms works by dividing an instance of the problem of size `n`,
-into `k` smaller instances, where the `i`'th instance is of size roughly `b_i n`, and calling itself
+into `k` smaller instances, where the `i`-th instance is of size roughly `b_i n`, and calling itself
 recursively on those smaller instances. `T(n)` then represents the running time of the algorithm,
 and `g(n)` represents the running time required to actually divide up the instance and process the
 answers that come out of the recursive calls. Since virtually all such algorithms produce instances
@@ -61,7 +61,7 @@ open Finset Real Filter Asymptotics
 open scoped Topology
 
 /-!
-#### Definition of Akra-Bazzi recurrences
+### Definition of Akra-Bazzi recurrences
 
 This section defines the predicate `AkraBazziRecurrence T g a b r` which states that `T`
 satisfies the recurrence
@@ -80,7 +80,7 @@ local notation "ε" => smoothingFn
 
 
 /-!
-#### Technical lemmas
+### Technical lemmas
 
 The next several lemmas are technical lemmas leading up to `rpow_p_mul_one_sub_smoothingFn_le` and
 `rpow_p_mul_one_add_smoothingFn_ge`, which are key steps in the main proof.
@@ -188,7 +188,6 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_sub_smoothingFn (p : ℝ) :
         =ᶠ[atTop] fun z => z⁻¹ / (log z ^ 2) := by
       filter_upwards [eventually_deriv_one_sub_smoothingFn, eventually_gt_atTop 1] with x hx hx_pos
       have : 0 ≤ x⁻¹ / (log x ^ 2) := by
-        have hlog : 0 < log x := Real.log_pos hx_pos
         positivity
       simp only [hp, Real.rpow_zero, one_mul, hx, Real.norm_of_nonneg this]
     refine GrowsPolynomially.congr_of_eventuallyEq h₁ ?_
@@ -209,7 +208,6 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_add_smoothingFn (p : ℝ) :
         =ᶠ[atTop] fun z => z⁻¹ / (log z ^ 2) := by
       filter_upwards [eventually_deriv_one_add_smoothingFn, eventually_gt_atTop 1] with x hx hx_pos
       have : 0 ≤ x⁻¹ / (log x ^ 2) := by
-        have hlog : 0 < log x := Real.log_pos hx_pos
         positivity
       simp only [neg_div, norm_neg, hp, Real.rpow_zero,
         one_mul, hx, Real.norm_of_nonneg this]
@@ -445,7 +443,7 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
   exact hn
 
 /-!
-#### Main proof
+### Main proof
 
 This final section proves the Akra-Bazzi theorem.
 -/
@@ -608,6 +606,12 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
             · exact le_of_lt <| h_smoothing_gt_half n hn
       _ = C * ((1 - ε n) * asympBound g a b n) := by ring
 
+#adaptation_note
+/--
+This linter is only enabled on `nightly-testing`, but it causes a deterministic timeout there.
+Can this proof be refactored into some smaller pieces?
+-/
+set_option linter.tacticAnalysis.regressions.linarithToGrind false in
 /-- The main proof of the lower bound part of the Akra-Bazzi theorem. The factor
 `1 + ε n` does not change the asymptotic order, but is needed for the induction step to go
 through. -/

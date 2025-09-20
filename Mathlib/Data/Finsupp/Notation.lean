@@ -28,7 +28,8 @@ def fun₀.matchAlts : Parser :=
 As a result, if multiple match arms coincide, the last one takes precedence. -/
 @[term_parser]
 def fun₀ := leading_parser:maxPrec
-  ppAllowUngrouped >> unicodeSymbol "λ₀" "fun₀" >> fun₀.matchAlts
+  -- Prefer `fun₀` over `λ₀` when pretty printing.
+  ppAllowUngrouped >> unicodeSymbol "λ₀" "fun₀" (preserveForPP := true) >> fun₀.matchAlts
 
 namespace Internal
 

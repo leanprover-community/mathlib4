@@ -43,7 +43,6 @@ import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
 import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
 import Mathlib.Tactic.CategoryTheory.MonoidalComp
 import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Tactic.CategoryTheory.Refs
 import Mathlib.Tactic.CategoryTheory.Slice
 import Mathlib.Tactic.CategoryTheory.ToApp
 import Mathlib.Tactic.Change
@@ -203,6 +202,7 @@ import Mathlib.Tactic.NormNum.NatLog
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.OfScientific
 import Mathlib.Tactic.NormNum.Ordinal
+import Mathlib.Tactic.NormNum.Parity
 import Mathlib.Tactic.NormNum.Pow
 import Mathlib.Tactic.NormNum.PowMod
 import Mathlib.Tactic.NormNum.Prime

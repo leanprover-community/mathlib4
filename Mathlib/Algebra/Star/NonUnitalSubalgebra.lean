@@ -88,9 +88,6 @@ lemma subtype_injective :
 theorem coe_subtype : (subtype s : s → A) = Subtype.val :=
   rfl
 
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
-
 end NonUnitalStarSubalgebraClass
 
 /-- A non-unital star subalgebra is a non-unital subalgebra which is closed under the `star`

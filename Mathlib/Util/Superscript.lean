@@ -215,7 +215,7 @@ def scriptParser.formatter (name : String) (m : Mapping) (k : SyntaxNodeKind) (p
   Formatter.node.formatter k p
   let st ← get
   let transformed : Except String _ := st.stack.mapM (·.mapStringsM fun s => do
-    let .some s := s.toList.mapM (m.toSpecial.insert ' ' ' ').get? | .error s
+    let some s := s.toList.mapM (m.toSpecial.insert ' ' ' ').get? | .error s
     .ok ⟨s⟩)
   match transformed with
   | .error err =>

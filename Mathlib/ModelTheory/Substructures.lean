@@ -641,9 +641,6 @@ theorem subtype_injective (S : L.Substructure M) : Function.Injective (subtype S
 theorem coe_subtype : ⇑S.subtype = ((↑) : S → M) :=
   rfl
 
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
-
 /-- The equivalence between the maximal substructure of a structure and the structure itself. -/
 def topEquiv : (⊤ : L.Substructure M) ≃[L] M where
   toFun := subtype ⊤

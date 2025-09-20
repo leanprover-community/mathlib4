@@ -22,7 +22,7 @@ once the `Field` class has been defined.
 
 - `Rat.divInt n d` constructs a rational number `q = n / d` from `n d : ℤ`.
 
-## Notations
+## Notation
 
 - `/.` is infix notation for `Rat.divInt`.
 
@@ -44,10 +44,6 @@ lemma mk'_num_den (q : ℚ) : mk' q.num q.den q.den_nz q.reduced = q := rfl
 @[simp]
 theorem ofInt_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
   rfl
-
-@[simp, norm_cast] lemma num_natCast (n : ℕ) : num n = n := rfl
-
-@[simp, norm_cast] lemma den_natCast (n : ℕ) : den n = 1 := rfl
 
 lemma intCast_injective : Injective (Int.cast : ℤ → ℚ) := fun _ _ ↦ congr_arg num
 lemma natCast_injective : Injective (Nat.cast : ℕ → ℚ) :=
@@ -120,9 +116,6 @@ lemma pow_eq_mkRat (q : ℚ) (n : ℕ) : q ^ n = mkRat (q.num ^ n) (q.den ^ n) :
 
 lemma pow_eq_divInt (q : ℚ) (n : ℕ) : q ^ n = q.num ^ n /. q.den ^ n := by
   rw [pow_def, mk_eq_divInt, Int.natCast_pow]
-
-@[simp] lemma num_pow (q : ℚ) (n : ℕ) : (q ^ n).num = q.num ^ n := rfl
-@[simp] lemma den_pow (q : ℚ) (n : ℕ) : (q ^ n).den = q.den ^ n := rfl
 
 @[simp] lemma mk'_pow (num : ℤ) (den : ℕ) (hd hdn) (n : ℕ) :
     mk' num den hd hdn ^ n = mk' (num ^ n) (den ^ n)
@@ -265,7 +258,7 @@ protected theorem add_divInt (a b c : ℤ) : (a + b) /. c = a /. c + b /. c :=
     rw [divInt_add_divInt _ _ h h, divInt_eq_divInt_iff h (Int.mul_ne_zero h h)]
     simp [Int.add_mul, Int.mul_assoc]
 
-lemma intCast_div_eq_divInt (n d : ℤ) : (n : ℚ) / (d) = n /. d := by rw [divInt_eq_div]
+lemma intCast_div_eq_divInt (n d : ℤ) : (n : ℚ) / d = n /. d := by rw [divInt_eq_div]
 
 theorem natCast_div_eq_divInt (n d : ℕ) : (n : ℚ) / d = n /. d := Rat.intCast_div_eq_divInt n d
 

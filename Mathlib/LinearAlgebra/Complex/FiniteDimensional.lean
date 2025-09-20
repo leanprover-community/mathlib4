@@ -5,7 +5,7 @@ Authors: Alexander Bentkamp, Sébastien Gouëzel, Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Analysis.Complex.Cardinality
-import Mathlib.Data.Complex.Module
+import Mathlib.LinearAlgebra.Complex.Module
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.Order.Interval.Set.Infinite
 

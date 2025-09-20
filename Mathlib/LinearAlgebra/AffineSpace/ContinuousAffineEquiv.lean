@@ -72,6 +72,10 @@ instance instEquivLike : EquivLike (P₁ ≃ᴬ[k] P₂) P₁ P₂ where
   right_inv f := f.right_inv
   coe_injective' _ _ h _ := toAffineEquiv_injective (DFunLike.coe_injective h)
 
+instance : HomeomorphClass (P₁ ≃ᴬ[k] P₂) P₁ P₂ where
+  map_continuous f := f.continuous_toFun
+  inv_continuous f := f.continuous_invFun
+
 attribute [coe] ContinuousAffineEquiv.toAffineEquiv
 
 /-- Coerce continuous affine equivalences to affine equivalences. -/
@@ -336,6 +340,56 @@ def constVAdd [ContinuousConstVAdd V₁ P₁] (v : V₁) : P₁ ≃ᴬ[k] P₁ w
 
 lemma constVAdd_coe [ContinuousConstVAdd V₁ P₁] (v : V₁) :
     (constVAdd k P₁ v).toAffineEquiv = .constVAdd k P₁ v := rfl
+
+end
+
+section
+
+variable (e₁ : P₁ ≃ᴬ[k] P₂) (e₂ : P₃ ≃ᴬ[k] P₄)
+
+/-- Product of two continuous affine equivalences. The map comes from `Equiv.prodCongr` -/
+@[simps toAffineEquiv]
+def prodCongr : P₁ × P₃ ≃ᴬ[k] P₂ × P₄ where
+  __ := AffineEquiv.prodCongr e₁ e₂
+  continuous_toFun := by eta_expand; dsimp; fun_prop
+  continuous_invFun := by eta_expand; dsimp; fun_prop
+
+@[simp]
+theorem prodCongr_symm : (e₁.prodCongr e₂).symm = e₁.symm.prodCongr e₂.symm :=
+  rfl
+
+@[simp]
+theorem prodCongr_apply (p : P₁ × P₃) : e₁.prodCongr e₂ p = (e₁ p.1, e₂ p.2) :=
+  rfl
+
+@[simp]
+theorem prodCongr_toContinuousAffineMap : (e₁.prodCongr e₂).toContinuousAffineMap =
+    e₁.toContinuousAffineMap.prodMap e₂.toContinuousAffineMap :=
+  rfl
+
+end
+
+section
+
+variable (k P₁ P₂ P₃)
+
+/-- Product of affine spaces is commutative up to continuous affine isomorphism. -/
+@[simps! apply symm_apply toAffineEquiv]
+def prodComm : P₁ × P₂ ≃ᴬ[k] P₂ × P₁ where
+  __ := AffineEquiv.prodComm k P₁ P₂
+  continuous_toFun := continuous_swap
+  continuous_invFun := continuous_swap
+
+@[simp]
+theorem prodComm_symm : (prodComm k P₁ P₂).symm = prodComm k P₂ P₁ :=
+  rfl
+
+/-- Product of affine spaces is associative up to continuous affine isomorphism. -/
+@[simps! apply symm_apply toAffineEquiv]
+def prodAssoc : (P₁ × P₂) × P₃ ≃ᴬ[k] P₁ × (P₂ × P₃) where
+  __ := AffineEquiv.prodAssoc k P₁ P₂ P₃
+  continuous_toFun := by eta_expand; dsimp; fun_prop
+  continuous_invFun := by eta_expand; dsimp; fun_prop
 
 end
 
