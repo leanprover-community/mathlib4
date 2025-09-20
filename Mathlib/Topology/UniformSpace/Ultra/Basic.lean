@@ -7,9 +7,9 @@ import Mathlib.Topology.UniformSpace.Defs
 import Mathlib.Topology.Bases
 
 /-!
-# Ultrametric (nonarchimedean) uniform spaces
+# Ultrametric (non-Archimedean) uniform spaces
 
-Ultrametric (nonarchimedean) uniform spaces are ones that generalize ultrametric spaces by
+Ultrametric (non-Archimedean) uniform spaces are ones that generalize ultrametric spaces by
 having a uniformity based on equivalence relations.
 
 ## Main definitions
@@ -18,7 +18,7 @@ In this file we define `IsUltraUniformity`, a Prop mixin typeclass.
 
 ## Main results
 
-* `TopologicalSpace.isTopologicalBasis_clopens`: a uniform space with a nonarchimedean uniformity
+* `TopologicalSpace.isTopologicalBasis_clopens`: a uniform space with a non-Archimedean uniformity
   has a topological basis of clopen sets in the topology, meaning that it is topologically
   zero-dimensional.
 
@@ -210,7 +210,7 @@ lemma nhds_basis_clopens (x : X) :
   · rintro u ⟨hx, hu⟩
     simp [hu.right.mem_nhds_iff, hx]
 
-/-- A uniform space with a nonarchimedean uniformity is zero-dimensional. -/
+/-- A uniform space with a non-Archimedean uniformity is zero-dimensional. -/
 lemma _root_.TopologicalSpace.isTopologicalBasis_clopens :
     TopologicalSpace.IsTopologicalBasis {s : Set X | IsClopen s} :=
   .of_hasBasis_nhds fun x ↦ by simpa [and_comm] using nhds_basis_clopens x

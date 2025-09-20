@@ -18,13 +18,13 @@ variable {α β : Type*}
 
 open Order Function
 
-/-- A `SuccOrder` is succ-archimedean if one can go from any two comparable elements by iterating
+/-- A `SuccOrder` is succ-Archimedean if one can go from any two comparable elements by iterating
 `succ` -/
 class IsSuccArchimedean (α : Type*) [Preorder α] [SuccOrder α] : Prop where
   /-- If `a ≤ b` then one can get to `a` from `b` by iterating `succ` -/
   exists_succ_iterate_of_le {a b : α} (h : a ≤ b) : ∃ n, succ^[n] a = b
 
-/-- A `PredOrder` is pred-archimedean if one can go from any two comparable elements by iterating
+/-- A `PredOrder` is pred-Archimedean if one can go from any two comparable elements by iterating
 `pred` -/
 class IsPredArchimedean (α : Type*) [Preorder α] [PredOrder α] : Prop where
   /-- If `a ≤ b` then one can get to `b` from `a` by iterating `pred` -/

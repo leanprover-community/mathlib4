@@ -7,7 +7,7 @@ import Mathlib.GroupTheory.ArchimedeanDensely
 import Mathlib.RingTheory.Valuation.ValuationRing
 
 /-!
-# Ring of integers under a given valuation in an multiplicatively archimedean codomain
+# Ring of integers under a given valuation in an multiplicatively Archimedean codomain
 
 -/
 

@@ -15,7 +15,7 @@ The `p`-adic valuation on `ℚ` is the difference of the multiplicities of `p` i
 denominator of `q`. This function obeys the standard properties of a valuation, with the appropriate
 assumptions on `p`.
 
-The valuation induces a norm on `ℚ`. This norm is a nonarchimedean absolute value.
+The valuation induces a norm on `ℚ`. This norm is a non-Archimedean absolute value.
 It takes values in {0} ∪ {1/p^k | k ∈ ℤ}.
 
 ## Implementation notes
@@ -168,7 +168,7 @@ private theorem nonarchimedean_aux {q r : ℚ} (h : padicValRat p q ≤ padicVal
           rw [this]
           exact min_le_padicValRat_add hqr
 
-/-- The `p`-adic norm is nonarchimedean: the norm of `p + q` is at most the max of the norm of `p`
+/-- The `p`-adic norm is non-Archimedean: the norm of `p + q` is at most the max of the norm of `p`
 and the norm of `q`. -/
 protected theorem nonarchimedean {q r : ℚ} :
     padicNorm p (q + r) ≤ max (padicNorm p q) (padicNorm p r) := by
@@ -185,7 +185,7 @@ theorem triangle_ineq (q r : ℚ) : padicNorm p (q + r) ≤ padicNorm p q + padi
     _ ≤ padicNorm p q + padicNorm p r :=
       max_le_add_of_nonneg (padicNorm.nonneg _) (padicNorm.nonneg _)
 
-/-- The `p`-adic norm of a difference is at most the max of each component. Restates the archimedean
+/-- The `p`-adic norm of a difference is at most the max of each component. Restates the Archimedean
 property of the `p`-adic norm. -/
 protected theorem sub {q r : ℚ} : padicNorm p (q - r) ≤ max (padicNorm p q) (padicNorm p r) := by
   rw [sub_eq_add_neg, ← padicNorm.neg r]

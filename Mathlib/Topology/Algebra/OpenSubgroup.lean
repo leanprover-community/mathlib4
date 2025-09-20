@@ -17,7 +17,7 @@ and its additive version `OpenAddSubgroup`.  This lattice has a top element, the
 elements, but no bottom element in general. The trivial subgroup which is the natural candidate
 bottom has no reason to be open (this happens only in discrete groups).
 
-Note that this notion is especially relevant in a non-archimedean context, for instance for
+Note that this notion is especially relevant in a non-Archimedean context, for instance for
 `p`-adic groups.
 
 ## Main declarations
@@ -29,7 +29,7 @@ Note that this notion is especially relevant in a non-archimedean context, for i
 
 ## TODO
 * Prove that the identity component of a locally path connected group is an open subgroup.
-  Up to now this file is really geared towards non-archimedean algebra, not Lie groups.
+  Up to now this file is really geared towards non-Archimedean algebra, not Lie groups.
 -/
 
 

@@ -8,16 +8,16 @@ import Mathlib.Topology.Algebra.GroupCompletion
 import Mathlib.Topology.Algebra.UniformRing
 
 /-!
-# The completion of a nonarchimedean additive group
+# The completion of a non-Archimedean additive group
 
-The completion of a nonarchimedean additive group is a nonarchimedean additive group.
+The completion of a non-Archimedean additive group is a non-Archimedean additive group.
 
-The completion of a nonarchimedean ring is a nonarchimedean ring.
+The completion of a non-Archimedean ring is a non-Archimedean ring.
 -/
 
 open UniformSpace UniformSpace.Completion AddSubgroup OpenAddSubgroup Topology
 
-/-- The completion of a nonarchimedean additive group is a nonarchimedean additive group. -/
+/-- The completion of a non-Archimedean additive group is a non-Archimedean additive group. -/
 instance {G : Type*} [AddGroup G] [UniformSpace G] [IsUniformAddGroup G]
     [NonarchimedeanAddGroup G] : NonarchimedeanAddGroup (Completion G) where
   is_nonarchimedean := by
@@ -31,7 +31,7 @@ instance {G : Type*} [AddGroup G] [UniformSpace G] [IsUniformAddGroup G]
     is a neighborhood of `0`. -/
     have : toCompl ⁻¹' C ∈ 𝓝 0 :=
       continuous_toCompl.continuousAt.preimage_mem_nhds (by rwa [map_zero])
-    /- Therefore, since `G` is nonarchimedean, there exists an open subgroup `W` of `G` that is
+    /- Therefore, since `G` is non-Archimedean, there exists an open subgroup `W` of `G` that is
     contained within `toCompl ⁻¹' C`. -/
     obtain ⟨W, hCW⟩ := NonarchimedeanAddGroup.is_nonarchimedean (toCompl ⁻¹' C) this
     /- Now, let `V = (W.map toCompl).topologicalClosure` be the result of mapping `W` back to
@@ -59,7 +59,7 @@ instance {G : Type*} [AddGroup G] [UniformSpace G] [IsUniformAddGroup G]
     suffices V ⊆ C from this.trans C_subset_U
     exact closure_minimal (Set.image_subset_iff.mpr hCW) C_closed
 
-/-- The completion of a nonarchimedean ring is a nonarchimedean ring. -/
+/-- The completion of a non-Archimedean ring is a non-Archimedean ring. -/
 instance {R : Type*} [Ring R] [UniformSpace R] [IsTopologicalRing R] [IsUniformAddGroup R]
     [NonarchimedeanRing R] :
     NonarchimedeanRing (Completion R) where

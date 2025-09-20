@@ -7,7 +7,7 @@ Authors: David Loeffler
 import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 
 /-!
-# Deligne's archimedean Gamma-factors
+# Deligne's Archimedean Gamma-factors
 
 In the theory of L-series one frequently encounters the following functions (of a complex variable
 `s`) introduced in Deligne's landmark paper *Valeurs de fonctions L et periodes d'integrales*:
@@ -33,7 +33,7 @@ open Complex
 
 namespace Complex
 
-/-- Deligne's archimedean Gamma factor for a real infinite place.
+/-- Deligne's Archimedean Gamma factor for a real infinite place.
 
 See "Valeurs de fonctions L et periodes d'integrales" § 5.3. Note that this is not the same as
 `Real.Gamma`; in particular it is a function `ℂ → ℂ`. -/
@@ -41,7 +41,7 @@ noncomputable def Gammaℝ (s : ℂ) := π ^ (-s / 2) * Gamma (s / 2)
 
 lemma Gammaℝ_def (s : ℂ) : Gammaℝ s = π ^ (-s / 2) * Gamma (s / 2) := rfl
 
-/-- Deligne's archimedean Gamma factor for a complex infinite place.
+/-- Deligne's Archimedean Gamma factor for a complex infinite place.
 
 See "Valeurs de fonctions L et periodes d'integrales" § 5.3. (Some authors omit the factor of 2).
 Note that this is not the same as `Complex.Gamma`. -/

@@ -19,7 +19,7 @@ variable (L) in
 /--
 The other direction of `IsUltrametricDist.of_normedAlgebra`.
 Let `K` be a normed field. If a seminormed ring `L` is a normed `K`-algebra, and `‖1‖ = 1` in `L`,
-then `K` is ultrametric (i.e. the norm on `L` is nonarchimedean) if `F` is.
+then `K` is ultrametric (i.e. the norm on `L` is non-Archimedean) if `F` is.
 This can be further generalized to the case where `‖1‖ ≠ 0` in `L`.
 -/
 theorem IsUltrametricDist.of_normedAlgebra' [SeminormedRing L] [NormOneClass L] [NormedAlgebra K L]
@@ -30,7 +30,7 @@ theorem IsUltrametricDist.of_normedAlgebra' [SeminormedRing L] [NormOneClass L] 
 variable (K) in
 /--
 Let `K` be a normed field. If a normed division ring `L` is a normed `K`-algebra,
-then `L` is ultrametric (i.e. the norm on `L` is nonarchimedean) if `K` is.
+then `L` is ultrametric (i.e. the norm on `L` is non-Archimedean) if `K` is.
 -/
 theorem IsUltrametricDist.of_normedAlgebra [NormedDivisionRing L] [NormedAlgebra K L]
     [h : IsUltrametricDist K] : IsUltrametricDist L := by
@@ -40,7 +40,7 @@ theorem IsUltrametricDist.of_normedAlgebra [NormedDivisionRing L] [NormedAlgebra
 variable (K L) in
 /--
 Let `K` be a normed field. If a normed division ring `L` is a normed `K`-algebra,
-then `L` is ultrametric (i.e. the norm on `L` is nonarchimedean) if and only if `K` is.
+then `L` is ultrametric (i.e. the norm on `L` is non-Archimedean) if and only if `K` is.
 -/
 theorem IsUltrametricDist.normedAlgebra_iff [NormedDivisionRing L] [NormedAlgebra K L] :
     IsUltrametricDist L ↔ IsUltrametricDist K :=

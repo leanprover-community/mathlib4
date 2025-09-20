@@ -12,7 +12,7 @@ import Mathlib.RingTheory.DiscreteValuationRing.Basic
 This file defines the `p`-adic integers `ℤ_[p]` as the subtype of `ℚ_[p]` with norm `≤ 1`.
 We show that `ℤ_[p]`
 * is complete,
-* is nonarchimedean,
+* is non-Archimedean,
 * is a normed ring,
 * is a local ring, and
 * is a discrete valuation ring.

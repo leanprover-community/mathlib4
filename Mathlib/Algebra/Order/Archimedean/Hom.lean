@@ -7,9 +7,9 @@ import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Hom.Ring
 
 /-!
-### Uniqueness of ring homomorphisms to archimedean fields.
+### Uniqueness of ring homomorphisms to Archimedean fields.
 
-There is at most one ordered ring homomorphism from a linear ordered field to an archimedean linear
+There is at most one ordered ring homomorphism from a linear ordered field to an Archimedean linear
 ordered field. Reciprocally, such an ordered ring homomorphism exists when the codomain is further
 conditionally complete.
 -/
@@ -18,7 +18,7 @@ assert_not_exists Finset
 
 variable {α β : Type*}
 
-/-- There is at most one ordered ring homomorphism from a linear ordered field to an archimedean
+/-- There is at most one ordered ring homomorphism from a linear ordered field to an Archimedean
 linear ordered field. -/
 instance OrderRingHom.subsingleton [Field α] [LinearOrder α]
     [Field β] [LinearOrder β] [IsStrictOrderedRing β] [Archimedean β] :
@@ -35,14 +35,14 @@ instance OrderRingHom.subsingleton [Field α] [LinearOrder α]
       (lt_asymm ((OrderHomClass.mono g).reflect_lt hg) <|
           (OrderHomClass.mono f).reflect_lt hf).elim⟩
 
-/-- There is at most one ordered ring isomorphism between a linear ordered field and an archimedean
+/-- There is at most one ordered ring isomorphism between a linear ordered field and an Archimedean
 linear ordered field. -/
 instance OrderRingIso.subsingleton_right [Field α] [LinearOrder α]
     [Field β] [LinearOrder β] [IsStrictOrderedRing β]
     [Archimedean β] : Subsingleton (α ≃+*o β) :=
   OrderRingIso.toOrderRingHom_injective.subsingleton
 
-/-- There is at most one ordered ring isomorphism between an archimedean linear ordered field and a
+/-- There is at most one ordered ring isomorphism between an Archimedean linear ordered field and a
 linear ordered field. -/
 instance OrderRingIso.subsingleton_left [Field α] [LinearOrder α] [IsStrictOrderedRing α]
     [Archimedean α] [Field β] [LinearOrder β] : Subsingleton (α ≃+*o β) :=
