@@ -3,8 +3,8 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Bicategory.Basic
+import Mathlib.CategoryTheory.Bicategory.EqToHom
 
 /-!
 # Strict bicategories
@@ -56,23 +56,5 @@ instance (priority := 100) StrictBicategory.category [Bicategory.Strict B] : Cat
   id_comp := Bicategory.Strict.id_comp
   comp_id := Bicategory.Strict.comp_id
   assoc := Bicategory.Strict.assoc
-
-namespace Bicategory
-
-variable {B}
-
-@[simp]
-theorem whiskerLeft_eqToHom {a b c : B} (f : a ⟶ b) {g h : b ⟶ c} (η : g = h) :
-    f ◁ eqToHom η = eqToHom (congr_arg₂ (· ≫ ·) rfl η) := by
-  cases η
-  simp only [whiskerLeft_id, eqToHom_refl]
-
-@[simp]
-theorem eqToHom_whiskerRight {a b c : B} {f g : a ⟶ b} (η : f = g) (h : b ⟶ c) :
-    eqToHom η ▷ h = eqToHom (congr_arg₂ (· ≫ ·) η rfl) := by
-  cases η
-  simp only [id_whiskerRight, eqToHom_refl]
-
-end Bicategory
 
 end CategoryTheory
