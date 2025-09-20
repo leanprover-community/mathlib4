@@ -6,6 +6,7 @@ Authors: Jireh Loreaux
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 import Mathlib.LinearAlgebra.Dual.Defs
 import Mathlib.Topology.Algebra.Module.WeakDual
+import Mathlib.Analysis.LocallyConvex.AbsConvex
 
 /-! # Closures of convex sets in locally convex spaces
 
@@ -51,6 +52,17 @@ theorem Convex.toWeakSpace_closure {s : Set E} (hs : Convex ℝ s) :
     rintro - ⟨y, hy, rfl⟩
     simpa [f'] using (hus y <| subset_closure hy).le
   exact (hux'.not_ge <| hus' ·)
+
+open ComplexOrder in
+theorem toWeakSpace_closedAbsConvexHull_eq {s : Set E} :
+    (toWeakSpace 𝕜 E) '' (closedAbsConvexHull 𝕜 s) =
+      closedAbsConvexHull 𝕜 (toWeakSpace 𝕜 E '' s) := by
+  have : ContinuousSMul 𝕜 (WeakSpace 𝕜 E) := WeakBilin.instContinuousSMul _
+  rw [closedAbsConvexHull_eq_closure_absConvexHull (𝕜 := 𝕜),
+    convex_absConvexHull.sMulPosMono_convex.toWeakSpace_closure 𝕜,
+    closedAbsConvexHull_eq_closure_absConvexHull (𝕜 := 𝕜)]
+  congr
+  refine (toWeakSpace 𝕜 E).toLinearMap.image_absConvexHull s
 
 /-- If `e : E →ₗ[𝕜] F` is a linear map between locally convex spaces, and `f ∘ e` is continuous
 for every continuous linear functional `f : StrongDual 𝕜 F`, then `e` commutes with the closure on
