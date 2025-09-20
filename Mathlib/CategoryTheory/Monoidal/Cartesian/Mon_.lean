@@ -18,7 +18,8 @@ showing that it is fully faithful and its (essential) image is the representable
 open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory MonObj
 
 universe w v u
-variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
+variable {C D : Type*} [Category.{v} C] [CartesianMonoidalCategory C]
+  [Category.{w} D] [CartesianMonoidalCategory D]
   {M N O X Y : C} [MonObj M] [MonObj N] [MonObj O]
 
 namespace MonObj
@@ -154,6 +155,34 @@ scoped[MonObj] attribute [instance] Hom.monoid
 
 lemma Hom.one_def : (1 : X ⟶ M) = toUnit X ≫ η := rfl
 lemma Hom.mul_def (f₁ f₂ : X ⟶ M) : f₁ * f₂ = lift f₁ f₂ ≫ μ := rfl
+
+namespace CategoryTheory.Functor
+variable (F : C ⥤ D) [F.Monoidal]
+
+open scoped Obj
+
+protected lemma map_mul (f g : X ⟶ M) : F.map (f * g) = F.map f * F.map g := by
+  simp only [Hom.mul_def, map_comp, obj.μ_def, ← Category.assoc]
+  congr 1
+  rw [← IsIso.comp_inv_eq]
+  ext <;> simp
+
+@[simp] protected lemma map_one : F.map (1 : X ⟶ M) = 1 := by simp [Hom.one_def]
+
+/-- `Functor.map` of a monoidal functor as a `MonoidHom`. -/
+@[simps]
+def homMonoidHom : (X ⟶ M) →* (F.obj X ⟶ F.obj M) where
+  toFun := F.map
+  map_one' := F.map_one
+  map_mul' := F.map_mul
+
+/-- `Functor.map` of a fully faithful monoidal functor as a `MulEquiv`. -/
+@[simps!]
+def FullyFaithful.homMulEquiv (hF : F.FullyFaithful) : (X ⟶ M) ≃* (F.obj X ⟶ F.obj M) where
+  __ := hF.homEquiv
+  __ := F.homMonoidHom
+
+end CategoryTheory.Functor
 
 section BraidedCategory
 variable [BraidedCategory C]
