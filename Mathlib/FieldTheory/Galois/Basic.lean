@@ -122,6 +122,16 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
   apply Nat.card_congr
   exact Equiv.mk (fun ϕ => iso.trans (ϕ.trans iso.symm)) fun ϕ => iso.symm.trans (ϕ.trans iso)
 
+lemma finiteDimensional_of_finite [IsGalois F E] [Finite (E ≃ₐ[F] E)] : FiniteDimensional F E := by
+  by_contra H
+  obtain ⟨K, h₁, h₂⟩ := exists_lt_finrank_of_infinite_dimensional H (Nat.card (E ≃ₐ[F] E))
+  let K' := normalClosure F K E
+  have : IsGalois F K' := ⟨⟩
+  have := Nat.card_le_card_of_surjective _
+    (AlgEquiv.restrictNormalHom_surjective (F := F) (K₁ := K') (E := E))
+  rw [IsGalois.card_aut_eq_finrank] at this
+  exact (this.trans_lt h₂).not_ge (finrank_le_of_le_right K.le_normalClosure)
+
 end IsGalois
 
 end
