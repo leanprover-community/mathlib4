@@ -56,7 +56,7 @@ example {V : Type*} [AddCommMonoid V] {x y : V} : 0 + x + (y + x) = x + x + y :=
   simp
   module
 
--- `grind` is another flexible tactic, as is `cfc_tac`, `positivity` and `finiteness`.
+-- `grind` is another flexible tactic, as are `cfc_tac` and `finiteness`.
 #guard_msgs in
 example {x y : ℕ} : 0 + x + (y + x) = x + x + y := by
   simp
@@ -67,6 +67,8 @@ example (h : False) : False ∧ True := by
   simp
   cfc_tac
 
+-- Currently, `positivity` is not marked as flexible (as it only applies to goals in a very
+-- particular shape). We use this test to record the current behaviour.
 #guard_msgs in
 example {k l : ℤ} : 0 ≤ k ^ 2 + 4 * l * 0 := by
   simp
@@ -96,6 +98,16 @@ example {X : Type*} [TopologicalSpace X] {f : X → ℕ} {g : ℕ → X}
     Continuous (fun x ↦ (f ∘ g) x + 0) := by
   simp
   continuity
+
+-- Currently, `fun_prop` is *not* marked as flexible (as it is rather structural on the exact
+-- shape of the goal, and e.g. changing the goal to a defeq one could break the proof).
+-- This test documents this behaviour.
+#guard_msgs in
+example {X : Type*} [TopologicalSpace X] {f : X → ℕ} {g : ℕ → X}
+    (hf : Continuous f) (hg : Continuous g) :
+    Continuous (fun x ↦ (f ∘ g) x + 0) := by
+  simp
+  fun_prop
 
 -- A similar example for the `measurability` tactic.
 example {α : Type*} [MeasurableSpace α] {f : α → ℚ} (hf : Measurable f) :
