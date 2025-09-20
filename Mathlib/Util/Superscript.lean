@@ -109,11 +109,11 @@ def partitionPoint (lo := 0) (hi := as.size) : Nat :=
 
 /-- The core function for super/subscript parsing. It consists of three stages:
 
-1. Parse a run of superscripted characters, skipping whitespace and stopping when we hit a
-   non-superscript character.
-2. Un-superscript the text and pass the body to the inner parser (usually `term`).
-3. Take the resulting `Syntax` object and align all the positions to fit back into the original
-   text (which as a side effect also rewrites all the substrings to be in subscript text).
+1.  Parse a run of superscripted characters, skipping whitespace and stopping when we hit a
+    non-superscript character.
+2.  Un-superscript the text and pass the body to the inner parser (usually `term`).
+3.  Take the resulting `Syntax` object and align all the positions to fit back into the original
+    text (which as a side effect also rewrites all the substrings to be in subscript text).
 
 If `many` is false, then whitespace (and comments) are not allowed inside the superscript.
 -/

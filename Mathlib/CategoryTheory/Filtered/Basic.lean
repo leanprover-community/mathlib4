@@ -10,10 +10,10 @@ import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 
 A category is filtered if every finite diagram admits a cocone.
 We give a simple characterisation of this condition as
-1. for every pair of objects there exists another object "to the right",
-2. for every pair of parallel morphisms there exists a morphism to the right so the compositions
-   are equal, and
-3. there exists some object.
+1.  for every pair of objects there exists another object "to the right",
+2.  for every pair of parallel morphisms there exists a morphism to the right so the compositions
+    are equal, and
+3.  there exists some object.
 
 Filtered colimits are often better behaved than arbitrary colimits.
 See `CategoryTheory/Limits/Types` for some details.
@@ -62,10 +62,11 @@ attribute [local instance] uliftCategory
 
 variable (C : Type u) [Category.{v} C]
 
-/-- A category `IsFilteredOrEmpty` if
-1. for every pair of objects there exists another object "to the right", and
-2. for every pair of parallel morphisms there exists a morphism to the right so the compositions
-   are equal.
+/--
+A category `IsFilteredOrEmpty` if
+1.  for every pair of objects there exists another object "to the right", and
+2.  for every pair of parallel morphisms there exists a morphism to the right so the compositions
+    are equal.
 -/
 class IsFilteredOrEmpty : Prop where
   /-- for every pair of objects there exists another object "to the right" -/
@@ -74,11 +75,12 @@ class IsFilteredOrEmpty : Prop where
   so the compositions are equal -/
   cocone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (Z : _) (h : Y ⟶ Z), f ≫ h = g ≫ h
 
-/-- A category `IsFiltered` if
-1. for every pair of objects there exists another object "to the right",
-2. for every pair of parallel morphisms there exists a morphism to the right so the compositions
-   are equal, and
-3. there exists some object. -/
+/--
+A category `IsFiltered` if
+1.  for every pair of objects there exists another object "to the right",
+2.  for every pair of parallel morphisms there exists a morphism to the right so the compositions
+    are equal, and
+3.  there exists some object. -/
 @[stacks 002V "They also define a diagram being filtered."]
 class IsFiltered : Prop extends IsFilteredOrEmpty C where
   /-- a filtered category must be non empty -/
@@ -481,9 +483,9 @@ end IsFiltered
 
 /--
 A category `IsCofilteredOrEmpty` if
-1. for every pair of objects there exists another object "to the left", and
-2. for every pair of parallel morphisms there exists a morphism to the left so the compositions
-   are equal.
+1.  for every pair of objects there exists another object "to the left", and
+2.  for every pair of parallel morphisms there exists a morphism to the left so the compositions
+    are equal.
 -/
 class IsCofilteredOrEmpty : Prop where
   /-- for every pair of objects there exists another object "to the left" -/
@@ -492,10 +494,11 @@ class IsCofilteredOrEmpty : Prop where
   so the compositions are equal -/
   cone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (W : _) (h : W ⟶ X), h ≫ f = h ≫ g
 
-/-- A category `IsCofiltered` if
-1. for every pair of objects there exists another object "to the left",
-2. for every pair of parallel morphisms there exists a morphism to the left so the compositions
-   are equal, and
+/--
+A category `IsCofiltered` if
+1.  for every pair of objects there exists another object "to the left",
+2.  for every pair of parallel morphisms there exists a morphism to the left so the compositions
+    are equal, and
 3. there exists some object. -/
 @[stacks 04AZ]
 class IsCofiltered : Prop extends IsCofilteredOrEmpty C where

@@ -16,23 +16,23 @@ The formalization follows Erdős's proof by upper and lower estimates.
 
 ## Proof outline
 
-1. Assume that the sum of the reciprocals of the primes converges.
-2. Then there exists a `k : ℕ` such that, for any `x : ℕ`, the sum of the reciprocals of the primes
-   between `k` and `x + 1` is less than 1/2 (`sum_lt_half_of_not_tendsto`).
-3. For any `x : ℕ`, we can partition `range x` into two subsets (`range_sdiff_eq_biUnion`):
+1.  Assume that the sum of the reciprocals of the primes converges.
+2.  Then there exists a `k : ℕ` such that, for any `x : ℕ`, the sum of the reciprocals of the primes
+    between `k` and `x + 1` is less than 1/2 (`sum_lt_half_of_not_tendsto`).
+3.  For any `x : ℕ`, we can partition `range x` into two subsets (`range_sdiff_eq_biUnion`):
     * `M x k`, the subset of those `e` for which `e + 1` is a product of powers of primes smaller
       than or equal to `k`;
     * `U x k`, the subset of those `e` for which there is a prime `p > k` that divides `e + 1`.
-4. Then `|U x k|` is bounded by the sum over the primes `p > k` of the number of multiples of `p`
-   in `(k, x]`, which is at most `x / p`. It follows that `|U x k|` is at most `x` times the sum of
-  the reciprocals of the primes between `k` and `x + 1`, which is less than 1/2 as noted in (2), so
-  `|U x k| < x / 2` (`card_le_mul_sum`).
-5. By factoring `e + 1 = (m + 1)² * (r + 1)`, `r + 1` squarefree and `m + 1 ≤ √x`, and noting that
-   squarefree numbers correspond to subsets of `[1, k]`, we find that `|M x k| ≤ 2 ^ k * √x`
-   (`card_le_two_pow_mul_sqrt`).
-6. Finally, setting `x := (2 ^ (k + 1))²` (`√x = 2 ^ (k + 1)`), we find that
-   `|M x k| ≤ 2 ^ k * 2 ^ (k + 1) = x / 2`. Combined with the strict bound for `|U k x|` from (4),
-   `x = |M x k| + |U x k| < x / 2 + x / 2 = x`.
+4.  Then `|U x k|` is bounded by the sum over the primes `p > k` of the number of multiples of `p`
+    in `(k, x]`, which is at most `x / p`. It follows that `|U x k|` is at most `x` times the sum of
+    the reciprocals of the primes between `k` and `x + 1`, which is less than 1/2 as noted in (2), so
+    `|U x k| < x / 2` (`card_le_mul_sum`).
+5.  By factoring `e + 1 = (m + 1)² * (r + 1)`, `r + 1` squarefree and `m + 1 ≤ √x`, and noting that
+    squarefree numbers correspond to subsets of `[1, k]`, we find that `|M x k| ≤ 2 ^ k * √x`
+    (`card_le_two_pow_mul_sqrt`).
+6.  Finally, setting `x := (2 ^ (k + 1))²` (`√x = 2 ^ (k + 1)`), we find that
+    `|M x k| ≤ 2 ^ k * 2 ^ (k + 1) = x / 2`. Combined with the strict bound for `|U k x|` from (4),
+    `x = |M x k| + |U x k| < x / 2 + x / 2 = x`.
 
 ## References
 

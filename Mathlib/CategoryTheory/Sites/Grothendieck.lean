@@ -60,10 +60,10 @@ variable (C : Type u) [Category.{v} C]
 
 /-- The definition of a Grothendieck topology: a set of sieves `J X` on each object `X` satisfying
 three axioms:
-1. For every object `X`, the maximal sieve is in `J X`.
-2. If `S ∈ J X` then its pullback along any `h : Y ⟶ X` is in `J Y`.
-3. If `S ∈ J X` and `R` is a sieve on `X`, then provided that the pullback of `R` along any arrow
-   `f : Y ⟶ X` in `S` is in `J Y`, we have that `R` itself is in `J X`.
+1.  For every object `X`, the maximal sieve is in `J X`.
+2.  If `S ∈ J X` then its pullback along any `h : Y ⟶ X` is in `J Y`.
+3.  If `S ∈ J X` and `R` is a sieve on `X`, then provided that the pullback of `R` along any arrow
+    `f : Y ⟶ X` in `S` is in `J Y`, we have that `R` itself is in `J X`.
 
 A sieve `S` on `X` is referred to as `J`-covering, (or just covering), if `S ∈ J X`.
 

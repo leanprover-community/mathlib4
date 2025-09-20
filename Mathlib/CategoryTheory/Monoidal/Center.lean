@@ -20,10 +20,10 @@ Verifying the various axioms directly requires tedious rewriting.
 Using the `slice` tactic may make the proofs marginally more readable.
 
 More exciting, however, would be to make possible one of the following options:
-1. Integration with homotopy.io / globular to give "picture proofs".
-2. The monoidal coherence theorem, so we can ignore associators
-   (after which most of these proofs are trivial).
-3. Automating these proofs using `rewrite_search` or some relative.
+1.  Integration with homotopy.io / globular to give "picture proofs".
+2.  The monoidal coherence theorem, so we can ignore associators
+    (after which most of these proofs are trivial).
+3.  Automating these proofs using `rewrite_search` or some relative.
 
 In this file, we take the second approach using the monoidal composition `⊗≫` and the
 `coherence` tactic.

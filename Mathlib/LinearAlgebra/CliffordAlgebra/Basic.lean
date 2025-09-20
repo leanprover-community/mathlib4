@@ -35,9 +35,9 @@ of the Clifford algebra.
 ## Implementation details
 
 The Clifford algebra of `M` is constructed as a quotient of the tensor algebra, as follows.
-1. We define a relation `CliffordAlgebra.Rel Q` on `TensorAlgebra R M`.
-   This is the smallest relation which identifies squares of elements of `M` with `Q m`.
-2. The Clifford algebra is the quotient of the tensor algebra by this relation.
+1.  We define a relation `CliffordAlgebra.Rel Q` on `TensorAlgebra R M`.
+    This is the smallest relation which identifies squares of elements of `M` with `Q m`.
+2.  The Clifford algebra is the quotient of the tensor algebra by this relation.
 
 This file is almost identical to `Mathlib/LinearAlgebra/ExteriorAlgebra/Basic.lean`.
 -/

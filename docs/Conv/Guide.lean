@@ -41,11 +41,11 @@ Mathlib also provides `conv_lhs` and `conv_rhs` variants to immediately apply ei
 
 `conv` mode is essentially the normal tactic mode but with two differences.
 
-1. Only "`conv` tactics" can appear in the `conv` block. These are tactics with syntax
-   in the `conv` category.
+1.  Only "`conv` tactics" can appear in the `conv` block. These are tactics with syntax
+    in the `conv` category.
 
-2. The goals are all of the form `⊢ lhs = ?rhs` with `?rhs` a metavariable, but the goals
-   are annotated in such a way that they display as `| lhs`.
+2.  The goals are all of the form `⊢ lhs = ?rhs` with `?rhs` a metavariable, but the goals
+    are annotated in such a way that they display as `| lhs`.
 
 Each `conv` tactic is aware that the goal is of this form, and in addition to solving for the
 goal like normal, they also solve for the `?rhs` metavariable in some controlled way.
