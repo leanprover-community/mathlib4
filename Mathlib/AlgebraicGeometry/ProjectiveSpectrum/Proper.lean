@@ -80,13 +80,13 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
   dsimp [Scheme, Cover.pullbackHom]
   refine (MorphismProperty.cancel_left_of_respectsIso (P := @IsClosedImmersion)
     (f := (pullbackDiagonalMapIdIso ..).inv) _).mp ?_
-  let e₁ : pullback ((affineOpenCover 𝒜).map i ≫ toSpecZero 𝒜)
-        ((affineOpenCover 𝒜).map j ≫ toSpecZero 𝒜) ≅
+  let e₁ : pullback ((affineOpenCover 𝒜).f i ≫ toSpecZero 𝒜)
+        ((affineOpenCover 𝒜).f j ≫ toSpecZero 𝒜) ≅
         Spec(TensorProduct (𝒜 0) (Away 𝒜 i.2) (Away 𝒜 j.2)) := by
     refine pullback.congrHom ?_ ?_ ≪≫ pullbackSpecIso (𝒜 0) (Away 𝒜 i.2) (Away 𝒜 j.2)
     · simp [affineOpenCover, openCoverOfISupEqTop, awayι_toSpecZero]; rfl
     · simp [affineOpenCover, openCoverOfISupEqTop, awayι_toSpecZero]; rfl
-  let e₂ : pullback ((affineOpenCover 𝒜).map i) ((affineOpenCover 𝒜).map j) ≅
+  let e₂ : pullback ((affineOpenCover 𝒜).f i) ((affineOpenCover 𝒜).f j) ≅
         Spec(Away 𝒜 (i.2 * j.2)) :=
     pullbackAwayιIso 𝒜 _ _ _ _ rfl
   rw [← MorphismProperty.cancel_right_of_respectsIso (P := @IsClosedImmersion) _ e₁.hom,
