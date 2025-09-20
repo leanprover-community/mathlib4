@@ -106,6 +106,46 @@ theorem tangentConeAt_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentCon
 
 @[deprecated (since := "2025-04-27")] alias tangentCone_mono := tangentConeAt_mono
 
+variable [ContinuousSMul 𝕜 E]
+
+/-- Auxiliary lemma ensuring that, under the assumptions defining the tangent cone,
+the sequence `d` tends to 0 at infinity. -/
+theorem tangentConeAt.lim_zero {α : Type*} (l : Filter α) {c : α → 𝕜} {d : α → E}
+    (hc : Tendsto (fun n => ‖c n‖) l atTop) (hd : Tendsto (fun n => c n • d n) l (𝓝 y)) :
+    Tendsto d l (𝓝 0) := by
+  rewrite [tendsto_norm_atTop_iff_cobounded] at hc
+  apply tendsto_inv₀_cobounded'.comp at hc
+  convert tendsto_nhds_of_tendsto_nhdsWithin hc |>.smul hd |>.congr' ?_
+  on_goal 1 => simp
+  filter_upwards [eventually_mem_of_tendsto_nhdsWithin hc] with n hc
+  conv at hc => equals c n ≠ 0 => simp
+  apply inv_smul_smul₀ hc
+
+variable [IsTopologicalAddGroup E]
+
+theorem tangentConeAt_mono_nhds (h : 𝓝[s] x ≤ 𝓝[t] x) :
+    tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
+  rintro y ⟨c, d, ds, ctop, clim⟩
+  refine ⟨c, d, ?_, ctop, clim⟩
+  suffices Tendsto (fun n => x + d n) atTop (𝓝[t] x) from
+    tendsto_principal.1 (tendsto_inf.1 this).2
+  refine (tendsto_inf.2 ⟨?_, tendsto_principal.2 ds⟩).mono_right h
+  simpa only [add_zero] using tendsto_const_nhds.add (tangentConeAt.lim_zero atTop ctop clim)
+
+@[deprecated (since := "2025-04-27")] alias tangentCone_mono_nhds := tangentConeAt_mono_nhds
+
+/-- Tangent cone of `s` at `x` depends only on `𝓝[s] x`. -/
+theorem tangentConeAt_congr (h : 𝓝[s] x = 𝓝[t] x) : tangentConeAt 𝕜 s x = tangentConeAt 𝕜 t x :=
+  Subset.antisymm (tangentConeAt_mono_nhds h.le) (tangentConeAt_mono_nhds h.ge)
+
+@[deprecated (since := "2025-04-27")] alias tangentCone_congr := tangentConeAt_congr
+
+/-- Intersecting with a neighborhood of the point does not change the tangent cone. -/
+theorem tangentConeAt_inter_nhds (ht : t ∈ 𝓝 x) : tangentConeAt 𝕜 (s ∩ t) x = tangentConeAt 𝕜 s x :=
+  tangentConeAt_congr (nhdsWithin_restrict' _ ht).symm
+
+@[deprecated (since := "2025-04-27")] alias tangentCone_inter_nhds := tangentConeAt_inter_nhds
+
 end TVS
 
 section Normed
@@ -130,46 +170,6 @@ theorem tangentConeAt_closure : tangentConeAt 𝕜 (closure s) x = tangentConeAt
   rcases this with ⟨d', hd's, hd'⟩
   exact ⟨c, d', hd's, ctop, clim.congr_dist
     (squeeze_zero' (.of_forall fun _ ↦ dist_nonneg) (hd'.mono fun _ ↦ le_of_lt) u_lim)⟩
-
-/-- Auxiliary lemma ensuring that, under the assumptions defining the tangent cone,
-the sequence `d` tends to 0 at infinity. -/
-theorem tangentConeAt.lim_zero {α : Type*} (l : Filter α) {c : α → 𝕜} {d : α → E}
-    (hc : Tendsto (fun n => ‖c n‖) l atTop) (hd : Tendsto (fun n => c n • d n) l (𝓝 y)) :
-    Tendsto d l (𝓝 0) := by
-  have A : Tendsto (fun n => ‖c n‖⁻¹) l (𝓝 0) := tendsto_inv_atTop_zero.comp hc
-  have B : Tendsto (fun n => ‖c n • d n‖) l (𝓝 ‖y‖) := (continuous_norm.tendsto _).comp hd
-  have C : Tendsto (fun n => ‖c n‖⁻¹ * ‖c n • d n‖) l (𝓝 (0 * ‖y‖)) := A.mul B
-  rw [zero_mul] at C
-  have : ∀ᶠ n in l, ‖c n‖⁻¹ * ‖c n • d n‖ = ‖d n‖ := by
-    refine (eventually_ne_of_tendsto_norm_atTop hc 0).mono fun n hn => ?_
-    rw [norm_smul, ← mul_assoc, inv_mul_cancel₀, one_mul]
-    rwa [Ne, norm_eq_zero]
-  have D : Tendsto (fun n => ‖d n‖) l (𝓝 0) := Tendsto.congr' this C
-  rw [tendsto_zero_iff_norm_tendsto_zero]
-  exact D
-
-theorem tangentConeAt_mono_nhds (h : 𝓝[s] x ≤ 𝓝[t] x) :
-    tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
-  rintro y ⟨c, d, ds, ctop, clim⟩
-  refine ⟨c, d, ?_, ctop, clim⟩
-  suffices Tendsto (fun n => x + d n) atTop (𝓝[t] x) from
-    tendsto_principal.1 (tendsto_inf.1 this).2
-  refine (tendsto_inf.2 ⟨?_, tendsto_principal.2 ds⟩).mono_right h
-  simpa only [add_zero] using tendsto_const_nhds.add (tangentConeAt.lim_zero atTop ctop clim)
-
-@[deprecated (since := "2025-04-27")] alias tangentCone_mono_nhds := tangentConeAt_mono_nhds
-
-/-- Tangent cone of `s` at `x` depends only on `𝓝[s] x`. -/
-theorem tangentConeAt_congr (h : 𝓝[s] x = 𝓝[t] x) : tangentConeAt 𝕜 s x = tangentConeAt 𝕜 t x :=
-  Subset.antisymm (tangentConeAt_mono_nhds h.le) (tangentConeAt_mono_nhds h.ge)
-
-@[deprecated (since := "2025-04-27")] alias tangentCone_congr := tangentConeAt_congr
-
-/-- Intersecting with a neighborhood of the point does not change the tangent cone. -/
-theorem tangentConeAt_inter_nhds (ht : t ∈ 𝓝 x) : tangentConeAt 𝕜 (s ∩ t) x = tangentConeAt 𝕜 s x :=
-  tangentConeAt_congr (nhdsWithin_restrict' _ ht).symm
-
-@[deprecated (since := "2025-04-27")] alias tangentCone_inter_nhds := tangentConeAt_inter_nhds
 
 /-- The tangent cone of a product contains the tangent cone of its left factor. -/
 theorem subset_tangentConeAt_prod_left {t : Set F} {y : F} (ht : y ∈ closure t) :
@@ -432,21 +432,7 @@ theorem uniqueDiffOn_empty : UniqueDiffOn 𝕜 (∅ : Set E) :=
 theorem UniqueDiffWithinAt.congr_pt (h : UniqueDiffWithinAt 𝕜 s x) (hy : x = y) :
     UniqueDiffWithinAt 𝕜 s y := hy ▸ h
 
-end TVS
-
-section Normed
-variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
-variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {x y : E} {s t : Set E}
-
-@[simp]
-theorem uniqueDiffWithinAt_closure :
-    UniqueDiffWithinAt 𝕜 (closure s) x ↔ UniqueDiffWithinAt 𝕜 s x := by
-  simp [uniqueDiffWithinAt_iff]
-
-protected alias ⟨UniqueDiffWithinAt.of_closure, UniqueDiffWithinAt.closure⟩ :=
-  uniqueDiffWithinAt_closure
+variable [ContinuousSMul 𝕜 E] [IsTopologicalAddGroup E]
 
 theorem UniqueDiffWithinAt.mono_nhds (h : UniqueDiffWithinAt 𝕜 s x) (st : 𝓝[s] x ≤ 𝓝[t] x) :
     UniqueDiffWithinAt 𝕜 t x := by
@@ -458,9 +444,9 @@ theorem UniqueDiffWithinAt.mono (h : UniqueDiffWithinAt 𝕜 s x) (st : s ⊆ t)
     UniqueDiffWithinAt 𝕜 t x :=
   h.mono_nhds <| nhdsWithin_mono _ st
 
-theorem UniqueDiffWithinAt.mono_closure (h : UniqueDiffWithinAt 𝕜 s x) (st : s ⊆ closure t) :
-    UniqueDiffWithinAt 𝕜 t x :=
-  (h.mono st).of_closure
+protected theorem UniqueDiffWithinAt.closure (h : UniqueDiffWithinAt 𝕜 s x) :
+    UniqueDiffWithinAt 𝕜 (closure s) x :=
+  h.mono subset_closure
 
 theorem uniqueDiffWithinAt_congr (st : 𝓝[s] x = 𝓝[t] x) :
     UniqueDiffWithinAt 𝕜 s x ↔ UniqueDiffWithinAt 𝕜 t x :=
@@ -493,6 +479,26 @@ theorem UniqueDiffOn.inter (hs : UniqueDiffOn 𝕜 s) (ht : IsOpen t) : UniqueDi
 
 theorem IsOpen.uniqueDiffOn (hs : IsOpen s) : UniqueDiffOn 𝕜 s :=
   fun _ hx => IsOpen.uniqueDiffWithinAt hs hx
+
+end TVS
+
+section Normed
+variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+variable [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
+variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {x y : E} {s t : Set E}
+
+@[simp]
+theorem uniqueDiffWithinAt_closure :
+    UniqueDiffWithinAt 𝕜 (closure s) x ↔ UniqueDiffWithinAt 𝕜 s x := by
+  simp [uniqueDiffWithinAt_iff]
+
+protected alias ⟨UniqueDiffWithinAt.of_closure, _⟩ :=
+  uniqueDiffWithinAt_closure
+
+theorem UniqueDiffWithinAt.mono_closure (h : UniqueDiffWithinAt 𝕜 s x) (st : s ⊆ closure t) :
+    UniqueDiffWithinAt 𝕜 t x :=
+  (h.mono st).of_closure
 
 /-- The product of two sets of unique differentiability at points `x` and `y` has unique
 differentiability at `(x, y)`. -/
