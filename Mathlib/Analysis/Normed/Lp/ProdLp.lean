@@ -342,26 +342,36 @@ abbrev prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
     (fun f g => by
       rcases p.dichotomy with (rfl | h)
-      · exact prod_sup_edist_ne_top_aux f g
-      · rw [prod_edist_eq_add (zero_lt_one.trans_le h)]
-        finiteness)
+      · simp [prod_dist_eq_sup]
+      · simp only [dist, one_div, dite_eq_ite]
+        split_ifs with hp'
+        all_goals try linarith
+        all_goals positivity)
     fun f g => by
     rcases p.dichotomy with (rfl | h)
     · rw [prod_edist_eq_sup, prod_dist_eq_sup]
       refine le_antisymm (sup_le ?_ ?_) ?_
-      · rw [← ENNReal.ofReal_le_iff_le_toReal (prod_sup_edist_ne_top_aux f g),
-          ← PseudoMetricSpace.edist_dist]
-        exact le_sup_left
-      · rw [← ENNReal.ofReal_le_iff_le_toReal (prod_sup_edist_ne_top_aux f g),
-          ← PseudoMetricSpace.edist_dist]
-        exact le_sup_right
-      · refine ENNReal.toReal_le_of_le_ofReal ?_ ?_
-        · simp only [le_sup_iff, dist_nonneg, or_self]
-        · simp [-ofReal_max]
-    · have h1 : edist f.fst g.fst ^ p.toReal ≠ ⊤ := by finiteness
-      have h2 : edist f.snd g.snd ^ p.toReal ≠ ⊤ := by finiteness
-      simp only [prod_edist_eq_add (zero_lt_one.trans_le h), dist_edist, ENNReal.toReal_rpow,
-        prod_dist_eq_add (zero_lt_one.trans_le h), ← ENNReal.toReal_add h1 h2]
+      · rw [ofReal_max]
+        refine le_sup_of_le_left ?_
+        simp
+      · rw [ofReal_max]
+        refine le_sup_of_le_right ?_
+        simp
+      · rw [← Prod.dist_eq,← Prod.edist_eq,edist_dist]
+    · simp only [edist, one_div, dite_eq_ite]
+      split_ifs with hp' ha hb hc hd
+      all_goals try simp_all only [nonpos_iff_eq_zero, one_ne_zero, toReal_zero,
+        PseudoMetricSpace.edist_dist, ENNReal.ofReal_eq_zero, add_zero, zero_eq_ofReal, add_zero]
+      all_goals try contradiction
+      · simp at h
+        linarith [h]
+      · have h1 : edist f.fst g.fst ^ p.toReal ≠ ⊤ := by finiteness
+        have h2 : edist f.snd g.snd ^ p.toReal ≠ ⊤ := by finiteness
+        simp only [dist_edist, ENNReal.toReal_rpow,
+        prod_dist_eq_add (zero_lt_one.trans_le h), ← ENNReal.toReal_add h1 h2, one_div]
+        rw [ofReal_toReal_eq_iff.mpr (by finiteness),
+          ofReal_toReal_eq_iff.mpr (by finiteness), ofReal_toReal_eq_iff.mpr (by finiteness)]
+
 
 attribute [local instance] WithLp.prodPseudoMetricAux
 
