@@ -11,7 +11,16 @@ import Mathlib.CategoryTheory.Limits.Presentation
 
 Given a property of object `P : ObjectProperty C` and a category `J`,
 we introduce two properties of objects `P.strictColimitsOfShape J`
-and `P.colimitsOfShape J`
+and `P.colimitsOfShape J`. The former contains exactly the objects
+of the form `colimit F` for any functor `F : J ⥤ C` that has
+a colimit and such that `F.obj j` satisfies `P` for any `h`, while
+the latter contains all the objects that are isomorphic to
+the these "chosen" objects `colimit F`.
+
+Under certain circumstances, the type of objects satisfying
+`P.strictColimitsOfShape J` is small: the main reason this variant is
+introduced is to deduce that the full subcategory of `P.colimitsOfShape J`
+is essentially small.
 
 ## TODO
 
@@ -135,8 +144,7 @@ instance [ObjectProperty.Small.{w} P] [LocallySmall.{w} C] [Small.{w} J] [Locall
     ObjectProperty.Small.{w} (P.strictColimitsOfShape J) := by
   refine small_of_surjective
     (f := fun (F : { F : J ⥤ P.FullSubcategory // HasColimit (F ⋙ P.ι) }) ↦
-      letI := F.2
-      (⟨_, ⟨F.1 ⋙ P.ι, fun j ↦ (F.1.obj j).2⟩⟩)) ?_
+      (⟨_, letI := F.2; ⟨F.1 ⋙ P.ι, fun j ↦ (F.1.obj j).2⟩⟩)) ?_
   rintro ⟨_, ⟨F, hF⟩⟩
   exact ⟨⟨P.lift F hF, by assumption⟩, rfl⟩
 
