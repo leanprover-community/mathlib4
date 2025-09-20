@@ -157,7 +157,7 @@ theorem count_eq_one_of_mem [DecidableEq α] {a : α} {l : List α} (d : Nodup l
 
 theorem count_eq_of_nodup [DecidableEq α] {a : α} {l : List α} (d : Nodup l) :
     count a l = if a ∈ l then 1 else 0 :=
-  Nodup.count d
+  d.count
 
 theorem Nodup.of_append_left : Nodup (l₁ ++ l₂) → Nodup l₁ :=
   Nodup.sublist (sublist_append_left l₁ l₂)
