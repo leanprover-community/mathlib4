@@ -304,25 +304,14 @@ variable (φ ψ)
 
 variable {ψ} in
 /--
-If `L/K` and `ψ : K →+* ℂ`, `φ : L →+* ℂ`, then `φ` is a _mixed extension_ of `ψ` if the
-image of `ψ` is real while the image of `φ` is complex.
+If `L` and `K` are any two fields and `ψ : K →+* ℂ`, `φ : L →+* ℂ`, then we say `φ` and `ψ` are
+mixed if `ψ` is real while the image of `φ` is complex.
 
-This is the complex embedding analogue of `InfinitePlace.RamifiedExtension`.
+This is the complex embedding analogue of `InfinitePlace.IsRamified`.
 -/
-abbrev Extension.IsMixed (φ : Extension L ψ) :=
-  ComplexEmbedding.IsReal ψ ∧ ¬ComplexEmbedding.IsReal φ.1
+abbrev IsMixed (φ : L →+* ℂ) (ψ : K →+* ℂ) :=
+  ComplexEmbedding.IsReal ψ ∧ ¬ComplexEmbedding.IsReal φ
 
-namespace IsMixedExtension
-
-variable {ψ φ}
-
-theorem Extension.IsMixed.isReal {φ : Extension L ψ} (h : φ.IsMixed) :
-    ComplexEmbedding.IsReal ψ := h.1
-
-theorem Extension.IsMixed.not_isReal {φ : Extension L ψ} (h : φ.IsMixed) :
-    ¬ComplexEmbedding.IsReal φ.1 := h.2
-
-end IsMixedExtension
 
 variable {ψ} in
 /--
@@ -332,19 +321,21 @@ if and only if the image of `φ` is real.
 
 This is the complex embedding analogue of `InfinitePlace.UnramifiedExtension`.
 -/
-abbrev Extension.IsUnmixed (φ : Extension L ψ) := ¬φ.IsMixed
+abbrev IsUnmixed (φ : L →+* ℂ) (ψ : K →+* ℂ) := ¬IsMixed φ ψ
 
+omit [Algebra K L] in
 variable {ψ φ} in
-theorem Extension.IsUnmixed.isReal_of_isReal {φ : Extension L ψ} (h : φ.IsUnmixed)
+theorem IsUnmixed.isReal_of_isReal {φ : L →+* ℂ} (h : IsUnmixed φ ψ)
     (hf : ComplexEmbedding.IsReal ψ) :
-    ComplexEmbedding.IsReal φ.1 := by
+    ComplexEmbedding.IsReal φ := by
   simp only [not_and, not_not] at h
   exact h hf
 
 open scoped Classical in
 noncomputable def Extension.equivSum :
-    Extension L ψ ≃ { φ : Extension L ψ // φ.IsMixed } ⊕ { φ : Extension L ψ // φ.IsUnmixed } := by
-  exact (Equiv.sumCompl Extension.IsMixed).symm
+    Extension L ψ ≃ { φ : Extension L ψ // IsMixed φ.1 ψ } ⊕
+      { φ : Extension L ψ // IsUnmixed φ.1 ψ } := by
+  exact (Equiv.sumCompl (fun _ ↦ IsMixed _ ψ)).symm
 
 /-
 open scoped Classical in
