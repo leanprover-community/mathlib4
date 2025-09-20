@@ -595,9 +595,8 @@ theorem ncard_mono [Finite α] : @Monotone (Set α) _ _ _ ncard := fun _ _ ↦ n
 
 @[simp] theorem ncard_univ (α : Type*) : (univ : Set α).ncard = Nat.card α := Nat.card_univ
 
-@[simp] theorem ncard_le_card [Finite α] : s.ncard ≤ Nat.card α := by
-  rw [← Set.ncard_univ]
-  exact Set.ncard_le_ncard (fun _ a ↦ trivial) Set.finite_univ
+@[simp] theorem ncard_le_card [Finite α] : s.ncard ≤ Nat.card α :=
+  ncard_univ _ ▸ ncard_le_ncard (fun _ _ ↦ trivial) finite_univ
 
 @[simp] theorem ncard_empty (α : Type*) : (∅ : Set α).ncard = 0 := by
   rw [ncard_eq_zero]
