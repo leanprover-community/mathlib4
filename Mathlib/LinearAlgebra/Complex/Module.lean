@@ -17,7 +17,7 @@ This file contains the following instances:
   `ℝ` imbues a corresponding structure on `ℂ`. This includes the statement that `ℂ` is an `ℝ`
   algebra.
 * any complex vector space is a real vector space;
-* any finite dimensional complex vector space is a finite dimensional real vector space;
+* any finite-dimensional complex vector space is a finite-dimensional real vector space;
 * the space of `ℝ`-linear maps from a real vector space to a complex vector space is a complex
   vector space.
 

@@ -8,7 +8,7 @@ import Mathlib.Analysis.Normed.Affine.Convex
 /-!
 # Convex functions are continuous
 
-This file proves that a convex function from a finite dimensional real normed space to `ℝ` is
+This file proves that a convex function from a finite-dimensional real normed space to `ℝ` is
 continuous.
 -/
 

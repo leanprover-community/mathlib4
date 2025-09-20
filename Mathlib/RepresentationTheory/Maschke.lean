@@ -27,7 +27,7 @@ taking the average over `G` of the conjugates of `π`.
   familiar `¬(ringChar k ∣ Fintype.card G)`.
 
 ## Future work
-It's not so far to give the usual statement, that every finite dimensional representation
+It's not so far to give the usual statement, that every finite-dimensional representation
 of a finite group is semisimple (i.e. a direct sum of irreducibles).
 -/
 
