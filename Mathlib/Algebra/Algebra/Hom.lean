@@ -285,6 +285,9 @@ def toLinearMap : A →ₗ[R] B where
 theorem toLinearMap_apply (p : A) : φ.toLinearMap p = φ p :=
   rfl
 
+@[simp]
+lemma coe_toLinearMap : ⇑φ.toLinearMap = ⇑φ := rfl
+
 theorem toLinearMap_injective :
     Function.Injective (toLinearMap : _ → A →ₗ[R] B) := fun _φ₁ _φ₂ h =>
   ext <| LinearMap.congr_fun h
@@ -429,6 +432,9 @@ variable {R}
 @[simp]
 theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
   rfl
+
+@[simp]
+lemma toRingHom_ofId : RingHomClass.toRingHom (ofId R A) = algebraMap R A := rfl
 
 /-- This is a special case of a more general instance that we define in a later file. -/
 instance subsingleton_id : Subsingleton (R →ₐ[R] A) :=
