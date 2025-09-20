@@ -488,6 +488,11 @@ lemma IsNontrivial.exists_lt_one {Γ₀ : Type*} [LinearOrderedCommGroupWithZero
   · use x⁻¹
     simp [- map_inv₀, ← one_lt_val_iff, hx]
 
+theorem isNontrivial_iff_exists_lt_one {Γ₀ : Type*}
+    [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀) :
+    v.IsNontrivial ↔ ∃ x, x ≠ 0 ∧ v x < 1 :=
+  ⟨fun h ↦ by simpa using h.exists_lt_one (v := v), fun ⟨x, hx0, hx1⟩ ↦ ⟨x, by simp [hx0, hx1.ne]⟩⟩
+
 lemma IsNontrivial.exists_one_lt {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
     {v : Valuation K Γ₀} [hv : v.IsNontrivial] :
     ∃ x : K, v x ≠ 0 ∧ 1 < v x := by
