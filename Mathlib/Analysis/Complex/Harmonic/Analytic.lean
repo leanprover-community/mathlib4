@@ -103,6 +103,7 @@ theorem harmonic_is_realOfHolomorphic {z : ℂ} {R : ℝ} (hf : HarmonicOnNhd f 
 
 /-
 Harmonic functions are real analytic.
+TODO: Prove this for harmonic functions on an arbitrary f.d. inner product space (not just on `ℂ`).
 -/
 theorem HarmonicAt.analyticAt (hf : HarmonicAt f x) : AnalyticAt ℝ f x := by
   obtain ⟨ε, h₁ε, h₂ε⟩ := isOpen_iff.1 (isOpen_setOf_harmonicAt (f := f)) x hf
