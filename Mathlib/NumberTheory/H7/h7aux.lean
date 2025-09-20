@@ -128,29 +128,54 @@ lemma triple_comm (K : Type) [Field K] (a b c : ℤ) (x y z : K) :
 --#check NumberField.Embeddings.range_eval_eq_rootSet_minpoly
 variable [Field K] [NumberField K]
 
+#check Polynomial.roots_prod_X_sub_C
 /-- Lemma 3.6: Let α be a non-zero algebraic integer.
-Then α has a conjugate α(i) with |α(i)| > 1. -/
+Then α has a conjugate α(i) with |α(i)| ≥ 1-/
 lemma exists_conjugate_abs_gt_one {α : 𝓞 K} (hα0 : α ≠ 0) :
-    ∃ σ : K →+* ℂ, 1 ≤ norm (σ α) := by
-  have HI : IsIntegral ℤ α := RingOfIntegers.isIntegral α
-  let S := ((minpoly ℤ α).rootSet ℚ).toFinset
-  let a : ℚ := by {
-    apply Finset.prod S
-    exact fun a ↦ a}
-  have haneq0 : a ≠ 0 := by {
-    dsimp [a,S]
-    intros H
+    ∃ σ : K →+* ℂ, 1 ≤ |Algebra.norm ℤ (α)| := by
+
+  have hn_ne_zero : (Algebra.norm ℤ (α)) ≠ 0 := by
+    exact Algebra.norm_ne_zero_iff.mpr hα0
+
+  have h_norm_ge_one : 1 ≤ Algebra.norm ℤ (α) := by {
     sorry
-  }
-  have Hpoly := minpoly.ne_zero HI
-  have : 1 ≤ norm (a) := by {
-    dsimp [a]
-    simp only [norm_prod]
-    sorry
-  }
-  -- Let α₁, ..., α_d be the conjugates of α.
-  let d := Module.finrank ℚ K
+    }--Int.one_le_abs hn_ne_zero
   sorry
+  -- let S : Finset ℚ := ((minpoly ℤ α).rootSet ℚ).toFinset
+  -- have := Polynomial.roots_prod_X_sub_C S
+  -- --have h_norm_ge_one : 1 ≤ norm ((∏ a ∈ S, (X - C a)).roots := Int.one_le_abs hn_ne_zero
+
+  --     --Since `α` is non-zero, its norm `n` must also be a non-zero integer.
+  -- -- have hn_ne_zero : n ≠ 0 := by
+  -- --   unfold n
+  -- --   exact Algebra.norm_ne_zero_iff.mpr hα0
+  -- have h_norm_ge_one : 1 ≤ |Algebra.norm ℤ (α)| := Int.one_le_abs hn_ne_zero
+
+  -- have h_prod_eq_norm : (n : ℂ) = ∏ σ : K →+* ℂ, σ α := by
+  --   sorry
+    -- This follows from `Algebra.norm_eq_prod_embeddings`.
+    --have := Algebra.norm_eq_prod_roots ℤ (𝓞 K) K
+
+
+  -- have HI : IsIntegral ℤ α := RingOfIntegers.isIntegral α
+  -- let S := ((minpoly ℤ α).rootSet ℚ).toFinset
+  -- let a : ℚ := by {
+  --   apply Finset.prod S
+  --   exact fun a ↦ a}
+  -- have haneq0 : a ≠ 0 := by {
+  --   dsimp [a,S]
+  --   intros H
+  --   sorry
+  -- }
+  -- have Hpoly := minpoly.ne_zero HI
+  -- have : 1 ≤ norm (a) := by {
+  --   dsimp [a]
+  --   simp only [norm_prod]
+  --   sorry
+  -- }
+  -- -- Let α₁, ..., α_d be the conjugates of α.
+  -- let d := Module.finrank ℚ K
+  -- sorry
   --let σs := NumberField.Embeddings K ℂ
   -- The conjugates are σ α for σ ∈ σs.
   --let α_conj := fun σ : K →+* ℂ => σ α
