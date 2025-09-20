@@ -261,6 +261,13 @@ theorem ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one {r : ℝ≥0∞} (hr : r <
   norm_cast at *
   apply NNReal.tendsto_pow_atTop_nhds_zero_of_lt_one hr
 
+lemma ENNReal.tendsto_const_mul_pow_atTop_nhds_zero_of_lt_one (c x : ℝ≥0∞) (hx : x < 1)
+    (hc : c ≠ ⊤) : Tendsto (fun n ↦ c * (x : ℝ≥0∞) ^ n) atTop (𝓝 0) := by
+  have := ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one (r :=x) hx
+  rw [ENNReal.tendsto_atTop_zero] at ⊢ this
+  exact fun ε hε ↦ Exists.imp (fun N h n hn => ENNReal.mul_le_of_le_div' (h n hn)) (this (ε / c)
+     (by simp [hc]; exact pos_iff_ne_zero.mp hε))
+
 @[simp]
 protected theorem ENNReal.tendsto_pow_atTop_nhds_zero_iff {r : ℝ≥0∞} :
     Tendsto (fun n : ℕ => r ^ n) atTop (𝓝 0) ↔ r < 1 := by
