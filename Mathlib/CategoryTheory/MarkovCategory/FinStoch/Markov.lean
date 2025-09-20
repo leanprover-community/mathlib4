@@ -38,8 +38,7 @@ instance : MarkovCategory FinStoch where
     -- Discard is natural because probabilities sum to 1
     apply StochasticMatrix.ext
     ext i u
-    simp only [CategoryStruct.comp, StochasticMatrix.comp, ComonObj.counit, discard]
-    simp [f.row_sum]
+    simp [CategoryStruct.comp, StochasticMatrix.comp, ComonObj.counit, discard, f.row_sum]
 
 /-- Copy is not natural in FinStoch. -/
 theorem copy_not_natural : ∃ (X Y : FinStoch) (f : X ⟶ Y),
@@ -52,7 +51,7 @@ theorem copy_not_natural : ∃ (X Y : FinStoch) (f : X ⟶ Y),
   let f : X ⟶ Y := {
     toMatrix := fun _ b => (1 : NNReal) / 2
     row_sum := fun _ => by
-      simp only [Finset.sum_const, Finset.card_univ]
+      simp
       rw [Fintype.card_bool]
       norm_num
   }
@@ -67,13 +66,9 @@ theorem copy_not_natural : ∃ (X Y : FinStoch) (f : X ⟶ Y),
   have left_zero : (∑ x, f.toMatrix () x * if x = true ∧ x = false then 1 else 0) = 0 := by
     simp only [Finset.sum_eq_zero_iff]
     intro x _
-    simp only [mul_ite, mul_one, mul_zero]
-    -- The condition x = true ∧ x = false is never true
-    simp only [ite_eq_right_iff]
+    simp
     intro h
-    simp_all only [one_div, instTensorUnit_comul, Fintype.univ_bool, Bool.eq_true_and_eq_false_self,
-      ↓reduceIte, mul_zero, Finset.sum_const_zero, and_self, Finset.mem_insert,
-      Finset.mem_singleton, Bool.true_eq_false, or_false, X, Y, f]
+    simp_all [instTensorUnit_comul, X, Y, f]
   -- Left: f then copy gives 0 (can't be in two different states)
   -- Right: copy then f⊗f gives 1/4 (independent coin flips)
   rw [left_zero] at this

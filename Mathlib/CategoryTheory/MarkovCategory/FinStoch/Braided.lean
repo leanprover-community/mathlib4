@@ -28,35 +28,6 @@ open FinStoch MonoidalCategory
 
 universe u
 
-/-! ### Helper lemmas for stochastic matrices -/
-
-/-- Sum of delta function equals 1 at the unique non-zero point. -/
-lemma sum_delta {α : Type*} [Fintype α] [DecidableEq α] (a : α) :
-    ∑ x : α, (if x = a then (1 : NNReal) else 0) = 1 := by
-  rw [Finset.sum_eq_single a]
-  · simp
-  · intro b _ hb; simp only [hb, ↓reduceIte]
-  · intro h; exfalso; exact h (Finset.mem_univ _)
-
-/-- Product of delta functions. -/
-lemma delta_mul_delta {α β : Type*} [DecidableEq α] [DecidableEq β] (a a' : α) (b b' : β) :
-    (if a = a' then (1 : NNReal) else 0) * (if b = b' then 1 else 0) =
-    if a = a' ∧ b = b' then 1 else 0 := by
-  by_cases ha : a = a'
-  · by_cases hb : b = b'
-    · simp only [ha, ↓reduceIte, hb, mul_one, and_self]
-    · simp only [ha, ↓reduceIte, hb, mul_zero, and_false]
-  · simp only [ha, ↓reduceIte, mul_ite, mul_one, mul_zero, ite_self, false_and]
-
-/-- Sum over product space with unique non-zero term. -/
-lemma sum_prod_delta {α β : Type*} [Fintype α] [Fintype β] (a : α) (b : β) (f : α × β → NNReal)
-    (hf : ∀ x : α × β, x ≠ (a, b) → f x = 0) :
-    ∑ x : α × β, f x = f (a, b) := by
-  rw [Finset.sum_eq_single (a, b)]
-  · intro b _ hb
-    exact hf b hb
-  · intro h; exfalso; exact h (Finset.mem_univ _)
-
 /-- Composition of morphisms with single non-zero path. -/
 lemma comp_single_path {X Y Z : FinStoch} (f : X ⟶ Y) (g : Y ⟶ Z)
     (x : X.carrier) (y : Y.carrier) (z : Z.carrier)
@@ -65,7 +36,7 @@ lemma comp_single_path {X Y Z : FinStoch} (f : X ⟶ Y) (g : Y ⟶ Z)
   simp only [CategoryStruct.comp, StochasticMatrix.comp]
   rw [Finset.sum_eq_single y]
   · intro y' _ hy'
-    simp only [hf y' hy', zero_mul]
+    simp [hf y' hy']
   · intro h; exfalso; exact h (Finset.mem_univ _)
 
 /-- The identity matrix has 1 on the diagonal and 0 elsewhere. -/
@@ -102,25 +73,25 @@ lemma associator_inv_toMatrix {X Y Z : FinStoch} (xyz : (X ⊗ (Y ⊗ Z)).carrie
 /-- Special case: the associator maps ((x,y),z) to (x,(y,z)). -/
 lemma associator_apply {X Y Z : FinStoch} (x : X.carrier) (y : Y.carrier) (z : Z.carrier) :
     (α_ X Y Z).hom.toMatrix ((x, y), z) (x, (y, z)) = 1 := by
-  simp only [associator_toMatrix, and_self, if_true]
+    simp
 
 /-- Special case: the associator is 0 when the x-component doesn't match. -/
 lemma associator_apply_ne_fst {X Y Z : FinStoch} (x x' : X.carrier) (y : Y.carrier)
     (z : Z.carrier) (yz : (Y ⊗ Z).carrier) (h : x ≠ x') :
     (α_ X Y Z).hom.toMatrix ((x, y), z) (x', yz) = 0 := by
   cases yz with | mk y' z' =>
-  simp only [associator_toMatrix, h, false_and, if_false]
+  simp [h]
 
 /-- The inverse associator maps (x,(y,z)) to ((x,y),z). -/
 lemma associator_inv_apply {X Y Z : FinStoch} (x : X.carrier) (y : Y.carrier) (z : Z.carrier) :
     (α_ X Y Z).inv.toMatrix (x, (y, z)) ((x, y), z) = 1 := by
-  simp only [associator_inv_toMatrix, and_self, if_true]
+  simp [associator_inv_toMatrix]
 
 /-- Inverse associator is 0 when x-components don't match. -/
 lemma associator_inv_apply_ne_fst {X Y Z : FinStoch} (x x' : X.carrier) (y : Y.carrier)
     (z : Z.carrier) (y' : Y.carrier) (z' : Z.carrier) (h : x ≠ x') :
     (α_ X Y Z).inv.toMatrix (x, (y, z)) ((x', y'), z') = 0 := by
-  simp only [associator_inv_toMatrix, h, false_and, if_false]
+  simp [associator_inv_toMatrix, h]
 
 /-- Swaps components of tensor products. -/
 def swap (X Y : FinStoch) : X ⊗ Y ⟶ Y ⊗ X where
@@ -143,9 +114,9 @@ def swap (X Y : FinStoch) : X ⊗ Y ⟶ Y ⊗ X where
           exfalso
           exact hb rfl
         · -- y ≠ y', so condition fails
-          simp only [hx, hy, and_false, ↓reduceIte]
+          simp [hx, hy]
       · -- x ≠ x', so condition fails
-        simp only [hx, false_and, ↓reduceIte]
+        simp [hx]
     · -- (y,x) is in the set
       intro h
       exfalso
@@ -157,24 +128,24 @@ lemma swap_toMatrix {X Y : FinStoch} (xy : (X ⊗ Y).carrier) (yx : (Y ⊗ X).ca
     (swap X Y).toMatrix xy yx = if xy.1 = yx.2 ∧ xy.2 = yx.1 then 1 else 0 := by
   cases xy with | mk x y =>
   cases yx with | mk y' x' =>
-  simp only [swap]
+  simp [swap]
 
 /-- Special case: swap preserves components when they match. -/
 lemma swap_apply {X Y : FinStoch} (x : X.carrier) (y : Y.carrier) :
     (swap X Y).toMatrix (x, y) (y, x) = 1 := by
-  simp only [swap_toMatrix, and_self, if_true]
+  simp [swap_toMatrix]
 
 /-- Special case: swap is 0 when x-components don't match. -/
 lemma swap_apply_ne_fst {X Y : FinStoch} (x : X.carrier) (y : Y.carrier)
     (x' : X.carrier) (y' : Y.carrier) (h : x ≠ x') :
     (swap X Y).toMatrix (x, y) (y', x') = 0 := by
-  simp only [swap_toMatrix, h, false_and, if_false]
+  simp [swap_toMatrix, h]
 
 /-- Special case: swap is 0 when y-components don't match. -/
 lemma swap_apply_ne_snd {X Y : FinStoch} (x : X.carrier) (y : Y.carrier)
     (x' : X.carrier) (y' : Y.carrier) (h : y ≠ y') :
     (swap X Y).toMatrix (x, y) (y', x') = 0 := by
-  simp only [swap_toMatrix, h, and_false, if_false]
+  simp [swap_toMatrix, h]
 
 /-- FinStoch is braided. -/
 instance : BraidedCategory FinStoch where
@@ -199,7 +170,7 @@ instance : BraidedCategory FinStoch where
         simp only [and_comm]
       · -- For any other (a, b) ≠ (y, x): show product is 0
         intro ⟨a, b⟩ _ h_ne
-        simp only []
+        simp only
         split_ifs with h₁ h₂
         · -- If x = b ∧ y = a, then (a, b) = (y, x), contradiction
           exfalso
@@ -242,7 +213,7 @@ instance : BraidedCategory FinStoch where
         simp only [and_comm]
       · -- For any other (a, b) ≠ (x, y): show product is 0
         intro ⟨a, b⟩ _ h_ne
-        simp only []
+        simp only
         split_ifs with h₁ h₂
         · -- If y = b ∧ x = a, then (a, b) = (x, y), contradiction
           exfalso
@@ -284,8 +255,8 @@ instance : BraidedCategory FinStoch where
         -- (if y' = y' ∧ z = z' then 1 else 0)
         simp only [if_true]
         by_cases hz : z = z'
-        · simp only [hz, ↓reduceIte, mul_one, and_self]
-        · simp only [hz, ↓reduceIte, mul_one, and_false, mul_zero]
+        · simp [hz]
+        · simp [hz]
       · -- For other points: show the sum term is 0
         intro ⟨y₁, z₁⟩ _ h_ne
         -- We have f(x,y₁) * (if z = z₁ then 1 else 0) * (if y₁ = y' ∧ z₁ = z' then 1 else 0)
@@ -295,8 +266,8 @@ instance : BraidedCategory FinStoch where
           · obtain ⟨hy₁, _⟩ := hyz
             subst hy₁
             exfalso; exact h_ne rfl
-          · simp only [↓reduceIte, mul_one, hyz, mul_zero]
-        · simp only [hz₁, ↓reduceIte, mul_zero, mul_ite, mul_one, ite_self]
+          · simp [hyz]
+        · simp [hz₁]
       · intro h; exfalso; exact h (Finset.mem_univ _)
 
     -- Compute the RHS sum
@@ -308,8 +279,8 @@ instance : BraidedCategory FinStoch where
         -- ((if z = z' then 1 else 0) * f(x,y'))
         simp only [and_self, if_true]
         by_cases hz : z = z'
-        · simp only [hz, ↓reduceIte, one_mul]
-        · simp only [hz, ↓reduceIte, zero_mul, mul_zero]
+        · simp [hz]
+        · simp [hz]
       · -- For other points: show the sum term is 0
         intro ⟨z₁, x₁⟩ _ h_ne
         -- We have (if x = x₁ ∧ z = z₁ then 1 else 0) * ((if z₁ = z' then 1 else 0) * f(x₁,y'))
@@ -317,7 +288,7 @@ instance : BraidedCategory FinStoch where
         · obtain ⟨hx₁, hz₁⟩ := hxz
           subst hx₁ hz₁
           exfalso; exact h_ne rfl
-        · simp only [hxz, ↓reduceIte, ite_mul, one_mul, zero_mul, mul_ite, mul_zero, ite_self]
+        · simp [hxz]
       · intro h; exfalso; exact h (Finset.mem_univ _)
   braiding_naturality_right := by
     intros X Y Z f
@@ -337,8 +308,8 @@ instance : BraidedCategory FinStoch where
       · -- We get (if x = x then 1 else 0) * f(y,z') * (if x = x' ∧ z' = z' then 1 else 0)
         simp only [if_true, one_mul]
         by_cases hx : x = x'
-        · simp only [hx, ↓reduceIte, and_self, mul_one]
-        · simp only [hx, ↓reduceIte, and_true, mul_zero]
+        · simp [hx]
+        · simp [hx]
       · -- For other points: show the sum term is 0
         intro ⟨x₁, z₁⟩ _ h_ne
         -- We have (if x = x₁ then 1 else 0) * f(y,z₁) * (if x₁ = x' ∧ z₁ = z' then 1 else 0)
@@ -348,8 +319,8 @@ instance : BraidedCategory FinStoch where
           · obtain ⟨_, hz₁⟩ := hxz
             subst hz₁
             exfalso; exact h_ne rfl
-          · simp only [↓reduceIte, one_mul, hxz, mul_zero]
-        · simp only [hx₁, ↓reduceIte, zero_mul, mul_ite, mul_one, mul_zero, ite_self]
+          · simp [hxz]
+        · simp [hx₁]
       · intro h; exfalso; exact h (Finset.mem_univ _)
 
     -- Compute the RHS sum
@@ -361,8 +332,8 @@ instance : BraidedCategory FinStoch where
         -- (f(y,z') * (if x = x' then 1 else 0))
         simp only [and_self, if_true]
         by_cases hx : x = x'
-        · simp only [hx, ↓reduceIte, mul_one, one_mul]
-        · simp only [hx, ↓reduceIte, mul_zero]
+        · simp [hx]
+        · simp [hx]
       · -- For other points: show the sum term is 0
         intro ⟨y₁, x₁⟩ _ h_ne
         -- We have (if x = x₁ ∧ y = y₁ then 1 else 0) * (f(y₁,z') * (if x₁ = x' then 1 else 0))
@@ -370,7 +341,7 @@ instance : BraidedCategory FinStoch where
         · obtain ⟨hx₁, hy₁⟩ := hxy
           subst hx₁ hy₁
           exfalso; exact h_ne rfl
-        · simp only [hxy, ↓reduceIte, mul_ite, mul_one, mul_zero, zero_mul, ite_self]
+        · simp [hxy]
       · intro h; exfalso; exact h (Finset.mem_univ _)
   hexagon_forward := by
     intros X Y Z
@@ -401,8 +372,7 @@ instance : BraidedCategory FinStoch where
           have h_assoc : (α_ X Y Z).hom.toMatrix ((x, y), z) (x, (y, z)) = 1 := by
             -- The associator in FinStoch is defined as: if x = x' ∧ y = y' ∧ z = z' then 1 else 0
             -- At ((x,y),z) -> (x,(y,z)), all components match, so we get 1
-            simp only [MonoidalCategoryStruct.associator, associator, DetMorphism.toMatrix_apply,
-              ite_eq_left_iff, zero_ne_one, imp_false, Decidable.not_not]
+            simp [MonoidalCategoryStruct.associator, associator, DetMorphism.toMatrix_apply]
             rfl
           simp only [h_assoc, one_mul]
           rw [eq_comm]
@@ -417,12 +387,12 @@ instance : BraidedCategory FinStoch where
                 simp only
                 -- Show the match expression equals the if condition
                 by_cases h : x = x' ∧ (y, z) = y'
-                · simp only [h, and_self, ↓reduceIte, one_mul]
-                · simp only [h]
+                · simp [h]
+                · simp [h]
                   have : ¬(y' = (y, z) ∧ x' = x) := by
                     rw [and_comm]
                     grind only
-                  simp only [↓reduceIte, zero_mul, NNReal.coe_zero, Prod.mk.injEq, this]
+                  simp [this]
           -- Use h_sum to transform the match expression
           trans (∑ x_1, (if x_1 = ((y, z), x) then 1 else 0) *
                         (α_ Y Z X).hom.toMatrix x_1 (y, z, x))
@@ -432,21 +402,19 @@ instance : BraidedCategory FinStoch where
           · simp only [if_true, one_mul]
             -- The associator at ((y,z), x) -> (y,(z,x)) gives 1
             have h_assoc2 : (α_ Y Z X).hom.toMatrix ((y, z), x) (y, (z, x)) = 1 := by
-              simp only [MonoidalCategoryStruct.associator, associator, DetMorphism.toMatrix_apply,
-                ite_eq_left_iff, zero_ne_one, imp_false, Decidable.not_not]
+              simp [MonoidalCategoryStruct.associator, associator, DetMorphism.toMatrix_apply]
               rfl
             simp only [h_assoc2]
           · intro b _ hb
-            simp only [hb, if_false, zero_mul]
+            simp [hb]
           · intro h_mem; exfalso; exact h_mem (Finset.mem_univ _)
         · -- Other x₁ terms are 0
           intro x₁ _ hx₁
           -- The associator gives 0 for x₁ ≠ (x, (y, z))
           have h_zero : (α_ X Y Z).hom.toMatrix ((x, y), z) x₁ = 0 := by
-            simp only [MonoidalCategoryStruct.associator, associator, DetMorphism.toMatrix_apply,
-              ite_eq_right_iff, one_ne_zero, imp_false]
+            simp [MonoidalCategoryStruct.associator, associator, DetMorphism.toMatrix_apply]
             tauto
-          simp only [h_zero, zero_mul]
+          simp [h_zero]
         · intro h_mem; exfalso; exact h_mem (Finset.mem_univ _)
       · -- Case: variables don't match, so we expect 0
         simp only [h, if_false]
@@ -457,19 +425,17 @@ instance : BraidedCategory FinStoch where
         -- Either the associator gives 0, or the inner sum is 0
         by_cases h_assoc : (α_ X Y Z).hom.toMatrix ((x, y), z) x₁ = 0
         · -- Associator is 0, so product is 0
-          simp only [h_assoc, associator_matrix, mul_ite, mul_one, mul_zero, zero_mul]
+          simp [h_assoc]
         · -- Associator is non-zero, so x₁ = (x, (y, z))
           push_neg at h_assoc
           have hx₁ : x₁ = (x, (y, z)) := by
-            simp_all only [not_and, Finset.mem_univ, MonoidalCategoryStruct.associator, associator,
-              DetMorphism.toMatrix_apply, ne_eq, ite_eq_right_iff, one_ne_zero, imp_false,
-              Decidable.not_not]
+            simp_all [MonoidalCategoryStruct.associator, associator, DetMorphism.toMatrix_apply]
             tauto
           subst hx₁
           simp only [MonoidalCategory.associator, associator]
           -- Now show the inner sum is 0
           rw [Finset.sum_eq_zero]
-          · simp only [mul_zero]
+          · simp
           · intro x_inner _
             -- Need to show swap * final_assoc = 0
             cases x_inner with | mk y_inner x_inner =>
@@ -479,12 +445,10 @@ instance : BraidedCategory FinStoch where
             · -- Swap gives 1, check final associator
               obtain ⟨hx_eq, hy_eq⟩ := h_swap
               subst hx_eq hy_eq
-              simp_all only [not_and, Finset.mem_univ, associator_matrix, and_self, ↓reduceIte,
-                ne_eq, one_ne_zero, not_false_eq_true, mul_ite, mul_one,
-                mul_zero, ite_eq_right_iff, imp_false, associatorDet, DetMorphism.ofFunc]
+              simp_all [associator_matrix, associatorDet, DetMorphism.ofFunc]
               grind only
             · -- Swap gives 0
-              simp only [h_swap, if_false, zero_mul]
+              simp [h_swap]
 
     -- RHS computation
     · congr 1
@@ -496,18 +460,17 @@ instance : BraidedCategory FinStoch where
 
       -- Sum over final state before last operation
       -- The RHS path: swap ⊗ id, then associator, then id ⊗ swap
-      simp only [id_matrix, mul_ite, mul_one, mul_zero, associator_matrix, ite_mul, one_mul,
-        zero_mul]
+      simp [id_matrix, associator_matrix]
       -- We need to show the sum equals the indicator function
       by_cases h_match : x = x' ∧ y = y' ∧ z = z'
       · -- Case: all match, result should be 1
         obtain ⟨hx, hy, hz⟩ := h_match
         subst hx hy hz
-        simp only [and_true, if_true]
+        simp
         -- The sum should collapse to a single non-zero term
         convert Finset.sum_eq_single ((y, x), z) _ _ using 1
         · -- At ((y,x),z): show it produces 1
-          simp only [and_self, ↓reduceIte, one_mul]
+          simp
           -- The sum equals 1 as only (y, (x, z)) contributes
           -- Simplify to show the sum has exactly one non-zero term
           have h_sum_eq : (∑ x_1 : Y.carrier × (X.carrier × Z.carrier),
@@ -520,17 +483,16 @@ instance : BraidedCategory FinStoch where
             · simp
             · intro ⟨y₁, x₁, z₁⟩ _ hne
               by_cases hy : y₁ = y
-              · simp only [hy, ↓reduceIte, true_and, ite_eq_right_iff, one_ne_zero, imp_false,
-                  not_and, and_imp]
+              · simp [hy]
                 by_cases hxz : x = x₁ ∧ z = z₁
                 · obtain ⟨hx, hz⟩ := hxz
                   subst hy hx hz
                   exfalso; exact hne rfl
                 · push_neg at hxz
                   by_cases hx : x = x₁
-                  · simp only [hx, hxz hx, forall_const, IsEmpty.forall_iff]
-                  · simp only [hx, IsEmpty.forall_iff]
-              · simp only [hy, ↓reduceIte]
+                  · simp [hx, hxz hx]
+                  · simp [hx]
+              · simp [hy]
             · intro h; exfalso; exact h (Finset.mem_univ _)
           grind only [cases eager Prod, cases Or]
         · -- Other x₁ values give 0
@@ -557,25 +519,9 @@ instance : BraidedCategory FinStoch where
           · rfl
           · rfl
         · -- x₁ ≠ ((y,x),z): first swap gives 0
-          simp_all only [not_and, Finset.mem_univ, ite_eq_right_iff, mul_eq_zero,
-            Finset.sum_eq_zero_iff, and_imp, forall_const]
+          simp_all
           -- Grind out the rest of the proof
-          intro a; subst a
-          push_neg at hx₁
-          split
-          · split_ifs
-            · simp_all only [ne_eq, one_ne_zero, false_or]
-              rename_i h
-              intro i a a_1 a_2 a_3
-              subst a a_1 a_2
-              simp_all only [forall_const]
-              obtain ⟨left, right⟩ := h
-              subst left right
-              split
-              rename_i x x_2 y heq_1
-              simp_all only [ite_eq_right_iff, one_ne_zero, imp_false, not_and, not_false_eq_true,
-                implies_true]
-            · simp_all only [ne_eq, not_and, true_or]
+          grind only [cases Or]
 
   hexagon_reverse := by
     intros X Y Z
@@ -602,12 +548,11 @@ instance : BraidedCategory FinStoch where
           have h1 : (α_ X Y Z).inv.toMatrix (x, (y, z)) ((x, y), z) = 1 :=
             associator_inv_apply x y z
           symm
-          simp only [associator_inv_toMatrix, mul_ite, mul_one, mul_zero, and_self, ↓reduceIte,
-            one_mul]
+          simp [associator_inv_toMatrix]
           -- Now compute swap and final α_inv
           convert Finset.sum_eq_single (z, (x, y)) _ _ using 1
           · -- swap gives 1, then α_inv gives 1
-            simp only [and_self, ↓reduceIte]
+            simp
           · intro b _ hb
             -- swap is deterministic, only maps to (z,(x,y))
             cases b with | mk b1 b2 =>
@@ -616,7 +561,7 @@ instance : BraidedCategory FinStoch where
             · obtain ⟨h_xy, h_z⟩ := h_swap
               subst h_xy h_z
               exfalso; exact hb rfl
-            · simp only [ite_eq_right_iff, one_ne_zero, imp_false, not_and, and_imp]
+            · simp
               tauto
           · intro habs; exfalso; exact habs (Finset.mem_univ _)
         · -- Other terms are 0
@@ -630,14 +575,14 @@ instance : BraidedCategory FinStoch where
             by_cases h_eq : x = b11 ∧ y = b12 ∧ z = b2
             · obtain ⟨h1, h2, h3⟩ := h_eq
               subst h1 h2 h3
-              simp only [and_self, if_true]
+              simp
             · simp only [h_eq, if_false]
               split_ifs with h_contra
               · exfalso
                 cases h_contra
                 exact h_eq ⟨rfl, rfl, rfl⟩
               · rfl
-          simp only [h_inv, hb, if_false, zero_mul]
+          simp [h_inv, hb]
         · intro habs; exfalso; exact habs (Finset.mem_univ _)
       · -- Case: not all match, expect 0
         simp only [h, if_false]
@@ -645,29 +590,21 @@ instance : BraidedCategory FinStoch where
         intro b _
         -- Either α_inv gives 0, or rest gives 0
         by_cases h_inv : (α_ X Y Z).inv.toMatrix (x, (y, z)) b = 0
-        · simp only [h_inv, zero_mul]
+        · simp [h_inv]
         · -- α_inv is non-zero, so b = ((x,y),z)
           push_neg at h_inv
           have hb : b = ((x, y), z) := by
             cases b with | mk b1 b2 =>
             cases b1 with | mk b11 b12 =>
-            simp only [associator_inv_toMatrix, ne_eq, ite_eq_right_iff,
-                       one_ne_zero, imp_false, Decidable.not_not] at h_inv
+            simp [associator_inv_toMatrix] at h_inv
             obtain ⟨h1, h2, h3⟩ := h_inv
             simp only [h1, h2, h3]
           subst hb
           -- Now show inner sum is 0
           rw [Finset.sum_eq_zero]
           · rw [mul_zero]
-          · simp_all only [not_and, Finset.mem_univ, associator_inv_toMatrix, and_self, ↓reduceIte,
-              ne_eq, one_ne_zero, not_false_eq_true, mul_ite, mul_one, mul_zero, ite_eq_right_iff,
-              and_imp, forall_const]
-            intro x_1 a a_1 a_2; subst a_1 a a_2
-            split
-            rename_i x_1 y' x'
-            simp_all only [ite_eq_right_iff, one_ne_zero, imp_false, not_and]
-            intro a; subst a
-            simp_all only [forall_const, not_false_eq_true]
+          · simp_all
+            grind only [cases Or]
 
     -- RHS: (x,(y,z)) → (x,(z,y)) → ((x,z),y) → ((z,x),y)
     · simp_all only [id_matrix, ite_mul, one_mul, zero_mul, associator_inv_toMatrix, mul_ite,
@@ -676,41 +613,29 @@ instance : BraidedCategory FinStoch where
       · -- All match, expect 1
         obtain ⟨hx, hy, hz⟩ := h_match
         subst hx hy hz
-        simp only [and_self, ↓reduceIte, NNReal.coe_one]
+        simp
         -- First: X ◁ swap Y Z
         rw [Fintype.sum_eq_single ⟨x ,⟨z, y⟩⟩]
         · -- At (x,(z,y)): whisker gives 1 when x matches
-          simp only [↓reduceIte, and_self, and_true, one_mul, NNReal.coe_sum]
+          simp
           rw [Fintype.sum_eq_single ⟨⟨x, z⟩, y⟩]
-          · simp only [↓reduceIte, and_self, NNReal.coe_one]
-          · simp only [ne_eq, NNReal.coe_eq_zero, ite_eq_right_iff, and_imp]
-            intro x_1 a a_1 a_2 a_3; subst a_3 a_2 a_1
-            simp_all only [Prod.mk.eta, not_true_eq_false]
+          · simp
+          · aesop
         · -- Other terms in first sum are 0
-          simp_all only [ne_eq, NNReal.coe_eq_zero, ite_eq_right_iff, mul_eq_zero,
-            Finset.sum_eq_zero_iff, Finset.mem_univ, and_imp, forall_const]
+          simp
           -- X ◁ swap is only non-zero at (x,(z,y))
-          intro xzy h_neg h1_x
-          subst h1_x
+          intro xzy h_neg h1_x; subst h1_x
           right
-          intro xzy' hy hxz1 hxz2 hxzy22
-          subst hxzy22
-          simp_all only
-          split
-          · rename_i x x_1 y heq
-            simp_all only [true_and, ite_eq_right_iff, one_ne_zero, imp_false]
-            subst hxz2 hxz1
-            intro a; subst a
-            simp_all only [Prod.mk.eta, not_true_eq_false]
+          intro xzy' hy hxz1 hxz2 hxzy22; subst hxzy22
+          simp_all
+          aesop
       · -- Not all match, expect 0
-        simp only [h_match, ↓reduceIte, NNReal.coe_zero]
+        simp [h_match]
         rw [Fintype.sum_eq_single ⟨x, ⟨z, y⟩⟩]
-        · simp_all only [not_and, ↓reduceIte, and_self, one_mul, NNReal.coe_sum]
+        · simp_all
           rw [Fintype.sum_eq_single ⟨⟨x, z⟩, y⟩] <;> aesop
-        · simp_all only [not_and, ne_eq, NNReal.coe_eq_zero, ite_eq_right_iff, mul_eq_zero,
-            Finset.sum_eq_zero_iff, Finset.mem_univ, and_imp, forall_const]
-          intro xzy hxzy_neg hx
-          subst hx
+        · simp_all
+          intro xzy hxzy_neg hx; subst hx
           left
           cases xzy with | mk x_val zy_val =>
           cases zy_val with | mk z_val y_val =>
@@ -743,15 +668,14 @@ instance : SymmetricCategory FinStoch where
         if x = x' ∧ y = y' then 1 else 0 := by
       convert Finset.sum_eq_single (y, x) _ _ using 1
       · -- At (y, x): first condition gives 1, second gives 1 iff y = y' ∧ x = x'
-        simp only [and_self, if_true, one_mul]
-        simp only [and_comm]
+        simp [and_self, and_comm]
       · -- For other points: product is 0
         intro ⟨y₁, x₁⟩ _ h_ne
         by_cases h : x = x₁ ∧ y = y₁
         · obtain ⟨hx, hy⟩ := h
           subst hx hy
           exfalso; exact h_ne rfl
-        · simp only [h, ↓reduceIte, mul_ite, mul_one, mul_zero, ite_self]
+        · simp [h]
       · -- (y, x) is in univ
         intro h; exfalso; exact h (Finset.mem_univ _)
 

@@ -59,7 +59,7 @@ def id (m : Type u) [Fintype m] [DecidableEq m] : StochasticMatrix m m where
   toMatrix := fun i j => if i = j then (1 : NNReal) else 0
   row_sum := fun i => by
     rw [Finset.sum_eq_single i]
-    · simp only [↓reduceIte]
+    · simp
     · intro j _ hj
       simp only [if_neg (Ne.symm hj)]
     · intro h
@@ -71,8 +71,7 @@ def comp (f : StochasticMatrix m n) (g : StochasticMatrix n p) : StochasticMatri
   toMatrix := fun i k => ∑ j : n, f.toMatrix i j * g.toMatrix j k
   row_sum := fun i => by
     rw [Finset.sum_comm]
-    simp only [← Finset.mul_sum]
-    simp only [g.row_sum, mul_one, f.row_sum]
+    simp [← Finset.mul_sum, g.row_sum, f.row_sum]
 
 /-- Tensor product for independent processes. -/
 def tensor {m₁ n₁ m₂ n₂ : Type u} [Fintype m₁] [Fintype n₁] [Fintype m₂] [Fintype n₂]
@@ -81,9 +80,8 @@ def tensor {m₁ n₁ m₂ n₂ : Type u} [Fintype m₁] [Fintype n₁] [Fintype
   toMatrix := fun ij kl => f.toMatrix ij.1 kl.1 * g.toMatrix ij.2 kl.2
   row_sum := fun ij => by
     obtain ⟨i₁, i₂⟩ := ij
-    rw [← Finset.univ_product_univ, Finset.sum_product]
-    rw [← Finset.sum_mul_sum]
-    simp only [f.row_sum i₁, g.row_sum i₂, one_mul]
+    rw [← Finset.univ_product_univ, Finset.sum_product, ← Finset.sum_mul_sum]
+    simp [f.row_sum i₁, g.row_sum i₂]
 
 @[ext]
 theorem ext {f g : StochasticMatrix m n} (h : f.toMatrix = g.toMatrix) : f = g := by
@@ -139,7 +137,7 @@ lemma apply_spec_ne (f : StochasticMatrix m n) [DecidableEq n] (h : f.isDetermin
       exact Finset.sum_eq_zero_iff_of_nonneg h_nonneg |>.mp h_others_zero
     -- j is different from f.apply h i, so it's in the erased set
     have h_j_in : j ∈ Finset.univ.erase (f.apply h i) := by
-      simp only [Finset.mem_erase, ne_eq, hj, not_false_eq_true, Finset.mem_univ, and_self]
+      simp [hj]
     exact h_nonzero (h_all_zero j h_j_in)
 
 /-- Matrix entry is 1 iff it's the unique output. -/
@@ -165,9 +163,9 @@ lemma id_isDeterministic (m : Type u) [Fintype m] [DecidableEq m] :
   intro i
   use i
   constructor
-  · simp only [id, ↓reduceIte]
+  · simp [id]
   · intro j hj
-    simp only [id, ite_eq_left_iff, zero_ne_one, imp_false, Decidable.not_not] at hj
+    simp [id] at hj
     exact hj.symm
 
 /-- Deterministic matrices compose to deterministic matrices. -/
@@ -193,9 +191,9 @@ theorem det_comp_det (f : StochasticMatrix m n) (g : StochasticMatrix n p)
       -- The sum simplifies because f is deterministic
       have h_sum_simp : ∑ j : n, f.toMatrix i j * g.toMatrix j k = g.toMatrix (f.apply hf i) k := by
         rw [Finset.sum_eq_single (f.apply hf i)]
-        · simp only [apply_spec f hf i, one_mul]
+        · simp [apply_spec f hf i]
         · intro j _ hj
-          simp only [apply_spec_ne f hf i j hj, zero_mul]
+          simp [apply_spec_ne f hf i j hj]
         · intro h; exfalso; exact h (Finset.mem_univ _)
       -- So g(f.apply hf i, k) = 1
       rw [h_sum_simp] at hk
@@ -232,8 +230,8 @@ theorem det_comp_eq_fun_comp (f : StochasticMatrix m n) (g : StochasticMatrix n 
 lemma sum_delta {α : Type*} [Fintype α] [DecidableEq α] (a : α) :
     ∑ x : α, (if x = a then (1 : NNReal) else 0) = 1 := by
   rw [Finset.sum_eq_single a]
-  · simp only [↓reduceIte]
-  · intro b _ hb; simp only [hb, ↓reduceIte]
+  · simp
+  · intro b _ hb; simp [hb]
   · intro h; exfalso; exact h (Finset.mem_univ _)
 
 /-- Product of delta functions. -/
@@ -243,9 +241,9 @@ lemma delta_mul_delta {α β : Type*} [DecidableEq α] [DecidableEq β]
     if a = a' ∧ b = b' then 1 else 0 := by
   by_cases ha : a = a'
   · by_cases hb : b = b'
-    · simp only [ha, ↓reduceIte, hb, mul_one, and_self]
-    · simp only [ha, ↓reduceIte, hb, mul_zero, and_false]
-  · simp [ha, ↓reduceIte, mul_ite, mul_one, mul_zero, ite_self, false_and]
+    · simp [ha, hb]
+    · simp [ha, hb]
+  · simp [ha]
 
 /-! ### Extensionality lemmas for deterministic matrices -/
 
@@ -495,13 +493,12 @@ instance : Category FinStoch where
   id_comp f := by
     apply StochasticMatrix.ext
     ext i j
-    simp only [CategoryStruct.comp, StochasticMatrix.comp]
-    simp only [CategoryStruct.id]
+    simp only [CategoryStruct.comp, StochasticMatrix.comp, CategoryStruct.id]
     -- Identity selects row i
     rw [Finset.sum_eq_single i]
-    · simp [StochasticMatrix.id, one_mul]
+    · simp [StochasticMatrix.id]
     · intro k _ hk
-      simp [StochasticMatrix.id, zero_mul]
+      simp [StochasticMatrix.id]
       intro h
       exact absurd h (Ne.symm hk)
     · intro h
@@ -510,13 +507,12 @@ instance : Category FinStoch where
   comp_id f := by
     apply StochasticMatrix.ext
     ext i j
-    simp only [CategoryStruct.comp, StochasticMatrix.comp]
-    simp only [CategoryStruct.id]
+    simp only [CategoryStruct.comp, StochasticMatrix.comp, CategoryStruct.id]
     -- Identity selects column j
     rw [Finset.sum_eq_single j]
-    · simp only [StochasticMatrix.id, ↓reduceIte, mul_one]
+    · simp [StochasticMatrix.id]
     · intro k _ hk
-      simp only [StochasticMatrix.id, mul_ite, mul_one, mul_zero, ite_eq_right_iff]
+      simp [StochasticMatrix.id]
       intro h
       exact absurd h.symm (Ne.symm hk)
     · intro h
