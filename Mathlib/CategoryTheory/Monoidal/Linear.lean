@@ -45,6 +45,20 @@ instance tensoringLeft_linear (X : C) : ((tensoringLeft C).obj X).Linear R where
 
 instance tensoringRight_linear (X : C) : ((tensoringRight C).obj X).Linear R where
 
+namespace MonoidalLinear
+
+@[simp]
+lemma tensorHom_smul (r : R) {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) :
+    f ⊗ₘ (r • g) = r • (f ⊗ₘ g) := by
+  simp only [tensorHom_def, MonoidalLinear.whiskerLeft_smul, Linear.comp_smul]
+
+@[simp]
+lemma smul_tensorHom (r : R) {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) :
+    (r • f) ⊗ₘ g = r • (f ⊗ₘ g) := by
+  simp only [tensorHom_def, MonoidalLinear.smul_whiskerRight, Linear.smul_comp]
+
+end MonoidalLinear
+
 /-- A faithful linear monoidal functor to a linear monoidal category
 ensures that the domain is linear monoidal. -/
 theorem monoidalLinearOfFaithful {D : Type*} [Category D] [Preadditive D] [Linear R D]
