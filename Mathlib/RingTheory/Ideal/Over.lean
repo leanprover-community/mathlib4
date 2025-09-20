@@ -301,6 +301,13 @@ instance primesOver.liesOver (Q : primesOver p B) : Q.1.LiesOver p :=
 abbrev primesOver.mk (P : Ideal B) [hPp : P.IsPrime] [hp : P.LiesOver p] : primesOver p B :=
   ⟨P, ⟨hPp, hp⟩⟩
 
+theorem ne_bot_of_mem_primesOver
+    {A B : Type*} [CommRing A] [Ring B] [Nontrivial B] [Algebra A B] [NoZeroSMulDivisors A B]
+    {p : Ideal A} (hp : p ≠ ⊥) {P : Ideal B} (hP : P ∈ p.primesOver B) :
+    P ≠ ⊥ :=
+  have := hP.2
+  ne_bot_of_liesOver_of_ne_bot hp P
+
 end primesOver
 
 end Ideal
