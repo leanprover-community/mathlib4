@@ -253,9 +253,9 @@
    "Mathlib.Data.PNat.Defs"],
   "Mathlib.Tactic.Order.CollectFacts":
   ["Mathlib.Order.BoundedOrder.Basic", "Mathlib.Order.Lattice"],
+  "Mathlib.Tactic.NormNum.Parity": ["Mathlib.Algebra.Ring.Int.Parity"],
   "Mathlib.Tactic.NormNum.ModEq":
   ["Mathlib.Data.Int.ModEq", "Mathlib.Tactic.NormNum.DivMod"],
-  "Mathlib.Tactic.NormNum.Parity": ["Mathlib.Algebra.Ring.Int.Parity"],
   "Mathlib.Tactic.NormNum.Ineq":
   ["Mathlib.Algebra.Order.Field.Defs", "Mathlib.Algebra.Order.Monoid.WithTop"],
   "Mathlib.Tactic.NormNum.BigOperators":
@@ -428,6 +428,7 @@
   ["Mathlib.Algebra.Order.Group.Nat",
    "Mathlib.Data.Char",
    "Mathlib.Data.List.Lex"],
+  "Mathlib.Data.Set.Subset": ["Mathlib.Tactic.HigherOrder"],
   "Mathlib.Data.Set.Image":
   ["Batteries.Tactic.Congr", "Mathlib.Data.Set.SymmDiff"],
   "Mathlib.Data.Seq.Parallel": ["Mathlib.Init.Data.Prod"],
