@@ -281,3 +281,12 @@ instance instMulTorsionFree [Monoid α] [IsMulTorsionFree α] : IsMulTorsionFree
   ⟨fun _ h ↦ op_injective.comp <| (pow_left_injective h).comp <| unop_injective⟩
 
 end AddOpposite
+
+section Torsion
+
+open MulOpposite in
+@[to_additive]
+instance (M : Type*) [Monoid M] [IsMulTorsionFree M] : IsMulTorsionFree (Mᵐᵒᵖ) :=
+  ⟨fun _ h ↦ op_injective.comp <| (pow_left_injective h).comp <| unop_injective⟩
+
+end Torsion
