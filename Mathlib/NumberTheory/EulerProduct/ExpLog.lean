@@ -37,7 +37,8 @@ theorem exp_tsum_primes_log_eq_tsum {f : ℕ →*₀ ℂ} (hsum : Summable (‖f
   have hs {p : ℕ} (hp : 1 < p) : ‖f p‖ < 1 := hsum.of_norm.norm_lt_one (f := f.toMonoidHom) hp
   have hp (p : Nat.Primes) : 1 - f p ≠ 0 :=
     fun h ↦ (norm_one (α := ℂ) ▸ (sub_eq_zero.mp h) ▸ hs p.prop.one_lt).false
-  have H := hsum.of_norm.clog_one_sub.neg.subtype {p | p.Prime} |>.hasSum.cexp.tprod_eq
+  have H := (summable_iff_summableFilter.mpr hsum.of_norm.clog_one_sub.neg).subtype
+    {p | p.Prime} |>.hasSum.cexp.tprod_eq
   simp only [Set.coe_setOf, Set.mem_setOf_eq, Function.comp_apply, exp_neg, exp_log (hp _)] at H
   exact H.symm.trans <| eulerProduct_completely_multiplicative_tprod hsum
 

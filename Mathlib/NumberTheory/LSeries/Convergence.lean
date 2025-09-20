@@ -120,7 +120,7 @@ lemma LSeries.summable_real_of_abscissaOfAbsConv_lt {f : ℕ → ℝ} {x : ℝ}
     ext n
     simp [term_def, apply_ite ((↑) : ℝ → ℂ), ofReal_cpow n.cast_nonneg]
   have := LSeriesSummable_of_abscissaOfAbsConv_lt_re (ofReal_re x ▸ h)
-  simp only [LSeriesSummable, aux, summable_ofReal] at this
+  simp only [LSeriesSummable, aux, summableFilter_ofReal, ← summable_iff_summableFilter] at this
   refine this.congr_cofinite ?_
   filter_upwards [(Set.finite_singleton 0).compl_mem_cofinite] with n hn
     using if_neg (by simpa using hn)

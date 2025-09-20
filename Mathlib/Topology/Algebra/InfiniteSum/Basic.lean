@@ -27,40 +27,50 @@ variable {α β γ : Type*}
 section HasProd
 
 variable [CommMonoid α] [TopologicalSpace α]
-variable {f g : β → α} {a b : α}
+variable {f g : β → α} {a b : α} {L : Filter (Finset β)}
 
 /-- Constant one function has product `1` -/
 @[to_additive /-- Constant zero function has sum `0` -/]
-theorem hasProd_one : HasProd (fun _ ↦ 1 : β → α) 1 := by simp [HasProd, tendsto_const_nhds]
+theorem hasProdFilter_one : HasProdFilter L (fun _ ↦ 1 : β → α) 1 := by
+  simp [HasProdFilter, tendsto_const_nhds]
+
+alias hasProd_one := hasProdFilter_one
+alias hasSum_zero := hasProdFilter_one
 
 @[to_additive]
-theorem hasProd_empty [IsEmpty β] : HasProd f 1 := by
-  convert @hasProd_one α β _ _
+theorem hasProdFilter_empty [IsEmpty β] : HasProdFilter L f 1 := by
+  convert @hasProdFilter_one α β _ _ L
 
 @[to_additive]
-theorem multipliable_one : Multipliable (fun _ ↦ 1 : β → α) :=
-  hasProd_one.multipliable
+theorem multipliableFilter_one : MultipliableFilter L (fun _ ↦ 1 : β → α) :=
+  hasProdFilter_one.multipliableFilter
+
+alias multipliable_one := multipliableFilter_one
+alias summable_zero := summableFilter_zero
 
 @[to_additive]
-theorem multipliable_empty [IsEmpty β] : Multipliable f :=
-  hasProd_empty.multipliable
+theorem multipliableFilter_empty [IsEmpty β] : MultipliableFilter L f :=
+  hasProdFilter_empty.multipliableFilter
 
-/-- See `multipliable_congr_cofinite` for a version allowing the functions to
-disagree on a finite set. -/
-@[to_additive /-- See `summable_congr_cofinite` for a version allowing the functions to
-disagree on a finite set. -/]
-theorem multipliable_congr (hfg : ∀ b, f b = g b) : Multipliable f ↔ Multipliable g :=
-  iff_of_eq (congr_arg Multipliable <| funext hfg)
+/-- See `multipliable_congr_cofinite` for an uncondiotionally convergent version
+allowing the functions to disagree on a finite set. -/
+@[to_additive /-- See `summable_congr_cofinite` for an uncondiotionally convergent version
+allowing the functions to disagree on a finite set. -/]
+theorem multipliableFilter_congr (hfg : ∀ b, f b = g b) :
+    MultipliableFilter L f ↔ MultipliableFilter L g :=
+  iff_of_eq (congr_arg (MultipliableFilter L) <| funext hfg)
 
-/-- See `Multipliable.congr_cofinite` for a version allowing the functions to
-disagree on a finite set. -/
-@[to_additive /-- See `Summable.congr_cofinite` for a version allowing the functions to
-disagree on a finite set. -/]
-theorem Multipliable.congr (hf : Multipliable f) (hfg : ∀ b, f b = g b) : Multipliable g :=
-  (multipliable_congr hfg).mp hf
+/-- See `Multipliable.congr_cofinite` for an uncondiotionally convergent version
+allowing the functions to disagree on a finite set. -/
+@[to_additive /-- See `Summable.congr_cofinite` for an uncondiotionally convergent version
+allowing the functions to disagree on a finite set. -/]
+theorem MultipliableFilter.congr (hf : MultipliableFilter L f) (hfg : ∀ b, f b = g b) :
+    MultipliableFilter L g :=
+  (multipliableFilter_congr hfg).mp hf
 
 @[to_additive]
-lemma HasProd.congr_fun (hf : HasProd f a) (h : ∀ x : β, g x = f x) : HasProd g a :=
+lemma HasProdFilter.congr_fun (hf : HasProdFilter L f a) (h : ∀ x : β, g x = f x) :
+    HasProdFilter L g a :=
   (funext h : g = f) ▸ hf
 
 @[to_additive]
@@ -111,7 +121,7 @@ theorem hasProd_subtype_mulSupport : HasProd (f ∘ (↑) : mulSupport f → α)
 @[to_additive]
 protected theorem Finset.multipliable (s : Finset β) (f : β → α) :
     Multipliable (f ∘ (↑) : (↑s : Set β) → α) :=
-  (s.hasProd f).multipliable
+  (s.hasProd f).multipliableFilter
 
 @[to_additive]
 protected theorem Set.Finite.multipliable {s : Set β} (hs : s.Finite) (f : β → α) :
@@ -181,97 +191,103 @@ theorem Equiv.multipliable_iff_of_mulSupport {g : γ → α} (e : mulSupport f �
   exists_congr fun _ ↦ e.hasProd_iff_of_mulSupport he
 
 @[to_additive]
-protected theorem HasProd.map [CommMonoid γ] [TopologicalSpace γ] (hf : HasProd f a) {G}
-    [FunLike G α γ] [MonoidHomClass G α γ] (g : G) (hg : Continuous g) :
-    HasProd (g ∘ f) (g a) := by
+protected theorem HasProdFilter.map [CommMonoid γ] [TopologicalSpace γ] (hf : HasProdFilter L f a)
+    {G} [FunLike G α γ] [MonoidHomClass G α γ] (g : G) (hg : Continuous g) :
+    HasProdFilter L (g ∘ f) (g a) := by
   have : (g ∘ fun s : Finset β ↦ ∏ b ∈ s, f b) = fun s : Finset β ↦ ∏ b ∈ s, (g ∘ f) b :=
     funext <| map_prod g _
-  unfold HasProd
+  unfold HasProdFilter
   rw [← this]
   exact (hg.tendsto a).comp hf
 
 @[to_additive]
-protected theorem Topology.IsInducing.hasProd_iff [CommMonoid γ] [TopologicalSpace γ] {G}
+protected theorem Topology.IsInducing.hasProdFilter_iff [CommMonoid γ] [TopologicalSpace γ] {G}
     [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : IsInducing g) (f : β → α) (a : α) :
-    HasProd (g ∘ f) (g a) ↔ HasProd f a := by
-  simp_rw [HasProd, comp_apply, ← map_prod]
+    HasProdFilter L (g ∘ f) (g a) ↔ HasProdFilter L f a := by
+  simp_rw [HasProdFilter, comp_apply, ← map_prod]
   exact hg.tendsto_nhds_iff.symm
 
 @[to_additive]
-protected theorem Multipliable.map [CommMonoid γ] [TopologicalSpace γ] (hf : Multipliable f) {G}
-    [FunLike G α γ] [MonoidHomClass G α γ] (g : G) (hg : Continuous g) : Multipliable (g ∘ f) :=
-  (hf.hasProd.map g hg).multipliable
+protected theorem MultipliableFilter.map [CommMonoid γ] [TopologicalSpace γ]
+    (hf : MultipliableFilter L f) {G} [FunLike G α γ] [MonoidHomClass G α γ] (g : G)
+    (hg : Continuous g) : MultipliableFilter L (g ∘ f) :=
+  (hf.hasProdFilter.map g hg).multipliableFilter
 
 @[to_additive]
-protected theorem Multipliable.map_iff_of_leftInverse [CommMonoid γ] [TopologicalSpace γ] {G G'}
-    [FunLike G α γ] [MonoidHomClass G α γ] [FunLike G' γ α] [MonoidHomClass G' γ α]
+protected theorem MultipliableFilter.map_iff_of_leftInverse [CommMonoid γ] [TopologicalSpace γ]
+    {G G'} [FunLike G α γ] [MonoidHomClass G α γ] [FunLike G' γ α] [MonoidHomClass G' γ α]
     (g : G) (g' : G') (hg : Continuous g) (hg' : Continuous g') (hinv : Function.LeftInverse g' g) :
-    Multipliable (g ∘ f) ↔ Multipliable f :=
+    MultipliableFilter L (g ∘ f) ↔ MultipliableFilter L f :=
   ⟨fun h ↦ by
     have := h.map _ hg'
     rwa [← Function.comp_assoc, hinv.id] at this, fun h ↦ h.map _ hg⟩
 
 @[to_additive]
-theorem Multipliable.map_tprod [CommMonoid γ] [TopologicalSpace γ] [T2Space γ] (hf : Multipliable f)
-    {G} [FunLike G α γ] [MonoidHomClass G α γ] (g : G) (hg : Continuous g) :
-    g (∏' i, f i) = ∏' i, g (f i) := (HasProd.tprod_eq (HasProd.map hf.hasProd g hg)).symm
+theorem MultipliableFilter.map_tprodFilter [CommMonoid γ] [TopologicalSpace γ] [T2Space γ] [L.NeBot]
+    (hf : MultipliableFilter L f) {G} [FunLike G α γ] [MonoidHomClass G α γ] (g : G)
+    (hg : Continuous g) : g (∏'[L] i, f i) = ∏'[L] i, g (f i) :=
+  (HasProdFilter.tprodFilter_eq (HasProdFilter.map hf.hasProdFilter g hg)).symm
 
 @[to_additive]
-lemma Topology.IsInducing.multipliable_iff_tprod_comp_mem_range [CommMonoid γ] [TopologicalSpace γ]
-    [T2Space γ] {G} [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : IsInducing g) (f : β → α) :
-    Multipliable f ↔ Multipliable (g ∘ f) ∧ ∏' i, g (f i) ∈ Set.range g := by
+lemma Topology.IsInducing.multipliableFilter_iff_tprodFilter_comp_mem_range
+    [CommMonoid γ] [TopologicalSpace γ] [T2Space γ] {G} [FunLike G α γ] [MonoidHomClass G α γ]
+    {g : G} (hg : IsInducing g) (f : β → α) [L.NeBot] :
+    MultipliableFilter L f ↔ MultipliableFilter L (g ∘ f) ∧ ∏'[L] i, g (f i) ∈ Set.range g := by
   constructor
   · intro hf
     constructor
     · exact hf.map g hg.continuous
-    · use ∏' i, f i
-      exact hf.map_tprod g hg.continuous
+    · use ∏'[L] i, f i
+      exact hf.map_tprodFilter g hg.continuous
   · rintro ⟨hgf, a, ha⟩
     use a
-    have := hgf.hasProd
+    have := hgf.hasProdFilter
     simp_rw [comp_apply, ← ha] at this
-    exact (hg.hasProd_iff f a).mp this
+    exact (hg.hasProdFilter_iff f a).mp this
 
 /-- "A special case of `Multipliable.map_iff_of_leftInverse` for convenience" -/
 @[to_additive /-- A special case of `Summable.map_iff_of_leftInverse` for convenience -/]
-protected theorem Multipliable.map_iff_of_equiv [CommMonoid γ] [TopologicalSpace γ] {G}
+protected theorem MultipliableFilter.map_iff_of_equiv [CommMonoid γ] [TopologicalSpace γ] {G}
     [EquivLike G α γ] [MulEquivClass G α γ] (g : G) (hg : Continuous g)
-    (hg' : Continuous (EquivLike.inv g : γ → α)) : Multipliable (g ∘ f) ↔ Multipliable f :=
-  Multipliable.map_iff_of_leftInverse g (g : α ≃* γ).symm hg hg' (EquivLike.left_inv g)
+    (hg' : Continuous (EquivLike.inv g : γ → α)) :
+    MultipliableFilter L (g ∘ f) ↔ MultipliableFilter L f :=
+  MultipliableFilter.map_iff_of_leftInverse g (g : α ≃* γ).symm hg hg' (EquivLike.left_inv g)
 
 @[to_additive]
-theorem Function.Surjective.multipliable_iff_of_hasProd_iff {α' : Type*} [CommMonoid α']
+theorem Function.Surjective.multipliableFilter_iff_of_hasProdFilter_iff {α' : Type*} [CommMonoid α']
     [TopologicalSpace α'] {e : α' → α} (hes : Function.Surjective e) {f : β → α} {g : γ → α'}
-    (he : ∀ {a}, HasProd f (e a) ↔ HasProd g a) : Multipliable f ↔ Multipliable g :=
+    {L' : Filter (Finset γ)} (he : ∀ {a}, HasProdFilter L f (e a) ↔ HasProdFilter L' g a) :
+    MultipliableFilter L f ↔ MultipliableFilter L' g :=
   hes.exists.trans <| exists_congr <| @he
 
 variable [ContinuousMul α]
 
 @[to_additive]
-theorem HasProd.mul (hf : HasProd f a) (hg : HasProd g b) :
-    HasProd (fun b ↦ f b * g b) (a * b) := by
-  dsimp only [HasProd] at hf hg ⊢
+theorem HasProdFilter.mul (hf : HasProdFilter L f a) (hg : HasProdFilter L g b) :
+    HasProdFilter L (fun b ↦ f b * g b) (a * b) := by
+  dsimp only [HasProdFilter] at hf hg ⊢
   simp_rw [prod_mul_distrib]
   exact hf.mul hg
 
 @[to_additive]
-theorem Multipliable.mul (hf : Multipliable f) (hg : Multipliable g) :
-    Multipliable fun b ↦ f b * g b :=
-  (hf.hasProd.mul hg.hasProd).multipliable
+theorem MultipliableFilter.mul (hf : MultipliableFilter L f) (hg : MultipliableFilter L g) :
+    MultipliableFilter L fun b ↦ f b * g b :=
+  (hf.hasProdFilter.mul hg.hasProdFilter).multipliableFilter
 
 @[to_additive]
-theorem hasProd_prod {f : γ → β → α} {a : γ → α} {s : Finset γ} :
-    (∀ i ∈ s, HasProd (f i) (a i)) → HasProd (fun b ↦ ∏ i ∈ s, f i b) (∏ i ∈ s, a i) := by
+theorem hasProdFilter_prod {f : γ → β → α} {a : γ → α} {s : Finset γ} :
+    (∀ i ∈ s, HasProdFilter L (f i) (a i)) →
+    HasProdFilter L (fun b ↦ ∏ i ∈ s, f i b) (∏ i ∈ s, a i) := by
   classical
-  exact Finset.induction_on s (by simp only [hasProd_one, prod_empty, forall_true_iff]) <| by
+  exact Finset.induction_on s (by simp only [hasProdFilter_one, prod_empty, forall_true_iff]) <| by
     simp +contextual only [mem_insert, forall_eq_or_imp, not_false_iff,
       prod_insert, and_imp]
     exact fun x s _ IH hx h ↦ hx.mul (IH h)
 
 @[to_additive]
-theorem multipliable_prod {f : γ → β → α} {s : Finset γ} (hf : ∀ i ∈ s, Multipliable (f i)) :
-    Multipliable fun b ↦ ∏ i ∈ s, f i b :=
-  (hasProd_prod fun i hi ↦ (hf i hi).hasProd).multipliable
+theorem multipliableFilter_prod {f : γ → β → α} {s : Finset γ}
+    (hf : ∀ i ∈ s, MultipliableFilter L (f i)) : MultipliableFilter L fun b ↦ ∏ i ∈ s, f i b :=
+  (hasProdFilter_prod fun i hi ↦ (hf i hi).hasProdFilter).multipliableFilter
 
 @[to_additive]
 theorem HasProd.mul_disjoint {s t : Set β} (hs : Disjoint s t) (ha : HasProd (f ∘ (↑) : s → α) a)
@@ -286,7 +302,7 @@ theorem hasProd_prod_disjoint {ι} (s : Finset ι) {t : ι → Set β} {a : ι �
     HasProd (f ∘ (↑) : (⋃ i ∈ s, t i) → α) (∏ i ∈ s, a i) := by
   simp_rw [hasProd_subtype_iff_mulIndicator] at *
   rw [Finset.mulIndicator_biUnion _ _ hs]
-  exact hasProd_prod hf
+  exact hasProdFilter_prod hf
 
 @[to_additive]
 theorem HasProd.mul_isCompl {s t : Set β} (hs : IsCompl s t) (ha : HasProd (f ∘ (↑) : s → α) a)
@@ -302,7 +318,7 @@ theorem HasProd.mul_compl {s : Set β} (ha : HasProd (f ∘ (↑) : s → α) a)
 @[to_additive]
 theorem Multipliable.mul_compl {s : Set β} (hs : Multipliable (f ∘ (↑) : s → α))
     (hsc : Multipliable (f ∘ (↑) : (sᶜ : Set β) → α)) : Multipliable f :=
-  (hs.hasProd.mul_compl hsc.hasProd).multipliable
+  (hs.hasProd.mul_compl hsc.hasProd).multipliableFilter
 
 @[to_additive]
 theorem HasProd.compl_mul {s : Set β} (ha : HasProd (f ∘ (↑) : (sᶜ : Set β) → α) a)
@@ -312,7 +328,7 @@ theorem HasProd.compl_mul {s : Set β} (ha : HasProd (f ∘ (↑) : (sᶜ : Set 
 @[to_additive]
 theorem Multipliable.compl_add {s : Set β} (hs : Multipliable (f ∘ (↑) : (sᶜ : Set β) → α))
     (hsc : Multipliable (f ∘ (↑) : s → α)) : Multipliable f :=
-  (hs.hasProd.compl_mul hsc.hasProd).multipliable
+  (hs.hasProd.compl_mul hsc.hasProd).multipliableFilter
 
 /-- Version of `HasProd.update` for `CommMonoid` rather than `CommGroup`.
 Rather than showing that `f.update` has a specific product in terms of `HasProd`,
@@ -330,7 +346,7 @@ theorem HasProd.update' {α β : Type*} [TopologicalSpace α] [CommMonoid α] [T
     · simp only [Function.update_apply, hb', if_false]
   have h := hf.mul (hasProd_ite_eq b x)
   simp_rw [this] at h
-  exact HasProd.unique h (hf'.mul (hasProd_ite_eq b (f b)))
+  exact HasProdFilter.unique h (hf'.mul (hasProd_ite_eq b (f b)))
 
 /-- Version of `hasProd_ite_div_hasProd` for `CommMonoid` rather than `CommGroup`.
 Rather than showing that the `ite` expression has a specific product in terms of `HasProd`, it gives
@@ -349,7 +365,7 @@ end HasProd
 
 section tprod
 
-variable [CommMonoid α] [TopologicalSpace α] {f g : β → α}
+variable [CommMonoid α] [TopologicalSpace α] {f g : β → α} {L : Filter (Finset β)}
 
 @[to_additive]
 theorem tprod_congr_set_coe (f : β → α) {s t : Set β} (h : s = t) :
@@ -362,7 +378,7 @@ theorem tprod_congr_subtype (f : β → α) {P Q : β → Prop} (h : ∀ x, P x 
 
 @[to_additive]
 theorem tprod_eq_finprod (hf : (mulSupport f).Finite) :
-    ∏' b, f b = ∏ᶠ b, f b := by simp [tprod_def, multipliable_of_finite_mulSupport hf, hf]
+    ∏' b, f b = ∏ᶠ b, f b := by simp [tprodFilter_def, multipliable_of_finite_mulSupport hf, hf]
 
 @[to_additive]
 theorem tprod_eq_prod' {s : Finset β} (hf : mulSupport f ⊆ s) :
@@ -375,6 +391,10 @@ theorem tprod_eq_prod {s : Finset β} (hf : ∀ b ∉ s, f b = 1) :
   tprod_eq_prod' <| mulSupport_subset_iff'.2 hf
 
 @[to_additive (attr := simp)]
+lemma tprodFilter_one [T2Space α] [L.NeBot] : ∏'[L] _, (1 : α) = 1 := by
+  exact (hasProdFilter_one).tprodFilter_eq
+
+@[to_additive (attr := simp)]
 theorem tprod_one : ∏' _ : β, (1 : α) = 1 := by rw [tprod_eq_finprod] <;> simp
 
 @[to_additive (attr := simp)]
@@ -382,14 +402,17 @@ theorem tprod_empty [IsEmpty β] : ∏' b, f b = 1 := by
   rw [tprod_eq_prod (s := (∅ : Finset β))] <;> simp
 
 @[to_additive]
-theorem tprod_congr {f g : β → α}
-    (hfg : ∀ b, f b = g b) : ∏' b, f b = ∏' b, g b :=
-  congr_arg tprod (funext hfg)
+theorem tprodFilter_congr {f g : β → α}
+    (hfg : ∀ b, f b = g b) : ∏'[L] b, f b = ∏'[L] b, g b :=
+  congr_arg (tprodFilter L) (funext hfg)
+
+alias tprod_congr := tprodFilter_congr
+alias tsum_congr := tsumFilter_congr
 
 @[to_additive]
-theorem tprod_congr₂ {f g : γ → β → α}
-    (hfg : ∀ b c, f b c = g b c) : ∏' c, ∏' b, f b c = ∏' c, ∏' b, g b c :=
-  tprod_congr fun c ↦ tprod_congr fun b ↦ hfg b c
+theorem tprod_congr₂ {f g : γ → β → α} {L' : Filter (Finset γ)}
+    (hfg : ∀ b c, f b c = g b c) : ∏'[L] c, ∏'[L'] b, f b c = ∏'[L] c, ∏'[L'] b, g b c :=
+  tprodFilter_congr fun c ↦ tprodFilter_congr fun b ↦ hfg b c
 
 @[to_additive]
 theorem tprod_fintype [Fintype β] (f : β → α) : ∏' b, f b = ∏ b, f b := by
@@ -415,7 +438,8 @@ theorem tprod_eq_mulSingle {f : β → α} (b : β) (hf : ∀ b' ≠ b, f b' = 1
 theorem tprod_tprod_eq_mulSingle (f : β → γ → α) (b : β) (c : γ) (hfb : ∀ b' ≠ b, f b' c = 1)
     (hfc : ∀ b', ∀ c' ≠ c, f b' c' = 1) : ∏' (b') (c'), f b' c' = f b c :=
   calc
-    ∏' (b') (c'), f b' c' = ∏' b', f b' c := tprod_congr fun b' ↦ tprod_eq_mulSingle _ (hfc b')
+    ∏' (b') (c'), f b' c' = ∏' b', f b' c := tprodFilter_congr fun b' ↦
+      tprod_eq_mulSingle _ (hfc b')
     _ = f b c := tprod_eq_mulSingle _ hfb
 
 @[to_additive (attr := simp)]
@@ -454,8 +478,10 @@ theorem Function.Injective.tprod_eq {g : γ → β} (hg : Injective g) {f : β �
     simp [this]
   · have hf_fin' : ¬ Set.Finite (mulSupport (f ∘ g)) := by
       rwa [this, Set.finite_image_iff hg.injOn] at hf_fin
-    simp_rw [tprod_def, if_neg hf_fin, if_neg hf_fin', Multipliable,
-      funext fun a => propext <| hg.hasProd_iff (mulSupport_subset_iff'.1 hf) (a := a)]
+    simp_rw [tprodFilter_def, le_refl, and_true, if_neg hf_fin, if_neg hf_fin', MultipliableFilter]
+    have := funext fun a => propext <| hg.hasProd_iff (mulSupport_subset_iff'.1 hf) (a := a)
+    simp_rw [HasProd] at this
+    simp [this]
 
 @[to_additive]
 theorem Equiv.tprod_eq (e : γ ≃ β) (f : β → α) : ∏' c, f (e c) = ∏' b, f b :=
@@ -474,7 +500,8 @@ theorem tprod_subtype_mulSupport (f : β → α) : ∏' x : mulSupport f, f x = 
 
 @[to_additive]
 theorem tprod_subtype (s : Set β) (f : β → α) : ∏' x : s, f x = ∏' x, s.mulIndicator f x := by
-  rw [← tprod_subtype_eq_of_mulSupport_subset Set.mulSupport_mulIndicator_subset, tprod_congr]
+  rw [← tprod_subtype_eq_of_mulSupport_subset Set.mulSupport_mulIndicator_subset, tprod,
+    tprodFilter_congr]
   simp
 
 @[to_additive (attr := simp)]
@@ -541,39 +568,43 @@ lemma tprod_extend_one {γ : Type*} {g : γ → β} (hg : Injective g) (f : γ �
 variable [T2Space α]
 
 @[to_additive]
-theorem Function.Surjective.tprod_eq_tprod_of_hasProd_iff_hasProd {α' : Type*} [CommMonoid α']
-    [TopologicalSpace α'] {e : α' → α} (hes : Function.Surjective e) (h1 : e 1 = 1) {f : β → α}
-    {g : γ → α'} (h : ∀ {a}, HasProd f (e a) ↔ HasProd g a) : ∏' b, f b = e (∏' c, g c) :=
-  by_cases (fun x ↦ (h.mpr x.hasProd).tprod_eq) fun hg : ¬Multipliable g ↦ by
-    have hf : ¬Multipliable f := mt (hes.multipliable_iff_of_hasProd_iff @h).1 hg
-    simp [tprod_def, hf, hg, h1]
+theorem Function.Surjective.tprodFilter_eq_tprodFilter_of_hasProdFilter_iff_hasProdFilter
+    {α' : Type*} [CommMonoid α'] [TopologicalSpace α'] {e : α' → α} (hes : Function.Surjective e)
+    (h1 : e 1 = 1) {f : β → α} {g : γ → α'} {L' : Filter (Finset γ)} [L.NeBot]
+    (h : ∀ {a}, HasProdFilter L f (e a) ↔ HasProdFilter L' g a) :
+    ∏'[L] b, f b = e (∏'[L'] c, g c) :=
+  by_cases (fun x ↦ (h.mpr x.hasProdFilter).tprodFilter_eq) fun hg : ¬MultipliableFilter L' g ↦ by
+  have hf : ¬MultipliableFilter L f := mt (hes.multipliableFilter_iff_of_hasProdFilter_iff @h).1 hg
+  simp [tprodFilter_def, hf, hg, h1]
 
 @[to_additive]
-theorem tprod_eq_tprod_of_hasProd_iff_hasProd {f : β → α} {g : γ → α}
-    (h : ∀ {a}, HasProd f a ↔ HasProd g a) : ∏' b, f b = ∏' c, g c :=
-  surjective_id.tprod_eq_tprod_of_hasProd_iff_hasProd rfl @h
+theorem tprodFilter_eq_tprodFilter_of_hasProdFilter_iff_hasProdFilter {f : β → α} {g : γ → α}
+    {L' : Filter (Finset γ)} (h : ∀ {a}, HasProdFilter L f a ↔ HasProdFilter L' g a) [L.NeBot] :
+    ∏'[L] b, f b = ∏'[L'] c, g c :=
+  surjective_id.tprodFilter_eq_tprodFilter_of_hasProdFilter_iff_hasProdFilter rfl @h
 
 section ContinuousMul
 
 variable [ContinuousMul α]
 
 @[to_additive]
-protected theorem Multipliable.tprod_mul (hf : Multipliable f) (hg : Multipliable g) :
-    ∏' b, (f b * g b) = (∏' b, f b) * ∏' b, g b :=
-  (hf.hasProd.mul hg.hasProd).tprod_eq
+protected theorem MultipliableFilter.tprodFilter_mul [L.NeBot] (hf : MultipliableFilter L f)
+    (hg : MultipliableFilter L g) : ∏'[L] b, (f b * g b) = (∏'[L] b, f b) * ∏'[L] b, g b :=
+  (hf.hasProdFilter.mul hg.hasProdFilter).tprodFilter_eq
 
-@[deprecated (since := "2025-04-12")] alias tsum_add := Summable.tsum_add
+@[deprecated (since := "2025-04-12")] alias tsum_add := SummableFilter.tsumFilter_add
 @[to_additive existing, deprecated (since := "2025-04-12")] alias
-  tprod_mul := Multipliable.tprod_mul
+  tprod_mul := MultipliableFilter.tprodFilter_mul
 
 @[to_additive]
-protected theorem Multipliable.tprod_finsetProd {f : γ → β → α} {s : Finset γ}
-    (hf : ∀ i ∈ s, Multipliable (f i)) : ∏' b, ∏ i ∈ s, f i b = ∏ i ∈ s, ∏' b, f i b :=
-  (hasProd_prod fun i hi ↦ (hf i hi).hasProd).tprod_eq
+protected theorem MultipliableFilter.tprodFilter_finsetProd [L.NeBot] {f : γ → β → α} {s : Finset γ}
+    (hf : ∀ i ∈ s, MultipliableFilter L (f i)) :
+    ∏'[L] b, ∏ i ∈ s, f i b = ∏ i ∈ s, ∏'[L] b, f i b :=
+  (hasProdFilter_prod fun i hi ↦ (hf i hi).hasProdFilter).tprodFilter_eq
 
-@[deprecated (since := "2025-04-12")] alias tsum_finsetSum := Summable.tsum_finsetSum
+@[deprecated (since := "2025-04-12")] alias tsum_finsetSum := SummableFilter.tsumFilter_finsetSum
 @[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_finsetProd :=
-  Multipliable.tprod_finsetProd
+  MultipliableFilter.tprodFilter_finsetProd
 
 /-- Version of `tprod_eq_mul_tprod_ite` for `CommMonoid` rather than `CommGroup`.
 Requires a different convergence assumption involving `Function.update`. -/
@@ -584,9 +615,10 @@ protected theorem Multipliable.tprod_eq_mul_tprod_ite' [DecidableEq β] {f : β 
     ∏' x, f x = f b * ∏' x, ite (x = b) 1 (f x) :=
   calc
     ∏' x, f x = ∏' x, (ite (x = b) (f x) 1 * update f b 1 x) :=
-      tprod_congr fun n ↦ by split_ifs with h <;> simp [update_apply, h]
+      tprodFilter_congr fun n ↦ by split_ifs with h <;> simp [update_apply, h]
     _ = (∏' x, ite (x = b) (f x) 1) * ∏' x, update f b 1 x :=
-      Multipliable.tprod_mul ⟨ite (b = b) (f b) 1, hasProd_single b fun _ hb ↦ if_neg hb⟩ hf
+      MultipliableFilter.tprodFilter_mul ⟨ite (b = b) (f b) 1, hasProd_single b
+      fun _ hb ↦ if_neg hb⟩ hf
     _ = ite (b = b) (f b) 1 * ∏' x, update f b 1 x := by
       congr
       exact tprod_eq_mulSingle b fun b' hb' ↦ if_neg hb'
@@ -602,7 +634,7 @@ protected theorem Multipliable.tprod_eq_mul_tprod_ite' [DecidableEq β] {f : β 
 protected theorem Multipliable.tprod_mul_tprod_compl {s : Set β}
     (hs : Multipliable (f ∘ (↑) : s → α)) (hsc : Multipliable (f ∘ (↑) : ↑sᶜ → α)) :
     (∏' x : s, f x) * ∏' x : ↑sᶜ, f x = ∏' x, f x :=
-  (hs.hasProd.mul_compl hsc.hasProd).tprod_eq.symm
+  (hs.hasProd.mul_compl hsc.hasProd).tprodFilter_eq.symm
 
 @[deprecated (since := "2025-04-12")] alias tsum_add_tsum_compl := Summable.tsum_add_tsum_compl
 @[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_mul_tprod_compl :=
@@ -612,7 +644,7 @@ protected theorem Multipliable.tprod_mul_tprod_compl {s : Set β}
 protected theorem Multipliable.tprod_union_disjoint {s t : Set β} (hd : Disjoint s t)
     (hs : Multipliable (f ∘ (↑) : s → α)) (ht : Multipliable (f ∘ (↑) : t → α)) :
     ∏' x : ↑(s ∪ t), f x = (∏' x : s, f x) * ∏' x : t, f x :=
-  (hs.hasProd.mul_disjoint hd ht.hasProd).tprod_eq
+  (hs.hasProd.mul_disjoint hd ht.hasProd).tprodFilter_eq
 
 @[deprecated (since := "2025-04-12")] alias tsum_union_disjoint := Summable.tsum_union_disjoint
 @[to_additive existing, deprecated (since := "2025-04-12")] alias tprod_union_disjoint :=
@@ -622,7 +654,7 @@ protected theorem Multipliable.tprod_union_disjoint {s t : Set β} (hd : Disjoin
 protected theorem Multipliable.tprod_finset_bUnion_disjoint {ι} {s : Finset ι} {t : ι → Set β}
     (hd : (s : Set ι).Pairwise (Disjoint on t)) (hf : ∀ i ∈ s, Multipliable (f ∘ (↑) : t i → α)) :
     ∏' x : ⋃ i ∈ s, t i, f x = ∏ i ∈ s, ∏' x : t i, f x :=
-  (hasProd_prod_disjoint _ hd fun i hi ↦ (hf i hi).hasProd).tprod_eq
+  (hasProd_prod_disjoint _ hd fun i hi ↦ (hf i hi).hasProd).tprodFilter_eq
 
 @[deprecated (since := "2025-04-12")] alias tsum_finset_bUnion_disjoint :=
     Summable.tsum_finset_bUnion_disjoint
@@ -646,6 +678,6 @@ lemma multipliable_of_exists_eq_zero (hf : ∃ b, f b = 0) : Multipliable f :=
   ⟨0, hasProd_zero_of_exists_eq_zero hf⟩
 
 lemma tprod_of_exists_eq_zero [T2Space α] (hf : ∃ b, f b = 0) : ∏' b, f b = 0 :=
-  (hasProd_zero_of_exists_eq_zero hf).tprod_eq
+  (hasProd_zero_of_exists_eq_zero hf).tprodFilter_eq
 
 end CommMonoidWithZero

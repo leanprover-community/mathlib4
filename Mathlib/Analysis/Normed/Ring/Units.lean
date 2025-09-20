@@ -110,7 +110,7 @@ theorem inverse_one_sub_nth_order' (n : ℕ) {t : R} (ht : ‖t‖ < 1) :
   calc inverse (1 - t) = ∑' i : ℕ, t ^ i := inverse_one_sub t ht
     _ = ∑ i ∈ range n, t ^ i + ∑' i : ℕ, t ^ (i + n) := (this.sum_add_tsum_nat_add _).symm
     _ = (∑ i ∈ range n, t ^ i) + t ^ n * inverse (1 - t) := by
-      simp only [inverse_one_sub t ht, add_comm _ n, pow_add, this.tsum_mul_left]; rfl
+      simp only [inverse_one_sub t ht, add_comm _ n, pow_add, this.tsumFilter_mul_left]; rfl
 
 theorem inverse_one_sub_nth_order (n : ℕ) :
     ∀ᶠ t in 𝓝 0, inverse ((1 : R) - t) = (∑ i ∈ range n, t ^ i) + t ^ n * inverse (1 - t) :=

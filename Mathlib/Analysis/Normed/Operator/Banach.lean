@@ -193,14 +193,14 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
       _ = (1 / 2) ^ n * (C * ‖y‖) := by ring
   have sNu : Summable fun n => ‖u n‖ := by
     refine .of_nonneg_of_le (fun n => norm_nonneg _) ule ?_
-    exact Summable.mul_right _ (summable_geometric_of_lt_one (by simp) (by norm_num))
+    exact SummableFilter.mul_right _ (summable_geometric_of_lt_one (by simp) (by norm_num))
   have su : Summable u := sNu.of_norm
   let x := tsum u
   have x_ineq : ‖x‖ ≤ (2 * C + 1) * ‖y‖ :=
     calc
       ‖x‖ ≤ ∑' n, ‖u n‖ := norm_tsum_le_tsum_norm sNu
       _ ≤ ∑' n, (1 / 2) ^ n * (C * ‖y‖) :=
-        sNu.tsum_le_tsum ule <| Summable.mul_right _ summable_geometric_two
+        sNu.tsumFilter_le_tsumFilter ule <| SummableFilter.mul_right _ summable_geometric_two
       _ = (∑' n, (1 / 2) ^ n) * (C * ‖y‖) := tsum_mul_right
       _ = 2 * C * ‖y‖ := by rw [tsum_geometric_two, mul_assoc]
       _ ≤ 2 * C * ‖y‖ + ‖y‖ := le_add_of_nonneg_right (norm_nonneg y)

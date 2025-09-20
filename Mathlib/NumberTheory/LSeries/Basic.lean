@@ -171,7 +171,7 @@ def LSeriesSummable (f : ℕ → ℂ) (s : ℂ) : Prop :=
 
 lemma LSeriesSummable_congr {f g : ℕ → ℂ} (s : ℂ) (h : ∀ {n}, n ≠ 0 → f n = g n) :
     LSeriesSummable f s ↔ LSeriesSummable g s :=
-  summable_congr <| term_congr h s
+  summableFilter_congr <| term_congr h s
 
 open Filter in
 /-- If `f` and `g` agree on large `n : ℕ` and the `LSeries` of `f` converges at `s`,
@@ -197,11 +197,11 @@ lemma LSeriesSummable_congr' {f g : ℕ → ℂ} (s : ℂ) (h : f =ᶠ[atTop] g)
 
 theorem LSeries.eq_zero_of_not_LSeriesSummable (f : ℕ → ℂ) (s : ℂ) :
     ¬ LSeriesSummable f s → LSeries f s = 0 :=
-  tsum_eq_zero_of_not_summable
+  tsumFilter_eq_zero_of_not_summableFilter
 
 @[simp]
 theorem LSeriesSummable_zero {s : ℂ} : LSeriesSummable 0 s := by
-  simp [LSeriesSummable, funext (term_def 0 s), summable_zero]
+  simp [LSeriesSummable, funext (term_def 0 s), summableFilter_zero]
 
 /-- This states that the L-series of the sequence `f` converges absolutely at `s` and that
 the value there is `a`. -/
@@ -342,7 +342,7 @@ lemma LSeriesSummable_of_le_const_mul_rpow {f : ℕ → ℂ} {x : ℝ} {s : ℂ}
   have hsum : Summable fun n : ℕ ↦ ‖(C : ℂ) / n ^ (s + (1 - x))‖ := by
     simp_rw [div_eq_mul_inv, norm_mul, ← cpow_neg]
     have hsx : -s.re + x - 1 < -1 := by linarith only [hs]
-    refine Summable.mul_left _ <|
+    refine SummableFilter.mul_left _ <|
       Summable.of_norm_bounded_eventually_nat (g := fun n ↦ (n : ℝ) ^ (-s.re + x - 1)) ?_ ?_
     · simpa
     · simp only [norm_norm, Filter.eventually_atTop]

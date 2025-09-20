@@ -626,6 +626,7 @@ theorem addHaar_image_eq_zero_of_det_fderivWithin_eq_zero_aux
       exact subset_inter Subset.rfl t_cover
     _ ≤ ∑' n, μ (f '' (s ∩ t n)) := measure_iUnion_le _
     _ ≤ ∑' n, (Real.toNNReal |(A n).det| + ε : ℝ≥0) * μ (s ∩ t n) := by
+      simp_rw [tsum]
       gcongr
       exact (hδ (A _)).2 _ (ht _)
     _ = ∑' n, ε * μ (s ∩ t n) := by
@@ -633,7 +634,7 @@ theorem addHaar_image_eq_zero_of_det_fderivWithin_eq_zero_aux
       rcases Af' h's n with ⟨y, ys, hy⟩
       simp only [hy, h'f' y ys, Real.toNNReal_zero, abs_zero, zero_add]
     _ ≤ ε * ∑' n, μ (closedBall 0 R ∩ t n) := by
-      rw [ENNReal.tsum_mul_left]
+      rw [ENNReal.tsum_mul_left, tsum, tsum]
       gcongr
     _ = ε * μ (⋃ n, closedBall 0 R ∩ t n) := by
       rw [measure_iUnion]
@@ -1013,6 +1014,7 @@ theorem lintegral_abs_det_fderiv_le_addHaar_image_aux1 (hs : MeasurableSet s)
     _ = ∑' n, (ENNReal.ofReal |(A n).det| * μ (s ∩ t n) + ε * μ (s ∩ t n)) := by
       simp only [setLIntegral_const, lintegral_add_right _ measurable_const]
     _ ≤ ∑' n, (μ (f '' (s ∩ t n)) + ε * μ (s ∩ t n) + ε * μ (s ∩ t n)) := by
+      simp_rw [tsum]
       gcongr
       exact (hδ (A _)).2.2 _ _ (ht _)
     _ = μ (f '' s) + 2 * ε * μ s := by

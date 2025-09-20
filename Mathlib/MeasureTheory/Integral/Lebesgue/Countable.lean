@@ -108,7 +108,7 @@ theorem _root_.NNReal.count_const_le_le_of_tsum_le [MeasurableSingletonClass α]
       (mod_cast ε_ne_zero) (@ENNReal.coe_ne_top ε)
   convert ENNReal.coe_le_coe.mpr tsum_le_c
   simp_rw [Function.comp_apply]
-  rw [ENNReal.tsum_coe_eq a_summable.hasSum]
+  rw [tsum, ENNReal.tsumFilter_coe_eq a_summable.hasSum]
 
 end DiracAndCount
 

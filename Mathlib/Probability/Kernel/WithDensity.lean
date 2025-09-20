@@ -155,21 +155,22 @@ lemma withDensity_sub_add_cancel [IsSFiniteKernel κ] {f g : α → β → ℝ�
 theorem withDensity_tsum [Countable ι] (κ : Kernel α β) [IsSFiniteKernel κ] {f : ι → α → β → ℝ≥0∞}
     (hf : ∀ i, Measurable (Function.uncurry (f i))) :
     withDensity κ (∑' n, f n) = Kernel.sum fun n => withDensity κ (f n) := by
-  have h_sum_a : ∀ a, Summable fun n => f n a := fun a => Pi.summable.mpr fun b => ENNReal.summable
-  have h_sum : Summable fun n => f n := Pi.summable.mpr h_sum_a
+  have h_sum_a : ∀ a, Summable fun n => f n a := fun a =>
+    Pi.summableFilter.mpr fun b => ENNReal.summable
+  have h_sum : Summable fun n => f n := Pi.summableFilter.mpr h_sum_a
   ext a s hs
   rw [sum_apply' _ a hs, Kernel.withDensity_apply' κ _ a s]
   swap
   · have : Function.uncurry (∑' n, f n) = ∑' n, Function.uncurry (f n) := by
       ext1 p
       simp only [Function.uncurry_def]
-      rw [tsum_apply h_sum, tsum_apply (h_sum_a _), tsum_apply]
-      exact Pi.summable.mpr fun p => ENNReal.summable
+      rw [tsum, tsum, tsum_apply h_sum, tsum_apply (h_sum_a _), tsum_apply]
+      exact Pi.summableFilter.mpr fun p => ENNReal.summable
     rw [this]
     fun_prop
   have : ∫⁻ b in s, (∑' n, f n) a b ∂κ a = ∫⁻ b in s, ∑' n, (fun b => f n a b) b ∂κ a := by
     congr with b
-    rw [tsum_apply h_sum, tsum_apply (h_sum_a a)]
+    rw [tsum, tsum_apply h_sum, tsum_apply (h_sum_a a)]
   rw [this, lintegral_tsum fun n => by fun_prop]
   congr with n
   rw [Kernel.withDensity_apply' _ (hf n) a s]
@@ -216,15 +217,15 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : Kernel α β) [IsFin
       min_eq_left (h_le a b n hn)⟩
   have hf_eq_tsum : f = ∑' n, fs n := by
     have h_sum_a : ∀ a, Summable fun n => fs n a := by
-      refine fun a => Pi.summable.mpr fun b => ?_
+      refine fun a => Pi.summableFilter.mpr fun b => ?_
       suffices ∀ n, n ∉ Finset.range ⌈(f a b).toReal⌉₊ → fs n a b = 0 from
         summable_of_ne_finset_zero this
       intro n hn_notMem
       rw [Finset.mem_range, not_lt] at hn_notMem
       exact h_zero a b n hn_notMem
     ext a b : 2
-    rw [tsum_apply (Pi.summable.mpr h_sum_a), tsum_apply (h_sum_a a),
-      ENNReal.tsum_eq_liminf_sum_nat]
+    rw [tsum, tsum_apply (Pi.summableFilter.mpr h_sum_a), tsum_apply (h_sum_a a),
+      ← tsum_iff_tsumFilter, ENNReal.tsum_eq_liminf_sum_nat]
     have h_finset_sum : ∀ n, ∑ i ∈ Finset.range n, fs i a b = min (f a b) n := fun n ↦ by
       induction n with
       | zero => simp

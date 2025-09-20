@@ -178,7 +178,7 @@ theorem of_iUnion_nonpos {M : Type*} [TopologicalSpace M]
     [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
     [OrderClosedTopology M] {v : VectorMeasure α M} (hf₁ : ∀ i, MeasurableSet (f i))
     (hf₂ : Pairwise (Disjoint on f)) (hf₃ : ∀ i, v (f i) ≤ 0) : v (⋃ i, f i) ≤ 0 :=
-  (v.of_disjoint_iUnion hf₁ hf₂).symm ▸ tsum_nonpos hf₃
+  (v.of_disjoint_iUnion hf₁ hf₂).symm ▸ tsumFilter_nonpos hf₃
 
 theorem of_nonneg_disjoint_union_eq_zero {s : SignedMeasure α} {A B : Set α} (h : Disjoint A B)
     (hA₁ : MeasurableSet A) (hB₁ : MeasurableSet B) (hA₂ : 0 ≤ s A) (hB₂ : 0 ≤ s B)
@@ -205,7 +205,7 @@ def smul (r : R) (v : VectorMeasure α M) : VectorMeasure α M where
   measureOf' := r • ⇑v
   empty' := by rw [Pi.smul_apply, empty, smul_zero]
   not_measurable' _ hi := by rw [Pi.smul_apply, v.not_measurable hi, smul_zero]
-  m_iUnion' _ hf₁ hf₂ := by exact HasSum.const_smul _ (v.m_iUnion hf₁ hf₂)
+  m_iUnion' _ hf₁ hf₂ := by exact HasSumFilter.const_smul _ (v.m_iUnion hf₁ hf₂)
 
 instance instSMul : SMul R (VectorMeasure α M) :=
   ⟨smul⟩
@@ -222,7 +222,7 @@ section AddCommMonoid
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
 
 instance instZero : Zero (VectorMeasure α M) :=
-  ⟨⟨0, rfl, fun _ _ => rfl, fun _ _ _ => hasSum_zero⟩⟩
+  ⟨⟨0, rfl, fun _ _ => rfl, fun _ _ _ => hasSumFilter_zero⟩⟩
 
 instance instInhabited : Inhabited (VectorMeasure α M) :=
   ⟨0⟩
@@ -239,7 +239,7 @@ def add (v w : VectorMeasure α M) : VectorMeasure α M where
   measureOf' := v + w
   empty' := by simp
   not_measurable' _ hi := by rw [Pi.add_apply, v.not_measurable hi, w.not_measurable hi, add_zero]
-  m_iUnion' _ hf₁ hf₂ := HasSum.add (v.m_iUnion hf₁ hf₂) (w.m_iUnion hf₁ hf₂)
+  m_iUnion' _ hf₁ hf₂ := HasSumFilter.add (v.m_iUnion hf₁ hf₂) (w.m_iUnion hf₁ hf₂)
 
 instance instAdd : Add (VectorMeasure α M) :=
   ⟨add⟩
@@ -270,7 +270,7 @@ def neg (v : VectorMeasure α M) : VectorMeasure α M where
   measureOf' := -v
   empty' := by simp
   not_measurable' _ hi := by rw [Pi.neg_apply, neg_eq_zero, v.not_measurable hi]
-  m_iUnion' _ hf₁ hf₂ := HasSum.neg <| v.m_iUnion hf₁ hf₂
+  m_iUnion' _ hf₁ hf₂ := HasSumFilter.neg <| v.m_iUnion hf₁ hf₂
 
 instance instNeg : Neg (VectorMeasure α M) :=
   ⟨neg⟩
@@ -285,7 +285,7 @@ def sub (v w : VectorMeasure α M) : VectorMeasure α M where
   measureOf' := v - w
   empty' := by simp
   not_measurable' _ hi := by rw [Pi.sub_apply, v.not_measurable hi, w.not_measurable hi, sub_zero]
-  m_iUnion' _ hf₁ hf₂ := HasSum.sub (v.m_iUnion hf₁ hf₂) (w.m_iUnion hf₁ hf₂)
+  m_iUnion' _ hf₁ hf₂ := HasSumFilter.sub (v.m_iUnion hf₁ hf₂) (w.m_iUnion hf₁ hf₂)
 
 instance instSub : Sub (VectorMeasure α M) :=
   ⟨sub⟩
@@ -385,7 +385,7 @@ def toENNRealVectorMeasure (μ : Measure α) : VectorMeasure α ℝ≥0∞ where
   empty' := by simp
   not_measurable' _ hi := if_neg hi
   m_iUnion' _ hf₁ hf₂ := by
-    rw [Summable.hasSum_iff ENNReal.summable, if_pos (MeasurableSet.iUnion hf₁),
+    rw [HasSum, SummableFilter.hasSumFilter_iff ENNReal.summable, if_pos (MeasurableSet.iUnion hf₁),
       MeasureTheory.measure_iUnion hf₂ hf₁]
     exact tsum_congr fun n => if_pos (hf₁ n)
 
@@ -499,7 +499,7 @@ def mapRange (v : VectorMeasure α M) (f : M →+ N) (hf : Continuous f) : Vecto
   measureOf' s := f (v s)
   empty' := by rw [empty, AddMonoidHom.map_zero]
   not_measurable' i hi := by rw [not_measurable v hi, AddMonoidHom.map_zero]
-  m_iUnion' _ hg₁ hg₂ := HasSum.map (v.m_iUnion hg₁ hg₂) f hf
+  m_iUnion' _ hg₁ hg₂ := HasSumFilter.map (v.m_iUnion hg₁ hg₂) f hf
 
 @[simp]
 theorem mapRange_apply {f : M →+ N} (hf : Continuous f) {s : Set α} : v.mapRange f hf s = f (v s) :=
@@ -1167,10 +1167,10 @@ def toMeasureOfZeroLE (s : SignedMeasure α) (i : Set α) (hi₁ : MeasurableSet
       Set.inter_iUnion, s.of_disjoint_iUnion h₁ h₂]
     have h : ∀ n, 0 ≤ s (i ∩ f n) := fun n =>
       s.nonneg_of_zero_le_restrict (s.zero_le_restrict_subset hi₁ Set.inter_subset_left hi₂)
-    rw [NNReal.coe_tsum_of_nonneg h, ENNReal.coe_tsum]
+    rw [NNReal.coe_tsumFilter_of_nonneg h, ENNReal.coe_tsumFilter]
     · refine tsum_congr fun n => ?_
       simp_rw [s.restrict_apply hi₁ (hf₁ n), Set.inter_comm]
-    · exact (NNReal.summable_mk h).2 (s.m_iUnion h₁ h₂).summable
+    · exact (NNReal.summableFilter_mk h).2 (s.m_iUnion h₁ h₂).summable
 
 variable (s : SignedMeasure α) {i j : Set α}
 

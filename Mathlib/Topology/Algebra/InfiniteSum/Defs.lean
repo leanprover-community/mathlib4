@@ -59,6 +59,16 @@ section HasProd
 
 variable [CommMonoid α] [TopologicalSpace α]
 
+
+@[to_additive]
+def HasProdFilter (L : Filter (Finset β)) (f : β → α) (a : α) : Prop :=
+  Tendsto (fun s : Finset β ↦ ∏ b ∈ s, f b) L (𝓝 a)
+
+@[to_additive
+/-- `SummableAlongFilter f` means that `f` has some (infinite) sum. -/]
+def MultipliableFilter (L : Filter (Finset β)) (f : β → α) : Prop :=
+  ∃ a, HasProdFilter L f a
+
 /-- `HasProd f a` means that the (potentially infinite) product of the `f b` for `b : β` converges
 to `a`.
 
@@ -84,29 +94,44 @@ This is based on Mario Carneiro's
 
 For the definition and many statements, `α` does not need to be a topological monoid. We only add
 this assumption later, for the lemmas where it is relevant. -/]
-def HasProd (f : β → α) (a : α) : Prop :=
-  Tendsto (fun s : Finset β ↦ ∏ b ∈ s, f b) atTop (𝓝 a)
+abbrev HasProd (f : β → α) (a : α) : Prop := HasProdFilter atTop f a
 
 /-- `Multipliable f` means that `f` has some (infinite) product. Use `tprod` to get the value. -/
 @[to_additive
 /-- `Summable f` means that `f` has some (infinite) sum. Use `tsum` to get the value. -/]
-def Multipliable (f : β → α) : Prop :=
-  ∃ a, HasProd f a
+abbrev Multipliable (f : β → α) : Prop := MultipliableFilter atTop f
+
+@[to_additive]
+lemma hasProd_iff_hasProdFilter {f : β → α} {a : α} :
+    HasProd f a ↔ HasProdFilter atTop f a :=
+  Iff.rfl
+
+@[to_additive]
+lemma multipliable_iff_multipliableFilter {f : β → α} :
+    Multipliable f ↔ MultipliableFilter atTop f :=
+  Iff.rfl
+
+open scoped Classical in
+/-- `∏' i, f i` is the product of `f` if along the filter `L` if it exists or 1 otherwise. -/
+@[to_additive /-- `∑' i, f i` is the sum  of `f` if along the filter `L` if it exists
+ or 0 otherwise. -/]
+noncomputable irreducible_def tprodFilter {β} (L : Filter (Finset β)) (f : β → α) :=
+  if h : MultipliableFilter L f then
+    if (mulSupport f).Finite ∧ L ≤ atTop then finprod f
+    else h.choose
+  else 1
 
 open scoped Classical in
 /-- `∏' i, f i` is the product of `f` if it exists and is unconditionally convergent,
 or 1 otherwise. -/
 @[to_additive /-- `∑' i, f i` is the sum of `f` if it exists and is unconditionally convergent,
 or 0 otherwise. -/]
-noncomputable irreducible_def tprod {β} (f : β → α) :=
-  if h : Multipliable f then
-  /- Note that the product might not be uniquely defined if the topology is not separated.
-  When the multiplicative support of `f` is finite, we make the most reasonable choice to use the
-  product over the multiplicative support. Otherwise, we choose arbitrarily an `a` satisfying
-  `HasProd f a`. -/
-    if (mulSupport f).Finite then finprod f
-    else h.choose
-  else 1
+abbrev tprod {β} (f : β → α) := tprodFilter atTop f
+
+@[inherit_doc tprod]
+notation3 "∏' " "[" L "]" (...)", "r:67:(scoped f => tprodFilter L f) => r
+@[inherit_doc tsumFilter]
+notation3 "∑' " "[" L "]" (...)", "r:67:(scoped f => tsumFilter L f) => r
 
 -- see Note [operator precedence of big operators]
 @[inherit_doc tprod]
@@ -114,20 +139,32 @@ notation3 "∏' "(...)", "r:67:(scoped f => tprod f) => r
 @[inherit_doc tsum]
 notation3 "∑' "(...)", "r:67:(scoped f => tsum f) => r
 
-variable {f : β → α} {a : α} {s : Finset β}
+@[to_additive]
+lemma tprod_iff_tprodFilter {f : β → α} :
+  ∏' b, f b = ∏' [atTop] b, f b := rfl
+
+variable {L : Filter (Finset β)} {f : β → α} {a : α} {s : Finset β}
 
 @[to_additive]
-theorem HasProd.multipliable (h : HasProd f a) : Multipliable f :=
+theorem HasProdFilter.multipliableFilter (h : HasProdFilter L f a) : MultipliableFilter L f :=
   ⟨a, h⟩
 
 @[to_additive]
-theorem tprod_eq_one_of_not_multipliable (h : ¬Multipliable f) : ∏' b, f b = 1 := by
-  simp [tprod_def, h]
+theorem HasProd.multipliable (h : HasProd f a) : Multipliable f :=
+  HasProdFilter.multipliableFilter h
+
+@[to_additive]
+theorem tprodFilter_eq_one_of_not_multipliableFilter (h : ¬MultipliableFilter L f) :
+    ∏'[L] b, f b = 1 := by
+  simp [tprodFilter_def, h]
+
+alias tprod_eq_one_of_not_multipliable := tprodFilter_eq_one_of_not_multipliableFilter
+alias tsum_eq_zero_of_not_summable := tsumFilter_eq_zero_of_not_summableFilter
 
 @[to_additive]
 theorem Function.Injective.hasProd_iff {g : γ → β} (hg : Injective g)
     (hf : ∀ x, x ∉ Set.range g → f x = 1) : HasProd (f ∘ g) a ↔ HasProd f a := by
-  simp only [HasProd, Tendsto, comp_apply, hg.map_atTop_finset_prod_eq hf]
+  simp only [HasProd, HasProdFilter, Tendsto, comp_apply, hg.map_atTop_finset_prod_eq hf]
 
 @[to_additive]
 theorem hasProd_subtype_iff_of_mulSupport_subset {s : Set β} (hf : mulSupport f ⊆ s) :
@@ -153,27 +190,55 @@ theorem hasProd_prod_of_ne_finset_one (hf : ∀ b ∉ s, f b = 1) :
 
 @[to_additive]
 theorem multipliable_of_ne_finset_one (hf : ∀ b ∉ s, f b = 1) : Multipliable f :=
-  (hasProd_prod_of_ne_finset_one hf).multipliable
+  (hasProd_prod_of_ne_finset_one hf).multipliableFilter
 
 @[to_additive]
-theorem Multipliable.hasProd (ha : Multipliable f) : HasProd f (∏' b, f b) := by
-  simp only [tprod_def, ha, dite_true]
-  by_cases H : (mulSupport f).Finite
-  · simp [H, hasProd_prod_of_ne_finset_one, finprod_eq_prod]
-  · simpa [H] using ha.choose_spec
+theorem MultipliableFilter.hasProdFilter {L : Filter (Finset β)} (ha : MultipliableFilter L f) :
+    HasProdFilter L f (∏'[L] b, f b) := by
+  simp only [tprodFilter_def, ha, dite_true]
+  by_cases h : (mulSupport f).Finite ∧ L ≤ atTop
+  · simp [h, HasProdFilter]
+    simp only [h, finprod_eq_prod]
+    have HH := hasProd_prod_of_ne_finset_one (f := f) (s := h.1.toFinset)
+    simp only [Set.Finite.mem_toFinset, mem_mulSupport, ne_eq, not_not, imp_self, implies_true,
+      HasProd, forall_const] at HH
+    exact fun ⦃U⦄ a ↦ h.2 (HH a)
+  simp [h]
+  apply ha.choose_spec
 
 @[to_additive]
-theorem HasProd.unique {a₁ a₂ : α} [T2Space α] : HasProd f a₁ → HasProd f a₂ → a₁ = a₂ := by
+theorem Multipliable.hasProd (h : Multipliable f) : HasProd f (∏' b, f b) :=
+  MultipliableFilter.hasProdFilter h
+
+@[to_additive]
+theorem HasProdFilter.unique {a₁ a₂ : α} [T2Space α] [L.NeBot] :
+    HasProdFilter L f a₁ → HasProdFilter L f a₂ → a₁ = a₂ := by
   classical exact tendsto_nhds_unique
 
 variable [T2Space α]
 
 @[to_additive]
-theorem HasProd.tprod_eq (ha : HasProd f a) : ∏' b, f b = a :=
-  (Multipliable.hasProd ⟨a, ha⟩).unique ha
+theorem HasProdFilter.tprodFilter_eq (ha : HasProdFilter L f a) [L.NeBot] : ∏'[L] b, f b = a :=
+  (MultipliableFilter.hasProdFilter ha.multipliableFilter).unique ha
+
+alias HasProdFilter.tprod_eq := HasProdFilter.tprodFilter_eq
+alias HasSumFilter.tsum_eq := HasSumFilter.tsumFilter_eq
 
 @[to_additive]
-theorem Multipliable.hasProd_iff (h : Multipliable f) : HasProd f a ↔ ∏' b, f b = a :=
-  Iff.intro HasProd.tprod_eq fun eq ↦ eq ▸ h.hasProd
+theorem MultipliableFilter.hasProdFilter_iff (h : MultipliableFilter L f) [L.NeBot] :
+    HasProdFilter L f a ↔ ∏'[L] b, f b = a := by
+  apply Iff.intro
+  · exact fun h ↦ HasProdFilter.tprodFilter_eq h
+  · exact fun H ↦ H ▸ hasProdFilter h
+
+omit [T2Space α] in
+@[to_additive]
+lemma HasProdFilter_bot {f : β → α} {a : α} : HasProdFilter ⊥ f a := by
+  simp [HasProdFilter, Tendsto]
+
+omit [T2Space α] in
+@[to_additive]
+lemma MultipliableFilter_bot (f : β → α) : MultipliableFilter ⊥ f :=
+  ⟨1, HasProdFilter_bot⟩
 
 end HasProd

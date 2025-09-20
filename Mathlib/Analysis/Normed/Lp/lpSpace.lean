@@ -124,7 +124,7 @@ theorem zero_memℓp : Memℓp (0 : ∀ i, E i) p := by
     simp only [norm_zero, Pi.zero_apply]
     exact bddAbove_singleton.mono Set.range_const_subset
   · apply memℓp_gen
-    simp [Real.zero_rpow hp.ne', summable_zero]
+    simp [Real.zero_rpow hp.ne', summableFilter_zero]
 
 theorem zero_mem_ℓp' : Memℓp (fun i : α => (0 : E i)) p :=
   zero_memℓp
@@ -251,7 +251,7 @@ theorem const_smul {f : ∀ i, E i} (hf : Memℓp f p) (c : 𝕜) : Memℓp (c �
   · apply memℓp_gen
     dsimp only [Pi.smul_apply]
     have := (hf.summable hp).mul_left (↑(‖c‖₊ ^ p.toReal) : ℝ)
-    simp_rw [← coe_nnnorm, ← NNReal.coe_rpow, ← NNReal.coe_mul, NNReal.summable_coe,
+    simp_rw [← coe_nnnorm, ← NNReal.coe_rpow, ← NNReal.coe_mul, NNReal.summableFilter_coe,
       ← NNReal.mul_rpow] at this ⊢
     refine NNReal.summable_of_le ?_ this
     intro i
@@ -380,7 +380,7 @@ theorem norm_rpow_eq_tsum (hp : 0 < p.toReal) (f : lp E p) :
   rw [norm_eq_tsum_rpow hp, ← Real.rpow_mul]
   · field_simp
     simp
-  apply tsum_nonneg
+  apply tsumFilter_nonneg
   intro i
   calc
     (0 : ℝ) = (0 : ℝ) ^ p.toReal := by rw [Real.zero_rpow hp.ne']
@@ -475,7 +475,7 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
             Real.Lp_add_le_hasSum_of_nonneg hp' hf₁ hg₁ (norm_nonneg' _) (norm_nonneg' _) hf₂ hg₂
           refine le_trans ?_ hC₂
           rw [← Real.rpow_le_rpow_iff (norm_nonneg' (f + g)) hC₁ hp'']
-          refine hasSum_le ?_ (lp.hasSum_norm hp'' (f + g)) hCfg
+          refine hasSumFilter_le ?_ (lp.hasSum_norm hp'' (f + g)) hCfg
           intro i
           gcongr
           apply norm_add_le
@@ -541,7 +541,7 @@ theorem norm_le_of_tsum_le (hp : 0 < p.toReal) {C : ℝ} (hC : 0 ≤ C) {f : lp 
 
 theorem norm_le_of_forall_sum_le (hp : 0 < p.toReal) {C : ℝ} (hC : 0 ≤ C) {f : lp E p}
     (hf : ∀ s : Finset α, ∑ i ∈ s, ‖f i‖ ^ p.toReal ≤ C ^ p.toReal) : ‖f‖ ≤ C :=
-  norm_le_of_tsum_le hp hC (((lp.memℓp f).summable hp).tsum_le_of_sum_le hf)
+  norm_le_of_tsum_le hp hC (((lp.memℓp f).summable hp).tsumFilter_le_of_sum_le hf)
 
 end ComparePointwise
 
@@ -619,8 +619,8 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     have hLHS := lp.hasSum_norm hp (c • f)
     have hRHS := (lp.hasSum_norm hp f).mul_left (‖c‖ ^ p.toReal)
     simp_rw [← coe_nnnorm, ← _root_.coe_nnnorm, ← NNReal.coe_rpow, ← NNReal.coe_mul,
-      NNReal.hasSum_coe] at hRHS hLHS
-    refine hasSum_mono hLHS hRHS fun i => ?_
+      NNReal.hasSumFilter_coe] at hRHS hLHS
+    refine hasSumFilter_mono hLHS hRHS fun i => ?_
     dsimp only
     rw [← NNReal.mul_rpow, lp.coeFn_smul, Pi.smul_apply]
     gcongr
@@ -1030,7 +1030,7 @@ protected theorem hasSum_single [Fact (1 ≤ p)] (hp : p ≠ ⊤) (f : lp E p) :
   have hp₀ : 0 < p := zero_lt_one.trans_le Fact.out
   have hp' : 0 < p.toReal := ENNReal.toReal_pos hp₀.ne' hp
   have := lp.hasSum_norm hp' f
-  rw [HasSum, Metric.tendsto_nhds] at this ⊢
+  rw [HasSum, HasSumFilter, Metric.tendsto_nhds] at this ⊢
   intro ε hε
   refine (this _ (Real.rpow_pos_of_pos hε p.toReal)).mono ?_
   intro s hs

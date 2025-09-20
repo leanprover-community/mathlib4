@@ -120,7 +120,7 @@ and let `g : β → R` be a function that sums to `b : R`. Then `fun i : α × �
 sums to `a * b`. -/
 theorem HasSum.mul_of_nonarchimedean {f : α → R} {g : β → R} {a b : R} (hf : HasSum f a)
     (hg : HasSum g b) : HasSum (fun i : α × β ↦ f i.1 * g i.2) (a * b) := by
-  rw [← hasSum_iff_hasSum_compl] at *
+  rw [HasSum, ← hasSumFilter_iff_hasSumFilter_compl, ← hasSum_iff_hasSumFilter] at *
   simp only [Function.comp_def, UniformSpace.Completion.toCompl_apply,
     UniformSpace.Completion.coe_mul]
   exact (hf.mul hg) (hf.summable.mul_of_complete_nonarchimedean hg.summable :)
@@ -133,6 +133,6 @@ theorem Summable.mul_of_nonarchimedean {f : α → R} {g : β → R} (hf : Summa
 
 theorem tsum_mul_tsum_of_nonarchimedean [T0Space R] {f : α → R} {g : β → R} (hf : Summable f)
     (hg : Summable g) : (∑' i, f i) * (∑' i, g i) = ∑' i : α × β, f i.1 * g i.2 :=
-  (hf.hasSum.mul_of_nonarchimedean hg.hasSum).tsum_eq.symm
+  (hf.hasSum.mul_of_nonarchimedean hg.hasSum).tsumFilter_eq.symm
 
 end NonarchimedeanRing

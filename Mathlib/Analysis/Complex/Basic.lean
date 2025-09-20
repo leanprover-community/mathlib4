@@ -444,17 +444,19 @@ theorem normSq_to_complex {x : ℂ} : norm_sqC x = Complex.normSq x :=
 
 section tsum
 
-variable {α : Type*} (𝕜 : Type*) [RCLike 𝕜]
+variable {α : Type*} (𝕜 : Type*) [RCLike 𝕜] {L : Filter (Finset α)}
 
 @[simp]
-theorem hasSum_conj {f : α → 𝕜} {x : 𝕜} : HasSum (fun x => conj (f x)) x ↔ HasSum f (conj x) :=
-  conjCLE.hasSum
+theorem hasSumFilter_conj {f : α → 𝕜} {x : 𝕜} :
+    HasSumFilter L (fun x => conj (f x)) x ↔ HasSumFilter L f (conj x) :=
+  conjCLE.hasSumFilter
 
-theorem hasSum_conj' {f : α → 𝕜} {x : 𝕜} : HasSum (fun x => conj (f x)) (conj x) ↔ HasSum f x :=
-  conjCLE.hasSum'
+theorem hasSumFilter_conj' {f : α → 𝕜} {x : 𝕜} :
+    HasSumFilter L (fun x => conj (f x)) (conj x) ↔ HasSumFilter L f x :=
+  conjCLE.hasSumFilter'
 
 @[simp]
-theorem summable_conj {f : α → 𝕜} : (Summable fun x => conj (f x)) ↔ Summable f :=
+theorem summableFilter_conj {f : α → 𝕜} : (Summable fun x => conj (f x)) ↔ Summable f :=
   summable_star_iff
 
 variable {𝕜} in
@@ -462,42 +464,49 @@ theorem conj_tsum (f : α → 𝕜) : conj (∑' a, f a) = ∑' a, conj (f a) :=
   tsum_star
 
 @[simp, norm_cast]
-theorem hasSum_ofReal {f : α → ℝ} {x : ℝ} : HasSum (fun x => (f x : 𝕜)) x ↔ HasSum f x :=
-  ⟨fun h => by simpa only [RCLike.reCLM_apply, RCLike.ofReal_re] using reCLM.hasSum h,
-    ofRealCLM.hasSum⟩
+theorem hasSumFilter_ofReal {f : α → ℝ} {x : ℝ} :
+    HasSumFilter L (fun x => (f x : 𝕜)) x ↔ HasSumFilter L f x :=
+  ⟨fun h => by simpa only [RCLike.reCLM_apply, RCLike.ofReal_re] using reCLM.hasSumFilter h,
+    ofRealCLM.hasSumFilter⟩
 
 @[simp, norm_cast]
-theorem summable_ofReal {f : α → ℝ} : (Summable fun x => (f x : 𝕜)) ↔ Summable f :=
-  ⟨fun h => by simpa only [RCLike.reCLM_apply, RCLike.ofReal_re] using reCLM.summable h,
-    ofRealCLM.summable⟩
+theorem summableFilter_ofReal {f : α → ℝ} :
+    (SummableFilter L fun x => (f x : 𝕜)) ↔ SummableFilter L f :=
+  ⟨fun h => by simpa only [RCLike.reCLM_apply, RCLike.ofReal_re] using reCLM.summableFilter h,
+    ofRealCLM.summableFilter⟩
 
 @[norm_cast]
-theorem ofReal_tsum (f : α → ℝ) : (↑(∑' a, f a) : 𝕜) = ∑' a, (f a : 𝕜) := by
-  by_cases h : Summable f
-  · exact ContinuousLinearMap.map_tsum ofRealCLM h
-  · rw [tsum_eq_zero_of_not_summable h,
-      tsum_eq_zero_of_not_summable ((summable_ofReal _).not.mpr h), ofReal_zero]
+theorem ofReal_tsumFilter [L.NeBot] (f : α → ℝ) : (↑(∑'[L] a, f a) : 𝕜) = ∑'[L] a, (f a : 𝕜) := by
+  by_cases h : SummableFilter L f
+  · exact ContinuousLinearMap.map_tsumFilter ofRealCLM h
+  · rw [tsumFilter_eq_zero_of_not_summableFilter h,
+      tsumFilter_eq_zero_of_not_summableFilter ((summableFilter_ofReal _).not.mpr h), ofReal_zero]
 
-theorem hasSum_re {f : α → 𝕜} {x : 𝕜} (h : HasSum f x) : HasSum (fun x => re (f x)) (re x) :=
-  reCLM.hasSum h
+theorem hasSumFilter_re {f : α → 𝕜} {x : 𝕜} (h : HasSumFilter L f x) :
+    HasSumFilter L (fun x => re (f x)) (re x) :=
+  reCLM.hasSumFilter h
 
-theorem hasSum_im {f : α → 𝕜} {x : 𝕜} (h : HasSum f x) : HasSum (fun x => im (f x)) (im x) :=
-  imCLM.hasSum h
+theorem hasSumFilter_im {f : α → 𝕜} {x : 𝕜} (h : HasSumFilter L f x) :
+    HasSumFilter L (fun x => im (f x)) (im x) :=
+  imCLM.hasSumFilter h
 
-theorem re_tsum {f : α → 𝕜} (h : Summable f) : re (∑' a, f a) = ∑' a, re (f a) :=
-  reCLM.map_tsum h
+theorem re_tsumFilter [L.NeBot] {f : α → 𝕜} (h : SummableFilter L f) :
+    re (∑'[L] a, f a) = ∑'[L] a, re (f a) :=
+  reCLM.map_tsumFilter h
 
-theorem im_tsum {f : α → 𝕜} (h : Summable f) : im (∑' a, f a) = ∑' a, im (f a) :=
-  imCLM.map_tsum h
+theorem im_tsumFilter [L.NeBot] {f : α → 𝕜} (h : SummableFilter L f) :
+    im (∑'[L] a, f a) = ∑'[L] a, im (f a) :=
+  imCLM.map_tsumFilter h
 
 variable {𝕜}
 
-theorem hasSum_iff (f : α → 𝕜) (c : 𝕜) :
-    HasSum f c ↔ HasSum (fun x => re (f x)) (re c) ∧ HasSum (fun x => im (f x)) (im c) := by
-  refine ⟨fun h => ⟨hasSum_re _ h, hasSum_im _ h⟩, ?_⟩
+theorem hasSumFilter_iff (f : α → 𝕜) (c : 𝕜) :
+    HasSumFilter L f c ↔ HasSumFilter L (fun x => re (f x)) (re c) ∧
+    HasSumFilter L (fun x => im (f x)) (im c) := by
+  refine ⟨fun h => ⟨hasSumFilter_re _ h, hasSumFilter_im _ h⟩, ?_⟩
   rintro ⟨h₁, h₂⟩
   simpa only [re_add_im] using
-    ((hasSum_ofReal 𝕜).mpr h₁).add (((hasSum_ofReal 𝕜).mpr h₂).mul_right I)
+    ((hasSumFilter_ofReal 𝕜).mpr h₁).add (((hasSumFilter_ofReal 𝕜).mpr h₂).mul_right I)
 
 end tsum
 
@@ -516,49 +525,59 @@ discoverability and to avoid the need to unify `𝕜`.
 
 section tsum
 
-variable {α : Type*}
+variable {α : Type*} {L : Filter (Finset α)}
 
 open ComplexConjugate
 
-theorem hasSum_conj {f : α → ℂ} {x : ℂ} : HasSum (fun x => conj (f x)) x ↔ HasSum f (conj x) :=
-  RCLike.hasSum_conj _
+theorem hasSumFilter_conj {f : α → ℂ} {x : ℂ} :
+    HasSumFilter L (conj (f · )) x ↔ HasSumFilter L f (conj x) :=
+  RCLike.hasSumFilter_conj _
 
-theorem hasSum_conj' {f : α → ℂ} {x : ℂ} : HasSum (fun x => conj (f x)) (conj x) ↔ HasSum f x :=
-  RCLike.hasSum_conj' _
+theorem hasSumFilter_conj' {f : α → ℂ} {x : ℂ} :
+    HasSumFilter L (conj (f · )) (conj x) ↔ HasSumFilter L f x :=
+  RCLike.hasSumFilter_conj' _
 
-theorem summable_conj {f : α → ℂ} : (Summable fun x => conj (f x)) ↔ Summable f :=
-  RCLike.summable_conj _
+theorem summableFilter_conj {f : α → ℂ} :
+    (Summable fun x => conj (f x)) ↔ Summable f :=
+  RCLike.summableFilter_conj _
 
-theorem conj_tsum (f : α → ℂ) : conj (∑' a, f a) = ∑' a, conj (f a) :=
+theorem conj_tsumFilter (f : α → ℂ) : conj (∑' a, f a) = ∑' a, conj (f a) :=
   RCLike.conj_tsum _
 
 @[simp, norm_cast]
-theorem hasSum_ofReal {f : α → ℝ} {x : ℝ} : HasSum (fun x => (f x : ℂ)) x ↔ HasSum f x :=
-  RCLike.hasSum_ofReal _
+theorem hasSumFilter_ofReal {f : α → ℝ} {x : ℝ} :
+    HasSumFilter L (fun x => (f x : ℂ)) x ↔ HasSumFilter L f x :=
+  RCLike.hasSumFilter_ofReal _
 
 @[simp, norm_cast]
-theorem summable_ofReal {f : α → ℝ} : (Summable fun x => (f x : ℂ)) ↔ Summable f :=
-  RCLike.summable_ofReal _
+theorem summableFilter_ofReal {f : α → ℝ} :
+    (SummableFilter L fun x => (f x : ℂ)) ↔ SummableFilter L f :=
+  RCLike.summableFilter_ofReal _
 
 @[norm_cast]
-theorem ofReal_tsum (f : α → ℝ) : (↑(∑' a, f a) : ℂ) = ∑' a, ↑(f a) :=
-  RCLike.ofReal_tsum _ _
+theorem ofReal_tsumFilter [L.NeBot] (f : α → ℝ) : (↑(∑'[L] a, f a) : ℂ) = ∑'[L] a, ↑(f a) :=
+  RCLike.ofReal_tsumFilter _ _
 
-theorem hasSum_re {f : α → ℂ} {x : ℂ} (h : HasSum f x) : HasSum (fun x => (f x).re) x.re :=
-  RCLike.hasSum_re ℂ h
+theorem hasSumFilter_re {f : α → ℂ} {x : ℂ} (h : HasSumFilter L f x) :
+    HasSumFilter L (fun x => (f x).re) x.re :=
+  RCLike.hasSumFilter_re ℂ h
 
-theorem hasSum_im {f : α → ℂ} {x : ℂ} (h : HasSum f x) : HasSum (fun x => (f x).im) x.im :=
-  RCLike.hasSum_im ℂ h
+theorem hasSumFilter_im {f : α → ℂ} {x : ℂ} (h : HasSumFilter L f x) :
+    HasSumFilter L (fun x => (f x).im) x.im :=
+  RCLike.hasSumFilter_im ℂ h
 
-theorem re_tsum {f : α → ℂ} (h : Summable f) : (∑' a, f a).re = ∑' a, (f a).re :=
-  RCLike.re_tsum _ h
+theorem re_tsumFilter [L.NeBot] {f : α → ℂ} (h : SummableFilter L f) :
+    (∑'[L] a, f a).re = ∑'[L] a, (f a).re :=
+  RCLike.re_tsumFilter _ h
 
-theorem im_tsum {f : α → ℂ} (h : Summable f) : (∑' a, f a).im = ∑' a, (f a).im :=
-  RCLike.im_tsum _ h
+theorem im_tsumFilter [L.NeBot] {f : α → ℂ} (h : SummableFilter L f) :
+    (∑'[L] a, f a).im = ∑'[L] a, (f a).im :=
+  RCLike.im_tsumFilter _ h
 
-theorem hasSum_iff (f : α → ℂ) (c : ℂ) :
-    HasSum f c ↔ HasSum (fun x => (f x).re) c.re ∧ HasSum (fun x => (f x).im) c.im :=
-  RCLike.hasSum_iff _ _
+theorem hasSumFilter_iff (f : α → ℂ) (c : ℂ) :
+    HasSumFilter L f c ↔ HasSumFilter L (fun x => (f x).re) c.re ∧
+    HasSumFilter L (fun x => (f x).im) c.im :=
+  RCLike.hasSumFilter_iff _ _
 
 end tsum
 

@@ -95,7 +95,7 @@ lemma multipliable_sineTerm (x : ℂ) : Multipliable fun i ↦ (1 + sineTerm x i
 
 lemma euler_sineTerm_tprod (hx : x ∈ ℂ_ℤ) :
     ∏' i : ℕ, (1 + sineTerm x i) = Complex.sin (π * x) / (π * x) := by
-  rw [← Multipliable.hasProd_iff (multipliable_sineTerm x),
+  rw [← MultipliableFilter.hasProdFilter_iff (multipliable_sineTerm x), ← hasProd_iff_hasProdFilter,
     Multipliable.hasProd_iff_tendsto_nat (multipliable_sineTerm x)]
   exact tendsto_euler_sin_prod' (integerComplement.ne_zero hx)
 
@@ -208,7 +208,7 @@ lemma cotTerm_identity (hz : x ∈ ℂ_ℤ) (n : ℕ) :
 
 lemma Summable_cotTerm (hz : x ∈ ℂ_ℤ) : Summable fun n ↦ cotTerm x n := by
   rw [funext fun n ↦ cotTerm_identity hz n]
-  apply Summable.mul_left
+  apply SummableFilter.mul_left
   suffices Summable fun i : ℕ ↦ (x - (↑i : ℂ))⁻¹ * (x + (↑i : ℂ))⁻¹ by
     rw [← summable_nat_add_iff 1] at this
     simpa using this
@@ -219,7 +219,7 @@ lemma Summable_cotTerm (hz : x ∈ ℂ_ℤ) : Summable fun n ↦ cotTerm x n := 
 
 lemma cot_series_rep' (hz : x ∈ ℂ_ℤ) : π * cot (π * x) - 1 / x =
     ∑' n : ℕ, (1 / (x - (n + 1)) + 1 / (x + (n + 1))) := by
-  rw [HasSum.tsum_eq]
+  rw [tsum, HasSumFilter.tsumFilter_eq]
   apply (Summable.hasSum_iff_tendsto_nat (Summable_cotTerm hz)).mpr
     (tendsto_logDeriv_euler_cot_sub hz)
 
@@ -286,10 +286,12 @@ private noncomputable abbrev cotTermUpperBound (A B : ℝ) (hB : 0 < B) (a : ℕ
 private lemma summable_cotTermUpperBound (A B : ℝ) (hB : 0 < B) {k : ℕ} (hk : 1 ≤ k) :
     Summable fun a : ℕ ↦ cotTermUpperBound k A B hB a := by
   simp_rw [← mul_assoc]
-  apply Summable.mul_left
-  conv => enter [1, n]; rw [show (-1 - k : ℤ) = -(1 + k :) by omega, zpow_neg, zpow_natCast];
+  apply SummableFilter.mul_left
+
+  conv => enter [2, n]; rw [show (-1 - k : ℤ) = -(1 + k :) by omega, zpow_neg, zpow_natCast];
           enter [1, 1, 1]; norm_cast
-  rw [summable_norm_iff, summable_nat_add_iff (f := fun n : ℕ ↦ ((n : ℝ) ^ (1 + k))⁻¹)]
+  rw [← summable_iff_summableFilter, summable_norm_iff,
+    summable_nat_add_iff (f := fun n : ℕ ↦ ((n : ℝ) ^ (1 + k))⁻¹)]
   exact summable_nat_pow_inv.mpr <| by omega
 
 open EisensteinSeries in
@@ -359,8 +361,8 @@ private lemma aux_iteratedDeriv_tsum_cotTerm {k : ℕ} (hk : 1 ≤ k) (hz : z �
     enter [1, 2, 1, n]
     rw [eqOn_iteratedDerivWithin_cotTerm_upperHalfPlaneSet k n (by simp [hz])]
   rw [tsum_of_add_one_of_neg_add_one (by simpa using aux_summable_add hk z)
-    (by simpa [sub_eq_add_neg] using aux_summable_sub hk z),
-    tsum_mul_left, Summable.tsum_add (aux_summable_add hk z) (aux_summable_sub hk z)]
+    (by simpa [sub_eq_add_neg] using aux_summable_sub hk z), tsum, tsumFilter_mul_left,
+    SummableFilter.tsumFilter_add (aux_summable_add hk z) (aux_summable_sub hk z)]
   push_cast
   ring_nf
 

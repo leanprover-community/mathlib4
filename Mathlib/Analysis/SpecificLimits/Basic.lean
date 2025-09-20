@@ -312,7 +312,7 @@ theorem summable_geometric_of_lt_one {r : ℝ} (h₁ : 0 ≤ r) (h₂ : r < 1) :
 
 
 theorem tsum_geometric_of_lt_one {r : ℝ} (h₁ : 0 ≤ r) (h₂ : r < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ :=
-  (hasSum_geometric_of_lt_one h₁ h₂).tsum_eq
+  (hasSum_geometric_of_lt_one h₁ h₂).tsumFilter_eq
 
 theorem hasSum_geometric_two : HasSum (fun n : ℕ ↦ ((1 : ℝ) / 2) ^ n) 2 := by
   convert hasSum_geometric_of_lt_one _ _ <;> norm_num
@@ -325,7 +325,7 @@ theorem summable_geometric_two_encode {ι : Type*} [Encodable ι] :
   summable_geometric_two.comp_injective Encodable.encode_injective
 
 theorem tsum_geometric_two : (∑' n : ℕ, ((1 : ℝ) / 2) ^ n) = 2 :=
-  hasSum_geometric_two.tsum_eq
+  hasSum_geometric_two.tsumFilter_eq
 
 theorem sum_geometric_two_le (n : ℕ) : (∑ i ∈ range n, (1 / (2 : ℝ)) ^ i) ≤ 2 := by
   have : ∀ i, 0 ≤ (1 / (2 : ℝ)) ^ i := by
@@ -348,10 +348,10 @@ theorem tsum_geometric_inv_two_ge (n : ℕ) :
     Finset.sum_eq_zero fun i hi ↦
       ite_eq_right_iff.2 fun h ↦ (lt_irrefl _ ((Finset.mem_range.1 hi).trans_le h)).elim
   simp only [← Summable.sum_add_tsum_nat_add n A, B, if_true, zero_add, zero_le',
-    le_add_iff_nonneg_left, pow_add, _root_.tsum_mul_right, tsum_geometric_inv_two]
+    le_add_iff_nonneg_left, pow_add, _root_.tsumFilter_mul_right, tsum_geometric_inv_two]
 
 theorem hasSum_geometric_two' (a : ℝ) : HasSum (fun n : ℕ ↦ a / 2 / 2 ^ n) a := by
-  convert HasSum.mul_left (a / 2)
+  convert HasSumFilter.mul_left (a / 2)
       (hasSum_geometric_of_lt_one (le_of_lt one_half_pos) one_half_lt_one) using 1
   · funext n
     simp only [one_div, inv_pow]
@@ -362,11 +362,11 @@ theorem summable_geometric_two' (a : ℝ) : Summable fun n : ℕ ↦ a / 2 / 2 ^
   ⟨a, hasSum_geometric_two' a⟩
 
 theorem tsum_geometric_two' (a : ℝ) : ∑' n : ℕ, a / 2 / 2 ^ n = a :=
-  (hasSum_geometric_two' a).tsum_eq
+  (hasSum_geometric_two' a).tsumFilter_eq
 
 /-- **Sum of a Geometric Series** -/
 theorem NNReal.hasSum_geometric {r : ℝ≥0} (hr : r < 1) : HasSum (fun n : ℕ ↦ r ^ n) (1 - r)⁻¹ := by
-  apply NNReal.hasSum_coe.1
+  apply NNReal.hasSumFilter_coe.1
   push_cast
   rw [NNReal.coe_sub (le_of_lt hr)]
   exact hasSum_geometric_of_lt_one r.coe_nonneg hr
@@ -375,7 +375,7 @@ theorem NNReal.summable_geometric {r : ℝ≥0} (hr : r < 1) : Summable fun n : 
   ⟨_, NNReal.hasSum_geometric hr⟩
 
 theorem tsum_geometric_nnreal {r : ℝ≥0} (hr : r < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ :=
-  (NNReal.hasSum_geometric hr).tsum_eq
+  (NNReal.hasSum_geometric hr).tsumFilter_eq
 
 /-- The series `pow r` converges to `(1-r)⁻¹`. For `r < 1` the RHS is a finite number,
 and for `1 ≤ r` the RHS equals `∞`. -/
@@ -384,7 +384,7 @@ theorem ENNReal.tsum_geometric (r : ℝ≥0∞) : ∑' n : ℕ, r ^ n = (1 - r)�
   rcases lt_or_ge r 1 with hr | hr
   · rcases ENNReal.lt_iff_exists_coe.1 hr with ⟨r, rfl, hr'⟩
     norm_cast at *
-    convert ENNReal.tsum_coe_eq (NNReal.hasSum_geometric hr)
+    convert ENNReal.tsumFilter_coe_eq (NNReal.hasSum_geometric hr)
     rw [ENNReal.coe_inv <| ne_of_gt <| tsub_pos_iff_lt.2 hr, coe_sub, coe_one]
   · rw [tsub_eq_zero_iff_le.mpr hr, ENNReal.inv_zero, ENNReal.tsum_eq_iSup_nat, iSup_eq_top]
     refine fun a ha ↦
@@ -500,8 +500,8 @@ include hr hu
 /-- If `dist (f n) (f (n+1))` is bounded by `C * r^n`, `r < 1`, then `f` is a Cauchy sequence. -/
 theorem aux_hasSum_of_le_geometric : HasSum (fun n : ℕ ↦ C * r ^ n) (C / (1 - r)) := by
   rcases sign_cases_of_C_mul_pow_nonneg fun n ↦ dist_nonneg.trans (hu n) with (rfl | ⟨_, r₀⟩)
-  · simp [hasSum_zero]
-  · refine HasSum.mul_left C ?_
+  · simp [hasSumFilter_zero]
+  · refine HasSumFilter.mul_left C ?_
     simpa using hasSum_geometric_of_lt_one r₀ hr
 
 variable (r C)
@@ -515,7 +515,7 @@ theorem cauchySeq_of_le_geometric : CauchySeq f :=
 `f n` to the limit of `f` is bounded above by `C * r^n / (1 - r)`. -/
 theorem dist_le_of_le_geometric_of_tendsto₀ {a : α} (ha : Tendsto f atTop (𝓝 a)) :
     dist (f 0) a ≤ C / (1 - r) :=
-  (aux_hasSum_of_le_geometric hr hu).tsum_eq ▸
+  (aux_hasSum_of_le_geometric hr hu).tsumFilter_eq ▸
     dist_le_tsum_of_dist_le_of_tendsto₀ _ hu ⟨_, aux_hasSum_of_le_geometric hr hu⟩ ha
 
 /-- If `dist (f n) (f (n+1))` is bounded by `C * r^n`, `r < 1`, then the distance from
@@ -526,7 +526,7 @@ theorem dist_le_of_le_geometric_of_tendsto {a : α} (ha : Tendsto f atTop (𝓝 
   convert dist_le_tsum_of_dist_le_of_tendsto _ hu ⟨_, this⟩ ha n
   simp only [pow_add, mul_left_comm C, mul_div_right_comm]
   rw [mul_comm]
-  exact (this.mul_left _).tsum_eq.symm
+  exact (this.mul_left _).tsumFilter_eq.symm
 
 end
 
@@ -550,7 +550,7 @@ theorem dist_le_of_le_geometric_two_of_tendsto {a : α} (ha : Tendsto f atTop (�
   convert dist_le_tsum_of_dist_le_of_tendsto _ hu₂ (summable_geometric_two' C) ha n
   simp only [add_comm n, pow_add, ← div_div]
   symm
-  exact ((hasSum_geometric_two' C).div_const _).tsum_eq
+  exact ((hasSum_geometric_two' C).div_const _).tsumFilter_eq
 
 end LeGeometric
 
@@ -614,7 +614,7 @@ theorem exists_pos_sum_of_countable {ε : ℝ≥0} (hε : ε ≠ 0) (ι) [Counta
   obtain ⟨ε', hε', c, hc, hcε⟩ := posSumOfEncodable a0 ι
   exact
     ⟨fun i ↦ ⟨ε' i, (hε' i).le⟩, fun i ↦ NNReal.coe_lt_coe.1 <| hε' i,
-      ⟨c, hasSum_le (fun i ↦ (hε' i).le) hasSum_zero hc⟩, NNReal.hasSum_coe.1 hc,
+      ⟨c, hasSumFilter_le (fun i ↦ (hε' i).le) hasSumFilter_zero hc⟩, NNReal.hasSumFilter_coe.1 hc,
       aε.trans_le' <| NNReal.coe_le_coe.1 hcε⟩
 
 end NNReal
@@ -626,7 +626,8 @@ theorem exists_pos_sum_of_countable {ε : ℝ≥0∞} (hε : ε ≠ 0) (ι) [Cou
   rcases exists_between (pos_iff_ne_zero.2 hε) with ⟨r, h0r, hrε⟩
   rcases lt_iff_exists_coe.1 hrε with ⟨x, rfl, _⟩
   rcases NNReal.exists_pos_sum_of_countable (coe_pos.1 h0r).ne' ι with ⟨ε', hp, c, hc, hcr⟩
-  exact ⟨ε', hp, (ENNReal.tsum_coe_eq hc).symm ▸ lt_trans (coe_lt_coe.2 hcr) hrε⟩
+  exact ⟨ε', hp, by
+    simp [tsum, (ENNReal.tsumFilter_coe_eq hc).symm ▸ lt_trans (coe_lt_coe.2 hcr) hrε]⟩
 
 theorem exists_pos_sum_of_countable' {ε : ℝ≥0∞} (hε : ε ≠ 0) (ι) [Countable ι] :
     ∃ ε' : ι → ℝ≥0∞, (∀ i, 0 < ε' i) ∧ ∑' i, ε' i < ε :=

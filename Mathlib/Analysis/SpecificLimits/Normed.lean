@@ -272,7 +272,7 @@ theorem tsum_geometric_le_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
       convert (hasSum_nat_add_iff' 1).mpr (hasSum_geometric_of_lt_one (norm_nonneg x) h)
       simp
     linarith
-  · simp [tsum_eq_zero_of_not_summable hx]
+  · simp [tsumFilter_eq_zero_of_not_summableFilter hx]
     nontriviality R
     have : 1 ≤ ‖(1 : R)‖ := one_le_norm_one R
     have : 0 ≤ (1 - ‖x‖) ⁻¹ := inv_nonneg.2 (by linarith)
@@ -281,7 +281,8 @@ theorem tsum_geometric_le_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
 variable [HasSummableGeomSeries R]
 
 theorem geom_series_mul_neg (x : R) (h : ‖x‖ < 1) : (∑' i : ℕ, x ^ i) * (1 - x) = 1 := by
-  have := (summable_geometric_of_norm_lt_one h).hasSum.mul_right (1 - x)
+  have := hasSum_iff_hasSumFilter.mpr
+    ((summable_geometric_of_norm_lt_one h).hasSum.mul_right (1 - x))
   refine tendsto_nhds_unique this.tendsto_sum_nat ?_
   have : Tendsto (fun n : ℕ ↦ 1 - x ^ n) atTop (𝓝 1) := by
     simpa using tendsto_const_nhds.sub (tendsto_pow_atTop_nhds_zero_of_norm_lt_one h)
@@ -289,7 +290,8 @@ theorem geom_series_mul_neg (x : R) (h : ‖x‖ < 1) : (∑' i : ℕ, x ^ i) * 
   rw [← geom_sum_mul_neg, Finset.sum_mul]
 
 theorem mul_neg_geom_series (x : R) (h : ‖x‖ < 1) : (1 - x) * ∑' i : ℕ, x ^ i = 1 := by
-  have := (summable_geometric_of_norm_lt_one h).hasSum.mul_left (1 - x)
+  have :=  hasSum_iff_hasSumFilter.mpr
+    ((summable_geometric_of_norm_lt_one h).hasSum.mul_left (1 - x))
   refine tendsto_nhds_unique this.tendsto_sum_nat ?_
   have : Tendsto (fun n : ℕ ↦ 1 - x ^ n) atTop (𝓝 1) := by
     simpa using tendsto_const_nhds.sub (tendsto_pow_atTop_nhds_zero_of_norm_lt_one h)
@@ -302,7 +304,7 @@ theorem geom_series_succ (x : R) (h : ‖x‖ < 1) : ∑' i : ℕ, x ^ (i + 1) =
 
 theorem geom_series_mul_shift (x : R) (h : ‖x‖ < 1) :
     x * ∑' i : ℕ, x ^ i = ∑' i : ℕ, x ^ (i + 1) := by
-  simp_rw [← (summable_geometric_of_norm_lt_one h).tsum_mul_left, ← _root_.pow_succ']
+  simp_rw [← (summable_geometric_of_norm_lt_one h).tsumFilter_mul_left, ← _root_.pow_succ']
 
 theorem geom_series_mul_one_add (x : R) (h : ‖x‖ < 1) :
     (1 + x) * ∑' i : ℕ, x ^ i = 2 * ∑' i : ℕ, x ^ i - 1 := by
@@ -351,7 +353,7 @@ instance : HasSummableGeomSeries K :=
   ⟨fun _ h ↦ (hasSum_geometric_of_norm_lt_one h).summable⟩
 
 theorem tsum_geometric_of_norm_lt_one (h : ‖ξ‖ < 1) : ∑' n : ℕ, ξ ^ n = (1 - ξ)⁻¹ :=
-  (hasSum_geometric_of_norm_lt_one h).tsum_eq
+  (hasSum_geometric_of_norm_lt_one h).tsumFilter_eq
 
 theorem hasSum_geometric_of_abs_lt_one {r : ℝ} (h : |r| < 1) :
     HasSum (fun n : ℕ ↦ r ^ n) (1 - r)⁻¹ :=
@@ -437,7 +439,7 @@ lemma hasSum_choose_mul_geometric_of_norm_lt_one'
           simp only [Finset.mem_range] at hi
           rw [mul_assoc, ← pow_add, show i + (n - i) = n by omega]
         simp [this, ← sum_mul, ← Nat.cast_sum, sum_range_add_choose n k, add_assoc]
-      · rw [ih.tsum_eq, (hasSum_geom_series_inverse r hr).tsum_eq, pow_succ]
+      · rw [tsum, tsum, ih.tsumFilter_eq, (hasSum_geom_series_inverse r hr).tsumFilter_eq, pow_succ]
 
 lemma summable_choose_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
     Summable (fun n ↦ (n + k).choose k * r ^ n) :=
@@ -445,7 +447,7 @@ lemma summable_choose_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r�
 
 lemma tsum_choose_mul_geometric_of_norm_lt_one' (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
     ∑' n, (n + k).choose k * r ^ n = (Ring.inverse (1 - r)) ^ (k + 1) :=
-  (hasSum_choose_mul_geometric_of_norm_lt_one' k hr).tsum_eq
+  (hasSum_choose_mul_geometric_of_norm_lt_one' k hr).tsumFilter_eq
 
 lemma hasSum_choose_mul_geometric_of_norm_lt_one
     (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
@@ -455,7 +457,7 @@ lemma hasSum_choose_mul_geometric_of_norm_lt_one
 
 lemma tsum_choose_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     ∑' n, (n + k).choose k * r ^ n = 1/ (1 - r) ^ (k + 1) :=
-  (hasSum_choose_mul_geometric_of_norm_lt_one k hr).tsum_eq
+  (hasSum_choose_mul_geometric_of_norm_lt_one k hr).tsumFilter_eq
 
 lemma summable_descFactorial_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
     Summable (fun n ↦ (n + k).descFactorial k * r ^ n) := by
@@ -482,7 +484,7 @@ theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r�
   have : Summable (fun n ↦ (n + k).descFactorial k * r ^ n
       - ∑ i ∈ range k, a i * n ^ (i : ℕ) * r ^ n) := by
     apply (summable_descFactorial_mul_geometric_of_norm_lt_one k hr).sub
-    apply summable_sum (fun i hi ↦ ?_)
+    apply summableFilter_sum (fun i hi ↦ ?_)
     simp_rw [mul_assoc]
     simp only [Finset.mem_range] at hi
     exact (hk _ hi).mul_left _
@@ -514,7 +516,7 @@ summable geometric series. For a version in a field, using division instead of `
 see `tsum_coe_mul_geometric_of_norm_lt_one`. -/
 theorem tsum_coe_mul_geometric_of_norm_lt_one'
     {r : 𝕜} (hr : ‖r‖ < 1) : (∑' n : ℕ, n * r ^ n : 𝕜) = r * Ring.inverse (1 - r) ^ 2 :=
-  (hasSum_coe_mul_geometric_of_norm_lt_one' hr).tsum_eq
+  (hasSum_coe_mul_geometric_of_norm_lt_one' hr).tsumFilter_eq
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, `HasSum` version. -/
 theorem hasSum_coe_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
@@ -525,7 +527,7 @@ theorem hasSum_coe_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`. -/
 theorem tsum_coe_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
     (∑' n : ℕ, n * r ^ n : 𝕜) = r / (1 - r) ^ 2 :=
-  (hasSum_coe_mul_geometric_of_norm_lt_one hr).tsum_eq
+  (hasSum_coe_mul_geometric_of_norm_lt_one hr).tsumFilter_eq
 
 end MulGeometric
 
@@ -615,14 +617,14 @@ theorem summable_of_ratio_norm_eventually_le {α : Type*} [SeminormedAddCommGrou
     rcases h with ⟨N, hN⟩
     rw [← @summable_nat_add_iff α _ _ _ _ N]
     refine .of_norm_bounded (g := fun n ↦ ‖f N‖ * r ^ n)
-      (Summable.mul_left _ <| summable_geometric_of_lt_one hr₀ hr₁) fun n ↦ ?_
+      (SummableFilter.mul_left _ <| summable_geometric_of_lt_one hr₀ hr₁) fun n ↦ ?_
     simp only
     conv_rhs => rw [mul_comm, ← zero_add N]
     refine le_geom (u := fun n ↦ ‖f (n + N)‖) hr₀ n fun i _ ↦ ?_
     convert hN (i + N) (N.le_add_left i) using 3
     ac_rfl
   · push_neg at hr₀
-    refine .of_norm_bounded_eventually_nat summable_zero ?_
+    refine .of_norm_bounded_eventually_nat summableFilter_zero ?_
     filter_upwards [h] with _ hn
     by_contra! h
     exact not_lt.mpr (norm_nonneg _) (lt_of_le_of_lt hn <| mul_neg_of_neg_of_pos hr₀ h)

@@ -184,7 +184,7 @@ theorem hasSum_of_hasSum_Lp {β : Type*} [μ.IsOpenPosMeasure]
     {g : β → C(α, E)} {f : C(α, E)} (hg : Summable g)
     (hg2 : HasSum (toLp (E := E) p μ 𝕜 ∘ g) (toLp (E := E) p μ 𝕜 f)) : HasSum g f := by
   convert Summable.hasSum hg
-  exact toLp_injective μ (hg2.unique ((toLp p μ 𝕜).hasSum <| Summable.hasSum hg))
+  exact toLp_injective μ (hg2.unique ((toLp p μ 𝕜).hasSumFilter <| Summable.hasSum hg))
 
 variable (μ) {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E]
 
