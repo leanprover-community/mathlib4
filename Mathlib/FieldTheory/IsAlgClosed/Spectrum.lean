@@ -16,7 +16,7 @@ spectrum of `a` under `(fun k ↦ Polynomial.eval k p)`. When `𝕜` is algebrai
 these are in fact equal (assuming either that the spectrum of `a` is nonempty or the polynomial
 has positive degree), which is the **spectral mapping theorem**.
 
-In addition, this file contains the fact that every element of a finite dimensional nontrivial
+In addition, this file contains the fact that every element of a finite-dimensional nontrivial
 algebra over an algebraically closed field has nonempty spectrum. In particular, this is used in
 `Module.End.exists_eigenvalue` to show that every linear map from a vector space to itself has an
 eigenvalue.
@@ -26,7 +26,7 @@ eigenvalue.
 * `spectrum.subset_polynomial_aeval`, `spectrum.map_polynomial_aeval_of_degree_pos`,
   `spectrum.map_polynomial_aeval_of_nonempty`: variations on the **spectral mapping theorem**.
 * `spectrum.nonempty_of_isAlgClosed_of_finiteDimensional`: the spectrum is nonempty for any
-  element of a nontrivial finite dimensional algebra over an algebraically closed field.
+  element of a nontrivial finite-dimensional algebra over an algebraically closed field.
 
 ## Notation
 
