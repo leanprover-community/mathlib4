@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.Limits.Presentation
 /-!
 # Objects that are colimits of objects satisfying a certain property
 
-Given a property of object `P : ObjectProperty C` and a category `J`,
+Given a property of objects `P : ObjectProperty C` and a category `J`,
 we introduce two properties of objects `P.strictColimitsOfShape J`
 and `P.colimitsOfShape J`. The former contains exactly the objects
 of the form `colimit F` for any functor `F : J ⥤ C` that has
