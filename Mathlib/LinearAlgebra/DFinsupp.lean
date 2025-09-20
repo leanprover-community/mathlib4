@@ -8,7 +8,6 @@ import Mathlib.Data.DFinsupp.Sigma
 import Mathlib.Data.Finsupp.ToDFinsupp
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
-import Mathlib.Tactic.Peel
 
 /-!
 # Properties of the module `Π₀ i, M i`
