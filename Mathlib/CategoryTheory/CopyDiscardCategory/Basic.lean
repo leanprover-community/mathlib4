@@ -47,34 +47,21 @@ class CopyDiscardCategory (C : Type*) [Category C] [MonoidalCategory C]
   /-- Every object has commutative comonoid structure. -/
   commComonObj (X : C) : CommComonObj X := by infer_instance
   /-- Tensor products of copies equal copies of tensor products. -/
-  copy_tensor (X Y : C) : Δ[X ⊗ Y] = (Δ[X] ⊗ₘ Δ[Y]) ≫ tensorμ X X Y Y
+  copy_tensor (X Y : C) : Δ[X ⊗ Y] = (Δ[X] ⊗ₘ Δ[Y]) ≫ tensorμ X X Y Y := by cat_disch
   /-- Discard distributes over tensor. -/
-  discard_tensor (X Y : C) : ε[X ⊗ Y] = (ε[X] ⊗ₘ ε[Y]) ≫ (λ_ (𝟙_ C)).hom
+  discard_tensor (X Y : C) : ε[X ⊗ Y] = (ε[X] ⊗ₘ ε[Y]) ≫ (λ_ (𝟙_ C)).hom := by cat_disch
   /-- Unit axioms. -/
-  copy_unit : Δ[𝟙_ C] = (λ_ (𝟙_ C)).inv
-  discard_unit : ε[𝟙_ C] = 𝟙 (𝟙_ C)
+  copy_unit : Δ[𝟙_ C] = (λ_ (𝟙_ C)).inv := by cat_disch
+  discard_unit : ε[𝟙_ C] = 𝟙 (𝟙_ C) := by cat_disch
 
 -- This gives access to the CommComonObj instances
-instance (X : C) [CopyDiscardCategory C] : CommComonObj X :=
-  CopyDiscardCategory.commComonObj X
+attribute [instance] CopyDiscardCategory.commComonObj
 
 open scoped ComonObj
 
 namespace CopyDiscardCategory
 
 variable [CopyDiscardCategory C]
-
-/-! ### Unit coherence -/
-
-/-- Counit on the monoidal unit is the identity. -/
-@[simp]
-lemma counit_unit : ε[𝟙_ C] = 𝟙 (𝟙_ C) :=
-  discard_unit
-
-/-- Comultiplication on the monoidal unit is the left unitor inverse. -/
-@[simp]
-lemma comul_unit : Δ[𝟙_ C] = (λ_ (𝟙_ C)).inv :=
-  copy_unit
 
 /-! ### Tensor product lemmas -/
 
