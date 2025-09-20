@@ -121,16 +121,13 @@ instance category : Category (Quotient r) where
 /-- The functor from a category to its quotient. -/
 def functor : C ⥤ Quotient r where
   obj a := { as := a }
-  map := @fun _ _ f ↦ Quot.mk _ f
+  map f := Quot.mk _ f
 
 instance full_functor : (functor r).Full where
   map_surjective f := ⟨Quot.out f, by simp [functor]⟩
 
 instance essSurj_functor : (functor r).EssSurj where
-  mem_essImage Y :=
-    ⟨Y.as, ⟨eqToIso (by
-            ext
-            rfl)⟩⟩
+  mem_essImage Y := ⟨Y.as, ⟨eqToIso rfl⟩⟩
 
 instance [Unique C] : Unique (Quotient r) where
   uniq a := by ext; subsingleton
@@ -182,7 +179,7 @@ variable {D : Type _} [Category D] (F : C ⥤ D)
 /-- The induced functor on the quotient category. -/
 def lift (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = F.map f₂) : Quotient r ⥤ D where
   obj a := F.obj a.as
-  map := @fun a b hf ↦
+  map hf :=
     Quot.liftOn hf (fun f ↦ F.map f)
       (by
         rintro _ _ ⟨_, _, _, _, h⟩
