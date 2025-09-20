@@ -5229,6 +5229,7 @@ import Mathlib.Order.WellQuasiOrder
 import Mathlib.Order.WithBot
 import Mathlib.Order.Zorn
 import Mathlib.Order.ZornAtoms
+import Mathlib.Probability.Bernoulli
 import Mathlib.Probability.BorelCantelli
 import Mathlib.Probability.CDF
 import Mathlib.Probability.CondVar
