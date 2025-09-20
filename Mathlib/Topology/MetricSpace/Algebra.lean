@@ -89,7 +89,7 @@ instance Real.hasLipschitzAdd : LipschitzAdd ℝ where
   lipschitz_add := ⟨2, LipschitzWith.of_dist_le_mul fun p q => by
     simp only [Real.dist_eq, Prod.dist_eq, NNReal.coe_ofNat,
       add_sub_add_comm, two_mul]
-    refine le_trans (abs_add (p.1 - q.1) (p.2 - q.2)) ?_
+    refine le_trans (abs_add_le (p.1 - q.1) (p.2 - q.2)) ?_
     exact add_le_add (le_max_left _ _) (le_max_right _ _)⟩
 
 -- this instance has the same proof as `AddSubmonoid.lipschitzAdd`, but the former can't

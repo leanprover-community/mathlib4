@@ -1199,7 +1199,7 @@ lemma LipschitzWith.uniformly_bounded [PseudoMetricSpace α] (g : α → ι → 
   rintro - ⟨i, rfl⟩
   calc
     |g a i| = |g a i - g a₀ i + g a₀ i| := by simp
-    _ ≤ |g a i - g a₀ i| + |g a₀ i| := abs_add _ _
+    _ ≤ |g a i - g a₀ i| + |g a₀ i| := abs_add_le _ _
     _ ≤ ↑K * dist a a₀ + M := by
         gcongr
         · exact lipschitzWith_iff_dist_le_mul.1 (hg i) a a₀

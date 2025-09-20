@@ -359,14 +359,14 @@ lemma supSum_union_add_supSum_infs (𝒜 ℬ : Finset (Finset α)) :
     supSum (𝒜 ∪ ℬ) + supSum (𝒜 ⊼ ℬ) = supSum 𝒜 + supSum ℬ := by
   unfold supSum
   rw [← sum_add_distrib, ← sum_add_distrib, sum_congr rfl fun s _ ↦ _]
-  simp_rw [div_add_div_same, ← Nat.cast_add, card_truncatedSup_union_add_card_truncatedSup_infs]
+  simp_rw [← add_div, ← Nat.cast_add, card_truncatedSup_union_add_card_truncatedSup_infs]
   simp
 
 lemma infSum_union_add_infSum_sups (𝒜 ℬ : Finset (Finset α)) :
     infSum (𝒜 ∪ ℬ) + infSum (𝒜 ⊻ ℬ) = infSum 𝒜 + infSum ℬ := by
   unfold infSum
   rw [← sum_add_distrib, ← sum_add_distrib, sum_congr rfl fun s _ ↦ _]
-  simp_rw [div_add_div_same, ← Nat.cast_add, card_truncatedInf_union_add_card_truncatedInf_sups]
+  simp_rw [← add_div, ← Nat.cast_add, card_truncatedInf_union_add_card_truncatedInf_sups]
   simp
 
 lemma IsAntichain.le_infSum (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) (h𝒜₀ : ∅ ∉ 𝒜) :
@@ -404,7 +404,7 @@ lemma infSum_compls_add_supSum (𝒜 : Finset (Finset α)) :
   rw [← @map_univ_of_surjective (Finset α) _ _ _ ⟨compl, compl_injective⟩ compl_surjective, sum_map]
   simp only [Function.Embedding.coeFn_mk, univ_map_embedding, ← compl_truncatedSup,
     ← sum_add_distrib, card_compl, cast_sub (card_le_univ _), choose_symm (card_le_univ _),
-    div_add_div_same, sub_add_cancel, Fintype.sum_div_mul_card_choose_card]
+    ← add_div, sub_add_cancel, Fintype.sum_div_mul_card_choose_card]
 
 lemma supSum_of_univ_notMem (h𝒜₁ : 𝒜.Nonempty) (h𝒜₂ : univ ∉ 𝒜) :
     supSum 𝒜 = card α * ∑ k ∈ range (card α), (k : ℚ)⁻¹ := by

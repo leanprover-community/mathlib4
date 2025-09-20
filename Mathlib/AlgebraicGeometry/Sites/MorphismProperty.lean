@@ -38,7 +38,7 @@ directly has the cover available. For a pretopology generating the same Grothend
 `AlgebraicGeometry.Scheme.grothendieckTopology_eq_inf`.
 -/
 def pretopology : Pretopology Scheme.{u} where
-  coverings Y S := ∃ (U : Cover.{u} P Y), S = Presieve.ofArrows U.obj U.map
+  coverings Y S := ∃ (U : Cover.{u} P Y), S = Presieve.ofArrows U.X U.f
   has_isos _ _ f _ := ⟨coverOfIsIso f, (Presieve.ofArrows_pUnit _).symm⟩
   pullbacks := by
     rintro Y X f _ ⟨U, rfl⟩
@@ -46,9 +46,9 @@ def pretopology : Pretopology Scheme.{u} where
   transitive := by
     rintro X _ T ⟨U, rfl⟩ H
     choose V hV using H
-    use U.bind (fun j => V (U.map j) ⟨j⟩)
-    simpa only [Cover.bind, ← hV] using Presieve.ofArrows_bind U.obj U.map _
-      (fun _ f H => (V f H).obj) (fun _ f H => (V f H).map)
+    use U.bind (fun j => V (U.f j) ⟨j⟩)
+    simpa only [Cover.bind, ← hV] using Presieve.ofArrows_bind U.X U.f _
+      (fun _ f H => (V f H).X) (fun _ f H => (V f H).f)
 
 /-- The Grothendieck topology on the category of schemes induced by the pretopology defined by
 `P`-covers. -/
@@ -104,7 +104,7 @@ lemma pretopology_le_inf [IsJointlySurjectivePreserving ⊤] :
   rintro X S ⟨𝒰, rfl⟩
   refine ⟨fun x ↦ ?_, fun _ _ ⟨i⟩ ↦ 𝒰.map_prop i⟩
   obtain ⟨a, ha⟩ := 𝒰.covers x
-  refine ⟨𝒰.obj (𝒰.f x), a, 𝒰.map (𝒰.f x), ⟨_⟩, ha⟩
+  refine ⟨𝒰.X (𝒰.idx x), a, 𝒰.f (𝒰.idx x), ⟨_⟩, ha⟩
 
 /--
 The Grothendieck topology defined by `P`-covers agrees with the Grothendieck
@@ -123,36 +123,36 @@ lemma grothendieckTopology_eq_inf [IsJointlySurjectivePreserving ⊤] :
   let J := (Y : Scheme.{u}) × (Y ⟶ X)
   choose Y y f hf hy using hs
   let 𝒰 : Cover.{u} P X :=
-    { J := X
-      obj := Y
-      map := f
-      f := id
+    { I₀ := X
+      X := Y
+      f := f
+      idx := id
       covers := fun x ↦ ⟨y x, hy x⟩
       map_prop := fun x ↦ hP (hf x)
     }
-  refine ⟨Presieve.ofArrows 𝒰.obj 𝒰.map, ⟨𝒰, rfl⟩, ?_⟩
+  refine ⟨Presieve.ofArrows 𝒰.X 𝒰.f, ⟨𝒰, rfl⟩, ?_⟩
   rintro Z g ⟨x⟩
   exact hle _ (hf x)
 
 variable {P}
 
 lemma pretopology_cover {Y : Scheme.{u}} (𝒰 : Cover.{u} P Y) :
-    pretopology P Y (Presieve.ofArrows 𝒰.obj 𝒰.map) :=
+    pretopology P Y (Presieve.ofArrows 𝒰.X 𝒰.f) :=
   ⟨𝒰, rfl⟩
 
 lemma grothendieckTopology_cover {X : Scheme.{u}} (𝒰 : Cover.{v} P X) :
-    grothendieckTopology P X (Sieve.generate (Presieve.ofArrows 𝒰.obj 𝒰.map)) := by
+    grothendieckTopology P X (Sieve.generate (Presieve.ofArrows 𝒰.X 𝒰.f)) := by
   let 𝒱 : Cover.{u} P X :=
-    { J := X
-      obj := fun x ↦ 𝒰.obj (𝒰.f x)
-      map := fun x ↦ 𝒰.map (𝒰.f x)
-      f := id
+    { I₀ := X
+      X := fun x ↦ 𝒰.X (𝒰.idx x)
+      f := fun x ↦ 𝒰.f (𝒰.idx x)
+      idx := id
       covers := 𝒰.covers
       map_prop := fun _ ↦ 𝒰.map_prop _
     }
   refine ⟨_, pretopology_cover 𝒱, ?_⟩
   rintro _ _ ⟨y⟩
-  exact ⟨_, 𝟙 _, 𝒰.map (𝒰.f y), ⟨_⟩, by simp [𝒱]⟩
+  exact ⟨_, 𝟙 _, 𝒰.f (𝒰.idx y), ⟨_⟩, by simp [𝒱]⟩
 
 section
 

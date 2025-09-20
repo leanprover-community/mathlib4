@@ -724,7 +724,7 @@ theorem Antitone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Antitone
   have hfa' : Monotone fun n ↦ -f n := fun _ _ hab ↦ neg_le_neg <| hfa hab
   have hf0' : Tendsto (fun n ↦ -f n) atTop (𝓝 0) := by
     convert hf0.neg
-    norm_num
+    simp
   convert (hfa'.cauchySeq_series_mul_of_tendsto_zero_of_bounded hf0' hzb).neg
   simp
 
