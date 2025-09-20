@@ -15,16 +15,14 @@ This file provides some results on multiplicative and additive submonoids in the
 namespace Submonoid
 
 section Pi
+variable {η : Type*} {f : η → Type*} [∀ i, MulOneClass (f i)]
+variable {S : Type*} [SetLike S (∀ i, f i)] [SubmonoidClass S (∀ i, f i)]
 
 open Set
 
-variable {η : Type*} {f : η → Type*} [∀ i, MulOneClass (f i)]
-
 @[to_additive]
-theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {S : Type*}
-    [SetLike S (∀ i, f i)] [SubmonoidClass S (∀ i, f i)] {H : S} (x : ∀ i, f i)
-    (h1 : ∀ i, i ∉ I → x i = 1) (h2 : ∀ i, i ∈ I → Pi.mulSingle i (x i) ∈ H) :
-    x ∈ H := by
+theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : S} (x : ∀ i, f i)
+    (h1 : ∀ i, i ∉ I → x i = 1) (h2 : ∀ i, i ∈ I → Pi.mulSingle i (x i) ∈ H) : x ∈ H := by
   induction I using Finset.induction_on generalizing x with
   | empty =>
     have : x = 1 := funext fun i => h1 i (Finset.notMem_empty i)
@@ -48,9 +46,8 @@ theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {S : Type*}
       exact h2 _ (Finset.mem_insert_of_mem hj)
 
 @[to_additive]
-theorem pi_mem_of_mulSingle_mem [Finite η] [DecidableEq η] {S : Type*} [SetLike S (∀ i, f i)]
-    [SubmonoidClass S (∀ i, f i)] {H : S} (x : ∀ i, f i) (h : ∀ i, Pi.mulSingle i (x i) ∈ H) :
-    x ∈ H := by
+theorem pi_mem_of_mulSingle_mem [Finite η] [DecidableEq η] {H : S} (x : ∀ i, f i)
+    (h : ∀ i, Pi.mulSingle i (x i) ∈ H) : x ∈ H := by
   cases nonempty_fintype η
   exact pi_mem_of_mulSingle_mem_aux Finset.univ x (by simp) fun i _ => h i
 
