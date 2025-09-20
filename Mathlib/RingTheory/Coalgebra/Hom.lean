@@ -74,7 +74,7 @@ instance instCoeToCoalgHom : CoeHead F (A →ₗc[R] B) :=
   ⟨CoalgHomClass.toCoalgHom⟩
 
 @[simp]
-theorem counit_comp_apply (f : F) (x : A) : counit (f x) = counit (R := R) x :=
+theorem counit_comp_apply (f : F) (x : A) : counit (R := R) (f x) = counit (R := R) x :=
   LinearMap.congr_fun (counit_comp f) _
 
 @[simp]
@@ -275,8 +275,7 @@ noncomputable def counitCoalgHom : A →ₗc[R] R :=
         ← LinearMap.lTensor_comp_rTensor, rTensor_counit_comul, LinearMap.lTensor_tmul] }
 
 @[simp]
-theorem counitCoalgHom_apply (x : A) :
-    counitCoalgHom R A x = counit x := rfl
+theorem counitCoalgHom_apply (x : A) : counitCoalgHom R A x = counit (R := R) x := rfl
 
 @[simp]
 theorem counitCoalgHom_toLinearMap :
