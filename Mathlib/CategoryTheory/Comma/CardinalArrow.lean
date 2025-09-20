@@ -119,8 +119,8 @@ instance {C : Type u} [Category.{v} C] [Small.{w} C] [LocallySmall.{w} C] :
 instance {C : Type u} [Category.{v} C] [Small.{w} C] [LocallySmall.{w} C]
     {D : Type u'} [Category.{v'} D] [Small.{w} D] [LocallySmall.{w} D] :
     Small.{w} (C ⥤ D) := by
-  let φ (F : C ⥤ D) (f : Arrow C) : Arrow D := ⟨_, _, F.map f.hom⟩
-  refine small_of_injective (f := φ) (fun F G h ↦ Functor.ext (fun X ↦ ?_) (fun X Y f ↦ ?_))
+  refine small_of_injective (f := fun F (f : Arrow C) ↦ Arrow.mk (F.map f.hom))
+    (fun F G h ↦ Functor.ext (fun X ↦ ?_) (fun X Y f ↦ ?_))
   · exact congr_arg Comma.left (congr_fun h (Arrow.mk (𝟙 X)))
   · have : Arrow.mk (F.map f) = Arrow.mk (G.map f) := congr_fun h (Arrow.mk f)
     rw [Arrow.mk_eq_mk_iff] at this
