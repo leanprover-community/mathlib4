@@ -556,7 +556,7 @@ def piUnique {ι : Type*} (M : ι → Type*) [(j : ι) → Mul (M j)]
 
 /-- Splits the indices of `∀ (i : ι), Y i` along the predicate `p`.
 This is `Equiv.piEquivPiSubtypeProd` as a `ContinuousMulEquiv`. -/
-@[to_additive (attr := simps!) piEquivPiSubtypeProd 
+@[to_additive (attr := simps!) piEquivPiSubtypeProd
 /-- Splits the indices of `∀ (i : ι), Y i` along the predicate `p`.
 This is `Equiv.piEquivPiSubtypeProd` as a `ContinuousAddEquiv`. -/]
 def piEquivPiSubtypeProd {ι : Type*} (p : ι → Prop) (Y : ι → Type*)
