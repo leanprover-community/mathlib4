@@ -408,7 +408,7 @@ def ofNatIso {F G : C ⥤ D} (i : F ≅ G) [F.LaxBraided] [G.LaxMonoidal]
     [NatTrans.IsMonoidal i.hom] : G.LaxBraided where
   braided X Y := by
     have (X Y : C) : μ G X Y = (i.inv.app X ⊗ₘ i.inv.app Y) ≫ μ F X Y ≫ i.hom.app _ := by
-      simp [NatTrans.IsMonoidal.tensor X Y, ← tensor_comp_assoc]
+      simp [NatTrans.IsMonoidal.tensor X Y, tensorHom_comp_tensorHom_assoc]
     rw [this X Y, this Y X, ← braiding_naturality_assoc, ← Functor.LaxBraided.braided_assoc]
     simp
 
@@ -604,11 +604,14 @@ theorem tensorμ_natural {X₁ X₂ Y₁ Y₂ U₁ U₂ V₁ V₂ : C} (f₁ : X
   simp_rw [← id_tensorHom, ← tensorHom_id]
   slice_lhs 1 2 => rw [associator_naturality]
   slice_lhs 2 3 =>
-    rw [← tensor_comp, comp_id f₁, ← id_comp f₁, associator_inv_naturality, tensor_comp]
+    rw [tensorHom_comp_tensorHom, comp_id f₁, ← id_comp f₁, associator_inv_naturality,
+      ← tensorHom_comp_tensorHom]
   slice_lhs 3 4 =>
-    rw [← tensor_comp, ← tensor_comp, comp_id f₁, ← id_comp f₁, comp_id g₂, ← id_comp g₂,
-      braiding_naturality, tensor_comp, tensor_comp]
-  slice_lhs 4 5 => rw [← tensor_comp, comp_id f₁, ← id_comp f₁, associator_naturality, tensor_comp]
+    rw [tensorHom_comp_tensorHom, tensorHom_comp_tensorHom, comp_id f₁, ← id_comp f₁, comp_id g₂,
+      ← id_comp g₂, braiding_naturality, ← tensorHom_comp_tensorHom, ← tensorHom_comp_tensorHom]
+  slice_lhs 4 5 =>
+    rw [tensorHom_comp_tensorHom, comp_id f₁, ← id_comp f₁, associator_naturality,
+      ← tensorHom_comp_tensorHom]
   slice_lhs 5 6 => rw [associator_inv_naturality]
   simp only [assoc]
 

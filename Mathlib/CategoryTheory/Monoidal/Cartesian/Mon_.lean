@@ -54,7 +54,6 @@ instance : IsMonHom (fst M N) where
 instance : IsMonHom (snd M N) where
 
 instance {f : M ⟶ N} {g : M ⟶ O} [IsMonHom f] [IsMonHom g] : IsMonHom (lift f g) where
-  mul_hom := by ext <;> simp [← tensor_comp_assoc]
 
 instance [IsCommMonObj M] : IsMonHom μ[M] where
   one_hom := by simp [toUnit_unique (ρ_ (𝟙_ C)).hom (λ_ (𝟙_ C)).hom]
