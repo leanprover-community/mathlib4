@@ -11,7 +11,7 @@ import Mathlib.Algebra.Homology.Refinements
 /-!
 # The mapping cone of a monomorphism, up to a quasi-isomophism
 
-If `S` is a short exact short complex of cochain complexes in an abelian category,
+If `S` is a short-exact short complex of cochain complexes in an abelian category,
 we construct a quasi-isomorphism `descShortComplex S : mappingCone S.f ⟶ S.X₃`.
 
 We obtain this by comparing the homology sequence of `S` and the homology

@@ -6,9 +6,9 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
 
 /-!
-# The distinguished triangle of a short exact sequence in an abelian category
+# The distinguished triangle of a short-exact sequence in an abelian category
 
-Given a short exact short complex `S` in an abelian category, we construct
+Given a short-exact short complex `S` in an abelian category, we construct
 the associated distinguished triangle in the derived category:
 `(singleFunctor C 0).obj S.X₁ ⟶ (singleFunctor C 0).obj S.X₂ ⟶ (singleFunctor C 0).obj S.X₃ ⟶ ...`
 
@@ -37,7 +37,7 @@ namespace ShortExact
 
 /-- The connecting homomorphism
 `(singleFunctor C 0).obj S.X₃ ⟶ ((singleFunctor C 0).obj S.X₁)⟦(1 : ℤ)⟧` in the derived
-category of `C` when `S` is a short exact short complex in `C`. -/
+category of `C` when `S` is a short-exact short complex in `C`. -/
 noncomputable def singleδ : (singleFunctor C 0).obj S.X₃ ⟶
     ((singleFunctor C 0).obj S.X₁)⟦(1 : ℤ)⟧ :=
   (((SingleFunctors.evaluation _ _ 0).mapIso (singleFunctorsPostcompQIso C)).hom.app S.X₃) ≫
@@ -46,15 +46,15 @@ noncomputable def singleδ : (singleFunctor C 0).obj S.X₃ ⟶
       (singleFunctorsPostcompQIso C)).inv.app S.X₁)⟦(1 : ℤ)⟧'
 
 /-- The (distinguished) triangle in the derived category of `C` given by a
-short exact short complex in `C`. -/
+short-exact short complex in `C`. -/
 @[simps!]
 noncomputable def singleTriangle : Triangle (DerivedCategory C) :=
   Triangle.mk ((singleFunctor C 0).map S.f)
     ((singleFunctor C 0).map S.g) hS.singleδ
 
-/-- Given a short exact complex `S` in `C` that is short exact (`hS`), this is the
+/-- Given a short-exact complex `S` in `C` that is short exact (`hS`), this is the
 canonical isomorphism between the triangle `hS.singleTriangle` in the derived category
-and the triangle attached to the corresponding short exact sequence of cochain complexes
+and the triangle attached to the corresponding short-exact sequence of cochain complexes
 after the application of the single functor. -/
 @[simps!]
 noncomputable def singleTriangleIso :
@@ -70,7 +70,7 @@ noncomputable def singleTriangleIso :
     rw [comp_id]
 
 /-- The distinguished triangle in the derived category of `C` given by a
-short exact short complex in `C`. -/
+short-exact short complex in `C`. -/
 lemma singleTriangle_distinguished :
     hS.singleTriangle ∈ distTriang (DerivedCategory C) :=
   isomorphic_distinguished _ (triangleOfSES_distinguished (hS.map_of_exact

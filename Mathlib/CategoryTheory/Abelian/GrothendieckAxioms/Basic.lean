@@ -32,10 +32,10 @@ in `HasExactColimitsOfShape.of_domain_equivalence` and
 
 ## Remarks
 
-For `AB4` and `AB5`, we only require left exactness as right exactness is automatic.
+For `AB4` and `AB5`, we only require left-exactness as right-exactness is automatic.
 A comparison with Grothendieck's original formulation of the properties can be found in the
 comments of the linked Stacks page.
-Exactness as the preservation of short exact sequences is introduced in
+Exactness as the preservation of short-exact sequences is introduced in
 `CategoryTheory.Abelian.Exact`.
 
 We do not require `Abelian` in the definition of `AB4` and `AB5` because these classes represent
