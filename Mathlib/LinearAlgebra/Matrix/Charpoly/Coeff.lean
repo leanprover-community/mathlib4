@@ -37,7 +37,7 @@ universe u v w z
 open Finset Matrix Polynomial
 
 variable {R : Type u} [CommRing R]
-variable {n G : Type v} [DecidableEq n] [Fintype n]
+variable {n G : Type v} {m : Type w} [DecidableEq n] [Fintype n] [DecidableEq m] [Fintype m]
 variable {α β : Type v} [DecidableEq α]
 variable {M : Matrix n n R}
 
@@ -161,6 +161,11 @@ theorem eval_det (M : Matrix n n R[X]) (r : R) :
   ext
   symm
   exact matPolyEquiv_eval _ _ _ _
+
+theorem det_one_sub_mul_comm (M : Matrix m n R) (N : Matrix n m R) :
+    det (1 - M * N) = det (1 - N * M) := by
+  simpa [charpoly, charmatrix, eval_det, -Matrix.map_mul] using
+    congr_arg (Polynomial.eval 1) (charpoly_mul_comm' M N)
 
 theorem det_eq_sign_charpoly_coeff (M : Matrix n n R) :
     M.det = (-1) ^ Fintype.card n * M.charpoly.coeff 0 := by
@@ -379,6 +384,20 @@ lemma isNilpotent_charpoly_sub_pow_of_isNilpotent (hM : IsNilpotent M) :
     le_trans (natDegree_sub_le _ _) (by simp)
   rw [← isNilpotent_reflect_iff aux, reflect_sub, ← reverse, M.reverse_charpoly]
   simpa [p, hp]
+
+theorem charpoly_inv (A : Matrix n n R) (h : IsUnit A) :
+    A⁻¹.charpoly = C ((-1) ^ Fintype.card n * (A⁻¹).det) * A.charpoly.reverse :=
+  have : Invertible A := h.invertible
+  calc
+  _ = (scalar n X - C.mapMatrix A⁻¹).det := rfl
+  _ = C A⁻¹.det * (C.mapMatrix A * (scalar n X - C.mapMatrix A⁻¹)).det := by
+    rw [det_mul, ← RingHom.map_det, ← mul_assoc, ← C_mul, ← det_mul, inv_mul_of_invertible]
+    simp
+  _ = _ := by
+    rw [mul_sub, ← RingHom.map_mul, mul_inv_of_invertible, RingHom.map_one, ← neg_sub, det_neg,
+      det_one_sub_mul_comm, reverse_charpoly, charpolyRev, scalar_apply, smul_eq_diagonal_mul,
+      RingHom.mapMatrix_apply, C_mul, C_pow, C_neg, C_1]
+    ring
 
 end reverse
 
