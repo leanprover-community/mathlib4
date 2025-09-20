@@ -715,7 +715,7 @@ lemma IsLocallyFiniteMeasure.withDensity_ofReal {f : α → ℝ} (hf : Continuou
 
 section Conv
 
-variable {G : Type*} [Group G] [MeasureSpace G] [MeasurableMul₂ G] [MeasurableInv G]
+variable {G : Type*} [Group G] {mG : MeasurableSpace G} [MeasurableMul₂ G] [MeasurableInv G]
   {μ : Measure G} [SFinite μ] [IsMulLeftInvariant μ]
 
 @[to_additive]
