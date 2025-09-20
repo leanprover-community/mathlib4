@@ -1102,11 +1102,11 @@ lemma ε_comp_map_ε : ε e.inverse ≫ e.inverse.map (ε e.functor) = e.unit.ap
 lemma map_η_comp_η : e.functor.map (η e.inverse) ≫ η e.functor = e.counit.app (𝟙_ D) :=
   e.toAdjunction.map_η_comp_η
 
-instance : (refl (C := C)).functor.Monoidal := inferInstanceAs (𝟭 C).Monoidal
-instance : (refl (C := C)).inverse.Monoidal := inferInstanceAs (𝟭 C).Monoidal
+instance : (refl C).functor.Monoidal := inferInstanceAs (𝟭 C).Monoidal
+instance : (refl C).inverse.Monoidal := inferInstanceAs (𝟭 C).Monoidal
 
 /-- The obvious auto-equivalence of a monoidal category is monoidal. -/
-instance isMonoidal_refl : (Equivalence.refl (C := C)).IsMonoidal :=
+instance isMonoidal_refl : (Equivalence.refl C).IsMonoidal :=
   inferInstanceAs (Adjunction.id (C := C)).IsMonoidal
 
 /-- The inverse of a monoidal category equivalence is also a monoidal category equivalence. -/
