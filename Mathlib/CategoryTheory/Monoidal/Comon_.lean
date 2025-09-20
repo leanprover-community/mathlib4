@@ -53,8 +53,10 @@ namespace ComonObj
 
 attribute [reassoc (attr := simp)] counit_comul comul_counit comul_assoc
 
+/-- The canonical comonoid structure on the monoidal unit.
+This is not a global instance to avoid conflicts with other comonoid structures. -/
 @[simps]
-instance (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C] : ComonObj (𝟙_ C) where
+def instTensorUnit (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C] : ComonObj (𝟙_ C) where
   counit := 𝟙 _
   comul := (λ_ _).inv
   counit_comul := by simp
@@ -104,9 +106,13 @@ namespace Comon
 
 variable (C) in
 /-- The trivial comonoid object. We later show this is terminal in `Comon C`.
+
+Uses the explicit comonoid structure to avoid instance conflicts.
 -/
 @[simps!]
-def trivial : Comon C := mk (𝟙_ C)
+def trivial : Comon C :=
+  { X := 𝟙_ C
+    comon := ComonObj.instTensorUnit C }
 
 instance : Inhabited (Comon C) :=
   ⟨trivial C⟩

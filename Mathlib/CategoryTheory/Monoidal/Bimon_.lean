@@ -148,7 +148,18 @@ attribute [local simp] MonObj.tensorObj.one_def MonObj.tensorObj.mul_def tensor�
 def ofMonComonObj (M : Mon (Comon C)) : Bimon C where
   X := ofMonComonObjX M
   comon.counit := .mk' ε[M.X.X]
+    (one_f := by
+      -- The unit morphism η[M.X] is a comonoid homomorphism, so it preserves counit
+      have h : η[M.X].hom ≫ ε[M.X.X] = ε[(Comon.trivial C).X] := η[M.X].isComonHom_hom.hom_counit
+      cat_disch)
+    (mul_f := by cat_disch)
   comon.comul := .mk' Δ[M.X.X]
+    (one_f := by
+      -- The unit morphism η[M.X] is a comonoid homomorphism, so it preserves comul
+      have h : η[M.X].hom ≫ Δ[M.X.X] = Δ[(Comon.trivial C).X] ≫ (η[M.X].hom ⊗ₘ η[M.X].hom) :=
+        η[M.X].isComonHom_hom.hom_comul
+      cat_disch)
+    (mul_f := by cat_disch)
 
 @[deprecated (since := "2025-09-15")] alias ofMon_Comon_Obj := ofMonComonObj
 
@@ -199,6 +210,8 @@ def equivMonComonUnitIsoAppX (M : Bimon C) :
 @[deprecated (since := "2025-09-15")] alias equivMon_Comon_UnitIsoAppX := equivMonComonUnitIsoAppX
 
 instance (M : Bimon C) : IsComonHom (equivMonComonUnitIsoAppX M).hom where
+  hom_counit := by cat_disch
+  hom_comul := by cat_disch
 
 /-- The unit for the equivalence `Comon (Mon C) ≌ Mon (Comon C)`. -/
 @[simps!]
@@ -210,16 +223,16 @@ def equivMonComonUnitIsoApp (M : Bimon C) :
 
 @[simp]
 theorem ofMonComon_toMonComon_obj_counit (M : Mon (Comon C)) :
-    ε[((ofMonComon C ⋙ toMonComon C).obj M).X.X] = ε[M.X.X] ≫ 𝟙 _ :=
-  rfl
+    ε[((ofMonComon C ⋙ toMonComon C).obj M).X.X] = ε[M.X.X] ≫ 𝟙 _ := by
+  rfl_cat
 
 @[deprecated (since := "2025-09-15")]
 alias ofMon_Comon_toMon_Comon_obj_counit := ofMonComon_toMonComon_obj_counit
 
 @[simp]
 theorem ofMonComon_toMonComon_obj_comul (M : Mon (Comon C)) :
-    Δ[((ofMonComon C ⋙ toMonComon C).obj M).X.X] = Δ[M.X.X] ≫ 𝟙 _ :=
-  rfl
+    Δ[((ofMonComon C ⋙ toMonComon C).obj M).X.X] = Δ[M.X.X] ≫ 𝟙 _ := by
+  rfl_cat
 
 @[deprecated (since := "2025-09-15")]
 alias ofMon_Comon_toMon_Comon_obj_comul := ofMonComon_toMonComon_obj_comul
