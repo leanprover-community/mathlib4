@@ -270,6 +270,19 @@ theorem isOpen_setOf_nat_le_rank (n : ℕ) :
     continuous_pi fun x => (ContinuousLinearMap.apply 𝕜 F (x : E)).continuous
   exact isOpen_setOf_linearIndependent.preimage this
 
+theorem isOpen_setOf_affineIndependent {ι : Type*} [Finite ι] :
+    IsOpen {p : ι → E | AffineIndependent 𝕜 p} := by
+  classical
+  rcases isEmpty_or_nonempty ι with h | ⟨⟨i₀⟩⟩
+  · exact isOpen_discrete _
+  · simp_rw [affineIndependent_iff_linearIndependent_vsub 𝕜 _ i₀]
+    let ι' := { x // x ≠ i₀ }
+    cases nonempty_fintype ι
+    haveI : Fintype ι' := Subtype.fintype _
+    convert_to
+      IsOpen ((fun (p : ι → E) (i : ι') ↦ p i -ᵥ p i₀) ⁻¹' {p : ι' → E | LinearIndependent 𝕜 p})
+    exact isOpen_setOf_linearIndependent.preimage (by fun_prop)
+
 namespace Module.Basis
 
 theorem opNNNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[𝕜] F} (M : ℝ≥0)

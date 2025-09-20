@@ -46,6 +46,25 @@ set_option linter.style.cases false
 example (a : (True ∨ True) ∨ (True ∨ True)): True := by
   cases' a with b b <;> cases' b <;> trivial
 
+set_option linter.style.induction true
+/--
+warning: The `induction'` tactic is discouraged: please strongly consider using `induction` instead.
+
+Note: This linter can be disabled with `set_option linter.style.induction false`
+-/
+#guard_msgs in
+example {n : Nat} : n < 2 ^ n := by
+  induction' n with n ih
+  · simp
+  · grind
+
+set_option linter.style.induction false
+-- This is quiet because `linter.style.induction` is now false
+example {n : Nat} : n < 2 ^ n := by
+  induction' n with n ih
+  · simp
+  · grind
+
 set_option linter.style.admit true
 /--
 warning: declaration uses 'sorry'
