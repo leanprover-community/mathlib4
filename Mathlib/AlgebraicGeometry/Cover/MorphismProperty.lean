@@ -5,6 +5,7 @@ Authors: Christian Merten, Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.OpenImmersion
 import Mathlib.CategoryTheory.MorphismProperty.Limits
+import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 
 /-!
 # Covers of schemes
@@ -34,15 +35,13 @@ namespace AlgebraicGeometry
 
 namespace Scheme
 
--- TODO: provide API to and from a presieve.
-/-- A cover of `X` consists of jointly surjective indexed family of scheme morphisms
-with target `X` all satisfying `P`.
+variable (K : Precoverage Scheme.{u})
 
-This is merely a coverage in the pretopology defined by `P`, and it would be optimal
-if we could reuse the existing API about pretopologies, However, the definitions of sieves and
-Grothendieck topologies uses `Prop`s, so that the actual open sets and immersions are hard to
-obtain. Also, since such a coverage in the pretopology usually contains a proper class of
-immersions, it is quite hard to glue them, reason about finite covers, etc.
+/-- A coverage `K` on `Scheme` is called jointly surjective if every covering family in `K`
+is jointly surjective. -/
+class JointlySurjective (K : Precoverage Scheme.{u}) : Prop where
+  exists_eq {X : Scheme.{u}} (S : Presieve X) (hS : S ∈ K X) (x : X) :
+    ∃ (Y : Scheme.{u}) (g : Y ⟶ X), S g ∧ x ∈ Set.range g.base
 
 Note: The `map_prop` field is equipped with a default argument `by infer_instance`. In general
 this causes worse error messages, but in practice `P` is mostly defined via `class`.
@@ -70,7 +69,7 @@ alias Cover.obj := Cover.X
 @[deprecated (since := "2025-09-19")]
 alias Cover.map := Cover.f
 
-variable {P : MorphismProperty Scheme.{u}}
+variable {K}
 
 variable {X Y Z : Scheme.{u}} (𝒰 : X.Cover P) (f : X ⟶ Z) (g : Y ⟶ Z)
 variable [∀ x, HasPullback (𝒰.f x ≫ f) g]
@@ -90,7 +89,7 @@ instance Cover.nonempty_of_nonempty [Nonempty X] (𝒰 : X.Cover P) : Nonempty �
 
 /-- Given a family of schemes with morphisms to `X` satisfying `P` that jointly
 cover `X`, `Cover.mkOfCovers` is an associated `P`-cover of `X`. -/
-@[simps]
+@[simps!]
 def Cover.mkOfCovers (J : Type*) (obj : J → Scheme.{u}) (map : (j : J) → obj j ⟶ X)
     (covers : ∀ x, ∃ j y, (map j).base y = x)
     (map_prop : ∀ j, P (map j) := by infer_instance) : X.Cover P where
@@ -354,13 +353,14 @@ def Cover.ulift (𝒰 : Cover.{v} P X) : Cover.{u} P X where
 
 section category
 
+-- TODO: replace this by `ZeroHypercover.Hom`
 /--
 A morphism between covers `𝒰 ⟶ 𝒱` indicates that `𝒰` is a refinement of `𝒱`.
 Since covers of schemes are indexed, the definition also involves a map on the
 indexing types.
 -/
 @[ext]
-structure Cover.Hom {X : Scheme.{u}} (𝒰 𝒱 : Cover.{v} P X) where
+structure Cover.Hom {X : Scheme.{u}} (𝒰 𝒱 : Cover.{v} (precoverage P) X) where
   /-- The map on indexing types associated to a morphism of covers. -/
   idx : 𝒰.I₀ → 𝒱.I₀
   /-- The morphism between open subsets associated to a morphism of covers. -/
@@ -371,19 +371,21 @@ structure Cover.Hom {X : Scheme.{u}} (𝒰 𝒱 : Cover.{v} P X) where
 attribute [reassoc (attr := simp)] Cover.Hom.w
 
 /-- The identity morphism in the category of covers of a scheme. -/
-def Cover.Hom.id [P.ContainsIdentities] {X : Scheme.{u}} (𝒰 : Cover.{v} P X) : 𝒰.Hom 𝒰 where
+def Cover.Hom.id [P.ContainsIdentities] {X : Scheme.{u}} (𝒰 : Cover.{v} (precoverage P) X) :
+    𝒰.Hom 𝒰 where
   idx j := j
   app _ := 𝟙 _
   app_prop _ := P.id_mem _
 
 /-- The composition of two morphisms in the category of covers of a scheme. -/
-def Cover.Hom.comp [P.IsStableUnderComposition] {X : Scheme.{u}} {𝒰 𝒱 𝒲 : Cover.{v} P X}
-    (f : 𝒰.Hom 𝒱) (g : 𝒱.Hom 𝒲) : 𝒰.Hom 𝒲 where
+def Cover.Hom.comp [P.IsStableUnderComposition] {X : Scheme.{u}}
+    {𝒰 𝒱 𝒲 : Cover.{v} (precoverage P) X} (f : 𝒰.Hom 𝒱) (g : 𝒱.Hom 𝒲) : 𝒰.Hom 𝒲 where
   idx j := g.idx <| f.idx j
   app _ := f.app _ ≫ g.app _
   app_prop _ := P.comp_mem _ _ (f.app_prop _) (g.app_prop _)
 
-instance Cover.category [P.IsMultiplicative] {X : Scheme.{u}} : Category (Cover.{v} P X) where
+instance Cover.category [P.IsMultiplicative] {X : Scheme.{u}} :
+    Category (Cover.{v} (precoverage P) X) where
   Hom 𝒰 𝒱 := 𝒰.Hom 𝒱
   id := Cover.Hom.id
   comp f g := f.comp g
@@ -409,6 +411,8 @@ lemma Cover.comp_app {X : Scheme.{u}} {𝒰 𝒱 𝒲 : X.Cover P}
     (f ≫ g).app j = f.app j ≫ g.app _ := rfl
 
 end category
+
+end MorphismProperty
 
 end Scheme
 

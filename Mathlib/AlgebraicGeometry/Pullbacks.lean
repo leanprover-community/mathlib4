@@ -164,6 +164,7 @@ theorem cocycle_fst_snd (i j k : 𝒰.I₀) :
 theorem cocycle_snd_fst_fst (i j k : 𝒰.I₀) :
     t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i ≫ t' 𝒰 f g k i j ≫ pullback.snd _ _ ≫ pullback.fst _ _ ≫
       pullback.fst _ _ = pullback.snd _ _ ≫ pullback.fst _ _ ≫ pullback.fst _ _ := by
+  rw [← cancel_mono (𝒰.f i)]
   simp only [pullback.condition_assoc, t'_snd_fst_fst, t'_fst_snd, t'_snd_snd]
 
 theorem cocycle_snd_fst_snd (i j k : 𝒰.I₀) :
@@ -334,7 +335,8 @@ theorem lift_comp_ι (i : 𝒰.I₀) :
       (pullback.fst _ _ : pullback (p1 𝒰 f g) (𝒰.f i) ⟶ _) := by
   apply ((gluing 𝒰 f g).openCover.pullbackCover (pullback.fst _ _)).hom_ext
   intro j
-  dsimp only [Cover.pullbackCover]
+  dsimp only [Cover.pullbackCover, Precoverage.ZeroHypercover.pullback₁,
+    PreZeroHypercover.pullback₁]
   trans pullbackFstιToV 𝒰 f g i j ≫ fV 𝒰 f g j i ≫ (gluing 𝒰 f g).ι _
   · rw [← show _ = fV 𝒰 f g j i ≫ _ from (gluing 𝒰 f g).glue_condition j i]
     simp_rw [← Category.assoc]
@@ -486,7 +488,7 @@ def openCoverOfRight (𝒰 : OpenCover Y) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
       (fun i => pullback.map _ _ _ _ (𝟙 _) (𝒰.f i) (𝟙 _) (by simp) (Category.comp_id _))
       (Equiv.refl _) fun i => pullbackSymmetry _ _
   intro i
-  dsimp [Cover.bind]
+  dsimp [Precoverage.ZeroHypercover.bind]
   apply pullback.hom_ext <;> simp
 
 /-- Given an open cover `{ Xᵢ }` of `X` and an open cover `{ Yⱼ }` of `Y`, then
@@ -515,7 +517,7 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
     @coverOfIsIso _ _ _ _ _
       (f := (pullbackSymmetry (pullback.snd f (𝒰.f i)) (pullback.snd g (𝒰.f i))).hom ≫
         (limit.isoLimitCone ⟨_, this.isLimit⟩).inv ≫
-        pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) ?_ ?_) inferInstance
+        pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) ?_ ?_)
   · simp [← pullback.condition]
   · simp only [Category.comp_id, Category.id_comp]
 
@@ -563,6 +565,7 @@ lemma diagonalCover_map (I) : (diagonalCover f 𝒰 𝒱).f I =
     ((𝒱 I.fst).f _ ≫ pullback.fst _ _) ((𝒱 I.fst).f _ ≫ pullback.fst _ _) (𝒰.f _)
     (by simp)
     (by simp) := by
+  cases I
   ext1 <;> simp [diagonalCover, Cover.pullbackHom]
 
 /-- The restriction of the diagonal `X ⟶ X ×ₛ X` to `𝒱 i j ×[𝒰 i] 𝒱 i j` is the diagonal

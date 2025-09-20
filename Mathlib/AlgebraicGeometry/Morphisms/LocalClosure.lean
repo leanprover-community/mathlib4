@@ -31,7 +31,8 @@ variable {W} {P Q : MorphismProperty Scheme.{u}} {X Y : Scheme.{u}}
 
 /-- A choice of open cover on which `P` is satisfied if `f` satisfies the source local closure
 of `P`. -/
-noncomputable def cover {f : X ⟶ Y} (hf : sourceLocalClosure W P f) : Scheme.Cover.{u} W X :=
+noncomputable def cover {f : X ⟶ Y} (hf : sourceLocalClosure W P f) :
+    Scheme.Cover.{u} (Scheme.precoverage W) X :=
   hf.choose
 
 lemma property_coverMap_comp {f : X ⟶ Y} (hf : sourceLocalClosure W P f) (i : hf.cover.I₀) :

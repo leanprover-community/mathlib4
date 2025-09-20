@@ -46,6 +46,8 @@ protected class Cover.Over {P : MorphismProperty Scheme.{u}} {X : Scheme.{u}} [X
 
 attribute [instance] Cover.Over.over Cover.Over.isOver_map
 
+variable [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
+
 instance [P.ContainsIdentities] [P.RespectsIso] {X Y : Scheme.{u}} (f : X ⟶ Y) [X.Over S] [Y.Over S]
     [f.IsOver S] [IsIso f] : (coverOfIsIso (P := P) f).Over S where
   over _ := inferInstanceAs <| X.Over S
@@ -53,8 +55,7 @@ instance [P.ContainsIdentities] [P.RespectsIso] {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 section
 
-variable [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
-variable {X W : Scheme.{u}} (𝒰 : X.Cover P) (f : W ⟶ X) [W.Over S] [X.Over S]
+variable {X W : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : W ⟶ X) [W.Over S] [X.Over S]
   [𝒰.Over S] [f.IsOver S]
 
 /-- The pullback of a cover of `S`-schemes along a morphism of `S`-schemes. This is not

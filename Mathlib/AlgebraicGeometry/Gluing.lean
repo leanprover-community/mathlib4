@@ -129,8 +129,7 @@ def gluedScheme : Scheme := by
   constructor
   · simp only [LocallyRingedSpace.comp_toShHom, SheafedSpace.comp_base, TopCat.hom_comp,
       ContinuousMap.coe_comp, Set.range_comp]
-    refine Set.mem_image_of_mem _ ?_
-    exact (D.U i).affineCover.covers y
+    exact Set.mem_image_of_mem _ ⟨z, hz⟩
   · infer_instance
 
 instance : CreatesColimit 𝖣.diagram.multispan forgetToLocallyRingedSpace :=
@@ -724,7 +723,7 @@ def isColimitForgetToLocallyRingedSpace :
         ← cancel_epi (Hom.isoOpensRange (F.map _)).hom.toLRSHom]
       simp only [Opens.iSupOpenCover, Cover.ulift, V, ← comp_toLRSHom_assoc,
         Cover.ι_fromGlued_assoc, homOfLE_ι, Hom.isoOpensRange_hom_ι]
-      generalize_proofs _ h
+      generalize_proofs _ _ h
       rw [homOfLE_tAux F ↓i ↓j h.choose.2.1 h.choose.2.2, Iso.hom_inv_id_assoc]
       exact (s.w h.choose.2.1).trans (s.w h.choose.2.2).symm)
   fac s j := by
@@ -748,9 +747,10 @@ instance : CreatesColimit F Scheme.forgetToLocallyRingedSpace :=
   CategoryTheory.createsColimitOfReflectsIsomorphismsOfPreserves
 
 /-- The open cover of the colimit of a locally directed diagram by the components. -/
+@[simps! I₀ X f]
 def openCover : (colimit F).OpenCover :=
-  ((coverOfIsIso ((isColimit F).coconePointUniqueUpToIso (colimit.isColimit F)).hom).bind
-    fun i ↦ (glueData F).openCover).copy J F.obj (colimit.ι F)
+  Cover.copy ((coverOfIsIso ((isColimit F).coconePointUniqueUpToIso (colimit.isColimit F)).hom).bind
+    fun i ↦ (glueData F).openCover) J F.obj (colimit.ι F)
     ((equivShrink J).trans <| (Equiv.uniqueSigma fun (_ : Unit) ↦ Shrink J).symm)
     (fun _ ↦ F.mapIso (eqToIso (by simp [GlueData.openCover, glueData]))) fun i ↦ by
   change colimit.ι F i = _ ≫ (glueData F).ι (equivShrink J i) ≫ _

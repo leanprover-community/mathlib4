@@ -18,6 +18,7 @@ open CategoryTheory Limits
 namespace AlgebraicGeometry.Scheme.Cover
 
 variable {P : MorphismProperty Scheme.{u}} {S : Scheme.{u}} [IsLocalAtSource P] [UnivLE.{v, u}]
+  [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
 
 /-- If `𝒰` is a cover of `S`, this is the single object cover where the covering
 object is the disjoint union. -/
@@ -32,14 +33,14 @@ noncomputable def sigma (𝒰 : Cover.{v} P S) : S.Cover P where
     refine ⟨(Sigma.ι 𝒰.X i).base y, by simp [← Scheme.comp_base_apply]⟩
   map_prop _ := IsLocalAtSource.sigmaDesc 𝒰.map_prop
 
-variable [P.IsMultiplicative] {𝒰 𝒱 : Scheme.Cover.{v} P S}
+variable [P.IsMultiplicative] {𝒰 𝒱 : Scheme.Cover.{v} (precoverage P) S}
 
 variable (𝒰) in
 instance : Unique 𝒰.sigma.I₀ := inferInstanceAs <| Unique PUnit.{v + 1}
 
 /-- `𝒰` refines the single object cover defined by `𝒰`. -/
 @[simps]
-noncomputable def toSigma (𝒰 : Cover.{v} P S) : 𝒰 ⟶ 𝒰.sigma where
+noncomputable def toSigma (𝒰 : Cover.{v} (precoverage P) S) : 𝒰 ⟶ 𝒰.sigma where
   idx _ := default
   app i := Sigma.ι _ i
   app_prop _ := IsLocalAtSource.of_isOpenImmersion _
@@ -60,7 +61,7 @@ noncomputable def Hom.sigma (f : 𝒰 ⟶ 𝒱) : 𝒰.sigma ⟶ 𝒱.sigma wher
 
 /-- Collapsing a cover to a single object cover is functorial. -/
 @[simps]
-noncomputable def sigmaFunctor : S.Cover P ⥤ S.Cover P where
+noncomputable def sigmaFunctor : S.Cover (precoverage P) ⥤ S.Cover (precoverage P) where
   obj 𝒰 := 𝒰.sigma
   map f := f.sigma
   map_id 𝒰 := Scheme.Cover.Hom.ext rfl <| by

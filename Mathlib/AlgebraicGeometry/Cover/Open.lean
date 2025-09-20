@@ -29,8 +29,11 @@ namespace AlgebraicGeometry
 
 namespace Scheme
 
+instance : MorphismProperty.HasPullbacks IsOpenImmersion where
+  hasPullback _ _ := inferInstance
+
 /-- An open cover of a scheme `X` is a cover where all component maps are open immersions. -/
-abbrev OpenCover (X : Scheme.{u}) : Type _ := Cover.{v} @IsOpenImmersion X
+abbrev OpenCover (X : Scheme.{u}) : Type _ := Cover.{v} (precoverage @IsOpenImmersion) X
 
 variable {X Y Z : Scheme.{u}} (𝒰 : OpenCover X) (f : X ⟶ Z) (g : Y ⟶ Z)
 variable [∀ x, HasPullback (𝒰.f x ≫ f) g]
@@ -258,7 +261,6 @@ def affineBasisCoverOfAffine (R : CommRingCat.{u}) : OpenCover (Spec R) where
     rw [Set.range_eq_univ.mpr ((TopCat.epi_iff_surjective _).mp _)]
     · exact trivial
     · infer_instance
-  map_prop x := AlgebraicGeometry.Scheme.basic_open_isOpenImmersion x
 
 /-- We may bind the basic open sets of an open affine cover to form an affine cover that is also
 a basis. -/
