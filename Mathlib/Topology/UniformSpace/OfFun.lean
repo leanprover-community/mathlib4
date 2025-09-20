@@ -32,7 +32,7 @@ def ofFun [AddCommMonoid M] [PartialOrder M]
     UniformSpace X :=
   .ofCore
     { uniformity := ⨅ r > 0, 𝓟 { x | d x.1 x.2 < r }
-      refl := le_iInf₂ fun r hr => principal_mono.2 <| idRel_subset.2 fun x => by simpa [refl]
+      refl := le_iInf₂ fun r hr => principal_mono.2 <| by simp [Set.subset_def, *]
       symm := tendsto_iInf_iInf fun r => tendsto_iInf_iInf fun _ => tendsto_principal_principal.2
         fun x hx => by rwa [mem_setOf, symm]
       comp := le_iInf₂ fun r hr => let ⟨δ, h0, hδr⟩ := half r hr; le_principal_iff.2 <|
