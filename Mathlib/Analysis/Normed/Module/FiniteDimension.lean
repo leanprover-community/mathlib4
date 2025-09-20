@@ -693,3 +693,39 @@ theorem IsEquivalent.summable_iff {ι E : Type*} [NormedAddCommGroup E] [NormedS
 theorem IsEquivalent.summable_iff_nat {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {f : ℕ → E} {g : ℕ → E} (h : f ~[atTop] g) : Summable f ↔ Summable g :=
   ⟨fun hf => summable_of_isEquivalent_nat hf h.symm, fun hg => summable_of_isEquivalent_nat hg h⟩
+
+
+def IsBilinearMap.toContinuousLinearMap
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+    {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+    [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] [FiniteDimensional 𝕜 E]
+    [T2Space E]
+    {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+    [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] [FiniteDimensional 𝕜 F]
+    [T2Space F]
+    {G : Type*} [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G]
+    [IsTopologicalAddGroup G] [ContinuousSMul 𝕜 G]
+    {f : E → F → G} (h : IsBilinearMap 𝕜 f) : E →L[𝕜] F →L[𝕜] G :=
+  IsLinearMap.mk' (fun x : E ↦ h.toLinearMap x |>.toContinuousLinearMap)
+      (by constructor <;> (intros;simp)) |>.toContinuousLinearMap
+
+def isBilinearMap_evalL
+    (𝕜 : Type*) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+    (E : Type*) [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+    [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] [FiniteDimensional 𝕜 E]
+    [T2Space E]
+    (F : Type*) [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+    [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] [FiniteDimensional 𝕜 F]
+    [T2Space F] :
+    IsBilinearMap 𝕜 (fun (e : E) (φ : E →L[𝕜] F) ↦ φ e) := by
+  constructor <;> simp
+
+def evalL
+    (𝕜 : Type*) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+    (E : Type*) [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+    [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] [FiniteDimensional 𝕜 E]
+    [T2Space E]
+    (F : Type*) [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+    [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] [FiniteDimensional 𝕜 F]
+    [T2Space F] : E →L[𝕜] (E →L[𝕜] F) →L[𝕜] F :=
+  (isBilinearMap_evalL 𝕜 E F).toContinuousLinearMap
