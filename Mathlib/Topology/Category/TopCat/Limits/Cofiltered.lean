@@ -90,7 +90,10 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
       rw [Set.preimage_iInter]
       apply congrArg
       ext1 he
-      simp [Vs, dif_pos he, ← Set.preimage_comp, ← coe_comp]
+      -- Porting note: needed more hand holding here
+      change (C.π.app e)⁻¹' U e =
+        (C.π.app j) ⁻¹' if h : e ∈ G then F.map (g e h) ⁻¹' U e else Set.univ
+      simp [he, ← Set.preimage_comp, ← coe_comp]
 
 end CofilteredLimit
 

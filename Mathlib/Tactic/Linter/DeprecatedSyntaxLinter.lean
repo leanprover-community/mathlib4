@@ -12,9 +12,8 @@ import Mathlib.Tactic.Linter.Header
 /-!
 # Linter against deprecated syntax
 
-`refine'`, `cases'` and `induction'` provide backward-compatible implementations of their
-unprimed equivalents in Lean 3 –`refine`, `cases` and `induction` respectively.
-They have been superseded by Lean 4 tactics:
+`refine'` and `cases'` provide backward-compatible implementations of their unprimed equivalents
+in Lean 3, `refine` and `cases`. They have been superseded by Lean 4 tactics:
 
 * `refine` and `apply` replace `refine'`. While they are similar, they handle metavariables
   slightly differently; this means that they are not completely interchangeable, nor can one
@@ -22,7 +21,6 @@ They have been superseded by Lean 4 tactics:
   tend to be more efficient on average.
 * `obtain`, `rcases` and `cases` replace `cases'`. Unlike the replacement tactics, `cases'`
   does not require the variables it introduces to be separated by case, which hinders readability.
-* `induction` replaces `induction'` for similar reasons to `cases` and `cases'`.
 
 The `admit` tactic is a synonym for the much more common `sorry`, so the latter should be preferred.
 
@@ -59,16 +57,6 @@ required to be separated by case, which hinders readability.
 register_option linter.style.cases : Bool := {
   defValue := false
   descr := "enable the cases linter"
-}
-
-/-- The option `linter.style.induction` of the deprecated syntax linter flags usages of
-the `induction'` tactic, which is a backward-compatible version of Lean 3's `induction` tactic.
-Unlike Lean 4's `induction`, variables introduced by `induction'` are not
-required to be separated by case, which hinders readability.
--/
-register_option linter.style.induction : Bool := {
-  defValue := false
-  descr := "enable the induction linter"
 }
 
 /-- The option `linter.style.admit` of the deprecated syntax linter flags usages of
@@ -155,10 +143,6 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
       rargs.push (kind, stx,
         "The `cases'` tactic is discouraged: \
          please strongly consider using `obtain`, `rcases` or `cases` instead.")
-    | `Mathlib.Tactic.induction' =>
-      rargs.push (kind, stx,
-        "The `induction'` tactic is discouraged: \
-         please strongly consider using `induction` instead.")
     | ``Lean.Parser.Tactic.tacticAdmit =>
       rargs.push (kind, stx,
         "The `admit` tactic is discouraged: \
@@ -196,7 +180,6 @@ replacement syntax. For each individual case, linting can be turned on or off se
 
 * `refine'`, superseded by `refine` and `apply` (controlled by `linter.style.refine`)
 * `cases'`, superseded by `obtain`, `rcases` and `cases` (controlled by `linter.style.cases`)
-* `induction'`, superseded by `induction` (controlled by `linter.style.induction`)
 * `admit`, superseded by `sorry` (controlled by `linter.style.admit`)
 * `set_option maxHeartbeats`, should contain an explanatory comment
   (controlled by `linter.style.maxHeartbeats`)
@@ -204,7 +187,6 @@ replacement syntax. For each individual case, linting can be turned on or off se
 def deprecatedSyntaxLinter : Linter where run stx := do
   unless getLinterValue linter.style.refine (← getLinterOptions) ||
       getLinterValue linter.style.cases (← getLinterOptions) ||
-      getLinterValue linter.style.induction (← getLinterOptions) ||
       getLinterValue linter.style.admit (← getLinterOptions) ||
       getLinterValue linter.style.maxHeartbeats (← getLinterOptions) ||
       getLinterValue linter.style.nativeDecide (← getLinterOptions) do
@@ -222,7 +204,6 @@ def deprecatedSyntaxLinter : Linter where run stx := do
       match kind with
       | ``Lean.Parser.Tactic.refine' => Linter.logLintIf linter.style.refine stx' msg
       | `Mathlib.Tactic.cases' => Linter.logLintIf linter.style.cases stx' msg
-      | `Mathlib.Tactic.induction' => Linter.logLintIf linter.style.induction stx' msg
       | ``Lean.Parser.Tactic.tacticAdmit => Linter.logLintIf linter.style.admit stx' msg
       | ``Lean.Parser.Tactic.nativeDecide | ``Lean.Parser.Tactic.decide =>
         Linter.logLintIf linter.style.nativeDecide stx' msg

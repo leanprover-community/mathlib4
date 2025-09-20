@@ -27,3 +27,4 @@ theorem sum_mem (I : Ideal α) {ι : Type*} {t : Finset ι} {f : ι → α} :
   Submodule.sum_mem I
 
 end Ideal
+

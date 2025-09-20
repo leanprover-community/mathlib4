@@ -77,7 +77,7 @@ def coherentCoverage [Precoherent C] : Coverage C where
 The coherent Grothendieck topology on a precoherent category `C`.
 -/
 def coherentTopology [Precoherent C] : GrothendieckTopology C :=
-  (coherentCoverage C).toGrothendieck
+  Coverage.toGrothendieck _ <| coherentCoverage C
 
 /--
 The condition `Preregular C` is property that effective epis can be "pulled back" along any
@@ -124,7 +124,7 @@ def regularCoverage [Preregular C] : Coverage C where
 The regular Grothendieck topology on a preregular category `C`.
 -/
 def regularTopology [Preregular C] : GrothendieckTopology C :=
-  (regularCoverage C).toGrothendieck
+  Coverage.toGrothendieck _ <| regularCoverage C
 
 /--
 The extensive coverage on an extensive category `C`
@@ -152,6 +152,6 @@ def extensiveCoverage [FinitaryPreExtensive C] : Coverage C where
 The extensive Grothendieck topology on a finitary pre-extensive category `C`.
 -/
 def extensiveTopology [FinitaryPreExtensive C] : GrothendieckTopology C :=
-  (extensiveCoverage C).toGrothendieck
+  Coverage.toGrothendieck _ <| extensiveCoverage C
 
 end CategoryTheory

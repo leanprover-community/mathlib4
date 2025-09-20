@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Lean.Expr.Rat
-import Mathlib.Tactic.Hint
 import Mathlib.Tactic.NormNum.Result
 import Mathlib.Util.AtLocation
 import Mathlib.Util.Qq
@@ -302,9 +301,3 @@ macro (name := normNumCmd) "#norm_num" cfg:optConfig o:(&" only")?
   `(command| #conv norm_num $cfg:optConfig $[only%$o]? $(args)? => $e)
 
 end Mathlib.Tactic
-
-/-!
-We register `norm_num` with the `hint` tactic.
--/
-
-register_hint norm_num

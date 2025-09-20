@@ -133,7 +133,10 @@ noncomputable def toTotalQuotientPresheaf : F ⟶ F.totalQuotientPresheaf :=
 deriving Epi
 
 instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf := by
-  apply (config := { allowSynthFailures := true }) NatTrans.mono_of_mono_app
+  -- Porting note: was an `apply (config := { instances := false })`
+  -- See https://github.com/leanprover/lean4/issues/2273
+  suffices ∀ (U : (Opens ↑X)ᵒᵖ), Mono (F.presheaf.toTotalQuotientPresheaf.app U) from
+    NatTrans.mono_of_mono_app _
   intro U
   apply ConcreteCategory.mono_of_injective
   dsimp [toTotalQuotientPresheaf]

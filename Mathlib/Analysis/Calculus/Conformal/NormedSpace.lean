@@ -5,7 +5,7 @@ Authors: Yourong Zang
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Add
 import Mathlib.Analysis.Calculus.FDeriv.Const
-import Mathlib.Analysis.Normed.Operator.Conformal
+import Mathlib.Analysis.NormedSpace.ConformalLinearMap
 
 /-!
 # Conformal Maps

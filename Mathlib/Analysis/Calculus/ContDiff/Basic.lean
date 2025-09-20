@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 import Mathlib.Analysis.Calculus.ContDiff.Defs
 import Mathlib.Analysis.Calculus.ContDiff.FaaDiBruno
 import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.CompCLM
+import Mathlib.Analysis.Calculus.FDeriv.Mul
 
 /-!
 # Higher differentiability of composition
@@ -20,7 +20,7 @@ We also expand the API around `C^n` functions.
 
 Similar results are given for `C^n` functions on domains.
 
-## Notation
+## Notations
 
 We use the notation `E [×n]→L[𝕜] F` for the space of continuous multilinear maps on `E^n` with
 values in `F`. This is the space in which the `n`-th derivative of a function from `E` to `F` lives.

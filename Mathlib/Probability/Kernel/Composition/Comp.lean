@@ -23,7 +23,7 @@ a kernel from `α` to `γ`.
 * Instances stating that `IsMarkovKernel`, `IsZeroOrMarkovKernel`, `IsFiniteKernel` and
   `IsSFiniteKernel` are stable by composition.
 
-## Notation
+## Notations
 
 * `η ∘ₖ κ = ProbabilityTheory.Kernel.comp η κ`
 

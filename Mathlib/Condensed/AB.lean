@@ -34,6 +34,8 @@ lemma hasExactColimitsOfShape [HasColimitsOfShape J A] [HasExactColimitsOfShape 
     [HasFiniteLimits A] : HasExactColimitsOfShape J (Condensed.{u} A) := by
   let e : Condensed.{u} A ≌ Sheaf (extensiveTopology Stonean.{u}) A :=
     (StoneanCompHaus.equivalence A).symm.trans Presheaf.coherentExtensiveEquivalence
+  have : HasColimitsOfShape J (Sheaf (extensiveTopology Stonean.{u}) A) :=
+    hasColimitsOfShape_of_hasColimitsOfShape_createsColimitsOfShape e.inverse
   exact HasExactColimitsOfShape.domain_of_functor _ e.functor
 
 set_option Elab.async false in  -- TODO: universe levels from type are unified in proof
@@ -41,6 +43,8 @@ lemma hasExactLimitsOfShape [HasLimitsOfShape J A] [HasExactLimitsOfShape J A]
     [HasFiniteColimits A] : HasExactLimitsOfShape J (Condensed.{u} A) := by
   let e : Condensed.{u} A ≌ Sheaf (extensiveTopology Stonean.{u}) A :=
     (StoneanCompHaus.equivalence A).symm.trans Presheaf.coherentExtensiveEquivalence
+  have : HasLimitsOfShape J (Sheaf (extensiveTopology Stonean.{u}) A) :=
+    hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape e.inverse
   exact HasExactLimitsOfShape.domain_of_functor _ e.functor
 
 section Module

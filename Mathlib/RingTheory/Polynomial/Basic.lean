@@ -173,7 +173,7 @@ def monicEquivDegreeLT [Nontrivial R] (n : ℕ) :
     rcases p with ⟨p, hp, rfl⟩
     simp only [mem_degreeLT]
     refine lt_of_lt_of_le ?_ degree_le_natDegree
-    exact degree_eraseLead_lt (Polynomial.Monic.ne_zero_of_polynomial_ne hp one_ne_zero)⟩
+    exact degree_eraseLead_lt (ne_zero_of_ne_zero_of_monic one_ne_zero hp)⟩
   invFun := fun p =>
     ⟨X^n + p.1, monic_X_pow_add (mem_degreeLT.1 p.2), by
         rw [natDegree_add_eq_left_of_degree_lt]
@@ -304,7 +304,7 @@ def restriction (p : R[X]) : Polynomial (Subring.closure (↑p.coeffs : Set R)) 
       (⟨p.coeff i,
           letI := Classical.decEq R
           if H : p.coeff i = 0 then H.symm ▸ (Subring.closure _).zero_mem
-          else Subring.subset_closure (p.coeff_mem_coeffs H)⟩ :
+          else Subring.subset_closure (p.coeff_mem_coeffs _ H)⟩ :
         Subring.closure (↑p.coeffs : Set R))
 
 @[simp]
@@ -372,7 +372,7 @@ def toSubring (hp : (↑p.coeffs : Set R) ⊆ T) : T[X] :=
     monomial i
       (⟨p.coeff i,
         letI := Classical.decEq R
-        if H : p.coeff i = 0 then H.symm ▸ T.zero_mem else hp (p.coeff_mem_coeffs H)⟩ : T)
+        if H : p.coeff i = 0 then H.symm ▸ T.zero_mem else hp (p.coeff_mem_coeffs _ H)⟩ : T)
 
 variable (hp : (↑p.coeffs : Set R) ⊆ T)
 

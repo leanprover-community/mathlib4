@@ -15,7 +15,7 @@ This operation, for which we introduce the notation `∘ₘ`, takes `μ : Measur
 This file does not define composition but only introduces notation for
 `MeasureTheory.Measure.bind μ κ`.
 
-## Notation
+## Notations
 
 * `κ ∘ₘ μ = MeasureTheory.Measure.bind μ κ`, for `κ` a kernel.
 -/

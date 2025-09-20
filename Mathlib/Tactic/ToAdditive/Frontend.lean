@@ -1148,7 +1148,8 @@ def elabToAdditive : Syntax → CoreM Config
         -- Deprecate `str` docstring syntax (since := "2025-08-12")
         if getLinterValue linter.deprecated (← getLinterOptions) then
           let hintSuggestion := {
-            diffGranularity := .none
+            /- #adaptation_note: change to `.none` on nightly-2025-08-28. -/
+            diffGranularity := .auto
             toTryThisSuggestion := { suggestion := "/-- " ++ doc.getString.trim ++ " -/" }
           }
           let sugg ← Hint.mkSuggestionsMessage #[hintSuggestion] doc

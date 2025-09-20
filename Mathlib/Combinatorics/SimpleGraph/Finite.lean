@@ -243,9 +243,8 @@ theorem incidenceFinset_subset [DecidableEq V] [Fintype G.edgeSet] :
   Set.toFinset_subset_toFinset.mpr (G.incidenceSet_subset v)
 
 /-- The degree of a vertex is at most the number of edges. -/
-theorem degree_le_card_edgeFinset [Fintype G.edgeSet] :
+theorem degree_le_card_edgeFinset [DecidableEq V] [Fintype G.edgeSet] :
     G.degree v ≤ #G.edgeFinset := by
-  classical
   rw [← card_incidenceFinset_eq_degree]
   exact card_le_card (G.incidenceFinset_subset v)
 
@@ -478,7 +477,9 @@ theorem Adj.card_commonNeighbors_lt_degree {G : SimpleGraph V} [DecidableRel G.A
 theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
     Fintype.card ((⊤ : SimpleGraph V).commonNeighbors v w) = Fintype.card V - 2 := by
   simp only [commonNeighbors_top_eq, ← Set.toFinset_card, Set.toFinset_diff]
-  simp [Finset.card_sdiff, h]
+  rw [Finset.card_sdiff]
+  · simp [Finset.card_univ, h]
+  · simp only [Set.toFinset_subset_toFinset, Set.subset_univ]
 
 end Finite
 

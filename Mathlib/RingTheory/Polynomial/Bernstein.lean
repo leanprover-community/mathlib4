@@ -117,8 +117,10 @@ theorem derivative_succ_aux (n ν : ℕ) :
     norm_cast
     congr 1
     convert (Nat.choose_mul_succ_eq n (ν + 1)).symm using 1
-    · convert mul_comm _ _ using 2
-      simp
+    · -- Porting note: was
+      -- convert mul_comm _ _ using 2
+      -- simp
+      rw [mul_comm, Nat.succ_sub_succ_eq_sub]
     · apply mul_comm
 
 theorem derivative_succ (n ν : ℕ) : Polynomial.derivative (bernsteinPolynomial R n (ν + 1)) =

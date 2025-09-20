@@ -21,7 +21,7 @@ This file defines isomorphisms between objects of a category.
 - `of_iso` : convert from `Iso` to `IsIso`;
 - standard operations on isomorphisms (composition, inverse etc)
 
-## Notation
+## Notations
 
 - `X ≅ Y` : same as `Iso X Y`;
 - `α ≪≫ β` : composition of two isomorphisms; it is called `Iso.trans`

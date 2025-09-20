@@ -16,7 +16,7 @@ The actual quotient structures are defined in the following files:
 * Quotient Module: `Mathlib/LinearAlgebra/Quotient/Defs.lean`
 * Quotient Ring: `Mathlib/RingTheory/Ideal/Quotient/Defs.lean`
 
-## Notation
+## Notations
 
 The following notation is introduced:
 

@@ -237,7 +237,8 @@ instance {α : Type*} : CoeOut (Matroidᵣ α) (Matroid α) where
   coe := Matroidᵣ.toMatroid
 
 @[simp] theorem Matroidᵣ.coe_inj {M₁ M₂ : Matroidᵣ α} :
-    (M₁ : Matroid α) = (M₂ : Matroid α) ↔ M₁ = M₂ := Matroidᵣ.ext_iff.symm
+    (M₁ : Matroid α) = (M₂ : Matroid α) ↔ M₁ = M₂ := by
+  cases M₁; cases M₂; simp
 
 instance {α : Type*} : PartialOrder (Matroidᵣ α) where
   le := (· ≤r ·)

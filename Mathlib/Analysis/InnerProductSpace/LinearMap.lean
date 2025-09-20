@@ -84,7 +84,7 @@ theorem inner_map_self_eq_zero (T : V →ₗ[ℂ] V) : (∀ x : V, ⟪T x, x⟫_
     ext x
     rw [LinearMap.zero_apply, ← @inner_self_eq_zero ℂ V, inner_map_polarization]
     simp only [hT]
-    simp
+    norm_num
   · rintro rfl x
     simp only [LinearMap.zero_apply, inner_zero_left]
 

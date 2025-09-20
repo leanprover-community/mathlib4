@@ -203,17 +203,13 @@ variable (C D)
 
 /-- Construct the skeleton category by taking the quotient of objects. This construction gives a
 preorder with nice definitional properties, but is only really appropriate for thin categories.
-If your original category is not thin, you probably want to be using `Skeleton` instead of this.
+If your original category is not thin, you probably want to be using `skeleton` instead of this.
 -/
 def ThinSkeleton : Type u₁ :=
   Quotient (isIsomorphicSetoid C)
 
-variable {C} in
-/-- Convenience constructor for `ThinSkeleton`. -/
-abbrev ThinSkeleton.mk (c : C) : ThinSkeleton C := Quotient.mk' c
-
 instance inhabitedThinSkeleton [Inhabited C] : Inhabited (ThinSkeleton C) :=
-  ⟨ThinSkeleton.mk default⟩
+  ⟨@Quotient.mk' C (isIsomorphicSetoid C) default⟩
 
 instance ThinSkeleton.preorder : Preorder (ThinSkeleton C) where
   le :=
@@ -233,7 +229,7 @@ instance ThinSkeleton.preorder : Preorder (ThinSkeleton C) where
 /-- The functor from a category to its thin skeleton. -/
 @[simps]
 def toThinSkeleton : C ⥤ ThinSkeleton C where
-  obj := ThinSkeleton.mk
+  obj := @Quotient.mk' C _
   map f := homOfLE (Nonempty.intro f)
 
 /-!

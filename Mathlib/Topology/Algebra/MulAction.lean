@@ -248,14 +248,15 @@ variable {ι : Sort*} {M X : Type*} [TopologicalSpace M] [SMul M X]
 @[to_additive]
 theorem continuousSMul_sInf {ts : Set (TopologicalSpace X)}
     (h : ∀ t ∈ ts, @ContinuousSMul M X _ _ t) : @ContinuousSMul M X _ _ (sInf ts) :=
-  let _ := sInf ts
-  { continuous_smul := by
+  -- Porting note: {} doesn't work because `sInf ts` isn't found by TC search. `(_)` finds it by
+  -- unification instead.
+  @ContinuousSMul.mk M X _ _ (_) <| by
       -- Porting note: needs `( :)`
-      rw [← (sInf_singleton (a := ‹TopologicalSpace M›):)]
+      rw [← (@sInf_singleton _ _ ‹TopologicalSpace M›:)]
       exact
         continuous_sInf_rng.2 fun t ht =>
           continuous_sInf_dom₂ (Eq.refl _) ht
-            (@ContinuousSMul.continuous_smul _ _ _ _ t (h t ht)) }
+            (@ContinuousSMul.continuous_smul _ _ _ _ t (h t ht))
 
 @[to_additive]
 theorem continuousSMul_iInf {ts' : ι → TopologicalSpace X}

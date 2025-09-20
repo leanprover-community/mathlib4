@@ -77,10 +77,12 @@ theorem monomial_mem_adjoin_monomial {I : Ideal R} {n : ℕ} {r : R} (hr : r ∈
   induction n generalizing r with
   | zero => exact Subalgebra.algebraMap_mem _ _
   | succ n hn =>
-  · rw [pow_succ'] at hr
-    refine Submodule.smul_induction_on hr ?_ ?_
+    rw [pow_succ'] at hr
+    apply Submodule.smul_induction_on
+      -- Porting note: did not need help with motive previously
+      (p := fun r => (monomial (Nat.succ n)) r ∈ Algebra.adjoin R (Submodule.map (monomial 1) I)) hr
     · intro r hr s hs
-      rw [add_comm n 1, smul_eq_mul, ← monomial_mul_monomial]
+      rw [Nat.succ_eq_one_add, smul_eq_mul, ← monomial_mul_monomial]
       exact Subalgebra.mul_mem _ (Algebra.subset_adjoin (Set.mem_image_of_mem _ hr)) (hn hs)
     · intro x y hx hy
       rw [monomial_add]

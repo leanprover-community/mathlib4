@@ -525,16 +525,10 @@ theorem symm_mk (f h₁ h₂ h₃ h₄) :
         invFun := e } :=
   rfl
 
-/-- For a more powerful version, see `coe_symm_mk'`. -/
+@[simp]
 theorem coe_symm_mk [Module R M] [Module R M₂]
     {to_fun inv_fun map_add map_smul left_inv right_inv} :
     ⇑(⟨⟨⟨to_fun, map_add⟩, map_smul⟩, inv_fun, left_inv, right_inv⟩ : M ≃ₗ[R] M₂).symm = inv_fun :=
-  rfl
-
-@[simp]
-theorem coe_symm_mk' [Module R M] [Module R M₂]
-    {f inv_fun left_inv right_inv} :
-    ⇑(⟨f, inv_fun, left_inv, right_inv⟩ : M ≃ₗ[R] M₂).symm = inv_fun :=
   rfl
 
 protected theorem bijective : Function.Bijective e :=

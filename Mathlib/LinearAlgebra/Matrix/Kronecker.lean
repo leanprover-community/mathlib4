@@ -32,7 +32,7 @@ This defines the [Kronecker product](https://en.wikipedia.org/wiki/Kronecker_pro
 * `Matrix.kroneckerTMul`: An alias of `kroneckerMap (⊗ₜ)`. Prefer using the notation.
 * `Matrix.kroneckerTMulBilinear`: `Matrix.kroneckerTMul` is bilinear
 
-## Notation
+## Notations
 
 These require `open Kronecker`:
 

@@ -23,10 +23,9 @@ Currently, this file contains linters checking
 - for lines with windows line endings,
 - for lines containing trailing whitespace,
 - for module names to be in upper camel case,
-- for module names to be valid Windows filenames, and containing no forbidden characters such as
-  `!`, `.` or spaces.
+- for module names to be valid Windows filenames.
 
-For historic reasons, some further such checks are written in a Python script `lint-style.py`:
+For historic reasons, some further such check checks are written in a Python script `lint-style.py`:
 these are gradually being rewritten in Lean.
 
 This linter has a file for style exceptions (to avoid false positives in the implementation),
@@ -404,8 +403,7 @@ def modulesOSForbidden (opts : LinterOptions) (modules : Array Lean.Name) : IO N
     "COM9", "COM¹", "COM²", "COM³", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8",
     "LPT9", "LPT¹", "LPT²", "LPT³"
   ]
-  -- We also check for the exclamation mark (which is not forbidden on Windows, but e.g. on Nix OS),
-  -- but do so below (with a custom error message).
+  -- We also check for the exclamation mark (which is not forbidden on Windows, but e.g. on Nix OS).
   let forbiddenCharacters := [
     '<', '>', '"', '/', '\\', '|', '?', '*',
   ]
@@ -425,9 +423,6 @@ def modulesOSForbidden (opts : LinterOptions) (modules : Array Lean.Name) : IO N
         else if s.contains '.' then
           isBad := true
           IO.eprintln s!"error: module name '{name}' contains forbidden character '.'"
-        else if s.contains ' ' || s.contains '\t' || s.contains '\n' then
-          isBad := true
-          IO.eprintln s!"error: module name '{name}' contains a whitespace character"
         for c in forbiddenCharacters do
           if s.contains c then
             badChars := c.toString :: badChars

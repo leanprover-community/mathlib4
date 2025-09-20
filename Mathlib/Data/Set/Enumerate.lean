@@ -48,7 +48,8 @@ theorem enumerate_eq_none :
     · cases m with
       | zero => contradiction
       | succ m' =>
-        simp only [enumerate, hs] at h ⊢
+        simp? [hs, enumerate] at h ⊢ says
+          simp only [enumerate, hs, Option.bind_eq_bind, Option.bind_some] at h ⊢
         have hm : n ≤ m' := Nat.le_of_succ_le_succ hm
         exact enumerate_eq_none h hm
 

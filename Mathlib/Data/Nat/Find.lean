@@ -66,8 +66,6 @@ protected def find : ℕ :=
 protected theorem find_spec : p (Nat.find H) :=
   (Nat.findX H).2.left
 
-grind_pattern Nat.find_spec => Nat.find H
-
 protected theorem find_min : ∀ {m : ℕ}, m < Nat.find H → ¬p m :=
   @(Nat.findX H).2.right
 
@@ -76,10 +74,10 @@ protected theorem find_min' {m : ℕ} (h : p m) : Nat.find H ≤ m :=
 
 lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m, ¬p n := by
   constructor
-  · grind [Nat.find_min]
+  · rintro rfl
+    exact ⟨Nat.find_spec h, fun _ ↦ Nat.find_min h⟩
   · rintro ⟨hm, hlt⟩
-    have := Nat.find_min' h hm
-    grind
+    exact le_antisymm (Nat.find_min' h hm) (not_lt.1 <| imp_not_comm.1 (hlt _) <| Nat.find_spec h)
 
 @[simp] lemma find_lt_iff (h : ∃ n : ℕ, p n) (n : ℕ) : Nat.find h < n ↔ ∃ m < n, p m :=
   ⟨fun h2 ↦ ⟨Nat.find h, h2, Nat.find_spec h⟩,

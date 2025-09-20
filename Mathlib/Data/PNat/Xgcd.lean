@@ -404,6 +404,7 @@ theorem gcd_props :
   intro d w x y z a' b'
   let u := XgcdType.start a b
   let ur := u.reduce
+  have _ : d = ur.a := rfl
   have hb : d = ur.b := u.reduce_isReduced'
   have ha' : (a' : ℕ) = w + x := gcdA'_coe a b
   have hb' : (b' : ℕ) = y + z := gcdB'_coe a b
@@ -411,6 +412,7 @@ theorem gcd_props :
   constructor
   · exact hdet
   have hdet' : (w * z : ℕ) = x * y + 1 := by rw [← mul_coe, hdet, succPNat_coe]
+  have _ : u.v = ⟨a, b⟩ := XgcdType.start_v a b
   let hv : Prod.mk (w * d + x * ur.b : ℕ) (y * d + z * ur.b : ℕ) = ⟨a, b⟩ :=
     u.reduce_v.trans (XgcdType.start_v a b)
   rw [← hb, ← add_mul, ← add_mul, ← ha', ← hb'] at hv

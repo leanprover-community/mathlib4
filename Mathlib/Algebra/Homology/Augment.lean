@@ -207,10 +207,11 @@ def augment (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f ≫ C.d 
     | i + 1, j + 1 => C.d i j
     | _, _ => 0
   shape i j s := by
+    simp? at s says simp only [ComplexShape.up_Rel] at s
     rcases j with (_ | _ | j) <;> cases i <;> try simp
     · contradiction
     · rw [C.shape]
-      simp only [ComplexShape.up_Rel] at ⊢ s
+      simp only [ComplexShape.up_Rel]
       contrapose! s
       rw [← s]
   d_comp_d' i j k hij hjk := by

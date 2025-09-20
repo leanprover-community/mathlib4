@@ -27,7 +27,7 @@ We provide the following functions to work with these objects:
 4. `SimplexCategory.Hom.toOrderHom` gives the underlying monotone map associated to a
   term of `SimplexCategory.Hom`.
 
-## Notation
+## Notations
 
 * `⦋n⦌` denotes the `n`-dimensional simplex. This notation is available with
   `open Simplicial`.
