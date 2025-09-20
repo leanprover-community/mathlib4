@@ -11,6 +11,8 @@ import Mathlib.Analysis.Normed.Group.ZeroAtInfty
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 import Mathlib.Topology.Algebra.UniformFilterBasis
+import Mathlib.MeasureTheory.Function.Holder
+import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 import Mathlib.Tactic.MoveAdd
 
 /-!
@@ -568,6 +570,15 @@ lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
     simpa [this] using .const _
   · exact (f.le_opNorm x).trans (by simp [mul_add])
 
+theorem hasTemperateGrowth (f : 𝓢(E, F)) : Function.HasTemperateGrowth f := by
+  refine ⟨smooth f ⊤, fun n => ?_⟩
+  rcases f.decay 0 n with ⟨C, Cpos, hC⟩
+  use 0, C
+  intro x
+  specialize hC x
+  simp only [pow_zero, one_mul, mul_one] at hC ⊢
+  assumption
+
 variable [NormedAddCommGroup D] [MeasurableSpace D]
 
 open MeasureTheory Module
@@ -973,6 +984,9 @@ def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
 theorem fderivCLM_apply (f : 𝓢(E, F)) (x : E) : fderivCLM 𝕜 f x = fderiv ℝ f x :=
   rfl
 
+theorem hasFDerivAt (f : 𝓢(E, F)) (x : E) : HasFDerivAt f (fderiv ℝ f x) x :=
+  f.differentiableAt.hasFDerivAt
+
 /-- The 1-dimensional derivative on Schwartz space as a continuous `𝕜`-linear map. -/
 def derivCLM : 𝓢(ℝ, F) →L[𝕜] 𝓢(ℝ, F) :=
   mkCLM deriv (fun f g _ => deriv_add f.differentiableAt g.differentiableAt)
@@ -986,6 +1000,9 @@ def derivCLM : 𝓢(ℝ, F) →L[𝕜] 𝓢(ℝ, F) :=
 @[simp]
 theorem derivCLM_apply (f : 𝓢(ℝ, F)) (x : ℝ) : derivCLM 𝕜 f x = deriv f x :=
   rfl
+
+theorem hasDerivAt (f : 𝓢(ℝ, F)) (x : ℝ) : HasDerivAt f (deriv f x) x :=
+  f.differentiableAt.hasDerivAt
 
 /-- The partial derivative (or directional derivative) in the direction `m : E` as a
 continuous linear map on Schwartz space. -/
@@ -1343,5 +1360,37 @@ theorem continuous_toLp {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} [hμ 
     Continuous (fun f : 𝓢(E, F) ↦ f.toLp p μ) := (toLpCLM ℝ F p μ).continuous
 
 end Lp
+
+section integration_by_parts
+
+open ENNReal MeasureTheory
+
+variable [NormedAddCommGroup V] [NormedSpace ℝ V]
+
+/-- Integration by parts of Schwartz functions for the 1-dimensional derivative.
+
+Version for a general bilinear map. -/
+theorem integral_bilinear_deriv_right_eq_neg_left (f : 𝓢(ℝ, E)) (g : 𝓢(ℝ, F))
+    (L : E →L[ℝ] F →L[ℝ] V) :
+    ∫ (x : ℝ), (L (f x)) (deriv g x) = -∫ (x : ℝ), (L (deriv f x)) (g x) := by
+  apply MeasureTheory.integral_bilinear_hasDerivAt_right_eq_neg_left_of_integrable
+    f.hasDerivAt g.hasDerivAt
+  all_goals rw [← MeasureTheory.memLp_one_iff_integrable]
+  · exact (bilinLeftCLM L (derivCLM ℝ g).hasTemperateGrowth f).memLp 1
+  · exact (bilinLeftCLM L g.hasTemperateGrowth (derivCLM ℝ f)).memLp 1
+  · exact (bilinLeftCLM L g.hasTemperateGrowth f).memLp 1
+
+variable [RCLike 𝕜] [NormedSpace 𝕜 F] [NormedSpace 𝕜 V]
+
+/-- Integration by parts of Schwartz functions for the 1-dimensional derivative.
+
+Version for a Schwartz function with values in continuous linear maps. -/
+theorem integral_clm_comp_deriv_right_eq_neg_left (f : 𝓢(ℝ, F)) (g : 𝓢(ℝ, F →L[𝕜] V)) :
+    ∫ (x : ℝ), (g x) (deriv f x) = -∫ (x : ℝ), (deriv g x) (f x) :=
+  integral_bilinear_deriv_right_eq_neg_left g f
+    ((ContinuousLinearMap.id 𝕜 (F →L[𝕜] V)).bilinearRestrictScalars ℝ)
+
+end integration_by_parts
+
 
 end SchwartzMap
