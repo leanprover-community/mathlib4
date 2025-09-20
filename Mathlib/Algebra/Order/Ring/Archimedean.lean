@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang, Violeta Hernández Palacios
 -/
 import Mathlib.Algebra.Order.Archimedean.Class
+import Mathlib.Algebra.Order.Group.DenselyOrdered
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.RingTheory.Valuation.Basic
@@ -35,7 +36,7 @@ reasons:
   one on `Valuation`.
 -/
 
-variable {R : Type*} [LinearOrder R]
+variable {R S : Type*} [LinearOrder R] [LinearOrder S]
 
 namespace ArchimedeanClass
 section Ring
@@ -140,6 +141,17 @@ theorem mk_map_of_archimedean' [Archimedean S] (f : S →+*o R) {x : S} (h : x �
     mk (f x) = 0 := by
   simpa using mk_map_of_archimedean f.toOrderAddMonoidHom h
 
+theorem mk_le_mk_add_of_archimedean [Archimedean S] (f : S →+*o R) (x : R) (y : S) :
+    mk x ≤ mk (f y) + mk x := by
+  obtain rfl | hy := eq_or_ne y 0
+  · simp
+  · rw [mk_map_of_archimedean' f hy, zero_add]
+
+theorem mk_le_add_mk_of_archimedean [Archimedean S] (f : S →+*o R) (x : R) (y : S) :
+    mk x ≤ mk x + mk (f y) := by
+  rw [add_comm]
+  exact mk_le_mk_add_of_archimedean f x y
+
 @[simp]
 theorem mk_intCast {n : ℤ} (h : n ≠ 0) : mk (n : S) = 0 := by
   obtain _ | _ := subsingleton_or_nontrivial S
@@ -170,6 +182,26 @@ theorem add_right_cancel_of_ne_top {x y z : ArchimedeanClass R} (hx : x ≠ ⊤)
     y = z := by
   simp_rw [← add_comm x] at h
   exact add_left_cancel_of_ne_top hx h
+
+variable [Ring S] [IsStrictOrderedRing S]
+
+theorem mk_le_mk_iff_denselyOrdered [DenselyOrdered R] [Archimedean R] {x y : S}
+    (f : R →+* S) (hf : StrictMono f) : mk x ≤ mk y ↔ ∃ q : R, 0 < f q ∧ f q * |y| ≤ |x| := by
+  have H {q} : 0 < f q ↔ 0 < q := by simpa using hf.lt_iff_lt (a := 0)
+  constructor
+  · rintro ⟨(_ | n), hn⟩
+    · simp_all [exists_zero_lt]
+    · obtain ⟨q, hq₀, hq⟩ := exists_nsmul_lt_of_pos (one_pos (α := R)) (n + 1)
+      refine ⟨q, H.2 hq₀, le_of_mul_le_mul_left ?_ n.cast_add_one_pos⟩
+      simpa [← mul_assoc] using mul_le_mul (hf hq).le hn (abs_nonneg y) (by simp)
+  · rintro ⟨q, hq₀, hq⟩
+    have hq₀' := H.1 hq₀
+    obtain ⟨n, hn⟩ := exists_lt_nsmul hq₀' 1
+    refine ⟨n, le_of_mul_le_mul_left ?_ hq₀⟩
+    have h : 0 ≤ f (n • q) := by
+      rw [← f.map_zero]
+      exact hf.monotone (nsmul_nonneg hq₀'.le n)
+    simpa [mul_comm, mul_assoc] using mul_le_mul (hf hn).le hq (mul_nonneg hq₀.le (abs_nonneg y)) h
 
 end IsStrictOrderedRing
 end Ring
@@ -221,6 +253,10 @@ noncomputable instance : LinearOrderedAddCommGroupWithTop (ArchimedeanClass R) w
 theorem mk_ratCast {q : ℚ} (h : q ≠ 0) : mk (q : R) = 0 := by
   have := IsOrderedRing.toIsStrictOrderedRing R
   simpa using mk_map_of_archimedean ⟨(Rat.castHom R).toAddMonoidHom, fun _ ↦ by simp⟩ h
+
+theorem mk_le_mk_iff_ratCast {x y : R} : mk x ≤ mk y ↔ ∃ q : ℚ, 0 < q ∧ q * |y| ≤ |x| := by
+  have := IsOrderedRing.toIsStrictOrderedRing R
+  simpa using mk_le_mk_iff_denselyOrdered (Rat.castHom _) Rat.cast_strictMono (x := x)
 
 end Field
 end ArchimedeanClass
