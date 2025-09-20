@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Rel
 import Mathlib.Order.OrderIsoNat
 
@@ -1121,7 +1122,7 @@ lemma finiteDimensionalOrder_or_infiniteDimensionalOrder [Preorder α] [Nonempty
     FiniteDimensionalOrder α ∨ InfiniteDimensionalOrder α :=
   SetRel.finiteDimensional_or_infiniteDimensional _
 
-/-- If `f : α → β` is a strictly monotonic function and `α` is an infinite dimensional type then so
+/-- If `f : α → β` is a strictly monotonic function and `α` is an infinite-dimensional type then so
   is `β`. -/
 lemma infiniteDimensionalOrder_of_strictMono [Preorder α] [Preorder β]
     (f : α → β) (hf : StrictMono f) [InfiniteDimensionalOrder α] :
