@@ -32,6 +32,7 @@ We provide many variations to stricten the result under more assumptions on the 
 * `Convex ℝ s → interior (closure s) ⊆ s`
 -/
 
+assert_not_exists ContinuousLinearMap.hasOpNorm
 
 open Set
 
