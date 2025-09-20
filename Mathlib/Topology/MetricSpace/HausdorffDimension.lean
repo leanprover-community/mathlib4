@@ -58,7 +58,7 @@ properties of Hausdorff dimension.
   smooth map is dense provided that the dimension of the domain is strictly less than the dimension
   of the codomain.
 
-## Notations
+## Notation
 
 We use the following notation localized in `MeasureTheory`. It is defined in
 `MeasureTheory.Measure.Hausdorff`.

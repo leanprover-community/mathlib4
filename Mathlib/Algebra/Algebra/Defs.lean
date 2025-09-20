@@ -103,6 +103,10 @@ end Prio
 def algebraMap (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] : R →+* A :=
   Algebra.algebraMap
 
+theorem Algebra.subsingleton (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A]
+    [Subsingleton R] : Subsingleton A :=
+  (algebraMap R A).codomain_trivial
+
 /-- Coercion from a commutative semiring to an algebra over this semiring. -/
 @[coe, reducible]
 def Algebra.cast {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] : R → A :=
