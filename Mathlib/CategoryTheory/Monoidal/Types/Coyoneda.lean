@@ -26,9 +26,9 @@ instance (C : Type u) [Category.{v} C] [MonoidalCategory C] :
       ext ⟨⟨f, g⟩, h⟩; dsimp at f g h
       dsimp; simp only [Iso.cancel_iso_inv_left, Category.assoc]
       conv_lhs =>
-        rw [← Category.id_comp h, tensor_comp, Category.assoc, associator_naturality,
+        rw [← Category.id_comp h, ← tensorHom_comp_tensorHom, Category.assoc, associator_naturality,
           ← Category.assoc, unitors_inv_equal, tensorHom_id, triangle_assoc_comp_right_inv]
-      conv_rhs => rw [← Category.id_comp f, tensor_comp]
+      conv_rhs => rw [← Category.id_comp f, ← tensorHom_comp_tensorHom]
       simp)
     (left_unitality := by
       intros

@@ -45,11 +45,11 @@ instance : (lim (J := J) (C := C)).LaxMonoidal :=
             { app := fun j => limit.π F j ⊗ₘ limit.π G j
               naturality := fun j j' f => by
                 dsimp
-                simp only [Category.id_comp, ← tensor_comp, limit.w] } })
+                simp only [Category.id_comp, tensorHom_comp_tensorHom, limit.w] } })
     (μ_natural := fun f g ↦ limit.hom_ext (fun j ↦ by
       dsimp
       simp only [limit.lift_π, Cones.postcompose_obj_π, Monoidal.tensorHom_app, limit.lift_map,
-        NatTrans.comp_app, Category.assoc, ← tensor_comp, limMap_π]))
+        NatTrans.comp_app, Category.assoc, tensorHom_comp_tensorHom, limMap_π]))
     (associativity := fun F G H ↦ limit.hom_ext (fun j ↦ by
       dsimp
       simp only [tensorHom_id, limit.lift_map, Category.assoc, limit.lift_π,

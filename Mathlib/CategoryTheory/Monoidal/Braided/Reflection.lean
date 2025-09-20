@@ -60,7 +60,8 @@ private lemma adjRetraction_is_retraction (c : C) (d : D)
   simp only [id_obj, comp_obj, adjRetractionAux, Functor.map_inv, Functor.comp_map,
     braiding_naturality_right_assoc]
   slice_lhs 2 3 =>
-    simp only [← id_tensorHom, ← tensorHom_id, ← tensor_comp, Category.id_comp, Category.comp_id]
+    simp only [← id_tensorHom, ← tensorHom_id, tensorHom_comp_tensorHom, Category.id_comp,
+      Category.comp_id]
   slice_lhs 2 4 =>
     rw [← adj.unit_naturality_assoc]
   simp
@@ -102,7 +103,7 @@ theorem isIso_tfae : List.TFAE
     -- and conclude.
     have : (adj.unit.app d) ⊗ₘ (adj.unit.app d') =
         (adj.unit.app d ▷ d') ≫ (((L ⋙ R).obj _) ◁ adj.unit.app d') := by
-      simp [← tensorHom_id, ← id_tensorHom, ← tensor_comp]
+      simp [← tensorHom_id, ← id_tensorHom, tensorHom_comp_tensorHom]
     rw [this, map_comp]
     infer_instance
   tfae_have 4 → 1

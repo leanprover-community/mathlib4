@@ -172,7 +172,7 @@ lemma homEquiv_comp (f : F₁ ⟶ F₂) (g : F₂ ⟶ F₃) :
     enrichedComp V F₁ F₂ F₃ := by
   ext j
   simp only [homEquiv_apply_π, NatTrans.comp_app, eHomEquiv_comp, assoc,
-    enrichedComp_π, Functor.op_obj, ← tensor_comp_assoc]
+    enrichedComp_π, Functor.op_obj, tensorHom_comp_tensorHom_assoc]
 
 end
 
@@ -386,7 +386,7 @@ noncomputable def functorEnrichedComp [HasFunctorEnrichedHom V F₁ F₂]
     dsimp
     rw [assoc, assoc, enrichedComp_π]
     dsimp
-    rw [← tensor_comp_assoc]
+    rw [tensorHom_comp_tensorHom_assoc]
     simp
 
 @[reassoc (attr := simp)]
@@ -446,7 +446,7 @@ lemma functorHomEquiv_comp [HasFunctorEnrichedHom V F₁ F₂] [HasEnrichedHom V
   dsimp
   ext k
   rw [homEquiv_comp, assoc, assoc, assoc, assoc, assoc, end_.lift_π, enrichedComp_π]
-  simp [← tensor_comp_assoc]
+  simp [tensorHom_comp_tensorHom_assoc]
 
 attribute [local instance] functorEnrichedCategory
 

@@ -894,7 +894,7 @@ def monoidalOfLawfulDayConvolutionMonoidalCategoryStruct
         tensorHom_id, id_whiskerRight, Category.id_comp]
       dsimp [DayConvolution.convolution]
       simp)
-    (tensor_comp := fun _ _ _ _ => by
+    (tensorHom_comp_tensorHom := fun _ _ _ _ => by
       apply Functor.Faithful.map_injective (F := ι C V D)
       simp only [ι_map_tensorHom_hom_eq_tensorHom, Functor.map_comp]
       apply (corepresentableBy (ι C V D|>.obj _) (ι C V D|>.obj _)).homEquiv.injective

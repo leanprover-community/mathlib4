@@ -937,8 +937,7 @@ lemma unit_app_tensor_comp_map_δ (X Y : C) :
     adj.unit.app (X ⊗ Y) ≫ G.map (δ F X Y) = (adj.unit.app X ⊗ₘ adj.unit.app Y) ≫ μ G _ _ := by
   rw [IsMonoidal.leftAdjoint_μ (adj := adj), homEquiv_unit]
   dsimp
-  simp only [← adj.unit_naturality_assoc, ← Functor.map_comp, ← δ_natural_assoc,
-    ← tensor_comp, left_triangle_components, tensorHom_id, id_whiskerRight, comp_id]
+  simp [← adj.unit_naturality_assoc, ← Functor.map_comp, ← δ_natural_assoc]
 
 @[reassoc]
 lemma map_ε_comp_counit_app_unit : F.map (ε G) ≫ adj.counit.app (𝟙_ D) = η F := by
@@ -968,7 +967,8 @@ instance isMonoidal_comp {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G')
     dsimp only [comp_obj, comp_μ, id_obj, comp_δ]
     rw [Equiv.symm_apply_apply]
     dsimp [homEquiv]
-    rw [comp_counit_app, comp_counit_app, comp_counit_app, assoc, tensor_comp, δ_natural_assoc]
+    rw [comp_counit_app, comp_counit_app, comp_counit_app, assoc, ← tensorHom_comp_tensorHom,
+      δ_natural_assoc]
     dsimp
     rw [← adj'.map_μ_comp_counit_app_tensor, ← map_comp_assoc, ← map_comp_assoc,
       ← map_comp_assoc, ← adj.map_μ_comp_counit_app_tensor, assoc,
@@ -1119,10 +1119,8 @@ instance isMonoidal_symm [e.inverse.Monoidal] [e.IsMonoidal] :
   leftAdjoint_μ X Y := by
     simp only [toAdjunction, Adjunction.homEquiv_unit]
     dsimp [symm]
-    rw [map_comp, counitIso_inv_app_tensor_comp_functor_map_δ_inverse_assoc,
-      ← Functor.map_comp, ← tensor_comp, Iso.hom_inv_id_app, Iso.hom_inv_id_app]
-    dsimp
-    rw [tensorHom_id, id_whiskerRight, map_id, comp_id]
+    rw [map_comp, counitIso_inv_app_tensor_comp_functor_map_δ_inverse_assoc]
+    simp [← map_comp]
 
 section
 
@@ -1185,27 +1183,27 @@ def coreMonoidalTransport {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G) : G.CoreMon
     simp only [← Category.assoc]
     congr 1
     slice_lhs 3 4 =>
-      rw [← tensorHom_id, ← tensor_comp]
+      rw [← tensorHom_id, tensorHom_comp_tensorHom]
       simp only [Iso.hom_inv_id_app, Category.id_comp, id_tensorHom]
     simp only [Category.assoc]
     rw [← whisker_exchange_assoc]
     simp only [tensor_whiskerLeft, Functor.LaxMonoidal.associativity, Category.assoc,
       Iso.inv_hom_id_assoc]
     rw [← tensorHom_id, associator_naturality_assoc]
-    simp [← id_tensorHom, -tensorHom_id, -tensor_comp, ← tensor_comp_assoc]
+    simp [← id_tensorHom, -tensorHom_id]
   left_unitality X := by
     simp only [Iso.trans_hom, εIso_hom, Iso.app_hom, ← tensorHom_id, tensorIso_hom, Iso.symm_hom,
-      μIso_hom, Category.assoc, ← tensor_comp_assoc, Iso.hom_inv_id_app, Category.comp_id,
-      Category.id_comp]
+      μIso_hom, Category.assoc, tensorHom_comp_tensorHom_assoc, Iso.hom_inv_id_app,
+      Category.comp_id, Category.id_comp]
     rw [← i.hom.naturality, ← Category.comp_id (i.inv.app X),
-      ← Category.id_comp (Functor.LaxMonoidal.ε F), tensor_comp]
+      ← Category.id_comp (Functor.LaxMonoidal.ε F), ← tensorHom_comp_tensorHom]
     simp
   right_unitality X := by
     simp only [Iso.trans_hom, εIso_hom, Iso.app_hom, ← id_tensorHom, tensorIso_hom, Iso.symm_hom,
-      μIso_hom, Category.assoc, ← tensor_comp_assoc, Category.id_comp, Iso.hom_inv_id_app,
-      Category.comp_id]
+      μIso_hom, Category.assoc, tensorHom_comp_tensorHom_assoc, Category.id_comp,
+      Iso.hom_inv_id_app, Category.comp_id]
     rw [← i.hom.naturality, ← Category.comp_id (i.inv.app X),
-      ← Category.id_comp (Functor.LaxMonoidal.ε F), tensor_comp]
+      ← Category.id_comp (Functor.LaxMonoidal.ε F), ← tensorHom_comp_tensorHom]
     simp
 
 /--

@@ -95,9 +95,9 @@ inductive HomEquiv : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (X ⟶ᵐ Y) → Prop
   | assoc {X Y U V : F C} (f : X ⟶ᵐ U) (g : U ⟶ᵐ V) (h : V ⟶ᵐ Y) :
       HomEquiv ((f.comp g).comp h) (f.comp (g.comp h))
   | id_tensorHom_id {X Y} : HomEquiv ((Hom.id X).tensor (Hom.id Y)) (Hom.id _)
-  | tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : F C} (f₁ : X₁ ⟶ᵐ Y₁) (f₂ : X₂ ⟶ᵐ Y₂) (g₁ : Y₁ ⟶ᵐ Z₁)
-      (g₂ : Y₂ ⟶ᵐ Z₂) :
-    HomEquiv ((f₁.comp g₁).tensor (f₂.comp g₂)) ((f₁.tensor f₂).comp (g₁.tensor g₂))
+  | tensorHom_comp_tensorHom {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : F C} (f₁ : X₁ ⟶ᵐ Y₁) (f₂ : X₂ ⟶ᵐ Y₂)
+      (g₁ : Y₁ ⟶ᵐ Z₁) (g₂ : Y₂ ⟶ᵐ Z₂) :
+    HomEquiv ((f₁.tensor f₂).comp (g₁.tensor g₂)) ((f₁.comp g₁).tensor (f₂.comp g₂))
   | whiskerLeft_id (X Y) : HomEquiv ((Hom.id Y).whiskerLeft X) (Hom.id (X.tensor Y))
   | id_whiskerRight (X Y) : HomEquiv ((Hom.id X).whiskerRight Y) (Hom.id (X.tensor Y))
   | α_hom_inv {X Y Z} : HomEquiv ((Hom.α_hom X Y Z).comp (Hom.α_inv X Y Z)) (Hom.id _)
@@ -157,9 +157,9 @@ instance : MonoidalCategory (F C) where
     rintro ⟨f⟩ ⟨g⟩
     exact Quotient.sound (tensorHom_def _ _)
   id_tensorHom_id _ _ := Quot.sound id_tensorHom_id
-  tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂} := by
+  tensorHom_comp_tensorHom {X₁ Y₁ Z₁ X₂ Y₂ Z₂} := by
     rintro ⟨f₁⟩ ⟨f₂⟩ ⟨g₁⟩ ⟨g₂⟩
-    exact Quotient.sound (tensor_comp _ _ _ _)
+    exact Quotient.sound (tensorHom_comp_tensorHom _ _ _ _)
   whiskerLeft_id X Y := Quot.sound (HomEquiv.whiskerLeft_id X Y)
   id_whiskerRight X Y := Quot.sound (HomEquiv.id_whiskerRight X Y)
   tensorUnit := FreeMonoidalCategory.unit
@@ -323,7 +323,8 @@ def projectMap (X Y : F C) : (X ⟶ Y) → (projectObj f X ⟶ projectObj f Y) :
     | id_comp => dsimp only [projectMapAux]; rw [Category.id_comp]
     | assoc => dsimp only [projectMapAux]; rw [Category.assoc]
     | id_tensorHom_id => dsimp only [projectMapAux]; rw [MonoidalCategory.id_tensorHom_id]; rfl
-    | tensor_comp => dsimp only [projectMapAux]; rw [MonoidalCategory.tensor_comp]
+    | tensorHom_comp_tensorHom =>
+      dsimp only [projectMapAux]; rw [MonoidalCategory.tensorHom_comp_tensorHom]
     | whiskerLeft_id =>
         dsimp only [projectMapAux, projectObj]
         rw [MonoidalCategory.whiskerLeft_id]
