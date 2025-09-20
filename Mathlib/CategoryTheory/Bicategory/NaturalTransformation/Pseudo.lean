@@ -134,7 +134,6 @@ variable (F) in
 lemma id.toOplax : Oplax.StrongTrans.id F.toOplax = 𝟙 F :=
   rfl
 
-
 section
 
 variable {a b c : B} {a' : C}
@@ -185,7 +184,7 @@ theorem whiskerRight_naturality_id (f : G.obj a ⟶ a') :
     (α_ _ _ _).hom :=
   η.toOplax.whiskerRight_naturality_id _
 
-@[reassoc, to_app]
+@[to_app]
 lemma naturality_id_hom (α : F ⟶ G) (a : B) :
     (α.naturality (𝟙 a)).hom = (F.mapId a).hom ▷ α.app a ≫
       (λ_ (α.app a)).hom ≫ (ρ_ (α.app a)).inv ≫ α.app a ◁ (G.mapId a).inv := by
@@ -197,13 +196,13 @@ lemma naturality_id_iso (α : F ⟶ G) (a : B) :
   ext
   simp [naturality_id_hom]
 
-@[reassoc, to_app]
+@[to_app]
 lemma naturality_id_inv (α : F ⟶ G) (a : B) :
     (α.naturality (𝟙 a)).inv = α.app a ◁ (G.mapId a).hom ≫ (ρ_ (α.app a)).hom ≫
       (λ_ (α.app a)).inv ≫ (F.mapId a).inv ▷ α.app a := by
   simp [naturality_id_iso]
 
-@[reassoc, to_app]
+@[to_app]
 lemma naturality_naturality_hom (α : F ⟶ G) {a b : B} {f g : a ⟶ b} (η : f ≅ g) :
     (α.naturality g).hom =
      (F.map₂ η.inv) ▷ α.app b ≫ (α.naturality f).hom ≫ α.app a ◁ G.map₂ η.hom := by
@@ -221,7 +220,7 @@ lemma naturality_naturality_inv (α : F ⟶ G) {a b : B} {f g : a ⟶ b} (η : f
       α.app a ◁ G.map₂ η.inv ≫ (α.naturality f).inv ≫ F.map₂ η.hom ▷ α.app b := by
   simp [naturality_naturality_iso α η]
 
-@[reassoc, to_app]
+@[to_app]
 lemma naturality_comp_hom (α : F ⟶ G) {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
     (α.naturality (f ≫ g)).hom =
       (F.mapComp f g).hom ▷ α.app c ≫ (α_ _ _ _).hom ≫ F.map f ◁ (α.naturality g).hom ≫
@@ -237,6 +236,7 @@ lemma naturality_comp_iso (α : F ⟶ G) {a b c : B} (f : a ⟶ b) (g : b ⟶ c)
   ext
   simp [naturality_comp_hom α f g]
 
+@[to_app]
 lemma naturality_comp_inv (α : F ⟶ G) {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
     (α.naturality (f ≫ g)).inv =
       α.app a ◁ (G.mapComp f g).hom ≫ (α_ _ _ _).inv ≫  (α.naturality f).inv ▷ G.map g ≫
