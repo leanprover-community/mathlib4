@@ -169,6 +169,11 @@ theorem preimage_compl [BooleanAlgebra α] (hs : IsAntichain (· ≤ ·) s) :
     IsAntichain (· ≤ ·) (compl ⁻¹' s) := fun _ ha _ ha' hne hle =>
   hs ha' ha (fun h => hne (compl_inj_iff.mp h.symm)) (compl_le_compl hle)
 
+protected theorem union :
+    IsAntichain r (s ∪ t) ↔
+      IsAntichain r s ∧ IsAntichain r t ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → rᶜ a b ∧ rᶜ b a := by
+  rw [IsAntichain, IsAntichain, IsAntichain, pairwise_union]
+
 end IsAntichain
 
 @[deprecated (since := "2025-09-20")]
