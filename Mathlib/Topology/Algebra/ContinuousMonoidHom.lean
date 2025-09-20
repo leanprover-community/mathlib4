@@ -543,7 +543,7 @@ end unique
 
 /-- A family indexed by a type with a unique element
 is `ContinuousMulEquiv` to the element at the single index. -/
-@[to_additive (attrs := simps!)
+@[to_additive (attr := simps!)
 /-- A family indexed by a type with a unique element
 is `ContinuousAddEquiv` to the element at the single index. -/]
 def piUnique {ι : Type*} (M : ι → Type*) [(j : ι) → Mul (M j)]
@@ -555,7 +555,7 @@ def piUnique {ι : Type*} (M : ι → Type*) [(j : ι) → Mul (M j)]
 
 /-- Splits the indices of `∀ (i : ι), Y i` along the predicate `p`.
 This is `Equiv.piEquivPiSubtypeProd` as a `ContinuousMulEquiv`. -/
-@[to_additive piEquivPiSubtypeProd (attrs := simps!)
+@[to_additive piEquivPiSubtypeProd (attr := simps!)
 /-- Splits the indices of `∀ (i : ι), Y i` along the predicate `p`.
 This is `Equiv.piEquivPiSubtypeProd` as a `ContinuousAddEquiv`. -/]
 def piEquivPiSubtypeProd {ι : Type*} (p : ι → Prop) (Y : ι → Type*)
