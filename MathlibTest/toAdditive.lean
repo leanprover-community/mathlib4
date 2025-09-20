@@ -272,7 +272,7 @@ lemma npowRec_zero [One M] [Mul M] (x : M) : npowRec 0 x = 1 := by
 
 /- Test that we can rewrite with definitions without the `@[to_additive]` attribute. -/
 @[to_additive addoptiontest]
-lemma optiontest (x : Option α) : x.elim .none Option.some = x := by
+lemma optiontest (x : Option α) : x.elim none some = x := by
   cases x <;> rw [Option.elim]
 
 /- Check that `to_additive` works if a `_match` aux declaration is created. -/
@@ -570,8 +570,10 @@ run_cmd
   logInfo doc
 
 /--
-warning: String syntax for `to_additive` docstrings is deprecated:
-Use docstring syntax instead (e.g. `@[to_additive /-- example -/]`)
+warning: String syntax for `to_additive` docstrings is deprecated: Use docstring syntax instead (e.g. `@[to_additive /-- example -/]`)
+
+Update deprecated syntax to:
+  /-- (via `str` syntax) I am an additive docstring! -/
 -/
 #guard_msgs in
 @[to_additive "(via `str` syntax) I am an additive docstring!"]

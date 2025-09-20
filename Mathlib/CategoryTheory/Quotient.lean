@@ -151,8 +151,7 @@ protected theorem sound {a b : C} {f₁ f₂ : a ⟶ b} (h : r f₁ f₂) :
 lemma compClosure_iff_self [h : Congruence r] {X Y : C} (f g : X ⟶ Y) :
     CompClosure r f g ↔ r f g := by
   constructor
-  · intro hfg
-    induction' hfg with m m' hm
+  · rintro ⟨hfg⟩
     exact Congruence.compLeft _ (Congruence.compRight _ (by assumption))
   · exact CompClosure.of _ _ _
 
@@ -235,10 +234,8 @@ theorem lift_obj_functor_obj (X : C) :
     (lift r F H).obj ((functor r).obj X) = F.obj X := rfl
 
 theorem lift_map_functor_map {X Y : C} (f : X ⟶ Y) :
-    (lift r F H).map ((functor r).map f) = F.map f := by
-  rw [← NatIso.naturality_1 (lift.isLift r F H)]
-  dsimp [lift, functor]
-  simp
+    (lift r F H).map ((functor r).map f) = F.map f :=
+  rfl
 
 variable {r}
 

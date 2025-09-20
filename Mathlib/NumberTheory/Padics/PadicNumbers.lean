@@ -20,7 +20,7 @@ and that `ℚ_[p]` is Cauchy complete.
 ## Important definitions
 
 * `Padic` : the type of `p`-adic numbers
-* `padicNormE` : the rational valued `p`-adic norm on `ℚ_[p]`
+* `padicNormE` : the rational-valued `p`-adic norm on `ℚ_[p]`
 * `Padic.addValuation` : the additive `p`-adic valuation on `ℚ_[p]`, with values in `WithTop ℤ`
 
 ## Notation
@@ -833,8 +833,6 @@ variable {p : ℕ} [hp : Fact p.Prime]
 
 section NormedSpace
 
--- Porting note: Linter thinks this is a duplicate simp lemma, so `priority` is assigned
-@[simp (high)]
 protected theorem padicNormE.mul (q r : ℚ_[p]) : ‖q * r‖ = ‖q‖ * ‖r‖ := by simp [Norm.norm, map_mul]
 
 protected theorem padicNormE.is_norm (q : ℚ_[p]) : ↑(padicNormE q) = ‖q‖ := rfl
@@ -864,13 +862,11 @@ theorem norm_p_lt_one : ‖(p : ℚ_[p])‖ < 1 := by
   rw [norm_p]
   exact inv_lt_one_of_one_lt₀ <| mod_cast hp.1.one_lt
 
--- Porting note: Linter thinks this is a duplicate simp lemma, so `priority` is assigned
-@[simp (high)]
+@[simp high] -- Shortcut lemma with higher priority.
 theorem norm_p_zpow (n : ℤ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n) := by
   rw [norm_zpow, norm_p, zpow_neg, inv_zpow]
 
--- Porting note: Linter thinks this is a duplicate simp lemma, so `priority` is assigned
-@[simp (high)]
+@[simp high] -- Shortcut lemma with higher priority.
 theorem norm_p_pow (n : ℕ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n : ℤ) := by
   rw [← norm_p_zpow, zpow_natCast]
 
@@ -972,13 +968,33 @@ theorem norm_int_le_pow_iff_dvd (k : ℤ) (n : ℕ) :
   norm_cast
   rw [← padicNorm.dvd_iff_norm_le]
 
-theorem eq_of_norm_add_lt_right {z1 z2 : ℚ_[p]} (h : ‖z1 + z2‖ < ‖z2‖) : ‖z1‖ = ‖z2‖ :=
+theorem norm_eq_of_norm_add_lt_right {z1 z2 : ℚ_[p]} (h : ‖z1 + z2‖ < ‖z2‖) : ‖z1‖ = ‖z2‖ :=
   _root_.by_contradiction fun hne ↦
     not_lt_of_ge (by rw [add_eq_max_of_ne hne]; apply le_max_right) h
 
-theorem eq_of_norm_add_lt_left {z1 z2 : ℚ_[p]} (h : ‖z1 + z2‖ < ‖z1‖) : ‖z1‖ = ‖z2‖ :=
+@[deprecated (since := "2025-09-17")] alias eq_of_norm_add_lt_right := norm_eq_of_norm_add_lt_right
+
+theorem norm_eq_of_norm_add_lt_left {z1 z2 : ℚ_[p]} (h : ‖z1 + z2‖ < ‖z1‖) : ‖z1‖ = ‖z2‖ :=
   _root_.by_contradiction fun hne ↦
     not_lt_of_ge (by rw [add_eq_max_of_ne hne]; apply le_max_left) h
+
+@[deprecated (since := "2025-09-17")] alias eq_of_norm_add_lt_left := norm_eq_of_norm_add_lt_left
+
+theorem norm_eq_of_norm_sub_lt_right {z1 z2 : ℚ_[p]} (h : ‖z1 - z2‖ < ‖z2‖) : ‖z1‖ = ‖z2‖ := by
+  rw [← norm_neg z2]
+  apply norm_eq_of_norm_add_lt_right
+  simp [← sub_eq_add_neg, h]
+
+theorem norm_eq_of_norm_sub_lt_left {z1 z2 : ℚ_[p]} (h : ‖z1 - z2‖ < ‖z1‖) : ‖z1‖ = ‖z2‖ := by
+  rw [eq_comm]
+  apply norm_eq_of_norm_sub_lt_right
+  simpa [← norm_neg (z1 - _)] using h
+
+@[simp]
+lemma norm_natCast_p_sub_one :
+    ‖((p - 1 : ℕ) : ℚ_[p])‖ = 1 := by
+  rw [norm_natCast_eq_one_iff]
+  exact (coprime_self_sub_right hp.out.one_le).mpr p.coprime_one_right
 
 end NormedSpace
 
@@ -1047,11 +1063,9 @@ theorem norm_eq_zpow_neg_valuation {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : �
   rw [PadicSeq.norm_eq_zpow_neg_valuation]
   · rw [Rat.cast_zpow, Rat.cast_natCast]
   · apply CauSeq.not_limZero_of_not_congr_zero
-    -- Porting note: was `contrapose! hf`
-    intro hf'
-    apply hf
+    contrapose! hf
     apply Quotient.sound
-    simpa using hf'
+    simpa using hf
 
 @[simp]
 lemma valuation_ratCast (q : ℚ) : valuation (q : ℚ_[p]) = padicValRat p q := by
