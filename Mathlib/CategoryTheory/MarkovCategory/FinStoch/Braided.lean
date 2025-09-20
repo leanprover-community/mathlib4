@@ -10,12 +10,18 @@ import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 # Braided Structure on FinStoch
 
 FinStoch is symmetric monoidal with swap as the braiding.
+The braiding is the deterministic permutation (x,y) ↦ (y,x).
 
 ## Main definitions
 
-* `swap` - Swaps components of tensor products
-* `BraidedCategory FinStoch` - Braiding structure
-* `SymmetricCategory FinStoch` - Symmetric structure
+* `swap` - Swaps components of tensor products deterministically
+* `BraidedCategory FinStoch` - Braiding structure via swap morphisms
+* `SymmetricCategory FinStoch` - Swap is involutive (β ∘ β = id)
+
+## Implementation notes
+
+The swap morphism is a permutation matrix with exactly one 1 per row.
+Proofs leverage the deterministic nature to simplify sums over single terms.
 
 ## Tags
 
@@ -28,34 +34,11 @@ open FinStoch MonoidalCategory
 
 universe u
 
-/-- Composition of morphisms with single non-zero path. -/
-lemma comp_single_path {X Y Z : FinStoch} (f : X ⟶ Y) (g : Y ⟶ Z)
-    (x : X.carrier) (y : Y.carrier) (z : Z.carrier)
-    (hf : ∀ y', y' ≠ y → f.toMatrix x y' = 0) :
-    (f ≫ g).toMatrix x z = f.toMatrix x y * g.toMatrix y z := by
-  simp only [CategoryStruct.comp, StochasticMatrix.comp]
-  rw [Finset.sum_eq_single y]
-  · intro y' _ hy'
-    simp [hf y' hy']
-  · intro h; exfalso; exact h (Finset.mem_univ _)
-
 /-- The identity matrix has 1 on the diagonal and 0 elsewhere. -/
 @[simp]
 lemma id_matrix {X : FinStoch} (x x' : X.carrier) :
     (𝟙 X : X ⟶ X).toMatrix x x' = if x = x' then 1 else 0 := by
   simp only [CategoryStruct.id, StochasticMatrix.id]
-
-/-- The associator morphism applied to matrix elements. -/
-lemma associator_toMatrix {X Y Z : FinStoch} (xyz : ((X ⊗ Y) ⊗ Z).carrier)
-    (xyz' : (X ⊗ (Y ⊗ Z)).carrier) :
-    (α_ X Y Z).hom.toMatrix xyz xyz' =
-    if xyz.1.1 = xyz'.1 ∧ xyz.1.2 = xyz'.2.1 ∧ xyz.2 = xyz'.2.2 then 1 else 0 := by
-  cases xyz with | mk xy z =>
-  cases xy with | mk x y =>
-  cases xyz' with | mk x' yz' =>
-  cases yz' with | mk y' z' =>
-  simp only [MonoidalCategoryStruct.associator, associator, associatorDet, DetMorphism.ofFunc]
-  grind only [cases Or]
 
 /-- Inverse associator applied to matrix elements. -/
 @[simp]
@@ -70,35 +53,18 @@ lemma associator_inv_toMatrix {X Y Z : FinStoch} (xyz : (X ⊗ (Y ⊗ Z)).carrie
   simp only [MonoidalCategoryStruct.associator, associator, associatorInvDet, DetMorphism.ofFunc]
   grind only [cases Or]
 
-/-- Special case: the associator maps ((x,y),z) to (x,(y,z)). -/
-lemma associator_apply {X Y Z : FinStoch} (x : X.carrier) (y : Y.carrier) (z : Z.carrier) :
-    (α_ X Y Z).hom.toMatrix ((x, y), z) (x, (y, z)) = 1 := by
-    simp
-
-/-- Special case: the associator is 0 when the x-component doesn't match. -/
-lemma associator_apply_ne_fst {X Y Z : FinStoch} (x x' : X.carrier) (y : Y.carrier)
-    (z : Z.carrier) (yz : (Y ⊗ Z).carrier) (h : x ≠ x') :
-    (α_ X Y Z).hom.toMatrix ((x, y), z) (x', yz) = 0 := by
-  cases yz with | mk y' z' =>
-  simp [h]
-
 /-- The inverse associator maps (x,(y,z)) to ((x,y),z). -/
 lemma associator_inv_apply {X Y Z : FinStoch} (x : X.carrier) (y : Y.carrier) (z : Z.carrier) :
     (α_ X Y Z).inv.toMatrix (x, (y, z)) ((x, y), z) = 1 := by
   simp [associator_inv_toMatrix]
 
-/-- Inverse associator is 0 when x-components don't match. -/
-lemma associator_inv_apply_ne_fst {X Y Z : FinStoch} (x x' : X.carrier) (y : Y.carrier)
-    (z : Z.carrier) (y' : Y.carrier) (z' : Z.carrier) (h : x ≠ x') :
-    (α_ X Y Z).inv.toMatrix (x, (y, z)) ((x', y'), z') = 0 := by
-  simp [associator_inv_toMatrix, h]
-
-/-- Swaps components of tensor products. -/
+/-- Swaps components of tensor products.
+The swap morphism maps (x,y) ↦ (y,x) deterministically. -/
 def swap (X Y : FinStoch) : X ⊗ Y ⟶ Y ⊗ X where
   toMatrix := fun (x, y) (y', x') => if x = x' ∧ y = y' then 1 else 0
   row_sum := fun (x, y) => by
-    -- We need to show: ∑_{(y',x')} swap((x,y), (y',x')) = 1
-    -- The matrix has a 1 at position (y,x) and 0 elsewhere
+    -- Row sum: ∑_{(y',x')} swap((x,y), (y',x')) = 1
+    -- Swap is deterministic: exactly one 1 at position (y,x), zeros elsewhere
     convert Finset.sum_eq_single (y, x) _ _ using 1
     · -- At (y, x): we get 1
       simp only [and_self, if_true]
@@ -130,112 +96,34 @@ lemma swap_toMatrix {X Y : FinStoch} (xy : (X ⊗ Y).carrier) (yx : (Y ⊗ X).ca
   cases yx with | mk y' x' =>
   simp [swap]
 
-/-- Special case: swap preserves components when they match. -/
-lemma swap_apply {X Y : FinStoch} (x : X.carrier) (y : Y.carrier) :
-    (swap X Y).toMatrix (x, y) (y, x) = 1 := by
-  simp [swap_toMatrix]
-
-/-- Special case: swap is 0 when x-components don't match. -/
-lemma swap_apply_ne_fst {X Y : FinStoch} (x : X.carrier) (y : Y.carrier)
-    (x' : X.carrier) (y' : Y.carrier) (h : x ≠ x') :
-    (swap X Y).toMatrix (x, y) (y', x') = 0 := by
-  simp [swap_toMatrix, h]
-
-/-- Special case: swap is 0 when y-components don't match. -/
-lemma swap_apply_ne_snd {X Y : FinStoch} (x : X.carrier) (y : Y.carrier)
-    (x' : X.carrier) (y' : Y.carrier) (h : y ≠ y') :
-    (swap X Y).toMatrix (x, y) (y', x') = 0 := by
-  simp [swap_toMatrix, h]
+/-- Swap is involutive: swap ∘ swap = id. -/
+lemma swap_involution (X Y : FinStoch) : swap X Y ≫ swap Y X = 𝟙 (X ⊗ Y) := by
+  apply StochasticMatrix.ext
+  ext ⟨x, y⟩ ⟨x', y'⟩
+  simp [CategoryStruct.comp, StochasticMatrix.comp, CategoryStruct.id, StochasticMatrix.id]
+  simp_all only
+  -- Goal: ∑_{(a,b)} swap(x,y)(a,b) * swap(a,b)(x',y') = if (x,y) = (x',y') then 1 else 0
+  split
+  next h =>
+    -- Case: (x,y) = (x',y'), need to show sum = 1
+    simp_all
+    obtain ⟨left, right⟩ := h
+    subst left right
+    -- The unique non-zero term is at (y,x): swap(x,y)(y,x) = 1 and swap(y,x)(x,y) = 1
+    rw [Fintype.sum_eq_single ⟨y, x⟩]
+    · simp_all
+    · aesop
+  next _ =>
+    -- Case: (x,y) ≠ (x',y'), need to show sum = 0
+    -- For any intermediate (a,b), either swap(x,y)(a,b) = 0 or swap(a,b)(x',y') = 0
+    simp_all
+    split
+    next _ => grind only
+    next _ => simp_all
 
 /-- FinStoch is braided. -/
 instance : BraidedCategory FinStoch where
-  braiding X Y := ⟨swap X Y, swap Y X, by
-    apply StochasticMatrix.ext
-    ext ⟨x, y⟩ ⟨x', y'⟩
-    simp only [CategoryStruct.comp, StochasticMatrix.comp, CategoryStruct.id,
-               swap, StochasticMatrix.id]
-    -- swap ∘ swap = id because swap is involutive
-    -- First simplify the sum to make pattern matching explicit
-    have h_sum : (∑ ab : Y.carrier × X.carrier,
-          (if x = ab.2 ∧ y = ab.1 then (1 : NNReal) else 0) *
-          (if ab.1 = y' ∧ ab.2 = x' then 1 else 0)) =
-        if x = x' ∧ y = y' then 1 else 0 := by
-      -- The sum has exactly one non-zero term when ab = (y, x)
-      rw [Finset.sum_eq_single (y, x)]
-      · -- At (y, x): the first condition is true, second depends on y=y' and x=x'
-        simp only [and_self]
-        simp only [if_true, one_mul]
-        -- Now we have: if y = y' ∧ x = x' then 1 else 0
-        -- We need: if x = x' ∧ y = y' then 1 else 0
-        simp only [and_comm]
-      · -- For any other (a, b) ≠ (y, x): show product is 0
-        intro ⟨a, b⟩ _ h_ne
-        simp only
-        split_ifs with h₁ h₂
-        · -- If x = b ∧ y = a, then (a, b) = (y, x), contradiction
-          exfalso
-          apply h_ne
-          ext <;> simp only [h₁]
-        · simp only [mul_zero]
-        · simp only [mul_one]
-        · simp only [mul_zero]
-      · -- (y, x) is in Finset.univ
-        intro h_not_mem
-        exfalso
-        exact h_not_mem (Finset.mem_univ _)
-    -- Now convert and apply our result
-    convert congr_arg NNReal.toReal h_sum
-    constructor
-    · intro h
-      cases h
-      constructor <;> rfl
-    · intro ⟨h1, h2⟩
-      cases h1
-      cases h2
-      rfl
-  , by
-    apply StochasticMatrix.ext
-    ext ⟨y, x⟩ ⟨y', x'⟩
-    simp only [CategoryStruct.comp, StochasticMatrix.comp, id_matrix, swap]
-    -- swap ∘ swap = id
-    -- First simplify the sum
-    have h_sum : (∑ ab : X.carrier × Y.carrier,
-          (if y = ab.2 ∧ x = ab.1 then (1 : NNReal) else 0) *
-          (if ab.1 = x' ∧ ab.2 = y' then 1 else 0)) =
-        if y = y' ∧ x = x' then 1 else 0 := by
-      -- The sum has exactly one non-zero term when ab = (x, y)
-      rw [Finset.sum_eq_single (x, y)]
-      · -- At (x, y): the first condition is true, second depends on x=x' and y=y'
-        simp only [and_self]
-        simp only [if_true, one_mul]
-        -- Now we have: if x = x' ∧ y = y' then 1 else 0
-        -- We need: if y = y' ∧ x = x' then 1 else 0
-        simp only [and_comm]
-      · -- For any other (a, b) ≠ (x, y): show product is 0
-        intro ⟨a, b⟩ _ h_ne
-        simp only
-        split_ifs with h₁ h₂
-        · -- If y = b ∧ x = a, then (a, b) = (x, y), contradiction
-          exfalso
-          apply h_ne
-          ext <;> simp only [h₁]
-        · simp only [mul_zero]
-        · simp only [mul_one]
-        · simp only [mul_zero]
-      · -- (x, y) is in Finset.univ
-        intro h_not_mem
-        exfalso
-        exact h_not_mem (Finset.mem_univ _)
-    -- Now convert and apply our result
-    convert congr_arg NNReal.toReal h_sum
-    constructor
-    · intro h
-      cases h
-      constructor <;> rfl
-    · intro ⟨h1, h2⟩
-      cases h1
-      cases h2
-      rfl⟩
+  braiding X Y := ⟨swap X Y, swap Y X, swap_involution X Y, swap_involution Y X⟩
   braiding_naturality_left := by
     intros X Y f Z
     apply StochasticMatrix.ext
@@ -652,43 +540,8 @@ instance : BraidedCategory FinStoch where
 /-- FinStoch is symmetric. -/
 instance : SymmetricCategory FinStoch where
   symmetry X Y := by
-    apply StochasticMatrix.ext
-    ext ⟨x, y⟩ ⟨x', y'⟩
-    simp only [CategoryStruct.comp, StochasticMatrix.comp,
-               CategoryStruct.id, StochasticMatrix.id]
-    -- We need to show swap ∘ swap = id
-    -- The composition should give δ_{(x,y), (x',y')}
-
-    -- The sum is over intermediate states
-    -- The sum ∑_{(y₁,x₁)} swap_{(x,y),(y₁,x₁)} * swap_{(y₁,x₁),(x',y')}
-    -- has exactly one non-zero term when (y₁,x₁) = (y,x)
-    have h_sum : (∑ ab : Y.carrier × X.carrier,
-          (if x = ab.2 ∧ y = ab.1 then (1 : NNReal) else 0) *
-          (if ab.1 = y' ∧ ab.2 = x' then 1 else 0)) =
-        if x = x' ∧ y = y' then 1 else 0 := by
-      convert Finset.sum_eq_single (y, x) _ _ using 1
-      · -- At (y, x): first condition gives 1, second gives 1 iff y = y' ∧ x = x'
-        simp [and_self, and_comm]
-      · -- For other points: product is 0
-        intro ⟨y₁, x₁⟩ _ h_ne
-        by_cases h : x = x₁ ∧ y = y₁
-        · obtain ⟨hx, hy⟩ := h
-          subst hx hy
-          exfalso; exact h_ne rfl
-        · simp [h]
-      · -- (y, x) is in univ
-        intro h; exfalso; exact h (Finset.mem_univ _)
-
-    -- Now show the composition equals the identity
-    simp only [BraidedCategory.braiding, swap]
-    convert congr_arg NNReal.toReal h_sum
-    constructor
-    · intro h
-      cases h
-      constructor <;> rfl
-    · intro ⟨h1, h2⟩
-      cases h1
-      cases h2
-      rfl
+    -- β ∘ β = id follows from swap being involutive
+    simp only [BraidedCategory.braiding]
+    exact swap_involution X Y
 
 end CategoryTheory.MarkovCategory
