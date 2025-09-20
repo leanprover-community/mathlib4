@@ -5,7 +5,6 @@ Authors: Kim Morrison, Reid Barton, Joël Riou
 -/
 import Mathlib.CategoryTheory.InducedCategory
 import Mathlib.CategoryTheory.ObjectProperty.Basic
-import Mathlib.Logic.Small.Basic
 
 /-!
 # The full subcategory associated to a property of objects
@@ -41,9 +40,6 @@ structure FullSubcategory where
 
 instance FullSubcategory.category : Category.{v} P.FullSubcategory :=
   InducedCategory.category FullSubcategory.obj
-
-instance [ObjectProperty.Small.{w} P] : Small.{w} P.FullSubcategory :=
-  small_of_surjective (f := fun (x : Subtype P) ↦ ⟨x.1, x.2⟩) (fun x ↦ ⟨⟨x.1, x.2⟩, rfl⟩)
 
 -- these lemmas are not particularly well-typed, so would probably be dangerous as simp lemmas
 

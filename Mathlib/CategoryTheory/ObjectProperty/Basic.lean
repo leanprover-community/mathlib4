@@ -66,10 +66,6 @@ lemma prop_of_is (P : ObjectProperty C) (X : C) [P.Is X] : P X := by rwa [← P.
 
 lemma is_of_prop (P : ObjectProperty C) {X : C} (hX : P X) : P.Is X := by rwa [P.is_iff]
 
-/-- A property of objects is small relative to a universe `w`
-if the corresponding subtype is. -/
-protected abbrev Small (P : ObjectProperty C) : Prop := _root_.Small.{w} (Subtype P)
-
 end ObjectProperty
 
 end CategoryTheory

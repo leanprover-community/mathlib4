@@ -1,0 +1,28 @@
+/-
+Copyright (c) 2025 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
+import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+import Mathlib.Logic.Small.Basic
+
+/-!
+# Smallness of a property of objects
+
+-/
+
+universe w v u
+
+namespace CategoryTheory.ObjectProperty
+
+variable {C : Type u} [Category.{v} C]
+
+/-- A property of objects is small relative to a universe `w`
+if the corresponding subtype is. -/
+protected abbrev Small (P : ObjectProperty C) : Prop := _root_.Small.{w} (Subtype P)
+
+instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P] :
+    Small.{w} P.FullSubcategory :=
+  small_of_surjective (f := fun (x : Subtype P) ↦ ⟨x.1, x.2⟩) (fun x ↦ ⟨⟨x.1, x.2⟩, rfl⟩)
+
+end CategoryTheory.ObjectProperty

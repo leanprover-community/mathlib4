@@ -2639,6 +2639,7 @@ import Mathlib.CategoryTheory.ObjectProperty.Extensions
 import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 import Mathlib.CategoryTheory.ObjectProperty.Ind
 import Mathlib.CategoryTheory.ObjectProperty.Shift
+import Mathlib.CategoryTheory.ObjectProperty.Small
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.CategoryTheory.PEmpty
 import Mathlib.CategoryTheory.PUnit
