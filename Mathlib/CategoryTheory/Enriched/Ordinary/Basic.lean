@@ -231,7 +231,8 @@ noncomputable def TransportEnrichment.enrichedOrdinaryCategory
     EnrichedOrdinaryCategory W (TransportEnrichment F C) where
   homEquiv {X Y} := (eHomEquiv V (C := C)).trans <| Equiv.ofBijective _ (h (Hom (C := C) X Y))
   homEquiv_comp f g := by
-    simp [eHomEquiv_comp, eComp_eq, tensorHom_def (Functor.LaxMonoidal.ε F), unitors_inv_equal]
+    simp [← tensorHom_comp_tensorHom, eHomEquiv_comp, eComp_eq,
+      tensorHom_def (Functor.LaxMonoidal.ε F), unitors_inv_equal]
 
 section Equiv
 
@@ -257,7 +258,7 @@ def TransportEnrichment.forgetEnrichmentEquivFunctor :
       ← Functor.LaxMonoidal.left_unitality_inv, Category.assoc, Category.assoc, Category.assoc,
       Category.assoc, ← Functor.LaxMonoidal.μ_natural_assoc, ← TransportEnrichment.eComp_eq,
       ← ForgetEnrichment.homOf_comp, leftUnitor_inv_naturality_assoc, ← tensorHom_def'_assoc,
-      ← tensor_comp_assoc]
+      tensorHom_comp_tensorHom_assoc]
     rfl
 
 /-- The inverse functor that makes up `TransportEnrichment.forgetEnrichmentEquiv`. -/
@@ -281,7 +282,7 @@ def TransportEnrichment.forgetEnrichmentEquivInverse :
     slice_rhs 1 3 =>
       rw [← Functor.LaxMonoidal.left_unitality_inv, Category.assoc, Category.assoc,
         ← Functor.LaxMonoidal.μ_natural, ← leftUnitor_inv_comp_tensorHom_assoc,
-        ← tensor_comp_assoc]
+        tensorHom_comp_tensorHom_assoc]
     simp [← h]
 
 /-- If `D` is a `V`-enriched category, then forgetting the enrichment and transporting the resulting
