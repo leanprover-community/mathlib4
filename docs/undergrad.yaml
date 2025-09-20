@@ -316,7 +316,7 @@ Single Variable Real Analysis:
     derivative of the inverse of a function: 'HasStrictDerivAt.of_local_left_inverse'
     Rolle's theorem: 'exists_deriv_eq_zero'
     mean value theorem: 'exists_ratio_deriv_eq_ratio_slope'
-    higher order derivatives of functions: 'iteratedDeriv'
+    higher-order derivatives of functions: 'iteratedDeriv'
     $C^k$ functions: 'ContDiff'
     piecewise $C^k$ functions: 'https://en.wikipedia.org/wiki/Piecewise#Continuity_and_differentiability_of_piecewise_functions'
     Leibniz formula: 'deriv_mul'
