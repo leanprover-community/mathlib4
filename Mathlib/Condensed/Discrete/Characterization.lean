@@ -17,12 +17,12 @@ and `LightCondMod.isDiscrete_tfae`.
 Informally, we can say: The following conditions characterize a condensed set `X` as discrete
 (`CondensedSet.isDiscrete_tfae`):
 
-1. There exists a set `X'` and an isomorphism `X ≅ cst X'`, where `cst X'` denotes the constant
-   sheaf on `X'`.
-2. The counit induces an isomorphism `cst X(*) ⟶ X`.
-3. There exists a set `X'` and an isomorphism `X ≅ LocallyConstant · X'`.
-4. The counit induces an isomorphism `LocallyConstant · X(*) ⟶ X`.
-5. For every profinite set `S = limᵢSᵢ`, the canonical map `colimᵢX(Sᵢ) ⟶ X(S)` is an isomorphism.
+1.  There exists a set `X'` and an isomorphism `X ≅ cst X'`, where `cst X'` denotes the constant
+    sheaf on `X'`.
+2.  The counit induces an isomorphism `cst X(*) ⟶ X`.
+3.  There exists a set `X'` and an isomorphism `X ≅ LocallyConstant · X'`.
+4.  The counit induces an isomorphism `LocallyConstant · X(*) ⟶ X`.
+5.  For every profinite set `S = limᵢSᵢ`, the canonical map `colimᵢX(Sᵢ) ⟶ X(S)` is an isomorphism.
 
 The analogues for light condensed sets, condensed `R`-modules over any ring, and light
 condensed `R`-modules are nearly identical (`CondensedMod.isDiscrete_tfae`,

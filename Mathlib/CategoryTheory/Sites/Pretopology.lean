@@ -45,10 +45,10 @@ variable (C)
 A (Grothendieck) pretopology on `C` consists of a collection of families of morphisms with a fixed
 target `X` for every object `X` in `C`, called "coverings" of `X`, which satisfies the following
 three axioms:
-1. Every family consisting of a single isomorphism is a covering family.
-2. The collection of covering families is stable under pullback.
-3. Given a covering family, and a covering family on each domain of the former, the composition
-   is a covering family.
+1.  Every family consisting of a single isomorphism is a covering family.
+2.  The collection of covering families is stable under pullback.
+3.  Given a covering family, and a covering family on each domain of the former, the composition
+    is a covering family.
 
 In some sense, a pretopology can be seen as Grothendieck topology with weaker saturation conditions,
 in that each covering is not necessarily downward closed.
