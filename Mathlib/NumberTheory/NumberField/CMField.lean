@@ -70,6 +70,7 @@ real subfield `K⁺`.
 -/
 class IsCMField (K : Type*) [Field K] [CharZero K] : Prop where
   [to_isTotallyComplex : IsTotallyComplex K]
+  -- TODO rename isQuadraticExtension
   [is_quadratic : IsQuadraticExtension (maximalRealSubfield K) K]
 
 namespace IsCMField
@@ -212,6 +213,7 @@ protected theorem RingOfIntegers.complexConj_eq_self_iff (x : 𝓞 K) :
       (isIntegral_algebraMap_iff (FaithfulSMul.algebraMap_injective K⁺ K)).mp x.isIntegral_coe
     refine ⟨⟨⟨x, h⟩, this⟩, ?_⟩
     rw [IsScalarTower.algebraMap_apply (𝓞 K⁺) K⁺, RingOfIntegers.map_mk]
+    -- REVIEW
     rfl
   · rw [← hy, IsScalarTower.algebraMap_apply (𝓞 K⁺) K⁺]
     exact SetLike.coe_mem _
@@ -222,6 +224,7 @@ protected theorem Units.complexConj_eq_self_iff (u : (𝓞 K)ˣ) :
   refine ⟨fun ⟨y, hy⟩ ↦ ?_, fun ⟨v, hv⟩ ↦ ⟨v, by rw [hv]⟩⟩
   have : IsUnit y := by
     apply IsUnit.of_map (algebraMap (𝓞 K⁺) (𝓞 K))
+    -- REVIEW
     rw [show algebraMap (𝓞 K⁺) (𝓞 K) y = u by exact RingOfIntegers.ext hy]
     exact u.isUnit
   exact ⟨this.unit, by simp [hy]⟩

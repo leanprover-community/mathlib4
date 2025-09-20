@@ -93,6 +93,7 @@ protected theorem bot_ext (x y : (⊥ : Submodule R M)) : x = y := by
 protected theorem ne_bot_iff (p : Submodule R M) : p ≠ ⊥ ↔ ∃ x ∈ p, x ≠ (0 : M) := by
   simp only [ne_eq, p.eq_bot_iff, not_forall, exists_prop]
 
+-- TODO rename or deprecate in favor of exists_mem_ne_zero_of_ne_bot
 theorem nonzero_mem_of_bot_lt {p : Submodule R M} (bot_lt : ⊥ < p) : ∃ a : p, a ≠ 0 :=
   let ⟨b, hb₁, hb₂⟩ := p.ne_bot_iff.mp bot_lt.ne'
   ⟨⟨b, hb₁⟩, hb₂ ∘ congr_arg Subtype.val⟩
