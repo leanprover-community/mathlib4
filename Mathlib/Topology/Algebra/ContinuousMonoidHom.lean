@@ -5,7 +5,7 @@ Authors: Thomas Browning, Nailin Guan
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Topology.Algebra.Group.Defs
-import Mathlib.Topology.Algebra.Module.Equiv
+import Mathlib.Topology.Algebra.Monoid
 
 /-!
 
