@@ -442,6 +442,20 @@ theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < 
   · intro p hp
     simp [factorization_def n (prime_of_mem_primeFactors hp)]
 
+lemma prod_pow_primeFactors_factorization (hn : n ≠ 0) :
+    n = ∏ (p : n.primeFactors), (p : ℕ) ^ (n.factorization p) := by
+  nth_rw 1 [← factorization_prod_pow_eq_self hn]
+  rw [prod_factorization_eq_prod_primeFactors _]
+  exact prod_subtype n.primeFactors (fun _ ↦ Iff.rfl) fun a ↦ a ^ n.factorization a
+
+lemma pairwise_coprime_pow_primeFactors_factorization :
+    Pairwise (Function.onFun Nat.Coprime fun (p : n.primeFactors) ↦ p ^ n.factorization p) := by
+  intro p1 p2 hp
+  refine Nat.Coprime.pow (n.factorization p1) (n.factorization p2) ?_
+  refine (Nat.coprime_primes ?_ ?_).mpr <| Subtype.coe_ne_coe.mpr hp
+  · exact Nat.prime_of_mem_primeFactors p1.2
+  · exact Nat.prime_of_mem_primeFactors p2.2
+
 /-! ### Lemmas about factorizations of particular functions -/
 
 /-- Exactly `n / p` naturals in `[1, n]` are multiples of `p`.
