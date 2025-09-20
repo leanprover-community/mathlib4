@@ -36,31 +36,23 @@ open MonoidalCategory CopyDiscardCategory ComonObj
 
 variable {C : Type*} [Category C] [MonoidalCategory C] [CopyDiscardCategory C]
 
-/-- A morphism is deterministic if it preserves the copy operation.
+/-- A morphism is deterministic if it preserves both copy and discard operations.
 
-For `f : X → Y`, this means `f ≫ Δ[Y] = Δ[X] ≫ (f ⊗ f)`. -/
-class Deterministic {X Y : C} (f : X ⟶ Y) : Prop where
-  preserves_copy : f ≫ Δ[Y] = Δ[X] ≫ (f ⊗ₘ f)
+This is an abbreviation for `IsComonHom`, which ensures the morphism preserves
+the comonoid structure. -/
+abbrev Deterministic {X Y : C} (f : X ⟶ Y) := IsComonHom f
 
 namespace Deterministic
 
 variable {X Y Z : C}
 
-/-- The identity morphism is deterministic. -/
-instance : Deterministic (𝟙 X) where
-  preserves_copy := by simp
-
-/-- Composition of deterministic morphisms is deterministic. -/
-instance (f : X ⟶ Y) (g : Y ⟶ Z) [Deterministic f] [Deterministic g] : Deterministic (f ≫ g) where
-  preserves_copy := by
-    rw [Category.assoc, Deterministic.preserves_copy, ← Category.assoc,
-        Deterministic.preserves_copy, Category.assoc]
-    simp only [← MonoidalCategory.tensor_comp]
-
 /-- Deterministic morphisms commute with copying. -/
-@[simp]
 lemma copy_natural {f : X ⟶ Y} [Deterministic f] : f ≫ Δ[Y] = Δ[X] ≫ (f ⊗ₘ f) :=
-  preserves_copy
+  IsComonHom.hom_comul f
+
+/-- Deterministic morphisms commute with discarding. -/
+lemma discard_natural {f : X ⟶ Y} [Deterministic f] : f ≫ ε[Y] = ε[X] :=
+  IsComonHom.hom_counit f
 
 end Deterministic
 
