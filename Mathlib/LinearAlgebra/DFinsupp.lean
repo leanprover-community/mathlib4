@@ -585,33 +585,34 @@ theorem iSupIndep_iff_dfinsupp_lsum_injective (p : ι → Submodule R N) :
 theorem iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero (p : ι → Submodule R N) :
     iSupIndep p ↔ ∀ (s : Finset ι) (v : ι → N),
     (∀ i ∈ s, v i ∈ p i) → (∑ i ∈ s, v i = 0) → ∀ i ∈ s, v i = 0 := by
-  classical
-  rw [iSupIndep_iff_dfinsupp_lsum_injective]
+  simp_rw [iSupIndep_def, Submodule.disjoint_def]
   constructor
-  · intro h s v hv hs i hi
-    dsimp only [Function.Injective, DFinsupp.lsum_apply_apply] at h
-    specialize h (a₁ := DFinsupp.mk s fun i ↦ ⟨v i, hv i (Finset.coe_mem i)⟩) (a₂ := 0) <| by
-      rw [DFinsupp.sumAddHom_apply, DFinsupp.sum, map_zero, ← hs]
-      apply Finset.sum_of_injOn id <;> simp [Set.MapsTo] <;> grind
-    simp [DFinsupp.ext_iff] at h
-    grind
-  · intros h f g hfg
-    specialize h (f - g).support ((f - g) · |>.1)
-    simp only [mem_support_toFun, SetLike.coe_mem, ZeroMemClass.coe_eq_zero,
-      _root_.not_imp_self, forall_const] at h
-    refine DFinsupp.ext fun i => sub_eq_zero.mp (h ?_ i)
-    rw [← sub_eq_zero, ← map_sub] at hfg
-    simpa [DFinsupp.sumAddHom_apply, DFinsupp.sum] using hfg
+  · intro h s v hv hv0 i hi
+    apply h _ _ (hv i hi)
+    rw [← s.add_sum_erase _ hi, add_eq_zero_iff_neg_eq] at hv0
+    rw [← Submodule.neg_mem_iff, hv0]
+    exact SetLike.le_def.mp (biSup_mono <| by grind) (Submodule.sum_mem_biSup <| by grind)
+  · intro h i x hx hsup
+    obtain ⟨f, hf, rfl⟩ := (Submodule.mem_iSup_iff_exists_finsupp ..).mp hsup
+    contrapose! h
+    use insert i f.support, fun j ↦ if j = i then -f.sum fun _ x ↦ x else f j
+    refine ⟨fun j hj ↦ ?_, ?_, by grind [neg_eq_zero]⟩
+    · beta_reduce
+      split_ifs with h
+      · exact (p j).neg_mem (h ▸ hx)
+      · simpa [h] using hf j
+    · specialize hf i
+      simp at hf
+      grind [Finsupp.sum, Finset.sum_congr]
 
 theorem iSupIndep_iff_finset_sum_eq_imp_eq (p : ι → Submodule R N) :
     iSupIndep p ↔ ∀ (s : Finset ι) (v w : ι → N),
     (∀ i ∈ s, v i ∈ p i ∧ w i ∈ p i) → (∑ i ∈ s, v i = ∑ i ∈ s, w i) → ∀ i ∈ s, v i = w i := by
   rw [iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero]
-  constructor <;> intro h
-  · intro s v w hvw
-    specialize h s (v - w) fun i hi => (p i).sub_mem (hvw i hi).1 (hvw i hi).2
-    simpa [sub_eq_zero] using h
-  · intro s v hv hv0
+  constructor
+  · intro h s v w hvw
+    simpa [sub_eq_zero] using h s (v - w) fun i hi => (p i).sub_mem (hvw i hi).1 (hvw i hi).2
+  · intro h s v hv hv0
     specialize h s v 0
     simp_all
 
