@@ -64,7 +64,7 @@ lemma mconv_dirac [MeasurableMul₂ M] (μ : Measure M) [SFinite μ] (x : M) :
   simp [Function.comp_def]
 
 @[to_additive (attr := simp)]
-lemma mconv_dirac_mconv [MeasurableMul₂ M] (x y : M) :
+lemma dirac_mconv_dirac [MeasurableMul₂ M] (x y : M) :
     (Measure.dirac x) ∗ₘ (Measure.dirac y) = Measure.dirac (x * y) := by
   rw [mconv_dirac, map_dirac (by fun_prop)]
 
