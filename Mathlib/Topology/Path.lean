@@ -123,11 +123,11 @@ instance instHasUncurryPath {α : Type*} {x y : α → X} :
     HasUncurry (∀ a : α, Path (x a) (y a)) (α × I) X :=
   ⟨fun φ p => φ p.1 p.2⟩
 
-@[simp↓]
+@[simp high]
 lemma source_mem_range (γ : Path x y) : x ∈ range ⇑γ :=
   ⟨0, Path.source γ⟩
 
-@[simp↓]
+@[simp high]
 lemma target_mem_range (γ : Path x y) : y ∈ range ⇑γ :=
   ⟨1, Path.target γ⟩
 
