@@ -74,7 +74,7 @@ The difference from the definition obtained from the functoriality of completion
 map sending a morphism `f` to the associated morphism of completions is itself additive. -/
 def completion.mapHom (V W : SemiNormedGrp.{u}) :
      (V ⟶ W) →+ (completion.obj V ⟶ completion.obj W) :=
-  @AddMonoidHom.mk' _ _ (_) (_) completion.map fun f g =>
+  @AddMonoidHom.mk' _ _ _ _ _ completion.map fun f g =>
     SemiNormedGrp.hom_ext (f.hom.completion_add g.hom)
 
 theorem completion.map_zero (V W : SemiNormedGrp) : completion.map (0 : V ⟶ W) = 0 :=
