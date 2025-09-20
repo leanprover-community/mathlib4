@@ -407,7 +407,7 @@ noncomputable instance :
     MonoidalCategory (LocalizedMonoidal L W ε) where
   tensorHom_def := by intros; simp [monoidalCategoryStruct]
   id_tensorHom_id := by intros; simp [monoidalCategoryStruct]
-  tensor_comp := by intros; simp [monoidalCategoryStruct]
+  tensorHom_comp_tensorHom := by intros; simp [monoidalCategoryStruct]
   whiskerLeft_id := by intros; simp [monoidalCategoryStruct]
   id_whiskerRight := by intros; simp [monoidalCategoryStruct]
   associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} f₁ f₂ f₃ := by apply associator_naturality
