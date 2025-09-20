@@ -149,7 +149,7 @@ lemma zero_pow_eq (n : ℕ) : (0 : M₀) ^ n = if n = 0 then 1 else 0 := by
 lemma zero_pow_eq_one₀ [Nontrivial M₀] : (0 : M₀) ^ n = 1 ↔ n = 0 := by
   rw [zero_pow_eq, one_ne_zero.ite_eq_left_iff]
 
-lemma pow_eq_zero_of_le : ∀ {m n}, m ≤ n → a ^ m = 0 → a ^ n = 0
+lemma pow_eq_zero_of_le : ∀ {m n : ℕ}, m ≤ n → a ^ m = 0 → a ^ n = 0
   | _, _, Nat.le.refl, ha => ha
   | _, _, Nat.le.step hmn, ha => by rw [pow_succ, pow_eq_zero_of_le hmn ha, zero_mul]
 
@@ -166,7 +166,7 @@ lemma pow_mul_eq_zero_of_le {a b : M₀} {m n : ℕ} (hmn : m ≤ n)
 
 variable [NoZeroDivisors M₀]
 
-lemma pow_eq_zero : ∀ {n}, a ^ n = 0 → a = 0
+lemma pow_eq_zero : ∀ {n : ℕ}, a ^ n = 0 → a = 0
   | 0, ha => by simpa using congr_arg (a * ·) ha
   | n + 1, ha => by rw [pow_succ, mul_eq_zero] at ha; exact ha.elim pow_eq_zero id
 

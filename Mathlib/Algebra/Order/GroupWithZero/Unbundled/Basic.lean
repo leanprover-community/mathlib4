@@ -355,7 +355,7 @@ variable [Preorder M₀] {a b : M₀} {m n : ℕ}
   | 0 => (pow_one a).symm ▸ ha
   | _ + 1 => pow_succ a _ ▸ mul_nonneg (pow_succ_nonneg ha _) ha
 
-@[simp] lemma pow_nonneg [ZeroLEOneClass M₀] [PosMulMono M₀] (ha : 0 ≤ a) : ∀ n, 0 ≤ a ^ n
+@[simp] lemma pow_nonneg [ZeroLEOneClass M₀] [PosMulMono M₀] (ha : 0 ≤ a) : ∀ (n : ℕ), 0 ≤ a ^ n
   | 0 => pow_zero a ▸ zero_le_one
   | n + 1 => pow_succ a n ▸ mul_nonneg (pow_nonneg ha _) ha
 
@@ -412,7 +412,8 @@ lemma pow_lt_one₀ [PosMulMono M₀] (h₀ : 0 ≤ a) (h₁ : a < 1) : ∀ {n :
   | n + 1, _ => by
     rw [pow_succ']; exact mul_lt_one_of_nonneg_of_lt_one_left h₀ h₁ (pow_le_one₀ h₀ h₁.le)
 
-lemma pow_right_mono₀ [ZeroLEOneClass M₀] [PosMulMono M₀] (h : 1 ≤ a) : Monotone (a ^ ·) :=
+lemma pow_right_mono₀ [ZeroLEOneClass M₀] [PosMulMono M₀] (h : 1 ≤ a) :
+    Monotone (fun (n : ℕ) => a ^ n) :=
   monotone_nat_of_le_succ fun n => by
     rw [pow_succ]; exact le_mul_of_one_le_right (pow_nonneg (zero_le_one.trans h) _) h
 
@@ -447,7 +448,7 @@ lemma Bound.le_self_pow_of_pos [ZeroLEOneClass M₀] [PosMulMono M₀] (ha : 1 �
 
 @[mono, gcongr, bound]
 theorem pow_le_pow_left₀ [PosMulMono M₀] [MulPosMono M₀]
-    (ha : 0 ≤ a) (hab : a ≤ b) : ∀ n, a ^ n ≤ b ^ n
+    (ha : 0 ≤ a) (hab : a ≤ b) : ∀ (n : ℕ), a ^ n ≤ b ^ n
   | 0 => by simp
   | 1 => by simpa using hab
   | n + 2 => by simpa only [pow_succ']
@@ -517,7 +518,7 @@ variable [PosMulStrictMono M₀]
   | 0 => by simpa using ha
   | _ + 1 => pow_succ a _ ▸ mul_pos (pow_succ_pos ha _) ha
 
-@[simp] lemma pow_pos [ZeroLEOneClass M₀] (ha : 0 < a) : ∀ n, 0 < a ^ n
+@[simp] lemma pow_pos [ZeroLEOneClass M₀] (ha : 0 < a) : ∀ (n : ℕ), 0 < a ^ n
   | 0 => by nontriviality; rw [pow_zero]; exact zero_lt_one
   | _ + 1 => pow_succ a _ ▸ mul_pos (pow_pos ha _) ha
 
@@ -539,7 +540,7 @@ section ZeroLEOneClass
 variable [ZeroLEOneClass M₀]
 
 /-- See also `pow_right_strictMono'`. -/
-lemma pow_right_strictMono₀ (h : 1 < a) : StrictMono (a ^ ·) :=
+lemma pow_right_strictMono₀ (h : 1 < a) : StrictMono (fun (n : ℕ) => a ^ n) :=
   strictMono_nat_of_lt_succ fun n => by
     simpa only [one_mul, pow_succ] using lt_mul_right (pow_pos (zero_le_one.trans_lt h) _) h
 
@@ -557,7 +558,7 @@ lemma lt_self_pow₀ (h : 1 < a) (hm : 1 < m) : a < a ^ m := by
 
 end ZeroLEOneClass
 
-lemma pow_right_strictAnti₀ (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti (a ^ ·) :=
+lemma pow_right_strictAnti₀ (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti (fun (n : ℕ) => a ^ n) :=
   strictAnti_nat_of_succ_lt fun n => by
     have : ZeroLEOneClass M₀ := ⟨(h₀.trans h₁).le⟩
     simpa only [pow_succ, mul_one] using mul_lt_mul_of_pos_left h₁ (pow_pos h₀ n)
@@ -631,7 +632,7 @@ section ZeroLEOneClass
 
 variable [ZeroLEOneClass M₀]
 
-lemma pow_right_injective₀ (ha₀ : 0 < a) (ha₁ : a ≠ 1) : Injective (a ^ ·) := by
+lemma pow_right_injective₀ (ha₀ : 0 < a) (ha₁ : a ≠ 1) : Injective (fun (n : ℕ) => a ^ n) := by
   obtain ha₁ | ha₁ := ha₁.lt_or_gt
   · exact (pow_right_strictAnti₀ ha₀ ha₁).injective
   · exact (pow_right_strictMono₀ ha₁).injective
