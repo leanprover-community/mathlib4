@@ -148,7 +148,7 @@ lemma term_of_lt {n : ℕ} (hn : 0 < n) {s : ℝ} (hs : 1 < s) :
     rw [uIcc_of_le (by simp only [le_add_iff_nonneg_right, zero_le_one])] at hx
     exact (Nat.cast_pos.mpr hn).trans_le hx.1
   calc term n s
-    _ = ∫ x : ℝ in n..(n + 1), (x - n) / x ^ (s + 1) := by rfl
+    _ = ∫ x : ℝ in n..(n + 1), (x - n) / x ^ (s + 1) := rfl
     _ = ∫ x : ℝ in n..(n + 1), (x ^ (-s) - n * x ^ (-(s + 1))) := by
       refine intervalIntegral.integral_congr (fun x hx ↦ ?_)
       rw [sub_div, rpow_add_one (hv x hx).ne', mul_comm, ← div_div, div_self (hv x hx).ne',

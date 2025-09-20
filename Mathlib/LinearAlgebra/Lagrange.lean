@@ -461,8 +461,7 @@ theorem nodal_eq (s : Finset ι) (v : ι → R) : nodal s v = ∏ i ∈ s, (X - 
   rfl
 
 @[simp]
-theorem nodal_empty : nodal ∅ v = 1 := by
-  rfl
+theorem nodal_empty : nodal ∅ v = 1 := rfl
 
 @[simp]
 theorem natDegree_nodal [Nontrivial R] : (nodal s v).natDegree = #s := by

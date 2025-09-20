@@ -92,8 +92,7 @@ def piRight : N ⊗[R] (∀ i, M i) ≃ₗ[S] ∀ i, N ⊗[R] M i :=
 
 @[simp]
 lemma piRight_apply (x : N ⊗[R] (∀ i, M i)) :
-    piRight R S N M x = piRightHom R S N M x := by
-  rfl
+    piRight R S N M x = piRightHom R S N M x := rfl
 
 @[simp]
 lemma piRight_symm_apply (x : N) (m : ∀ i, M i) :
@@ -156,8 +155,7 @@ def piScalarRight : N ⊗[R] (ι → R) ≃ₗ[S] (ι → N) :=
 
 @[simp]
 lemma piScalarRight_apply (x : N ⊗[R] (ι → R)) :
-    piScalarRight R S N ι x = piScalarRightHom R S N ι x := by
-  rfl
+    piScalarRight R S N ι x = piScalarRightHom R S N ι x := rfl
 
 @[simp]
 lemma piScalarRight_symm_single (x : N) (i : ι) :

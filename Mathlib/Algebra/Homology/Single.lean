@@ -315,7 +315,6 @@ lemma toSingle₀Equiv_symm_apply_f_zero
 @[simp]
 lemma toSingle₀Equiv_symm_apply_f_succ
     {C : CochainComplex V ℕ} {X : V} (f : C.X 0 ⟶ X) (n : ℕ) :
-    ((toSingle₀Equiv C X).symm f).f (n + 1) = 0 := by
-  rfl
+    ((toSingle₀Equiv C X).symm f).f (n + 1) = 0 := rfl
 
 end CochainComplex
