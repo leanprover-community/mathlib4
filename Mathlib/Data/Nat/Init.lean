@@ -444,6 +444,8 @@ variable {n : ℕ} [n.AtLeastTwo]
 lemma one_lt : 1 < n := prop
 lemma ne_one : n ≠ 1 := Nat.ne_of_gt one_lt
 
+instance : NeZero (n - 1) := ⟨by have := prop (n := n); omega⟩
+
 end AtLeastTwo
 
 end Nat
