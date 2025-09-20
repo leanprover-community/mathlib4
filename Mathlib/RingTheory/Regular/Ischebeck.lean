@@ -26,8 +26,7 @@ local instance [Small.{v} R] : CategoryTheory.HasExt.{max u v} (ModuleCat.{v} R)
 instance [Small.{v} R] [IsNoetherianRing R] (N M : ModuleCat.{v} R)
     [Module.Finite R N] [Module.Finite R M] (i : ℕ) : Module.Finite R (Ext.{max u v} N M i) := by
   induction i generalizing N
-  · have : Module.Finite R (N →ₗ[R] M) := inferInstance
-    sorry
+  · exact Module.Finite.equiv Ext.linearEquiv₀.symm
   · rename_i n ih _
     rcases Module.Finite.exists_fin' R N with ⟨m, f', hf'⟩
     let f := f'.comp ((Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)).trans
@@ -59,9 +58,7 @@ instance [Small.{v} R] [IsNoetherianRing R] (N M : ModuleCat.{v} R)
       (AddCommGrp.epi_iff_surjective _).mp epi
     let f : Ext S.X₁ M n →ₗ[R] Ext S.X₃ M (n + 1) := {
       __ := S_exact.extClass.precomp M (add_comm 1 n)
-      map_smul' r x := by
-        --simp (would work after lemmas set up)
-        sorry }
+      map_smul' r x := by simp }
     exact Module.Finite.of_surjective f surj
 
 lemma quotSMulTop_nontrivial [IsLocalRing R] {x : R} (mem : x ∈ maximalIdeal R)
