@@ -58,7 +58,7 @@ lemma discard_natural_simp {X Y : C} (f : X ⟶ Y) : f ≫ ε[Y] = ε[X] :=
 /-- The monoidal unit is terminal. -/
 theorem unit_terminal (X : C) (f : X ⟶ 𝟙_ C) : f = ε[X] := by
   calc f = f ≫ 𝟙 (𝟙_ C) := (Category.comp_id _).symm
-       _ = f ≫ ε[𝟙_ C] := by rw [← counit_unit]  -- Use the lemma from CopyDiscardCategory
+       _ = f ≫ ε[𝟙_ C] := by rw [← CopyDiscardCategory.discard_unit]
        _ = ε[X] := discard_natural f
 
 /-- The monoidal unit is a terminal object. -/
@@ -69,7 +69,7 @@ def unit_isTerminal : IsTerminal (𝟙_ C : C) where
 
 /-- Morphisms between terminal objects are unique. -/
 lemma terminal_unique (f : (𝟙_ C) ⟶ (𝟙_ C)) : f = 𝟙 (𝟙_ C) := by
-  rw [unit_terminal (𝟙_ C) f, counit_unit]  -- Use counit_unit instead of del_unit
+  rw [unit_terminal (𝟙_ C) f, CopyDiscardCategory.discard_unit]
 
 end MarkovCategory
 
