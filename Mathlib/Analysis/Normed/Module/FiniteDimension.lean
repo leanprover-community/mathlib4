@@ -693,3 +693,10 @@ theorem IsEquivalent.summable_iff {ι E : Type*} [NormedAddCommGroup E] [NormedS
 theorem IsEquivalent.summable_iff_nat {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {f : ℕ → E} {g : ℕ → E} (h : f ~[atTop] g) : Summable f ↔ Summable g :=
   ⟨fun hf => summable_of_isEquivalent_nat hf h.symm, fun hg => summable_of_isEquivalent_nat hg h⟩
+
+theorem Module.Basis.continuous_toMatrix {ι R M : Type*} [Fintype ι]
+    [NontriviallyNormedField R] [CompleteSpace R]
+    [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M] [T2Space M]
+    [Module R M] [ContinuousSMul R M] [FiniteDimensional R M] (B : Module.Basis ι R M) :
+    Continuous fun (v : ι → M) => B.toMatrix v :=
+  LinearMap.continuous_of_finiteDimensional B.toMatrixEquiv.toLinearMap
