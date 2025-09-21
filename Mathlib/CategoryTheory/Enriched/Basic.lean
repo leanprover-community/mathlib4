@@ -352,7 +352,7 @@ def forget (F : EnrichedFunctor W C D) :
   map_comp f g := by
     dsimp
     apply_fun ForgetEnrichment.homTo W
-    · simp only [Iso.cancel_iso_inv_left, Category.assoc, tensor_comp,
+    · simp only [Iso.cancel_iso_inv_left, Category.assoc, ← tensorHom_comp_tensorHom,
         ForgetEnrichment.homTo_homOf, EnrichedFunctor.map_comp, ForgetEnrichment.homTo_comp]
       rfl
     · intro f g w; apply_fun ForgetEnrichment.homOf W at w; simpa using w
@@ -489,8 +489,8 @@ def enrichedNatTransYoneda (F G : EnrichedFunctor V C D) : Vᵒᵖ ⥤ Type max 
         have p := σ.naturality X Y
         dsimp at p ⊢
         rw [← id_tensor_comp_tensor_id (f.unop ≫ σ.app Y) _, id_tensor_comp, Category.assoc,
-          Category.assoc, ← braiding_naturality_assoc, id_tensor_comp_tensor_id_assoc, p, ←
-          tensor_comp_assoc, Category.id_comp] }
+          Category.assoc, ← braiding_naturality_assoc, id_tensor_comp_tensor_id_assoc, p,
+          tensorHom_comp_tensorHom_assoc, Category.id_comp] }
 
 -- TODO assuming `[HasLimits C]` construct the actual object of natural transformations
 -- and show that the functor category is `V`-enriched.

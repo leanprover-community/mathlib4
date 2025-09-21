@@ -312,24 +312,19 @@ def append (p q : RelSeries r) (connect : p.last ~[r] q.head) : RelSeries r wher
 
 lemma append_apply_left (p q : RelSeries r) (connect : p.last ~[r] q.head)
     (i : Fin (p.length + 1)) :
-    p.append q connect ((i.castAdd (q.length + 1)).cast (by dsimp; omega)) = p i := by
+    p.append q connect
+      ((i.castAdd (q.length + 1)).cast (by dsimp; omega) : Fin ((p.append q connect).length + 1))
+        = p i := by
   delta append
   simp only [Function.comp_apply]
   convert Fin.append_left _ _ _
 
-open Fin.NatCast in -- TODO: can this be removed?
 lemma append_apply_right (p q : RelSeries r) (connect : p.last ~[r] q.head)
     (i : Fin (q.length + 1)) :
-    p.append q connect (i.natAdd p.length + 1) = q i := by
-  delta append
-  simp only [Fin.coe_natAdd, Function.comp_apply]
-  convert Fin.append_right _ _ _
-  ext
-  simp only [Fin.coe_cast, Fin.coe_natAdd]
-  conv_rhs => rw [add_assoc, add_comm 1, ← add_assoc]
-  change _ % _ = _
-  simp only [Nat.mod_add_mod, Nat.one_mod, Nat.mod_succ_eq_iff_lt]
-  omega
+    p.append q connect
+      ((i.natAdd (p.length + 1)).cast (by dsimp; omega) : Fin ((p.append q connect).length + 1))
+        = q i :=
+  Fin.append_right _ _ _
 
 @[simp] lemma head_append (p q : RelSeries r) (connect : p.last ~[r] q.head) :
     (p.append q connect).head = p.head :=
@@ -339,10 +334,9 @@ lemma append_apply_right (p q : RelSeries r) (connect : p.last ~[r] q.head)
     (p.append q connect).last = q.last := by
   delta last
   convert append_apply_right p q connect (Fin.last _)
-  ext
-  change _ = _ % _
-  simp only [append_length, Fin.val_last, Fin.natAdd_last, Nat.one_mod, Nat.mod_add_mod,
-    Nat.mod_succ]
+  ext1
+  dsimp
+  omega
 
 lemma append_assoc (p q w : RelSeries r) (hpq : p.last ~[r] q.head) (hqw : q.last ~[r] w.head) :
     (p.append q hpq).append w (by simpa) = p.append (q.append w hqw) (by simpa) := by
@@ -494,9 +488,9 @@ lemma cons_cast_succ (s : RelSeries r) (a : α) (h : a ~[r] s.head) (i : Fin (s.
     (s.cons a h) (.cast (by simp) (.succ i)) = s i := by
   dsimp [cons]
   convert append_apply_right (singleton r a) s h i
-  ext
-  change i.1 + 1 = _ % _
-  simpa using (Nat.mod_eq_of_lt (by simp)).symm
+  ext1
+  dsimp
+  omega
 
 @[simp]
 lemma append_singleton_left (p : RelSeries r) (x : α) (hx : x ~[r] p.head) :

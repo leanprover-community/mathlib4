@@ -4101,7 +4101,6 @@ import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
 import Mathlib.LinearAlgebra.AffineSpace.Basis
 import Mathlib.LinearAlgebra.AffineSpace.Centroid
 import Mathlib.LinearAlgebra.AffineSpace.Combination
-import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv
 import Mathlib.LinearAlgebra.AffineSpace.Defs
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 import Mathlib.LinearAlgebra.AffineSpace.Independent
@@ -6294,6 +6293,7 @@ import Mathlib.Topology.Algebra.ClosedSubgroup
 import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Algebra.Constructions.DomMulAct
+import Mathlib.Topology.Algebra.ContinuousAffineEquiv
 import Mathlib.Topology.Algebra.ContinuousAffineMap
 import Mathlib.Topology.Algebra.ContinuousMonoidHom
 import Mathlib.Topology.Algebra.Equicontinuity
