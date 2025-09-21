@@ -880,12 +880,6 @@ section Induced
 
 variable {F : Type*} (R S : Type*) [FunLike F R S]
 
-instance [NonUnitalSeminormedRing S] : SeminormedAddCommGroup S := by exact
-  NonUnitalSeminormedRing.toSeminormedAddCommGroup
-
-instance [NonUnitalNonAssocSeminormedRing S] : SeminormedAddCommGroup S := by exact
-  NonUnitalNonAssocSeminormedRing.toSeminormedAddCommGroup
-
 /-- A non-unital ring homomorphism from a `NonUnitalNonAssocRing` to a
 `NonUnitalNonAssocSeminormedRing` induces a `NonUnitalNonAssocSeminormedRing` structure on the
 domain.
