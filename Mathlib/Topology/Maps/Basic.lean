@@ -361,12 +361,11 @@ end IsOpenMap
 theorem isOpenMap_iff_nhds_le : IsOpenMap f ↔ ∀ x : X, 𝓝 (f x) ≤ (𝓝 x).map f :=
   ⟨fun hf => hf.nhds_le, IsOpenMap.of_nhds_le⟩
 
-theorem isOpenMap_iff_image_mem_nhds : IsOpenMap f ↔ ∀ x, ∀ s ∈ 𝓝 x, f '' s ∈ 𝓝 (f x) := by
-  simp only [isOpenMap_iff_nhds_le, le_map_iff]
-
 theorem isOpenMap_iff_clusterPt_comap :
     IsOpenMap f ↔ ∀ x l, ClusterPt (f x) l → ClusterPt x (comap f l) := by
-  refine ⟨fun hf _ _ ↦ hf.clusterPt_comap, fun h ↦ isOpenMap_iff_image_mem_nhds.mpr fun x s hs ↦ ?_⟩
+  refine ⟨fun hf _ _ ↦ hf.clusterPt_comap, fun h ↦ ?_⟩
+  simp only [isOpenMap_iff_nhds_le, le_map_iff]
+  intro x s hs
   contrapose! hs
   rw [← mem_interior_iff_mem_nhds, mem_interior_iff_not_clusterPt_compl, not_not] at hs ⊢
   exact (h _ _ hs).mono <| by simp [subset_preimage_image]
