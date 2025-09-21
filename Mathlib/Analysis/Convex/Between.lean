@@ -656,7 +656,7 @@ lemma mem_closedInterior_face_iff_wbtw {n : ℕ} (s : Simplex R P n) {p : P} {i 
   rw [s.closedInterior_face_eq_affineSegment h, Wbtw]
 
 /-- The interior of a 1-simplex is a segment between its vertices. -/
-lemma interior_eq_image_Ioo [Nontrivial R] [NoZeroSMulDivisors R V] (s : Simplex R P 1) :
+lemma interior_eq_image_Ioo [NoZeroSMulDivisors R V] (s : Simplex R P 1) :
     s.interior = AffineMap.lineMap (s.points 0) (s.points 1) '' Set.Ioo (0 : R) 1 := by
   ext p
   constructor
