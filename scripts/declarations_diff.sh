@@ -66,7 +66,7 @@ fi |
   ## this sed "splits" `[+-]alias ⟨d1, d2⟩ := d` into
   ## `[+-]alias d1 := d` and `[+-]alias d2 := d`
   sed 's=^\([+-]\)alias ⟨\([^,]*\), *\([^⟩]*\)⟩\(.*\)=\1alias \2\4\n\1alias \3\4=' |
-  ## deal with `alias ⟨d, _⟩` and `alias ⟨_, d⟩`
+  ## deal with `alias _`, leftover from `alias ⟨d, _⟩ = e` and `alias ⟨_, d⟩ = e`
   sed 's=^\([+-]\)alias _\(.*\)==' |
   ## extract lines that begin with '[+-]' followed by the input `theorem`, `lemma`,...
   ## and then a space in the `git diff`
