@@ -111,4 +111,33 @@ instance (b : β) : (P.limitClosureIter J b).IsClosedUnderIsomorphisms := by
 
 end
 
+-- TODO: remove the variable `b` and keep only `κ`
+lemma strictLimitsClosureStep_strictLimitsClosureIter_eq_self
+    (b : Ordinal.{u'}) (κ : Cardinal.{u'}) (hκ : κ.IsRegular)
+    (hb : κ ≤ b.cof) (h : ∀ (a : α), HasCardinalLT (J a) κ) :
+    (P.strictLimitsClosureIter J b).strictLimitsClosureStep J =
+      (P.strictLimitsClosureIter J b) := by
+  have hb' : Order.IsSuccLimit b := Ordinal.aleph0_le_cof.1 ((hκ.aleph0_le).trans hb)
+  refine le_antisymm ?_ (le_of_le_of_eq (monotone_transfiniteIterate _ _
+      (fun Q ↦ Q.le_strictLimitsClosureStep J) (Order.le_succ b))
+      (transfiniteIterate_succ _ _ _ (by simp)))
+  intro X hX
+  simp only [strictLimitsClosureStep, prop_sup_iff, prop_iSup_iff] at hX
+  obtain (hX | ⟨a, F, hF⟩) := hX
+  · exact hX
+  · simp only [strictLimitsClosureIter, transfiniteIterate_limit _ _ _ hb',
+      prop_iSup_iff, Subtype.exists, Set.mem_Iio, exists_prop] at hF
+    choose o ho ho' using hF
+    obtain ⟨m, hm, hm'⟩ : ∃ (m : Ordinal.{u'}) (hm : m < b), ∀ (j : J a), o j ≤ m :=
+      ⟨⨆ j, o j, Ordinal.iSup_lt_ord
+        (lt_of_lt_of_le ((hasCardinalLT_iff_cardinal_mk_lt _ _).1 (h a)) hb) ho,
+        le_ciSup (Ordinal.bddAbove_range _)⟩
+    refine monotone_transfiniteIterate _ _
+      (fun (Q : ObjectProperty C) ↦ Q.le_strictLimitsClosureStep J) (Order.succ_le_iff.2 hm) _ ?_
+    dsimp
+    rw [transfiniteIterate_succ _ _ _ (by simp)]
+    simp only [strictLimitsClosureStep, prop_sup_iff, prop_iSup_iff]
+    exact Or.inr ⟨a, ⟨_, fun j ↦ monotone_transfiniteIterate _ _
+      (fun (Q : ObjectProperty C) ↦ Q.le_strictLimitsClosureStep J)  (hm' j) _ (ho' j)⟩⟩
+
 end CategoryTheory.ObjectProperty
