@@ -413,7 +413,7 @@ lemma bijective_cast {x' y' : X} (hx : x' = x) (hy : y' = y) : Bijective (Path.c
 @[congr]
 lemma exists_congr {x₁ x₂ y₁ y₂ : X} {p : Path x₁ y₁ → Prop}
     (hx : x₁ = x₂) (hy : y₁ = y₂) :
-    Exists p ↔ ∃ (γ : Path x₂ y₂), p (γ.cast hx hy) :=
+    (∃ γ, p γ) ↔ (∃ (γ : Path x₂ y₂), p (γ.cast hx hy)) :=
   bijective_cast hx hy |>.surjective.exists
 
 @[continuity, fun_prop]
