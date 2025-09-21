@@ -96,13 +96,6 @@ instance (priority := 100) NonUnitalNonAssocNormedRing.toNonUnitalNonAssocSemino
   { β with }
 
 /-- A normed ring is a ring endowed with a norm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
-class NonAssocNormedRing (α : Type*) extends Norm α, NonAssocRing α, MetricSpace α where
-  /-- The distance is induced by the norm. -/
-  dist_eq : ∀ x y, dist x y = norm (x - y)
-  /-- The norm is submultiplicative. -/
-  norm_mul_le : ∀ a b, norm (a * b) ≤ norm a * norm b
-
-/-- A normed ring is a ring endowed with a norm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 class NormedRing (α : Type*) extends Norm α, Ring α, MetricSpace α where
   /-- The distance is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = norm (x - y)
