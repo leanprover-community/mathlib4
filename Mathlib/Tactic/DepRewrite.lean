@@ -547,7 +547,7 @@ at the expense of creating potentially complicated terms.
 syntax (name := depRewriteSeq) "rewrite!" optConfig rwRuleSeq (location)? : tactic
 
 /--
-`rw!` is like `rewrite!`, but also calls `dsimp` to simplify the result after every substitution.
+`rw!` is like `rewrite!`, but also cleans up introduced refl-casts after every substitution.
 It is available as an ordinary tactic and a `conv` tactic.
 -/
 syntax (name := depRwSeq) "rw!" optConfig rwRuleSeq (location)? : tactic
