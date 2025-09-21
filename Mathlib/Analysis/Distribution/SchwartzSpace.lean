@@ -11,7 +11,6 @@ import Mathlib.Analysis.Normed.Group.ZeroAtInfty
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 import Mathlib.Topology.Algebra.UniformFilterBasis
-import Mathlib.MeasureTheory.Function.Holder
 import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 import Mathlib.Tactic.MoveAdd
 
