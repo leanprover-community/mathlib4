@@ -29,18 +29,18 @@ noncomputable section
 
 namespace UpperHalfPlane
 
-/-- The matrix `[1, 0; 0, -1]`, which defines an anti-holomorphic involution of `ℍ` via
+/-- The matrix `[-1, 0; 0, 1]`, which defines an anti-holomorphic involution of `ℍ` via
 `τ ↦ -conj τ`. -/
-def J : GL (Fin 2) ℝ := .mkOfDetNeZero !![1, 0; 0, -1] (by simp)
+def J : GL (Fin 2) ℝ := .mkOfDetNeZero !![-1, 0; 0, 1] (by simp)
 
 lemma coe_J_smul (τ : ℍ) : (↑(J • τ) : ℂ) = -conj ↑τ := by
-  simp [UpperHalfPlane.coe_smul, σ, J, if_neg (show ¬(1 : ℝ) < 0 by simp), num, denom, div_neg]
+  simp [UpperHalfPlane.coe_smul, σ, J, show ¬(1 : ℝ) < 0 by simp, num, denom]
 
 lemma J_smul (τ : ℍ) : J • τ = ofComplex (-(conj ↑τ)) := by
   ext
   rw [coe_J_smul, ofComplex_apply_of_im_pos (by simpa using τ.im_pos), coe_mk_subtype]
 
-@[simp] lemma val_J : J.val = !![1, 0; 0, -1] := rfl
+@[simp] lemma val_J : J.val = !![-1, 0; 0, 1] := rfl
 
 @[simp] lemma J_sq : J ^ 2 = 1 := by ext; simp [J, sq, Matrix.one_fin_two]
 
@@ -48,7 +48,7 @@ lemma J_smul (τ : ℍ) : J • τ = ofComplex (-(conj ↑τ)) := by
 
 @[simp] lemma sigma_J : σ J = starRingEnd ℂ := by simp [σ, J]
 
-@[simp] lemma denom_J (τ : ℍ) : denom J τ = -1 := by simp [J, denom]
+@[simp] lemma denom_J (τ : ℍ) : denom J τ = 1 := by simp [J, denom]
 
 end UpperHalfPlane
 
@@ -65,18 +65,17 @@ private lemma MDifferentiable.slash_of_pos {f : ℍ → ℂ} (hf : MDifferentiab
   simpa only [σ, hg, ↓reduceIte] using hf.comp (mdifferentiable_smul hg)
 
 private lemma slash_J (f : ℍ → ℂ) (k : ℤ) :
-    f ∣[k] J = fun τ : ℍ ↦ -conj (f <| ofComplex <| -(conj ↑τ)) := by
-  simp [slash_def, J_smul, mul_assoc, ← zpow_add₀ (by simp : (-1 : ℂ) ≠ 0),
-    (by ring : k - 1 + -k = -1), -zpow_neg, zpow_neg_one]
+    f ∣[k] J = fun τ : ℍ ↦ conj (f <| ofComplex <| -(conj ↑τ)) := by
+  simp [slash_def, J_smul]
+
 
 /-- The weight `k` slash action of the negative-determinant matrix `J` preserves holomorphic
 functions. -/
 private lemma MDifferentiable.slashJ {f : ℍ → ℂ} (hf : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) f) (k : ℤ) :
     MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f ∣[k] J) := by
   simp only [mdifferentiable_iff, slash_J, Function.comp_def] at hf ⊢
-  have : {z | 0 < z.im}.EqOn (fun x ↦ -conj (f <| ofComplex <| -conj ↑(ofComplex x)))
-      (fun x ↦ -conj (f <| ofComplex <| -conj x)) := fun z hz ↦ by
-    simp [ofComplex_apply_of_im_pos hz]
+  have : {z | 0 < z.im}.EqOn (fun x ↦ conj (f <| ofComplex <| -conj ↑(ofComplex x)))
+      (fun x ↦ conj (f <| ofComplex <| -conj x)) := fun z h ↦ by simp [ofComplex_apply_of_im_pos h]
   refine .congr (fun z hz ↦ DifferentiableAt.differentiableWithinAt ?_) this
   have : 0 < (-conj z).im := by simpa using hz
   have := hf.differentiableAt (isOpen_upperHalfPlaneSet.mem_nhds this)
@@ -227,13 +226,13 @@ variable {α : Type*} [SMul α ℝ] [SMul α ℂ] [IsScalarTower α ℝ ℂ]
 local instance : IsScalarTower α ℂ ℂ where
   smul_assoc a y z := by simpa using smul_assoc (a • (1 : ℝ)) y z
 
-instance instSMul : SMul α (ModularForm Γ k) where
+instance instSMulℝ : SMul α (ModularForm Γ k) where
   smul c f :=
   { toSlashInvariantForm := c • f.1
     holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
     bdd_at_cusps' := fun hc g hg ↦ by
       simpa only [IsBoundedAtImInfty, Filter.BoundedAtFilter, SlashInvariantForm.toFun_eq_coe,
-        SlashInvariantForm.coe_smul, toSlashInvariantForm_coe, ← smul_one_smul ℂ c ⇑f, smul_slash]
+        SlashInvariantForm.coe_smulℝ, toSlashInvariantForm_coe, ← smul_one_smul ℂ c ⇑f, smul_slash]
         using (f.bdd_at_cusps' hc g hg).const_smul_left _ }
 
 @[simp]
@@ -248,15 +247,15 @@ end
 
 section
 
-variable {α : Type*} [SMul α ℂ] [IsScalarTower α ℂ ℂ] [IsGLPos Γ]
+variable {α : Type*} [SMul α ℂ] [IsScalarTower α ℂ ℂ] [HasDetOne Γ]
 
-instance IsGLPos.instSMul : SMul α (ModularForm Γ k) where
+instance instSMulℂ : SMul α (ModularForm Γ k) where
   smul c f :=
   { toSlashInvariantForm := c • f.1
     holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
     bdd_at_cusps' := fun hc g hg ↦ by
       simp_rw [IsBoundedAtImInfty, Filter.BoundedAtFilter, SlashInvariantForm.toFun_eq_coe,
-        IsGLPos.coe_smul, toSlashInvariantForm_coe, ← smul_one_smul ℂ c ⇑f, smul_slash]
+        SlashInvariantForm.coe_smul, toSlashInvariantForm_coe, ← smul_one_smul ℂ c ⇑f, smul_slash]
       exact (f.bdd_at_cusps' hc g hg).const_smul_left (σ g (c • (1 : ℂ))) }
 
 @[simp]
@@ -307,7 +306,7 @@ def coeHom : ModularForm Γ k →+ ℍ → ℂ where
 instance : Module ℝ (ModularForm Γ k) :=
   Function.Injective.module ℝ coeHom DFunLike.coe_injective fun _ _ => rfl
 
-instance [IsGLPos Γ] : Module ℂ (ModularForm Γ k) :=
+instance [HasDetOne Γ] : Module ℂ (ModularForm Γ k) :=
   Function.Injective.module ℂ coeHom DFunLike.coe_injective fun _ _ => rfl
 
 instance : Inhabited (ModularForm Γ k) :=
@@ -315,7 +314,7 @@ instance : Inhabited (ModularForm Γ k) :=
 
 /-- The modular form of weight `k_1 + k_2` given by the product of two modular forms of weights
 `k_1` and `k_2`. -/
-def mul {k_1 k_2 : ℤ} [IsSL Γ] (f : ModularForm Γ k_1) (g : ModularForm Γ k_2) :
+def mul {k_1 k_2 : ℤ} [HasDetPlusMinusOne Γ] (f : ModularForm Γ k_1) (g : ModularForm Γ k_2) :
     ModularForm Γ (k_1 + k_2) where
   toSlashInvariantForm := f.1.mul g.1
   holo' := f.holo'.mul g.holo'
@@ -323,45 +322,57 @@ def mul {k_1 k_2 : ℤ} [IsSL Γ] (f : ModularForm Γ k_1) (g : ModularForm Γ k
     simpa [mul_slash] using ((f.bdd_at_cusps' hc γ hγ).mul (g.bdd_at_cusps' hc γ hγ)).smul _
 
 @[simp]
-theorem mul_coe [IsSL Γ] {k_1 k_2 : ℤ} (f : ModularForm Γ k_1)
+theorem mul_coe [HasDetPlusMinusOne Γ] {k_1 k_2 : ℤ} (f : ModularForm Γ k_1)
     (g : ModularForm Γ k_2) : (f.mul g : ℍ → ℂ) = f * g :=
   rfl
 
 /-- The constant function with value `x : ℂ` as a modular form of weight 0 and any level. -/
-def const (x : ℂ) [IsSL Γ] : ModularForm Γ 0 where
+def const (x : ℂ) [HasDetOne Γ] : ModularForm Γ 0 where
   toSlashInvariantForm := .const x
   holo' _ := mdifferentiableAt_const
   bdd_at_cusps' hc g hg := by simpa only [const_toFun, slash_def, SlashInvariantForm.toFun_eq_coe,
       Function.const_apply, neg_zero, zpow_zero] using atImInfty.const_boundedAtFilter _
 
 @[simp]
-lemma const_apply [IsSL Γ] (x : ℂ) (τ : ℍ) : (const x : ModularForm Γ 0) τ = x := rfl
+lemma const_apply [HasDetOne Γ] (x : ℂ) (τ : ℍ) : (const x : ModularForm Γ 0) τ = x := rfl
 
-instance [IsSL Γ] : One (ModularForm Γ 0) where
-  one := { const 1 with toSlashInvariantForm := 1 }
+/-- The constant function with value `x : ℂ` as a modular form of weight 0 and any level. -/
+def constℝ (x : ℝ) [HasDetPlusMinusOne Γ] : ModularForm Γ 0 where
+  toSlashInvariantForm := .constℝ x
+  holo' _ := mdifferentiableAt_const
+  bdd_at_cusps' hc g hg := by simpa only [constℝ_toFun, slash_def, SlashInvariantForm.toFun_eq_coe,
+      Function.const_apply, neg_zero, zpow_zero] using atImInfty.const_boundedAtFilter _
 
 @[simp]
-theorem one_coe_eq_one [IsSL Γ] : ⇑(1 : ModularForm Γ 0) = 1 :=
+lemma constℝ_apply [HasDetPlusMinusOne Γ] (x : ℝ) (τ : ℍ) :
+    (constℝ x : ModularForm Γ 0) τ = x :=
   rfl
 
-instance [IsSL Γ] : NatCast (ModularForm Γ 0) where
-  natCast n := const n
+instance [HasDetPlusMinusOne Γ] : One (ModularForm Γ 0) where
+  one := { constℝ 1 with toSlashInvariantForm := 1 }
+
+@[simp]
+theorem one_coe_eq_one [HasDetPlusMinusOne Γ] : ⇑(1 : ModularForm Γ 0) = 1 :=
+  rfl
+
+instance [HasDetPlusMinusOne Γ] : NatCast (ModularForm Γ 0) where
+  natCast n := constℝ n
 
 @[simp, norm_cast]
-lemma coe_natCast [IsSL Γ] (n : ℕ) :
+lemma coe_natCast [HasDetPlusMinusOne Γ] (n : ℕ) :
     ⇑(n : ModularForm Γ 0) = n := rfl
 
-lemma toSlashInvariantForm_natCast [IsSL Γ] (n : ℕ) :
+lemma toSlashInvariantForm_natCast [HasDetPlusMinusOne Γ] (n : ℕ) :
     (n : ModularForm Γ 0).toSlashInvariantForm = n := rfl
 
-instance [IsSL Γ] : IntCast (ModularForm Γ 0) where
-  intCast z := const z
+instance [HasDetPlusMinusOne Γ] : IntCast (ModularForm Γ 0) where
+  intCast z := constℝ z
 
 @[simp, norm_cast]
-lemma coe_intCast [IsSL Γ] (z : ℤ) :
+lemma coe_intCast [HasDetPlusMinusOne Γ] (z : ℤ) :
     ⇑(z : ModularForm Γ 0) = z := rfl
 
-lemma toSlashInvariantForm_intCast [IsSL Γ] (z : ℤ) :
+lemma toSlashInvariantForm_intCast [HasDetPlusMinusOne Γ] (z : ℤ) :
     (z : ModularForm Γ 0).toSlashInvariantForm = z := rfl
 
 end ModularForm
@@ -412,7 +423,7 @@ instance instSMul : SMul α (CuspForm Γ k) where smul c f :=
     holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
     zero_at_cusps' hc g hg := by
       simp_rw [IsZeroAtImInfty, Filter.ZeroAtFilter, SlashInvariantForm.toFun_eq_coe,
-        SlashInvariantForm.coe_smul, toSlashInvariantForm_coe, ← smul_one_smul ℂ c ⇑f, smul_slash]
+        SlashInvariantForm.coe_smulℝ, toSlashInvariantForm_coe, ← smul_one_smul ℂ c ⇑f, smul_slash]
       exact (f.zero_at_cusps' hc g hg).smul _ }
 
 @[simp]
@@ -428,14 +439,14 @@ end
 section
 -- scalar multiplication by complex types (assuming `IsGLPos Γ`)
 
-variable {α : Type*} [SMul α ℂ] [IsScalarTower α ℂ ℂ] [IsGLPos Γ]
+variable {α : Type*} [SMul α ℂ] [IsScalarTower α ℂ ℂ] [HasDetOne Γ]
 
 instance IsGLPos.instSMul : SMul α (CuspForm Γ k) where smul c f :=
   { toSlashInvariantForm := c • f.1
     holo' := by simpa using f.holo'.const_smul (c • (1 : ℂ))
     zero_at_cusps' hc g hg := by
       simp_rw [IsZeroAtImInfty, Filter.ZeroAtFilter, SlashInvariantForm.toFun_eq_coe,
-        SlashInvariantForm.IsGLPos.coe_smul, toSlashInvariantForm_coe, ← smul_one_smul ℂ c ⇑f,
+        SlashInvariantForm.coe_smul, toSlashInvariantForm_coe, ← smul_one_smul ℂ c ⇑f,
         smul_slash]
       exact (f.zero_at_cusps' hc g hg).smul _ }
 
@@ -487,7 +498,7 @@ def coeHom : CuspForm Γ k →+ ℍ → ℂ where
 instance : Module ℝ (CuspForm Γ k) :=
   Function.Injective.module ℝ coeHom DFunLike.coe_injective fun _ _ => rfl
 
-instance [IsGLPos Γ] : Module ℂ (CuspForm Γ k) :=
+instance [HasDetOne Γ] : Module ℂ (CuspForm Γ k) :=
   Function.Injective.module ℂ coeHom DFunLike.coe_injective fun _ _ => rfl
 
 instance : Inhabited (CuspForm Γ k) :=
@@ -520,13 +531,15 @@ theorem gradedMonoid_eq_of_cast {Γ : Subgroup (GL (Fin 2) ℝ)} {a b : GradedMo
   cases h
   exact congr_arg _ h2
 
-instance (Γ : Subgroup (GL (Fin 2) ℝ)) [IsSL Γ] : GradedMonoid.GOne (ModularForm Γ) where
+instance (Γ : Subgroup (GL (Fin 2) ℝ)) [HasDetPlusMinusOne Γ] :
+    GradedMonoid.GOne (ModularForm Γ) where
   one := 1
 
-instance (Γ : Subgroup (GL (Fin 2) ℝ)) [IsSL Γ] : GradedMonoid.GMul (ModularForm Γ) where
+instance (Γ : Subgroup (GL (Fin 2) ℝ)) [HasDetPlusMinusOne Γ] :
+    GradedMonoid.GMul (ModularForm Γ) where
   mul f g := f.mul g
 
-instance instGCommRing (Γ : Subgroup (GL (Fin 2) ℝ)) [IsSL Γ] :
+instance instGCommRing (Γ : Subgroup (GL (Fin 2) ℝ)) [HasDetPlusMinusOne Γ] :
     DirectSum.GCommRing (ModularForm Γ) where
   one_mul _ := gradedMonoid_eq_of_cast (zero_add _) (ext fun _ => one_mul _)
   mul_one _ := gradedMonoid_eq_of_cast (add_zero _) (ext fun _ => mul_one _)
@@ -543,7 +556,7 @@ instance instGCommRing (Γ : Subgroup (GL (Fin 2) ℝ)) [IsSL Γ] :
   intCast_ofNat _ := ext fun _ => AddGroupWithOne.intCast_ofNat _
   intCast_negSucc_ofNat _ := ext fun _ => AddGroupWithOne.intCast_negSucc _
 
-instance instGAlgebra (Γ : Subgroup (GL (Fin 2) ℝ)) [IsSL Γ] :
+instance instGAlgebra (Γ : Subgroup (GL (Fin 2) ℝ)) [HasDetOne Γ] :
     DirectSum.GAlgebra ℂ (ModularForm Γ) where
   toFun := { toFun z := const z, map_zero' := rfl, map_add' := fun _ _ => rfl }
   map_one := rfl
@@ -552,7 +565,8 @@ instance instGAlgebra (Γ : Subgroup (GL (Fin 2) ℝ)) [IsSL Γ] :
   smul_def _x _x := gradedMonoid_eq_of_cast (zero_add _).symm (ext fun _ => rfl)
 
 open scoped DirectSum in
-example (Γ : Subgroup (GL (Fin 2) ℝ)) [IsSL Γ] : Algebra ℂ (⨁ i, ModularForm Γ i) := inferInstance
+example (Γ : Subgroup (GL (Fin 2) ℝ)) [HasDetOne Γ] : Algebra ℂ (⨁ i, ModularForm Γ i) :=
+inferInstance
 
 end GradedRing
 
