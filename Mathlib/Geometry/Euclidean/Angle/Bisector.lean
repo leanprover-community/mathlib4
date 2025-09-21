@@ -19,6 +19,8 @@ namespace EuclideanGeometry
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
 variable [NormedAddTorsor V P]
 
+/-- Auxiliary lemma for the degenerate case of `dist_orthogonalProjection_eq_iff_angle_eq` where
+`p` lies in `s₁`. -/
 private lemma dist_orthogonalProjection_eq_iff_angle_eq_aux₁ {p p' : P}
     {s₁ s₂ : AffineSubspace ℝ P}
     [s₁.direction.HasOrthogonalProjection] [s₂.direction.HasOrthogonalProjection]
@@ -50,6 +52,8 @@ private lemma dist_orthogonalProjection_eq_iff_angle_eq_aux₁ {p p' : P}
           (vsub_orthogonalProjection_mem_direction_orthogonal _ _)
       · exact .inl (Ne.symm (orthogonalProjection_eq_self_iff.symm.not.1 hn))
 
+/-- Auxiliary lemma for the degenerate case of `dist_orthogonalProjection_eq_iff_angle_eq` where
+`p` lies in `s₁` or `s₂`. -/
 private lemma dist_orthogonalProjection_eq_iff_angle_eq_aux {p p' : P}
     {s₁ s₂ : AffineSubspace ℝ P}
     [s₁.direction.HasOrthogonalProjection] [s₂.direction.HasOrthogonalProjection]
