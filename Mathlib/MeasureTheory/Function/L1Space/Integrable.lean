@@ -1191,6 +1191,8 @@ theorem MeasureTheory.Integrable.apply_continuousLinearMap {φ : α → H →L[�
     (φ_int : Integrable φ μ) (v : H) : Integrable (fun a => φ a v) μ :=
   (ContinuousLinearMap.apply 𝕜 _ v).integrable_comp φ_int
 
+end ContinuousLinearMap
+
 namespace MeasureTheory
 
 variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
