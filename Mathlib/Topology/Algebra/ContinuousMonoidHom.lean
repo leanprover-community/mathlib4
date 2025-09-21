@@ -545,7 +545,7 @@ end unique
 /-- A family indexed by a type with a unique element
 is `ContinuousMulEquiv` to the element at the single index.
 This is the topological version of `MulEquiv.piUnique`. -/
-@[to_additive (attr := simps! 1100)
+@[to_additive (attr := simps!)
 /-- A family indexed by a type with a unique element
 is `ContinuousAddEquiv` to the element at the single index.
 This is the topological equivalent of `AddEquiv.piUnique`. -/]
@@ -556,15 +556,21 @@ def piUnique {ι : Type*} (M : ι → Type*) [(j : ι) → Mul (M j)]
   continuous_toFun := continuous_apply default
   continuous_invFun := by simpa [continuous_pi_iff, Unique.forall_iff] using continuous_id'
 
+attribute [simp 1100] ContinuousMulEquiv.piUnique_symm_apply
+attribute [simp 1100] ContinuousAddEquiv.piUnique_symm_apply
+
 /-- Splits the indices of `∀ (i : ι), Y i` along the predicate `p`.
 This is `Equiv.piEquivPiSubtypeProd` as a `ContinuousMulEquiv`. -/
-@[to_additive (attr := simps! 1100) piEquivPiSubtypeProd
+@[to_additive (attr := simps!) piEquivPiSubtypeProd
 /-- Splits the indices of `∀ (i : ι), Y i` along the predicate `p`.
 This is `Equiv.piEquivPiSubtypeProd` as a `ContinuousAddEquiv`. -/]
 def piEquivPiSubtypeProd {ι : Type*} (p : ι → Prop) (Y : ι → Type*)
     [(i : ι) → TopologicalSpace (Y i)] [(i : ι) → Mul (Y i)] [DecidablePred p] :
     ((i : ι) → Y i) ≃ₜ* ((i : { x : ι // p x }) → Y i) × ((i : { x : ι // ¬p x }) → Y i) :=
   {Homeomorph.piEquivPiSubtypeProd p Y with map_mul' _ _ := rfl}
+
+attribute [simp 1100] ContinuousMulEquiv.piEquivPiSubtypeProd_symm_apply
+attribute [simp 1100] ContinuousAddEquiv.piEquivPiSubtypeProd_symm_apply
 
 end ContinuousMulEquiv
 
