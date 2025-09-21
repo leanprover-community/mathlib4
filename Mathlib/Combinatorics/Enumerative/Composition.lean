@@ -888,12 +888,12 @@ def boundary : Fin c.boundaries.card ↪o Fin (n + 1) :=
 
 @[simp]
 theorem boundary_zero : (c.boundary ⟨0, c.card_boundaries_pos⟩ : Fin (n + 1)) = 0 := by
-  rw [boundary, Finset.orderEmbOfFin_zero rfl c.card_boundaries_pos]
+  rw [boundary, Finset.orderEmbOfFin_mk_zero rfl c.card_boundaries_pos]
   exact le_antisymm (Finset.min'_le _ _ c.zero_mem) (Fin.zero_le _)
 
 @[simp]
 theorem boundary_length : c.boundary ⟨c.length, c.length_lt_card_boundaries⟩ = Fin.last n := by
-  convert Finset.orderEmbOfFin_last rfl c.card_boundaries_pos
+  convert Finset.orderEmbOfFin_mk_last rfl c.card_boundaries_pos
   exact le_antisymm (Finset.le_max' _ _ c.getLast_mem) (Fin.le_last _)
 
 /-- Size of the `i`-th block in a `CompositionAsSet`, seen as a function on `Fin c.length`. -/
