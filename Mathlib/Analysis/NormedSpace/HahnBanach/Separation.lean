@@ -325,7 +325,7 @@ theorem geometric_hahn_banach {B : Set E} (hs₁ : Convex ℝ B) (hs₂ : IsClos
   have h3 : ∀ z ∈ f '' B, v < re z := fun z ⟨y, ⟨hy, eq⟩⟩ ↦ eq ▸ h3 y hy
   set K := closure (⇑f '' B)
   have notin : f x₀ ∉ K := fun h ↦ by
-    have : v ≤ re (f x₀) := le_on_closure_of_lt (by grind) continuous_re.continuousOn h
+    have : v ≤ re (f x₀) := le_on_closure_of_le (by grind) continuous_re.continuousOn h
     linarith [h1 x₀ rfl]
   have Balanced_K : Balanced 𝕜 K := by
     refine Balanced.closure (fun a ha _ ⟨_, ⟨⟨t, ht, _⟩, _⟩⟩ ↦ ?_)
@@ -334,7 +334,7 @@ theorem geometric_hahn_banach {B : Set E} (hs₁ : Convex ℝ B) (hs₂ : IsClos
   set r := ‖f x₀‖ with hr
   have r_pos : r > 0 := by simpa [hr] using fun nh ↦ by simp [nh, zero_in] at notin
   have norm_lt_r : ∀ x ∈ K, ‖x‖ < r := fun x hx ↦
-    not_le.mp <| hr ▸ not_imp_not.mpr (mem_norm_le_of_balanced Balanced_K hx (f x₀)) notin
+    not_le.mp <| hr ▸ not_imp_not.mpr (mem_balanced_of_norm_le Balanced_K hx (f x₀)) notin
   have compact_K : IsCompact K := Metric.isCompact_of_isClosed_isBounded isClosed_closure <|
     (Metric.isBounded_iff_subset_ball 0).mpr ⟨r, fun x hx ↦ mem_ball_zero_iff.mpr (norm_lt_r x hx)⟩
   obtain ⟨s, s_pos, s_lt, hs⟩ : ∃ s, 0 < s ∧ s < r ∧ (∀ z ∈ K, ‖z‖ < s) :=
