@@ -212,7 +212,7 @@ def strongEpiMonoFactorisationSigmaDesc (F : J ⥤ MonoOver Y) :
   Classical.choice <| HasStrongEpiMonoFactorisations.has_fac (Sigma.desc fun i ↦ (F.obj i).arrow)
 
 /-- If a category `C` has strong epi-mono factorization, for any `Y : C` and functor
-`F : J ⥤ MonoOver Y`, there is a cocone. -/
+`F : J ⥤ MonoOver Y`, there is a cocone under F. -/
 def coconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
     Cocone F where
   pt := {
