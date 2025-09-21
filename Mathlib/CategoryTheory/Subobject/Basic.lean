@@ -3,6 +3,7 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Kim Morrison
 -/
+import Mathlib.CategoryTheory.Limits.Skeleton
 import Mathlib.CategoryTheory.Subobject.MonoOver
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
@@ -69,7 +70,7 @@ In fact, in an abelian category (I'm not sure in what generality beyond that),
 -/
 
 
-universe v₁ v₂ u₁ u₂
+universe w' w v₁ v₂ u₁ u₂
 
 noncomputable section
 
@@ -515,6 +516,15 @@ def lowerEquivalence {A : C} {B : D} (e : MonoOver A ≌ MonoOver B) : Subobject
     convert ThinSkeleton.map_iso_eq e.counitIso
     · exact (ThinSkeleton.map_comp_eq _ _).symm
     · exact ThinSkeleton.map_id_eq.symm
+
+section Colimits
+
+variable [HasCoproducts C] [HasStrongEpiMonoFactorisations C]
+
+instance hasColimitsOfSize : HasColimitsOfSize.{w, w'} (Subobject X) := by
+  apply hasColimitsOfSize_thinSkeleton
+
+end Colimits
 
 section Pullback
 
