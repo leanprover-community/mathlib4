@@ -80,11 +80,23 @@ noncomputable def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) := by
 @[simp] lemma fourierTransformCLM_apply (f : 𝓢(V, E)) :
     fourierTransformCLM 𝕜 f = 𝓕 f := rfl
 
+variable [CompleteSpace E]
+
+@[simp]
+theorem fourier_inversion (f : 𝓢(V, E)) (x : V) : 𝓕⁻ (𝓕 f) x = f x :=
+  Integrable.fourier_inversion f.integrable (fourierTransformCLM ℂ f).integrable
+    f.continuous.continuousAt
+
+@[simp]
+theorem fourier_inversion_inv (f : 𝓢(V, E)) (x : V) : 𝓕 (𝓕⁻ f) x = f x :=
+  Integrable.fourier_inversion_inv f.integrable (fourierTransformCLM ℂ f).integrable
+    f.continuous.continuousAt
+
 variable
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F] [NormedSpace 𝕜 F] [SMulCommClass ℂ 𝕜 F]
   {G : Type*} [NormedAddCommGroup G] [NormedSpace ℂ G]
 
-variable [CompleteSpace E] [CompleteSpace F]
+variable [CompleteSpace F]
 
 /-- The Fourier transform satisfies `∫ 𝓕 f * g = ∫ f * 𝓕 g`, i.e., it is self-adjoint.
 Version where the multiplication is replaced by a general bilinear form `M`. -/
@@ -93,6 +105,19 @@ theorem integral_bilin_fourierIntegral_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M :
   have := VectorFourier.integral_bilin_fourierIntegral_eq_flip M (μ := volume) (ν := volume)
     (L := (innerₗ V)) continuous_fourierChar continuous_inner f.integrable g.integrable
   rwa [flip_innerₗ] at this
+
+theorem integral_sesq_fourierIntegral_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L⋆[ℂ] F →L[ℂ] G) :
+    ∫ ξ, M (𝓕 f ξ) (g ξ) = ∫ x, M (f x) (𝓕⁻ g x) := by
+  have := VectorFourier.integral_sesq_fourierIntegral_eq_neg_flip M (μ := volume) (ν := volume)
+    (L := (innerₗ V)) continuous_fourierChar continuous_inner f.integrable g.integrable
+  rwa [flip_innerₗ] at this
+
+/-- Parseval's identity. -/
+theorem integral_sesq_fourier_fourier (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L⋆[ℂ] F →L[ℂ] G) :
+    ∫ ξ, M (𝓕 f ξ) (𝓕 g ξ) = ∫ x, M (f x) (g x) := by
+  have := integral_sesq_fourierIntegral_eq f (fourierTransformCLM ℂ g) M
+  simp only [fourierTransformCLM_apply, fourier_inversion] at this
+  assumption
 
 /-- The Fourier transform on a real inner product space, as a continuous linear equiv on the
 Schwartz space. -/
