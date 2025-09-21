@@ -27,6 +27,15 @@ variable {G α β ι : Type*}
 open Filter
 open scoped Topology NNReal
 
+/-- A non-unital non-associative seminormed ring is a not-necessarily-unital, not-necessarily
+associative ring endowed with a seminorm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
+class NonUnitalNonAssocSeminormedRing (α : Type*) extends Norm α, NonUnitalNonAssocRing α,
+  PseudoMetricSpace α where
+  /-- The distance is induced by the norm. -/
+  dist_eq : ∀ x y, dist x y = norm (x - y)
+  /-- The norm is submultiplicative. -/
+  protected norm_mul_le : ∀ a b, norm (a * b) ≤ norm a * norm b
+
 /-- A non-unital seminormed ring is a not-necessarily-unital ring
 endowed with a seminorm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 class NonUnitalSeminormedRing (α : Type*) extends Norm α, NonUnitalRing α,
@@ -35,6 +44,12 @@ class NonUnitalSeminormedRing (α : Type*) extends Norm α, NonUnitalRing α,
   dist_eq : ∀ x y, dist x y = norm (x - y)
   /-- The norm is submultiplicative. -/
   protected norm_mul_le : ∀ a b, norm (a * b) ≤ norm a * norm b
+
+-- see Note [lower instance priority]
+/-- A non-unital seminormed ring is a non-unital non-associative seminormed ring. -/
+instance (priority := 100) NonUnitalSeminormedRing.toNonUnitalNonAssocSeminormedRing
+    [β : NonUnitalSeminormedRing α] : NonUnitalNonAssocSeminormedRing α :=
+  { β with }
 
 /-- A seminormed ring is a ring endowed with a seminorm which satisfies the inequality
 `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
@@ -63,6 +78,28 @@ class NonUnitalNormedRing (α : Type*) extends Norm α, NonUnitalRing α, Metric
 instance (priority := 100) NonUnitalNormedRing.toNonUnitalSeminormedRing
     [β : NonUnitalNormedRing α] : NonUnitalSeminormedRing α :=
   { β with }
+
+/-- A non-unital normed ring is a not-necessarily-unital ring
+endowed with a norm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
+class NonUnitalNonAssocNormedRing (α : Type*) extends Norm α, NonUnitalNonAssocRing α, MetricSpace α
+    where
+  /-- The distance is induced by the norm. -/
+  dist_eq : ∀ x y, dist x y = norm (x - y)
+  /-- The norm is submultiplicative. -/
+  norm_mul_le : ∀ a b, norm (a * b) ≤ norm a * norm b
+
+-- see Note [lower instance priority]
+/-- A normed ring is a seminormed ring. -/
+instance (priority := 100) NonUnitalNonAssocNormedRing.toNonUnitalNonAssocSeminormedRing
+    [β : NonUnitalNonAssocNormedRing α] : NonUnitalNonAssocSeminormedRing α :=
+  { β with }
+
+/-- A normed ring is a ring endowed with a norm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
+class NonAssocNormedRing (α : Type*) extends Norm α, NonAssocRing α, MetricSpace α where
+  /-- The distance is induced by the norm. -/
+  dist_eq : ∀ x y, dist x y = norm (x - y)
+  /-- The norm is submultiplicative. -/
+  norm_mul_le : ∀ a b, norm (a * b) ≤ norm a * norm b
 
 /-- A normed ring is a ring endowed with a norm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 class NormedRing (α : Type*) extends Norm α, Ring α, MetricSpace α where
@@ -165,6 +202,11 @@ end SeminormedAddCommGroup
 end NormOneClass
 
 -- see Note [lower instance priority]
+instance (priority := 100) NonUnitalNonAssocNormedRing.toNormedAddCommGroup
+    [β : NonUnitalNonAssocNormedRing α] : NormedAddCommGroup α :=
+  { β with }
+
+-- see Note [lower instance priority]
 instance (priority := 100) NonUnitalNormedRing.toNormedAddCommGroup [β : NonUnitalNormedRing α] :
     NormedAddCommGroup α :=
   { β with }
@@ -173,6 +215,11 @@ instance (priority := 100) NonUnitalNormedRing.toNormedAddCommGroup [β : NonUni
 instance (priority := 100) NonUnitalSeminormedRing.toSeminormedAddCommGroup
     [NonUnitalSeminormedRing α] : SeminormedAddCommGroup α :=
   { ‹NonUnitalSeminormedRing α› with }
+
+-- see Note [lower instance priority]
+instance (priority := 100) NonUnitalNonAssocSeminormedRing.toSeminormedAddCommGroup
+    [NonUnitalNonAssocSeminormedRing α] : SeminormedAddCommGroup α :=
+  { ‹NonUnitalNonAssocSeminormedRing α› with }
 
 instance ULift.normOneClass [SeminormedAddCommGroup α] [One α] [NormOneClass α] :
     NormOneClass (ULift α) :=
@@ -191,13 +238,13 @@ instance MulOpposite.normOneClass [SeminormedAddCommGroup α] [One α] [NormOneC
     NormOneClass αᵐᵒᵖ :=
   ⟨@norm_one α _ _ _⟩
 
-section NonUnitalSeminormedRing
+section NonUnitalNonAssocSeminormedRing
 
-variable [NonUnitalSeminormedRing α] {a a₁ a₂ b c : α}
+variable [NonUnitalNonAssocSeminormedRing α] {a a₁ a₂ b c : α}
 
 /-- The norm is submultiplicative. -/
 theorem norm_mul_le (a b : α) : ‖a * b‖ ≤ ‖a‖ * ‖b‖ :=
-  NonUnitalSeminormedRing.norm_mul_le a b
+  NonUnitalNonAssocSeminormedRing.norm_mul_le a b
 
 theorem nnnorm_mul_le (a b : α) : ‖a * b‖₊ ≤ ‖a‖₊ * ‖b‖₊ := norm_mul_le a b
 
@@ -263,6 +310,38 @@ instance (priority := 75) NonUnitalSubalgebraClass.nonUnitalNormedRing {S 𝕜 E
   { nonUnitalSeminormedRing s with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
+instance ULift.nonUnitalNonAssocSeminormedRing : NonUnitalNonAssocSeminormedRing (ULift α) :=
+  { ULift.seminormedAddCommGroup, ULift.nonUnitalNonAssocRing with
+    norm_mul_le x y := norm_mul_le x.down y.down }
+
+/-- Non-unital seminormed ring structure on the product of two non-unital seminormed rings,
+  using the sup norm. -/
+instance Prod.nonUnitalNonAssocSeminormedRing [NonUnitalNonAssocSeminormedRing β] :
+    NonUnitalNonAssocSeminormedRing (α × β) :=
+  { seminormedAddCommGroup, instNonUnitalNonAssocRing with
+    norm_mul_le x y := calc
+      ‖x * y‖ = ‖(x.1 * y.1, x.2 * y.2)‖ := rfl
+      _ = max ‖x.1 * y.1‖ ‖x.2 * y.2‖ := rfl
+      _ ≤ max (‖x.1‖ * ‖y.1‖) (‖x.2‖ * ‖y.2‖) :=
+        (max_le_max (norm_mul_le x.1 y.1) (norm_mul_le x.2 y.2))
+      _ = max (‖x.1‖ * ‖y.1‖) (‖y.2‖ * ‖x.2‖) := by simp [mul_comm]
+      _ ≤ max ‖x.1‖ ‖x.2‖ * max ‖y.2‖ ‖y.1‖ := by
+        apply max_mul_mul_le_max_mul_max <;> simp [norm_nonneg]
+      _ = max ‖x.1‖ ‖x.2‖ * max ‖y.1‖ ‖y.2‖ := by simp [max_comm]
+      _ = ‖x‖ * ‖y‖ := rfl }
+
+instance MulOpposite.instNonUnitalSeminormedRing : NonUnitalNonAssocSeminormedRing αᵐᵒᵖ where
+  __ := instNonUnitalNonAssocRing
+  __ := instSeminormedAddCommGroup
+  norm_mul_le := MulOpposite.rec' fun x ↦ MulOpposite.rec' fun y ↦
+    (norm_mul_le y x).trans_eq (mul_comm _ _)
+
+end NonUnitalNonAssocSeminormedRing
+
+section NonUnitalSeminormedRing
+
+variable [NonUnitalSeminormedRing α] {a a₁ a₂ b c : α}
+
 instance ULift.nonUnitalSeminormedRing : NonUnitalSeminormedRing (ULift α) :=
   { ULift.seminormedAddCommGroup, ULift.nonUnitalRing with
     norm_mul_le x y := norm_mul_le x.down y.down }
@@ -282,12 +361,6 @@ instance Prod.nonUnitalSeminormedRing [NonUnitalSeminormedRing β] :
         apply max_mul_mul_le_max_mul_max <;> simp [norm_nonneg]
       _ = max ‖x.1‖ ‖x.2‖ * max ‖y.1‖ ‖y.2‖ := by simp [max_comm]
       _ = ‖x‖ * ‖y‖ := rfl }
-
-instance MulOpposite.instNonUnitalSeminormedRing : NonUnitalSeminormedRing αᵐᵒᵖ where
-  __ := instNonUnitalRing
-  __ := instSeminormedAddCommGroup
-  norm_mul_le := MulOpposite.rec' fun x ↦ MulOpposite.rec' fun y ↦
-    (norm_mul_le y x).trans_eq (mul_comm _ _)
 
 end NonUnitalSeminormedRing
 
@@ -416,7 +489,7 @@ theorem eventually_norm_pow_le (a : α) : ∀ᶠ n : ℕ in atTop, ‖a ^ n‖ �
   eventually_atTop.mpr ⟨1, fun _b h => norm_pow_le' a (Nat.succ_le_iff.mp h)⟩
 
 instance ULift.seminormedRing : SeminormedRing (ULift α) :=
-  { ULift.nonUnitalSeminormedRing, ULift.ring with }
+  { ULift.nonUnitalNonAssocSeminormedRing, ULift.ring with }
 
 /-- Seminormed ring structure on the product of two seminormed rings,
   using the sup norm. -/
@@ -475,6 +548,26 @@ def RingHom.IsBounded {α : Type*} [SeminormedRing α] {β : Type*} [SeminormedR
 
 end SeminormedRing
 
+section NonUnitalNonAssocNormedRing
+
+variable [NonUnitalNonAssocNormedRing α]
+
+instance ULift.nonUnitalNonAssocNormedRing : NonUnitalNonAssocNormedRing (ULift α) :=
+  { ULift.nonUnitalNonAssocSeminormedRing, ULift.normedAddCommGroup with }
+
+/-- Non-unital normed ring structure on the product of two non-unital normed rings,
+using the sup norm. -/
+instance Prod.nonUnitalNonAssocNormedRing [NonUnitalNonAssocNormedRing β] :
+    NonUnitalNonAssocNormedRing (α × β) :=
+  { Prod.nonUnitalNonAssocSeminormedRing, Prod.normedAddCommGroup with }
+
+instance MulOpposite.instNonUnitalNonAssocNormedRing : NonUnitalNonAssocNormedRing αᵐᵒᵖ where
+  __ := instNonUnitalNonAssocRing
+  __ := instNonUnitalSeminormedRing
+  __ := instNormedAddCommGroup
+
+end NonUnitalNonAssocNormedRing
+
 section NonUnitalNormedRing
 
 variable [NonUnitalNormedRing α]
@@ -484,7 +577,8 @@ instance ULift.nonUnitalNormedRing : NonUnitalNormedRing (ULift α) :=
 
 /-- Non-unital normed ring structure on the product of two non-unital normed rings,
 using the sup norm. -/
-instance Prod.nonUnitalNormedRing [NonUnitalNormedRing β] : NonUnitalNormedRing (α × β) :=
+instance Prod.nonUnitalNormedRing [NonUnitalNormedRing β] :
+    NonUnitalNormedRing (α × β) :=
   { Prod.nonUnitalSeminormedRing, Prod.normedAddCommGroup with }
 
 instance MulOpposite.instNonUnitalNormedRing : NonUnitalNormedRing αᵐᵒᵖ where
@@ -792,6 +886,27 @@ end NormMulClass
 section Induced
 
 variable {F : Type*} (R S : Type*) [FunLike F R S]
+
+--variable [NonUnitalNonAssocSeminormedRing S]
+
+instance [NonUnitalSeminormedRing S] : SeminormedAddCommGroup S := by exact
+  NonUnitalSeminormedRing.toSeminormedAddCommGroup
+
+instance [NonUnitalNonAssocSeminormedRing S] : SeminormedAddCommGroup S := by exact
+  NonUnitalNonAssocSeminormedRing.toSeminormedAddCommGroup
+
+
+/-- A non-unital ring homomorphism from a `NonUnitalNonAssocRing` to a
+`NonUnitalNonAssocSeminormedRing` induces a `NonUnitalNonAssocSeminormedRing` structure on the
+domain.
+
+See note [reducible non-instances] -/
+abbrev NonUnitalNonAssocSeminormedRing.induced [NonUnitalNonAssocRing R]
+    [NonUnitalNonAssocSeminormedRing S] [NonUnitalRingHomClass F R S] (f : F) :
+    NonUnitalNonAssocSeminormedRing R :=
+  { SeminormedAddCommGroup.induced R S f, ‹NonUnitalNonAssocRing R› with
+    norm_mul_le x y := show ‖f _‖ ≤ _ from (map_mul f x y).symm ▸ norm_mul_le (f x) (f y)
+    }
 
 /-- A non-unital ring homomorphism from a `NonUnitalRing` to a `NonUnitalSeminormedRing`
 induces a `NonUnitalSeminormedRing` structure on the domain.
