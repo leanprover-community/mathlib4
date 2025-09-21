@@ -635,12 +635,12 @@ lemma closedInterior_face_eq_affineSegment {n : ℕ} (s : Simplex R P n) {i j : 
     · simp [min_eq_left hij.le, max_eq_right hij.le]
     · nth_rw 2 [affineSegment_comm]
       simp [max_eq_left hji.le, min_eq_right hji.le]
-  rw [h', (s.face (Finset.card_pair h)).closedInterior_eq_affineSegment]
-  convert rfl using 2 <;> rw [face_points] <;> congr
-  · convert (Finset.orderEmbOfFin_zero _ _).symm
+  rw [h', (s.face (Finset.card_pair h)).closedInterior_eq_affineSegment, face_points, face_points]
+  congr 2
+  · convert Finset.orderEmbOfFin_zero _ _
     · exact (Finset.min'_pair i j).symm
     · omega
-  · convert (Finset.orderEmbOfFin_last _ _).symm
+  · convert Finset.orderEmbOfFin_last _ _
     · exact (Finset.max'_pair i j).symm
     · omega
 
@@ -668,7 +668,7 @@ lemma mem_interior_iff_sbtw [Nontrivial R] [NoZeroSMulDivisors R V] {s : Simplex
       (Finset.mem_univ _), affineCombination_mem_interior_iff
         (Finset.sum_affineCombinationLineMapWeights _ (Finset.mem_univ _) (Finset.mem_univ _) _)]
     intro i
-    fin_cases i <;> simp <;> grind
+    fin_cases i <;> simp [h0, h1]
 
 lemma mem_interior_face_iff_sbtw [Nontrivial R] [NoZeroSMulDivisors R V] {n : ℕ}
     (s : Simplex R P n) {p : P} {i j : Fin (n + 1)} (h : i ≠ j) :
@@ -679,12 +679,12 @@ lemma mem_interior_face_iff_sbtw [Nontrivial R] [NoZeroSMulDivisors R V] {n : �
     · simp [min_eq_left hij.le, max_eq_right hij.le]
     · nth_rw 2 [sbtw_comm]
       simp [max_eq_left hji.le, min_eq_right hji.le]
-  rw [h', mem_interior_iff_sbtw]
-  convert Iff.rfl using 2 <;> rw [face_points] <;> congr
-  · convert (Finset.orderEmbOfFin_zero _ _).symm
+  rw [h', mem_interior_iff_sbtw, face_points, face_points]
+  congr! 4
+  · convert Finset.orderEmbOfFin_zero _ _
     · exact (Finset.min'_pair i j).symm
     · omega
-  · convert (Finset.orderEmbOfFin_last _ _).symm
+  · convert Finset.orderEmbOfFin_last _ _
     · exact (Finset.max'_pair i j).symm
     · omega
 
