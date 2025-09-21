@@ -576,7 +576,7 @@ theorem _root_.Matrix.posDef_vecMulVec_star [StarOrderedRing R] [NoZeroDivisors 
     (ha : Function.Injective (dotProduct · a)) :
     (vecMulVec a (star a)).PosDef := by
   simp only [vecMulVec_eq Unit, ← conjTranspose_replicateCol]
-  apply mul_conjTranspose_self _ fun a b => by simp [← ha.eq_iff, funext_iff, vecMul]
+  exact mul_conjTranspose_self _ fun a b => by simp [← ha.eq_iff, funext_iff, vecMul]
 
 theorem _root_.Matrix.posDef_star_vecMulVec [StarOrderedRing R] [NoZeroDivisors R] (a : n → R)
     (ha : Function.Injective (dotProduct a)) :
