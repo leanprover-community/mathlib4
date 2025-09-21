@@ -144,7 +144,7 @@ theorem dotProduct_sum {ι : Type*} (u : m → α) (s : Finset ι) (v : ι → (
   rw [Finset.sum_comm]
 
 theorem sum_dotProduct {ι : Type*} (s : Finset ι) (u : ι → (m → α)) (v : m → α) :
-    (∑ i ∈ s, u i) ⬝ᵥ v = ∑ i ∈ s, u i⬝ᵥ v := by
+    (∑ i ∈ s, u i) ⬝ᵥ v = ∑ i ∈ s, u i ⬝ᵥ v := by
   simp only [dotProduct, Finset.sum_apply, Finset.sum_mul]
   rw [Finset.sum_comm]
 
