@@ -424,6 +424,14 @@ theorem PosSemidef.commute_iff [DecidableEq n] {A B : Matrix n n 𝕜}
       exact posSemidef_iff_isHermitian_and_spectrum_nonneg.mp
         (posSemidef_conjTranspose_mul_self _) |>.2
 
+theorem posSemidef_vecMulVec_self_star [StarOrderedRing R] (a : n → R) :
+    (vecMulVec a (star a)).PosSemidef := by
+  simp [vecMulVec_eq Unit, ← conjTranspose_replicateCol, posSemidef_self_mul_conjTranspose]
+
+theorem posSemidef_vecMulVec_star_self [StarOrderedRing R] (a : n → R) :
+    (vecMulVec (star a) a).PosSemidef := by
+  simp [vecMulVec_eq Unit, ← conjTranspose_replicateRow, posSemidef_conjTranspose_mul_self]
+
 /-!
 ## Positive definite matrices
 -/
