@@ -20,9 +20,13 @@ variable (Ω : Type w)
 /-- Structure which allows to construct a category whose types
 of objects and morphisms are subtype of a fixed type `Ω`. -/
 structure SmallCategoryOfSet where
+  /-- objects -/
   obj : Set Ω
+  /-- morphisms -/
   hom (X Y : obj) : Set Ω
+  /-- identity morphisms -/
   id (X : obj) : hom X X
+  /-- the composition of morphisms -/
   comp {X Y Z : obj} (f : hom X Y) (g : hom Y Z) : hom X Z
   id_comp {X Y : obj} (f : hom X Y) : comp (id _) f = f := by cat_disch
   comp_id {X Y : obj} (f : hom X Y) : comp f (id _) = f := by cat_disch
@@ -39,16 +43,25 @@ instance (S : SmallCategoryOfSet Ω) : SmallCategory S.obj where
   id := S.id
   comp := S.comp
 
+/-- The family of all categories such that the types of objects and
+morphisms are subtypes of a given type `Ω`. -/
 abbrev categoryFamily : SmallCategoryOfSet Ω → Type w := fun S ↦ S.obj
 
 end SmallCategoryOfSet
 
 variable (C : Type u) [Category.{v} C]
 
+/-- Helper structure for the construction of a term in `SmallCategoryOfSet Ω`.
+This involves the choice of bijections between types of objects and morphisms
+in a category `C`, and subtypes of `Ω`. -/
 structure CoreSmallCategoryOfSet where
+  /-- objects -/
   obj : Set Ω
+  /-- morphisms -/
   hom (X Y : obj) : Set Ω
+  /-- a bijection between the types of objects -/
   objEquiv : obj ≃ C
+  /-- a bijection between the types of morphisms -/
   homEquiv {X Y : obj} : hom X Y ≃ (objEquiv X ⟶ objEquiv Y)
 
 namespace CoreSmallCategoryOfSet
@@ -64,6 +77,8 @@ def smallCategoryOfSet : SmallCategoryOfSet Ω where
   id X := h.homEquiv.symm (𝟙 _)
   comp f g := h.homEquiv.symm (h.homEquiv f ≫ h.homEquiv g)
 
+/-- Given `h : CoreSmallCategoryOfSet Ω C`, this is the
+obvious functor `h.smallCategoryOfSet.obj ⥤ C`. -/
 @[simps!]
 def functor : h.smallCategoryOfSet.obj ⥤ C where
   obj := h.objEquiv
@@ -75,6 +90,8 @@ def functor : h.smallCategoryOfSet.obj ⥤ C where
     rw [SmallCategoryOfSet.comp_def]
     simp
 
+/-- Given `h : CoreSmallCategoryOfSet Ω C`,
+the obvious functor `h.smallCategoryOfSet.obj ⥤ C` is fully faithful. -/
 def fullyFaithfulFunctor : h.functor.FullyFaithful where
   preimage := h.homEquiv.symm
 
@@ -89,6 +106,8 @@ instance : h.functor.EssSurj where
 
 instance : h.functor.IsEquivalence where
 
+/-- Given `h : CoreSmallCategoryOfSet Ω C`,
+the obvious functor `h.smallCategoryOfSet.obj ⥤ C` is an equivalence. -/
 noncomputable def equivalence : h.smallCategoryOfSet.obj ≌ C :=
   h.functor.asEquivalence
 
