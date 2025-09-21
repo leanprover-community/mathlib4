@@ -549,8 +549,8 @@ variable [NonUnitalNonAssocNormedRing α]
 instance ULift.nonUnitalNonAssocNormedRing : NonUnitalNonAssocNormedRing (ULift α) :=
   { ULift.nonUnitalNonAssocSeminormedRing, ULift.normedAddCommGroup with }
 
-/-- Non-unital normed ring structure on the product of two non-unital normed rings,
-using the sup norm. -/
+/-- Non-unital, non-associative normed ring structure on the product of two non-unital,
+non-associative normed rings, using the sup norm. -/
 instance Prod.nonUnitalNonAssocNormedRing [NonUnitalNonAssocNormedRing β] :
     NonUnitalNonAssocNormedRing (α × β) :=
   { Prod.nonUnitalNonAssocSeminormedRing, Prod.normedAddCommGroup with }
@@ -571,8 +571,7 @@ instance ULift.nonUnitalNormedRing : NonUnitalNormedRing (ULift α) :=
 
 /-- Non-unital normed ring structure on the product of two non-unital normed rings,
 using the sup norm. -/
-instance Prod.nonUnitalNormedRing [NonUnitalNormedRing β] :
-    NonUnitalNormedRing (α × β) :=
+instance Prod.nonUnitalNormedRing [NonUnitalNormedRing β] : NonUnitalNormedRing (α × β) :=
   { Prod.nonUnitalSeminormedRing, Prod.normedAddCommGroup with }
 
 instance MulOpposite.instNonUnitalNormedRing : NonUnitalNormedRing αᵐᵒᵖ where
