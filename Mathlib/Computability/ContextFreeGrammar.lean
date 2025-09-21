@@ -34,6 +34,9 @@ structure ContextFreeRule (T N : Type*) where
   output : List (Symbol T N)
 deriving DecidableEq, Repr
 
+-- See https://github.com/leanprover/lean4/issues/10295
+attribute [nolint unusedArguments] instReprContextFreeRule.repr
+
 /-- Context-free grammar that generates words over the alphabet `T` (a type of terminals). -/
 structure ContextFreeGrammar (T : Type*) where
   /-- Type of nonterminals. -/
@@ -213,8 +216,9 @@ lemma Produces.exists_nonterminal_input_mem {u v : List (Symbol T g.NT)} (hguv :
   obtain ⟨w, l, r⟩ := hguv
   exact ⟨w, l, r.nonterminal_input_mem⟩
 
-lemma derives_nonterminal {t : g.NT} (hgt : ∀ r ∈ g.rules, r.input ≠ t) :
-    ∀ s ≠ [.nonterminal t], ¬g.Derives [.nonterminal t] s := fun _ hs ↦ by
+lemma derives_nonterminal {t : g.NT} (hgt : ∀ r ∈ g.rules, r.input ≠ t)
+    (s : List (Symbol T g.NT)) (hs : s ≠ [.nonterminal t]) :
+    ¬g.Derives [.nonterminal t] s := by
   rw [derives_iff_eq_or_head]
   push_neg
   refine ⟨hs.symm, fun _ hx ↦ ?_⟩

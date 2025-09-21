@@ -92,8 +92,8 @@ theorem continuous_polarCoord_symm :
 
 /-- The derivative of `polarCoord.symm`, see `hasFDerivAt_polarCoord_symm`. -/
 def fderivPolarCoordSymm (p : ℝ × ℝ) : ℝ × ℝ →L[ℝ] ℝ × ℝ :=
-  LinearMap.toContinuousLinearMap (Matrix.toLin (Basis.finTwoProd ℝ)
-    (Basis.finTwoProd ℝ) !![cos p.2, -p.1 * sin p.2; sin p.2, p.1 * cos p.2])
+  (Matrix.toLin (.finTwoProd ℝ) (.finTwoProd ℝ)
+    !![cos p.2, -p.1 * sin p.2; sin p.2, p.1 * cos p.2]).toContinuousLinearMap
 
 theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
     HasFDerivAt polarCoord.symm (fderivPolarCoordSymm p) p := by
@@ -112,7 +112,7 @@ theorem det_fderivPolarCoordSymm (p : ℝ × ℝ) :
     Matrix.det_fin_two_of, sub_neg_eq_add]
   ring
 
--- Porting note: this instance is needed but not automatically synthesised
+/-- This instance is required to see through the defeq `volume = volume.prod volume`. -/
 instance : Measure.IsAddHaarMeasure volume (G := ℝ × ℝ) :=
   Measure.prod.instIsAddHaarMeasure _ _
 
@@ -162,8 +162,8 @@ theorem lintegral_comp_polarCoord_symm (f : ℝ × ℝ → ℝ≥0∞) :
       · simp_rw [det_fderivPolarCoordSymm]; rfl
       exacts [polarCoord.symm.injOn, measurableSet_Ioi.prod measurableSet_Ioo]
     _ = ∫⁻ (p : ℝ × ℝ) in polarCoord.target, ENNReal.ofReal p.1 • f (polarCoord.symm p) := by
-      refine setLIntegral_congr_fun polarCoord.open_target.measurableSet ?_
-      filter_upwards with _ hx using by rw [abs_of_pos hx.1]
+      refine setLIntegral_congr_fun polarCoord.open_target.measurableSet (fun x hx ↦ ?_)
+      rw [abs_of_pos hx.1]
 
 end Real
 
@@ -198,8 +198,6 @@ theorem measurableEquivRealProd_symm_polarCoord_symm_apply (p : ℝ × ℝ) :
 
 theorem norm_polarCoord_symm (p : ℝ × ℝ) :
     ‖Complex.polarCoord.symm p‖ = |p.1| := by simp
-
-@[deprecated (since := "2025-02-17")] alias polarCoord_symm_abs := norm_polarCoord_symm
 
 protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] (f : ℂ → E) :
@@ -286,8 +284,7 @@ theorem lintegral_comp_pi_polarCoord_symm (f : (ι → ℝ × ℝ) → ℝ≥0�
   convert (lintegral_image_eq_lintegral_abs_det_fderiv_mul volume measurableSet_pi_polarCoord_target
     (fun p _ ↦ (hasFDerivAt_pi_polarCoord_symm p).hasFDerivWithinAt)
       injOn_pi_polarCoord_symm f).symm using 1
-  refine setLIntegral_congr_fun measurableSet_pi_polarCoord_target ?_
-  filter_upwards with x hx
+  refine setLIntegral_congr_fun measurableSet_pi_polarCoord_target (fun x hx ↦ ?_)
   simp_rw [det_fderivPiPolarCoordSymm, Finset.abs_prod, ENNReal.ofReal_prod_of_nonneg (fun _ _ ↦
     abs_nonneg _), abs_fst_of_mem_pi_polarCoord_target hx]
 

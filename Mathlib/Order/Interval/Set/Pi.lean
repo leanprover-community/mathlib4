@@ -3,7 +3,7 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Notation.Pi.Basic
 import Mathlib.Data.Set.BooleanAlgebra
 import Mathlib.Data.Set.Piecewise
 import Mathlib.Order.Interval.Set.Basic
@@ -52,20 +52,20 @@ theorem piecewise_mem_Icc' {s : Set ι} [∀ j, Decidable (j ∈ s)] {f₁ f₂ 
 
 section Nonempty
 
-theorem pi_univ_Ioi_subset [Nonempty ι]: (pi univ fun i ↦ Ioi (x i)) ⊆ Ioi x := fun _ hz ↦
+theorem pi_univ_Ioi_subset [Nonempty ι] : (pi univ fun i ↦ Ioi (x i)) ⊆ Ioi x := fun _ hz ↦
   ⟨fun i ↦ le_of_lt <| hz i trivial, fun h ↦
-    (‹Nonempty ι›.elim) fun i ↦ not_lt_of_le (h i) (hz i trivial)⟩
+    (‹Nonempty ι›.elim) fun i ↦ not_lt_of_ge (h i) (hz i trivial)⟩
 
-theorem pi_univ_Iio_subset [Nonempty ι]: (pi univ fun i ↦ Iio (x i)) ⊆ Iio x :=
+theorem pi_univ_Iio_subset [Nonempty ι] : (pi univ fun i ↦ Iio (x i)) ⊆ Iio x :=
   pi_univ_Ioi_subset (α := fun i ↦ (α i)ᵒᵈ) x
 
-theorem pi_univ_Ioo_subset [Nonempty ι]: (pi univ fun i ↦ Ioo (x i) (y i)) ⊆ Ioo x y := fun _ hx ↦
+theorem pi_univ_Ioo_subset [Nonempty ι] : (pi univ fun i ↦ Ioo (x i) (y i)) ⊆ Ioo x y := fun _ hx ↦
   ⟨(pi_univ_Ioi_subset _) fun i hi ↦ (hx i hi).1, (pi_univ_Iio_subset _) fun i hi ↦ (hx i hi).2⟩
 
-theorem pi_univ_Ioc_subset [Nonempty ι]: (pi univ fun i ↦ Ioc (x i) (y i)) ⊆ Ioc x y := fun _ hx ↦
+theorem pi_univ_Ioc_subset [Nonempty ι] : (pi univ fun i ↦ Ioc (x i) (y i)) ⊆ Ioc x y := fun _ hx ↦
   ⟨(pi_univ_Ioi_subset _) fun i hi ↦ (hx i hi).1, fun i ↦ (hx i trivial).2⟩
 
-theorem pi_univ_Ico_subset [Nonempty ι]: (pi univ fun i ↦ Ico (x i) (y i)) ⊆ Ico x y := fun _ hx ↦
+theorem pi_univ_Ico_subset [Nonempty ι] : (pi univ fun i ↦ Ico (x i) (y i)) ⊆ Ico x y := fun _ hx ↦
   ⟨fun i ↦ (hx i trivial).1, (pi_univ_Iio_subset _) fun i hi ↦ (hx i hi).2⟩
 
 end Nonempty
@@ -99,7 +99,7 @@ theorem disjoint_pi_univ_Ioc_update_left_right {x y : ∀ i, α i} {i₀ : ι} {
     (pi univ fun i ↦ Ioc (update x i₀ m i) (y i)) := by
   rw [disjoint_left]
   rintro z h₁ h₂
-  refine (h₁ i₀ (mem_univ _)).2.not_lt ?_
+  refine (h₁ i₀ (mem_univ _)).2.not_gt ?_
   simpa only [Function.update_self] using (h₂ i₀ (mem_univ _)).1
 
 end PiPreorder
@@ -275,7 +275,7 @@ theorem pi_univ_Ioc_update_union (x y : ∀ i, α i) (i₀ : ι) (m : α i₀) (
         pi univ fun i ↦ Ioc (update x i₀ m i) (y i)) =
       pi univ fun i ↦ Ioc (x i) (y i) := by
   simp_rw [pi_univ_Ioc_update_left hm.1, pi_univ_Ioc_update_right hm.2, ← union_inter_distrib_right,
-    ← setOf_or, le_or_lt, setOf_true, univ_inter]
+    ← setOf_or, le_or_gt, setOf_true, univ_inter]
 
 /-- If `x`, `y`, `x'`, and `y'` are functions `Π i : ι, α i`, then
 the set difference between the box `[x, y]` and the product of the open intervals `(x' i, y' i)`
@@ -294,7 +294,7 @@ theorem Icc_diff_pi_univ_Ioo_subset (x y x' y' : ∀ i, α i) :
     hxa, hay _, hxa _, hay, ← exists_or]
   rcases ha' with ⟨w, hw⟩
   apply Exists.intro w
-  cases lt_or_le (x' w) (a w) <;> simp_all
+  cases lt_or_ge (x' w) (a w) <;> simp_all
 
 /-- If `x`, `y`, `z` are functions `Π i : ι, α i`, then
 the set difference between the box `[x, z]` and the product of the intervals `(y i, z i]`

@@ -90,8 +90,8 @@ instance liftHom_WhiskerRight {X Y : C} (f : X ⟶ Y) [LiftObj X] [LiftObj Y] [L
   lift := LiftHom.lift f ▷ LiftObj.lift Z
 
 instance LiftHom_tensor {W X Y Z : C} [LiftObj W] [LiftObj X] [LiftObj Y] [LiftObj Z]
-    (f : W ⟶ X) (g : Y ⟶ Z) [LiftHom f] [LiftHom g] : LiftHom (f ⊗ g) where
-  lift := LiftHom.lift f ⊗ LiftHom.lift g
+    (f : W ⟶ X) (g : Y ⟶ Z) [LiftHom f] [LiftHom g] : LiftHom (f ⊗ₘ g) where
+  lift := LiftHom.lift f ⊗ₘ LiftHom.lift g
 
 end lifting
 
@@ -185,13 +185,13 @@ elab (name := liftable_prefixes) "liftable_prefixes" : tactic => do
   withOptions (fun opts => synthInstance.maxSize.set opts
     (max 256 (synthInstance.maxSize.get opts))) do
   evalTactic (← `(tactic|
-    (simp (config := {failIfUnchanged := false}) only
+    (simp -failIfUnchanged only
       [monoidalComp, bicategoricalComp, Category.assoc, BicategoricalCoherence.iso,
       MonoidalCoherence.iso, Iso.trans, Iso.symm, Iso.refl,
       MonoidalCategory.whiskerRightIso, MonoidalCategory.whiskerLeftIso,
       Bicategory.whiskerRightIso, Bicategory.whiskerLeftIso]) <;>
     (apply (cancel_epi (𝟙 _)).1 <;> try infer_instance) <;>
-    (simp (config := {failIfUnchanged := false}) only
+    (simp -failIfUnchanged only
       [assoc_liftHom, Mathlib.Tactic.BicategoryCoherence.assoc_liftHom₂])))
 
 lemma insert_id_lhs {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f ≫ 𝟙 _ = g) :
@@ -250,7 +250,7 @@ def coherence_loop (maxSteps := 37) : TacticM Unit :=
 open Lean.Parser.Tactic
 
 /--
-Simp lemmas for rewriting a hom in monoical categories into a normal form.
+Simp lemmas for rewriting a hom in monoidal categories into a normal form.
 -/
 syntax (name := monoidal_simps) "monoidal_simps" optConfig : tactic
 
@@ -289,9 +289,9 @@ syntax (name := coherence) "coherence" : tactic
 elab_rules : tactic
 | `(tactic| coherence) => do
   evalTactic (← `(tactic|
-    (simp (config := {failIfUnchanged := false}) only [bicategoricalComp, monoidalComp]);
-    whisker_simps (config := {failIfUnchanged := false});
-    monoidal_simps (config := {failIfUnchanged := false})))
+    (simp -failIfUnchanged only [bicategoricalComp, monoidalComp]);
+    whisker_simps -failIfUnchanged;
+    monoidal_simps -failIfUnchanged))
   coherence_loop
 
 end Coherence

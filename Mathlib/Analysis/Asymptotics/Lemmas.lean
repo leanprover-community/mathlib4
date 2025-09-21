@@ -7,7 +7,6 @@ import Mathlib.Analysis.Asymptotics.Defs
 import Mathlib.Analysis.Normed.Group.Bounded
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.Analysis.Normed.MulAction
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.PartialHomeomorph
 
 /-!
@@ -45,7 +44,7 @@ theorem isBigO_principal {s : Set α} : f =O[𝓟 s] g ↔ ∃ c, ∀ x ∈ s, �
 @[simp]
 theorem isLittleO_principal {s : Set α} : f'' =o[𝓟 s] g' ↔ ∀ x ∈ s, f'' x = 0 := by
   refine ⟨fun h x hx ↦ norm_le_zero_iff.1 ?_, fun h ↦ ?_⟩
-  · simp only [isLittleO_iff, isBigOWith_principal] at h
+  · simp only [isLittleO_iff] at h
     have : Tendsto (fun c : ℝ => c * ‖g' x‖) (𝓝[>] 0) (𝓝 0) :=
       ((continuous_id.mul continuous_const).tendsto' _ _ (zero_mul _)).mono_left
         inf_le_left
@@ -227,7 +226,7 @@ theorem IsBigO.const_smul_left (h : f' =O[l] g) (c : R) : (c • f') =O[l] g :=
 theorem IsLittleO.const_smul_left (h : f' =o[l] g) (c : R) : (c • f') =o[l] g :=
   (IsBigO.const_smul_self _).trans_isLittleO h
 
-variable [Module 𝕜 E'] [IsBoundedSMul 𝕜 E']
+variable [Module 𝕜 E'] [NormSMulClass 𝕜 E']
 
 theorem isBigO_const_smul_left {c : 𝕜} (hc : c ≠ 0) : (fun x => c • f' x) =O[l] g ↔ f' =O[l] g := by
   have cne0 : ‖c‖ ≠ 0 := norm_ne_zero_iff.mpr hc
@@ -260,7 +259,7 @@ end SMulConst
 
 section SMul
 
-variable [Module R E'] [IsBoundedSMul R E'] [Module 𝕜' F'] [IsBoundedSMul 𝕜' F']
+variable [Module R E'] [IsBoundedSMul R E'] [Module 𝕜' F'] [NormSMulClass 𝕜' F']
 variable {k₁ : α → R} {k₂ : α → 𝕜'}
 
 theorem IsBigOWith.smul (h₁ : IsBigOWith c l k₁ k₂) (h₂ : IsBigOWith c' l f' g') :
@@ -356,7 +355,7 @@ theorem IsLittleO.tendsto_div_nhds_zero {f g : α → 𝕜} (h : f =o[l] g) :
         simpa only [div_eq_mul_inv] using h.mul_isBigO (isBigO_refl _ _)
       _ =O[l] fun _x => (1 : 𝕜) := isBigO_of_le _ fun x => by simp [div_self_le_one]
 
-theorem IsLittleO.tendsto_inv_smul_nhds_zero [Module 𝕜 E'] [IsBoundedSMul 𝕜 E']
+theorem IsLittleO.tendsto_inv_smul_nhds_zero [Module 𝕜 E'] [NormSMulClass 𝕜 E']
     {f : α → E'} {g : α → 𝕜}
     {l : Filter α} (h : f =o[l] g) : Tendsto (fun x => (g x)⁻¹ • f x) l (𝓝 0) := by
   simpa only [div_eq_inv_mul, ← norm_inv, ← norm_smul, ← tendsto_zero_iff_norm_tendsto_zero] using
@@ -386,10 +385,10 @@ theorem isLittleO_const_left_of_ne {c : E''} (hc : c ≠ 0) :
 theorem isLittleO_const_left {c : E''} :
     (fun _x => c) =o[l] g'' ↔ c = 0 ∨ Tendsto (norm ∘ g'') l atTop := by
   rcases eq_or_ne c 0 with (rfl | hc)
-  · simp only [isLittleO_zero, eq_self_iff_true, true_or]
+  · simp only [isLittleO_zero, true_or]
   · simp only [hc, false_or, isLittleO_const_left_of_ne hc]; rfl
 
-@[simp 1001] -- Porting note: increase priority so that this triggers before `isLittleO_const_left`
+@[simp high] -- Increase priority so that this triggers before `isLittleO_const_left`
 theorem isLittleO_const_const_iff [NeBot l] {d : E''} {c : F''} :
     ((fun _x => d) =o[l] fun _x => c) ↔ d = 0 := by
   have : ¬Tendsto (Function.const α ‖c‖) l atTop :=
@@ -420,8 +419,8 @@ section ExistsMulEq
 variable {u v : α → 𝕜}
 
 /-- If `‖φ‖` is eventually bounded by `c`, and `u =ᶠ[l] φ * v`, then we have `IsBigOWith c u v l`.
-    This does not require any assumptions on `c`, which is why we keep this version along with
-    `IsBigOWith_iff_exists_eq_mul`. -/
+This does not require any assumptions on `c`, which is why we keep this version along with
+`IsBigOWith_iff_exists_eq_mul`. -/
 theorem isBigOWith_of_eq_mul {u v : α → R} (φ : α → R) (hφ : ∀ᶠ x in l, ‖φ x‖ ≤ c)
     (h : u =ᶠ[l] φ * v) :
     IsBigOWith c l u v := by
@@ -534,11 +533,7 @@ theorem IsBigO.eq_zero_of_norm_pow {f : E'' → F''} {x₀ : E''} {n : ℕ}
 
 theorem isLittleO_pow_sub_pow_sub (x₀ : E') {n m : ℕ} (h : n < m) :
     (fun x => ‖x - x₀‖ ^ m) =o[𝓝 x₀] fun x => ‖x - x₀‖ ^ n :=
-  haveI : Tendsto (fun x => ‖x - x₀‖) (𝓝 x₀) (𝓝 0) := by
-    apply tendsto_norm_zero.comp
-    rw [← sub_self x₀]
-    exact tendsto_id.sub tendsto_const_nhds
-  (isLittleO_pow_pow h).comp_tendsto this
+  (isLittleO_pow_pow h).comp_tendsto (tendsto_norm_sub_self x₀)
 
 theorem isLittleO_pow_sub_sub (x₀ : E') {m : ℕ} (h : 1 < m) :
     (fun x => ‖x - x₀‖ ^ m) =o[𝓝 x₀] fun x => x - x₀ := by
@@ -630,12 +625,14 @@ theorem isLittleO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, Norme
   simp +contextual only [IsLittleO_def, isBigOWith_pi, le_of_lt]
   exact ⟨fun h i c hc => h hc i, fun h c hc i => h i hc⟩
 
-theorem IsBigO.natCast_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean R]
+theorem IsBigO.natCast_atTop {R : Type*} [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
+    [Archimedean R]
     {f : R → E} {g : R → F} (h : f =O[atTop] g) :
     (fun (n : ℕ) => f n) =O[atTop] (fun n => g n) :=
   IsBigO.comp_tendsto h tendsto_natCast_atTop_atTop
 
-theorem IsLittleO.natCast_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean R]
+theorem IsLittleO.natCast_atTop {R : Type*} [Semiring R] [PartialOrder R] [IsStrictOrderedRing R]
+    [Archimedean R]
     {f : R → E} {g : R → F} (h : f =o[atTop] g) :
     (fun (n : ℕ) => f n) =o[atTop] (fun n => g n) :=
   IsLittleO.comp_tendsto h tendsto_natCast_atTop_atTop
@@ -662,8 +659,8 @@ open Asymptotics
 
 theorem summable_of_isBigO {ι E} [SeminormedAddCommGroup E] [CompleteSpace E]
     {f : ι → E} {g : ι → ℝ} (hg : Summable g) (h : f =O[cofinite] g) : Summable f :=
-  let ⟨C, hC⟩ := h.isBigOWith
-  .of_norm_bounded_eventually (fun x => C * ‖g x‖) (hg.abs.mul_left _) hC.bound
+  let ⟨_, hC⟩ := h.isBigOWith
+  .of_norm_bounded_eventually (hg.abs.mul_left _) hC.bound
 
 theorem summable_of_isBigO_nat {E} [SeminormedAddCommGroup E] [CompleteSpace E]
     {f : ℕ → E} {g : ℕ → ℝ} (hg : Summable g) (h : f =O[atTop] g) : Summable f :=
@@ -674,6 +671,12 @@ lemma Asymptotics.IsBigO.comp_summable_norm {ι E F : Type*}
     (hf : f =O[𝓝 0] id) (hg : Summable (‖g ·‖)) : Summable (‖f <| g ·‖) :=
   summable_of_isBigO hg <| hf.norm_norm.comp_tendsto <|
     tendsto_zero_iff_norm_tendsto_zero.2 hg.tendsto_cofinite_zero
+
+lemma Summable.mul_tendsto_const {F ι : Type*} [NormedRing F] [NormMulClass F] [NormOneClass F]
+    [CompleteSpace F] {f g : ι → F} (hf : Summable fun n ↦ ‖f n‖) {c : F}
+    (hg : Tendsto g cofinite (𝓝 c)) : Summable fun n ↦ f n * g n := by
+  apply summable_of_isBigO hf
+  simpa using (isBigO_const_mul_self 1 f _).mul (hg.isBigO_one F)
 
 namespace PartialHomeomorph
 

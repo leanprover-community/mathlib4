@@ -137,7 +137,7 @@ end MDifferentiableOn
 /-!
 ### Functions holomorphic on the whole manifold
 
-Porting note: lemmas in this section were generalized from `𝓘(ℂ, E)` to an unspecified boundaryless
+Lemmas in this section were generalized from `𝓘(ℂ, E)` to an unspecified boundaryless
 model so that it works, e.g., on a product of two manifolds without a boundary. This can break
 `apply MDifferentiable.apply_eq_of_compactSpace`, use
 `apply MDifferentiable.apply_eq_of_compactSpace (I := I)` instead or dot notation on an existing

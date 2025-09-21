@@ -107,7 +107,7 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
     by_cases hv : x ∈ v
     · rw [← Set.diff_union_of_subset hsv] at hv
       rcases hv with hsv | hs
-      · simpa only [hsv.2, Set.indicator_of_not_mem, not_false_iff, sub_zero, hsv,
+      · simpa only [hsv.2, Set.indicator_of_notMem, not_false_iff, sub_zero, hsv,
           Set.indicator_of_mem] using gc_bd0 x
       · simp [hgs hs, hs]
     · simp [hgv hv, show x ∉ s from fun h => hv (hsv h)]
@@ -179,12 +179,9 @@ theorem MemLp.exists_hasCompactSupport_eLpNorm_sub_le
           I2 I1).le using 2
     simp only [sub_add_sub_cancel]
   refine ⟨f, I3, f_cont, f_mem, HasCompactSupport.intro k_compact fun x hx => ?_⟩
-  rw [← Function.nmem_support]
+  rw [← Function.notMem_support]
   contrapose! hx
   exact interior_subset (f_support hx)
-
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.exists_hasCompactSupport_eLpNorm_sub_le := MemLp.exists_hasCompactSupport_eLpNorm_sub_le
 
 
 /-- In a locally compact space, any function in `ℒp` can be approximated by compactly supported
@@ -208,10 +205,6 @@ theorem MemLp.exists_hasCompactSupport_integral_rpow_sub_le
     Real.rpow_le_rpow_iff _ hε.le (inv_pos.2 hp)] at hg
   positivity
 
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.exists_hasCompactSupport_integral_rpow_sub_le :=
-  MemLp.exists_hasCompactSupport_integral_rpow_sub_le
-
 
 /-- In a locally compact space, any integrable function can be approximated by compactly supported
 continuous functions, version in terms of `∫⁻`. -/
@@ -230,7 +223,7 @@ theorem Integrable.exists_hasCompactSupport_integral_sub_le
     {f : α → E} (hf : Integrable f μ) {ε : ℝ} (hε : 0 < ε) :
     ∃ g : α → E, HasCompactSupport g ∧ (∫ x, ‖f x - g x‖ ∂μ) ≤ ε ∧
       Continuous g ∧ Integrable g μ := by
-  simp only [← memLp_one_iff_integrable, ← eLpNorm_one_eq_lintegral_enorm, ← ENNReal.ofReal_one]
+  simp only [← memLp_one_iff_integrable, ← ENNReal.ofReal_one]
     at hf ⊢
   simpa using hf.exists_hasCompactSupport_integral_rpow_sub_le zero_lt_one hε
 
@@ -285,9 +278,6 @@ theorem MemLp.exists_boundedContinuous_eLpNorm_sub_le [μ.WeaklyRegular] (hp : p
   refine ⟨f, I3, f_cont, f_mem, ?_⟩
   exact (BoundedContinuousFunction.ofNormedAddCommGroup f f_cont _ f_bound).isBounded_range
 
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.exists_boundedContinuous_eLpNorm_sub_le := MemLp.exists_boundedContinuous_eLpNorm_sub_le
-
 /-- Any function in `ℒp` can be approximated by bounded continuous functions when `0 < p < ∞`,
 version in terms of `∫`. -/
 theorem MemLp.exists_boundedContinuous_integral_rpow_sub_le [μ.WeaklyRegular] {p : ℝ} (hp : 0 < p)
@@ -305,10 +295,6 @@ theorem MemLp.exists_boundedContinuous_integral_rpow_sub_le [μ.WeaklyRegular] {
     Real.rpow_le_rpow_iff _ hε.le (inv_pos.2 hp)] at hg
   positivity
 
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.exists_boundedContinuous_integral_rpow_sub_le :=
-  MemLp.exists_boundedContinuous_integral_rpow_sub_le
-
 /-- Any integrable function can be approximated by bounded continuous functions,
 version in terms of `∫⁻`. -/
 theorem Integrable.exists_boundedContinuous_lintegral_sub_le [μ.WeaklyRegular] {f : α → E}
@@ -322,7 +308,7 @@ version in terms of `∫`. -/
 theorem Integrable.exists_boundedContinuous_integral_sub_le [μ.WeaklyRegular] {f : α → E}
     (hf : Integrable f μ) {ε : ℝ} (hε : 0 < ε) :
     ∃ g : α →ᵇ E, (∫ x, ‖f x - g x‖ ∂μ) ≤ ε ∧ Integrable g μ := by
-  simp only [← memLp_one_iff_integrable, ← eLpNorm_one_eq_lintegral_enorm, ← ENNReal.ofReal_one]
+  simp only [← memLp_one_iff_integrable, ← ENNReal.ofReal_one]
     at hf ⊢
   simpa using hf.exists_boundedContinuous_integral_rpow_sub_le zero_lt_one hε
 
@@ -353,14 +339,14 @@ end Lp
 end MeasureTheory
 
 variable [SecondCountableTopologyEither α E] [_i : Fact (1 ≤ p)]
-variable (𝕜 : Type*) [NormedField 𝕜] [NormedAlgebra ℝ 𝕜] [NormedSpace 𝕜 E]
+variable (𝕜 : Type*) [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [NormedSpace ℝ E]
+
 variable (E) (μ)
 
 namespace BoundedContinuousFunction
 
 theorem toLp_denseRange [μ.WeaklyRegular] [IsFiniteMeasure μ] (hp : p ≠ ∞) :
     DenseRange (toLp p μ 𝕜 : (α →ᵇ E) →L[𝕜] Lp E p μ) := by
-  haveI : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
   simpa only [← range_toLp p μ (𝕜 := 𝕜)]
     using MeasureTheory.Lp.boundedContinuousFunction_dense E μ hp
 

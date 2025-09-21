@@ -61,7 +61,8 @@ end GeneralFiltration
 
 section FilteredRing
 
-variable {ι R σ : Type*} [OrderedAddCommMonoid ι] [Semiring R] [SetLike σ R]
+variable {ι R σ : Type*} [AddMonoid ι] [PartialOrder ι]
+  [Semiring R] [SetLike σ R]
 
 /-- For a family of subsets `σ` of semiring `R`, an increasing series `F` in `σ` is
 a ring filtration if `IsFiltration F F_lt` and the pointwise multiplication of `F i` and `F j`
@@ -78,8 +79,8 @@ end FilteredRing
 
 section FilteredModule
 
-variable {ι ιM R M σ σM : Type*} [OrderedAddCommMonoid ι] [OrderedAddCommMonoid ιM]
-variable [Semiring R] [SetLike σ R] [AddCommMonoid M] [Module R M] [VAdd ι ιM] [SetLike σM M]
+variable {ι ιM R M σ σM : Type*} [AddMonoid ι] [PartialOrder ι] [PartialOrder ιM] [VAdd ι ιM]
+variable [Semiring R] [SetLike σ R] [AddCommMonoid M] [Module R M] [SetLike σM M]
 
 /-- For `F` satisfying `IsRingFiltration F F_lt` in a semiring `R` and `σM` a family of subsets of
 a `R` module `M`, an increasing series `FM` in `σM` is a module filtration if `IsFiltration F F_lt`
@@ -92,7 +93,7 @@ class IsModuleFiltration (F : ι → σ) (F_lt : outParam <| ι → σ) [IsRingF
 
 /-- A convenience constructor for `IsModuleFiltration` when the index is the integers. -/
 lemma IsModuleFiltration.mk_int (F : ℤ → σ) (mono : Monotone F) [SetLike.GradedMonoid F]
-    (F' : ℤ → σM) (mono' : Monotone F') [SetLike.GradedSMul F F']:
+    (F' : ℤ → σM) (mono' : Monotone F') [SetLike.GradedSMul F F'] :
     letI := IsRingFiltration.mk_int F mono
     IsModuleFiltration F (fun n ↦ F (n - 1)) F' (fun n ↦ F' (n - 1)) :=
   letI := IsRingFiltration.mk_int F mono

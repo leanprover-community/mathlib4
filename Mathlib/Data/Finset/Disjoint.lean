@@ -43,16 +43,22 @@ section Disjoint
 variable {f : α → β} {s t u : Finset α} {a b : α}
 
 theorem disjoint_left : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → a ∉ t :=
-  ⟨fun h a hs ht => not_mem_empty a <|
+  ⟨fun h a hs ht => notMem_empty a <|
     singleton_subset_iff.mp (h (singleton_subset_iff.mpr hs) (singleton_subset_iff.mpr ht)),
     fun h _ hs ht _ ha => (h (hs ha) (ht ha)).elim⟩
 
-alias ⟨_root_.Disjoint.not_mem_of_mem_left_finset, _⟩ := disjoint_left
+alias ⟨_root_.Disjoint.notMem_of_mem_left_finset, _⟩ := disjoint_left
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.Disjoint.not_mem_of_mem_left_finset := Disjoint.notMem_of_mem_left_finset
 
 theorem disjoint_right : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ t → a ∉ s := by
   rw [_root_.disjoint_comm, disjoint_left]
 
-alias ⟨_root_.Disjoint.not_mem_of_mem_right_finset, _⟩ := disjoint_right
+alias ⟨_root_.Disjoint.notMem_of_mem_right_finset, _⟩ := disjoint_right
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.Disjoint.not_mem_of_mem_right_finset := Disjoint.notMem_of_mem_right_finset
 
 theorem disjoint_iff_ne : Disjoint s t ↔ ∀ a ∈ s, ∀ b ∈ t, a ≠ b := by
   simp only [disjoint_left, imp_not_comm, forall_eq']
@@ -122,7 +128,7 @@ ensures that the sets are disjoint. -/
 def disjUnion (s t : Finset α) (h : Disjoint s t) : Finset α :=
   ⟨s.1 + t.1, Multiset.nodup_add.2 ⟨s.2, t.2, disjoint_val.2 h⟩⟩
 
-@[simp]
+@[simp, grind =]
 theorem mem_disjUnion {α s t h a} : a ∈ @disjUnion α s t h ↔ a ∈ s ∨ a ∈ t := by
   rcases s with ⟨⟨s⟩⟩; rcases t with ⟨⟨t⟩⟩; apply List.mem_append
 

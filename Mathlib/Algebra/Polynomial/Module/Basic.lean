@@ -36,15 +36,13 @@ for the full discussion.
 -/
 @[nolint unusedArguments]
 def PolynomialModule (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] := ℕ →₀ M
+deriving Inhabited, FunLike, CoeFun
 
-variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
+noncomputable section
+deriving instance AddCommGroup for PolynomialModule
+end
 
--- The `Inhabited, AddCommGroup` instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-noncomputable instance : Inhabited (PolynomialModule R M) := Finsupp.instInhabited
-noncomputable instance : AddCommGroup (PolynomialModule R M) := Finsupp.instAddCommGroup
-
-variable {M}
+variable (R : Type*) {M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
 variable {S : Type*} [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
 
 namespace PolynomialModule
@@ -53,12 +51,6 @@ namespace PolynomialModule
 @[nolint unusedArguments]
 noncomputable instance : Module S (PolynomialModule R M) :=
   Finsupp.module ℕ M
-
-instance instFunLike : FunLike (PolynomialModule R M) ℕ M :=
-  Finsupp.instFunLike
-
-instance : CoeFun (PolynomialModule R M) fun _ => ℕ → M :=
-  inferInstanceAs <| CoeFun (_ →₀ _) _
 
 theorem zero_apply (i : ℕ) : (0 : PolynomialModule R M) i = 0 :=
   Finsupp.zero_apply
@@ -114,7 +106,7 @@ instance isScalarTower' (M : Type u) [AddCommGroup M] [Module R M] [Module S M]
 @[simp]
 theorem monomial_smul_single (i : ℕ) (r : R) (j : ℕ) (m : M) :
     monomial i r • single R j m = single R (i + j) (r • m) := by
-  simp only [LinearMap.mul_apply, Polynomial.aeval_monomial, LinearMap.pow_apply,
+  simp only [Module.End.mul_apply, Polynomial.aeval_monomial, Module.End.pow_apply,
     Module.algebraMap_end_apply, smul_def]
   induction i generalizing r j m with
   | zero =>
@@ -129,32 +121,25 @@ theorem monomial_smul_single (i : ℕ) (r : R) (j : ℕ) (m : M) :
 @[simp]
 theorem monomial_smul_apply (i : ℕ) (r : R) (g : PolynomialModule R M) (n : ℕ) :
     (monomial i r • g) n = ite (i ≤ n) (r • g (n - i)) 0 := by
-  induction' g using PolynomialModule.induction_linear with p q hp hq
-  · simp only [smul_zero, zero_apply, ite_self]
-  · simp only [smul_add, add_apply, hp, hq]
+  induction g using PolynomialModule.induction_linear with
+  | zero => simp only [smul_zero, zero_apply, ite_self]
+  | add p q hp hq =>
+    simp only [smul_add, add_apply, hp, hq]
     split_ifs
     exacts [rfl, zero_add 0]
-  · rw [monomial_smul_single, single_apply, single_apply, smul_ite, smul_zero, ← ite_and]
-    congr
-    rw [eq_iff_iff]
-    constructor
-    · rintro rfl
-      simp
-    · rintro ⟨e, rfl⟩
-      rw [add_comm, tsub_add_cancel_of_le e]
+  | single =>
+    rw [monomial_smul_single, single_apply, single_apply, smul_ite, smul_zero, ← ite_and]
+    grind
 
 @[simp]
 theorem smul_single_apply (i : ℕ) (f : R[X]) (m : M) (n : ℕ) :
     (f • single R i m) n = ite (i ≤ n) (f.coeff (n - i) • m) 0 := by
-  induction' f using Polynomial.induction_on' with p q hp hq
-  · rw [add_smul, Finsupp.add_apply, hp, hq, coeff_add, add_smul]
+  induction f using Polynomial.induction_on' with
+  | add p q hp hq =>
+    rw [add_smul, Finsupp.add_apply, hp, hq, coeff_add, add_smul]
     split_ifs
     exacts [rfl, zero_add 0]
-  · rw [monomial_smul_single, single_apply, coeff_monomial, ite_smul, zero_smul]
-    by_cases h : i ≤ n
-    · simp_rw [eq_tsub_iff_add_eq_of_le h, if_pos h]
-    · rw [if_neg h, if_neg]
-      omega
+  | monomial => grind [monomial_smul_single, single_apply, coeff_monomial, zero_smul]
 
 theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
     (f • g) n = ∑ x ∈ Finset.antidiagonal n, f.coeff x.1 • g x.2 := by
@@ -168,11 +153,7 @@ theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
     rw [Finset.Nat.sum_antidiagonal_eq_sum_range_succ fun i j => (monomial f_n f_a).coeff i • g j,
       monomial_smul_apply]
     simp_rw [Polynomial.coeff_monomial, ← Finset.mem_range_succ_iff]
-    rw [← Finset.sum_ite_eq (Finset.range (Nat.succ n)) f_n (fun x => f_a • g (n - x))]
-    congr
-    ext x
-    split_ifs
-    exacts [rfl, (zero_smul R _).symm]
+    simp
 
 /-- `PolynomialModule R R` is isomorphic to `R[X]` as an `R[X]` module. -/
 noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :=
@@ -197,7 +178,7 @@ noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :
               exfalso
               apply hpq2
               rw [← hpq1, H]
-              simp only [add_le_iff_nonpos_left, nonpos_iff_eq_zero, add_tsub_cancel_right]
+              simp only [add_tsub_cancel_right]
             · rfl
           · intro H
             exfalso
@@ -205,11 +186,7 @@ noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :
             rw [Finset.mem_antidiagonal, tsub_add_cancel_of_le hn]
         · symm
           rw [Finset.sum_ite_of_false, Finset.sum_const_zero]
-          simp_rw [Finset.mem_antidiagonal]
-          intro x hx
-          contrapose! hn
-          rw [add_comm, ← hn] at hx
-          exact Nat.le.intro hx }
+          grind [Finset.mem_antidiagonal] }
 
 /-- `PolynomialModule R S` is isomorphic to `S[X]` as an `R` module. -/
 noncomputable def equivPolynomial {S : Type*} [CommRing S] [Algebra R S] :
@@ -250,7 +227,7 @@ theorem map_smul (f : M →ₗ[R] M') (p : R[X]) (q : PolynomialModule R M) :
 
 /-- Evaluate a polynomial `p : PolynomialModule R M` at `r : R`. -/
 @[simps! -isSimp]
-def eval (r : R) : PolynomialModule R M →ₗ[R] M where
+noncomputable def eval (r : R) : PolynomialModule R M →ₗ[R] M where
   toFun p := p.sum fun i m => r ^ i • m
   map_add' _ _ := Finsupp.sum_add_index' (fun _ => smul_zero _) fun _ _ _ => smul_add _ _ _
   map_smul' s m := by
@@ -269,6 +246,7 @@ theorem eval_single (r : R) (i : ℕ) (m : M) : eval r (single R i m) = r ^ i �
 theorem eval_lsingle (r : R) (i : ℕ) (m : M) : eval r (lsingle R i m) = r ^ i • m :=
   eval_single r i m
 
+@[simp]
 theorem eval_smul (p : R[X]) (q : PolynomialModule R M) (r : R) :
     eval r (p • q) = p.eval r • eval r q := by
   induction q using induction_linear with

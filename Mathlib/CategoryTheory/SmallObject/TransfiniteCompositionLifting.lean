@@ -45,7 +45,7 @@ F.obj j     | p
 This is constructed by transfinite induction on `j`:
 * When `j = ⊥`, this is `f`;
 * In order to pass from `j` to `Order.succ j`, we use the assumption that
-`F.obj j ⟶ F.obj (Order.succ j)` has the left lifting property with respect to `p`;
+  `F.obj j ⟶ F.obj (Order.succ j)` has the left lifting property with respect to `p`;
 * When `j` is a limit element, we use the "continuity" of `F`.
 
 -/
@@ -90,8 +90,8 @@ F.obj j     | p
 structure SqStruct (j : J) where
   /-- a morphism `F.obj j ⟶ X` -/
   f' : F.obj j ⟶ X
-  w₁ : F.map (homOfLE bot_le) ≫ f' = f := by aesop_cat
-  w₂ : f' ≫ p = c.ι.app j ≫ g := by aesop_cat
+  w₁ : F.map (homOfLE bot_le) ≫ f' = f := by cat_disch
+  w₂ : f' ≫ p = c.ι.app j ≫ g := by cat_disch
 
 namespace SqStruct
 
@@ -197,7 +197,7 @@ noncomputable def wellOrderInductionData :
         simp only [← sq'.w₁]
         conv_rhs => rw [← sq'.sq.fac_left, ← F.map_comp_assoc]
         rfl }
-  map_succ j hj sq' := by aesop_cat
+  map_succ j hj sq' := by cat_disch
   lift j hj s := lift hj s
   map_lift j hj s i hij := map_lift hj s hij
 

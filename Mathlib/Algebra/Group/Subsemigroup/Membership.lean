@@ -60,8 +60,7 @@ theorem coe_iSup_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ 
 @[to_additive]
 theorem mem_sSup_of_directed_on {S : Set (Subsemigroup M)} (hS : DirectedOn (· ≤ ·) S) {x : M} :
     x ∈ sSup S ↔ ∃ s ∈ S, x ∈ s := by
-  simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, SetCoe.exists, Subtype.coe_mk,
-    exists_prop]
+  simp only [sSup_eq_iSup', mem_iSup_of_directed hS.directed_val, SetCoe.exists, exists_prop]
 
 @[to_additive]
 theorem coe_sSup_of_directed_on {S : Set (Subsemigroup M)} (hS : DirectedOn (· ≤ ·) S) :
@@ -97,9 +96,9 @@ theorem mem_sSup_of_mem {S : Set (Subsemigroup M)} {s : Subsemigroup M} (hs : s 
 If `C` holds all elements of `S i` for all `i`, and is preserved under multiplication,
 then it holds for all elements of the supremum of `S`. -/
 @[to_additive (attr := elab_as_elim)
-"An induction principle for elements of `⨆ i, S i`. If `C` holds all
+/-- An induction principle for elements of `⨆ i, S i`. If `C` holds all
 elements of `S i` for all `i`, and is preserved under addition, then it holds for all elements of
-the supremum of `S`."]
+the supremum of `S`. -/]
 theorem iSup_induction (S : ι → Subsemigroup M) {C : M → Prop} {x₁ : M} (hx₁ : x₁ ∈ ⨆ i, S i)
     (mem : ∀ i, ∀ x₂ ∈ S i, C x₂) (mul : ∀ x y, C x → C y → C (x * y)) : C x₁ := by
   rw [iSup_eq_closure] at hx₁
@@ -109,7 +108,7 @@ theorem iSup_induction (S : ι → Subsemigroup M) {C : M → Prop} {x₁ : M} (
 
 /-- A dependent version of `Subsemigroup.iSup_induction`. -/
 @[to_additive (attr := elab_as_elim)
-"A dependent version of `AddSubsemigroup.iSup_induction`."]
+/-- A dependent version of `AddSubsemigroup.iSup_induction`. -/]
 theorem iSup_induction' (S : ι → Subsemigroup M) {C : ∀ x, (x ∈ ⨆ i, S i) → Prop}
     (mem : ∀ (i) (x) (hxS : x ∈ S i), C x (mem_iSup_of_mem i ‹_›))
     (mul : ∀ x y hx hy, C x hx → C y hy → C (x * y) (mul_mem ‹_› ‹_›)) {x₁ : M}

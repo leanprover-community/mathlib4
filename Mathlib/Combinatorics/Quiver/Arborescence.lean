@@ -34,7 +34,7 @@ universe v u
 namespace Quiver
 
 /-- A quiver is an arborescence when there is a unique path from the default vertex
-    to every other vertex. -/
+to every other vertex. -/
 class Arborescence (V : Type u) [Quiver.{v} V] : Type max u v where
   /-- The root of the arborescence. -/
   root : V
@@ -55,7 +55,7 @@ instance {V : Type u} [Quiver V] [Arborescence V] (b : V) : Unique (Path (root V
   - show that every vertex other than `r` has an arrow to it. -/
 noncomputable def arborescenceMk {V : Type u} [Quiver V] (r : V) (height : V → ℕ)
     (height_lt : ∀ ⦃a b⦄, (a ⟶ b) → height a < height b)
-    (unique_arrow : ∀ ⦃a b c : V⦄ (e : a ⟶ c) (f : b ⟶ c), a = b ∧ HEq e f)
+    (unique_arrow : ∀ ⦃a b c : V⦄ (e : a ⟶ c) (f : b ⟶ c), a = b ∧ e ≍ f)
     (root_or_arrow : ∀ b, b = r ∨ ∃ a, Nonempty (a ⟶ b)) :
     Arborescence V where
   root := r

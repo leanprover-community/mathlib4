@@ -128,7 +128,7 @@ def aevalEquiv : MvPolynomial ι R ≃ₐ[R] Algebra.adjoin R (range x) :=
   (AlgEquiv.ofInjective (aeval x) (algebraicIndependent_iff_injective_aeval.1 hx)).trans
     (Subalgebra.equivOfEq _ _ (Algebra.adjoin_range_eq_range_aeval R x).symm)
 
---@[simp] Porting note: removing simp because the linter complains about deterministic timeout
+@[simp]
 theorem algebraMap_aevalEquiv (p : MvPolynomial ι R) :
     algebraMap (Algebra.adjoin R (range x)) A (hx.aevalEquiv p) = aeval x p :=
   rfl
@@ -162,6 +162,8 @@ theorem isTranscendenceBasis_iff_maximal {s : Set A} :
 theorem isTranscendenceBasis_equiv (e : ι ≃ ι') {f : ι' → A} :
     IsTranscendenceBasis R (f ∘ e) ↔ IsTranscendenceBasis R f := by
   simp_rw [IsTranscendenceBasis, algebraicIndependent_equiv, EquivLike.range_comp]
+
+alias ⟨_, IsTranscendenceBasis.comp_equiv⟩ := isTranscendenceBasis_equiv
 
 theorem isTranscendenceBasis_equiv' (e : ι ≃ ι') {f : ι' → A} {g : ι → A} (h : f ∘ e = g) :
     IsTranscendenceBasis R g ↔ IsTranscendenceBasis R f :=

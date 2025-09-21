@@ -58,7 +58,7 @@ protected theorem differentiableOn : DifferentiableOn 𝕜 f s := fun _ _ ↦ f.
 ### Line map
 
 In this section we specialize some lemmas to `AffineMap.lineMap` because this map is very useful to
-deduce higher dimensional lemmas from one-dimensional versions.
+deduce higher-dimensional lemmas from one-dimensional versions.
 -/
 
 theorem hasStrictDerivAt_lineMap : HasStrictDerivAt (lineMap a b) (b - a) x := by

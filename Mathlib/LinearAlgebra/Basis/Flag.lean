@@ -19,7 +19,7 @@ We also prove some lemmas about this definition.
 
 open Set Submodule
 
-namespace Basis
+namespace Module.Basis
 
 section Semiring
 
@@ -35,7 +35,7 @@ theorem flag_zero (b : Basis (Fin n) R M) : b.flag 0 = ⊥ := by simp [flag]
 
 @[simp]
 theorem flag_last (b : Basis (Fin n) R M) : b.flag (.last n) = ⊤ := by
-  simp [flag, Fin.castSucc_lt_last]
+  simp [flag]
 
 theorem flag_le_iff (b : Basis (Fin n) R M) {k p} :
     b.flag k ≤ p ↔ ∀ i : Fin n, i.castSucc < k → b i ∈ p :=
@@ -122,4 +122,4 @@ theorem isMaxChain_range_flag (b : Basis (Fin n) K V) : IsMaxChain (· ≤ ·) (
 
 end DivisionRing
 
-end Basis
+end Module.Basis

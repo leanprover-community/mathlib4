@@ -5,6 +5,7 @@ Authors: Michael Stoll
 -/
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.CharP.Lemmas
+import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Fintype.Units
 import Mathlib.GroupTheory.OrderOfElement
 
@@ -154,7 +155,7 @@ theorem coe_toUnitHom (χ : MulChar R R') (a : Rˣ) : ↑(χ.toUnitHom a) = χ a
 noncomputable def ofUnitHom (f : Rˣ →* R'ˣ) : MulChar R R' where
   toFun := by classical exact fun x => if hx : IsUnit x then f hx.unit else 0
   map_one' := by
-    have h1 : (isUnit_one.unit : Rˣ) = 1 := Units.eq_iff.mp rfl
+    have h1 : (isUnit_one.unit : Rˣ) = 1 := Units.ext rfl
     simp only [h1, dif_pos, Units.val_eq_one, map_one, isUnit_one]
   map_mul' := by
     classical
@@ -163,7 +164,7 @@ noncomputable def ofUnitHom (f : Rˣ →* R'ˣ) : MulChar R R' where
       · simp only [hx, IsUnit.mul_iff, true_and, dif_pos]
         by_cases hy : IsUnit y
         · simp only [hy, dif_pos]
-          have hm : (IsUnit.mul_iff.mpr ⟨hx, hy⟩).unit = hx.unit * hy.unit := Units.eq_iff.mp rfl
+          have hm : (hx.mul hy).unit = hx.unit * hy.unit := Units.ext rfl
           rw [hm, map_mul]
           norm_cast
         · simp only [hy, not_false_iff, dif_neg, mul_zero]
@@ -232,7 +233,7 @@ def toMonoidWithZeroHom {R : Type*} [CommMonoidWithZero R] [Nontrivial R] (χ : 
   map_mul' := χ.map_mul'
 
 /-- If the domain is a ring `R`, then `χ (ringChar R) = 0`. -/
-theorem map_ringChar {R : Type*} [CommRing R] [Nontrivial R] (χ : MulChar R R') :
+theorem map_ringChar {R : Type*} [CommSemiring R] [Nontrivial R] (χ : MulChar R R') :
     χ (ringChar R) = 0 := by rw [ringChar.Nat.cast_ringChar, χ.map_zero]
 
 noncomputable instance hasOne : One (MulChar R R') :=
@@ -287,7 +288,8 @@ theorem inv_apply_eq_inv (χ : MulChar R R') (a : R) : χ⁻¹ a = Ring.inverse 
 
 /-- The inverse of a multiplicative character `χ`, applied to `a`, is the inverse of `χ a`.
 Variant when the target is a field -/
-theorem inv_apply_eq_inv' {R' : Type*} [Field R'] (χ : MulChar R R') (a : R) : χ⁻¹ a = (χ a)⁻¹ :=
+theorem inv_apply_eq_inv' {R' : Type*} [CommGroupWithZero R'] (χ : MulChar R R') (a : R) :
+    χ⁻¹ a = (χ a)⁻¹ :=
   (inv_apply_eq_inv χ a).trans <| Ring.inverse_eq_inv (χ a)
 
 /-- When the domain has a zero, then the inverse of a multiplicative character `χ`,
@@ -308,7 +310,7 @@ theorem inv_apply {R : Type*} [CommMonoidWithZero R] (χ : MulChar R R') (a : R)
 
 /-- When the domain has a zero, then the inverse of a multiplicative character `χ`,
 applied to `a`, is `χ` applied to the inverse of `a`. -/
-theorem inv_apply' {R : Type*} [Field R] (χ : MulChar R R') (a : R) : χ⁻¹ a = χ a⁻¹ :=
+theorem inv_apply' {R : Type*} [CommGroupWithZero R] (χ : MulChar R R') (a : R) : χ⁻¹ a = χ a⁻¹ :=
   (inv_apply χ a).trans <| congr_arg _ (Ring.inverse_eq_inv a)
 
 /-- The product of a character with its inverse is the trivial character. -/
@@ -349,7 +351,7 @@ theorem pow_apply' (χ : MulChar R R') {n : ℕ} (hn : n ≠ 0) (a : R) : (χ ^ 
 
 lemma equivToUnitHom_mul_apply (χ₁ χ₂ : MulChar R R') (a : Rˣ) :
     equivToUnitHom (χ₁ * χ₂) a = equivToUnitHom χ₁ a * equivToUnitHom χ₂ a := by
-  apply_fun ((↑) : R'ˣ → R') using Units.ext
+  apply_fun ((↑) : R'ˣ → R') using Units.val_injective
   push_cast
   simp_rw [coe_equivToUnitHom, coeToFun_mul, Pi.mul_apply]
 
@@ -419,7 +421,7 @@ lemma ringHomComp_one (f : R' →+* R'') : (1 : MulChar R R').ringHomComp f = 1 
   ext1
   simp only [MulChar.ringHomComp_apply, MulChar.one_apply_coe, map_one]
 
-lemma ringHomComp_inv {R : Type*} [CommRing R] (χ : MulChar R R') (f : R' →+* R'') :
+lemma ringHomComp_inv {R : Type*} [CommMonoidWithZero R] (χ : MulChar R R') (f : R' →+* R'') :
     (χ.ringHomComp f)⁻¹ = χ⁻¹.ringHomComp f := by
   ext1
   simp only [inv_apply, Ring.inverse_unit, ringHomComp_apply]
@@ -443,7 +445,7 @@ lemma injective_ringHomComp {f : R' →+* R''} (hf : Function.Injective f) :
 
 lemma ringHomComp_eq_one_iff {f : R' →+* R''} (hf : Function.Injective f) {χ : MulChar R R'} :
     χ.ringHomComp f = 1 ↔ χ = 1 := by
-  conv_lhs => rw [← (show (1 : MulChar R R').ringHomComp f = 1 by ext; simp)]
+  conv_lhs => rw [← (show (1 : MulChar R R').ringHomComp f = 1 by simp)]
   exact (injective_ringHomComp hf).eq_iff
 
 lemma ringHomComp_ne_one_iff {f : R' →+* R''} (hf : Function.Injective f) {χ : MulChar R R'} :
@@ -463,10 +465,9 @@ theorem IsQuadratic.inv {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ⁻¹ = �
   rcases hχ x with (h₀ | h₁ | h₂)
   · rw [h₀, Ring.inverse_zero]
   · rw [h₁, Ring.inverse_one]
-  · -- Porting note: was `by norm_cast`
-    have : (-1 : R') = (-1 : R'ˣ) := by rw [Units.val_neg, Units.val_one]
-    rw [h₂, this, Ring.inverse_unit (-1 : R'ˣ)]
-    rfl
+  · -- Porting note (#11573): was `by norm_cast`
+    have : (-1 : R') = (-1 : R'ˣ) := by norm_cast; simp
+    rw [h₂, this, Ring.inverse_unit (-1 : R'ˣ), inv_neg, inv_one]
 
 /-- The square of a quadratic character is the trivial character. -/
 theorem IsQuadratic.sq_eq_one {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ ^ 2 = 1 := by
@@ -559,15 +560,14 @@ theorem sum_one_eq_card_units [DecidableEq R] :
     (∑ a, (1 : MulChar R R') a) = ∑ a : R, if IsUnit a then 1 else 0 :=
       Finset.sum_congr rfl fun a _ => ?_
     _ = ((Finset.univ : Finset R).filter IsUnit).card := Finset.sum_boole _ _
-    _ = (Finset.univ.map ⟨((↑) : Rˣ → R), Units.ext⟩).card := ?_
+    _ = (Finset.univ.map ⟨((↑) : Rˣ → R), Units.val_injective⟩).card := ?_
     _ = Fintype.card Rˣ := congr_arg _ (Finset.card_map _)
   · split_ifs with h
     · exact one_apply_coe h.unit
     · exact map_nonunit _ h
   · congr
     ext a
-    simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_map,
-      Function.Embedding.coeFn_mk, exists_true_left, IsUnit]
+    simp [IsUnit]
 
 end sum
 

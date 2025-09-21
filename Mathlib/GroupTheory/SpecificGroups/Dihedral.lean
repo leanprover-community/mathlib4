@@ -8,6 +8,7 @@ import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.Exponent
 import Mathlib.GroupTheory.GroupAction.CardCommute
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
+import Mathlib.GroupTheory.SpecificGroups.KleinFour
 
 /-!
 # Dihedral Groups
@@ -234,10 +235,14 @@ lemma isCyclic_iff : IsCyclic (DihedralGroup n) ↔ n = 1 where
   mp := not_imp_not.mp not_isCyclic
   mpr h := h ▸ isCyclic_of_prime_card (p := 2) nat_card
 
+instance : IsKleinFour (DihedralGroup 2) where
+  card_four := DihedralGroup.nat_card
+  exponent_two := DihedralGroup.exponent
+
 /-- If n is odd, then the Dihedral group of order $2n$ has $n(n+3)$ pairs (represented as
 $n + n + n + n*n$) of commuting elements. -/
 @[simps]
-def OddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // Commute p.1 p.2 } ≃
+def oddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // Commute p.1 p.2 } ≃
     ZMod n ⊕ ZMod n ⊕ ZMod n ⊕ ZMod n × ZMod n :=
   let u := ZMod.unitOfCoprime 2 (Nat.prime_two.coprime_iff_not_dvd.mpr hn.not_two_dvd_nat)
   have hu : ∀ a : ZMod n, a + a = 0 ↔ a = 0 := fun _ => ZMod.add_self_eq_zero_iff_eq_zero hn
@@ -271,11 +276,18 @@ def OddCommuteEquiv (hn : Odd n) : { p : DihedralGroup n × DihedralGroup n // C
         congrArg (Sum.inr ∘ Sum.inr ∘ Sum.inl) <| two_mul (u⁻¹ * k) ▸ u.mul_inv_cancel_left k
       | .inr (.inr (.inr ⟨_, _⟩)) => rfl }
 
+@[deprecated (since := "2025-05-07")] alias OddCommuteEquiv := oddCommuteEquiv
+
+@[deprecated (since := "2025-05-07")] alias
+OddCommuteEquiv_apply := DihedralGroup.oddCommuteEquiv_apply
+@[deprecated (since := "2025-05-07")] alias
+OddCommuteEquiv_symm_apply := DihedralGroup.oddCommuteEquiv_symm_apply
+
 /-- If n is odd, then the Dihedral group of order $2n$ has $n(n+3)$ pairs of commuting elements. -/
 lemma card_commute_odd (hn : Odd n) :
     Nat.card { p : DihedralGroup n × DihedralGroup n // Commute p.1 p.2 } = n * (n + 3) := by
   have hn' : NeZero n := ⟨hn.pos.ne'⟩
-  simp_rw [Nat.card_congr (OddCommuteEquiv hn), Nat.card_sum, Nat.card_prod, Nat.card_zmod]
+  simp_rw [Nat.card_congr (oddCommuteEquiv hn), Nat.card_sum, Nat.card_prod, Nat.card_zmod]
   ring
 
 lemma card_conjClasses_odd (hn : Odd n) :

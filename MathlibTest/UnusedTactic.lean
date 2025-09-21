@@ -11,7 +11,8 @@ example : 0 + 1 = 1 := by
 
 /--
 warning: 'change 1 = 1' tactic does nothing
-note: this linter can be disabled with `set_option linter.unusedTactic false`
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
 #guard_msgs in
 example : 1 = 1 := by
@@ -31,10 +32,12 @@ example : True ∧ True := by
 set_option linter.unusedTactic true
 /--
 warning: 'congr' tactic does nothing
-note: this linter can be disabled with `set_option linter.unusedTactic false`
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
 ---
 warning: 'done' tactic does nothing
-note: this linter can be disabled with `set_option linter.unusedTactic false`
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
 -/
 #guard_msgs in
 -- the linter notices that `congr` is unused
@@ -54,7 +57,7 @@ section allowing_more_unused_tactics
 #show_kind skip
 
 /--
-error: unknown constant 'skip'
+error: Unknown constant `skip`
 The command `#show_kind skip` may help to find the correct `SyntaxNodeKind`.
 -/
 #guard_msgs in

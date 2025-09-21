@@ -10,8 +10,6 @@ import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 # The symmetric monoidal structure on `Module R`.
 -/
 
-suppress_compilation
-
 universe v w x u
 
 open CategoryTheory MonoidalCategory
@@ -28,7 +26,7 @@ namespace MonoidalCategory
 
 @[simp]
 theorem braiding_naturality {X₁ X₂ Y₁ Y₂ : ModuleCat.{u} R} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
-    (f ⊗ g) ≫ (Y₁.braiding Y₂).hom = (X₁.braiding X₂).hom ≫ (g ⊗ f) := by
+    (f ⊗ₘ g) ≫ (Y₁.braiding Y₂).hom = (X₁.braiding X₂).hom ≫ (g ⊗ₘ f) := by
   ext : 1
   apply TensorProduct.ext'
   intro x y
@@ -79,7 +77,7 @@ instance symmetricCategory : SymmetricCategory (ModuleCat.{u} R) where
   symmetry _ _ := by
     ext : 1
     apply TensorProduct.ext'
-    aesop_cat
+    cat_disch
 
 @[simp]
 theorem braiding_hom_apply {M N : ModuleCat.{u} R} (m : M) (n : N) :

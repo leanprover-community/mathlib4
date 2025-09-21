@@ -62,8 +62,7 @@ private lemma isLocallyBijective_iff_isIso' :
       erw [← FunctorToTypes.map_comp_apply, ← FunctorToTypes.map_comp_apply]
       simp only [← op_comp, w]
     refine ⟨H.amalgamate t ht, ?_⟩
-    · apply (Presieve.isSeparated_of_isSheaf _ _
-        ((isSheaf_iff_isSheaf_of_type J G.val).1 G.cond) _
+    · apply (((isSheaf_iff_isSheaf_of_type J G.val).1 G.cond).isSeparated _
         (Presheaf.imageSieve_mem J f.val s)).ext
       intro Y g hg
       rw [← FunctorToTypes.naturality, H.valid_glue ht]

@@ -72,7 +72,7 @@ theorem IsCompact.extremePoints_nonempty (hscomp : IsCompact s) (hsnemp : s.None
     have h : IsExposed ℝ t ({ z ∈ t | ∀ w ∈ t, l w ≤ l z }) := fun _ => ⟨l, rfl⟩
     rw [ht.eq_of_ge (y := ({ z ∈ t | ∀ w ∈ t, l w ≤ l z }))
       ⟨⟨z, hzt, hz⟩, h.isClosed htclos, hst.trans h.isExtreme⟩ (t.sep_subset _)] at hyB
-    exact hl.not_le (hyB.2 x hxt)
+    exact hl.not_ge (hyB.2 x hxt)
   refine zorn_superset _ fun F hFS hF => ?_
   obtain rfl | hFnemp := F.eq_empty_or_nonempty
   · exact ⟨s, ⟨hsnemp, hscomp.isClosed, IsExtreme.rfl⟩, fun _ => False.elim⟩
@@ -88,7 +88,7 @@ theorem IsCompact.extremePoints_nonempty (hscomp : IsCompact s) (hsnemp : s.None
   exacts [⟨t, Subset.rfl, htu⟩, ⟨u, hut, Subset.rfl⟩]
 
 /-- **Krein-Milman theorem**: In a LCTVS, any compact convex set is the closure of the convex hull
-    of its extreme points. -/
+of its extreme points. -/
 theorem closure_convexHull_extremePoints (hscomp : IsCompact s) (hAconv : Convex ℝ s) :
     closure (convexHull ℝ <| s.extremePoints ℝ) = s := by
   apply (closure_minimal (convexHull_min extremePoints_subset hAconv) hscomp.isClosed).antisymm

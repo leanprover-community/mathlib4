@@ -181,8 +181,8 @@ theorem mem_generateSetAlgebra_elim (s_mem : s ∈ generateSetAlgebra 𝒜) :
       fun a ha t ht ↦ ?_, by simp⟩
     rw [eq_of_mem_singleton ha, ha, eq_of_mem_singleton ht, ht] at *
     exact Or.inl u_mem
-  | empty => exact ⟨∅, finite_empty, fun _ h ↦ (not_mem_empty _ h).elim,
-    fun _ ha _ _ ↦ (not_mem_empty _ ha).elim, by simp⟩
+  | empty => exact ⟨∅, finite_empty, fun _ h ↦ (notMem_empty _ h).elim,
+    fun _ ha _ _ ↦ (notMem_empty _ ha).elim, by simp⟩
   | compl u _ u_ind =>
     rcases u_ind with ⟨A, A_fin, mem_A, hA, u_eq⟩
     have := finite_coe_iff.2 A_fin

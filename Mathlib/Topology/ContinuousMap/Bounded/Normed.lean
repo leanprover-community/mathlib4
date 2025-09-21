@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel, Mario Carneiro, Yury Kudryashov, Heather Macbeth
 -/
 import Mathlib.Algebra.Module.MinimalAxioms
 import Mathlib.Analysis.Normed.Order.Lattice
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
+import Mathlib.Analysis.Normed.Operator.Basic
 import Mathlib.Topology.ContinuousMap.Bounded.Basic
 
 /-!
@@ -49,7 +49,7 @@ theorem norm_eq_of_nonempty [h : Nonempty α] : ‖f‖ = sInf { C : ℝ | ∀ x
   rw [norm_eq]
   congr
   ext
-  simp only [mem_setOf_eq, and_iff_right_iff_imp]
+  simp only [and_iff_right_iff_imp]
   exact fun h' => le_trans (norm_nonneg (f a)) (h' a)
 
 @[simp]
@@ -224,6 +224,9 @@ theorem nnnorm_const_eq [Nonempty α] (b : β) : ‖const α b‖₊ = ‖b‖�
 
 theorem nnnorm_eq_iSup_nnnorm : ‖f‖₊ = ⨆ x : α, ‖f x‖₊ :=
   Subtype.ext <| (norm_eq_iSup_norm f).trans <| by simp_rw [val_eq_coe, NNReal.coe_iSup, coe_nnnorm]
+
+theorem enorm_eq_iSup_enorm : ‖f‖ₑ = ⨆ x, ‖f x‖ₑ := by
+  simpa only [← edist_zero_eq_enorm] using edist_eq_iSup
 
 theorem abs_diff_coe_le_dist : ‖f x - g x‖ ≤ dist f g := by
   rw [dist_eq_norm]
@@ -438,7 +441,7 @@ variable (𝕜)
 as an `AlgHom`. Similar to `AlgHom.compLeftContinuous`. -/
 @[simps!]
 protected def AlgHom.compLeftContinuousBounded
-    [NormedRing β] [NormedAlgebra 𝕜 β][NormedRing γ] [NormedAlgebra 𝕜 γ]
+    [NormedRing β] [NormedAlgebra 𝕜 β] [NormedRing γ] [NormedAlgebra 𝕜 γ]
     (g : β →ₐ[𝕜] γ) {C : NNReal} (hg : LipschitzWith C g) : (α →ᵇ β) →ₐ[𝕜] (α →ᵇ γ) :=
   { g.toRingHom.compLeftContinuousBounded α hg with
     commutes' := fun _ => DFunLike.ext _ _ fun _ => g.commutes' _ }
@@ -490,7 +493,8 @@ end NormedAlgebra
 
 section NormedLatticeOrderedGroup
 
-variable [TopologicalSpace α] [NormedLatticeAddCommGroup β]
+variable [TopologicalSpace α]
+  [NormedAddCommGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
 
 instance instPartialOrder : PartialOrder (α →ᵇ β) :=
   PartialOrder.lift (fun f => f.toFun) (by simp [Injective])
@@ -533,18 +537,19 @@ instance instLattice : Lattice (α →ᵇ β) := DFunLike.coe_injective.lattice 
 @[simp, norm_cast] lemma coe_posPart (f : α →ᵇ β) : ⇑f⁺ = (⇑f)⁺ := rfl
 @[simp, norm_cast] lemma coe_negPart (f : α →ᵇ β) : ⇑f⁻ = (⇑f)⁻ := rfl
 
-instance instNormedLatticeAddCommGroup : NormedLatticeAddCommGroup (α →ᵇ β) :=
-  { instSeminormedAddCommGroup with
-    add_le_add_left := by
-      intro f g h₁ h t
-      simp only [coe_toContinuousMap, Pi.add_apply, add_le_add_iff_left, coe_add]
-      exact h₁ _
-    solid := by
+instance instHasSolidNorm : HasSolidNorm (α →ᵇ β) :=
+  { solid := by
       intro f g h
       have i1 : ∀ t, ‖f t‖ ≤ ‖g t‖ := fun t => HasSolidNorm.solid (h t)
       rw [norm_le (norm_nonneg _)]
-      exact fun t => (i1 t).trans (norm_coe_le_norm g t)
-    eq_of_dist_eq_zero }
+      exact fun t => (i1 t).trans (norm_coe_le_norm g t) }
+
+instance instIsOrderedAddMonoid : IsOrderedAddMonoid (α →ᵇ β) :=
+  { add_le_add_left := by
+      intro f g h₁ h t
+      simp only [ContinuousMap.toFun_eq_coe, coe_toContinuousMap, coe_add, Pi.add_apply,
+        add_le_add_iff_left]
+      exact h₁ _ }
 
 end NormedLatticeOrderedGroup
 

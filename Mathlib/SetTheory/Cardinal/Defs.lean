@@ -3,14 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Notation.Defs
 import Mathlib.Data.ULift
 import Mathlib.Util.Delaborators
+import Mathlib.Util.AssertExists
 
 /-!
 # Cardinal Numbers
 
-We define cardinal numbers as a quotient of types under the equivalence relation of equinumerity.
+We define cardinal numbers as a quotient of types under the equivalence relation of equinumerosity
+(i.e., existence of a bijection).
 
 ## Main definitions
 
@@ -35,14 +36,6 @@ We define cardinal numbers as a quotient of types under the equivalence relation
   The operation `Cardinal.lift` lifts cardinal numbers to a higher level.
 * Cardinal arithmetic specifically for infinite cardinals (like `κ * κ = κ`) is in the file
   `Mathlib/SetTheory/Cardinal/Ordinal.lean`.
-* There is an instance `Pow Cardinal`, but this will only fire if Lean already knows that both
-  the base and the exponent live in the same universe. As a workaround, you can add
-  ```
-    local infixr:80 " ^' " => @HPow.hPow Cardinal Cardinal Cardinal _
-  ```
-  to a file. This notation will work even if Lean doesn't know yet that the base and the exponent
-  live in the same universe (but no exponents in other types can be used).
-  (Porting note: This last point might need to be updated.)
 
 ## References
 
@@ -116,11 +109,6 @@ theorem induction_on_pi {ι : Type u} {p : (ι → Cardinal.{v}) → Prop}
 protected theorem eq : #α = #β ↔ Nonempty (α ≃ β) :=
   Quotient.eq'
 
-/-- Avoid using `Quotient.mk` to construct a `Cardinal` directly -/
-@[deprecated "No deprecation message was provided." (since := "2024-10-24")]
-theorem mk'_def (α : Type u) : @Eq Cardinal ⟦α⟧ #α :=
-  rfl
-
 @[simp]
 theorem mk_out (c : Cardinal) : #c.out = c :=
   Quotient.out_eq _
@@ -166,11 +154,6 @@ Unfortunately, the simp lemma doesn't work. -/
 theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
   funext fun a => inductionOn a fun _ => (Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
 
-/-- `lift.{max v u, u}` equals `lift.{v, u}`. -/
-@[deprecated lift_umax (since := "2024-10-24")]
-theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
-  lift_umax
-
 /-- A cardinal lifted to a lower or equal universe equals itself.
 
 Unfortunately, the simp lemma doesn't work. -/
@@ -202,7 +185,7 @@ theorem lift_mk_eq {α : Type u} {β : Type v} :
       ⟨Equiv.ulift.trans <| f.trans Equiv.ulift.symm⟩⟩
 
 /-- A variant of `Cardinal.lift_mk_eq` with specialized universes.
-Because Lean often can not realize it should use this specialization itself,
+Because Lean often cannot realize it should use this specialization itself,
 we provide this statement separately so you don't have to solve the specialization problem either.
 -/
 theorem lift_mk_eq' {α : Type u} {β : Type v} : lift.{v} #α = lift.{u} #β ↔ Nonempty (α ≃ β) :=

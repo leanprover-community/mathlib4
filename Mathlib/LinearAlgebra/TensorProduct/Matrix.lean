@@ -3,7 +3,7 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Matrix.Kronecker
+import Mathlib.LinearAlgebra.Matrix.Kronecker
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.TensorProduct.Basis
 
@@ -17,6 +17,8 @@ Notably, `TensorProduct.toMatrix_map` shows that taking the tensor product of li
 equivalent to taking the Kronecker product of their matrix representations.
 -/
 
+open Matrix Module LinearMap
+open scoped Kronecker
 
 variable {R : Type*} {M N P M' N' : Type*} {ι κ τ ι' κ' : Type*}
 variable [DecidableEq ι] [DecidableEq κ] [DecidableEq τ]
@@ -27,10 +29,6 @@ variable [AddCommGroup M'] [AddCommGroup N']
 variable [Module R M] [Module R N] [Module R P] [Module R M'] [Module R N']
 variable (bM : Basis ι R M) (bN : Basis κ R N) (bP : Basis τ R P)
 variable (bM' : Basis ι' R M') (bN' : Basis κ' R N')
-
-open Kronecker
-
-open Matrix LinearMap
 
 /-- The linear map built from `TensorProduct.map` corresponds to the matrix built from
 `Matrix.kronecker`. -/

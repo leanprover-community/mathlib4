@@ -188,7 +188,6 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly p f) (hg : IsPoly p g)
     simp only [coeff_mk]; rfl
 
 /-- The composition of polynomial functions is polynomial. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): made this an instance
 instance comp {g f} [hg : IsPoly p g] [hf : IsPoly p f] :
     IsPoly p fun R _Rcr => @g R _Rcr ∘ @f R _Rcr := by
   obtain ⟨φ, hf⟩ := hf
@@ -218,7 +217,6 @@ class IsPoly₂ (f : ∀ ⦃R⦄ [CommRing R], WittVector p R → 𝕎 R → �
 variable {p}
 
 /-- The composition of polynomial functions is polynomial. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): made this an instance
 instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsPoly p g] :
     IsPoly₂ p fun _ _Rcr x y => h (f x) (g y) := by
   obtain ⟨φ, hf⟩ := hf
@@ -229,39 +227,32 @@ instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsP
       fun k ↦ rename (Prod.mk (1 : Fin 2)) (ψ k)]) (χ n), ?_⟩⟩
   intros
   funext n
-  simp (config := { unfoldPartialApp := true }) only [peval, aeval_bind₁, Function.comp, hh, hf, hg,
+  simp +unfoldPartialApp only [peval, aeval_bind₁, hh, hf, hg,
     uncurry]
   apply eval₂Hom_congr rfl _ rfl
   ext ⟨i, n⟩
   fin_cases i <;> simp [aeval_eq_eval₂Hom, eval₂Hom_rename, Function.comp_def]
 
 /-- The composition of a polynomial function with a binary polynomial function is polynomial. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): made this an instance
 instance IsPoly.comp₂ {g f} [hg : IsPoly p g] [hf : IsPoly₂ p f] :
     IsPoly₂ p fun _ _Rcr x y => g (f x y) := by
   obtain ⟨φ, hf⟩ := hf
   obtain ⟨ψ, hg⟩ := hg
   use fun n => bind₁ φ (ψ n)
   intros
-  simp only [peval, aeval_bind₁, Function.comp, hg, hf]
+  simp only [peval, aeval_bind₁, hg, hf]
 
 /-- The diagonal `fun x ↦ f x x` of a polynomial function `f` is polynomial. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): made this an instance
 instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun _ _Rcr x => f x x := by
   obtain ⟨φ, hf⟩ := hf
   refine ⟨⟨fun n => bind₁ (uncurry ![X, X]) (φ n), ?_⟩⟩
   intros; funext n
-  simp (config := { unfoldPartialApp := true }) only [hf, peval, uncurry, aeval_bind₁]
+  simp +unfoldPartialApp only [hf, peval, uncurry, aeval_bind₁]
   apply eval₂Hom_congr rfl _ rfl
   ext ⟨i, k⟩
   fin_cases i <;> simp
 
--- Porting note: Lean 4's typeclass inference is sufficiently more powerful that we no longer
--- need the `@[is_poly]` attribute. Use of the attribute should just be replaced by changing the
--- theorem to an `instance`.
-
 /-- The additive negation is a polynomial function on Witt vectors. -/
--- Porting note: replaced `@[is_poly]` with `instance`.
 instance negIsPoly [Fact p.Prime] : IsPoly p fun R _ => @Neg.neg (𝕎 R) _ :=
   ⟨⟨fun n => rename Prod.snd (wittNeg p n), by
       intros; funext n
@@ -290,8 +281,7 @@ def onePoly (n : ℕ) : MvPolynomial ℕ ℤ :=
 theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
     bind₁ onePoly (wittPolynomial p ℤ n) = 1 := by
   rw [wittPolynomial_eq_sum_C_mul_X_pow, map_sum, Finset.sum_eq_single 0]
-  · simp only [onePoly, one_pow, one_mul, map_pow, C_1, pow_zero, bind₁_X_right, if_true,
-      eq_self_iff_true]
+  · simp only [onePoly, one_pow, one_mul, map_pow, C_1, pow_zero, bind₁_X_right, if_true]
   · intro i _hi hi0
     simp only [onePoly, if_neg hi0, zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero, map_pow,
       bind₁_X_right, map_mul]
@@ -301,7 +291,7 @@ theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
 instance oneIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 1 :=
   ⟨⟨onePoly, by
       intros; funext n; cases n
-      · simp only [lt_self_iff_false, one_coeff_zero, onePoly, ite_true, map_one]
+      · simp only [one_coeff_zero, onePoly, ite_true, map_one]
       · simp only [Nat.succ_pos', one_coeff_eq_of_pos, onePoly, Nat.succ_ne_zero, ite_false,
           map_zero]
   ⟩⟩
@@ -309,12 +299,10 @@ instance oneIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 1 :=
 end ZeroOne
 
 /-- Addition of Witt vectors is a polynomial function. -/
--- Porting note: replaced `@[is_poly]` with `instance`.
 instance addIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· + ·) :=
   ⟨⟨wittAdd p, by intros; ext; exact add_coeff _ _ _⟩⟩
 
 /-- Multiplication of Witt vectors is a polynomial function. -/
--- Porting note: replaced `@[is_poly]` with `instance`.
 instance mulIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· * ·) :=
   ⟨⟨wittMul p, by intros; ext; exact mul_coeff _ _ _⟩⟩
 
@@ -331,7 +319,6 @@ theorem IsPoly.map [Fact p.Prime] {f} (hf : IsPoly p f) (g : R →+* S) (x : �
 
 namespace IsPoly₂
 
--- porting note: the argument `(fun _ _ => (· + ·))` to `IsPoly₂` was just `_`.
 instance [Fact p.Prime] : Inhabited (IsPoly₂ p (fun _ _ => (· + ·))) :=
   ⟨addIsPoly₂⟩
 
@@ -368,7 +355,7 @@ theorem map [Fact p.Prime] {f} (hf : IsPoly₂ p f) (g : R →+* S) (x y : 𝕎 
   -- so that applications do not have to worry about the universe issue
   obtain ⟨φ, hf⟩ := hf
   ext n
-  simp (config := { unfoldPartialApp := true }) only [map_coeff, hf, map_aeval, peval, uncurry]
+  simp +unfoldPartialApp only [map_coeff, hf, map_aeval, peval, uncurry]
   apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
   ext ⟨i, k⟩
   fin_cases i <;> simp

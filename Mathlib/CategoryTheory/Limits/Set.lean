@@ -3,10 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Data.Set.FunctorToTypes
 import Mathlib.CategoryTheory.Limits.Lattice
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Types.Filtered
+import Mathlib.CategoryTheory.Types.Set
 
 /-!
 # The functor from `Set X` to types preserves filtered colimits

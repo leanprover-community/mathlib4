@@ -45,8 +45,8 @@ namespace MeasureTheory
 theorem measurableSet_generateFrom_singleton_iff {s t : Set α} :
     MeasurableSet[MeasurableSpace.generateFrom {s}] t ↔ t = ∅ ∨ t = s ∨ t = sᶜ ∨ t = univ := by
   simp_rw [MeasurableSpace.generateFrom_singleton]
-  change t ∈ {t | _} ↔ _
-  simp_rw [MeasurableSpace.measurableSet_top, true_and, mem_setOf_eq]
+  unfold MeasurableSet MeasurableSpace.MeasurableSet' MeasurableSpace.comap
+  simp_rw [MeasurableSpace.measurableSet_top, true_and]
   constructor
   · rintro ⟨x, rfl⟩
     by_cases hT : True ∈ x
@@ -69,14 +69,9 @@ theorem measurableSet_generateFrom_singleton_iff {s t : Set α} :
       · have hx : x = {False} := by
           ext p
           refine ⟨fun hp ↦ mem_singleton_iff.2 ?_, fun hp ↦ hp ▸ hF⟩
-          by_contra hpneg
-          simp only [eq_iff_iff, iff_false, not_not] at hpneg
-          refine hT ?_
-          convert hp
-          simpa
+          grind
         refine Or.inr <| Or.inr <| Or.inl <| ?_
-        simp [hx]
-        rfl
+        simp [hx, compl_def]
       · refine Or.inl <| subset_antisymm ?_ <| empty_subset _
         suffices x ⊆ ∅ by
           rw [subset_empty_iff] at this

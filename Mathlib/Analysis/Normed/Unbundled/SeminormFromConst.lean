@@ -44,7 +44,7 @@ open scoped Topology
 
 section Ring
 
-variable {R : Type _} [CommRing R] (c : R) (f : RingSeminorm R)
+variable {R : Type*} [CommRing R] (c : R) (f : RingSeminorm R)
 
 /-- For a ring seminorm `f` on `R` and `c ∈ R`, the sequence given by `(f (x * c^n))/((f c)^n)`. -/
 def seminormFromConst_seq (x : R) : ℕ → ℝ := fun n ↦ f (x * c ^ n) / f c ^ n
@@ -90,14 +90,16 @@ theorem seminormFromConst_seq_antitone (x : R) : Antitone (seminormFromConst_seq
   rw [pow_add, ← mul_assoc]
   have hc_pos : 0 < f c := lt_of_le_of_ne (apply_nonneg f _) hc.symm
   apply le_trans ((div_le_div_iff_of_pos_right (pow_pos hc_pos _)).mpr (map_mul_le_mul f _ _))
-  by_cases heq : m = n
-  · have hnm : n - m = 0 := by rw [heq, Nat.sub_self n]
+  cases hmn.eq_or_lt with
+  | inl heq =>
+    have hnm : n - m = 0 := by rw [heq, Nat.sub_self n]
     rw [hnm, heq, div_le_div_iff_of_pos_right (pow_pos hc_pos _), pow_zero]
     conv_rhs => rw [← mul_one (f (x * c ^ n))]
     exact mul_le_mul_of_nonneg_left hf1 (apply_nonneg f _)
-  · have h1 : 1 ≤ n - m := by
-      rw [Nat.one_le_iff_ne_zero, ne_eq, Nat.sub_eq_zero_iff_le, not_le]
-      exact lt_of_le_of_ne hmn heq
+  | inr hlt =>
+    have h1 : 1 ≤ n - m := by
+      rw [Nat.one_le_iff_ne_zero]
+      exact Nat.sub_ne_zero_of_lt hlt
     rw [hpm c h1, mul_div_assoc, div_eq_mul_inv, pow_sub₀ _ hc hmn, mul_assoc, mul_comm (f c ^ m)⁻¹,
       ← mul_assoc (f c ^ n), mul_inv_cancel₀ (pow_ne_zero n hc), one_mul, div_eq_mul_inv]
 
@@ -131,7 +133,7 @@ def seminormFromConst : RingSeminorm R where
     intro n
     have h_add : f ((x + y) * c ^ n) ≤ f (x * c ^ n) + f (y * c ^ n) := by
       simp only [add_mul, map_add_le_add f _ _]
-    simp only [seminormFromConst_seq, div_add_div_same]
+    simp only [seminormFromConst_seq, ← add_div]
     gcongr
   neg' x := by
     apply tendsto_nhds_unique_of_eventuallyEq (seminormFromConst_isLimit hf1 hc hpm (-x))
@@ -144,7 +146,7 @@ def seminormFromConst : RingSeminorm R where
         (𝓝 (seminormFromConst' hf1 hc hpm (x * y))) := by
       apply (seminormFromConst_isLimit hf1 hc hpm (x * y)).comp
         (tendsto_atTop_atTop_of_monotone (fun _ _ hnm ↦ by
-          simp only [mul_le_mul_left, Nat.succ_pos', hnm]) _)
+          simp only [mul_le_mul_iff_right₀, Nat.succ_pos', hnm]) _)
       · rintro n; use n; omega
     refine le_of_tendsto_of_tendsto' hlim ((seminormFromConst_isLimit hf1 hc hpm x).mul
       (seminormFromConst_isLimit hf1 hc hpm y)) (fun n ↦ ?_)
@@ -187,7 +189,7 @@ theorem seminormFromConst_isPowMul : IsPowMul (seminormFromConst' hf1 hc hpm) :=
   ext n
   simp only [seminormFromConst_seq, div_pow, ← hpm _ hm, ← pow_mul, mul_pow, mul_comm m n]
 
-/-- The function `seminormFromConst' hf1 hc hpm` is bounded above by `x`. -/
+/-- The function `seminormFromConst' hf1 hc hpm` is bounded above by `f`. -/
 theorem seminormFromConst_le_seminorm (x : R) : seminormFromConst' hf1 hc hpm x ≤ f x := by
   apply le_of_tendsto (seminormFromConst_isLimit hf1 hc hpm x)
   simp only [eventually_atTop, ge_iff_le]
@@ -231,7 +233,7 @@ theorem seminormFromConst_apply_c : seminormFromConst' hf1 hc hpm c = f c :=
     have hseq : seminormFromConst_seq c f c = fun _n ↦ f c := by
       ext n
       simp only [seminormFromConst_seq]
-      rw [mul_comm, ← pow_succ, hpm _ le_add_self, pow_succ, mul_comm,  mul_div_assoc,
+      rw [mul_comm, ← pow_succ, hpm _ le_add_self, pow_succ, mul_comm, mul_div_assoc,
         div_self (pow_ne_zero n hc), mul_one]
     rw [hseq]
     exact tendsto_const_nhds
@@ -261,7 +263,7 @@ end Ring
 
 section Field
 
-variable {K : Type _} [Field K]
+variable {K : Type*} [Field K]
 
 /-- If `K` is a field, the function `seminormFromConst` is a `RingNorm` on `K`. -/
 def normFromConst {k : K} {g : RingSeminorm K} (hg1 : g 1 ≤ 1) (hg_k : g k ≠ 0)

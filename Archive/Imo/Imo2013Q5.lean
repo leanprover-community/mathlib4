@@ -3,7 +3,9 @@ Copyright (c) 2021 David Renshaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Renshaw
 -/
-import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Ring.GeomSum
+import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Real.Archimedean
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.LinearCombination
@@ -74,7 +76,7 @@ theorem le_of_all_pow_lt_succ' {x y : ℝ} (hx : 1 < x) (hy : 0 < y)
     calc
       x ^ n - 1 < y ^ n := h n hn
       _ ≤ y' ^ n := by gcongr
-  exact h_y'_lt_x.not_le (le_of_all_pow_lt_succ hx h1_lt_y' hh)
+  exact h_y'_lt_x.not_ge (le_of_all_pow_lt_succ hx h1_lt_y' hh)
 
 theorem f_pos_of_pos {f : ℚ → ℝ} {q : ℚ} (hq : 0 < q)
     (H1 : ∀ x y, 0 < x → 0 < y → f (x * y) ≤ f x * f y) (H4 : ∀ n : ℕ, 0 < n → (n : ℝ) ≤ f n) :
@@ -113,16 +115,17 @@ theorem fx_gt_xm1 {f : ℚ → ℝ} {x : ℚ} (hx : 1 ≤ x)
 theorem pow_f_le_f_pow {f : ℚ → ℝ} {n : ℕ} (hn : 0 < n) {x : ℚ} (hx : 1 < x)
     (H1 : ∀ x y, 0 < x → 0 < y → f (x * y) ≤ f x * f y) (H4 : ∀ n : ℕ, 0 < n → (n : ℝ) ≤ f n) :
     f (x ^ n) ≤ f x ^ n := by
-  induction' n with pn hpn
-  · exfalso; exact Nat.lt_asymm hn hn
-  rcases pn with - | pn
-  · norm_num
-  have hpn' := hpn pn.succ_pos
-  rw [pow_succ x (pn + 1), pow_succ (f x) (pn + 1)]
-  have hxp : 0 < x := by positivity
-  calc
-    f (x ^ (pn + 1) * x) ≤ f (x ^ (pn + 1)) * f x := H1 (x ^ (pn + 1)) x (pow_pos hxp (pn + 1)) hxp
-    _ ≤ f x ^ (pn + 1) * f x := by gcongr; exact (f_pos_of_pos hxp H1 H4).le
+  induction n with
+  | zero => exfalso; exact Nat.lt_asymm hn hn
+  | succ pn hpn =>
+    rcases pn with - | pn
+    · norm_num
+    have hpn' := hpn pn.succ_pos
+    rw [pow_succ x (pn + 1), pow_succ (f x) (pn + 1)]
+    have hxp : 0 < x := by positivity
+    calc
+      _ ≤ f (x ^ (pn + 1)) * f x := H1 (x ^ (pn + 1)) x (pow_pos hxp (pn + 1)) hxp
+      _ ≤ f x ^ (pn + 1) * f x := by gcongr; exact (f_pos_of_pos hxp H1 H4).le
 
 theorem fixed_point_of_pos_nat_pow {f : ℚ → ℝ} {n : ℕ} (hn : 0 < n)
     (H1 : ∀ x y, 0 < x → 0 < y → f (x * y) ≤ f x * f y) (H4 : ∀ n : ℕ, 0 < n → (n : ℝ) ≤ f n)
@@ -169,20 +172,21 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
     intro x hx n hn
     rcases n with - | n
     · exact (lt_irrefl 0 hn).elim
-    induction' n with pn hpn
-    · norm_num
-    calc
-      ↑(pn + 2) * f x = (↑pn + 1 + 1) * f x := by norm_cast
-      _ = (↑pn + 1) * f x + f x := by ring
-      _ ≤ f (↑pn.succ * x) + f x := mod_cast add_le_add_right (hpn pn.succ_pos) (f x)
-      _ ≤ f ((↑pn + 1) * x + x) := by exact_mod_cast H2 _ _ (mul_pos pn.cast_add_one_pos hx) hx
-      _ = f ((↑pn + 1 + 1) * x) := by ring_nf
-      _ = f (↑(pn + 2) * x) := by norm_cast
+    induction n with
+    | zero => norm_num
+    | succ pn hpn =>
+      calc
+        ↑(pn + 2) * f x = (↑pn + 1 + 1) * f x := by norm_cast
+        _ = (↑pn + 1) * f x + f x := by ring
+        _ ≤ f (↑pn.succ * x) + f x := mod_cast add_le_add_right (hpn pn.succ_pos) (f x)
+        _ ≤ f ((↑pn + 1) * x + x) := by exact_mod_cast H2 _ _ (mul_pos pn.cast_add_one_pos hx) hx
+        _ = f ((↑pn + 1 + 1) * x) := by ring_nf
+        _ = f (↑(pn + 2) * x) := by norm_cast
   have H4 : ∀ n : ℕ, 0 < n → (n : ℝ) ≤ f n := by
     intro n hn
     have hf1 : 1 ≤ f 1 := by
       have a_pos : (0 : ℝ) < a := Rat.cast_pos.mpr (zero_lt_one.trans ha1)
-      suffices ↑a * 1 ≤ ↑a * f 1 by rwa [← mul_le_mul_left a_pos]
+      suffices ↑a * 1 ≤ ↑a * f 1 by rwa [← mul_le_mul_iff_right₀ a_pos]
       calc
         ↑a * 1 = ↑a := mul_one (a : ℝ)
         _ = f a := hae.symm

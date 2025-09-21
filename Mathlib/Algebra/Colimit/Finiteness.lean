@@ -16,7 +16,7 @@ We show that every module is the direct limit of its finitely generated submodul
 * `Module.fgSystem`: the directed system of finitely generated submodules of a module.
 
 * `Module.fgSystem.equiv`: the isomorphism between a module and the direct limit of its
-finitely generated submodules.
+  finitely generated submodules.
 -/
 
 namespace Module

@@ -44,9 +44,8 @@ abbrev Two :=
 instance : Fintype Two :=
   inferInstanceAs (Fintype (Option Unit))
 
-instance : LinearOrderedAddCommMonoid Two :=
-  { (inferInstance : LinearOrder Two), (inferInstance : AddCommMonoid Two) with
-    add_le_add_left := by decide }
+instance : IsOrderedAddMonoid Two :=
+  { add_le_add_left := by decide }
 
 section
 

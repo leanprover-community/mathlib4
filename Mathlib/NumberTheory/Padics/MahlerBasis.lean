@@ -66,9 +66,11 @@ lemma norm_ascPochhammer_le (k : ℕ) (x : ℤ_[p]) :
     ← Ring.factorial_nsmul_multichoose_eq_ascPochhammer, smul_eq_mul, Nat.cast_mul, norm_mul]
   exact mul_le_of_le_one_right (norm_nonneg _) (norm_le_one _)
 
+instance : IsAddTorsionFree ℤ_[p] where
+  nsmul_right_injective _ := smul_right_injective ℤ_[p]
+
 /-- The p-adic integers are a binomial ring, i.e. a ring where binomial coefficients make sense. -/
 noncomputable instance instBinomialRing : BinomialRing ℤ_[p] where
-  nsmul_right_injective hn := smul_right_injective ℤ_[p] hn
   -- We define `multichoose` as a fraction in `ℚ_[p]` together with a proof that its norm is `≤ 1`.
   multichoose x k := ⟨(ascPochhammer ℤ_[p] k).eval x / (k.factorial : ℚ_[p]), by
     rw [norm_div, div_le_one (by simpa using k.factorial_ne_zero)]
@@ -101,7 +103,7 @@ lemma mahler_apply (k : ℕ) (x : ℤ_[p]) : mahler k x = Ring.choose x k := rfl
 
 /-- The function `mahler k` extends `n ↦ n.choose k` on `ℕ`. -/
 lemma mahler_natCast_eq (k n : ℕ) : mahler k (n : ℤ_[p]) = n.choose k := by
-  simp only [mahler_apply, Ring.choose_natCast, PadicInt.coe_natCast]
+  simp only [mahler_apply, Ring.choose_natCast]
 
 section fwdDiff
 
@@ -174,9 +176,9 @@ private lemma bojanic_mahler_step2 {f : C(ℤ_[p], E)} {s t : ℕ}
       (mod_cast this.ne'), coe_zpow, NNReal.coe_natCast,
       zpow_le_zpow_iff_right₀ (mod_cast hp.out.one_lt), neg_le_neg_iff,
       ← PadicInt.valuation_coe, PadicInt.coe_natCast, Padic.valuation_natCast, Nat.one_le_cast]
-    exact one_le_padicValNat_of_dvd this <| hp.out.dvd_choose_pow (by omega) (by omega)
+    exact one_le_padicValNat_of_dvd this.ne' <| hp.out.dvd_choose_pow (by omega) (by omega)
   · -- Bounding the sum over `range (n + 1)`: every term is small by the choice of `t`
-    refine norm_sum_le_of_forall_le_of_nonempty nonempty_range_succ (fun i _ ↦ ?_)
+    refine norm_sum_le_of_forall_le_of_nonempty nonempty_range_add_one (fun i _ ↦ ?_)
     calc ‖((-1 : ℤ) ^ (n - i) * n.choose i) • (f (i + ↑(p ^ t)) - f i)‖
     _ ≤ ‖((-1 : ℤ) ^ (n - i) * n.choose i : ℤ_[p])‖ * ‖(f (i + ↑(p ^ t)) - f i)‖ := by
       rw [← Int.cast_smul_eq_zsmul ℤ_[p]]
@@ -297,7 +299,7 @@ lemma mahlerSeries_apply_nat (ha : Tendsto a atTop (𝓝 0)) {m n : ℕ} (hmn : 
   have aux : Summable fun i ↦ m.choose (i + (n + 1)) • a (i + (n + 1)) := by
     simpa only [h_van, zero_smul] using summable_zero
   simp only [mahlerSeries_apply ha, mahler_natCast_eq, Nat.cast_smul_eq_nsmul, add_zero,
-    ← sum_add_tsum_nat_add' (f := fun i ↦ m.choose i • a i) aux, h_van, zero_smul, tsum_zero]
+    ← aux.sum_add_tsum_nat_add' (f := fun i ↦ m.choose i • a i), h_van, zero_smul, tsum_zero]
 
 /--
 The coefficients of a Mahler series can be recovered from the sum by taking forward differences at
@@ -306,7 +308,7 @@ The coefficients of a Mahler series can be recovered from the sum by taking forw
 lemma fwdDiff_mahlerSeries (ha : Tendsto a atTop (𝓝 0)) (n) :
     Δ_[1]^[n] (mahlerSeries a) (0 : ℤ_[p]) = a n :=
   calc Δ_[1]^[n] (mahlerSeries a) 0
-  -- throw away terms after the n'th
+  -- throw away terms after the nth
   _ = Δ_[1]^[n] (fun k ↦ ∑ j ∈ range (n + 1), k.choose j • (a j)) 0 := by
     simp only [fwdDiff_iter_eq_sum_shift, zero_add]
     refine Finset.sum_congr rfl fun j hj ↦ ?_
@@ -318,7 +320,7 @@ lemma fwdDiff_mahlerSeries (ha : Tendsto a atTop (𝓝 0)) (n) :
     rw [sum_comm]
   -- bring `Δ_[1]` inside scalar-mult
   _ = ∑ j ∈ range (n + 1), (Δ_[1]^[n] (fun k ↦ k.choose j : ℕ → ℤ) 0) • (a j) := by
-    simp only [fwdDiff_iter_eq_sum_shift, zero_add, sum_smul, smul_assoc, Nat.cast_id,
+    simp only [fwdDiff_iter_eq_sum_shift, zero_add, sum_smul, smul_assoc,
       natCast_zsmul]
   -- finish using `fwdDiff_iter_choose_zero`
   _ = a n := by
@@ -369,8 +371,7 @@ noncomputable def mahlerEquiv : C(ℤ_[p], E) ≃ₗᵢ[ℤ_[p]] C₀(ℕ, E) wh
     · rw [← (hasSum_mahler f).tsum_eq]
       refine (norm_tsum_le _).trans (ciSup_le fun n ↦ ?_)
       refine le_trans (le_of_eq ?_) (BoundedContinuousFunction.norm_coe_le_norm _ n)
-      simp only [ZeroAtInftyContinuousMap.toBCF_apply, ZeroAtInftyContinuousMap.coe_mk,
-        norm_mahlerTerm, (hasSum_mahler f).tsum_eq]
+      simp [(hasSum_mahler f).tsum_eq]
 
 lemma mahlerEquiv_apply (f : C(ℤ_[p], E)) : mahlerEquiv E f = fun n ↦ Δ_[1]^[n] f 0 := rfl
 

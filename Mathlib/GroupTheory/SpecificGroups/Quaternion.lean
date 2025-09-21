@@ -156,7 +156,7 @@ instance [NeZero n] : Fintype (QuaternionGroup n) :=
   Fintype.ofEquiv _ fintypeHelper
 
 instance : Nontrivial (QuaternionGroup n) :=
-  ⟨⟨a 0, xa 0, by simp [← a_zero]⟩⟩
+  ⟨⟨a 0, xa 0, by simp [- a_zero]⟩⟩
 
 /-- If `0 < n`, then `QuaternionGroup n` has `4n` elements.
 -/
@@ -166,9 +166,10 @@ theorem card [NeZero n] : Fintype.card (QuaternionGroup n) = 4 * n := by
 
 @[simp]
 theorem a_one_pow (k : ℕ) : (a 1 : QuaternionGroup n) ^ k = a k := by
-  induction' k with k IH
-  · rw [Nat.cast_zero]; rfl
-  · rw [pow_succ, IH, a_mul_a]
+  induction k with
+  | zero => rw [Nat.cast_zero]; rfl
+  | succ k IH =>
+    rw [pow_succ, IH, a_mul_a]
     congr 1
     norm_cast
 
@@ -199,7 +200,7 @@ theorem orderOf_xa [NeZero n] (i : ZMod (2 * n)) : orderOf (xa i) = 4 := by
     apply_fun (· / n) at h'
     simp only [ZMod.val_natCast, ZMod.val_zero, Nat.zero_div, Nat.mod_mul_left_div_self,
       Nat.div_self (NeZero.pos n), reduceCtorEq] at h'
-  · norm_num
+  · simp
 
 /-- In the special case `n = 1`, `Quaternion 1` is a cyclic group (of order `4`). -/
 theorem quaternionGroup_one_isCyclic : IsCyclic (QuaternionGroup 1) := by

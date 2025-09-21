@@ -112,7 +112,7 @@ noncomputable def cone : Cone F where
         rw [h.coneπApp_eq j _ α β, assoc, h.coneπApp_eq j' _ α (β ≫ φ), map_comp] }
 
 /-- When `h : F.IsEventuallyConstantTo i₀`, the limit of `F` exists and is `F.obj i₀`. -/
-def isLimitCone : IsLimit h.cone where
+noncomputable def isLimitCone : IsLimit h.cone where
   lift s := s.π.app i₀
   fac s j := by
     dsimp [coneπApp]
@@ -206,7 +206,7 @@ noncomputable def cocone : Cocone F where
         rw [h.coconeιApp_eq j' _ β α, h.coconeιApp_eq j _ (φ ≫ β) α, map_comp, assoc] }
 
 /-- When `h : F.IsEventuallyConstantFrom i₀`, the colimit of `F` exists and is `F.obj i₀`. -/
-def isColimitCocone : IsColimit h.cocone where
+noncomputable def isColimitCocone : IsColimit h.cocone where
   desc s := s.ι.app i₀
   fac s j := by
     dsimp [coconeιApp]

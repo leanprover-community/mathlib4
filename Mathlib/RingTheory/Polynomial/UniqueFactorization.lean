@@ -47,7 +47,7 @@ instance (priority := 100) wfDvdMonoid : WfDvdMonoid R[X] where
         apply Prod.Lex.left
         exact WithTop.coe_lt_top _
       have cne0 : c ≠ 0 := right_ne_zero_of_mul hac
-      simp only [cne0, ane0, Polynomial.leadingCoeff_mul]
+      simp only [Polynomial.leadingCoeff_mul]
       by_cases hdeg : c.degree = (0 : ℕ)
       · simp only [hdeg, Nat.cast_zero, add_zero]
         refine Prod.Lex.right _ ⟨?_, ⟨c.leadingCoeff, fun unit_c => not_unit_c ?_, rfl⟩⟩
@@ -63,7 +63,7 @@ instance (priority := 100) wfDvdMonoid : WfDvdMonoid R[X] where
 
 theorem exists_irreducible_of_degree_pos (hf : 0 < f.degree) : ∃ g, Irreducible g ∧ g ∣ f :=
   WfDvdMonoid.exists_irreducible_factor (fun huf => ne_of_gt hf <| degree_eq_zero_of_isUnit huf)
-    fun hf0 => not_lt_of_lt hf <| hf0.symm ▸ (@degree_zero R _).symm ▸ WithBot.bot_lt_coe _
+    fun hf0 => not_lt_of_gt hf <| hf0.symm ▸ (@degree_zero R _).symm ▸ WithBot.bot_lt_coe _
 
 theorem exists_irreducible_of_natDegree_pos (hf : 0 < f.natDegree) : ∃ g, Irreducible g ∧ g ∣ f :=
   exists_irreducible_of_degree_pos <| by
@@ -112,10 +112,12 @@ variable (d : ℕ)
 private theorem uniqueFactorizationMonoid_of_fintype [Fintype σ] :
     UniqueFactorizationMonoid (MvPolynomial σ D) :=
   (renameEquiv D (Fintype.equivFin σ)).toMulEquiv.symm.uniqueFactorizationMonoid <| by
-    induction' Fintype.card σ with d hd
-    · apply (isEmptyAlgEquiv D (Fin 0)).toMulEquiv.symm.uniqueFactorizationMonoid
+    induction Fintype.card σ with
+    | zero =>
+      apply (isEmptyAlgEquiv D (Fin 0)).toMulEquiv.symm.uniqueFactorizationMonoid
       infer_instance
-    · apply (finSuccEquiv D d).toMulEquiv.symm.uniqueFactorizationMonoid
+    | succ d hd =>
+      apply (finSuccEquiv D d).toMulEquiv.symm.uniqueFactorizationMonoid
       exact Polynomial.uniqueFactorizationMonoid
 
 instance (priority := 100) uniqueFactorizationMonoid :

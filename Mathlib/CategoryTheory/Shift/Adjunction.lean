@@ -232,11 +232,11 @@ lemma mk' (h : NatTrans.CommShift adj.unit A) :
   commShift_counit := ⟨fun a ↦ by
     ext
     simp only [Functor.comp_obj, Functor.id_obj, NatTrans.comp_app,
-      Functor.commShiftIso_comp_hom_app, whiskerRight_app, assoc, whiskerLeft_app,
+      Functor.commShiftIso_comp_hom_app, Functor.whiskerRight_app, assoc, Functor.whiskerLeft_app,
       Functor.commShiftIso_id_hom_app, comp_id]
     refine (compatibilityCounit_of_compatibilityUnit adj _ _ (fun X ↦ ?_) _).symm
     simpa only [NatTrans.comp_app,
-      Functor.commShiftIso_id_hom_app, whiskerRight_app, id_comp,
+      Functor.commShiftIso_id_hom_app, Functor.whiskerRight_app, id_comp,
       Functor.commShiftIso_comp_hom_app] using congr_app (h.shift_comm a) X⟩
 
 variable [adj.CommShift A]

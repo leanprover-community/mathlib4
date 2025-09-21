@@ -15,7 +15,7 @@ the arguments are numerals.
 ## Implementation notes
 
 We use the Law of Quadratic Reciprocity for the Jacobi symbol to compute the value of `J(a | b)`
-efficiently, roughly comparable in effort with the euclidean algorithm for the computation
+efficiently, roughly comparable in effort with the Euclidean algorithm for the computation
 of the gcd of `a` and `b`. More precisely, the computation is done in the following steps.
 
 * Use `J(a | 0) = 1` (an artifact of the definition) and `J(a | 1) = 1` to deal
@@ -120,7 +120,7 @@ theorem jacobiSymNat.odd_even (a b c : ℕ) (r : ℤ) (ha : a % 2 = 1) (hb : b %
 /-- If `a` is divisible by `4` and `b` is odd, then we can remove the factor `4` from `a`. -/
 theorem jacobiSymNat.double_even (a b c : ℕ) (r : ℤ) (ha : a % 4 = 0) (hb : b % 2 = 1)
     (hc : a / 4 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = r := by
-  simp only [jacobiSymNat, ← hr, ← hc, Int.ofNat_ediv, Nat.cast_ofNat]
+  simp only [jacobiSymNat, ← hr, ← hc, Int.natCast_ediv, Nat.cast_ofNat]
   exact (jacobiSym.div_four_left (mod_cast ha) hb).symm
 
 /-- If `a` is even and `b` is odd, then we can remove a factor `2` from `a`,
@@ -128,29 +128,29 @@ but we may have to change the sign, depending on `b % 8`.
 We give one version for each of the four odd residue classes mod `8`. -/
 theorem jacobiSymNat.even_odd₁ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 1)
     (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = r := by
-  simp only [jacobiSymNat, ← hr, ← hc, Int.ofNat_ediv, Nat.cast_ofNat]
+  simp only [jacobiSymNat, ← hr, ← hc, Int.natCast_ediv, Nat.cast_ofNat]
   rw [← jacobiSym.even_odd (mod_cast ha), if_neg (by simp [hb])]
-  rw [← Nat.mod_mod_of_dvd, hb]; norm_num
+  rw [← Nat.mod_mod_of_dvd, hb]; simp
 
 theorem jacobiSymNat.even_odd₇ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 7)
     (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = r := by
-  simp only [jacobiSymNat, ← hr, ← hc, Int.ofNat_ediv, Nat.cast_ofNat]
+  simp only [jacobiSymNat, ← hr, ← hc, Int.natCast_ediv, Nat.cast_ofNat]
   rw [← jacobiSym.even_odd (mod_cast ha), if_neg (by simp [hb])]
-  rw [← Nat.mod_mod_of_dvd, hb]; norm_num
+  rw [← Nat.mod_mod_of_dvd, hb]; simp
 
 theorem jacobiSymNat.even_odd₃ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 3)
     (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = -r := by
-  simp only [jacobiSymNat, ← hr, ← hc, Int.ofNat_ediv, Nat.cast_ofNat]
+  simp only [jacobiSymNat, ← hr, ← hc, Int.natCast_ediv, Nat.cast_ofNat]
   rw [← jacobiSym.even_odd (mod_cast ha), if_pos (by simp [hb])]
-  rw [← Nat.mod_mod_of_dvd, hb]; norm_num
+  rw [← Nat.mod_mod_of_dvd, hb]; simp
 
 theorem jacobiSymNat.even_odd₅ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 5)
     (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = -r := by
-  simp only [jacobiSymNat, ← hr, ← hc, Int.ofNat_ediv, Nat.cast_ofNat]
+  simp only [jacobiSymNat, ← hr, ← hc, Int.natCast_ediv, Nat.cast_ofNat]
   rw [← jacobiSym.even_odd (mod_cast ha), if_pos (by simp [hb])]
-  rw [← Nat.mod_mod_of_dvd, hb]; norm_num
+  rw [← Nat.mod_mod_of_dvd, hb]; simp
 
-/-- Use quadratic reciproity to reduce to smaller `b`. -/
+/-- Use quadratic reciprocity to reduce to smaller `b`. -/
 theorem jacobiSymNat.qr₁ (a b : ℕ) (r : ℤ) (ha : a % 4 = 1) (hb : b % 2 = 1)
     (hr : jacobiSymNat b a = r) : jacobiSymNat a b = r := by
   rwa [jacobiSymNat, jacobiSym.quadratic_reciprocity_one_mod_four ha (Nat.odd_iff.mpr hb)]

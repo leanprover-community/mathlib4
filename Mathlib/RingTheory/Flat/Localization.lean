@@ -34,7 +34,7 @@ theorem IsLocalization.flat : Module.Flat R S := by
   have h := ((range N.subtype).isLocalizedModule S p (TensorProduct.mk R S P 1)).isBaseChange _ S
   let e := (LinearEquiv.ofInjective _ Subtype.val_injective).lTensor S ≪≫ₗ h.equiv.restrictScalars R
   have : N.subtype.lTensor S = Submodule.subtype _ ∘ₗ e.toLinearMap := by
-    ext; show _ = (h.equiv _).1; simp [h.equiv_tmul, TensorProduct.smul_tmul']
+    ext; change _ = (h.equiv _).1; simp [h.equiv_tmul, TensorProduct.smul_tmul']
   simpa [this] using e.injective
 
 instance Localization.flat : Module.Flat R (Localization p) := IsLocalization.flat _ p
@@ -103,3 +103,19 @@ instance [Module.Flat A B] (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [
     Module.Flat (Localization.AtPrime p) (Localization.AtPrime P) := by
   rw [Module.flat_iff_of_isLocalization (Localization.AtPrime p) p.primeCompl]
   exact Module.Flat.trans A B (Localization.AtPrime P)
+
+section IsSMulRegular
+
+variable {M} in
+theorem IsSMulRegular.of_isLocalizedModule {K : Type*} [AddCommMonoid K] [Module R K]
+    (f : K →ₗ[R] M) [IsLocalizedModule p f] {x : R} (reg : IsSMulRegular K x) :
+    IsSMulRegular M (algebraMap R S x) :=
+  have : Module.Flat R S := IsLocalization.flat S p
+  reg.of_flat_of_isBaseChange (IsLocalizedModule.isBaseChange p S f)
+
+include p in
+theorem IsSMulRegular.of_isLocalization {x : R} (reg : IsSMulRegular R x) :
+    IsSMulRegular S (algebraMap R S x) :=
+  reg.of_isLocalizedModule S p (Algebra.linearMap R S)
+
+end IsSMulRegular

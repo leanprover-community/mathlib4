@@ -58,10 +58,10 @@ def Lean.Name.decapitalize (n : Name) : Name :=
 /-- Whether the lemma has a name of the form produced by `Lean.Meta.mkAuxLemma`. -/
 def Lean.Name.isAuxLemma (n : Name) : Bool :=
   match n with
-  | .str _ s => "_proof_".isPrefixOf s
+  -- `mkAuxLemma` generally allows for arbitrary prefixes but these are the ones produced by core.
+  | .str _ s => "_proof_".isPrefixOf s || "_simp_".isPrefixOf s
   | _ => false
 
-/-- Unfold all lemmas created by `Lean.Meta.mkAuxLemma`.
-The names of these lemmas end in `_auxLemma.nn` where `nn` is a number. -/
+/-- Unfold all lemmas created by `Lean.Meta.mkAuxLemma`. -/
 def Lean.Meta.unfoldAuxLemmas (e : Expr) : MetaM Expr := do
   deltaExpand e Lean.Name.isAuxLemma

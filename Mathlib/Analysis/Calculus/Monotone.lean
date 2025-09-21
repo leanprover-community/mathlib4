@@ -34,6 +34,8 @@ open Set Filter Function Metric MeasureTheory MeasureTheory.Measure IsUnifLocDou
 
 open scoped Topology
 
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
+set_option linter.unusedSimpArgs false in
 /-- If `(f y - f x) / (y - x)` converges to a limit as `y` tends to `x`, then the same goes if
 `y` is shifted a little bit, i.e., `f (y + (y-x)^2) - f x) / (y - x)` converges to the same limit.
 This lemma contains a slightly more general version of this statement (where one considers
@@ -57,7 +59,7 @@ theorem tendsto_apply_add_mul_sq_div_sub {f : ℝ → ℝ} {x a c d : ℝ} {l : 
   apply Tendsto.congr' _ Z
   have : ∀ᶠ y in l, y + c * (y - x) ^ 2 ≠ x := by apply Tendsto.mono_right h' hl self_mem_nhdsWithin
   filter_upwards [this] with y hy
-  field_simp [sub_ne_zero.2 hy]
+  simp [field, sub_ne_zero.2 hy]
 
 /-- A Stieltjes function is almost everywhere differentiable, with derivative equal to the
 Radon-Nikodym derivative of the associated Stieltjes measure with respect to Lebesgue. -/
@@ -71,7 +73,7 @@ theorem StieltjesFunction.ae_hasDerivAt (f : StieltjesFunction) :
     As `μ [y, x] = f x - f (y^-)`, this is not exactly the right result, so one uses a sandwiching
     argument to deduce the convergence for `(f x - f y) / (x - y)`. -/
   filter_upwards [VitaliFamily.ae_tendsto_rnDeriv (vitaliFamily (volume : Measure ℝ) 1) f.measure,
-    rnDeriv_lt_top f.measure volume, f.countable_leftLim_ne.ae_not_mem volume] with x hx h'x h''x
+    rnDeriv_lt_top f.measure volume, f.countable_leftLim_ne.ae_notMem volume] with x hx h'x h''x
   -- Limit on the right, following from differentiation of measures
   have L1 :
     Tendsto (fun y => (f y - f x) / (y - x)) (𝓝[>] x) (𝓝 (rnDeriv f.measure volume x).toReal) := by
@@ -134,7 +136,7 @@ theorem Monotone.ae_hasDerivAt {f : ℝ → ℝ} (hf : Monotone f) :
     values of `g`, by shifting with `(y - x)^2` (which has no influence on the relevant
     scale `y - x`.) -/
   filter_upwards [hf.stieltjesFunction.ae_hasDerivAt,
-    hf.countable_not_continuousAt.ae_not_mem volume] with x hx h'x
+    hf.countable_not_continuousAt.ae_notMem volume] with x hx h'x
   have A : hf.stieltjesFunction x = f x := by
     rw [Classical.not_not, hf.continuousAt_iff_leftLim_eq_rightLim] at h'x
     apply le_antisymm _ (hf.le_rightLim (le_refl _))

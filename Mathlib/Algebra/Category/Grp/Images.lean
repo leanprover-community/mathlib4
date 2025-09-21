@@ -27,7 +27,7 @@ namespace AddCommGrp
 -- we restrict to the lowest universe here for now.
 variable {G H : AddCommGrp.{0}} (f : G ⟶ H)
 
-attribute [local ext] Subtype.ext_val
+attribute [local ext] Subtype.ext
 
 section
 

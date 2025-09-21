@@ -22,7 +22,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {F : Type uF} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   {n : WithTop ℕ∞} {f : D → E} {s : Set D}
 
-/-! ### Finite dimensional results -/
+/-! ### Finite-dimensional results -/
 
 section FiniteDimensional
 
@@ -56,7 +56,7 @@ domain and codomain (`D` and `E`). This is not the case for `contDiff_succ_iff_f
 often requires an inconvenient need to generalize `F`, which results in universe issues
 (see the discussion in the section of `ContDiff.comp`).
 
-This lemma avoids these universe issues, but only applies for finite dimensional `D`. -/
+This lemma avoids these universe issues, but only applies for finite-dimensional `D`. -/
 theorem contDiff_succ_iff_fderiv_apply [FiniteDimensional 𝕜 D] :
     ContDiff 𝕜 (n + 1) f ↔ Differentiable 𝕜 f ∧
       (n = ω → AnalyticOnNhd 𝕜 f Set.univ) ∧ ∀ y, ContDiff 𝕜 n fun x => fderiv 𝕜 f x y := by

@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Andrew Yang
 -/
-import Mathlib.CategoryTheory.Sites.IsSheafOneHypercover
+import Mathlib.CategoryTheory.Sites.Hypercover.IsSheaf
 
 /-!
 # Continuous functors between sites.
@@ -15,23 +15,23 @@ category).
 ## Main definitions
 
 * `Functor.IsContinuous`: a functor between sites is continuous if the
-precomposition with this functor preserves sheaves with values in
-the category `Type t` for a certain auxiliary universe `t`.
+  precomposition with this functor preserves sheaves with values in
+  the category `Type t` for a certain auxiliary universe `t`.
 * `Functor.sheafPushforwardContinuous`: the induced functor
-`Sheaf K A ⥤ Sheaf J A` for a continuous functor `G : (C, J) ⥤ (D, K)`. In case this is
-part of a morphism of sites, this would be understood as the pushforward functor
-even though it goes in the opposite direction as the functor `G`. (Here, the auxiliary
-universe `t` in the assumption that `G` is continuous is the one such that morphisms
-in the category `A` are in `Type t`.)
+  `Sheaf K A ⥤ Sheaf J A` for a continuous functor `G : (C, J) ⥤ (D, K)`. In case this is
+  part of a morphism of sites, this would be understood as the pushforward functor
+  even though it goes in the opposite direction as the functor `G`. (Here, the auxiliary
+  universe `t` in the assumption that `G` is continuous is the one such that morphisms
+  in the category `A` are in `Type t`.)
 * `Functor.PreservesOneHypercovers`: a type-class expressing that a functor preserves
-1-hypercovers of a certain size
+  1-hypercovers of a certain size
 
 ## Main result
 
 - `Functor.isContinuous_of_preservesOneHypercovers`: if the topology on `C` is generated
-by 1-hypercovers of size `w` and that `F : C ⥤ D` preserves 1-hypercovers of size `w`,
-then `F` is continuous (for any auxiliary universe parameter `t`).
-This is an instance for `w = max u₁ v₁` when `C : Type u₁` and `[Category.{v₁} C]`
+  by 1-hypercovers of size `w` and that `F : C ⥤ D` preserves 1-hypercovers of size `w`,
+  then `F` is continuous (for any auxiliary universe parameter `t`).
+  This is an instance for `w = max u₁ v₁` when `C : Type u₁` and `[Category.{v₁} C]`
 
 ## References
 * https://stacks.math.columbia.edu/tag/00WU
@@ -85,14 +85,14 @@ class IsPreservedBy (F : C ⥤ D) (K : GrothendieckTopology D) : Prop where
       (E.toPreOneHypercover.map F).sieve₁ p₁ p₂ ∈ K W
 
 /-- Given a 1-hypercover `E : J.OneHypercover X` of an object of `C`, a functor `F : C ⥤ D`
-such that `E.IsPreversedBy F K` for a Grothendieck topology `K` on `D`, this is
+such that `E.IsPreservedBy F K` for a Grothendieck topology `K` on `D`, this is
 the image of `E` by `F`, as a 1-hypercover of `F.obj X` for `K`. -/
-@[simps toPreOneHypercover]
+@[simps! toPreOneHypercover]
 def map (F : C ⥤ D) (K : GrothendieckTopology D) [E.IsPreservedBy F K] :
     K.OneHypercover (F.obj X) where
   toPreOneHypercover := E.toPreOneHypercover.map F
   mem₀ := IsPreservedBy.mem₀
-  mem₁ := IsPreservedBy.mem₁
+  mem₁ _ _ _ _ _ h := IsPreservedBy.mem₁ _ _ _ _ h
 
 instance : E.IsPreservedBy (𝟭 C) J where
   mem₀ := E.mem₀
@@ -120,8 +120,6 @@ class IsContinuous : Prop where
 lemma op_comp_isSheaf_of_types [Functor.IsContinuous.{t} F J K] (G : Sheaf K (Type t)) :
     Presieve.IsSheaf J (F.op ⋙ G.val) :=
   Functor.IsContinuous.op_comp_isSheaf_of_types _
-
-@[deprecated (since := "2024-11-26")] alias op_comp_isSheafOfTypes := op_comp_isSheaf_of_types
 
 lemma op_comp_isSheaf [Functor.IsContinuous.{t} F J K] (G : Sheaf K A) :
     Presheaf.IsSheaf J (F.op ⋙ G.val) :=

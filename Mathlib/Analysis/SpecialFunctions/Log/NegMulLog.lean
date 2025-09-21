@@ -34,7 +34,7 @@ lemma continuous_mul_log : Continuous fun x ↦ x * log x := by
   nth_rewrite 1 [← nhdsWithin_univ]
   have : (Set.univ : Set ℝ) = Set.Iio 0 ∪ Set.Ioi 0 ∪ {0} := by ext; simp [em]
   rw [this, nhdsWithin_union, nhdsWithin_union]
-  simp only [nhdsWithin_singleton, sup_le_iff, Filter.nonpos_iff, Filter.tendsto_sup]
+  simp only [nhdsWithin_singleton, Filter.tendsto_sup]
   refine ⟨⟨tendsto_log_mul_self_nhdsLT_zero, ?_⟩, ?_⟩
   · simpa only [rpow_one] using tendsto_log_mul_rpow_nhdsGT_zero zero_lt_one
   · convert tendsto_pure_nhds (fun x ↦ log x * x) 0
@@ -45,13 +45,10 @@ lemma Continuous.mul_log {α : Type*} [TopologicalSpace α] {f : α → ℝ} (hf
     Continuous fun a ↦ f a * log (f a) := continuous_mul_log.comp hf
 
 lemma differentiableOn_mul_log : DifferentiableOn ℝ (fun x ↦ x * log x) {0}ᶜ :=
-  differentiable_id'.differentiableOn.mul differentiableOn_log
+  differentiable_id.differentiableOn.mul differentiableOn_log
 
-@[simp]
 lemma deriv_mul_log {x : ℝ} (hx : x ≠ 0) : deriv (fun x ↦ x * log x) x = log x + 1 := by
-  rw [deriv_mul differentiableAt_id' (differentiableAt_log hx)]
-  simp only [deriv_id'', one_mul, deriv_log', ne_eq, add_right_inj]
-  exact mul_inv_cancel₀ hx
+  simp [hx]
 
 lemma hasDerivAt_mul_log {x : ℝ} (hx : x ≠ 0) : HasDerivAt (fun x ↦ x * log x) (log x + 1) x := by
   rw [← deriv_mul_log hx, hasDerivAt_deriv_iff]
@@ -152,7 +149,7 @@ lemma negMulLog_nonneg {x : ℝ} (h1 : 0 ≤ x) (h2 : x ≤ 1) : 0 ≤ negMulLog
   simpa only [negMulLog_eq_neg, neg_nonneg] using mul_log_nonpos h1 h2
 
 lemma negMulLog_mul (x y : ℝ) : negMulLog (x * y) = y * negMulLog x + x * negMulLog y := by
-  simp only [negMulLog, neg_mul, neg_add_rev]
+  simp only [negMulLog, neg_mul]
   by_cases hx : x = 0
   · simp [hx]
   by_cases hy : y = 0
@@ -170,7 +167,7 @@ lemma differentiableAt_negMulLog_iff {x : ℝ} : DifferentiableAt ℝ negMulLog 
   constructor
   · unfold negMulLog
     intro h eq0
-    simp only [neg_mul, differentiableAt_neg_iff, eq0] at h
+    simp only [neg_mul, differentiableAt_fun_neg_iff, eq0] at h
     exact not_DifferentiableAt_log_mul_zero h
   · intro hx
     have : x ∈ ({0} : Set ℝ)ᶜ := by
@@ -183,7 +180,7 @@ lemma differentiableAt_negMulLog_iff {x : ℝ} : DifferentiableAt ℝ negMulLog 
 @[fun_prop] alias ⟨_, differentiableAt_negMulLog⟩ := differentiableAt_negMulLog_iff
 
 lemma deriv_negMulLog {x : ℝ} (hx : x ≠ 0) : deriv negMulLog x = - log x - 1 := by
-  rw [negMulLog_eq_neg, deriv.neg, deriv_mul_log hx]
+  rw [negMulLog_eq_neg, deriv.fun_neg, deriv_mul_log hx]
   ring
 
 lemma hasDerivAt_negMulLog {x : ℝ} (hx : x ≠ 0) : HasDerivAt negMulLog (- log x - 1) x := by
@@ -194,8 +191,8 @@ lemma hasDerivAt_negMulLog {x : ℝ} (hx : x ≠ 0) : HasDerivAt negMulLog (- lo
 lemma deriv2_negMulLog (x : ℝ) : deriv^[2] negMulLog x = - x⁻¹ := by
   rw [negMulLog_eq_neg]
   have h := deriv2_mul_log
-  simp only [Function.iterate_succ, Function.iterate_zero, Function.id_comp,
-    Function.comp_apply, deriv.neg', differentiableAt_id', differentiableAt_log_iff, ne_eq] at h ⊢
+  simp only [Function.iterate_succ, Function.iterate_zero, Function.id_comp, deriv.fun_neg',
+    Function.comp_apply] at h ⊢
   rw [h]
 
 lemma strictConcaveOn_negMulLog : StrictConcaveOn ℝ (Set.Ici (0 : ℝ)) negMulLog := by

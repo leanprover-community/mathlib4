@@ -90,8 +90,8 @@ theorem forall₂_and_left {p : α → Prop} :
     simp only [forall₂_nil_left_iff, forall_prop_of_false not_mem_nil, imp_true_iff, true_and]
   | a :: l, u => by
     simp only [forall₂_and_left l, forall₂_cons_left_iff, forall_mem_cons, and_assoc,
-      @and_comm _ (p a), @and_left_comm _ (p a), exists_and_left]
-    simp only [and_comm, and_assoc, and_left_comm, ← exists_and_right]
+      exists_and_left]
+    simp only [and_comm, and_assoc, ← exists_and_right]
 
 @[simp]
 theorem forall₂_map_left_iff {f : γ → α} :
@@ -169,7 +169,7 @@ theorem forall₂_iff_zip {l₁ l₂} :
       · simp only [length_cons, succ.injEq] at h₁
         exact Forall₂.cons (h₂ <| by simp [zip])
           (IH h₁ fun h => h₂ <| by
-            simp only [zip, zipWith, find?, mem_cons, Prod.mk.injEq]; right
+            simp only [zip, zipWith, mem_cons, Prod.mk.injEq]; right
             simpa [zip] using h)⟩
 
 theorem forall₂_take : ∀ (n) {l₁ l₂}, Forall₂ R l₁ l₂ → Forall₂ R (take n l₁) (take n l₂)
@@ -226,13 +226,9 @@ theorem rel_flatten : (Forall₂ (Forall₂ R) ⇒ Forall₂ R) flatten flatten
   | [], [], Forall₂.nil => Forall₂.nil
   | _, _, Forall₂.cons h₁ h₂ => rel_append h₁ (rel_flatten h₂)
 
-@[deprecated (since := "2025-10-15")] alias rel_join := rel_flatten
-
 theorem rel_flatMap : (Forall₂ R ⇒ (R ⇒ Forall₂ P) ⇒ Forall₂ P)
     (Function.swap List.flatMap) (Function.swap List.flatMap) :=
   fun _ _ h₁ _ _ h₂ => rel_flatten (rel_map (@h₂) h₁)
-
-@[deprecated (since := "2025-10-16")] alias rel_bind := rel_flatMap
 
 theorem rel_foldl : ((P ⇒ R ⇒ P) ⇒ P ⇒ Forall₂ R ⇒ P) foldl foldl
   | _, _, _, _, _, h, _, _, Forall₂.nil => h

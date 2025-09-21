@@ -40,7 +40,7 @@ noncomputable def MvPolynomial.rTensor' :
 noncomputable def MvPolynomial.rTensor :
     MvPolynomial σ R ⊗[R] N ≃ₗ[R] (σ →₀ ℕ) →₀ N :=
   TensorProduct.finsuppScalarLeft
- ```
+```
 
 However, to be actually usable, these definitions need lemmas to be given in companion PR.
 
@@ -95,7 +95,7 @@ lemma finsuppLeft_apply_tmul (p : ι →₀ M) (n : N) :
 lemma finsuppLeft_apply_tmul_apply (p : ι →₀ M) (n : N) (i : ι) :
     finsuppLeft R M N ι (p ⊗ₜ[R] n) i = p i ⊗ₜ[R] n := by
   rw [finsuppLeft_apply_tmul, Finsupp.sum_apply,
-    Finsupp.sum_eq_single i (fun _ _ ↦ Finsupp.single_eq_of_ne) (by simp), Finsupp.single_eq_same]
+    Finsupp.sum_eq_single i (fun _ _ ↦ Finsupp.single_eq_of_ne') (by simp), Finsupp.single_eq_same]
 
 theorem finsuppLeft_apply (t : (ι →₀ M) ⊗[R] N) (i : ι) :
     finsuppLeft R M N ι t i = rTensor N (Finsupp.lapply i) t := by
@@ -108,7 +108,7 @@ theorem finsuppLeft_apply (t : (ι →₀ M) ⊗[R] N) (i : ι) :
 lemma finsuppLeft_symm_apply_single (i : ι) (m : M) (n : N) :
     (finsuppLeft R M N ι).symm (Finsupp.single i (m ⊗ₜ[R] n)) =
       Finsupp.single i m ⊗ₜ[R] n := by
-  simp [finsuppLeft, Finsupp.lsum]
+  simp [finsuppLeft]
 
 variable (R M N ι)
 /-- The tensor product of `M` and `ι →₀ N` is linearly equivalent to `ι →₀ M ⊗[R] N` -/
@@ -130,7 +130,7 @@ lemma finsuppRight_apply_tmul (m : M) (p : ι →₀ N) :
 lemma finsuppRight_apply_tmul_apply (m : M) (p : ι →₀ N) (i : ι) :
     finsuppRight R M N ι (m ⊗ₜ[R] p) i = m ⊗ₜ[R] p i := by
   rw [finsuppRight_apply_tmul, Finsupp.sum_apply,
-    Finsupp.sum_eq_single i (fun _ _ ↦ Finsupp.single_eq_of_ne) (by simp), Finsupp.single_eq_same]
+    Finsupp.sum_eq_single i (fun _ _ ↦ Finsupp.single_eq_of_ne') (by simp), Finsupp.single_eq_same]
 
 theorem finsuppRight_apply (t : M ⊗[R] (ι →₀ N)) (i : ι) :
     finsuppRight R M N ι t i = lTensor M (Finsupp.lapply i) t := by
@@ -143,7 +143,7 @@ theorem finsuppRight_apply (t : M ⊗[R] (ι →₀ N)) (i : ι) :
 lemma finsuppRight_symm_apply_single (i : ι) (m : M) (n : N) :
     (finsuppRight R M N ι).symm (Finsupp.single i (m ⊗ₜ[R] n)) =
       m ⊗ₜ[R] Finsupp.single i n := by
-  simp [finsuppRight, Finsupp.lsum]
+  simp [finsuppRight]
 
 variable {S : Type*} [CommSemiring S] [Algebra R S]
   [Module S M] [IsScalarTower R S M]
@@ -191,7 +191,7 @@ lemma finsuppScalarLeft_apply_tmul (p : ι →₀ R) (n : N) :
     finsuppScalarLeft R N ι (p ⊗ₜ[R] n) = p.sum fun i m ↦ Finsupp.single i (m • n) := by
   ext i
   rw [finsuppScalarLeft_apply_tmul_apply, Finsupp.sum_apply,
-    Finsupp.sum_eq_single i (fun _ _ ↦ Finsupp.single_eq_of_ne) (by simp), Finsupp.single_eq_same]
+    Finsupp.sum_eq_single i (fun _ _ ↦ Finsupp.single_eq_of_ne') (by simp), Finsupp.single_eq_same]
 
 lemma finsuppScalarLeft_apply (pn : (ι →₀ R) ⊗[R] N) (i : ι) :
     finsuppScalarLeft R N ι pn i = TensorProduct.lid R N ((Finsupp.lapply i).rTensor N pn) := by
@@ -221,7 +221,7 @@ lemma finsuppScalarRight_apply_tmul (m : M) (p : ι →₀ R) :
     finsuppScalarRight R M ι (m ⊗ₜ[R] p) = p.sum fun i n ↦ Finsupp.single i (n • m) := by
   ext i
   rw [finsuppScalarRight_apply_tmul_apply, Finsupp.sum_apply,
-    Finsupp.sum_eq_single i (fun _ _ ↦ Finsupp.single_eq_of_ne) (by simp), Finsupp.single_eq_same]
+    Finsupp.sum_eq_single i (fun _ _ ↦ Finsupp.single_eq_of_ne') (by simp), Finsupp.single_eq_same]
 
 lemma finsuppScalarRight_apply (t : M ⊗[R] (ι →₀ R)) (i : ι) :
     finsuppScalarRight R M ι t i = TensorProduct.rid R M ((Finsupp.lapply i).lTensor M t) := by

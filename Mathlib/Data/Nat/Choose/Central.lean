@@ -76,7 +76,7 @@ This bound is of interest because it appears in
 [Tochiori's refinement of Erdős's proof of Bertrand's postulate](tochiori_bertrand).
 -/
 theorem four_pow_lt_mul_centralBinom (n : ℕ) (n_big : 4 ≤ n) : 4 ^ n < n * centralBinom n := by
-  induction' n using Nat.strong_induction_on with n IH
+  induction n using Nat.strong_induction_on with | _ n IH
   rcases lt_trichotomy n 4 with (hn | rfl | hn)
   · clear IH; exact False.elim ((not_lt.2 n_big) hn)
   · norm_num [centralBinom, choose]
@@ -94,9 +94,9 @@ because it appears in Erdős's proof of Bertrand's postulate.
 theorem four_pow_le_two_mul_self_mul_centralBinom :
     ∀ (n : ℕ) (_ : 0 < n), 4 ^ n ≤ 2 * n * centralBinom n
   | 0, pr => (Nat.not_lt_zero _ pr).elim
-  | 1, _ => by norm_num [centralBinom, choose]
-  | 2, _ => by norm_num [centralBinom, choose]
-  | 3, _ => by norm_num [centralBinom, choose]
+  | 1, _ => by simp [centralBinom, choose]
+  | 2, _ => by simp [centralBinom, choose]
+  | 3, _ => by simp [centralBinom, choose]
   | n + 4, _ =>
     calc
       4 ^ (n+4) ≤ (n+4) * centralBinom (n+4) := (four_pow_lt_mul_centralBinom _ le_add_self).le

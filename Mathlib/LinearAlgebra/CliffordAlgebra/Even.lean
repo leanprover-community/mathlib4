@@ -176,8 +176,7 @@ private theorem fFold_fFold (m : M) (x : A × S f) : fFold f m (fFold f m x) = Q
     · rintro _ ⟨b, m₃, rfl⟩
       change f.bilin _ _ * (f.bilin _ _ * b) = Q m • (f.bilin _ _ * b)
       rw [← smul_mul_assoc, ← mul_assoc, f.contract_mid]
-    · suffices f.bilin m₁ m * 0 = Q m • (0 : A) by simp
-      simp
+    · simp
     · rintro x y _hx _hy ihx ihy
       rw [LinearMap.add_apply, LinearMap.add_apply, mul_add, smul_add, ihx, ihy]
     · rintro x hx _c ihx
@@ -202,7 +201,8 @@ theorem aux_ι (m₁ m₂ : M) : aux f ((even.ι Q).bilin m₁ m₂) = f.bilin m
       exact mul_one _)
 
 @[simp]
-theorem aux_algebraMap (r) (hr) : aux f ⟨algebraMap R _ r, hr⟩ = algebraMap R _ r :=
+theorem aux_algebraMap (r) :
+    aux f (algebraMap R (even Q) r) = algebraMap R A r :=
   (congr_arg Prod.fst (foldr_algebraMap _ _ _ _ _)).trans (Algebra.algebraMap_eq_smul_one r).symm
 
 @[simp]
@@ -213,15 +213,13 @@ theorem aux_mul (x y : even Q) : aux f (x * y) = aux f x * aux f y := by
   dsimp only
   induction x, x_property using even_induction Q with
   | algebraMap r =>
-    rw [foldr_algebraMap, aux_algebraMap]
-    exact Algebra.smul_def r _
+    generalize_proofs at ⊢
+    simpa using Algebra.smul_def r _
   | add x y hx hy ihx ihy =>
-    rw [LinearMap.map_add, Prod.fst_add, ihx, ihy, ← add_mul, ← LinearMap.map_add]
-    rfl
+    rw [LinearMap.map_add, Prod.fst_add]
+    simp [ihx, ihy, ← add_mul, ← LinearMap.map_add]
   | ι_mul_ι_mul m₁ m₂ x hx ih =>
-    rw [aux_apply, foldr_mul, foldr_mul, foldr_ι, foldr_ι, fst_fFold_fFold, ih, ← mul_assoc,
-      Subtype.coe_mk, foldr_mul, foldr_mul, foldr_ι, foldr_ι, fst_fFold_fFold]
-    rfl
+    simp [aux_apply, ih, ← mul_assoc]
 
 end even.lift
 

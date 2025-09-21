@@ -18,7 +18,7 @@ A subsingleton type is `w`-small for any `w`.
 
 If `α ≃ β`, then `Small.{w} α ↔ Small.{w} β`.
 
-See `Mathlib.Logic.Small.Basic` for further instances and theorems.
+See `Mathlib/Logic/Small/Basic.lean` for further instances and theorems.
 -/
 
 universe u w v v'
@@ -52,12 +52,18 @@ theorem Shrink.ext {α : Type v} [Small.{w} α] {x y : Shrink α}
   simpa using w
 
 -- It would be nice to mark this as `aesop cases` if
--- https://github.com/JLimperg/aesop/issues/59
+-- https://github.com/leanprover-community/aesop/issues/59
 -- is resolved.
 @[induction_eliminator]
 protected noncomputable def Shrink.rec {α : Type*} [Small.{w} α] {F : Shrink α → Sort v}
     (h : ∀ X, F (equivShrink _ X)) : ∀ X, F X :=
   fun X => ((equivShrink _).apply_symm_apply X) ▸ (h _)
+
+@[simp]
+lemma Shrink.rec_equivShrink {α : Type*} [Small.{w} α] {F : Shrink α → Sort v}
+    {f : (a : α) → F (equivShrink α a)} (a : α) : Shrink.rec f (equivShrink _ a) = f a := by
+  simp only [Shrink.rec, eqRec_eq_cast, cast_eq_iff_heq]
+  rw [Equiv.symm_apply_apply]
 
 instance small_self (α : Type v) : Small.{v} α :=
   Small.mk' <| Equiv.refl α
@@ -84,8 +90,14 @@ instance (priority := 100) small_succ (α : Type v) : Small.{v+1} α :=
 instance small_ulift (α : Type u) [Small.{v} α] : Small.{v} (ULift.{w} α) :=
   small_map Equiv.ulift
 
+instance small_plift (α : Type u) [Small.{v} α] : Small.{v} (PLift α) :=
+  small_map Equiv.plift
+
 theorem small_type : Small.{max (u + 1) v} (Type u) :=
   small_max.{max (u + 1) v} _
+
+instance {α : Type u} [Small.{v} α] [Nontrivial α] : Nontrivial (Shrink.{v} α) :=
+  (equivShrink α).symm.nontrivial
 
 section
 
@@ -93,13 +105,13 @@ theorem small_congr {α : Type*} {β : Type*} (e : α ≃ β) : Small.{w} α ↔
   ⟨fun h => @small_map _ _ h e.symm, fun h => @small_map _ _ h e⟩
 
 instance small_sigma {α} (β : α → Type*) [Small.{w} α] [∀ a, Small.{w} (β a)] :
-    Small.{w} (Σa, β a) :=
-  ⟨⟨Σa' : Shrink α, Shrink (β ((equivShrink α).symm a')),
+    Small.{w} (Σ a, β a) :=
+  ⟨⟨Σ a' : Shrink α, Shrink (β ((equivShrink α).symm a')),
       ⟨Equiv.sigmaCongr (equivShrink α) fun a => by simpa using equivShrink (β a)⟩⟩⟩
 
 theorem not_small_type : ¬Small.{u} (Type max u v)
   | ⟨⟨S, ⟨e⟩⟩⟩ =>
-    @Function.cantor_injective (Σα, e.symm α) (fun a => ⟨_, cast (e.3 _).symm a⟩) fun a b e => by
+    @Function.cantor_injective (Σ α, e.symm α) (fun a => ⟨_, cast (e.3 _).symm a⟩) fun a b e => by
       dsimp at e
       injection e with h₁ h₂
       simpa using h₂

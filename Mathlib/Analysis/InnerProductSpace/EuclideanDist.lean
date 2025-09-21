@@ -8,11 +8,11 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 /-!
-# Euclidean distance on a finite dimensional space
+# Euclidean distance on a finite-dimensional space
 
 When we define a smooth bump function on a normed space, it is useful to have a smooth distance on
 the space. Since the default distance is not guaranteed to be smooth, we define `toEuclidean` to be
-an equivalence between a finite dimensional topological vector space and the standard Euclidean
+an equivalence between a finite-dimensional topological vector space and the standard Euclidean
 space of the same dimension.
 Then we define `Euclidean.dist x y = dist (toEuclidean x) (toEuclidean y)` and
 provide some definitions (`Euclidean.ball`, `Euclidean.closedBall`) and simple lemmas about this
@@ -31,24 +31,24 @@ noncomputable section
 
 open Module
 
-/-- If `E` is a finite dimensional space over `ℝ`, then `toEuclidean` is a continuous `ℝ`-linear
+/-- If `E` is a finite-dimensional space over `ℝ`, then `toEuclidean` is a continuous `ℝ`-linear
 equivalence between `E` and the Euclidean space of the same dimension. -/
 def toEuclidean : E ≃L[ℝ] EuclideanSpace ℝ (Fin <| finrank ℝ E) :=
   ContinuousLinearEquiv.ofFinrankEq finrank_euclideanSpace_fin.symm
 
 namespace Euclidean
 
-/-- If `x` and `y` are two points in a finite dimensional space over `ℝ`, then `Euclidean.dist x y`
+/-- If `x` and `y` are two points in a finite-dimensional space over `ℝ`, then `Euclidean.dist x y`
 is the distance between these points in the metric defined by some inner product space structure on
 `E`. -/
 nonrec def dist (x y : E) : ℝ :=
   dist (toEuclidean x) (toEuclidean y)
 
-/-- Closed ball w.r.t. the euclidean distance. -/
+/-- Closed ball w.r.t. the Euclidean distance. -/
 def closedBall (x : E) (r : ℝ) : Set E :=
   {y | dist y x ≤ r}
 
-/-- Open ball w.r.t. the euclidean distance. -/
+/-- Open ball w.r.t. the Euclidean distance. -/
 def ball (x : E) (r : ℝ) : Set E :=
   {y | dist y x < r}
 

@@ -27,19 +27,19 @@ private inductive SplitPosition
 private def getSplitCandidates (loc : Location) : TacticM (List (SplitPosition × Expr)) :=
 match loc with
 | Location.wildcard => do
-   let candidates ← (← getLCtx).getFVarIds.mapM
-     (fun fvarId ↦ do
-       let typ ← instantiateMVars (← inferType (mkFVar fvarId))
-       return (SplitPosition.hyp fvarId, typ))
-   pure ((SplitPosition.target, ← getMainTarget) :: candidates.toList)
+  let candidates ← (← getLCtx).getFVarIds.mapM
+    (fun fvarId ↦ do
+      let typ ← instantiateMVars (← inferType (mkFVar fvarId))
+      return (SplitPosition.hyp fvarId, typ))
+  pure ((SplitPosition.target, ← getMainTarget) :: candidates.toList)
 | Location.targets hyps tgt => do
-   let candidates ← (← hyps.mapM getFVarId).mapM
-     (fun fvarId ↦ do
-       let typ ← instantiateMVars (← inferType (mkFVar fvarId))
-       return (SplitPosition.hyp fvarId, typ))
-   if tgt
-   then return (SplitPosition.target, ← getMainTarget) :: candidates.toList
-   else return candidates.toList
+  let candidates ← (← hyps.mapM getFVarId).mapM
+    (fun fvarId ↦ do
+      let typ ← instantiateMVars (← inferType (mkFVar fvarId))
+      return (SplitPosition.hyp fvarId, typ))
+  if tgt
+  then return (SplitPosition.target, ← getMainTarget) :: candidates.toList
+  else return candidates.toList
 
 /-- Return the condition and decidable instance of an `if` expression to case split. -/
 private partial def findIfToSplit? (e : Expr) : Option (Expr × Expr) :=
