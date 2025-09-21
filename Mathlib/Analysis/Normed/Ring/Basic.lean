@@ -79,8 +79,8 @@ instance (priority := 100) NonUnitalNormedRing.toNonUnitalSeminormedRing
     [β : NonUnitalNormedRing α] : NonUnitalSeminormedRing α :=
   { β with }
 
-/-- A non-unital normed ring is a not-necessarily-unital ring
-endowed with a norm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
+/-- A non-unital non-associative normed ring is a not-necessarily-unital not-necessarily-associative
+ring endowed with a norm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 class NonUnitalNonAssocNormedRing (α : Type*) extends Norm α, NonUnitalNonAssocRing α, MetricSpace α
     where
   /-- The distance is induced by the norm. -/
@@ -89,7 +89,8 @@ class NonUnitalNonAssocNormedRing (α : Type*) extends Norm α, NonUnitalNonAsso
   norm_mul_le : ∀ a b, norm (a * b) ≤ norm a * norm b
 
 -- see Note [lower instance priority]
-/-- A normed ring is a seminormed ring. -/
+/-- A non-unital, non-associative normed ring is a non-unital, non-associativenon-unital,
+non-associative seminormed ring. -/
 instance (priority := 100) NonUnitalNonAssocNormedRing.toNonUnitalNonAssocSeminormedRing
     [β : NonUnitalNonAssocNormedRing α] : NonUnitalNonAssocSeminormedRing α :=
   { β with }
