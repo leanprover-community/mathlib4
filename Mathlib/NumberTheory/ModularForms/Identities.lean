@@ -15,7 +15,7 @@ Collection of useful identities of modular forms.
 
 noncomputable section
 
-open ModularForm UpperHalfPlane Matrix CongruenceSubgroup
+open ModularForm UpperHalfPlane Matrix CongruenceSubgroup Matrix.SpecialLinearGroup
 
 namespace SlashInvariantForm
 
@@ -23,12 +23,10 @@ namespace SlashInvariantForm
 theorem vAdd_width_periodic (N : ℕ) (k n : ℤ) (f : SlashInvariantForm (Gamma N) k) (z : ℍ) :
     f (((N * n) : ℝ) +ᵥ z) = f z := by
   norm_cast
-  rw [← modular_T_zpow_smul z (N * n)]
-  have := (ModularGroup_T_pow_mem_Gamma N (N * n) (Int.dvd_mul_right N n))
-  convert slash_action_eqn' f (Subgroup.mem_map_of_mem _ this) z
-  rw [SpecialLinearGroup.mapGL_coe_matrix, SpecialLinearGroup.map_apply_coe,
-    ModularGroup.coe_T_zpow (N * n)]
-  simp
+  rw [← modular_T_zpow_smul z (N * n), MulAction.compHom_smul_def, slash_action_eqn']
+  · simp [-map_zpow, ModularGroup.coe_T_zpow (N * n)]
+  · simpa using Subgroup.mem_map_of_mem (mapGL ℝ) <|
+      ModularGroup_T_pow_mem_Gamma _ _ (Int.dvd_mul_right N n)
 
 theorem T_zpow_width_invariant (N : ℕ) (k n : ℤ) (f : SlashInvariantForm (Gamma N) k) (z : ℍ) :
     f (((ModularGroup.T ^ (N * n))) • z) = f z := by
