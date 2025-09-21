@@ -28,14 +28,14 @@ namespace Finset
 
 section OrderedCommMonoid
 
-variable [CommMonoid M] [CommMonoid N] [PartialOrder N] [IsOrderedMonoid N]
+variable [CommMonoid M] [CommMonoid N] [PartialOrder N]
 
 /-- Let `{x | p x}` be a subsemigroup of a commutative monoid `M`. Let `f : M → N` be a map
 submultiplicative on `{x | p x}`, i.e., `p x → p y → f (x * y) ≤ f x * f y`. Let `g i`, `i ∈ s`, be
 a nonempty finite family of elements of `M` such that `∀ i ∈ s, p (g i)`. Then
 `f (∏ x ∈ s, g x) ≤ ∏ x ∈ s, f (g x)`. -/
 @[to_additive le_sum_nonempty_of_subadditive_on_pred]
-theorem le_prod_nonempty_of_submultiplicative_on_pred (f : M → N) (p : M → Prop)
+theorem le_prod_nonempty_of_submultiplicative_on_pred [IsOrderedMonoid N] (f : M → N) (p : M → Prop)
     (h_mul : ∀ x y, p x → p y → f (x * y) ≤ f x * f y) (hp_mul : ∀ x y, p x → p y → p (x * y))
     (g : ι → M) (s : Finset ι) (hs_nonempty : s.Nonempty) (hs : ∀ i ∈ s, p (g i)) :
     f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) := by
@@ -54,8 +54,9 @@ add_decl_doc le_sum_nonempty_of_subadditive_on_pred
 /-- If `f : M → N` is a submultiplicative function, `f (x * y) ≤ f x * f y` and `g i`, `i ∈ s`, is a
 nonempty finite family of elements of `M`, then `f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i)`. -/
 @[to_additive le_sum_nonempty_of_subadditive]
-theorem le_prod_nonempty_of_submultiplicative (f : M → N) (h_mul : ∀ x y, f (x * y) ≤ f x * f y)
-    {s : Finset ι} (hs : s.Nonempty) (g : ι → M) : f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) :=
+theorem le_prod_nonempty_of_submultiplicative [IsOrderedMonoid N] (f : M → N)
+    (h_mul : ∀ x y, f (x * y) ≤ f x * f y) {s : Finset ι} (hs : s.Nonempty) (g : ι → M) :
+    f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) :=
   le_prod_nonempty_of_submultiplicative_on_pred f (fun _ ↦ True) (fun x y _ _ ↦ h_mul x y)
     (fun _ _ _ _ ↦ trivial) g s hs fun _ _ ↦ trivial
 
@@ -68,9 +69,10 @@ such that `f 1 = 1` and `f` is submultiplicative on `{x | p x}`, i.e.,
 `p x → p y → f (x * y) ≤ f x * f y`. Let `g i`, `i ∈ s`, be a finite family of elements of `M` such
 that `∀ i ∈ s, p (g i)`. Then `f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i)`. -/
 @[to_additive le_sum_of_subadditive_on_pred]
-theorem le_prod_of_submultiplicative_on_pred (f : M → N) (p : M → Prop) (h_one : f 1 = 1)
-    (h_mul : ∀ x y, p x → p y → f (x * y) ≤ f x * f y) (hp_mul : ∀ x y, p x → p y → p (x * y))
-    (g : ι → M) {s : Finset ι} (hs : ∀ i ∈ s, p (g i)) : f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) := by
+theorem le_prod_of_submultiplicative_on_pred [IsOrderedMonoid N] (f : M → N) (p : M → Prop)
+    (h_one : f 1 = 1) (h_mul : ∀ x y, p x → p y → f (x * y) ≤ f x * f y)
+    (hp_mul : ∀ x y, p x → p y → p (x * y)) (g : ι → M) {s : Finset ι} (hs : ∀ i ∈ s, p (g i)) :
+    f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) := by
   rcases eq_empty_or_nonempty s with (rfl | hs_nonempty)
   · simp [h_one]
   · exact le_prod_nonempty_of_submultiplicative_on_pred f p h_mul hp_mul g s hs_nonempty hs
@@ -84,7 +86,7 @@ add_decl_doc le_sum_of_subadditive_on_pred
 /-- If `f : M → N` is a submultiplicative function, `f (x * y) ≤ f x * f y`, `f 1 = 1`, and `g i`,
 `i ∈ s`, is a finite family of elements of `M`, then `f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i)`. -/
 @[to_additive le_sum_of_subadditive]
-theorem le_prod_of_submultiplicative (f : M → N) (h_one : f 1 = 1)
+theorem le_prod_of_submultiplicative [IsOrderedMonoid N] (f : M → N) (h_one : f 1 = 1)
     (h_mul : ∀ x y, f (x * y) ≤ f x * f y) (s : Finset ι) (g : ι → M) :
     f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) :=
   le_trans (Multiset.le_prod_of_submultiplicative f h_one h_mul _) (by simp)
@@ -99,7 +101,7 @@ variable {f g : ι → N} {s t : Finset ι}
 equal to the corresponding factor `g i` of another finite product, then
 `∏ i ∈ s, f i ≤ ∏ i ∈ s, g i`. -/
 @[to_additive (attr := gcongr) sum_le_sum]
-theorem prod_le_prod' (h : ∀ i ∈ s, f i ≤ g i) : ∏ i ∈ s, f i ≤ ∏ i ∈ s, g i :=
+theorem prod_le_prod' [MulLeftMono N] (h : ∀ i ∈ s, f i ≤ g i) : ∏ i ∈ s, f i ≤ ∏ i ∈ s, g i :=
   Multiset.prod_map_le_prod_map f g h
 
 attribute [bound] sum_le_sum
@@ -109,37 +111,21 @@ or equal to the corresponding summand `g i` of another finite sum, then
 `∑ i ∈ s, f i ≤ ∑ i ∈ s, g i`. -/
 add_decl_doc sum_le_sum
 
-section MulLeftMono
-variable {N : Type*} [CommMonoid N] [PartialOrder N] [MulLeftMono N]
-variable {f g : ι → N} {s t : Finset ι}
-
 @[to_additive sum_nonneg]
-theorem one_le_prod' (h : ∀ i ∈ s, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => simp
-  | insert i s hins H =>
-      rw [Finset.prod_insert hins]
-      grind [one_le_mul]
+theorem one_le_prod' [MulLeftMono N] (h : ∀ i ∈ s, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
+  le_trans (by rw [prod_const_one]) (prod_le_prod' h)
 
 @[to_additive Finset.sum_nonneg']
-theorem one_le_prod'' (h : ∀ i : ι, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
+theorem one_le_prod'' [MulLeftMono N] (h : ∀ i : ι, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
   Finset.one_le_prod' fun i _ ↦ h i
 
 @[to_additive sum_nonpos]
-theorem prod_le_one' (h : ∀ i ∈ s, f i ≤ 1) : ∏ i ∈ s, f i ≤ 1 := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => simp
-  | insert i s hins H =>
-      rw [Finset.prod_insert hins]
-      grind [mul_le_one']
-
-end MulLeftMono
+theorem prod_le_one' [MulLeftMono N] (h : ∀ i ∈ s, f i ≤ 1) : ∏ i ∈ s, f i ≤ 1 :=
+  (prod_le_prod' h).trans_eq (by rw [prod_const_one])
 
 @[to_additive (attr := gcongr) sum_le_sum_of_subset_of_nonneg]
-theorem prod_le_prod_of_subset_of_one_le' (h : s ⊆ t) (hf : ∀ i ∈ t, i ∉ s → 1 ≤ f i) :
-    ∏ i ∈ s, f i ≤ ∏ i ∈ t, f i := by
+theorem prod_le_prod_of_subset_of_one_le' [MulLeftMono N] (h : s ⊆ t)
+    (hf : ∀ i ∈ t, i ∉ s → 1 ≤ f i) : ∏ i ∈ s, f i ≤ ∏ i ∈ t, f i := by
   classical calc
       ∏ i ∈ s, f i ≤ (∏ i ∈ t \ s, f i) * ∏ i ∈ s, f i :=
         le_mul_of_one_le_left' <| one_le_prod' <| by simpa only [mem_sdiff, and_imp]
@@ -147,16 +133,17 @@ theorem prod_le_prod_of_subset_of_one_le' (h : s ⊆ t) (hf : ∀ i ∈ t, i ∉
       _ = ∏ i ∈ t, f i := by rw [sdiff_union_of_subset h]
 
 @[to_additive sum_mono_set_of_nonneg]
-theorem prod_mono_set_of_one_le' (hf : ∀ x, 1 ≤ f x) : Monotone fun s ↦ ∏ x ∈ s, f x :=
+theorem prod_mono_set_of_one_le' [MulLeftMono N] (hf : ∀ x, 1 ≤ f x) :
+    Monotone fun s ↦ ∏ x ∈ s, f x :=
   fun _ _ hst ↦ prod_le_prod_of_subset_of_one_le' hst fun x _ _ ↦ hf x
 
 @[to_additive sum_le_univ_sum_of_nonneg]
-theorem prod_le_univ_prod_of_one_le' [Fintype ι] {s : Finset ι} (w : ∀ x, 1 ≤ f x) :
+theorem prod_le_univ_prod_of_one_le' [MulLeftMono N] [Fintype ι] {s : Finset ι} (w : ∀ x, 1 ≤ f x) :
     ∏ x ∈ s, f x ≤ ∏ x, f x :=
   prod_le_prod_of_subset_of_one_le' (subset_univ s) fun a _ _ ↦ w a
 
 @[to_additive sum_eq_zero_iff_of_nonneg]
-theorem prod_eq_one_iff_of_one_le' :
+theorem prod_eq_one_iff_of_one_le' [MulLeftMono N] :
     (∀ i ∈ s, 1 ≤ f i) → ((∏ i ∈ s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) := by
   classical
     refine Finset.induction_on s
@@ -167,31 +154,33 @@ theorem prod_eq_one_iff_of_one_le' :
       forall_mem_insert, ih this]
 
 @[to_additive sum_pos_iff_of_nonneg]
-lemma one_lt_prod_iff_of_one_le (hf : ∀ x ∈ s, 1 ≤ f x) :
+lemma one_lt_prod_iff_of_one_le [MulLeftMono N] (hf : ∀ x ∈ s, 1 ≤ f x) :
     1 < ∏ x ∈ s, f x ↔ ∃ x ∈ s, 1 < f x := by
   have hsum : 1 ≤ ∏ x ∈ s, f x := one_le_prod' hf
   rw [hsum.lt_iff_ne', Ne, prod_eq_one_iff_of_one_le' hf, not_forall]
   simp +contextual [← exists_prop, - exists_const_iff, hf _ _ |>.lt_iff_ne']
 
 @[to_additive sum_eq_zero_iff_of_nonpos]
-theorem prod_eq_one_iff_of_le_one' :
+theorem prod_eq_one_iff_of_le_one' [MulLeftMono N] :
     (∀ i ∈ s, f i ≤ 1) → ((∏ i ∈ s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) :=
   prod_eq_one_iff_of_one_le' (N := Nᵒᵈ)
 
 @[to_additive]
-lemma prod_lt_one_iff_of_le_one (hf : ∀ x ∈ s, f x ≤ 1) :
+lemma prod_lt_one_iff_of_le_one [MulLeftMono N] (hf : ∀ x ∈ s, f x ≤ 1) :
     ∏ x ∈ s, f x < 1 ↔ ∃ x ∈ s, f x < 1 :=
   one_lt_prod_iff_of_one_le (N := Nᵒᵈ) hf
 
 @[to_additive single_le_sum]
-theorem single_le_prod' (hf : ∀ i ∈ s, 1 ≤ f i) {a} (h : a ∈ s) : f a ≤ ∏ x ∈ s, f x :=
+theorem single_le_prod' [MulLeftMono N] (hf : ∀ i ∈ s, 1 ≤ f i) {a} (h : a ∈ s) :
+    f a ≤ ∏ x ∈ s, f x :=
   calc
     f a = ∏ i ∈ {a}, f i := (prod_singleton _ _).symm
     _ ≤ ∏ i ∈ s, f i :=
       prod_le_prod_of_subset_of_one_le' (singleton_subset_iff.2 h) fun i hi _ ↦ hf i hi
 
 @[to_additive]
-lemma mul_le_prod {i j : ι} (hf : ∀ i ∈ s, 1 ≤ f i) (hi : i ∈ s) (hj : j ∈ s) (hne : i ≠ j) :
+lemma mul_le_prod [MulLeftMono N] {i j : ι} (hf : ∀ i ∈ s, 1 ≤ f i) (hi : i ∈ s) (hj : j ∈ s)
+    (hne : i ≠ j) :
     f i * f j ≤ ∏ k ∈ s, f k :=
   calc
     f i * f j = ∏ k ∈ .cons i {j} (by simpa), f k := by rw [prod_cons, prod_singleton]
@@ -200,14 +189,14 @@ lemma mul_le_prod {i j : ι} (hf : ∀ i ∈ s, 1 ≤ f i) (hi : i ∈ s) (hj : 
       simp [cons_subset, *]
 
 @[to_additive sum_le_card_nsmul]
-theorem prod_le_pow_card (s : Finset ι) (f : ι → N) (n : N) (h : ∀ x ∈ s, f x ≤ n) :
+theorem prod_le_pow_card [MulLeftMono N] (s : Finset ι) (f : ι → N) (n : N) (h : ∀ x ∈ s, f x ≤ n) :
     s.prod f ≤ n ^ #s := by
   refine (Multiset.prod_le_pow_card (s.val.map f) n ?_).trans ?_
   · simpa using h
   · simp
 
 @[to_additive card_nsmul_le_sum]
-theorem pow_card_le_prod (s : Finset ι) (f : ι → N) (n : N) (h : ∀ x ∈ s, n ≤ f x) :
+theorem pow_card_le_prod [MulLeftMono N] (s : Finset ι) (f : ι → N) (n : N) (h : ∀ x ∈ s, n ≤ f x) :
     n ^ #s ≤ s.prod f := Finset.prod_le_pow_card (N := Nᵒᵈ) _ _ _ h
 
 theorem card_biUnion_le_card_mul [DecidableEq β] (s : Finset ι) (f : ι → Finset β) (n : ℕ)
@@ -217,8 +206,8 @@ theorem card_biUnion_le_card_mul [DecidableEq β] (s : Finset ι) (f : ι → Fi
 variable {ι' : Type*} [DecidableEq ι']
 
 @[to_additive sum_fiberwise_le_sum_of_sum_fiber_nonneg]
-theorem prod_fiberwise_le_prod_of_one_le_prod_fiber' {t : Finset ι'} {g : ι → ι'} {f : ι → N}
-    (h : ∀ y ∉ t, (1 : N) ≤ ∏ x ∈ s with g x = y, f x) :
+theorem prod_fiberwise_le_prod_of_one_le_prod_fiber' [MulLeftMono N] {t : Finset ι'} {g : ι → ι'}
+    {f : ι → N} (h : ∀ y ∉ t, (1 : N) ≤ ∏ x ∈ s with g x = y, f x) :
     (∏ y ∈ t, ∏ x ∈ s with g x = y, f x) ≤ ∏ x ∈ s, f x :=
   calc
     (∏ y ∈ t, ∏ x ∈ s with g x = y, f x) ≤
@@ -228,13 +217,13 @@ theorem prod_fiberwise_le_prod_of_one_le_prod_fiber' {t : Finset ι'} {g : ι �
       prod_fiberwise_of_maps_to (fun _ hx ↦ mem_union.2 <| Or.inr <| mem_image_of_mem _ hx) _
 
 @[to_additive sum_le_sum_fiberwise_of_sum_fiber_nonpos]
-theorem prod_le_prod_fiberwise_of_prod_fiber_le_one' {t : Finset ι'} {g : ι → ι'} {f : ι → N}
-    (h : ∀ y ∉ t, ∏ x ∈ s with g x = y, f x ≤ 1) :
+theorem prod_le_prod_fiberwise_of_prod_fiber_le_one' [MulLeftMono N] {t : Finset ι'} {g : ι → ι'}
+    {f : ι → N} (h : ∀ y ∉ t, ∏ x ∈ s with g x = y, f x ≤ 1) :
     ∏ x ∈ s, f x ≤ ∏ y ∈ t, ∏ x ∈ s with g x = y, f x :=
   prod_fiberwise_le_prod_of_one_le_prod_fiber' (N := Nᵒᵈ) h
 
 @[to_additive]
-lemma prod_image_le_of_one_le
+lemma prod_image_le_of_one_le [MulLeftMono N]
     {g : ι → ι'} {f : ι' → N} (hf : ∀ u ∈ s.image g, 1 ≤ f u) :
     ∏ u ∈ s.image g, f u ≤ ∏ u ∈ s, f (g u) := by
   rw [prod_comp f g]
@@ -260,12 +249,12 @@ theorem abs_sum_le_sum_abs {G : Type*} [AddCommGroup G] [LinearOrder G] [IsOrder
     (f : ι → G) (s : Finset ι) :
     |∑ i ∈ s, f i| ≤ ∑ i ∈ s, |f i| := le_sum_of_subadditive _ abs_zero abs_add s f
 
-theorem abs_sum_of_nonneg {G : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G]
+theorem abs_sum_of_nonneg {G : Type*} [AddCommGroup G] [LinearOrder G] [AddLeftMono G]
     {f : ι → G} {s : Finset ι}
     (hf : ∀ i ∈ s, 0 ≤ f i) : |∑ i ∈ s, f i| = ∑ i ∈ s, f i := by
   rw [abs_of_nonneg (Finset.sum_nonneg hf)]
 
-theorem abs_sum_of_nonneg' {G : Type*} [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G]
+theorem abs_sum_of_nonneg' {G : Type*} [AddCommGroup G] [LinearOrder G] [AddLeftMono G]
     {f : ι → G} {s : Finset ι}
     (hf : ∀ i, 0 ≤ f i) : |∑ i ∈ s, f i| = ∑ i ∈ s, f i := by
   rw [abs_of_nonneg (Finset.sum_nonneg' hf)]
@@ -564,19 +553,17 @@ end Finset
 
 namespace Fintype
 section OrderedCommMonoid
-variable [Fintype ι] [CommMonoid M] [PartialOrder M] {f : ι → M}
+variable [Fintype ι] [CommMonoid M] [PartialOrder M] [MulLeftMono M] {f : ι → M}
 
 @[to_additive (attr := mono) sum_mono]
-theorem prod_mono' [IsOrderedMonoid M] : Monotone fun f : ι → M ↦ ∏ i, f i := fun _ _ hfg ↦
+theorem prod_mono' : Monotone fun f : ι → M ↦ ∏ i, f i := fun _ _ hfg ↦
   Finset.prod_le_prod' fun x _ ↦ hfg x
 
 @[to_additive sum_nonneg]
-lemma one_le_prod [MulLeftMono M] (hf : 1 ≤ f) : 1 ≤ ∏ i, f i := Finset.one_le_prod' fun _ _ ↦ hf _
+lemma one_le_prod (hf : 1 ≤ f) : 1 ≤ ∏ i, f i := Finset.one_le_prod' fun _ _ ↦ hf _
 
-@[to_additive] lemma prod_le_one [MulLeftMono M] (hf : f ≤ 1) : ∏ i, f i ≤ 1 :=
+@[to_additive] lemma prod_le_one (hf : f ≤ 1) : ∏ i, f i ≤ 1 :=
   Finset.prod_le_one' fun _ _ ↦ hf _
-
-variable [IsOrderedMonoid M]
 
 @[to_additive]
 lemma prod_eq_one_iff_of_one_le (hf : 1 ≤ f) : ∏ i, f i = 1 ↔ f = 1 :=
