@@ -63,15 +63,6 @@ namespace CopyDiscardCategory
 
 variable [CopyDiscardCategory C]
 
-/-! ### Tensor product lemmas -/
-
--- Note: copy_tensor_simp was removed as it was redundant with copy_tensor
-
-/-- How to discard tensor products. -/
-@[simp]
-lemma discard_tensor_simp (X Y : C) : ε[X ⊗ Y] = (ε[X] ⊗ₘ ε[Y]) ≫ (λ_ (𝟙_ C)).hom :=
-  discard_tensor X Y
-
 end CopyDiscardCategory
 
 end CategoryTheory
