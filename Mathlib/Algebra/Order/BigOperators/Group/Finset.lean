@@ -564,16 +564,19 @@ end Finset
 
 namespace Fintype
 section OrderedCommMonoid
-variable [Fintype ι] [CommMonoid M] [PartialOrder M] [IsOrderedMonoid M] {f : ι → M}
+variable [Fintype ι] [CommMonoid M] [PartialOrder M] {f : ι → M}
 
 @[to_additive (attr := mono) sum_mono]
-theorem prod_mono' : Monotone fun f : ι → M ↦ ∏ i, f i := fun _ _ hfg ↦
+theorem prod_mono' [IsOrderedMonoid M] : Monotone fun f : ι → M ↦ ∏ i, f i := fun _ _ hfg ↦
   Finset.prod_le_prod' fun x _ ↦ hfg x
 
 @[to_additive sum_nonneg]
-lemma one_le_prod (hf : 1 ≤ f) : 1 ≤ ∏ i, f i := Finset.one_le_prod' fun _ _ ↦ hf _
+lemma one_le_prod [MulLeftMono M] (hf : 1 ≤ f) : 1 ≤ ∏ i, f i := Finset.one_le_prod' fun _ _ ↦ hf _
 
-@[to_additive] lemma prod_le_one (hf : f ≤ 1) : ∏ i, f i ≤ 1 := Finset.prod_le_one' fun _ _ ↦ hf _
+@[to_additive] lemma prod_le_one [MulLeftMono M] (hf : f ≤ 1) : ∏ i, f i ≤ 1 :=
+  Finset.prod_le_one' fun _ _ ↦ hf _
+
+variable [IsOrderedMonoid M]
 
 @[to_additive]
 lemma prod_eq_one_iff_of_one_le (hf : 1 ≤ f) : ∏ i, f i = 1 ↔ f = 1 :=
