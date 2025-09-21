@@ -16,9 +16,9 @@ we provide some order properties of the `MonoidWithZeroHom.valueGroup₀` as def
 
 namespace MonoidWithZeroHom
 
-variable {A B F : Type*} [FunLike F A B]
+variable {A B : Type*}
 variable [MonoidWithZero A] [LinearOrderedCommGroupWithZero B]
-variable [MonoidWithZeroHomClass F A B] {f : F}
+variable {f : A →*₀ B}
 
 open WithZero
 
@@ -28,8 +28,7 @@ def valueGroup₀_MonoidWithZeroHom : ValueGroup₀ f →*₀ WithZero Bˣ :=
   WithZero.map' (valueGroup f).subtype
 
 lemma valueGroup₀_MonoidWithZeroHom_strictMono :
-    StrictMono (valueGroup₀_MonoidWithZeroHom (f := f)) :=
-  map'_strictMono (Subtype.strictMono_coe _)
+    StrictMono (valueGroup₀_MonoidWithZeroHom (f := f)):= map'_strictMono (Subtype.strictMono_coe _)
 
 /-- The inclusion of `ValueGroup₀ f` into `WithZero Bˣ` as an order embedding. In general, prefer
 the use of `valueGroup₀_MonoidWithZeroHom` and apply the above lemma
