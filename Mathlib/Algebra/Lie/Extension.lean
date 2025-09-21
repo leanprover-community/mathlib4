@@ -3,8 +3,9 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Lie.Ideal
 import Mathlib.Algebra.Lie.CochainTrivial
+import Mathlib.Algebra.Lie.Ideal
+import Mathlib.Algebra.Module.TransferInstance
 
 /-!
 # Extensions of Lie algebras
@@ -20,7 +21,7 @@ homomorphisms as parameters, and `Extension` is a structure that includes the mi
 ## TODO
 * `IsCentral` - central extensions
 * `Equiv` - equivalence of extensions
-* `ofTwoCocycle` - construction of extensions from 2-cocycles
+* `ofTwoCocycleAlg` - construction of extensions from 2-cocycles
 
 ## References
 * [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*](bourbaki1975)
@@ -134,132 +135,94 @@ instance : Group (E.Equiv E) where
   mul_one _ := rfl
   inv_mul_cancel x := by ext; simp
 
-/-- `Splitting` of a Lie extension is a section homomorphism. -/
-structure Splitting where
-  /-- A section homomorphism -/
-  sectionHom : M →ₗ⁅R⁆ E.L
-  /-- The section is a left inverse of the projection map. -/
-  leftInv : Function.LeftInverse E.proj sectionHom
+/-- A one-field structure giving a type synonym for a direct product. We use this to describe an
+alternative Lie algebra structure on the product, where the bracket is shifted by a 2-cocycle. -/
+structure ofTwoCocycleAlg {R L V} [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup V]
+    [Module R V] (c : twoCocycle R L V) where
+  /-- The underlying type. -/
+  carrier : L × V
 
-instance : FunLike (Splitting E) M E.L where
-  coe s := s.sectionHom
-  coe_injective' := by
-    intro ⟨_, _⟩ ⟨_, _⟩ h
-    congr
-    exact DFunLike.coe_injective h
+variable [AddCommGroup V] [Module R V] (c : twoCocycle R L V)
 
-instance : LinearMapClass (Splitting E) R M E.L where
-  map_add f := f.sectionHom.map_add'
-  map_smulₛₗ f := f.sectionHom.map_smul'
+/-- An equivalence between the direct product and the corresponding one-field structure. This is
+used to transfer the additive and scalar-multiple structure on the direct product to the type
+synonym. -/
+@[reducible]
+def ofProd : L × V ≃ ofTwoCocycleAlg c where
+  toFun a := ⟨ a ⟩
+  invFun a := a.carrier
 
-section TwoCocycleTriv
+-- transport instances along equivalence!
+instance : AddCommGroup (ofTwoCocycleAlg c) := (ofProd c).symm.addCommGroup
 
-/-- A Lie algebra 2-cocycle with coefficients in a module with trivial action. We do not define the
-trivial action of `L` on `V`. -/
-structure twoCocycleTriv (R L V) [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup V]
-    [Module R V] where
-  /-- The underlying bilinear map. -/
-  toFun : L →ₗ[R] L →ₗ[R] V
-  map_eq_zero_of_eq' x : toFun x x = 0
-  cocycle x y z : toFun x ⁅y, z⁆ = toFun ⁅x, y⁆ z + toFun y ⁅x, z⁆
-
-/-- The canonical injection from cocycles to cochains. -/
-def toCochain [AddCommGroup V] [Module R V] : (twoCocycleTriv R L V) → (twoCochain R L V) :=
-  fun ⟨a, h, _⟩ ↦ ⟨a, h⟩
-
-theorem toCochain_toBilin [AddCommGroup V] [Module R V] (a : twoCocycleTriv R L V) :
-    (toCochain a).toBilin = a.toFun :=
-  rfl
-
-theorem image_eq_kernel [AddCommGroup V] [Module R V] (a : twoCochain R L V) :
-    a ∈ (Set.range toCochain) ↔ a ∈ twoCocycle R L V := by
-  rw [mem_twoCocycle_iff, Set.mem_range]
-  constructor
-  · intro h
-    obtain ⟨b, hb⟩ := h
-    ext x y z
-    simp only [d₂₃_apply_apply, LinearMap.zero_apply, Pi.zero_apply]
-    have := b.cocycle x y z
-    rw [← toCochain_toBilin, hb, ← twoCochain_skew R L V _ z, ← lie_skew x z,
-      LinearMap.map_neg] at this
-    simp [this]
-  · intro h
-    have := (mem_twoCocycle_iff_Jacobi_like R L V a).mp h
-    use ⟨a.toBilin, a.alt, this⟩
-    simp [toCochain]
-
-variable [AddCommGroup V] [Module R V] (c : twoCocycleTriv R L V)
-
-set_option linter.unusedVariables false in
-/-- We introduce a type alias for `L × V` in order to avoid typeclass inference problems with
-central extensions. -/
-@[nolint unusedArguments]
-def ofTwoCocycleTrivModule (c : twoCocycleTriv R L V) := L × V
-
-/-- The casting function to the type synonym. -/
---@[reducible] -- this makes a mess
-def ofProd : L × V ≃ ofTwoCocycleTrivModule c := Equiv.refl _
-
-instance : AddCommGroup (ofTwoCocycleTrivModule c) :=
-  inferInstanceAs <| AddCommGroup (L × V)
-
-instance : Module R (ofTwoCocycleTrivModule c) :=
-  inferInstanceAs <| Module R (L × V)
+instance : Module R (ofTwoCocycleAlg c) := (ofProd c).symm.module R
 
 @[simp] theorem of_zero : ofProd c (0 : L × V) = 0 := rfl
 @[simp] theorem of_add (x y : L × V) : ofProd c (x + y) = ofProd c x + ofProd c y := rfl
 @[simp] theorem of_smul (r : R) (x : L × V) : (ofProd c) (r • x) = r • ofProd c x := rfl
 
-@[simp] theorem of_symm_zero : (ofProd c).symm (0 : ofTwoCocycleTrivModule c) = 0 := rfl
-@[simp] theorem of_symm_add (x y : ofTwoCocycleTrivModule c) :
+@[simp] theorem of_symm_zero : (ofProd c).symm (0 : ofTwoCocycleAlg c) = 0 := rfl
+@[simp] theorem of_symm_add (x y : ofTwoCocycleAlg c) :
   (ofProd c).symm (x + y) = (ofProd c).symm x + (ofProd c).symm y := rfl
-@[simp] theorem of_symm_smul (r : R) (x : ofTwoCocycleTrivModule c) :
+@[simp] theorem of_symm_smul (r : R) (x : ofTwoCocycleAlg c) :
   (ofProd c).symm (r • x) = r • (ofProd c).symm x := rfl
 
 @[simp] theorem of_nsmul (n : ℕ) (x : L × V) :
   (ofProd c) (n • x) = n • (ofProd c) x := rfl
-@[simp] theorem of_symm_nsmul (n : ℕ) (x : ofTwoCocycleTrivModule c) :
+@[simp] theorem of_symm_nsmul (n : ℕ) (x : ofTwoCocycleAlg c) :
   (ofProd c).symm (n • x) = n • (ofProd c).symm x := rfl
 
-instance : LieRing (ofTwoCocycleTrivModule c) where
-  bracket x y := (⁅x.1, y.1⁆, c.toFun x.1 y.1)
-  add_lie x y z := by simp [ofTwoCocycleTrivModule]
-  lie_add x y z := by simp [ofTwoCocycleTrivModule]
-  lie_self x := by simp [c.map_eq_zero_of_eq', Prod.mk_zero_zero]
-  leibniz_lie x y z := by simp [ofTwoCocycleTrivModule, c.cocycle x.1 y.1 z.1]
+instance : LieRing (ofTwoCocycleAlg c) where
+  bracket x y := ofProd c (⁅x.carrier.1, y.carrier.1⁆,
+    c.1.toBilin x.carrier.1 y.carrier.1)
+  add_lie x y z := by
+    rw [← of_add, show (x + y).carrier = x.carrier + y.carrier by rfl]
+    refine Equiv.congr_arg ?_
+    simp
+  lie_add x y z := by
+    rw [← of_add, show (y + z).carrier = y.carrier + z.carrier by rfl]
+    exact Equiv.congr_arg (by simp)
+  lie_self x := by
+    rw [← of_zero, twoCochain.alt]
+    exact Equiv.congr_arg (by simp)
+  leibniz_lie x y z := by
+    rw [← of_add]
+    refine Equiv.congr_arg ?_
+    simp only [Equiv.coe_fn_mk, lie_lie, Prod.mk_add_mk, sub_add_cancel, Prod.mk.injEq, true_and]
+    rw [(mem_twoCocycle_iff_Jacobi_like R L V c.1).mp c.2]
 
-@[simp]
-lemma bracket_ofTwoCocycleTriv {c : twoCocycleTriv R L V}
-    (x y : ofTwoCocycleTrivModule c) : ⁅x, y⁆ = (⁅x.1, y.1⁆, c.toFun x.1 y.1) :=
+lemma bracket_ofTwoCocycleAlg {c : twoCocycle R L V}
+    (x y : ofTwoCocycleAlg c) : ⁅x, y⁆ =
+      ofProd c (⁅x.carrier.1, y.carrier.1⁆, c.1.toBilin x.carrier.1 y.carrier.1) :=
   rfl
 
-instance : LieAlgebra R (ofTwoCocycleTrivModule c) where
+instance : LieAlgebra R (ofTwoCocycleAlg c) where
   lie_smul r x y := by
-    simp only [bracket_ofTwoCocycleTriv]
-    rw [show (r • y).1 = r • (y.1) by rfl, lie_smul r x.1 y.1, map_smul (c.toFun x.1) r y.1,
-      Prod.smul_mk]
+    simp only [bracket_ofTwoCocycleAlg]
+    rw [show (r • y).carrier.1 = r • (y.carrier.1) by rfl, ← of_smul]
+    exact Equiv.congr_arg (by simp)
 
 /-- The Lie algebra map from a central extension. -/
-def twoCocycleTrivProj : (ofTwoCocycleTrivModule c) →ₗ⁅R⁆ L where
-  toLinearMap := LinearMap.fst R L V
-  map_lie' {x y} := by
-    simp only [ofTwoCocycleTrivModule, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
-      LinearMap.fst_apply]
-    exact rfl
+def twoCocycleProj : (ofTwoCocycleAlg c) →ₗ⁅R⁆ L where
+  toLinearMap := {
+    toFun x := ((ofProd c).symm x).1
+    map_add' _ _ := by simp
+    map_smul' _ _ := by simp }
+  map_lie' {x y} := by simp [bracket_ofTwoCocycleAlg]
 
-lemma surjective_of_cocycle : Function.Surjective (twoCocycleTrivProj c) :=
-  fun x ↦ Exists.intro (x, 0) rfl
+lemma surjective_of_cocycle : Function.Surjective (twoCocycleProj c) := by
+  intro x
+  use ofProd c (x, 0)
+  simp [twoCocycleProj]
 
-lemma isExtensionTwoCocycleTriv :
-    LieAlgebra.IsExtension (twoCocycleTrivProj c).ker.incl (twoCocycleTrivProj c) :=
-  isExtension.of_surjective (twoCocycleTrivProj c) (surjective_of_cocycle c)
+lemma isExtension_of_twoCocycle :
+    LieAlgebra.IsExtension (twoCocycleProj c).ker.incl (twoCocycleProj c) :=
+  isExtension.of_surjective (twoCocycleProj c) (surjective_of_cocycle c)
 
 /-- A Lie extension from a trivial 2-cocycle -/
-def ofTwoCocycleTriv :
-    Extension R (twoCocycleTrivProj c).ker L :=
-  IsExtension.extension (isExtensionTwoCocycleTriv c)
-
-end TwoCocycleTriv
+def ofTwoCocycle :
+    Extension R (twoCocycleProj c).ker L :=
+  IsExtension.extension (isExtension_of_twoCocycle c)
 
 end Extension
 

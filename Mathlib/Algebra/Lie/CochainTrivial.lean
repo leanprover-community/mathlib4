@@ -154,6 +154,9 @@ lemma mem_twoCocycle_iff_Jacobi_like (a : twoCochain R L M) :
 /-- A Lie 2-coboundary is a 2-cochain that lies in the image of the coboundary map. -/
 def twoCoboundary : Submodule R (twoCochain R L M) := LinearMap.range (d₁₂ R L M)
 
+/-- superfluous? -/
+def coboundaryMap : oneCochain R L M →ₗ[R] twoCoboundary R L M := (d₁₂ R L M).rangeRestrict
+
 lemma twoCoboundary_le_twoCocycle : (twoCoboundary R L M) ≤ (twoCocycle R L M) := by
   intro _ h
   obtain ⟨b, hb⟩ := h
