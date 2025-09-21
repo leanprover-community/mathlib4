@@ -27,28 +27,29 @@ namespace ContinuousLinearMap
 
 variable [NormedSpace ℝ F]
 
-theorem integral_compLp (L : E →L[𝕜] F) (φ : Lp E p μ) :
+variable {σ : 𝕜 →+* 𝕜} [RingHomIsometric σ]
+
+theorem integral_compLp (L : E →SL[σ] F) (φ : Lp E p μ) :
     ∫ x, (L.compLp φ) x ∂μ = ∫ x, L (φ x) ∂μ :=
   integral_congr_ae <| coeFn_compLp _ _
 
-theorem setIntegral_compLp (L : E →L[𝕜] F) (φ : Lp E p μ) {s : Set X} (hs : MeasurableSet s) :
+theorem setIntegral_compLp (L : E →SL[σ] F) (φ : Lp E p μ) {s : Set X} (hs : MeasurableSet s) :
     ∫ x in s, (L.compLp φ) x ∂μ = ∫ x in s, L (φ x) ∂μ :=
   setIntegral_congr_ae hs ((L.coeFn_compLp φ).mono fun _x hx _ => hx)
 
-theorem continuous_integral_comp_L1 (L : E →L[𝕜] F) :
+theorem continuous_integral_comp_L1 (L : E →SL[σ] F) :
     Continuous fun φ : X →₁[μ] E => ∫ x : X, L (φ x) ∂μ := by
   rw [← funext L.integral_compLp]; exact continuous_integral.comp (L.compLpL 1 μ).continuous
 
 variable [CompleteSpace F] [NormedSpace ℝ E]
 
-theorem integral_comp_comm' [CompleteSpace E] (L : E →L[𝕜] F) {φ : X → E} (φ_int : Integrable φ μ) :
-    ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) := by
+theorem integral_comp_commSL [CompleteSpace E] (hσ : ∀ (r : ℝ) (x : 𝕜), σ (r • x) = r • σ x)
+    (L : E →SL[σ] F) {φ : X → E} (φ_int : Integrable φ μ) : ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) := by
   apply φ_int.induction (P := fun φ => ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ))
   · intro e s s_meas _
     rw [integral_indicator_const e s_meas, ← @smul_one_smul E ℝ 𝕜 _ _ _ _ _ (μ.real s) e,
-      ContinuousLinearMap.map_smul]
-    rw [@smul_one_smul F ℝ 𝕜 _ _ _ _ _ (μ.real s) (L e), ←
-      integral_indicator_const (L e) s_meas]
+      ContinuousLinearMap.map_smulₛₗ, hσ, map_one, smul_assoc, one_smul,
+      ← integral_indicator_const (L e) s_meas]
     congr 1 with a
     rw [← Function.comp_def L, Set.indicator_comp_of_zero L.map_zero, Function.comp_apply]
   · intro f g _ f_int g_int hf hg
@@ -60,29 +61,8 @@ theorem integral_comp_comm' [CompleteSpace E] (L : E →L[𝕜] F) {φ : X → E
     · exact integral_congr_ae (hfg.fun_comp L).symm
     · rw [integral_congr_ae hfg.symm]
 
-variable {σ : 𝕜 →+* 𝕜}
-
-theorem integral_comp_commSL [CompleteSpace E] (L : E →L⋆[𝕜] F) {φ : X → E} (φ_int : Integrable φ μ) :
-    ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) := by
-  apply φ_int.induction (P := fun φ => ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ))
-  · intro e s s_meas _
-    rw [integral_indicator_const e s_meas, ← @smul_one_smul E ℝ 𝕜 _ _ _ _ _ (μ.real s) e,
-      ContinuousLinearMap.map_smulₛₗ]
-    rw [RCLike.conj_smul, map_one, smul_assoc, one_smul]
-    rw [← integral_indicator_const (L e) s_meas]
-    congr 1 with a
-    rw [← Function.comp_def L, Set.indicator_comp_of_zero L.map_zero, Function.comp_apply]
-  · intro f g _ f_int g_int hf hg
-    simp [L.map_add, integral_add (μ := μ) f_int g_int,
-      integral_add (μ := μ) (L.integrable_comp f_int) (L.integrable_comp g_int), hf, hg]
-    sorry
-  · exact isClosed_eq L.continuous_integral_comp_L1 (L.continuous.comp continuous_integral)
-  · intro f g hfg _ hf
-    convert hf using 1 <;> clear hf
-    · exact integral_congr_ae (hfg.fun_comp L).symm
-    · rw [integral_congr_ae hfg.symm]
-
-#exit
+theorem integral_comp_comm [CompleteSpace E] (L : E →L[𝕜] F) {φ : X → E} (φ_int : Integrable φ μ) :
+    ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) := integral_comp_commSL (by simp) L φ_int
 
 theorem integral_apply {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {φ : X → H →L[𝕜] E}
     (φ_int : Integrable φ μ) (v : H) : (∫ x, φ x ∂μ) v = ∫ x, φ x v ∂μ := by
