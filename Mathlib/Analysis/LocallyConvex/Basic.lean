@@ -28,6 +28,10 @@ For a module over a normed ring:
   `s`.
 * `Balanced`: A set `s` is balanced if `a • s ⊆ s` for all `a` of norm less than `1`.
 
+## Main Results
+* `absorbent_subset_image_iff_surjective` shows that when the base ring is nontrivially normed, a
+  linear function is surjective if and only if its image contains an absorbent set.
+
 ## References
 
 * [H. H. Schaefer, *Topological Vector Spaces*][schaefer1966]
@@ -277,8 +281,21 @@ protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (co
   simp only [smul_add, ← smul_comm]
   exact convex_convexHull ℝ s (hx a ha) (hy a ha) hu hv huv
 
-end NontriviallyNormedField
+variable (F ℱ : Type*) [SeminormedAddCommGroup F] [Module 𝕜 F]
+variable [FunLike ℱ F E] [LinearMapClass ℱ 𝕜 F E]
 
+omit [Module ℝ E] in
+theorem absorbent_subset_image_iff_surjective {f : ℱ} {s : Set E} (hs_abs : Absorbent 𝕜 s) :
+    s ⊆ Set.range f ↔ (⇑f).Surjective := by
+  refine ⟨fun hs_sub y ↦ ?_, by simp_all⟩
+  obtain ⟨r, -, hr⟩ := Absorbs.exists_pos (hs_abs y)
+  specialize hr _ <| le_of_lt (NormedField.exists_lt_norm 𝕜 r).choose_spec
+  grw [hs_sub] at hr
+  obtain ⟨_, ⟨z, _⟩, _⟩ := Set.singleton_subset_iff.mp hr
+  use (NormedField.exists_lt_norm 𝕜 r).choose • z
+  simp_all
+
+end NontriviallyNormedField
 section Real
 
 variable [AddCommGroup E] [Module ℝ E] {s : Set E}
