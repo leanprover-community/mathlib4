@@ -336,7 +336,7 @@ theorem posSemidef_sum [AddLeftMono R]
     {x : ι → Matrix n n R} (s : Finset ι) (h : ∀ i ∈ s, PosSemidef (x i)) :
     PosSemidef (∑ i ∈ s, x i) := by
   refine ⟨isSelfAdjoint_sum s fun _ hi => h _ hi |>.1, fun y => ?_⟩
-  simp [sum_mulVec, dotProduct_sum, Finset.sum_nonneg' (fun _ hi => (h _ hi).2 _)]
+  simp [sum_mulVec, dotProduct_sum, Finset.sum_nonneg (fun _ hi => (h _ hi).2 _)]
 
 section trace
 -- TODO: move these results to an earlier file
