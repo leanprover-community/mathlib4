@@ -11,7 +11,7 @@ import Mathlib.RepresentationTheory.FDRep
 This file introduces facts on representations of monoids that only holds for commutative monoids.
 
 A key result shown in `finrank_eq_one_simple_of_commMonoid` is that for a commutative monoid, the
-simple finite dimensional representations over algebraically closed fields are all 1-dimensional.
+simple finite dimensional representations over algebraically closed fields are all one-dimensional.
 
 -/
 
@@ -25,23 +25,16 @@ variable {k G : Type u} [Field k] [CommMonoid G]
 simple representation of `G` has dimension 1. -/
 theorem finrank_eq_one_simple_of_commMonoid [IsAlgClosed k]
     {V : FDRep k G} [Simple V] : finrank k V = 1 := by
-  -- Appealing to the fact that simple objects are not zero objects would be more complicated here,
-  -- so instead, we use that `0 = 𝟙` holds for rank 0 spaces, since they are subsingletons,
-  -- but not for simple objects.
-  have finrank_pos : 0 < finrank k V := by
-    by_contra! h
-    rw[nonpos_iff_eq_zero, Module.finrank_zero_iff] at h
-    apply id_nonzero V
-    ext a
-    change Subsingleton ↑V.V.obj at h
-    apply Subsingleton.allEq
+  -- exclude the case of dim 0 representations
+  have finrank_pos : 0 < finrank k V := FDRep.finrank_pos_of_simple V
   rw[finrank_pos_iff_exists_ne_zero] at finrank_pos
   obtain ⟨x, x_nonzero⟩ := finrank_pos
   -- We show that for any nonzero `x : V`, the span of `x` is a subrepresentation.
   -- We have to explicitly show it is a representation since the relationship
   -- between `FDRep` and `Rep` is not developed well enough yet.
   -- TODO: fix this when made possible
-  let W := ↥ (Submodule.span k {x})
+  let W := Submodule.span k {x}
+  -- This is true since `G` is abelian, such that each `V.ρ g` is a representation morphism, ...
   let rho_endo (g : G) : V ⟶ V := ⟨FGModuleCat.ofHom <| V.ρ g, by
     intro h
     ext a
@@ -49,9 +42,11 @@ theorem finrank_eq_one_simple_of_commMonoid [IsAlgClosed k]
     rw[← map_mul, ← map_mul, mul_comm]⟩
   have invariant (g y) (hy : y ∈ Submodule.span k {x}) : (V.ρ g) y ∈ Submodule.span k {x} := by
     change (rho_endo g) y ∈ Submodule.span k {x}
+  -- ...hence by Schur's lemma, it acts as a scalar and every subspace is invariant.
     obtain ⟨c, eq⟩ := endomorphism_simple_eq_smul_id k <| rho_endo g
     rw[← eq]
     exact (Submodule.span k {x}).smul_mem c hy
+  -- So the span of `x` can be turned into a representation with `V.ρ`.
   let w_rho : G →* W →ₗ[k] W := ⟨⟨fun g => (V.ρ g).restrict <| invariant g,
       by ext a; simp⟩,
     by intro g h; ext a; aesop⟩
@@ -71,7 +66,7 @@ theorem finrank_eq_one_simple_of_commMonoid [IsAlgClosed k]
   have := isIso_of_mono_of_nonzero incl_nz
   let incl' := (forget₂ (FGModuleCat k) (ModuleCat k)).mapIso <|
     (forget₂ _ (FGModuleCat k)).mapIso <| asIso incl
-  -- So `V` must be equal to the span of `x`, hence 1-dimensional.
+  -- Hence `V` must be equal to the span of `x`, hence 1-dimensional.
   let incl_equiv : WMod ≃ₗ[k] V.V := CategoryTheory.Iso.toLinearEquiv <| incl'
   rw[← LinearEquiv.finrank_eq incl_equiv]
   apply finrank_span_singleton x_nonzero
