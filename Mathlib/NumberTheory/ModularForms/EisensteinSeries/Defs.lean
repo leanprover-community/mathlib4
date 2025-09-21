@@ -5,8 +5,8 @@ Authors: Chris Birkbeck, David Loeffler
 -/
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
-import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 import Mathlib.RingTheory.EuclideanDomain
+import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 
 /-!
 # Eisenstein Series
@@ -27,7 +27,7 @@ import Mathlib.RingTheory.EuclideanDomain
 
 noncomputable section
 
-open ModularForm UpperHalfPlane Matrix CongruenceSubgroup Matrix.SpecialLinearGroup
+open ModularForm UpperHalfPlane Complex Matrix CongruenceSubgroup Set
 
 open scoped MatrixGroups
 
@@ -208,7 +208,7 @@ lemma eisensteinSeries_slash_apply (k : ℤ) (γ : SL(2, ℤ)) :
 
 /-- The SlashInvariantForm defined by an Eisenstein series of weight `k : ℤ`, level `Γ(N)`,
   and congruence condition given by `a : Fin 2 → ZMod N`. -/
-def eisensteinSeries_SIF (k : ℤ) : SlashInvariantForm Γ(N) k where
+def eisensteinSeries_SIF (k : ℤ) : SlashInvariantForm (Gamma N) k where
   toFun := eisensteinSeries a k
   slash_action_eq' A hA := by
     obtain ⟨A, (hA : A ∈ Γ(N)), rfl⟩ := hA
