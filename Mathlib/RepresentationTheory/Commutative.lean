@@ -29,8 +29,7 @@ noncomputable def smul_hom {V : Rep R G} (g : G) : V ⟶ V :=
     change (V.ρ g * V.ρ h) a = (V.ρ h * V.ρ g) a
     rw[← map_mul, ← map_mul, mul_comm]⟩
 
-@[simp] theorem smul_hom_apply {V : Rep R G} {v : V} {g : G} :
-    smul_hom g v = V.ρ g v := rfl
+theorem smul_hom_apply {V : Rep R G} {v : V} {g : G} : smul_hom g v = V.ρ g v := rfl
 
 end Rep
 namespace FDRep
@@ -39,8 +38,7 @@ namespace FDRep
 noncomputable def smul_hom {V : FDRep R G} (g : G) : V ⟶ V :=
   forget₂HomLinearEquiv V V <| Rep.smul_hom g
 
-@[simp] theorem smul_hom_apply {V : FDRep R G} {v : V} {g : G} :
-    smul_hom g v = V.ρ g v := rfl
+theorem smul_hom_apply {V : FDRep R G} {v : V} {g : G} : smul_hom g v = V.ρ g v := rfl
 
 /-- If `G` is a commutative monoid and `k` is algebraically closed, any finite dimensional
 simple representation of `G` has dimension 1. -/
