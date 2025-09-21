@@ -24,6 +24,10 @@ file `NormedSpace.lean`.
 Note that most of statements that apply to semilinear maps only hold when the ring homomorphism
 is isometric, as expressed by the typeclass `[RingHomIsometric σ]`.
 
+### To Do
+Move `Seminormed.absorbent_subset_image_iff_surjective` to `Normed.Operator.Basic` once
+<https://github.com/leanprover-community/mathlib4/issues/28698> is completed.
+
 -/
 
 suppress_compilation
@@ -33,7 +37,7 @@ open Filter hiding map_smul
 open scoped NNReal Topology Uniformity
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
-variable {𝕜 𝕜₂ 𝕜₃ E F Fₗ G 𝓕 : Type*}
+variable {𝕜 𝕜₂ 𝕜₃ E F Fₗ G 𝓕 𝓕ₗ : Type*}
 
 section SemiNormed
 
@@ -43,8 +47,21 @@ variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCom
   [SeminormedAddCommGroup G]
 
 variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
-  [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ] [NormedSpace 𝕜₃ G]
+  [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₃ G]
   {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₁₃ : 𝕜 →+* 𝕜₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
+
+open Function in
+theorem absorbent_subset_image_iff_surjective [FunLike 𝓕ₗ E Fₗ] [Module 𝕜 Fₗ]
+    [LinearMapClass 𝓕ₗ 𝕜 E Fₗ] {f : 𝓕ₗ} {s : Set Fₗ} (hs_abs : Absorbent 𝕜 s) :
+    s ⊆ Set.range f ↔ Surjective f := by
+  refine ⟨fun hs_sub y ↦ ?_, by simp_all⟩
+  obtain ⟨r, -, hr⟩ := Absorbs.exists_pos (hs_abs y)
+  specialize hr _ <| le_of_lt (NormedField.exists_lt_norm 𝕜 r).choose_spec
+  grw [hs_sub] at hr
+  obtain ⟨_, ⟨z, _⟩, _⟩ := Set.singleton_subset_iff.mp hr
+  use (NormedField.exists_lt_norm 𝕜 r).choose • z
+  simp_all
+
 
 variable [FunLike 𝓕 E F]
 
@@ -376,7 +393,7 @@ section RestrictScalars
 
 variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
 variable [NormedSpace 𝕜' E] [IsScalarTower 𝕜' 𝕜 E]
-variable [NormedSpace 𝕜' Fₗ] [IsScalarTower 𝕜' 𝕜 Fₗ]
+variable [NormedSpace 𝕜 Fₗ] [NormedSpace 𝕜' Fₗ] [IsScalarTower 𝕜' 𝕜 Fₗ]
 
 @[simp]
 theorem norm_restrictScalars (f : E →L[𝕜] Fₗ) : ‖f.restrictScalars 𝕜'‖ = ‖f‖ :=
