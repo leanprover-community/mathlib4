@@ -198,7 +198,7 @@ instance : MonoidalCategory FinStoch where
         obtain ⟨h1, _⟩ := h
         exact hx rfl
       · rfl
-  tensor_comp := by
+  tensorHom_comp_tensorHom := by
     intros X₁ Y₁ Z₁ X₂ Y₂ Z₂ f₁ f₂ g₁ g₂
     apply StochasticMatrix.ext
     ext ⟨x₁, x₂⟩ ⟨z₁, z₂⟩
