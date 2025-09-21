@@ -494,12 +494,21 @@ open ModularForm
 
 variable {k : ℤ} {Γ : Subgroup SL(2, ℤ)} {F : Type*} [FunLike F ℍ ℂ] (f : F) (g : SL(2, ℤ))
 
+open Pointwise ConjAct Matrix.SpecialLinearGroup in
 /-- Translating a `ModularForm` by `SL(2, ℤ)`, to obtain a new `ModularForm`.
 
 (TODO : Define this more generally for `GL(2, ℚ)`.) -/
 noncomputable def ModularForm.translate [ModularFormClass F Γ k] :
-    ModularForm (Γ.map <| MulAut.conj g⁻¹) k where
-  __ := SlashInvariantForm.translate f g
+    ModularForm (ConjAct.toConjAct g⁻¹ • Γ) k where
+  toFun := f ∣[k] g
+  slash_action_eq' γ hγ := by
+    suffices γ ∈ toConjAct (mapGL ℝ g)⁻¹ • Γ.map (mapGL ℝ) by simpa only [SL_slash] using
+      (SlashInvariantForm.translate f (g : GL (Fin 2) ℝ)).slash_action_eq' γ this
+    rcases hγ with ⟨γ, (hγ : γ ∈ _ • Γ), rfl⟩ -- stop it unfolding `Subgroup.mem`
+    rw [ConjAct.toConjAct_inv, Subgroup.mem_inv_pointwise_smul_iff]
+    refine ⟨toConjAct g • γ, ?_, ?_⟩
+    · simpa [Subgroup.mem_inv_pointwise_smul_iff] using hγ
+    · simp [toConjAct_smul, Matrix.SpecialLinearGroup.mapGL]
   bdd_at_infty' h := by simpa [SlashAction.slash_mul] using ModularFormClass.bdd_at_infty f (g * h)
   holo' := (ModularFormClass.holo f).slash k g
 
