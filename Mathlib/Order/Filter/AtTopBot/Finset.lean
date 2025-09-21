@@ -7,6 +7,7 @@ import Mathlib.Data.Finset.Preimage
 import Mathlib.Order.Filter.AtTopBot.Tendsto
 import Mathlib.Order.Filter.AtTopBot.Basic
 import Mathlib.Order.Filter.Finite
+import Mathlib.Order.Interval.Finset.Defs
 
 /-!
 # `Filter.atTop` and `Filter.atBot` filters and finite sets.
@@ -69,5 +70,18 @@ theorem tendsto_finset_powerset_atTop_atTop : Tendsto (Finset.powerset (α := α
   classical
   refine tendsto_atTop_atTop.mpr fun t ↦ ⟨t.sup id, fun _ hu _ hv ↦ ?_⟩
   exact Finset.mem_powerset.mpr <| (Finset.le_sup_of_le hv fun _ h ↦ h).trans hu
+
+theorem tendsto_finset_Iic_atTop_atTop [Lattice α] [LocallyFiniteOrderBot α] :
+    Tendsto (Finset.Iic (α := α)) atTop atTop := by
+  rcases isEmpty_or_nonempty α with _ | _
+  · exact tendsto_of_isEmpty
+  refine tendsto_atTop_atTop.mpr fun s ↦ ?_
+  rcases Finset.eq_empty_or_nonempty s with rfl | hnonempty
+  · simp
+  exact ⟨s.sup' hnonempty id, fun _ h b hb ↦ by simpa using (Finset.sup'_le_iff _ _).mp h b hb⟩
+
+theorem tendsto_finset_Ici_atBot_atTop [Lattice α] [LocallyFiniteOrderTop α] :
+    Tendsto (Finset.Ici (α := α)) atBot atTop :=
+  tendsto_finset_Iic_atTop_atTop (α := αᵒᵈ)
 
 end Filter
