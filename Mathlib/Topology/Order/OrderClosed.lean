@@ -655,7 +655,7 @@ theorem le_on_closure [TopologicalSpace β] {f g : β → α} {s : Set β} (h : 
   have : s ⊆ { y ∈ closure s | f y ≤ g y } := fun y hy => ⟨subset_closure hy, h y hy⟩
   (closure_minimal this (isClosed_closure.isClosed_le hf hg) hx).2
 
-lemma le_on_closure_of_lt [TopologicalSpace β] {f : β → α} {s : Set β} {b : α}
+lemma le_on_closure_of_le [TopologicalSpace β] {f : β → α} {s : Set β} {b : α}
     (hb : ∀ x ∈ s, b ≤ f x) (hf : ContinuousOn f (closure s)) ⦃x⦄ (hx : x ∈ closure s) :
     b ≤ f x :=
   le_on_closure (f := fun _ ↦ b) hb continuousOn_const hf hx
