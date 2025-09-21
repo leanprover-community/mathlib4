@@ -58,9 +58,6 @@ lemma valueGroup₀_OrderEmbedding'_mul (x y : ValueGroup₀ f) :
       valueGroup₀_OrderEmbedding' x * valueGroup₀_OrderEmbedding' y := by
   simp [valueGroup₀_OrderEmbedding'_apply, map_mul, OrderIso.withZeroUnits]
 
-instance : IsOrderedMonoid B := inferInstance
-
-instance : IsOrderedMonoid (WithZero Bˣ) := inferInstance
 
 instance : IsOrderedMonoid (ValueGroup₀ f) :=
   Function.Injective.isOrderedMonoid valueGroup₀_OrderEmbedding' valueGroup₀_OrderEmbedding'_mul
