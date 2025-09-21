@@ -9,6 +9,7 @@ import Mathlib.Topology.Instances.Discrete
 import Mathlib.Topology.MetricSpace.Bounded
 import Mathlib.Order.Filter.AtTopBot.Archimedean
 import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.Order.Bornology
 
 /-!
 # Topology on the integers
@@ -41,14 +42,8 @@ theorem pairwise_one_le_dist : Pairwise fun m n : ℤ => 1 ≤ dist m n := by
 theorem isUniformEmbedding_coe_real : IsUniformEmbedding ((↑) : ℤ → ℝ) :=
   isUniformEmbedding_bot_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_coe_real := isUniformEmbedding_coe_real
-
 theorem isClosedEmbedding_coe_real : IsClosedEmbedding ((↑) : ℤ → ℝ) :=
   isClosedEmbedding_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
-
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_coe_real := isClosedEmbedding_coe_real
 
 instance : MetricSpace ℤ := Int.isUniformEmbedding_coe_real.comapMetricSpace _
 
@@ -67,11 +62,13 @@ instance : ProperSpace ℤ :=
     rw [closedBall_eq_Icc]
     exact (Set.finite_Icc _ _).isCompact⟩
 
+instance : IsOrderBornology ℤ :=
+  .of_isCompactIcc 0 (by simp [Int.closedBall_eq_Icc]) (by simp [Int.closedBall_eq_Icc])
+
 @[simp]
 theorem cobounded_eq : Bornology.cobounded ℤ = atBot ⊔ atTop := by
   simp_rw [← comap_dist_right_atTop (0 : ℤ), dist_eq', sub_zero,
     ← comap_abs_atTop, ← @Int.comap_cast_atTop ℝ, comap_comap]; rfl
-
 
 @[simp]
 theorem cofinite_eq : (cofinite : Filter ℤ) = atBot ⊔ atTop := by

@@ -188,14 +188,14 @@ lemma exists_null_set_measure_lt_of_disjoint (h : Disjoint μ ν) {ε : ℝ≥0}
     exact ⟨t, hm₂⟩
   choose t ht₂ using h₂
   refine ⟨⋂ n, t n, ?_, ?_⟩
-  · refine eq_zero_of_le_mul_pow (by norm_num)
+  · refine eq_zero_of_le_mul_pow (by simp)
       fun n ↦ ((measure_mono <| iInter_subset_of_subset n fun _ ht ↦ ht).trans
       (le_add_right le_rfl)).trans (ht₂ n).le
   · rw [compl_iInter, (by simp [ENNReal.tsum_mul_left, mul_comm] :
       2 * (ε : ℝ≥0∞) = ∑' (n : ℕ), ε * (1 / 2 : ℝ≥0∞) ^ n)]
     refine (measure_iUnion_le _).trans ?_
-    exact tsum_le_tsum (fun n ↦ (le_add_left le_rfl).trans (ht₂ n).le)
-      ENNReal.summable ENNReal.summable
+    exact ENNReal.summable.tsum_le_tsum (fun n ↦ (le_add_left le_rfl).trans (ht₂ n).le)
+      ENNReal.summable
 
 lemma mutuallySingular_of_disjoint (h : Disjoint μ ν) : μ ⟂ₘ ν := by
   have h' (n : ℕ) : ∃ s, μ s = 0 ∧ ν sᶜ ≤ (1 / 2) ^ n := by
@@ -211,7 +211,7 @@ lemma mutuallySingular_of_disjoint (h : Disjoint μ ν) : μ ⟂ₘ ν := by
   choose s hs₂ hs₃ using h'
   refine Measure.MutuallySingular.mk (t := (⋃ n, s n)ᶜ) (measure_iUnion_null hs₂) ?_ ?_
   · rw [compl_iUnion]
-    refine eq_zero_of_le_mul_pow (ε := 1) (by norm_num : (1 / 2 : ℝ≥0∞) < 1) <| fun n ↦ ?_
+    refine eq_zero_of_le_mul_pow (ε := 1) (by simp : (1 / 2 : ℝ≥0∞) < 1) <| fun n ↦ ?_
     rw [ENNReal.coe_one, one_mul]
     exact (measure_mono <| iInter_subset_of_subset n fun _ ht ↦ ht).trans (hs₃ n)
   · rw [union_compl_self]

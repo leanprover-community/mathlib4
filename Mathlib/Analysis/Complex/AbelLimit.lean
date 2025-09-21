@@ -61,7 +61,7 @@ theorem nhdsWithin_lt_le_nhdsWithin_stolzSet {M : ℝ} (hM : 1 < M) :
   refine tendsto_map' <| tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within ofReal
     (tendsto_nhdsWithin_of_tendsto_nhds <| ofRealCLM.continuous.tendsto' 1 1 rfl) ?_
   simp only [eventually_iff, mem_nhdsWithin]
-  refine ⟨Set.Ioo 0 2, isOpen_Ioo, by norm_num, fun x hx ↦ ?_⟩
+  refine ⟨Set.Ioo 0 2, isOpen_Ioo, by simp, fun x hx ↦ ?_⟩
   simp only [Set.mem_inter_iff, Set.mem_Ioo, Set.mem_Iio] at hx
   simp only [Set.mem_setOf_eq, stolzSet, ← ofReal_one, ← ofReal_sub, norm_real,
     norm_of_nonneg hx.1.1.le, norm_of_nonneg <| (sub_pos.mpr hx.2).le]
@@ -70,26 +70,26 @@ theorem nhdsWithin_lt_le_nhdsWithin_stolzSet {M : ℝ} (hM : 1 < M) :
 -- An ugly technical lemma
 private lemma stolzCone_subset_stolzSet_aux' (s : ℝ) :
     ∃ M ε, 0 < M ∧ 0 < ε ∧ ∀ x y, 0 < x → x < ε → |y| < s * x →
-      sqrt (x ^ 2 + y ^ 2) < M * (1 - sqrt ((1 - x) ^ 2 + y ^ 2)) := by
-  refine ⟨2 * sqrt (1 + s ^ 2) + 1, 1 / (1 + s ^ 2), by positivity, by positivity,
+      √(x ^ 2 + y ^ 2) < M * (1 - √((1 - x) ^ 2 + y ^ 2)) := by
+  refine ⟨2 * √(1 + s ^ 2) + 1, 1 / (1 + s ^ 2), by positivity, by positivity,
     fun x y hx₀ hx₁ hy ↦ ?_⟩
-  have H : sqrt ((1 - x) ^ 2 + y ^ 2) ≤ 1 - x / 2 := by
-    calc sqrt ((1 - x) ^ 2 + y ^ 2)
-      _ ≤ sqrt ((1 - x) ^ 2 + (s * x) ^ 2) := sqrt_le_sqrt <| by rw [← sq_abs y]; gcongr
-      _ = sqrt (1 - 2 * x + (1 + s ^ 2) * x * x) := by congr 1; ring
-      _ ≤ sqrt (1 - 2 * x + (1 + s ^ 2) * (1 / (1 + s ^ 2)) * x) := sqrt_le_sqrt <| by gcongr
-      _ = sqrt (1 - x) := by congr 1; field_simp; ring
+  have H : √((1 - x) ^ 2 + y ^ 2) ≤ 1 - x / 2 := by
+    calc √((1 - x) ^ 2 + y ^ 2)
+      _ ≤ √((1 - x) ^ 2 + (s * x) ^ 2) := sqrt_le_sqrt <| by rw [← sq_abs y]; gcongr
+      _ = √(1 - 2 * x + (1 + s ^ 2) * x * x) := by congr 1; ring
+      _ ≤ √(1 - 2 * x + (1 + s ^ 2) * (1 / (1 + s ^ 2)) * x) := by gcongr
+      _ = √(1 - x) := by congr 1; field_simp; ring
       _ ≤ 1 - x / 2 := by
         simp_rw [sub_eq_add_neg, ← neg_div]
         refine sqrt_one_add_le <| neg_le_neg_iff.mpr (hx₁.trans_le ?_).le
         rw [div_le_one (by positivity)]
         exact le_add_of_nonneg_right <| sq_nonneg s
-  calc sqrt (x ^ 2 + y ^ 2)
-    _ ≤ sqrt (x ^ 2 + (s * x) ^ 2) := sqrt_le_sqrt <| by rw [← sq_abs y]; gcongr
-    _ = sqrt ((1 + s ^ 2) * x ^ 2) := by congr; ring
-    _ = sqrt (1 + s ^ 2) * x := by rw [sqrt_mul' _ (sq_nonneg x), sqrt_sq hx₀.le]
-    _ = 2 * sqrt (1 + s ^ 2) * (x / 2) := by ring
-    _ < (2 * sqrt (1 + s ^ 2) + 1) * (x / 2) := by gcongr; exact lt_add_one _
+  calc √(x ^ 2 + y ^ 2)
+    _ ≤ √(x ^ 2 + (s * x) ^ 2) := by rw [← sq_abs y]; gcongr
+    _ = √((1 + s ^ 2) * x ^ 2) := by congr; ring
+    _ = √(1 + s ^ 2) * x := by rw [sqrt_mul' _ (sq_nonneg x), sqrt_sq hx₀.le]
+    _ = 2 * √(1 + s ^ 2) * (x / 2) := by ring
+    _ < (2 * √(1 + s ^ 2) + 1) * (x / 2) := by gcongr; exact lt_add_one _
     _ ≤ _ := by gcongr; exact le_sub_comm.mpr H
 
 lemma stolzCone_subset_stolzSet_aux {s : ℝ} (hs : 0 < s) :
@@ -101,7 +101,7 @@ lemma stolzCone_subset_stolzSet_aux {s : ℝ} (hs : 0 < s) :
   replace H :=
     H (1 - z).re z.im ((mul_pos_iff_of_pos_left hs).mp <| (abs_nonneg z.im).trans_lt hzr) hzl hzr
   have h : z.im ^ 2 = (1 - z).im ^ 2 := by
-    simp only [sub_im, one_im, zero_sub, even_two, neg_sq]
+    simp only [sub_im, one_im, zero_sub, neg_sq]
   rw [h, ← norm_eq_sqrt_sq_add_sq, ← h, sub_re, one_re, sub_sub_cancel,
     ← norm_eq_sqrt_sq_add_sq] at H
   exact ⟨sub_pos.mp <| (mul_pos_iff_of_pos_left hM).mp <| (norm_nonneg _).trans_lt H, H⟩
@@ -158,7 +158,7 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_stolzSet
     (h : Tendsto (fun n ↦ ∑ i ∈ range n, f i) atTop (𝓝 l)) {M : ℝ} :
     Tendsto (fun z ↦ ∑' n, f n * z ^ n) (𝓝[stolzSet M] 1) (𝓝 l) := by
   -- If `M ≤ 1` the Stolz set is empty and the statement is trivial
-  rcases le_or_lt M 1 with hM | hM
+  rcases le_or_gt M 1 with hM | hM
   · simp_rw [stolzSet_empty hM, nhdsWithin_empty, tendsto_bot]
   -- Abbreviations
   let s := fun n ↦ ∑ i ∈ range n, f i
@@ -221,7 +221,7 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_stolzSet
         rw [← mul_sum, ← mul_assoc]
       _ ≤ ‖1 - z‖ * (ε / 4 / M) * ∑' i, ‖z‖ ^ i := by
         gcongr
-        exact sum_le_tsum _ (fun _ _ ↦ by positivity)
+        exact Summable.sum_le_tsum _ (fun _ _ ↦ by positivity)
           (summable_geometric_of_lt_one (by positivity) zn)
       _ = ‖1 - z‖ * (ε / 4 / M) / (1 - ‖z‖) := by
         rw [tsum_geometric_of_lt_one (by positivity) zn, ← div_eq_mul_inv]

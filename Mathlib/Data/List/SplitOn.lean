@@ -68,7 +68,7 @@ theorem splitOnP_eq_single (h : ∀ x ∈ xs, ¬p x) : xs.splitOnP p = [xs] := b
   induction xs with
   | nil => simp only [splitOnP_nil]
   | cons hd tl ih =>
-    simp only [splitOnP_cons, h hd (mem_cons_self hd tl), if_false, Bool.false_eq_true,
+    simp only [splitOnP_cons, h hd mem_cons_self, if_false, Bool.false_eq_true,
       modifyHead_cons, ih <| forall_mem_of_forall_mem_cons h]
 
 /-- When a list of the form `[...xs, sep, ...as]` is split on `p`, the first element is `xs`,
@@ -82,7 +82,7 @@ theorem splitOnP_first (h : ∀ x ∈ xs, ¬p x) (sep : α) (hsep : p sep) (as :
 /-- `intercalate [x]` is the left inverse of `splitOn x` -/
 theorem intercalate_splitOn (x : α) [DecidableEq α] : [x].intercalate (xs.splitOn x) = xs := by
   simp only [intercalate, splitOn]
-  induction' xs with hd tl ih; · simp [flatten]
+  induction xs with | nil => simp [flatten] | cons hd tl ih => ?_
   rcases h' : splitOnP (· == x) tl with - | ⟨hd', tl'⟩; · exact (splitOnP_ne_nil _ tl h').elim
   rw [h'] at ih
   rw [splitOnP_cons]
@@ -97,7 +97,7 @@ consisting of each nonempty list of lists `ls` whose elements do not contain `x`
 theorem splitOn_intercalate [DecidableEq α] (x : α) (hx : ∀ l ∈ ls, x ∉ l) (hls : ls ≠ []) :
     ([x].intercalate ls).splitOn x = ls := by
   simp only [intercalate]
-  induction' ls with hd tl ih; · contradiction
+  induction ls with | nil => contradiction | cons hd tl ih => ?_
   cases tl
   · suffices hd.splitOn x = [hd] by simpa [flatten]
     refine splitOnP_eq_single _ _ ?_

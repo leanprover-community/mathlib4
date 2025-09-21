@@ -12,8 +12,8 @@ import Mathlib.Algebra.Ring.Hom.Defs
 
 ## Main definitions
 
- * `Module.compHom`: compose a `Module` with a `RingHom`, with action `f s • m`.
- * `RingHom.toModule`: a `RingHom` defines a module structure by `r • x = f r * x`.
+* `Module.compHom`: compose a `Module` with a `RingHom`, with action `f s • m`.
+* `RingHom.toModule`: a `RingHom` defines a module structure by `r • x = f r * x`.
 
 ## Tags
 
@@ -63,8 +63,9 @@ variable {M}
 
 end AddCommMonoid
 
-/-- A ring homomorphism `f : R →+* M` defines a module structure by `r • x = f r * x`. -/
-def RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
+/-- A ring homomorphism `f : R →+* M` defines a module structure by `r • x = f r * x`.
+See note [reducible non-instances]. -/
+abbrev RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
   Module.compHom S f
 
 /-- If the module action of `R` on `S` is compatible with multiplication on `S`, then

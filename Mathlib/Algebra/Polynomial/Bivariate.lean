@@ -9,7 +9,7 @@ import Mathlib.RingTheory.AdjoinRoot
 # Bivariate polynomials
 
 This file introduces the notation `R[X][Y]` for the polynomial ring `R[X][X]` in two variables,
-and the notation `Y` for the second variable, in the `Polynomial` scope.
+and the notation `Y` for the second variable, in the `Polynomial.Bivariate` scope.
 
 It also defines `Polynomial.evalEval` for the evaluation of a bivariate polynomial at a point
 on the affine plane, which is a ring homomorphism (`Polynomial.evalEvalRingHom`), as well as
@@ -77,7 +77,7 @@ lemma evalEval_finset_sum {ι : Type*} (s : Finset ι) (x y : R) (f : ι → R[X
   simp only [evalEval, eval_finset_sum]
 
 @[simp]
-lemma evalEval_smul [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (x y : R) (s : S)
+lemma evalEval_smul [DistribSMul S R] [IsScalarTower S R R] (x y : R) (s : S)
     (p : R[X][Y]) : (s • p).evalEval x y = s • p.evalEval x y := by
   simp only [evalEval, eval_smul]
 
@@ -197,6 +197,60 @@ lemma eval_C_X_eval₂_map_C_X {p : R[X][Y]} :
 
 end
 
+section aevalAeval
+
+noncomputable section
+
+variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+
+/-- `aevalAeval x y` is the `R`-algebra evaluation morphism sending a two-variable polynomial
+  `p : R[X][Y]` to `p(x,y)`. -/
+abbrev aevalAeval (x y : A) : R[X][Y] →ₐ[R] A :=
+  ((aeval x).restrictScalars R).comp
+    (letI := Polynomial.algebra; (aeval (R := R[X]) (C y)).restrictScalars R)
+
+theorem coe_aevalAeval_eq_evalEval (x y : A) : ⇑(aevalAeval x y) = evalEval x y := by
+  ext p; simp [aevalAeval, evalEval, aeval, Algebra.ofId]
+
+/-- The R-algebra automorphism given by `X ↦ Y` and `Y ↦ X`. -/
+def Bivariate.swap : R[X][Y] ≃ₐ[R] R[X][Y] := by
+  apply AlgEquiv.ofAlgHom (aevalAeval (Y : R[X][Y]) (C X)) (aevalAeval (Y : R[X][Y]) (C X))
+    <;> (ext n m <;> simp)
+
+@[simp]
+theorem Bivariate.swap_apply (p : R[X][Y]) : swap p = p.aevalAeval (A := R[X][Y]) Y (C X) := rfl
+
+theorem Bivariate.swap_X : swap (R := R) (C X) = Y := by simp
+
+theorem Bivariate.swap_Y : swap (R := R) Y = (C X) := by simp
+
+theorem Bivariate.swap_monomial_monomial (n m : ℕ) (r : R) :
+    swap (monomial n (monomial m r)) = (monomial m (monomial n r)) := by
+  simp [← C_mul_X_pow_eq_monomial]; ac_rfl
+
+/-- Evaluating `swap p` at `x`, `y` is the same as evaluating `p` at `y` `x`. -/
+theorem Bivariate.aevalAeval_swap (x y : A) (p : R[X][Y]) :
+    aevalAeval x y (swap p) = aevalAeval y x p := by
+  induction p using Polynomial.induction_on' with
+  | add => aesop
+  | monomial n a =>
+    simp
+    induction a using Polynomial.induction_on' <;> aesop (add norm add_mul)
+
+attribute [local instance] Polynomial.algebra in
+theorem Bivariate.aveal_eq_map_swap (x : A) (p : R[X][Y]) :
+    aeval (C x) p = mapAlgHom (aeval x) (swap p) := by
+  induction p using Polynomial.induction_on' with
+  | add =>  aesop
+  | monomial n a =>
+      simp
+      induction a using Polynomial.induction_on'
+        <;> aesop (add norm [add_mul, C_mul_X_pow_eq_monomial])
+
+end
+
+end aevalAeval
+
 end Polynomial
 
 open Polynomial
@@ -208,7 +262,7 @@ variable {R : Type*} [CommRing R] {x y : R} {p : R[X][Y]} (h : p.evalEval x y = 
 /-- If the evaluation (`evalEval`) of a bivariate polynomial `p : R[X][Y]` at a point (x,y)
 is zero, then `Polynomial.evalEval x y` factors through `AdjoinRoot.evalEval`, a ring homomorphism
 from `AdjoinRoot p` to `R`. -/
-@[simps!] def evalEval : AdjoinRoot p →+* R :=
+@[simps!] noncomputable def evalEval : AdjoinRoot p →+* R :=
   lift (evalRingHom x) y <| eval₂_evalRingHom x ▸ h
 
 lemma evalEval_mk (g : R[X][Y]) : evalEval h (mk p g) = g.evalEval x y := by

@@ -89,7 +89,7 @@ instance [h : DivInvMonoid α] : DivInvMonoid αᵒᵈ := h
 @[to_additive]
 instance [h : DivisionMonoid α] : DivisionMonoid αᵒᵈ := h
 
-@[to_additive OrderDual.subtractionCommMonoid]
+@[to_additive]
 instance [h : DivisionCommMonoid α] : DivisionCommMonoid αᵒᵈ := h
 
 @[to_additive]
@@ -162,6 +162,18 @@ instance [h : Semigroup α] : Semigroup (Lex α) := h
 instance [h : CommSemigroup α] : CommSemigroup (Lex α) := h
 
 @[to_additive]
+instance [Mul α] [IsLeftCancelMul α] : IsLeftCancelMul (Lex α) :=
+  inferInstanceAs <| IsLeftCancelMul α
+
+@[to_additive]
+instance [Mul α] [IsRightCancelMul α] : IsRightCancelMul (Lex α) :=
+  inferInstanceAs <| IsRightCancelMul α
+
+@[to_additive]
+instance [Mul α] [IsCancelMul α] : IsCancelMul (Lex α) :=
+  inferInstanceAs <| IsCancelMul α
+
+@[to_additive]
 instance [h : LeftCancelSemigroup α] : LeftCancelSemigroup (Lex α) := h
 
 @[to_additive]
@@ -197,7 +209,7 @@ instance [h : DivInvMonoid α] : DivInvMonoid (Lex α) := h
 @[to_additive]
 instance [h : DivisionMonoid α] : DivisionMonoid (Lex α) := h
 
-@[to_additive existing OrderDual.subtractionCommMonoid]
+@[to_additive]
 instance [h : DivisionCommMonoid α] : DivisionCommMonoid (Lex α) := h
 
 @[to_additive]
@@ -209,8 +221,12 @@ instance [h : CommGroup α] : CommGroup (Lex α) := h
 @[to_additive (attr := simp)]
 theorem toLex_one [One α] : toLex (1 : α) = 1 := rfl
 
+@[to_additive (attr := simp)] lemma toLex_eq_one [One α] {a : α} : toLex a = 1 ↔ a = 1 := .rfl
+
 @[to_additive (attr := simp)]
 theorem ofLex_one [One α] : (ofLex 1 : α) = 1 := rfl
+
+@[to_additive (attr := simp)] lemma ofLex_eq_one [One α] {a : Lex α} : ofLex a = 1 ↔ a = 1 := .rfl
 
 @[to_additive (attr := simp)]
 theorem toLex_mul [Mul α] (a b : α) : toLex (a * b) = toLex a * toLex b := rfl

@@ -18,7 +18,8 @@ open Encodable
 instance Finset.encodable [Encodable α] : Encodable (Finset α) :=
   haveI := decidableEqOfEncodable α
   ofEquiv { s : Multiset α // s.Nodup }
-    ⟨fun ⟨a, b⟩ => ⟨a, b⟩, fun ⟨a, b⟩ => ⟨a, b⟩, fun ⟨_, _⟩ => rfl, fun ⟨_, _⟩ => rfl⟩
+    { toFun := fun ⟨a, b⟩ => ⟨a, b⟩
+      invFun := fun ⟨a, b⟩ => ⟨a, b⟩ }
 
 namespace Encodable
 
@@ -70,12 +71,12 @@ def raise' : List ℕ → ℕ → List ℕ
 
 theorem lower_raise' : ∀ l n, lower' (raise' l n) n = l
   | [], _ => rfl
-  | m :: l, n => by simp [raise', lower', Nat.add_sub_cancel_right, lower_raise']
+  | m :: l, n => by simp [raise', lower', lower_raise']
 
 theorem raise_lower' : ∀ {l n}, (∀ m ∈ l, n ≤ m) → List.Sorted (· < ·) l → raise' (lower' l n) n = l
   | [], _, _, _ => rfl
   | m :: l, n, h₁, h₂ => by
-    have : n ≤ m := h₁ _ (l.mem_cons_self _)
+    have : n ≤ m := h₁ _ List.mem_cons_self
     simp [raise', lower', Nat.sub_add_cancel this,
       raise_lower' (List.rel_of_sorted_cons h₂ : ∀ a ∈ l, m < a) h₂.of_cons]
 

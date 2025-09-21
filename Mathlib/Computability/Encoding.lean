@@ -33,9 +33,13 @@ namespace Computability
 
 /-- An encoding of a type in a certain alphabet, together with a decoding. -/
 structure Encoding (α : Type u) where
+  /-- The alphabet of the encoding -/
   Γ : Type v
+  /-- The encoding function -/
   encode : α → List Γ
+  /-- The decoding function -/
   decode : List Γ → Option α
+  /-- Decoding and encoding are inverses of each other. -/
   decode_encode : ∀ x, decode (encode x) = some x
 
 theorem Encoding.encode_injective {α : Type u} (e : Encoding α) : Function.Injective e.encode := by
@@ -44,6 +48,7 @@ theorem Encoding.encode_injective {α : Type u} (e : Encoding α) : Function.Inj
 
 /-- An encoding plus a guarantee of finiteness of the alphabet. -/
 structure FinEncoding (α : Type u) extends Encoding.{u, 0} α where
+  /-- The alphabet of the encoding is finite -/
   ΓFin : Fintype Γ
 
 instance Γ.fintype {α : Type u} (e : FinEncoding α) : Fintype e.toEncoding.Γ :=
@@ -73,10 +78,6 @@ def sectionΓ'Bool : Γ' → Bool
 @[simp]
 theorem sectionΓ'Bool_inclusionBoolΓ' {b} : sectionΓ'Bool (inclusionBoolΓ' b) = b := by
   cases b <;> rfl
-
-@[deprecated sectionΓ'Bool_inclusionBoolΓ' (since := "2025-01-21")]
-theorem leftInverse_section_inclusion : Function.LeftInverse sectionΓ'Bool inclusionBoolΓ' :=
-  fun x => Bool.casesOn x rfl rfl
 
 theorem inclusionBoolΓ'_injective : Function.Injective inclusionBoolΓ' :=
   Function.HasLeftInverse.injective ⟨_, (fun _ => sectionΓ'Bool_inclusionBoolΓ')⟩
@@ -112,24 +113,22 @@ theorem encodePosNum_nonempty (n : PosNum) : encodePosNum n ≠ [] :=
   PosNum.casesOn n (List.cons_ne_nil _ _) (fun _m => List.cons_ne_nil _ _) fun _m =>
     List.cons_ne_nil _ _
 
-@[simp] theorem decode_encodePosNum : ∀ n, decodePosNum (encodePosNum n) = n := by
-  intro n
-  induction' n with m hm m hm <;> unfold encodePosNum decodePosNum
-  · rfl
-  · rw [hm]
+@[simp] theorem decode_encodePosNum (n) : decodePosNum (encodePosNum n) = n := by
+  induction n with unfold encodePosNum decodePosNum
+  | one => rfl
+  | bit1 m hm =>
+    rw [hm]
     exact if_neg (encodePosNum_nonempty m)
-  · exact congr_arg PosNum.bit0 hm
+  | bit0 m hm => exact congr_arg PosNum.bit0 hm
 
-@[simp] theorem decode_encodeNum : ∀ n, decodeNum (encodeNum n) = n := by
-  intro n
+@[simp] theorem decode_encodeNum (n) : decodeNum (encodeNum n) = n := by
   obtain - | n := n <;> unfold encodeNum decodeNum
   · rfl
   rw [decode_encodePosNum n]
   rw [PosNum.cast_to_num]
   exact if_neg (encodePosNum_nonempty n)
 
-@[simp] theorem decode_encodeNat : ∀ n, decodeNat (encodeNat n) = n := by
-  intro n
+@[simp] theorem decode_encodeNat (n) : decodeNat (encodeNat n) = n := by
   conv_rhs => rw [← Num.to_of_nat n]
   exact congr_arg ((↑) : Num → ℕ) (decode_encodeNum n)
 

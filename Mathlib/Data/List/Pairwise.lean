@@ -92,6 +92,8 @@ theorem Pairwise.rel_getLast [IsRefl α R] (h₁ : l.Pairwise R) (ha : a ∈ l) 
     R a (l.getLast <| ne_nil_of_mem ha) :=
   h₁.rel_getLast_of_rel_getLast_getLast ha (refl_of ..)
 
+protected alias ⟨Pairwise.of_reverse, Pairwise.reverse⟩ := pairwise_reverse
+
 /-! ### Pairwise filtering -/
 
 protected alias ⟨_, Pairwise.pwFilter⟩ := pwFilter_eq_self

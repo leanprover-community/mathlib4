@@ -47,7 +47,7 @@ variable {𝕜 : Type*} {α : Type*} [RCLike 𝕜] [TopologicalSpace α] [Compac
 lemma NormedSpace.exp_continuousMap_eq (f : C(α, 𝕜)) :
     exp 𝕜 f = (⟨exp 𝕜 ∘ f, exp_continuous.comp f.continuous⟩ : C(α, 𝕜)) := by
   ext a
-  simp only [Function.comp_apply, NormedSpace.exp, FormalMultilinearSeries.sum]
+  simp only [NormedSpace.exp, FormalMultilinearSeries.sum]
   have h_sum := NormedSpace.expSeries_summable (𝕂 := 𝕜) f
   simp_rw [← ContinuousMap.tsum_apply h_sum a, NormedSpace.expSeries_apply_eq]
   simp [NormedSpace.exp_eq_tsum]
@@ -128,20 +128,18 @@ lemma log_algebraMap {r : ℝ} : log (algebraMap ℝ A r) = algebraMap ℝ A (Re
   simp [log]
 
 -- TODO: Relate the hypothesis to a notion of strict positivity
-lemma log_smul {r : ℝ} (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x) (hr : 0 < r)
+lemma log_smul {r : ℝ} (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, x ≠ 0) (hr : r ≠ 0)
     (ha₁ : IsSelfAdjoint a := by cfc_tac) :
     log (r • a) = algebraMap ℝ A (Real.log r) + log a := by
-  have : ∀ x ∈ spectrum ℝ a, x ≠ 0 := by peel ha₂ with x hx h; exact h.ne'
   rw [log, ← cfc_smul_id (R := ℝ) r a, ← cfc_comp Real.log (r • ·) a, log]
   calc
     _ = cfc (fun z => Real.log r + Real.log z) a :=
-      cfc_congr (Real.log_mul hr.ne' <| ne_of_gt <| ha₂ · ·)
+      cfc_congr (Real.log_mul hr <| ha₂ · ·)
     _ = _ := by rw [cfc_const_add _ _ _]
 
 -- TODO: Relate the hypothesis to a notion of strict positivity
-lemma log_pow (n : ℕ) (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x)
+lemma log_pow (n : ℕ) (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, x ≠ 0)
     (ha₁ : IsSelfAdjoint a := by cfc_tac) : log (a ^ n) = n • log a := by
-  have : ∀ x ∈ spectrum ℝ a, x ≠ 0 := by peel ha₂ with x hx h; exact h.ne'
   have ha₂' : ContinuousOn Real.log (spectrum ℝ a) := by fun_prop (disch := assumption)
   have ha₂'' : ContinuousOn Real.log ((· ^ n) '' spectrum ℝ a)  := by fun_prop (disch := aesop)
   rw [log, ← cfc_pow_id (R := ℝ) a n ha₁, ← cfc_comp' Real.log (· ^ n) a ha₂'', log]

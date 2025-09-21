@@ -112,7 +112,7 @@ theorem generateMeasurableRec_omega1 (s : Set (Set α)) :
     exact ⟨0, omega_pos 1, self_subset_generateMeasurableRec s 0 ht⟩
   · exact ⟨0, omega_pos 1, empty_mem_generateMeasurableRec s 0⟩
   · rintro u - ⟨j, hj, hj'⟩
-    exact ⟨_, (isLimit_omega 1).succ_lt hj,
+    exact ⟨_, (isSuccLimit_omega 1).succ_lt hj,
       compl_mem_generateMeasurableRec (Order.lt_succ j) hj'⟩
   · intro f H
     choose I hI using fun n => (H n).1
@@ -133,14 +133,16 @@ theorem generateMeasurable_eq_rec (s : Set (Set α)) :
     { t | GenerateMeasurable s t } = generateMeasurableRec s ω₁ := by
   apply (generateMeasurableRec_subset s _).antisymm'
   intro t ht
-  induction' ht with u hu u _ IH f _ IH
-  · exact self_subset_generateMeasurableRec s _ hu
-  · exact empty_mem_generateMeasurableRec s _
-  · rw [generateMeasurableRec_omega1, mem_iUnion₂] at IH
+  induction ht with
+  | basic u hu => exact self_subset_generateMeasurableRec s _ hu
+  | empty => exact empty_mem_generateMeasurableRec s _
+  | compl u _ IH =>
+    rw [generateMeasurableRec_omega1, mem_iUnion₂] at IH
     obtain ⟨i, hi, hi'⟩ := IH
-    exact generateMeasurableRec_mono _ ((isLimit_omega 1).succ_lt hi).le
+    exact generateMeasurableRec_mono _ ((isSuccLimit_omega 1).succ_lt hi).le
       (compl_mem_generateMeasurableRec (Order.lt_succ i) hi')
-  · simp_rw [generateMeasurableRec_omega1, mem_iUnion₂, exists_prop] at IH
+  | iUnion f _ IH =>
+    simp_rw [generateMeasurableRec_omega1, mem_iUnion₂, exists_prop] at IH
     exact iUnion_mem_generateMeasurableRec IH
 
 /-- `generateMeasurableRec` is constant for ordinals `≥ ω₁`. -/
@@ -154,7 +156,7 @@ theorem generateMeasurableRec_of_omega1_le (s : Set (Set α)) {i : Ordinal.{v}} 
 theorem cardinal_generateMeasurableRec_le (s : Set (Set α)) (i : Ordinal.{v}) :
     #(generateMeasurableRec s i) ≤ max #s 2 ^ ℵ₀ := by
   suffices ∀ i ≤ ω₁, #(generateMeasurableRec s i) ≤ max #s 2 ^ ℵ₀ by
-    obtain hi | hi := le_or_lt i ω₁
+    obtain hi | hi := le_or_gt i ω₁
     · exact this i hi
     · rw [generateMeasurableRec_of_omega1_le s hi.le]
       exact this _ le_rfl

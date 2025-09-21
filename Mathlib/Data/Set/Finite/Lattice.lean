@@ -3,9 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
-import Mathlib.Data.Finite.Sigma
 import Mathlib.Data.Set.Finite.Powerset
 import Mathlib.Data.Set.Finite.Range
+import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Finiteness of unions and intersections
@@ -83,8 +83,9 @@ Some set instances do not appear here since they are consequences of others, for
 namespace Finite.Set
 
 instance finite_iUnion [Finite ι] (f : ι → Set α) [∀ i, Finite (f i)] : Finite (⋃ i, f i) := by
-  rw [iUnion_eq_range_psigma]
-  apply Set.finite_range
+  have : Fintype (PLift ι) := Fintype.ofFinite _
+  have : ∀ i, Fintype (f i) := fun i => Fintype.ofFinite _
+  classical apply (fintypeiUnion _).finite
 
 instance finite_sUnion {s : Set (Set α)} [Finite s] [H : ∀ t : s, Finite (t : Set α)] :
     Finite (⋃₀ s) := by
@@ -178,6 +179,14 @@ lemma finite_iUnion_iff {ι : Type*} {s : ι → Set α} (hs : Pairwise fun i j 
     have : Finite (⋃ i, s i) := h
     exact .of_injective u u_inj
   mpr h := h.2.iUnion (fun _ _ ↦ h.1 _) (by simp [not_nonempty_iff_eq_empty])
+
+protected lemma Infinite.iUnion {ι : Sort*} {s : ι → Set α} (i : ι) (hi : (s i).Infinite) :
+    (⋃ i, s i).Infinite :=
+  fun h ↦ hi (h.subset (Set.subset_iUnion s i))
+
+lemma Infinite.iUnion₂ {ι : Sort*} {κ : ι → Sort*} {s : ∀ i, κ i → Set α} (i : ι) (j : κ i)
+    (hij : (s i j).Infinite) : (⋃ (i) (j), s i j).Infinite :=
+  fun hc ↦ hij (hc.subset <| subset_iUnion₂ _ _)
 
 @[simp] lemma finite_iUnion_of_subsingleton {ι : Sort*} [Subsingleton ι] {s : ι → Set α} :
     (⋃ i, s i).Finite ↔ ∀ i, (s i).Finite := by
@@ -386,9 +395,10 @@ protected theorem Finite.bddAbove (hs : s.Finite) : BddAbove s :=
 
 /-- A finite union of sets which are all bounded above is still bounded above. -/
 theorem Finite.bddAbove_biUnion {I : Set β} {S : β → Set α} (H : I.Finite) :
-    BddAbove (⋃ i ∈ I, S i) ↔ ∀ i ∈ I, BddAbove (S i) :=
-  Finite.induction_on _ H (by simp only [biUnion_empty, bddAbove_empty, forall_mem_empty])
-    fun _ _ hs => by simp only [biUnion_insert, forall_mem_insert, bddAbove_union, hs]
+    BddAbove (⋃ i ∈ I, S i) ↔ ∀ i ∈ I, BddAbove (S i) := by
+  induction I, H using Set.Finite.induction_on with
+  | empty => simp only [biUnion_empty, bddAbove_empty, forall_mem_empty]
+  | insert _ _ hs => simp only [biUnion_insert, forall_mem_insert, bddAbove_union, hs]
 
 theorem infinite_of_not_bddAbove : ¬BddAbove s → s.Infinite :=
   mt Finite.bddAbove
@@ -453,5 +463,12 @@ theorem DirectedOn.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} {f
   rw [Set.biUnion_eq_iUnion] at hs
   haveI := hn.coe_sort
   simpa using (directed_comp.2 hc.directed_val).exists_mem_subset_of_finset_subset_biUnion hs
+
+theorem DirectedOn.exists_mem_subset_of_finite_of_subset_sUnion {α : Type*} {c : Set (Set α)}
+    (hn : c.Nonempty) (hc : DirectedOn (· ⊆ ·) c) {s : Set α} (hs : s.Finite)
+    (hsc : s ⊆ sUnion c) : ∃ t ∈ c, s ⊆ t := by
+  rw [← hs.coe_toFinset, sUnion_eq_biUnion] at hsc
+  have := DirectedOn.exists_mem_subset_of_finset_subset_biUnion hn hc hsc
+  exact hs.coe_toFinset ▸ this
 
 end LinearOrder

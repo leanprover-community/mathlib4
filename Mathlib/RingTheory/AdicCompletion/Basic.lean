@@ -3,7 +3,7 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Judith Ludwig, Christian Merten
 -/
-import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.LinearAlgebra.SModEq
 import Mathlib.RingTheory.Jacobson.Ideal
 import Mathlib.RingTheory.Ideal.Quotient.PowTransition
@@ -85,8 +85,10 @@ abbrev Hausdorffification : Type _ :=
 to define `AdicCompletion`. -/
 abbrev AdicCompletion.transitionMap {m n : ℕ} (hmn : m ≤ n) := factorPow I M hmn
 
-/-- The completion of a module with respect to an ideal. This is not necessarily Hausdorff.
-In fact, this is only complete if the ideal is finitely generated. -/
+/-- The completion of a module with respect to an ideal.
+
+This is Hausdorff but not necessarily complete: a classical sufficient condition for
+completeness is that `M` be finitely generated [Stacks, 0G1Q]. -/
 def AdicCompletion : Type _ :=
   { f : ∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M) //
     ∀ {m n} (hmn : m ≤ n), AdicCompletion.transitionMap I M hmn (f n) = f m }
@@ -350,7 +352,7 @@ def AdicCauchySequence : Type _ := { f : ℕ → M // IsAdicCauchy I M f }
 
 namespace AdicCauchySequence
 
-/-- The type of `I`-adic cauchy sequences is a submodule of the product `ℕ → M`. -/
+/-- The type of `I`-adic Cauchy sequences is a submodule of the product `ℕ → M`. -/
 def submodule : Submodule R (ℕ → M) where
   carrier := { f | IsAdicCauchy I M f }
   add_mem' := by
@@ -419,7 +421,7 @@ theorem smul_apply (n : ℕ) (r : R) (f : AdicCauchySequence I M) : (r • f) n 
 theorem ext {x y : AdicCauchySequence I M} (h : ∀ n, x n = y n) : x = y :=
   Subtype.eq <| funext h
 
-/-- The defining property of an adic cauchy sequence unwrapped. -/
+/-- The defining property of an adic Cauchy sequence unwrapped. -/
 theorem mk_eq_mk {m n : ℕ} (hmn : m ≤ n) (f : AdicCauchySequence I M) :
     Submodule.Quotient.mk (p := (I ^ m • ⊤ : Submodule R M)) (f n) =
       Submodule.Quotient.mk (p := (I ^ m • ⊤ : Submodule R M)) (f m) :=
@@ -427,7 +429,7 @@ theorem mk_eq_mk {m n : ℕ} (hmn : m ≤ n) (f : AdicCauchySequence I M) :
 
 end AdicCauchySequence
 
-/-- The `I`-adic cauchy condition can be checked on successive `n`. -/
+/-- The `I`-adic Cauchy condition can be checked on successive `n`. -/
 theorem isAdicCauchy_iff (f : ℕ → M) :
     IsAdicCauchy I M f ↔ ∀ n, f n ≡ f (n + 1) [SMOD (I ^ n • ⊤ : Submodule R M)] := by
   constructor
@@ -441,24 +443,24 @@ theorem isAdicCauchy_iff (f : ℕ → M) :
         · exact ih
         · refine SModEq.mono (smul_mono (Ideal.pow_le_pow_right hmn) (by rfl)) (h n)
 
-/-- Construct `I`-adic cauchy sequence from sequence satisfying the successive cauchy condition. -/
+/-- Construct `I`-adic Cauchy sequence from sequence satisfying the successive Cauchy condition. -/
 @[simps]
 def AdicCauchySequence.mk (f : ℕ → M)
     (h : ∀ n, f n ≡ f (n + 1) [SMOD (I ^ n • ⊤ : Submodule R M)]) : AdicCauchySequence I M where
   val := f
   property := by rwa [isAdicCauchy_iff]
 
-/-- The canonical linear map from cauchy sequences to the completion. -/
+/-- The canonical linear map from Cauchy sequences to the completion. -/
 @[simps]
 def mk : AdicCauchySequence I M →ₗ[R] AdicCompletion I M where
   toFun f := ⟨fun n ↦ Submodule.mkQ (I ^ n • ⊤ : Submodule R M) (f n), by
     intro m n hmn
-    simp only [mkQ_apply, factor_mk]
+    simp only [mkQ_apply]
     exact (f.property hmn).symm⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-/-- Criterion for checking that an adic cauchy sequence is mapped to zero in the adic completion. -/
+/-- Criterion for checking that an adic Cauchy sequence is mapped to zero in the adic completion. -/
 theorem mk_zero_of (f : AdicCauchySequence I M)
     (h : ∃ k : ℕ, ∀ n ≥ k, ∃ m ≥ n, ∃ l ≥ n, f m ∈ (I ^ l • ⊤ : Submodule R M)) :
     AdicCompletion.mk I M f = 0 := by
@@ -477,7 +479,7 @@ theorem mk_surjective : Function.Surjective (mk I M) := by
   · intro m n hmn
     rw [SModEq.def, ha m, ← mkQ_apply,
       ← factor_mk (Submodule.smul_mono_left (Ideal.pow_le_pow_right hmn)) (a n),
-      mkQ_apply,  ha n, x.property hmn]
+      mkQ_apply, ha n, x.property hmn]
   · ext n
     simp [ha n]
 

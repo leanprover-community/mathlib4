@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Fintype.Option
-import Mathlib.Order.ConditionallyCompleteLattice.Defs
 import Mathlib.Order.InitialSeg
 import Mathlib.Order.Nat
 import Mathlib.Order.SuccPred.CompleteLinearOrder
@@ -31,13 +30,13 @@ semiring structure.
 * Cardinals form a `CanonicallyOrderedAdd` `OrderedCommSemiring` with the aforementioned sum and
   product.
 * Cardinals form a `SuccOrder`. Use `Order.succ c` for the smallest cardinal greater than `c`.
-* The less than relation on cardinals forms a well-order.
+* The less-than relation on cardinals forms a well-order.
 * Cardinals form a `ConditionallyCompleteLinearOrderBot`. Bounded sets for cardinals in universe
   `u` are precisely the sets indexed by some type in universe `u`, see
-  `Cardinal.bddAbove_iff_small` (in `Mathlib.SetTheory.Cardinal.Small`). One can use `sSup` for the
-  cardinal supremum, and `sInf` for the minimum of a set of cardinals.
+  `Cardinal.bddAbove_iff_small`. One can use `sSup` for the cardinal supremum,
+  and `sInf` for the minimum of a set of cardinals.
 
-## Main Statements
+## Main statements
 
 * Cantor's theorem: `Cardinal.cantor c : c < 2 ^ c`.
 * König's theorem: `Cardinal.sum_lt_prod`
@@ -96,7 +95,7 @@ instance linearOrder : LinearOrder Cardinal.{u} :=
     le_total := by
       rintro ⟨α⟩ ⟨β⟩
       apply Embedding.total
-    decidableLE := Classical.decRel _ }
+    toDecidableLE := Classical.decRel _ }
 
 theorem le_def (α β : Type u) : #α ≤ #β ↔ Nonempty (α ↪ β) :=
   Iff.rfl
@@ -129,7 +128,7 @@ theorem lift_mk_le {α : Type v} {β : Type w} :
     ⟨Embedding.congr Equiv.ulift.symm Equiv.ulift.symm f⟩⟩
 
 /-- A variant of `Cardinal.lift_mk_le` with specialized universes.
-Because Lean often can not realize it should use this specialization itself,
+Because Lean often cannot realize it should use this specialization itself,
 we provide this statement separately so you don't have to solve the specialization problem either.
 -/
 theorem lift_mk_le' {α : Type u} {β : Type v} : lift.{v} #α ≤ lift.{u} #β ↔ Nonempty (α ↪ β) :=
@@ -154,16 +153,6 @@ def liftInitialSeg : Cardinal.{u} ≤i Cardinal.{max u v} := by
 theorem mem_range_lift_of_le {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
     b ≤ lift.{v, u} a → b ∈ Set.range lift.{v, u} :=
   liftInitialSeg.mem_range_of_le
-
-@[deprecated mem_range_lift_of_le (since := "2024-10-07")]
-theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
-    b ≤ lift.{v, u} a → ∃ a', lift.{v, u} a' = b :=
-  mem_range_lift_of_le
-
-/-- `Cardinal.lift` as an `OrderEmbedding`. -/
-@[deprecated Cardinal.liftInitialSeg (since := "2024-10-07")]
-def liftOrderEmbedding : Cardinal.{v} ↪o Cardinal.{max v u} :=
-  liftInitialSeg.toOrderEmbedding
 
 theorem lift_injective : Injective lift.{u, v} :=
   liftInitialSeg.injective
@@ -193,8 +182,7 @@ theorem lift_min {a b : Cardinal} : lift.{u, v} (min a b) = min (lift.{u, v} a) 
 theorem lift_max {a b : Cardinal} : lift.{u, v} (max a b) = max (lift.{u, v} a) (lift.{u, v} b) :=
   lift_monotone.map_max
 
--- Porting note: simpNF is not happy with universe levels.
-@[simp, nolint simpNF]
+-- This cannot be a `@[simp]` lemma because `simp` can't figure out the universes.
 theorem lift_umax_eq {a : Cardinal.{u}} {b : Cardinal.{v}} :
     lift.{max v w} a = lift.{max u w} b ↔ lift.{v} a = lift.{u} b := by
   rw [← lift_lift.{v, w, u}, ← lift_lift.{u, w, v}, lift_inj]
@@ -242,7 +230,7 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   nsmul := nsmulRec
   npow n c := c ^ (n : Cardinal)
   npow_zero := power_zero
-  npow_succ n c := by dsimp; rw [cast_succ, power_add, power_one]
+  npow_succ n c := by rw [cast_succ, power_add, power_one]
   natCast n := lift #(Fin n)
   natCast_zero := rfl
   natCast_succ n := cast_succ n
@@ -259,9 +247,6 @@ theorem power_mul {a b c : Cardinal} : a ^ (b * c) = (a ^ b) ^ c := by
 theorem power_natCast (a : Cardinal.{u}) (n : ℕ) : a ^ (↑n : Cardinal.{u}) = a ^ n :=
   rfl
 
-@[deprecated (since := "2024-10-16")]
-alias power_cast_right := power_natCast
-
 @[simp]
 theorem lift_eq_one {a : Cardinal.{v}} : lift.{u} a = 1 ↔ a = 1 :=
   lift_injective.eq_iff' lift_one
@@ -274,7 +259,7 @@ theorem lift_mul (a b : Cardinal.{u}) : lift.{v} (a * b) = lift.{v} a * lift.{v}
 theorem lift_two : lift.{u, v} 2 = 2 := by simp [← one_add_one_eq_two]
 
 @[simp]
-theorem mk_set {α : Type u} : #(Set α) = 2 ^ #α := by simp [← one_add_one_eq_two, Set, mk_arrow]
+theorem mk_set {α : Type u} : #(Set α) = 2 ^ #α := by simp [← one_add_one_eq_two, Set]
 
 /-- A variant of `Cardinal.mk_set` expressed in terms of a `Set` instead of a `Type`. -/
 @[simp]
@@ -308,14 +293,14 @@ instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
           Equiv.Set.sumCompl (range f)
       ⟨#(↥(range f)ᶜ), mk_congr this.symm⟩
   le_self_add a _ := (add_zero a).ge.trans <| add_le_add_left (Cardinal.zero_le _) _
+  le_add_self a _ := (zero_add a).ge.trans <| add_le_add_right (Cardinal.zero_le _) _
 
-instance orderedCommSemiring : OrderedCommSemiring Cardinal.{u} :=
-  CanonicallyOrderedAdd.toOrderedCommSemiring
+instance isOrderedRing : IsOrderedRing Cardinal.{u} :=
+  CanonicallyOrderedAdd.toIsOrderedRing
 
-instance : LinearOrderedAddCommMonoid Cardinal.{u} :=
-  { Cardinal.orderedCommSemiring, Cardinal.linearOrder with }
-
-instance orderBot : OrderBot Cardinal.{u} := inferInstance
+instance orderBot : OrderBot Cardinal.{u} where
+  bot := 0
+  bot_le := zero_le
 
 instance noZeroDivisors : NoZeroDivisors Cardinal.{u} where
   eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>
@@ -325,17 +310,17 @@ instance noZeroDivisors : NoZeroDivisors Cardinal.{u} where
 instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
   { Cardinal.commSemiring,
     Cardinal.linearOrder with
+    bot_le _ := bot_le
     mul_le_mul_left := @mul_le_mul_left' _ _ _ _
     zero_le_one := zero_le _ }
 
 -- Computable instance to prevent a non-computable one being found via the one above
 instance : CommMonoidWithZero Cardinal.{u} :=
-  { Cardinal.orderedCommSemiring with }
+  { Cardinal.commSemiring with }
 
--- Porting note: new
 -- Computable instance to prevent a non-computable one being found via the one above
 instance : CommMonoid Cardinal.{u} :=
-  { Cardinal.orderedCommSemiring with }
+  { Cardinal.commSemiring with }
 
 theorem zero_power_le (c : Cardinal.{u}) : (0 : Cardinal.{u}) ^ c ≤ 1 := by
   by_cases h : c = 0
@@ -356,7 +341,7 @@ theorem self_le_power (a : Cardinal) {b : Cardinal} (hb : 1 ≤ b) : a ≤ a ^ b
 
 /-- **Cantor's theorem** -/
 theorem cantor (a : Cardinal.{u}) : a < 2 ^ a := by
-  induction' a using Cardinal.inductionOn with α
+  induction a using Cardinal.inductionOn with | _ α
   rw [← mk_set]
   refine ⟨⟨⟨singleton, fun a b => singleton_eq_singleton_iff.1⟩⟩, ?_⟩
   rintro ⟨⟨f, hf⟩⟩
@@ -393,7 +378,6 @@ protected theorem lt_wf : @WellFounded Cardinal.{u} (· < ·) :=
 instance : WellFoundedRelation Cardinal.{u} :=
   ⟨(· < ·), Cardinal.lt_wf⟩
 
--- Porting note: this no longer is automatically inferred.
 instance : WellFoundedLT Cardinal.{u} :=
   ⟨Cardinal.lt_wf⟩
 
@@ -417,13 +401,12 @@ theorem succ_ne_zero (c : Cardinal) : succ c ≠ 0 :=
   (succ_pos _).ne'
 
 theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c := by
-  -- Porting note: rewrote the next three lines to avoid defeq abuse.
   have : Set.Nonempty { c' | c < c' } := exists_gt c
   simp_rw [succ_def, le_csInf_iff'' this, mem_setOf]
   intro b hlt
   rcases b, c with ⟨⟨β⟩, ⟨γ⟩⟩
   obtain ⟨f⟩ := le_of_lt hlt
-  have : ¬Surjective f := fun hn => (not_le_of_lt hlt) (mk_le_of_surjective hn)
+  have : ¬Surjective f := fun hn => (not_le_of_gt hlt) (mk_le_of_surjective hn)
   simp only [Surjective, not_forall] at this
   rcases this with ⟨b, hb⟩
   calc
@@ -436,7 +419,7 @@ theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) :=
     (le_of_not_gt fun h => by
       rcases lt_lift_iff.1 h with ⟨b, h, e⟩
       rw [lt_succ_iff, ← lift_le, e] at h
-      exact h.not_lt (lt_succ _))
+      exact h.not_gt (lt_succ _))
     (succ_le_of_lt <| lift_lt.2 <| lt_succ a)
 
 /-! ### Limit cardinals -/
@@ -449,6 +432,10 @@ theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Cardinal) :=
 
 protected theorem isSuccLimit_iff {c : Cardinal} : IsSuccLimit c ↔ c ≠ 0 ∧ IsSuccPrelimit c :=
   isSuccLimit_iff
+
+@[simp]
+protected theorem not_isSuccLimit_zero : ¬ IsSuccLimit (0 : Cardinal) :=
+  not_isSuccLimit_bot
 
 /-- A cardinal is a strong limit if it is not zero and it is closed under powersets.
 Note that `ℵ₀` is a strong limit by this definition. -/
@@ -463,6 +450,10 @@ protected theorem IsStrongLimit.isSuccLimit {c} (H : IsStrongLimit c) : IsSuccLi
 
 protected theorem IsStrongLimit.isSuccPrelimit {c} (H : IsStrongLimit c) : IsSuccPrelimit c :=
   H.isSuccLimit.isSuccPrelimit
+
+@[simp]
+theorem not_isStrongLimit_zero : ¬ IsStrongLimit (0 : Cardinal) :=
+  fun h ↦ h.ne_zero rfl
 
 /-! ### Indexed cardinal `sum` -/
 
@@ -502,10 +493,6 @@ theorem lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le {α : Type u} {β : Type v
               (Equiv.trans
                 (by
                   rw [Equiv.image_eq_preimage]
-                  /- Porting note: Need to insert the following `have` b/c bad fun coercion
-                   behaviour for Equivs -/
-                  have : DFunLike.coe (Equiv.symm (Equiv.ulift (α := α))) = ULift.up (α := α) := rfl
-                  rw [this]
                   simp only [preimage, mem_singleton_iff, ULift.up_inj, mem_setOf_eq, coe_setOf]
                   exact Equiv.refl _)
                 Equiv.ulift.symm)).trans_le
@@ -584,7 +571,7 @@ theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f 
       show ∀ i, ∃ b, ∀ a, G ⟨i, a⟩ i ≠ b by
         intro i
         simp only [not_exists.symm, not_forall.symm]
-        refine fun h => (H i).not_le ?_
+        refine fun h => (H i).not_ge ?_
         rw [← mk_out (f i), ← mk_out (g i)]
         exact ⟨Embedding.ofSurjective _ h⟩
     let ⟨⟨i, a⟩, h⟩ := sG C

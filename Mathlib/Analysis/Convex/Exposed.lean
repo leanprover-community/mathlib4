@@ -49,18 +49,18 @@ variable (𝕜 : Type*) {E : Type*} [TopologicalSpace 𝕜] [Semiring 𝕜] [Pre
 /-- A set `B` is exposed with respect to `A` iff it maximizes some functional over `A` (and contains
 all points maximizing it). Written `IsExposed 𝕜 A B`. -/
 def IsExposed (A B : Set E) : Prop :=
-  B.Nonempty → ∃ l : E →L[𝕜] 𝕜, B = { x ∈ A | ∀ y ∈ A, l y ≤ l x }
+  B.Nonempty → ∃ l : StrongDual 𝕜 E, B = { x ∈ A | ∀ y ∈ A, l y ≤ l x }
 
 end PreorderSemiring
 
 section OrderedRing
 
-variable {𝕜 : Type*} {E : Type*} [TopologicalSpace 𝕜] [OrderedRing 𝕜] [AddCommMonoid E]
-  [TopologicalSpace E] [Module 𝕜 E] {l : E →L[𝕜] 𝕜} {A B C : Set E} {x : E}
+variable {𝕜 : Type*} {E : Type*} [TopologicalSpace 𝕜] [Ring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E]
+  [TopologicalSpace E] [Module 𝕜 E] {l : StrongDual 𝕜 E} {A B C : Set E} {x : E}
 
 /-- A useful way to build exposed sets from intersecting `A` with half-spaces (modelled by an
 inequality with a functional). -/
-def ContinuousLinearMap.toExposed (l : E →L[𝕜] 𝕜) (A : Set E) : Set E :=
+def ContinuousLinearMap.toExposed (l : StrongDual 𝕜 E) (A : Set E) : Set E :=
   { x ∈ A | ∀ y ∈ A, l y ≤ l x }
 
 theorem ContinuousLinearMap.toExposed.isExposed : IsExposed 𝕜 A (l.toExposed A) := fun _ => ⟨l, rfl⟩
@@ -97,29 +97,25 @@ protected theorem mono (hC : IsExposed 𝕜 A C) (hBA : B ⊆ A) (hCB : C ⊆ B)
 half-space. The converse is *not* true. It would require that the corresponding open half-space
 doesn't intersect `A`. -/
 theorem eq_inter_halfSpace' {A B : Set E} (hAB : IsExposed 𝕜 A B) (hB : B.Nonempty) :
-    ∃ l : E →L[𝕜] 𝕜, ∃ a, B = { x ∈ A | a ≤ l x } := by
+    ∃ l : StrongDual 𝕜 E, ∃ a, B = { x ∈ A | a ≤ l x } := by
   obtain ⟨l, rfl⟩ := hAB hB
   obtain ⟨w, hw⟩ := hB
   exact ⟨l, l w, Subset.antisymm (fun x hx => ⟨hx.1, hx.2 w hw.1⟩) fun x hx =>
     ⟨hx.1, fun y hy => (hw.2 y hy).trans hx.2⟩⟩
-@[deprecated (since := "2024-11-12")] alias eq_inter_halfspace' := eq_inter_halfSpace'
-
 /-- For nontrivial `𝕜`, if `B` is an exposed subset of `A`, then `B` is the intersection of `A` with
 some closed half-space. The converse is *not* true. It would require that the corresponding open
 half-space doesn't intersect `A`. -/
-theorem eq_inter_halfSpace [Nontrivial 𝕜] {A B : Set E} (hAB : IsExposed 𝕜 A B) :
-    ∃ l : E →L[𝕜] 𝕜, ∃ a, B = { x ∈ A | a ≤ l x } := by
+theorem eq_inter_halfSpace [IsOrderedRing 𝕜] [Nontrivial 𝕜] {A B : Set E} (hAB : IsExposed 𝕜 A B) :
+    ∃ l : StrongDual 𝕜 E, ∃ a, B = { x ∈ A | a ≤ l x } := by
   obtain rfl | hB := B.eq_empty_or_nonempty
   · refine ⟨0, 1, ?_⟩
-    rw [eq_comm, eq_empty_iff_forall_not_mem]
+    rw [eq_comm, eq_empty_iff_forall_notMem]
     rintro x ⟨-, h⟩
     rw [ContinuousLinearMap.zero_apply] at h
-    have : ¬(1 : 𝕜) ≤ 0 := not_le_of_lt zero_lt_one
+    have : ¬(1 : 𝕜) ≤ 0 := not_le_of_gt zero_lt_one
     contradiction
   exact hAB.eq_inter_halfSpace' hB
-@[deprecated (since := "2024-11-12")] alias eq_inter_halfspace := eq_inter_halfSpace
-
-protected theorem inter [ContinuousAdd 𝕜] {A B C : Set E} (hB : IsExposed 𝕜 A B)
+protected theorem inter [IsOrderedRing 𝕜] [ContinuousAdd 𝕜] {A B C : Set E} (hB : IsExposed 𝕜 A B)
     (hC : IsExposed 𝕜 A C) : IsExposed 𝕜 A (B ∩ C) := by
   rintro ⟨w, hwB, hwC⟩
   obtain ⟨l₁, rfl⟩ := hB ⟨w, hwB⟩
@@ -134,12 +130,12 @@ protected theorem inter [ContinuousAdd 𝕜] {A B C : Set E} (hB : IsExposed �
   · exact
       (add_le_add_iff_left (l₁ x)).1 (le_trans (add_le_add (hwB.2 x hxA) (hwC.2 y hy)) (hx w hwB.1))
 
-theorem sInter [ContinuousAdd 𝕜] {F : Finset (Set E)} (hF : F.Nonempty)
+theorem sInter [IsOrderedRing 𝕜] [ContinuousAdd 𝕜] {F : Finset (Set E)} (hF : F.Nonempty)
     (hAF : ∀ B ∈ F, IsExposed 𝕜 A B) : IsExposed 𝕜 A (⋂₀ F) := by
   classical
   induction F using Finset.induction with
   | empty => exfalso; exact Finset.not_nonempty_empty hF
-  | @insert C F _ hF' =>
+  | insert C F _ hF' =>
     rw [Finset.coe_insert, sInter_insert]
     obtain rfl | hFnemp := F.eq_empty_or_nonempty
     · rw [Finset.coe_empty, sInter_empty, inter_univ]
@@ -174,11 +170,11 @@ variable (𝕜) in
 /-- A point is exposed with respect to `A` iff there exists a hyperplane whose intersection with
 `A` is exactly that point. -/
 def Set.exposedPoints (A : Set E) : Set E :=
-  { x ∈ A | ∃ l : E →L[𝕜] 𝕜, ∀ y ∈ A, l y ≤ l x ∧ (l x ≤ l y → y = x) }
+  { x ∈ A | ∃ l : StrongDual 𝕜 E, ∀ y ∈ A, l y ≤ l x ∧ (l x ≤ l y → y = x) }
 
 theorem exposed_point_def :
-    x ∈ A.exposedPoints 𝕜 ↔ x ∈ A ∧ ∃ l : E →L[𝕜] 𝕜, ∀ y ∈ A, l y ≤ l x ∧ (l x ≤ l y → y = x) :=
-  Iff.rfl
+    x ∈ A.exposedPoints 𝕜 ↔ x ∈ A ∧ ∃ l :
+    StrongDual 𝕜 E, ∀ y ∈ A, l y ≤ l x ∧ (l x ≤ l y → y = x) := Iff.rfl
 
 theorem exposedPoints_subset : A.exposedPoints 𝕜 ⊆ A := fun _ hx => hx.1
 
@@ -204,7 +200,8 @@ end OrderedRing
 
 section LinearOrderedRing
 
-variable {𝕜 : Type*} {E : Type*} [TopologicalSpace 𝕜] [LinearOrderedRing 𝕜] [AddCommMonoid E]
+variable {𝕜 : Type*} {E : Type*} [TopologicalSpace 𝕜]
+  [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommMonoid E]
   [TopologicalSpace E] [Module 𝕜 E] {A B : Set E}
 
 namespace IsExposed

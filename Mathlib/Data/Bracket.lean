@@ -13,7 +13,8 @@ subgroups, and for other similar operations.
 ## Main Definitions
 
 * `Bracket L M` for a binary operation that takes something in `L` and something in `M` and
-produces something in `M`. Defining an instance of this structure gives access to the notation `⁅ ⁆`
+  produces something in `M`.
+  Defining an instance of this structure gives access to the notation `⁅ ⁆`
 
 ## Notation
 

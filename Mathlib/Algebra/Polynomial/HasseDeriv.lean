@@ -58,23 +58,22 @@ def hasseDeriv (k : ℕ) : R[X] →ₗ[R] R[X] :=
 theorem hasseDeriv_apply :
     hasseDeriv k f = f.sum fun i r => monomial (i - k) (↑(i.choose k) * r) := by
   dsimp [hasseDeriv]
-  congr; ext; congr
-  apply nsmul_eq_mul
+  simp
 
 theorem hasseDeriv_coeff (n : ℕ) :
     (hasseDeriv k f).coeff n = (n + k).choose k * f.coeff (n + k) := by
   rw [hasseDeriv_apply, coeff_sum, sum_def, Finset.sum_eq_single (n + k), coeff_monomial]
-  · simp only [if_true, add_tsub_cancel_right, eq_self_iff_true]
-  · intro i _hi hink
+  · simp only [if_true, add_tsub_cancel_right]
+  · #adaptation_note
+    /-- Prior to nightly-2025-08-14, this was working as
+    `grind [coeff_monomial, Nat.choose_eq_zero_of_lt, Nat.cast_zero, zero_mul]` -/
+    intro i _hi hink
     rw [coeff_monomial]
     by_cases hik : i < k
     · simp only [Nat.choose_eq_zero_of_lt hik, ite_self, Nat.cast_zero, zero_mul]
-    · push_neg at hik
-      rw [if_neg]
-      contrapose! hink
-      exact (tsub_eq_iff_eq_add_of_le hik).mp hink
+    · grind
   · intro h
-    simp only [not_mem_support_iff.mp h, monomial_zero_right, mul_zero, coeff_zero]
+    simp only [notMem_support_iff.mp h, monomial_zero_right, mul_zero, coeff_zero]
 
 theorem hasseDeriv_zero' : hasseDeriv 0 f = f := by
   simp only [hasseDeriv_apply, tsub_zero, Nat.choose_zero_right, Nat.cast_one, one_mul,
@@ -104,9 +103,7 @@ theorem hasseDeriv_monomial (n : ℕ) (r : R) :
   ext i
   simp only [hasseDeriv_coeff, coeff_monomial]
   by_cases hnik : n = i + k
-  · rw [if_pos hnik, if_pos, ← hnik]
-    apply tsub_eq_of_eq_add_rev
-    rwa [add_comm]
+  · grind
   · rw [if_neg hnik, mul_zero]
     by_cases hkn : k ≤ n
     · rw [← tsub_eq_iff_eq_add_of_le hkn] at hnik
@@ -126,8 +123,9 @@ theorem hasseDeriv_X (hk : 1 < k) : hasseDeriv k (X : R[X]) = 0 := by
     zero_mul, monomial_zero_right]
 
 theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = (@derivative R _)^[k] := by
-  induction' k with k ih
-  · rw [hasseDeriv_zero, factorial_zero, iterate_zero, one_smul, LinearMap.id_coe]
+  induction k with
+  | zero => rw [hasseDeriv_zero, factorial_zero, iterate_zero, one_smul, LinearMap.id_coe]
+  | succ k ih => ?_
   ext f n : 2
   rw [iterate_succ_apply', ← ih]
   simp only [LinearMap.smul_apply, coeff_smul, LinearMap.map_smul_of_tower, coeff_derivative,
@@ -170,7 +168,7 @@ theorem hasseDeriv_comp (k l : ℕ) :
   rw [cast_choose ℚ h1, cast_choose ℚ h2, cast_choose ℚ h3, cast_choose ℚ hikl]
   rw [show i - (k + l) = i - l - k by rw [add_comm]; apply tsub_add_eq_tsub_tsub]
   simp only [add_tsub_cancel_left]
-  field_simp; ring
+  field_simp
 
 theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) :
     natDegree (hasseDeriv n p) ≤ natDegree p - n := by
@@ -183,15 +181,17 @@ theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) :
         tsub_le_iff_right, mem_support_iff, Ne, Finset.mem_filter]
       intro x hx hx'
       have hxp : x ≤ p.natDegree := le_natDegree_of_ne_zero hx
-      have hxn : n ≤ x := by
-        contrapose! hx'
-        simp [Nat.choose_eq_zero_of_lt hx']
-      rwa [tsub_add_cancel_of_le (hxn.trans hxp)]
+      grind
     · simp
+
+theorem hasseDeriv_natDegree_eq_C : f.hasseDeriv f.natDegree = C f.leadingCoeff := by
+  have : _ ≤ 0 := Nat.sub_self f.natDegree ▸ natDegree_hasseDeriv_le ..
+  rw [eq_C_of_natDegree_le_zero this, hasseDeriv_coeff, zero_add, Nat.choose_self,
+    Nat.cast_one, one_mul, leadingCoeff]
 
 theorem natDegree_hasseDeriv [NoZeroSMulDivisors ℕ R] (p : R[X]) (n : ℕ) :
     natDegree (hasseDeriv n p) = natDegree p - n := by
-  rcases lt_or_le p.natDegree n with hn | hn
+  rcases lt_or_ge p.natDegree n with hn | hn
   · simpa [hasseDeriv_eq_zero_of_lt_natDegree, hn] using (tsub_eq_zero_of_le hn.le).symm
   · refine map_natDegree_eq_sub ?_ ?_
     · exact fun h => hasseDeriv_eq_zero_of_lt_natDegree _ _
@@ -212,7 +212,7 @@ theorem hasseDeriv_mul (f g : R[X]) :
     hasseDeriv k (f * g) = ∑ ij ∈ antidiagonal k, hasseDeriv ij.1 f * hasseDeriv ij.2 g := by
   let D k := (@hasseDeriv R _ k).toAddMonoidHom
   let Φ := @AddMonoidHom.mul R[X] _
-  show
+  change
     (compHom (D k)).comp Φ f g =
       ∑ ij ∈ antidiagonal k, ((compHom.comp ((compHom Φ) (D ij.1))).flip (D ij.2) f) g
   simp only [← finset_sum_apply]

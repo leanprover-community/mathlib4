@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
 import Mathlib.Analysis.Complex.Basic
-import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.FieldTheory.IntermediateField.Basic
+import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.Topology.Algebra.Field
 import Mathlib.Topology.Algebra.UniformRing
@@ -48,7 +48,7 @@ continuous, then `ψ` is either the inclusion map or the composition of the incl
 complex conjugation. -/
 theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ : K →+* ℂ}
     (hc : UniformContinuous ψ) : ψ.toFun = K.subtype ∨ ψ.toFun = conj ∘ K.subtype := by
-  letI : TopologicalDivisionRing ℂ := TopologicalDivisionRing.mk
+  letI : IsTopologicalDivisionRing ℂ := IsTopologicalDivisionRing.mk
   letI : IsTopologicalRing K.topologicalClosure :=
     Subring.instIsTopologicalRing K.topologicalClosure.toSubring
   set ι : K → K.topologicalClosure := ⇑(Subfield.inclusion K.le_topologicalClosure)
@@ -110,7 +110,7 @@ theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ :
         simp only [id, Set.image_id']
         rfl ⟩
     convert DenseRange.comp (Function.Surjective.denseRange _)
-      (IsDenseEmbedding.id.subtype (K : Set ℂ)).dense (by continuity : Continuous j)
+      (IsDenseEmbedding.id.subtype (K : Set ℂ)).dense (by fun_prop : Continuous j)
     rintro ⟨y, hy⟩
     use
       ⟨y, by

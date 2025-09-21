@@ -15,19 +15,42 @@ It identifies atoms up to ring-equivalence: that is, `(y*3)*x` will be identifie
 where the monomial `x*y` is the linear atom.
 
 * Variables are represented by natural numbers.
-* Monomials are represented by `Monom := RBMap ℕ ℕ`.
+* Monomials are represented by `Monom := TreeMap ℕ ℕ`.
   The monomial `1` is represented by the empty map.
-* Linear combinations of monomials are represented by `Sum := RBMap Monom ℤ`.
+* Linear combinations of monomials are represented by `Sum := TreeMap Monom ℤ`.
 
 All input expressions are converted to `Sum`s, preserving the map from expressions to variables.
 We then discard the monomial information, mapping each distinct monomial to a natural number.
-The resulting `RBMap ℕ ℤ` represents the ring-normalized linear form of the expression.
+The resulting `TreeMap ℕ ℤ` represents the ring-normalized linear form of the expression.
 This is ultimately converted into a `Linexp` in the obvious way.
 
 `linearFormsAndMaxVar` is the main entry point into this file. Everything else is contained.
 -/
 
-open Mathlib.Ineq Batteries
+open Std (TreeMap)
+
+namespace Std.TreeMap
+
+-- This will be replaced by a `BEq` instance implemented in the standard library,
+-- likely in Q4 2025.
+
+/-- Returns true if the two maps have the same size and the same keys and values
+(with keys compared using the ordering, and values compared using `BEq`). -/
+def beq {α β : Type*} [BEq β] {c : α → α → Ordering} (m₁ m₂ : TreeMap α β c) : Bool :=
+  m₁.size == m₂.size && Id.run do
+    -- This could be made more efficient by simultaneously traversing both maps.
+    for (k, v) in m₁ do
+      if let some v' := m₂[k]? then
+        if v != v' then
+          return false
+      else
+        return false
+    return true
+
+instance {α β : Type*} [BEq β] {c : α → α → Ordering} : BEq (TreeMap α β c) := ⟨beq⟩
+
+end Std.TreeMap
+
 
 section
 open Lean Elab Tactic Meta
@@ -46,18 +69,18 @@ def List.findDefeq {v : Type} (red : TransparencyMode) (m : List (Expr × v)) (e
 end
 
 /--
-We introduce a local instance allowing addition of `RBMap`s,
+We introduce a local instance allowing addition of `TreeMap`s,
 removing any keys with value zero.
 We don't need to prove anything about this addition, as it is only used in meta code.
 -/
 local instance {α β : Type*} {c : α → α → Ordering} [Add β] [Zero β] [DecidableEq β] :
-    Add (RBMap α β c) where
+    Add (TreeMap α β c) where
   add := fun f g => (f.mergeWith (fun _ b b' => b + b') g).filter (fun _ b => b ≠ 0)
 
-namespace Linarith
+namespace Mathlib.Tactic.Linarith
 
-/-- A local abbreviation for `RBMap` so we don't need to write `Ord.compare` each time. -/
-abbrev Map (α β) [Ord α] := RBMap α β Ord.compare
+/-- A local abbreviation for `TreeMap` so we don't need to write `Ord.compare` each time. -/
+abbrev Map (α β) [Ord α] := TreeMap α β Ord.compare
 
 /-! ### Parsing datatypes -/
 
@@ -65,7 +88,7 @@ abbrev Map (α β) [Ord α] := RBMap α β Ord.compare
 abbrev Monom : Type := Map ℕ ℕ
 
 /-- `1` is represented by the empty monomial, the product of no variables. -/
-def Monom.one : Monom := RBMap.empty
+def Monom.one : Monom := TreeMap.empty
 
 /-- Compare monomials by first comparing their keys and then their powers. -/
 def Monom.lt : Monom → Monom → Bool :=
@@ -80,16 +103,16 @@ instance : Ord Monom where
 abbrev Sum : Type := Map Monom ℤ
 
 /-- `1` is represented as the singleton sum of the monomial `Monom.one` with coefficient 1. -/
-def Sum.one : Sum := RBMap.empty.insert Monom.one 1
+def Sum.one : Sum := TreeMap.empty.insert Monom.one 1
 
 /-- `Sum.scaleByMonom s m` multiplies every monomial in `s` by `m`. -/
 def Sum.scaleByMonom (s : Sum) (m : Monom) : Sum :=
-  s.foldr (fun m' coeff sm => sm.insert (m + m') coeff) RBMap.empty
+  s.foldr (fun m' coeff sm => sm.insert (m + m') coeff) TreeMap.empty
 
 /-- `sum.mul s1 s2` distributes the multiplication of two sums. -/
 def Sum.mul (s1 s2 : Sum) : Sum :=
-  s1.foldr (fun mn coeff sm => sm + ((s2.scaleByMonom mn).mapVal (fun _ v => v * coeff)))
-    RBMap.empty
+  s1.foldr (fun mn coeff sm => sm + ((s2.scaleByMonom mn).map (fun _ v => v * coeff)))
+    TreeMap.empty
 
 /-- The `n`th power of `s : Sum` is the `n`-fold product of `s`, with `s.pow 0 = Sum.one`. -/
 partial def Sum.pow (s : Sum) : ℕ → Sum
@@ -105,18 +128,18 @@ partial def Sum.pow (s : Sum) : ℕ → Sum
 
 /-- `SumOfMonom m` lifts `m` to a sum with coefficient `1`. -/
 def SumOfMonom (m : Monom) : Sum :=
-  RBMap.empty.insert m 1
+  TreeMap.empty.insert m 1
 
-/-- The unit monomial `one` is represented by the empty RBMap. -/
-def one : Monom := RBMap.empty
+/-- The unit monomial `one` is represented by the empty TreeMap. -/
+def one : Monom := TreeMap.empty
 
 /-- A scalar `z` is represented by a `Sum` with coefficient `z` and monomial `one` -/
 def scalar (z : ℤ) : Sum :=
-  RBMap.empty.insert one z
+  TreeMap.empty.insert one z
 
 /-- A single variable `n` is represented by a sum with coefficient `1` and monomial `n`. -/
 def var (n : ℕ) : Sum :=
-  RBMap.empty.insert (RBMap.empty.insert n 1) 1
+  TreeMap.empty.insert (TreeMap.empty.insert n 1) 1
 
 
 /-! ### Parsing algorithms -/
@@ -156,10 +179,11 @@ and forces some functions that call it into `MetaM` as well.
 -/
 
 partial def linearFormOfExpr (red : TransparencyMode) (m : ExprMap) (e : Expr) :
-    MetaM (ExprMap × Sum) :=
+    MetaM (ExprMap × Sum) := do
+  let e ← whnfR e
   match e.numeral? with
-  | some 0 => return ⟨m, RBMap.empty⟩
-  | some (n+1) => return ⟨m, scalar (n+1)⟩
+  | some 0 => return ⟨m, TreeMap.empty⟩
+  | some (n + 1) => return ⟨m, scalar (n + 1)⟩
   | none =>
   match e.getAppFnArgs with
   | (``HMul.hMul, #[_, _, _, _, e1, e2]) => do
@@ -173,10 +197,10 @@ partial def linearFormOfExpr (red : TransparencyMode) (m : ExprMap) (e : Expr) :
   | (``HSub.hSub, #[_, _, _, _, e1, e2]) => do
     let (m1, comp1) ← linearFormOfExpr red m e1
     let (m2, comp2) ← linearFormOfExpr red m1 e2
-    return (m2, comp1 + comp2.mapVal (fun _ v => -v))
+    return (m2, comp1 + comp2.map (fun _ v => -v))
   | (``Neg.neg, #[_, _, e]) => do
     let (m1, comp) ← linearFormOfExpr red m e
-    return (m1, comp.mapVal (fun _ v => -v))
+    return (m1, comp.map (fun _ v => -v))
   | (``HPow.hPow, #[_, _, _, _, a, n]) => do
     match n.numeral? with
     | some n => do
@@ -189,18 +213,18 @@ partial def linearFormOfExpr (red : TransparencyMode) (m : ExprMap) (e : Expr) :
 `elimMonom s map` eliminates the monomial level of the `Sum` `s`.
 
 `map` is a lookup map from monomials to variable numbers.
-The output `RBMap ℕ ℤ` has the same structure as `s : Sum`,
+The output `TreeMap ℕ ℤ` has the same structure as `s : Sum`,
 but each monomial key is replaced with its index according to `map`.
 If any new monomials are encountered, they are assigned variable numbers and `map` is updated.
 -/
 def elimMonom (s : Sum) (m : Map Monom ℕ) : Map Monom ℕ × Map ℕ ℤ :=
   s.foldr (fun mn coeff ⟨map, out⟩ ↦
-    match map.find? mn with
+    match map[mn]? with
     | some n => ⟨map, out.insert n coeff⟩
     | none =>
       let n := map.size
       ⟨map.insert mn n, out.insert n coeff⟩)
-    (m, RBMap.empty)
+    (m, TreeMap.empty)
 
 /--
 `toComp red e e_map monom_map` converts an expression of the form `t < 0`, `t ≤ 0`, or `t = 0`
@@ -239,8 +263,8 @@ It also returns the largest variable index that appears in comparisons in `c`.
 def linearFormsAndMaxVar (red : TransparencyMode) (pfs : List Expr) :
     MetaM (List Comp × ℕ) := do
   let pftps ← (pfs.mapM inferType)
-  let (l, _, map) ← toCompFold red [] pftps RBMap.empty
+  let (l, _, map) ← toCompFold red [] pftps TreeMap.empty
   trace[linarith.detail] "monomial map: {map.toList.map fun ⟨k,v⟩ => (k.toList, v)}"
   return (l, map.size - 1)
 
-end Linarith
+end Mathlib.Tactic.Linarith

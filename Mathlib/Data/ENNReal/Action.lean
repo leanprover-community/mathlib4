@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Data.ENNReal.Order
+import Mathlib.Data.ENNReal.Operations
 
 /-!
 # Scalar multiplication on `ℝ≥0∞`.
@@ -88,10 +88,11 @@ theorem toReal_smul (r : ℝ≥0) (s : ℝ≥0∞) : (r • s).toReal = r • s.
   rfl
 
 instance : PosSMulStrictMono ℝ≥0 ℝ≥0∞ where
-  elim _r hr _a _b hab := ENNReal.mul_lt_mul_left' (coe_pos.2 hr).ne' coe_ne_top hab
+  smul_lt_smul_of_pos_left _r hr _a _b hab :=
+    ENNReal.mul_lt_mul_left' (coe_pos.2 hr).ne' coe_ne_top hab
 
 instance : SMulPosMono ℝ≥0 ℝ≥0∞ where
-  elim _r _ _a _b hab := mul_le_mul_right' (coe_le_coe.2 hab) _
+  smul_le_smul_of_nonneg_right _r _ _a _b hab := mul_le_mul_right' (coe_le_coe.2 hab) _
 
 end Actions
 

@@ -23,15 +23,15 @@ namespace CategoryTheory
 
 open CategoryTheory.Limits Opposite
 
-universe w v u
+universe t w' w v u
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-variable {D : Type w} [Category.{max v u} D]
+variable {D : Type w} [Category.{w'} D]
 
 section
 
-variable {FD : D → D → Type*} {CD : D → Type (max v u)} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
-variable [ConcreteCategory.{max v u} D FD]
+variable {FD : D → D → Type*} {CD : D → Type t} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+variable [ConcreteCategory.{t} D FD]
 
 /-- A concrete version of the multiequalizer, to be used below. -/
 def Meq {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) :=
@@ -42,8 +42,8 @@ end
 
 namespace Meq
 
-variable {FD : D → D → Type*} {CD : D → Type (max v u)} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
-variable [ConcreteCategory.{max v u} D FD]
+variable {FD : D → D → Type*} {CD : D → Type t} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+variable [ConcreteCategory.{t} D FD]
 
 instance {X} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) :
     CoeFun (Meq P S) fun _ => ∀ I : S.Arrow, ToType (P.obj (op I.Y)) :=
@@ -99,12 +99,13 @@ theorem mk_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : ToType (P.obj 
     mk S x I = P.map I.f.op x :=
   rfl
 
-variable [PreservesLimits (forget D)]
+variable [∀ {X : C} (S : J.Cover X),
+  PreservesLimitsOfShape (WalkingMulticospan S.shape) (forget D)]
 
 /-- The equivalence between the type associated to `multiequalizer (S.index P)` and `Meq P S`. -/
 noncomputable def equiv {X : C} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) [HasMultiequalizer (S.index P)] :
     ToType (multiequalizer (S.index P)) ≃ Meq P S :=
-  Limits.Concrete.multiequalizerEquiv (C := D) _
+  Limits.Concrete.multiequalizerEquiv.{t} (C := D) _
 
 @[simp]
 theorem equiv_apply {X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} [HasMultiequalizer (S.index P)]
@@ -125,10 +126,11 @@ namespace GrothendieckTopology
 
 namespace Plus
 
-variable {FD : D → D → Type*} {CD : D → Type (max v u)} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
-variable [instCC : ConcreteCategory.{max v u} D FD]
+variable {FD : D → D → Type*} {CD : D → Type t} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+variable [instCC : ConcreteCategory.{t} D FD]
 
-variable [PreservesLimits (forget D)]
+variable [∀ {X : C} (S : J.Cover X),
+  PreservesLimitsOfShape (WalkingMulticospan S.shape) (forget D)]
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
 
@@ -165,7 +167,7 @@ theorem toPlus_mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : ToType (P.obj
   dsimp [diagram]
   apply Concrete.multiequalizer_ext (C := D)
   intro i
-  simp only [← ConcreteCategory.comp_apply, Category.assoc, Multiequalizer.lift_ι, Category.comp_id,
+  simp only [← ConcreteCategory.comp_apply, Category.assoc, Multiequalizer.lift_ι,
     Meq.equiv_symm_eq_apply]
   rfl
 
@@ -189,15 +191,7 @@ theorem toPlus_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : Meq P S) (
   simpa using (x.condition (Cover.Relation.mk' (I.precompRelation i.f))).symm
 
 theorem toPlus_eq_mk {X : C} {P : Cᵒᵖ ⥤ D} (x : ToType (P.obj (op X))) :
-    (J.toPlus P).app _ x = mk (Meq.mk ⊤ x) := by
-  dsimp [mk, toPlus]
-  delta Cover.toMultiequalizer
-  simp only [ConcreteCategory.comp_apply]
-  apply congr_arg
-  apply (Meq.equiv P ⊤).injective
-  ext i
-  rw [Meq.equiv_apply, Equiv.apply_symm_apply, ← ConcreteCategory.comp_apply, Multiequalizer.lift_ι]
-  rfl
+    (J.toPlus P).app _ x = mk (Meq.mk ⊤ x) := toPlus_mk ⊤ x
 
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
 
@@ -213,7 +207,7 @@ theorem eq_mk_iff_exists {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq 
     mk x = mk y ↔ ∃ (W : J.Cover X) (h1 : W ⟶ S) (h2 : W ⟶ T), x.refine h1 = y.refine h2 := by
   constructor
   · intro h
-    obtain ⟨W, h1, h2, hh⟩ := Concrete.colimit_exists_of_rep_eq.{u} (C := D) _ _ _ h
+    obtain ⟨W, h1, h2, hh⟩ := Concrete.colimit_exists_of_rep_eq (C := D) _ _ _ h
     use W.unop, h1.unop, h2.unop
     ext I
     apply_fun Multiequalizer.ι (W.unop.index P) I at hh
@@ -319,11 +313,12 @@ def meqOfSep (P : Cᵒᵖ ⥤ D)
     erw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply];
     rw [← (J.plusObj P).map_comp, ← (J.plusObj P).map_comp, ← op_comp, ← op_comp]
     exact s.condition
-      (Cover.Relation.mk { hf := II.fst.from_middle_condition }
-        { hf := II.snd.from_middle_condition }
-        { g₁ := II.r.g₁ ≫ II.fst.toMiddleHom
-          g₂ := II.r.g₂ ≫ II.snd.toMiddleHom
-          w := by simpa only [Category.assoc, Cover.Arrow.middle_spec] using II.r.w })
+      { fst.hf := II.fst.from_middle_condition
+        snd.hf := II.snd.from_middle_condition
+        r.g₁ := II.r.g₁ ≫ II.fst.toMiddleHom
+        r.g₂ := II.r.g₂ ≫ II.snd.toMiddleHom
+        r.w := by simpa only [Category.assoc, Cover.Arrow.middle_spec] using II.r.w
+        .. }
 
 theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
     (hsep :
@@ -375,7 +370,7 @@ theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
   erw [toPlus_apply (T IB) (t IB) IC]
   rw [← ht, ← ht]
   -- Conclude by constructing the relation showing equality...
-  let IR : S.Relation := Cover.Relation.mk { hf := IB.hf } { hf := I.hf } { w := IA.middle_spec }
+  let IR : S.Relation := { fst.hf := IB.hf, snd.hf := I.hf, r.w := IA.middle_spec, .. }
   exact s.condition IR
 
 variable [(forget D).ReflectsIsomorphisms]
@@ -477,7 +472,7 @@ theorem sheafification_map {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
 /-- The canonical map from `P` to its sheafification, as a natural transformation.
 *Note:* We only show this is a sheaf under additional hypotheses on `D`. -/
 noncomputable def toSheafification : 𝟭 _ ⟶ sheafification J D :=
-  J.toPlusNatTrans D ≫ whiskerRight (J.toPlusNatTrans D) (J.plusFunctor D)
+  J.toPlusNatTrans D ≫ Functor.whiskerRight (J.toPlusNatTrans D) (J.plusFunctor D)
 
 @[simp]
 theorem toSheafification_app (P : Cᵒᵖ ⥤ D) :
@@ -544,8 +539,9 @@ theorem sheafifyMap_sheafifyLift {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q 
 end GrothendieckTopology
 
 variable (J)
-variable {FD : D → D → Type*} {CD : D → Type (max v u)} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
-variable [instCC : ConcreteCategory.{max v u} D FD] [PreservesLimits (forget D)]
+variable {FD : D → D → Type*} {CD : D → Type t} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+variable [instCC : ConcreteCategory.{t} D FD]
+  [∀ {X : C} (S : J.Cover X), PreservesLimitsOfShape (WalkingMulticospan S.shape) (forget D)]
   [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
   [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)] [(forget D).ReflectsIsomorphisms]

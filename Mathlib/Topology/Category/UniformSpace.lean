@@ -249,6 +249,7 @@ noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace Unif
         rfl }
 
 noncomputable instance : Reflective (forget₂ CpltSepUniformSpace UniformSpaceCat) where
+  L := completionFunctor
   adj := adj
   map_surjective f := ⟨f, rfl⟩
 

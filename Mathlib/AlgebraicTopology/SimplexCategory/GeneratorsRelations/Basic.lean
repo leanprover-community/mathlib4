@@ -48,21 +48,21 @@ abbrev σ {n : ℕ} (i : Fin (n + 1)) : FreeSimplexQuiver.mk (n + 1) ⟶ .mk n :
 five simplicial identities. -/
 inductive homRel : HomRel (Paths FreeSimplexQuiver)
   | δ_comp_δ {n : ℕ} {i j : Fin (n + 2)} (H : i ≤ j) : homRel
-    (Paths.of.map (δ i) ≫ Paths.of.map (δ j.succ))
-    (Paths.of.map (δ j) ≫ Paths.of.map (δ i.castSucc))
+    ((Paths.of FreeSimplexQuiver).map (δ i) ≫ (Paths.of FreeSimplexQuiver).map (δ j.succ))
+    ((Paths.of FreeSimplexQuiver).map (δ j) ≫ (Paths.of FreeSimplexQuiver).map (δ i.castSucc))
   | δ_comp_σ_of_le {n : ℕ} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : i ≤ j.castSucc) : homRel
-    (Paths.of.map (δ i.castSucc) ≫ Paths.of.map (σ j.succ))
-    (Paths.of.map (σ j) ≫ Paths.of.map (δ i))
+    ((Paths.of FreeSimplexQuiver).map (δ i.castSucc) ≫ (Paths.of FreeSimplexQuiver).map (σ j.succ))
+    ((Paths.of FreeSimplexQuiver).map (σ j) ≫ (Paths.of FreeSimplexQuiver).map (δ i))
   | δ_comp_σ_self {n : ℕ} {i : Fin (n + 1)} : homRel
-    (Paths.of.map (δ i.castSucc) ≫ Paths.of.map (σ i)) (𝟙 _)
+    ((Paths.of FreeSimplexQuiver).map (δ i.castSucc) ≫ (Paths.of FreeSimplexQuiver).map (σ i)) (𝟙 _)
   | δ_comp_σ_succ {n : ℕ} {i : Fin (n + 1)} : homRel
-    (Paths.of.map (δ i.succ) ≫ Paths.of.map (σ i)) (𝟙 _)
+    ((Paths.of FreeSimplexQuiver).map (δ i.succ) ≫ (Paths.of FreeSimplexQuiver).map (σ i)) (𝟙 _)
   | δ_comp_σ_of_gt {n : ℕ} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : j.castSucc < i) : homRel
-    (Paths.of.map (δ i.succ) ≫ Paths.of.map (σ j.castSucc))
-    (Paths.of.map (σ j) ≫ Paths.of.map (δ i))
+    ((Paths.of FreeSimplexQuiver).map (δ i.succ) ≫ (Paths.of FreeSimplexQuiver).map (σ j.castSucc))
+    ((Paths.of FreeSimplexQuiver).map (σ j) ≫ (Paths.of FreeSimplexQuiver).map (δ i))
   | σ_comp_σ {n : ℕ} {i j : Fin (n + 1)} (H : i ≤ j) : homRel
-    (Paths.of.map (σ i.castSucc) ≫ Paths.of.map (σ j))
-    (Paths.of.map (σ j.succ) ≫ Paths.of.map (σ i))
+    ((Paths.of FreeSimplexQuiver).map (σ i.castSucc) ≫ (Paths.of FreeSimplexQuiver).map (σ j))
+    ((Paths.of FreeSimplexQuiver).map (σ j.succ) ≫ (Paths.of FreeSimplexQuiver).map (σ i))
 
 end FreeSimplexQuiver
 
@@ -73,17 +73,17 @@ def SimplexCategoryGenRel := Quotient FreeSimplexQuiver.homRel
 
 /-- `SimplexCategoryGenRel.mk` is the main constructor for objects of `SimplexCategoryGenRel`. -/
 def SimplexCategoryGenRel.mk (n : ℕ) : SimplexCategoryGenRel where
-  as := Paths.of.obj n
+  as := (Paths.of FreeSimplexQuiver).obj n
 
 namespace SimplexCategoryGenRel
 
 /-- `SimplexCategoryGenRel.δ i` is the `i`-th face map `.mk n ⟶ .mk (n + 1)`. -/
 abbrev δ {n : ℕ} (i : Fin (n + 2)) : mk n ⟶ mk (n + 1) :=
-  (Quotient.functor FreeSimplexQuiver.homRel).map <| Paths.of.map (.δ i)
+  (Quotient.functor FreeSimplexQuiver.homRel).map <| (Paths.of FreeSimplexQuiver).map (.δ i)
 
 /-- `SimplexCategoryGenRel.σ i` is the `i`-th degeneracy map `.mk (n + 1) ⟶ .mk n`. -/
 abbrev σ {n : ℕ} (i : Fin (n + 1)) : mk (n + 1) ⟶ mk n :=
-  (Quotient.functor FreeSimplexQuiver.homRel).map <| Paths.of.map (.σ i)
+  (Quotient.functor FreeSimplexQuiver.homRel).map <| (Paths.of FreeSimplexQuiver).map (.σ i)
 
 /-- The length of an object of `SimplexCategoryGenRel`. -/
 def len (x : SimplexCategoryGenRel) : ℕ := by rcases x with ⟨n⟩; exact n
@@ -155,7 +155,7 @@ lemma hom_induction' (P : MorphismProperty SimplexCategoryGenRel)
     (δ_comp : ∀ {n m : ℕ} (u : mk (m + 1) ⟶ mk n)
       (i : Fin (m + 2)), P u → P (δ i ≫ u))
     (σ_comp : ∀ {n m : ℕ} (u : mk m ⟶ mk n)
-      (i : Fin (m + 1)), P u → P (σ i ≫ u )) {a b : SimplexCategoryGenRel} (f : a ⟶ b) :
+      (i : Fin (m + 1)), P u → P (σ i ≫ u)) {a b : SimplexCategoryGenRel} (f : a ⟶ b) :
     P f := by
   suffices generators.multiplicativeClosure' ≤ P by
     rw [← MorphismProperty.multiplicativeClosure_eq_multiplicativeClosure',

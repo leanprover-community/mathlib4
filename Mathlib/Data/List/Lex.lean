@@ -17,11 +17,11 @@ The lexicographic order on `List α` is defined by `L < M` iff
 ## See also
 
 Related files are:
-* `Mathlib.Data.Finset.Colex`: Colexicographic order on finite sets.
-* `Mathlib.Data.PSigma.Order`: Lexicographic order on `Σ' i, α i`.
-* `Mathlib.Data.Pi.Lex`: Lexicographic order on `Πₗ i, α i`.
-* `Mathlib.Data.Sigma.Order`: Lexicographic order on `Σ i, α i`.
-* `Mathlib.Data.Prod.Lex`: Lexicographic order on `α × β`.
+* `Mathlib/Data/Finset/Colex.lean`: Colexicographic order on finite sets.
+* `Mathlib/Data/PSigma/Order.lean`: Lexicographic order on `Σ' i, α i`.
+* `Mathlib/Data/Pi/Lex.lean`: Lexicographic order on `Πₗ i, α i`.
+* `Mathlib/Data/Sigma/Order.lean`: Lexicographic order on `Σ i, α i`.
+* `Mathlib/Data/Prod/Lex.lean`: Lexicographic order on `α × β`.
 -/
 
 
@@ -37,11 +37,7 @@ variable {α : Type u}
 
 theorem lex_cons_iff {r : α → α → Prop} [IsIrrefl α r] {a l₁ l₂} :
     Lex r (a :: l₁) (a :: l₂) ↔ Lex r l₁ l₂ :=
-  ⟨fun h => by obtain - | h | h := h; exacts [h, (irrefl_of r a h).elim], Lex.cons⟩
-
-@[deprecated (since := "2025-03-14")] alias Lex.cons_iff := lex_cons_iff
-
-@[deprecated (since := "2024-12-21")] alias not_nil_right := not_lex_nil
+  ⟨fun h => by obtain - | h | h := h; exacts [(irrefl_of r a h).elim, h], Lex.cons⟩
 
 theorem lex_nil_or_eq_nil {r : α → α → Prop} (l : List α) : List.Lex r [] l ∨ l = [] :=
   match l with
@@ -104,8 +100,8 @@ instance decidableRel [DecidableEq α] (r : α → α → Prop) [DecidableRel r]
       · exact Lex.rel h
       · exact Lex.cons h
     · rcases h with (_ | h | h)
-      · exact Or.inr ⟨rfl, h⟩
       · exact Or.inl h
+      · exact Or.inr ⟨rfl, h⟩
 
 theorem append_right (r : α → α → Prop) : ∀ {s₁ s₂} (t), Lex r s₁ s₂ → Lex r s₁ (s₂ ++ t)
   | _, _, _, nil => nil
@@ -128,11 +124,12 @@ theorem to_ne : ∀ {l₁ l₂ : List α}, Lex (· ≠ ·) l₁ l₂ → l₁ �
 theorem _root_.Decidable.List.Lex.ne_iff [DecidableEq α] {l₁ l₂ : List α}
     (H : length l₁ ≤ length l₂) : Lex (· ≠ ·) l₁ l₂ ↔ l₁ ≠ l₂ :=
   ⟨to_ne, fun h => by
-    induction' l₁ with a l₁ IH generalizing l₂ <;> rcases l₂ with - | ⟨b, l₂⟩
+    induction l₁ generalizing l₂ <;> rcases l₂ with - | ⟨b, l₂⟩
     · contradiction
     · apply nil
     · exact (not_lt_of_ge H).elim (succ_pos _)
-    · by_cases ab : a = b
+    case cons.cons a l₁ IH =>
+      by_cases ab : a = b
       · subst b
         exact .cons <| IH (le_of_succ_le_succ H) (mt (congr_arg _) h)
       · exact .rel ab ⟩

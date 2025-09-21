@@ -12,7 +12,7 @@ import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 
 The main Result is `ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable`:
 Let `A` be a StarSubalgebra of `C(E, 𝕜)` that separates points and whose elements are bounded. If
-the integrals of all elements `A` with respect to two finite measures `P, P'`coincide, then the
+the integrals of all elements of `A` with respect to two finite measures `P, P'`coincide, then the
 measures coincide. In other words: If a Subalgebra separates points, it separates finite measures.
 -/
 
@@ -26,6 +26,9 @@ namespace MeasureTheory
 
 variable [MeasurableSpace E]
 
+/-- If the integrals of all elements of a subalgebra `A` of continuous and bounded functions with
+respect to two finite measures `P, P'` coincide, then the measures coincide. In other words: If a
+subalgebra separates points, it separates finite measures. -/
 theorem ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable
     [PseudoEMetricSpace E] [BorelSpace E] [CompleteSpace E] [SecondCountableTopology E]
     {P P' : Measure E} [IsFiniteMeasure P] [IsFiniteMeasure P']
@@ -38,14 +41,14 @@ theorem ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_count
   have hA_toReal : (A_toReal.map (toContinuousMapₐ ℝ)).SeparatesPoints := by
     rw [RCLike.restrict_toContinuousMap_eq_toContinuousMapStar_restrict]
     exact Subalgebra.SeparatesPoints.rclike_to_real hA
-  --integrals of elements of the real subalgebra wrt P, P', respectively, coincide
+  --integrals of elements of the real subalgebra w.r.t. P, P', respectively, coincide
   have heq' : ∀ g ∈ A_toReal, ∫ x, (g : E → ℝ) x ∂P = ∫ x, (g : E → ℝ) x ∂P' := by
     intro g hgA_toReal
     rw [← @ofReal_inj 𝕜, ← integral_ofReal, ← integral_ofReal]
     exact heq _ hgA_toReal
   apply ext_of_forall_integral_eq_of_IsFiniteMeasure
   intro f
-  have h0 : Tendsto (fun ε : ℝ => 6 * sqrt ε) (𝓝[>] 0) (𝓝 0) := by
+  have h0 : Tendsto (fun ε : ℝ => 6 * √ε) (𝓝[>] 0) (𝓝 0) := by
     nth_rewrite 3 [← mul_zero 6]
     apply tendsto_nhdsWithin_of_tendsto_nhds (Tendsto.const_mul 6 _)
     nth_rewrite 2 [← sqrt_zero]

@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Restrict
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Monomorphisms over a fixed object
@@ -24,6 +25,7 @@ We provide
 * `def pullback [HasPullbacks C] (f : X ⟶ Y) : MonoOver Y ⥤ MonoOver X`
 * `def map (f : X ⟶ Y) [Mono f] : MonoOver X ⥤ MonoOver Y`
 * `def «exists» [HasImages C] (f : X ⟶ Y) : MonoOver X ⥤ MonoOver Y`
+
 and prove their basic properties and relationships.
 
 ## Notes
@@ -40,7 +42,7 @@ noncomputable section
 
 namespace CategoryTheory
 
-open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Functor
 
 variable {C : Type u₁} [Category.{v₁} C] {X Y Z : C}
 variable {D : Type u₂} [Category.{v₂} D]
@@ -51,10 +53,10 @@ This isn't skeletal, so it's not a partial order.
 Later we define `Subobject X` as the quotient of this by isomorphisms.
 -/
 def MonoOver (X : C) :=
-  FullSubcategory fun f : Over X => Mono f.hom
+  ObjectProperty.FullSubcategory fun f : Over X => Mono f.hom
 
 instance (X : C) : Category (MonoOver X) :=
-  FullSubcategory.category _
+  ObjectProperty.FullSubcategory.category _
 
 namespace MonoOver
 
@@ -68,7 +70,7 @@ def mk' {X A : C} (f : A ⟶ X) [hf : Mono f] : MonoOver X where
 
 /-- The inclusion from monomorphisms over X to morphisms over X. -/
 def forget (X : C) : MonoOver X ⥤ Over X :=
-  fullSubcategoryInclusion _
+  ObjectProperty.ι _
 
 instance : CoeOut (MonoOver X) C where coe Y := Y.obj.left
 
@@ -94,18 +96,20 @@ theorem forget_obj_hom {f} : ((forget X).obj f).hom = f.arrow :=
 
 /-- The forget functor `MonoOver X ⥤ Over X` is fully faithful. -/
 def fullyFaithfulForget (X : C) : (forget X).FullyFaithful :=
-  fullyFaithfulFullSubcategoryInclusion _
+  ObjectProperty.fullyFaithfulι _
 
 instance : (forget X).Full :=
-  FullSubcategory.full _
+  ObjectProperty.full_ι _
 
 instance : (forget X).Faithful :=
-  FullSubcategory.faithful _
+  ObjectProperty.faithful_ι _
 
 instance mono (f : MonoOver X) : Mono f.arrow :=
   f.property
 
-/-- The category of monomorphisms over X is a thin category,
+instance {X : C} {f : MonoOver X} : Mono ((MonoOver.forget X).obj f).hom := f.mono
+
+/-- The category of monomorphisms over X is a thin category,s
 which makes defining its skeleton easy. -/
 instance isThin {X : C} : Quiver.IsThin (MonoOver X) := fun f g =>
   ⟨by
@@ -121,18 +125,18 @@ theorem w {f g : MonoOver X} (k : f ⟶ g) : k.left ≫ g.arrow = f.arrow :=
 
 /-- Convenience constructor for a morphism in monomorphisms over `X`. -/
 abbrev homMk {f g : MonoOver X} (h : f.obj.left ⟶ g.obj.left)
-    (w : h ≫ g.arrow = f.arrow := by aesop_cat) : f ⟶ g :=
+    (w : h ≫ g.arrow = f.arrow := by cat_disch) : f ⟶ g :=
   Over.homMk h w
 
 /-- Convenience constructor for an isomorphism in monomorphisms over `X`. -/
 @[simps]
 def isoMk {f g : MonoOver X} (h : f.obj.left ≅ g.obj.left)
-    (w : h.hom ≫ g.arrow = f.arrow := by aesop_cat) : f ≅ g where
+    (w : h.hom ≫ g.arrow = f.arrow := by cat_disch) : f ≅ g where
   hom := homMk h.hom w
   inv := homMk h.inv (by rw [h.inv_comp_eq, w])
 
 /-- If `f : MonoOver X`, then `mk' f.arrow` is of course just `f`, but not definitionally, so we
-    package it as an isomorphism. -/
+package it as an isomorphism. -/
 @[simps!]
 def mk'ArrowIso {X : C} (f : MonoOver X) : mk' f.arrow ≅ f :=
   isoMk (Iso.refl _)
@@ -301,7 +305,7 @@ section
 variable (X)
 
 /-- An equivalence of categories `e` between `C` and `D` induces an equivalence between
-    `MonoOver X` and `MonoOver (e.functor.obj X)` whenever `X` is an object of `C`. -/
+`MonoOver X` and `MonoOver (e.functor.obj X)` whenever `X` is an object of `C`. -/
 @[simps]
 def congr (e : C ≌ D) : MonoOver X ≌ MonoOver (e.functor.obj X) where
   functor :=
@@ -390,14 +394,13 @@ def imageForgetAdj : image ⊣ forget X :=
                     fac := Over.w k }
             · apply image.lift_fac
           left_inv := fun _ => Subsingleton.elim _ _
-          right_inv := fun k => by
-            ext
-            simp } }
+          right_inv := fun k => by simp } }
 
 instance : (forget X).IsRightAdjoint :=
   ⟨_, ⟨imageForgetAdj⟩⟩
 
 instance reflective : Reflective (forget X) where
+  L := image
   adj := imageForgetAdj
 
 /-- Forgetting that a monomorphism over `X` is a monomorphism, then taking its image,

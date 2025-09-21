@@ -2,9 +2,11 @@ import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Data.DFinsupp.Defs
 import Mathlib.Data.Finsupp.Notation
 import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Data.PNat.Basic
 import Mathlib.Tactic.Have
 import Mathlib.Tactic.SuccessIfFailWithMsg
 import Mathlib.Testing.Plausible.Functions
+import Mathlib.Testing.Plausible.Sampleable
 import Plausible
 
 private axiom test_sorry : ∀ {α}, α
@@ -219,4 +221,17 @@ issue: ⋯ does not hold
 -/
 #guard_msgs in
 example {a : ℕ} [Fact a.Prime] : (a + 1).Prime ∨ (a + 2).Prime := by
+  plausible (config := { randomSeed := some 257 })
+
+/--
+error:
+===================
+Found a counter-example!
+x := 4
+issue: 64 < 42 does not hold
+(0 shrinks)
+-------------------
+-/
+#guard_msgs in
+example (x : PNat) : x^3 < 2*x^2 + 10:= by
   plausible (config := { randomSeed := some 257 })

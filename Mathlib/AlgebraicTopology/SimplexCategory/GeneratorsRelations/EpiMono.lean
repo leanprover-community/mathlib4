@@ -24,13 +24,13 @@ section EpiMono
 def splitMonoδ {n : ℕ} (i : Fin (n + 2)) : SplitMono (δ i) where
   retraction := by
     induction i using Fin.lastCases with
-    | last => exact σ n
+    | last => exact σ (Fin.last n)
     | cast i => exact σ i
   id := by
     cases i using Fin.lastCases
-    · simp only [Fin.natCast_eq_last, Fin.lastCases_last]
+    · simp only [Fin.lastCases_last]
       exact δ_comp_σ_succ
-    · simp only [Fin.natCast_eq_last, Fin.lastCases_castSucc]
+    · simp only [Fin.lastCases_castSucc]
       exact δ_comp_σ_self
 
 instance {n : ℕ} {i : Fin (n + 2)} : IsSplitMono (δ i) := .mk' <| splitMonoδ i
@@ -197,8 +197,8 @@ theorem exists_P_σ_P_δ_factorization {x y : SimplexCategoryGenRel} (f : x ⟶ 
 
 instance : MorphismProperty.HasFactorization P_σ P_δ where
   nonempty_mapFactorizationData f := by
-    obtain ⟨z, e , m, he, hm, fac⟩ := exists_P_σ_P_δ_factorization f
-    exact ⟨⟨z, e , m, fac.symm, he, hm⟩⟩
+    obtain ⟨z, e, m, he, hm, fac⟩ := exists_P_σ_P_δ_factorization f
+    exact ⟨⟨z, e, m, fac.symm, he, hm⟩⟩
 
 end ExistenceOfFactorizations
 

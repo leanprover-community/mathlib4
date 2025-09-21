@@ -41,6 +41,7 @@ namespace MeasureTheory
 /-- A `Filtration` on a measurable space `Ω` with σ-algebra `m` is a monotone
 sequence of sub-σ-algebras of `m`. -/
 structure Filtration {Ω : Type*} (ι : Type*) [Preorder ι] (m : MeasurableSpace Ω) where
+  /-- The sequence of sub-σ-algebras of `m` -/
   seq : ι → MeasurableSpace Ω
   mono' : Monotone seq
   le' : ∀ i : ι, seq i ≤ m
@@ -137,7 +138,7 @@ noncomputable instance : InfSet (Filtration ι m) :=
     { seq := fun i => if Set.Nonempty s then sInf ((fun f : Filtration ι m => f i) '' s) else m
       mono' := fun i j hij => by
         by_cases h_nonempty : Set.Nonempty s
-        swap; · simp only [h_nonempty, Set.image_nonempty, if_false, le_refl]
+        swap; · simp only [h_nonempty, if_false, le_refl]
         simp only [h_nonempty, if_true, le_sInf_iff, Set.mem_image, forall_exists_index, and_imp,
           forall_apply_eq_imp_iff₂]
         refine fun f hf_mem => le_trans ?_ (f.mono hij)
@@ -217,10 +218,6 @@ theorem Integrable.uniformIntegrable_condExp_filtration [Preorder ι] {μ : Meas
     UniformIntegrable (fun i => μ[g|f i]) 1 μ :=
   hg.uniformIntegrable_condExp f.le
 
-@[deprecated (since := "2025-01-21")]
-alias Integrable.uniformIntegrable_condexp_filtration :=
-  Integrable.uniformIntegrable_condExp_filtration
-
 theorem Filtration.condExp_condExp [Preorder ι] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [CompleteSpace E] (f : Ω → E) {μ : Measure Ω} (ℱ : Filtration ι m)
     {i j : ι} (hij : i ≤ j) [SigmaFinite (μ.trim (ℱ.le j))] :
@@ -279,7 +276,7 @@ theorem filtrationOfSet_eq_natural [MulZeroOneClass β] [Nontrivial β] {s : ι 
     rw [comap_eq_generateFrom]
     refine measurableSet_generateFrom ⟨{1}, measurableSet_singleton 1, ?_⟩
     ext x
-    simp [Set.indicator_const_preimage_eq_union]
+    simp
   · rintro t ⟨n, ht⟩
     suffices MeasurableSpace.generateFrom {t | n ≤ i ∧
       MeasurableSet[MeasurableSpace.comap ((s n).indicator (fun _ => 1 : Ω → β)) mβ] t} ≤
@@ -334,9 +331,6 @@ theorem memLp_limitProcess_of_eLpNorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Ty
     exact sSup_le fun b ⟨a, ha⟩ => (ha a le_rfl).trans (hbdd _)
   · exact MemLp.zero
 
-@[deprecated (since := "2025-02-21")]
-alias memℒp_limitProcess_of_eLpNorm_bdd := memLp_limitProcess_of_eLpNorm_bdd
-
 end Limit
 
 section piLE
@@ -386,13 +380,7 @@ def piFinset : @Filtration (Π i, X i) (Finset ι) _ pi where
   le' s := s.measurable_restrict.comap_le
 
 lemma piFinset_eq_comap_restrict (s : Finset ι) :
-    piFinset (X := X) s = pi.comap s.toSet.restrict := by
-  apply le_antisymm
-  · simp_rw [piFinset, ← Set.piCongrLeft_comp_restrict, ← MeasurableEquiv.coe_piCongrLeft,
-      ← comap_comp]
-    exact MeasurableSpace.comap_mono <| (MeasurableEquiv.measurable _).comap_le
-  · rw [← piCongrLeft_comp_restrict, ← MeasurableEquiv.coe_piCongrLeft, ← comap_comp]
-    exact MeasurableSpace.comap_mono <| (MeasurableEquiv.measurable _).comap_le
+    piFinset (X := X) s = pi.comap s.toSet.restrict := rfl
 
 end piFinset
 

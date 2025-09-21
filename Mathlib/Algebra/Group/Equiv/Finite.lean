@@ -27,8 +27,6 @@ universe u v
 
 variable {α β γ : Type*}
 
-open Function
-
 namespace Fintype
 
 section BundledHoms

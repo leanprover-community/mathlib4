@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, Anne Baanen
 -/
 import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Algebra.CharZero.AddMonoidHom
 import Mathlib.Algebra.Ring.Int.Parity
 import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
@@ -13,10 +14,10 @@ import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 This file defines a number field and the ring of integers corresponding to it.
 
 ## Main definitions
- - `NumberField` defines a number field as a field which has characteristic zero and is finite
-    dimensional over ℚ.
- - `RingOfIntegers` defines the ring of integers (or number ring) corresponding to a number field
-    as the integral closure of ℤ in the number field.
+- `NumberField` defines a number field as a field which has characteristic zero and is finite
+  dimensional over ℚ.
+- `RingOfIntegers` defines the ring of integers (or number ring) corresponding to a number field
+  as the integral closure of ℤ in the number field.
 
 ## Implementation notes
 The definitions that involve a field of fractions choose a canonical field of fractions,
@@ -24,7 +25,7 @@ but are independent of that choice.
 
 ## References
 * [D. Marcus, *Number Fields*][marcus1977number]
-* [J.W.S. Cassels, A. Frölich, *Algebraic Number Theory*][cassels1967algebraic]
+* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 * [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 
 ## Tags
@@ -73,11 +74,21 @@ instance of_intermediateField [NumberField K] [NumberField L] [Algebra K L]
     (E : IntermediateField K L) : NumberField E :=
   of_module_finite K E
 
+variable {K} in
+instance of_subfield [NumberField K] (E : Subfield K) : NumberField E where
+  to_finiteDimensional := FiniteDimensional.left ℚ E K
+
 theorem of_tower [NumberField K] [NumberField L] [Algebra K L] (E : Type*) [Field E]
     [Algebra K E] [Algebra E L] [IsScalarTower K E L] : NumberField E :=
   letI := Module.Finite.left K E L
   of_module_finite K E
 
+theorem of_ringEquiv (e : K ≃+* L) [NumberField K] : NumberField L :=
+  letI := CharZero.of_addMonoidHom e.toAddMonoidHom (by simp) e.injective
+  {
+    to_charZero := inferInstance
+    to_finiteDimensional := (e : K ≃ₗ[ℚ] L).finiteDimensional
+  }
 /-- The ring of integers (or number ring) corresponding to a number field
 is the integral closure of ℤ in the number field.
 
@@ -163,8 +174,8 @@ def mapRingHom {K L F : Type*} [Field K] [Field L] [FunLike F K L]
   map_add' x y:= by ext; simp only [map_mk, map_add]
   map_mul' x y := by ext; simp only [map_mk, map_mul]
 
-/-- The ring isomorphsim `(𝓞 K) ≃+* (𝓞 L)` given by restricting
-  a ring isomorphsim `e : K ≃+* L` to `𝓞 K`. -/
+/-- The ring isomorphism `(𝓞 K) ≃+* (𝓞 L)` given by restricting
+  a ring isomorphism `e : K ≃+* L` to `𝓞 K`. -/
 def mapRingEquiv {K L E : Type*} [Field K] [Field L] [EquivLike E K L]
     [RingEquivClass E K L] (e : E) : (𝓞 K) ≃+* (𝓞 L) :=
   RingEquiv.ofRingHom (mapRingHom e) (mapRingHom (e : K ≃+* L).symm)
@@ -173,7 +184,8 @@ def mapRingEquiv {K L E : Type*} [Field K] [Field L] [EquivLike E K L]
 
 end RingOfIntegers
 
-/-- Given an algebra between two fields, create an algebra between their two rings of integers. -/
+/-- Given an algebra structure between two fields, this instance creates an algebra structure
+between their two rings of integers. -/
 instance inst_ringOfIntegersAlgebra [Algebra K L] : Algebra (𝓞 K) (𝓞 L) :=
   (RingOfIntegers.mapRingHom (algebraMap K L)).toAlgebra
 
@@ -182,7 +194,7 @@ example : Algebra.id (𝓞 K) = inst_ringOfIntegersAlgebra K K := rfl
 
 namespace RingOfIntegers
 
-/-- The algebra homomorphism `(𝓞 K) →ₐ[𝓞 k] (𝓞 L)` given by restricting a algebra homomorphism
+/-- The algebra homomorphism `(𝓞 K) →ₐ[𝓞 k] (𝓞 L)` given by restricting an algebra homomorphism
   `f : K →ₐ[k] L` to `𝓞 K`. -/
 def mapAlgHom {k K L F : Type*} [Field k] [Field K] [Field L] [Algebra k K]
     [Algebra k L] [FunLike F K L] [AlgHomClass F k K L] (f : F) : (𝓞 K) →ₐ[𝓞 k] (𝓞 L) where
@@ -299,7 +311,6 @@ def restrict_addMonoidHom [AddZeroClass M] (f : M →+ K) (h : ∀ x, IsIntegral
 
 /-- Given `f : M →* K` such that `∀ x, IsIntegral ℤ (f x)`, the corresponding function
 `M →* 𝓞 K`. -/
-@[to_additive existing] -- TODO: why doesn't it figure this out by itself?
 def restrict_monoidHom [MulOneClass M] (f : M →* K) (h : ∀ x, IsIntegral ℤ (f x)) : M →* 𝓞 K where
   toFun := restrict f h
   map_one' := by simp only [restrict, map_one, mk_one]
@@ -324,7 +335,7 @@ protected noncomputable def algEquiv (R : Type*) [CommRing R] [Algebra (𝓞 K) 
 instance extension_algebra_isIntegral : Algebra.IsIntegral (𝓞 K) (𝓞 L) :=
   IsIntegralClosure.isIntegral_algebra (𝓞 K) L
 
-/-- Any extension between ring of integers of number fields is noetherian. -/
+/-- Any extension between ring of integers of number fields is Noetherian. -/
 instance extension_isNoetherian [NumberField K] [NumberField L] : IsNoetherian (𝓞 K) (𝓞 L) :=
   IsIntegralClosure.isNoetherian (𝓞 K) K L (𝓞 L)
 

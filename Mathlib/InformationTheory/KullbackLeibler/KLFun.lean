@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
 import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
-import Mathlib.MeasureTheory.Decomposition.IntegralRNDeriv
+import Mathlib.MeasureTheory.Measure.Decomposition.IntegralRNDeriv
 import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
 
 /-!
@@ -34,7 +34,7 @@ This is a continuous nonnegative, strictly convex function on [0,∞), with mini
   `llr μ ν` is integrable with respect to `μ`.
 * `integral_klFun_rnDeriv`: For two finite measures `μ ≪ ν` such that `llr μ ν` is integrable with
   respect to `μ`,
-  `∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν = ∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal`.
+  `∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν = ∫ x, llr μ ν x ∂μ + ν.real univ - μ.real univ`.
 
 -/
 
@@ -173,7 +173,7 @@ lemma integrable_klFun_rnDeriv_iff (hμν : μ ≪ ν) :
 
 lemma integral_klFun_rnDeriv (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) :
     ∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν
-      = ∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal := by
+      = ∫ x, llr μ ν x ∂μ + ν.real univ - μ.real univ := by
   unfold klFun
   rw [integral_sub, integral_add, integral_const, Measure.integral_toReal_rnDeriv hμν, smul_eq_mul,
     mul_one]

@@ -3,8 +3,7 @@ Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
-import Mathlib.RingTheory.TwoSidedIdeal.Lattice
-import Mathlib.Topology.ContinuousMap.Bounded.Basic
+import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
 /-!
 # Compactly supported bounded continuous functions
@@ -20,7 +19,7 @@ section CompactlySupported
 /-- The two-sided ideal of compactly supported functions. -/
 def compactlySupported (α γ : Type*) [TopologicalSpace α] [NonUnitalNormedRing γ] :
     TwoSidedIdeal (α →ᵇ γ) :=
-  .mk' {z | HasCompactSupport z} .zero .add .neg' .mul_left .mul_right
+  .mk' {z | HasCompactSupport z} .zero .add .neg .mul_left .mul_right
 
 variable {α γ : Type*} [TopologicalSpace α] [NonUnitalNormedRing γ]
 
@@ -30,7 +29,7 @@ scoped[BoundedContinuousFunction] notation
 
 lemma mem_compactlySupported {f : α →ᵇ γ} :
     f ∈ C_cb(α, γ) ↔ HasCompactSupport f :=
-  TwoSidedIdeal.mem_mk' {z : α →ᵇ γ | HasCompactSupport z} .zero .add .neg' .mul_left .mul_right f
+  TwoSidedIdeal.mem_mk' {z : α →ᵇ γ | HasCompactSupport z} .zero .add .neg .mul_left .mul_right f
 
 lemma exist_norm_eq [c : Nonempty α] {f : α →ᵇ γ} (h : f ∈ C_cb(α, γ)) : ∃ (x : α),
     ‖f x‖ = ‖f‖ := by
@@ -40,7 +39,7 @@ lemma exist_norm_eq [c : Nonempty α] {f : α →ᵇ γ} (h : f ∈ C_cb(α, γ)
     refine ⟨x, le_antisymm (norm_coe_le_norm f x) (norm_le (norm_nonneg _) |>.mpr fun y ↦ ?_)⟩
     by_cases hy : y ∈ tsupport f
     · exact hmax hy
-    · simp [image_eq_zero_of_nmem_tsupport hy]
+    · simp [image_eq_zero_of_notMem_tsupport hy]
   · suffices f = 0 by simp [this]
     rwa [not_nonempty_iff_eq_empty, tsupport_eq_empty_iff, ← coe_zero, ← DFunLike.ext'_iff] at hs
 
@@ -54,10 +53,10 @@ theorem norm_lt_iff_of_compactlySupported {f : α →ᵇ γ} (h : f ∈ C_cb(α,
 
 theorem norm_lt_iff_of_nonempty_compactlySupported [c : Nonempty α] {f : α →ᵇ γ}
     (h : f ∈ C_cb(α, γ)) {M : ℝ} : ‖f‖ < M ↔ ∀ (x : α), ‖f x‖ < M := by
-  obtain (hM | hM) := lt_or_le 0 M
+  obtain (hM | hM) := lt_or_ge 0 M
   · exact norm_lt_iff_of_compactlySupported h hM
-  · exact ⟨fun h ↦ False.elim <| (h.trans_le hM).not_le (by positivity),
-      fun h ↦ False.elim <| (h (Classical.arbitrary α) |>.trans_le hM).not_le (by positivity)⟩
+  · exact ⟨fun h ↦ False.elim <| (h.trans_le hM).not_ge (by positivity),
+      fun h ↦ False.elim <| (h (Classical.arbitrary α) |>.trans_le hM).not_ge (by positivity)⟩
 
 theorem compactlySupported_eq_top_of_isCompact (h : IsCompact (Set.univ : Set α)) :
     C_cb(α, γ) = ⊤ :=
@@ -87,7 +86,7 @@ def ofCompactSupport (g : α → γ) (hg₁ : Continuous g) (hg₂ : HasCompactS
       refine ⟨2 * ‖g z‖, dist_le_two_norm' fun x ↦ ?_⟩
       by_cases hx : x ∈ tsupport g
       · exact isMaxOn_iff.mp hmax x hx
-      · simp [image_eq_zero_of_nmem_tsupport hx]
+      · simp [image_eq_zero_of_notMem_tsupport hx]
 
 lemma ofCompactSupport_mem (g : α → γ) (hg₁ : Continuous g) (hg₂ : HasCompactSupport g) :
     ofCompactSupport g hg₁ hg₂ ∈ C_cb(α, γ) := mem_compactlySupported.mpr hg₂

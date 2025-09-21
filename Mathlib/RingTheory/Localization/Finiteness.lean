@@ -57,6 +57,9 @@ lemma of_isLocalizedModule [Module.Finite R M] : Module.Finite Rₚ Mₚ := by
   · rw [← hyx, ← IsLocalizedModule.mk'_one S, IsLocalizedModule.mk'_smul_mk']
     simp
 
+instance [Module.Finite R M] : Module.Finite (Localization S) (LocalizedModule S M) :=
+  of_isLocalizedModule S (LocalizedModule.mkLinearMap S M)
+
 end
 
 variable {R : Type u} [CommRing R] {M : Type w} [AddCommMonoid M] [Module R M]

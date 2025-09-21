@@ -3,10 +3,9 @@ Copyright (c) 2024 Thomas Lanard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, Inna Capdeboscq, Johan Commelin, Thomas Lanard, Peiran Wu
 -/
-import Mathlib.Data.Matrix.Rank
 import Mathlib.FieldTheory.Finiteness
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
-
+import Mathlib.LinearAlgebra.Matrix.Rank
 /-!
 # Cardinal of the general linear group over finite rings
 
@@ -14,12 +13,12 @@ This file computes the cardinal of the general linear group over finite rings.
 
 ## Main statements
 
-* `card_linearInependent` gives the cardinal of the set of linearly independent vectors over a
-  finite dimensional vector space over a finite field.
+* `card_linearIndependent` gives the cardinal of the set of linearly independent vectors over a
+  finite-dimensional vector space over a finite field.
 * `Matrix.card_GL_field` gives the cardinal of the general linear group over a finite field.
 -/
 
-open LinearMap
+open LinearMap Module
 
 section LinearIndependent
 
@@ -31,7 +30,7 @@ local notation "n" => Module.finrank K V
 
 attribute [local instance] Fintype.ofFinite in
 open Fintype in
-/-- The cardinal of the set of linearly independent vectors over a finite dimensional vector space
+/-- The cardinal of the set of linearly independent vectors over a finite-dimensional vector space
 over a finite field. -/
 theorem card_linearIndependent {k : ℕ} (hk : k ≤ n) :
     Nat.card { s : Fin k → V // LinearIndependent K s } =
@@ -49,7 +48,7 @@ theorem card_linearIndependent {k : ℕ} (hk : k ≤ n) :
             simp only [SetLike.coe_sort_coe, finrank_span_eq_card s.2, card_fin]
             rw [Module.card_eq_pow_finrank (K := K)]
       simp [card_congr (equiv_linearIndependent k), sum_congr _ _ this, ih (Nat.le_of_succ_le hk),
-        mul_comm, Fin.prod_univ_succAbove _ k]
+        mul_comm, Fin.prod_univ_succAbove _ (Fin.last k)]
 
 end LinearIndependent
 
@@ -67,7 +66,7 @@ variable (n : ℕ)
 by sending a matrix to its columns. -/
 noncomputable def equiv_GL_linearindependent :
     GL (Fin n) 𝔽 ≃ { s : Fin n → Fin n → 𝔽 // LinearIndependent 𝔽 s } where
-  toFun M := ⟨transpose M, by
+  toFun M := ⟨M.1.col, by
     apply linearIndependent_iff_card_eq_finrank_span.2
     rw [Set.finrank, ← rank_eq_finrank_span_cols, rank_unit]⟩
   invFun M := GeneralLinearGroup.mk'' (transpose (M.1)) <| by
@@ -77,7 +76,6 @@ noncomputable def equiv_GL_linearindependent :
     rw [← Basis.coePiBasisFun.toMatrix_eq_transpose,
       ← coe_basisOfPiSpaceOfLinearIndependent M.2]
     exact isUnit_det_of_invertible _
-  left_inv := fun _ ↦ Units.ext (ext fun _ _ ↦ rfl)
   right_inv := by exact congrFun rfl
 
 /-- The cardinal of the general linear group over a finite field. -/

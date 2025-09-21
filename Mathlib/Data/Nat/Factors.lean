@@ -17,8 +17,8 @@ This file deals with the factors of natural numbers.
 
 ## Important declarations
 
-- `Nat.factors n`: the prime factorization of `n`
-- `Nat.factors_unique`: uniqueness of the prime factorisation
+- `Nat.primeFactorsList n`: the prime factorization of `n`
+- `Nat.primeFactorsList_unique`: uniqueness of the prime factorisation
 
 -/
 
@@ -122,6 +122,9 @@ theorem primeFactorsList_eq_nil (n : ℕ) : n.primeFactorsList = [] ↔ n = 0 �
   · rcases h with (rfl | rfl)
     · exact primeFactorsList_zero
     · exact primeFactorsList_one
+
+theorem primeFactorsList_ne_nil (n : ℕ) : n.primeFactorsList ≠ [] ↔ 1 < n := by
+  simp [primeFactorsList_eq_nil n, one_lt_iff_ne_zero_and_ne_one]
 
 open scoped List in
 theorem eq_of_perm_primeFactorsList {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)

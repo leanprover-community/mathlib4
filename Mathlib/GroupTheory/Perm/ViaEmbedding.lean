@@ -30,8 +30,11 @@ theorem viaEmbedding_apply (x : α) : e.viaEmbedding ι (ι x) = ι (e x) :=
   extendDomain_apply_image e (ofInjective ι.1 ι.2) x
 
 open scoped Classical in
-theorem viaEmbedding_apply_of_not_mem (x : β) (hx : x ∉ Set.range ι) : e.viaEmbedding ι x = x :=
+theorem viaEmbedding_apply_of_notMem (x : β) (hx : x ∉ Set.range ι) : e.viaEmbedding ι x = x :=
   extendDomain_apply_not_subtype e (ofInjective ι.1 ι.2) hx
+
+@[deprecated (since := "2025-05-23")]
+alias viaEmbedding_apply_of_not_mem := viaEmbedding_apply_of_notMem
 
 open scoped Classical in
 /-- `viaEmbedding` as a group homomorphism -/

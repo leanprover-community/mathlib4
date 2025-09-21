@@ -19,8 +19,8 @@ variable [Mul α] {s s₁ s₂ t t₁ t₂ : Set α} {a : α} {x : α × α}
 /-- `Set.mulAntidiagonal s t a` is the set of all pairs of an element in `s` and an element in `t`
 that multiply to `a`. -/
 @[to_additive
-      "`Set.addAntidiagonal s t a` is the set of all pairs of an element in `s` and an
-      element in `t` that add to `a`."]
+      /-- `Set.addAntidiagonal s t a` is the set of all pairs of an element in `s` and an
+      element in `t` that add to `a`. -/]
 def mulAntidiagonal (s t : Set α) (a : α) : Set (α × α) :=
   { x | x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 * x.2 = a }
 
@@ -38,14 +38,14 @@ theorem mulAntidiagonal_mono_right (h : t₁ ⊆ t₂) :
 
 end Mul
 
--- The left hand side is not in simp normal form, see variant below.
+-- The left-hand side is not in simp normal form, see variant below.
 @[to_additive]
-theorem swap_mem_mulAntidiagonal [CommSemigroup α] {s t : Set α} {a : α} {x : α × α} :
+theorem swap_mem_mulAntidiagonal [CommMagma α] {s t : Set α} {a : α} {x : α × α} :
     x.swap ∈ Set.mulAntidiagonal s t a ↔ x ∈ Set.mulAntidiagonal t s a := by
   simp [mul_comm, and_left_comm]
 
 @[to_additive (attr := simp)]
-theorem swap_mem_mulAntidiagonal_aux [CommSemigroup α] {s t : Set α} {a : α} {x : α × α} :
+theorem swap_mem_mulAntidiagonal_aux [CommMagma α] {s t : Set α} {a : α} {x : α × α} :
     x.snd ∈ s ∧ x.fst ∈ t ∧ x.snd * x.fst = a
       ↔ x ∈ Set.mulAntidiagonal t s a := by
   simp [mul_comm, and_left_comm]
@@ -55,7 +55,7 @@ namespace MulAntidiagonal
 
 section CancelCommMonoid
 
-variable [CancelCommMonoid α] {s t : Set α} {a : α} {x y : mulAntidiagonal s t a}
+variable [CommMonoid α] [IsCancelMul α] {s t : Set α} {a : α} {x y : mulAntidiagonal s t a}
 
 -- We have to translate the names manually because the namespace name `MulAntidiagonal`
 -- does not match the declaration `mulAntidiagonal` that has the `to_additive` attribute.
@@ -84,7 +84,7 @@ end CancelCommMonoid
 
 section OrderedCancelCommMonoid
 
-variable [CancelCommMonoid α] [PartialOrder α] [MulLeftMono α] [MulRightStrictMono α]
+variable [CommMonoid α] [PartialOrder α] [IsCancelMul α] [MulLeftMono α] [MulRightStrictMono α]
   (s t : Set α) (a : α) {x y : mulAntidiagonal s t a}
 
 @[to_additive Set.AddAntidiagonal.eq_of_fst_le_fst_of_snd_le_snd]

@@ -116,13 +116,13 @@ theorem subset_zeroLocus_iff_le_vanishingIdeal (t : Set (ProjectiveSpectrum 𝒜
 
 variable (𝒜)
 
-/-- `zeroLocus` and `vanishingIdeal` form a galois connection. -/
+/-- `zeroLocus` and `vanishingIdeal` form a Galois connection. -/
 theorem gc_ideal :
     @GaloisConnection (Ideal A) (Set (ProjectiveSpectrum 𝒜))ᵒᵈ _ _
       (fun I => zeroLocus 𝒜 I) fun t => (vanishingIdeal t).toIdeal :=
   fun I t => subset_zeroLocus_iff_le_vanishingIdeal t I
 
-/-- `zeroLocus` and `vanishingIdeal` form a galois connection. -/
+/-- `zeroLocus` and `vanishingIdeal` form a Galois connection. -/
 theorem gc_set :
     @GaloisConnection (Set A) (Set (ProjectiveSpectrum 𝒜))ᵒᵈ _ _
       (fun s => zeroLocus 𝒜 s) fun t => vanishingIdeal t := by
@@ -186,7 +186,7 @@ theorem vanishingIdeal_univ : vanishingIdeal (∅ : Set (ProjectiveSpectrum 𝒜
   simpa using (gc_ideal _).u_top
 
 theorem zeroLocus_empty_of_one_mem {s : Set A} (h : (1 : A) ∈ s) : zeroLocus 𝒜 s = ∅ :=
-  Set.eq_empty_iff_forall_not_mem.mpr fun x hx =>
+  Set.eq_empty_iff_forall_notMem.mpr fun x hx =>
     (inferInstance : x.asHomogeneousIdeal.toIdeal.IsPrime).ne_top <|
       x.asHomogeneousIdeal.toIdeal.eq_top_iff_one.mpr <| hx h
 
@@ -269,9 +269,12 @@ theorem sup_vanishingIdeal_le (t t' : Set (ProjectiveSpectrum 𝒜)) :
   rw [HomogeneousIdeal.mem_iff, mem_vanishingIdeal] at hf hg
   apply Submodule.add_mem <;> solve_by_elim
 
-theorem mem_compl_zeroLocus_iff_not_mem {f : A} {I : ProjectiveSpectrum 𝒜} :
+theorem mem_compl_zeroLocus_iff_notMem {f : A} {I : ProjectiveSpectrum 𝒜} :
     I ∈ (zeroLocus 𝒜 {f} : Set (ProjectiveSpectrum 𝒜))ᶜ ↔ f ∉ I.asHomogeneousIdeal := by
   rw [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff]; rfl
+
+@[deprecated (since := "2025-05-23")]
+alias mem_compl_zeroLocus_iff_not_mem := mem_compl_zeroLocus_iff_notMem
 
 /-- The Zariski topology on the prime spectrum of a commutative ring is defined via the closed sets
 of the topology: they are exactly those sets that are the zero locus of a subset of the ring. -/
