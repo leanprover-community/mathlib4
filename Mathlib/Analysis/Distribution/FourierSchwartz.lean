@@ -119,6 +119,26 @@ theorem integral_sesq_fourier_fourier (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E �
   simp only [fourierTransformCLM_apply, fourier_inversion] at this
   assumption
 
+variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
+
+@[simp]
+theorem bar (f g : 𝓢(V, H)) : inner ℂ (f.toLp 2) (g.toLp 2) = ∫ x, inner ℂ (f x) (g x) := by
+  apply integral_congr_ae
+  have hf_ae := f.coeFn_toLp 2
+  have hg_ae := g.coeFn_toLp 2
+  filter_upwards [hf_ae, hg_ae] with _ hf hg
+  rw [hf, hg]
+
+variable [CompleteSpace H]
+
+theorem foo (f : 𝓢(V, H)) :
+    inner ℂ ((fourierTransformCLM ℂ f).toLp 2) ((fourierTransformCLM ℂ f).toLp 2) =
+    inner ℂ (f.toLp 2) (f.toLp 2) := by
+  simp only [bar]
+  exact integral_sesq_fourier_fourier f f (innerSL ℂ : H →L⋆[ℂ] H →L[ℂ] ℂ)
+
+#exit
+
 /-- The Fourier transform on a real inner product space, as a continuous linear equiv on the
 Schwartz space. -/
 noncomputable def fourierTransformCLE : 𝓢(V, E) ≃L[𝕜] 𝓢(V, E) where

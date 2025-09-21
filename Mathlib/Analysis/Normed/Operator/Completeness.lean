@@ -159,7 +159,8 @@ section UniformlyExtend
 
 section NonField
 
-variable {R R₂ E F Fₗ : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup Fₗ]
+variable {R R₂ E F Fₗ : Type*} [AddCommGroup E] [UniformSpace E] [IsUniformAddGroup E]
+  [NormedAddCommGroup F] [NormedAddCommGroup Fₗ]
   [NormedRing R] [NormedRing R₂] [Module R E] [Module R₂ F] [Module R Fₗ]
   [IsBoundedSMul R₂ F] [IsBoundedSMul R Fₗ]
   {σ₁₂ : R →+* R₂} (f g : E →SL[σ₁₂] F) [CompleteSpace F] (e : E →L[R] Fₗ) (h_dense : DenseRange e)
