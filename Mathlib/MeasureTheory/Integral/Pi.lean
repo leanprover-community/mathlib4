@@ -221,7 +221,7 @@ theorem setIntegral_pi_fin_two_pi (f : (Fin 2 → α) → E) (μ : Fin 2 → Mea
     [∀ i, SigmaFinite (μ i)] (s : Fin 2 → Set α) :
     ∫ x in univ.pi s, f x ∂.pi μ = ∫ x : α × α in s 0 ×ˢ s 1, f ![x.1, x.2] ∂(μ 0).prod (μ 1) := by
   rw [setIntegral_pi_fin_two]
-  congr with x
+  congr 2 with x
   simp [Fin.forall_fin_two]
 
 theorem setIntegral_pi_fin_two_Icc [Preorder α] (f : (Fin 2 → α) → E) (μ : Fin 2 → Measure α)
@@ -290,7 +290,7 @@ theorem integral_pi_eq_integral_pi_removeNth_integral {f : (∀ i, α i) → E} 
   unfold Fin.removeNth at *
   rw [integral_prod_symm _ hf]
 
-theorem setIntegral_pi_eq_setIntegral_preimage_prod_pi_insertNth (f : (∀ i, α i) → E)
+theorem setIntegral_pi_eq_setIntegral_preimage_prod_pi_removeNth (f : (∀ i, α i) → E)
     (i : Fin (n + 1)) (μ : ∀ i, Measure (α i)) [∀ i, SigmaFinite (μ i)] (s : Set (∀ i, α i)) :
     ∫ x in s, f x ∂.pi μ =
       ∫ x : α i × (∀ j, α (i.succAbove j)) in (fun x ↦ i.insertNth x.1 x.2) ⁻¹' s,
@@ -303,7 +303,7 @@ theorem setIntegral_pi_eq_setIntegral_prod_pi_removeNth (f : (∀ i, α i) → E
     ∫ x in univ.pi s, f x ∂.pi μ =
       ∫ x : α i × (∀ j, α (i.succAbove j)) in s i ×ˢ univ.pi (i.removeNth s),
         f (i.insertNth x.1 x.2) ∂(μ i).prod (.pi (i.removeNth μ)) := by
-  convert setIntegral_pi_eq_setIntegral_preimage_prod_pi_insertNth f i μ _
+  convert setIntegral_pi_eq_setIntegral_preimage_prod_pi_removeNth f i μ _
   ext x
   simp [i.forall_iff_succAbove, Fin.removeNth]
 
@@ -312,7 +312,7 @@ theorem setIntegral_Icc_eq_setIntegral_prod_pi_removeNth [∀ i, Preorder (α i)
     ∫ x in Icc a b, f x ∂.pi μ =
       ∫ x in Icc (a i) (b i) ×ˢ Icc (i.removeNth a) (i.removeNth b),
         f (i.insertNth x.1 x.2) ∂(μ i).prod (.pi (i.removeNth μ)) := by
-  simp only [← pi_univ_Icc, setIntegral_fin_pi_eq_insertNth _ i, Icc_prod_Icc]
+  simp only [← pi_univ_Icc, setIntegral_pi_eq_setIntegral_prod_pi_removeNth _ i]
   rfl
 
 end Measure
@@ -323,14 +323,14 @@ variable {n : ℕ} {α : Fin (n + 1) → Type*} [∀ i, MeasureSpace (α i)]
 theorem integral_fin_volume_eq_insertNth (f : (∀ i, α i) → E) (i : Fin (n + 1)) :
     ∫ x, f x =
       ∫ x : α i × (∀ j, α (i.succAbove j)), f (i.insertNth x.1 x.2) :=
-  integral_fin_eq_insertNth ..
+  integral_pi_eq_integral_prod_pi_removeNth ..
 
 theorem setIntegral_fin_volume_eq_insertNth (f : (∀ i, α i) → E) (i : Fin (n + 1))
     (s : Set (∀ i, α i)) :
     ∫ x in s, f x =
       ∫ x : α i × (∀ j, α (i.succAbove j)) in (fun x ↦ i.insertNth x.1 x.2) ⁻¹' s,
         f (i.insertNth x.1 x.2) :=
-  setIntegral_fin_eq_insertNth ..
+  setIntegral_pi_eq_setIntegral_preimage_prod_pi_removeNth ..
 
 theorem setIntegral_fin_pi_volume_eq_insertNth (f : (∀ i, α i) → E) (i : Fin (n + 1))
     (s : ∀ i, Set (α i)) :
