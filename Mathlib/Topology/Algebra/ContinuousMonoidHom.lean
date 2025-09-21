@@ -556,9 +556,6 @@ def piUnique {ι : Type*} (M : ι → Type*) [(j : ι) → Mul (M j)]
   continuous_toFun := continuous_apply default
   continuous_invFun := by simpa [continuous_pi_iff, Unique.forall_iff] using continuous_id'
 
-attribute [simp 1100] ContinuousMulEquiv.piUnique_symm_apply
-attribute [simp 1100] ContinuousAddEquiv.piUnique_symm_apply
-
 /-- Splits the indices of `∀ (i : ι), Y i` along the predicate `p`.
 This is `Equiv.piEquivPiSubtypeProd` as a `ContinuousMulEquiv`. -/
 @[to_additive (attr := simps!) piEquivPiSubtypeProd
@@ -568,9 +565,6 @@ def piEquivPiSubtypeProd {ι : Type*} (p : ι → Prop) (Y : ι → Type*)
     [(i : ι) → TopologicalSpace (Y i)] [(i : ι) → Mul (Y i)] [DecidablePred p] :
     ((i : ι) → Y i) ≃ₜ* ((i : { x : ι // p x }) → Y i) × ((i : { x : ι // ¬p x }) → Y i) :=
   {Homeomorph.piEquivPiSubtypeProd p Y with map_mul' _ _ := rfl}
-
-attribute [simp 1100] ContinuousMulEquiv.piEquivPiSubtypeProd_symm_apply
-attribute [simp 1100] ContinuousAddEquiv.piEquivPiSubtypeProd_symm_apply
 
 end ContinuousMulEquiv
 
