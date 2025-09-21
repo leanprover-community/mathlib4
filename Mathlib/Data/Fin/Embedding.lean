@@ -139,9 +139,8 @@ def succAboveEmb (p : Fin (n + 1)) : Fin n ↪ Fin (n + 1) := ⟨p.succAbove, su
 
 @[simp, norm_cast] lemma coe_succAboveEmb (p : Fin (n + 1)) : p.succAboveEmb = p.succAbove := rfl
 
-/-- `Fin.natAdd_castLEEmb` as an `Embedding` from `Fin n` to `Fin m`, by appending the former
-at the end of the latter.
-`natAdd_castLEEmb m hmn i` maps `i : Fin m` to `i + (m - n) : Fin n` by adding `m - n` to `i` -/
+/-- `Fin.natAdd_castLEEmb` is an `Embedding` that views `Fin n` as a suffix of `Fin m` when `n ≤ m`.
+It maps `i : Fin n` to `i + (m - n) : Fin m`. -/
 @[simps!]
 def natAdd_castLEEmb (hmn : n ≤ m) : Fin n ↪ Fin m :=
   (addNatEmb (m - n)).trans (finCongr (by omega)).toEmbedding
