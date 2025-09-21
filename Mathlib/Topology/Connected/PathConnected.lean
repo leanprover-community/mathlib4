@@ -442,7 +442,7 @@ theorem IsPathConnected.exists_path_through_family {n : ℕ}
     specialize hp₂ y hp hy
     obtain ⟨γ₀, hγ₀s, hγ₀p⟩ := hp₂
     obtain ⟨γ₁, hγ₁⟩ := h.joinedIn y hy x hx
-    rewrite [← range_subset_iff] at hγ₁
+    rw [← range_subset_iff] at hγ₁
     use γ₀.trans γ₁
     simp only [Path.trans_range, mem_union, Path.source_mem_range, or_true, and_true,
       union_subset_iff]
