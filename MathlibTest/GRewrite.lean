@@ -238,7 +238,7 @@ end
 example {x y a b : ℤ} (h1 : |x| ≤ a) (h2 : |y| ≤ b) :
     |x ^ 2 + 2 * x * y| ≤ a ^ 2 + 2 * a * b := by
   have : 0 ≤ a := by grw [← h1]; positivity
-  grw [abs_add, abs_mul, abs_mul, abs_pow, h1, h2, abs_of_nonneg]
+  grw [abs_add_le, abs_mul, abs_mul, abs_pow, h1, h2, abs_of_nonneg]
   norm_num
 
 example {a b : ℚ} {P : Prop} (hP : P) (h : P → a < b) : False := by
