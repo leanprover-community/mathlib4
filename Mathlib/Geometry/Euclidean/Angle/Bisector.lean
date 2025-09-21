@@ -84,34 +84,34 @@ lemma dist_orthogonalProjection_eq_iff_angle_eq {p p' : P} {s₁ s₂ : AffineSu
   have : Nonempty s₂ := ⟨p', hp'.2⟩
   by_cases h' : p ∈ s₁ ∨ p ∈ s₂
   · exact dist_orthogonalProjection_eq_iff_angle_eq_aux hp' h'
-  · rw [not_or] at h'
-    rw [angle_comm,
-      angle_eq_arcsin_of_angle_eq_pi_div_two ?_
-        (.inl (Ne.symm (orthogonalProjection_eq_self_iff.symm.not.1 h'.1))),
-      angle_comm,
-      angle_eq_arcsin_of_angle_eq_pi_div_two ?_
-        (.inl (Ne.symm (orthogonalProjection_eq_self_iff.symm.not.1 h'.2)))]
-    · refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-      · rw [h]
-      · have hp : p ≠ p' := by
-          rintro rfl
-          exact h'.1 hp'.1
-        have hpd : 0 < dist p p' := dist_pos.2 hp
-        rw [Real.arcsin_inj (le_trans (by norm_num : (-1 : ℝ) ≤ 0) (by positivity))
-          ((div_le_one hpd).2 ?_)
-          (le_trans (by norm_num : (-1 : ℝ) ≤ 0) (by positivity)) ((div_le_one hpd).2 ?_)] at h
-        · rwa [div_left_inj' hpd.ne'] at h
-        · rw [dist_orthogonalProjection_eq_infDist]
-          exact Metric.infDist_le_dist_of_mem (SetLike.mem_coe.1 hp'.1)
-        · rw [dist_orthogonalProjection_eq_infDist]
-          exact Metric.infDist_le_dist_of_mem (SetLike.mem_coe.1 hp'.2)
-    · rw [angle, ← InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two]
-      exact Submodule.inner_left_of_mem_orthogonal (K := s₂.direction)
-        (AffineSubspace.vsub_mem_direction hp'.2 (orthogonalProjection_mem _))
-        (vsub_orthogonalProjection_mem_direction_orthogonal _ _)
-    · rw [angle, ← InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two]
-      exact Submodule.inner_left_of_mem_orthogonal (K := s₁.direction)
-        (AffineSubspace.vsub_mem_direction hp'.1 (orthogonalProjection_mem _))
-        (vsub_orthogonalProjection_mem_direction_orthogonal _ _)
+  rw [not_or] at h'
+  rw [angle_comm,
+    angle_eq_arcsin_of_angle_eq_pi_div_two ?_
+      (.inl (Ne.symm (orthogonalProjection_eq_self_iff.symm.not.1 h'.1))),
+    angle_comm,
+    angle_eq_arcsin_of_angle_eq_pi_div_two ?_
+      (.inl (Ne.symm (orthogonalProjection_eq_self_iff.symm.not.1 h'.2)))]
+  · refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+    · rw [h]
+    · have hp : p ≠ p' := by
+        rintro rfl
+        exact h'.1 hp'.1
+      have hpd : 0 < dist p p' := dist_pos.2 hp
+      rw [Real.arcsin_inj (le_trans (by norm_num : (-1 : ℝ) ≤ 0) (by positivity))
+        ((div_le_one hpd).2 ?_)
+        (le_trans (by norm_num : (-1 : ℝ) ≤ 0) (by positivity)) ((div_le_one hpd).2 ?_)] at h
+      · rwa [div_left_inj' hpd.ne'] at h
+      · rw [dist_orthogonalProjection_eq_infDist]
+        exact Metric.infDist_le_dist_of_mem (SetLike.mem_coe.1 hp'.1)
+      · rw [dist_orthogonalProjection_eq_infDist]
+        exact Metric.infDist_le_dist_of_mem (SetLike.mem_coe.1 hp'.2)
+  · rw [angle, ← InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two]
+    exact Submodule.inner_left_of_mem_orthogonal (K := s₂.direction)
+      (AffineSubspace.vsub_mem_direction hp'.2 (orthogonalProjection_mem _))
+      (vsub_orthogonalProjection_mem_direction_orthogonal _ _)
+  · rw [angle, ← InnerProductGeometry.inner_eq_zero_iff_angle_eq_pi_div_two]
+    exact Submodule.inner_left_of_mem_orthogonal (K := s₁.direction)
+      (AffineSubspace.vsub_mem_direction hp'.1 (orthogonalProjection_mem _))
+      (vsub_orthogonalProjection_mem_direction_orthogonal _ _)
 
 end EuclideanGeometry
