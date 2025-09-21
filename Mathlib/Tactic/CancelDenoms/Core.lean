@@ -68,7 +68,8 @@ theorem cancel_factors_lt {α} [Field α] [LinearOrder α] [IsStrictOrderedRing 
     {a b ad bd a' b' gcd : α}
     (ha : ad * a = a') (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :
     (a < b) = (1 / gcd * (bd * a') < 1 / gcd * (ad * b')) := by
-  rw [mul_lt_mul_left, ← ha, ← hb, ← mul_assoc, ← mul_assoc, mul_comm bd, mul_lt_mul_left]
+  rw [mul_lt_mul_iff_right₀, ← ha, ← hb, ← mul_assoc, ← mul_assoc, mul_comm bd,
+    mul_lt_mul_iff_right₀]
   · exact mul_pos had hbd
   · exact one_div_pos.2 hgcd
 

@@ -141,7 +141,7 @@ theorem totient_div_of_dvd {n d : ℕ} (hnd : d ∣ n) :
   rw [Nat.mul_div_cancel_left x hd0]
   apply Finset.card_bij fun k _ => d * k
   · simp only [mem_filter, mem_range, and_imp, Coprime]
-    refine fun a ha1 ha2 => ⟨(mul_lt_mul_left hd0).2 ha1, ?_⟩
+    refine fun a ha1 ha2 => ⟨by gcongr, ?_⟩
     rw [gcd_mul_left, ha2, mul_one]
   · simp [hd0.ne']
   · simp only [mem_filter, mem_range, exists_prop, and_imp]
@@ -150,7 +150,7 @@ theorem totient_div_of_dvd {n d : ℕ} (hnd : d ∣ n) :
       rw [← hb2]
       apply gcd_dvd_right
     rcases this with ⟨q, rfl⟩
-    refine ⟨q, ⟨⟨(mul_lt_mul_left hd0).1 hb1, ?_⟩, rfl⟩⟩
+    refine ⟨q, ⟨⟨(mul_lt_mul_iff_right₀ hd0).1 hb1, ?_⟩, rfl⟩⟩
     rwa [gcd_mul_left, mul_eq_left hd0.ne'] at hb2
 
 theorem sum_totient (n : ℕ) : n.divisors.sum φ = n := by
@@ -194,7 +194,7 @@ theorem totient_prime_pow_succ {p : ℕ} (hp : p.Prime) (n : ℕ) : φ (p ^ (n +
         simp only [mem_image, mem_range, exists_imp]
         rintro b ⟨h, rfl⟩
         rw [Nat.pow_succ]
-        exact (mul_lt_mul_right hp.pos).2 h
+        exact (mul_lt_mul_iff_left₀ hp.pos).2 h
       rw [card_sdiff_of_subset h2, Finset.card_image_of_injective _ h1, card_range, card_range, ←
         one_mul (p ^ n), pow_succ', ← tsub_mul, one_mul, mul_comm]
 
