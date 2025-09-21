@@ -109,17 +109,33 @@ or equal to the corresponding summand `g i` of another finite sum, then
 `∑ i ∈ s, f i ≤ ∑ i ∈ s, g i`. -/
 add_decl_doc sum_le_sum
 
+section MulLeftMono
+variable {N : Type*} [CommMonoid N] [PartialOrder N] [MulLeftMono N]
+variable {f g : ι → N} {s t : Finset ι}
+
 @[to_additive sum_nonneg]
-theorem one_le_prod' (h : ∀ i ∈ s, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
-  le_trans (by rw [prod_const_one]) (prod_le_prod' h)
+theorem one_le_prod' (h : ∀ i ∈ s, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert i s hins H =>
+      rw [Finset.prod_insert hins]
+      grind [one_le_mul]
 
 @[to_additive Finset.sum_nonneg']
 theorem one_le_prod'' (h : ∀ i : ι, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
   Finset.one_le_prod' fun i _ ↦ h i
 
 @[to_additive sum_nonpos]
-theorem prod_le_one' (h : ∀ i ∈ s, f i ≤ 1) : ∏ i ∈ s, f i ≤ 1 :=
-  (prod_le_prod' h).trans_eq (by rw [prod_const_one])
+theorem prod_le_one' (h : ∀ i ∈ s, f i ≤ 1) : ∏ i ∈ s, f i ≤ 1 := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert i s hins H =>
+      rw [Finset.prod_insert hins]
+      grind [mul_le_one']
+
+end MulLeftMono
 
 @[to_additive (attr := gcongr) sum_le_sum_of_subset_of_nonneg]
 theorem prod_le_prod_of_subset_of_one_le' (h : s ⊆ t) (hf : ∀ i ∈ t, i ∉ s → 1 ≤ f i) :
