@@ -620,7 +620,7 @@ lemma closedInterior_eq_affineSegment (s : Simplex R P 1) :
       (Finset.mem_univ _), affineCombination_mem_closedInterior_iff
         (Finset.sum_affineCombinationLineMapWeights _ (Finset.mem_univ _) (Finset.mem_univ _) _)]
     intro i
-    fin_cases i <;> simp <;> grind
+    fin_cases i <;> simp [h0, h1]
 
 lemma mem_closedInterior_iff_wbtw {s : Simplex R P 1} {p : P} :
     p ∈ s.closedInterior ↔ Wbtw R (s.points 0) p (s.points 1) := by
