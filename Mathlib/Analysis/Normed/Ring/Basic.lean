@@ -334,7 +334,7 @@ end NonUnitalNonAssocSeminormedRing
 
 section NonUnitalSeminormedRing
 
-variable [NonUnitalSeminormedRing α] {a a₁ a₂ b c : α}
+variable [NonUnitalSeminormedRing α]
 
 instance ULift.nonUnitalSeminormedRing : NonUnitalSeminormedRing (ULift α) :=
   { ULift.seminormedAddCommGroup, ULift.nonUnitalRing with
