@@ -104,7 +104,7 @@ theorem mapsTo_closedBall (hf : LipschitzWith K f) (x : α) (r : ℝ) :
 
 theorem dist_lt_mul_of_lt (hf : LipschitzWith K f) (hK : K ≠ 0) (hr : dist x y < r) :
     dist (f x) (f y) < K * r :=
-  (hf.dist_le_mul x y).trans_lt <| (mul_lt_mul_left <| NNReal.coe_pos.2 hK.bot_lt).2 hr
+  (hf.dist_le_mul x y).trans_lt <| by gcongr
 
 theorem mapsTo_ball (hf : LipschitzWith K f) (hK : K ≠ 0) (x : α) (r : ℝ) :
     MapsTo f (Metric.ball x r) (Metric.ball (f x) (K * r)) := fun _y hy =>

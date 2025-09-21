@@ -94,7 +94,8 @@ theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
     intro b hbs hbp
     refine coeff_eq_zero_of_natDegree_lt (natDegree_mul_le.trans_lt ?_)
     rw [natDegree_C, zero_add]
-    refine natDegree_pow_le.trans_lt ((mul_lt_mul_right (pos_iff_ne_zero.mpr hqd0)).mpr ?_)
+    refine natDegree_pow_le.trans_lt ?_
+    gcongr
     exact lt_of_le_of_ne (le_natDegree_of_mem_supp _ hbs) hbp
   case h₁ =>
     simp +contextual
