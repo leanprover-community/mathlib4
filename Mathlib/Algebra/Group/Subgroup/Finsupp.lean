@@ -61,10 +61,4 @@ theorem mem_closure_iff_of_fintype {s : Set M} [Fintype s] :
   conv_lhs => rw [← Subtype.range_coe (s := s)]
   exact mem_closure_range_iff_of_fintype
 
-/-- A variant of `Subgroup.mem_closure_finset` using `s` as the index type. -/
-@[to_additive /-- A variant of `AddSubgroup.mem_closure_finset` using `s` as the index type. -/]
-theorem mem_closure_finset' {s : Finset M} :
-    x ∈ closure s ↔ ∃ a : s → ℤ, x = ∏ i : s, i.1 ^ a i :=
-  mem_closure_iff_of_fintype
-
 end Subgroup
