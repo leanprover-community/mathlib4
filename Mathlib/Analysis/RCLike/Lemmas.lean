@@ -91,7 +91,7 @@ theorem ofRealCLM_norm : ‖(ofRealCLM : ℝ →L[ℝ] K)‖ = 1 :=
   LinearIsometry.norm_toContinuousLinearMap _
 
 lemma mem_norm_le_of_balanced {𝕜 : Type*} [RCLike 𝕜] {K : Set 𝕜} (Balanced_K : Balanced 𝕜 K)
-    {x : 𝕜} (hx : x ∈ K) : ∀ z : 𝕜, ‖z‖ ≤ ‖x‖ → z ∈ K := fun z t ↦ by
+    {x : 𝕜} (hx : x ∈ K) (z : 𝕜) (t : ‖z‖ ≤ ‖x‖) : z ∈ K := by
   by_cases ch: x = 0
   · simp_all
   · have : ‖z / x‖ ≤ 1 := by calc
