@@ -18,7 +18,6 @@ TODO: Add finite-dimensionality of these spaces of modular forms.
 
 open UpperHalfPlane ModularGroup SlashInvariantForm ModularForm Complex
   CongruenceSubgroup Real Function SlashInvariantFormClass ModularFormClass Periodic
-  Matrix.SpecialLinearGroup
 
 local notation "𝕢" => qParam
 
@@ -89,8 +88,7 @@ lemma levelOne_weight_zero_const [ModularFormClass F Γ(1) 0] (f : F) :
 
 end ModularFormClass
 
-lemma ModularForm.levelOne_weight_zero_rank_one :
-    Module.rank ℂ (ModularForm Γ(1) 0) = 1 := by
+lemma ModularForm.levelOne_weight_zero_rank_one : Module.rank ℂ (ModularForm Γ(1) 0) = 1 := by
   refine rank_eq_one (const 1) (by simp [DFunLike.ne_iff]) fun g ↦ ?_
   obtain ⟨c', hc'⟩ := levelOne_weight_zero_const g
   aesop
