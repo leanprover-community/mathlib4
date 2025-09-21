@@ -186,7 +186,7 @@ theorem exists_rat_abs_sub_lt_and_lt_of_irrational {ξ : ℝ} (hξ : Irrational 
             lt_of_lt_of_le (lt_add_one _) <|
               (le_mul_iff_one_le_right <| add_pos m_pos zero_lt_one).mpr <|
                 mod_cast (q'.pos : 1 ≤ q'.den)⟩
-  rw [sq, one_div_lt_one_div md_pos (mul_pos den_pos den_pos), mul_lt_mul_right den_pos]
+  rw [sq, one_div_lt_one_div md_pos (mul_pos den_pos den_pos), mul_lt_mul_iff_left₀ den_pos]
   exact lt_add_of_le_of_pos (Nat.cast_le.mpr hden) zero_lt_one
 
 /-- If `ξ` is an irrational real number, then there are infinitely many good
@@ -223,7 +223,7 @@ theorem den_le_and_le_num_le_of_sub_lt_one_div_den_sq {ξ q : ℚ}
     q.den ≤ ξ.den ∧ ⌈ξ * q.den⌉ - 1 ≤ q.num ∧ q.num ≤ ⌊ξ * q.den⌋ + 1 := by
   have hq₀ : (0 : ℚ) < q.den := Nat.cast_pos.mpr q.pos
   replace h : |ξ * q.den - q.num| < 1 / q.den := by
-    rw [← mul_lt_mul_right hq₀] at h
+    rw [← mul_lt_mul_iff_left₀ hq₀] at h
     conv_lhs at h => rw [← abs_of_pos hq₀, ← abs_mul, sub_mul, mul_den_eq_num]
     rwa [sq, div_mul, mul_div_cancel_left₀ _ hq₀.ne'] at h
   constructor
@@ -419,9 +419,8 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
     rw [← sub_lt_iff_lt_add, ← mul_assoc, ← sub_mul, ← add_lt_add_iff_right (v * (2 * v - 1) : ℝ),
       add_comm (1 : ℝ)] at h
     have :=
-      (mul_lt_mul_right <| hv₀').mpr
-        ((sub_lt_sub_iff_left (u : ℝ)).mpr <|
-          (mul_lt_mul_right hv₀).mpr <| sub_right_lt_of_lt_add <| lt_floor_add_one ξ)
+      flip mul_lt_mul_of_pos_right hv₀' <| (sub_lt_sub_iff_left (u : ℝ)).mpr <|
+          flip mul_lt_mul_of_pos_right hv₀ <| sub_right_lt_of_lt_add <| lt_floor_add_one ξ
     rw [sub_mul ξ, one_mul, ← sub_add, add_mul] at this
     exact mod_cast this.trans h
   have huv_cop : IsCoprime (u - ⌊ξ⌋ * v) v := by
@@ -451,7 +450,7 @@ private theorem aux₃ :
     have : (2 * (v : ℝ) - 1) * (-((v : ℝ) * (2 * v - 1))⁻¹ + u' / v) = 2 * u' - (1 + u') / v := by
       field_simp; ring
     rw [hu'ℝ, add_div, mul_div_cancel_right₀ _ Hv.ne', ← sub_sub, sub_right_comm, self_sub_floor,
-      lt_sub_iff_add_lt, ← mul_lt_mul_left Hv', this] at h
+      lt_sub_iff_add_lt, ← mul_lt_mul_iff_right₀ Hv', this] at h
     refine LE.le.trans ?_ h.le
     rw [sub_le_sub_iff_left, div_le_one Hv, add_comm]
     exact mod_cast huv
@@ -459,7 +458,7 @@ private theorem aux₃ :
     |(fract ξ)⁻¹ - v / u'| = |(fract ξ - u' / v) * (v / u' / fract ξ)| := by
       rw [abs_sub_comm]; congr 1; field_simp
     _ = |fract ξ - u' / v| * (v / u' / fract ξ) := by rw [abs_mul, abs_of_pos H₁]
-    _ < ((v : ℝ) * (2 * v - 1))⁻¹ * (v / u' / fract ξ) := (mul_lt_mul_right H₁).mpr h'
+    _ < ((v : ℝ) * (2 * v - 1))⁻¹ * (v / u' / fract ξ) := by gcongr
     _ = (u' * ((2 * v - 1) * fract ξ))⁻¹ := by field_simp
     _ ≤ (u' * (2 * u' - 1) : ℝ)⁻¹ := by gcongr
 
