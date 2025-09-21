@@ -308,8 +308,8 @@ instance ULift.nonUnitalNonAssocSeminormedRing : NonUnitalNonAssocSeminormedRing
   { ULift.seminormedAddCommGroup, ULift.nonUnitalNonAssocRing with
     norm_mul_le x y := norm_mul_le x.down y.down }
 
-/-- Non-unital seminormed ring structure on the product of two non-unital seminormed rings,
-  using the sup norm. -/
+/-- Non-unital, non-associative seminormed ring structure on the product of two non-unital,
+non-associative seminormed rings, using the sup norm. -/
 instance Prod.nonUnitalNonAssocSeminormedRing [NonUnitalNonAssocSeminormedRing β] :
     NonUnitalNonAssocSeminormedRing (α × β) :=
   { seminormedAddCommGroup, instNonUnitalNonAssocRing with
