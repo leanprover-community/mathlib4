@@ -572,17 +572,17 @@ theorem mul_conjTranspose_self [StarOrderedRing R] [NoZeroDivisors R] (A : Matri
   classical
   simpa using mul_mul_conjTranspose_same .one hA
 
-theorem _root_.Matrix.posDef_star_vecMulVec [StarOrderedRing R] [NoZeroDivisors R] (a : n → R)
-    (ha : Function.Injective (replicateRow Unit a).mulVec) :
-    (vecMulVec (star a) a).PosDef := by
-  simp only [vecMulVec_eq Unit, ← conjTranspose_replicateRow]
-  exact conjTranspose_mul_self _ ha
-
 theorem _root_.Matrix.posDef_vecMulVec_star [StarOrderedRing R] [NoZeroDivisors R] (a : n → R)
     (ha : Function.Injective (replicateCol Unit a).vecMul) :
     (vecMulVec a (star a)).PosDef := by
   simp only [vecMulVec_eq Unit, ← conjTranspose_replicateCol]
   exact mul_conjTranspose_self _ ha
+
+theorem _root_.Matrix.posDef_star_vecMulVec [StarOrderedRing R] [NoZeroDivisors R] (a : n → R)
+    (ha : Function.Injective (replicateRow Unit a).mulVec) :
+    (vecMulVec (star a) a).PosDef := by
+  simp only [vecMulVec_eq Unit, ← conjTranspose_replicateRow]
+  exact conjTranspose_mul_self _ ha
 
 theorem conjTranspose {M : Matrix n n R} (hM : M.PosDef) : Mᴴ.PosDef := hM.1.symm ▸ hM
 
