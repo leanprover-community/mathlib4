@@ -157,7 +157,7 @@ lemma integrable_fun_norm_addHaar {f : ℝ → F} :
     integrable_withDensity_iff_integrable_smul', integrable_congr]
   · refine .of_forall ?_
     rintro ⟨x, hx : 0 < x⟩
-    simp (disch := positivity) [ENNReal.toReal_ofReal, mul_comm]
+    simp (disch := positivity) [ENNReal.toReal_ofReal]
   · fun_prop
   · simp
   · measurability

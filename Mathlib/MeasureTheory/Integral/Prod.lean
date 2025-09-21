@@ -223,11 +223,11 @@ protected theorem MeasureTheory.AEStronglyMeasurable.of_comp_fst {f : α → X} 
 
 theorem MeasureTheory.AEStronglyMeasurable.comp_fst_iff [SFinite μ] [SFinite ν] {f : α → X}
     (hν : ν ≠ 0) : AEStronglyMeasurable (f <| ·.1) (μ.prod ν) ↔ AEStronglyMeasurable f μ :=
-  ⟨(.of_comp_fst · hν), .fst⟩
+  ⟨(.of_comp_fst · hν), .comp_fst⟩
 
 theorem MeasureTheory.AEStronglyMeasurable.comp_snd_iff [SFinite ν] {f : β → X}
     (hμ : μ ≠ 0) : AEStronglyMeasurable (f <| ·.2) (μ.prod ν) ↔ AEStronglyMeasurable f ν :=
-  ⟨(.of_comp_snd · hμ), .snd⟩
+  ⟨(.of_comp_snd · hμ), .comp_snd⟩
 
 end
 
@@ -366,23 +366,6 @@ theorem IntegrableOn.swap [SFinite μ] {f : α × β → E} {s : Set α} {t : Se
   rw [IntegrableOn, ← Measure.prod_restrict] at hf ⊢
   exact hf.swap
 
-omit [SFinite ν] in
-theorem Integrable.comp_fst [IsFiniteMeasure ν] {f : α → E} (hf : Integrable f μ) :
-    Integrable (f ·.1) (μ.prod ν) := by
-  constructor
-  · exact hf.1.fst
-  · simp only [HasFiniteIntegral, lintegral_prod _ hf.1.fst.enorm, lintegral_const,
-      lintegral_mul_const' _ _ (measure_ne_top _ _)]
-    exact ENNReal.mul_lt_top hf.2 (measure_lt_top _ _)
-
-theorem Integrable.comp_snd [IsFiniteMeasure μ] {f : β → E} (hf : Integrable f ν) :
-    Integrable (f ·.2) (μ.prod ν) := by
-  constructor
-  · exact hf.1.snd
-  · simp only [HasFiniteIntegral, lintegral_prod _ hf.1.snd.enorm, lintegral_const,
-      lintegral_mul_const' _ _ (measure_ne_top _ _)]
-    exact ENNReal.mul_lt_top hf.2 (measure_lt_top _ _)
-
 theorem Integrable.of_comp_snd {f : β → E} (hf : Integrable (f ·.2) (μ.prod ν)) (hμ : μ ≠ 0) :
     Integrable f ν := by
   rcases hf with ⟨hf_meas, hf_fin⟩
@@ -396,12 +379,12 @@ theorem Integrable.of_comp_fst [SFinite μ] {f : α → E} (hf : Integrable (f �
 
 theorem Integrable.comp_snd_iff [IsFiniteMeasure μ] {f : β → E} (hμ : μ ≠ 0) :
     Integrable (f ·.2) (μ.prod ν) ↔ Integrable f ν :=
-  ⟨(.of_comp_snd · hμ), .comp_snd⟩
+  ⟨(.of_comp_snd · hμ), (.comp_snd · μ)⟩
 
 omit [SFinite ν] in
 theorem Integrable.comp_fst_iff [SFinite μ] [IsFiniteMeasure ν] {f : α → E} (hν : ν ≠ 0) :
     Integrable (f ·.1) (μ.prod ν) ↔ Integrable f μ :=
-  ⟨(.of_comp_fst · hν), .comp_fst⟩
+  ⟨(.of_comp_fst · hν), (.comp_fst · ν)⟩
 
 end
 
