@@ -625,10 +625,10 @@ section CommSemiring
 
 open Finset.HasAntidiagonal Finset
 
-variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
+variable {R : Type*} [CommSemiring R] {ι : Type*}
 
 /-- Coefficients of a product of power series -/
-theorem coeff_prod [DecidableEq σ]
+theorem coeff_prod [DecidableEq ι] [DecidableEq σ]
     (f : ι → MvPowerSeries σ R) (d : σ →₀ ℕ) (s : Finset ι) :
     coeff d (∏ j ∈ s, f j) =
       ∑ l ∈ finsuppAntidiag s d,
@@ -663,6 +663,12 @@ theorem coeff_prod [DecidableEq σ]
       simp only [add_right_inj] at huv
       exact h rfl huv.symm
 
+theorem prod_monomial (f : ι → σ →₀ ℕ) (g : ι → R) (s : Finset ι) :
+    ∏ i ∈ s, monomial (f i) (g i) = monomial (∑ i ∈ s, f i) (∏ i ∈ s, g i) := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha h => simp [h, monomial_mul_monomial]
+
 /-- The `d`th coefficient of a power of a multivariate power series
 is the sum, indexed by `finsuppAntidiag (Finset.range n) d`, of products of coefficients -/
 theorem coeff_pow [DecidableEq σ] (f : MvPowerSeries σ R) {n : ℕ} (d : σ →₀ ℕ) :
@@ -672,6 +678,11 @@ theorem coeff_pow [DecidableEq σ] (f : MvPowerSeries σ R) {n : ℕ} (d : σ �
   suffices f ^ n = (Finset.range n).prod fun _ ↦ f by
     rw [this, coeff_prod]
   rw [Finset.prod_const, card_range]
+
+theorem monmial_pow (m : σ →₀ ℕ) (a : R) (n : ℕ) :
+    (monomial m a) ^ n = monomial (n • m) (a ^ n) := by
+  rw [Finset.pow_eq_prod_const, prod_monomial, ← Finset.nsmul_eq_sum_const,
+    ← Finset.pow_eq_prod_const]
 
 /-- Vanishing of coefficients of powers of multivariate power series
 when the constant coefficient is nilpotent
@@ -770,7 +781,6 @@ open Finsupp
 
 variable {σ : Type*} {R : Type*} [CommSemiring R] (φ ψ : MvPolynomial σ R)
 
--- Porting note: added so we can add the `@[coe]` attribute
 /-- The natural inclusion from multivariate polynomials into multivariate formal power series. -/
 @[coe]
 def toMvPowerSeries : MvPolynomial σ R → MvPowerSeries σ R :=

@@ -16,7 +16,7 @@ assert_not_exists Monoid Preorder
 
 open Function
 
-variable {ι α β : Type*} {G M N O : ι → Type*}
+variable {ι ι' α β : Type*} {G M N O : ι → Type*}
 
 namespace Pi
 variable [∀ i, One (M i)] [∀ i, One (N i)] [∀ i, One (O i)] [DecidableEq ι] {i : ι} {x : M i}
@@ -95,5 +95,17 @@ lemma mulSingle_apply (i : ι) (x : M) (i' : ι) :
 @[to_additive /-- On non-dependent functions, `Pi.single` is symmetric in the two indices. -/]
 lemma mulSingle_comm (i : ι) (x : M) (j : ι) :
     (mulSingle i x : ι → M) j = (mulSingle j x : ι → M) i := by simp [mulSingle_apply, eq_comm]
+
+variable [DecidableEq ι']
+
+@[to_additive (attr := simp)]
+theorem curry_mulSingle (i : ι × ι') (b : M) :
+    curry (Pi.mulSingle i b) = Pi.mulSingle i.1 (Pi.mulSingle i.2 b) :=
+  curry_update _ _ _
+
+@[to_additive (attr := simp)]
+theorem uncurry_mulSingle_mulSingle (i : ι) (i' : ι') (b : M) :
+    uncurry (Pi.mulSingle i (Pi.mulSingle i' b)) = Pi.mulSingle (i, i') b :=
+  uncurry_update_update _ _ _ _
 
 end Pi

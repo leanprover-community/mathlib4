@@ -25,7 +25,7 @@ This ensures `simp` works with entries only when (some) entries are already give
 In other words, this notation will only appear in the output of `simp` if it
 already appears in the input.
 
-## Notations
+## Notation
 
 The main new notation is `![a, b]`, which gets expanded to `vecCons a (vecCons b vecEmpty)`.
 
@@ -163,7 +163,7 @@ dsimproc cons_val (Matrix.vecCons _ _ _) := fun e => do
     let etailn_whnf : Q(ℕ) ← Meta.whnfD etailn
     if let Expr.lit (.natVal length) := etailn_whnf then
       pure (length, false, q(OfNat.ofNat $etailn_whnf))
-    else if let .some ((base : Q(ℕ)), offset) ← (Meta.isOffset? etailn_whnf).run then
+    else if let some ((base : Q(ℕ)), offset) ← (Meta.isOffset? etailn_whnf).run then
       let offset_e : Q(ℕ) := mkNatLit offset
       pure (offset, true, q($base + $offset))
     else
@@ -315,6 +315,11 @@ theorem vecAppend_apply_zero {α : Type*} {o : ℕ} (ho : o + 1 = m + 1 + n) (u 
 
 @[simp]
 theorem empty_vecAppend (v : Fin n → α) : vecAppend n.zero_add.symm ![] v = v := by
+  ext
+  simp [vecAppend_eq_ite]
+
+@[simp]
+theorem vecAppend_empty (v : Fin n → α) : vecAppend rfl v ![] = v := by
   ext
   simp [vecAppend_eq_ite]
 

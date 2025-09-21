@@ -78,9 +78,8 @@ lemma term_one {n : ℕ} (hn : 0 < n) :
   calc term n 1
     _ = ∫ x : ℝ in n..(n + 1), (x - n) / x ^ 2 := by
       simp_rw [term, one_add_one_eq_two, ← Nat.cast_two (R := ℝ), rpow_natCast]
-    _ = ∫ x : ℝ in n..(n + 1), (1 / x - n / x ^ 2) := by
-      refine intervalIntegral.integral_congr (fun x hx ↦ ?_)
-      field_simp [(hv x hx).ne']
+    _ = ∫ x : ℝ in n..(n + 1), (1 / x - n / x ^ 2) :=
+      intervalIntegral.integral_congr (fun x hx ↦ by field_simp)
     _ = (∫ x : ℝ in n..(n + 1), 1 / x) - n * ∫ x : ℝ in n..(n + 1), 1 / x ^ 2 := by
       simp_rw [← mul_one_div (n : ℝ)]
       rw [intervalIntegral.integral_sub]
@@ -416,7 +415,7 @@ lemma _root_.riemannZeta_one_ne_zero : riemannZeta 1 ≠ 0 := by
   · exact Real.eulerMascheroniConstant_lt_two_thirds.trans (by norm_num)
   · rw [lt_log_iff_exp_lt (by positivity)]
     exact (lt_trans Real.exp_one_lt_d9 (by norm_num)).trans_le
-      <| mul_le_mul_of_nonneg_left two_le_pi (by norm_num)
+      <| mul_le_mul_of_nonneg_left two_le_pi (by simp)
 
 end val_at_one
 

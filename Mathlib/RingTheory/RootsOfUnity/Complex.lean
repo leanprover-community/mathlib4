@@ -33,14 +33,13 @@ theorem isPrimitiveRoot_exp_of_coprime (i n : ℕ) (h0 : n ≠ 0) (hi : i.Coprim
     IsPrimitiveRoot (exp (2 * π * I * (i / n))) n := by
   rw [IsPrimitiveRoot.iff_def]
   simp only [← exp_nat_mul, exp_eq_one_iff]
-  have hn0 : (n : ℂ) ≠ 0 := mod_cast h0
   constructor
   · use i
-    simp [field, mul_comm (i : ℂ), mul_comm (n : ℂ)]
+    simp (discharger := norm_cast) [field]
   · simp only [forall_exists_index]
+    have hn0 : (n : ℂ) ≠ 0 := mod_cast h0
     rintro l k hk
-    have hz : π ≠ 0 := pi_pos.ne'
-    field_simp [hz, I_ne_zero] at hk
+    field_simp at hk
     norm_cast at hk
     have : n ∣ l * i := by rw [← Int.natCast_dvd_natCast, hk]; apply dvd_mul_right
     exact hi.symm.dvd_of_dvd_mul_right this

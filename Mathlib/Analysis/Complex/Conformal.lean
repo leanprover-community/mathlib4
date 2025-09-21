@@ -9,8 +9,8 @@ import Mathlib.Analysis.Calculus.FDeriv.Equiv
 import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 import Mathlib.Analysis.Complex.Isometry
 import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.Data.Complex.Module
 import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+import Mathlib.LinearAlgebra.Complex.Module
 
 /-!
 # Conformal maps between complex vector spaces

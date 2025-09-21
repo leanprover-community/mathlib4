@@ -417,10 +417,6 @@ lemma valuedAdicCompletion_surjective :
     Function.Surjective (Valued.v : (v.adicCompletion K) → ℤᵐ⁰) :=
   Valued.valuedCompletion_surjective_iff.mpr (v.valuation_surjective K)
 
--- Porting note: replaced by `Coe`
--- instance AdicCompletion.hasLiftT : HasLiftT K (v.adicCompletion K) :=
---   (inferInstance : HasLiftT K (@UniformSpace.Completion K v.adicValued.toUniformSpace))
-
 /-- The ring of integers of `adicCompletion`. -/
 def adicCompletionIntegers : ValuationSubring (v.adicCompletion K) :=
   Valued.v.valuationSubring
@@ -643,7 +639,7 @@ theorem adicAbv_coe_lt_one_iff {b : NNReal} (hb : 1 < b) (r : R) :
 variable {R K} in
 theorem adicAbv_coe_eq_one_iff {b : NNReal} (hb : 1 < b) (r : R) :
     v.adicAbv hb (algebraMap R K r) = 1 ↔ r ∉ v.asIdeal := by
-  rw [← not_iff_not, not_not, ← v.adicAbv_coe_lt_one_iff (K := K), ne_iff_lt_iff_le]
+  rw [← not_iff_not, not_not, ← v.adicAbv_coe_lt_one_iff (K := K) hb, ne_iff_lt_iff_le]
   exact adicAbv_coe_le_one v hb r
 
 end AbsoluteValue
