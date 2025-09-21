@@ -226,8 +226,7 @@ def coconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
     }
   }
 
-/-- A helper function, providing the strong commutative square used to construct colimits. -/
-def commSqOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) (c : Cocone F) :
+lemma commSqOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) (c : Cocone F) :
   CommSq (Sigma.desc fun i ↦ (c.ι.app i).left) (strongEpiMonoFactorisationSigmaDesc F).e
     c.pt.arrow (strongEpiMonoFactorisationSigmaDesc F).m where
   w := by
