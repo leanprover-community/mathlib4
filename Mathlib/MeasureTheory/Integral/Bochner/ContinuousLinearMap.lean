@@ -41,12 +41,13 @@ theorem continuous_integral_comp_L1 (L : E →L[𝕜] F) :
 
 variable [CompleteSpace F] [NormedSpace ℝ E]
 
-theorem integral_comp_comm [CompleteSpace E] (L : E →L[𝕜] F) {φ : X → E} (φ_int : Integrable φ μ) :
+theorem integral_comp_comm' [CompleteSpace E] (L : E →L[𝕜] F) {φ : X → E} (φ_int : Integrable φ μ) :
     ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) := by
   apply φ_int.induction (P := fun φ => ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ))
   · intro e s s_meas _
     rw [integral_indicator_const e s_meas, ← @smul_one_smul E ℝ 𝕜 _ _ _ _ _ (μ.real s) e,
-      ContinuousLinearMap.map_smul, @smul_one_smul F ℝ 𝕜 _ _ _ _ _ (μ.real s) (L e), ←
+      ContinuousLinearMap.map_smul]
+    rw [@smul_one_smul F ℝ 𝕜 _ _ _ _ _ (μ.real s) (L e), ←
       integral_indicator_const (L e) s_meas]
     congr 1 with a
     rw [← Function.comp_def L, Set.indicator_comp_of_zero L.map_zero, Function.comp_apply]
@@ -58,6 +59,30 @@ theorem integral_comp_comm [CompleteSpace E] (L : E →L[𝕜] F) {φ : X → E}
     convert hf using 1 <;> clear hf
     · exact integral_congr_ae (hfg.fun_comp L).symm
     · rw [integral_congr_ae hfg.symm]
+
+variable {σ : 𝕜 →+* 𝕜}
+
+theorem integral_comp_commSL [CompleteSpace E] (L : E →L⋆[𝕜] F) {φ : X → E} (φ_int : Integrable φ μ) :
+    ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) := by
+  apply φ_int.induction (P := fun φ => ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ))
+  · intro e s s_meas _
+    rw [integral_indicator_const e s_meas, ← @smul_one_smul E ℝ 𝕜 _ _ _ _ _ (μ.real s) e,
+      ContinuousLinearMap.map_smulₛₗ]
+    rw [RCLike.conj_smul, map_one, smul_assoc, one_smul]
+    rw [← integral_indicator_const (L e) s_meas]
+    congr 1 with a
+    rw [← Function.comp_def L, Set.indicator_comp_of_zero L.map_zero, Function.comp_apply]
+  · intro f g _ f_int g_int hf hg
+    simp [L.map_add, integral_add (μ := μ) f_int g_int,
+      integral_add (μ := μ) (L.integrable_comp f_int) (L.integrable_comp g_int), hf, hg]
+    sorry
+  · exact isClosed_eq L.continuous_integral_comp_L1 (L.continuous.comp continuous_integral)
+  · intro f g hfg _ hf
+    convert hf using 1 <;> clear hf
+    · exact integral_congr_ae (hfg.fun_comp L).symm
+    · rw [integral_congr_ae hfg.symm]
+
+#exit
 
 theorem integral_apply {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {φ : X → H →L[𝕜] E}
     (φ_int : Integrable φ μ) (v : H) : (∫ x, φ x ∂μ) v = ∫ x, φ x v ∂μ := by

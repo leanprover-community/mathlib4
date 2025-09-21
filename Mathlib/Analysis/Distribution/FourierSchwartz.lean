@@ -80,13 +80,19 @@ noncomputable def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) := by
 @[simp] lemma fourierTransformCLM_apply (f : 𝓢(V, E)) :
     fourierTransformCLM 𝕜 f = 𝓕 f := rfl
 
-lemma foo (f : 𝓢(V, E)) (g : 𝓢(V, F)) (L : E →L[𝕜] F →L[𝕜] W) :
-    ∫ x, L (𝓕 f x) (g x) = ∫ x, L (f x) (𝓕 g x) := by
-  sorry
+variable
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F] [NormedSpace 𝕜 F] [SMulCommClass ℂ 𝕜 F]
+  {G : Type*} [NormedAddCommGroup G] [NormedSpace ℂ G]
 
-#exit
+variable [CompleteSpace E] [CompleteSpace F]
 
-variable [CompleteSpace E]
+/-- The Fourier transform satisfies `∫ 𝓕 f * g = ∫ f * 𝓕 g`, i.e., it is self-adjoint.
+Version where the multiplication is replaced by a general bilinear form `M`. -/
+theorem integral_bilin_fourierIntegral_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L[ℂ] F →L[ℂ] G) :
+    ∫ ξ, M (𝓕 f ξ) (g ξ) = ∫ x, M (f x) (𝓕 g x) := by
+  have := VectorFourier.integral_bilin_fourierIntegral_eq_flip M (μ := volume) (ν := volume)
+    (L := (innerₗ V)) continuous_fourierChar continuous_inner f.integrable g.integrable
+  rwa [flip_innerₗ] at this
 
 /-- The Fourier transform on a real inner product space, as a continuous linear equiv on the
 Schwartz space. -/
