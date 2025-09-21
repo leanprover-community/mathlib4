@@ -279,7 +279,7 @@ theorem one_coe_eq_one [HasDetPlusMinusOne Γ] : ((1 : SlashInvariantForm Γ 0) 
 instance : Inhabited (SlashInvariantForm Γ k) :=
   ⟨0⟩
 
-/-- The slash invariant form of weight `k₁ + k₂` given by the product of two slash-invarinat forms
+/-- The slash invariant form of weight `k₁ + k₂` given by the product of two slash-invariant forms
 of weights `k₁` and `k₂`. -/
 def mul [HasDetPlusMinusOne Γ] {k₁ k₂ : ℤ} (f : SlashInvariantForm Γ k₁)
     (g : SlashInvariantForm Γ k₂) : SlashInvariantForm Γ (k₁ + k₂) where
