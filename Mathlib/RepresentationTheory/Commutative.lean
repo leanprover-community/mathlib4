@@ -18,8 +18,29 @@ simple finite dimensional representations over algebraically closed fields are a
 universe u
 open CategoryTheory LinearMap Representation Module
 
+variable {R k G : Type u} [CommRing R] [Field k] [CommMonoid G]
+namespace Rep
+/-- For commutative monoids `G`, `g : G` and a representation `V` of `G`, `smul_hom g` is the
+endomorphism of `V` defined by left multiplication with `g`. -/
+noncomputable def smul_hom {V : Rep R G} (g : G) : V ⟶ V :=
+  ⟨ModuleCat.ofHom <| V.ρ g, by
+    intro h
+    ext a
+    change (V.ρ g * V.ρ h) a = (V.ρ h * V.ρ g) a
+    rw[← map_mul, ← map_mul, mul_comm]⟩
+
+@[simp] theorem smul_hom_apply {V : Rep R G} {v : V} {g : G} :
+    smul_hom g v = V.ρ g v := rfl
+
+end Rep
 namespace FDRep
-variable {k G : Type u} [Field k] [CommMonoid G]
+/-- For commutative monoids `G`, `g : G` and a finite-dimensional representation `V` of `G`,
+`smul_hom g` is the endomorphism of `V` defined by left multiplication with `g`. -/
+noncomputable def smul_hom {V : FDRep R G} (g : G) : V ⟶ V :=
+  forget₂HomLinearEquiv V V <| Rep.smul_hom g
+
+@[simp] theorem smul_hom_apply {V : FDRep R G} {v : V} {g : G} :
+    smul_hom g v = V.ρ g v := rfl
 
 /-- If `G` is a commutative monoid and `k` is algebraically closed, any finite dimensional
 simple representation of `G` has dimension 1. -/
@@ -35,15 +56,10 @@ theorem finrank_eq_one_simple_of_commMonoid [IsAlgClosed k]
   -- TODO: fix this when made possible
   let W := Submodule.span k {x}
   -- This is true since `G` is abelian, such that each `V.ρ g` is a representation morphism, ...
-  let rho_endo (g : G) : V ⟶ V := ⟨FGModuleCat.ofHom <| V.ρ g, by
-    intro h
-    ext a
-    change (V.ρ g * V.ρ h) a = (V.ρ h * V.ρ g) a
-    rw[← map_mul, ← map_mul, mul_comm]⟩
   have invariant (g y) (hy : y ∈ Submodule.span k {x}) : (V.ρ g) y ∈ Submodule.span k {x} := by
-    change (rho_endo g) y ∈ Submodule.span k {x}
+    rw[← smul_hom_apply]
   -- ...hence by Schur's lemma, it acts as a scalar and every subspace is invariant.
-    obtain ⟨c, eq⟩ := endomorphism_simple_eq_smul_id k <| rho_endo g
+    obtain ⟨c, eq⟩ := endomorphism_simple_eq_smul_id k <| smul_hom (V := V) g
     rw[← eq]
     exact (Submodule.span k {x}).smul_mem c hy
   -- So the span of `x` can be turned into a representation with `V.ρ`.
