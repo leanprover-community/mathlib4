@@ -509,12 +509,15 @@ end OrderedCancelCommMonoid
 
 section LinearOrderedCancelCommMonoid
 
-variable [CommMonoid M] [LinearOrder M] [IsOrderedCancelMonoid M] {f g : ι → M} {s t : Finset ι}
+variable [CommMonoid M] [LinearOrder M] {f g : ι → M} {s t : Finset ι}
 
 @[to_additive exists_lt_of_sum_lt]
-theorem exists_lt_of_prod_lt' (Hlt : ∏ i ∈ s, f i < ∏ i ∈ s, g i) : ∃ i ∈ s, f i < g i := by
+theorem exists_lt_of_prod_lt' [MulLeftMono M] (Hlt : ∏ i ∈ s, f i < ∏ i ∈ s, g i) :
+    ∃ i ∈ s, f i < g i := by
   contrapose! Hlt with Hle
   exact prod_le_prod' Hle
+
+variable [IsOrderedCancelMonoid M]
 
 @[to_additive exists_le_of_sum_le]
 theorem exists_le_of_prod_le' (hs : s.Nonempty) (Hle : ∏ i ∈ s, f i ≤ ∏ i ∈ s, g i) :
@@ -535,7 +538,7 @@ theorem exists_one_lt_of_prod_one_of_exists_ne_one' (f : ι → M) (h₁ : ∏ i
 end LinearOrderedCancelCommMonoid
 
 theorem apply_sup_le_sum [SemilatticeSup α] [OrderBot α]
-    [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
+    [AddCommMonoid β] [PartialOrder β] [AddLeftMono β]
     {f : α → β} (zero : f ⊥ = 0) (ih : ∀ {s t}, f (s ⊔ t) ≤ f s + f t)
     {s : ι → α} (t : Finset ι) :
     f (t.sup s) ≤ ∑ i ∈ t, f (s i) := by
@@ -543,7 +546,7 @@ theorem apply_sup_le_sum [SemilatticeSup α] [OrderBot α]
   refine t.induction_on zero.le fun i t it h ↦ ?_
   simpa only [sup_insert, Finset.sum_insert it] using ih.trans (by gcongr)
 
-theorem apply_union_le_sum [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
+theorem apply_union_le_sum [AddCommMonoid β] [PartialOrder β] [AddLeftMono β]
     {f : Set α → β} (zero : f ∅ = 0) (ih : ∀ {s t}, f (s ∪ t) ≤ f s + f t)
     {s : ι → Set α} (t : Finset ι) :
     f (⋃ i ∈ t, s i) ≤ ∑ i ∈ t, f (s i) :=
