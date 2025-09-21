@@ -3,9 +3,9 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Analysis.Normed.Affine.Isometry
 import Mathlib.Topology.Algebra.ContinuousAffineMap
-import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
+import Mathlib.Analysis.Normed.Operator.NormedSpace
+import Mathlib.Analysis.Normed.Group.AddTorsor
 
 /-!
 # Continuous affine maps between normed spaces.
@@ -31,10 +31,10 @@ submultiplicative: for a composition of maps, we have only `‖f.comp g‖ ≤ �
 
 ## Main definitions:
 
- * `ContinuousAffineMap.contLinear`
- * `ContinuousAffineMap.hasNorm`
- * `ContinuousAffineMap.norm_comp_le`
- * `ContinuousAffineMap.toConstProdContinuousLinearMap`
+* `ContinuousAffineMap.contLinear`
+* `ContinuousAffineMap.hasNorm`
+* `ContinuousAffineMap.norm_comp_le`
+* `ContinuousAffineMap.toConstProdContinuousLinearMap`
 
 -/
 
@@ -155,6 +155,26 @@ instance : AddTorsor (P →ᴬ[R] W) (P →ᴬ[R] Q) where
 @[simp] lemma vsub_toAffineMap (f g : P →ᴬ[R] Q) :
     (f -ᵥ g).toAffineMap = f.toAffineMap -ᵥ g.toAffineMap :=
   rfl
+
+section Prod
+
+variable {P₁ P₂ P₃ P₄ V₁ V₂ V₃ V₄ : Type*}
+  [NormedAddCommGroup V₁] [NormedSpace 𝕜 V₁] [MetricSpace P₁] [NormedAddTorsor V₁ P₁]
+  [NormedAddCommGroup V₂] [NormedSpace 𝕜 V₂] [MetricSpace P₂] [NormedAddTorsor V₂ P₂]
+  [NormedAddCommGroup V₃] [NormedSpace 𝕜 V₃] [MetricSpace P₃] [NormedAddTorsor V₃ P₃]
+  [NormedAddCommGroup V₄] [NormedSpace 𝕜 V₄] [MetricSpace P₄] [NormedAddTorsor V₄ P₄]
+
+@[simp]
+theorem prod_contLinear (f : P₁ →ᴬ[𝕜] P₂) (g : P₁ →ᴬ[𝕜] P₃) :
+    (f.prod g).contLinear = f.contLinear.prod g.contLinear :=
+  rfl
+
+@[simp]
+theorem prodMap_contLinear (f : P₁ →ᴬ[𝕜] P₂) (g : P₃ →ᴬ[𝕜] P₄) :
+    (f.prodMap g).contLinear = f.contLinear.prodMap g.contLinear :=
+  rfl
+
+end Prod
 
 section NormedSpaceStructure
 

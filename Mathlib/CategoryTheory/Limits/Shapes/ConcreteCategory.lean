@@ -31,7 +31,7 @@ wide-pullbacks, wide-pushouts, multiequalizers and cokernels.
 
 -/
 
-universe w w' v u t r
+universe s w w' v u t r
 
 namespace CategoryTheory.Limits.Concrete
 
@@ -70,7 +70,7 @@ variable [ConcreteCategory.{max w r} D FD] (F : C ⥤ D)
   [PreservesLimit (Discrete.functor f) F]
   [HasProduct fun j => F.obj (f j)]
   [PreservesLimitsOfShape WalkingCospan (forget D)]
-  [PreservesLimit (Discrete.functor fun b ↦ F.toPrefunctor.obj (f b)) (forget D)]
+  [PreservesLimit (Discrete.functor fun b ↦ F.obj (f b)) (forget D)]
 
 lemma Pi.map_ext (x y : ToType (F.obj (∏ᶜ f : C)))
     (h : ∀ i, F.map (Pi.π f i) x = F.map (Pi.π f i) y) : x = y := by
@@ -253,8 +253,8 @@ end WidePullback
 
 section Multiequalizer
 
-variable {FC : C → C → Type*} {CC : C → Type (max w w' v)} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
-variable [ConcreteCategory.{max w w' v} C FC]
+variable {FC : C → C → Type*} {CC : C → Type s} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+variable [ConcreteCategory.{s} C FC]
 
 theorem multiequalizer_ext {J : MulticospanShape.{w, w'}}
     {I : MulticospanIndex J C} [HasMultiequalizer I]
@@ -308,8 +308,7 @@ noncomputable def multiequalizerEquiv {J : MulticospanShape.{w, w'}}
       { x : ∀ i : J.L, ToType (I.left i) // ∀ i : J.R, I.fst i (x _) = I.snd i (x _) } :=
   letI h1 := limit.isLimit I.multicospan
   letI h2 := isLimitOfPreserves (forget C) h1
-  letI E := h2.conePointUniqueUpToIso (Types.limitConeIsLimit.{max w w', v} _)
-  Equiv.trans E.toEquiv (Concrete.multiequalizerEquivAux I)
+  (Types.isLimitEquivSections h2).trans (Concrete.multiequalizerEquivAux I)
 
 @[simp]
 theorem multiequalizerEquiv_apply {J : MulticospanShape.{w, w'}}

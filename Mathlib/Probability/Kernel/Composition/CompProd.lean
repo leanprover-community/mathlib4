@@ -30,7 +30,7 @@ that convention because it fits better with the use of the name `comp` elsewhere
 * Instances stating that `IsMarkovKernel`, `IsZeroOrMarkovKernel`, `IsFiniteKernel` and
   `IsSFiniteKernel` are stable by composition-product.
 
-## Notations
+## Notation
 
 * `κ ⊗ₖ η = ProbabilityTheory.Kernel.compProd κ η`
 
@@ -80,8 +80,8 @@ theorem compProdFun_iUnion (κ : Kernel α β) (η : Kernel (α × β) γ) [IsSF
   have h_Union : (fun b ↦ η (a, b) {c : γ | (b, c) ∈ ⋃ i, f i})
       = fun b ↦ η (a, b) (⋃ i, {c : γ | (b, c) ∈ f i}) := by
     ext1 b
-    congr with c
-    simp only [Set.mem_iUnion, Set.iSup_eq_iUnion, Set.mem_setOf_eq]
+    congr 1 with c
+    simp only [Set.mem_iUnion, Set.mem_setOf_eq]
   rw [compProdFun, h_Union]
   have h_tsum : (fun b ↦ η (a, b) (⋃ i, {c : γ | (b, c) ∈ f i}))
       = fun b ↦ ∑' i, η (a, b) {c : γ | (b, c) ∈ f i} := by
@@ -274,19 +274,19 @@ lemma compProd_deterministic_apply [MeasurableSingletonClass γ] {f : α × β �
     {s : Set (β × γ)} (hs : MeasurableSet s) (κ : Kernel α β) [IsSFiniteKernel κ] (x : α) :
     (κ ⊗ₖ deterministic f hf) x s = κ x {b | (b, f (x, b)) ∈ s} := by
   classical
-  simp only [deterministic_apply, measurableSet_setOf, Set.mem_setOf_eq, Measure.dirac_apply,
-    Set.mem_setOf_eq, Set.indicator_apply, Pi.one_apply, compProd_apply hs]
+  simp only [deterministic_apply, Measure.dirac_apply,
+    Set.indicator_apply, Pi.one_apply, compProd_apply hs]
   let t := {b | (b, f (x, b)) ∈ s}
   have ht : MeasurableSet t := (measurable_id.prodMk (hf.comp measurable_prodMk_left)) hs
   rw [← lintegral_add_compl _ ht]
   convert add_zero _
   · suffices ∀ b ∈ tᶜ, (if f (x, b) ∈ Prod.mk b ⁻¹' s then (1 : ℝ≥0∞) else 0) = 0 by
-      rw [setLIntegral_congr_fun ht.compl (ae_of_all _ this), lintegral_zero]
+      rw [setLIntegral_congr_fun ht.compl this, lintegral_zero]
     intro b hb
     simp only [t, Set.mem_compl_iff, Set.mem_setOf_eq] at hb
     simp [hb]
   · suffices ∀ b ∈ t, (if f (x, b) ∈ Prod.mk b ⁻¹' s then (1 : ℝ≥0∞) else 0) = 1 by
-      rw [setLIntegral_congr_fun ht (ae_of_all _ this), setLIntegral_one]
+      rw [setLIntegral_congr_fun ht this, setLIntegral_one]
     intro b hb
     simp only [t, Set.mem_setOf_eq] at hb
     simp [hb]
@@ -359,7 +359,7 @@ theorem compProd_restrict {s : Set β} {t : Set γ} (hs : MeasurableSet s) (ht :
   rw [compProd_apply hu, restrict_apply' _ _ _ hu, compProd_apply (hu.inter (hs.prod ht))]
   simp only [restrict_apply, Set.preimage, Measure.restrict_apply' ht, Set.mem_inter_iff,
     Set.mem_prod]
-  have (b) : η (a, b) {c : γ | (b, c) ∈ u ∧ b ∈ s ∧ c ∈ t} =
+  have (b : _) : η (a, b) {c : γ | (b, c) ∈ u ∧ b ∈ s ∧ c ∈ t} =
       s.indicator (fun b => η (a, b) ({c : γ | (b, c) ∈ u} ∩ t)) b := by
     classical
     rw [Set.indicator_apply]
@@ -371,13 +371,13 @@ theorem compProd_restrict {s : Set β} {t : Set γ} (hs : MeasurableSet s) (ht :
 
 theorem compProd_restrict_left {s : Set β} (hs : MeasurableSet s) :
     Kernel.restrict κ hs ⊗ₖ η = Kernel.restrict (κ ⊗ₖ η) (hs.prod MeasurableSet.univ) := by
-  rw [← compProd_restrict]
-  · congr; exact Kernel.restrict_univ.symm
+  rw [← compProd_restrict hs MeasurableSet.univ]
+  congr; exact Kernel.restrict_univ.symm
 
 theorem compProd_restrict_right {t : Set γ} (ht : MeasurableSet t) :
     κ ⊗ₖ Kernel.restrict η ht = Kernel.restrict (κ ⊗ₖ η) (MeasurableSet.univ.prod ht) := by
-  rw [← compProd_restrict]
-  · congr; exact Kernel.restrict_univ.symm
+  rw [← compProd_restrict MeasurableSet.univ ht]
+  congr; exact Kernel.restrict_univ.symm
 
 end Restrict
 
@@ -420,7 +420,6 @@ theorem lintegral_compProd' (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kerne
   ext1 n
   refine SimpleFunc.induction ?_ ?_ (F n)
   · intro c s hs
-    classical -- Porting note: Added `classical` for `Set.piecewise_eq_indicator`
     simp +unfoldPartialApp only [SimpleFunc.const_zero,
       SimpleFunc.coe_piecewise, SimpleFunc.coe_const, SimpleFunc.coe_zero,
       Set.piecewise_eq_indicator, Function.const, lintegral_indicator_const hs]
@@ -525,13 +524,13 @@ instance IsZeroOrMarkovKernel.compProd (κ : Kernel α β) [IsZeroOrMarkovKernel
   all_goals simpa using by infer_instance
 
 theorem compProd_apply_univ_le (κ : Kernel α β) (η : Kernel (α × β) γ) [IsFiniteKernel η] (a : α) :
-    (κ ⊗ₖ η) a Set.univ ≤ κ a Set.univ * IsFiniteKernel.bound η := by
+    (κ ⊗ₖ η) a Set.univ ≤ κ a Set.univ * η.bound := by
   by_cases hκ : IsSFiniteKernel κ
   swap
   · rw [compProd_of_not_isSFiniteKernel_left _ _ hκ]
     simp
   rw [compProd_apply .univ]
-  let Cη := IsFiniteKernel.bound η
+  let Cη := η.bound
   calc
     ∫⁻ b, η (a, b) Set.univ ∂κ a ≤ ∫⁻ _, Cη ∂κ a :=
       lintegral_mono fun b => measure_le_bound η (a, b) Set.univ
@@ -540,12 +539,9 @@ theorem compProd_apply_univ_le (κ : Kernel α β) (η : Kernel (α × β) γ) [
 
 instance IsFiniteKernel.compProd (κ : Kernel α β) [IsFiniteKernel κ] (η : Kernel (α × β) γ)
     [IsFiniteKernel η] : IsFiniteKernel (κ ⊗ₖ η) :=
-  ⟨⟨IsFiniteKernel.bound κ * IsFiniteKernel.bound η,
-      ENNReal.mul_lt_top (IsFiniteKernel.bound_lt_top κ) (IsFiniteKernel.bound_lt_top η), fun a =>
-      calc
-        (κ ⊗ₖ η) a Set.univ ≤ κ a Set.univ * IsFiniteKernel.bound η := compProd_apply_univ_le κ η a
-        _ ≤ IsFiniteKernel.bound κ * IsFiniteKernel.bound η :=
-          mul_le_mul (measure_le_bound κ a Set.univ) le_rfl (zero_le _) (zero_le _)⟩⟩
+  ⟨⟨κ.bound * η.bound, ENNReal.mul_lt_top κ.bound_lt_top η.bound_lt_top, fun a =>
+      calc (κ ⊗ₖ η) a Set.univ ≤ κ a Set.univ * η.bound := compProd_apply_univ_le κ η a
+      _ ≤ κ.bound * η.bound := mul_le_mul (measure_le_bound κ a Set.univ) le_rfl zero_le' zero_le'⟩⟩
 
 instance IsSFiniteKernel.compProd (κ : Kernel α β) (η : Kernel (α × β) γ) :
     IsSFiniteKernel (κ ⊗ₖ η) := by

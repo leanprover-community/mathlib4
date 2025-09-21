@@ -51,12 +51,20 @@ theorem isCoprime_div_gcd_div_gcd (hq : q ≠ 0) :
         (EuclideanDomain.mul_div_cancel' (gcd_ne_zero_of_right hq) <| gcd_dvd_right _ _).symm <|
       gcd_ne_zero_of_right hq
 
+/-- This is a version of `isCoprime_div_gcd_div_gcd` which replaces the `q ≠ 0` assumption with
+`gcd p q ≠ 0`. -/
+theorem isCoprime_div_gcd_div_gcd_of_gcd_ne_zero (hpq : GCDMonoid.gcd p q ≠ 0) :
+    IsCoprime (p / GCDMonoid.gcd p q) (q / GCDMonoid.gcd p q) :=
+  (gcd_isUnit_iff _ _).1 <|
+    isUnit_gcd_of_eq_mul_gcd
+        (EuclideanDomain.mul_div_cancel' (hpq) <| gcd_dvd_left _ _).symm
+        (EuclideanDomain.mul_div_cancel' (hpq) <| gcd_dvd_right _ _).symm <| hpq
+
 end GCDMonoid
 
 namespace EuclideanDomain
 
 /-- Create a `GCDMonoid` whose `GCDMonoid.gcd` matches `EuclideanDomain.gcd`. -/
--- Porting note: added `DecidableEq R`
 def gcdMonoid (R) [EuclideanDomain R] [DecidableEq R] : GCDMonoid R where
   gcd := gcd
   lcm := lcm

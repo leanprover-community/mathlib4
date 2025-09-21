@@ -17,8 +17,9 @@ The definition of multiplication in the automorphism group agrees with function 
 multiplication in `Equiv.Perm`, and multiplication in `CategoryTheory.End`, but not with
 `CategoryTheory.comp`.
 
-This file is kept separate from `Mathlib/Algebra/Ring/Equiv.lean` so that `Mathlib.GroupTheory.Perm`
-is free to use equivalences (and other files that use them) before the group structure is defined.
+This file is kept separate from `Mathlib/Algebra/Ring/Equiv.lean` so that
+`Mathlib/GroupTheory/Perm.lean` is free to use equivalences (and other files that use them) before
+the group structure is defined.
 
 ## Tags
 

@@ -58,7 +58,7 @@ variable {α β γ : Type*} [Ring α] [LinearOrder α] [FloorRing α]
 
 section
 variable [IsStrictOrderedRing α]
--- TODO: move to `Mathlib.Order.Filter.AtTopBot.Floor`
+-- TODO: move to `Mathlib/Order/Filter/AtTopBot/Floor.lean`
 
 theorem tendsto_floor_atTop : Tendsto (floor : α → ℤ) atTop atTop :=
   floor_mono.tendsto_atTop_atTop fun b =>

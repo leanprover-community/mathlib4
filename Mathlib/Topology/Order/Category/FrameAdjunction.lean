@@ -14,7 +14,7 @@ and proves that it is right adjoint to the forgetful functor from topological sp
 ## Main declarations
 
 * `Locale.pt`: the *points* functor from the category of locales to the category of topological
-spaces.
+  spaces.
 
 * `Locale.adjunctionTopToLocalePT`: the adjunction between the functors `topToLocale` and `pt`.
 

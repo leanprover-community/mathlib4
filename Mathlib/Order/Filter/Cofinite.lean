@@ -78,19 +78,25 @@ alias ⟨_, _root_.Set.Infinite.cofinite_inf_principal_neBot⟩ := cofinite_inf_
 theorem _root_.Set.Finite.compl_mem_cofinite {s : Set α} (hs : s.Finite) : sᶜ ∈ @cofinite α :=
   mem_cofinite.2 <| (compl_compl s).symm ▸ hs
 
-theorem _root_.Set.Finite.eventually_cofinite_nmem {s : Set α} (hs : s.Finite) :
+theorem _root_.Set.Finite.eventually_cofinite_notMem {s : Set α} (hs : s.Finite) :
     ∀ᶠ x in cofinite, x ∉ s :=
   hs.compl_mem_cofinite
 
-theorem _root_.Finset.eventually_cofinite_nmem (s : Finset α) : ∀ᶠ x in cofinite, x ∉ s :=
-  s.finite_toSet.eventually_cofinite_nmem
+@[deprecated (since := "2025-05-24")]
+alias _root_.Set.Finite.eventually_cofinite_nmem := _root_.Set.Finite.eventually_cofinite_notMem
+
+theorem _root_.Finset.eventually_cofinite_notMem (s : Finset α) : ∀ᶠ x in cofinite, x ∉ s :=
+  s.finite_toSet.eventually_cofinite_notMem
+
+@[deprecated (since := "2025-05-24")]
+alias _root_.Finset.eventually_cofinite_nmem := _root_.Finset.eventually_cofinite_notMem
 
 theorem _root_.Set.infinite_iff_frequently_cofinite {s : Set α} :
     Set.Infinite s ↔ ∃ᶠ x in cofinite, x ∈ s :=
   frequently_cofinite_iff_infinite.symm
 
 theorem eventually_cofinite_ne (x : α) : ∀ᶠ a in cofinite, a ≠ x :=
-  (Set.finite_singleton x).eventually_cofinite_nmem
+  (Set.finite_singleton x).eventually_cofinite_notMem
 
 theorem le_cofinite_iff_compl_singleton_mem : l ≤ cofinite ↔ ∀ x, {x}ᶜ ∈ l := by
   refine ⟨fun h x => h (finite_singleton x).compl_mem_cofinite, fun h s (hs : sᶜ.Finite) => ?_⟩
@@ -218,7 +224,7 @@ theorem Filter.Tendsto.exists_within_forall_le {α β : Type*} [LinearOrder β] 
     simp only [not_le] at this
     obtain ⟨a₀, ⟨ha₀ : f a₀ < x, ha₀s⟩, others_bigger⟩ :=
       exists_min_image _ f (this.inter_of_left s) ⟨y, hx, hys⟩
-    refine ⟨a₀, ha₀s, fun a has => (lt_or_le (f a) x).elim ?_ (le_trans ha₀.le)⟩
+    refine ⟨a₀, ha₀s, fun a has => (lt_or_ge (f a) x).elim ?_ (le_trans ha₀.le)⟩
     exact fun h => others_bigger a ⟨h, has⟩
   · -- in this case, f is constant because all values are at top
     push_neg at not_all_top
@@ -262,3 +268,11 @@ theorem Function.Injective.comap_cofinite_eq {f : α → β} (hf : Injective f) 
 theorem Function.Injective.nat_tendsto_atTop {f : ℕ → ℕ} (hf : Injective f) :
     Tendsto f atTop atTop :=
   Nat.cofinite_eq_atTop ▸ hf.tendsto_cofinite
+
+lemma Function.update_eventuallyEq [DecidableEq α] (f : α → β) (a : α) (b : β) :
+    Function.update f a b =ᶠ[𝓟 {a}ᶜ] f := by
+  filter_upwards [mem_principal_self _] with u hu using Function.update_of_ne hu _ _
+
+lemma Function.update_eventuallyEq_cofinite [DecidableEq α] (f : α → β) (a : α) (b : β) :
+    Function.update f a b =ᶠ[cofinite] f :=
+  (Function.update_eventuallyEq f a b).filter_mono (by simp)

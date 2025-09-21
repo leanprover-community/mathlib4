@@ -133,12 +133,6 @@ def ContinuousMap.liftZeroAtInfty [CompactSpace α] : C(α, β) ≃ C₀(α, β)
       continuous_toFun := f.continuous
       zero_at_infty' := by simp }
   invFun f := f
-  left_inv f := by
-    ext
-    rfl
-  right_inv f := by
-    ext
-    rfl
 
 /-- A continuous function on a compact space is automatically a continuous function vanishing at
 infinity. This is not an instance to avoid type class loops. -/
@@ -207,9 +201,7 @@ instance instAddZeroClass [AddZeroClass β] [ContinuousAdd β] : AddZeroClass C�
 
 instance instSMul [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [ContinuousConstSMul R β] :
     SMul R C₀(α, β) :=
-  -- Porting note: Original version didn't have `Continuous.const_smul f.continuous r`
-  ⟨fun r f => ⟨⟨r • ⇑f, Continuous.const_smul f.continuous r⟩,
-    by simpa [smul_zero] using (zero_at_infty f).const_smul r⟩⟩
+  ⟨fun r f => ⟨r • f, by simpa [smul_zero] using (zero_at_infty f).const_smul r⟩⟩
 
 @[simp, norm_cast]
 theorem coe_smul [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [ContinuousConstSMul R β] (r : R)

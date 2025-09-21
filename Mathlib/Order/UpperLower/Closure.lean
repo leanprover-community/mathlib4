@@ -374,9 +374,9 @@ lemma le_erase : s ≤ s.erase a := diff_subset
 @[simp] lemma erase_eq : s.erase a = s ↔ a ∉ s := by rw [← sdiff_singleton]; simp [-sdiff_singleton]
 
 @[simp] lemma lt_sdiff_left : s < s.sdiff t ↔ ¬ Disjoint ↑s t :=
-  le_sdiff_left.gt_iff_ne.trans UpperSet.sdiff_eq_left.not
+  le_sdiff_left.lt_iff_ne'.trans UpperSet.sdiff_eq_left.not
 
-@[simp] lemma lt_erase : s < s.erase a ↔ a ∈ s := le_erase.gt_iff_ne.trans erase_eq.not_left
+@[simp] lemma lt_erase : s < s.erase a ↔ a ∈ s := le_erase.lt_iff_ne'.trans erase_eq.not_left
 
 @[simp] protected lemma sdiff_idem (s : UpperSet α) (t : Set α) : (s.sdiff t).sdiff t = s.sdiff t :=
   SetLike.coe_injective sdiff_idem

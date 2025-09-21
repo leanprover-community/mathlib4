@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Kim Morrison, Johan Commelin
 -/
 import Mathlib.Data.Finset.Card
-import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Fin.Embedding
 
 /-!
 # Finsets in `Fin n`
@@ -89,7 +89,7 @@ set_option linter.deprecated false
 
 @[simp, deprecated mem_attachFin (since := "2025-04-08")]
 theorem mem_fin {s : Finset ℕ} : ∀ a : Fin n, a ∈ s.fin n ↔ (a : ℕ) ∈ s
-  | ⟨a, ha⟩ => by simp [Finset.fin, ha, and_comm]
+  | ⟨a, ha⟩ => by simp [Finset.fin]
 
 @[simp, deprecated coe_attachFin (since := "2025-04-08")]
 theorem coe_fin (n : ℕ) (s : Finset ℕ) : (s.fin n : Set (Fin n)) = Fin.val ⁻¹' s := by ext; simp

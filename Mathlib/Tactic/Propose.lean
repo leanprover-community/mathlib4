@@ -97,8 +97,8 @@ open Lean.Parser.Tactic
 
 /--
 * `have? using a, b, c` tries to find a lemma
-which makes use of each of the local hypotheses `a, b, c`,
-and reports any results via trace messages.
+  which makes use of each of the local hypotheses `a, b, c`,
+  and reports any results via trace messages.
 * `have? : h using a, b, c` only returns lemmas whose type matches `h` (which may contain `_`).
 * `have?! using a, b, c` will also call `have` to add results to the local goal state.
 

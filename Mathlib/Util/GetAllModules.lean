@@ -46,7 +46,7 @@ def getAllFiles (git : Bool) (ml : String) : IO (Array System.FilePath) := do
   )
 
 /-- Like `getAllFiles`, but return an array of *module* names instead,
-i.e. names of the form `Mathlib.Algebra.Algebra.Basic`.
+i.e. names of the form `Mathlib/Algebra/Algebra/Basic.lean`.
 In addition, these names are sorted in a platform-independent order. -/
 def getAllModulesSorted (git : Bool) (ml : String) : IO (Array String) := do
   let files ← getAllFiles git ml

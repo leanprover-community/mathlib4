@@ -123,7 +123,7 @@ theorem add_L {a b : ℕ × ZMod 2} (ha : a ≠ (0, 1)) (hb : b ≠ (0, 1)) : a 
     · simp [ha, -Prod.mk.injEq]
     · cases hb rfl
   | b + 1 =>
-    simp [(a + b).succ_ne_zero]
+    simp
 
 theorem mul_L {a b : ℕ × ZMod 2} (ha : a ≠ (0, 1)) (hb : b ≠ (0, 1)) : a * b ≠ (0, 1) := by
   rcases a with ⟨a, a2⟩
@@ -210,7 +210,8 @@ instance : PartialOrder L := inferInstance
 instance : IsOrderedRing L := inferInstance
 
 instance : CanonicallyOrderedAdd L where
-  exists_add_of_le := @(exists_add_of_le)
+  exists_add_of_le := exists_add_of_le _ _
+  le_add_self a b := by rw [add_comm]; exact le_self_add a b
   le_self_add := le_self_add
 
 instance : NoZeroDivisors L where

@@ -206,8 +206,8 @@ open ProdPreservesConnectedLimits
 
 /-- The functor `(X × -)` preserves any connected limit.
 Note that this functor does not preserve the two most obvious disconnected limits - that is,
-`(X × -)` does not preserve products or terminal object, eg `(X ⨯ A) ⨯ (X ⨯ B)` is not isomorphic to
-`X ⨯ (A ⨯ B)` and `X ⨯ 1` is not isomorphic to `1`.
+`(X × -)` does not preserve products or terminal object, e.g. `(X ⨯ A) ⨯ (X ⨯ B)` is not isomorphic
+to `X ⨯ (A ⨯ B)` and `X ⨯ 1` is not isomorphic to `1`.
 -/
 lemma prod_preservesConnectedLimits [IsConnected J] (X : C) :
     PreservesLimitsOfShape J (prod.functor.obj X) where
@@ -219,7 +219,7 @@ lemma prod_preservesConnectedLimits [IsConnected J] (X : C) :
             apply Limits.prod.hom_ext
             · erw [assoc, limMap_π, comp_id, limit.lift_π]
               exact (nat_trans_from_is_connected (s.π ≫ γ₁ X) j (Classical.arbitrary _)).symm
-            · simp [← l.fac (forgetCone s) j]
+            · simp
           uniq := fun s m L => by
             apply Limits.prod.hom_ext
             · erw [limit.lift_π, ← L (Classical.arbitrary J), assoc, limMap_π, comp_id]

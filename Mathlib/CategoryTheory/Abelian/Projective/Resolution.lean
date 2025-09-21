@@ -76,7 +76,7 @@ theorem liftFOne_zero_comm {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y)
 def liftFSucc {Y Z : C} (P : ProjectiveResolution Y) (Q : ProjectiveResolution Z) (n : ℕ)
     (g : P.complex.X n ⟶ Q.complex.X n) (g' : P.complex.X (n + 1) ⟶ Q.complex.X (n + 1))
     (w : g' ≫ Q.complex.d (n + 1) n = P.complex.d (n + 1) n ≫ g) :
-    Σ'g'' : P.complex.X (n + 2) ⟶ Q.complex.X (n + 2),
+    Σ' g'' : P.complex.X (n + 2) ⟶ Q.complex.X (n + 2),
       g'' ≫ Q.complex.d (n + 2) (n + 1) = P.complex.d (n + 2) (n + 1) ≫ g' :=
   ⟨(Q.exact_succ n).liftFromProjective
     (P.complex.d (n + 2) (n + 1) ≫ g') (by simp [w]),
@@ -142,7 +142,7 @@ lemma liftHomotopyZeroSucc_comp {Y Z : C} {P : ProjectiveResolution Y} {Q : Proj
     (w : f.f (n + 1) = P.complex.d (n + 1) n ≫ g + g' ≫ Q.complex.d (n + 2) (n + 1)) :
     liftHomotopyZeroSucc f n g g' w ≫ Q.complex.d (n + 3) (n + 2) =
       f.f (n + 2) - P.complex.d _ _ ≫ g' :=
-  (Q.exact_succ (n+1)).liftFromProjective_comp  _ _
+  (Q.exact_succ (n + 1)).liftFromProjective_comp  _ _
 
 /-- Any lift of the zero morphism is homotopic to zero. -/
 def liftHomotopyZero {Y Z : C} {P : ProjectiveResolution Y} {Q : ProjectiveResolution Z}
@@ -237,7 +237,7 @@ lemma ProjectiveResolution.iso_inv_naturality {X Y : C} (f : X ⟶ Y)
   apply HomotopyCategory.eq_of_homotopy
   apply liftHomotopy f
   all_goals
-    aesop_cat
+    cat_disch
 
 @[reassoc]
 lemma ProjectiveResolution.iso_hom_naturality {X Y : C} (f : X ⟶ Y)
@@ -259,9 +259,6 @@ theorem exact_d_f {X Y : C} (f : X ⟶ Y) :
     { τ₁ := Projective.π _
       τ₂ := 𝟙 _
       τ₃ := 𝟙 _ }
-  have : Epi α.τ₁ := by dsimp; infer_instance
-  have : IsIso α.τ₂ := by dsimp; infer_instance
-  have : Mono α.τ₃ := by dsimp; infer_instance
   rw [ShortComplex.exact_iff_of_epi_of_isIso_of_mono α]
   apply ShortComplex.exact_of_f_is_kernel
   apply kernelIsKernel
