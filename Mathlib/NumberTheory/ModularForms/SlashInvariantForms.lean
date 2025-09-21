@@ -24,6 +24,8 @@ section
 
 variable {R n : Type*} [CommRing R] [Fintype n] [DecidableEq n] (Γ : Subgroup (GL n R))
 
+/-- Typeclass saying that a subgroup of `GL(2, ℝ)` has determinant contained in `{±1}`. Necessary
+so that the typeclass system can detect when the slash action is multiplicative. -/
 class HasDetPlusMinusOne : Prop where
   det_eq {g} (hg : g ∈ Γ) : g.det = 1 ∨ g.det = -1
 
@@ -33,7 +35,7 @@ lemma HasDetPlusMinusOne.abs_det [LinearOrder R] [IsOrderedRing R] [HasDetPlusMi
   rcases HasDetPlusMinusOne.det_eq hg with h | h <;> simp [h]
 
 /-- Typeclass saying that a subgroup of `GL(2, ℝ)` is contained in `SL(2, ℝ)`. Necessary so that
-the typeclass system can detect when the slash action is `ℂ`-linear and multiplicative. -/
+the typeclass system can detect when the slash action is `ℂ`-linear. -/
 class HasDetOne : Prop where
   det_eq {g} (hg : g ∈ Γ) : g.det = 1
 
@@ -277,6 +279,8 @@ theorem one_coe_eq_one [HasDetPlusMinusOne Γ] : ((1 : SlashInvariantForm Γ 0) 
 instance : Inhabited (SlashInvariantForm Γ k) :=
   ⟨0⟩
 
+/-- The slash invariant form of weight `k₁ + k₂` given by the product of two slash-invarinat forms
+of weights `k₁` and `k₂`. -/
 def mul [HasDetPlusMinusOne Γ] {k₁ k₂ : ℤ} (f : SlashInvariantForm Γ k₁)
     (g : SlashInvariantForm Γ k₂) : SlashInvariantForm Γ (k₁ + k₂) where
   toFun := f * g
