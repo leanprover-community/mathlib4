@@ -603,6 +603,7 @@ namespace Affine
 
 namespace Simplex
 
+/-- The closed interior of a 1-simplex is a segment between its vertices. -/
 lemma closedInterior_eq_affineSegment (s : Simplex R P 1) :
     s.closedInterior = affineSegment R (s.points 0) (s.points 1) := by
   ext p
@@ -620,12 +621,15 @@ lemma closedInterior_eq_affineSegment (s : Simplex R P 1) :
       (Finset.mem_univ _), affineCombination_mem_closedInterior_iff
         (Finset.sum_affineCombinationLineMapWeights _ (Finset.mem_univ _) (Finset.mem_univ _) _)]
     intro i
-    fin_cases i <;> simp <;> grind
+    fin_cases i <;> simp [h0, h1]
 
+/-- A point lies in the closed interior of a 1-simplex if and only if it lies weakly between its
+vertices. -/
 lemma mem_closedInterior_iff_wbtw {s : Simplex R P 1} {p : P} :
     p ∈ s.closedInterior ↔ Wbtw R (s.points 0) p (s.points 1) := by
   rw [closedInterior_eq_affineSegment, Wbtw]
 
+/-- The closed interior of a 1-dimensional face of a simplex is a segment between its vertices. -/
 lemma closedInterior_face_eq_affineSegment {n : ℕ} (s : Simplex R P n) {i j : Fin (n + 1)}
     (h : i ≠ j) :
     (s.face (Finset.card_pair h)).closedInterior = affineSegment R (s.points i) (s.points j) := by
@@ -635,25 +639,26 @@ lemma closedInterior_face_eq_affineSegment {n : ℕ} (s : Simplex R P n) {i j : 
     · simp [min_eq_left hij.le, max_eq_right hij.le]
     · nth_rw 2 [affineSegment_comm]
       simp [max_eq_left hji.le, min_eq_right hji.le]
-  rw [h', (s.face (Finset.card_pair h)).closedInterior_eq_affineSegment]
-  convert rfl using 2 <;> rw [face_points] <;> congr
-  · convert (Finset.orderEmbOfFin_zero _ _).symm
+  rw [h', (s.face (Finset.card_pair h)).closedInterior_eq_affineSegment, face_points, face_points]
+  congr 2
+  · convert Finset.orderEmbOfFin_zero _ _
     · exact (Finset.min'_pair i j).symm
     · omega
-  · convert (Finset.orderEmbOfFin_last _ _).symm
+  · convert Finset.orderEmbOfFin_last _ _
     · exact (Finset.max'_pair i j).symm
     · omega
 
+/-- A point lies in the closed interior of a 1-dimensional face of a simplex if and only if it lies
+weakly between its vertices. -/
 lemma mem_closedInterior_face_iff_wbtw {n : ℕ} (s : Simplex R P n) {p : P} {i j : Fin (n + 1)}
     (h : i ≠ j) :
     p ∈ (s.face (Finset.card_pair h)).closedInterior ↔ Wbtw R (s.points i) p (s.points j) := by
   rw [s.closedInterior_face_eq_affineSegment h, Wbtw]
 
-lemma mem_interior_iff_sbtw [Nontrivial R] [NoZeroSMulDivisors R V] {s : Simplex R P 1} {p : P} :
-    p ∈ s.interior ↔ Sbtw R (s.points 0) p (s.points 1) := by
-  rw [sbtw_iff_mem_image_Ioo_and_ne]
-  simp only [ne_eq, s.independent.injective.ne (by decide : (0 : Fin 2) ≠ 1), not_false_eq_true,
-    and_true]
+/-- The interior of a 1-simplex is a segment between its vertices. -/
+lemma interior_eq_image_Ioo [Nontrivial R] [NoZeroSMulDivisors R V] (s : Simplex R P 1) :
+    s.interior = AffineMap.lineMap (s.points 0) (s.points 1) '' Set.Ioo (0 : R) 1 := by
+  ext p
   constructor
   · rintro ⟨w, hw, h01, rfl⟩
     have h : w = Finset.affineCombinationLineMapWeights 0 1 (w 1) := by
@@ -668,8 +673,17 @@ lemma mem_interior_iff_sbtw [Nontrivial R] [NoZeroSMulDivisors R V] {s : Simplex
       (Finset.mem_univ _), affineCombination_mem_interior_iff
         (Finset.sum_affineCombinationLineMapWeights _ (Finset.mem_univ _) (Finset.mem_univ _) _)]
     intro i
-    fin_cases i <;> simp <;> grind
+    fin_cases i <;> simp [h0, h1]
 
+/-- A point lies in the interior of a 1-simplex if and only if it lies strictly between its
+vertices. -/
+lemma mem_interior_iff_sbtw [Nontrivial R] [NoZeroSMulDivisors R V] {s : Simplex R P 1} {p : P} :
+    p ∈ s.interior ↔ Sbtw R (s.points 0) p (s.points 1) := by
+  rw [interior_eq_image_Ioo, sbtw_iff_mem_image_Ioo_and_ne]
+  simp [s.independent.injective.ne (by decide : (0 : Fin 2) ≠ 1)]
+
+/-- A point lies in the interior of a 1-dimensional face of a simplex if and only if it lies
+strictly between its vertices. -/
 lemma mem_interior_face_iff_sbtw [Nontrivial R] [NoZeroSMulDivisors R V] {n : ℕ}
     (s : Simplex R P n) {p : P} {i j : Fin (n + 1)} (h : i ≠ j) :
     p ∈ (s.face (Finset.card_pair h)).interior ↔ Sbtw R (s.points i) p (s.points j) := by
@@ -679,12 +693,12 @@ lemma mem_interior_face_iff_sbtw [Nontrivial R] [NoZeroSMulDivisors R V] {n : �
     · simp [min_eq_left hij.le, max_eq_right hij.le]
     · nth_rw 2 [sbtw_comm]
       simp [max_eq_left hji.le, min_eq_right hji.le]
-  rw [h', mem_interior_iff_sbtw]
-  convert Iff.rfl using 2 <;> rw [face_points] <;> congr
-  · convert (Finset.orderEmbOfFin_zero _ _).symm
+  rw [h', mem_interior_iff_sbtw, face_points, face_points]
+  congr! 4
+  · convert Finset.orderEmbOfFin_zero _ _
     · exact (Finset.min'_pair i j).symm
     · omega
-  · convert (Finset.orderEmbOfFin_last _ _).symm
+  · convert Finset.orderEmbOfFin_last _ _
     · exact (Finset.max'_pair i j).symm
     · omega
 
