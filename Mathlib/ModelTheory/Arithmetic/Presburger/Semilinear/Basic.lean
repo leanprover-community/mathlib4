@@ -33,7 +33,7 @@ variable {M N ι : Type*} [AddCommMonoid M] [AddCommMonoid N] {s s₁ s₂ : Set
 
 open Set Pointwise AddSubmonoid
 
-theorem IsLinearSet.exists_addSubmonoidFG (hs : IsLinearSet s) :
+theorem IsLinearSet.exists_fg_eq_subtypeVal (hs : IsLinearSet s) :
     ∃ (P : AddSubmonoid M) (s' : Set P), P.FG ∧ IsLinearSet s' ∧ s = Subtype.val '' s' := by
   rcases hs with ⟨a, t, ht, rfl⟩
   refine ⟨_, _, (fg_iff _).2 ⟨insert a t, rfl, ht.insert a⟩,
@@ -43,22 +43,22 @@ theorem IsLinearSet.exists_addSubmonoidFG (hs : IsLinearSet s) :
   ext x
   simpa using mem_closure_of_mem ∘ mem_insert_of_mem a
 
-theorem IsSemilinearSet.exists_addSubmonoidFG (hs : IsSemilinearSet s) :
+theorem IsSemilinearSet.exists_fg_eq_subtypeVal (hs : IsSemilinearSet s) :
     ∃ (P : AddSubmonoid M) (s' : Set P), P.FG ∧ IsSemilinearSet s' ∧ s = Subtype.val '' s' := by
   rcases hs with ⟨S, hS, hS', rfl⟩
-  choose! P t hP ht ht' using fun s hs => (hS' s hs).exists_addSubmonoidFG
+  choose! P t hP ht ht' using fun s hs => (hS' s hs).exists_fg_eq_subtypeVal
   haveI : Finite S := hS
   refine ⟨⨆ s : S, P s, ⋃ (s : S), AddSubmonoid.inclusion (le_iSup _ s) '' t s.1,
     .iSup _ fun s => hP s s.2, .iUnion fun s => .image (ht s s.2).isSemilinearSet _, ?_⟩
   simp_rw [sUnion_eq_iUnion, image_iUnion, image_image, AddSubmonoid.coe_inclusion,
     fun s : S => ht' s s.2]
 
-theorem IsSemilinearSet.exists_addSubmonoidFG₂ (hs₁ : IsSemilinearSet s₁)
+theorem IsSemilinearSet.exists_fg_eq_subtypeVal₂ (hs₁ : IsSemilinearSet s₁)
     (hs₂ : IsSemilinearSet s₂) :
     ∃ (P : AddSubmonoid M) (s₁' s₂' : Set P), P.FG ∧ IsSemilinearSet s₁' ∧ s₁ = Subtype.val '' s₁'
       ∧ IsSemilinearSet s₂' ∧ s₂ = Subtype.val '' s₂' := by
-  rcases hs₁.exists_addSubmonoidFG with ⟨P₁, s₁', hP₁, hs₁', rfl⟩
-  rcases hs₂.exists_addSubmonoidFG with ⟨P₂, s₂', hP₂, hs₂', rfl⟩
+  rcases hs₁.exists_fg_eq_subtypeVal with ⟨P₁, s₁', hP₁, hs₁', rfl⟩
+  rcases hs₂.exists_fg_eq_subtypeVal with ⟨P₂, s₂', hP₂, hs₂', rfl⟩
   refine ⟨P₁ ⊔ P₂, (AddSubmonoid.inclusion le_sup_left) '' s₁',
     (AddSubmonoid.inclusion le_sup_right) '' s₂', hP₁.sup hP₂, hs₁'.image _, ?_, hs₂'.image _, ?_⟩
     <;> simp_rw [image_image, AddSubmonoid.coe_inclusion]
@@ -78,7 +78,7 @@ variable [IsCancelAdd M]
 /-- Semilinear sets are closed under intersection. -/
 theorem IsSemilinearSet.inter (hs₁ : IsSemilinearSet s₁) (hs₂ : IsSemilinearSet s₂) :
     IsSemilinearSet (s₁ ∩ s₂) := by
-  rcases hs₁.exists_addSubmonoidFG₂ hs₂ with ⟨P, s₁', s₂', hP, hs₁', rfl, hs₂', rfl⟩
+  rcases hs₁.exists_fg_eq_subtypeVal₂ hs₂ with ⟨P, s₁', s₂', hP, hs₁', rfl, hs₂', rfl⟩
   rw [← image_inter Subtype.val_injective]
   apply image (f := P.subtype)
   rw [← AddMonoid.fg_iff_addSubmonoid_fg, AddMonoid.fg_def, fg_iff_exists_fin_addMonoidHom] at hP
@@ -91,7 +91,7 @@ theorem IsSemilinearSet.inter (hs₁ : IsSemilinearSet s₁) (hs₂ : IsSemiline
 /-- Semilinear sets are closed under set difference. -/
 theorem IsSemilinearSet.diff (hs₁ : IsSemilinearSet s₁) (hs₂ : IsSemilinearSet s₂) :
     IsSemilinearSet (s₁ \ s₂) := by
-  rcases hs₁.exists_addSubmonoidFG₂ hs₂ with ⟨P, s₁', s₂', hP, hs₁', rfl, hs₂', rfl⟩
+  rcases hs₁.exists_fg_eq_subtypeVal₂ hs₂ with ⟨P, s₁', s₂', hP, hs₁', rfl, hs₂', rfl⟩
   rw [← image_diff Subtype.val_injective]
   apply image (f := P.subtype)
   rw [← AddMonoid.fg_iff_addSubmonoid_fg, AddMonoid.fg_def, fg_iff_exists_fin_addMonoidHom] at hP
