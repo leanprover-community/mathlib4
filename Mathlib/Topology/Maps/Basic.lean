@@ -368,8 +368,7 @@ theorem isOpenMap_iff_clusterPt_comap :
     IsOpenMap f ↔ ∀ x l, ClusterPt (f x) l → ClusterPt x (comap f l) := by
   refine ⟨fun hf _ _ ↦ hf.clusterPt_comap, fun h ↦ isOpenMap_iff_image_mem_nhds.mpr fun x s hs ↦ ?_⟩
   contrapose! hs
-  rw [← mem_interior_iff_mem_nhds, ← mem_compl_iff, ← closure_compl,
-    mem_closure_iff_clusterPt] at hs ⊢
+  rw [← mem_interior_iff_mem_nhds, mem_interior_iff_not_clusterPt_compl, not_not] at hs ⊢
   exact (h _ _ hs).mono <| by simp [subset_preimage_image]
 
 theorem isOpenMap_iff_interior : IsOpenMap f ↔ ∀ s, f '' interior s ⊆ interior (f '' s) :=
