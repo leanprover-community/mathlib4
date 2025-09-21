@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.EssentiallySmall
 import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
-# Representatives of essentially small categories
+# Representatives of small categories
 
 -/
 
