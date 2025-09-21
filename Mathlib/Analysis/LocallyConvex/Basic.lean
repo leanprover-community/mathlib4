@@ -297,6 +297,7 @@ theorem absorbent_subset_image_iff_surjective {f : ℱ} {s : Set E} (hs_abs : Ab
   simp_all
 
 end NontriviallyNormedField
+
 section Real
 
 variable [AddCommGroup E] [Module ℝ E] {s : Set E}
