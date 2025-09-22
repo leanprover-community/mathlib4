@@ -23,19 +23,19 @@ variable {P : MorphismProperty Scheme.{u}} {S : Scheme.{u}} [IsLocalAtSource P] 
 object is the disjoint union. -/
 @[simps]
 noncomputable def sigma (𝒰 : Cover.{v} P S) : S.Cover P where
-  J := PUnit.{v + 1}
-  obj _ := ∐ 𝒰.obj
-  map _ := Sigma.desc 𝒰.map
-  f _ := default
+  I₀ := PUnit.{v + 1}
+  X _ := ∐ 𝒰.X
+  f _ := Sigma.desc 𝒰.f
+  idx _ := default
   covers s := by
     obtain ⟨i, y, rfl⟩ := 𝒰.exists_eq s
-    refine ⟨(Sigma.ι 𝒰.obj i).base y, by simp [← Scheme.comp_base_apply]⟩
+    refine ⟨(Sigma.ι 𝒰.X i).base y, by simp [← Scheme.comp_base_apply]⟩
   map_prop _ := IsLocalAtSource.sigmaDesc 𝒰.map_prop
 
 variable [P.IsMultiplicative] {𝒰 𝒱 : Scheme.Cover.{v} P S}
 
 variable (𝒰) in
-instance : Unique 𝒰.sigma.J := inferInstanceAs <| Unique PUnit.{v + 1}
+instance : Unique 𝒰.sigma.I₀ := inferInstanceAs <| Unique PUnit.{v + 1}
 
 /-- `𝒰` refines the single object cover defined by `𝒰`. -/
 @[simps]
@@ -51,10 +51,10 @@ noncomputable def Hom.sigma (f : 𝒰 ⟶ 𝒱) : 𝒰.sigma ⟶ 𝒱.sigma wher
   app _ := Sigma.desc fun j ↦ f.app j ≫ Sigma.ι _ (f.idx j)
   w _ := Sigma.hom_ext _ _ (by simp)
   app_prop _ := by
-    simp only [sigma_obj, sigma_J, PUnit.default_eq_unit,
+    simp only [sigma_X, sigma_I₀, PUnit.default_eq_unit,
       IsLocalAtSource.iff_of_openCover (Scheme.IsLocallyDirected.openCover _),
-      Discrete.functor_obj_eq_as, IsLocallyDirected.openCover_J, IsLocallyDirected.openCover_obj,
-      IsLocallyDirected.openCover_map, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+      Discrete.functor_obj_eq_as, IsLocallyDirected.openCover_I₀, IsLocallyDirected.openCover_X,
+      IsLocallyDirected.openCover_f, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
     intro i
     exact P.comp_mem _ _ (f.app_prop i.1) (IsLocalAtSource.of_isOpenImmersion _)
 
@@ -64,11 +64,11 @@ noncomputable def sigmaFunctor : S.Cover P ⥤ S.Cover P where
   obj 𝒰 := 𝒰.sigma
   map f := f.sigma
   map_id 𝒰 := Scheme.Cover.Hom.ext rfl <| by
-    simp only [sigma_J, sigma_obj, Hom.sigma_idx, PUnit.default_eq_unit, id_idx_apply, heq_eq_eq]
+    simp only [sigma_I₀, sigma_X, Hom.sigma_idx, PUnit.default_eq_unit, id_idx_apply, heq_eq_eq]
     ext j : 1
     exact Sigma.hom_ext _ _ (by simp)
   map_comp f g := Scheme.Cover.Hom.ext rfl <| by
-    simp only [sigma_J, sigma_obj, Hom.sigma_idx, PUnit.default_eq_unit, comp_idx_apply, heq_eq_eq]
+    simp only [sigma_I₀, sigma_X, Hom.sigma_idx, PUnit.default_eq_unit, comp_idx_apply, heq_eq_eq]
     ext j : 1
     exact Sigma.hom_ext _ _ (by simp)
 
