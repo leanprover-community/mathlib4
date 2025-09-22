@@ -366,9 +366,9 @@ lemma chain'_flatten : ∀ {L : List (List α)}, [] ∉ L →
 | [l], _ => by simp [flatten]
 | (l₁ :: l₂ :: L), hL => by
     rw [mem_cons, not_or, ← Ne] at hL
-    rw [flatten, chain'_append, chain'_flatten hL.2, forall_mem_cons, chain'_cons_cons]
+    rw [flatten_cons, chain'_append, chain'_flatten hL.2, forall_mem_cons, chain'_cons_cons]
     rw [mem_cons, not_or, ← Ne] at hL
-    simp only [forall_mem_cons, and_assoc, flatten, head?_append_of_ne_nil _ hL.2.1.symm]
+    simp only [forall_mem_cons, and_assoc, flatten_cons, head?_append_of_ne_nil _ hL.2.1.symm]
     exact Iff.rfl.and (Iff.rfl.and <| Iff.rfl.and and_comm)
 
 theorem chain'_attachWith {l : List α} {p : α → Prop} (h : ∀ x ∈ l, p x)
