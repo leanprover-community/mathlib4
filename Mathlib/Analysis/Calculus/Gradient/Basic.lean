@@ -32,18 +32,19 @@ This file contains the following parts of gradient.
 * theorems the Uniqueness of Gradient.
 * the theorems translating between  `HasGradientAtFilter` and `HasDerivAtFilter`,
   `HasGradientAt` and `HasDerivAt`, `gradient` and `deriv` when `F = 𝕜`.
+* the theorems about the inner product of the gradient.
 * the theorems about the congruence of the gradient.
 * the theorems about the gradient of constant function.
 * the theorems about the continuity of a function admitting a gradient.
 -/
 
-open Topology InnerProductSpace Function Set
+open ComplexConjugate Topology InnerProductSpace Function Set
 
 noncomputable section
 
 variable {𝕜 F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] [CompleteSpace F]
-variable {f : F → 𝕜} {f' x : F}
+variable {f : F → 𝕜} {f' x y : F}
 
 /-- A function `f` has the gradient `f'` as derivative along the filter `L` if
   `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` when `x'` converges along the filter `L`. -/
@@ -155,26 +156,24 @@ section OneDimension
 variable {g : 𝕜 → 𝕜} {g' u : 𝕜} {L' : Filter 𝕜}
 
 theorem HasGradientAtFilter.hasDerivAtFilter (h : HasGradientAtFilter g g' u L') :
-    HasDerivAtFilter g (starRingEnd 𝕜 g') u L' := by
+    HasDerivAtFilter g (conj g') u L' := by
   tauto
 
 theorem HasDerivAtFilter.hasGradientAtFilter (h : HasDerivAtFilter g g' u L') :
-    HasGradientAtFilter g (starRingEnd 𝕜 g') u L' := by
-  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) g' = (toDual 𝕜 𝕜) (starRingEnd 𝕜 g') := by
+    HasGradientAtFilter g (conj g') u L' := by
+  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) g' = (toDual 𝕜 𝕜) (conj g') := by
     ext; simp
   rwa [HasGradientAtFilter, ← this]
 
-theorem HasGradientAt.hasDerivAt (h : HasGradientAt g g' u) :
-    HasDerivAt g (starRingEnd 𝕜 g') u := by
+theorem HasGradientAt.hasDerivAt (h : HasGradientAt g g' u) : HasDerivAt g (conj g') u := by
   rw [hasGradientAt_iff_hasFDerivAt, hasFDerivAt_iff_hasDerivAt] at h
   simpa using h
 
-theorem HasDerivAt.hasGradientAt (h : HasDerivAt g g' u) :
-    HasGradientAt g (starRingEnd 𝕜 g') u := by
+theorem HasDerivAt.hasGradientAt (h : HasDerivAt g g' u) : HasGradientAt g (conj g') u := by
   rw [hasGradientAt_iff_hasFDerivAt, hasFDerivAt_iff_hasDerivAt]
   simpa
 
-theorem gradient_eq_deriv : ∇ g u = starRingEnd 𝕜 (deriv g u) := by
+theorem gradient_eq_deriv : ∇ g u = conj (deriv g u) := by
   by_cases h : DifferentiableAt 𝕜 g u
   · rw [h.hasGradientAt.hasDerivAt.deriv, RCLike.conj_conj]
   · rw [gradient_eq_zero_of_not_differentiableAt h, deriv_zero_of_not_differentiableAt h, map_zero]
@@ -246,6 +245,34 @@ theorem hasGradientAt_iff_isLittleO_nhds_zero : HasGradientAt f f' x ↔
   hasFDerivAt_iff_isLittleO_nhds_zero
 
 end GradientProperties
+
+section Inner
+
+lemma HasGradientWithinAt.fderivWithin_apply
+    (h : HasGradientWithinAt f f' s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
+    fderivWithin 𝕜 f s x y = ⟪f', y⟫ := by
+  rw [h.hasFDerivWithinAt.fderivWithin hs, toDual_apply]
+
+lemma HasGradientAt.fderiv_apply (h : HasGradientAt f f' x) : fderiv 𝕜 f x y = ⟪f', y⟫ := by
+  rw [h.hasFDerivAt.fderiv, toDual_apply]
+
+lemma inner_gradientWithin_left
+    (h : DifferentiableWithinAt 𝕜 f s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
+    ⟪gradientWithin f s x, y⟫ = fderivWithin 𝕜 f s x y := by
+  rw [h.hasGradientWithinAt.fderivWithin_apply hs]
+
+lemma inner_gradient_left (h : DifferentiableAt 𝕜 f x) : ⟪∇ f x, y⟫ = fderiv 𝕜 f x y := by
+  rw [h.hasGradientAt.fderiv_apply]
+
+lemma inner_gradientWithin_right
+    (h : DifferentiableWithinAt 𝕜 f s y) (hs : UniqueDiffWithinAt 𝕜 s y) :
+    ⟪x, gradientWithin f s y⟫ = conj (fderivWithin 𝕜 f s y x) := by
+  rw [← inner_conj_symm, inner_gradientWithin_left h hs]
+
+lemma inner_gradient_right (h : DifferentiableAt 𝕜 f y) : ⟪x, ∇ f y⟫ = conj (fderiv 𝕜 f y x) := by
+  rw [← inner_conj_symm, h.hasGradientAt.fderiv_apply]
+
+end Inner
 
 section congr
 
