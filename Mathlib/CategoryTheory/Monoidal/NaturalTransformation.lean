@@ -213,7 +213,7 @@ instance transport_iso_isMonoidal {F G : C ⥤ D} [F.Monoidal] (e : F ≅ G) :
     e.hom.IsMonoidal := by
   letI G.Monoidal := transport e
   refine ⟨rfl, fun X Y ↦ ?_⟩
-  simp [transport_μ, ← tensor_comp_assoc]
+  simp [transport_μ, tensorHom_comp_tensorHom_assoc]
 
 end Functor.Monoidal
 
