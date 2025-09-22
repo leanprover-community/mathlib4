@@ -35,28 +35,24 @@ lemma petersson_continuous (k : ℤ) {f f' : ℍ → ℂ} (hf : Continuous f) (h
 
 lemma petersson_slash (k : ℤ) (f f' : ℍ → ℂ) (g : GL (Fin 2) ℝ) (τ : ℍ) :
     petersson k (f ∣[k] g) (f' ∣[k] g) τ =
-      |g.val.det| ^ (k - 2) * σ g (petersson k f f' (g • τ)) := by
-  set D := g.val.det
-  have hD : (D : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr <| g.det_ne_zero
+      |g.det.val| ^ (k - 2) * σ g (petersson k f f' (g • τ)) := by
+  set D := |g.det.val|
+  have hD : (D : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr <| abs_ne_zero.mpr <| g.det_ne_zero
   set j := denom g τ
   calc petersson k (f ∣[k] g) (f' ∣[k] g) τ
   _ = D ^ (2 * k - 2) * conj (σ g (f (g • τ))) * σ g (f' (g • τ))
       * (τ.im ^ k * j.normSq ^ (-k)) := by
-    simp [Complex.normSq_eq_conj_mul_self, (by ring : 2 * k - 2 = (k - 1) + (k - 1)),
-      zpow_add₀ hD, mul_zpow, ModularForm.slash_def, petersson]
+    simp [Complex.normSq_eq_conj_mul_self, (by ring : 2 * k - 2 = (k - 1) + (k - 1)), petersson,
+      zpow_add₀ hD, mul_zpow, ModularForm.slash_def, -Matrix.GeneralLinearGroup.val_det_apply]
     ring
-  _ = |D| ^ (2 * k - 2) * conj (σ g (f (g • τ))) * σ g (f' (g • τ))
-      * (τ.im ^ k * j.normSq ^ (-k)) := by
-    simp only [← Complex.ofReal_zpow, (show Even (2 * k - 2) by aesop).zpow_abs]
-  _ = |D| ^ (k - 2) * (conj (σ g (f (g • τ))) * σ g (f' (g • τ))
-      * (|D| * τ.im / j.normSq) ^ k) := by
+  _ = D ^ (k - 2) * (conj (σ g (f (g • τ))) * σ g (f' (g • τ))
+      * (D * τ.im / j.normSq) ^ k) := by
     rw [div_zpow, mul_zpow, zpow_neg, div_eq_mul_inv, (by ring : 2 * k - 2 = k + (k - 2)),
-      zpow_add₀ (by aesop)]
+      zpow_add₀ hD]
     ring
-  _ = |D| ^ (k - 2) * (conj (σ g (f (g • τ))) * σ g (f' (g • τ)) * (im (g • τ)) ^ k) := by
-    rw [im_smul_eq_div_normSq, Complex.ofReal_div, Complex.ofReal_mul,
-      Matrix.GeneralLinearGroup.val_det_apply]
-  _ = |D| ^ (k - 2) * σ g (petersson k f f' (g • τ)) := by simp [petersson, σ_conj]
+  _ = D ^ (k - 2) * (conj (σ g (f (g • τ))) * σ g (f' (g • τ)) * (im (g • τ)) ^ k) := by
+    rw [im_smul_eq_div_normSq, Complex.ofReal_div, Complex.ofReal_mul]
+  _ = D ^ (k - 2) * σ g (petersson k f f' (g • τ)) := by simp [petersson, σ_conj]
 
 lemma petersson_slash_SL (k : ℤ) (f f' : ℍ → ℂ) (g : SL(2, ℤ)) (τ : ℍ) :
     petersson k (f ∣[k] g) (f' ∣[k] g) τ = petersson k f f' (g • τ) := by
