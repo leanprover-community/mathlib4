@@ -166,6 +166,11 @@ lemma mem_comap_iff {X : C} {R : Presieve X} :
 
 lemma comap_inf : (J ⊓ K).comap F = J.comap F ⊓ K.comap F := rfl
 
+@[simp]
+lemma comap_id (K : Precoverage C) : K.comap (𝟭 C) = K := by
+  ext
+  simp
+
 instance [HasIsos J] : HasIsos (J.comap F) where
   mem_coverings_of_isIso {S T} f hf := by simpa using mem_coverings_of_isIso (F.map f)
 
