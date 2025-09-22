@@ -638,11 +638,9 @@ lemma ext_prod₃_iff' {α β γ : Type*} {mα : MeasurableSpace α} {mβ : Meas
       (hs : MeasurableSet s) (ht : MeasurableSet t) (hu : MeasurableSet u) :
       ν.map MeasurableEquiv.prodAssoc (s ×ˢ (t ×ˢ u)) = ν ((s ×ˢ t) ×ˢ u) := by
     rw [map_apply (by fun_prop) (hs.prod (ht.prod hu))]
-    congr 1
-    ext x
+    congr 1 with x
     simp [MeasurableEquiv.prodAssoc]
-  refine ⟨fun h s t u hs ht hu ↦ ?_, fun h s t u hs ht hu ↦ ?_⟩
-    <;> specialize h hs ht hu
+  refine ⟨fun h s t u hs ht hu ↦ ?_, fun h s t u hs ht hu ↦ ?_⟩ <;> specialize h hs ht hu
   · rwa [h_eq μ hs ht hu, h_eq ν hs ht hu] at h
   · rwa [h_eq μ hs ht hu, h_eq ν hs ht hu]
 
