@@ -739,11 +739,10 @@ lemma image_zeroLocus {U : X.Opens} (s : Set Γ(X, U)) :
   · simp only [Set.mem_inter_iff, hx, and_false, iff_false]
     exact fun H ↦ hx (Set.image_subset_range _ _ H)
 
-open CommRingCat _root_.PrimeSpectrum
-
+open CommRingCat _root_.PrimeSpectrum in
 /-- An open immersion `u : U ⟶ Spec R` is covered by `Spec R[1/f]`. In other words, for every
 `p : U`, there is `f : R` such that `p ∈ D(f) ⊆ U`, i.e. such that `Spec R[1/f] ⟶ Spec R`
-factors through `u`. -/
+factors through `U`. -/
 lemma Hom.exists_factor
     {R : Type u} [CommRing R] {U : Scheme.{u}} (u : U ⟶ Spec (.of R)) [IsOpenImmersion u] (p : U) :
     ∃ f : R, ∃ g : Spec (.of (Localization.Away f)) ⟶ U,

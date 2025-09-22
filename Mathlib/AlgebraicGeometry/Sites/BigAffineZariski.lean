@@ -3,7 +3,6 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-
 import Mathlib.AlgebraicGeometry.PullbackCarrier
 import Mathlib.AlgebraicGeometry.Sites.BigZariski
 import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
@@ -51,7 +50,7 @@ variable {X : Scheme.{u}} {P : MorphismProperty Scheme.{u}}
 See `Cover.mkOfCovers`. -/
 @[simps] noncomputable def AffineCover.mkOfCovers
     {P : MorphismProperty Scheme.{u}} {X : Scheme.{u}}
-    (J : Type v) (obj : J → CommRingCat.{u}) (map : ∀ j, Spec (obj j) ⟶ X)
+     {J : Type v} (obj : J → CommRingCat.{u}) (map : ∀ j, Spec (obj j) ⟶ X)
     (covers : ∀ x : X, ∃ (j : J) (y : Spec (obj j)), (map j).base y = x)
     (map_prop : ∀ (j : J), P (map j) := by infer_instance) :
     AffineCover P X where
