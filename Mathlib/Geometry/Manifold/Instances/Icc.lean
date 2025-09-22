@@ -183,7 +183,7 @@ lemma mfderivWithin_comp_projIcc_one {f : Icc x y → M} {w : Icc x y} :
   · exact (uniqueDiffOn_Icc h.out _ w.2).uniqueMDiffWithinAt
   simp only [Function.comp_apply, ContinuousLinearMap.coe_comp']
   have : w = projIcc x y h.out.le (w : ℝ) := by rw [projIcc_of_mem]
-  rw [projIcc_of_mem]
+  rw [projIcc_of_mem _ w.2]
   congr 1
   convert mfderivWithin_projIcc_one w.2
 

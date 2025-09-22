@@ -153,7 +153,7 @@ end PiLp
 
 namespace LinearIsometryEquiv
 
-/-- Every linear isometry on a real finite dimensional Hilbert space is measure-preserving. -/
+/-- Every linear isometry on a real finite-dimensional Hilbert space is measure-preserving. -/
 theorem measurePreserving (f : E ≃ₗᵢ[ℝ] F) :
     MeasurePreserving f := by
   refine ⟨f.continuous.measurable, ?_⟩
