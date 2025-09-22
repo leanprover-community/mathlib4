@@ -30,7 +30,7 @@ For a module over a normed ring:
 * `Balanced`: A set `s` is balanced if `a • s ⊆ s` for all `a` of norm less than `1`.
 
 ## Main Results
-* `absorbent_subset_image_iff_surjective` shows that when the base field is nontrivially normed, a
+* `Absorbent.subset_image_iff_surjective` shows that when the base field is nontrivially normed, a
   linear function is surjective if and only if its image contains an absorbent set.
 
 ## References
