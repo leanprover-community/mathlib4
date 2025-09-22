@@ -290,11 +290,11 @@ theorem absorbent_subset_image_iff_surjective {f : ℱ} {s : Set E} (hs_abs : Ab
     s ⊆ Set.range f ↔ (⇑f).Surjective := by
   refine ⟨fun hs_sub y ↦ ?_, by simp_all⟩
   obtain ⟨r, -, hr⟩ := Absorbs.exists_pos (hs_abs y)
-  specialize hr _ <| le_of_lt (NormedField.exists_lt_norm 𝕜 r).choose_spec
-  grw [hs_sub] at hr
-  obtain ⟨_, ⟨z, _⟩, _⟩ := Set.singleton_subset_iff.mp hr
-  use (NormedField.exists_lt_norm 𝕜 r).choose • z
-  simp_all
+  obtain ⟨x, hx⟩ := NormedField.exists_lt_norm 𝕜 r
+  specialize hr _ hx.le
+  grw [hs_sub, Set.singleton_subset_iff] at hr
+  obtain ⟨-, ⟨z, rfl⟩, rfl⟩ := hr
+  exact ⟨x • z, map_smul _ _ _⟩
 
 end NontriviallyNormedField
 
