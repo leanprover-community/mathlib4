@@ -593,7 +593,6 @@ lemma hM_neq0 : A K α' β' γ' q ≠ 0 := by
       one_ne_zero, and_false, not_false_eq_true] at H2
     rcases H2 with ⟨H2, H22⟩
     · have := β'_neq_zero α β hirr K σ α' β' γ' habc q t (k K q u)
-
       apply this
       simp_all only [ne_eq, map_eq_zero, Equiv.toFun_as_coe, finProdFinEquiv_symm_apply,
         Fin.coe_divNat, Nat.zero_div,
@@ -861,17 +860,39 @@ lemma house_muls (s t : ℕ) (h: s ≤ t ) (ht: 0 ≤ t) :
   exact house_nonneg β'
   exact Nat.cast_nonneg' t}
 
+omit hirr in
 lemma house_add_mul_leq : house (c₁ •(↑a + b • β')) ≤
-    house (c₁ • (q : K)) + house (c₁ • q • β') := by {
-  calc _ ≤ house (a : K) + house (b • β') := ?_
-       _ ≤ house (a : K) + house (q • β') := sorry
+    house (c₁ • q : K) + house (c₁ • q • β') := by {
+  calc _ ≤ house (c₁ • ↑(a q t) + c₁ • b q t • β') := ?_
+       _ ≤ house (c₁ • ↑(a q t : ℤ) : K) + house (c₁  • b q t • β') := ?_
+       _ ≤ house (c₁ : K) * house (↑(a q t : ℤ) : K) +
+         house (c₁ : K) * house ((b q t : ℤ) • β') := ?_
+       _ ≤ house (c₁ : K) * house ((q : ℤ) : K) +
+         house (c₁ : K) * house ((q : ℤ) • β') := ?_
   · rw [smul_add]
-    -- apply house_add_le (α := c₁ K α' β' γ' • ↑(a q t))
-    --  (β := sorry)
-  · simp only [Nat.cast_add,add_le_add_iff_right]
-    rw [← house_intCast]
-}
+  · apply house_add_le
+  · refine add_le_add ?_ ?_
+    · rw [zsmul_eq_mul]
+      apply house_mul_le (α := (c₁ : K)) (β:= ((a q t : ℤ) : K))
+    · sorry
 
+  --     --apply house_mul_le (α := (c₁ : K)) (β:= (↑(a q t : ℤ) : K))
+  --   · rw [zsmul_eq_mul]
+  --     simp only [nsmul_eq_mul]
+  --     apply house_mul_le
+  -- · refine add_le_add ?_ ?_
+  --   · apply mul_le_mul
+  --     simp only [house_intCast, Int.cast_abs, le_refl]
+  --     sorry
+
+
+
+
+
+
+
+}
+#exit
 include hirr htriv habc in
 lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
   house ((algebraMap (𝓞 K) K) ((A K α' β' γ' q) u t)) ≤
