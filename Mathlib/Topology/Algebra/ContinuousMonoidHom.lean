@@ -566,15 +566,6 @@ def piEquivPiSubtypeProd {ι : Type*} (p : ι → Prop) (Y : ι → Type*)
     ((i : ι) → Y i) ≃ₜ* ((i : { x : ι // p x }) → Y i) × ((i : { x : ι // ¬p x }) → Y i) :=
   {Homeomorph.piEquivPiSubtypeProd p Y with map_mul' _ _ := rfl}
 
-@[simp]
-def piEquivPiSubtypeProd_symm_apply {ι : Type*} (p : ι → Prop) (Y : ι → Type*)
-    [(i : ι) → TopologicalSpace (Y i)] [(i : ι) → Mul (Y i)] [DecidablePred p]
-    (f : ((i : { x // p x }) → Y i) × ((i : { x // ¬p x }) → Y i)) (i : ι) :
-    (piEquivPiSubtypeProd p Y).symm f i = if h : p i then f.1 ⟨i, h⟩ else f.2 ⟨i, h⟩ := by
-  by_cases h : p i <;>
-    { unfold piEquivPiSubtypeProd; simp [ContinuousMulEquiv.symm, h] }
-
-
 end ContinuousMulEquiv
 
 end
