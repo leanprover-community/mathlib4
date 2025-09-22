@@ -24,77 +24,51 @@ open CategoryTheory MonoidalCategory Functor Functor.Monoidal
 
 namespace Localization.Monoidal
 
-variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D) (W : MorphismProperty C)
-  [MonoidalCategory C] [MonoidalCategory D] [L.IsLocalization W] [L.Monoidal]
-
-variable {E : Type*} [Category E] [MonoidalCategory E] {F : D ⥤ E}
-
-@[simps!]
-noncomputable instance : Lifting₂ L L W W
-    ((curriedTensor C) ⋙ (whiskeringRight C C E).obj (L ⋙ F))
-    (curriedTensor _ ⋙ (whiskeringRight _ _ _).obj F) := by
-  change (Lifting₂ L L W W
-    (((curriedTensor C) ⋙ (whiskeringRight C C D).obj L) ⋙ (whiskeringRight C D E).obj _)
-    (curriedTensor D ⋙ (whiskeringRight _ _ _).obj F))
-  apply (config := {allowSynthFailures := true}) Lifting₂.compRight L L W W
-  exact ⟨NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun Y ↦ μIso L X Y)) (by cat_disch)⟩
+variable {C D E : Type*} [Category C] [Category D] [Category E]
+  [MonoidalCategory C] [MonoidalCategory D] [MonoidalCategory E]
+  (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W] [L.Monoidal]
+  (F : D ⥤ E) (G : C ⥤ E) [G.Monoidal] [W.ContainsIdentities] [Lifting L W G F]
 
 @[simps]
-noncomputable instance : Lifting₂ L L W W
-    ((((whiskeringLeft₂ _).obj (L ⋙ F)).obj (L ⋙ F)).obj (curriedTensor E))
-    ((((whiskeringLeft₂ _).obj F).obj F).obj (curriedTensor E)) where
-  iso := Iso.refl _
+instance lifting₂CurriedTensorPre :
+    Lifting₂ L L W W (curriedTensorPre G) (curriedTensorPre F) where
+  iso := curriedTensorPreFunctor.mapIso (Lifting.iso L W G F)
 
-variable {G : C ⥤ E} (e : L ⋙ F ≅ G) [G.Monoidal] [W.ContainsIdentities]
+@[simps]
+instance lifting₂CurriedTensorPost :
+    Lifting₂ L L W W (curriedTensorPost G) (curriedTensorPost F) where
+  iso := (postcompose₂.obj F).mapIso (curriedTensorPreIsoPost L) ≪≫
+      curriedTensorPostFunctor.mapIso (Lifting.iso L W G F)
 
 /--
 The natural isomorphism of bifunctors `F - ⊗ F - ≅ F (- ⊗ -)`, given that `L ⋙ F` is monoidal.
 -/
-noncomputable def μNatIso : curriedTensorPre F ≅ curriedTensorPost F := by
-  letI : (L ⋙ F).Monoidal := Functor.Monoidal.transport e.symm
-  refine lift₂NatIso L L W W
-    ((((whiskeringLeft₂ _).obj (L ⋙ F)).obj (L ⋙ F)).obj (curriedTensor E))
-    ((curriedTensor C) ⋙ (whiskeringRight C C E).obj (L ⋙ F))
-    ((((whiskeringLeft₂ _).obj F).obj F).obj (curriedTensor E))
-    (curriedTensor _ ⋙ (whiskeringRight _ _ _).obj F)
-    ?_
-  refine NatIso.ofComponents (fun _ ↦ (NatIso.ofComponents (fun _ ↦ μIso (L ⋙ F) _ _) ?_)) ?_
-  · intros
-    simp only [whiskeringLeft₂_obj_obj_obj_obj_obj, Functor.comp_obj, curriedTensor_obj_obj,
-      whiskeringRight_obj_obj, whiskeringLeft₂_obj_obj_obj_obj_map, Functor.comp_map,
-      curriedTensor_obj_map, μIso_hom]
-    change _ =  _ ≫ (L ⋙ F).map _
-    rw [map_whiskerLeft]
-    simp
-  · intros
-    ext
-    simp only [Functor.comp_obj, whiskeringRight_obj_obj, curriedTensor_obj_obj,
-      whiskeringLeft₂_obj_obj_obj_obj_obj, Functor.comp_map, whiskeringRight_obj_map,
-      NatTrans.comp_app, Functor.whiskerRight_app, curriedTensor_map_app,
-      NatIso.ofComponents_hom_app, whiskeringLeft₂_obj_obj_obj_map_app]
-    change _ = _ ≫ (L ⋙ F).map _
-    rw [map_whiskerRight]
-    simp
+noncomputable def curriedTensorPreIsoPost : curriedTensorPre F ≅ curriedTensorPost F :=
+  lift₂NatIso L L W W (curriedTensorPre G) (curriedTensorPost G) _ _
+    (Functor.curriedTensorPreIsoPost G)
 
-lemma μNatIso_hom_app_app (X Y : C) :
+lemma curriedTensorPreIsoPost_hom_app_app (X Y : C) :
+    letI e := Lifting.iso L W G F
     letI : (L ⋙ F).Monoidal := Functor.Monoidal.transport e.symm
-    ((μNatIso L W e).hom.app (L.obj X)).app (L.obj Y) =
+    ((curriedTensorPreIsoPost L W F G).hom.app (L.obj X)).app (L.obj Y) =
       Functor.LaxMonoidal.μ (L ⋙ F) X Y ≫
         F.map (Functor.OplaxMonoidal.δ L X Y) := by
-  simp [μNatIso]
+  simp [curriedTensorPreIsoPost, transport_μ]
 
 @[reassoc]
-lemma μNatIso_hom_app_app' {X₁ X₂ : C} {Y₁ Y₂ : D} (e₁ : Y₁ ≅ L.obj X₁) (e₂ : Y₂ ≅ L.obj X₂) :
+lemma curriedTensorPreIsoPost_hom_app_app' {X₁ X₂ : C} {Y₁ Y₂ : D} (e₁ : Y₁ ≅ L.obj X₁)
+    (e₂ : Y₂ ≅ L.obj X₂) :
+    letI e := Lifting.iso L W G F
     letI : (L ⋙ F).Monoidal := Functor.Monoidal.transport e.symm
-    ((μNatIso L W e).hom.app Y₁).app Y₂ =
+    ((curriedTensorPreIsoPost L W F G).hom.app Y₁).app Y₂ =
       (F.map e₁.hom ⊗ₘ F.map e₂.hom) ≫
         LaxMonoidal.μ (L ⋙ F) X₁ X₂ ≫
         F.map (OplaxMonoidal.δ L _ _≫ (e₁.inv ⊗ₘ e₂.inv)) := by
-  have h₁ := ((μNatIso L W e).hom.app Y₁).naturality e₂.hom
-  have h₂ := congr_app ((μNatIso L W e).hom.naturality e₁.hom)
+  have h₁ := ((curriedTensorPreIsoPost L W F G).hom.app Y₁).naturality e₂.hom
+  have h₂ := congr_app ((curriedTensorPreIsoPost L W F G).hom.naturality e₁.hom)
   dsimp at h₁ h₂ ⊢
   rw [← cancel_mono (F.map (Y₁ ◁ e₂.hom)), ← h₁, ← cancel_mono (F.map (e₁.hom ▷ L.obj X₂)),
-    Category.assoc, ← h₂, μNatIso_hom_app_app]
+    Category.assoc, ← h₂, curriedTensorPreIsoPost_hom_app_app]
   simp [← tensorHom_def'_assoc, ← Functor.map_comp, ← tensorHom_def']
 
 /--
@@ -102,14 +76,15 @@ Monoidal structure on `F`, given that `L ⋙ F` is monoidal, where `L` is a loca
 -/
 @[simps!]
 noncomputable def functorCoreMonoidalOfComp : F.CoreMonoidal := by
+  letI e := Lifting.iso L W G F
   letI : (L ⋙ F).Monoidal := Functor.Monoidal.transport e.symm
   refine Functor.CoreMonoidal.ofBifunctor (εIso (L ⋙ F) ≪≫ F.mapIso (εIso L).symm)
-    (μNatIso L W e) ?_ ?_ ?_
+    (curriedTensorPreIsoPost L W F G) ?_ ?_ ?_
   · apply natTrans₃_ext L L L W W W (fun X Y Z ↦ ?_)
     dsimp
-    rw [μNatIso_hom_app_app, μNatIso_hom_app_app,
-      μNatIso_hom_app_app' L W e (μIso L _ _) (Iso.refl _),
-      μNatIso_hom_app_app' L W e (Iso.refl _) (μIso L _ _)]
+    rw [curriedTensorPreIsoPost_hom_app_app, curriedTensorPreIsoPost_hom_app_app,
+      curriedTensorPreIsoPost_hom_app_app' L W F G (μIso L _ _) (Iso.refl _),
+      curriedTensorPreIsoPost_hom_app_app' L W F G (Iso.refl _) (μIso L _ _)]
     -- generated by:
     -- `simp? [← MonoidalCategory.whiskerLeft_comp_assoc, ← comp_whiskerRight_assoc, ← map_comp]`
     simp only [comp_obj, CoreMonoidal.toMonoidal_toLaxMonoidal, comp_whiskerRight, μIso_hom,
@@ -124,11 +99,12 @@ noncomputable def functorCoreMonoidalOfComp : F.CoreMonoidal := by
       mapIso_hom, NatTrans.comp_app, whiskeringLeft₂_obj_obj_obj_obj_obj,
       LaxMonoidal.ofBifunctor.topMapₗ_app, comp_whiskerRight, postcompose₂_obj_obj_obj_obj,
       LaxMonoidal.ofBifunctor.bottomMapₗ_app, LaxMonoidal.left_unitality, map_comp, Category.assoc]
-    have := NatTrans.congr_app ((μNatIso L W e).hom.naturality (εIso L).symm.hom) (L.obj X)
+    have := NatTrans.congr_app ((curriedTensorPreIsoPost L W F G).hom.naturality (εIso L).symm.hom)
+      (L.obj X)
     simp only [whiskeringLeft₂_obj_obj_obj_obj_obj, curriedTensor_obj_obj, NatTrans.comp_app,
       whiskeringLeft₂_obj_obj_obj_map_app, curriedTensor_map_app] at this
     slice_rhs 2 3 => rw [this]
-    simp only [comp_obj, μNatIso_hom_app_app, Category.assoc]
+    simp only [comp_obj, curriedTensorPreIsoPost_hom_app_app, Category.assoc]
     change (λ_ ((L ⋙ F).obj _)).hom = _
     rw [Functor.LaxMonoidal.left_unitality (L ⋙ F)]
     simp [← Functor.map_comp]
@@ -139,11 +115,11 @@ noncomputable def functorCoreMonoidalOfComp : F.CoreMonoidal := by
       whiskeringLeft₂_obj_obj_obj_obj_obj, LaxMonoidal.ofBifunctor.topMapᵣ_app,
       MonoidalCategory.whiskerLeft_comp, postcompose₂_obj_obj_obj_obj, flipFunctor_map_app_app,
       LaxMonoidal.ofBifunctor.bottomMapᵣ_app, LaxMonoidal.right_unitality, map_comp, Category.assoc]
-    have := ((μNatIso L W e).hom.app (L.obj X)).naturality (εIso L).symm.hom
+    have := ((curriedTensorPreIsoPost L W F G).hom.app (L.obj X)).naturality (εIso L).symm.hom
     simp only [whiskeringLeft₂_obj_obj_obj_obj_obj, curriedTensor_obj_obj,
       whiskeringLeft₂_obj_obj_obj_obj_map, curriedTensor_obj_map] at this
     slice_rhs 2 3 => rw [this]
-    simp only [comp_obj, μNatIso_hom_app_app, Category.assoc]
+    simp only [comp_obj, curriedTensorPreIsoPost_hom_app_app, Category.assoc]
     change (ρ_ ((L ⋙ F).obj _)).hom = _
     rw [Functor.LaxMonoidal.right_unitality (L ⋙ F)]
     simp [← Functor.map_comp]
@@ -152,14 +128,14 @@ noncomputable def functorCoreMonoidalOfComp : F.CoreMonoidal := by
 Monoidal structure on `F`, given that `L ⋙ F` is monoidal, where `L` is a localization functor.
 -/
 noncomputable def functorMonoidalOfComp : F.Monoidal :=
-  (functorCoreMonoidalOfComp L W e).toMonoidal
+  (functorCoreMonoidalOfComp L W F G).toMonoidal
 
 instance natTrans_isMonoidal :
-    letI : F.Monoidal := functorMonoidalOfComp L W e
-    e.hom.IsMonoidal := by
-  letI : F.Monoidal := functorMonoidalOfComp L W e
+    letI : F.Monoidal := functorMonoidalOfComp L W F G
+    (Lifting.iso L W G F).hom.IsMonoidal := by
+  letI : F.Monoidal := functorMonoidalOfComp L W F G
   refine ⟨?_, fun _ _ ↦ ?_⟩
   · simp [Functor.CoreMonoidal.toLaxMonoidal_ε]
-  · simp [Functor.CoreMonoidal.toLaxMonoidal_μ, μNatIso_hom_app_app]
+  · simp [Functor.CoreMonoidal.toLaxMonoidal_μ, curriedTensorPreIsoPost_hom_app_app]
 
 end CategoryTheory.Localization.Monoidal
