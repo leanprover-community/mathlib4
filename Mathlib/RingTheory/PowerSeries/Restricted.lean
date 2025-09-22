@@ -139,8 +139,8 @@ lemma mul {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) 
           gcongr
           exact fBound2 fst (by omega)
          _ ≤ ε := by
-          rw [div_mul_comm]
-          simpa only [div_mul_comm] using ((mul_le_iff_le_one_left hε).mpr (by bound))
+          rw [div_mul_comm, mul_le_iff_le_one_left ‹_›]
+          bound
   · calc _ < a * (ε / max a b) := by
           grw [fBound1 fst]
           gcongr
