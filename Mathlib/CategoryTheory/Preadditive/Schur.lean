@@ -15,7 +15,7 @@ We first prove the part of Schur's Lemma that holds in any preadditive category 
 that any nonzero morphism between simple objects
 is an isomorphism.
 
-Second, we prove Schur's lemma for `𝕜`-linear categories with finite dimensional hom spaces,
+Second, we prove Schur's lemma for `𝕜`-linear categories with finite-dimensional hom spaces,
 over an algebraically closed field `𝕜`:
 the hom space `X ⟶ Y` between simple objects `X` and `Y` is at most one dimensional,
 and is 1-dimensional iff `X` and `Y` are isomorphic.
