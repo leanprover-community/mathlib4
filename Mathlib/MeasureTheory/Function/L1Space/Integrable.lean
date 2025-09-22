@@ -1187,7 +1187,7 @@ theorem LinearIsometryEquiv.integrable_comp_iff {φ : α → H} (L : H ≃ₛₗ
     Integrable (fun a : α ↦ L (φ a)) μ ↔ Integrable φ μ :=
   ContinuousLinearEquiv.integrable_comp_iff (L : H ≃SL[σ] E)
 
-theorem MeasureTheory.Integrable.apply_continuousLinearMap {φ : α → H →L[𝕜] E}
+theorem MeasureTheory.Integrable.apply_continuousLinearMap {φ : α → H →SL[σ] E}
     (φ_int : Integrable φ μ) (v : H) : Integrable (fun a => φ a v) μ :=
   (ContinuousLinearMap.apply' E σ v).integrable_comp φ_int
 
