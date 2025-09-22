@@ -10,7 +10,7 @@ import Mathlib.Geometry.Convex.Cone.Basic
 # Pointed cones
 
 A *pointed cone* is defined to be a submodule of a module where the scalars are restricted to be
-nonnegative. This is equivalent to saying that as a set a pointed cone is convex cone which
+nonnegative. This is equivalent to saying that, as a set, a pointed cone is a convex cone which
 contains `0`. This is a bundled version of `ConvexCone.Pointed`. We choose the submodule definition
 as it allows us to use the `Module` API to work with convex cones.
 
@@ -34,7 +34,7 @@ open Function
 section Definitions
 
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E]
-  {C₁ C₂ : PointedCone R E}
+  {C C₁ C₂ : PointedCone R E} {x : E} {r : R}
 
 /-- Every pointed cone is a convex cone. -/
 @[coe]
@@ -62,8 +62,11 @@ lemma convex (C : PointedCone R E) : Convex R (C : Set E) := C.toConvexCone.conv
 instance instZero (C : PointedCone R E) : Zero C :=
   ⟨0, C.zero_mem⟩
 
+nonrec lemma smul_mem (C : PointedCone R E) (hr : 0 ≤ r) (hx : x ∈ C) : r • x ∈ C :=
+  C.smul_mem ⟨r, hr⟩ hx
+
 /-- The `PointedCone` constructed from a pointed `ConvexCone`. -/
-def _root_.ConvexCone.toPointedCone {C : ConvexCone R E} (hC : C.Pointed) : PointedCone R E where
+def _root_.ConvexCone.toPointedCone (C : ConvexCone R E) (hC : C.Pointed) : PointedCone R E where
   carrier := C
   add_mem' hx hy := C.add_mem hx hy
   zero_mem' := hC
@@ -83,7 +86,7 @@ lemma _root_.ConvexCone.mem_toPointedCone {C : ConvexCone R E} (hC : C.Pointed) 
   Iff.rfl
 
 @[simp, norm_cast]
-lemma _root_.ConvexCone.coe_toPointedCone {C : ConvexCone R E} (hC : C.Pointed) :
+lemma _root_.ConvexCone.coe_toPointedCone (C : ConvexCone R E) (hC : C.Pointed) :
     C.toPointedCone hC = C :=
   rfl
 
@@ -114,7 +117,7 @@ between pointed cones induced from linear maps between the ambient modules that 
 
 -/
 
-/-- The image of a pointed cone under a `R`-linear map is a pointed cone. -/
+/-- The image of a pointed cone under an `R`-linear map is a pointed cone. -/
 def map (f : E →ₗ[R] F) (C : PointedCone R E) : PointedCone R F :=
   Submodule.map (f : E →ₗ[R≥0] F) C
 
@@ -139,7 +142,7 @@ theorem map_map (g : F →ₗ[R] G) (f : E →ₗ[R] F) (C : PointedCone R E) :
 theorem map_id (C : PointedCone R E) : C.map LinearMap.id = C :=
   SetLike.coe_injective <| Set.image_id _
 
-/-- The preimage of a convex cone under a `R`-linear map is a convex cone. -/
+/-- The preimage of a pointed cone under an `R`-linear map is a pointed cone. -/
 def comap (f : E →ₗ[R] F) (C : PointedCone R F) : PointedCone R E :=
   Submodule.comap (f : E →ₗ[R≥0] F) C
 
@@ -181,4 +184,15 @@ theorem toConvexCone_positive : ↑(positive R E) = ConvexCone.positive R E :=
   rfl
 
 end PositiveCone
+
+section OrderedAddCommGroup
+variable [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [PartialOrder E]
+  [IsOrderedAddMonoid E] [Module R E]
+
+/-- Constructs an ordered module given an ordered group, a cone, and a proof that
+the order relation is the one defined by the cone. -/
+lemma to_isOrderedModule (C : PointedCone R E) (h : ∀ x y : E, x ≤ y ↔ y - x ∈ C) :
+    IsOrderedModule R E := .of_smul_nonneg <| by simp +contextual [h, C.smul_mem]
+
+end OrderedAddCommGroup
 end PointedCone

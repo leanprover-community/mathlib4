@@ -167,10 +167,9 @@ theorem Spec.basicOpen_hom_ext {X : RingedSpace.{u}} {R : CommRingCat.{u}}
     apply (StructureSheaf.to_basicOpen_epi R r).1
     simpa using h r
 
--- Porting note: `simps!` generate some garbage lemmas, so choose manually,
+-- `simps!` generates some garbage lemmas, so choose manually,
 -- if more is needed, add them here
-/-- The spectrum of a commutative ring, as a `LocallyRingedSpace`.
--/
+/-- The spectrum of a commutative ring, as a `LocallyRingedSpace`. -/
 @[simps! toSheafedSpace presheaf]
 def Spec.locallyRingedSpaceObj (R : CommRingCat.{u}) : LocallyRingedSpace :=
   { Spec.sheafedSpaceObj R with

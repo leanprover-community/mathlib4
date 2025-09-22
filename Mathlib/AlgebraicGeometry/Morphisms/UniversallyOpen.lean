@@ -106,7 +106,7 @@ lemma isOpenMap_of_generalizingMap [LocallyOfFinitePresentation f]
     dsimp only [Scheme.Cover.pullbackHom]
     refine this _ ?_ ⟨_, rfl⟩
     exact IsLocalAtTarget.of_isPullback (P := topologically GeneralizingMap)
-      (iY := Y.affineCover.map i) (IsPullback.of_hasPullback ..) hf
+      (iY := Y.affineCover.f i) (IsPullback.of_hasPullback ..) hf
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
   · rw [IsLocalAtSource.iff_of_openCover (P := topologically IsOpenMap) X.affineCover]

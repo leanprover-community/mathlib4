@@ -3,7 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Cardinal.UnivLE
 import Mathlib.SetTheory.Ordinal.Arithmetic
 
 /-!
@@ -329,15 +328,8 @@ theorem unbounded_range_of_le_iSup {α β : Type u} (r : α → α → Prop) [Is
 
 theorem IsNormal.map_iSup_of_bddAbove {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
     {ι : Type*} (g : ι → Ordinal.{u}) (hg : BddAbove (range g))
-    [Nonempty ι] : f (⨆ i, g i) = ⨆ i, f (g i) := eq_of_forall_ge_iff fun a ↦ by
-  have := bddAbove_iff_small.mp hg
-  have := univLE_of_injective H.strictMono.injective
-  have := Small.trans_univLE.{u, v} (range g)
-  have hfg : BddAbove (range (f ∘ g)) := bddAbove_iff_small.mpr <| by
-    rw [range_comp]
-    exact small_image f (range g)
-  change _ ↔ ⨆ i, (f ∘ g) i ≤ a
-  rw [ciSup_le_iff hfg, H.le_set' _ Set.univ_nonempty g] <;> simp [ciSup_le_iff hg]
+    [Nonempty ι] : f (⨆ i, g i) = ⨆ i, f (g i) :=
+  Order.IsNormal.map_iSup H hg
 
 theorem IsNormal.map_iSup {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
     {ι : Type w} (g : ι → Ordinal.{u}) [Small.{u} ι] [Nonempty ι] :
@@ -369,20 +361,16 @@ theorem IsNormal.apply_of_isSuccLimit {f : Ordinal.{u} → Ordinal.{v}} (H : IsN
 @[deprecated (since := "2025-07-08")]
 alias IsNormal.apply_of_isLimit := IsNormal.apply_of_isSuccLimit
 
-theorem sSup_ord {s : Set Cardinal.{u}} (hs : BddAbove s) : (sSup s).ord = sSup (ord '' s) :=
-  eq_of_forall_ge_iff fun a => by
-    rw [csSup_le_iff'
-        (bddAbove_iff_small.2 (@small_image _ _ _ s (Cardinal.bddAbove_iff_small.1 hs))),
-      ord_le, csSup_le_iff' hs]
-    simp [ord_le]
+theorem sSup_ord (s : Set Cardinal) : (sSup s).ord = sSup (ord '' s) := by
+  obtain rfl | hn := s.eq_empty_or_nonempty
+  · simp
+  · by_cases hs : BddAbove s
+    · exact isNormal_ord.map_sSup hn hs
+    · rw [csSup_of_not_bddAbove hs, csSup_of_not_bddAbove (bddAbove_ord_image_iff.not.2 hs)]
+      simp
 
-theorem iSup_ord {ι} {f : ι → Cardinal} (hf : BddAbove (range f)) :
-    (iSup f).ord = ⨆ i, (f i).ord := by
-  unfold iSup
-  convert sSup_ord hf
-  -- Porting note: `change` is required.
-  conv_lhs => change range (ord ∘ f)
-  rw [range_comp]
+theorem iSup_ord {ι} (f : ι → Cardinal) : (⨆ i, f i).ord = ⨆ i, (f i).ord := by
+  rw [iSup, iSup, sSup_ord, range_comp']
 
 theorem lift_card_sInf_compl_le (s : Set Ordinal.{u}) :
     Cardinal.lift.{u + 1} (sInf sᶜ).card ≤ #s := by
@@ -478,7 +466,6 @@ theorem bsup_eq_sup {ι : Type u} (f : ι → Ordinal.{max u v}) :
 theorem bsup_congr {o₁ o₂ : Ordinal.{u}} (f : ∀ a < o₁, Ordinal.{max u v}) (ho : o₁ = o₂) :
     bsup.{_, v} o₁ f = bsup.{_, v} o₂ fun a h => f a (h.trans_eq ho.symm) := by
   subst ho
-  -- Porting note: `rfl` is required.
   rfl
 
 set_option linter.deprecated false in
@@ -583,9 +570,7 @@ theorem sup_eq_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
 set_option linter.deprecated false in
 theorem lsub_le_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
     lsub.{_, v} f ≤ a ↔ ∀ i, f i < a := by
-  convert sup_le_iff.{_, v} (f := succ ∘ f) (a := a) using 2
-  -- Porting note: `comp_apply` is required.
-  simp only [comp_apply, succ_le_iff]
+  simpa using sup_le_iff.{_, v} (f := succ ∘ f) (a := a)
 
 theorem lsub_le {ι} {f : ι → Ordinal} {a} : (∀ i, f i < a) → lsub f ≤ a :=
   lsub_le_iff.2
@@ -709,15 +694,14 @@ theorem lsub_typein (o : Ordinal) : lsub.{u, u} (typein (α := o.toType) (· < �
   (lsub_le.{u, u} typein_lt_self).antisymm
     (by
       by_contra! h
-      -- Porting note: `nth_rw` → `conv_rhs` & `rw`
-      conv_rhs at h => rw [← type_toType o]
+      have h := h.trans_eq (type_toType o).symm
       simpa [typein_enum] using lt_lsub.{u, u} (typein (· < ·)) (enum (· < ·) ⟨_, h⟩))
 
 set_option linter.deprecated false in
 theorem sup_typein_limit {o : Ordinal} (ho : ∀ a, a < o → succ a < o) :
     sup.{u, u} (typein ((· < ·) : o.toType → o.toType → Prop)) = o := by
-  -- Porting note: `rwa` → `rw` & `assumption`
-  rw [(sup_eq_lsub_iff_succ.{u, u} (typein (· < ·))).2] <;> rw [lsub_typein o]; assumption
+  rw [(sup_eq_lsub_iff_succ.{u, u} (typein (· < ·))).2] <;> rw [lsub_typein o]
+  assumption
 
 set_option linter.deprecated false in
 @[simp]
@@ -784,7 +768,6 @@ theorem blsub_eq_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
 theorem blsub_congr {o₁ o₂ : Ordinal.{u}} (f : ∀ a < o₁, Ordinal.{max u v}) (ho : o₁ = o₂) :
     blsub.{_, v} o₁ f = blsub.{_, v} o₂ fun a h => f a (h.trans_eq ho.symm) := by
   subst ho
-  -- Porting note: `rfl` is required.
   rfl
 
 theorem blsub_le_iff {o : Ordinal.{u}} {f : ∀ a < o, Ordinal.{max u v}} {a} :
@@ -856,7 +839,6 @@ theorem blsub_eq_zero_iff {o} {f : ∀ a < o, Ordinal} : blsub o f = 0 ↔ o = 0
   rw [← lsub_eq_blsub, lsub_eq_zero_iff]
   exact toType_empty_iff_eq_zero
 
--- Porting note: `rwa` → `rw`
 @[simp]
 theorem blsub_zero (f : ∀ a < (0 : Ordinal), Ordinal) : blsub 0 f = 0 := by rw [blsub_eq_zero_iff]
 
@@ -945,16 +927,7 @@ theorem isNormal_iff_lt_succ_and_blsub_eq {f : Ordinal.{u} → Ordinal.{max u v}
 
 theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : IsNormal f)
     (hg : IsNormal g) : f = g ↔ f 0 = g 0 ∧ ∀ a, f a = g a → f (succ a) = g (succ a) :=
-  ⟨fun h => by simp [h], fun ⟨h₁, h₂⟩ =>
-    funext fun a => by
-      induction a using limitRecOn with
-      | zero => solve_by_elim
-      | succ => solve_by_elim
-      | limit _ ho H =>
-        rw [← IsNormal.bsup_eq.{u, u} hf ho, ← IsNormal.bsup_eq.{u, u} hg ho]
-        congr
-        ext b hb
-        exact H b hb⟩
+  Order.IsNormal.ext hf hg
 
 end blsub
 
@@ -963,22 +936,27 @@ end Ordinal
 /-! ### Results about injectivity and surjectivity -/
 
 
-theorem not_surjective_of_ordinal {α : Type u} (f : α → Ordinal.{u}) : ¬Surjective f := fun h =>
-  Ordinal.lsub_notMem_range.{u, u} f (h _)
+theorem not_surjective_of_ordinal {α : Type*} [Small.{u} α] (f : α → Ordinal.{u}) :
+    ¬ Surjective f := by
+  intro h
+  obtain ⟨a, ha⟩ := h (⨆ i, succ (f i))
+  apply ha.not_lt
+  rw [Ordinal.lt_iSup_iff]
+  exact ⟨a, Order.lt_succ _⟩
 
-theorem not_injective_of_ordinal {α : Type u} (f : Ordinal.{u} → α) : ¬Injective f := fun h =>
-  not_surjective_of_ordinal _ (invFun_surjective h)
+theorem not_injective_of_ordinal {α : Type*} [Small.{u} α] (f : Ordinal.{u} → α) :
+    ¬ Injective f := fun h ↦ not_surjective_of_ordinal _ (invFun_surjective h)
 
-theorem not_surjective_of_ordinal_of_small {α : Type v} [Small.{u} α] (f : α → Ordinal.{u}) :
-    ¬Surjective f := fun h => not_surjective_of_ordinal _ (h.comp (equivShrink _).symm.surjective)
+@[deprecated (since := "2025-08-21")]
+alias not_surjective_of_ordinal_of_small := not_surjective_of_ordinal
 
-theorem not_injective_of_ordinal_of_small {α : Type v} [Small.{u} α] (f : Ordinal.{u} → α) :
-    ¬Injective f := fun h => not_injective_of_ordinal _ ((equivShrink _).injective.comp h)
+@[deprecated (since := "2025-08-21")]
+alias not_injective_of_ordinal_of_small := not_injective_of_ordinal
 
 /-- The type of ordinals in universe `u` is not `Small.{u}`. This is the type-theoretic analog of
 the Burali-Forti paradox. -/
 theorem not_small_ordinal : ¬Small.{u} Ordinal.{max u v} := fun h =>
-  @not_injective_of_ordinal_of_small _ h _ fun _a _b => Ordinal.lift_inj.{v, u}.1
+  @not_injective_of_ordinal _ h _ fun _a _b => Ordinal.lift_inj.{v, u}.1
 
 instance Ordinal.uncountable : Uncountable Ordinal.{u} :=
   Uncountable.of_not_small not_small_ordinal.{u}

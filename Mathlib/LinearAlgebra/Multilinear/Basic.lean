@@ -232,7 +232,7 @@ def toLinearMap [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) : M₁ i →ₗ[R]
   map_add' x y := by simp
   map_smul' c x := by simp
 
-/-- The cartesian product of two multilinear maps, as a multilinear map. -/
+/-- The Cartesian product of two multilinear maps, as a multilinear map. -/
 @[simps]
 def prod (f : MultilinearMap R M₁ M₂) (g : MultilinearMap R M₁ M₃) :
     MultilinearMap R M₁ (M₂ × M₃) where
@@ -288,8 +288,6 @@ we use is the canonical (increasing) bijection. -/
 def restr {k n : ℕ} (f : MultilinearMap R (fun _ : Fin n => M') M₂) (s : Finset (Fin n))
     (hk : #s = k) (z : M') : MultilinearMap R (fun _ : Fin k => M') M₂ where
   toFun v := f fun j => if h : j ∈ s then v ((s.orderIsoOfFin hk).symm ⟨j, h⟩) else z
-  /- Porting note: The proofs of the following two lemmas used to only use `erw` followed by `simp`,
-  but it seems `erw` no longer unfolds or unifies well enough to work without more help. -/
   map_update_add' v i x y := by
     erw [dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
       dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
@@ -549,7 +547,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
     have : ∑ i, #(B i) < ∑ i, #(A i) := by
       refine sum_lt_sum (fun i _ => card_le_card (B_subset_A i)) ⟨i₀, mem_univ _, ?_⟩
       have : {j₂} ⊆ A i₀ := by simp [hj₂]
-      simp only [B, Finset.card_sdiff this, Function.update_self, Finset.card_singleton]
+      simp only [B, Finset.card_sdiff_of_subset this, Function.update_self, Finset.card_singleton]
       exact Nat.pred_lt (ne_of_gt (lt_trans Nat.zero_lt_one hi₀))
     rw [h] at this
     exact IH _ this B rfl
@@ -1196,11 +1194,9 @@ for `A^ι` with any finite type `ι`. -/
 protected def mkPiAlgebraFin : MultilinearMap R (fun _ : Fin n => A) A :=
   MultilinearMap.mk' (fun m ↦ (List.ofFn m).prod)
     (fun m i x y ↦ by
-      have : (List.finRange n).idxOf i < n := by simp
       simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set, add_mul,
         mul_add, add_mul])
     (fun m i c x ↦ by
-      have : (List.finRange n).idxOf i < n := by simp
       simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set])
 
 variable {R A n}
@@ -1250,8 +1246,7 @@ theorem mkPiRing_eq_iff [Fintype ι] {z₁ z₂ : M₂} :
   simp_rw [MultilinearMap.ext_iff, mkPiRing_apply]
   constructor <;> intro h
   · simpa using h fun _ => 1
-  · intro x
-    simp [h]
+  · simp [h]
 
 theorem mkPiRing_zero [Fintype ι] : MultilinearMap.mkPiRing R ι (0 : M₂) = 0 := by
   ext; rw [mkPiRing_apply, smul_zero, MultilinearMap.zero_apply]
