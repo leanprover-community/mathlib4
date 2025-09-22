@@ -1011,6 +1011,27 @@ theorem coe_primesOverFinset : primesOverFinset p B = primesOver p B := by
     (fun ⟨hPp, h⟩ => ⟨hPp, ⟨hpm.eq_of_le (comap_ne_top _ hPp.ne_top) (le_comap_of_map_le h)⟩⟩)
     (fun ⟨hPp, h⟩ => ⟨hPp, map_le_of_le_comap h.1.le⟩)
 
+namespace IsDedekindDomain.HeightOneSpectrum
+
+/--
+The bijection between the elements of the height one prime spectrum of `B` that divide the lift
+of the maximal ideal `p` in `B` and the primes over `p` in `B`.
+-/
+noncomputable def equivPrimesOver (hp : p ≠ 0) :
+    {v : HeightOneSpectrum B // v.asIdeal ∣ map (algebraMap A B) p} ≃ p.primesOver B :=
+  Set.BijOn.equiv HeightOneSpectrum.asIdeal
+    ⟨fun v hv ↦ ⟨v.isPrime, by rwa [liesOver_iff_dvd_map v.isPrime.ne_top]⟩,
+    fun _ _ _ _ h ↦ HeightOneSpectrum.ext_iff.mpr h,
+    fun Q hQ ↦ ⟨⟨Q, hQ.1, ne_bot_of_mem_primesOver hp hQ⟩,
+      (liesOver_iff_dvd_map hQ.1.ne_top).mp hQ.2, rfl⟩⟩
+
+@[simp]
+theorem equivPrimesOver_apply (hp : p ≠ 0)
+    (v : {v : HeightOneSpectrum B // v.asIdeal ∣ map (algebraMap A B) p}) :
+    equivPrimesOver B hp v = v.1.asIdeal := rfl
+
+end IsDedekindDomain.HeightOneSpectrum
+
 variable (p) [Algebra.IsIntegral A B]
 
 theorem primesOver_finite : (primesOver p B).Finite := by
@@ -1021,6 +1042,8 @@ theorem primesOver_finite : (primesOver p B).Finite := by
     exact Set.finite_singleton ⊥
   · rw [← coe_primesOverFinset hpb B]
     exact (primesOverFinset p B).finite_toSet
+
+noncomputable instance : Fintype (p.primesOver B) := Set.Finite.fintype (primesOver_finite p B)
 
 theorem primesOver_ncard_ne_zero : (primesOver p B).ncard ≠ 0 := by
   rcases exists_ideal_liesOver_maximal_of_isIntegral p B with ⟨P, hPm, hp⟩
