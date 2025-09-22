@@ -22,7 +22,12 @@
   decl   : EuclideanGeometry.dist_sq_eq_dist_sq_add_dist_sq_iff_angle_eq_pi_div_two
   authors: Joseph Myers
 5:
-  title  : Prime Number Theorem
+  title   : Prime Number Theorem
+  authors : Alex Kontorovich, Terry Tao, and the Prime Number Theorem + Project
+  links   :
+    Prime Number Theorem : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/a5040887e6bb24f7c201db8568e7755c138b3878/PrimeNumberTheoremAnd/Wiener.lean#L2196-L2211
+    With Error Terms     : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/a5040887e6bb24f7c201db8568e7755c138b3878/PrimeNumberTheoremAnd/MediumPNT.lean#L5504-L6162
+    website              : https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
 6:
   title  : Gödel’s Incompleteness Theorem
   authors: Shogo Saito

@@ -72,10 +72,7 @@ lemma IsInducing.of_comp_iff (hg : IsInducing g) : IsInducing (g ∘ f) ↔ IsIn
 
 lemma IsInducing.of_comp (hf : Continuous f) (hg : Continuous g) (hgf : IsInducing (g ∘ f)) :
     IsInducing f :=
-  ⟨le_antisymm (by rwa [← continuous_iff_le_induced])
-      (by
-        rw [hgf.eq_induced, ← induced_compose]
-        exact induced_mono hg.le_induced)⟩
+  ⟨le_antisymm hf.le_induced (by grw [hgf.eq_induced, ← induced_compose, ← hg.le_induced])⟩
 
 lemma isInducing_iff_nhds : IsInducing f ↔ ∀ x, 𝓝 x = comap f (𝓝 (f x)) :=
   (isInducing_iff _).trans (induced_iff_nhds_eq f)
@@ -246,9 +243,7 @@ protected theorem comp (hg : IsQuotientMap g) (hf : IsQuotientMap f) : IsQuotien
 protected theorem of_comp (hf : Continuous f) (hg : Continuous g)
     (hgf : IsQuotientMap (g ∘ f)) : IsQuotientMap g :=
   ⟨hgf.1.of_comp,
-    le_antisymm
-      (by rw [hgf.eq_coinduced, ← coinduced_compose]; exact coinduced_mono hf.coinduced_le)
-      hg.coinduced_le⟩
+    le_antisymm (by grw [hgf.eq_coinduced, ← coinduced_compose, hf.coinduced_le]) hg.coinduced_le⟩
 
 theorem of_inverse {g : Y → X} (hf : Continuous f) (hg : Continuous g) (h : LeftInverse g f) :
     IsQuotientMap g := .of_comp hf hg <| h.comp_eq_id.symm ▸ IsQuotientMap.id
@@ -293,7 +288,7 @@ theorem range_mem_nhds (hf : IsOpenMap f) (x : X) : range f ∈ 𝓝 (f x) :=
 
 theorem mapsTo_interior (hf : IsOpenMap f) {s : Set X} {t : Set Y} (h : MapsTo f s t) :
     MapsTo f (interior s) (interior t) :=
-  mapsTo'.2 <|
+  mapsTo_iff_image_subset.2 <|
     interior_maximal (h.mono interior_subset Subset.rfl).image_subset (hf _ isOpen_interior)
 
 theorem image_interior_subset (hf : IsOpenMap f) (s : Set X) :
@@ -356,17 +351,28 @@ theorem preimage_frontier_eq_frontier_preimage (hf : IsOpenMap f) (hfc : Continu
 
 theorem of_isEmpty [h : IsEmpty X] (f : X → Y) : IsOpenMap f := of_nhds_le h.elim
 
+theorem clusterPt_comap (hf : IsOpenMap f) {x : X} {l : Filter Y} (h : ClusterPt (f x) l) :
+    ClusterPt x (comap f l) := by
+  rw [ClusterPt, ← map_neBot_iff, Filter.push_pull]
+  exact h.neBot.mono <| inf_le_inf_right _ <| hf.nhds_le _
+
 end IsOpenMap
 
 theorem isOpenMap_iff_nhds_le : IsOpenMap f ↔ ∀ x : X, 𝓝 (f x) ≤ (𝓝 x).map f :=
   ⟨fun hf => hf.nhds_le, IsOpenMap.of_nhds_le⟩
 
+theorem isOpenMap_iff_clusterPt_comap :
+    IsOpenMap f ↔ ∀ x l, ClusterPt (f x) l → ClusterPt x (comap f l) := by
+  refine ⟨fun hf _ _ ↦ hf.clusterPt_comap, fun h ↦ ?_⟩
+  simp only [isOpenMap_iff_nhds_le, le_map_iff]
+  intro x s hs
+  contrapose! hs
+  rw [← mem_interior_iff_mem_nhds, mem_interior_iff_not_clusterPt_compl, not_not] at hs ⊢
+  exact (h _ _ hs).mono <| by simp [subset_preimage_image]
+
 theorem isOpenMap_iff_interior : IsOpenMap f ↔ ∀ s, f '' interior s ⊆ interior (f '' s) :=
   ⟨IsOpenMap.image_interior_subset, fun hs u hu =>
-    subset_interior_iff_isOpen.mp <|
-      calc
-        f '' u = f '' interior u := by rw [hu.interior_eq]
-        _ ⊆ interior (f '' u) := hs u⟩
+    subset_interior_iff_isOpen.mp <| by simpa only [hu.interior_eq] using hs u⟩
 
 /-- An inducing map with an open range is an open map. -/
 protected lemma Topology.IsInducing.isOpenMap (hi : IsInducing f) (ho : IsOpen (range f)) :
@@ -459,7 +465,7 @@ theorem IsClosedMap.lift'_closure_map_eq
     (f_closed : IsClosedMap f) (f_cont : Continuous f) (F : Filter X) :
     (map f F).lift' closure = map f (F.lift' closure) := by
   rw [map_lift'_eq2 (monotone_closure Y), map_lift'_eq (monotone_closure X)]
-  congr
+  congr 1
   ext s : 1
   exact f_closed.closure_image_eq_of_continuous f_cont s
 

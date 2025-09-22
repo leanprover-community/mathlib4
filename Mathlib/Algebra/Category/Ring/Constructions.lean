@@ -20,13 +20,11 @@ In this file we provide the explicit (co)cones for various (co)limits in `CommRi
 * tensor product over `ℤ` is the binary coproduct
 * `ℤ` is the initial object
 * `0` is the strict terminal object
-* cartesian product is the product
+* Cartesian product is the product
 * arbitrary direct product of a family of rings is the product object (Pi object)
 * `RingHom.eqLocus` is the equalizer
 
 -/
-
-suppress_compilation
 
 universe u u'
 
@@ -259,12 +257,12 @@ section Product
 
 variable (A B : CommRingCat.{u})
 
-/-- The product in `CommRingCat` is the cartesian product. This is the binary fan. -/
+/-- The product in `CommRingCat` is the Cartesian product. This is the binary fan. -/
 @[simps! pt]
 def prodFan : BinaryFan A B :=
   BinaryFan.mk (CommRingCat.ofHom <| RingHom.fst A B) (CommRingCat.ofHom <| RingHom.snd A B)
 
-/-- The product in `CommRingCat` is the cartesian product. -/
+/-- The product in `CommRingCat` is the Cartesian product. -/
 def prodFanIsLimit : IsLimit (prodFan A B) where
   lift c := ofHom <| RingHom.prod (c.π.app ⟨WalkingPair.left⟩).hom (c.π.app ⟨WalkingPair.right⟩).hom
   fac c j := by
@@ -288,14 +286,14 @@ section Pi
 variable {ι : Type u} (R : ι → CommRingCat.{u})
 
 /--
-The categorical product of rings is the cartesian product of rings. This is its `Fan`.
+The categorical product of rings is the Cartesian product of rings. This is its `Fan`.
 -/
 @[simps! pt]
 def piFan : Fan R :=
   Fan.mk (CommRingCat.of ((i : ι) → R i)) (fun i ↦ ofHom <| Pi.evalRingHom _ i)
 
 /--
-The categorical product of rings is the cartesian product of rings.
+The categorical product of rings is the Cartesian product of rings.
 -/
 def piFanIsLimit : IsLimit (piFan R) where
   lift s := ofHom <| Pi.ringHom fun i ↦ (s.π.1 ⟨i⟩).hom
@@ -306,13 +304,13 @@ def piFanIsLimit : IsLimit (piFan R) where
 /--
 The categorical product and the usual product agree
 -/
-def piIsoPi : ∏ᶜ R ≅ CommRingCat.of ((i : ι) → R i) :=
+noncomputable def piIsoPi : ∏ᶜ R ≅ CommRingCat.of ((i : ι) → R i) :=
   limit.isoLimitCone ⟨_, piFanIsLimit R⟩
 
 /--
 The categorical product and the usual product agree
 -/
-def _root_.RingEquiv.piEquivPi (R : ι → Type u) [∀ i, CommRing (R i)] :
+noncomputable def _root_.RingEquiv.piEquivPi (R : ι → Type u) [∀ i, CommRing (R i)] :
     (∏ᶜ (fun i : ι ↦ CommRingCat.of (R i)) : CommRingCat.{u}) ≃+* ((i : ι) → R i) :=
   (piIsoPi (CommRingCat.of <| R ·)).commRingCatIsoToRingEquiv
 

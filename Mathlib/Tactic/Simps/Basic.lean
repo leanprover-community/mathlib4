@@ -386,9 +386,9 @@ structure ProjectionData where
   The composition of these projections is required to be definitionally equal to the provided
   Expression. -/
   projNrs : List Nat
-  /-- A boolean specifying whether `simp` lemmas are generated for this projection by default. -/
+  /-- A Boolean specifying whether `simp` lemmas are generated for this projection by default. -/
   isDefault : Bool
-  /-- A boolean specifying whether this projection is written as prefix. -/
+  /-- A Boolean specifying whether this projection is written as prefix. -/
   isPrefix : Bool
   deriving Inhabited
 
@@ -487,11 +487,11 @@ Example: If `e : α ≃+ β` and ``projName = `invFun`` then this returns `[0, 1
 projection of `MulEquiv` is `toEquiv` and the second projection of `Equiv` is `invFun`. -/
 def findProjectionIndices (strName projName : Name) : MetaM (List Nat) := do
   let env ← getEnv
-  let .some baseStr := findField? env strName projName |
+  let some baseStr := findField? env strName projName |
     throwError "{strName} has no field {projName} in parent structure"
-  let .some fullProjName := getProjFnForField? env baseStr projName |
+  let some fullProjName := getProjFnForField? env baseStr projName |
     throwError "no such field {projName}"
-  let .some pathToField := getPathToBaseStructure? env baseStr strName |
+  let some pathToField := getPathToBaseStructure? env baseStr strName |
     throwError "no such field {projName}"
   let allProjs := pathToField ++ [fullProjName]
   return allProjs.map (env.getProjectionFnInfo? · |>.get!.i)
@@ -1010,7 +1010,7 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
   if cfg.isSimp then
     addSimpTheorem simpExtension declName true false .global <| eval_prio default
   _ ← cfg.attrs.mapM fun simpAttr ↦ do
-    let .some simpDecl ← getSimpExtension? simpAttr |
+    let some simpDecl ← getSimpExtension? simpAttr |
       throwError "{simpAttr} is not a simp-attribute."
     addSimpTheorem simpDecl declName true false .global <| eval_prio default
 
@@ -1211,7 +1211,7 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
   let nm : NameStruct :=
     { parent := nm.getPrefix
       components :=
-        if let .some n := cfg.nameStem then
+        if let some n := cfg.nameStem then
           if n == "" then [] else [n]
         else
           let s := nm.lastComponentAsString

@@ -110,9 +110,13 @@ open ZeroObject
 def botCoeIsoZero {B : C} : ((⊥ : MonoOver B) : C) ≅ 0 :=
   initialIsInitial.uniqueUpToIso HasZeroObject.zeroIsInitial
 
--- Porting note: removed @[simp] as the LHS simplifies
 theorem bot_arrow_eq_zero [HasZeroMorphisms C] {B : C} : (⊥ : MonoOver B).arrow = 0 :=
   zero_of_source_iso_zero _ botCoeIsoZero
+
+/-- `simp`-normal form of `bot_arrow_eq_zero`. -/
+@[simp]
+theorem initialTo_b_eq_zero [HasZeroMorphisms C] {B : C} : initial.to B = 0 := by
+  rw [← bot_arrow, bot_arrow_eq_zero]
 
 end ZeroOrderBot
 
@@ -297,7 +301,7 @@ variable [HasZeroMorphisms C]
 
 theorem bot_eq_zero {B : C} : (⊥ : Subobject B) = Subobject.mk (0 : 0 ⟶ B) :=
   mk_eq_mk_of_comm _ _ (initialIsInitial.uniqueUpToIso HasZeroObject.zeroIsInitial)
-    (by simp [eq_iff_true_of_subsingleton])
+    (by simp)
 
 @[simp]
 theorem bot_arrow {B : C} : (⊥ : Subobject B).arrow = 0 :=
@@ -410,7 +414,7 @@ theorem finset_inf_arrow_factors {I : Type*} {B : C} (s : Finset I) (P : I → S
 theorem inf_eq_map_pullback' {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :
     (Subobject.inf.obj (Quotient.mk'' f₁)).obj f₂ =
       (Subobject.map f₁.arrow).obj ((Subobject.pullback f₁.arrow).obj f₂) := by
-  induction' f₂ using Quotient.inductionOn' with f₂
+  induction f₂ using Quotient.inductionOn'
   rfl
 
 theorem inf_eq_map_pullback {A : C} (f₁ : MonoOver A) (f₂ : Subobject A) :

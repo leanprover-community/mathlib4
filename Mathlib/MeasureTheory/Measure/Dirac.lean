@@ -104,7 +104,7 @@ theorem restrict_singleton (μ : Measure α) (a : α) : μ.restrict {a} = μ {a}
 
 /-- Two measures on a countable space are equal if they agree on singletons. -/
 theorem ext_of_singleton [Countable α] {μ ν : Measure α} (h : ∀ a, μ {a} = ν {a}) : μ = ν :=
-  ext_of_sUnion_eq_univ (countable_range singleton) (by aesop) (by aesop)
+  ext_of_sUnion_eq_univ (countable_range singleton) (by aesop) (by simp_all)
 
 /-- Two measures on a countable space are equal if and only if they agree on singletons. -/
 theorem ext_iff_singleton [Countable α] {μ ν : Measure α} : μ = ν ↔ ∀ a, μ {a} = ν {a} :=
@@ -149,7 +149,7 @@ lemma exists_sum_smul_dirac [Countable α] (μ : Measure α) :
   rw [tsum_eq_single ⟨points ⟨measurableAtom x, by simp [measurableAtoms]⟩, by simp⟩]
   · rw [indicator_of_mem]
     · simp only [Pi.one_apply, mul_one]
-      congr
+      congr 1
       refine (measurableAtom_eq_of_mem ?_).symm
       convert h_points_mem _
       simp
@@ -212,6 +212,9 @@ lemma aemeasurable_dirac [MeasurableSingletonClass α] {a : α} {f : α → β} 
 
 instance Measure.dirac.isProbabilityMeasure {x : α} : IsProbabilityMeasure (dirac x) :=
   ⟨dirac_apply_of_mem <| mem_univ x⟩
+
+instance [hα : Nonempty α] : Nonempty {μ : Measure α // IsProbabilityMeasure μ} :=
+  ⟨Measure.dirac hα.some, inferInstance⟩
 
 /-! Extra instances to short-circuit type class resolution -/
 

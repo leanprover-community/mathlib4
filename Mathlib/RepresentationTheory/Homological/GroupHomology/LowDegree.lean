@@ -541,7 +541,7 @@ def IsBoundary₁ (x : G →₀ A) : Prop :=
   ∃ y : G × G →₀ A, y.sum
     (fun g a => single g.2 (g.1⁻¹ • a) - single (g.1 * g.2) a + single g.1 a) = x
 
-/-- A finsupp `x : G × G →₀ A` satsfies the 2-boundary condition if there's a finsupp
+/-- A finsupp `x : G × G →₀ A` satisfies the 2-boundary condition if there's a finsupp
 `∑ aᵢ·(gᵢ, hᵢ, jᵢ) : G × G × G →₀ A` such that
 `∑ (gᵢ⁻¹ • aᵢ)·(hᵢ, jᵢ) - aᵢ·(gᵢhᵢ, jᵢ) + aᵢ·(gᵢ, hᵢjᵢ) - aᵢ·(gᵢ, hᵢ) = x.` -/
 def IsBoundary₂ (x : G × G →₀ A) : Prop :=
