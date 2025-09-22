@@ -15,15 +15,23 @@ products *are equal to the infinite sum or product over `ℤ
 
 -/
 
-open  TopologicalSpace Filter Function Finset
+open TopologicalSpace Filter Function Finset
 
 open scoped Topology
 
-variable {α β γ : Type*} [CommMonoid α] [TopologicalSpace α] [ContinuousMul α]
+variable {α β γ : Type*} [CommMonoid α] [TopologicalSpace α] [T2Space α]
 
+/-- The filter in the integers of intevals of the form `[-N,N]`. -/
 def Icc_filter : Filter (Finset ℤ) := atTop.map (fun N : ℕ ↦ Icc (-(N : ℤ)) N)
 
+/-- The filter in the integers of intevals of the form `[N,N)`. -/
 def Ico_filter : Filter (Finset ℤ) := atTop.map (fun N : ℕ ↦ Ico (-(N : ℤ)) N)
+
+/-- The filter in the integers of intevals of the form `(N,N]`. -/
+def Ioc_filter : Filter (Finset ℤ) := atTop.map (fun N : ℕ ↦ Ioc (-(N : ℤ)) N)
+
+/-- The filter in the integers of intevals of the form `(N,N)`. -/
+def Ioo_filter : Filter (Finset ℤ) := atTop.map (fun N : ℕ ↦ Ioo (-(N : ℤ)) N)
 
 instance : NeBot (Icc_filter) := by
   simp [Icc_filter, Filter.NeBot.map]
@@ -31,6 +39,11 @@ instance : NeBot (Icc_filter) := by
 instance : NeBot (Ico_filter) := by
   simp [Ico_filter, Filter.NeBot.map]
 
+instance : NeBot (Ioc_filter) := by
+  simp [Ioc_filter, Filter.NeBot.map]
+
+instance : NeBot (Ioo_filter) := by
+  simp [Ioo_filter, Filter.NeBot.map]
 
 lemma tendsto_Icc_atTop_atTop : Tendsto (fun N : ℕ => Finset.Icc (-N : ℤ) N) atTop atTop :=
   tendsto_atTop_finset_of_monotone (fun _ _ _ ↦ Finset.Icc_subset_Icc (by gcongr) (by gcongr))
@@ -51,11 +64,9 @@ lemma tendsto_Ioo_atTop_atTop : Tendsto (fun N : ℕ => Finset.Ioo (-N : ℤ) N)
   exact fun x => ⟨x.natAbs + 1, by simpa using ⟨by apply le_trans _ (add_abs_nonneg x); omega,
     (Int.lt_add_one_iff.mpr (le_abs_self x))⟩⟩
 
-
-omit [ContinuousMul α] in
 @[to_additive]
-lemma prodFilter_int_atTop_eq_Icc_filter [T2Space α] {f : ℤ → α}
-    (hf : MultipliableFilter atTop f) : ∏'[atTop] b, f b  = ∏'[Icc_filter] b, f b := by
+lemma prodFilter_int_atTop_eq_Icc_filter {f : ℤ → α} (hf : MultipliableFilter atTop f) :
+    ∏'[atTop] b, f b = ∏'[Icc_filter] b, f b := by
   have := (hf.hasProdFilter).comp tendsto_Icc_atTop_atTop
   simp only [Icc_filter] at *
   apply symm
@@ -64,10 +75,9 @@ lemma prodFilter_int_atTop_eq_Icc_filter [T2Space α] {f : ℤ → α}
   apply this.congr
   simp
 
-omit [ContinuousMul α] in
 @[to_additive]
-lemma prodFilter_int_atTop_eq_Ico_filter [T2Space α] {f : ℤ → α}
-    (hf : MultipliableFilter atTop f) : ∏'[atTop] b, f b  = ∏'[Ico_filter] b, f b := by
+lemma prodFilter_int_atTop_eq_Ico_filter {f : ℤ → α} (hf : MultipliableFilter atTop f) :
+    ∏'[atTop] b, f b = ∏'[Ico_filter] b, f b := by
   have := (hf.hasProdFilter).comp tendsto_Ico_atTop_atTop
   simp only [Ico_filter] at *
   apply symm
@@ -96,7 +106,7 @@ lemma multipliableFilter_int_Icc_eq_Ico_filter {α : Type*} {f : ℤ → α} [Co
 lemma prodFilter_int_Icc_eq_Ico_filter {α : Type*} {f : ℤ → α} [CommGroup α] [TopologicalSpace α]
     [ContinuousMul α] [T2Space α] (hf : MultipliableFilter Icc_filter f)
     (hf2 : Tendsto (fun N : ℕ ↦ (f ↑N)⁻¹) atTop (𝓝 1)) :
-    ∏'[Icc_filter] b, f b  = ∏'[Ico_filter] b, f b := by
+    ∏'[Icc_filter] b, f b = ∏'[Ico_filter] b, f b := by
   have := (hf.hasProdFilter)
   simp only [Ico_filter] at *
   apply symm
