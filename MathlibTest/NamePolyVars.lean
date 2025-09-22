@@ -1,4 +1,3 @@
--- import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.Ring.NamePolyVars
 
 -- set_option trace.name_poly_vars true
@@ -138,5 +137,21 @@ name_poly_vars (Fin 37)[x,y,z][C]
 /-- info: (Fin 37)[x,y,z][C] : Type -/
 #guard_msgs in
 #check (Fin 37)[x,y,z][C]
+
+/-- info: x : (Fin 37)[x,y,z][C] -/
+#guard_msgs in
+#check x
+
+/-- info: y : (Fin 37)[x,y,z][C] -/
+#guard_msgs in
+#check y
+
+/-- info: z : (Fin 37)[x,y,z][C] -/
+#guard_msgs in
+#check z
+
+/-- info: C : (Fin 37)[x,y,z][C] -/
+#guard_msgs in
+#check C
 
 end Test4
