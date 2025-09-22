@@ -6,7 +6,7 @@ Authors: Jireh Loreaux
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 
-/-! # range of the continuous functional calculus
+/-! # Range of the continuous functional calculus
 
 This file contains results about the range of the continuous functional calculus, and
 consequences thereof.
@@ -64,7 +64,7 @@ theorem cfcHom_apply_mem_elemental {a : A} (ha : p a) (f : C(spectrum 𝕜 a, �
     cfcHom ha f ∈ elemental 𝕜 a :=
   range_cfcHom 𝕜 ha ▸ ⟨f, rfl⟩
 
-@[simp]
+@[simp, grind ←]
 theorem cfc_apply_mem_elemental (f : 𝕜 → 𝕜) (a : A) :
     cfc f a ∈ elemental 𝕜 a :=
   cfc_cases _ a f (zero_mem _) fun hf ha ↦
@@ -88,6 +88,7 @@ protected theorem IsSelfAdjoint.commute_cfcHom {a b : A} (ha : p a)
 
 If the base ring is `ℝ` or `ℝ≥0`, see `Commute.cfc_real` or `Commute.cfc_nnreal` which don't require
 the `Commute (star a) b` hypothesis. -/
+@[grind ←]
 protected theorem Commute.cfc {a b : A} (hb₁ : Commute a b)
     (hb₂ : Commute (star a) b) (f : 𝕜 → 𝕜) :
     Commute (cfc f a) b :=
@@ -112,6 +113,7 @@ variable [ContinuousStar A] [IsTopologicalRing A] [T2Space A]
 
 /-- A version of `Commute.cfc` or `IsSelfAdjoint.commute_cfc` which does not require any interaction
 with `star` when the base ring is `ℝ`. -/
+@[grind ←]
 protected theorem Commute.cfc_real {a b : A} (hb : Commute a b) (f : ℝ → ℝ) :
     Commute (cfc f a) b :=
   cfc_cases (fun x ↦ Commute x b) a f (Commute.zero_left _) fun hf ha ↦ by
@@ -122,6 +124,7 @@ variable [PartialOrder A] [NonnegSpectrumClass ℝ A] [StarOrderedRing A]
 
 /-- A version of `Commute.cfc` or `IsSelfAdjoint.commute_cfc` which does not require any interaction
 with `star` when the base ring is `ℝ≥0`. -/
+@[grind ←]
 protected theorem Commute.cfc_nnreal {a b : A} (hb : Commute a b) (f : ℝ≥0 → ℝ≥0) :
     Commute (cfc f a) b := by
   by_cases ha : 0 ≤ a
@@ -198,6 +201,7 @@ theorem cfcₙHom_apply_mem_elemental {a : A} (ha : p a) (f : C(quasispectrum �
     cfcₙHom ha f ∈ elemental 𝕜 a :=
   range_cfcₙHom 𝕜 ha ▸ ⟨f, rfl⟩
 
+@[simp, grind ←]
 theorem cfcₙ_apply_mem_elemental (f : 𝕜 → 𝕜) (a : A) :
     cfcₙ f a ∈ elemental 𝕜 a :=
   cfcₙ_cases _ a f (zero_mem _) fun hf hf₀ ha ↦
@@ -221,6 +225,7 @@ protected theorem IsSelfAdjoint.commute_cfcₙHom {a b : A} (ha : p a)
 
 If the base ring is `ℝ` or `ℝ≥0`, see `Commute.cfcₙ_real` or `Commute.cfcₙ_nnreal` which don't
 require the `Commute (star a) b` hypothesis. -/
+@[grind ←]
 protected theorem Commute.cfcₙ {a b : A} (hb₁ : Commute a b)
     (hb₂ : Commute (star a) b) (f : 𝕜 → 𝕜) :
     Commute (cfcₙ f a) b :=
@@ -246,6 +251,7 @@ variable {A : Type*} [NonUnitalRing A] [StarRing A] [Module ℝ A] [IsScalarTowe
 
 /-- A version of `Commute.cfcₙ` or `IsSelfAdjoint.commute_cfcₙ` which does not require any
 interaction with `star` when the base ring is `ℝ`. -/
+@[grind ←]
 protected theorem Commute.cfcₙ_real {a b : A} (hb : Commute a b) (f : ℝ → ℝ) :
     Commute (cfcₙ f a) b :=
   cfcₙ_cases (fun x ↦ Commute x b) a f (Commute.zero_left _)
@@ -257,6 +263,7 @@ variable [PartialOrder A] [NonnegSpectrumClass ℝ A] [StarOrderedRing A]
 
 /-- A version of `Commute.cfcₙ` or `IsSelfAdjoint.commute_cfcₙ` which does not require any
 interaction with `star` when the base ring is `ℝ≥0`. -/
+@[grind ←]
 protected theorem Commute.cfcₙ_nnreal {a b : A} (hb : Commute a b) (f : ℝ≥0 → ℝ≥0) :
     Commute (cfcₙ f a) b := by
   by_cases ha : 0 ≤ a
