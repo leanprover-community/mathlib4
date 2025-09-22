@@ -115,13 +115,14 @@ end CoreSmallCategoryOfSet
 
 namespace SmallCategoryOfSet
 
-lemma exists_equivalence (C : Type w) [Category.{w} C]
-    (h₁ : Cardinal.mk C ≤ Cardinal.mk Ω)
-    (h₂ : ∀ (X Y : C), Cardinal.mk (X ⟶ Y) ≤ Cardinal.mk Ω) :
+lemma exists_equivalence (C : Type u) [Category.{v} C]
+    (h₁ : Cardinal.lift.{w} (Cardinal.mk C) ≤ Cardinal.lift.{u} (Cardinal.mk Ω))
+    (h₂ : ∀ (X Y : C), Cardinal.lift.{w} (Cardinal.mk (X ⟶ Y)) ≤
+      Cardinal.lift.{v} (Cardinal.mk Ω)) :
     ∃ (h : SmallCategoryOfSet Ω), Nonempty (categoryFamily Ω h ≌ C) := by
-  obtain ⟨f₁, hf₁⟩ := h₁
-  let f₂ (X Y) := (h₂ X Y).some
-  let e := Equiv.ofInjective f₁ hf₁
+  let f₁ := (Cardinal.lift_mk_le'.1 h₁).some
+  let f₂ (X Y) := (Cardinal.lift_mk_le'.1 (h₂ X Y)).some
+  let e := Equiv.ofInjective _ f₁.injective
   let h : CoreSmallCategoryOfSet Ω C :=
     { obj := Set.range f₁
       hom X Y := Set.range (f₂ (e.symm X) (e.symm Y))
