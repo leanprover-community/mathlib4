@@ -915,7 +915,6 @@ def uliftCoyonedaEquiv {X : Cᵒᵖ} {F : C ⥤ Type (max w v₁)} :
   left_inv τ := by
     ext Y ⟨y⟩
     simp [uliftYoneda, ← FunctorToTypes.naturality]
-
   right_inv x := by simp
 
 @[deprecated (since := "2025-08-04")] alias coyonedaCompUliftFunctorEquiv :=

@@ -74,7 +74,6 @@ lemma colimitHomIsoLimitYoneda_hom_comp_π [HasLimitsOfShape Iᵒᵖ (Type u₂)
   change ((coyonedaOpColimitIsoLimitCoyoneda F).hom ≫ _).app A = _
   rw [coyonedaOpColimitIsoLimitCoyoneda_hom_comp_π]
 
-@[reassoc (attr := simp)]
 lemma colimitHomIsoLimitYoneda_inv_comp_π [HasLimitsOfShape Iᵒᵖ (Type u₂)] (A : C) (i : I) :
     (colimitHomIsoLimitYoneda F A).inv ≫ (coyoneda.map (colimit.ι F i).op).app A =
       limit.π (F.op ⋙ yoneda.obj A) ⟨i⟩ := by
@@ -122,7 +121,6 @@ lemma colimitHomIsoLimitYoneda'_hom_comp_π [HasLimitsOfShape I (Type u₂)] (A 
   change ((coyonedaOpColimitIsoLimitCoyoneda' F).hom ≫ _).app A = _
   rw [coyonedaOpColimitIsoLimitCoyoneda'_hom_comp_π]
 
-@[reassoc (attr := simp)]
 lemma colimitHomIsoLimitYoneda'_inv_comp_π [HasLimitsOfShape I (Type u₂)] (A : C) (i : I) :
     (colimitHomIsoLimitYoneda' F A).inv ≫ (coyoneda.map (colimit.ι F ⟨i⟩).op).app A =
       limit.π (F.rightOp ⋙ yoneda.obj A) i := by
