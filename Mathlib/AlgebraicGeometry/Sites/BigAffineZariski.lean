@@ -49,36 +49,36 @@ variable {X : Scheme.{u}} {P : MorphismProperty Scheme.{u}}
 
 See `Cover.mkOfCovers`. -/
 @[simps] noncomputable def AffineCover.mkOfCovers
-    {P : MorphismProperty Scheme.{u}} {X : Scheme.{u}}
-     {J : Type v} (obj : J → CommRingCat.{u}) (map : ∀ j, Spec (obj j) ⟶ X)
-    (covers : ∀ x : X, ∃ (j : J) (y : Spec (obj j)), (map j).base y = x)
-    (map_prop : ∀ (j : J), P (map j) := by infer_instance) :
-    AffineCover P X where
-  J := J
-  obj := obj
-  map := map
-  f x := (covers x).choose
+    {P : MorphismProperty Scheme.{u}} {S : Scheme.{u}}
+    {I₀ : Type v} (X : I₀ → CommRingCat.{u}) (f : ∀ j, Spec (X j) ⟶ S)
+    (covers : ∀ x : S, ∃ (j : I₀) (y : Spec (X j)), (f j).base y = x)
+    (map_prop : ∀ (j : I₀), P (f j) := by infer_instance) :
+    AffineCover P S where
+  I₀ := I₀
+  X := X
+  f := f
+  idx x := (covers x).choose
   covers x := (covers x).choose_spec
   map_prop := map_prop
 
 namespace Cover
 
 /-- Package the data of `U₁ ⟶ U₂` into a theorem. -/
-theorem Hom.exists {U₁ U₂ : Cover.{v} P X} (h : U₁.Hom U₂) (j₁ : U₁.J) :
-    ∃ (j₂ : U₂.J) (f : U₁.obj j₁ ⟶ U₂.obj j₂), P f ∧ f ≫ U₂.map j₂ = U₁.map j₁ :=
-  ⟨h.idx j₁, h.app j₁, h.app_prop j₁, h.w j₁⟩
+theorem Hom.exists {U₁ U₂ : Cover.{v} P X} (h : U₁.Hom U₂) (i₁ : U₁.I₀) :
+    ∃ (i₂ : U₂.I₀) (f : U₁.X i₁ ⟶ U₂.X i₂), P f ∧ f ≫ U₂.f i₂ = U₁.f i₁ :=
+  ⟨h.idx i₁, h.app i₁, h.app_prop i₁, h.w i₁⟩
 
 /-- Given an open cover of `Spec R`, refine it to a cover by `Spec R[1/f]`. -/
 @[simps! (isSimp := False) map] noncomputable
 def refinementSpec {R : CommRingCat.{u}}
     (U : Cover IsOpenImmersion (Spec R)) : AffineOpenCover (Spec R) :=
   AffineCover.mkOfCovers
-    (J := { f : R // ∃ j : U.J, PrimeSpectrum.basicOpen f ≤ (U.map j).opensRange })
-    (obj := fun f ↦ .of (Localization.Away f.val))
-    (map := fun f ↦ Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away f.val))))
+    (I₀ := { f : R // ∃ j : U.J, PrimeSpectrum.basicOpen f ≤ (U.f j).opensRange })
+    (X := fun f ↦ .of (Localization.Away f.val))
+    (f := fun f ↦ Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away f.val))))
     (covers := fun x ↦
       let ⟨j, y, hjyx⟩ := U.exists_eq x
-      let ⟨f, g, hfj, hg, hgj, p, hypg⟩ := (U.map j).exists_factor y
+      let ⟨f, g, hfj, hg, hgj, p, hypg⟩ := (U.f j).exists_factor y
       ⟨⟨f, j, hfj⟩, p, hjyx ▸ hypg ▸ congr(($hgj.symm).base p)⟩)
 
 /-- The `refinementSpec` cover is a refinement of the original cover. -/
@@ -96,21 +96,21 @@ namespace AffineOpenCover
 @[simps (isSimp := false)] noncomputable
 def finiteSubcover {X : Scheme.{u}} [CompactSpace X] (U : AffineOpenCover.{v} X) :
     AffineOpenCover.{u} X where
-  J := U.openCover.finiteSubcover.J
-  obj j := U.obj (U.f j.val)
-  map j := U.map (U.f j.val)
-  f := U.openCover.finiteSubcover.f
+  I₀ := U.openCover.finiteSubcover.I₀
+  X i := U.X (U.idx i.val)
+  f j := U.f (U.idx j.val)
+  idx := U.openCover.finiteSubcover.idx
   covers := U.openCover.finiteSubcover.covers
 
 noncomputable instance {X : Scheme.{u}} [CompactSpace X] (U : AffineOpenCover.{v} X) :
-    Fintype U.finiteSubcover.J :=
-  inferInstanceAs (Fintype (U.openCover.finiteSubcover.J))
+    Fintype U.finiteSubcover.I₀ :=
+  inferInstanceAs (Fintype (U.openCover.finiteSubcover.I₀))
 
 /-- The finite subcover is a refinement of the original cover. -/
 noncomputable def finiteSubcoverHom {X : Scheme.{u}} [CompactSpace X] (U : AffineOpenCover.{u} X) :
     U.finiteSubcover.openCover ⟶ U.openCover where
-  idx j := U.f j.val
-  app j := 𝟙 _
+  idx i := U.idx i.val
+  app i := 𝟙 _
 
 end AffineOpenCover
 
@@ -122,9 +122,9 @@ namespace CommRingCat
 
 /-- A scheme is covered by affines. -/
 instance isCoverDense_zariski : IsCoverDense Scheme.Spec Scheme.zariskiTopology.{u} where
-  is_cover X := ⟨.ofArrows (Spec ∘ X.affineOpenCover.obj) X.affineOpenCover.map,
+  is_cover X := ⟨.ofArrows (Spec ∘ X.affineOpenCover.X) X.affineOpenCover.f,
     ⟨X.affineOpenCover.openCover, rfl⟩,
-    fun _ u ⟨j⟩ ↦ ⟨⟨op (X.affineOpenCover.obj j), 𝟙 _, X.affineOpenCover.map j, by rw [id_comp]⟩⟩⟩
+    fun _ u ⟨j⟩ ↦ ⟨⟨op (X.affineOpenCover.X j), 𝟙 _, X.affineOpenCover.f j, by rw [id_comp]⟩⟩⟩
 
 instance : IsCoverDense Scheme.Spec (grothendieckTopology IsOpenImmersion.{u}) :=
   isCoverDense_zariski
@@ -206,22 +206,22 @@ open PrimeSpectrum
 
 /-- Shrink a given open cover. -/
 @[simps!] noncomputable def _root_.AlgebraicGeometry.Scheme.OpenCover.shrink {X : Scheme.{u}}
-    (U : OpenCover.{v} X) [Small.{u₀} U.J] : OpenCover.{u₀} X :=
-  U.reindex (equivShrink.{u₀} U.J).symm
+    (U : OpenCover.{v} X) [Small.{u₀} U.I₀] : OpenCover.{u₀} X :=
+  U.reindex (equivShrink.{u₀} U.I₀).symm
 
 /-- Actually a subcover (the indexing type is a subtype of `U.J`). -/
 @[simps!] noncomputable def _root_.AlgebraicGeometry.Scheme.OpenCover.finiteSubcover'
     {X : Scheme.{u}} [CompactSpace X] (U : OpenCover.{v} X) :
     OpenCover.{v} X where
-  J := { j : U.J // ∃ x : U.finiteSubcover.J, U.f x.val = j }
-  obj j := U.obj j.val
-  map j := U.map j.val
-  f x := ⟨U.f (U.finiteSubcover.f x).val, _, rfl⟩
+  I₀ := { i : U.I₀ // ∃ x : U.finiteSubcover.I₀, U.idx x.val = i }
+  X i := U.X i.val
+  f i := U.f i.val
+  idx x := ⟨U.idx (U.finiteSubcover.idx x).val, _, rfl⟩
   covers := U.finiteSubcover.covers
 
 noncomputable instance {X : Scheme.{u}} [CompactSpace X] (U : OpenCover.{v} X) :
-    Fintype U.finiteSubcover'.J :=
-  open Classical in Fintype.ofSurjective (fun x ↦ ⟨U.f x.val, x, rfl⟩) fun j ↦ by
+    Fintype U.finiteSubcover'.I₀ :=
+  open Classical in Fintype.ofSurjective (fun x ↦ ⟨U.idx x.val, x, rfl⟩) fun j ↦ by
     obtain ⟨_, _, rfl⟩ := j; exact ⟨_, rfl⟩
 
 open TopologicalSpace
@@ -234,7 +234,7 @@ def zariskiPretopology : Pretopology CommRingCat.{u}ᵒᵖ :=
 def _root_.CategoryTheory.Presieve.ofAffineCover {X : CommRingCat.{u}ᵒᵖ}
     {P : MorphismProperty Scheme.{u}} (U : AffineCover.{v} P (Spec X.unop)) :
     Presieve X :=
-  fun Y u ↦ ∃ (j : U.J) (h : Y = op (U.obj j)), u = eqToHom h ≫ (Spec.preimage (U.map j)).op
+  fun Y u ↦ ∃ (j : U.I₀) (h : Y = op (U.X j)), u = eqToHom h ≫ (Spec.preimage (U.f j)).op
 
 open Presieve
 
@@ -242,14 +242,14 @@ theorem jointlySurjective_ofCover {X : CommRingCat.{u}ᵒᵖ}
     {P : MorphismProperty Scheme.{u}} (U : AffineCover.{v} P (Spec X.unop)) :
     JointlySurjective X (.ofAffineCover U) :=
   fun p ↦ let ⟨y, hy⟩ := U.covers p
-  ⟨op <| U.obj (U.f p), (Spec.preimage <| U.map (U.f p)).op, ⟨_, rfl, rfl⟩, y, by
+  ⟨op <| U.X (U.idx p), (Spec.preimage <| U.f (U.idx p)).op, ⟨_, rfl, rfl⟩, y, by
     rwa [Quiver.Hom.unop_op, Spec.map_preimage]⟩
 
 theorem finite_ofCover {X : CommRingCat.{u}ᵒᵖ}
-    {P : MorphismProperty Scheme.{u}} (U : AffineCover.{v} P (Spec X.unop)) [Finite U.J] :
+    {P : MorphismProperty Scheme.{u}} (U : AffineCover.{v} P (Spec X.unop)) [Finite U.I₀] :
     Pretopology.finite _ X (.ofAffineCover U) := by
   refine Set.finite_coe_iff.2 <| Finite.of_surjective
-    (fun j : U.J ↦ ⟨⟨_, _⟩, j, rfl, by rw [eqToHom_refl, id_comp]⟩)
+    (fun i : U.I₀ ↦ ⟨⟨_, _⟩, i, rfl, by rw [eqToHom_refl, id_comp]⟩)
     fun ⟨⟨fst, snd⟩, j, h₁, h₂⟩ ↦ ⟨j, ?_⟩
   dsimp only at h₁ h₂; subst h₁
   rw [eqToHom_refl, id_comp] at h₂; subst h₂; rfl
@@ -263,7 +263,7 @@ lemma zariskiTopology_eq_toGrothendieck_zariskiPretopology :
     set U' := U.refinementSpec.finiteSubcover
     refine ⟨.ofAffineCover U', ⟨?_, ?_, ?_⟩, ?_⟩
     · rintro _ _ ⟨j, rfl, rfl⟩
-      rw [AffineOpenCover.finiteSubcover_map, Cover.refinementSpec_map,
+      rw [AffineOpenCover.finiteSubcover_f, Cover.refinementSpec_f,
         Spec.preimage_map, eqToHom_refl, id_comp, MorphismProperty.op, Quiver.Hom.unop_op,
         standardOpenImmersion_ofHom, RingHom.isStandardOpenImmersion_algebraMap]
       infer_instance
@@ -273,7 +273,7 @@ lemma zariskiTopology_eq_toGrothendieck_zariskiPretopology :
       rw [eqToHom_refl, id_comp] at h; subst h
       obtain ⟨j, f, hf, hfj⟩ := (U.refinementSpec.finiteSubcoverHom ≫ U.refinementSpecHom).exists j'
       obtain ⟨Z, g, h, hsg, hjhg⟩ := hus _ ⟨j⟩
-      rw [← AffineOpenCover.openCover_map, ← hfj, hjhg, ← assoc, Spec.preimage_comp,
+      rw [← AffineOpenCover.openCover_f, ← hfj, hjhg, ← assoc, Spec.preimage_comp,
         Scheme.Spec_map, Spec.preimage_map, op_comp, Quiver.Hom.op_unop]
       exact s.downward_closed hsg _
   · rintro ⟨p, ⟨std, surj, fin⟩, hsu⟩
