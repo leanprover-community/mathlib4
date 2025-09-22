@@ -5,7 +5,18 @@ Authors: Moritz Doll, Zhouhang Zhou
 -/
 import Mathlib.Analysis.Normed.Operator.Basic
 
--- (#1649) was original extend (Zhouhang Zhou, 2019)
+/-!
+
+# Extension of continuous linear maps on Banach spaces
+
+In this file we provide two different ways to extend a continuous linear map defined on a dense
+subspace to the entire Banach space.
+
+* `ContinuousLinearMap.extend`: Extend from a dense subspace using `IsUniformInducing`
+* `ContinuousLinearMap.extend_of_injCLM`: Extend from a continuous linear map that is a dense
+injection into the domain and using a norm estimate.
+
+-/
 
 suppress_compilation
 
