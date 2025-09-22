@@ -49,14 +49,13 @@ theorem isIntegral_two_mul_cos_pi (hθ : ∃ r : ℚ, θ = r * π) :
     use p
     push_cast
     field_simp [hq_pos]
-    ring
   -- Since z is a root of unity, `2 cos θ = z` and `z⁻¹` are algebraic integers, and their sum.
+  have h_cos_eq : 2 * cos (p / q * π) = z + z⁻¹ := by
+    simpa [Complex.cos, Complex.exp_neg, hr, z] using by ring_nf
   obtain ⟨f, hf₁, hf₂⟩ : IsIntegral ℤ (z + z⁻¹) := by
     apply IsIntegral.add <;> exact ⟨.X ^ (2 * q) - 1,
       Polynomial.monic_X_pow_sub_C _ (by positivity), by simp [hz_root]⟩
   use f, hf₁
-  have h_cos_eq : 2 * cos (p / q * π) = z + z⁻¹ := by
-    simpa [Complex.cos, Complex.exp_neg, hr, z] using by ring_nf
   simp_all [Polynomial.eval₂_eq_sum_range, ← Complex.ofReal_inj]
 
 /-- **Niven's theorem**: The only rational values of `cos` that occur at rational multiples of π
@@ -74,7 +73,7 @@ theorem niven (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, cos θ = q) 
     rw [Finset.mem_Icc]
     rify
     constructor <;> linarith [hk, (r * π).neg_one_le_cos, (r * π).cos_le_one]
-  rw [show cos (r * π) = k / 2 by rwa [mul_comm, ← eq_div_iff two_ne_zero] at hk]
+  rw [show cos (r * π) = k / 2 by grind]
   fin_cases hk_values <;> simp
 
 /-- Niven's theorem, but stated for `sin` instead of `cos`. -/
