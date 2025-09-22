@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Independence.Kernel
+import Mathlib.Probability.Kernel.CompProdEqIff
 import Mathlib.Probability.Kernel.Condexp
 
 /-!
@@ -694,6 +695,22 @@ theorem CondIndepFun.neg_right {_mβ : MeasurableSpace β} {_mβ' : MeasurableSp
 theorem CondIndepFun.neg_left {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'} [Neg β]
     [MeasurableNeg β] (hfg : CondIndepFun m' hm' f g μ) :
     CondIndepFun m' hm' (-f) g μ := hfg.comp measurable_neg measurable_id
+
+theorem condIndepFun_iff_compProd_map_prod_eq_compProd_prod_map_map
+    {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'} [CountableOrCountablyGenerated Ω (β × β')]
+    (hf : Measurable f) (hg : Measurable g) :
+    CondIndepFun m' hm' f g μ
+      ↔ (μ.trim hm') ⊗ₘ (condExpKernel μ m').map (fun ω ↦ (f ω, g ω))
+        = (μ.trim hm') ⊗ₘ (((condExpKernel μ m').map f) ×ₖ ((condExpKernel μ m').map g)) :=
+  Kernel.indepFun_iff_compProd_map_prod_eq_compProd_prod_map_map hf hg
+
+theorem condIndepFun_iff_map_prod_eq_prod_map_map
+    {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'} [CountableOrCountablyGenerated Ω (β × β')]
+    (hf : Measurable f) (hg : Measurable g) :
+    CondIndepFun m' hm' f g μ
+      ↔ (condExpKernel μ m').map (fun ω ↦ (f ω, g ω))
+        =ᵐ[μ.trim hm'] (((condExpKernel μ m').map f) ×ₖ ((condExpKernel μ m').map g)) := by
+  rw [condIndepFun_iff_compProd_map_prod_eq_compProd_prod_map_map hf hg, ← Kernel.compProd_eq_iff]
 
 section iCondIndepFun
 variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}
