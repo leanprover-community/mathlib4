@@ -42,7 +42,7 @@ theorem isCyclicallyReduced_singleton {x : (α × Bool)} : IsCyclicallyReduced [
 @[to_additive]
 theorem isCyclicallyReduced_iff :
     IsCyclicallyReduced L ↔
-    IsReduced L ∧ ∀ a ∈ L.getLast?, ∀ b ∈ L.head?, a.1 = b.1 → a.2 = b.2 := rfl
+    IsReduced L ∧ ∀ a ∈ L.getLast?, ∀ b ∈ L.head?, a.1 = b.1 → a.2 = b.2 := rfl.to_iff
 
 @[to_additive]
 theorem isCyclicallyReduced_cons_append_iff {a b : α × Bool} :
