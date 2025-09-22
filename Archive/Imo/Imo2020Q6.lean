@@ -1,28 +1,5 @@
 import Mathlib
 
-
-section lineMap
-
-variable {k E} [Ring k] [LinearOrder k] [IsStrictOrderedRing k]
-variable [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E]
-variable [Module k E] [OrderedSMul k E]
-
-variable {a b : E} {r r' : k}
-
-open AffineMap
-
-theorem lineMap_le_lineMap_iff_of_lt' (h : a < b) : lineMap a b r ≤ lineMap a b r' ↔ r ≤ r' := by
-  simp only [lineMap_apply_module']
-  rw [add_le_add_iff_right, smul_le_smul_iff_of_pos_right (sub_pos.mpr h)]
-
--- theorem left_le_lineMap_iff_le' (h : a < b) : a ≤ lineMap a b r ↔ 0 ≤ r :=
---   Iff.trans (by rw [lineMap_apply_zero]) (lineMap_le_lineMap_iff_of_lt' h)
-
--- theorem lineMap_le_right_iff_le' (h : a < b) : lineMap a b r ≤ b ↔ r ≤ 1 :=
---   Iff.trans (by rw [lineMap_apply_one]) (lineMap_le_lineMap_iff_of_lt' h)
-
-end lineMap
-
 open Finset
 
 theorem exists_between_and_separated {ι : Type*} (S : Finset ι) (f : ι → ℝ) (n : Nat)
