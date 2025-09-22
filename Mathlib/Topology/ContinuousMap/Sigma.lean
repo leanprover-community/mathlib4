@@ -52,18 +52,15 @@ theorem isEmbedding_sigmaMk_comp [Nonempty X] :
       Function.eq_of_sigmaMk_comp <| congr_arg DFunLike.coe h
     simpa using hg
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_sigmaMk_comp := isEmbedding_sigmaMk_comp
-
 section ConnectedSpace
 
 variable [ConnectedSpace X]
 
 /-- Every continuous map from a connected topological space to the disjoint union of a family of
-topological spaces is a composition of the embedding `ContinuousMap.sigmMk i : C(Y i, Σ i, Y i)` for
-some `i` and a continuous map `g : C(X, Y i)`. See also `Continuous.exists_lift_sigma` for a version
-with unbundled functions and `ContinuousMap.sigmaCodHomeomorph` for a homeomorphism defined using
-this fact. -/
+topological spaces is a composition of the embedding `ContinuousMap.sigmaMk i : C(Y i, Σ i, Y i)`
+for some `i` and a continuous map `g : C(X, Y i)`. See also `Continuous.exists_lift_sigma` for a
+version with unbundled functions and `ContinuousMap.sigmaCodHomeomorph` for a homeomorphism defined
+using this fact. -/
 theorem exists_lift_sigma (f : C(X, Σ i, Y i)) : ∃ i g, f = (sigmaMk i).comp g :=
   let ⟨i, g, hg, hfg⟩ := (map_continuous f).exists_lift_sigma
   ⟨i, ⟨g, hg⟩, DFunLike.ext' hfg⟩

@@ -3,7 +3,6 @@ Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.Perm.Centralizer
 import Mathlib.GroupTheory.SpecificGroups.Alternating
 
@@ -187,7 +186,7 @@ theorem count_le_one_of_centralizer_le_alternating
     rw [← sum_cycleType, hk_cT]
     simp
   have that : Multiset.card (k : Perm α).cycleType = (c : Perm α).support.card := by
-    rw [← Nat.mul_left_inj (a := 2) (by norm_num), this]
+    rw [← Nat.mul_left_inj (a := 2) (by simp), this]
     simp only [hk, toCentralizer, MonoidHom.coe_mk, OneHom.coe_mk, card_ofPermHom_support]
     have H : (⟨c, hc⟩ : g.cycleFactorsFinset) ≠ ⟨d, hd⟩ := Subtype.coe_ne_coe.mp hm'
     simp only [τ, support_swap H]

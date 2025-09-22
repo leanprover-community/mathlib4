@@ -40,7 +40,7 @@ instance {J : Type} [Finite J] (Z : J → ModuleCat.{v} k) [∀ j, Module.Finite
 
 variable [IsNoetherianRing k]
 
-/-- Finite limits of finite dimensional vectors spaces are finite dimensional,
+/-- Finite limits of finite-dimensional vector spaces are finite dimensional,
 because we can realise them as subobjects of a finite product. -/
 instance (F : J ⥤ FGModuleCat k) :
     Module.Finite k (limit (F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)) : ModuleCat.{v} k) :=

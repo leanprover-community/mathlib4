@@ -15,7 +15,7 @@ This file defines the equivalence relation `a ≡ b [MOD n]` on the natural numb
 and proves basic properties about it such as the Chinese Remainder Theorem
 `modEq_and_modEq_iff_modEq_mul`.
 
-## Notations
+## Notation
 
 `a ≡ b [MOD n]` is notation for `Nat.ModEq n a b`, which is defined to mean `a % n = b % n`.
 
@@ -99,14 +99,12 @@ lemma of_dvd (d : m ∣ n) (h : a ≡ b [MOD n]) : a ≡ b [MOD m] :=
 protected theorem mul_left' (c : ℕ) (h : a ≡ b [MOD n]) : c * a ≡ c * b [MOD c * n] := by
   unfold ModEq at *; rw [mul_mod_mul_left, mul_mod_mul_left, h]
 
-@[gcongr]
 protected theorem mul_left (c : ℕ) (h : a ≡ b [MOD n]) : c * a ≡ c * b [MOD n] :=
   (h.mul_left' _).of_dvd (dvd_mul_left _ _)
 
 protected theorem mul_right' (c : ℕ) (h : a ≡ b [MOD n]) : a * c ≡ b * c [MOD n * c] := by
   rw [mul_comm a, mul_comm b, mul_comm n]; exact h.mul_left' c
 
-@[gcongr]
 protected theorem mul_right (c : ℕ) (h : a ≡ b [MOD n]) : a * c ≡ b * c [MOD n] := by
   rw [mul_comm a, mul_comm b]; exact h.mul_left c
 
@@ -127,11 +125,9 @@ protected theorem add (h₁ : a ≡ b [MOD n]) (h₂ : c ≡ d [MOD n]) : a + c 
   rw [modEq_iff_dvd, Int.natCast_add, Int.natCast_add, add_sub_add_comm]
   exact Int.dvd_add h₁.dvd h₂.dvd
 
-@[gcongr]
 protected theorem add_left (c : ℕ) (h : a ≡ b [MOD n]) : c + a ≡ c + b [MOD n] :=
   ModEq.rfl.add h
 
-@[gcongr]
 protected theorem add_right (c : ℕ) (h : a ≡ b [MOD n]) : a + c ≡ b + c [MOD n] :=
   h.add ModEq.rfl
 
@@ -145,6 +141,10 @@ protected theorem add_left_cancel (h₁ : a ≡ b [MOD n]) (h₂ : a + c ≡ b +
 protected theorem add_left_cancel' (c : ℕ) (h : c + a ≡ c + b [MOD n]) : a ≡ b [MOD n] :=
   ModEq.rfl.add_left_cancel h
 
+@[simp]
+protected theorem add_iff_left (h : a ≡ b [MOD n]) : a + c ≡ b + d [MOD n] ↔ c ≡ d [MOD n] :=
+  ⟨h.add_left_cancel, h.add⟩
+
 protected theorem add_right_cancel (h₁ : c ≡ d [MOD n]) (h₂ : a + c ≡ b + d [MOD n]) :
     a ≡ b [MOD n] := by
   rw [add_comm a, add_comm b] at h₂
@@ -152,6 +152,35 @@ protected theorem add_right_cancel (h₁ : c ≡ d [MOD n]) (h₂ : a + c ≡ b 
 
 protected theorem add_right_cancel' (c : ℕ) (h : a + c ≡ b + c [MOD n]) : a ≡ b [MOD n] :=
   ModEq.rfl.add_right_cancel h
+
+@[simp]
+protected theorem add_iff_right (h : c ≡ d [MOD n]) : a + c ≡ b + d [MOD n] ↔ a ≡ b [MOD n] :=
+  ⟨h.add_right_cancel, (.add · h)⟩
+
+protected lemma sub' (h : c ≤ a ↔ d ≤ b) (hab : a ≡ b [MOD n]) (hcd : c ≡ d [MOD n]) :
+    a - c ≡ b - d [MOD n] := by
+  obtain hac | hca := lt_or_ge a c
+  · rw [Nat.sub_eq_zero_of_le hac.le, Nat.sub_eq_zero_of_le ((lt_iff_lt_of_le_iff_le h).1 hac).le]
+  rw [modEq_iff_dvd, Int.natCast_sub hca, Int.natCast_sub <| h.1 hca, sub_sub_sub_comm]
+  exact Int.dvd_sub hab.dvd hcd.dvd
+
+protected lemma sub_left' (h : b ≤ a ↔ c ≤ a) (hbc : b ≡ c [MOD n]) : a - b ≡ a - c [MOD n] :=
+  .sub' h .rfl hbc
+
+protected lemma sub_right' (h : a ≤ b ↔ a ≤ c) (hbc : b ≡ c [MOD n]) : b - a ≡ c - a [MOD n] :=
+  .sub' h hbc .rfl
+
+@[gcongr]
+protected lemma sub (hca : c ≤ a) (hdb : d ≤ b) (hab : a ≡ b [MOD n]) (hcd : c ≡ d [MOD n]) :
+    a - c ≡ b - d [MOD n] := .sub' (iff_of_true hca hdb) hab hcd
+
+@[gcongr]
+protected lemma sub_left (hba : b ≤ a) (hca : c ≤ a) (hbc : b ≡ c [MOD n]) :
+    a - b ≡ a - c [MOD n] := .sub hba hca .rfl hbc
+
+@[gcongr]
+protected lemma sub_right (hab : a ≤ b) (hac : a ≤ c) (hbc : b ≡ c [MOD n]) :
+    b - a ≡ c - a [MOD n] := .sub hab hac hbc .rfl
 
 /-- Cancel left multiplication on both sides of the `≡` and in the modulus.
 

@@ -42,7 +42,7 @@ various versions of the Jacobi theta function.
 
 noncomputable section
 
-open Complex hiding abs_of_nonneg
+open Complex
 open CharZero Filter Topology Asymptotics Real Set MeasureTheory
 open scoped ComplexConjugate
 
@@ -81,7 +81,7 @@ lemma jacobiTheta₂''_neg_left (z τ : ℂ) : jacobiTheta₂'' (-z) τ = -jacob
 lemma jacobiTheta₂'_functional_equation' (z τ : ℂ) :
     jacobiTheta₂' z τ = (-2 * π) / (-I * τ) ^ (3 / 2 : ℂ) * jacobiTheta₂'' z (-1 / τ) := by
   rcases eq_or_ne τ 0 with rfl | hτ
-  · rw [jacobiTheta₂'_undef _ (by simp), mul_zero, zero_cpow (by norm_num), div_zero, zero_mul]
+  · rw [jacobiTheta₂'_undef _ (by simp), mul_zero, zero_cpow (by simp), div_zero, zero_mul]
   have aux1 : (-2 * π : ℂ) / (2 * π * I) = I := by
     rw [div_eq_iff two_pi_I_ne_zero, mul_comm I, mul_assoc _ I I, I_mul_I, neg_mul, mul_neg,
       mul_one]
@@ -105,7 +105,7 @@ for an expression as a sum over `ℤ`.
 -/
 @[irreducible] def oddKernel (a : UnitAddCircle) (x : ℝ) : ℝ :=
   (show Function.Periodic (fun a : ℝ ↦ re (jacobiTheta₂'' a (I * x))) 1 by
-    intro a; simp [jacobiTheta₂''_add_left]).lift a
+    simp [jacobiTheta₂''_add_left]).lift a
 
 lemma oddKernel_def (a x : ℝ) : ↑(oddKernel a x) = jacobiTheta₂'' a (I * x) := by
   simp [oddKernel, ← conj_eq_iff_re, jacobiTheta₂''_conj]
@@ -126,7 +126,7 @@ to `∑ (n : ℕ), 2 * n * sin (2 * π * n * a) * exp (-π * n ^ 2 * x)`. See `h
 for the defining sum. -/
 @[irreducible] def sinKernel (a : UnitAddCircle) (x : ℝ) : ℝ :=
   (show Function.Periodic (fun ξ : ℝ ↦ re (jacobiTheta₂' ξ (I * x) / (-2 * π))) 1 by
-    intro ξ; simp [jacobiTheta₂'_add_left]).lift a
+    simp [jacobiTheta₂'_add_left]).lift a
 
 lemma sinKernel_def (a x : ℝ) : ↑(sinKernel ↑a x) = jacobiTheta₂' a (I * x) / (-2 * π) := by
   simp [sinKernel, re_eq_add_conj, jacobiTheta₂'_conj, map_ofNat]

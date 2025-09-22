@@ -90,7 +90,7 @@ theorem mul_eq (x y : FreeMagma α) : mul x y = x * y := rfl
 
 /-- Recursor for `FreeMagma` using `x * y` instead of `FreeMagma.mul x y`. -/
 @[to_additive (attr := elab_as_elim, induction_eliminator)
-  "Recursor for `FreeAddMagma` using `x + y` instead of `FreeAddMagma.add x y`."]
+  /-- Recursor for `FreeAddMagma` using `x + y` instead of `FreeAddMagma.add x y`. -/]
 def recOnMul {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (of x))
     (ih2 : ∀ x y, C x → C y → C (x * y)) : C x :=
   FreeMagma.recOn x ih1 ih2
@@ -122,7 +122,7 @@ variable {α : Type u} {β : Type v} [Mul β] (f : α → β)
 
 /-- The universal property of the free magma expressing its adjointness. -/
 @[to_additive (attr := simps symm_apply)
-"The universal property of the free additive magma expressing its adjointness."]
+/-- The universal property of the free additive magma expressing its adjointness. -/]
 def lift : (α → β) ≃ (FreeMagma α →ₙ* β) where
   toFun f :=
   { toFun := liftAux f
@@ -146,8 +146,8 @@ variable {α : Type u} {β : Type v} (f : α → β)
 
 /-- The unique magma homomorphism `FreeMagma α →ₙ* FreeMagma β` that sends
 each `of x` to `of (f x)`. -/
-@[to_additive "The unique additive magma homomorphism `FreeAddMagma α → FreeAddMagma β` that sends
-each `of x` to `of (f x)`."]
+@[to_additive /-- The unique additive magma homomorphism `FreeAddMagma α → FreeAddMagma β` that
+sends each `of x` to `of (f x)`. -/]
 def map (f : α → β) : FreeMagma α →ₙ* FreeMagma β := lift (of ∘ f)
 
 @[to_additive (attr := simp)]
@@ -165,7 +165,8 @@ instance : Monad FreeMagma where
   bind x f := lift f x
 
 /-- Recursor on `FreeMagma` using `pure` instead of `of`. -/
-@[to_additive (attr := elab_as_elim) "Recursor on `FreeAddMagma` using `pure` instead of `of`."]
+@[to_additive (attr := elab_as_elim)
+/-- Recursor on `FreeAddMagma` using `pure` instead of `of`. -/]
 protected def recOnPure {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (pure x))
     (ih2 : ∀ x y, C x → C y → C (x * y)) : C x :=
   FreeMagma.recOnMul x ih1 ih2
@@ -304,7 +305,7 @@ def FreeAddMagma.length {α : Type u} : FreeAddMagma α → ℕ
 attribute [to_additive existing (attr := simp)] FreeMagma.length
 
 /-- The length of an element of a free magma is positive. -/
-@[to_additive "The length of an element of a free additive magma is positive."]
+@[to_additive /-- The length of an element of a free additive magma is positive. -/]
 lemma FreeMagma.length_pos {α : Type u} (x : FreeMagma α) : 0 < x.length :=
   match x with
   | FreeMagma.of _ => Nat.succ_pos 0
@@ -316,7 +317,7 @@ inductive AddMagma.AssocRel (α : Type u) [Add α] : α → α → Prop
   | left : ∀ w x y z, AddMagma.AssocRel α (w + (x + y + z)) (w + (x + (y + z)))
 
 /-- Associativity relations for a magma. -/
-@[to_additive AddMagma.AssocRel "Associativity relations for an additive magma."]
+@[to_additive AddMagma.AssocRel /-- Associativity relations for an additive magma. -/]
 inductive Magma.AssocRel (α : Type u) [Mul α] : α → α → Prop
   | intro : ∀ x y z, Magma.AssocRel α (x * y * z) (x * (y * z))
   | left : ∀ w x y z, Magma.AssocRel α (w * (x * y * z)) (w * (x * (y * z)))
@@ -324,7 +325,7 @@ inductive Magma.AssocRel (α : Type u) [Mul α] : α → α → Prop
 namespace Magma
 
 /-- Semigroup quotient of a magma. -/
-@[to_additive AddMagma.FreeAddSemigroup "Additive semigroup quotient of an additive magma."]
+@[to_additive AddMagma.FreeAddSemigroup /-- Additive semigroup quotient of an additive magma. -/]
 def AssocQuotient (α : Type u) [Mul α] : Type u :=
   Quot <| AssocRel α
 
@@ -356,7 +357,7 @@ instance : Semigroup (AssocQuotient α) where
     Quot.induction_on₃ x y z fun a b c ↦ quot_mk_assoc a b c
 
 /-- Embedding from magma to its free semigroup. -/
-@[to_additive "Embedding from additive magma to its free additive semigroup."]
+@[to_additive /-- Embedding from additive magma to its free additive semigroup. -/]
 def of : α →ₙ* AssocQuotient α where toFun := Quot.mk _; map_mul' _x _y := rfl
 
 @[to_additive]
@@ -376,8 +377,8 @@ theorem hom_ext {f g : AssocQuotient α →ₙ* β} (h : f.comp of = g.comp of) 
 
 /-- Lifts a magma homomorphism `α → β` to a semigroup homomorphism `Magma.AssocQuotient α → β`
 given a semigroup `β`. -/
-@[to_additive (attr := simps symm_apply) "Lifts an additive magma homomorphism `α → β` to an
-additive semigroup homomorphism `AddMagma.AssocQuotient α → β` given an additive semigroup `β`."]
+@[to_additive (attr := simps symm_apply) /-- Lifts an additive magma homomorphism `α → β` to an
+additive semigroup homomorphism `AddMagma.AssocQuotient α → β` given an additive semigroup `β`. -/]
 def lift : (α →ₙ* β) ≃ (AssocQuotient α →ₙ* β) where
   toFun f :=
   { toFun := fun x ↦
@@ -400,8 +401,8 @@ variable {β : Type v} [Mul β] (f : α →ₙ* β)
 
 /-- From a magma homomorphism `α →ₙ* β` to a semigroup homomorphism
 `Magma.AssocQuotient α →ₙ* Magma.AssocQuotient β`. -/
-@[to_additive "From an additive magma homomorphism `α → β` to an additive semigroup homomorphism
-`AddMagma.AssocQuotient α → AddMagma.AssocQuotient β`."]
+@[to_additive /-- From an additive magma homomorphism `α → β` to an additive semigroup homomorphism
+`AddMagma.AssocQuotient α → AddMagma.AssocQuotient β`. -/]
 def map : AssocQuotient α →ₙ* AssocQuotient β := lift (of.comp f)
 
 @[to_additive (attr := simp)]
@@ -478,11 +479,11 @@ theorem tail_mul (x y : FreeSemigroup α) : (x * y).2 = x.2 ++ y.1 :: y.2 := rfl
 theorem mk_mul_mk (x y : α) (L1 L2 : List α) : mk x L1 * mk y L2 = mk x (L1 ++ y :: L2) := rfl
 
 /-- The embedding `α → FreeSemigroup α`. -/
-@[to_additive (attr := simps) "The embedding `α → FreeAddSemigroup α`."]
+@[to_additive (attr := simps) /-- The embedding `α → FreeAddSemigroup α`. -/]
 def of (x : α) : FreeSemigroup α := ⟨x, []⟩
 
 /-- Length of an element of free semigroup. -/
-@[to_additive "Length of an element of free additive semigroup"]
+@[to_additive /-- Length of an element of free additive semigroup -/]
 def length (x : FreeSemigroup α) : ℕ := x.tail.length + 1
 
 @[to_additive (attr := simp)]
@@ -497,7 +498,7 @@ instance [Inhabited α] : Inhabited (FreeSemigroup α) := ⟨of default⟩
 
 /-- Recursor for free semigroup using `of` and `*`. -/
 @[to_additive (attr := elab_as_elim, induction_eliminator)
-  "Recursor for free additive semigroup using `of` and `+`."]
+  /-- Recursor for free additive semigroup using `of` and `+`. -/]
 protected def recOnMul {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (of x))
     (ih2 : ∀ x y, C (of x) → C y → C (of x * y)) : C x :=
       FreeSemigroup.recOn x fun f s ↦
@@ -514,8 +515,8 @@ variable {β : Type v} [Semigroup β] (f : α → β)
 
 /-- Lifts a function `α → β` to a semigroup homomorphism `FreeSemigroup α → β` given
 a semigroup `β`. -/
-@[to_additive (attr := simps symm_apply) "Lifts a function `α → β` to an additive semigroup
-homomorphism `FreeAddSemigroup α → β` given an additive semigroup `β`."]
+@[to_additive (attr := simps symm_apply) /-- Lifts a function `α → β` to an additive semigroup
+homomorphism `FreeAddSemigroup α → β` given an additive semigroup `β`. -/]
 def lift : (α → β) ≃ (FreeSemigroup α →ₙ* β) where
   toFun f :=
     { toFun := fun x ↦ x.2.foldl (fun a b ↦ a * f b) (f x.1)
@@ -543,7 +544,7 @@ section Map
 variable {β : Type v} (f : α → β)
 
 /-- The unique semigroup homomorphism that sends `of x` to `of (f x)`. -/
-@[to_additive "The unique additive semigroup homomorphism that sends `of x` to `of (f x)`."]
+@[to_additive /-- The unique additive semigroup homomorphism that sends `of x` to `of (f x)`. -/]
 def map : FreeSemigroup α →ₙ* FreeSemigroup β :=
   lift <| of ∘ f
 
@@ -566,7 +567,7 @@ instance : Monad FreeSemigroup where
   bind x f := lift f x
 
 /-- Recursor that uses `pure` instead of `of`. -/
-@[to_additive (attr := elab_as_elim) "Recursor that uses `pure` instead of `of`."]
+@[to_additive (attr := elab_as_elim) /-- Recursor that uses `pure` instead of `of`. -/]
 def recOnPure {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (pure x))
     (ih2 : ∀ x y, C (pure x) → C y → C (pure x * y)) : C x :=
   FreeSemigroup.recOnMul x ih1 ih2
@@ -600,7 +601,7 @@ instance instLawfulMonad : LawfulMonad FreeSemigroup.{u} := LawfulMonad.mk'
   (id_map := fun x ↦ recOnPure x (fun _ ↦ rfl) fun x y ih1 ih2 ↦ by rw [map_mul', ih1, ih2])
 
 /-- `FreeSemigroup` is traversable. -/
-@[to_additive "`FreeAddSemigroup` is traversable."]
+@[to_additive /-- `FreeAddSemigroup` is traversable. -/]
 protected def traverse {m : Type u → Type u} [Applicative m] {α β : Type u}
     (F : α → m β) (x : FreeSemigroup α) : m (FreeSemigroup β) :=
   recOnPure x (fun x ↦ pure <$> F x) fun _x _y ihx ihy ↦ (· * ·) <$> ihx <*> ihy
@@ -678,7 +679,7 @@ namespace FreeMagma
 variable {α : Type u} {β : Type v}
 
 /-- The canonical multiplicative morphism from `FreeMagma α` to `FreeSemigroup α`. -/
-@[to_additive "The canonical additive morphism from `FreeAddMagma α` to `FreeAddSemigroup α`."]
+@[to_additive /-- The canonical additive morphism from `FreeAddMagma α` to `FreeAddSemigroup α`. -/]
 def toFreeSemigroup : FreeMagma α →ₙ* FreeSemigroup α := FreeMagma.lift FreeSemigroup.of
 
 @[to_additive (attr := simp)]
@@ -704,8 +705,8 @@ theorem length_toFreeSemigroup (x : FreeMagma α) : (toFreeSemigroup x).length =
 end FreeMagma
 
 /-- Isomorphism between `Magma.AssocQuotient (FreeMagma α)` and `FreeSemigroup α`. -/
-@[to_additive "Isomorphism between `AddMagma.AssocQuotient (FreeAddMagma α)` and
-`FreeAddSemigroup α`."]
+@[to_additive /-- Isomorphism between `AddMagma.AssocQuotient (FreeAddMagma α)` and
+`FreeAddSemigroup α`. -/]
 def FreeMagmaAssocQuotientEquiv (α : Type u) :
     Magma.AssocQuotient (FreeMagma α) ≃* FreeSemigroup α :=
       (Magma.AssocQuotient.lift FreeMagma.toFreeSemigroup).toMulEquiv

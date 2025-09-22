@@ -36,8 +36,8 @@ are given the `aesop` attribute according to the following principles:
   - Rules that cause loops (even in the absence of metavariables) are given a low priority of 5%.
     These rules are placed in the `SetLike!` ruleset instead of the `SetLike` ruleset so that
     they are not invoked by default. An example is `SetLike.mem_of_subset`.
-  - Simplifying the left hand side of a membership goal is prioritised over simplifying the
-    right hand side. By default, rules simplifying the LHS (e.g., `mul_mem`) are given
+  - Simplifying the left-hand side of a membership goal is prioritised over simplifying the
+    right-hand side. By default, rules simplifying the LHS (e.g., `mul_mem`) are given
     probability 90% and rules simplifying the RHS are given probability 80%
     (e.g., `Subgroup.mem_closure_of_mem`).
   - These default probabilities are for rules with simple hypotheses that fail quickly when

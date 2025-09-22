@@ -166,7 +166,7 @@ instance commRingStructureSheafInTypeObj (U : (Opens (ProjectiveSpectrum.top �
     CommRing ((structureSheafInType 𝒜).1.obj U) :=
   (sectionsSubring U).toCommRing
 
-/-- The structure presheaf, valued in `CommRing`, constructed by dressing up the `Type` valued
+/-- The structure presheaf, valued in `CommRing`, constructed by dressing up the `Type`-valued
 structure presheaf. -/
 @[simps obj_carrier]
 def structurePresheafInCommRing : Presheaf CommRingCat (ProjectiveSpectrum.top 𝒜) where
@@ -178,11 +178,11 @@ def structurePresheafInCommRing : Presheaf CommRingCat (ProjectiveSpectrum.top �
       map_one' := rfl
       map_mul' := fun _ _ => rfl }
 
-/-- Some glue, verifying that the structure presheaf valued in `CommRing` agrees with the `Type`
-valued structure presheaf. -/
+/-- Some glue, verifying that the structure presheaf valued in `CommRing` agrees with the
+`Type`-valued structure presheaf. -/
 def structurePresheafCompForget :
     structurePresheafInCommRing 𝒜 ⋙ forget CommRingCat ≅ (structureSheafInType 𝒜).1 :=
-  NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
+  NatIso.ofComponents (fun _ => Iso.refl _) (by cat_disch)
 
 end ProjectiveSpectrum.StructureSheaf
 

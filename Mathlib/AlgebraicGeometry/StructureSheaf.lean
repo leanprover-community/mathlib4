@@ -7,7 +7,7 @@ import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Localization.AtPrime.Basic
 import Mathlib.RingTheory.Spectrum.Prime.Topology
 import Mathlib.Topology.Sheaves.LocalPredicate
 
@@ -215,7 +215,7 @@ instance commRingStructureSheafInTypeObj (U : (Opens (PrimeSpectrum.Top R))ᵒ�
 
 open PrimeSpectrum
 
-/-- The structure presheaf, valued in `CommRingCat`, constructed by dressing up the `Type` valued
+/-- The structure presheaf, valued in `CommRingCat`, constructed by dressing up the `Type`-valued
 structure presheaf.
 -/
 @[simps obj_carrier]
@@ -229,7 +229,7 @@ def structurePresheafInCommRing : Presheaf CommRingCat (PrimeSpectrum.Top R) whe
       map_mul' := fun _ _ => rfl }
 
 /-- Some glue, verifying that the structure presheaf valued in `CommRingCat` agrees
-with the `Type` valued structure presheaf.
+with the `Type`-valued structure presheaf.
 -/
 def structurePresheafCompForget :
     structurePresheafInCommRing R ⋙ forget CommRingCat ≅ (structureSheafInType R).1 :=
@@ -737,10 +737,6 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
   rw [pow_succ]
   ring
 
--- Porting note: in the following proof there are two places where `⋃ i, ⋃ (hx : i ∈ _), ... `
--- though `hx` is not used in `...` part, it is still required to maintain the structure of
--- the original proof in mathlib3.
-set_option linter.unusedVariables false in
 -- The proof here follows the argument in Hartshorne's Algebraic Geometry, Proposition II.2.2.
 theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) := by
   intro s
@@ -973,8 +969,8 @@ theorem comapFunIsLocallyFraction (f : R →+* S) (U : Opens (PrimeSpectrum.Top 
   specialize h_frac ⟨PrimeSpectrum.comap f q, hqW⟩
   refine ⟨h_frac.1, ?_⟩
   dsimp only [comapFun]
-  erw [← Localization.localRingHom_to_map (PrimeSpectrum.comap f q).asIdeal, ← RingHom.map_mul,
-    h_frac.2, Localization.localRingHom_to_map]
+  erw [← Localization.localRingHom_to_map (PrimeSpectrum.comap f q).asIdeal _ _ rfl,
+    ← RingHom.map_mul, h_frac.2, Localization.localRingHom_to_map]
   rfl
 
 /-- For a ring homomorphism `f : R →+* S` and open sets `U` and `V` of the prime spectra of `R` and

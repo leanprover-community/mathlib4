@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Bases
 import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Topology.UniformSpace.Basic
+import Mathlib.Topology.UniformSpace.DiscreteUniformity
 
 /-!
 # Theory of Cauchy filters in uniform spaces. Complete uniform spaces. Totally bounded subsets.
@@ -423,7 +423,7 @@ theorem cauchySeq_tendsto_of_complete [Preorder β] [CompleteSpace α] {u : β �
     (H : CauchySeq u) : ∃ x, Tendsto u atTop (𝓝 x) :=
   CompleteSpace.complete H
 
-/-- If `K` is a complete subset, then any cauchy sequence in `K` converges to a point in `K` -/
+/-- If `K` is a complete subset, then any Cauchy sequence in `K` converges to a point in `K` -/
 theorem cauchySeq_tendsto_of_isComplete [Preorder β] {K : Set α} (h₁ : IsComplete K)
     {u : β → α} (h₂ : ∀ n, u n ∈ K) (h₃ : CauchySeq u) : ∃ v ∈ K, Tendsto u atTop (𝓝 v) :=
   h₁ _ h₃ <| le_principal_iff.2 <| mem_map_iff_exists_image.2
@@ -441,6 +441,46 @@ theorem IsClosed.isComplete [CompleteSpace α] {s : Set α} (h : IsClosed s) : I
   fun _ cf fs =>
   let ⟨x, hx⟩ := CompleteSpace.complete cf
   ⟨x, isClosed_iff_clusterPt.mp h x (cf.left.mono (le_inf hx fs)), hx⟩
+
+namespace DiscreteUniformity
+
+variable [DiscreteUniformity α]
+
+/-- A Cauchy filter in a discrete uniform space is contained in the principal filter
+of a point. -/
+theorem eq_pure_of_cauchy {f : Filter α} (hf : Cauchy f) : ∃ x : α, f = pure x := by
+  rcases hf with ⟨f_ne_bot, f_le⟩
+  simp only [DiscreteUniformity.eq_principal_idRel, le_principal_iff, mem_prod_iff] at f_le
+  obtain ⟨S, ⟨hS, ⟨T, ⟨hT, H⟩⟩⟩⟩ := f_le
+  obtain ⟨x, rfl⟩ := eq_singleton_left_of_prod_subset_idRel (f_ne_bot.nonempty_of_mem hS)
+    (Filter.nonempty_of_mem hT) H
+  exact ⟨x, f_ne_bot.le_pure_iff.mp <| le_pure_iff.mpr hS⟩
+
+@[deprecated (since := "2025-03-23")]
+alias _root_.UniformSpace.DiscreteUnif.cauchy_le_pure := eq_pure_of_cauchy
+
+/-- The discrete uniformity makes a space complete. -/
+instance : CompleteSpace α where
+  complete {f} hf := by
+    obtain ⟨x, rfl⟩ := eq_pure_of_cauchy hf
+    exact ⟨x, pure_le_nhds x⟩
+
+variable {X}
+
+/-- A constant to which a Cauchy filter in a discrete uniform space converges. -/
+noncomputable def cauchyConst {f : Filter α} (hf : Cauchy f) : α :=
+  (eq_pure_of_cauchy hf).choose
+
+@[deprecated (since := "2025-03-23")]
+alias _root_.UniformSpace.DiscreteUnif.cauchyConst := cauchyConst
+
+theorem eq_pure_cauchyConst {f : Filter α} (hf : Cauchy f) : f = pure (cauchyConst hf) :=
+  (eq_pure_of_cauchy hf).choose_spec
+
+@[deprecated (since := "2025-03-23")]
+alias _root_.UniformSpace.DiscreteUnif.eq_const_of_cauchy := eq_pure_cauchyConst
+
+end DiscreteUniformity
 
 /-- A set `s` is totally bounded if for every entourage `d` there is a finite
   set of points `t` such that every element of `s` is `d`-near to some element of `t`. -/
@@ -562,8 +602,7 @@ theorem TotallyBounded.image [UniformSpace β] {f : α → β} {s : Set α} (hs 
   ⟨f '' c, hfc.image f, by
     simp only [mem_image, iUnion_exists, biUnion_and', iUnion_iUnion_eq_right, image_subset_iff,
       preimage_iUnion, preimage_setOf_eq]
-    simp? [subset_def] at hct says
-      simp only [mem_setOf_eq, subset_def, mem_iUnion, exists_prop] at hct
+    have hct : ∀ x ∈ s, ∃ i ∈ c, (f x, f i) ∈ t := by simpa [subset_def] using hct
     intro x hx
     simpa using hct x hx⟩
 
@@ -629,9 +668,14 @@ instance (priority := 100) complete_of_compact {α : Type u} [UniformSpace α] [
     CompleteSpace α :=
   ⟨fun hf => by simpa using (isCompact_iff_totallyBounded_isComplete.1 isCompact_univ).2 _ hf⟩
 
-theorem isCompact_of_totallyBounded_isClosed [CompleteSpace α] {s : Set α} (ht : TotallyBounded s)
-    (hc : IsClosed s) : IsCompact s :=
-  (@isCompact_iff_totallyBounded_isComplete α _ s).2 ⟨ht, hc.isComplete⟩
+theorem TotallyBounded.isCompact_of_isComplete {s : Set α} (ht : TotallyBounded s)
+    (hc : IsComplete s) : IsCompact s := isCompact_iff_totallyBounded_isComplete.mpr ⟨ht, hc⟩
+
+theorem TotallyBounded.isCompact_of_isClosed [CompleteSpace α] {s : Set α} (ht : TotallyBounded s)
+    (hc : IsClosed s) : IsCompact s := ht.isCompact_of_isComplete hc.isComplete
+
+@[deprecated (since := "2025-08-30")] alias isCompact_of_totallyBounded_isClosed :=
+    TotallyBounded.isCompact_of_isClosed
 
 /-- Every Cauchy sequence over `ℕ` is totally bounded. -/
 theorem CauchySeq.totallyBounded_range {s : ℕ → α} (hs : CauchySeq s) :
@@ -788,10 +832,8 @@ instance (priority := 100) firstCountableTopology : FirstCountableTopology α :=
 
 /-- A separable uniform space with countably generated uniformity filter is second countable:
 one obtains a countable basis by taking the balls centered at points in a dense subset,
-and with rational "radii" from a countable open symmetric antitone basis of `𝓤 α`. We do not
-register this as an instance, as there is already an instance going in the other direction
-from second countable spaces to separable spaces, and we want to avoid loops. -/
-theorem secondCountable_of_separable [SeparableSpace α] : SecondCountableTopology α := by
+and with rational "radii" from a countable open symmetric antitone basis of `𝓤 α`. -/
+instance secondCountable_of_separable [SeparableSpace α] : SecondCountableTopology α := by
   rcases exists_countable_dense α with ⟨s, hsc, hsd⟩
   obtain
     ⟨t : ℕ → Set (α × α), hto : ∀ i : ℕ, t i ∈ (𝓤 α).sets ∧ IsOpen (t i) ∧ IsSymmetricRel (t i),

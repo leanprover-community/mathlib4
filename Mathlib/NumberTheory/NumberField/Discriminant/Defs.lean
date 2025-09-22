@@ -9,7 +9,6 @@ import Init.Data.List.Nat.Pairwise
 import Init.Data.List.Nat.Range
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.RingTheory.Localization.NormTrace
-import Mathlib.Analysis.Normed.Field.Lemmas
 
 /-!
 # Number field discriminant
@@ -23,7 +22,9 @@ This file defines the discriminant of a number field.
 number field, discriminant
 -/
 
--- TODO. Rewrite some of the FLT results on the disciminant using the definitions and results of
+open Module
+
+-- TODO: Rewrite some of the FLT results on the discriminant using the definitions and results of
 -- this file
 
 namespace NumberField
@@ -52,11 +53,15 @@ theorem discr_eq_discr_of_algEquiv {L : Type*} [Field L] [NumberField L] (f : K 
     ← discr_eq_discr L ((RingOfIntegers.basis K).map f₀)]
   change _ = algebraMap ℤ ℚ _
   rw [← Algebra.discr_localizationLocalization ℤ (nonZeroDivisors ℤ) L]
-  congr
+  congr 1
   ext
   simp only [Function.comp_apply, integralBasis_apply, Basis.localizationLocalization_apply,
     Basis.map_apply]
   rfl
+
+theorem discr_eq_discr_of_ringEquiv {L : Type*} [Field L] [NumberField L] (f : K ≃+* L) :
+    discr K = discr L :=
+  discr_eq_discr_of_algEquiv _ <| AlgEquiv.ofRingEquiv (f := f) fun _ ↦ by simp
 
 end NumberField
 
@@ -78,7 +83,7 @@ theorem numberField_discr : discr ℚ = 1 := by
         AddEquiv.coe_toIntLinearEquiv, Basis.singleton_apply,
         show (AddEquiv.symm ↑ringOfIntegersEquiv) (1 : ℤ) = ringOfIntegersEquiv.symm 1 by rfl,
         map_one, mul_one]
-    _ = 1 := by rw [Algebra.trace_eq_matrix_trace b]; norm_num
+    _ = 1 := by rw [Algebra.trace_eq_matrix_trace b]; simp
 
 alias _root_.NumberField.discr_rat := numberField_discr
 

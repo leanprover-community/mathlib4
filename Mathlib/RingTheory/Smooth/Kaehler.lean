@@ -59,7 +59,7 @@ variable [Algebra R P] [Algebra P S]
 section ofSection
 
 variable [Algebra R S] [IsScalarTower R P S]
--- Suppose we have a section (as alghom) of `P →ₐ[R] S`.
+-- Suppose we have a section (as an algebra homomorphism) of `P →ₐ[R] S`.
 variable (g : S →ₐ[R] P)
 
 /--
@@ -438,7 +438,7 @@ private theorem Algebra.FormallySmooth.iff_injective_and_projective' :
     letI : Algebra (MvPolynomial S R) S := (MvPolynomial.aeval _root_.id).toAlgebra
     Algebra.FormallySmooth R S ↔
         Function.Injective (kerCotangentToTensor R (MvPolynomial S R) S) ∧
-        Module.Projective S (Ω[S⁄R]) := by
+        Module.Projective S Ω[S⁄R] := by
   letI : Algebra (MvPolynomial S R) S := (MvPolynomial.aeval _root_.id).toAlgebra
   have : Function.Surjective (algebraMap (MvPolynomial S R) S) :=
     fun x ↦ ⟨.X x, MvPolynomial.aeval_X _ _⟩
@@ -446,7 +446,7 @@ private theorem Algebra.FormallySmooth.iff_injective_and_projective' :
     ← Module.Projective.iff_split_of_projective]
   exact KaehlerDifferential.mapBaseChange_surjective _ _ _ this
 
-instance : Module.Projective P (Ω[P⁄R]) :=
+instance : Module.Projective P Ω[P⁄R] :=
   (Algebra.FormallySmooth.iff_injective_and_projective'.mp ‹_›).2
 
 include hf in
@@ -457,7 +457,7 @@ then `S` is formally smooth iff `I/I² → S ⊗[P] Ω[P⁄R]` is injective and 
 -/
 theorem Algebra.FormallySmooth.iff_injective_and_projective :
     Algebra.FormallySmooth R S ↔
-        Function.Injective (kerCotangentToTensor R P S) ∧ Module.Projective S (Ω[S⁄R]) := by
+        Function.Injective (kerCotangentToTensor R P S) ∧ Module.Projective S Ω[S⁄R] := by
   rw [Algebra.FormallySmooth.iff_injective_and_split hf,
     ← Module.Projective.iff_split_of_projective]
   exact KaehlerDifferential.mapBaseChange_surjective _ _ _ hf
@@ -468,7 +468,7 @@ An algebra is formally smooth if and only if `H¹(L_{R/S}) = 0` and `Ω_{S/R}` i
 @[stacks 031J]
 theorem Algebra.FormallySmooth.iff_subsingleton_and_projective :
     Algebra.FormallySmooth R S ↔
-        Subsingleton (Algebra.H1Cotangent R S) ∧ Module.Projective S (Ω[S⁄R]) := by
+        Subsingleton (Algebra.H1Cotangent R S) ∧ Module.Projective S Ω[S⁄R] := by
   refine (Algebra.FormallySmooth.iff_injective_and_projective
     (Generators.self R S).algebraMap_surjective).trans (and_congr ?_ Iff.rfl)
   change Function.Injective (Generators.self R S).toExtension.cotangentComplex ↔ _
@@ -490,7 +490,7 @@ lemma CotangentSpace.map_toInfinitesimal_bijective (P : Extension.{u} R S) :
   apply LinearMap.restrictScalars_injective P.Ring
   ext x a
   dsimp
-  simp only [map_tmul, id.map_eq_id, RingHom.id_apply, Hom.toAlgHom_apply]
+  simp only [map_tmul, algebraMap_self, RingHom.id_apply, Hom.toAlgHom_apply]
   exact (tensorKaehlerQuotKerSqEquiv_symm_tmul_D _ _).symm
 
 lemma Cotangent.map_toInfinitesimal_bijective (P : Extension.{u} R S) :
