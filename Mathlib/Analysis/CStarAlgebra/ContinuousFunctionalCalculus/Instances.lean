@@ -258,6 +258,18 @@ instance Nonneg.instNonUnitalContinuousFunctionalCalculus :
     isUniformEmbedding_subtype_val le_rfl
     (fun _ ↦ nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts)
 
+/-- In a C⋆-algebra, commuting nonnegative elements have nonnegative products. -/
+lemma Commute.mul_nonneg {a b : A} (ha : 0 ≤ a) (hb : 0 ≤ b) (h : Commute a b) :
+    0 ≤ a * b := by
+  rw [nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts]
+  refine ⟨ha.isSelfAdjoint.commute_iff hb.isSelfAdjoint |>.mp h, ?_⟩
+  rw [nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts] at hb
+  obtain ⟨x, hx₁, hx₂, rfl⟩ := CFC.exists_sqrt_of_isSelfAdjoint_of_quasispectrumRestricts hb.1 hb.2
+  have hx := nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts.mpr ⟨hx₁, hx₂⟩
+  rw [← mul_assoc, quasispectrumRestricts_iff, quasispectrum.mul_comm,
+    ← quasispectrumRestricts_iff, ← mul_assoc]
+  exact QuasispectrumRestricts.nnreal_of_nonneg <| conjugate_nonneg_of_nonneg ha hx
+
 open NNReal in
 lemma NNReal.spectrum_nonempty {A : Type*} [Ring A] [StarRing A] [LE A]
     [TopologicalSpace A] [Algebra ℝ≥0 A] [ContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·)]

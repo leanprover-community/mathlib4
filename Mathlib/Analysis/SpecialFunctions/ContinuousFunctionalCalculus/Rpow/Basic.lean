@@ -6,10 +6,11 @@ Authors: Frédéric Dupuis
 
 import Mathlib.Algebra.Order.Star.Prod
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Range
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Pi
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 
 /-!
 # Real powers defined via the continuous functional calculus
@@ -286,13 +287,6 @@ lemma sqrt_eq_real_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) :
     rwa [cfcₙ_mul .., cfcₙ_id' ..,
       ← sqrt_eq_iff _ (hb := cfcₙ_nonneg (fun x _ ↦ Real.sqrt_nonneg x))] at this
   exact cfcₙ_congr fun x hx ↦ Real.mul_self_sqrt <| quasispectrum_nonneg_of_nonneg a ha x hx
-
-lemma _root_.Commute.mul_nonneg [ContinuousConstSMul ℝ A] [StarModule ℝ A] [ContinuousStar A]
-    {a b : A} (hab : Commute a b) (ha : 0 ≤ a := by cfc_tac) (hb : 0 ≤ b := by cfc_tac) :
-    0 ≤ a * b := by
-  rw [← CFC.sqrt_mul_sqrt_self a, CFC.sqrt_eq_real_sqrt a, mul_assoc,
-    ha.isSelfAdjoint.commute_cfcₙ hab Real.sqrt, ← mul_assoc, ← CFC.sqrt_eq_real_sqrt a]
-  exact conjugate_nonneg_of_nonneg hb <| CFC.sqrt_nonneg a
 
 section prod
 
