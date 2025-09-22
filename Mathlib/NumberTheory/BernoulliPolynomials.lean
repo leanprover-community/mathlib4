@@ -72,7 +72,7 @@ theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli 
   rw [bernoulli, eval_finset_sum, sum_range_succ]
   have : ∑ x ∈ range n, _root_.bernoulli x * n.choose x * 0 ^ (n - x) = 0 := by
     apply sum_eq_zero fun x hx => _
-    intros x hx
+    intro x hx
     simp [tsub_eq_zero_iff_le, mem_range.1 hx]
   simp [this]
 
@@ -129,7 +129,7 @@ nonrec theorem sum_bernoulli (n : ℕ) :
     choose_succ_self_right, one_smul, _root_.bernoulli_zero, sum_singleton, zero_add,
     map_add, range_one, mul_one]
   apply sum_eq_zero fun x hx => _
-  have f : ∀ x ∈ range n, ¬n + 1 - x = 1 := by grind [Finset.mem_range]
+  have f : ∀ x ∈ range n, ¬n + 1 - x = 1 := by grind
   intro x hx
   rw [sum_bernoulli]
   have g : ite (n + 1 - x = 1) (1 : ℚ) 0 = 0 := by

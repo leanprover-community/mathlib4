@@ -326,7 +326,7 @@ properties when each `A i` is an open subset of `R i`. The key fact is that each
 `Πʳ i, [R i, A i]`.
 
 This allows us to prove a "universal property with parameters", expressing that for any
-arbitrary topolgical space `X` (of "parameters"), the product `X × Πʳ i, [R i, A i]`
+arbitrary topological space `X` (of "parameters"), the product `X × Πʳ i, [R i, A i]`
 is still the inductive limit of the `X × Πʳ i, [R i, A i]_[𝓟 S]` for `S` cofinite.
 
 This fact, which is **not true** for a general inductive limit, will allow us to prove continuity
@@ -478,7 +478,7 @@ theorem continuous_dom_prod {R' : ι → Type*} {A' : (i : ι) → Set (R' i)}
   exact (H U hU).comp ((continuous_inclusion hSU).prodMap (continuous_inclusion hTU))
 
 /-- A finitary (instead of binary) version of `continuous_dom_prod`. -/
-theorem continuous_dom_pi {n : Type*} [Fintype n] {X : Type*}
+theorem continuous_dom_pi {n : Type*} [Finite n] {X : Type*}
     [TopologicalSpace X] {A : n → ι → Type*}
     [∀ j i, TopologicalSpace (A j i)]
     {C : (j : n) → (i : ι) → Set (A j i)}

@@ -43,7 +43,7 @@ private partial def makeFastInstance (provided : Expr) (trace : Array Name := #[
     MetaM Expr := withReducible do
   let ty ← inferType provided
   withTraceNode `Elab.fast_instance (fun e => return m!"{exceptEmoji e} type: {ty}") do
-  let .some className ← isClass? ty
+  let some className ← isClass? ty
     | error trace m!"Can only be used for classes, but term has type{indentExpr ty}"
   trace[Elab.fast_instance] "class is {className}"
   if ← withDefault <| Meta.isProp ty then

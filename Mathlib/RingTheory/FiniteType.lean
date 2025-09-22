@@ -226,9 +226,7 @@ def FiniteType (f : A →+* B) : Prop :=
 
 lemma finiteType_algebraMap [Algebra A B] :
     (algebraMap A B).FiniteType ↔ Algebra.FiniteType A B := by
-  delta FiniteType
-  congr!
-  exact Algebra.algebra_ext _ _ fun _ ↦ rfl
+  rw [FiniteType, toAlgebra_algebraMap]
 
 namespace Finite
 
@@ -529,11 +527,8 @@ theorem support_gen_of_gen {S : Set (MonoidAlgebra R M)} (hS : Algebra.adjoin R 
   refine le_antisymm le_top ?_
   rw [← hS, adjoin_le_iff]
   intro f hf
-  -- Porting note: ⋃ notation did not work here. Was
-  -- ⋃ (g : MonoidAlgebra R M) (H : g ∈ S), (of R M '' g.support)
   have hincl : (of R M '' f.support) ⊆
-      Set.iUnion fun (g : MonoidAlgebra R M)
-        => Set.iUnion fun (_ : g ∈ S) => (of R M '' g.support) := by
+      ⋃ (g : MonoidAlgebra R M) (H : g ∈ S), (of R M '' g.support) := by
     intro s hs
     exact Set.mem_iUnion₂.2 ⟨f, ⟨hf, hs⟩⟩
   exact adjoin_mono hincl (mem_adjoin_support f)

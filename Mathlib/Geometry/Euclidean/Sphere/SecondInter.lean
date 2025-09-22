@@ -76,7 +76,7 @@ theorem Sphere.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem {s : Spher
   · rcases h with (h | h)
     · rwa [h]
     · rwa [h, Sphere.secondInter_mem]
-  · rw [AffineSubspace.mem_mk'_iff_vsub_mem, Submodule.mem_span_singleton] at hp'
+  · rw [AffineSubspace.mem_mk', Submodule.mem_span_singleton] at hp'
     rcases hp' with ⟨r, hr⟩
     rw [eq_comm, ← eq_vadd_iff_vsub_eq] at hr
     subst hr

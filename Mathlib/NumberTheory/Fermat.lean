@@ -176,7 +176,7 @@ lemma fermat_primeFactors_one_lt (n p : ℕ) (hn : 1 < n) (hp : p.Prime)
     obtain ⟨k, rfl⟩ := pow_pow_add_primeFactors_one_lt hp hp2 hpdvd
     obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le' hn
     rw [add_assoc, pow_add, ← mul_assoc, ← mod_add_mod, mul_mod]
-    norm_num
+    simp
   obtain ⟨a, ha⟩ := (exists_sq_eq_two_iff hp2).mpr (Or.inl hp8)
   suffices h : p ∣ a.val ^ (2 ^ (n + 1)) + 1 by
     exact pow_pow_add_primeFactors_one_lt hp hp2 h
@@ -199,14 +199,14 @@ theorem prime_of_pow_sub_one_prime {a n : ℕ} (hn1 : n ≠ 1) (hP : (a ^ n - 1)
   have ha0 : 0 < a := one_pos.trans ha1
   have ha2 : a = 2 := by
     contrapose! hn1
-    let h := nat_sub_dvd_pow_sub_pow a 1 n
+    let h := Nat.sub_dvd_pow_sub_pow a 1 n
     rw [one_pow, hP.dvd_iff_eq (mt (Nat.sub_eq_iff_eq_add ha1.le).mp hn1), eq_comm] at h
     exact (pow_eq_self_iff ha1).mp (Nat.sub_one_cancel ha0 (pow_pos ha0 n) h).symm
   subst ha2
   refine ⟨rfl, Nat.prime_def.mpr ⟨(two_le_iff n).mpr ⟨hn0, hn1⟩, fun d hdn ↦ ?_⟩⟩
   have hinj : ∀ x y, 2 ^ x - 1 = 2 ^ y - 1 → x = y :=
     fun x y h ↦ Nat.pow_right_injective le_rfl (sub_one_cancel (pow_pos ha0 x) (pow_pos ha0 y) h)
-  let h := nat_sub_dvd_pow_sub_pow (2 ^ d) 1 (n / d)
+  let h := Nat.sub_dvd_pow_sub_pow (2 ^ d) 1 (n / d)
   rw [one_pow, ← pow_mul, Nat.mul_div_cancel' hdn] at h
   exact (hP.eq_one_or_self_of_dvd (2 ^ d - 1) h).imp (hinj d 1) (hinj d n)
 
