@@ -89,9 +89,13 @@ name_poly_vars R[t,]
 #guard_msgs in
 #check R[t,]
 
-/-- info: MvPolynomial.X 0 : R[t,] -/
+/-- info: t : R[t,] -/
 #guard_msgs in
 #check t
+
+/-- info: MvPolynomial.X 0 : MvPolynomial (Fin 1) S -/
+#guard_msgs in
+#check (MvPolynomial.X 0 : MvPolynomial (Fin 1) S)
 
 name_poly_vars R[x,y,z]
 
