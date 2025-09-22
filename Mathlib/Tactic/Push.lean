@@ -92,7 +92,7 @@ def pushSimpConfig : Simp.Config where
   zeta := false
   proj := false
 
-/-- Try to rewrite using a push lemma. -/
+/-- Try to rewrite using a `push` lemma. -/
 def pushStep (head : Head) : Simp.Simproc := fun e => do
   let e_whnf ← whnf e
   let some e_head := Head.ofExpr? e_whnf | return Simp.Step.continue
@@ -103,8 +103,8 @@ def pushStep (head : Head) : Simp.Simproc := fun e => do
     -- We return `.visit r` instead of `.continue r`, because in the case of a triple negation,
     -- after rewriting `¬ ¬ ¬ p` into `¬ p`, we may want to rewrite `¬ p` again.
     return Simp.Step.visit r
-  if let some ex := e_whnf.not? then
-    pushNegBuiltin ex
+  if let some e := e_whnf.not? then
+    pushNegBuiltin e
   else
     return Simp.Step.continue
 
@@ -118,7 +118,7 @@ def pushCore (head : Head) (tgt : Expr) (disch? : Option Simp.Discharge) : MetaM
     | some disch => { pre := pushStep head, discharge? := disch, wellBehavedDischarge := false }
   (·.1) <$> Simp.main tgt ctx (methods := methods)
 
-/-- Try to rewrite using a pull lemma. -/
+/-- Try to rewrite using a `pull` lemma. -/
 def pullStep (head : Head) : Simp.Simproc := fun e => do
   let thms := pullExt.getState (← getEnv)
   -- We can't use `Simp.rewrite?` here, because we need to only allow rewriting with theorems
@@ -184,7 +184,7 @@ def elabHead (stx : Term) : TermElabM Head := withRef stx do
   | `(∀ $_, _) => return .forall
   | _ =>
     match ← resolvePushId? stx with
-    | some (.const name _) => return .name name
+    | some (.const c _) => return .const c
     | _ => throwError "Could not resolve `push` argument {stx}. \
       Expected either a constant, e.g. `push Not`, \
       or notation with underscores, e.g. `push ¬ _`"
@@ -250,6 +250,7 @@ macro (name := push_neg) "push_neg" loc:(location)? : tactic => `(tactic| push N
 It pulls the given constant towards the head of the expression. For example
 - `pull _ ∈ _` rewrites `x ∈ y ∨ ¬ x ∈ z` into `x ∈ y ∪ zᶜ`.
 - `pull (disch := positivity) Real.log` rewrites `log a + 2 * log b` into `log (a * b ^ 2)`.
+- `pull fun _ ↦ _` rewrites `f ^ 2 + 5` into `fun x => f x ^ 2 + 5` where `f` is a function.
 
 A lemma is considered a `pull` lemma if its reverse direction is a `push` lemma
 that actually moves the given constant away from the head. For example
@@ -258,7 +259,7 @@ that actually moves the given constant away from the head. For example
 - `Pi.mul_def : f * g = fun (i : ι) => f i * g i` and `Pi.one_def : 1 = fun (x : ι) => 1` are both
   `pull` lemmas for `fun`, because every `push fun _ ↦ _` lemma is also considered a `pull` lemma.
 
-TODO: add a `@[pull]` attribute to add `pull` lemmas without using `@[push]`.
+TODO: define a `@[pull]` attribute for tagging `pull` lemmas that are not `push` lemmas.
 -/
 elab (name := pull) "pull" disch?:(discharger)? head:(ppSpace colGt term) loc:(location)? :
     tactic => do
@@ -335,7 +336,7 @@ def elabPushTree : Elab.Command.CommandElab := fun stx => do
   for (key, trie) in thms.root do
     let matchesHead (k : DiscrTree.Key) : Bool :=
       match k, head with
-      | .const n _, .name n' => n == n'
+      | .const c _, .const c' => c == c'
       | .other    , .lambda  => true
       | .arrow    , .forall  => true
       | _         , _        => false

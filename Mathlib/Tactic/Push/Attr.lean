@@ -3,7 +3,7 @@ Copyright (c) 2025 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Mathlib.Init
+import Mathlib.Lean.Expr.Basic
 
 /-!
 # The `@[push]` attribute for the `push`, `push_neg` and `pull` tactics
@@ -18,14 +18,14 @@ open Lean Meta
 
 /-- The type for a constant to be pushed by `push`. -/
 inductive Head where
-| name (const : Name)
+| const (c : Name)
 | lambda
 | forall
 deriving Inhabited, BEq
 
 /-- Converts a `Head` to a string. -/
 def Head.toString : Head → String
-  | .name const => const.toString
+  | .const c => c.toString
   | .lambda => "fun"
   | .forall => "Forall"
 
@@ -33,7 +33,7 @@ instance : ToString Head := ⟨Head.toString⟩
 
 /-- Returns the head of an expression. -/
 def Head.ofExpr? : Expr → Option Head
-  | .app f _ => f.getAppFn.constName?.map .name
+  | .app f _ => f.getAppFn.constName?.map .const
   | .lam .. => some .lambda
   | .forallE .. => some .forall
   | _ => none
@@ -56,15 +56,15 @@ def isPullThm (declName : Name) (inv : Bool) : MetaM (Option Head) := do
     let some (lhs, rhs) := type.eqOrIff? | return none
     let (lhs, rhs) := if inv then (rhs, lhs) else (lhs, rhs)
     let some head := Head.ofExpr? rhs | return none
-    if Head.ofExpr? lhs != some head && findHead? lhs head then
+    if Head.ofExpr? lhs != some head && containsHead lhs head then
       return head
     return none
 where
   /-- Checks if the expression has the head in any subexpression.
   We don't need to check this for `.lambda`, because the term being a function
   is sufficient for `pull fun _ ↦ _` to be applicable. -/
-  findHead? (e : Expr) : Head → Bool
-  | .name n => e.foldConsts false (· == n || ·)
+  containsHead (e : Expr) : Head → Bool
+  | .const c => e.containsConst (· == c)
   | .lambda => true
   | .forall => (e.find? (· matches .forallE ..)).isSome
 
@@ -97,7 +97,7 @@ some `push` lemmas cancel the constant out (`not_not` and `not_le`).
 For the other lemmas that are "genuine" `push` lemmas, a `pull` attribute is automatically added
 in the reverse direction. To not add a `pull` tag, use `@[push only]`.
 
-To use the lemma in the reverse direction, use `@[push ←]`.
+To tag the reverse direction of the lemma, use `@[push ←]`.
 -/
 syntax (name := pushAttr) "push" (" ←" <|> " <-")? (&" only")? (ppSpace prio)? : attr
 
