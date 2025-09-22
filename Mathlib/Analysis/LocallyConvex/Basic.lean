@@ -286,7 +286,7 @@ variable (F ℱ : Type*) [SeminormedAddCommGroup F] [Module 𝕜 F]
 variable [FunLike ℱ F E] [LinearMapClass ℱ 𝕜 F E]
 
 omit [Module ℝ E] in
-theorem absorbent_subset_image_iff_surjective {f : ℱ} {s : Set E} (hs_abs : Absorbent 𝕜 s) :
+theorem Absorbent.subset_range_iff_surjective {f : ℱ} {s : Set E} (hs_abs : Absorbent 𝕜 s) :
     s ⊆ Set.range f ↔ (⇑f).Surjective := by
   refine ⟨fun hs_sub y ↦ ?_, by simp_all⟩
   obtain ⟨r, -, hr⟩ := Absorbs.exists_pos (hs_abs y)
