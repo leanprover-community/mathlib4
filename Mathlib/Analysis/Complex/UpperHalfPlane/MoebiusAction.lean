@@ -106,7 +106,7 @@ noncomputable def σ (g : GL (Fin 2) ℝ) : ℂ →+* ℂ :=
 
 lemma σ_conj (g : GL (Fin 2) ℝ) (z : ℂ) : σ g (conj z) = conj (σ g z) := by
   simp only [σ]
-  aesop
+  split_ifs <;> simp
 
 @[simp]
 lemma σ_ofReal (g : GL (Fin 2) ℝ) (y : ℝ) : σ g y = y := by

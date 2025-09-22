@@ -27,28 +27,26 @@ namespace UpperHalfPlane
 noncomputable def petersson (k : ℤ) (f f' : ℍ → ℂ) (τ : ℍ) :=
   conj (f τ) * f' τ * τ.im ^ k
 
+@[fun_prop]
 lemma petersson_continuous (k : ℤ) {f f' : ℍ → ℂ} (hf : Continuous f) (hf' : Continuous f') :
     Continuous (petersson k f f') := by
-  apply ((Complex.continuous_conj.comp hf).mul hf').mul
-  apply (Complex.continuous_ofReal.comp continuous_im).zpow₀
-  exact fun τ ↦ .inl <| Complex.ofReal_ne_zero.mpr τ.im_ne_zero
+  unfold petersson
+  fun_prop (disch := simp [im_ne_zero _])
 
 lemma petersson_slash (k : ℤ) (f f' : ℍ → ℂ) (g : GL (Fin 2) ℝ) (τ : ℍ) :
     petersson k (f ∣[k] g) (f' ∣[k] g) τ =
       |g.det.val| ^ (k - 2) * σ g (petersson k f f' (g • τ)) := by
   set D := |g.det.val|
-  have hD : (D : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr <| abs_ne_zero.mpr <| g.det_ne_zero
+  have hD : (D : ℂ) ≠ 0 := mod_cast abs_ne_zero.mpr g.det_ne_zero
   set j := denom g τ
   calc petersson k (f ∣[k] g) (f' ∣[k] g) τ
-  _ = D ^ (2 * k - 2) * conj (σ g (f (g • τ))) * σ g (f' (g • τ))
+  _ = D ^ (k - 2 + k) * conj (σ g (f (g • τ))) * σ g (f' (g • τ))
       * (τ.im ^ k * j.normSq ^ (-k)) := by
-    simp [Complex.normSq_eq_conj_mul_self, (by ring : 2 * k - 2 = (k - 1) + (k - 1)), petersson,
+    simp [Complex.normSq_eq_conj_mul_self, (by abel : k - 2 + k = (k - 1) + (k - 1)), petersson,
       zpow_add₀ hD, mul_zpow, ModularForm.slash_def, -Matrix.GeneralLinearGroup.val_det_apply]
     ring
-  _ = D ^ (k - 2) * (conj (σ g (f (g • τ))) * σ g (f' (g • τ))
-      * (D * τ.im / j.normSq) ^ k) := by
-    rw [div_zpow, mul_zpow, zpow_neg, div_eq_mul_inv, (by ring : 2 * k - 2 = k + (k - 2)),
-      zpow_add₀ hD]
+  _ = D ^ (k - 2) * (conj (σ g (f (g • τ))) * σ g (f' (g • τ)) * (D * τ.im / j.normSq) ^ k) := by
+    rw [div_zpow, mul_zpow, zpow_neg, div_eq_mul_inv, zpow_add₀ hD]
     ring
   _ = D ^ (k - 2) * (conj (σ g (f (g • τ))) * σ g (f' (g • τ)) * (im (g • τ)) ^ k) := by
     rw [im_smul_eq_div_normSq, Complex.ofReal_div, Complex.ofReal_mul]
@@ -72,11 +70,5 @@ lemma SlashInvariantFormClass.petersson_smul {k : ℤ} {Γ : Subgroup SL(2, ℤ)
     petersson k f f' (g • τ) = petersson k f f' τ := by
   simpa only [SlashInvariantFormClass.slash_action_eq _ _ hg]
     using (petersson_slash_SL k f f' g τ).symm
-
-lemma ModularFormClass.petersson_continuous (k : ℤ) (Γ : Subgroup SL(2, ℤ))
-    [ModularFormClass F Γ k] [ModularFormClass F' Γ k] (f : F) (f' : F') :
-    Continuous (petersson k f f') :=
-  UpperHalfPlane.petersson_continuous k
-    (ModularFormClass.holo f).continuous (ModularFormClass.holo f').continuous
 
 end
