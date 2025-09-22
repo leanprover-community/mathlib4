@@ -189,10 +189,10 @@ lemma isLocalizedModule_quotSMulTop_isLocalizedModule_map (x : R)
     exact isUnit_iff_exists.mpr ⟨LinearMap.restrictScalars R s,
       ⟨LinearMap.ext (fun x ↦ by simpa using DFunLike.congr hs1 (Eq.refl x)),
         LinearMap.ext (fun x ↦ by simpa using DFunLike.congr hs2 (Eq.refl x))⟩⟩
-  surj' y := by
+  surj y := by
     induction y using Submodule.Quotient.induction_on
     rename_i y
-    rcases IsLocalizedModule.surj' (S := p.primeCompl) (f := f) y with ⟨z, hz⟩
+    rcases IsLocalizedModule.surj (S := p.primeCompl) (f := f) y with ⟨z, hz⟩
     use (Submodule.Quotient.mk z.1, z.2)
     simp [← hz]
   exists_of_eq {y1 y2} h := by
