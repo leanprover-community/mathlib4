@@ -11,7 +11,7 @@ import Mathlib.Order.TransfiniteIteration
 # Closure of a property of objects under limits of certain shapes
 
 -/
-universe w t v' u' v u
+universe w w' t v' u' v u
 
 namespace CategoryTheory.ObjectProperty
 
@@ -51,6 +51,20 @@ lemma limitsClosure_le {Q : ObjectProperty C} [Q.IsClosedUnderIsomorphisms]
   | of_limitPresentation pres h h' =>
     exact h₂ _ _ ⟨{ toLimitPresentation := pres, prop_diag_obj := h' }⟩
 
+variable {P} in
+lemma limitsClosure_monotone {Q : ObjectProperty C} (h : P ≤ Q) :
+    P.limitsClosure J ≤ Q.limitsClosure J :=
+  limitsClosure_le (h.trans (Q.le_limitsClosure J))
+    (fun _ ↦ limitsOfShape_limitsClosure _ _ _)
+
+lemma limitsClosure_isoClosure :
+    P.isoClosure.limitsClosure J = P.limitsClosure J := by
+  refine le_antisymm
+    (limitsClosure_le ?_ (fun _ ↦ limitsOfShape_limitsClosure _ _ _))
+    (limitsClosure_monotone _ P.le_isoClosure)
+  rw [isoClosure_le_iff]
+  exact le_limitsClosure P J
+
 /-- Given `P : ObjectProperty C` and a family of categories `J : α → Type _`,
 this property objects contains `P` and all objects that are equal to `lim F`
 for some functor `F : J a ⥤ C` such that `F.obj j` satisfies `P` for any `j`. -/
@@ -70,7 +84,7 @@ lemma strictLimitsClosureStep_monotone {Q : ObjectProperty C} (h : P ≤ Q) :
 
 section
 
-variable {β : Type w} [LinearOrder β] [OrderBot β] [SuccOrder β] [WellFoundedLT β]
+variable {β : Type w'} [LinearOrder β] [OrderBot β] [SuccOrder β] [WellFoundedLT β]
 
 /-- Given `P : ObjectProperty C`, a family of categories `J a`, this
 is the transfinite iteration of `Q ↦ Q.strictLimitsClosureStep J`. -/
@@ -99,10 +113,36 @@ lemma strictLimitsClosureIter_le_limitsClosure (b : β) :
     intro c hc
     exact hb' _ hc
 
+instance [ObjectProperty.Small.{w} P] [LocallySmall.{w} C] [Small.{w} α]
+    [∀ a, Small.{w} (J a)] [∀ a, LocallySmall.{w} (J a)] (b : β)
+    [hb₀ : Small.{w} (Set.Iio b)] :
+    ObjectProperty.Small.{w} (P.strictLimitsClosureIter J b) := by
+  have H {b c : β} (hbc : b ≤ c) [Small.{w} (Set.Iio c)] : Small.{w} (Set.Iio b) :=
+    small_of_injective (f := fun x ↦ (⟨x.1, lt_of_lt_of_le x.2 hbc⟩ : Set.Iio c))
+      (fun _ _ _ ↦ by aesop)
+  induction b using SuccOrder.limitRecOn generalizing hb₀ with
+  | isMin b hb =>
+    obtain rfl := hb.eq_bot
+    simp only [transfiniteIterate_bot]
+    infer_instance
+  | succ b hb hb' =>
+    have := H (Order.le_succ b)
+    rw [strictLimitsClosureIter, transfiniteIterate_succ _ _ _ hb,
+      strictLimitsClosureStep]
+    infer_instance
+  | isSuccLimit b hb hb' =>
+    simp only [transfiniteIterate_limit _ _ _ hb]
+    have (c : Set.Iio b) : ObjectProperty.Small.{w}
+      (transfiniteIterate (fun Q ↦ Q.strictLimitsClosureStep J) c.1 P) := by
+      have := H c.2.le
+      exact hb' c.1 c.2
+    infer_instance
+
 end
 
 section
 
+-- TODO: improve this so that `u'` is replaced by any `w`
 variable (κ : Cardinal.{u'}) [Fact κ.IsRegular] (h : ∀ (a : α), HasCardinalLT (J a) κ)
 
 include h
@@ -142,6 +182,17 @@ lemma isoClosure_strictLimitsClosureIter_eq_limitsClosure :
     rw [limitsOfShape_isoClosure, ← isoClosure_strictLimitsOfShape,
       strictLimitsClosureStep]
     exact monotone_isoClosure ((le_trans (by rfl) (le_iSup _ a)).trans le_sup_right)
+
+lemma isEssentiallySmall_limitsClosure
+    [ObjectProperty.EssentiallySmall.{u'} P] [LocallySmall.{u'} C] [Small.{u'} α]
+    [∀ a, Small.{u'} (J a)] [∀ a, LocallySmall.{u'} (J a)] :
+    ObjectProperty.EssentiallySmall.{u'} (P.limitsClosure J) := by
+  obtain ⟨Q, hQ, hQ₁, hQ₂⟩ := EssentiallySmall.exists_small_le.{u'} P
+  have : ObjectProperty.EssentiallySmall.{u'} (Q.isoClosure.limitsClosure J) := by
+    rw [limitsClosure_isoClosure,
+      ← Q.isoClosure_strictLimitsClosureIter_eq_limitsClosure J κ h]
+    infer_instance
+  exact essentiallySmall_of_le (limitsClosure_monotone J hQ₂)
 
 end
 
