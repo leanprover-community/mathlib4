@@ -142,4 +142,9 @@ instance [ObjectProperty.Small.{w} P] [LocallySmall.{w} C] [Small.{w} J] [Locall
   rintro ⟨_, ⟨F, hF⟩⟩
   exact ⟨⟨P.lift F hF, by assumption⟩, rfl⟩
 
+instance [ObjectProperty.Small.{w} P] [LocallySmall.{w} C] [Small.{w} J] [LocallySmall.{w} J] :
+    ObjectProperty.EssentiallySmall.{w} (P.limitsOfShape J) := by
+  rw [← isoClosure_strictLimitsOfShape]
+  infer_instance
+
 end CategoryTheory.ObjectProperty
