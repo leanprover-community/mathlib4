@@ -75,7 +75,7 @@ theorem ringKrullDim_polynomial_A_eq_three : ringKrullDim (A k)[X] = 3 := by
       Subring.topEquiv).toRingHom.comp (Subring.inclusion ?_)
     exact fun _ ⟨⟨_, ⟨u, _⟩⟩, _⟩ ↦ ⟨u, ⟨by simp, by simp_all⟩⟩
   have h_phi : RatFunc.C.comp φ = PowerSeries.constantCoeff.comp (A k).subtype := RingHom.ext
-    fun x ↦ by simp [φ, ← Subring.coe_equivMapOfInjective_apply _ _ RatFunc.C_injective _]
+    fun x ↦ by simp [φ, ← Subring.coe_equivMapOfInjective_apply (hf := RatFunc.C_injective)]
   let f : (A k)[X] →+* (RatFunc k)⟦X⟧ := eval₂RingHom (A k).subtype (PowerSeries.C RatFunc.X)
   let Q : PrimeSpectrum (A k)[X] := ⟨RingHom.ker f, RingHom.ker_isPrime f⟩
   let g : (A k)[X] →+* k[X] := mapRingHom φ
@@ -85,13 +85,11 @@ theorem ringKrullDim_polynomial_A_eq_three : ringKrullDim (A k)[X] = 3 := by
   let Y : A k := ⟨PowerSeries.X, by simp⟩
   let tY : A k := ⟨PowerSeries.X * (PowerSeries.C RatFunc.X), by simp⟩
   have Y_ne_zero : Y ≠ 0 := fun h ↦ by simpa [Y] using congr(Subtype.val $h)
-  have phi_Y_eq_zero : φ Y = 0 := RatFunc.C_injective (Eq.trans congr($h_phi Y) (by simp [Y]))
+  have phi_Y_eq_zero : φ Y = 0 := RatFunc.C_injective (congr($h_phi Y).trans (by simp [Y]))
   have comp_eq : (algebraMap k[X] (RatFunc k)).comp g = PowerSeries.constantCoeff.comp f :=
     Polynomial.ringHom_ext (fun z ↦ by simpa [f, g] using congr($h_phi z)) (by simp [f, g])
   refine Order.le_krullDim_iff.mpr ⟨⟨3, fun | 0 => ⊥ | 1 => Q | 2 => P1 | 3 => P2, fun i ↦ ?_⟩, rfl⟩
   fin_cases i
-  all_goals simp only [Fin.reduceFinMk, Fin.reduceCastSucc, Fin.reduceSucc, Set.mem_setOf_eq,
-    lt_iff_le_not_ge]
   · let val0 : (A k)[X] := Polynomial.C Y * Polynomial.X - Polynomial.C tY
     have h1_val0 : val0 ∈ Q.asIdeal := by simp [val0, Q, f, Y, tY]
     have h2_val0 : val0 ≠ 0 := support_nonempty.mp ⟨1, by simpa [val0, Y]⟩
