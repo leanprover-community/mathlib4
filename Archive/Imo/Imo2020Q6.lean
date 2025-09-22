@@ -42,7 +42,7 @@ theorem exists_between_and_separated {ι : Type*} (S : Finset ι) (f : ι → �
   obtain ⟨i, h⟩ := h; unfold rel at h
   -- use the midpoint of the `i`th interval
   use AffineMap.lineMap a b (i / n + 1 / (2 * n) : ℝ)
-  have ineq₁: (i / n : ℝ) ≤ 1 - 1 / n := by field_simp [n]; gcongr; apply Fin.is_le
+  have ineq₁: (i / n : ℝ) ≤ 1 - 1 / n := by grw [Fin.is_le]; field_simp [n]; simp [n]
   have : b - a > 0 := sub_pos.mpr hab
   -- check that the point is in between `a` and `b`
   constructor; constructor
@@ -140,7 +140,7 @@ theorem exists_affine_between_and_separated {ι : Type*} (S : Finset ι) (f : ι
   apply le_ciInf
   simp [dist_eq_norm_vsub]
   intro y hy
-  rw [← mul_le_mul_left this]
+  rw [← mul_le_mul_iff_right₀ this]
   calc
     _ ≤ ‖a -ᵥ b‖ * ((j - i) / (2 * ↑(⌊n - 1⌋₊ + 1))) := by
       gcongr
@@ -153,7 +153,7 @@ theorem exists_affine_between_and_separated {ι : Type*} (S : Finset ι) (f : ι
       rw [sub_eq_iff_eq_add', ← inner_add_right]
       simp
       rw [inner_smul_right, real_inner_self_eq_norm_sq]
-      field_simp; ring
+      field_simp
     _ = |⟪a -ᵥ b, f p -ᵥ y⟫| := by congr 1; rw [← sub_eq_zero, ← inner_sub_right]; simp; exact hy
     _ ≤ ‖a -ᵥ b‖ * ‖f p -ᵥ y‖ := abs_real_inner_le_norm ..
 
@@ -179,7 +179,7 @@ theorem card_le_of_separated {ι : Type*} (S : Finset ι) (f : ι → ℝ) {ε a
   · intro x hx y hy h
     apply Int.abs_sub_lt_one_of_floor_eq_floor at h
     field_simp at h
-    rw [abs_div, abs_eq_self.mpr hε.le, div_lt_one hε] at h
+    rw [sub_sub_sub_cancel_right, abs_div, abs_eq_self.mpr hε.le, div_lt_one hε] at h
     contrapose! h
     exact h_sep hx hy h
 
@@ -245,7 +245,8 @@ theorem result : ∃ c : ℝ, 0 < c ∧ ∀ {n : ℕ}, 1 < n → ∀ {S : Finset
     specialize h p hp
     grw [← h, ← hab]
     rw [neg_div, Real.rpow_neg (by positivity)]
-    field_simp [div_le_iff₀, le_div_iff₀]
+    field_simp
+    rw [div_le_iff₀ (by positivity), div_mul_eq_mul_div₀, le_div_iff₀ (by positivity)]
     rw [← Real.rpow_add (by positivity)]
     norm_num; linarith only
 
@@ -301,7 +302,7 @@ theorem result : ∃ c : ℝ, 0 < c ∧ ∀ {n : ℕ}, 1 < n → ∀ {S : Finset
     rw [OrthonormalBasis.repr_apply_apply, hbasis₀, real_inner_smul_left]
     rw [← neg_vsub_eq_vsub_rev b, ← neg_vsub_eq_vsub_rev p, inner_neg_neg, norm_neg]
     ring
-  -- Compute a bount for the points lying in a strip on the edge
+  -- Compute a bound for the points lying in a strip on the edge
   have strip_bound (x) (hx : x ∈ S.filter (eqv · 0 ∈ Set.Ioo 0 (1/2))) :
       |eqv x 1| ≤ √(dist a b) := by
     apply Real.abs_le_sqrt
@@ -331,12 +332,13 @@ theorem result : ∃ c : ℝ, 0 < c ∧ ∀ {n : ℕ}, 1 < n → ∀ {S : Finset
   intro p hp
   specialize h p hp
   grw [← h]
-  field_simp [le_div_iff₀, h_ne]
+  field_simp
+  rw [le_div_iff₀ (by simp [h_ne])]
 
   specialize h_dist a ha b hb
   grw [Real.sqrt_le_sqrt h_dist.le]
   rw [Real.sqrt_eq_rpow, ← Real.rpow_mul (by positivity)]
-  rw [show (-1/3:ℝ) = -(1/3) by norm_num, Real.rpow_neg (by positivity)]
+  rw [Real.rpow_neg (by positivity)]
   norm_num
   ring_nf
   field_simp
