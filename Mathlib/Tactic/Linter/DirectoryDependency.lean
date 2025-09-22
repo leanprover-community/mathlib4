@@ -589,7 +589,8 @@ def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Deprecated, `Mathlib.Deprecated),
   (`Mathlib.Topology.Algebra, `Mathlib.Algebra),
   (`Mathlib.Topology.Compactification, `Mathlib.Geometry.Manifold),
-  (`Mathlib.LinearAlgebra.Matrix.PosDef, `Mathlib.Analysis)
+  (`Mathlib.LinearAlgebra.Matrix.PosDef, `Mathlib.Analysis),
+  (`Mathlib.LinearAlgebra.Matrix.PosDef, `Mathlib.Probability)
 ]
 
 end DirectoryDependency
