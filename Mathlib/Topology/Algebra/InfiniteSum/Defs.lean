@@ -61,9 +61,10 @@ variable [CommMonoid α] [TopologicalSpace α]
 
 /-- `HasProdFilter L f a` means that the (potentially infinite) product of the `f b` for `b : β`
 converges to `a` along the filter `L` on `Finset β`. If this filter is `atTop`, this means that the
-product is absolutely convergent and we call it `HasProd f a` instead.
--/
-@[to_additive]
+product is absolutely convergent and we call it `HasProd f a` instead. -/
+@[to_additive /-- `HasSumFilter L f a` means that the (potentially infinite) sum of the `f b` for
+`b : β` converges to `a` along the filter `L` on `Finset β`. If this filter is `atTop`,
+this means that the sum is absolutely convergent and we call it `HasSum f a` instead. -/]
 def HasProdFilter (L : Filter (Finset β)) (f : β → α) (a : α) : Prop :=
   Tendsto (fun s : Finset β ↦ ∏ b ∈ s, f b) L (𝓝 a)
 
@@ -128,7 +129,7 @@ noncomputable irreducible_def tprodFilter {β} (L : Filter (Finset β)) (f : β 
 
 open scoped Classical in
 /-- `∏' i, f i` is the product of `f` if it exists and is unconditionally convergent,
-or 1 otherwise. This is defined as `∏'[L] i, f i` -/
+or 1 otherwise. This is defined as `∏'[atTop] i, f i` -/
 @[to_additive /-- `∑' i, f i` is the sum of `f` if it exists and is unconditionally convergent,
 or 0 otherwise. This is defined as `∑'[atTop] i, f i`. -/]
 abbrev tprod {β} (f : β → α) := tprodFilter atTop f
