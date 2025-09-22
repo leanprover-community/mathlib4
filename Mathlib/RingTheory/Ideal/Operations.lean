@@ -506,6 +506,15 @@ variable (R) in
 theorem top_pow (n : ℕ) : (⊤ ^ n : Ideal R) = ⊤ :=
   Nat.recOn n one_eq_top fun n ih => by rw [Submodule.pow_succ, ih, top_mul]
 
+@[simp]
+theorem pow_eq_top_iff {n : ℕ} :
+    I ^ n = ⊤ ↔ I = ⊤ ∨ n = 0 := by
+  refine ⟨fun h ↦ or_iff_not_imp_right.mpr
+      fun hn ↦ (eq_top_iff_one _).mpr <| pow_le_self hn <| (eq_top_iff_one _).mp h, ?_⟩
+  rintro (h | h)
+  · rw [h, top_pow]
+  · rw [h, Submodule.pow_zero, one_eq_top]
+
 theorem natCast_eq_top {n : ℕ} (hn : n ≠ 0) : (n : Ideal R) = ⊤ := by
   induction n with
   | zero => exact (hn rfl).elim
