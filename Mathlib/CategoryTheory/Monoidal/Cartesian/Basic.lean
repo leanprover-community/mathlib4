@@ -776,11 +776,14 @@ variable {P : ObjectProperty C}
 -- TODO: Introduce `ClosedUnderFiniteProducts`?
 /-- The restriction of a Cartesian-monoidal category along an object property that's closed under
 finite products is Cartesian-monoidal. -/
-noncomputable def fullSubcategory (hP₀ : ClosedUnderLimitsOfShape (Discrete PEmpty) P)
-    (hP₂ : ClosedUnderLimitsOfShape (Discrete WalkingPair) P) :
+instance fullSubcategoryOfIsClosedUnderLimitsOfShape
+    [P.IsClosedUnderLimitsOfShape (Discrete PEmpty)]
+    [P.IsClosedUnderLimitsOfShape (Discrete WalkingPair)] :
     CartesianMonoidalCategory P.FullSubcategory where
-  __ := MonoidalCategory.fullSubcategory P (hP₀ isTerminalTensorUnit <| by simp)
-    fun X Y hX hY ↦ hP₂ (tensorProductIsBinaryProduct X Y) (by rintro ⟨_ | _⟩ <;> simp [hX, hY])
+  __ := MonoidalCategory.fullSubcategory P
+      (P.prop_of_isLimit isTerminalTensorUnit (by simp))
+      (fun X Y hX hY ↦ P.prop_of_isLimit (tensorProductIsBinaryProduct X Y)
+        (by rintro ( _ | _) <;> assumption))
   isTerminalTensorUnit := .ofUniqueHom (fun X ↦ toUnit X.1) fun _ _ ↦ by ext
   fst X Y := fst X.1 Y.1
   snd X Y := snd X.1 Y.1
@@ -789,6 +792,9 @@ noncomputable def fullSubcategory (hP₀ : ClosedUnderLimitsOfShape (Discrete PE
       (by rintro T f g m rfl rfl; symm; exact lift_comp_fst_snd _)
   fst_def X Y := fst_def X.1 Y.1
   snd_def X Y := snd_def X.1 Y.1
+
+@[deprecated (since := "2025-09-22")] alias fullSubcategory :=
+  fullSubcategoryOfIsClosedUnderLimitsOfShape
 
 end CartesianMonoidalCategory
 
