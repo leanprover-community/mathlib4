@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Independence.Kernel
+import Mathlib.Probability.Kernel.Composition.MeasureComp
+import Mathlib.Probability.Kernel.Composition.Lemmas
 import Mathlib.Probability.Kernel.CompProdEqIff
 import Mathlib.Probability.Kernel.Condexp
 
@@ -711,6 +713,36 @@ theorem condIndepFun_iff_map_prod_eq_prod_map_map
       ↔ (condExpKernel μ m').map (fun ω ↦ (f ω, g ω))
         =ᵐ[μ.trim hm'] (condExpKernel μ m').map f ×ₖ (condExpKernel μ m').map g := by
   rw [condIndepFun_iff_compProd_map_prod_eq_compProd_prod_map_map hf hg, ← Kernel.compProd_eq_iff]
+
+lemma condIndepFun_iff_map_prod_eq_prod_comp_trim
+    {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'} [CountableOrCountablyGenerated Ω (β × β')]
+    (hf : Measurable f) (hg : Measurable g) :
+    CondIndepFun m' hm' f g μ
+      ↔ @Measure.map _ _ _ (m'.prod _) (fun ω ↦ (ω, f ω, g ω)) μ
+        = (Kernel.id ×ₖ ((condExpKernel μ m').map f ×ₖ (condExpKernel μ m').map g))
+          ∘ₘ μ.trim hm' := by
+  rw [condIndepFun_iff_compProd_map_prod_eq_compProd_prod_map_map hf hg]
+  congr!
+  swap; · rw [Measure.compProd_eq_comp_prod]
+  calc (μ.trim hm' ⊗ₘ (condExpKernel μ m').map fun ω ↦ (f ω, g ω))
+  _ = (Kernel.id ∥ₖ Kernel.deterministic (fun ω ↦ (f ω, g ω)) (by fun_prop))
+      ∘ₘ (μ.trim hm' ⊗ₘ (condExpKernel μ m')) := by
+    rw [Measure.compProd_eq_parallelComp_comp_copy_comp, ← Kernel.deterministic_comp_eq_map,
+      ← Kernel.parallelComp_id_left_comp_parallelComp, Measure.comp_assoc, Kernel.comp_assoc,
+      Kernel.parallelComp_comp_copy, ← Measure.comp_assoc, Measure.compProd_eq_comp_prod]
+  _ = (Kernel.id ∥ₖ Kernel.deterministic (fun ω ↦ (f ω, g ω)) (by fun_prop))
+      ∘ₘ (@Measure.map _ _ _ (m'.prod _) (fun ω ↦ (ω, ω)) μ) := by
+    congr
+    exact compProd_trim_condExpKernel hm'
+  _ = _ := by
+    rw [← Measure.deterministic_comp_eq_map, Measure.comp_assoc,
+      ← Kernel.deterministic_prod_deterministic (g := fun ω ↦ ω),
+      Kernel.parallelComp_comp_prod, Kernel.deterministic_comp_deterministic, Kernel.id_comp,
+      Kernel.deterministic_prod_deterministic, Measure.deterministic_comp_eq_map]
+    · rfl
+    · exact measurable_id.mono le_rfl hm'
+    · fun_prop
+    · exact Measurable.prodMk (measurable_id.mono le_rfl hm') measurable_id
 
 section iCondIndepFun
 variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}
