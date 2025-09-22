@@ -56,7 +56,7 @@ lemma monomials (n : ℕ) (a : R) : IsRestricted c (monomial R n a) := by
   · omega
   · simpa
 
-lemma constants (a : R) : IsRestricted c (C R a) := by
+lemma C (a : R) : IsRestricted c (C R a) := by
   simpa [monomial_zero_eq_C_apply] using monomials c 0 a
 
 lemma add {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) :
