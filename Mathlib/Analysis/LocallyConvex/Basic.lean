@@ -271,8 +271,7 @@ section NontriviallyNormedField
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
 
-variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
-
+variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E] in
 protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (convexHull ℝ s) := by
   suffices Convex ℝ { x | ∀ a : 𝕜, ‖a‖ ≤ 1 → a • x ∈ convexHull ℝ s } by
     rw [balanced_iff_smul_mem] at hs ⊢
@@ -282,10 +281,9 @@ protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (co
   simp only [smul_add, ← smul_comm]
   exact convex_convexHull ℝ s (hx a ha) (hy a ha) hu hv huv
 
-variable (F ℱ : Type*) [SeminormedAddCommGroup F] [Module 𝕜 F]
+variable (F ℱ : Type*) [AddCommMonoid F] [Module 𝕜 F]
 variable [FunLike ℱ F E] [LinearMapClass ℱ 𝕜 F E]
 
-omit [Module ℝ E] in
 theorem Absorbent.subset_range_iff_surjective {f : ℱ} {s : Set E} (hs_abs : Absorbent 𝕜 s) :
     s ⊆ Set.range f ↔ (⇑f).Surjective := by
   refine ⟨fun hs_sub y ↦ ?_, by simp_all⟩
