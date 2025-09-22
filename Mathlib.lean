@@ -5758,6 +5758,7 @@ import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.NoZeroDivisors
 import Mathlib.RingTheory.PowerSeries.Order
 import Mathlib.RingTheory.PowerSeries.PiTopology
+import Mathlib.RingTheory.PowerSeries.Restricted
 import Mathlib.RingTheory.PowerSeries.Substitution
 import Mathlib.RingTheory.PowerSeries.Trunc
 import Mathlib.RingTheory.PowerSeries.WeierstrassPreparation
