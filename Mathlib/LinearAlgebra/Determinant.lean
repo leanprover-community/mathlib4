@@ -302,6 +302,11 @@ theorem det_conj {N : Type*} [AddCommGroup N] [Module A N] (f : M →ₗ[A] M) (
 theorem isUnit_det {A : Type*} [CommRing A] [Module A M] (f : M →ₗ[A] M) (hf : IsUnit f) :
     IsUnit (LinearMap.det f) := IsUnit.map LinearMap.det hf
 
+lemma isUnit_iff_isUnit_det [Module.Finite R M] [Module.Free R M] (f : M →ₗ[R] M) :
+    IsUnit f ↔ IsUnit f.det := by
+  let b := Module.Free.chooseBasis R M
+  rw [← isUnit_toMatrix_iff b, ← det_toMatrix b, Matrix.isUnit_iff_isUnit_det (toMatrix b b f)]
+
 /-- If a linear map has determinant different from `1`, then the space is finite-dimensional. -/
 theorem finite_of_det_ne_one {f : M →ₗ[R] M} (hf : f.det ≠ 1) : Module.Finite R M := by
   by_cases H : ∃ s : Finset M, Nonempty (Basis s R M)
