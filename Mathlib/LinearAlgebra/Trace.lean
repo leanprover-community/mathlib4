@@ -268,10 +268,8 @@ theorem trace_comp_comm' (f : M →ₗ[R] N) (g : N →ₗ[R] M) :
 @[simp]
 lemma trace_smulRight (f : M →ₗ[R] R) (x : M) :
     trace R M (f.smulRight x) = f x := by
-  classical
-  rw [trace_eq_matrix_trace _ (Free.chooseBasis R M)]
-  simp only [toMatrix_smulRight, Matrix.trace_vecMulVec, dotProduct, Function.comp_apply]
-  simp_rw [← smul_eq_mul, ← map_smul, ← map_sum, Basis.sum_repr]
+  rw [trace_eq_matrix_trace _ (Free.chooseBasis R M), ← (Free.chooseBasis R M).sum_repr x]
+  simp [- Basis.sum_repr, dotProduct]
 
 end
 
