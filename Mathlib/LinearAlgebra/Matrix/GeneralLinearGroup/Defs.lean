@@ -36,7 +36,7 @@ open LinearMap
 
 /-- `GL n R` is the group of `n` by `n` `R`-matrices with unit determinant.
 Defined as a subtype of matrices -/
-abbrev GeneralLinearGroup (n : Type u) (R : Type v) [DecidableEq n] [Fintype n] [CommRing R] :
+abbrev GeneralLinearGroup (n : Type u) (R : Type v) [DecidableEq n] [Fintype n] [Semiring R] :
     Type _ :=
   (Matrix n n R)ˣ
 
@@ -44,14 +44,16 @@ abbrev GeneralLinearGroup (n : Type u) (R : Type v) [DecidableEq n] [Fintype n] 
 
 namespace GeneralLinearGroup
 
-variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
+variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v}
 
 section CoeFnInstance
 
-instance instCoeFun : CoeFun (GL n R) fun _ => n → n → R where
+instance instCoeFun [Semiring R] : CoeFun (GL n R) fun _ => n → n → R where
   coe A := (A : Matrix n n R)
 
 end CoeFnInstance
+
+variable [CommRing R]
 
 /-- The determinant of a unit matrix is itself a unit. -/
 @[simps]

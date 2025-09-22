@@ -6,6 +6,10 @@ Authors: David Loeffler
 import Mathlib.Data.Real.Basic
 import Mathlib.GroupTheory.Commensurable
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+import Mathlib.Topology.Algebra.Ring.Real
+import Mathlib.Topology.Instances.Matrix
+import Mathlib.Topology.MetricSpace.Isometry
 
 /-!
 # Arithmetic subgroups of `GL(2, ℝ)`
@@ -51,3 +55,17 @@ instance IsArithmetic.finiteIndex_comap (𝒢 : Subgroup (GL (Fin 2) ℝ)) [IsAr
   ⟨𝒢.index_comap (mapGL (R := ℤ) ℝ) ▸ IsArithmetic.is_commensurable.1⟩
 
 end Subgroup
+
+namespace Matrix.SpecialLinearGroup
+
+local notation "SL" => SpecialLinearGroup
+
+variable {n : Type*} [Fintype n] [DecidableEq n]
+
+instance discreteSpecialLinearGroupIntRange : DiscreteTopology (mapGL (n := n) (R := ℤ) ℝ).range :=
+  (isEmbedding_mapGL (Isometry.isEmbedding fun _ _ ↦ rfl)).toHomeomorph.discreteTopology
+
+lemma isClosedEmbedding_mapGLInt : Topology.IsClosedEmbedding (mapGL ℝ : SL n ℤ → GL n ℝ) :=
+  ⟨isEmbedding_mapGL (Isometry.isEmbedding fun _ _ ↦ rfl), (mapGL ℝ).range.isClosed_of_discrete⟩
+
+end Matrix.SpecialLinearGroup

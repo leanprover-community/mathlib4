@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Eric Wieser
 -/
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
+import Mathlib.Topology.Algebra.Group.Pointwise
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.Star
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
@@ -47,11 +48,10 @@ instance [TopologicalSpace R] : TopologicalSpace (Matrix m n R) :=
 instance [TopologicalSpace R] [T2Space R] : T2Space (Matrix m n R) :=
   Pi.t2Space
 
-open Matrix
-
-instance [TopologicalSpace R] [DecidableEq n] [Fintype n] [CommRing R] :
-    TopologicalSpace (SpecialLinearGroup n R) :=
-  instTopologicalSpaceSubtype
+/-- The topology on finite matrices over a discrete space is discrete. -/
+instance [TopologicalSpace R] [Finite m] [Finite n] [DiscreteTopology R] :
+    DiscreteTopology (Matrix m n R) :=
+  Pi.discreteTopology
 
 section Set
 
@@ -244,6 +244,28 @@ theorem continuousAt_matrix_inv [Fintype n] [DecidableEq n] [CommRing R] [IsTopo
     (A : Matrix n n R) (h : ContinuousAt Ring.inverse A.det) : ContinuousAt Inv.inv A :=
   (h.comp continuous_id.matrix_det.continuousAt).smul continuous_id.matrix_adjugate.continuousAt
 
+namespace Topology
+
+variable {m n R S : Type*} [TopologicalSpace R] [TopologicalSpace S] {f : R → S}
+
+lemma IsInducing.matrix_map (hf : IsInducing f) :
+    IsInducing (map · f : Matrix m n R → Matrix m n S) :=
+  IsInducing.piMap fun _ : m ↦ (IsInducing.piMap fun _ : n ↦ hf)
+
+lemma IsEmbedding.matrix_map (hf : IsEmbedding f) :
+    IsEmbedding (map · f : Matrix m n R → Matrix m n S) :=
+  IsEmbedding.piMap fun _ : m ↦ (IsEmbedding.piMap fun _ : n ↦ hf)
+
+lemma IsClosedEmbedding.matrix_map (hf : IsClosedEmbedding f) :
+    IsClosedEmbedding (map · f : Matrix m n R → Matrix m n S) :=
+  IsClosedEmbedding.piMap fun _ : m ↦ (IsClosedEmbedding.piMap fun _ : n ↦ hf)
+
+lemma IsOpenEmbedding.matrix_map [Finite m] [Finite n] (hf : IsOpenEmbedding f) :
+    IsOpenEmbedding (map · f : Matrix m n R → Matrix m n S) :=
+  IsOpenEmbedding.piMap fun _ : m ↦ (IsOpenEmbedding.piMap fun _ : n ↦ hf)
+
+end Topology
+
 -- lemmas about functions in `Data/Matrix/Block.lean`
 section BlockMatrices
 
@@ -434,3 +456,92 @@ theorem Summable.matrix_blockDiag' {f : X → Matrix (Σ i, m' i) (Σ i, n' i) R
 end BlockMatrices
 
 end tsum
+
+/-! ### Lemmas about matrix groups -/
+
+section MatrixGroups
+
+variable [Fintype n] [DecidableEq n]
+  [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
+
+namespace Matrix.GeneralLinearGroup
+
+/-- The determinant is continuous as a map from the general linear group to the units. -/
+@[continuity, fun_prop] protected lemma continuous_det :
+    Continuous (det : GL n R → Rˣ) := by
+  simp_rw [Units.continuous_iff, ← map_inv]
+  constructor <;> fun_prop
+
+end Matrix.GeneralLinearGroup
+
+namespace Matrix.SpecialLinearGroup
+
+local notation "SL" => SpecialLinearGroup
+
+omit [IsTopologicalRing R] in
+instance : TopologicalSpace (SpecialLinearGroup n R) :=
+  instTopologicalSpaceSubtype
+
+/-- If `R` is a commutative ring with the discrete topology, then `SL(n, R)` has the discrete
+topology. -/
+instance [DiscreteTopology R] : DiscreteTopology (SL n R) :=
+  instDiscreteTopologySubtype
+
+/-- The special linear group over a topological ring is a topological group. -/
+instance topologicalGroup : IsTopologicalGroup (SL n R) where
+  continuous_inv := by simpa [continuous_induced_rng] using continuous_induced_dom.matrix_adjugate
+  continuous_mul := by simpa only [continuous_induced_rng] using
+    (continuous_induced_dom.comp continuous_fst).mul (continuous_induced_dom.comp continuous_snd)
+
+section toGL -- results on the map from `SL` to `GL`
+
+/-- The natural map from `SL n A` to `GL n A` is continuous. -/
+lemma continuous_toGL : Continuous (toGL : SL n R → GL n R) := by
+  simp_rw [Units.continuous_iff, ← map_inv]
+  constructor <;> fun_prop
+
+/-- The natural map from `SL n A` to `GL n A` is inducing, i.e. the topology on
+`SL n A` is the pullback of the topology from `GL n A`. -/
+lemma isInducing_toGL : Topology.IsInducing (toGL : SL n R → GL n R) :=
+  .of_comp continuous_toGL Units.continuous_val (Topology.IsInducing.induced _)
+
+/-- The natural map from `SL n A` in `GL n A` is an embedding, i.e. it is an injection and
+the topology on `SL n A` coincides with the subspace topology from `GL n A`. -/
+lemma isEmbedding_toGL : Topology.IsEmbedding (toGL : SL n R → GL n R) :=
+  ⟨isInducing_toGL, toGL_injective⟩
+
+theorem range_toGL {A : Type*} [CommRing A] :
+    Set.range (toGL : SL n A → GL n A) = GeneralLinearGroup.det ⁻¹' {1} := by
+  ext x
+  simpa [Units.ext_iff] using ⟨fun ⟨y, hy⟩ ↦ by simp [← hy], fun hx ↦ ⟨⟨x, hx⟩, rfl⟩⟩
+
+/-- The natural inclusion of `SL n A` in `GL n A` is a closed embedding. -/
+lemma isClosedEmbedding_toGL [T0Space R] : Topology.IsClosedEmbedding (toGL : SL n R → GL n R) :=
+  ⟨isEmbedding_toGL, by simpa [range_toGL] using isClosed_singleton.preimage <| by fun_prop⟩
+
+end toGL
+
+section mapGL
+
+variable {n : Type*} [Fintype n] [DecidableEq n]
+  {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+  [TopologicalSpace A] [TopologicalSpace B] [IsTopologicalRing B]
+
+lemma isInducing_mapGL (h : Topology.IsInducing (algebraMap A B)) :
+    Topology.IsInducing (mapGL B : SL n A → GL n B) := by
+  -- TODO: add `IsInducing.units_map` and deduce `IsInducing.generalLinearGroup_map`
+  refine isInducing_toGL.comp ?_
+  refine .of_comp ?_ continuous_induced_dom (h.matrix_map.comp (Topology.IsInducing.induced _))
+  rw [continuous_induced_rng]
+  exact continuous_subtype_val.matrix_map h.continuous
+
+lemma isEmbedding_mapGL (h : Topology.IsEmbedding (algebraMap A B)) :
+    Topology.IsEmbedding (mapGL B : SL n A → GL n B) :=
+  haveI : FaithfulSMul A B := (faithfulSMul_iff_algebraMap_injective _ _).mpr h.2
+  ⟨isInducing_mapGL h.isInducing, mapGL_injective⟩
+
+end mapGL
+
+end Matrix.SpecialLinearGroup
+
+end MatrixGroups
