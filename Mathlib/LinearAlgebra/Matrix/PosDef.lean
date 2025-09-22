@@ -470,7 +470,8 @@ lemma posSemidef_iff_eq_conjTranspose_mul_self [DecidableEq n] {A : Matrix n n �
 @[deprecated (since := "2025-05-07")]
 alias posSemidef_iff_eq_transpose_mul_self := posSemidef_iff_eq_conjTranspose_mul_self
 
-theorem PosSemidef.commute_iff {A B : Matrix n n 𝕜} (hA : A.PosSemidef) (hB : B.PosSemidef) :
+theorem PosSemidef.commute_iff [DecidableEq n] {A B : Matrix n n 𝕜}
+    (hA : A.PosSemidef) (hB : B.PosSemidef) :
     Commute A B ↔ (A * B).PosSemidef := by
   classical
   rw [hA.isHermitian.commute_iff hB.isHermitian]
