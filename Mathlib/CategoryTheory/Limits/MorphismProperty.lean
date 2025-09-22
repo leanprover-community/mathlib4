@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
 import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.MorphismProperty.Comma
 import Mathlib.CategoryTheory.MorphismProperty.Limits
+import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 
 /-!
 # (Co)limits in subcategories of comma categories defined by morphism properties
@@ -28,22 +29,23 @@ variable (D : J ⥤ P.Comma L R ⊤ ⊤)
 /-- If `P` is closed under limits of shape `J` in `Comma L R`, then when `D` has
 a limit in `Comma L R`, the forgetful functor creates this limit. -/
 noncomputable def forgetCreatesLimitOfClosed
-    (h : ClosedUnderLimitsOfShape J (fun f : Comma L R ↦ P f.hom))
+    (h : ObjectProperty.IsClosedUnderLimitsOfShape (fun f : Comma L R ↦ P f.hom) J)
     [HasLimit (D ⋙ forget L R P ⊤ ⊤)] :
     CreatesLimit D (forget L R P ⊤ ⊤) :=
   createsLimitOfFullyFaithfulOfIso
-    (⟨limit (D ⋙ forget L R P ⊤ ⊤), h.limit fun j ↦ (D.obj j).prop⟩)
-    (Iso.refl _)
+    (⟨limit (D ⋙ forget L R P ⊤ ⊤),
+      ObjectProperty.prop_limit (fun f : Comma L R ↦ P f.hom) _
+        fun j ↦ (D.obj j).prop⟩) (Iso.refl _)
 
 /-- If `Comma L R` has limits of shape `J` and `Comma L R` is closed under limits of shape
 `J`, then `forget L R P ⊤ ⊤` creates limits of shape `J`. -/
 noncomputable def forgetCreatesLimitsOfShapeOfClosed [HasLimitsOfShape J (Comma L R)]
-    (h : ClosedUnderLimitsOfShape J (fun f : Comma L R ↦ P f.hom)) :
+    (h : ObjectProperty.IsClosedUnderLimitsOfShape (fun f : Comma L R ↦ P f.hom) J) :
     CreatesLimitsOfShape J (forget L R P ⊤ ⊤) where
   CreatesLimit := forgetCreatesLimitOfClosed _ _ h
 
 lemma hasLimit_of_closedUnderLimitsOfShape
-    (h : ClosedUnderLimitsOfShape J (fun f : Comma L R ↦ P f.hom))
+    (h : ObjectProperty.IsClosedUnderLimitsOfShape (fun f : Comma L R ↦ P f.hom) J)
     [HasLimit (D ⋙ forget L R P ⊤ ⊤)] :
     HasLimit D :=
   haveI : CreatesLimit D (forget L R P ⊤ ⊤) := forgetCreatesLimitOfClosed _ D h
