@@ -225,6 +225,10 @@ instance (priority := 100) continuousInv_of_discreteTopology [TopologicalSpace H
     [DiscreteTopology H] : ContinuousInv H :=
   ⟨continuous_of_discreteTopology⟩
 
+@[to_additive]
+instance (priority := 100) topologicalGroup_of_discreteTopology
+    [TopologicalSpace H] [Group H] [DiscreteTopology H] : IsTopologicalGroup H := ⟨⟩
+
 section PointwiseLimits
 
 variable (G₁ G₂ : Type*) [TopologicalSpace G₂] [T2Space G₂]
