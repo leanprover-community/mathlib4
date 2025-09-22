@@ -1189,7 +1189,7 @@ theorem LinearIsometryEquiv.integrable_comp_iff {φ : α → H} (L : H ≃ₛₗ
 
 theorem MeasureTheory.Integrable.apply_continuousLinearMap {φ : α → H →L[𝕜] E}
     (φ_int : Integrable φ μ) (v : H) : Integrable (fun a => φ a v) μ :=
-  (ContinuousLinearMap.apply 𝕜 _ v).integrable_comp φ_int
+  (ContinuousLinearMap.apply' E σ v).integrable_comp φ_int
 
 end ContinuousLinearMap
 
