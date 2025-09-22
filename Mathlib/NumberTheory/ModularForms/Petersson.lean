@@ -5,7 +5,7 @@ Authors: David Loeffler
 -/
 
 import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
-import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
+import Mathlib.NumberTheory.ModularForms.QExpansion
 
 /-!
 # The Petersson scalar product
