@@ -128,7 +128,7 @@ noncomputable irreducible_def tprodFilter {β} (L : Filter (Finset β)) (f : β 
 
 open scoped Classical in
 /-- `∏' i, f i` is the product of `f` if it exists and is unconditionally convergent,
-or 1 otherwise. This is defined as `∏'[] i, f i` -/
+or 1 otherwise. This is defined as `∏'[L] i, f i` -/
 @[to_additive /-- `∑' i, f i` is the sum of `f` if it exists and is unconditionally convergent,
 or 0 otherwise. This is defined as `∑'[atTop] i, f i`. -/]
 abbrev tprod {β} (f : β → α) := tprodFilter atTop f
