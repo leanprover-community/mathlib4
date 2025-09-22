@@ -198,12 +198,12 @@ lemma ext_hom_zero_of_mem_ideal_smul (L M N : ModuleCat.{v} R) (n : ℕ) (f : M 
   refine Submodule.smul_induction_on mem ?_ ?_
   · intro r hr f hf
     ext x
-    change (((Ext.homEquiv₀_linearHom R).symm (r • f)).postcompOfLinear R L _) x = 0
+    change (((Ext.linearEquiv₀ R).symm (r • f)).postcompOfLinear R L _) x = 0
     simp only [Ext.postcompOfLinear, LinearMap.flip_apply]
     rw [map_smul, map_smul, ← LinearMap.smul_apply, ← map_smul]
     have : r • x = 0 := by
       have : r • (Ext.bilinearCompOfLinear R L L M 0 n n (zero_add n)).flip
-        x ((Ext.homEquiv₀_linearHom R).symm (𝟙 L)) = 0 := by
+        x ((Ext.linearEquiv₀ R).symm (𝟙 L)) = 0 := by
         have : r • (𝟙 L) = 0 := ModuleCat.hom_ext
           (LinearMap.ext (fun x ↦ Module.mem_annihilator.mp hr _))
         rw [← map_smul, ← map_smul, this]
@@ -212,7 +212,7 @@ lemma ext_hom_zero_of_mem_ideal_smul (L M N : ModuleCat.{v} R) (n : ℕ) (f : M 
     simp [this]
   · intro g1 g2 hg1 hg2
     ext x
-    change (((Ext.homEquiv₀_linearHom R).symm (g1 + g2)).postcompOfLinear R L _) x = 0
+    change (((Ext.linearEquiv₀ R).symm (g1 + g2)).postcompOfLinear R L _) x = 0
     have : AddCommGrp.ofHom ((Ext.mk₀ g1).postcomp L (add_zero n)) x +
       AddCommGrp.ofHom ((Ext.mk₀ g2).postcomp L (add_zero n)) x = 0 := by simp [hg1, hg2]
     simpa only [Ext.postcompOfLinear, map_add]
