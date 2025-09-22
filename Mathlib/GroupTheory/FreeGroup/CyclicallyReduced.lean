@@ -61,11 +61,10 @@ theorem IsCyclicallyReduced.flatten_replicate (n : ℕ) (h : IsCyclicallyReduced
   | n + 1, [] => simp
   | n + 1, (head :: tail) =>
     rw [isCyclicallyReduced_iff, IsReduced, List.chain'_flatten (by simp)]
-    refine ⟨⟨by simpa [IsReduced] using h.isReduced, List.chain'_replicate_of_rel _ h.2⟩, ?_⟩
-    intro a ha b hb
-    simp only [Option.mem_def] at ha hb
-    rw [List.getLast?_flatten_replicate (h := by simp +arith)] at ha
-    rw [List.head?_flatten_replicate (h := by simp +arith)] at hb
-    apply h.2 _ ha _ hb
+    refine ⟨⟨by simpa [IsReduced] using h.isReduced, List.chain'_replicate_of_rel _ h.2⟩,
+      fun _ ha _ hb ↦ ?_⟩
+    rw [Option.mem_def, List.getLast?_flatten_replicate (h := by simp +arith)] at ha
+    rw [Option.mem_def, List.head?_flatten_replicate (h := by simp +arith)] at hb
+    exact h.2 _ ha _ hb
 
 end FreeGroup
