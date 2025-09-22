@@ -5,6 +5,7 @@ Authors: Thomas Browning, Nailin Guan
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Topology.Algebra.Group.Defs
+import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 
@@ -540,6 +541,30 @@ instance {M N} [Unique M] [Unique N] [Mul M] [Mul N]
   uniq _ := ext fun _ ↦ Subsingleton.elim _ _
 
 end unique
+
+/-- A family indexed by a type with a unique element
+is `ContinuousMulEquiv` to the element at the single index.
+This is the topological version of `MulEquiv.piUnique`. -/
+@[to_additive 
+/-- A family indexed by a type with a unique element
+is `ContinuousAddEquiv` to the element at the single index.
+This is the topological equivalent of `AddEquiv.piUnique`. -/]
+def piUnique {ι : Type*} (M : ι → Type*) [(j : ι) → Mul (M j)]
+    [(j : ι) → TopologicalSpace (M j)] [Unique ι] :
+    ((j : ι) → M j) ≃ₜ* M default where
+  __ := MulEquiv.piUnique M
+  continuous_toFun := continuous_apply default
+  continuous_invFun := by simpa [continuous_pi_iff, Unique.forall_iff] using continuous_id'
+
+/-- Splits the indices of `∀ (i : ι), Y i` along the predicate `p`.
+This is `Equiv.piEquivPiSubtypeProd` as a `ContinuousMulEquiv`. -/
+@[to_additive piEquivPiSubtypeProd
+/-- Splits the indices of `∀ (i : ι), Y i` along the predicate `p`.
+This is `Equiv.piEquivPiSubtypeProd` as a `ContinuousAddEquiv`. -/]
+def piEquivPiSubtypeProd {ι : Type*} (p : ι → Prop) (Y : ι → Type*)
+    [(i : ι) → TopologicalSpace (Y i)] [(i : ι) → Mul (Y i)] [DecidablePred p] :
+    ((i : ι) → Y i) ≃ₜ* ((i : { x : ι // p x }) → Y i) × ((i : { x : ι // ¬p x }) → Y i) :=
+  {Homeomorph.piEquivPiSubtypeProd p Y with map_mul' _ _ := rfl}
 
 end ContinuousMulEquiv
 
