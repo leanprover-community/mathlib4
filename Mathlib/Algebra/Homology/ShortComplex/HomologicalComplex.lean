@@ -50,7 +50,7 @@ when `c.prev j = i` and `c.next j = k`. -/
 noncomputable def natIsoSc' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k) :
     shortComplexFunctor C c j ≅ shortComplexFunctor' C c i j k :=
   NatIso.ofComponents (fun K => ShortComplex.isoMk (K.XIsoOfEq hi) (Iso.refl _) (K.XIsoOfEq hk)
-    (by simp) (by simp)) (by aesop_cat)
+    (by simp) (by simp)) (by cat_disch)
 
 variable {C c}
 
@@ -236,8 +236,7 @@ lemma p_descOpcycles {A : C} (k : K.X i ⟶ A) (j : ι) (hj : c.prev i = j)
 variable (i)
 
 /-- The map `K.opcycles i ⟶ K.X j` induced by the differential `K.d i j`. -/
-noncomputable def fromOpcycles :
-  K.opcycles i ⟶ K.X j  :=
+noncomputable def fromOpcycles : K.opcycles i ⟶ K.X j  :=
   K.descOpcycles (K.d i j) (c.prev i) rfl (K.d_comp_d _ _ _)
 
 omit [K.HasHomology i] in
@@ -539,7 +538,7 @@ lemma iCyclesIso_inv_hom_id :
   (K.iCyclesIso i j hj h).inv_hom_id
 
 lemma isIso_homologyι : IsIso (K.homologyι i) :=
-  ShortComplex.isIso_homologyι _ (by aesop_cat)
+  ShortComplex.isIso_homologyι _ (by cat_disch)
 
 /-- The canonical isomorphism `K.homology i ≅ K.opcycles i`
 when the differential from `i` is zero. -/
@@ -586,7 +585,7 @@ lemma pOpcyclesIso_inv_hom_id :
   (K.pOpcyclesIso i j hi h).inv_hom_id
 
 lemma isIso_homologyπ : IsIso (K.homologyπ j) :=
-  ShortComplex.isIso_homologyπ _ (by aesop_cat)
+  ShortComplex.isIso_homologyπ _ (by cat_disch)
 
 /-- The canonical isomorphism `K.cycles j ≅ K.homology j`
 when the differential to `j` is zero. -/
@@ -681,8 +680,8 @@ instance isIso_homologyι₀ :
 
 /-- The canonical isomorphism `K.homology 0 ≅ K.opcycles 0` for a chain complex `K`
 indexed by `ℕ`. -/
-noncomputable abbrev isoHomologyι₀ :
-  K.homology 0 ≅ K.opcycles 0 := K.isoHomologyι 0 _ rfl (by simp)
+noncomputable abbrev isoHomologyι₀ : K.homology 0 ≅ K.opcycles 0 :=
+  K.isoHomologyι 0 _ rfl (by simp)
 
 variable {K L}
 
@@ -707,8 +706,8 @@ instance isIso_homologyπ₀ :
 
 /-- The canonical isomorphism `K.cycles 0 ≅ K.homology 0` for a cochain complex `K`
 indexed by `ℕ`. -/
-noncomputable abbrev isoHomologyπ₀ :
-  K.cycles 0 ≅ K.homology 0 := K.isoHomologyπ _ 0 rfl (by simp)
+noncomputable abbrev isoHomologyπ₀ : K.cycles 0 ≅ K.homology 0 :=
+  K.isoHomologyπ _ 0 rfl (by simp)
 
 variable {K L}
 

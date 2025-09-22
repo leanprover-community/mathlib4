@@ -473,7 +473,7 @@ lemma isCompl_ker_weight_span_coroot (α : Weight K H L) :
       using isCompl_top_bot
   else
     rw [← coe_corootSpace_eq_span_singleton]
-    apply Module.Dual.isCompl_ker_of_disjoint_of_ne_bot (by aesop)
+    apply Module.Dual.isCompl_ker_of_disjoint_of_ne_bot (by simp_all)
       (disjoint_ker_weight_corootSpace α)
     replace hα : corootSpace α ≠ ⊥ := by simpa using hα
     rwa [ne_eq, ← LieSubmodule.toSubmodule_inj] at hα

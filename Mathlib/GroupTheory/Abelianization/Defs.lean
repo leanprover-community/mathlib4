@@ -10,7 +10,7 @@ import Mathlib.GroupTheory.Commutator.Basic
 
 This file defines the commutator and the abelianization of a group. It furthermore prepares for the
 result that the abelianization is left adjoint to the forgetful functor from abelian groups to
-groups, which can be found in `Algebra/Category/Group/Adjunctions`.
+groups, which can be found in `Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
 
 ## Main definitions
 
@@ -91,6 +91,11 @@ theorem lift_apply_of (x : G) : lift f (of x) = f x :=
 
 @[deprecated (since := "2025-07-23")]
 alias lift.of := lift_apply_of
+
+theorem coe_lift_symm : (lift.symm : (Abelianization G →* A) → (G →* A)) = (·.comp of) := rfl
+
+@[simp]
+theorem lift_symm_apply (f : Abelianization G →* A) : lift.symm f = f.comp of := rfl
 
 theorem lift_unique (φ : Abelianization G →* A)
     -- hφ : φ agrees with f on the image of G in Gᵃᵇ

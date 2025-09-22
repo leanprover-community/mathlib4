@@ -541,7 +541,7 @@ def IsBoundary₁ (x : G →₀ A) : Prop :=
   ∃ y : G × G →₀ A, y.sum
     (fun g a => single g.2 (g.1⁻¹ • a) - single (g.1 * g.2) a + single g.1 a) = x
 
-/-- A finsupp `x : G × G →₀ A` satsfies the 2-boundary condition if there's a finsupp
+/-- A finsupp `x : G × G →₀ A` satisfies the 2-boundary condition if there's a finsupp
 `∑ aᵢ·(gᵢ, hᵢ, jᵢ) : G × G × G →₀ A` such that
 `∑ (gᵢ⁻¹ • aᵢ)·(hᵢ, jᵢ) - aᵢ·(gᵢhᵢ, jᵢ) + aᵢ·(gᵢ, hᵢjᵢ) - aᵢ·(gᵢ, hᵢ) = x.` -/
 def IsBoundary₂ (x : G × G →₀ A) : Prop :=
@@ -715,6 +715,10 @@ lemma coinvariantsMk_comp_opcyclesIso₀_inv :
       (chainsIso₀ A).inv ≫ (inhomogeneousChains A).pOpcycles 0 :=
   (CommSq.vert_inv ⟨pOpcycles_comp_opcyclesIso_hom A⟩).w
 
+lemma cyclesMk₀_eq (x : A) :
+    cyclesMk 0 0 (by simp) ((chainsIso₀ A).inv x) (by simp) = (cyclesIso₀ A).inv x :=
+  (ModuleCat.mono_iff_injective <| iCycles A 0).1 inferInstance <| by rw [iCycles_mk]; simp
+
 end cyclesIso₀
 
 section isoCycles₁
@@ -751,6 +755,13 @@ lemma toCycles_comp_isoCycles₁_hom :
   simp [← cancel_mono (shortComplexH1 A).moduleCatLeftHomologyData.i, comp_d₂₁_eq,
     shortComplexH1_f]
 
+lemma cyclesMk₁_eq (x : cycles₁ A) :
+    cyclesMk 1 0 (by simp) ((chainsIso₁ A).inv x) (by simp) = (isoCycles₁ A).inv x :=
+  (ModuleCat.mono_iff_injective <| iCycles A 1).1 inferInstance <| by
+    rw [iCycles_mk]
+    simp only [ChainComplex.of_x, isoCycles₁_inv_comp_iCycles_apply]
+    rfl
+
 end isoCycles₁
 
 section isoCycles₂
@@ -786,6 +797,13 @@ lemma toCycles_comp_isoCycles₂_hom :
       (chainsIso₃ A).hom ≫ (shortComplexH2 A).moduleCatLeftHomologyData.f' := by
   simp [← cancel_mono (shortComplexH2 A).moduleCatLeftHomologyData.i, comp_d₃₂_eq,
     shortComplexH2_f]
+
+lemma cyclesMk₂_eq (x : cycles₂ A) :
+    cyclesMk 2 1 (by simp) ((chainsIso₂ A).inv x) (by simp) = (isoCycles₂ A).inv x :=
+  (ModuleCat.mono_iff_injective <| iCycles A 2).1 inferInstance <| by
+    rw [iCycles_mk]
+    simp only [ChainComplex.of_x, isoCycles₂_inv_comp_iCycles_apply]
+    rfl
 
 end isoCycles₂
 

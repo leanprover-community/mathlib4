@@ -50,7 +50,7 @@ instance compactOpen : TopologicalSpace C(X, Y) :=
 /-- Definition of `ContinuousMap.compactOpen`. -/
 theorem compactOpen_eq : @compactOpen X Y _ _ =
     .generateFrom (image2 (fun K U ↦ {f | MapsTo f K U}) {K | IsCompact K} {t | IsOpen t}) :=
-   rfl
+  rfl
 
 theorem isOpen_setOf_mapsTo (hK : IsCompact K) (hU : IsOpen U) :
     IsOpen {f : C(X, Y) | MapsTo f K U} :=
@@ -128,16 +128,11 @@ theorem isInducing_postcomp (g : C(Y, Z)) (hg : IsInducing g) :
     simp only [compactOpen_eq, induced_generateFrom_eq, image_image2, hg.setOf_isOpen,
       image2_image_right, MapsTo, mem_preimage, preimage_setOf_eq, comp_apply]
 
-@[deprecated (since := "2024-10-28")] alias inducing_postcomp := isInducing_postcomp
-
 /-- If `g : C(Y, Z)` is a topological embedding,
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is an embedding too. -/
 theorem isEmbedding_postcomp (g : C(Y, Z)) (hg : IsEmbedding g) :
     IsEmbedding (g.comp : C(X, Y) → C(X, Z)) :=
   ⟨isInducing_postcomp g hg.1, fun _ _ ↦ (cancel_left hg.2).1⟩
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_postcomp := isEmbedding_postcomp
 
 /-- `C(·, Z)` is a functor. -/
 @[continuity, fun_prop]
@@ -171,7 +166,7 @@ lemma continuous_prodMk_const : Continuous fun p : X × C(Y, Z) ↦ prodMk (cons
   obtain ⟨V, W, hV, hW, hrV, hKW, hVW⟩ := generalized_tube_lemma (isCompact_singleton (x := r))
     (hK.image f.continuous) hU (by simpa [Set.subset_def, forall_comm (α := X)])
   refine Filter.eventually_of_mem (prod_mem_nhds (hV.mem_nhds (by simpa using hrV))
-    (ContinuousMap.eventually_mapsTo hK hW (Set.mapsTo'.mpr hKW))) ?_
+    (ContinuousMap.eventually_mapsTo hK hW (Set.mapsTo_iff_image_subset.mpr hKW))) ?_
   rintro ⟨r', f'⟩ ⟨hr'V, hf'⟩ x hxK
   exact hVW (Set.mk_mem_prod hr'V (hf' hxK))
 
@@ -186,7 +181,7 @@ theorem continuous_comp' : Continuous fun x : C(X, Y) × C(Y, Z) => x.2.comp x.1
   obtain ⟨L, hKL, hLc, hLU⟩ : ∃ L ∈ 𝓝ˢ (f '' K), IsCompact L ∧ MapsTo g L U :=
     exists_mem_nhdsSet_isCompact_mapsTo g.continuous (hK.image f.continuous) hU
       (mapsTo_image_iff.2 hKU)
-  rw [← subset_interior_iff_mem_nhdsSet, ← mapsTo'] at hKL
+  rw [← subset_interior_iff_mem_nhdsSet, ← mapsTo_iff_image_subset] at hKL
   exact ((eventually_mapsTo hK isOpen_interior hKL).prod_nhds
     (eventually_mapsTo hLc hU hLU)).mono fun ⟨f', g'⟩ ⟨hf', hg'⟩ ↦
       hg'.comp <| hf'.mono_right interior_subset
@@ -273,7 +268,7 @@ instance [RegularSpace Y] : RegularSpace C(X, Y) :=
     intro K hK U hU hf
     rcases (hK.image f.continuous).exists_isOpen_closure_subset (hU.mem_nhdsSet.2 hf.image_subset)
       with ⟨V, hVo, hKV, hVU⟩
-    filter_upwards [mem_lift' (eventually_mapsTo hK hVo (mapsTo'.2 hKV))] with g hg
+    filter_upwards [mem_lift' (eventually_mapsTo hK hVo (mapsTo_iff_image_subset.2 hKV))] with g hg
     refine ((isClosed_setOf_mapsTo isClosed_closure K).closure_subset ?_).mono_right hVU
     exact closure_mono (fun _ h ↦ h.mono_right subset_closure) hg
 
@@ -399,8 +394,8 @@ end Coev
 section Curry
 
 /-- The curried form of a continuous map `α × β → γ` as a continuous map `α → C(β, γ)`.
-    If `a × β` is locally compact, this is continuous. If `α` and `β` are both locally
-    compact, then this is a homeomorphism, see `Homeomorph.curry`. -/
+If `a × β` is locally compact, this is continuous. If `α` and `β` are both locally
+compact, then this is a homeomorphism, see `Homeomorph.curry`. -/
 def curry (f : C(X × Y, Z)) : C(X, C(Y, Z)) where
   toFun a := ⟨Function.curry f a, f.continuous.comp <| by fun_prop⟩
   continuous_toFun := (continuous_postcomp f).comp continuous_coev
@@ -410,7 +405,7 @@ theorem curry_apply (f : C(X × Y, Z)) (a : X) (b : Y) : f.curry a b = f (a, b) 
   rfl
 
 /-- To show continuity of a map `α → C(β, γ)`, it suffices to show that its uncurried form
-    `α × β → γ` is continuous. -/
+α × β → γ` is continuous. -/
 theorem continuous_of_continuous_uncurry (f : X → C(Y, Z))
     (h : Continuous (Function.uncurry fun x y => f x y)) : Continuous f :=
   (curry ⟨_, h⟩).2
@@ -434,8 +429,8 @@ theorem continuous_uncurry_of_continuous [LocallyCompactSpace Y] (f : C(X, C(Y, 
   continuous_eval.comp <| f.continuous.prodMap continuous_id
 
 /-- The uncurried form of a continuous map `X → C(Y, Z)` as a continuous map `X × Y → Z` (if `Y` is
-    locally compact). If `X` is also locally compact, then this is a homeomorphism between the two
-    function spaces, see `Homeomorph.curry`. -/
+locally compact). If `X` is also locally compact, then this is a homeomorphism between the two
+function spaces, see `Homeomorph.curry`. -/
 @[simps]
 def uncurry [LocallyCompactSpace Y] (f : C(X, C(Y, Z))) : C(X × Y, Z) :=
   ⟨_, continuous_uncurry_of_continuous f⟩
@@ -569,17 +564,11 @@ theorem Topology.IsQuotientMap.continuous_lift_prod_left (hf : IsQuotientMap f) 
     exact Gf.continuous
   exact ContinuousMap.continuous_uncurry_of_continuous ⟨G, this⟩
 
-@[deprecated (since := "2024-10-22")]
-alias QuotientMap.continuous_lift_prod_left := IsQuotientMap.continuous_lift_prod_left
-
 theorem Topology.IsQuotientMap.continuous_lift_prod_right (hf : IsQuotientMap f) {g : Y × X → Z}
     (hg : Continuous fun p : Y × X₀ => g (p.1, f p.2)) : Continuous g := by
   have : Continuous fun p : X₀ × Y => g ((Prod.swap p).1, f (Prod.swap p).2) :=
     hg.comp continuous_swap
   have : Continuous fun p : X₀ × Y => (g ∘ Prod.swap) (f p.1, p.2) := this
   exact (hf.continuous_lift_prod_left this).comp continuous_swap
-
-@[deprecated (since := "2024-10-22")]
-alias QuotientMap.continuous_lift_prod_right := IsQuotientMap.continuous_lift_prod_right
 
 end IsQuotientMap

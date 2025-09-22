@@ -110,14 +110,10 @@ theorem map_update_add [DecidableEq ι] (m : ι → M) (i : ι) (x y : M) :
     f (update m i (x + y)) = f (update m i x) + f (update m i y) :=
   f.map_update_add' m i x y
 
-@[deprecated (since := "2024-11-03")] protected alias map_add := map_update_add
-
 @[simp]
 theorem map_update_smul [DecidableEq ι] (m : ι → M) (i : ι) (c : R) (x : M) :
     f (update m i (c • x)) = c • f (update m i x) :=
   f.map_update_smul' m i c x
-
-@[deprecated (since := "2024-11-03")] protected alias map_smul := map_update_smul
 
 theorem map_coord_zero {m : ι → M} (i : ι) (h : m i = 0) : f m = 0 :=
   f.toMultilinearMap.map_coord_zero i h
@@ -249,7 +245,7 @@ linear map obtained by fixing all coordinates but `i` equal to those of `m`, and
 def toContinuousLinearMap [DecidableEq ι] (m : ι → M) (i : ι) : M →L[R] N :=
   f.1.toContinuousLinearMap m i
 
-/-- The cartesian product of two continuous alternating maps, as a continuous alternating map. -/
+/-- The Cartesian product of two continuous alternating maps, as a continuous alternating map. -/
 @[simps!]
 def prod (f : M [⋀^ι]→L[R] N) (g : M [⋀^ι]→L[R] N') : M [⋀^ι]→L[R] (N × N') :=
   ⟨f.1.prod g.1, (f.toAlternatingMap.prod g.toAlternatingMap).map_eq_zero_of_eq⟩
@@ -473,8 +469,6 @@ variable {R M N ι : Type*} [Ring R] [AddCommGroup M] [Module R M] [TopologicalS
 theorem map_update_sub [DecidableEq ι] (m : ι → M) (i : ι) (x y : M) :
     f (update m i (x - y)) = f (update m i x) - f (update m i y) :=
   f.toMultilinearMap.map_update_sub _ _ _ _
-
-@[deprecated (since := "2024-11-03")] protected alias map_sub := map_update_sub
 
 section IsTopologicalAddGroup
 

@@ -165,7 +165,7 @@ theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : 
     -- As the evaluation of the polynomial vanishes, we found a root of `fR` that is rational.
     -- We know that `α` is the only root of `fR` in our interval, and `α` is irrational:
     -- follow your nose.
-    refine (irrational_iff_ne_rational α).mp ha z (a + 1) (mem_singleton_iff.mp ?_).symm
+    refine ha.ne_rational z (a + 1) (mem_singleton_iff.mp ?_).symm
     refine U.subset ?_
     refine ⟨hq, Finset.mem_coe.mp (Multiset.mem_toFinset.mpr ?_)⟩
     exact (mem_roots fR0).mpr (IsRoot.def.mpr hy)

@@ -25,7 +25,7 @@ namespace Group
 
 variable (G) in
 /-- The minimum number of generators of a group. -/
-@[to_additive "The minimum number of generators of an additive group."]
+@[to_additive /-- The minimum number of generators of an additive group. -/]
 noncomputable def rank [h : FG G] : ℕ := @Nat.find _ (Classical.decPred _) (fg_iff'.mp h)
 
 variable (G) in

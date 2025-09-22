@@ -133,9 +133,6 @@ theorem isEmbedding_coeFn [UniformSpace F] [IsUniformAddGroup F] (𝔖 : Set (Se
       (UniformOnFun.ofFun 𝔖 ∘ DFunLike.coe) :=
   IsUniformEmbedding.isEmbedding (isUniformEmbedding_coeFn _ _ _)
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_coeFn := isEmbedding_coeFn
-
 instance instAddCommGroup [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
     AddCommGroup (UniformConvergenceCLM σ F 𝔖) := ContinuousLinearMap.addCommGroup
 
@@ -506,11 +503,15 @@ variable {𝕜 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜] [NormedField 𝕜₂]
   {σ₁₃ : 𝕜 →+* 𝕜₃} {σ₂₃ : 𝕜₂ →+* 𝕜₃}
 
 /-- Send a continuous bilinear map to an abstract bilinear map (forgetting continuity). -/
-def toLinearMap₂ (L : E →SL[σ₁₃] F →SL[σ₂₃] G) : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G :=
+def toLinearMap₁₂ (L : E →SL[σ₁₃] F →SL[σ₂₃] G) : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G :=
   (coeLMₛₗ σ₂₃).comp L.toLinearMap
 
-@[simp] lemma toLinearMap₂_apply (L : E →SL[σ₁₃] F →SL[σ₂₃] G) (v : E) (w : F) :
-    L.toLinearMap₂ v w = L v w := rfl
+@[deprecated (since := "2025-07-28")] alias toLinearMap₂ := toLinearMap₁₂
+
+@[simp] lemma toLinearMap₁₂_apply (L : E →SL[σ₁₃] F →SL[σ₂₃] G) (v : E) (w : F) :
+    L.toLinearMap₁₂ v w = L v w := rfl
+
+@[deprecated (since := "2025-07-28")] alias toLinearMap₂_apply := toLinearMap₁₂_apply
 
 end BilinearMaps
 
@@ -548,13 +549,10 @@ theorem isEmbedding_restrictScalars :
   haveI : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
   (isUniformEmbedding_restrictScalars _).isEmbedding
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_restrictScalars := isEmbedding_restrictScalars
-
 @[continuity, fun_prop]
 theorem continuous_restrictScalars :
     Continuous (restrictScalars 𝕜' : (E →L[𝕜] F) → (E →L[𝕜'] F)) :=
-   (isEmbedding_restrictScalars _).continuous
+  (isEmbedding_restrictScalars _).continuous
 
 variable (𝕜 E F)
 variable (𝕜'' : Type*) [Ring 𝕜'']

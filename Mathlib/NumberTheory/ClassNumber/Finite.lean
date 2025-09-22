@@ -21,12 +21,10 @@ finiteness of the class group for number fields and function fields.
   its integral closure has a finite class group
 -/
 
+open Module Ring
 open scoped nonZeroDivisors
 
 namespace ClassGroup
-
-open Ring
-
 section EuclideanDomain
 
 variable {R S : Type*} (K L : Type*) [EuclideanDomain R] [CommRing S] [IsDomain S]
@@ -94,8 +92,9 @@ theorem norm_lt {T : Type*} [Ring T] [LinearOrder T] [IsStrictOrderedRing T] (a 
     intro k
     exact @Finset.le_max' ℤ _ _ _ (Finset.mem_image.mpr ⟨k, Finset.mem_univ _, rfl⟩)
   have : (y' : T) < y := by
-    rw [y'_def, ←
-      Finset.max'_image (show Monotone (_ : ℤ → T) from fun x y h => Int.cast_le.mpr h)]
+    rw [y'_def,
+      ← Finset.max'_image (show Monotone (_ : ℤ → T) from fun x y h => Int.cast_le.mpr h)
+          _ (him.image _)]
     apply (Finset.max'_lt_iff _ (him.image _)).mpr
     simp only [Finset.mem_image]
     rintro _ ⟨x, ⟨k, -, rfl⟩, rfl⟩

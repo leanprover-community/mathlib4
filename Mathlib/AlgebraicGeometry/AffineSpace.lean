@@ -279,7 +279,7 @@ lemma SpecIso_inv_over (R : CommRingCat.{max u v}) :
 section functorial
 
 variable (n) in
-/-- `𝔸(n; S)` is functorial wrt `S`. -/
+/-- `𝔸(n; S)` is functorial w.r.t. `S`. -/
 def map {S T : Scheme.{max u v}} (f : S ⟶ T) : 𝔸(n; S) ⟶ 𝔸(n; T) :=
   homOfVector (𝔸(n; S) ↘ S ≫ f) (coord S)
 
@@ -339,7 +339,7 @@ lemma isPullback_map {S T : Scheme.{max u v}} (f : S ⟶ T) :
   convert (IsPullback.of_hasPullback _ _).flip
   rw [← toSpecMvPoly, ← toSpecMvPoly, map_toSpecMvPoly]
 
-/-- `𝔸(n; S)` is functorial wrt `n`. -/
+/-- `𝔸(n; S)` is functorial w.r.t. `n`. -/
 def reindex {n m : Type v} (i : m → n) (S : Scheme.{max u v}) : 𝔸(n; S) ⟶ 𝔸(m; S) :=
   homOfVector (𝔸(n; S) ↘ S) (coord S ∘ i)
 
@@ -406,8 +406,8 @@ lemma isOpenMap_over : IsOpenMap (𝔸(n; S) ↘ S).base := by
   wlog hS : ∃ R, S = Spec R
   · refine (IsLocalAtTarget.iff_of_openCover (P := topologically @IsOpenMap) S.affineCover).mpr ?_
     intro i
-    have := this (n := n) (S.affineCover.obj i) ⟨_, rfl⟩
-    rwa [← (isPullback_map (n := n)  (S.affineCover.map i)).isoPullback_hom_snd,
+    have := this (n := n) (S.affineCover.X i) ⟨_, rfl⟩
+    rwa [← (isPullback_map (n := n)  (S.affineCover.f i)).isoPullback_hom_snd,
       MorphismProperty.cancel_left_of_respectsIso (P := topologically @IsOpenMap)] at this
   obtain ⟨R, rfl⟩ := hS
   rw [← MorphismProperty.cancel_left_of_respectsIso (P := topologically @IsOpenMap)
@@ -434,8 +434,8 @@ lemma isIntegralHom_over_iff_isEmpty : IsIntegralHom (𝔸(n; S) ↘ S) ↔ IsEm
     wlog hS : ∃ R, S = Spec R
     · obtain ⟨x⟩ := ‹Nonempty S›
       obtain ⟨y, hy⟩ := S.affineCover.covers x
-      exact this (S.affineCover.obj x) (MorphismProperty.IsStableUnderBaseChange.of_isPullback
-        (isPullback_map (S.affineCover.map x)) h) ⟨y⟩ ⟨_, rfl⟩
+      exact this (S.affineCover.X x) (MorphismProperty.IsStableUnderBaseChange.of_isPullback
+        (isPullback_map (S.affineCover.f x)) h) ⟨y⟩ ⟨_, rfl⟩
     obtain ⟨R, rfl⟩ := hS
     have : Nontrivial R := (subsingleton_or_nontrivial R).resolve_left fun H ↦
         not_isEmpty_of_nonempty (Spec R) (inferInstanceAs (IsEmpty (PrimeSpectrum R)))
@@ -456,6 +456,17 @@ lemma isIntegralHom_over_iff_isEmpty : IsIntegralHom (𝔸(n; S) ↘ S) ↔ IsEm
 
 lemma not_isIntegralHom [Nonempty S] [Nonempty n] : ¬ IsIntegralHom (𝔸(n; S) ↘ S) := by
   simp [isIntegralHom_over_iff_isEmpty]
+
+lemma spec_le_iff (R : CommRingCat) (p q : Spec R) : p ≤ q ↔ q.asIdeal ≤ p.asIdeal := by
+  aesop (add simp PrimeSpectrum.le_iff_specializes)
+
+/--
+One should bear this equality in mind when breaking the `Spec R/ PrimeSpectrum R` abstraction
+boundary, since these instances are not definitionally equal.
+-/
+example (R : CommRingCat) :
+    inferInstance (α := Preorder (Spec R)) = inferInstance (α := Preorder (PrimeSpectrum R)ᵒᵈ) := by
+  aesop (add simp spec_le_iff)
 
 end instances
 

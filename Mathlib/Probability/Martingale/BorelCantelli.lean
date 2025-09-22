@@ -269,7 +269,7 @@ variable {s : ℕ → Set Ω}
 theorem process_zero : process s 0 = 0 := by rw [process, Finset.range_zero, Finset.sum_empty]
 
 theorem adapted_process (hs : ∀ n, MeasurableSet[ℱ n] (s n)) : Adapted ℱ (process s) := fun _ =>
-  Finset.stronglyMeasurable_sum' _ fun _ hk =>
+  Finset.stronglyMeasurable_sum _ fun _ hk =>
     stronglyMeasurable_one.indicator <| ℱ.mono (Finset.mem_range.1 hk) _ <| hs _
 
 theorem martingalePart_process_ae_eq (ℱ : Filtration ℕ m0) (μ : Measure Ω) (s : ℕ → Set Ω) (n : ℕ) :

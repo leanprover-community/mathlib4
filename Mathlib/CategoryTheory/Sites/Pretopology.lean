@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Sites.Grothendieck
+import Mathlib.CategoryTheory.Sites.Precoverage
 
 /-!
 # Grothendieck pretopologies
@@ -56,9 +57,8 @@ See: https://ncatlab.org/nlab/show/Grothendieck+pretopology or [MM92] Chapter II
 Section 2, Definition 2. -/
 @[ext, stacks 00VH "Note that Stacks calls a category together with a pretopology a site,
 and [MM92] calls this a basis for a topology."]
-structure Pretopology where
+structure Pretopology extends Precoverage C where
   /-- For all `X : C`, the coverings of `X` (sets of families of morphisms with target `X`) -/
-  coverings : ∀ X : C, Set (Presieve X)
   has_isos : ∀ ⦃X Y⦄ (f : Y ⟶ X) [IsIso f], Presieve.singleton f ∈ coverings X
   pullbacks : ∀ ⦃X Y⦄ (f : Y ⟶ X) (S), S ∈ coverings X → pullbackArrows f S ∈ coverings Y
   transitive :
@@ -68,7 +68,7 @@ structure Pretopology where
 namespace Pretopology
 
 instance : CoeFun (Pretopology C) fun _ => ∀ X : C, Set (Presieve X) :=
-  ⟨coverings⟩
+  ⟨fun J ↦ J.coverings⟩
 
 variable {C}
 
@@ -97,6 +97,8 @@ instance orderTop : OrderTop (Pretopology C) where
 instance : Inhabited (Pretopology C) :=
   ⟨⊤⟩
 
+variable {C}
+
 /-- A pretopology `K` can be completed to a Grothendieck topology `J` by declaring a sieve to be
 `J`-covering if it contains a family in `K`.
 
@@ -120,14 +122,17 @@ def toGrothendieck (K : Pretopology C) : GrothendieckTopology C where
     apply t₃ (RS _ hg) _ hf
 
 theorem mem_toGrothendieck (K : Pretopology C) (X S) :
-    S ∈ toGrothendieck C K X ↔ ∃ R ∈ K X, R ≤ (S : Presieve X) :=
+    S ∈ toGrothendieck K X ↔ ∃ R ∈ K X, R ≤ (S : Presieve X) :=
   Iff.rfl
 
+end Pretopology
+
+variable {C} in
 /-- The largest pretopology generating the given Grothendieck topology.
 
 See [MM92] Chapter III, Section 2, Equations (3,4).
 -/
-def ofGrothendieck (J : GrothendieckTopology C) : Pretopology C where
+def GrothendieckTopology.toPretopology (J : GrothendieckTopology C) : Pretopology C where
   coverings X := {R | Sieve.generate R ∈ J X}
   has_isos X Y f i := J.covering_of_eq_top (by simp)
   pullbacks X Y f R hR := by simpa [Sieve.pullbackArrows_comm] using J.pullback_stable f hR
@@ -141,8 +146,12 @@ def ofGrothendieck (J : GrothendieckTopology C) : Pretopology C where
     rintro Y g ⟨W, h, g, hg, rfl⟩
     exact ⟨_, h, _, ⟨_, _, _, hf, hg, rfl⟩, by simp⟩
 
-/-- We have a galois insertion from pretopologies to Grothendieck topologies. -/
-def gi : GaloisInsertion (toGrothendieck C) (ofGrothendieck C) where
+@[deprecated (since := "2025-09-19")]
+alias Pretopology.ofGrothendieck := GrothendieckTopology.toPretopology
+
+/-- We have a Galois insertion from pretopologies to Grothendieck topologies. -/
+def Pretopology.gi : GaloisInsertion
+    (toGrothendieck (C := C)) (GrothendieckTopology.toPretopology (C := C)) where
   gc K J := by
     constructor
     · intro h X R hR
@@ -151,12 +160,17 @@ def gi : GaloisInsertion (toGrothendieck C) (ofGrothendieck C) where
       apply J.superset_covering _ (h _ hR)
       rwa [Sieve.giGenerate.gc]
   le_l_u J _ S hS := ⟨S, J.superset_covering (Sieve.le_generate S.arrows) hS, le_rfl⟩
-  choice x _ := toGrothendieck C x
+  choice x _ := toGrothendieck x
   choice_eq _ _ := rfl
 
-lemma mem_ofGrothendieck (t : GrothendieckTopology C) {X : C} (S : Presieve X) :
-    S ∈ ofGrothendieck C t X ↔ Sieve.generate S ∈ t X :=
+lemma GrothendieckTopology.mem_toPretopology (t : GrothendieckTopology C) {X : C} (S : Presieve X) :
+    S ∈ t.toPretopology X ↔ Sieve.generate S ∈ t X :=
   Iff.rfl
+
+@[deprecated (since := "2025-09-19")]
+alias Pretopology.mem_ofGrothendieck := GrothendieckTopology.mem_toPretopology
+
+namespace Pretopology
 
 /--
 The trivial pretopology, in which the coverings are exactly singleton isomorphisms. This topology is
@@ -200,13 +214,13 @@ instance orderBot : OrderBot (Pretopology C) where
     rintro ⟨Y, f, hf, rfl⟩
     exact K.has_isos f
 
-/-- The trivial pretopology induces the trivial grothendieck topology. -/
-theorem toGrothendieck_bot : toGrothendieck C ⊥ = ⊥ :=
+/-- The trivial pretopology induces the trivial Grothendieck topology. -/
+theorem toGrothendieck_bot : toGrothendieck (C := C) ⊥ = ⊥ :=
   (gi C).gc.l_bot
 
 instance : InfSet (Pretopology C) where
   sInf T := {
-    coverings := sInf (coverings '' T)
+    coverings := sInf ((fun J ↦ J.coverings) '' T)
     has_isos := fun X Y f _ ↦ by
       simp only [sInf_apply, Set.iInf_eq_iInter, Set.iInter_coe_set, Set.mem_image,
         Set.iInter_exists,
@@ -227,16 +241,16 @@ instance : InfSet (Pretopology C) where
 
 lemma mem_sInf (T : Set (Pretopology C)) {X : C} (S : Presieve X) :
     S ∈ sInf T X ↔ ∀ t ∈ T, S ∈ t X := by
-  change S ∈ sInf (Pretopology.coverings '' T) X ↔ _
+  change S ∈ sInf ((fun J : Pretopology C ↦ J.coverings) '' T) X ↔ _
   simp
 
 lemma sInf_ofGrothendieck (T : Set (GrothendieckTopology C)) :
-    ofGrothendieck C (sInf T) = sInf (ofGrothendieck C '' T) := by
+    (sInf T).toPretopology = sInf (GrothendieckTopology.toPretopology '' T) := by
   ext X S
-  simp [mem_sInf, mem_ofGrothendieck, GrothendieckTopology.mem_sInf]
+  simp [mem_sInf, GrothendieckTopology.mem_toPretopology, GrothendieckTopology.mem_sInf]
 
 lemma isGLB_sInf (T : Set (Pretopology C)) : IsGLB T (sInf T) :=
-  IsGLB.of_image (f := coverings) Iff.rfl (_root_.isGLB_sInf _)
+  IsGLB.of_image (f := fun J ↦ J.coverings) Iff.rfl (_root_.isGLB_sInf _)
 
 /-- The complete lattice structure on pretopologies. This is induced by the `InfSet` instance, but
 with good definitional equalities for `⊥`, `⊤` and `⊓`. -/
@@ -263,5 +277,33 @@ lemma mem_inf (t₁ t₂ : Pretopology C) {X : C} (S : Presieve X) :
   Iff.rfl
 
 end Pretopology
+
+/-- If `J` is a precoverage that has isomorphisms and is stable under composition and
+base change, it defines a pretopology. -/
+@[simps toPrecoverage]
+def Precoverage.toPretopology [Limits.HasPullbacks C] (J : Precoverage C) [J.HasIsos]
+    [J.IsStableUnderBaseChange] [J.IsStableUnderComposition] : Pretopology C where
+  __ := J
+  has_isos X Y f hf := mem_coverings_of_isIso f
+  pullbacks X Y f R hR := J.pullbackArrows_mem f hR
+  transitive X R Ti hR hTi := by
+    obtain ⟨ι, Z, g, rfl⟩ := R.exists_eq_ofArrows
+    choose κ W p hp using fun ⦃Y⦄ (f : Y ⟶ X) hf ↦ (Ti f hf).exists_eq_ofArrows
+    have : (Presieve.ofArrows Z g).bind Ti =
+        .ofArrows (fun ij : Σ i, κ (g i) ⟨i⟩ ↦ W _ _ ij.2) (fun ij ↦ p _ _ ij.2 ≫ g ij.1) := by
+      apply le_antisymm
+      · rintro T u ⟨S, v, w, ⟨i⟩, hv, rfl⟩
+        rw [hp] at hv
+        obtain ⟨j⟩ := hv
+        exact .mk <| Sigma.mk (β := fun i : ι ↦ κ (g i) ⟨i⟩) i j
+      · rintro T u ⟨ij⟩
+        use Z ij.1, p (g ij.1) ⟨ij.1⟩ ij.2, g ij.1, ⟨ij.1⟩
+        rw [hp]
+        exact ⟨⟨_⟩, rfl⟩
+    rw [this]
+    refine J.comp_mem_coverings (Y := fun (i : ι) (j : κ (g i) ⟨i⟩) ↦ W _ _ j)
+      (g := fun i j ↦ p _ _ j) _ hR fun i ↦ ?_
+    rw [← hp]
+    exact hTi _ _
 
 end CategoryTheory
