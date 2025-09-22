@@ -269,7 +269,7 @@ theorem summable_nat_rpow_inv {p : ℝ} :
       nth_rw 1 [← rpow_one 2]
       rw [← division_def, ← rpow_sub zero_lt_two, norm_eq_abs,
         abs_of_pos (rpow_pos_of_pos zero_lt_two _), rpow_lt_one_iff zero_lt_two.le]
-      norm_num
+      simp
     · intro n
       positivity
     · intro m n hm hmn

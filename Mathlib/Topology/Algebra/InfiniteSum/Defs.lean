@@ -11,7 +11,7 @@ import Mathlib.Topology.Separation.Hausdorff
 # Infinite sum and product over a topological monoid
 
 This file defines unconditionally convergent sums over a commutative topological additive monoid.
-For Euclidean spaces (finite dimensional Banach spaces) this is equivalent to absolute
+For Euclidean spaces (finite-dimensional Banach spaces) this is equivalent to absolute
 convergence.
 
 We also define unconditionally convergent products over a commutative topological multiplicative
