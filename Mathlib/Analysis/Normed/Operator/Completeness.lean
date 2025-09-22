@@ -154,5 +154,3 @@ theorem isCompact_image_coe_closedBall [ProperSpace F] (f₀ : E →SL[σ₁₂]
     is_weak_closed_closedBall f₀ r
 
 end Completeness
-
-end ContinuousLinearMap

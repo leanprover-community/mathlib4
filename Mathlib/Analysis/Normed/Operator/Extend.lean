@@ -41,10 +41,12 @@ section Extend
 
 section NormedRing
 
-variable [NormedRing 𝕜] [NormedRing 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
-  [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup Fₗ] [CompleteSpace F]
-  [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜 Fₗ] [IsBoundedSMul 𝕜₂ F] [IsBoundedSMul 𝕜 Fₗ]
-  (f g : E →SL[σ₁₂] F) (e : E →L[𝕜] Fₗ)
+variable [AddCommGroup E] [UniformSpace E] [IsUniformAddGroup E]
+  [AddCommGroup F] [UniformSpace F] [IsUniformAddGroup F] [T0Space F]
+  [AddCommMonoid Fₗ] [UniformSpace Fₗ] [ContinuousAdd Fₗ]
+  [Semiring 𝕜] [Semiring 𝕜₂] [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜 Fₗ]
+  [ContinuousConstSMul 𝕜 Fₗ] [ContinuousConstSMul 𝕜₂ F]
+  {σ₁₂ : 𝕜 →+* 𝕜₂} (f g : E →SL[σ₁₂] F) [CompleteSpace F] (e : E →L[𝕜] Fₗ) (h_dense : DenseRange e)
 
 variable (h_dense : DenseRange e) (h_e : IsUniformInducing e)
 
