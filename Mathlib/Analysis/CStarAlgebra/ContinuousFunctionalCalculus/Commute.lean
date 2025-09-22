@@ -7,7 +7,7 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 
 /-! # Commuting with applications of the continuous functional calculus
 
-This file show that if an element `b` commutes with both `a` and `star a`, then it commutes
+This file shows that if an element `b` commutes with both `a` and `star a`, then it commutes
 with `cfc f a` (or `cfcₙ f a`). In the case where `a` is selfadjoint, we may reduce the hypotheses.
 
 # Main results
