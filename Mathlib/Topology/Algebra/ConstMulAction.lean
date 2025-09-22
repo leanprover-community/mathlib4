@@ -170,6 +170,12 @@ theorem smul_closure_subset (c : M) (s : Set α) : c • closure s ⊆ closure (
   ((Set.mapsTo_image _ _).closure <| continuous_const_smul c).image_subset
 
 @[to_additive]
+theorem set_smul_closure_subset (s : Set M) (t : Set α) : s • closure t ⊆ closure (s • t) := by
+  simp only [← iUnion_smul_set]
+  exact iUnion₂_subset fun c hc ↦ (smul_closure_subset c t).trans <| closure_mono <|
+    subset_biUnion_of_mem (u := (· • t)) hc
+
+@[to_additive]
 theorem smul_closure_orbit_subset (c : M) (x : α) :
     c • closure (MulAction.orbit M x) ⊆ closure (MulAction.orbit M x) :=
   (smul_closure_subset c _).trans <| closure_mono <| MulAction.smul_orbit_subset _ _
