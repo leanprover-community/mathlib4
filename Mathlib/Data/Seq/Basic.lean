@@ -73,7 +73,7 @@ theorem getElem?_take : ∀ (n k : ℕ) (s : Seq α),
           simp [List.getElem?_cons_succ, Nat.add_lt_add_iff_right, getElem?_take]
 
 theorem get?_mem_take {s : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
-    (h_get : s.get? m = .some x) : x ∈ s.take n := by
+    (h_get : s.get? m = some x) : x ∈ s.take n := by
   induction m generalizing n s with
   | zero =>
     obtain ⟨l, hl⟩ := Nat.exists_add_one_eq.mpr h_mn
@@ -82,7 +82,7 @@ theorem get?_mem_take {s : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
   | succ k ih =>
     obtain ⟨l, hl⟩ := Nat.exists_eq_add_of_lt h_mn
     subst hl
-    have : ∃ y, s.get? 0 = .some y := by
+    have : ∃ y, s.get? 0 = some y := by
       apply ge_stable _ _ h_get
       simp
     obtain ⟨y, hy⟩ := this
@@ -393,8 +393,9 @@ theorem dropn_tail (s : Seq α) (n) : drop (tail s) n = drop s (n + 1) := by
 
 @[simp]
 theorem head_dropn (s : Seq α) (n) : head (drop s n) = get? s n := by
-  induction' n with n IH generalizing s; · rfl
-  rw [← get?_tail, ← dropn_tail]; apply IH
+  induction n generalizing s with
+  | zero => rfl
+  | succ n IH => rw [← get?_tail, ← dropn_tail]; apply IH
 
 @[simp]
 theorem drop_succ_cons {x : α} {s : Seq α} {n : ℕ} :
@@ -735,7 +736,8 @@ theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
   rw [map_comp _ join]
   generalize Seq.map (map g ∘ f) s = SS
   rcases map g (f a) with ⟨⟨a, s⟩, S⟩
-  induction' s using recOn with x s_1 <;> induction' S using recOn with x_1 s_2 <;> simp
+  induction s using recOn with | nil => ?_ | cons x s_1 => ?_ <;>
+  induction S using recOn with | nil => simp | cons x_1 s_2 => ?_
   · obtain ⟨x, t⟩ := x_1
     cases t <;> simp
   · obtain ⟨y, t⟩ := x_1; simp

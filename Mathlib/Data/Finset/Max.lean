@@ -64,9 +64,10 @@ theorem max_eq_bot {s : Finset α} : s.max = ⊥ ↔ s = ∅ :=
     fun h ↦ h.symm ▸ max_empty⟩
 
 theorem mem_of_max {s : Finset α} : ∀ {a : α}, s.max = a → a ∈ s := by
-  induction' s using Finset.induction_on with b s _ ih
-  · intro _ H; cases H
-  · intro a h
+  induction s using Finset.induction_on with
+  | empty => intro _ H; cases H
+  | insert b s _ ih =>
+    intro a h
     by_cases p : b = a
     · induction p
       exact mem_insert_self b s
@@ -453,7 +454,7 @@ theorem card_le_diff_of_interleaved {s t : Finset α}
 @[elab_as_elim]
 theorem induction_on_max [DecidableEq α] {p : Finset α → Prop} (s : Finset α) (h0 : p ∅)
     (step : ∀ a s, (∀ x ∈ s, x < a) → p s → p (insert a s)) : p s := by
-  induction' s using Finset.eraseInduction with s ih
+  induction s using Finset.eraseInduction with | _ s ih
   rcases s.eq_empty_or_nonempty with (rfl | hne)
   · exact h0
   · have H : s.max' hne ∈ s := max'_mem s hne
@@ -486,7 +487,7 @@ ordered type : a predicate is true on all `s : Finset α` provided that:
 @[elab_as_elim]
 theorem induction_on_max_value [DecidableEq ι] (f : ι → α) {p : Finset ι → Prop} (s : Finset ι)
     (h0 : p ∅) (step : ∀ a s, a ∉ s → (∀ x ∈ s, f x ≤ f a) → p s → p (insert a s)) : p s := by
-  induction' s using Finset.eraseInduction with s ihs
+  induction s using Finset.eraseInduction with | _ s ihs
   rcases (s.image f).eq_empty_or_nonempty with (hne | hne)
   · simp only [image_eq_empty] at hne
     simp only [hne, h0]

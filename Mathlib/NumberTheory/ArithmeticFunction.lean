@@ -393,7 +393,6 @@ theorem zeta_apply {x : ℕ} : ζ x = if x = 0 then 0 else 1 :=
 theorem zeta_apply_ne {x : ℕ} (h : x ≠ 0) : ζ x = 1 :=
   if_neg h
 
--- Porting note: removed `@[simp]`, LHS not in normal form
 theorem coe_zeta_smul_apply {M} [Semiring R] [AddCommMonoid M] [MulAction R M]
     {f : ArithmeticFunction M} {x : ℕ} :
     ((↑ζ : ArithmeticFunction R) • f) x = ∑ i ∈ divisors x, f i := by
@@ -403,6 +402,15 @@ theorem coe_zeta_smul_apply {M} [Semiring R] [AddCommMonoid M] [MulAction R M]
     rcases mem_divisorsAntidiagonal.1 hi with ⟨rfl, h⟩
     rw [natCoe_apply, zeta_apply_ne (left_ne_zero_of_mul h), cast_one, one_smul]
   · rw [← map_div_left_divisors, sum_map, Function.Embedding.coeFn_mk]
+
+/-- `@[simp]`-normal form of `coe_zeta_smul_apply`. -/
+@[simp]
+theorem sum_divisorsAntidiagonal_eq_sum_divisors {M} [Semiring R] [AddCommMonoid M] [MulAction R M]
+    {f : ArithmeticFunction M} {x : ℕ} :
+    (∑ x ∈ x.divisorsAntidiagonal, if x.1 = 0 then (0 : R) • f x.2 else f x.2) =
+      ∑ i ∈ divisors x, f i := by
+  rw [← coe_zeta_smul_apply (R := R)]
+  simp
 
 theorem coe_zeta_mul_apply [Semiring R] {f : ArithmeticFunction R} {x : ℕ} :
     (↑ζ * f) x = ∑ i ∈ divisors x, f i :=
@@ -823,10 +831,26 @@ theorem sigma_one_apply_prime_pow {p i : ℕ} (hp : p.Prime) :
     σ 1 (p ^ i) = ∑ k ∈ .range (i + 1), p ^ k := by
   simp [sigma_apply_prime_pow hp]
 
+theorem sigma_eq_sum_div (k n : ℕ) : sigma k n = ∑ d ∈ Nat.divisors n, (n / d) ^ k := by
+  rw [sigma_apply, ← Nat.sum_div_divisors]
+
 theorem sigma_zero_apply (n : ℕ) : σ 0 n = #n.divisors := by simp [sigma_apply]
 
 theorem sigma_zero_apply_prime_pow {p i : ℕ} (hp : p.Prime) : σ 0 (p ^ i) = i + 1 := by
   simp [sigma_apply_prime_pow hp]
+
+@[simp]
+theorem sigma_one (k : ℕ) : σ k 1 = 1 := by
+  simp only [sigma_apply, divisors_one, sum_singleton, one_pow]
+
+theorem sigma_pos (k n : ℕ) (hn0 : n ≠ 0) : 0 < σ k n := by
+  rw [sigma_apply]
+  exact sum_pos (fun d hd ↦ pow_pos (pos_of_mem_divisors hd) k) (nonempty_divisors.mpr hn0)
+
+theorem sigma_mono (k k' n : ℕ) (hk : k ≤ k') : σ k n ≤ σ k' n := by
+  simp_rw [sigma_apply]
+  apply Finset.sum_le_sum
+  exact fun d hd ↦ Nat.pow_le_pow_right (Nat.pos_of_mem_divisors hd) hk
 
 theorem zeta_mul_pow_eq_sigma {k : ℕ} : ζ * pow k = σ k := by
   ext
@@ -871,6 +895,43 @@ theorem isMultiplicative_pow {k : ℕ} : IsMultiplicative (pow k) :=
 theorem isMultiplicative_sigma {k : ℕ} : IsMultiplicative (σ k) := by
   rw [← zeta_mul_pow_eq_sigma]
   apply isMultiplicative_zeta.mul isMultiplicative_pow
+
+theorem _root_.Nat.card_divisors {n : ℕ} (hn : n ≠ 0) :
+    #n.divisors = n.primeFactors.prod (n.factorization · + 1) := by
+  rw [← sigma_zero_apply, isMultiplicative_sigma.multiplicative_factorization _ hn]
+  exact Finset.prod_congr n.support_factorization fun _ h =>
+    sigma_zero_apply_prime_pow <| Nat.prime_of_mem_primeFactors h
+
+@[simp]
+theorem _root_.Nat.divisors_card_eq_one_iff (n : ℕ) : #n.divisors = 1 ↔ n = 1 := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp
+  · refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
+    exact (card_le_one.mp h.le 1 (one_mem_divisors.mpr hn) n (n.mem_divisors_self hn)).symm
+
+/-- `sigma_eq_one_iff` is to be preferred. -/
+private theorem sigma_zero_eq_one_iff (n : ℕ) : σ 0 n = 1 ↔ n = 1 := by
+  simp [sigma_zero_apply]
+
+@[simp]
+theorem sigma_eq_one_iff (k n : ℕ) : σ k n = 1 ↔ n = 1 := by
+  by_cases hn0 : n = 0
+  · subst hn0
+    simp
+  constructor
+  · intro h
+    rw [← sigma_zero_eq_one_iff]
+    have zero_lt_sigma := sigma_pos 0 n hn0
+    have sigma_zero_le_sigma := sigma_mono 0 k n (Nat.zero_le k)
+    omega
+  · rintro rfl
+    simp
+
+theorem _root_.Nat.sum_divisors {n : ℕ} (hn : n ≠ 0) :
+    ∑ d ∈ n.divisors, d = ∏ p ∈ n.primeFactors, ∑ k ∈ .range (n.factorization p + 1), p ^ k := by
+  rw [← sigma_one_apply, isMultiplicative_sigma.multiplicative_factorization _ hn]
+  exact Finset.prod_congr n.support_factorization fun _ h =>
+    sigma_one_apply_prime_pow <| Nat.prime_of_mem_primeFactors h
 
 /-- `Ω n` is the number of prime factors of `n`. -/
 def cardFactors : ArithmeticFunction ℕ :=
@@ -1302,18 +1363,6 @@ theorem prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero [CommGroupWithZero R]
       Units.coeHom_apply, Units.val_zpow_eq_zpow_val, Units.val_mk0]
 
 end SpecialFunctions
-
-theorem _root_.Nat.card_divisors {n : ℕ} (hn : n ≠ 0) :
-    #n.divisors = n.primeFactors.prod (n.factorization · + 1) := by
-  rw [← sigma_zero_apply, isMultiplicative_sigma.multiplicative_factorization _ hn]
-  exact Finset.prod_congr n.support_factorization fun _ h =>
-    sigma_zero_apply_prime_pow <| Nat.prime_of_mem_primeFactors h
-
-theorem _root_.Nat.sum_divisors {n : ℕ} (hn : n ≠ 0) :
-    ∑ d ∈ n.divisors, d = ∏ p ∈ n.primeFactors, ∑ k ∈ .range (n.factorization p + 1), p ^ k := by
-  rw [← sigma_one_apply, isMultiplicative_sigma.multiplicative_factorization _ hn]
-  exact Finset.prod_congr n.support_factorization fun _ h =>
-    sigma_one_apply_prime_pow <| Nat.prime_of_mem_primeFactors h
 
 end ArithmeticFunction
 

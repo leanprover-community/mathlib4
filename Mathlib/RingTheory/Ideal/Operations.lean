@@ -333,9 +333,10 @@ theorem pow_le_self {n : ℕ} (hn : n ≠ 0) : I ^ n ≤ I :=
     _ = I := Submodule.pow_one _
 
 theorem pow_right_mono (e : I ≤ J) (n : ℕ) : I ^ n ≤ J ^ n := by
-  induction' n with _ hn
-  · rw [Submodule.pow_zero, Submodule.pow_zero]
-  · rw [Submodule.pow_succ, Submodule.pow_succ]
+  induction n with
+  | zero => rw [Submodule.pow_zero, Submodule.pow_zero]
+  | succ _ hn =>
+    rw [Submodule.pow_succ, Submodule.pow_succ]
     exact Ideal.mul_mono hn e
 
 namespace IsTwoSided
@@ -440,8 +441,9 @@ theorem span_singleton_mul_span_singleton (r s : R) :
   rw [Submodule.span_mul_span, Set.singleton_mul_singleton]
 
 theorem span_singleton_pow (s : R) (n : ℕ) : span {s} ^ n = (span {s ^ n} : Ideal R) := by
-  induction' n with n ih; · simp [Set.singleton_one]
-  simp only [pow_succ, ih, span_singleton_mul_span_singleton]
+  induction n with
+  | zero => simp [Set.singleton_one]
+  | succ n ih => simp only [pow_succ, ih, span_singleton_mul_span_singleton]
 
 theorem mem_mul_span_singleton {x y : R} {I : Ideal R} : x ∈ I * span {y} ↔ ∃ z ∈ I, z * y = x :=
   Submodule.mem_smul_span_singleton
@@ -529,7 +531,7 @@ theorem finset_inf_span_singleton {ι : Type*} (s : Finset ι) (I : ι → R)
     (hI : Set.Pairwise (↑s) (IsCoprime on I)) :
     (s.inf fun i => Ideal.span ({I i} : Set R)) = Ideal.span {∏ i ∈ s, I i} := by
   ext x
-  simp only [Submodule.mem_finset_inf, Ideal.mem_span_singleton]
+  simp only [Submodule.mem_finsetInf, Ideal.mem_span_singleton]
   exact ⟨Finset.prod_dvd_of_coprime hI, fun h i hi => (Finset.dvd_prod_of_mem _ hi).trans h⟩
 
 theorem iInf_span_singleton {ι : Type*} [Fintype ι] {I : ι → R}
@@ -973,7 +975,6 @@ theorem IsPrime.inf_le' {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp :
     s.inf f ≤ P ↔ ∃ i ∈ s, f i ≤ P :=
   ⟨fun h ↦ hp.prod_le.1 <| prod_le_inf.trans h, fun ⟨_, his, hip⟩ ↦ (Finset.inf_le his).trans hip⟩
 
--- Porting note: needed to add explicit coercions (· : Set R).
 theorem subset_union {R : Type u} [Ring R] {I J K : Ideal R} :
     (I : Set R) ⊆ J ∪ K ↔ I ≤ J ∨ I ≤ K :=
   AddSubgroupClass.subset_union
@@ -997,13 +998,15 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
           refine Set.Subset.trans hi <| Set.Subset.trans ?_ Set.subset_union_right
           exact Set.subset_biUnion_of_mem (u := fun x ↦ (f x : Set R)) (Finset.mem_coe.2 his)⟩
   generalize hn : s.card = n; intro h
-  induction' n with n ih generalizing a b s
-  · clear hp
+  induction n generalizing a b s with
+  | zero =>
+    clear hp
     rw [Finset.card_eq_zero] at hn
     subst hn
     rw [Finset.coe_empty, Set.biUnion_empty, Set.union_empty, subset_union] at h
     simpa only [exists_prop, Finset.notMem_empty, false_and, exists_false, or_false]
-  classical
+  | succ n ih =>
+    classical
     replace hn : ∃ (i : ι) (t : Finset ι), i ∉ t ∧ insert i t = s ∧ t.card = n :=
       Finset.card_eq_succ.1 hn
     rcases hn with ⟨i, t, hit, rfl, hn⟩

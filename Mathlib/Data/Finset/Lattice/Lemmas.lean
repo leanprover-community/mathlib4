@@ -183,8 +183,8 @@ variable [DecidableEq α] {l l' : List α}
 
 @[simp]
 theorem toFinset_append : toFinset (l ++ l') = l.toFinset ∪ l'.toFinset := by
-  induction' l with hd tl hl
-  · simp
-  · simp [hl]
+  induction l with
+  | nil => simp
+  | cons hd tl hl => simp [hl]
 
 end List

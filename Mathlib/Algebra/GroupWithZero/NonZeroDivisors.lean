@@ -283,15 +283,9 @@ theorem mem_nonZeroDivisors_of_injective [MonoidWithZeroHomClass F M₀ M₀'] {
   ⟨fun y hy ↦ hf <| map_zero f ▸ hx.1 (f y) (map_mul f x y ▸ map_zero f ▸ congrArg f hy),
     fun y hy ↦ hf <| map_zero f ▸ hx.2 (f y) (map_mul f y x ▸ map_zero f ▸ congrArg f hy)⟩
 
-@[deprecated (since := "2025-02-03")]
-alias mem_nonZeroDivisor_of_injective := mem_nonZeroDivisors_of_injective
-
 theorem comap_nonZeroDivisors_le_of_injective [MonoidWithZeroHomClass F M₀ M₀'] {f : F}
     (hf : Injective f) : M₀'⁰.comap f ≤ M₀⁰ :=
   fun _ ha ↦ mem_nonZeroDivisors_of_injective hf (Submonoid.mem_comap.mp ha)
-
-@[deprecated (since := "2025-02-03")]
-alias comap_nonZeroDivisor_le_of_injective := comap_nonZeroDivisors_le_of_injective
 
 end MonoidWithZero
 
