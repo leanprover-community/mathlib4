@@ -29,7 +29,188 @@ open Topology
 
 open scoped CStarAlgebra
 
-section CFCRangeCommute
+section Commute
+
+section Unital
+
+section RCLike
+
+variable {𝕜 A : Type*} {p : A → Prop} [RCLike 𝕜] [Ring A] [StarRing A] [Algebra 𝕜 A]
+variable [TopologicalSpace A] [ContinuousFunctionalCalculus 𝕜 A p] [IsTopologicalRing A] [T2Space A]
+
+open StarAlgebra.elemental in
+protected theorem Commute.cfcHom {a b : A} (ha : p a) (hb₁ : Commute a b)
+    (hb₂ : Commute (star a) b) (f : C(spectrum 𝕜 a, 𝕜)) :
+    Commute (cfcHom ha f) b := by
+  open scoped ContinuousFunctionalCalculus in
+  induction f using ContinuousMap.induction_on_of_compact with
+  | const r =>
+    conv =>
+      enter [1, 2]
+      equals algebraMap 𝕜 _ r => rfl
+    rw [AlgHomClass.commutes]
+    exact Algebra.commute_algebraMap_left r b
+  | id => rwa [cfcHom_id ha]
+  | star_id => rwa [map_star, cfcHom_id]
+  | add f g hf hg => rw [map_add]; exact hf.add_left hg
+  | mul f g hf hg => rw [map_mul]; exact mul_left hf hg
+  | frequently f hf =>
+    change cfcHom ha f ∈ { x | x * b = b * x}
+    rw [← (isClosed_eq (by fun_prop) (by fun_prop)).closure_eq]
+    apply mem_closure_of_frequently_of_tendsto hf
+    exact cfcHom_continuous ha |>.tendsto _
+
+protected theorem IsSelfAdjoint.commute_cfcHom {a b : A} (ha : p a)
+    (ha' : IsSelfAdjoint a) (hb : Commute a b) (f : C(spectrum 𝕜 a, 𝕜)) :
+    Commute (cfcHom ha f) b :=
+  hb.cfcHom ha (ha'.star_eq.symm ▸ hb) f
+
+/-- An element commutes with `cfc f a` if it commutes with both `a` and `star a`.
+
+If the base ring is `ℝ` or `ℝ≥0`, see `Commute.cfc_real` or `Commute.cfc_nnreal` which don't require
+the `Commute (star a) b` hypothesis. -/
+@[grind ←]
+protected theorem Commute.cfc {a b : A} (hb₁ : Commute a b)
+    (hb₂ : Commute (star a) b) (f : 𝕜 → 𝕜) :
+    Commute (cfc f a) b :=
+  cfc_cases (fun x ↦ Commute x b) a f (Commute.zero_left _)
+    fun hf ha ↦ hb₁.cfcHom ha hb₂ ⟨_, hf.restrict⟩
+
+/-- For `a` selfadjoint, an element commutes with `cfc f a` if it commutes with `a`.
+
+If the base ring is `ℝ` or `ℝ≥0`, see `Commute.cfc_real` or `Commute.cfc_nnreal` which don't require
+the `IsSelfAdjoint` hypothesis on `a` (due to the junk value `cfc f a = 0`). -/
+protected theorem IsSelfAdjoint.commute_cfc {a b : A}
+    (ha : IsSelfAdjoint a) (hb₁ : Commute a b) (f : 𝕜 → 𝕜) :
+    Commute (cfc f a) b :=
+  hb₁.cfc (ha.star_eq.symm ▸ hb₁) f
+
+end RCLike
+
+section NNReal
+
+open scoped NNReal
+variable {A : Type*} [Ring A] [StarRing A] [Algebra ℝ A] [TopologicalSpace A]
+variable [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint] [IsTopologicalRing A] [T2Space A]
+
+/-- A version of `Commute.cfc` or `IsSelfAdjoint.commute_cfc` which does not require any interaction
+with `star` when the base ring is `ℝ`. -/
+@[grind ←]
+protected theorem Commute.cfc_real {a b : A} (hb : Commute a b) (f : ℝ → ℝ) :
+    Commute (cfc f a) b :=
+  cfc_cases (fun x ↦ Commute x b) a f (Commute.zero_left _) fun hf ha ↦ by
+    rw [← cfc_apply ..]
+    exact hb.cfc (ha.star_eq.symm ▸ hb) _
+
+variable [PartialOrder A] [NonnegSpectrumClass ℝ A] [StarOrderedRing A]
+
+/-- A version of `Commute.cfc` or `IsSelfAdjoint.commute_cfc` which does not require any interaction
+with `star` when the base ring is `ℝ≥0`. -/
+@[grind ←]
+protected theorem Commute.cfc_nnreal {a b : A} (hb : Commute a b) (f : ℝ≥0 → ℝ≥0) :
+    Commute (cfc f a) b := by
+  by_cases ha : 0 ≤ a
+  · rw [cfc_nnreal_eq_real ..]
+    exact hb.cfc_real _
+  · simp [cfc_apply_of_not_predicate a ha]
+
+end NNReal
+
+end Unital
+
+section NonUnital
+
+section RCLike
+
+variable {𝕜 A : Type*} {p : A → Prop} [RCLike 𝕜] [NonUnitalRing A] [StarRing A]
+variable [Module 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A] [TopologicalSpace A]
+variable [NonUnitalContinuousFunctionalCalculus 𝕜 A p] [IsTopologicalRing A] [T2Space A]
+
+open ContinuousMapZero
+
+open NonUnitalStarAlgebra.elemental in
+protected theorem Commute.cfcₙHom {a b : A} (ha : p a) (hb₁ : Commute a b)
+    (hb₂ : Commute (star a) b) (f : C(quasispectrum 𝕜 a, 𝕜)₀) :
+    Commute (cfcₙHom ha f) b := by
+  open scoped NonUnitalContinuousFunctionalCalculus in
+  induction f using ContinuousMapZero.induction_on_of_compact with
+  | zero => simp
+  | smul  r f hf => rw [map_smul]; exact hf.smul_left r
+  | id => rwa [cfcₙHom_id ha]
+  | star_id => rwa [map_star, cfcₙHom_id]
+  | add f g hf hg => rw [map_add]; exact hf.add_left hg
+  | mul f g hf hg => rw [map_mul]; exact mul_left hf hg
+  | frequently f hf =>
+    change cfcₙHom ha f ∈ { x | x * b = b * x}
+    rw [← (isClosed_eq (by fun_prop) (by fun_prop)).closure_eq]
+    apply mem_closure_of_frequently_of_tendsto hf
+    exact cfcₙHom_continuous ha |>.tendsto _
+
+protected theorem IsSelfAdjoint.commute_cfcₙHom {a b : A} (ha : p a)
+    (ha' : IsSelfAdjoint a) (hb : Commute a b) (f : C(quasispectrum 𝕜 a, 𝕜)₀) :
+    Commute (cfcₙHom ha f) b :=
+  hb.cfcₙHom ha (ha'.star_eq.symm ▸ hb) f
+
+/-- An element commutes with `cfcₙ f a` if it commutes with both `a` and `star a`.
+
+If the base ring is `ℝ` or `ℝ≥0`, see `Commute.cfcₙ_real` or `Commute.cfcₙ_nnreal` which don't
+require the `Commute (star a) b` hypothesis. -/
+@[grind ←]
+protected theorem Commute.cfcₙ {a b : A} (hb₁ : Commute a b)
+    (hb₂ : Commute (star a) b) (f : 𝕜 → 𝕜) :
+    Commute (cfcₙ f a) b :=
+  cfcₙ_cases (fun x ↦ Commute x b) a f (Commute.zero_left _)
+    fun hf hf₀ ha ↦ hb₁.cfcₙHom ha hb₂ ⟨⟨_, hf.restrict⟩, hf₀⟩
+
+/-- For `a` selfadjoint, an element commutes with `cfcₙ f a` if it commutes with `a`.
+
+If the base ring is `ℝ` or `ℝ≥0`, see `Commute.cfcₙ_real` or `Commute.cfcₙ_nnreal` which don't
+require the `IsSelfAdjoint` hypothesis on `a` (due to the junk value `cfcₙ f a = 0`). -/
+protected theorem IsSelfAdjoint.commute_cfcₙ {a b : A}
+    (ha : IsSelfAdjoint a) (hb₁ : Commute a b) (f : 𝕜 → 𝕜) :
+    Commute (cfcₙ f a) b :=
+  hb₁.cfcₙ (ha.star_eq.symm ▸ hb₁) f
+
+end RCLike
+
+section NNReal
+
+open scoped NNReal
+variable {A : Type*} [NonUnitalRing A] [StarRing A] [Module ℝ A] [IsScalarTower ℝ A A]
+variable [SMulCommClass ℝ A A] [TopologicalSpace A]
+variable [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint] [IsTopologicalRing A] [T2Space A]
+
+/-- A version of `Commute.cfcₙ` or `IsSelfAdjoint.commute_cfcₙ` which does not require any
+interaction with `star` when the base ring is `ℝ`. -/
+@[grind ←]
+protected theorem Commute.cfcₙ_real {a b : A} (hb : Commute a b) (f : ℝ → ℝ) :
+    Commute (cfcₙ f a) b :=
+  cfcₙ_cases (fun x ↦ Commute x b) a f (Commute.zero_left _)
+    fun hf hf0 ha ↦ by
+      rw [← cfcₙ_apply ..]
+      exact hb.cfcₙ (ha.star_eq.symm ▸ hb) _
+
+variable [PartialOrder A] [NonnegSpectrumClass ℝ A] [StarOrderedRing A]
+
+/-- A version of `Commute.cfcₙ` or `IsSelfAdjoint.commute_cfcₙ` which does not require any
+interaction with `star` when the base ring is `ℝ≥0`. -/
+@[grind ←]
+protected theorem Commute.cfcₙ_nnreal {a b : A} (hb : Commute a b) (f : ℝ≥0 → ℝ≥0) :
+    Commute (cfcₙ f a) b := by
+  by_cases ha : 0 ≤ a
+  · rw [cfcₙ_nnreal_eq_real ..]
+    exact hb.cfcₙ_real _
+  · simp [cfcₙ_apply_of_not_predicate a ha]
+
+end NNReal
+
+end NonUnital
+
+end Commute
+
+section CFCRange
+
+section Unital
 
 theorem range_cfc (R : Type*) {A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R]
     [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A]
@@ -70,69 +251,13 @@ theorem cfc_apply_mem_elemental (f : 𝕜 → 𝕜) (a : A) :
   cfc_cases _ a f (zero_mem _) fun hf ha ↦
     cfcHom_apply_mem_elemental ha ⟨_, hf.restrict⟩
 
-variable [T2Space A]
-
-open StarSubalgebra elemental in
-protected theorem Commute.cfcHom {a b : A} (ha : p a) (hb₁ : Commute a b)
-    (hb₂ : Commute (star a) b) (f : C(spectrum 𝕜 a, 𝕜)) :
-    Commute (cfcHom ha f) b :=
-  have hb : b ∈ centralizer 𝕜 {a} := by simpa [mem_centralizer_iff] using ⟨hb₁.eq, hb₂.eq⟩
-  le_centralizer_centralizer 𝕜 a (cfcHom_apply_mem_elemental ha f) b (.inl hb) |>.symm
-
-protected theorem IsSelfAdjoint.commute_cfcHom {a b : A} (ha : p a)
-    (ha' : IsSelfAdjoint a) (hb : Commute a b) (f : C(spectrum 𝕜 a, 𝕜)) :
-    Commute (cfcHom ha f) b :=
-  hb.cfcHom ha (ha'.star_eq.symm ▸ hb) f
-
-/-- An element commutes with `cfc f a` if it commutes with both `a` and `star a`.
-
-If the base ring is `ℝ` or `ℝ≥0`, see `Commute.cfc_real` or `Commute.cfc_nnreal` which don't require
-the `Commute (star a) b` hypothesis. -/
-@[grind ←]
-protected theorem Commute.cfc {a b : A} (hb₁ : Commute a b)
-    (hb₂ : Commute (star a) b) (f : 𝕜 → 𝕜) :
-    Commute (cfc f a) b :=
-  cfc_cases (fun x ↦ Commute x b) a f (Commute.zero_left _)
-    fun hf ha ↦ hb₁.cfcHom ha hb₂ ⟨_, hf.restrict⟩
-
-/-- For `a` selfadjoint, an element commutes with `cfc f a` if it commutes with `a`.
-
-If the base ring is `ℝ` or `ℝ≥0`, see `Commute.cfc_real` or `Commute.cfc_nnreal` which don't require
-the `IsSelfAdjoint` hypothesis on `a` (due to the junk value `cfc f a = 0`). -/
-protected theorem IsSelfAdjoint.commute_cfc {a b : A}
-    (ha : IsSelfAdjoint a) (hb₁ : Commute a b) (f : 𝕜 → 𝕜) :
-    Commute (cfc f a) b :=
-  hb₁.cfc (ha.star_eq.symm ▸ hb₁) f
-
 end RCLike
 
 open scoped NNReal
-variable {A : Type*} [Ring A] [StarRing A] [Algebra ℝ A]
-variable [TopologicalSpace A] [StarModule ℝ A] [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-variable [ContinuousStar A] [IsTopologicalRing A] [T2Space A]
-
-/-- A version of `Commute.cfc` or `IsSelfAdjoint.commute_cfc` which does not require any interaction
-with `star` when the base ring is `ℝ`. -/
-@[grind ←]
-protected theorem Commute.cfc_real {a b : A} (hb : Commute a b) (f : ℝ → ℝ) :
-    Commute (cfc f a) b :=
-  cfc_cases (fun x ↦ Commute x b) a f (Commute.zero_left _) fun hf ha ↦ by
-    rw [← cfc_apply ..]
-    exact hb.cfc (ha.star_eq.symm ▸ hb) _
-
+variable {A : Type*} [Ring A] [StarRing A] [Algebra ℝ A] [TopologicalSpace A]
+variable [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint] [IsTopologicalRing A] [T2Space A]
 variable [PartialOrder A] [NonnegSpectrumClass ℝ A] [StarOrderedRing A]
 
-/-- A version of `Commute.cfc` or `IsSelfAdjoint.commute_cfc` which does not require any interaction
-with `star` when the base ring is `ℝ≥0`. -/
-@[grind ←]
-protected theorem Commute.cfc_nnreal {a b : A} (hb : Commute a b) (f : ℝ≥0 → ℝ≥0) :
-    Commute (cfc f a) b := by
-  by_cases ha : 0 ≤ a
-  · rw [cfc_nnreal_eq_real ..]
-    exact hb.cfc_real _
-  · simp [cfc_apply_of_not_predicate a ha]
-
-omit [StarModule ℝ A] [ContinuousStar A] in
 lemma range_cfc_nnreal_eq_image_cfc_real (a : A) (ha : 0 ≤ a) :
     Set.range (cfc (R := ℝ≥0) · a) = (cfc · a) '' {f | ∀ x ∈ spectrum ℝ a, 0 ≤ f x} := by
   ext
@@ -143,6 +268,8 @@ lemma range_cfc_nnreal_eq_image_cfc_real (a : A) (ha : 0 ≤ a) :
   · rintro ⟨f, hf, rfl⟩
     simp only [cfc_real_eq_nnreal a hf]
     exact ⟨_, rfl⟩
+
+variable [ContinuousStar A] [StarModule ℝ A]
 
 lemma range_cfc_nnreal (a : A) (ha : 0 ≤ a) :
     Set.range (cfc (R := ℝ≥0) · a) = {x | x ∈ StarAlgebra.elemental ℝ a ∧ 0 ≤ x} := by
@@ -159,7 +286,7 @@ lemma range_cfc_nnreal (a : A) (ha : 0 ≤ a) :
   · exact ⟨0, by simp, by simp [cfc_apply_of_not_continuousOn a h]⟩
   · exact ⟨0, by simp, by simp [cfc_apply_of_not_predicate a h]⟩
 
-end CFCRangeCommute
+end Unital
 
 section NonUnital
 
@@ -207,71 +334,14 @@ theorem cfcₙ_apply_mem_elemental (f : 𝕜 → 𝕜) (a : A) :
   cfcₙ_cases _ a f (zero_mem _) fun hf hf₀ ha ↦
     cfcₙHom_apply_mem_elemental ha ⟨⟨_, hf.restrict⟩, hf₀⟩
 
-variable [T2Space A]
-
-open NonUnitalStarSubalgebra elemental in
-protected theorem Commute.cfcₙHom {a b : A} (ha : p a) (hb₁ : Commute a b)
-    (hb₂ : Commute (star a) b) (f : C(quasispectrum 𝕜 a, 𝕜)₀) :
-    Commute (cfcₙHom ha f) b :=
-  have hb : b ∈ centralizer 𝕜 {a} := by simpa [mem_centralizer_iff] using ⟨hb₁.eq, hb₂.eq⟩
-  le_centralizer_centralizer 𝕜 a (cfcₙHom_apply_mem_elemental ha f) b (.inl hb) |>.symm
-
-protected theorem IsSelfAdjoint.commute_cfcₙHom {a b : A} (ha : p a)
-    (ha' : IsSelfAdjoint a) (hb : Commute a b) (f : C(quasispectrum 𝕜 a, 𝕜)₀) :
-    Commute (cfcₙHom ha f) b :=
-  hb.cfcₙHom ha (ha'.star_eq.symm ▸ hb) f
-
-/-- An element commutes with `cfcₙ f a` if it commutes with both `a` and `star a`.
-
-If the base ring is `ℝ` or `ℝ≥0`, see `Commute.cfcₙ_real` or `Commute.cfcₙ_nnreal` which don't
-require the `Commute (star a) b` hypothesis. -/
-@[grind ←]
-protected theorem Commute.cfcₙ {a b : A} (hb₁ : Commute a b)
-    (hb₂ : Commute (star a) b) (f : 𝕜 → 𝕜) :
-    Commute (cfcₙ f a) b :=
-  cfcₙ_cases (fun x ↦ Commute x b) a f (Commute.zero_left _)
-    fun hf hf₀ ha ↦ hb₁.cfcₙHom ha hb₂ ⟨⟨_, hf.restrict⟩, hf₀⟩
-
-/-- For `a` selfadjoint, an element commutes with `cfcₙ f a` if it commutes with `a`.
-
-If the base ring is `ℝ` or `ℝ≥0`, see `Commute.cfcₙ_real` or `Commute.cfcₙ_nnreal` which don't
-require the `IsSelfAdjoint` hypothesis on `a` (due to the junk value `cfcₙ f a = 0`). -/
-protected theorem IsSelfAdjoint.commute_cfcₙ {a b : A}
-    (ha : IsSelfAdjoint a) (hb₁ : Commute a b) (f : 𝕜 → 𝕜) :
-    Commute (cfcₙ f a) b :=
-  hb₁.cfcₙ (ha.star_eq.symm ▸ hb₁) f
-
 end RCLike
 
 open scoped NNReal
 variable {A : Type*} [NonUnitalRing A] [StarRing A] [Module ℝ A] [IsScalarTower ℝ A A]
-  [SMulCommClass ℝ A A] [TopologicalSpace A] [StarModule ℝ A]
-  [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint] [ContinuousStar A]
-  [IsTopologicalRing A] [T2Space A] [ContinuousConstSMul ℝ A]
-
-/-- A version of `Commute.cfcₙ` or `IsSelfAdjoint.commute_cfcₙ` which does not require any
-interaction with `star` when the base ring is `ℝ`. -/
-@[grind ←]
-protected theorem Commute.cfcₙ_real {a b : A} (hb : Commute a b) (f : ℝ → ℝ) :
-    Commute (cfcₙ f a) b :=
-  cfcₙ_cases (fun x ↦ Commute x b) a f (Commute.zero_left _)
-    fun hf hf0 ha ↦ by
-      rw [← cfcₙ_apply ..]
-      exact hb.cfcₙ (ha.star_eq.symm ▸ hb) _
-
+variable [SMulCommClass ℝ A A] [TopologicalSpace A]
+variable [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint] [IsTopologicalRing A] [T2Space A]
 variable [PartialOrder A] [NonnegSpectrumClass ℝ A] [StarOrderedRing A]
 
-/-- A version of `Commute.cfcₙ` or `IsSelfAdjoint.commute_cfcₙ` which does not require any
-interaction with `star` when the base ring is `ℝ≥0`. -/
-@[grind ←]
-protected theorem Commute.cfcₙ_nnreal {a b : A} (hb : Commute a b) (f : ℝ≥0 → ℝ≥0) :
-    Commute (cfcₙ f a) b := by
-  by_cases ha : 0 ≤ a
-  · rw [cfcₙ_nnreal_eq_real ..]
-    exact hb.cfcₙ_real _
-  · simp [cfcₙ_apply_of_not_predicate a ha]
-
-omit [StarModule ℝ A] [ContinuousStar A] [ContinuousConstSMul ℝ A] in
 lemma range_cfcₙ_nnreal_eq_image_cfcₙ_real (a : A) (ha : 0 ≤ a) :
     Set.range (cfcₙ (R := ℝ≥0) · a) = (cfcₙ · a) '' {f | ∀ x ∈ quasispectrum ℝ a, 0 ≤ f x} := by
   ext
@@ -282,6 +352,8 @@ lemma range_cfcₙ_nnreal_eq_image_cfcₙ_real (a : A) (ha : 0 ≤ a) :
   · rintro ⟨f, hf, rfl⟩
     simp only [cfcₙ_real_eq_nnreal a hf]
     exact ⟨_, rfl⟩
+
+variable [StarModule ℝ A] [ContinuousStar A] [ContinuousConstSMul ℝ A]
 
 lemma range_cfcₙ_nnreal (a : A) (ha : 0 ≤ a) :
     Set.range (cfcₙ (R := ℝ≥0) · a) = {x | x ∈ NonUnitalStarAlgebra.elemental ℝ a ∧ 0 ≤ x} := by
@@ -301,3 +373,5 @@ lemma range_cfcₙ_nnreal (a : A) (ha : 0 ≤ a) :
   · exact ⟨0, by simp, by simp [cfcₙ_apply_of_not_predicate a h]⟩
 
 end NonUnital
+
+end CFCRange
