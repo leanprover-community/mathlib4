@@ -2623,7 +2623,7 @@ lemma R'analytic (l' : Fin (m K)) :
       simp only [ne_eq, mem_setOf_eq, H, not_false_eq_true]
 
 lemma R'onC (l' : Fin (m K)) :
-    let R' := R' α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq l'
+  let R' := R' α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq l'
     ∀ z : ℂ, (R) z = (z - (l' + 1))^r * R' z := by
   intros R' z
   let U := (exists_R'_at_l'_plus_one
@@ -2756,9 +2756,11 @@ lemma SR_analytic_S.U : AnalyticOn ℂ SR (S.U K) := by {
           AnalyticOnSubset (R α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq) (S.U K)
             (fun ⦃a⦄ ↦ True) (fun ⦃a⦄ a ↦ trivial) (analyticOn_univ.mpr fun x a ↦ this x)
       · exact analyticOn_const
-    · apply AnalyticOn.zpow_nonneg
-      · sorry
-      . sorry
+    · simp only [zpow_neg, zpow_natCast]
+      sorry
+    -- · apply AnalyticOn.zpow_nonneg
+    --   · sorry
+    --   · sorry
   · sorry
   }
 
@@ -2792,7 +2794,9 @@ def S : ℂ → ℂ :=
     let R' := R' α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq
     if H : ∃ (k' : Fin (m K)), z = (k' : ℂ) + 1 then
       let k' := H.choose
-      if k' = l₀ then (SRl0 α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq z) else
+      if k' = l₀ then
+        (SRl0 α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq z)
+          else
         (SRl α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq k' z)
     else
       (SR) z
@@ -2973,7 +2977,9 @@ lemma holS :
   -- on a neigh and use the lemma that the other fun is analytic
   · sorry
   · --have : (SRl) (l') z = (SR) z := sorry
-    sorry
+    have : S = SR := by {
+      sorry
+    }
   · refine AnalyticOnAt (S α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq) z ?_ ?_ ?_
     exact (S.U K)
     apply S.U_nhds
