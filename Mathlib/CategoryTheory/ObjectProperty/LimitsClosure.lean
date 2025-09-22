@@ -147,8 +147,7 @@ end
 
 section
 
--- TODO: improve this so that `u'` is replaced by any `w`
-variable (κ : Cardinal.{u'}) [Fact κ.IsRegular] (h : ∀ (a : α), HasCardinalLT (J a) κ)
+variable (κ : Cardinal.{w}) [Fact κ.IsRegular] (h : ∀ (a : α), HasCardinalLT (J a) κ)
 
 include h
 
@@ -156,6 +155,7 @@ lemma strictLimitsClosureStep_strictLimitsClosureIter_eq_self :
     (P.strictLimitsClosureIter J κ.ord).strictLimitsClosureStep J =
       (P.strictLimitsClosureIter J κ.ord) := by
   have hκ : κ.IsRegular := Fact.out
+  have (a : α) := (h a).small
   refine le_antisymm (fun X hX ↦ ?_) (le_strictLimitsClosureStep _ _)
   simp only [strictLimitsClosureStep, prop_sup_iff, prop_iSup_iff] at hX
   obtain (hX | ⟨a, F, hF⟩) := hX
@@ -164,10 +164,14 @@ lemma strictLimitsClosureStep_strictLimitsClosureIter_eq_self :
       (Cardinal.isSuccLimit_ord hκ.aleph0_le), prop_iSup_iff,
       Subtype.exists, Set.mem_Iio, exists_prop] at hF
     choose o ho ho' using hF
-    obtain ⟨m, hm, hm'⟩ : ∃ (m : Ordinal.{u'}) (hm : m < κ.ord), ∀ (j : J a), o j ≤ m :=
-      ⟨⨆ j, o j, Ordinal.iSup_lt_ord
-        (lt_of_lt_of_eq ((hasCardinalLT_iff_cardinal_mk_lt _ _).1 (h a)) hκ.cof_eq.symm) ho,
-        le_ciSup (Ordinal.bddAbove_range _)⟩
+    obtain ⟨m, hm, hm'⟩ : ∃ (m : Ordinal.{w}) (hm : m < κ.ord), ∀ (j : J a), o j ≤ m := by
+      refine ⟨⨆ j, o ((equivShrink.{w} (J a)).symm j),
+          Ordinal.iSup_lt_ord ?_ (fun _ ↦ ho _), fun j ↦ ?_⟩
+      · rw [hκ.cof_eq, ← hasCardinalLT_iff_cardinal_mk_lt _ κ,
+          ← hasCardinalLT_iff_of_equiv (equivShrink.{w} (J a))]
+        exact h a
+      · obtain ⟨j, rfl⟩ := (equivShrink.{w} (J a)).symm.surjective j
+        exact le_ciSup (Ordinal.bddAbove_range _) _
     refine monotone_transfiniteIterate _ _
       (fun (Q : ObjectProperty C) ↦ Q.le_strictLimitsClosureStep J) (Order.succ_le_iff.2 hm) _ ?_
     dsimp
@@ -189,11 +193,11 @@ lemma isoClosure_strictLimitsClosureIter_eq_limitsClosure :
     exact monotone_isoClosure ((le_trans (by rfl) (le_iSup _ a)).trans le_sup_right)
 
 lemma isEssentiallySmall_limitsClosure
-    [ObjectProperty.EssentiallySmall.{u'} P] [LocallySmall.{u'} C] [Small.{u'} α]
-    [∀ a, Small.{u'} (J a)] [∀ a, LocallySmall.{u'} (J a)] :
-    ObjectProperty.EssentiallySmall.{u'} (P.limitsClosure J) := by
-  obtain ⟨Q, hQ, hQ₁, hQ₂⟩ := EssentiallySmall.exists_small_le.{u'} P
-  have : ObjectProperty.EssentiallySmall.{u'} (Q.isoClosure.limitsClosure J) := by
+    [ObjectProperty.EssentiallySmall.{w} P] [LocallySmall.{w} C] [Small.{w} α]
+    [∀ a, Small.{w} (J a)] [∀ a, LocallySmall.{w} (J a)] :
+    ObjectProperty.EssentiallySmall.{w} (P.limitsClosure J) := by
+  obtain ⟨Q, hQ, hQ₁, hQ₂⟩ := EssentiallySmall.exists_small_le.{w} P
+  have : ObjectProperty.EssentiallySmall.{w} (Q.isoClosure.limitsClosure J) := by
     rw [limitsClosure_isoClosure,
       ← Q.isoClosure_strictLimitsClosureIter_eq_limitsClosure J κ h]
     infer_instance
