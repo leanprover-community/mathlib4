@@ -4811,6 +4811,7 @@ import Mathlib.NumberTheory.Harmonic.EulerMascheroni
 import Mathlib.NumberTheory.Harmonic.GammaDeriv
 import Mathlib.NumberTheory.Harmonic.Int
 import Mathlib.NumberTheory.Harmonic.ZetaAsymp
+import Mathlib.NumberTheory.IccSums
 import Mathlib.NumberTheory.JacobiSum.Basic
 import Mathlib.NumberTheory.KummerDedekind
 import Mathlib.NumberTheory.LSeries.AbstractFuncEq
@@ -6316,6 +6317,7 @@ import Mathlib.Topology.Algebra.Group.TopologicalAbelianization
 import Mathlib.Topology.Algebra.GroupCompletion
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Algebra.Indicator
+import Mathlib.Topology.Algebra.InfiniteConditionalSum.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 import Mathlib.Topology.Algebra.InfiniteSum.Defs
