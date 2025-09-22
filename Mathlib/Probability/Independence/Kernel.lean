@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 import Mathlib.Probability.ConditionalProbability
 import Mathlib.Probability.Kernel.Basic
 import Mathlib.Probability.Kernel.Composition.MeasureComp
+import Mathlib.Probability.Kernel.CompProdEqIff
 import Mathlib.Tactic.Peel
 import Mathlib.MeasureTheory.MeasurableSpace.Pi
 
@@ -1007,6 +1008,64 @@ theorem IndepFun.neg_right {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace 
 theorem IndepFun.neg_left {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'} [Neg β]
     [MeasurableNeg β] (hfg : IndepFun f g κ μ) :
     IndepFun (-f) g κ μ := hfg.comp measurable_neg measurable_id
+
+-- todo: use this to refactor `indepFun_iff_map_prod_eq_prod_map_map`
+theorem Kernel.indepFun_iff_map_prod_eq_prod_map_map {Ω' α β γ : Type*}
+    {mΩ' : MeasurableSpace Ω'} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+    {mγ : MeasurableSpace γ}
+    [CountableOrCountablyGenerated Ω' (β × γ)] {X : α → β} {T : α → γ}
+    {μ : Measure Ω'} [IsFiniteMeasure μ]
+    {κ : Kernel Ω' α} [IsFiniteKernel κ]
+    (hf : Measurable X) (hg : Measurable T) :
+    IndepFun X T κ μ ↔ κ.map (fun ω ↦ (X ω, T ω)) =ᵐ[μ] κ.map X ×ₖ κ.map T := by
+  classical
+  rw [indepFun_iff_measure_inter_preimage_eq_mul]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [← Kernel.compProd_eq_iff]
+    have : (μ ⊗ₘ κ.map fun ω ↦ (X ω, T ω)) = μ ⊗ₘ (κ.map X ×ₖ κ.map T)
+        ↔ ∀ {u : Set Ω'} {s : Set β} {t : Set γ},
+        MeasurableSet u → MeasurableSet s → MeasurableSet t →
+        (μ ⊗ₘ κ.map (fun ω ↦ (X ω, T ω))) (u ×ˢ s ×ˢ t)
+          = (μ ⊗ₘ (κ.map X ×ₖ κ.map T)) (u ×ˢ s ×ˢ t) := by
+      refine ⟨fun h ↦ by simp [h], fun h ↦ ?_⟩
+      exact Measure.ext_prod₃ h
+    rw [this]
+    intro u s t hu hs ht
+    rw [Measure.compProd_apply (hu.prod (hs.prod ht)),
+      Measure.compProd_apply (hu.prod (hs.prod ht))]
+    refine lintegral_congr_ae ?_
+    have h_set_eq ω : Prod.mk ω ⁻¹' u ×ˢ s ×ˢ t = if ω ∈ u then s ×ˢ t else ∅ := by ext; simp
+    simp_rw [h_set_eq]
+    filter_upwards [h s t hs ht] with ω hω
+    by_cases hωu : ω ∈ u
+    swap; · simp [hωu]
+    simp only [hωu, ↓reduceIte]
+    rw [Kernel.map_apply _ (by fun_prop), Measure.map_apply (by fun_prop) (hs.prod ht)]
+    rw [Set.mk_preimage_prod, hω, Kernel.prod_apply_prod, Kernel.map_apply' _ (by fun_prop),
+        Kernel.map_apply' _ (by fun_prop)]
+    exacts [ht, hs]
+  · intro s t hs ht
+    filter_upwards [h] with ω hω
+    calc (κ ω) (X ⁻¹' s ∩ T ⁻¹' t)
+    _ = (κ.map (fun ω ↦ (X ω, T ω))) ω (s ×ˢ t) := by
+      rw [← Kernel.deterministic_comp_eq_map, ← deterministic_prod_deterministic hf hg,
+        Kernel.comp_apply, Measure.bind_apply (hs.prod ht) (by fun_prop)]
+      simp_rw [Kernel.prod_apply_prod, Kernel.deterministic_apply' hf _ hs,
+        Kernel.deterministic_apply' hg _ ht]
+      calc (κ ω) (X ⁻¹' s ∩ T ⁻¹' t)
+      _ = ∫⁻ a, (X ⁻¹' s ∩ T ⁻¹' t).indicator (fun x ↦ 1) a ∂κ ω := by
+        simp [lintegral_indicator ((hf hs).inter (hg ht))]
+      _ = ∫⁻ a, (X ⁻¹' s).indicator (fun x ↦ 1) a * (T ⁻¹' t).indicator (fun x ↦ 1) a ∂κ ω := by
+        congr with a
+        simp only [Set.indicator_apply, Set.mem_inter_iff, Set.mem_preimage, mul_ite, mul_one,
+          mul_zero]
+        by_cases has : X a ∈ s <;> simp [has]
+      _ = ∫⁻ a, s.indicator (fun x ↦ 1) (X a) * t.indicator (fun x ↦ 1) (T a) ∂κ ω := rfl
+    _ = ((κ.map X) ×ₖ (κ.map T)) ω (s ×ˢ t) := by rw [hω]
+    _ = (κ ω) (X ⁻¹' s) * (κ ω) (T ⁻¹' t) := by
+      rw [Kernel.prod_apply_prod, Kernel.map_apply' _ (by fun_prop),
+        Kernel.map_apply' _ (by fun_prop)]
+      exacts [ht, hs]
 
 section iIndepFun
 variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}
