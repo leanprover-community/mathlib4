@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Types.Colimits
 import Mathlib.CategoryTheory.Limits.Types.Limits
 import Mathlib.Logic.Function.Coequalizer
@@ -690,6 +690,31 @@ theorem pullbackIsoPullback_inv_fst :
 @[simp]
 theorem pullbackIsoPullback_inv_snd :
     (pullbackIsoPullback f g).inv ≫ pullback.snd _ _ = fun p => (p.1 : X × Y).snd := by aesop
+
+lemma range_fst_of_isPullback {fst : W ⟶ X} {snd : W ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z}
+    (h : IsPullback fst snd f g) :
+    Set.range fst = f ⁻¹' Set.range g := by
+  let e := h.isoPullback ≪≫ Types.pullbackIsoPullback f g
+  have : fst = _root_.Prod.fst ∘ Subtype.val ∘ e.hom := by
+    ext p
+    suffices fst p = pullback.fst f g (h.isoPullback.hom p) by simpa
+    rw [← types_comp_apply h.isoPullback.hom (pullback.fst f g), IsPullback.isoPullback_hom_fst]
+  rw [this, Set.range_comp, Set.range_comp, Set.range_eq_univ.mpr (surjective_of_epi e.hom)]
+  ext
+  simp [eq_comm]
+
+@[simp]
+lemma range_pullbackFst : Set.range (pullback.fst f g) = f ⁻¹' Set.range g :=
+  range_fst_of_isPullback (.of_hasPullback f g)
+
+lemma range_snd_of_isPullback {fst : W ⟶ X} {snd : W ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z}
+    (h : IsPullback fst snd f g) :
+    Set.range snd = g ⁻¹' Set.range f := by
+  rw [range_fst_of_isPullback (IsPullback.flip h)]
+
+@[simp]
+lemma range_pullbackSnd : Set.range (pullback.snd f g) = g ⁻¹' Set.range f :=
+  range_snd_of_isPullback (.of_hasPullback f g)
 
 end Pullback
 
