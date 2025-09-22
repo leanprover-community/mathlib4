@@ -144,7 +144,7 @@ theorem ClassGroup.mk_eq_one_of_coe_ideal {I : (FractionalIdeal R⁰ <| Fraction
     rcases Ideal.mem_span_singleton_mul.mp ((Ideal.span_singleton_le_iff_mem _).mp h.ge) with
       ⟨i, _hi, rfl⟩
     rw [← Ideal.span_singleton_mul_span_singleton, Ideal.span_singleton_mul_right_inj hx] at h
-    exact ⟨i, right_ne_zero_of_mul hy, h⟩
+    exact ⟨i, by grobner, h⟩
   · rintro ⟨x, hx, rfl⟩
     exact ⟨1, x, one_ne_zero, hx, by rw [Ideal.span_singleton_one, Ideal.top_mul, Ideal.mul_top]⟩
 

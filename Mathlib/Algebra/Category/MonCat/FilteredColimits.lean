@@ -110,8 +110,7 @@ theorem colimitMulAux_eq_of_rel_left {x x' y : Σ j, F.obj j}
     colimitMulAux.{v, u} F x y = colimitMulAux.{v, u} F x' y := by
   obtain ⟨j₁, x⟩ := x; obtain ⟨j₂, y⟩ := y; obtain ⟨j₃, x'⟩ := x'
   obtain ⟨l, f, g, hfg⟩ := hxx'
-  simp? at hfg says
-    simp only [Functor.comp_obj, Functor.comp_map, ConcreteCategory.forget_map_eq_coe] at hfg
+  replace hfg : F.map f x = F.map g x' := by simpa
   obtain ⟨s, α, β, γ, h₁, h₂, h₃⟩ :=
     IsFiltered.tulip (IsFiltered.leftToMax j₁ j₂) (IsFiltered.rightToMax j₁ j₂)
       (IsFiltered.rightToMax j₃ j₂) (IsFiltered.leftToMax j₃ j₂) f g
