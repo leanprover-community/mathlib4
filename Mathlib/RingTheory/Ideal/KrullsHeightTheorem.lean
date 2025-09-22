@@ -91,7 +91,7 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing
     rwa [Ideal.mem_comap, f.map_add, f.map_mul, Ideal.add_mem_iff_right _
       (Ideal.pow_le_pow_right n.le_succ hy), mul_comm, Ideal.unit_mul_mem_iff_mem] at hx
     refine IsLocalization.map_units (M := q.primeCompl) _ ⟨_, ?_⟩
-    show Submodule.IsPrincipal.generator I ∉ (↑q : Set R)
+    change Submodule.IsPrincipal.generator I ∉ (↑q : Set R)
     rw [← Set.singleton_subset_iff, ← Ideal.span_le, Ideal.span_singleton_generator]
     exact fun e ↦ h₂.not_ge (hp.2 ⟨h₁, e⟩ h₂.le)
 

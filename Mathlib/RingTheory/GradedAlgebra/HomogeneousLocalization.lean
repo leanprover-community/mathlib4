@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Submonoid.Finsupp
 import Mathlib.Order.Filter.AtTopBot.Defs
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.GradedAlgebra.FiniteType
-import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Localization.AtPrime.Basic
 import Mathlib.RingTheory.Localization.Away.Basic
 
 /-!
@@ -150,13 +150,13 @@ end SMul
 
 variable [AddCommMonoid ι] [DecidableEq ι] [GradedAlgebra 𝒜]
 
+open GradedOne in
 instance : One (NumDenSameDeg 𝒜 x) where
   one :=
     { deg := 0
-      -- Porting note: Changed `one_mem` to `GradedOne.one_mem`
-      num := ⟨1, GradedOne.one_mem⟩
-      den := ⟨1, GradedOne.one_mem⟩
-      den_mem := Submonoid.one_mem _ }
+      num := ⟨1, one_mem⟩
+      den := ⟨1, one_mem⟩
+      den_mem := one_mem _ }
 
 @[simp]
 theorem deg_one : (1 : NumDenSameDeg 𝒜 x).deg = 0 :=
@@ -170,8 +170,9 @@ theorem num_one : ((1 : NumDenSameDeg 𝒜 x).num : A) = 1 :=
 theorem den_one : ((1 : NumDenSameDeg 𝒜 x).den : A) = 1 :=
   rfl
 
+open GradedOne in
 instance : Zero (NumDenSameDeg 𝒜 x) where
-  zero := ⟨0, 0, ⟨1, GradedOne.one_mem⟩, Submonoid.one_mem _⟩
+  zero := ⟨0, 0, ⟨1, one_mem⟩, one_mem _⟩
 
 @[simp]
 theorem deg_zero : (0 : NumDenSameDeg 𝒜 x).deg = 0 :=
@@ -185,12 +186,12 @@ theorem num_zero : (0 : NumDenSameDeg 𝒜 x).num = 0 :=
 theorem den_zero : ((0 : NumDenSameDeg 𝒜 x).den : A) = 1 :=
   rfl
 
+open GradedMul in
 instance : Mul (NumDenSameDeg 𝒜 x) where
   mul p q :=
     { deg := p.deg + q.deg
-      -- Porting note: Changed `mul_mem` to `GradedMul.mul_mem`
-      num := ⟨p.num * q.num, GradedMul.mul_mem p.num.prop q.num.prop⟩
-      den := ⟨p.den * q.den, GradedMul.mul_mem p.den.prop q.den.prop⟩
+      num := ⟨p.num * q.num, mul_mem p.num.prop q.num.prop⟩
+      den := ⟨p.den * q.den, mul_mem p.den.prop q.den.prop⟩
       den_mem := Submonoid.mul_mem _ p.den_mem q.den_mem }
 
 @[simp]
@@ -240,7 +241,7 @@ instance : Pow (NumDenSameDeg 𝒜 x) ℕ where
     ⟨n • c.deg, @GradedMonoid.GMonoid.gnpow _ (fun i => ↥(𝒜 i)) _ _ n _ c.num,
       @GradedMonoid.GMonoid.gnpow _ (fun i => ↥(𝒜 i)) _ _ n _ c.den, by
         induction' n with n ih
-        · simpa only [coe_gnpow, pow_zero] using Submonoid.one_mem _
+        · simp only [coe_gnpow, pow_zero, one_mem]
         · simpa only [pow_succ, coe_gnpow] using x.mul_mem ih c.den_mem⟩
 
 @[simp]
@@ -478,6 +479,9 @@ instance : Algebra (𝒜 0) (HomogeneousLocalization 𝒜 x) :=
 
 lemma algebraMap_eq : algebraMap (𝒜 0) (HomogeneousLocalization 𝒜 x) = fromZeroRingHom 𝒜 x := rfl
 
+instance : IsScalarTower (𝒜 0) (HomogeneousLocalization 𝒜 x) (Localization x) :=
+  .of_algebraMap_eq' rfl
+
 end HomogeneousLocalization
 
 namespace HomogeneousLocalization
@@ -664,7 +668,7 @@ lemma range_awayMapAux_subset :
     Set.range (awayMapAux 𝒜 (f := f) ⟨_, hx⟩) ⊆ Set.range (val (𝒜 := 𝒜)) := by
   rintro _ ⟨z, rfl⟩
   obtain ⟨⟨n, ⟨a, ha⟩, ⟨b, hb'⟩, j, rfl : _ = b⟩, rfl⟩ := mk_surjective z
-  use mk ⟨n+j•e,⟨a*g^j, ?_⟩ ,⟨x^j, ?_⟩, j, rfl⟩
+  use mk ⟨n+j•e,⟨a*g^j, ?_⟩, ⟨x^j, ?_⟩, j, rfl⟩
   · simp [awayMapAux_mk 𝒜 (hx := hx)]
   · apply SetLike.mul_mem_graded ha
     exact SetLike.pow_mem_graded _ hg
@@ -877,7 +881,7 @@ theorem Away.adjoin_mk_prod_pow_eq_top_of_pos {f : A} {d : ℕ} (hf : f ∈ 𝒜
       (hai ▸ SetLike.prod_pow_mem_graded _ _ _ _ fun i _ ↦ hxd i) |
         (a : ℕ) (ai : ι' → ℕ) (hai : ∑ i, ai i • dv i = a • d) (_ : ∀ i, ai i ≤ d) } = ⊤ := by
   rw [← top_le_iff]
-  show ⊤ ≤ (Algebra.adjoin (𝒜 0) _).toSubmodule
+  change ⊤ ≤ (Algebra.adjoin (𝒜 0) _).toSubmodule
   rw [← HomogeneousLocalization.Away.span_mk_prod_pow_eq_top hf v hx dv hxd, Submodule.span_le]
   rintro _ ⟨a, ai, hai, rfl⟩
   have H₀ : (a - ∑ i : ι', dv i * (ai i / d)) • d = ∑ k : ι', (ai k % d) • dv k := by
@@ -959,7 +963,7 @@ theorem Away.adjoin_mk_prod_pow_eq_top {f : A} {d : ℕ} (hf : f ∈ 𝒜 d)
   · simpa [Finset.sum_attach_eq_sum_dite] using hai
   · simp [apply_dite, dite_apply, h]
   · congr 1
-    show _ = ∏ x ∈ s.attach, _
+    change _ = ∏ x ∈ s.attach, _
     simp [Finset.prod_attach_eq_prod_dite]
 
 variable {𝒜 : ℕ → Submodule R A} [GradedAlgebra 𝒜] [Algebra.FiniteType (𝒜 0) A] in

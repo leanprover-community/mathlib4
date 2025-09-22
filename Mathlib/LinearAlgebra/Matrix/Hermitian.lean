@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
 import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 import Mathlib.LinearAlgebra.Matrix.ZPow
-import Mathlib.Data.Matrix.ConjTranspose
 
 /-! # Hermitian matrices
 
@@ -93,7 +93,7 @@ theorem isHermitian_conjTranspose_iff (A : Matrix n n α) : Aᴴ.IsHermitian ↔
   IsSelfAdjoint.star_iff
 
 /-- A block matrix `A.from_blocks B C D` is hermitian,
-    if `A` and `D` are hermitian and `Bᴴ = C`. -/
+if `A` and `D` are hermitian and `Bᴴ = C`. -/
 theorem IsHermitian.fromBlocks {A : Matrix m m α} {B : Matrix m n α} {C : Matrix n m α}
     {D : Matrix n n α} (hA : A.IsHermitian) (hBC : Bᴴ = C) (hD : D.IsHermitian) :
     (A.fromBlocks B C D).IsHermitian := by
@@ -194,9 +194,11 @@ theorem isHermitian_mul_mul_conjTranspose [Fintype m] {A : Matrix m m α} (B : M
     (hA : A.IsHermitian) : (B * A * Bᴴ).IsHermitian := by
   simp only [IsHermitian, conjTranspose_mul, conjTranspose_conjTranspose, hA.eq, Matrix.mul_assoc]
 
-lemma commute_iff [Fintype n] {A B : Matrix n n α}
+lemma IsHermitian.commute_iff [Fintype n] {A B : Matrix n n α}
     (hA : A.IsHermitian) (hB : B.IsHermitian) : Commute A B ↔ (A * B).IsHermitian :=
   hA.isSelfAdjoint.commute_iff hB.isSelfAdjoint
+
+@[deprecated (since := "13-08-2025")] alias commute_iff := IsHermitian.commute_iff
 
 end NonUnitalSemiring
 
@@ -269,15 +271,20 @@ theorem IsHermitian.coe_re_diag {A : Matrix n n α} (h : A.IsHermitian) :
 /-- A matrix is hermitian iff the corresponding linear map is self adjoint. -/
 theorem isHermitian_iff_isSymmetric [Fintype n] [DecidableEq n] {A : Matrix n n α} :
     IsHermitian A ↔ A.toEuclideanLin.IsSymmetric := by
-  rw [LinearMap.IsSymmetric, (WithLp.equiv 2 (n → α)).symm.surjective.forall₂]
-  simp only [toEuclideanLin_piLp_equiv_symm, EuclideanSpace.inner_eq_star_dotProduct,
-    Equiv.apply_symm_apply, star_mulVec]
+  rw [LinearMap.IsSymmetric, (WithLp.toLp_surjective _).forall₂]
+  simp only [toEuclideanLin_toLp, Matrix.toLin'_apply, EuclideanSpace.inner_eq_star_dotProduct,
+    WithLp.ofLp_toLp, star_mulVec]
   constructor
   · rintro (h : Aᴴ = A) x y
     rw [dotProduct_comm, ← dotProduct_mulVec, h, dotProduct_comm]
   · intro h
     ext i j
     simpa [(Pi.single_star i 1).symm] using h (Pi.single i 1) (Pi.single j 1)
+
+theorem IsHermitian.im_star_dotProduct_mulVec_self [Fintype n] {A : Matrix n n α}
+    (hA : A.IsHermitian) (x : n → α) : RCLike.im (star x ⬝ᵥ A *ᵥ x) = 0 := by
+  classical
+  exact dotProduct_comm _ (star x) ▸ (isHermitian_iff_isSymmetric.mp hA).im_inner_self_apply _
 
 end RCLike
 

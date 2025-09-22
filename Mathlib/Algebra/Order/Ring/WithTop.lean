@@ -74,9 +74,6 @@ lemma untopD_zero_mul (a b : WithTop α) : (a * b).untopD 0 = a.untopD 0 * b.unt
   induction b; · rw [mul_top ha, untopD_top, mul_zero]
   rw [← coe_mul, untopD_coe, untopD_coe, untopD_coe]
 
-@[deprecated (since := "2025-02-06")]
-alias untop'_zero_mul := untopD_zero_mul
-
 theorem mul_ne_top {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) : a * b ≠ ⊤ := by
   simp [mul_eq_top_iff, *]
 
@@ -312,9 +309,6 @@ lemma unbotD_zero_mul (a b : WithBot α) : (a * b).unbotD 0 = a.unbotD 0 * b.unb
   induction a; · rw [bot_mul hb, unbotD_bot, zero_mul]
   induction b; · rw [mul_bot ha, unbotD_bot, mul_zero]
   rw [← coe_mul, unbotD_coe, unbotD_coe, unbotD_coe]
-
-@[deprecated (since := "2025-02-06")]
-alias unbot'_zero_mul := unbotD_zero_mul
 
 theorem mul_ne_bot {a b : WithBot α} (ha : a ≠ ⊥) (hb : b ≠ ⊥) : a * b ≠ ⊥ :=
   WithTop.mul_ne_top (α := αᵒᵈ) ha hb

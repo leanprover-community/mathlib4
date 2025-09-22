@@ -18,6 +18,9 @@ import Mathlib.RingTheory.Finiteness.Prod
 
 -/
 
+noncomputable section
+
+open Module Free Polynomial Matrix
 
 universe u v w
 
@@ -26,12 +29,6 @@ variable [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M]
 variable [AddCommGroup M₁] [Module R M₁] [Module.Finite R M₁] [Module.Free R M₁]
 variable [AddCommGroup M₂] [Module R M₂] [Module.Finite R M₂] [Module.Free R M₂]
 variable (f : M →ₗ[R] M)
-
-open Matrix
-
-noncomputable section
-
-open Module.Free Polynomial Matrix
 
 namespace LinearMap
 

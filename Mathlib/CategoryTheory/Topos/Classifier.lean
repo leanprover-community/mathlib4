@@ -1,9 +1,10 @@
 /-
 Copyright (c) 2024 Charlie Conneen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Charlie Conneen, Pablo Donato
+Authors: Charlie Conneen, Pablo Donato, Klaus Gy
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 import Mathlib.CategoryTheory.Subobject.Presheaf
 
@@ -48,68 +49,113 @@ Let `C` refer to a category with a terminal object.
 
 * [S. MacLane and I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
 
-## TODO
-
-* Make API for constructing a subobject classifier without reference to limits (replacing `⊤_ C`
-  with an arbitrary `Ω₀ : C` and including the assumption `mono truth`)
-
 -/
 
 universe u v u₀ v₀
 
 namespace CategoryTheory
 
-open Category Limits Functor
+open Category Limits Functor IsPullback
 
-variable (C : Type u) [Category.{v} C] [HasTerminal C]
+variable (C : Type u) [Category.{v} C]
 
-/-- A morphism `truth : ⊤_ C ⟶ Ω` from the terminal object of a category `C`
-is a subobject classifier if, for every monomorphism `m : U ⟶ X` in `C`,
-there is a unique map `χ : X ⟶ Ω` such that the following square is a pullback square:
+/-- A monomorphism `truth : Ω₀ ⟶ Ω` is a subobject classifier if, for every monomorphism
+`m : U ⟶ X` in `C`, there is a unique map `χ : X ⟶ Ω` such that for some (necessarily unique)
+`χ₀ : U ⟶ Ω₀` the following square is a pullback square:
 ```
       U ---------m----------> X
       |                       |
-terminal.from U               χ
+    χ₀ U                     χ m
       |                       |
       v                       v
-    ⊤_ C ------truth--------> Ω
+      Ω₀ ------truth--------> Ω
 ```
-An equivalent formulation replaces the object `⊤_ C` with an arbitrary object, and instead
-includes the assumption that `truth` is a monomorphism.
+An equivalent formulation replaces `Ω₀` with the terminal object.
 -/
 structure Classifier where
-  /-- The target of the truth morphism -/
+  /-- The domain of the truth morphism -/
+  Ω₀ : C
+  /-- The codomain of the truth morphism -/
   Ω : C
-  /-- the truth morphism for a subobject classifier -/
-  truth : ⊤_ C ⟶ Ω
+  /-- The truth morphism of the subobject classifier -/
+  truth : Ω₀ ⟶ Ω
+  /-- The truth morphism is a monomorphism -/
+  mono_truth : Mono truth
+  /-- The top arrow in the pullback square -/
+  χ₀ (U : C) : U ⟶ Ω₀
   /-- For any monomorphism `U ⟶ X`, there is an associated characteristic map `X ⟶ Ω`. -/
   χ {U X : C} (m : U ⟶ X) [Mono m] : X ⟶ Ω
-  /-- `χ m` forms the appropriate pullback square. -/
-  isPullback {U X : C} (m : U ⟶ X) [Mono m] : IsPullback m (terminal.from U) (χ m) truth
-  /-- `χ m` is the only map `X ⟶ Ω` which forms the appropriate pullback square. -/
-  uniq {U X : C} (m : U ⟶ X) [Mono m] (χ' : X ⟶ Ω)
-      (hχ' : IsPullback m (terminal.from U) χ' truth) :
-    χ' = χ m
+  /-- `χ₀ U` and `χ m` form the appropriate pullback square. -/
+  isPullback {U X : C} (m : U ⟶ X) [Mono m] : IsPullback m (χ₀ U) (χ m) truth
+  /-- `χ m` is the only map `X ⟶ Ω` which forms the appropriate pullback square for any `χ₀'`. -/
+  uniq {U X : C} (m : U ⟶ X) [Mono m] {χ₀' : U ⟶ Ω₀} {χ' : X ⟶ Ω}
+    (hχ' : IsPullback m χ₀' χ' truth) : χ' = χ m
+
+variable {C}
+
+namespace Classifier
+
+attribute [instance] mono_truth
+
+/-- More explicit constructor in case `Ω₀` is already known to be a terminal object. -/
+@[simps]
+def mkOfTerminalΩ₀
+    (Ω₀ : C)
+    (t : IsTerminal Ω₀)
+    (Ω : C)
+    (truth : Ω₀ ⟶ Ω)
+    (χ : ∀ {U X : C} (m : U ⟶ X) [Mono m], X ⟶ Ω)
+    (isPullback : ∀ {U X : C} (m : U ⟶ X) [Mono m],
+      IsPullback m (t.from U) (χ m) truth)
+    (uniq : ∀ {U X : C} (m : U ⟶ X) [Mono m] (χ' : X ⟶ Ω)
+      (_ : IsPullback m (t.from U) χ' truth), χ' = χ m) : Classifier C where
+  Ω₀ := Ω₀
+  Ω := Ω
+  truth := truth
+  mono_truth := t.mono_from _
+  χ₀ := t.from
+  χ m _ := χ m
+  isPullback m _ := isPullback m
+  uniq m _ χ₀' χ' hχ' := uniq m χ' ((t.hom_ext χ₀' (t.from _)) ▸ hχ')
+
+instance {c : Classifier C} : ∀ Y : C, Unique (Y ⟶ c.Ω₀) := fun Y =>
+  { default := c.χ₀ Y,
+    uniq f :=
+      have : f ≫ c.truth = c.χ₀ Y ≫ c.truth :=
+        by calc
+          _ = c.χ (𝟙 Y) := c.uniq (𝟙 Y) (of_horiz_isIso_mono { })
+          _ = c.χ₀ Y ≫ c.truth := by simp [← (c.isPullback (𝟙 Y)).w]
+      Mono.right_cancellation _ _ this }
+
+/-- Given `c : Classifier C`, `c.Ω₀` is a terminal object.
+Prefer `c.χ₀` over `c.isTerminalΩ₀.from`. -/
+def isTerminalΩ₀ {c : Classifier C} : IsTerminal c.Ω₀ := IsTerminal.ofUnique c.Ω₀
+
+@[simp]
+lemma isTerminalFrom_eq_χ₀ (c : Classifier C) : c.isTerminalΩ₀.from = c.χ₀ := rfl
+
+end Classifier
 
 /-- A category `C` has a subobject classifier if there is at least one subobject classifier. -/
-class HasClassifier : Prop where
+class HasClassifier (C : Type u) [Category.{v} C] : Prop where
   /-- There is some classifier. -/
   exists_classifier : Nonempty (Classifier C)
 
 namespace HasClassifier
 
-variable [HasClassifier C]
+variable (C) [HasClassifier C]
 
 noncomputable section
 
-/-- Notation for the object in an arbitrary choice of a subobject classifier -/
+/-- Notation for the `Ω₀` in an arbitrary choice of a subobject classifier -/
+abbrev Ω₀ : C := HasClassifier.exists_classifier.some.Ω₀
+/-- Notation for the `Ω` in an arbitrary choice of a subobject classifier -/
 abbrev Ω : C := HasClassifier.exists_classifier.some.Ω
 
 /-- Notation for the "truth arrow" in an arbitrary choice of a subobject classifier -/
-abbrev truth : ⊤_ C ⟶ Ω C := HasClassifier.exists_classifier.some.truth
+abbrev truth : Ω₀ C ⟶ Ω C := HasClassifier.exists_classifier.some.truth
 
-variable {C}
-variable {U X : C} (m : U ⟶ X) [Mono m]
+variable {C} {U X : C} (m : U ⟶ X) [Mono m]
 
 /-- returns the characteristic morphism of the subobject `(m : U ⟶ X) [Mono m]` -/
 def χ : X ⟶ Ω C :=
@@ -119,35 +165,38 @@ def χ : X ⟶ Ω C :=
 ```
       U ---------m----------> X
       |                       |
-terminal.from U              χ m
+    χ₀ U                     χ m
       |                       |
       v                       v
-    ⊤_ C -----truth C-------> Ω
+      Ω₀ ------truth--------> Ω
 ```
 is a pullback square.
 -/
-lemma isPullback_χ : IsPullback m (terminal.from U) (χ m) (truth C) :=
-  HasClassifier.exists_classifier.some.isPullback m
+lemma isPullback_χ : IsPullback m (Classifier.χ₀ _ U) (χ m) (truth C) :=
+  Classifier.isPullback _ m
 
 /-- The diagram
 ```
       U ---------m----------> X
       |                       |
-terminal.from U              χ m
+    χ₀ U                     χ m
       |                       |
       v                       v
-    ⊤_ C -----truth C-------> Ω
+      Ω₀ ------truth--------> Ω
 ```
 commutes.
 -/
 @[reassoc]
-lemma comm : m ≫ χ m = terminal.from _ ≫ truth C := (isPullback_χ m).w
+lemma comm : m ≫ χ m = Classifier.χ₀ _ U ≫ truth C := (isPullback_χ m).w
 
 /-- `χ m` is the only map for which the associated square
 is a pullback square.
 -/
-lemma unique (χ' : X ⟶ Ω C) (hχ' : IsPullback m (terminal.from _) χ' (truth C)) : χ' = χ m :=
-  HasClassifier.exists_classifier.some.uniq m χ' hχ'
+lemma unique (χ' : X ⟶ Ω C) (hχ' : IsPullback m (Classifier.χ₀ _ U) χ' (truth C)) : χ' = χ m :=
+  Classifier.uniq _ m hχ'
+
+instance truthIsSplitMono : IsSplitMono (truth C) :=
+  Classifier.isTerminalΩ₀.isSplitMono_from _
 
 /-- `truth C` is a regular monomorphism (because it is split). -/
 noncomputable instance truthIsRegularMono : RegularMono (truth C) :=
@@ -157,10 +206,10 @@ noncomputable instance truthIsRegularMono : RegularMono (truth C) :=
 ```
       U ---------m----------> X
       |                       |
-terminal.from U              χ m
+    χ₀ U                     χ m
       |                       |
       v                       v
-    ⊤_ C -----truth C-------> Ω
+      Ω₀ ------truth--------> Ω
 ```
 being a pullback for any monic `m` means that every monomorphism
 in `C` is the pullback of a regular monomorphism; since regularity
@@ -202,27 +251,30 @@ open Subobject
 
 section RepresentableBy
 
-variable {C : Type u} [Category.{v} C] [HasTerminal C] [HasPullbacks C] (𝒞 : Classifier C)
+variable {C : Type u} [Category.{v} C] [HasPullbacks C] (𝒞 : Classifier C)
+
+/-- The subobject of `𝒞.Ω` corresponding to the `truth` morphism. -/
+abbrev truth_as_subobject : Subobject 𝒞.Ω :=
+  Subobject.mk 𝒞.truth
 
 lemma surjective_χ {X : C} (φ : X ⟶ 𝒞.Ω) :
     ∃ (Z : C) (i : Z ⟶ X) (_ : Mono i), φ = 𝒞.χ i :=
-  ⟨Limits.pullback φ 𝒞.truth, pullback.fst _ _, inferInstance, 𝒞.uniq _ _ (by
-    convert IsPullback.of_hasPullback φ 𝒞.truth
-    apply Subsingleton.elim)⟩
+  ⟨Limits.pullback φ 𝒞.truth, pullback.fst _ _, inferInstance, 𝒞.uniq _ (by
+    convert IsPullback.of_hasPullback φ 𝒞.truth)⟩
 
 @[simp]
 lemma pullback_χ_obj_mk_truth {Z X : C} (i : Z ⟶ X) [Mono i] :
-    (Subobject.pullback (𝒞.χ i)).obj (.mk 𝒞.truth) = .mk i :=
+    (Subobject.pullback (𝒞.χ i)).obj 𝒞.truth_as_subobject = .mk i :=
   Subobject.pullback_obj_mk (𝒞.isPullback i).flip
 
 @[simp]
 lemma χ_pullback_obj_mk_truth_arrow {X : C} (φ : X ⟶ 𝒞.Ω) :
-    𝒞.χ ((Subobject.pullback φ).obj (.mk 𝒞.truth)).arrow = φ := by
+    𝒞.χ ((Subobject.pullback φ).obj 𝒞.truth_as_subobject).arrow = φ := by
   obtain ⟨Z, i, _, rfl⟩ := 𝒞.surjective_χ φ
-  refine (𝒞.uniq _ _ ?_).symm
+  refine (𝒞.uniq _ (?_ : IsPullback _ (𝒞.χ₀ _) _ _)).symm
   refine (IsPullback.of_hasPullback 𝒞.truth (𝒞.χ i)).flip.of_iso
     (underlyingIso _).symm (Iso.refl _) (Iso.refl _) (Iso.refl _)
-    ?_ (Subsingleton.elim _ _) (by simp) (by simp)
+    ?_ (𝒞.isTerminalΩ₀.hom_ext _ _) (by simp) (by simp)
   dsimp
   rw [Iso.eq_inv_comp, comp_id, underlyingIso_hom_comp_eq_mk]
   rfl
@@ -231,7 +283,7 @@ lemma χ_pullback_obj_mk_truth_arrow {X : C} (φ : X ⟶ 𝒞.Ω) :
 noncomputable def representableBy :
     (Subobject.presheaf C).RepresentableBy 𝒞.Ω where
   homEquiv := {
-    toFun φ := (Subobject.pullback φ).obj (Subobject.mk 𝒞.truth)
+    toFun φ := (Subobject.pullback φ).obj 𝒞.truth_as_subobject
     invFun x := 𝒞.χ x.arrow
     left_inv φ := by simp
     right_inv x := by simp
@@ -247,7 +299,7 @@ section FromRepresentation
 variable {C : Type u} [Category.{v} C] [HasPullbacks C] (Ω : C)
 
 /-- Abbreviation to enable dot notation on the hypothesis `h` stating that the subobjects presheaf
-    is representable by some object `Ω`. -/
+is representable by some object `Ω`. -/
 abbrev SubobjectRepresentableBy := (Subobject.presheaf C).RepresentableBy Ω
 
 variable {Ω} (h : SubobjectRepresentableBy Ω)
@@ -255,17 +307,17 @@ variable {Ω} (h : SubobjectRepresentableBy Ω)
 namespace SubobjectRepresentableBy
 
 /-- `h.Ω₀` is the subobject of `Ω` which corresponds to the identity `𝟙 Ω`,
-    given `h : SubobjectRepresentableBy Ω`. -/
+given `h : SubobjectRepresentableBy Ω`. -/
 def Ω₀ : Subobject Ω := h.homEquiv (𝟙 Ω)
 
 /-- `h.homEquiv` acts like an "object comprehension" operator: it maps any characteristic map
-    `f : X ⟶ Ω` to the associated subobject of `X`, obtained by pulling back `h.Ω₀` along `f`. -/
+`f : X ⟶ Ω` to the associated subobject of `X`, obtained by pulling back `h.Ω₀` along `f`. -/
 lemma homEquiv_eq {X : C} (f : X ⟶ Ω) :
     h.homEquiv f = (Subobject.pullback f).obj h.Ω₀ := by
   simpa using h.homEquiv_comp f (𝟙 _)
 
 /-- For any subobject `x`, the pullback of `h.Ω₀` along the characteristic map of `x`
-    given by `h.homEquiv` is `x` itself. -/
+given by `h.homEquiv` is `x` itself. -/
 lemma pullback_homEquiv_symm_obj_Ω₀ {X : C} (x : Subobject X) :
     (Subobject.pullback (h.homEquiv.symm x)).obj h.Ω₀ = x := by
   rw [← homEquiv_eq, Equiv.apply_symm_apply]
@@ -278,7 +330,7 @@ variable {U X : C} (m : U ⟶ X) [Mono m]
 def χ : X ⟶ Ω := h.homEquiv.symm (Subobject.mk m)
 
 /-- `h.iso m` is the isomorphism between `m` and the pullback of `Ω₀`
-    along the characteristic map of `m`. -/
+along the characteristic map of `m`. -/
 noncomputable def iso : MonoOver.mk' m ≅
     Subobject.representative.obj ((Subobject.pullback (h.χ m)).obj h.Ω₀) :=
   (Subobject.representativeIso (.mk' m)).symm ≪≫ Subobject.representative.mapIso
@@ -332,12 +384,14 @@ end
 noncomputable def isTerminalΩ₀ : IsTerminal (h.Ω₀ : C) :=
   IsTerminal.ofUniqueHom (fun X ↦ h.π (𝟙 X)) (fun X π' ↦ by
     have : IsPullback (𝟙 X) π' (π' ≫ h.Ω₀.arrow) h.Ω₀.arrow :=
-      { w := by simp
-        isLimit' := ⟨PullbackCone.IsLimit.mk _ (fun s ↦ s.fst) (by simp)
+      { isLimit' := ⟨PullbackCone.IsLimit.mk _ (fun s ↦ s.fst) (by simp)
           (fun s ↦ by rw [← cancel_mono h.Ω₀.arrow, ← s.condition, Category.assoc])
           (fun s m hm _ ↦ by simpa using hm) ⟩ }
     rw [← cancel_mono h.Ω₀.arrow, h.uniq this,
       ← (h.isPullback (𝟙 X)).w, Category.id_comp])
+
+/-- The unique map to the terminal object. -/
+noncomputable def χ₀ (U : C) : U ⟶ h.Ω₀ := h.isTerminalΩ₀.from U
 
 include h in
 lemma hasTerminal : HasTerminal C := h.isTerminalΩ₀.hasTerminal
@@ -349,16 +403,19 @@ noncomputable def isoΩ₀ : (h.Ω₀ : C) ≅ ⊤_ C :=
   h.isTerminalΩ₀.conePointUniqueUpToIso (limit.isLimit _)
 
 /-- Any representation `Ω` of `Subobject.presheaf C` gives a subobject classifier with truth values
-    object `Ω`. -/
+object `Ω`. -/
 noncomputable def classifier : Classifier C where
+  Ω₀ := ⊤_ C
   Ω := Ω
   truth := h.isoΩ₀.inv ≫ h.Ω₀.arrow
+  mono_truth := terminalIsTerminal.mono_from _
+  χ₀ := terminalIsTerminal.from
   χ m _ := h.χ m
   isPullback m _ :=
     (h.isPullback m).of_iso (Iso.refl _) (Iso.refl _) h.isoΩ₀ (Iso.refl _)
       (by simp) (Subsingleton.elim _ _) (by simp) (by simp)
-  uniq {U X} m _ χ' sq := by
-    have : IsPullback m (h.isTerminalΩ₀.from U) χ' h.Ω₀.arrow :=
+  uniq {U X} m _ χ₀ χ' sq := by
+    have : IsPullback m (h.χ₀ U) χ' h.Ω₀.arrow :=
       sq.of_iso (Iso.refl _) (Iso.refl _) (h.isoΩ₀.symm) (Iso.refl _)
         (by simp) (h.isTerminalΩ₀.hom_ext _ _) (by simp) (by simp)
     exact h.uniq this
@@ -366,6 +423,8 @@ noncomputable def classifier : Classifier C where
 end SubobjectRepresentableBy
 end FromRepresentation
 end Classifier
+
+variable [HasTerminal C]
 
 /-- A category has a subobject classifier if and only if the subobjects functor is representable. -/
 theorem isRepresentable_hasClassifier_iff [HasPullbacks C] :

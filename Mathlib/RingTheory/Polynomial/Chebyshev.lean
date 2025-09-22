@@ -116,7 +116,7 @@ theorem T_two : T R 2 = 2 * X ^ 2 - 1 := by
 theorem T_neg (n : ℤ) : T R (-n) = T R n := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => rfl
-  | one => show 2 * X * 1 - X = X; ring
+  | one => change 2 * X * 1 - X = X; ring
   | add_two n ih1 ih2 =>
     have h₁ := T_add_two R n
     have h₂ := T_sub_two R (-n)
@@ -326,7 +326,7 @@ theorem C_two : C R 2 = X ^ 2 - 2 := by
 theorem C_neg (n : ℤ) : C R (-n) = C R n := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => rfl
-  | one => show X * 2 - X = X; ring
+  | one => change X * 2 - X = X; ring
   | add_two n ih1 ih2 =>
     have h₁ := C_add_two R n
     have h₂ := C_sub_two R (-n)
@@ -668,8 +668,6 @@ theorem T_mul_T (m k : ℤ) : 2 * T R m * T R k = T R (m + k) + T R (m - k) := b
     have h₂ := T_sub_two R (m - (-k - 1))
     have h₃ := T_add_two R (-k - 1)
     linear_combination (norm := ring_nf) 2 * T R m * h₃ - h₂ - h₁ - ih2 + 2 * (X : R[X]) * ih1
-
-@[deprecated (since := "2024-12-03")] alias mul_T := T_mul_T
 
 /-- The product of two Chebyshev `C` polynomials is the sum of two other Chebyshev `C` polynomials.
 -/

@@ -16,11 +16,6 @@ any others. They are so named since they can't be the successors of anything sma
 For some applications, it is desirable to exclude minimal elements from being successor limits, or
 maximal elements from being predecessor limits. As such, we also provide `Order.IsSuccLimit` and
 `Order.IsPredLimit`, which exclude these cases.
-
-## TODO
-
-The plan is to eventually replace `Ordinal.IsLimit` and `Cardinal.IsLimit` with the common
-predicate `Order.IsSuccLimit`.
 -/
 
 
@@ -89,6 +84,9 @@ protected theorem _root_.IsMin.not_isSuccLimit (h : IsMin a) : ¬ IsSuccLimit a 
 
 protected theorem _root_.IsMin.isSuccPrelimit : IsMin a → IsSuccPrelimit a := fun h _ hab =>
   not_isMin_of_lt hab.lt h
+
+theorem IsSuccLimit.nonempty_Iio (h : IsSuccLimit a) : (Set.Iio a).Nonempty :=
+  not_isMin_iff.1 h.1
 
 theorem isSuccPrelimit_bot [OrderBot α] : IsSuccPrelimit (⊥ : α) :=
   isMin_bot.isSuccPrelimit
@@ -419,6 +417,9 @@ protected theorem _root_.IsMax.not_isPredLimit (h : IsMax a) : ¬ IsPredLimit a 
 
 protected theorem _root_.IsMax.isPredPrelimit : IsMax a → IsPredPrelimit a := fun h _ hab =>
   not_isMax_of_lt hab.lt h
+
+theorem IsPredLimit.nonempty_Ioi (h : IsPredLimit a) : (Set.Ioi a).Nonempty :=
+  not_isMax_iff.1 h.1
 
 theorem isPredPrelimit_top [OrderTop α] : IsPredPrelimit (⊤ : α) :=
   isMax_top.isPredPrelimit

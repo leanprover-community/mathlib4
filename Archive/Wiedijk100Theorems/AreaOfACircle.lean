@@ -65,7 +65,7 @@ theorem disc_eq_regionBetween :
       regionBetween
         (fun x => -sqrt (r ^ 2 - x ^ 2)) (fun x => sqrt (r ^ 2 - x ^ 2)) (Ioc (-r) r) := by
   ext p
-  simp only [disc, regionBetween, mem_setOf_eq, mem_Ioo, mem_Ioc, Pi.neg_apply]
+  simp only [disc, regionBetween, mem_setOf_eq, mem_Ioo, mem_Ioc]
   constructor <;> intro h
   · cases abs_lt_of_sq_lt_sq' (lt_of_add_lt_of_nonneg_left h (sq_nonneg p.2)) r.2 with
     | intro left right =>
@@ -92,7 +92,7 @@ theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
         (volume_regionBetween_eq_integral h.neg h measurableSet_Ioc fun x _ =>
           neg_le_self (sqrt_nonneg _))
       _ = ENNReal.ofReal (∫ x in (-r : ℝ)..r, 2 * f x) := by
-        rw [integral_of_le] <;> simp [two_mul, neg_le_self]
+        rw [integral_of_le] <;> simp [two_mul]
       _ = NNReal.pi * r ^ 2 := by rw_mod_cast [this, ← ENNReal.coe_nnreal_eq]
   have hle := NNReal.coe_nonneg r
   obtain heq | hlt := hle.eq_or_lt; · simp [← heq]
@@ -108,10 +108,11 @@ theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
     · have h₁ : (r:ℝ) ^ 2 - x ^ 2 > 0 := sub_pos_of_lt (sq_lt_sq' hx1 hx2)
       have h : sqrt ((r:ℝ) ^ 2 - x ^ 2) ^ 3 = ((r:ℝ) ^ 2 - x ^ 2) * sqrt ((r: ℝ) ^ 2 - x ^ 2) := by
         rw [pow_three, ← mul_assoc, mul_self_sqrt (by positivity)]
-      field_simp [f]
+      simp [f]
+      field_simp
+      simp (disch := positivity)
+      field_simp
       ring_nf
-      rw [h]
-      ring
     · suffices -(1 : ℝ) < (r : ℝ)⁻¹ * x by exact this.ne'
       calc
         -(1 : ℝ) = (r : ℝ)⁻¹ * -r := by simp [inv_mul_cancel₀ hlt.ne']

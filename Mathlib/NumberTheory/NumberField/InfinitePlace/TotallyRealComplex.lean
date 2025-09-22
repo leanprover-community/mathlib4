@@ -62,6 +62,8 @@ theorem IsTotallyReal.of_algebra [IsTotallyReal K] [Algebra F K] : IsTotallyReal
     obtain ⟨W, rfl⟩ : ∃ W : InfinitePlace K, W.comap (algebraMap F K) = w := comap_surjective w
     exact IsReal.comap _ (IsTotallyReal.isReal W)
 
+@[deprecated (since := "2025-05-19")] alias IsTotally.of_algebra := IsTotallyReal.of_algebra
+
 instance [IsTotallyReal K] (F : IntermediateField ℚ K) : IsTotallyReal F :=
   IsTotallyReal.of_algebra F K
 
@@ -117,7 +119,7 @@ theorem IsTotallyReal.le_maximalRealSubfield (E : Subfield K) [IsTotallyReal E] 
   intro x hx φ
   rw [show φ x = (φ.comp E.subtype) ⟨x, hx⟩ by simp, RCLike.star_def, ← conjugate_coe_eq]
   refine RingHom.congr_fun ?_ _
-  exact ComplexEmbedding.isReal_iff.mp  <| isReal_mk_iff.mp <| isReal _
+  exact ComplexEmbedding.isReal_iff.mp <| isReal_mk_iff.mp <| isReal _
 
 theorem isTotallyReal_iff_le_maximalRealSubfield {E : Subfield K} :
     IsTotallyReal E ↔ E ≤ maximalRealSubfield K :=

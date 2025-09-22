@@ -234,9 +234,7 @@ theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.ge
       specialize H hy
       specialize h fun _ => hy
       rw [not_forall] at h
-      obtain ⟨hx', h⟩ := h
-      rw [not_le] at h
-      exact h
+      omega
     · specialize h fun hx' => (hx hx').elim
       rw [not_forall] at h
       obtain ⟨hx', h⟩ := h
@@ -282,7 +280,7 @@ theorem get_le_get {x y : PartENat} {hx : x.Dom} {hy : y.Dom} : x.get hx ≤ y.g
     rw [← coe_le_coe, natCast_get, natCast_get]
 
 theorem le_coe_iff (x : PartENat) (n : ℕ) : x ≤ n ↔ ∃ h : x.Dom, x.get h ≤ n := by
-  show (∃ h : True → x.Dom, _) ↔ ∃ h : x.Dom, x.get h ≤ n
+  change (∃ h : True → x.Dom, _) ↔ ∃ h : x.Dom, x.get h ≤ n
   simp only [forall_prop_of_true, dom_natCast, get_natCast']
 
 theorem lt_coe_iff (x : PartENat) (n : ℕ) : x < n ↔ ∃ h : x.Dom, x.get h < n := by
@@ -400,16 +398,20 @@ noncomputable instance lattice : Lattice PartENat :=
     inf_le_right := min_le_right
     le_inf := fun _ _ _ => le_min }
 
-instance : CanonicallyOrderedAdd PartENat :=
-  { le_self_add := fun a b =>
-      PartENat.casesOn b (le_top.trans_eq (add_top _).symm) fun _ =>
-        PartENat.casesOn a (top_add _).ge fun _ =>
-          (coe_le_coe.2 le_self_add).trans_eq (Nat.cast_add _ _)
-    exists_add_of_le := fun {a b} =>
-      PartENat.casesOn b (fun _ => ⟨⊤, (add_top _).symm⟩) fun b =>
-        PartENat.casesOn a (fun h => ((natCast_lt_top _).not_ge h).elim) fun a h =>
-          ⟨(b - a : ℕ), by
-            rw [← Nat.cast_add, natCast_inj, add_comm, tsub_add_cancel_of_le (coe_le_coe.1 h)]⟩ }
+instance : CanonicallyOrderedAdd PartENat where
+  le_self_add a b :=
+    PartENat.casesOn b (le_top.trans_eq (add_top _).symm) fun _ =>
+      PartENat.casesOn a (top_add _).ge fun _ =>
+        (coe_le_coe.2 le_self_add).trans_eq (Nat.cast_add _ _)
+  le_add_self a b :=
+    PartENat.casesOn b (le_top.trans_eq (top_add _).symm) fun _ =>
+      PartENat.casesOn a (add_top _).ge fun _ =>
+        (coe_le_coe.2 le_add_self).trans_eq (Nat.cast_add _ _)
+  exists_add_of_le {a b} :=
+    PartENat.casesOn b (fun _ => ⟨⊤, (add_top _).symm⟩) fun b =>
+      PartENat.casesOn a (fun h => ((natCast_lt_top _).not_ge h).elim) fun a h =>
+        ⟨(b - a : ℕ), by
+          rw [← Nat.cast_add, natCast_inj, add_comm, tsub_add_cancel_of_le (coe_le_coe.1 h)]⟩
 
 theorem eq_natCast_sub_of_add_eq_natCast {x y : PartENat} {n : ℕ} (h : x + y = n) :
     x = ↑(n - y.get (dom_of_le_natCast ((le_add_left le_rfl).trans_eq h))) := by
@@ -739,6 +741,6 @@ noncomputable instance : LinearOrderedAddCommMonoidWithTop PartENat :=
 
 noncomputable instance : CompleteLinearOrder PartENat :=
   { lattice, withTopOrderIso.symm.toGaloisInsertion.liftCompleteLattice,
-    linearOrder, LinearOrder.toBiheytingAlgebra with }
+    linearOrder, linearOrder.toBiheytingAlgebra with }
 
 end PartENat

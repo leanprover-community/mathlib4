@@ -50,8 +50,6 @@ lemma Scheme.Hom.isClosedEmbedding {X Y : Scheme} (f : X.Hom Y)
 
 namespace IsClosedImmersion
 
-@[deprecated (since := "2024-10-24")]
-alias isClosedEmbedding := Scheme.Hom.isClosedEmbedding
 lemma eq_inf : @IsClosedImmersion = (topologically IsClosedEmbedding) ⊓
     @SurjectiveOnStalks := by
   ext X Y f
@@ -161,7 +159,7 @@ instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsClosedImmersion f] :
   · exact inferInstanceAs (IsIso (TopCat.isoOfHomeo this.homeomorph).hom)
   · intro x
     refine ⟨?_, f.toImage.stalkMap_surjective x⟩
-    show Function.Injective (CommRingCat.Hom.hom (((TopCat.Presheaf.stalkFunctor CommRingCat
+    change Function.Injective (CommRingCat.Hom.hom (((TopCat.Presheaf.stalkFunctor CommRingCat
       (f.toImage.base x)).map f.toImage.c) ≫ X.presheaf.stalkPushforward _ _ x))
     simp only [TopCat.Presheaf.stalkFunctor_obj, CommRingCat.hom_comp, RingHom.coe_comp]
     refine .comp ?_ (f.stalkFunctor_toImage_injective _)
@@ -247,7 +245,6 @@ lemma stalkMap_injective_of_isOpenMap_of_injective [CompactSpace X]
     Function.Injective (f.stalkMap x) := by
   let φ : Γ(Y, ⊤) ⟶ Γ(X, ⊤) := f.appTop
   let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
-  have (i : 𝒰.J) : IsAffine (𝒰.obj i) := Scheme.isAffine_affineCover X _
   let res (i : 𝒰.J) : Γ(X, ⊤) ⟶ Γ(𝒰.obj i, ⊤) := (𝒰.map i).appTop
   refine stalkMap_injective_of_isAffine _ _ (fun (g : Γ(Y, ⊤)) h ↦ ?_)
   rw [TopCat.Presheaf.Γgerm, Scheme.stalkMap_germ_apply] at h
@@ -257,7 +254,7 @@ lemma stalkMap_injective_of_isOpenMap_of_injective [CompactSpace X]
     (show f.base x ∈ ⟨f.base '' U.carrier, hfopen U.carrier U.is_open'⟩ from ⟨x, by simpa⟩)
   let W (i : 𝒰.J) : TopologicalSpace.Opens (𝒰.obj i) := (𝒰.obj i).basicOpen ((res i) (φ s))
   have hwle (i : 𝒰.J) : W i ≤ (𝒰.map i)⁻¹ᵁ U := by
-    show (𝒰.obj i).basicOpen ((𝒰.map i ≫ f).appTop s) ≤ _
+    change (𝒰.obj i).basicOpen ((𝒰.map i ≫ f).appTop s) ≤ _
     rw [← Scheme.preimage_basicOpen_top, Scheme.comp_coeBase, Opens.map_comp_obj]
     refine Scheme.Hom.preimage_le_preimage_of_le _
       (le_trans (f.preimage_le_preimage_of_le bsle) (le_of_eq ?_))
@@ -305,7 +302,7 @@ theorem isAffine_surjective_of_isAffine [IsClosedImmersion f] :
     ((ConcreteCategory.bijective_of_isIso _).2.comp Ideal.Quotient.mk_surjective)
 
 lemma Spec_iff {R : CommRingCat} {f : X ⟶ Spec R} :
-    IsClosedImmersion f ↔ ∃ I : Ideal R, ∃ e : X ≅ Spec (.of <| R ⧸ I),
+    IsClosedImmersion f ↔ ∃ I : Ideal R, ∃ e : X ≅ Spec(R ⧸ I),
       f = e.hom ≫ Spec.map (CommRingCat.ofHom (Ideal.Quotient.mk I)) := by
   constructor
   · intro H
@@ -317,7 +314,7 @@ lemma Spec_iff {R : CommRingCat} {f : X ⟶ Spec R} :
         (h₂.comp (Scheme.ΓSpecIso R).commRingCatIsoToRingEquiv.symm.surjective)⟩
     · simp only [Iso.trans_hom, Functor.mapIso_hom, Iso.op_hom, Scheme.Spec_map,
         Quiver.Hom.unop_op, Category.assoc, ← Spec.map_comp]
-      show f = X.isoSpec.hom ≫ Spec.map φ
+      change f = X.isoSpec.hom ≫ Spec.map φ
       simp only [Scheme.isoSpec, asIso_hom, Spec.map_comp, ← Scheme.toSpecΓ_naturality_assoc,
         ← SpecMap_ΓSpecIso_hom, φ]
       simp only [← Spec.map_comp, Iso.inv_hom_id, Spec.map_id, Category.comp_id]

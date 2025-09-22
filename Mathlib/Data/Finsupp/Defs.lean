@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
-import Mathlib.Algebra.Group.Support
+import Mathlib.Algebra.Notation.Support
 import Mathlib.Data.Set.Finite.Basic
 
 /-!
@@ -74,7 +74,7 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 
 -/
 
-assert_not_exists CompleteLattice Submonoid
+assert_not_exists CompleteLattice Monoid
 
 noncomputable section
 
@@ -179,7 +179,7 @@ theorem finite_support (f : α →₀ M) : Set.Finite (Function.support f) :=
 
 theorem support_subset_iff {s : Set α} {f : α →₀ M} :
     ↑f.support ⊆ s ↔ ∀ a ∉ s, f a = 0 := by
-  simp only [Set.subset_def, mem_coe, mem_support_iff]; exact forall_congr' fun a => not_imp_comm
+  simp only [Set.subset_def, mem_coe, mem_support_iff, forall_congr' fun a => not_imp_comm]
 
 /-- Given `Finite α`, `equivFunOnFinite` is the `Equiv` between `α →₀ β` and `α → β`.
   (All functions on a finite type are finitely supported.) -/
@@ -335,7 +335,7 @@ lemma range_mapRange (e : M → N) (he₀ : e 0 = 0) :
   · intro h
     classical
     choose f h using h
-    use onFinset g.support (fun x ↦ if x ∈ g.support then f x else 0) (by aesop)
+    use onFinset g.support (fun x ↦ if x ∈ g.support then f x else 0) (by simp_all)
     ext i
     simp only [mapRange_apply, onFinset_apply]
     split_ifs <;> simp_all

@@ -36,6 +36,9 @@ open ENNReal (ofReal)
 
 /-- Bundled monotone right-continuous real functions, used to construct Stieltjes measures. -/
 structure StieltjesFunction where
+  /-- The underlying function `ℝ → ℝ`.
+
+  Do NOT use directly. Use the coercion instead. -/
   toFun : ℝ → ℝ
   mono' : Monotone toFun
   right_continuous' : ∀ x, ContinuousWithinAt toFun (Ici x) x
@@ -231,8 +234,8 @@ theorem length_subadditive_Icc_Ioo {a b : ℝ} {c d : ℕ → ℝ} (ss : Icc a b
   rw [← Finset.insert_erase is] at cv ⊢
   rw [Finset.coe_insert, biUnion_insert] at cv
   rw [Finset.sum_insert (Finset.notMem_erase _ _)]
-  refine le_trans ?_ (add_le_add_left (IH _ (Finset.erase_ssubset is) (c i) ?_) _)
-  · refine le_trans (ENNReal.ofReal_le_ofReal ?_) ENNReal.ofReal_add_le
+  grw [← IH _ (Finset.erase_ssubset is) (c i), ← ENNReal.ofReal_add_le]
+  · gcongr
     rw [sub_add_sub_cancel]
     exact sub_le_sub_right (f.mono bd.le) _
   · rintro x ⟨h₁, h₂⟩
@@ -325,7 +328,7 @@ theorem outer_trim : f.outer.trim = f.outer := by
   rw [OuterMeasure.trim_eq_iInf]
   refine le_iInf fun t => le_iInf fun ht => ENNReal.le_of_forall_pos_le_add fun ε ε0 h => ?_
   rcases ENNReal.exists_pos_sum_of_countable (ENNReal.coe_pos.2 ε0).ne' ℕ with ⟨ε', ε'0, hε⟩
-  refine le_trans ?_ (add_le_add_left (le_of_lt hε) _)
+  grw [← hε]
   rw [← ENNReal.tsum_add]
   choose g hg using
     show ∀ i, ∃ s, t i ⊆ s ∧ MeasurableSet s ∧ f.outer s ≤ f.length (t i) + ofReal (ε' i) by

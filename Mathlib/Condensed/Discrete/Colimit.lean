@@ -379,7 +379,7 @@ lemma lanPresheafExt_hom {F G : LightProfinite.{u}ᵒᵖ ⥤ Type u} (S : LightP
   aesop
 
 @[simp]
-lemma lanPresheafExt_inv  {F G : LightProfinite.{u}ᵒᵖ ⥤ Type u} (S : LightProfinite.{u}ᵒᵖ)
+lemma lanPresheafExt_inv {F G : LightProfinite.{u}ᵒᵖ ⥤ Type u} (S : LightProfinite.{u}ᵒᵖ)
     (i : toLightProfinite.op ⋙ F ≅ toLightProfinite.op ⋙ G) : (lanPresheafExt i).inv.app S =
       colimMap (whiskerLeft (CostructuredArrow.proj toLightProfinite.op S) i.inv) := by
   simp only [lanPresheaf, pointwiseLeftKanExtension_obj, lanPresheafExt,

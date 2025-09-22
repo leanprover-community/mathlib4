@@ -27,10 +27,10 @@ ideal of `R` and `I.den` an element of `R⁰` such that `I.den • I = I.num`.
   norm of its generator
 -/
 
-namespace FractionalIdeal
-
+open Module
 open scoped Pointwise nonZeroDivisors
 
+namespace FractionalIdeal
 variable {R : Type*} [CommRing R] [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R]
 variable {K : Type*} [CommRing K] [Algebra R K] [IsFractionRing R K]
 

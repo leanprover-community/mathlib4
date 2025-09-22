@@ -134,9 +134,6 @@ theorem natDegree_C_mul_of_mul_ne_zero (h : a * p.leadingCoeff ≠ 0) :
   refine mem_support_iff.mpr ?_
   rwa [coeff_C_mul]
 
-@[deprecated (since := "2025-01-03")]
-alias natDegree_C_mul_eq_of_mul_ne_zero := natDegree_C_mul_of_mul_ne_zero
-
 lemma degree_C_mul_of_mul_ne_zero (h : a * p.leadingCoeff ≠ 0) : (C a * p).degree = p.degree := by
   rw [degree_mul' (by simpa)]; simp [left_ne_zero_of_mul h]
 
@@ -276,14 +273,10 @@ theorem natDegree_map_eq_iff {f : R →+* S} {p : Polynomial R} :
     natDegree (map f p) = natDegree p ↔ f (p.leadingCoeff) ≠ 0 ∨ natDegree p = 0 := by
   rcases eq_or_ne (natDegree p) 0 with h|h
   · simp_rw [h, ne_eq, or_true, iff_true, ← Nat.le_zero, ← h, natDegree_map_le]
-  have h2 : p ≠ 0 := by rintro rfl; simp at h
   simp_all [natDegree, WithBot.unbotD_eq_unbotD_iff]
 
 theorem natDegree_pos_of_nextCoeff_ne_zero (h : p.nextCoeff ≠ 0) : 0 < p.natDegree := by
-  rw [nextCoeff] at h
-  by_cases hpz : p.natDegree = 0
-  · simp_all only [ne_eq, ite_true, not_true_eq_false]
-  · apply Nat.zero_lt_of_ne_zero hpz
+  grind [nextCoeff]
 
 end Degree
 
@@ -323,7 +316,7 @@ lemma nextCoeff_C_mul_X_add_C (ha : a ≠ 0) (c : R) : nextCoeff (C a * X + C c)
 lemma natDegree_eq_one : p.natDegree = 1 ↔ ∃ a ≠ 0, ∃ b, C a * X + C b = p := by
   refine ⟨fun hp ↦ ⟨p.coeff 1, fun h ↦ ?_, p.coeff 0, ?_⟩, ?_⟩
   · rw [← hp, coeff_natDegree, leadingCoeff_eq_zero] at h
-    aesop
+    simp_all
   · ext n
     obtain _ | _ | n := n
     · simp

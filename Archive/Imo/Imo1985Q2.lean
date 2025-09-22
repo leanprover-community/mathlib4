@@ -29,7 +29,7 @@ In this range of $k$, $kj\bmod n ≠ j$, so
 
 * if $kj\bmod n > j$, $kj\bmod n \sim kj\bmod n - j = (k-1)j\bmod n$ using rule 2;
 * if $kj\bmod n < j$, $kj\bmod n \sim j - kj\bmod n \sim n - j + kj\bmod n = (k-1)j\bmod n$
-using rule 2 then rule 1.
+  using rule 2 then rule 1.
 -/
 
 namespace Imo1985Q2

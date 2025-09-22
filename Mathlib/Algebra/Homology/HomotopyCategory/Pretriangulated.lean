@@ -165,7 +165,7 @@ lemma map_comp (comm' : φ₂ ≫ b' = a' ≫ φ₃) :
     map φ₁ φ₃ (a ≫ a') (b ≫ b') (by rw [reassoc_of% comm, comm', assoc]) =
       map φ₁ φ₂ a b comm ≫ map φ₂ φ₃ a' b' comm' := by
   ext n
-  simp [ext_from_iff _ (n+1) n rfl, map]
+  simp [ext_from_iff _ (n + 1) n rfl, map]
 
 /-- The morphism `triangle φ₁ ⟶ triangle φ₂` that is induced by a commutative square. -/
 @[simps]
@@ -247,8 +247,8 @@ noncomputable def rotateHomotopyEquiv :
 
 /-- Auxiliary definition for `rotateTrianglehIso`. -/
 noncomputable def rotateHomotopyEquivComm₂Homotopy :
-  Homotopy ((triangle φ).mor₃ ≫ (rotateHomotopyEquiv φ).hom)
-    (inr (CochainComplex.mappingCone.inr φ)) := (Cochain.equivHomotopy _ _).symm
+    Homotopy ((triangle φ).mor₃ ≫ (rotateHomotopyEquiv φ).hom)
+      (inr (CochainComplex.mappingCone.inr φ)) := (Cochain.equivHomotopy _ _).symm
       ⟨-(snd φ).comp (inl (inr φ)) (zero_add (-1)), by
         ext p
         dsimp [rotateHomotopyEquiv]
@@ -396,7 +396,7 @@ lemma map_δ :
       (triangle ((G.mapHomologicalComplex (ComplexShape.up ℤ)).map φ)).mor₃ := by
   ext n
   dsimp [mapHomologicalComplexIso]
-  rw [mapHomologicalComplexXIso_eq φ G n (n+1) rfl, mapHomologicalComplexXIso'_hom]
+  rw [mapHomologicalComplexXIso_eq φ G n (n + 1) rfl, mapHomologicalComplexXIso'_hom]
   simp only [Functor.mapHomologicalComplex_obj_X, add_comp, assoc, inl_v_triangle_mor₃_f,
     shiftFunctor_obj_X, shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv,
     comp_neg, comp_id, inr_f_triangle_mor₃_f, comp_zero, add_zero]

@@ -85,7 +85,7 @@ def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.sy
     cases le_or_gt (x : ℝ) 2⁻¹ with
     | inl hx => simp [hx, ← extend_extends]
     | inr hx =>
-      simp? [hx.not_le, ← extend_extends] says
+      simp? [hx.not_ge, ← extend_extends] says
         simp only [one_div, hx.not_ge, ↓reduceIte, Set.Icc.coe_one, one_mul, ← extend_extends,
           extend_symm, ContinuousMap.coe_mk, Function.comp_apply]
       ring_nf
@@ -304,7 +304,6 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
         simp only [comp_eq, ← Path.Homotopic.map_lift, ← Path.Homotopic.comp_lift, Path.map_trans] }
   map_id X := by
     simp only
-    change _ = (⟨_, _, _⟩ : FundamentalGroupoid X ⥤ FundamentalGroupoid X)
     congr
     ext x y p
     refine Quotient.inductionOn p fun q => ?_

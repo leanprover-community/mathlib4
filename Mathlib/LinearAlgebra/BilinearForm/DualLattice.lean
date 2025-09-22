@@ -18,6 +18,7 @@ Properly develop the material in the context of lattices.
 -/
 
 open LinearMap (BilinForm)
+open Module
 
 variable {R S M} [CommRing R] [Field S] [AddCommGroup M]
 variable [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
@@ -43,7 +44,7 @@ lemma mem_dualSubmodule {N : Submodule R M} {x} :
 
 lemma le_flip_dualSubmodule {N₁ N₂ : Submodule R M} :
     N₁ ≤ B.flip.dualSubmodule N₂ ↔ N₂ ≤ B.dualSubmodule N₁ := by
-  show (∀ (x : M), x ∈ N₁ → _) ↔ ∀ (x : M), x ∈ N₂ → _
+  change (∀ (x : M), x ∈ N₁ → _) ↔ ∀ (x : M), x ∈ N₂ → _
   simp only [mem_dualSubmodule, Submodule.mem_one, flip_apply]
   exact forall₂_swap
 

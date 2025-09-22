@@ -3,6 +3,7 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Order.Floor.Semiring
 import Mathlib.Data.Nat.Log
 
@@ -142,16 +143,17 @@ theorem log_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : log b (b ^ z : R) = z := by
       neg_nonpos.2 (Int.natCast_nonneg _)),
       zpow_neg, inv_inv, zpow_natCast, ← Nat.cast_pow, Nat.ceil_natCast, Nat.clog_pow _ _ hb]
 
-@[mono]
+@[mono, gcongr]
 theorem log_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ ≤ r₂) : log b r₁ ≤ log b r₂ := by
   rcases le_total r₁ 1 with h₁ | h₁ <;> rcases le_total r₂ 1 with h₂ | h₂
-  · rw [log_of_right_le_one _ h₁, log_of_right_le_one _ h₂, neg_le_neg_iff, Int.ofNat_le]
-    exact Nat.clog_mono_right _ (Nat.ceil_mono <| inv_anti₀ h₀ h)
+  · have h₀' : 0 < r₂ := lt_of_lt_of_le h₀ h
+    rw [log_of_right_le_one _ h₁, log_of_right_le_one _ h₂, neg_le_neg_iff, Nat.cast_le]
+    exact Nat.clog_mono_right b <| Nat.ceil_mono <| (inv_le_inv₀ h₀' h₀).2 h
   · rw [log_of_right_le_one _ h₁, log_of_one_le_right _ h₂]
     exact (neg_nonpos.mpr (Int.natCast_nonneg _)).trans (Int.natCast_nonneg _)
   · obtain rfl := le_antisymm h (h₂.trans h₁)
     rfl
-  · rw [log_of_one_le_right _ h₁, log_of_one_le_right _ h₂, Int.ofNat_le]
+  · rw [log_of_one_le_right _ h₁, log_of_one_le_right _ h₂, Nat.cast_le]
     exact Nat.log_mono_right (Nat.floor_mono h)
 
 variable (R) in
@@ -268,8 +270,9 @@ theorem clog_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : clog b (b ^ z : R) = z := b
 @[mono]
 theorem clog_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ ≤ r₂) :
     clog b r₁ ≤ clog b r₂ := by
+  have h₀' : 0 < r₂ := lt_of_lt_of_le h₀ h
   rw [← neg_log_inv_eq_clog, ← neg_log_inv_eq_clog, neg_le_neg_iff]
-  exact log_mono_right (inv_pos.mpr <| h₀.trans_le h) (inv_anti₀ h₀ h)
+  exact log_mono_right (inv_pos_of_pos h₀') <| (inv_le_inv₀ h₀' h₀).2 h
 
 variable (R) in
 /-- Over suitable subtypes, `Int.clog` and `zpow` form a galois insertion -/

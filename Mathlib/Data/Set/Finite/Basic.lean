@@ -332,7 +332,7 @@ instance fintypeLENat (n : ℕ) : Fintype { i | i ≤ n } := by
   simpa [Nat.lt_succ_iff] using Set.fintypeLTNat (n + 1)
 
 /-- This is not an instance so that it does not conflict with the one
-in `Mathlib/Order/LocallyFinite.lean`. -/
+in `Mathlib/Order/Interval/Finset/Defs.lean`. -/
 def Nat.fintypeIio (n : ℕ) : Fintype (Iio n) :=
   Set.fintypeLTNat n
 
@@ -705,9 +705,6 @@ theorem Finite.induction_on_subset {motive : ∀ s : Set α, s.Finite → Prop} 
   rw [insert_subset_iff] at haS
   exact insert haS.1 haS.2 has (hCs haS.2)
 
-@[deprecated (since := "2025-01-03")] alias Finite.induction_on' := Finite.induction_on_subset
-@[deprecated (since := "2025-01-03")] alias Finite.dinduction_on := Finite.induction_on
-
 section
 
 attribute [local instance] Nat.fintypeIio
@@ -736,8 +733,6 @@ end
 theorem card_empty : Fintype.card (∅ : Set α) = 0 :=
   rfl
 
-@[deprecated (since := "2025-02-05")] alias empty_card := card_empty
-
 theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
     @Fintype.card _ (fintypeInsertOfNotMem s h) = Fintype.card s + 1 := by
   simp [fintypeInsertOfNotMem, Fintype.card_ofFinset]
@@ -763,7 +758,7 @@ theorem card_image_of_injective (s : Set α) [Fintype s] {f : α → β} [Fintyp
 
 @[simp]
 theorem card_singleton (a : α) : Fintype.card ({a} : Set α) = 1 :=
-  Fintype.card_ofSubsingleton _
+  rfl
 
 theorem card_lt_card {s t : Set α} [Fintype s] [Fintype t] (h : s ⊂ t) :
     Fintype.card s < Fintype.card t :=
@@ -865,7 +860,7 @@ protected alias ⟨_, Infinite.image⟩ := infinite_image_iff
 
 theorem infinite_of_injOn_mapsTo {s : Set α} {t : Set β} {f : α → β} (hi : InjOn f s)
     (hm : MapsTo f s t) (hs : s.Infinite) : t.Infinite :=
-  ((infinite_image_iff hi).2 hs).mono (mapsTo'.mp hm)
+  ((infinite_image_iff hi).2 hs).mono (mapsTo_iff_image_subset.mp hm)
 
 theorem Infinite.exists_ne_map_eq_of_mapsTo {s : Set α} {t : Set β} {f : α → β} (hs : s.Infinite)
     (hf : MapsTo f s t) (ht : t.Finite) : ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y := by
@@ -906,6 +901,14 @@ lemma exists_card_eq [Infinite α] : ∀ n : ℕ, ∃ s : Finset α, s.card = n
     obtain ⟨s, rfl⟩ := exists_card_eq n
     obtain ⟨a, ha⟩ := s.exists_notMem
     exact ⟨insert a s, card_insert_of_notMem ha⟩
+
+/-- `Finset` version of `Set.SurjOn.exists_subset_injOn_image_eq`. -/
+lemma exists_subset_injOn_image_eq_of_surjOn [DecidableEq β] {f : α → β}
+    (s : Set α) (t : Finset β) (hfs : s.SurjOn f t) :
+    ∃ u : Finset α, ↑u ⊆ s ∧ Set.InjOn f u ∧ u.image f = t := by
+  obtain ⟨u, hus, hf, himg⟩ := hfs.exists_subset_injOn_image_eq
+  refine ⟨(Finite.of_finite_image (by simp [himg]) hf).toFinset, by simpa, by simpa, ?_⟩
+  simpa [← Finset.coe_inj]
 
 end Finset
 

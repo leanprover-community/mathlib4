@@ -124,7 +124,7 @@ variable [NonAssocSemiring α] [StarRing α]
 def starCenterIsoCentroid : StarSubsemiring.center α ≃⋆+* CentroidHom α where
   __ := starCenterToCentroid
   invFun T :=
-    ⟨T 1, by refine ⟨?_, ?_, ?_, ?_⟩; all_goals simp [← map_mul_left, ← map_mul_right]⟩
+    ⟨T 1, by constructor <;> simp [commute_iff_eq, ← map_mul_left, ← map_mul_right]⟩
   left_inv z := Subtype.ext <| by simp only [MulHom.toFun_eq_coe,
     NonUnitalRingHom.coe_toMulHom, NonUnitalStarRingHom.coe_toNonUnitalRingHom,
     starCenterToCentroid_apply, mul_one]

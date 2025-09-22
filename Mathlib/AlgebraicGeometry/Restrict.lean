@@ -111,7 +111,7 @@ lemma ι_preimage_self : U.ι ⁻¹ᵁ U = ⊤ :=
 instance ι_appLE_isIso :
     IsIso (U.ι.appLE U ⊤ U.ι_preimage_self.ge) := by
   simp only [ι, ofRestrict_appLE]
-  show IsIso (X.presheaf.map (eqToIso U.ι_image_top).hom.op)
+  change IsIso (X.presheaf.map (eqToIso U.ι_image_top).hom.op)
   infer_instance
 
 lemma ι_app_self : U.ι.app U = X.presheaf.map (eqToHom (X := U.ι ''ᵁ _) (by simp)).op := rfl
@@ -195,8 +195,6 @@ lemma Scheme.map_basicOpen (r : Γ(U, ⊤)) :
     eqToHom_refl, op_id, CategoryTheory.Functor.map_id]
   congr
   exact PresheafedSpace.IsOpenImmersion.ofRestrict_invApp _ _ _
-
-@[deprecated (since := "2024-10-23")] alias Scheme.map_basicOpen' := Scheme.map_basicOpen
 
 lemma Scheme.Opens.ι_image_basicOpen (r : Γ(U, ⊤)) :
     U.ι ''ᵁ U.toScheme.basicOpen r = X.basicOpen r := by
@@ -378,6 +376,12 @@ lemma Scheme.isoOfEq_inv_ι (X : Scheme.{u}) {U V : X.Opens} (e : U = V) :
     (X.isoOfEq e).inv ≫ U.ι = V.ι :=
   IsOpenImmersion.isoOfRangeEq_inv_fac _ _ _
 
+lemma Scheme.isoOfEq_hom (X : Scheme.{u}) {U V : X.Opens} (e : U = V) :
+    (X.isoOfEq e).hom = X.homOfLE e.le := rfl
+
+lemma Scheme.isoOfEq_inv (X : Scheme.{u}) {U V : X.Opens} (e : U = V) :
+    (X.isoOfEq e).inv = X.homOfLE e.ge := rfl
+
 @[simp]
 lemma Scheme.isoOfEq_rfl (X : Scheme.{u}) (U : X.Opens) : X.isoOfEq (refl U) = Iso.refl _ := by
   ext1
@@ -422,6 +426,29 @@ lemma Scheme.Opens.isoOfLE_inv_ι {X : Scheme.{u}} {U V : X.Opens}
     (hUV : U ≤ V) :
     (Scheme.Opens.isoOfLE hUV).inv ≫ (V.ι ⁻¹ᵁ U).ι ≫ V.ι = U.ι := by
   simp [isoOfLE]
+
+/-- For `f : R`, `D(f)` as an open subscheme of `Spec R` is isomorphic to `Spec R[1/f]`. -/
+def basicOpenIsoSpecAway {R : CommRingCat.{u}} (f : R) :
+    Scheme.Opens.toScheme (X := Spec R) (PrimeSpectrum.basicOpen f) ≅ Spec(Localization.Away f) :=
+  IsOpenImmersion.isoOfRangeEq (Scheme.Opens.ι _) (Spec.map (CommRingCat.ofHom (algebraMap _ _)))
+    (by
+      simp only [Scheme.Opens.range_ι]
+      exact (PrimeSpectrum.localization_away_comap_range _ _).symm)
+
+@[reassoc]
+lemma basicOpenIsoSpecAway_inv_homOfLE {R : CommRingCat.{u}} (f g x : R) (hx : x = f * g) :
+    haveI : IsLocalization.Away (f * g) (Localization.Away x) := by rw [hx]; infer_instance
+    (basicOpenIsoSpecAway x).inv ≫ (Spec R).homOfLE (by simp [hx, PrimeSpectrum.basicOpen_mul]) =
+      Spec.map (CommRingCat.ofHom (IsLocalization.Away.awayToAwayRight f g)) ≫
+        (basicOpenIsoSpecAway f).inv := by
+  subst hx
+  rw [← cancel_mono (Scheme.Opens.ι _)]
+  simp only [basicOpenIsoSpecAway, Category.assoc, Scheme.homOfLE_ι,
+    IsOpenImmersion.isoOfRangeEq_inv_fac]
+  simp only [← Spec.map_comp, ← CommRingCat.ofHom_comp]
+  congr
+  ext x
+  exact (IsLocalization.Away.awayToAwayRight_eq f g x).symm
 
 section MorphismRestrict
 
@@ -563,7 +590,7 @@ theorem morphismRestrict_app' {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V 
 @[simp]
 theorem morphismRestrict_appLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V W e) :
     (f ∣_ U).appLE V W e = f.appLE (U.ι ''ᵁ V) ((f ⁻¹ᵁ U).ι ''ᵁ W)
-      ((Set.image_subset _ e).trans (image_morphismRestrict_preimage f U V).le) := by
+      ((Set.image_mono e).trans (image_morphismRestrict_preimage f U V).le) := by
   rw [Scheme.Hom.appLE, morphismRestrict_app', Scheme.Opens.toScheme_presheaf_map,
     Scheme.Hom.appLE_map]
 

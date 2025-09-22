@@ -72,7 +72,7 @@ theorem deterministic_apply' {f : α → β} (hf : Measurable f) (a : α) {s : S
 `deterministic f hf` to `deterministic g ⋯`. Instead one can do `rw [deterministic_congr h]`. -/
 theorem deterministic_congr {f g : α → β} {hf : Measurable f} (h : f = g) :
     deterministic f hf = deterministic g (h ▸ hf) := by
-  conv_lhs => enter [1]; rw [h]
+  grind
 
 instance isMarkovKernel_deterministic {f : α → β} (hf : Measurable f) :
     IsMarkovKernel (deterministic f hf) :=
@@ -213,6 +213,9 @@ lemma isSFiniteKernel_const [Nonempty α] {μβ : Measure β} :
     IsSFiniteKernel (const α μβ) ↔ SFinite μβ :=
   ⟨fun h ↦ h.sFinite (Classical.arbitrary α), fun _ ↦ inferInstance⟩
 
+instance [Nonempty β] : Nonempty {κ : Kernel α β // IsMarkovKernel κ} :=
+  nonempty_subtype.2 ⟨Kernel.const _ (Measure.dirac Classical.ofNonempty), inferInstance⟩
+
 @[simp]
 theorem lintegral_const {f : β → ℝ≥0∞} {μ : Measure β} {a : α} :
     ∫⁻ x, f x ∂const α μ a = ∫⁻ x, f x ∂μ := by rw [const_apply]
@@ -220,6 +223,8 @@ theorem lintegral_const {f : β → ℝ≥0∞} {μ : Measure β} {a : α} :
 @[simp]
 theorem setLIntegral_const {f : β → ℝ≥0∞} {μ : Measure β} {a : α} {s : Set β} :
     ∫⁻ x in s, f x ∂const α μ a = ∫⁻ x in s, f x ∂μ := by rw [const_apply]
+
+lemma discard_eq_const : discard α = const α (Measure.dirac ()) := rfl
 
 end Const
 
@@ -401,12 +406,49 @@ lemma exists_ae_eq_isMarkovKernel {μ : Measure α}
   obtain ⟨a, ha⟩ : sᶜ.Nonempty := by
     contrapose! h'; simpa [μs, h'] using measure_univ_le_add_compl s (μ := μ)
   refine ⟨Kernel.piecewise s_meas (Kernel.const _ (κ a)) κ, ?_, ?_⟩
-  · filter_upwards [measure_zero_iff_ae_notMem.1 μs] with b hb
+  · filter_upwards [measure_eq_zero_iff_ae_notMem.1 μs] with b hb
     simp [hb, piecewise]
   · refine ⟨fun b ↦ ?_⟩
     by_cases hb : b ∈ s
     · simpa [hb, piecewise] using hs _ ha
     · simpa [hb, piecewise] using hs _ hb
+
+section Bool
+
+variable {μ ν : Measure α}
+
+/-- The kernel from `Bool` that sends `false` to `μ` and `true` to `ν`. -/
+def boolKernel (μ ν : Measure α) : Kernel Bool α where
+  toFun := fun b ↦ if b then ν else μ
+  measurable' := .of_discrete
+
+lemma boolKernel_false : boolKernel μ ν false = μ := rfl
+
+lemma boolKernel_true : boolKernel μ ν true = ν := rfl
+
+@[simp] lemma boolKernel_apply (b : Bool) : boolKernel μ ν b = if b then ν else μ := rfl
+
+instance [IsFiniteMeasure μ] [IsFiniteMeasure ν] : IsFiniteKernel (boolKernel μ ν) :=
+  ⟨max (μ .univ) (ν .univ), max_lt (measure_lt_top _ _) (measure_lt_top _ _),
+    fun b ↦ by cases b <;> simp⟩
+
+instance [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] : IsMarkovKernel (boolKernel μ ν) where
+  isProbabilityMeasure b := by
+    cases b
+      <;> simp only [boolKernel_apply, Bool.false_eq_true, ↓reduceIte]
+      <;> infer_instance
+
+instance [SFinite μ] [SFinite ν] : IsSFiniteKernel (boolKernel μ ν) where
+  tsum_finite := by
+    refine ⟨fun n ↦ boolKernel (sfiniteSeq μ n) (sfiniteSeq ν n), fun n ↦ inferInstance, ?_⟩
+    ext b
+    rw [Kernel.sum_apply]
+    cases b <;> simp [sum_sfiniteSeq]
+
+lemma eq_boolKernel (κ : Kernel Bool α) : κ = boolKernel (κ false) (κ true) := by
+  ext (_ | _) <;> simp
+
+end Bool
 
 end Kernel
 end ProbabilityTheory

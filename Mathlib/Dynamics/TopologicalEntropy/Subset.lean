@@ -48,7 +48,7 @@ lemma IsDynCoverOf.monotone_subset {T : X → X} {F G : Set X} (F_G : F ⊆ G) {
     IsDynCoverOf T F U n s :=
   F_G.trans h
 
-lemma IsDynNetIn.monotone_subset {T : X → X} {F G : Set X} (F_G : F ⊆ G ) {U : Set (X × X)} {n : ℕ}
+lemma IsDynNetIn.monotone_subset {T : X → X} {F G : Set X} (F_G : F ⊆ G) {U : Set (X × X)} {n : ℕ}
     {s : Set X} (h : IsDynNetIn T F U n s) :
     IsDynNetIn T G U n s :=
   ⟨h.1.trans F_G, h.2⟩

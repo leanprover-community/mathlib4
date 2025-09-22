@@ -53,7 +53,7 @@ it is customary to order them using the opposite order : `MvPolynomial.X 0 > MvP
 
 -/
 
-/-- Monomial orders : equivalence of `σ →₀ ℕ` with a well ordered type -/
+/-- Monomial orders : equivalence of `σ →₀ ℕ` with a well-ordered type -/
 structure MonomialOrder (σ : Type*) where
   /-- The synonym type -/
   syn : Type*
@@ -89,6 +89,9 @@ instance orderBot : OrderBot (m.syn) where
 
 @[simp]
 theorem bot_eq_zero : (⊥ : m.syn) = 0 := rfl
+
+@[simp]
+lemma zero_le (a : m.syn) : 0 ≤ a := bot_le
 
 theorem eq_zero_iff {a : m.syn} : a = 0 ↔ a ≤ 0 := eq_bot_iff
 

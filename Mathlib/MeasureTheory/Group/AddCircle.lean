@@ -79,7 +79,7 @@ theorem isAddFundamentalDomain_of_ae_ball (I : Set <| AddCircle T) (u x : AddCir
     replace hI := hI.trans closedBall_ae_eq_ball.symm
     haveI : Fintype G := @Fintype.ofFinite _ hu.finite_zmultiples.to_subtype
     have hG_card : #(Finset.univ : Finset G) = n := by
-      show _ = addOrderOf u
+      change _ = addOrderOf u
       rw [← Nat.card_zmultiples, Nat.card_eq_fintype_card]; rfl
     simp_rw [measure_vadd]
     rw [AddCircle.measure_univ, tsum_fintype, Finset.sum_const, measure_congr hI,

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Bhavik Mehta, Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Monad.Limits
-import Mathlib.Topology.StoneCech
+import Mathlib.Topology.Compactification.StoneCech
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.Category.CompHausLike.Basic
 import Mathlib.Topology.Category.TopCat.Limits.Basic
@@ -132,7 +132,7 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
   { pt := {
       toTop := (TopCat.limitCone FF).pt
       is_compact := by
-        show CompactSpace { u : ∀ j, F.obj j | ∀ {i j : J} (f : i ⟶ j), (F.map f) (u i) = u j }
+        change CompactSpace { u : ∀ j, F.obj j | ∀ {i j : J} (f : i ⟶ j), (F.map f) (u i) = u j }
         rw [← isCompact_iff_compactSpace]
         apply IsClosed.isCompact
         have :

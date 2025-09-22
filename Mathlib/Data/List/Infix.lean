@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.TakeDrop
 import Mathlib.Data.List.Induction
+import Mathlib.Order.Basic
 
 /-!
 # Prefixes, suffixes, infixes
@@ -112,6 +113,17 @@ theorem concat_get_prefix {x y : List α} (h : x <+: y) (hl : x.length < y.lengt
   convert List.take_append_drop (x.length + 1) y using 2
   rw [← List.take_concat_get, List.concat_eq_append]; rfl
 
+theorem prefix_append_drop {l₁ l₂ : List α} (h : l₁ <+: l₂) :
+    l₂ = l₁ ++ l₂.drop l₁.length := by
+  induction l₂ generalizing l₁ with
+  | nil => simp [List.prefix_nil.mp h]
+  | cons _ _ ih =>
+    cases l₁ with
+    | nil => rfl
+    | cons =>
+      obtain ⟨rfl, h'⟩ := List.cons_prefix_cons.mp h
+      simpa using ih h'
+
 instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <:+: l₂)
   | [], l₂ => isTrue ⟨[], l₂, rfl⟩
   | a :: l₁, [] => isFalse fun ⟨s, t, te⟩ => by simp at te
@@ -123,6 +135,33 @@ instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l
 protected theorem IsPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁ <+: l₂) :
     l₁.reduceOption <+: l₂.reduceOption :=
   h.filterMap id
+
+theorem singleton_infix_iff (x : α) (xs : List α) :
+    [x] <:+: xs ↔ x ∈ xs := by
+  rw [List.mem_iff_append, List.IsInfix]
+  congr! 4
+  simp [eq_comm]
+
+@[simp]
+theorem singleton_infix_singleton_iff {x y : α} :
+    [x] <:+: [y] ↔ x = y := by
+  constructor
+  · rintro ⟨_ | _, bs, h⟩ <;> simp_all
+  · rintro rfl; rfl
+
+theorem infix_singleton_iff (xs : List α) (x : α) :
+    xs <:+: [x] ↔ xs = [] ∨ xs = [x] := by
+  match xs with
+  | [] => simp
+  | [_] => simp [List.singleton_infix_singleton_iff]
+  | _ :: _ :: _ =>
+    constructor
+    · rintro ⟨_ | _, _, h⟩ <;> simp at h
+    · simp
+
+lemma infix_antisymm {l₁ l₂ : List α} (h₁ : l₁ <:+: l₂) (h₂ : l₂ <:+: l₁) :
+    l₁ = l₂ :=
+  h₁.sublist.antisymm h₂.sublist
 
 instance : IsPartialOrder (List α) (· <+: ·) where
   refl _ := prefix_rfl

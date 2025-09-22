@@ -319,7 +319,7 @@ def Any (P : α → Prop) : Ordnode α → Prop
   | nil => False
   | node _ l x r => Any P l ∨ P x ∨ Any P r
 
-instance Any.decidable {P : α → Prop} : (t : Ordnode α ) → [DecidablePred P] → Decidable (Any P t)
+instance Any.decidable {P : α → Prop} : (t : Ordnode α) → [DecidablePred P] → Decidable (Any P t)
   | nil => isFalse id
   | node _ l m r =>
     have : Decidable (Any P l) := Any.decidable l
@@ -753,7 +753,7 @@ def span (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α × Ordn
 
 /-- Auxiliary definition for `ofAscList`.
 
-**Note:** This function is defined by well founded recursion, so it will probably not compute
+**Note:** This function is defined by well-founded recursion, so it will probably not compute
 in the kernel, meaning that you probably can't prove things like
 `ofAscList [1, 2, 3] = {1, 2, 3}` by `rfl`.
 This implementation is optimized for VM evaluation. -/

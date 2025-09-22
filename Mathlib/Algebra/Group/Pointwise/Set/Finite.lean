@@ -36,7 +36,7 @@ theorem Finite.mul : s.Finite → t.Finite → (s * t).Finite :=
   Finite.image2 _
 
 /-- Multiplication preserves finiteness. -/
-@[to_additive "Addition preserves finiteness."]
+@[to_additive /-- Addition preserves finiteness. -/]
 instance fintypeMul [DecidableEq α] (s t : Set α) [Fintype s] [Fintype t] : Fintype (s * t) :=
   Set.fintypeImage2 _ _ _
 
@@ -127,7 +127,7 @@ variable [Div α] {s t : Set α}
 @[to_additive] lemma Finite.div : s.Finite → t.Finite → (s / t).Finite := .image2 _
 
 /-- Division preserves finiteness. -/
-@[to_additive "Subtraction preserves finiteness."]
+@[to_additive /-- Subtraction preserves finiteness. -/]
 instance fintypeDiv [DecidableEq α] (s t : Set α) [Fintype s] [Fintype t] : Fintype (s / t) :=
   Set.fintypeImage2 _ _ _
 

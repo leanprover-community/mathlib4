@@ -97,9 +97,6 @@ class ContinuousMapZero.UniqueHom (R A : Type*) [CommSemiring R] [StarRing R]
     (h : φ (⟨.restrict s <| .id R, h0⟩) = ψ (⟨.restrict s <| .id R, h0⟩)) :
     φ = ψ
 
-@[deprecated (since := "2025-01-10")] alias UniqueNonUnitalContinuousFunctionalCalculus :=
-  ContinuousMapZero.UniqueHom
-
 section Main
 
 variable {R A : Type*} {p : A → Prop} [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R]
@@ -259,6 +256,25 @@ lemma cfcₙHom_eq_cfcₙ_extend {a : A} (g : R → R) (ha : p a) (f : C(σₙ R
   rw [cfcₙ_apply ..]
   congr!
 
+lemma cfcₙ_eq_cfcₙL {a : A} {f : R → R} (ha : p a) (hf : ContinuousOn f (σₙ R a)) (hf0 : f 0 = 0) :
+    cfcₙ f a = cfcₙL ha ⟨⟨_, hf.restrict⟩, hf0⟩ := by
+  rw [cfcₙ_def, dif_pos ⟨ha, hf, hf0⟩, cfcₙL_apply]
+
+/-- A version of `cfcₙ_apply` in terms of `ContinuousMapZero.mkD` -/
+lemma cfcₙ_apply_mkD :
+    cfcₙ f a = cfcₙHom (a := a) ha (mkD ((quasispectrum R a).restrict f) 0) := by
+  by_cases f_cont : ContinuousOn f (quasispectrum R a)
+  · by_cases f_zero : f 0 = 0
+    · rw [cfcₙ_apply f a, mkD_of_continuousOn f_cont f_zero]
+    · rw [cfcₙ_apply_of_not_map_zero a f_zero, mkD_of_not_zero, map_zero]
+      exact f_zero
+  · rw [cfcₙ_apply_of_not_continuousOn a f_cont, mkD_of_not_continuousOn f_cont, map_zero]
+
+/-- A version of `cfcₙ_eq_cfcₙL` in terms of `ContinuousMapZero.mkD` -/
+lemma cfcₙ_eq_cfcₙL_mkD :
+    cfcₙ f a = cfcₙL (a := a) ha (mkD ((quasispectrum R a).restrict f) 0) :=
+  cfcₙ_apply_mkD _ _
+
 lemma cfcₙ_cases (P : A → Prop) (a : A) (f : R → R) (h₀ : P 0)
     (haf : ∀ (hf : ContinuousOn f (σₙ R a)) h0 ha, P (cfcₙHom ha ⟨⟨_, hf.restrict⟩, h0⟩)) :
     P (cfcₙ f a) := by
@@ -303,7 +319,7 @@ lemma cfcₙ_congr {f g : R → R} {a : A} (hfg : (σₙ R a).EqOn f g) :
   by_cases h : p a ∧ ContinuousOn g (σₙ R a) ∧ g 0 = 0
   · rw [cfcₙ_apply f a (h.2.1.congr hfg) (hfg (quasispectrum.zero_mem R a) ▸ h.2.2) h.1,
       cfcₙ_apply g a h.2.1 h.2.2 h.1]
-    congr
+    congr 3
     exact Set.restrict_eq_iff.mpr hfg
   · simp only [not_and_or] at h
     obtain (ha | hg | h0) := h
@@ -552,7 +568,7 @@ lemma cfcₙ_neg_id (ha : p a := by cfc_tac) :
 
 variable [UniqueHom R A]
 
-lemma cfcₙ_comp_neg (hf : ContinuousOn f ((- ·) '' (σₙ R a)) := by cfc_cont_tac)
+lemma cfcₙ_comp_neg (hf : ContinuousOn f ((-·) '' (σₙ R a)) := by cfc_cont_tac)
     (h0 : f 0 = 0 := by cfc_zero_tac) (ha : p a := by cfc_tac) :
     cfcₙ (f <| - ·) a = cfcₙ f (-a) := by
   rw [cfcₙ_comp' .., cfcₙ_neg_id _]

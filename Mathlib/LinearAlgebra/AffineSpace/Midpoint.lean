@@ -40,7 +40,7 @@ variable (R : Type*) {V V' P P' : Type*} [Ring R] [Invertible (2 : R)] [AddCommG
 
 /-- `midpoint x y` is the midpoint of the segment `[x, y]`. -/
 def midpoint (x y : P) : P :=
-  lineMap x y (⅟ 2 : R)
+  lineMap x y (⅟2 : R)
 
 variable {R} {x y z : P}
 
@@ -109,46 +109,46 @@ nonrec lemma AffineEquiv.midpoint_pointReflection_right (x y : P) :
   midpoint_pointReflection_right x y
 
 @[simp]
-theorem midpoint_vsub_left (p₁ p₂ : P) : midpoint R p₁ p₂ -ᵥ p₁ = (⅟ 2 : R) • (p₂ -ᵥ p₁) :=
+theorem midpoint_vsub_left (p₁ p₂ : P) : midpoint R p₁ p₂ -ᵥ p₁ = (⅟2 : R) • (p₂ -ᵥ p₁) :=
   lineMap_vsub_left _ _ _
 
 @[simp]
-theorem midpoint_vsub_right (p₁ p₂ : P) : midpoint R p₁ p₂ -ᵥ p₂ = (⅟ 2 : R) • (p₁ -ᵥ p₂) := by
+theorem midpoint_vsub_right (p₁ p₂ : P) : midpoint R p₁ p₂ -ᵥ p₂ = (⅟2 : R) • (p₁ -ᵥ p₂) := by
   rw [midpoint_comm, midpoint_vsub_left]
 
 @[simp]
-theorem left_vsub_midpoint (p₁ p₂ : P) : p₁ -ᵥ midpoint R p₁ p₂ = (⅟ 2 : R) • (p₁ -ᵥ p₂) :=
+theorem left_vsub_midpoint (p₁ p₂ : P) : p₁ -ᵥ midpoint R p₁ p₂ = (⅟2 : R) • (p₁ -ᵥ p₂) :=
   left_vsub_lineMap _ _ _
 
 @[simp]
-theorem right_vsub_midpoint (p₁ p₂ : P) : p₂ -ᵥ midpoint R p₁ p₂ = (⅟ 2 : R) • (p₂ -ᵥ p₁) := by
+theorem right_vsub_midpoint (p₁ p₂ : P) : p₂ -ᵥ midpoint R p₁ p₂ = (⅟2 : R) • (p₂ -ᵥ p₁) := by
   rw [midpoint_comm, left_vsub_midpoint]
 
 theorem midpoint_vsub (p₁ p₂ p : P) :
-    midpoint R p₁ p₂ -ᵥ p = (⅟ 2 : R) • (p₁ -ᵥ p) + (⅟ 2 : R) • (p₂ -ᵥ p) := by
+    midpoint R p₁ p₂ -ᵥ p = (⅟2 : R) • (p₁ -ᵥ p) + (⅟2 : R) • (p₂ -ᵥ p) := by
   rw [← vsub_sub_vsub_cancel_right p₁ p p₂, smul_sub, sub_eq_add_neg, ← smul_neg,
     neg_vsub_eq_vsub_rev, add_assoc, invOf_two_smul_add_invOf_two_smul, ← vadd_vsub_assoc,
     midpoint_comm, midpoint, lineMap_apply]
 
 theorem vsub_midpoint (p₁ p₂ p : P) :
-    p -ᵥ midpoint R p₁ p₂ = (⅟ 2 : R) • (p -ᵥ p₁) + (⅟ 2 : R) • (p -ᵥ p₂) := by
+    p -ᵥ midpoint R p₁ p₂ = (⅟2 : R) • (p -ᵥ p₁) + (⅟2 : R) • (p -ᵥ p₂) := by
   rw [← neg_vsub_eq_vsub_rev, midpoint_vsub, neg_add, ← smul_neg, ← smul_neg, neg_vsub_eq_vsub_rev,
     neg_vsub_eq_vsub_rev]
 
 @[simp]
-theorem midpoint_sub_left (v₁ v₂ : V) : midpoint R v₁ v₂ - v₁ = (⅟ 2 : R) • (v₂ - v₁) :=
+theorem midpoint_sub_left (v₁ v₂ : V) : midpoint R v₁ v₂ - v₁ = (⅟2 : R) • (v₂ - v₁) :=
   midpoint_vsub_left v₁ v₂
 
 @[simp]
-theorem midpoint_sub_right (v₁ v₂ : V) : midpoint R v₁ v₂ - v₂ = (⅟ 2 : R) • (v₁ - v₂) :=
+theorem midpoint_sub_right (v₁ v₂ : V) : midpoint R v₁ v₂ - v₂ = (⅟2 : R) • (v₁ - v₂) :=
   midpoint_vsub_right v₁ v₂
 
 @[simp]
-theorem left_sub_midpoint (v₁ v₂ : V) : v₁ - midpoint R v₁ v₂ = (⅟ 2 : R) • (v₁ - v₂) :=
+theorem left_sub_midpoint (v₁ v₂ : V) : v₁ - midpoint R v₁ v₂ = (⅟2 : R) • (v₁ - v₂) :=
   left_vsub_midpoint v₁ v₂
 
 @[simp]
-theorem right_sub_midpoint (v₁ v₂ : V) : v₂ - midpoint R v₁ v₂ = (⅟ 2 : R) • (v₂ - v₁) :=
+theorem right_sub_midpoint (v₁ v₂ : V) : v₂ - midpoint R v₁ v₂ = (⅟2 : R) • (v₂ - v₁) :=
   right_vsub_midpoint v₁ v₂
 
 variable (R)
@@ -195,7 +195,7 @@ theorem midpoint_add_self (x y : V) : midpoint R x y + midpoint R x y = x + y :=
 theorem midpoint_zero_add (x y : V) : midpoint R 0 (x + y) = midpoint R x y :=
   (midpoint_eq_midpoint_iff_vsub_eq_vsub R).2 <| by simp
 
-theorem midpoint_eq_smul_add (x y : V) : midpoint R x y = (⅟ 2 : R) • (x + y) := by
+theorem midpoint_eq_smul_add (x y : V) : midpoint R x y = (⅟2 : R) • (x + y) := by
   rw [midpoint_eq_iff, pointReflection_apply, vsub_eq_sub, vadd_eq_add, sub_add_eq_add_sub, ←
     two_smul R, smul_smul, mul_invOf_self, one_smul, add_sub_cancel_left]
 
@@ -213,6 +213,14 @@ theorem midpoint_sub_add (x y : V) : midpoint R (x - y) (x + y) = x := by
 @[simp]
 theorem midpoint_add_sub (x y : V) : midpoint R (x + y) (x - y) = x := by
   rw [midpoint_comm]; simp
+
+theorem midpoint_vsub_midpoint_same_left (p₁ p₂ p₃ : P) :
+    midpoint R p₁ p₂ -ᵥ midpoint R p₁ p₃ = (⅟ 2 : R) • (p₂ -ᵥ p₃) := by
+  rw [midpoint_vsub_midpoint, vsub_self, midpoint_eq_smul_add, zero_add]
+
+theorem midpoint_vsub_midpoint_same_right (p₁ p₂ p₃ : P) :
+    midpoint R p₁ p₃ -ᵥ midpoint R p₂ p₃ = (⅟ 2 : R) • (p₁ -ᵥ p₂) := by
+  rw [midpoint_vsub_midpoint, vsub_self, midpoint_eq_smul_add, add_zero]
 
 end
 

@@ -589,6 +589,16 @@ private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·)
 protected noncomputable def sSup (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·) c) : E →ₗ.[R] F :=
   ⟨_, Classical.choose <| sSup_aux c hc⟩
 
+theorem domain_sSup {c : Set (E →ₗ.[R] F)} (hc : DirectedOn (· ≤ ·) c) :
+    (LinearPMap.sSup c hc).domain = sSup (LinearPMap.domain '' c) := rfl
+
+theorem mem_domain_sSup_iff {c : Set (E →ₗ.[R] F)} (hnonempty : c.Nonempty)
+    (hc : DirectedOn (· ≤ ·) c) {x : E} :
+    x ∈ (LinearPMap.sSup c hc).domain ↔ ∃ f ∈ c, x ∈ f.domain := by
+  rw [domain_sSup, Submodule.mem_sSup_of_directed (hnonempty.image _)
+    (DirectedOn.mono_comp LinearPMap.domain_mono.monotone hc)]
+  simp
+
 protected theorem le_sSup {c : Set (E →ₗ.[R] F)} (hc : DirectedOn (· ≤ ·) c) {f : E →ₗ.[R] F}
     (hf : f ∈ c) : f ≤ LinearPMap.sSup c hc :=
   Classical.choose_spec (sSup_aux c hc) hf
@@ -651,14 +661,10 @@ and sending `p` to `f p.1 + g p.2`. -/
 def coprod (f : E →ₗ.[R] G) (g : F →ₗ.[R] G) : E × F →ₗ.[R] G where
   domain := f.domain.prod g.domain
   toFun :=
-    -- Porting note: This is just
-    -- `(f.comp (LinearPMap.fst f.domain g.domain) fun x => x.2.1).toFun +`
-    -- `  (g.comp (LinearPMap.snd f.domain g.domain) fun x => x.2.2).toFun`,
-    HAdd.hAdd
-      (α := f.domain.prod g.domain →ₗ[R] G)
-      (β := f.domain.prod g.domain →ₗ[R] G)
-      (f.comp (LinearPMap.fst f.domain g.domain) fun x => x.2.1).toFun
-      (g.comp (LinearPMap.snd f.domain g.domain) fun x => x.2.2).toFun
+    (show f.domain.prod g.domain →ₗ[R] G from
+      (f.comp (LinearPMap.fst f.domain g.domain) fun x => x.2.1).toFun) +
+    (show f.domain.prod g.domain →ₗ[R] G from
+      (g.comp (LinearPMap.snd f.domain g.domain) fun x => x.2.2).toFun)
 
 @[simp]
 theorem coprod_apply (f : E →ₗ.[R] G) (g : F →ₗ.[R] G) (x) :
@@ -772,12 +778,7 @@ theorem neg_graph (f : E →ₗ.[R] F) :
 
 theorem mem_graph_snd_inj (f : E →ₗ.[R] F) {x y : E} {x' y' : F} (hx : (x, x') ∈ f.graph)
     (hy : (y, y') ∈ f.graph) (hxy : x = y) : x' = y' := by
-  rw [mem_graph_iff] at hx hy
-  rcases hx with ⟨x'', hx1, hx2⟩
-  rcases hy with ⟨y'', hy1, hy2⟩
-  simp only at hx1 hx2 hy1 hy2
-  rw [← hx1, ← hy1, SetLike.coe_eq_coe] at hxy
-  rw [← hx2, ← hy2, hxy]
+  grind [mem_graph_iff]
 
 theorem mem_graph_snd_inj' (f : E →ₗ.[R] F) {x y : E × F} (hx : x ∈ f.graph) (hy : y ∈ f.graph)
     (hxy : x.1 = y.1) : x.2 = y.2 := by
@@ -794,12 +795,7 @@ theorem mem_domain_iff {f : E →ₗ.[R] F} {x : E} : x ∈ f.domain ↔ ∃ y :
   constructor <;> intro h
   · use f ⟨x, h⟩
     exact f.mem_graph ⟨x, h⟩
-  obtain ⟨y, h⟩ := h
-  rw [mem_graph_iff] at h
-  obtain ⟨x', h⟩ := h
-  simp only at h
-  rw [← h.1]
-  simp
+  grind [mem_graph_iff]
 
 theorem mem_domain_of_mem_graph {f : E →ₗ.[R] F} {x : E} {y : F} (h : (x, y) ∈ f.graph) :
     x ∈ f.domain := by
@@ -808,13 +804,7 @@ theorem mem_domain_of_mem_graph {f : E →ₗ.[R] F} {x : E} {y : F} (h : (x, y)
 
 theorem image_iff {f : E →ₗ.[R] F} {x : E} {y : F} (hx : x ∈ f.domain) :
     y = f ⟨x, hx⟩ ↔ (x, y) ∈ f.graph := by
-  rw [mem_graph_iff]
-  constructor <;> intro h
-  · use ⟨x, hx⟩
-    simp [h]
-  rcases h with ⟨⟨x', hx'⟩, ⟨h1, h2⟩⟩
-  simp only at h1 h2
-  simp only [← h2, h1]
+  grind [mem_graph_iff]
 
 theorem mem_range_iff {f : E →ₗ.[R] F} {y : F} : y ∈ Set.range f ↔ ∃ x : E, (x, y) ∈ f.graph := by
   constructor <;> intro h
@@ -823,13 +813,7 @@ theorem mem_range_iff {f : E →ₗ.[R] F} {y : F} : y ∈ Set.range f ↔ ∃ x
     use x
     rw [← h]
     exact f.mem_graph ⟨x, hx⟩
-  obtain ⟨x, h⟩ := h
-  rw [mem_graph_iff] at h
-  obtain ⟨x, h⟩ := h
-  rw [Set.mem_range]
-  use x
-  simp only at h
-  rw [h.2]
+  grind [mem_graph_iff]
 
 theorem mem_domain_iff_of_eq_graph {f g : E →ₗ.[R] F} (h : f.graph = g.graph) {x : E} :
     x ∈ f.domain ↔ x ∈ g.domain := by simp_rw [mem_domain_iff, h]
@@ -1023,11 +1007,7 @@ theorem mem_inverse_graph (x : f.domain) : (f x, (x : E)) ∈ (inverse f).graph 
 theorem inverse_apply_eq {y : (inverse f).domain} {x : f.domain} (hxy : f x = y) :
     (inverse f) y = x := by
   have := mem_inverse_graph hf x
-  simp only [mem_graph_iff, Subtype.exists, exists_and_left, exists_eq_left] at this
-  rcases this with ⟨hx, h⟩
-  rw [← h]
-  congr
-  simp only [hxy, Subtype.coe_eta]
+  grind [mem_graph_iff]
 
 end inverse
 

@@ -58,7 +58,6 @@ instance : (N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)).Reflects
       simp only [id_comp] at h₁₀ h₂₀
       tauto
     | succ n hn =>
-      haveI := hn
       use φ { a := PInfty.f (n + 1) ≫ (inv (N₁.map f)).f.f (n + 1)
               b := fun i => inv (f.app (op ⦋n⦌)) ≫ X.σ i }
       simp only [MorphComponents.id, ← id_φ, ← preComp_φ, preComp, ← postComp_φ, postComp,
@@ -110,8 +109,6 @@ instance : (N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)
     -- could this be fixed by setting better instance priorities?
     haveI : F₁.ReflectsIsomorphisms := reflectsIsomorphisms_of_full_and_faithful _
     haveI : F₂.ReflectsIsomorphisms := by infer_instance
-    haveI : ((KaroubiKaroubi.equivalence C).inverse).ReflectsIsomorphisms :=
-      reflectsIsomorphisms_of_full_and_faithful _
     have : IsIso (F.map f) := by
       simp only [F, F₁]
       rw [← compatibility_N₂_N₁_karoubi, Functor.comp_map]

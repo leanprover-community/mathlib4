@@ -60,8 +60,6 @@ theorem comp_hom {R S T : CommMon_ C} (f : R ⟶ S) (g : S ⟶ T) :
 lemma hom_ext {A B : CommMon_ C} (f g : A ⟶ B) (h : f.hom = g.hom) : f = g :=
   Mon_.Hom.ext h
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): the following two lemmas `id'` and `comp'`
--- have been added to ease automation;
 @[simp]
 lemma id' (A : CommMon_ C) : (𝟙 A : A.toMon_ ⟶ A.toMon_) = 𝟙 (A.toMon_) := rfl
 
@@ -74,6 +72,7 @@ section
 variable (C)
 
 /-- The forgetful functor from commutative monoid objects to monoid objects. -/
+@[simps! obj_X]
 def forget₂Mon_ : CommMon_ C ⥤ Mon_ C :=
   inducedFunctor CommMon_.toMon_
 
@@ -99,10 +98,6 @@ theorem forget₂Mon_obj_mul (A : CommMon_ C) : μ[((forget₂Mon_ C).obj A).X] 
 theorem forget₂Mon_map_hom {A B : CommMon_ C} (f : A ⟶ B) : ((forget₂Mon_ C).map f).hom = f.hom :=
   rfl
 
-@[deprecated (since := "2025-02-07")] alias forget₂_Mon_obj_one := forget₂Mon_obj_one
-@[deprecated (since := "2025-02-07")] alias forget₂_Mon_obj_mul := forget₂Mon_obj_mul
-@[deprecated (since := "2025-02-07")] alias forget₂_Mon_map_hom := forget₂Mon_map_hom
-
 /-- The forgetful functor from commutative monoid objects to the ambient category. -/
 @[simps!]
 def forget : CommMon_ C ⥤ C :=
@@ -113,21 +108,26 @@ instance : (forget C).Faithful where
 @[simp]
 theorem forget₂Mon_comp_forget : forget₂Mon_ C ⋙ Mon_.forget C = forget C := rfl
 
-end
-
-section
-
-variable {M N : CommMon_ C} (f : M.X ≅ N.X) (one_f : η[M.X] ≫ f.hom = η[N.X] := by aesop_cat)
-  (mul_f : μ[M.X] ≫ f.hom = (f.hom ⊗ₘ f.hom) ≫ μ[N.X] := by aesop_cat)
-
-/-- Constructor for isomorphisms in the category `CommMon_ C`. -/
-def mkIso : M ≅ N :=
-  (fullyFaithfulForget₂Mon_ C).preimageIso (Mon_.mkIso f one_f mul_f)
-
-@[simp] lemma mkIso_hom_hom : (mkIso f one_f mul_f).hom.hom = f.hom := rfl
-@[simp] lemma mkIso_inv_hom : (mkIso f one_f mul_f).inv.hom = f.inv := rfl
+instance {M N : CommMon_ C} {f : M ⟶ N} [IsIso f] : IsIso f.hom :=
+  inferInstanceAs <| IsIso <| (forget C).map f
 
 end
+
+/-- Construct an isomorphism of commutative monoid objects by giving a monoid isomorphism between
+the underlying objects. -/
+@[simps!]
+def mkIso' {M N : C} (e : M ≅ N) [Mon_Class M] [IsCommMon M] [Mon_Class N] [IsCommMon N]
+    [IsMon_Hom e.hom] : mk M ≅ mk N :=
+  (fullyFaithfulForget₂Mon_ C).preimageIso (Mon_.mkIso' e)
+
+/-- Construct an isomorphism of commutative monoid objects by giving an isomorphism between the
+underlying objects and checking compatibility with unit and multiplication only in the forward
+direction. -/
+@[simps!]
+abbrev mkIso {M N : CommMon_ C} (e : M.X ≅ N.X) (one_f : η[M.X] ≫ e.hom = η[N.X] := by cat_disch)
+    (mul_f : μ[M.X] ≫ e.hom = (e.hom ⊗ₘ e.hom) ≫ μ[N.X] := by cat_disch) : M ≅ N :=
+  have : IsMon_Hom e.hom := ⟨one_f, mul_f⟩
+  mkIso' e
 
 instance uniqueHomFromTrivial (A : CommMon_ C) : Unique (trivial C ⟶ A) :=
   Mon_.uniqueHomFromTrivial A.toMon_
@@ -143,9 +143,17 @@ namespace CategoryTheory
 variable
   {D : Type u₂} [Category.{v₂} D] [MonoidalCategory D] [BraidedCategory D]
   {E : Type u₃} [Category.{v₃} E] [MonoidalCategory E] [BraidedCategory E]
-  {F F' : C ⥤ D} [F.LaxBraided] [F'.LaxBraided] {G : D ⥤ E} [G.LaxBraided]
+  {F F' : C ⥤ D} {G : D ⥤ E}
 
 namespace Functor
+section LaxBraided
+variable [F.LaxBraided] [F'.LaxBraided] [G.LaxBraided]
+
+open scoped Obj
+
+instance isCommMon_obj {M : C} [Mon_Class M] [IsCommMon M] : IsCommMon (F.obj M) where
+  mul_comm := by
+    dsimp; rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMon.mul_comm]
 
 variable (F) in
 /-- A lax braided functor takes commutative monoid objects to commutative monoid objects.
@@ -184,12 +192,12 @@ theorem comp_mapCommMon_mul (A : CommMon_ C) :
 
 /-- The identity functor is also the identity on commutative monoid objects. -/
 @[simps!]
-noncomputable def mapCommMonIdIso : mapCommMon (𝟭 C) ≅ 𝟭 (CommMon_ C) :=
+def mapCommMonIdIso : mapCommMon (𝟭 C) ≅ 𝟭 (CommMon_ C) :=
   NatIso.ofComponents fun X ↦ CommMon_.mkIso (.refl _)
 
 /-- The composition functor is also the composition on commutative monoid objects. -/
 @[simps!]
-noncomputable def mapCommMonCompIso : (F ⋙ G).mapCommMon ≅ F.mapCommMon ⋙ G.mapCommMon :=
+def mapCommMonCompIso : (F ⋙ G).mapCommMon ≅ F.mapCommMon ⋙ G.mapCommMon :=
   NatIso.ofComponents fun X ↦ CommMon_.mkIso (.refl _)
 
 variable (C D) in
@@ -200,17 +208,34 @@ def mapCommMonFunctor : LaxBraidedFunctor C D ⥤ CommMon_ C ⥤ CommMon_ D wher
   map α := { app A := .mk' (α.hom.app A.X) }
   map_comp _ _ := rfl
 
+protected instance Faithful.mapCommMon [F.Faithful] : F.mapCommMon.Faithful where
+  map_injective hfg := F.mapMon.map_injective hfg
+
 /-- Natural transformations between functors lift to monoid objects. -/
 @[simps!]
-noncomputable def mapCommMonNatTrans (f : F ⟶ F') [NatTrans.IsMonoidal f] :
-    F.mapCommMon ⟶ F'.mapCommMon where
+def mapCommMonNatTrans (f : F ⟶ F') [NatTrans.IsMonoidal f] : F.mapCommMon ⟶ F'.mapCommMon where
   app X := .mk' (f.app _)
 
 /-- Natural isomorphisms between functors lift to monoid objects. -/
 @[simps!]
-noncomputable def mapCommMonNatIso (e : F ≅ F') [NatTrans.IsMonoidal e.hom] :
-    F.mapCommMon ≅ F'.mapCommMon :=
+def mapCommMonNatIso (e : F ≅ F') [NatTrans.IsMonoidal e.hom] : F.mapCommMon ≅ F'.mapCommMon :=
   NatIso.ofComponents fun X ↦ CommMon_.mkIso (e.app _)
+
+end LaxBraided
+
+section Braided
+variable [F.Braided]
+
+protected instance Full.mapCommMon [F.Full] [F.Faithful] : F.mapCommMon.Full where
+  map_surjective := F.mapMon.map_surjective
+
+/-- If `F : C ⥤ D` is a fully faithful monoidal functor, then `Grp(F) : Grp C ⥤ Grp D` is fully
+faithful too. -/
+@[simps]
+protected def FullyFaithful.mapCommMon (hF : F.FullyFaithful) : F.mapCommMon.FullyFaithful where
+  preimage f := .mk <| hF.preimage f.hom
+
+end Braided
 
 end Functor
 
@@ -221,7 +246,7 @@ variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Braided] [G.LaxBraided] [a
 
 /-- An adjunction of braided functors lifts to an adjunction of their lifts to commutative monoid
 objects. -/
-@[simps] noncomputable def mapCommMon : F.mapCommMon ⊣ G.mapCommMon where
+@[simps] def mapCommMon : F.mapCommMon ⊣ G.mapCommMon where
   unit := mapCommMonIdIso.inv ≫ mapCommMonNatTrans a.unit ≫ mapCommMonCompIso.hom
   counit := mapCommMonCompIso.inv ≫ mapCommMonNatTrans a.counit ≫ mapCommMonIdIso.hom
 
@@ -231,7 +256,7 @@ namespace Equivalence
 
 /-- An equivalence of categories lifts to an equivalence of their commutative monoid objects. -/
 @[simps]
-noncomputable def mapCommMon (e : C ≌ D) [e.functor.Braided] [e.inverse.Braided] [e.IsMonoidal] :
+def mapCommMon (e : C ≌ D) [e.functor.Braided] [e.inverse.Braided] [e.IsMonoidal] :
     CommMon_ C ≌ CommMon_ D where
   functor := e.functor.mapCommMon
   inverse := e.inverse.mapCommMon
@@ -252,8 +277,6 @@ variable (C) in
 def laxBraidedToCommMon : LaxBraidedFunctor (Discrete PUnit.{u + 1}) C ⥤ CommMon_ C where
   obj F := (F.mapCommMon : CommMon_ _ ⥤ CommMon_ C).obj (trivial (Discrete PUnit.{u+1}))
   map α := ((Functor.mapCommMonFunctor (Discrete PUnit) C).map α).app _
-
--- variable {C}
 
 /-- Implementation of `CommMon_.equivLaxBraidedFunctorPUnit`. -/
 @[simps!]

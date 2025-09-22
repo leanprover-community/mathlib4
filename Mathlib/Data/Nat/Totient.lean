@@ -74,14 +74,14 @@ theorem filter_coprime_Ico_eq_totient (a n : ℕ) :
   rw [totient, filter_Ico_card_eq_of_periodic, count_eq_card_filter_range]
   exact periodic_coprime a
 
-theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
+theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_ne_zero : a ≠ 0) :
     #{x ∈ Ico k (k + n) | a.Coprime x} ≤ totient a * (n / a + 1) := by
   conv_lhs => rw [← Nat.mod_add_div n a]
   induction' n / a with i ih
   · rw [← filter_coprime_Ico_eq_totient a k]
     simp only [add_zero, mul_one, mul_zero, zero_add]
     gcongr
-    exact le_of_lt (mod_lt n a_pos)
+    exact le_of_lt (mod_lt n (pos_iff_ne_zero.mpr a_ne_zero))
   simp only [mul_succ]
   simp_rw [← add_assoc] at ih ⊢
   calc
@@ -240,6 +240,11 @@ theorem prime_iff_card_units (p : ℕ) [Fintype (ZMod p)ˣ] :
 theorem totient_two : φ 2 = 1 :=
   (totient_prime prime_two).trans rfl
 
+/-- Euler's totient function is only odd at `1` or `2`. -/
+theorem odd_totient_iff {n : ℕ} :
+    Odd (φ n) ↔ n = 1 ∨ n = 2 := by
+  rcases n with _ | _ | _ | _ <;> simp [Nat.totient_even]
+
 theorem totient_eq_one_iff : ∀ {n : ℕ}, n.totient = 1 ↔ n = 1 ∨ n = 2
   | 0 => by simp
   | 1 => by simp
@@ -251,6 +256,21 @@ theorem totient_eq_one_iff : ∀ {n : ℕ}, n.totient = 1 ↔ n = 1 ∨ n = 2
 
 theorem dvd_two_of_totient_le_one {a : ℕ} (han : 0 < a) (ha : a.totient ≤ 1) : a ∣ 2 := by
   rcases totient_eq_one_iff.mp <| le_antisymm ha <| totient_pos.2 han with rfl | rfl <;> norm_num
+
+theorem odd_totient_iff_eq_one {n : ℕ} :
+    Odd (φ n) ↔ φ n = 1 := by
+  simp [Nat.odd_totient_iff, Nat.totient_eq_one_iff]
+
+/-- `Nat.totient m` and `Nat.totient n` are coprime iff one of them is 1. -/
+theorem totient_coprime_totient_iff (m n : ℕ) :
+    (φ m).Coprime (φ n) ↔ (m = 1 ∨ m = 2) ∨ (n = 1 ∨ n = 2) := by
+  constructor
+  · rw [← not_imp_not]
+    simp_rw [← odd_totient_iff, not_or, not_odd_iff_even, even_iff_two_dvd]
+    exact fun h ↦ Nat.not_coprime_of_dvd_of_dvd one_lt_two h.1 h.2
+  · simp_rw [← totient_eq_one_iff]
+    rintro (h | h) <;> rw [h]
+    exacts [Nat.coprime_one_left _, Nat.coprime_one_right _]
 
 /-! ### Euler's product formula for the totient function
 
@@ -327,6 +347,7 @@ theorem totient_super_multiplicative (a b : ℕ) : φ a * φ b ≤ φ (a * b) :=
   rw [← totient_gcd_mul_totient_mul a b, mul_comm]
   apply mul_le_mul_left' (Nat.totient_le d)
 
+@[gcongr]
 theorem totient_dvd_of_dvd {a b : ℕ} (h : a ∣ b) : φ a ∣ φ b := by
   rcases eq_or_ne a 0 with (rfl | ha0)
   · simp [zero_dvd_iff.1 h]
@@ -349,3 +370,19 @@ theorem totient_mul_of_prime_of_not_dvd {p n : ℕ} (hp : p.Prime) (h : ¬p ∣ 
   simpa [h] using coprime_or_dvd_of_prime hp n
 
 end Nat
+
+namespace Mathlib.Meta.Positivity
+open Lean Meta Qq
+
+/-- Extension for `Nat.totient`. -/
+@[positivity Nat.totient _]
+def evalNatTotient : PositivityExt where eval {u α} z p e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(Nat.totient $n) =>
+    assumeInstancesCommute
+    match ← core z p n with
+    | .positive pa => return .positive q(Nat.totient_pos.mpr $pa)
+    | _ => failure
+  | _, _, _ => throwError "not Nat.totient"
+
+end Mathlib.Meta.Positivity

@@ -22,7 +22,7 @@ suppress_compilation
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Category CategoryTheory.Functor CategoryTheory.Limits
   CategoryTheory.Idempotents Opposite SimplicialObject Simplicial
 
 namespace AlgebraicTopology

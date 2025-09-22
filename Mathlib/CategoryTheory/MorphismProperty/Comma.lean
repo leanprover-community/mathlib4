@@ -75,9 +75,8 @@ abbrev Hom.hom {X Y : P.Comma L R Q W} (f : Comma.Hom X Y) : X.toComma ⟶ Y.toC
   f.toCommaMorphism
 
 @[simp, nolint simpVarHead]
-lemma Hom.hom_mk {X Y : P.Comma L R Q W}
-    (f : CommaMorphism X.toComma Y.toComma) (hf) (hg) :
-  Comma.Hom.hom ⟨f, hf, hg⟩ = f := rfl
+lemma Hom.hom_mk {X Y : P.Comma L R Q W} (f : CommaMorphism X.toComma Y.toComma) (hf) (hg) :
+    Comma.Hom.hom ⟨f, hf, hg⟩ = f := rfl
 
 lemma Hom.hom_left {X Y : P.Comma L R Q W} (f : Comma.Hom X Y) : f.hom.left = f.left := rfl
 
@@ -167,7 +166,7 @@ def isoFromComma [Q.RespectsIso] [W.RespectsIso] {X Y : P.Comma L R Q W}
 components and naturality in the forward direction. -/
 @[simps!]
 def isoMk [Q.RespectsIso] [W.RespectsIso] {X Y : P.Comma L R Q W} (l : X.left ≅ Y.left)
-    (r : X.right ≅ Y.right) (h : L.map l.hom ≫ Y.hom = X.hom ≫ R.map r.hom := by aesop_cat) :
+    (r : X.right ≅ Y.right) (h : L.map l.hom ≫ Y.hom = X.hom ≫ R.map r.hom := by cat_disch) :
     X ≅ Y :=
   isoFromComma (CategoryTheory.Comma.isoMk l r h)
 
@@ -227,6 +226,31 @@ lemma eqToHom_right {X Y : P.Comma L R Q W} (h : X = Y) :
     (eqToHom h).right = eqToHom (by rw [h]) := by
   subst h
   rfl
+
+end
+
+section
+
+variable {P P' : MorphismProperty T} {Q Q' : MorphismProperty A} {W W' : MorphismProperty B}
+  (hP : P ≤ P') (hQ : Q ≤ Q') (hW : W ≤ W')
+
+variable [Q.IsMultiplicative] [Q'.IsMultiplicative] [W.IsMultiplicative] [W'.IsMultiplicative]
+
+/-- Weaken the conditions on all components. -/
+def changeProp : P.Comma L R Q W ⥤ P'.Comma L R Q' W' where
+  obj X := ⟨X.toComma, hP _ X.2⟩
+  map f := ⟨f.toCommaMorphism, hQ _ f.2, hW _ f.3⟩
+
+/-- Weakening the condition on the structure morphisms is fully faithful. -/
+def fullyFaithfulChangeProp :
+    (changeProp (Q := Q) (W := W) L R hP le_rfl le_rfl).FullyFaithful where
+  preimage f := ⟨f.toCommaMorphism, f.2, f.3⟩
+
+instance : (changeProp L R hP hQ hW).Faithful where
+  map_injective {X Y} f g h := by ext : 1; exact congr($(h).hom)
+
+instance : (changeProp (Q := Q) (W := W) L R hP le_rfl le_rfl).Full :=
+  (fullyFaithfulChangeProp ..).full
 
 end
 
@@ -310,7 +334,7 @@ protected def Over.mk {A : T} (f : A ⟶ X) (hf : P f) : P.Over Q X where
 /-- Make a morphism in `P.Over Q X` from a morphism in `T` with compatibilities. -/
 @[simps hom]
 protected def Over.homMk {A B : P.Over Q X} (f : A.left ⟶ B.left)
-    (w : f ≫ B.hom = A.hom := by aesop_cat) (hf : Q f := by trivial) : A ⟶ B where
+    (w : f ≫ B.hom = A.hom := by cat_disch) (hf : Q f := by trivial) : A ⟶ B where
   __ := CategoryTheory.Over.homMk f w
   prop_hom_left := hf
   prop_hom_right := trivial
@@ -318,7 +342,7 @@ protected def Over.homMk {A B : P.Over Q X} (f : A.left ⟶ B.left)
 /-- Make an isomorphism in `P.Over Q X` from an isomorphism in `T` with compatibilities. -/
 @[simps! hom_left inv_left]
 protected def Over.isoMk [Q.RespectsIso] {A B : P.Over Q X} (f : A.left ≅ B.left)
-    (w : f.hom ≫ B.hom = A.hom := by aesop_cat) : A ≅ B :=
+    (w : f.hom ≫ B.hom = A.hom := by cat_disch) : A ≅ B :=
   Comma.isoMk f (Discrete.eqToIso' rfl)
 
 @[ext]
@@ -371,7 +395,7 @@ protected def Under.mk {A : T} (f : X ⟶ A) (hf : P f) : P.Under Q X where
 /-- Make a morphism in `P.Under Q X` from a morphism in `T` with compatibilities. -/
 @[simps hom]
 protected def Under.homMk {A B : P.Under Q X} (f : A.right ⟶ B.right)
-    (w : A.hom ≫ f = B.hom := by aesop_cat) (hf : Q f := by trivial) : A ⟶ B where
+    (w : A.hom ≫ f = B.hom := by cat_disch) (hf : Q f := by trivial) : A ⟶ B where
   __ := CategoryTheory.Under.homMk f w
   prop_hom_left := trivial
   prop_hom_right := hf
@@ -379,7 +403,7 @@ protected def Under.homMk {A B : P.Under Q X} (f : A.right ⟶ B.right)
 /-- Make an isomorphism in `P.Under Q X` from an isomorphism in `T` with compatibilities. -/
 @[simps! hom_right inv_right]
 protected def Under.isoMk [Q.RespectsIso] {A B : P.Under Q X} (f : A.right ≅ B.right)
-    (w : A.hom ≫ f.hom = B.hom := by aesop_cat) : A ≅ B :=
+    (w : A.hom ≫ f.hom = B.hom := by cat_disch) : A ≅ B :=
   Comma.isoMk (Discrete.eqToIso' rfl) f
 
 @[ext]

@@ -71,44 +71,37 @@ lemma isSMulRegular_algebraMap_iff [CommSemiring R] [Semiring S] [Algebra R S]
 
 section Ring
 
-variable (M) [Ring R] [AddCommGroup M] [Module R M]
+variable [Ring R] [AddCommGroup M] [Module R M]
     [AddCommGroup M'] [Module R M'] [AddCommGroup M''] [Module R M'']
     (N : Submodule R M) (r : R)
 
-lemma isSMulRegular_iff_smul_eq_zero_imp_eq_zero :
-    IsSMulRegular M r ↔ ∀ x : M, r • x = 0 → x = 0 :=
-  Iff.trans (Module.toAddMonoidEnd R M r).ker_eq_bot_iff.symm
-    <| AddSubgroup.eq_bot_iff_forall _
-
-lemma isSMulRegular_iff_mem_nonZeroSMulDivisors :
-    IsSMulRegular M r ↔ r ∈ nonZeroSMulDivisors R M :=
-  isSMulRegular_iff_smul_eq_zero_imp_eq_zero M r
-
-variable {M r}
-
-lemma isSMulRegular_of_smul_eq_zero_imp_eq_zero
-    (h : ∀ x : M, r • x = 0 → x = 0) : IsSMulRegular M r :=
-  (isSMulRegular_iff_smul_eq_zero_imp_eq_zero M r).mpr h
-
-variable (r)
-
-lemma isSMulRegular_on_submodule_iff_mem_imp_smul_eq_zero_imp_eq_zero :
+lemma isSMulRegular_submodule_iff_right_eq_zero_of_smul :
     IsSMulRegular N r ↔ ∀ x ∈ N, r • x = 0 → x = 0 :=
-  Iff.trans (isSMulRegular_iff_smul_eq_zero_imp_eq_zero N r) <|
-    Iff.trans Subtype.forall <| by
+  isSMulRegular_iff_right_eq_zero_of_smul.trans <|
+    Subtype.forall.trans <| by
       simp only [SetLike.mk_smul_mk, Submodule.mk_eq_zero]
 
-lemma isSMulRegular_on_quot_iff_smul_mem_implies_mem :
+lemma isSMulRegular_quotient_iff_mem_of_smul_mem :
     IsSMulRegular (M ⧸ N) r ↔ ∀ x : M, r • x ∈ N → x ∈ N :=
-  Iff.trans (isSMulRegular_iff_smul_eq_zero_imp_eq_zero _ r) <|
-    Iff.trans N.mkQ_surjective.forall <| by
+  isSMulRegular_iff_right_eq_zero_of_smul.trans <|
+    N.mkQ_surjective.forall.trans <| by
       simp_rw [← map_smul, N.mkQ_apply, Submodule.Quotient.mk_eq_zero]
 
 variable {N r}
 
-lemma mem_of_isSMulRegular_on_quot_of_smul_mem (h1 : IsSMulRegular (M ⧸ N) r)
+lemma mem_of_isSMulRegular_quotient_of_smul_mem (h1 : IsSMulRegular (M ⧸ N) r)
     {x : M} (h2 : r • x ∈ N) : x ∈ N :=
-  (isSMulRegular_on_quot_iff_smul_mem_implies_mem N r).mp h1 x h2
+  (isSMulRegular_quotient_iff_mem_of_smul_mem N r).mp h1 x h2
+
+@[deprecated (since := "2025-08-04")]
+alias isSMulRegular_on_submodule_iff_mem_imp_smul_eq_zero_imp_eq_zero :=
+  isSMulRegular_submodule_iff_right_eq_zero_of_smul
+
+@[deprecated (since := "2025-08-04")]
+alias isSMulRegular_on_quot_iff_smul_mem_implies_mem := isSMulRegular_quotient_iff_mem_of_smul_mem
+
+@[deprecated (since := "2025-08-04")]
+alias mem_of_isSMulRegular_on_quot_of_smul_mem := mem_of_isSMulRegular_quotient_of_smul_mem
 
 /-- Given a left exact sequence `0 → M → M' → M''`, if `r` is regular on both
 `M` and `M''` it's regular `M'` too. -/
@@ -116,17 +109,17 @@ lemma isSMulRegular_of_range_eq_ker {f : M →ₗ[R] M'} {g : M' →ₗ[R] M''}
     (hf : Function.Injective f) (hfg : LinearMap.range f = LinearMap.ker g)
     (h1 : IsSMulRegular M r) (h2 : IsSMulRegular M'' r) :
     IsSMulRegular M' r := by
-  refine isSMulRegular_of_smul_eq_zero_imp_eq_zero ?_
+  refine IsSMulRegular.of_right_eq_zero_of_smul ?_
   intro x hx
-  obtain ⟨y, ⟨⟩⟩ := (congrArg (x ∈ ·) hfg).mpr <| h2.eq_zero_of_smul_eq_zero <|
-    Eq.trans (g.map_smul r x).symm <| Eq.trans (congrArg _ hx) g.map_zero
-  refine Eq.trans (congrArg f (h1.eq_zero_of_smul_eq_zero ?_)) f.map_zero
-  exact hf <| Eq.trans (f.map_smul r y) <| Eq.trans hx f.map_zero.symm
+  obtain ⟨y, ⟨⟩⟩ := (congrArg (x ∈ ·) hfg).mpr <| h2.right_eq_zero_of_smul <|
+    (g.map_smul r x).symm.trans <| (congrArg _ hx).trans g.map_zero
+  refine (congrArg f (h1.right_eq_zero_of_smul ?_)).trans f.map_zero
+  exact hf <| (f.map_smul r y).trans <| hx.trans f.map_zero.symm
 
 lemma isSMulRegular_of_isSMulRegular_on_submodule_on_quotient
     (h1 : IsSMulRegular N r) (h2 : IsSMulRegular (M ⧸ N) r) : IsSMulRegular M r :=
   isSMulRegular_of_range_eq_ker N.injective_subtype
-    (Eq.trans N.range_subtype N.ker_mkQ.symm) h1 h2
+    (N.range_subtype.trans N.ker_mkQ.symm) h1 h2
 
 end Ring
 
@@ -142,7 +135,7 @@ variable (R) in
 lemma biUnion_associatedPrimes_eq_compl_regular [IsNoetherianRing R] :
     ⋃ p ∈ associatedPrimes R M, p = { r : R | IsSMulRegular M r }ᶜ :=
   Eq.trans (biUnion_associatedPrimes_eq_zero_divisors R M) <| by
-    simp_rw [Set.compl_setOf, isSMulRegular_iff_smul_eq_zero_imp_eq_zero,
+    simp_rw [Set.compl_setOf, isSMulRegular_iff_right_eq_zero_of_smul,
       not_forall, exists_prop, and_comm]
 
 lemma isSMulRegular_iff_ker_lsmul_eq_bot :
@@ -153,17 +146,17 @@ variable {M}
 
 lemma isSMulRegular_on_submodule_iff_disjoint_ker_lsmul_submodule :
     IsSMulRegular N r ↔ Disjoint (LinearMap.ker (LinearMap.lsmul R M r)) N :=
-  Iff.trans (isSMulRegular_on_submodule_iff_mem_imp_smul_eq_zero_imp_eq_zero N r) <|
+  Iff.trans (isSMulRegular_submodule_iff_right_eq_zero_of_smul N r) <|
     Iff.symm <| Iff.trans disjoint_comm disjoint_def
 
 lemma isSMulRegular_on_quot_iff_lsmul_comap_le :
     IsSMulRegular (M ⧸ N) r ↔ N.comap (LinearMap.lsmul R M r) ≤ N :=
-  isSMulRegular_on_quot_iff_smul_mem_implies_mem N r
+  isSMulRegular_quotient_iff_mem_of_smul_mem N r
 
 lemma isSMulRegular_on_quot_iff_lsmul_comap_eq :
     IsSMulRegular (M ⧸ N) r ↔ N.comap (LinearMap.lsmul R M r) = N :=
   Iff.trans (isSMulRegular_on_quot_iff_lsmul_comap_le N r) <|
-    LE.le.le_iff_eq (fun _ => N.smul_mem r)
+    LE.le.ge_iff_eq' (fun _ => N.smul_mem r)
 
 variable {r}
 

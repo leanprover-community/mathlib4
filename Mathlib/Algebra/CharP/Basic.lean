@@ -5,7 +5,8 @@ Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Group.Fin.Basic
-import Mathlib.Algebra.Group.ULift
+import Mathlib.Algebra.Ring.ULift
+import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Cast.Prod
 import Mathlib.Data.ULift
@@ -207,14 +208,10 @@ end AddMonoidWithOne
 
 section CommRing
 
-#adaptation_note
-/-- 2025-04-19 `IsCharP` has `n` as an outparam, but `CharP` does not.
-Remove after https://github.com/leanprover-community/mathlib4/pull/24216 is merged.
--/
-set_option synthInstance.checkSynthOrder false in
-instance (α : Type*) [CommRing α] (n : ℕ) [CharP α n] : Lean.Grind.IsCharP α n where
-  ofNat_eq_zero_iff m := by
-    rw [CommRing.toGrindCommRing_ofNat]
-    simpa [← Nat.dvd_iff_mod_eq_zero] using CharP.cast_eq_zero_iff α n m
+instance (α : Type*) [Semiring α] [IsLeftCancelAdd α] (n : ℕ) [CharP α n] :
+    Lean.Grind.IsCharP α n where
+  ofNat_ext_iff {a b} := by
+    rw [Lean.Grind.Semiring.ofNat_eq_natCast, Lean.Grind.Semiring.ofNat_eq_natCast]
+    exact CharP.cast_eq_iff_mod_eq α n
 
 end CommRing

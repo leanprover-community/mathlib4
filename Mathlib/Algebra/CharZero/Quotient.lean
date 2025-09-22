@@ -18,7 +18,8 @@ variable {R : Type*} [DivisionRing R] [CharZero R] {p : R}
 
 namespace AddSubgroup
 
-/-- `z • r` is a multiple of `p` iff `r` is `pk/z` above a multiple of `p`, where `0 ≤ k < |z|`. -/
+/-- `z • r` is a multiple of `p` iff `r` is `k * (p / z)` above a multiple of `p`, where
+`0 ≤ k < |z|`. -/
 theorem zsmul_mem_zmultiples_iff_exists_sub_div {r : R} {z : ℤ} (hz : z ≠ 0) :
     z • r ∈ AddSubgroup.zmultiples p ↔
       ∃ k : Fin z.natAbs, r - (k : ℕ) • (p / z : R) ∈ AddSubgroup.zmultiples p := by
@@ -55,10 +56,6 @@ theorem zmultiples_zsmul_eq_zsmul_iff {ψ θ : R ⧸ AddSubgroup.zmultiples p} {
     z • ψ = z • θ ↔ ∃ k : Fin z.natAbs, ψ = θ + ((k : ℕ) • (p / z) : R) := by
   induction ψ using Quotient.inductionOn
   induction θ using Quotient.inductionOn
-  -- Porting note: Introduced Zp notation to shorten lines
-  let Zp := AddSubgroup.zmultiples p
-  have : (Quotient.mk _ : R → R ⧸ Zp) = ((↑) : R → R ⧸ Zp) := rfl
-  simp only [Zp, this]
   simp_rw [← QuotientAddGroup.mk_zsmul, ← QuotientAddGroup.mk_add,
     QuotientAddGroup.eq_iff_sub_mem, ← smul_sub, ← sub_sub]
   exact AddSubgroup.zsmul_mem_zmultiples_iff_exists_sub_div hz

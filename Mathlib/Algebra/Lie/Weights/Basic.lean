@@ -297,7 +297,6 @@ end Weight
 @[simp]
 theorem zero_genWeightSpace_eq_top_of_nilpotent' [IsNilpotent L M] :
     genWeightSpace M (0 : L → R) = ⊤ := by
-  ext
   simp [genWeightSpace, genWeightSpaceOf]
 
 theorem coe_genWeightSpace_of_top (χ : L → R) :
@@ -310,12 +309,7 @@ theorem coe_genWeightSpace_of_top (χ : L → R) :
 @[simp]
 theorem zero_genWeightSpace_eq_top_of_nilpotent [IsNilpotent L M] :
     genWeightSpace M (0 : (⊤ : LieSubalgebra R L) → R) = ⊤ := by
-  ext m
-  simp only [mem_genWeightSpace, Pi.zero_apply, zero_smul, sub_zero, Subtype.forall,
-    forall_true_left, LieSubalgebra.toEnd_mk, LieSubalgebra.mem_top, LieSubmodule.mem_top, iff_true]
-  intro x
-  obtain ⟨k, hk⟩ := exists_forall_pow_toEnd_eq_zero R L M
-  exact ⟨k, by simp [hk x]⟩
+  simp_all
 
 theorem exists_genWeightSpace_le_ker_of_isNoetherian [IsNoetherian R M] (χ : L → R) (x : L) :
     ∃ k : ℕ,
@@ -397,7 +391,7 @@ def posFittingCompOf (x : L) : LieSubmodule R L M :=
   { toSubmodule := ⨅ k, LinearMap.range (toEnd R L M x ^ k)
     lie_mem := by
       set φ := toEnd R L M x
-      intros y m hm
+      intro y m hm
       simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
         Submodule.mem_toAddSubmonoid, Submodule.mem_iInf, LinearMap.mem_range] at hm ⊢
       intro k
@@ -672,23 +666,16 @@ lemma iSupIndep_genWeightSpace [NoZeroSMulDivisors R M] :
   exact Module.End.independent_iInf_maxGenEigenspace_of_forall_mapsTo (toEnd R L M)
     (fun x y φ z ↦ (genWeightSpaceOf M φ y).lie_mem)
 
-@[deprecated (since := "2024-11-24")] alias independent_genWeightSpace := iSupIndep_genWeightSpace
-
 lemma iSupIndep_genWeightSpace' [NoZeroSMulDivisors R M] :
     iSupIndep fun χ : Weight R L M ↦ genWeightSpace M χ :=
   (iSupIndep_genWeightSpace R L M).comp <|
     Subtype.val_injective.comp (Weight.equivSetOf R L M).injective
-
-@[deprecated (since := "2024-11-24")] alias independent_genWeightSpace' := iSupIndep_genWeightSpace'
 
 lemma iSupIndep_genWeightSpaceOf [NoZeroSMulDivisors R M] (x : L) :
     iSupIndep fun (χ : R) ↦ genWeightSpaceOf M χ x := by
   rw [← LieSubmodule.iSupIndep_toSubmodule]
   dsimp [genWeightSpaceOf]
   exact (toEnd R L M x).independent_genEigenspace _
-
-@[deprecated (since := "2024-11-24")]
-alias independent_genWeightSpaceOf := iSupIndep_genWeightSpaceOf
 
 lemma finite_genWeightSpaceOf_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] (x : L) :
     {χ : R | genWeightSpaceOf M χ x ≠ ⊥}.Finite :=

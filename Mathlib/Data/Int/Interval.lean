@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Embedding
-import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Algebra.Ring.CharZero
+import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Int
 import Mathlib.Order.Interval.Finset.Basic
 
 /-!
@@ -30,49 +31,37 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder ℤ where
   finsetIoo a b :=
     (Finset.range (b - a - 1).toNat).map <| Nat.castEmbedding.trans <| addLeftEmbedding (a + 1)
   finset_mem_Icc a b x := by
-    simp_rw [mem_map, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,
-      Nat.castEmbedding_apply, addLeftEmbedding_apply]
+    simp_rw [mem_map, mem_range, Function.Embedding.trans_apply, Nat.castEmbedding_apply,
+      addLeftEmbedding_apply]
     constructor
-    · rintro ⟨a, h, rfl⟩
-      rw [lt_sub_iff_add_lt, Int.lt_add_one_iff, add_comm] at h
-      exact ⟨Int.le.intro a rfl, h⟩
-    · rintro ⟨ha, hb⟩
+    · omega
+    · intro
       use (x - a).toNat
-      rw [← lt_add_one_iff] at hb
-      rw [toNat_sub_of_le ha]
-      exact ⟨sub_lt_sub_right hb _, add_sub_cancel _ _⟩
+      omega
   finset_mem_Ico a b x := by
-    simp_rw [mem_map, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,
-      Nat.castEmbedding_apply, addLeftEmbedding_apply]
+    simp_rw [mem_map, mem_range, Function.Embedding.trans_apply, Nat.castEmbedding_apply,
+      addLeftEmbedding_apply]
     constructor
-    · rintro ⟨a, h, rfl⟩
-      exact ⟨Int.le.intro a rfl, lt_sub_iff_add_lt'.mp h⟩
-    · rintro ⟨ha, hb⟩
+    · omega
+    · intro
       use (x - a).toNat
-      rw [toNat_sub_of_le ha]
-      exact ⟨sub_lt_sub_right hb _, add_sub_cancel _ _⟩
+      omega
   finset_mem_Ioc a b x := by
-    simp_rw [mem_map, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,
-      Nat.castEmbedding_apply, addLeftEmbedding_apply]
+    simp_rw [mem_map, mem_range, Function.Embedding.trans_apply, Nat.castEmbedding_apply,
+      addLeftEmbedding_apply]
     constructor
-    · rintro ⟨a, h, rfl⟩
-      rw [← add_one_le_iff, le_sub_iff_add_le', add_comm _ (1 : ℤ), ← add_assoc] at h
-      exact ⟨Int.le.intro a rfl, h⟩
-    · rintro ⟨ha, hb⟩
+    · omega
+    · intro
       use (x - (a + 1)).toNat
-      rw [toNat_sub_of_le ha, ← add_one_le_iff, sub_add, add_sub_cancel_right]
-      exact ⟨sub_le_sub_right hb _, add_sub_cancel _ _⟩
+      omega
   finset_mem_Ioo a b x := by
-    simp_rw [mem_map, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,
-      Nat.castEmbedding_apply, addLeftEmbedding_apply]
+    simp_rw [mem_map, mem_range, Function.Embedding.trans_apply, Nat.castEmbedding_apply,
+      addLeftEmbedding_apply]
     constructor
-    · rintro ⟨a, h, rfl⟩
-      rw [sub_sub, lt_sub_iff_add_lt'] at h
-      exact ⟨Int.le.intro a rfl, h⟩
-    · rintro ⟨ha, hb⟩
+    · omega
+    · intro
       use (x - (a + 1)).toNat
-      rw [toNat_sub_of_le ha, sub_sub]
-      exact ⟨sub_lt_sub_right hb _, add_sub_cancel _ _⟩
+      omega
 
 variable (a b : ℤ)
 

@@ -131,7 +131,7 @@ lemma εIso_inv_freeMk (x : PUnit) : (εIso R).inv (freeMk x) = 1 := by
 
 /-- The canonical isomorphism `(free R).obj X ⊗ (free R).obj Y ≅ (free R).obj (X ⊗ Y)`
 for two types `X` and `Y`.
-(This should not be used directly: it is is part of the implementation of the
+(This should not be used directly: it is part of the implementation of the
 monoidal structure on the functor `free R`.) -/
 def μIso (X Y : Type u) :
     (free R).obj X ⊗ (free R).obj Y ≅ (free R).obj (X ⊗ Y) :=

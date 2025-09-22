@@ -3,7 +3,7 @@ Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.NormedSpace.FunctionSeries
+import Mathlib.Analysis.Normed.Group.FunctionSeries
 import Mathlib.Analysis.SpecialFunctions.Log.Summable
 import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 import Mathlib.Topology.Algebra.IsUniformGroup.Order
@@ -146,7 +146,7 @@ lemma hasProdLocallyUniformlyOn_nat_one_add {f : ℕ → α → R} (hK : IsOpen 
     HasProdLocallyUniformlyOn (fun n x ↦ 1 + f n x) (fun x ↦ ∏' i, (1 + f i x)) K :=
   hasProdLocallyUniformlyOn_one_add hK hu (Nat.cofinite_eq_atTop ▸ h) hcts
 
-lemma multipliableLocallyUniformlyOn_nat_one_add  {f : ℕ → α → R} (hK : IsOpen K) {u : ℕ → ℝ}
+lemma multipliableLocallyUniformlyOn_nat_one_add {f : ℕ → α → R} (hK : IsOpen K) {u : ℕ → ℝ}
     (hu : Summable u) (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n)
     (hcts : ∀ n, ContinuousOn (f n) K) :
     MultipliableLocallyUniformlyOn (fun n x ↦ 1 + f n x) K :=

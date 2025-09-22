@@ -101,6 +101,7 @@ lemma Hom.congr {a b : ∫ F} {f g : a ⟶ b} (h : f = g) :
 
 end
 
+attribute [local simp] PrelaxFunctor.map₂_eqToHom in
 /-- The category structure on `∫ F`. -/
 instance category : Category (∫ F) where
   toCategoryStruct := Pseudofunctor.Grothendieck.categoryStruct
@@ -172,7 +173,7 @@ variable (F)
 
 /-- The natural isomorphism witnessing the pseudo-unity constraint of `Grothendieck.map`. -/
 def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ F) :=
-  NatIso.ofComponents (fun _ ↦ eqToIso (by aesop_cat))
+  NatIso.ofComponents (fun _ ↦ eqToIso (by cat_disch))
 
 lemma map_id_eq : map (𝟙 F) = 𝟭 (∫ F) :=
   Functor.ext_of_iso (mapIdIso F) (fun x ↦ by simp [map]) (fun x ↦ by simp [mapIdIso])
@@ -181,7 +182,7 @@ end
 
 /-- The natural isomorphism witnessing the pseudo-functoriality of `Grothendieck.map`. -/
 def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β :=
-  NatIso.ofComponents (fun _ ↦ eqToIso (by aesop_cat)) (fun f ↦ by
+  NatIso.ofComponents (fun _ ↦ eqToIso (by cat_disch)) (fun f ↦ by
     dsimp
     simp only [comp_id, id_comp]
     ext <;> simp)

@@ -336,7 +336,7 @@ instance of_iso (φ : a ≅ b) [IsHomLift p f φ.hom] : IsStronglyCartesian p f 
   universal_property' := by
     intro a' g τ hτ
     use τ ≫ φ.inv
-    refine ⟨?_, by aesop_cat⟩
+    refine ⟨?_, by cat_disch⟩
     simpa using (IsHomLift.comp p (g ≫ f) (isoOfIsoLift p f φ).inv τ φ.inv)
 
 instance of_isIso (φ : a ⟶ b) [IsHomLift p f φ] [IsIso φ] : IsStronglyCartesian p f φ :=

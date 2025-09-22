@@ -19,12 +19,12 @@ then any injective polynomial map `K^n → K^n` is also surjective.
 ## Main results
 
 * `ax_grothendieck_zeroLocus`: If `K` is algebraically closed, `ι` is a finite type, and
-`S : Set (ι → K)` is the `zeroLocus` of some ideal of `MvPolynomial ι K`, then any injective
-polynomial map `S → S` is also surjective on `S`.
+  `S : Set (ι → K)` is the `zeroLocus` of some ideal of `MvPolynomial ι K`, then any injective
+  polynomial map `S → S` is also surjective on `S`.
 * `ax_grothendieck_univ`: Any injective polynomial map `K^n → K^n` is also surjective if `K` is an
   algebraically closed field.
 * `ax_grothendieck_of_definable`: Any injective polynomial map `S → S` is also surjective on `S` if
-`K` is an algebraically closed field and `S` is a definable subset of `K^n`.
+  `K` is an algebraically closed field and `S` is a definable subset of `K^n`.
 * `ax_grothendieck_of_locally_finite`: any injective polynomial map `R^n → R^n` is also surjective
   whenever `R` is an algebraic extension of a finite field.
 
@@ -230,7 +230,7 @@ surjective on `S`. -/
 theorem ax_grothendieck_zeroLocus
     (I : Ideal (MvPolynomial ι K))
     (p : ι → MvPolynomial ι K) :
-    let S := zeroLocus I
+    let S := zeroLocus K I
     S.MapsTo (fun v i => eval v (p i)) S →
     S.InjOn (fun v i => eval v (p i)) →
     S.SurjOn (fun v i => eval v (p i)) S := by
@@ -242,7 +242,7 @@ theorem ax_grothendieck_zeroLocus
 /-- A special case of the **Ax-Grothendieck** theorem
 
 Any injective polynomial map `K^n → K^n` is also surjective if `K` is an
-algberaically closed field. -/
+algebraically closed field. -/
 theorem ax_grothendieck_univ (p : ι → MvPolynomial ι K) :
     (fun v i => eval v (p i)).Injective →
     (fun v i => eval v (p i)).Surjective := by

@@ -191,8 +191,8 @@ transformations in the usual way, extended to all of `GL (Fin 2) ℝ` using comp
 instance glAction : MulAction (GL (Fin 2) ℝ) ℍ where
   smul := smulAux
   one_smul z := by
-    show smulAux 1 z = z
-    simp [UpperHalfPlane.ext_iff, smulAux, coe_mk, smulAux', num, denom, σ]
+    change smulAux 1 z = z
+    simp [smulAux, smulAux', num, denom, σ]
   mul_smul := mul_smul'
 
 lemma coe_smul (g : GL (Fin 2) ℝ) (z : ℍ) :
@@ -299,12 +299,8 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : g 1 
     simpa [modular_S_smul, coe_specialLinearGroup_apply]
   replace hc : (c : ℂ) ≠ 0 := by norm_cast
   replace h_denom : ↑c * z + d ≠ 0 := by simpa using h_denom ⟨z, hz⟩
-  have h_aux : (c : ℂ) * d + ↑c * ↑c * z ≠ 0 := by
-    rw [mul_assoc, ← mul_add, add_comm]
-    exact mul_ne_zero hc h_denom
   replace h : (a * d - b * c : ℂ) = (1 : ℂ) := by norm_cast
-  field_simp
-  linear_combination (-(z * (c : ℂ) ^ 2) - c * d) * h
+  grind
 
 end SLAction
 
@@ -325,8 +321,6 @@ lemma coe_inj (a b : SL(2, ℤ)) : coe a = coe b ↔ a = b := by
   simp only [Subtype.ext_iff, GeneralLinearGroup.ext_iff] at h
   simpa [coe] using h i j
 
-@[deprecated (since := "2024-11-19")] noncomputable alias coe' := coe
-
 instance : Coe SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨coe⟩
 
@@ -340,13 +334,9 @@ theorem coe_apply_complex {g : SL(2, ℤ)} {i j : Fin 2} :
     (Units.val <| Subtype.val <| coe g) i j = (Subtype.val g i j : ℂ) :=
   rfl
 
-@[deprecated (since := "2024-11-19")] alias coe'_apply_complex := coe_apply_complex
-
 @[simp]
 theorem det_coe {g : SL(2, ℤ)} : det (Units.val <| Subtype.val <| coe g) = 1 := by
   simp only [SpecialLinearGroup.coe_GLPos_coe_GL_coe_matrix, SpecialLinearGroup.det_coe, coe]
-
-@[deprecated (since := "2024-11-19")] alias det_coe' := det_coe
 
 lemma coe_one : coe 1 = 1 := by
   simp only [coe, map_one]

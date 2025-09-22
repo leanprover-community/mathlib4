@@ -215,8 +215,8 @@ theorem le_succ_of_forall_lt_le {x y : s} (h : ∀ z < x, z ≤ y) : x ≤ succ 
 
 theorem lt_succ_self (x : s) : x < succ x :=
   calc
-    (x : ℕ) ≤ (x + _)  := le_add_right ..
-    _       < (succ x) := Nat.lt_succ_self (x + _)
+    (x : ℕ) ≤ (x + _) := le_add_right ..
+    _ < (succ x) := Nat.lt_succ_self (x + _)
 
 theorem lt_succ_iff_le {x y : s} : x < succ y ↔ x ≤ y :=
   ⟨fun h => le_of_not_gt fun h' => not_le_of_gt h (succ_le_of_lt h'), fun h =>
@@ -232,7 +232,7 @@ theorem ofNat_surjective : Surjective (ofNat s)
     set t : List s :=
       ((List.range x).filter fun y => y ∈ s).pmap
         (fun (y : ℕ) (hy : y ∈ s) => ⟨y, hy⟩)
-        (by intros a ha; simpa using (List.mem_filter.mp ha).2) with ht
+        (by intro a ha; simpa using (List.mem_filter.mp ha).2) with ht
     have hmt : ∀ {y : s}, y ∈ t ↔ y < ⟨x, hx⟩ := by
       simp [List.mem_filter, Subtype.ext_iff_val, ht]
     cases hmax : List.maximum t with

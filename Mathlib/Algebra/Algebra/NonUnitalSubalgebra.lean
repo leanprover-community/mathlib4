@@ -44,9 +44,6 @@ lemma subtype_injective :
 theorem coe_subtype : (subtype s : s → A) = ((↑) : s → A) :=
   rfl
 
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
-
 end NonUnitalSubalgebraClass
 
 end NonUnitalSubalgebraClass
@@ -153,10 +150,7 @@ Useful to fix definitional equalities. -/
 protected def copy (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) :
     NonUnitalSubalgebra R A :=
   { S.toNonUnitalSubsemiring.copy s hs with
-    smul_mem' := fun r a (ha : a ∈ s) => by
-      show r • a ∈ s
-      rw [hs] at ha ⊢
-      exact S.smul_mem' r ha }
+    smul_mem' r a := by simpa [hs] using S.smul_mem r }
 
 @[simp]
 theorem coe_copy (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) :
@@ -351,7 +345,7 @@ def map (f : F) (S : NonUnitalSubalgebra R A) : NonUnitalSubalgebra R B :=
 
 theorem map_mono {S₁ S₂ : NonUnitalSubalgebra R A} {f : F} :
     S₁ ≤ S₂ → (map f S₁ : NonUnitalSubalgebra R B) ≤ map f S₂ :=
-  Set.image_subset f
+  Set.image_mono
 
 theorem map_injective {f : F} (hf : Function.Injective f) :
     Function.Injective (map f : NonUnitalSubalgebra R A → NonUnitalSubalgebra R B) :=
@@ -572,7 +566,7 @@ theorem adjoin_toSubmodule (s : Set A) :
     (adjoin R s).toSubmodule = Submodule.span R (NonUnitalSubsemiring.closure s : Set A) :=
   rfl
 
-@[simp, aesop safe 20 apply (rule_sets := [SetLike])]
+@[simp, aesop safe 20 (rule_sets := [SetLike])]
 theorem subset_adjoin {s : Set A} : s ⊆ adjoin R s :=
   NonUnitalSubsemiring.subset_closure.trans Submodule.subset_span
 
@@ -604,6 +598,7 @@ instance : CompleteLattice (NonUnitalSubalgebra R A) :=
 theorem adjoin_le {S : NonUnitalSubalgebra R A} {s : Set A} (hs : s ⊆ S) : adjoin R s ≤ S :=
   NonUnitalAlgebra.gc.l_le hs
 
+@[simp]
 theorem adjoin_le_iff {S : NonUnitalSubalgebra R A} {s : Set A} : adjoin R s ≤ S ↔ s ⊆ S :=
   NonUnitalAlgebra.gc _ _
 
@@ -614,6 +609,7 @@ theorem adjoin_mono {s t : Set A} (H : s ⊆ t) : adjoin R s ≤ adjoin R t :=
 theorem adjoin_union (s t : Set A) : adjoin R (s ∪ t) = adjoin R s ⊔ adjoin R t :=
   (NonUnitalAlgebra.gc : GaloisConnection _ ((↑) : NonUnitalSubalgebra R A → Set A)).l_sup
 
+@[simp]
 lemma adjoin_eq (s : NonUnitalSubalgebra R A) : adjoin R (s : Set A) = s :=
   le_antisymm (adjoin_le le_rfl) (subset_adjoin R)
 
@@ -676,7 +672,7 @@ lemma adjoin_eq_span (s : Set A) : (adjoin R s).toSubmodule = span R (Subsemigro
       case Hsmul_r => exact fun r x y _ _ hxy ↦ by simpa [mul_smul_comm] using smul_mem _ _ hxy
     | smul r x _ hpx => exact smul_mem _ _ hpx
   · apply span_le.2 _
-    show Subsemigroup.closure s ≤ (adjoin R s).toSubsemigroup
+    change Subsemigroup.closure s ≤ (adjoin R s).toSubsemigroup
     exact Subsemigroup.closure_le.2 (subset_adjoin R)
 
 variable (R A)
@@ -862,8 +858,6 @@ theorem range_eq_top [IsScalarTower R B B] [SMulCommClass R B B] (f : A →ₙ�
     NonUnitalAlgHom.range f = (⊤ : NonUnitalSubalgebra R B) ↔ Function.Surjective f :=
   NonUnitalAlgebra.eq_top_iff
 
-@[deprecated (since := "2024-11-11")] alias range_top_iff_surjective := range_eq_top
-
 end NonUnitalAlgebra
 
 namespace NonUnitalSubalgebra
@@ -974,7 +968,7 @@ theorem coe_inclusion {S T : NonUnitalSubalgebra R A} (h : S ≤ T) (s : S) :
 
 section SuprLift
 
-variable {ι : Type*}
+variable {ι : Sort*}
 
 theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalSubalgebra R A}
     (dir : Directed (· ≤ ·) S) : ↑(iSup S) = ⋃ i, (S i : Set A) :=
@@ -1064,10 +1058,8 @@ variable [IsScalarTower R A A] [SMulCommClass R A A]
 
 theorem _root_.Set.smul_mem_center (r : R) {a : A} (ha : a ∈ Set.center A) :
     r • a ∈ Set.center A where
-  comm b := by rw [mul_smul_comm, smul_mul_assoc, ha.comm]
+  comm b := by rw [commute_iff_eq, mul_smul_comm, smul_mul_assoc, ha.comm]
   left_assoc b c := by rw [smul_mul_assoc, smul_mul_assoc, smul_mul_assoc, ha.left_assoc]
-  mid_assoc b c := by
-    rw [mul_smul_comm, smul_mul_assoc, smul_mul_assoc, mul_smul_comm, ha.mid_assoc]
   right_assoc b c := by
     rw [mul_smul_comm, mul_smul_comm, mul_smul_comm, ha.right_assoc]
 

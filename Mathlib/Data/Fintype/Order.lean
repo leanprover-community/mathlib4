@@ -120,7 +120,7 @@ If the `α` is already a `BiheytingAlgebra`, then prefer to construct this insta
 `LinearOrder.toBiheytingAlgebra`. -/
 noncomputable abbrev toCompleteLinearOrder
     [LinearOrder α] [BoundedOrder α] : CompleteLinearOrder α :=
-  { toCompleteLattice α, ‹LinearOrder α›, LinearOrder.toBiheytingAlgebra with }
+  { toCompleteLattice α, ‹LinearOrder α›, LinearOrder.toBiheytingAlgebra _ with }
 
 -- See note [reducible non-instances]
 /-- A finite boolean algebra is complete. -/
@@ -144,15 +144,14 @@ variable (α) [Nonempty α]
 /-- A nonempty finite lattice is complete. If the lattice is already a `BoundedOrder`, then use
 `Fintype.toCompleteLattice` instead, as this gives definitional equality for `⊥` and `⊤`. -/
 noncomputable abbrev toCompleteLatticeOfNonempty [Lattice α] : CompleteLattice α :=
-  @toCompleteLattice _ _ _ <| @toBoundedOrder α _ ⟨Classical.arbitrary α⟩ _
+  @toCompleteLattice _ _ _ <| toBoundedOrder α
 
 -- See note [reducible non-instances]
 /-- A nonempty finite linear order is complete. If the linear order is already a `BoundedOrder`,
 then use `Fintype.toCompleteLinearOrder` instead, as this gives definitional equality for `⊥` and
 `⊤`. -/
-noncomputable abbrev toCompleteLinearOrderOfNonempty [LinearOrder α] : CompleteLinearOrder α := by
-  let _ := toBoundedOrder α
-  exact { toCompleteLatticeOfNonempty α, ‹LinearOrder α›, LinearOrder.toBiheytingAlgebra with }
+noncomputable abbrev toCompleteLinearOrderOfNonempty [LinearOrder α] : CompleteLinearOrder α :=
+  @toCompleteLinearOrder _ _ _ <| toBoundedOrder α
 
 end Nonempty
 

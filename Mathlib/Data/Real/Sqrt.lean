@@ -38,8 +38,6 @@ namespace NNReal
 variable {x y : ℝ≥0}
 
 /-- Square root of a nonnegative real number. -/
--- Porting note (kmill): `pp_nodot` has no effect here
--- unless RFC https://github.com/leanprover/lean4/issues/6178 leads to dot notation pp for CoeFun
 @[pp_nodot]
 noncomputable def sqrt : ℝ≥0 ≃o ℝ≥0 :=
   OrderIso.symm <| powOrderIso 2 two_ne_zero
@@ -95,6 +93,8 @@ theorem continuous_sqrt : Continuous sqrt := sqrt.continuous
 alias ⟨_, sqrt_pos_of_pos⟩ := sqrt_pos
 
 attribute [bound] sqrt_pos_of_pos
+
+@[simp] theorem isSquare (x : ℝ≥0) : IsSquare x := ⟨_, mul_self_sqrt _ |>.symm⟩
 
 end NNReal
 
@@ -189,6 +189,9 @@ theorem sqrt_le_sqrt (h : x ≤ y) : √x ≤ √y := by
   rw [Real.sqrt, Real.sqrt, NNReal.coe_le_coe, NNReal.sqrt_le_sqrt]
   exact toNNReal_le_toNNReal h
 
+theorem sqrt_monotone : Monotone Real.sqrt :=
+  fun _ _ ↦ sqrt_le_sqrt
+
 @[gcongr, bound]
 theorem sqrt_lt_sqrt (hx : 0 ≤ x) (h : x < y) : √x < √y :=
   (sqrt_lt_sqrt_iff hx).2 h
@@ -262,6 +265,9 @@ lemma sqrt_le_sqrt_iff' (hx : 0 < x) : √x ≤ √y ↔ x ≤ y := by
 @[simp] lemma sqrt_le_one : √x ≤ 1 ↔ x ≤ 1 := by
   rw [← sqrt_one, sqrt_le_sqrt_iff zero_le_one, sqrt_one]
 
+@[simp] lemma isSquare_iff : IsSquare x ↔ 0 ≤ x :=
+  ⟨(·.nonneg), (⟨√x, mul_self_sqrt · |>.symm⟩)⟩
+
 end Real
 
 namespace Mathlib.Meta.Positivity
@@ -297,6 +303,13 @@ def evalSqrt : PositivityExt where eval {u α} _zα _pα e := do
 end Mathlib.Meta.Positivity
 
 namespace Real
+
+lemma one_lt_sqrt_two : 1 < √2 := by rw [← Real.sqrt_one]; gcongr; simp
+
+lemma sqrt_two_lt_three_halves : √2 < 3 / 2 := by
+  suffices 2 * √2 < 3 by linarith
+  rw [← sq_lt_sq₀ (by positivity) (by positivity), mul_pow, Real.sq_sqrt (by positivity)]
+  norm_num
 
 @[simp]
 theorem sqrt_mul {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : √(x * y) = √x * √y := by

@@ -90,7 +90,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Highe
       replace h : a + 3 + k = 1 := by simp [Fin.ext_iff] at h
       omega
     · dsimp [Fin.cast, Fin.pred]
-      rw [Nat.add_right_comm, Nat.add_sub_assoc (by norm_num : 1 ≤ 3)]
+      rw [Nat.add_right_comm, Nat.add_sub_assoc (by simp : 1 ≤ 3)]
       omega
   simp only [assoc]
   conv_lhs =>

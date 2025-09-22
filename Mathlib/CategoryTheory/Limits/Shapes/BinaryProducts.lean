@@ -28,7 +28,6 @@ braiding and associating isomorphisms, and the product comparison morphism.
 * [Stacks: coproducts of pairs](https://stacks.math.columbia.edu/tag/04AN)
 -/
 
-
 universe v v₁ u u₁ u₂
 
 open CategoryTheory
@@ -139,7 +138,7 @@ def mapPair : F ⟶ G where
   app
     | ⟨left⟩ => f
     | ⟨right⟩ => g
-  naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨u⟩⟩ => by aesop_cat
+  naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨u⟩⟩ => by cat_disch
 
 @[simp]
 theorem mapPair_left : (mapPair f g).app ⟨left⟩ = f :=
@@ -156,7 +155,7 @@ def mapPairIso (f : F.obj ⟨left⟩ ≅ G.obj ⟨left⟩) (g : F.obj ⟨right�
   NatIso.ofComponents (fun j ↦ match j with
     | ⟨left⟩ => f
     | ⟨right⟩ => g)
-    (fun ⟨⟨u⟩⟩ => by aesop_cat)
+    (fun ⟨⟨u⟩⟩ => by cat_disch)
 
 end
 
@@ -188,11 +187,11 @@ abbrev BinaryFan.fst {X Y : C} (s : BinaryFan X Y) :=
 abbrev BinaryFan.snd {X Y : C} (s : BinaryFan X Y) :=
   s.π.app ⟨WalkingPair.right⟩
 
-@[simp]
+-- Marking this `@[simp]` causes loops since `s.fst` is reducibly defeq to the LHS.
 theorem BinaryFan.π_app_left {X Y : C} (s : BinaryFan X Y) : s.π.app ⟨WalkingPair.left⟩ = s.fst :=
   rfl
 
-@[simp]
+-- Marking this `@[simp]` causes loops since `s.snd` is reducibly defeq to the LHS.
 theorem BinaryFan.π_app_right {X Y : C} (s : BinaryFan X Y) : s.π.app ⟨WalkingPair.right⟩ = s.snd :=
   rfl
 
@@ -247,11 +246,11 @@ lemma BinaryCofan.ext_hom_hom {A B : C} {c c' : BinaryCofan A B} (e : c.pt ≅ c
     (h₁ : c.inl ≫ e.hom = c'.inl) (h₂ : c.inr ≫ e.hom = c'.inr) :
     (ext e h₁ h₂).hom.hom = e.hom := rfl
 
-@[simp]
+-- This cannot be `@[simp]` because `s.inl` is reducibly defeq to the LHS.
 theorem BinaryCofan.ι_app_left {X Y : C} (s : BinaryCofan X Y) :
     s.ι.app ⟨WalkingPair.left⟩ = s.inl := rfl
 
-@[simp]
+-- This cannot be `@[simp]` because `s.inr` is reducibly defeq to the LHS.
 theorem BinaryCofan.ι_app_right {X Y : C} (s : BinaryCofan X Y) :
     s.ι.app ⟨WalkingPair.right⟩ = s.inr := rfl
 
@@ -281,7 +280,7 @@ section
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
--- Porting note: would it be okay to use this more generally?
+-- TODO: would it be okay to use this more generally?
 attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Eq
 
 /-- A binary fan with vertex `P` consists of the two projections `π₁ : P ⟶ X` and `π₂ : P ⟶ Y`. -/
@@ -407,17 +406,12 @@ noncomputable def BinaryFan.isLimitCompLeftIso {X Y X' : C} (c : BinaryFan X Y) 
     [IsIso f] (h : IsLimit c) : IsLimit (BinaryFan.mk (c.fst ≫ f) c.snd) := by
   fapply BinaryFan.isLimitMk
   · exact fun s => h.lift (BinaryFan.mk (s.fst ≫ inv f) s.snd)
-  · intro s -- Porting note: simp timed out here
-    simp only [Category.comp_id,BinaryFan.π_app_left,IsIso.inv_hom_id,
-      BinaryFan.mk_fst,IsLimit.fac_assoc,Category.assoc]
-  · intro s -- Porting note: simp timed out here
-    simp only [BinaryFan.π_app_right,BinaryFan.mk_snd,IsLimit.fac]
+  · simp
+  · simp
   · intro s m e₁ e₂
-     -- Porting note: simpa timed out here also
     apply BinaryFan.IsLimit.hom_ext h
-    · simpa only
-      [BinaryFan.π_app_left,BinaryFan.mk_fst,Category.assoc,IsLimit.fac,IsIso.eq_comp_inv]
-    · simpa only [BinaryFan.π_app_right,BinaryFan.mk_snd,IsLimit.fac]
+    · simpa
+    · simpa
 
 /-- If `Y' ≅ Y`, then `X x Y` also is the product of `X` and `Y'`. -/
 noncomputable def BinaryFan.isLimitCompRightIso {X Y Y' : C} (c : BinaryFan X Y) (f : Y ⟶ Y')
@@ -460,21 +454,13 @@ noncomputable def BinaryCofan.isColimitCompLeftIso {X Y X' : C} (c : BinaryCofan
     [IsIso f] (h : IsColimit c) : IsColimit (BinaryCofan.mk (f ≫ c.inl) c.inr) := by
   fapply BinaryCofan.isColimitMk
   · exact fun s => h.desc (BinaryCofan.mk (inv f ≫ s.inl) s.inr)
-  · intro s
-    -- Porting note: simp timed out here too
-    simp only [IsColimit.fac,BinaryCofan.ι_app_left,
-      Category.assoc,BinaryCofan.mk_inl,IsIso.hom_inv_id_assoc]
-  · intro s
-    -- Porting note: simp timed out here too
-    simp only [IsColimit.fac,BinaryCofan.ι_app_right,BinaryCofan.mk_inr]
+  · simp
+  · simp
   · intro s m e₁ e₂
     apply BinaryCofan.IsColimit.hom_ext h
     · rw [← cancel_epi f]
-    -- Porting note: simp timed out here too
-      simpa only [IsColimit.fac,BinaryCofan.ι_app_left,eq_self_iff_true,
-      Category.assoc,BinaryCofan.mk_inl,IsIso.hom_inv_id_assoc] using e₁
-    -- Porting note: simp timed out here too
-    · simpa only [IsColimit.fac,BinaryCofan.ι_app_right,eq_self_iff_true,BinaryCofan.mk_inr]
+      simpa using e₁
+    · simpa
 
 /-- If `Y' ≅ Y`, then `X ⨿ Y` also is the coproduct of `X` and `Y'`. -/
 noncomputable def BinaryCofan.isColimitCompRightIso {X Y Y' : C} (c : BinaryCofan X Y) (f : Y' ⟶ Y)
@@ -489,13 +475,11 @@ abbrev HasBinaryProduct (X Y : C) :=
 abbrev HasBinaryCoproduct (X Y : C) :=
   HasColimit (pair X Y)
 
-/-- If we have a product of `X` and `Y`, we can access it using `prod X Y` or
-    `X ⨯ Y`. -/
+/-- If we have a product of `X` and `Y`, we can access it using `prod X Y` or `X ⨯ Y`. -/
 noncomputable abbrev prod (X Y : C) [HasBinaryProduct X Y] :=
   limit (pair X Y)
 
-/-- If we have a coproduct of `X` and `Y`, we can access it using `coprod X Y` or
-    `X ⨿ Y`. -/
+/-- If we have a coproduct of `X` and `Y`, we can access it using `coprod X Y` or `X ⨿ Y`. -/
 noncomputable abbrev coprod (X Y : C) [HasBinaryCoproduct X Y] :=
   colimit (pair X Y)
 
@@ -526,8 +510,8 @@ noncomputable def prodIsProd (X Y : C) [HasBinaryProduct X Y] :
     IsLimit (BinaryFan.mk (prod.fst : X ⨯ Y ⟶ X) prod.snd) :=
   (limit.isLimit _).ofIsoLimit (Cones.ext (Iso.refl _) (fun ⟨u⟩ => by
     cases u
-    · dsimp; simp only [Category.id_comp]; rfl
-    · dsimp; simp only [Category.id_comp]; rfl
+    · simp [Category.id_comp]
+    · simp [Category.id_comp]
   ))
 
 /-- The binary cofan constructed from the coprojection maps is a colimit. -/
@@ -550,7 +534,7 @@ theorem coprod.hom_ext {W X Y : C} [HasBinaryCoproduct X Y] {f g : X ⨿ Y ⟶ W
   BinaryCofan.IsColimit.hom_ext (colimit.isColimit _) h₁ h₂
 
 /-- If the product of `X` and `Y` exists, then every pair of morphisms `f : W ⟶ X` and `g : W ⟶ Y`
-    induces a morphism `prod.lift f g : W ⟶ X ⨯ Y`. -/
+induces a morphism `prod.lift f g : W ⟶ X ⨯ Y`. -/
 noncomputable abbrev prod.lift {W X Y : C} [HasBinaryProduct X Y]
     (f : W ⟶ X) (g : W ⟶ Y) : W ⟶ X ⨯ Y :=
   limit.lift _ (BinaryFan.mk f g)
@@ -560,7 +544,7 @@ noncomputable abbrev diag (X : C) [HasBinaryProduct X X] : X ⟶ X ⨯ X :=
   prod.lift (𝟙 _) (𝟙 _)
 
 /-- If the coproduct of `X` and `Y` exists, then every pair of morphisms `f : X ⟶ W` and
-    `g : Y ⟶ W` induces a morphism `coprod.desc f g : X ⨿ Y ⟶ W`. -/
+`g : Y ⟶ W` induces a morphism `coprod.desc f g : X ⨿ Y ⟶ W`. -/
 noncomputable abbrev coprod.desc {W X Y : C} [HasBinaryCoproduct X Y]
     (f : X ⟶ W) (g : Y ⟶ W) : X ⨿ Y ⟶ W :=
   colimit.desc _ (BinaryCofan.mk f g)
@@ -606,26 +590,26 @@ instance coprod.epi_desc_of_epi_right {W X Y : C} [HasBinaryCoproduct X Y] (f : 
   epi_of_epi_fac <| coprod.inr_desc _ _
 
 /-- If the product of `X` and `Y` exists, then every pair of morphisms `f : W ⟶ X` and `g : W ⟶ Y`
-    induces a morphism `l : W ⟶ X ⨯ Y` satisfying `l ≫ Prod.fst = f` and `l ≫ Prod.snd = g`. -/
+induces a morphism `l : W ⟶ X ⨯ Y` satisfying `l ≫ Prod.fst = f` and `l ≫ Prod.snd = g`. -/
 noncomputable def prod.lift' {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W ⟶ Y) :
     { l : W ⟶ X ⨯ Y // l ≫ prod.fst = f ∧ l ≫ prod.snd = g } :=
   ⟨prod.lift f g, prod.lift_fst _ _, prod.lift_snd _ _⟩
 
 /-- If the coproduct of `X` and `Y` exists, then every pair of morphisms `f : X ⟶ W` and
-    `g : Y ⟶ W` induces a morphism `l : X ⨿ Y ⟶ W` satisfying `coprod.inl ≫ l = f` and
-    `coprod.inr ≫ l = g`. -/
+`g : Y ⟶ W` induces a morphism `l : X ⨿ Y ⟶ W` satisfying `coprod.inl ≫ l = f` and
+`coprod.inr ≫ l = g`. -/
 noncomputable def coprod.desc' {W X Y : C} [HasBinaryCoproduct X Y] (f : X ⟶ W) (g : Y ⟶ W) :
     { l : X ⨿ Y ⟶ W // coprod.inl ≫ l = f ∧ coprod.inr ≫ l = g } :=
   ⟨coprod.desc f g, coprod.inl_desc _ _, coprod.inr_desc _ _⟩
 
 /-- If the products `W ⨯ X` and `Y ⨯ Z` exist, then every pair of morphisms `f : W ⟶ Y` and
-    `g : X ⟶ Z` induces a morphism `prod.map f g : W ⨯ X ⟶ Y ⨯ Z`. -/
+`g : X ⟶ Z` induces a morphism `prod.map f g : W ⨯ X ⟶ Y ⨯ Z`. -/
 noncomputable def prod.map {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z]
     (f : W ⟶ Y) (g : X ⟶ Z) : W ⨯ X ⟶ Y ⨯ Z :=
   limMap (mapPair f g)
 
 /-- If the coproducts `W ⨿ X` and `Y ⨿ Z` exist, then every pair of morphisms `f : W ⟶ Y` and
-    `g : W ⟶ Z` induces a morphism `coprod.map f g : W ⨿ X ⟶ Y ⨿ Z`. -/
+`g : W ⟶ Z` induces a morphism `coprod.map f g : W ⨿ X ⟶ Y ⨿ Z`. -/
 noncomputable def coprod.map {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduct Y Z]
     (f : W ⟶ Y) (g : X ⟶ Z) : W ⨿ X ⟶ Y ⨿ Z :=
   colimMap (mapPair f g)
@@ -669,8 +653,8 @@ theorem prod.lift_fst_comp_snd_comp {W X Y Z : C} [HasBinaryProduct W Y] [HasBin
   rw [← prod.lift_map]
   simp
 
--- We take the right hand side here to be simp normal form, as this way composition lemmas for
--- `f ≫ h` and `g ≫ k` can fire (eg `id_comp`) , while `map_fst` and `map_snd` can still work just
+-- We take the right-hand side here to be simp normal form, as this way composition lemmas for
+-- `f ≫ h` and `g ≫ k` can fire (e.g. `id_comp`), while `map_fst` and `map_snd` can still work just
 -- as well.
 @[reassoc (attr := simp)]
 theorem prod.map_map {A₁ A₂ A₃ B₁ B₂ B₃ : C} [HasBinaryProduct A₁ B₁] [HasBinaryProduct A₂ B₂]
@@ -694,7 +678,7 @@ theorem prod.map_id_comp {X Y Z W : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasBinaryPro
     prod.map (𝟙 W) (f ≫ g) = prod.map (𝟙 W) f ≫ prod.map (𝟙 W) g := by simp
 
 /-- If the products `W ⨯ X` and `Y ⨯ Z` exist, then every pair of isomorphisms `f : W ≅ Y` and
-    `g : X ≅ Z` induces an isomorphism `prod.mapIso f g : W ⨯ X ≅ Y ⨯ Z`. -/
+`g : X ≅ Z` induces an isomorphism `prod.mapIso f g : W ⨯ X ≅ Y ⨯ Z`. -/
 @[simps]
 def prod.mapIso {W X Y Z : C} [HasBinaryProduct W X] [HasBinaryProduct Y Z] (f : W ≅ Y)
     (g : X ≅ Z) : W ⨯ X ≅ Y ⨯ Z where
@@ -773,8 +757,8 @@ theorem coprod.desc_comp_inl_comp_inr {W X Y Z : C} [HasBinaryCoproduct W Y]
     coprod.desc (g ≫ coprod.inl) (g' ≫ coprod.inr) = coprod.map g g' := by
   rw [← coprod.map_desc]; simp
 
--- We take the right hand side here to be simp normal form, as this way composition lemmas for
--- `f ≫ h` and `g ≫ k` can fire (eg `id_comp`) , while `inl_map` and `inr_map` can still work just
+-- We take the right-hand side here to be simp normal form, as this way composition lemmas for
+-- `f ≫ h` and `g ≫ k` can fire (e.g. `id_comp`), while `inl_map` and `inr_map` can still work just
 -- as well.
 @[reassoc (attr := simp)]
 theorem coprod.map_map {A₁ A₂ A₃ B₁ B₂ B₃ : C} [HasBinaryCoproduct A₁ B₁] [HasBinaryCoproduct A₂ B₂]
@@ -799,7 +783,7 @@ theorem coprod.map_id_comp {X Y Z W : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasBinaryC
     coprod.map (𝟙 W) (f ≫ g) = coprod.map (𝟙 W) f ≫ coprod.map (𝟙 W) g := by simp
 
 /-- If the coproducts `W ⨿ X` and `Y ⨿ Z` exist, then every pair of isomorphisms `f : W ≅ Y` and
-   `g : W ≅ Z` induces an isomorphism `coprod.mapIso f g : W ⨿ X ≅ Y ⨿ Z`. -/
+`g : W ≅ Z` induces an isomorphism `coprod.mapIso f g : W ⨿ X ≅ Y ⨿ Z`. -/
 @[simps]
 def coprod.mapIso {W X Y Z : C} [HasBinaryCoproduct W X] [HasBinaryCoproduct Y Z] (f : W ≅ Y)
     (g : X ≅ Z) : W ⨿ X ≅ Y ⨿ Z where
@@ -1033,8 +1017,7 @@ end ProdFunctor
 
 noncomputable section CoprodFunctor
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added category instance as it did not propagate
-variable {C} [Category.{v} C] [HasBinaryCoproducts C]
+variable {C} [HasBinaryCoproducts C]
 
 /-- The binary coproduct functor. -/
 @[simps]
@@ -1411,13 +1394,12 @@ protected def IsLimit.assoc (P : IsLimit sXY) (Q : IsLimit sYZ) {s : BinaryFan s
       · exact w ⟨.left⟩
       · specialize w ⟨.right⟩
         simp? at w says
-          simp only [pair_obj_right, BinaryFan.π_app_right, BinaryFan.assoc_snd,
+          simp only [pair_obj_right, BinaryFan.assoc_snd,
             Functor.const_obj_obj, pair_obj_left] at w
-        rw [← w]
-        simp
+        simp [← w]
     · specialize w ⟨.right⟩
       simp? at w says
-        simp only [pair_obj_right, BinaryFan.π_app_right, BinaryFan.assoc_snd,
+        simp only [pair_obj_right, BinaryFan.assoc_snd,
           Functor.const_obj_obj, pair_obj_left] at w
       simp [← w]
 

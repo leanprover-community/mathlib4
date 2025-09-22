@@ -86,6 +86,12 @@ variable {f}
 theorem iterate_fixed {x} (h : f x = x) (n : ℕ) : f^[n] x = x :=
   Nat.recOn n rfl fun n ihn ↦ by rw [iterate_succ_apply, h, ihn]
 
+/-- If a function `g` is invariant under composition with a function `f` (i.e., `g ∘ f = g`), then
+`g` is invariant under composition with any iterate of `f`. -/
+theorem iterate_invariant {g : α → β} (h : g ∘ f = g) (n : ℕ) : g ∘ f^[n] = g := match n with
+  | 0 => by rw [iterate_zero, comp_id]
+  | m + 1 => by rwa [iterate_succ, ← comp_assoc, iterate_invariant h m]
+
 theorem Injective.iterate (Hinj : Injective f) (n : ℕ) : Injective f^[n] :=
   Nat.recOn n injective_id fun _ ihn ↦ ihn.comp Hinj
 
@@ -171,14 +177,15 @@ theorem comp_iterate_pred_of_pos {n : ℕ} (hn : 0 < n) : f ∘ f^[n.pred] = f^[
   rw [← iterate_succ', Nat.succ_pred_eq_of_pos hn]
 
 /-- A recursor for the iterate of a function. -/
-def Iterate.rec (p : α → Sort*) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) (n : ℕ) :
-    p (f^[n] a) :=
+@[elab_as_elim]
+def Iterate.rec (motive : α → Sort*) {a : α} (arg : motive a)
+    {f : α → α} (app : ∀ a, motive a → motive (f a)) (n : ℕ) : motive (f^[n] a) :=
   match n with
-  | 0 => ha
-  | m+1 => Iterate.rec p h (h _ ha) m
+  | 0 => arg
+  | m + 1 => Iterate.rec motive (app _ arg) app m
 
-theorem Iterate.rec_zero (p : α → Sort*) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) :
-    Iterate.rec p h ha 0 = ha :=
+theorem Iterate.rec_zero (motive : α → Sort*) {f : α → α} (app : ∀ a, motive a → motive (f a))
+    {a : α} (arg : motive a) : Iterate.rec motive arg app 0 = arg :=
   rfl
 
 variable {f} {m n : ℕ} {a : α}

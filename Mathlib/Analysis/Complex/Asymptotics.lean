@@ -9,7 +9,7 @@ import Mathlib.Analysis.Asymptotics.Theta
 /-!
 # Lemmas about asymptotics and the natural embedding `ℝ → ℂ`
 
-In this file we prove several trivial lemmas about `Asymptotics.IsBigO` etc and `(↑) : ℝ → ℂ`.
+In this file we prove several trivial lemmas about `Asymptotics.IsBigO` etc. and `(↑) : ℝ → ℂ`.
 -/
 
 namespace Complex

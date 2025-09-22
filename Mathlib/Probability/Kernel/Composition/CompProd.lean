@@ -80,7 +80,7 @@ theorem compProdFun_iUnion (κ : Kernel α β) (η : Kernel (α × β) γ) [IsSF
   have h_Union : (fun b ↦ η (a, b) {c : γ | (b, c) ∈ ⋃ i, f i})
       = fun b ↦ η (a, b) (⋃ i, {c : γ | (b, c) ∈ f i}) := by
     ext1 b
-    congr with c
+    congr 1 with c
     simp only [Set.mem_iUnion, Set.mem_setOf_eq]
   rw [compProdFun, h_Union]
   have h_tsum : (fun b ↦ η (a, b) (⋃ i, {c : γ | (b, c) ∈ f i}))
@@ -359,7 +359,7 @@ theorem compProd_restrict {s : Set β} {t : Set γ} (hs : MeasurableSet s) (ht :
   rw [compProd_apply hu, restrict_apply' _ _ _ hu, compProd_apply (hu.inter (hs.prod ht))]
   simp only [restrict_apply, Set.preimage, Measure.restrict_apply' ht, Set.mem_inter_iff,
     Set.mem_prod]
-  have (b) : η (a, b) {c : γ | (b, c) ∈ u ∧ b ∈ s ∧ c ∈ t} =
+  have (b : _) : η (a, b) {c : γ | (b, c) ∈ u ∧ b ∈ s ∧ c ∈ t} =
       s.indicator (fun b => η (a, b) ({c : γ | (b, c) ∈ u} ∩ t)) b := by
     classical
     rw [Set.indicator_apply]
@@ -420,7 +420,6 @@ theorem lintegral_compProd' (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kerne
   ext1 n
   refine SimpleFunc.induction ?_ ?_ (F n)
   · intro c s hs
-    classical -- Porting note: Added `classical` for `Set.piecewise_eq_indicator`
     simp +unfoldPartialApp only [SimpleFunc.const_zero,
       SimpleFunc.coe_piecewise, SimpleFunc.coe_const, SimpleFunc.coe_zero,
       Set.piecewise_eq_indicator, Function.const, lintegral_indicator_const hs]

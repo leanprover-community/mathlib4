@@ -29,7 +29,7 @@ Generalize linear independence to:
   * arbitrary sets of polynomials which are pairwise different degree.
 -/
 
-open Submodule
+open Module Submodule
 open scoped Function
 
 variable (R : Type*)
@@ -38,9 +38,9 @@ namespace Polynomial
 
 /-- A sequence of polynomials such that the polynomial at index `i` has degree `i`. -/
 structure Sequence [Semiring R] where
-  /-- The `i`'th element in the sequence. Use `S i` instead, defined via `CoeFun`. -/
+  /-- The `i`-th element in the sequence. Use `S i` instead, defined via `CoeFun`. -/
   protected elems' : ℕ → R[X]
-  /-- The `i`'th element in the sequence has degree `i`. Use `S.degree_eq` instead. -/
+  /-- The `i`-th element in the sequence has degree `i`. Use `S.degree_eq` instead. -/
   protected degree_eq' (i : ℕ) : (elems' i).degree = i
 
 attribute [coe] Sequence.elems'
@@ -174,9 +174,9 @@ variable (hCoeff : ∀ i, IsUnit (S i).leadingCoeff)
 noncomputable def basis : Basis ℕ R R[X] :=
   Basis.mk S.linearIndependent <| eq_top_iff.mp <| S.span hCoeff
 
-/-- The `i`'th basis vector is the `i`'th polynomial in the sequence. -/
+/-- The `i`-th basis vector is the `i`-th polynomial in the sequence. -/
 @[simp]
-lemma basis_eq_self  (i : ℕ) : S.basis hCoeff i = S i := Basis.mk_apply _ _ _
+lemma basis_eq_self (i : ℕ) : S.basis hCoeff i = S i := Basis.mk_apply _ _ _
 
 /-- Basis elements have strictly monotone degree. -/
 lemma basis_degree_strictMono : StrictMono <| degree ∘ (S.basis hCoeff) := fun _ _  ↦ by simp

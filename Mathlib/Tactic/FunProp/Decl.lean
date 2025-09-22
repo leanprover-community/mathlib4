@@ -36,7 +36,7 @@ structure FunPropDecls where
   decls : DiscrTree FunPropDecl := {}
   deriving Inhabited
 
-set_option linter.style.docString false in
+set_option linter.style.docString.empty false in
 /-- -/
 abbrev FunPropDeclsExt := SimpleScopedEnvExtension FunPropDecl FunPropDecls
 
@@ -65,7 +65,7 @@ def addFunPropDecl (declName : Name) : MetaM Unit := do
   let path ← DiscrTree.mkPath e
 
   -- find the argument position of the function `f` in `P f`
-  let mut .some funArgId ← (xs.zip bi).findIdxM? fun (x,bi) => do
+  let mut some funArgId ← (xs.zip bi).findIdxM? fun (x,bi) => do
     if (← inferType x).isForall && bi.isExplicit then
       return true
     else
@@ -115,15 +115,15 @@ def isFunPropGoal (e : Expr) : MetaM Bool := do
 /-- Returns function property declaration from `e = P f`. -/
 def getFunPropDecl? (e : Expr) : MetaM (Option FunPropDecl) := do
   match ← getFunProp? e with
-  | .some (decl,_) => return decl
-  | .none => return none
+  | some (decl, _) => return decl
+  | none => return none
 
 
 /-- Returns function `f` from `e = P f` and `P` is function property. -/
 def getFunPropFun? (e : Expr) : MetaM (Option Expr) := do
   match ← getFunProp? e with
-  | .some (_,f) => return f
-  | .none => return none
+  | some (_, f) => return f
+  | none => return none
 
 
 open Elab Term in

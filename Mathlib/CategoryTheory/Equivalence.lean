@@ -44,7 +44,7 @@ if it is full, faithful and essentially surjective.
 
 * `Equivalence.mk`: upgrade an equivalence to a (half-)adjoint equivalence
 * `isEquivalence_iff_of_iso`: when `F` and `G` are isomorphic functors,
-`F` is an equivalence iff `G` is.
+  `F` is an equivalence iff `G` is.
 * `Functor.asEquivalenceFunctor`: construction of an equivalence of categories from
   a functor `F` which satisfies the property `F.IsEquivalence` (i.e. `F` is full, faithful
   and essentially surjective).
@@ -62,32 +62,40 @@ open CategoryTheory.Functor NatIso Category
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
-/-- We define an equivalence as a (half)-adjoint equivalence, a pair of functors with
-  a unit and counit which are natural isomorphisms and the triangle law `Fη ≫ εF = 1`, or in other
-  words the composite `F ⟶ FGF ⟶ F` is the identity.
+/-- An equivalence of categories.
 
-  In `unit_inverse_comp`, we show that this is actually an adjoint equivalence, i.e., that the
-  composite `G ⟶ GFG ⟶ G` is also the identity.
+We define an equivalence between `C` and `D`, with notation `C ≌ D`, as a half-adjoint equivalence:
+a pair of functors `F : C ⥤ D` and `G : D ⥤ C` with a unit `η : 𝟭 C ≅ F ⋙ G` and counit
+`ε : G ⋙ F ≅ 𝟭 D`, such that the natural isomorphisms `η` and `ε` satisfy the triangle law for
+`F`: namely, `Fη ≫ εF = 𝟙 F`. Or, in other words, the composite `F` ⟶ `F ⋙ G ⋙ F` ⟶ `F` is the
+identity.
 
-  The triangle equation is written as a family of equalities between morphisms, it is more
-  complicated if we write it as an equality of natural transformations, because then we would have
-  to insert natural transformations like `F ⟶ F1`. -/
+In `unit_inverse_comp`, we show that this is sufficient to establish a full adjoint
+equivalence. I.e., the composite `G` ⟶ `G ⋙ F ⋙ G` ⟶ `G` is also the identity.
+
+The triangle equation `functor_unitIso_comp` is written as a family of equalities between
+morphisms. It is more complicated if we write it as an equality of natural transformations, because
+then we would either have to insert natural transformations like `F ⟶ F𝟭` or abuse defeq. -/
 @[ext, stacks 001J]
 structure Equivalence (C : Type u₁) (D : Type u₂) [Category.{v₁} C] [Category.{v₂} D] where mk' ::
-  /-- A functor in one direction -/
+  /-- The forwards direction of an equivalence. -/
   functor : C ⥤ D
-  /-- A functor in the other direction -/
+  /-- The backwards direction of an equivalence. -/
   inverse : D ⥤ C
-  /-- The composition `functor ⋙ inverse` is isomorphic to the identity -/
+  /-- The composition `functor ⋙ inverse` is isomorphic to the identity. -/
   unitIso : 𝟭 C ≅ functor ⋙ inverse
-  /-- The composition `inverse ⋙ functor` is also isomorphic to the identity -/
+  /-- The composition `inverse ⋙ functor` is isomorphic to the identity. -/
   counitIso : inverse ⋙ functor ≅ 𝟭 D
-  /-- The natural isomorphisms compose to the identity. -/
+  /-- The triangle law for the forwards direction of an equivalence: the unit and counit compose
+  to the identity when whiskered along the forwards direction.
+
+  We state this as a family of equalities among morphisms instead of an equality of natural
+  transformations to avoid abusing defeq or inserting natural transformations like `F ⟶ F𝟭`. -/
   functor_unitIso_comp :
     ∀ X : C, functor.map (unitIso.hom.app X) ≫ counitIso.hom.app (functor.obj X) =
-      𝟙 (functor.obj X) := by aesop_cat
+      𝟙 (functor.obj X) := by cat_disch
 
-/-- We infix the usual notation for an equivalence -/
+@[inherit_doc Equivalence]
 infixr:10 " ≌ " => Equivalence
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
@@ -141,7 +149,7 @@ lemma asNatTrans_mkHom {e f : C ≌ D} (η : e ⟶ f) :
 lemma id_asNatTrans {e : C ≌ D} : asNatTrans (𝟙 e) = 𝟙 _ := rfl
 
 @[simp, reassoc]
-lemma comp_asNatTrans {e f g: C ≌ D} (α : e ⟶ f) (β : f ⟶ g) :
+lemma comp_asNatTrans {e f g : C ≌ D} (α : e ⟶ f) (β : f ⟶ g) :
     asNatTrans (α ≫ β) = asNatTrans α ≫ asNatTrans β :=
   rfl
 
@@ -149,7 +157,7 @@ lemma comp_asNatTrans {e f g: C ≌ D} (α : e ⟶ f) (β : f ⟶ g) :
 lemma mkHom_id_functor {e : C ≌ D} : mkHom (𝟙 e.functor) = 𝟙 e := rfl
 
 @[simp, reassoc]
-lemma mkHom_comp {e f g: C ≌ D} (α : e.functor ⟶ f.functor) (β : f.functor ⟶ g.functor) :
+lemma mkHom_comp {e f g : C ≌ D} (α : e.functor ⟶ f.functor) (β : f.functor ⟶ g.functor) :
     mkHom (α ≫ β) = mkHom α ≫ mkHom β :=
   rfl
 
@@ -559,11 +567,11 @@ def changeFunctor (e : C ≌ D) {G : C ⥤ D} (iso : e.functor ≅ G) : C ≌ D 
   counitIso := isoWhiskerLeft _ iso.symm ≪≫ e.counitIso
 
 /-- Compatibility of `changeFunctor` with identity isomorphisms of functors -/
-theorem changeFunctor_refl (e : C ≌ D) : e.changeFunctor (Iso.refl _) = e := by aesop_cat
+theorem changeFunctor_refl (e : C ≌ D) : e.changeFunctor (Iso.refl _) = e := by cat_disch
 
 /-- Compatibility of `changeFunctor` with the composition of isomorphisms of functors -/
 theorem changeFunctor_trans (e : C ≌ D) {G G' : C ⥤ D} (iso₁ : e.functor ≅ G) (iso₂ : G ≅ G') :
-    (e.changeFunctor iso₁).changeFunctor iso₂ = e.changeFunctor (iso₁ ≪≫ iso₂) := by aesop_cat
+    (e.changeFunctor iso₁).changeFunctor iso₂ = e.changeFunctor (iso₁ ≪≫ iso₂) := by cat_disch
 
 /-- If `e : C ≌ D` is an equivalence of categories, and `iso : e.functor ≅ G` is
 an isomorphism, then there is an equivalence of categories whose inverse is `G`. -/

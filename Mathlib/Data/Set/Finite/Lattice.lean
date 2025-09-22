@@ -179,6 +179,14 @@ lemma finite_iUnion_iff {ι : Type*} {s : ι → Set α} (hs : Pairwise fun i j 
     exact .of_injective u u_inj
   mpr h := h.2.iUnion (fun _ _ ↦ h.1 _) (by simp [not_nonempty_iff_eq_empty])
 
+protected lemma Infinite.iUnion {ι : Sort*} {s : ι → Set α} (i : ι) (hi : (s i).Infinite) :
+    (⋃ i, s i).Infinite :=
+  fun h ↦ hi (h.subset (Set.subset_iUnion s i))
+
+lemma Infinite.iUnion₂ {ι : Sort*} {κ : ι → Sort*} {s : ∀ i, κ i → Set α} (i : ι) (j : κ i)
+    (hij : (s i j).Infinite) : (⋃ (i) (j), s i j).Infinite :=
+  fun hc ↦ hij (hc.subset <| subset_iUnion₂ _ _)
+
 @[simp] lemma finite_iUnion_of_subsingleton {ι : Sort*} [Subsingleton ι] {s : ι → Set α} :
     (⋃ i, s i).Finite ↔ ∀ i, (s i).Finite := by
   rw [← iUnion_plift_down, finite_iUnion_iff _root_.Subsingleton.pairwise]
@@ -454,5 +462,12 @@ theorem DirectedOn.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} {f
   rw [Set.biUnion_eq_iUnion] at hs
   haveI := hn.coe_sort
   simpa using (directed_comp.2 hc.directed_val).exists_mem_subset_of_finset_subset_biUnion hs
+
+theorem DirectedOn.exists_mem_subset_of_finite_of_subset_sUnion {α : Type*} {c : Set (Set α)}
+    (hn : c.Nonempty) (hc : DirectedOn (· ⊆ ·) c) {s : Set α} (hs : s.Finite)
+    (hsc : s ⊆ sUnion c) : ∃ t ∈ c, s ⊆ t := by
+  rw [← hs.coe_toFinset, sUnion_eq_biUnion] at hsc
+  have := DirectedOn.exists_mem_subset_of_finset_subset_biUnion hn hc hsc
+  exact hs.coe_toFinset ▸ this
 
 end LinearOrder

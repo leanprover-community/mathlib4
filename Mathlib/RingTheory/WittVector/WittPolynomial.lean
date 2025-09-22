@@ -190,7 +190,7 @@ The polynomials `xInTermsOfW` give the coordinate transformation in the backward
 that corresponds to the ordinary `X n`. -/
 noncomputable def xInTermsOfW [Invertible (p : R)] : ℕ → MvPolynomial ℕ R
   | n => (X n - ∑ i : Fin n,
-          C ((p : R) ^ (i : ℕ)) * xInTermsOfW i ^ p ^ (n - (i : ℕ))) * C ((⅟ p : R) ^ n)
+          C ((p : R) ^ (i : ℕ)) * xInTermsOfW i ^ p ^ (n - (i : ℕ))) * C ((⅟p : R) ^ n)
 
 theorem xInTermsOfW_eq [Invertible (p : R)] {n : ℕ} : xInTermsOfW p R n =
     (X n - ∑ i ∈ range n, C ((p : R) ^ i) *

@@ -155,7 +155,7 @@ theorem next_cons_concat (y : α) (hy : x ≠ y) (hx : x ∉ l)
     (h : x ∈ y :: l ++ [x] := mem_append_right _ (mem_singleton_self x)) :
     next (y :: l ++ [x]) x h = y := by
   rw [next, nextOr_concat]
-  · rfl
+  · simp
   · simp [hy, hx]
 
 theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ y)
@@ -273,10 +273,6 @@ theorem next_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
         simp at this; simp [this] at hi'
       · rw [getElem_cons_succ]; exact get_mem _ _
 
-@[deprecated (since := "2025-02-015")] alias next_get := next_getElem
-
--- Unused variable linter incorrectly reports that `h` is unused here.
-set_option linter.unusedVariables false in
 theorem prev_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
     prev l l[i] (get_mem _ _) =
       (l[(i + (l.length - 1)) % l.length]'(Nat.mod_lt _ (by omega))) :=
@@ -316,8 +312,6 @@ theorem prev_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
           suffices Fin.mk _ hi = ⟨1, by omega⟩ by rwa [Fin.mk.inj_iff] at this
           rw [nodup_iff_injective_get] at h
           apply h; rw [← H]; simp
-
-@[deprecated (since := "2025-02-15")] alias prev_get := prev_getElem
 
 theorem pmap_next_eq_rotate_one (h : Nodup l) : (l.pmap l.next fun _ h => h) = l.rotate 1 := by
   apply List.ext_getElem
@@ -450,8 +444,8 @@ instance : Inhabited (Cycle α) :=
 
 /-- An induction principle for `Cycle`. Use as `induction s`. -/
 @[elab_as_elim, induction_eliminator]
-theorem induction_on {C : Cycle α → Prop} (s : Cycle α) (H0 : C nil)
-    (HI : ∀ (a) (l : List α), C ↑l → C ↑(a :: l)) : C s :=
+theorem induction_on {motive : Cycle α → Prop} (s : Cycle α) (nil : motive nil)
+    (cons : ∀ (a) (l : List α), motive ↑l → motive ↑(a :: l)) : motive s :=
   Quotient.inductionOn' s fun l => by
     refine List.recOn l ?_ ?_ <;> simp only [mk''_eq_coe, coe_nil]
     assumption'
@@ -850,8 +844,9 @@ theorem chain_mono : Monotone (Chain : (α → α → Prop) → Cycle α → Pro
   Chain.imp hab
 
 theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s := by
-  induction' s with a l _
-  · exact fun _ => Cycle.Chain.nil r
+  induction s with
+  | nil => exact fun _ ↦ Cycle.Chain.nil r
+  | cons a l => ?_
   intro hs
   have Ha : a ∈ (a :: l : Cycle α) := by simp
   have Hl : ∀ {b} (_hb : b ∈ l), b ∈ (a :: l : Cycle α) := @fun b hb => by simp [hb]
@@ -875,8 +870,9 @@ theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s := b
 
 theorem chain_iff_pairwise [IsTrans α r] : Chain r s ↔ ∀ a ∈ s, ∀ b ∈ s, r a b :=
   ⟨by
-    induction' s with a l _
-    · exact fun _ b hb => (notMem_nil _ hb).elim
+    induction s with
+    | nil => exact fun _ b hb ↦ (notMem_nil _ hb).elim
+    | cons a l => ?_
     intro hs b hb c hc
     rw [Cycle.chain_coe_cons, List.chain_iff_pairwise] at hs
     simp only [pairwise_append, pairwise_cons, mem_append, mem_singleton, List.not_mem_nil,
@@ -889,9 +885,10 @@ theorem chain_iff_pairwise [IsTrans α r] : Chain r s ↔ ∀ a ∈ s, ∀ b ∈
     · exact _root_.trans (hs.2.2 b hb) (hs.1 c (Or.inl hc)), Cycle.chain_of_pairwise⟩
 
 theorem Chain.eq_nil_of_irrefl [IsTrans α r] [IsIrrefl α r] (h : Chain r s) : s = Cycle.nil := by
-  induction' s with a l _ h
-  · rfl
-  · have ha : a ∈ a :: l := mem_cons_self
+  induction s with
+  | nil => rfl
+  | cons a l h =>
+    have ha : a ∈ a :: l := mem_cons_self
     exact (irrefl_of r a <| chain_iff_pairwise.1 h a ha a ha).elim
 
 theorem Chain.eq_nil_of_well_founded [IsWellFounded α r] (h : Chain r s) : s = Cycle.nil :=

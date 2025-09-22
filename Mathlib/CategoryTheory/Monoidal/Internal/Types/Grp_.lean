@@ -16,6 +16,8 @@ is equivalent to the category of "native" bundled groups.
 Moreover, this equivalence is compatible with the forgetful functors to `Type`.
 -/
 
+assert_not_exists Field
+
 universe v u
 
 open CategoryTheory Mon_Class
@@ -55,7 +57,7 @@ noncomputable def grpTypeEquivalenceGrp : Grp_ (Type u) ≌ Grp.{u} where
   unitIso := Iso.refl _
   counitIso := NatIso.ofComponents
     (fun A => MulEquiv.toGrpIso { Equiv.refl _ with map_mul' := fun _ _ => rfl })
-    (by aesop_cat)
+    (by cat_disch)
 
 /-- The equivalences `Mon_ (Type u) ≌ MonCat.{u}` and `Grp_ (Type u) ≌ Grp.{u}`
 are naturally compatible with the forgetful functors to `MonCat` and `Mon_ (Type u)`.

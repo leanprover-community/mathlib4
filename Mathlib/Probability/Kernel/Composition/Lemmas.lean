@@ -141,7 +141,7 @@ lemma parallelComp_comp_prod [IsSFiniteKernel κ] {η : Kernel β γ} [IsSFinite
   rw [← parallelComp_comp_copy, ← comp_assoc, parallelComp_comp_parallelComp,
     ← parallelComp_comp_copy]
 
-lemma parallelComp_comm {η : Kernel γ δ}:
+lemma parallelComp_comm {η : Kernel γ δ} :
     (Kernel.id ∥ₖ κ) ∘ₖ (η ∥ₖ Kernel.id) = (η ∥ₖ Kernel.id) ∘ₖ (Kernel.id ∥ₖ κ) := by
   by_cases hκ : IsSFiniteKernel κ
   swap; · simp [hκ]

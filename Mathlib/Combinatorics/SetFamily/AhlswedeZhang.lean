@@ -69,8 +69,7 @@ private lemma binomial_sum_eq (h : n < m) :
   rw [(eq_mul_inv_iff_mul_eq₀ hi₄).mpr this]
   have : (m - i : ℚ) ≠ 0 := sub_ne_zero_of_ne (cast_lt.mpr h₂).ne'
   have : (m.choose i : ℚ) ≠ 0 := cast_ne_zero.2 (choose_pos h₂.le).ne'
-  field_simp
-  ring
+  simp [field, *]
 
 private lemma Fintype.sum_div_mul_card_choose_card :
     ∑ s : Finset α, (card α / ((card α - #s) * (card α).choose #s) : ℚ) =
@@ -79,7 +78,7 @@ private lemma Fintype.sum_div_mul_card_choose_card :
   have : ∀ {x : ℕ}, ∀ s ∈ powersetCard x (univ : Finset α),
     (card α / ((card α - #s) * (card α).choose #s) : ℚ) =
       card α / ((card α - x) * (card α).choose x) := by
-    intros n s hs
+    intro n s hs
     rw [mem_powersetCard_univ.1 hs]
   simp_rw [sum_congr rfl this, sum_const, card_powersetCard, card_univ, nsmul_eq_mul, mul_div,
     mul_comm, ← mul_div]

@@ -131,7 +131,7 @@ theorem ker_eq_top {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊤ ↔ f = 0 :=
   ⟨fun h => ext fun _ => mem_ker.1 <| h.symm ▸ trivial, fun h => h.symm ▸ ker_zero⟩
 
 theorem exists_ne_zero_of_sSup_eq_top {f : M →ₛₗ[τ₁₂] M₂} (h : f ≠ 0) (s : Set (Submodule R M))
-    (hs : sSup s = ⊤): ∃ m ∈ s, f ∘ₛₗ m.subtype ≠ 0 := by
+    (hs : sSup s = ⊤) : ∃ m ∈ s, f ∘ₛₗ m.subtype ≠ 0 := by
   contrapose! h
   simp_rw [← ker_eq_top, eq_top_iff, ← hs, sSup_le_iff, le_ker_iff_comp_subtype_eq_zero]
   exact h

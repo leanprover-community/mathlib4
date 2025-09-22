@@ -45,8 +45,6 @@ variable [TopologicalSpace B] [TopologicalSpace F]
 theorem isInducing_toProd : IsInducing (TotalSpace.toProd B F) :=
   ⟨by simp only [instTopologicalSpaceProd, induced_inf, induced_compose]; rfl⟩
 
-@[deprecated (since := "2024-10-28")] alias inducing_toProd := isInducing_toProd
-
 /-- Homeomorphism between the total space of the trivial bundle and the Cartesian product. -/
 @[simps!]
 def homeomorphProd : TotalSpace F (Trivial B F) ≃ₜ B × F :=
@@ -111,9 +109,6 @@ theorem FiberBundle.Prod.isInducing_diag :
     IsInducing (fun p ↦ (⟨p.1, p.2.1⟩, ⟨p.1, p.2.2⟩) :
       TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → TotalSpace F₁ E₁ × TotalSpace F₂ E₂) :=
   ⟨rfl⟩
-
-@[deprecated (since := "2024-10-28")]
-alias FiberBundle.Prod.inducing_diag := FiberBundle.Prod.isInducing_diag
 
 end Defs
 
@@ -215,7 +210,7 @@ noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ 
   target_eq := rfl
   proj_toFun _ _ := rfl
 
-@[deprecated (since := "2025-0619")] alias baseSet_prod := prod_baseSet
+@[deprecated (since := "2025-06-19")] alias baseSet_prod := prod_baseSet
 
 theorem prod_symm_apply (x : B) (w₁ : F₁) (w₂ : F₂) :
     (prod e₁ e₂).toPartialEquiv.symm (x, w₁, w₂) = ⟨x, e₁.symm x w₁, e₂.symm x w₂⟩ := rfl

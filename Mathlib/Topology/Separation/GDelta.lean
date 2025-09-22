@@ -126,7 +126,6 @@ class T6Space (X : Type u) [TopologicalSpace X] : Prop extends T0Space X, Perfec
 -- see Note [lower instance priority]
 /-- A `T₆` space is a `T₅` space. -/
 instance (priority := 100) T6Space.toT5Space [T6Space X] : T5Space X where
-  toT1Space := t1Space_of_t0Space_of_r0Space
 
 end PerfectlyNormal
 
