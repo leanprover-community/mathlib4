@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.Data.Finset.Sort
+import Mathlib.Tactic.NoncommRing
 import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.Topology.Category.Profinite.Nobeling.Basic
 
@@ -197,11 +198,11 @@ theorem GoodProducts.spanFin [WellFoundedLT I] :
     split_ifs
     · rw [hmap]
       exact finsuppSum_mem_span_eval _ _ ha hc
-    · ring_nf
+    · noncomm_ring
+      -- we use `noncomm_ring` even though this is a commutative ring, because we want a weaker
+      -- normalization which preserves multiplication order (i.e. doesn't use commutativity rules)
       rw [hmap]
       apply Submodule.add_mem
-      · apply Submodule.neg_mem
-        exact finsuppSum_mem_span_eval _ _ ha hc
       · apply Submodule.finsuppSum_mem
         intro m hm
         apply Submodule.smul_mem
@@ -217,6 +218,8 @@ theorem GoodProducts.spanFin [WellFoundedLT I] :
           apply le_of_lt
           rw [List.chain'_cons_cons] at ha
           exact (List.lt_iff_lex_lt _ _).mp (List.Lex.rel ha.1)
+      · apply Submodule.smul_mem
+        exact finsuppSum_mem_span_eval _ _ ha hc
 
 end Fin
 
