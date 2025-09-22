@@ -40,7 +40,9 @@ theorem ringKrullDim_A_eq_one : ringKrullDim (A k) = 1 := by
       Subtype.ext hxy⟩
     have := hxy ▸ congr(PowerSeries.constantCoeff $(y.3))
     simp only [map_mul, ← hz, constantCoeff_one] at this
-    have hz : z ≠ 0 := fun h ↦ by subst h; simp at this
+    have hz : z ≠ 0 := by
+      intro rfl
+      simp at this
     simpa only [← mul_assoc, ← RatFunc.C.map_mul, inv_mul_cancel₀ hz, RatFunc.C.map_one,
     one_mul, mul_one] using congr(RatFunc.C z⁻¹ * $this.symm)
   have : IsLocalRing (A k) := Subring.isLocalRing_of_unit (A k) h_unit

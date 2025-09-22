@@ -21,8 +21,8 @@ lemma ringKrullDim_eq_one_iff_of_isLocalRing_isDomain {R : Type*}
   · intro x hx
     rw [Ideal.radical_eq_sInf]
     refine le_sInf (fun J ⟨hJ1, hJ2⟩ ↦ ?_)
-    have : J.IsMaximal := by
-      refine Ring.krullDimLE_one_iff_of_noZeroDivisors.mp (Ring.krullDimLE_iff.mpr (by simp [h]))
+    have : J.IsMaximal :=
+      Ring.krullDimLE_one_iff_of_noZeroDivisors.mp (Ring.krullDimLE_iff.mpr (by simp [h]))
         J (fun hJ3 ↦ hx (by simp_all)) hJ2
     exact le_of_eq (IsLocalRing.eq_maximalIdeal this).symm
   · have : ¬ ringKrullDim R ≤ 0 := fun h ↦ by
@@ -36,8 +36,7 @@ lemma ringKrullDim_eq_one_iff_of_isLocalRing_isDomain {R : Type*}
       apply by_contradiction fun h ↦ (hI (le_antisymm (fun x ↦ ?_) bot_le))
       simp only [ne_eq, not_exists, not_and, not_not] at h
       exact fun hx ↦ h x hx
-    specialize h x hx
-    have : IsLocalRing.maximalIdeal R ≤ I := le_trans h
+    have : IsLocalRing.maximalIdeal R ≤ I := le_trans (h x hx)
       ((Ideal.IsRadical.radical_le_iff hI_prime.isRadical).mpr
         ((Ideal.span_singleton_le_iff_mem I).mpr hI))
     have := Ideal.IsMaximal.eq_of_le (IsLocalRing.maximalIdeal.isMaximal R) hI_prime.ne_top this
