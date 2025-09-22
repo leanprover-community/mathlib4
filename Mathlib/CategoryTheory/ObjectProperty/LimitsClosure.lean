@@ -10,6 +10,11 @@ import Mathlib.Order.TransfiniteIteration
 /-!
 # Closure of a property of objects under limits of certain shapes
 
+In this file, given a property `P` of objects in a category `C` and
+family of categories `J : α → Type _`, we introduce the closure
+`P.limitsClosure J` of `P` under limits of shapes `J a` for all `a : α`,
+and under certain small circumstances, we show that its essentially small.
+
 -/
 universe w w' t v' u' v u
 
