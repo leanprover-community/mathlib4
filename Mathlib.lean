@@ -1415,6 +1415,7 @@ import Mathlib.Analysis.CStarAlgebra.CStarMatrix
 import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.CStarAlgebra.CompletelyPositiveMap
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Commute
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Continuity
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
@@ -1423,6 +1424,7 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Note
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Pi
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Range
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Restrict
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
