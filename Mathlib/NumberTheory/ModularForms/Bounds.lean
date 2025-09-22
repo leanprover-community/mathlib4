@@ -201,7 +201,7 @@ lemma ModularFormClass.exists_petersson_le
     [FunLike F ℍ ℂ] [FunLike F' ℍ ℂ] [ModularFormClass F Γ k] [ModularFormClass F' Γ k] :
     ∃ C, ∀ τ, ‖petersson k f f' τ‖ ≤ C * max τ.im (1 / τ.im) ^ k := by
   have := ModularGroup.exists_bound_of_subgroup_invariant_of_isBigO
-      (ModularFormClass.petersson_continuous k Γ f f') (mod_cast hk : 0 ≤ (k : ℝ))
+      (show Continuous (petersson k f f') by fun_prop) (mod_cast hk : 0 ≤ (k : ℝ))
       (fun g ↦ ?_) (fun g hg τ ↦ SlashInvariantFormClass.petersson_smul hg)
   · simpa using this
   · simp_rw [← UpperHalfPlane.petersson_slash_SL, Real.rpow_intCast]
@@ -218,7 +218,7 @@ lemma CuspFormClass.petersson_bounded_left
     [FunLike F ℍ ℂ] [FunLike F' ℍ ℂ] [CuspFormClass F Γ k] [ModularFormClass F' Γ k] :
     ∃ C, ∀ τ, ‖petersson k f f' τ‖ ≤ C := by
   refine ModularGroup.exists_bound_of_subgroup_invariant
-    (ModularFormClass.petersson_continuous k Γ f f') (fun g ↦ ?_)
+    (show Continuous (petersson k f f') by fun_prop) (fun g ↦ ?_)
     fun g hg τ ↦ SlashInvariantFormClass.petersson_smul hg
   apply IsZeroAtImInfty.isBoundedAtImInfty
   simp_rw [← UpperHalfPlane.petersson_slash_SL]
