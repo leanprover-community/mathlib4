@@ -1008,6 +1008,8 @@ theorem IndepFun.neg_left {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace �
     [MeasurableNeg β] (hfg : IndepFun f g κ μ) :
     IndepFun (-f) g κ μ := hfg.comp measurable_neg measurable_id
 
+/-- Two random variables `f, g` are independent given a kernel `κ` and a measure `μ` iff
+`μ ⊗ₘ κ.map (fun ω ↦ (f ω, g ω)) = μ ⊗ₘ (κ.map f ×ₖ κ.map g)`. -/
 theorem indepFun_iff_compProd_map_prod_eq_compProd_prod_map_map
     {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
     [IsFiniteMeasure μ] [IsFiniteKernel κ] {f : Ω → β} {g : Ω → γ}
