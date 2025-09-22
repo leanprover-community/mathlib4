@@ -100,7 +100,7 @@ lemma nnrpow_def {a : A} {y : ℝ≥0} : a ^ y = cfcₙ (NNReal.nnrpow · y) a :
 
 lemma nnrpow_eq_cfcₙ_real [T2Space A] [IsTopologicalRing A] (a : A)
     (y : ℝ≥0) (ha : 0 ≤ a := by cfc_tac) : a ^ y = cfcₙ (fun x : ℝ => x ^ (y : ℝ)) a := by
-  rw [nnrpow_def, cfcₙ_nnreal_eq_real]
+  rw [nnrpow_def, cfcₙ_nnreal_eq_real ..]
   refine cfcₙ_congr ?_
   intro x hx
   have : 0 ≤ x := by grind
@@ -648,7 +648,7 @@ lemma _root_.IsUnit.cfcNNRpow (a : A) (y : ℝ≥0) (ha_unit : IsUnit a) (hy : y
 
 lemma isUnit_sqrt_iff (a : A) (ha : 0 ≤ a := by cfc_tac) : IsUnit (sqrt a) ↔ IsUnit a := by
   rw [sqrt_eq_rpow]
-  exact isUnit_rpow_iff a _ (by norm_num) ha
+  exact isUnit_rpow_iff a _ (by simp) ha
 
 @[aesop safe apply]
 lemma _root_.IsUnit.cfcSqrt (a : A) (ha_unit : IsUnit a) (ha : 0 ≤ a := by cfc_tac) :

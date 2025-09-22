@@ -118,7 +118,7 @@ theorem CHSH_inequality_of_comm [CommRing R] [PartialOrder R] [StarRing R] [Star
     have idem' : P = (1 / 4 : ℝ) • (P * P) := by
       have h : 4 * P = (4 : ℝ) • P := by simp [map_ofNat, Algebra.smul_def]
       rw [idem, h, ← mul_smul]
-      norm_num
+      simp
     have sa : star P = P := by
       dsimp [P]
       simp only [star_add, star_sub, star_mul, star_ofNat, T.A₀_sa, T.A₁_sa, T.B₀_sa,
@@ -143,7 +143,7 @@ we prepare some easy lemmas about √2.
 
 theorem sqrt_two_inv_mul_self : (√2)⁻¹ * (√2)⁻¹ = (2⁻¹ : ℝ) := by
   rw [← mul_inv]
-  norm_num
+  simp
 
 end TsirelsonInequality
 
