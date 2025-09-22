@@ -127,12 +127,12 @@ variable [Semiring R] {ι : Type*} {f : ι → R⟦X⟧}
 
 theorem hasSum_iff_hasSum_coeff {g : R⟦X⟧} :
     HasSum f g ↔ ∀ d, HasSum (fun i ↦ coeff d (f i)) (coeff d g) := by
-  simp_rw [HasSum, ← map_sum]
+  simp_rw [HasSumFilter, ← map_sum]
   apply tendsto_iff_coeff_tendsto
 
 theorem summable_iff_summable_coeff :
     Summable f ↔ ∀ d : ℕ, Summable (fun i ↦ coeff d (f i)) := by
-  simp_rw [Summable, hasSum_iff_hasSum_coeff]
+  simp_rw [SummableFilter, hasSum_iff_hasSum_coeff]
   constructor
   · rintro ⟨a, h⟩ n
     exact ⟨coeff n a, h n⟩
@@ -144,7 +144,7 @@ theorem summable_iff_summable_coeff :
 theorem summable_of_tendsto_order_atTop_nhds_top [LinearOrder ι] [LocallyFiniteOrderBot ι]
     (h : Tendsto (fun i ↦ (f i).order) atTop (𝓝 ⊤)) : Summable f := by
   rcases isEmpty_or_nonempty ι with hempty | hempty
-  · apply summable_empty
+  · apply summableFilter_empty
   rw [summable_iff_summable_coeff]
   intro n
   simp_rw [ENat.tendsto_nhds_top_iff_natCast_lt, Filter.eventually_atTop] at h

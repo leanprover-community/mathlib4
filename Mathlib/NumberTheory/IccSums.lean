@@ -28,9 +28,10 @@ lemma Icc_succ_succ (n : ℕ) : Finset.Icc (-(n + 1) : ℤ) (n + 1) = Finset.Icc
 
 lemma sum_Icc_of_even_eq_range {α : Type*} [CommRing α] {f : ℤ → α} (hf : ∀ n, f n = f (-n))
     (N : ℕ) : ∑ m ∈  Finset.Icc (-N : ℤ) N, f m =  2 * ∑ m ∈ Finset.range (N + 1), f m  - f 0 := by
-  induction' N with N ih
-  · simp [two_mul]
-  · have := Icc_succ_succ N
+  induction N with
+  | zero => simp [two_mul]
+  | succ N ih =>
+    have := Icc_succ_succ N
     simp only [neg_add_rev, Int.reduceNeg,  Nat.cast_add, Nat.cast_one] at *
     rw [this, Finset.sum_union (by simp), Finset.sum_pair (by omega), ih]
     nth_rw 2 [Finset.sum_range_succ]
@@ -48,7 +49,7 @@ lemma prod_Icc_eq_prod_Ico_succ {α : Type*} [CommMonoid α] (f : ℤ → α)
 lemma sum_Icc_add_endpoints {R : Type*} [AddCommGroup R] (f : ℤ → R) {N : ℕ}
     (hn : 1 ≤ N) : ∑ m ∈ Icc (-N : ℤ) N, f m =
     f N + f (-N : ℤ)  + ∑ m ∈ Icc (-(N - 1) : ℤ) (N - 1), f m := by
-  induction' N with N ih
+  induction N
   · grind
   · zify
     rw [Icc_succ_succ, Finset.sum_union (by simp)]

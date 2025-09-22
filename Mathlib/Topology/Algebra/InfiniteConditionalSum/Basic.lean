@@ -1,4 +1,19 @@
+/-
+Copyright (c) 2025 Chris Birkbeck. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Birkbeck
+-/
+
 import Mathlib.NumberTheory.IccSums
+
+/-!
+# Infinite conditional sums and products over intervals of integers.
+
+We define filters on `Finset ℤ` given by intervals `Icc (-N) N`, `Ico (-N) N`, `Ioc (-N) N` and
+`Ioo (-N) N` as `N` tends to infinity. We then prove that the corresponding infinite sums and
+products *are equal to the infinite sum or product over `ℤ
+
+-/
 
 open  TopologicalSpace Filter Function Finset
 

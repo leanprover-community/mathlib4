@@ -53,7 +53,7 @@ theorem summable_ofDigitsTerm {b : ℕ} {digits : ℕ → Fin b} :
   obtain rfl | hb := (Nat.one_le_of_lt (b_pos digits)).eq_or_lt
   · simpa using summable_zero
   simp_rw [pow_succ', mul_inv, ← inv_pow, ← mul_assoc]
-  refine Summable.mul_left _ (summable_geometric_of_lt_one (by positivity) ?_)
+  refine SummableFilter.mul_left _ (summable_geometric_of_lt_one (by positivity) ?_)
   simp [inv_lt_one_iff₀, hb]
 
 /-- `ofDigits d` is the real number `0.d₀d₁d₂...` in base `b`.
@@ -69,13 +69,14 @@ theorem ofDigits_le_one {b : ℕ} (digits : ℕ → Fin b) : ofDigits digits ≤
   obtain rfl | hb := (Nat.one_le_of_lt (b_pos digits)).eq_or_lt
   · simp [ofDigits, ofDigitsTerm]
   rify at hb
-  convert Summable.tsum_mono summable_ofDigitsTerm _ (fun _ ↦ ofDigitsTerm_le)
+  convert SummableFilter.tsumFilter_mono summable_ofDigitsTerm _ (fun _ ↦ ofDigitsTerm_le)
   · simp_rw [pow_succ', mul_inv, ← inv_pow, ← mul_assoc]
-    rw [tsum_mul_left, tsum_geometric_of_lt_one (by positivity) (by simp [inv_lt_one_iff₀, hb])]
+    rw [tsum_mul_left, ← tsum_iff_tsumFilter,
+      tsum_geometric_of_lt_one (by positivity) (by simp [inv_lt_one_iff₀, hb])]
     have := sub_pos.mpr hb
     field_simp
   · simp_rw [pow_succ', mul_inv, ← inv_pow, ← mul_assoc]
-    refine Summable.mul_left _ (summable_geometric_of_lt_one (by positivity) ?_)
+    refine SummableFilter.mul_left _ (summable_geometric_of_lt_one (by positivity) ?_)
     simp [inv_lt_one_iff₀, hb]
 
 theorem ofDigits_eq_sum_add_ofDigits {b : ℕ} (a : ℕ → Fin b) (n : ℕ) :
@@ -83,7 +84,7 @@ theorem ofDigits_eq_sum_add_ofDigits {b : ℕ} (a : ℕ → Fin b) (n : ℕ) :
       ((b : ℝ) ^ n)⁻¹ * ofDigits (fun i ↦ a (i + n)) := by
   simp only [ofDigits]
   rw [← Summable.sum_add_tsum_nat_add n summable_ofDigitsTerm,
-    ← Summable.tsum_mul_left _ summable_ofDigitsTerm]
+    ← SummableFilter.tsumFilter_mul_left _ summable_ofDigitsTerm]
   congr
   ext i
   simp only [ofDigitsTerm]
@@ -150,7 +151,7 @@ theorem hasSum_ofDigitsTerm_digits (x : ℝ) {b : ℕ} [NeZero b] (hb : 1 < b) (
 theorem ofDigits_digits {b : ℕ} [NeZero b] {x : ℝ} (hb : 1 < b) (hx : x ∈ Set.Ico 0 1) :
     ofDigits (digits x b) = x := by
   simp only [ofDigits]
-  rw [← Summable.hasSum_iff]
+  rw [← SummableFilter.hasSumFilter_iff]
   · exact hasSum_ofDigitsTerm_digits x hb hx
   · exact summable_ofDigitsTerm
 

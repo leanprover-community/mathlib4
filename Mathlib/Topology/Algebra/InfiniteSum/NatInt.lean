@@ -538,7 +538,7 @@ theorem Summable.alternating {α} [Ring α]
     exact hf.comp_injective (mul_right_injective₀ (two_ne_zero' ℕ))
   · simp only [pow_add, even_two, Even.mul_right, Even.neg_pow, one_pow, pow_one, mul_neg, mul_one,
       neg_mul, one_mul]
-    apply Summable.neg
+    apply SummableFilter.neg
     apply hf.comp_injective
     exact (add_left_injective 1).comp (mul_right_injective₀ (two_ne_zero' ℕ))
 
