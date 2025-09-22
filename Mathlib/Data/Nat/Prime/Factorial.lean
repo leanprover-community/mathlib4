@@ -33,4 +33,14 @@ theorem coprime_factorial_iff {m n : ℕ} (hm : m ≠ 1) :
   · rintro ⟨p, hp, hdvd, hdvd'⟩
     exact le_trans (minFac_le_of_dvd hp.two_le hdvd) (hp.dvd_factorial.mp hdvd')
 
+lemma Prime.coprime_factorial_of_lt {p n : ℕ} (hp : p.Prime) (hn : n < p) :
+    p.Coprime n.factorial := by
+  rwa [hp.coprime_iff_not_dvd, hp.dvd_factorial, not_le]
+
+lemma Prime.coprime_descFactorial_of_lt_of_le {p n k : ℕ} (hp : p.Prime) (hn : n < p) (hk : k ≤ n) :
+    p.Coprime (n.descFactorial k) := by
+  rw [Nat.descFactorial_eq_div hk]
+  refine (hp.coprime_factorial_of_lt hn).coprime_div_right ?_
+  simp [Nat.factorial_dvd_factorial]
+
 end Nat
