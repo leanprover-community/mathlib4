@@ -361,6 +361,7 @@
   ["Mathlib.LinearAlgebra.FreeModule.IdealQuotient"],
   "Mathlib.RingTheory.Finiteness.Defs": ["Mathlib.Data.Finsupp.Defs"],
   "Mathlib.RingTheory.Adjoin.Basic": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
+  "Mathlib.RingTheory.PowerSeries.Restricted": ["Mathlib.Tactic.Bound"],
   "Mathlib.RepresentationTheory.FdRep":
   ["Mathlib.CategoryTheory.Monoidal.Rigid.Braided"],
   "Mathlib.RepresentationTheory.FDRep":
