@@ -74,7 +74,7 @@ instance : jointlySurjectivePrecoverage.IsStableUnderSup where
 
 end Types
 
-variable {C : Type*} [Category C] (F : C ⥤ Type u)
+variable {C : Type*} [Category C] {F : C ⥤ Type u}
 
 lemma Presieve.mem_comap_jointlySurjectivePrecoverage_iff {X : C} {R : Presieve X} :
     R ∈ Types.jointlySurjectivePrecoverage.comap F X ↔
@@ -85,6 +85,12 @@ lemma Presieve.mem_comap_jointlySurjectivePrecoverage_iff {X : C} {R : Presieve 
     exact ⟨_, _, hf, hi⟩
   · obtain ⟨Y, g, hg, hi⟩ := h x
     exact ⟨_, _, ⟨hg⟩, hi⟩
+
+lemma Presieve.ofArrows_mem_comap_jointlySurjectivePrecoverage_iff {X : C} {ι : Type*}
+    {Y : ι → C} {f : ∀ i, Y i ⟶ X} :
+    Presieve.ofArrows Y f ∈ Types.jointlySurjectivePrecoverage.comap F X ↔
+      ∀ x : F.obj X, ∃ (i : ι), x ∈ Set.range (F.map (f i)) := by
+  simp
 
 /-- The pullback of the jointly surjective precoverage of types to any category `C` via a
 (forgetful) functor `C ⥤ Type u` is stable under base change if the canonical map

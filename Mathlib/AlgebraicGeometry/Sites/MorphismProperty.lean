@@ -5,6 +5,7 @@ Authors: Christian Merten, Joël Riou, Adam Topaz
 -/
 import Mathlib.AlgebraicGeometry.OpenImmersion
 import Mathlib.CategoryTheory.MorphismProperty.Limits
+import Mathlib.CategoryTheory.Sites.JointlySurjective
 import Mathlib.CategoryTheory.Sites.MorphismProperty
 
 /-!
@@ -12,7 +13,7 @@ import Mathlib.CategoryTheory.Sites.MorphismProperty
 # Site defined by a morphism property
 
 Given a multiplicative morphism property `P` that is stable under base change, we define the
-associated (pre)topology on the category of schemes, where coverings are given
+associated precoverage on the category of schemes, where coverings are given
 by jointly surjective families of morphisms satisfying `P`.
 
 -/
@@ -61,22 +62,9 @@ instance : IsJointlySurjectivePreserving @IsOpenImmersion where
     use (PreservesPullback.iso Scheme.forgetToTop f g).inv a
     rwa [← TopCat.comp_app, Iso.inv_hom_id_assoc]
 
-/-- The precoverage on `Scheme` defined by jointly surjective families. -/
-def jointlySurjectivePrecoverage : Precoverage Scheme.{u} where
-  coverings X R := ∀ x : X, ∃ (Y : Scheme.{u}) (f : Y ⟶ X), R f ∧ x ∈ Set.range f.base
-
-instance : jointlySurjectivePrecoverage.IsStableUnderComposition where
-  comp_mem_coverings {ι} S X f hf σ Y g hg x := by
-    obtain ⟨-, -, ⟨i⟩, w, hw⟩ := hf x
-    obtain ⟨-, -, ⟨j⟩, z, hz⟩ := (hg i) w
-    clear Y; clear Y
-    use Y i j, g i j ≫ f i, .mk (Sigma.mk i j), z
-    simp [hz, hw]
-
-instance : jointlySurjectivePrecoverage.HasIsos where
-  mem_coverings_of_isIso {S T} f hf x := by
-    use S, f, ⟨⟩, (inv f).base x
-    simp [← Scheme.comp_base_apply]
+/-- The precoverage on `Scheme` of jointly surjective families. -/
+abbrev jointlySurjectivePrecoverage : Precoverage Scheme.{u} :=
+  Types.jointlySurjectivePrecoverage.comap Scheme.forget
 
 variable (P : MorphismProperty Scheme.{u})
 
@@ -89,12 +77,9 @@ def precoverage : Precoverage Scheme.{u} :=
 lemma ofArrows_mem_precoverage_iff {S : Scheme.{u}} {ι : Type*} {X : ι → Scheme.{u}}
     {f : ∀ i, X i ⟶ S} :
     .ofArrows X f ∈ precoverage P S ↔ (∀ x, ∃ i, x ∈ Set.range (f i).base) ∧ ∀ i, P (f i) := by
-  refine ⟨fun hmem ↦ ⟨fun x ↦ ?_, fun i ↦ hmem.2 ⟨i⟩⟩,
-      fun h ↦ ⟨fun x ↦ ?_, fun {Y} g ⟨i⟩ ↦ h.2 i⟩⟩
-  · obtain ⟨Y, g, ⟨i⟩, hrange⟩ := hmem.1 x
-    use i
-  · obtain ⟨i, h⟩ := h.1 x
-    use X i, f i, ⟨i⟩
+  simp_rw [← Scheme.forget_map, ← Scheme.forget_obj,
+    ← Presieve.ofArrows_mem_comap_jointlySurjectivePrecoverage_iff]
+  exact ⟨fun hmem ↦ ⟨hmem.1, fun i ↦ hmem.2 ⟨i⟩⟩, fun h ↦ ⟨h.1, fun {Y} g ⟨i⟩ ↦ h.2 i⟩⟩
 
 instance [P.IsStableUnderComposition] : (precoverage P).IsStableUnderComposition := by
   dsimp only [precoverage]; infer_instance
