@@ -699,8 +699,7 @@ theorem CondIndepFun.neg_left {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpa
     CondIndepFun m' hm' (-f) g μ := hfg.comp measurable_neg measurable_id
 
 theorem condIndepFun_iff_compProd_map_prod_eq_compProd_prod_map_map
-    {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'} [CountableOrCountablyGenerated Ω (β × β')]
-    (hf : Measurable f) (hg : Measurable g) :
+    {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'} (hf : Measurable f) (hg : Measurable g) :
     CondIndepFun m' hm' f g μ
       ↔ (μ.trim hm') ⊗ₘ (condExpKernel μ m').map (fun ω ↦ (f ω, g ω))
         = (μ.trim hm') ⊗ₘ ((condExpKernel μ m').map f ×ₖ (condExpKernel μ m').map g) :=
@@ -715,8 +714,7 @@ theorem condIndepFun_iff_map_prod_eq_prod_map_map
   rw [condIndepFun_iff_compProd_map_prod_eq_compProd_prod_map_map hf hg, ← Kernel.compProd_eq_iff]
 
 lemma condIndepFun_iff_map_prod_eq_prod_comp_trim
-    {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'} [CountableOrCountablyGenerated Ω (β × β')]
-    (hf : Measurable f) (hg : Measurable g) :
+    {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'} (hf : Measurable f) (hg : Measurable g) :
     CondIndepFun m' hm' f g μ
       ↔ @Measure.map _ _ _ (m'.prod _) (fun ω ↦ (ω, f ω, g ω)) μ
         = (Kernel.id ×ₖ ((condExpKernel μ m').map f ×ₖ (condExpKernel μ m').map g))
