@@ -434,8 +434,8 @@ lemma isIntegralHom_over_iff_isEmpty : IsIntegralHom (𝔸(n; S) ↘ S) ↔ IsEm
     wlog hS : ∃ R, S = Spec R
     · obtain ⟨x⟩ := ‹Nonempty S›
       obtain ⟨y, hy⟩ := S.affineCover.covers x
-      exact this (S.affineCover.X x) (MorphismProperty.IsStableUnderBaseChange.of_isPullback
-        (isPullback_map (S.affineCover.f x)) h) ⟨y⟩ ⟨_, rfl⟩
+      exact this (S.affineCover.X _) (MorphismProperty.IsStableUnderBaseChange.of_isPullback
+        (isPullback_map (S.affineCover.f _)) h) ⟨y⟩ ⟨_, rfl⟩
     obtain ⟨R, rfl⟩ := hS
     have : Nontrivial R := (subsingleton_or_nontrivial R).resolve_left fun H ↦
         not_isEmpty_of_nonempty (Spec R) (inferInstanceAs (IsEmpty (PrimeSpectrum R)))

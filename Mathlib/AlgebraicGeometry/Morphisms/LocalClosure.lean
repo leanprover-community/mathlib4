@@ -23,7 +23,7 @@ variable (W : MorphismProperty Scheme.{u})
 /-- The source (Zariski-)local closure of `P` is satisfied if there exists
 an open cover of the source on which `P` is satisfied. -/
 def sourceLocalClosure (P : MorphismProperty Scheme.{u}) : MorphismProperty Scheme.{u} :=
-  fun X _ f ↦ ∃ (𝒰 : Scheme.Cover.{u} W X), ∀ (i : 𝒰.I₀), P (𝒰.f i ≫ f)
+  fun X _ f ↦ ∃ (𝒰 : Scheme.Cover.{u} (Scheme.precoverage W) X), ∀ (i : 𝒰.I₀), P (𝒰.f i ≫ f)
 
 namespace sourceLocalClosure
 
@@ -31,7 +31,8 @@ variable {W} {P Q : MorphismProperty Scheme.{u}} {X Y : Scheme.{u}}
 
 /-- A choice of open cover on which `P` is satisfied if `f` satisfies the source local closure
 of `P`. -/
-noncomputable def cover {f : X ⟶ Y} (hf : sourceLocalClosure W P f) : Scheme.Cover.{u} W X :=
+noncomputable def cover {f : X ⟶ Y} (hf : sourceLocalClosure W P f) :
+    Scheme.Cover.{u} (Scheme.precoverage W) X :=
   hf.choose
 
 lemma property_coverMap_comp {f : X ⟶ Y} (hf : sourceLocalClosure W P f) (i : hf.cover.I₀) :
@@ -87,9 +88,9 @@ instance [W.ContainsIdentities] [P.ContainsIdentities] :
 instance [W.IsStableUnderComposition] [P.IsStableUnderBaseChange] [P.IsStableUnderComposition] :
     (sourceLocalClosure W P).IsStableUnderComposition := by
   refine ⟨fun {X Y Z} f g ⟨𝒰, hf⟩ ⟨𝒱, hg⟩ ↦ ?_⟩
-  refine ⟨𝒰.bind fun i ↦ (𝒱.pullbackCover (𝒰.f i ≫ f)), fun i ↦ ?_⟩
+  refine ⟨𝒰.bind fun i ↦ (𝒱.pullbackCover (𝒰.f i ≫ f)), fun ⟨l, r⟩ ↦ ?_⟩
   simpa [← pullbackRightPullbackFstIso_inv_snd_fst_assoc, pullback.condition_assoc] using
-    P.comp_mem _ _ (P.pullback_snd _ _ (hf _)) (hg i.snd)
+    P.comp_mem _ _ (P.pullback_snd _ _ (hf _)) (hg r)
 
 instance [W.IsMultiplicative] [P.IsStableUnderBaseChange] [P.IsMultiplicative] :
     (sourceLocalClosure W P).IsMultiplicative where
