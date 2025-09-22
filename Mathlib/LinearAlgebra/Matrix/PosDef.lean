@@ -470,9 +470,9 @@ lemma posSemidef_iff_eq_conjTranspose_mul_self [DecidableEq n] {A : Matrix n n �
 @[deprecated (since := "2025-05-07")]
 alias posSemidef_iff_eq_transpose_mul_self := posSemidef_iff_eq_conjTranspose_mul_self
 
-theorem PosSemidef.commute_iff [DecidableEq n] {A B : Matrix n n 𝕜}
-    (hA : A.PosSemidef) (hB : B.PosSemidef) :
+theorem PosSemidef.commute_iff {A B : Matrix n n 𝕜} (hA : A.PosSemidef) (hB : B.PosSemidef) :
     Commute A B ↔ (A * B).PosSemidef := by
+  classical
   rw [hA.isHermitian.commute_iff hB.isHermitian]
   refine ⟨fun hAB => posSemidef_iff_isHermitian_and_spectrum_nonneg.mpr ⟨hAB, ?_⟩,
     fun h => h.isHermitian⟩
@@ -707,8 +707,9 @@ theorem _root_.Matrix.PosSemidef.posDef_iff_isUnit [DecidableEq n] {x : Matrix n
   rw [← map_eq_zero_iff (f := (yᴴ * y).mulVecLin) (mulVec_injective_iff_isUnit.mpr h),
     mulVecLin_apply, ← mulVec_mulVec, hv, mulVec_zero]
 
-theorem commute_iff [DecidableEq n] {A B : Matrix n n 𝕜} (hA : A.PosDef) (hB : B.PosDef) :
+theorem commute_iff {A B : Matrix n n 𝕜} (hA : A.PosDef) (hB : B.PosDef) :
     Commute A B ↔ (A * B).PosDef := by
+  classical
   rw [hA.posSemidef.commute_iff hB.posSemidef]
   exact ⟨fun h => h.posDef_iff_isUnit.mpr <| hA.isUnit.mul hB.isUnit, fun h => h.posSemidef⟩
 
