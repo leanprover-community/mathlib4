@@ -48,7 +48,7 @@ lemma one : IsRestricted c (1 : PowerSeries R) := by
   · omega
   · simpa
 
-lemma monomials (n : ℕ) (a : R) : IsRestricted c (monomial R n a) := by
+lemma monomial (n : ℕ) (a : R) : IsRestricted c (monomial R n a) := by
   simp only [monomial_eq_mk, isRestricted_iff, coeff_mk, norm_mul, norm_pow,
     Real.norm_eq_abs, abs_norm]
   refine fun _ _ ↦ ⟨n + 1, fun _ _ ↦ ?_⟩
