@@ -79,7 +79,6 @@ scoped notation "E(" Dₕ ")" => DiHypergraph.edgeSet Dₕ
 
 /-! ## DiHypergraph Basics -/
 
-@[simp]
 lemma edge_src_dst_isSubset_vertexSet (he : e ∈ E(Dₕ)) : e.1 ⊆ V(Dₕ) ∧ e.2 ⊆ V(Dₕ) :=
   Dₕ.edge_src_dst_isSubset_vertexSet' he
 
