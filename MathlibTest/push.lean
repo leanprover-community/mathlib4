@@ -10,20 +10,17 @@ section logic
 
 variable {p q r : Prop}
 
-example : False ∧ p ∨ q ∧ r := by
-  push _ ∨ _
-  guard_target =ₛ (q ∧ (p ∨ q)) ∧ r ∧ (p ∨ r)
-  exact test_sorry
+/-- info: (q ∧ (p ∨ q)) ∧ r ∧ (p ∨ r) -/
+#guard_msgs in
+#push Or False ∧ p ∨ q ∧ r
 
-example : (p ∨ q) ∧ (p ∨ r) := by
-  pull _ ∨ _
-  guard_target =ₛ p ∨ q ∧ r
-  exact test_sorry
+/-- info: (p ∨ q) ∧ (p ∨ r) -/
+#guard_msgs in
+#push Or (p ∨ q) ∧ (p ∨ r)
 
-example : (p ∨ True) ∧ (q ∨ r) := by
-  push _ ∧ _
-  guard_target =ₛ (p ∧ q ∨ q) ∨ p ∧ r ∨ r
-  exact test_sorry
+/-- info: (p ∧ q ∨ q) ∨ p ∧ r ∨ r -/
+#guard_msgs in
+#push And (p ∨ True) ∧ (q ∨ r)
 
 example {r : ℕ → Prop} : ∀ n : ℕ, p ∨ r n ∧ q ∧ n = 1 := by
   push ∀ n, _
@@ -39,9 +36,22 @@ example {r : ℕ → Prop} : ∃ n : ℕ, p ∨ r n ∨ q ∧ n = 1 := by
   fail_if_success pull ∃ n, _
   exact test_sorry
 
-example : p ∨ q ∧ ∃ n : ℕ, n = 1 := by
-  pull ∃ n, _
-  guard_target =ₛ p ∨ ∃ n, q ∧ n = 1
-  exact test_sorry
+/-- info: p ∨ ∃ x, q ∧ x = 1 -/
+#guard_msgs in
+#pull Exists p ∨ q ∧ ∃ n : ℕ, n = 1
+
+/--
+info: DiscrTree branch for Or:
+  (node
+   (* => (node
+     (False => (node #[or_false:1000]))
+     (And => (node (* => (node (* => (node #[or_and_left:1000]))))))
+     (True => (node #[or_true:1000]))))
+   (False => (node (* => (node #[false_or:1000]))))
+   (And => (node (* => (node (* => (node (* => (node #[and_or_right:1000]))))))))
+   (True => (node (* => (node #[true_or:1000])))))
+-/
+#guard_msgs in
+#push_discr_tree Or
 
 end logic
