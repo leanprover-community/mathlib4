@@ -6,6 +6,7 @@ Authors: Michail Karatarakis
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.NumberTheory.H7.House
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 
 set_option autoImplicit true
 set_option linter.style.multiGoal false
@@ -107,136 +108,56 @@ lemma triple_comm (K : Type) [Field K] (a b c : ℤ) (x y z : K) :
  ((a*b)*c) • ((x*y)*z) = a•x * b•y * c•z := by
   simp only [zsmul_eq_mul, Int.cast_mul]; ring
 
--- Lemma 3.6. Let α be a non-zero algebraic integer. Then α has a conjugate α(i)
--- with |α(i)| ≥ 1.
--- Proof. Let α(1), . . . , α(d) be the conjugates of α. Then by Lemma 3.4, the minimal
--- polynomial of α, fα = ∏d
--- i=1(X − α(i)) has its coefficients in Z. In particular, the
--- product α(1) · · · α(d) = ±f (0) is a non-zero rational integer, whence has absolute
--- value at least 1. This implies the lemma.
-
--- Lemma 3.6. Let α be a non-zero algebraic integer. Then α has a conjugate α(i)
--- with |α(i)| ≥ 1.
-
--- Proof. Let α(1), ..., α(d) be the conjugates of α. Then by Lemma 3.4, the minimal
--- polynomial of α, fα = ∏_{i=1}^d (X − α(i)), has its coefficients in ℤ.
---#moogle "product of elements in a set of complex numbers."
---#check minpoly.ne_zero
---In particular, the
--- product α(1) ··· α(d) = ±f(0) is a non-zero rational integer, whence has absolute
--- value at least 1. This implies the lemma.
---#check NumberField.Embeddings.range_eval_eq_rootSet_minpoly
 variable [Field K] [NumberField K]
 
-#check Polynomial.roots_prod_X_sub_C
-/-- Lemma 3.6: Let α be a non-zero algebraic integer.
-Then α has a conjugate α(i) with |α(i)| ≥ 1-/
+/-- Let α be a non-zero algebraic integer. Then α has a conjugate α(i) with |α(i)| ≥ 1. -/
 lemma exists_conjugate_abs_gt_one {α : 𝓞 K} (hα0 : α ≠ 0) :
-    ∃ σ : K →+* ℂ, 1 ≤ |Algebra.norm ℤ (α)| := by
+    ∃ σ : K →+* ℂ, 1 ≤ norm (σ α) := by
+  have h_exists_w : ∃ w : InfinitePlace K, 1 ≤ w α := by
+    by_contra h_neg; push_neg at h_neg
+    let w₀ := (inferInstance : Nonempty (InfinitePlace K)).some
+    have h_ge_one : 1 ≤ w₀ α :=
+      NumberField.InfinitePlace.one_le_of_lt_one hα0 (fun z _ => h_neg z)
+    linarith [h_neg w₀, h_ge_one]
+  rcases h_exists_w with ⟨w, hw⟩
+  use w.embedding
+  rw [← InfinitePlace.norm_embedding_eq] at hw
+  exact hw
 
-  have hn_ne_zero : (Algebra.norm ℤ (α)) ≠ 0 := by
-    exact Algebra.norm_ne_zero_iff.mpr hα0
+lemma house_gt_one_of_isIntegral {α : K} (hα : IsIntegral ℤ α) (hα0 : α ≠ 0) :
+  1 ≤ house α := by
+  have ⟨σ, hσ⟩ : ∃ σ : K →+* ℂ, 1 ≤ ‖σ α‖ := by
+    let a : 𝓞 K := ⟨α, hα⟩
+    have hα_int_0 : a ≠ 0 := by
+      intros H
+      apply hα0
+      injection H
+    apply exists_conjugate_abs_gt_one (K := K) hα_int_0
+  rw [house_eq_sup']
+  have h_le_sup := Finset.le_sup' (fun φ : K →+* ℂ ↦ ‖φ α‖₊) (Finset.mem_univ σ)
+  exact le_trans hσ h_le_sup
 
-  have h_norm_ge_one : 1 ≤ Algebra.norm ℤ (α) := by {
-    sorry
-    }--Int.one_le_abs hn_ne_zero
-  sorry
-  -- let S : Finset ℚ := ((minpoly ℤ α).rootSet ℚ).toFinset
-  -- have := Polynomial.roots_prod_X_sub_C S
-  -- --have h_norm_ge_one : 1 ≤ norm ((∏ a ∈ S, (X - C a)).roots := Int.one_le_abs hn_ne_zero
+lemma house_alg_int_leq_pow (α : K) (n m : ℕ) (h : n ≤ m) (hα0 : α ≠ 0) (H : IsIntegral ℤ α) :
+  house α ^ n ≤ house α ^ m :=
+Bound.pow_le_pow_right_of_le_one_or_one_le (Or.inl ⟨house_gt_one_of_isIntegral H hα0, h⟩)
 
-  --     --Since `α` is non-zero, its norm `n` must also be a non-zero integer.
-  -- -- have hn_ne_zero : n ≠ 0 := by
-  -- --   unfold n
-  -- --   exact Algebra.norm_ne_zero_iff.mpr hα0
-  -- have h_norm_ge_one : 1 ≤ |Algebra.norm ℤ (α)| := Int.one_le_abs hn_ne_zero
+lemma house_alg_int_leq_pow' (α : K) (n m : Int) (h_exp : n ≤ m)
+    (hα0 : α ≠ 0) (h_int : IsIntegral ℤ α) :
+  house α ^ n ≤ house α ^ m := by
+  have h_base : 1 ≤ house α := house_gt_one_of_isIntegral h_int hα0
+  exact zpow_le_zpow_right₀ h_base h_exp
 
-  -- have h_prod_eq_norm : (n : ℂ) = ∏ σ : K →+* ℂ, σ α := by
-  --   sorry
-    -- This follows from `Algebra.norm_eq_prod_embeddings`.
-    --have := Algebra.norm_eq_prod_roots ℤ (𝓞 K) K
-
-
-  -- have HI : IsIntegral ℤ α := RingOfIntegers.isIntegral α
-  -- let S := ((minpoly ℤ α).rootSet ℚ).toFinset
-  -- let a : ℚ := by {
-  --   apply Finset.prod S
-  --   exact fun a ↦ a}
-  -- have haneq0 : a ≠ 0 := by {
-  --   dsimp [a,S]
-  --   intros H
-  --   sorry
-  -- }
-  -- have Hpoly := minpoly.ne_zero HI
-  -- have : 1 ≤ norm (a) := by {
-  --   dsimp [a]
-  --   simp only [norm_prod]
-  --   sorry
-  -- }
-  -- -- Let α₁, ..., α_d be the conjugates of α.
-  -- let d := Module.finrank ℚ K
-  -- sorry
-  --let σs := NumberField.Embeddings K ℂ
-  -- The conjugates are σ α for σ ∈ σs.
-  --let α_conj := fun σ : K →+* ℂ => σ α
-  -- The minimal polynomial of α has integer coefficients,
-  -- and the product of the conjugates is ±fα(0), a nonzero integer.
-
-    --NumberField.prod_embeddings_eq_minpoly_eval_zero hα
-  -- Since α ≠ 0, the product is a nonzero integer, so at least one conjugate has |σ α| ≥ 1.
-  -- have h_prod_nonzero : (minpoly ℚ α).eval 0 ≠ 0 :=
-  --   minpoly.eval_ne_zero_of_isIntegral_of_ne_zero hα hα0
-  -- have h_abs_prod : 1 ≤ |∏ σ in Finset.univ, α_conj σ| :=
-  --   by
-  --     rw [h_prod]
-  --     have : (minpoly ℚ α).eval 0 ∈ ℤ := minpoly.eval_int_of_isIntegral hα
-  --     have h0 : (minpoly ℚ α).eval 0 ≠ 0 := h_prod_nonzero
-  --     exact Int.one_le_abs_of_ne_zero h0
-  -- -- If all |σ α| ≤ 1, then |product| ≤ 1, contradiction.
-  -- by_contra H
-  -- push_neg at H
-  -- have h_le : |∏ σ in Finset.univ, α_conj σ| ≤ 1 :=
-  --   by
-  --     apply Finset.abs_prod_le_prod_abs
-  --     intros σ _
-  --     exact H σ
-  -- linarith
-  -- -- Therefore, there exists σ such that |σ α| > 1.
-  -- obtain ⟨σ, hσ⟩ := exists_gt_of_prod_le_and_one_le
-  -- (Finset.univ) (fun σ => |α_conj σ|) h_abs_prod h_le
-  -- use σ
-  -- exact hσ
-
-lemma house_gt_one_of_isIntegral {α : K}
-    (hα : IsIntegral ℤ α) (hα0 : α ≠ 0) :
-  1 ≤ house α := by {
-  -- By Lemma 3.6, there is a conjugate σ such that |σ α| > 1.
-  unfold house
-  sorry
-  }
-
-lemma house_alg_int_leq_pow (α : K) (n m : ℕ) (h : n ≤ m) (hα0 : α ≠ 0)
-   (H : IsIntegral ℤ α)  :
-house α ^ n ≤ house α ^ m := by {
-  refine Bound.pow_le_pow_right_of_le_one_or_one_le ?_
-  left
-  constructor
-  · apply house_gt_one_of_isIntegral
-    exact H
-    exact hα0
-  · apply h}
+lemma house_alg_int_leq_pow_real (α : K) (r s : ℝ) (h_exp : r ≤ s)
+    (hα0 : α ≠ 0) (h_int : IsIntegral ℤ α) :
+  house α ^ r ≤ house α ^ s := by
+  have h_base : 1 ≤ house α := house_gt_one_of_isIntegral h_int hα0
+  exact Real.rpow_le_rpow_of_exponent_le h_base h_exp
 
 lemma house_leq_pow_pow (α : K) (n : ℕ) (hn : n ≠ 0) (hα0 : α ≠ 0)
-   (H : IsIntegral ℤ α) :
-house α ≤ house α ^ n := by {
-  refine le_self_pow₀ ?_ ?_
-  · exact house_gt_one_of_isIntegral H hα0
-  · exact hn}
+  (H : IsIntegral ℤ α) : house α ≤ house α ^ n :=
+le_self_pow₀ (house_gt_one_of_isIntegral H hα0) hn
 
 lemma house_leq_one_pow (α : K) (n : ℕ) (hn : n ≠ 0) (hα0 : α ≠ 0)
-   (H : IsIntegral ℤ α) :
-  1 ≤ house α ^ n := by {
-  trans
-  · apply house_gt_one_of_isIntegral H hα0
-  · exact house_leq_pow_pow α n hn hα0 H
-}
+  (H : IsIntegral ℤ α) :
+  1 ≤ house α ^ n :=
+(house_gt_one_of_isIntegral H hα0).trans (house_leq_pow_pow α n hn hα0 H)
