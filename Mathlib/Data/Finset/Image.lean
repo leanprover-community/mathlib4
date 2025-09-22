@@ -9,6 +9,7 @@ import Mathlib.Data.Finset.Disjoint
 import Mathlib.Data.Finset.Erase
 import Mathlib.Data.Finset.Filter
 import Mathlib.Data.Finset.Range
+import Mathlib.Data.Finset.Lattice.Lemmas
 import Mathlib.Data.Finset.SDiff
 import Mathlib.Data.Fintype.Defs
 
