@@ -20,6 +20,37 @@ open Limits
 variable {C : Type u} [Category.{v} C] (P : ObjectProperty C)
   {α : Type t} (J : α → Type u') [∀ a, Category.{v'} (J a)]
 
+/-- The closure of property of objects of a category under limits of
+shape `J a` for a family of categories `J`. -/
+inductive limitsClosure : ObjectProperty C
+  | of_mem (X : C) (hX : P X) : limitsClosure X
+  | of_isoClosure {X Y : C} (e : X ≅ Y) (hX : limitsClosure X) : limitsClosure Y
+  | of_limitPresentation {X : C} {a : α} (pres : LimitPresentation (J a) X)
+      (h : ∀ j, limitsClosure (pres.diag.obj j)) : limitsClosure X
+
+@[simp]
+lemma le_limitsClosure : P ≤ P.limitsClosure J :=
+  fun X hX ↦ .of_mem X hX
+
+instance : (P.limitsClosure J).IsClosedUnderIsomorphisms where
+  of_iso e hX := .of_isoClosure e hX
+
+lemma limitsOfShape_limitsClosure (a : α) :
+    (P.limitsClosure J).limitsOfShape (J a) ≤ P.limitsClosure J := by
+  rintro X ⟨hX⟩
+  exact .of_limitPresentation hX.toLimitPresentation hX.prop_diag_obj
+
+variable {P J} in
+lemma limitsClosure_le {Q : ObjectProperty C} [Q.IsClosedUnderIsomorphisms]
+    (h₁ : P ≤ Q) (h₂ : ∀ (a : α), Q.limitsOfShape (J a) ≤ Q) :
+    P.limitsClosure J ≤ Q := by
+  intro X hX
+  induction hX with
+  | of_mem X hX => exact h₁ _ hX
+  | of_isoClosure e hX hX' => exact Q.prop_of_iso e hX'
+  | of_limitPresentation pres h h' =>
+    exact h₂ _ _ ⟨{ toLimitPresentation := pres, prop_diag_obj := h' }⟩
+
 /-- Given `P : ObjectProperty C` and a family of categories `J : α → Type _`,
 this property objects contains `P` and all objects that are equal to `lim F`
 for some functor `F : J a ⥤ C` such that `F.obj j` satisfies `P` for any `j`. -/
@@ -37,42 +68,6 @@ lemma strictLimitsClosureStep_monotone {Q : ObjectProperty C} (h : P ≤ Q) :
   exact ⟨h.trans le_sup_left, fun a ↦ (strictLimitsOfShape_monotone (J a) h).trans
     (le_trans (by rfl) ((le_iSup _ a).trans le_sup_right))⟩
 
-/-- Given `P : ObjectProperty C` and a family of categories `J : α → Type _`,
-this property objects contains `P.isoClosure` and all objects that are isomorphic to `lim F`
-for some functor `F : J a ⥤ C` such that `F.obj j` satisfies `P` for any `j`. -/
-def limitsClosureStep : ObjectProperty C :=
-  P.isoClosure ⊔ (⨆ (a : α), P.limitsOfShape (J a))
-
-@[simp]
-lemma isoClosure_le_limitsClosureStep : P.isoClosure ≤ P.limitsClosureStep J := le_sup_left
-
-@[simp]
-lemma le_limitsClosureStep : P ≤ P.limitsClosureStep J :=
-  (le_isoClosure P).trans (P.isoClosure_le_limitsClosureStep J)
-
-variable {P} in
-lemma limitsClosureStep_monotone {Q : ObjectProperty C} (h : P ≤ Q) :
-    P.limitsClosureStep J ≤ Q.limitsClosureStep J := by
-  dsimp [limitsClosureStep]
-  simp only [sup_le_iff, iSup_le_iff]
-  exact ⟨(monotone_isoClosure h).trans le_sup_left, fun a ↦ (limitsOfShape_monotone (J a) h).trans
-    (le_trans (by rfl) ((le_iSup _ a).trans le_sup_right))⟩
-
-instance : (P.limitsClosureStep J).IsClosedUnderIsomorphisms := by
-  dsimp [limitsClosureStep]
-  infer_instance
-
-@[simp]
-lemma isoClosure_strictLimitsClosureStep :
-    (P.strictLimitsClosureStep J).isoClosure = P.limitsClosureStep J := by
-  simp [limitsClosureStep, strictLimitsClosureStep, isoClosure_sup, isoClosure_iSup]
-
-@[simp]
-lemma limitsClosureStep_isoClosure :
-    P.isoClosure.limitsClosureStep J = P.limitsClosureStep J := by
-  refine le_antisymm ?_ (limitsClosureStep_monotone _ (P.le_isoClosure))
-  simp [limitsClosureStep, isoClosure_eq_self]
-
 section
 
 variable {β : Type w} [LinearOrder β] [OrderBot β] [SuccOrder β] [WellFoundedLT β]
@@ -82,32 +77,27 @@ is the transfinite iteration of `Q ↦ Q.strictLimitsClosureStep J`. -/
 abbrev strictLimitsClosureIter (b : β) : ObjectProperty C :=
   transfiniteIterate (φ := fun Q ↦ Q.strictLimitsClosureStep J) b P
 
-/-- Given `P : ObjectProperty C`, a family of categories `J a`, this
-is the transfinite iteration of `Q ↦ Q.limitsClosureStep J`. -/
-abbrev limitsClosureIter (b : β) : ObjectProperty C :=
-  transfiniteIterate (φ := fun Q ↦ Q.limitsClosureStep J) b P.isoClosure
+lemma le_strictLimitsClosureIter (b : β) :
+    P ≤ P.strictLimitsClosureIter J b :=
+  le_of_eq_of_le (transfiniteIterate_bot _ _).symm
+    (monotone_transfiniteIterate _ _ (fun _ ↦ le_strictLimitsClosureStep _ _) bot_le)
 
-@[simp]
-lemma isoClosure_strictLimitsClosureIter (b : β) :
-    (P.strictLimitsClosureIter J b).isoClosure = P.limitsClosureIter J b := by
+lemma strictLimitsClosureIter_le_limitsClosure (b : β) :
+    P.strictLimitsClosureIter J b ≤ P.limitsClosure J := by
   induction b using SuccOrder.limitRecOn with
   | isMin b hb =>
     obtain rfl := hb.eq_bot
     simp
   | succ b hb hb' =>
-    dsimp [strictLimitsClosureIter, limitsClosureIter] at hb' ⊢
-    rw [transfiniteIterate_succ _ _ _ hb, transfiniteIterate_succ _ _ _ hb, ← hb',
-      isoClosure_strictLimitsClosureStep, limitsClosureStep_isoClosure]
+    rw [strictLimitsClosureIter, transfiniteIterate_succ _ _ _ hb,
+      strictLimitsClosureStep, sup_le_iff, iSup_le_iff]
+    exact ⟨hb', fun a ↦ ((strictLimitsOfShape_le_limitsOfShape _ _).trans
+      (limitsOfShape_monotone _ hb')).trans (P.limitsOfShape_limitsClosure J a)⟩
   | isSuccLimit b hb hb' =>
-    dsimp [strictLimitsClosureIter, limitsClosureIter] at hb' ⊢
-    rw [transfiniteIterate_limit _ _ _ hb, transfiniteIterate_limit _ _ _ hb, isoClosure_iSup]
-    congr
-    ext ⟨c, hc⟩ : 1
-    exact hb' c hc
-
-instance (b : β) : (P.limitsClosureIter J b).IsClosedUnderIsomorphisms := by
-  rw [← isoClosure_strictLimitsClosureIter]
-  infer_instance
+    simp only [transfiniteIterate_limit _ _ _ hb,
+      iSup_le_iff, Subtype.forall, Set.mem_Iio]
+    intro c hc
+    exact hb' _ hc
 
 end
 
@@ -141,14 +131,17 @@ lemma strictLimitsClosureStep_strictLimitsClosureIter_eq_self :
     exact Or.inr ⟨a, ⟨_, fun j ↦ monotone_transfiniteIterate _ _
       (fun (Q : ObjectProperty C) ↦ Q.le_strictLimitsClosureStep J)  (hm' j) _ (ho' j)⟩⟩
 
-lemma limitsClosureStep_limitsClosureIter_eq_self :
-    (P.limitsClosureIter J κ.ord).limitsClosureStep J =
-      (P.limitsClosureIter J κ.ord) := by
-  refine le_antisymm ?_ (le_limitsClosureStep _ _)
-  conv_rhs => rw [← isoClosure_strictLimitsClosureIter,
-    ← P.strictLimitsClosureStep_strictLimitsClosureIter_eq_self J κ h]
-  rw [isoClosure_strictLimitsClosureStep, ← isoClosure_strictLimitsClosureIter,
-    limitsClosureStep_isoClosure]
+lemma isoClosure_strictLimitsClosureIter_eq_limitsClosure :
+    (P.strictLimitsClosureIter J κ.ord).isoClosure = P.limitsClosure J := by
+  refine le_antisymm ?_ ?_
+  · rw [isoClosure_le_iff]
+    exact P.strictLimitsClosureIter_le_limitsClosure J κ.ord
+  · refine limitsClosure_le
+      ((P.le_strictLimitsClosureIter J κ.ord).trans (le_isoClosure _)) (fun a ↦ ?_)
+    conv_rhs => rw [← P.strictLimitsClosureStep_strictLimitsClosureIter_eq_self J κ h]
+    rw [limitsOfShape_isoClosure, ← isoClosure_strictLimitsOfShape,
+      strictLimitsClosureStep]
+    exact monotone_isoClosure ((le_trans (by rfl) (le_iSup _ a)).trans le_sup_right)
 
 end
 
