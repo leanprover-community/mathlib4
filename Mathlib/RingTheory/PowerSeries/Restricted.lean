@@ -27,7 +27,7 @@ open scoped Topology
 /-- A power series over `R` is restricted of paramerter `c` if we have
 `‖coeff R i f‖ * c ^ i → 0`. -/
 def IsRestricted (f : PowerSeries R) :=
-  Tendsto (fun (i : ℕ) => (norm (coeff R i f)) * c ^ i) atTop (𝓝 0)
+  Tendsto (fun (i : ℕ) ↦ (norm (coeff R i f)) * c ^ i) atTop (𝓝 0)
 
 namespace IsRestricted
 
