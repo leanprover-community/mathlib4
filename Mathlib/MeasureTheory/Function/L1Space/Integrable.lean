@@ -1170,9 +1170,6 @@ variable {E H : Type*} [NormedAddCommGroup E] [NormedAddCommGroup H]
 variable {σ : 𝕜 →+* 𝕜'} {σ' : 𝕜' →+* 𝕜} [RingHomIsometric σ] [RingHomIsometric σ']
   [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 
-variable {σ σ' : 𝕜 →+* 𝕜} [RingHomIsometric σ] [RingHomIsometric σ'] [RingHomInvPair σ σ']
-  [RingHomInvPair σ' σ]
-
 @[fun_prop]
 theorem ContinuousLinearMap.integrable_comp {φ : α → H} (L : H →SL[σ] E) (φ_int : Integrable φ μ) :
     Integrable (fun a : α => L (φ a)) μ :=
