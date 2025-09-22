@@ -550,6 +550,15 @@ include ha in
 lemma cfc_star_id : cfc (star · : R → R) a = star a := by
   rw [cfc_star .., cfc_id' ..]
 
+variable (R) in
+theorem range_cfc_eq_range_cfcHom [StarModule R A] {a : A} (ha : p a) :
+    Set.range (cfc (R := R) · a) = (cfcHom ha (R := R)).range := by
+  ext
+  constructor
+  all_goals rintro ⟨f, rfl⟩
+  · exact cfc_cases _ a f (zero_mem _) fun hf ha ↦ ⟨_, rfl⟩
+  · exact ⟨Subtype.val.extend f 0, cfcHom_eq_cfc_extend _ ha _ |>.symm⟩
+
 section Polynomial
 open Polynomial
 

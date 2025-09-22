@@ -52,7 +52,7 @@ theorem cfc_tsub {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [Sta
   have : (spectrum ℝ a).EqOn (fun x ↦ ((f x.toNNReal - g x.toNNReal : ℝ≥0) : ℝ))
       (fun x ↦ f x.toNNReal - g x.toNNReal) :=
     fun x hx ↦ NNReal.coe_sub <| hfg _ <| ha'.apply_mem hx
-  rw [cfc_nnreal_eq_real, cfc_nnreal_eq_real, cfc_nnreal_eq_real, cfc_congr this]
+  rw [cfc_nnreal_eq_real .., cfc_nnreal_eq_real .., cfc_nnreal_eq_real .., cfc_congr this]
   refine cfc_sub _ _ a ?_ ?_
   all_goals
     exact continuous_subtype_val.comp_continuousOn <|
@@ -70,7 +70,7 @@ theorem cfcₙ_tsub {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialO
   have : (σₙ ℝ a).EqOn (fun x ↦ ((f x.toNNReal - g x.toNNReal : ℝ≥0) : ℝ))
       (fun x ↦ f x.toNNReal - g x.toNNReal) :=
     fun x hx ↦ NNReal.coe_sub <| hfg _ <| ha'.apply_mem hx
-  rw [cfcₙ_nnreal_eq_real, cfcₙ_nnreal_eq_real, cfcₙ_nnreal_eq_real, cfcₙ_congr this]
+  rw [cfcₙ_nnreal_eq_real .., cfcₙ_nnreal_eq_real .., cfcₙ_nnreal_eq_real .., cfcₙ_congr this]
   refine cfcₙ_sub _ _ a ?_ (by simpa) ?_
   all_goals
     exact continuous_subtype_val.comp_continuousOn <|
@@ -122,7 +122,7 @@ lemma cfc_nnreal_le_iff {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [
     cfc f a ≤ cfc g a ↔ ∀ x ∈ spectrum ℝ≥0 a, f x ≤ g x := by
   have hf' := hf.ofReal_map_toNNReal <| ha_spec.image ▸ Set.mapsTo_image ..
   have hg' := hg.ofReal_map_toNNReal <| ha_spec.image ▸ Set.mapsTo_image ..
-  rw [cfc_nnreal_eq_real, cfc_nnreal_eq_real, cfc_le_iff ..]
+  rw [cfc_nnreal_eq_real .., cfc_nnreal_eq_real .., cfc_le_iff ..]
   simp [NNReal.coe_le_coe, ← ha_spec.image]
 
 open ContinuousFunctionalCalculus in
