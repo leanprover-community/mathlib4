@@ -189,7 +189,7 @@ lemma isLocalizedModule_quotSMulTop_isLocalizedModule_map (x : R)
     exact isUnit_iff_exists.mpr ⟨LinearMap.restrictScalars R s,
       ⟨LinearMap.ext (fun x ↦ by simpa using DFunLike.congr hs1 (Eq.refl x)),
         LinearMap.ext (fun x ↦ by simpa using DFunLike.congr hs2 (Eq.refl x))⟩⟩
-  surj' y := by
+  surj y := by
     induction y using Submodule.Quotient.induction_on
     rename_i y
     rcases IsLocalizedModule.surj' (S := p.primeCompl) (f := f) y with ⟨z, hz⟩
