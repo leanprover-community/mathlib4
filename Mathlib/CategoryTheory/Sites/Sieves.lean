@@ -334,6 +334,10 @@ lemma map_singleton {X Y : C} (f : X ⟶ Y) : (singleton f).map F = singleton (F
 lemma map_functorPullback {X : C} (R : Presieve (F.obj X)) : (R.functorPullback F).map F ≤ R :=
   fun _ _ ⟨hu⟩ ↦ hu
 
+@[simp]
+lemma map_id {X : C} (R : Presieve X) : R.map (𝟭 C) = R :=
+  le_antisymm (fun _ _ ⟨hg⟩ ↦ hg) fun _ _ hg ↦ ⟨hg⟩
+
 end
 
 end FunctorPushforward
