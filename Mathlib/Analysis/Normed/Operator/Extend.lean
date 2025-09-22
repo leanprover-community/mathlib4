@@ -20,11 +20,13 @@ variable [DivisionRing 𝕜] [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [
 variable (f : E →ₗ[𝕜] F)
 
 open scoped Classical in
+/-- The left inverse of a `f : LinearMap`. -/
 def leftInverse_aux : F →ₗ[𝕜] E :=
   if h_inj : LinearMap.ker f = ⊥ then
   Classical.choose (f.exists_leftInverse_of_injective h_inj)
   else 0
 
+/-- If `f` is injective, then the left inverse composed with `f` is the identity. -/
 @[simp]
 theorem leftInverseLM_aux_apply (h_inj : LinearMap.ker f = ⊥) (x : E) :
     f.leftInverse_aux (f x) = x := by
@@ -98,7 +100,6 @@ variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁
   (f g : E →SL[σ₁₂] F) (e : E →L[𝕜] Fₗ)
 
 variable (h_dense : DenseRange e) (h_e : IsUniformInducing e)
---variable [CompleteSpace F] (e : E →L[𝕜] Fₗ) (h_dense : DenseRange e)
 
 variable {N : ℝ≥0} (h_e : ∀ x, ‖x‖ ≤ N * ‖e x‖) [RingHomIsometric σ₁₂]
 
@@ -137,6 +138,10 @@ variable [DivisionRing 𝕜] [DivisionRing 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜�
 variable (f : E →SL[σ₁₂] F) (g : E →L[𝕜] Fₗ)
 
 open scoped Classical in
+/-- Composition with the left inverse as a CLM.
+
+This definition is only used to construct extensions of continuous linear maps and should not
+be used outside of this file. -/
 def compInv_aux :=
   if h : LinearMap.ker g = ⊥ ∧ ∃ (C : ℝ), ∀ (x : E), ‖f x‖ ≤ C * ‖g x‖ then
   (f.toLinearMap ∘ₛₗ (g.toLinearMap.leftInverse_aux.domRestrict
