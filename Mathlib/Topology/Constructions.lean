@@ -646,8 +646,8 @@ end Quotient
 
 section Pi
 
-variable {ι : Type*} {A : ι → Type*} {κ : Type*} [TopologicalSpace X]
-  [T : ∀ i, TopologicalSpace (A i)] {f : X → ∀ i : ι, A i}
+variable {ι : Type*} {A B : ι → Type*} {κ : Type*} [TopologicalSpace X]
+  [T : ∀ i, TopologicalSpace (A i)] [∀ i, TopologicalSpace (B i)] {f : X → ∀ i : ι, A i}
 
 theorem continuous_pi_iff : Continuous f ↔ ∀ i, Continuous fun a => f a i := by
   simp only [continuous_iInf_rng, continuous_induced_rng, comp_def]
@@ -673,22 +673,22 @@ theorem Filter.Tendsto.apply_nhds {l : Filter Y} {f : Y → ∀ i, A i} {x : ∀
   (continuousAt_apply i _).tendsto.comp h
 
 @[fun_prop]
-protected theorem Continuous.piMap {Y : ι → Type*} [∀ i, TopologicalSpace (Y i)]
-    {f : ∀ i, A i → Y i} (hf : ∀ i, Continuous (f i)) : Continuous (Pi.map f) :=
+protected theorem Continuous.piMap
+    {f : ∀ i, A i → B i} (hf : ∀ i, Continuous (f i)) : Continuous (Pi.map f) :=
   continuous_pi fun i ↦ (hf i).comp (continuous_apply i)
 
 theorem nhds_pi {a : ∀ i, A i} : 𝓝 a = pi fun i => 𝓝 (a i) := by
   simp only [nhds_iInf, nhds_induced, Filter.pi]
 
-protected theorem IsOpenMap.piMap {Y : ι → Type*} [∀ i, TopologicalSpace (Y i)] {f : ∀ i, A i → Y i}
+protected theorem IsOpenMap.piMap {f : ∀ i, A i → B i}
     (hfo : ∀ i, IsOpenMap (f i)) (hsurj : ∀ᶠ i in cofinite, Surjective (f i)) :
     IsOpenMap (Pi.map f) := by
   refine IsOpenMap.of_nhds_le fun x ↦ ?_
   rw [nhds_pi, nhds_pi, map_piMap_pi hsurj]
   exact Filter.pi_mono fun i ↦ (hfo i).nhds_le _
 
-protected theorem IsOpenQuotientMap.piMap {Y : ι → Type*} [∀ i, TopologicalSpace (Y i)]
-    {f : ∀ i, A i → Y i} (hf : ∀ i, IsOpenQuotientMap (f i)) : IsOpenQuotientMap (Pi.map f) :=
+protected theorem IsOpenQuotientMap.piMap
+    {f : ∀ i, A i → B i} (hf : ∀ i, IsOpenQuotientMap (f i)) : IsOpenQuotientMap (Pi.map f) :=
   ⟨.piMap fun i ↦ (hf i).1, .piMap fun i ↦ (hf i).2, .piMap (fun i ↦ (hf i).3) <|
     .of_forall fun i ↦ (hf i).1⟩
 
@@ -706,10 +706,18 @@ theorem continuousAt_pi' {f : X → ∀ i, A i} {x : X} (hf : ∀ i, ContinuousA
   continuousAt_pi.2 hf
 
 @[fun_prop]
-protected theorem ContinuousAt.piMap {Y : ι → Type*} [∀ i, TopologicalSpace (Y i)]
-    {f : ∀ i, A i → Y i} {x : ∀ i, A i} (hf : ∀ i, ContinuousAt (f i) (x i)) :
+protected theorem ContinuousAt.piMap {f : ∀ i, A i → B i} {x : ∀ i, A i}
+    (hf : ∀ i, ContinuousAt (f i) (x i)) :
     ContinuousAt (Pi.map f) x :=
   continuousAt_pi.2 fun i ↦ (hf i).comp (continuousAt_apply i x)
+
+protected lemma Topology.IsInducing.piMap {f : ∀ i, A i → B i}
+    (hf : ∀ i, IsInducing (f i)) : IsInducing (Pi.map f) := by
+  simp [isInducing_iff_nhds, nhds_pi, (hf _).nhds_eq_comap, Filter.pi_comap]
+
+protected lemma Topology.IsEmbedding.piMap {f : ∀ i, A i → B i}
+    (hf : ∀ i, IsEmbedding (f i)) : IsEmbedding (Pi.map f) :=
+  ⟨.piMap fun i ↦ (hf i).1, .piMap fun i ↦ (hf i).2⟩
 
 theorem Pi.continuous_precomp' {ι' : Type*} (φ : ι' → ι) :
     Continuous (fun (f : (∀ i, A i)) (j : ι') ↦ f (φ j)) :=
@@ -960,6 +968,14 @@ theorem isOpen_pi_iff' [Finite ι] {s : Set (∀ a, A a)} :
 theorem isClosed_set_pi {i : Set ι} {s : ∀ a, Set (A a)} (hs : ∀ a ∈ i, IsClosed (s a)) :
     IsClosed (pi i s) := by
   rw [pi_def]; exact isClosed_biInter fun a ha => (hs _ ha).preimage (continuous_apply _)
+
+protected lemma Topology.IsClosedEmbedding.piMap {f : ∀ i, A i → B i}
+    (hf : ∀ i, IsClosedEmbedding (f i)) : IsClosedEmbedding (Pi.map f) :=
+  ⟨.piMap fun i ↦ (hf i).1, by simpa using isClosed_set_pi fun i _ ↦ (hf i).2⟩
+
+protected lemma Topology.IsOpenEmbedding.piMap [Finite ι] {f : ∀ i, A i → B i}
+    (hf : ∀ i, IsOpenEmbedding (f i)) : IsOpenEmbedding (Pi.map f) :=
+  ⟨.piMap fun i ↦ (hf i).1, by simpa using isOpen_set_pi Set.finite_univ fun i _ ↦ (hf i).2⟩
 
 theorem mem_nhds_of_pi_mem_nhds {I : Set ι} {s : ∀ i, Set (A i)} (a : ∀ i, A i) (hs : I.pi s ∈ 𝓝 a)
     {i : ι} (hi : i ∈ I) : s i ∈ 𝓝 (a i) := by
