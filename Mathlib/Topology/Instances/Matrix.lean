@@ -457,6 +457,8 @@ end BlockMatrices
 
 end tsum
 
+/-! ### Lemmas about matrix groups -/
+
 section MatrixGroups
 
 variable [Fintype n] [DecidableEq n]
@@ -486,7 +488,7 @@ instance [DiscreteTopology R] : DiscreteTopology (SL n R) :=
   instDiscreteTopologySubtype
 
 /-- The special linear group over a topological ring is a topological group. -/
-instance topologicalGroup [IsTopologicalRing R] : IsTopologicalGroup (SL n R) where
+instance topologicalGroup : IsTopologicalGroup (SL n R) where
   continuous_inv := by simpa [continuous_induced_rng] using continuous_induced_dom.matrix_adjugate
   continuous_mul := by simpa only [continuous_induced_rng] using
     (continuous_induced_dom.comp continuous_fst).mul (continuous_induced_dom.comp continuous_snd)
