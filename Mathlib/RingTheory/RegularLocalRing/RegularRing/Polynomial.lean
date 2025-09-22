@@ -90,11 +90,11 @@ theorem Polynomial.isRegularRing_of_isRegularRing [IsRegularRing R] :
   let pc := Submonoid.map Polynomial.C.toMonoidHom q.primeCompl
   let _ : Algebra R[X] S := algebra R (Localization.AtPrime q)
   have _ : IsLocalization pc S := {
-    map_units' x := by
+    map_units x := by
       rcases x.2 with ⟨y, mem, eq⟩
       apply isUnit_of_mul_eq_one _ (C (Localization.mk 1 ⟨y, mem⟩))
       simp [← eq, S, ← map_mul, ← Localization.mk_one_eq_algebraMap, Localization.mk_mul]
-    surj' z := by
+    surj z := by
       induction z using Polynomial.induction_on'
       · rename_i _ _ f g hf hg
         rcases hf with ⟨⟨x1, y1⟩, h1⟩
