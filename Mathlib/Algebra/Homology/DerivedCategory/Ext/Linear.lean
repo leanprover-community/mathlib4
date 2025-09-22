@@ -74,6 +74,22 @@ noncomputable def homLinearEquiv [HasDerivedCategory.{w'} C] :
   __ := homAddEquiv
   map_smul' := by simp
 
+lemma mk₀_smul (r : R) (f : X ⟶ Y) : mk₀ (r • f) = r • mk₀ f := by
+  letI := HasDerivedCategory.standard C
+  aesop
+
+/-- The linear equivalence `Ext X Y 0 ≃ₜ[R] (X ⟶ Y)`. -/
+@[simps! symm_apply]
+noncomputable def linearEquiv₀ :
+    Ext X Y 0 ≃ₗ[R] (X ⟶ Y) where
+  toAddEquiv := addEquiv₀
+  map_smul' m x := homEquiv₀.symm.injective (by simp [mk₀_smul])
+
+@[simp]
+lemma mk₀_linearEquiv₀_apply (f : Ext X Y 0) :
+    mk₀ (linearEquiv₀ (R := R) f) = f :=
+  addEquiv₀.left_inv f
+
 end Ring
 
 section CommRing
