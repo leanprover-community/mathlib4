@@ -210,6 +210,27 @@ instance [IsZeroOrProbabilityMeasure μ] [IsZeroOrMarkovKernel κ] :
   rw [compProd]
   exact IsZeroOrMarkovKernel.isZeroOrProbabilityMeasure ()
 
+/-- `Measure.compProd` is associative. We have to insert `MeasurableEquiv.prodAssoc`
+because the products of types `α × β × γ` and `(α × β) × γ` are different. -/
+lemma compProd_assoc {γ : Type*} {mγ : MeasurableSpace γ} {η : Kernel (α × β) γ}
+    [SFinite μ] [IsSFiniteKernel κ] [IsSFiniteKernel η] :
+    μ ⊗ₘ κ ⊗ₘ η = (μ ⊗ₘ (κ ⊗ₖ η)).map MeasurableEquiv.prodAssoc.symm := by
+  ext s hs
+  rw [Measure.compProd_apply hs, Measure.map_apply (by fun_prop) hs,
+    Measure.compProd_apply (hs.preimage (by fun_prop)), Measure.lintegral_compProd]
+  swap; · exact Kernel.measurable_kernel_prodMk_left hs
+  congr with a
+  rw [Kernel.compProd_apply]
+  · congr
+  · exact hs.preimage (by fun_prop)
+
+/-- `Measure.compProd` is associative. We have to insert `MeasurableEquiv.prodAssoc`
+because the products of types `α × β × γ` and `(α × β) × γ` are different. -/
+lemma compProd_assoc' {γ : Type*} {mγ : MeasurableSpace γ} {η : Kernel (α × β) γ}
+    [SFinite μ] [IsSFiniteKernel κ] [IsSFiniteKernel η] :
+    μ ⊗ₘ (κ ⊗ₖ η) = ((μ ⊗ₘ κ) ⊗ₘ η).map MeasurableEquiv.prodAssoc := by
+  simp [Measure.compProd_assoc]
+
 section AbsolutelyContinuous
 
 lemma AbsolutelyContinuous.compProd_left [SFinite ν] (hμν : μ ≪ ν) (κ : Kernel α β) :
