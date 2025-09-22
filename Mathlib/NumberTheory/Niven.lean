@@ -20,24 +20,44 @@ namespace IsIntegral
 
 variable {α R : Type*} [DivisionRing α] [CharZero α] {q : ℚ} {x : α}
 
-theorem lift_rat (h₁ : IsIntegral ℤ (q : α)) : IsIntegral ℤ q := by
-  rcases h₁ with ⟨P, hP₁, hP₂⟩
-  refine ⟨P, hP₁, ?_⟩
-  simpa [Polynomial.eval₂_eq_sum_range, ← @Rat.cast_inj α] using hP₂
+@[simp]
+theorem ratCast_iff : IsIntegral ℤ (q : α) ↔ IsIntegral ℤ q :=
+  isIntegral_algebraMap_iff (FaithfulSMul.algebraMap_injective ℚ α)
 
-theorem exists_int_of_exists_rat (h₁ : IsIntegral ℤ x) : (∃ q : ℚ, x = q) → ∃ k : ℤ, x = k := by
+theorem exists_int_iff_exists_rat (h₁ : IsIntegral ℤ x) : (∃ q : ℚ, x = q) ↔ ∃ k : ℤ, x = k := by
+  refine ⟨?_, fun ⟨w, h⟩ ↦ ⟨w, by simp [h]⟩⟩
   rintro ⟨q, rfl⟩
-  peel IsIntegrallyClosed.algebraMap_eq_of_integral h₁.lift_rat with h
+  rw [ratCast_iff] at h₁
+  peel IsIntegrallyClosed.algebraMap_eq_of_integral h₁ with h
   simp [← h]
-
-theorem exists_int_iff_exists_rat (h₁ : IsIntegral ℤ x) : (∃ q : ℚ, x = q) ↔ (∃ k : ℤ, x = k) :=
-  ⟨h₁.exists_int_of_exists_rat, fun ⟨w, h⟩ ↦ ⟨w, by simp [h]⟩⟩
 
 end IsIntegral
 
 variable {θ : ℝ}
 
 open Real
+
+theorem isIntegral_two_mul_cos_pi (hθ : ∃ r : ℚ, θ = r * π) :
+    IsIntegral ℤ (2 * cos θ) := by
+  rcases hθ with ⟨r, hr⟩
+  obtain ⟨p, q, hq_pos, rfl⟩ : ∃ (p : ℤ) (q : ℕ), q ≠ 0 ∧ r = p / q :=
+    ⟨r.num, r.den, r.den_ne_zero, r.num_div_den.symm⟩
+  -- Let `z = e^{i π p / q}`, which is a root of unity.
+  let z : ℂ := .exp (.I * θ)
+  have hz_root : z ^ (2 * q) = 1 := by
+    rw [← Complex.exp_nat_mul, Complex.exp_eq_one_iff, hr]
+    use p
+    push_cast
+    field_simp [hq_pos]
+    ring
+  -- Since z is a root of unity, `2 cos θ = z` and `z⁻¹` are algebraic integers, and their sum.
+  obtain ⟨f, hf₁, hf₂⟩ : IsIntegral ℤ (z + z⁻¹) := by
+    apply IsIntegral.add <;> exact ⟨.X ^ (2 * q) - 1,
+      Polynomial.monic_X_pow_sub_C _ (by positivity), by simp [hz_root]⟩
+  use f, hf₁
+  have h_cos_eq : 2 * cos (p / q * π) = z + z⁻¹ := by
+    simpa [Complex.cos, Complex.exp_neg, hr, z] using by ring_nf
+  simp_all [Polynomial.eval₂_eq_sum_range, ← Complex.ofReal_inj]
 
 /-- **Niven's theorem**: The only rational values of `cos` that occur at rational multiples of π
 are `[-1, -1/2, 0, 1/2, 1]`. -/
@@ -46,48 +66,16 @@ theorem niven (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, cos θ = q) 
   -- Since `2 cos θ ` is an algebraic integer and rational, it must be an integer.
   -- Hence, `2 cos θ ∈ {-2, -1, 0, 1, 2}`.
   obtain ⟨k, hk⟩ : ∃ k : ℤ, 2 * cos θ = k := by
-    have h_int : IsIntegral ℤ (2 * cos θ) := by
-      rcases hθ with ⟨r, hr⟩
-      obtain ⟨p, q, hq_pos, rfl⟩ : ∃ p q : ℤ, q > 0 ∧ r = p / q :=
-        ⟨r.num, r.den, by positivity, r.num_div_den.symm⟩
-      -- Let `z = e^{i π p / q}`, which is a root of unity.
-      set z : ℂ := .exp (.I * θ)
-      have hz_root : z ^ (2 * q.natAbs) = 1 := by
-        rw [← Complex.exp_nat_mul, Complex.exp_eq_one_iff]
-        use p
-        rw [Nat.cast_mul, ← Int.cast_natCast q.natAbs, ← Int.eq_natAbs_of_nonneg hq_pos.le]
-        field_simp [hr, hq_pos.ne']
-        group
-      -- Since z is a root of unity, `2 cos⁡ θ = z` and `z⁻¹` are algebraic integers, and their sum.
-      obtain ⟨f, hf₁, hf₂⟩ : IsIntegral ℤ (z + z⁻¹) := by
-        have hz : IsIntegral ℤ z ∧ IsIntegral ℤ z⁻¹ := by
-          constructor
-          all_goals (
-            use .X ^ (2 * q.natAbs) - 1
-            constructor
-            · apply Polynomial.monic_X_pow_sub_C
-              positivity
-            · simp [hr, hz_root]
-          )
-        exact hz.left.add hz.right
-      use f, hf₁
-      have h_cos_eq : 2 * cos (p / q * π) = z + z⁻¹ := by
-        simpa [Complex.cos, Complex.exp_neg, hr, z] using by ring_nf
-      simp_all [Polynomial.eval₂_eq_sum_range, ← Complex.ofReal_inj]
-    -- Since `2 cos θ` is an algebraic integer and rational, it must be an integer.
-    rw [← h_int.exists_int_iff_exists_rat]
+    rw [← (isIntegral_two_mul_cos_pi hθ).exists_int_iff_exists_rat]
     exact ⟨2 * hcos.choose, by push_cast; linarith [hcos.choose_spec]⟩
   obtain ⟨r, rfl⟩ := hθ
-  obtain ⟨q, hq⟩ := hcos
   -- Since k is an integer and `2 * cos (w * pi) = k`, we have $k ∈ {-2, -1, 0, 1, 2}$.
-  have hk_values : k ∈ ({-2, -1, 0, 1, 2} : Set ℤ) := by
-    have : k ≤ 2 := Int.le_of_lt_add_one <| by rify; linarith [(r * π).cos_le_one]
-    have : k ≥ -2 := Int.le_of_lt_add_one <| by rify; linarith [(r * π).neg_one_le_cos]
-    interval_cases k <;> norm_num
-  rcases hk_values with (rfl | rfl | rfl | rfl | rfl) <;> simp_all
-  · simp [show (q : ℝ) = -1 by linarith]
-  · simp [show (q : ℝ) = -1/2 by linarith]
-  · simp [show (q : ℝ) = 1/2 by linarith]
+  have hk_values : k ∈ Finset.Icc (-2 : ℤ) 2 := by
+    rw [Finset.mem_Icc]
+    rify
+    constructor <;> linarith [hk, (r * π).neg_one_le_cos, (r * π).cos_le_one]
+  rw [show cos (r * π) = k / 2 by rwa [mul_comm, ← eq_div_iff two_ne_zero] at hk]
+  fin_cases hk_values <;> simp
 
 /-- Niven's theorem, but stated for `sin` instead of `cos`. -/
 theorem niven_sin (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, sin θ = q) :
