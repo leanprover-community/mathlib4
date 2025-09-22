@@ -16,7 +16,7 @@ import Mathlib.RingTheory.Regular.Ischebeck
 import Mathlib.RingTheory.RegularLocalRing.Basic
 /-!
 
-# Ferrand Vasconcelos Theorem
+# A Noetherian Local Ring is Regular if its Maximal Ideal has Finite Projective Dimension
 
 -/
 
