@@ -545,7 +545,7 @@ end unique
 /-- A family indexed by a type with a unique element
 is `ContinuousMulEquiv` to the element at the single index.
 This is the topological version of `MulEquiv.piUnique`. -/
-@[to_additive 
+@[to_additive
 /-- A family indexed by a type with a unique element
 is `ContinuousAddEquiv` to the element at the single index.
 This is the topological equivalent of `AddEquiv.piUnique`. -/]
