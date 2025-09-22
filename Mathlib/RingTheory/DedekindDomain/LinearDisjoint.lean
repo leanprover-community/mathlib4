@@ -5,7 +5,6 @@ Authors: Xavier Roblot
 -/
 import Mathlib.FieldTheory.LinearDisjoint
 import Mathlib.RingTheory.DedekindDomain.Different
-import Mathlib.RingTheory.Adjoin.PowerBasis
 
 /-!
 # Disjoint extensions with coprime different ideals
