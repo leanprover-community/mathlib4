@@ -707,6 +707,8 @@ theorem continuous_coe_repr : Continuous (fun m : M => ⇑(B.repr m)) :=
   have := Finite.of_basis B
   LinearMap.continuous_of_finiteDimensional B.equivFun.toLinearMap
 
+-- Note: this could be generalized if we had some typeclass to indicate "each of the projections
+-- into the basis is continuous".
 theorem continuous_toMatrix : Continuous fun (v : ι → M) => B.toMatrix v :=
   let _ := Fintype.ofFinite ι
   have := Finite.of_basis B
