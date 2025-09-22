@@ -701,7 +701,7 @@ theorem condIndepFun_iff_compProd_map_prod_eq_compProd_prod_map_map
     (hf : Measurable f) (hg : Measurable g) :
     CondIndepFun m' hm' f g μ
       ↔ (μ.trim hm') ⊗ₘ (condExpKernel μ m').map (fun ω ↦ (f ω, g ω))
-        = (μ.trim hm') ⊗ₘ (((condExpKernel μ m').map f) ×ₖ ((condExpKernel μ m').map g)) :=
+        = (μ.trim hm') ⊗ₘ ((condExpKernel μ m').map f ×ₖ (condExpKernel μ m').map g) :=
   Kernel.indepFun_iff_compProd_map_prod_eq_compProd_prod_map_map hf hg
 
 theorem condIndepFun_iff_map_prod_eq_prod_map_map
@@ -709,7 +709,7 @@ theorem condIndepFun_iff_map_prod_eq_prod_map_map
     (hf : Measurable f) (hg : Measurable g) :
     CondIndepFun m' hm' f g μ
       ↔ (condExpKernel μ m').map (fun ω ↦ (f ω, g ω))
-        =ᵐ[μ.trim hm'] (((condExpKernel μ m').map f) ×ₖ ((condExpKernel μ m').map g)) := by
+        =ᵐ[μ.trim hm'] ((condExpKernel μ m').map f ×ₖ (condExpKernel μ m').map g) := by
   rw [condIndepFun_iff_compProd_map_prod_eq_compProd_prod_map_map hf hg, ← Kernel.compProd_eq_iff]
 
 section iCondIndepFun
