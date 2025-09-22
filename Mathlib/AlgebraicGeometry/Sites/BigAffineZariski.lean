@@ -69,11 +69,11 @@ theorem Hom.exists {U₁ U₂ : Cover.{v} P X} (h : U₁.Hom U₂) (i₁ : U₁.
   ⟨h.idx i₁, h.app i₁, h.app_prop i₁, h.w i₁⟩
 
 /-- Given an open cover of `Spec R`, refine it to a cover by `Spec R[1/f]`. -/
-@[simps! (isSimp := False) map] noncomputable
+@[simps! (isSimp := False) f] noncomputable
 def refinementSpec {R : CommRingCat.{u}}
     (U : Cover IsOpenImmersion (Spec R)) : AffineOpenCover (Spec R) :=
   AffineCover.mkOfCovers
-    (I₀ := { f : R // ∃ j : U.J, PrimeSpectrum.basicOpen f ≤ (U.f j).opensRange })
+    (I₀ := { f : R // ∃ j : U.I₀, PrimeSpectrum.basicOpen f ≤ (U.f j).opensRange })
     (X := fun f ↦ .of (Localization.Away f.val))
     (f := fun f ↦ Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away f.val))))
     (covers := fun x ↦
