@@ -281,7 +281,7 @@ protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (co
   simp only [smul_add, ← smul_comm]
   exact convex_convexHull ℝ s (hx a ha) (hy a ha) hu hv huv
 
-variable (F ℱ : Type*) [AddCommMonoid F] [Module 𝕜 F]
+variable (F ℱ : Type*) [AddCommGroup F] [Module 𝕜 F]
 variable [FunLike ℱ F E] [LinearMapClass ℱ 𝕜 F E]
 
 theorem Absorbent.subset_range_iff_surjective {f : ℱ} {s : Set E} (hs_abs : Absorbent 𝕜 s) :
