@@ -99,7 +99,6 @@ private lemma small_pos_pos_neg_mul (hA : #(A ^ 3) ≤ K * #A) : #(A * A * A⁻�
 private lemma small_pos_neg_pos_mul (hA : #(A ^ 3) ≤ K * #A) : #(A * A⁻¹ * A) ≤ K ^ 3 * #A := by
   obtain rfl | hA₀ := A.eq_empty_or_nonempty
   · simp
-  have : 0 ≤ K := nonneg_of_mul_nonneg_left (hA.trans' <| by positivity) (by positivity)
   refine le_of_mul_le_mul_left ?_ (by positivity : (0 : ℝ) < #A)
   calc
     (#A * #(A * A⁻¹ * A) : ℝ) ≤ #(A * (A * A⁻¹)) * #(A * A) := by
@@ -151,7 +150,7 @@ lemma small_alternating_pow_of_small_tripling (hm : 3 ≤ m) (hA : #(A ^ 3) ≤ 
   have : K ^ 2 ≤ K ^ 3 := by
     gcongr
     · exact hK₁
-    · norm_num
+    · simp
   obtain ⟨hδ₀ | hδ₀, hδ₁ | hδ₁, hδ₂ | hδ₂⟩ := hδ <;> simp [hδ₀, hδ₁, hδ₂]
   · simp [pow_succ] at hA
     nlinarith

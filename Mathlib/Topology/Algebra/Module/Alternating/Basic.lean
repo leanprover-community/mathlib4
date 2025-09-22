@@ -245,7 +245,7 @@ linear map obtained by fixing all coordinates but `i` equal to those of `m`, and
 def toContinuousLinearMap [DecidableEq ι] (m : ι → M) (i : ι) : M →L[R] N :=
   f.1.toContinuousLinearMap m i
 
-/-- The cartesian product of two continuous alternating maps, as a continuous alternating map. -/
+/-- The Cartesian product of two continuous alternating maps, as a continuous alternating map. -/
 @[simps!]
 def prod (f : M [⋀^ι]→L[R] N) (g : M [⋀^ι]→L[R] N') : M [⋀^ι]→L[R] (N × N') :=
   ⟨f.1.prod g.1, (f.toAlternatingMap.prod g.toAlternatingMap).map_eq_zero_of_eq⟩
