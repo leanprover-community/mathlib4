@@ -27,12 +27,12 @@ open scoped Topology
 /-- A power series over `R` is restricted of paramerter `c` if we have
 `‖coeff R i f‖ * c ^ i → 0`. -/
 def IsRestricted (f : PowerSeries R) :=
-  Tendsto (fun (i : ℕ) ↦ (norm (coeff R i f)) * c ^ i) atTop (𝓝 0)
+  Tendsto (fun (i : ℕ) ↦ (norm (coeff i f)) * c ^ i) atTop (𝓝 0)
 
 namespace IsRestricted
 
 lemma isRestricted_iff {f : PowerSeries R} : IsRestricted c f ↔
-    ∀ ε, 0 < ε → ∃ N, ∀ n, N ≤ n → ‖‖(coeff R n) f‖ * c ^ n‖ < ε := by
+    ∀ ε, 0 < ε → ∃ N, ∀ n, N ≤ n → ‖‖(coeff n) f‖ * c ^ n‖ < ε := by
   simp [IsRestricted, NormedAddCommGroup.tendsto_atTop]
 
 lemma isRestricted_iff_abs (f : PowerSeries R) : IsRestricted c f ↔ IsRestricted |c| f := by
@@ -48,7 +48,7 @@ lemma one : IsRestricted c (1 : PowerSeries R) := by
   · omega
   · simpa
 
-lemma monomial (n : ℕ) (a : R) : IsRestricted c (monomial R n a) := by
+lemma monomial (n : ℕ) (a : R) : IsRestricted c (monomial n a) := by
   simp only [monomial_eq_mk, isRestricted_iff, coeff_mk, norm_mul, norm_pow,
     Real.norm_eq_abs, abs_norm]
   refine fun _ _ ↦ ⟨n + 1, fun _ _ ↦ ?_⟩
@@ -56,7 +56,7 @@ lemma monomial (n : ℕ) (a : R) : IsRestricted c (monomial R n a) := by
   · omega
   · simpa
 
-lemma C (a : R) : IsRestricted c (C R a) := by
+lemma C (a : R) : IsRestricted c (C a) := by
   simpa [monomial_zero_eq_C_apply] using monomial c 0 a
 
 lemma add {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) :
@@ -67,7 +67,7 @@ lemma add {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) 
   obtain ⟨gN, hgN⟩ := hg (ε / 2) (by positivity)
   simp only [abs_norm] at hfN hgN ⊢
   refine ⟨max fN gN, fun n hn ↦ ?_ ⟩
-  calc _ ≤ ‖(coeff R n) f‖ * |c| ^ n + ‖(coeff R n) g‖ * |c| ^ n := by grw [norm_add_le, add_mul]
+  calc _ ≤ ‖(coeff n) f‖ * |c| ^ n + ‖(coeff n) g‖ * |c| ^ n := by grw [norm_add_le, add_mul]
        _ < ε / 2 + ε / 2 := by gcongr <;> grind
        _ = ε := by ring
 
@@ -80,7 +80,7 @@ lemma smul {f : PowerSeries R} (hf : IsRestricted c f) (r : R) : IsRestricted c 
   intro ε _
   obtain ⟨n, hn⟩ := hf (ε / ‖r‖) (by positivity)
   refine ⟨n, fun N hN ↦ ?_⟩
-  calc _ ≤ ‖r‖ * ‖(coeff R N) f‖ * |c| ^ N :=
+  calc _ ≤ ‖r‖ * ‖(coeff N) f‖ * |c| ^ N :=
         mul_le_mul_of_nonneg (norm_mul_le _ _) (by simp) (by simp) (by simp)
        _ < ‖r‖ * (ε / ‖r‖) := by
         rw [mul_assoc]; aesop
@@ -88,7 +88,7 @@ lemma smul {f : PowerSeries R} (hf : IsRestricted c f) (r : R) : IsRestricted c 
 
 
 /-- The set of `‖coeff R i f‖ * c ^ i` for a given power series `f` and parameter `c`. -/
-def convergenceSet (f : PowerSeries R) : Set ℝ := {‖coeff R i f‖ * c^i | i : ℕ}
+def convergenceSet (f : PowerSeries R) : Set ℝ := {‖coeff i f‖ * c^i | i : ℕ}
 
 open Finset in
 lemma convergenceSet_BddAbove {f : PowerSeries R} (hf : IsRestricted c f) :
@@ -96,7 +96,7 @@ lemma convergenceSet_BddAbove {f : PowerSeries R} (hf : IsRestricted c f) :
   simp_rw [isRestricted_iff] at hf
   obtain ⟨N, hf⟩ := by simpa using (hf 1)
   rw [bddAbove_def, convergenceSet]
-  use max 1 (max' (image (fun i ↦ ‖coeff R i f‖ * c ^ i) (range (N + 1))) (by simp))
+  use max 1 (max' (image (fun i ↦ ‖coeff i f‖ * c ^ i) (range (N + 1))) (by simp))
   simp only [Set.mem_setOf_eq, le_sup_iff, forall_exists_index, forall_apply_eq_imp_iff]
   intro i
   rcases le_total i N with h | h
@@ -105,7 +105,7 @@ lemma convergenceSet_BddAbove {f : PowerSeries R} (hf : IsRestricted c f) :
     simp only [mem_image, mem_range]
     exact ⟨i, by omega, rfl⟩
   · left
-    calc _ ≤ ‖(coeff R i) f‖ * |c ^ i| := by bound
+    calc _ ≤ ‖(coeff i) f‖ * |c ^ i| := by bound
          _ ≤ 1 := by simpa using (hf i h).le
 
 variable [IsUltrametricDist R]
@@ -127,10 +127,10 @@ lemma mul {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) 
   obtain ⟨Ng, gBound2⟩ := (hg (ε / (max a b))) (by positivity)
   refine ⟨2 * max Nf Ng, fun n hn ↦ ?_⟩
   obtain ⟨⟨fst, snd⟩, hi, ultrametric⟩ := exists_norm_finset_sum_le (Finset.antidiagonal n)
-    (fun a ↦ (coeff R a.1) f * (coeff R a.2) g)
+    (fun a ↦ (coeff a.1) f * (coeff a.2) g)
   obtain ⟨rfl⟩ := by simpa using hi (⟨(0, n), by simp⟩)
-  calc _ ≤ ‖(coeff R fst) f * (coeff R snd) g‖ * |c| ^ (fst + snd) := by bound
-       _ ≤ ‖(coeff R fst) f‖ * |c| ^ fst * (‖(coeff R snd) g‖ * |c| ^ snd) := by
+  calc _ ≤ ‖(coeff fst) f * (coeff snd) g‖ * |c| ^ (fst + snd) := by bound
+       _ ≤ ‖(coeff fst) f‖ * |c| ^ fst * (‖(coeff snd) g‖ * |c| ^ snd) := by
         grw [norm_mul_le]; grind
   have : max Nf Ng ≤ fst ∨ max Nf Ng ≤ snd := by omega
   rcases this with this | this
