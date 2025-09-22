@@ -70,9 +70,9 @@ theorem ringKrullDim_A_eq_one : ringKrullDim (A k) = 1 := by
 theorem ringKrullDim_polynomial_A_eq_three : ringKrullDim (A k)[X] = 3 := by
   apply le_antisymm (by simpa [ringKrullDim_A_eq_one k] using Polynomial.ringKrullDim_le (R := A k))
   let φ : (A k) →+* k := by
-    refine RingHom.comp ?_ (PowerSeries.constantCoeff.comp (A k).subtype).rangeRestrict
-    refine (((⊤ : Subring k).equivMapOfInjective _ RatFunc.C_injective).symm.trans
-      Subring.topEquiv).toRingHom.comp (Subring.inclusion ?_)
+    refine ((((⊤ : Subring k).equivMapOfInjective _ RatFunc.C_injective).symm.trans
+      Subring.topEquiv).toRingHom.comp (Subring.inclusion ?_)).comp
+        (PowerSeries.constantCoeff.comp (A k).subtype).rangeRestrict
     exact fun _ ⟨⟨_, ⟨u, _⟩⟩, _⟩ ↦ ⟨u, ⟨by simp, by simp_all⟩⟩
   have h_phi : RatFunc.C.comp φ = PowerSeries.constantCoeff.comp (A k).subtype := RingHom.ext
     fun x ↦ by simp [φ, ← Subring.coe_equivMapOfInjective_apply (hf := RatFunc.C_injective)]
