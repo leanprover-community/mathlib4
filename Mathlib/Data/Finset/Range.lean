@@ -107,7 +107,7 @@ protected alias ⟨_, Aesop.range_nonempty⟩ := nonempty_range_iff
 
 @[simp]
 theorem range_eq_empty_iff : range n = ∅ ↔ n = 0 := by
-  grind [!nonempty_range_iff]
+  grind [nonempty_range_iff]
 
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 theorem nonempty_range_add_one : (range <| n + 1).Nonempty :=
