@@ -1018,7 +1018,7 @@ The bijection between the elements of the height one prime spectrum of `B` that 
 of the maximal ideal `p` in `B` and the primes over `p` in `B`.
 -/
 noncomputable def equivPrimesOver (hp : p ≠ 0) :
-    {v : HeightOneSpectrum B // v.asIdeal ∣ map (algebraMap A B) p} ≃ (p.primesOver B) :=
+    {v : HeightOneSpectrum B // v.asIdeal ∣ map (algebraMap A B) p} ≃ p.primesOver B :=
   Set.BijOn.equiv HeightOneSpectrum.asIdeal
     ⟨fun v hv ↦ ⟨v.isPrime, by rwa [liesOver_iff_dvd_map v.isPrime.ne_top]⟩,
     fun _ _ _ _ h ↦ HeightOneSpectrum.ext_iff.mpr h,
