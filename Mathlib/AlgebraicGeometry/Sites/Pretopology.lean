@@ -42,7 +42,7 @@ abbrev grothendieckTopology (P : MorphismProperty Scheme.{u}) [P.IsStableUnderBa
   (pretopology P).toGrothendieck
 
 instance : jointlySurjectivePrecoverage.IsStableUnderBaseChange :=
-  isStableUnderBaseChange_comap_jointlySurjectivePrecoverage
+  isStableUnderBaseChange_comap_jointlySurjectivePrecoverage _
     fun f g _ ↦ pullbackComparison_forget_surjective f g
 
 /-- The pretopology on the category of schemes defined by jointly surjective families. -/
