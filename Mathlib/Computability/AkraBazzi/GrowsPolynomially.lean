@@ -17,12 +17,6 @@ statement of the Akra-Bazzi theorem: for the theorem to hold, the function `g` m
 satisfy the condition that `c₁ g(n) ≤ g(u) ≤ c₂ g(n)`, for u between b*n and n for any constant
 `b ∈ (0,1)`.
 
-## Main definitions and results
-
-* `GrowsPolynomially`: The growth condition that `g` must satisfy for the theorem to apply.
-  It roughly states that
-  `c₁ g(n) ≤ g(u) ≤ c₂ g(n)`, for u between b*n and n for any constant `b ∈ (0,1)`.
-
 ## Implementation notes
 
 Our definition requires that the condition must hold for any `b ∈ (0,1)`. This is equivalent to
