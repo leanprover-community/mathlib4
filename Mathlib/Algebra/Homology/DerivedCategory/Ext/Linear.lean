@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 import Mathlib.Algebra.Homology.DerivedCategory.Linear
+import Mathlib.Algebra.Module.TransferInstance
 
 /-!
 # Ext-modules in linear categories
@@ -20,7 +21,6 @@ universe w' w t v u
 namespace CategoryTheory
 
 namespace Abelian
-
 
 namespace Ext
 
