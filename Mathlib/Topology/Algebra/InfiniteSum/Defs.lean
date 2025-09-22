@@ -59,13 +59,18 @@ section HasProd
 
 variable [CommMonoid α] [TopologicalSpace α]
 
-
+/-- `HasProdFilter L f a` means that the (potentially infinite) product of the `f b` for `b : β`
+converges to `a` along the filter `L` on `Finset β`. If this filter is `atTop`, this means that the
+product is absolutely convergent and we call it `HasProd f a` instead.
+-/
 @[to_additive]
 def HasProdFilter (L : Filter (Finset β)) (f : β → α) (a : α) : Prop :=
   Tendsto (fun s : Finset β ↦ ∏ b ∈ s, f b) L (𝓝 a)
 
+/-- `MultipliableAlongFilter L f` means that `f` has some (infinite) product along the filter `L`.
+-/
 @[to_additive
-/-- `SummableAlongFilter f` means that `f` has some (infinite) sum. -/]
+/-- `SummableAlongFilter L f` means that `f` has some (infinite) sum along the filter `L`. -/]
 def MultipliableFilter (L : Filter (Finset β)) (f : β → α) : Prop :=
   ∃ a, HasProdFilter L f a
 
@@ -112,8 +117,8 @@ lemma multipliable_iff_multipliableFilter {f : β → α} :
   Iff.rfl
 
 open scoped Classical in
-/-- `∏' i, f i` is the product of `f` if along the filter `L` if it exists or 1 otherwise. -/
-@[to_additive /-- `∑' i, f i` is the sum  of `f` if along the filter `L` if it exists
+/-- `∏'[L] i, f i` is the product of `f` if along the filter `L` if it exists or 1 otherwise. -/
+@[to_additive /-- `∑'[L] i, f i` is the sum of `f` if along the filter `L` if it exists
  or 0 otherwise. -/]
 noncomputable irreducible_def tprodFilter {β} (L : Filter (Finset β)) (f : β → α) :=
   if h : MultipliableFilter L f then
@@ -123,9 +128,9 @@ noncomputable irreducible_def tprodFilter {β} (L : Filter (Finset β)) (f : β 
 
 open scoped Classical in
 /-- `∏' i, f i` is the product of `f` if it exists and is unconditionally convergent,
-or 1 otherwise. -/
+or 1 otherwise. This is defined as `∏'[] i, f i` -/
 @[to_additive /-- `∑' i, f i` is the sum of `f` if it exists and is unconditionally convergent,
-or 0 otherwise. -/]
+or 0 otherwise. This is defined as `∑'[atTop] i, f i`. -/]
 abbrev tprod {β} (f : β → α) := tprodFilter atTop f
 
 @[inherit_doc tprod]
