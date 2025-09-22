@@ -52,7 +52,7 @@ theorem sup_empty : (∅ : Finset β).sup f = ⊥ :=
 theorem sup_cons {b : β} (h : b ∉ s) : (cons b s h).sup f = f b ⊔ s.sup f :=
   fold_cons h
 
-@[simp]
+@[simp, grind =]
 theorem sup_insert [DecidableEq β] {b : β} : (insert b s : Finset β).sup f = f b ⊔ s.sup f :=
   fold_insert_idem
 

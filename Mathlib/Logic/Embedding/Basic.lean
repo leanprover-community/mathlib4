@@ -300,6 +300,8 @@ variable {α α' : Type*} {β : α → Type*} {β' : α' → Type*}
 def sigmaMk (a : α) : β a ↪ Σ x, β x :=
   ⟨Sigma.mk a, sigma_mk_injective⟩
 
+attribute [grind =] sigmaMk_apply
+
 /-- If `f : α ↪ α'` is an embedding and `g : Π a, β α ↪ β' (f α)` is a family
 of embeddings, then `Sigma.map f g` is an embedding. -/
 @[simps apply]

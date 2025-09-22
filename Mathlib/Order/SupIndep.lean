@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Kevin Buzzard, Yaël Dillies, Eric Wieser
 -/
 import Mathlib.Data.Finset.Lattice.Union
-import Mathlib.Data.Finset.Prod
+import Mathlib.Data.Finset.Lattice.Prod
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Order.CompleteLatticeIntervals
@@ -202,6 +202,40 @@ protected theorem SupIndep.product {s : Finset ι} {t : Finset ι'} {f : ι × �
   · simpa using hs
   · exact fun i' hi' ↦ (ht.mono fun i hi ↦ Finset.le_sup (f := fun i' ↦ f (i', i)) hi').image
 
+protected theorem SupIndep.disjoint_sup_sup {s : Finset ι} {f : ι → α} {u v : Finset ι}
+    (hs : s.SupIndep f) (hu : u ⊆ s) (hv : v ⊆ s) (huv : Disjoint u v) :
+    Disjoint (u.sup f) (v.sup f) := by
+  classical
+  induction u using Finset.induction generalizing v with
+  | empty => simp
+  | insert x u hx ih =>
+    specialize ih (v := insert x v)
+    grind [= SupIndep, = disjoint_comm, ← Disjoint.disjoint_sup_left_of_disjoint_sup_right]
+
+theorem supIndep_sigma_iff' {β : ι → Type*} {s : Finset ι} {g : ∀ i, Finset (β i)}
+    {f : Sigma β → α} : (s.sigma g).SupIndep f ↔ (s.SupIndep fun i => (g i).sup fun b => f ⟨i, b⟩)
+      ∧ ∀ i ∈ s, (g i).SupIndep fun b => f ⟨i, b⟩ := by
+  classical
+  refine ⟨fun h ↦ ⟨fun t _ i _ _ ↦ ?_, fun i _ t _ j _ _ ↦ ?_⟩, fun h ↦ h.1.sigma h.2⟩
+  · let u := (g i).map (Function.Embedding.sigmaMk i)
+    let v := t.biUnion (fun j => (g j).map (Function.Embedding.sigmaMk j))
+    suffices Disjoint (u.sup f) (v.sup f) by simpa only [sup_map, sup_biUnion, u, v]
+    apply SupIndep.disjoint_sup_sup h <;> grind [disjoint_left]
+  · suffices Disjoint (f ⟨i, j⟩) ((t.image fun b ↦ ⟨i, b⟩).sup f) by simpa only [sup_image]
+    grind [= SupIndep]
+
+theorem supIndep_product_iff {s : Finset ι} {t : Finset ι'} {f : ι × ι' → α} :
+    (s.product t).SupIndep f ↔ (s.SupIndep fun i => t.sup fun i' => f (i, i'))
+      ∧ t.SupIndep fun i' => s.sup fun i => f (i, i') := by
+  classical
+  refine ⟨fun h ↦ ⟨fun u _ i _ _ ↦ ?_, fun u _ i _ _ ↦ ?_⟩, fun h ↦ h.1.product h.2⟩
+  · suffices Disjoint ((t.image ((i, ·))).sup f) ((u ×ˢ t).sup f) by
+      simpa only [sup_image, sup_product_left]
+    grind [Finset.SupIndep.disjoint_sup_sup, = product_eq_sprod, = disjoint_left]
+  · suffices Disjoint ((s.image ((·, i))).sup f) ((s ×ˢ u).sup f) by
+      simpa only [sup_image, sup_product_right]
+    grind [Finset.SupIndep.disjoint_sup_sup, = product_eq_sprod, = disjoint_left]
+
 end IsModularLattice
 
 section DistribLattice
@@ -213,17 +247,6 @@ theorem supIndep_iff_pairwiseDisjoint : s.SupIndep f ↔ (s : Set ι).PairwiseDi
     Finset.disjoint_sup_right.2 fun _ hj => hs hi (ht hj) (ne_of_mem_of_not_mem hj hit).symm⟩
 
 alias ⟨_, _root_.Set.PairwiseDisjoint.supIndep⟩ := supIndep_iff_pairwiseDisjoint
-
-theorem supIndep_product_iff {s : Finset ι} {t : Finset ι'} {f : ι × ι' → α} :
-    (s.product t).SupIndep f ↔ (s.SupIndep fun i => t.sup fun i' => f (i, i'))
-      ∧ t.SupIndep fun i' => s.sup fun i => f (i, i') := by
-  refine ⟨?_, fun h => h.1.product h.2⟩
-  simp_rw [supIndep_iff_pairwiseDisjoint]
-  refine fun h => ⟨fun i hi j hj hij => ?_, fun i hi j hj hij => ?_⟩ <;>
-      simp_rw [Finset.disjoint_sup_left, Finset.disjoint_sup_right] <;>
-    intro i' hi' j' hj'
-  · exact h (mk_mem_product hi hi') (mk_mem_product hj hj') (ne_of_apply_ne Prod.fst hij)
-  · exact h (mk_mem_product hi' hi) (mk_mem_product hj' hj) (ne_of_apply_ne Prod.snd hij)
 
 end DistribLattice
 
