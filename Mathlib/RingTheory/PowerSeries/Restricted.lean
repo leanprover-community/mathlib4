@@ -103,7 +103,7 @@ lemma convergenceSet_BddAbove {f : PowerSeries R} (hf : IsRestricted c f) :
   · right
     apply le_max'
     simp only [mem_image, mem_range]
-    exact ⟨i, Order.lt_add_one_iff.mpr h, rfl⟩
+    exact ⟨i, by omega, rfl⟩
   · left
     calc _ ≤ ‖(coeff R i) f‖ * |c ^ i| := by bound
          _ ≤ 1 := by simpa using (hf i h).le
