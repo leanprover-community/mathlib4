@@ -17,7 +17,7 @@ This introduces `FGModuleCat R`, the category of finitely generated modules over
 It is implemented as a full subcategory on a subtype of `ModuleCat R`.
 
 When `K` is a field,
-`FGModuleCat K` is the category of finite dimensional vector spaces over `K`.
+`FGModuleCat K` is the category of finite-dimensional vector spaces over `K`.
 
 We first create the instance as a preadditive category.
 When `R` is commutative we then give the structure as an `R`-linear monoidal category.
