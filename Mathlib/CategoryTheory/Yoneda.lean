@@ -53,19 +53,13 @@ def uliftYonedaIsoYoneda {C : Type u₁} [Category.{max w v₁} C] :
 
 /-- The co-Yoneda embedding, as a functor from `Cᵒᵖ` into co-presheaves on `C`.
 -/
-@[simps]
-def coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁ where
-  obj X :=
-    { obj := fun Y => unop X ⟶ Y
-      map := fun f g => g ≫ f }
-  map f :=
-    { app := fun _ g => f.unop ≫ g }
+@[simps!]
+abbrev coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁ := yoneda.flip
 
 /-- Variant of the Coyoneda embedding which allows a raise in the universe level
 for the category of types. -/
 @[pp_with_univ, simps!]
-def uliftCoyoneda : Cᵒᵖ ⥤ C ⥤ Type (max w v₁) :=
-  coyoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{w}
+abbrev uliftCoyoneda : Cᵒᵖ ⥤ C ⥤ Type (max w v₁) := uliftYoneda.flip
 
 /-- If `C` is a category with `[Category.{max w v₁} C]`, this is the isomorphism
 `uliftCoyoneda.{w} (C := C) ≅ coyoneda`. -/
@@ -920,7 +914,8 @@ def uliftCoyonedaEquiv {X : Cᵒᵖ} {F : C ⥤ Type (max w v₁)} :
   invFun x := { app Y y := F.map y.down x }
   left_inv τ := by
     ext Y ⟨y⟩
-    simp [uliftCoyoneda, ← FunctorToTypes.naturality]
+    simp [uliftYoneda, ← FunctorToTypes.naturality]
+
   right_inv x := by simp
 
 @[deprecated (since := "2025-08-04")] alias coyonedaCompUliftFunctorEquiv :=
@@ -932,7 +927,7 @@ lemma uliftCoyonedaEquiv_naturality {X Y : C} {F : C ⥤ Type max w v₁}
     (f : uliftCoyoneda.{w}.obj (op X) ⟶ F)
     (g : X ⟶ Y) : F.map g (uliftCoyonedaEquiv.{w} f) =
       uliftCoyonedaEquiv.{w} (uliftCoyoneda.map g.op ≫ f) := by
-  simp [uliftCoyonedaEquiv, uliftCoyoneda,
+  simp [uliftCoyonedaEquiv, uliftYoneda,
     ← FunctorToTypes.naturality _ _ f g (ULift.up (𝟙 _))]
 
 lemma uliftCoyonedaEquiv_comp {X : Cᵒᵖ} {F G : C ⥤ Type max w v₁}
@@ -953,7 +948,7 @@ lemma uliftCoyonedaEquiv_symm_map {X Y : C} (f : X ⟶ Y) {F : C ⥤ Type max w 
 lemma uliftCoyonedaEquiv_uliftCoyoneda_map {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     DFunLike.coe (β := fun _ ↦ ULift.{w} (Y.unop ⟶ X.unop))
         uliftCoyonedaEquiv.{w} (uliftCoyoneda.map f) = ULift.up f.unop := by
-  simp [uliftCoyonedaEquiv, uliftCoyoneda]
+  simp [uliftCoyonedaEquiv, uliftYoneda]
 
 /-- Two morphisms of presheaves of types `P ⟶ Q` coincide if the precompositions
 with morphisms `uliftCoyoneda.obj X ⟶ P` agree. -/
