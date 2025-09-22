@@ -545,7 +545,7 @@ end unique
 /-- A family indexed by a type with a unique element
 is `ContinuousMulEquiv` to the element at the single index.
 This is the topological version of `MulEquiv.piUnique`. -/
-@[to_additive
+@[to_additive (attr := simps!)
 /-- A family indexed by a type with a unique element
 is `ContinuousAddEquiv` to the element at the single index.
 This is the topological equivalent of `AddEquiv.piUnique`. -/]
@@ -558,21 +558,13 @@ def piUnique {ι : Type*} (M : ι → Type*) [(j : ι) → Mul (M j)]
 
 /-- Splits the indices of `∀ (i : ι), Y i` along the predicate `p`.
 This is `Equiv.piEquivPiSubtypeProd` as a `ContinuousMulEquiv`. -/
-@[to_additive piEquivPiSubtypeProd
+@[to_additive (attr := simps!) piEquivPiSubtypeProd
 /-- Splits the indices of `∀ (i : ι), Y i` along the predicate `p`.
 This is `Equiv.piEquivPiSubtypeProd` as a `ContinuousAddEquiv`. -/]
 def piEquivPiSubtypeProd {ι : Type*} (p : ι → Prop) (Y : ι → Type*)
     [(i : ι) → TopologicalSpace (Y i)] [(i : ι) → Mul (Y i)] [DecidablePred p] :
     ((i : ι) → Y i) ≃ₜ* ((i : { x : ι // p x }) → Y i) × ((i : { x : ι // ¬p x }) → Y i) :=
   {Homeomorph.piEquivPiSubtypeProd p Y with map_mul' _ _ := rfl}
-
-@[simp]
-def piEquivPiSubtypeProd_symm_apply {ι : Type*} (p : ι → Prop) (Y : ι → Type*)
-    [(i : ι) → TopologicalSpace (Y i)] [(i : ι) → Mul (Y i)] [DecidablePred p]
-    (f : ((i : { x // p x }) → Y i) × ((i : { x // ¬p x }) → Y i)) (i : ι) :
-    (piEquivPiSubtypeProd p Y).symm f i = if h : p i then f.1 ⟨i, h⟩ else f.2 ⟨i, h⟩ := by
-  by_cases h : p i <;>
-    { unfold piEquivPiSubtypeProd; simp [ContinuousMulEquiv.symm, h] }
 
 end ContinuousMulEquiv
 
