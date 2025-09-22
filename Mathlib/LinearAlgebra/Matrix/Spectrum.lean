@@ -10,7 +10,7 @@ import Mathlib.LinearAlgebra.Matrix.Hermitian
 import Mathlib.LinearAlgebra.Matrix.Rank
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 
-/-! # Spectral theory of hermitian matrices
+/-! # Spectral theory of Hermitian matrices
 
 This file proves the spectral theorem for matrices. The proof of the spectral theorem is based on
 the spectral theorem for linear maps (`LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply`).
@@ -44,16 +44,16 @@ section DecidableEq
 variable [DecidableEq n]
 variable (hA : A.IsHermitian)
 
-/-- The eigenvalues of a hermitian matrix, indexed by `Fin (Fintype.card n)` where `n` is the index
+/-- The eigenvalues of a Hermitian matrix, indexed by `Fin (Fintype.card n)` where `n` is the index
 type of the matrix. -/
 noncomputable def eigenvalues₀ : Fin (Fintype.card n) → ℝ :=
   (isHermitian_iff_isSymmetric.1 hA).eigenvalues finrank_euclideanSpace
 
-/-- The eigenvalues of a hermitian matrix, reusing the index `n` of the matrix entries. -/
+/-- The eigenvalues of a Hermitian matrix, reusing the index `n` of the matrix entries. -/
 noncomputable def eigenvalues : n → ℝ := fun i =>
   hA.eigenvalues₀ <| (Fintype.equivOfCardEq (Fintype.card_fin _)).symm i
 
-/-- A choice of an orthonormal basis of eigenvectors of a hermitian matrix. -/
+/-- A choice of an orthonormal basis of eigenvectors of a Hermitian matrix. -/
 noncomputable def eigenvectorBasis : OrthonormalBasis n 𝕜 (EuclideanSpace 𝕜 n) :=
   ((isHermitian_iff_isSymmetric.1 hA).eigenvectorBasis finrank_euclideanSpace).reindex
     (Fintype.equivOfCardEq (Fintype.card_fin _))
@@ -65,7 +65,7 @@ lemma mulVec_eigenvectorBasis (j : n) :
       congr(⇑$((isHermitian_iff_isSymmetric.1 hA).apply_eigenvectorBasis
         finrank_euclideanSpace ((Fintype.equivOfCardEq (Fintype.card_fin _)).symm j)))
 
-/-- Eigenvalues of a hermitian matrix A are in the ℝ spectrum of A. -/
+/-- Eigenvalues of a Hermitian matrix A are in the ℝ spectrum of A. -/
 theorem eigenvalues_mem_spectrum_real (i : n) : hA.eigenvalues i ∈ spectrum ℝ A := by
   apply spectrum.of_algebraMap_mem 𝕜
   rw [← Matrix.spectrum_toEuclideanLin]
@@ -123,7 +123,7 @@ theorem star_mul_self_mul_eq_diagonal :
   intro j
   simp only [PiLp.smul_apply, EuclideanSpace.single_apply, smul_eq_mul, mul_ite, mul_one, mul_zero]
 
-/-- **Diagonalization theorem**, **spectral theorem** for matrices; A hermitian matrix can be
+/-- **Diagonalization theorem**, **spectral theorem** for matrices; A Hermitian matrix can be
 diagonalized by a change of basis. For the spectral theorem on linear maps, see
 `LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply`. -/
 theorem spectral_theorem :
@@ -141,18 +141,18 @@ theorem eigenvalues_eq (i : n) :
     inner_self_eq_norm_sq_to_K, RCLike.smul_re, hA.eigenvectorBasis.orthonormal.1 i,
     mul_one, algebraMap.coe_one, one_pow, RCLike.one_re]
 
-/-- The determinant of a hermitian matrix is the product of its eigenvalues. -/
+/-- The determinant of a Hermitian matrix is the product of its eigenvalues. -/
 theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
   convert congr_arg det hA.spectral_theorem
   rw [det_mul_right_comm]
   simp
 
-/-- rank of a hermitian matrix is the rank of after diagonalization by the eigenvector unitary -/
+/-- rank of a Hermitian matrix is the rank of after diagonalization by the eigenvector unitary -/
 lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
   conv_lhs => rw [hA.spectral_theorem, ← unitary.coe_star]
   simp [-isUnit_iff_ne_zero, -unitary.coe_star, rank_diagonal]
 
-/-- rank of a hermitian matrix is the number of nonzero eigenvalues of the hermitian matrix -/
+/-- rank of a Hermitian matrix is the number of nonzero eigenvalues of the Hermitian matrix -/
 lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i ≠ 0} := by
   rw [rank_eq_rank_diagonal hA, Matrix.rank_diagonal]
 
@@ -169,8 +169,8 @@ theorem spectrum_real_eq_range_eigenvalues :
   conv_lhs => rw [hA.spectral_theorem, ← spectrum.algebraMap_mem_iff 𝕜]
   simp
 
-@[deprecated (since := "14-08-2025")] alias eigenvalues_eq_spectrum_real :=
-  spectrum_real_eq_range_eigenvalues
+@[deprecated (since := "2025-08-14")]
+alias eigenvalues_eq_spectrum_real := spectrum_real_eq_range_eigenvalues
 
 /-- The eigenvalues of a Hermitian matrix `A` are all zero iff `A = 0`. -/
 theorem eigenvalues_eq_zero_iff :
@@ -201,8 +201,3 @@ theorem trace_eq_sum_eigenvalues [DecidableEq n] (hA : A.IsHermitian) :
 end IsHermitian
 
 end Matrix
-
-/-The following were removed as a result of the refactor, since they either were
-unused in the library, followed as immediate consequences of, or were replaced by
-above results (e.g. results about inverses don't need replacement because their unitary
-analogues have replaced them). -/

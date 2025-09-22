@@ -334,7 +334,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     push_cast
     rw [← abs_div, abs_sq, sub_div, mul_div_cancel_right₀ _ h0.ne', ← div_pow, h1, ←
       sq_sqrt (Int.cast_pos.mpr h₀).le, sq_sub_sq, abs_mul, ← mul_one_div]
-    refine mul_lt_mul'' (((abs_add ξ q).trans ?_).trans_lt hM₁) h (abs_nonneg _) (abs_nonneg _)
+    refine mul_lt_mul'' (((abs_add_le ξ q).trans ?_).trans_lt hM₁) h (abs_nonneg _) (abs_nonneg _)
     rw [two_mul, add_assoc, add_le_add_iff_left, ← sub_le_iff_le_add']
     rw [mem_setOf, abs_sub_comm] at h
     refine (abs_sub_abs_le_abs_sub (q : ℝ) ξ).trans (h.le.trans ?_)
