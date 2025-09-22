@@ -192,7 +192,7 @@ lemma isLocalizedModule_quotSMulTop_isLocalizedModule_map (x : R)
   surj y := by
     induction y using Submodule.Quotient.induction_on
     rename_i y
-    rcases IsLocalizedModule.surj' (S := p.primeCompl) (f := f) y with ⟨z, hz⟩
+    rcases IsLocalizedModule.surj (S := p.primeCompl) (f := f) y with ⟨z, hz⟩
     use (Submodule.Quotient.mk z.1, z.2)
     simp [← hz]
   exists_of_eq {y1 y2} h := by
