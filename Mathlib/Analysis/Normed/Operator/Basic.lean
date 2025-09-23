@@ -33,7 +33,7 @@ open Filter hiding map_smul
 open scoped NNReal Topology Uniformity
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
-variable {𝕜 𝕜₂ 𝕜₃ E F Fₗ G 𝓕 : Type*}
+variable {𝕜 𝕜₂ 𝕜₃ E F Fₗ G 𝓕 𝓕ₗ : Type*}
 
 section SemiNormed
 
@@ -46,7 +46,18 @@ variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [Nontr
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ] [NormedSpace 𝕜₃ G]
   {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₁₃ : 𝕜 →+* 𝕜₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
-variable [FunLike 𝓕 E F]
+variable [FunLike 𝓕 E F] [FunLike 𝓕ₗ E Fₗ]
+
+theorem ball_subset_range_iff_surjective [LinearMapClass 𝓕ₗ 𝕜 E Fₗ] {f : 𝓕ₗ} {x : Fₗ} {r : ℝ}
+    (hrx : ‖x‖ < r) : Metric.ball x r ⊆ LinearMap.range f ↔ (⇑f).Surjective :=
+  absorbent_ball (by simpa)|>.subset_range_iff_surjective'
+
+theorem closedBall_subset_range_iff_surjective [LinearMapClass 𝓕ₗ 𝕜 E Fₗ] {f : 𝓕ₗ} {x : Fₗ} {r : ℝ}
+      (hrx : ‖x‖ < r) : Metric.closedBall (x : Fₗ) r ⊆ LinearMap.range f ↔ (⇑f).Surjective := by
+  apply Absorbent.subset_range_iff_surjective'
+  rw [← closedBall_normSeminorm 𝕜 Fₗ]
+  exact (normSeminorm 𝕜 Fₗ).absorbent_closedBall (by simp_all)
+
 
 /-- If `‖x‖ = 0` and `f` is continuous then `‖f x‖ = 0`. -/
 theorem norm_image_of_norm_zero [SemilinearMapClass 𝓕 σ₁₂ E F] (f : 𝓕) (hf : Continuous f) {x : E}
