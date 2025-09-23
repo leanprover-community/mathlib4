@@ -467,7 +467,9 @@ theorem relNorm_eq_pow_of_isMaximal [PerfectField (FractionRing R)] [P.IsMaximal
     refine IsGalois.of_equiv_equiv  (F := K) (E := E) (f := (FractionRing.algEquiv R K).symm)
       (g := (FractionRing.algEquiv T E).symm) ?_
     ext
-    simpa using FractionRing.algebraMap_algEquiv_symm_commutes _ _ _ _ _
+    simpa using
+      IsFractionRing.algebraMap_algHom_commute (FractionRing.algEquiv R K).symm.toAlgHom
+        (FractionRing.algEquiv T E).symm.toAlgHom _
   obtain ⟨Q, hQ₁, hQ₂⟩ : ∃ Q : Ideal T, Q.IsMaximal ∧ Q.LiesOver P :=
     exists_maximal_ideal_liesOver_of_isIntegral P
   have : IsGalois L (FractionRing T) := IsGalois.tower_top_of_isGalois K L (FractionRing T)
