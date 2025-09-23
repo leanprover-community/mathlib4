@@ -50,29 +50,29 @@ theorem isNNRat_abs_neg {α : Type*} [DivisionRing α] [LinearOrder α] [IsStric
 /-- The `norm_num` extension which identifies expressions of the form `|a|`,
 such that `norm_num` successfully recognises `a`. -/
 @[norm_num |_|] def evalAbs : NormNumExt where eval {u α}
-| ~q(@abs _ $instLattice $instAddGroup $a) => do
-  match ← derive a with
-  | .isBool ..  => failure
-  | .isNat sα na pa =>
-    let rα : Q(Ring $α) ← synthInstanceQ q(Ring $α)
-    let iorα : Q(IsOrderedRing $α) ← synthInstanceQ q(IsOrderedRing $α)
-    assumeInstancesCommute
-    return .isNat sα na q(isNat_abs_nonneg $pa)
-  | .isNegNat sα na pa =>
-    let rα : Q(Ring $α) ← synthInstanceQ q(Ring $α)
-    let iorα : Q(IsOrderedRing $α) ← synthInstanceQ q(IsOrderedRing $α)
-    assumeInstancesCommute
-    return .isNat _ _ q(isNat_abs_neg $pa)
-  | .isNNRat dsα' qe' nume' dene' pe' =>
-    let rα : Q(DivisionRing $α) ← synthInstanceQ q(DivisionRing $α)
-    let loα : Q(LinearOrder $α) ← synthInstanceQ q(LinearOrder $α)
-    let isorα : Q(IsStrictOrderedRing $α) ← synthInstanceQ q(IsStrictOrderedRing $α)
-    assumeInstancesCommute
-    return .isNNRat _ qe' _ _ q(isNNRat_abs_nonneg $pe')
-  | .isNegNNRat dα' qe' nume' dene' pe' =>
-    let loα : Q(LinearOrder $α) ← synthInstanceQ q(LinearOrder $α)
-    let isorα : Q(IsStrictOrderedRing $α) ← synthInstanceQ q(IsStrictOrderedRing $α)
-    assumeInstancesCommute
-    return .isNNRat _ (-qe') _ _ q(isNNRat_abs_neg $pe')
+  | ~q(@abs _ $instLattice $instAddGroup $a) => do
+    match ← derive a with
+    | .isBool ..  => failure
+    | .isNat sα na pa =>
+      let rα : Q(Ring $α) ← synthInstanceQ q(Ring $α)
+      let iorα : Q(IsOrderedRing $α) ← synthInstanceQ q(IsOrderedRing $α)
+      assumeInstancesCommute
+      return .isNat sα na q(isNat_abs_nonneg $pa)
+    | .isNegNat sα na pa =>
+      let rα : Q(Ring $α) ← synthInstanceQ q(Ring $α)
+      let iorα : Q(IsOrderedRing $α) ← synthInstanceQ q(IsOrderedRing $α)
+      assumeInstancesCommute
+      return .isNat _ _ q(isNat_abs_neg $pa)
+    | .isNNRat dsα' qe' nume' dene' pe' =>
+      let rα : Q(DivisionRing $α) ← synthInstanceQ q(DivisionRing $α)
+      let loα : Q(LinearOrder $α) ← synthInstanceQ q(LinearOrder $α)
+      let isorα : Q(IsStrictOrderedRing $α) ← synthInstanceQ q(IsStrictOrderedRing $α)
+      assumeInstancesCommute
+      return .isNNRat _ qe' _ _ q(isNNRat_abs_nonneg $pe')
+    | .isNegNNRat dα' qe' nume' dene' pe' =>
+      let loα : Q(LinearOrder $α) ← synthInstanceQ q(LinearOrder $α)
+      let isorα : Q(IsStrictOrderedRing $α) ← synthInstanceQ q(IsStrictOrderedRing $α)
+      assumeInstancesCommute
+      return .isNNRat _ (-qe') _ _ q(isNNRat_abs_neg $pe')
 
 end Mathlib.Meta.NormNum
