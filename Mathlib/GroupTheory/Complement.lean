@@ -32,8 +32,15 @@ namespace Subgroup
 variable {G : Type*} [Group G] (H K : Subgroup G) (S T : Set G)
 
 /-- `S` and `T` are complements if `(*) : S × T → G` is a bijection.
-  This notion generalizes left transversals, right transversals, and complementary subgroups. -/
-@[to_additive /-- `S` and `T` are complements if `(+) : S × T → G` is a bijection -/]
+This notion generalizes left transversals, right transversals, and complementary subgroups.
+
+If `S` and `T` are `SetLike`s such as `Subgroup`s, see `isComplement_iff_bijective` for a
+more ergonomic way to unfold.
+-/
+@[to_additive /-- `S` and `T` are complements if `(+) : S × T → G` is a bijection
+
+If `S` and `T` are `SetLike`s such as `AddSubgroup`s, see `isComplement_iff_bijective` for a
+more ergonomic way to unfold. -/]
 def IsComplement : Prop :=
   Function.Bijective fun x : S × T => x.1.1 * x.2.1
 
@@ -43,6 +50,12 @@ abbrev IsComplement' :=
   IsComplement (H : Set G) (K : Set G)
 
 variable {H K S T}
+
+/-- The correct way to unfold `IsComplement` for `SetLike`s such as `Subgroup`s -/
+@[to_additive /-- The correct way to unfold `IsComplement` for `SetLike`s such as `AddSubgroup`s -/]
+theorem isComplement_iff_bijective {S : Type*} [SetLike S G] (s t : S) :
+    IsComplement (G := G) s t ↔ Function.Bijective fun x : s × t => (x.1 : G) * (x.2 : G) :=
+  Iff.rfl
 
 @[to_additive]
 theorem isComplement'_def : IsComplement' H K ↔ IsComplement (H : Set G) (K : Set G) :=
@@ -65,9 +78,8 @@ theorem IsComplement'.symm (h : IsComplement' H K) : IsComplement' K H := by
       (fun x => Prod.ext (inv_inv _) (inv_inv _)) fun x => Prod.ext (inv_inv _) (inv_inv _)
   let ψ : G ≃ G := Equiv.mk (fun g : G => g⁻¹) (fun g : G => g⁻¹) inv_inv inv_inv
   suffices hf : (ψ ∘ fun x : H × K => x.1.1 * x.2.1) = (fun x : K × H => x.1.1 * x.2.1) ∘ ϕ by
-    rw [isComplement'_def, IsComplement, ← Equiv.bijective_comp ϕ]
-    apply (congr_arg Function.Bijective hf).mp -- Porting note: This was a `rw` in mathlib3
-    rwa [ψ.comp_bijective]
+    rwa [isComplement'_def, isComplement_iff_bijective, ← Equiv.bijective_comp ϕ, ← hf,
+      ψ.comp_bijective]
   exact funext fun x => mul_inv_rev _ _
 
 @[to_additive]

@@ -24,13 +24,13 @@ based on application: for any `s t : Set Ω`, we have `μ[t|s] = (μ s)⁻¹ * �
   to conditioning on their intersection.
 * `cond_eq_inv_mul_cond_mul`: Bayes' Theorem, `μ[t|s] = (μ s)⁻¹ * μ[s|t] * (μ t)`.
 
-## Notations
+## Notation
 
 This file uses the notation `μ[|s]` the measure of `μ` conditioned on `s`,
 and `μ[t|s]` for the probability of `t` given `s` under `μ` (equivalent to the
 application `μ[|s] t`).
 
-These notations are contained in the locale `ProbabilityTheory`.
+These notations are contained in the scope `ProbabilityTheory`.
 
 ## Implementation notes
 

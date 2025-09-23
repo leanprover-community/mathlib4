@@ -65,27 +65,22 @@ structure IsTrail {u v : V} (p : G.Walk u v) : Prop where
 
 /-- A *path* is a walk with no repeating vertices.
 Use `SimpleGraph.Walk.IsPath.mk'` for a simpler constructor. -/
-structure IsPath {u v : V} (p : G.Walk u v) : Prop extends IsTrail p where
+structure IsPath {u v : V} (p : G.Walk u v) : Prop extends isTrail : IsTrail p where
   support_nodup : p.support.Nodup
-
--- Porting note: used to use `extends to_trail : is_trail p` in structure
-protected lemma IsPath.isTrail {p : Walk G u v} (h : IsPath p) : IsTrail p := h.toIsTrail
 
 /-- A *circuit* at `u : V` is a nonempty trail beginning and ending at `u`. -/
 @[mk_iff isCircuit_def]
-structure IsCircuit {u : V} (p : G.Walk u u) : Prop extends IsTrail p where
+structure IsCircuit {u : V} (p : G.Walk u u) : Prop extends isTrail : IsTrail p where
   ne_nil : p ≠ nil
-
--- Porting note: used to use `extends to_trail : is_trail p` in structure
-protected lemma IsCircuit.isTrail {p : Walk G u u} (h : IsCircuit p) : IsTrail p := h.toIsTrail
 
 /-- A *cycle* at `u : V` is a circuit at `u` whose only repeating vertex
 is `u` (which appears exactly twice). -/
-structure IsCycle {u : V} (p : G.Walk u u) : Prop extends IsCircuit p where
+structure IsCycle {u : V} (p : G.Walk u u) : Prop extends isCircuit : IsCircuit p where
   support_nodup : p.support.tail.Nodup
 
--- Porting note: used to use `extends to_circuit : is_circuit p` in structure
-protected lemma IsCycle.isCircuit {p : Walk G u u} (h : IsCycle p) : IsCircuit p := h.toIsCircuit
+@[deprecated (since := "2025-08-26")] protected alias IsPath.toIsTrail := IsPath.isTrail
+@[deprecated (since := "2025-08-26")] protected alias IsCircuit.toIsTrail := IsCircuit.isTrail
+@[deprecated (since := "2025-08-26")] protected alias IsCycle.toIsCircuit := IsCycle.isCircuit
 
 @[simp]
 theorem isTrail_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
@@ -248,16 +243,14 @@ lemma IsPath.disjoint_support_of_append {u v w : V} {p : G.Walk u v} {q : G.Walk
 lemma IsPath.ne_of_mem_support_of_append {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
     (hpq : (p.append q).IsPath) {x y : V} (hyv : y ≠ v) (hx : x ∈ p.support) (hy : y ∈ q.support) :
     x ≠ y := by
-  intro hxy
-  subst hxy
+  rintro rfl
   have hq : ¬q.Nil := by
     intro hq
-    simp only [nil_iff_support_eq.mp hq, List.mem_cons, List.not_mem_nil, or_false] at hy
-    exact hyv hy
+    simp [nil_iff_support_eq.mp hq, hyv] at hy
   have hx' : x ∈ q.tail.support := by
     rw [support_tail_of_not_nil q hq]
     rw [mem_support_iff] at hy
-    exact (or_iff_right hyv).mp hy
+    exact hy.resolve_left hyv
   exact IsPath.disjoint_support_of_append hpq hq hx hx'
 
 @[simp]
@@ -372,14 +365,16 @@ lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤
     refine ⟨ih (by
       intro n hn m hm hnm
       simp only [Set.mem_setOf_eq] at hn hm
-      have := hinj (by rw [length_cons]; omega : n + 1 ≤ (q.cons h).length)
-          (by rw [length_cons]; omega : m + 1 ≤ (q.cons h).length)
-          (by simpa [getVert_cons] using hnm)
+      have := hinj
+        (by rw [length_cons]; omega : n + 1 ≤ (q.cons h).length)
+        (by rw [length_cons]; omega : m + 1 ≤ (q.cons h).length)
+        (by simpa [getVert_cons] using hnm)
       omega), fun h' => ?_⟩
     obtain ⟨n, ⟨hn, hnl⟩⟩ := mem_support_iff_exists_getVert.mp h'
-    have := hinj (by rw [length_cons]; omega : (n + 1) ≤ (q.cons h).length)
-      (by omega : 0 ≤ (q.cons h).length) (show (q.cons h).getVert (n + 1) = (q.cons h).getVert 0
-        from by rwa [getVert_cons _ _ (by omega : n + 1 ≠ 0), getVert_zero])
+    have := hinj
+      (by rw [length_cons]; omega : (n + 1) ≤ (q.cons h).length)
+      (by omega : 0 ≤ (q.cons h).length)
+      (by rwa [getVert_cons _ _ n.add_one_ne_zero, getVert_zero])
     omega
 
 /-! ### About cycles -/
@@ -392,9 +387,8 @@ lemma IsCycle.getVert_injOn {p : G.Walk u u} (hpc : p.IsCycle) :
   rw [← SimpleGraph.Walk.length_tail_add_one
     (p.not_nil_of_tail_not_nil (not_nil_of_isCycle_cons hpc)), Set.mem_setOf] at hn hm
   have := ((Walk.cons_isCycle_iff _ _).mp hpc).1.getVert_injOn
-      (by omega : n - 1 ≤ p.tail.length) (by omega : m - 1 ≤ p.tail.length)
-      (by simp_all [SimpleGraph.Walk.getVert_tail, show n - 1 + 1 = n by omega,
-          show m - 1 + 1 = m by omega])
+    (by omega : n - 1 ≤ p.tail.length) (by omega : m - 1 ≤ p.tail.length)
+    (by simp_all [SimpleGraph.Walk.getVert_tail, Nat.sub_add_cancel hn.1, Nat.sub_add_cancel hm.1])
   omega
 
 lemma IsCycle.getVert_injOn' {p : G.Walk u u} (hpc : p.IsCycle) :
@@ -425,13 +419,12 @@ lemma IsCycle.getVert_endpoint_iff {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle) 
 
 lemma IsCycle.getVert_sub_one_ne_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
     (h : i ≤ p.length) : p.getVert (i - 1) ≠ p.getVert (i + 1) := by
+  intro h'
   have hl := hpc.three_le_length
   by_cases hi' : i ≥ p.length - 1
-  · intro h'
-    rw [p.getVert_of_length_le (by omega : p.length ≤ i + 1),
+  · rw [p.getVert_of_length_le (by omega : p.length ≤ i + 1),
       hpc.getVert_endpoint_iff (by omega)] at h'
     omega
-  intro h'
   have := hpc.getVert_injOn' (by simp only [Set.mem_setOf_eq, Nat.sub_le_iff_le_add]; omega)
     (by simp only [Set.mem_setOf_eq]; omega) h'
   omega

@@ -185,6 +185,10 @@ def FixedPoints.intermediateField (M : Type*) [Monoid M] [MulSemiringAction M E]
     carrier := MulAction.fixedPoints M E
     algebraMap_mem' := fun a g => smul_algebraMap g a }
 
+@[simp] lemma FixedPoints.mem_intermediateField_iff
+    {M : Type*} [Monoid M] [MulSemiringAction M E] [SMulCommClass M F E] {x : E} :
+    x ∈ FixedPoints.intermediateField (F := F) M ↔ ∀ m : M, m • x = x := .rfl
+
 namespace IntermediateField
 
 /-- The intermediate field fixed by a subgroup. -/
@@ -484,8 +488,7 @@ theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.I
   rw [← @IntermediateField.card_algHom_adjoin_integral K _ E _ _ x E _ (RingHom.toAlgebra f) h]
   · exact Polynomial.Separable.of_dvd ((Polynomial.separable_map (algebraMap F K)).mpr hp) h2
   · refine Polynomial.splits_of_splits_of_dvd _ (Polynomial.map_ne_zero h1) ?_ h2
-    -- Porting note: use unification instead of synthesis for one argument of `algebraMap_eq`
-    rw [Polynomial.splits_map_iff, ← @IsScalarTower.algebraMap_eq _ _ _ _ _ _ _ (_) _ _]
+    rw [Polynomial.splits_map_iff, ← IsScalarTower.algebraMap_eq]
     exact sp.splits
 
 theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separable) :
