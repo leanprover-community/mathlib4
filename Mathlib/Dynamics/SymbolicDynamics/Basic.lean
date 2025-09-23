@@ -51,7 +51,7 @@ open Set Topology
 
 namespace SymbolicDynamics
 
-variable {A : Type*} [Fintype A] [Fintype A] [DecidableEq A] [Inhabited A]
+variable {A : Type*} [Fintype A] [Inhabited A]
 variable {G : Type*}
 variable [TopologicalSpace A] [DiscreteTopology A]
 variable [Group G] [DecidableEq G]
@@ -59,12 +59,14 @@ variable [Group G] [DecidableEq G]
 /-! ## Full shift and shift action -/
 
 
-/-- Right-translation shift: `(shift g x)(h) = x (h * g)`. -/
+/-- Right-translation shift: `(shift g x) (h) = x (h * g)`. -/
 def shift (g : G) (x : G → A) : G → A :=
   fun h => x (h * g)
 
 section ShiftAlgebra
+
 variable {A G : Type*} [Group G]
+
 @[simp] lemma shift_apply (g h : G) (x : G → A) :
   shift g x h = x (h * g) := rfl
 
@@ -74,13 +76,16 @@ variable {A G : Type*} [Group G]
 lemma shift_mul (g₁ g₂ : G) (x : G → A) :
   shift (g₁ * g₂) x = shift g₁ (shift g₂ x) := by
   ext h; simp [shift, mul_assoc]
+
 end ShiftAlgebra
 
 section ShiftTopology  -- add only topology on A
+
 variable {A G : Type*} [Group G] [TopologicalSpace A]
 lemma continuous_shift (g : G) : Continuous (shift (A := A) (G := G) g) := by
   -- coordinate projections are continuous; composition preserves continuity
   continuity
+
 end ShiftTopology
 
 
@@ -88,6 +93,7 @@ end ShiftTopology
 /-! ## Cylinders -/
 
 section CylindersDefs
+
 variable {A G : Type*}
 
 /-- Cylinder fixing `x` on the finite set `U`. -/
@@ -100,10 +106,13 @@ lemma cylinder_eq_set_pi (U : Finset G) (x : G → A) :
 
 @[simp] lemma mem_cylinder {U : Finset G} {x y : G → A} :
     y ∈ cylinder U x ↔ ∀ i ∈ U, y i = x i := Iff.rfl
+
 end CylindersDefs
 
 section CylindersOpen
+
 variable {A G : Type*} [TopologicalSpace A] [DiscreteTopology A]
+
 /-- Cylinders are open (and, dually, closed) when `A` is discrete. -/
 lemma cylinder_is_open (U : Finset G) (x : G → A) :
     IsOpen (cylinder (A := A) (G := G) U x) := by
@@ -115,11 +124,13 @@ lemma cylinder_is_open (U : Finset G) (x : G → A) :
                      (t := fun i => ({x i} : Set A))) :=
     isOpen_set_pi (U.finite_toSet) hopen
   simpa [cylinder_eq_set_pi (A := A) (G := G) U x] using hpi
+
 end CylindersOpen
 
 section CylindersClosed
-variable {A G : Type*}
-[TopologicalSpace A] [DiscreteTopology A]
+
+variable {A G : Type*} [TopologicalSpace A] [DiscreteTopology A]
+
 lemma cylinder_is_closed (U : Finset G) (x : G → A) :
     IsClosed (cylinder (A := A) (G := G) U x) := by
   classical
@@ -130,6 +141,7 @@ lemma cylinder_is_closed (U : Finset G) (x : G → A) :
                        (t := fun i => ({x i} : Set A))) :=
     isClosed_set_pi hclosed
   simpa [cylinder_eq_set_pi (A := A) (G := G) U x] using hpi
+
 end CylindersClosed
 
 /-! ## Patterns and occurrences -/
@@ -174,7 +186,9 @@ def forbids (F : Set (Pattern A G)) : Set (G → A) :=
 
 
 section ShiftInvariance
+
 variable {A G : Type*} [Group G]
+
 /-- Shifts move occurrences as expected. -/
 lemma occurs_shift (p : Pattern A G) (x : G → A) (g h : G) :
     p.occursIn (shift h x) g ↔ p.occursIn x (g * h) := by
@@ -187,6 +201,7 @@ lemma forbids_shift_invariant (F : Set (Pattern A G)) :
   -- contraposition
   contrapose! hx
   simpa [occurs_shift] using hx
+
 end ShiftInvariance
 
 /-- Extend a pattern by `default` away from its support (anchored at the origin). -/
@@ -203,7 +218,9 @@ def patternFromConfig (x : G → A) (U : Finset G) : Pattern A G :=
     data := fun i => x i.1 }
 
 section OccursAtEqCylinder
+
 variable {A G : Type*} [Group G] [Inhabited A] [DecidableEq G]
+
 /-- “Occurrence = cylinder translated by `g`”. -/
 lemma occursAt_eq_cylinder (p : Pattern A G) (g : G) :
     { x | p.occursIn x g } = cylinder (p.support.image (· * g)) (patternToConfig p g) := by
@@ -217,11 +234,13 @@ lemma occursAt_eq_cylinder (p : Pattern A G) (g : G) :
     have := H (u * g) (Finset.mem_image_of_mem _ hu)
     dsimp [patternToConfig, patternToOriginConfig, shift] at this
     simpa [add_neg_cancel_right, dif_pos hu] using this
+
 end OccursAtEqCylinder
 
 /-! ## Forbidden sets and subshifts -/
 
 section OccSetsOpen
+
 variable {A G : Type*} [Group G] [TopologicalSpace A] [DiscreteTopology A]
            [Inhabited A] [DecidableEq G]
 
@@ -247,6 +266,7 @@ lemma forbids_closed (F : Set (Pattern A G)) :
 end OccSetsOpen
 
 section OccSetsClosed
+
 variable {A G : Type*} [Group G] [TopologicalSpace A] [DiscreteTopology A]
            [Inhabited A] [DecidableEq G]
 
