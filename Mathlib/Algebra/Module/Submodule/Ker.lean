@@ -16,7 +16,7 @@ This file defines the kernel of a linear map.
 
 * `LinearMap.ker`: the kernel of a linear map as a submodule of the domain
 
-## Notations
+## Notation
 
 * We continue to use the notations `M →ₛₗ[σ] M₂` and `M →ₗ[R] M₂` for the type of semilinear
   (resp. linear) maps from `M` to `M₂` over the ring homomorphism `σ` (resp. over the ring `R`).
@@ -245,7 +245,7 @@ theorem comap_bot (f : F) : comap f ⊥ = ker f :=
 
 @[simp]
 theorem ker_subtype : ker p.subtype = ⊥ :=
-  ker_eq_bot_of_injective fun _ _ => Subtype.ext_val
+  ker_eq_bot_of_injective fun _ _ => Subtype.ext
 
 @[simp]
 theorem ker_inclusion (p p' : Submodule R M) (h : p ≤ p') : ker (inclusion h) = ⊥ := by

@@ -81,9 +81,10 @@ lemma _root_.induction_on_primes {motive : ℕ → Prop} (zero : motive 0) (one 
     (prime_mul : ∀ p a : ℕ, p.Prime → motive a → motive (p * a)) : ∀ n, motive n := by
   refine recOnPrimePow zero one ?_
   rintro a p n hp - - ha
-  induction' n with n ih
-  · simpa using ha
-  · rw [pow_succ', mul_assoc]
+  induction n with
+  | zero => simpa using ha
+  | succ n ih =>
+    rw [pow_succ', mul_assoc]
     exact prime_mul _ _ hp ih
 
 lemma prime_composite_induction {motive : ℕ → Prop} (zero : motive 0) (one : motive 1)

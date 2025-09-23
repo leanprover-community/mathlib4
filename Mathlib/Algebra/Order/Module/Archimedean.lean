@@ -52,10 +52,7 @@ def submodule (s : UpperSet (ArchimedeanClass M)) : Submodule K M where
   smul_mem' k {a} := by
     obtain rfl | hs := eq_or_ne s ⊤
     · aesop
-    change a ∈ addSubgroup s → k • a ∈ addSubgroup s
-    simp_rw [mem_addSubgroup_iff hs]
-    refine fun h ↦ s.upper ?_ h
-    apply mk_le_mk_smul
+    simpa [mem_addSubgroup_iff hs] using s.upper (mk_le_mk_smul a k)
 
 /-- An open ball defined by `ArchimedeanClass.submodule` of `UpperSet.Ioi c`.
 For `c = ⊤`, we assign the junk value `⊥`.
@@ -99,5 +96,11 @@ theorem closedBall_top : closedBall (M := M) K ⊤ = ⊥ :=
 theorem ball_antitone : Antitone (ball (M := M) K) := by
   intro _ _ h
   exact (Submodule.toAddSubgroup_le _ _).mp <| ballAddSubgroup_antitone h
+
+theorem ball_le_closedBall {c : ArchimedeanClass M} : ball K c ≤ closedBall K c := by
+  obtain rfl | hc := eq_or_ne c ⊤
+  · simp
+  intro a ha
+  simpa using ((mem_ball_iff K hc).mp ha).le
 
 end ArchimedeanClass

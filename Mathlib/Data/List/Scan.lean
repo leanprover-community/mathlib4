@@ -64,9 +64,6 @@ theorem getElem?_succ_scanl {i : ℕ} : (scanl f b l)[i + 1]? =
     · simp
     · simp only [hl, getElem?_cons_succ]
 
-@[deprecated (since := "2025-02-21")]
-alias get?_succ_scanl := getElem?_succ_scanl
-
 theorem getElem_succ_scanl {i : ℕ} (h : i + 1 < (scanl f b l).length) :
     (scanl f b l)[i + 1] =
       f ((scanl f b l)[i]'(Nat.lt_of_succ_lt h))
