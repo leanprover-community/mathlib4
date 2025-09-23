@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 
-import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 import Mathlib.NumberTheory.ModularForms.QExpansion
 
 /-!
@@ -16,7 +15,6 @@ For `f, f'` functions `ℍ → ℂ`, we define `petersson k f f'` to be the func
 We show this function is (weight 0) invariant under `Γ` if `f, f'` are (weight `k`) invariant under
 `Γ`, and it vanishes at infinity if `f, f'` are bounded at infinity and one of them vanishes.
 -/
-
 
 open Topology Filter UpperHalfPlane Asymptotics
 
