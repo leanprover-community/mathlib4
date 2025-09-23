@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Patrick Luo, Bhavik Mehta
 -/
 import Mathlib.Algebra.Pointwise.Stabilizer
+import Mathlib.Combinatorics.Additive.Convolution
 import Mathlib.Data.Real.GoldenRatio
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Qify
-import Mathlib.Combinatorics.Additive.Convolution
 
 /-!
 # Sets with very small doubling
@@ -350,7 +350,7 @@ private lemma op_smul_eq_op_smul_iff_mem {H : Subgroup G} {x y : G} :
 omit [DecidableEq G] in
 /-- Given a finite subset `A` of a group `G` and a subgroup `H ≤ G`, there exists a subset `Z ⊆ A`
 such that `H * Z = H * A` and the cosets `Hz` are disjoint as `z` runs over `Z`. -/
-private lemma exists_rightCosetRepresentingFinset (H : Subgroup G) (A : Finset G) :
+private lemma exists_subset_mul_eq_mul_injOn (H : Subgroup G) (A : Finset G) :
     ∃ Z ⊆ A, (H : Set G) * Z = H * A ∧ (Z : Set G).InjOn ((H : Set G) <• ·) := by
   obtain ⟨Z, hZA, hZinj, hHZA⟩ :=
     (A.toSet.surjOn_image ((H : Set G) <• ·)).exists_subset_injOn_image_eq
@@ -358,7 +358,7 @@ private lemma exists_rightCosetRepresentingFinset (H : Subgroup G) (A : Finset G
   refine ⟨Z, mod_cast hZA, ?_, hZinj⟩
   simpa [-Finset.mem_coe, Set.iUnion_op_smul_set] using congr(Set.sUnion $hHZA)
 
-private lemma card_mul_eq_mul_card_of_disjoint_rightCosets {H : Subgroup G} [Fintype H]
+private lemma card_mul_eq_mul_card_of_injOn_opSMul {H : Subgroup G} [Fintype H]
     {Z : Finset G} (hZ : (Z : Set G).InjOn ((H : Set G) <• ·)) :
     Fintype.card H * #Z = #(Set.toFinset H * Z) := by
   rw [card_mul_iff.2]
@@ -397,11 +397,11 @@ theorem doubling_lt_golden_ratio (hK₁ : 1 < K) (hKφ : K < φ)
   -- By definition, `H * S = S`.
   have H_mul_S : (H : Set G) * S = S := by simp [H, ← stabilizer_coe_finset]
   -- Since `H` is a subgroup, find a finite set `Z ⊆ S` such that `H * Z = S` and `|H| * |Z| = |S|`.
-  obtain ⟨Z, hZ⟩ := exists_rightCosetRepresentingFinset H S
+  obtain ⟨Z, hZ⟩ := exists_subset_mul_eq_mul_injOn H S
   have H_mul_Z : (H : Set G) * Z = S := by simp [hZ.2.1, H_mul_S]
   have H_toFinset_mul_Z : Set.toFinset H * Z = S := by simpa [← Finset.coe_inj]
   have card_H_mul_card_Z : Fintype.card H * #Z = #S := by
-    simpa [card_mul_eq_mul_card_of_disjoint_rightCosets hZ.2.2] using congr_arg _ H_toFinset_mul_Z
+    simpa [card_mul_eq_mul_card_of_injOn_opSMul hZ.2.2] using congr_arg _ H_toFinset_mul_Z
   -- It remains to show that `|Z| ≤ C(K)` for some `C(K)` depending only on `K`.
   refine ⟨H, inferInstance, Z, ?_, mod_cast H_mul_Z⟩
   -- This is equivalent to showing that `|H| ≥ c(K)|S|` for some `c(K)` depending only on `K`.
