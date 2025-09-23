@@ -95,6 +95,7 @@ lemma roots_quadratic_eq_pair_iff_of_ne_zero [CommRing R] [IsDomain R] {x1 x2 : 
       have h2 : C a * (X - C x1) * (X - C x2) ≠ 0 := mul_ne_zero h1 (Polynomial.X_sub_C_ne_zero _)
       simp [this, Polynomial.roots_mul h2, Polynomial.roots_mul h1]
     have ep : p = C a * X ^ 2 + C b * X + C c := by
+      rw [C_mul_X_pow_eq_monomial]
       sorry
     simpa [ep, hvieta.1, hvieta.2] using by ring
   ⟨fun h => ⟨eq_neg_mul_add_of_roots_quadratic_eq_pair hp h,
