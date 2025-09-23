@@ -343,9 +343,9 @@ lemma radius_ne_zero_of_nontrivial [Nontrivial α] : G.radius ≠ 0 := by
 lemma radius_eq_zero_iff : G.radius = 0 ↔ Nonempty α ∧ Subsingleton α := by
   refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨_, _⟩ ↦ ?_⟩
   · contrapose! h
-    simp [radius, h]
+    simp [radius]
   · contrapose! h
-    simp [h, radius_ne_zero_of_nontrivial]
+    simp [radius_ne_zero_of_nontrivial]
   · rw [radius, ENat.iInf_eq_zero]
     use Classical.ofNonempty
     simpa [eccent] using Subsingleton.elim _
