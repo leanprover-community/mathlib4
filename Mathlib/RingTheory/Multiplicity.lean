@@ -3,7 +3,6 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Chris Hughes, Daniel Weber
 -/
-import Batteries.Data.Nat.Gcd
 import Mathlib.Algebra.GroupWithZero.Associated
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Int.Defs
@@ -63,7 +62,7 @@ theorem finiteMultiplicity_iff_emultiplicity_ne_top :
 
 theorem finiteMultiplicity_of_emultiplicity_eq_natCast {n : ℕ} (h : emultiplicity a b = n) :
     FiniteMultiplicity a b := by
-  by_contra! nh
+  by_contra nh
   rw [← emultiplicity_eq_top, h] at nh
   trivial
 
@@ -597,8 +596,6 @@ section CancelCommMonoidWithZero
 
 variable [CancelCommMonoidWithZero α]
 
-/- Porting note:
-Pulled a b intro parameters since Lean parses that more easily -/
 theorem finiteMultiplicity_mul_aux {p : α} (hp : Prime p) {a b : α} :
     ∀ {n m : ℕ}, ¬p ^ (n + 1) ∣ a → ¬p ^ (m + 1) ∣ b → ¬p ^ (n + m + 1) ∣ a * b
   | n, m => fun ha hb ⟨s, hs⟩ =>

@@ -5,8 +5,6 @@ Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.NumberTheory.RamificationInertia.Basic
 import Mathlib.Order.Filter.Cofinite
-import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
-import Mathlib.RingTheory.UniqueFactorizationDomain.Finite
 
 /-!
 # Factorization of ideals and fractional ideals of Dedekind domains
@@ -794,7 +792,6 @@ variable {S : Type*} [CommRing S] [Algebra S R] [Algebra.IsIntegral S R] [NoZero
 
 open IsDedekindDomain Ideal.IsDedekindDomain HeightOneSpectrum
 
-variable (R) in
 /--
 If `p` is a maximal ideal, then the lift of `p` in an extension is the product of the primes
 over `p` to the power the ramification index.
@@ -810,8 +807,7 @@ theorem Ideal.map_algebraMap_eq_finset_prod_pow {p : Ideal S} [p.IsMaximal] (hp 
     (s := {v | v.asIdeal ∣ p.map (algebraMap S R)}.toFinset), ← Finset.prod_set_coe,
     ← Finset.prod_set_coe]
   · let _ : Fintype {v : HeightOneSpectrum R // v.asIdeal ∣ map (algebraMap S R) p} := hF
-    refine Fintype.prod_equiv (equivPrimesOver _ hp) _ _ ?_
-    intro ⟨v, hv⟩
+    refine Fintype.prod_equiv (equivPrimesOver _ hp) _ _ fun ⟨v, _⟩ ↦ ?_
     simp [maxPowDividing_eq_pow_multiset_count _ h,
       ramificationIdx_eq_factors_count h v.isPrime v.ne_bot]
   · intro v hv
