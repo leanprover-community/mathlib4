@@ -33,11 +33,9 @@ open Filter hiding map_smul
 open scoped NNReal Topology Uniformity
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
-variable {𝕜 𝕜₂ 𝕜₃ E F Fₗ G 𝓕 𝓕ₗ : Type*}
+variable {𝕜 𝕜₂ 𝕜₃ E F Fₗ G 𝓕 : Type*}
 
 section SemiNormed
-
-open Metric ContinuousLinearMap
 
 variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup Fₗ]
   [SeminormedAddCommGroup G]
@@ -46,18 +44,27 @@ variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [Nontr
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ] [NormedSpace 𝕜₃ G]
   {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₁₃ : 𝕜 →+* 𝕜₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
-variable [FunLike 𝓕 E F] [FunLike 𝓕ₗ E Fₗ]
+variable [FunLike 𝓕 E F] [SemilinearMapClass 𝓕 σ₁₂ E F]
 
-theorem ball_subset_range_iff_surjective [LinearMapClass 𝓕ₗ 𝕜 E Fₗ] {f : 𝓕ₗ} {x : Fₗ} {r : ℝ}
+theorem ball_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕} {x : F} {r : ℝ}
+    (hrx : ‖x‖ < r) : Metric.ball x r ⊆ Set.range f ↔ (⇑f).Surjective :=
+  absorbent_ball (by simpa)|>.subset_range_iff_surjective
+
+theorem ball_subset_range_iff_surjective' [RingHomSurjective σ₁₂] {f : 𝓕} {x : F} {r : ℝ}
     (hrx : ‖x‖ < r) : Metric.ball x r ⊆ LinearMap.range f ↔ (⇑f).Surjective :=
   absorbent_ball (by simpa)|>.subset_range_iff_surjective'
 
-theorem closedBall_subset_range_iff_surjective [LinearMapClass 𝓕ₗ 𝕜 E Fₗ] {f : 𝓕ₗ} {x : Fₗ} {r : ℝ}
-      (hrx : ‖x‖ < r) : Metric.closedBall (x : Fₗ) r ⊆ LinearMap.range f ↔ (⇑f).Surjective := by
-  apply Absorbent.subset_range_iff_surjective'
-  rw [← closedBall_normSeminorm 𝕜 Fₗ]
-  exact (normSeminorm 𝕜 Fₗ).absorbent_closedBall (by simp_all)
+theorem closedBall_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕} {x : F} {r : ℝ}
+      (hrx : ‖x‖ < r) : Metric.closedBall (x : F) r ⊆ Set.range f ↔ (⇑f).Surjective := by
+  apply Absorbent.subset_range_iff_surjective
+  rw [← closedBall_normSeminorm 𝕜₂]
+  exact (normSeminorm ..).absorbent_closedBall (by simp_all)
 
+theorem closedBall_subset_range_iff_surjective' [RingHomSurjective σ₁₂] {f : 𝓕} {x : F} {r : ℝ}
+      (hrx : ‖x‖ < r) : Metric.closedBall (x : F) r ⊆ LinearMap.range f ↔ (⇑f).Surjective :=
+  LinearMap.coe_range (f := f) ▸ closedBall_subset_range_iff_surjective hrx
+
+omit [SemilinearMapClass 𝓕 σ₁₂ E F]
 
 /-- If `‖x‖ = 0` and `f` is continuous then `‖f x‖ = 0`. -/
 theorem norm_image_of_norm_zero [SemilinearMapClass 𝓕 σ₁₂ E F] (f : 𝓕) (hf : Continuous f) {x : E}
@@ -246,6 +253,7 @@ theorem opNorm_le_of_shell {f : E →SL[σ₁₂] F} {ε C : ℝ} (ε_pos : 0 < 
     (hc : 1 < ‖c‖) (hf : ∀ x, ε / ‖c‖ ≤ ‖x‖ → ‖x‖ < ε → ‖f x‖ ≤ C * ‖x‖) : ‖f‖ ≤ C :=
   f.opNorm_le_bound' hC fun _ hx => SemilinearMapClass.bound_of_shell_semi_normed f ε_pos hc hf hx
 
+open Metric
 
 theorem opNorm_le_of_ball {f : E →SL[σ₁₂] F} {ε : ℝ} {C : ℝ} (ε_pos : 0 < ε) (hC : 0 ≤ C)
     (hf : ∀ x ∈ ball (0 : E) ε, ‖f x‖ ≤ C * ‖x‖) : ‖f‖ ≤ C := by
