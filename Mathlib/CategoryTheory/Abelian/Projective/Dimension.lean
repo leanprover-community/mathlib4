@@ -237,7 +237,7 @@ open CategoryTheory
 
 variable {C : Type u} [Category.{v, u} C] [Abelian C]
 
-/-- The projective dimension of object of abelian category. -/
+/-- The projective dimension of an object in an abelian category. -/
 noncomputable def projectiveDimension (X : C) : WithBot ℕ∞ :=
   sInf {n : WithBot ℕ∞ | ∀ (i : ℕ), n < i → HasProjectiveDimensionLT X i}
 
