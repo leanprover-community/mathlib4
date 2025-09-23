@@ -219,7 +219,7 @@ theorem nndist_conj_comm (z w : ℂ) : nndist (conj z) w = nndist z (conj w) :=
 instance : ContinuousStar ℂ :=
   ⟨conjLIE.continuous⟩
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_conj : Continuous (conj : ℂ → ℂ) :=
   continuous_star
 
