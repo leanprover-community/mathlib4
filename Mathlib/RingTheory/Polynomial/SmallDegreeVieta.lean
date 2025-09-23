@@ -37,7 +37,7 @@ lemma eq_mul_mul_of_roots_quadratic_eq_pair [CommRing R] [IsDomain R] {x1 x2 : R
 
 /-- **Vieta's formula** for quadratics (`aroots` version). -/
 lemma eq_neg_mul_add_of_aroots_quadratic_eq_pair
-    [CommRing T] [CommRing S] [IsDomain S] [Algebra T S]  {p : T[X]} {x1 x2 : S}
+    [CommRing T] [CommRing S] [IsDomain S] [Algebra T S] {p : T[X]} {x1 x2 : S}
     (hp : p.natDegree = 2) (haroots : p.aroots S = {x1, x2}) :
     algebraMap T S (p.coeff 1) = -algebraMap T S (p.coeff 2) * (x1 + x2) := by
   rw [aroots_def] at haroots
