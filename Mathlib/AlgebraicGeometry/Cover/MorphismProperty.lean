@@ -3,7 +3,7 @@ Copyright (c) 2024 Christian Merten, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.OpenImmersion
+import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 
@@ -162,12 +162,12 @@ def Cover.add {X Y : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : Y ⟶ X)
   I₀ := Option 𝒰.I₀
   X i := Option.rec Y 𝒰.X i
   f i := Option.rec f 𝒰.f i
-  mem₀ := by
-    rw [presieve₀_mem_precoverage_iff]
-    refine ⟨fun x ↦ ?_, fun i ↦ ?_⟩
-    · obtain ⟨i, y, hy⟩ := 𝒰.exists_eq x
-      use i, y
-    · cases i <;> grind
+  idx x := some (𝒰.idx x)
+  covers := 𝒰.covers
+  map_prop j := by
+    obtain ⟨_ | _⟩ := j
+    · exact hf
+    · exact 𝒰.map_prop _
 
 /-- Given a cover on `X`, we may pull them back along a morphism `W ⟶ X` to obtain
 a cover of `W`.

@@ -105,7 +105,7 @@ lemma overGrothendieckTopology_eq_toGrothendieck_overPretopology :
   constructor
   · intro hR
     obtain ⟨𝒰, hle⟩ := exists_cover_of_mem_grothendieckTopology hR
-    rw [mem_grothendieckTopology] at hR
+    rw [mem_grothendieckTopology_iff] at hR
     letI (i : 𝒰.I₀) : (𝒰.X i).Over S := { hom := 𝒰.f i ≫ X.hom }
     letI : 𝒰.Over S :=
       { over := inferInstance
@@ -113,7 +113,7 @@ lemma overGrothendieckTopology_eq_toGrothendieck_overPretopology :
     use 𝒰.toPresieveOver, ⟨𝒰, inferInstance, rfl⟩
     rwa [Cover.toPresieveOver_le_arrows_iff]
   · rintro ⟨T, ⟨𝒰, h, rfl⟩, hT⟩
-    use Presieve.ofArrows 𝒰.X 𝒰.f, 𝒰.mem₀
+    use Presieve.ofArrows 𝒰.X 𝒰.f, 𝒰.mem_pretopology
     rwa [Cover.toPresieveOver_le_arrows_iff] at hT
 
 variable {S}
