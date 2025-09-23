@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Nailin Guan
 -/
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
-import Mathlib.Data.ENat.Lattice
 import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.Algebra.Category.Grp.Zero
+import Mathlib.Data.ENat.Lattice
 
 /-!
 # Projective dimension
