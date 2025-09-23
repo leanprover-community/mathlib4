@@ -291,6 +291,7 @@ theorem WithSeminorms.hasBasis_zero_ball (hp : WithSeminorms p) :
   /--
   nightly-2025-09-21
   `grind` is failing here
+  Minimised in https://github.com/leanprover/lean4/pull/10497
   -/
   constructor
   · rintro ⟨-, ⟨s, r, hr, rfl⟩, hV⟩
