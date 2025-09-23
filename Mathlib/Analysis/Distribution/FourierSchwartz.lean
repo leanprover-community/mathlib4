@@ -112,32 +112,20 @@ theorem integral_sesq_fourierIntegral_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : 
     (L := (innerₗ V)) continuous_fourierChar continuous_inner f.integrable g.integrable
   rwa [flip_innerₗ] at this
 
-/-- Parseval's identity. -/
+/-- Plancherel's theorem for Schwartz functions. -/
 theorem integral_sesq_fourier_fourier (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L⋆[ℂ] F →L[ℂ] G) :
     ∫ ξ, M (𝓕 f ξ) (𝓕 g ξ) = ∫ x, M (f x) (g x) := by
   have := integral_sesq_fourierIntegral_eq f (fourierTransformCLM ℂ g) M
   simp only [fourierTransformCLM_apply, fourier_inversion] at this
   assumption
 
-variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
+variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 
-@[simp]
-theorem bar (f g : 𝓢(V, H)) : inner ℂ (f.toLp 2) (g.toLp 2) = ∫ x, inner ℂ (f x) (g x) := by
-  apply integral_congr_ae
-  have hf_ae := f.coeFn_toLp 2
-  have hg_ae := g.coeFn_toLp 2
-  filter_upwards [hf_ae, hg_ae] with _ hf hg
-  rw [hf, hg]
-
-variable [CompleteSpace H]
-
-theorem foo (f : 𝓢(V, H)) :
+theorem inner_fourierTransformCLM_toL2_eq (f : 𝓢(V, H)) :
     inner ℂ ((fourierTransformCLM ℂ f).toLp 2) ((fourierTransformCLM ℂ f).toLp 2) =
     inner ℂ (f.toLp 2) (f.toLp 2) := by
-  simp only [bar]
-  exact integral_sesq_fourier_fourier f f (innerSL ℂ : H →L⋆[ℂ] H →L[ℂ] ℂ)
-
-#exit
+  simp only [inner_toL2_toL2_eq]
+  exact integral_sesq_fourier_fourier f f (innerSL ℂ)
 
 /-- The Fourier transform on a real inner product space, as a continuous linear equiv on the
 Schwartz space. -/
