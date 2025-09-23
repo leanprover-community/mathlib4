@@ -284,27 +284,23 @@ lemma projectiveDimension_eq_find (X : C) (h : ∃ n, HasProjectiveDimensionLE X
   · rw [← Nat.succ_pred_eq_of_ne_zero eq0]
     exact (Nat.find_min h (Nat.sub_one_lt eq0))
 
-lemma projectiveDimension_ne_top_iff (X : C) : projectiveDimension X ≠ ⊤ ↔
-    ∃ n, HasProjectiveDimensionLE X n := by
-  simp only [projectiveDimension, ne_eq, sInf_eq_top, Set.mem_setOf_eq, not_forall]
-  refine ⟨fun ⟨x, hx, ne⟩ ↦ ?_, fun ⟨n, hn⟩ ↦ ?_⟩
-  · by_cases eqbot : x = ⊥
-    · use 0
-      have := hx 0 (by simp [eqbot, bot_lt_iff_ne_bot])
-      exact instHasProjectiveDimensionLTSucc X 0
-    · have : x.unbot eqbot ≠ ⊤ := by
-        by_contra eq
-        rw [← WithBot.coe_inj, WithBot.coe_unbot, WithBot.coe_top] at eq
-        exact ne eq
-      use (x.unbot eqbot).toNat
-      have eq : x = (x.unbot eqbot).toNat := (WithBot.coe_unbot x eqbot).symm.trans
-        (WithBot.coe_inj.mpr (ENat.coe_toNat this).symm)
-      have : x < ((x.unbot eqbot).toNat + 1 : ℕ) := by
-        nth_rw 1 [eq]
-        exact Nat.cast_lt.mpr (lt_add_one _)
-      exact hx ((x.unbot eqbot).toNat + 1 : ℕ) this
-  · use n
-    simpa using ⟨fun i hi ↦ hasProjectiveDimensionLT_of_ge X (n + 1) i hi,
-      WithBot.coe_inj.not.mpr (ENat.coe_ne_top n)⟩
+lemma projectiveDimension_ne_top_iff (X : C) :
+    projectiveDimension X ≠ ⊤ ↔ ∃ n, HasProjectiveDimensionLE X n := by
+  generalize hd : projectiveDimension X = d 
+  induction d with
+  | bot =>
+    simp only [ne_eq, bot_ne_top, not_false_eq_true, true_iff]
+    exact ⟨0, by simp [← projectiveDimension_le_iff, hd]⟩
+  | coe d =>
+    induction d with
+    | top =>
+      by_contra!
+      simp only [WithBot.coe_top, ne_eq, not_true_eq_false, false_and, true_and, false_or] at this
+      obtain ⟨n, hn⟩ := this
+      rw [← projectiveDimension_le_iff, hd, WithBot.coe_top, top_le_iff] at hn
+      exact ENat.coe_ne_top _ ((WithBot.coe_eq_coe).1 hn)
+    | coe d =>
+      simp only [ne_eq, WithBot.coe_eq_top, ENat.coe_ne_top, not_false_eq_true, true_iff]
+      exact ⟨d, by simpa only [← projectiveDimension_le_iff] using hd.le⟩
 
 end ProjectiveDimension
