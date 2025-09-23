@@ -145,7 +145,8 @@ lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
     (FractionRing.algEquiv B L).toRingEquiv]
   swap
   · ext
-    exact FractionRing.algebraMap_algEquiv_commutes _ _ _ _ _
+    exact IsFractionRing.algebraMap_algHom_commute (FractionRing.algEquiv A K).toAlgHom
+      (FractionRing.algEquiv B L).toAlgHom _
   simp only [AlgEquiv.toRingEquiv_eq_coe, map_mul, AlgEquiv.coe_ringEquiv,
     AlgEquiv.apply_symm_apply, ← AlgEquiv.symm_toRingEquiv, AlgEquiv.algebraMap_eq_apply]
 

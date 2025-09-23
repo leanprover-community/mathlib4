@@ -221,6 +221,17 @@ theorem mk'_eq_one_iff_eq {x : A} {y : nonZeroDivisors A} : mk' K x y = 1 ↔ x 
   rw [IsFractionRing.mk'_eq_div, div_eq_one_iff_eq hy] at hxy
   exact IsFractionRing.injective A K hxy
 
+omit [IsDomain B] in
+theorem algebraMap_algHom_commute [Algebra A B] {K₁ K₂ : Type*} [Field K₁] [Field K₂]
+    [Algebra A K₁] [Algebra A K₂] [IsFractionRing A K₁] {L₁ L₂ : Type*} [Field L₁] [Field L₂]
+    [Algebra B L₁] [Algebra B L₂] [Algebra K₁ L₁] [Algebra K₂ L₂] [Algebra A L₁] [Algebra A L₂]
+    [IsScalarTower A K₁ L₁] [IsScalarTower A K₂ L₂] [IsScalarTower A B L₁] [IsScalarTower A B L₂]
+    (e : K₁ →ₐ[A] K₂) (f : L₁ →ₐ[B] L₂) (x : K₁) :
+    algebraMap K₂ L₂ (e x) = f (algebraMap K₁ L₁ x) := by
+  obtain ⟨r, s, hs, rfl⟩ := IsFractionRing.div_surjective (A := A) x
+  simp_rw [map_div₀, AlgHom.commutes, ← IsScalarTower.algebraMap_apply,
+    IsScalarTower.algebraMap_apply A B L₁, AlgHom.commutes, ← IsScalarTower.algebraMap_apply]
+
 section Subfield
 
 variable (A K) in
@@ -562,46 +573,10 @@ noncomputable def algEquiv (K : Type*) [CommRing K] [Algebra A K] [IsFractionRin
     FractionRing A ≃ₐ[A] K :=
   Localization.algEquiv (nonZeroDivisors A) K
 
-
 instance [Algebra R A] [FaithfulSMul R A] : FaithfulSMul R (FractionRing A) := by
   rw [faithfulSMul_iff_algebraMap_injective, IsScalarTower.algebraMap_eq R A]
   exact (FaithfulSMul.algebraMap_injective A (FractionRing A)).comp
     (FaithfulSMul.algebraMap_injective R A)
-
-/--
-To apply results that prove that certain properties of the extension `Frac B /Frac A` are shared by
-the extension `K/L` where `IsFractionRing A K` and `IsFractionRing B L` such as
-`Algebra.finrank_eq_of_equiv_equiv`, `Algebra.IsSeparable.of_equiv_equiv`, etc., it is necessary
-to prove a compatibility between `algEquiv` and `algebraMap`. This is what this result proves.
-See also `FractionRing.algebraMap_algEquiv_symm_commutes` for the result in the other direction.
--/
-theorem algebraMap_algEquiv_commutes (B : Type*) [CommRing B] [IsDomain B] (L : Type*) [Field K]
-    [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L] [IsFractionRing B L] [Algebra A B]
-    [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
-    [Algebra (FractionRing A) (FractionRing B)] [IsScalarTower A (FractionRing A) (FractionRing B)]
-    (x : FractionRing A) :
-    algebraMap K L (algEquiv A K x) =
-      algEquiv B L (algebraMap (FractionRing A) (FractionRing B) x) := by
-  obtain ⟨r, s, -, rfl⟩ := IsFractionRing.div_surjective (A := A) x
-  simp_rw [map_div₀, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B
-    (FractionRing B), AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
-
-/--
-To apply results that prove that certain properties of the extension `Frac B /Frac A` are shared by
-the extension `K/L` where `IsFractionRing A K` and `IsFractionRing B L` such as
-`Algebra.finrank_eq_of_equiv_equiv`, `Algebra.IsSeparable.of_equiv_equiv`, etc., it is necessary
-to prove a compatibility between `algEquiv` and the corresponding `algebraMap`. This is what this
-result proves.
-See also `FractionRing.algebraMap_algEquiv_commutes` for the result in the other direction.
--/
-theorem algebraMap_algEquiv_symm_commutes (B : Type*) [CommRing B] [IsDomain B] (L : Type*)
-    [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L] [IsFractionRing B L]
-    [Algebra A B] [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
-    [Algebra (FractionRing A) (FractionRing B)] [IsScalarTower A (FractionRing A) (FractionRing B)]
-    (x : K) :
-    algebraMap (FractionRing A) (FractionRing B) ((FractionRing.algEquiv A K).symm x) =
-      (FractionRing.algEquiv B L).symm (algebraMap K L x) := by
-  rw [AlgEquiv.eq_symm_apply, ← algebraMap_algEquiv_commutes A K B L, AlgEquiv.apply_symm_apply]
 
 section IsScalarTower
 
