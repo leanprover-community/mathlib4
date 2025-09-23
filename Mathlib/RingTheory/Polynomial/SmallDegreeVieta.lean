@@ -150,6 +150,7 @@ theorem vieta_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R} (h : disc
   rw [← h, discrim]
   field_simp
   ring_nf
+  exact ⟨trivial, trivial⟩
 
 theorem quadratic_eq_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
     (h : discrim a b c = s ^ 2) : C a * X ^ 2 + C b * X + C c =
