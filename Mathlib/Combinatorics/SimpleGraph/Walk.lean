@@ -608,22 +608,22 @@ theorem coe_support_append' [DecidableEq V] {u v w : V} (p : G.Walk u v) (p' : G
   simp only [← add_assoc, add_tsub_cancel_right]
 
 theorem chain_adj_support {u v w : V} (h : G.Adj u v) :
-    ∀ (p : G.Walk v w), List.Chain G.Adj u p.support
-  | nil => List.Chain.cons h List.Chain.nil
-  | cons h' p => List.Chain.cons h (chain_adj_support h' p)
+    ∀ (p : G.Walk v w), List.IsChain G.Adj (u :: p.support)
+  | nil => .cons_cons h (.singleton _)
+  | cons h' p => .cons_cons h (chain_adj_support h' p)
 
-theorem chain'_adj_support {u v : V} : ∀ (p : G.Walk u v), List.Chain' G.Adj p.support
-  | nil => List.Chain.nil
+theorem isChain_adj_support {u v : V} : ∀ (p : G.Walk u v), List.IsChain G.Adj p.support
+  | nil => .singleton _
   | cons h p => chain_adj_support h p
 
 theorem chain_dartAdj_darts {d : G.Dart} {v w : V} (h : d.snd = v) (p : G.Walk v w) :
-    List.Chain G.DartAdj d p.darts := by
+    List.IsChain G.DartAdj (d :: p.darts) := by
   induction p generalizing d with
-  | nil => exact List.Chain.nil
-  | cons h' p ih => exact List.Chain.cons h (ih rfl)
+  | nil => exact .singleton _
+  | cons h' p ih => exact .cons_cons h (ih rfl)
 
-theorem chain'_dartAdj_darts {u v : V} : ∀ (p : G.Walk u v), List.Chain' G.DartAdj p.darts
-  | nil => trivial
+theorem isChain_dartAdj_darts {u v : V} : ∀ (p : G.Walk u v), List.IsChain G.DartAdj p.darts
+  | nil => .nil
   -- Porting note: needed to defer `rfl` to help elaboration
   | cons h p => chain_dartAdj_darts (by rfl) p
 

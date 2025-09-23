@@ -8,7 +8,7 @@ import Mathlib.Control.Functor
 import Mathlib.Data.SProd
 import Mathlib.Util.CompileInductive
 import Batteries.Tactic.Lint.Basic
-import Batteries.Data.List.Lemmas
+import Batteries.Data.List.Basic
 import Batteries.Logic
 
 /-!
@@ -238,6 +238,7 @@ def destutter' (R : α → α → Prop) [DecidableRel R] : α → List α → Li
   | a, h :: l => if R a h then a :: destutter' R h l else destutter' R a l
 
 -- TODO: should below be "lazily"?
+-- TODO: Remove destutter' as we have removed chain'
 /-- Greedily create a sublist of `l` such that, for every two adjacent elements `a, b ∈ l`,
 `R a b` holds. Mostly used with ≠; for example, `destutter (≠) [1, 2, 2, 1, 1] = [1, 2, 1]`,
 `destutter (≠) [1, 2, 3, 3] = [1, 2, 3]`, `destutter (<) [1, 2, 5, 2, 3, 4, 9] = [1, 2, 5, 9]`. -/
