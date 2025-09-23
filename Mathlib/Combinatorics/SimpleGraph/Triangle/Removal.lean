@@ -53,7 +53,7 @@ lemma triangleRemovalBound_mul_cube_lt (hε : 0 < ε) :
     _ < 1 := by norm_num
 
 lemma triangleRemovalBound_le (hε₁ : ε ≤ 1) :
-    triangleRemovalBound ε ≤ (1 - ε/4) * (ε/(16 * bound (ε/8) ⌈4/ε⌉₊)) ^ 3 := by
+    triangleRemovalBound ε ≤ (1 - ε/4) * (ε/(16 * szBound (ε/8) ⌈4/ε⌉₊)) ^ 3 := by
   simp [triangleRemovalBound, hε₁]
 
 private lemma aux {n k : ℕ} (hk : 0 < k) (hn : k ≤ n) : n < 2 * k * (n / k) := by
@@ -92,13 +92,9 @@ private lemma triangle_removal_aux (hε : 0 < ε) (hε₁ : ε ≤ 1) (hP₁ : P
     have : ε / 4 ≤ 1 := ‹ε / 4 ≤ _›.trans (by exact mod_cast G.edgeDensity_le_one _ _); linarith
   calc
     _ ≤ (1 - ε/4) * (ε/(16 * szBound (ε/8) ⌈4/ε⌉₊))^3 * card α ^ 3 := by
-      gcongr; exact min_le_right _ _
-    _ = (1 - 2 * (ε / 8)) * (ε / 8) ^ 3 * (card α / (2 * szBound (ε / 8) ⌈4 / ε⌉₊)) *
-        (card α / (2 * szBound (ε / 8) ⌈4 / ε⌉₊)) * (card α / (2 * szBound (ε / 8) ⌈4 / ε⌉₊)) := by
-    _ ≤ (1 - ε/4) * (ε/(16 * szBound (ε/8) ⌈4/ε⌉₊))^3 * card α ^ 3 := by
       gcongr; exact triangleRemovalBound_le hε₁
     _ = (1 - 2 * (ε / 8)) * (ε / 8) ^ 3 * (card α / (2 * szBound (ε / 8) ⌈4 / ε⌉₊)) *
-          (card α / (2 * szBound (ε / 8) ⌈4 / ε⌉₊)) * (card α / (2 * szBound (ε / 8) ⌈4 / ε⌉₊)) := by
+        (card α / (2 * szBound (ε / 8) ⌈4 / ε⌉₊)) * (card α / (2 * szBound (ε / 8) ⌈4 / ε⌉₊)) := by
       ring
     _ ≤ (1 - 2 * (ε / 8)) * (ε / 8) ^ 3 * #s * #Y * #Z := by
       gcongr <;> exact card_bound hP₁ hP₃ ‹_›
