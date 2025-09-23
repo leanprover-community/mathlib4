@@ -44,7 +44,7 @@ def instAddMonoidWithOne' {α : Type u} [Semiring α] : AddMonoidWithOne α := i
 /-- A shortcut (non)instance for `AddMonoidWithOne α` from `Ring α` to shrink generated proofs. -/
 def instAddMonoidWithOne {α : Type u} [Ring α] : AddMonoidWithOne α := inferInstance
 
-/-- A shortcur (non)instance for `Nat.AtLeastTwo (n + 2)` to shrink generated proofs. -/
+/-- A shortcut (non)instance for `Nat.AtLeastTwo (n + 2)` to shrink generated proofs. -/
 lemma instAtLeastTwo (n : ℕ) : Nat.AtLeastTwo (n + 2) := inferInstance
 
 /-- Helper function to synthesize a typed `AddMonoidWithOne α` expression. -/
