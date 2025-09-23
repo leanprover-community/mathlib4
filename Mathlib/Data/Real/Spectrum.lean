@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
-import Mathlib.Analysis.Complex.Basic
 import Mathlib.Data.Complex.Basic
 import Mathlib.Topology.Instances.NNReal.Lemmas
 
@@ -17,43 +16,35 @@ namespace SpectrumRestricts
 
 open NNReal ENNReal
 
-variable {A : Type*} [Ring A]
+variable {A : Type*} [Ring A] [Algebra ℝ A]
 
-lemma nnreal_iff [Algebra ℝ A] {a : A} :
+lemma nnreal_iff {a : A} :
     SpectrumRestricts a ContinuousMap.realToNNReal ↔ ∀ x ∈ spectrum ℝ a, 0 ≤ x := by
   refine ⟨fun h x hx ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨x, -, rfl⟩ := h.algebraMap_image.symm ▸ hx
     exact coe_nonneg x
   · exact .of_subset_range_algebraMap (fun _ ↦ Real.toNNReal_coe) fun x hx ↦ ⟨⟨x, h x hx⟩, rfl⟩
 
-lemma nnreal_of_nonneg {A : Type*} [Ring A] [PartialOrder A] [Algebra ℝ A]
-    [NonnegSpectrumClass ℝ A] {a : A} (ha : 0 ≤ a) :
+lemma nnreal_of_nonneg [PartialOrder A] [NonnegSpectrumClass ℝ A] {a : A} (ha : 0 ≤ a) :
     SpectrumRestricts a ContinuousMap.realToNNReal :=
   nnreal_iff.mpr <| spectrum_nonneg_of_nonneg ha
 
-lemma real_iff [Algebra ℂ A] {a : A} :
-    SpectrumRestricts a Complex.reCLM ↔ ∀ x ∈ spectrum ℂ a, x = x.re := by
-  refine ⟨fun h x hx ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨x, -, rfl⟩ := h.algebraMap_image.symm ▸ hx
-    simp
-  · exact .of_subset_range_algebraMap Complex.ofReal_re fun x hx ↦ ⟨x.re, (h x hx).symm⟩
-
-lemma nnreal_le_iff [Algebra ℝ A] {a : A}
+lemma nnreal_le_iff {a : A}
     (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
     (∀ x ∈ spectrum ℝ≥0 a, r ≤ x) ↔ ∀ x ∈ spectrum ℝ a, r ≤ x := by
   simp [← ha.algebraMap_image]
 
-lemma nnreal_lt_iff [Algebra ℝ A] {a : A}
+lemma nnreal_lt_iff {a : A}
     (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
     (∀ x ∈ spectrum ℝ≥0 a, r < x) ↔ ∀ x ∈ spectrum ℝ a, r < x := by
   simp [← ha.algebraMap_image]
 
-lemma le_nnreal_iff [Algebra ℝ A] {a : A}
+lemma le_nnreal_iff {a : A}
     (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
     (∀ x ∈ spectrum ℝ≥0 a, x ≤ r) ↔ ∀ x ∈ spectrum ℝ a, x ≤ r := by
   simp [← ha.algebraMap_image]
 
-lemma lt_nnreal_iff [Algebra ℝ A] {a : A}
+lemma lt_nnreal_iff {a : A}
     (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
     (∀ x ∈ spectrum ℝ≥0 a, x < r) ↔ ∀ x ∈ spectrum ℝ a, x < r := by
   simp [← ha.algebraMap_image]
@@ -76,11 +67,6 @@ lemma nnreal_of_nonneg [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ
     [NonnegSpectrumClass ℝ A] {a : A} (ha : 0 ≤ a) :
     QuasispectrumRestricts a ContinuousMap.realToNNReal :=
   nnreal_iff.mpr <| quasispectrum_nonneg_of_nonneg _ ha
-
-lemma real_iff [Module ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] {a : A} :
-    QuasispectrumRestricts a Complex.reCLM ↔ ∀ x ∈ σₙ ℂ a, x = x.re := by
-  rw [quasispectrumRestricts_iff_spectrumRestricts_inr,
-    Unitization.quasispectrum_eq_spectrum_inr' _ ℂ, SpectrumRestricts.real_iff]
 
 lemma le_nnreal_iff [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {a : A}
     (ha : QuasispectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
