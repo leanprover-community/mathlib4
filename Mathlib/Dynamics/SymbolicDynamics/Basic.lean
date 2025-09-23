@@ -13,19 +13,18 @@ import Mathlib.Logic.Equiv.Defs
 # Symbolic dynamics on groups
 
 This file develops a minimal API for symbolic dynamics over an arbitrary group `G`.
-The ambient space is the full shift
-`FullShift A G := G → A` (an `abbrev`), hence it inherits the product topology
-from the Π-type. We define the right-translation action, cylinders, finite patterns,
-their occurrences, forbidden sets, and subshifts (closed, shift-invariant subsets).
-Basic topological statements (e.g. cylinders are clopen, occurrence sets are clopen,
-forbidden sets are closed) are proved under discreteness assumptions on the alphabet.
+Provided a finite set `A`, the ambient space is the space of functions from `G` to `A`,
+hence it inherits the product topology from the Π-type. We define the right-translation action,
+cylinders, finite patterns, their occurrences, forbidden sets, and subshifts (closed,
+shift-invariant subsets). Basic topological statements (e.g. cylinders are clopen,
+occurrence sets are clopen, forbidden sets are closed) are proved under discreteness
+assumptions on the alphabet.
 
 The file is group-generic. Geometry specific to `ℤ^d` (boxes/cubes and the
 box-based entropy) is kept in a separate specialization.
 
 ## Main definitions
 
-* `FullShift A G := G → A`.
 * `shift g x` — right translation: `(shift g x) h = x (h * g)`.
 * `cylinder U x` — configurations agreeing with `x` on a finite set `U ⊆ G`.
 * `Pattern A G` — finite support together with values on that support.
@@ -41,20 +40,11 @@ We use a **right** action of `G` on configurations:
 
 ## Implementation notes
 
-* Since `FullShift A G` is an `abbrev` for `G → A`, instances such as
-  `TopologicalSpace (FullShift A G)` and `Inhabited (FullShift A G)` are inherited
-  automatically from the Π-type; no explicit instances are declared here.
 * Openness/closedness results for cylinders and occurrence sets use
   `[DiscreteTopology A]`. The closedness proofs that enumerate values additionally
   require `[Fintype A]`, `[DecidableEq A]`, and `[DecidableEq G]` (for `Finset` manipulations
   and `Function.update`).
 -/
-
--- TODO:
--- In entropy, match the namespaces of basic2 ?
--- 3. Rewrite documentation
--- 4. CI checks
--- 5. Rewrite the PR description ? Make comments ?
 
 noncomputable section
 open Set Topology
