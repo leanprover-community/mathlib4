@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
+import Mathlib.Data.Finset.Order
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Order.Filter.AtTopBot.Tendsto
 import Mathlib.Order.Filter.AtTopBot.Basic
@@ -71,17 +72,16 @@ theorem tendsto_finset_powerset_atTop_atTop : Tendsto (Finset.powerset (α := α
   refine tendsto_atTop_atTop.mpr fun t ↦ ⟨t.sup id, fun _ hu _ hv ↦ ?_⟩
   exact Finset.mem_powerset.mpr <| (Finset.le_sup_of_le hv fun _ h ↦ h).trans hu
 
-theorem tendsto_finset_Iic_atTop_atTop [Lattice α] [LocallyFiniteOrderBot α] :
-    Tendsto (Finset.Iic (α := α)) atTop atTop := by
+theorem tendsto_finset_Iic_atTop_atTop [Preorder α] [IsDirected α (· ≤ ·)]
+    [LocallyFiniteOrderBot α] : Tendsto (Finset.Iic (α := α)) atTop atTop := by
   rcases isEmpty_or_nonempty α with _ | _
   · exact tendsto_of_isEmpty
   refine tendsto_atTop_atTop.mpr fun s ↦ ?_
-  rcases Finset.eq_empty_or_nonempty s with rfl | hnonempty
-  · simp
-  exact ⟨s.sup' hnonempty id, fun _ h b hb ↦ by simpa using (Finset.sup'_le_iff _ _).mp h b hb⟩
+  obtain ⟨a, ha⟩ := Finset.exists_le s
+  exact ⟨a, fun b hb c hc ↦ by simpa using (ha c hc).trans hb⟩
 
-theorem tendsto_finset_Ici_atBot_atTop [Lattice α] [LocallyFiniteOrderTop α] :
-    Tendsto (Finset.Ici (α := α)) atBot atTop :=
+theorem tendsto_finset_Ici_atBot_atTop [Preorder α] [IsDirected α (· ≥ ·)]
+    [LocallyFiniteOrderTop α] : Tendsto (Finset.Ici (α := α)) atBot atTop :=
   tendsto_finset_Iic_atTop_atTop (α := αᵒᵈ)
 
 end Filter
