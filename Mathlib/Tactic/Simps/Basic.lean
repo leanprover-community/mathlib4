@@ -1009,7 +1009,7 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
   inferDefEqAttr declName
   -- add term info and apply attributes
   addDeclarationRangesFromSyntax declName (← getRef) ref
-  MetaM.run' <| TermElabM.run' do
+  TermElabM.run' do
     _ ← addTermInfo (isBinder := true) ref <| ← mkConstWithLevelParams declName
     if cfg.isSimp then
       addSimpTheorem simpExtension declName true false .global <| eval_prio default
@@ -1226,8 +1226,8 @@ def simpsTacFromSyntax (nm : Name) (stx : Syntax) : AttrM (Array Name) :=
   match stx with
   | `(attr| simps $[!%$bang]? $[?%$trc]? $attrs:simpsOptAttrOption $c:optConfig $[$ids]*) => do
     let extraAttrs := match attrs with
-    | `(Attr.simpsOptAttrOption| (attr := $[$stxs],*)) => stxs
-    | _ => #[]
+      | `(Attr.simpsOptAttrOption| (attr := $[$stxs],*)) => stxs
+      | _ => #[]
     let cfg ← liftCommandElabM <| elabSimpsConfig c
     let cfg := if bang.isNone then cfg else { cfg with rhsMd := .default, simpRhs := true }
     let cfg := { cfg with attrs := cfg.attrs ++ extraAttrs }

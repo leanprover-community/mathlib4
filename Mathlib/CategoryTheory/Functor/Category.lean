@@ -145,10 +145,8 @@ protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
 
 -- `@[simps]` doesn't produce a nicely stated lemma here:
 -- the implicit arguments for `app` use the definition of `flip`, rather than `flip` itself.
-@[simp] theorem flip_map_app (F : C ⥤ D ⥤ E) {d d' : D} (f : d ⟶ d') (c : C) :
+@[simp, grind =] theorem flip_map_app (F : C ⥤ D ⥤ E) {d d' : D} (f : d ⟶ d') (c : C) :
     (F.flip.map f).app c = (F.obj c).map f := rfl
-
-attribute [grind =] flip_map_app
 
 /-- The left unitor, a natural isomorphism `((𝟭 _) ⋙ F) ≅ F`.
 -/
