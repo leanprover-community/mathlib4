@@ -74,11 +74,8 @@ omit [IsNoetherianRing R] [IsLocalRing R] in
 theorem supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes {x : R}
     (hn : ∀ p ∈ (annihilator R M).minimalPrimes, x ∉ p) :
     supportDim R (QuotSMulTop x M) + 1 ≤ supportDim R M := by
-  rcases subsingleton_or_nontrivial M with h | _
-  · rw [(supportDim_eq_bot_iff_subsingleton R M).mpr h]
-    rw [(supportDim_eq_bot_iff_subsingleton R (QuotSMulTop x M)).mpr inferInstance, WithBot.bot_add]
-  rcases subsingleton_or_nontrivial (QuotSMulTop x M) with h | _
-  · simp [(supportDim_eq_bot_iff_subsingleton R (QuotSMulTop x M)).mpr h]
+  nontriviality M
+  nontriviality (QuotSMulTop x M)
   simp only [supportDim, Order.krullDim_eq_iSup_length]
   apply WithBot.coe_le_coe.mpr
   simp only [ENat.iSup_add, iSup_le_iff]
