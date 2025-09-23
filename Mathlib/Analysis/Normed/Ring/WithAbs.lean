@@ -92,8 +92,14 @@ variable {R' : Type*} [CommSemiring R] [Semiring R'] [Algebra R R']
 instance instAlgebra_left (v : AbsoluteValue R S) : Algebra (WithAbs v) R' :=
   inferInstanceAs <| Algebra R R'
 
+theorem algebraMap_left_apply (v : AbsoluteValue R S) (x : WithAbs v) :
+    algebraMap (WithAbs v) R' x = algebraMap R R' (WithAbs.equiv v x) := rfl
+
 instance instAlgebra_right (v : AbsoluteValue R' S) : Algebra R (WithAbs v) :=
   inferInstanceAs <| Algebra R R'
+
+theorem algebraMap_right_apply (v : AbsoluteValue R' S) (x : R) :
+    algebraMap R (WithAbs v) x = (WithAbs.equiv v).symm (algebraMap R R' x) := rfl
 
 /-- The canonical algebra isomorphism from an `R`-algebra `R'` with an absolute value `v`
 to `R'`. -/

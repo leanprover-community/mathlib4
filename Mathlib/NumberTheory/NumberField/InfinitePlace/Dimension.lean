@@ -18,39 +18,41 @@ In this file, we prove:
 
 noncomputable section
 
-variable {K : Type*} {L : Type*} [Field K] [Field L] [Algebra K L]
-
 namespace NumberField.InfinitePlace
 
 open NumberField.ComplexEmbedding
 
-variable {v : InfinitePlace K}
+variable {K L : Type*} [Field K] [Field L] [Algebra K L] (v : InfinitePlace K)
 
 namespace Extension
 
-variable (L v) in
+variable (L)
+
 open scoped Classical in
-abbrev toComplexExtension : v.Extension L ↪ ComplexEmbedding.Extension L v.embedding where
-  toFun := fun w ↦
-    if hw : w.1.embedding.comp (algebraMap K L) = v.embedding then
-      ⟨w.1.embedding, hw⟩ else
-        ⟨conjugate w.1.embedding, embedding_conjugate_comp_eq_of_not_embedding_comp_eq _ hw⟩
-  inj' := by
-    have := @Function.Injective.dite (α := v.Extension L) (β := Extension L v.embedding)
-      (fun w ↦ w.1.embedding.comp (algebraMap K L) = v.embedding) _
-      (fun w ↦ ⟨w.1.1.embedding, w.2⟩) (fun w ↦ ⟨conjugate w.1.1.embedding,
-        embedding_conjugate_comp_eq_of_not_embedding_comp_eq _ w.2⟩)
-    apply this <;> clear this
-    · aesop (add simp [Function.Injective])
-    · aesop (add simp [Function.Injective])
-    · intro ⟨w₁, _⟩ ⟨w₂, h₂⟩ hw₁ hw₂
-      by_cases hw₂r : IsReal v
-      · subst h₂;
-        simp_all only [ne_eq, Subtype.mk.injEq]
-        simp_all [comap_embedding_eq_comp_of_isReal, not_true_eq_false]
-      · by_cases h₁₂ : w₁ = w₂
-        · aesop
-        · simpa using mt (eq_of_embedding_eq_conjugate L) h₁₂
+private abbrev toComplexExtension :
+    v.Extension L ↪ ComplexEmbedding.Extension L v.embedding where
+  toFun := fun w ↦ if hw : w.1.embedding.comp (algebraMap K L) = v.embedding then
+    ⟨w.1.embedding, hw⟩ else ⟨conjugate w.1.embedding, embedding_conjugate_comp_eq _ hw⟩
+  inj' := Function.Injective.dite (α := v.Extension L) (β := Extension L v.embedding) _
+    (f := fun ⟨w, hw⟩ ↦ ⟨w.1.embedding, hw⟩)
+    (f' := fun ⟨w, hw⟩ ↦ ⟨_, embedding_conjugate_comp_eq _ hw⟩)
+    (by aesop (add simp [Function.Injective]))
+    (by aesop (add simp [Function.Injective]))
+    fun hc ↦ by simp at hc; simp_all [eq_of_embedding_eq_conjugate L hc]
+
+open scoped Classical in
+private abbrev toComplexExtensionConjugate :
+    v.Extension L ↪ ComplexEmbedding.Extension L v.embedding where
+  toFun := fun w ↦ if hw : (conjugate w.1.embedding).comp (algebraMap K L) = v.embedding then
+    ⟨conjugate w.1.embedding, hw⟩ else ⟨w.1.embedding, embedding_comp_eq _ hw⟩
+  inj' := Function.Injective.dite (α := v.Extension L) (β := Extension L v.embedding) _
+    (f' := fun ⟨w, hw⟩ ↦ ⟨w.1.embedding, embedding_comp_eq _ hw⟩)
+    (f := fun ⟨w, hw⟩ ↦ ⟨_, hw⟩)
+    (by aesop (add simp [Function.Injective]))
+    (by aesop (add simp [Function.Injective]))
+    fun hc ↦ by simp at hc; simp_all [eq_of_embedding_eq_conjugate L hc.symm]
+
+variable {L v}
 
 abbrev inertiaDeg {v : InfinitePlace K} (w : v.Extension L) :=
   (⊥ : Ideal v.Completion).inertiaDeg (⊥ : Ideal w.1.Completion)
@@ -58,67 +60,58 @@ abbrev inertiaDeg {v : InfinitePlace K} (w : v.Extension L) :=
 theorem inertiaDeg_eq_finrank {v : InfinitePlace K} (w : v.Extension L) :
     w.inertiaDeg = Module.finrank v.Completion w.1.Completion := by
   simp only [Ideal.inertiaDeg]
-  have : Ideal.comap (algebraMap v.Completion w.1.Completion) ⊥ = ⊥ := by
-    rw [Ideal.comap_bot_of_injective]
-    exact FaithfulSMul.algebraMap_injective _ _
-  simp [this]
-  have := Algebra.finrank_eq_of_equiv_equiv (RingEquiv.quotientBot v.Completion)
+  simp [Ideal.comap_bot_of_injective _ <| FaithfulSMul.algebraMap_injective _ _]
+  apply Algebra.finrank_eq_of_equiv_equiv (RingEquiv.quotientBot v.Completion)
     (RingEquiv.quotientBot w.1.Completion)
-  apply this
-  rw [RingHom.algebraMap_toAlgebra]
   ext
-  simp
-  rfl
+  simp [RingHom.algebraMap_toAlgebra]
 
 end Extension
 
 open NumberField.ComplexEmbedding
 
-variable {v : InfinitePlace K} {w : InfinitePlace L}
-
-theorem comap_mk_of_comp_eq (ψ : L →+* ℂ) (h : ψ.comp (algebraMap K L) = v.embedding) :
-    (mk ψ).comap (algebraMap K L) = v := by
-  aesop
-
-theorem comap_mk_of_extension (ψ : ComplexEmbedding.Extension L v.embedding) :
-    (mk ψ).comap (algebraMap K L) = v := by
-  aesop
-
-variable (w)
+variable {v : InfinitePlace K} (w : InfinitePlace L)
 
 namespace RamifiedExtension
 
-variable {w : v.Extension L}
+open Extension
 
-theorem embedding_comp_eq (h : w.1.IsRamified K) :
-    w.1.embedding.comp (algebraMap K L) = v.embedding := by
-  rw [← congrArg embedding w.2,
-    ← comap_embedding_eq_comp_of_isReal _ (isRamified_iff.1 h).2]
+-- TODO : move
+@[simps!]
+def _root_.Function.Embedding.sumElim {α β γ : Type*} (e₁ : α ↪ γ) (e₂ : β ↪ γ)
+    (h : ∀ a b, e₁ a ≠ e₂ b) : α ⊕ β ↪ γ where
+  toFun := Sum.elim e₁ e₂
+  inj' := e₁.injective.sumElim e₂.injective h
 
-theorem conjugate_embedding_comp_eq (h : w.1.IsRamified K) :
-    (conjugate w.1.embedding).comp (algebraMap K L) = v.embedding := by
-  have := (w.2 ▸ (isRamified_iff.1 h).2)
-  rw [← ComplexEmbedding.isReal_iff.1 <| isReal_iff.1 this,
-    ← congrArg InfinitePlace.embedding w.2]
-  simp [comap_embedding_eq_comp_of_isReal _ ((isRamified_iff.1 h).2)]
+@[simp]
+theorem _root_.Function.Embedding.subtypeMap_apply {α β : Sort*} {p : α → Prop} {q : β → Prop}
+    (f : α ↪ β) (h : ∀ ⦃x : α⦄, p x → q (f x)) (a : {a : α // p a}) :
+    f.subtypeMap h a = ⟨f a, h a.2⟩ := rfl
 
-theorem isMixed_embedding (h : w.1.IsRamified K) :
-    IsMixed w.1.embedding v.embedding :=
-  ⟨isReal_iff.1 (w.2 ▸ isRamified_iff.1 h).2, isComplex_iff.1 (isRamified_iff.1 h).1⟩
+private theorem isMixed_toComplexExtension (w : v.Extension L) (h : w.1.IsRamified K) :
+    IsMixed K (toComplexExtension L v w).1 := by
+  simpa [w.2, ← h.comap_embedding] using h.isMixed_embedding
 
-theorem isMixed_conjugate_embedding (h : w.1.IsRamified K) :
-    IsMixed (conjugate w.1.embedding) v.embedding :=
-  ⟨isReal_iff.1 (w.2 ▸ isRamified_iff.1 h).2,
-    mt ComplexEmbedding.isReal_conjugate_iff.1 <| isComplex_iff.1 (isRamified_iff.1 h).1⟩
+private theorem isMixed_toComplexExtensionConjugate (w : v.Extension L) (h : w.1.IsRamified K) :
+    IsMixed K (toComplexExtensionConjugate L v w).1 := by
+  simpa [w.2, ← h.comap_embedding_conjugate] using h.isMixed_conjugate_embedding
 
--- TODO: move this
-theorem isRamified_mk_of_isMixed {ψ : Extension L v.embedding} (h : IsMixed ψ.1 v.embedding) :
-    (mk ψ.1).IsRamified K := by
-  rw [isRamified_iff, isComplex_iff, comap_mk, isReal_iff, ψ.2, embedding_mk_eq_of_isReal h.1]
-  exact ⟨by rcases embedding_mk_eq ψ.1 with (_ | _) <;> aesop, h.1⟩
+private theorem toComplexExtension_apply (w : v.Extension L) (h : w.1.IsRamified K) :
+    toComplexExtension L v w = w.1.embedding := by
+  simp [w.2, ← h.comap_embedding]
+
+private theorem toComplexExtensionConjugate_apply (w : v.Extension L) (h : w.1.IsRamified K) :
+    toComplexExtensionConjugate L v w = conjugate w.1.embedding := by
+  simp [w.2, ← h.comap_embedding_conjugate]
+
+private theorem toComplexExtension_ne_conjugate (w₁ w₂ : v.Extension L) (h₁ : w₁.1.IsRamified K)
+    (h₂ : w₂.1.IsRamified K) :
+    toComplexExtension L v w₁ ≠ toComplexExtensionConjugate L v w₂ := by
+  rw [ne_eq, Subtype.mk.injEq]
+  simp [-Function.Embedding.coeFn_mk, toComplexExtension_apply _ h₁,
+    toComplexExtensionConjugate_apply _ h₂, h₂.ne_conjugate]
 
 variable (L v)
-
 
 /-- The equivalence between two copies of ramified places `w` over `v` and the type of all
 mixed extensions of `v.embedding`. This two-fold equivalence exists because when `w` ramifies
@@ -126,25 +119,20 @@ over `v` both `w.embedding` and `conjugate w.embedding` give distinct mixed exte
 `v.embedding`. -/
 def sumEquivIsMixedExtension :
     { w : v.Extension L // w.1.IsRamified K } ⊕ { w : v.Extension L // w.1.IsRamified K } ≃
-      { ψ : Extension L v.embedding // IsMixed ψ.1 v.embedding } := by
-  apply Equiv.ofBijective <| Sum.elim
-    (Subtype.coind (fun ⟨w, h⟩ ↦ ⟨_, embedding_comp_eq h⟩) fun ⟨_, hr⟩ ↦ isMixed_embedding hr)
-    (Subtype.coind (fun ⟨w, h⟩ ↦ ⟨_, conjugate_embedding_comp_eq h⟩)
-      fun ⟨_, hr⟩ ↦ isMixed_conjugate_embedding hr)
-  refine ⟨?_, fun ⟨ψ, h⟩ ↦ ?_⟩
-  · exact (Subtype.coind_injective _ (by simp_all [Function.Injective])).sumElim
-      (Subtype.coind_injective _ (by aesop (add simp [Function.Injective]))) <|
-      fun a b ↦ by simpa [Subtype.coind] using b.2.ne_conjugate
-  · cases embedding_mk_eq ψ.1 with
-    | inl hl => exact ⟨.inl ⟨⟨mk ψ, comap_mk_of_extension ψ⟩, isRamified_mk_of_isMixed h⟩,
-        by simp [Subtype.coind, hl]⟩
-    | inr hr => exact ⟨.inr ⟨⟨mk ψ, comap_mk_of_extension ψ⟩, isRamified_mk_of_isMixed h⟩,
-        by simp [Subtype.coind, hr]⟩
+      { ψ : Extension L v.embedding // IsMixed K ψ.1 } := by
+  let f : { w : v.Extension L // w.1.IsRamified K } ⊕ { w : v.Extension L // w.1.IsRamified K } ↪
+      { ψ : Extension L v.embedding // IsMixed K ψ.1 } :=
+    (toComplexExtension L v |>.subtypeMap isMixed_toComplexExtension).sumElim
+      (toComplexExtensionConjugate L v |>.subtypeMap isMixed_toComplexExtensionConjugate)
+        (fun ⟨w₁, h₁⟩ ⟨w₂, h₂⟩ ↦ by simpa using toComplexExtension_ne_conjugate w₁ w₂ h₁ h₂)
+  exact f.equivOfSurjective fun ⟨ψ, h⟩ ↦ by cases embedding_mk_eq ψ.1 with
+  | inl hl => exact ⟨.inl ⟨⟨mk ψ, ψ.comap_mk_eq⟩, h.mk_isRamified⟩, by aesop⟩
+  | inr hr => exact ⟨.inr ⟨⟨mk ψ, ψ.comap_mk_eq⟩, h.mk_isRamified⟩, by aesop⟩
 
 open scoped Classical in
 theorem two_mul_card_eq [NumberField L] :
     2 * Fintype.card ({ w : v.Extension L // w.1.IsRamified K }) =
-      Fintype.card { ψ : Extension L v.embedding // IsMixed ψ.1 v.embedding } := by
+      Fintype.card { ψ : Extension L v.embedding // IsMixed K ψ.1 } := by
   simp [← Fintype.card_eq.2 ⟨sumEquivIsMixedExtension L v⟩]; ring
 
 end RamifiedExtension
@@ -153,59 +141,13 @@ namespace UnramifiedExtension
 
 open Extension
 
-variable {w : InfinitePlace L}
-
-theorem isUnmixed (hw : w.IsUnramified K)
-    (he : w.embedding.comp (algebraMap K L) = v.embedding) :
-    IsUnmixed w.embedding v.embedding := by
-  simp_all only [isUnramified_iff, not_and, not_not]
-  intro a
-  cases hw with
-  | inl h => simp_all only [mk_embedding, isReal_of_mk_isReal]
-  | inr h_1 =>
-    rw [← mk_embedding (w.comap (algebraMap K L))] at h_1
-    have := not_isReal_of_mk_isComplex h_1
-    have := comap_mk_of_comp_eq _ he
-    simp at this
-    rw [comap_embedding_eq_comp_of_isReal _ (isReal_iff.2 <| this ▸ a)] at h_1
-    rw [he] at h_1
-    simp_all
-
-theorem isUnmixed_conjugate (hw : w.IsUnramified K)
-    (he : (conjugate w.embedding).comp (algebraMap K L) = v.embedding) :
-    IsUnmixed w.embedding v.embedding := by
-  simp_all only [isUnramified_iff, not_and, not_not]
-  intro a
-  cases hw with
-  | inl h => simp_all [mk_embedding, isReal_of_mk_isReal]
-  | inr h_1 =>
-    rw [← mk_embedding (w.comap (algebraMap K L))] at h_1
-    have := not_isReal_of_mk_isComplex h_1
-    have := comap_mk_of_comp_eq _ he
-    simp at this
-    rw [comap_embedding_eq_comp_of_isReal _ (isReal_iff.2 <| this ▸ a)] at h_1
-    simp_all
-
-theorem isUnmixed_mk_isUnramified {ψ : Extension L v.embedding} (h : IsUnmixed ψ.1 v.embedding) :
-    (mk ψ.1).IsUnramified K := by
-  rw [isUnramified_iff, isReal_iff]
-  by_cases hv : ComplexEmbedding.IsReal v.embedding
-  · simpa [embedding_mk_eq_of_isReal <| h.isReal_of_isReal hv] using Or.inl (h.isReal_of_isReal hv)
-  · simpa [comap_mk, ψ.2, mk_embedding, isComplex_iff] using Or.inr hv
+private theorem isUnmixed_toComplexExtension (w : v.Extension L) (hw : w.1.IsUnramified K) :
+    IsUnmixed K (toComplexExtension L v w).1 := by
+  rcases eq_or_ne (w.1.embedding.comp (algebraMap K L)) v.embedding with (h | h)
+  · simpa [h] using hw.isUnmixed
+  · simpa [h] using hw.isUnmixed_conjugate
 
 variable (L v)
-
-def toIsUnmixedExtension :
-    {w : v.Extension L // w.1.IsUnramified K } ↪
-      { ψ : Extension L v.embedding // IsUnmixed ψ.1 v.embedding } := by
-  apply (toComplexExtension L v).subtypeMap
-  simp only [toComplexExtension]
-  intro w hw
-  dsimp
-  split_ifs with h
-  · exact isUnmixed hw ‹_›
-  · have := isUnmixed_conjugate hw <| embedding_conjugate_comp_eq_of_not_embedding_comp_eq _ h
-    aesop
 
 /-- If `w` is an unramified place above `v` then there are the following two cases:
 - `v` and `w` are both real;
@@ -214,20 +156,17 @@ In the first case `w.embedding` and `conjugate w.embedding` coincide. In the sec
 only one of `w.embedding` and `conjugate w.embedding` can extend `v.embedding`. In both cases
 then, there is a unique unmixed extension of `v.embedding` associated to the unramified
 place `w` over `v`. -/
-def equivIsUnmixedExtension :
-    {w : v.Extension L // w.1.IsUnramified K } ≃
-      { ψ : Extension L v.embedding // IsUnmixed ψ.1 v.embedding } := by
-  apply (toIsUnmixedExtension L v).equivOfSurjective
+def equivIsUnmixedExtension : {w : v.Extension L // w.1.IsUnramified K } ≃
+      { ψ : Extension L v.embedding // IsUnmixed K ψ.1 } := by
+  apply ((toComplexExtension L v).subtypeMap isUnmixed_toComplexExtension).equivOfSurjective
   rintro ⟨ψ, h⟩
-  use ⟨⟨mk ψ, comap_mk_of_extension ψ⟩, isUnmixed_mk_isUnramified h⟩
-  rcases embedding_mk_eq ψ.1 with (_ | _) <;>
-    aesop (add simp [toIsUnmixedExtension, toComplexExtension, Function.Embedding.subtypeMap,
-      Subtype.map])
+  use ⟨⟨mk ψ, ψ.comap_mk_eq⟩, h.mk_isUnramified⟩
+  rcases embedding_mk_eq ψ.1 with (_ | _) <;> aesop (add simp [conjugate_comp])
 
 open scoped Classical in
 theorem card_eq [NumberField L] :
     Fintype.card ({w : v.Extension L // w.1.IsUnramified K }) =
-      Fintype.card { ψ : Extension L v.embedding // IsUnmixed ψ.1 v.embedding } := by
+      Fintype.card { ψ : Extension L v.embedding // IsUnmixed K ψ.1 } := by
   rw [← Fintype.card_eq.2 ⟨equivIsUnmixedExtension L v⟩]
 
 end UnramifiedExtension
@@ -248,12 +187,10 @@ variable (w) in
 is `2`. -/
 theorem finrank_eq_two (h : w.1.IsRamified K) :
     Module.finrank v.Completion w.1.Completion = 2 := by
-  have := Algebra.finrank_eq_of_equiv_equiv (R₀ := v.Completion) (R₁ := ℝ) (S₀ := w.1.Completion)
-    (S₁ := ℂ) (ringEquivRealOfIsReal (w.2 ▸ (isRamified_iff.1 h).2))
-    (ringEquivComplexOfIsComplex (isRamified_iff.1 h).1)
-  rw [this, Complex.finrank_real_complex]
-  ext
-  simp [← extensionEmbedding_algebraMap_of_isReal w <| w.2 ▸ (isRamified_iff.1 h).2]
+  rw [Algebra.finrank_eq_of_equiv_equiv (ringEquivRealOfIsReal h.extension_isReal_base)
+      (ringEquivComplexOfIsComplex h.isComplex) (by simp [RingHom.ext_iff,
+        ← w.extensionEmbedding_algebraMap_of_isReal h.extension_isReal_base]),
+    Complex.finrank_real_complex]
 
 end RamifiedExtension
 
@@ -263,35 +200,24 @@ open NumberField.ComplexEmbedding Extension
 
 variable {L : Type*} [Field L] [Algebra K L] (w : v.Extension L)
 
-
 /-- If `w` is an unramified extension of `v` and both infinite places are complex then
 the `v.Completion`-dimension of `w.Completion` is `1`. -/
 theorem finrank_eq_one (h : w.1.IsUnramified K) :
     Module.finrank v.Completion w.1.Completion = 1 := by
   by_cases hv : v.IsReal
-  · have := Algebra.finrank_eq_of_equiv_equiv (R₀ := v.Completion) (R₁ := ℝ) (S₀ := w.1.Completion)
-      (S₁ := ℝ) (ringEquivRealOfIsReal hv)
-      (ringEquivRealOfIsReal (isReal_of_isReal h hv))
-    rw [this, Module.finrank_self]
-    ext
-    rw [← Complex.ofReal_inj]
-    simp [← extensionEmbedding_algebraMap_of_isReal w hv]
+  · rw [Algebra.finrank_eq_of_equiv_equiv (ringEquivRealOfIsReal hv) (ringEquivRealOfIsReal
+      (h.extension_isReal_of_isReal hv)) (RingHom.ext fun _ ↦ Complex.ofReal_inj.1 <| by
+        simp [← extensionEmbedding_algebraMap_of_isReal w hv]), Module.finrank_self]
   · have hv : v.IsComplex := not_isReal_iff_isComplex.1 hv
     cases embedding_comp_eq_or_conjugate_embedding_comp_eq w with
-    | inl hl =>
-      have := Algebra.finrank_eq_of_equiv_equiv (R₀ := v.Completion) (R₁ := ℂ)
-        (S₀ := w.1.Completion) (S₁ := ℂ) (ringEquivComplexOfIsComplex hv)
+    | inl hl => rw [Algebra.finrank_eq_of_equiv_equiv (ringEquivComplexOfIsComplex hv)
         (ringEquivComplexOfIsComplex (w.isComplex_of_isComplex hv))
-      rw [this, Module.finrank_self]
-      ext
-      simp [← extensionEmbedding_algebraMap_of_embedding_comp_eq _ hl]
-    | inr hr =>
-      have := Algebra.finrank_eq_of_equiv_equiv (R₀ := v.Completion) (R₁ := ℂ)
-        (S₀ := w.1.Completion) (S₁ := ℂ) (ringEquivComplexOfIsComplex hv)
+        (RingHom.ext fun _ ↦ by simp [← extensionEmbedding_algebraMap _ hl]),
+        Module.finrank_self]
+    | inr hr => rw [Algebra.finrank_eq_of_equiv_equiv (ringEquivComplexOfIsComplex hv)
         ((ringEquivComplexOfIsComplex (w.isComplex_of_isComplex hv)).trans (starRingAut (R := ℂ)))
-      rw [this, Module.finrank_self]
-      ext
-      simp [← extensionEmbedding_algebraMap_of_conjugate_embedding_comp_eq _ hr]
+        (RingHom.ext fun _ ↦ by simp [← conjugate_extensionEmbedding_algebraMap _ hr]),
+        Module.finrank_self]
 
 end UnramifiedExtension
 
@@ -303,7 +229,7 @@ open UnramifiedExtension RamifiedExtension
 
 instance : Algebra (WithAbs v.1) ℂ := v.embedding.toAlgebra
 
-theorem isExtension_algHom (φ : L →ₐ[WithAbs v.1] ℂ) :
+theorem algHom_comp_eq (φ : L →ₐ[WithAbs v.1] ℂ) :
     φ.toRingHom.comp (algebraMap K L) = v.embedding := by
   have := v.embedding.algebraMap_toAlgebra ▸ funext_iff.2 φ.commutes'
   simp only [AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
@@ -316,9 +242,9 @@ variable (L v)
 
 /-- For any infinite place `v` of `K`, the `K`-algebra maps from `L` to `ℂ` are equivalent to
 the embeddings `L →+* ℂ` that extend `v.embedding`. -/
-def algHomEquivIsExtension :
+def algHomEquivExtension :
     (L →ₐ[WithAbs v.1] ℂ) ≃ Extension L v.embedding :=
-  Equiv.ofBijective (fun φ => ⟨φ.toRingHom, isExtension_algHom φ⟩)
+  Equiv.ofBijective (fun φ => ⟨φ.toRingHom, algHom_comp_eq φ⟩)
     ⟨fun _ _ h => AlgHom.coe_ringHom_injective (by simpa using h),
       fun ⟨σ, h⟩ => ⟨⟨σ, fun _ => by simp [RingHom.algebraMap_toAlgebra, ← h]; rfl⟩, rfl⟩⟩
 
@@ -326,29 +252,32 @@ open scoped Classical in
 theorem card_isUnramified_add_two_mul_card_isRamified [NumberField K] [NumberField L] :
     Fintype.card ({w : v.Extension L // w.1.IsUnramified K }) +
       2 * Fintype.card ({w : v.Extension L // w.1.IsRamified K }) =
-      Module.finrank K L := by
-  change _ = Module.finrank (WithAbs v.1) L
-  rw [← AlgHom.card (WithAbs v.1) L ℂ, Fintype.card_eq.2 ⟨algHomEquivIsExtension L v⟩,
+      Module.finrank (WithAbs v.1) L := by
+  rw [← AlgHom.card (WithAbs v.1) L ℂ, Fintype.card_eq.2 ⟨algHomEquivExtension L v⟩,
     Fintype.card_eq.2 ⟨Extension.equivSum v.embedding⟩, Fintype.card_sum,
-    RamifiedExtension.two_mul_card_eq, UnramifiedExtension.card_eq]
-  ring
+    RamifiedExtension.two_mul_card_eq, UnramifiedExtension.card_eq]; ring
+
+theorem _root_.WithAbs.finrank_left_eq {R R' S : Type*} [Semiring S] [PartialOrder S]
+    [CommSemiring R] [Semiring R'] [Algebra R R'] [Module.Finite R R'] (v : AbsoluteValue R S) :
+    Module.finrank (WithAbs v) R' = Module.finrank R R' :=
+  Algebra.finrank_eq_of_equiv_equiv (WithAbs.equiv v) (RingEquiv.refl R') <|
+    RingHom.ext fun x ↦ by simpa using WithAbs.algebraMap_left_apply v x
 
 open scoped Classical in
-open Completion in
-theorem sum_ramificationIdx_eq [NumberField K] [NumberField L] :
+open Completion Finset in
+theorem sum_inertiaDeg_eq_finrank [NumberField K] [NumberField L] :
     ∑ w : v.Extension L, w.inertiaDeg = Module.finrank K L := by
   rw [Fintype.sum_equiv (Equiv.sumCompl fun w ↦ w.1.IsUnramified K).symm _
     ((fun w ↦ w.inertiaDeg) ∘ (Equiv.sumCompl fun w : v.Extension L ↦ w.1.IsUnramified K))
     (fun _ => by rw [Function.comp_apply, Equiv.apply_symm_apply])]
   simp only [Function.comp_apply, Fintype.sum_sum_type, Equiv.sumCompl_apply_inl,
     Equiv.sumCompl_apply_inr]
-  rw [Finset.sum_congr rfl (fun w  _ =>
-      inertiaDeg_eq_finrank w.1 ▸ UnramifiedExtension.finrank_eq_one w.1 w.2),
-    Finset.sum_const,
-    Finset.sum_congr rfl
-      (fun w _  => inertiaDeg_eq_finrank w.1 ▸ RamifiedExtension.finrank_eq_two w.1 w.2),
-    Finset.sum_const, ← Fintype.card, ← Fintype.card, smul_eq_mul, mul_one,
-    smul_eq_mul, mul_comm, ← card_isUnramified_add_two_mul_card_isRamified L v]
+  rw [sum_congr rfl (fun w  _ => inertiaDeg_eq_finrank w.1 ▸
+      UnramifiedExtension.finrank_eq_one w.1 w.2),
+    sum_const, sum_congr rfl (fun w _  => inertiaDeg_eq_finrank w.1 ▸
+      RamifiedExtension.finrank_eq_two w.1 w.2),
+    sum_const, ← Fintype.card, ← Fintype.card, smul_eq_mul, mul_one, smul_eq_mul, mul_comm,
+    card_isUnramified_add_two_mul_card_isRamified, WithAbs.finrank_left_eq]
 
 end Extension
 

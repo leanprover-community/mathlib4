@@ -199,6 +199,12 @@ def isometryEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completi
   toEquiv := ringEquivRealOfIsReal hv
   isometry_toFun := isometry_extensionEmbedding_of_isReal hv
 
+end Completion
+
+namespace Extension
+
+open Completion
+
 variable {L : Type*} [Field L] [Algebra K L] (w : v.Extension L) {v}
 
 instance : Algebra v.Completion w.1.Completion :=
@@ -211,7 +217,7 @@ theorem algebraMap_coe (x : WithAbs v.1) :
   rw [RingHom.algebraMap_toAlgebra, mapOfComp_coe]
 
 open UniformSpace.Completion NumberField.ComplexEmbedding in
-theorem extensionEmbedding_algebraMap_of_embedding_comp_eq
+theorem extensionEmbedding_algebraMap
     (h : w.1.embedding.comp (algebraMap K L) = v.embedding) (x : v.Completion) :
     extensionEmbedding w.1 (algebraMap v.Completion w.1.Completion x) =
       extensionEmbedding v x := by
@@ -222,7 +228,7 @@ theorem extensionEmbedding_algebraMap_of_embedding_comp_eq
     rfl
 
 open UniformSpace.Completion NumberField.ComplexEmbedding in
-theorem extensionEmbedding_algebraMap_of_conjugate_embedding_comp_eq
+theorem conjugate_extensionEmbedding_algebraMap
     (h : (conjugate w.1.embedding).comp (algebraMap K L) = v.embedding) (x : v.Completion) :
     conjugate (extensionEmbedding w.1) (algebraMap v.Completion w.1.Completion x) =
       extensionEmbedding v x := by
@@ -239,7 +245,7 @@ open UniformSpace.Completion in
 theorem extensionEmbedding_algebraMap_of_isReal (h : v.IsReal) (x : v.Completion) :
     extensionEmbedding w.1 (algebraMap v.Completion w.1.Completion x) =
       extensionEmbedding v x :=
-  extensionEmbedding_algebraMap_of_embedding_comp_eq w
-    (w.2 ▸ comap_embedding_eq_comp_of_isReal _ (w.2 ▸ h) |>.symm) _
+  extensionEmbedding_algebraMap w
+    (w.2 ▸ comap_embedding_of_isReal _ (w.2 ▸ h) |>.symm) _
 
-end NumberField.InfinitePlace.Completion
+end NumberField.InfinitePlace.Extension

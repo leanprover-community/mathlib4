@@ -273,7 +273,6 @@ section Extension
 variable {K : Type*} {L : Type*} [Field K] [Field L]
    (ψ : K →+* ℂ) (φ : L →+* ℂ)
 
-@[simp]
 theorem conjugate_comp (σ : K →+* L) :
     (conjugate φ).comp σ = conjugate (φ.comp σ) := rfl
 
@@ -302,18 +301,18 @@ theorem Extension.not_isReal_of_not_isReal (φ : Extension L ψ)
 
 variable (φ ψ)
 
-variable {ψ} in
+variable {ψ} (K) in
 /--
 If `L` and `K` are any two fields and `ψ : K →+* ℂ`, `φ : L →+* ℂ`, then we say `φ` and `ψ` are
 mixed if `ψ` is real while the image of `φ` is complex.
 
 This is the complex embedding analogue of `InfinitePlace.IsRamified`.
 -/
-abbrev IsMixed (φ : L →+* ℂ) (ψ : K →+* ℂ) :=
-  ComplexEmbedding.IsReal ψ ∧ ¬ComplexEmbedding.IsReal φ
+abbrev IsMixed (φ : L →+* ℂ) :=
+  ComplexEmbedding.IsReal (φ.comp (algebraMap K L)) ∧ ¬ComplexEmbedding.IsReal φ
 
 
-variable {ψ} in
+variable {ψ} (K) in
 /--
 If `L/K` and `ψ : K →+* ℂ`, `φ : L →+* ℂ`, then `φ` is an _unmixed extension_ of `ψ` if `φ` is an
 extension of `ψ` but is not a mixed extension. In other words, the image of `ψ` is real
@@ -321,21 +320,20 @@ if and only if the image of `φ` is real.
 
 This is the complex embedding analogue of `InfinitePlace.UnramifiedExtension`.
 -/
-abbrev IsUnmixed (φ : L →+* ℂ) (ψ : K →+* ℂ) := ¬IsMixed φ ψ
+abbrev IsUnmixed (φ : L →+* ℂ) := ¬IsMixed K φ
 
-omit [Algebra K L] in
 variable {ψ φ} in
-theorem IsUnmixed.isReal_of_isReal {φ : L →+* ℂ} (h : IsUnmixed φ ψ)
-    (hf : ComplexEmbedding.IsReal ψ) :
+theorem IsUnmixed.isReal_of_isReal {φ : L →+* ℂ} (h : IsUnmixed K φ)
+    (hf : ComplexEmbedding.IsReal (φ.comp (algebraMap K L))) :
     ComplexEmbedding.IsReal φ := by
   simp only [not_and, not_not] at h
   exact h hf
 
 open scoped Classical in
 noncomputable def Extension.equivSum :
-    Extension L ψ ≃ { φ : Extension L ψ // IsMixed φ.1 ψ } ⊕
-      { φ : Extension L ψ // IsUnmixed φ.1 ψ } := by
-  exact (Equiv.sumCompl (fun _ ↦ IsMixed _ ψ)).symm
+    Extension L ψ ≃ { φ : Extension L ψ // IsMixed K φ.1 } ⊕
+      { φ : Extension L ψ // IsUnmixed K φ.1 } := by
+  exact (Equiv.sumCompl _).symm
 
 /-
 open scoped Classical in
