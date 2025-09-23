@@ -5,8 +5,8 @@ Authors: Joseph Myers, Manuel Candales
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
-import Mathlib.Analysis.Normed.Affine.ContinuousAffineMap
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+import Mathlib.Topology.Algebra.ContinuousAffineMap
 
 /-!
 # Orthogonal projection in Euclidean affine spaces
