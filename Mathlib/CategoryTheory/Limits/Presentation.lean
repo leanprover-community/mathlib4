@@ -237,7 +237,7 @@ structure LimitPresentation (J : Type w) [Category.{t} J] (X : C) where
   diag : J ⥤ C
   /-- The natural maps `sᵢ : X ⟶ Dᵢ`. -/
   π : (Functor.const J).obj X ⟶ diag
-  /-- `X` is the colimit of the `Dᵢ` via `sᵢ`. -/
+  /-- `X` is the limit of the `Dᵢ` via `sᵢ`. -/
   isLimit : IsLimit (Cone.mk _ π)
 
 variable {J : Type w} [Category.{t} J] {X : C}
