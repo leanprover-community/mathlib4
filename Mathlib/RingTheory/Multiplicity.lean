@@ -62,7 +62,7 @@ theorem finiteMultiplicity_iff_emultiplicity_ne_top :
 
 theorem finiteMultiplicity_of_emultiplicity_eq_natCast {n : ℕ} (h : emultiplicity a b = n) :
     FiniteMultiplicity a b := by
-  by_contra! nh
+  by_contra nh
   rw [← emultiplicity_eq_top, h] at nh
   trivial
 
