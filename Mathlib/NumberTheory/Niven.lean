@@ -37,24 +37,22 @@ variable {θ : ℝ}
 
 open Real
 
-theorem isIntegral_two_mul_cos_pi (hθ : ∃ r : ℚ, θ = r * π) :
-    IsIntegral ℤ (2 * cos θ) := by
-  rcases hθ with ⟨r, hr⟩
+theorem isIntegral_two_mul_cos_rat_mul_pi (r : ℚ) :
+    IsIntegral ℤ (2 * cos (r * π)) := by
+  let z : ℂ := .exp (.I * r * π)
   obtain ⟨p, q, hq_pos, rfl⟩ : ∃ (p : ℤ) (q : ℕ), q ≠ 0 ∧ r = p / q :=
     ⟨r.num, r.den, r.den_ne_zero, r.num_div_den.symm⟩
-  -- Let `z = e^{i π p / q}`, which is a root of unity.
-  let z : ℂ := .exp (.I * θ)
+  -- Let `z = e ^ (i * π * p / q)`, which is a root of unity.
   have hz_root : z ^ (2 * q) = 1 := by
-    rw [← Complex.exp_nat_mul, Complex.exp_eq_one_iff, hr]
+    rw [← Complex.exp_nat_mul, Complex.exp_eq_one_iff]
     use p
     push_cast
     field_simp [hq_pos]
   -- Since z is a root of unity, `2 cos θ = z` and `z⁻¹` are algebraic integers, and their sum.
   have h_cos_eq : 2 * cos (p / q * π) = z + z⁻¹ := by
-    simpa [Complex.cos, Complex.exp_neg, hr, z] using by ring_nf
-  obtain ⟨f, hf₁, hf₂⟩ : IsIntegral ℤ (z + z⁻¹) := by
-    apply IsIntegral.add <;> exact ⟨.X ^ (2 * q) - 1,
-      Polynomial.monic_X_pow_sub_C _ (by positivity), by simp [hz_root]⟩
+    simpa [Complex.cos, Complex.exp_neg, z] using by ring_nf
+  obtain ⟨f, hf₁, hf₂⟩ : IsIntegral ℤ (z + z⁻¹) := by apply IsIntegral.add <;> 
+      exact ⟨.X ^ (2 * q) - 1, Polynomial.monic_X_pow_sub_C _ (by positivity), by simp [hz_root]⟩
   use f, hf₁
   simp_all [Polynomial.eval₂_eq_sum_range, ← Complex.ofReal_inj]
 
