@@ -417,7 +417,7 @@ theorem relNorm_eq_pow_of_isPrime_isGalois [p.IsMaximal] [P.IsPrime]
     obtain ⟨σ, rfl⟩ := Ideal.exists_map_eq_of_isGalois p P Q (FractionRing R) (FractionRing S)
     rw [relNorm_map_algEquiv, hs, ← pow_mul, mul_comm]
   have h := (congr_arg (relNorm R ·) <|
-    map_algebraMap_eq_finset_prod_pow S hp).symm.trans <| relNorm_algebraMap S p
+    map_algebraMap_eq_finset_prod_pow hp).symm.trans <| relNorm_algebraMap S p
   simp +contextual only [map_prod, map_pow, h₀, Finset.prod_const, ← pow_mul] at h
   rwa [← Ideal.ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp S, mul_comm,
     ← Set.ncard_eq_toFinset_card',
@@ -428,10 +428,9 @@ theorem relNorm_eq_pow_of_isPrime_isGalois [p.IsMaximal] [P.IsPrime]
   rw [one_eq_top]
   exact IsMaximal.ne_top inferInstance
 
-set_option maxHeartbeats 700000 in
+set_option maxHeartbeats 400000 in
 -- Avoid some timeouts during compilation of this proof
-theorem relNorm_eq_pow_of_isMaximal [PerfectField (FractionRing R)] (P : Ideal S) [P.IsMaximal]
-    (p : Ideal R) [p.IsMaximal] [P.LiesOver p] :
+theorem relNorm_eq_pow_of_isMaximal [PerfectField (FractionRing R)] [P.IsMaximal] [p.IsMaximal] :
     relNorm R P = p ^ p.inertiaDeg P := by
   let K := FractionRing R
   let L := FractionRing S
@@ -465,20 +464,10 @@ theorem relNorm_eq_pow_of_isMaximal [PerfectField (FractionRing R)] (P : Ideal S
       (FaithfulSMul.algebraMap_injective S T).comp (FaithfulSMul.algebraMap_injective R S)
   let _ : Algebra K (FractionRing T) := FractionRing.liftAlgebra R (FractionRing T)
   have : IsGalois K (FractionRing T) := by
-    refine { to_isSeparable := Algebra.IsAlgebraic.isSeparable_of_perfectField, to_normal := ?_ }
-    have : Normal K E := normalClosure.normal K L A
-    apply Normal.of_equiv_equiv (F := K) (E := E) (f := RingEquiv.refl K)
-      (g := (FractionRing.algEquiv T E).symm)
-    ext x
-    refine x.ind fun ⟨r, s⟩ ↦ ?_
-    simp only [RingEquiv.coe_ringHom_refl, RingHomCompTriple.comp_eq, FractionRing.mk_eq_div,
-      map_div₀, AlgEquiv.symm_toRingEquiv, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply]
-    rw [← IsScalarTower.algebraMap_apply R K E, ← IsScalarTower.algebraMap_apply R K E,
-      ← IsScalarTower.algebraMap_apply R K (FractionRing T),
-      ← IsScalarTower.algebraMap_apply R K (FractionRing T), ← AlgEquiv.symm_toRingEquiv,
-      AlgEquiv.coe_ringEquiv, IsScalarTower.algebraMap_apply R T E,
-      IsScalarTower.algebraMap_apply R T E, AlgEquiv.commutes, AlgEquiv.commutes,
-      ← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply]
+    refine IsGalois.of_equiv_equiv  (F := K) (E := E) (f := (FractionRing.algEquiv R K).symm)
+      (g := (FractionRing.algEquiv T E).symm) ?_
+    ext
+    simpa using FractionRing.algebraMap_algEquiv_symm_commutes _ _ _ _ _
   obtain ⟨Q, hQ₁, hQ₂⟩ : ∃ Q : Ideal T, Q.IsMaximal ∧ Q.LiesOver P :=
     exists_maximal_ideal_liesOver_of_isIntegral P
   have : IsGalois L (FractionRing T) := IsGalois.tower_top_of_isGalois K L (FractionRing T)
