@@ -386,9 +386,9 @@ structure ProjectionData where
   The composition of these projections is required to be definitionally equal to the provided
   Expression. -/
   projNrs : List Nat
-  /-- A boolean specifying whether `simp` lemmas are generated for this projection by default. -/
+  /-- A Boolean specifying whether `simp` lemmas are generated for this projection by default. -/
   isDefault : Bool
-  /-- A boolean specifying whether this projection is written as prefix. -/
+  /-- A Boolean specifying whether this projection is written as prefix. -/
   isPrefix : Bool
   deriving Inhabited
 

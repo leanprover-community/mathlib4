@@ -189,7 +189,7 @@ private def calc_eval_z' {z z' z1 : ℤ_[p]} (hz' : z' = z - z1) {n} (hz : ih n 
     { q : ℤ_[p] // F.aeval z' = q * z1 ^ 2 } := by
   have hdzne : F.derivative.aeval z ≠ 0 :=
     mt norm_eq_zero.2 (by rw [hz.1]; apply deriv_norm_ne_zero; assumption)
-  have hdzne' : (↑(F.derivative.aeval z) : ℚ_[p]) ≠ 0 := fun h => hdzne (Subtype.ext_iff_val.2 h)
+  have hdzne' : (↑(F.derivative.aeval z) : ℚ_[p]) ≠ 0 := fun h => hdzne (Subtype.ext_iff.2 h)
   obtain ⟨q, hq⟩ := (F.map (algebraMap R ℤ_[p])).binomExpansion z (-z1)
   have : ‖(↑(F.derivative.aeval z) * (↑(F.aeval z) / ↑(F.derivative.aeval z)) : ℚ_[p])‖ ≤ 1 := by
     simpa using mul_le_one₀ (PadicInt.norm_le_one _) (norm_nonneg _) h1
@@ -279,7 +279,7 @@ private theorem newton_seq_dist_aux (n : ℕ) :
   | k + 1 =>
     have : 2 ^ n ≤ 2 ^ (n + k) := by
       apply pow_right_mono₀
-      · norm_num
+      · simp
       · apply Nat.le_add_right
     calc
       ‖newton_seq (n + (k + 1)) - newton_seq n‖ = ‖newton_seq (n + k + 1) - newton_seq n‖ := by
