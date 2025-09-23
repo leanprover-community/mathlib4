@@ -75,7 +75,7 @@ lemma eccent_pos_iff (u : α) : 0 < G.eccent u ↔ Nontrivial α := by
 
 @[simp]
 lemma eccent_bot [Nontrivial α] (u : α) : (⊥ : SimpleGraph α).eccent u = ⊤ :=
-  eccent_eq_top_of_not_connected bot_not_connected u
+  eccent_eq_top_of_not_connected not_connected_bot u
 
 @[simp]
 lemma eccent_top [Nontrivial α] (u : α) : (⊤ : SimpleGraph α).eccent u = 1 := by
@@ -209,7 +209,7 @@ lemma ediam_anti (h : G ≤ G') : G'.ediam ≤ G.ediam :=
 
 @[simp]
 lemma ediam_bot [Nontrivial α] : (⊥ : SimpleGraph α).ediam = ⊤ :=
-  ediam_eq_top_of_not_connected bot_not_connected
+  ediam_eq_top_of_not_connected not_connected_bot
 
 @[simp]
 lemma ediam_top [Nontrivial α] : (⊤ : SimpleGraph α).ediam = 1 := by
@@ -383,7 +383,7 @@ lemma radius_eq_ediam_iff [Nonempty α] :
 
 @[simp]
 lemma radius_bot [Nontrivial α] : (⊥ : SimpleGraph α).radius = ⊤ :=
-  radius_eq_top_of_not_connected bot_not_connected
+  radius_eq_top_of_not_connected not_connected_bot
 
 @[simp]
 lemma radius_top [Nontrivial α] : (⊤ : SimpleGraph α).radius = 1 := by
