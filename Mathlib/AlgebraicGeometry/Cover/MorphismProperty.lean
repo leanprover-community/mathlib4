@@ -5,7 +5,6 @@ Authors: Christian Merten, Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 
 /-!
 # Covers of schemes
@@ -111,9 +110,11 @@ def coverOfIsIso [P.ContainsIdentities] [P.RespectsIso] {X Y : Scheme.{u}} (f : 
     (fun _ ↦ P.of_isIso f)
 
 instance : JointlySurjective (precoverage P) where
-  exists_eq {X} R hR x := by
-    obtain ⟨Y, g, hg, heq⟩ := hR.1 x
-    use Y, g
+  exists_eq {X} R := fun ⟨hR, _⟩ x ↦ by
+    rw [jointlySurjectivePrecoverage, Presieve.mem_comap_jointlySurjectivePrecoverage_iff] at hR
+    obtain ⟨Y, g, hg, heq⟩ := hR x
+    use Y, g, hg
+    exact heq
 
 /-- Turn a `K`-cover into a `Q`-cover by showing that the components satisfy `Q`. -/
 def Cover.changeProp [JointlySurjective K] (𝒰 : X.Cover K) (h : ∀ j, Q (𝒰.f j)) :
@@ -156,18 +157,14 @@ def Cover.pushforwardIso [P.RespectsIso] [P.ContainsIdentities] [P.IsStableUnder
     fun _ => (Category.id_comp _).symm
 
 /-- Adding map satisfying `P` into a cover gives another cover. -/
-@[simps]
-def Cover.add {X Y : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : Y ⟶ X)
+@[simps toPreZeroHypercover]
+nonrec def Cover.add {X Y : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : Y ⟶ X)
     (hf : P f := by infer_instance) : X.Cover (precoverage P) where
-  I₀ := Option 𝒰.I₀
-  X i := Option.rec Y 𝒰.X i
-  f i := Option.rec f 𝒰.f i
-  idx x := some (𝒰.idx x)
-  covers := 𝒰.covers
-  map_prop j := by
-    obtain ⟨_ | _⟩ := j
-    · exact hf
-    · exact 𝒰.map_prop _
+  __ := 𝒰.toPreZeroHypercover.add f
+  mem₀ := by
+    rw [presieve₀_mem_precoverage_iff]
+    refine ⟨fun x ↦ ⟨some <| 𝒰.idx x, 𝒰.covers x⟩, ?_⟩
+    rintro (i|i) <;> simp [hf, 𝒰.map_prop]
 
 /-- Given a cover on `X`, we may pull them back along a morphism `W ⟶ X` to obtain
 a cover of `W`.
