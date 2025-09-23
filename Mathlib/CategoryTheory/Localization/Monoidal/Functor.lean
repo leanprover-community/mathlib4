@@ -38,7 +38,7 @@ instance lifting₂CurriedTensorPre :
 instance lifting₂CurriedTensorPost :
     Lifting₂ L L W W (curriedTensorPost G) (curriedTensorPost F) where
   iso := (postcompose₂.obj F).mapIso (curriedTensorPreIsoPost L) ≪≫
-      curriedTensorPostFunctor.mapIso (Lifting.iso L W G F)
+    curriedTensorPostFunctor.mapIso (Lifting.iso L W G F)
 
 /--
 The natural isomorphism of bifunctors `F - ⊗ F - ≅ F (- ⊗ -)`, given that `L ⋙ F` is monoidal.
@@ -50,7 +50,7 @@ noncomputable def curriedTensorPreIsoPost : curriedTensorPre F ≅ curriedTensor
 @[reassoc]
 lemma curriedTensorPreIsoPost_hom_app_app (X Y : C) :
     letI e := Lifting.iso L W G F
-    letI : (L ⋙ F).Monoidal := Functor.Monoidal.transport e.symm
+    letI : (L ⋙ F).Monoidal := transport e.symm
     ((curriedTensorPreIsoPost L W F G).hom.app (L.obj X)).app (L.obj Y) =
       μ (L ⋙ F) X Y ≫ F.map (δ L X Y) := by
   simp [curriedTensorPreIsoPost, transport_μ]
@@ -59,7 +59,7 @@ lemma curriedTensorPreIsoPost_hom_app_app (X Y : C) :
 lemma curriedTensorPreIsoPost_hom_app_app' {X₁ X₂ : C} {Y₁ Y₂ : D} (e₁ : Y₁ ≅ L.obj X₁)
     (e₂ : Y₂ ≅ L.obj X₂) :
     letI e := Lifting.iso L W G F
-    letI : (L ⋙ F).Monoidal := Functor.Monoidal.transport e.symm
+    letI : (L ⋙ F).Monoidal := transport e.symm
     ((curriedTensorPreIsoPost L W F G).hom.app Y₁).app Y₂ =
       (F.map e₁.hom ⊗ₘ F.map e₂.hom) ≫ μ (L ⋙ F) X₁ X₂ ≫
         F.map (δ L _ _≫ (e₁.inv ⊗ₘ e₂.inv)) := by
@@ -76,7 +76,7 @@ Monoidal structure on `F`, given that `L ⋙ F` is monoidal, where `L` is a loca
 @[simps!]
 noncomputable def functorCoreMonoidalOfComp : F.CoreMonoidal := by
   letI e := Lifting.iso L W G F
-  letI : (L ⋙ F).Monoidal := Functor.Monoidal.transport e.symm
+  letI : (L ⋙ F).Monoidal := transport e.symm
   refine Functor.CoreMonoidal.ofBifunctor (εIso (L ⋙ F) ≪≫ F.mapIso (εIso L).symm)
     (curriedTensorPreIsoPost L W F G) ?_ ?_ ?_
   · apply natTrans₃_ext L L L W W W (fun X Y Z ↦ ?_)
