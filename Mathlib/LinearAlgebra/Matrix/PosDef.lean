@@ -40,7 +40,7 @@ variable [Fintype m] [Fintype n]
 variable [Ring R] [PartialOrder R] [StarRing R]
 variable [CommRing R'] [PartialOrder R'] [StarRing R']
 variable [RCLike 𝕜]
-open scoped Matrix
+open Matrix
 
 /-!
 ## Positive semidefinite matrices
@@ -248,19 +248,24 @@ section PartialOrder
 
 open scoped ComplexOrder
 
-instance [AddLeftMono R] : Preorder (Matrix n n R) where
+abbrev instPreOrder [AddLeftMono R] : Preorder (Matrix n n R) where
   le A B := (B - A).PosSemidef
   le_refl A := sub_self A ▸ PosSemidef.zero
   le_trans A B C h₁ h₂ := sub_add_sub_cancel C B A ▸ h₂.add h₁
+
+scoped[MatrixOrder] attribute [instance] instPreOrder
+
+open MatrixOrder
 
 lemma le_iff [AddLeftMono R] {A B : Matrix n n R} : A ≤ B ↔ (B - A).PosSemidef := Iff.rfl
 
 lemma nonneg_iff [AddLeftMono R] {A : Matrix n n R} :
     0 ≤ A ↔ A.PosSemidef := by rw [le_iff, sub_zero]
 
-protected alias ⟨_, PosSemidef.nonneg⟩ := nonneg_iff
+@[aesop 20% apply (rule_sets := [CStarAlgebra])]
+protected alias ⟨LE.le.posSemidef, PosSemidef.nonneg⟩ := nonneg_iff
 
-instance : PartialOrder (Matrix n n 𝕜) where
+abbrev instPartialOrder : PartialOrder (Matrix n n 𝕜) where
   le_antisymm A B h₁ h₂ := by
     have foo := neg_nonneg.mp <| trace_neg (A - B) ▸ neg_sub A B ▸ h₁.trace_nonneg
     have : (A - B).trace = 0 := le_antisymm foo h₂.trace_nonneg
@@ -270,20 +275,26 @@ instance : PartialOrder (Matrix n n 𝕜) where
         (by simpa using h₂.eigenvalues_nonneg), Finset.mem_univ, true_imp_iff] at this
     exact sub_eq_zero.mp <| funext_iff.eq ▸ h₂.isHermitian.eigenvalues_eq_zero_iff.mp <| this
 
-instance : IsOrderedAddMonoid (Matrix n n 𝕜) where
+scoped[MatrixOrder] attribute [instance] instPartialOrder
+
+abbrev instIsOrderedAddMonoid : IsOrderedAddMonoid (Matrix n n 𝕜) where
   add_le_add_left _ _ _ _ := by rwa [le_iff, add_sub_add_left_eq_sub]
 
-instance : NonnegSpectrumClass ℝ (Matrix n n 𝕜) where
+scoped[MatrixOrder] attribute [instance] instIsOrderedAddMonoid
+
+abbrev instNonnegSpectrumClass : NonnegSpectrumClass ℝ (Matrix n n 𝕜) where
   quasispectrum_nonneg_of_nonneg A hA := by
     classical
     simp only [quasispectrum_eq_spectrum_union_zero ℝ A, Set.union_singleton, Set.mem_insert_iff,
       forall_eq_or_imp, le_refl, true_and]
     intro x hx
     obtain ⟨i, rfl⟩ := Set.ext_iff.mp
-      (nonneg_iff.mp hA).1.spectrum_real_eq_range_eigenvalues x |>.mp hx
+      hA.posSemidef.1.spectrum_real_eq_range_eigenvalues x |>.mp hx
     exact (nonneg_iff.mp hA).eigenvalues_nonneg _
 
-instance : StarOrderedRing (Matrix n n 𝕜) :=
+scoped[MatrixOrder] attribute [instance] instNonnegSpectrumClass
+
+abbrev instStarOrderedRing : StarOrderedRing (Matrix n n 𝕜) :=
   .of_nonneg_iff' add_le_add_left fun A ↦
     ⟨fun hA ↦ by
       classical
@@ -293,7 +304,11 @@ instance : StarOrderedRing (Matrix n n 𝕜) :=
       exact ⟨X, hX.star_eq.symm ▸ rfl⟩,
     fun ⟨A, hA⟩ => hA ▸ (posSemidef_conjTranspose_mul_self A).nonneg⟩
 
+scoped[MatrixOrder] attribute [instance] instStarOrderedRing
+
 end PartialOrder
+
+open scoped MatrixOrder
 
 namespace PosSemidef
 
@@ -308,24 +323,24 @@ noncomputable def sqrt : Matrix n n 𝕜 :=
   (star hA.1.eigenvectorUnitary : Matrix n n 𝕜)
 
 @[deprecated CFC.sqrt_nonneg (since := "2025-09-22")]
-lemma posSemidef_sqrt : PosSemidef (CFC.sqrt A) := nonneg_iff.mp (CFC.sqrt_nonneg A)
+lemma posSemidef_sqrt : PosSemidef (CFC.sqrt A) := CFC.sqrt_nonneg A |>.posSemidef
 
 include hA
 
 @[deprecated CFC.sq_sqrt (since := "2025-09-22")]
-lemma sq_sqrt : (CFC.sqrt A) ^ 2 = A := CFC.sq_sqrt A hA.nonneg
+lemma sq_sqrt : (CFC.sqrt A) ^ 2 = A := CFC.sq_sqrt A
 
 @[deprecated CFC.sqrt_mul_sqrt_self (since := "2025-09-22")]
-lemma sqrt_mul_self : CFC.sqrt A * CFC.sqrt A = A := CFC.sqrt_mul_sqrt_self A hA.nonneg
+lemma sqrt_mul_self : CFC.sqrt A * CFC.sqrt A = A := CFC.sqrt_mul_sqrt_self A
 
 lemma eq_of_sq_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B ^ 2) : A = B :=
-  CFC.sqrt_sq A hA.nonneg ▸ CFC.sqrt_unique (sq B ▸ hAB.symm) hB.nonneg
+  CFC.sqrt_sq A ▸ CFC.sqrt_unique (sq B ▸ hAB.symm)
 
 lemma sq_eq_sq_iff {B : Matrix n n 𝕜} (hB : PosSemidef B) : A ^ 2 = B ^ 2 ↔ A = B :=
   ⟨eq_of_sq_eq_sq hA hB, fun h => h ▸ rfl⟩
 
 @[deprecated CFC.sqrt_sq (since := "2025-09-22")]
-lemma sqrt_sq : CFC.sqrt (A ^ 2) = A := CFC.sqrt_sq A hA.nonneg
+lemma sqrt_sq : CFC.sqrt (A ^ 2) = A := CFC.sqrt_sq A
 
 lemma eq_sqrt_iff_sq_eq {B : Matrix n n 𝕜} (hB : PosSemidef B) : A = CFC.sqrt B ↔ A ^ 2 = B := by
   rw [eq_comm, CFC.sqrt_eq_iff B A hB.nonneg hA.nonneg, sq]
@@ -333,21 +348,17 @@ lemma eq_sqrt_iff_sq_eq {B : Matrix n n 𝕜} (hB : PosSemidef B) : A = CFC.sqrt
 lemma sqrt_eq_iff_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) : CFC.sqrt A = B ↔ A = B ^ 2 := by
   simpa [eq_comm, sq] using CFC.sqrt_eq_iff A B hA.nonneg hB.nonneg
 
-@[deprecated (since := "2025-05-07")] alias ⟨_, eq_sqrt_of_sq_eq⟩ := eq_sqrt_iff_sq_eq
-
 @[deprecated CFC.sqrt_eq_zero_iff (since := "2025-09-22")]
-lemma sqrt_eq_zero_iff : CFC.sqrt A = 0 ↔ A = 0 := CFC.sqrt_eq_zero_iff A hA.nonneg
+lemma sqrt_eq_zero_iff : CFC.sqrt A = 0 ↔ A = 0 := CFC.sqrt_eq_zero_iff A
 
-@[simp]
-lemma sqrt_eq_one_iff : CFC.sqrt A = 1 ↔ A = 1 := by
-  rw [sqrt_eq_iff_eq_sq hA .one, one_pow]
+@[deprecated CFC.sqrt_eq_one_iff (since := "2025-09-23")]
+lemma sqrt_eq_one_iff : CFC.sqrt A = 1 ↔ A = 1 := CFC.sqrt_eq_one_iff A
 
 @[deprecated CFC.isUnit_sqrt_iff (since := "2025-09-22")]
-lemma isUnit_sqrt_iff : IsUnit (CFC.sqrt A) ↔ IsUnit A := CFC.isUnit_sqrt_iff A hA.nonneg
+lemma isUnit_sqrt_iff : IsUnit (CFC.sqrt A) ↔ IsUnit A := CFC.isUnit_sqrt_iff A
 
 lemma inv_sqrt : (CFC.sqrt A)⁻¹ = CFC.sqrt A⁻¹ := by
-  rw [eq_sqrt_iff_sq_eq (nonneg_iff.mp (CFC.sqrt_nonneg A)).inv hA.inv, sq, ← mul_inv_rev, ← sq,
-    CFC.sq_sqrt A hA.nonneg]
+  rw [eq_sqrt_iff_sq_eq (CFC.sqrt_nonneg A).posSemidef.inv hA.inv, inv_pow', CFC.sq_sqrt A]
 
 end sqrtDeprecated
 
@@ -380,9 +391,8 @@ lemma posSemidef_iff_eq_conjTranspose_mul_self {A : Matrix n n 𝕜} :
   exact nonneg_iff (A := A) |>.eq ▸ CStarAlgebra.nonneg_iff_eq_star_mul_self
 
 @[deprecated (since := "2025-05-07")]
-alias posSemidef_iff_eq_transpose_mul_self := posSemidef_iff_eq_conjTranspose_mul_self
+alias posSemidef_iff_eq_transpose_mul_self := CStarAlgebra.nonneg_iff_eq_star_mul_self
 
-@[deprecated nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts (since := "2025-09-23")]
 theorem posSemidef_iff_isHermitian_and_spectrum_nonneg [DecidableEq n] {A : Matrix n n 𝕜} :
     A.PosSemidef ↔ A.IsHermitian ∧ spectrum 𝕜 A ⊆ {a : 𝕜 | 0 ≤ a} := by
   refine ⟨fun h => ⟨h.isHermitian, fun a => ?_⟩, fun ⟨h1, h2⟩ => ?_⟩
@@ -397,15 +407,8 @@ theorem posSemidef_iff_isHermitian_and_spectrum_nonneg [DecidableEq n] {A : Matr
 theorem PosSemidef.commute_iff {A B : Matrix n n 𝕜} (hA : A.PosSemidef) (hB : B.PosSemidef) :
     Commute A B ↔ (A * B).PosSemidef := by
   classical
-  rw [← nonneg_iff] at hA hB ⊢
-  refine ⟨fun h => nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts.mpr
-    ⟨hA.isSelfAdjoint.commute_iff hB.isSelfAdjoint |>.mp h, ?_⟩,
-    fun h => hA.isSelfAdjoint.commute_iff hB.isSelfAdjoint |>.mpr h.isSelfAdjoint⟩
-  obtain ⟨a, rfl⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp hA
-  obtain ⟨b, rfl⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp hB
-  simp_rw [QuasispectrumRestricts.nnreal_iff, ← mul_assoc, quasispectrum.mul_comm, ← mul_assoc]
-  simpa [mul_assoc (b * star a)] using
-    quasispectrum_nonneg_of_nonneg _ (star_mul_self_nonneg (a * star b))
+  exact ⟨fun h => (h.mul_nonneg hA.nonneg hB.nonneg).posSemidef,
+    fun h => hA.isHermitian.commute_iff hB.isHermitian |>.mpr h.isHermitian⟩
 
 /-!
 ## Positive definite matrices
@@ -631,9 +634,9 @@ theorem commute_iff {A B : Matrix n n 𝕜} (hA : A.PosDef) (hB : B.PosDef) :
   exact ⟨fun h => h.posDef_iff_isUnit.mpr <| hA.isUnit.mul hB.isUnit, fun h => h.posSemidef⟩
 
 lemma posDef_sqrt [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) :
-    PosDef (CFC.sqrt M) := by
-  rw [(nonneg_iff.mp (CFC.sqrt_nonneg M)).posDef_iff_isUnit]
-  exact CFC.isUnit_sqrt_iff M hM.posSemidef.nonneg |>.mpr hM.isUnit
+    PosDef (CFC.sqrt M) :=
+  (CFC.sqrt_nonneg M).posSemidef.posDef_iff_isUnit.mpr <|
+    CFC.isUnit_sqrt_iff M hM.posSemidef.nonneg |>.mpr hM.isUnit
 
 /--
 A matrix is positive definite if and only if it has the form `Bᴴ * B` for some invertible `B`.
@@ -672,8 +675,9 @@ theorem posDef_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)} (hQ
 end QuadraticForm
 
 namespace Matrix
-
 variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
+
+open scoped MatrixOrder
 
 /-- A positive definite matrix `M` induces a norm `‖x‖ = sqrt (re xᴴMx)`. -/
 noncomputable abbrev NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :

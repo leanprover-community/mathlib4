@@ -510,6 +510,10 @@ lemma isUnit_rpow_iff (a : A) (y : ℝ) (hy : y ≠ 0) (ha : 0 ≤ a := by cfc_t
   · rw [cfc_apply_of_not_continuousOn a hf] at h
     exact False.elim <| not_isUnit_zero h
 
+lemma sqrt_eq_one_iff [IsTopologicalRing A] [T2Space A] (a : A) (ha : 0 ≤ a := by cfc_tac) :
+    sqrt a = 1 ↔ a = 1 := by
+  rw [sqrt_eq_iff a _, mul_one, eq_comm]
+
 section prod
 
 variable [IsTopologicalRing A] [T2Space A]
