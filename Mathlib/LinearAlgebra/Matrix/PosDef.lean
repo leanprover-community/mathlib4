@@ -25,8 +25,6 @@ of quadratic forms. Most results require `𝕜 = ℝ` or `ℂ`.
 
 ## Main results
 
-* `Matrix.posSemidef_iff_eq_conjTranspose_mul_self` : a matrix `M : Matrix n n 𝕜` is positive
-  semidefinite iff it has the form `Bᴴ * B` for some `B`.
 * `Matrix.posDef_iff_eq_conjTranspose_mul_self` : a matrix `M : Matrix n n 𝕜` is positive
   definite iff it has the form `Bᴴ * B` for some _invertible_ `B`.
 -/
