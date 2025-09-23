@@ -183,7 +183,7 @@ lemma inv_height_eq_sum_mul_inv_dist (i : Fin (n + 1)) :
 quantity for the other vertices. This implies the existence of the excenter opposite that vertex;
 it also implies that the image of the incenter under a homothety with scale factor 2 about a
 vertex lies outside the simplex. -/
-lemma inv_height_lt_sum_inv_height (hn : 1 < n) (i : Fin (n + 1)) :
+lemma inv_height_lt_sum_inv_height [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
     (s.height i)⁻¹ < ∑ j ∈ {k | k ≠ i}, (s.height j)⁻¹ := by
   rw [inv_height_eq_sum_mul_inv_dist]
   refine Finset.sum_lt_sum_of_nonempty ?_ ?_
@@ -195,14 +195,14 @@ lemma inv_height_lt_sum_inv_height (hn : 1 < n) (i : Fin (n + 1)) :
     refine mul_lt_of_lt_one_left ?_ ?_
     · simp [height_pos]
     · rw [neg_lt]
-      exact neg_one_lt_inner_vsub_altitudeFoot_div _ _ _ hn
+      exact neg_one_lt_inner_vsub_altitudeFoot_div _ _ _
 
-lemma sum_excenterWeightsUnnorm_singleton_pos (hn : 1 < n) (i : Fin (n + 1)) :
+lemma sum_excenterWeightsUnnorm_singleton_pos [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
     0 < ∑ j, s.excenterWeightsUnnorm {i} j := by
   rw [← Finset.sum_add_sum_compl {i}, Finset.sum_singleton]
   nth_rw 1 [excenterWeightsUnnorm]
   simp only [Finset.mem_singleton, ↓reduceIte, neg_mul, one_mul, lt_neg_add_iff_add_lt, add_zero]
-  convert s.inv_height_lt_sum_inv_height hn i using 2 with j h
+  convert s.inv_height_lt_sum_inv_height i using 2 with j h
   · ext j
     simp
   · rw [Finset.mem_filter_univ] at h
@@ -210,8 +210,8 @@ lemma sum_excenterWeightsUnnorm_singleton_pos (hn : 1 < n) (i : Fin (n + 1)) :
 
 /-- The existence of the excenter opposite a vertex (in two or more dimensions), expressed in
 terms of `ExcenterExists`. -/
-lemma excenterExists_singleton (hn : 1 < n) (i : Fin (n + 1)) : s.ExcenterExists {i} :=
-  (s.sum_excenterWeightsUnnorm_singleton_pos hn i).ne'
+lemma excenterExists_singleton [Nat.AtLeastTwo n] (i : Fin (n + 1)) : s.ExcenterExists {i} :=
+  (s.sum_excenterWeightsUnnorm_singleton_pos i).ne'
 
 /-- The exsphere with signs determined by the given set of indices (for the empty set, this is
 the insphere; for a singleton set, this is the exsphere opposite a vertex).  This is only
@@ -303,8 +303,8 @@ lemma ExcenterExists.exradius_pos {signs : Finset (Fin (n + 1))} (h : s.Excenter
 lemma inradius_pos : 0 < s.inradius :=
   s.excenterExists_empty.exradius_pos
 
-lemma exradius_singleton_pos (hn : 1 < n) (i : Fin (n + 1)) : 0 < s.exradius {i} :=
-  (s.excenterExists_singleton hn i).exradius_pos
+lemma exradius_singleton_pos [Nat.AtLeastTwo n] (i : Fin (n + 1)) : 0 < s.exradius {i} :=
+  (s.excenterExists_singleton i).exradius_pos
 
 variable {s} in
 lemma ExcenterExists.excenter_mem_affineSpan_range {signs : Finset (Fin (n + 1))}
@@ -314,9 +314,9 @@ lemma ExcenterExists.excenter_mem_affineSpan_range {signs : Finset (Fin (n + 1))
 lemma incenter_mem_affineSpan_range : s.incenter ∈ affineSpan ℝ (Set.range s.points) :=
   s.excenterExists_empty.excenter_mem_affineSpan_range
 
-lemma excenter_singleton_mem_affineSpan_range (hn : 1 < n) (i : Fin (n + 1)) :
+lemma excenter_singleton_mem_affineSpan_range [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
     s.excenter {i} ∈ affineSpan ℝ (Set.range s.points) :=
-  (s.excenterExists_singleton hn i).excenter_mem_affineSpan_range
+  (s.excenterExists_singleton i).excenter_mem_affineSpan_range
 
 variable {s} in
 lemma ExcenterExists.signedInfDist_excenter_eq_mul_sum_inv {signs : Finset (Fin (n + 1))}

@@ -486,17 +486,17 @@ instance uniqueEmpty [IsEmpty α] : Unique (Set α) where
 
 /-- See also `Set.nonempty_iff_ne_empty`. -/
 @[push]
-theorem not_nonempty_iff_eq_empty {s : Set α} : ¬s.Nonempty ↔ s = ∅ := by
+theorem not_nonempty_iff_eq_empty : ¬s.Nonempty ↔ s = ∅ := by
   simp only [Set.Nonempty, not_exists, eq_empty_iff_forall_notMem]
 
 /-- See also `Set.not_nonempty_iff_eq_empty`. -/
 @[push ←]
-theorem nonempty_iff_ne_empty {s : Set α} : s.Nonempty ↔ s ≠ ∅ :=
+theorem nonempty_iff_ne_empty : s.Nonempty ↔ s ≠ ∅ :=
   not_nonempty_iff_eq_empty.not_right
 
-/-- Variant of `nonempty_iff_ne_empty` used in the `push` tactic. -/
+/-- Variant of `nonempty_iff_ne_empty` used by `push_neg`. -/
 @[push ←]
-theorem nonempty_iff_empty_ne {s : Set α} : s.Nonempty ↔ ∅ ≠ s :=
+theorem nonempty_iff_empty_ne : s.Nonempty ↔ ∅ ≠ s :=
   nonempty_iff_ne_empty.trans ne_comm
 
 /-- See also `nonempty_iff_ne_empty'`. -/

@@ -16,7 +16,7 @@ import Mathlib.Util.AtLocation
 The `push` tactic pushes a given constant inside expressions: it can be applied to goals as well
 as local hypotheses and also works as a `conv` tactic. `push_neg` is a macro for `push Not`.
 
-The `pull` tactic does the reverse: it pulls the given constant towards the root of the expression.
+The `pull` tactic does the reverse: it pulls the given constant towards the head of the expression.
 -/
 
 namespace Mathlib.Tactic.Push
@@ -40,6 +40,10 @@ attribute [push]
   exists_const exists_or exists_and_left exists_and_right exists_eq exists_eq'
   and_or_left and_or_right and_true true_and and_false false_and
   or_and_left or_and_right or_true true_or or_false false_or
+
+-- these lemmas are only for the `pull` tactic
+attribute [push low]
+  forall_and_left forall_and_right -- needs lower priority than `forall_and` in the `pull` tactic
 
 attribute [push ←] Function.id_def
 
@@ -88,7 +92,7 @@ def pushSimpConfig : Simp.Config where
   zeta := false
   proj := false
 
-/-- Try to rewrite using a push lemma. -/
+/-- Try to rewrite using a `push` lemma. -/
 def pushStep (head : Head) : Simp.Simproc := fun e => do
   let e_whnf ← whnf e
   let some e_head := Head.ofExpr? e_whnf | return Simp.Step.continue
@@ -99,8 +103,8 @@ def pushStep (head : Head) : Simp.Simproc := fun e => do
     -- We return `.visit r` instead of `.continue r`, because in the case of a triple negation,
     -- after rewriting `¬ ¬ ¬ p` into `¬ p`, we may want to rewrite `¬ p` again.
     return Simp.Step.visit r
-  if let some ex := e_whnf.not? then
-    pushNegBuiltin ex
+  if let some e := e_whnf.not? then
+    pushNegBuiltin e
   else
     return Simp.Step.continue
 
@@ -114,7 +118,7 @@ def pushCore (head : Head) (tgt : Expr) (disch? : Option Simp.Discharge) : MetaM
     | some disch => { pre := pushStep head, discharge? := disch, wellBehavedDischarge := false }
   (·.1) <$> Simp.main tgt ctx (methods := methods)
 
-/-- Try to rewrite using a pull lemma. -/
+/-- Try to rewrite using a `pull` lemma. -/
 def pullStep (head : Head) : Simp.Simproc := fun e => do
   let thms := pullExt.getState (← getEnv)
   -- We can't use `Simp.rewrite?` here, because we need to only allow rewriting with theorems
@@ -156,7 +160,7 @@ def resolvePushId? (stx : Term) : TermElabM (Option Expr) := do
     -- but for example `∑ x, _` expands to `Finset.sum Finset.univ fun _ ↦ _`,
     -- in which `Finset.univ` is not an underscore. So instead
     -- we only insist that the last argument is an underscore.
-    if isUnderscore args.back! then
+    if args.back?.all isUnderscore then
       try resolveId? f catch _ => return none
     else
       return none
@@ -180,7 +184,7 @@ def elabHead (stx : Term) : TermElabM Head := withRef stx do
   | `(∀ $_, _) => return .forall
   | _ =>
     match ← resolvePushId? stx with
-    | some (.const name _) => return .name name
+    | some (.const c _) => return .const c
     | _ => throwError "Could not resolve `push` argument {stx}. \
       Expected either a constant, e.g. `push Not`, \
       or notation with underscores, e.g. `push ¬ _`"
@@ -192,7 +196,7 @@ def elabDischarger (stx : TSyntax ``discharger) : TacticM Simp.Discharge :=
   (·.2) <$> tacticToDischarge stx.raw[3]
 
 /--
-`push` pushes the given constant away from the root of the expression. For example
+`push` pushes the given constant away from the head of the expression. For example
 - `push _ ∈ _` rewrites `x ∈ {y} ∪ zᶜ` into `x = y ∨ ¬ x ∈ z`.
 - `push (disch := positivity) Real.log` rewrites `log (a * b ^ 2)` into `log a + 2 * log b`.
 - `push ¬ _` is the same as `push_neg` or `push Not`, and it rewrites
@@ -204,11 +208,12 @@ In addition to constants, `push` can be used to push `fun` and `∀` binders:
 
 The `push` tactic can be extended using the `@[push]` attribute.
 
-To instead move a constant closer to the root of the expression, use the `pull` tactic.
+To instead move a constant closer to the head of the expression, use the `pull` tactic.
 
 To push a constant at a hypothesis, use the `push ... at h` or `push ... at *` syntax.
 -/
-elab (name := push) "push " disch?:(discharger)? head:(colGt term) loc:(location)? : tactic => do
+elab (name := push) "push" disch?:(discharger)? head:(ppSpace colGt term) loc:(location)? :
+    tactic => do
   let disch? ← disch?.mapM elabDischarger
   let head ← elabHead head
   let loc := (loc.map expandLocation).getD (.targets #[] true)
@@ -242,18 +247,22 @@ macro (name := push_neg) "push_neg" loc:(location)? : tactic => `(tactic| push N
 
 /--
 `pull` is the inverse tactic to `push`.
-It pulls the given constant towards the root of the expression. For example
+It pulls the given constant towards the head of the expression. For example
 - `pull _ ∈ _` rewrites `x ∈ y ∨ ¬ x ∈ z` into `x ∈ y ∪ zᶜ`.
 - `pull (disch := positivity) Real.log` rewrites `log a + 2 * log b` into `log (a * b ^ 2)`.
+- `pull fun _ ↦ _` rewrites `f ^ 2 + 5` into `fun x => f x ^ 2 + 5` where `f` is a function.
 
 A lemma is considered a `pull` lemma if its reverse direction is a `push` lemma
-that actually moves the given constant away from the root. For example
+that actually moves the given constant away from the head. For example
 - `not_or : ¬ (p ∨ q) ↔ ¬ p ∧ ¬ q` is a `pull` lemma, but `not_not : ¬ ¬ p ↔ p` is not.
 - `log_mul : log (x * y) = log x + log y` is a `pull` lemma, but `log_abs : log |x| = log x` is not.
+- `Pi.mul_def : f * g = fun (i : ι) => f i * g i` and `Pi.one_def : 1 = fun (x : ι) => 1` are both
+  `pull` lemmas for `fun`, because every `push fun _ ↦ _` lemma is also considered a `pull` lemma.
 
-TODO: add a `@[pull]` attribute to add `pull` lemmas without using `@[push]`.
+TODO: define a `@[pull]` attribute for tagging `pull` lemmas that are not `push` lemmas.
 -/
-elab (name := pull) "pull " disch?:(discharger)? head:(colGt term) loc:(location)? : tactic => do
+elab (name := pull) "pull" disch?:(discharger)? head:(ppSpace colGt term) loc:(location)? :
+    tactic => do
   let disch? ← disch?.mapM elabDischarger
   let head ← elabHead head
   let loc := (loc.map expandLocation).getD (.targets #[] true)
@@ -268,7 +277,7 @@ simproc_decl _root_.pullFun (_) := pullStep .lambda
 section Conv
 
 @[inherit_doc push]
-elab "push " disch?:(discharger)? head:(colGt term) : conv => withMainContext do
+elab "push" disch?:(discharger)? head:(ppSpace colGt term) : conv => withMainContext do
   let disch? ← disch?.mapM elabDischarger
   let head ← elabHead head
   Conv.applySimpResult (← pushCore head (← instantiateMVars (← Conv.getLhs)) disch?)
@@ -282,7 +291,7 @@ which will print the `push head` form of `e`.
 
 `#push` understands local variables, so you can use them to introduce parameters.
 -/
-macro (name := pushCommand) tk:"#push " head:ident e:term : command =>
+macro (name := pushCommand) tk:"#push " head:ident ppSpace e:term : command =>
   `(command| #conv%$tk push $head:ident => $e)
 
 /--
@@ -294,7 +303,7 @@ which will print the `push_neg` form of `e`.
 macro (name := pushNegCommand) tk:"#push_neg " e:term : command => `(command| #push%$tk Not $e)
 
 @[inherit_doc pull]
-elab "pull " disch?:(discharger)? head:(colGt term) : conv => withMainContext do
+elab "pull" disch?:(discharger)? head:(ppSpace colGt term) : conv => withMainContext do
   let disch? ← disch?.mapM elabDischarger
   let head ← elabHead head
   Conv.applySimpResult (← pullCore head (← instantiateMVars (← Conv.getLhs)) disch?)
@@ -305,7 +314,7 @@ which will print the `pull head` form of `e`.
 
 `#pull` understands local variables, so you can use them to introduce parameters.
 -/
-macro (name := pullCommand) tk:"#pull " head:ident e:term : command =>
+macro (name := pullCommand) tk:"#pull " head:ident ppSpace e:term : command =>
   `(command| #conv%$tk pull $head:ident => $e)
 
 end Conv
@@ -327,7 +336,7 @@ def elabPushTree : Elab.Command.CommandElab := fun stx => do
   for (key, trie) in thms.root do
     let matchesHead (k : DiscrTree.Key) : Bool :=
       match k, head with
-      | .const n _, .name n' => n == n'
+      | .const c _, .const c' => c == c'
       | .other    , .lambda  => true
       | .arrow    , .forall  => true
       | _         , _        => false
