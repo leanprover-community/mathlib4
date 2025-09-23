@@ -522,7 +522,7 @@ lemma SeparableSpace.exists_measurable_partition_diam_le {ε : ℝ} (ε_pos : 0 
     · intro n
       simpa only [diam_empty] using LT.lt.le ε_pos
     · subsingleton
-  rw [not_isEmpty_iff] at X_emp
+  push_neg at X_emp
   obtain ⟨xs, xs_dense⟩ := exists_dense_seq Ω
   have half_ε_pos : 0 < ε / 2 := half_pos ε_pos
   set Bs := fun n ↦ Metric.ball (xs n) (ε / 2)

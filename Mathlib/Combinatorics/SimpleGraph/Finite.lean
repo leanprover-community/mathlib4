@@ -421,7 +421,7 @@ lemma maxDegree_bot_eq_zero : (⊥ : SimpleGraph V).maxDegree = 0 :=
 lemma minDegree_le_maxDegree [DecidableRel G.Adj] : G.minDegree ≤ G.maxDegree := by
   by_cases he : IsEmpty V
   · simp
-  · rw [not_isEmpty_iff] at he
+  · push_neg at he
     exact he.elim fun v ↦ (minDegree_le_degree _ v).trans (degree_le_maxDegree _ v)
 
 @[simp]
