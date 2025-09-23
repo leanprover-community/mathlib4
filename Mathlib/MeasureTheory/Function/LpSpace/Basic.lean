@@ -687,22 +687,24 @@ end LipschitzWith
 
 namespace ContinuousLinearMap
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
+variable {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜 E]
+  [NormedSpace 𝕜' F]
+variable {σ : 𝕜 →+* 𝕜'} [RingHomIsometric σ]
 
 /-- Composing `f : Lp` with `L : E →L[𝕜] F`. -/
-def compLp (L : E →L[𝕜] F) (f : Lp E p μ) : Lp F p μ :=
+def compLp (L : E →SL[σ] F) (f : Lp E p μ) : Lp F p μ :=
   L.lipschitz.compLp (map_zero L) f
 
-theorem coeFn_compLp (L : E →L[𝕜] F) (f : Lp E p μ) : ∀ᵐ a ∂μ, (L.compLp f) a = L (f a) :=
+theorem coeFn_compLp (L : E →SL[σ] F) (f : Lp E p μ) : ∀ᵐ a ∂μ, (L.compLp f) a = L (f a) :=
   LipschitzWith.coeFn_compLp _ _ _
 
-theorem coeFn_compLp' (L : E →L[𝕜] F) (f : Lp E p μ) : L.compLp f =ᵐ[μ] fun a => L (f a) :=
+theorem coeFn_compLp' (L : E →SL[σ] F) (f : Lp E p μ) : L.compLp f =ᵐ[μ] fun a => L (f a) :=
   L.coeFn_compLp f
 
-theorem comp_memLp (L : E →L[𝕜] F) (f : Lp E p μ) : MemLp (L ∘ f) p μ :=
+theorem comp_memLp (L : E →SL[σ] F) (f : Lp E p μ) : MemLp (L ∘ f) p μ :=
   (Lp.memLp (L.compLp f)).ae_eq (L.coeFn_compLp' f)
 
-theorem comp_memLp' (L : E →L[𝕜] F) {f : α → E} (hf : MemLp f p μ) : MemLp (L ∘ f) p μ :=
+theorem comp_memLp' (L : E →SL[σ] F) {f : α → E} (hf : MemLp f p μ) : MemLp (L ∘ f) p μ :=
   (L.comp_memLp (hf.toLp f)).ae_eq (EventuallyEq.fun_comp hf.coeFn_toLp _)
 
 section RCLike
@@ -724,7 +726,7 @@ theorem _root_.MeasureTheory.memLp_re_im_iff {f : α → K} :
 
 end RCLike
 
-theorem add_compLp (L L' : E →L[𝕜] F) (f : Lp E p μ) :
+theorem add_compLp (L L' : E →SL[σ] F) (f : Lp E p μ) :
     (L + L').compLp f = L.compLp f + L'.compLp f := by
   ext1
   grw [Lp.coeFn_add, coeFn_compLp']
@@ -733,20 +735,21 @@ theorem add_compLp (L L' : E →L[𝕜] F) (f : Lp E p μ) :
   filter_upwards with x
   rw [coe_add', Pi.add_def]
 
-theorem smul_compLp {𝕜'} [NormedRing 𝕜'] [Module 𝕜' F] [IsBoundedSMul 𝕜' F] [SMulCommClass 𝕜 𝕜' F]
-    (c : 𝕜') (L : E →L[𝕜] F) (f : Lp E p μ) : (c • L).compLp f = c • L.compLp f := by
+theorem smul_compLp {𝕜''} [NormedRing 𝕜''] [Module 𝕜'' F] [IsBoundedSMul 𝕜'' F]
+    [SMulCommClass 𝕜' 𝕜'' F] (c : 𝕜'') (L : E →SL[σ] F) (f : Lp E p μ) :
+    (c • L).compLp f = c • L.compLp f := by
   ext1
   grw [Lp.coeFn_smul, coeFn_compLp']
   refine (L.coeFn_compLp' f).mono fun x hx => ?_
   rw [Pi.smul_apply, hx, coe_smul', Pi.smul_def]
 
-theorem norm_compLp_le (L : E →L[𝕜] F) (f : Lp E p μ) : ‖L.compLp f‖ ≤ ‖L‖ * ‖f‖ :=
+theorem norm_compLp_le (L : E →SL[σ] F) (f : Lp E p μ) : ‖L.compLp f‖ ≤ ‖L‖ * ‖f‖ :=
   LipschitzWith.norm_compLp_le _ _ _
 
 variable (μ p)
 
 /-- Composing `f : Lp E p μ` with `L : E →L[𝕜] F`, seen as a `𝕜`-linear map on `Lp E p μ`. -/
-def compLpₗ (L : E →L[𝕜] F) : Lp E p μ →ₗ[𝕜] Lp F p μ where
+def compLpₗ (L : E →SL[σ] F) : Lp E p μ →ₛₗ[σ] Lp F p μ where
   toFun f := L.compLp f
   map_add' f g := by
     ext1
@@ -755,11 +758,10 @@ def compLpₗ (L : E →L[𝕜] F) : Lp E p μ →ₗ[𝕜] Lp F p μ where
     intro a ha1 ha2 ha3 ha4 ha5
     simp only [ha1, ha2, ha3, ha4, ha5, map_add, Pi.add_apply]
   map_smul' c f := by
-    dsimp
     ext1
-    filter_upwards [Lp.coeFn_smul c f, coeFn_compLp L (c • f), Lp.coeFn_smul c (L.compLp f),
+    filter_upwards [Lp.coeFn_smul c f, coeFn_compLp L (c • f), Lp.coeFn_smul (σ c) (L.compLp f),
       coeFn_compLp L f] with _ ha1 ha2 ha3 ha4
-    simp only [ha1, ha2, ha3, ha4, map_smul, Pi.smul_apply]
+    simp only [ha1, ha2, ha3, ha4, Pi.smul_apply, map_smulₛₗ]
 
 /-- Composing `f : Lp E p μ` with `L : E →L[𝕜] F`, seen as a continuous `𝕜`-linear map on
 `Lp E p μ`. See also the similar
@@ -768,23 +770,24 @@ def compLpₗ (L : E →L[𝕜] F) : Lp E p μ →ₗ[𝕜] Lp F p μ where
 * `ContinuousLinearMap.compLeftContinuousBounded` for bounded continuous functions,
 * `ContinuousLinearMap.compLeftContinuousCompact` for continuous functions on compact spaces.
 -/
-def compLpL [Fact (1 ≤ p)] (L : E →L[𝕜] F) : Lp E p μ →L[𝕜] Lp F p μ :=
+def compLpL [Fact (1 ≤ p)] (L : E →SL[σ] F) : Lp E p μ →SL[σ] Lp F p μ :=
   LinearMap.mkContinuous (L.compLpₗ p μ) ‖L‖ L.norm_compLp_le
 
 variable {μ p}
 
-theorem coeFn_compLpL [Fact (1 ≤ p)] (L : E →L[𝕜] F) (f : Lp E p μ) :
+theorem coeFn_compLpL [Fact (1 ≤ p)] (L : E →SL[σ] F) (f : Lp E p μ) :
     L.compLpL p μ f =ᵐ[μ] fun a => L (f a) :=
   L.coeFn_compLp f
 
-theorem add_compLpL [Fact (1 ≤ p)] (L L' : E →L[𝕜] F) :
+theorem add_compLpL [Fact (1 ≤ p)] (L L' : E →SL[σ] F) :
     (L + L').compLpL p μ = L.compLpL p μ + L'.compLpL p μ := by ext1 f; exact add_compLp L L' f
 
-theorem smul_compLpL [Fact (1 ≤ p)] {𝕜'} [NormedRing 𝕜'] [Module 𝕜' F] [IsBoundedSMul 𝕜' F]
-    [SMulCommClass 𝕜 𝕜' F] (c : 𝕜') (L : E →L[𝕜] F) : (c • L).compLpL p μ = c • L.compLpL p μ := by
+theorem smul_compLpL [Fact (1 ≤ p)] {𝕜''} [NormedRing 𝕜''] [Module 𝕜'' F] [IsBoundedSMul 𝕜'' F]
+    [SMulCommClass 𝕜' 𝕜'' F] (c : 𝕜'') (L : E →SL[σ] F) :
+    (c • L).compLpL p μ = c • L.compLpL p μ := by
   ext1 f; exact smul_compLp c L f
 
-theorem norm_compLpL_le [Fact (1 ≤ p)] (L : E →L[𝕜] F) : ‖L.compLpL p μ‖ ≤ ‖L‖ :=
+theorem norm_compLpL_le [Fact (1 ≤ p)] (L : E →SL[σ] F) : ‖L.compLpL p μ‖ ≤ ‖L‖ :=
   LinearMap.mkContinuous_norm_le _ (norm_nonneg _) _
 
 end ContinuousLinearMap
