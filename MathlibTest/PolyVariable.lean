@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Ring.NamePolyVars
+import Mathlib.Tactic.PolyVariable
 
 -- set_option trace.poly_variable true
 -- set_option pp.rawOnError true
