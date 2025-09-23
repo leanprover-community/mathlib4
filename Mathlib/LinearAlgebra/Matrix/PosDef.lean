@@ -273,17 +273,13 @@ protected alias ⟨_, PosSemidef.nonneg⟩ := nonneg_iff
 
 instance : PartialOrder (Matrix n n 𝕜) where
   le_antisymm A B h₁ h₂ := by
-    have foo := neg_sub A B ▸ h₁.trace_nonneg
-    rw [trace_neg, neg_nonneg] at foo
+    have foo := neg_nonneg.mp <| trace_neg (A - B) ▸ neg_sub A B ▸ h₁.trace_nonneg
     have : (A - B).trace = 0 := le_antisymm foo h₂.trace_nonneg
     classical
-    rw [← sub_eq_zero, ← h₂.isHermitian.eigenvalues_eq_zero_iff]
-    ext i
-    rw [h₂.isHermitian.trace_eq_sum_eigenvalues, ← RCLike.ofReal_sum] at this
-    norm_cast at this
-    rw [← (Finset.univ (α := n)).sum_const_zero, eq_comm,
-      Finset.sum_eq_sum_iff_of_le (by simpa using h₂.eigenvalues_nonneg)] at this
-    exact this i (by simp) |>.symm
+    simp_rw [h₂.isHermitian.trace_eq_sum_eigenvalues, ← RCLike.ofReal_sum,
+      RCLike.ofReal_eq_zero, Finset.sum_eq_zero_iff_of_nonneg (s := Finset.univ)
+        (by simpa using h₂.eigenvalues_nonneg), Finset.mem_univ, true_imp_iff] at this
+    exact sub_eq_zero.mp <| funext_iff.eq ▸ h₂.isHermitian.eigenvalues_eq_zero_iff.mp <| this
 
 instance : IsOrderedAddMonoid (Matrix n n 𝕜) where
   add_le_add_left _ _ _ _ := by rwa [le_iff, add_sub_add_left_eq_sub]
@@ -291,24 +287,20 @@ instance : IsOrderedAddMonoid (Matrix n n 𝕜) where
 instance : NonnegSpectrumClass ℝ (Matrix n n 𝕜) where
   quasispectrum_nonneg_of_nonneg A hA := by
     classical
-    rw [nonneg_iff, posSemidef_iff_isHermitian_and_spectrum_nonneg] at hA
     simp only [quasispectrum_eq_spectrum_union_zero ℝ A, Set.union_singleton, Set.mem_insert_iff,
       forall_eq_or_imp, le_refl, true_and]
     intro x hx
-    simpa using @hA.2 (x : 𝕜) hx
+    simpa using posSemidef_iff_isHermitian_and_spectrum_nonneg.mp (nonneg_iff.mp hA) |>.2 hx
 
 instance : StarOrderedRing (Matrix n n 𝕜) :=
   .of_nonneg_iff' add_le_add_left fun A ↦
     ⟨fun hA ↦ by
-      have := QuasispectrumRestricts.nnreal_of_nonneg hA
-      rw [nonneg_iff] at hA
       classical
       obtain ⟨X, hX, -, rfl⟩ :=
-        CFC.exists_sqrt_of_isSelfAdjoint_of_quasispectrumRestricts hA.isHermitian this
-      exact ⟨X, by rw [hX.star_eq]⟩,
-    fun ⟨A, hA⟩ => by
-      rw [nonneg_iff, hA, star_eq_conjTranspose]
-      exact posSemidef_conjTranspose_mul_self A⟩
+        sub_zero A ▸ CFC.exists_sqrt_of_isSelfAdjoint_of_quasispectrumRestricts hA.isHermitian
+          (QuasispectrumRestricts.nnreal_of_nonneg hA.nonneg)
+      exact ⟨X, hX.star_eq.symm ▸ rfl⟩,
+    fun ⟨A, hA⟩ => hA ▸ (posSemidef_conjTranspose_mul_self A).nonneg⟩
 
 end PartialOrder
 
@@ -337,40 +329,8 @@ lemma sqrt_mul_self : CFC.sqrt A * CFC.sqrt A = A := CFC.sqrt_mul_sqrt_self A hA
 
 include hA in
 lemma eq_of_sq_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B ^ 2) : A = B := by
-  /- This is deceptively hard, much more difficult than the positive *definite* case. We follow a
-  clever proof due to Koeber and Schäfer. The idea is that if `A ≠ B`, then `A - B` has a nonzero
-  real eigenvalue, with eigenvector `v`. Then a manipulation using the identity
-  `A ^ 2 - B ^ 2 = A * (A - B) + (A - B) * B` leads to the conclusion that
-  `⟨v, A v⟩ + ⟨v, B v⟩ = 0`. Since `A, B` are positive semidefinite, both terms must be zero. Thus
-  `⟨v, (A - B) v⟩ = 0`, but this is a nonzero scalar multiple of `⟨v, v⟩`, contradiction. -/
-  by_contra h_ne
-  let ⟨v, t, ht, hv, hv'⟩ := (hA.1.sub hB.1).exists_eigenvector_of_ne_zero (sub_ne_zero.mpr h_ne)
-  have h_sum : 0 = t * (star v ⬝ᵥ A *ᵥ v + star v ⬝ᵥ B *ᵥ v) := calc
-    0 = star v ⬝ᵥ (A ^ 2 - B ^ 2) *ᵥ v := by rw [hAB, sub_self, zero_mulVec, dotProduct_zero]
-    _ = star v ⬝ᵥ A *ᵥ (A - B) *ᵥ v + star v ⬝ᵥ (A - B) *ᵥ B *ᵥ v := by
-      rw [mulVec_mulVec, mulVec_mulVec, ← dotProduct_add, ← add_mulVec, mul_sub, sub_mul,
-        add_sub, sub_add_cancel, pow_two, pow_two]
-    _ = t * (star v ⬝ᵥ A *ᵥ v) + (star v) ᵥ* (A - B)ᴴ ⬝ᵥ B *ᵥ v := by
-      rw [hv', mulVec_smul, dotProduct_smul, RCLike.real_smul_eq_coe_mul,
-        dotProduct_mulVec _ (A - B), hA.1.sub hB.1]
-    _ = t * (star v ⬝ᵥ A *ᵥ v + star v ⬝ᵥ B *ᵥ v) := by
-      simp_rw [← star_mulVec, hv', mul_add, ← RCLike.real_smul_eq_coe_mul, ← smul_dotProduct]
-      congr 2 with i
-      simp only [Pi.star_apply, Pi.smul_apply, RCLike.real_smul_eq_coe_mul, star_mul',
-        RCLike.star_def, RCLike.conj_ofReal]
-  replace h_sum : star v ⬝ᵥ A *ᵥ v + star v ⬝ᵥ B *ᵥ v = 0 := by
-    rw [eq_comm, ← mul_zero (t : 𝕜)] at h_sum
-    exact mul_left_cancel₀ (RCLike.ofReal_ne_zero.mpr ht) h_sum
-  have h_van : star v ⬝ᵥ A *ᵥ v = 0 ∧ star v ⬝ᵥ B *ᵥ v = 0 := by
-    refine ⟨le_antisymm ?_ (hA.2 v), le_antisymm ?_ (hB.2 v)⟩
-    · rw [add_comm, add_eq_zero_iff_eq_neg] at h_sum
-      simpa only [h_sum, neg_nonneg] using hB.2 v
-    · simpa only [add_eq_zero_iff_eq_neg.mp h_sum, neg_nonneg] using hA.2 v
-  have aux : star v ⬝ᵥ (A - B) *ᵥ v = 0 := by
-    rw [sub_mulVec, dotProduct_sub, h_van.1, h_van.2, sub_zero]
-  rw [hv', dotProduct_smul, RCLike.real_smul_eq_coe_mul, ← mul_zero ↑t] at aux
-  exact hv <| dotProduct_star_self_eq_zero.mp <| mul_left_cancel₀
-    (RCLike.ofReal_ne_zero.mpr ht) aux
+  rw [← CFC.sqrt_sq A hA.nonneg]
+  exact (CFC.sqrt_unique (sq B ▸ hAB.symm) hB.nonneg)
 
 include hA in
 lemma sq_eq_sq_iff {B : Matrix n n 𝕜} (hB : PosSemidef B) : A ^ 2 = B ^ 2 ↔ A = B :=
