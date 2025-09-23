@@ -22,7 +22,7 @@ suppress_compilation
 
 open scoped NNReal
 
-variable {𝕜 𝕜₂ E F Fₗ : Type*}
+variable {𝕜 𝕜₂ E Eₗ F Fₗ : Type*}
 
 namespace ContinuousLinearMap
 
@@ -32,16 +32,16 @@ section NormedRing
 
 variable [AddCommGroup E] [UniformSpace E] [IsUniformAddGroup E]
   [AddCommGroup F] [UniformSpace F] [IsUniformAddGroup F] [T0Space F]
-  [AddCommMonoid Fₗ] [UniformSpace Fₗ] [ContinuousAdd Fₗ]
-  [Semiring 𝕜] [Semiring 𝕜₂] [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜 Fₗ]
-  [ContinuousConstSMul 𝕜 Fₗ] [ContinuousConstSMul 𝕜₂ F]
-  {σ₁₂ : 𝕜 →+* 𝕜₂} (f g : E →SL[σ₁₂] F) [CompleteSpace F] (e : E →L[𝕜] Fₗ) (h_dense : DenseRange e)
+  [AddCommMonoid Eₗ] [UniformSpace Eₗ] [ContinuousAdd Eₗ]
+  [Semiring 𝕜] [Semiring 𝕜₂] [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜 Eₗ]
+  [ContinuousConstSMul 𝕜 Eₗ] [ContinuousConstSMul 𝕜₂ F]
+  {σ₁₂ : 𝕜 →+* 𝕜₂} (f g : E →SL[σ₁₂] F) [CompleteSpace F] (e : E →L[𝕜] Eₗ) (h_dense : DenseRange e)
 
 variable (h_dense : DenseRange e) (h_e : IsUniformInducing e)
 
 /-- Extension of a continuous linear map `f : E →SL[σ₁₂] F`, with `E` a normed space and `F` a
-complete normed space, along a uniform and dense embedding `e : E →L[𝕜] Fₗ`. -/
-def extend : Fₗ →SL[σ₁₂] F :=
+complete normed space, along a uniform and dense embedding `e : E →L[𝕜] Eₗ`. -/
+def extend : Eₗ →SL[σ₁₂] F :=
   -- extension of `f` is continuous
   have cont := (uniformContinuous_uniformly_extend h_e h_dense f.uniformContinuous).continuous
   -- extension of `f` agrees with `f` on the domain of the embedding `e`
@@ -68,7 +68,7 @@ def extend : Fₗ →SL[σ₁₂] F :=
 theorem extend_eq (x : E) : extend f e h_dense h_e (e x) = f x :=
   IsDenseInducing.extend_eq (h_e.isDenseInducing h_dense) f.cont _
 
-theorem extend_unique (g : Fₗ →SL[σ₁₂] F) (H : g.comp e = f) : extend f e h_dense h_e = g :=
+theorem extend_unique (g : Eₗ →SL[σ₁₂] F) (H : g.comp e = f) : extend f e h_dense h_e = g :=
   ContinuousLinearMap.coeFn_injective <|
     uniformly_extend_unique h_e h_dense (ContinuousLinearMap.ext_iff.1 H) g.continuous
 
@@ -81,10 +81,9 @@ end NormedRing
 section NormedField
 
 variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
-  [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup Fₗ]
-  [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ]
-  [NormedSpace 𝕜 E] [CompleteSpace F]
-  (f g : E →SL[σ₁₂] F) (e : E →L[𝕜] Fₗ)
+  [NormedAddCommGroup E] [NormedAddCommGroup Eₗ] [NormedAddCommGroup F] [NormedAddCommGroup Fₗ]
+  [NormedSpace 𝕜 E] [NormedSpace 𝕜 Eₗ] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₂ Fₗ] [CompleteSpace F]
+  (f g : E →SL[σ₁₂] F) (e : E →L[𝕜] Eₗ)
 
 variable (h_dense : DenseRange e) (h_e : IsUniformInducing e)
 
@@ -147,10 +146,10 @@ end LeftInverse
 section compInv
 
 variable [DivisionRing 𝕜] [DivisionRing 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
-  [AddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup Fₗ]
-  [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜 Fₗ]
+  [AddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup Eₗ]
+  [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜 Eₗ]
 
-variable (f : E →ₛₗ[σ₁₂] F) (g : E →ₗ[𝕜] Fₗ)
+variable (f : E →ₛₗ[σ₁₂] F) (g : E →ₗ[𝕜] Eₗ)
 
 open scoped Classical in
 /-- Composition with the left inverse as a CLM.
@@ -183,18 +182,18 @@ end compInv
 section NormedDivisionRing
 
 variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
-  [NormedAddCommGroup F] [NormedAddCommGroup Fₗ]
-  [Module 𝕜₂ F] [IsBoundedSMul 𝕜₂ F] [Module 𝕜 Fₗ] [IsBoundedSMul 𝕜 Fₗ]
-  [AddCommGroup E] [Module 𝕜 E] [CompleteSpace F]
+  [AddCommGroup E] [SeminormedAddCommGroup Eₗ] [NormedAddCommGroup F]
+  [Module 𝕜 E] [Module 𝕜₂ F] [IsBoundedSMul 𝕜₂ F] [Module 𝕜 Eₗ] [IsBoundedSMul 𝕜 Eₗ]
+  [CompleteSpace F]
 
-variable (f : E →ₛₗ[σ₁₂] F) (e : E →ₗ[𝕜] Fₗ)
+variable (f : E →ₛₗ[σ₁₂] F) (e : E →ₗ[𝕜] Eₗ)
 
 open scoped Classical in
 /-- Extension of a continuous linear map `f : E →SL[σ₁₂] F` to `Fₗ →SL[σ₁₂] F`,
 where `E` is a normed space and `F` a complete normed space,
 using an injective dense embedding `e : E →L[𝕜] Fₗ` together with a bound `‖f x‖ ≤ C * ‖e x‖`
 for all `x : E`. -/
-def extendOfNorm : Fₗ →SL[σ₁₂] F :=
+def extendOfNorm : Eₗ →SL[σ₁₂] F :=
   if h : DenseRange e then
   ContinuousLinearMap.extend (f.compInv_aux e) (LinearMap.range e).subtypeL
     (by
@@ -220,27 +219,27 @@ theorem extendOfNorm_eq (h_inj : LinearMap.ker e = ⊥)
   apply (e.leftInverseLM_aux_apply h_inj _).symm
 
 theorem extendOfNorm_norm_le (h_inj : LinearMap.ker e = ⊥) (h_dense : DenseRange e) (C : ℝ)
-    (h_norm : ∀ (x : E), ‖f x‖ ≤ C * ‖e x‖) (x : Fₗ) :
+    (h_norm : ∀ (x : E), ‖f x‖ ≤ C * ‖e x‖) (x : Eₗ) :
     ‖f.extendOfNorm e x‖ ≤ C * ‖x‖ := by
-  have h_mem : ∀ (x : Fₗ) (hy : x ∈ (LinearMap.range e)), ‖extendOfNorm f e x‖ ≤ C * ‖x‖ := by
+  have h_mem : ∀ (x : Eₗ) (hy : x ∈ (LinearMap.range e)), ‖extendOfNorm f e x‖ ≤ C * ‖x‖ := by
     rintro x ⟨y, hxy⟩
     rw [← hxy]
     convert h_norm y
     apply extendOfNorm_eq h_inj h_dense ⟨C, h_norm⟩
   have h_closed : IsClosed { x | ‖f.extendOfNorm e x‖ ≤ C * ‖x‖ } :=
     (isClosed_le (ContinuousLinearMap.cont _).norm (continuous_const.mul continuous_norm))
-  exact h_dense.induction (P := fun y => ‖f.extendOfNorm e y‖ ≤ C * ‖y‖) h_mem h_closed x
+  exact h_dense.induction h_mem h_closed x
 
 end NormedDivisionRing
 
 section NormedField
 
 variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
-  [NormedAddCommGroup F] [NormedAddCommGroup Fₗ]
-  [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ]
+  [NormedAddCommGroup F] [SeminormedAddCommGroup Eₗ]
+  [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Eₗ]
   [AddCommGroup E] [Module 𝕜 E] [CompleteSpace F]
 
-variable (f : E →ₛₗ[σ₁₂] F) (e : E →ₗ[𝕜] Fₗ)
+variable (f : E →ₛₗ[σ₁₂] F) (e : E →ₗ[𝕜] Eₗ)
 
 theorem extendOfNorm_opNorm_le (h_inj : LinearMap.ker e = ⊥)
     (h_dense : DenseRange e) (C : ℝ)
