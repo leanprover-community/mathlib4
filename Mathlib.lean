@@ -4868,6 +4868,7 @@ import Mathlib.NumberTheory.ModularForms.JacobiTheta.Manifold
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.OneVariable
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
 import Mathlib.NumberTheory.ModularForms.LevelOne
+import Mathlib.NumberTheory.ModularForms.Petersson
 import Mathlib.NumberTheory.ModularForms.QExpansion
 import Mathlib.NumberTheory.ModularForms.SlashActions
 import Mathlib.NumberTheory.ModularForms.SlashInvariantForms

@@ -33,12 +33,15 @@ theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℍ → ℂ) :=
 theorem isEmbedding_coe : IsEmbedding ((↑) : ℍ → ℂ) :=
   IsEmbedding.subtypeVal
 
+@[fun_prop]
 theorem continuous_coe : Continuous ((↑) : ℍ → ℂ) :=
   isEmbedding_coe.continuous
 
+@[fun_prop]
 theorem continuous_re : Continuous re :=
   Complex.continuous_re.comp continuous_coe
 
+@[fun_prop]
 theorem continuous_im : Continuous im :=
   Complex.continuous_im.comp continuous_coe
 
