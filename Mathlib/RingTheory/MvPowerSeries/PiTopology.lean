@@ -242,7 +242,7 @@ theorem hasSum_of_monomials_self (f : MvPowerSeries σ R) :
     HasSum (fun d : σ →₀ ℕ => monomial d (coeff d f)) f := by
   rw [Pi.hasSum]
   intro d
-  convert hasSum_single d ?_ using 1
+  convert hasSum_single d ?_ using 2
   · exact (coeff_monomial_same d _).symm
   · exact fun d' h ↦ coeff_monomial_ne (Ne.symm h) _
 

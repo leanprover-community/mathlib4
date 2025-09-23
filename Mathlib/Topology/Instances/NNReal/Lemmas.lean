@@ -137,7 +137,7 @@ theorem summable_coe {f : α → ℝ≥0} : (Summable fun a => (f a : ℝ)) ↔ 
   · exact fun ⟨a, ha⟩ => ⟨a.1, hasSum_coe.2 ha⟩
 
 theorem summable_mk {f : α → ℝ} (hf : ∀ n, 0 ≤ f n) :
-    (@Summable ℝ≥0 _ _ _ fun n => ⟨f n, hf n⟩) ↔ Summable f :=
+    (@Summable ℝ≥0 _ _ _ (fun n => ⟨f n, hf n⟩) atTop) ↔ Summable f :=
   Iff.symm <| summable_coe (f := fun x => ⟨f x, hf x⟩)
 
 @[norm_cast]

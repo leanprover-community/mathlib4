@@ -51,7 +51,7 @@ protected theorem Summable.tsum_mul_right (a) (hf : Summable f) : ∑' i, f i * 
 theorem Commute.tsum_right (a) (h : ∀ i, Commute a (f i)) : Commute a (∑' i, f i) := by
   classical
   by_cases hf : Summable f
-  · exact (hf.tsum_mul_left a).symm.trans ((congr_arg _ <| funext h).trans (hf.tsum_mul_right a))
+  · exact (hf.tsum_mul_left a).symm.trans ((tsum_congr h).trans (hf.tsum_mul_right a))
   · exact (tsum_eq_zero_of_not_summable hf).symm ▸ Commute.zero_right _
 
 theorem Commute.tsum_left (a) (h : ∀ i, Commute (f i) a) : Commute (∑' i, f i) a :=
