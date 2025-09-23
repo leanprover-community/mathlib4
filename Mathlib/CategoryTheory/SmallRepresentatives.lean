@@ -9,6 +9,16 @@ import Mathlib.SetTheory.Cardinal.Basic
 /-!
 # Representatives of small categories
 
+Given a type `Ω : Type w`, we construct a structure `SmallCategoryOfSet Ω : Type w`
+which consists of the data and axioms that allows to define a category
+structure such that the type of objects and morphisms identify to subtypes of `Ω`.
+
+This allows to define a small family of small categories
+`SmallCategoryOfSet.categoryFamily : SmallCategoryOfSet Ω → Type w`
+which, up to equivalence, represents all categories such that
+types of objects and morphisms have cardinalities less than or equal to
+that of `Ω` (see `SmallCategoryOfSet.exists_equivalence`).
+
 -/
 
 universe w v u
@@ -18,7 +28,7 @@ namespace CategoryTheory
 variable (Ω : Type w)
 
 /-- Structure which allows to construct a category whose types
-of objects and morphisms are subtype of a fixed type `Ω`. -/
+of objects and morphisms are subtypes of a fixed type `Ω`. -/
 structure SmallCategoryOfSet where
   /-- objects -/
   obj : Set Ω
@@ -51,9 +61,9 @@ end SmallCategoryOfSet
 
 variable (C : Type u) [Category.{v} C]
 
-/-- Helper structure for the construction of a term in `SmallCategoryOfSet Ω`.
+/-- Helper structure for the construction of a term in `SmallCategoryOfSet`.
 This involves the choice of bijections between types of objects and morphisms
-in a category `C`, and subtypes of `Ω`. -/
+in a category `C` and subtypes of a type `Ω`. -/
 structure CoreSmallCategoryOfSet where
   /-- objects -/
   obj : Set Ω
@@ -83,28 +93,20 @@ obvious functor `h.smallCategoryOfSet.obj ⥤ C`. -/
 def functor : h.smallCategoryOfSet.obj ⥤ C where
   obj := h.objEquiv
   map := h.homEquiv
-  map_id _ := by
-    rw [SmallCategoryOfSet.id_def]
-    simp
-  map_comp _ _ := by
-    rw [SmallCategoryOfSet.comp_def]
-    simp
+  map_id _ := by rw [SmallCategoryOfSet.id_def]; simp
+  map_comp _ _ := by rw [SmallCategoryOfSet.comp_def]; simp
 
 /-- Given `h : CoreSmallCategoryOfSet Ω C`,
 the obvious functor `h.smallCategoryOfSet.obj ⥤ C` is fully faithful. -/
 def fullyFaithfulFunctor : h.functor.FullyFaithful where
   preimage := h.homEquiv.symm
 
-instance : h.functor.Faithful := h.fullyFaithfulFunctor.faithful
-
-instance : h.functor.Full := h.fullyFaithfulFunctor.full
-
-instance : h.functor.EssSurj where
-  mem_essImage Y := by
+instance : h.functor.IsEquivalence where
+  faithful := h.fullyFaithfulFunctor.faithful
+  full := h.fullyFaithfulFunctor.full
+  essSurj.mem_essImage Y := by
     obtain ⟨X, rfl⟩ := h.objEquiv.surjective Y
     exact ⟨_, ⟨Iso.refl _⟩⟩
-
-instance : h.functor.IsEquivalence where
 
 /-- Given `h : CoreSmallCategoryOfSet Ω C`,
 the obvious functor `h.smallCategoryOfSet.obj ⥤ C` is an equivalence. -/
