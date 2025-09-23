@@ -37,8 +37,9 @@ lemma le_iff {A B : Matrix n n R} : A ≤ B ↔ (B - A).PosSemidef := Iff.rfl
 
 lemma nonneg_iff {A : Matrix n n R} : 0 ≤ A ↔ A.PosSemidef := by rw [le_iff, sub_zero]
 
-@[aesop 20% apply (rule_sets := [CStarAlgebra])]
 protected alias ⟨LE.le.posSemidef, PosSemidef.nonneg⟩ := nonneg_iff
+
+attribute [aesop 20% apply (rule_sets := [CStarAlgebra])] PosSemidef.nonneg
 
 /-- The partial order on matrices given by `A ≤ B := (B - A).PosSemidef`. -/
 abbrev instPartialOrder : PartialOrder (Matrix n n 𝕜) where
@@ -118,9 +119,11 @@ lemma sq_eq_sq_iff {B : Matrix n n 𝕜} (hB : PosSemidef B) : A ^ 2 = B ^ 2 ↔
 @[deprecated CFC.sqrt_sq (since := "2025-09-22")]
 lemma sqrt_sq : CFC.sqrt (A ^ 2) = A := CFC.sqrt_sq A
 
+@[deprecated CFC.sqrt_eq_iff (since := "2025-09-23")]
 lemma eq_sqrt_iff_sq_eq {B : Matrix n n 𝕜} (hB : PosSemidef B) : A = CFC.sqrt B ↔ A ^ 2 = B := by
   rw [eq_comm, CFC.sqrt_eq_iff B A hB.nonneg hA.nonneg, sq]
 
+@[deprecated CFC.sqrt_eq_iff (since := "2025-09-23")]
 lemma sqrt_eq_iff_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) : CFC.sqrt A = B ↔ A = B ^ 2 := by
   simpa [eq_comm, sq] using CFC.sqrt_eq_iff A B hA.nonneg hB.nonneg
 
