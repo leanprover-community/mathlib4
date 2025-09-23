@@ -73,10 +73,10 @@ section ShiftAlgebra
 
 variable {A G : Type*} [Group G]
 
-@[to_additive (attr := simp)] lemma mulShift_apply (g h : G) (x : G → A) :
+@[to_additive] lemma mulShift_apply (g h : G) (x : G → A) :
   mulShift g x h = x (h * g) := rfl
 
-@[to_additive (attr := simp)] lemma mulShift_one (x : G → A) : mulShift (1 : G) x = x := by
+@[to_additive] lemma mulShift_one (x : G → A) : mulShift (1 : G) x = x := by
   ext h; simp [mulShift]
 
 @[to_additive] lemma mulShift_mul (g₁ g₂ : G) (x : G → A) :
