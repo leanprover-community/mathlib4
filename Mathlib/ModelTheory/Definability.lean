@@ -402,7 +402,7 @@ variable {α : Type u₁} {β : Type*}
 open FirstOrder FirstOrder.Language FirstOrder.Language.Structure
 
 /-- A function from a Cartesian power of a structure to that structure is term-definable over
-  a set `A` when the value of the function is given by a term with constants `A`. -/
+a set `A` when the value of the function is given by a term with constants `A`. -/
 @[fun_prop]
 def TermDefinable (f : (α → M) → M) : Prop :=
   ∃ φ : L[[A]].Term α, f = φ.realize
@@ -440,8 +440,8 @@ theorem TermDefinable.mono {f : (α → M) → M} (h : A.TermDefinable L f) (hAB
   exact h.map_expansion (L.lhomWithConstantsMap (Set.inclusion hAB))
 
 /-- TermDefinable is transitive. If f is TermDefinable in a structure S on L, and all of the
-  functions' realizations on S are TermDefinable on a structure T on L', then f is
-  TermDefinable on T in L'. -/
+functions' realizations on S are TermDefinable on a structure T on L', then f is
+TermDefinable on T in L'. -/
 @[fun_prop]
 theorem TermDefinable.trans {f : (β → M) → M} (h₁ : A.TermDefinable L f)
     (h₂ : ∀ {n} (g : L[[A]].Functions n), A.TermDefinable L' g.term.realize) :
@@ -457,33 +457,38 @@ theorem TermDefinable.trans {f : (β → M) → M} (h₁ : A.TermDefinable L f)
 
 variable (L) in
 /-- A function from a structure to itself is term-definable over a set `A` when the
-  value of the function is given by a term with constants `A`. Like `TermDefinable`
-  but specialized for unary functions in order to write `M → M` instead of `(Unit → M) → M`. -/
+value of the function is given by a term with constants `A`. Like `TermDefinable`
+but specialized for unary functions in order to write `M → M` instead of `(Unit → M) → M`. -/
 @[fun_prop]
 def TermDefinable₁ (f : M → M) : Prop :=
-  ∃ φ : L[[A]].Term Unit, f = φ.realize ∘ Function.const _
+  A.TermDefinable L fun x ↦ (f (x ()))
 
-/-- `TermDefinable₁` is equivalent to `TermDefinable` on the `Unit` index type. -/
-theorem TermDefinable₁_iff_termDefinable (f : M → M) : A.TermDefinable₁ L f ↔
+/-- `TermDefinable₁` is defined as `TermDefinable` on the `Unit` index type. -/
+theorem termDefinable₁_iff_termDefinable (f : M → M) : A.TermDefinable₁ L f ↔
     A.TermDefinable L (fun v ↦ f (v ())) := by
+  rfl
+
+alias ⟨TermDefinable₁.termDefinable, TermDefinable.termDefinable₁⟩ :=
+  termDefinable₁_iff_termDefinable
+
+attribute [fun_prop] TermDefinable.termDefinable₁
+
+theorem termDefinable₁_iff_exists_term {f : M → M} : A.TermDefinable₁ L f ↔
+    ∃ φ : L[[A]].Term Unit, f = φ.realize ∘ Function.const _ := by
   refine exists_congr fun φ ↦ ?_
   rw [funext_iff, funext_iff, (Equiv.funUnique Unit M).forall_congr']
   simp only [Equiv.funUnique_symm_apply, uniqueElim_const, Function.comp_apply]
   congr!
 
-alias ⟨TermDefinable₁.termDefinable, TermDefinable.termDefinable₁⟩ :=
-  TermDefinable₁_iff_termDefinable
-
-attribute [fun_prop] TermDefinable.termDefinable₁
 
 /-- A `TermDefinable₁` function has a graph that's `Definable₂`. -/
 theorem TermDefinable₁.graph_definable₂ {f : M → M} (h : A.TermDefinable₁ L f) :
     A.Definable₂ L f.graph := by
   obtain ⟨t, h⟩ := h.termDefinable.tupleGraph_definable A L
   use t.relabel (Sum.elim (fun _ ↦ 0) (fun _ ↦ 1))
-  funext v
-  convert congrFun h (Sum.elim (fun _ ↦ v 0) (fun _ ↦ v 1))
-  rw [setOf, setOf, Formula.realize_relabel, Sum.comp_elim]
+  ext v
+  convert Set.ext_iff.1 h (Sum.elim (fun _ ↦ v 0) (fun _ ↦ v 1))
+  rw [mem_setOf, mem_setOf, Formula.realize_relabel, Sum.comp_elim]
   rfl
 
 /-- The identity function is `TermDefinable₁` -/
