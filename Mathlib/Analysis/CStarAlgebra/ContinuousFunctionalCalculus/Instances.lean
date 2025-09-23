@@ -272,7 +272,7 @@ lemma Commute.mul_nonneg {a b : A} (ha : 0 ≤ a) (hb : 0 ≤ b) (h : Commute a 
 
 lemma commute_iff_mul_nonneg {a b : A} (ha : 0 ≤ a) (hb : 0 ≤ b) :
     Commute a b ↔ 0 ≤ a * b :=
-  ⟨fun h => h.mul_nonneg ha hb,
+  ⟨Commute.mul_nonneg ha hb,
   fun h => ha.isSelfAdjoint.commute_iff hb.isSelfAdjoint |>.mpr h.isSelfAdjoint⟩
 
 open NNReal in

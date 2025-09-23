@@ -35,7 +35,7 @@ variable [Fintype m] [Fintype n]
 variable [Ring R] [PartialOrder R] [StarRing R]
 variable [CommRing R'] [PartialOrder R'] [StarRing R']
 variable [RCLike 𝕜]
-open Matrix
+open scoped Matrix
 
 /-!
 ## Positive semidefinite matrices
