@@ -39,7 +39,7 @@ abstract two related kinds of ideas:
 * `Filter.IsCobounded r f` states that the filter `f` does not tend to infinity w.r.t. `r`.
   This is also called frequently bounded. Will be usually instantiated with `(· ≤ ·)` or `(· ≥ ·)`.
 
-## Notations
+## Notation
 
 * `∀ᶠ x in f, p x` : `f.Eventually p`;
 * `∃ᶠ x in f, p x` : `f.Frequently p`;
@@ -414,21 +414,22 @@ syntax (name := filterUpwards) "filter_upwards" (" [" term,* "]")?
 
 elab_rules : tactic
 | `(tactic| filter_upwards $[[$[$args],*]]? $[with $wth*]? $[using $usingArg]?) => do
-  let config : ApplyConfig := {newGoals := ApplyNewGoals.nonDependentOnly}
-  for e in args.getD #[] |>.reverse do
-    let goal ← getMainGoal
-    replaceMainGoal <| ← goal.withContext <| runTermElab do
-      let m ← mkFreshExprMVar none
-      let lem ← Term.elabTermEnsuringType
-        (← ``(Filter.mp_mem $e $(← Term.exprToSyntax m))) (← goal.getType)
-      goal.assign lem
-      return [m.mvarId!]
-  liftMetaTactic fun goal => do
-    goal.apply (← mkConstWithFreshMVarLevels ``Filter.univ_mem') config
-  evalTactic <|← `(tactic| dsimp -zeta only [Set.mem_setOf_eq])
-  if let some l := wth then
-    evalTactic <|← `(tactic| intro $[$l]*)
-  if let some e := usingArg then
-    evalTactic <|← `(tactic| exact $e)
+  focus do
+    let config : ApplyConfig := {newGoals := ApplyNewGoals.nonDependentOnly}
+    for e in args.getD #[] |>.reverse do
+      let goal ← getMainGoal
+      replaceMainGoal <| ← goal.withContext <| runTermElab do
+        let m ← mkFreshExprMVar none
+        let lem ← Term.elabTermEnsuringType
+          (← ``(Filter.mp_mem $e $(← Term.exprToSyntax m))) (← goal.getType)
+        goal.assign lem
+        return [m.mvarId!]
+    liftMetaTactic fun goal => do
+      goal.apply (← mkConstWithFreshMVarLevels ``Filter.univ_mem') config
+    evalTactic <|← `(tactic| dsimp -zeta only [Set.mem_setOf_eq])
+    if let some l := wth then
+      evalTactic <|← `(tactic| intro $[$l]*)
+    if let some e := usingArg then
+      evalTactic <|← `(tactic| exact $e)
 
 end Mathlib.Tactic
