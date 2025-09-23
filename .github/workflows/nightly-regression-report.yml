@@ -61,26 +61,34 @@ jobs:
         action: add
         linters: lean
 
+    - name: Generate a temporary file to capture command output
+      id: buildlog
+      working-directory: docbuild
+      run: |
+        echo -n "filename=" >> "${GITHUB_OUTPUT}"
+        mktemp >> "${GITHUB_OUTPUT}"
+
     - name: build mathlib
       id: build
       continue-on-error: true
       run: |
-        # Use a temporary file to ensure we don't overflow max variable size.
-        lean_outfile=$(mktemp)
-        # Show the stdout in the GitHub build logs, while we process it from the file.
-        (lake build || true) | tee "${lean_outfile}"
-
-        # Process output for posting to Zulip
-        SHA=${{ github.sha }} \
-        REPO=${{ github.repository }} \
-        RUN_ID=${{ github.run_id }} \
-          ./scripts/zulip_build_report.sh "${lean_outfile}" > "${GITHUB_OUTPUT}"
+        lake build | tee "${{ steps.buildlog.outputs.filename }}"
 
     - name: Remove GitHub problem matcher wrapper
       uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
       with:
         action: remove
         linters: lean
+
+    - name: Prepare Zulip report
+      id: zulip-report
+      run: |
+        WORKFLOW=${{ github.workflow }} \
+        SHA=${{ github.sha }} \
+        REPO=${{ github.repository }} \
+        RUN_ID=${{ github.run_id }} \
+        SUCCESS=${{ success() }} \
+          ./scripts/zulip_build_report.sh "${{ steps.buildlog.outputs.filename }}" > "${GITHUB_OUTPUT}"
 
     - name: Post output to Zulip
       uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
@@ -91,4 +99,4 @@ jobs:
         to: 'nightly-testing'
         type: 'stream'
         topic: nightly-testing regression log
-        content: ${{ steps.build.outputs.zulip-message }}
+        content: ${{ steps.zulip-report.outputs.zulip-message }}
