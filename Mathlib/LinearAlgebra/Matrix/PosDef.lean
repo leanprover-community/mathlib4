@@ -325,20 +325,15 @@ noncomputable def sqrt : Matrix n n 𝕜 :=
   (star hA.1.eigenvectorUnitary : Matrix n n 𝕜)
 
 @[deprecated CFC.sqrt_nonneg (since := "2025-09-22")]
-lemma posSemidef_sqrt : PosSemidef (CFC.sqrt A) :=
-  nonneg_iff.mp (CFC.sqrt_nonneg A)
+lemma posSemidef_sqrt : PosSemidef (CFC.sqrt A) := nonneg_iff.mp (CFC.sqrt_nonneg A)
 
 include hA in
 @[deprecated CFC.sq_sqrt (since := "2025-09-22")]
-lemma sq_sqrt : (CFC.sqrt A) ^ 2 = A :=
-  have := hA.nonneg
-  CFC.sq_sqrt A
+lemma sq_sqrt : (CFC.sqrt A) ^ 2 = A := CFC.sq_sqrt A hA.nonneg
 
 include hA in
 @[deprecated CFC.sqrt_mul_sqrt_self (since := "2025-09-22")]
-lemma sqrt_mul_self : CFC.sqrt A * CFC.sqrt A = A :=
-  have := hA.nonneg
-  CFC.sqrt_mul_sqrt_self A
+lemma sqrt_mul_self : CFC.sqrt A * CFC.sqrt A = A := CFC.sqrt_mul_sqrt_self A hA.nonneg
 
 include hA in
 lemma eq_of_sq_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B ^ 2) : A = B := by
@@ -383,15 +378,11 @@ lemma sq_eq_sq_iff {B : Matrix n n 𝕜} (hB : PosSemidef B) : A ^ 2 = B ^ 2 ↔
 
 include hA in
 @[deprecated CFC.sqrt_sq (since := "2025-09-22")]
-lemma sqrt_sq : CFC.sqrt (A ^ 2) = A :=
-  have := hA.nonneg
-  CFC.sqrt_sq A
+lemma sqrt_sq : CFC.sqrt (A ^ 2) = A := CFC.sqrt_sq A hA.nonneg
 
 include hA in
 lemma eq_sqrt_iff_sq_eq {B : Matrix n n 𝕜} (hB : PosSemidef B) : A = CFC.sqrt B ↔ A ^ 2 = B := by
-  have ha := hA.nonneg
-  have hb := hB.nonneg
-  rw [eq_comm, CFC.sqrt_eq_iff B A, sq]
+  rw [eq_comm, CFC.sqrt_eq_iff B A hB.nonneg hA.nonneg, sq]
 
 include hA in
 lemma sqrt_eq_iff_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) : CFC.sqrt A = B ↔ A = B ^ 2 := by
@@ -401,9 +392,7 @@ lemma sqrt_eq_iff_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) : CFC.sqrt A =
 
 include hA in
 @[deprecated CFC.sqrt_eq_zero_iff (since := "2025-09-22")]
-lemma sqrt_eq_zero_iff : CFC.sqrt A = 0 ↔ A = 0 :=
-  have := hA.nonneg
-  CFC.sqrt_eq_zero_iff A
+lemma sqrt_eq_zero_iff : CFC.sqrt A = 0 ↔ A = 0 := CFC.sqrt_eq_zero_iff A hA.nonneg
 
 include hA in
 @[simp]
@@ -412,9 +401,7 @@ lemma sqrt_eq_one_iff : CFC.sqrt A = 1 ↔ A = 1 := by
 
 include hA in
 @[deprecated CFC.isUnit_sqrt_iff (since := "2025-09-22")]
-lemma isUnit_sqrt_iff : IsUnit (CFC.sqrt A) ↔ IsUnit A :=
-  have := hA.nonneg
-  CFC.isUnit_sqrt_iff A
+lemma isUnit_sqrt_iff : IsUnit (CFC.sqrt A) ↔ IsUnit A := CFC.isUnit_sqrt_iff A hA.nonneg
 
 include hA in
 lemma inv_sqrt : (CFC.sqrt A)⁻¹ = CFC.sqrt A⁻¹ := by
@@ -701,8 +688,7 @@ theorem commute_iff {A B : Matrix n n 𝕜} (hA : A.PosDef) (hB : B.PosDef) :
 lemma posDef_sqrt [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) :
     PosDef (CFC.sqrt M) := by
   rw [(nonneg_iff.mp (CFC.sqrt_nonneg M)).posDef_iff_isUnit]
-  have := hM.posSemidef.nonneg
-  exact CFC.isUnit_sqrt_iff M |>.mpr hM.isUnit
+  exact CFC.isUnit_sqrt_iff M hM.posSemidef.nonneg |>.mpr hM.isUnit
 
 /--
 A matrix is positive definite if and only if it has the form `Bᴴ * B` for some invertible `B`.
