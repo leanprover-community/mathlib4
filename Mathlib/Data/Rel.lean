@@ -353,6 +353,9 @@ lemma id_subset_iff : .id ⊆ R ↔ R.IsRefl where
   mp h := ⟨fun _ ↦ h rfl⟩
   mpr _ := id_subset
 
+instance isRefl_univ : SetRel.IsRefl (.univ : SetRel α α) where
+  refl _ := trivial
+
 instance isRefl_inter [R₁.IsRefl] [R₂.IsRefl] : (R₁ ∩ R₂).IsRefl where
   refl _ := ⟨R₁.rfl, R₂.rfl⟩
 
@@ -365,6 +368,8 @@ instance isRefl_iInter {ι : Sort*} {R : ι → SetRel α α} [∀ i, (R i).IsRe
 
 instance isRefl_preimage {f : β → α} [R.IsRefl] : SetRel.IsRefl (Prod.map f f ⁻¹' R) where
   refl _ := R.rfl
+
+lemma isRefl_mono [R₁.IsRefl] (hR : R₁ ⊆ R₂) : R₂.IsRefl where refl _ := hR R₁.rfl
 
 lemma left_subset_comp {R : SetRel α β} [S.IsRefl] : R ⊆ R ○ S := by
   simpa using comp_subset_comp_right id_subset
