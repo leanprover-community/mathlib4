@@ -13,19 +13,19 @@ import Mathlib.RingTheory.Spectrum.Prime.LTSeries
 
 ## Main results
 
-- `Module.supportDim_regular_sequence_add_length_eq_supportDim`: If $M$ is a finite module over a
+- `Module.supportDim_add_length_eq_supportDim_of_isRegular`: If $M$ is a finite module over a
   Noetherian local ring $R$, $r_1, \dots, r_n$ is an $M$-sequence, then
   $\dim M/(r_1, \dots, r_n)M + n = \dim M$.
 -/
 
 namespace Module
 
-variable {R : Type*} [CommRing R] [IsNoetherianRing R] [IsLocalRing R]
+variable {R : Type*} [CommRing R] [IsNoetherianRing R]
   {M : Type*} [AddCommGroup M] [Module R M] [Module.Finite R M]
 
 open RingTheory Sequence IsLocalRing Ideal PrimeSpectrum Pointwise
 
-omit [IsNoetherianRing R] [IsLocalRing R] [Module.Finite R M] in
+omit [IsNoetherianRing R] [Module.Finite R M] in
 lemma exists_ltSeries_support_isMaximal_last_of_ltSeries_support (q : LTSeries (support R M)) :
     ∃ p : LTSeries (support R M), q.length ≤ p.length ∧ p.last.1.1.IsMaximal := by
   obtain ⟨m, hmm, hm⟩ := exists_le_maximal _ q.last.1.2.1
@@ -34,7 +34,6 @@ lemma exists_ltSeries_support_isMaximal_last_of_ltSeries_support (q : LTSeries (
     simpa
   · use q
 
-omit [IsLocalRing R] in
 theorem supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson {x : R}
     (h : x ∈ (annihilator R M).jacobson) : supportDim R M ≤ supportDim R (QuotSMulTop x M) + 1 := by
   nontriviality M
@@ -68,14 +67,7 @@ theorem supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson {x : R}
   calc (p.length : WithBot ℕ∞) ≤ (p.length - 1 + 1 : ℕ) := Nat.cast_le.mpr le_tsub_add
     _ ≤ _ := by simpa using add_le_add_right (by exact le_iSup_iff.mpr fun _ h ↦ h q') 1
 
-/-- If $M$ is a finite module over a Noetherian local ring $R$, then $\dim M \le \dim M/xM + 1$
-  for every $x$ in the maximal ideal of the local ring $R$. -/
-@[stacks 0B52 "the second inequality"]
-theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIdeal R) :
-    supportDim R M ≤ supportDim R (QuotSMulTop x M) + 1 :=
-  supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson ((maximalIdeal_le_jacobson _) hx)
-
-omit [IsNoetherianRing R] [IsLocalRing R] in
+omit [IsNoetherianRing R] in
 /-- If $M$ is a finite module over a commutative ring $R$, $x \in M$ is not in any minimal prime of
   $M$, then $\dim M/xM + 1 \le \dim M$. -/
 theorem supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes {x : R}
@@ -99,20 +91,17 @@ theorem supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes {x : R}
   have hr : r < q.head := lt_of_le_of_ne hr (fun h ↦ hn q.head.1.1 (by rwa [← h]) hp.2)
   exact le_of_eq_of_le (by simp [q]) (le_iSup _ (q.cons r hr))
 
-omit [IsLocalRing R] in
 theorem supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_jacobson {x : R}
     (hn : ∀ p ∈ (annihilator R M).minimalPrimes, x ∉ p) (hx : x ∈ (annihilator R M).jacobson) :
     supportDim R (QuotSMulTop x M) + 1 = supportDim R M :=
   le_antisymm (supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes hn)
     (supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson hx)
 
-omit [IsLocalRing R] in
 theorem supportDim_quotSMulTop_succ_eq_supportDim_mem_jacobson {x : R} (reg : IsSMulRegular M x)
     (hx : x ∈ (annihilator R M).jacobson) : supportDim R (QuotSMulTop x M) + 1 = supportDim R M :=
   supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_jacobson
     (fun _ ↦ reg.notMem_of_mem_minimalPrimes) hx
 
-omit [IsLocalRing R] in
 lemma _root_.ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim_of_mem_jacobson {x : R}
     (reg : IsSMulRegular R x) (hx : x ∈ Ring.jacobson R) :
     ringKrullDim (R ⧸ span {x}) + 1 = ringKrullDim R := by
@@ -122,6 +111,15 @@ lemma _root_.ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim_of_mem_ja
     ← supportDim_quotient_eq_ringKrullDim, ← supportDim_self_eq_ringKrullDim]
   exact supportDim_quotSMulTop_succ_eq_supportDim_mem_jacobson reg
     ((annihilator R R).ringJacobson_le_jacobson hx)
+
+variable [IsLocalRing R]
+
+/-- If $M$ is a finite module over a Noetherian local ring $R$, then $\dim M \le \dim M/xM + 1$
+  for every $x$ in the maximal ideal of the local ring $R$. -/
+@[stacks 0B52 "the second inequality"]
+theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIdeal R) :
+    supportDim R M ≤ supportDim R (QuotSMulTop x M) + 1 :=
+  supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson ((maximalIdeal_le_jacobson _) hx)
 
 @[stacks 0B52 "the equality case"]
 theorem supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_maximalIdeal {x : R}
