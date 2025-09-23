@@ -265,18 +265,6 @@ lemma projectiveDimension_eq_bot_iff (X : C) : projectiveDimension X = ⊥ ↔
   rw [← hasProjectiveDimensionLT_zero_iff_isZero, ← projectiveDimension_lt_iff,
     Nat.cast_zero, ← WithBot.lt_coe_bot, bot_eq_zero', WithBot.coe_zero]
 
-lemma projectiveDimension_eq_find (X : C) (h : ∃ n, HasProjectiveDimensionLE X n)
-    (nzero : ¬ Limits.IsZero X) [DecidablePred (HasProjectiveDimensionLE X)] :
-    projectiveDimension X = Nat.find h := by
-  apply le_antisymm ((projectiveDimension_le_iff _ _).mpr (Nat.find_spec h))
-  apply (projectiveDimension_ge_iff _ _).mpr
-  by_cases eq0 : Nat.find h = 0
-  · simp only [eq0]
-    by_contra
-    exact nzero (isZero_of_hasProjectiveDimensionLT_zero X)
-  · rw [← Nat.succ_pred_eq_of_ne_zero eq0]
-    exact (Nat.find_min h (Nat.sub_one_lt eq0))
-
 lemma projectiveDimension_ne_top_iff (X : C) :
     projectiveDimension X ≠ ⊤ ↔ ∃ n, HasProjectiveDimensionLE X n := by
   generalize hd : projectiveDimension X = d
