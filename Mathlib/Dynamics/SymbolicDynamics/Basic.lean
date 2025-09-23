@@ -78,7 +78,7 @@ end ShiftAlgebra
 
 section ShiftTopology  -- add only topology on A
 variable {A G : Type*} [Group G] [TopologicalSpace A]
-lemma shift_continuous (g : G) : Continuous (shift (A:=A) (G:=G) g) := by
+lemma continuous_shift (g : G) : Continuous (shift (A := A) (G := G) g) := by
   -- coordinate projections are continuous; composition preserves continuity
   continuity
 end ShiftTopology
@@ -94,8 +94,8 @@ variable {A G : Type*}
 def cylinder (U : Finset G) (x : G → A) : Set (G → A) :=
   { y | ∀ i ∈ U, y i = x i }
 
-lemma cylinder_eq_set_pi (U : Finset (G)) (x : G → A) :
-    cylinder U x = Set.pi (↑U : Set (G)) (fun i => ({x i} : Set A)) := by
+lemma cylinder_eq_set_pi (U : Finset G) (x : G → A) :
+    cylinder U x = Set.pi (↑U : Set G) (fun i => ({x i} : Set A)) := by
   ext y; simp [cylinder, Set.pi, Finset.mem_coe]
 
 @[simp] lemma mem_cylinder {U : Finset G} {x y : G → A} :
@@ -106,7 +106,7 @@ section CylindersOpen
 variable {A G : Type*} [TopologicalSpace A] [DiscreteTopology A]
 /-- Cylinders are open (and, dually, closed) when `A` is discrete. -/
 lemma cylinder_is_open (U : Finset G) (x : G → A) :
-    IsOpen (cylinder (A:=A) (G:=G) U x) := by
+    IsOpen (cylinder (A := A) (G := G) U x) := by
   classical
   have hopen : ∀ i ∈ (↑U : Set G), IsOpen ({x i} : Set A) := by
     intro i _; simp
@@ -114,14 +114,14 @@ lemma cylinder_is_open (U : Finset G) (x : G → A) :
       IsOpen (Set.pi (s := (↑U : Set G))
                      (t := fun i => ({x i} : Set A))) :=
     isOpen_set_pi (U.finite_toSet) hopen
-  simpa [cylinder_eq_set_pi (A:=A) (G:=G) U x] using hpi
+  simpa [cylinder_eq_set_pi (A := A) (G := G) U x] using hpi
 end CylindersOpen
 
 section CylindersClosed
 variable {A G : Type*}
 [TopologicalSpace A] [DiscreteTopology A]
 lemma cylinder_is_closed (U : Finset G) (x : G → A) :
-    IsClosed (cylinder (A:=A) (G:=G) U x) := by
+    IsClosed (cylinder (A := A) (G := G) U x) := by
   classical
   have hclosed : ∀ i ∈ (↑U : Set G), IsClosed ({x i} : Set A) := by
     intro i _; simp
@@ -129,7 +129,7 @@ lemma cylinder_is_closed (U : Finset G) (x : G → A) :
       IsClosed (Set.pi (s := (↑U : Set G))
                        (t := fun i => ({x i} : Set A))) :=
     isClosed_set_pi hclosed
-  simpa [cylinder_eq_set_pi (A:=A) (G:=G) U x] using hpi
+  simpa [cylinder_eq_set_pi (A := A) (G := G) U x] using hpi
 end CylindersClosed
 
 /-! ## Patterns and occurrences -/
@@ -141,7 +141,7 @@ structure Subshift (A : Type*) [TopologicalSpace A] [Inhabited A] (G : Type*) [G
   /-- Closedness of `carrier`. -/
   isClosed : IsClosed carrier
   /-- Shift invariance of `carrier`. -/
-  shiftInvariant : ∀ g : G, ∀ x ∈ carrier, shift (A:=A) (G:=G) g x ∈ carrier
+  shiftInvariant : ∀ g : G, ∀ x ∈ carrier, shift (A := A) (G := G) g x ∈ carrier
 
 /-- Example: the full shift on alphabet A. -/
 def fullShift (A G) [TopologicalSpace A] [Inhabited A] [Group G] : Subshift A G :=
@@ -161,7 +161,7 @@ structure Pattern (A : Type*) (G : Type*) [Group G] where
 def domino {A : Type*}
     (i j : G) (ai aj : A) : Pattern A G := by
   refine
-  { support := ({i, j} : Finset (G))
+  { support := ({i, j} : Finset G)
   , data := fun ⟨z, hz⟩ => if z = i then ai else aj }
 
 /-- Occurrence of a pattern `p` in `x` at position `g`. -/
@@ -181,7 +181,7 @@ lemma occurs_shift (p : Pattern A G) (x : G → A) (g h : G) :
   constructor <;> intro H u hu <;> simpa [shift, mul_assoc] using H u hu
 
 lemma forbids_shift_invariant (F : Set (Pattern A G)) :
-    ∀ h : G, ∀ x ∈ forbids (A:=A) (G:=G) F, shift h x ∈ forbids F := by
+    ∀ h : G, ∀ x ∈ forbids (A := A) (G := G) F, shift h x ∈ forbids F := by
   intro h x hx p hp g
   specialize hx p hp (g * h)
   -- contraposition
@@ -198,7 +198,7 @@ def patternToConfig (p : Pattern A G) (v : G) : G → A :=
   shift (v⁻¹) (patternToOriginConfig p)
 
 /-- Restrict a configuration to a finite support, seen as a pattern. -/
-def patternFromConfig (x : G → A) (U : Finset (G)) : Pattern A G :=
+def patternFromConfig (x : G → A) (U : Finset G) : Pattern A G :=
   { support := U,
     data := fun i => x i.1 }
 
@@ -281,7 +281,7 @@ def equivFun {U : Finset G} :
 
 instance fintypeFixedSupport {U : Finset G} :
     Fintype (FixedSupport A G U) := by
-  classical exact Fintype.ofEquiv (U → A) (equivFun (A:=A) (G:=G) (U:=U)).symm
+  classical exact Fintype.ofEquiv (U → A) (equivFun (A := A) (G := G) (U := U)).symm
 
 /-- Language on a finite set `U ⊆ G`: patterns obtained by restricting some `x ∈ X`. -/
 def languageOn (X : Set (G → A)) (U : Finset G) : Set (Pattern A G) :=
@@ -300,6 +300,6 @@ noncomputable def languageCardOn (X : Set (G → A)) (U : Finset G) : ℕ := by
 
 /-- Number of patterns of a subshift on a finite shape `U`. -/
 noncomputable def patternCountOn (Y : Subshift A G) (U : Finset G) : ℕ :=
-  languageCardOn (A:=A) (G:=G) Y.carrier U
+  languageCardOn (A := A) (G := G) Y.carrier U
 
 end SymbolicDynamics
