@@ -2563,6 +2563,7 @@ import Mathlib.CategoryTheory.Monoidal.Cartesian.Over
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Monoidal.Center
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
+import Mathlib.CategoryTheory.Monoidal.CommComon_
 import Mathlib.CategoryTheory.Monoidal.CommGrp_
 import Mathlib.CategoryTheory.Monoidal.CommMon_
 import Mathlib.CategoryTheory.Monoidal.Comon_
