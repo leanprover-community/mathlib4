@@ -286,7 +286,7 @@ lemma projectiveDimension_eq_find (X : C) (h : ∃ n, HasProjectiveDimensionLE X
 
 lemma projectiveDimension_ne_top_iff (X : C) :
     projectiveDimension X ≠ ⊤ ↔ ∃ n, HasProjectiveDimensionLE X n := by
-  generalize hd : projectiveDimension X = d 
+  generalize hd : projectiveDimension X = d
   induction d with
   | bot =>
     simp only [ne_eq, bot_ne_top, not_false_eq_true, true_iff]
