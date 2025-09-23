@@ -895,7 +895,7 @@ theorem sum_ramification_inertia (K L : Type*) [Field K] [Field L] [IsDedekindDo
   · exact finrank_quotient_map p K L
 
 /-- `Ideal.sum_ramification_inertia`, in the local (DVR) case. -/
-lemma sum_ramification_inertia_of_isLocalRing
+lemma ramificationIdx_mul_inertiaDeg_of_isLocalRing
     (K L : Type*) [Field K] [Field L] [IsLocalRing S]
     [IsDedekindDomain R] [Algebra R K] [IsFractionRing R K] [Algebra S L]
     [IsFractionRing S L] [Algebra K L] [Algebra R L] [IsScalarTower R S L]
