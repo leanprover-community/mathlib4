@@ -69,7 +69,7 @@ variable {P J}
 
 /-- If `F : J ⥤ C` is a functor that has a colimit and is such that for all `j`,
 `F.obj j` satisfies a property `P`, then this structure expresses that `colimit F`
-is indeed a colimits of objects satisfying `P`. -/
+is indeed a colimit of objects satisfying `P`. -/
 noncomputable def colimit (F : J ⥤ C) [HasColimit F] (hF : ∀ j, P (F.obj j)) :
     P.ColimitOfShape J (colimit F) where
   diag := F
