@@ -144,11 +144,9 @@ lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
   rw [Algebra.trace_eq_of_equiv_equiv (FractionRing.algEquiv A K).toRingEquiv
     (FractionRing.algEquiv B L).toRingEquiv]
   swap
-  · apply IsLocalization.ringHom_ext (M := A⁰); ext
-    simp only [AlgEquiv.toRingEquiv_eq_coe, AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_comp,
-      RingHom.coe_coe, Function.comp_apply, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
-    rw [IsScalarTower.algebraMap_apply A B (FractionRing B), AlgEquiv.commutes,
-      ← IsScalarTower.algebraMap_apply]
+  · ext
+    exact IsFractionRing.algebraMap_algHom_commute (FractionRing.algEquiv A K).toAlgHom
+      (FractionRing.algEquiv B L).toAlgHom _
   simp only [AlgEquiv.toRingEquiv_eq_coe, map_mul, AlgEquiv.coe_ringEquiv,
     AlgEquiv.apply_symm_apply, ← AlgEquiv.symm_toRingEquiv, AlgEquiv.algebraMap_eq_apply]
 
