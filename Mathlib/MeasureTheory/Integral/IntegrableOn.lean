@@ -407,7 +407,7 @@ alias IntegrableOn.integrable_of_forall_not_mem_eq_zero :=
   IntegrableOn.integrable_of_forall_notMem_eq_zero
 
 theorem IntegrableOn.of_inter_support {f : α → ε'}
-  (hs : MeasurableSet s) (hf : IntegrableOn f (s ∩ support f) μ) :
+    (hs : MeasurableSet s) (hf : IntegrableOn f (s ∩ support f) μ) :
     IntegrableOn f s μ := by
   simpa using hf.of_forall_diff_eq_zero hs
 
