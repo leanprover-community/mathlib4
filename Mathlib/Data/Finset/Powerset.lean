@@ -29,7 +29,7 @@ def powerset (s : Finset α) : Finset (Finset α) :=
   ⟨(s.1.powerset.pmap Finset.mk) fun _t h => nodup_of_le (mem_powerset.1 h) s.nodup,
     s.nodup.powerset.pmap fun _a _ha _b _hb => congr_arg Finset.val⟩
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_powerset {s t : Finset α} : s ∈ powerset t ↔ s ⊆ t := by
   cases s
   simp [powerset, mem_mk, mem_pmap, mk.injEq, exists_prop, exists_eq_right,
@@ -222,7 +222,7 @@ theorem powersetCard_one (s : Finset α) :
 lemma powersetCard_eq_empty : powersetCard n s = ∅ ↔ s.card < n := by
   refine ⟨?_, fun h ↦ card_eq_zero.1 <| by rw [card_powersetCard, Nat.choose_eq_zero_of_lt h]⟩
   contrapose!
-  exact fun h ↦ nonempty_iff_ne_empty.1 <| (exists_subset_card_eq h).imp <| by simp
+  exact fun h ↦ (exists_subset_card_eq h).imp <| by simp
 
 @[simp] lemma powersetCard_card_add (s : Finset α) (hn : 0 < n) :
     s.powersetCard (s.card + n) = ∅ := by simpa

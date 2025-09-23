@@ -46,7 +46,8 @@ lemma disjiUnion_val (s : Finset α) (t : α → Finset β) (h) :
 
 @[simp] lemma disjiUnion_empty (t : α → Finset β) : disjiUnion ∅ t (by simp) = ∅ := rfl
 
-@[simp, grind =] lemma mem_disjiUnion {b : β} {h} : b ∈ s.disjiUnion t h ↔ ∃ a ∈ s, b ∈ t a := by
+@[simp, grind =, push]
+lemma mem_disjiUnion {b : β} {h} : b ∈ s.disjiUnion t h ↔ ∃ a ∈ s, b ∈ t a := by
   simp only [mem_def, disjiUnion_val, Multiset.mem_bind]
 
 @[simp, norm_cast]
@@ -148,7 +149,7 @@ protected def biUnion (s : Finset α) (t : α → Finset β) : Finset β :=
 
 @[simp] lemma biUnion_empty : Finset.biUnion ∅ t = ∅ := rfl
 
-@[simp, grind =] lemma mem_biUnion {b : β} : b ∈ s.biUnion t ↔ ∃ a ∈ s, b ∈ t a := by
+@[simp, grind =, push] lemma mem_biUnion {b : β} : b ∈ s.biUnion t ↔ ∃ a ∈ s, b ∈ t a := by
   simp only [mem_def, biUnion_val, Multiset.mem_dedup, Multiset.mem_bind]
 
 @[simp, norm_cast]

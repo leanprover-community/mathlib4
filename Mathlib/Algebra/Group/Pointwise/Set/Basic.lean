@@ -88,7 +88,7 @@ open Pointwise
 theorem singleton_one : ({1} : Set α) = 1 :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, push)]
 theorem mem_one : a ∈ (1 : Set α) ↔ a = 1 :=
   Iff.rfl
 
@@ -156,7 +156,7 @@ section Inv
 
 variable {ι : Sort*} [Inv α] {s t : Set α} {a : α}
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, push)]
 theorem mem_inv : a ∈ s⁻¹ ↔ a⁻¹ ∈ s :=
   Iff.rfl
 
@@ -273,7 +273,7 @@ scoped[Pointwise] attribute [instance] Set.mul Set.add
 theorem image2_mul : image2 (· * ·) s t = s * t :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := push)]
 theorem mem_mul : a ∈ s * t ↔ ∃ x ∈ s, ∃ y ∈ t, x * y = a :=
   Iff.rfl
 
@@ -418,7 +418,7 @@ scoped[Pointwise] attribute [instance] Set.div Set.sub
 theorem image2_div : image2 (· / ·) s t = s / t :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := push)]
 theorem mem_div : a ∈ s / t ↔ ∃ x ∈ s, ∃ y ∈ t, x / y = a :=
   Iff.rfl
 
