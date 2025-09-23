@@ -74,6 +74,11 @@ lemma isPrincipalIdealRing_iff_not_denselyOrdered [MulArchimedean (MonoidHom.mra
     LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered]
   exact H
 
+lemma isPrincipalIdealRing_iff_not_denselyOrdered_mrange [MulArchimedean (MonoidHom.mrange v)]
+    (hv : Integers v O) :
+    IsPrincipalIdealRing O ↔ ¬ DenselyOrdered (MonoidHom.mrange v) :=
+  isPrincipalIdealRing_iff_not_denselyOrdered hv
+
 end Valuation.Integers
 
 end Field
