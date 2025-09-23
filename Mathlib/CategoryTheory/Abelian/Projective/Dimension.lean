@@ -248,52 +248,29 @@ lemma projectiveDimension_eq_of_iso {X Y : C} (e : X ≅ Y) :
   exact ⟨fun h ↦ hasProjectiveDimensionLT_of_iso e _,
     fun h ↦ hasProjectiveDimensionLT_of_iso e.symm _⟩
 
-lemma hasProjectiveDimensionLT_of_projectiveDimension_lt (X : C) (n : ℕ)
-    (h : projectiveDimension X < n) : HasProjectiveDimensionLT X n := by
-  have : projectiveDimension X ∈ _ := csInf_mem (by
-    use ⊤
-    simp)
-  simp only [Set.mem_setOf_eq] at this
-  exact this n h
+lemma projectiveDimension_lt_iff {X : C} {n : ℕ} :
+    projectiveDimension X < n ↔ HasProjectiveDimensionLT X n := by
+  refine ⟨fun h ↦ ?_, fun h ↦ (sInf_lt_iff ..).2 ?_⟩
+  · have : projectiveDimension X ∈ _ := csInf_mem ⟨⊤, by simp⟩
+    simp only [Set.mem_setOf_eq] at this
+    exact this _ h
+  · obtain _ | n := n
+    · exact ⟨⊥, fun _ _ ↦ hasProjectiveDimensionLT_of_ge _ 0 _ (by simp), by decide⟩
+    · exact ⟨n, fun i hi ↦ hasProjectiveDimensionLT_of_ge _ (n + 1) _ (by simpa using hi),
+        by simp [WithBot.lt_add_one_iff]⟩
 
 lemma projectiveDimension_le_iff (X : C) (n : ℕ) : projectiveDimension X ≤ n ↔
     HasProjectiveDimensionLE X n := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · apply hasProjectiveDimensionLT_of_projectiveDimension_lt X (n + 1)
-    exact lt_of_le_of_lt h (Nat.cast_lt.mpr (lt_add_one n))
-  · apply sInf_le
-    simp only [Set.mem_setOf_eq, Nat.cast_lt]
-    intro i hi
-    exact hasProjectiveDimensionLT_of_ge X (n + 1) i hi
+  simp [← projectiveDimension_lt_iff, ← WithBot.lt_add_one_iff]
 
 lemma projectiveDimension_ge_iff (X : C) (n : ℕ) : n ≤ projectiveDimension X  ↔
     ¬ HasProjectiveDimensionLT X n := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · simp only [projectiveDimension, le_sInf_iff, Set.mem_setOf_eq] at h
-    by_contra lt
-    by_cases eq0 : n = 0
-    · have := h ⊥ (fun i _ ↦ (hasProjectiveDimensionLT_of_ge X n i (by simp [eq0])))
-      simp [eq0] at this
-    · have : ∀ (i : ℕ), (n - 1 : ℕ) < (i : WithBot ℕ∞) → HasProjectiveDimensionLT X i := by
-        intro i hi
-        exact hasProjectiveDimensionLT_of_ge X n i (Nat.le_of_pred_lt (Nat.cast_lt.mp hi))
-      have not := Nat.cast_le.mp (h (n - 1 : ℕ) this)
-      omega
-  · simp only [projectiveDimension, le_sInf_iff, Set.mem_setOf_eq]
-    intro m hm
-    by_contra nle
-    exact h (hm _ (lt_of_not_ge nle))
+  rw [← not_iff_not, not_le, not_not, projectiveDimension_lt_iff]
 
 lemma projectiveDimension_eq_bot_iff (X : C) : projectiveDimension X = ⊥ ↔
     Limits.IsZero X := by
-  rw [← hasProjectiveDimensionLT_zero_iff_isZero]
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · apply hasProjectiveDimensionLT_of_projectiveDimension_lt X 0
-    simp [h, bot_lt_iff_ne_bot]
-  · rw [eq_bot_iff]
-    apply sInf_le
-    intro i _
-    apply hasProjectiveDimensionLT_of_ge X 0 i (Nat.zero_le i)
+  rw [← hasProjectiveDimensionLT_zero_iff_isZero, ← projectiveDimension_lt_iff,
+    Nat.cast_zero, ← WithBot.lt_coe_bot, bot_eq_zero', WithBot.coe_zero]
 
 lemma projectiveDimension_eq_find (X : C) (h : ∃ n, HasProjectiveDimensionLE X n)
     (nzero : ¬ Limits.IsZero X) [DecidablePred (HasProjectiveDimensionLE X)] :
