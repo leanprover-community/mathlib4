@@ -34,7 +34,7 @@ noncomputable section
 open LinearMap (BilinForm)
 open LinearMap (BilinMap)
 
-name_poly_vars (ZMod 2)[X,Y,Z]
+poly_variable (ZMod 2)[X,Y,Z]
 
 namespace Q60596
 

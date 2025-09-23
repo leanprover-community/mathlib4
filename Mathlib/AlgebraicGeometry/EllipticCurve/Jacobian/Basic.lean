@@ -95,7 +95,7 @@ universe r s u v
 
 variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v}
 
-name_poly_vars R[X,Y,Z]
+poly_variable R[X,Y,Z]
 
 namespace WeierstrassCurve
 
