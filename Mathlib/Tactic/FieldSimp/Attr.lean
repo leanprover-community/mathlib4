@@ -5,6 +5,8 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Init
 
+/-! # Attribute grouping the `field_simp` simprocs -/
+
 open Lean Meta
 
 /-- Initialize the attribute `field` grouping the simprocs associated to the field_simp tactic. -/
