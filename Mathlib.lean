@@ -6075,6 +6075,7 @@ import Mathlib.Tactic.FBinop
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.FastInstance
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.FieldSimp.Attr
 import Mathlib.Tactic.FieldSimp.Discharger
 import Mathlib.Tactic.FieldSimp.Lemmas
 import Mathlib.Tactic.FinCases
@@ -6171,6 +6172,7 @@ import Mathlib.Tactic.NoncommRing
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Nontriviality.Core
 import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.NormNum.Abs
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.NormNum.BigOperators
 import Mathlib.Tactic.NormNum.Core
