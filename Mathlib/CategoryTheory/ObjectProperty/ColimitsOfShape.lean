@@ -70,11 +70,10 @@ variable {P J}
 /-- If `F : J ⥤ C` is a functor that has a colimit and is such that for all `j`,
 `F.obj j` satisfies a property `P`, then this structure expresses that `colimit F`
 is indeed a colimit of objects satisfying `P`. -/
+@[simps toColimitPresentation]
 noncomputable def colimit (F : J ⥤ C) [HasColimit F] (hF : ∀ j, P (F.obj j)) :
     P.ColimitOfShape J (colimit F) where
-  diag := F
-  ι := _
-  isColimit := colimit.isColimit _
+  toColimitPresentation := .colimit F
   prop_diag_obj := hF
 
 /-- If `X` is a colimit indexed by `J` of objects satisfying a property `P`, then
@@ -137,7 +136,7 @@ lemma colimitsOfShape_isoClosure :
   intro X ⟨h⟩
   choose obj h₁ h₂ using h.prop_diag_obj
   exact
-   ⟨{ toColimitPresentation := h.chgDiag (h.diag.isoCopyObj obj (fun j ↦ (h₂ j).some)).symm
+   ⟨{ toColimitPresentation := h.changeDiag (h.diag.isoCopyObj obj (fun j ↦ (h₂ j).some)).symm
       prop_diag_obj := h₁ }⟩
 
 instance [ObjectProperty.Small.{w} P] [LocallySmall.{w} C] [Small.{w} J] [LocallySmall.{w} J] :
