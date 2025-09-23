@@ -143,7 +143,6 @@ lemma functorMonoidalOfComp_ε' : letI := functorMonoidalOfComp L W F G
 @[reassoc]
 lemma functorMonoidalOfComp_μ (X Y : C) : letI := functorMonoidalOfComp L W F G
     μ F (L.obj X) (L.obj Y) = μ (L ⋙ F) X Y ≫ F.map (δ L _ _) := by
-  change ((functorCoreMonoidalOfComp L W F G).μIso _ _).hom = _
   simp [Functor.CoreMonoidal.toLaxMonoidal_μ, curriedTensorPreIsoPost_hom_app_app]
 
 @[reassoc]
@@ -151,8 +150,7 @@ lemma functorMonoidalOfComp_μ' (X Y : C) : letI := functorMonoidalOfComp L W F 
     letI e := Lifting.iso L W G F
     μ F (L.obj X) (L.obj Y) = (e.hom.app _ ⊗ₘ e.hom.app _) ≫ μ G X Y ≫ e.inv.app _ ≫
         F.map (δ L _ _) := by
-  change ((functorCoreMonoidalOfComp L W F G).μIso _ _).hom = _
-  simp [curriedTensorPreIsoPost]
+  simp [Functor.CoreMonoidal.toLaxMonoidal_μ, curriedTensorPreIsoPost_hom_app_app]
 
 instance natTrans_isMonoidal :
     letI : F.Monoidal := functorMonoidalOfComp L W F G
