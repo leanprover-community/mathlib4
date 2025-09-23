@@ -218,7 +218,7 @@ class HasFiniteWidePullbacks : Prop where
   /-- `C` has all wide pullbacks for any Finite `J` -/
   out (J : Type) [Finite J] : HasLimitsOfShape (WidePullbackShape J) C
 
-instance hasLimitsOfShape_widePullbackShape (J : Type) [Finite J] [HasFiniteWidePullbacks C] :
+instance hasLimitsOfShape_widePullbackShape [HasFiniteWidePullbacks C] (J : Type) [Finite J] :
     HasLimitsOfShape (WidePullbackShape J) C := by
   haveI := @HasFiniteWidePullbacks.out C _ _ J
   infer_instance
@@ -230,7 +230,7 @@ class HasFiniteWidePushouts : Prop where
   /-- `C` has all wide pushouts for any Finite `J` -/
   out (J : Type) [Finite J] : HasColimitsOfShape (WidePushoutShape J) C
 
-instance hasColimitsOfShape_widePushoutShape (J : Type) [Finite J] [HasFiniteWidePushouts C] :
+instance hasColimitsOfShape_widePushoutShape [HasFiniteWidePushouts C] (J : Type) [Finite J] :
     HasColimitsOfShape (WidePushoutShape J) C := by
   haveI := @HasFiniteWidePushouts.out C _ _ J
   infer_instance

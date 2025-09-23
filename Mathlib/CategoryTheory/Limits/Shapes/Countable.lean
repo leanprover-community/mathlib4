@@ -26,7 +26,7 @@ limits, see `sequentialFunctor_initial`.
 
 open CategoryTheory Opposite CountableCategory
 
-variable (C : Type*) [Category C] (J : Type*) [Countable J]
+variable (C : Type*) [Category C] (J : Type*)
 
 namespace CategoryTheory.Limits
 
@@ -56,7 +56,7 @@ instance [HasCountableLimits C] [Category.{v} J] [CountableCategory J] : HasLimi
 class HasCountableProducts where
   out (J : Type) [Countable J] : HasProductsOfShape J C
 
-instance [HasCountableProducts C] (J : Type*) [Countable J] : HasProductsOfShape J C :=
+instance [HasCountableProducts C] [Countable J] : HasProductsOfShape J C :=
   have : Countable (Shrink.{0} J) := Countable.of_equiv _ (equivShrink.{0} J)
   have : HasLimitsOfShape (Discrete (Shrink.{0} J)) C := HasCountableProducts.out _
   hasLimitsOfShape_of_equivalence (Discrete.equivalence (equivShrink.{0} J)).symm
@@ -110,7 +110,7 @@ instance (priority := 100) hasCountableCoproducts_of_hasCoproducts [HasCoproduct
     inferInstance
 
 -- See note [instance argument order]
-instance [HasCountableCoproducts C] (J : Type*) [Countable J] : HasCoproductsOfShape J C :=
+instance [HasCountableCoproducts C] [Countable J] : HasCoproductsOfShape J C :=
   have : Countable (Shrink.{0} J) := Countable.of_equiv _ (equivShrink.{0} J)
   have : HasColimitsOfShape (Discrete (Shrink.{0} J)) C := HasCountableCoproducts.out _
   hasColimitsOfShape_of_equivalence (Discrete.equivalence (equivShrink.{0} J)).symm
@@ -129,7 +129,7 @@ namespace IsFiltered
 
 attribute [local instance] IsFiltered.nonempty
 
-variable {C} [Preorder J] [IsFiltered J]
+variable {C} [Countable J] [Preorder J] [IsFiltered J]
 
 /-- The object part of the initial functor `ℕᵒᵖ ⥤ J` -/
 noncomputable def sequentialFunctor_obj : ℕ → J := fun
@@ -177,7 +177,7 @@ namespace IsCofiltered
 
 attribute [local instance] IsCofiltered.nonempty
 
-variable {C} [Preorder J] [IsCofiltered J]
+variable {C} [Countable J] [Preorder J] [IsCofiltered J]
 
 /-- The object part of the initial functor `ℕᵒᵖ ⥤ J` -/
 noncomputable def sequentialFunctor_obj : ℕ → J := fun
