@@ -174,7 +174,6 @@ lemma hasPeriod_of_hasPeriod_hasPeriod_add {q k : ℕ} {w : List α}
      _         = w[i + (k + q)]? := per_plus i (by omega)
      _         = w[q + (i + k)]? := congr_arg (getElem? w) (by omega)
 
-
 /-- The **Periodicity Lemma**, also known as the **Fine and Wilf theorem**, shows that
 if word `w` of length at least `p + q - gcd p q` has two periods `p` and `q`,
 then it has a period `gcd p q`.
