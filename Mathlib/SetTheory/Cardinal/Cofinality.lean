@@ -684,7 +684,6 @@ theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, 2 ^ x < #α) :
   · simp [ha]
   have h' : IsStrongLimit #α := ⟨ha, @h⟩
   rcases ord_eq α with ⟨r, wo, hr⟩
-  haveI := wo
   apply le_antisymm
   · conv_rhs => rw [← mk_bounded_subset h hr]
     apply mk_le_mk_of_subset

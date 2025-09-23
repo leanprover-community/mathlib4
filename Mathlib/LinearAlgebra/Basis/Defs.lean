@@ -410,7 +410,6 @@ section ReindexRange
 def reindexRange : Basis (range b) R M :=
   haveI := Classical.dec (Nontrivial R)
   if h : Nontrivial R then
-    letI := h
     b.reindex (Equiv.ofInjective b (Basis.injective b))
   else
     letI : Subsingleton R := not_nontrivial_iff_subsingleton.mp h
@@ -418,8 +417,7 @@ def reindexRange : Basis (range b) R M :=
 
 theorem reindexRange_self (i : ι) (h := Set.mem_range_self i) : b.reindexRange ⟨b i, h⟩ = b i := by
   by_cases htr : Nontrivial R
-  · letI := htr
-    simp [htr, reindexRange, reindex_apply]
+  · simp [htr, reindexRange, reindex_apply]
   · letI : Subsingleton R := not_nontrivial_iff_subsingleton.mp htr
     letI := Module.subsingleton R M
     simp [reindexRange, eq_iff_true_of_subsingleton]
