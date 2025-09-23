@@ -434,6 +434,13 @@ example {x y a b : ℚ} (hx : 0 < x) (hy : 0 < y) (ha : 0 < a) (hb : 0 < b) :
   guard_target = x * y ≤ (a * x + b * y) * (a * y + x * b)
   exact test_sorry
 
+-- vary `<` vs `≤`, `≥` vs `≤`
+example {x y a b : ℚ} (hx : x > 0) (hy : 0 < y) (ha : 0 ≤ a) (hb : 0 < b) :
+    a * x⁻¹ + b * y⁻¹ ≥ (a * x + b * y)⁻¹ := by
+  field_simp
+  guard_target = x * y ≤ (a * x + b * y) * (a * y + x * b)
+  exact test_sorry
+
 example {x y a b : ℚ} (hx : 0 < x) (hy : 0 < y) (ha : 0 < a) (hb : 0 < b) :
     (a * x + b * y)⁻¹ < a * x⁻¹ + b * y⁻¹ := by
   field_simp
