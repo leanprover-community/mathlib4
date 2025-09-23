@@ -29,8 +29,6 @@ of quadratic forms. Most results require `𝕜 = ℝ` or `ℂ`.
   semidefinite iff it has the form `Bᴴ * B` for some `B`.
 * `Matrix.posDef_iff_eq_conjTranspose_mul_self` : a matrix `M : Matrix n n 𝕜` is positive
   definite iff it has the form `Bᴴ * B` for some _invertible_ `B`.
-* `Matrix.PosSemidef.sqrt` : the unique positive semidefinite square root of a positive semidefinite
-  matrix. (See `Matrix.PosSemidef.eq_sqrt_of_sq_eq` for the proof of uniqueness.)
 -/
 
 open scoped ComplexOrder
