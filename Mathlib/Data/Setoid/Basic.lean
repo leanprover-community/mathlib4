@@ -322,8 +322,8 @@ abbrev kerLift (f : α → β) : Quotient (ker f) → β := Quotient.lift f fun 
 @[simp]
 theorem kerLift_mk (f : α → β) (x : α) : kerLift f ⟦x⟧ = f x := rfl
 
-theorem kerLift_eq_apply_out (f : α → β) (q : Quotient (ker f)) : kerLift f q = f q.out := by
-  nth_rw 1 [← q.out_eq]
+theorem apply_out_eq_kerLift (f : α → β) (q : Quotient (ker f)) : f q.out = kerLift f q := by
+  nth_rw 2 [← q.out_eq]
   rfl
 
 /-- Given a map f from α to β, the natural map from the quotient of α by the kernel of f is
