@@ -49,6 +49,18 @@ instance {φ : Measure α} {κ : Kernel α α} [IsStronglyIrreducible φ κ] :
   { irreducible := fun _ hs hsp ↦ by
       use 1; simpa using IsStronglyIrreducible.strongly_irreducible hs hsp }
 
+instance isIrreducible_of_smul_measure {c : ℝ≥0∞}
+    {φ : Measure α} {κ : Kernel α α} [hκ : IsIrreducible φ κ] :
+    IsIrreducible (c • φ) κ :=
+  { irreducible := fun s hs hsp ↦ by
+      simpa using hκ.irreducible hs <| by simp_all }
+
+instance isStronglyIrreducible_of_smul_measure {c : ℝ≥0∞}
+    {φ : Measure α} {κ : Kernel α α} [hκ : IsStronglyIrreducible φ κ] :
+    IsStronglyIrreducible (c • φ) κ :=
+  { strongly_irreducible := fun s hs hsp ↦ by
+      simpa using hκ.strongly_irreducible hs <| by simp_all }
+
 lemma isIrreducible_of_le_measure {φ₁ φ₂ : Measure α} (hφ : φ₁ ≤ φ₂)
     {κ : Kernel α α} [hκ : IsIrreducible φ₂ κ] :
     IsIrreducible φ₁ κ :=
