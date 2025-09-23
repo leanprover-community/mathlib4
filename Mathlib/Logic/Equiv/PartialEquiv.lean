@@ -76,9 +76,8 @@ new file to become functional.
 -/
 
 /-- Common `@[simps]` configuration options used for manifold-related declarations. -/
-@[deprecated (since := "2025-09-23") "Use `@[simps (attr := mfld_simps) -fullyApplied]` instead"]
+@[deprecated "Use `@[simps (attr := mfld_simps) -fullyApplied]` instead" (since := "2025-09-23")]
 def mfld_cfg : Simps.Config where
-  attrs := .missing
   fullyApplied := false
 
 namespace Tactic.MfldSetTac
