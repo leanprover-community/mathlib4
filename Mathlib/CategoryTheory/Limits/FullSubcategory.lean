@@ -66,7 +66,7 @@ def createsLimitFullSubcategoryInclusionOfClosed [P.IsClosedUnderLimitsOfShape J
   createsLimitFullSubcategoryInclusion F (P.prop_limit _ fun j => (F.obj j).property)
 
 /-- If `P` is closed under limits of shape `J`, then the inclusion creates such limits. -/
-def createsLimitsOfShapeFullSubcategoryInclusion [P.IsClosedUnderLimitsOfShape J]
+instance createsLimitsOfShapeFullSubcategoryInclusion [P.IsClosedUnderLimitsOfShape J]
     [HasLimitsOfShape J C] : CreatesLimitsOfShape J P.ι where
   CreatesLimit := @fun F => createsLimitFullSubcategoryInclusionOfClosed J P F
 
@@ -76,7 +76,7 @@ theorem hasLimit_of_closedUnderLimits [P.IsClosedUnderLimitsOfShape J]
     createsLimitFullSubcategoryInclusionOfClosed J P F
   hasLimit_of_created F P.ι
 
-theorem hasLimitsOfShape_of_closedUnderLimits [P.IsClosedUnderLimitsOfShape J]
+instance hasLimitsOfShape_of_closedUnderLimits [P.IsClosedUnderLimitsOfShape J]
     [HasLimitsOfShape J C] : HasLimitsOfShape J P.FullSubcategory :=
   { has_limit := fun F => hasLimit_of_closedUnderLimits J P F }
 
@@ -87,7 +87,7 @@ def createsColimitFullSubcategoryInclusionOfClosed [P.IsClosedUnderColimitsOfSha
   createsColimitFullSubcategoryInclusion F (P.prop_colimit _ fun j => (F.obj j).property)
 
 /-- If `P` is closed under colimits of shape `J`, then the inclusion creates such colimits. -/
-def createsColimitsOfShapeFullSubcategoryInclusion [P.IsClosedUnderColimitsOfShape J]
+instance createsColimitsOfShapeFullSubcategoryInclusion [P.IsClosedUnderColimitsOfShape J]
     [HasColimitsOfShape J C] : CreatesColimitsOfShape J P.ι where
   CreatesColimit := @fun F => createsColimitFullSubcategoryInclusionOfClosed J P F
 
@@ -97,7 +97,7 @@ theorem hasColimit_of_closedUnderColimits [P.IsClosedUnderColimitsOfShape J]
     createsColimitFullSubcategoryInclusionOfClosed J P F
   hasColimit_of_created F P.ι
 
-theorem hasColimitsOfShape_of_closedUnderColimits [P.IsClosedUnderColimitsOfShape J]
+instance hasColimitsOfShape_of_closedUnderColimits [P.IsClosedUnderColimitsOfShape J]
     [HasColimitsOfShape J C] : HasColimitsOfShape J P.FullSubcategory :=
   { has_colimit := fun F => hasColimit_of_closedUnderColimits J P F }
 

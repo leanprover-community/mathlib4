@@ -776,7 +776,8 @@ variable {P : ObjectProperty C}
 -- TODO: Introduce `ClosedUnderFiniteProducts`?
 /-- The restriction of a Cartesian-monoidal category along an object property that's closed under
 finite products is Cartesian-monoidal. -/
-instance fullSubcategoryOfIsClosedUnderLimitsOfShape
+@[simps!]
+instance fullSubcategory'
     [P.IsClosedUnderLimitsOfShape (Discrete PEmpty)]
     [P.IsClosedUnderLimitsOfShape (Discrete WalkingPair)] :
     CartesianMonoidalCategory P.FullSubcategory where
@@ -794,7 +795,7 @@ instance fullSubcategoryOfIsClosedUnderLimitsOfShape
   snd_def X Y := snd_def X.1 Y.1
 
 @[deprecated (since := "2025-09-22")] alias fullSubcategory :=
-  fullSubcategoryOfIsClosedUnderLimitsOfShape
+  fullSubcategory'
 
 end CartesianMonoidalCategory
 
@@ -963,11 +964,6 @@ alias braidedOfChosenFiniteProducts := Braided.ofChosenFiniteProducts
 
 namespace EssImageSubcategory
 variable [F.Full] [F.Faithful] [PreservesFiniteProducts F] {T X Y Z : F.EssImageSubcategory}
-
-@[simps!]
-noncomputable instance instCartesianMonoidalCategory :
-     CartesianMonoidalCategory F.EssImageSubcategory :=
-  .fullSubcategory (.essImage _) (.essImage _)
 
 lemma tensor_obj (X Y : F.EssImageSubcategory) : (X ⊗ Y).obj = X.obj ⊗ Y.obj := rfl
 
