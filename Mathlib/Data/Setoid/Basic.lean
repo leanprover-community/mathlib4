@@ -320,7 +320,8 @@ theorem lift_unique {r : Setoid α} {f : α → β} (H : r ≤ ker f) (g : Quoti
 /-- Given a function `f`, lift it to the quotient by its kernel. -/
 abbrev kerLift (f : α → β) : Quotient (ker f) → β := Quotient.lift f fun _ _ => id
 
-@[simp] theorem kerLift_mk (f : α → β) (x : α) : kerLift f ⟦x⟧ = f x := rfl
+@[simp]
+theorem kerLift_mk (f : α → β) (x : α) : kerLift f ⟦x⟧ = f x := rfl
 
 theorem kerLift_eq_apply_out (f : α → β) (q : Quotient (ker f)) : kerLift f q = f q.out := by
   nth_rw 1 [← q.out_eq]
@@ -328,8 +329,10 @@ theorem kerLift_eq_apply_out (f : α → β) (q : Quotient (ker f)) : kerLift f 
 
 /-- Given a map `f` from `α` to `β`, the natural map from the quotient of `α` by the kernel of `f`
 is injective. -/
-theorem kerLift_injective (f : α → β) : Injective (kerLift f) :=
+theorem kerLift_injective (f : α → β) : Injective <| kerLift f :=
   fun x y => Quotient.inductionOn₂' x y fun _ _ h => Quotient.sound' h
+
+@[deprecated (since := "2025-09-23")] alias ker_lift_injective := kerLift_injective
 
 /-- Given a map `f` from `α` to `β`, the kernel of `f` is the unique equivalence relation on `α`
 whose induced map from the quotient of `α` to `β` is injective. -/
@@ -348,13 +351,13 @@ theorem kerLift_range_eq_range : Set.range (kerLift f) = Set.range f :=
 
 /-- The quotient of `α` by the kernel of a function `f`
 bijects with the image of `f` lifted to the quotient. -/
-noncomputable def quotientKerEquivRangeKerLift : Quotient (ker f) ≃ Set.range (kerLift f) :=
+noncomputable def quotientKerEquivKerLiftRange : Quotient (ker f) ≃ Set.range (kerLift f) :=
   Equiv.ofInjective _ (kerLift_injective _)
 
 /-- The first isomorphism theorem for sets: the quotient of `α` by the kernel of a function `f`
 bijects with `f`'s image. -/
 noncomputable def quotientKerEquivRange : Quotient (ker f) ≃ Set.range f :=
-  (quotientKerEquivRangeKerLift _).trans (.setCongr (kerLift_range_eq_range _))
+  (quotientKerEquivKerLiftRange _).trans (.setCongr (kerLift_range_eq_range _))
 
 /-- If `f` has a computable right-inverse, then the quotient by its kernel is equivalent to its
 domain. -/
