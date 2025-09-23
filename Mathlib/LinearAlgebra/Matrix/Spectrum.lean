@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
 import Mathlib.Analysis.InnerProductSpace.Spectrum
-import Mathlib.Data.List.GetD
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Eigs
 import Mathlib.LinearAlgebra.Matrix.Diagonal
@@ -163,22 +162,19 @@ lemma roots_charpoly_eq_eigenvalues₀ :
   simp only [← Multiset.map_map, eigenvalues, ← Function.comp_apply (f := hA.eigenvalues₀)]
   simp
 
-lemma eigenvalues₀_eq_getI_sort_roots_charpoly :
-    hA.eigenvalues₀ = fun i ↦ ((A.charpoly.roots.map RCLike.re).sort (· ≥ ·)).getI i.val := by
-  rw [hA.roots_charpoly_eq_eigenvalues₀]
-  simp_rw [Fin.univ_val_map, Multiset.map_coe, List.map_ofFn,
+lemma sort_roots_charpoly_eq_eigenvalues₀ :
+    (A.charpoly.roots.map RCLike.re).sort (· ≥ ·) = List.ofFn hA.eigenvalues₀ := by
+  simp_rw [hA.roots_charpoly_eq_eigenvalues₀, Fin.univ_val_map, Multiset.map_coe, List.map_ofFn,
     Function.comp_def, RCLike.ofReal_re, Multiset.coe_sort]
   rw [List.mergeSort_of_sorted]
-  · simp [List.getI_eq_getElem]
-  · simp only [decide_eq_true_eq]
-    exact (eigenvalues₀_antitone hA).ofFn_sorted
+  simpa [List.Sorted] using (eigenvalues₀_antitone hA).ofFn_sorted
 
-lemma eigenvalues_eq_iff_charpoly_eq :
+lemma eigenvalues_eq_eigenvalues_iff :
     hA.eigenvalues = hB.eigenvalues ↔ A.charpoly = B.charpoly := by
   constructor <;> intro h
   · rw [hA.charpoly_eq, hB.charpoly_eq, h]
-  · unfold eigenvalues
-    simp_rw [eigenvalues₀_eq_getI_sort_roots_charpoly, h]
+  · suffices hA.eigenvalues₀ = hB.eigenvalues₀ by unfold eigenvalues; rw [this]
+    simp_rw [← List.ofFn_inj, ← sort_roots_charpoly_eq_eigenvalues₀, h]
 
 theorem splits_charpoly (hA : A.IsHermitian) : A.charpoly.Splits (RingHom.id 𝕜) :=
   Polynomial.splits_iff_card_roots.mpr (by simp [hA.roots_charpoly_eq_eigenvalues])
