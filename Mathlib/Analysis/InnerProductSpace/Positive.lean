@@ -178,12 +178,11 @@ theorem IsPositive.of_isSymmetricProjection {p : E →ₗ[𝕜] E} (hp : p.IsSym
 @[deprecated (since := "19-08-2025")]
 alias IsPositive.of_isStarProjection := IsPositive.of_isSymmetricProjection
 
-theorem IsSymmetricProjection.le_iff_comp_eq_right {p q : E →ₗ[𝕜] E}
-    (hp : p.IsSymmetricProjection) (hq : q.IsSymmetricProjection) : p ≤ q ↔ q ∘ₗ p = p := by
-  refine ⟨fun ⟨h1, h2⟩ => ?_, fun hpq ↦
-    IsPositive.of_isSymmetricProjection <| hp.sub_of_comp_eq_right hq hpq⟩
-  rw [hq.isIdempotentElem.comp_eq_right_iff]
-  intro a ha
+theorem IsSymmetricProjection.le_iff_range_le_range {p q : E →ₗ[𝕜] E}
+    (hp : p.IsSymmetricProjection) (hq : q.IsSymmetricProjection) : p ≤ q ↔ range p ≤ range q := by
+  refine ⟨fun ⟨h1, h2⟩ a ha => ?_, fun hpq ↦
+    IsPositive.of_isSymmetricProjection <| hp.sub_of_comp_eq_right hq <|
+    hq.isIdempotentElem.comp_eq_right_iff _|>.mpr hpq⟩
   specialize h2 a
   have hh {T : E →ₗ[𝕜] E} (hT : T.IsSymmetricProjection) : RCLike.re ⟪T a, a⟫_𝕜 = ‖T a‖ ^ 2 := by
     conv_lhs => rw [← hT.isIdempotentElem]
@@ -195,24 +194,14 @@ theorem IsSymmetricProjection.le_iff_comp_eq_right {p q : E →ₗ[𝕜] E}
   simpa [Submodule.starProjection_coe_eq_isCompl_projection] using
     U.mem_iff_norm_starProjection _ |>.mpr <| le_antisymm (U.norm_starProjection_apply_le a) h2
 
-theorem IsSymmetricProjection.le_iff_comp_eq_left {p q : E →ₗ[𝕜] E}
-    (hp : p.IsSymmetricProjection) (hq : q.IsSymmetricProjection) : p ≤ q ↔ p ∘ₗ q = p := by
-  rw [hp.le_iff_comp_eq_right hq]
-  constructor
-  all_goals
-    intro h
-    apply LinearMap.ext fun x => ext_inner_left 𝕜 fun y => ?_
-    simp only [LinearMap.comp_apply, ← hq.isSymmetric _, ← hp.isSymmetric _]
-    simp only [← LinearMap.comp_apply, h]
-
 end LinearMap
 
 theorem Submodule.coe_starProjection_le_coe_starProjection_iff {U V : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
     U.starProjection.toLinearMap ≤ V.starProjection ↔ U ≤ V := by
-  simp_rw [isSymmetricProjection_starProjection _ |>.le_iff_comp_eq_right <|
+  simp_rw [isSymmetricProjection_starProjection _ |>.le_iff_range_le_range <|
       isSymmetricProjection_starProjection _, starProjection_coe_eq_isCompl_projection,
-    IsCompl.projection_isIdempotentElem _ |>.comp_eq_right_iff, IsCompl.projection_range]
+    IsCompl.projection_range]
 
 theorem Submodule.starProjection_inj {U V : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] :
