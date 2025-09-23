@@ -281,18 +281,30 @@ protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (co
   simp only [smul_add, ← smul_comm]
   exact convex_convexHull ℝ s (hx a ha) (hy a ha) hu hv huv
 
-variable (F ℱ : Type*) [AddCommGroup F] [Module 𝕜 F]
+variable {F ℱ : Type*} [AddCommGroup F] [Module 𝕜 F]
 variable [FunLike ℱ F E] [LinearMapClass ℱ 𝕜 F E]
 
+theorem Absorbent.module_univ {V : Submodule 𝕜 E} (hV : Absorbent 𝕜 (V : Set E)) :
+    (V : Set E) = Set.univ := by
+  ext x
+  refine ⟨by simp, fun _ ↦ ?_⟩
+  obtain ⟨r, r_pos, hr⟩ := Absorbs.exists_pos (hV x)
+  obtain ⟨α, hα⟩ := NormedField.exists_lt_norm 𝕜 r
+  have hα_unit : IsUnit α := by
+    apply isUnit_iff_ne_zero.mpr <| ne_zero_of_norm_ne_zero (a := α) _
+    linarith
+  obtain ⟨_, H, _, _, rfl⟩ := mem_smul.mp <|
+    singleton_subset_iff.mp <| singleton_smul (β := E) (a := α) ▸ hr α (le_of_lt hα)
+  rwa [SetLike.mem_coe, ← Submodule.smul_mem_iff_of_isUnit _ hα_unit.inv, mem_singleton_iff.mpr H,
+    ← smul_assoc, smul_eq_mul, hα_unit.inv_mul_cancel, one_smul]
+
 theorem Absorbent.subset_range_iff_surjective {f : ℱ} {s : Set E} (hs_abs : Absorbent 𝕜 s) :
-    s ⊆ Set.range f ↔ (⇑f).Surjective := by
-  refine ⟨fun hs_sub y ↦ ?_, by simp_all⟩
-  obtain ⟨r, -, hr⟩ := Absorbs.exists_pos (hs_abs y)
-  obtain ⟨x, hx⟩ := NormedField.exists_lt_norm 𝕜 r
-  specialize hr _ hx.le
-  grw [hs_sub, Set.singleton_subset_iff] at hr
-  obtain ⟨-, ⟨z, rfl⟩, rfl⟩ := hr
-  exact ⟨x • z, map_smul _ _ _⟩
+    s ⊆ LinearMap.range f ↔ (⇑f).Surjective :=
+  ⟨fun hs_sub ↦ range_eq_univ.mp (hs_abs.mono hs_sub).module_univ, fun h a _ ↦ h a⟩
+
+theorem Absorbent.subset_range_iff_surjective' {f : ℱ} {s : Set E} (hs_abs : Absorbent 𝕜 s) :
+    s ⊆ Set.range f ↔ (⇑f).Surjective :=
+  LinearMap.coe_range (f := f) ▸ hs_abs.subset_range_iff_surjective
 
 end NontriviallyNormedField
 
