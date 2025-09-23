@@ -3595,6 +3595,7 @@ import Mathlib.Data.Real.Pi.Leibniz
 import Mathlib.Data.Real.Pi.Wallis
 import Mathlib.Data.Real.Pointwise
 import Mathlib.Data.Real.Sign
+import Mathlib.Data.Real.Spectrum
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Data.Real.Star
 import Mathlib.Data.Real.StarOrdered
