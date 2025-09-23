@@ -19,7 +19,7 @@ if all `Ext X Y i` vanish when `n ≤ i`. This defines a type class
 `HasProjectiveDimensionLT X 0`, but this cannot be expressed in terms of
 `HasProjectiveDimensionLE`.)
 
-We also defined the projective dimension as `WithBot ℕ∞` as `projectiveDimension`,
+We also define the projective dimension in `WithBot ℕ∞` as `projectiveDimension`,
 `projectiveDimension X = ⊥` iff `X` is zero and acts in common sense in the non-negative values.
 
 -/
@@ -226,7 +226,7 @@ end CategoryTheory
 
 section ProjectiveDimension
 
-open CategoryTheory
+namespace CategoryTheory
 
 variable {C : Type u} [Category.{v, u} C] [Abelian C]
 
@@ -241,9 +241,18 @@ lemma projectiveDimension_eq_of_iso {X Y : C} (e : X ≅ Y) :
   exact ⟨fun h ↦ hasProjectiveDimensionLT_of_iso e _,
     fun h ↦ hasProjectiveDimensionLT_of_iso e.symm _⟩
 
+lemma Retract.projectiveDimension_le {X Y : C} (h : Retract X Y) :
+    projectiveDimension X ≤ projectiveDimension Y :=
+  sInf_le_sInf_of_subset_insert_top (fun n hn ↦ by
+    simp only [Set.mem_setOf_eq, not_top_lt, IsEmpty.forall_iff, implies_true,
+      Set.insert_eq_of_mem] at hn ⊢
+    intro i hi
+    have := hn i hi
+    exact h.hasProjectiveDimensionLT i)
+
 lemma projectiveDimension_lt_iff {X : C} {n : ℕ} :
     projectiveDimension X < n ↔ HasProjectiveDimensionLT X n := by
-  refine ⟨fun h ↦ ?_, fun h ↦ (sInf_lt_iff ..).2 ?_⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ sInf_lt_iff.2 ?_⟩
   · have : projectiveDimension X ∈ _ := csInf_mem ⟨⊤, by simp⟩
     simp only [Set.mem_setOf_eq] at this
     exact this _ h
@@ -252,16 +261,16 @@ lemma projectiveDimension_lt_iff {X : C} {n : ℕ} :
     · exact ⟨n, fun i hi ↦ hasProjectiveDimensionLT_of_ge _ (n + 1) _ (by simpa using hi),
         by simp [WithBot.lt_add_one_iff]⟩
 
-lemma projectiveDimension_le_iff (X : C) (n : ℕ) : projectiveDimension X ≤ n ↔
-    HasProjectiveDimensionLE X n := by
+lemma projectiveDimension_le_iff (X : C) (n : ℕ) :
+    projectiveDimension X ≤ n ↔ HasProjectiveDimensionLE X n := by
   simp [← projectiveDimension_lt_iff, ← WithBot.lt_add_one_iff]
 
-lemma projectiveDimension_ge_iff (X : C) (n : ℕ) : n ≤ projectiveDimension X  ↔
-    ¬ HasProjectiveDimensionLT X n := by
+lemma projectiveDimension_ge_iff (X : C) (n : ℕ) :
+    n ≤ projectiveDimension X ↔ ¬ HasProjectiveDimensionLT X n := by
   rw [← not_iff_not, not_le, not_not, projectiveDimension_lt_iff]
 
-lemma projectiveDimension_eq_bot_iff (X : C) : projectiveDimension X = ⊥ ↔
-    Limits.IsZero X := by
+lemma projectiveDimension_eq_bot_iff (X : C) :
+    projectiveDimension X = ⊥ ↔ Limits.IsZero X := by
   rw [← hasProjectiveDimensionLT_zero_iff_isZero, ← projectiveDimension_lt_iff,
     Nat.cast_zero, ← WithBot.lt_coe_bot, bot_eq_zero', WithBot.coe_zero]
 
@@ -283,5 +292,7 @@ lemma projectiveDimension_ne_top_iff (X : C) :
     | coe d =>
       simp only [ne_eq, WithBot.coe_eq_top, ENat.coe_ne_top, not_false_eq_true, true_iff]
       exact ⟨d, by simpa only [← projectiveDimension_le_iff] using hd.le⟩
+
+end CategoryTheory
 
 end ProjectiveDimension
