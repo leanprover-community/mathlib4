@@ -141,7 +141,7 @@ lemma projective_iff_subsingleton_ext_one [HasExt.{w} C] {X : C} :
   obtain ⟨φ, rfl⟩ := Ext.homEquiv₀.symm.surjective φ
   exact ⟨φ, Ext.homEquiv₀.symm.injective (by simpa using hφ)⟩
 
-lemma hasProjectiveDimensionLT_one_iff (X : C) :
+lemma projective_iff_hasProjectiveDimensionLT_one (X : C) :
     Projective X ↔ HasProjectiveDimensionLT X 1 := by
   letI := HasExt.standard C
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ projective_iff_subsingleton_ext_one.2
