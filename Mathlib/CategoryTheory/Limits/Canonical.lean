@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 # Canonical colimits
 
 Given a functor `F : C ⥤ D` and `Y : D`, we say that `Y` is a
-canonical colimit relatively to `F` is `Y` identifies to the
+canonical colimit relatively to `F` if `Y` identifies to the
 colimit of all `F.obj X` for `X : C` and `f : F.obj X ⟶ Y`,
 i.e. `Y` identifies to the colimit of the obvious functor
 `CostructuredArrow F Y ⥤ D` (see definitions `canonicalCocone`
