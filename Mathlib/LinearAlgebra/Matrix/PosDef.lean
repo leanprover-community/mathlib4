@@ -324,20 +324,6 @@ noncomputable def sqrt : Matrix n n 𝕜 :=
   hA.1.eigenvectorUnitary.1 * diagonal ((↑) ∘ (√·) ∘ hA.1.eigenvalues) *
   (star hA.1.eigenvectorUnitary : Matrix n n 𝕜)
 
-open Lean PrettyPrinter.Delaborator SubExpr in
-/-- Custom elaborator to produce output like `(_ : PosSemidef A).sqrt` in the goal view. -/
-@[app_delab Matrix.PosSemidef.sqrt]
-def delabSqrt : Delab :=
-  whenPPOption getPPNotation <|
-  whenNotPPOption getPPAnalysisSkip <|
-  withOverApp 7 <|
-  withOptionAtCurrPos `pp.analysis.skip true do
-    let e ← getExpr
-    guard <| e.isAppOfArity ``Matrix.PosSemidef.sqrt 7
-    let optionsPerPos ← withNaryArg 6 do
-      return (← read).optionsPerPos.setBool (← getPos) `pp.proofs.withType true
-    withTheReader Context ({· with optionsPerPos}) delab
-
 @[deprecated CFC.sqrt_nonneg (since := "2025-09-22")]
 lemma posSemidef_sqrt : PosSemidef (CFC.sqrt A) :=
   nonneg_iff.mp (CFC.sqrt_nonneg A)
