@@ -689,7 +689,7 @@ namespace ContinuousLinearMap
 
 variable {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜 E]
   [NormedSpace 𝕜' F]
-variable {σ : 𝕜 →+* 𝕜'} {σ' : 𝕜' →+* 𝕜} [RingHomIsometric σ]
+variable {σ : 𝕜 →+* 𝕜'} [RingHomIsometric σ]
 
 /-- Composing `f : Lp` with `L : E →L[𝕜] F`. -/
 def compLp (L : E →SL[σ] F) (f : Lp E p μ) : Lp F p μ :=
