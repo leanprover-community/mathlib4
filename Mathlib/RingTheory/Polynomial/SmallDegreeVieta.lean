@@ -69,8 +69,7 @@ lemma eq_mul_mul_of_aroots_quadratic_eq_pair [CommRing T] [CommRing S] [IsDomain
   · rw [← hp_roots_card']
     exact card_roots' (map (algebraMap T S) p)
 
-lemma test [CommRing R] [IsDomain R] {p : R[X]}
-    (hp : p.natDegree = 2) : (p.coeff 2) ≠ 0 := by
+lemma test [CommRing R] {p : R[X]} (hp : p.natDegree = 2) : (p.coeff 2) ≠ 0 := by
   apply coeff_ne_zero_of_eq_degree
   unfold natDegree at hp
   rw [WithBot.unbotD_eq_iff] at hp
