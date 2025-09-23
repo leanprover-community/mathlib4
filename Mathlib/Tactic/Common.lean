@@ -9,6 +9,9 @@ import Aesop
 import Qq
 import Plausible
 
+-- Import `reap` so we can try it out.
+import Reap
+
 -- Tools for analysing imports, like `#find_home`, `#minimize_imports`, ...
 import ImportGraph.Imports
 
