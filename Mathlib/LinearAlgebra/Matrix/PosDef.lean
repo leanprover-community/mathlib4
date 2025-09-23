@@ -328,9 +328,8 @@ include hA in
 lemma sqrt_mul_self : CFC.sqrt A * CFC.sqrt A = A := CFC.sqrt_mul_sqrt_self A hA.nonneg
 
 include hA in
-lemma eq_of_sq_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B ^ 2) : A = B := by
-  rw [← CFC.sqrt_sq A hA.nonneg]
-  exact (CFC.sqrt_unique (sq B ▸ hAB.symm) hB.nonneg)
+lemma eq_of_sq_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B ^ 2) : A = B :=
+  CFC.sqrt_sq A hA.nonneg ▸ CFC.sqrt_unique (sq B ▸ hAB.symm) hB.nonneg
 
 include hA in
 lemma sq_eq_sq_iff {B : Matrix n n 𝕜} (hB : PosSemidef B) : A ^ 2 = B ^ 2 ↔ A = B :=
