@@ -101,6 +101,9 @@ lemma isZero_of_hasProjectiveDimensionLT_zero [HasProjectiveDimensionLT X 0] : I
   simpa only [Ext.homEquiv₀_symm_apply, Ext.mk₀_zero]
     using Abelian.Ext.eq_zero_of_hasProjectiveDimensionLT _ 0 (by rfl)
 
+lemma hasProjectiveDimensionLT_zero_iff_isZero : HasProjectiveDimensionLT X 0 ↔ IsZero X :=
+  ⟨fun _ ↦ isZero_of_hasProjectiveDimensionLT_zero X, fun h ↦ h.hasProjectiveDimensionLT_zero⟩
+
 lemma hasProjectiveDimensionLT_of_ge (m : ℕ) (h : n ≤ m)
     [HasProjectiveDimensionLT X n] :
     HasProjectiveDimensionLT X m := by
@@ -128,6 +131,28 @@ instance [Projective X] : HasProjectiveDimensionLT X 1 := by
   obtain _ | i := i
   · simp at hi
   · exact e.eq_zero_of_projective
+
+lemma hasProjectiveDimensionLT_one_iff (X : C) :
+    Projective X ↔ HasProjectiveDimensionLT X 1 := by
+  letI := HasExt.standard C
+  refine ⟨fun h ↦ inferInstance, fun ⟨h⟩ ↦ ⟨?_⟩⟩
+  intro Z Y f g epi
+  let S := ShortComplex.mk (kernel.ι g) g (kernel.condition g)
+  have S_exact : S.ShortExact := {
+    exact := ShortComplex.exact_kernel g
+    mono_f := equalizer.ι_mono
+    epi_g := epi}
+  have : IsZero (AddCommGrp.of (Ext X S.X₁ 1)) := by
+    let _ := h 1 (le_refl 1) (Y := S.X₁)
+    exact AddCommGrp.isZero_of_subsingleton _
+  have exac := Ext.covariant_sequence_exact₃' X S_exact 0 1 (zero_add 1)
+  have surj: Function.Surjective ((Ext.mk₀ S.g).postcomp X (add_zero 0)) :=
+    (AddCommGrp.epi_iff_surjective _).mp (exac.epi_f (this.eq_zero_of_tgt _))
+  rcases surj (Ext.mk₀ f) with ⟨f', hf'⟩
+  use Ext.addEquiv₀ f'
+  simp only [AddMonoidHom.flip_apply, Ext.bilinearComp_apply_apply] at hf'
+  rw [← Ext.mk₀_addEquiv₀_apply f', Ext.mk₀_comp_mk₀] at hf'
+  exact (Ext.mk₀_bijective X Y).1 hf'
 
 end
 
@@ -306,28 +331,5 @@ lemma projectiveDimension_ne_top_iff (X : C) : projectiveDimension X ≠ ⊤ ↔
   · use n
     simpa using ⟨fun i hi ↦ hasProjectiveDimensionLT_of_ge X (n + 1) i hi,
       WithBot.coe_inj.not.mpr (ENat.coe_ne_top n)⟩
-
-open Limits Abelian in
-lemma hasProjectiveDimensionLT_one_iff (X : C) :
-    Projective X ↔ HasProjectiveDimensionLT X 1 := by
-  letI := HasExt.standard C
-  refine ⟨fun h ↦ inferInstance, fun ⟨h⟩ ↦ ⟨?_⟩⟩
-  intro Z Y f g epi
-  let S := ShortComplex.mk (kernel.ι g) g (kernel.condition g)
-  have S_exact : S.ShortExact := {
-    exact := ShortComplex.exact_kernel g
-    mono_f := equalizer.ι_mono
-    epi_g := epi}
-  have : IsZero (AddCommGrp.of (Ext X S.X₁ 1)) := by
-    let _ := h 1 (le_refl 1) (Y := S.X₁)
-    exact AddCommGrp.isZero_of_subsingleton _
-  have exac := Ext.covariant_sequence_exact₃' X S_exact 0 1 (zero_add 1)
-  have surj: Function.Surjective ((Ext.mk₀ S.g).postcomp X (add_zero 0)) :=
-    (AddCommGrp.epi_iff_surjective _).mp (exac.epi_f (this.eq_zero_of_tgt _))
-  rcases surj (Ext.mk₀ f) with ⟨f', hf'⟩
-  use Ext.addEquiv₀ f'
-  simp only [AddMonoidHom.flip_apply, Ext.bilinearComp_apply_apply] at hf'
-  rw [← Ext.mk₀_addEquiv₀_apply f', Ext.mk₀_comp_mk₀] at hf'
-  exact (Ext.mk₀_bijective X Y).1 hf'
 
 end ProjectiveDimension
