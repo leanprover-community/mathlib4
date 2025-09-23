@@ -131,22 +131,12 @@ noncomputable def functorMonoidalOfComp : F.Monoidal :=
 
 @[reassoc]
 lemma functorMonoidalOfComp_ε : letI := functorMonoidalOfComp L W F G
-    ε F = ε (L ⋙ F) ≫ F.map (η L) := by
-  simp
-
-@[reassoc]
-lemma functorMonoidalOfComp_ε' : letI := functorMonoidalOfComp L W F G
     letI e := Lifting.iso L W G F
     ε F = ε G ≫ e.inv.app _ ≫ F.map (η L) := by
   simp [Functor.CoreMonoidal.toLaxMonoidal_ε]
 
 @[reassoc]
 lemma functorMonoidalOfComp_μ (X Y : C) : letI := functorMonoidalOfComp L W F G
-    μ F (L.obj X) (L.obj Y) = μ (L ⋙ F) X Y ≫ F.map (δ L _ _) := by
-  simp [Functor.CoreMonoidal.toLaxMonoidal_μ]
-
-@[reassoc]
-lemma functorMonoidalOfComp_μ' (X Y : C) : letI := functorMonoidalOfComp L W F G
     letI e := Lifting.iso L W G F
     μ F (L.obj X) (L.obj Y) = (e.hom.app _ ⊗ₘ e.hom.app _) ≫ μ G X Y ≫ e.inv.app _ ≫
         F.map (δ L _ _) := by
@@ -157,7 +147,7 @@ instance natTrans_isMonoidal :
     (Lifting.iso L W G F).hom.IsMonoidal := by
   letI : F.Monoidal := functorMonoidalOfComp L W F G
   refine ⟨?_, fun _ _ ↦ ?_⟩
-  · simp [functorMonoidalOfComp_ε']
-  · simp [functorMonoidalOfComp_μ']
+  · simp [functorMonoidalOfComp_ε]
+  · simp [functorMonoidalOfComp_μ]
 
 end CategoryTheory.Localization.Monoidal
