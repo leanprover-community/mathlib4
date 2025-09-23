@@ -6,6 +6,7 @@ Authors: Jean Lo, Yaël Dillies, Moritz Doll
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Analysis.LocallyConvex.Basic
+import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Data.Real.Pointwise
 
 /-!
@@ -187,7 +188,7 @@ instance instPartialOrder : PartialOrder (Seminorm 𝕜 E) :=
   PartialOrder.lift _ DFunLike.coe_injective
 
 instance instIsOrderedCancelAddMonoid : IsOrderedCancelAddMonoid (Seminorm 𝕜 E) :=
-  DFunLike.coe_injective.isOrderedCancelAddMonoid _ rfl coe_add fun _ _ => rfl
+  Function.Injective.isOrderedCancelAddMonoid DFunLike.coe coe_add .rfl
 
 instance instMulAction [Monoid R] [MulAction R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] :
     MulAction R (Seminorm 𝕜 E) :=
@@ -892,7 +893,7 @@ theorem ball_norm_mul_subset {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} :
     rw [Set.mem_smul_set, Seminorm.mem_ball_zero]
     refine fun hx => ⟨k⁻¹ • x, ?_, ?_⟩
     · rwa [Seminorm.mem_ball_zero, map_smul_eq_mul, norm_inv, ←
-        mul_lt_mul_left <| norm_pos_iff.mpr hk, ← mul_assoc, ← div_eq_mul_inv ‖k‖ ‖k‖,
+        mul_lt_mul_iff_right₀ <| norm_pos_iff.mpr hk, ← mul_assoc, ← div_eq_mul_inv ‖k‖ ‖k‖,
         div_self (ne_of_gt <| norm_pos_iff.mpr hk), one_mul]
     rw [← smul_assoc, smul_eq_mul, ← div_eq_mul_inv, div_self hk, one_smul]
 

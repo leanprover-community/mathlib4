@@ -58,16 +58,20 @@ The following facts are true more generally in a (linearly) ordered commutative 
 /-- Pullback a `LinearOrderedCommMonoidWithZero` under an injective map.
 See note [reducible non-instances]. -/
 abbrev Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β] [Bot β] [One β]
-    [Mul β] [Pow β ℕ] [Max β] [Min β] (f : β → α) (hf : Function.Injective f) (zero : f 0 = 0)
+    [Mul β] [Pow β ℕ] [LE β] [LT β] [Max β] [Min β] [Ord β]
+    [DecidableEq β] [DecidableLE β] [DecidableLT β]
+    (f : β → α) (hf : Function.Injective f) (zero : f 0 = 0)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y))
-    (bot : f ⊥ = ⊥) : LinearOrderedCommMonoidWithZero β where
-  __ := LinearOrder.lift f hf hsup hinf
-  __ := hf.isOrderedMonoid f one mul npow
+    (bot : f ⊥ = ⊥)
+    (compare : ∀ x y, compare (f x) (f y) = compare x y) :
+    LinearOrderedCommMonoidWithZero β where
+  __ := hf.linearOrder f le lt hinf hsup compare
   __ := hf.commMonoidWithZero f zero one mul npow
-  zero_le_one :=
-      show f 0 ≤ f 1 by simp only [zero, one, LinearOrderedCommMonoidWithZero.zero_le_one]
-  bot_le a := show f ⊥ ≤ f a from bot ▸ bot_le
+  __ := Function.Injective.isOrderedMonoid f mul le
+  zero_le_one := le.1 <| by simp only [zero, one, LinearOrderedCommMonoidWithZero.zero_le_one]
+  bot_le a := le.1 <| bot ▸ bot_le
 
 @[simp] lemma zero_le' : 0 ≤ a := by
   simpa only [mul_zero, mul_one] using mul_le_mul_left' (zero_le_one' α) a
@@ -564,5 +568,11 @@ lemma lt_mul_exp_iff_le {x y : ℤᵐ⁰} (hy : y ≠ 0) : x < y * exp 1 ↔ x �
   · simp
   lift x to Multiplicative ℤ using hx
   rw [← log_le_log, ← log_lt_log] <;> simp [log_mul, Int.lt_add_one_iff]
+
+lemma le_exp_log {x : Gᵐ⁰} :
+    x ≤ exp (log x) := by
+  cases x
+  · simp
+  · rfl
 
 end WithZero

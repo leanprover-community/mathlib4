@@ -42,23 +42,21 @@ namespace Nonneg
 
 instance isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] :
     IsOrderedAddMonoid { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.isOrderedAddMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
+  Function.Injective.isOrderedAddMonoid Subtype.val Nonneg.coe_add .rfl
 
 instance isOrderedCancelAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] :
     IsOrderedCancelAddMonoid { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.isOrderedCancelAddMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
+  Function.Injective.isOrderedCancelAddMonoid _ Nonneg.coe_add .rfl
 
 instance isOrderedRing [Semiring α] [PartialOrder α] [IsOrderedRing α] :
     IsOrderedRing { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.isOrderedRing _ Nonneg.coe_zero Nonneg.coe_one
-    (fun _ _ => rfl) (fun _ _=> rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ => rfl
+  Function.Injective.isOrderedRing Subtype.val Nonneg.coe_zero Nonneg.coe_one Nonneg.coe_add
+    Nonneg.coe_mul .rfl
 
 instance isStrictOrderedRing [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] :
     IsStrictOrderedRing { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.isStrictOrderedRing _ Nonneg.coe_zero Nonneg.coe_one
-    (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+  Function.Injective.isStrictOrderedRing Subtype.val Nonneg.coe_zero Nonneg.coe_one Nonneg.coe_add
+    Nonneg.coe_mul .rfl .rfl
 
 instance existsAddOfLE [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α] :
     ExistsAddOfLE { x : α // 0 ≤ x } :=
@@ -72,6 +70,13 @@ instance existsAddOfLE [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] 
 instance nontrivial [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] :
     Nontrivial { x : α // 0 ≤ x } :=
   ⟨⟨0, 1, fun h => zero_ne_one (congr_arg Subtype.val h)⟩⟩
+
+instance [Nontrivial α] [AddGroup α] [LinearOrder α] [AddLeftMono α] :
+    Nontrivial { x : α // 0 ≤ x } := by
+  have ⟨a, ha⟩ := exists_ne (0 : α)
+  obtain lt | lt := ha.lt_or_gt
+  · exact ⟨0, ⟨-a, neg_nonneg.mpr lt.le⟩, Subtype.coe_ne_coe.mp (neg_ne_zero.mpr ha).symm⟩
+  · exact ⟨0, ⟨a, lt.le⟩, Subtype.coe_ne_coe.mp ha.symm⟩
 
 instance linearOrderedCommMonoidWithZero [CommSemiring α] [LinearOrder α] [IsStrictOrderedRing α] :
     LinearOrderedCommMonoidWithZero { x : α // 0 ≤ x } :=

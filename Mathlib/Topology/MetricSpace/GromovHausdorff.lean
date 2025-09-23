@@ -676,10 +676,7 @@ instance : SecondCountableTopology GHSpace := by
       /- the distance between `x` and `y` is encoded in `F p`, and the distance between
             `Φ x` and `Φ y` (two points of `s q`) is encoded in `F q`, all this up to `ε`.
             As `F p = F q`, the distances are almost equal. -/
-      -- Porting note: we have to circumvent the absence of `change … with … `
       intro x y
-      -- have : dist (Φ x) (Φ y) = dist (Ψ x) (Ψ y) := rfl
-      rw [show dist (Φ x) (Φ y) = dist (Ψ x) (Ψ y) from rfl]
       -- introduce `i`, that codes both `x` and `Φ x` in `Fin (N p) = Fin (N q)`
       let i : ℕ := E p x
       have hip : i < N p := ((E p) x).2
@@ -700,9 +697,7 @@ instance : SecondCountableTopology GHSpace := by
         simp only [F, (E q).symm_apply_apply]
       have Aq : (F q).2 ⟨i, hiq⟩ ⟨j, hjq⟩ = ⌊ε⁻¹ * dist (Ψ x) (Ψ y)⌋ := by
         rw [← this]
-        -- Porting note: `congr` fails to make progress
-        refine congr_arg₂ (F q).2 ?_ ?_ <;> ext1
-        exacts [i', j']
+        congr!
       -- use the equality between `F p` and `F q` to deduce that the distances have equal
       -- integer parts
       have : (F p).2 ⟨i, hip⟩ ⟨j, hjp⟩ = (F q).2 ⟨i, hiq⟩ ⟨j, hjq⟩ := by
@@ -847,8 +842,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       have Aq : ((F q).2 ⟨i, hiq⟩ ⟨j, hjq⟩).1 = ⌊ε⁻¹ * dist (Ψ x) (Ψ y)⌋₊ :=
         calc
           ((F q).2 ⟨i, hiq⟩ ⟨j, hjq⟩).1 = ((F q).2 ((E q) (Ψ x)) ((E q) (Ψ y))).1 := by
-            -- Porting note: `congr` drops `Fin.val` but fails to make further progress
-            exact congr_arg₂ (Fin.val <| (F q).2 · ·) (Fin.ext i') (Fin.ext j')
+            congr!
           _ = min M ⌊ε⁻¹ * dist (Ψ x) (Ψ y)⌋₊ := by simp only [F, (E q).symm_apply_apply]
           _ = ⌊ε⁻¹ * dist (Ψ x) (Ψ y)⌋₊ := by
             refine min_eq_right (Nat.floor_mono ?_)

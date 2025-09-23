@@ -497,7 +497,7 @@ lemma cfc_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
       rw [sum_coe_sort s, hsum]
       exact continuousOn_finset_sum s fun i hi => hf i hi
     rw [← sum_coe_sort s, ← sum_coe_sort s]
-    rw [cfc_apply_pi _ a _ (fun ⟨i, hi⟩ => hf i hi), ← map_sum, cfc_apply _ a ha hf']
+    rw [cfc_apply_pi _ a ha (fun ⟨i, hi⟩ => hf i hi), ← map_sum, cfc_apply _ a ha hf']
     congr 1
     ext
     simp
@@ -549,6 +549,15 @@ lemma cfc_const_mul_id (r : R) (a : A) (ha : p a := by cfc_tac) : cfc (r * ·) a
 include ha in
 lemma cfc_star_id : cfc (star · : R → R) a = star a := by
   rw [cfc_star .., cfc_id' ..]
+
+variable (R) in
+theorem range_cfc_eq_range_cfcHom [StarModule R A] {a : A} (ha : p a) :
+    Set.range (cfc (R := R) · a) = (cfcHom ha (R := R)).range := by
+  ext
+  constructor
+  all_goals rintro ⟨f, rfl⟩
+  · exact cfc_cases _ a f (zero_mem _) fun hf ha ↦ ⟨_, rfl⟩
+  · exact ⟨Subtype.val.extend f 0, cfcHom_eq_cfc_extend _ ha _ |>.symm⟩
 
 section Polynomial
 open Polynomial

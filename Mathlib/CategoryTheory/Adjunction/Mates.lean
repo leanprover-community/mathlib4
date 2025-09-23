@@ -32,7 +32,7 @@ isomorphism (since if `L₁ ≅ L₂` then we deduce `R₁ ≅ R₂`).
 
 Another example arises from considering the square representing that a functor `H` preserves
 products, in particular the morphism `HA ⨯ H- ⟶ H(A ⨯ -)`. Then provided `(A ⨯ -)` and `HA ⨯ -`
-have left adjoints (for instance if the relevant categories are cartesian closed), the transferred
+have left adjoints (for instance if the relevant categories are Cartesian closed), the transferred
 natural transformation is the exponential comparison morphism: `H(A ^ -) ⟶ HA ^ H-`.
 Furthermore if `H` has a left adjoint `L`, this morphism is an isomorphism iff its mate
 `L(HA ⨯ -) ⟶ A ⨯ L-` is an isomorphism, see

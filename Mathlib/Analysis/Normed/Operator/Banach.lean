@@ -6,8 +6,8 @@ Authors: Sébastien Gouëzel
 import Mathlib.Topology.Baire.Lemmas
 import Mathlib.Topology.Baire.CompleteMetrizable
 import Mathlib.Analysis.Normed.Operator.NormedSpace
-import Mathlib.Analysis.Normed.Affine.Isometry
 import Mathlib.Analysis.Normed.Group.InfiniteSum
+import Mathlib.Analysis.Normed.Group.AddTorsor
 
 /-!
 # Banach open mapping theorem
@@ -126,8 +126,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
           simp only [x, f.map_sub]
           abel
         _ ≤ ‖f x₁ - (a + d • y)‖ + ‖f x₂ - a‖ := norm_sub_le _ _
-        _ ≤ δ + δ := by rw [dist_eq_norm'] at h₁ h₂; gcongr
-        _ = 2 * δ := (two_mul _).symm
+        _ ≤ 2 * δ := by grind [dist_eq_norm']
     have J : ‖f (σ' d⁻¹ • x) - y‖ ≤ 1 / 2 * ‖y‖ :=
       calc
         ‖f (σ' d⁻¹ • x) - y‖ = ‖d⁻¹ • f x - (d⁻¹ * d) • y‖ := by
@@ -136,12 +135,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
         _ = ‖d⁻¹ • (f x - d • y)‖ := by rw [mul_smul, smul_sub]
         _ = ‖d‖⁻¹ * ‖f x - d • y‖ := by rw [norm_smul, norm_inv]
         _ ≤ ‖d‖⁻¹ * (2 * δ) := by gcongr
-        _ = ‖d‖⁻¹ * ‖d‖ * ‖y‖ / 2 := by
-          simp only [δ]
-          ring
-        _ = ‖y‖ / 2 := by
-          simp [norm_eq_zero, hd]
-        _ = 1 / 2 * ‖y‖ := by ring
+        _ = 1 / 2 * ‖y‖ := by simpa [δ, field] using by norm_num
     rw [← dist_eq_norm] at J
     have K : ‖σ' d⁻¹ • x‖ ≤ (ε / 2)⁻¹ * ‖c‖ * 2 * ↑n * ‖y‖ :=
       calc

@@ -15,7 +15,7 @@ Unlike `Is(Little|Big)O` relations, this one requires `u` and `v` to have the sa
 While the definition only requires `β` to be a `NormedAddCommGroup`, most interesting properties
 require it to be a `NormedField`.
 
-## Notations
+## Notation
 
 We introduce the notation `u ~[l] v := IsEquivalent l u v`, which you can use by opening the
 `Asymptotics` locale.
@@ -216,7 +216,7 @@ theorem isEquivalent_iff_tendsto_one (hz : ∀ᶠ x in l, v x ≠ 0) :
       (tendsto_congr' <| hz.mono fun x hnz ↦ @div_self _ _ (v x) hnz).mpr tendsto_const_nhds
     convert this.add key
     · simp
-    · norm_num
+    · simp
   · exact isEquivalent_of_tendsto_one (hz.mono fun x hnvz hz ↦ (hnvz hz).elim)
 
 end NormedField

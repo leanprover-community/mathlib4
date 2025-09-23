@@ -225,6 +225,10 @@ instance (priority := 100) continuousInv_of_discreteTopology [TopologicalSpace H
     [DiscreteTopology H] : ContinuousInv H :=
   ⟨continuous_of_discreteTopology⟩
 
+@[to_additive]
+instance (priority := 100) topologicalGroup_of_discreteTopology
+    [TopologicalSpace H] [Group H] [DiscreteTopology H] : IsTopologicalGroup H := ⟨⟩
+
 section PointwiseLimits
 
 variable (G₁ G₂ : Type*) [TopologicalSpace G₂] [T2Space G₂]
@@ -733,7 +737,7 @@ lemma IsTopologicalGroup.isInducing_iff_nhds_one
   ext; simp
 
 @[to_additive]
-lemma TopologicalGroup.isOpenMap_iff_nhds_one
+lemma IsTopologicalGroup.isOpenMap_iff_nhds_one
     {H : Type*} [Monoid H] [TopologicalSpace H] [ContinuousConstSMul H H]
     {F : Type*} [FunLike F G H] [MonoidHomClass F G H] {f : F} :
     IsOpenMap f ↔ 𝓝 1 ≤ .map f (𝓝 1) := by
@@ -744,6 +748,12 @@ lemma TopologicalGroup.isOpenMap_iff_nhds_one
   rw [← map_mul_left_nhds_one x, Filter.map_map, Function.comp_def, ← this]
   refine (Filter.map_mono h).trans ?_
   simp [Function.comp_def]
+
+@[deprecated (since := "2025-09-16")]
+alias TopologicalGroup.isOpenMap_iff_nhds_one := IsTopologicalGroup.isOpenMap_iff_nhds_one
+
+@[deprecated (since := "2025-09-16")]
+alias TopologicalGroup.isOpenMap_iff_nhds_zero := IsTopologicalAddGroup.isOpenMap_iff_nhds_zero
 
 -- TODO: unify with `QuotientGroup.isOpenQuotientMap_mk`
 /-- Let `A` and `B` be topological groups, and let `φ : A → B` be a continuous surjective group

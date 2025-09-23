@@ -169,7 +169,7 @@ theorem integral_cos_mul_cos_pow_even (n : ℕ) (hz : z ≠ 0) :
   · push_cast; ring
 
 /-- Relate the integral `cos x ^ n` over `[0, π/2]` to the integral of `sin x ^ n` over `[0, π]`,
-which is studied in `Data.Real.Pi.Wallis` and other places. -/
+which is studied in `Mathlib/Analysis/Real/Pi/Wallis.lean` and other places. -/
 theorem integral_cos_pow_eq (n : ℕ) :
     (∫ x in (0 : ℝ)..π / 2, cos x ^ n) = 1 / 2 * ∫ x in (0 : ℝ)..π, sin x ^ n := by
   rw [mul_comm (1 / 2 : ℝ), ← div_eq_iff (one_div_ne_zero (two_ne_zero' ℝ)), ← div_mul, div_one,

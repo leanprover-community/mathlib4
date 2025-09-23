@@ -314,7 +314,7 @@ theorem circleIntegrable_sub_zpow_iff {c w : ℂ} {R : ℝ} {n : ℤ} :
 @[simp]
 theorem circleIntegrable_sub_inv_iff {c w : ℂ} {R : ℝ} :
     CircleIntegrable (fun z => (z - w)⁻¹) c R ↔ R = 0 ∨ w ∉ sphere c |R| := by
-  simp only [← zpow_neg_one, circleIntegrable_sub_zpow_iff]; norm_num
+  simp only [← zpow_neg_one, circleIntegrable_sub_zpow_iff]; simp
 
 variable [NormedSpace ℂ E]
 
@@ -418,7 +418,7 @@ theorem norm_integral_lt_of_norm_le_const_of_lt {f : ℂ → E} {c : ℂ} {R C :
       · exact continuousOn_const.mul (hc.comp (continuous_circleMap _ _).continuousOn fun θ _ =>
           circleMap_mem_sphere _ hR.le _).norm
       · exact mul_le_mul_of_nonneg_left (hf _ <| circleMap_mem_sphere _ hR.le _) hR.le
-      · exact (mul_lt_mul_left hR).2 hlt
+      · gcongr
     _ = 2 * π * R * C := by simp [mul_assoc]; ring
 
 @[simp]

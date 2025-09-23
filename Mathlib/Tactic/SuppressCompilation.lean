@@ -5,7 +5,6 @@ Authors: Alex J. Best, Mac Malone
 -/
 import Mathlib.Init
 import Lean.Elab.Declaration
-import Lean.Elab.Notation
 
 /-!
 # Suppressing compilation to executable code in a file or in a section
@@ -60,9 +59,9 @@ them with `unsuppress_compilation`. -/
 def expandSuppressCompilationNotation : Macro := fun
 | `($[$doc?:docComment]? $(attrs?)? $(attrKind)? notation
     $(prec?)? $(name?)? $(prio?)? $items* => $v) => do
-  let defn ← expandNotation <| ← `($[$doc?:docComment]? $(attrs?)? $(attrKind)? notation
-    $(prec?)? $(name?)? $(prio?)? $items* => $v)
-  `(unsuppress_compilation in $(⟨defn⟩):command)
+  `(unsuppress_compilation in
+    $[$doc?:docComment]? $(attrs?)? $(attrKind)? notation
+      $(prec?)? $(name?)? $(prio?)? $items* => $v)
 | _ => Macro.throwUnsupported
 
 /-- Replacing `def` and `instance` by `noncomputable def` and `noncomputable instance`, designed

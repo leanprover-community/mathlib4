@@ -398,6 +398,29 @@ partial def eval (e : Expr) : M (NormalExpr × Expr) := do
       evalAtom e
   | _ => evalAtom e
 
+/-- Determine whether `e` will be handled as an atom by the `abel` tactic. The `match` in this
+function should be preserved to be parallel in case-matching to that in the
+`Mathlib.Tactic.Abel.eval` metaprogram. -/
+def isAtom (e : Expr) : Bool :=
+  match e.getAppFnArgs with
+  | (``HAdd.hAdd, #[_, _, _, _, _, _])
+  | (``HSub.hSub, #[_, _, _, _, _, _])
+  | (``Neg.neg, #[_, _, _])
+  | (``AddMonoid.nsmul, #[_, _, _, _])
+  | (``SubNegMonoid.zsmul, #[_, _, _, _])
+  | (``SMul.smul, #[.const ``Int _, _, _, _, _])
+  | (``SMul.smul, #[.const ``Nat _, _, _, _, _])
+  | (``HSMul.hSMul, #[.const ``Int _, _, _, _, _, _])
+  | (``HSMul.hSMul, #[.const ``Nat _, _, _, _, _, _])
+  | (``smul, #[_, _, _, _])
+  | (``smulg, #[_, _, _, _]) => false
+  /- The `OfNat.ofNat` and `Zero.zero` cases are deliberately omitted here: these two cases are not
+  strictly atoms for `abel`, but they are atom-like in that their handling by
+  `Mathlib.Tactic.Abel.eval` contains no recursive call. -/
+  -- | (``OfNat.ofNat, #[_, .lit (.natVal 0), _])
+  -- | (``Zero.zero, #[_, _])
+  | _ => true
+
 @[tactic_alt abel]
 elab (name := abel1) "abel1" tk:"!"? : tactic => withMainContext do
   let tm := if tk.isSome then .default else .reducible
@@ -465,9 +488,8 @@ It differs in
 -/
 def evalExpr (e : Expr) : AtomM Simp.Result := do
   let e ← withReducible <| whnf e
-  guard e.isApp -- all interesting group expressions are applications
+  guard !(isAtom e)
   let (a, pa) ← eval e (← mkContext e)
-  guard !a.isAtom
   return { expr := a, proof? := pa }
 
 open Parser.Tactic

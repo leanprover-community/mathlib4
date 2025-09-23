@@ -69,7 +69,7 @@ theorem real_main_inequality {x : ℝ} (x_large : (512 : ℝ) ≤ x) :
     refine ((strictConcaveOn_log_Ioi.concaveOn.subset (Set.Ioi_subset_Ioi _)
       (convex_Ioi 0.5)).add ((strictConcaveOn_sqrt_mul_log_Ioi.concaveOn.comp_linearMap
       ((2 : ℝ) • LinearMap.id)).subset
-      (fun a ha => lt_of_eq_of_lt _ ((mul_lt_mul_left two_pos).mpr ha)) (convex_Ioi 0.5))).sub
+      (fun a ha => lt_of_eq_of_lt _ ((mul_lt_mul_iff_right₀ two_pos).mpr ha)) (convex_Ioi 0.5))).sub
       ((convex_on_id (convex_Ioi (0.5 : ℝ))).smul (div_nonneg (log_nonneg _) _))
     norm_num
   -/
@@ -83,7 +83,7 @@ theorem real_main_inequality {x : ℝ} (x_large : (512 : ℝ) ≤ x) :
       ext x
       simp only [Set.mem_Ioi, Set.mem_preimage, LinearMap.smul_apply,
         LinearMap.id_coe, id_eq, smul_eq_mul]
-      rw [← mul_lt_mul_left (two_pos)]
+      rw [← mul_lt_mul_iff_right₀ (two_pos)]
       norm_num1
       rfl
     apply ConvexOn.smul
@@ -211,8 +211,7 @@ for each number ≤ n.
 theorem exists_prime_lt_and_le_two_mul_succ {n} (q) {p : ℕ} (prime_p : Nat.Prime p)
     (covering : p ≤ 2 * q) (H : n < q → ∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n) (hn : n < p) :
     ∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n := by
-  by_cases h : p ≤ 2 * n; · exact ⟨p, prime_p, hn, h⟩
-  exact H (lt_of_mul_lt_mul_left' (lt_of_lt_of_le (not_le.1 h) covering))
+  grind
 
 /--
 **Bertrand's Postulate**: For any positive natural number, there is a prime which is greater than

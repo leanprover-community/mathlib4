@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Eric Wieser
 -/
 import Mathlib.Data.Real.Basic
-import Mathlib.Tactic.NormNum.Inv
 
 /-!
 # Real sign function
@@ -92,7 +91,7 @@ theorem sign_mul_pos_of_ne_zero (r : ℝ) (hr : r ≠ 0) : 0 < sign r * r := by
 theorem inv_sign (r : ℝ) : (sign r)⁻¹ = sign r := by
   obtain hn | hz | hp := sign_apply_eq r
   · rw [hn]
-    norm_num
+    simp
   · rw [hz]
     exact inv_zero
   · rw [hp]

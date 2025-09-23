@@ -180,10 +180,7 @@ lemma convexOn_zpow : ∀ n : ℤ, ConvexOn 𝕜 (Ioi 0) fun x : 𝕜 ↦ x ^ n
     rintro x (hx : 0 < x) y (hy : 0 < y) a b ha hb hab
     simp only [smul_eq_mul]
     field_simp
-    rw [div_le_div_iff₀, ← sub_nonneg]
-    · calc
-        0 ≤ a * b * (x - y) ^ 2 := by positivity
-        _ = _ := by obtain rfl := eq_sub_of_add_eq hab; ring
-    all_goals positivity
+    have H : 0 ≤ a * b * (x - y) ^ 2 := by positivity
+    linear_combination H - x * y * (a + b + 1) * hab
 
 end LinearOrderedField

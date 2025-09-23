@@ -591,6 +591,9 @@ theorem transpose_vecMulVec [CommMagma α] (w : m → α) (v : n → α) :
     (vecMulVec w v)ᵀ = vecMulVec v w :=
   ext fun _ _ => mul_comm _ _
 
+@[simp]
+theorem diag_vecMulVec [Mul α] (u v : n → α) : diag (vecMulVec u v) = u * v := rfl
+
 section NonUnitalNonAssocSemiring
 
 variable [NonUnitalNonAssocSemiring α]

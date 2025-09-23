@@ -215,17 +215,15 @@ theorem trace_eq_sum_embeddings_gen (pb : PowerBasis K L)
     algebraMap K E (Algebra.trace K L pb.gen) =
       (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).sum fun σ => σ pb.gen := by
   letI := Classical.decEq E
-  -- Porting note: the following `letI` was not needed.
   letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
   rw [pb.trace_gen_eq_sum_roots hE, Fintype.sum_equiv pb.liftEquiv', Finset.sum_mem_multiset,
     Finset.sum_eq_multiset_sum, Multiset.toFinset_val, Multiset.dedup_eq_self.mpr _,
     Multiset.map_id]
   · exact nodup_roots ((separable_map _).mpr hfx)
-  -- Porting note: the following goal does not exist in mathlib3.
-  · exact (fun x => x.1)
+  swap
   · intro x; rfl
   · intro σ
-    rw [PowerBasis.liftEquiv'_apply_coe]
+    rw [PowerBasis.liftEquiv'_apply_coe, id_def]
 
 variable [IsAlgClosed E]
 
@@ -242,11 +240,8 @@ theorem sum_embeddings_eq_finrank_mul [FiniteDimensional K F] [Algebra.IsSeparab
       Finset.univ_sigma_univ, Finset.sum_sigma, ← Finset.sum_nsmul]
     · refine Finset.sum_congr rfl fun σ _ => ?_
       letI : Algebra L E := σ.toRingHom.toAlgebra
-      -- Porting note: `Finset.card_univ` was inside `simp only`.
-      simp only [Finset.sum_const]
-      congr
-      rw [← AlgHom.card L F E]
-      exact Finset.card_univ (α := F →ₐ[L] E)
+      simp only [Finset.sum_const, Finset.card_univ, ← AlgHom.card L F E]
+      congr!
     · intro σ
       simp only [algHomEquivSigma, Equiv.coe_fn_mk, AlgHom.restrictDomain, AlgHom.comp_apply,
         IsScalarTower.coe_toAlgHom']

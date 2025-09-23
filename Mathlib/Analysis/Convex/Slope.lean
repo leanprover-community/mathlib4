@@ -39,9 +39,7 @@ theorem ConvexOn.slope_mono_adjacent (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx
   replace key := mul_le_mul_of_nonneg_left key hxz.le
   simp [a, b] at key ⊢
   field_simp at key ⊢
-  rw [div_le_div_iff_of_pos_right]
-  · linarith
-  · positivity
+  linarith
 
 /-- If `f : 𝕜 → 𝕜` is concave, then for any three points `x < y < z` the slope of the secant line of
 `f` on `[x, y]` is greater than the slope of the secant line of `f` on `[y, z]`. -/
@@ -73,9 +71,7 @@ theorem StrictConvexOn.slope_strict_mono_adjacent (hf : StrictConvexOn 𝕜 s f)
   replace key := mul_lt_mul_of_pos_left key hxz
   simp at key ⊢
   field_simp at key ⊢
-  rw [div_lt_div_iff_of_pos_right]
-  · linarith
-  · positivity
+  linarith
 
 /-- If `f : 𝕜 → 𝕜` is strictly concave, then for any three points `x < y < z` the slope of the
 secant line of `f` on `[x, y]` is strictly greater than the slope of the secant line of `f` on
@@ -144,10 +140,12 @@ theorem strictConvexOn_of_slope_strict_mono_adjacent (hs : Convex 𝕜 s)
     let y := a * x + b * z
     have hxy : x < y := by
       rw [← one_mul x, ← hab, add_mul]
-      exact add_lt_add_left ((mul_lt_mul_left hb).2 hxz) _
+      dsimp [y]
+      gcongr
     have hyz : y < z := by
       rw [← one_mul z, ← hab, add_mul]
-      exact add_lt_add_right ((mul_lt_mul_left ha).2 hxz) _
+      dsimp [y]
+      gcongr
     have : (f y - f x) * (z - y) < (f z - f y) * (y - x) :=
       (div_lt_div_iff₀ (sub_pos.2 hxy) (sub_pos.2 hyz)).1 (hf hx hz hxy hyz)
     have hxz : 0 < z - x := sub_pos.2 (hxy.trans hyz)

@@ -13,7 +13,7 @@ import Mathlib.Algebra.Algebra.Rat
 /-!
 # The root system associated with a Lie algebra
 
-We show that the roots of a finite dimensional splitting semisimple Lie algebra over a field of
+We show that the roots of a finite-dimensional splitting semisimple Lie algebra over a field of
 characteristic 0 form a root system. We achieve this by studying root chains.
 
 ## Main results

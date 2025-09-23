@@ -601,8 +601,7 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → NonUnitalSubse
     NonUnitalSubsemiring.mk' (⋃ i, (S i : Set R))
       (⨆ i, (S i).toSubsemigroup) (Subsemigroup.coe_iSup_of_directed hS)
       (⨆ i, (S i).toAddSubmonoid) (AddSubmonoid.coe_iSup_of_directed hS)
-  -- Porting note `@this` doesn't work
-  suffices H : ⨆ i, S i ≤ U by simpa [U] using @H x
+  suffices ⨆ i, S i ≤ U by simpa [U] using @this x
   exact iSup_le fun i x hx => Set.mem_iUnion.2 ⟨i, hx⟩
 
 theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → NonUnitalSubsemiring R}

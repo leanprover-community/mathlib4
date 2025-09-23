@@ -23,7 +23,7 @@ a kernel from `α` to `γ`.
 * Instances stating that `IsMarkovKernel`, `IsZeroOrMarkovKernel`, `IsFiniteKernel` and
   `IsSFiniteKernel` are stable by composition.
 
-## Notations
+## Notation
 
 * `η ∘ₖ κ = ProbabilityTheory.Kernel.comp η κ`
 
@@ -56,9 +56,9 @@ theorem comp_apply' (η : Kernel β γ) (κ : Kernel α β) (a : α) {s : Set γ
   rw [comp_apply, Measure.bind_apply hs (Kernel.aemeasurable _)]
 
 theorem comp_apply_univ_le (κ : Kernel α β) (η : Kernel β γ) (a : α) :
-    (η ∘ₖ κ) a Set.univ ≤ κ a Set.univ * IsFiniteKernel.bound η := by
+    (η ∘ₖ κ) a Set.univ ≤ κ a Set.univ * η.bound := by
   rw [comp_apply' _ _ _ .univ]
-  let Cη := IsFiniteKernel.bound η
+  let Cη := η.bound
   calc
     ∫⁻ b, η b Set.univ ∂κ a ≤ ∫⁻ _, Cη ∂κ a :=
       lintegral_mono fun b => measure_le_bound η b Set.univ
@@ -196,13 +196,10 @@ instance IsZeroOrMarkovKernel.comp (κ : Kernel α β) [IsZeroOrMarkovKernel κ]
 
 instance IsFiniteKernel.comp (η : Kernel β γ) [IsFiniteKernel η] (κ : Kernel α β)
     [IsFiniteKernel κ] : IsFiniteKernel (η ∘ₖ κ) := by
-  refine ⟨⟨IsFiniteKernel.bound κ * IsFiniteKernel.bound η,
-    ENNReal.mul_lt_top (IsFiniteKernel.bound_lt_top κ) (IsFiniteKernel.bound_lt_top η),
-    fun a ↦ ?_⟩⟩
+  refine ⟨⟨κ.bound * η.bound, ENNReal.mul_lt_top κ.bound_lt_top η.bound_lt_top, fun a ↦ ?_⟩⟩
   calc (η ∘ₖ κ) a Set.univ
-  _ ≤ κ a Set.univ * IsFiniteKernel.bound η := comp_apply_univ_le κ η a
-  _ ≤ IsFiniteKernel.bound κ * IsFiniteKernel.bound η :=
-    mul_le_mul (measure_le_bound κ a Set.univ) le_rfl (zero_le _) (zero_le _)
+  _ ≤ κ a Set.univ * η.bound := comp_apply_univ_le κ η a
+  _ ≤ κ.bound * η.bound := mul_le_mul (measure_le_bound κ a Set.univ) le_rfl zero_le' zero_le'
 
 instance IsSFiniteKernel.comp (η : Kernel β γ) [IsSFiniteKernel η] (κ : Kernel α β)
     [IsSFiniteKernel κ] : IsSFiniteKernel (η ∘ₖ κ) := by

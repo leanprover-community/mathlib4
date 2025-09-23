@@ -362,7 +362,7 @@ variable [TopologicalSpace A]
 variable {B : Type*} [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R B]
   {C : Type*} [Semiring C] [Algebra R C] [TopologicalSpace C]
 
-/-- The cartesian product of two continuous algebra morphisms as a continuous algebra morphism. -/
+/-- The Cartesian product of two continuous algebra morphisms as a continuous algebra morphism. -/
 protected def prod (f₁ : A →A[R] B) (f₂ : A →A[R] C) :
     A →A[R] B × C :=
   ⟨(f₁ : A →ₐ[R] B).prod f₂, f₁.2.prodMk f₂.2⟩

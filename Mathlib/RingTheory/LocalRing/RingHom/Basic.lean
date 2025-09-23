@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.Ideal.Maps
 
@@ -138,3 +139,7 @@ protected theorem isLocalRing {A B : Type*} [CommSemiring A] [IsLocalRing A] [Se
   IsLocalRing.of_surjective (e : A →+* B) e.surjective
 
 end RingEquiv
+
+instance {R : Type*} [CommRing R] [IsLocalRing R] {n : ℕ} [Nontrivial (ZMod n)] (f : R →+* ZMod n) :
+    IsLocalHom f :=
+  (ZMod.ringHom_surjective f).isLocalHom
