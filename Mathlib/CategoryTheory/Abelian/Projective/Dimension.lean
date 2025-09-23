@@ -132,27 +132,21 @@ instance [Projective X] : HasProjectiveDimensionLT X 1 := by
   · simp at hi
   · exact e.eq_zero_of_projective
 
+lemma projective_iff_subsingleton_ext_one [HasExt.{w} C] {X : C} :
+    Projective X ↔ ∀ ⦃Y : C⦄, Subsingleton (Ext X Y 1) := by
+  refine ⟨fun h ↦ HasProjectiveDimensionLT.subsingleton X 1 1 (by rfl),
+    fun h ↦ ⟨fun f g _ ↦ ?_⟩⟩
+  obtain ⟨φ, hφ⟩ :=
+    Ext.covariant_sequence_exact₃ _ { exact := ShortComplex.exact_kernel g }
+      (Ext.mk₀ f) (zero_add 1) (by subsingleton)
+  obtain ⟨φ, rfl⟩ := Ext.homEquiv₀.symm.surjective φ
+  exact ⟨φ, Ext.homEquiv₀.symm.injective (by simpa using hφ)⟩
+
 lemma hasProjectiveDimensionLT_one_iff (X : C) :
     Projective X ↔ HasProjectiveDimensionLT X 1 := by
   letI := HasExt.standard C
-  refine ⟨fun h ↦ inferInstance, fun ⟨h⟩ ↦ ⟨?_⟩⟩
-  intro Z Y f g epi
-  let S := ShortComplex.mk (kernel.ι g) g (kernel.condition g)
-  have S_exact : S.ShortExact := {
-    exact := ShortComplex.exact_kernel g
-    mono_f := equalizer.ι_mono
-    epi_g := epi}
-  have : IsZero (AddCommGrp.of (Ext X S.X₁ 1)) := by
-    let _ := h 1 (le_refl 1) (Y := S.X₁)
-    exact AddCommGrp.isZero_of_subsingleton _
-  have exac := Ext.covariant_sequence_exact₃' X S_exact 0 1 (zero_add 1)
-  have surj: Function.Surjective ((Ext.mk₀ S.g).postcomp X (add_zero 0)) :=
-    (AddCommGrp.epi_iff_surjective _).mp (exac.epi_f (this.eq_zero_of_tgt _))
-  rcases surj (Ext.mk₀ f) with ⟨f', hf'⟩
-  use Ext.addEquiv₀ f'
-  simp only [AddMonoidHom.flip_apply, Ext.bilinearComp_apply_apply] at hf'
-  rw [← Ext.mk₀_addEquiv₀_apply f', Ext.mk₀_comp_mk₀] at hf'
-  exact (Ext.mk₀_bijective X Y).1 hf'
+  exact ⟨fun _ ↦ inferInstance, fun _ ↦ projective_iff_subsingleton_ext_one.2
+    (HasProjectiveDimensionLT.subsingleton X 1 1 (by rfl))⟩
 
 end
 
