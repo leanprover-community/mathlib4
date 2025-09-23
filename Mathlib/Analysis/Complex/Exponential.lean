@@ -93,9 +93,10 @@ theorem exp_zero : exp 0 = 1 := by
   rcases j with - | j
   · exact absurd hj (not_le_of_gt zero_lt_one)
   · dsimp [exp']
-    induction' j with j ih
-    · simp
-    · rw [← ih (by simp)]
+    induction j with
+    | zero => simp
+    | succ j ih =>
+      rw [← ih (by simp)]
       simp only [sum_range_succ, pow_succ]
       simp
 
