@@ -84,29 +84,41 @@ This is based on Mario Carneiro's
 
 For the definition and many statements, `α` does not need to be a topological monoid. We only add
 this assumption later, for the lemmas where it is relevant. -/]
-def HasProd (f : β → α) (a : α) : Prop :=
-  Tendsto (fun s : Finset β ↦ ∏ b ∈ s, f b) atTop (𝓝 a)
+def HasProd (f : β → α) (a : α) (L : Filter (Finset β) := atTop) : Prop :=
+  Tendsto (fun s : Finset β ↦ ∏ b ∈ s, f b) L (𝓝 a)
 
 /-- `Multipliable f` means that `f` has some (infinite) product. Use `tprod` to get the value. -/
 @[to_additive
 /-- `Summable f` means that `f` has some (infinite) sum. Use `tsum` to get the value. -/]
-def Multipliable (f : β → α) : Prop :=
-  ∃ a, HasProd f a
+def Multipliable (f : β → α) (L : Filter (Finset β) := atTop) : Prop :=
+  ∃ a, HasProd f a L
+
+@[to_additive]
+lemma Multipliable.mono_filter {f : β → α} {L₁ L₂ : Filter (Finset β)}
+    (hf : Multipliable f L₂) (h : L₁ ≤ L₂) : Multipliable f L₁ :=
+  match hf with | ⟨a, ha⟩ => ⟨a, ha.mono_left h⟩
 
 open scoped Classical in
 /-- `∏' i, f i` is the product of `f` if it exists and is unconditionally convergent,
 or 1 otherwise. -/
 @[to_additive /-- `∑' i, f i` is the sum of `f` if it exists and is unconditionally convergent,
 or 0 otherwise. -/]
-noncomputable irreducible_def tprod {β} (f : β → α) :=
-  if h : Multipliable f then
+noncomputable irreducible_def tprod (f : β → α) (L : Filter (Finset β) := atTop) :=
+  if h : Multipliable f L then
   /- Note that the product might not be uniquely defined if the topology is not separated.
   When the multiplicative support of `f` is finite, we make the most reasonable choice to use the
   product over the multiplicative support. Otherwise, we choose arbitrarily an `a` satisfying
   `HasProd f a`. -/
-    if (mulSupport f).Finite then finprod f
+    if (mulSupport f).Finite ∧ L ≤ atTop then finprod f
     else h.choose
   else 1
+
+variable {L : Filter (Finset β)}
+
+@[inherit_doc tprod]
+notation3 "∏' " "[" L "]" (...)", "r:67:(scoped f => tprod f L) => r
+@[inherit_doc tsum]
+notation3 "∑' " "[" L "]" (...)", "r:67:(scoped f => tsum f L) => r
 
 -- see Note [operator precedence of big operators]
 @[inherit_doc tprod]
@@ -117,63 +129,70 @@ notation3 "∑' "(...)", "r:67:(scoped f => tsum f) => r
 variable {f : β → α} {a : α} {s : Finset β}
 
 @[to_additive]
-theorem HasProd.multipliable (h : HasProd f a) : Multipliable f :=
+theorem HasProd.multipliable (h : HasProd f a L) : Multipliable f L :=
   ⟨a, h⟩
 
 @[to_additive]
-theorem tprod_eq_one_of_not_multipliable (h : ¬Multipliable f) : ∏' b, f b = 1 := by
+theorem tprod_eq_one_of_not_multipliable (h : ¬Multipliable f L) : ∏'[L] b, f b = 1 := by
   simp [tprod_def, h]
 
+-- didn't find a way to "filterize" this one
 @[to_additive]
 theorem Function.Injective.hasProd_iff {g : γ → β} (hg : Injective g)
     (hf : ∀ x, x ∉ Set.range g → f x = 1) : HasProd (f ∘ g) a ↔ HasProd f a := by
   simp only [HasProd, Tendsto, comp_apply, hg.map_atTop_finset_prod_eq hf]
 
+-- didn't find a way to "filterize" this one
 @[to_additive]
 theorem hasProd_subtype_iff_of_mulSupport_subset {s : Set β} (hf : mulSupport f ⊆ s) :
     HasProd (f ∘ (↑) : s → α) a ↔ HasProd f a :=
   Subtype.coe_injective.hasProd_iff <| by simpa using mulSupport_subset_iff'.1 hf
 
 @[to_additive]
-theorem hasProd_fintype [Fintype β] (f : β → α) : HasProd f (∏ b, f b) :=
-  OrderTop.tendsto_atTop_nhds _
+theorem hasProd_fintype [Fintype β] (f : β → α) (hL : L ≤ atTop := by rfl) :
+    HasProd f (∏ b, f b) L :=
+  (OrderTop.tendsto_atTop_nhds _).mono_left hL
 
 @[to_additive]
-protected theorem Finset.hasProd (s : Finset β) (f : β → α) :
-    HasProd (f ∘ (↑) : (↑s : Set β) → α) (∏ b ∈ s, f b) := by
+protected theorem Finset.hasProd (s : Finset β) (f : β → α)
+      {L : Filter (Finset (s : Set β))} (hL : L ≤ atTop := by rfl) :
+    HasProd (f ∘ (↑) : (↑s : Set β) → α) (∏ b ∈ s, f b) L := by
   rw [← prod_attach]
-  exact hasProd_fintype _
+  exact hasProd_fintype _ hL
 
 /-- If a function `f` is `1` outside of a finite set `s`, then it `HasProd` `∏ b ∈ s, f b`. -/
 @[to_additive /-- If a function `f` vanishes outside of a finite set `s`, then it `HasSum`
 `∑ b ∈ s, f b`. -/]
-theorem hasProd_prod_of_ne_finset_one (hf : ∀ b ∉ s, f b = 1) :
-    HasProd f (∏ b ∈ s, f b) :=
-  (hasProd_subtype_iff_of_mulSupport_subset <| mulSupport_subset_iff'.2 hf).1 <| s.hasProd f
+theorem hasProd_prod_of_ne_finset_one (hf : ∀ b ∉ s, f b = 1) (hL : L ≤ atTop := by rfl) :
+    HasProd f (∏ b ∈ s, f b) L :=
+  ((hasProd_subtype_iff_of_mulSupport_subset <| mulSupport_subset_iff'.2 hf).1 <| s.hasProd f)
+    |>.mono_left hL
 
 @[to_additive]
-theorem multipliable_of_ne_finset_one (hf : ∀ b ∉ s, f b = 1) : Multipliable f :=
-  (hasProd_prod_of_ne_finset_one hf).multipliable
+theorem multipliable_of_ne_finset_one (hf : ∀ b ∉ s, f b = 1) (hL : L ≤ atTop := by rfl) :
+    Multipliable f L :=
+  (hasProd_prod_of_ne_finset_one hf hL).multipliable
 
 @[to_additive]
-theorem Multipliable.hasProd (ha : Multipliable f) : HasProd f (∏' b, f b) := by
+theorem Multipliable.hasProd (ha : Multipliable f L) : HasProd f (∏'[L] b, f b) L := by
   simp only [tprod_def, ha, dite_true]
-  by_cases H : (mulSupport f).Finite
-  · simp [H, hasProd_prod_of_ne_finset_one, finprod_eq_prod]
-  · simpa [H] using ha.choose_spec
+  split_ifs with h
+  · simpa [h, finprod_eq_prod] using (hasProd_prod_of_ne_finset_one (by simp)).mono_left h.2
+  · exact ha.choose_spec
+
+variable [T2Space α] [NeBot L]
 
 @[to_additive]
-theorem HasProd.unique {a₁ a₂ : α} [T2Space α] : HasProd f a₁ → HasProd f a₂ → a₁ = a₂ := by
+theorem HasProd.unique {a₁ a₂ : α} :
+    HasProd f a₁ L → HasProd f a₂ L → a₁ = a₂ := by
   classical exact tendsto_nhds_unique
 
-variable [T2Space α]
-
 @[to_additive]
-theorem HasProd.tprod_eq (ha : HasProd f a) : ∏' b, f b = a :=
+theorem HasProd.tprod_eq (ha : HasProd f a L) : ∏'[L] b, f b = a :=
   (Multipliable.hasProd ⟨a, ha⟩).unique ha
 
 @[to_additive]
-theorem Multipliable.hasProd_iff (h : Multipliable f) : HasProd f a ↔ ∏' b, f b = a :=
+theorem Multipliable.hasProd_iff (h : Multipliable f L) : HasProd f a L ↔ ∏'[L] b, f b = a :=
   Iff.intro HasProd.tprod_eq fun eq ↦ eq ▸ h.hasProd
 
 end HasProd
