@@ -13,7 +13,7 @@ import Mathlib.Algebra.Regular.Pow
 import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Data.Finsupp.Order
 import Mathlib.Order.SymmDiff
-import Mathlib.Tactic.Ring.NamePolyVars
+import Mathlib.Tactic.PolyVariable
 
 /-!
 # Multivariate polynomials

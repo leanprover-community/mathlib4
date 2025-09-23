@@ -234,7 +234,7 @@
   "Mathlib.Tactic.Subsingleton": ["Mathlib.Logic.Basic", "Std.Logic"],
   "Mathlib.Tactic.Simps.Basic": ["Batteries.Data.String.Basic"],
   "Mathlib.Tactic.Says": ["Batteries.Data.String.Basic"],
-  "Mathlib.Tactic.Ring.NamePolyVars": ["Mathlib.Algebra.MvPolynomial.Basic"],
+  "Mathlib.Tactic.PolyVariable": ["Mathlib.Algebra.MvPolynomial.Basic"],
   "Mathlib.Tactic.ReduceModChar":
   ["Mathlib.Data.ZMod.Basic", "Mathlib.RingTheory.Polynomial.Basic"],
   "Mathlib.Tactic.Qify": ["Mathlib.Data.NNRat.Defs"],
@@ -522,9 +522,9 @@
   "Mathlib.AlgebraicTopology.DoldKan.Notations":
   ["Mathlib.AlgebraicTopology.AlternatingFaceMapComplex"],
   "Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Basic":
-  ["Mathlib.Tactic.Ring.NamePolyVars"],
+  ["Mathlib.Tactic.PolyVariable"],
   "Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Basic":
-  ["Mathlib.Tactic.Ring.NamePolyVars"],
+  ["Mathlib.Tactic.PolyVariable"],
   "Mathlib.Algebra.Star.Module": ["Mathlib.Algebra.Module.LinearMap.Star"],
   "Mathlib.Algebra.Ring.Int.Defs": ["Mathlib.Algebra.Ring.GrindInstances"],
   "Mathlib.Algebra.Ring.CentroidHom": ["Mathlib.Algebra.Algebra.Defs"],
@@ -537,7 +537,7 @@
   ["Mathlib.Algebra.Order.Field.InjSurj"],
   "Mathlib.Algebra.Order.CauSeq.Basic": ["Mathlib.Data.Setoid.Basic"],
   "Mathlib.Algebra.Notation.Lemmas": ["Batteries.Tactic.Init"],
-  "Mathlib.Algebra.MvPolynomial.Basic": ["Mathlib.Tactic.Ring.NamePolyVars"],
+  "Mathlib.Algebra.MvPolynomial.Basic": ["Mathlib.Tactic.PolyVariable"],
   "Mathlib.Algebra.MonoidAlgebra.Basic":
   ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
   "Mathlib.Algebra.Module.Submodule.Order":
