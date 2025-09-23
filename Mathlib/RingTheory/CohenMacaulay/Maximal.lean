@@ -156,7 +156,7 @@ theorem free_of_isMaximalCohenMacaulay_of_isRegularLocalRing [IsRegularLocalRing
       have dim : ringKrullDim (R ⧸ Ideal.span {x}) = n := by
         have := (quotient_span_singleton R xmem xnmem).2
         simp only [hn, Nat.cast_add, Nat.cast_one] at this
-        exact (withBotENat_add_coe_cancel _ _ 1).mp this
+        exact (WithBot.add_natCast_cancel _ _ 1).mp this
       have reg : IsSMulRegular M x := by
         by_contra h
         have := (Set.ext_iff.mp (biUnion_associatedPrimes_eq_compl_regular R M) x).mpr h
@@ -171,7 +171,7 @@ theorem free_of_isMaximalCohenMacaulay_of_isRegularLocalRing [IsRegularLocalRing
         rw [hn, dim, Nat.cast_le] at this
         exact (Nat.not_succ_le_self n) this
       have max : (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x ↑M)).IsMaximalCohenMacaulay := by
-        rw [isMaximalCohenMacaulay_def, ← withBotENat_add_coe_cancel _ _ 1, Nat.cast_one,
+        rw [isMaximalCohenMacaulay_def, ← WithBot.add_natCast_cancel _ _ 1, Nat.cast_one,
           (quotient_span_singleton R xmem xnmem).2, ← WithBot.coe_one, ← WithBot.coe_add,
           ← (isMaximalCohenMacaulay_def M).mp ‹_›, WithBot.coe_inj,
           ← depth_quotSMulTop_succ_eq_moduleDepth M x reg xmem]
