@@ -54,7 +54,7 @@ instance : LinearOrder (Lex (HahnSeries Γ R)) where
         intro i h
         rw [Set.mem_union, Set.mem_setOf_eq, Set.mem_setOf_eq]
         contrapose! h
-        rw [Set.notMem_setOf_iff, Mathlib.Tactic.PushNeg.not_ne_eq, h.1, h.2]
+        rw [Set.notMem_setOf_iff, not_not, h.1, h.2]
       have hv : v.IsWF :=
         ((ofLex a).isPWO_support'.isWF.union (ofLex b).isPWO_support'.isWF).subset hvu
       let i := hv.min hab
