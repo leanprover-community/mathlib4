@@ -242,7 +242,7 @@ variable [Mul M]
 /-- The multiplication in a monoid algebra.
 
 We make it irreducible so that Lean doesn't unfold it when trying to unify two different things. -/
-def mul' (x y : MonoidAlgebra R M) : MonoidAlgebra R M :=
+@[irreducible] def mul' (x y : MonoidAlgebra R M) : MonoidAlgebra R M :=
   x.sum fun m₁ r₁ ↦ y.sum fun m₂ r₂ ↦ single (m₁ * m₂) (r₁ * r₂)
 
 /-- The product of `f g : k[G]` is the finitely supported function
