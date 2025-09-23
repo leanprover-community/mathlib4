@@ -83,18 +83,16 @@ theorem niven_sin (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, sin θ =
   · simpa [cos_sub_pi_div_two]
 
 /-- Niven's theorem, giving the possible angles for `θ` in the range `0 .. π`. -/
-theorem niven_theta_eq (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, cos θ = q)
+theorem niven_angle_eq (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, cos θ = q)
     (h_bnd : θ ∈ Set.Icc 0 π) : θ ∈ ({0, π / 3, π / 2, π * (2 / 3), π} : Set ℝ) := by
-  have h := niven hθ hcos
-  simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h ⊢
-  rcases h with (h | h | h | h | h) <;> [
-    have h₂ := cos_pi;
+  rcases niven hθ hcos with h | h | h | h | h <;>
+  -- define `h₂` appropriately for each proof branch
+  [ have h₂ := cos_pi;
     have h₂ : cos (π * (2 / 3)) = -1 / 2 := by
       have := cos_pi_sub (π / 3)
       have := cos_pi_div_three
-      ring_nf at *
-      linarith;;
+      grind;;
     have h₂ := cos_pi_div_two;
     have h₂ := cos_pi_div_three;
-    have h₂ := cos_zero
-  ] <;> simp [injOn_cos h_bnd ⟨by positivity, by linarith [pi_nonneg]⟩ (h₂ ▸ h)]
+    have h₂ := cos_zero] <;>
+  simp [injOn_cos h_bnd ⟨by positivity, by linarith [pi_nonneg]⟩ (h₂ ▸ h)]
