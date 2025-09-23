@@ -66,16 +66,17 @@ def whiskerRight {M₁ M₂ : ModuleCat R} (f : M₁ ⟶ M₂) (N : ModuleCat R)
 theorem id_tensorHom_id (M N : ModuleCat R) :
     tensorHom (𝟙 M) (𝟙 N) = 𝟙 (ModuleCat.of R (M ⊗ N)) := by
   ext : 1
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): even with high priority `ext` fails to find this.
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): even with high priority `ext` fails to find this.
   apply TensorProduct.ext
   rfl
 
 @[deprecated (since := "2025-07-14")] alias tensor_id := id_tensorHom_id
 
-theorem tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : ModuleCat R} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁)
-    (g₂ : Y₂ ⟶ Z₂) : tensorHom (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom f₁ f₂ ≫ tensorHom g₁ g₂ := by
+theorem tensorHom_comp_tensorHom {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : ModuleCat R} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂)
+    (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
+    tensorHom f₁ f₂ ≫ tensorHom g₁ g₂ = tensorHom (f₁ ≫ g₁) (f₂ ≫ g₂) := by
   ext : 1
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): even with high priority `ext` fails to find this.
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): even with high priority `ext` fails to find this.
   apply TensorProduct.ext
   rfl
 
@@ -124,7 +125,7 @@ theorem pentagon (W X Y Z : ModuleCat R) :
 theorem leftUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
     tensorHom (𝟙 (ModuleCat.of R R)) f ≫ (leftUnitor N).hom = (leftUnitor M).hom ≫ f := by
   ext : 1
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): broken ext
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): broken ext
   apply TensorProduct.ext
   ext x
   dsimp
@@ -135,7 +136,7 @@ theorem leftUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
 theorem rightUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
     tensorHom f (𝟙 (ModuleCat.of R R)) ≫ (rightUnitor N).hom = (rightUnitor M).hom ≫ f := by
   ext : 1
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): broken ext
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): broken ext
   apply TensorProduct.ext
   ext x
   dsimp
@@ -157,7 +158,7 @@ open MonoidalCategory
 
 instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) := MonoidalCategory.ofTensorHom
   (id_tensorHom_id := fun M N ↦ id_tensorHom_id M N)
-  (tensor_comp := fun f g h ↦ MonoidalCategory.tensor_comp f g h)
+  (tensorHom_comp_tensorHom := fun f g h ↦ MonoidalCategory.tensorHom_comp_tensorHom f g h)
   (associator_naturality := fun f g h ↦ MonoidalCategory.associator_naturality f g h)
   (leftUnitor_naturality := fun f ↦ MonoidalCategory.leftUnitor_naturality f)
   (rightUnitor_naturality := fun f ↦ rightUnitor_naturality f)

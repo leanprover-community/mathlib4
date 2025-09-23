@@ -184,6 +184,7 @@ import Mathlib.Tactic.NoncommRing
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Nontriviality.Core
 import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.NormNum.Abs
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.NormNum.BigOperators
 import Mathlib.Tactic.NormNum.Core
@@ -202,6 +203,7 @@ import Mathlib.Tactic.NormNum.NatLog
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.OfScientific
 import Mathlib.Tactic.NormNum.Ordinal
+import Mathlib.Tactic.NormNum.Parity
 import Mathlib.Tactic.NormNum.Pow
 import Mathlib.Tactic.NormNum.PowMod
 import Mathlib.Tactic.NormNum.Prime
@@ -227,6 +229,7 @@ import Mathlib.Tactic.ProdAssoc
 import Mathlib.Tactic.Propose
 import Mathlib.Tactic.ProxyType
 import Mathlib.Tactic.Push
+import Mathlib.Tactic.Push.Attr
 import Mathlib.Tactic.Qify
 import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.Recall
