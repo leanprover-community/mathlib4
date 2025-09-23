@@ -28,8 +28,7 @@ open RingTheory Sequence IsLocalRing Ideal PrimeSpectrum Pointwise
 omit [IsLocalRing R] in
 theorem supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson {x : R}
     (h : x ∈ (annihilator R M).jacobson) : supportDim R M ≤ supportDim R (QuotSMulTop x M) + 1 := by
-  rcases subsingleton_or_nontrivial M with h | _
-  · simp [Module.supportDim_eq_bot_of_subsingleton]
+  nontriviality M
   refine iSup_le_iff.mpr (fun q ↦ ?_)
   obtain ⟨m, hmm, hm⟩ := exists_le_maximal _ q.last.1.2.1
   have hj : (annihilator R M).jacobson ≤ m :=
