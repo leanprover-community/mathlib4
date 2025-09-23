@@ -404,11 +404,11 @@ theorem posSemidef_iff_isHermitian_and_spectrum_nonneg [DecidableEq n] {A : Matr
     intro i
     simpa [h1.spectrum_eq_image_range] using @h2 (h1.eigenvalues i)
 
+@[deprecated commute_iff_mul_nonneg (since := "2025-09-23")]
 theorem PosSemidef.commute_iff {A B : Matrix n n 𝕜} (hA : A.PosSemidef) (hB : B.PosSemidef) :
     Commute A B ↔ (A * B).PosSemidef := by
   classical
-  exact ⟨fun h => (h.mul_nonneg hA.nonneg hB.nonneg).posSemidef,
-    fun h => hA.isHermitian.commute_iff hB.isHermitian |>.mpr h.isHermitian⟩
+  exact nonneg_iff (A := A * B).eq ▸ commute_iff_mul_nonneg hA.nonneg hB.nonneg
 
 /-!
 ## Positive definite matrices
@@ -630,7 +630,7 @@ theorem _root_.Matrix.PosSemidef.posDef_iff_isUnit [DecidableEq n] {x : Matrix n
 theorem commute_iff {A B : Matrix n n 𝕜} (hA : A.PosDef) (hB : B.PosDef) :
     Commute A B ↔ (A * B).PosDef := by
   classical
-  rw [hA.posSemidef.commute_iff hB.posSemidef]
+  rw [commute_iff_mul_nonneg hA.posSemidef.nonneg hB.posSemidef.nonneg, nonneg_iff]
   exact ⟨fun h => h.posDef_iff_isUnit.mpr <| hA.isUnit.mul hB.isUnit, fun h => h.posSemidef⟩
 
 lemma posDef_sqrt [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) :
