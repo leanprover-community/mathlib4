@@ -150,7 +150,7 @@ theorem IsCoprime.of_isCoprime_of_dvd_right (h : IsCoprime z y) (hdvd : x ∣ y)
   (h.symm.of_isCoprime_of_dvd_left hdvd).symm
 
 @[gcongr]
-theorem isCoprime_mono (h₁ : x ∣ y) (h₂ : z ∣ w) (h : IsCoprime y w) : IsCoprime x z :=
+theorem IsCoprime.mono (h₁ : x ∣ y) (h₂ : z ∣ w) (h : IsCoprime y w) : IsCoprime x z :=
   h.of_isCoprime_of_dvd_left h₁ |>.of_isCoprime_of_dvd_right h₂
 
 theorem IsCoprime.isUnit_of_dvd (H : IsCoprime x y) (d : x ∣ y) : IsUnit x :=
