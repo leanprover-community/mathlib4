@@ -75,6 +75,16 @@ jobs:
         run: |
           lake exe cache get
 
+      - name: Generate a temporary file to capture command output
+        id: buildlog
+        working-directory: docbuild
+        run: |
+          echo -n "lean4checker-filename=" >> "${GITHUB_OUTPUT}"
+          mktemp >> "${GITHUB_OUTPUT}"
+
+          echo -n "mathlib-test-filename=" >> "${GITHUB_OUTPUT}"
+          mktemp >> "${GITHUB_OUTPUT}"
+
       - name: Check environments using lean4checker
         id: lean4checker
         continue-on-error: true
@@ -98,7 +108,7 @@ jobs:
           # Now that the git hash is embedded in each olean,
           # we need to compile lean4checker on the same toolchain
           cp ../lean-toolchain .
-          lake build
+          lake build | tee -a "${{ steps.buildlog.lean4checker-filename }}"
           ./test.sh
           cd ..
           # After https://github.com/leanprover/lean4checker/pull/26
@@ -110,9 +120,21 @@ jobs:
         id: mathlib-test
         continue-on-error: true
         run: |
-          lake exe mathlib_test_executable
+          lake exe mathlib_test_executable | tee -a "${{ steps.buildlog.mathlib-test-filename }}"
 
-      - name: Post success message for lean4checker on Zulip
+      - name: Prepare lean4checker Zulip report
+        id: lean4checker-zulip-report
+        run: |
+          # Process output for posting to Zulip
+          WORKFLOW="${{ github.workflow }} - lean4checker" \
+          SHA=${{ github.sha }} \
+          REPO=${{ github.repository }} \
+          RUN_ID=${{ github.run_id }} \
+          SUCCESS=${{ steps.lean4checker.outcome == "success" }} \
+            ./scripts/zulip_build_report.sh "${{ steps.buildlog.lean4checker-filename }}" >> "${GITHUB_OUTPUT}"
+        continue-on-error: true
+
+      - name: Post message for lean4checker on Zulip
         if: steps.lean4checker.outcome == 'success'
         uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
         with:
@@ -122,8 +144,20 @@ jobs:
           to: 'nightly-testing'
           type: 'stream'
           topic: 'lean4checker'
-          content: |
-            ✅ lean4checker [succeeded](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
+          content: ${{ steps.lean4checker-zulip-report.outputs.zulip-message }}
+        continue-on-error: true
+
+      - name: Prepare mathlib_test_executable Zulip report
+        id: mathlib-test-zulip-report
+        run: |
+          # Process output for posting to Zulip
+          WORKFLOW="${{ github.workflow }} - mathlib_test_executable" \
+          SHA=${{ github.sha }} \
+          REPO=${{ github.repository }} \
+          RUN_ID=${{ github.run_id }} \
+          SUCCESS=${{ steps.mathlib-test.outcome == "success" }} \
+            ./scripts/zulip_build_report.sh "${{ steps.buildlog.mathlib-test-filename }}" >> "${GITHUB_OUTPUT}"
+        continue-on-error: true
 
       - name: Post success message for mathlib_test_executable on Zulip
         if: steps.mathlib-test.outcome == 'success'
@@ -135,33 +169,5 @@ jobs:
           to: 'nightly-testing'
           type: 'stream'
           topic: 'mathlib test executable'
-          content: |
-            ✅ mathlib_test_executable [succeeded](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
-
-      - name: Post failure message for lean4checker on Zulip
-        if: steps.lean4checker.outcome == 'failure'
-        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
-        with:
-          api-key: ${{ secrets.ZULIP_API_KEY }}
-          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
-          organization-url: 'https://leanprover.zulipchat.com'
-          to: 'nightly-testing'
-          type: 'stream'
-          topic: 'lean4checker failure'
-          content: |
-            ❌ lean4checker [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
-        continue-on-error: true
-
-      - name: Post failure message for mathlib_test_executable on Zulip
-        if: steps.mathlib-test.outcome == 'failure'
-        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
-        with:
-          api-key: ${{ secrets.ZULIP_API_KEY }}
-          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
-          organization-url: 'https://leanprover.zulipchat.com'
-          to: 'nightly-testing'
-          type: 'stream'
-          topic: 'mathlib test executable failure'
-          content: |
-            ❌ mathlib_test_executable [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) on ${{ github.sha }} (branch: ${{ env.BRANCH_REF }})
+          content: ${{ steps.mathlib-test-zulip-report.outputs.zulip-message }}
         continue-on-error: true
