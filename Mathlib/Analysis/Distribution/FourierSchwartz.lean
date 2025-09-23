@@ -127,6 +127,10 @@ theorem inner_fourierTransformCLM_toL2_eq (f : 𝓢(V, H)) :
   simp only [inner_toL2_toL2_eq]
   exact integral_sesq_fourier_fourier f f (innerSL ℂ)
 
+theorem norm_fourierTransformCLM_toL2_eq (f : 𝓢(V, H)) :
+    ‖(fourierTransformCLM ℂ f).toLp 2‖ = ‖f.toLp 2‖ := by
+  simp_rw [norm_eq_sqrt_re_inner (𝕜 := ℂ), inner_fourierTransformCLM_toL2_eq]
+
 /-- The Fourier transform on a real inner product space, as a continuous linear equiv on the
 Schwartz space. -/
 noncomputable def fourierTransformCLE : 𝓢(V, E) ≃L[𝕜] 𝓢(V, E) where

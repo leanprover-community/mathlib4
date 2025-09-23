@@ -233,7 +233,7 @@ theorem integral_fourierIntegral_smul_eq_flip
   integral_bilin_fourierIntegral_eq_flip (ContinuousLinearMap.lsmul ℂ ℂ) he hL hf hg
 
 /-- The Fourier transform satisfies `∫ 𝓕 f * conj g = ∫ f * conj (𝓕⁻¹ g)`, i.e.,
-Parseval's identity.
+Parseval's identity or Plancherel's theorem.
 
 Version where the multiplication is replaced by a general bilinear form `M`. -/
 theorem integral_sesq_fourierIntegral_eq_neg_flip
