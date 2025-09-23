@@ -286,15 +286,13 @@ lemma projectiveDimension_ge_iff (X : C) (n : ℕ) : n ≤ projectiveDimension X
 
 lemma projectiveDimension_eq_bot_iff (X : C) : projectiveDimension X = ⊥ ↔
     Limits.IsZero X := by
+  rw [← hasProjectiveDimensionLT_zero_iff_isZero]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · have : HasProjectiveDimensionLT X 0 := by
-      apply hasProjectiveDimensionLT_of_projectiveDimension_lt X 0
-      simp [h, bot_lt_iff_ne_bot]
-    exact isZero_of_hasProjectiveDimensionLT_zero X
+  · apply hasProjectiveDimensionLT_of_projectiveDimension_lt X 0
+    simp [h, bot_lt_iff_ne_bot]
   · rw [eq_bot_iff]
     apply sInf_le
     intro i _
-    have := h.hasProjectiveDimensionLT_zero
     apply hasProjectiveDimensionLT_of_ge X 0 i (Nat.zero_le i)
 
 lemma projectiveDimension_eq_find (X : C) (h : ∃ n, HasProjectiveDimensionLE X n)
