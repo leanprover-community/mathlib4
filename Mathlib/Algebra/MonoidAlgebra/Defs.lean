@@ -131,7 +131,7 @@ lemma smul_apply (a : A) (x : MonoidAlgebra R M) (m : M) : (a • x) m = a • x
 lemma smul_single (a : A) (m : M) (r : R) : a • single m r = single m (a • r) := by
   ext; simp [single, ← Finsupp.smul_single]
 
-@[to_additive (attr := simp) (dont_translate := R) smul_single']
+@[to_additive (dont_translate := R) smul_single']
 lemma smul_single' (r' : R) (m : M) (r : R) : r' • single m r = single m (r' * r) := smul_single ..
 
 @[to_additive (dont_translate := N) distribSMul]
@@ -158,10 +158,10 @@ end SMul
 @[to_additive (attr := simp, norm_cast)]
 lemma coe_add (f g : MonoidAlgebra R G) : ⇑(f + g) = f + g := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma single_zero (m : M) : (single m 0 : MonoidAlgebra R M) = 0 := by simp [single]
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma single_add (m : M) (r₁ r₂ : R) : single m (r₁ + r₂) = single m r₁ + single m r₂ := by
   simp [single]
 
@@ -562,7 +562,7 @@ instance addCommGroup : AddCommGroup (MonoidAlgebra R M) :=
 @[to_additive (attr := simp) (dont_translate := R)]
 lemma neg_apply (m : M) (x : MonoidAlgebra R M) : (-x) m = -x m := rfl
 
-@[to_additive (attr := simp) (dont_translate := R)]
+@[to_additive (dont_translate := R)]
 lemma single_neg (m : M) (r : R) : single m (-r) = -single m r := by simp [single]
 
 @[to_additive (dont_translate := R)]
