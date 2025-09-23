@@ -134,8 +134,8 @@ theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
   by_cases hs : s = ∅
   · simp [hs, posLog]
   -- Nontrivial case: Obtain maximal element…
-  obtain ⟨t_max, ht_max⟩ := s.exists_max_image (fun t ↦ |f t|)
-    (Finset.nonempty_iff_ne_empty.mpr hs)
+  push_neg at hs
+  obtain ⟨t_max, ht_max⟩ := s.exists_max_image (fun t ↦ |f t|) hs
   -- …then calculate
   calc log⁺ (∑ t ∈ s, f t)
   _ = log⁺ |∑ t ∈ s, f t| := by

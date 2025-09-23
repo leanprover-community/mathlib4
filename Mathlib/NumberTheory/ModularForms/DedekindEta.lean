@@ -74,8 +74,9 @@ lemma multipliableLocallyUniformlyOn_eta :
       simpa [eta_q, eta_q_eq_pow] using pow_le_pow_left₀ (by simp [norm_nonneg]) (HB x hx) _
     · simp_rw [eta_q, Periodic.qParam]
       fun_prop
-  · rw [hasProdUniformlyOn_iff_tendstoUniformlyOn]
-    simpa [not_nonempty_iff_eq_empty.mp hN] using tendstoUniformlyOn_empty
+  · push_neg at hN
+    rw [hasProdUniformlyOn_iff_tendstoUniformlyOn]
+    simpa [hN] using tendstoUniformlyOn_empty
 
 /-- Eta is non-vanishing on the upper half plane. -/
 lemma eta_ne_zero {z : ℂ} (hz : z ∈ ℍₒ) : η z ≠ 0 := by

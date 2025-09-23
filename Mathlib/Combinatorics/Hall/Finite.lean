@@ -64,7 +64,7 @@ theorem hall_cond_of_erase {x : ι} (a : α)
       exact Nat.le_sub_one_of_lt ha'
     · rw [erase_eq_of_notMem hb]
       exact Nat.le_of_lt ha'
-  · rw [nonempty_iff_ne_empty, not_not] at he
+  · push_neg at he
     subst s'
     simp
 

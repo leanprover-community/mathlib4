@@ -144,7 +144,8 @@ theorem iSupIndep_stratum : iSupIndep u.stratum := by
     contrapose! h
     rw [DFinsupp.notMem_support_iff, u.archimedeanClassMk_of_mem_stratum ha h0]
     simpa using (f c).prop
-  · rw [Finset.not_nonempty_iff_eq_empty.mp hnonempty]
+  · push_neg at hnonempty
+    rw [hnonempty]
     symm
     simpa using h0
 

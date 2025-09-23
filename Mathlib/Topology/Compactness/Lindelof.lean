@@ -542,8 +542,8 @@ theorem IsLindelof.ne_univ [NonLindelofSpace X] (hs : IsLindelof s) : s ≠ univ
 
 instance [NonLindelofSpace X] : NeBot (Filter.coLindelof X) := by
   refine hasBasis_coLindelof.neBot_iff.2 fun {s} hs => ?_
-  contrapose hs
-  rw [not_nonempty_iff_eq_empty, compl_empty_iff] at hs
+  contrapose! hs
+  rw [compl_empty_iff] at hs
   rw [hs]
   exact nonLindelof_univ X
 

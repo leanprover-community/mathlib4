@@ -142,7 +142,7 @@ element. -/
 lemma subsingleton_of_disjoint_isClopen
     (h_clopen : ∀ i, IsClopen (s i)) :
     Subsingleton ι := by
-  replace h_nonempty : ∀ i, s i ≠ ∅ := by intro i; rw [← nonempty_iff_ne_empty]; exact h_nonempty i
+  replace h_nonempty : ∀ i, s i ≠ ∅ := by intro i; push_neg; exact h_nonempty i
   by_contra! contra
   obtain ⟨i, j, h_ne⟩ := contra
   replace h_ne : s i ∩ s j = ∅ := by

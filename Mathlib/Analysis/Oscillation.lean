@@ -138,7 +138,7 @@ theorem uniform_oscillationWithin (comp : IsCompact K) (hK : ∀ x ∈ K, oscill
       obtain ⟨r, hr⟩ := mem_iUnion.1 (hT hx)
       simp only [mem_iUnion, exists_prop] at hr
       exact (S_antitone _ r (IsWF.min_le Tfin.isWF T_nonempty hr.1)) hr.2
-    · rw [not_nonempty_iff_eq_empty] at T_nonempty
+    · push_neg at T_nonempty
       use 1, one_pos, subset_trans hT (by simp [T_nonempty])
   use δ, δ0
   intro x xK

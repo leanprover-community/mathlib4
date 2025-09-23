@@ -267,7 +267,7 @@ lemma eqOn_complexMGF_of_mgf' (hXY : mgf X μ = mgf Y μ') (hμμ' : μ = 0 ↔ 
     Set.EqOn (complexMGF X μ) (complexMGF Y μ') {z | z.re ∈ interior (integrableExpSet X μ)} := by
   by_cases h_empty : interior (integrableExpSet X μ) = ∅
   · simp [h_empty]
-  rw [← ne_eq, ← Set.nonempty_iff_ne_empty] at h_empty
+  push_neg at h_empty
   obtain ⟨t, ht⟩ := h_empty
   have hX : AnalyticOnNhd ℂ (complexMGF X μ) {z | z.re ∈ interior (integrableExpSet X μ)} :=
     analyticOnNhd_complexMGF

@@ -594,8 +594,8 @@ noncomputable irreducible_def MeasureTheory.Measure.finiteSpanningSetsInOpen' [T
     isOpen_sUnion_countable S fun s hs => hs.1
   rw [μ.isTopologicalBasis_isOpen_lt_top.sUnion_eq] at hT
   have T_ne : T.Nonempty := by
-    by_contra h'T
-    rw [not_nonempty_iff_eq_empty.1 h'T, sUnion_empty] at hT
+    by_contra! h'T
+    rw [h'T, sUnion_empty] at hT
     simpa only [← hT] using mem_univ (default : α)
   obtain ⟨f, hf⟩ : ∃ f : ℕ → Set α, T = range f := T_count.exists_eq_range T_ne
   have fS : ∀ n, f n ∈ S := by

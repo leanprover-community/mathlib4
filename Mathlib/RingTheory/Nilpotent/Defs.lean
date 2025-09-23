@@ -116,8 +116,8 @@ lemma isNilpotent_of_pos_nilpotencyClass (hx : 0 < nilpotencyClass x) :
   let s : Set ℕ := {k | x ^ k = 0}
   change s.Nonempty
   change 0 < sInf s at hx
-  by_contra contra
-  simp [not_nonempty_iff_eq_empty.mp contra] at hx
+  by_contra! contra
+  simp [contra] at hx
 
 lemma pow_nilpotencyClass (hx : IsNilpotent x) : x ^ (nilpotencyClass x) = 0 :=
   Nat.sInf_mem hx

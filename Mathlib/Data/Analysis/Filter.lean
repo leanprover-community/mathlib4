@@ -302,8 +302,8 @@ theorem tendsto_iff (f : α → β) {l₁ : Filter α} {l₂ : Filter β} (L₁ 
   (le_iff (L₁.map f) L₂).trans <| forall_congr' fun _ ↦ exists_congr fun _ ↦ image_subset_iff
 
 theorem ne_bot_iff {f : Filter α} (F : f.Realizer) : f ≠ ⊥ ↔ ∀ a : F.σ, (F.F a).Nonempty := by
-  rw [not_iff_comm, ← le_bot_iff, F.le_iff Realizer.bot, not_forall]
-  simp only [Set.not_nonempty_iff_eq_empty]
+  rw [not_iff_comm, ← le_bot_iff, F.le_iff Realizer.bot]
+  push_neg
   exact ⟨fun ⟨x, e⟩ _ ↦ ⟨x, le_of_eq e⟩, fun h ↦
     let ⟨x, h⟩ := h ()
     ⟨x, le_bot_iff.1 h⟩⟩
