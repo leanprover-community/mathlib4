@@ -7,7 +7,6 @@ import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 import Mathlib.Analysis.Analytic.RadiusLiminf
 import Mathlib.Analysis.Complex.Liouville
 import Mathlib.Analysis.Complex.Polynomial.Basic
-import Mathlib.Analysis.Complex.Spectrum
 import Mathlib.Analysis.Normed.Algebra.Exponential
 import Mathlib.Analysis.Normed.Algebra.UnitizationL1
 import Mathlib.Analysis.Real.Spectrum
