@@ -395,10 +395,12 @@ namespace Mathlib.Meta.Positivity
 
 open Qq Lean Meta Finset
 
+-- commented out because I have no idea how to write tactics -- DL
 -- attribute [local instance] monadLiftOptionMetaM in
 -- /-- Positivity extension for infinite sums.
 
--- This extension only proves non-negativity, strict positivity is more delicate for infinite sums and
+-- This extension only proves non-negativity, strict positivity is more delicate for infinite sums
+-- and
 -- requires more assumptions. -/
 -- @[positivity tsum _]
 -- def evalTsum : PositivityExt where eval {u α} zα pα e := do
@@ -414,7 +416,8 @@ open Qq Lean Meta Finset
 --       let pα' ← synthInstanceQ q(IsOrderedAddMonoid $α)
 --       let instOrderClosed ← synthInstanceQ q(OrderClosedTopology $α)
 --       assertInstancesCommute
---       return .nonnegative q(@tsum_nonneg $ι $α $mα' $oα' $pα' $instTopSpace $instOrderClosed $f $pr)
+--       return .nonnegative q(@tsum_nonneg $ι $α $mα' $oα' $pα' $instTopSpace
+--          $instOrderClosed $f $pr)
 --   | _ => throwError "not tsum"
 
 end Mathlib.Meta.Positivity
