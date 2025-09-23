@@ -16,6 +16,7 @@ a kernel from `α` to `γ`.
 * `comp (η : Kernel β γ) (κ : Kernel α β) : Kernel α γ`: composition of 2 kernels.
   We define a notation `η ∘ₖ κ = comp η κ`.
   `∫⁻ c, g c ∂((η ∘ₖ κ) a) = ∫⁻ b, ∫⁻ c, g c ∂(η b) ∂(κ a)`
+* `pow (κ : Kernel α α) : Kernel α α`: iterated composition of a kernel with itself.
 
 ## Main statements
 
@@ -79,20 +80,6 @@ theorem comp_apply_univ_le (κ : Kernel α β) (η : Kernel β γ) (a : α) :
   ext a s hs
   simp [comp_apply' _ _ _ hs, id_apply,
     lintegral_dirac' a <| κ.measurable_coe hs]
-
-section Pow
-
-/-- Power of a kernel. -/
-noncomputable def pow (κ : Kernel α α) : ℕ → Kernel α α
-  | 0          => Kernel.id
-  | Nat.succ n => κ.pow n ∘ₖ κ
-
-@[simp] lemma pow_zero (κ : Kernel α α) : κ.pow 0 = Kernel.id := rfl
-
-@[simp] lemma pow_succ (κ : Kernel α α) (n : ℕ) : κ.pow (n + 1) = κ.pow n ∘ₖ κ := by
-  cases n <;> simp [pow]
-
-end Pow
 
 section Ae
 
@@ -231,6 +218,18 @@ instance IsSFiniteKernel.comp (η : Kernel β γ) [IsSFiniteKernel η] (κ : Ker
   simp_rw [← kernel_sum_seq κ, ← kernel_sum_seq η, comp_sum_left, comp_sum_right]
   infer_instance
 
+section Pow
+
+/-- Power of a kernel. -/
+noncomputable def pow (κ : Kernel α α) : ℕ → Kernel α α
+  | 0          => Kernel.id
+  | Nat.succ n => κ.pow n ∘ₖ κ
+
+@[simp] lemma pow_zero (κ : Kernel α α) : κ.pow 0 = Kernel.id := rfl
+
+@[simp] lemma pow_succ (κ : Kernel α α) (n : ℕ) : κ.pow (n + 1) = κ.pow n ∘ₖ κ := by
+  cases n <;> simp [pow]
+
 /-! ### Chapman-Kolmogorov Equations -/
 
 /-- The **Chapman-Kolmogorov equation**, kernel composition version.
@@ -254,6 +253,8 @@ theorem pow_succ_apply_eq_lintegral (κ : Kernel α α) (n : ℕ) (a : α) {s : 
     (hs : MeasurableSet s) :
     (κ.pow (n + 1)) a s = ∫⁻ b, κ b s ∂(κ.pow n a) := by
   simpa using pow_add_apply_eq_lintegral _ n 1 _ hs
+
+end Pow
 
 end Kernel
 end ProbabilityTheory
