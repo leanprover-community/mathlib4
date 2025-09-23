@@ -57,15 +57,15 @@ theorem isIntegral_two_mul_cos_rat_mul_pi (r : ℚ) :
   simp_all [Polynomial.eval₂_eq_sum_range, ← Complex.ofReal_inj]
 
 /-- **Niven's theorem**: The only rational values of `cos` that occur at rational multiples of π
-are `[-1, -1/2, 0, 1/2, 1]`. -/
+are `{-1, -1/2, 0, 1/2, 1}`. -/
 theorem niven (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, cos θ = q) :
     cos θ ∈ ({-1, -1 / 2, 0, 1 / 2, 1} : Set ℝ) := by
   -- Since `2 cos θ ` is an algebraic integer and rational, it must be an integer.
   -- Hence, `2 cos θ ∈ {-2, -1, 0, 1, 2}`.
-  obtain ⟨k, hk⟩ : ∃ k : ℤ, 2 * cos θ = k := by
-    rw [← (isIntegral_two_mul_cos_pi hθ).exists_int_iff_exists_rat]
-    exact ⟨2 * hcos.choose, by push_cast; linarith [hcos.choose_spec]⟩
   obtain ⟨r, rfl⟩ := hθ
+  obtain ⟨k, hk⟩ : ∃ k : ℤ, 2 * cos (r * π) = k := by
+    rw [← (isIntegral_two_mul_cos_rat_mul_pi r).exists_int_iff_exists_rat]
+    exact ⟨2 * hcos.choose, by push_cast; linarith [hcos.choose_spec]⟩
   -- Since k is an integer and `2 * cos (w * pi) = k`, we have $k ∈ {-2, -1, 0, 1, 2}$.
   have hk_values : k ∈ Finset.Icc (-2 : ℤ) 2 := by
     rw [Finset.mem_Icc]
