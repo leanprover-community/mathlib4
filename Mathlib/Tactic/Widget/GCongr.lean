@@ -49,6 +49,6 @@ open scoped Json in
 /-- Display a widget panel allowing to generate a `gcongr` call with holes specified by selecting
 subexpressions in the goal. -/
 elab stx:"gcongr?" : tactic => do
-  let some replaceRange := (← getFileMap).rangeOfStx? stx | return
+  let some replaceRange := (← getFileMap).lspRangeOfStx? stx | return
   Widget.savePanelWidgetInfo GCongrSelectionPanel.javascriptHash
     (pure <| json% { replaceRange: $(replaceRange) }) stx

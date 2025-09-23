@@ -213,7 +213,7 @@ This gives a list of rewrite suggestions for the selected expression.
 Click on a suggestion to replace `unfold?` by a tactic that performs this rewrite.
 -/
 elab stx:"unfold?" : tactic => do
-  let some range := (← getFileMap).rangeOfStx? stx | return
+  let some range := (← getFileMap).lspRangeOfStx? stx | return
   Widget.savePanelWidgetInfo (hash UnfoldComponent.javascript)
     (pure <| json% { replaceRange : $range }) stx
 

@@ -140,7 +140,7 @@ elab_rules : tactic
 | `(tactic|calc%$calcstx $steps) => do
   let mut isFirst := true
   for step in ← Lean.Elab.Term.mkCalcStepViews steps do
-    let some replaceRange := (← getFileMap).rangeOfStx? step.ref | continue
+    let some replaceRange := (← getFileMap).lspRangeOfStx? step.ref | continue
     let json := json% {"replaceRange": $(replaceRange),
                         "isFirst": $(isFirst),
                         "indent": $(replaceRange.start.character)}
