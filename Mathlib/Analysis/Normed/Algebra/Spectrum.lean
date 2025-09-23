@@ -10,7 +10,7 @@ import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.Analysis.Complex.Spectrum
 import Mathlib.Analysis.Normed.Algebra.Exponential
 import Mathlib.Analysis.Normed.Algebra.UnitizationL1
-import Mathlib.Data.Real.Spectrum
+import Mathlib.Analysis.Real.Spectrum
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 import Mathlib.Tactic.ContinuousFunctionalCalculus
 import Mathlib.Topology.Algebra.Module.CharacterSpace
