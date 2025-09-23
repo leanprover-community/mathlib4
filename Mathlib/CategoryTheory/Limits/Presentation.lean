@@ -274,7 +274,7 @@ def map (P : LimitPresentation J X) {D : Type*} [Category D] (F : C ⥤ D)
 /-- If `P` is a limit presentation of `X`, it is possible to define another
 limit presentation of `X` where `P.diag` is replaced by an isomorphic functor. -/
 @[simps]
-def chgDiag (P : LimitPresentation J X) {F : J ⥤ C} (e : F ≅ P.diag) :
+def changeDiag (P : LimitPresentation J X) {F : J ⥤ C} (e : F ≅ P.diag) :
     LimitPresentation J X where
   diag := F
   π := P.π ≫ e.inv
