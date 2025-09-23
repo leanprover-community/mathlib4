@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.Nat.Init
+import Mathlib.Data.Set.Defs
 import Mathlib.Logic.Nontrivial.Defs
+import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Util.AssertExists

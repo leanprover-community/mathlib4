@@ -139,7 +139,6 @@ theorem IsContained.extremalNumber_le {W' : Type*} {H' : SimpleGraph W'} (h : H'
   rw [← Fintype.card_fin n, extremalNumber_le_iff]
   intro _ _ h'
   contrapose! h'
-  rw [not_not]
   exact h.trans (IsContained.of_extremalNumber_lt_card_edgeFinset h')
 
 /-- If `H₁ ≃g H₂`, then `extremalNumber n H₁` equals `extremalNumber n H₂`. -/
@@ -156,7 +155,6 @@ theorem extremalNumber_congr {n₁ n₂ : ℕ} {W₁ W₂ : Type*} {H₁ : Simpl
     intro G _ h
     apply card_edgeFinset_le_extremalNumber
     contrapose! h
-    rw [not_free] at h ⊢
     exact h.trans' ⟨e.toCopy⟩
 
 /-- If `H₁ ≃g H₂`, then `extremalNumber n H₁` equals `extremalNumber n H₂`. -/
@@ -181,7 +179,6 @@ theorem card_edgeFinset_deleteIncidenceSet_le_extremalNumber
   rw [← card_edgeFinset_induce_compl_singleton, ← @card_unique ({v} : Set V), ← card_compl_set]
   apply card_edgeFinset_le_extremalNumber
   contrapose! h
-  rw [not_free] at h ⊢
   exact h.trans ⟨Copy.induce G {v}ᶜ⟩
 
 end ExtremalNumber
