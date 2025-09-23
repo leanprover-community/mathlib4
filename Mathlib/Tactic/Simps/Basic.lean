@@ -143,8 +143,12 @@ attribute [notation_class] Neg Dvd LE LT HasEquiv HasSubset HasSSubset Union Int
 attribute [notation_class one Simps.findOneArgs] OfNat
 attribute [notation_class zero Simps.findZeroArgs] OfNat
 
-/-- arguments to `@[simps]` attribute. -/
-syntax simpsArgsRest := Tactic.optConfig (ppSpace ident)*
+/-- An `attr := ...` option for `simps`. -/
+syntax simpsOptAttrOption := atomic(ppSpace "(" &"attr" " := " Parser.Term.attrInstance,* ")")?
+
+/-- Arguments to `@[simps]` attribute.
+Currently, a potential `(attr := ...)` argument has to come before other configuration options. -/
+syntax simpsArgsRest := simpsOptAttrOption Tactic.optConfig (ppSpace ident)*
 
 /-- The `@[simps]` attribute automatically derives lemmas specifying the projections of this
 declaration.
@@ -866,9 +870,8 @@ def elabSimpsRule : Syntax → CommandElabM ProjectionRule
 structure Config where
   /-- Make generated lemmas simp lemmas -/
   isSimp := true
-  /-- Other simp-attributes to apply to generated lemmas.
-  Attributes that are currently not simp-attributes are not supported. -/
-  attrs : List Name := []
+  /-- Other attributes to apply to generated lemmas. -/
+  attrs : Array Syntax := #[]
   /-- simplify the right-hand side of generated simp-lemmas using `dsimp, simp`. -/
   simpRhs := false
   /-- TransparencyMode used to reduce the type in order to detect whether it is a structure. -/
@@ -1000,15 +1003,14 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
       type := declType
       value := declValue }
   inferDefEqAttr declName
+  -- add term info and apply attributes
   addDeclarationRangesFromSyntax declName (← getRef) ref
-  _ ← MetaM.run' <| TermElabM.run' <| addTermInfo (isBinder := true) ref <|
-    ← mkConstWithLevelParams declName
-  if cfg.isSimp then
-    addSimpTheorem simpExtension declName true false .global <| eval_prio default
-  _ ← cfg.attrs.mapM fun simpAttr ↦ do
-    let some simpDecl ← getSimpExtension? simpAttr |
-      throwError "{simpAttr} is not a simp-attribute."
-    addSimpTheorem simpDecl declName true false .global <| eval_prio default
+  MetaM.run' <| TermElabM.run' do
+    _ ← addTermInfo (isBinder := true) ref <| ← mkConstWithLevelParams declName
+    if cfg.isSimp then
+      addSimpTheorem simpExtension declName true false .global <| eval_prio default
+    let attrs ← elabAttrs cfg.attrs
+    Elab.Term.applyAttributes declName attrs
 
 /--
 Perform head-structure-eta-reduction on expression `e`. That is, if `e` is of the form
@@ -1218,9 +1220,13 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
 /-- elaborate the syntax and run `simpsTac`. -/
 def simpsTacFromSyntax (nm : Name) (stx : Syntax) : AttrM (Array Name) :=
   match stx with
-  | `(attr| simps $[!%$bang]? $[?%$trc]? $c:optConfig $[$ids]*) => do
+  | `(attr| simps $[!%$bang]? $[?%$trc]? $attrs:simpsOptAttrOption $c:optConfig $[$ids]*) => do
+    let extraAttrs := match attrs with
+    | `(Attr.simpsOptAttrOption| (attr := $[$stxs],*)) => stxs
+    | _ => #[]
     let cfg ← liftCommandElabM <| elabSimpsConfig c
     let cfg := if bang.isNone then cfg else { cfg with rhsMd := .default, simpRhs := true }
+    let cfg := { cfg with attrs := cfg.attrs ++ extraAttrs }
     let ids := ids.map fun x => (x.getId.eraseMacroScopes.lastComponentAsString, x.raw)
     simpsTac stx nm cfg ids.toList trc.isSome
   | _ => throwUnsupportedSyntax

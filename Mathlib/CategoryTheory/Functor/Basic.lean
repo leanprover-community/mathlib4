@@ -108,7 +108,7 @@ theorem congr_map (F : C ⥤ D) {X Y : C} {f g : X ⟶ Y}
 
 /-- `F ⋙ G` is the composition of a functor `F` and a functor `G` (`F` first, then `G`).
 -/
-@[simps obj]
+@[simps (attr := grind =) obj]
 def comp (F : C ⥤ D) (G : D ⥤ E) : C ⥤ E where
   obj X := G.obj (F.obj X)
   map f := G.map (F.map f)
@@ -120,7 +120,6 @@ scoped [CategoryTheory] infixr:80 " ⋙ " => Functor.comp
 theorem comp_map (F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ⟶ Y) :
     (F ⋙ G).map f = G.map (F.map f) := rfl
 
-attribute [grind =] comp_obj
 attribute [grind =] comp_map
 
 -- These are not simp lemmas because rewriting along equalities between functors
