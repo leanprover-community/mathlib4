@@ -143,7 +143,7 @@ lemma functorMonoidalOfComp_ε' : letI := functorMonoidalOfComp L W F G
 @[reassoc]
 lemma functorMonoidalOfComp_μ (X Y : C) : letI := functorMonoidalOfComp L W F G
     μ F (L.obj X) (L.obj Y) = μ (L ⋙ F) X Y ≫ F.map (δ L _ _) := by
-  simp [Functor.CoreMonoidal.toLaxMonoidal_μ, curriedTensorPreIsoPost_hom_app_app]
+  simp [Functor.CoreMonoidal.toLaxMonoidal_μ]
 
 @[reassoc]
 lemma functorMonoidalOfComp_μ' (X Y : C) : letI := functorMonoidalOfComp L W F G
