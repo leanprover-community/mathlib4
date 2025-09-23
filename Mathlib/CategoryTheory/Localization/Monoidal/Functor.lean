@@ -70,6 +70,7 @@ lemma curriedTensorPreIsoPost_hom_app_app' {X₁ X₂ : C} {Y₁ Y₂ : D} (e₁
     Category.assoc, ← h₂, curriedTensorPreIsoPost_hom_app_app]
   simp [← tensorHom_def'_assoc, ← Functor.map_comp, ← tensorHom_def']
 
+
 /--
 Monoidal structure on `F`, given that `L ⋙ F` is monoidal, where `L` is a localization functor.
 -/
