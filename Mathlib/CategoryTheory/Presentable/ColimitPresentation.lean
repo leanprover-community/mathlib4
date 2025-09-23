@@ -17,7 +17,7 @@ import Mathlib.CategoryTheory.Presentable.Finite
 
 universe s t w v u
 
-namespace CategoryTheory.Limits.Presentation
+namespace CategoryTheory.Limits.ColimitPresentation
 
 variable {C : Type u} [Category.{v} C]
 
@@ -146,4 +146,4 @@ def bind {X : C} (P : ColimitPresentation J X) (Q : ∀ j, ColimitPresentation (
 
 end Small
 
-end CategoryTheory.Limits.Presentation
+end CategoryTheory.Limits.ColimitPresentation

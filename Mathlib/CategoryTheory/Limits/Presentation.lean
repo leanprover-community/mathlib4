@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Limits.Final
 Let `J` and `C` be categories and `X : C`. We define type `ColimitPresentation J X` that contains
 the data of objects `Dⱼ` and natural maps `sⱼ : Dⱼ ⟶ X` that make `X` the colimit of the `Dⱼ`.
 
-(See `CategoryTheory.Presentable.Presentation` for the construction of a presentation
+(See `CategoryTheory.Presentable.ColimitPresentation` for the construction of a presentation
 of a colimit of objects that are equipped with presentations.)
 
 ## Main definitions:
