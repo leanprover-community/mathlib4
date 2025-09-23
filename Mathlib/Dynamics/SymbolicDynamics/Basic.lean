@@ -25,7 +25,8 @@ box-based entropy) is kept in a separate specialization.
 
 ## Main definitions
 
-* `shift g x` — right translation: `(shift g x) h = x (h * g)`.
+* `shift g x` — right translation: in the multiplicative notation: `(shift g x) h = x (h * g)`;
+  additive notation (e.g. for `ℤ^d`): `(addShift v x) u = x (u + v)`.
 * `cylinder U x` — configurations agreeing with `x` on a finite set `U ⊆ G`.
 * `Pattern A G` — finite support together with values on that support.
 * `Pattern.occursIn p x g` — occurrence of `p` in `x` at translate `g`.
@@ -51,38 +52,44 @@ open Set Topology
 
 namespace SymbolicDynamics
 
-variable {A : Type*} [Fintype A] [Inhabited A]
-variable {G : Type*}
-variable [TopologicalSpace A] [DiscreteTopology A]
-variable [Group G] [DecidableEq G]
-
 /-! ## Full shift and shift action -/
 
+section ShiftDefinition
 
-/-- Right-translation shift: `(shift g x) (h) = x (h * g)`. -/
-def shift (g : G) (x : G → A) : G → A :=
+variable {A : Type*}
+variable {G : Type*}
+variable [Group G]
+
+/-- Right-translation shift:
+* In multiplicative notation: `(mulShift g x) h = x (h * g)`.
+* In additive notation (e.g. for `ℤ^d`): `(addShift v x) u = x (u + v)` -/
+@[to_additive]
+def mulShift (g : G) (x : G → A) : G → A :=
   fun h => x (h * g)
+
+end ShiftDefinition
 
 section ShiftAlgebra
 
 variable {A G : Type*} [Group G]
 
-@[simp] lemma shift_apply (g h : G) (x : G → A) :
-  shift g x h = x (h * g) := rfl
+@[to_additive (attr := simp)] lemma mulShift_apply (g h : G) (x : G → A) :
+  mulShift g x h = x (h * g) := rfl
 
-@[simp] lemma shift_one (x : G → A) : shift (1 : G) x = x := by
-  ext h; simp [shift]
+@[to_additive (attr := simp)] lemma mulShift_one (x : G → A) : mulShift (1 : G) x = x := by
+  ext h; simp [mulShift]
 
-lemma shift_mul (g₁ g₂ : G) (x : G → A) :
-  shift (g₁ * g₂) x = shift g₁ (shift g₂ x) := by
-  ext h; simp [shift, mul_assoc]
+@[to_additive] lemma mulShift_mul (g₁ g₂ : G) (x : G → A) :
+  mulShift (g₁ * g₂) x = mulShift g₁ (mulShift g₂ x) := by
+  ext h; simp [mulShift, mul_assoc]
 
 end ShiftAlgebra
 
 section ShiftTopology  -- add only topology on A
 
 variable {A G : Type*} [Group G] [TopologicalSpace A]
-lemma continuous_shift (g : G) : Continuous (shift (A := A) (G := G) g) := by
+
+@[to_additive] lemma continuous_mulShift (g : G) : Continuous (mulShift (A := A) (G := G) g) := by
   -- coordinate projections are continuous; composition preserves continuity
   continuity
 
@@ -146,21 +153,42 @@ end CylindersClosed
 
 /-! ## Patterns and occurrences -/
 
+section SubshiftDef
+variable (A : Type*) [TopologicalSpace A] [Inhabited A]
+variable (G : Type*) [Group G]
+
 /-- A subshift is a closed, shift-invariant subset. -/
-structure Subshift (A : Type*) [TopologicalSpace A] [Inhabited A] (G : Type*) [Group G] where
+structure Subshift : Type _ where
   /-- The underlying set of configurations. -/
   carrier : Set (G → A)
   /-- Closedness of `carrier`. -/
   isClosed : IsClosed carrier
   /-- Shift invariance of `carrier`. -/
-  shiftInvariant : ∀ g : G, ∀ x ∈ carrier, shift (A := A) (G := G) g x ∈ carrier
+  shiftInvariant : ∀ g : G, ∀ x ∈ carrier, mulShift g x ∈ carrier
+
+end SubshiftDef
+
+
+section AddSubshiftDef
+variable (A : Type*) [TopologicalSpace A] [Inhabited A]
+variable (G : Type*) [AddGroup G]
+
+/-- Additive version of the definition of subshift -/
+structure AddSubshift : Type _ where
+  carrier : Set (G → A)
+  isClosed : IsClosed carrier
+  shiftInvariant : ∀ g : G, ∀ x ∈ carrier, addShift g x ∈ carrier
+end AddSubshiftDef
+
+attribute [to_additive existing SymbolicDynamics.AddSubshift]
+  SymbolicDynamics.Subshift
 
 /-- Example: the full shift on alphabet A. -/
+@[to_additive SymbolicDynamics.addFullShift]
 def fullShift (A G) [TopologicalSpace A] [Inhabited A] [Group G] : Subshift A G :=
 { carrier := Set.univ,
   isClosed := isClosed_univ,
   shiftInvariant := by intro _ _ _; simp }
-
 
 /-- A finite pattern: finite support in `G` and values on it. -/
 structure Pattern (A : Type*) (G : Type*) [Group G] where
@@ -169,33 +197,64 @@ structure Pattern (A : Type*) (G : Type*) [Group G] where
   /-- The value (symbol) at each point of the support. -/
   data : support → A
 
+/-- Additive version of `Pattern`. -/
+structure AddPattern (A : Type*) (G : Type*) [AddGroup G] : Type _ where
+  support : Finset G
+  data    : support → A
+
+attribute [to_additive existing SymbolicDynamics.AddPattern]
+  SymbolicDynamics.Pattern
+
+section Dominos
+
+variable (G : Type*) [Group G] [DecidableEq G]
+
 /-- The domino supported on `{i,j}` with values `ai`,`aj`. -/
+@[to_additive addDomino]
 def domino {A : Type*}
     (i j : G) (ai aj : A) : Pattern A G := by
   refine
   { support := ({i, j} : Finset G)
   , data := fun ⟨z, hz⟩ => if z = i then ai else aj }
 
+end Dominos
+
+section Forbids
+
+variable {A : Type*}
+variable {G : Type*}
+variable [Group G]
+
 /-- Occurrence of a pattern `p` in `x` at position `g`. -/
+@[to_additive Pattern.addOccursIn]
 def Pattern.occursIn (p : Pattern A G) (x : G → A) (g : G) : Prop :=
   ∀ (h) (hh : h ∈ p.support), x (h * g) = p.data ⟨h, hh⟩
 
 /-- Configurations avoiding every pattern in `F`. -/
+@[to_additive addForbids]
 def forbids (F : Set (Pattern A G)) : Set (G → A) :=
   { x | ∀ p ∈ F, ∀ g : G, ¬ p.occursIn x g }
 
+end Forbids
+
+-- variable {A : Type*} [Fintype A] [Inhabited A]
+-- variable {G : Type*}
+-- variable [TopologicalSpace A] [DiscreteTopology A]
+-- variable [Group G] [DecidableEq G]
 
 section ShiftInvariance
 
 variable {A G : Type*} [Group G]
 
 /-- Shifts move occurrences as expected. -/
+@[to_additive addOccurs_addShift]
 lemma occurs_shift (p : Pattern A G) (x : G → A) (g h : G) :
-    p.occursIn (shift h x) g ↔ p.occursIn x (g * h) := by
-  constructor <;> intro H u hu <;> simpa [shift, mul_assoc] using H u hu
+    p.occursIn (mulShift h x) g ↔ p.occursIn x (g * h) := by
+  constructor <;> intro H u hu <;> simpa [mulShift, mul_assoc] using H u hu
 
+@[to_additive addForbids_addShift_invariant]
 lemma forbids_shift_invariant (F : Set (Pattern A G)) :
-    ∀ h : G, ∀ x ∈ forbids (A := A) (G := G) F, shift h x ∈ forbids F := by
+    ∀ h : G, ∀ x ∈ forbids (A := A) (G := G) F, mulShift h x ∈ forbids F := by
   intro h x hx p hp g
   specialize hx p hp (g * h)
   -- contraposition
@@ -204,36 +263,48 @@ lemma forbids_shift_invariant (F : Set (Pattern A G)) :
 
 end ShiftInvariance
 
+section PatternFromToConfig
+
+variable {A : Type*} [Inhabited A]
+variable {G : Type*}
+variable [Group G] [DecidableEq G]
+
 /-- Extend a pattern by `default` away from its support (anchored at the origin). -/
+@[to_additive addPatternToOriginConfig]
 def patternToOriginConfig (p : Pattern A G) : G → A :=
   fun i ↦ if h : i ∈ p.support then p.data ⟨i, h⟩ else default
 
 /-- Translate a pattern to occur at `v`. -/
+@[to_additive addPatternToConfig]
 def patternToConfig (p : Pattern A G) (v : G) : G → A :=
-  shift (v⁻¹) (patternToOriginConfig p)
+  mulShift (v⁻¹) (patternToOriginConfig p)
 
 /-- Restrict a configuration to a finite support, seen as a pattern. -/
+@[to_additive addPatternFromConfig]
 def patternFromConfig (x : G → A) (U : Finset G) : Pattern A G :=
   { support := U,
     data := fun i => x i.1 }
+
+end PatternFromToConfig
 
 section OccursAtEqCylinder
 
 variable {A G : Type*} [Group G] [Inhabited A] [DecidableEq G]
 
 /-- “Occurrence = cylinder translated by `g`”. -/
+@[to_additive addOccursAt_eq_cylinder]
 lemma occursAt_eq_cylinder (p : Pattern A G) (g : G) :
     { x | p.occursIn x g } = cylinder (p.support.image (· * g)) (patternToConfig p g) := by
   ext x
   constructor
   · intro H u hu
     obtain ⟨w, hw, rfl⟩ := Finset.mem_image.mp hu
-    dsimp [patternToConfig, patternToOriginConfig, shift]
+    dsimp [patternToConfig, patternToOriginConfig, mulShift]
     simp [dif_pos hw, H w hw]
   · intro H u hu
     have := H (u * g) (Finset.mem_image_of_mem _ hu)
-    dsimp [patternToConfig, patternToOriginConfig, shift] at this
-    simpa [add_neg_cancel_right, dif_pos hu] using this
+    dsimp [patternToConfig, patternToOriginConfig, mulShift] at this
+    simpa [mul_inv_cancel_right, mul_assoc, dif_pos hu] using this
 
 end OccursAtEqCylinder
 
@@ -245,11 +316,13 @@ variable {A G : Type*} [Group G] [TopologicalSpace A] [DiscreteTopology A]
            [Inhabited A] [DecidableEq G]
 
 /-- Occurrence sets are open. -/
+@[to_additive addOccursAt_open]
 lemma occursAt_open (p : Pattern A G) (g : G) :
     IsOpen { x | p.occursIn x g } := by
   rw [occursAt_eq_cylinder]; exact cylinder_is_open _ _
 
 /-- Avoiding a fixed set of patterns is a closed condition. -/
+@[to_additive addForbids_closed]
 lemma forbids_closed (F : Set (Pattern A G)) :
     IsClosed (forbids F) := by
   rw [forbids]
@@ -271,27 +344,48 @@ variable {A G : Type*} [Group G] [TopologicalSpace A] [DiscreteTopology A]
            [Inhabited A] [DecidableEq G]
 
 /-- Occurrence sets are closed. -/
+@[to_additive addOccursAt_closed]
 lemma occursAt_closed (p : Pattern A G) (g : G) :
     IsClosed { x | p.occursIn x g } := by
   rw [occursAt_eq_cylinder]; exact cylinder_is_closed _ _
 
 end OccSetsClosed
 
+section DefSubshiftByForbidden
+
+variable {A : Type*} [Inhabited A]
+variable {G : Type*}
+variable [TopologicalSpace A] [DiscreteTopology A]
+variable [Group G] [DecidableEq G]
+
 /-- Subshift defined by forbidden patterns. -/
+@[to_additive addX_F]
 def X_F (F : Set (Pattern A G)) : Subshift A G :=
 { carrier := forbids F,
   isClosed := forbids_closed F,
   shiftInvariant := forbids_shift_invariant F }
 
 /-- Subshift of finite type defined by a finite family of forbidden patterns. -/
+@[to_additive addSFT]
 def SFT (F : Finset (Pattern A G)) : Subshift A G :=
   X_F (F : Set (Pattern A G))
 
+end DefSubshiftByForbidden
+
+section Language
+
+variable {A : Type*} [Fintype A]
+variable {G : Type*}
+variable [TopologicalSpace A]
+variable [Group G]
+
 /-- Patterns with fixed support `U`. -/
+@[to_additive AddFixedSupport]
 def FixedSupport (A : Type*) (G : Type*) [Group G] (U : Finset G) :=
   { p : Pattern A G // p.support = U }
 
 /-- `FixedSupport A G U ≃ (U → A)`; gives finiteness immediately. -/
+@[to_additive addEquivFun]
 def equivFun {U : Finset G} :
   FixedSupport A G U ≃ (U → A) where
   toFun   := fun p i => p.1.data ⟨i.1, by simp [p.2]⟩
@@ -299,15 +393,18 @@ def equivFun {U : Finset G} :
   left_inv := by rintro ⟨p,hU⟩; apply Subtype.ext; cases hU; rfl
   right_inv := by intro f; rfl
 
+@[to_additive SymbolicDynamics.addFintypeFixedSupport] noncomputable
 instance fintypeFixedSupport {U : Finset G} :
     Fintype (FixedSupport A G U) := by
   classical exact Fintype.ofEquiv (U → A) (equivFun (A := A) (G := G) (U := U)).symm
 
 /-- Language on a finite set `U ⊆ G`: patterns obtained by restricting some `x ∈ X`. -/
+@[to_additive addLanguageOn]
 def languageOn (X : Set (G → A)) (U : Finset G) : Set (Pattern A G) :=
   { p | ∃ x ∈ X, patternFromConfig x U = p }
 
 /-- Cardinality of the finite-support language. -/
+@[to_additive addLanguageCardOn]
 noncomputable def languageCardOn (X : Set (G → A)) (U : Finset G) : ℕ := by
   classical
   -- Image of a map into the finite type `FixedSupport A G U`
@@ -319,7 +416,10 @@ noncomputable def languageCardOn (X : Set (G → A)) (U : Finset G) : ℕ := by
   exact hfin.toFinset.card
 
 /-- Number of patterns of a subshift on a finite shape `U`. -/
+@[to_additive addPatternCountOn]
 noncomputable def patternCountOn (Y : Subshift A G) (U : Finset G) : ℕ :=
   languageCardOn (A := A) (G := G) Y.carrier U
+
+end Language
 
 end SymbolicDynamics
