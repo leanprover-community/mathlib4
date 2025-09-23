@@ -235,8 +235,8 @@ lemma not_initial_of_inhabited {X : C} (x : F.obj X) (h : IsInitial X) : False :
 
 /-- The fiber of a connected object is nonempty. -/
 instance nonempty_fiber_of_isConnected (X : C) [IsConnected X] : Nonempty (F.obj X) := by
-  by_contra h
-  have ⟨hin⟩ : Nonempty (IsInitial X) := (initial_iff_fiber_empty F X).mpr (not_nonempty_iff.mp h)
+  by_contra! h
+  have ⟨hin⟩ : Nonempty (IsInitial X) := (initial_iff_fiber_empty F X).mpr h
   exact IsConnected.notInitial hin
 
 /-- The fiber of the equalizer of `f g : X ⟶ Y` is equivalent to the set of agreement of `f`

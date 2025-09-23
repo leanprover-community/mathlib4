@@ -163,8 +163,8 @@ protected lemma Preconnected.mono {G G' : SimpleGraph V} (h : G ≤ G') (hG : G.
 
 lemma preconnected_bot_iff_subsingleton : (⊥ : SimpleGraph V).Preconnected ↔ Subsingleton V := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simpa [subsingleton_iff, ← reachable_bot] using h⟩
-  contrapose h
-  simp [nontrivial_iff.mp <| not_subsingleton_iff_nontrivial.mp h, Preconnected, reachable_bot]
+  contrapose! h
+  simp [nontrivial_iff.mp h, Preconnected, reachable_bot]
 
 lemma preconnected_bot [Subsingleton V] : (⊥ : SimpleGraph V).Preconnected :=
   preconnected_bot_iff_subsingleton.mpr ‹_›
