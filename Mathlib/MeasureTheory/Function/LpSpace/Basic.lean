@@ -27,7 +27,7 @@ that it is continuous. In particular,
 * `Lp.posPart` is the positive part of an `Lp` function.
 * `Lp.negPart` is the negative part of an `Lp` function.
 
-## Notations
+## Notation
 
 * `α →₁[μ] E` : the type `Lp E 1 μ`.
 * `α →₂[μ] E` : the type `Lp E 2 μ`.
@@ -687,8 +687,9 @@ end LipschitzWith
 
 namespace ContinuousLinearMap
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
-variable {σ : 𝕜 →+* 𝕜} [RingHomIsometric σ]
+variable {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜 E]
+  [NormedSpace 𝕜' F]
+variable {σ : 𝕜 →+* 𝕜'} [RingHomIsometric σ]
 
 /-- Composing `f : Lp` with `L : E →L[𝕜] F`. -/
 def compLp (L : E →SL[σ] F) (f : Lp E p μ) : Lp F p μ :=
@@ -734,8 +735,9 @@ theorem add_compLp (L L' : E →SL[σ] F) (f : Lp E p μ) :
   filter_upwards with x
   rw [coe_add', Pi.add_def]
 
-theorem smul_compLp {𝕜'} [NormedRing 𝕜'] [Module 𝕜' F] [IsBoundedSMul 𝕜' F] [SMulCommClass 𝕜 𝕜' F]
-    (c : 𝕜') (L : E →SL[σ] F) (f : Lp E p μ) : (c • L).compLp f = c • L.compLp f := by
+theorem smul_compLp {𝕜''} [NormedRing 𝕜''] [Module 𝕜'' F] [IsBoundedSMul 𝕜'' F]
+    [SMulCommClass 𝕜' 𝕜'' F] (c : 𝕜'') (L : E →SL[σ] F) (f : Lp E p μ) :
+    (c • L).compLp f = c • L.compLp f := by
   ext1
   grw [Lp.coeFn_smul, coeFn_compLp']
   refine (L.coeFn_compLp' f).mono fun x hx => ?_
@@ -759,7 +761,7 @@ def compLpₗ (L : E →SL[σ] F) : Lp E p μ →ₛₗ[σ] Lp F p μ where
     ext1
     filter_upwards [Lp.coeFn_smul c f, coeFn_compLp L (c • f), Lp.coeFn_smul (σ c) (L.compLp f),
       coeFn_compLp L f] with _ ha1 ha2 ha3 ha4
-    simp only [ha2, ha1, ha3, ha4, Pi.smul_apply, ContinuousLinearMap.map_smulₛₗ]
+    simp only [ha1, ha2, ha3, ha4, Pi.smul_apply, map_smulₛₗ]
 
 /-- Composing `f : Lp E p μ` with `L : E →L[𝕜] F`, seen as a continuous `𝕜`-linear map on
 `Lp E p μ`. See also the similar
@@ -780,8 +782,9 @@ theorem coeFn_compLpL [Fact (1 ≤ p)] (L : E →SL[σ] F) (f : Lp E p μ) :
 theorem add_compLpL [Fact (1 ≤ p)] (L L' : E →SL[σ] F) :
     (L + L').compLpL p μ = L.compLpL p μ + L'.compLpL p μ := by ext1 f; exact add_compLp L L' f
 
-theorem smul_compLpL [Fact (1 ≤ p)] {𝕜'} [NormedRing 𝕜'] [Module 𝕜' F] [IsBoundedSMul 𝕜' F]
-    [SMulCommClass 𝕜 𝕜' F] (c : 𝕜') (L : E →SL[σ] F) : (c • L).compLpL p μ = c • L.compLpL p μ := by
+theorem smul_compLpL [Fact (1 ≤ p)] {𝕜''} [NormedRing 𝕜''] [Module 𝕜'' F] [IsBoundedSMul 𝕜'' F]
+    [SMulCommClass 𝕜' 𝕜'' F] (c : 𝕜'') (L : E →SL[σ] F) :
+    (c • L).compLpL p μ = c • L.compLpL p μ := by
   ext1 f; exact smul_compLp c L f
 
 theorem norm_compLpL_le [Fact (1 ≤ p)] (L : E →SL[σ] F) : ‖L.compLpL p μ‖ ≤ ‖L‖ :=

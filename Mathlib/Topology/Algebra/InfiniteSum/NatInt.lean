@@ -527,6 +527,20 @@ lemma multipliable_int_iff_multipliable_nat_and_neg {f : ℤ → G} :
   apply p.comp_injective
   exacts [Nat.cast_injective, neg_injective.comp Nat.cast_injective]
 
+-- We're not really using the ring structure here:
+-- we only use multiplication by `-1`, so perhaps this can be generalised further.
+theorem Summable.alternating {α} [Ring α]
+    [UniformSpace α] [IsUniformAddGroup α] [CompleteSpace α] {f : ℕ → α} (hf : Summable f) :
+    Summable (fun n => (-1) ^ n * f n) := by
+  apply Summable.even_add_odd
+  · simp only [even_two, Even.mul_right, Even.neg_pow, one_pow, one_mul]
+    exact hf.comp_injective (mul_right_injective₀ (two_ne_zero' ℕ))
+  · simp only [pow_add, even_two, Even.mul_right, Even.neg_pow, one_pow, pow_one, mul_neg, mul_one,
+      neg_mul, one_mul]
+    apply Summable.neg
+    apply hf.comp_injective
+    exact (add_left_injective 1).comp (mul_right_injective₀ (two_ne_zero' ℕ))
+
 end IsUniformGroup
 
 end Int

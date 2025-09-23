@@ -54,8 +54,8 @@ section Composition
 /-!
 ### Derivative of the composition of a vector function and a scalar function
 
-We use `scomp` in lemmas on composition of vector valued and scalar valued functions, and `comp`
-in lemmas on composition of scalar valued functions, in analogy for `smul` and `mul` (and also
+We use `scomp` in lemmas on composition of vector-valued and scalar-valued functions, and `comp`
+in lemmas on composition of scalar-valued functions, in analogy for `smul` and `mul` (and also
 because the `comp` version with the shorter name will show up much more often in applications).
 The formula for the derivative involves `smul` in `scomp` lemmas, which can be reduced to
 usual multiplication in `comp` lemmas.

@@ -1163,8 +1163,12 @@ section ContinuousLinearMap
 
 open MeasureTheory
 
-variable {E : Type*} [NormedAddCommGroup E] {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  [NormedSpace 𝕜 E] {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H]
+variable {E H : Type*} [NormedAddCommGroup E] [NormedAddCommGroup H]
+  {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
+  [NormedSpace 𝕜' E] [NormedSpace 𝕜 H]
+
+variable {σ : 𝕜 →+* 𝕜'} {σ' : 𝕜' →+* 𝕜} [RingHomIsometric σ] [RingHomIsometric σ']
+  [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 
 variable {σ σ' : 𝕜 →+* 𝕜} [RingHomIsometric σ] [RingHomIsometric σ'] [RingHomInvPair σ σ']
   [RingHomInvPair σ' σ]
@@ -1187,9 +1191,9 @@ theorem LinearIsometryEquiv.integrable_comp_iff {φ : α → H} (L : H ≃ₛₗ
     Integrable (fun a : α ↦ L (φ a)) μ ↔ Integrable φ μ :=
   ContinuousLinearEquiv.integrable_comp_iff (L : H ≃SL[σ] E)
 
-theorem MeasureTheory.Integrable.apply_continuousLinearMap {φ : α → H →L[𝕜] E}
+theorem MeasureTheory.Integrable.apply_continuousLinearMap {φ : α → H →SL[σ] E}
     (φ_int : Integrable φ μ) (v : H) : Integrable (fun a => φ a v) μ :=
-  (ContinuousLinearMap.apply 𝕜 _ v).integrable_comp φ_int
+  (ContinuousLinearMap.apply' E σ v).integrable_comp φ_int
 
 end ContinuousLinearMap
 
