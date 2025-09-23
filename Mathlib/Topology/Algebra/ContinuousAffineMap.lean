@@ -352,6 +352,16 @@ instance : AddTorsor (P →ᴬ[R] W) (P →ᴬ[R] Q) where
     (f -ᵥ g).toAffineMap = f.toAffineMap -ᵥ g.toAffineMap :=
   rfl
 
+variable [TopologicalSpace V] [IsTopologicalAddTorsor P]
+
+@[simp] lemma vadd_contLinear (f : P →ᴬ[R] W) (g : P →ᴬ[R] Q) :
+    (f +ᵥ g).contLinear = f.contLinear + g.contLinear :=
+  rfl
+
+@[simp] lemma vsub_contLinear (f g : P →ᴬ[R] Q) :
+    (f -ᵥ g).contLinear = f.contLinear - g.contLinear :=
+  rfl
+
 end
 
 section Prod
@@ -427,25 +437,19 @@ theorem coe_toContinuousAffineMap (f : V →L[R] W) : ⇑f.toContinuousAffineMap
 @[simp]
 theorem toContinuousAffineMap_map_zero (f : V →L[R] W) : f.toContinuousAffineMap 0 = 0 := by simp
 
-end ContinuousLinearMap
-
-namespace ContinuousAffineMap
-
-variable {R V W : Type*} [Ring R]
-variable [AddCommGroup V] [Module R V] [TopologicalSpace V] [IsTopologicalAddGroup V]
-variable [AddCommGroup W] [Module R W] [TopologicalSpace W] [IsTopologicalAddGroup W]
-
-section Ring
+variable [IsTopologicalAddGroup V] [IsTopologicalAddGroup W]
 
 @[simp]
-theorem to_affine_map_contLinear (f : V →L[R] W) : f.toContinuousAffineMap.contLinear = f :=
+theorem toContinuousAffineMap_contLinear (f : V →L[R] W) : f.toContinuousAffineMap.contLinear = f :=
   rfl
 
-theorem decomp (f : V →ᴬ[R] W) : (f : V → W) = f.contLinear + Function.const V (f 0) := by
+@[deprecated (since := "2025-09-23")]
+alias _root_.ContinuousAffineMap.to_affine_map_contLinear := toContinuousAffineMap_contLinear
+
+theorem _root_.ContinuousAffineMap.decomp (f : V →ᴬ[R] W) :
+    (f : V → W) = f.contLinear + Function.const V (f 0) := by
   rcases f with ⟨f, h⟩
-  rw [coe_mk_contLinear_eq_linear, coe_mk, f.decomp, Pi.add_apply, LinearMap.map_zero, zero_add,
-    ← Function.const_def]
+  rw [ContinuousAffineMap.coe_mk_contLinear_eq_linear, ContinuousAffineMap.coe_mk, f.decomp,
+    Pi.add_apply, LinearMap.map_zero, zero_add, ← Function.const_def]
 
-end Ring
-
-end ContinuousAffineMap
+end ContinuousLinearMap
