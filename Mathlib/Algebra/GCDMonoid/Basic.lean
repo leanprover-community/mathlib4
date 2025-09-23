@@ -381,6 +381,7 @@ theorem isUnit_gcd_one_right [GCDMonoid α] (a : α) : IsUnit (gcd a 1) :=
 
 theorem gcd_one_right' [GCDMonoid α] (a : α) : Associated (gcd a 1) 1 := by simp
 
+@[gcongr]
 theorem gcd_dvd_gcd [GCDMonoid α] {a b c d : α} (hab : a ∣ b) (hcd : c ∣ d) : gcd a c ∣ gcd b d :=
   dvd_gcd ((gcd_dvd_left _ _).trans hab) ((gcd_dvd_right _ _).trans hcd)
 
@@ -437,17 +438,17 @@ theorem gcd_eq_left_iff [NormalizedGCDMonoid α] (a b : α) (h : normalize a = a
 theorem gcd_eq_right_iff [NormalizedGCDMonoid α] (a b : α) (h : normalize b = b) :
     gcd a b = b ↔ b ∣ a := by simpa only [gcd_comm a b] using gcd_eq_left_iff b a h
 
-theorem gcd_dvd_gcd_mul_left [GCDMonoid α] (m n k : α) : gcd m n ∣ gcd (k * m) n :=
-  gcd_dvd_gcd (dvd_mul_left _ _) dvd_rfl
+theorem gcd_dvd_gcd_mul_left [GCDMonoid α] (m n k : α) : gcd m n ∣ gcd (k * m) n := by
+  grw [← dvd_mul_left]
 
-theorem gcd_dvd_gcd_mul_right [GCDMonoid α] (m n k : α) : gcd m n ∣ gcd (m * k) n :=
-  gcd_dvd_gcd (dvd_mul_right _ _) dvd_rfl
+theorem gcd_dvd_gcd_mul_right [GCDMonoid α] (m n k : α) : gcd m n ∣ gcd (m * k) n := by
+  grw [← dvd_mul_right]
 
-theorem gcd_dvd_gcd_mul_left_right [GCDMonoid α] (m n k : α) : gcd m n ∣ gcd m (k * n) :=
-  gcd_dvd_gcd dvd_rfl (dvd_mul_left _ _)
+theorem gcd_dvd_gcd_mul_left_right [GCDMonoid α] (m n k : α) : gcd m n ∣ gcd m (k * n) := by
+  grw [← dvd_mul_left]
 
-theorem gcd_dvd_gcd_mul_right_right [GCDMonoid α] (m n k : α) : gcd m n ∣ gcd m (n * k) :=
-  gcd_dvd_gcd dvd_rfl (dvd_mul_right _ _)
+theorem gcd_dvd_gcd_mul_right_right [GCDMonoid α] (m n k : α) : gcd m n ∣ gcd m (n * k) := by
+  grw [← dvd_mul_right]
 
 theorem Associated.gcd_eq_left [NormalizedGCDMonoid α] {m n : α} (h : Associated m n) (k : α) :
     gcd m k = gcd n k :=
@@ -531,8 +532,7 @@ theorem pow_dvd_of_mul_eq_pow [GCDMonoid α] {a b c d₁ d₂ : α} (ha : a ≠ 
     · apply IsUnit.dvd
       apply IsUnit.pow
       apply isUnit_of_dvd_one
-      apply dvd_trans _ hab.dvd
-      apply gcd_dvd_gcd hd₁ (dvd_refl b)
+      grw [hd₁, hab.dvd]
   have h2 : d₁ ^ k ∣ a * b := by
     use d₂ ^ k
     rw [h, hc]
