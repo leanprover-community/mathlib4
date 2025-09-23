@@ -187,7 +187,6 @@ lemma HasAffineProperty.affineAnd_isStableUnderComposition {P : MorphismProperty
     (hA : HasAffineProperty P (affineAnd Q)) (hQ : RingHom.StableUnderComposition Q) :
     P.IsStableUnderComposition where
   comp_mem {X Y Z} f g hf hg := by
-    haveI := hA
     wlog hZ : IsAffine Z
     · rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
       intro U
