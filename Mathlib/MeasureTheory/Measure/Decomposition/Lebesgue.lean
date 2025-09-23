@@ -731,7 +731,7 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
       rcases this with ⟨n, hn⟩
       have hb₁ : (0 : ℝ) < (νA : ℝ)⁻¹ := by rw [_root_.inv_pos]; exact hb
       have h' : 1 / (↑n + 1) * νA < c := by
-        rw [← NNReal.coe_lt_coe, ← mul_lt_mul_right hb₁, NNReal.coe_mul, mul_assoc, ←
+        rw [← NNReal.coe_lt_coe, ← mul_lt_mul_iff_left₀ hb₁, NNReal.coe_mul, mul_assoc, ←
           NNReal.coe_inv, ← NNReal.coe_mul, mul_inv_cancel₀, ← NNReal.coe_mul, mul_one,
           NNReal.coe_inv]
         · exact hn
@@ -740,12 +740,7 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
       rw [← ENNReal.coe_le_coe, ENNReal.coe_mul]
       exact hA₃ n
     · rw [not_lt, le_zero_iff] at hb
-      specialize hA₃ 0
-      simp? [hb] at hA₃ says
-        simp only [CharP.cast_eq_zero, zero_add, ne_eq, one_ne_zero, not_false_eq_true, div_self,
-          ENNReal.coe_one, hb, ENNReal.coe_zero, mul_zero, nonpos_iff_eq_zero,
-          ENNReal.coe_eq_zero] at hA₃
-      assumption
+      simpa [hb] using hA₃ 0
   -- since `μ` and `ν` are not mutually singular, `μ A = 0` implies `ν Aᶜ > 0`
   rw [MutuallySingular] at h; push_neg at h
   have := h _ hAmeas hμ

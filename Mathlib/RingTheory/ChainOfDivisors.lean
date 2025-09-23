@@ -277,9 +277,9 @@ theorem map_prime_of_factor_orderIso {m p : Associates M} {n : Associates N} (hn
       coe_factor_orderIso_map_eq_one_iff _ d]
     rintro rfl
     exact (prime_of_normalized_factor 1 hp).not_unit isUnit_one
-  · obtain ⟨x, hx⟩ :=
-      d.surjective ⟨b, le_trans (le_of_lt hb) (d ⟨p, dvd_of_mem_normalizedFactors hp⟩).prop⟩
-    rw [← Subtype.coe_mk b _, ← hx] at hb
+  · have : b ≤ n := le_trans (le_of_lt hb) (d ⟨p, dvd_of_mem_normalizedFactors hp⟩).prop
+    obtain ⟨x, hx⟩ := d.surjective ⟨b, this⟩
+    rw [← Subtype.coe_mk (p := (· ≤ n)) b this, ← hx] at hb
     letI : OrderBot { l : Associates M // l ≤ m } := Subtype.orderBot bot_le
     letI : OrderBot { l : Associates N // l ≤ n } := Subtype.orderBot bot_le
     suffices x = ⊥ by
