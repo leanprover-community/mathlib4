@@ -408,22 +408,21 @@ def TermDefinable (f : (α → M) → M) : Prop :=
   ∃ φ : L[[A]].Term α, f = φ.realize
 
 /-- Every TermDefinable function has a tupleGraph that is definable. -/
-theorem TermDefinable.Definable {f : (α → M) → M} (h : A.TermDefinable L f) :
+theorem TermDefinable.tupleGraph_definable {f : (α → M) → M} (h : A.TermDefinable L f) :
     A.Definable L f.tupleGraph := by
-  obtain ⟨φ,rfl⟩ := h
+  obtain ⟨φ, rfl⟩ := h
   use (φ.relabel Sum.inl).equal (Term.var (Sum.inr ()))
-  ext v
+  ext
   simp [Function.tupleGraph]
 
 variable {L} {A B} {f : (α → M) → M}
 
 @[fun_prop]
-theorem TermDefinable.map_expansion (h : A.TermDefinable L f)
-    (φ : L →ᴸ L') [φ.IsExpansionOn M] : A.TermDefinable L' f := by
+theorem TermDefinable.map_expansion (h : A.TermDefinable L f) (φ : L →ᴸ L') [φ.IsExpansionOn M] :
+    A.TermDefinable L' f := by
   obtain ⟨ψ, rfl⟩ := h
-  refine ⟨(φ.addConstants A).onTerm ψ, ?_⟩
-  ext x
-  simp only [mem_setOf_eq, LHom.realize_onTerm]
+  use (φ.addConstants A).onTerm ψ
+  simp
 
 theorem empty_termDefinable_iff :
     (∅ : Set M).TermDefinable L f ↔ ∃ φ : L.Term α, f = φ.realize := by
@@ -437,7 +436,7 @@ theorem termDefinable_iff_empty_termDefinable_with_params :
 @[fun_prop]
 theorem TermDefinable.mono {f : (α → M) → M} (h : A.TermDefinable L f) (hAB : A ⊆ B) :
     B.TermDefinable L f := by
-  rw [termDefinable_iff_empty_termDefinable_with_params] at *
+  rw [termDefinable_iff_empty_termDefinable_with_params] at h ⊢
   exact h.map_expansion (L.lhomWithConstantsMap (Set.inclusion hAB))
 
 /-- TermDefinable is transitive. If f is TermDefinable in a structure S on L, and all of the
@@ -447,18 +446,16 @@ theorem TermDefinable.mono {f : (α → M) → M} (h : A.TermDefinable L f) (hAB
 theorem TermDefinable.trans {f : (β → M) → M} (h₁ : A.TermDefinable L f)
     (h₂ : ∀ {n} (g : L[[A]].Functions n), A.TermDefinable L' g.term.realize) :
     A.TermDefinable L' f := by
-  obtain ⟨x,rfl⟩ := h₁
-  use x.substFunc (fun {n} (g : L[[A]].Functions n) ↦ Classical.choose (h₂ g))
-  have hc : ∀ {n} (g : L[[A]].Functions n), _ := fun {n} g ↦ congrFun (Classical.choose_spec (h₂ g))
+  obtain ⟨x, rfl⟩ := h₁
+  choose c hc using @h₂
+  simp only [funext_iff] at hc
+  use x.substFunc c
   funext v
-  induction x
-  next x₀ =>
-    simp
-  next n f ts ih =>
-    simp [← ih, ← hc]
+  induction x with
+  | var => simp
+  | func f ts ih => simp [← ih, ← hc]
 
-variable (L)
-
+variable (L) in
 /-- A function from a structure to itself is term-definable over a set `A` when the
   value of the function is given by a term with constants `A`. Like `TermDefinable`
   but specialized for unary functions in order to write `M → M` instead of `(Unit → M) → M`. -/
@@ -467,26 +464,22 @@ def TermDefinable₁ (f : M → M) : Prop :=
   ∃ φ : L[[A]].Term Unit, f = φ.realize ∘ Function.const _
 
 /-- `TermDefinable₁` is equivalent to `TermDefinable` on the `Unit` index type. -/
-theorem TermDefinable₁_iff_TermDefinable (f : M → M) : A.TermDefinable₁ L f ↔
+theorem TermDefinable₁_iff_termDefinable (f : M → M) : A.TermDefinable₁ L f ↔
     A.TermDefinable L (fun v ↦ f (v ())) := by
-  dsimp [TermDefinable, TermDefinable₁]
-  constructor <;> intro h <;> obtain ⟨φ,hφ⟩ := h <;> use φ
-  · subst hφ
-    funext v
-    rw [Function.comp_apply, ← eq_const_of_subsingleton]
-  · funext v
-    rw [Function.comp_apply, ← congrFun hφ (Function.const Unit v), Function.const]
+  refine exists_congr fun φ ↦ ?_
+  rw [funext_iff, funext_iff, (Equiv.funUnique Unit M).forall_congr']
+  simp only [Equiv.funUnique_symm_apply, uniqueElim_const, Function.comp_apply]
+  congr!
 
-@[fun_prop]
-theorem TermDefinable.TermDefinable₁ {f : M → M} (h : A.TermDefinable L (fun v ↦ f (v ()))) :
-     A.TermDefinable₁ L f :=
-  (A.TermDefinable₁_iff_TermDefinable L f).mpr h
+alias ⟨TermDefinable₁.termDefinable, TermDefinable.termDefinable₁⟩ :=
+  TermDefinable₁_iff_termDefinable
+
+attribute [fun_prop] TermDefinable.termDefinable₁
 
 /-- A `TermDefinable₁` function has a graph that's `Definable₂`. -/
-theorem TermDefinable₁.Definable₂ {f : M → M} (h : A.TermDefinable₁ L f) :
-    A.Definable₂ L (Function.uncurry f.graph) := by
-  rw [TermDefinable₁_iff_TermDefinable] at h
-  obtain ⟨t,h⟩ := TermDefinable.Definable A L h
+theorem TermDefinable₁.graph_definable₂ {f : M → M} (h : A.TermDefinable₁ L f) :
+    A.Definable₂ L f.graph := by
+  obtain ⟨t, h⟩ := h.termDefinable.tupleGraph_definable A L
   use t.relabel (Sum.elim (fun _ ↦ 0) (fun _ ↦ 1))
   funext v
   convert congrFun h (Sum.elim (fun _ ↦ v 0) (fun _ ↦ v 1))
@@ -495,46 +488,37 @@ theorem TermDefinable₁.Definable₂ {f : M → M} (h : A.TermDefinable₁ L f)
 
 /-- The identity function is `TermDefinable₁` -/
 @[fun_prop]
-theorem TermDefinable₁_id : A.TermDefinable₁ L (id : M → M) :=
+theorem TermDefinable₁.id : A.TermDefinable₁ L id :=
   ⟨Term.var (), rfl⟩
+
+/-- Constant functions are `TermDefinable`, assuming the constant value is a language constant. -/
+@[fun_prop]
+theorem TermDefinable.const (C : L[[A]].Constants) : A.TermDefinable L (Function.const (α → M) C) :=
+  ⟨C.term, by simp only [Term.realize_constants]; rfl⟩
 
 /-- Constant functions are `TermDefinable₁`, assuming the constant value is a language constant. -/
 @[fun_prop]
-theorem TermDefinable₁_const (C : L[[A]].Constants) : A.TermDefinable₁ L (Function.const M C) :=
-  ⟨C.term, by simp only [Term.realize_constants]; rfl⟩
+theorem TermDefinable₁.const (C : L[[A]].Constants) : A.TermDefinable₁ L (Function.const M C) :=
+  (TermDefinable.const C).termDefinable₁
+
+/-- A k-ary `TermDefinable` function composed with k `TermDefinable` others is `TermDefinable`. -/
+theorem TermDefinable.comp {f : (α → M) → M} {g : α → (β → M) → M} (hf : A.TermDefinable L f)
+    (hg : ∀ i, A.TermDefinable L (g i)) : A.TermDefinable L (fun b ↦ f (g · b)) := by
+  obtain ⟨φ, rfl⟩ := hf
+  choose ψ hψ using hg
+  use φ.subst ψ
+  simp [hψ]
 
 /-- `TermDefinable₁` functions are closed under composition. -/
 @[fun_prop]
-theorem TermDefinable₁_comp {f g : M → M} (hf : A.TermDefinable₁ L f) (hg : A.TermDefinable₁ L g) :
-    A.TermDefinable₁ L (f ∘ g) := by
-  obtain ⟨fφ,rfl⟩ := hf
-  obtain ⟨gφ,rfl⟩ := hg
-  use fφ.subst (fun (_:Unit) ↦ gφ)
-  funext m
-  simp [Function.const_def]
+theorem TermDefinable₁.comp {f g : M → M} (hf : A.TermDefinable₁ L f) (hg : A.TermDefinable₁ L g) :
+    A.TermDefinable₁ L (f ∘ g) :=
+  (hf.termDefinable.comp fun _ ↦ hg.termDefinable).termDefinable₁
 
 /-- A `TermDefinable` function postcomposed with `TermDefinable₁` is `TermDefinable`. -/
 @[fun_prop]
-theorem TermDefinable₁_comp_TermDefinable {f : M → M} {g : (α → M) → M}
-    (hf : A.TermDefinable₁ L f) (hg : A.TermDefinable L g) :
-    A.TermDefinable L (f ∘ g) := by
-  obtain ⟨fφ,rfl⟩ := hf
-  obtain ⟨gφ,rfl⟩ := hg
-  use fφ.subst (fun (_:Unit) ↦ gφ)
-  funext m
-  simp [Function.const_def]
-
-/-- A kary `TermDefinable` function composed with k `TermDefinable` functions is `TermDefinable`. -/
-theorem TermDefinable_comp_TermDefinable {f : (α → M) → M} {g : α → (β → M) → M}
-    (hf : A.TermDefinable L f) (hg : ∀ a, A.TermDefinable L (g a)) :
-    A.TermDefinable L (fun b ↦ f (g · b)) := by
-  obtain ⟨fφ,rfl⟩ := hf
-  -- obtain ⟨gφ,rfl⟩ := hg
-  use fφ.subst (fun a ↦ (hg a).choose)
-  funext m
-  conv =>
-    enter [1, 1, a]
-    rw [(hg a).choose_spec]
-  simp
+theorem TermDefinable₁.comp_termDefinable {f : M → M} {g : (α → M) → M}
+    (hf : A.TermDefinable₁ L f) (hg : A.TermDefinable L g) : A.TermDefinable L (f ∘ g) :=
+  hf.termDefinable.comp fun _ ↦ hg
 
 end Set
