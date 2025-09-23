@@ -322,10 +322,6 @@ def kerLift (f : α → β) : Quotient (ker f) → β := Quotient.lift f fun _ _
 @[simp]
 theorem kerLift_mk (f : α → β) (x : α) : kerLift f ⟦x⟧ = f x := rfl
 
-theorem apply_out_eq_kerLift (f : α → β) (q : Quotient (ker f)) : f q.out = kerLift f q := by
-  nth_rw 2 [← q.out_eq]
-  rfl
-
 /-- Given a map f from α to β, the natural map from the quotient of α by the kernel of f is
 injective. -/
 theorem kerLift_injective (f : α → β) : Injective <| kerLift f :=
