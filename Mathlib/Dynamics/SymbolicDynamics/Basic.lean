@@ -95,18 +95,18 @@ def cylinder (U : Finset G) (x : G → A) : Set (G → A) :=
   { y | ∀ i ∈ U, y i = x i }
 
 lemma cylinder_eq_set_pi (U : Finset (G)) (x : G → A) :
-  cylinder U x = Set.pi (↑U : Set (G)) (fun i => ({x i} : Set A)) := by
+    cylinder U x = Set.pi (↑U : Set (G)) (fun i => ({x i} : Set A)) := by
   ext y; simp [cylinder, Set.pi, Finset.mem_coe]
 
 @[simp] lemma mem_cylinder {U : Finset G} {x y : G → A} :
-  y ∈ cylinder U x ↔ ∀ i ∈ U, y i = x i := Iff.rfl
+    y ∈ cylinder U x ↔ ∀ i ∈ U, y i = x i := Iff.rfl
 end CylindersDefs
 
 section CylindersOpen
 variable {A G : Type*} [TopologicalSpace A] [DiscreteTopology A]
 /-- Cylinders are open (and, dually, closed) when `A` is discrete. -/
 lemma cylinder_is_open (U : Finset G) (x : G → A) :
-  IsOpen (cylinder (A:=A) (G:=G) U x) := by
+    IsOpen (cylinder (A:=A) (G:=G) U x) := by
   classical
   have hopen : ∀ i ∈ (↑U : Set G), IsOpen ({x i} : Set A) := by
     intro i _; simp
@@ -121,7 +121,7 @@ section CylindersClosed
 variable {A G : Type*}
 [TopologicalSpace A] [DiscreteTopology A]
 lemma cylinder_is_closed (U : Finset G) (x : G → A) :
-  IsClosed (cylinder (A:=A) (G:=G) U x) := by
+    IsClosed (cylinder (A:=A) (G:=G) U x) := by
   classical
   have hclosed : ∀ i ∈ (↑U : Set G), IsClosed ({x i} : Set A) := by
     intro i _; simp
@@ -177,11 +177,11 @@ section ShiftInvariance
 variable {A G : Type*} [Group G]
 /-- Shifts move occurrences as expected. -/
 lemma occurs_shift (p : Pattern A G) (x : G → A) (g h : G) :
-  p.occursIn (shift h x) g ↔ p.occursIn x (g * h) := by
+    p.occursIn (shift h x) g ↔ p.occursIn x (g * h) := by
   constructor <;> intro H u hu <;> simpa [shift, mul_assoc] using H u hu
 
 lemma forbids_shift_invariant (F : Set (Pattern A G)) :
-  ∀ h : G, ∀ x ∈ forbids (A:=A) (G:=G) F, shift h x ∈ forbids F := by
+    ∀ h : G, ∀ x ∈ forbids (A:=A) (G:=G) F, shift h x ∈ forbids F := by
   intro h x hx p hp g
   specialize hx p hp (g * h)
   -- contraposition
@@ -206,8 +206,7 @@ section OccursAtEqCylinder
 variable {A G : Type*} [Group G] [Inhabited A] [DecidableEq G]
 /-- “Occurrence = cylinder translated by `g`”. -/
 lemma occursAt_eq_cylinder (p : Pattern A G) (g : G) :
-  { x | p.occursIn x g }
-    = cylinder (p.support.image (· * g)) (patternToConfig p g) := by
+    { x | p.occursIn x g } = cylinder (p.support.image (· * g)) (patternToConfig p g) := by
   ext x
   constructor
   · intro H u hu
@@ -233,7 +232,7 @@ lemma occursAt_open (p : Pattern A G) (g : G) :
 
 /-- Avoiding a fixed set of patterns is a closed condition. -/
 lemma forbids_closed (F : Set (Pattern A G)) :
-  IsClosed (forbids F) := by
+    IsClosed (forbids F) := by
   rw [forbids]
   have : {x | ∀ p ∈ F, ∀ v : G, ¬ p.occursIn x v}
        = ⋂ (p : Pattern A G) (h : p ∈ F), ⋂ (v : G), {x | ¬ p.occursIn x v} := by
