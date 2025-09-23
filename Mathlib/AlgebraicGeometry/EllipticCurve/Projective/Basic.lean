@@ -221,8 +221,7 @@ variable (W') in
 /-- The polynomial `W(X, Y, Z) := Y²Z + a₁XYZ + a₃YZ² - (X³ + a₂X²Z + a₄XZ² + a₆Z³)` associated to a
 Weierstrass curve `W` over a ring `R` in projective coordinates.
 
-This is represented as a term of type `R[X,Y,Z]`, where `X`, `Y`, and `Z`
-represent `X`, `Y`, and `Z` respectively. -/
+This is represented as a term of type `R[X,Y,Z]`, which is secretly `MvPolynomial (Fin 3) R`. -/
 noncomputable def polynomial : R[X,Y,Z] :=
   Y ^ 2 * Z + C W'.a₁ * X * Y * Z + C W'.a₃ * Y * Z ^ 2
     - (X ^ 3 + C W'.a₂ * X ^ 2 * Z + C W'.a₄ * X * Z ^ 2 + C W'.a₆ * Z ^ 3)

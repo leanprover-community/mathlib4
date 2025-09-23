@@ -46,4 +46,3 @@ instance [Small.{v} R] : HasSeparator (ModuleCat.{v} R) where
   hasSeparator := ⟨ModuleCat.of R (Shrink.{v} R), ModuleCat.isSeparator R⟩
 
 instance : IsGrothendieckAbelian.{u} (ModuleCat.{u} R) where
-
