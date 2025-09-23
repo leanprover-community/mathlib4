@@ -239,7 +239,7 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : Kernel α β) [IsFin
   rw [hf_eq_tsum, withDensity_tsum _ fun n : ℕ => _]
   swap; · fun_prop
   refine isSFiniteKernel_sum (hκs := fun n => ?_)
-  suffices IsFiniteKernel (withDensity κ (fs n)) by haveI := this; infer_instance
+  suffices IsFiniteKernel (withDensity κ (fs n)) by infer_instance
   refine isFiniteKernel_withDensity_of_bounded _ (ENNReal.coe_ne_top : ↑n + 1 ≠ ∞) fun a b => ?_
   -- After https://github.com/leanprover/lean4/pull/2734, we need to do beta reduction before `norm_cast`
   beta_reduce
