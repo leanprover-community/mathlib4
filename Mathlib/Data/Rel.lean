@@ -181,6 +181,14 @@ lemma comp_subset_comp {S₁ S₂ : SetRel β γ} (hR : R₁ ⊆ R₂) (hS : S�
 lemma comp_subset_comp_left {S : SetRel β γ} (hR : R₁ ⊆ R₂) : R₁ ○ S ⊆ R₂ ○ S :=
   comp_subset_comp hR .rfl
 
+@[gcongr]
+lemma comp_subset_comp_right {S₁ S₂ : SetRel β γ} (hS : S₁ ⊆ S₂) : R ○ S₁ ⊆ R ○ S₂ :=
+  comp_subset_comp .rfl hS
+
+protected lemma _root_.Monotone.relComp {ι : Type*} [Preorder ι] {f : ι → SetRel α β}
+    {g : ι → SetRel β γ} (hf : Monotone f) (hg : Monotone g) : Monotone fun x ↦ f x ○ g x :=
+  fun _i _j hij ⟨_a, _c⟩ ⟨b, hab, hbc⟩ ↦ ⟨b, hf hij hab, hg hij hbc⟩
+
 lemma prod_comp_prod_of_inter_nonempty (ht : (t₁ ∩ t₂).Nonempty) (s : Set α) (u : Set γ) :
     s ×ˢ t₁ ○ t₂ ×ˢ u = s ×ˢ u := by aesop
 
@@ -193,14 +201,6 @@ lemma prod_comp_prod (s : Set α) (t₁ t₂ : Set β) (u : Set γ) [Decidable (
   split_ifs with hst
   · exact prod_comp_prod_of_disjoint hst ..
   · rw [prod_comp_prod_of_inter_nonempty <| Set.not_disjoint_iff_nonempty_inter.1 hst]
-
-@[gcongr]
-lemma comp_subset_comp_right {S₁ S₂ : SetRel β γ} (hS : S₁ ⊆ S₂) : R ○ S₁ ⊆ R ○ S₂ :=
-  comp_subset_comp .rfl hS
-
-protected lemma _root_.Monotone.relComp {ι : Type*} [Preorder ι] {f : ι → SetRel α β}
-    {g : ι → SetRel β γ} (hf : Monotone f) (hg : Monotone g) : Monotone fun x ↦ f x ○ g x :=
-  fun _i _j hij ⟨_a, _c⟩ ⟨b, hab, hbc⟩ ↦ ⟨b, hf hij hab, hg hij hbc⟩
 
 @[deprecated (since := "2025-07-06")] alias comp_right_top := comp_univ
 @[deprecated (since := "2025-07-06")] alias comp_left_top := univ_comp
@@ -349,6 +349,10 @@ protected lemma rfl [R.IsRefl] : a ~[R] a := R.refl a
 
 lemma id_subset [R.IsRefl] : .id ⊆ R := by rintro ⟨_, _⟩ rfl; exact R.rfl
 
+lemma id_subset_iff : .id ⊆ R ↔ R.IsRefl where
+  mp h := ⟨fun _ ↦ h rfl⟩
+  mpr _ := id_subset
+
 instance isRefl_inter [R₁.IsRefl] [R₂.IsRefl] : (R₁ ∩ R₂).IsRefl where
   refl _ := ⟨R₁.rfl, R₂.rfl⟩
 
@@ -362,19 +366,15 @@ instance isRefl_iInter {ι : Sort*} {R : ι → SetRel α α} [∀ i, (R i).IsRe
 instance isRefl_preimage {f : β → α} [R.IsRefl] : SetRel.IsRefl (Prod.map f f ⁻¹' R) where
   refl _ := R.rfl
 
-lemma id_subset_iff : .id ⊆ R ↔ R.IsRefl where
-  mp h := ⟨fun _ ↦ h rfl⟩
-  mpr _ := id_subset
-
 lemma left_subset_comp {R : SetRel α β} [S.IsRefl] : R ⊆ R ○ S := by
   simpa using comp_subset_comp_right id_subset
 
 lemma right_subset_comp [R.IsRefl] {S : SetRel α β} : S ⊆ R ○ S := by
   simpa using comp_subset_comp_left id_subset
 
-lemma subset_iterate_comp [R.IsRefl] {S : SetRel α β} : ∀ n : ℕ, S ⊆ (R ○ ·)^[n] S
+lemma subset_iterate_comp [R.IsRefl] {S : SetRel α β} : ∀ {n}, S ⊆ (R ○ ·)^[n] S
   | 0 => .rfl
-  | _n + 1 => right_subset_comp.trans <| subset_iterate_comp _
+  | _n + 1 => right_subset_comp.trans subset_iterate_comp
 
 lemma exists_eq_singleton_of_prod_subset_id {s t : Set α} (hs : s.Nonempty) (ht : t.Nonempty)
     (hst : s ×ˢ t ⊆ SetRel.id) : ∃ x, s = {x} ∧ t = {x} := by
@@ -400,6 +400,12 @@ protected lemma comm [R.IsSymm] : a ~[R] b ↔ b ~[R] a := comm_of (· ~[R] ·)
 variable (R) in
 @[simp] lemma inv_eq_self [R.IsSymm] : R.inv = R := by ext; exact R.comm
 
+lemma inv_eq_self_iff : R.inv = R ↔ R.IsSymm where
+  mp hR := ⟨fun a b hab ↦ by rwa [← hR]⟩
+  mpr _ := inv_eq_self _
+
+instance [R.IsSymm] : R.inv.IsSymm := by simpa
+
 instance isSymm_empty : (∅ : SetRel α α).IsSymm where symm _ _ := by simp
 instance isSymm_univ : SetRel.IsSymm (Set.univ : SetRel α α) where symm _ _ := by simp
 
@@ -418,8 +424,12 @@ instance isSymm_id : (SetRel.id : SetRel α α).IsSymm where symm _ _ := .symm
 instance isSymm_preimage {f : β → α} [R.IsSymm] : SetRel.IsSymm (Prod.map f f ⁻¹' R) where
   symm _ _ := R.symm
 
-instance isSymm_comp_self [R.IsSymm] : (R ○ R).IsSymm where
-  symm a c := by rintro ⟨b, hab, hbc⟩; exact ⟨b, R.symm hbc, R.symm hab⟩
+instance isSymm_comp_inv : (R ○ R.inv).IsSymm where
+  symm a c := by rintro ⟨b, hab, hbc⟩; exact ⟨b, hbc, hab⟩
+
+instance isSymm_inv_comp : (R.inv ○ R).IsSymm := isSymm_comp_inv
+
+instance isSymm_comp_self [R.IsSymm] : (R ○ R).IsSymm := by simpa using R.isSymm_comp_inv
 
 variable (R) in
 /-- The maximal symmetric relation contained in a given relation. -/
