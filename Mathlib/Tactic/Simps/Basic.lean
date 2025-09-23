@@ -125,10 +125,6 @@ def mkSimpContext (cfg : Meta.Simp.Config := {}) (simpOnly := false) (kind := Si
 
 end Lean.Meta
 
-/-- Tests whether `declName` has the `@[simp]` attribute in `env`. -/
-def hasSimpAttribute (env : Environment) (declName : Name) : Bool :=
-  simpExtension.getState env |>.lemmaNames.contains <| .decl declName
-
 namespace Lean.Parser
 namespace Attr
 

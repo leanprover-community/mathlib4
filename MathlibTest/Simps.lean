@@ -15,6 +15,11 @@ set_option linter.style.commandStart false
 
 open Lean Meta Elab Term Command Simps
 
+/-- Tests whether `declName` has the `@[simp]` attribute in `env`. -/
+def hasSimpAttribute (env : Environment) (declName : Name) : Bool :=
+  simpExtension.getState env |>.lemmaNames.contains <| .decl declName
+
+
 structure Foo1 : Type where
   Projone : Nat
   two : Bool
