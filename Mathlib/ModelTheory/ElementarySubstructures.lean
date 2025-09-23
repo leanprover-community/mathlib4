@@ -81,9 +81,6 @@ theorem subtype_injective (S : L.ElementarySubstructure M) : Function.Injective 
 theorem coe_subtype (S : L.ElementarySubstructure M) : ⇑S.subtype = Subtype.val :=
   rfl
 
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
-
 /-- The substructure `M` of the structure `M` is elementary. -/
 instance instTop : Top (L.ElementarySubstructure M) :=
   ⟨⟨⊤, fun _ _ _ => Substructure.realize_formula_top.symm⟩⟩

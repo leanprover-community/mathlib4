@@ -45,7 +45,7 @@ We introduce two convenience definitions:
   This is essentially `ContinuousLinearMap.smulRight`, up to the factor `- 2πI` designed to make
   sure that the Fourier integral of `fourierSMulRight L f` is the derivative of the Fourier
   integral of `f`.
-* `VectorFourier.fourierPowSMulRight` is the higher order analogue for higher derivatives:
+* `VectorFourier.fourierPowSMulRight` is the higher-order analogue for higher derivatives:
   `fourierPowSMulRight L f v n` is informally `(-(2 * π * I))^n (L v ⬝)^n • f v`, in
   the space of continuous multilinear maps `W [×n]→L[ℝ] E`.
 
@@ -746,7 +746,7 @@ lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le
   rcases eq_or_ne w 0 with rfl | hw
   · simp [hn]
     positivity
-  rw [mul_le_mul_left (pow_pos (by simp [hw]) n)] at Z
+  rw [mul_le_mul_iff_right₀ (pow_pos (by simp [hw]) n)] at Z
   apply Z.trans
   conv_rhs => rw [← mul_one π]
   simp only [mul_assoc]

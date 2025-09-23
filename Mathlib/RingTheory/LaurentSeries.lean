@@ -268,13 +268,13 @@ theorem coe_algebraMap [CommSemiring R] :
 @[simps (rhsMd := .all) +simpRhs]
 instance of_powerSeries_localization [CommRing R] :
     IsLocalization (Submonoid.powers (PowerSeries.X : R⟦X⟧)) R⸨X⸩ where
-  map_units' := by
+  map_units := by
     rintro ⟨_, n, rfl⟩
     refine ⟨⟨single (n : ℤ) 1, single (-n : ℤ) 1, ?_, ?_⟩, ?_⟩
     · simp
     · simp
     · dsimp; rw [ofPowerSeries_X_pow]
-  surj' z := by
+  surj z := by
     by_cases h : 0 ≤ z.order
     · refine ⟨⟨PowerSeries.X ^ Int.natAbs z.order * powerSeriesPart z, 1⟩, ?_⟩
       simp only [RingHom.map_one, mul_one, RingHom.map_mul, coe_algebraMap, ofPowerSeries_X_pow,
@@ -381,9 +381,10 @@ theorem coe_X : ((X : RatFunc F) : F⸨X⸩) = single 1 1 := by
 
 theorem single_one_eq_pow {R : Type*} [Semiring R] (n : ℕ) :
     single (n : ℤ) (1 : R) = single (1 : ℤ) 1 ^ n := by
-  induction' n with n h_ind
-  · simp
-  · rw [← Int.ofNat_add_one_out, pow_succ', ← h_ind, HahnSeries.single_mul_single, one_mul,
+  induction n with
+  | zero => simp
+  | succ n h_ind =>
+    rw [← Int.ofNat_add_one_out, pow_succ', ← h_ind, HahnSeries.single_mul_single, one_mul,
       add_comm]
 
 theorem single_inv (d : ℤ) {α : F} (hα : α ≠ 0) :
@@ -537,9 +538,9 @@ theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : K⸨X⸩}
     obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (a := D + s) (by omega)
     rw [eq_add_neg_of_add_eq hm, add_comm, ← hs, ← powerSeriesPart_coeff]
     apply (intValuation_le_iff_coeff_lt_eq_zero K F).mp _ m (by linarith)
-    rwa [hF, ofPowerSeries_powerSeriesPart f, hs, neg_neg, ← hd, neg_add_rev, ofAdd_add, map_mul,
-      ← ofPowerSeries_X_pow s, PowerSeries.coe_pow, WithZero.coe_mul, valuation_X_pow K s,
-      mul_le_mul_left (by simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff, zero_lt_iff])]
+    rw [hF, ofPowerSeries_powerSeriesPart f, hs, neg_neg, ← hd, neg_add_rev, ofAdd_add, map_mul,
+      ← ofPowerSeries_X_pow s, PowerSeries.coe_pow, WithZero.coe_mul, valuation_X_pow K s]
+    gcongr
   · rw [not_le] at ord_nonpos
     obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat (Int.neg_nonpos_of_nonneg (le_of_lt ord_nonpos))
     obtain ⟨m, hm⟩ := Int.eq_ofNat_of_zero_le (a := n - s) (by omega)
@@ -547,9 +548,9 @@ theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : K⸨X⸩}
     rw [(sub_eq_iff_eq_add).mp hm, add_comm, ← neg_neg (s : ℤ), ← hs, neg_neg,
       ← powerSeriesPart_coeff]
     apply (intValuation_le_iff_coeff_lt_eq_zero K F).mp _ m (by linarith)
-    rwa [hF, ofPowerSeries_powerSeriesPart f, map_mul, ← hd, hs, neg_sub, sub_eq_add_neg,
-      ofAdd_add, valuation_single_zpow, neg_neg, WithZero.coe_mul,
-      mul_le_mul_left (by simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff, zero_lt_iff])]
+    rw [hF, ofPowerSeries_powerSeriesPart f, map_mul, ← hd, hs, neg_sub, sub_eq_add_neg,
+      ofAdd_add, valuation_single_zpow, neg_neg, WithZero.coe_mul]
+    gcongr
 
 /- The valuation of a Laurent series is the order of the first non-zero coefficient. -/
 theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : K⸨X⸩} :
@@ -836,11 +837,12 @@ theorem exists_ratFunc_val_lt (f : K⸨X⸩) (γ : ℤᵐ⁰ˣ) :
         zpow_natCast, inv_eq_one_div (RatFunc.X ^ s), map_div₀, map_pow,
         RatFunc.coe_X]
       simp only [map_one]
-      rw [
-         ← inv_eq_one_div, ← mul_sub, map_mul, map_inv₀,
+      rw [← inv_eq_one_div, ← mul_sub, map_mul, map_inv₀,
         ← PowerSeries.coe_X, valuation_X_pow, ← hs, ← RatFunc.coe_coe, ← PowerSeries.coe_sub,
         ← coe_algebraMap, adicValued_apply, valuation_of_algebraMap,
-        ← Units.val_mk0 (a := ((Multiplicative.ofAdd f.order : Multiplicative ℤ) : ℤᵐ⁰)), ← hη]
+        ← Units.val_mk0 (a := ((Multiplicative.ofAdd f.order : Multiplicative ℤ) : ℤᵐ⁰))
+            coe_ne_zero,
+        ← hη]
       apply inv_mul_lt_of_lt_mul₀
       rwa [← Units.val_mul]
     · simp only [PowerSeries.coe_pow, pow_ne_zero, PowerSeries.coe_X, ne_eq,

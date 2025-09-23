@@ -196,7 +196,7 @@ theorem heval_X (hx : 0 < x.orderTop) : heval x X = x := by
   rw [X_eq, monomial_eq_mk, heval_apply, powerSeriesFamily, smulFamily]
   simp only [coeff_mk, powers_toFun, hx, ↓reduceIte, ite_smul, one_smul, zero_smul]
   ext g
-  rw [coeff_hsum, finsum_eq_single _ 1 (fun n hn ↦ (by simp [hn]))]
+  rw [coeff_hsum, finsum_eq_single _ 1 (fun n hn ↦ by simp [hn])]
   simp
 
 theorem heval_unit (u : (PowerSeries R)ˣ) : IsUnit (heval x u) := by
