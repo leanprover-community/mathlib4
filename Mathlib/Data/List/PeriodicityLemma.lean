@@ -177,7 +177,6 @@ lemma hasPeriod_of_hasPeriod_hasPeriod_add {q k : ℕ} {w : List α}
 /-- The **Periodicity Lemma**, also known as the **Fine and Wilf theorem**, shows that
 if word `w` of length at least `p + q - gcd p q` has two periods `p` and `q`,
 then it has a period `gcd p q`.
-
 The proof is similar to the Euclidean algorithm for computing `gcd`.
 -/
 theorem HasPeriod.gcd {w : List α} {p q : ℕ} (per_p : HasPeriod w p) (per_q : HasPeriod w q)
