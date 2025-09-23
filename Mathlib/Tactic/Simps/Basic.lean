@@ -245,7 +245,7 @@ derives two `simp` lemmas:
 * The precise syntax is `simps (attr := a) config ident*`, where `a` is a list of attributes,
   `config` declares configuration options and `ident*` is a list of desired projection names.
 * Configuration options can be given using `(config := e)` where `e : Simps.Config`,
-  or by specifying options directly, like `-fullyApplied` or `notRecursive := []`.
+  or by specifying options directly, like `-fullyApplied` or `(notRecursive := [])`.
 * `@[simps]` reduces let-expressions where necessary.
 * When option `trace.simps.verbose` is true, `simps` will print the projections it finds and the
   lemmas it generates. The same can be achieved by using `@[simps?]`.
