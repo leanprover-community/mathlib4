@@ -2644,7 +2644,13 @@ lemma exists_R'_at_l'_plus_one (l' : Fin (m K))  :
               simp only [add_sub_cancel]
             }
             rw [sub_eq_add_neg]
+            congr
             sorry
+
+
+
+            --simp only [add_sub_cancel] at this
+            --rw [this]
             --rw [← this]
              }
         rw [← mul_assoc]
@@ -2762,8 +2768,7 @@ lemma R'R_analytic (l' : Fin (m K)) :
     refine AnalyticOn.mul ?_ ?_
     · apply AnalyticOnSubset _ _ univ
       simp only [Set.subset_univ]
-      have := analyticEverywhere
-        α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq
+      have := analyticEverywhere α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq
       apply analyticOn_univ.mpr fun x a ↦ this x
     · apply AnalyticOn.fun_zpow ?_
       intros z hz
