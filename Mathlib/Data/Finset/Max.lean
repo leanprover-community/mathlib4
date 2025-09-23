@@ -407,7 +407,7 @@ theorem max_erase_ne_self {s : Finset α} : (s.erase x).max ≠ x := by
   · refine ne_of_eq_of_ne (coe_max' s0).symm ?_
     exact WithBot.coe_eq_coe.not.mpr (max'_erase_ne_self _)
   · push_neg at s0
-    rw [max_empty]
+    rw [s0, max_empty]
     exact WithBot.bot_ne_coe
 
 theorem min_erase_ne_self {s : Finset α} : (s.erase x).min ≠ x := by
