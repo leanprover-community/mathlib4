@@ -152,11 +152,9 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
   constructor
   · push_neg at h₂
     rify at h₂
-    rw [lt_div_iff₀ (by positivity)]
-    linear_combination Real.pi * h₂
+    linear_combination h₂
   · rify at h
-    rw [div_le_iff₀ (by positivity)]
-    linear_combination 2 * Real.pi * h + (n:ℝ) * Real.pi_pos
+    linear_combination 2 * h + (n:ℝ) * one_pos (α := ℝ)
 
 lemma Complex.norm_eq_one_of_mem_rootsOfUnity {ζ : ℂˣ} {n : ℕ} [NeZero n]
     (hζ : ζ ∈ rootsOfUnity n ℂ) :

@@ -303,6 +303,7 @@
    "Mathlib.Tactic.Positivity.Core"],
   "Mathlib.Tactic.FinCases": ["Mathlib.Data.Fintype.Basic"],
   "Mathlib.Tactic.FieldSimp.Lemmas": ["Mathlib.Algebra.Field.Power"],
+  "Mathlib.Tactic.FieldSimp": ["Mathlib.Tactic.FieldSimp.Attr"],
   "Mathlib.Tactic.Eval": ["Qq.Macro"],
   "Mathlib.Tactic.DeriveFintype":
   ["Mathlib.Data.Fintype.Basic",
