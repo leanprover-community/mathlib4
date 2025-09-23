@@ -29,20 +29,13 @@ omit [IsLocalRing R] in
 theorem supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson {x : R}
     (h : x ∈ (annihilator R M).jacobson) : supportDim R M ≤ supportDim R (QuotSMulTop x M) + 1 := by
   nontriviality M
-  refine iSup_le_iff.mpr (fun q ↦ ?_)
-  obtain ⟨m, hmm, hm⟩ := exists_le_maximal _ q.last.1.2.1
-  have hj : (annihilator R M).jacobson ≤ m :=
-    sInf_le ⟨(mem_support_iff_of_finite.mp q.last.2).trans hm, hmm⟩
-  -- Append `m` to `q`.
-  classical let p : LTSeries (support R M) :=
-    if hq : q.last.1.1 < m then q.snoc ⟨⟨m, inferInstance⟩, mem_support_mono hm q.last.2⟩ hq else q
-  obtain ⟨hxp, le⟩ : x ∈ p.last.1.1 ∧ q.length ≤ p.length := by
-    by_cases lt : q.last.1.1 < m
-    · simpa [show p = q.snoc ⟨⟨m, _⟩, _⟩ lt from dif_pos lt] using hj h
-    · have hq : q.last.1.1 = m := by
-        contrapose! lt
-        exact lt_of_le_of_ne hm lt
-      simpa [show p = q from dif_neg lt, hq] using hj h
+  refine iSup_le_iff.mpr (fun p ↦ ?_)
+  wlog hxp : x ∈ p.last.1.1 generalizing p
+  · obtain ⟨p, hle, hm⟩ := exists_ltSeries_support_isMaximal_last_of_ltSeries_support p
+    refine le_trans (Nat.cast_le.mpr hle) ?_
+    have hj : (annihilator R M).jacobson ≤ p.last.1.1 :=
+      sInf_le ⟨mem_support_iff_of_finite.mp p.last.2, inferInstance⟩
+    exact this _ (hj h)
   -- `q` is a chain of primes such that `x ∈ q 1`, `p.length = q.length` and `p.head = q.head`.
   obtain ⟨q, hxq, hq, h0, _⟩ : ∃ q : LTSeries (PrimeSpectrum R), _ ∧ _ ∧ p.head = q.head ∧ _ :=
     exist_ltSeries_mem_one_of_mem_last (p.map Subtype.val (fun ⦃_ _⦄ lt ↦ lt)) hxp
