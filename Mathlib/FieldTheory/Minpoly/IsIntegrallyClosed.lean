@@ -106,25 +106,18 @@ theorem IsIntegrallyClosed.degree_le_of_ne_zero {s : S} (hs : IsIntegral R s) {p
   norm_cast
   exact natDegree_le_of_dvd ((isIntegrallyClosed_dvd_iff hs _).mp hp) hp0
 
-/-- If an element `x` is a root of a irreducible polynomial `p`, then 'x' is integral
-iff the leadingcoeff of 'p' is unit. -/
+/-- If `x` is a root of an irreducible polynomial `p`, then `x` is integral
+iff the leading coefficient of `p` is unit. -/
 theorem IsIntegrallyClosed.isIntegral_iff_leadingCoeff_isUnit {x : S} {p : R[X]}
     (hirr : Irreducible p) (hp : p.aeval x = 0) :
-    IsIntegral R x ↔ IsUnit p.leadingCoeff  := by
+    IsIntegral R x ↔ IsUnit p.leadingCoeff := by
   constructor
-  · intro int_a
-    obtain ⟨g, hg⟩ := minpoly.isIntegrallyClosed_dvd int_a hp
-    have huni : IsUnit g := (or_iff_right (minpoly.not_isUnit R x)).mp
-        (of_irreducible_mul (hg ▸ hirr))
-    obtain ⟨r, uni_r, geq⟩ := Polynomial.isUnit_iff.mp huni
-    apply_fun leadingCoeff at hg
-    rw [hg, leadingCoeff_mul, ← geq, leadingCoeff_C, minpoly.monic int_a, one_mul]
-    exact uni_r
-  · intro f_uni
-    obtain ⟨r, hr, _⟩ := (isUnit_iff_exists.mp f_uni)
-    refine ⟨p * C r, monic_mul_C_of_leadingCoeff_mul_eq_one hr, ?_⟩
-    rw [eval₂_mul, mul_eq_zero]; left
-    exact hp
+  · intro int_x
+    obtain ⟨p, rfl⟩ := minpoly.isIntegrallyClosed_dvd int_x hp
+    rw [leadingCoeff_mul, minpoly.monic int_x, one_mul]
+    exact ((of_irreducible_mul hirr).resolve_left (minpoly.not_isUnit R x)).map leadingCoeffHom
+  · intro isUnit
+    simpa [smul_smul] using (isIntegral_leadingCoeff_smul _ _ hp).smul ((isUnit.unit⁻¹ : Rˣ) : R)
 
 /-- The minimal polynomial of an element `x` is uniquely characterized by its defining property:
 if there is another monic polynomial of minimal degree that has `x` as a root, then this polynomial
