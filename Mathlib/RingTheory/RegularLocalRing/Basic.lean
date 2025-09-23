@@ -160,7 +160,7 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
     have : ringKrullDim (R ⧸ Ideal.span S.toSet) + S.card ≤
       (Submodule.spanFinrank (maximalIdeal (R ⧸ Ideal.span S.toSet))) + S.card :=
       add_le_add_right (ringKrullDim_le_spanFinrank_maximalIdeal _) _
-    exact ⟨(withBotENat_add_coe_cancel _ _ S.card).mp
+    exact ⟨(WithBot.add_natCast_cancel _ _ S.card).mp
       (le_antisymm (ge.trans le) this), le_antisymm (this.trans ge) le⟩
   tfae_have 3 → 1 := by
     classical
@@ -244,7 +244,7 @@ theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
       SetLike.mem_coe, Set.mem_iUnion, exists_prop, not_or, not_exists, not_and] at xnmem
     obtain ⟨reg, dim⟩ := quotient_span_singleton R xmem xnmem.1
     simp only [hn, Nat.cast_add, Nat.cast_one] at dim
-    have ih' := ih (R ⧸ Ideal.span {x}) ((withBotENat_add_coe_cancel _ _ 1).mp dim)
+    have ih' := ih (R ⧸ Ideal.span {x}) ((WithBot.add_natCast_cancel _ _ 1).mp dim)
     have : (Ideal.span {x}).IsPrime := (Ideal.Quotient.isDomain_iff_prime _).mp ih'
     obtain ⟨p, min, hp⟩ := Ideal.exists_minimalPrimes_le (bot_le (a := Ideal.span {x}))
     let _ : p.IsPrime := Ideal.minimalPrimes_isPrime min
