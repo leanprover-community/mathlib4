@@ -83,7 +83,6 @@ theorem tendsto_finset_Iic_atTop_atTop [Preorder α] [LocallyFiniteOrderBot α] 
   · obtain h := Filter.atTop_neBot_iff.not.mpr (fun h' ↦ h h'.2)
     simp [not_ne_iff.mp <| Filter.neBot_iff.not.mp h]
 
-
 theorem tendsto_finset_Ici_atBot_atTop [Preorder α] [LocallyFiniteOrderTop α] :
     Tendsto (Finset.Ici (α := α)) atBot atTop :=
   tendsto_finset_Iic_atTop_atTop (α := αᵒᵈ)
