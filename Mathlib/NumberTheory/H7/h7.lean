@@ -817,15 +817,13 @@ omit hirr htriv habc hq0 h2mq
 lemma c₃_pow :  c₃  ^ ↑(n K q : ℝ) = c₂^ ↑(n K q) *
   ((1 + house (β'))^ ↑(n K q)) *
   ((↑2*m) ^ ↑(n K q)) *
-  (max 1 (((house (α') ^ (2*m^2)) * house (γ') ^(2*m^2))^2*m))^ ↑(n K q) := by {
+  (max 1 (((house (α') ^ (2*m^2)) * house (γ') ^(2*m^2))^2*m))^ ↑(n K q) := by
     unfold c₃
     simp only [Real.rpow_natCast]
-    rw [mul_pow]
-    rw [mul_pow]
-    rw [mul_pow]}
+    rw [mul_pow, mul_pow, mul_pow]
 
 include h2mq in
-lemma q_eq_n_etc : ↑q ^ (n K q - 1) ≤ (Real.sqrt (2*m)^(n-1))* (Real.sqrt n)^(n-1) := by {
+lemma q_eq_n_etc : ↑q ^ (n K q - 1) ≤ (Real.sqrt (2*m)^(n-1))* (Real.sqrt n)^(n-1) := by
   have : (Real.sqrt ((2*m)*(n))) = Real.sqrt (2*m)* Real.sqrt n := by {
     rw [Real.sqrt_mul]
     simp only [Nat.ofNat_pos, mul_nonneg_iff_of_pos_left, Nat.cast_nonneg]}
@@ -834,21 +832,13 @@ lemma q_eq_n_etc : ↑q ^ (n K q - 1) ≤ (Real.sqrt (2*m)^(n-1))* (Real.sqrt n)
   · simp only [Nat.cast_nonneg]
   · rw [← this]
     rw [Real.le_sqrt]
-    · norm_cast
-      apply sq_le_two_mn K q h2mq
+    · norm_cast; apply sq_le_two_mn K q h2mq
     · simp only [Nat.cast_nonneg]
-    · norm_cast
-      simp only [zero_le]}
+    · norm_cast;simp only [zero_le]
 
-lemma sq_n : (Real.sqrt n)^((n K q : ℝ)-1) = (n : ℝ) ^ (((n K q : ℝ) - 1)/2) := by {
-  rw [Real.sqrt_eq_rpow]
-  rw [← Real.rpow_mul]
-  nth_rw 1 [mul_comm, mul_div]
-  simp only [mul_one]
-  · sorry
-
-}
-
+lemma sq_n : (Real.sqrt n)^((n K q : ℝ)-1) = (n : ℝ) ^ (((n K q : ℝ) - 1)/2) := by
+  nth_rw 1 [Real.sqrt_eq_rpow, ← Real.rpow_mul, mul_comm, mul_div]
+  simp only [mul_one]; simp only [Nat.cast_nonneg]
 
 include hirr htriv habc hq0 h2mq in
 lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
@@ -1078,13 +1068,8 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
     · rw [le_iff_eq_or_lt]
       left
       rw [← sq_n]
-
 }
 
-
-
--- def c₄ : ℝ := ((c₂ K α' β' γ') * ((q : ℝ) + (q : ℝ) * house β')*
---     (house α')^(Nat.sqrt (2*m K))*(house γ')^(Nat.sqrt (2*m K)))
 def applylemma82 := NumberField.house.exists_ne_zero_int_vec_house_le K
   (A K α' β' γ' q)
   (hM_neq0 α β hirr htriv K σ α' β' γ' habc q hq0 h2mq)
@@ -1100,29 +1085,23 @@ def η : Fin (q * q) → 𝓞 K :=
 macro_rules | `(η) => `(η α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq)
 
 abbrev c₄ := (max 1 ((house.c₁ K)* house.c₁ K * 2 * m )) * c₃
--- abbrev c₄ := max 1 (house.c₁ K * ((house.c₁ K) * ↑(q * q : ℝ) *
---   (c₃ ^ ↑(n : ℝ) * ↑(n : ℝ) ^ ((↑(n : ℝ) - 1) / 2))) ^
---   (↑(m * n : ℝ) / (↑(q * q : ℝ) - ↑(m * n : ℝ))))
 
 macro_rules | `(c₄) => `(c₄ K hd α' β' γ')
 
 omit hirr in
 lemma one_leq_c₄ : 1 ≤ c₄ := by
   dsimp [c₄]
-  refine one_le_mul_of_one_le_of_one_le ?_ ?_
+  refine one_le_mul_of_one_le_of_one_le ?_ (one_leq_c₃ K α' β' γ')
   · exact le_max_left 1 (house.c₁ K * house.c₁ K * 2 * ↑(m K))
-  · exact one_leq_c₃ K α' β' γ'
 
 omit hirr in
 lemma q_sq_real: (q * q : ℝ) = q^2 := by {
-  norm_cast
-  exact Eq.symm (pow_two ↑q)}
+  norm_cast; exact Eq.symm (pow_two ↑q)}
 
 omit hirr in
 include h2mq in
 lemma q_eq_2sqrtmn_real : (q^2 : ℝ) = 2*m*n := by
-  norm_cast
-  refine Eq.symm (Nat.mul_div_cancel' h2mq)
+  norm_cast; refine Eq.symm (Nat.mul_div_cancel' h2mq)
 
 omit hirr in
 include h2mq hq0 in
@@ -1144,10 +1123,9 @@ lemma hfrac : ↑(n K q : ℝ) * ↑(n K q : ℝ) ^ ((↑(n K q : ℝ) - 1) / 2)
   ↑(n K q : ℝ) ^ ((↑(n K q : ℝ) + 1) / 2) := by {
     nth_rw 1 [← Real.rpow_one (x := ↑(n K q))]
     rw [← Real.rpow_add]
-    · congr
-      ring
+    · congr; ring
     · norm_cast
-      have :=one_le_n K q hq0 h2mq
+      have := one_le_n K q hq0 h2mq
       linarith}
 
 open NumberField.house in
@@ -2966,7 +2944,11 @@ lemma SR_analytic_S.U : AnalyticOn ℂ SR (S.U K) := by {
     -- · apply AnalyticOn.zpow_nonneg
     --   · sorry
     --   · sorry
-  · sorry
+  · apply Finset.analyticOn_fun_prod
+    intros u hu
+    simp only [mem_sdiff, Finset.mem_range, Finset.mem_singleton] at hu
+    sorry
+
   }
 
 
@@ -3145,10 +3127,7 @@ lemma S_eq_SR (l : Fin (m K)) (hl : l ≠ l₀) : z ∈ (S.U K) → (S) z = (SR)
 -- #check AnalyticOnAt
 -- #check  AnalyticOnSubset
 
-omit hirr htriv
-  habc
-  hq0
-  h2mq in
+omit hirr htriv habc hq0 h2mq in
 lemma z_in_ks' : z ∈ (ks K) ↔ ∃ k': Fin (m K), z = k' + 1 := by
   apply Iff.intro
   · intros hz
@@ -3166,10 +3145,7 @@ lemma z_in_ks' : z ∈ (ks K) ↔ ∃ k': Fin (m K), z = k' + 1 := by
     simp_all only [Finset.mem_image, Finset.mem_range,
       add_left_inj, Nat.cast_inj, exists_eq_right, Fin.is_lt]
 
-omit hirr htriv
-  habc
-  hq0
-  h2mq in
+omit hirr htriv habc hq0 h2mq in
 lemma S.U_ne_of_mem' {z : ℂ} (hz : z ∈ (S.U K)) (k' : Fin (m K)) : z ≠ (k' + 1 : ℂ) := by
   dsimp [S.U, ks] at hz
   simp only [coe_image, coe_range, mem_compl_iff,
@@ -3216,10 +3192,8 @@ lemma hcauchy (l' : Fin (m K)) :
   apply two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_countable
   · exact countable_singleton (l₀ : ℂ)
   · have : (l₀ : ℂ) ∈ Metric.ball 0 (m K * (1 + ↑r / ↑q)) := by {
-    simp only [Metric.mem_ball, dist_zero_right]
-    simp only [norm_natCast]
-    have : (l₀ : ℝ) < m := by {
-      simp only [Nat.cast_lt, Fin.is_lt]}
+    simp only [Metric.mem_ball, dist_zero_right, norm_natCast]
+    have : (l₀ : ℝ) < m := by {simp only [Nat.cast_lt, Fin.is_lt]}
     trans
     · exact this
     · apply lt_mul_right
@@ -3236,8 +3210,7 @@ lemma hcauchy (l' : Fin (m K)) :
     refine DifferentiableAt.differentiableWithinAt ?_
     have : ∀ z, AnalyticAt ℂ S z :=
      fun z ↦ holS α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq z
-    have := this x
-    exact AnalyticAt.differentiableAt this
+    exact AnalyticAt.differentiableAt (this x)
   · intros x hx
     apply AnalyticAt.differentiableAt
     exact holS α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq x
@@ -3247,7 +3220,8 @@ def sys_coeff_foo_S : ρᵣ = Complex.log α ^ (-↑(r : ℤ)) * (S) ↑↑(l₀
   unfold S
   simp only
   dsimp [ρᵣ]
-  sorry
+  congr
+  · sorry
   }
 
 lemma eq7 (l' : Fin (m K)) :
@@ -3411,8 +3385,7 @@ def c₁₁ : ℝ := sorry
 def c₁₂ : ℝ := sorry
 
 include u in
-lemma blah (l' : Fin (m K)) : norm ((S) z) ≤
-    (c₁₂)^r * ((3 - m) / 2 + 3 / 2) := by
+lemma blah (l' : Fin (m K)) : norm ((S) z) ≤ (c₁₂)^r * ((3 - m) / 2 + 3 / 2) := by
   calc
     _ = norm (((R) z) * ((r).factorial) * (((z - l₀) ^ (-r : ℤ)) *
         ∏ k ∈ Finset.range (m K) \ {(l₀ : ℕ)},
@@ -3467,7 +3440,7 @@ def c₁₃ : ℝ := sorry
 
 lemma eq8 : norm (ρᵣ) ≤ (c₁₃)^r*r^(r*(3-m K)/2 +3/2) := by
   let Cnum : ℝ := sorry
-  have hR : 0 ≤ (m K * (1 + ↑r / ↑q) : ℝ) := by {
+  have hR : 0 ≤ (m K * (1 + ↑r / ↑q) : ℝ) := by
     apply mul_nonneg
     · simp only [Nat.cast_nonneg]
     · trans
@@ -3478,7 +3451,6 @@ lemma eq8 : norm (ρᵣ) ≤ (c₁₃)^r*r^(r*(3-m K)/2 +3/2) := by
         apply div_nonneg
         · simp only [Nat.cast_nonneg]
         · simp only [Nat.cast_nonneg]
-        }
 
   have hf : ∀ z ∈ Metric.sphere 0 (m K * (1 + ↑r / ↑q)),
     ‖(z - (↑l₀ : ℂ))⁻¹ * (S) z‖ ≤ Cnum := sorry
