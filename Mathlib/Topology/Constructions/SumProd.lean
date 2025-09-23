@@ -248,7 +248,7 @@ theorem continuous_curry {g : X × Y → Z} (x : X) (h : Continuous g) : Continu
 theorem IsOpen.prod {s : Set X} {t : Set Y} (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ×ˢ t) :=
   (hs.preimage continuous_fst).inter (ht.preimage continuous_snd)
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: Lean fails to find `t₁` and `t₂` by unification
+-- Porting note: Lean fails to find `t₁` and `t₂` by unification
 theorem nhds_prod_eq {x : X} {y : Y} : 𝓝 (x, y) = 𝓝 x ×ˢ 𝓝 y := by
   rw [prod_eq_inf, instTopologicalSpaceProd, nhds_inf (t₁ := TopologicalSpace.induced Prod.fst _)
     (t₂ := TopologicalSpace.induced Prod.snd _), nhds_induced, nhds_induced]
@@ -334,7 +334,7 @@ theorem Filter.EventuallyLE.prodMap_nhds {α β : Type*} [LE α] [LE β] {f₁ f
   exact hf.prodMap hg
 
 theorem nhds_swap (x : X) (y : Y) : 𝓝 (x, y) = (𝓝 (y, x)).map Prod.swap := by
-  rw [nhds_prod_eq, Filter.prod_comm, nhds_prod_eq]; rfl
+  rw [nhds_prod_eq, Filter.prod_comm, nhds_prod_eq]
 
 theorem Filter.Tendsto.prodMk_nhds {γ} {x : X} {y : Y} {f : Filter γ} {mx : γ → X} {my : γ → Y}
     (hx : Tendsto mx f (𝓝 x)) (hy : Tendsto my f (𝓝 y)) :
@@ -513,14 +513,8 @@ theorem isOpen_prod_iff' {s : Set X} {t : Set Y} :
 theorem isQuotientMap_fst [Nonempty Y] : IsQuotientMap (Prod.fst : X × Y → X) :=
   isOpenMap_fst.isQuotientMap continuous_fst Prod.fst_surjective
 
-@[deprecated (since := "2024-10-22")]
-alias quotientMap_fst := isQuotientMap_fst
-
 theorem isQuotientMap_snd [Nonempty X] : IsQuotientMap (Prod.snd : X × Y → Y) :=
   isOpenMap_snd.isQuotientMap continuous_snd Prod.snd_surjective
-
-@[deprecated (since := "2024-10-22")]
-alias quotientMap_snd := isQuotientMap_snd
 
 theorem closure_prod_eq {s : Set X} {t : Set Y} : closure (s ×ˢ t) = closure s ×ˢ closure t :=
   ext fun ⟨a, b⟩ => by
@@ -570,23 +564,17 @@ lemma Topology.IsInducing.prodMap {f : X → Y} {g : Z → W} (hf : IsInducing f
   isInducing_iff_nhds.2 fun (x, z) => by simp_rw [Prod.map_def, nhds_prod_eq, hf.nhds_eq_comap,
     hg.nhds_eq_comap, prod_comap_comap_eq]
 
-@[deprecated (since := "2024-10-28")] alias Inducing.prodMap := IsInducing.prodMap
-
 @[simp]
 lemma Topology.isInducing_const_prod {x : X} {f : Y → Z} :
     IsInducing (fun x' => (x, f x')) ↔ IsInducing f := by
   simp_rw [isInducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose,
     Function.comp_def, induced_const, top_inf_eq]
 
-@[deprecated (since := "2024-10-28")] alias inducing_const_prod := isInducing_const_prod
-
 @[simp]
 lemma Topology.isInducing_prod_const {y : Y} {f : X → Z} :
     IsInducing (fun x => (f x, y)) ↔ IsInducing f := by
   simp_rw [isInducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose,
     Function.comp_def, induced_const, inf_top_eq]
-
-@[deprecated (since := "2024-10-28")] alias inducing_prod_const := isInducing_prod_const
 
 lemma isInducing_prodMkLeft (y : Y) : IsInducing (fun x : X ↦ (x, y)) :=
   .of_comp (.prodMk_left y) continuous_fst .id
@@ -613,9 +601,6 @@ protected lemma Topology.IsOpenEmbedding.prodMap {f : X → Y} {g : Z → W} (hf
 lemma isEmbedding_graph {f : X → Y} (hf : Continuous f) : IsEmbedding fun x => (x, f x) :=
   .of_comp (continuous_id.prodMk hf) continuous_fst .id
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_graph := isEmbedding_graph
-
 lemma isEmbedding_prodMkLeft (y : Y) : IsEmbedding (fun x : X ↦ (x, y)) :=
   .of_comp (.prodMk_left y) continuous_fst .id
 
@@ -623,8 +608,6 @@ lemma isEmbedding_prodMkRight (x : X) : IsEmbedding (Prod.mk x : Y → X × Y) :
   .of_comp (.prodMk_right x) continuous_snd .id
 
 @[deprecated (since := "2025-06-12")] alias isEmbedding_prodMk := isEmbedding_prodMkRight
-@[deprecated (since := "2024-10-26")] alias embedding_prod_mk := isEmbedding_prodMkRight
-
 theorem IsOpenQuotientMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenQuotientMap f)
     (hg : IsOpenQuotientMap g) : IsOpenQuotientMap (Prod.map f g) :=
   ⟨.prodMap hf.1 hg.1, .prodMap hf.2 hg.2, .prodMap hf.3 hg.3⟩
@@ -723,14 +706,10 @@ theorem continuous_sumElim {f : X → Z} {g : Y → Z} :
     Continuous (Sum.elim f g) ↔ Continuous f ∧ Continuous g :=
   continuous_sum_dom
 
-@[deprecated (since := "2025-02-20")] alias continuous_sum_elim := continuous_sumElim
-
 @[continuity, fun_prop]
 theorem Continuous.sumElim {f : X → Z} {g : Y → Z} (hf : Continuous f) (hg : Continuous g) :
     Continuous (Sum.elim f g) :=
   continuous_sumElim.2 ⟨hf, hg⟩
-
-@[deprecated (since := "2025-02-20")] alias Continuous.sum_elim := Continuous.sumElim
 
 @[continuity, fun_prop]
 theorem continuous_isLeft : Continuous (isLeft : X ⊕ Y → Bool) :=
@@ -772,18 +751,11 @@ theorem isClosedMap_inr : IsClosedMap (@inr X Y) := fun u hu ↦ by
 protected lemma Topology.IsOpenEmbedding.inl : IsOpenEmbedding (@inl X Y) :=
   .of_continuous_injective_isOpenMap continuous_inl inl_injective isOpenMap_inl
 
-@[deprecated (since := "2024-10-30")] alias isOpenEmbedding_inl := IsOpenEmbedding.inl
-
 protected lemma Topology.IsOpenEmbedding.inr : IsOpenEmbedding (@inr X Y) :=
   .of_continuous_injective_isOpenMap continuous_inr inr_injective isOpenMap_inr
 
-@[deprecated (since := "2024-10-30")] alias isOpenEmbedding_inr := IsOpenEmbedding.inr
-
 protected lemma Topology.IsEmbedding.inl : IsEmbedding (@inl X Y) := IsOpenEmbedding.inl.1
 protected lemma Topology.IsEmbedding.inr : IsEmbedding (@inr X Y) := IsOpenEmbedding.inr.1
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_inr := IsEmbedding.inr
 
 lemma isOpen_range_inl : IsOpen (range (inl : X → X ⊕ Y)) := IsOpenEmbedding.inl.2
 lemma isOpen_range_inr : IsOpen (range (inr : Y → X ⊕ Y)) := IsOpenEmbedding.inr.2
@@ -799,12 +771,8 @@ theorem isClosed_range_inr : IsClosed (range (inr : Y → X ⊕ Y)) := by
 theorem Topology.IsClosedEmbedding.inl : IsClosedEmbedding (inl : X → X ⊕ Y) :=
   ⟨.inl, isClosed_range_inl⟩
 
-@[deprecated (since := "2024-10-30")] alias isClosedEmbedding_inl := IsClosedEmbedding.inl
-
 theorem Topology.IsClosedEmbedding.inr : IsClosedEmbedding (inr : Y → X ⊕ Y) :=
   ⟨.inr, isClosed_range_inr⟩
-
-@[deprecated (since := "2024-10-30")] alias isClosedEmbedding_inr := IsClosedEmbedding.inr
 
 theorem nhds_inl (x : X) : 𝓝 (inl x : X ⊕ Y) = map inl (𝓝 x) :=
   (IsOpenEmbedding.inl.map_nhds_eq _).symm
@@ -818,14 +786,10 @@ theorem continuous_sumMap {f : X → Y} {g : Z → W} :
   continuous_sumElim.trans <|
     IsEmbedding.inl.continuous_iff.symm.and IsEmbedding.inr.continuous_iff.symm
 
-@[deprecated (since := "2025-02-21")] alias continuous_sum_map := continuous_sumMap
-
 @[continuity, fun_prop]
 theorem Continuous.sumMap {f : X → Y} {g : Z → W} (hf : Continuous f) (hg : Continuous g) :
     Continuous (Sum.map f g) :=
   continuous_sumMap.2 ⟨hf, hg⟩
-
-@[deprecated (since := "2025-02-21")] alias Continuous.sum_map := Continuous.sumMap
 
 theorem isOpenMap_sum {f : X ⊕ Y → Z} :
     IsOpenMap f ↔ (IsOpenMap fun a => f (inl a)) ∧ IsOpenMap fun b => f (inr b) := by
@@ -840,13 +804,9 @@ theorem isOpenMap_sumElim {f : X → Z} {g : Y → Z} :
     IsOpenMap (Sum.elim f g) ↔ IsOpenMap f ∧ IsOpenMap g := by
   simp only [isOpenMap_sum, elim_inl, elim_inr]
 
-@[deprecated (since := "2025-02-20")] alias isOpenMap_sum_elim := isOpenMap_sumElim
-
 theorem IsOpenMap.sumElim {f : X → Z} {g : Y → Z} (hf : IsOpenMap f) (hg : IsOpenMap g) :
     IsOpenMap (Sum.elim f g) :=
   isOpenMap_sumElim.2 ⟨hf, hg⟩
-
-@[deprecated (since := "2025-02-20")] alias IsOpenMap.sum_elim := IsOpenMap.sumElim
 
 lemma IsOpenEmbedding.sumElim {f : X → Z} {g : Y → Z}
     (hf : IsOpenEmbedding f) (hg : IsOpenEmbedding g) (h : Injective (Sum.elim f g)) :
@@ -949,14 +909,11 @@ lemma sumAssoc_toEquiv : (sumAssoc X Y Z).toEquiv = Equiv.sumAssoc X Y Z := rfl
 def sumSumSumComm : (X ⊕ Y) ⊕ W ⊕ Z ≃ₜ (X ⊕ W) ⊕ Y ⊕ Z where
   toEquiv := Equiv.sumSumSumComm X Y W Z
   continuous_toFun := by
-    unfold Equiv.sumSumSumComm
-    dsimp only
-    have : Continuous (Sum.map (Sum.map (@id X) ⇑(Equiv.sumComm Y W)) (@id Z)) := by continuity
+    have : Continuous (Sum.map (Sum.map (@id X) ⇑(Homeomorph.sumComm Y W)) (@id Z)) := by fun_prop
     fun_prop
   continuous_invFun := by
-    unfold Equiv.sumSumSumComm
-    dsimp only
-    have : Continuous (Sum.map (Sum.map (@id X) (Equiv.sumComm Y W).symm) (@id Z)) := by continuity
+    have : Continuous (Sum.map (Sum.map (@id X) (Homeomorph.sumComm Y W).symm) (@id Z)) := by
+      fun_prop
     fun_prop
 
 @[simp]

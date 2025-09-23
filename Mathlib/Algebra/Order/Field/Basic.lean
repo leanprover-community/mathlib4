@@ -9,6 +9,7 @@ import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Set.Monotone
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Tactic.Positivity.Core
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 
 /-!
 # Lemmas about linear ordered (semi)fields
@@ -22,44 +23,6 @@ variable {ι α β : Type*}
 section LinearOrderedSemifield
 
 variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {a b c d e : α} {m n : ℤ}
-
-/-!
-### Relating two divisions.
--/
-
-@[deprecated div_le_div_iff_of_pos_right (since := "2024-11-12")]
-theorem div_le_div_right (hc : 0 < c) : a / c ≤ b / c ↔ a ≤ b := div_le_div_iff_of_pos_right hc
-
-@[deprecated div_lt_div_iff_of_pos_right (since := "2024-11-12")]
-theorem div_lt_div_right (hc : 0 < c) : a / c < b / c ↔ a < b := div_lt_div_iff_of_pos_right hc
-
-@[deprecated div_lt_div_iff_of_pos_left (since := "2024-11-13")]
-theorem div_lt_div_left (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : a / b < a / c ↔ c < b :=
-  div_lt_div_iff_of_pos_left ha hb hc
-
-@[deprecated div_le_div_iff_of_pos_left (since := "2024-11-12")]
-theorem div_le_div_left (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) : a / b ≤ a / c ↔ c ≤ b :=
-  div_le_div_iff_of_pos_left ha hb hc
-
-@[deprecated div_lt_div_iff₀ (since := "2024-11-12")]
-theorem div_lt_div_iff (b0 : 0 < b) (d0 : 0 < d) : a / b < c / d ↔ a * d < c * b :=
-  div_lt_div_iff₀ b0 d0
-
-@[deprecated div_le_div_iff₀ (since := "2024-11-12")]
-theorem div_le_div_iff (b0 : 0 < b) (d0 : 0 < d) : a / b ≤ c / d ↔ a * d ≤ c * b :=
-  div_le_div_iff₀ b0 d0
-
-@[deprecated div_le_div₀ (since := "2024-11-12")]
-theorem div_le_div (hc : 0 ≤ c) (hac : a ≤ c) (hd : 0 < d) (hbd : d ≤ b) : a / b ≤ c / d :=
-  div_le_div₀ hc hac hd hbd
-
-@[deprecated div_lt_div₀ (since := "2024-11-12")]
-theorem div_lt_div (hac : a < c) (hbd : d ≤ b) (c0 : 0 ≤ c) (d0 : 0 < d) : a / b < c / d :=
-  div_lt_div₀ hac hbd c0 d0
-
-@[deprecated div_lt_div₀' (since := "2024-11-12")]
-theorem div_lt_div' (hac : a ≤ c) (hbd : d < b) (c0 : 0 < c) (d0 : 0 < d) : a / b < c / d :=
-  div_lt_div₀' hac hbd c0 d0
 
 /-!
 ### Relating one division and involving `1`
@@ -171,7 +134,7 @@ theorem left_lt_add_div_two : a < (a + b) / 2 ↔ a < b := by simp [lt_div_iff�
 theorem add_div_two_lt_right : (a + b) / 2 < b ↔ a < b := by simp [div_lt_iff₀, mul_two]
 
 theorem add_thirds (a : α) : a / 3 + a / 3 + a / 3 = a := by
-  rw [div_add_div_same, div_add_div_same, ← two_mul, ← add_one_mul 2 a, two_add_one_eq_three,
+  rw [← add_div, ← add_div, ← two_mul, ← add_one_mul 2 a, two_add_one_eq_three,
     mul_div_cancel_left₀ a three_ne_zero]
 
 /-!
@@ -222,10 +185,9 @@ instance (priority := 100) LinearOrderedSemiField.toDenselyOrdered : DenselyOrde
     ⟨(a₁ + a₂) / 2,
       calc
         a₁ = (a₁ + a₁) / 2 := (add_self_div_two a₁).symm
-        _ < (a₁ + a₂) / 2 := div_lt_div_of_pos_right (add_lt_add_left h _) zero_lt_two
-        ,
+        _ < (a₁ + a₂) / 2 := by gcongr; exact zero_lt_two,
       calc
-        (a₁ + a₂) / 2 < (a₂ + a₂) / 2 := div_lt_div_of_pos_right (add_lt_add_right h _) zero_lt_two
+        (a₁ + a₂) / 2 < (a₂ + a₂) / 2 := by gcongr; exact zero_lt_two
         _ = a₂ := add_self_div_two a₂
         ⟩
 
@@ -649,6 +611,7 @@ theorem min_div_div_right_of_nonpos (hc : c ≤ 0) (a b : α) : min (a / c) (b /
 theorem max_div_div_right_of_nonpos (hc : c ≤ 0) (a b : α) : max (a / c) (b / c) = min a b / c :=
   Eq.symm <| Antitone.map_min fun _ _ => div_le_div_of_nonpos_of_le hc
 
+@[simp]
 theorem abs_inv (a : α) : |a⁻¹| = |a|⁻¹ :=
   map_inv₀ (absHom : α →*₀ α) a
 

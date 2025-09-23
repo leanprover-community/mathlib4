@@ -18,7 +18,7 @@ morphisms `F ⟶ G`. Informally, in degree `n`, this complex shall consist of
 cochains of degree `n` from `F` to `G`, i.e. arbitrary families for morphisms
 `F.X p ⟶ G.X (p + n)`. This complex shall be denoted `HomComplex F G`.
 
-In order to avoid type theoretic issues, a cochain of degree `n : ℤ`
+In order to avoid type-theoretic issues, a cochain of degree `n : ℤ`
 (i.e. a term of type of `Cochain F G n`) shall be defined here
 as the data of a morphism `F.X p ⟶ G.X q` for all triplets
 `⟨p, q, hpq⟩` where `p` and `q` are integers and `hpq : p + n = q`.
@@ -138,7 +138,7 @@ lemma ofHoms_v (ψ : ∀ (p : ℤ), F.X p ⟶ G.X p) (p : ℤ) :
   simp only [ofHoms, mk_v, eqToHom_refl, comp_id]
 
 @[simp]
-lemma ofHoms_zero : ofHoms (fun p => (0 : F.X p ⟶ G.X p)) = 0 := by aesop_cat
+lemma ofHoms_zero : ofHoms (fun p => (0 : F.X p ⟶ G.X p)) = 0 := by cat_disch
 
 @[simp]
 lemma ofHoms_v_comp_d (ψ : ∀ (p : ℤ), F.X p ⟶ G.X p) (p q q' : ℤ) (hpq : p + 0 = q) :
@@ -181,15 +181,15 @@ lemma d_comp_ofHom_v (φ : F ⟶ G) (p' p q : ℤ) (hpq : p + 0 = q) :
 
 @[simp]
 lemma ofHom_add (φ₁ φ₂ : F ⟶ G) :
-    Cochain.ofHom (φ₁ + φ₂) = Cochain.ofHom φ₁ + Cochain.ofHom φ₂ := by aesop_cat
+    Cochain.ofHom (φ₁ + φ₂) = Cochain.ofHom φ₁ + Cochain.ofHom φ₂ := by cat_disch
 
 @[simp]
 lemma ofHom_sub (φ₁ φ₂ : F ⟶ G) :
-    Cochain.ofHom (φ₁ - φ₂) = Cochain.ofHom φ₁ - Cochain.ofHom φ₂ := by aesop_cat
+    Cochain.ofHom (φ₁ - φ₂) = Cochain.ofHom φ₁ - Cochain.ofHom φ₂ := by cat_disch
 
 @[simp]
 lemma ofHom_neg (φ : F ⟶ G) :
-    Cochain.ofHom (-φ) = -Cochain.ofHom φ := by aesop_cat
+    Cochain.ofHom (-φ) = -Cochain.ofHom φ := by cat_disch
 
 /-- The cochain of degree `-1` given by an homotopy between two morphism of complexes. -/
 def ofHomotopy {φ₁ φ₂ : F ⟶ G} (ho : Homotopy φ₁ φ₂) : Cochain F G (-1) :=
@@ -380,7 +380,7 @@ protected lemma comp_id {n : ℤ} (z₁ : Cochain F G n) :
 
 @[simp]
 lemma ofHoms_comp (φ : ∀ (p : ℤ), F.X p ⟶ G.X p) (ψ : ∀ (p : ℤ), G.X p ⟶ K.X p) :
-    (ofHoms φ).comp (ofHoms ψ) (zero_add 0) = ofHoms (fun p => φ p ≫ ψ p) := by aesop_cat
+    (ofHoms φ).comp (ofHoms ψ) (zero_add 0) = ofHoms (fun p => φ p ≫ ψ p) := by cat_disch
 
 @[simp]
 lemma ofHom_comp (f : F ⟶ G) (g : G ⟶ K) :
@@ -669,10 +669,10 @@ def homOf (z : Cocycle F G 0) : F ⟶ G where
       using Cochain.congr_v hz i (i + 1) rfl
 
 @[simp]
-lemma homOf_ofHom_eq_self (φ : F ⟶ G) : homOf (ofHom φ) = φ := by aesop_cat
+lemma homOf_ofHom_eq_self (φ : F ⟶ G) : homOf (ofHom φ) = φ := by cat_disch
 
 @[simp]
-lemma ofHom_homOf_eq_self (z : Cocycle F G 0) : ofHom (homOf z) = z := by aesop_cat
+lemma ofHom_homOf_eq_self (z : Cocycle F G 0) : ofHom (homOf z) = z := by cat_disch
 
 @[simp]
 lemma cochain_ofHom_homOf_eq_coe (z : Cocycle F G 0) :
@@ -688,7 +688,7 @@ def equivHom : (F ⟶ G) ≃+ Cocycle F G 0 where
   invFun := homOf
   left_inv := homOf_ofHom_eq_self
   right_inv := ofHom_homOf_eq_self
-  map_add' := by aesop_cat
+  map_add' := by cat_disch
 
 variable (K)
 
@@ -791,18 +791,18 @@ def map : Cochain ((Φ.mapHomologicalComplex _).obj K) ((Φ.mapHomologicalComple
 lemma map_v (p q : ℤ) (hpq : p + n = q) : (z.map Φ).v p q hpq = Φ.map (z.v p q hpq) := rfl
 
 @[simp]
-protected lemma map_add : (z + z').map Φ = z.map Φ + z'.map Φ := by aesop_cat
+protected lemma map_add : (z + z').map Φ = z.map Φ + z'.map Φ := by cat_disch
 
 @[simp]
-protected lemma map_neg : (-z).map Φ = -z.map Φ := by aesop_cat
+protected lemma map_neg : (-z).map Φ = -z.map Φ := by cat_disch
 
 @[simp]
-protected lemma map_sub : (z - z').map Φ = z.map Φ - z'.map Φ := by aesop_cat
+protected lemma map_sub : (z - z').map Φ = z.map Φ - z'.map Φ := by cat_disch
 
 variable (K L n)
 
 @[simp]
-protected lemma map_zero : (0 : Cochain K L n).map Φ = 0 := by aesop_cat
+protected lemma map_zero : (0 : Cochain K L n).map Φ = 0 := by cat_disch
 
 @[simp]
 lemma map_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂)
@@ -814,7 +814,7 @@ lemma map_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cocha
 
 @[simp]
 lemma map_ofHom :
-    (Cochain.ofHom f).map Φ = Cochain.ofHom ((Φ.mapHomologicalComplex _).map f) := by aesop_cat
+    (Cochain.ofHom f).map Φ = Cochain.ofHom ((Φ.mapHomologicalComplex _).map f) := by cat_disch
 
 end Cochain
 

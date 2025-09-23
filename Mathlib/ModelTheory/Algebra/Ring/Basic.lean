@@ -9,9 +9,9 @@ import Mathlib.ModelTheory.Semantics
 import Mathlib.Algebra.Ring.Equiv
 
 /-!
-# First Order Language of Rings
+# First-Order Language of Rings
 
-This file defines the first order language of rings, as well as defining instance of `Add`, `Mul`,
+This file defines the first-order language of rings, as well as defining instance of `Add`, `Mul`,
 etc. on terms in the language.
 
 ## Main Definitions
@@ -152,19 +152,19 @@ combination with a `Ring`, or `Field` instance without having multiple different
 class CompatibleRing (R : Type*) [Add R] [Mul R] [Neg R] [One R] [Zero R]
     extends Language.ring.Structure R where
   /-- Addition in the `Language.ring.Structure` is the same as the addition given by the
-    `Add` instance -/
+  `Add` instance -/
   funMap_add : ∀ x, funMap addFunc x = x 0 + x 1
   /-- Multiplication in the `Language.ring.Structure` is the same as the multiplication given by the
-    `Mul` instance -/
+  `Mul` instance -/
   funMap_mul : ∀ x, funMap mulFunc x = x 0 * x 1
   /-- Negation in the `Language.ring.Structure` is the same as the negation given by the
-    `Neg` instance -/
+  `Neg` instance -/
   funMap_neg : ∀ x, funMap negFunc x = -x 0
   /-- The constant `0` in the `Language.ring.Structure` is the same as the constant given by the
-    `Zero` instance -/
+  `Zero` instance -/
   funMap_zero : ∀ x, funMap (zeroFunc : Language.ring.Constants) x = 0
   /-- The constant `1` in the `Language.ring.Structure` is the same as the constant given by the
-    `One` instance -/
+  `One` instance -/
   funMap_one : ∀ x, funMap (oneFunc : Language.ring.Constants) x = 1
 
 open CompatibleRing
@@ -291,7 +291,7 @@ attribute [local instance] addOfRingStructure mulOfRingStructure negOfRingStruct
 
 /--
 Given a Type `R` with a `Language.ring.Structure R`, the instance given by
-`addOfRingStructure` etc are compatible with the `Language.ring.Structure` instance on `R`.
+`addOfRingStructure` etc. are compatible with the `Language.ring.Structure` instance on `R`.
 
 This definition is only to be used when `addOfRingStructure`, `mulOfRingStructure` etc
 are local instances.

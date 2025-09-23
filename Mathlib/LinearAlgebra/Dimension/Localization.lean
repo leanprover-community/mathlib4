@@ -121,8 +121,6 @@ theorem lift_rank_eq_of_le_nonZeroDivisors :
     lift_lift, ← lift_lift.{max uS uT uP, uM}]
   let _ : Algebra T ST := Algebra.TensorProduct.rightAlgebra
   set pT := Algebra.algebraMapSubmonoid T p
-  have : IsLocalization pT ST := isLocalizedModule_iff_isLocalization.mp
-    (IsLocalization.tensorProduct_isLocalizedModule ..)
   rw [← lift_lift.{max uS uT, max uM uN}, ← lift_umax.{uP},
     ← IsLocalizedModule.lift_rank_eq pT (mk T ST P 1) hpT,
     ← IsLocalization.rank_eq ST pT hpT, lift_id'.{uP, max uS uT},
@@ -163,7 +161,7 @@ theorem lift_rank_eq :
   have : IsLocalizedModule R⁰ (TensorProduct.mk R FR FT 1) := inferInstance
   let _ : Algebra FT (FR ⊗[R] FT) := Algebra.TensorProduct.rightAlgebra
   let _ := isLocalizedModule_iff_isLocalization.mp this |>.atUnits _ _ ?_ |>.symm.isField
-    _ (Field.toIsField FT) |>.toField
+    (Field.toIsField FT) |>.toField
   on_goal 2 => rintro _ ⟨_, mem, rfl⟩; exact (map_ne_zero_of_mem_nonZeroDivisors _ inj mem).isUnit
   have := bc.comp_iff.2 ((isLocalizedModule_iff_isBaseChange T⁰ FT g).1 inferInstance)
   rw [← lift_inj.{_, max uT uP}, lift_lift, lift_lift, ← lift_lift.{max uT uP, uM},

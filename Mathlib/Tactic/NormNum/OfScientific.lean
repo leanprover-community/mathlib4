@@ -20,9 +20,9 @@ open Qq
 variable {α : Type*}
 
 -- see note [norm_num lemma function equality]
-theorem isRat_ofScientific_of_true [DivisionRing α] :
-    {m e : ℕ} → {n : ℤ} → {d : ℕ} →
-    IsRat (mkRat m (10 ^ e) : α) n d → IsRat (OfScientific.ofScientific m true e : α) n d
+theorem isNNRat_ofScientific_of_true [DivisionRing α] :
+    {m e : ℕ} → {n : ℕ} → {d : ℕ} →
+    IsNNRat (mkRat m (10 ^ e) : α) n d → IsNNRat (OfScientific.ofScientific m true e : α) n d
   | _, _, _, _, ⟨_, eq⟩ => ⟨‹_›, by
     rwa [← Rat.cast_ofScientific, ← Rat.ofScientific_eq_ofScientific, Rat.ofScientific_true_def]⟩
 
@@ -48,8 +48,8 @@ to rat casts if the scientific notation is inherited from the one for rationals.
   match b with
   | ~q(true) =>
     let rme ← derive (q(mkRat $m (10 ^ $exp)) : Q($α))
-    let some ⟨q, n, d, p⟩ := rme.toRat' dα | failure
-    return .isRat' dα q n d q(isRat_ofScientific_of_true $p)
+    let some ⟨q, n, d, p⟩ := rme.toNNRat' q(DivisionRing.toDivisionSemiring) | failure
+    return .isNNRat q(DivisionRing.toDivisionSemiring) q n d q(isNNRat_ofScientific_of_true $p)
   | ~q(false) =>
     let ⟨nm, pm⟩ ← deriveNat m q(AddCommMonoidWithOne.toAddMonoidWithOne)
     let ⟨ne, pe⟩ ← deriveNat exp q(AddCommMonoidWithOne.toAddMonoidWithOne)

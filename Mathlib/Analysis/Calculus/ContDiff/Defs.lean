@@ -61,8 +61,8 @@ function is `C^n` inside `s` if it admits a sequence of derivatives up to `n` in
 This definition still has the problem that a function which is locally `C^n` would not need to
 be `C^n`, as different choices of sequences of derivatives around different points might possibly
 not be glued together to give a globally defined sequence of derivatives. (Note that this issue
-can not happen over reals, thanks to partition of unity, but the behavior over a general field is
-not so clear, and we want a definition for general fields). Also, there are locality
+cannot happen over the real numbers, thanks to partitions of unity, but the behavior over a general
+field is not so clear, and we want a definition for general fields). Also, there are locality
 problems for the order parameter: one could image a function which, for each `n`, has a nice
 sequence of derivatives up to order `n`, but they do not coincide for varying `n` and can therefore
 not be glued to give rise to an infinite sequence of derivatives. This would give a function
@@ -80,7 +80,7 @@ within `s`. However, this does not imply continuity or differentiability within 
 at `x` when `x` does not belong to `s`. Therefore, we require such existence and good behavior on
 a neighborhood of `x` within `s ∪ {x}` (which appears as `insert x s` in this file).
 
-## Notations
+## Notation
 
 We use the notation `E [×n]→L[𝕜] F` for the space of continuous multilinear maps on `E^n` with
 values in `F`. This is the space in which the `n`-th derivative of a function from `E` to `F` lives.
@@ -199,8 +199,6 @@ theorem contDiffWithinAt_iff_forall_nat_le {n : ℕ∞} :
 theorem contDiffWithinAt_infty :
     ContDiffWithinAt 𝕜 ∞ f s x ↔ ∀ n : ℕ, ContDiffWithinAt 𝕜 n f s x :=
   contDiffWithinAt_iff_forall_nat_le.trans <| by simp only [forall_prop_of_true, le_top]
-
-@[deprecated (since := "2024-11-25")] alias contDiffWithinAt_top := contDiffWithinAt_infty
 
 theorem ContDiffWithinAt.continuousWithinAt (h : ContDiffWithinAt 𝕜 n f s x) :
     ContinuousWithinAt f s x := by
@@ -528,10 +526,6 @@ theorem contDiffOn_iff_forall_nat_le {n : ℕ∞} :
 
 theorem contDiffOn_infty : ContDiffOn 𝕜 ∞ f s ↔ ∀ n : ℕ, ContDiffOn 𝕜 n f s :=
   contDiffOn_iff_forall_nat_le.trans <| by simp only [le_top, forall_prop_of_true]
-
-@[deprecated (since := "2024-11-27")] alias contDiffOn_top := contDiffOn_infty
-@[deprecated (since := "2024-11-27")]
-alias contDiffOn_infty_iff_contDiffOn_omega := contDiffOn_infty
 
 theorem contDiffOn_all_iff_nat :
     (∀ (n : ℕ∞), ContDiffOn 𝕜 n f s) ↔ ∀ n : ℕ, ContDiffOn 𝕜 n f s := by
@@ -866,16 +860,10 @@ theorem contDiffOn_succ_iff_hasFDerivWithinAt_of_uniqueDiffOn (hs : UniqueDiffOn
   refine ⟨fun x hx => (h2 x hx).differentiableWithinAt, f_an, fun x hx => ?_⟩
   exact (h1 x hx).congr_of_mem (fun y hy => (h2 y hy).fderivWithin (hs y hy)) hx
 
-@[deprecated (since := "2024-11-27")]
-alias contDiffOn_succ_iff_hasFDerivWithin := contDiffOn_succ_iff_hasFDerivWithinAt_of_uniqueDiffOn
-
 theorem contDiffOn_infty_iff_fderivWithin (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 ∞ f s ↔ DifferentiableOn 𝕜 f s ∧ ContDiffOn 𝕜 ∞ (fderivWithin 𝕜 f s) s := by
   rw [← ENat.coe_top_add_one, contDiffOn_succ_iff_fderivWithin hs]
   simp
-
-@[deprecated (since := "2024-11-27")]
-alias contDiffOn_top_iff_fderivWithin := contDiffOn_infty_iff_fderivWithin
 
 /-- A function is `C^(n + 1)` on an open domain if and only if it is
 differentiable there, and its derivative (expressed with `fderiv`) is `C^n`. -/
@@ -890,9 +878,6 @@ theorem contDiffOn_infty_iff_fderiv_of_isOpen (hs : IsOpen s) :
     ContDiffOn 𝕜 ∞ f s ↔ DifferentiableOn 𝕜 f s ∧ ContDiffOn 𝕜 ∞ (fderiv 𝕜 f) s := by
   rw [← ENat.coe_top_add_one, contDiffOn_succ_iff_fderiv_of_isOpen hs]
   simp
-
-@[deprecated (since := "2024-11-27")]
-alias contDiffOn_top_iff_fderiv_of_isOpen := contDiffOn_infty_iff_fderiv_of_isOpen
 
 protected theorem ContDiffOn.fderivWithin (hf : ContDiffOn 𝕜 n f s) (hs : UniqueDiffOn 𝕜 s)
     (hmn : m + 1 ≤ n) : ContDiffOn 𝕜 m (fderivWithin 𝕜 f s) s :=
@@ -927,8 +912,6 @@ theorem contDiffWithinAt_univ : ContDiffWithinAt 𝕜 n f univ x ↔ ContDiffAt 
 
 theorem contDiffAt_infty : ContDiffAt 𝕜 ∞ f x ↔ ∀ n : ℕ, ContDiffAt 𝕜 n f x := by
   simp [← contDiffWithinAt_univ, contDiffWithinAt_infty]
-
-@[deprecated (since := "2024-11-27")] alias contDiffAt_top := contDiffAt_infty
 
 @[fun_prop]
 theorem ContDiffAt.contDiffWithinAt (h : ContDiffAt 𝕜 n f x) : ContDiffWithinAt 𝕜 n f s x :=
@@ -1094,10 +1077,6 @@ theorem ContDiff.contDiffWithinAt (h : ContDiff 𝕜 n f) : ContDiffWithinAt �
 theorem contDiff_infty : ContDiff 𝕜 ∞ f ↔ ∀ n : ℕ, ContDiff 𝕜 n f := by
   simp [contDiffOn_univ.symm, contDiffOn_infty]
 
-@[deprecated (since := "2024-11-25")] alias contDiff_top := contDiff_infty
-
-@[deprecated (since := "2024-11-25")] alias contDiff_infty_iff_contDiff_omega := contDiff_infty
-
 theorem contDiff_all_iff_nat : (∀ n : ℕ∞, ContDiff 𝕜 n f) ↔ ∀ n : ℕ, ContDiff 𝕜 n f := by
   simp only [← contDiffOn_univ, contDiffOn_all_iff_nat]
 
@@ -1249,8 +1228,6 @@ theorem contDiff_infty_iff_fderiv :
     ContDiff 𝕜 ∞ f ↔ Differentiable 𝕜 f ∧ ContDiff 𝕜 ∞ (fderiv 𝕜 f) := by
   rw [← ENat.coe_top_add_one, contDiff_succ_iff_fderiv]
   simp
-
-@[deprecated (since := "2024-11-27")] alias contDiff_top_iff_fderiv := contDiff_infty_iff_fderiv
 
 theorem ContDiff.continuous_fderiv (h : ContDiff 𝕜 n f) (hn : 1 ≤ n) :
     Continuous (fderiv 𝕜 f) :=

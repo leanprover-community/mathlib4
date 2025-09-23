@@ -86,7 +86,7 @@ lemma isOpen_extend_target [I.Boundaryless] : IsOpen (f.extend I).target := by
 
 theorem mapsTo_extend (hs : s ⊆ f.source) :
     MapsTo (f.extend I) s ((f.extend I).symm ⁻¹' s ∩ range I) := by
-  rw [mapsTo', extend_coe, extend_coe_symm, preimage_comp, ← I.image_eq, image_comp,
+  rw [mapsTo_iff_image_subset, extend_coe, extend_coe_symm, preimage_comp, ← I.image_eq, image_comp,
     f.image_eq_target_inter_inv_preimage hs]
   exact image_mono inter_subset_right
 
@@ -296,7 +296,7 @@ theorem extend_preimage_inter_eq :
       (f.extend I).symm ⁻¹' s ∩ range I ∩ (f.extend I).symm ⁻¹' t := by
   mfld_set_tac
 
--- Porting note: an `aux` lemma that is no longer needed. Delete?
+@[deprecated "Removed without replacement" (since := "2025-08-27")]
 theorem extend_symm_preimage_inter_range_eventuallyEq_aux {s : Set M} {x : M} (hx : x ∈ f.source) :
     ((f.extend I).symm ⁻¹' s ∩ range I : Set _) =ᶠ[𝓝 (f.extend I x)]
       ((f.extend I).target ∩ (f.extend I).symm ⁻¹' s : Set _) := by
@@ -495,10 +495,6 @@ theorem extChartAt_target_union_compl_range_mem_nhds_of_mem {y : E} {x : M}
     (hy : y ∈ (extChartAt I x).target) : (extChartAt I x).target ∪ (range I)ᶜ ∈ 𝓝 y := by
   rw [← nhdsWithin_univ, ← union_compl_self (range I), nhdsWithin_union]
   exact Filter.union_mem_sup (extChartAt_target_mem_nhdsWithin_of_mem hy) self_mem_nhdsWithin
-
-@[deprecated (since := "2024-11-27")] alias
-extChartAt_target_union_comp_range_mem_nhds_of_mem :=
-extChartAt_target_union_compl_range_mem_nhds_of_mem
 
 /-- If we're boundaryless, `extChartAt` has open target -/
 theorem isOpen_extChartAt_target [I.Boundaryless] (x : M) : IsOpen (extChartAt I x).target := by
@@ -776,8 +772,6 @@ variable {𝕜}
 theorem extChartAt_prod (x : M × M') :
     extChartAt (I.prod I') x = (extChartAt I x.1).prod (extChartAt I' x.2) := by
   simp only [mfld_simps]
-  -- Porting note: `simp` can't use `PartialEquiv.prod_trans` here because of a type
-  -- synonym
   rw [PartialEquiv.prod_trans]
 
 theorem extChartAt_comp [ChartedSpace H H'] (x : M') :

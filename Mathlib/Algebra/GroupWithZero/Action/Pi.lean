@@ -84,7 +84,6 @@ theorem single_smul {α} [Monoid α] [∀ i, AddMonoid <| f i] [∀ i, DistribMu
     [DecidableEq I] (i : I) (r : α) (x : f i) : single i (r • x) = r • single i x :=
   single_op (fun i : I => (r • · : f i → f i)) (fun _ => smul_zero _) _ _
 
--- Porting note: Lean4 cannot infer the non-dependent function `f := fun _ => β`
 /-- A version of `Pi.single_smul` for non-dependent functions. It is useful in cases where Lean
 fails to apply `Pi.single_smul`. -/
 theorem single_smul' {α β} [Monoid α] [AddMonoid β] [DistribMulAction α β] [DecidableEq I] (i : I)
