@@ -347,20 +347,20 @@ theorem kerLift_range_eq_range : Set.range (kerLift f) = Set.range f :=
 
 /-- The quotient of α by the kernel of a function f
 bijects with the image of f lifted to the quotient. -/
-noncomputable def quotientKerEquivRangeKerLift : Quotient (ker f) ≃ Set.range (ker_lift f) :=
-  Equiv.ofInjective _ (ker_lift_injective _)
+noncomputable def quotientKerEquivRangeKerLift : Quotient (ker f) ≃ Set.range (kerLift f) :=
+  Equiv.ofInjective _ (kerLift_injective _)
 
 /-- The first isomorphism theorem for sets: the quotient of α by the kernel of a function f
 bijects with f's image. -/
 noncomputable def quotientKerEquivRange : Quotient (ker f) ≃ Set.range f :=
-  (quotientKerEquivRangeKerLift _).trans (.setCongr (ker_lift_range_eq_range _))
+  (quotientKerEquivRangeKerLift _).trans (.setCongr (kerLift_range_eq_range _))
 
 /-- If `f` has a computable right-inverse, then the quotient by its kernel is equivalent to its
 domain. -/
 @[simps]
 def quotientKerEquivOfRightInverse (g : β → α) (hf : Function.RightInverse g f) :
     Quotient (ker f) ≃ β where
-  toFun := ker_lift f
+  toFun := kerLift f
   invFun := Quotient.mk'' ∘ g
   left_inv a := Quotient.inductionOn' a fun a => Quotient.sound' <| hf (f a)
   right_inv := hf
