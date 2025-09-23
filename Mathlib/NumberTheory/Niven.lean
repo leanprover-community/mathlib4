@@ -51,7 +51,7 @@ theorem isIntegral_two_mul_cos_rat_mul_pi (r : ℚ) :
   -- Since z is a root of unity, `2 cos θ = z` and `z⁻¹` are algebraic integers, and their sum.
   have h_cos_eq : 2 * cos (p / q * π) = z + z⁻¹ := by
     simpa [Complex.cos, Complex.exp_neg, z] using by ring_nf
-  obtain ⟨f, hf₁, hf₂⟩ : IsIntegral ℤ (z + z⁻¹) := by apply IsIntegral.add <;> 
+  obtain ⟨f, hf₁, hf₂⟩ : IsIntegral ℤ (z + z⁻¹) := by apply IsIntegral.add <;>
       exact ⟨.X ^ (2 * q) - 1, Polynomial.monic_X_pow_sub_C _ (by positivity), by simp [hz_root]⟩
   use f, hf₁
   simp_all [Polynomial.eval₂_eq_sum_range, ← Complex.ofReal_inj]
