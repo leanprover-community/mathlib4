@@ -339,15 +339,22 @@ theorem card_eq_zero_iff_empty (α : Type*) : card α = 0 ↔ IsEmpty α := by
 theorem card_ne_zero_iff_nonempty (α : Type*) : card α ≠ 0 ↔ Nonempty α := by
   simp [card_eq_zero_iff_empty]
 
+@[simp] lemma card_pos [Nonempty α] : 0 < card α := by
+  simpa [pos_iff_ne_zero, card_ne_zero_iff_nonempty]
+
 theorem card_le_one_iff_subsingleton (α : Type*) : card α ≤ 1 ↔ Subsingleton α := by
   rw [← le_one_iff_subsingleton]
   simp [card]
+
+@[simp] lemma card_le_one [Subsingleton α] : card α ≤ 1 := by simpa [card_le_one_iff_subsingleton]
 
 theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α := by
   rw [← Cardinal.one_lt_iff_nontrivial]
   conv_rhs => rw [← Nat.cast_one]
   rw [← natCast_lt_toENat_iff]
   simp only [ENat.card, Nat.cast_one]
+
+@[simp] lemma one_lt_card [Nontrivial α] : 1 < card α := by simpa [one_lt_card_iff_nontrivial]
 
 @[simp]
 theorem card_prod (α β : Type*) : ENat.card (α × β) = .card α * .card β := by
