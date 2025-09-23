@@ -124,7 +124,7 @@ def mkOfNat (α : Q(Type u)) (_sα : Q(AddMonoidWithOne $α)) (lit : Q(ℕ)) :
     | k+2 =>
       let k : Q(ℕ) := mkRawNatLit k
       let _x : Q(Nat.AtLeastTwo $lit) :=
-        (q(Nat.instAtLeastTwo $k) : Expr)
+        (q(instAtLeastTwo $k) : Expr)
       let a' : Q($α) := q(OfNat.ofNat $lit)
       pure ⟨a', (q(Eq.refl $a') : Expr)⟩
 
