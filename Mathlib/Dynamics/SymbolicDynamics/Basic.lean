@@ -113,7 +113,7 @@ lemma cylinder_eq_set_pi (U : Finset G) (x : G → A) :
     cylinder U x = Set.pi (↑U : Set G) (fun i => ({x i} : Set A)) := by
   ext y; simp [cylinder, Set.pi, Finset.mem_coe]
 
-@[simp] lemma mem_cylinder {U : Finset G} {x y : G → A} :
+lemma mem_cylinder {U : Finset G} {x y : G → A} :
     y ∈ cylinder U x ↔ ∀ i ∈ U, y i = x i := Iff.rfl
 
 end CylindersDefs
