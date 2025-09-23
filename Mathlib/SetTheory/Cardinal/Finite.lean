@@ -306,6 +306,10 @@ theorem card_image_of_injOn {α β : Type*} {f : α → β} {s : Set α} (h : Se
 theorem card_image_of_injective {α β : Type*} (f : α → β) (s : Set α)
     (h : Function.Injective f) : card (f '' s) = card s := card_image_of_injOn h.injOn
 
+lemma card_le_card_of_injective {α β : Type*} {f : α → β} (hf : Injective f) : card α ≤ card β := by
+  rw [← card_ulift α, ← card_ulift β]
+  exact Cardinal.gciENat.gc.monotone_u <| Cardinal.lift_mk_le_lift_mk_of_injective hf
+
 @[simp]
 theorem _root_.Cardinal.natCast_le_toENat_iff {n : ℕ} {c : Cardinal} :
     ↑n ≤ toENat c ↔ ↑n ≤ c := by
@@ -337,12 +341,20 @@ theorem card_eq_zero_iff_empty (α : Type*) : card α = 0 ↔ IsEmpty α := by
   rw [← Cardinal.mk_eq_zero_iff]
   simp [card]
 
+theorem card_ne_zero_iff_nonempty (α : Type*) : card α ≠ 0 ↔ Nonempty α := by
+  simp [card_eq_zero_iff_empty]
+
 theorem one_le_card_iff_nonempty (α : Type*) : 1 ≤ card α ↔ Nonempty α := by
   simp [one_le_iff_ne_zero, card_eq_zero_iff_empty]
+
+@[simp] lemma card_pos [Nonempty α] : 0 < card α := by
+  simpa [pos_iff_ne_zero, card_ne_zero_iff_nonempty]
 
 theorem card_le_one_iff_subsingleton (α : Type*) : card α ≤ 1 ↔ Subsingleton α := by
   rw [← le_one_iff_subsingleton]
   simp [card]
+
+@[simp] lemma card_le_one [Subsingleton α] : card α ≤ 1 := by simpa [card_le_one_iff_subsingleton]
 
 lemma card_eq_one_iff_unique {α : Type*} : card α = 1 ↔ Nonempty (Unique α) := by
   rw [unique_iff_subsingleton_and_nonempty α, le_antisymm_iff]
@@ -353,6 +365,8 @@ theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α 
   conv_rhs => rw [← Nat.cast_one]
   rw [← natCast_lt_toENat_iff]
   simp only [ENat.card, Nat.cast_one]
+
+@[simp] lemma one_lt_card [Nontrivial α] : 1 < card α := by simpa [one_lt_card_iff_nontrivial]
 
 @[simp]
 theorem card_prod (α β : Type*) : card (α × β) = card α * card β := by
