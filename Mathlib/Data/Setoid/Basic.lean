@@ -18,7 +18,7 @@ theorems for quotients of arbitrary types.
 ## Implementation notes
 
 The complete lattice instance for equivalence relations could have been defined by lifting
-the Galois insertion of equivalence relations on α into binary relations on α, and then using
+the Galois insertion of equivalence relations on `α` into binary relations on `α`, and then using
 `CompleteLattice.copy` to define a complete lattice instance with more appropriate
 definitional equalities (a similar example is `Filter.CompleteLattice` in
 `Mathlib/Order/Filter/Basic.lean`). This does not save space, however, and is less clear.
@@ -70,7 +70,7 @@ open scoped Function -- required for scoped `on` notation
 def ker (f : α → β) : Setoid α :=
   ⟨(· = ·) on f, eq_equivalence.comap f⟩
 
-/-- The kernel of the quotient map induced by an equivalence relation r equals r. -/
+/-- The kernel of the quotient map induced by an equivalence relation `r` equals `r`. -/
 @[simp]
 theorem ker_mk_eq (r : Setoid α) : ker (@Quotient.mk'' _ r) = r :=
   ext fun _ _ => Quotient.eq
@@ -142,7 +142,7 @@ instance : Min (Setoid α) :=
       ⟨fun x => ⟨r.refl' x, s.refl' x⟩, fun h => ⟨r.symm' h.1, s.symm' h.2⟩, fun h1 h2 =>
         ⟨r.trans' h1.1 h2.1, s.trans' h1.2 h2.2⟩⟩⟩⟩
 
-/-- The infimum of 2 equivalence relations r and s is the same relation as the infimum
+/-- The infimum of 2 equivalence relations `r` and `s` is the same relation as the infimum
 of the underlying binary operations. -/
 theorem inf_def {r s : Setoid α} : ⇑(r ⊓ s) = ⇑r ⊓ ⇑s :=
   rfl
@@ -223,8 +223,8 @@ section EqvGen
 
 open Relation
 
-/-- The inductively defined equivalence closure of a binary relation r is the infimum
-of the set of all equivalence relations containing r. -/
+/-- The inductively defined equivalence closure of a binary relation `r` is the infimum
+of the set of all equivalence relations containing `r`. -/
 theorem eqvGen_eq (r : α → α → Prop) :
     EqvGen.setoid r = sInf { s : Setoid α | ∀ ⦃x y⦄, r x y → s x y } :=
   le_antisymm
@@ -233,7 +233,7 @@ theorem eqvGen_eq (r : α → α → Prop) :
         (fun _ _ _ _ _ => trans' _) H)
     (sInf_le fun _ _ h => EqvGen.rel _ _ h)
 
-/-- The supremum of two equivalence relations r and s is the equivalence closure of the binary
+/-- The supremum of two equivalence relations `r` and `s` is the equivalence closure of the binary
 relation `x is related to y by r or s`. -/
 theorem sup_eq_eqvGen (r s : Setoid α) :
     r ⊔ s = EqvGen.setoid fun x y => r x y ∨ s x y := by
@@ -241,12 +241,12 @@ theorem sup_eq_eqvGen (r s : Setoid α) :
   apply congr_arg sInf
   simp only [le_def, or_imp, ← forall_and]
 
-/-- The supremum of 2 equivalence relations r and s is the equivalence closure of the
+/-- The supremum of 2 equivalence relations `r` and `s` is the equivalence closure of the
 supremum of the underlying binary operations. -/
 theorem sup_def {r s : Setoid α} : r ⊔ s = EqvGen.setoid (⇑r ⊔ ⇑s) := by
   rw [sup_eq_eqvGen]; rfl
 
-/-- The supremum of a set S of equivalence relations is the equivalence closure of the binary
+/-- The supremum of a set `S` of equivalence relations is the equivalence closure of the binary
 relation `there exists r ∈ S relating x and y`. -/
 theorem sSup_eq_eqvGen (S : Set (Setoid α)) :
     sSup S = EqvGen.setoid fun x y => ∃ r : Setoid α, r ∈ S ∧ r x y := by
@@ -263,7 +263,7 @@ theorem sSup_def {s : Set (Setoid α)} : sSup s = EqvGen.setoid (sSup ((⇑) '' 
   congr with (x y)
   simp only [iSup_apply, iSup_Prop_eq, exists_prop]
 
-/-- The equivalence closure of an equivalence relation r is r. -/
+/-- The equivalence closure of an equivalence relation `r` is `r`. -/
 @[simp]
 theorem eqvGen_of_setoid (r : Setoid α) : EqvGen.setoid r.r = r :=
   le_antisymm (by rw [eqvGen_eq]; exact sInf_le fun _ _ => id) EqvGen.rel
@@ -272,8 +272,8 @@ theorem eqvGen_of_setoid (r : Setoid α) : EqvGen.setoid r.r = r :=
 theorem eqvGen_idem (r : α → α → Prop) : EqvGen.setoid (EqvGen.setoid r) = EqvGen.setoid r :=
   eqvGen_of_setoid _
 
-/-- The equivalence closure of a binary relation r is contained in any equivalence
-relation containing r. -/
+/-- The equivalence closure of a binary relation `r` is contained in any equivalence
+relation containing `r`. -/
 theorem eqvGen_le {r : α → α → Prop} {s : Setoid α} (h : ∀ x y, r x y → s x y) :
     EqvGen.setoid r ≤ s := by rw [eqvGen_eq]; exact sInf_le h
 
@@ -282,8 +282,8 @@ theorem eqvGen_mono {r s : α → α → Prop} (h : ∀ x y, r x y → s x y) :
     EqvGen.setoid r ≤ EqvGen.setoid s :=
   eqvGen_le fun _ _ hr => EqvGen.rel _ _ <| h _ _ hr
 
-/-- There is a Galois insertion of equivalence relations on α into binary relations
-on α, with equivalence closure the lower adjoint. -/
+/-- There is a Galois insertion of equivalence relations on `α` into binary relations
+on `α`, with equivalence closure the lower adjoint. -/
 def gi : @GaloisInsertion (α → α → Prop) (Setoid α) _ _ EqvGen.setoid (⇑) where
   choice r _ := EqvGen.setoid r
   gc _ s := ⟨fun H _ _ h => H <| EqvGen.rel _ _ h, fun H => eqvGen_of_setoid s ▸ eqvGen_mono H⟩
@@ -294,12 +294,13 @@ end EqvGen
 
 open Function
 
-/-- A function from α to β is injective iff its kernel is the bottom element of the complete lattice
-of equivalence relations on α. -/
+/-- A function from `α` to `β` is injective iff its kernel is the bottom element of the complete
+lattice of equivalence relations on `α`. -/
 theorem injective_iff_ker_bot (f : α → β) : Injective f ↔ ker f = ⊥ :=
   (@eq_bot_iff (Setoid α) _ _ (ker f)).symm
 
-/-- The elements related to x ∈ α by the kernel of f are those in the preimage of f(x) under f. -/
+/-- The elements related to `x ∈ α` by the kernel of `f` are those in the preimage of `f(x)`
+under `f`. -/
 theorem ker_iff_mem_preimage {f : α → β} {x y} : ker f x y ↔ x ∈ f ⁻¹' {f y} :=
   Iff.rfl
 
@@ -316,7 +317,7 @@ theorem lift_unique {r : Setoid α} {f : α → β} (H : r ≤ ker f) (g : Quoti
   ext ⟨x⟩
   rw [← Quotient.mk, Quotient.lift_mk f H, Hg, Function.comp_apply, Quotient.mk''_eq_mk]
 
-/-- Given a function f, lift it to the quotient by its kernel. -/
+/-- Given a function `f`, lift it to the quotient by its kernel. -/
 abbrev kerLift (f : α → β) : Quotient (ker f) → β := Quotient.lift f fun _ _ => id
 
 @[simp] theorem kerLift_mk (f : α → β) (x : α) : kerLift f ⟦x⟧ = f x := rfl
@@ -325,13 +326,13 @@ theorem kerLift_eq_apply_out (f : α → β) (q : Quotient (ker f)) : kerLift f 
   nth_rw 1 [← q.out_eq]
   rfl
 
-/-- Given a map f from α to β, the natural map from the quotient of α by the kernel of f is
-injective. -/
+/-- Given a map `f` from `α` to `β`, the natural map from the quotient of `α` by the kernel of `f`
+is injective. -/
 theorem kerLift_injective (f : α → β) : Injective (kerLift f) :=
   fun x y => Quotient.inductionOn₂' x y fun _ _ h => Quotient.sound' h
 
-/-- Given a map f from α to β, the kernel of f is the unique equivalence relation on α whose
-induced map from the quotient of α to β is injective. -/
+/-- Given a map `f` from `α` to `β`, the kernel of `f` is the unique equivalence relation on `α`
+whose induced map from the quotient of `α` to `β` is injective. -/
 theorem ker_eq_lift_of_injective {r : Setoid α} (f : α → β) (H : r ≤ ker f)
     (h : Injective (Quotient.lift f H)) : ker f = r :=
   le_antisymm
@@ -345,13 +346,13 @@ variable (r : Setoid α) (f : α → β)
 theorem kerLift_range_eq_range : Set.range (kerLift f) = Set.range f :=
   Set.range_quotient_lift (s := ker f) _
 
-/-- The quotient of α by the kernel of a function f
-bijects with the image of f lifted to the quotient. -/
+/-- The quotient of `α` by the kernel of a function `f`
+bijects with the image of `f` lifted to the quotient. -/
 noncomputable def quotientKerEquivRangeKerLift : Quotient (ker f) ≃ Set.range (kerLift f) :=
   Equiv.ofInjective _ (kerLift_injective _)
 
-/-- The first isomorphism theorem for sets: the quotient of α by the kernel of a function f
-bijects with f's image. -/
+/-- The first isomorphism theorem for sets: the quotient of `α` by the kernel of a function `f`
+bijects with `f`'s image. -/
 noncomputable def quotientKerEquivRange : Quotient (ker f) ≃ Set.range f :=
   (quotientKerEquivRangeKerLift _).trans (.setCongr (kerLift_range_eq_range _))
 
@@ -365,7 +366,7 @@ def quotientKerEquivOfRightInverse (g : β → α) (hf : Function.RightInverse g
   left_inv a := Quotient.inductionOn' a fun a => Quotient.sound' <| hf (f a)
   right_inv := hf
 
-/-- The quotient of α by the kernel of a surjective function f bijects with f's codomain.
+/-- The quotient of `α` by the kernel of a surjective function `f` bijects with `f`'s codomain.
 
 If a specific right-inverse of `f` is known, `Setoid.quotientKerEquivOfRightInverse` can be
 definitionally more useful. -/
@@ -380,13 +381,13 @@ related to the elements of `f⁻¹(y)` by `r`.' -/
 def map (r : Setoid α) (f : α → β) : Setoid β :=
   Relation.EqvGen.setoid (Relation.Map r f f)
 
-/-- Given a surjective function f whose kernel is contained in an equivalence relation r, the
-equivalence relation on f's codomain defined by x ≈ y ↔ the elements of f⁻¹(x) are related to
-the elements of f⁻¹(y) by r. -/
+/-- Given a surjective function `f` whose kernel is contained in an equivalence relation `r`, the
+equivalence relation on `f`'s codomain defined by `x ≈ y` ↔ the elements of `f⁻¹(x)` are related to
+the elements of `f⁻¹(y)` by `r`. -/
 def mapOfSurjective (r : Setoid α) (f : α → β) (h : ker f ≤ r) (hf : Surjective f) : Setoid β :=
   ⟨Relation.Map r f f, Relation.map_equivalence r.iseqv f hf h⟩
 
-/-- A special case of the equivalence closure of an equivalence relation r equaling r. -/
+/-- A special case of the equivalence closure of an equivalence relation `r` equaling `r`. -/
 theorem mapOfSurjective_eq_map (h : ker f ≤ r) (hf : Surjective f) :
     map r f = mapOfSurjective r f h hf := by
   rw [← eqvGen_of_setoid (mapOfSurjective r f h hf)]; rfl
