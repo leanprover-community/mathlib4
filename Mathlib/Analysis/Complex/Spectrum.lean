@@ -3,12 +3,11 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.Real.Spectrum
 
 /-!
 # Some lemmas on the spectrum and quasispectrum of elements and positivity on `ℂ`
-
 -/
 
 namespace SpectrumRestricts
