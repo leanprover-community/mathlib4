@@ -3,8 +3,8 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.EssentiallySmall
-import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.CategoryTheory.Equivalence
+import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Representatives of small categories
