@@ -141,7 +141,7 @@ example : (-3).sqrt = 0 ∧ (-Real.pi).sqrt = 0 := by
 
 /-- `Nat.log2` rounds down. It uses the junk value `Nat.log2 0 = 0`. -/
 example : Nat.log2 0 = 0 ∧ Nat.log2 100 = 6 := by
-  and_intros <;> simp [Nat.log2]
+  and_intros <;> rfl
 
 /-- `Nat.log` generalizes this rounding down to arbitrary bases. If you wanted to instead round
 up, there's `Nat.clog`, but it uses the same junk value when the argument is 0. When the base is
