@@ -49,6 +49,18 @@ instance {φ : Measure α} {κ : Kernel α α} [IsStronglyIrreducible φ κ] :
   { irreducible := fun _ hs hsp ↦ by
       use 1; simpa using IsStronglyIrreducible.strongly_irreducible hs hsp }
 
+lemma isIrreducible_of_le_measure {φ₁ φ₂ : Measure α} (hφ : φ₁ ≤ φ₂)
+    {κ : Kernel α α} [hκ : IsIrreducible φ₂ κ] :
+    IsIrreducible φ₁ κ :=
+  { irreducible := fun s hs hsp ↦ by
+      simpa using hκ.irreducible hs <| Std.lt_of_lt_of_le hsp (hφ s) }
+
+lemma isStronglyIrreducible_of_le_measure {φ₁ φ₂ : Measure α} (hφ : φ₁ ≤ φ₂)
+    {κ : Kernel α α} [hκ : IsStronglyIrreducible φ₂ κ] :
+    IsStronglyIrreducible φ₁ κ :=
+  { strongly_irreducible := fun s hs hsp ↦ by
+      simpa using hκ.strongly_irreducible hs <| Std.lt_of_lt_of_le hsp (hφ s) }
+
 end Kernel
 
 end ProbabilityTheory
