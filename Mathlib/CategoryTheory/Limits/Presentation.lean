@@ -77,7 +77,7 @@ def map (P : ColimitPresentation J X) {D : Type*} [Category D] (F : C ⥤ D)
 /-- If `P` is a colimit presentation of `X`, it is possible to define another
 colimit presentation of `X` where `P.diag` is replaced by an isomorphic functor. -/
 @[simps]
-def chgDiag (P : ColimitPresentation J X) {F : J ⥤ C} (e : F ≅ P.diag) :
+def changeDiag (P : ColimitPresentation J X) {F : J ⥤ C} (e : F ≅ P.diag) :
     ColimitPresentation J X where
   diag := F
   ι := e.hom ≫ P.ι
