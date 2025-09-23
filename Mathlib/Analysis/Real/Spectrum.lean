@@ -5,6 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 import Mathlib.Topology.Instances.NNReal.Lemmas
+import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # Some lemmas on the spectrum and quasispectrum of elements and positivity
@@ -78,3 +79,13 @@ lemma lt_nnreal_iff [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A 
   simp [← ha.algebraMap_image]
 
 end QuasispectrumRestricts
+
+variable {A : Type*} [Ring A] [PartialOrder A]
+
+open scoped NNReal
+
+lemma coe_mem_spectrum_real_of_nonneg [Algebra ℝ A] [NonnegSpectrumClass ℝ A] {a : A} {x : ℝ≥0}
+    (ha : 0 ≤ a := by cfc_tac) :
+    (x : ℝ) ∈ spectrum ℝ a ↔ x ∈ spectrum ℝ≥0 a := by
+  simp [← (SpectrumRestricts.nnreal_of_nonneg ha).algebraMap_image, Set.mem_image,
+    NNReal.algebraMap_eq_coe]
