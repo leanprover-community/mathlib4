@@ -67,6 +67,8 @@ variable [Group G]
 def mulShift (g : G) (x : G → A) : G → A :=
   fun h => x (h * g)
 
+attribute [inherit_doc SymbolicDynamics.mulShift] SymbolicDynamics.addShift
+
 end ShiftDefinition
 
 section ShiftAlgebra
@@ -185,7 +187,7 @@ attribute [to_additive existing SymbolicDynamics.AddSubshift]
 
 /-- Example: the full shift on alphabet A. -/
 @[to_additive SymbolicDynamics.addFullShift]
-def fullShift (A G) [TopologicalSpace A] [Inhabited A] [Group G] : Subshift A G :=
+def fullShift (A G) [TopologicalSpace A] [Group G] : Subshift A G :=
 { carrier := Set.univ,
   isClosed := isClosed_univ,
   shiftInvariant := by intro _ _ _; simp }
@@ -230,17 +232,16 @@ variable [Group G]
 def Pattern.occursIn (p : Pattern A G) (x : G → A) (g : G) : Prop :=
   ∀ (h) (hh : h ∈ p.support), x (h * g) = p.data ⟨h, hh⟩
 
+attribute [inherit_doc SymbolicDynamics.Pattern.occursIn] SymbolicDynamics.Pattern.addOccursIn
+
 /-- Configurations avoiding every pattern in `F`. -/
 @[to_additive addForbids]
 def forbids (F : Set (Pattern A G)) : Set (G → A) :=
   { x | ∀ p ∈ F, ∀ g : G, ¬ p.occursIn x g }
 
-end Forbids
+attribute [inherit_doc SymbolicDynamics.forbids] SymbolicDynamics.addForbids
 
--- variable {A : Type*} [Fintype A] [Inhabited A]
--- variable {G : Type*}
--- variable [TopologicalSpace A] [DiscreteTopology A]
--- variable [Group G] [DecidableEq G]
+end Forbids
 
 section ShiftInvariance
 
@@ -274,16 +275,23 @@ variable [Group G] [DecidableEq G]
 def patternToOriginConfig (p : Pattern A G) : G → A :=
   fun i ↦ if h : i ∈ p.support then p.data ⟨i, h⟩ else default
 
+attribute [inherit_doc SymbolicDynamics.patternToOriginConfig]
+  SymbolicDynamics.addPatternToOriginConfig
+
 /-- Translate a pattern to occur at `v`. -/
 @[to_additive addPatternToConfig]
 def patternToConfig (p : Pattern A G) (v : G) : G → A :=
   mulShift (v⁻¹) (patternToOriginConfig p)
+
+attribute [inherit_doc SymbolicDynamics.patternToConfig] SymbolicDynamics.addPatternToConfig
 
 /-- Restrict a configuration to a finite support, seen as a pattern. -/
 @[to_additive addPatternFromConfig]
 def patternFromConfig (x : G → A) (U : Finset G) : Pattern A G :=
   { support := U,
     data := fun i => x i.1 }
+
+attribute [inherit_doc SymbolicDynamics.patternFromConfig] SymbolicDynamics.addPatternFromConfig
 
 end PatternFromToConfig
 
@@ -365,10 +373,14 @@ def X_F (F : Set (Pattern A G)) : Subshift A G :=
   isClosed := forbids_closed F,
   shiftInvariant := forbids_shift_invariant F }
 
+attribute [inherit_doc SymbolicDynamics.X_F] SymbolicDynamics.addX_F
+
 /-- Subshift of finite type defined by a finite family of forbidden patterns. -/
 @[to_additive addSFT]
 def SFT (F : Finset (Pattern A G)) : Subshift A G :=
   X_F (F : Set (Pattern A G))
+
+attribute [inherit_doc SymbolicDynamics.SFT] SymbolicDynamics.addSFT
 
 end DefSubshiftByForbidden
 
@@ -384,6 +396,8 @@ variable [Group G]
 def FixedSupport (A : Type*) (G : Type*) [Group G] (U : Finset G) :=
   { p : Pattern A G // p.support = U }
 
+attribute [inherit_doc SymbolicDynamics.FixedSupport] SymbolicDynamics.AddFixedSupport
+
 /-- `FixedSupport A G U ≃ (U → A)`; gives finiteness immediately. -/
 @[to_additive addEquivFun]
 def equivFun {U : Finset G} :
@@ -392,6 +406,8 @@ def equivFun {U : Finset G} :
   invFun  := fun f => ⟨{ support := U, data := f }, rfl⟩
   left_inv := by rintro ⟨p,hU⟩; apply Subtype.ext; cases hU; rfl
   right_inv := by intro f; rfl
+
+attribute [inherit_doc SymbolicDynamics.equivFun] SymbolicDynamics.addEquivFun
 
 @[to_additive SymbolicDynamics.addFintypeFixedSupport] noncomputable
 instance fintypeFixedSupport {U : Finset G} :
@@ -402,6 +418,9 @@ instance fintypeFixedSupport {U : Finset G} :
 @[to_additive addLanguageOn]
 def languageOn (X : Set (G → A)) (U : Finset G) : Set (Pattern A G) :=
   { p | ∃ x ∈ X, patternFromConfig x U = p }
+
+attribute [inherit_doc SymbolicDynamics.languageOn] SymbolicDynamics.addLanguageOn
+
 
 /-- Cardinality of the finite-support language. -/
 @[to_additive addLanguageCardOn]
@@ -415,10 +434,14 @@ noncomputable def languageCardOn (X : Set (G → A)) (U : Finset G) : ℕ := by
     |>.subset (by intro y hy; simp)
   exact hfin.toFinset.card
 
+attribute [inherit_doc SymbolicDynamics.languageCardOn] SymbolicDynamics.addLanguageCardOn
+
 /-- Number of patterns of a subshift on a finite shape `U`. -/
 @[to_additive addPatternCountOn]
 noncomputable def patternCountOn (Y : Subshift A G) (U : Finset G) : ℕ :=
   languageCardOn (A := A) (G := G) Y.carrier U
+
+attribute [inherit_doc SymbolicDynamics.patternCountOn] SymbolicDynamics.addPatternCountOn
 
 end Language
 
