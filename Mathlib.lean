@@ -1733,6 +1733,7 @@ import Mathlib.Analysis.LocallyConvex.WeakOperatorTopology
 import Mathlib.Analysis.LocallyConvex.WeakSpace
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.Matrix
+import Mathlib.Analysis.Matrix.Order
 import Mathlib.Analysis.MeanInequalities
 import Mathlib.Analysis.MeanInequalitiesPow
 import Mathlib.Analysis.MellinInversion
