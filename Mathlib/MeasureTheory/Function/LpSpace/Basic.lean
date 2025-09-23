@@ -735,8 +735,8 @@ theorem add_compLp (L L' : E →SL[σ] F) (f : Lp E p μ) :
   filter_upwards with x
   rw [coe_add', Pi.add_def]
 
-theorem smul_compLp {𝕜''} [NormedRing 𝕜''] [Module 𝕜'' F] [IsBoundedSMul 𝕜' F]
-    [SMulCommClass 𝕜' 𝕜'' F] (c : 𝕜') (L : E →SL[σ] F) (f : Lp E p μ) :
+theorem smul_compLp {𝕜''} [NormedRing 𝕜''] [Module 𝕜'' F] [IsBoundedSMul 𝕜'' F]
+    [SMulCommClass 𝕜' 𝕜'' F] (c : 𝕜'') (L : E →SL[σ] F) (f : Lp E p μ) :
     (c • L).compLp f = c • L.compLp f := by
   ext1
   grw [Lp.coeFn_smul, coeFn_compLp']
@@ -783,9 +783,9 @@ theorem add_compLpL [Fact (1 ≤ p)] (L L' : E →SL[σ] F) :
     (L + L').compLpL p μ = L.compLpL p μ + L'.compLpL p μ := by ext1 f; exact add_compLp L L' f
 
 theorem smul_compLpL [Fact (1 ≤ p)] {𝕜''} [NormedRing 𝕜''] [Module 𝕜'' F] [IsBoundedSMul 𝕜'' F]
-    [SMulCommClass 𝕜' 𝕜'' F] (c : 𝕜') (L : E →SL[σ] F) :
+    [SMulCommClass 𝕜' 𝕜'' F] (c : 𝕜'') (L : E →SL[σ] F) :
     (c • L).compLpL p μ = c • L.compLpL p μ := by
-  ext1 f; exact smul_compLp (𝕜'' := 𝕜'') c L f
+  ext1 f; exact smul_compLp c L f
 
 theorem norm_compLpL_le [Fact (1 ≤ p)] (L : E →SL[σ] F) : ‖L.compLpL p μ‖ ≤ ‖L‖ :=
   LinearMap.mkContinuous_norm_le _ (norm_nonneg _) _
