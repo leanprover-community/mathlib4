@@ -25,6 +25,15 @@ variable {R : Type*} [CommRing R] [IsNoetherianRing R] [IsLocalRing R]
 
 open RingTheory Sequence IsLocalRing Ideal PrimeSpectrum Pointwise
 
+omit [IsNoetherianRing R] [IsLocalRing R] [Module.Finite R M] in
+lemma exists_ltSeries_support_isMaximal_last_of_ltSeries_support (q : LTSeries (support R M)) :
+    ∃ p : LTSeries (support R M), q.length ≤ p.length ∧ p.last.1.1.IsMaximal := by
+  obtain ⟨m, hmm, hm⟩ := exists_le_maximal _ q.last.1.2.1
+  obtain hlt | rfl := lt_or_eq_of_le hm
+  · use q.snoc ⟨⟨m, inferInstance⟩, mem_support_mono hm q.last.2⟩ hlt
+    simpa
+  · use q
+
 omit [IsLocalRing R] in
 theorem supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson {x : R}
     (h : x ∈ (annihilator R M).jacobson) : supportDim R M ≤ supportDim R (QuotSMulTop x M) + 1 := by
@@ -32,14 +41,12 @@ theorem supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson {x : R}
   refine iSup_le_iff.mpr (fun p ↦ ?_)
   wlog hxp : x ∈ p.last.1.1 generalizing p
   · obtain ⟨p, hle, hm⟩ := exists_ltSeries_support_isMaximal_last_of_ltSeries_support p
-    refine le_trans (Nat.cast_le.mpr hle) ?_
     have hj : (annihilator R M).jacobson ≤ p.last.1.1 :=
       sInf_le ⟨mem_support_iff_of_finite.mp p.last.2, inferInstance⟩
-    exact this _ (hj h)
+    exact (Nat.cast_le.mpr hle).trans <| this _ (hj h)
   -- `q` is a chain of primes such that `x ∈ q 1`, `p.length = q.length` and `p.head = q.head`.
   obtain ⟨q, hxq, hq, h0, _⟩ : ∃ q : LTSeries (PrimeSpectrum R), _ ∧ _ ∧ p.head = q.head ∧ _ :=
     exist_ltSeries_mem_one_of_mem_last (p.map Subtype.val (fun ⦃_ _⦄ lt ↦ lt)) hxp
-  refine (Nat.cast_le.mpr le).trans ?_
   by_cases hp0 : p.length = 0
   · have hb : supportDim R (QuotSMulTop x M) ≠ ⊥ :=
       (supportDim_ne_bot_iff_nontrivial R (QuotSMulTop x M)).mpr <|
@@ -106,21 +113,15 @@ theorem supportDim_quotSMulTop_succ_eq_supportDim_mem_jacobson {x : R} (reg : Is
     (fun _ ↦ reg.notMem_of_mem_minimalPrimes) hx
 
 omit [IsLocalRing R] in
-lemma _root_.ringKrullDim_quotSMulTop_succ_eq_ringKrullDim_of_mem_jacobson {x : R}
-    (reg : IsSMulRegular R x) (hx : x ∈ Ring.jacobson R) :
-    ringKrullDim (QuotSMulTop x R) + 1 = ringKrullDim R := by
-  rw [← supportDim_quotient_eq_ringKrullDim, ← supportDim_self_eq_ringKrullDim]
-  exact supportDim_quotSMulTop_succ_eq_supportDim_mem_jacobson reg
-    ((annihilator R R).ringJacobson_le_jacobson hx)
-
-omit [IsLocalRing R] in
 lemma _root_.ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim_of_mem_jacobson {x : R}
     (reg : IsSMulRegular R x) (hx : x ∈ Ring.jacobson R) :
     ringKrullDim (R ⧸ span {x}) + 1 = ringKrullDim R := by
   have h := Submodule.ideal_span_singleton_smul x (⊤ : Ideal R)
   simp only [smul_eq_mul, mul_top] at h
   rw [ringKrullDim_eq_of_ringEquiv (quotientEquivAlgOfEq R h).toRingEquiv,
-    ringKrullDim_quotSMulTop_succ_eq_ringKrullDim_of_mem_jacobson reg hx]
+    ← supportDim_quotient_eq_ringKrullDim, ← supportDim_self_eq_ringKrullDim]
+  exact supportDim_quotSMulTop_succ_eq_supportDim_mem_jacobson reg
+    ((annihilator R R).ringJacobson_le_jacobson hx)
 
 @[stacks 0B52 "the equality case"]
 theorem supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_maximalIdeal {x : R}
@@ -132,11 +133,6 @@ theorem supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_maximalIde
 theorem supportDim_quotSMulTop_succ_eq_supportDim {x : R} (reg : IsSMulRegular M x)
     (hx : x ∈ maximalIdeal R) : supportDim R (QuotSMulTop x M) + 1 = supportDim R M :=
   supportDim_quotSMulTop_succ_eq_supportDim_mem_jacobson reg ((maximalIdeal_le_jacobson _) hx)
-
-lemma _root_.ringKrullDim_quotSMulTop_succ_eq_ringKrullDim {x : R} (reg : IsSMulRegular R x)
-    (hx : x ∈ maximalIdeal R) : ringKrullDim (QuotSMulTop x R) + 1 = ringKrullDim R :=
-  ringKrullDim_quotSMulTop_succ_eq_ringKrullDim_of_mem_jacobson reg <| by
-    rwa [ringJacobson_eq_maximalIdeal R]
 
 @[stacks 00KW]
 lemma _root_.ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim {x : R}
