@@ -304,7 +304,7 @@ def reorderMulThree {α : Type _} [Mul α] (x y z : α) : α := x * y * z
 error: the permutation
 [[2, 3, 50]]
 provided by the `(reorder := ...)` option is out of bounds, the type
-  {α : Type u_1} → [Mul α] → α → α → α → α
+  {α : Type u_1} → [Add α] → α → α → α → α
 has only 5 arguments
 -/
 #guard_msgs in
@@ -573,7 +573,7 @@ run_cmd
 warning: String syntax for `to_additive` docstrings is deprecated: Use docstring syntax instead (e.g. `@[to_additive /-- example -/]`)
 
 Update deprecated syntax to:
-  "̵/̲-̲-̲ ̲(via `str` syntax) I am an additive docstring!"̵ ̲-̲/̲
+  /-- (via `str` syntax) I am an additive docstring! -/
 -/
 #guard_msgs in
 @[to_additive "(via `str` syntax) I am an additive docstring!"]

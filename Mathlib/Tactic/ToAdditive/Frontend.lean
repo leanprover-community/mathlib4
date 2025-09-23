@@ -489,6 +489,48 @@ structure Config : Type where
 -- See https://github.com/leanprover/lean4/issues/10295
 attribute [nolint unusedArguments] instReprConfig.repr
 
+/-- Eta expands `e` at most `n` times. -/
+def etaExpandN (n : Nat) (e : Expr) : MetaM Expr := do
+  forallBoundedTelescope (← inferType e) (some n) fun xs _ ↦ mkLambdaFVars xs (mkAppN e xs)
+
+/-- `e.expand` eta-expands all expressions that have as head a constant `n` in `reorder`.
+They are expanded until they are applied to one more argument than the maximum in `reorder.find n`.
+It also expands all kernel projections that have as head a constant `n` in `reorder`. -/
+def expand (b : BundledExts) (e : Expr) : MetaM Expr := do
+  let env ← getEnv
+  let reorderFn : Name → List (List ℕ) := fun nm ↦ (b.reorderAttr.find? env nm |>.getD [])
+  let e₂ ← Lean.Meta.transform (input := e) (skipConstInApp := true)
+    (post := fun e => return .done e) fun e ↦
+    e.withApp fun f args ↦ do
+    match f with
+    | .proj n i s =>
+      let some info := getStructureInfo? (← getEnv) n | return .continue -- e.g. if `n` is `Exists`
+      let some projName := info.getProjFn? i | unreachable!
+      -- if `projName` is explicitly tagged with `@[to_additive]`,
+      -- replace `f` with the application `projName s` and then visit `projName s args` again.
+      if findTranslation? env b projName |>.isNone then
+        return .continue
+      return .visit <| (← whnfD (← inferType s)).withApp fun sf sargs ↦
+        mkAppN (mkApp (mkAppN (.const projName sf.constLevels!) sargs) s) args
+    | .const c _ =>
+      let reorder := reorderFn c
+      if reorder.isEmpty then
+        -- no need to expand if nothing needs reordering
+        return .continue
+      let needed_n := reorder.flatten.foldr Nat.max 0 + 1
+      if needed_n ≤ args.size then
+        return .continue
+      else
+        -- in this case, we need to reorder arguments that are not yet
+        -- applied, so first η-expand the function.
+        let e' ← etaExpandN (needed_n - args.size) e
+        trace[to_additive_detail] "expanded {e} to {e'}"
+        return .continue e'
+    | _ => return .continue
+  if e != e₂ then
+    trace[to_additive_detail] "expand:\nBefore: {e}\nAfter: {e₂}"
+  return e₂
+
 /-- Implementation function for `additiveTest`.
 Failure means that in that subexpression there is no constant that blocks `e` from being translated.
 We cache previous applications of the function, using an expression cache using ptr equality
@@ -566,7 +608,7 @@ e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorder
 -/
 def applyReplacementFun (b : BundledExts) (e : Expr) (dontTranslate : Array FVarId := #[]) :
     MetaM Expr := do
-  let e' := aux (← getEnv) (← getBoolOption `trace.to_additive_detail) e
+  let e' := aux (← getEnv) (← getBoolOption `trace.to_additive_detail) (← expand b e)
   -- Make sure any new reserved names in the expr are realized; this needs to be done outside of
   -- `aux` as it is monadic.
   e'.forEach fun
@@ -591,63 +633,52 @@ where /-- Implementation of `applyReplacementFun`. -/
           dbg_trace s!"changing {n₀} to {n₁}"
         if 0 ∈ (reorderFn n₀).flatten then
           dbg_trace s!"reordering the universe variables from {ls₀} to {ls₁}"
-      return some <| Lean.mkConst n₁ ls₁
+      return some <| .const n₁ ls₁
     | .app g x => do
-      let gf := g.getAppFn
+      let mut gf := g.getAppFn
       if gf.isBVar && x.isLit then
         if trace then
           dbg_trace s!"applyReplacementFun: Variables applied to numerals are not changed {g.app x}"
         return some <| g.app x
-      let gArgs := g.getAppArgs
-      let mut gAllArgs := gArgs.push x
-      let (gfAdditive, gAllArgsAdditive) ←
-        if let some nm := gf.constName? then
-          -- e = `(nm y₁ .. yₙ x)
-          /- Test if the head should not be replaced. -/
-          let relevantArgId := relevantArg nm
-          let gfAdditive :=
-            if h : relevantArgId < gAllArgs.size ∧ gf.isConst then
-              if let some fxd :=
-                additiveTest env b gAllArgs[relevantArgId] dontTranslate then
-                Id.run <| do
-                  if trace then
-                    match fxd with
-                    | .inl fxd => dbg_trace s!"The application of {nm} contains the fixed type \
-                      {fxd}, so it is not changed."
-                    | .inr fvarId => dbg_trace s!"The application of {nm} contains a fixed \
-                      variable so it is not changed."
-                  gf
-              else
-                r gf
-            else
-              r gf
+      let mut gAllArgs := e.getAppArgs
+      let some nm := gf.constName? | return mkAppN (← r gf) (← gAllArgs.mapM r)
+      -- e = `(nm y₁ .. yₙ x)
+      /- Test if the head should not be replaced. -/
+      let relevantArgId := relevantArg nm
+      if h : relevantArgId < gAllArgs.size then
+        if let some fxd := additiveTest env b gAllArgs[relevantArgId] dontTranslate then
+          if trace then
+            match fxd with
+            | .inl fxd => dbg_trace s!"The application of {nm} contains the fixed type \
+              {fxd}, so it is not changed."
+            | .inr _ => dbg_trace s!"The application of {nm} contains a fixed \
+              variable so it is not changed."
+        else
+          gf ← r gf
           /- Test if arguments should be reordered. -/
           let reorder := reorderFn nm
-          if !reorder.isEmpty && relevantArgId < gAllArgs.size &&
-            (additiveTest env b gAllArgs[relevantArgId]! dontTranslate).isNone then
+          if !reorder.isEmpty then
             gAllArgs := gAllArgs.permute! reorder
             if trace then
               dbg_trace s!"reordering the arguments of {nm} using the cyclic permutations {reorder}"
-          /- Do not replace numerals in specific types. -/
-          let firstArg := gAllArgs[0]!
-          if b.changeNumeral then
-            if let some changedArgNrs := changeNumeralAttr.find? env nm then
-              if additiveTest env b firstArg dontTranslate |>.isNone then
-                if trace then
-                  dbg_trace s!"applyReplacementFun: We change the numerals in this expression. \
-                    However, we will still recurse into all the non-numeral arguments."
-                -- In this case, we still update all arguments of `g` that are not numerals,
-                -- since all other arguments can contain subexpressions like
-                -- `(fun x ↦ ℕ) (1 : G)`, and we have to update the `(1 : G)` to `(0 : G)`
-                gAllArgs := gAllArgs.mapIdx fun argNr arg ↦
-                  if changedArgNrs.contains argNr then
-                    changeNumeral arg
-                  else
-                    arg
-          pure <| (gfAdditive, ← gAllArgs.mapM r)
-        else
-          pure (← r gf, ← gAllArgs.mapM r)
-      return some <| mkAppN gfAdditive gAllArgsAdditive
+      else
+        gf ← r gf
+      /- Do not replace numerals in specific types. -/
+      if let some changedArgNrs := changeNumeralAttr.find? env nm then
+        let firstArg := gAllArgs[0]!
+        if additiveTest env b firstArg dontTranslate |>.isNone then
+          if trace then
+            dbg_trace s!"applyReplacementFun: We change the numerals in this expression. \
+              However, we will still recurse into all the non-numeral arguments."
+          -- In this case, we still update all arguments of `g` that are not numerals,
+          -- since all other arguments can contain subexpressions like
+          -- `(fun x ↦ ℕ) (1 : G)`, and we have to update the `(1 : G)` to `(0 : G)`
+          gAllArgs := gAllArgs.mapIdx fun argNr arg ↦
+            if changedArgNrs.contains argNr then
+              changeNumeral arg
+            else
+              arg
+      return mkAppN gf (← gAllArgs.mapM r)
     | .proj n₀ idx e => do
       let n₁ := findPrefixTranslation env n₀ b
       if trace then
@@ -656,48 +687,6 @@ where /-- Implementation of `applyReplacementFun`. -/
       return some <| .proj n₁ idx <| ← r e
     | _ => return none
 
-/-- Eta expands `e` at most `n` times. -/
-def etaExpandN (n : Nat) (e : Expr) : MetaM Expr := do
-  forallBoundedTelescope (← inferType e) (some n) fun xs _ ↦ mkLambdaFVars xs (mkAppN e xs)
-
-/-- `e.expand` eta-expands all expressions that have as head a constant `n` in `reorder`.
-They are expanded until they are applied to one more argument than the maximum in `reorder.find n`.
-It also expands all kernel projections that have as head a constant `n` in `reorder`. -/
-def expand (b : BundledExts) (e : Expr) : MetaM Expr := do
-  let env ← getEnv
-  let reorderFn : Name → List (List ℕ) := fun nm ↦ (b.reorderAttr.find? env nm |>.getD [])
-  let e₂ ← Lean.Meta.transform (input := e) (skipConstInApp := true)
-    (post := fun e => return .done e) fun e ↦
-    e.withApp fun f args ↦ do
-    match f with
-    | .proj n i s =>
-      let some info := getStructureInfo? (← getEnv) n | return .continue -- e.g. if `n` is `Exists`
-      let some projName := info.getProjFn? i | unreachable!
-      -- if `projName` is explicitly tagged with `@[to_additive]`,
-      -- replace `f` with the application `projName s` and then visit `projName s args` again.
-      if findTranslation? env b projName |>.isNone then
-        return .continue
-      return .visit <| (← whnfD (← inferType s)).withApp fun sf sargs ↦
-        mkAppN (mkApp (mkAppN (.const projName sf.constLevels!) sargs) s) args
-    | .const c _ =>
-      let reorder := reorderFn c
-      if reorder.isEmpty then
-        -- no need to expand if nothing needs reordering
-        return .continue
-      let needed_n := reorder.flatten.foldr Nat.max 0 + 1
-      if needed_n ≤ args.size then
-        return .continue
-      else
-        -- in this case, we need to reorder arguments that are not yet
-        -- applied, so first η-expand the function.
-        let e' ← etaExpandN (needed_n - args.size) e
-        trace[to_additive_detail] "expanded {e} to {e'}"
-        return .continue e'
-    | _ => return .continue
-  if e != e₂ then
-    trace[to_additive_detail] "expand:\nBefore: {e}\nAfter: {e₂}"
-  return e₂
-
 /-- Rename binder names in pi type. -/
 def renameBinderNames (b : BundledExts) (src : Expr) : Expr :=
   src.mapForallBinderNames fun
@@ -705,7 +694,7 @@ def renameBinderNames (b : BundledExts) (src : Expr) : Expr :=
     | n => n
 
 /-- Reorder pi-binders. See doc of `reorderAttr` for the interpretation of the argument -/
-def reorderForall (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr := do
+def reorderForall (reorder : List (List Nat)) (src : Expr) : MetaM Expr := do
   if let some maxReorder := reorder.flatten.max? then
     forallBoundedTelescope src (some (maxReorder + 1)) fun xs e => do
       if xs.size = maxReorder + 1 then
@@ -717,7 +706,7 @@ def reorderForall (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr :=
     return src
 
 /-- Reorder lambda-binders. See doc of `reorderAttr` for the interpretation of the argument -/
-def reorderLambda (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr := do
+def reorderLambda (reorder : List (List Nat)) (src : Expr) : MetaM Expr := do
   if let some maxReorder := reorder.flatten.max? then
     let maxReorder := maxReorder + 1
     lambdaBoundedTelescope src maxReorder fun xs e => do
@@ -798,14 +787,13 @@ def updateDecl (b : BundledExts) (tgt : Name) (srcDecl : ConstantInfo)
   if 0 ∈ reorder.flatten then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
   let dont ← getDontTranslates dont srcDecl.type
-  decl := decl.updateType <| ← applyReplacementForall b dont <| ← reorderForall reorder <|
-    renameBinderNames b <| ← expand b decl.type
+  decl := decl.updateType <| ← reorderForall reorder <| ← applyReplacementForall b dont <|
+    renameBinderNames b decl.type
   if let some v := decl.value? then
-    decl := decl.updateValue <| ← applyReplacementLambda b dont <| ← reorderLambda reorder <|
-      ← expand b v
+    decl := decl.updateValue <| ← reorderLambda reorder <| ← applyReplacementLambda b dont v
   else if let .opaqueInfo info := decl then -- not covered by `value?`
     decl := .opaqueInfo { info with
-      value := ← applyReplacementLambda b dont <| ← reorderLambda reorder <| ← expand b info.value }
+      value := ← reorderLambda reorder <| ← applyReplacementLambda b dont info.value }
   return decl
 
 /-- Abstracts the nested proofs in the value of `decl` if it is a def. -/
@@ -963,8 +951,7 @@ partial def transformDeclAux (b : BundledExts) (cfg : Config) (pre tgt_pre : Nam
 
 [todo] it seems not to work when the `to_additive` is added as an attribute later. -/
 def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
-  if (← isInstance src) then
-    let prio := (← getInstancePriority? src).getD 100
+  if let some prio ← getInstancePriority? src then
     let attr_kind := (← getInstanceAttrKind? src).getD .global
     trace[to_additive_detail] "Making {tgt} an instance with priority {prio}."
     addInstance tgt attr_kind prio |>.run'
@@ -1124,7 +1111,7 @@ def elabToAdditive (stx : Syntax) : CoreM Config :=
           reorder := cycle :: reorder
       | `(toAdditiveOption| (relevant_arg := $n)) =>
         if let some arg := relevantArg? then
-          throwErrorAt stx "cannot specify `relevant_arg` multiple times"
+          throwErrorAt opt "cannot specify `relevant_arg` multiple times"
         else
           relevantArg? := n.getNat.pred
       | `(toAdditiveOption| (dont_translate := $[$types:ident]*)) =>
@@ -1144,8 +1131,7 @@ def elabToAdditive (stx : Syntax) : CoreM Config :=
         -- Deprecate `str` docstring syntax (since := "2025-08-12")
         if getLinterValue linter.deprecated (← getLinterOptions) then
           let hintSuggestion := {
-            /- #adaptation_note: change to `.none` on nightly-2025-08-28. -/
-            diffGranularity := .auto
+            diffGranularity := .none
             toTryThisSuggestion := { suggestion := "/-- " ++ doc.getString.trim ++ " -/" }
           }
           let sugg ← Hint.mkSuggestionsMessage #[hintSuggestion] doc
@@ -1289,8 +1275,7 @@ partial def checkExistingType (b : BundledExts) (src tgt : Name) (reorder : List
   let tgtType := tgtDecl.type.instantiateLevelParams
     tgtDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
   let dont ← getDontTranslates dont type
-  let type ←
-    applyReplacementForall b dont <| ← reorderForall reorder <| ← expand b <| ← unfoldAuxLemmas type
+  let type  ← reorderForall reorder <| ← applyReplacementForall b dont <| ← unfoldAuxLemmas type
   -- `instantiateLevelParams` normalizes universes, so we have to normalize both expressions
   unless ← withReducible <| isDefEq type tgtType do
     throwError "`{b.attrName}` validation failed: expected{indentExpr type}\nbut '{tgt}' has \
