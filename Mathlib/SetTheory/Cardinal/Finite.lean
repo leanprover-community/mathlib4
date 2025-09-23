@@ -305,6 +305,10 @@ theorem card_image_of_injOn {α β : Type*} {f : α → β} {s : Set α} (h : Se
 theorem card_image_of_injective {α β : Type*} (f : α → β) (s : Set α)
     (h : Function.Injective f) : card (f '' s) = card s := card_image_of_injOn h.injOn
 
+lemma card_le_card_of_injective {α β : Type*} {f : α → β} (hf : Injective f) : card α ≤ card β := by
+  rw [← card_ulift α, ← card_ulift β]
+  exact Cardinal.gciENat.gc.monotone_u <| Cardinal.lift_mk_le_lift_mk_of_injective hf
+
 @[simp]
 theorem _root_.Cardinal.natCast_le_toENat_iff {n : ℕ} {c : Cardinal} :
     ↑n ≤ toENat c ↔ ↑n ≤ c := by
