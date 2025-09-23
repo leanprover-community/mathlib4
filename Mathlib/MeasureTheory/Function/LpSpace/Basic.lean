@@ -761,7 +761,7 @@ def compLpₗ (L : E →SL[σ] F) : Lp E p μ →ₛₗ[σ] Lp F p μ where
     ext1
     filter_upwards [Lp.coeFn_smul c f, coeFn_compLp L (c • f), Lp.coeFn_smul (σ c) (L.compLp f),
       coeFn_compLp L f] with _ ha1 ha2 ha3 ha4
-    simp only [ha2, ha1, ha3, ha4, Pi.smul_apply, ContinuousLinearMap.map_smulₛₗ]
+    simp only [ha1, ha2, ha3, ha4, Pi.smul_apply, map_smulₛₗ]
 
 /-- Composing `f : Lp E p μ` with `L : E →L[𝕜] F`, seen as a continuous `𝕜`-linear map on
 `Lp E p μ`. See also the similar
