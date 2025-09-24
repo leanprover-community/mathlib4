@@ -33,24 +33,17 @@ lemma eq_mul_mul_of_roots_quadratic_eq_pair [CommRing R] [IsDomain R] {x1 x2 : R
   simpa [leadingCoeff, hp, hroots, mul_assoc, add_comm x1] using
     coeff_eq_esymm_roots_of_card hp_roots_card (k := 0) (by simp [hp])
 
-
 /-- **Vieta's formula** for quadratics (`aroots` version). -/
 lemma eq_neg_mul_add_of_aroots_quadratic_eq_pair
     [CommRing T] [CommRing S] [IsDomain S] [Algebra T S] {p : T[X]} {x1 x2 : S}
     (hp : p.natDegree = 2) (haroots : p.aroots S = {x1, x2}) :
     algebraMap T S (p.coeff 1) = -algebraMap T S (p.coeff 2) * (x1 + x2) := by
-  rw [aroots_def] at haroots
-  have hp_roots_card' : (map (algebraMap T S) p).roots.card = 2 := by
-    rw [haroots, Multiset.card_pair]
+  have e1 : (map (algebraMap T S) p).natDegree = 2 := le_antisymm
+    (by simpa [← hp] using natDegree_map_le)
+    (by simpa [← aroots_def, haroots, ← Multiset.card_pair]
+      using (map (algebraMap T S) p).card_roots')
   rw [← coeff_map, ← coeff_map]
-  apply eq_neg_mul_add_of_roots_quadratic_eq_pair _ haroots
-  rw [le_antisymm_iff]
-  constructor
-  · rw [← hp]
-    exact natDegree_map_le
-  · rw [← hp_roots_card']
-    exact card_roots' (map (algebraMap T S) p)
-
+  exact eq_neg_mul_add_of_roots_quadratic_eq_pair e1 haroots
 
 /-- **Vieta's formula** for quadratics (`aroots` version). -/
 lemma eq_mul_mul_of_aroots_quadratic_eq_pair [CommRing T] [CommRing S] [IsDomain S] [Algebra T S]
