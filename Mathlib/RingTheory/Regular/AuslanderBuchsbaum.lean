@@ -161,7 +161,7 @@ lemma basis_lift [IsLocalRing R] (M : Type*) [AddCommGroup M] [Module R M] [Modu
   rw [← hf, ← LinearMap.range_eq_top, LinearMap.range_comp] at this
   exact LinearMap.range_eq_top.mp (IsLocalRing.map_mkQ_eq_top.mp this)
 
-noncomputable local instance [IsLocalRing R] : Field (R ⧸ maximalIdeal R) :=
+private noncomputable instance [IsLocalRing R] : Field (R ⧸ maximalIdeal R) :=
   Quotient.field (maximalIdeal R)
 
 instance (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
