@@ -363,7 +363,7 @@ protected lemma IsRefl.sInter {ℛ : Set <| SetRel α α} (hℛ : ∀ R ∈ ℛ,
     SetRel.IsRefl (⋂₀ ℛ) where
   refl _a R hR := (hℛ R hR).refl _
 
-instance isRefl_iInter {ι : Sort*} {R : ι → SetRel α α} [∀ i, (R i).IsRefl] :
+instance isRefl_iInter {R : ι → SetRel α α} [∀ i, (R i).IsRefl] :
     SetRel.IsRefl (⋂ i, R i) := .sInter <| by simpa
 
 instance isRefl_preimage {f : β → α} [R.IsRefl] : SetRel.IsRefl (Prod.map f f ⁻¹' R) where
