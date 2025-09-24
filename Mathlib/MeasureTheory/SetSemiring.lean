@@ -10,11 +10,11 @@ import Mathlib.MeasureTheory.PiSystem
 
 /-! # Semirings and rings of sets
 
-A semiring of sets `C` (in the sense of measure theory) is a family of sets containing `∅`,
+A semi-ring of sets `C` (in the sense of measure theory) is a family of sets containing `∅`,
 stable by intersection and such that for all `s, t ∈ C`, `t \ s` is equal to a disjoint union of
-finitely many sets in `C`. Note that a semiring of sets may not contain unions.
+finitely many sets in `C`. Note that a semi-ring of sets may not contain unions.
 
-An important example of a semiring of sets is intervals in `ℝ`. The intersection of two intervals
+An important example of a semi-ring of sets is intervals in `ℝ`. The intersection of two intervals
 is an interval (possibly empty). The union of two intervals may not be an interval.
 The set difference of two intervals may not be an interval, but it will be a disjoint union of
 two intervals.
@@ -23,8 +23,8 @@ A ring of sets is a set of sets containing `∅`, stable by union, set differenc
 
 ## Main definitions
 
-* `MeasureTheory.IsSetSemiring C`: property of being a semiring of sets.
-* `MeasureTheory.IsSetSemiring.disjointOfDiff hs ht`: for `s, t` in a semiring `C`
+* `MeasureTheory.IsSetSemiring C`: property of being a semi-ring of sets.
+* `MeasureTheory.IsSetSemiring.disjointOfDiff hs ht`: for `s, t` in a semi-ring `C`
   (with `hC : IsSetSemiring C`) with `hs : s ∈ C`, `ht : t ∈ C`, this is a `Finset` of
   pairwise disjoint sets such that `s \ t = ⋃₀ hC.disjointOfDiff hs ht`.
 * `MeasureTheory.IsSetSemiring.disjointOfDiffUnion hs hI`: for `hs : s ∈ C` and a finset
@@ -54,7 +54,7 @@ namespace MeasureTheory
 
 variable {α : Type*} {C : Set (Set α)} {s t : Set α}
 
-/-- A semiring of sets `C` is a family of sets containing `∅`, stable by intersection and such that
+/-- A semi-ring of sets `C` is a family of sets containing `∅`, stable by intersection and such that
 for all `s, t ∈ C`, `s \ t` is equal to a disjoint union of finitely many sets in `C`. -/
 structure IsSetSemiring (C : Set (Set α)) : Prop where
   empty_mem : ∅ ∈ C
@@ -69,7 +69,7 @@ lemma isPiSystem (hC : IsSetSemiring C) : IsPiSystem C := fun s hs t ht _ ↦ hC
 section disjointOfDiff
 
 open scoped Classical in
-/-- In a semiring of sets `C`, for all sets `s, t ∈ C`, `s \ t` is equal to a disjoint union of
+/-- In a semi-ring of sets `C`, for all sets `s, t ∈ C`, `s \ t` is equal to a disjoint union of
 finitely many sets in `C`. The finite set of sets in the union is not unique, but this definition
 gives an arbitrary `Finset (Set α)` that satisfies the equality.
 
