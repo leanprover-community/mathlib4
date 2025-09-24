@@ -134,5 +134,3 @@ theorem isPrincipalIdealRing_of_isPrincipalIdealRing_isLocalization [IsDomain R]
 end IsLocalization
 
 end CommRing
-
-#min_imports
