@@ -112,9 +112,8 @@ theorem compProd_apply (hs : MeasurableSet s) (κ : Kernel α β) [IsSFiniteKern
   have h_int x : ∫⁻ y, swap γ β (x, y) s ∂Measure.dirac b = (Prod.mk b ⁻¹' s).indicator 1 x := by
     rw [lintegral_dirac']
     · simp [swap_apply' _ hs, Set.indicator_apply]
-    · simp only [swap_apply' _ hs, Prod.swap_prod_mk]
-      refine Measurable.indicator measurable_const ?_
-      exact measurable_prodMk_right hs
+    · simpa [swap_apply' _ hs, Prod.swap_prod_mk] using
+        measurable_const.indicator (measurable_prodMk_right hs)
   simp_rw [h_int]
   rw [lintegral_indicator_one]
   exact measurable_prodMk_left hs
