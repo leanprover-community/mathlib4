@@ -5,7 +5,6 @@ Authors: Nailin Guan
 -/
 import Mathlib.RingTheory.RegularLocalRing.GlobalDimension
 import Mathlib.RingTheory.RegularLocalRing.RegularRing.Basic
-import Mathlib.RingTheory.Ideal.Height
 /-!
 
 # Global Dimension of Regular Ring is equal to Krull Dimension
