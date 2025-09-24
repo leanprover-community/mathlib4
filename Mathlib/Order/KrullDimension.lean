@@ -544,8 +544,8 @@ lemma one_lt_height_iff {x : α} : 1 < Order.height x ↔ ∃ y z, z < y ∧ y <
   · obtain ⟨p, hp, hlen⟩ := Order.exists_series_of_le_height x (n := 2) h
     refine ⟨p 1, p 0, p.rel_of_lt ?_, hp ▸ p.rel_of_lt ?_⟩ <;> simp [Fin.lt_def, hlen]
   · rintro ⟨y, z, hzy, hyx⟩
-    let p : LTSeries α := RelSeries.fromListChain' [z, y, x] (List.cons_ne_nil z [y, x])
-      (List.Chain'.cons_cons hzy <| List.chain'_pair.mpr hyx)
+    let p : LTSeries α := RelSeries.fromListIsChain [z, y, x] (List.cons_ne_nil z [y, x])
+      (List.IsChain.cons_cons hzy <| List.isChain_pair.mpr hyx)
     have : p.last = x := by simp [p, ← RelSeries.getLast_toList]
     exact Order.length_le_height this.le
 
