@@ -448,3 +448,16 @@ def mapComon (F : C ⥤ D) [F.OplaxMonoidal] : Comon C ⥤ Comon D where
 -- and so can't state `mapComonFunctor : OplaxMonoidalFunctor C D ⥤ Comon C ⥤ Comon D`.
 
 end CategoryTheory.Functor
+
+section
+variable [BraidedCategory.{v₁} C]
+
+/-- Predicate for a comonoid object to be commutative. -/
+class IsCommComonObj (X : C) [ComonObj X] where
+  comul_comm (X) : Δ ≫ (β_ X X).hom = Δ := by cat_disch
+
+open scoped ComonObj
+
+attribute [reassoc (attr := simp)] IsCommComonObj.comul_comm
+
+end

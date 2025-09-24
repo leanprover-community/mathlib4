@@ -5,56 +5,101 @@ Authors: Jacob Reinhold
 -/
 import Mathlib.CategoryTheory.Monoidal.Comon_
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 
 /-!
-# Commutative Comonoid Objects
+# The category of commutative comonoids in a braided monoidal category.
 
-Comonoids where comultiplication is symmetric: swapping outputs gives the same result.
+We define the category of commutative comonoid objects in a braided monoidal category `C`.
 
 ## Main definitions
 
-* `CommComonObj X` - Commutative comonoid structure on X
-
-## Main results
-
-* `swap_comul` - Swapping the two copies does nothing
-
-## Implementation notes
-
-We extend ComonObj and add the commutativity axiom. This requires a braided monoidal category for
-the braiding isomorphism.
-
-Unlike the specific `ComonObj (𝟙_ C)` instance which was removed from mathlib to avoid conflicts,
-`CommComonObj` remains a type class because it describes a property of comonoid structures rather
-than providing a specific comonoid structure that could conflict with others.
-
-In cartesian monoidal categories, every object has a unique commutative comonoid structure
-(diagonal and terminal morphisms).
+* `CommComon C` - The bundled structure of commutative comonoid objects
 
 ## Tags
 
 comonoid, commutative, braided
 -/
 
+universe v₁ v₂ v₃ u₁ u₂ u₃ u
+
 namespace CategoryTheory
 
-open MonoidalCategory ComonObj
+open MonoidalCategory ComonObj Functor
 
-variable {C : Type*} [Category C] [MonoidalCategory C] [BraidedCategory C]
+variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory.{v₁} C]
 
-/-- A comonoid where swapping outputs gives the same result: Δ ≫ σ = Δ. -/
-class CommComonObj (X : C) extends ComonObj X where
-  /-- Comultiplication commutes with braiding. -/
-  isComm : comul ≫ (β_ X X).hom = comul
+variable (C) in
+/-- A commutative comonoid object internal to a monoidal category. -/
+structure CommComon where
+  /-- The underlying object in the ambient monoidal category -/
+  X : C
+  [comon : ComonObj X]
+  [comm : IsCommComonObj X]
 
-namespace CommComonObj
+attribute [instance] CommComon.comon CommComon.comm
 
-variable {X : C} [CommComonObj X]
+namespace CommComon
 
-/-- Swapping the two copies does nothing. -/
+/-- A commutative comonoid object is a comonoid object. -/
+@[simps X]
+def toComon (A : CommComon C) : Comon C := ⟨A.X⟩
+
+section
+
+/-- Local instance for the comonoid structure on the tensor unit. -/
+local instance instComonObjTensorUnit : ComonObj (𝟙_ C) := ComonObj.instTensorUnit C
+
+/-- The trivial comonoid on the unit object is commutative. -/
+instance instCommComonObjUnit : IsCommComonObj (𝟙_ C) where
+  comul_comm := by
+    simp only [instTensorUnit_comul, braiding_tensorUnit_right]
+    rw [← Category.assoc]
+    rw [← unitors_equal]
+    simp only [Iso.inv_hom_id, Category.id_comp]
+
+end
+
+variable (C) in
+/-- The trivial commutative comonoid object. We later show this is initial in `CommComon C`. -/
+@[simps!]
+def trivial : CommComon C where
+  X := 𝟙_ C
+  comon := ComonObj.instTensorUnit C
+  comm := instCommComonObjUnit
+
+instance : Inhabited (CommComon C) :=
+  ⟨trivial C⟩
+
+variable {M : CommComon C}
+
+instance : Category (CommComon C) :=
+  InducedCategory.category CommComon.toComon
+
 @[simp]
-lemma swap_comul : Δ[X] ≫ (β_ X X).hom = Δ[X] := isComm
+theorem id_hom (A : CommComon C) : Comon.Hom.hom (𝟙 A) = 𝟙 A.X :=
+  rfl
 
-end CommComonObj
+@[simp]
+theorem comp_hom {R S T : CommComon C} (f : R ⟶ S) (g : S ⟶ T) :
+    Comon.Hom.hom (f ≫ g) = f.hom ≫ g.hom :=
+  rfl
+
+@[ext]
+lemma hom_ext {A B : CommComon C} (f g : A ⟶ B) (h : f.hom = g.hom) : f = g :=
+  Comon.Hom.ext h
+
+section
+
+variable (C)
+
+/-- The forgetful functor from commutative comonoid objects to comonoid objects. -/
+@[simps!]
+def forget₂Comon : CommComon C ⥤ Comon C :=
+  inducedFunctor _
+
+end
+
+end CommComon
 
 end CategoryTheory
