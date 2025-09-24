@@ -295,7 +295,8 @@ protected abbrev spanningCoe {s : Set V} (G : Digraph s) : G ↪g G.spanningCoe 
   Digraph.Embedding.map (Function.Embedding.subtype _) G
 
 /-- Embeddings of types induce embeddings of complete graphs on those types. -/
-protected def completeDigraph {α β : Type*} (f : α ↪ β) : Digraph.completeDigraph α ↪g Digraph.completeDigraph β :=
+protected def completeDigraph {α β : Type*} (f : α ↪ β) :
+  Digraph.completeDigraph α ↪g Digraph.completeDigraph β :=
   { f with map_rel_iff' := by simp }
 
 @[simp] lemma coe_completeGraph {α β : Type*} (f : α ↪ β) :
