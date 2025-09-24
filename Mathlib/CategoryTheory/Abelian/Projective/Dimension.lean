@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Nailin Guan
 -/
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
-import Mathlib.Data.ENat.Lattice
 import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.Algebra.Category.Grp.Zero
+import Mathlib.Data.ENat.Lattice
 
 /-!
 # Projective dimension
@@ -20,7 +19,7 @@ if all `Ext X Y i` vanish when `n ≤ i`. This defines a type class
 `HasProjectiveDimensionLT X 0`, but this cannot be expressed in terms of
 `HasProjectiveDimensionLE`.)
 
-We also defined the projective dimension as `WithBot ℕ∞` as `projectiveDimension`,
+We also define the projective dimension in `WithBot ℕ∞` as `projectiveDimension`,
 `projectiveDimension X = ⊥` iff `X` is zero and acts in common sense in the non-negative values.
 
 -/
@@ -110,15 +109,15 @@ lemma hasProjectiveDimensionLT_of_ge (m : ℕ) (h : n ≤ m)
   letI := HasExt.standard C
   rw [hasProjectiveDimensionLT_iff]
   intro i hi Y e
-  exact e.eq_zero_of_hasProjectiveDimensionLT n (by omega)
+  exact e.eq_zero_of_hasProjectiveDimensionLT n (by cutsat)
 
 instance [HasProjectiveDimensionLT X n] (k : ℕ) :
     HasProjectiveDimensionLT X (n + k) :=
-  hasProjectiveDimensionLT_of_ge X n (n + k) (by omega)
+  hasProjectiveDimensionLT_of_ge X n (n + k) (by cutsat)
 
 instance [HasProjectiveDimensionLT X n] (k : ℕ) :
     HasProjectiveDimensionLT X (k + n) :=
-  hasProjectiveDimensionLT_of_ge X n (k + n) (by omega)
+  hasProjectiveDimensionLT_of_ge X n (k + n) (by cutsat)
 
 instance [HasProjectiveDimensionLT X n] :
     HasProjectiveDimensionLT X n.succ :=
@@ -132,27 +131,21 @@ instance [Projective X] : HasProjectiveDimensionLT X 1 := by
   · simp at hi
   · exact e.eq_zero_of_projective
 
-lemma hasProjectiveDimensionLT_one_iff (X : C) :
+lemma projective_iff_subsingleton_ext_one [HasExt.{w} C] {X : C} :
+    Projective X ↔ ∀ ⦃Y : C⦄, Subsingleton (Ext X Y 1) := by
+  refine ⟨fun h ↦ HasProjectiveDimensionLT.subsingleton X 1 1 (by rfl),
+    fun h ↦ ⟨fun f g _ ↦ ?_⟩⟩
+  obtain ⟨φ, hφ⟩ :=
+    Ext.covariant_sequence_exact₃ _ { exact := ShortComplex.exact_kernel g }
+      (Ext.mk₀ f) (zero_add 1) (by subsingleton)
+  obtain ⟨φ, rfl⟩ := Ext.homEquiv₀.symm.surjective φ
+  exact ⟨φ, Ext.homEquiv₀.symm.injective (by simpa using hφ)⟩
+
+lemma projective_iff_hasProjectiveDimensionLT_one (X : C) :
     Projective X ↔ HasProjectiveDimensionLT X 1 := by
   letI := HasExt.standard C
-  refine ⟨fun h ↦ inferInstance, fun ⟨h⟩ ↦ ⟨?_⟩⟩
-  intro Z Y f g epi
-  let S := ShortComplex.mk (kernel.ι g) g (kernel.condition g)
-  have S_exact : S.ShortExact := {
-    exact := ShortComplex.exact_kernel g
-    mono_f := equalizer.ι_mono
-    epi_g := epi}
-  have : IsZero (AddCommGrp.of (Ext X S.X₁ 1)) := by
-    let _ := h 1 (le_refl 1) (Y := S.X₁)
-    exact AddCommGrp.isZero_of_subsingleton _
-  have exac := Ext.covariant_sequence_exact₃' X S_exact 0 1 (zero_add 1)
-  have surj: Function.Surjective ((Ext.mk₀ S.g).postcomp X (add_zero 0)) :=
-    (AddCommGrp.epi_iff_surjective _).mp (exac.epi_f (this.eq_zero_of_tgt _))
-  rcases surj (Ext.mk₀ f) with ⟨f', hf'⟩
-  use Ext.addEquiv₀ f'
-  simp only [AddMonoidHom.flip_apply, Ext.bilinearComp_apply_apply] at hf'
-  rw [← Ext.mk₀_addEquiv₀_apply f', Ext.mk₀_comp_mk₀] at hf'
-  exact (Ext.mk₀_bijective X Y).1 hf'
+  exact ⟨fun _ ↦ inferInstance, fun _ ↦ projective_iff_subsingleton_ext_one.2
+    (HasProjectiveDimensionLT.subsingleton X 1 1 (by rfl))⟩
 
 end
 
@@ -202,7 +195,7 @@ lemma hasProjectiveDimensionLT_X₃ (h₁ : HasProjectiveDimensionLT S.X₁ n)
   · simp at hi
   · obtain ⟨x₁, rfl⟩ := Ext.contravariant_sequence_exact₃ hS _ x₃
       (Ext.eq_zero_of_hasProjectiveDimensionLT _ (n + 1) hi) (add_comm _ _)
-    rw [x₁.eq_zero_of_hasProjectiveDimensionLT n (by omega), Ext.comp_zero]
+    rw [x₁.eq_zero_of_hasProjectiveDimensionLT n (by cutsat), Ext.comp_zero]
 
 lemma hasProjectiveDimensionLT_X₁ (h₂ : HasProjectiveDimensionLT S.X₂ n)
     (h₃ : HasProjectiveDimensionLT S.X₃ (n + 1)) :
@@ -211,8 +204,8 @@ lemma hasProjectiveDimensionLT_X₁ (h₂ : HasProjectiveDimensionLT S.X₂ n)
   rw [hasProjectiveDimensionLT_iff]
   intro i hi Y x₁
   obtain ⟨x₂, rfl⟩ := Ext.contravariant_sequence_exact₁ hS _ x₁ (add_comm _ _)
-    (Ext.eq_zero_of_hasProjectiveDimensionLT _ (n + 1) (by omega))
-  rw [x₂.eq_zero_of_hasProjectiveDimensionLT n (by omega), Ext.comp_zero]
+    (Ext.eq_zero_of_hasProjectiveDimensionLT _ (n + 1) (by cutsat))
+  rw [x₂.eq_zero_of_hasProjectiveDimensionLT n (by cutsat), Ext.comp_zero]
 
 lemma hasProjectiveDimensionLT_X₃_iff (n : ℕ) (h₂ : Projective S.X₂) :
     HasProjectiveDimensionLT S.X₃ (n + 2) ↔ HasProjectiveDimensionLT S.X₁ (n + 1) :=
@@ -233,11 +226,11 @@ end CategoryTheory
 
 section ProjectiveDimension
 
-open CategoryTheory
+namespace CategoryTheory
 
 variable {C : Type u} [Category.{v, u} C] [Abelian C]
 
-/-- The projective dimension of object of abelian category. -/
+/-- The projective dimension of an object in an abelian category. -/
 noncomputable def projectiveDimension (X : C) : WithBot ℕ∞ :=
   sInf {n : WithBot ℕ∞ | ∀ (i : ℕ), n < i → HasProjectiveDimensionLT X i}
 
@@ -248,86 +241,58 @@ lemma projectiveDimension_eq_of_iso {X Y : C} (e : X ≅ Y) :
   exact ⟨fun h ↦ hasProjectiveDimensionLT_of_iso e _,
     fun h ↦ hasProjectiveDimensionLT_of_iso e.symm _⟩
 
-lemma hasProjectiveDimensionLT_of_projectiveDimension_lt (X : C) (n : ℕ)
-    (h : projectiveDimension X < n) : HasProjectiveDimensionLT X n := by
-  have : projectiveDimension X ∈ _ := csInf_mem (by
-    use ⊤
-    simp)
-  simp only [Set.mem_setOf_eq] at this
-  exact this n h
-
-lemma projectiveDimension_le_iff (X : C) (n : ℕ) : projectiveDimension X ≤ n ↔
-    HasProjectiveDimensionLE X n := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · apply hasProjectiveDimensionLT_of_projectiveDimension_lt X (n + 1)
-    exact lt_of_le_of_lt h (Nat.cast_lt.mpr (lt_add_one n))
-  · apply sInf_le
-    simp only [Set.mem_setOf_eq, Nat.cast_lt]
+lemma Retract.projectiveDimension_le {X Y : C} (h : Retract X Y) :
+    projectiveDimension X ≤ projectiveDimension Y :=
+  sInf_le_sInf_of_subset_insert_top (fun n hn ↦ by
+    simp only [Set.mem_setOf_eq, not_top_lt, IsEmpty.forall_iff, implies_true,
+      Set.insert_eq_of_mem] at hn ⊢
     intro i hi
-    exact hasProjectiveDimensionLT_of_ge X (n + 1) i hi
+    have := hn i hi
+    exact h.hasProjectiveDimensionLT i)
 
-lemma projectiveDimension_ge_iff (X : C) (n : ℕ) : n ≤ projectiveDimension X  ↔
-    ¬ HasProjectiveDimensionLT X n := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · simp only [projectiveDimension, le_sInf_iff, Set.mem_setOf_eq] at h
-    by_contra lt
-    by_cases eq0 : n = 0
-    · have := h ⊥ (fun i _ ↦ (hasProjectiveDimensionLT_of_ge X n i (by simp [eq0])))
-      simp [eq0] at this
-    · have : ∀ (i : ℕ), (n - 1 : ℕ) < (i : WithBot ℕ∞) → HasProjectiveDimensionLT X i := by
-        intro i hi
-        exact hasProjectiveDimensionLT_of_ge X n i (Nat.le_of_pred_lt (Nat.cast_lt.mp hi))
-      have not := Nat.cast_le.mp (h (n - 1 : ℕ) this)
-      omega
-  · simp only [projectiveDimension, le_sInf_iff, Set.mem_setOf_eq]
-    intro m hm
-    by_contra nle
-    exact h (hm _ (lt_of_not_ge nle))
+lemma projectiveDimension_lt_iff {X : C} {n : ℕ} :
+    projectiveDimension X < n ↔ HasProjectiveDimensionLT X n := by
+  refine ⟨fun h ↦ ?_, fun h ↦ sInf_lt_iff.2 ?_⟩
+  · have : projectiveDimension X ∈ _ := csInf_mem ⟨⊤, by simp⟩
+    simp only [Set.mem_setOf_eq] at this
+    exact this _ h
+  · obtain _ | n := n
+    · exact ⟨⊥, fun _ _ ↦ hasProjectiveDimensionLT_of_ge _ 0 _ (by simp), by decide⟩
+    · exact ⟨n, fun i hi ↦ hasProjectiveDimensionLT_of_ge _ (n + 1) _ (by simpa using hi),
+        by simp [WithBot.lt_add_one_iff]⟩
 
-lemma projectiveDimension_eq_bot_iff (X : C) : projectiveDimension X = ⊥ ↔
-    Limits.IsZero X := by
-  rw [← hasProjectiveDimensionLT_zero_iff_isZero]
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · apply hasProjectiveDimensionLT_of_projectiveDimension_lt X 0
-    simp [h, bot_lt_iff_ne_bot]
-  · rw [eq_bot_iff]
-    apply sInf_le
-    intro i _
-    apply hasProjectiveDimensionLT_of_ge X 0 i (Nat.zero_le i)
+lemma projectiveDimension_le_iff (X : C) (n : ℕ) :
+    projectiveDimension X ≤ n ↔ HasProjectiveDimensionLE X n := by
+  simp [← projectiveDimension_lt_iff, ← WithBot.lt_add_one_iff]
 
-lemma projectiveDimension_eq_find (X : C) (h : ∃ n, HasProjectiveDimensionLE X n)
-    (nzero : ¬ Limits.IsZero X) [DecidablePred (HasProjectiveDimensionLE X)] :
-    projectiveDimension X = Nat.find h := by
-  apply le_antisymm ((projectiveDimension_le_iff _ _).mpr (Nat.find_spec h))
-  apply (projectiveDimension_ge_iff _ _).mpr
-  by_cases eq0 : Nat.find h = 0
-  · simp only [eq0]
-    by_contra
-    exact nzero (isZero_of_hasProjectiveDimensionLT_zero X)
-  · rw [← Nat.succ_pred_eq_of_ne_zero eq0]
-    exact (Nat.find_min h (Nat.sub_one_lt eq0))
+lemma projectiveDimension_ge_iff (X : C) (n : ℕ) :
+    n ≤ projectiveDimension X ↔ ¬ HasProjectiveDimensionLT X n := by
+  rw [← not_iff_not, not_le, not_not, projectiveDimension_lt_iff]
 
-lemma projectiveDimension_ne_top_iff (X : C) : projectiveDimension X ≠ ⊤ ↔
-    ∃ n, HasProjectiveDimensionLE X n := by
-  simp only [projectiveDimension, ne_eq, sInf_eq_top, Set.mem_setOf_eq, not_forall]
-  refine ⟨fun ⟨x, hx, ne⟩ ↦ ?_, fun ⟨n, hn⟩ ↦ ?_⟩
-  · by_cases eqbot : x = ⊥
-    · use 0
-      have := hx 0 (by simp [eqbot, bot_lt_iff_ne_bot])
-      exact instHasProjectiveDimensionLTSucc X 0
-    · have : x.unbot eqbot ≠ ⊤ := by
-        by_contra eq
-        rw [← WithBot.coe_inj, WithBot.coe_unbot, WithBot.coe_top] at eq
-        exact ne eq
-      use (x.unbot eqbot).toNat
-      have eq : x = (x.unbot eqbot).toNat := (WithBot.coe_unbot x eqbot).symm.trans
-        (WithBot.coe_inj.mpr (ENat.coe_toNat this).symm)
-      have : x < ((x.unbot eqbot).toNat + 1 : ℕ) := by
-        nth_rw 1 [eq]
-        exact Nat.cast_lt.mpr (lt_add_one _)
-      exact hx ((x.unbot eqbot).toNat + 1 : ℕ) this
-  · use n
-    simpa using ⟨fun i hi ↦ hasProjectiveDimensionLT_of_ge X (n + 1) i hi,
-      WithBot.coe_inj.not.mpr (ENat.coe_ne_top n)⟩
+lemma projectiveDimension_eq_bot_iff (X : C) :
+    projectiveDimension X = ⊥ ↔ Limits.IsZero X := by
+  rw [← hasProjectiveDimensionLT_zero_iff_isZero, ← projectiveDimension_lt_iff,
+    Nat.cast_zero, ← WithBot.lt_coe_bot, bot_eq_zero', WithBot.coe_zero]
+
+lemma projectiveDimension_ne_top_iff (X : C) :
+    projectiveDimension X ≠ ⊤ ↔ ∃ n, HasProjectiveDimensionLE X n := by
+  generalize hd : projectiveDimension X = d
+  induction d with
+  | bot =>
+    simp only [ne_eq, bot_ne_top, not_false_eq_true, true_iff]
+    exact ⟨0, by simp [← projectiveDimension_le_iff, hd]⟩
+  | coe d =>
+    induction d with
+    | top =>
+      by_contra!
+      simp only [WithBot.coe_top, ne_eq, not_true_eq_false, false_and, true_and, false_or] at this
+      obtain ⟨n, hn⟩ := this
+      rw [← projectiveDimension_le_iff, hd, WithBot.coe_top, top_le_iff] at hn
+      exact ENat.coe_ne_top _ ((WithBot.coe_eq_coe).1 hn)
+    | coe d =>
+      simp only [ne_eq, WithBot.coe_eq_top, ENat.coe_ne_top, not_false_eq_true, true_iff]
+      exact ⟨d, by simpa only [← projectiveDimension_le_iff] using hd.le⟩
+
+end CategoryTheory
 
 end ProjectiveDimension
