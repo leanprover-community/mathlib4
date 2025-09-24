@@ -27,7 +27,7 @@ theorem ConvexOn.slope_mono_adjacent (hf : ConvexOn 𝕜 s f) {x y z : 𝕜} (hx
   rw [← sub_pos] at hxy hxz hyz
   have ha : 0 ≤ (z - y) / (z - x) := by positivity
   have hb : 0 ≤ (y - x) / (z - x) := by positivity
-  have key := hf.2 hx hz ha hb (by simp [field])
+  have key := hf.2 hx hz ha hb (by field_simp; ring)
   simp only [smul_eq_mul] at key
   ring_nf at key
   field_simp at key ⊢
@@ -52,7 +52,7 @@ theorem StrictConvexOn.slope_strict_mono_adjacent (hf : StrictConvexOn 𝕜 s f)
   rw [← sub_pos] at hxy hxz hyz
   have ha : 0 < (z - y) / (z - x) := by positivity
   have hb : 0 < (y - x) / (z - x) := by positivity
-  have key := hf.2 hx hz hxz' ha hb (by simp [field])
+  have key := hf.2 hx hz hxz' ha hb (by field_simp; ring)
   simp only [smul_eq_mul] at key
   ring_nf at key
   field_simp at key ⊢
