@@ -119,10 +119,9 @@ theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
   refine (log_stirlingSeq_diff_le_geo_sum n).trans ?_
   push_cast
   field_simp
-  rw [div_le_div_iff₀ h₃ h₁]
   ring_nf
   norm_cast
-  omega
+  cutsat
 
 /-- For any `n`, we have `log_stirlingSeq 1 - log_stirlingSeq n ≤ 1/4 * ∑' 1/k^2` -/
 theorem log_stirlingSeq_bounded_aux :
@@ -213,7 +212,7 @@ theorem second_wallis_limit (a : ℝ) (hane : a ≠ 0) (ha : Tendsto stirlingSeq
     stirlingSeq_pow_four_div_stirlingSeq_pow_two_eq n (one_le_iff_ne_zero.mp hn)⟩) ?_
   have h : a ^ 2 / 2 = a ^ 4 / a ^ 2 * (1 / 2) := by
     rw [mul_one_div, ← mul_one_div (a ^ 4) (a ^ 2), one_div, ← pow_sub_of_lt a]
-    norm_num
+    simp
   rw [h]
   exact ((ha.pow 4).div ((ha.comp (tendsto_id.const_mul_atTop' two_pos)).pow 2)
     (pow_ne_zero 2 hane)).mul tendsto_self_div_two_mul_self_add_one
