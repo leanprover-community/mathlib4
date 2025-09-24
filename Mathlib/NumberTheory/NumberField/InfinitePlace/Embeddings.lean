@@ -315,7 +315,7 @@ if and only if it's restriction to `K` is.
 This is the complex embedding analogue of `InfinitePlace.IsUnramified K w`, where
 `w : InfinitePlace L`. In this case there is an isomorphism between unmixed embeddings and
 unramified infinite places. -/
-abbrev IsUnmixed (φ : L →+* ℂ) := ¬IsMixed K φ
+abbrev IsUnmixed (φ : L →+* ℂ) := IsReal (φ.comp (algebraMap K L)) → IsReal φ
 
 theorem IsUnmixed.isReal_iff_isReal {φ : L →+* ℂ} (h : IsUnmixed K φ) :
     IsReal (φ.comp (algebraMap K L)) ↔ IsReal φ := by
