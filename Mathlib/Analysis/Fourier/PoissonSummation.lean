@@ -69,7 +69,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
     -- Transform sum in C(ℝ, ℂ) evaluated at x into pointwise sum of values.
     _ = ∫ x in (0 : ℝ)..1, ∑' n : ℤ, (e * f.comp (ContinuousMap.addRight n)) x := by
       simp_rw [coe_mul, Pi.mul_apply,
-        ← ContinuousMap.tsum_apply (summable_of_locally_summable_norm hf), tsum_mul_left]
+        ← ContinuousMap.tsumFilter_apply (summable_of_locally_summable_norm hf), tsum_mul_left]
     -- Swap sum and integral.
     _ = ∑' n : ℤ, ∫ x in (0 : ℝ)..1, (e * f.comp (ContinuousMap.addRight n)) x := by
       refine (intervalIntegral.tsum_intervalIntegral_eq_of_summable_norm ?_).symm
@@ -109,7 +109,7 @@ theorem Real.tsum_eq_tsum_fourierIntegral {f : C(ℝ, ℂ)}
   convert (has_pointwise_sum_fourier_series_of_summable this x).tsum_eq.symm using 1
   · simpa only [F, coe_mk, ← QuotientAddGroup.mk_zero, Periodic.lift_coe, zsmul_one, comp_apply,
       coe_addRight, zero_add]
-       using (hasSum_apply (summable_of_locally_summable_norm h_norm).hasSum x).tsum_eq
+       using (hasSumFilter_apply (summable_of_locally_summable_norm h_norm).hasSum x).tsum_eq
   · simp_rw [← Real.fourierCoeff_tsum_comp_add h_norm, smul_eq_mul, F, coe_mk]
 
 section RpowDecay

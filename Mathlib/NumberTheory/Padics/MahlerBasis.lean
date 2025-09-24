@@ -286,7 +286,7 @@ lemma hasSum_mahlerSeries (ha : Tendsto a atTop (𝓝 0)) :
 /-- Evaluation of a Mahler series is just the pointwise sum. -/
 lemma mahlerSeries_apply (ha : Tendsto a atTop (𝓝 0)) (x : ℤ_[p]) :
     mahlerSeries a x = ∑' n, mahler n x • a n := by
-  simp only [mahlerSeries, ← ContinuousMap.tsum_apply (hasSum_mahlerSeries ha).summable,
+  simp only [mahlerSeries, ← ContinuousMap.tsumFilter_apply (hasSum_mahlerSeries ha).summable,
     mahlerTerm_apply]
 
 /--
@@ -297,7 +297,7 @@ lemma mahlerSeries_apply_nat (ha : Tendsto a atTop (𝓝 0)) {m n : ℕ} (hmn : 
     mahlerSeries a (m : ℤ_[p]) = ∑ i ∈ range (n + 1), m.choose i • a i := by
   have h_van (i) : m.choose (i + (n + 1)) = 0 := Nat.choose_eq_zero_of_lt (by omega)
   have aux : Summable fun i ↦ m.choose (i + (n + 1)) • a (i + (n + 1)) := by
-    simpa only [h_van, zero_smul] using summable_zero
+    simpa only [h_van, zero_smul] using summableFilter_zero
   simp only [mahlerSeries_apply ha, mahler_natCast_eq, Nat.cast_smul_eq_nsmul, add_zero,
     ← aux.sum_add_tsum_nat_add' (f := fun i ↦ m.choose i • a i), h_van, zero_smul, tsum_zero]
 

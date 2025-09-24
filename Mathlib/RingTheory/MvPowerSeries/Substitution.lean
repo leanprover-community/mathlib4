@@ -259,7 +259,7 @@ theorem coeff_subst_finite (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ �
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
   Summable.finite_support_of_discreteTopology _
-    ((hasSum_aeval ha.hasEval f).map (coeff e) (continuous_coeff S e)).summable
+    ((hasSum_aeval ha.hasEval f).map (coeff e) (continuous_coeff S e)).summableFilter
 
 theorem coeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ →₀ ℕ) :
     coeff e (subst a f) =
@@ -267,8 +267,10 @@ theorem coeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ →₀ �
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
   have := ((hasSum_aeval ha.hasEval f).map (coeff e) (continuous_coeff S e))
-  rw [← coe_substAlgHom ha, substAlgHom, ← this.tsum_eq, tsum_def, dif_pos this.summable]
-  exact if_pos (coeff_subst_finite ha f e)
+  rw [← coe_substAlgHom ha, substAlgHom, ← this.tsum_eq, tsumFilter_def,
+    dif_pos this.summableFilter]
+  have := (coeff_subst_finite ha f e)
+  aesop
 
 theorem constantCoeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
     constantCoeff (subst a f) =

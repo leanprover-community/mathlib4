@@ -66,9 +66,9 @@ theorem measure_iUnion_le [Countable ι] (s : ι → Set α) : μ (⋃ i, s i) �
   refine rel_iSup_tsum μ measure_empty (· ≤ ·) (fun t ↦ ?_) _
   calc
     μ (⋃ i, t i) = μ (⋃ i, disjointed t i) := by rw [iUnion_disjointed]
-    _ ≤ ∑' i, μ (disjointed t i) :=
+    _ ≤ ∑'[atTop] i, μ (disjointed t i) :=
       OuterMeasureClass.measure_iUnion_nat_le _ _ (disjoint_disjointed _)
-    _ ≤ ∑' i, μ (t i) := by gcongr; exact disjointed_subset ..
+    _ ≤ ∑'[atTop] i, μ (t i) := by gcongr; exact disjointed_subset ..
 
 theorem measure_biUnion_le {I : Set ι} (μ : F) (hI : I.Countable) (s : ι → Set α) :
     μ (⋃ i ∈ I, s i) ≤ ∑' i : I, μ (s i) := by

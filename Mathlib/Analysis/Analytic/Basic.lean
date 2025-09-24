@@ -327,7 +327,7 @@ theorem HasFPowerSeriesAt.eventually_hasSum_sub (hf : HasFPowerSeriesAt f p x) :
 theorem HasFPowerSeriesOnBall.eventually_eq_zero
     (hf : HasFPowerSeriesOnBall f (0 : FormalMultilinearSeries 𝕜 E F) x r) :
     ∀ᶠ z in 𝓝 x, f z = 0 := by
-  filter_upwards [hf.eventually_hasSum_sub] with z hz using hz.unique hasSum_zero
+  filter_upwards [hf.eventually_hasSum_sub] with z hz using hz.unique hasSumFilter_zero
 
 theorem HasFPowerSeriesAt.eventually_eq_zero
     (hf : HasFPowerSeriesAt f (0 : FormalMultilinearSeries 𝕜 E F) x) : ∀ᶠ z in 𝓝 x, f z = 0 :=
@@ -527,7 +527,7 @@ theorem ContinuousLinearMap.comp_hasFPowerSeriesWithinOnBall (g : F →L[𝕜] G
   hasSum hy h'y := by
     simpa only [ContinuousLinearMap.compFormalMultilinearSeries_apply,
       ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply] using
-      g.hasSum (h.hasSum hy h'y)
+      g.hasSumFilter (h.hasSum hy h'y)
 
 /-- If a function `f` has a power series `p` on a ball and `g` is linear, then `g ∘ f` has the
 power series `g ∘ p` on the same ball. -/
@@ -800,7 +800,7 @@ theorem HasFPowerSeriesWithinOnBall.isBigO_image_sub_image_sub_deriv_principal
         _ = B n := by
           simp [field, B, pow_succ]
     have hBL : HasSum B (L y) := by
-      apply HasSum.mul_left
+      apply HasSumFilter.mul_left
       simp only [add_mul]
       have : ‖a‖ < 1 := by simp only [Real.norm_eq_abs, abs_of_pos ha.1, ha.2]
       rw [div_eq_mul_inv, div_eq_mul_inv]
@@ -1056,7 +1056,7 @@ protected theorem FormalMultilinearSeries.hasFPowerSeriesOnBall [CompleteSpace F
 
 theorem HasFPowerSeriesWithinOnBall.sum (h : HasFPowerSeriesWithinOnBall f p s x r) {y : E}
     (h'y : x + y ∈ insert x s) (hy : y ∈ EMetric.ball (0 : E) r) : f (x + y) = p.sum y :=
-  (h.hasSum h'y hy).tsum_eq.symm
+  (h.hasSum h'y hy).tsumFilter_eq.symm
 
 theorem HasFPowerSeriesOnBall.sum (h : HasFPowerSeriesOnBall f p x r) {y : E}
     (hy : y ∈ EMetric.ball (0 : E) r) : f (x + y) = p.sum y :=

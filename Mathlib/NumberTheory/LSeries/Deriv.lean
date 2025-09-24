@@ -66,8 +66,8 @@ private lemma LSeries.LSeriesSummable_logMul_and_hasDerivAt {f : ℕ → ℂ} {s
     norm_term_le_of_re_le_re f (by simpa using (hxy.trans hz).le) n
   have H := hasSum_deriv_of_summable_norm h₀ h₁ h₂ h₃ hys
   simp_rw [(hasDerivAt_term f _ _).deriv] at H
-  refine ⟨summable_neg_iff.mp H.summable, ?_⟩
-  simpa [← H.tsum_eq, tsum_neg] using ((differentiableOn_tsum_of_summable_norm
+  refine ⟨summableFilter_neg_iff.mp H.summable, ?_⟩
+  simpa [← H.tsum_eq, tsumFilter_neg] using ((differentiableOn_tsum_of_summable_norm
     h₀ h₁ h₂ h₃).differentiableAt <| h₂.mem_nhds hys).hasDerivAt
 
 /-- If `re s` is greater than the abscissa of absolute convergence of `f`, then the L-series

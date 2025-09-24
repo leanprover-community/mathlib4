@@ -110,7 +110,7 @@ private theorem one_sub_eta_logDeriv_eq (z : ℂ) (n : ℕ) :
 
 lemma tsum_logDeriv_eta_q (z : ℂ) : ∑' n, logDeriv (fun x ↦ 1 - eta_q n x) z =
     (2 * π * I) * ∑' n, (n + 1) * (-eta_q n z) / (1 - eta_q n z) := by
-  rw [tsum_congr (one_sub_eta_logDeriv_eq z), ← tsum_mul_left]
+  rw [tsum, tsumFilter_congr (one_sub_eta_logDeriv_eq z), ← tsumFilter_mul_left]
   grind
 
 theorem differentiableAt_eta_of_mem_upperHalfPlaneSet {z : ℂ} (hz : z ∈ ℍₒ) :

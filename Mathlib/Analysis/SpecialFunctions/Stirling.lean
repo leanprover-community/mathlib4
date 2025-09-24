@@ -106,7 +106,7 @@ theorem log_stirlingSeq_diff_le_geo_sum (n : ℕ) :
     refine mul_le_of_le_one_left (pow_nonneg h_nonneg ↑(k + 1)) ?_
     rw [one_div]
     exact inv_le_one_of_one_le₀ (le_add_of_nonneg_left <| by positivity)
-  exact hasSum_le hab (log_stirlingSeq_diff_hasSum n) g
+  exact hasSumFilter_le hab (log_stirlingSeq_diff_hasSum n) g
 
 /-- We have the bound `log (stirlingSeq n) - log (stirlingSeq (n+1))` ≤ 1/(4 n^2)
 -/

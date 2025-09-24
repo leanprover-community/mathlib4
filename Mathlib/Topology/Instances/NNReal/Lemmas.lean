@@ -115,50 +115,61 @@ theorem nhds_zero : 𝓝 (0 : ℝ≥0) = ⨅ (a : ℝ≥0) (_ : a ≠ 0), 𝓟 (
 theorem nhds_zero_basis : (𝓝 (0 : ℝ≥0)).HasBasis (fun a : ℝ≥0 => 0 < a) fun a => Iio a :=
   nhds_bot_basis
 
+variable {L : Filter (Finset α)}
 
 @[norm_cast]
-theorem hasSum_coe {f : α → ℝ≥0} {r : ℝ≥0} : HasSum (fun a => (f a : ℝ)) (r : ℝ) ↔ HasSum f r := by
-  simp only [HasSum, ← coe_sum, tendsto_coe]
+theorem hasSumFilter_coe {f : α → ℝ≥0} {r : ℝ≥0} :
+    HasSumFilter L (fun a => (f a : ℝ)) (r : ℝ) ↔ HasSumFilter L f r := by
+  simp only [HasSumFilter, ← coe_sum, tendsto_coe]
 
-protected theorem _root_.HasSum.toNNReal {f : α → ℝ} {y : ℝ} (hf₀ : ∀ n, 0 ≤ f n)
-    (hy : HasSum f y) : HasSum (fun x => Real.toNNReal (f x)) y.toNNReal := by
+protected theorem _root_.HasSumFilter.toNNReal [L.NeBot] {f : α → ℝ} {y : ℝ} (hf₀ : ∀ n, 0 ≤ f n)
+    (hy : HasSumFilter L f y) : HasSumFilter L (fun x => Real.toNNReal (f x)) y.toNNReal := by
   lift y to ℝ≥0 using hy.nonneg hf₀
   lift f to α → ℝ≥0 using hf₀
-  simpa [hasSum_coe] using hy
+  simpa [hasSumFilter_coe] using hy
 
-theorem hasSum_real_toNNReal_of_nonneg {f : α → ℝ} (hf_nonneg : ∀ n, 0 ≤ f n) (hf : Summable f) :
-    HasSum (fun n => Real.toNNReal (f n)) (Real.toNNReal (∑' n, f n)) :=
-  hf.hasSum.toNNReal hf_nonneg
+theorem hasSum_real_toNNReal_of_nonneg [L.NeBot] {f : α → ℝ} (hf_nonneg : ∀ n, 0 ≤ f n)
+    (hf : SummableFilter L f) :
+    HasSumFilter L (fun n => Real.toNNReal (f n)) (Real.toNNReal (∑'[L] n, f n)) :=
+  hf.hasSumFilter.toNNReal hf_nonneg
 
+--make alias
 @[norm_cast]
-theorem summable_coe {f : α → ℝ≥0} : (Summable fun a => (f a : ℝ)) ↔ Summable f := by
+theorem summableFilter_coe [L.NeBot] {f : α → ℝ≥0} :
+    (SummableFilter L fun a => (f a : ℝ)) ↔ SummableFilter L f := by
   constructor
-  · exact fun ⟨a, ha⟩ => ⟨⟨a, ha.nonneg fun x => (f x).2⟩, hasSum_coe.1 ha⟩
-  · exact fun ⟨a, ha⟩ => ⟨a.1, hasSum_coe.2 ha⟩
+  · exact fun ⟨a, ha⟩ => ⟨⟨a, ha.nonneg fun x => (f x).2⟩, hasSumFilter_coe.1 ha⟩
+  · exact fun ⟨a, ha⟩ => ⟨a.1, hasSumFilter_coe.2 ha⟩
 
-theorem summable_mk {f : α → ℝ} (hf : ∀ n, 0 ≤ f n) :
-    (@Summable ℝ≥0 _ _ _ fun n => ⟨f n, hf n⟩) ↔ Summable f :=
-  Iff.symm <| summable_coe (f := fun x => ⟨f x, hf x⟩)
+alias summable_coe := summableFilter_coe
+
+theorem summableFilter_mk [L.NeBot] {f : α → ℝ} (hf : ∀ n, 0 ≤ f n) :
+    (@SummableFilter ℝ≥0 _ _ _ L fun n => ⟨f n, hf n⟩) ↔ SummableFilter L f :=
+  Iff.symm <| summableFilter_coe (f := fun x => ⟨f x, hf x⟩)
 
 @[norm_cast]
-theorem coe_tsum {f : α → ℝ≥0} : ↑(∑' a, f a) = ∑' a, (f a : ℝ) := by
+theorem coe_tsumFilter [L.NeBot] {f : α → ℝ≥0} : ↑(∑'[L] a, f a) = ∑'[L] a, (f a : ℝ) := by
   classical
-  exact if hf : Summable f then Eq.symm <| (hasSum_coe.2 <| hf.hasSum).tsum_eq
-  else by simp [tsum_def, hf, mt summable_coe.1 hf]
+  exact if hf : SummableFilter L f then
+    Eq.symm <| (hasSumFilter_coe.2 <| hf.hasSumFilter).tsumFilter_eq
+  else by simp [tsumFilter_def, hf, mt summableFilter_coe.1 hf]
 
-theorem coe_tsum_of_nonneg {f : α → ℝ} (hf₁ : ∀ n, 0 ≤ f n) :
-    (⟨∑' n, f n, tsum_nonneg hf₁⟩ : ℝ≥0) = (∑' n, ⟨f n, hf₁ n⟩ : ℝ≥0) :=
-  NNReal.eq <| Eq.symm <| coe_tsum (f := fun x => ⟨f x, hf₁ x⟩)
+theorem coe_tsumFilter_of_nonneg [L.NeBot] {f : α → ℝ} (hf₁ : ∀ n, 0 ≤ f n) :
+    (⟨∑'[L] n, f n, tsumFilter_nonneg hf₁⟩ : ℝ≥0) = (∑'[L] n, ⟨f n, hf₁ n⟩ : ℝ≥0) :=
+  NNReal.eq <| Eq.symm <| coe_tsumFilter (f := fun x => ⟨f x, hf₁ x⟩)
 
-nonrec theorem tsum_mul_left (a : ℝ≥0) (f : α → ℝ≥0) : ∑' x, a * f x = a * ∑' x, f x :=
-  NNReal.eq <| by simp only [coe_tsum, NNReal.coe_mul, tsum_mul_left]
+nonrec theorem tsumFilter_mul_left [L.NeBot] (a : ℝ≥0) (f : α → ℝ≥0) :
+    ∑'[L] x, a * f x = a * ∑'[L] x, f x :=
+  NNReal.eq <| by simp only [coe_tsumFilter, NNReal.coe_mul, tsumFilter_mul_left]
 
-nonrec theorem tsum_mul_right (f : α → ℝ≥0) (a : ℝ≥0) : ∑' x, f x * a = (∑' x, f x) * a :=
-  NNReal.eq <| by simp only [coe_tsum, NNReal.coe_mul, tsum_mul_right]
+nonrec theorem tsum_mul_right [L.NeBot] (f : α → ℝ≥0) (a : ℝ≥0) :
+    ∑'[L] x, f x * a = (∑'[L] x, f x) * a :=
+  NNReal.eq <| by simp only [coe_tsumFilter, NNReal.coe_mul, tsumFilter_mul_right]
 
+--this needs fixing, shouldnt need to go from summable to summableFilter and then back
 theorem summable_comp_injective {β : Type*} {f : α → ℝ≥0} (hf : Summable f) {i : β → α}
     (hi : Function.Injective i) : Summable (f ∘ i) := by
-  rw [← summable_coe] at hf ⊢
+  rw [Summable, ← summableFilter_coe, ← summable_iff_summableFilter] at hf ⊢
   exact hf.comp_injective hi
 
 theorem summable_nat_add (f : ℕ → ℝ≥0) (hf : Summable f) (k : ℕ) : Summable fun i => f (i + k) :=
@@ -166,12 +177,13 @@ theorem summable_nat_add (f : ℕ → ℝ≥0) (hf : Summable f) (k : ℕ) : Sum
 
 nonrec theorem summable_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) :
     (Summable fun i => f (i + k)) ↔ Summable f := by
-  rw [← summable_coe, ← summable_coe]
+  simp_rw [Summable, ← summableFilter_coe]
   exact @summable_nat_add_iff ℝ _ _ _ (fun i => (f i : ℝ)) k
 
 nonrec theorem hasSum_nat_add_iff {f : ℕ → ℝ≥0} (k : ℕ) {a : ℝ≥0} :
     HasSum (fun n => f (n + k)) a ↔ HasSum f (a + ∑ i ∈ range k, f i) := by
-  rw [← hasSum_coe, hasSum_nat_add_iff (f := fun n => toReal (f n)) k]; norm_cast
+  rw [HasSum, ← hasSumFilter_coe, ← hasSum_iff_hasSumFilter,
+    hasSum_nat_add_iff (f := fun n => toReal (f n)) k]; norm_cast
 
 theorem sum_add_tsum_nat_add {f : ℕ → ℝ≥0} (k : ℕ) (hf : Summable f) :
     ∑' i, f i = (∑ i ∈ range k, f i) + ∑' i, f (i + k) :=
@@ -185,7 +197,7 @@ end coe
 
 theorem tendsto_cofinite_zero_of_summable {α} {f : α → ℝ≥0} (hf : Summable f) :
     Tendsto f cofinite (𝓝 0) := by
-  simp only [← summable_coe, ← tendsto_coe] at hf ⊢
+  simp only [← summableFilter_coe,  ← summable_iff_summableFilter, ← tendsto_coe] at hf ⊢
   exact hf.tendsto_cofinite_zero
 
 theorem tendsto_atTop_zero_of_summable {f : ℕ → ℝ≥0} (hf : Summable f) : Tendsto f atTop (𝓝 0) := by
@@ -196,7 +208,7 @@ theorem tendsto_atTop_zero_of_summable {f : ℕ → ℝ≥0} (hf : Summable f) :
 space. This does not need a summability assumption, as otherwise all sums are zero. -/
 nonrec theorem tendsto_tsum_compl_atTop_zero {α : Type*} (f : α → ℝ≥0) :
     Tendsto (fun s : Finset α => ∑' b : { x // x ∉ s }, f b) atTop (𝓝 0) := by
-  simp_rw [← tendsto_coe, coe_tsum, NNReal.coe_zero]
+  simp_rw [← tendsto_coe, coe_tsumFilter, NNReal.coe_zero]
   exact tendsto_tsum_compl_atTop_zero fun a : α => (f a : ℝ)
 
 /-- `x ↦ x ^ n` as an order isomorphism of `ℝ≥0`. -/

@@ -227,7 +227,7 @@ inner product of the Fourier coefficients of `f` and `g` is the inner product of
 theorem hasSum_prod_mFourierCoeff (f g : L²(UnitAddTorus d)) :
     HasSum (fun i ↦ conj (mFourierCoeff f i) * (mFourierCoeff g i)) (∫ t, conj (f t) * g t) := by
   simp_rw [mul_comm (conj _)]
-  refine HasSum.congr_fun (mFourierBasis.hasSum_inner_mul_inner f g) (fun n ↦ ?_)
+  refine HasSumFilter.congr_fun (mFourierBasis.hasSum_inner_mul_inner f g) (fun n ↦ ?_)
   simp only [← mFourierBasis_repr, HilbertBasis.repr_apply_apply, inner_conj_symm,
     mul_comm (inner ℂ f _)]
 
@@ -236,7 +236,7 @@ squared norms of the Fourier coefficients equals the `L²` norm of `f`. -/
 theorem hasSum_sq_mFourierCoeff (f : L²(UnitAddTorus d)) :
     HasSum (fun i ↦ ‖mFourierCoeff f i‖ ^ 2) (∫ t, ‖f t‖ ^ 2) := by
   simpa only [← RCLike.inner_apply', inner_self_eq_norm_sq, ← integral_re
-    (L2.integrable_inner f f)] using RCLike.hasSum_re ℂ (hasSum_prod_mFourierCoeff f f)
+    (L2.integrable_inner f f)] using RCLike.hasSumFilter_re ℂ (hasSum_prod_mFourierCoeff f f)
 
 end FourierL2
 
@@ -263,7 +263,7 @@ theorem hasSum_mFourier_series_of_summable (h : Summable (mFourierCoeff f)) :
 converges everywhere pointwise to `f`. -/
 theorem hasSum_mFourier_series_apply_of_summable (h : Summable (mFourierCoeff f))
     (x : UnitAddTorus d) : HasSum (fun i ↦ mFourierCoeff f i • mFourier i x) (f x) := by
-  simpa only [map_smul] using (ContinuousMap.evalCLM ℂ x).hasSum
+  simpa only [map_smul] using (ContinuousMap.evalCLM ℂ x).hasSumFilter
     (hasSum_mFourier_series_of_summable h)
 
 end Convergence

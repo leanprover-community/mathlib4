@@ -36,7 +36,7 @@ def poissonPMFReal (r : ℝ≥0) (n : ℕ) : ℝ := exp (- r) * r ^ n / n !
 lemma poissonPMFRealSum (r : ℝ≥0) : HasSum (fun n ↦ poissonPMFReal r n) 1 := by
   let r := r.toReal
   unfold poissonPMFReal
-  apply (hasSum_mul_left_iff (exp_ne_zero r)).mp
+  apply (hasSumFilter_mul_left_iff (exp_ne_zero r)).mp
   simp only [mul_one]
   have : (fun i ↦ rexp r * (rexp (-r) * r ^ i / ↑(Nat.factorial i))) =
       fun i ↦ r ^ i / ↑(Nat.factorial i) := by
@@ -58,7 +58,7 @@ lemma poissonPMFReal_nonneg {r : ℝ≥0} {n : ℕ} : 0 ≤ poissonPMFReal r n :
 noncomputable
 def poissonPMF (r : ℝ≥0) : PMF ℕ := by
   refine ⟨fun n ↦ ENNReal.ofReal (poissonPMFReal r n), ?_⟩
-  apply ENNReal.hasSum_coe.mpr
+  apply ENNReal.hasSumFilter_coe.mpr
   rw [← toNNReal_one]
   exact (poissonPMFRealSum r).toNNReal (fun n ↦ poissonPMFReal_nonneg)
 

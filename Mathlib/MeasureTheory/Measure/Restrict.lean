@@ -1046,7 +1046,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
     Measure.sum (fun i ↦ μ.restrict (s i)) ≤ M • μ.restrict (⋃ i, s i) := by
   classical
   refine le_iff.mpr (fun t ht ↦ le_of_eq_of_le (sum_apply _ ht) ?_)
-  refine ENNReal.summable.tsum_le_of_sum_le (fun F ↦ ?_)
+  refine ENNReal.summable.tsumFilter_le_of_sum_le (fun F ↦ ?_)
   -- `P` is a partition of `⋃ i ∈ F, s i` indexed by `C ∈ Cs` (nonempty subsets of `F`).
   -- `P` is a partition of `s i` when restricted to `C ∈ G i` (subsets of `F` containing `i`).
   let P (C : Finset ι) := (⋂ i ∈ C, s i) ∩ (⋂ i ∈ (F \ C), (s i)ᶜ)
@@ -1080,7 +1080,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
         restrict_biUnion_le ((finite_toSet F.powerset).subset (sep_subset _ _)).countable t
     _ = ∑ i ∈ F, ∑' (C : G i), μ.restrict (P C) t := by simp_rw [Measure.sum_apply _ ht]
     _ = ∑' C, ∑ i ∈ F, (G i).indicator (fun C ↦ μ.restrict (P C) t) C := by
-      rw [Summable.tsum_finsetSum (fun _ _ ↦ ENNReal.summable)]
+      rw [tsum, SummableFilter.tsumFilter_finsetSum (fun _ _ ↦ ENNReal.summable)]
       congr with i
       rw [tsum_subtype (G i) (fun C ↦ (μ.restrict (P C)) t)]
     _ = ∑ C ∈ Cs, ∑ i ∈ F, C.toSet.indicator (fun _ ↦ (μ.restrict (P C)) t) i := by

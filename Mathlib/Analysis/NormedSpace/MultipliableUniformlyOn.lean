@@ -101,7 +101,7 @@ lemma hasProdUniformlyOn_one_add (hK : IsCompact K) (hu : Summable u)
       multipliable_one_add_of_summable (hu.of_norm_bounded_eventually (by simpa using hf'_bd))
     convert ContinuousMap.tendsto_iff_tendstoUniformly.mp hM.hasProd
     · simp [f']
-    · exact funext fun k ↦ ContinuousMap.tprod_apply hM k
+    · exact funext fun k ↦ ContinuousMap.tprodFilter_apply hM k
 
 lemma multipliableUniformlyOn_one_add (hK : IsCompact K) (hu : Summable u)
     (h : ∀ᶠ i in cofinite, ∀ x ∈ K, ‖f i x‖ ≤ u i) (hcts : ∀ i, ContinuousOn (f i) K) :

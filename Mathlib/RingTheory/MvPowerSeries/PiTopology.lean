@@ -240,7 +240,7 @@ variable [Semiring R]
 /-- A multivariate power series is the sum (in the sense of summable families) of its monomials -/
 theorem hasSum_of_monomials_self (f : MvPowerSeries σ R) :
     HasSum (fun d : σ →₀ ℕ => monomial d (coeff d f)) f := by
-  rw [Pi.hasSum]
+  rw [HasSum, Pi.hasSumFilter]
   intro d
   convert hasSum_single d ?_ using 1
   · exact (coeff_monomial_same d _).symm
@@ -249,19 +249,19 @@ theorem hasSum_of_monomials_self (f : MvPowerSeries σ R) :
 /-- If the coefficient space is T2, then the multivariate power series is `tsum` of its monomials -/
 theorem as_tsum [T2Space R] (f : MvPowerSeries σ R) :
     f = tsum fun d : σ →₀ ℕ => monomial d (coeff d f) :=
-  (HasSum.tsum_eq (hasSum_of_monomials_self _)).symm
+  ((hasSum_of_monomials_self _).tsum_eq).symm
 
 section Sum
 variable {ι : Type*} {f : ι → MvPowerSeries σ R}
 
 theorem hasSum_iff_hasSum_coeff {g : MvPowerSeries σ R} :
     HasSum f g ↔ ∀ d : σ →₀ ℕ, HasSum (fun i ↦ coeff d (f i)) (coeff d g) := by
-  simp_rw [HasSum, ← map_sum]
+  simp_rw [HasSumFilter, ← map_sum]
   apply tendsto_iff_coeff_tendsto
 
 theorem summable_iff_summable_coeff :
     Summable f ↔ ∀ d : σ →₀ ℕ, Summable (fun i ↦ coeff d (f i)) := by
-  simp_rw [Summable, hasSum_iff_hasSum_coeff]
+  simp_rw [SummableFilter, hasSum_iff_hasSum_coeff]
   constructor
   · rintro ⟨a, h⟩ n
     exact ⟨coeff n a, h n⟩
@@ -275,7 +275,7 @@ variable [LinearOrder ι] [LocallyFiniteOrderBot ι]
 theorem summable_of_tendsto_weightedOrder_atTop_nhds_top {w : σ → ℕ}
     (h : Tendsto (fun i ↦ weightedOrder w (f i)) atTop (𝓝 ⊤)) : Summable f := by
   rcases isEmpty_or_nonempty ι with hempty | hempty
-  · apply summable_empty
+  · apply summableFilter_empty
   rw [summable_iff_summable_coeff]
   simp_rw [ENat.tendsto_nhds_top_iff_natCast_lt, Filter.eventually_atTop] at h
   intro d

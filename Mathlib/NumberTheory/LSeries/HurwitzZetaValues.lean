@@ -52,7 +52,7 @@ theorem cosZeta_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc 0 1) :
   rw [← (hasSum_nat_cosZeta x (?_ : 1 < re (2 * k))).tsum_eq]
   · refine Eq.trans ?_ <|
       (congr_arg ofReal (hasSum_one_div_nat_pow_mul_cos hk hx).tsum_eq).trans ?_
-    · rw [ofReal_tsum]
+    · rw [ofReal_tsumFilter]
       refine tsum_congr fun n ↦ ?_
       norm_cast
       ring_nf
@@ -78,7 +78,7 @@ theorem sinZeta_two_mul_nat_add_one (hk : k ≠ 0) (hx : x ∈ Icc 0 1) :
   rw [← (hasSum_nat_sinZeta x (?_ : 1 < re (2 * k + 1))).tsum_eq]
   · refine Eq.trans ?_ <|
       (congr_arg ofReal (hasSum_one_div_nat_pow_mul_sin hk hx).tsum_eq).trans ?_
-    · rw [ofReal_tsum]
+    · rw [ofReal_tsumFilter]
       refine tsum_congr fun n ↦ ?_
       norm_cast
       ring_nf

@@ -271,7 +271,7 @@ lemma hasSum_taylorSeries_log {z : ℂ} (hz : ‖z‖ < 1) :
 lemma hasSum_taylorSeries_neg_log {z : ℂ} (hz : ‖z‖ < 1) :
     HasSum (fun n : ℕ ↦ z ^ n / n) (-log (1 - z)) := by
   conv => enter [1, n]; rw [← neg_neg (z ^ n / n)]
-  refine HasSum.neg ?_
+  refine HasSumFilter.neg ?_
   convert hasSum_taylorSeries_log (z := -z) (norm_neg z ▸ hz) using 2 with n
   rcases n.eq_zero_or_pos with rfl | hn
   · simp

@@ -1289,7 +1289,7 @@ theorem sum_congr {μ ν : ℕ → Measure α} (h : ∀ n, μ n = ν n) : sum μ
 theorem sum_add_sum {ι : Type*} (μ ν : ι → Measure α) : sum μ + sum ν = sum fun n => μ n + ν n := by
   ext1 s hs
   simp only [add_apply, sum_apply _ hs,
-    ENNReal.summable.tsum_add ENNReal.summable]
+    ENNReal.summable.tsumFilter_add ENNReal.summable]
 
 @[simp] lemma sum_comp_equiv {ι ι' : Type*} (e : ι' ≃ ι) (m : ι → Measure α) :
     sum (m ∘ e) = sum m := by

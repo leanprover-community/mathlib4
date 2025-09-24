@@ -15,45 +15,48 @@ open Filter Finset Function
 section ConstSMul
 
 variable [Monoid γ] [TopologicalSpace α] [AddCommMonoid α] [DistribMulAction γ α]
-  [ContinuousConstSMul γ α] {f : β → α}
+  [ContinuousConstSMul γ α] {f : β → α} {L : Filter (Finset β)}
 
-theorem HasSum.const_smul {a : α} (b : γ) (hf : HasSum f a) : HasSum (fun i ↦ b • f i) (b • a) :=
+theorem HasSumFilter.const_smul {a : α} (b : γ) (hf : HasSumFilter L f a) :
+    HasSumFilter L (fun i ↦ b • f i) (b • a) :=
   hf.map (DistribMulAction.toAddMonoidHom α _) <| continuous_const_smul _
 
-theorem Summable.const_smul (b : γ) (hf : Summable f) : Summable fun i ↦ b • f i :=
-  (hf.hasSum.const_smul _).summable
+theorem SummableFilter.const_smul (b : γ) (hf : SummableFilter L f) :
+    SummableFilter L fun i ↦ b • f i :=
+  (hf.hasSumFilter.const_smul _).summableFilter
 
 /-- Infinite sums commute with scalar multiplication. Version for scalars living in a `Monoid`, but
   requiring a summability hypothesis. -/
-protected theorem Summable.tsum_const_smul [T2Space α] (b : γ) (hf : Summable f) :
-    ∑' i, b • f i = b • ∑' i, f i :=
-  (hf.hasSum.const_smul _).tsum_eq
+protected theorem SummableFilter.tsumFilter_const_smul [T2Space α] [L.NeBot] (b : γ)
+    (hf : SummableFilter L f) : ∑'[L] i, b • f i = b • ∑'[L] i, f i :=
+  (hf.hasSumFilter.const_smul _).tsumFilter_eq
 
-@[deprecated (since := "2025-04-12")] alias tsum_const_smul := Summable.tsum_const_smul
+@[deprecated (since := "2025-04-12")] alias tsum_const_smul := SummableFilter.tsumFilter_const_smul
 
 /-- Infinite sums commute with scalar multiplication. Version for scalars living in a `Group`, but
   not requiring any summability hypothesis. -/
-lemma tsum_const_smul' {γ : Type*} [Group γ] [DistribMulAction γ α] [ContinuousConstSMul γ α]
-    [T2Space α] (g : γ) : ∑' (i : β), g • f i = g • ∑' (i : β), f i := by
-  by_cases hf : Summable f
-  · exact hf.tsum_const_smul g
-  rw [tsum_eq_zero_of_not_summable hf]
+lemma tsumFilter_const_smul' {γ : Type*} [Group γ] [DistribMulAction γ α] [ContinuousConstSMul γ α]
+    [T2Space α] [L.NeBot] (g : γ) : ∑'[L] (i : β), g • f i = g • ∑'[L] (i : β), f i := by
+  by_cases hf : SummableFilter L f
+  · exact hf.tsumFilter_const_smul g
+  rw [tsumFilter_eq_zero_of_not_summableFilter hf]
   simp only [smul_zero]
   let mul_g : α ≃+ α := DistribMulAction.toAddEquiv α g
-  apply tsum_eq_zero_of_not_summable
-  change ¬ Summable (mul_g ∘ f)
-  rwa [Summable.map_iff_of_equiv mul_g]
+  apply tsumFilter_eq_zero_of_not_summableFilter
+  change ¬ SummableFilter L (mul_g ∘ f)
+  rwa [SummableFilter.map_iff_of_equiv mul_g]
   · apply continuous_const_smul
   · apply continuous_const_smul
 
 /-- Infinite sums commute with scalar multiplication. Version for scalars living in a
   `DivisionRing`; no summability hypothesis. This could be made to work for a
   `[GroupWithZero γ]` if there was such a thing as `DistribMulActionWithZero`. -/
-lemma tsum_const_smul'' {γ : Type*} [DivisionSemiring γ] [Module γ α] [ContinuousConstSMul γ α]
-    [T2Space α] (g : γ) : ∑' (i : β), g • f i = g • ∑' (i : β), f i := by
+lemma tsumFilter_const_smul'' {γ : Type*} [DivisionSemiring γ] [Module γ α]
+    [ContinuousConstSMul γ α] [T2Space α] [L.NeBot] (g : γ) :
+    ∑'[L] (i : β), g • f i = g • ∑'[L] (i : β), f i := by
   rcases eq_or_ne g 0 with rfl | hg
   · simp
-  · exact tsum_const_smul' (Units.mk0 g hg)
+  · exact tsumFilter_const_smul' (Units.mk0 g hg)
 
 end ConstSMul
 
@@ -64,19 +67,21 @@ variable {ι κ R R₂ M M₂ : Type*}
 section SMulConst
 
 variable [Semiring R] [TopologicalSpace R] [TopologicalSpace M] [AddCommMonoid M] [Module R M]
-  [ContinuousSMul R M] {f : ι → R}
+  [ContinuousSMul R M] {f : ι → R} {L : Filter (Finset ι)}
 
-theorem HasSum.smul_const {r : R} (hf : HasSum f r) (a : M) : HasSum (fun z ↦ f z • a) (r • a) :=
+theorem HasSumFilter.smul_const {r : R} (hf : HasSumFilter L f r) (a : M) :
+    HasSumFilter L (fun z ↦ f z • a) (r • a) :=
   hf.map ((smulAddHom R M).flip a) (continuous_id.smul continuous_const)
 
-theorem Summable.smul_const (hf : Summable f) (a : M) : Summable fun z ↦ f z • a :=
-  (hf.hasSum.smul_const _).summable
+theorem SummableFilter.smul_const (hf : SummableFilter L f) (a : M) :
+    SummableFilter L fun z ↦ f z • a :=
+  (hf.hasSumFilter.smul_const _).summableFilter
 
-protected theorem Summable.tsum_smul_const [T2Space M] (hf : Summable f) (a : M) :
-    ∑' z, f z • a = (∑' z, f z) • a :=
-  (hf.hasSum.smul_const _).tsum_eq
+protected theorem SummableFilter.tsumFilter_smul_const [T2Space M] [L.NeBot]
+    (hf : SummableFilter L f) (a : M) : ∑'[L] z, f z • a = (∑'[L] z, f z) • a :=
+  (hf.hasSumFilter.smul_const _).tsumFilter_eq
 
-@[deprecated (since := "2025-04-12")] alias tsum_smul_const := Summable.tsum_smul_const
+@[deprecated (since := "2025-04-12")] alias tsum_smul_const := SummableFilter.tsumFilter_smul_const
 
 end SMulConst
 
@@ -118,56 +123,56 @@ section HasSum
 -- don't have bundled continuous additive homomorphisms.
 variable [Semiring R] [Semiring R₂] [AddCommMonoid M] [Module R M] [AddCommMonoid M₂] [Module R₂ M₂]
   [TopologicalSpace M] [TopologicalSpace M₂] {σ : R →+* R₂} {σ' : R₂ →+* R} [RingHomInvPair σ σ']
-  [RingHomInvPair σ' σ]
+  [RingHomInvPair σ' σ] {L : Filter (Finset ι)}
 
 /-- Applying a continuous linear map commutes with taking an (infinite) sum. -/
-protected theorem ContinuousLinearMap.hasSum {f : ι → M} (φ : M →SL[σ] M₂) {x : M}
-    (hf : HasSum f x) : HasSum (fun b : ι ↦ φ (f b)) (φ x) := by
+protected theorem ContinuousLinearMap.hasSumFilter {f : ι → M} (φ : M →SL[σ] M₂) {x : M}
+    (hf : HasSumFilter L f x) : HasSumFilter L (fun b : ι ↦ φ (f b)) (φ x) := by
   simpa only using hf.map φ.toLinearMap.toAddMonoidHom φ.continuous
 
-alias HasSum.mapL := ContinuousLinearMap.hasSum
+alias HasSumFilter.mapL := ContinuousLinearMap.hasSumFilter
 
-protected theorem ContinuousLinearMap.summable {f : ι → M} (φ : M →SL[σ] M₂) (hf : Summable f) :
-    Summable fun b : ι ↦ φ (f b) :=
-  (hf.hasSum.mapL φ).summable
+protected theorem ContinuousLinearMap.summableFilter {f : ι → M} (φ : M →SL[σ] M₂)
+    (hf : SummableFilter L f) : SummableFilter L fun b : ι ↦ φ (f b) :=
+  (φ.hasSumFilter hf.hasSumFilter).summableFilter
 
-alias Summable.mapL := ContinuousLinearMap.summable
+alias Summable.mapL := ContinuousLinearMap.summableFilter
 
-protected theorem ContinuousLinearMap.map_tsum [T2Space M₂] {f : ι → M} (φ : M →SL[σ] M₂)
-    (hf : Summable f) : φ (∑' z, f z) = ∑' z, φ (f z) :=
-  (hf.hasSum.mapL φ).tsum_eq.symm
+protected theorem ContinuousLinearMap.map_tsumFilter [T2Space M₂] [L.NeBot] {f : ι → M}
+    (φ : M →SL[σ] M₂) (hf : SummableFilter L f) : φ (∑'[L] z, f z) = ∑'[L] z, φ (f z) :=
+  (φ.hasSumFilter hf.hasSumFilter).tsumFilter_eq.symm
 
 /-- Applying a continuous linear map commutes with taking an (infinite) sum. -/
-protected theorem ContinuousLinearEquiv.hasSum {f : ι → M} (e : M ≃SL[σ] M₂) {y : M₂} :
-    HasSum (fun b : ι ↦ e (f b)) y ↔ HasSum f (e.symm y) :=
+protected theorem ContinuousLinearEquiv.hasSumFilter {f : ι → M} (e : M ≃SL[σ] M₂) {y : M₂} :
+    HasSumFilter L (fun b : ι ↦ e (f b)) y ↔ HasSumFilter L f (e.symm y) :=
   ⟨fun h ↦ by simpa only [e.symm.coe_coe, e.symm_apply_apply] using h.mapL (e.symm : M₂ →SL[σ'] M),
-    fun h ↦ by simpa only [e.coe_coe, e.apply_symm_apply] using (e : M →SL[σ] M₂).hasSum h⟩
+    fun h ↦ by simpa only [e.coe_coe, e.apply_symm_apply] using (e : M →SL[σ] M₂).hasSumFilter h⟩
 
 /-- Applying a continuous linear map commutes with taking an (infinite) sum. -/
-protected theorem ContinuousLinearEquiv.hasSum' {f : ι → M} (e : M ≃SL[σ] M₂) {x : M} :
-    HasSum (fun b : ι ↦ e (f b)) (e x) ↔ HasSum f x := by
-  rw [e.hasSum, ContinuousLinearEquiv.symm_apply_apply]
+protected theorem ContinuousLinearEquiv.hasSumFilter' {f : ι → M} (e : M ≃SL[σ] M₂) {x : M} :
+    HasSumFilter L (fun b : ι ↦ e (f b)) (e x) ↔ HasSumFilter L f x := by
+  rw [e.hasSumFilter, ContinuousLinearEquiv.symm_apply_apply]
 
-protected theorem ContinuousLinearEquiv.summable {f : ι → M} (e : M ≃SL[σ] M₂) :
-    (Summable fun b : ι ↦ e (f b)) ↔ Summable f :=
-  ⟨fun hf ↦ (e.hasSum.1 hf.hasSum).summable, (e : M →SL[σ] M₂).summable⟩
+protected theorem ContinuousLinearEquiv.summableFilter {f : ι → M} (e : M ≃SL[σ] M₂) :
+    (SummableFilter L fun b : ι ↦ e (f b)) ↔ SummableFilter L f :=
+  ⟨fun hf ↦ (e.hasSumFilter.1 hf.hasSumFilter).summableFilter, (e : M →SL[σ] M₂).summableFilter⟩
 
-theorem ContinuousLinearEquiv.tsum_eq_iff [T2Space M] [T2Space M₂] {f : ι → M} (e : M ≃SL[σ] M₂)
-    {y : M₂} : (∑' z, e (f z)) = y ↔ ∑' z, f z = e.symm y := by
-  by_cases hf : Summable f
+theorem ContinuousLinearEquiv.tsumFilter_eq_iff [T2Space M] [T2Space M₂] [L.NeBot] {f : ι → M}
+    (e : M ≃SL[σ] M₂) {y : M₂} : (∑'[L] z, e (f z)) = y ↔ ∑'[L] z, f z = e.symm y := by
+  by_cases hf : SummableFilter L f
   · exact
-      ⟨fun h ↦ (e.hasSum.mp ((e.summable.mpr hf).hasSum_iff.mpr h)).tsum_eq, fun h ↦
-        (e.hasSum.mpr (hf.hasSum_iff.mpr h)).tsum_eq⟩
-  · have hf' : ¬Summable fun z ↦ e (f z) := fun h ↦ hf (e.summable.mp h)
-    rw [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable hf']
+     ⟨fun h ↦ (e.hasSumFilter.mp ((e.summableFilter.mpr hf).hasSumFilter_iff.mpr h)).tsumFilter_eq,
+      fun h ↦ (e.hasSumFilter.mpr (hf.hasSumFilter_iff.mpr h)).tsumFilter_eq⟩
+  · have hf' : ¬SummableFilter L fun z ↦ e (f z) := fun h ↦ hf (e.summableFilter.mp h)
+    rw [tsumFilter_eq_zero_of_not_summableFilter hf, tsumFilter_eq_zero_of_not_summableFilter hf']
     refine ⟨?_, fun H ↦ ?_⟩
     · rintro rfl
       simp
     · simpa using congr_arg (fun z ↦ e z) H
 
-protected theorem ContinuousLinearEquiv.map_tsum [T2Space M] [T2Space M₂] {f : ι → M}
-    (e : M ≃SL[σ] M₂) : e (∑' z, f z) = ∑' z, e (f z) := by
-  refine symm (e.tsum_eq_iff.mpr ?_)
+protected theorem ContinuousLinearEquiv.map_tsumFilter [T2Space M] [T2Space M₂] [L.NeBot]
+    {f : ι → M} (e : M ≃SL[σ] M₂) : e (∑'[L] z, f z) = ∑'[L] z, e (f z) := by
+  refine symm (e.tsumFilter_eq_iff.mpr ?_)
   rw [e.symm_apply_apply _]
 
 end HasSum
@@ -216,7 +221,7 @@ lemma MulAction.automorphize_smul_left [Group α] [MulAction α β] (f : β → 
     use a
   change ∑' a : α, g (π (a • b)) • f (a • b) = g (π b) • ∑' a : α, f (a • b)
   simp_rw [H₁]
-  exact tsum_const_smul'' _
+  exact tsumFilter_const_smul'' _
 
 /-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/
@@ -235,7 +240,7 @@ lemma AddAction.automorphize_smul_left [AddGroup α] [AddAction α β] (f : β �
     use a
   change ∑' a : α, g (π (a +ᵥ b)) • f (a +ᵥ b) = g (π b) • ∑' a : α, f (a +ᵥ b)
   simp_rw [H₁]
-  exact tsum_const_smul'' _
+  exact tsumFilter_const_smul'' _
 
 section
 

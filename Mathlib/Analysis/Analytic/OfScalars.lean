@@ -149,12 +149,12 @@ theorem ofScalarsSum_of_subsingleton [Subsingleton E] {x : E} : ofScalarsSum c x
 @[simp]
 theorem ofScalarsSum_op [T2Space E] (x : E) :
     ofScalarsSum c (MulOpposite.op x) = MulOpposite.op (ofScalarsSum c x) := by
-  simp [ofScalars_sum_eq, ← MulOpposite.op_pow, ← MulOpposite.op_smul, tsum_op]
+  simp [ofScalars_sum_eq, ← MulOpposite.op_pow, ← MulOpposite.op_smul, tsumFilter_op]
 
 @[simp]
 theorem ofScalarsSum_unop [T2Space E] (x : Eᵐᵒᵖ) :
     ofScalarsSum c (MulOpposite.unop x) = MulOpposite.unop (ofScalarsSum c x) := by
-  simp [ofScalars_sum_eq, ← MulOpposite.unop_pow, ← MulOpposite.unop_smul, tsum_unop]
+  simp [ofScalars_sum_eq, ← MulOpposite.unop_pow, ← MulOpposite.unop_smul, tsumFilter_unop]
 
 end Field
 

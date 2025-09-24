@@ -118,11 +118,11 @@ theorem exp_def_of_smul_comm (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd
   by_cases h : Summable (fun (n : ℕ) => (expSeries 𝕜 R n) fun _ ↦ fst x)
   · refine (hasSum_expSeries_of_smul_comm 𝕜 x hx ?_).tsum_eq
     exact h.hasSum
-  · rw [tsum_eq_zero_of_not_summable h, zero_smul, inr_zero, inl_zero, zero_add,
-      tsum_eq_zero_of_not_summable]
+  · rw [tsum, tsum, tsumFilter_eq_zero_of_not_summableFilter h, zero_smul, inr_zero, inl_zero,
+      zero_add, tsumFilter_eq_zero_of_not_summableFilter]
     simp_rw [← fst_expSeries] at h
     refine mt ?_ h
-    exact (Summable.map · (TrivSqZeroExt.fstHom 𝕜 R M).toLinearMap continuous_fst)
+    exact (SummableFilter.map · (TrivSqZeroExt.fstHom 𝕜 R M).toLinearMap continuous_fst)
 
 @[simp]
 theorem exp_inl (x : R) : exp 𝕜 (inl x : tsze R M) = inl (exp 𝕜 x) := by

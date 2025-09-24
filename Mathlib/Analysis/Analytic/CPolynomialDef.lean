@@ -239,7 +239,7 @@ theorem HasFiniteFPowerSeriesOnBall.bound_zero_of_eq_zero (hf : ∀ y ∈ EMetri
     exact le_top
   · intro y hy
     rw [hf (x + y)]
-    · convert hasSum_zero
+    · convert hasSumFilter_zero
       rw [hp, ContinuousMultilinearMap.zero_apply]
     · rwa [EMetric.mem_ball, edist_eq_enorm_sub, add_comm, add_sub_cancel_right,
         ← edist_zero_eq_enorm, ← EMetric.mem_ball]
