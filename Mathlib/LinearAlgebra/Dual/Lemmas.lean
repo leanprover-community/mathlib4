@@ -46,7 +46,7 @@ This file contains basic results on dual vector spaces.
     `M ⧸ W.dualCoannihilator →ₗ[R] Dual R W`.
     It is an perfect pairing when `R` is a field and `W` is finite-dimensional.
 * Vector spaces:
-  * `Subspace.dualAnnihilator_dualConnihilator_eq` says that the double dual annihilator,
+  * `Subspace.dualAnnihilator_dualCoannihilator_eq` says that the double dual annihilator,
     pulled back ground `Module.Dual.eval`, is the original submodule.
   * `Subspace.dualAnnihilator_gci` says that `module.dualAnnihilator_gc R M` is an
     antitone Galois coinsertion.
@@ -123,7 +123,7 @@ theorem Basis.linearEquiv_dual_iff_finiteDimensional [Field K] [AddCommGroup V] 
   have := e.lift_rank_eq
   rwa [lift_umax, lift_id'.{uV}] at this
 
-theorem Basis.dual_rank_eq (b : Basis ι R M) :
+theorem Module.Basis.dual_rank_eq (b : Basis ι R M) :
     Module.rank R (Dual R M) = Cardinal.lift.{uR,uM} (Module.rank R M) := by
   classical rw [← lift_umax.{uM,uR}, b.toDualEquiv.lift_rank_eq, lift_id'.{uM,uR}]
 
@@ -257,7 +257,7 @@ instance _root_.Prod.instModuleIsReflexive [IsReflexive R N] :
         (dualProdDualEquivDual R (Dual R M) (Dual R N)).symm
     have : Dual.eval R (M × N) = e.symm.comp ((Dual.eval R M).prodMap (Dual.eval R N)) := by
       ext m f <;> simp [e]
-    simp only [this, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.dualMap_symm,
+    simp only [this,
       coe_comp, LinearEquiv.coe_coe, EquivLike.comp_bijective]
     exact (bijective_dual_eval R M).prodMap (bijective_dual_eval R N)
 
@@ -832,7 +832,7 @@ theorem dualAnnihilator_inf_eq (W W' : Subspace K V₁) :
   rfl
 
 -- This is also true if `V₁` is finite dimensional since one can restrict `ι` to some subtype
--- for which the infi and supr are the same.
+-- for which the infimum and supremum are the same.
 -- The obstruction to the `dualAnnihilator_inf_eq` argument carrying through is that we need
 -- for `Module.Dual R (Π (i : ι), V ⧸ W i) ≃ₗ[K] Π (i : ι), Module.Dual R (V ⧸ W i)`, which is not
 -- true for infinite `ι`. One would need to add additional hypothesis on `W` (for example, it might
@@ -1025,7 +1025,7 @@ sending `f ⊗ g` to the composition of `TensorProduct.map f g` with
 the natural isomorphism `R ⊗ R ≃ R`.
 -/
 def dualDistrib : Dual R M ⊗[R] Dual R N →ₗ[R] Dual R (M ⊗[R] N) :=
-  compRight ↑(TensorProduct.lid R R) ∘ₗ homTensorHomMap R M N R R
+  compRight _ (TensorProduct.lid R R) ∘ₗ homTensorHomMap R M N R R
 
 variable {R M N}
 
@@ -1042,7 +1042,7 @@ variable [Module R M] [Module A M] [Module R N] [IsScalarTower R A M]
 
 /-- Heterobasic version of `TensorProduct.dualDistrib` -/
 def dualDistrib : Dual A M ⊗[R] Dual R N →ₗ[A] Dual A (M ⊗[R] N) :=
-  compRight (Algebra.TensorProduct.rid R A A).toLinearMap ∘ₗ homTensorHomMap R A A M N A R
+  compRight _ (Algebra.TensorProduct.rid R A A).toLinearMap ∘ₗ homTensorHomMap R A A M N A R
 
 variable {R M N}
 
@@ -1061,10 +1061,9 @@ variable [Module R M] [Module R N]
 -/
 noncomputable def dualDistribInvOfBasis (b : Basis ι R M) (c : Basis κ R N) :
     Dual R (M ⊗[R] N) →ₗ[R] Dual R M ⊗[R] Dual R N :=
-  -- Porting note: ∑ (i) (j) does not seem to work; applyₗ needs a little help to unify
   ∑ i, ∑ j,
     (ringLmapEquivSelf R ℕ _).symm (b.dualBasis i ⊗ₜ c.dualBasis j) ∘ₗ
-      (applyₗ (c j)) ∘ₗ (applyₗ (b i)) ∘ₗ lcurry R M N R
+      applyₗ (c j) ∘ₗ applyₗ (b i) ∘ₗ lcurry R M N R
 
 @[simp]
 theorem dualDistribInvOfBasis_apply (b : Basis ι R M) (c : Basis κ R N) (f : Dual R (M ⊗[R] N)) :
@@ -1079,7 +1078,7 @@ theorem dualDistrib_dualDistribInvOfBasis_left_inverse (b : Basis ι R M) (c : B
   rintro ⟨i', j'⟩
   simp only [dualDistrib, Basis.coe_dualBasis, coe_comp, Function.comp_apply,
     dualDistribInvOfBasis_apply, Basis.coord_apply, Basis.tensorProduct_repr_tmul_apply,
-    Basis.repr_self, ne_eq, _root_.map_sum, map_smul, homTensorHomMap_apply, compRight_apply,
+    Basis.repr_self, _root_.map_sum, map_smul, homTensorHomMap_apply, compRight_apply,
     Basis.tensorProduct_apply, coeFn_sum, Finset.sum_apply, smul_apply, LinearEquiv.coe_coe,
     map_tmul, lid_tmul, smul_eq_mul, id_coe, id_eq]
   rw [Finset.sum_eq_single i, Finset.sum_eq_single j]
@@ -1092,7 +1091,7 @@ theorem dualDistrib_dualDistribInvOfBasis_right_inverse (b : Basis ι R M) (c : 
   rintro ⟨i, j⟩
   simp only [Basis.tensorProduct_apply, Basis.coe_dualBasis, coe_comp, Function.comp_apply,
     dualDistribInvOfBasis_apply, dualDistrib_apply, Basis.coord_apply, Basis.repr_self,
-    ne_eq, id_coe, id_eq]
+    id_coe, id_eq]
   rw [Finset.sum_eq_single i, Finset.sum_eq_single j]
   · simp
   all_goals { intros; simp [*] at * }

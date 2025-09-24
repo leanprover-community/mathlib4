@@ -5,11 +5,12 @@ Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.Norm.Defs
 import Mathlib.RingTheory.Trace.Defs
+
 /-!
-
-# Relation between Norms and Traces
-
+# Relation between norms and traces
 -/
+
+open Module
 
 lemma Algebra.norm_one_add_smul {A B} [CommRing A] [CommRing B] [Algebra A B]
     [Module.Free A B] [Module.Finite A B] (a : A) (x : B) :

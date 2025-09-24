@@ -58,7 +58,7 @@ lemma Module.FinitePresentation.exists_basis_localizedModule_powers
       (Finsupp.single i 1)
     simp only [Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, Algebra.linearMap_apply,
       map_one, LocalizedModule.mkLinearMap_apply] at this
-    show LocalizedModule.lift _ _ _ (e.symm (e'.symm _)) = _
+    change LocalizedModule.lift _ _ _ (e.symm (e'.symm _)) = _
     replace he := LinearMap.congr_fun he (e.symm (e'.symm (Finsupp.single i 1)))
     simp only [LinearMap.coe_comp, LinearMap.coe_restrictScalars, LinearEquiv.coe_coe,
       Function.comp_apply, LinearEquiv.apply_symm_apply, LinearEquiv.restrictScalars_apply] at he

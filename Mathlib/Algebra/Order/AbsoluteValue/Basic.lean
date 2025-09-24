@@ -3,11 +3,11 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Anne Baanen
 -/
+import Mathlib.Algebra.GroupWithZero.Regular
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Regular.Basic
-import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Absolute values
@@ -110,8 +110,12 @@ protected alias ⟨_, ne_zero⟩ := AbsoluteValue.ne_zero_iff
 
 @[simp]
 protected theorem pos_iff {x : R} : 0 < abv x ↔ x ≠ 0 :=
-  (abv.nonneg x).gt_iff_ne.trans abv.ne_zero_iff
+  (abv.nonneg x).lt_iff_ne'.trans abv.ne_zero_iff
 protected alias ⟨_, pos⟩ := AbsoluteValue.pos_iff
+
+@[simp]
+protected theorem nonpos_iff {x : R} : abv x ≤ 0 ↔ x = 0 := by
+  simp only [← abv.eq_zero, le_antisymm_iff, abv.nonneg, and_true]
 
 theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
   h <| by simp [← abv.map_mul]
@@ -246,9 +250,9 @@ open Int in
 /-- Values of an absolute value coincide on the image of `ℕ` in `R`
 if and only if they coincide on the image of `ℤ` in `R`. -/
 lemma eq_on_nat_iff_eq_on_int {f g : AbsoluteValue R S} :
-    (∀ n : ℕ , f n = g n) ↔ ∀ n : ℤ , f n = g n := by
+    (∀ n : ℕ, f n = g n) ↔ ∀ n : ℤ, f n = g n := by
   refine ⟨fun h z ↦ ?_, fun a n ↦ mod_cast a n⟩
-  obtain ⟨n , rfl | rfl⟩ := Int.eq_nat_or_neg z <;> simp [h n]
+  obtain ⟨n, rfl | rfl⟩ := Int.eq_nat_or_neg z <;> simp [h n]
 
 end OrderedCommRing
 
@@ -263,7 +267,7 @@ protected def abs : AbsoluteValue S S where
   toFun := abs
   nonneg' := abs_nonneg
   eq_zero' _ := abs_eq_zero
-  add_le' := abs_add
+  add_le' := abs_add_le
   map_mul' := abs_mul
 
 instance : Inhabited (AbsoluteValue S S) :=

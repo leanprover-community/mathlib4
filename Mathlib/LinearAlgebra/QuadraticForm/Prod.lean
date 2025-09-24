@@ -258,7 +258,7 @@ def IsometryEquiv.pi [Fintype ι]
     {Q : ∀ i, QuadraticMap R (Mᵢ i) P} {Q' : ∀ i, QuadraticMap R (Nᵢ i) P}
     (e : ∀ i, (Q i).IsometryEquiv (Q' i)) : (pi Q).IsometryEquiv (pi Q') where
   map_app' x := by
-    simp only [pi_apply, LinearEquiv.piCongrRight, LinearEquiv.toFun_eq_coe,
+    simp only [pi_apply, LinearEquiv.piCongrRight,
       IsometryEquiv.coe_toLinearEquiv, IsometryEquiv.map_app]
   toLinearEquiv := LinearEquiv.piCongrRight fun i => (e i : Mᵢ i ≃ₗ[R] Nᵢ i)
 

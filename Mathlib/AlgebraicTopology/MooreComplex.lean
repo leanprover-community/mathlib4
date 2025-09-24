@@ -37,6 +37,8 @@ open CategoryTheory CategoryTheory.Limits
 
 open Opposite
 
+open scoped Simplicial
+
 namespace AlgebraicTopology
 
 variable {C : Type*} [Category C] [Abelian C]
@@ -55,7 +57,7 @@ variable (X : SimplicialObject C)
 
 /-- The normalized Moore complex in degree `n`, as a subobject of `X n`.
 -/
-def objX : ∀ n : ℕ, Subobject (X.obj (op (SimplexCategory.mk n)))
+def objX : ∀ n : ℕ, Subobject (X.obj (op ⦋n⦌))
   | 0 => ⊤
   | n + 1 => Finset.univ.inf fun k : Fin (n + 1) => kernelSubobject (X.δ k.succ)
 
@@ -117,7 +119,7 @@ variable {X} {Y : SimplicialObject C} (f : X ⟶ Y)
 @[simps!]
 def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
   ChainComplex.ofHom _ _ _ _ _ _
-    (fun n => factorThru _ (arrow _ ≫ f.app (op (SimplexCategory.mk n))) (by
+    (fun n => factorThru _ (arrow _ ≫ f.app (op ⦋n⦌)) (by
       cases n <;> dsimp
       · apply top_factors
       · refine (finset_inf_factors _).mpr fun i _ => kernelSubobject_factors _ _ ?_
@@ -127,7 +129,7 @@ def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
         erw [kernelSubobject_arrow_comp_assoc]
         rw [zero_comp, comp_zero]))
     fun n => by
-    cases n <;> dsimp [objD, objX] <;> aesop_cat
+    cases n <;> dsimp [objD, objX] <;> cat_disch
 
 end NormalizedMooreComplex
 
@@ -147,7 +149,7 @@ def normalizedMooreComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
   obj := obj
   map f := map f
 
--- Porting note: removed @[simp] as it is not in normal form
+-- Not `@[simp]` as `simp` can prove this.
 theorem normalizedMooreComplex_objD (X : SimplicialObject C) (n : ℕ) :
     ((normalizedMooreComplex C).obj X).d (n + 1) n = NormalizedMooreComplex.objD X n :=
   ChainComplex.of_d _ _ (d_squared X) n

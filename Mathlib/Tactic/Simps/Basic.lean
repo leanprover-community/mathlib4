@@ -386,9 +386,9 @@ structure ProjectionData where
   The composition of these projections is required to be definitionally equal to the provided
   Expression. -/
   projNrs : List Nat
-  /-- A boolean specifying whether `simp` lemmas are generated for this projection by default. -/
+  /-- A Boolean specifying whether `simp` lemmas are generated for this projection by default. -/
   isDefault : Bool
-  /-- A boolean specifying whether this projection is written as prefix. -/
+  /-- A Boolean specifying whether this projection is written as prefix. -/
   isPrefix : Bool
   deriving Inhabited
 
@@ -487,11 +487,11 @@ Example: If `e : α ≃+ β` and ``projName = `invFun`` then this returns `[0, 1
 projection of `MulEquiv` is `toEquiv` and the second projection of `Equiv` is `invFun`. -/
 def findProjectionIndices (strName projName : Name) : MetaM (List Nat) := do
   let env ← getEnv
-  let .some baseStr := findField? env strName projName |
+  let some baseStr := findField? env strName projName |
     throwError "{strName} has no field {projName} in parent structure"
-  let .some fullProjName := getProjFnForField? env baseStr projName |
+  let some fullProjName := getProjFnForField? env baseStr projName |
     throwError "no such field {projName}"
-  let .some pathToField := getPathToBaseStructure? env baseStr strName |
+  let some pathToField := getPathToBaseStructure? env baseStr strName |
     throwError "no such field {projName}"
   let allProjs := pathToField ++ [fullProjName]
   return allProjs.map (env.getProjectionFnInfo? · |>.get!.i)
@@ -794,8 +794,8 @@ Optionally, this command accepts three optional arguments:
   `set_option trace.simps.verbose true` was set.
 -/
 def getRawProjections (stx : Syntax) (str : Name) (traceIfExists : Bool := false)
-  (rules : Array ProjectionRule := #[]) (trc := false) :
-  CoreM (List Name × Array ProjectionData) := do
+    (rules : Array ProjectionRule := #[]) (trc := false) :
+    CoreM (List Name × Array ProjectionData) := do
   withOptions (· |>.updateBool `trace.simps.verbose (trc || ·)) <| do
   let env ← getEnv
   if let some data := (structureExt.getState env).find? str then
@@ -997,21 +997,20 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
     throwError "simps tried to add lemma{indentD m!"{.ofConstName declName} : {declType}"}\n\
       to the environment, but it already exists."
   trace[simps.verbose] "adding projection {declName}:{indentExpr declType}"
-  try
+  prependError "Failed to add projection lemma {declName}:" do
     addDecl <| .thmDecl {
       name := declName
       levelParams := univs
       type := declType
       value := declValue }
-  catch ex =>
-    throwError "Failed to add projection lemma {declName}. Nested error:\n{ex.toMessageData}"
+  inferDefEqAttr declName
   addDeclarationRangesFromSyntax declName (← getRef) ref
   _ ← MetaM.run' <| TermElabM.run' <| addTermInfo (isBinder := true) ref <|
     ← mkConstWithLevelParams declName
   if cfg.isSimp then
     addSimpTheorem simpExtension declName true false .global <| eval_prio default
   _ ← cfg.attrs.mapM fun simpAttr ↦ do
-    let .some simpDecl ← getSimpExtension? simpAttr |
+    let some simpDecl ← getSimpExtension? simpAttr |
       throwError "{simpAttr} is not a simp-attribute."
     addSimpTheorem simpDecl declName true false .global <| eval_prio default
 
@@ -1054,8 +1053,8 @@ was just used. In that case we need to apply these projections before we continu
 `simpLemmas`: names of the simp lemmas added so far.(simpLemmas : Array Name)
 -/
 partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
-  (args : Array Expr) (mustBeStr : Bool) (cfg : Config)
-  (todo : List (String × Syntax)) (toApply : List Nat) : MetaM (Array Name) := do
+    (args : Array Expr) (mustBeStr : Bool) (cfg : Config)
+    (todo : List (String × Syntax)) (toApply : List Nat) : MetaM (Array Name) := do
   -- we don't want to unfold non-reducible definitions (like `Set`) to apply more arguments
   trace[simps.debug] "Type of the Expression before normalizing: {type}"
   withTransparency cfg.typeMd <| forallTelescopeReducing type fun typeArgs tgt ↦ withDefault do
@@ -1212,7 +1211,7 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
   let nm : NameStruct :=
     { parent := nm.getPrefix
       components :=
-        if let .some n := cfg.nameStem then
+        if let some n := cfg.nameStem then
           if n == "" then [] else [n]
         else
           let s := nm.lastComponentAsString

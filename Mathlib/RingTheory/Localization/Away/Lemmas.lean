@@ -55,7 +55,7 @@ lemma span_range_mulNumerator_eq_top {s : Set R}
   obtain ⟨y, hy, ⟨-, m, rfl⟩, hyz⟩ := h₂
   rw [IsLocalization.eq] at hyz
   obtain ⟨⟨-, n, rfl⟩, hc⟩ := hyz
-  simp only [← mul_assoc, OneMemClass.coe_one, one_mul, mul_one] at hc
+  simp only [OneMemClass.coe_one, one_mul, mul_one] at hc
   use n + m
   simpa [pow_add, hc] using Ideal.mul_mem_left _ _ hy
 

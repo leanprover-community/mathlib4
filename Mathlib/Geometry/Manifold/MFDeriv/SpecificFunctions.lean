@@ -3,6 +3,7 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
+import Mathlib.Analysis.Calculus.FDeriv.Mul
 import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 
 /-!
@@ -378,7 +379,7 @@ theorem mdifferentiableOn_prod_iff (f : M → M' × N') :
     MDifferentiableOn I (I'.prod J') f s ↔
       MDifferentiableOn I I' (Prod.fst ∘ f) s ∧ MDifferentiableOn I J' (Prod.snd ∘ f) s :=
   ⟨fun h ↦ ⟨fun x hx ↦ ((mdifferentiableWithinAt_prod_iff f).1 (h x hx)).1,
-      fun x hx ↦ ((mdifferentiableWithinAt_prod_iff f).1 (h x hx)).2⟩ ,
+      fun x hx ↦ ((mdifferentiableWithinAt_prod_iff f).1 (h x hx)).2⟩,
     fun h x hx ↦ (mdifferentiableWithinAt_prod_iff f).2 ⟨h.1 x hx, h.2 x hx⟩⟩
 
 theorem mdifferentiableOn_prod_module_iff (f : M → F₁ × F₂) :
@@ -580,13 +581,27 @@ section Group
 
 variable {z : M} {f g : M → E'} {f' g' : TangentSpace I z →L[𝕜] E'}
 
+theorem HasMFDerivWithinAt.add {s : Set M} (hf : HasMFDerivWithinAt I 𝓘(𝕜, E') f s z f')
+    (hg : HasMFDerivWithinAt I 𝓘(𝕜, E') g s z g') :
+    HasMFDerivWithinAt I 𝓘(𝕜, E') (f + g) s z (f' + g') :=
+  ⟨hf.1.add hg.1, hf.2.add hg.2⟩
+
 theorem HasMFDerivAt.add (hf : HasMFDerivAt I 𝓘(𝕜, E') f z f')
     (hg : HasMFDerivAt I 𝓘(𝕜, E') g z g') : HasMFDerivAt I 𝓘(𝕜, E') (f + g) z (f' + g') :=
   ⟨hf.1.add hg.1, hf.2.add hg.2⟩
 
+theorem MDifferentiableWithinAt.add {s : Set M} (hf : MDifferentiableWithinAt I 𝓘(𝕜, E') f s z)
+    (hg : MDifferentiableWithinAt I 𝓘(𝕜, E') g s z) :
+    MDifferentiableWithinAt I 𝓘(𝕜, E') (f + g) s z :=
+  (hf.hasMFDerivWithinAt.add hg.hasMFDerivWithinAt).mdifferentiableWithinAt
+
 theorem MDifferentiableAt.add (hf : MDifferentiableAt I 𝓘(𝕜, E') f z)
     (hg : MDifferentiableAt I 𝓘(𝕜, E') g z) : MDifferentiableAt I 𝓘(𝕜, E') (f + g) z :=
   (hf.hasMFDerivAt.add hg.hasMFDerivAt).mdifferentiableAt
+
+theorem MDifferentiableOn.add {s : Set M} (hf : MDifferentiableOn I 𝓘(𝕜, E') f s)
+    (hg : MDifferentiableOn I 𝓘(𝕜, E') g s) : MDifferentiableOn I 𝓘(𝕜, E') (f + g) s :=
+  fun x hx ↦ (hf x hx).add (hg x hx)
 
 theorem MDifferentiable.add (hf : MDifferentiable I 𝓘(𝕜, E') f)
     (hg : MDifferentiable I 𝓘(𝕜, E') g) : MDifferentiable I 𝓘(𝕜, E') (f + g) := fun x =>
@@ -615,6 +630,10 @@ theorem const_smul_mfderiv (hf : MDifferentiableAt I 𝓘(𝕜, E') f z) (s : �
       (s • mfderiv I 𝓘(𝕜, E') f z : TangentSpace I z →L[𝕜] E') :=
   (hf.hasMFDerivAt.const_smul s).mfderiv
 
+theorem HasMFDerivWithinAt.neg {s : Set M} (hf : HasMFDerivWithinAt I 𝓘(𝕜, E') f s z f') :
+    HasMFDerivWithinAt I 𝓘(𝕜, E') (-f) s z (-f') :=
+  ⟨hf.1.neg, hf.2.neg⟩
+
 theorem HasMFDerivAt.neg (hf : HasMFDerivAt I 𝓘(𝕜, E') f z f') :
     HasMFDerivAt I 𝓘(𝕜, E') (-f) z (-f') :=
   ⟨hf.1.neg, hf.2.neg⟩
@@ -622,9 +641,17 @@ theorem HasMFDerivAt.neg (hf : HasMFDerivAt I 𝓘(𝕜, E') f z f') :
 theorem hasMFDerivAt_neg : HasMFDerivAt I 𝓘(𝕜, E') (-f) z (-f') ↔ HasMFDerivAt I 𝓘(𝕜, E') f z f' :=
   ⟨fun hf => by convert hf.neg <;> rw [neg_neg], fun hf => hf.neg⟩
 
+theorem MDifferentiableWithinAt.neg {s : Set M} (hf : MDifferentiableWithinAt I 𝓘(𝕜, E') f s z) :
+    MDifferentiableWithinAt I 𝓘(𝕜, E') (-f) s z :=
+  (hf.hasMFDerivWithinAt.neg).mdifferentiableWithinAt
+
 theorem MDifferentiableAt.neg (hf : MDifferentiableAt I 𝓘(𝕜, E') f z) :
     MDifferentiableAt I 𝓘(𝕜, E') (-f) z :=
   hf.hasMFDerivAt.neg.mdifferentiableAt
+
+theorem MDifferentiableOn.neg {s : Set M} (hf : MDifferentiableOn I 𝓘(𝕜, E') f s) :
+    MDifferentiableOn I 𝓘(𝕜, E') (-f) s :=
+  fun x hx ↦ (hf x hx).neg
 
 theorem mdifferentiableAt_neg :
     MDifferentiableAt I 𝓘(𝕜, E') (-f) z ↔ MDifferentiableAt I 𝓘(𝕜, E') f z :=

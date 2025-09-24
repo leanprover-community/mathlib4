@@ -3,8 +3,10 @@ Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Indicator
+import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Group.Support
 import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.Notation.Indicator
 
 /-!
 # Indicator functions and support of a function in groups with zero
@@ -97,11 +99,9 @@ end ZeroOne
 section MulZeroClass
 variable [MulZeroClass M₀]
 
---@[simp] Porting note: removing simp, bad lemma LHS not in normal form
 lemma support_mul_subset_left (f g : ι → M₀) : support (fun x ↦ f x * g x) ⊆ support f :=
   fun x hfg hf ↦ hfg <| by simp only [hf, zero_mul]
 
---@[simp] Porting note: removing simp, bad lemma LHS not in normal form
 lemma support_mul_subset_right (f g : ι → M₀) : support (fun x ↦ f x * g x) ⊆ support g :=
   fun x hfg hg => hfg <| by simp only [hg, mul_zero]
 
@@ -158,7 +158,7 @@ lemma mulSupport_add_one' [AddRightCancelMonoid R] (f : ι → R) : mulSupport (
   mulSupport_add_one f
 
 lemma mulSupport_one_sub' [AddGroup R] (f : ι → R) : mulSupport (1 - f) = support f := by
-  rw [sub_eq_add_neg, mulSupport_one_add', support_neg']
+  rw [sub_eq_add_neg, mulSupport_one_add', support_neg]
 
 lemma mulSupport_one_sub [AddGroup R] (f : ι → R) :
     mulSupport (fun x ↦ 1 - f x) = support f := mulSupport_one_sub' f

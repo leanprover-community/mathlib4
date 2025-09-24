@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Analysis.Convex.Topology
-import Mathlib.Analysis.NormedSpace.Pointwise
+import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 import Mathlib.Analysis.Seminorm
 import Mathlib.Analysis.LocallyConvex.Bounded
 import Mathlib.Analysis.RCLike.Basic
@@ -73,8 +73,9 @@ theorem Absorbent.gauge_set_nonempty (absorbs : Absorbent ℝ s) :
   let ⟨r, hr₁, hr₂⟩ := (absorbs x).exists_pos
   ⟨r, hr₁, hr₂ r (Real.norm_of_nonneg hr₁.le).ge rfl⟩
 
-theorem gauge_mono (hs : Absorbent ℝ s) (h : s ⊆ t) : gauge t ≤ gauge s := fun _ =>
-  csInf_le_csInf gauge_set_bddBelow hs.gauge_set_nonempty fun _ hr => ⟨hr.1, smul_set_mono h hr.2⟩
+theorem gauge_mono (hs : Absorbent ℝ s) (h : s ⊆ t) : gauge t ≤ gauge s := fun _ => by
+  unfold gauge
+  gcongr; exacts [gauge_set_bddBelow, hs.gauge_set_nonempty]
 
 theorem exists_lt_of_gauge_lt (absorbs : Absorbent ℝ s) (h : gauge s x < a) :
     ∃ b, 0 < b ∧ b < a ∧ x ∈ b • s := by
@@ -95,7 +96,7 @@ theorem gauge_zero' : gauge (0 : Set E) = 0 := by
   ext x
   rw [gauge_def']
   obtain rfl | hx := eq_or_ne x 0
-  · simp only [csInf_Ioi, mem_zero, Pi.zero_apply, eq_self_iff_true, sep_true, smul_zero]
+  · simp only [csInf_Ioi, mem_zero, Pi.zero_apply, sep_true, smul_zero]
   · simp only [mem_zero, Pi.zero_apply, inv_eq_zero, smul_eq_zero]
     convert Real.sInf_empty
     exact eq_empty_iff_forall_notMem.2 fun r hr => hr.2.elim (ne_of_gt hr.1) hx
@@ -232,7 +233,7 @@ theorem one_le_gauge_of_notMem (hs₁ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ
 section LinearOrderedField
 
 variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
-  [MulActionWithZero α ℝ] [OrderedSMul α ℝ]
+  [MulActionWithZero α ℝ] [IsStrictOrderedModule α ℝ]
 
 theorem gauge_smul_of_nonneg [MulActionWithZero α E] [IsScalarTower α ℝ (Set E)] {s : Set E} {a : α}
     (ha : 0 ≤ a) (x : E) : gauge s (a • x) = a • gauge s x := by
@@ -285,9 +286,7 @@ theorem gauge_smul_left [Module α E] [SMulCommClass α ℝ ℝ] [IsScalarTower 
   obtain h | h := abs_choice a
   · rw [h]
   · rw [h, Set.neg_smul_set, ← Set.smul_set_neg]
-    -- Porting note: was congr
-    apply congr_arg
-    apply congr_arg
+    congr
     ext y
     refine ⟨symmetric _, fun hy => ?_⟩
     rw [← neg_neg y]
@@ -340,7 +339,7 @@ theorem gauge_eq_zero (hs : Absorbent ℝ s) (hb : Bornology.IsVonNBounded ℝ s
 
 theorem gauge_pos (hs : Absorbent ℝ s) (hb : Bornology.IsVonNBounded ℝ s) :
     0 < gauge s x ↔ x ≠ 0 := by
-  simp only [(gauge_nonneg _).gt_iff_ne, Ne, gauge_eq_zero hs hb]
+  simp only [(gauge_nonneg _).lt_iff_ne', Ne, gauge_eq_zero hs hb]
 
 end TopologicalSpace
 
@@ -548,7 +547,7 @@ theorem gauge_ball (hr : 0 ≤ r) (x : E) : gauge (ball (0 : E) r) x = ‖x‖ /
 theorem gauge_closure_zero : gauge (closure (0 : Set E)) = 0 := funext fun x ↦ by
   simp only [← singleton_zero, gauge_def', mem_closure_zero_iff_norm, norm_smul, mul_eq_zero,
     norm_eq_zero, inv_eq_zero]
-  rcases (norm_nonneg x).eq_or_gt with hx | hx
+  rcases (norm_nonneg x).eq_or_lt' with hx | hx
   · convert csInf_Ioi (a := (0 : ℝ))
     exact Set.ext fun r ↦ and_iff_left (.inr hx)
   · convert Real.sInf_empty
