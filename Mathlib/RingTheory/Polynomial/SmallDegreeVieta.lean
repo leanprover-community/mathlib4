@@ -76,6 +76,17 @@ lemma test [CommRing R] {p : R[X]} (hp : p.natDegree = 2) : (p.coeff 2) ≠ 0 :=
   rw [hp]
   norm_cast
 
+lemma ex0 [CommRing R] {p : R[X]} (hp : p.natDegree = 0) : p = C (p.coeff 0) :=
+  eq_C_of_natDegree_eq_zero hp
+
+lemma ex1 [CommRing R] {p : R[X]} (hp : p.natDegree = 1) :
+    p = C (p.coeff 1) * X + C (p.coeff 0) := p.eq_X_add_C_of_natDegree_le_one (Nat.le_of_eq hp)
+/-
+lemma eq_quadratic_of_natDegree_le_two [CommRing R] {p : R[X]} (hp : natDegree p ≤ 2) :
+    p = C (p.coeff 2) * X ^ 2 + C (p.coeff 1) * X + C (p.coeff 0) := by
+sorry
+-/
+
 /-- **Vieta's formula** for quadratics as an iff. -/
 lemma roots_quadratic_eq_pair_iff_of_ne_zero [CommRing R] [IsDomain R] {x1 x2 : R} {p : R[X]}
     (hp : p.natDegree = 2) :
