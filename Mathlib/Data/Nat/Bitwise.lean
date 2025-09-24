@@ -68,7 +68,7 @@ lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
 
 theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n → C (bit b n)) {n}
     (h : n ≠ 0) :
-    binaryRec z f n = bit_decomp n ▸ f (bodd n) (div2 n) (binaryRec z f (div2 n)) := by
+    binaryRec z f n = bit_bodd_div2 n ▸ f (bodd n) (div2 n) (binaryRec z f (div2 n)) := by
   cases n using bitCasesOn with
   | bit b n =>
     rw [binaryRec_eq _ _ (by right; simpa [bit_eq_zero_iff] using h)]
@@ -189,7 +189,7 @@ theorem testBit_eq_inth (n i : ℕ) : n.testBit i = n.bits.getI i := by
       bodd_eq_bits_head, List.getI_zero_eq_headI]
     cases List.headI (bits n) <;> rfl
   | succ i ih =>
-    conv_lhs => rw [← bit_decomp n]
+    conv_lhs => rw [← bit_bodd_div2 n]
     rw [testBit_bit_succ, ih n.div2, div2_bits_eq_tail]
     cases n.bits <;> simp
 
