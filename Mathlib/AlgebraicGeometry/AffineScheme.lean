@@ -165,6 +165,8 @@ instance Spec_faithful : Spec.Faithful := Functor.Faithful.toEssImage _
 
 instance Spec_essSurj : Spec.EssSurj := Functor.EssSurj.toEssImage (F := _)
 
+instance Spec_isEquivalence : Spec.IsEquivalence where
+
 /-- The forgetful functor `AffineScheme ⥤ Scheme`. -/
 @[simps!]
 def forgetToScheme : AffineScheme ⥤ Scheme :=
