@@ -76,16 +76,18 @@ lemma test [CommRing R] {p : R[X]} (hp : p.natDegree = 2) : (p.coeff 2) ≠ 0 :=
   rw [hp]
   norm_cast
 
-lemma ex0 [CommRing R] {p : R[X]} (hp : p.natDegree = 0) : p = C (p.coeff 0) :=
-  eq_C_of_natDegree_eq_zero hp
+lemma eq_quadratic_of_degree_le_two [CommRing R] {p : R[X]} (hp : degree p ≤ 2) :
+    p = C (p.coeff 2) * X ^ 2 + C (p.coeff 1) * X + C (p.coeff 0) :=
+  ext fun n₁ =>
+    Nat.casesOn n₁ (by simp) fun n₂ =>
+      Nat.casesOn n₂ (by simp [coeff_C]) fun n₃ =>
+        Nat.casesOn n₃ (by simp) fun m => by
+          have : degree p < m.succ.succ.succ := lt_of_le_of_lt hp (compare_gt_iff_gt.mp rfl)
+          simp [coeff_eq_zero_of_degree_lt this]
 
-lemma ex1 [CommRing R] {p : R[X]} (hp : p.natDegree = 1) :
-    p = C (p.coeff 1) * X + C (p.coeff 0) := p.eq_X_add_C_of_natDegree_le_one (Nat.le_of_eq hp)
-/-
 lemma eq_quadratic_of_natDegree_le_two [CommRing R] {p : R[X]} (hp : natDegree p ≤ 2) :
-    p = C (p.coeff 2) * X ^ 2 + C (p.coeff 1) * X + C (p.coeff 0) := by
-sorry
--/
+    p = C (p.coeff 2) * X ^ 2 + C (p.coeff 1) * X + C (p.coeff 0) :=
+  eq_quadratic_of_degree_le_two  <| degree_le_of_natDegree_le hp
 
 /-- **Vieta's formula** for quadratics as an iff. -/
 lemma roots_quadratic_eq_pair_iff_of_ne_zero [CommRing R] [IsDomain R] {x1 x2 : R} {p : R[X]}
@@ -102,16 +104,8 @@ lemma roots_quadratic_eq_pair_iff_of_ne_zero [CommRing R] [IsDomain R] {x1 x2 : 
       have h1 : C a * (X - C x1) ≠ 0 := mul_ne_zero (by simpa) (Polynomial.X_sub_C_ne_zero _)
       have h2 : C a * (X - C x1) * (X - C x2) ≠ 0 := mul_ne_zero h1 (Polynomial.X_sub_C_ne_zero _)
       simp [this, Polynomial.roots_mul h2, Polynomial.roots_mul h1]
-    have ep : p = C a * X ^ 2 + C b * X + C c := by
-      rw [p.as_sum_range, C_mul_X_pow_eq_monomial, Finset.sum_range_succ_comm, add_assoc]
-      apply congr
-      simp_all only [neg_mul, b, a, c]
-      rw [C_mul_X_eq_monomial, hp, Finset.sum_range_succ_comm]
-      apply congr
-      · simp_all only [neg_mul, monomial_neg, b, a, c]
-      · simp_all only [neg_mul, Finset.range_one, Finset.sum_singleton, monomial_zero_left, map_mul,
-        b, a, c]
-    simpa [ep, hvieta.1, hvieta.2] using by ring
+    have ep : p = C a * X ^ 2 + C b * X + C c := eq_quadratic_of_natDegree_le_two (Nat.le_of_eq hp)
+    simpa [ep, hvieta.1, hvieta.2] using by ring_nf
   ⟨fun h => ⟨eq_neg_mul_add_of_roots_quadratic_eq_pair hp h,
     eq_mul_mul_of_roots_quadratic_eq_pair hp h⟩,
     roots_of_ne_zero_of_vieta⟩
