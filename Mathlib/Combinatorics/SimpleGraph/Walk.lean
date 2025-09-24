@@ -33,6 +33,9 @@ walks
 
 -/
 
+-- TODO: split
+set_option linter.style.longFile 1700
+
 open Function
 
 universe u v w
@@ -427,7 +430,7 @@ theorem concatRec_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
   trans concatRecAux @Hnil @Hconcat (cons h.symm p.reverse)
   · congr
     simp
-  · rw [concatRecAux, rec_heq_iff_heq]
+  · rw [concatRecAux, eqRec_heq_iff_heq]
     congr <;> simp
 
 end ConcatRec
@@ -607,25 +610,32 @@ theorem coe_support_append' [DecidableEq V] {u v w : V} (p : G.Walk u v) (p' : G
   rw [add_comm ({v} : Multiset V)]
   simp only [← add_assoc, add_tsub_cancel_right]
 
-theorem chain_adj_support {u v w : V} (h : G.Adj u v) :
-    ∀ (p : G.Walk v w), List.Chain G.Adj u p.support
-  | nil => List.Chain.cons h List.Chain.nil
-  | cons h' p => List.Chain.cons h (chain_adj_support h' p)
+theorem isChain_adj_cons_support {u v w : V} (h : G.Adj u v) :
+    ∀ (p : G.Walk v w), List.IsChain G.Adj (u :: p.support)
+  | nil => .cons_cons h (.singleton _)
+  | cons h' p => .cons_cons h (isChain_adj_cons_support h' p)
 
-theorem chain'_adj_support {u v : V} : ∀ (p : G.Walk u v), List.Chain' G.Adj p.support
-  | nil => List.Chain.nil
-  | cons h p => chain_adj_support h p
+@[deprecated (since := "2025-09-24")] alias chain_adj_support := isChain_adj_cons_support
 
-theorem chain_dartAdj_darts {d : G.Dart} {v w : V} (h : d.snd = v) (p : G.Walk v w) :
-    List.Chain G.DartAdj d p.darts := by
+theorem isChain_adj_support {u v : V} : ∀ (p : G.Walk u v), List.IsChain G.Adj p.support
+  | nil => .singleton _
+  | cons h p => isChain_adj_cons_support h p
+
+@[deprecated (since := "2025-09-24")] alias chain'_adj_support := isChain_adj_support
+
+theorem isChain_dartAdj_cons_darts {d : G.Dart} {v w : V} (h : d.snd = v) (p : G.Walk v w) :
+    List.IsChain G.DartAdj (d :: p.darts) := by
   induction p generalizing d with
-  | nil => exact List.Chain.nil
-  | cons h' p ih => exact List.Chain.cons h (ih rfl)
+  | nil => exact .singleton _
+  | cons h' p ih => exact .cons_cons h (ih rfl)
 
-theorem chain'_dartAdj_darts {u v : V} : ∀ (p : G.Walk u v), List.Chain' G.DartAdj p.darts
-  | nil => trivial
+theorem isChain_dartAdj_darts {u v : V} : ∀ (p : G.Walk u v), List.IsChain G.DartAdj p.darts
+  | nil => .nil
   -- Porting note: needed to defer `rfl` to help elaboration
-  | cons h p => chain_dartAdj_darts (by rfl) p
+  | cons h p => isChain_dartAdj_cons_darts (by rfl) p
+
+@[deprecated (since := "2025-09-24")] alias chain_dartAdj_darts := isChain_dartAdj_cons_darts
+@[deprecated (since := "2025-09-24")] alias chain'_dartAdj_darts := isChain_dartAdj_darts
 
 /-- Every edge in a walk's edge list is an edge of the graph.
 It is written in this form (rather than using `⊆`) to avoid unsightly coercions. -/
@@ -795,8 +805,8 @@ theorem nodup_tail_support_reverse {u : V} {p : G.Walk u u} :
     p.reverse.support.tail.Nodup ↔ p.support.tail.Nodup := by
   rw [Walk.support_reverse]
   refine List.nodup_tail_reverse p.support ?h
-  rw [← getVert_eq_support_getElem? _ (by omega), List.getLast?_eq_getElem?,
-    ← getVert_eq_support_getElem? _ (by rw [Walk.length_support]; omega)]
+  rw [← getVert_eq_support_getElem? _ (by cutsat), List.getLast?_eq_getElem?,
+    ← getVert_eq_support_getElem? _ (by rw [Walk.length_support]; cutsat)]
   aesop
 
 theorem edges_injective {u v : V} : Function.Injective (Walk.edges : G.Walk u v → List (Sym2 V))
@@ -1467,7 +1477,8 @@ theorem isSubwalk_iff_support_isInfix {v w v' w' : V} {p₁ : G.Walk v w} {p₂ 
   · grind [support_append, support_append_eq_support_dropLast_append]
   · have : (s.length + p₁.length) ≤ p₂.length := by grind [_=_ length_support]
     have h₁ : p₂.getVert s.length = v := by
-      simp [p₂.getVert_eq_support_getElem (by omega : s.length ≤ p₂.length), ← h, List.getElem_zero]
+      simp [p₂.getVert_eq_support_getElem (by cutsat : s.length ≤ p₂.length), ← h,
+        List.getElem_zero]
     have h₂ : p₂.getVert (s.length + p₁.length) = w := by
       simp [p₂.getVert_eq_support_getElem (by omega), ← h,
         ← p₁.getVert_eq_support_getElem (Nat.le_refl _)]
@@ -1476,7 +1487,7 @@ theorem isSubwalk_iff_support_isInfix {v w v' w' : V} {p₁ : G.Walk v w} {p₂ 
     simp only [← h, support_append, support_copy, take_support_eq_support_take_succ,
       List.take_append, drop_support_eq_support_drop_min, List.tail_drop]
     rw [Nat.min_eq_left (by grind [length_support]), List.drop_append, List.drop_append,
-      List.drop_eq_nil_of_le (by omega), List.drop_eq_nil_of_le (by grind [length_support]),
+      List.drop_eq_nil_of_le (by cutsat), List.drop_eq_nil_of_le (by grind [length_support]),
       p₁.support_eq_cons]
     simp +arith
 
