@@ -12,9 +12,9 @@ import Mathlib.Tactic.ENatToNat
 /-!
 # Auslander-Buchsbaum theorem
 
-In this file, we prove the Auslander-Buchsbaum theorem, which states that for a finitely generated
-module `M` over a Noetherian local ring `R`, if $\operatorname{proj}\dim M < \infty$, then
-$\operatorname{proj}\dim M + \operatorname{depth} M = \operatorname{depth} R$.
+In this file, we prove the Auslander-Buchsbaum theorem, which states that for a nontrivial
+finitely generated module `M` over a Noetherian local ring `R`, if `projectiveDimension M ≠ ⊤`,
+then `projectiveDimension M + IsLocalRing.depth M = IsLocalRing.depth R`.
 
 -/
 
@@ -174,25 +174,16 @@ lemma ext_hom_zero_of_mem_ideal_smul (L M N : ModuleCat.{v} R) (n : ℕ) (f : M 
   refine Submodule.smul_induction_on mem ?_ ?_
   · intro r hr f hf
     ext x
-    change (((Ext.linearEquiv₀ R).symm (r • f)).postcompOfLinear R L _) x = 0
-    simp only [Ext.postcompOfLinear, LinearMap.flip_apply]
-    rw [map_smul, map_smul, ← LinearMap.smul_apply, ← map_smul]
     have : r • x = 0 := by
-      have : r • (Ext.bilinearCompOfLinear R L L M 0 n n (zero_add n)).flip
-        x ((Ext.linearEquiv₀ R).symm (𝟙 L)) = 0 := by
-        have : r • (𝟙 L) = 0 := ModuleCat.hom_ext
-          (LinearMap.ext (fun x ↦ Module.mem_annihilator.mp hr _))
-        rw [← map_smul, ← map_smul, this]
-        simp
-      rwa [← Ext.mk₀_id_comp x]
-    simp [this]
+      have : r • (𝟙 L) = 0 := ModuleCat.hom_ext
+        (LinearMap.ext (fun x ↦ Module.mem_annihilator.mp hr _))
+      rw [← Ext.mk₀_id_comp x, ← Ext.smul_comp, ← Ext.mk₀_smul, this, Ext.mk₀_zero, Ext.zero_comp]
+    simp [Ext.mk₀_smul, ← Ext.smul_comp, this]
   · intro g1 g2 hg1 hg2
     ext x
-    change (((Ext.linearEquiv₀ R).symm (g1 + g2)).postcompOfLinear R L _) x = 0
     have : AddCommGrp.ofHom ((Ext.mk₀ g1).postcomp L (add_zero n)) x +
       AddCommGrp.ofHom ((Ext.mk₀ g2).postcomp L (add_zero n)) x = 0 := by simp [hg1, hg2]
-    simpa only [Ext.postcompOfLinear, map_add]
-
+    simpa [Ext.mk₀_add] using this
 
 lemma ENat.add_one_lt_add_one_iff {a b : ℕ∞} : a < b ↔ a + 1 < b + 1 := by
   enat_to_nat
