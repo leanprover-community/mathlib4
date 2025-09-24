@@ -3,8 +3,11 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Alex J. Best
 -/
+import Mathlib.Algebra.GroupWithZero.Torsion
+import Mathlib.NumberTheory.RamificationInertia.Galois
+import Mathlib.RingTheory.DedekindDomain.Factorization
 import Mathlib.RingTheory.DedekindDomain.Instances
-import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
+import Mathlib.RingTheory.Ideal.Int
 
 /-!
 
@@ -371,6 +374,151 @@ theorem relNorm_algebraMap' {R'} [CommRing R'] (I : Ideal R') [Algebra R' R]
     [Algebra R' S] [IsScalarTower R' R S] : relNorm R (I.map (algebraMap R' S)) =
       I.map (algebraMap R' R) ^ Module.finrank (FractionRing R) (FractionRing S) := by
   rw [← relNorm_algebraMap, Ideal.map_map, IsScalarTower.algebraMap_eq R' R S]
+
+section relNorm_prime
+
+variable {R} {S} (P : Ideal S) (p : Ideal R) [hPp : P.LiesOver p]
+
+/--
+See `Ideal.relNorm_eq_pow_of_isMaximal` for a more precise statement when `p` is a maximal ideal.
+-/
+theorem exists_relNorm_eq_pow_of_isPrime [p.IsPrime] : ∃ s, relNorm R P = p ^ s := by
+  by_cases hp : p = ⊥
+  · refine ⟨1, ?_⟩
+    have : P.LiesOver ⊥ := hp ▸ hPp
+    rw [hp, eq_bot_of_liesOver_bot R P, relNorm_bot, bot_pow (one_ne_zero)]
+  have h : relNorm R (map (algebraMap R S) p) ≤ relNorm R P :=
+    relNorm_mono _ <| map_le_iff_le_comap.mpr <| le_of_eq <| (liesOver_iff _ _).mp hPp
+  rw [relNorm_algebraMap S, ← dvd_iff_le, dvd_prime_pow (prime_of_isPrime hp inferInstance)] at h
+  obtain ⟨s, _, hs⟩ := h
+  exact ⟨s, by rwa [associated_iff_eq] at hs⟩
+
+/--
+See `Ideal.relNorm_eq_pow_of_isMaximal` for a statement that does not require the extension to
+be Galois.
+-/
+theorem relNorm_eq_pow_of_isPrime_isGalois [p.IsMaximal] [P.IsPrime]
+    [IsGalois (FractionRing R) (FractionRing S)] : relNorm R P = p ^ p.inertiaDeg P := by
+  by_cases hp : p = ⊥
+  · have h : p.inertiaDeg P ≠ 0 := Nat.ne_zero_iff_zero_lt.mpr <| inertiaDeg_pos p P
+    have hP : P = ⊥ := by
+      rw [hp] at hPp
+      exact eq_bot_of_liesOver_bot R P
+    rw [hp, hP, relNorm_bot, bot_pow]
+    rwa [hp, hP] at h
+  obtain ⟨s, hs⟩ := exists_relNorm_eq_pow_of_isPrime P p
+  suffices s = p.inertiaDeg P by rwa [this] at hs
+  have h₀ {Q} (hQ : Q ∈ (p.primesOver S).toFinset) :
+      relNorm R Q ^ ramificationIdx (algebraMap R S) p Q = p ^ ((p.ramificationIdxIn S) * s) := by
+    rw [Set.mem_toFinset] at hQ
+    have : Q.IsPrime := hQ.1
+    have : Q.LiesOver p := hQ.2
+    rw [← ramificationIdxIn_eq_ramificationIdx p Q (FractionRing R) (FractionRing S)]
+    obtain ⟨σ, rfl⟩ := Ideal.exists_map_eq_of_isGalois p P Q (FractionRing R) (FractionRing S)
+    rw [relNorm_map_algEquiv, hs, ← pow_mul, mul_comm]
+  have h := (congr_arg (relNorm R ·) <|
+    map_algebraMap_eq_finset_prod_pow hp).symm.trans <| relNorm_algebraMap S p
+  simp +contextual only [map_prod, map_pow, h₀, Finset.prod_const, ← pow_mul] at h
+  rwa [← Ideal.ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp S, mul_comm,
+    ← Set.ncard_eq_toFinset_card',
+    ((IsLeftCancelMulZero.mul_left_cancel_of_ne_zero hp).pow_injective _).eq_iff,
+    mul_right_inj' (primesOver_ncard_ne_zero p S),
+    mul_right_inj' (ramificationIdxIn_ne_zero (FractionRing R) (FractionRing S) hp),
+    inertiaDegIn_eq_inertiaDeg p P (FractionRing R) (FractionRing S)] at h
+  rw [one_eq_top]
+  exact IsMaximal.ne_top inferInstance
+
+set_option maxHeartbeats 400000 in
+-- Avoid some timeouts during compilation of this proof
+theorem relNorm_eq_pow_of_isMaximal [PerfectField (FractionRing R)] [P.IsMaximal] [p.IsMaximal] :
+    relNorm R P = p ^ p.inertiaDeg P := by
+  let K := FractionRing R
+  let L := FractionRing S
+  let A := AlgebraicClosure L
+  let E := IntermediateField.normalClosure K L A
+  -- Lean has trouble finding this instance
+  let _ : Algebra K A := AlgebraicClosure.instAlgebra L
+  -- Lean has trouble finding this instance
+  let _ : Algebra L E := normalClosure.algebra K L A
+  -- Lean has trouble finding this instance
+  let _ : Algebra K E := (IntermediateField.normalClosure K L A).algebra'
+  let _ : Algebra S E := ((algebraMap L E).comp (algebraMap S L)).toAlgebra
+  let T := integralClosure S E
+  let _ : Algebra R T := ((algebraMap S T).comp (algebraMap R S)).toAlgebra
+  have : IsScalarTower S L E := IsScalarTower.of_algebraMap_eq' rfl
+  have : IsScalarTower R S T := IsScalarTower.of_algebraMap_eq' rfl
+  have : IsScalarTower R L E := IsScalarTower.to₁₃₄ R K L E
+  have : IsScalarTower R K E := IsScalarTower.to₁₂₄ R K L E
+  have : IsScalarTower R S E := IsScalarTower.to₁₂₄ R S L E
+  have : IsScalarTower R T E := IsScalarTower.to₁₃₄ R S T E
+  have : Module.Finite L E := Module.Finite.right K L E
+  have : Algebra.IsSeparable L E := Algebra.isSeparable_tower_top_of_isSeparable K L E
+  have : IsDedekindDomain T := integralClosure.isDedekindDomain S L E
+  have : Module.Finite S T := IsIntegralClosure.finite S L E T
+  have : Module.Finite R T := Module.Finite.trans S T
+  have : IsFractionRing (integralClosure S E) E :=
+    integralClosure.isFractionRing_of_finite_extension L E
+  have : FaithfulSMul S E := (faithfulSMul_iff_algebraMap_injective S E).mpr <|
+      (FaithfulSMul.algebraMap_injective L E).comp (FaithfulSMul.algebraMap_injective S L)
+  have : FaithfulSMul R T := (faithfulSMul_iff_algebraMap_injective R T).mpr <|
+      (FaithfulSMul.algebraMap_injective S T).comp (FaithfulSMul.algebraMap_injective R S)
+  let _ : Algebra K (FractionRing T) := FractionRing.liftAlgebra R (FractionRing T)
+  have : IsGalois K (FractionRing T) := by
+    refine IsGalois.of_equiv_equiv  (F := K) (E := E) (f := (FractionRing.algEquiv R K).symm)
+      (g := (FractionRing.algEquiv T E).symm) ?_
+    ext
+    simpa using IsFractionRing.algEquiv_commutes (FractionRing.algEquiv R K).symm
+        (FractionRing.algEquiv T E).symm _
+  obtain ⟨Q, hQ₁, hQ₂⟩ : ∃ Q : Ideal T, Q.IsMaximal ∧ Q.LiesOver P :=
+    exists_maximal_ideal_liesOver_of_isIntegral P
+  have : IsGalois L (FractionRing T) := IsGalois.tower_top_of_isGalois K L (FractionRing T)
+  have : Q.LiesOver p := LiesOver.trans Q P p
+  have h := relNorm_eq_pow_of_isPrime_isGalois Q p
+  rwa [← relNorm_relNorm R S, relNorm_eq_pow_of_isPrime_isGalois Q P, map_pow,
+    inertiaDeg_algebra_tower p P Q, pow_mul, pow_left_inj] at h
+  exact Nat.ne_zero_iff_zero_lt.mpr <| inertiaDeg_pos P Q
+
+end relNorm_prime
+
+section absNorm
+
+variable [Module.Free ℤ R] [Module.Free ℤ S] [Module.Finite ℤ S]
+
+open UniqueFactorizationMonoid in
+theorem absNorm_relNorm [PerfectField (FractionRing R)] (I : Ideal S) :
+    absNorm (relNorm R I) = absNorm I := by
+  have : Module.Finite ℤ R := Module.Finite.left ℤ R S
+  by_cases hI : I = ⊥
+  · simp [hI]
+  rw [← prod_normalizedFactors_eq_self hI]
+  refine Multiset.prod_induction (fun I ↦ absNorm (relNorm R I) = absNorm I) _ ?_ ?_ ?_
+  · intro _ _ hx hy
+    rw [map_mul, map_mul, map_mul, hx, hy]
+  · simp
+  · intro Q hQ
+    have hQ' : Q ≠ ⊥ := ne_zero_of_mem_normalizedFactors hQ
+    rw [Ideal.mem_normalizedFactors_iff hI] at hQ
+    have : Q.IsMaximal := Ring.DimensionLEOne.maximalOfPrime hQ' hQ.1
+    let P := under R Q
+    let p := absNorm (under ℤ P)
+    have : NeZero P := ⟨under_ne_bot R hQ'⟩
+    have : Q.LiesOver P := by simp [liesOver_iff, P]
+    have : Q.LiesOver (span {(p : ℤ)}) := LiesOver.trans Q P _
+    have : Fact (p.Prime) := ⟨Nat.absNorm_under_prime _⟩
+    have hp : Prime (p : ℤ) := Nat.prime_iff_prime_int.mp <| Nat.absNorm_under_prime _
+    rw [relNorm_eq_pow_of_isMaximal Q P, map_pow, absNorm_eq_pow_inertiaDeg Q hp,
+      absNorm_eq_pow_inertiaDeg P hp, inertiaDeg_algebra_tower (span {(p : ℤ)}) P Q, pow_mul]
+
+theorem relNorm_int (I : Ideal S) :
+    relNorm ℤ I = Ideal.span {(absNorm I : ℤ)} := by
+  rw [← Int.ideal_span_absNorm_eq_self (relNorm ℤ I), absNorm_relNorm]
+
+theorem absNorm_algebraMap (I : Ideal R) [Module.Finite ℤ R] :
+    absNorm (I.map (algebraMap R S)) =
+      (absNorm I) ^ Module.finrank (FractionRing R) (FractionRing S) := by
+  rw [← absNorm_relNorm ℤ, ← relNorm_relNorm ℤ R, relNorm_algebraMap, absNorm_relNorm, map_pow]
+
+end absNorm
 
 end Ideal
 
