@@ -61,10 +61,11 @@ end ProdDomain
 section ProdCodomain
 
 variable [CommMonoid α] [TopologicalSpace α] [CommMonoid γ] [TopologicalSpace γ]
+{L : SummationFilter β}
 
 @[to_additive HasSum.prodMk]
-theorem HasProd.prodMk {f : β → α} {g : β → γ} {a : α} {b : γ} (hf : HasProd f a)
-    (hg : HasProd g b) : HasProd (fun x ↦ (⟨f x, g x⟩ : α × γ)) ⟨a, b⟩ := by
+theorem HasProd.prodMk {f : β → α} {g : β → γ} {a : α} {b : γ} (hf : HasProd f a L)
+    (hg : HasProd g b L) : HasProd (fun x ↦ (⟨f x, g x⟩ : α × γ)) ⟨a, b⟩ L := by
   simp [HasProd, ← prod_mk_prod, Filter.Tendsto.prodMk_nhds hf hg]
 
 @[deprecated (since := "2025-03-10")]
@@ -304,19 +305,21 @@ end CompleteSpace
 section Pi
 
 variable {ι : Type*} {X : α → Type*} [∀ x, CommMonoid (X x)] [∀ x, TopologicalSpace (X x)]
+{L : SummationFilter ι}
 
 @[to_additive]
 theorem Pi.hasProd {f : ι → ∀ x, X x} {g : ∀ x, X x} :
-    HasProd f g ↔ ∀ x, HasProd (fun i ↦ f i x) (g x) := by
+    HasProd f g L ↔ ∀ x, HasProd (fun i ↦ f i x) (g x) L := by
   simp only [HasProd, tendsto_pi_nhds, prod_apply]
 
 @[to_additive]
-theorem Pi.multipliable {f : ι → ∀ x, X x} : Multipliable f ↔ ∀ x, Multipliable fun i ↦ f i x := by
+theorem Pi.multipliable {f : ι → ∀ x, X x} :
+    Multipliable f L ↔ ∀ x, Multipliable (fun i ↦ f i x) L := by
   simp only [Multipliable, Pi.hasProd, Classical.skolem]
 
 @[to_additive]
-theorem tprod_apply [∀ x, T2Space (X x)] {f : ι → ∀ x, X x} {x : α} (hf : Multipliable f) :
-    (∏' i, f i) x = ∏' i, f i x :=
+theorem tprod_apply [∀ x, T2Space (X x)] {f : ι → ∀ x, X x} {x : α} (hf : Multipliable f L) :
+    (∏'[L] i, f i) x = ∏'[L] i, f i x :=
   (Pi.hasProd.mp hf.hasProd x).tprod_eq.symm
 
 end Pi
@@ -328,46 +331,46 @@ section MulOpposite
 
 open MulOpposite
 
-variable [AddCommMonoid α] [TopologicalSpace α] {f : β → α} {a : α}
+variable [AddCommMonoid α] [TopologicalSpace α] {f : β → α} {a : α} {L : SummationFilter β}
 
-theorem HasSum.op (hf : HasSum f a) : HasSum (fun a ↦ op (f a)) (op a) :=
+theorem HasSum.op (hf : HasSum f a L) : HasSum (fun a ↦ op (f a)) (op a) L :=
   (hf.map (@opAddEquiv α _) continuous_op :)
 
-theorem Summable.op (hf : Summable f) : Summable (op ∘ f) :=
+theorem Summable.op (hf : Summable f L) : Summable (op ∘ f) L :=
   hf.hasSum.op.summable
 
-theorem HasSum.unop {f : β → αᵐᵒᵖ} {a : αᵐᵒᵖ} (hf : HasSum f a) :
-    HasSum (fun a ↦ unop (f a)) (unop a) :=
+theorem HasSum.unop {f : β → αᵐᵒᵖ} {a : αᵐᵒᵖ} (hf : HasSum f a L) :
+    HasSum (fun a ↦ unop (f a)) (unop a) L :=
   (hf.map (@opAddEquiv α _).symm continuous_unop :)
 
-theorem Summable.unop {f : β → αᵐᵒᵖ} (hf : Summable f) : Summable (unop ∘ f) :=
+theorem Summable.unop {f : β → αᵐᵒᵖ} (hf : Summable f L) : Summable (unop ∘ f) L :=
   hf.hasSum.unop.summable
 
 @[simp]
-theorem hasSum_op : HasSum (fun a ↦ op (f a)) (op a) ↔ HasSum f a :=
+theorem hasSum_op : HasSum (fun a ↦ op (f a)) (op a) L ↔ HasSum f a L :=
   ⟨HasSum.unop, HasSum.op⟩
 
 @[simp]
 theorem hasSum_unop {f : β → αᵐᵒᵖ} {a : αᵐᵒᵖ} :
-    HasSum (fun a ↦ unop (f a)) (unop a) ↔ HasSum f a :=
+    HasSum (fun a ↦ unop (f a)) (unop a) L ↔ HasSum f a L :=
   ⟨HasSum.op, HasSum.unop⟩
 
 @[simp]
-theorem summable_op : (Summable fun a ↦ op (f a)) ↔ Summable f :=
+theorem summable_op : (Summable (fun a ↦ op (f a)) L) ↔ Summable f L:=
   ⟨Summable.unop, Summable.op⟩
 
-theorem summable_unop {f : β → αᵐᵒᵖ} : (Summable fun a ↦ unop (f a)) ↔ Summable f :=
+theorem summable_unop {f : β → αᵐᵒᵖ} : (Summable (fun a ↦ unop (f a)) L) ↔ Summable f L :=
   ⟨Summable.op, Summable.unop⟩
 
 theorem tsum_op [T2Space α] :
-    ∑' x, op (f x) = op (∑' x, f x) := by
-  by_cases h : Summable f
+    ∑'[L] x, op (f x) = op (∑'[L] x, f x) := by
+  by_cases h : Summable f L
   · exact h.hasSum.op.tsum_eq
   · have ho := summable_op.not.mpr h
     rw [tsum_eq_zero_of_not_summable h, tsum_eq_zero_of_not_summable ho, op_zero]
 
 theorem tsum_unop [T2Space α] {f : β → αᵐᵒᵖ} :
-    ∑' x, unop (f x) = unop (∑' x, f x) :=
+    ∑'[L] x, unop (f x) = unop (∑'[L] x, f x) :=
   op_injective tsum_op.symm
 
 end MulOpposite

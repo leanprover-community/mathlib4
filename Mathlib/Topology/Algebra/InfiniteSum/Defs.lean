@@ -79,7 +79,7 @@ variable [CommMonoid α] [TopologicalSpace α]
 
 /-- `HasProd f a` means that the (potentially infinite) product of the `f b` for `b : β` converges
 to `a` along a SummationFilter `L`, which by default is the `unconditional` one giving absolute
-convergence..
+convergence.
 
 The `atTop` filter on `Finset β` is the limit of all finite sets towards the entire type. So we take
 the product over bigger and bigger sets. This product operation is invariant under reordering.
