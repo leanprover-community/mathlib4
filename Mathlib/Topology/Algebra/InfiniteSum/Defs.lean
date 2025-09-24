@@ -61,18 +61,13 @@ section HasProd
 structure SummationFilter (β) where
   filter : Filter (Finset β)
   le_atTop : filter ≤ atTop
+  ne_bot : filter.NeBot
+
+attribute [instance] SummationFilter.ne_bot
 
 /-- Unconditional summation: a function on `β` is said to be summable if its partial
 sums over finite subsets converge with respect to the `atTop` filter. -/
-def unconditional : SummationFilter β := ⟨atTop, le_rfl⟩
-
-instance : PartialOrder (SummationFilter β) where
-  le L₁ L₂ := L₁.filter ≤ L₂.filter
-  le_refl L := le_rfl
-  le_trans L₁ L₂ L₃ := le_trans
-  le_antisymm L₁ L₂ h h' := by cases L₁; cases L₂; congr; exact le_antisymm h h'
-
-instance : NeBot (unconditional : SummationFilter β).filter := atTop_neBot
+def unconditional : SummationFilter β := ⟨atTop, le_rfl, atTop_neBot⟩
 
 instance [Countable β] : IsCountablyGenerated (unconditional : SummationFilter β).filter :=
   atTop.isCountablyGenerated
@@ -115,7 +110,7 @@ def Multipliable (f : β → α) (L : SummationFilter β := unconditional) : Pro
 
 @[to_additive]
 lemma Multipliable.mono_filter {f : β → α} {L₁ L₂ : SummationFilter β}
-    (hf : Multipliable f L₂) (h : L₁ ≤ L₂) : Multipliable f L₁ :=
+    (hf : Multipliable f L₂) (h : L₁.filter ≤ L₂.filter) : Multipliable f L₁ :=
   match hf with | ⟨a, ha⟩ => ⟨a, ha.mono_left h⟩
 
 open scoped Classical in
@@ -199,7 +194,7 @@ theorem Multipliable.hasProd (ha : Multipliable f L) : HasProd f (∏'[L] b, f b
   · simpa [h, finprod_eq_prod] using (hasProd_prod_of_ne_finset_one (by simp))
   · exact ha.choose_spec
 
-variable [T2Space α] [NeBot L.filter]
+variable [T2Space α]
 
 @[to_additive]
 theorem HasProd.unique {a₁ a₂ : α} :
