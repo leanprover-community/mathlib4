@@ -421,7 +421,7 @@ That's why it is not a global instance. -/
 @[to_additive
 /-- If `S` is an `R`-algebra, then `S[M]` is an `R[M]`-algebra.
 
-Warning: This produces a diamond for `Algebra R[M] R[M][M]`.
+Warning: This produces a diamond for `Algebra R[M] S[M][M]`.
 That's why it is not a global instance. -/]
 noncomputable abbrev algebraMonoidAlgebra : Algebra (MonoidAlgebra R M) (MonoidAlgebra S M) :=
   (mapRangeRingHom M (algebraMap R S)).toAlgebra
