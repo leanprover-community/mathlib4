@@ -147,8 +147,8 @@ def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
     (antidiagonal n).attach.biUnion fun ijh =>
       pairwiseNode (treesOfNumNodesEq ijh.1.1) (treesOfNumNodesEq ijh.1.2)
   decreasing_by
-    · simp_wf; have := fst_le ijh.2; omega
-    · simp_wf; have := snd_le ijh.2; omega
+    · simp_wf; have := fst_le ijh.2; cutsat
+    · simp_wf; have := snd_le ijh.2; cutsat
 
 @[simp]
 theorem treesOfNumNodesEq_zero : treesOfNumNodesEq 0 = {nil} := by rw [treesOfNumNodesEq]

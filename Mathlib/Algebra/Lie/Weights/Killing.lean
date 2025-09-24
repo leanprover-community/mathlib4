@@ -590,7 +590,7 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
     have h₀ : finrank K (rootSpace H α) ≠ 0 := by
       convert_to finrank K (rootSpace H α).toSubmodule ≠ 0
       simpa using α.genWeightSpace_ne_bot
-    omega
+    cutsat
   intro contra
   obtain ⟨h, e, f, ht, heα, hfα⟩ := exists_isSl2Triple_of_weight_isNonZero hα
   let F : rootSpace H α →ₗ[K] K := killingForm K L f ∘ₗ (rootSpace H α).subtype

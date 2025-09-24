@@ -188,7 +188,7 @@ def toRingNorm (f : MulRingNorm R) : RingNorm R where
 /-- A multiplicative ring norm is power-multiplicative. -/
 theorem isPowMul {A : Type*} [Ring A] (f : MulRingNorm A) : IsPowMul f := fun x n hn => by
   cases n
-  · omega
+  · cutsat
   · rw [map_pow]
 
 end MulRingNorm

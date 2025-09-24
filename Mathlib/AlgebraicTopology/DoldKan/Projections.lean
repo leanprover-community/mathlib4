@@ -108,7 +108,7 @@ theorem comp_P_eq_self {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : High
     · obtain ⟨a, ha⟩ := Nat.le.dest (not_lt.mp hqn)
       have hnaq : n = a + q := by omega
       simp only [v.of_succ.comp_Hσ_eq hnaq, neg_eq_zero, ← assoc]
-      have eq := v ⟨a, by omega⟩ (by
+      have eq := v ⟨a, by cutsat⟩ (by
         simp only [hnaq, add_assoc]
         rfl)
       simp only [Fin.succ_mk] at eq

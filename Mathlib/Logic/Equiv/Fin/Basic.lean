@@ -315,8 +315,8 @@ theorem finAddFlip_apply_mk_left {k : ℕ} (h : k < m) (hk : k < m + n := Nat.lt
 
 @[simp]
 theorem finAddFlip_apply_mk_right {k : ℕ} (h₁ : m ≤ k) (h₂ : k < m + n) :
-    finAddFlip (⟨k, h₂⟩ : Fin (m + n)) = ⟨k - m, by omega⟩ := by
-  convert @finAddFlip_apply_natAdd n ⟨k - m, by omega⟩ m
+    finAddFlip (⟨k, h₂⟩ : Fin (m + n)) = ⟨k - m, by cutsat⟩ := by
+  convert @finAddFlip_apply_natAdd n ⟨k - m, by cutsat⟩ m
   simp [Nat.add_sub_cancel' h₁]
 
 /-- Equivalence between `Fin m × Fin n` and `Fin (m * n)` -/

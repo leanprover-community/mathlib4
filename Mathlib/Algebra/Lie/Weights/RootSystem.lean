@@ -186,7 +186,7 @@ lemma chainLength_zero [Nontrivial L] : chainLength 0 β = 0 := by
   `β (coroot α) = q - r`. In particular, it is an integer. -/
 lemma apply_coroot_eq_cast :
     β (coroot α) = (chainBotCoeff α β - chainTopCoeff α β : ℤ) := by
-  rw [apply_coroot_eq_cast', ← chainTopCoeff_add_chainBotCoeff]; congr 1; omega
+  rw [apply_coroot_eq_cast', ← chainTopCoeff_add_chainBotCoeff]; congr 1; cutsat
 
 lemma le_chainBotCoeff_of_rootSpace_ne_top
     (hα : α.IsNonZero) (n : ℤ) (hn : rootSpace H (-n • α + β) ≠ ⊥) :
@@ -337,7 +337,7 @@ lemma eq_neg_one_or_eq_zero_or_eq_one_of_eq_smul
     swap
     · simp only [tsub_le_iff_right, le_add_iff_nonneg_right, Nat.cast_nonneg, neg_sub, true_and]
       rw [← Nat.cast_add, chainBotCoeff_add_chainTopCoeff, hn]
-      omega
+      cutsat
     rw [h, hk, ← Int.cast_smul_eq_zsmul K, ← add_smul] at this
     simp only [Int.cast_sub, Int.cast_natCast,
       sub_add_sub_cancel', add_sub_cancel_left, ne_eq] at this

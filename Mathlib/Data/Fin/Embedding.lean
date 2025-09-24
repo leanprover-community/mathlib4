@@ -144,13 +144,13 @@ at the end of the latter.
 `natAdd_castLEEmb hmn i` maps `i : Fin m` to `i + (m - n) : Fin n` by adding `m - n` to `i` -/
 @[simps!]
 def natAdd_castLEEmb (hmn : n ≤ m) : Fin n ↪ Fin m :=
-  (addNatEmb (m - n)).trans (finCongr (by omega)).toEmbedding
+  (addNatEmb (m - n)).trans (finCongr (by cutsat)).toEmbedding
 
 lemma range_natAdd_castLEEmb {n m : ℕ} (hmn : n ≤ m) :
     Set.range (natAdd_castLEEmb hmn) = {i | m - n ≤ i.1} := by
   simp only [natAdd_castLEEmb, Nat.sub_le_iff_le_add]
   ext y
-  exact ⟨fun ⟨x, hx⟩ ↦ by simp [← hx]; omega,
+  exact ⟨fun ⟨x, hx⟩ ↦ by simp [← hx]; cutsat,
     fun xin ↦ ⟨subNat (m - n) (y.cast (Nat.add_sub_of_le hmn).symm)
     (Nat.sub_le_of_le_add xin), by simp⟩⟩
 
