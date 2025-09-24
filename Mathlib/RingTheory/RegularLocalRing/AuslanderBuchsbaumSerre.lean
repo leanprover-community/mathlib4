@@ -194,7 +194,7 @@ lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetheria
     projectiveDimension.{v} (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) ≤ n := by
     simp only [projectiveDimension_le_iff]
     induction n generalizing M
-    · simp only [HasProjectiveDimensionLE, zero_add, ← hasProjectiveDimensionLT_one_iff]
+    · simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one]
       rw [← IsProjective.iff_projective, ← IsProjective.iff_projective]
       refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
       · have := (free_iff_quotSMulTop_free R M mem reg2).mpr Module.free_of_flat_of_isLocalRing
@@ -319,7 +319,7 @@ lemma exist_isSMulRegular_of_exist_hasProjectiveDimensionLE_aux [IsLocalRing R] 
   rcases h with ⟨n, hn⟩
   let _ : Module.Free R (ModuleCat.of R (Shrink.{v, u} R)) :=
     Module.Free.of_equiv (Shrink.linearEquiv.{v} R R).symm
-  have := (S_exact.hasProjectiveDimensionLT_X₃_iff n
+  have projdim := (S_exact.hasProjectiveDimensionLT_X₃_iff n
     (ModuleCat.projective_of_categoryTheory_projective S.X₂)).mpr hn
   have : Module.annihilator R (Shrink.{v} (R ⧸ maximalIdeal R)) = maximalIdeal R := by
     rw [(Shrink.linearEquiv.{v} R (R ⧸ maximalIdeal R)).annihilator_eq, Ideal.annihilator_quotient]
@@ -331,9 +331,13 @@ lemma exist_isSMulRegular_of_exist_hasProjectiveDimensionLE_aux [IsLocalRing R] 
   by_contra h
   have eq0 : IsLocalRing.depth (ModuleCat.of R (Shrink.{v} R)) = 0 :=
     (moduleDepth_eq_zero_of_hom_nontrivial _ _).mpr (not_subsingleton_iff_nontrivial.mp h)
-  have eq := AuslanderBuchsbaum (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R))) (by use n + 1)
-  simp only [eq0, add_eq_zero, Nat.cast_eq_zero, Nat.find_eq_zero] at eq
-  let _ := (hasProjectiveDimensionLT_one_iff _).mpr eq.1
+  have eq := AuslanderBuchsbaum (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R)))
+    (ne_top_of_le_ne_top (WithBot.coe_inj.not.mpr (ENat.coe_ne_top _))
+      ((projectiveDimension_le_iff _ _).mpr projdim))
+  have : projectiveDimension (ModuleCat.of R (Shrink.{v, u} (R ⧸ maximalIdeal R))) ≤ 0 := by
+    simpa [← WithBot.coe_zero, ← eq0, ← eq] using WithBot.le_self_add WithBot.coe_ne_bot _
+  let _ := (projective_iff_hasProjectiveDimensionLT_one _).mpr
+    ((projectiveDimension_le_iff _ _).mp this)
   let _ : Module.Projective R (Shrink.{v, u} (R ⧸ maximalIdeal R)) :=
     ModuleCat.projective_of_module_projective (ModuleCat.of R (Shrink.{v, u} (R ⧸ maximalIdeal R)))
   have : Module.Projective R (R ⧸ maximalIdeal R) :=
