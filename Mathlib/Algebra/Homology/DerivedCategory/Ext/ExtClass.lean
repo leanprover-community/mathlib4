@@ -81,8 +81,11 @@ lemma extClass_hom [HasDerivedCategory.{w'} C] : hS.extClass.hom = hS.singleδ :
   rw [SmallHom.equiv_mkInv, SmallHom.equiv_mk]
   dsimp [singleδ, triangleOfSESδ]
   rw [Category.assoc, Category.assoc, Category.assoc,
-    singleFunctorsPostcompQIso_hom_hom, singleFunctorsPostcompQIso_inv_hom]
-  erw [Category.id_comp, Functor.map_id, Category.comp_id]
+    singleFunctorsPostcompQIso_hom_hom, singleFunctorsPostcompQIso_inv_hom,
+    NatTrans.id_app, Category.id_comp, NatTrans.id_app]
+  simp only [SingleFunctors.postcomp, Functor.comp_obj]
+  unfold CochainComplex.singleFunctors
+  rw [Functor.map_id, Category.comp_id]
   rfl
 
 end
