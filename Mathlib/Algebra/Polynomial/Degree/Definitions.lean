@@ -233,6 +233,9 @@ theorem natDegree_monomial_eq (i : ℕ) {r : R} (r0 : r ≠ 0) : (monomial i r).
 theorem coeff_ne_zero_of_eq_degree (hn : degree p = n) : coeff p n ≠ 0 := fun h =>
   mem_support_iff.mp (mem_of_max hn) h
 
+theorem coeff_ne_zero_of_eq_natDegree (hn : 0 < n) (hp : natDegree p = n) : coeff p n ≠ 0 :=
+  coeff_ne_zero_of_eq_degree ((degree_eq_iff_natDegree_eq_of_pos hn).mpr hp)
+
 theorem degree_X_pow_le (n : ℕ) : degree (X ^ n : R[X]) ≤ n := by
   simpa only [C_1, one_mul] using degree_C_mul_X_pow_le n (1 : R)
 

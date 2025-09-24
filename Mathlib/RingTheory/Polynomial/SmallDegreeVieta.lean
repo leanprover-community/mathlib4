@@ -56,9 +56,6 @@ lemma eq_mul_mul_of_aroots_quadratic_eq_pair [CommRing T] [CommRing S] [IsDomain
   rw [← coeff_map, ← coeff_map]
   exact eq_mul_mul_of_roots_quadratic_eq_pair e1 haroots
 
-lemma test [CommRing R] {p : R[X]} (hp : p.natDegree = 2) : (p.coeff 2) ≠ 0 :=
-  coeff_ne_zero_of_eq_degree ((degree_eq_iff_natDegree_eq_of_pos Nat.zero_lt_two).mpr hp)
-
 /-- **Vieta's formula** for quadratics as an iff. -/
 lemma roots_quadratic_eq_pair_iff_of_ne_zero [CommRing R] [IsDomain R] {x1 x2 : R} {p : R[X]}
     (hp : p.natDegree = 2) :
@@ -70,7 +67,7 @@ lemma roots_quadratic_eq_pair_iff_of_ne_zero [CommRing R] [IsDomain R] {x1 x2 : 
   have roots_of_ne_zero_of_vieta (hvieta : b = -a * (x1 + x2) ∧ c = a * x1 * x2) :
       p.roots = {x1, x2} := by
     suffices p = C a * (X - C x1) * (X - C x2) by
-      have h0 : (p.coeff 2) ≠ 0 := test hp
+      have h0 : (p.coeff 2) ≠ 0 := coeff_ne_zero_of_eq_natDegree Nat.zero_lt_two hp
       have h1 : C a * (X - C x1) ≠ 0 := mul_ne_zero (by simpa) (Polynomial.X_sub_C_ne_zero _)
       have h2 : C a * (X - C x1) * (X - C x2) ≠ 0 := mul_ne_zero h1 (Polynomial.X_sub_C_ne_zero _)
       simp [this, Polynomial.roots_mul h2, Polynomial.roots_mul h1]
@@ -93,19 +90,10 @@ lemma roots_quadratic_eq_pair_iff_of_ne_zero' [Field R] {p : R[X]} {x1 x2 : R}
     (hp : p.natDegree = 2) : p.roots = {x1, x2} ↔
       x1 + x2 = -(p.coeff 1) / (p.coeff 2) ∧ x1 * x2 = (p.coeff 0) / (p.coeff 2) := by
   rw [roots_quadratic_eq_pair_iff_of_ne_zero hp]
+  have h0 : (p.coeff 2) ≠ 0 := coeff_ne_zero_of_eq_natDegree Nat.zero_lt_two hp
   field_simp
-  have h0 : (p.coeff 2) ≠ 0 := test hp
-  apply and_congr
-  · constructor
-    · intro h
-      rw [h, neg_div, neg_neg, mul_div_cancel_left₀ _ h0]
-    · intro h
-      rw [h, mul_neg, neg_neg, (mul_div_cancel₀ _ h0)]
-  · constructor
-    · intro h
-      rw [h, mul_assoc, mul_div_cancel_left₀ _ h0]
-    · intro h
-      rw [mul_assoc, h, mul_div_cancel₀ _ h0]
+  exact and_congr ⟨fun h => by linear_combination h, fun h => by linear_combination h⟩
+    ⟨fun h => by linear_combination -h, fun h => by linear_combination -h⟩
 
 /-- **Vieta's formula** for quadratics as an iff (`aroots, Field` version). -/
 lemma aroots_quadratic_eq_pair_iff_of_ne_zero' [CommRing T] [Field S] [Algebra T S] {p : T[X]}
