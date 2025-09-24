@@ -224,6 +224,17 @@ variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
 instance instZero : Zero (VectorMeasure α M) :=
   ⟨⟨0, rfl, fun _ _ => rfl, fun _ _ _ => hasSum_zero⟩⟩
 
+@[nontriviality]
+lemma apply_eq_zero_of_isEmpty [IsEmpty α] (v : VectorMeasure α M) (s : Set α) :
+    v s = 0 := by
+  rw [eq_empty_of_isEmpty s, VectorMeasure.empty]
+
+instance instSubsingleton [IsEmpty α] : Subsingleton (VectorMeasure α M) :=
+  ⟨fun μ ν => by ext1 s _; rw [apply_eq_zero_of_isEmpty, apply_eq_zero_of_isEmpty]⟩
+
+theorem eq_zero_of_isEmpty [IsEmpty α] (v : VectorMeasure α M) : v = 0 :=
+  Subsingleton.elim v 0
+
 instance instInhabited : Inhabited (VectorMeasure α M) :=
   ⟨0⟩
 
@@ -426,6 +437,10 @@ def ennrealToMeasure {_ : MeasurableSpace α} (v : VectorMeasure α ℝ≥0∞) 
 theorem ennrealToMeasure_apply {m : MeasurableSpace α} {v : VectorMeasure α ℝ≥0∞} {s : Set α}
     (hs : MeasurableSet s) : ennrealToMeasure v s = v s := by
   rw [ennrealToMeasure, ofMeasurable_apply _ hs]
+
+@[simp]
+theorem ennrealToMeasure_zero : ennrealToMeasure (0 : VectorMeasure α ℝ≥0∞) = 0 := by
+  ext s ms; rw [ennrealToMeasure_apply ms]; simp
 
 @[simp]
 theorem _root_.MeasureTheory.Measure.toENNRealVectorMeasure_ennrealToMeasure
