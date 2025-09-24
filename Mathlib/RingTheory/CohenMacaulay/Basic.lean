@@ -490,9 +490,11 @@ lemma quotient_regular_smul_top_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing
     have : IsLocalHom (Ideal.Quotient.mk (x • (⊤ : Ideal R))) :=
       IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
     IsLocalRing.of_surjective (Ideal.Quotient.mk (x • (⊤ : Ideal R))) Ideal.Quotient.mk_surjective
-  simp only [isCohenMacaulayLocalRing_def,
-    ← ringKrullDim_quotSMulTop_succ_eq_ringKrullDim reg mem,
-    ← depth_quotient_regular_succ_eq_depth x reg mem, WithBot.coe_add, WithBot.coe_one]
+  have : ringKrullDim R = ringKrullDim (R ⧸ x • (⊤ : Ideal R)) + 1 := by
+    rw [← Module.supportDim_quotient_eq_ringKrullDim, ← Module.supportDim_self_eq_ringKrullDim]
+    exact (Module.supportDim_quotSMulTop_succ_eq_supportDim reg mem).symm
+  simp only [isCohenMacaulayLocalRing_def, this, ← depth_quotient_regular_succ_eq_depth x reg mem,
+    WithBot.coe_add, WithBot.coe_one]
   exact WithBot.add_natCast_cancel _ _ 1
 
 lemma quotient_span_regular_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing R] [IsNoetherianRing R]
