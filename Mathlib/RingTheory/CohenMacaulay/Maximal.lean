@@ -14,6 +14,8 @@ The definition of maximal Cohen Macaulay module.
 
 # Main definition and results
 
+* `isCohenMacaulayLocalRing_of_isRegularLocalRing` : regular local ring is Cohen Macaulay
+
 * `free_of_isMaximalCohenMacaulay_of_isRegularLocalRing` : maximal Cohen Macaulay module over
   regular local ring is free.
 
@@ -25,6 +27,7 @@ variable {R : Type u} [CommRing R]
 
 open IsLocalRing
 
+/-- A `R`-module is maximal Cohen Macaulay if `IsLocalRing.depth M = ringKrullDim R`. -/
 class ModuleCat.IsMaximalCohenMacaulay [IsLocalRing R] [Small.{v} R]
     (M : ModuleCat.{v} R) : Prop where
   depth_eq_dim : IsLocalRing.depth M = ringKrullDim R
