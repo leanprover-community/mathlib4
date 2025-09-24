@@ -40,6 +40,8 @@ variable
   [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (f P)]
 
 include f in
+/-- A module `M` over a semilocal ring `R` is finite if it is
+locally finite at every maximal ideal. -/
 theorem Module.finite.of_isLocalized_maximal
     (H : ∀ (P : Ideal R) [P.IsMaximal], Module.Finite (Rₚ P) (Mₚ P)) :
     Module.Finite R M := by
