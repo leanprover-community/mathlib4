@@ -17,8 +17,8 @@ open Lean Elab Command Linter
 namespace Mathlib.Linter
 
 /-- The "removeDeprecations" linter reports constructs that are considered to be technical debt. -/
-register_option linter.removeDeprecations : Bool := {
-  defValue := true
+register_option linter.removeDeprecations : String := {
+  defValue := ""
   descr := "enable the removeDeprecations linter"
 }
 
@@ -81,7 +81,7 @@ positions of the syntax `s` in `rd.firstLast`.
 If `s` is a `deprecated` attribute, then its range is added to `rd.removals`.
 If `s` is a terminal command, then `rd.firstLast` is not updated.
 -/
-def update (rd : RemoveDeprecations) (s : Syntax) : RemoveDeprecations :=
+def update (oldDate newDate : String) (rd : RemoveDeprecations) (s : Syntax) : RemoveDeprecations :=
   if Parser.isTerminalCommand s then rd else
   match s.getRangeWithTrailing? with
   | none => rd
@@ -93,8 +93,11 @@ def update (rd : RemoveDeprecations) (s : Syntax) : RemoveDeprecations :=
     if let some deprStx := s.find? (·.isOfKind ``deprecated) then
       match deprStx with
       | `(attr| deprecated $[$id?]? $[$text?]? (since := $since)) =>
-        dbg_trace "since: {since.getString}"
-        {ans with removals := rd.removals.insert rg}
+        let since := since.getString
+        if oldDate ≤ since && since ≤ newDate then
+          --dbg_trace "removing this"
+          {ans with removals := rd.removals.insert rg}
+        else ans
       | _ =>
         ans
     else
@@ -124,8 +127,14 @@ def removeDeprecations (file : String) (rgs : Array String.Range) : IO String :=
 
 @[inherit_doc Mathlib.Linter.linter.removeDeprecations]
 def removeDeprecationsLinter : Linter where run stx := do
-  unless Linter.getLinterValue linter.removeDeprecations (← getLinterOptions) do
+  let linterBound := linter.removeDeprecations.get (← getOptions)
+  if linterBound.isEmpty then
     return
+  let [oldDate, newDate] := (linterBound.splitOn " ") | throwError "The expected format is \
+    'YYYY-MM-DD YYYY-MM-DD', where the first date is earlier than the second one \
+    and all declarations that have been deprecated in between the two will be erased."
+  unless oldDate ≤ newDate do
+    throwError "The first date should not be later than the second date!"
   if (← get).messages.hasErrors then
     return
   if (← RemoveDeprecationsExt.get).firstLast.isEmpty then
@@ -133,7 +142,7 @@ def removeDeprecationsLinter : Linter where run stx := do
     let (_, fileStartPos, _) ← parseImports fm.source (← getFileName)
     RemoveDeprecationsExt.modify fun _ =>
       initializeExt fm (fm.ofPosition fileStartPos)
-  RemoveDeprecationsExt.modify (update · stx)
+  RemoveDeprecationsExt.modify (update oldDate newDate · stx)
   let rd ← RemoveDeprecationsExt.get
   -- When `rd.firstLast` is empty, the current command is the last to be elaborated.
   -- Hence, this is where we can reconstruct the file without the deprecations.
@@ -143,9 +152,22 @@ def removeDeprecationsLinter : Linter where run stx := do
     if !replacements.isEmpty then
       let cleanUpDeprecations ← removeDeprecations fm.source replacements
       --dbg_trace "{stx.getKind} completed the whole syntax!:\n{replacements}"
-      dbg_trace cleanUpDeprecations
-    else
-      dbg_trace "This file contains no deprecations!"
+      let fname ← getFileName
+      let tmpFname := fname.replace "Mathlib" ".lake/build/lib/lean/Mathlib" ++ ".tmp"
+      dbg_trace "bash\nmv -f {tmpFname} {fname}"
+      --dbg_trace cleanUpDeprecations
+
+      --/-
+      IO.FS.writeFile tmpFname cleanUpDeprecations
+      let diff ← IO.Process.output {
+        cmd := "diff"
+        args := #[fname, tmpFname]
+      }
+      logInfo diff.stdout
+      --/
+
+    --else
+    --  dbg_trace "This file contains no deprecations!"
 
 initialize addLinter removeDeprecationsLinter
 
