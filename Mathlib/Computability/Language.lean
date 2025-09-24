@@ -20,7 +20,7 @@ over the languages.
 In addition to that, we define a reversal of a language and prove that it behaves well
 with respect to other language operations.
 
-## Notations
+## Notation
 
 * `l + m`: union of languages `l` and `m`
 * `l * m`: language of strings `x ++ y` such that `x ∈ l` and `y ∈ m`

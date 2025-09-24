@@ -22,7 +22,7 @@ defines Turing degrees as the quotient under this relation.
 * `TuringDegree`: the type of Turing degrees, defined as the quotient of partial functions under
   `TuringEquivalent`.
 
-## Notations
+## Notation
 
 * `f ≤ᵀ g`: `f` is Turing reducible to `g`.
 * `f ≡ᵀ g`: `f` is Turing equivalent to `g`.
