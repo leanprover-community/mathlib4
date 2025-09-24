@@ -10,10 +10,8 @@ import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import Mathlib.Algebra.Module.LocalizedModule.Exact
 import Mathlib.CategoryTheory.Abelian.Projective.Dimension
-import Mathlib.Data.ENat.Lattice
 import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.RingTheory.LocalProperties.Projective
-import Mathlib.RingTheory.Ideal.Quotient.Operations
 /-!
 # The Global Dimension of a Ring
 
@@ -81,7 +79,7 @@ lemma projectiveDimension_eq_iSup_localizedModule_prime [Small.{v, u} R] [IsNoet
     (M.localizedModule p.1.primeCompl) ≤ n := by
     simp only [projectiveDimension_le_iff, iSup_le_iff]
     induction n generalizing M
-    · simp only [HasProjectiveDimensionLE, zero_add, ← hasProjectiveDimensionLT_one_iff]
+    · simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one]
       refine ⟨fun h p ↦ ?_, fun h ↦ ?_⟩
       · let _ : Small.{v, u} (Localization p.asIdeal.primeCompl) :=
           small_of_surjective Localization.mkHom_surjective
@@ -183,7 +181,7 @@ lemma projectiveDimension_eq_iSup_localizedModule_maximal [Small.{v, u} R] [IsNo
     (M.localizedModule p.1.primeCompl) ≤ n := by
     simp only [projectiveDimension_le_iff, iSup_le_iff]
     induction n generalizing M
-    · simp only [HasProjectiveDimensionLE, zero_add, ← hasProjectiveDimensionLT_one_iff]
+    · simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one]
       refine ⟨fun h p ↦ ?_, fun h ↦ ?_⟩
       · let _ : Small.{v, u} (Localization p.asIdeal.primeCompl) :=
           small_of_surjective Localization.mkHom_surjective
@@ -286,7 +284,7 @@ lemma projectiveDimension_le_projectiveDimension_of_isLocalizedModule [Small.{v,
     let _ : Small.{v, u} (Localization S) :=
       small_of_surjective Localization.mkHom_surjective
     induction n generalizing M
-    · simp only [HasProjectiveDimensionLE, zero_add, ← hasProjectiveDimensionLT_one_iff]
+    · simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one]
       rw [← IsProjective.iff_projective, ← IsProjective.iff_projective]
       intro _
       exact Module.projective_of_isLocalizedModule S (M.localizedModule_mkLinearMap S)
