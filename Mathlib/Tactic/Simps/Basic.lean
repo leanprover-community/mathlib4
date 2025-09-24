@@ -144,7 +144,7 @@ attribute [notation_class one Simps.findOneArgs] OfNat
 attribute [notation_class zero Simps.findZeroArgs] OfNat
 
 /-- An `(attr := ...)` option for `simps`. -/
-syntax simpsOptAttrOption := atomic(ppSpace "(" &"attr" " := " Parser.Term.attrInstance,* ")")?
+syntax simpsOptAttrOption := atomic(" (" &"attr" " := " Parser.Term.attrInstance,* ")")?
 
 /-- Arguments to `@[simps]` attribute.
 Currently, a potential `(attr := ...)` argument has to come before other configuration options. -/
