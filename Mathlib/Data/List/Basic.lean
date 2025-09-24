@@ -469,7 +469,7 @@ theorem forall_mem_iff_getElem {l : List α} {p : α → Prop} :
   simp [mem_iff_getElem, @forall_swap α]
 
 theorem get_tail (l : List α) (i) (h : i < l.tail.length)
-    (h' : i + 1 < l.length := (by simp only [length_tail] at h; omega)) :
+    (h' : i + 1 < l.length := (by simp only [length_tail] at h; cutsat)) :
     l.tail.get ⟨i, h⟩ = l.get ⟨i + 1, h'⟩ := by
   simp
 
@@ -481,13 +481,7 @@ theorem Sublist.cons_cons {l₁ l₂ : List α} (a : α) (s : l₁ <+ l₂) : a 
   Sublist.cons₂ _ s
 
 lemma cons_sublist_cons' {a b : α} : a :: l₁ <+ b :: l₂ ↔ a :: l₁ <+ l₂ ∨ a = b ∧ l₁ <+ l₂ := by
-  constructor
-  · rintro (_ | _)
-    · exact Or.inl ‹_›
-    · exact Or.inr ⟨rfl, ‹_›⟩
-  · rintro (h | ⟨rfl, h⟩)
-    · exact h.cons _
-    · rwa [cons_sublist_cons]
+  grind
 
 theorem sublist_cons_of_sublist (a : α) (h : l₁ <+ l₂) : l₁ <+ a :: l₂ := h.cons _
 
@@ -525,23 +519,11 @@ theorem idxOf_of_notMem {l : List α} {a : α} : a ∉ l → idxOf a l = length 
 @[deprecated (since := "2025-05-23")] alias idxOf_of_not_mem := idxOf_of_notMem
 
 theorem idxOf_append_of_mem {a : α} (h : a ∈ l₁) : idxOf a (l₁ ++ l₂) = idxOf a l₁ := by
-  induction l₁ with
-  | nil =>
-    exfalso
-    exact not_mem_nil h
-  | cons d₁ t₁ ih =>
-    rw [List.cons_append]
-    by_cases hh : d₁ = a
-    · iterate 2 rw [idxOf_cons_eq _ hh]
-    rw [idxOf_cons_ne _ hh, idxOf_cons_ne _ hh, ih (mem_of_ne_of_mem (Ne.symm hh) h)]
+  grind
 
 theorem idxOf_append_of_notMem {a : α} (h : a ∉ l₁) :
     idxOf a (l₁ ++ l₂) = l₁.length + idxOf a l₂ := by
-  induction l₁ with
-  | nil => rw [List.nil_append, List.length, Nat.zero_add]
-  | cons d₁ t₁ ih =>
-    rw [List.cons_append, idxOf_cons_ne _ (ne_of_not_mem_cons h).symm, List.length,
-      ih (not_mem_of_not_mem_cons h), Nat.succ_add]
+  grind
 
 @[deprecated (since := "2025-05-23")] alias idxOf_append_of_not_mem := idxOf_append_of_notMem
 
@@ -607,7 +589,7 @@ theorem idxOf_get [DecidableEq α] {a : α} {l : List α} (h) : get l ⟨idxOf a
 @[simp]
 theorem getElem?_idxOf [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
     l[idxOf a l]? = some a := by
-  rw [getElem?_eq_getElem, getElem_idxOf (idxOf_lt_length_iff.2 h)]
+  rw [getElem?_eq_getElem (idxOf_lt_length_iff.2 h), getElem_idxOf]
 
 theorem idxOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy : y ∈ l) :
     idxOf x l = idxOf y l ↔ x = y :=
@@ -622,11 +604,11 @@ theorem get_reverse' (l : List α) (n) (hn') :
     l.reverse.get n = l.get ⟨l.length - 1 - n, hn'⟩ := by
   simp
 
-theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0, by omega⟩] := by
+theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0, by cutsat⟩] := by
   refine ext_get (by convert h) fun n h₁ h₂ => ?_
   simp
   congr
-  omega
+  cutsat
 
 end deprecated
 
@@ -940,9 +922,9 @@ end FoldlMFoldrM
 theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {l : List α} (hx : x ∈ l) :
     SizeOf.sizeOf x < SizeOf.sizeOf l := by
   induction l with | nil => ?_ | cons h t ih => ?_ <;> cases hx <;> rw [cons.sizeOf_spec]
-  · omega
+  · cutsat
   · specialize ih ‹_›
-    omega
+    cutsat
 
 /-! ### filter -/
 
@@ -1059,9 +1041,7 @@ variable {p : α → Bool}
 -- Cannot be @[simp] because `a` cannot be inferred by `simp`.
 theorem length_eraseP_add_one {l : List α} {a} (al : a ∈ l) (pa : p a) :
     (l.eraseP p).length + 1 = l.length := by
-  let ⟨_, l₁, l₂, _, _, h₁, h₂⟩ := exists_of_eraseP al pa
-  rw [h₂, h₁, length_append, length_append]
-  rfl
+  grind
 
 end eraseP
 
@@ -1101,8 +1081,7 @@ theorem erase_getElem [DecidableEq ι] {l : List ι} {i : ℕ} (hi : i < l.lengt
 
 theorem length_eraseIdx_add_one {l : List ι} {i : ℕ} (h : i < l.length) :
     (l.eraseIdx i).length + 1 = l.length := by
-  rw [length_eraseIdx]
-  split <;> omega
+  grind
 
 end Erase
 

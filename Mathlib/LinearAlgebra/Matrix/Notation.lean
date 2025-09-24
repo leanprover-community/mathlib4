@@ -27,7 +27,7 @@ This ensures `simp` works with entries only when (some) entries are already give
 In other words, this notation will only appear in the output of `simp` if it
 already appears in the input.
 
-## Notations
+## Notation
 
 This file provide notation `!![a, b; c, d]` for matrices, which corresponds to
 `Matrix.of ![![a, b], ![c, d]]`.
