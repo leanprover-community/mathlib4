@@ -17,8 +17,8 @@ finitely many maximal ideals).
 
 * `Module.finite.of_isLocalized_maximal`: A module `M` over a semilocal ring `R` is finite if it is
   locally finite at every maximal ideal.
-* `IsNoetherianRing.of_isLocalized_maximal`: A semilocal ring `R` is Noetherian if it is locally
-  Noetherian at every maximal ideal.
+* `IsNoetherianRing.of_isLocalization_maximal`: A semilocal ring `R` is Noetherian if it is
+  locally Noetherian at every maximal ideal.
 * `isPrincipalIdealRing_of_isPrincipalIdealRing_localization`: A semilocal integral domain `A` is a
   PID if its localization at every maximal ideal is a PID.
 -/
@@ -90,7 +90,7 @@ end localized_maximal
 section IsLocalization
 
 /-- A semilocal ring `R` is Noetherian if it is locally Noetherian at every maximal ideal. -/
-theorem IsNoetherianRing.of_isLocalized_maximal
+theorem IsNoetherianRing.of_isLocalization_maximal
     (H : ∀ (P : Ideal R) [P.IsMaximal], IsNoetherianRing (Rₚ P)) :
     IsNoetherianRing R where
   noetherian N := Submodule.fg_of_isLocalized_maximal
@@ -116,7 +116,8 @@ This is the `IsLocalization` version. -/
 theorem isPrincipalIdealRing_of_isPrincipalIdealRing_isLocalization [IsDomain R]
     (hpid : ∀ (P : Ideal R) [P.IsMaximal], IsPrincipalIdealRing (Rₚ P)) :
     IsPrincipalIdealRing R := by
-  have : IsNoetherianRing R := IsNoetherianRing.of_isLocalized_maximal Rₚ (fun P _ => inferInstance)
+  have : IsNoetherianRing R :=
+    IsNoetherianRing.of_isLocalization_maximal Rₚ (fun P _ => inferInstance)
   have : IsIntegrallyClosed R := by
     refine IsIntegrallyClosed.of_isLocalization_maximal Rₚ (fun P _ => ?_)
     have := hpid P
