@@ -16,7 +16,7 @@ In this file we define the submonoid `nonZeroDivisors` and `nonZeroSMulDivisors`
 `MonoidWithZero`. We also define `nonZeroDivisorsLeft` and `nonZeroDivisorsRight` for
 non-commutative monoids.
 
-## Notations
+## Notation
 
 This file declares the notations:
 - `M₀⁰` for the submonoid of non-zero-divisors of `M₀`, in the scope `nonZeroDivisors`.
