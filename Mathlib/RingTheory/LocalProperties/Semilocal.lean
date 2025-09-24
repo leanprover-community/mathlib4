@@ -46,7 +46,7 @@ theorem Module.finite.of_isLocalized_maximal
     (H : ∀ (P : Ideal R) [P.IsMaximal], Module.Finite (Rₚ P) (Mₚ P)) :
     Module.Finite R M := by
   classical
-  let _ : Fintype ({ P : Ideal R | P.IsMaximal }) := by
+  let : Fintype ({ P : Ideal R | P.IsMaximal }) := by
     rw [← MaximalSpectrum.range_asIdeal]
     exact Fintype.ofFinite (Set.range MaximalSpectrum.asIdeal)
   constructor
@@ -123,7 +123,7 @@ theorem isPrincipalIdealRing_of_isPrincipalIdealRing_localization
   have : IsNoetherianRing A := by
     constructor
     intro N
-    refine Submodule.fg_of_localized_maximal  N (fun P hP => ?_)
+    refine Submodule.fg_of_localized_maximal N (fun P hP => ?_)
     exact IsNoetherian.noetherian (Submodule.localized P.primeCompl N)
   have : IsIntegrallyClosed A := by
     refine IsIntegrallyClosed.of_localization_maximal (fun P _ hP => ?_)
