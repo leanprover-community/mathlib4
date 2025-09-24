@@ -755,7 +755,7 @@ theorem generalized_eigenvec_disjoint_range_ker [FiniteDimensional K V] (f : End
       _ = f.genEigenspace μ (finrank K V + finrank K V : ℕ) := by
               simp_rw [← pow_add, genEigenspace_nat]; rfl
       _ = f.genEigenspace μ (finrank K V) := by
-              rw [genEigenspace_eq_genEigenspace_finrank_of_le]; omega
+              rw [genEigenspace_eq_genEigenspace_finrank_of_le]; cutsat
   rw [disjoint_iff_inf_le, genEigenrange_nat, LinearMap.range_eq_map,
     Submodule.map_inf_eq_map_inf_comap, top_inf_eq, h, genEigenspace_nat]
   apply Submodule.map_comap_le
@@ -817,7 +817,7 @@ lemma genEigenspace_inf_le_add
   suffices (((f₁ - μ₁ • 1) ^ i) * ((f₂ - μ₂ • 1) ^ j)) m = 0 by
     rw [LinearMap.smul_apply, this, smul_zero]
   rw [Finset.mem_antidiagonal] at hij
-  obtain hi|hj : l₁ ≤ i ∨ l₂ ≤ j := by omega
+  obtain hi|hj : l₁ ≤ i ∨ l₂ ≤ j := by cutsat
   · rw [(h.pow_pow i j).eq, Module.End.mul_apply, Module.End.pow_map_zero_of_le hi hl₁,
       LinearMap.map_zero]
   · rw [Module.End.mul_apply, Module.End.pow_map_zero_of_le hj hl₂, LinearMap.map_zero]

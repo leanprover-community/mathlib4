@@ -587,7 +587,7 @@ theorem sub_dioph : DiophFn fun v => f v - g v :=
               rcases o with (ae | ⟨yz, x0⟩)
               · rw [ae, add_tsub_cancel_right]
               · rw [x0, tsub_eq_zero_iff_le.mpr yz], by
-              omega⟩
+              cutsat⟩
 
 @[inherit_doc]
 scoped infixl:80 " D- " => Dioph.sub_dioph

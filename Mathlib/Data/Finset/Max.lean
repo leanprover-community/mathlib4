@@ -270,7 +270,7 @@ theorem min'_lt_max' {i j} (H1 : i ∈ s) (H2 : j ∈ s) (H3 : i ≠ j) :
 `min'_lt_max'` which is sometimes more convenient.
 -/
 theorem min'_lt_max'_of_card (h₂ : 1 < card s) :
-    s.min' (Finset.card_pos.1 <| by omega) < s.max' (Finset.card_pos.1 <| by omega) := by
+    s.min' (Finset.card_pos.1 <| by cutsat) < s.max' (Finset.card_pos.1 <| by cutsat) := by
   rcases one_lt_card.1 h₂ with ⟨a, ha, b, hb, hab⟩
   exact s.min'_lt_max' ha hb hab
 

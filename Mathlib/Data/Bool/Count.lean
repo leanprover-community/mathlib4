@@ -70,9 +70,9 @@ theorem count_not_le_count_add_one (hl : Chain' (· ≠ ·) l) (b : Bool) :
   · exact zero_le _
   obtain rfl | rfl : b = x ∨ b = !x := by simp only [Bool.eq_not_iff, em]
   · rw [count_cons_of_ne b.not_ne_self.symm, count_cons_self, hl.count_not, add_assoc]
-    omega
+    cutsat
   · rw [Bool.not_not, count_cons_self, count_cons_of_ne x.not_ne_self.symm, hl.count_not]
-    omega
+    cutsat
 
 theorem count_false_le_count_true_add_one (hl : Chain' (· ≠ ·) l) :
     count false l ≤ count true l + 1 :=

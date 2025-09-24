@@ -81,11 +81,11 @@ lemma nsmul_notMem_range_root [CharZero R] [NoZeroSMulDivisors ℤ M] [P.IsReduc
   · replace hj : (1 : ℤ) • P.root j = (n : ℤ) • P.root j := by simpa
     rw [(smul_left_injective ℤ <| P.ne_zero j).eq_iff, eq_comm] at hj
     have : 2 ≤ n := Nat.AtLeastTwo.prop
-    omega
+    cutsat
   · rw [← one_smul ℤ (P.root i), ← neg_smul, hj] at this
     replace this : (n : ℤ) • P.root i = -1 • P.root i := by simpa
     rw [(smul_left_injective ℤ <| P.ne_zero i).eq_iff] at this
-    omega
+    cutsat
 
 @[deprecated (since := "2025-07-06")] alias two_smul_notMem_range_root := nsmul_notMem_range_root
 @[deprecated (since := "2025-05-24")] alias two_smul_nmem_range_root := two_smul_notMem_range_root

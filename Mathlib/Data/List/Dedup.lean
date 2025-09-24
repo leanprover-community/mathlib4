@@ -89,7 +89,7 @@ theorem dedup_eq_cons (l : List α) (a : α) (l' : List α) :
     have := count_pos_iff.2 ha
     have : count a l.dedup ≤ 1 := nodup_iff_count_le_one.1 (nodup_dedup l) a
     rw [h, count_cons_self] at this
-    omega
+    cutsat
   · have := @List.cons_head!_tail α ⟨a⟩ _ (ne_nil_of_mem (mem_dedup.2 h.1))
     have hal : a ∈ l.dedup := mem_dedup.2 h.1
     rw [← this, mem_cons, or_iff_not_imp_right] at hal

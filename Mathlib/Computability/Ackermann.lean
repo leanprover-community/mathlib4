@@ -218,7 +218,7 @@ theorem ack_succ_right_le_ack_succ_left (m n : ℕ) : ack m (n + 1) ≤ ack (m +
   · simp
   · rw [ack_succ_succ]
     apply ack_mono_right m (le_trans _ <| add_add_one_le_ack _ n)
-    omega
+    cutsat
 
 -- All the inequalities from this point onwards are specific to the main proof.
 private theorem sq_le_two_pow_add_one_minus_three (n : ℕ) : n ^ 2 ≤ 2 ^ (n + 1) - 3 := by
@@ -245,7 +245,7 @@ theorem ack_add_one_sq_lt_ack_add_three : ∀ m n, (ack m n + 1) ^ 2 ≤ ack (m 
   | m + 1, n + 1 => by
     rw [ack_succ_succ, ack_succ_succ]
     apply (ack_add_one_sq_lt_ack_add_three _ _).trans (ack_mono_right _ <| ack_mono_left _ _)
-    omega
+    cutsat
 
 theorem ack_ack_lt_ack_max_add_two (m n k : ℕ) : ack m (ack n k) < ack (max m n + 2) k :=
   calc
@@ -260,7 +260,7 @@ theorem ack_add_one_sq_lt_ack_add_four (m n : ℕ) : ack m ((n + 1) ^ 2) < ack (
     ack m ((n + 1) ^ 2) < ack m ((ack m n + 1) ^ 2) :=
       ack_strictMono_right m <| Nat.pow_lt_pow_left (succ_lt_succ <| lt_ack_right m n) two_ne_zero
     _ ≤ ack m (ack (m + 3) n) := ack_mono_right m <| ack_add_one_sq_lt_ack_add_three m n
-    _ ≤ ack (m + 2) (ack (m + 3) n) := ack_mono_left _ <| by omega
+    _ ≤ ack (m + 2) (ack (m + 3) n) := ack_mono_left _ <| by cutsat
     _ = ack (m + 3) (n + 1) := (ack_succ_succ _ n).symm
     _ ≤ ack (m + 4) n := ack_succ_right_le_ack_succ_left _ n
 
@@ -310,7 +310,7 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
       induction n with
       | zero => -- The base case is easy.
         apply (ha m).trans (ack_strictMono_left m <| (le_max_left a b).trans_lt _)
-        omega
+        cutsat
       | succ n IH => -- We get rid of the first `pair`.
         simp only
         apply (hb _).trans ((ack_pair_lt _ _ _).trans_le _)

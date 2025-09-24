@@ -56,7 +56,7 @@ def engel (x : L) : LieSubalgebra R L :=
       rw [ad_pow_lie]
       apply Finset.sum_eq_zero
       intro ij hij
-      obtain (h|h) : m ≤ ij.1 ∨ n ≤ ij.2 := by rw [Finset.mem_antidiagonal] at hij; omega
+      obtain (h|h) : m ≤ ij.1 ∨ n ≤ ij.2 := by rw [Finset.mem_antidiagonal] at hij; cutsat
       all_goals simp [Module.End.pow_map_zero_of_le h, hm, hn] }
 
 lemma mem_engel_iff (x y : L) :

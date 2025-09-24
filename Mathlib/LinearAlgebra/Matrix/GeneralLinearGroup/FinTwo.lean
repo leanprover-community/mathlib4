@@ -181,7 +181,7 @@ lemma IsParabolic.pow {g : GL (Fin 2) K} (hg : IsParabolic g) [CharZero K]
       simp only [pow_succ, IH, add_mul, Nat.add_sub_cancel, mul_add, ← map_mul, add_assoc]
       simp only [scalar_apply, ← smul_eq_mul_diagonal, ← MulAction.mul_smul, ← smul_eq_diagonal_mul,
         smul_mul, ← sq, hmsq, smul_zero, add_zero, ← add_smul, Nat.cast_add_one, add_mul, one_mul]
-      rw [(by omega : n = n - 1 + 1), pow_succ, (by omega : n - 1 + 1 = n)]
+      rw [(by cutsat : n = n - 1 + 1), pow_succ, (by cutsat : n - 1 + 1 = n)]
       ring_nf
   · suffices a ≠ 0 by simp [this, hm0, hn]
     refine fun ha ↦ (g ^ 2).det_ne_zero ?_

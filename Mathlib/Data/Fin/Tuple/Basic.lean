@@ -295,7 +295,7 @@ theorem append_left (u : Fin m → α) (v : Fin n → α) (i : Fin m) :
 /-- Variant of `append_left` using `Fin.castLE` instead of `Fin.castAdd`. -/
 @[simp]
 theorem append_left' (u : Fin m → α) (v : Fin n → α) (i : Fin m) :
-    append u v (Fin.castLE (by omega) i) = u i :=
+    append u v (Fin.castLE (by cutsat) i) = u i :=
   addCases_left _
 
 @[simp]

@@ -80,14 +80,14 @@ lemma triplewise_iff_getElem : l.Triplewise p ↔ ∀ i j k (hij : i < j) (hjk :
     · rcases i with - | i <;> rcases j with - | j
       · simp at hij
       · rcases k with - | k
-        · omega
-        · simpa using hh j k (by omega) (by omega) (by omega)
+        · cutsat
+        · simpa using hh j k (by cutsat) (by cutsat) (by cutsat)
       · simp at hij
       · rcases k with - | k
-        · omega
-        · simpa using ht i j k (by omega) (by omega) (by omega)
-    · simpa using h 0 (i + 1) (j + 1) (by omega) (by omega) (by omega)
-    · simpa using h (i + 1) (j + 1) (k + 1) (by omega) (by omega) (by omega)
+        · cutsat
+        · simpa using ht i j k (by cutsat) (by cutsat) (by cutsat)
+    · simpa using h 0 (i + 1) (j + 1) (by cutsat) (by cutsat) (by cutsat)
+    · simpa using h (i + 1) (j + 1) (k + 1) (by cutsat) (by cutsat) (by cutsat)
 
 lemma triplewise_append : (l₁ ++ l₂).Triplewise p ↔ l₁.Triplewise p ∧ l₂.Triplewise p ∧
     (∀ a ∈ l₁, l₂.Pairwise (p a)) ∧ ∀ a ∈ l₂, l₁.Pairwise fun x y ↦ p x y a := by

@@ -17,7 +17,7 @@ namespace Int
 
 theorem mul_ediv_le_mul_ediv_assoc {a : Int} (ha : 0 ≤ a) (b : Int) {c : Int} (hc : 0 ≤ c) :
     a * (b / c) ≤ a * b / c := by
-  obtain rfl | hlt : c = 0 ∨ 0 < c := by omega
+  obtain rfl | hlt : c = 0 ∨ 0 < c := by cutsat
   · simp
   · rw [Int.le_ediv_iff_mul_le hlt, Int.mul_assoc]
     exact Int.mul_le_mul_of_nonneg_left (Int.ediv_mul_le b (Int.ne_of_gt hlt)) ha
@@ -25,7 +25,7 @@ theorem mul_ediv_le_mul_ediv_assoc {a : Int} (ha : 0 ≤ a) (b : Int) {c : Int} 
 theorem ediv_ediv_eq_ediv_mul (m : Int) {n k : Int} (hn : 0 ≤ n) :
     m / n / k = m / (n * k) := by
   have {k : Int} (hk : 0 < k) : m / n / k = m / (n * k) := by
-    obtain rfl | hn' : n = 0 ∨ 0 < n := by omega
+    obtain rfl | hn' : n = 0 ∨ 0 < n := by cutsat
     · simp
     · apply Int.le_antisymm
       · apply Int.le_ediv_of_mul_le (Int.mul_pos hn' hk)

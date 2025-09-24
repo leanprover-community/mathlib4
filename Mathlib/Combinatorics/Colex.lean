@@ -511,7 +511,7 @@ lemma geomSum_ofColex_strictMono (hn : 2 ≤ n) : StrictMono fun s ↦ ∑ k ∈
   rw [toColex_lt_toColex_iff_exists_forall_lt] at hst
   obtain ⟨a, hat, has, ha⟩ := hst
   rw [← sum_sdiff_lt_sum_sdiff]
-  exact (Nat.geomSum_lt hn <| by simpa).trans_le <| single_le_sum (fun _ _ ↦ by omega) <|
+  exact (Nat.geomSum_lt hn <| by simpa).trans_le <| single_le_sum (fun _ _ ↦ by cutsat) <|
     mem_sdiff.2 ⟨hat, has⟩
 
 /-- For finsets of naturals, the colexicographic order is equivalent to the order induced by the

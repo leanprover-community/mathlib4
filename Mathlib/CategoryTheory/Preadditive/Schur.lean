@@ -172,14 +172,14 @@ theorem finrank_hom_simple_simple_eq_one_iff (X Y : C) [FiniteDimensional 𝕜 (
     have le_one := finrank_hom_simple_simple_le_one 𝕜 X Y
     have zero_lt : 0 < finrank 𝕜 (X ⟶ Y) :=
       finrank_pos_iff_exists_ne_zero.mpr ⟨f.hom, (isIso_iff_nonzero f.hom).mp inferInstance⟩
-    omega
+    cutsat
 
 theorem finrank_hom_simple_simple_eq_zero_iff (X Y : C) [FiniteDimensional 𝕜 (X ⟶ X)]
     [FiniteDimensional 𝕜 (X ⟶ Y)] [Simple X] [Simple Y] :
     finrank 𝕜 (X ⟶ Y) = 0 ↔ IsEmpty (X ≅ Y) := by
   rw [← not_nonempty_iff, ← not_congr (finrank_hom_simple_simple_eq_one_iff 𝕜 X Y)]
   have := finrank_hom_simple_simple_le_one 𝕜 X Y
-  omega
+  cutsat
 
 open scoped Classical in
 theorem finrank_hom_simple_simple (X Y : C) [∀ X Y : C, FiniteDimensional 𝕜 (X ⟶ Y)] [Simple X]

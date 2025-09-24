@@ -946,7 +946,7 @@ lemma zpow_pos (ha : 0 < a) : ∀ n : ℤ, 0 < a ^ n
 omit [ZeroLEOneClass G₀] in
 lemma zpow_left_strictMonoOn₀ [MulPosMono G₀] (hn : 0 < n) :
     StrictMonoOn (fun a : G₀ ↦ a ^ n) {a | 0 ≤ a} := by
-  lift n to ℕ using hn.le; simpa using pow_left_strictMonoOn₀ (by omega)
+  lift n to ℕ using hn.le; simpa using pow_left_strictMonoOn₀ (by cutsat)
 
 lemma zpow_right_mono₀ (ha : 1 ≤ a) : Monotone fun n : ℤ ↦ a ^ n := by
   refine monotone_int_of_le_succ fun n ↦ ?_

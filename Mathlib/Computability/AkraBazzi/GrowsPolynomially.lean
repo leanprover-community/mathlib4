@@ -114,7 +114,7 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
         rw [Set.left_mem_Icc]
         gcongr
         · norm_num
-        · omega
+        · cutsat
       simp only [ih, mul_zero, Set.Icc_self, Set.mem_singleton_iff] at hx
       refine hx ⟨?lb₁, ?ub₁⟩
       case lb₁ =>
