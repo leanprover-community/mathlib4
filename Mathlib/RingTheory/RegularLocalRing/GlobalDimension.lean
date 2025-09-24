@@ -3,9 +3,8 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.RingTheory.RegularLocalRing.Basic
-import Mathlib.RingTheory.GlobalDimension
 import Mathlib.RingTheory.CohenMacaulay.Maximal
+import Mathlib.RingTheory.GlobalDimension
 import Mathlib.RingTheory.Regular.AuslanderBuchsbaum
 /-!
 
@@ -80,11 +79,13 @@ lemma finite_projectiveDimension_of_isRegularLocalRing_aux [IsRegularLocalRing R
       use 0
       exact CategoryTheory.instHasProjectiveDimensionLTSucc M 0
 
-lemma finite_projectiveDimension_of_isRegularLocalRing [IsRegularLocalRing R] [Small.{v, u} R]
-    (M : ModuleCat.{v} R) [Module.Finite R M] : ∃ n, HasProjectiveDimensionLE M n := by
+lemma projectiveDimension_ne_top_of_isRegularLocalRing [IsRegularLocalRing R] [Small.{v, u} R]
+    (M : ModuleCat.{v} R) [Module.Finite R M] : projectiveDimension M ≠ ⊤ := by
   rcases exist_nat_eq R with ⟨m, hm⟩
-  apply finite_projectiveDimension_of_isRegularLocalRing_aux M m
-  simpa [hm] using WithBot.coe_le_coe.mpr le_add_self
+  obtain ⟨n, hn⟩ := finite_projectiveDimension_of_isRegularLocalRing_aux M m
+    (by simpa [hm] using WithBot.coe_le_coe.mpr le_add_self)
+  exact ne_top_of_le_ne_top (WithBot.coe_inj.not.mpr (ENat.coe_ne_top n))
+    ((projectiveDimension_le_iff M n).mpr hn)
 
 variable (R) in
 theorem IsRegularLocalRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegularLocalRing R] :
@@ -98,12 +99,11 @@ theorem IsRegularLocalRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegu
   · simp only [iSup_le_iff]
     intro M hM
     by_cases ntr : Nontrivial M
-    · have finM := (finite_projectiveDimension_of_isRegularLocalRing M)
+    · have finM := projectiveDimension_ne_top_of_isRegularLocalRing M
       have nz : ¬Limits.IsZero M := ModuleCat.isZero_iff_subsingleton.not.mpr
         (not_subsingleton_iff_nontrivial.mpr ntr)
       have eq : projectiveDimension M + depth M = ringKrullDim R := by
-        rw [projectiveDimension_eq_find M finM nz, ← depth_eq]
-        exact WithBot.coe_inj.mpr (AuslanderBuchsbaum M finM)
+        rw [← depth_eq, AuslanderBuchsbaum M finM]
       simpa [← eq] using WithBot.le_self_add WithBot.coe_ne_bot _
     · have : Subsingleton M := not_nontrivial_iff_subsingleton.mp ntr
       simp [(projectiveDimension_eq_bot_iff M).mpr (ModuleCat.isZero_iff_subsingleton.mpr this)]
@@ -111,12 +111,11 @@ theorem IsRegularLocalRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegu
     let k := (ModuleCat.of R (Shrink.{v} (ResidueField R)))
     let _ : Module.Finite R k :=
       Module.Finite.equiv (Shrink.linearEquiv R (ResidueField R)).symm
-    have fink := (finite_projectiveDimension_of_isRegularLocalRing k)
+    have fink := projectiveDimension_ne_top_of_isRegularLocalRing k
     have nz : ¬Limits.IsZero k := ModuleCat.isZero_iff_subsingleton.not.mpr
       (not_subsingleton_iff_nontrivial.mpr inferInstance)
     have eq : projectiveDimension k + depth k = ringKrullDim R := by
-      rw [projectiveDimension_eq_find k fink nz, ← depth_eq]
-      exact WithBot.coe_inj.mpr (AuslanderBuchsbaum k fink)
+      rw [← depth_eq, AuslanderBuchsbaum k fink]
     have eq0 : depth k = 0 := by
       rw [IsLocalRing.depth_eq_sSup_length_regular, ← bot_eq_zero', sSup_eq_bot]
       simp only [exists_prop, Set.mem_setOf_eq, bot_eq_zero', forall_exists_index, and_imp]
