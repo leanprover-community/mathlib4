@@ -11,6 +11,7 @@ import Mathlib.RingTheory.Ideal.AssociatedPrime.Localization
 import Mathlib.RingTheory.Regular.Category
 import Mathlib.RingTheory.Spectrum.Prime.Topology
 import Mathlib.RingTheory.Support
+import Mathlib.Tactic.ENatToNat
 /-!
 
 # Hom(N,M) is subsingleton iff there exists a smul regular element of M in ann(N)
@@ -371,6 +372,13 @@ In this section, we set `R` be a noetherian commutative ring, all modules refer 
   `M` and N`, if support of `N` is equal to `PrimeSpectrum.zeroLocus I` and `IM < M`,
   `moduleDepth N M` is equal to the supremum of length of `M`-regular sequence in `I`
 
+* `IsLocalRing.depth_quotSMulTop_succ_eq_moduleDepth` : For `R` local, a `R`-module `M` and a
+  `M`-regular element `x` in `maximalIdeal R`,
+  `IsLocalRing.depth (QuotSMulTop x M) + 1 = IsLocalRing.depth M`
+
+* `moduleDepth_quotient_regular_sequence_add_length_eq_moduleDepth` : For `R` local, a `R`-module
+  `M` and a `M`-regular sequence `rs` in `maximalIdeal R`,
+  `moduleDepth N (M ⧸ (Ideal.ofList rs) • (⊤ : Submodule R M)) + rs.length = moduleDepth N M`
 
 -/
 
