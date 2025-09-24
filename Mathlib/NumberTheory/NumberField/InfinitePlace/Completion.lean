@@ -100,12 +100,18 @@ def extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Complet
   extensionEmbeddingOfComp <| v.norm_embedding_of_isReal hv
 
 @[simp]
-theorem extensionEmbedding_coe (x : K) : extensionEmbedding v x = v.embedding x :=
+theorem extensionEmbedding_coe (x : WithAbs v.1) :
+    extensionEmbedding v x = v.embedding (WithAbs.equiv v.1 x) :=
   extensionEmbeddingOfComp_coe v.norm_embedding_eq x
 
 @[simp]
-theorem extensionEmbeddingOfIsReal_coe {v : InfinitePlace K} (hv : IsReal v) (x : K) :
-    extensionEmbeddingOfIsReal hv x = embedding_of_isReal hv x :=
+theorem extensionEmbedding_coeTail (x : K) :
+    extensionEmbedding v x = v.embedding x:= by
+  rw [extensionEmbedding_coe, RingEquiv.apply_symm_apply]
+
+@[simp]
+theorem extensionEmbeddingOfIsReal_coe {v : InfinitePlace K} (hv : IsReal v) (x : WithAbs v.1) :
+    extensionEmbeddingOfIsReal hv x = embedding_of_isReal hv (WithAbs.equiv v.1 x) :=
   extensionEmbeddingOfComp_coe (v.norm_embedding_of_isReal hv) x
 
 @[deprecated (since := "2025-09-24")]
@@ -148,7 +154,7 @@ theorem subfield_ne_real_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) :
   contrapose! hv
   simp only [not_isComplex_iff_isReal, isReal_iff]
   ext x
-  obtain ⟨r, hr⟩ := hv ▸ extensionEmbedding_coe v x ▸ RingHom.mem_fieldRange_self _ _
+  obtain ⟨r, hr⟩ := hv ▸ extensionEmbedding_coeTail v x ▸ RingHom.mem_fieldRange_self _ _
   simp only [ComplexEmbedding.conjugate_coe_eq, ← hr, Complex.ofRealHom_eq_coe, Complex.conj_ofReal]
 
 /-- If `v` is a complex infinite place, then the embedding `v.Completion →+* ℂ` is surjective. -/
@@ -229,9 +235,7 @@ theorem extensionEmbedding_algebraMap
       extensionEmbedding v x := by
   induction x using induction_on
   · exact isClosed_eq (Continuous.comp continuous_extension continuous_map) continuous_extension
-  · rw [RingHom.algebraMap_toAlgebra, mapOfComp_coe]
-    simp only [extensionEmbedding_coe, ← h]
-    rfl
+  · simp [WithAbs.equiv_algebraMap_apply, ← h]
 
 open UniformSpace.Completion NumberField.ComplexEmbedding in
 theorem conjugate_extensionEmbedding_algebraMap
@@ -241,9 +245,7 @@ theorem conjugate_extensionEmbedding_algebraMap
   · exact isClosed_eq (Continuous.comp
       (by simpa using Continuous.comp Complex.continuous_conj continuous_extension) continuous_map)
       continuous_extension
-  · rw [RingHom.algebraMap_toAlgebra, mapOfComp_coe]
-    simp only [extensionEmbedding_coe, conjugate_coe_eq, ← h]
-    rfl
+  · simp [WithAbs.equiv_algebraMap_apply, ← h]
 
 open UniformSpace.Completion in
 theorem extensionEmbedding_algebraMap_of_isReal (h : v.IsReal) (x : v.Completion) :

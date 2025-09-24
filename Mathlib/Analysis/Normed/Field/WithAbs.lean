@@ -74,8 +74,9 @@ abbrev Completion := UniformSpace.Completion (WithAbs v)
 
 namespace Completion
 
-instance : Coe K v.Completion :=
-  inferInstanceAs <| Coe (WithAbs v) (UniformSpace.Completion (WithAbs v))
+/-- This is a `CoeTail` so that `Coe (WithAbs v) v.Completion` is prioritised. -/
+instance : CoeTail K v.Completion where
+  coe k : v.Completion := ↑((WithAbs.equiv v).symm k)
 
 variable {L : Type*} [NormedField L] [CompleteSpace L] {f : WithAbs v →+* L} {v}
 
@@ -84,9 +85,9 @@ variable {L : Type*} [NormedField L] [CompleteSpace L] {f : WithAbs v →+* L} {
 abbrev extensionEmbeddingOfComp (h : ∀ x, ‖f x‖ = v (equiv v x)) : v.Completion →+* L :=
   UniformSpace.Completion.extensionHom _ (isUniformInducing_of_comp h).uniformContinuous.continuous
 
-theorem extensionEmbeddingOfComp_coe (h : ∀ x, ‖f x‖ = v (equiv v x)) (x : K) :
+theorem extensionEmbeddingOfComp_coe (h : ∀ x, ‖f x‖ = v (equiv v x)) (x : WithAbs v) :
     extensionEmbeddingOfComp h x = f x := by
-  rw [← UniformSpace.Completion.extensionHom_coe f
+  rw [UniformSpace.Completion.extensionHom_coe f
     (isUniformInducing_of_comp h).uniformContinuous.continuous]
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
