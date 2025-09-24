@@ -28,7 +28,7 @@ s ∈ G  ↔  ∀ i:ℕ, ∃ n, [n..∞] × {i} ⊆ s
 Now `⋃ i, [i..∞] × {i}` is in `G` but not in `F`.
 As product filter we want to have `F` as result.
 
-## Notations
+## Notation
 
 * `f ×ˢ g` : `Filter.prod f g`, localized in `Filter`.
 
