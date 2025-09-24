@@ -18,6 +18,7 @@ variable {R : Type u} [CommRing R]
 
 open RingTheory.Sequence IsLocalRing Module.associatedPrimes
 
+/-- An ideal `I` is unmixed if every associated prime of `I` has height equal to `I.height`. -/
 class Ideal.IsUnmixed (I : Ideal R) : Prop where
   height_eq : ∀ {p : Ideal R}, p ∈ associatedPrimes R (R ⧸ I) → p.height = I.height
 
