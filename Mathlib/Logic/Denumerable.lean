@@ -119,7 +119,8 @@ instance option : Denumerable (Option α) :=
 /-- If `α` and `β` are denumerable, then so is their sum. -/
 instance sum : Denumerable (α ⊕ β) :=
   ⟨fun n => by
-    suffices ∃ a ∈ @decodeSum α β _ _ n, encodeSum a = bit (bodd n) (div2 n) by simpa [bit_decomp]
+    suffices ∃ a ∈ @decodeSum α β _ _ n, encodeSum a = bit (bodd n) (div2 n) by
+      simpa [bit_bodd_div2]
     simp only [decodeSum, boddDiv2_eq, decode_eq_ofNat, Option.map_some,
       Option.mem_def, Sum.exists]
     cases bodd n <;> simp [bit, encodeSum, Nat.two_mul]⟩
