@@ -65,14 +65,8 @@ private lemma MDifferentiable.slash_of_pos {f : ℍ → ℂ} (hf : MDifferentiab
   simpa only [σ, hg, ↓reduceIte] using hf.comp (mdifferentiable_smul hg)
 
 private lemma slash_J (f : ℍ → ℂ) (k : ℤ) :
-<<<<<<< HEAD
-    f ∣[k] J = fun τ : ℍ ↦ -conj (f <| ofComplex <| -(conj ↑τ)) := by
-  simp [slash_def, J_smul, mul_assoc, ← zpow_add₀ (by simp : (-1 : ℂ) ≠ 0),
-    (by ring : k - 1 + -k = -1), -zpow_neg, zpow_neg_one]
-=======
     f ∣[k] J = fun τ : ℍ ↦ conj (f <| ofComplex <| -(conj ↑τ)) := by
   simp [slash_def, J_smul]
->>>>>>> upstream/master
 
 /-- The weight `k` slash action of the negative-determinant matrix `J` preserves holomorphic
 functions. -/
