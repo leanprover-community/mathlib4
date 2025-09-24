@@ -72,6 +72,8 @@ theorem Module.finite.of_isLocalized_maximal
   exact ⟨Num, ⟨⟨P, hP⟩, ⟨x, ⟨x.2, rfl⟩⟩⟩, rfl⟩
 
 variable {M} in
+/-- A submodule `N` of a module `M` over a semilocal ring `R` is finitely generated if it is
+locally finitely generated at every maximal ideal. -/
 theorem Submodule.fg_of_isLocalized_maximal (N : Submodule R M)
     (H : ∀ (P : Ideal R) [P.IsMaximal], (Submodule.localized' (Rₚ P) P.primeCompl (f P) N).FG) :
     N.FG := by
@@ -79,22 +81,23 @@ theorem Submodule.fg_of_isLocalized_maximal (N : Submodule R M)
   let fN : ∀ (P : Ideal R) [P.IsMaximal], ↥N →ₗ[R]
     Submodule.localized' (Rₚ P) P.primeCompl (f P) N :=
     fun P _ => N.toLocalized' (Rₚ P) P.primeCompl (f P)
-  exact Module.finite.of_isLocalized_maximal _ _ _ fN H
+  exact Module.finite.of_isLocalized_maximal  _ _ _ fN H
 
 end isLocalized_maximal
 
 section localized_maximal
 
-theorem finite_of_finite_localized_maximal
+theorem Module.finite.of_localized_maximal
     (H : ∀ (P : Ideal R) [P.IsMaximal],
       Module.Finite (Localization P.primeCompl) (LocalizedModule P.primeCompl M)) :
     Module.Finite R M :=
-  Module.finite.of_isLocalized_maximal M _ _ (fun _ _ ↦ LocalizedModule.mkLinearMap _ _) H
+  Module.finite.of_isLocalized_maximal  M _ _
+    (fun _ _ ↦ LocalizedModule.mkLinearMap _ _) H
 
 variable {M} in
 theorem Submodule.fg_of_localized_maximal (N : Submodule R M)
     (H : ∀ (P : Ideal R) [P.IsMaximal], (Submodule.localized (P.primeCompl) N).FG) :
-    N.FG := Submodule.fg_of_isLocalized_maximal _ _ _ N H
+    N.FG := Submodule.fg_of_isLocalized_maximal  _ _ _ N H
 
 end localized_maximal
 
@@ -120,7 +123,7 @@ theorem isPrincipalIdealRing_of_isPrincipalIdealRing_localization
   have : IsNoetherianRing A := by
     constructor
     intro N
-    refine Submodule.fg_of_localized_maximal N (fun P hP => ?_)
+    refine Submodule.fg_of_localized_maximal  N (fun P hP => ?_)
     exact IsNoetherian.noetherian (Submodule.localized P.primeCompl N)
   have : IsIntegrallyClosed A := by
     refine IsIntegrallyClosed.of_localization_maximal (fun P _ hP => ?_)
