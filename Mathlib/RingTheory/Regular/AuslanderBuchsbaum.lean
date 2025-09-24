@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Yongle Hu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Nailin Guan, Yongle Hu, Yijun Yuan
+Authors: Nailin Guan, Yongle Hu
 -/
 import Mathlib.Algebra.Algebra.Shrink
 import Mathlib.Algebra.Category.ModuleCat.Products
@@ -12,35 +12,11 @@ import Mathlib.Tactic.ENatToNat
 /-!
 # Auslander-Buchsbaum theorem
 
-In this file, we prove the Auslander-Buchsbaum theorem, which states that for a finitely generated
-module `M` over a Noetherian local ring `R`, if $\operatorname{proj}\dim M < \infty$, then
-$\operatorname{proj}\dim M + \operatorname{depth} M = \operatorname{depth} R$.
+In this file, we prove the Auslander-Buchsbaum theorem, which states that for a nontrivial
+finitely generated module `M` over a Noetherian local ring `R`, if `projectiveDimension M ≠ ⊤`,
+then `projectiveDimension M + IsLocalRing.depth M = IsLocalRing.depth R`.
 
 -/
-
-namespace CategoryTheory
-
-universe w v u
-
-open Abelian Limits ZeroObject Abelian.Ext
-
-variable {C : Type u} [Category.{v} C] [Abelian C]
-
-theorem shortExact_kernel_of_epi {X Y : C} (e : X ⟶ Y) [he : Epi e] :
-    (ShortComplex.mk (kernel.ι e) e (kernel.condition e)).ShortExact where
-  exact := ShortComplex.exact_kernel e
-  mono_f := equalizer.ι_mono
-  epi_g := he
-
-instance Projective.of_hasProjectiveDimensionLT_one [HasExt.{w} C]
-    (P : C) [HasProjectiveDimensionLT P 1] : Projective P where
-  factors f e _ := by
-    obtain ⟨g, h⟩ := covariant_sequence_exact₃ P (shortExact_kernel_of_epi e) (addEquiv₀.symm f) rfl
-      (eq_zero_of_hasProjectiveDimensionLT _ 1 (Eq.le rfl))
-    rw [← addEquiv₀.eq_symm_apply.mp h, ← AddEquiv.symm_apply_apply addEquiv₀ g]
-    exact ⟨addEquiv₀ g, addEquiv₀.symm_apply_eq.mp (mk₀_comp_mk₀ (addEquiv₀ g) e).symm⟩
-
-end CategoryTheory
 
 section hom
 
@@ -100,9 +76,11 @@ variable {ι : Type v} [DecidableEq ι] (Z : ι → AddCommGrp.{max u v})
 
 open DirectSum
 
+/-- Given a function `Z : ι → AddCommGrp`, the `Cofan` obtained from `DirectSum.of Z i`. -/
 def coproductCocone : Cofan Z :=
   Cofan.mk (of (⨁ i : ι, Z i)) fun i => ofHom (DirectSum.of (fun i ↦ Z i) i)
 
+/-- `coproductCocone` is colimit. -/
 def coproductCoconeIsColimit : IsColimit (coproductCocone Z) where
   desc s := ofHom <| DirectSum.toAddMonoid fun i ↦ (s.ι.app ⟨i⟩).hom
   fac := by
@@ -116,6 +94,7 @@ def coproductCoconeIsColimit : IsColimit (coproductCocone Z) where
     simpa [LinearMap.coe_comp, Function.comp_apply, hom_ofHom, toModule_lof] using
       congr($(h ⟨i⟩) x)
 
+/-- The isomorphism in `AddCommGrp` between coproduct and directsum. -/
 noncomputable def coprodIsoDirectSum [HasCoproduct Z] : ∐ Z ≅ AddCommGrp.of (⨁ i, Z i) :=
   colimit.isoColimitCocone ⟨_, coproductCoconeIsColimit Z⟩
 
@@ -182,7 +161,7 @@ lemma basis_lift [IsLocalRing R] (M : Type*) [AddCommGroup M] [Module R M] [Modu
   rw [← hf, ← LinearMap.range_eq_top, LinearMap.range_comp] at this
   exact LinearMap.range_eq_top.mp (IsLocalRing.map_mkQ_eq_top.mp this)
 
-noncomputable local instance [IsLocalRing R] : Field (R ⧸ maximalIdeal R) :=
+private noncomputable instance [IsLocalRing R] : Field (R ⧸ maximalIdeal R) :=
   Quotient.field (maximalIdeal R)
 
 instance (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
@@ -198,25 +177,16 @@ lemma ext_hom_zero_of_mem_ideal_smul (L M N : ModuleCat.{v} R) (n : ℕ) (f : M 
   refine Submodule.smul_induction_on mem ?_ ?_
   · intro r hr f hf
     ext x
-    change (((Ext.linearEquiv₀ R).symm (r • f)).postcompOfLinear R L _) x = 0
-    simp only [Ext.postcompOfLinear, LinearMap.flip_apply]
-    rw [map_smul, map_smul, ← LinearMap.smul_apply, ← map_smul]
     have : r • x = 0 := by
-      have : r • (Ext.bilinearCompOfLinear R L L M 0 n n (zero_add n)).flip
-        x ((Ext.linearEquiv₀ R).symm (𝟙 L)) = 0 := by
-        have : r • (𝟙 L) = 0 := ModuleCat.hom_ext
-          (LinearMap.ext (fun x ↦ Module.mem_annihilator.mp hr _))
-        rw [← map_smul, ← map_smul, this]
-        simp
-      rwa [← Ext.mk₀_id_comp x]
-    simp [this]
+      have : r • (𝟙 L) = 0 := ModuleCat.hom_ext
+        (LinearMap.ext (fun x ↦ Module.mem_annihilator.mp hr _))
+      rw [← Ext.mk₀_id_comp x, ← Ext.smul_comp, ← Ext.mk₀_smul, this, Ext.mk₀_zero, Ext.zero_comp]
+    simp [Ext.mk₀_smul, ← Ext.smul_comp, this]
   · intro g1 g2 hg1 hg2
     ext x
-    change (((Ext.linearEquiv₀ R).symm (g1 + g2)).postcompOfLinear R L _) x = 0
     have : AddCommGrp.ofHom ((Ext.mk₀ g1).postcomp L (add_zero n)) x +
       AddCommGrp.ofHom ((Ext.mk₀ g2).postcomp L (add_zero n)) x = 0 := by simp [hg1, hg2]
-    simpa only [Ext.postcompOfLinear, map_add]
-
+    simpa [Ext.mk₀_add] using this
 
 lemma ENat.add_one_lt_add_one_iff {a b : ℕ∞} : a < b ↔ a + 1 < b + 1 := by
   enat_to_nat
@@ -266,15 +236,12 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
       ⟨LinearMap.ker_eq_bot.mp Submodule.eq_bot_of_subsingleton, surjf⟩
     obtain ⟨⟨B⟩⟩ := Module.Free.of_equiv ef
     absurd nle0
-    have := ModuleCat.projective_of_free B.2
-    infer_instance
+    exact (projective_iff_hasProjectiveDimensionLT_one M).mp (ModuleCat.projective_of_free B.2)
   have ker_free : Module.Free R (LinearMap.ker f) := by
     apply @(ModuleCat.of R (LinearMap.ker f)).free_of_projective_of_isLocalRing _ _ _ _ _ ?_
-    apply @Projective.of_hasProjectiveDimensionLT_one _ _ _ _ _ ?_
-    have proj : Projective (ModuleCat.of.{v} R (ι →₀ Shrink.{v, u} R)) := by
-      rcases free with ⟨⟨B⟩⟩
-      exact ModuleCat.projective_of_free B.2
-    exact (S_exact.hasProjectiveDimensionLT_X₃_iff 0 proj).mp le1
+    rw [projective_iff_hasProjectiveDimensionLT_one]
+    rcases free with ⟨⟨B⟩⟩
+    exact (S_exact.hasProjectiveDimensionLT_X₃_iff 0 (ModuleCat.projective_of_free B.2)).mp le1
   have ker_le : LinearMap.ker f ≤ (maximalIdeal R) • (⊤ : Submodule R (ι →₀ Shrink.{v, u} R)) := by
     apply le_trans (LinearMap.ker_le_ker_comp f (maximalIdeal R • (⊤ : Submodule R M)).mkQ) _
     rw [hf]
@@ -367,24 +334,35 @@ lemma AuslanderBuchsbaum_one [IsNoetherianRing R] [IsLocalRing R]
       have lt1 : i < n := lt_of_le_of_lt (self_le_add_right _ _) lt2
       exact (iff i).mpr ⟨hn i lt1, hn (i + 1) lt2⟩
 
-open scoped Classical in
-theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
-    (M : ModuleCat.{v} R) [Nontrivial M] [Module.Finite R M]
-    (hfinprojdim : ∃ i : ℕ, CategoryTheory.HasProjectiveDimensionLE M i) :
-    Nat.find hfinprojdim + IsLocalRing.depth M =
+theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R] (M : ModuleCat.{v} R) [Nontrivial M]
+    [Module.Finite R M] (netop : projectiveDimension M ≠ ⊤) :
+    projectiveDimension M + IsLocalRing.depth M =
     IsLocalRing.depth.{v} (ModuleCat.of R (Shrink.{v} R)) := by
-    generalize h: Nat.find hfinprojdim = n
+    classical
+    obtain ⟨n, hn⟩: ∃ n : ℕ, projectiveDimension M = n := by
+      generalize hd : projectiveDimension M = d
+      induction d with
+      | bot =>
+        absurd not_nontrivial_iff_subsingleton.mpr
+          (ModuleCat.isZero_iff_subsingleton.mp ((projectiveDimension_eq_bot_iff M).mp hd))
+        assumption
+      | coe d =>
+        induction d with
+        | top => simp [hd] at netop
+        | coe d =>
+          use d
+          rfl
     induction n generalizing M
-    · simp only [CharP.cast_eq_zero, IsLocalRing.depth, Ideal.depth, moduleDepth, zero_add]
-      have pdz: HasProjectiveDimensionLE M (Nat.find hfinprojdim) := Nat.find_spec hfinprojdim
-      simp only [HasProjectiveDimensionLE, h, zero_add] at pdz
-      have : Module.Free R M := M.free_of_projective_of_isLocalRing
-      congr! 5
-      apply finte_free_ext_vanish_iff
+    · simp only [hn, CharP.cast_eq_zero, IsLocalRing.depth, Ideal.depth, zero_add, WithBot.coe_inj]
+      have : HasProjectiveDimensionLE M 0 := by simp [← projectiveDimension_le_iff, hn]
+      have := (projective_iff_hasProjectiveDimensionLT_one M).mpr this
+      let _ : Module.Free R M := M.free_of_projective_of_isLocalRing
+      exact free_depth_eq_ring_depth M _
     · rename_i n ih _ _
       by_cases eq0 : n = 0
-      · simp only [eq0, zero_add, Nat.find_eq_iff, Nat.lt_one_iff, forall_eq, Nat.cast_one] at h ⊢
-        exact AuslanderBuchsbaum_one M h.1 h.2
+      · simpa [hn, eq0, zero_add, Nat.cast_one, ← WithBot.coe_one, ← WithBot.coe_add]
+          using AuslanderBuchsbaum_one M ((projectiveDimension_le_iff M 1).mp (by simp [hn, eq0]))
+          ((projectiveDimension_ge_iff M 1).mp (by simp [hn, eq0]))
       · rcases Basis.exists_basis (R ⧸ maximalIdeal R) (M ⧸ maximalIdeal R • (⊤ : Submodule R M))
           with ⟨ι, ⟨B⟩⟩
         let fin := FiniteDimensional.fintypeBasisIndex B
@@ -403,7 +381,7 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
           f := ModuleCat.ofHom.{v} (LinearMap.ker f).subtype
           g := ModuleCat.ofHom.{v} f
           zero := by
-            ext x
+            ext
             simp }
         have S_exact : S.ShortExact := {
           exact := by
@@ -419,29 +397,29 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
           let ef : (ι →₀ Shrink.{v, u} R) ≃ₗ[R] M := LinearEquiv.ofBijective f
             ⟨LinearMap.ker_eq_bot.mp Submodule.eq_bot_of_subsingleton, surjf⟩
           obtain ⟨⟨B⟩⟩ := Module.Free.of_equiv ef
-          absurd Nat.find_min hfinprojdim (lt_of_lt_of_eq (Nat.zero_lt_succ n) h.symm)
-          have := ModuleCat.projective_of_free B.2
-          infer_instance
-        have le_n : HasProjectiveDimensionLE S.X₁ n := by
+          absurd ModuleCat.projective_of_free B.2
+          simpa [← projectiveDimension_ge_iff, hn, projective_iff_hasProjectiveDimensionLT_one]
+            using WithBot.le_add_self (WithBot.natCast_ne_bot n) 1
+        have projdim : projectiveDimension S.X₁ = n := by
           rcases free with ⟨⟨B⟩⟩
-          have : HasProjectiveDimensionLT S.X₃ (n + 1 + 1) := by
-            rw [← h]
-            exact Nat.find_spec hfinprojdim
-          exact (ShortComplex.ShortExact.hasProjectiveDimensionLT_X₃_iff S_exact n
-            (ModuleCat.projective_of_free B.2)).mp this
-        have hfinprojdim' : ∃ i, HasProjectiveDimensionLE S.X₁ i := by use n
-        have find_eq : Nat.find hfinprojdim' = n := by
-          simp only [Nat.find_eq_iff, le_n, true_and]
-          intro k hk
-          rcases free with ⟨⟨B⟩⟩
-          apply (ShortComplex.ShortExact.hasProjectiveDimensionLT_X₃_iff S_exact k
-            (ModuleCat.projective_of_free B.2)).not.mp
-          exact Nat.find_min hfinprojdim (lt_of_lt_of_eq (Nat.add_lt_add_right hk 1) h.symm)
-        have h_ker := ih S.X₁ hfinprojdim' find_eq
+          apply le_antisymm
+          · simp only [projectiveDimension_le_iff, HasProjectiveDimensionLE,
+              ← S_exact.hasProjectiveDimensionLT_X₃_iff n (ModuleCat.projective_of_free B.2)]
+            exact (projectiveDimension_le_iff M (n + 1)).mp (by simp [hn])
+          · have : n.pred + 2 = n + 1 := by simpa using Nat.succ_pred_eq_of_ne_zero eq0
+            rw [projectiveDimension_ge_iff, (Nat.succ_pred_eq_of_ne_zero eq0).symm,
+              ← S_exact.hasProjectiveDimensionLT_X₃_iff _ (ModuleCat.projective_of_free B.2),
+              ← projectiveDimension_ge_iff, this]
+            simp [S, hn]
+        have h_ker := ih S.X₁ (by simpa [projdim] using not_eq_of_beq_eq_false rfl) projdim
+        have h_ker' : n + IsLocalRing.depth S.X₁ =
+          IsLocalRing.depth (ModuleCat.of R (Shrink.{v, u} R)) := by
+          simp [projdim] at h_ker
+          exact WithBot.coe_inj.mp h_ker
         let K := ModuleCat.of R (Shrink.{v} (R ⧸ (maximalIdeal R)))
         have depth_pos : IsLocalRing.depth S.X₁ > 0 := by
           apply pos_of_ne_zero
-          have : IsLocalRing.depth (ModuleCat.of R (Shrink.{v, u} R)) ≠ 0 := by simp [← h_ker, eq0]
+          have : IsLocalRing.depth (ModuleCat.of R (Shrink.{v, u} R)) ≠ 0 := by simp [← h_ker', eq0]
           have : IsLocalRing.depth S.X₂ ≠ 0 := by
             simpa only [IsLocalRing.depth, Ideal.depth, free_depth_eq_ring_depth S.X₂ _]
           simp only [IsLocalRing.depth, Ideal.depth, ne_eq,
@@ -463,11 +441,11 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
             exact ext_subsingleton_of_lt_moduleDepth lt
         have eq_add1 : IsLocalRing.depth S.X₁ = IsLocalRing.depth M + 1 := by
           by_cases eqtop : IsLocalRing.depth S.X₁ = ⊤
-          · simp only [eqtop, add_top, f, S] at h_ker
+          · simp [eqtop, f, S] at h_ker'
             have M_depth_eqtop : IsLocalRing.depth M = ⊤ := by
               apply (moduleDepth_eq_top_iff _ _).mpr (fun i ↦ ?_)
               have lt : i + 1 < IsLocalRing.depth (ModuleCat.of R (Shrink.{v, u} R)) := by
-                rw [← h_ker, ENat.add_lt_top]
+                rw [← h_ker', ENat.add_lt_top]
                 exact ⟨ENat.coe_lt_top i, ENat.coe_lt_top 1⟩
               have := ext_iso i lt
               rw [(asIso (AddCommGrp.ofHom (S_exact.extClass.postcomp K
@@ -476,7 +454,7 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
               exact lt_of_lt_of_eq (ENat.coe_lt_top (i + 1)) eqtop.symm
             simp [M_depth_eqtop, eqtop]
           · have lttop : IsLocalRing.depth (ModuleCat.of R (Shrink.{v, u} R)) < ⊤ := by
-              rw [← h_ker]
+              rw [← h_ker']
               exact ENat.add_lt_top.mpr ⟨ENat.coe_lt_top n, Ne.lt_top' (Ne.symm eqtop)⟩
             have exist := (moduleDepth_lt_top_iff _ _).mp (Ne.lt_top' (Ne.symm eqtop))
             let k := Nat.find exist
@@ -487,7 +465,7 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
             have : IsLocalRing.depth M = (k - 1 : ℕ) := by
               simp only [IsLocalRing.depth, Ideal.depth, moduleDepth_eq_iff]
               have lt : (k - 1 : ℕ) + 1 < IsLocalRing.depth (ModuleCat.of R (Shrink.{v, u} R)) := by
-                simp only [← h_ker, eq_find, ← ENat.coe_one, ← ENat.coe_add, eq, ENat.coe_lt_coe]
+                simp only [← h_ker', ← ENat.coe_one, ← ENat.coe_add, eq, eq_find, ENat.coe_lt_coe]
                 omega
               refine ⟨?_, fun i hi ↦ ?_⟩
               · have := ext_iso (k - 1) lt
@@ -501,4 +479,6 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
                 exact not_nontrivial_iff_subsingleton.mp
                   (Nat.find_min exist (Nat.add_lt_of_lt_sub hi))
             simpa [eq_find, this] using ENat.coe_inj.mpr eq.symm
-        simpa [add_assoc, add_comm 1 (IsLocalRing.depth M), ← eq_add1] using h_ker
+        rw [hn, Nat.cast_add, Nat.cast_one, add_assoc, add_comm 1, ← WithBot.coe_one,
+          ← WithBot.coe_add, ← eq_add1, ← projdim]
+        exact h_ker
