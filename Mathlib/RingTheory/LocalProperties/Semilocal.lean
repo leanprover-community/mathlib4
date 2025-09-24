@@ -21,23 +21,10 @@ finitely many maximal ideals).
   PID if its localization at every maximal ideal is a PID.
 -/
 
+section CommSemiring
+
 variable {R : Type*} [CommSemiring R] [Finite (MaximalSpectrum R)]
 variable (M : Type*) [AddCommMonoid M] [Module R M]
-
-lemma Ring.krullDimLE_one_of_localization_maximal {A : Type*} [CommRing A] {n : ℕ}
-    (h : ∀ (P : Ideal A) [P.IsMaximal], Ring.KrullDimLE n (Localization P.primeCompl)) :
-    Ring.KrullDimLE n A := by
-  by_cases hA : Nontrivial A
-  · simp_rw [Ring.krullDimLE_iff] at h ⊢
-    rw [← Ideal.sup_primeHeight_of_maximal_eq_ringKrullDim]
-    refine (WithBot.coe_le_coe).2 (iSup₂_le_iff.mpr fun P hP ↦ ?_)
-    rw [← Ideal.height_eq_primeHeight, ← WithBot.coe_le_coe]
-    rw [← IsLocalization.AtPrime.ringKrullDim_eq_height P (Localization P.primeCompl)]
-    exact h P
-  · rw [not_nontrivial_iff_subsingleton] at hA
-    simp only [Ring.krullDimLE_iff, ringKrullDim_eq_bot_of_subsingleton, bot_le]
-
-section isLocalized_maximal
 
 variable
   (Rₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
@@ -51,6 +38,8 @@ variable
   [∀ (P : Ideal R) [P.IsMaximal], IsScalarTower R (Rₚ P) (Mₚ P)]
   (f : ∀ (P : Ideal R) [P.IsMaximal], M →ₗ[R] Mₚ P)
   [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (f P)]
+
+section isLocalized_maximal
 
 include f in
 /-- A module `M` over a semilocal ring `R` is finite if it is
@@ -90,45 +79,57 @@ theorem Module.Finite.of_localized_maximal
     (H : ∀ (P : Ideal R) [P.IsMaximal],
       Module.Finite (Localization P.primeCompl) (LocalizedModule P.primeCompl M)) :
     Module.Finite R M :=
-  Module.Finite.of_isLocalized_maximal  M _ _
-    (fun _ _ ↦ LocalizedModule.mkLinearMap _ _) H
+  .of_isLocalized_maximal M _ _ (fun _ _ ↦ LocalizedModule.mkLinearMap _ _) H
 
 variable {M} in
 theorem Submodule.fg_of_localized_maximal (N : Submodule R M)
     (H : ∀ (P : Ideal R) [P.IsMaximal], (Submodule.localized (P.primeCompl) N).FG) :
-    N.FG := Submodule.fg_of_isLocalized_maximal  _ _ _ N H
+    N.FG := N.fg_of_isLocalized_maximal _ _ _ H
 
 end localized_maximal
 
-/-- If a semilocal integral domain satisfies that it localized at all
-maximal ideals is a PID, then itself is a PID. -/
-theorem isPrincipalIdealRing_of_isPrincipalIdealRing_localization
-    (A : Type*) [CommRing A] [IsDomain A] [Finite (MaximalSpectrum A)]
-    (hpid : ∀ (P : Ideal A) [P.IsMaximal], IsPrincipalIdealRing (Localization P.primeCompl)) :
-    IsPrincipalIdealRing A := by
-  have : IsNoetherianRing A := by
-    constructor
-    intro N
-    refine Submodule.fg_of_localized_maximal N (fun P hP => ?_)
-    exact IsNoetherian.noetherian (Submodule.localized P.primeCompl N)
-  have : IsIntegrallyClosed A := by
-    refine IsIntegrallyClosed.of_localization_maximal (fun P _ hP => ?_)
-    let p : MaximalSpectrum A := ⟨P, hP⟩
-    change IsIntegrallyClosed (Localization p.1.primeCompl)
-    infer_instance
-  have : Ring.KrullDimLE 1 A :=
-    Ring.krullDimLE_one_of_localization_maximal (fun _ _ => by infer_instance)
+section IsLocalization
+
+theorem IsNoetherianRing.of_isLocalized_maximal
+    (H : ∀ (P : Ideal R) [P.IsMaximal], IsNoetherianRing (Rₚ P)) :
+    IsNoetherianRing R where
+  noetherian N := Submodule.fg_of_isLocalized_maximal
+    Rₚ Rₚ (fun P _ => Algebra.linearMap R (Rₚ P)) N (fun _ _ => IsNoetherian.noetherian _)
+
+end IsLocalization
+
+end CommSemiring
+
+section CommRing
+
+section IsLocalization
+
+variable {R : Type*} [CommRing R] [Finite (MaximalSpectrum R)]
+variable
+  (Rₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
+  [∀ (P : Ideal R) [P.IsMaximal], CommRing (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], Algebra R (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsLocalization.AtPrime (Rₚ P) P]
+
+/-- If a semilocal integral domain `R` is a PID at all of its maximal ideals, then it is a PID.
+This is the `IsLocalization` version. -/
+theorem isPrincipalIdealRing_of_isPrincipalIdealRing_isLocalization [IsDomain R]
+    (hpid : ∀ (P : Ideal R) [P.IsMaximal], IsPrincipalIdealRing (Rₚ P)) :
+    IsPrincipalIdealRing R := by
+  have : IsNoetherianRing R := IsNoetherianRing.of_isLocalized_maximal Rₚ (fun P _ => inferInstance)
+  have : IsIntegrallyClosed R := by
+    refine IsIntegrallyClosed.of_isLocalization_maximal Rₚ (fun P _ => ?_)
+    have := hpid P
+    sorry
+  have : Ring.KrullDimLE 1 R :=
+    Ring.krullDimLE_of_isLocalization_maximal Rₚ (fun P _ => inferInstance)
   rw [Ring.krullDimLE_one_iff_of_noZeroDivisors] at this
-  have : IsDedekindDomain A := {maximalOfPrime := this _}
-  have hp_sub : {P : Ideal A | P.IsPrime} ⊆ {P : Ideal A | P.IsMaximal} ∪ {⊥} := by
-    simp only [Set.union_singleton]
-    intro P hP
-    obtain rfl | hbot := eq_or_ne P ⊥
-    · simp
-    · simp only [Set.mem_insert_iff, hbot, Set.mem_setOf_eq, false_or]
-      exact this.maximalOfPrime hbot hP
-  have hp_finite : {P : Ideal A | P.IsPrime}.Finite := by
-    refine Set.Finite.subset (Set.Finite.union ?_ (Set.finite_singleton ⊥)) hp_sub
-    rw [← MaximalSpectrum.range_asIdeal]
-    exact Set.finite_range MaximalSpectrum.asIdeal
+  have dedekind : IsDedekindDomain R := { maximalOfPrime := this _ }
+  have hp_finite : {P : Ideal R | P.IsPrime}.Finite :=
+    ((Set.finite_range MaximalSpectrum.asIdeal).insert ⊥).subset fun P hP ↦
+      or_iff_not_imp_left.mpr (⟨⟨_, this _ · hP⟩, rfl⟩)
   exact IsPrincipalIdealRing.of_finite_primes hp_finite
+
+end IsLocalization
+
+end CommRing
