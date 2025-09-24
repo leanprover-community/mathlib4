@@ -130,6 +130,7 @@ theorem isPrincipalIdealRing_of_isPrincipalIdealRing_isLocalization [IsDomain R]
     rw [← MaximalSpectrum.range_asIdeal]
     exact Set.finite_range MaximalSpectrum.asIdeal
   exact IsPrincipalIdealRing.of_finite_maximals hp_finite
+
 end IsLocalization
 
 end CommRing
