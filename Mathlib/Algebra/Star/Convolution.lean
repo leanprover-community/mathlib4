@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 Monica Omar. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Monica Omar
+-/
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Star.SelfAdjoint
 
@@ -5,20 +10,20 @@ import Mathlib.Algebra.Star.SelfAdjoint
 # Convolution star operation on `E →ₗ[R] F`
 
 This file defines the star operation on linear maps: `(star f) x = star (f (star x))`.
-This corresponds to a map being star-preserving, i.e., a map is self-adjoint iff it is star-preserving.
+This corresponds to a map being star-preserving, i.e., a map is self-adjoint iff it
+is star-preserving.
 
 ## Implementation notes
 
-**Note** that in the case of when `E = F` for a finite-dimensional Hilbert space, this `star` conflicts with
-the global instance on `E →ₗ[𝕜] E` where `star := LinearMap.adjoint`.
+**Note** that in the case of when `E = F` for a finite-dimensional Hilbert space, this `star`
+conflicts with the global instance on `E →ₗ[𝕜] E` where `star := LinearMap.adjoint`.
 For that reason, the convolution star operation is scoped to `ConvolutionStar`.
-
 -/
 
 namespace LinearMap
 variable {R E F : Type*} [Semiring R] [InvolutiveStar R]
   [AddCommMonoid E] [Module R E] [StarAddMonoid E] [StarModule R E]
-  [AddCommMonoid F] [Module R F]  [StarAddMonoid F] [StarModule R F]
+  [AddCommMonoid F] [Module R F] [StarAddMonoid F] [StarModule R F]
 
 /-- The convolution star operation on linear maps `E →ₗ F` defined by
 `(star f) x = star (f (star x))`. -/
