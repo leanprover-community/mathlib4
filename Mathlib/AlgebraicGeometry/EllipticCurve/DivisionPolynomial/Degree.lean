@@ -172,7 +172,7 @@ private lemma expDegree_rec (m : ℕ) :
       expDegree (m + 1) + 3 * expDegree (m + 3) + (if Even m then 0 else 2 * 3)) := by
   push_cast [← @Nat.cast_inj ℤ, ← mul_left_cancel_iff_of_pos (b := (expDegree _ : ℤ)) two_pos,
     mul_add, mul_left_comm (2 : ℤ)]
-  repeat rw [expDegree_cast <| by omega]
+  repeat rw [expDegree_cast <| by cutsat]
   push_cast [Nat.even_add_one, ite_not, even_two_mul]
   constructor <;> constructor <;> split_ifs <;> ring1
 
