@@ -59,7 +59,7 @@ theorem eq_quadratic_of_degree_le_two (hp : degree p ≤ 2) :
 
 theorem eq_quadratic_of_natDegree_le_two (hp : natDegree p ≤ 2) :
     p = C (p.coeff 2) * X ^ 2 + C (p.coeff 1) * X + C (p.coeff 0) :=
-  eq_quadratic_of_degree_le_two  <| degree_le_of_natDegree_le hp
+  eq_quadratic_of_degree_le_two <| degree_le_of_natDegree_le hp
 
 end Semiring
 
