@@ -96,9 +96,9 @@ theorem compProd_apply (hs : MeasurableSet s) (κ : Kernel α β) [IsSFiniteKern
     lintegral_prod _ (Kernel.measurable_coe _ hs).aemeasurable, lintegral_dirac']
   swap
   · suffices Measurable fun p : α × β ↦
-        (swap γ β ∘ₖ (η ∥ₖ Kernel.id)
-          ∘ₖ deterministic MeasurableEquiv.prodAssoc.symm (MeasurableEquiv.measurable _)
-          ∘ₖ (Kernel.id ∥ₖ copy β)) p s by fun_prop
+      (swap γ β ∘ₖ (η ∥ₖ Kernel.id)
+        ∘ₖ deterministic MeasurableEquiv.prodAssoc.symm (MeasurableEquiv.measurable _)
+        ∘ₖ (Kernel.id ∥ₖ copy β)) p s by fun_prop
     exact Kernel.measurable_coe _ hs
   congr with b
   rw [comp_apply, parallelComp_apply, Kernel.id_apply, copy_apply, Measure.dirac_prod_dirac,
