@@ -90,8 +90,13 @@ def update (rd : RemoveDeprecations) (s : Syntax) : RemoveDeprecations :=
       firstLast :=
         let updateStart := toggleEntry rd.firstLast rg.start
         toggleEntry updateStart rg.stop}
-    if let some _ := s.find? (·.isOfKind ``deprecated) then
-      {ans with removals := rd.removals.insert rg}
+    if let some deprStx := s.find? (·.isOfKind ``deprecated) then
+      match deprStx with
+      | `(attr| deprecated $[$id?]? $[$text?]? (since := $since)) =>
+        dbg_trace "since: {since.getString}"
+        {ans with removals := rd.removals.insert rg}
+      | _ =>
+        ans
     else
       ans
 
