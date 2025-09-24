@@ -81,7 +81,7 @@ theorem Module.Finite.of_localized_maximal
 
 variable {M} in
 theorem Submodule.fg_of_localized_maximal (N : Submodule R M)
-    (H : ∀ (P : Ideal R) [P.IsMaximal], (N.localized (P.primeCompl)).FG) :
+    (H : ∀ (P : Ideal R) [P.IsMaximal], (N.localized P.primeCompl).FG) :
     N.FG := N.fg_of_isLocalized_maximal _ _ _ H
 
 end localized_maximal
@@ -117,13 +117,13 @@ theorem isPrincipalIdealRing_of_isPrincipalIdealRing_isLocalization [IsDomain R]
     (hpid : ∀ (P : Ideal R) [P.IsMaximal], IsPrincipalIdealRing (Rₚ P)) :
     IsPrincipalIdealRing R := by
   have : IsNoetherianRing R :=
-    IsNoetherianRing.of_isLocalization_maximal Rₚ (fun P _ => inferInstance)
+    IsNoetherianRing.of_isLocalization_maximal Rₚ fun P _ => inferInstance
   have : IsIntegrallyClosed R := by
-    refine IsIntegrallyClosed.of_isLocalization_maximal Rₚ (fun P hP => ?_)
+    refine IsIntegrallyClosed.of_isLocalization_maximal Rₚ fun P hP => ?_
     have : IsDomain (Rₚ P) := IsLocalization.isDomain_of_isLocalization_atPrime (Rₚ P) P
     infer_instance
   have : Ring.KrullDimLE 1 R :=
-    Ring.krullDimLE_of_isLocalization_maximal Rₚ (fun P _ => inferInstance)
+    Ring.krullDimLE_of_isLocalization_maximal Rₚ fun P _ => inferInstance
   rw [Ring.krullDimLE_one_iff_of_noZeroDivisors] at this
   have dedekind : IsDedekindDomain R := { maximalOfPrime := this _ }
   have hp_finite : {P : Ideal R | P.IsPrime}.Finite :=
