@@ -352,12 +352,16 @@ omit [UnivLE.{v, w}]
 instance (I : Ideal R) [Small.{v, u} R] : Small.{v, u} (R ⧸ I) :=
   small_of_surjective Ideal.Quotient.mk_surjective
 
+/-- The depth between two `R`-modules defined as the minimal nontrivia `Ext` between them. -/
 noncomputable def moduleDepth (N M : ModuleCat.{v} R) : ℕ∞ :=
   sSup {n : ℕ∞ | ∀ i : ℕ, i < n → Subsingleton (Ext.{max u v} N M i)}
 
+/-- The depth of a `R`-module `M` with respect to an ideal `I`,
+defined as `moduleDepth (R⧸ I, M)`. -/
 noncomputable def Ideal.depth (I : Ideal R) (M : ModuleCat.{v} R) : ℕ∞ :=
   moduleDepth (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M
 
+/-- The depth of a `R`-module with respect to the maximal ideal when `R` is local ring. -/
 noncomputable def IsLocalRing.depth [IsLocalRing R] (M : ModuleCat.{v} R) : ℕ∞ :=
   (IsLocalRing.maximalIdeal R).depth M
 
@@ -656,7 +660,7 @@ lemma Submodule.comap_lt_top_of_lt_range {M N : Type*} [AddCommGroup M] [Module 
   have : y ∉ Submodule.comap f p := by simpa [hy] using nmem
   exact lt_of_le_not_ge (fun _ a ↦ trivial) fun a ↦ this (a trivial)
 
---universe invariant
+/-- Universe invariant of `moduleDepth`. -/
 lemma moduleDepth_eq_moduleDepth_shrink [IsNoetherianRing R] (I : Ideal R) [Small.{w, u} R]
     (N M : Type v) [AddCommGroup M] [Module R M] [Module.Finite R M] [Nontrivial M]
     [AddCommGroup N] [Module R N] [Nfin : Module.Finite R N] [Nntr : Nontrivial N]
