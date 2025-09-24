@@ -8,6 +8,7 @@ import Mathlib.Analysis.Convex.PathConnected
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.Analysis.Normed.Module.RCLike.Real
 
 /-!
 # Metric properties of convex sets in normed spaces
@@ -60,6 +61,38 @@ theorem convex_ball (a : E) (r : ℝ) : Convex ℝ (Metric.ball a r) := by
 
 theorem convex_closedBall (a : E) (r : ℝ) : Convex ℝ (Metric.closedBall a r) := by
   simpa only [Metric.closedBall, sep_univ] using (convexOn_univ_dist a).convex_le r
+
+theorem convexHull_sphere_zero_eq_ball (F : Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
+    [Nontrivial F] : convexHull ℝ (Metric.sphere (0 : F) 1) = Metric.closedBall 0 1 := by
+  ext x
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [mem_convexHull_iff] at h
+    exact h (Metric.closedBall 0 1) sphere_subset_closedBall <| convex_closedBall 0 1
+  rw [mem_convexHull_iff]
+  intro U hU_sub hU
+  have zero_mem : (0 : F) ∈ U := by
+    obtain ⟨z, hz⟩ := (@NormedSpace.sphere_nonempty F _ _ _ 0 1).mpr (by simp)
+    have := @Convex.midpoint_mem ℝ F _ _ _ _ _ ?_ U z (- z) hU (hU_sub hz) ?_
+    · simp_all
+    · use 2⁻¹
+      rw [inv_mul_cancel₀]
+      exact two_ne_zero
+      rw [mul_inv_cancel₀]
+      exact two_ne_zero
+    · apply hU_sub
+      aesop
+  by_cases x_zero : x = 0
+  · rwa [x_zero]
+  replace hU := hU.starConvex zero_mem
+  simp at h
+  set z := ‖x‖⁻¹ • x with hz_def
+  have hz : z ∈ sphere 0 1 := by
+    rw [mem_sphere_iff_norm, sub_zero, hz_def, norm_smul, norm_inv, norm_norm, inv_mul_cancel₀]
+    simp [x_zero]
+  replace hz : z ∈ U := hU_sub hz
+  have := @StarConvex.smul_mem ℝ F _ _ _ _ _ z U hU hz ‖x‖ (by simp) h
+  rwa [hz_def, ← smul_assoc, smul_eq_mul, mul_inv_cancel₀, one_smul] at this
+  simp [x_zero]
 
 /-- Given a point `x` in the convex hull of `s` and a point `y`, there exists a point
 of `s` at distance at least `dist x y` from `y`. -/

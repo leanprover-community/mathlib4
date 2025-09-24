@@ -64,23 +64,17 @@ theorem ball_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕}
   apply h
   simp_all
 
-theorem closedBall_zero_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕} {r : ℝ}
-    (hr : 0 < r) : closedBall (0 : F) r ⊆ Set.range f ↔ (⇑f).Surjective := by
-  apply Absorbent.subset_range_iff_surjective
-  rw [← closedBall_normSeminorm 𝕜₂]
-  apply (normSeminorm ..).absorbent_closedBall (by simp_all)
-
 theorem closedBall_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕} {x : F} {r : ℝ}
-      (hr : 0 < r) : closedBall (x : F) r ⊆ Set.range f ↔ (⇑f).Surjective := by
+    (hr : 0 < r) : closedBall (x : F) r ⊆ Set.range f ↔ (⇑f).Surjective :=
+  ⟨fun h ↦ (ball_subset_range_iff_surjective hr).mp <| subset_trans ball_subset_closedBall h,
+    by simp_all⟩
+
+theorem sphere_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f : 𝓕} {x : F} {r : ℝ}
+    (hr : 0 < r) : sphere (x : F) r ⊆ Set.range f ↔ (⇑f).Surjective := by
   refine ⟨fun h ↦ ?_, by simp_all⟩
-  suffices closedBall 0 r ⊆ Set.range f from
-    (closedBall_zero_subset_range_iff_surjective hr).mp this
-  intro _ _
-  change _ ∈ LinearMap.range f --this can be avoided by replacing `rw` with `erw` in the next line
-  rw [← Submodule.add_mem_iff_left (p := LinearMap.range f)
-    (h <| mem_closedBall_self <| le_of_lt hr)]
-  apply h
-  simp_all
+  -- have := @Convex.linear_image
+  sorry
+
 
 omit [SemilinearMapClass 𝓕 σ₁₂ E F]
 
