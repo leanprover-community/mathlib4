@@ -530,6 +530,8 @@ namespace Extension
 
 variable {L} {v : InfinitePlace K} (w : v.Extension L)
 
+abbrev abs : AbsoluteValue L ℝ := w.1.1
+
 theorem comap_eq : w.1.comap (algebraMap K L) = v := w.2
 
 /-- If `w : v.Extension L` extends a complex place `v : InfinitePlace K`, then `w` is complex. -/
@@ -542,12 +544,12 @@ theorem isReal (hw : w.1.IsReal) : v.IsReal :=
   w.comap_eq ▸ hw.comap _
 
 theorem mk_embedding_comp_eq : mk (w.1.embedding.comp (algebraMap K L)) = v := by
-  rw [← comap_mk, w.1.mk_embedding, w.2]
+  rw [← comap_mk, w.1.mk_embedding, w.comap_eq]
 
 theorem _root_.NumberField.ComplexEmbedding.Extension.comap_mk_eq {v : InfinitePlace K}
     (ψ : ComplexEmbedding.Extension L v.embedding) :
     (mk ψ).comap (algebraMap K L) = v := by
-  rw [comap_mk, ψ.2, mk_embedding]
+  rw [comap_mk, ψ.comp_eq, mk_embedding]
 
 /-- If `w : InfinitePlace L` extends `v : InfinitePlace K`, then either `w.embedding`
 extends `v.embedding` as complex embeddings, or `conjugate w.embedding` extends `v.embedding`. -/
