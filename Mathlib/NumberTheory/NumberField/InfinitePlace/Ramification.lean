@@ -82,6 +82,11 @@ lemma mult_comap_le (f : k →+* K) (w : InfinitePlace K) : mult (w.comap f) ≤
   · exact (h₁ (h₂.comap _)).elim
   all_goals decide
 
+lemma comap_embedding_of_isReal (f : k →+* K) {w : InfinitePlace K} (h : (w.comap f).IsReal) :
+    (w.comap f).embedding = w.embedding.comp f := by
+  rw [← mk_embedding w, comap_mk, mk_embedding, embedding_mk_eq_of_isReal
+    (by rwa [← isReal_mk_iff, ← comap_mk, mk_embedding])]
+
 variable [Algebra k K] (σ : K ≃ₐ[k] K) (w : InfinitePlace K)
 variable (k K)
 

@@ -130,31 +130,33 @@ theorem locallyCompactSpace [LocallyCompactSpace L] (h : ∀ x, ‖f x‖ = v ((
     LocallyCompactSpace (v.Completion) :=
   (isClosedEmbedding_extensionEmbeddingOfComp h).locallyCompactSpace
 
-variable {w : AbsoluteValue L ℝ} {σ : WithAbs v →+* WithAbs w}
+section mapOfComp
+
+variable {K L : Type*} [Field K] [Field L] [Algebra K L] {w : AbsoluteValue L ℝ}
+  {σ : WithAbs v →+* WithAbs w}
 
 /-- If `L/K` and `w` is an absolute value on `L` factors through `K` via an embedding `σ : K →+* L`
 to give the absolute value `v` on `K`, then `mapOfComp` is natural ring homomorphism
 `v.Completion →+* w.Completion` lifting `σ`. -/
-abbrev mapOfComp (h : ∀ x, w ((equiv w).symm (σ x)) = v ((equiv v).symm x)) :
+abbrev mapOfComp (h : ∀ x, w (equiv w (σ x)) = v (equiv v x)) :
     v.Completion →+* w.Completion :=
   UniformSpace.Completion.mapRingHom σ (isUniformInducing_of_comp h).uniformContinuous.continuous
 
-omit [CompleteSpace L] in
-theorem mapOfComp_coe (h : ∀ x, w ((equiv w).symm (σ x)) = v ((equiv v).symm x)) (x : WithAbs v) :
+theorem mapOfComp_coe (h : ∀ x, w (equiv w (σ x)) = v (equiv v x)) (x : WithAbs v) :
     mapOfComp h x = σ x :=
   UniformSpace.Completion.mapRingHom_coe (isUniformInducing_of_comp h).uniformContinuous x
 
-omit [CompleteSpace L] in
-theorem mapOfComp_dist_eq (h : ∀ x, w ((equiv w).symm (σ x)) = v ((equiv v).symm x))
-    (x y : v.Completion) : dist (mapOfComp h x) (mapOfComp h y) = dist x y := by
+theorem mapOfComp_dist_eq (h : ∀ x, w (equiv w (σ x)) = v (equiv v x)) (x y : v.Completion) :
+    dist (mapOfComp h x) (mapOfComp h y) = dist x y := by
   refine UniformSpace.Completion.induction_on₂ x y ?_ fun x y => ?_
   · refine isClosed_eq ?_ continuous_dist
     exact continuous_iff_continuous_dist.1 UniformSpace.Completion.continuous_extension
   · rw [mapOfComp_coe, mapOfComp_coe, UniformSpace.Completion.dist_eq]
     exact UniformSpace.Completion.dist_eq x y ▸ (isometry_of_comp h).dist_eq x y
 
-omit [CompleteSpace L] in
-theorem isometry_mapOfComp (h : ∀ x, w ((equiv w).symm (σ x)) = v ((equiv v).symm x)) :
+theorem isometry_mapOfComp (h : ∀ x, w (equiv w (σ x)) = v (equiv v x)) :
     Isometry (mapOfComp h) := Isometry.of_dist_eq <| mapOfComp_dist_eq h
+
+end mapOfComp
 
 end AbsoluteValue.Completion
