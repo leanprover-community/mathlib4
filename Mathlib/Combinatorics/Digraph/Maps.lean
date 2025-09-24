@@ -32,6 +32,7 @@ To make use of pre-existing simp lemmas, definitions involving morphisms are
 abbreviations as well.
 -/
 
+
 open Function
 
 namespace Digraph
@@ -293,6 +294,13 @@ protected abbrev induce (s : Set V) : G.induce s ↪g G :=
 protected abbrev spanningCoe {s : Set V} (G : Digraph s) : G ↪g G.spanningCoe :=
   Digraph.Embedding.map (Function.Embedding.subtype _) G
 
+/-- Embeddings of types induce embeddings of complete graphs on those types. -/
+protected def completeDigraph {α β : Type*} (f : α ↪ β) : Digraph.completeDigraph α ↪g Digraph.completeDigraph β :=
+  { f with map_rel_iff' := by simp }
+
+@[simp] lemma coe_completeGraph {α β : Type*} (f : α ↪ β) :
+ ⇑(Embedding.completeDigraph f) = f := rfl
+
 variable {G'' : Digraph X}
 
 /-- Composition of graph embeddings. -/
@@ -419,6 +427,15 @@ lemma map_apply (f : V ≃ W) (G : Digraph V) (v : V) :
 @[simp]
 lemma map_symm_apply (f : V ≃ W) (G : Digraph V) (w : W) :
     (Digraph.Iso.map f G).symm w = f.symm w := rfl
+
+/-- Equivalences of types induce isomorphisms of complete graphs on those types. -/
+protected def completeDigraph {α β : Type*} (f : α ≃ β) :
+  Digraph.completeDigraph α ≃g Digraph.completeDigraph β :=
+  { f with map_rel_iff' := by simp }
+
+theorem toEmbedding_completeDigraph {α β : Type*} (f : α ≃ β) :
+    (Iso.completeDigraph f).toEmbedding = Embedding.completeDigraph f.toEmbedding :=
+  rfl
 
 variable {G'' : Digraph X}
 
