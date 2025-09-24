@@ -120,8 +120,8 @@ theorem isPrincipalIdealRing_of_isPrincipalIdealRing_isLocalization [IsDomain R]
     IsNoetherianRing.of_isLocalization_maximal Rₚ (fun P _ => inferInstance)
   have : IsIntegrallyClosed R := by
     refine IsIntegrallyClosed.of_isLocalization_maximal Rₚ (fun P hP => ?_)
-
-    sorry
+    have : IsDomain (Rₚ P) := IsLocalization.isDomain_of_isLocalization_atPrime (Rₚ P) P
+    infer_instance
   have : Ring.KrullDimLE 1 R :=
     Ring.krullDimLE_of_isLocalization_maximal Rₚ (fun P _ => inferInstance)
   rw [Ring.krullDimLE_one_iff_of_noZeroDivisors] at this
