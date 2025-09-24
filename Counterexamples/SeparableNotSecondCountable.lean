@@ -3,7 +3,7 @@ Copyright (c) 2025 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.Data.Real.Cardinality
+import Mathlib.Analysis.Real.Cardinality
 
 /-!
 # Example of a linear order which is a separable space but is not a second countable topology
