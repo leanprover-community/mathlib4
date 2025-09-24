@@ -113,7 +113,7 @@ the vanishing order of `Ext` and maximal regular sequence.
 
 # Main results
 
-* `lemma222` : for `n : ℕ`, noetherian ring `R`, `I : Ideal R`,
+* `exist_isRegular_tfae` : for `n : ℕ`, noetherian ring `R`, `I : Ideal R`,
   `M : ModuleCat R` finitely generated and nontrivial satisfying `IM < M`, we proved TFAE,
   · for any `N : ModuleCat R` finitely generated and nontrivial with support contained in the
     zerolucus of `I`, `∀ i < n, Ext N M i = 0`
@@ -137,7 +137,7 @@ local instance : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
 
 open Pointwise ModuleCat IsSMulRegular
 
-lemma lemma222_3_to_4 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
+lemma exist_isRegular_tfae_3_to_4 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
     ∀ M : ModuleCat.{v} R, Nontrivial M → Module.Finite R M →
     I • (⊤ : Submodule R M) < ⊤ → (∃ N : ModuleCat.{v} R, Nontrivial N ∧ Module.Finite R N ∧
     Module.support R N = PrimeSpectrum.zeroLocus I ∧ ∀ i < n, Subsingleton (Ext N M i)) →
@@ -214,7 +214,7 @@ lemma mono_of_mono (a : R) {k : ℕ} (kpos : k > 0) (i : ℕ) {M N : ModuleCat.{
       rw [eq_comp]
       exact CategoryTheory.mono_comp' (ih (Nat.zero_lt_of_ne_zero eq0)) f_mono
 
-lemma lemma222_4_to_1 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) (N : ModuleCat.{v} R)
+lemma exist_isRegular_tfae_4_to_1 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) (N : ModuleCat.{v} R)
     (Nntr : Nontrivial N) (Nfin : Module.Finite R N)
     (Nsupp : Module.support R N ⊆ PrimeSpectrum.zeroLocus I) :
     ∀ M : ModuleCat.{v} R, Nontrivial M → Module.Finite R M → I • (⊤ : Submodule R M) < ⊤ →
@@ -277,13 +277,14 @@ lemma lemma222_4_to_1 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) (N : ModuleCa
         have zero_gk : gk = 0 := ext_hom_eq_zero_of_mem_ann hk i
         exact AddCommGrp.subsingleton_of_isZero (IsZero.of_mono_eq_zero _ zero_gk)
 
---lemma222 i.e. Rees theorem
-lemma lemma222 [IsNoetherianRing R] (I : Ideal R) [Small.{v} (R ⧸ I)] (n : ℕ) (M : ModuleCat.{v} R)
-    (Mntr : Nontrivial M) (Mfin : Module.Finite R M) (smul_lt : I • (⊤ : Submodule R M) < ⊤) :
-  [∀ N : ModuleCat.{v} R, (Nontrivial N ∧ Module.Finite R N ∧
+/-- The Rees theorem -/
+lemma exist_isRegular_tfae [IsNoetherianRing R] (I : Ideal R) [Small.{v} (R ⧸ I)] (n : ℕ)
+    (M : ModuleCat.{v} R) (Mntr : Nontrivial M) (Mfin : Module.Finite R M)
+    (smul_lt : I • (⊤ : Submodule R M) < ⊤) :
+    [∀ N : ModuleCat.{v} R, (Nontrivial N ∧ Module.Finite R N ∧
     Module.support R N ⊆ PrimeSpectrum.zeroLocus I) → ∀ i < n, Subsingleton (Ext N M i),
-   ∀ i < n, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M i),
-   ∃ N : ModuleCat R, Nontrivial N ∧ Module.Finite R N ∧
+    ∀ i < n, Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M i),
+    ∃ N : ModuleCat R, Nontrivial N ∧ Module.Finite R N ∧
     Module.support R N = PrimeSpectrum.zeroLocus I ∧ ∀ i < n, Subsingleton (Ext N M i),
     ∃ rs : List R, rs.length = n ∧ (∀ r ∈ rs, r ∈ I) ∧ RingTheory.Sequence.IsRegular M rs
     ].TFAE := by
@@ -311,7 +312,7 @@ lemma lemma222 [IsNoetherianRing R] (I : Ideal R) [Small.{v} (R ⧸ I)] (n : ℕ
       true_and]
     refine ⟨?_, h2⟩
     rw [(Shrink.linearEquiv R _).support_eq, suppQ]
-  tfae_have 3 → 4 := lemma222_3_to_4 I n M Mntr Mfin smul_lt
+  tfae_have 3 → 4 := exist_isRegular_tfae_3_to_4 I n M Mntr Mfin smul_lt
   tfae_have 4 → 1 := fun h4 N ⟨Nntr, Nfin, Nsupp⟩ i hi ↦
-    lemma222_4_to_1 I n N Nntr Nfin Nsupp M Mntr Mfin smul_lt h4 i hi
+    exist_isRegular_tfae_4_to_1 I n N Nntr Nfin Nsupp M Mntr Mfin smul_lt h4 i hi
   tfae_finish
