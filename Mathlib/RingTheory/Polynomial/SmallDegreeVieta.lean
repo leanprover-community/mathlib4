@@ -76,8 +76,6 @@ lemma test [CommRing R] {p : R[X]} (hp : p.natDegree = 2) : (p.coeff 2) ≠ 0 :=
   rw [hp]
   norm_cast
 
-#check Finset.sum
-
 /-- **Vieta's formula** for quadratics as an iff. -/
 lemma roots_quadratic_eq_pair_iff_of_ne_zero [CommRing R] [IsDomain R] {x1 x2 : R} {p : R[X]}
     (hp : p.natDegree = 2) :
