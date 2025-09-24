@@ -3,6 +3,7 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
+import Mathlib.Algebra.Category.Grp.Zero
 import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
@@ -84,9 +85,8 @@ lemma injective_of_quotients_ext_one_subsingleton [Small.{v} R] (M : ModuleCat.{
     exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mpr exac
     mono_f := (ModuleCat.mono_iff_injective _).mpr inj
     epi_g := (ModuleCat.epi_iff_surjective _).mpr surj }
-  have : IsZero (AddCommGrp.of (Ext (ModuleCat.of R (Shrink.{v, u} (R ⧸ I))) M 1)) := by
-    let _ := h I
-    exact AddCommGrp.isZero_of_subsingleton _
+  have : IsZero (AddCommGrp.of (Ext (ModuleCat.of R (Shrink.{v, u} (R ⧸ I))) M 1)) :=
+    @AddCommGrp.isZero_of_subsingleton _ (h I)
   have exac := Ext.contravariant_sequence_exact₁' S_exact M 0 1 rfl
   have surj : Function.Surjective ((Ext.mk₀ S.f).precomp M (add_zero 0)) :=
     (AddCommGrp.epi_iff_surjective _).mp (exac.epi_f (this.eq_zero_of_tgt _))
