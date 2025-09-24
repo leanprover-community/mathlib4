@@ -19,20 +19,20 @@ This file provides lemmas about the interaction between infinite sums and multip
 
 open Filter Finset Function
 
-variable {ι κ α : Type*}
+variable {ι κ α : Type*} {L : SummationFilter ι}
 
 section NonUnitalNonAssocSemiring
 
 variable [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [IsTopologicalSemiring α] {f : ι → α}
   {a₁ : α}
 
-theorem HasSum.mul_left (a₂) (h : HasSum f a₁) : HasSum (fun i ↦ a₂ * f i) (a₂ * a₁) := by
+theorem HasSum.mul_left (a₂) (h : HasSum f a₁ L) : HasSum (fun i ↦ a₂ * f i) (a₂ * a₁) L := by
   simpa only using h.map (AddMonoidHom.mulLeft a₂) (continuous_const.mul continuous_id)
 
 theorem HasSum.mul_right (a₂) (hf : HasSum f a₁) : HasSum (fun i ↦ f i * a₂) (a₁ * a₂) := by
   simpa only using hf.map (AddMonoidHom.mulRight a₂) (continuous_id.mul continuous_const)
 
-theorem Summable.mul_left (a) (hf : Summable f) : Summable fun i ↦ a * f i :=
+theorem Summable.mul_left (a) (hf : Summable f L) : Summable (fun i ↦ a * f i) L :=
   (hf.hasSum.mul_left _).summable
 
 theorem Summable.mul_right (a) (hf : Summable f) : Summable fun i ↦ f i * a :=
@@ -42,7 +42,8 @@ section tsum
 
 variable [T2Space α]
 
-protected theorem Summable.tsum_mul_left (a) (hf : Summable f) : ∑' i, a * f i = a * ∑' i, f i :=
+protected theorem Summable.tsum_mul_left (a) (hf : Summable f L) :
+      ∑'[L] i, a * f i = a * ∑'[L] i, f i :=
   (hf.hasSum.mul_left _).tsum_eq
 
 protected theorem Summable.tsum_mul_right (a) (hf : Summable f) : ∑' i, f i * a = (∑' i, f i) * a :=
@@ -81,7 +82,7 @@ theorem hasSum_mul_right_iff (h : a₂ ≠ 0) : HasSum (fun i ↦ f i * a₂) (a
 theorem hasSum_div_const_iff (h : a₂ ≠ 0) : HasSum (fun i ↦ f i / a₂) (a₁ / a₂) ↔ HasSum f a₁ := by
   simpa only [div_eq_mul_inv] using hasSum_mul_right_iff (inv_ne_zero h)
 
-theorem summable_mul_left_iff (h : a ≠ 0) : (Summable fun i ↦ a * f i) ↔ Summable f :=
+theorem summable_mul_left_iff (h : a ≠ 0) : (Summable (fun i ↦ a * f i) L) ↔ Summable f L :=
   ⟨fun H ↦ by simpa only [inv_mul_cancel_left₀ h] using H.mul_left a⁻¹, fun H ↦ H.mul_left _⟩
 
 theorem summable_mul_right_iff (h : a ≠ 0) : (Summable fun i ↦ f i * a) ↔ Summable f :=
@@ -90,9 +91,10 @@ theorem summable_mul_right_iff (h : a ≠ 0) : (Summable fun i ↦ f i * a) ↔ 
 theorem summable_div_const_iff (h : a ≠ 0) : (Summable fun i ↦ f i / a) ↔ Summable f := by
   simpa only [div_eq_mul_inv] using summable_mul_right_iff (inv_ne_zero h)
 
-theorem tsum_mul_left [T2Space α] : ∑' x, a * f x = a * ∑' x, f x := by
+theorem tsum_mul_left [T2Space α] :
+    ∑'[L] x, a * f x = a * ∑'[L] x, f x := by
   classical
-  exact if hf : Summable f then hf.tsum_mul_left a
+  exact if hf : Summable f L then hf.tsum_mul_left a
   else if ha : a = 0 then by simp [ha]
   else by rw [tsum_eq_zero_of_not_summable hf,
               tsum_eq_zero_of_not_summable (mt (summable_mul_left_iff ha).mp hf), mul_zero]
