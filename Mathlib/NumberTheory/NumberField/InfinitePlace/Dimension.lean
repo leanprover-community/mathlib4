@@ -254,8 +254,8 @@ theorem card_isUnramified_add_two_mul_card_isRamified [NumberField K] [NumberFie
       2 * Fintype.card ({w : v.Extension L // w.1.IsRamified K }) =
       Module.finrank (WithAbs v.1) L := by
   rw [← AlgHom.card (WithAbs v.1) L ℂ, Fintype.card_eq.2 ⟨algHomEquivExtension L v⟩,
-    Fintype.card_eq.2 ⟨Extension.equivSum v.embedding⟩, Fintype.card_sum,
-    RamifiedExtension.two_mul_card_eq, UnramifiedExtension.card_eq]; ring
+    Fintype.card_eq.2 ⟨(Equiv.sumCompl fun φ : Extension L _ ↦ IsMixed K φ.1).symm⟩,
+    Fintype.card_sum, RamifiedExtension.two_mul_card_eq, UnramifiedExtension.card_eq]; ring
 
 theorem _root_.WithAbs.finrank_left_eq {R R' S : Type*} [Semiring S] [PartialOrder S]
     [CommSemiring R] [Semiring R'] [Algebra R R'] [Module.Finite R R'] (v : AbsoluteValue R S) :

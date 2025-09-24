@@ -329,26 +329,6 @@ theorem IsUnmixed.isReal_of_isReal {φ : L →+* ℂ} (h : IsUnmixed K φ)
   simp only [not_and, not_not] at h
   exact h hf
 
-open scoped Classical in
-noncomputable def Extension.equivSum :
-    Extension L ψ ≃ { φ : Extension L ψ // IsMixed K φ.1 } ⊕
-      { φ : Extension L ψ // IsUnmixed K φ.1 } := by
-  exact (Equiv.sumCompl _).symm
-
-/-
-open scoped Classical in
-/--
-Let `ψ : K →+* ℂ` be a fixed complex embedding. The extensions `φ : L →+* ℂ` of `ψ` are the
-direct sum of the mixed and the unmixed extensions.
--/
-noncomputable def isExtensionEquivSum (ψ : K →+* ℂ) :
-    { φ : L →+* ℂ // IsExtension ψ φ } ≃
-      { φ : L →+* ℂ // IsMixedExtension ψ φ } ⊕ { φ : L →+* ℂ // IsUnmixedExtension ψ φ } :=
-  (Equiv.sumCompl _).symm.trans <| Equiv.sumCongr
-    (Equiv.subtypeSubtypeEquivSubtypeInter _ fun φ => _ ∧ ¬IsReal φ)
-    ((Equiv.subtypeSubtypeEquivSubtypeInter _ fun φ => ¬(_ ∧ ¬IsReal φ)).trans <|
-      Equiv.subtypeEquiv (Equiv.refl _) fun _ => by aesop)
--/
 end Extension
 
 end NumberField.ComplexEmbedding
