@@ -532,19 +532,14 @@ variable {L} {v : InfinitePlace K} (w : v.Extension L)
 
 theorem comap_eq : w.1.comap (algebraMap K L) = v := w.2
 
-theorem isComplex_of_isComplex (hv : v.IsComplex) :
-     w.1.IsComplex := by
-   rw [isComplex_iff, ComplexEmbedding.isReal_iff, RingHom.ext_iff, not_forall] at hv ⊢
-   let ⟨x, hx⟩ := hv
-   use algebraMap K L x
-   rw [← w.2, ← mk_embedding w.1, comap_mk] at hx
-   cases embedding_mk_eq (w.1.embedding.comp (algebraMap K L)) with
-   | inl hl => simp_all
-   | inr hr => aesop
+/-- If `w : v.Extension L` extends a complex place `v : InfinitePlace K`, then `w` is complex. -/
+theorem isComplex_of_isComplex (hv : v.IsComplex) : w.1.IsComplex := by
+  rw [← not_isReal_iff_isComplex] at hv ⊢
+  convert mt (IsReal.comap (algebraMap K L)) (w.comap_eq ▸ hv)
 
-theorem isReal (hw : w.1.IsReal) : v.IsReal := by
-  simp_all only [← not_isComplex_iff_isReal]
-  exact mt w.isComplex_of_isComplex hw
+/-- If `w : v.Extension L` is a real place extending `v : InfinitePlace K`, then `v` is real. -/
+theorem isReal (hw : w.1.IsReal) : v.IsReal :=
+  w.comap_eq ▸ hw.comap _
 
 theorem mk_embedding_comp_eq : mk (w.1.embedding.comp (algebraMap K L)) = v := by
   rw [← comap_mk, w.1.mk_embedding, w.2]
