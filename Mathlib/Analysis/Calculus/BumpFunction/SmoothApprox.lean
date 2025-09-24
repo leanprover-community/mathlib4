@@ -10,7 +10,7 @@ import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
 # Density of smooth functions in the space of continuous functions
 
 In this file we prove that smooth functions are dense in the set of continuous functions
-from a real finite dimensional vector space to a Banach space,
+from a real finite-dimensional vector space to a Banach space,
 see `ContinuousMap.dense_setOf_contDiff`.
 We also prove several unbundled versions of this statement.
 
