@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri, María Inés de Frutos-Fernández
 -/
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
-import Mathlib.NumberTheory.NumberField.Completion
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Completion
 import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
 
 /-!
@@ -103,8 +103,7 @@ ring to the mixed embedding `x ↦ (φᵢ(x))ᵢ` of `K` into the space `ℝ ^ r
 theorem mixedEmbedding_eq_algebraMap_comp {x : K} :
     mixedEmbedding K x = ringEquiv_mixedSpace K (algebraMap K _ x) := by
   ext v <;> simp only [ringEquiv_mixedSpace_apply, algebraMap_apply,
-    extensionEmbedding,
-    extensionEmbeddingOfIsReal, extensionEmbedding_of_comp,
+    extensionEmbedding, extensionEmbeddingOfIsReal, extensionEmbeddingOfComp,
     RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, UniformSpace.Completion.extensionHom]
   · rw [UniformSpace.Completion.extension_coe
       (WithAbs.isUniformInducing_of_comp <| v.1.norm_embedding_of_isReal v.2).uniformContinuous x]
