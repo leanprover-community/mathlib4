@@ -27,40 +27,40 @@ variable {α β γ : Type*}
 section HasProd
 
 variable [CommMonoid α] [TopologicalSpace α]
-variable {f g : β → α} {a b : α}
+variable {f g : β → α} {a b : α} {L : SummationFilter β}
 
 /-- Constant one function has product `1` -/
 @[to_additive /-- Constant zero function has sum `0` -/]
-theorem hasProd_one : HasProd (fun _ ↦ 1 : β → α) 1 := by simp [HasProd, tendsto_const_nhds]
+theorem hasProd_one : HasProd (fun _ ↦ 1 : β → α) 1 L := by simp [HasProd, tendsto_const_nhds]
 
 @[to_additive]
-theorem hasProd_empty [IsEmpty β] : HasProd f 1 := by
-  convert @hasProd_one α β _ _
+theorem hasProd_empty [IsEmpty β] : HasProd f 1 L := by
+  convert hasProd_one
 
 @[to_additive]
-theorem multipliable_one : Multipliable (fun _ ↦ 1 : β → α) :=
+theorem multipliable_one : Multipliable (fun _ ↦ 1 : β → α) L :=
   hasProd_one.multipliable
 
 @[to_additive]
-theorem multipliable_empty [IsEmpty β] : Multipliable f :=
+theorem multipliable_empty [IsEmpty β] : Multipliable f L :=
   hasProd_empty.multipliable
 
 /-- See `multipliable_congr_cofinite` for a version allowing the functions to
 disagree on a finite set. -/
 @[to_additive /-- See `summable_congr_cofinite` for a version allowing the functions to
 disagree on a finite set. -/]
-theorem multipliable_congr (hfg : ∀ b, f b = g b) : Multipliable f ↔ Multipliable g :=
-  iff_of_eq (congr_arg Multipliable <| funext hfg)
+theorem multipliable_congr (hfg : ∀ b, f b = g b) : Multipliable f L ↔ Multipliable g L :=
+  iff_of_eq (congr_arg (Multipliable · L) <| funext hfg)
 
 /-- See `Multipliable.congr_cofinite` for a version allowing the functions to
 disagree on a finite set. -/
 @[to_additive /-- See `Summable.congr_cofinite` for a version allowing the functions to
 disagree on a finite set. -/]
-theorem Multipliable.congr (hf : Multipliable f) (hfg : ∀ b, f b = g b) : Multipliable g :=
+theorem Multipliable.congr (hf : Multipliable f L) (hfg : ∀ b, f b = g b) : Multipliable g L :=
   (multipliable_congr hfg).mp hf
 
 @[to_additive]
-lemma HasProd.congr_fun (hf : HasProd f a) (h : ∀ x : β, g x = f x) : HasProd g a :=
+lemma HasProd.congr_fun (hf : HasProd f a L) (h : ∀ x : β, g x = f x) : HasProd g a L :=
   (funext h : g = f) ▸ hf
 
 @[to_additive]
@@ -128,11 +128,13 @@ lemma Multipliable.of_finite [Finite β] {f : β → α} : Multipliable f :=
   multipliable_of_finite_mulSupport <| Set.finite_univ.subset (Set.subset_univ _)
 
 @[to_additive]
-theorem hasProd_single {f : β → α} (b : β) (hf : ∀ (b') (_ : b' ≠ b), f b' = 1) : HasProd f (f b) :=
-  suffices HasProd f (∏ b' ∈ {b}, f b') by simpa using this
+theorem hasProd_single {f : β → α} (b : β) (hf : ∀ (b') (_ : b' ≠ b), f b' = 1) :
+    HasProd f (f b) L :=
+  suffices HasProd f (∏ b' ∈ {b}, f b') L by simpa using this
   hasProd_prod_of_ne_finset_one <| by simpa [hf]
 
-@[to_additive (attr := simp)] lemma hasProd_unique [Unique β] (f : β → α) : HasProd f (f default) :=
+@[to_additive (attr := simp)] lemma hasProd_unique [Unique β] (f : β → α) :
+    HasProd f (f default) L :=
   hasProd_single default (fun _ hb ↦ False.elim <| hb <| Unique.uniq ..)
 
 @[to_additive (attr := simp)]
@@ -141,8 +143,8 @@ lemma hasProd_singleton (m : β) (f : β → α) : HasProd (({m} : Set β).restr
 
 @[to_additive]
 theorem hasProd_ite_eq (b : β) [DecidablePred (· = b)] (a : α) :
-    HasProd (fun b' ↦ if b' = b then a else 1) a := by
-  convert @hasProd_single _ _ _ _ (fun b' ↦ if b' = b then a else 1) b (fun b' hb' ↦ if_neg hb')
+    HasProd (fun b' ↦ if b' = b then a else 1) a L := by
+  convert hasProd_single b (hf := fun b' hb' ↦ if_neg hb')
   exact (if_pos rfl).symm
 
 @[to_additive]

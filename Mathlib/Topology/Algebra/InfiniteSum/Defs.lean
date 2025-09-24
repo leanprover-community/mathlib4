@@ -72,11 +72,10 @@ instance : PartialOrder (SummationFilter β) where
   le_trans L₁ L₂ L₃ := le_trans
   le_antisymm L₁ L₂ h h' := by cases L₁; cases L₂; congr; exact le_antisymm h h'
 
-instance : OrderTop (SummationFilter β) where
-  top := unconditional
-  le_top L := L.le_atTop
-
 instance : NeBot (unconditional : SummationFilter β).filter := atTop_neBot
+
+instance [Countable β] : IsCountablyGenerated (unconditional : SummationFilter β).filter :=
+  atTop.isCountablyGenerated
 
 variable [CommMonoid α] [TopologicalSpace α]
 
