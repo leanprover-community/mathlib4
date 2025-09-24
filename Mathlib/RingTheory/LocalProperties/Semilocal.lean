@@ -126,11 +126,10 @@ theorem isPrincipalIdealRing_of_isPrincipalIdealRing_isLocalization [IsDomain R]
     Ring.krullDimLE_of_isLocalization_maximal Rₚ fun P _ => inferInstance
   rw [Ring.krullDimLE_one_iff_of_noZeroDivisors] at this
   have dedekind : IsDedekindDomain R := { maximalOfPrime := this _ }
-  have hp_finite : {P : Ideal R | P.IsPrime}.Finite :=
-    ((Set.finite_range MaximalSpectrum.asIdeal).insert ⊥).subset fun P hP ↦
-      or_iff_not_imp_left.mpr (⟨⟨_, this _ · hP⟩, rfl⟩)
-  exact IsPrincipalIdealRing.of_finite_primes hp_finite
-
+  have hp_finite : {P : Ideal R | P.IsMaximal}.Finite := by
+    rw [← MaximalSpectrum.range_asIdeal]
+    exact Set.finite_range MaximalSpectrum.asIdeal
+  exact IsPrincipalIdealRing.of_finite_maximals hp_finite
 end IsLocalization
 
 end CommRing
