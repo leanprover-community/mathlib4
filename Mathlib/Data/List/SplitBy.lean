@@ -111,6 +111,8 @@ theorem isChain_of_mem_splitBy {r : α → α → Bool} {l : List α} (h : m ∈
     · rintro _ ⟨⟩
     · exact isChain_nil
 
+@[deprecated (since := "2025-09-24")] alias chain'_of_mem_splitBy := isChain_of_mem_splitBy
+
 private theorem isChain_getLast_head_splitByLoop {r : α → α → Bool} (l : List α) {a : α}
     {g : List α} {gs : List (List α)} (hgs' : [] ∉ gs)
     (hgs : gs.IsChain fun b a ↦ ∃ ha hb, r (a.getLast ha) (b.head hb) = false)
@@ -142,5 +144,7 @@ theorem isChain_getLast_head_splitBy (r : α → α → Bool) (l : List α) :
   | cons _ _ =>
     apply isChain_getLast_head_splitByLoop _ not_mem_nil isChain_nil
     rintro _ ⟨⟩
+
+@[deprecated (since := "2025-09-24")] alias chain'_getLast_head_splitBy := isChain_getLast_head_splitBy
 
 end List

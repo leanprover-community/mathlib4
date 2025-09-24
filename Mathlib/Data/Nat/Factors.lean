@@ -83,7 +83,7 @@ theorem primeFactorsList_prime {p : ℕ} (hp : Nat.Prime p) : p.primeFactorsList
   have : Nat.minFac p = p := (Nat.prime_def_minFac.mp hp).2
   simp only [this, primeFactorsList, Nat.div_self (Nat.Prime.pos hp)]
 
-theorem primeFactorsList_isChain_cons {n : ℕ} :
+theorem isChain_cons_primeFactorsList {n : ℕ} :
     ∀ {a}, (∀ p, Prime p → p ∣ n → a ≤ p) → List.IsChain (· ≤ ·) (a :: primeFactorsList n) := by
   match n with
   | 0 => simp
@@ -94,20 +94,26 @@ theorem primeFactorsList_isChain_cons {n : ℕ} :
       have : (k + 2) / m < (k + 2) := factors_lemma
       rw [primeFactorsList]
       refine List.IsChain.cons_cons
-        ((le_minFac.2 h).resolve_left (by simp)) (primeFactorsList_isChain_cons ?_)
+        ((le_minFac.2 h).resolve_left (by simp)) (isChain_cons_primeFactorsList ?_)
       exact fun p pp d => minFac_le_of_dvd pp.two_le (d.trans <| div_dvd_of_dvd <| minFac_dvd _)
 
 @[deprecated (since := "2025-09-21")]
-alias primeFactorsList_chain := primeFactorsList_isChain_cons
+alias primeFactorsList_chain := isChain_cons_primeFactorsList
 
-theorem primeFactorsList_chain_2 (n) : List.IsChain (· ≤ ·) (2 :: primeFactorsList n) :=
-  primeFactorsList_isChain_cons fun _ pp _ => pp.two_le
+theorem isChain_two_cons_primeFactorsList (n) : List.IsChain (· ≤ ·) (2 :: primeFactorsList n) :=
+  isChain_cons_primeFactorsList fun _ pp _ => pp.two_le
 
-theorem primeFactorsList_isChain (n) : List.IsChain (· ≤ ·) (primeFactorsList n) :=
+theorem isChain_primeFactorsList (n) : List.IsChain (· ≤ ·) (primeFactorsList n) :=
   (primeFactorsList_chain_2 _).tail
 
+@[deprecated (since := "2025-09-24")]
+alias primeFactorsList_chain_2 := isChain_two_cons_primeFactorsList
+
+@[deprecated (since := "2025-09-24")]
+alias primeFactorsList_chain' := isChain_primeFactorsList
+
 theorem primeFactorsList_sorted (n : ℕ) : List.Sorted (· ≤ ·) (primeFactorsList n) :=
-  List.isChain_iff_pairwise.1 (primeFactorsList_isChain _)
+  (isChain_primeFactorsList _).pairwise
 
 /-- `primeFactorsList` can be constructed inductively by extracting `minFac`, for sufficiently
 large `n`. -/

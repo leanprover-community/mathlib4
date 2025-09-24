@@ -834,10 +834,9 @@ theorem chain_map {β : Type*} {r : α → α → Prop} (f : β → α) {s : Cyc
   Quotient.inductionOn s fun l => by
     rcases l with - | ⟨a, l⟩
     · rfl
-    · simp only [mk''_eq_coe, map_coe, map_cons, chain_coe_cons, ← concat_eq_append, ← map_concat,
-      List.isChain_cons_map f]
+    · simp [← concat_eq_append, ← map_concat, List.isChain_cons_map f]
 
-nonrec theorem chain_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
+theorem chain_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
     Chain r (List.range n.succ) ↔ r n 0 ∧ ∀ m < n, r m m.succ := by
   rw [range_succ, ← coe_cons_eq_coe_append, chain_coe_cons, ← range_succ, isChain_range_succ_cons]
 

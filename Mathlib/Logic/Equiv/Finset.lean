@@ -85,15 +85,15 @@ theorem isChain_raise' : ∀ (l) (n), List.IsChain (· < ·) (raise' l n)
   | [_], _ => .singleton _
   | _ :: _ :: _, _ => .cons_cons (by omega) (isChain_raise' (_ :: _) _)
 
-theorem isChain_raise'_cons (l m) : List.IsChain (· < ·) (m :: raise' l (m + 1)) :=
+theorem isChain_cons_raise' (l m) : List.IsChain (· < ·) (m :: raise' l (m + 1)) :=
   isChain_raise' (m :: l) 0
 
-theorem isChain_raise'_cons_of_lt (l) {m n} (h : m < n) :
+theorem isChain_cons_raise'_of_lt (l) {m n} (h : m < n) :
     List.IsChain (· < ·) (m :: raise' l n) := by
-  unfold raise'; cases l with grind [isChain_raise'_cons]
+  unfold raise'; cases l with grind [isChain_cons_raise']
 
 @[deprecated (since := "2025-09-19")]
-alias raise'_chain := isChain_raise'_cons_of_lt
+alias raise'_chain := isChain_cons_raise'_of_lt
 
 /-- `raise' l n` is a strictly increasing sequence. -/
 theorem raise'_sorted (l n) : List.Sorted (· < ·) (raise' l n) := (isChain_raise' _ _).pairwise

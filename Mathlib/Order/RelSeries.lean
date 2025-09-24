@@ -100,10 +100,12 @@ lemma length_toList (x : RelSeries r) : x.toList.length = x.length + 1 :=
 lemma toList_singleton (x : α) : (singleton r x).toList = [x] :=
   rfl
 
-lemma toList_chain' (x : RelSeries r) : x.toList.IsChain (· ~[r] ·) := by
+lemma isChain_toList (x : RelSeries r) : x.toList.IsChain (· ~[r] ·) := by
   rw [List.isChain_iff_get]
   intro i h
   convert x.step ⟨i, by simpa [toList] using h⟩ <;> apply List.get_ofFn
+
+@[deprecated (since := "2025-09-24")] alias toList_chain' := isChain_toList
 
 lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m =>
   List.eq_nil_iff_forall_not_mem.mp m (x 0) <| List.mem_ofFn.mpr ⟨_, rfl⟩
@@ -115,10 +117,12 @@ def fromListIsChain (x : List α) (x_ne_nil : x ≠ []) (hx : x.IsChain (· ~[r]
   toFun i := x[Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos_iff.mpr x_ne_nil) i]
   step i := List.isChain_iff_get.mp hx i _
 
+@[deprecated (since := "2025-09-24")] alias fromListChain' := fromListIsChain
+
 /-- Relation series of `r` and nonempty list of `α` satisfying `r`-chain condition bijectively
 corresponds to each other. -/
 protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.IsChain (· ~[r] ·)} where
-  toFun x := ⟨_, x.toList_ne_nil, x.toList_chain'⟩
+  toFun x := ⟨_, x.toList_ne_nil, x.isChain_toList⟩
   invFun x := fromListIsChain _ x.2.1 x.2.2
   left_inv x := ext (by simp [toList]) <| by ext; dsimp; apply List.get_ofFn
   right_inv x := by
@@ -267,6 +271,9 @@ lemma toList_fromListIsChain (l : List α) (l_ne_nil : l ≠ []) (hl : l.IsChain
 lemma head_fromListIsChain (l : List α) (l_ne_nil : l ≠ []) (hl : l.IsChain (· ~[r] ·)) :
     (fromListIsChain l l_ne_nil hl).head = l.head l_ne_nil := by
   simp [← apply_zero, List.getElem_zero_eq_head]
+
+@[deprecated (since := "2025-09-24")] alias toList_fromListChain' := toList_fromListIsChain
+@[deprecated (since := "2025-09-24")] alias head_fromListChain' := head_fromListIsChain
 
 @[simp]
 lemma getLast_toList (p : RelSeries r) : p.toList.getLast (by simp [toList]) = p.last := by
@@ -509,6 +516,8 @@ lemma fromListIsChain_cons (l : List α) (l_ne_nil : l ≠ [])
       (fromListIsChain l l_ne_nil hl).cons x (by simpa) := by
   apply toList_injective
   simp
+
+@[deprecated (since := "2025-09-24")] alias fromListChain'_cons := fromListIsChain_cons
 
 lemma append_cons {p q : RelSeries r} {x : α} (hx : x ~[r] p.head) (hq : p.last ~[r] q.head) :
     (p.cons x hx).append q (by simpa) = (p.append q hq).cons x (by simpa) := by

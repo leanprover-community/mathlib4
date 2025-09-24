@@ -213,13 +213,13 @@ theorem isChain_toList_nonempty :
   | _, cons nil _ => .singleton _
   | _, cons (cons p g) _ => List.IsChain.cons_cons ⟨g⟩ (isChain_toList_nonempty (cons p g))
 
-theorem toList_isChain_cons_nonempty :
+theorem isChain_cons_toList_nonempty :
     ∀ {b} (p : Path a b), (b :: p.toList).IsChain (fun x y => Nonempty (y ⟶ x))
   | _, nil => .singleton _
   | _, cons p f => p.toList_isChain_cons_nonempty.cons_cons ⟨f⟩
 
 @[deprecated (since := "2025-09-19")]
-alias toList_chain_nonempty := toList_isChain_cons_nonempty
+alias toList_chain_nonempty := isChain_cons_toList_nonempty
 
 variable [∀ a b : V, Subsingleton (a ⟶ b)]
 

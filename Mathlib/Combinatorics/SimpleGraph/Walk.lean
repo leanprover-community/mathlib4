@@ -607,16 +607,20 @@ theorem coe_support_append' [DecidableEq V] {u v w : V} (p : G.Walk u v) (p' : G
   rw [add_comm ({v} : Multiset V)]
   simp only [← add_assoc, add_tsub_cancel_right]
 
-theorem chain_adj_support {u v w : V} (h : G.Adj u v) :
+theorem isChain_adj_cons_support {u v w : V} (h : G.Adj u v) :
     ∀ (p : G.Walk v w), List.IsChain G.Adj (u :: p.support)
   | nil => .cons_cons h (.singleton _)
-  | cons h' p => .cons_cons h (chain_adj_support h' p)
+  | cons h' p => .cons_cons h (isChain_adj_cons_support h' p)
+
+@[deprecated (since := "2025-09-24")] alias chain_adj_support := isChain_adj_cons_support
 
 theorem isChain_adj_support {u v : V} : ∀ (p : G.Walk u v), List.IsChain G.Adj p.support
   | nil => .singleton _
   | cons h p => chain_adj_support h p
 
-theorem chain_dartAdj_darts {d : G.Dart} {v w : V} (h : d.snd = v) (p : G.Walk v w) :
+@[deprecated (since := "2025-09-24")] alias chain'_adj_support := isChain_adj_support
+
+theorem isChain_dartAdj_cons_darts {d : G.Dart} {v w : V} (h : d.snd = v) (p : G.Walk v w) :
     List.IsChain G.DartAdj (d :: p.darts) := by
   induction p generalizing d with
   | nil => exact .singleton _
@@ -626,6 +630,9 @@ theorem isChain_dartAdj_darts {u v : V} : ∀ (p : G.Walk u v), List.IsChain G.D
   | nil => .nil
   -- Porting note: needed to defer `rfl` to help elaboration
   | cons h p => chain_dartAdj_darts (by rfl) p
+
+@[deprecated (since := "2025-09-24")] alias chain_dartAdj_darts := isChain_dartAdj_cons_darts
+@[deprecated (since := "2025-09-24")] alias chain'_dartAdj_darts := isChain_dartAdj_darts
 
 /-- Every edge in a walk's edge list is an edge of the graph.
 It is written in this form (rather than using `⊆`) to avoid unsightly coercions. -/

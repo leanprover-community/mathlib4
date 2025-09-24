@@ -502,6 +502,8 @@ theorem isChain_cons_of_lt (l : MaxProducts C ho)
     rw [max_eq_o_cons_tail C hsC ho l, List.isChain_iff_pairwise] at this
     exact List.rel_of_pairwise_cons this (List.head!_mem_self hM)
 
+@[deprecated (since := "2025-09-24")] alias chain'_cons_of_lt := isChain_cons_of_lt
+
 include hsC in
 theorem good_lt_maxProducts (q : GoodProducts (π C (ord I · < o)))
     (l : MaxProducts C ho) : List.Lex (· < ·) q.val.val l.val.val := by

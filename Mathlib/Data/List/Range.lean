@@ -44,14 +44,16 @@ theorem isChain_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
     IsChain r (range n.succ) ↔ ∀ m < n, r m m.succ := by
   rw [isChain_range, succ_eq_add_one, Nat.add_one_sub_one]
 
-theorem isChain_range_succ_cons (r : ℕ → ℕ → Prop) (n a : ℕ) :
+theorem isChain_cons_range_succ (r : ℕ → ℕ → Prop) (n a : ℕ) :
     IsChain r (a :: range n.succ) ↔ r a 0 ∧ ∀ m < n, r m m.succ := by
   rw [range_succ_eq_map, isChain_cons_cons, and_congr_right_iff,
     ← isChain_range_succ, range_succ_eq_map]
   exact fun _ => Iff.rfl
 
 @[deprecated (since := "2025-09-21")]
-alias chain_range_succ  := isChain_range_succ_cons
+alias chain_range_succ := isChain_cons_range_succ
+@[deprecated (since := "2025-09-24")]
+alias chain'_range_succ := isChain_range_succ
 
 section Ranges
 
