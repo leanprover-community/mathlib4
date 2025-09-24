@@ -76,9 +76,11 @@ variable {ι : Type v} [DecidableEq ι] (Z : ι → AddCommGrp.{max u v})
 
 open DirectSum
 
+/-- Given a function `Z : ι → AddCommGrp`, the `Cofan` obtained from `DirectSum.of Z i`. -/
 def coproductCocone : Cofan Z :=
   Cofan.mk (of (⨁ i : ι, Z i)) fun i => ofHom (DirectSum.of (fun i ↦ Z i) i)
 
+/-- `coproductCocone` is colimit. -/
 def coproductCoconeIsColimit : IsColimit (coproductCocone Z) where
   desc s := ofHom <| DirectSum.toAddMonoid fun i ↦ (s.ι.app ⟨i⟩).hom
   fac := by
@@ -92,6 +94,7 @@ def coproductCoconeIsColimit : IsColimit (coproductCocone Z) where
     simpa [LinearMap.coe_comp, Function.comp_apply, hom_ofHom, toModule_lof] using
       congr($(h ⟨i⟩) x)
 
+/-- The isomorphism in `AddCommGrp` between coproduct and directsum. -/
 noncomputable def coprodIsoDirectSum [HasCoproduct Z] : ∐ Z ≅ AddCommGrp.of (⨁ i, Z i) :=
   colimit.isoColimitCocone ⟨_, coproductCoconeIsColimit Z⟩
 
