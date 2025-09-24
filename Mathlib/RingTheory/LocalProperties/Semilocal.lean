@@ -5,7 +5,7 @@ Authors: Yiming Fu
 -/
 import Mathlib.RingTheory.DedekindDomain.PID
 import Mathlib.RingTheory.KrullDimension.PID
-import Mathlib.RingTheory.Localization.Finiteness
+
 /-!
 # Local properties for semilocal rings
 
