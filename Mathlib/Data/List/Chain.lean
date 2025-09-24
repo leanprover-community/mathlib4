@@ -38,8 +38,9 @@ theorem isChain_singleton (a : α) : IsChain R [a] := .singleton _
 @[deprecated (since := "2025-09-24")] alias chain'_singleton := isChain_singleton
 @[deprecated (since := "2025-09-24")] alias chain'_cons_cons := isChain_cons_cons
 @[deprecated (since := "2025-08-12")] alias chain'_cons := isChain_cons_cons
-@[deprecated (since := "2025-09-24")] alias Chain'.cons_cons := IsChain.cons_cons
-@[deprecated (since := "2025-09-24")] alias Chain'.cons := IsChain.cons_cons
+
+@[deprecated (since := "2025-09-24"), nolint defLemma] alias Chain'.cons_cons := IsChain.cons_cons
+@[deprecated (since := "2025-09-24"), nolint defLemma] alias Chain'.cons := IsChain.cons_cons
 
 theorem isChain_cons_iff (R : α → α → Prop) (a : α) (l : List α) :
     IsChain R (a :: l) ↔ l = [] ∨
