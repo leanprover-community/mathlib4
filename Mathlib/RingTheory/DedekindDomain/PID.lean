@@ -181,12 +181,7 @@ theorem IsPrincipalIdealRing.of_finite_maximals [IsDedekindDomain R]
 /-- A Dedekind domain is a PID if its set of primes is finite. -/
 theorem IsPrincipalIdealRing.of_finite_primes [IsDedekindDomain R]
     (h : {I : Ideal R | I.IsPrime}.Finite) : IsPrincipalIdealRing R :=
-  ⟨fun I => by
-    obtain rfl | hI := eq_or_ne I ⊥
-    · exact bot_isPrincipal
-    apply Ideal.IsPrincipal.of_finite_maximals_of_isUnit
-    · apply h.subset; exact @Ideal.IsMaximal.isPrime _ _
-    · exact isUnit_of_mul_eq_one _ _ (FractionalIdeal.coe_ideal_mul_inv I hI)⟩
+  IsPrincipalIdealRing.of_finite_maximals <| h.subset fun _ hi ↦ hi.isPrime
 
 variable [IsDedekindDomain R]
 variable (S : Type*) [CommRing S]
