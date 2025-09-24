@@ -56,13 +56,8 @@ lemma eq_mul_mul_of_aroots_quadratic_eq_pair [CommRing T] [CommRing S] [IsDomain
   rw [← coeff_map, ← coeff_map]
   exact eq_mul_mul_of_roots_quadratic_eq_pair e1 haroots
 
-lemma test [CommRing R] {p : R[X]} (hp : p.natDegree = 2) : (p.coeff 2) ≠ 0 := by
-  apply coeff_ne_zero_of_eq_degree
-  unfold natDegree at hp
-  rw [WithBot.unbotD_eq_iff] at hp
-  simp at hp
-  rw [hp]
-  norm_cast
+lemma test [CommRing R] {p : R[X]} (hp : p.natDegree = 2) : (p.coeff 2) ≠ 0 :=
+  coeff_ne_zero_of_eq_degree ((degree_eq_iff_natDegree_eq_of_pos Nat.zero_lt_two).mpr hp)
 
 /-- **Vieta's formula** for quadratics as an iff. -/
 lemma roots_quadratic_eq_pair_iff_of_ne_zero [CommRing R] [IsDomain R] {x1 x2 : R} {p : R[X]}
@@ -91,9 +86,6 @@ lemma aroots_quadratic_eq_pair_iff_of_ne_zero [CommRing T] [CommRing S] [IsDomai
     p.aroots S = {x1, x2} ↔
       algebraMap T S (p.coeff 1) = -algebraMap T S (p.coeff 2) * (x1 + x2) ∧
       algebraMap T S (p.coeff 0) = algebraMap T S (p.coeff 2) * x1 * x2 := by
-  let a := p.coeff 2
-  let b := p.coeff 1
-  let c := p.coeff 0
   rw [roots_quadratic_eq_pair_iff_of_ne_zero ha, coeff_map, coeff_map, coeff_map]
 
 /-- **Vieta's formula** for quadratics as an iff (`Field` version). -/
