@@ -96,6 +96,26 @@ protected theorem piMap {ι} [Fintype ι] {α β : ι → Type*} [∀ i, PseudoE
     Isometry (Pi.map f) := fun x y => by
   simp only [edist_pi_def, (hf _).edist_eq, Pi.map_apply]
 
+protected lemma single [Fintype ι] [DecidableEq ι] {E : ι → Type*} [∀ i, PseudoEMetricSpace (E i)]
+    [∀ i, Zero (E i)] (i : ι) :
+    Isometry (Pi.single (M := E) i) := by
+  intro x y
+  rw [edist_pi_def]
+  refine le_antisymm (Finset.sup_le fun j ↦ ?_) (Finset.le_sup_of_le (Finset.mem_univ i) (by simp))
+  obtain rfl | h := eq_or_ne i j
+  · simp
+  · simp [h]
+
+protected lemma inl [AddZeroClass α] [AddZeroClass β] : Isometry (AddMonoidHom.inl α β) := by
+  intro x y
+  rw [Prod.edist_eq]
+  simp
+
+protected lemma inr [AddZeroClass α] [AddZeroClass β] : Isometry (AddMonoidHom.inr α β) := by
+  intro x y
+  rw [Prod.edist_eq]
+  simp
+
 /-- The composition of isometries is an isometry. -/
 theorem comp {g : β → γ} {f : α → β} (hg : Isometry g) (hf : Isometry f) : Isometry (g ∘ f) :=
   fun _ _ => (hg _ _).trans (hf _ _)
@@ -197,7 +217,6 @@ theorem diam_range (hf : Isometry f) : Metric.diam (range f) = Metric.diam (univ
 
 theorem preimage_setOf_dist (hf : Isometry f) (x : α) (p : ℝ → Prop) :
     f ⁻¹' { y | p (dist y (f x)) } = { y | p (dist y x) } := by
-  ext y
   simp [hf.dist_eq]
 
 theorem preimage_closedBall (hf : Isometry f) (x : α) (r : ℝ) :
@@ -597,6 +616,12 @@ def _root_.Fin.appendIsometry (m n : ℕ) : (Fin m → α) × (Fin n → α) ≃
 theorem _root_.Fin.appendIsometry_toHomeomorph (m n : ℕ) :
     (Fin.appendIsometry m n).toHomeomorph = Fin.appendHomeomorph (X := α) m n :=
   rfl
+
+/-- The natural `IsometryEquiv` `(Fin m → ℝ) × (Fin l → ℝ) ≃ᵢ (Fin n → ℝ)` when `m + l = n`. -/
+@[simps!]
+def _root_.Fin.appendIsometryOfEq {n m l : ℕ} (hmln : m + l = n) :
+    (Fin m → α) × (Fin l → α) ≃ᵢ (Fin n → α) :=
+  (Fin.appendIsometry m l).trans (IsometryEquiv.piCongrLeft (Y := fun _ ↦ α) (finCongr hmln))
 
 variable (ι α)
 

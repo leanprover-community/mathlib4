@@ -99,7 +99,6 @@ private lemma small_pos_pos_neg_mul (hA : #(A ^ 3) ≤ K * #A) : #(A * A * A⁻�
 private lemma small_pos_neg_pos_mul (hA : #(A ^ 3) ≤ K * #A) : #(A * A⁻¹ * A) ≤ K ^ 3 * #A := by
   obtain rfl | hA₀ := A.eq_empty_or_nonempty
   · simp
-  have : 0 ≤ K := nonneg_of_mul_nonneg_left (hA.trans' <| by positivity) (by positivity)
   refine le_of_mul_le_mul_left ?_ (by positivity : (0 : ℝ) < #A)
   calc
     (#A * #(A * A⁻¹ * A) : ℝ) ≤ #(A * (A * A⁻¹)) * #(A * A) := by
@@ -125,12 +124,12 @@ terms in the product.
 When `A` is symmetric (`A⁻¹ = A`), the base of the exponential can be lowered from `K ^ 3` to `K`,
 where `K` is the tripling constant. See `Finset.small_pow_of_small_tripling`. -/
 @[to_additive
-"If `A` has small tripling, say with constant `K`, then `A` has small alternating powers, in the
+/-- If `A` has small tripling, say with constant `K`, then `A` has small alternating powers, in the
 sense that `|±A ± ... ± A|` is at most `|A|` times a constant exponential in the number of
 terms in the product.
 
 When `A` is symmetric (`-A = A`), the base of the exponential can be lowered from `K ^ 3` to `K`,
-where `K` is the tripling constant. See `Finset.small_nsmul_of_small_tripling`."]
+where `K` is the tripling constant. See `Finset.small_nsmul_of_small_tripling`. -/]
 lemma small_alternating_pow_of_small_tripling (hm : 3 ≤ m) (hA : #(A ^ 3) ≤ K * #A) (ε : Fin m → ℤ)
     (hε : ∀ i, |ε i| = 1) :
     #((finRange m).map fun i ↦ A ^ ε i).prod ≤ K ^ (3 * (m - 2)) * #A := by
@@ -147,11 +146,11 @@ lemma small_alternating_pow_of_small_tripling (hm : 3 ≤ m) (hA : #(A ^ 3) ≤ 
     succ_zero_eq_one, succ_one_eq_two, List.prod_cons, prod_nil, mul_one, ← mul_assoc]
   simp only [zero_le_one, abs_eq, Int.reduceNeg, forall_iff_succ, isValue, succ_zero_eq_one,
     succ_one_eq_two, IsEmpty.forall_iff, and_true] at hδ
-  have : K ≤ K ^ 3 := le_self_pow₀ hK₁ (by omega)
+  have : K ≤ K ^ 3 := le_self_pow₀ hK₁ (by cutsat)
   have : K ^ 2 ≤ K ^ 3 := by
     gcongr
     · exact hK₁
-    · norm_num
+    · simp
   obtain ⟨hδ₀ | hδ₀, hδ₁ | hδ₁, hδ₂ | hδ₂⟩ := hδ <;> simp [hδ₀, hδ₁, hδ₂]
   · simp [pow_succ] at hA
     nlinarith
@@ -170,11 +169,11 @@ in the sense that `|A ^ m|` is at most `|A|` times a constant exponential in `m`
 See also `Finset.small_alternating_pow_of_small_tripling` for a version with a weaker constant but
 which encompasses non-symmetric sets. -/
 @[to_additive
-"If `A` is symmetric (`-A = A`) and has small tripling, then `A` has small powers,
+/-- If `A` is symmetric (`-A = A`) and has small tripling, then `A` has small powers,
 in the sense that `|m • A|` is at most `|A|` times a constant exponential in `m`.
 
 See also `Finset.small_alternating_nsmul_of_small_tripling` for a version with a weaker constant but
-which encompasses non-symmetric sets."]
+which encompasses non-symmetric sets. -/]
 lemma small_pow_of_small_tripling (hm : 3 ≤ m) (hA : #(A ^ 3) ≤ K * #A) (hAsymm : A⁻¹ = A) :
     #(A ^ m) ≤ K ^ (m - 2) * #A := by
   have (ε : ℤ) (hε : |ε| = 1) : A ^ ε = A := by

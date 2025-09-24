@@ -253,16 +253,16 @@ theorem ruzsaSzemerediNumberNat_asymptotic_lower_bound :
     · rw [IsBigO_def]
       refine ⟨12, ?_⟩
       simp only [IsBigOWith, norm_natCast, eventually_atTop]
-      exact ⟨15, fun x hx ↦ by norm_cast; omega⟩
+      exact ⟨15, fun x hx ↦ by norm_cast; cutsat⟩
     · rw [isBigO_exp_comp_exp_comp]
       refine ⟨0, ?_⟩
       simp only [neg_mul, eventually_map, Pi.sub_apply, sub_neg_eq_add, neg_add_le_iff_le_add,
-        add_zero, ofNat_pos, _root_.mul_le_mul_left, eventually_atTop]
+        add_zero, ofNat_pos, mul_le_mul_iff_right₀, eventually_atTop]
       refine ⟨9, fun x hx ↦ ?_⟩
       gcongr
       · simp
-        omega
-      · omega
+        cutsat
+      · cutsat
   · refine .of_norm_eventuallyLE ?_
     filter_upwards [eventually_ge_atTop 6] with n hn
     have : (0 : ℝ) ≤ n / 3 - 2 := by rify at hn; linarith

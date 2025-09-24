@@ -38,7 +38,6 @@ structure Grp : Type (u + 1) where
   [str : Group carrier]
 
 attribute [instance] AddGrp.str Grp.str
-attribute [to_additive existing] Grp.carrier Grp.str
 
 initialize_simps_projections AddGrp (carrier → coe, -str)
 initialize_simps_projections Grp (carrier → coe, -str)
@@ -52,7 +51,7 @@ instance : CoeSort Grp (Type u) :=
 attribute [coe] AddGrp.carrier Grp.carrier
 
 /-- Construct a bundled `Grp` from the underlying type and typeclass. -/
-@[to_additive "Construct a bundled `AddGrp` from the underlying type and typeclass."]
+@[to_additive /-- Construct a bundled `AddGrp` from the underlying type and typeclass. -/]
 abbrev of (M : Type u) [Group M] : Grp := ⟨M⟩
 
 end Grp
@@ -71,8 +70,6 @@ structure Grp.Hom (A B : Grp.{u}) where
   /-- The underlying monoid homomorphism. -/
   hom' : A →* B
 
-attribute [to_additive existing AddGrp.Hom.mk] Grp.Hom.mk
-
 namespace Grp
 
 @[to_additive]
@@ -87,12 +84,12 @@ instance : ConcreteCategory Grp (· →* ·) where
   ofHom := Hom.mk
 
 /-- Turn a morphism in `Grp` back into a `MonoidHom`. -/
-@[to_additive "Turn a morphism in `AddGrp` back into an `AddMonoidHom`."]
+@[to_additive /-- Turn a morphism in `AddGrp` back into an `AddMonoidHom`. -/]
 abbrev Hom.hom {X Y : Grp.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := Grp) f
 
 /-- Typecheck a `MonoidHom` as a morphism in `Grp`. -/
-@[to_additive "Typecheck an `AddMonoidHom` as a morphism in `AddGrp`. "]
+@[to_additive /-- Typecheck an `AddMonoidHom` as a morphism in `AddGrp`. -/]
 abbrev ofHom {X Y : Type u} [Group X] [Group Y] (f : X →* Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := Grp) f
 
@@ -209,7 +206,7 @@ lemma ofHom_injective {X Y : Type u} [Group X] [Group Y] :
 
 /-- The forgetful functor from groups to monoids is fully faithful. -/
 @[to_additive fullyFaihtfulForget₂ToAddMonCat
-  "The forgetful functor from additive groups to additive monoids is fully faithful."]
+  /-- The forgetful functor from additive groups to additive monoids is fully faithful. -/]
 def fullyFaithfulForget₂ToMonCat : (forget₂ Grp.{u} MonCat).FullyFaithful where
   preimage f := ofHom f.hom
 
@@ -223,7 +220,7 @@ example {R S : Grp} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h]
 
 /-- Universe lift functor for groups. -/
 @[to_additive (attr := simps obj map)
-  "Universe lift functor for additive groups."]
+  /-- Universe lift functor for additive groups. -/]
 def uliftFunctor : Grp.{v} ⥤ Grp.{max v u} where
   obj X := Grp.of (ULift.{u, v} X)
   map {_ _} f := Grp.ofHom <|
@@ -247,7 +244,6 @@ structure CommGrp : Type (u + 1) where
   [str : CommGroup carrier]
 
 attribute [instance] AddCommGrp.str CommGrp.str
-attribute [to_additive existing] CommGrp.carrier CommGrp.str
 
 initialize_simps_projections AddCommGrp (carrier → coe, -str)
 initialize_simps_projections CommGrp (carrier → coe, -str)
@@ -264,7 +260,7 @@ instance : CoeSort CommGrp (Type u) :=
 attribute [coe] AddCommGrp.carrier CommGrp.carrier
 
 /-- Construct a bundled `CommGrp` from the underlying type and typeclass. -/
-@[to_additive "Construct a bundled `AddCommGrp` from the underlying type and typeclass."]
+@[to_additive /-- Construct a bundled `AddCommGrp` from the underlying type and typeclass. -/]
 abbrev of (M : Type u) [CommGroup M] : CommGrp := ⟨M⟩
 
 end CommGrp
@@ -283,8 +279,6 @@ structure CommGrp.Hom (A B : CommGrp.{u}) where
   /-- The underlying monoid homomorphism. -/
   hom' : A →* B
 
-attribute [to_additive existing AddCommGrp.Hom.mk] CommGrp.Hom.mk
-
 namespace CommGrp
 
 @[to_additive]
@@ -299,17 +293,17 @@ instance : ConcreteCategory CommGrp (· →* ·) where
   ofHom := Hom.mk
 
 /-- Turn a morphism in `CommGrp` back into a `MonoidHom`. -/
-@[to_additive "Turn a morphism in `AddCommGrp` back into an `AddMonoidHom`."]
+@[to_additive /-- Turn a morphism in `AddCommGrp` back into an `AddMonoidHom`. -/]
 abbrev Hom.hom {X Y : CommGrp.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := CommGrp) f
 
 /-- Typecheck a `MonoidHom` as a morphism in `CommGrp`. -/
-@[to_additive "Typecheck an `AddMonoidHom` as a morphism in `AddCommGrp`. "]
+@[to_additive /-- Typecheck an `AddMonoidHom` as a morphism in `AddCommGrp`. -/]
 abbrev ofHom {X Y : Type u} [CommGroup X] [CommGroup Y] (f : X →* Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := CommGrp) f
 
 /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-@[to_additive "Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas."]
+@[to_additive /-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/]
 def Hom.Simps.hom (X Y : CommGrp.{u}) (f : Hom X Y) :=
   f.hom
 
@@ -409,7 +403,7 @@ instance : Coe CommGrp.{u} Grp.{u} where coe := (forget₂ CommGrp Grp).obj
 
 /-- The forgetful functor from commutative groups to groups is fully faithful. -/
 @[to_additive fullyFaihtfulForget₂ToAddGrp
-  "The forgetful functor from additive commutative groups to additive groups is fully faithful."]
+/-- The forgetful functor from additive commutative groups to additive groups is fully faithful. -/]
 def fullyFaithfulForget₂ToGrp : (forget₂ CommGrp.{u} Grp).FullyFaithful where
   preimage f := ofHom f.hom
 
@@ -450,7 +444,7 @@ example {R S : CommGrp} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [
 
 /-- Universe lift functor for commutative groups. -/
 @[to_additive (attr := simps obj map)
-  "Universe lift functor for additive commutative groups."]
+  /-- Universe lift functor for additive commutative groups. -/]
 def uliftFunctor : CommGrp.{v} ⥤ CommGrp.{max v u} where
   obj X := CommGrp.of (ULift.{u, v} X)
   map {_ _} f := CommGrp.ofHom <|
@@ -483,7 +477,7 @@ theorem int_hom_ext {G : AddCommGrp.{0}} (f g : AddCommGrp.of ℤ ⟶ G)
 -- the forgetful functor is representable.
 theorem injective_of_mono {G H : AddCommGrp.{0}} (f : G ⟶ H) [Mono f] : Function.Injective f :=
   fun g₁ g₂ h => by
-  have t0 : asHom g₁ ≫ f = asHom g₂ ≫ f := by aesop_cat
+  have t0 : asHom g₁ ≫ f = asHom g₂ ≫ f := by cat_disch
   have t1 : asHom g₁ = asHom g₂ := (cancel_mono _).1 t0
   apply asHom_injective t1
 
@@ -592,7 +586,7 @@ instance CommGrp.forget_reflects_isos : (forget CommGrp.{u}).ReflectsIsomorphism
 
 /-- An alias for `Grp.{max u v}`, to deal around unification issues. -/
 @[to_additive (attr := nolint checkUnivs) GrpMaxAux
-  "An alias for `AddGrp.{max u v}`, to deal around unification issues."]
+  /-- An alias for `AddGrp.{max u v}`, to deal around unification issues. -/]
 abbrev GrpMax.{u1, u2} := Grp.{max u1 u2}
 /-- An alias for `AddGrp.{max u v}`, to deal around unification issues. -/
 @[nolint checkUnivs]
@@ -600,7 +594,7 @@ abbrev AddGrpMax.{u1, u2} := AddGrp.{max u1 u2}
 
 /-- An alias for `CommGrp.{max u v}`, to deal around unification issues. -/
 @[to_additive (attr := nolint checkUnivs) AddCommGrpMaxAux
-  "An alias for `AddCommGrp.{max u v}`, to deal around unification issues."]
+  /-- An alias for `AddCommGrp.{max u v}`, to deal around unification issues. -/]
 abbrev CommGrpMax.{u1, u2} := CommGrp.{max u1 u2}
 /-- An alias for `AddCommGrp.{max u v}`, to deal around unification issues. -/
 @[nolint checkUnivs]

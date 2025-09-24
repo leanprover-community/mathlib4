@@ -30,11 +30,12 @@ theorem getElem_range'_1 {n m} (i) (H : i < (range' n m).length) :
 theorem chain'_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
     Chain' r (range n.succ) ↔ ∀ m < n, r m m.succ := by
   rw [range_succ]
-  induction' n with n hn
-  · simp
-  · rw [range_succ]
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    rw [range_succ]
     simp only [append_assoc, singleton_append, chain'_append_cons_cons, chain'_singleton, and_true]
-    rw [hn, forall_lt_succ]
+    rw [hn, forall_lt_succ_right]
 
 theorem chain_range_succ (r : ℕ → ℕ → Prop) (n a : ℕ) :
     Chain r a (range n.succ) ↔ r a 0 ∧ ∀ m < n, r m m.succ := by
@@ -65,7 +66,7 @@ theorem ranges_disjoint (l : List ℕ) :
       rw [mem_map]
       rintro ⟨v, _, rfl⟩
       rw [mem_range] at hu
-      omega
+      cutsat
     · rw [pairwise_map]
       apply Pairwise.imp _ hl
       intro u v

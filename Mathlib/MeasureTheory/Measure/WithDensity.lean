@@ -517,12 +517,7 @@ lemma withDensity_inv_same_le {μ : Measure α} {f : α → ℝ≥0∞} (hf : AE
     refine (withDensity_mono this).trans ?_
     rw [withDensity_one]
   filter_upwards with x
-  simp only [Pi.mul_apply, Pi.one_apply]
-  by_cases hx_top : f x = ∞
-  · simp only [hx_top, ENNReal.inv_top, mul_zero, zero_le]
-  by_cases hx_zero : f x = 0
-  · simp only [hx_zero, ENNReal.inv_zero, zero_mul, zero_le]
-  rw [ENNReal.mul_inv_cancel hx_zero hx_top]
+  simp
 
 lemma withDensity_inv_same₀ {μ : Measure α} {f : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hf_ne_zero : ∀ᵐ x ∂μ, f x ≠ 0) (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
@@ -642,6 +637,12 @@ theorem sFinite_of_absolutelyContinuous {ν : Measure α} [SFinite ν] (hμν : 
     restrict_compl_sigmaFiniteSetWRT hμν]
   infer_instance
 
+/-- In a countable space, every measure is s-finite. -/
+instance [Countable α] : SFinite μ := by
+  obtain ⟨s, h⟩ := exists_sum_smul_dirac μ
+  rw [h]
+  infer_instance
+
 end SFinite
 
 section Prod
@@ -714,6 +715,16 @@ lemma IsLocallyFiniteMeasure.withDensity_ofReal {f : α → ℝ} (hf : Continuou
 
 section Conv
 
+variable {M : Type*} [Monoid M] [MeasurableSpace M]
+
+-- `mconv_smul_left` is in the `Convolution` file. This lemma is here because this is the file in
+-- which we prove the instance that gives `SFinite (c • ν)`.
+@[to_additive conv_smul_right]
+theorem Measure.mconv_smul_right (μ : Measure M) (ν : Measure M) [SFinite ν] (s : ℝ≥0∞) :
+    μ ∗ₘ (s • ν) = s • (μ ∗ₘ ν) := by
+  unfold mconv
+  rw [Measure.prod_smul_right, Measure.map_smul]
+
 variable {G : Type*} [Group G] [MeasureSpace G] [MeasurableMul₂ G] [MeasurableInv G]
   {μ : Measure G} [SFinite μ] [IsMulLeftInvariant μ]
 
@@ -728,7 +739,7 @@ theorem mconv_withDensity_eq_mlconvolution₀ {f g : G → ℝ≥0∞}
     lintegral_congr (fun x ↦ by apply (lintegral_mul_left_eq_self _ x⁻¹).symm),
     lintegral_lintegral_swap]
   · simp only [Pi.mul_apply, mul_inv_cancel_left, mlconvolution_def]
-    conv in (∫⁻ _ , _ ∂μ) * φ _ => rw[(lintegral_mul_const'' _ (by fun_prop)).symm]
+    conv in (∫⁻ _ , _ ∂μ) * φ _ => rw [(lintegral_mul_const'' _ (by fun_prop)).symm]
   all_goals first | fun_prop | simp; fun_prop
 
 @[to_additive]

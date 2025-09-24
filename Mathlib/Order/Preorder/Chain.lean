@@ -206,7 +206,6 @@ open Classical in
 theorem subset_succChain : s ⊆ SuccChain r s :=
   if h : ∃ t, IsChain r s ∧ SuperChain r s t then (succChain_spec h).2.1
   else by
-    rw [exists_and_left] at h
     simp [SuccChain, h]
 
 end Chain

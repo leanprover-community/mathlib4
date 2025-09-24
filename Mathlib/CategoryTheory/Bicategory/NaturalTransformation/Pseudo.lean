@@ -58,18 +58,18 @@ structure StrongTrans (F G : Pseudofunctor B C) where
   /-- Naturality of the strong naturality constraint. -/
   naturality_naturality {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
       F.map₂ η ▷ app b ≫ (naturality g).hom = (naturality f).hom ≫ app a ◁ G.map₂ η := by
-    aesop_cat
+    cat_disch
   /-- Oplax unity. -/
   naturality_id (a : B) :
       (naturality (𝟙 a)).hom ≫ app a ◁ (G.mapId a).hom =
         (F.mapId a).hom ▷ app a ≫ (λ_ (app a)).hom ≫ (ρ_ (app a)).inv := by
-    aesop_cat
+    cat_disch
   /-- Oplax functoriality. -/
   naturality_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
       (naturality (f ≫ g)).hom ≫ app a ◁ (G.mapComp f g).hom =
         (F.mapComp f g).hom ▷ app c ≫ (α_ _ _ _).hom ≫ F.map f ◁ (naturality g).hom ≫
         (α_ _ _ _).inv ≫ (naturality f).hom ▷ G.map g ≫ (α_ _ _ _).hom := by
-    aesop_cat
+    cat_disch
 
 attribute [reassoc (attr := simp)] StrongTrans.naturality_naturality
   StrongTrans.naturality_id StrongTrans.naturality_comp

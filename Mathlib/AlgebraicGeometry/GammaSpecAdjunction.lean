@@ -134,19 +134,16 @@ def toΓSpecCApp :
       (isUnit_res_toΓSpecMapBasicOpen _ r)
 
 /-- Characterization of the sheaf hom on basic opens,
-    direction ← (next lemma) is used at various places, but → is not used in this file. -/
+direction ← (next lemma) is used at various places, but → is not used in this file. -/
 theorem toΓSpecCApp_iff
     (f :
       (structureSheaf <| Γ.obj <| op X).val.obj (op <| basicOpen r) ⟶
         X.presheaf.obj (op <| X.toΓSpecMapBasicOpen r)) :
     toOpen _ (basicOpen r) ≫ f = X.toToΓSpecMapBasicOpen r ↔ f = X.toΓSpecCApp r := by
-  -- Porting Note: Type class problem got stuck in `IsLocalization.Away.AwayMap.lift_comp`
-  -- created instance manually. This replaces the `pick_goal` tactics
   have loc_inst := IsLocalization.to_basicOpen (Γ.obj (op X)) r
   refine ConcreteCategory.ext_iff.trans ?_
   rw [← @IsLocalization.Away.lift_comp _ _ _ _ _ _ _ r loc_inst _
       (X.isUnit_res_toΓSpecMapBasicOpen r)]
-  --pick_goal 5; exact is_localization.to_basic_open _ r
   constructor
   · intro h
     ext : 1
@@ -182,21 +179,19 @@ theorem toΓSpecSheafedSpace_app_eq :
     X.toΓSpecSheafedSpace.c.app (op (basicOpen r)) = X.toΓSpecCApp r := by
   apply TopCat.Sheaf.extend_hom_app _ _ _
 
--- Porting note: need a helper lemma `toΓSpecSheafedSpace_app_spec_assoc` to help compile
--- `toStalk_stalkMap_to_Γ_Spec`
 @[reassoc] theorem toΓSpecSheafedSpace_app_spec (r : Γ.obj (op X)) :
     toOpen (Γ.obj (op X)) (basicOpen r) ≫ X.toΓSpecSheafedSpace.c.app (op (basicOpen r)) =
       X.toToΓSpecMapBasicOpen r :=
   (X.toΓSpecSheafedSpace_app_eq r).symm ▸ X.toΓSpecCApp_spec r
 
 /-- The map on stalks induced by the unit commutes with maps from `Γ(X)` to
-    stalks (in `Spec Γ(X)` and in `X`). -/
+stalks (in `Spec Γ(X)` and in `X`). -/
 theorem toStalk_stalkMap_toΓSpec (x : X) :
     toStalk _ _ ≫ X.toΓSpecSheafedSpace.stalkMap x = X.presheaf.Γgerm x := by
   rw [PresheafedSpace.Hom.stalkMap,
     ← toOpen_germ _ (basicOpen (1 : Γ.obj (op X))) _ (by rw [basicOpen_one]; trivial),
     ← Category.assoc, Category.assoc (toOpen _ _), stalkFunctor_map_germ, ← Category.assoc,
-    toΓSpecSheafedSpace_app_spec, Γgerm]
+    X.toΓSpecSheafedSpace_app_eq, X.toΓSpecCApp_spec, Γgerm]
   erw [← stalkPushforward_germ _ _ X.presheaf ⊤]
   congr 1
   exact (X.toΓSpecBase _* X.presheaf).germ_res le_top.hom _ _
@@ -311,8 +306,7 @@ theorem right_triangle (R : CommRingCat) :
   · intro r; apply toOpen_res
 
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `LocallyRingedSpace`. -/
--- Porting note: `simps` generates lemmas not in `simp` normal form, so `unit` and `counit` have to
--- be added manually
+@[simps]
 def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} where
   unit := identityToΓSpec
   counit := (NatIso.op SpecΓIdentity).inv
@@ -329,18 +323,20 @@ def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} 
       Spec.toLocallyRingedSpace_map, Quiver.Hom.unop_op]
     exact right_triangle R.unop
 
-lemma locallyRingedSpaceAdjunction_unit :
-    locallyRingedSpaceAdjunction.unit = identityToΓSpec := rfl
-
-lemma locallyRingedSpaceAdjunction_counit :
-    locallyRingedSpaceAdjunction.counit = (NatIso.op SpecΓIdentity.{u}).inv := rfl
-
+/-- `@[simp]`-normal form of `locallyRingedSpaceAdjunction_counit_app`. -/
 @[simp]
+lemma toSpecΓ_unop (R : CommRingCatᵒᵖ) :
+    AlgebraicGeometry.toSpecΓ (Opposite.unop R) = toOpen R.unop ⊤ := rfl
+
+/-- `@[simp]`-normal form of `locallyRingedSpaceAdjunction_counit_app'`. -/
+@[simp]
+lemma toSpecΓ_of (R : Type u) [CommRing R] :
+    AlgebraicGeometry.toSpecΓ (CommRingCat.of R) = toOpen R ⊤ := rfl
+
 lemma locallyRingedSpaceAdjunction_counit_app (R : CommRingCatᵒᵖ) :
     locallyRingedSpaceAdjunction.counit.app R =
       (toOpen R.unop ⊤).op := rfl
 
-@[simp]
 lemma locallyRingedSpaceAdjunction_counit_app' (R : Type u) [CommRing R] :
     locallyRingedSpaceAdjunction.counit.app (op <| CommRingCat.of R) =
       (toOpen R ⊤).op := rfl
