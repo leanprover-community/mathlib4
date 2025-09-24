@@ -41,29 +41,28 @@ namespace IsStrictlyPositive
 
 section basic
 
-variable [PartialOrder A] [Ring A]
-
 @[grind =]
-lemma iff_of_unital {a : A} : IsStrictlyPositive a ↔ 0 ≤ a ∧ IsUnit a := Iff.rfl
+lemma iff_of_unital [LE A] [Monoid A] [Zero A] {a : A} :
+    IsStrictlyPositive a ↔ 0 ≤ a ∧ IsUnit a := Iff.rfl
 
 @[aesop 20% apply (rule_sets := [CStarAlgebra])]
-protected lemma nonneg {a : A} (ha : IsStrictlyPositive a) : 0 ≤ a := ha.1
+protected lemma nonneg [LE A] [Monoid A] [Zero A] {a : A} (ha : IsStrictlyPositive a) :
+    0 ≤ a := ha.1
 
 @[aesop 20% apply (rule_sets := [CStarAlgebra])]
-protected lemma isUnit {a : A} (ha : IsStrictlyPositive a) : IsUnit a := ha.2
+protected lemma isUnit [LE A] [Monoid A] [Zero A] {a : A} (ha : IsStrictlyPositive a) :
+    IsUnit a := ha.2
 
-lemma _root_.IsUnit.isStrictlyPositive {a : A} (ha : IsUnit a) (ha₀ : 0 ≤ a) :
-    IsStrictlyPositive a := ⟨ha₀, ha⟩
+lemma _root_.IsUnit.isStrictlyPositive [LE A] [Monoid A] [Zero A]
+    {a : A} (ha : IsUnit a) (ha₀ : 0 ≤ a) : IsStrictlyPositive a := iff_of_unital.mpr ⟨ha₀, ha⟩
 
 @[grind →]
-lemma isSelfAdjoint [StarRing A] [StarOrderedRing A] {a : A} (ha : IsStrictlyPositive a) :
-    IsSelfAdjoint a := ha.nonneg.isSelfAdjoint
+lemma isSelfAdjoint [Semiring A] [PartialOrder A] [StarRing A] [StarOrderedRing A] {a : A}
+    (ha : IsStrictlyPositive a) : IsSelfAdjoint a := ha.nonneg.isSelfAdjoint
 
 @[simp, grind]
-lemma _root_.isStrictlyPositive_one [ZeroLEOneClass A] :
-    IsStrictlyPositive (1 : A) := by
-  rw [iff_of_unital]
-  exact ⟨zero_le_one, isUnit_one⟩
+lemma _root_.isStrictlyPositive_one [LE A] [Monoid A] [Zero A] [ZeroLEOneClass A] :
+    IsStrictlyPositive (1 : A) := iff_of_unital.mpr ⟨zero_le_one, isUnit_one⟩
 
 end basic
 
@@ -91,7 +90,7 @@ lemma spectrum_pos [CommSemiring 𝕜] [PartialOrder 𝕜] [Algebra 𝕜 A]
     (hx : x ∈ spectrum 𝕜 a) : 0 < x := by
   have h₁ : 0 ≤ x := by grind
   have h₂ : x ≠ 0 := by grind [= spectrum.zero_notMem_iff]
-  exact lt_of_le_of_ne h₁ (id (Ne.symm h₂))
+  exact lt_of_le_of_ne h₁ h₂.symm
 
 grind_pattern IsStrictlyPositive.spectrum_pos => x ∈ spectrum 𝕜 a, IsStrictlyPositive a
 

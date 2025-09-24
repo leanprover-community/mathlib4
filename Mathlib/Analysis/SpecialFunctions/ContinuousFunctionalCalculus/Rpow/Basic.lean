@@ -5,7 +5,6 @@ Authors: Frédéric Dupuis
 -/
 
 import Mathlib.Algebra.Order.Star.Prod
---import Mathlib.Algebra.Algebra.StrictPositivity
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique

@@ -374,7 +374,15 @@ lemma rpow_neg_one_le_one {a : A} (ha : 1 ≤ a) : a ^ (-1 : ℝ) ≤ 1 := by
 
 protected lemma _root_.IsStrictlyPositive.of_le {a b : A} (ha : IsStrictlyPositive a)
     (hab : a ≤ b) : IsStrictlyPositive b :=
-  ⟨ha.1.trans hab, CStarAlgebra.isUnit_of_le ha.2 ha.1 hab⟩
+  ⟨ha.nonneg.trans hab, CStarAlgebra.isUnit_of_le ha.isUnit ha.nonneg hab⟩
+
+theorem _root_.IsStrictlyPositive.add_nonneg {a b : A}
+    (ha : IsStrictlyPositive a) (hb : 0 ≤ b) : IsStrictlyPositive (a + b) :=
+  IsStrictlyPositive.of_le ha ((le_add_iff_nonneg_right a).mpr hb)
+
+theorem _root_.IsStrictlyPositive.nonneg_add {a b : A}
+    (ha : 0 ≤ a) (hb : IsStrictlyPositive b) : IsStrictlyPositive (a + b) :=
+  add_comm a b ▸ hb.add_nonneg ha
 
 @[grind ←, aesop 90% apply]
 lemma _root_.isStrictlyPositive_add {a b : A}
@@ -382,9 +390,9 @@ lemma _root_.isStrictlyPositive_add {a b : A}
     IsStrictlyPositive (a + b) := by
   obtain h|h := h
   case inl =>
-    exact IsStrictlyPositive.of_le (a := a) h.1 ((le_add_iff_nonneg_right a).mpr h.2)
+    exact IsStrictlyPositive.add_nonneg h.1 h.2
   case inr =>
-    exact IsStrictlyPositive.of_le (a := b) h.2 (le_add_of_nonneg_left h.1)
+    exact IsStrictlyPositive.nonneg_add h.1 h.2
 
 end CStarAlgebra
 
