@@ -33,6 +33,9 @@ walks
 
 -/
 
+-- TODO: split
+set_option linter.style.longFile 1700
+
 open Function
 
 universe u v w
@@ -616,7 +619,7 @@ theorem isChain_adj_cons_support {u v w : V} (h : G.Adj u v) :
 
 theorem isChain_adj_support {u v : V} : ∀ (p : G.Walk u v), List.IsChain G.Adj p.support
   | nil => .singleton _
-  | cons h p => chain_adj_support h p
+  | cons h p => isChain_adj_cons_support h p
 
 @[deprecated (since := "2025-09-24")] alias chain'_adj_support := isChain_adj_support
 
@@ -629,7 +632,7 @@ theorem isChain_dartAdj_cons_darts {d : G.Dart} {v w : V} (h : d.snd = v) (p : G
 theorem isChain_dartAdj_darts {u v : V} : ∀ (p : G.Walk u v), List.IsChain G.DartAdj p.darts
   | nil => .nil
   -- Porting note: needed to defer `rfl` to help elaboration
-  | cons h p => chain_dartAdj_darts (by rfl) p
+  | cons h p => isChain_dartAdj_cons_darts (by rfl) p
 
 @[deprecated (since := "2025-09-24")] alias chain_dartAdj_darts := isChain_dartAdj_cons_darts
 @[deprecated (since := "2025-09-24")] alias chain'_dartAdj_darts := isChain_dartAdj_darts

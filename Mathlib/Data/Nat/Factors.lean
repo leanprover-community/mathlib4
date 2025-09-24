@@ -104,7 +104,7 @@ theorem isChain_two_cons_primeFactorsList (n) : List.IsChain (· ≤ ·) (2 :: p
   isChain_cons_primeFactorsList fun _ pp _ => pp.two_le
 
 theorem isChain_primeFactorsList (n) : List.IsChain (· ≤ ·) (primeFactorsList n) :=
-  (primeFactorsList_chain_2 _).tail
+  (isChain_two_cons_primeFactorsList _).tail
 
 @[deprecated (since := "2025-09-24")]
 alias primeFactorsList_chain_2 := isChain_two_cons_primeFactorsList

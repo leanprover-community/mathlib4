@@ -216,7 +216,7 @@ theorem isChain_toList_nonempty :
 theorem isChain_cons_toList_nonempty :
     ∀ {b} (p : Path a b), (b :: p.toList).IsChain (fun x y => Nonempty (y ⟶ x))
   | _, nil => .singleton _
-  | _, cons p f => p.toList_isChain_cons_nonempty.cons_cons ⟨f⟩
+  | _, cons p f => p.isChain_cons_toList_nonempty.cons_cons ⟨f⟩
 
 @[deprecated (since := "2025-09-19")]
 alias toList_chain_nonempty := isChain_cons_toList_nonempty
