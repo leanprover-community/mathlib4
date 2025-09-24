@@ -17,6 +17,7 @@ require "leanprover-community" / "proofwidgets" @ git "v0.0.77" -- ProofWidgets 
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "main"
+require "reap" from git "https://github.com/frenzymath/reap.git" @ "main"
 
 
 /-!
