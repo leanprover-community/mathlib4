@@ -223,16 +223,13 @@ theorem isPositive_def [CompleteSpace E] {T : E →L[𝕜] E} :
   simp [IsPositive, LinearMap.IsPositive, isSelfAdjoint_iff_isSymmetric, reApplyInnerSelf_apply]
 
 theorem IsPositive.isSelfAdjoint [CompleteSpace E] {T : E →L[𝕜] E} (hT : IsPositive T) :
-    IsSelfAdjoint T :=
-  hT.1.isSelfAdjoint
+    IsSelfAdjoint T := hT.1.isSelfAdjoint
 
 theorem IsPositive.inner_left_eq_inner_right {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
-    ⟪T x, x⟫ = ⟪x, T x⟫ :=
-  hT.1 _ _
+    ⟪T x, x⟫ = ⟪x, T x⟫ := hT.1 _ _
 
 theorem IsPositive.re_inner_nonneg_left {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
-    0 ≤ re ⟪T x, x⟫ :=
-  hT.2 x
+    0 ≤ re ⟪T x, x⟫ := hT.2 x
 
 lemma _root_.LinearMap.isPositive_toContinuousLinearMap_iff
     [FiniteDimensional 𝕜 E] (T : E →ₗ[𝕜] E) :
@@ -248,8 +245,7 @@ theorem IsPositive.re_inner_nonneg_right {T : E →L[𝕜] E} (hT : IsPositive T
 
 open ComplexOrder in
 theorem isPositive_iff (T : E →L[𝕜] E) :
-    IsPositive T ↔ T.IsSymmetric ∧ ∀ x, 0 ≤ ⟪T x, x⟫ :=
-  LinearMap.isPositive_iff _
+    IsPositive T ↔ T.IsSymmetric ∧ ∀ x, 0 ≤ ⟪T x, x⟫ := LinearMap.isPositive_iff _
 
 open ComplexOrder in
 theorem isPositive_iff' [CompleteSpace E] (T : E →L[𝕜] E) :
@@ -258,14 +254,11 @@ theorem isPositive_iff' [CompleteSpace E] (T : E →L[𝕜] E) :
 
 open ComplexOrder in
 theorem IsPositive.inner_nonneg_left {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
-    0 ≤ ⟪T x, x⟫ :=
-  (T.isPositive_iff.mp hT).right x
+    0 ≤ ⟪T x, x⟫ := hT.toLinearMap.inner_nonneg_left x
 
 open ComplexOrder in
 theorem IsPositive.inner_nonneg_right {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
-    0 ≤ ⟪x, T x⟫ := by
-  rw [← hT.inner_left_eq_inner_right]
-  exact inner_nonneg_left hT x
+    0 ≤ ⟪x, T x⟫ := hT.toLinearMap.inner_nonneg_right x
 
 @[simp]
 theorem isPositive_zero : IsPositive (0 : E →L[𝕜] E) := LinearMap.isPositive_zero
@@ -296,9 +289,8 @@ theorem IsPositive.smul_of_nonneg {T : E →L[𝕜] E} (hT : T.IsPositive) {c : 
   (isPositive_toLinearMap_iff _).mp (hT.toLinearMap.smul_of_nonneg hc)
 
 @[aesop safe apply]
-theorem IsPositive.conj_adjoint [CompleteSpace E] [CompleteSpace F]
-    {T : E →L[𝕜] E} (hT : T.IsPositive) (S : E →L[𝕜] F) :
-    (S ∘L T ∘L S†).IsPositive := by
+theorem IsPositive.conj_adjoint [CompleteSpace E] [CompleteSpace F] {T : E →L[𝕜] E}
+    (hT : T.IsPositive) (S : E →L[𝕜] F) : (S ∘L T ∘L S†).IsPositive := by
   refine isPositive_def.mpr ⟨hT.isSelfAdjoint.conj_adjoint S, fun x => ?_⟩
   rw [reApplyInnerSelf, comp_apply, ← adjoint_inner_right]
   exact hT.re_inner_nonneg_left _
@@ -308,9 +300,8 @@ theorem isPositive_self_comp_adjoint [CompleteSpace E] [CompleteSpace F] (S : E 
   simpa using isPositive_one.conj_adjoint S
 
 @[aesop safe apply]
-theorem IsPositive.adjoint_conj [CompleteSpace E] [CompleteSpace F]
-    {T : E →L[𝕜] E} (hT : T.IsPositive) (S : F →L[𝕜] E) :
-    (S† ∘L T ∘L S).IsPositive := by
+theorem IsPositive.adjoint_conj [CompleteSpace E] [CompleteSpace F] {T : E →L[𝕜] E}
+    (hT : T.IsPositive) (S : F →L[𝕜] E) : (S† ∘L T ∘L S).IsPositive := by
   convert hT.conj_adjoint (S†)
   rw [adjoint_adjoint]
 
@@ -346,16 +337,15 @@ theorem _root_.LinearMap.isPositive_adjoint_comp_self (S : E →ₗ[𝕜] F) :
 
 end LinearMap
 
-theorem IsPositive.conj_starProjection [CompleteSpace E]
-    (U : Submodule 𝕜 E) {T : E →L[𝕜] E} (hT : T.IsPositive)
-    [U.HasOrthogonalProjection] :
+theorem IsPositive.conj_starProjection [CompleteSpace E] (U : Submodule 𝕜 E) {T : E →L[𝕜] E}
+    (hT : T.IsPositive) [U.HasOrthogonalProjection] :
     (U.starProjection ∘L T ∘L U.starProjection).IsPositive := by
   have := hT.conj_adjoint (U.starProjection)
   rwa [(isSelfAdjoint_starProjection U).adjoint_eq] at this
 
-theorem IsPositive.orthogonalProjection_comp [CompleteSpace E]
-    {T : E →L[𝕜] E} (hT : T.IsPositive) (U : Submodule 𝕜 E)
-    [CompleteSpace U] : (U.orthogonalProjection ∘L T ∘L U.subtypeL).IsPositive := by
+theorem IsPositive.orthogonalProjection_comp [CompleteSpace E] {T : E →L[𝕜] E} (hT : T.IsPositive)
+    (U : Submodule 𝕜 E) [CompleteSpace U] :
+    (U.orthogonalProjection ∘L T ∘L U.subtypeL).IsPositive := by
   have := hT.conj_adjoint (U.orthogonalProjection : E →L[𝕜] U)
   rwa [U.adjoint_orthogonalProjection] at this
 
