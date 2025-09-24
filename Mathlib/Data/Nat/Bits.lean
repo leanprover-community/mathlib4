@@ -90,7 +90,7 @@ lemma div2_succ (n : ℕ) : div2 (n + 1) = cond (bodd n) (succ (div2 n)) (div2 n
   simp only [bodd, boddDiv2, div2]
   rcases boddDiv2 n with ⟨_ |_, _⟩ <;> simp
 
-attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm Nat.mul_assoc
+attribute [local simp] Nat.add_comm Nat.mul_comm
 
 lemma bodd_add_div2 : ∀ n, (bodd n).toNat + 2 * div2 n = n
   | 0 => rfl
@@ -106,11 +106,18 @@ lemma div2_val (n) : div2 n = n / 2 := by
     (Nat.add_left_cancel (Eq.trans ?_ (Nat.mod_add_div n 2).symm))
   rw [mod_two_of_bodd, bodd_add_div2]
 
-lemma bit_decomp (n : Nat) : bit (bodd n) (div2 n) = n :=
+@[simp, grind =]
+lemma bit_bodd_div2 (n : Nat) : bit (bodd n) (div2 n) = n :=
   (bit_val _ _).trans <| (Nat.add_comm _ _).trans <| bodd_add_div2 _
 
-lemma bit_zero : bit false 0 = 0 :=
+@[deprecated (since := "2025-09-24")]
+alias bit_decomp := bit_bodd_div2
+
+lemma bit_false_zero : bit false 0 = 0 :=
   rfl
+
+@[deprecated (since := "2025-09-24")]
+alias bit_zero := bit_false_zero
 
 /-- `shiftLeft' b m n` performs a left shift of `m` `n` times
 and adds the bit `b` as the least significant bit each time.
@@ -156,12 +163,14 @@ def ldiff : ℕ → ℕ → ℕ :=
 
 /-! bitwise ops -/
 
+@[simp, grind =]
 lemma bodd_bit (b n) : bodd (bit b n) = b := by
   rw [bit_val]
   simp only [Nat.mul_comm, Nat.add_comm, bodd_add, bodd_mul, bodd_succ, bodd_zero, Bool.not_false,
     Bool.not_true, Bool.and_false, Bool.xor_false]
   cases b <;> cases bodd n <;> rfl
 
+@[simp, grind =]
 lemma div2_bit (b n) : div2 (bit b n) = n := by
   rw [bit_val, div2_val, Nat.add_comm, add_mul_div_left, div_eq_of_lt, Nat.zero_add]
   <;> cases b
@@ -197,7 +206,7 @@ lemma testBit_bit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
 /-! ### `boddDiv2_eq` and `bodd` -/
 
 
-@[simp]
+@[simp, grind =]
 theorem boddDiv2_eq (n : ℕ) : boddDiv2 n = (bodd n, div2 n) := rfl
 
 @[simp]
