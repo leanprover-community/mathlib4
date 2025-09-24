@@ -101,10 +101,6 @@ lemma aroots_quadratic_eq_pair_iff_of_ne_zero' [CommRing T] [Field S] [Algebra T
     p.aroots S = {x1, x2} ↔
       x1 + x2 = -algebraMap T S (p.coeff 1) / algebraMap T S (p.coeff 2) ∧
       x1 * x2 = algebraMap T S (p.coeff 0) / algebraMap T S (p.coeff 2) := by
-  rw [aroots_def]
-  rw [roots_quadratic_eq_pair_iff_of_ne_zero' ha]
-  apply and_congr
-  · rw [coeff_map, coeff_map]
-  · rw [coeff_map, coeff_map]
+  rw [aroots_def, roots_quadratic_eq_pair_iff_of_ne_zero' ha, coeff_map, coeff_map, coeff_map]
 
 end Polynomial
