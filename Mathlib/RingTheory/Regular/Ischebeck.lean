@@ -3,9 +3,10 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 import Mathlib.RingTheory.Regular.Depth
 import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
+import Mathlib.RingTheory.KrullDimension.Field
+import Mathlib.RingTheory.KrullDimension.Module
 /-!
 
 # The Ischebeck theorem and its corollary
@@ -26,7 +27,7 @@ local instance [Small.{v} R] : CategoryTheory.HasExt.{max u v} (ModuleCat.{v} R)
 instance [Small.{v} R] [IsNoetherianRing R] (N M : ModuleCat.{v} R)
     [Module.Finite R N] [Module.Finite R M] (i : ℕ) : Module.Finite R (Ext.{max u v} N M i) := by
   induction i generalizing N
-  · exact Module.Finite.equiv ((Ext.linearEquiv₀ R).trans ModuleCat.homLinearEquiv).symm
+  · exact Module.Finite.equiv ((Ext.linearEquiv₀ (R := R)).trans ModuleCat.homLinearEquiv).symm
   · rename_i n ih _
     rcases Module.Finite.exists_fin' R N with ⟨m, f', hf'⟩
     let f := f'.comp ((Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)).trans
@@ -191,11 +192,10 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
           (Ext.contravariant_sequence_exact₁' hS M i (i + 1) (Nat.add_comm 1 i))
           (zero.eq_zero_of_tgt _)
         ext a
-        change x • a = Ext.bilinearCompOfLinear R _ _ _ _ _ _ (zero_add i)
-          ((Ext.linearEquiv₀ R).symm (ModuleCat.homLinearEquiv.symm (S := R) (x • LinearMap.id))) a
-        simp only [map_smul, smul_apply]
+        simp only [smul_apply, id_coe, id_eq, smulShortComplex_X₂, smulShortComplex_X₁,
+          smulShortComplex_f, AddCommGrp.hom_ofHom, Ext.bilinearComp_apply_apply]
+        nth_rw 1 [← Ext.mk₀_id_comp a, ← Ext.smul_comp, ← Ext.mk₀_smul]
         congr
-        exact (Ext.mk₀_id_comp a).symm
       have range : LinearMap.range (x • LinearMap.id) =
         x • (⊤ : Submodule R (Ext.{max u v} (of R L) M i)) := by
         ext y

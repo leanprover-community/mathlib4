@@ -69,7 +69,7 @@ theorem real_main_inequality {x : ℝ} (x_large : (512 : ℝ) ≤ x) :
     refine ((strictConcaveOn_log_Ioi.concaveOn.subset (Set.Ioi_subset_Ioi _)
       (convex_Ioi 0.5)).add ((strictConcaveOn_sqrt_mul_log_Ioi.concaveOn.comp_linearMap
       ((2 : ℝ) • LinearMap.id)).subset
-      (fun a ha => lt_of_eq_of_lt _ ((mul_lt_mul_left two_pos).mpr ha)) (convex_Ioi 0.5))).sub
+      (fun a ha => lt_of_eq_of_lt _ ((mul_lt_mul_iff_right₀ two_pos).mpr ha)) (convex_Ioi 0.5))).sub
       ((convex_on_id (convex_Ioi (0.5 : ℝ))).smul (div_nonneg (log_nonneg _) _))
     norm_num
   -/
@@ -83,7 +83,7 @@ theorem real_main_inequality {x : ℝ} (x_large : (512 : ℝ) ≤ x) :
       ext x
       simp only [Set.mem_Ioi, Set.mem_preimage, LinearMap.smul_apply,
         LinearMap.id_coe, id_eq, smul_eq_mul]
-      rw [← mul_lt_mul_left (two_pos)]
+      rw [← mul_lt_mul_iff_right₀ (two_pos)]
       norm_num1
       rfl
     apply ConvexOn.smul
