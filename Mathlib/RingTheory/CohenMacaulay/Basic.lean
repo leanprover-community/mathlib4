@@ -8,7 +8,33 @@ import Mathlib.RingTheory.Regular.Flat
 import Mathlib.RingTheory.Regular.Ischebeck
 
 /-!
+
 # Definition of Cohen-Macaulay Ring
+
+In this file, we define a `R`-module `M` is Cohen Macaulay module if it is zero or
+`Module.supportDim R M = IsLocalRing.depth M`. We also define a local ring `R`
+`IsCohenMacaulayLocalRing` if `ringKrullDim R = IsLocalRing.depth (ModuleCat.of R R)`,
+a commutative ring is Cohen Macaulay if its localization at every prime `IsCohenMacaulayLocalRing`.
+
+# Main definition and results
+
+* `ModuleCat.IsCohenMacaulay` : A `R`-module `M` is Cohen Macaulay if it is zero or
+  `Module.supportDim R M = IsLocalRing.depth M`.
+
+* `isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay` : For any prime ideal `p` and
+  finitely generated `R`-module `M`, `Module.supportDim Rₚ Mₚ = p.depth M`
+
+* `isLocalize_at_prime_isCohenMacaulay_of_isCohenMacaulay` : For any prime ideal `p` and
+  finitely generated `R`-module `M`, `Mₚ` is Cohen Macaulay as `Rₚ` module.
+
+* `IsCohenMacaulayLocalRing` : A local ring is Cohen Macaulay if
+  `ringKrullDim R = IsLocalRing.depth (ModuleCat.of R R)`.
+
+* `IsCohenMacaulayRing` : A commutative ring is Cohen Macaulay if its localization at every prime
+  `IsCohenMacaulayLocalRing`
+
+* `isCohenMacaulayRing_iff` : A commutative ring is Cohen Macaulay iff its localization at
+  every maximal ideal `IsCohenMacaulayLocalRing`
 
 -/
 
@@ -484,6 +510,21 @@ lemma isCohenMacaulayRing_of_ringEquiv {R R' : Type*} [CommRing R] [CommRing R']
   let _ := (isCohenMacaulayRing_def R).mp ‹_› p (Ideal.comap_isPrime e p')
   exact isCohenMacaulayLocalRing_of_ringEquiv
     (IsLocalization.ringEquivOfRingEquiv (Localization.AtPrime p) (Localization.AtPrime p') e this)
+
+lemma IsCohenMacaulayRing.of_isCohenMacaulayLocalRing [IsCohenMacaulayLocalRing R]
+    [IsNoetherianRing R] : IsCohenMacaulayRing R := by
+  apply (isCohenMacaulayRing_iff R).mpr (fun m hm ↦ ?_)
+  let _ := IsLocalization.at_units m.primeCompl (fun x hx ↦ by simpa [eq_maximalIdeal hm] using hx)
+  let e := (IsLocalization.algEquiv m.primeCompl R (Localization.AtPrime m)).toRingEquiv
+  exact isCohenMacaulayLocalRing_of_ringEquiv e
+
+lemma IsCohenMacaulayLocalRing.of_isLocalRing_of_isCohenMacaulayRing [IsLocalRing R]
+    [IsNoetherianRing R] [IsCohenMacaulayRing R] : IsCohenMacaulayLocalRing R := by
+  let _ := IsLocalization.at_units (maximalIdeal R).primeCompl (fun x hx ↦ by simpa using hx)
+  let _ := (isCohenMacaulayRing_def R).mp ‹_› (maximalIdeal R) inferInstance
+  let e := (IsLocalization.algEquiv (maximalIdeal R).primeCompl R
+    (Localization.AtPrime (maximalIdeal R))).toRingEquiv
+  exact isCohenMacaulayLocalRing_of_ringEquiv e.symm
 
 open Ideal
 
