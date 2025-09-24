@@ -14,9 +14,9 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 A divide-and-conquer recurrence is a function $T : ℕ → ℝ$ that satisfies a recurrence relation of
 the form
 $$T(n) = \sum_{i=0}^{k-1} a_i\, T(r_i(n)) + g(n),$$
-for sufficiently large $n$, where $r_i(n)$ is a function with
+for sufficiently large $n$, where $r_i(n)$ is a function such that
 $‖r_i(n) - b_i n‖ ∈ o(n / (\log n)^2)$ for every $i$, the coefficients $a_i$ are
-positive, and the parameters $b_i$ are real numbers in $(0, 1)$. (This assumption can be
+positive, and the coefficients $b_i$ are real numbers in $(0, 1)$. (This assumption can be
 relaxed to $O(n / (\log n)^{1 + ε})$ for some $ε > 0$; we leave this as future work.) These
 recurrences arise primarily in the
 analysis of divide-and-conquer algorithms such as mergesort or Strassen's algorithm for matrix
@@ -45,6 +45,8 @@ prove the version with a sum here, as it is simpler and more relevant for algori
 
 ## TODO
 
+* Relax the assumption described in the introduction from `o(n / (log n)^2)` to
+  `O(n / (log n)^(1+ε))`, for some `ε > 0`.
 * Specialize this theorem to the very common case where the recurrence is of the form
   `T(n) = ℓ · T(r(n)) + g(n)`
   where `g(n) ∈ Θ(n^t)` for some `t`. (This is often called the "master theorem" in the literature.)
@@ -181,7 +183,6 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_sub_smoothingFn (p : ℝ) :
         =ᶠ[atTop] fun z => z⁻¹ / (log z ^ 2) := by
       filter_upwards [eventually_deriv_one_sub_smoothingFn, eventually_gt_atTop 1] with x hx hx_pos
       have : 0 ≤ x⁻¹ / (log x ^ 2) := by
-        have hlog : 0 < log x := Real.log_pos hx_pos
         positivity
       simp only [hp, Real.rpow_zero, one_mul, hx, Real.norm_of_nonneg this]
     refine GrowsPolynomially.congr_of_eventuallyEq h₁ ?_
@@ -202,7 +203,6 @@ lemma growsPolynomially_deriv_rpow_p_mul_one_add_smoothingFn (p : ℝ) :
         =ᶠ[atTop] fun z => z⁻¹ / (log z ^ 2) := by
       filter_upwards [eventually_deriv_one_add_smoothingFn, eventually_gt_atTop 1] with x hx hx_pos
       have : 0 ≤ x⁻¹ / (log x ^ 2) := by
-        have hlog : 0 < log x := Real.log_pos hx_pos
         positivity
       simp only [neg_div, norm_neg, hp, Real.rpow_zero,
         one_mul, hx, Real.norm_of_nonneg this]
@@ -453,9 +453,8 @@ lemma base_nonempty {n : ℕ} (hn : 0 < n) : (Finset.Ico (⌊b (min_bi b) / 2 * 
                            _ = n := by simp
   exact_mod_cast this
 
-/-- The main proof of the upper-bound part of the Akra–Bazzi theorem. The factor
-`1 - ε n` does not change the asymptotic order, but it is needed for the induction step to go
-through. -/
+/-- The main proof of the upper-bound part of the Akra–Bazzi theorem. The factor `1 - ε n` does not
+change the asymptotic order, but it is needed for the induction step to go through. -/
 lemma T_isBigO_smoothingFn_mul_asympBound :
     T =O[atTop] (fun n => (1 - ε n) * asympBound g a b n) := by
   let b' := b (min_bi b) / 2
@@ -601,9 +600,14 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
             · exact le_of_lt <| h_smoothing_gt_half n hn
       _ = C * ((1 - ε n) * asympBound g a b n) := by ring
 
-/-- The main proof of the lower-bound part of the Akra–Bazzi theorem. The factor
-`1 + ε n` does not change the asymptotic order, but it is needed for the induction step to go
-through. -/
+#adaptation_note
+/--
+This linter is only enabled on `nightly-testing`, but it causes a deterministic timeout there.
+Can this proof be refactored into some smaller pieces?
+-/
+set_option linter.tacticAnalysis.regressions.linarithToGrind false in
+/-- The main proof of the lower-bound part of the Akra–Bazzi theorem. The factor `1 + ε n` does not
+change the asymptotic order, but it is needed for the induction step to go through. -/
 lemma smoothingFn_mul_asympBound_isBigO_T :
     (fun (n : ℕ) => (1 + ε n) * asympBound g a b n) =O[atTop] T := by
   let b' := b (min_bi b) / 2

@@ -303,9 +303,8 @@ theorem DiophList.forall (l : List (Set <| α → ℕ)) (d : l.Forall Dioph) :
     let ⟨β, pl, h⟩ := this
     ⟨β, Poly.sumsq pl, fun v => (h v).trans <| exists_congr fun t => (Poly.sumsq_eq_zero _ _).symm⟩
   induction l with | nil => exact ⟨ULift Empty, [], fun _ => by simp⟩ | cons S l IH =>
-  simp? at d says simp only [List.forall_cons] at d
+  obtain ⟨⟨β, p, pe⟩, dl⟩ := (List.forall_cons _ _ _).mp d
   exact
-    let ⟨⟨β, p, pe⟩, dl⟩ := d
     let ⟨γ, pl, ple⟩ := IH dl
     ⟨β ⊕ γ, p.map (inl ⊗ inr ∘ inl)::pl.map fun q => q.map (inl ⊗ inr ∘ inr),
       fun v => by
@@ -588,7 +587,7 @@ theorem sub_dioph : DiophFn fun v => f v - g v :=
               rcases o with (ae | ⟨yz, x0⟩)
               · rw [ae, add_tsub_cancel_right]
               · rw [x0, tsub_eq_zero_iff_le.mpr yz], by
-              omega⟩
+              cutsat⟩
 
 @[inherit_doc]
 scoped infixl:80 " D- " => Dioph.sub_dioph

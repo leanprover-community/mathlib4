@@ -54,13 +54,13 @@ structure AkraBazziRecurrence {α : Type*} [Fintype α] [Nonempty α]
     (T : ℕ → ℝ) (g : ℝ → ℝ) (a : α → ℝ) (b : α → ℝ) (r : α → ℕ → ℕ) where
   /-- Point below which the recurrence is in the base case -/
   n₀ : ℕ
-  /-- `n₀` is positive. -/
+  /-- `n₀` is always positive -/
   n₀_gt_zero : 0 < n₀
   /-- The coefficients `a i` are positive. -/
   a_pos : ∀ i, 0 < a i
   /-- The coefficients `b i` are positive. -/
   b_pos : ∀ i, 0 < b i
-  /-- Each `b i` is less than 1. -/
+  /-- The coefficients `b i` are less than 1. -/
   b_lt_one : ∀ i, b i < 1
   /-- `g` is nonnegative -/
   g_nonneg : ∀ x ≥ 0, 0 ≤ g x
@@ -164,7 +164,7 @@ lemma bi_min_div_two_lt_one : b (min_bi b) / 2 < 1 := by
     _ < b (min_bi b) := by aesop (add safe apply div_two_lt_of_pos)
     _ < 1 := R.b_lt_one _
 
-lemma bi_min_div_two_pos : 0 < b (min_bi b) / 2 := div_pos (R.b_pos _) (by norm_num)
+lemma bi_min_div_two_pos : 0 < b (min_bi b) / 2 := div_pos (R.b_pos _) (by simp)
 
 lemma exists_eventually_const_mul_le_r :
     ∃ c ∈ Set.Ioo (0 : ℝ) 1, ∀ᶠ (n : ℕ) in atTop, ∀ i, c * n ≤ r i n := by
@@ -406,7 +406,7 @@ lemma eventually_one_add_smoothingFn_pos : ∀ᶠ (n : ℕ) in atTop, 0 < 1 + ε
   have h₁ := isLittleO_smoothingFn_one
   rw [isLittleO_iff] at h₁
   refine Eventually.natCast_atTop (p := fun n => 0 < 1 + ε n) ?_
-  filter_upwards [h₁ (by norm_num : (0 : ℝ) < 1 / 2), eventually_gt_atTop 1] with x _ hx'
+  filter_upwards [h₁ (by simp : (0 : ℝ) < 1 / 2), eventually_gt_atTop 1] with x _ hx'
   have : 0 < log x := Real.log_pos hx'
   change 0 < 1 + 1 / log x
   positivity
@@ -603,10 +603,10 @@ lemma eventually_atTop_sumTransform_le :
          _ ≤ n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
           gcongr with u hu
           rw [Finset.mem_Ico] at hu
-          have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by omega⟩
+          have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by cutsat⟩
           refine hn₂ u ?_
           rw [Set.mem_Icc]
-          refine ⟨?_, by norm_cast; omega⟩
+          refine ⟨?_, by norm_cast; cutsat⟩
           calc c₁ * n ≤ r i n := by exact hn₁ i
                     _ ≤ u := by exact_mod_cast hu'.1
          _ ≤ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
@@ -635,10 +635,10 @@ lemma eventually_atTop_sumTransform_le :
       _ ≤ n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
         gcongr with u hu
         rw [Finset.mem_Ico] at hu
-        have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by omega⟩
+        have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by cutsat⟩
         refine hn₂ u ?_
         rw [Set.mem_Icc]
-        refine ⟨?_, by norm_cast; omega⟩
+        refine ⟨?_, by norm_cast; cutsat⟩
         calc c₁ * n ≤ r i n := by exact hn₁ i
                   _ ≤ u     := by exact_mod_cast hu'.1
       _ ≤ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / n ^ ((p a b) + 1)) := by
@@ -682,10 +682,10 @@ lemma eventually_atTop_sumTransform_ge :
       _ ≥ n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, c₂ * g n / u^((p a b) + 1)) := by
         gcongr with u hu
         rw [Finset.mem_Ico] at hu
-        have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by omega⟩
+        have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by cutsat⟩
         refine hn₂ u ?_
         rw [Set.mem_Icc]
-        refine ⟨?_, by norm_cast; omega⟩
+        refine ⟨?_, by norm_cast; cutsat⟩
         calc c₁ * n ≤ r i n := by exact hn₁ i
                   _ ≤ u     := by exact_mod_cast hu'.1
       _ ≥ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / n ^ ((p a b) + 1)) := by
@@ -716,10 +716,10 @@ lemma eventually_atTop_sumTransform_ge :
       _ ≥ n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
         gcongr with u hu
         rw [Finset.mem_Ico] at hu
-        have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by omega⟩
+        have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by cutsat⟩
         refine hn₂ u ?_
         rw [Set.mem_Icc]
-        refine ⟨?_, by norm_cast; omega⟩
+        refine ⟨?_, by norm_cast; cutsat⟩
         calc c₁ * n ≤ r i n := by exact hn₁ i
                   _ ≤ u := by exact_mod_cast hu'.1
       _ ≥ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / (r i n) ^ ((p a b) + 1)) := by

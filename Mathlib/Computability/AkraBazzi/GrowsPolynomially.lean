@@ -19,10 +19,10 @@ constant $b \in (0,1)$.
 
 ## Implementation notes
 
-Our definition requires that the condition hold for any $b \in (0,1)$. This is equivalent to
-requiring it only for $b = 1/2$ (or any other particular value in $(0,1)$). While this
-could, in principle, make it harder to prove that a particular function grows polynomially,
-this issue does not seem to arise in practice.
+Our definition requires that the condition hold for any `b ∈ (0,1)`. This is equivalent to
+requiring it only for `b = 1 / 2` (or any other particular value in `(0, 1)`). While this could, in
+principle, make it harder to prove that a particular function grows polynomially, this issue does
+not seem to arise in practice.
 
 -/
 
@@ -114,7 +114,7 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
         rw [Set.left_mem_Icc]
         gcongr
         · norm_num
-        · omega
+        · cutsat
       simp only [ih, mul_zero, Set.Icc_self, Set.mem_singleton_iff] at hx
       refine hx ⟨?lb₁, ?ub₁⟩
       case lb₁ =>

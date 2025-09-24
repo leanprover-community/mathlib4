@@ -199,7 +199,7 @@ theorem encode_lt_prec (cf cg) :
 
 theorem encode_lt_rfind' (cf) : encode cf < encode (rfind' cf) := by
   simp only [encodeCode_eq, encodeCode]
-  omega
+  cutsat
 
 end Nat.Partrec.Code
 
@@ -945,7 +945,7 @@ theorem primrec_evaln : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.
       · simp [evaln]
       let k := k' + 1
       simp only
-      simp? [Nat.lt_succ_iff] at nk says simp only [List.mem_range, Nat.lt_succ_iff] at nk
+      simp only [List.mem_range, Nat.lt_succ_iff] at nk
       have hg :
         ∀ {k' c' n},
           Nat.pair k' (encode c') < Nat.pair k (encode c) →
