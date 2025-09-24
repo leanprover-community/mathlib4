@@ -5,12 +5,10 @@ Authors: Nailin Guan
 -/
 import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
-import Mathlib.Combinatorics.Quiver.ReflQuiver
 import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.Regular.RegularSequence
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 /-!
 # Categorical constructions for `IsSMulRegular`
 -/
@@ -24,8 +22,7 @@ open CategoryTheory Ideal Pointwise
 lemma LinearMap.exact_smul_id_smul_top_mkQ (M : Type v) [AddCommGroup M] [Module R M] (r : R) :
     Function.Exact (r • LinearMap.id : M →ₗ[R] M) (r • (⊤ : Submodule R M)).mkQ := by
   intro x
-  simp [Submodule.mem_smul_pointwise_iff_exists,
-    Submodule.mem_smul_pointwise_iff_exists]
+  simp [Submodule.mem_smul_pointwise_iff_exists, Submodule.mem_smul_pointwise_iff_exists]
 
 namespace ModuleCat
 
