@@ -731,7 +731,7 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
       rcases this with ⟨n, hn⟩
       have hb₁ : (0 : ℝ) < (νA : ℝ)⁻¹ := by rw [_root_.inv_pos]; exact hb
       have h' : 1 / (↑n + 1) * νA < c := by
-        rw [← NNReal.coe_lt_coe, ← mul_lt_mul_right hb₁, NNReal.coe_mul, mul_assoc, ←
+        rw [← NNReal.coe_lt_coe, ← mul_lt_mul_iff_left₀ hb₁, NNReal.coe_mul, mul_assoc, ←
           NNReal.coe_inv, ← NNReal.coe_mul, mul_inv_cancel₀, ← NNReal.coe_mul, mul_one,
           NNReal.coe_inv]
         · exact hn

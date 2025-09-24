@@ -418,7 +418,7 @@ theorem norm_integral_lt_of_norm_le_const_of_lt {f : ℂ → E} {c : ℂ} {R C :
       · exact continuousOn_const.mul (hc.comp (continuous_circleMap _ _).continuousOn fun θ _ =>
           circleMap_mem_sphere _ hR.le _).norm
       · exact mul_le_mul_of_nonneg_left (hf _ <| circleMap_mem_sphere _ hR.le _) hR.le
-      · exact (mul_lt_mul_left hR).2 hlt
+      · gcongr
     _ = 2 * π * R * C := by simp [mul_assoc]; ring
 
 @[simp]

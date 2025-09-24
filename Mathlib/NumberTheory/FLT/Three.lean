@@ -287,7 +287,7 @@ lemma lambda_sq_dvd_c : λ ^ 2 ∣ S'.c := by
   rw [pow_dvd_iff_le_emultiplicity, emultiplicity_pow hζ.zeta_sub_one_prime',
     hm.emultiplicity_eq_multiplicity] at this
   norm_cast at this
-  omega
+  cutsat
 
 /-- Given `S' : Solution'`, we have that `2 ≤ S'.multiplicity`. -/
 lemma Solution'.two_le_multiplicity : 2 ≤ S'.multiplicity := by
@@ -337,7 +337,7 @@ lemma lambda_sq_dvd_or_dvd_or_dvd :
     emultiplicity_mul hζ.zeta_sub_one_prime', emultiplicity_mul hζ.zeta_sub_one_prime',
       h1'.emultiplicity_eq_multiplicity, h2'.emultiplicity_eq_multiplicity,
       h3'.emultiplicity_eq_multiplicity, ← Nat.cast_add, ← Nat.cast_add, Nat.cast_le] at this
-  omega
+  cutsat
 
 open Units in
 /-- Given `S' : Solution'`, we may assume that `λ ^ 2` divides `S'.a + S'.b ∨ λ ^ 2` (see also the
@@ -489,7 +489,7 @@ private lemma lambda_pow_dvd_a_add_b : λ ^ (3 * S.multiplicity - 2) ∣ S.a + S
   apply hζ.zeta_sub_one_prime'.pow_dvd_of_dvd_mul_left _ S.lambda_not_dvd_z
   apply hζ.zeta_sub_one_prime'.pow_dvd_of_dvd_mul_left _ S.lambda_not_dvd_y
   have := S.two_le_multiplicity
-  rw [show 3 * multiplicity S = 3 * multiplicity S - 2 + 1 + 1 by omega, pow_succ, pow_succ,
+  rw [show 3 * multiplicity S = 3 * multiplicity S - 2 + 1 + 1 by cutsat, pow_succ, pow_succ,
     show (S.a + S.b) * (λ * y S) * (λ * z S) = (S.a + S.b) * y S * z S * λ * λ by ring] at h
   simp only [mul_dvd_mul_iff_right hζ.zeta_sub_one_prime'.ne_zero] at h
   rwa [show (S.a + S.b) * y S * z S = y S * (z S * (S.a + S.b)) by ring] at h
@@ -522,7 +522,7 @@ private lemma lambda_not_dvd_x : ¬ λ ∣ S.x := fun h ↦ by
   simp only [← a_cube_add_b_cube_eq_mul, S.H, w_spec, Units.isUnit, IsUnit.dvd_mul_left] at h
   rw [← pow_succ', mul_comm, ← mul_assoc, ← pow_succ'] at h
   have := S.two_le_multiplicity
-  rw [show 3 * multiplicity S - 2 + 1 + 1 = 3 * multiplicity S by omega, mul_pow, ← pow_mul,
+  rw [show 3 * multiplicity S - 2 + 1 + 1 = 3 * multiplicity S by cutsat, mul_pow, ← pow_mul,
     mul_comm _ 3, mul_dvd_mul_iff_left _] at h
   · exact lambda_not_dvd_w _ <| hζ.zeta_sub_one_prime'.dvd_of_dvd_pow h
   · simp [hζ.zeta_sub_one_prime'.ne_zero]
@@ -558,7 +558,7 @@ private lemma x_mul_y_mul_z_eq_u_mul_w_cube : S.x * S.y * S.z = S.u * S.w ^ 3 :=
       λ ^ (3 * multiplicity S - 2) * λ * λ * x S * y S * z S by ring] at hh
     have := S.two_le_multiplicity
     rw [mul_comm _ (λ ^ (3 * multiplicity S)), ← pow_succ, ← pow_succ,
-      show 3 * multiplicity S - 2 + 1 + 1 = 3 * multiplicity S by omega, mul_assoc, mul_assoc,
+      show 3 * multiplicity S - 2 + 1 + 1 = 3 * multiplicity S by cutsat, mul_assoc, mul_assoc,
       mul_assoc] at hh
     simp only [mul_eq_mul_left_iff, pow_eq_zero_iff', hζ.zeta_sub_one_prime'.ne_zero, ne_eq,
       mul_eq_zero, OfNat.ofNat_ne_zero, false_or, false_and, or_false] at hh
@@ -722,7 +722,7 @@ lemma Solution'_descent_multiplicity : S.Solution'_descent.multiplicity = S.mult
 lemma Solution'_descent_multiplicity_lt :
     (Solution'_descent S).multiplicity < S.multiplicity := by
   rw [Solution'_descent_multiplicity S, Nat.sub_one]
-  exact Nat.pred_lt <| by have := S.two_le_multiplicity; omega
+  exact Nat.pred_lt <| by have := S.two_le_multiplicity; cutsat
 
 /-- Given any `S : Solution`, there is another `S₁ : Solution` such that
   `S₁.multiplicity < S.multiplicity` -/
