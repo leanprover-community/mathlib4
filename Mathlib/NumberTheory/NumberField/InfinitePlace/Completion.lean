@@ -218,14 +218,14 @@ variable {L : Type*} [Field L] [Algebra K L] (w : v.Extension L) {v}
 
 open WithAbs in
 theorem apply_algebraMap_apply (x : WithAbs v.1) :
-    w.1 (equiv w.1.1 (algebraMap (WithAbs v.1) (WithAbs w.1.1) x)) = v (equiv v.1 x) := by
-  exact WithAbs.equiv_algebraMap_apply v.1 w.1.1 _ ▸ comp_of_comap_eq w.2 _
+    w.1 (equiv w.abs (algebraMap (WithAbs v.1) (WithAbs w.abs) x)) = v (equiv v.1 x) := by
+  exact WithAbs.equiv_algebraMap_apply v.1 w.abs _ ▸ comp_of_comap_eq w.comap_eq _
 
 instance : Algebra v.Completion w.1.Completion := mapOfComp (apply_algebraMap_apply w) |>.toAlgebra
 
 @[simp]
 theorem algebraMap_coe (x : WithAbs v.1) :
-    algebraMap v.Completion w.1.Completion x = algebraMap (WithAbs v.1) (WithAbs w.1.1) x := by
+    algebraMap v.Completion w.1.Completion x = algebraMap (WithAbs v.1) (WithAbs w.abs) x := by
   rw [RingHom.algebraMap_toAlgebra, mapOfComp_coe]
 
 open UniformSpace.Completion NumberField.ComplexEmbedding in
@@ -250,6 +250,7 @@ theorem conjugate_extensionEmbedding_algebraMap
 open UniformSpace.Completion in
 theorem extensionEmbedding_algebraMap_of_isReal (h : v.IsReal) (x : v.Completion) :
     extensionEmbedding w.1 (algebraMap _ _ x) = extensionEmbedding v x :=
-  extensionEmbedding_algebraMap w (w.2 ▸ comap_embedding_of_isReal _ (w.2 ▸ h) |>.symm) _
+  extensionEmbedding_algebraMap w
+    ((w.comap_eq ▸ comap_embedding_of_isReal _ (w.comap_eq ▸ h)).symm) _
 
 end NumberField.InfinitePlace.Extension
