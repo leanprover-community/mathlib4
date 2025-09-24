@@ -617,22 +617,11 @@ variable {p a}
 theorem liftIoc_eq_liftIco {f : 𝕜 → B} (hf : f a = f (a + p)) :
     liftIoc p a f = liftIco p a f := by
   ext q
-  induction q using QuotientAddGroup.induction_on with | H x =>
-  let y := toIcoMod hp.out a x
-  have hy : y ∈ Ico a (a + p) := toIcoMod_mem_Ico hp.out a x
-  have : (↑x : AddCircle p) = ↑(toIcoMod hp.out a x) := by
-    rw [← toIcoMod_add_toIcoDiv_zsmul hp.out a x, coe_add]
-    simp only [QuotientAddGroup.mk_zsmul, toIcoMod_add_toIcoDiv_zsmul, add_eq_left]
-    refine smul_eq_zero_of_right (toIcoDiv hp.out a x) (coe_period p)
-  rw [this]
-  change liftIoc p a f y = liftIco p a f y
-  by_cases ha : a = y
-  · rw [liftIco_coe_apply hy, ← ha, hf, liftIoc, comp_apply]
-    have : (equivIoc p a) (↑a : AddCircle p) =
-        ⟨a + p, right_mem_Ioc.mpr (lt_add_of_pos_right a hp.out)⟩ := by
-      simp [equivIoc, QuotientAddGroup.equivIocMod_coe]
-    rw [this, restrict_apply]
-  · rw [liftIco_coe_apply hy, liftIoc_coe_apply ⟨lt_of_le_of_ne hy.1 ha, le_of_lt hy.2⟩]
+  obtain ⟨x, hx, rfl⟩ := by simpa only [mem_image] using coe_image_Ico_eq p a ▸ mem_univ q
+  rw [liftIco_coe_apply hx]
+  obtain (⟨rfl, -⟩ | h) := by rwa [mem_Ico, le_iff_eq_or_lt, or_and_right] at hx
+  · rw [← coe_add_period, liftIoc_coe_apply (by simp [hp.out]), hf]
+  · exact liftIoc_coe_apply ⟨h.1, h.2.le⟩
 
 theorem liftIco_eq_lift_Icc {f : 𝕜 → B} (h : f a = f (a + p)) :
     liftIco p a f =
