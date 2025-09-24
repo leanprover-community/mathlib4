@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Lean.Elab.Command
 import Lean.Elab.ParseImportsFast
+-- This file is imported by the Header linter, hence has no mathlib imports.
 
 /-! # The `directoryDependency` linter
 
@@ -228,7 +229,6 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Logic, `Mathlib.Util),
   (`Mathlib.Logic, `Mathlib.Tactic),
   (`Mathlib.Logic.Fin.Rotate, `Mathlib.Algebra.Group.Fin.Basic),
-  (`Mathlib.Logic.Hydra, `Mathlib.GroupTheory),
   (`Mathlib.Logic, `Mathlib.Algebra.Notation),
   (`Mathlib.Logic, `Mathlib.Algebra.NeZero),
   (`Mathlib.Logic, `Mathlib.Data),
@@ -280,6 +280,7 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
 
   -- The following are a list of existing non-dependent top-level directory pairs.
   (`Mathlib.Algebra, `Mathlib.AlgebraicGeometry),
+  (`Mathlib.Algebra, `Mathlib.Analysis),
   (`Mathlib.Algebra, `Mathlib.Computability),
   (`Mathlib.Algebra, `Mathlib.Condensed),
   (`Mathlib.Algebra, `Mathlib.Geometry),
@@ -387,8 +388,10 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Control, `Mathlib.Topology),
   (`Mathlib.Data, `Mathlib.AlgebraicGeometry),
   (`Mathlib.Data, `Mathlib.AlgebraicTopology),
+  (`Mathlib.Data, `Mathlib.Analysis),
   (`Mathlib.Data, `Mathlib.Computability),
   (`Mathlib.Data, `Mathlib.Condensed),
+  (`Mathlib.Data, `Mathlib.FieldTheory),
   (`Mathlib.Data, `Mathlib.Geometry.Euclidean),
   (`Mathlib.Data, `Mathlib.Geometry.Group),
   (`Mathlib.Data, `Mathlib.Geometry.Manifold),
@@ -581,6 +584,7 @@ outside `Mathlib/Algebra/Notation.lean`.
 -/
 def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Algebra.Lie, `Mathlib.RepresentationTheory),
+  (`Mathlib.Algebra.Module.ZLattice, `Mathlib.Analysis),
   (`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation),
   (`Mathlib.Deprecated, `Mathlib.Deprecated),
   (`Mathlib.Topology.Algebra, `Mathlib.Algebra),

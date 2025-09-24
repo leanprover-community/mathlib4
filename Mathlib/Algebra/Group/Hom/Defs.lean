@@ -27,7 +27,7 @@ building blocks for other homomorphisms:
 * `AddHom`
 * `MulHom`
 
-## Notations
+## Notation
 
 * `→+`: Bundled `AddMonoid` homs. Also use for `AddGroup` homs.
 * `→*`: Bundled `Monoid` homs. Also use for `Group` homs.
@@ -496,6 +496,15 @@ lemma map_comp_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) 
     (n : ℤ) : f ∘ (g ^ n) = f ∘ g ^ n := by simp
 
 end mul_one
+
+/-- If the codomain of an injective monoid homomorphism is torsion free,
+then so is the domain. -/
+@[to_additive /-- If the codomain of an injective additive monoid homomorphism is torsion free,
+then so is the domain. -/]
+theorem Function.Injective.isMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionFree N]
+    (f : M →* N) (hf : Function.Injective f) : IsMulTorsionFree M where
+  pow_left_injective n hn x y hxy := hf <| IsMulTorsionFree.pow_left_injective hn <| by
+    simpa using congrArg f hxy
 
 -- completely uninteresting lemmas about coercion to function, that all homs need
 section Coes

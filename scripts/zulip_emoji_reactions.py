@@ -95,7 +95,7 @@ print(f"Searching for: '{urlPR}'")
 first_by_subject = {}
 
 for message in messages:
-    if message['display_recipient'] == 'rss':
+    if message['display_recipient'] == 'rss' and message['subject'] != 'mathlib bors notifications':
         continue
     content = message['content']
     # Check for emoji reactions
@@ -152,7 +152,7 @@ for message in messages:
 
         # Otherwise, remove all previous mutually exclusive emoji reactions (unless
         # LABELS_TO_KEEP contains the corresponding label). This is because otherwise this script
-        # may end up removing reactions that are still relevant. See PR #27570
+        # may end up removing reactions that are still relevant. See PR https://github.com/leanprover-community/mathlib4/issues/27570
         # Note that the 'merge' and 'closed-pr' reactions do not have a corresponding label,
         # so we pass the empty string (which will never be in LABELS_TO_KEEP) so that they are
         # always removed.

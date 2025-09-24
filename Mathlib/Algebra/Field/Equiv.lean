@@ -10,7 +10,7 @@ import Mathlib.Algebra.GroupWithZero.Equiv
 /-!
 # If a semiring is a field, any isomorphic semiring is also a field.
 
-This is in a separate file to avoid needing to import `Field` in `Mathlib/Algebra/Ring/Equiv/.lean`
+This is in a separate file to avoid needing to import `Field` in `Mathlib/Algebra/Ring/Equiv.lean`
 -/
 
 variable {A B F : Type*} [Semiring A] [Semiring B]

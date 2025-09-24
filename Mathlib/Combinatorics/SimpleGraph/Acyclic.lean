@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -163,7 +163,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
   case notNil => exact not_nil_of_ne (by simpa using hw)
   case memEdges => simp
   case inj =>
-    intros a ha b hb h
+    intro a ha b hb h
     wlog h' : (f a).length ≤ (f b).length generalizing a b
     · exact Eq.symm (this _ hb _ ha h.symm (le_of_not_ge h'))
     rw [dart_edge_eq_iff] at h
@@ -174,12 +174,12 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
       have h3 := congrArg length (hf' _ ((f _).tail.copy h1 rfl) ?_)
       · rw [length_copy, ← add_left_inj 1,
           length_tail_add_one (not_nil_of_ne (by simpa using ha))] at h3
-        omega
+        cutsat
       · simp only [isPath_copy]
         exact (hf _).tail
   case surj =>
     simp only [mem_edgeFinset, Finset.mem_compl, Finset.mem_singleton, Sym2.forall, mem_edgeSet]
-    intros x y h
+    intro x y h
     wlog h' : (f x).length ≤ (f y).length generalizing x y
     · rw [Sym2.eq_swap]
       exact this y x h.symm (le_of_not_ge h')
@@ -232,5 +232,26 @@ lemma isTree_iff_connected_and_card [Finite V] :
   rw [Nat.card_eq_fintype_card, ← edgeFinset_card, ← h₂, Nat.card_eq_fintype_card,
     ← edgeFinset_card, add_lt_add_iff_right]
   exact Finset.card_lt_card <| by simpa [deleteEdges]
+
+/-- The minimum degree of all vertices in a nontrivial tree is one. -/
+lemma IsTree.minDegree_eq_one_of_nontrivial (h : G.IsTree) [Fintype V] [Nontrivial V]
+    [DecidableRel G.Adj] : G.minDegree = 1 := by
+  by_cases q : 2 ≤ G.minDegree
+  · have := h.card_edgeFinset
+    have := G.sum_degrees_eq_twice_card_edges
+    have hle : ∑ v : V, 2 ≤ ∑ v, G.degree v := by
+      gcongr
+      exact le_trans q (G.minDegree_le_degree _)
+    rw [Finset.sum_const, Finset.card_univ, smul_eq_mul] at hle
+    cutsat
+  · linarith [h.isConnected.preconnected.minDegree_pos_of_nontrivial]
+
+/-- A nontrivial tree has a vertex of degree one. -/
+lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
+    (h : G.IsTree) : ∃ v, G.degree v = 1 := by
+  obtain ⟨v, hv⟩ := G.exists_minimal_degree_vertex
+  use v
+  rw [← hv]
+  exact h.minDegree_eq_one_of_nontrivial
 
 end SimpleGraph

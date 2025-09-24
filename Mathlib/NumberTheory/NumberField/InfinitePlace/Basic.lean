@@ -155,7 +155,7 @@ theorem mk_eq_iff {φ ψ : K →+* ℂ} : mk φ = mk ψ ↔ φ = ψ ∨ ComplexE
 /-- An infinite place is real if it is defined by a real embedding. -/
 def IsReal (w : InfinitePlace K) : Prop := ∃ φ : K →+* ℂ, ComplexEmbedding.IsReal φ ∧ mk φ = w
 
-/-- An infinite place is complex if it is defined by a complex (ie. not real) embedding. -/
+/-- An infinite place is complex if it is defined by a complex (i.e. not real) embedding. -/
 def IsComplex (w : InfinitePlace K) : Prop := ∃ φ : K →+* ℂ, ¬ComplexEmbedding.IsReal φ ∧ mk φ = w
 
 theorem embedding_mk_eq (φ : K →+* ℂ) :
@@ -468,16 +468,16 @@ theorem nrRealPlaces_eq_zero_of_two_lt (hk : 2 < k) (hζ : IsPrimitiveRoot ζ k)
     congr
   have hre : (f ζ).re = 1 ∨ (f ζ).re = -1 := by
     rw [← Complex.abs_re_eq_norm] at him
-    have := Complex.norm_eq_one_of_pow_eq_one hζ'.pow_eq_one (by omega)
+    have := Complex.norm_eq_one_of_pow_eq_one hζ'.pow_eq_one (by cutsat)
     rwa [← him, ← abs_one, abs_eq_abs] at this
   cases hre with
   | inl hone =>
-    exact hζ'.ne_one (by omega) <| Complex.ext (by simp [hone]) (by simp [him])
+    exact hζ'.ne_one (by cutsat) <| Complex.ext (by simp [hone]) (by simp [him])
   | inr hnegone =>
     replace hζ' := hζ'.eq_orderOf
     simp only [show f ζ = -1 from Complex.ext (by simp [hnegone]) (by simp [him]),
       orderOf_neg_one, ringChar.eq_zero, OfNat.zero_ne_ofNat, ↓reduceIte] at hζ'
-    omega
+    cutsat
 
 end IsPrimitiveRoot
 

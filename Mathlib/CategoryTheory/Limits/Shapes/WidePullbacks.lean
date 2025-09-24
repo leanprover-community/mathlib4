@@ -35,7 +35,6 @@ variable (J : Type w)
 /-- A wide pullback shape for any type `J` can be written simply as `Option J`. -/
 def WidePullbackShape := Option J
 
--- Porting note: strangely this could be synthesized
 instance : Inhabited (WidePullbackShape J) where
   default := none
 
@@ -57,9 +56,8 @@ inductive Hom : WidePullbackShape J → WidePullbackShape J → Type w
   | term : ∀ j : J, Hom (some j) none
   deriving DecidableEq
 
--- This is relying on an automatically generated instance name, generated in a `deriving` handler.
--- See https://github.com/leanprover/lean4/issues/2343
-attribute [nolint unusedArguments] instDecidableEqHom
+-- See https://github.com/leanprover/lean4/issues/10295
+attribute [nolint unusedArguments] instDecidableEqHom.decEq
 
 instance struct : CategoryStruct (WidePullbackShape J) where
   Hom := Hom
@@ -159,9 +157,8 @@ inductive Hom : WidePushoutShape J → WidePushoutShape J → Type w
   | init : ∀ j : J, Hom none (some j)
   deriving DecidableEq
 
--- This is relying on an automatically generated instance name, generated in a `deriving` handler.
--- See https://github.com/leanprover/lean4/issues/2343
-attribute [nolint unusedArguments] instDecidableEqHom
+-- See https://github.com/leanprover/lean4/issues/10295
+attribute [nolint unusedArguments] instDecidableEqHom.decEq
 
 instance struct : CategoryStruct (WidePushoutShape J) where
   Hom := Hom
@@ -387,9 +384,7 @@ theorem hom_eq_desc (g : widePushout _ _ arrows ⟶ X) :
       desc (head arrows ≫ g) (fun j => ι arrows j ≫ g) fun j => by
         rw [← Category.assoc]
         simp := by
-  apply eq_desc_of_comp_eq
-  · simp
-  · rfl -- Porting note: another missing rfl
+  cat_disch
 
 @[ext 1100]
 theorem hom_ext (g1 g2 : widePushout _ _ arrows ⟶ X) : (∀ j : J,

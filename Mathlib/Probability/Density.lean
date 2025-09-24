@@ -16,7 +16,7 @@ as the Radon–Nikodym derivative of the law of `X`. In particular, a measurable
 is said to the probability density function of a random variable `X` if for all measurable
 sets `S`, `ℙ(X ∈ S) = ∫ x in S, f x dx`. Probability density functions are one way of describing
 the distribution of a random variable, and are useful for calculating probabilities and
-finding moments (although the latter is better achieved with moment generating functions).
+finding moments (although the latter is better achieved with moment-generating functions).
 
 This file also defines the continuous uniform distribution and proves some properties about
 random variables with this distribution.

@@ -4,11 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 import Mathlib.RingTheory.MvPowerSeries.Basic
+import Mathlib.RingTheory.MvPowerSeries.Order
 import Mathlib.RingTheory.MvPowerSeries.Trunc
 import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+import Mathlib.Topology.Instances.ENat
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.Algebra.TopologicallyNilpotent
 
@@ -96,7 +98,8 @@ scoped instance : TopologicalSpace (MvPowerSeries σ R) :=
 theorem instTopologicalSpace_mono (σ : Type*) {R : Type*} {t u : TopologicalSpace R} (htu : t ≤ u) :
     @instTopologicalSpace σ R t ≤ @instTopologicalSpace σ R u := by
   simp only [instTopologicalSpace, Pi.topologicalSpace, le_iInf_iff]
-  exact fun i ↦ le_trans (iInf_le _ i) (induced_mono htu)
+  grw [htu]
+  exact iInf_le _
 
 /-- `MvPowerSeries` on a `T0Space` form a `T0Space` -/
 @[scoped instance]
@@ -110,19 +113,19 @@ variable (R) in
 /-- `MvPowerSeries.coeff` is continuous. -/
 @[fun_prop]
 theorem continuous_coeff [Semiring R] (d : σ →₀ ℕ) :
-    Continuous (MvPowerSeries.coeff R d) :=
+    Continuous (MvPowerSeries.coeff (R := R) d) :=
   continuous_pi_iff.mp continuous_id d
 
 variable (R) in
 /-- `MvPowerSeries.constantCoeff` is continuous -/
-theorem continuous_constantCoeff [Semiring R] : Continuous (constantCoeff σ R) :=
-  continuous_coeff R 0
+theorem continuous_constantCoeff [Semiring R] : Continuous (constantCoeff (σ := σ) (R := R)) :=
+  continuous_coeff (R := R) 0
 
 /-- A family of power series converges iff it converges coefficientwise -/
 theorem tendsto_iff_coeff_tendsto [Semiring R] {ι : Type*}
     (f : ι → MvPowerSeries σ R) (u : Filter ι) (g : MvPowerSeries σ R) :
     Tendsto f u (nhds g) ↔
-    ∀ d : σ →₀ ℕ, Tendsto (fun i => coeff R d (f i)) u (nhds (coeff R d g)) := by
+    ∀ d : σ →₀ ℕ, Tendsto (fun i => coeff d (f i)) u (nhds (coeff d g)) := by
   rw [nhds_pi, tendsto_pi]
   exact forall_congr' (fun d => Iff.rfl)
 
@@ -176,7 +179,7 @@ variable {σ R}
 
 @[fun_prop]
 theorem continuous_C [Semiring R] :
-    Continuous (C σ R) := by
+    Continuous (C (σ := σ) (R := R)) := by
   classical
   simp only [continuous_iff_continuousAt]
   refine fun r ↦ (tendsto_iff_coeff_tendsto _ _ _).mpr fun d ↦ ?_
@@ -204,7 +207,7 @@ theorem variables_tendsto_zero [Semiring R] :
       Eventually.of_forall fun x h' ↦ (not_exists.mp h x h').elim
 
 theorem isTopologicallyNilpotent_of_constantCoeff_isNilpotent [CommSemiring R]
-    {f} (hf : IsNilpotent (constantCoeff σ R f)) :
+    {f : MvPowerSeries σ R} (hf : IsNilpotent (constantCoeff f)) :
     IsTopologicallyNilpotent f := by
   classical
   obtain ⟨m, hm⟩ := hf
@@ -213,7 +216,7 @@ theorem isTopologicallyNilpotent_of_constantCoeff_isNilpotent [CommSemiring R]
     coeff_eq_zero_of_constantCoeff_nilpotent hm hn
 
 theorem isTopologicallyNilpotent_of_constantCoeff_zero [CommSemiring R]
-    {f} (hf : constantCoeff σ R f = 0) :
+    {f : MvPowerSeries σ R} (hf : constantCoeff f = 0) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) := by
   apply isTopologicallyNilpotent_of_constantCoeff_isNilpotent
   rw [hf]
@@ -225,8 +228,8 @@ iff its constant coefficient is nilpotent.
 
 See also `MvPowerSeries.LinearTopology.isTopologicallyNilpotent_iff_constantCoeff`. -/
 theorem isTopologicallyNilpotent_iff_constantCoeff_isNilpotent
-    [CommRing R] [DiscreteTopology R] (f) :
-    IsTopologicallyNilpotent f ↔ IsNilpotent (constantCoeff σ R f) := by
+    [CommRing R] [DiscreteTopology R] (f : MvPowerSeries σ R) :
+    IsTopologicallyNilpotent f ↔ IsNilpotent (constantCoeff f) := by
   refine ⟨fun H ↦ ?_, isTopologicallyNilpotent_of_constantCoeff_isNilpotent⟩
   replace H := H.map (continuous_constantCoeff R)
   simp_rw [IsTopologicallyNilpotent, nhds_discrete, tendsto_pure] at H
@@ -236,7 +239,7 @@ variable [Semiring R]
 
 /-- A multivariate power series is the sum (in the sense of summable families) of its monomials -/
 theorem hasSum_of_monomials_self (f : MvPowerSeries σ R) :
-    HasSum (fun d : σ →₀ ℕ => monomial R d (coeff R d f)) f := by
+    HasSum (fun d : σ →₀ ℕ => monomial d (coeff d f)) f := by
   rw [Pi.hasSum]
   intro d
   convert hasSum_single d ?_ using 1
@@ -245,8 +248,50 @@ theorem hasSum_of_monomials_self (f : MvPowerSeries σ R) :
 
 /-- If the coefficient space is T2, then the multivariate power series is `tsum` of its monomials -/
 theorem as_tsum [T2Space R] (f : MvPowerSeries σ R) :
-    f = tsum fun d : σ →₀ ℕ => monomial R d (coeff R d f) :=
+    f = tsum fun d : σ →₀ ℕ => monomial d (coeff d f) :=
   (HasSum.tsum_eq (hasSum_of_monomials_self _)).symm
+
+section Sum
+variable {ι : Type*} {f : ι → MvPowerSeries σ R}
+
+theorem hasSum_iff_hasSum_coeff {g : MvPowerSeries σ R} :
+    HasSum f g ↔ ∀ d : σ →₀ ℕ, HasSum (fun i ↦ coeff d (f i)) (coeff d g) := by
+  simp_rw [HasSum, ← map_sum]
+  apply tendsto_iff_coeff_tendsto
+
+theorem summable_iff_summable_coeff :
+    Summable f ↔ ∀ d : σ →₀ ℕ, Summable (fun i ↦ coeff d (f i)) := by
+  simp_rw [Summable, hasSum_iff_hasSum_coeff]
+  constructor
+  · rintro ⟨a, h⟩ n
+    exact ⟨coeff n a, h n⟩
+  · intro h
+    choose a h using h
+    exact ⟨a, by simpa using h⟩
+
+variable [LinearOrder ι] [LocallyFiniteOrderBot ι]
+
+/-- A family of `MvPowerSeries` is summable if their weighted order tends to infinity. -/
+theorem summable_of_tendsto_weightedOrder_atTop_nhds_top {w : σ → ℕ}
+    (h : Tendsto (fun i ↦ weightedOrder w (f i)) atTop (𝓝 ⊤)) : Summable f := by
+  rcases isEmpty_or_nonempty ι with hempty | hempty
+  · apply summable_empty
+  rw [summable_iff_summable_coeff]
+  simp_rw [ENat.tendsto_nhds_top_iff_natCast_lt, Filter.eventually_atTop] at h
+  intro d
+  obtain ⟨i, hi⟩ := h (Finsupp.weight w d)
+  refine summable_of_finite_support <| (Set.finite_Iic i).subset ?_
+  simp_rw [Function.support_subset_iff, Set.mem_Iic]
+  intro k hk
+  contrapose! hk
+  exact coeff_eq_zero_of_lt_weightedOrder w <| hi k hk.le
+
+/-- A family of `MvPowerSeries` is summable if their order tends to infinity. -/
+theorem summable_of_tendsto_order_atTop_nhds_top
+    (h : Tendsto (fun i ↦ (f i).order) atTop (𝓝 ⊤)) : Summable f :=
+  summable_of_tendsto_weightedOrder_atTop_nhds_top h
+
+end Sum
 
 end Topology
 
@@ -261,7 +306,7 @@ scoped instance : UniformSpace (MvPowerSeries σ R) :=
 variable (R) in
 /-- Coefficients of a multivariate power series are uniformly continuous -/
 theorem uniformContinuous_coeff [Semiring R] (d : σ →₀ ℕ) :
-    UniformContinuous fun f : MvPowerSeries σ R => coeff R d f :=
+    UniformContinuous fun f : MvPowerSeries σ R => coeff d f :=
   uniformContinuous_pi.mp uniformContinuous_id d
 
 /-- Completeness of the uniform structure on `MvPowerSeries` -/

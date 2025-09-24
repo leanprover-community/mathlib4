@@ -167,7 +167,7 @@ theorem iff_of_iSup_eq_top {ι} (U : ι → Y.Opens) (hU : iSup U = ⊤) :
   ⟨fun H _ ↦ restrict H _, of_iSup_eq_top U hU⟩
 
 lemma of_openCover (H : ∀ i, P (𝒰.pullbackHom f i)) : P f := by
-  apply of_iSup_eq_top (fun i ↦ (𝒰.map i).opensRange) 𝒰.iSup_opensRange
+  apply of_iSup_eq_top (fun i ↦ (𝒰.f i).opensRange) 𝒰.iSup_opensRange
   exact fun i ↦ (P.arrow_mk_iso_iff (morphismRestrictOpensRange f _)).mpr (H i)
 
 theorem iff_of_openCover (𝒰 : Y.OpenCover) :
@@ -211,7 +211,7 @@ class IsLocalAtSource (P : MorphismProperty Scheme) : Prop where
   /-- `P` holds for `f ∣_ U` for an open cover `U` of `Y` if and only if `P` holds for `f`. -/
   iff_of_openCover' :
     ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{u} X),
-      P f ↔ ∀ i, P (𝒰.map i ≫ f)
+      P f ↔ ∀ i, P (𝒰.f i ≫ f)
 
 namespace IsLocalAtSource
 
@@ -231,12 +231,12 @@ protected lemma mk' {P : MorphismProperty Scheme} [P.RespectsIso]
     IsLocalAtSource P := by
   refine ⟨inferInstance, fun {X Y} f 𝒰 ↦
     ⟨fun H i ↦ ?_, fun H ↦ of_sSup_eq_top f _ 𝒰.iSup_opensRange fun i ↦ ?_⟩⟩
-  · rw [← IsOpenImmersion.isoOfRangeEq_hom_fac (𝒰.map i) (Scheme.Opens.ι _)
-      (congr_arg Opens.carrier (𝒰.map i).opensRange.opensRange_ι.symm), Category.assoc,
+  · rw [← IsOpenImmersion.isoOfRangeEq_hom_fac (𝒰.f i) (Scheme.Opens.ι _)
+      (congr_arg Opens.carrier (𝒰.f i).opensRange.opensRange_ι.symm), Category.assoc,
       P.cancel_left_of_respectsIso]
     exact restrict _ _ H
-  · rw [← IsOpenImmersion.isoOfRangeEq_inv_fac (𝒰.map i) (Scheme.Opens.ι _)
-      (congr_arg Opens.carrier (𝒰.map i).opensRange.opensRange_ι.symm), Category.assoc,
+  · rw [← IsOpenImmersion.isoOfRangeEq_inv_fac (𝒰.f i) (Scheme.Opens.ι _)
+      (congr_arg Opens.carrier (𝒰.f i).opensRange.opensRange_ι.symm), Category.assoc,
       P.cancel_left_of_respectsIso]
     exact H _
 
@@ -272,15 +272,15 @@ theorem iff_of_iSup_eq_top {ι} (U : ι → X.Opens) (hU : iSup U = ⊤) :
     P f ↔ ∀ i, P ((U i).ι ≫ f) :=
   ⟨fun H _ ↦ comp H _, of_iSup_eq_top U hU⟩
 
-lemma of_openCover (H : ∀ i, P (𝒰.map i ≫ f)) : P f := by
-  refine of_iSup_eq_top (fun i ↦ (𝒰.map i).opensRange) 𝒰.iSup_opensRange fun i ↦ ?_
-  rw [← IsOpenImmersion.isoOfRangeEq_inv_fac (𝒰.map i) (Scheme.Opens.ι _)
-    (congr_arg Opens.carrier (𝒰.map i).opensRange.opensRange_ι.symm), Category.assoc,
+lemma of_openCover (H : ∀ i, P (𝒰.f i ≫ f)) : P f := by
+  refine of_iSup_eq_top (fun i ↦ (𝒰.f i).opensRange) 𝒰.iSup_opensRange fun i ↦ ?_
+  rw [← IsOpenImmersion.isoOfRangeEq_inv_fac (𝒰.f i) (Scheme.Opens.ι _)
+    (congr_arg Opens.carrier (𝒰.f i).opensRange.opensRange_ι.symm), Category.assoc,
     P.cancel_left_of_respectsIso]
   exact H i
 
 theorem iff_of_openCover :
-    P f ↔ ∀ i, P (𝒰.map i ≫ f) :=
+    P f ↔ ∀ i, P (𝒰.f i ≫ f) :=
   ⟨fun H _ ↦ comp H _, of_openCover _⟩
 
 variable (f) in
@@ -430,7 +430,7 @@ def IsStableUnderBaseChange (P : AffineTargetMorphismProperty) : Prop :=
 lemma IsStableUnderBaseChange.mk (P : AffineTargetMorphismProperty) [P.toProperty.RespectsIso]
     (H : ∀ ⦃X Y S : Scheme⦄ [IsAffine S] [IsAffine X] (f : X ⟶ S) (g : Y ⟶ S),
       P g → P (pullback.fst f g)) : P.IsStableUnderBaseChange := by
-  intros Z X Y S _ _ f g f' g' h hg
+  intro Z X Y S _ _ f g f' g' h hg
   rw [← P.cancel_left_of_respectsIso h.isoPullback.inv, h.isoPullback_inv_fst]
   exact H f g hg
 
@@ -553,14 +553,14 @@ theorem iff_of_iSup_eq_top
   ⟨fun H _ ↦ restrict H _, fun H ↦ HasAffineProperty.of_iSup_eq_top U hU H⟩
 
 theorem of_openCover
-    (𝒰 : Y.OpenCover) [∀ i, IsAffine (𝒰.obj i)] (h𝒰 : ∀ i, Q (𝒰.pullbackHom f i)) :
+    (𝒰 : Y.OpenCover) [∀ i, IsAffine (𝒰.X i)] (h𝒰 : ∀ i, Q (𝒰.pullbackHom f i)) :
     P f :=
   letI := isLocal_affineProperty P
   of_iSup_eq_top
-    (fun i ↦ ⟨_, isAffineOpen_opensRange (𝒰.map i)⟩) 𝒰.iSup_opensRange
+    (fun i ↦ ⟨_, isAffineOpen_opensRange (𝒰.f i)⟩) 𝒰.iSup_opensRange
     (fun i ↦ (Q.arrow_mk_iso_iff (morphismRestrictOpensRange f _)).mpr (h𝒰 i))
 
-theorem iff_of_openCover (𝒰 : Y.OpenCover) [∀ i, IsAffine (𝒰.obj i)] :
+theorem iff_of_openCover (𝒰 : Y.OpenCover) [∀ i, IsAffine (𝒰.X i)] :
     P f ↔ ∀ i, Q (𝒰.pullbackHom f i) := by
   letI := isLocal_affineProperty P
   rw [iff_of_iSup_eq_top (P := P)
@@ -570,7 +570,7 @@ theorem iff_of_openCover (𝒰 : Y.OpenCover) [∀ i, IsAffine (𝒰.obj i)] :
 
 theorem iff_of_isAffine [IsAffine Y] : P f ↔ Q f := by
   letI := isLocal_affineProperty P
-  haveI : ∀ i, IsAffine (Scheme.Cover.obj
+  haveI : ∀ i, IsAffine (Scheme.Cover.X
       (Scheme.coverOfIsIso (P := @IsOpenImmersion) (𝟙 Y)) i) := fun i => by
     dsimp; infer_instance
   rw [iff_of_openCover (P := P) (Scheme.coverOfIsIso.{0} (𝟙 Y))]
@@ -592,7 +592,7 @@ instance (priority := 900) : IsLocalAtTarget P := by
     rintro ⟨i, j⟩
     have : P (𝒰.pullbackHom f i) := by
       refine (P.arrow_mk_iso_iff
-        (morphismRestrictEq _ ?_ ≪≫ morphismRestrictOpensRange f (𝒰.map i))).mp (H i)
+        (morphismRestrictEq _ ?_ ≪≫ morphismRestrictOpensRange f (𝒰.f i))).mp (H i)
       exact (Scheme.Opens.opensRange_ι _).symm
     rw [← Q.cancel_left_of_respectsIso (𝒰.pullbackCoverAffineRefinementObjIso f _).inv,
       𝒰.pullbackCoverAffineRefinementObjIso_inv_pullbackHom]
@@ -610,7 +610,7 @@ private theorem pullback_fst_of_right (hP' : Q.IsStableUnderBaseChange)
   letI := isLocal_affineProperty P
   rw [iff_of_openCover (P := P) X.affineCover]
   intro i
-  let e := pullbackSymmetry _ _ ≪≫ pullbackRightPullbackFstIso f g (X.affineCover.map i)
+  let e := pullbackSymmetry _ _ ≪≫ pullbackRightPullbackFstIso f g (X.affineCover.f i)
   have : e.hom ≫ pullback.fst _ _ = X.affineCover.pullbackHom (pullback.fst _ _) i := by
     simp [e, Scheme.Cover.pullbackHom]
   rw [← this, Q.cancel_left_of_respectsIso]
@@ -623,11 +623,11 @@ theorem isStableUnderBaseChange (hP' : Q.IsStableUnderBaseChange) :
     (fun X Y S f g _ H => by
       rw [IsLocalAtTarget.iff_of_openCover (P := P) (S.affineCover.pullbackCover f)]
       intro i
-      let e : pullback (pullback.fst f g) ((S.affineCover.pullbackCover f).map i) ≅
+      let e : pullback (pullback.fst f g) ((S.affineCover.pullbackCover f).f i) ≅
           _ := by
         refine pullbackSymmetry _ _ ≪≫ pullbackRightPullbackFstIso f g _ ≪≫ ?_ ≪≫
-          (pullbackRightPullbackFstIso (S.affineCover.map i) g
-            (pullback.snd f (S.affineCover.map i))).symm
+          (pullbackRightPullbackFstIso (S.affineCover.f i) g
+            (pullback.snd f (S.affineCover.f i))).symm
         exact asIso
           (pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) (by simpa using pullback.condition) (by simp))
       have : e.hom ≫ pullback.fst _ _ =
@@ -641,7 +641,7 @@ theorem isStableUnderBaseChange (hP' : Q.IsStableUnderBaseChange) :
 
 lemma isLocalAtSource
     (H : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) [IsAffine Y] (𝒰 : Scheme.OpenCover.{u} X),
-        Q f ↔ ∀ i, Q (𝒰.map i ≫ f)) : IsLocalAtSource P where
+        Q f ↔ ∀ i, Q (𝒰.f i ≫ f)) : IsLocalAtSource P where
   iff_of_openCover' {X Y} f 𝒰 := by
     simp_rw [IsLocalAtTarget.iff_of_iSup_eq_top _ (iSup_affineOpens_eq_top Y)]
     rw [forall_comm]

@@ -88,7 +88,7 @@ lemma ScottContinuousOn.prodMk (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
       exact (hp _ hb).2
 
 /-- A function between preorders is said to be Scott continuous if it preserves `IsLUB` on directed
-sets. It can be shown that a function is Scott continuous if and only if it is continuous wrt the
+sets. It can be shown that a function is Scott continuous if and only if it is continuous w.r.t. the
 Scott topology.
 -/
 def ScottContinuous (f : α → β) : Prop :=

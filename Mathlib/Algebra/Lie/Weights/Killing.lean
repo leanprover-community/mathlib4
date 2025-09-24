@@ -473,7 +473,7 @@ lemma isCompl_ker_weight_span_coroot (α : Weight K H L) :
       using isCompl_top_bot
   else
     rw [← coe_corootSpace_eq_span_singleton]
-    apply Module.Dual.isCompl_ker_of_disjoint_of_ne_bot (by aesop)
+    apply Module.Dual.isCompl_ker_of_disjoint_of_ne_bot (by simp_all)
       (disjoint_ker_weight_corootSpace α)
     replace hα : corootSpace α ≠ ⊥ := by simpa using hα
     rwa [ne_eq, ← LieSubmodule.toSubmodule_inj] at hα
@@ -521,7 +521,7 @@ lemma traceForm_eq_zero_of_mem_ker_of_mem_span_coroot {α : Weight K H L} {x y :
   else
     have hβ : β.IsNonZero := by
       contrapose! hα
-      simp only [not_not, ← coroot_eq_zero_iff] at hα ⊢
+      simp only [← coroot_eq_zero_iff] at hα ⊢
       rwa [hyp]
     have : α.ker = β.ker := by
       rw [← orthogonal_span_coroot_eq_ker α, hyp, orthogonal_span_coroot_eq_ker]
@@ -590,7 +590,7 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
     have h₀ : finrank K (rootSpace H α) ≠ 0 := by
       convert_to finrank K (rootSpace H α).toSubmodule ≠ 0
       simpa using α.genWeightSpace_ne_bot
-    omega
+    cutsat
   intro contra
   obtain ⟨h, e, f, ht, heα, hfα⟩ := exists_isSl2Triple_of_weight_isNonZero hα
   let F : rootSpace H α →ₗ[K] K := killingForm K L f ∘ₗ (rootSpace H α).subtype
