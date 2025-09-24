@@ -78,7 +78,8 @@ instance [Countable β] : IsCountablyGenerated (unconditional : SummationFilter 
 variable [CommMonoid α] [TopologicalSpace α]
 
 /-- `HasProd f a` means that the (potentially infinite) product of the `f b` for `b : β` converges
-to `a`.
+to `a` along a SummationFilter `L`, which by default is the `unconditional` one giving absolute
+convergence..
 
 The `atTop` filter on `Finset β` is the limit of all finite sets towards the entire type. So we take
 the product over bigger and bigger sets. This product operation is invariant under reordering.
@@ -90,7 +91,8 @@ These are defined in an identical way to infinite sums (`HasSum`). For example, 
 the function `ℕ → ℝ` sending `n` to `1 / 2` has a product of `0`, rather than saying that it does
 not converge as some authors would. -/
 @[to_additive /-- `HasSum f a` means that the (potentially infinite) sum of the `f b` for `b : β`
-converges to `a`.
+converges to `a` along a SummationFilter `L`, which by default is the `unconditional` one giving
+absolute convergence.
 
 The `atTop` filter on `Finset β` is the limit of all finite sets towards the entire type. So we sum
 up bigger and bigger sets. This sum operation is invariant under reordering. In particular,
