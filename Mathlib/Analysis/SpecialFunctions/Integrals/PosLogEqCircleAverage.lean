@@ -12,8 +12,8 @@ import Mathlib.MeasureTheory.Integral.CircleAverage
 /-!
 # Representation of `log⁺` as a Circle Average
 
-If `a` is any complex number, the circle average of `log ‖· - a‖` over the unit circle equals the
-positive part of the logarithm, `circleAverage (log ‖· - a‖) 0 1 = log⁺ ‖a‖`.
+If `a` is any complex number, `circleAverage_log_norm_sub_const_eq_posLog` represents of `log⁺` as
+the circle average of `log ‖· - a‖` over the unit circle.
 -/
 
 open Filter Interval intervalIntegral MeasureTheory Metric Real
