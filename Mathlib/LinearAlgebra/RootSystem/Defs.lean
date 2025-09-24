@@ -687,6 +687,14 @@ lemma reflectionPerm_eq_iff_smul_coroot :
 @[deprecated (since := "2025-05-28")]
 alias reflection_perm_eq_iff_smul_coroot := reflectionPerm_eq_iff_smul_coroot
 
+lemma pairing_eq_zero_iff_reflectionPerm_eq [NeZero (2 : R)] [NoZeroSMulDivisors R N] :
+    P.pairing i j = 0 ↔ P.reflectionPerm i j = j := by
+  simp [reflectionPerm_eq_iff_smul_coroot, P.ne_zero' i]
+
+lemma pairing_eq_zero_iff_reflectionPerm_eq' [NeZero (2 : R)] [NoZeroSMulDivisors R M] :
+    P.pairing i j = 0 ↔ P.reflectionPerm j i = i := by
+  simp [reflectionPerm_eq_iff_smul_root, P.ne_zero j]
+
 lemma pairing_eq_zero_iff [NeZero (2 : R)] [NoZeroSMulDivisors R M] :
     P.pairing i j = 0 ↔ P.pairing j i = 0 := by
   suffices ∀ {i j : ι}, P.pairing i j = 0 → P.pairing j i = 0 from ⟨this, this⟩

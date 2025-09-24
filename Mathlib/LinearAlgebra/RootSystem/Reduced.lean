@@ -68,24 +68,32 @@ lemma IsReduced.linearIndependent_iff [Nontrivial R] [P.IsReduced] :
   · rw [h h']
     exact ⟨1, 1, by simp⟩
 
+lemma eq_one_or_neg_one_of_smul_mem_range
+    {S : Type*} [CommRing S] [Algebra S R] [Module S M] [IsScalarTower S R M]
+    [NeZero (2 : R)] [NoZeroSMulDivisors S M] [P.IsReduced]
+    {i : ι} {t : S} (ht : t • P.root i ∈ range P.root) :
+    t = 1 ∨ t = -1 := by
+  obtain ⟨j, hj⟩ := ht
+  have ht₀ : algebraMap S R t ≠ 0 := by
+    replace hj : P.root j = (algebraMap S R t) • P.root i := by simp [hj]
+    intro contra
+    simp [contra, P.ne_zero j] at hj
+  have : ¬ LinearIndependent R ![P.root i, P.root j] := by
+    simpa only [hj, LinearIndependent.pair_iff, not_forall] using
+      ⟨-algebraMap S R t, 1, by simp, by simp [ht₀]⟩
+  rcases IsReduced.eq_or_eq_neg i j this with this | this
+  · have aux : t • P.root i = (1 : S) • P.root i := by simpa [← hj] using this.symm
+    exact Or.inl <| smul_left_injective _ (P.ne_zero i) aux
+  · have aux : (-t) • P.root i = (1 : S) • P.root i := by simpa [← hj] using this.symm
+    exact Or.inr <| by simp [← smul_left_injective _ (P.ne_zero i) aux]
+
 lemma nsmul_notMem_range_root [CharZero R] [NoZeroSMulDivisors ℤ M] [P.IsReduced]
     {n : ℕ} [n.AtLeastTwo] {i : ι} :
     n • P.root i ∉ range P.root := by
-  have : ¬ LinearIndependent R ![n • P.root i, P.root i] := by
-    simpa only [LinearIndependent.pair_iff, not_forall] using
-      ⟨1, -(n : R), by simp [Nat.cast_smul_eq_nsmul], by simp⟩
-  rintro ⟨j, hj⟩
-  replace this : j = i ∨ P.root j = -P.root i := by
-    simpa only [← hj, IsReduced.linearIndependent_iff, not_and_or, not_not] using this
-  rcases this with rfl | this
-  · replace hj : (1 : ℤ) • P.root j = (n : ℤ) • P.root j := by simpa
-    rw [(smul_left_injective ℤ <| P.ne_zero j).eq_iff, eq_comm] at hj
-    have : 2 ≤ n := Nat.AtLeastTwo.prop
-    omega
-  · rw [← one_smul ℤ (P.root i), ← neg_smul, hj] at this
-    replace this : (n : ℤ) • P.root i = -1 • P.root i := by simpa
-    rw [(smul_left_injective ℤ <| P.ne_zero i).eq_iff] at this
-    omega
+  intro contra
+  have := P.eq_one_or_neg_one_of_smul_mem_range (S := ℤ) (i := i) (t := n) (by simpa)
+  have : 2 ≤ n := Nat.AtLeastTwo.prop
+  omega
 
 @[deprecated (since := "2025-07-06")] alias two_smul_notMem_range_root := nsmul_notMem_range_root
 @[deprecated (since := "2025-05-24")] alias two_smul_nmem_range_root := two_smul_notMem_range_root
