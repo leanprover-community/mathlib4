@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 import Lean.Elab.Command
 import Lean.Elab.Import
-
+import Mathlib.Tactic.Linter.Header
 /-!
 #  The "removeDeprecations" linter
 
