@@ -715,9 +715,6 @@ lemma IsLocallyFiniteMeasure.withDensity_ofReal {f : α → ℝ} (hf : Continuou
 
 section Conv
 
-<<<<<<< HEAD
-variable {G : Type*} [Group G] {mG : MeasurableSpace G} [MeasurableMul₂ G] [MeasurableInv G]
-=======
 variable {M : Type*} [Monoid M] [MeasurableSpace M]
 
 -- `mconv_smul_left` is in the `Convolution` file. This lemma is here because this is the file in
@@ -729,7 +726,6 @@ theorem Measure.mconv_smul_right (μ : Measure M) (ν : Measure M) [SFinite ν] 
   rw [Measure.prod_smul_right, Measure.map_smul]
 
 variable {G : Type*} [Group G] [MeasureSpace G] [MeasurableMul₂ G] [MeasurableInv G]
->>>>>>> master
   {μ : Measure G} [SFinite μ] [IsMulLeftInvariant μ]
 
 @[to_additive]
