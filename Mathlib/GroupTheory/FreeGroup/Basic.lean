@@ -333,7 +333,7 @@ theorem sizeof_of_step : ∀ {L₁ L₂ : List (α × Bool)},
     induction L1 with
     | nil =>
       dsimp
-      omega
+      cutsat
     | cons hd tl ih =>
       dsimp
       exact Nat.add_lt_add_left ih _

@@ -97,7 +97,7 @@ lemma one_lt_absNorm : 1 < absNorm v.asIdeal := by
   have : 0 < absNorm v.asIdeal := by
     rw [Nat.pos_iff_ne_zero, absNorm_ne_zero_iff]
     exact v.asIdeal.finiteQuotientOfFreeOfNeBot v.ne_bot
-  omega
+  cutsat
 
 /-- The norm of a maximal ideal as an element of `ℝ≥0` is `> 1` -/
 lemma one_lt_absNorm_nnreal : 1 < (absNorm v.asIdeal : ℝ≥0) := mod_cast one_lt_absNorm v
