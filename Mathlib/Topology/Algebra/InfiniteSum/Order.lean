@@ -162,8 +162,8 @@ protected theorem Multipliable.tprod_mono (hf : Multipliable f L) (hg : Multipli
 
 omit [IsOrderedMonoid α] in
 @[to_additive]
-protected theorem Multipliable.tprod_le_of_prod_le (hf : Multipliable f)
-    (h : ∀ s, ∏ i ∈ s, f i ≤ a₂) : ∏' i, f i ≤ a₂ :=
+protected theorem Multipliable.tprod_le_of_prod_le (hf : Multipliable f L)
+    (h : ∀ s, ∏ i ∈ s, f i ≤ a₂) : ∏'[L] i, f i ≤ a₂ :=
   hasProd_le_of_prod_le hf.hasProd h
 
 @[deprecated (since := "2025-04-12")] alias tsum_le_of_sum_le := Summable.tsum_le_of_sum_le
@@ -172,34 +172,34 @@ protected theorem Multipliable.tprod_le_of_prod_le (hf : Multipliable f)
 
 omit [IsOrderedMonoid α] in
 @[to_additive]
-theorem tprod_le_of_prod_le' (ha₂ : 1 ≤ a₂) (h : ∀ s, ∏ i ∈ s, f i ≤ a₂) : ∏' i, f i ≤ a₂ := by
-  by_cases hf : Multipliable f
+theorem tprod_le_of_prod_le' (ha₂ : 1 ≤ a₂) (h : ∀ s, ∏ i ∈ s, f i ≤ a₂) : ∏'[L] i, f i ≤ a₂ := by
+  by_cases hf : Multipliable f L
   · exact hf.tprod_le_of_prod_le h
   · rw [tprod_eq_one_of_not_multipliable hf]
     exact ha₂
 
 @[to_additive]
-theorem HasProd.one_le (h : ∀ i, 1 ≤ g i) (ha : HasProd g a) : 1 ≤ a :=
+theorem HasProd.one_le (h : ∀ i, 1 ≤ g i) (ha : HasProd g a L) : 1 ≤ a :=
   hasProd_le h hasProd_one ha
 
 @[to_additive]
-theorem HasProd.le_one (h : ∀ i, g i ≤ 1) (ha : HasProd g a) : a ≤ 1 :=
+theorem HasProd.le_one (h : ∀ i, g i ≤ 1) (ha : HasProd g a L) : a ≤ 1 :=
   hasProd_le h ha hasProd_one
 
 @[to_additive tsum_nonneg]
-theorem one_le_tprod (h : ∀ i, 1 ≤ g i) : 1 ≤ ∏' i, g i := by
-  by_cases hg : Multipliable g
+theorem one_le_tprod (h : ∀ i, 1 ≤ g i) : 1 ≤ ∏'[L] i, g i := by
+  by_cases hg : Multipliable g L
   · exact hg.hasProd.one_le h
   · rw [tprod_eq_one_of_not_multipliable hg]
 
 @[to_additive]
-theorem tprod_le_one (h : ∀ i, f i ≤ 1) : ∏' i, f i ≤ 1 := by
-  by_cases hf : Multipliable f
+theorem tprod_le_one (h : ∀ i, f i ≤ 1) : ∏'[L] i, f i ≤ 1 := by
+  by_cases hf : Multipliable f L
   · exact hf.hasProd.le_one h
   · rw [tprod_eq_one_of_not_multipliable hf]
 
 @[to_additive]
-theorem hasProd_one_iff_of_one_le (hf : ∀ i, 1 ≤ f i) : HasProd f 1 ↔ f = 1 := by
+theorem hasProd_one_iff_of_one_le (hf : ∀ i, 1 ≤ f i) : HasProd f 1 L ↔ f = 1 := by
   refine ⟨fun hf' ↦ ?_, ?_⟩
   · ext i
     exact (hf i).antisymm' (le_hasProd hf' _ fun j _ ↦ hf j)
@@ -215,7 +215,7 @@ variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
   [OrderClosedTopology α] {f g : ι → α} {a₁ a₂ : α} {i : ι}
 
 @[to_additive]
-theorem hasProd_lt (h : f ≤ g) (hi : f i < g i) (hf : HasProd f a₁) (hg : HasProd g a₂) :
+theorem hasProd_lt (h : f ≤ g) (hi : f i < g i) (hf : HasProd f a₁ L) (hg : HasProd g a₂ L) :
     a₁ < a₂ := by
   classical
   have : update f i 1 ≤ update g i 1 := update_le_update_iff.mpr ⟨rfl.le, fun i _ ↦ h i⟩
@@ -403,7 +403,7 @@ requires more assumptions. -/
 @[positivity tsum _]
 def evalTsum : PositivityExt where eval {u α} zα pα e := do
   match e with
-  | ~q(@tsum _ $ι $instCommMonoid $instTopSpace $f unconditional) =>
+  | ~q(@tsum _ $ι $instCommMonoid $instTopSpace $f $L) =>
     lambdaBoundedTelescope f 1 fun args (body : Q($α)) => do
       let #[(i : Q($ι))] := args | failure
       let rbody ← core zα pα body
@@ -414,7 +414,8 @@ def evalTsum : PositivityExt where eval {u α} zα pα e := do
       let pα' ← synthInstanceQ q(IsOrderedAddMonoid $α)
       let instOrderClosed ← synthInstanceQ q(OrderClosedTopology $α)
       assertInstancesCommute
-      return .nonnegative q(@tsum_nonneg $ι $α $mα' $oα' $pα' $instTopSpace $instOrderClosed $f $pr)
+      return .nonnegative
+        q(@tsum_nonneg $ι $α $L $mα' $oα' $pα' $instTopSpace $instOrderClosed $f $pr)
   | _ => throwError "not tsum"
 
 end Mathlib.Meta.Positivity

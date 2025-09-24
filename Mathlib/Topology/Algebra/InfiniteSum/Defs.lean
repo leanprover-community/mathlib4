@@ -59,8 +59,11 @@ section HasProd
 
 /-- A filter on the set of finsets of a type. (Used for defining summation methods.) -/
 structure SummationFilter (β) where
+  /-- The filter -/
   filter : Filter (Finset β)
+  /-- Proof that the filter is `≤ atTop` -/
   le_atTop : filter ≤ atTop
+  /-- Proof that the filter is `≠ ⊥` -/
   ne_bot : filter.NeBot
 
 attribute [instance] SummationFilter.ne_bot
@@ -131,9 +134,9 @@ noncomputable irreducible_def tprod (f : β → α) (L : SummationFilter β := u
 variable {L : SummationFilter β}
 
 @[inherit_doc tprod]
-notation3 "∏' " "[" L "]" (...)", "r:67:(scoped f => tprod f L) => r
+notation3 "∏'[" L "]" (...)", "r:67:(scoped f => tprod f L) => r
 @[inherit_doc tsum]
-notation3 "∑' " "[" L "]" (...)", "r:67:(scoped f => tsum f L) => r
+notation3 "∑'[" L "]" (...)", "r:67:(scoped f => tsum f L) => r
 
 -- see Note [operator precedence of big operators]
 @[inherit_doc tprod]
