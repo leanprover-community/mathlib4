@@ -379,21 +379,21 @@ theorem eqvGen_step_iff_join_red : EqvGen Red.Step L₁ L₂ ↔ Join Red L₁ L
 elements of the word cancel. -/
 @[to_additive /-- Predicate asserting the word `L` admits no reduction steps,
 i.e., no two neighboring elements of the word cancel. -/]
-def IsReduced (L : List (α × Bool)) : Prop := L.Chain' fun a b ↦ a.1 = b.1 → a.2 = b.2
+def IsReduced (L : List (α × Bool)) : Prop := L.IsChain fun a b ↦ a.1 = b.1 → a.2 = b.2
 
 section IsReduced
 
 open List
 
 @[to_additive (attr := simp)]
-theorem IsReduced.nil : IsReduced ([] : List (α × Bool)) := chain'_nil
+theorem IsReduced.nil : IsReduced ([] : List (α × Bool)) := isChain_nil
 
 @[to_additive (attr := simp)]
-theorem IsReduced.singleton {a : α × Bool} : IsReduced [a] := chain'_singleton a
+theorem IsReduced.singleton {a : α × Bool} : IsReduced [a] := isChain_singleton a
 
 @[to_additive (attr := simp)]
 theorem isReduced_cons_cons {a b : (α × Bool)} :
-    IsReduced (a :: b :: L) ↔ (a.1 = b.1 → a.2 = b.2) ∧ IsReduced (b :: L) := chain'_cons_cons
+    IsReduced (a :: b :: L) ↔ (a.1 = b.1 → a.2 = b.2) ∧ IsReduced (b :: L) := isChain_cons_cons
 
 @[to_additive]
 theorem IsReduced.not_step (h : IsReduced L₁) : ¬ Red.Step L₁ L₂ := fun step ↦ by
@@ -426,10 +426,10 @@ theorem IsReduced.red_iff_eq (h : IsReduced L₁) : Red L₁ L₂ ↔ L₂ = L�
 @[to_additive]
 theorem IsReduced.append_overlap {L₁ L₂ L₃ : List (α × Bool)} (h₁ : IsReduced (L₁ ++ L₂))
     (h₂ : IsReduced (L₂ ++ L₃)) (hn : L₂ ≠ []) : IsReduced (L₁ ++ L₂ ++ L₃) :=
-  Chain'.append_overlap h₁ h₂ hn
+  IsChain.append_overlap h₁ h₂ hn
 
 @[to_additive]
-theorem IsReduced.infix (h : IsReduced L₂) (h' : L₁ <:+: L₂) : IsReduced L₁ := Chain'.infix h h'
+theorem IsReduced.infix (h : IsReduced L₂) (h' : L₁ <:+: L₂) : IsReduced L₁ := IsChain.infix h h'
 
 end IsReduced
 end FreeGroup

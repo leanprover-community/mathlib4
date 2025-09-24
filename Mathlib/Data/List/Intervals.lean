@@ -114,12 +114,16 @@ theorem eq_cons {n m : ℕ} (h : n < m) : Ico n m = n :: Ico (n + 1) m := by
 theorem pred_singleton {m : ℕ} (h : 0 < m) : Ico (m - 1) m = [m - 1] := by
   simp [Ico, Nat.sub_sub_self (succ_le_of_lt h)]
 
-theorem chain'_succ (n m : ℕ) : Chain' (fun a b => b = succ a) (Ico n m) := by
+theorem isChain_succ (n m : ℕ) : IsChain (fun a b => b = succ a) (Ico n m) := by
   by_cases h : n < m
   · rw [eq_cons h]
-    exact chain_succ_range' _ _ 1
+    unfold List.Ico
+    exact isChain_range' _ (_ + 1) 1
   · rw [eq_nil_of_le (le_of_not_gt h)]
-    trivial
+    exact .nil
+
+@[deprecated (since := "2025-09-19")]
+alias chain'_succ := isChain_succ
 
 theorem notMem_top {n m : ℕ} : m ∉ Ico n m := by simp
 

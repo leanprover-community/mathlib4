@@ -21,20 +21,20 @@ open Mathlib.Meta.NormNum
 /-- A proof of the partial computation of `primeFactorsList`.
 Asserts that `l` is a sorted list of primes multiplying to `n` and lower bounded by a prime `p`. -/
 def FactorsHelper (n p : ℕ) (l : List ℕ) : Prop :=
-  p.Prime → l.Chain (· ≤ ·) p ∧ (∀ a ∈ l, Nat.Prime a) ∧ l.prod = n
+  p.Prime → (p :: l).IsChain (· ≤ ·) ∧ (∀ a ∈ l, Nat.Prime a) ∧ l.prod = n
 
 /-! The argument explicitness in this section is chosen to make only the numerals in the factors
 list appear in the proof term. -/
 
 theorem FactorsHelper.nil {a : ℕ} : FactorsHelper 1 a [] := fun _ =>
-  ⟨.nil, List.forall_mem_nil _, List.prod_nil⟩
+  ⟨.singleton _, List.forall_mem_nil _, List.prod_nil⟩
 
 theorem FactorsHelper.cons_of_le
     {n m : ℕ} (a : ℕ) {b : ℕ} {l : List ℕ} (h₁ : IsNat (b * m) n) (h₂ : a ≤ b)
     (h₃ : minFac b = b) (H : FactorsHelper m b l) : FactorsHelper n a (b :: l) := fun pa =>
   have pb : b.Prime := Nat.prime_def_minFac.2 ⟨le_trans pa.two_le h₂, h₃⟩
   let ⟨f₁, f₂, f₃⟩ := H pb
-  ⟨List.Chain.cons h₂ f₁,
+  ⟨List.IsChain.cons_cons h₂ f₁,
     fun _ h => (List.eq_or_mem_of_mem_cons h).elim (fun e => e.symm ▸ pb) (f₂ _),
     by rw [List.prod_cons, f₃, h₁.out, cast_id]⟩
 
@@ -58,7 +58,7 @@ theorem FactorsHelper.singleton_self (a : ℕ) : FactorsHelper a a [a] :=
 theorem FactorsHelper.primeFactorsList_eq {n : ℕ} {l : List ℕ} (H : FactorsHelper n 2 l) :
     Nat.primeFactorsList n = l :=
   let ⟨h₁, h₂, h₃⟩ := H Nat.prime_two
-  have := List.chain'_iff_pairwise.1 (@List.Chain'.tail _ _ (_ :: _) h₁)
+  have := List.isChain_iff_pairwise.1 (@List.IsChain.tail _ _ (_ :: _) h₁)
   (List.eq_of_perm_of_sorted
     (Nat.primeFactorsList_unique h₃ h₂) this (Nat.primeFactorsList_sorted _)).symm
 
