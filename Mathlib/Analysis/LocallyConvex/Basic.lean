@@ -304,10 +304,6 @@ theorem Absorbent.subset_range_iff_surjective [RingHomSurjective σ] {f : ℱ} {
     (hs_abs : Absorbent 𝕜 s) : s ⊆ LinearMap.range f ↔ (⇑f).Surjective :=
   ⟨fun hs_sub ↦ range_eq_univ.mp (hs_abs.mono hs_sub).module_univ, fun h a _ ↦ h a⟩
 
-theorem Absorbent.subset_range_iff_surjective' [RingHomSurjective σ] {f : ℱ} {s : Set E}
-    (hs_abs : Absorbent 𝕜 s) : s ⊆ Set.range f ↔ (⇑f).Surjective :=
-  LinearMap.coe_range (f := f) ▸ hs_abs.subset_range_iff_surjective
-
 end NontriviallyNormedField
 
 section Real
