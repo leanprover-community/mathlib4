@@ -239,6 +239,15 @@ lemma IsHermitian.posSemidef_iff_eigenvalues_nonneg [DecidableEq n] {A : Matrix 
 @[deprecated (since := "2025-08-17")] alias ⟨_, IsHermitian.posSemidef_of_eigenvalues_nonneg⟩ :=
   IsHermitian.posSemidef_iff_eigenvalues_nonneg
 
+theorem PosSemidef.trace_eq_zero_iff {A : Matrix n n 𝕜} (hA : A.PosSemidef) :
+    A.trace = 0 ↔ A = 0 := by
+  refine ⟨fun h => ?_, fun h => h ▸ trace_zero n 𝕜⟩
+  classical
+  simp_rw [hA.isHermitian.trace_eq_sum_eigenvalues, ← RCLike.ofReal_sum,
+    RCLike.ofReal_eq_zero, Finset.sum_eq_zero_iff_of_nonneg (s := Finset.univ)
+      (by simpa using hA.eigenvalues_nonneg), Finset.mem_univ, true_imp_iff] at h
+  exact funext_iff.eq ▸ hA.isHermitian.eigenvalues_eq_zero_iff.mp <| h
+
 /-!
 ## Positive definite matrices
 -/

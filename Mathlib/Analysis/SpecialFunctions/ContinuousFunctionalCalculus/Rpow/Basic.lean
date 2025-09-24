@@ -277,6 +277,10 @@ lemma sqrt_eq_iff (a b : A) (ha : 0 ≤ a := by cfc_tac) (hb : 0 ≤ b := by cfc
 lemma sqrt_eq_zero_iff (a : A) (ha : 0 ≤ a := by cfc_tac) : sqrt a = 0 ↔ a = 0 := by
   rw [sqrt_eq_iff a _, mul_zero, eq_comm]
 
+lemma mul_self_eq_mul_self_iff (a b : A) (ha : 0 ≤ a := by cfc_tac) (hb : 0 ≤ b := by cfc_tac) :
+    a * a = b * b ↔ a = b :=
+  ⟨fun h => sqrt_mul_self a ▸ sqrt_unique h.symm, fun h => h ▸ rfl⟩
+
 /-- Note that the hypothesis `0 ≤ a` is necessary because the continuous functional calculi over
 `ℝ≥0` (for the left-hand side) and `ℝ` (for the right-hand side) use different predicates (i.e.,
 `(0 ≤ ·)` versus `IsSelfAdjoint`). Consequently, if `a` is selfadjoint but not nonnegative, then
@@ -595,6 +599,10 @@ lemma sqrt_sq (a : A) (ha : 0 ≤ a := by cfc_tac) : sqrt (a ^ 2) = a := by
 
 lemma sq_sqrt (a : A) (ha : 0 ≤ a := by cfc_tac) : (sqrt a) ^ 2 = a := by
   rw [pow_two, sqrt_mul_sqrt_self (A := A) a]
+
+lemma sq_eq_sq_iff (a b : A) (ha : 0 ≤ a := by cfc_tac) (hb : 0 ≤ b := by cfc_tac) :
+    a ^ 2 = b ^ 2 ↔ a = b := by
+  simp_rw [sq, mul_self_eq_mul_self_iff a b]
 
 @[simp]
 lemma sqrt_algebraMap {r : ℝ≥0} : sqrt (algebraMap ℝ≥0 A r) = algebraMap ℝ≥0 A (NNReal.sqrt r) := by

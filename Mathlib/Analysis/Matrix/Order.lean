@@ -44,13 +44,9 @@ attribute [aesop 20% apply (rule_sets := [CStarAlgebra])] PosSemidef.nonneg
 /-- The partial order on matrices given by `A ≤ B := (B - A).PosSemidef`. -/
 abbrev instPartialOrder : PartialOrder (Matrix n n 𝕜) where
   le_antisymm A B h₁ h₂ := by
-    have foo := neg_nonneg.mp <| trace_neg (A - B) ▸ neg_sub A B ▸ h₁.trace_nonneg
-    have : (A - B).trace = 0 := le_antisymm foo h₂.trace_nonneg
-    classical
-    simp_rw [h₂.isHermitian.trace_eq_sum_eigenvalues, ← RCLike.ofReal_sum,
-      RCLike.ofReal_eq_zero, Finset.sum_eq_zero_iff_of_nonneg (s := Finset.univ)
-        (by simpa using h₂.eigenvalues_nonneg), Finset.mem_univ, true_imp_iff] at this
-    exact sub_eq_zero.mp <| funext_iff.eq ▸ h₂.isHermitian.eigenvalues_eq_zero_iff.mp <| this
+    rw [← sub_eq_zero, ← h₂.trace_eq_zero_iff]
+    have := neg_nonneg.mp <| trace_neg (A - B) ▸ neg_sub A B ▸ h₁.trace_nonneg
+    exact le_antisymm this h₂.trace_nonneg
 
 scoped[MatrixOrder] attribute [instance] Matrix.instPartialOrder
 
@@ -110,11 +106,11 @@ lemma sq_sqrt : (CFC.sqrt A) ^ 2 = A := CFC.sq_sqrt A
 @[deprecated CFC.sqrt_mul_sqrt_self (since := "2025-09-22")]
 lemma sqrt_mul_self : CFC.sqrt A * CFC.sqrt A = A := CFC.sqrt_mul_sqrt_self A
 
-lemma eq_of_sq_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B ^ 2) : A = B :=
-  CFC.sqrt_sq A ▸ CFC.sqrt_unique (sq B ▸ hAB.symm)
-
+@[deprecated CFC.sq_eq_sq_iff (since := "2025-09-24")]
 lemma sq_eq_sq_iff {B : Matrix n n 𝕜} (hB : PosSemidef B) : A ^ 2 = B ^ 2 ↔ A = B :=
-  ⟨eq_of_sq_eq_sq hA hB, fun h => h ▸ rfl⟩
+  CFC.sq_eq_sq_iff A B
+
+@[deprecated (since := "2025-09-24")] alias ⟨eq_of_sq_eq_sq, _⟩ := CFC.sq_eq_sq_iff
 
 @[deprecated CFC.sqrt_sq (since := "2025-09-22")]
 lemma sqrt_sq : CFC.sqrt (A ^ 2) = A := CFC.sqrt_sq A
