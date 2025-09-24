@@ -76,19 +76,6 @@ lemma test [CommRing R] {p : R[X]} (hp : p.natDegree = 2) : (p.coeff 2) ≠ 0 :=
   rw [hp]
   norm_cast
 
-lemma eq_quadratic_of_degree_le_two [CommRing R] {p : R[X]} (hp : degree p ≤ 2) :
-    p = C (p.coeff 2) * X ^ 2 + C (p.coeff 1) * X + C (p.coeff 0) :=
-  ext fun n₁ =>
-    Nat.casesOn n₁ (by simp) fun n₂ =>
-      Nat.casesOn n₂ (by simp [coeff_C]) fun n₃ =>
-        Nat.casesOn n₃ (by simp) fun m => by
-          have : degree p < m.succ.succ.succ := lt_of_le_of_lt hp (compare_gt_iff_gt.mp rfl)
-          simp [coeff_eq_zero_of_degree_lt this]
-
-lemma eq_quadratic_of_natDegree_le_two [CommRing R] {p : R[X]} (hp : natDegree p ≤ 2) :
-    p = C (p.coeff 2) * X ^ 2 + C (p.coeff 1) * X + C (p.coeff 0) :=
-  eq_quadratic_of_degree_le_two  <| degree_le_of_natDegree_le hp
-
 /-- **Vieta's formula** for quadratics as an iff. -/
 lemma roots_quadratic_eq_pair_iff_of_ne_zero [CommRing R] [IsDomain R] {x1 x2 : R} {p : R[X]}
     (hp : p.natDegree = 2) :
