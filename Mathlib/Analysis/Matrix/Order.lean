@@ -230,11 +230,8 @@ noncomputable def PosDef.matrixNormedAddCommGroup {M : Matrix n n 𝕜} (hM : M.
     conj_inner_symm _ _ := by
       simp only [mul_assoc, starRingEnd_apply, ← trace_conjTranspose, conjTranspose_mul,
         conjTranspose_conjTranspose, hM.isHermitian.eq]
-    re_inner_nonneg x := by
-      classical
-      obtain ⟨y, rfl⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp hM.posSemidef.nonneg
-      simpa [mul_assoc] using RCLike.nonneg_iff.mp
-        (posSemidef_conjTranspose_mul_self (y * xᴴ)).trace_nonneg |>.1
+    re_inner_nonneg x := RCLike.nonneg_iff.mp
+      (hM.posSemidef.mul_mul_conjTranspose_same x).trace_nonneg |>.1
     add_left := by simp [mul_add]
     smul_left := by simp
     definite x hx := by

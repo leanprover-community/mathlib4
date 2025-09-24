@@ -484,20 +484,16 @@ variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
 noncomputable abbrev NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
     NormedAddCommGroup (n → 𝕜) :=
   @InnerProductSpace.Core.toNormedAddCommGroup _ _ _ _ _
-    { inner := fun x y => (M *ᵥ y) ⬝ᵥ star x
-      conj_inner_symm := fun x y => by
+    { inner x y := (M *ᵥ y) ⬝ᵥ star x
+      conj_inner_symm x y := by
         rw [dotProduct_comm, star_dotProduct, starRingEnd_apply, star_star,
           star_mulVec, dotProduct_comm (M *ᵥ y), dotProduct_mulVec, hM.isHermitian.eq]
-      re_inner_nonneg := fun x => by
-        by_cases h : x = 0
-        · simp [h]
-        · exact (dotProduct_comm _ (M *ᵥ x) ▸ hM.re_dotProduct_pos h).le
-      definite := fun x (hx : _ ⬝ᵥ _ = 0) => by
+      re_inner_nonneg x := dotProduct_comm _ (star x) ▸ hM.posSemidef.re_dotProduct_nonneg x
+      definite x (hx : _ ⬝ᵥ _ = 0) := by
         by_contra! h
         simpa [hx, lt_irrefl, dotProduct_comm] using hM.re_dotProduct_pos h
       add_left := by simp only [star_add, dotProduct_add, forall_const]
-      smul_left := fun x y r => by
-        rw [← smul_eq_mul, ← dotProduct_smul, starRingEnd_apply, ← star_smul] }
+      smul_left _ _ _ := by rw [← smul_eq_mul, ← dotProduct_smul, starRingEnd_apply, ← star_smul] }
 
 /-- A positive definite matrix `M` induces an inner product `⟪x, y⟫ = xᴴMy`. -/
 def InnerProductSpace.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
