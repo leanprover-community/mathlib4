@@ -124,7 +124,7 @@ theorem Measure.isFiniteMeasure_of_isFiniteMeasure_map {μ : Measure α} {f : α
 
 theorem Measure.isFiniteMeasure_iff_isFiniteMeasure_map {μ : Measure α} {f : α → β}
     (hf : AEMeasurable f μ) : IsFiniteMeasure μ ↔ IsFiniteMeasure (μ.map f) :=
-  ⟨fun _ ↦ isFiniteMeasure_map μ f, fun _ ↦ isFiniteMeasure_of_map_isFiniteMeasure hf⟩
+  ⟨fun _ ↦ isFiniteMeasure_map μ f, fun _ ↦ isFiniteMeasure_of_isFiniteMeasure_map hf⟩
 
 instance IsFiniteMeasure_comap (f : β → α) [IsFiniteMeasure μ] : IsFiniteMeasure (μ.comap f) where
   measure_univ_lt_top := by

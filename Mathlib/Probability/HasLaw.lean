@@ -53,6 +53,14 @@ lemma HasLaw.measurePreserving (h₁ : HasLaw X μ P) (h₂ : Measurable X) :
   measurable := h₂
   map_eq := h₁.map_eq
 
+theorem HasLaw.isFiniteMeasure_iff_isFiniteMeasure_law (hX : HasLaw X μ P) :
+    IsFiniteMeasure P ↔ IsFiniteMeasure μ := by
+  rw [← hX.map_eq, isFiniteMeasure_iff_isFiniteMeasure_map hX.aemeasurable]
+
+theorem HasLaw.isProbabilityMeasure_iff_isProbabilityMeasure_law (hX : HasLaw X μ P) :
+    IsProbabilityMeasure P ↔ IsProbabilityMeasure μ := by
+  rw [← hX.map_eq, isProbabilityMeasure_iff_isProbabilityMeasure_map hX.aemeasurable]
+
 @[fun_prop]
 lemma HasLaw.comp {𝒴 : Type*} {m𝒴 : MeasurableSpace 𝒴} {ν : Measure 𝒴} {Y : 𝓧 → 𝒴}
     (hY : HasLaw Y ν μ) (hX : HasLaw X μ P) : HasLaw (Y ∘ X) ν P where
@@ -121,13 +129,5 @@ lemma HasLaw.variance_eq {μ : Measure ℝ} {X : Ω → ℝ} (hX : HasLaw X μ P
 lemma HasPDF.hasLaw [h : HasPDF X P μ] : HasLaw X (μ.withDensity (pdf X P μ)) P where
   aemeasurable := h.aemeasurable
   map_eq := map_eq_withDensity_pdf X P μ
-
-theorem HasLaw.isFiniteMeasure_iff_law_isFiniteMeasure (hX : HasLaw X μ P) :
-    IsFiniteMeasure P ↔ IsFiniteMeasure μ := by
-  rw [← hX.map_eq, isFiniteMeasure_iff_map_isFiniteMeasure hX.aemeasurable]
-
-theorem HasLaw.isProbabilityMeasure_iff_law_isProbabilityMeasure (hX : HasLaw X μ P) :
-    IsProbabilityMeasure P ↔ IsProbabilityMeasure μ := by
-  rw [← hX.map_eq, isProbabilityMeasure_iff_map_isProbabilityMeasure hX.aemeasurable]
 
 end ProbabilityTheory
