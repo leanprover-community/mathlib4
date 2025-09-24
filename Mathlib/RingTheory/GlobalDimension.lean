@@ -3,16 +3,15 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
+import Mathlib.Algebra.Category.Grp.Zero
 import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import Mathlib.Algebra.Module.LocalizedModule.Exact
 import Mathlib.CategoryTheory.Abelian.Projective.Dimension
-import Mathlib.Data.ENat.Lattice
 import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.RingTheory.LocalProperties.Projective
-import Mathlib.RingTheory.Ideal.Quotient.Operations
 /-!
 # The Global Dimension of a Ring
 
@@ -80,7 +79,7 @@ lemma projectiveDimension_eq_iSup_localizedModule_prime [Small.{v, u} R] [IsNoet
     (M.localizedModule p.1.primeCompl) ≤ n := by
     simp only [projectiveDimension_le_iff, iSup_le_iff]
     induction n generalizing M
-    · simp only [HasProjectiveDimensionLE, zero_add, ← hasProjectiveDimensionLT_one_iff]
+    · simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one]
       refine ⟨fun h p ↦ ?_, fun h ↦ ?_⟩
       · let _ : Small.{v, u} (Localization p.asIdeal.primeCompl) :=
           small_of_surjective Localization.mkHom_surjective
@@ -182,7 +181,7 @@ lemma projectiveDimension_eq_iSup_localizedModule_maximal [Small.{v, u} R] [IsNo
     (M.localizedModule p.1.primeCompl) ≤ n := by
     simp only [projectiveDimension_le_iff, iSup_le_iff]
     induction n generalizing M
-    · simp only [HasProjectiveDimensionLE, zero_add, ← hasProjectiveDimensionLT_one_iff]
+    · simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one]
       refine ⟨fun h p ↦ ?_, fun h ↦ ?_⟩
       · let _ : Small.{v, u} (Localization p.asIdeal.primeCompl) :=
           small_of_surjective Localization.mkHom_surjective
@@ -285,7 +284,7 @@ lemma projectiveDimension_le_projectiveDimension_of_isLocalizedModule [Small.{v,
     let _ : Small.{v, u} (Localization S) :=
       small_of_surjective Localization.mkHom_surjective
     induction n generalizing M
-    · simp only [HasProjectiveDimensionLE, zero_add, ← hasProjectiveDimensionLT_one_iff]
+    · simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one]
       rw [← IsProjective.iff_projective, ← IsProjective.iff_projective]
       intro _
       exact Module.projective_of_isLocalizedModule S (M.localizedModule_mkLinearMap S)
@@ -390,9 +389,8 @@ lemma injective_of_quotients_ext_one_subsingleton [Small.{v} R] (M : ModuleCat.{
     exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mpr exac
     mono_f := (ModuleCat.mono_iff_injective _).mpr inj
     epi_g := (ModuleCat.epi_iff_surjective _).mpr surj }
-  have : IsZero (AddCommGrp.of (Ext (ModuleCat.of R (Shrink.{v, u} (R ⧸ I))) M 1)) := by
-    let _ := h I
-    exact AddCommGrp.isZero_of_subsingleton _
+  have : IsZero (AddCommGrp.of (Ext (ModuleCat.of R (Shrink.{v, u} (R ⧸ I))) M 1)) :=
+    @AddCommGrp.isZero_of_subsingleton _ (h I)
   have exac := Ext.contravariant_sequence_exact₁' S_exact M 0 1 rfl
   have surj : Function.Surjective ((Ext.mk₀ S.f).precomp M (add_zero 0)) :=
     (AddCommGrp.epi_iff_surjective _).mp (exac.epi_f (this.eq_zero_of_tgt _))
