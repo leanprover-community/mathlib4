@@ -122,7 +122,7 @@ theorem Measure.isFiniteMeasure_of_isFiniteMeasure_map {μ : Measure α} {f : α
     rw [← Set.preimage_univ (f := f), ← map_apply_of_aemeasurable hf .univ]
     exact IsFiniteMeasure.measure_univ_lt_top
 
-theorem Measure.isFiniteMeasure_iff_map_isFiniteMeasure {μ : Measure α} {f : α → β}
+theorem Measure.isFiniteMeasure_iff_isFiniteMeasure_map {μ : Measure α} {f : α → β}
     (hf : AEMeasurable f μ) : IsFiniteMeasure μ ↔ IsFiniteMeasure (μ.map f) :=
   ⟨fun _ ↦ isFiniteMeasure_map μ f, fun _ ↦ isFiniteMeasure_of_map_isFiniteMeasure hf⟩
 
