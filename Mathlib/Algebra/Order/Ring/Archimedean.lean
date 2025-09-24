@@ -172,9 +172,7 @@ theorem add_right_cancel_of_ne_top {x y z : ArchimedeanClass R} (hx : x ≠ ⊤)
   simp_rw [← add_comm x] at h
   exact add_left_cancel_of_ne_top hx h
 
-variable [Ring S] [IsStrictOrderedRing S]
-
-theorem mk_le_mk_iff_denselyOrdered [DenselyOrdered R] [Archimedean R] {x y : S}
+theorem mk_le_mk_iff_denselyOrdered [Ring S] [IsStrictOrderedRing S] [DenselyOrdered R] [Archimedean R] {x y : S}
     (f : R →+* S) (hf : StrictMono f) : mk x ≤ mk y ↔ ∃ q : R, 0 < f q ∧ f q * |y| ≤ |x| := by
   have H {q} : 0 < f q ↔ 0 < q := by simpa using hf.lt_iff_lt (a := 0)
   constructor
