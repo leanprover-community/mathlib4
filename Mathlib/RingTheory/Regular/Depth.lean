@@ -10,7 +10,6 @@ import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
 import Mathlib.RingTheory.Ideal.AssociatedPrime.Localization
 import Mathlib.RingTheory.Regular.Category
 import Mathlib.RingTheory.Spectrum.Prime.Topology
-import Mathlib.Tactic.ENatToNat
 import Mathlib.RingTheory.Support
 /-!
 
@@ -345,6 +344,36 @@ lemma CategoryTheory.Abelian.extFunctor_post_apply_zero_preserve_momoMorphism
 
 end
 
+/-!
+
+# The Definition of Depth
+
+In this section, we give the definition of depth of a module over a local ring. We also extablished
+some basic facts about it using the Rees theorem proven above.
+In this section, we set `R` be a noetherian commutative ring, all modules refer to `R`-module.
+
+# Main definition and results
+
+* `moduleDepth` : The depth between two `R`-modules defined as the minimal nontrivial `Ext`
+  between them, equal to `⊤ : ℕ∞` if no such index.
+
+* `Ideal.depth` : The depth of a `R`-module `M` with respect to an ideal `I`,
+  defined as `moduleDepth (R⧸ I, M)`.
+
+* `IsLocalRing.depth` : For a local ring `R`, the depth of a `R`-module with respect to
+  the maximal ideal.
+
+* `moduleDepth_eq_depth_of_supp_eq` : For `I : Ideal R`, if support of a finitely generated module
+  `N` is equal to `PrimeSpectrum.zeroLocus I`, then for any finitely generated nontrivial module
+  `M` with `IM < M`, `moduleDepth N M = I.depth M`
+
+* `moduleDepth_eq_sSup_length_regular` : For `I : Ideal R`, nontrivial finitely generated module
+  `M` and N`, if support of `N` is equal to `PrimeSpectrum.zeroLocus I` and `IM < M`,
+  `moduleDepth N M` is equal to the supremum of length of `M`-regular sequence in `I`
+
+
+-/
+
 section depth
 
 omit [UnivLE.{v, w}]
@@ -352,7 +381,7 @@ omit [UnivLE.{v, w}]
 instance (I : Ideal R) [Small.{v, u} R] : Small.{v, u} (R ⧸ I) :=
   small_of_surjective Ideal.Quotient.mk_surjective
 
-/-- The depth between two `R`-modules defined as the minimal nontrivia `Ext` between them. -/
+/-- The depth between two `R`-modules defined as the minimal nontrivial `Ext` between them. -/
 noncomputable def moduleDepth (N M : ModuleCat.{v} R) : ℕ∞ :=
   sSup {n : ℕ∞ | ∀ i : ℕ, i < n → Subsingleton (Ext.{max u v} N M i)}
 
@@ -361,7 +390,7 @@ defined as `moduleDepth (R⧸ I, M)`. -/
 noncomputable def Ideal.depth (I : Ideal R) (M : ModuleCat.{v} R) : ℕ∞ :=
   moduleDepth (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M
 
-/-- The depth of a `R`-module with respect to the maximal ideal when `R` is local ring. -/
+/-- For a local ring `R`, the depth of a `R`-module with respect to the maximal ideal. -/
 noncomputable def IsLocalRing.depth [IsLocalRing R] (M : ModuleCat.{v} R) : ℕ∞ :=
   (IsLocalRing.maximalIdeal R).depth M
 
@@ -440,9 +469,9 @@ lemma moduleDepth_eq_depth_of_supp_eq [IsNoetherianRing R] (I : Ideal R)
   have (n : ℕ) : (∀ i < n, Subsingleton (Ext.{max u v} N M i)) ↔
     (∀ i < n, Subsingleton (Ext.{max u v} (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M i)) := by
     refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · apply ((lemma222 I n M ‹_› ‹_› smul_lt).out 1 2).mpr
+    · apply ((exist_isRegular_tfae I n M ‹_› ‹_› smul_lt).out 1 2).mpr
       use N
-    · have rees := ((lemma222 I n M ‹_› ‹_› smul_lt).out 0 1).mpr h
+    · have rees := ((exist_isRegular_tfae I n M ‹_› ‹_› smul_lt).out 0 1).mpr h
       apply rees N
       simp [Nfin, Nntr, hsupp]
   simp [Ideal.depth, moduleDepth_eq_sup_nat]
@@ -616,10 +645,10 @@ lemma moduleDepth_eq_sSup_length_regular [IsNoetherianRing R] (I : Ideal R)
       Module.support R N = PrimeSpectrum.zeroLocus I ∧
       ∀ i < n, Subsingleton (Ext.{max u v} N M i) := by
       use N
-    rcases ((lemma222 I n M ‹_› ‹_› smul_lt).out 2 3).mp this with ⟨rs, len, mem, reg⟩
+    rcases ((exist_isRegular_tfae I n M ‹_› ‹_› smul_lt).out 2 3).mp this with ⟨rs, len, mem, reg⟩
     use rs
   · simp only [← len, ENat.coe_lt_top, Nat.cast_lt, true_and]
-    have rees := ((lemma222 I rs.length M ‹_› ‹_› smul_lt).out 3 0).mp (by use rs)
+    have rees := ((exist_isRegular_tfae I rs.length M ‹_› ‹_› smul_lt).out 3 0).mp (by use rs)
     apply rees N
     simp [Nntr, Nfin, hsupp]
 
