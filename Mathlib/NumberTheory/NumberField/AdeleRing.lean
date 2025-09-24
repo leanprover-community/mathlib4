@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri, María Inés de Frutos-Fernández
 -/
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
-import Mathlib.NumberTheory.NumberField.Completion
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Completion
 import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
 
 /-!
