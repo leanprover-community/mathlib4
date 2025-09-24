@@ -273,8 +273,7 @@ lemma Algebra.algebraMap_intTrace (x : B) :
   apply Algebra.trace_eq_of_equiv_equiv (FractionRing.algEquiv A K).toRingEquiv
     (FractionRing.algEquiv B L).toRingEquiv
   ext
-  exact IsFractionRing.algebraMap_algHom_commute (FractionRing.algEquiv A K).toAlgHom
-    (FractionRing.algEquiv B L).toAlgHom _
+  exact IsFractionRing.algEquiv_commutes (FractionRing.algEquiv A K) (FractionRing.algEquiv B L) _
 
 lemma Algebra.algebraMap_intTrace_fractionRing (x : B) :
     algebraMap A (FractionRing A) (Algebra.intTrace A B x) =
@@ -400,8 +399,7 @@ lemma Algebra.algebraMap_intNorm (x : B) :
   apply Algebra.norm_eq_of_equiv_equiv (FractionRing.algEquiv A K).toRingEquiv
     (FractionRing.algEquiv B L).toRingEquiv
   ext
-  exact IsFractionRing.algebraMap_algHom_commute (FractionRing.algEquiv A K).toAlgHom
-    (FractionRing.algEquiv B L).toAlgHom _
+  exact IsFractionRing.algEquiv_commutes (FractionRing.algEquiv A K) (FractionRing.algEquiv B L) _
 
 @[simp]
 lemma Algebra.algebraMap_intNorm_fractionRing (x : B) :
