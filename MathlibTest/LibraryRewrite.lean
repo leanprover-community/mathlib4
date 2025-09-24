@@ -86,6 +86,8 @@ info: Pattern n + 1
   Std.PRange.Nat.succ_eq
 · (↑n + 1).toNat
   Int.toNat_natCast_add_one
+· (*...=n).size
+  Std.PRange.Nat.size_Ric
 
 Pattern n + m
 · 1 + n
