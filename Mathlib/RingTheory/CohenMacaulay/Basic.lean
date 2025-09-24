@@ -18,6 +18,8 @@ variable {R : Type u} [CommRing R]
 
 open RingTheory.Sequence IsLocalRing ModuleCat
 
+/-- A `R`-module `M` is Cohen Macaulay if it is zero or
+`Module.supportDim R M = IsLocalRing.depth M`. -/
 class ModuleCat.IsCohenMacaulay [IsLocalRing R] [Small.{v} R] (M : ModuleCat.{v} R) : Prop where
   depth_eq_dim : Subsingleton M ∨ Module.supportDim R M = IsLocalRing.depth M
 
@@ -46,8 +48,6 @@ lemma ModuleCat.IsCohenMacaulay_of_iso [IsLocalRing R] [Small.{v} R] {M M' : Mod
     rw [← IsLocalRing.depth_eq_of_iso e,
       ← Module.supportDim_eq_of_equiv e.toLinearEquiv, M.depth_eq_supportDim_of_cohenMacaulay]
   · simp [← e.toLinearEquiv.subsingleton_congr, not_nontrivial_iff_subsingleton.mp ntr]
-
---isCohenMacaulay universe invariant
 
 section IsLocalization
 
@@ -147,12 +147,14 @@ lemma quotient_regular_isCohenMacaulay_iff_isCohenMacaulay
 
 variable [p.IsPrime] {Rₚ : Type u'} [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p]
 
+/-- Turn a `R`-linear map into `algebraMap R A`-semilinear map if its target is an `A`-module. -/
 abbrev SemiLinearMapAlgebraMapOfLinearMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
     {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] [Module A N]
     [IsScalarTower R A N] (f : M →ₗ[R] N) : M →ₛₗ[algebraMap R A] N where
   __ := f
   map_smul' m r := by simp
 
+/-- Turn a `algebraMap R A`-semilinear map into a `R`-linear map. -/
 abbrev LinearMapOfSemiLinearMapAlgebraMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
     {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] [Module A N]
     [IsScalarTower R A N] (f : M →ₛₗ[algebraMap R A] N) : M →ₗ[R] N where
@@ -160,6 +162,8 @@ abbrev LinearMapOfSemiLinearMapAlgebraMap {R A : Type*} [CommRing R] [CommRing A
   map_smul' m r := by simp
 
 variable (Rₚ) in
+/-- Given `R`-algebra `Rₚ`, `R`-module `M` and `Rₚ`-module `Mₚ` and `f : M →ₗ[R] Mₚ`,
+The linear map `QuotSMulTop x M →ₗ[R] QuotSMulTop ((algebraMap R Rₚ) x) Mₚ` lifted from `f`. -/
 abbrev quotSMulTop_isLocalizedModule_map (x : R) (M : Type*) [AddCommGroup M] [Module R M]
     (Mₚ : Type*) [AddCommGroup Mₚ] [Module R Mₚ] [Module Rₚ Mₚ] [IsScalarTower R Rₚ Mₚ]
     (f : M →ₗ[R] Mₚ) :
@@ -381,6 +385,7 @@ lemma localize_at_prime_depth_eq_of_isCohenMacaulay [IsLocalRing R] [IsNoetheria
 
 variable (R)
 
+/-- A local ring is Cohen Macaulay if `ringKrullDim R = IsLocalRing.depth (ModuleCat.of R R)`. -/
 class IsCohenMacaulayLocalRing : Prop extends IsLocalRing R where
   depth_eq_dim : ringKrullDim R = IsLocalRing.depth (ModuleCat.of R R)
 
@@ -424,6 +429,8 @@ lemma associatedPrimes_self_eq_minimalPrimes [IsCohenMacaulayLocalRing R] [IsNoe
   have : Module.annihilator R R = ⊥ := Module.annihilator_eq_bot.mpr inferInstance
   simp [associated_prime_eq_minimalPrimes_isCohenMacaulay (ModuleCat.of R R), this, minimalPrimes]
 
+/-- A commutative ring is Cohen Macaulay if its localization at every prime
+`IsCohenMacaulayLocalRing`. -/
 class IsCohenMacaulayRing : Prop where
   CM_localize : ∀ p : Ideal R, ∀ (_ : p.IsPrime), IsCohenMacaulayLocalRing (Localization.AtPrime p)
 
