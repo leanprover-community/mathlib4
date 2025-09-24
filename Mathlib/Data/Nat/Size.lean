@@ -6,6 +6,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Nat.Bits
+import Mathlib.Data.Nat.Basic
 
 /-! Lemmas about `size`. -/
 
