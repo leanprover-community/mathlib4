@@ -249,3 +249,68 @@ theorem extendOfNorm_opNorm_le (h_inj : LinearMap.ker e = ⊥)
 end NormedField
 
 end LinearMap
+
+namespace LinearEquiv
+
+variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₁ : 𝕜₂ →+* 𝕜}
+  [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
+  [AddCommGroup E] [NormedAddCommGroup Eₗ] [AddCommGroup F] [NormedAddCommGroup Fₗ]
+  [Module 𝕜 E] [Module 𝕜 Eₗ] [IsBoundedSMul 𝕜 Eₗ] [Module 𝕜₂ F] [Module 𝕜₂ Fₗ] [IsBoundedSMul 𝕜₂ Fₗ]
+  [CompleteSpace Eₗ] [CompleteSpace Fₗ]
+
+variable (f : E ≃ₛₗ[σ₁₂] F) (e₁ : E →ₗ[𝕜] Eₗ) (e₂ : F →ₗ[𝕜₂] Fₗ)
+
+def extend (h_inj1 : LinearMap.ker e₁ = ⊥) (h_dense1 : DenseRange e₁)
+    (h_norm1 : ∃ C, ∀ x, ‖e₂ (f x)‖ ≤ C * ‖e₁ x‖) (h_inj2 : LinearMap.ker e₂ = ⊥)
+    (h_dense2 : DenseRange e₂) (h_norm2 : ∃ C, ∀ x, ‖e₁ (f.symm x)‖ ≤ C * ‖e₂ x‖) :
+    Eₗ ≃SL[σ₁₂] Fₗ where
+  __ := (e₂ ∘ₛₗ f.toLinearMap).extendOfNorm e₁
+  invFun := (e₁ ∘ₛₗ f.symm.toLinearMap).extendOfNorm e₂
+  left_inv := by
+    apply h_dense1.induction (P := fun x => ((e₁ ∘ₛₗ f.symm.toLinearMap).extendOfNorm e₂)
+      ((((e₂ ∘ₛₗ f.toLinearMap).extendOfNorm e₁)) x) = x)
+    · intro x ⟨y, hxy⟩
+      rw [← hxy, LinearMap.extendOfNorm_eq h_inj1 h_dense1 h_norm1, LinearMap.coe_comp, coe_coe,
+        Function.comp_apply, LinearMap.extendOfNorm_eq h_inj2 h_dense2 h_norm2, LinearMap.coe_comp,
+        coe_coe, Function.comp_apply, symm_apply_apply]
+    · refine isClosed_eq ?_ continuous_id
+      exact (ContinuousLinearMap.cont _).comp (ContinuousLinearMap.cont _)
+  right_inv := by
+    apply h_dense2.induction (P := fun x => ((e₂ ∘ₛₗ f.toLinearMap).extendOfNorm e₁)
+      ((((e₁ ∘ₛₗ f.symm.toLinearMap).extendOfNorm e₂)) x) = x)
+    · intro x ⟨y, hxy⟩
+      rw [← hxy, LinearMap.extendOfNorm_eq h_inj2 h_dense2 h_norm2, LinearMap.coe_comp, coe_coe,
+        Function.comp_apply, LinearMap.extendOfNorm_eq h_inj1 h_dense1 h_norm1, LinearMap.coe_comp,
+        coe_coe, Function.comp_apply, apply_symm_apply]
+    · refine isClosed_eq ?_ continuous_id
+      exact (ContinuousLinearMap.cont _).comp (ContinuousLinearMap.cont _)
+  continuous_invFun := ContinuousLinearMap.continuous _
+
+theorem extend_eq (h_inj1 : LinearMap.ker e₁ = ⊥) (h_dense1 : DenseRange e₁)
+    (h_norm1 : ∃ C, ∀ x, ‖e₂ (f x)‖ ≤ C * ‖e₁ x‖) (h_inj2 : LinearMap.ker e₂ = ⊥)
+    (h_dense2 : DenseRange e₂) (h_norm2 : ∃ C, ∀ x, ‖e₁ (f.symm x)‖ ≤ C * ‖e₂ x‖) (x : E) :
+    f.extend e₁ e₂ h_inj1 h_dense1 h_norm1 h_inj2 h_dense2 h_norm2 (e₁ x) = e₂ (f x) := by
+  apply LinearMap.extendOfNorm_eq h_inj1 h_dense1 h_norm1
+
+theorem extend_symm_eq (h_inj1 : LinearMap.ker e₁ = ⊥) (h_dense1 : DenseRange e₁)
+    (h_norm1 : ∃ C, ∀ x, ‖e₂ (f x)‖ ≤ C * ‖e₁ x‖) (h_inj2 : LinearMap.ker e₂ = ⊥)
+    (h_dense2 : DenseRange e₂) (h_norm2 : ∃ C, ∀ x, ‖e₁ (f.symm x)‖ ≤ C * ‖e₂ x‖) (x : F) :
+    (f.extend e₁ e₂ h_inj1 h_dense1 h_norm1 h_inj2 h_dense2 h_norm2).symm (e₂ x)
+    = e₁ (f.symm x) := by
+  apply LinearMap.extendOfNorm_eq h_inj2 h_dense2 h_norm2
+
+theorem extend_norm_le (C : ℝ) (h_inj1 : LinearMap.ker e₁ = ⊥) (h_dense1 : DenseRange e₁)
+    (h_norm1 : ∀ x, ‖e₂ (f x)‖ ≤ C * ‖e₁ x‖) (h_inj2 : LinearMap.ker e₂ = ⊥)
+    (h_dense2 : DenseRange e₂) (h_norm2 : ∃ C, ∀ x, ‖e₁ (f.symm x)‖ ≤ C * ‖e₂ x‖) (x : Eₗ) :
+    ‖(f.extend e₁ e₂ h_inj1 h_dense1 ⟨C, h_norm1⟩ h_inj2 h_dense2 h_norm2) x‖ ≤ C * ‖x‖ := by
+  apply LinearMap.extendOfNorm_norm_le h_inj1 h_dense1
+  convert h_norm1
+
+theorem extend_symm_norm_le (C : ℝ) (h_inj1 : LinearMap.ker e₁ = ⊥) (h_dense1 : DenseRange e₁)
+    (h_norm1 : ∃ C, ∀ x, ‖e₂ (f x)‖ ≤ C * ‖e₁ x‖) (h_inj2 : LinearMap.ker e₂ = ⊥)
+    (h_dense2 : DenseRange e₂) (h_norm2 : ∀ x, ‖e₁ (f.symm x)‖ ≤ C * ‖e₂ x‖) (x : Fₗ) :
+    ‖(f.extend e₁ e₂ h_inj1 h_dense1 h_norm1 h_inj2 h_dense2 ⟨C, h_norm2⟩).symm x‖ ≤ C * ‖x‖ := by
+  apply LinearMap.extendOfNorm_norm_le h_inj2 h_dense2
+  convert h_norm2
+
+end LinearEquiv
