@@ -377,7 +377,7 @@ theorem getVert_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) (i : ℕ) :
     (p.append q).getVert i = if i < p.length then p.getVert i else q.getVert (i - p.length) := by
   induction p generalizing i with
   | nil => simp
-  | cons h p ih => cases i <;> simp [getVert, ih, Nat.succ_lt_succ_iff]
+  | cons h p ih => cases i <;> simp [getVert, ih]
 
 theorem getVert_reverse {u v : V} (p : G.Walk u v) (i : ℕ) :
     p.reverse.getVert i = p.getVert (p.length - i) := by

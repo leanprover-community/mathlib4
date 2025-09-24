@@ -5,8 +5,10 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
 -/
 import Mathlib.Combinatorics.SimpleGraph.Init
 import Mathlib.Data.Finite.Prod
+import Mathlib.Data.Finite.Card
 import Mathlib.Data.Rel
 import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Sym.Card
 import Mathlib.Data.Sym.Sym2
 
 /-!
@@ -549,6 +551,10 @@ instance fintypeEdgeSetSdiff [DecidableEq V] [Fintype G₁.edgeSet] [Fintype G�
   rw [edgeSet_sdiff]
   exact Set.fintypeDiff _ _
 
+theorem card_top_edgeSet [DecidableEq V] [Fintype V] :
+    Fintype.card (⊤ : SimpleGraph V).edgeSet = (Fintype.card V).choose 2 := by
+  simp only [edgeSet_top, Set.coe_setOf, Sym2.card_subtype_not_diag]
+
 end EdgeSet
 
 section FromEdgeSet
@@ -628,6 +634,9 @@ instance [DecidableEq V] [Fintype s] : Fintype (fromEdgeSet s).edgeSet := by
   infer_instance
 
 end FromEdgeSet
+
+theorem disjoint_left {G H : SimpleGraph V} : Disjoint G H ↔ ∀ x y, G.Adj x y → ¬H.Adj x y := by
+  simp only [← disjoint_edgeSet, Set.disjoint_left, Sym2.forall, mem_edgeSet]
 
 /-! ### Incidence set -/
 
