@@ -530,6 +530,8 @@ namespace Extension
 
 variable {L} {v : InfinitePlace K} (w : v.Extension L)
 
+/-- If `w : v.Extension L` extends `v : InfinitePlace`, then `w.abs` is the absolute value
+in `AbsoluteValue L ℝ` associated to it. This is a shortcut to `w.1.1`. -/
 abbrev abs : AbsoluteValue L ℝ := w.1.1
 
 theorem comap_eq : w.1.comap (algebraMap K L) = v := w.2
