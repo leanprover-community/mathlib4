@@ -189,7 +189,7 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
         Nat.sub_zero, get_eq_getElem, getElem_cons_succ]
     · simp only [dropLast_cons₂, length_cons, length_dropLast, Nat.add_one_sub_one,
         Nat.add_lt_add_iff_right] at hk ⊢
-      omega
+      cutsat
     simpa using hk
 
 theorem prev_getLast_cons' (y : α) (hxy : x ∈ y :: l) (hx : x = y) :
@@ -283,7 +283,7 @@ theorem next_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
 
 theorem prev_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
     prev l l[i] (get_mem _ _) =
-      (l[(i + (l.length - 1)) % l.length]'(Nat.mod_lt _ (by omega))) :=
+      (l[(i + (l.length - 1)) % l.length]'(Nat.mod_lt _ (by cutsat))) :=
   match l with
   | [] => by simp at hi
   | x::l => by

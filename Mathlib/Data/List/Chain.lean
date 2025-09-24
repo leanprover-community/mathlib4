@@ -295,7 +295,6 @@ theorem isChain_iff_get {R} : ∀ {l : List α}, IsChain R l ↔
     ∀ (i : ℕ) (h : i + 1 < l.length), R (get l ⟨i, by omega⟩) (get l ⟨i + 1, h⟩) := by
   simp [isChain_iff_getElem]
 
-
 theorem exists_not_getElem_of_not_isChain (h : ¬List.IsChain R l) :
     ∃ n : ℕ, ∃ h : n + 1 < l.length, ¬R l[n] l[n + 1] := by simp_all [isChain_iff_getElem]
 
@@ -496,7 +495,7 @@ lemma IsChain.iterate_eq_of_apply_eq {α : Type*} {f : α → α} {l : List α}
   induction i with
   | zero => rfl
   | succ i h =>
-    rw [Function.iterate_succ', Function.comp_apply, h (by omega)]
+    rw [Function.iterate_succ', Function.comp_apply, h (by cutsat)]
     rw [List.isChain_iff_get] at hl
     apply hl
 
