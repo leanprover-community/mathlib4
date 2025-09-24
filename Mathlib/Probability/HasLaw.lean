@@ -17,7 +17,7 @@ operations on the codomain of `X`.
 See for instance `HasLaw.comp`, `IndepFun.hasLaw_mul` and `IndepFun.hasLaw_add`.
 -/
 
-open MeasureTheory
+open MeasureTheory Measure
 
 open scoped ENNReal
 
@@ -121,5 +121,13 @@ lemma HasLaw.variance_eq {μ : Measure ℝ} {X : Ω → ℝ} (hX : HasLaw X μ P
 lemma HasPDF.hasLaw [h : HasPDF X P μ] : HasLaw X (μ.withDensity (pdf X P μ)) P where
   aemeasurable := h.aemeasurable
   map_eq := map_eq_withDensity_pdf X P μ
+
+theorem HasLaw.isFiniteMeasure_iff_law_isFiniteMeasure (hX : HasLaw X μ P) :
+    IsFiniteMeasure P ↔ IsFiniteMeasure μ := by
+  rw [← hX.map_eq, isFiniteMeasure_iff_map_isFiniteMeasure hX.aemeasurable]
+
+theorem HasLaw.isProbabilityMeasure_iff_law_isProbabilityMeasure (hX : HasLaw X μ P) :
+    IsProbabilityMeasure P ↔ IsProbabilityMeasure μ := by
+  rw [← hX.map_eq, isProbabilityMeasure_iff_map_isProbabilityMeasure hX.aemeasurable]
 
 end ProbabilityTheory
