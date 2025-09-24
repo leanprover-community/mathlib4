@@ -53,12 +53,11 @@ def uliftYonedaIsoYoneda {C : Type u₁} [Category.{max w v₁} C] :
 
 /-- The co-Yoneda embedding, as a functor from `Cᵒᵖ` into co-presheaves on `C`.
 -/
-@[simps!]
 abbrev coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁ := yoneda.flip
 
 /-- Variant of the Coyoneda embedding which allows a raise in the universe level
 for the category of types. -/
-@[pp_with_univ, simps!]
+@[pp_with_univ]
 abbrev uliftCoyoneda : Cᵒᵖ ⥤ C ⥤ Type (max w v₁) := uliftYoneda.flip
 
 /-- If `C` is a category with `[Category.{max w v₁} C]`, this is the isomorphism
