@@ -11,6 +11,8 @@ import Lean.Elab.PreDefinition.Main
 /-!
 # Deriving handler for `Traversable` instances
 
+Note: this module was deprecated on 2025-09-11.
+
 This module gives deriving handlers for `Functor`, `LawfulFunctor`, `Traversable`, and
 `LawfulTraversable`. These deriving handlers automatically derive their dependencies, for
 example `deriving LawfulTraversable` all by itself gives all four.
@@ -493,10 +495,13 @@ def deriveLawfulTraversable (m : MVarId) : TermElabM Unit := do
     m.refl
 
 /-- The deriving handler for `LawfulTraversable`. -/
+@[deprecated "This has not been used in Mathlib for some time, and broke on nightly-2025-09-11. \
+  Without an active maintainer, it has been deprecated." (since := "2025-09-11")]
 def lawfulTraversableDeriveHandler : DerivingHandler :=
   higherOrderDeriveHandler ``LawfulTraversable deriveLawfulTraversable
     [traversableDeriveHandler, lawfulFunctorDeriveHandler] (fun n arg => mkAppOptM n #[arg, none])
 
+set_option linter.deprecated false in
 initialize registerDerivingHandler ``LawfulTraversable lawfulTraversableDeriveHandler
 
 end Mathlib.Deriving.Traversable
