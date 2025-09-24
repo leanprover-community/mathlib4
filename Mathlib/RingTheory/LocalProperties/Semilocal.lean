@@ -66,10 +66,7 @@ theorem Submodule.fg_of_isLocalized_maximal (N : Submodule R M)
     (H : ∀ (P : Ideal R) [P.IsMaximal], (Submodule.localized' (Rₚ P) P.primeCompl (f P) N).FG) :
     N.FG := by
   simp_rw [← Module.Finite.iff_fg] at ⊢ H
-  let fN : ∀ (P : Ideal R) [P.IsMaximal], ↥N →ₗ[R]
-    Submodule.localized' (Rₚ P) P.primeCompl (f P) N :=
-    fun P _ => N.toLocalized' (Rₚ P) P.primeCompl (f P)
-  exact Module.Finite.of_isLocalized_maximal  _ _ _ fN H
+  exact .of_isLocalized_maximal  _ _ _ (fun P ↦ N.toLocalized' (Rₚ P) P.primeCompl (f P)) H
 
 end isLocalized_maximal
 
