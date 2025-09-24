@@ -380,7 +380,8 @@ theorem isSubwalk_iff_support_isInfix {v w v' w' : V} {p₁ : G.Walk v w} {p₂ 
   · grind [support_append, support_append_eq_support_dropLast_append]
   · have : (s.length + p₁.length) ≤ p₂.length := by grind [_=_ length_support]
     have h₁ : p₂.getVert s.length = v := by
-      simp [p₂.getVert_eq_support_getElem (by cutsat : s.length ≤ p₂.length), ← h, List.getElem_zero]
+      simp [p₂.getVert_eq_support_getElem (by cutsat : s.length ≤ p₂.length), ← h,
+        List.getElem_zero]
     have h₂ : p₂.getVert (s.length + p₁.length) = w := by
       simp [p₂.getVert_eq_support_getElem (by omega), ← h,
         ← p₁.getVert_eq_support_getElem (Nat.le_refl _)]
