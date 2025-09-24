@@ -36,9 +36,7 @@ namespace ProbabilityTheory.Kernel
 theorem comp_eq_snd_compProd (η : Kernel β γ) [IsSFiniteKernel η] (κ : Kernel α β)
     [IsSFiniteKernel κ] : η ∘ₖ κ = snd (κ ⊗ₖ prodMkLeft α η) := by
   ext a s hs
-  rw [comp_apply' _ _ _ hs, snd_apply' _ _ hs, compProd_apply]
-  swap
-  · exact measurable_snd hs
+  rw [comp_apply' _ _ _ hs, snd_apply' _ _ hs, compProd_apply (measurable_snd hs)]
   simp [← Set.preimage_comp]
 
 @[simp] lemma snd_compProd_prodMkLeft
