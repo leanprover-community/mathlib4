@@ -795,8 +795,8 @@ theorem nodup_tail_support_reverse {u : V} {p : G.Walk u u} :
     p.reverse.support.tail.Nodup ↔ p.support.tail.Nodup := by
   rw [Walk.support_reverse]
   refine List.nodup_tail_reverse p.support ?h
-  rw [← getVert_eq_support_getElem? _ (by omega), List.getLast?_eq_getElem?,
-    ← getVert_eq_support_getElem? _ (by rw [Walk.length_support]; omega)]
+  rw [← getVert_eq_support_getElem? _ (by cutsat), List.getLast?_eq_getElem?,
+    ← getVert_eq_support_getElem? _ (by rw [Walk.length_support]; cutsat)]
   aesop
 
 theorem edges_injective {u v : V} : Function.Injective (Walk.edges : G.Walk u v → List (Sym2 V))
@@ -1472,7 +1472,8 @@ theorem isSubwalk_iff_support_isInfix {v w v' w' : V} {p₁ : G.Walk v w} {p₂ 
   · grind [support_append, support_append_eq_support_dropLast_append]
   · have : (s.length + p₁.length) ≤ p₂.length := by grind [_=_ length_support]
     have h₁ : p₂.getVert s.length = v := by
-      simp [p₂.getVert_eq_support_getElem (by omega : s.length ≤ p₂.length), ← h, List.getElem_zero]
+      simp [p₂.getVert_eq_support_getElem (by cutsat : s.length ≤ p₂.length), ← h,
+        List.getElem_zero]
     have h₂ : p₂.getVert (s.length + p₁.length) = w := by
       simp [p₂.getVert_eq_support_getElem (by omega), ← h,
         ← p₁.getVert_eq_support_getElem (Nat.le_refl _)]
@@ -1481,7 +1482,7 @@ theorem isSubwalk_iff_support_isInfix {v w v' w' : V} {p₁ : G.Walk v w} {p₂ 
     simp only [← h, support_append, support_copy, take_support_eq_support_take_succ,
       List.take_append, drop_support_eq_support_drop_min, List.tail_drop]
     rw [Nat.min_eq_left (by grind [length_support]), List.drop_append, List.drop_append,
-      List.drop_eq_nil_of_le (by omega), List.drop_eq_nil_of_le (by grind [length_support]),
+      List.drop_eq_nil_of_le (by cutsat), List.drop_eq_nil_of_le (by grind [length_support]),
       p₁.support_eq_cons]
     simp +arith
 

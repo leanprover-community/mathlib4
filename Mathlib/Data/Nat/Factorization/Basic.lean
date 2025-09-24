@@ -386,7 +386,7 @@ theorem Ico_pow_dvd_eq_Ico_of_lt {n p b : ℕ} (pp : p.Prime) (hn : n ≠ 0) (hb
   simp only [Finset.mem_filter, mem_Ico, and_congr_left_iff, and_congr_right_iff]
   refine fun h1 h2 ↦ ⟨fun h ↦ ?_, fun h ↦ lt_of_pow_dvd_right hn (Prime.one_lt pp) h1⟩
   rcases p with - | p
-  · rw [zero_pow (by omega), zero_dvd_iff] at h1
+  · rw [zero_pow (by cutsat), zero_dvd_iff] at h1
     exact (hn h1).elim
   · rw [← Nat.pow_lt_pow_iff_right (Prime.one_lt pp)]
     apply lt_of_le_of_lt (le_of_dvd (Nat.zero_lt_of_ne_zero hn) h1) hb
@@ -396,7 +396,7 @@ divides `n`. Note `m` is prime. This set is expressed by filtering `Ico 1 b` whe
 greater than `log m n`. -/
 theorem factorization_eq_card_pow_dvd_of_lt (hm : m.Prime) (hn : 0 < n) (hb : n < m ^ b) :
     n.factorization m = #{i ∈ Ico 1 b | m ^ i ∣ n} := by
-  rwa [factorization_eq_card_pow_dvd n hm, Ico_pow_dvd_eq_Ico_of_lt hm (by omega)]
+  rwa [factorization_eq_card_pow_dvd n hm, Ico_pow_dvd_eq_Ico_of_lt hm (by cutsat)]
 
 /-! ### Factorization and coprimes -/
 

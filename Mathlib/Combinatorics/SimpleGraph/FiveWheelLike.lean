@@ -402,7 +402,7 @@ lemma minDegree_le_of_cliqueFree_fiveWheelLikeFree_succ [Fintype α]
         have hap : #W - 1 + 2 * (k - 1) = #W - 3 + 2 * k := by omega
         rw [hap, ← add_mul, card_add_card_compl, mul_comm, two_mul, ← add_assoc]
         gcongr
-        omega
+        cutsat
 
 end IsFiveWheelLike
 
