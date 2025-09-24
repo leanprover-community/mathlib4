@@ -5,6 +5,8 @@ Authors: Arend Mellendijk
 -/
 import Mathlib.Tactic.Module
 
+set_option linter.all false
+
 open Lean hiding Module
 open Meta Elab Qq Mathlib.Tactic List Mathlib.Tactic.Module
 
@@ -35,6 +37,53 @@ section ExSum
 
 set_option linter.style.longLine false
 
+
+section lemmas
+
+open NormNum
+variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] {n d : ℕ}
+
+theorem add_overlap_nonzero {a₁ a₂ b₁ b₂ c₁ c₂ : R}
+    (h₁ : a₁ + b₁ = c₁) (h₂ : a₂ + b₂ = c₂) :
+    a₁ + a₂ + (b₁ + b₂) = c₁ + c₂ := by
+  rw [← h₁, ← h₂, add_assoc, add_assoc, add_left_comm a₂]
+
+theorem add_overlap_zero {a₁ a₂ b₁ b₂ c₂ : R}
+    (h₁ : IsNat (a₁ + b₁) 0) (h₂ : a₂ + b₂ = c₂) :
+    a₁ + a₂ + (b₁ + b₂) = c₂ := by
+  sorry
+
+theorem add_assoc_rev (a b c : R) : a + (b + c) = a + b + c := (add_assoc ..).symm
+theorem mul_assoc_rev (a b c : R) : a * (b * c) = a * b * c := (mul_assoc ..).symm
+theorem mul_neg {R} [Ring R] (a b : R) : a * -b = -(a * b) := by simp
+theorem add_neg {R} [Ring R] (a b : R) : a + -b = a - b := (sub_eq_add_neg ..).symm
+theorem nat_rawCast_0 : (Nat.rawCast 0 : R) = 0 := by simp
+theorem nat_rawCast_1 : (Nat.rawCast 1 : R) = 1 := by simp
+theorem nat_rawCast_2 [Nat.AtLeastTwo n] : (Nat.rawCast n : R) = OfNat.ofNat n := rfl
+theorem int_rawCast_neg {R} [Ring R] : (Int.rawCast (.negOfNat n) : R) = -Nat.rawCast n := by simp
+theorem nnrat_rawCast {R} [DivisionSemiring R] :
+    (NNRat.rawCast n d : R) = Nat.rawCast n / Nat.rawCast d := by simp
+theorem rat_rawCast_neg {R} [DivisionRing R] :
+    (Rat.rawCast (.negOfNat n) d : R) = Int.rawCast (.negOfNat n) / Nat.rawCast d := by simp
+
+theorem smul_add_left_zero {r s : R} {a b : A} (h : r + s = 0) :
+    IsNat (r • a + s • b) 0 := by
+  sorry
+
+theorem smul_add_smul_same {r s t : R} {a b : A} (ha : a = b) (ht : r + s = t) :
+    r • a + s • b = t • a := by
+  rw [ha, ← add_smul, ht]
+
+theorem smul_congr {r r' : R} {a a' : A} {ef : A} (hr : r = r') (ha : a = a') (hf : r' • a' = ef) :
+    r • a = ef := by
+  rw [hr, ha, hf]
+
+theorem eval_smul_eq {e : A} {r : R} {a : A} {ef : A}
+    (he : e = r • a) (hf : r • a = ef) :
+    e = ef := by
+  rw [he, hf]
+
+end lemmas
 
 open Ring in
 mutual
@@ -120,13 +169,12 @@ def evalAtom :
   let ve' : ExSum _ _ := ExSum.add
     (.ofExProd q($sAlg) _ <|
       (Ring.ExBase.atom i (e := a')).toProd (Ring.ExProd.mkNat Ring.sℕ 1).2) .zero
-  pure ⟨_, ve', q(sorry)
-
-  -- match r.proof? with
-  -- | none =>
-  --     have : $e =Q $a' := ⟨⟩
-  --     (q(atom_pf rfl))
-  -- | some (p : Q($e = $a')) => (q(atom_pf $p))
+  pure ⟨_, ve',
+  match r.proof? with
+  | none =>
+      -- have : $e =Q $a' := ⟨⟩
+      (q(sorry))
+  | some (p : Q($a = $e')) => (q(sorry))
 
   ⟩
 
@@ -164,10 +212,10 @@ def evalAddOverlap {a b : Q($A)} (va : ExSMul sAlg a) (vb : ExSMul sAlg b) :
     match vt with
     | .zero .. =>
       -- IO.println s!"I think {← ppExpr a} + {← ppExpr b} = 0"
-      return .zero q(sorry)
-    | _ =>
+      return .zero q(smul_add_left_zero $pt)
+    | vt =>
       -- IO.println s!"I think {← ppExpr a} + {← ppExpr b} ≠ 0"
-      return .nonzero ⟨_, .smul vt va, q(sorry)⟩
+      return .nonzero ⟨_, .smul vt va, q(smul_add_smul_same rfl $pt)⟩
 
 variable {sAlg a b} in
 partial def ExSMul.cmp :
@@ -213,10 +261,10 @@ partial def evalAdd {a b : Q($A)} (va : ExSum sAlg a) (vb : ExSum sAlg b) :
     match ← (evalAddOverlap sAlg va₁ vb₁).run with
     | some (.nonzero ⟨_, vc₁, pc₁⟩) =>
       let ⟨_, vc₂, pc₂⟩ ← evalAdd va₂ vb₂
-      return ⟨_, .add vc₁ vc₂, q(sorry)⟩
+      return ⟨_, .add vc₁ vc₂, q(add_overlap_nonzero $pc₁ $pc₂)⟩
     | some (.zero pc₁) =>
       let ⟨c₂, vc₂, pc₂⟩ ← evalAdd va₂ vb₂
-      return ⟨c₂, vc₂, q(sorry)⟩
+      return ⟨c₂, vc₂, q(add_overlap_zero $pc₁ $pc₂)⟩
     | none =>
       if let .lt := va₁.cmp vb₁ then
         have : $b =Q $b₁ + $_b₂ := ⟨⟩
@@ -322,6 +370,7 @@ def evalCast (c : Ring.Cache q($sR)) :
     let some rR := c.rα | none
     let ⟨r, vr⟩ := Ring.ExProd.mkNegNat sR rR lit.natLit!
     have : $r =Q Int.rawCast (Int.negOfNat $lit) := ⟨⟩
+    assumeInstancesCommute
     pure ⟨_, (ExSMul.smul vr.toSum Ring.ExProd.one).toExSum, q(sorry)⟩
   -- We don't handle rational expressions in A.
   | _ => none
@@ -362,15 +411,17 @@ partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(Comm
         throwError "HSmul not implemented"
       have r : Q($R) := r'
       have a : Q($A) := a'
-      let ⟨_, vr, pr⟩ ← Ring.eval q($sR) cacheR q($r)
-      let ⟨_, va, pa⟩ ← eval q($sAlg) cacheR cacheA q($a)
+      let ⟨r'', vr, pr⟩ ← Ring.eval q($sR) cacheR q($r)
+      let ⟨a'', va, pa⟩ ← eval q($sAlg) cacheR cacheA q($a)
       let ⟨ef, vf, pf⟩ ← evalSMul sAlg vr va
       have : v =QL u_2 := ⟨⟩
       have : $A =Q $A' := ⟨⟩
       have : u =QL u_1 := ⟨⟩
       have : $R =Q $R' := ⟨⟩
       have : $r =Q $r' := ⟨⟩
-      return ⟨ef, vf, q(sorry)⟩
+      have : $a =Q $a' := ⟨⟩
+      assumeInstancesCommute
+      return ⟨ef, vf, q(eval_smul_eq rfl (smul_congr $pr $pa $pf))⟩
     | _ => els
   | ``HAdd.hAdd, _, _ | ``Add.add, _, _ => match e with
     | ~q($a + $b) =>
@@ -426,21 +477,7 @@ def inferLevelQ (e : Expr) : MetaM (Σ u : Lean.Level, Q(Type u)) := do
   return ⟨v, e⟩
 
 section cleanup
-variable {R : Type*} [Semiring R] {n d : ℕ}
-
-theorem add_assoc_rev (a b c : R) : a + (b + c) = a + b + c := (add_assoc ..).symm
-theorem mul_assoc_rev (a b c : R) : a * (b * c) = a * b * c := (mul_assoc ..).symm
-theorem mul_neg {R} [Ring R] (a b : R) : a * -b = -(a * b) := by simp
-theorem add_neg {R} [Ring R] (a b : R) : a + -b = a - b := (sub_eq_add_neg ..).symm
-theorem nat_rawCast_0 : (Nat.rawCast 0 : R) = 0 := by simp
-theorem nat_rawCast_1 : (Nat.rawCast 1 : R) = 1 := by simp
-theorem nat_rawCast_2 [Nat.AtLeastTwo n] : (Nat.rawCast n : R) = OfNat.ofNat n := rfl
-theorem int_rawCast_neg {R} [Ring R] : (Int.rawCast (.negOfNat n) : R) = -Nat.rawCast n := by simp
-theorem nnrat_rawCast {R} [DivisionSemiring R] :
-    (NNRat.rawCast n d : R) = Nat.rawCast n / Nat.rawCast d := by simp
-theorem rat_rawCast_neg {R} [DivisionRing R] :
-    (Rat.rawCast (.negOfNat n) d : R) = Int.rawCast (.negOfNat n) / Nat.rawCast d := by simp
-
+variable {R : Type*} [Semiring R]
 end cleanup
 /-- A cleanup routine, which simplifies normalized expressions to a more human-friendly format. -/
 def cleanup (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
@@ -674,10 +711,46 @@ def equateScalars {a b : Q($A)} (va : ExSum q($sAlg) a) (vb : ExSum q($sAlg) b) 
         let pab ← mkFreshExprMVarQ q($r = $s)
         return ⟨q(sorry), pab.mvarId! :: ids⟩
 
+def matchScalarsAux (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) : MetaM (List MVarId) :=
+  do
+  let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
+    | throwError "algebra failed: not an equality"
+  let .sort u ← whnf (← inferType α) | unreachable!
+  let v ← try u.dec catch _ => throwError "not a type{indentExpr α}"
+  let ⟨u, R⟩ ←
+    match base with
+      | .some p => do pure p
+      | none => do
+        pure (← inferBase (← g.getType))
+  have A : Q(Type v) := α
+  let sA ← synthInstanceQ q(CommSemiring $A)
+  let sR ← synthInstanceQ q(CommSemiring $R)
+  let sAlg ← synthInstanceQ q(Algebra $R $A)
+  have e₁ : Q($A) := e₁; have e₂ : Q($A) := e₂
+  let ⟨eq, mids⟩ ← AtomM.run .instances <| algCore q($sAlg) e₁ e₂
+  g.assign eq
+  return mids
+where
+  /-- The core of `proveEq` takes expressions `e₁ e₂ : α` where `α` is a `CommSemiring`,
+  and returns a proof that they are equal (or fails). -/
+  algCore {u v : Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
+      {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (e₁ e₂ : Q($A)) :
+      AtomM (Q($e₁ = $e₂) × List MVarId) := do
+    let cr ← Ring.mkCache sR
+    let ca ← Ring.mkCache sA
+    profileitM Exception "algebra" (← getOptions) do
+      let ⟨a, va, pa⟩ ← eval sAlg cr ca e₁
+      let ⟨b, vb, pb⟩ ← eval sAlg cr ca e₂
+      let ⟨pb, mvars⟩ ← equateScalars sAlg va vb
+      /- TODO: extract lemma -/
+      return ⟨q(sorry), mvars⟩
 
-elab (name := matchScalarsAlg) "match_scalars_alg":tactic =>
+elab (name := matchScalarsAlgWith) "match_scalars_alg" " with " R:term :tactic => withMainContext do
+  let ⟨u, R⟩ ← inferLevelQ (← elabTerm R none)
+  Tactic.liftMetaTactic (matchScalarsAux <| .some ⟨u, R⟩)
 
-  sorry
+elab (name := matchScalarsAlg) "match_scalars_alg" :tactic =>
+  Tactic.liftMetaTactic (matchScalarsAux .none)
 
 
 example {x : ℚ} {y : ℤ} : y • x + (1:ℤ) • x = (1 + y) • x := by
@@ -720,7 +793,7 @@ example (x y : ℚ) : x + (y)*(x+y) = 0 := by
   sorry
 
 example (x y : ℚ) : x + (x)*(x + -y) = 0 := by
-  -- NOTE:
+  -- NOTE: it can only handle negation if the base ring can.
   algebra_nf with ℤ
   sorry
 
@@ -767,3 +840,20 @@ example {a b : ℤ} (x y : ℚ) : (a - b) • (x + y) = - b • x + a • (x + y
   -- ring does nothing
   ring_nf
   algebra
+
+
+example {a b : ℤ} (x y : ℚ) (ha : a = 2) : (a + b) • (x + y) = b • x + (2:ℤ) • (x + y) + b • y := by
+  -- ring does nothing
+  match_scalars_alg with ℤ
+  all_goals simp [ha]
+
+
+
+
+
+example (x y : ℚ) (a : ℤ) (h : 2 * a = 3) : (x + a • y)^2 = x^2 + 3 * x*y + a^2 • y^2 := by
+  grind
+
+
+
+-- #lint
