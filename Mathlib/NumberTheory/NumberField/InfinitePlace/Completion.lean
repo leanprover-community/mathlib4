@@ -92,45 +92,45 @@ instance locallyCompactSpace : LocallyCompactSpace (v.Completion) :=
   AbsoluteValue.Completion.locallyCompactSpace v.norm_embedding_eq
 
 /-- The embedding associated to an infinite place extended to an embedding `v.Completion →+* ℂ`. -/
-def extensionEmbedding : v.Completion →+* ℂ := extensionEmbedding_of_comp v.norm_embedding_eq
+def extensionEmbedding : v.Completion →+* ℂ := extensionEmbeddingOfComp v.norm_embedding_eq
 
 /-- The embedding `K →+* ℝ` associated to a real infinite place extended to `v.Completion →+* ℝ`. -/
 def extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion →+* ℝ :=
-  extensionEmbedding_of_comp <| v.norm_embedding_of_isReal hv
+  extensionEmbeddingOfComp <| v.norm_embedding_of_isReal hv
 
 @[simp]
 theorem extensionEmbedding_coe (x : K) : extensionEmbedding v x = v.embedding x :=
-  extensionEmbedding_of_comp_coe v.norm_embedding_eq x
+  extensionEmbeddingOfComp_coe v.norm_embedding_eq x
 
 @[simp]
 theorem extensionEmbeddingOfIsReal_coe {v : InfinitePlace K} (hv : IsReal v) (x : K) :
     extensionEmbeddingOfIsReal hv x = embedding_of_isReal hv x :=
-  extensionEmbedding_of_comp_coe (v.norm_embedding_of_isReal hv) x
+  extensionEmbeddingOfComp_coe (v.norm_embedding_of_isReal hv) x
 
 @[deprecated (since := "2025-09-24")]
 alias extensionEmbedding_of_isReal_coe := extensionEmbeddingOfIsReal_coe
 
 /-- The embedding `v.Completion →+* ℂ` is an isometry. -/
 theorem isometry_extensionEmbedding : Isometry (extensionEmbedding v) :=
-  Isometry.of_dist_eq (extensionEmbedding_dist_eq_of_comp v.norm_embedding_eq)
+  Isometry.of_dist_eq (extensionEmbeddingOfComp_dist_eq v.norm_embedding_eq)
 
 /-- The embedding `v.Completion →+* ℝ` at a real infinite place is an isometry. -/
 theorem isometry_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) :
     Isometry (extensionEmbeddingOfIsReal hv) :=
-  Isometry.of_dist_eq (extensionEmbedding_dist_eq_of_comp <| v.norm_embedding_of_isReal hv)
+  Isometry.of_dist_eq (extensionEmbeddingOfComp_dist_eq <| v.norm_embedding_of_isReal hv)
 
 @[deprecated (since := "2025-09-24")]
 alias isometry_extensionEmbedding_of_isReal := isometry_extensionEmbeddingOfIsReal
 
 /-- The embedding `v.Completion →+* ℂ` has closed image inside `ℂ`. -/
 theorem isClosed_image_extensionEmbedding : IsClosed (Set.range (extensionEmbedding v)) :=
-  (isClosedEmbedding_extensionEmbedding_of_comp v.norm_embedding_eq).isClosed_range
+  (isClosedEmbedding_extensionEmbeddingOfComp v.norm_embedding_eq).isClosed_range
 
 /-- The embedding `v.Completion →+* ℝ` associated to a real infinite place has closed image
 inside `ℝ`. -/
 theorem isClosed_image_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) :
     IsClosed (Set.range (extensionEmbeddingOfIsReal hv)) :=
-  (isClosedEmbedding_extensionEmbedding_of_comp <| v.norm_embedding_of_isReal hv).isClosed_range
+  (isClosedEmbedding_extensionEmbeddingOfComp <| v.norm_embedding_of_isReal hv).isClosed_range
 
 @[deprecated (since := "2025-09-24")]
 alias isClosed_image_extensionEmbedding_of_isReal := isClosed_image_extensionEmbeddingOfIsReal
