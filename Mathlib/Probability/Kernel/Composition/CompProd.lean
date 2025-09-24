@@ -30,7 +30,7 @@ that convention because it fits better with the use of the name `comp` elsewhere
 * Instances stating that `IsMarkovKernel`, `IsZeroOrMarkovKernel`, `IsFiniteKernel` and
   `IsSFiniteKernel` are stable by composition-product.
 
-## Notations
+## Notation
 
 * `κ ⊗ₖ η = ProbabilityTheory.Kernel.compProd κ η`
 
@@ -297,13 +297,13 @@ theorem compProd_restrict {s : Set β} {t : Set γ} (hs : MeasurableSet s) (ht :
 
 theorem compProd_restrict_left {s : Set β} (hs : MeasurableSet s) :
     Kernel.restrict κ hs ⊗ₖ η = Kernel.restrict (κ ⊗ₖ η) (hs.prod MeasurableSet.univ) := by
-  rw [← compProd_restrict]
-  · congr; exact Kernel.restrict_univ.symm
+  rw [← compProd_restrict hs MeasurableSet.univ]
+  congr; exact Kernel.restrict_univ.symm
 
 theorem compProd_restrict_right {t : Set γ} (ht : MeasurableSet t) :
     κ ⊗ₖ Kernel.restrict η ht = Kernel.restrict (κ ⊗ₖ η) (MeasurableSet.univ.prod ht) := by
-  rw [← compProd_restrict]
-  · congr; exact Kernel.restrict_univ.symm
+  rw [← compProd_restrict MeasurableSet.univ ht]
+  congr; exact Kernel.restrict_univ.symm
 
 end Restrict
 

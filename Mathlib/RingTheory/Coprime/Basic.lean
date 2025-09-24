@@ -31,7 +31,7 @@ universe u v
 
 section CommSemiring
 
-variable {R : Type u} [CommSemiring R] (x y z : R)
+variable {R : Type u} [CommSemiring R] (x y z w : R)
 
 /-- The proposition that `x` and `y` are coprime, defined to be the existence of `a` and `b` such
 that `a * x + b * y = 1`. Note that elements with no common divisors are not necessarily coprime,
@@ -39,7 +39,7 @@ e.g., the multivariate polynomials `x₁` and `x₂` are not coprime. -/
 def IsCoprime : Prop :=
   ∃ a b, a * x + b * y = 1
 
-variable {x y z}
+variable {x y z w}
 
 @[symm]
 theorem IsCoprime.symm (H : IsCoprime x y) : IsCoprime y x :=
@@ -148,6 +148,10 @@ theorem IsCoprime.of_isCoprime_of_dvd_left (h : IsCoprime y z) (hdvd : x ∣ y) 
 
 theorem IsCoprime.of_isCoprime_of_dvd_right (h : IsCoprime z y) (hdvd : x ∣ y) : IsCoprime z x :=
   (h.symm.of_isCoprime_of_dvd_left hdvd).symm
+
+@[gcongr]
+theorem IsCoprime.mono (h₁ : x ∣ y) (h₂ : z ∣ w) (h : IsCoprime y w) : IsCoprime x z :=
+  h.of_isCoprime_of_dvd_left h₁ |>.of_isCoprime_of_dvd_right h₂
 
 theorem IsCoprime.isUnit_of_dvd (H : IsCoprime x y) (d : x ∣ y) : IsUnit x :=
   let ⟨k, hk⟩ := d
