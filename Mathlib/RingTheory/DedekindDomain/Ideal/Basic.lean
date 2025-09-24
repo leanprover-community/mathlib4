@@ -451,6 +451,12 @@ theorem Ideal.dvd_iff_le {I J : Ideal A} : I ∣ J ↔ J ≤ I :=
     refine coeIdeal_injective (show (J : FractionalIdeal A⁰ (FractionRing A)) = ↑(I * H) from ?_)
     rw [coeIdeal_mul, hH, ← mul_assoc, mul_inv_cancel₀ hI', one_mul]⟩
 
+theorem Ideal.liesOver_iff_dvd_map [Algebra R A] {p : Ideal R} {P : Ideal A} (hP : P ≠ ⊤)
+    [p.IsMaximal] :
+    P.LiesOver p ↔ P ∣ Ideal.map (algebraMap R A) p := by
+  rw [liesOver_iff, dvd_iff_le, under_def, map_le_iff_le_comap,
+    IsCoatom.le_iff_eq (by rwa [← isMaximal_def]) (comap_ne_top _ hP), eq_comm]
+
 theorem Ideal.dvdNotUnit_iff_lt {I J : Ideal A} : DvdNotUnit I J ↔ J < I :=
   ⟨fun ⟨hI, H, hunit, hmul⟩ =>
     lt_of_le_of_ne (Ideal.dvd_iff_le.mp ⟨H, hmul⟩)
