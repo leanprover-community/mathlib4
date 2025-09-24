@@ -57,6 +57,27 @@ variable {α β γ : Type*}
 
 section HasProd
 
+/-- A filter on the set of finsets of a type. (Used for defining summation methods.) -/
+structure SummationFilter (β) where
+  filter : Filter (Finset β)
+  le_atTop : filter ≤ atTop
+
+/-- Unconditional summation: a function on `β` is said to be summable if its partial
+sums over finite subsets converge with respect to the `atTop` filter. -/
+def unconditional : SummationFilter β := ⟨atTop, le_rfl⟩
+
+instance : PartialOrder (SummationFilter β) where
+  le L₁ L₂ := L₁.filter ≤ L₂.filter
+  le_refl L := le_rfl
+  le_trans L₁ L₂ L₃ := le_trans
+  le_antisymm L₁ L₂ h h' := by cases L₁; cases L₂; congr; exact le_antisymm h h'
+
+instance : OrderTop (SummationFilter β) where
+  top := unconditional
+  le_top L := L.le_atTop
+
+instance : NeBot (unconditional : SummationFilter β).filter := atTop_neBot
+
 variable [CommMonoid α] [TopologicalSpace α]
 
 /-- `HasProd f a` means that the (potentially infinite) product of the `f b` for `b : β` converges
@@ -84,17 +105,17 @@ This is based on Mario Carneiro's
 
 For the definition and many statements, `α` does not need to be a topological monoid. We only add
 this assumption later, for the lemmas where it is relevant. -/]
-def HasProd (f : β → α) (a : α) (L : Filter (Finset β) := atTop) : Prop :=
-  Tendsto (fun s : Finset β ↦ ∏ b ∈ s, f b) L (𝓝 a)
+def HasProd (f : β → α) (a : α) (L : SummationFilter β := unconditional) : Prop :=
+  Tendsto (fun s : Finset β ↦ ∏ b ∈ s, f b) L.filter (𝓝 a)
 
 /-- `Multipliable f` means that `f` has some (infinite) product. Use `tprod` to get the value. -/
 @[to_additive
 /-- `Summable f` means that `f` has some (infinite) sum. Use `tsum` to get the value. -/]
-def Multipliable (f : β → α) (L : Filter (Finset β) := atTop) : Prop :=
+def Multipliable (f : β → α) (L : SummationFilter β := unconditional) : Prop :=
   ∃ a, HasProd f a L
 
 @[to_additive]
-lemma Multipliable.mono_filter {f : β → α} {L₁ L₂ : Filter (Finset β)}
+lemma Multipliable.mono_filter {f : β → α} {L₁ L₂ : SummationFilter β}
     (hf : Multipliable f L₂) (h : L₁ ≤ L₂) : Multipliable f L₁ :=
   match hf with | ⟨a, ha⟩ => ⟨a, ha.mono_left h⟩
 
@@ -103,17 +124,17 @@ open scoped Classical in
 or 1 otherwise. -/
 @[to_additive /-- `∑' i, f i` is the sum of `f` if it exists and is unconditionally convergent,
 or 0 otherwise. -/]
-noncomputable irreducible_def tprod (f : β → α) (L : Filter (Finset β) := atTop) :=
+noncomputable irreducible_def tprod (f : β → α) (L : SummationFilter β := unconditional) :=
   if h : Multipliable f L then
   /- Note that the product might not be uniquely defined if the topology is not separated.
   When the multiplicative support of `f` is finite, we make the most reasonable choice to use the
   product over the multiplicative support. Otherwise, we choose arbitrarily an `a` satisfying
   `HasProd f a`. -/
-    if (mulSupport f).Finite ∧ L ≤ atTop then finprod f
+    if (mulSupport f).Finite then finprod f
     else h.choose
   else 1
 
-variable {L : Filter (Finset β)}
+variable {L : SummationFilter β}
 
 @[inherit_doc tprod]
 notation3 "∏' " "[" L "]" (...)", "r:67:(scoped f => tprod f L) => r
@@ -140,7 +161,7 @@ theorem tprod_eq_one_of_not_multipliable (h : ¬Multipliable f L) : ∏'[L] b, f
 @[to_additive]
 theorem Function.Injective.hasProd_iff {g : γ → β} (hg : Injective g)
     (hf : ∀ x, x ∉ Set.range g → f x = 1) : HasProd (f ∘ g) a ↔ HasProd f a := by
-  simp only [HasProd, Tendsto, comp_apply, hg.map_atTop_finset_prod_eq hf]
+  simp only [HasProd, Tendsto, comp_apply, unconditional, hg.map_atTop_finset_prod_eq hf]
 
 -- didn't find a way to "filterize" this one
 @[to_additive]
@@ -149,38 +170,37 @@ theorem hasProd_subtype_iff_of_mulSupport_subset {s : Set β} (hf : mulSupport f
   Subtype.coe_injective.hasProd_iff <| by simpa using mulSupport_subset_iff'.1 hf
 
 @[to_additive]
-theorem hasProd_fintype [Fintype β] (f : β → α) (hL : L ≤ atTop := by rfl) :
+theorem hasProd_fintype [Fintype β] (f : β → α) :
     HasProd f (∏ b, f b) L :=
-  (OrderTop.tendsto_atTop_nhds _).mono_left hL
+  (OrderTop.tendsto_atTop_nhds _).mono_left L.le_atTop
 
 @[to_additive]
-protected theorem Finset.hasProd (s : Finset β) (f : β → α)
-      {L : Filter (Finset (s : Set β))} (hL : L ≤ atTop := by rfl) :
+protected theorem Finset.hasProd (s : Finset β) (f : β → α) {L : SummationFilter (s : Set β)} :
     HasProd (f ∘ (↑) : (↑s : Set β) → α) (∏ b ∈ s, f b) L := by
   rw [← prod_attach]
-  exact hasProd_fintype _ hL
+  exact hasProd_fintype _
 
 /-- If a function `f` is `1` outside of a finite set `s`, then it `HasProd` `∏ b ∈ s, f b`. -/
 @[to_additive /-- If a function `f` vanishes outside of a finite set `s`, then it `HasSum`
 `∑ b ∈ s, f b`. -/]
-theorem hasProd_prod_of_ne_finset_one (hf : ∀ b ∉ s, f b = 1) (hL : L ≤ atTop := by rfl) :
+theorem hasProd_prod_of_ne_finset_one (hf : ∀ b ∉ s, f b = 1) :
     HasProd f (∏ b ∈ s, f b) L :=
   ((hasProd_subtype_iff_of_mulSupport_subset <| mulSupport_subset_iff'.2 hf).1 <| s.hasProd f)
-    |>.mono_left hL
+    |>.mono_left L.le_atTop
 
 @[to_additive]
-theorem multipliable_of_ne_finset_one (hf : ∀ b ∉ s, f b = 1) (hL : L ≤ atTop := by rfl) :
+theorem multipliable_of_ne_finset_one (hf : ∀ b ∉ s, f b = 1) :
     Multipliable f L :=
-  (hasProd_prod_of_ne_finset_one hf hL).multipliable
+  (hasProd_prod_of_ne_finset_one hf).multipliable
 
 @[to_additive]
 theorem Multipliable.hasProd (ha : Multipliable f L) : HasProd f (∏'[L] b, f b) L := by
   simp only [tprod_def, ha, dite_true]
   split_ifs with h
-  · simpa [h, finprod_eq_prod] using (hasProd_prod_of_ne_finset_one (by simp)).mono_left h.2
+  · simpa [h, finprod_eq_prod] using (hasProd_prod_of_ne_finset_one (by simp))
   · exact ha.choose_spec
 
-variable [T2Space α] [NeBot L]
+variable [T2Space α] [NeBot L.filter]
 
 @[to_additive]
 theorem HasProd.unique {a₁ a₂ : α} :

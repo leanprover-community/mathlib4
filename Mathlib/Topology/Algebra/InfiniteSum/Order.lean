@@ -404,7 +404,7 @@ requires more assumptions. -/
 @[positivity tsum _]
 def evalTsum : PositivityExt where eval {u α} zα pα e := do
   match e with
-  | ~q(@tsum _ $ι $instCommMonoid $instTopSpace $f atTop) =>
+  | ~q(@tsum _ $ι $instCommMonoid $instTopSpace $f unconditional) =>
     lambdaBoundedTelescope f 1 fun args (body : Q($α)) => do
       let #[(i : Q($ι))] := args | failure
       let rbody ← core zα pα body

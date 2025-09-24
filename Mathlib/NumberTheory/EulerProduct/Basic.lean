@@ -173,7 +173,7 @@ theorem eulerProduct_hasProd (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
   change HasProd (F ∘ Subtype.val) _
   rw [hasProd_subtype_iff_mulIndicator,
     show Set.mulIndicator (fun p : ℕ ↦ Irreducible p) = {p | Nat.Prime p}.mulIndicator from rfl,
-    HasProd, Metric.tendsto_atTop]
+    HasProd, unconditional, Metric.tendsto_atTop]
   intro ε hε
   obtain ⟨N₀, hN₀⟩ := norm_tsum_factoredNumbers_sub_tsum_lt hsum.of_norm hf₀ hε
   refine ⟨range N₀, fun s hs ↦ ?_⟩
