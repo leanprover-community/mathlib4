@@ -32,7 +32,7 @@ theorem splitOnP.go_acc (xs acc : List α) :
     simp only [splitOnP, go]; split
     · simp only [modifyHead, reverse_nil, append_nil]
     · rw [ih [hd], modifyHead_modifyHead, ih]
-      congr; funext x; simp only [reverse_cons, append_assoc]; rfl
+      congr; grind
 
 theorem splitOnP_ne_nil (xs : List α) : xs.splitOnP p ≠ [] := splitOnP.go_ne_nil _ _ _
 
@@ -100,24 +100,13 @@ theorem splitOn_intercalate [DecidableEq α] (x : α) (hx : ∀ l ∈ ls, x ∉ 
   induction ls with | nil => contradiction | cons hd tl ih => ?_
   cases tl
   · suffices hd.splitOn x = [hd] by simpa [flatten]
-    refine splitOnP_eq_single _ _ ?_
-    intro y hy H
-    rw [eq_of_beq H] at hy
-    refine hx hd ?_ hy
-    simp
+    exact splitOnP_eq_single _ _ (by grind)
   · simp only [intersperse_cons₂, singleton_append, flatten]
     specialize ih _ _
-    · intro l hl
-      apply hx l
-      simp only [mem_cons] at hl ⊢
-      exact Or.inr hl
-    · exact List.noConfusion
-    have := splitOnP_first (· == x) hd ?h x (beq_self_eq_true _)
-    case h =>
-      intro y hy H
-      rw [eq_of_beq H] at hy
-      exact hx hd (.head _) hy
+    · grind
+    · grind
     simp only [splitOn] at ih ⊢
+    have := splitOnP_first (· == x) hd (by grind) x (beq_self_eq_true _)
     rw [this, ih]
 
 end List
