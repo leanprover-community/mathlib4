@@ -134,7 +134,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
         mem_closure_of_tendsto y_lim
           (by
             simp only [exists_prop, Set.mem_iUnion, Filter.eventually_atTop]
-            exact ⟨k, fun m hm => ⟨n + m, by omega, (z m).2⟩⟩)
+            exact ⟨k, fun m hm => ⟨n + m, by cutsat, (z m).2⟩⟩)
     use this
     -- Then, we check that `y` is close to `x = z n`. This follows from the fact that `y`
     -- is the limit of `z k`, and the distance between `z n` and `z k` has already been estimated.
@@ -183,8 +183,7 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
         start from a set `s` which is ε-dense in α. Then the subsets of `s`
         are finitely many, and ε-dense for the Hausdorff distance. -/
     refine
-      isCompact_of_totallyBounded_isClosed (EMetric.totallyBounded_iff.2 fun ε εpos => ?_)
-        isClosed_univ
+      (EMetric.totallyBounded_iff.2 fun ε εpos => ?_).isCompact_of_isClosed isClosed_univ
     rcases exists_between εpos with ⟨δ, δpos, δlt⟩
     obtain ⟨s : Set α, fs : s.Finite, hs : univ ⊆ ⋃ y ∈ s, ball y δ⟩ :=
       EMetric.totallyBounded_iff.1

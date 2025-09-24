@@ -51,6 +51,9 @@ because the more bundled version usually does not work with dot notation.
   `α →o Π i, π i`;
 * `OrderHom.Subtype.val`: embedding `Subtype.val : Subtype p → α` as a bundled monotone map;
 * `OrderHom.dual`: reinterpret a monotone map `α →o β` as a monotone map `αᵒᵈ →o βᵒᵈ`;
+* `OrderIso.dualIso`: order isomorphism between `α →o β` and `(αᵒᵈ →o βᵒᵈ)ᵒᵈ`;
+* `OrderHom.compl`: order isomorphism `α ≃o αᵒᵈ` given by taking complements in a
+  Boolean algebra;
 
 We also define two functions to convert other bundled maps to `α →o β`:
 

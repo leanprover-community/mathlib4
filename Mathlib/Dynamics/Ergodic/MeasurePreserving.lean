@@ -178,12 +178,14 @@ open scoped symmDiff in
 lemma measure_symmDiff_preimage_iterate_le
     (hf : MeasurePreserving f μ μ) (hs : NullMeasurableSet s μ) (n : ℕ) :
     μ (s ∆ (f^[n] ⁻¹' s)) ≤ n • μ (s ∆ (f ⁻¹' s)) := by
-  induction' n with n ih; · simp
-  simp only [add_smul, one_smul]
-  refine le_trans (measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n+1] ⁻¹' s)) (add_le_add ih ?_)
-  replace hs : NullMeasurableSet (s ∆ (f ⁻¹' s)) μ :=
-    hs.symmDiff <| hs.preimage hf.quasiMeasurePreserving
-  rw [iterate_succ', preimage_comp, ← preimage_symmDiff, (hf.iterate n).measure_preimage hs]
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    simp only [add_smul, one_smul]
+    grw [← ih, measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n+1] ⁻¹' s)]
+    replace hs : NullMeasurableSet (s ∆ (f ⁻¹' s)) μ :=
+      hs.symmDiff <| hs.preimage hf.quasiMeasurePreserving
+    rw [iterate_succ', preimage_comp, ← preimage_symmDiff, (hf.iterate n).measure_preimage hs]
 
 /-- If `μ univ < n * μ s` and `f` is a map preserving measure `μ`,
 then for some `x ∈ s` and `0 < m < n`, `f^[m] x ∈ s`. -/

@@ -81,10 +81,13 @@ theorem frequently_ae_iff {p : α → Prop} : (∃ᵐ a ∂μ, p a) ↔ μ { a |
 theorem frequently_ae_mem_iff {s : Set α} : (∃ᵐ a ∂μ, a ∈ s) ↔ μ s ≠ 0 :=
   not_congr compl_mem_ae_iff
 
-theorem measure_zero_iff_ae_notMem {s : Set α} : μ s = 0 ↔ ∀ᵐ a ∂μ, a ∉ s :=
+theorem measure_eq_zero_iff_ae_notMem {s : Set α} : μ s = 0 ↔ ∀ᵐ a ∂μ, a ∉ s :=
   compl_mem_ae_iff.symm
 
-@[deprecated (since := "2025-05-24")] alias measure_zero_iff_ae_nmem := measure_zero_iff_ae_notMem
+@[deprecated (since := "2025-08-26")]
+alias measure_zero_iff_ae_notMem := measure_eq_zero_iff_ae_notMem
+@[deprecated (since := "2025-05-24")]
+alias measure_zero_iff_ae_nmem := measure_eq_zero_iff_ae_notMem
 
 theorem ae_of_all {p : α → Prop} (μ : F) : (∀ a, p a) → ∀ᵐ a ∂μ, p a :=
   Eventually.of_forall

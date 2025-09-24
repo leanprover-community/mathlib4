@@ -188,7 +188,7 @@ lemma isClique_sup_edge_of_ne_iff {v w : α} {s : Set α} (h : v ≠ w) :
 theorem isClique_range_copy_top (f : Copy (⊤ : SimpleGraph β) G) :
     G.IsClique (Set.range f) := by
   intro _ ⟨_, h⟩ _ ⟨_, h'⟩ nh
-  rw [← h, show f _ = f.topEmbedding _ by rfl, ← h', show f _ = f.topEmbedding _ by rfl] at nh ⊢
+  rw [← h, ← Copy.topEmbedding_apply, ← h', ← Copy.topEmbedding_apply] at nh ⊢
   rwa [← f.topEmbedding.coe_toEmbedding, (f.topEmbedding.apply_eq_iff_eq _ _).ne,
     ← top_adj, ← f.topEmbedding.map_adj_iff] at nh
 

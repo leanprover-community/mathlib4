@@ -3,10 +3,10 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
+import Mathlib.Data.ZMod.Coprime
 import Mathlib.NumberTheory.DirichletCharacter.Orthogonality
 import Mathlib.NumberTheory.LSeries.Linearity
 import Mathlib.NumberTheory.LSeries.Nonvanishing
-import Mathlib.RingTheory.RootsOfUnity.AlgebraicallyClosed
 
 /-!
 # Dirichlet's Theorem on primes in arithmetic progression
@@ -287,7 +287,7 @@ lemma LSeries_residueClass_eq (ha : IsUnit a) {s : ℂ} (hs : 1 < s.re) :
   rw [eq_inv_mul_iff_mul_eq₀ <| mod_cast (Nat.totient_pos.mpr q.pos_of_neZero).ne']
   simp_rw [← LSeries_smul,
     ← LSeries_sum <| fun χ _ ↦ (LSeriesSummable_twist_vonMangoldt χ hs).smul _]
-  refine LSeries_congr s fun {n} _ ↦ ?_
+  refine LSeries_congr (fun {n} _ ↦ ?_) s
   simp only [Pi.smul_apply, residueClass_apply ha, smul_eq_mul, ← mul_assoc,
     mul_inv_cancel_of_invertible, one_mul, Finset.sum_apply, Pi.mul_apply]
 
@@ -486,6 +486,17 @@ theorem forall_exists_prime_gt_and_eq_mod (ha : IsUnit a) (n : ℕ) :
     ∃ p > n, p.Prime ∧ (p : ZMod q) = a := by
   obtain ⟨p, hp₁, hp₂⟩ := Set.infinite_iff_exists_gt.mp (setOf_prime_and_eq_mod_infinite ha) n
   exact ⟨p, hp₂.gt, Set.mem_setOf.mp hp₁⟩
+
+/-- **Dirichlet's Theorem** on primes in arithmetic progression: if `q` is a positive
+integer and `a : ℤ` is coürime to `q`, then there are infinitely many prime numbers `p`
+such that `p ≡ a mod q`. -/
+theorem forall_exists_prime_gt_and_modEq (n : ℕ) {a : ℤ} (h : IsCoprime a q) :
+    ∃ p > n, p.Prime ∧ p ≡ a [ZMOD q] := by
+  have : IsUnit (a : ZMod q) := by
+    rwa [ZMod.coe_int_isUnit_iff_isCoprime, isCoprime_comm]
+  obtain ⟨p, hpn, hpp, heq⟩ := forall_exists_prime_gt_and_eq_mod this n
+  refine ⟨p, hpn, hpp, ?_⟩
+  simpa [← ZMod.intCast_eq_intCast_iff] using heq
 
 end Nat
 

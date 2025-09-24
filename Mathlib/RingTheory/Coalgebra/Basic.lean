@@ -116,7 +116,7 @@ lemma sum_tmul_counit_eq {a : A} (repr : Coalgebra.Repr R a) :
     ∑ i ∈ repr.index, (repr.left i) ⊗ₜ counit (R := R) (repr.right i) = a ⊗ₜ[R] 1 := by
   simpa [← repr.eq, map_sum] using congr($(lTensor_counit_comp_comul (R := R) (A := A)) a)
 
--- Cannot be @[simp] because `a₂` can not be inferred by `simp`.
+-- Cannot be @[simp] because `a₂` cannot be inferred by `simp`.
 lemma sum_tmul_tmul_eq {a : A} (repr : Repr R a)
     (a₁ : (i : repr.ι) → Repr R (repr.left i)) (a₂ : (i : repr.ι) → Repr R (repr.right i)) :
     ∑ i ∈ repr.index, ∑ j ∈ (a₁ i).index,
@@ -142,7 +142,7 @@ theorem sum_map_tmul_counit_eq {B : Type*} [AddCommMonoid B] [Module R B]
   apply_fun LinearMap.rTensor R (f : A →ₗ[R] B) at this
   simp_all only [map_sum, LinearMap.rTensor_tmul, LinearMap.coe_coe]
 
--- Cannot be @[simp] because `a₁` can not be inferred by `simp`.
+-- Cannot be @[simp] because `a₁` cannot be inferred by `simp`.
 theorem sum_map_tmul_tmul_eq {B : Type*} [AddCommMonoid B] [Module R B]
     {F : Type*} [FunLike F A B] [LinearMapClass F R A B] (f g h : F) (a : A) {repr : Repr R a}
     {a₁ : (i : repr.ι) → Repr R (repr.left i)} {a₂ : (i : repr.ι) → Repr R (repr.right i)} :

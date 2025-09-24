@@ -92,8 +92,7 @@ variable {Γ} {R}
 theorem ofPowerSeries_injective : Function.Injective (ofPowerSeries Γ R) :=
   embDomain_injective.comp toPowerSeries.symm.injective
 
-/-@[simp] Porting note: removing simp. RHS is more complicated and it makes linter
-failures elsewhere -/
+-- Not `@[simp]` since the RHS is more complicated and it makes linter failures elsewhere
 theorem ofPowerSeries_apply (x : PowerSeries R) :
     ofPowerSeries Γ R x =
       HahnSeries.embDomain

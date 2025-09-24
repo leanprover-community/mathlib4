@@ -223,8 +223,8 @@ alias closure_fst := upperPolar_extent
 @[deprecated (since := "2025-07-10")]
 alias closure_snd := lowerPolar_intent
 
-variable {r α β}
-variable {c d : Concept α β r}
+variable {r r' α β}
+variable {c d : Concept α β r} {c' : Concept α α r'}
 
 attribute [simp] upperPolar_extent lowerPolar_intent
 
@@ -250,6 +250,37 @@ theorem intent_injective : Injective (@intent α β r) := fun _ _ => ext'
 
 @[deprecated (since := "2025-07-10")]
 alias snd_injective := intent_injective
+
+theorem rel_extent_intent {x y} (hx : x ∈ c.extent) (hy : y ∈ c.intent) : r x y := by
+  rw [← c.upperPolar_extent] at hy
+  exact hy hx
+
+/-- Note that if `r'` is the `≤` relation, this theorem will often not be true! -/
+theorem disjoint_extent_intent [IsIrrefl α r'] : Disjoint c'.extent c'.intent := by
+  rw [disjoint_iff_forall_ne]
+  rintro x hx _ hx' rfl
+  exact irrefl x (rel_extent_intent hx hx')
+
+theorem mem_extent_of_rel_extent [IsTrans α r'] {x y} (hy : r' y x) (hx : x ∈ c'.extent) :
+    y ∈ c'.extent := by
+  rw [← lowerPolar_intent]
+  exact fun z hz ↦ _root_.trans hy (rel_extent_intent hx hz)
+
+theorem mem_intent_of_intent_rel [IsTrans α r'] {x y} (hy : r' x y) (hx : x ∈ c'.intent) :
+    y ∈ c'.intent := by
+  rw [← upperPolar_extent]
+  exact fun z hz ↦ _root_.trans (rel_extent_intent hz hx) hy
+
+theorem codisjoint_extent_intent [IsTrichotomous α r'] [IsTrans α r'] :
+    Codisjoint c'.extent c'.intent := by
+  rw [codisjoint_iff_le_sup]
+  refine fun x _ ↦ or_iff_not_imp_left.2 fun hx ↦ ?_
+  rw [← upperPolar_extent]
+  intro y hy
+  obtain h | rfl | h := trichotomous_of r' x y
+  · cases hx <| mem_extent_of_rel_extent h hy
+  · contradiction
+  · assumption
 
 instance instSupConcept : Max (Concept α β r) :=
   ⟨fun c d =>
