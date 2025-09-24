@@ -53,7 +53,7 @@ namespace MeasureTheory
 
 section weightedVectorSMul
 
-variable {α E F G : Type*} [MeasurableSpace α]
+variable {α E F G 𝕜 : Type*} [MeasurableSpace α]
   [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
@@ -69,6 +69,56 @@ def weightedVectorSMul (s : Set α) : E →L[ℝ] G where
 
 @[simp]
 theorem weightedVectorSMul_apply (s : Set α) (x : E) : weightedVectorSMul B μ s x = B x (μ s) := rfl
+
+@[simp]
+theorem weightedVectorSMul_zero_measure :
+    weightedVectorSMul B (0 : VectorMeasure α F) = (0 : Set α → E →L[ℝ] G) := by
+  ext1; simp [weightedVectorSMul]; rfl
+
+@[simp]
+theorem weightedVectorSMul_zero_pairing : weightedVectorSMul 0 μ = (0 : Set α → E →L[ℝ] G) := rfl
+
+@[simp]
+theorem weightedVectorSMul_empty :
+    weightedVectorSMul B μ ∅ = (0 : E →L[ℝ] G) := by ext1 x; rw [weightedVectorSMul_apply]; simp
+
+theorem weightedVectorSMul_add_measure (ν : VectorMeasure α F) :
+    weightedVectorSMul B (μ + ν) = weightedVectorSMul B μ + weightedVectorSMul B ν := by
+  ext s; simp
+
+theorem weightedVectorSMul_add_pairing (C : E →L[ℝ] F →L[ℝ] G) :
+    weightedVectorSMul (B + C) μ = weightedVectorSMul B μ + weightedVectorSMul C μ := by
+  ext s; simp
+
+theorem weightedVectorSMul_neg_measure : weightedVectorSMul B (- μ) = - weightedVectorSMul B μ := by
+  ext s; simp
+
+theorem weightedVectorSMul_neg_pairing : weightedVectorSMul (- B) μ = - weightedVectorSMul B μ := by
+  ext s; simp
+
+theorem weightedVectorSMul_sub_measure (ν : VectorMeasure α F) :
+    weightedVectorSMul B (μ - ν) = weightedVectorSMul B μ - weightedVectorSMul B ν := by
+  ext s; simp
+
+theorem weightedVectorSMul_sub_pairing (C : E →L[ℝ] F →L[ℝ] G) :
+    weightedVectorSMul (B - C) μ = weightedVectorSMul B μ - weightedVectorSMul C μ := by
+  ext s; simp
+
+theorem weightedVectorSMul_smul_measure (c : ℝ) :
+    weightedVectorSMul B (c • μ)  = c • weightedVectorSMul B μ := by
+  ext s; simp
+
+theorem weightedVectorSMul_smul_pairing (c : ℝ) :
+    weightedVectorSMul (c • B) μ  = c • weightedVectorSMul B μ := by
+  ext s; simp
+
+theorem weightedVectorSMul_congr (s t : Set α) (hst : μ s = μ t) :
+    (weightedVectorSMul B μ s : E →L[ℝ] G) = weightedVectorSMul B μ t := by
+  ext1 x; simp_rw [weightedVectorSMul_apply]; congr
+
+theorem weightedVectorSMul_null {s : Set α} (h_zero : μ s = 0) :
+    (weightedVectorSMul B μ s : E →L[ℝ] G) = 0 := by
+  ext1 x; rw [weightedVectorSMul_apply, h_zero]; simp
 
 theorem weightedVectorSMul_union (s t : Set α) (hs : MeasurableSet s) (ht : MeasurableSet t)
     (hdisj : Disjoint s t) :
@@ -101,6 +151,15 @@ theorem dominatedFinMeasAdditive_weightedVectorSMul :
     ofReal_norm]
   exact norm_measure_le_variation μ s
 
+theorem dominatedFinMeasAdditive_weightedVectorSMul_neg :
+    DominatedFinMeasAdditive (μ.variation.ennrealToMeasure)
+    (weightedVectorSMul B (-μ) : Set α → E →L[ℝ] G) ‖B‖ := by
+  have : DominatedFinMeasAdditive μ.variation.ennrealToMeasure (weightedVectorSMul B (-μ)) ‖B‖
+    = DominatedFinMeasAdditive (-μ).variation.ennrealToMeasure (weightedVectorSMul B (-μ)) ‖B‖ := by
+    congr 2; exact (variation_neg _).symm
+  simp [this]
+  exact dominatedFinMeasAdditive_weightedVectorSMul B (-μ)
+
 end weightedVectorSMul
 
 open SimpleFunc L1
@@ -127,8 +186,16 @@ namespace VectorMeasureWithPairing
 variable {α E F G : Type*} [MeasurableSpace α]
   [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F]
-  [NormedAddCommGroup G] [NormedSpace ℝ G] [CompleteSpace G]
+  [NormedAddCommGroup G] [NormedSpace ℝ G]
   (Bμ : VectorMeasureWithPairing α E F G)
+
+noncomputable def restrict (s : Set α) : VectorMeasureWithPairing α E F G :=
+  VectorMeasureWithPairing.mk Bμ.pairing (Bμ.vectorMeasure.restrict s)
+
+@[simp]
+theorem restrict_univ : Bμ.restrict univ = Bμ := by simp [restrict]
+
+variable [CompleteSpace G]
 
 /-- The pairing integral in L1 space as a continuous linear map. -/
 noncomputable def integral : (α →₁[Bμ.vectorMeasure.variation.ennrealToMeasure] E) →L[ℝ] G :=

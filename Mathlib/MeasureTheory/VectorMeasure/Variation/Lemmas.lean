@@ -52,12 +52,81 @@ theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) : ‖μ E
   have := le_biSup (fun P ↦ ∑ p ∈ P, ‖μ p‖ₑ) h
   simp_all [variation, var_aux]
 
+@[simp]
 lemma variation_zero : (0 : VectorMeasure X V).variation = 0 := by
   ext _ _
   simp [variation, var_aux_zero]
 
-lemma variation_neg
-    (μ : MeasureTheory.ComplexMeasure X) : (-μ).variation = μ.variation := by
+theorem eq_zero_of_zero_variation (μ : VectorMeasure X V) : μ.variation = 0 → μ = 0 := by
+  intro hμ; ext E hE; simp only [coe_zero, Pi.zero_apply, ← enorm_eq_zero (a := μ E)]
+  refine le_antisymm ?_ (zero_le _)
+  refine le_of_le_of_eq (norm_measure_le_variation μ E) ?_
+  have : ↑μ.variation = fun E ↦ 0 := by simp_all only [coe_zero]; rfl
+  exact congr_fun this E
+
+theorem eq_zero_of_zero_variation_ennrealToMeasure (μ : VectorMeasure X V) :
+    μ.variation.ennrealToMeasure = 0 → μ = 0 := by
+  intro hμ; apply eq_zero_of_zero_variation
+  rw [← Measure.toENNRealVectorMeasure_ennrealToMeasure μ.variation, hμ,
+    Measure.toENNRealVectorMeasure_zero]
+
+theorem eq_zero_of_zero_variation_ennrealToMeasure_univ (μ : VectorMeasure X V) :
+    μ.variation.ennrealToMeasure Set.univ = 0 → μ = 0 := by
+  intro hμ; apply eq_zero_of_zero_variation_ennrealToMeasure
+  rw [← Measure.measure_univ_eq_zero, hμ]
+
+theorem triangle_inequality (μ ν : VectorMeasure X V) [ContinuousAdd V] :
+    (μ + ν).variation ≤ μ.variation + ν.variation := by
+  intro s hs
+  simp [variation, var_aux, hs]
+  intro ι hι
+  trans (∑ x ∈ ι, (‖μ x‖ₑ + ‖ν x‖ₑ))
+  · apply Finset.sum_le_sum
+    intro x hx
+    exact enorm_add_le _ _
+  · simp [Finset.sum_add_distrib]
+    apply add_le_add
+    · apply le_sSup; simp; use ι
+      exact ciSup_const (hι := Nonempty.intro hι)
+    · apply le_sSup; simp; use ι
+      exact ciSup_const (hι := Nonempty.intro hι)
+
+theorem triangle_inequality_ennrealToMeasure {s : Set X} (hs : MeasurableSet s)
+    (μ ν : VectorMeasure X V) [ContinuousAdd V] :
+    (μ + ν).variation.ennrealToMeasure s ≤
+    μ.variation.ennrealToMeasure s + ν.variation.ennrealToMeasure s := by
+  simp [ennrealToMeasure_apply hs]
+  exact triangle_inequality μ ν s hs
+
+theorem eq_zero_of_zero_variation_univ (μ : VectorMeasure X V) :
+    μ.variation Set.univ = 0 → μ = 0 := by
+  intro hμ; apply eq_zero_of_zero_variation_ennrealToMeasure_univ μ
+  exact Eq.trans (ennrealToMeasure_apply (v := μ.variation) MeasurableSet.univ) hμ
+
+theorem restrict_comm_variation (s : Set X) (μ : VectorMeasure X V) :
+    (μ.restrict s).variation = μ.variation.restrict s := by
+  ext t ht
+  by_cases hsm : MeasurableSet s
+  · simp [variation, var_aux, restrict, ht, hsm]
+    apply le_antisymm
+    · apply sSup_le; intro b hb; obtain ⟨P, hP⟩ := hb
+      have iP : IsInnerPart t P := sorry
+      simp [apply_ite, ciSup_const (hι := Nonempty.intro iP)] at hP
+      rw [IsInnerPart] at iP
+      simp_all only [↓reduceIte, ← hP]
+      apply le_sSup
+      classical
+      let Q := P.image (fun p : Set X => p ∩ s)
+      use Q
+      have iQ : IsInnerPart (t ∩ s) Q := sorry
+      simp [ciSup_const (hι := Nonempty.intro iQ), Q]
+      refine Finset.sum_image (fun x hx y hy hxy ↦ ?_)
+      sorry
+    · sorry
+  sorry
+
+lemma variation_neg {E} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    (μ : VectorMeasure X E) : (-μ).variation = μ.variation := by
   simp [variation]
 
 lemma absolutelyContinuous (μ : VectorMeasure X V) : μ ≪ᵥ μ.variation := by
