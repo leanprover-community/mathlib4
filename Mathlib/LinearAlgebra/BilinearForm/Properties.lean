@@ -338,25 +338,31 @@ theorem apply_dualBasis_right (B : BilinForm K V) (hB : B.Nondegenerate) (sym : 
 
 @[simp]
 lemma dualBasis_dualBasis_flip [FiniteDimensional K V]
-    (B : BilinForm K V) (hB : B.Nondegenerate) {ι : Type*}
-    [Finite ι] [DecidableEq ι] (b : Basis ι K V) :
+    (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) :
     B.dualBasis hB (B.flip.dualBasis hB.flip b) = b := by
   ext i
   refine LinearMap.ker_eq_bot.mp hB.ker_eq_bot ((B.flip.dualBasis hB.flip b).ext (fun j ↦ ?_))
   simp_rw [apply_dualBasis_left, ← B.flip_apply, apply_dualBasis_left, @eq_comm _ i j]
 
 @[simp]
-lemma dualBasis_flip_dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) {ι}
-    [Finite ι] [DecidableEq ι] [FiniteDimensional K V] (b : Basis ι K V) :
+lemma dualBasis_flip_dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) [FiniteDimensional K V]
+    (b : Basis ι K V) :
     B.flip.dualBasis hB.flip (B.dualBasis hB b) = b :=
   dualBasis_dualBasis_flip _ hB.flip b
 
 @[simp]
-lemma dualBasis_dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) (hB' : B.IsSymm) {ι}
-    [Finite ι] [DecidableEq ι] [FiniteDimensional K V] (b : Basis ι K V) :
+lemma dualBasis_dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) (hB' : B.IsSymm)
+    [FiniteDimensional K V] (b : Basis ι K V) :
     B.dualBasis hB (B.dualBasis hB b) = b := by
   convert dualBasis_dualBasis_flip _ hB.flip b
   rwa [eq_comm, ← isSymm_iff_flip]
+
+@[simp]
+theorem dualBasis_eq_iff (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (v : ι → V) :
+    B.dualBasis hB b = v ↔ ∀ i j, B (v i) (b j) = if j = i then 1 else 0 :=
+  ⟨fun h _ _ ↦ by rw [← h, apply_dualBasis_left],
+    fun h ↦ funext fun _ ↦ (B.dualBasis hB b).ext_elem_iff.mpr fun _ ↦ by
+      rw [dualBasis_repr_apply, dualBasis_repr_apply, apply_dualBasis_left, h]⟩
 
 end DualBasis
 
