@@ -37,7 +37,7 @@ gh_api() {
 
 git push "${remote_name}" "HEAD:$branch_name"
 
-pr_id=$(gh_api "repos/${owner_name}/mathlib4/pulls" -X POST -d @- <<EOF | jq -r .number
+pr_id="$(gh_api "repos/${owner_name}/mathlib4/pulls" -X POST -d @- <<EOF | jq -r .number
 {
   "title": "$pr_title",
   "head": "$branch_name",
@@ -45,6 +45,6 @@ pr_id=$(gh_api "repos/${owner_name}/mathlib4/pulls" -X POST -d @- <<EOF | jq -r 
   "body": "$pr_body"
 }
 EOF
-)
+)"
 
-printf $'message=\'Please review #%s, which removes deprecated declarations older than %s.\'\n' "${pr_id}" "${DEPRECATION_DATE}" | tee -a "${GITHUB_OUTPUT}"
+printf $'message<<EOF\n\'Please review #%s, which removes deprecated declarations older than %s.\'\nEOF\n' "${pr_id}" "${DEPRECATION_DATE}" | tee -a "${GITHUB_OUTPUT}"
