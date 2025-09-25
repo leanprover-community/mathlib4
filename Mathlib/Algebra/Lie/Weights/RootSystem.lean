@@ -422,50 +422,6 @@ instance : (rootSystem H).IsReduced where
     · right; ext x; simpa [neg_eq_iff_eq_neg] using DFunLike.congr_fun h.symm x
     · left; ext x; simpa using DFunLike.congr_fun h.symm x
 
-lemma pairing_zero_of_bot_sum_diff_spaces
-  (χ α : Weight K H L) (hχ : χ.IsNonZero) (hα : α.IsNonZero)
-  (w_plus : χ.toLinear + α.toLinear ≠ 0) (w_minus : χ.toLinear - α.toLinear ≠ 0)
-  (h_plus_bot : genWeightSpace L (χ.toLinear + α.toLinear) = ⊥)
-  (h_minus_bot : genWeightSpace L (χ.toLinear - α.toLinear) = ⊥) :
-  let S := rootSystem H
-  ∃ (i j : { w : Weight K H L // w ∈ H.root }),
-    S.root i = χ.toLinear ∧ S.root j = α.toLinear ∧ S.pairing i j = 0 := by
-  let S := rootSystem H
-  let i : { w : Weight K H L // w ∈ H.root } := ⟨χ, by
-    rw [LieSubalgebra.root, Finset.mem_filter]; exact ⟨Finset.mem_univ χ, hχ⟩⟩
-  let j : { w : Weight K H L // w ∈ H.root } := ⟨α, by
-    rw [LieSubalgebra.root, Finset.mem_filter]; exact ⟨Finset.mem_univ α, hα⟩⟩
-  use i, j, rfl, rfl
-  have h_c (β γ : H →ₗ[K] K) (h_bot : genWeightSpace L β = ⊥)
-      (idx : { w : Weight K H L // w ∈ H.root }) (h_eq : S.root idx = γ)
-      (h_beta_eq : β = γ) : False := by
-    have h_nontrivial : genWeightSpace L β ≠ ⊥ := by
-      rw [h_beta_eq, ← h_eq, rootSystem_root_apply H idx]
-      exact idx.val.genWeightSpace_ne_bot
-    exact h_nontrivial h_bot
-  cases lt_trichotomy (S.pairingIn ℤ i j) 0 with
-  | inl h_neg =>
-    exfalso
-    have h_add_mem : S.root i + S.root j ∈ Set.range S.root := by
-      apply RootPairing.root_add_root_mem_of_pairingIn_neg S.toRootPairing h_neg
-      intro h_eq
-      have h_sum_zero : S.root i + S.root j = 0 := by rw [h_eq]; simp only [neg_add_cancel]
-      exact w_plus h_sum_zero
-    obtain ⟨idx, hidx⟩ := h_add_mem
-    exact h_c (χ.toLinear + α.toLinear) (S.root i + S.root j) h_plus_bot idx hidx rfl
-  | inr h_rest =>
-    cases h_rest with
-    | inl h_zero => exact (S.algebraMap_pairingIn ℤ i j ▸ by simp [h_zero])
-    | inr h_pos =>
-      exfalso
-      have h_sub_mem : S.root i - S.root j ∈ Set.range S.root := by
-        apply RootPairing.root_sub_root_mem_of_pairingIn_pos S.toRootPairing h_pos
-        intro h_eq
-        have h_chi_eq_alpha : χ = α := by injection h_eq
-        exact w_minus (by rw [h_chi_eq_alpha]; simp only [sub_self])
-      obtain ⟨idx, hidx⟩ := h_sub_mem
-      exact h_c (χ.toLinear - α.toLinear) (S.root i - S.root j) h_minus_bot idx hidx rfl
-
 section IsSimple
 
 -- Note that after https://github.com/leanprover-community/mathlib4/issues/10068 (Cartan's criterion) is complete we can omit `[IsKilling K L]`
