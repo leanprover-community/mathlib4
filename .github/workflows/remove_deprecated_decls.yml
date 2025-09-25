@@ -115,4 +115,4 @@ jobs:
         to: 'nightly-testing'
         type: 'stream'
         topic: 'Mathlib `remove outdated deprecated declarations`'
-        content: Here'${{ steps.pr.outputs.message }}'
+        content: '${{ steps.pr.outputs.message }}'
