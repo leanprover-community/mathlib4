@@ -168,10 +168,7 @@ theorem degree_map_eq_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f (leadingCo
   refine degree_map_le.antisymm ?_
   have hp0 : p ≠ 0 :=
     leadingCoeff_ne_zero.mp fun hp0 => hf (_root_.trans (congr_arg _ hp0) f.map_zero)
-  rw [degree_eq_natDegree hp0]
-  refine le_degree_of_ne_zero ?_
-  rw [coeff_map]
-  exact hf
+  simp [hf, hp0, degree_eq_natDegree, le_degree_of_ne_zero]
 
 theorem natDegree_map_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f (leadingCoeff p) ≠ 0) :
     natDegree (p.map f) = natDegree p :=
@@ -180,15 +177,30 @@ theorem natDegree_map_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f (leadingCo
 theorem leadingCoeff_map_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f (leadingCoeff p) ≠ 0) :
     leadingCoeff (p.map f) = f (leadingCoeff p) := by
   unfold leadingCoeff
-  rw [coeff_map, natDegree_map_of_leadingCoeff_ne_zero f hf]
+  simp [hf, natDegree_map_of_leadingCoeff_ne_zero]
+
+variable (f) in
+theorem degree_map_of_leadingCoeff_isUnit [Nontrivial S] (hf : IsUnit <| p.leadingCoeff) :
+    (p.map f).degree = p.degree :=
+  degree_map_eq_of_leadingCoeff_ne_zero _ <| fun h ↦ not_isUnit_zero <|
+    h ▸ RingHom.isUnit_map _ hf
+
+variable (f) in
+theorem natDegree_map_of_leadingCoeff_isUnit [Nontrivial S] (hf : IsUnit <| p.leadingCoeff) :
+    (p.map f).natDegree = p.natDegree :=
+  natDegree_eq_natDegree <| degree_map_of_leadingCoeff_isUnit f hf
+
+variable (f) in
+theorem leadingCoeff_map_of_leadingCoeff_isUnit [Nontrivial S] (hf : IsUnit <| p.leadingCoeff) :
+    (p.map f).leadingCoeff = f (p.leadingCoeff) :=
+  leadingCoeff_map_of_leadingCoeff_ne_zero _ <| fun h ↦ not_isUnit_zero <|
+    h ▸ RingHom.isUnit_map _ hf
 
 end Map
 
 end Semiring
 
-section CommSemiring
-
-section Eval
+section CommSemiring.Eval
 
 section
 
@@ -217,9 +229,22 @@ theorem iterate_comp_eval :
 
 end
 
-end Eval
+end CommSemiring.Eval
 
-end CommSemiring
+section DivisionRing.Map
+
+variable [DivisionRing R] [Nontrivial S] [Semiring S] (f : R →+* S) (p : R[X])
+
+theorem degree_map_from_divisionRing : (p.map f).degree = p.degree := by
+  by_cases h₀ : p = 0 <;> simp [h₀, degree_map_eq_of_leadingCoeff_ne_zero]
+
+theorem natDegree_map_from_divisionRing : (p.map f).natDegree = p.natDegree :=
+  natDegree_eq_natDegree <| degree_map_from_divisionRing f p
+
+theorem leadingCoeff_map_from_divisionRing : (p.map f).leadingCoeff = f (p.leadingCoeff) := by
+  by_cases h₀ : p = 0 <;> simp [h₀, leadingCoeff_map_of_leadingCoeff_ne_zero]
+
+end DivisionRing.Map
 
 section
 variable [Semiring R] [CommRing S] [IsDomain S] (φ : R →+* S) {f : R[X]}

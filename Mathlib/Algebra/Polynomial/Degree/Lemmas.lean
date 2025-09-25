@@ -272,6 +272,19 @@ theorem natDegree_map_eq_iff {f : R →+* S} {p : Polynomial R} :
   · simp_rw [h, ne_eq, or_true, iff_true, ← Nat.le_zero, ← h, natDegree_map_le]
   simp_all [natDegree, WithBot.unbotD_eq_unbotD_iff]
 
+theorem degree_map_eq_of_injective {f : R →+* S} {p : Polynomial R} (hf : Function.Injective f) :
+    (p.map f).degree = p.degree := by
+  simp [hf, map_ne_zero_iff, ne_or_eq]
+
+theorem natDegree_map_eq_of_injective {f : R →+* S} {p : Polynomial R} (hf : Function.Injective f) :
+    (p.map f).natDegree = p.natDegree := by
+  simp [hf, natDegree, degree_map_eq_of_injective]
+
+theorem leadingCoeff_map_of_injective {f : R →+* S} {p : Polynomial R} (hf : Function.Injective f) :
+    (p.map f).leadingCoeff = f (p.leadingCoeff) := by
+  unfold leadingCoeff
+  simp [hf, natDegree_map_eq_of_injective]
+
 theorem natDegree_pos_of_nextCoeff_ne_zero (h : p.nextCoeff ≠ 0) : 0 < p.natDegree := by
   grind [nextCoeff]
 
