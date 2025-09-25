@@ -190,7 +190,7 @@ lemma intervalIntegrable_charFun {μ : Measure ℝ} [IsFiniteMeasure μ] {a b : 
 lemma charFun_map_smul [BorelSpace E] (r : ℝ) (t : E) :
     charFun (μ.map (r • ·)) t = charFun μ (r • t) := by
   rw [charFun_apply, charFun_apply,
-    integral_map (by fun_prop) (Measurable.aestronglyMeasurable <| by fun_prop)]
+    integral_map (by fun_prop) (by fun_prop)]
   simp_rw [inner_smul_right, ← real_inner_smul_left]
 
 lemma charFun_map_mul {μ : Measure ℝ} (r t : ℝ) :
