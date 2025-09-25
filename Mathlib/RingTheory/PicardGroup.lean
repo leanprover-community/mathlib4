@@ -445,7 +445,7 @@ private theorem bijective_ofId_of_isLocalRing [IsLocalRing R] :
   let ⟨e⟩ := (free_iff_linearEquiv (R := R) (M := A)).mp inferInstance
   e.symm.algEquivOfRing.bijective
 
-noncomputable def algEquivOfRing : R ≃ₐ[R] A :=
+@[simps!] noncomputable def algEquivOfRing : R ≃ₐ[R] A :=
   .ofBijective (Algebra.ofId R A) <| by
     refine bijective_of_isLocalized_maximal
       (fun P _ ↦ Localization.AtPrime P)
