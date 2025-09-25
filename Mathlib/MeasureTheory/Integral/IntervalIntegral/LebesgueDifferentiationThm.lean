@@ -18,11 +18,10 @@ open MeasureTheory Set Filter Function IsUnifLocDoublingMeasure
 open scoped Topology
 
 /-- The interval version of the *Lebesgue Differentiation Theorem*: if `f : ℝ → ℝ` is locally
-integrable and `c : ℝ`, then for almost every `x`, the derivative of `∫ (t : ℝ) in c..x, f t` at
-`x` is equal to `f x`. -/
-theorem LocallyIntegrable.ae_hasDerivAt_integral {f : ℝ → ℝ} (hf : LocallyIntegrable f volume)
-    (c : ℝ) :
-    ∀ᵐ x, HasDerivAt (fun x => ∫ (t : ℝ) in c..x, f t) (f x) x := by
+integrable, then for almost every `x`, for any `c : ℝ`, the derivative of `∫ (t : ℝ) in c..x, f t`
+at `x` is equal to `f x`. -/
+theorem LocallyIntegrable.ae_hasDerivAt_integral {f : ℝ → ℝ} (hf : LocallyIntegrable f volume) :
+    ∀ᵐ x, ∀ c, HasDerivAt (fun x => ∫ (t : ℝ) in c..x, f t) (f x) x := by
   have hg (x y : ℝ) : IntervalIntegrable f volume x y :=
     intervalIntegrable_iff.mpr <|
       (hf.integrableOn_isCompact isCompact_uIcc).mono_set uIoc_subset_uIcc
@@ -30,6 +29,7 @@ theorem LocallyIntegrable.ae_hasDerivAt_integral {f : ℝ → ℝ} (hf : Locally
   have {a b : ℝ} : ∫ (t : ℝ) in Ioc a b, f t = ∫ (t : ℝ) in Icc a b, f t :=
     integral_Icc_eq_integral_Ioc (x := a) (y := b) (X := ℝ) |>.symm
   filter_upwards [LDT] with x hx
+  intro c
   rw [hasDerivAt_iff_tendsto_slope_left_right]
   constructor
   · refine Filter.tendsto_congr' ?_ |>.mpr (hx.comp x.tendsto_Icc_vitaliFamily_left)
@@ -45,22 +45,23 @@ theorem LocallyIntegrable.ae_hasDerivAt_integral {f : ℝ → ℝ} (hf : Locally
         intervalIntegral.integral_of_le, hy, this]
 
 /-- The interval version of the *Lebesgue Differentiation Theorem*: if `f : ℝ → ℝ` is integrable on
-`uIoc a b`, and `c ∈ uIoc a b`, then for almost every `x ∈ uIcc a b`, the derivative of
+`uIoc a b`, then for almost every `x ∈ uIcc a b`, for any `c ∈ uIoc a b`, the derivative of
 `∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`. -/
-theorem IntervalIntegrable.ae_hasDerivAt_integral {f : ℝ → ℝ} {a b c : ℝ}
-    (hf : IntervalIntegrable f volume a b) (hc : c ∈ uIcc a b) :
-    ∀ᵐ x, x ∈ uIcc a b → HasDerivAt (fun x => ∫ (t : ℝ) in c..x, f t) (f x) x := by
+theorem IntervalIntegrable.ae_hasDerivAt_integral {f : ℝ → ℝ} {a b : ℝ}
+    (hf : IntervalIntegrable f volume a b) :
+    ∀ᵐ x, x ∈ uIcc a b → ∀ c ∈ uIcc a b, HasDerivAt (fun x => ∫ (t : ℝ) in c..x, f t) (f x) x := by
   wlog hab : a ≤ b
-  · exact uIcc_comm b a ▸ @this f b a c hf.symm (uIcc_comm a b ▸ hc) (by linarith)
-  rw [uIcc_of_le hab] at hc ⊢
+  · exact uIcc_comm b a ▸ @this f b a hf.symm (by linarith)
+  rw [uIcc_of_le hab]
   have h₁ : ∀ᵐ x, x ≠ a := by simp [ae_iff, measure_singleton]
   have h₂ : ∀ᵐ x, x ≠ b := by simp [ae_iff, measure_singleton]
   let g (x : ℝ) := if x ∈ Ioc a b then f x else 0
   have hg : LocallyIntegrable g volume :=
     integrableOn_congr_fun (by grind [EqOn]) (by simp) |>.mpr hf.left
       |>.integrable_of_forall_notMem_eq_zero (by grind) |>.locallyIntegrable
-  filter_upwards [LocallyIntegrable.ae_hasDerivAt_integral hg c, h₁, h₂] with x hx _ _ _
+  filter_upwards [LocallyIntegrable.ae_hasDerivAt_integral hg, h₁, h₂] with x hx _ _ _
+  intro c hc
   refine HasDerivWithinAt.hasDerivAt (s := Ioo a b) ?_ <| Ioo_mem_nhds (by grind) (by grind)
   rw [show f x = g x by grind]
-  refine hx.hasDerivWithinAt.congr (fun y hy ↦ ?_) ?_
+  refine (hx c).hasDerivWithinAt.congr (fun y hy ↦ ?_) ?_
   all_goals apply intervalIntegral.integral_congr_ae' <;> filter_upwards <;> grind
