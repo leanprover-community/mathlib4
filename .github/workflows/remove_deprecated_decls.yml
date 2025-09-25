@@ -82,11 +82,6 @@ jobs:
         printf -- $'\nHere is the content of git diff:\n---\n'
         git diff
 
-        # TODO: remove the following command once everything is working
-        printf -- $'---\nHere is the content of Mathlib/New.lean:\n---\n'
-        cat Mathlib/New.lean
-        #exit 1 # still WIP, don't do anything below
-
     - name: configure git setup
       run: |
         git remote add origin-bot "https://leanprover-community-bot:${{ secrets.UPDATE_NOLINTS_TOKEN }}@github.com/leanprover-community/mathlib4.git"
