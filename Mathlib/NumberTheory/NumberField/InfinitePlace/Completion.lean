@@ -59,13 +59,22 @@ open AbsoluteValue.Completion
 
 variable {K : Type*} [Field K] (v : InfinitePlace K)
 
+theorem isometry_embedding : Isometry (v.embedding.comp (WithAbs.equiv v.1).toRingHom) :=
+  AddMonoidHomClass.isometry_of_norm _ fun x ↦ by
+    simpa using v.norm_embedding_eq (WithAbs.equiv v.1 x)
+
+theorem isometry_embedding_of_isReal (hv : v.IsReal) :
+    Isometry ((v.embedding_of_isReal hv).comp (WithAbs.equiv v.1).toRingHom) :=
+  AddMonoidHomClass.isometry_of_norm _ fun x ↦ by
+    simpa using v.norm_embedding_of_isReal hv (WithAbs.equiv v.1 x)
+
 /-- The completion of a number field at an infinite place. -/
 abbrev Completion := v.1.Completion
 
 namespace Completion
 
 instance : NormedField v.Completion :=
-  letI := (WithAbs.isUniformInducing_of_comp v.norm_embedding_eq).completableTopField
+  letI := v.isometry_embedding.isUniformInducing.completableTopField
   UniformSpace.Completion.instNormedFieldOfCompletableTopField (WithAbs v.1)
 
 lemma norm_coe (x : WithAbs v.1) :
@@ -89,48 +98,48 @@ lemma Rat.norm_infinitePlace_completion (v : InfinitePlace ℚ) (x : ℚ) :
 
 /-- The completion of a number field at an infinite place is locally compact. -/
 instance locallyCompactSpace : LocallyCompactSpace (v.Completion) :=
-  AbsoluteValue.Completion.locallyCompactSpace v.norm_embedding_eq
+  AbsoluteValue.Completion.locallyCompactSpace v.isometry_embedding
 
 /-- The embedding associated to an infinite place extended to an embedding `v.Completion →+* ℂ`. -/
-def extensionEmbedding : v.Completion →+* ℂ := extensionEmbeddingOfComp v.norm_embedding_eq
+def extensionEmbedding : v.Completion →+* ℂ := v.isometry_embedding.extensionHom
 
 /-- The embedding `K →+* ℝ` associated to a real infinite place extended to `v.Completion →+* ℝ`. -/
 def extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completion →+* ℝ :=
-  extensionEmbeddingOfComp <| v.norm_embedding_of_isReal hv
+  (v.isometry_embedding_of_isReal hv).extensionHom
 
 @[simp]
 theorem extensionEmbedding_coe (x : K) : extensionEmbedding v x = v.embedding x :=
-  extensionEmbeddingOfComp_coe v.norm_embedding_eq x
+  v.isometry_embedding.extensionHom_coe _
 
 @[simp]
 theorem extensionEmbeddingOfIsReal_coe {v : InfinitePlace K} (hv : IsReal v) (x : K) :
     extensionEmbeddingOfIsReal hv x = embedding_of_isReal hv x :=
-  extensionEmbeddingOfComp_coe (v.norm_embedding_of_isReal hv) x
+  (v.isometry_embedding_of_isReal hv).extensionHom_coe _
 
 @[deprecated (since := "2025-09-24")]
 alias extensionEmbedding_of_isReal_coe := extensionEmbeddingOfIsReal_coe
 
 /-- The embedding `v.Completion →+* ℂ` is an isometry. -/
 theorem isometry_extensionEmbedding : Isometry (extensionEmbedding v) :=
-  Isometry.of_dist_eq (extensionEmbeddingOfComp_dist_eq v.norm_embedding_eq)
+  v.isometry_embedding.completion_extension
 
 /-- The embedding `v.Completion →+* ℝ` at a real infinite place is an isometry. -/
 theorem isometry_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) :
     Isometry (extensionEmbeddingOfIsReal hv) :=
-  Isometry.of_dist_eq (extensionEmbeddingOfComp_dist_eq <| v.norm_embedding_of_isReal hv)
+  (v.isometry_embedding_of_isReal hv).completion_extension
 
 @[deprecated (since := "2025-09-24")]
 alias isometry_extensionEmbedding_of_isReal := isometry_extensionEmbeddingOfIsReal
 
 /-- The embedding `v.Completion →+* ℂ` has closed image inside `ℂ`. -/
 theorem isClosed_image_extensionEmbedding : IsClosed (Set.range (extensionEmbedding v)) :=
-  (isClosedEmbedding_extensionEmbeddingOfComp v.norm_embedding_eq).isClosed_range
+  v.isometry_embedding.completion_extension.isClosedEmbedding.isClosed_range
 
 /-- The embedding `v.Completion →+* ℝ` associated to a real infinite place has closed image
 inside `ℝ`. -/
 theorem isClosed_image_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) :
     IsClosed (Set.range (extensionEmbeddingOfIsReal hv)) :=
-  (isClosedEmbedding_extensionEmbeddingOfComp <| v.norm_embedding_of_isReal hv).isClosed_range
+  (v.isometry_embedding_of_isReal hv).completion_extension.isClosedEmbedding.isClosed_range
 
 @[deprecated (since := "2025-09-24")]
 alias isClosed_image_extensionEmbedding_of_isReal := isClosed_image_extensionEmbeddingOfIsReal

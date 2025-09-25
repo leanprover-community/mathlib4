@@ -208,3 +208,9 @@ def Isometry.extensionHom [Ring α] [IsTopologicalRing α] [IsUniformAddGroup α
     [PseudoMetricSpace β] [IsUniformAddGroup β] [IsTopologicalRing β] [CompleteSpace β]
     [T0Space β] {f : α →+* β} (h : Isometry f) : Completion α →+* β :=
   Completion.extensionHom f h.continuous
+
+theorem Isometry.extensionHom_coe [Ring α] [IsTopologicalRing α] [IsUniformAddGroup α] [Ring β]
+    [PseudoMetricSpace β] [IsUniformAddGroup β] [IsTopologicalRing β] [CompleteSpace β]
+    [T0Space β] {f : α →+* β} (h : Isometry f) (x : α) :
+    h.extensionHom x = f x :=
+  UniformSpace.Completion.extensionHom_coe f h.continuous _
