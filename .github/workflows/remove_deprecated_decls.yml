@@ -45,7 +45,7 @@ jobs:
           # TODO: provide date input to lake build here via DATE_RANGE
           # WARNING: make sure the string is escaped properly as this is user input!
           # can we pass the environment variable directly to lake?
-          lake build > linter.out
+          lake build | tee linter.out
 
           # TODO: do the same for Archive/ and Counterexamples/
 
@@ -53,7 +53,7 @@ jobs:
           echo '#!/bin/bash' > delete_deprecations.sh
           # WARNING: we assume that all lines in the output of 'lake build' that begin with "mv" are safe to run
           # the rest of the build should be silent as we will only ever run this on master
-          grep linter.out "$mv" >> delete_deprecations.sh
+          grep "$mv" linter.out >> delete_deprecations.sh
           chmod 755 delete_deprecations.sh
 
           cat delete_deprecations.sh
