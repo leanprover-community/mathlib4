@@ -87,7 +87,7 @@ jobs:
         SHA=${{ github.sha }} \
         REPO=${{ github.repository }} \
         RUN_ID=${{ github.run_id }} \
-        SUCCESS=${{ success() }} \
+        SUCCESS=${{ job.status == 'success' }} \
           ./scripts/zulip_build_report.sh "${{ steps.buildlog.outputs.filename }}" > "${GITHUB_OUTPUT}"
 
     - name: Post output to Zulip

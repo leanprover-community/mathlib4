@@ -79,11 +79,9 @@ jobs:
         id: buildlog
         working-directory: docbuild
         run: |
-          echo -n "lean4checker-filename=" >> "${GITHUB_OUTPUT}"
-          mktemp >> "${GITHUB_OUTPUT}"
-
-          echo -n "mathlib-test-filename=" >> "${GITHUB_OUTPUT}"
-          mktemp >> "${GITHUB_OUTPUT}"
+          (echo -n "lean4checker-filename="; mktemp) >> "${GITHUB_OUTPUT}"
+          # Use a separate file for the `mathlib_test_executable` output, to post in a different Zulip thread.
+          (echo -n "mathlib-test-filename="; mktemp) >> "${GITHUB_OUTPUT}"
 
       - name: Check environments using lean4checker
         id: lean4checker
@@ -108,7 +106,7 @@ jobs:
           # Now that the git hash is embedded in each olean,
           # we need to compile lean4checker on the same toolchain
           cp ../lean-toolchain .
-          lake build | tee -a "${{ steps.buildlog.lean4checker-filename }}"
+          lake build | tee -a "${{ steps.buildlog.outputs.lean4checker-filename }}"
           ./test.sh
           cd ..
           # After https://github.com/leanprover/lean4checker/pull/26
@@ -120,7 +118,7 @@ jobs:
         id: mathlib-test
         continue-on-error: true
         run: |
-          lake exe mathlib_test_executable | tee -a "${{ steps.buildlog.mathlib-test-filename }}"
+          lake exe mathlib_test_executable | tee -a "${{ steps.buildlog.outputs.mathlib-test-filename }}"
 
       - name: Prepare lean4checker Zulip report
         id: lean4checker-zulip-report
@@ -130,8 +128,8 @@ jobs:
           SHA=${{ github.sha }} \
           REPO=${{ github.repository }} \
           RUN_ID=${{ github.run_id }} \
-          SUCCESS=${{ steps.lean4checker.outcome == "success" }} \
-            ./scripts/zulip_build_report.sh "${{ steps.buildlog.lean4checker-filename }}" >> "${GITHUB_OUTPUT}"
+          SUCCESS=${{ steps.lean4checker.outcome == 'success' }} \
+            ./scripts/zulip_build_report.sh "${{ steps.buildlog.outputs.lean4checker-filename }}" >> "${GITHUB_OUTPUT}"
         continue-on-error: true
 
       - name: Post message for lean4checker on Zulip
@@ -155,8 +153,8 @@ jobs:
           SHA=${{ github.sha }} \
           REPO=${{ github.repository }} \
           RUN_ID=${{ github.run_id }} \
-          SUCCESS=${{ steps.mathlib-test.outcome == "success" }} \
-            ./scripts/zulip_build_report.sh "${{ steps.buildlog.mathlib-test-filename }}" >> "${GITHUB_OUTPUT}"
+          SUCCESS=${{ steps.mathlib-test.outcome == 'success' }} \
+            ./scripts/zulip_build_report.sh "${{ steps.buildlog.outputs.mathlib-test-filename }}" >> "${GITHUB_OUTPUT}"
         continue-on-error: true
 
       - name: Post success message for mathlib_test_executable on Zulip
