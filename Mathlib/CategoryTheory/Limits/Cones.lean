@@ -400,6 +400,17 @@ def whiskeringEquivalence (e : K ≌ J) : Cone F ≌ Cone (e.functor ⋙ F) wher
 def equivalenceOfReindexing {G : K ⥤ C} (e : K ≌ J) (α : e.functor ⋙ F ≅ G) : Cone F ≌ Cone G :=
   (whiskeringEquivalence e).trans (postcomposeEquivalence α)
 
+
+/-- Given a cone isomorphism, produce an isomorphism of the object parts. -/
+@[simps!]
+def IsoPt {c c' : Cone F} (e : c ≅ c') : c.pt ≅ c'.pt where
+  hom := e.hom.hom
+  inv := e.inv.hom
+
+/-- `Cones.IsoPt` is compatible with `π`. -/
+lemma isoPt_π {c c' : Cone F} (e : c ≅ c') (j : J) : (IsoPt e).hom ≫ c'.π.app j = c.π.app j :=
+  e.hom.w j
+
 section
 
 variable (F)
@@ -614,6 +625,16 @@ The categories of cocones over `F` and `G` are equivalent if `F` and `G` are nat
 @[simps! functor_obj]
 def equivalenceOfReindexing {G : K ⥤ C} (e : K ≌ J) (α : e.functor ⋙ F ≅ G) : Cocone F ≌ Cocone G :=
   (whiskeringEquivalence e).trans (precomposeEquivalence α.symm)
+
+/-- Given a cocone isomorphism, produce an isomorphism of the object parts. -/
+@[simps!]
+def IsoPt {c c' : Cocone F} (e : c ≅ c') : c.pt ≅ c'.pt where
+  hom := e.hom.hom
+  inv := e.inv.hom
+
+/-- `Cocones.IsoPt` is compatible with `ι`. -/
+lemma isoPt_ι {c c' : Cocone F} (e : c ≅ c') (j : J) : c.ι.app j ≫ (IsoPt e).hom = c'.ι.app j :=
+  e.hom.w j
 
 section
 
@@ -831,6 +852,16 @@ def mapConeWhisker {E : K ⥤ J} {c : Cone F} : mapCone H (c.whisker E) ≅ (map
 def mapCoconeWhisker {E : K ⥤ J} {c : Cocone F} :
     mapCocone H (c.whisker E) ≅ (mapCocone H c).whisker E :=
   Cocones.ext (Iso.refl _)
+
+/-- `mapCone` is compatible with `Cones.IsoPt`. -/
+lemma mapCone_π_isoPt {c c' : Cone F} (e : c ≅ c') (j : J) :
+    (H.mapIso (Cones.IsoPt e)).hom ≫ (H.mapCone c').π.app j = (H.mapCone c).π.app j :=
+  ((Cones.functoriality F H).mapIso e).hom.w j
+
+/-- `mapCocone` is compatible with `Cocones.IsoPt`. -/
+lemma mapCocone_ι_isoPt {c c' : Cocone F} (e : c ≅ c') (j : J) :
+    (H.mapCocone c).ι.app j ≫ (H.mapIso (Cocones.IsoPt e)).hom = (H.mapCocone c').ι.app j :=
+  ((Cocones.functoriality F H).mapIso e).hom.w j
 
 end Functor
 
