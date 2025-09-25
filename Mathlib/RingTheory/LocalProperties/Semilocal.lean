@@ -18,8 +18,8 @@ finitely many maximal ideals).
   localization at every maximal ideal is finite.
 * `IsNoetherianRing.of_isLocalization_maximal`: A semilocal ring `R` is Noetherian if its
   localization at every maximal ideal is a Noetherian ring.
-* `isPrincipalIdealRing_of_isPrincipalIdealRing_isLocalization`: A semilocal integral domain `A` is a
-  PID if its localization at every maximal ideal is a PID.
+* `isPrincipalIdealRing_of_isPrincipalIdealRing_isLocalization`: A semilocal integral domain `A` is
+  a PID if its localization at every maximal ideal is a PID.
 -/
 
 section CommSemiring
@@ -94,7 +94,7 @@ theorem IsNoetherianRing.of_isLocalization_maximal
     (H : ∀ (P : Ideal R) [P.IsMaximal], IsNoetherianRing (Rₚ P)) :
     IsNoetherianRing R where
   noetherian N := Submodule.fg_of_isLocalized_maximal
-    Rₚ Rₚ (fun P _ => Algebra.linearMap R (Rₚ P)) N fun _ _ => IsNoetherian.noetherian _
+    Rₚ Rₚ (fun P _ => Algebra.linearMap R (Rₚ P)) N fun _ _ ↦ IsNoetherian.noetherian _
 
 end IsLocalization
 
