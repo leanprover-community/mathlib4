@@ -39,27 +39,35 @@ variable {K : Type*} [Field K] {v : AbsoluteValue K ℝ} {L : Type*} [NormedFiel
 
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
 `f` is an isometry. -/
-theorem isometry_of_comp (h : ∀ x, ‖f x‖ = v (equiv v x)) : Isometry f :=
-  Isometry.of_dist_eq <| fun x y => by simp only [‹NormedField L›.dist_eq, ← f.map_sub, h]; rfl
+@[deprecated AddMonoidHomClass.isometry_of_norm (since := "2025-09-25")]
+theorem isometry_of_comp (h : ∀ x, ‖f x‖ = v x) : Isometry f :=
+  AddMonoidHomClass.isometry_of_norm _ h
 
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
 the pseudo metric space associated to the absolute value is the same as the pseudo metric space
 induced by `f`. -/
-theorem pseudoMetricSpace_induced_of_comp (h : ∀ x, ‖f x‖ = v (equiv v x)) :
+@[deprecated "Use Isometry.dist_eq in combination with AddMonoidHomClass.isometry_of_norm"
+  (since := "2025-09-25")]
+theorem pseudoMetricSpace_induced_of_comp (h : ∀ x, ‖f x‖ = v x) :
     PseudoMetricSpace.induced f inferInstance = (normedField v).toPseudoMetricSpace := by
-  ext; exact isometry_of_comp h |>.dist_eq _ _
+  ext; exact AddMonoidHomClass.isometry_of_norm _ h |>.dist_eq _ _
 
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
 the uniform structure associated to the absolute value is the same as the uniform structure
 induced by `f`. -/
-theorem uniformSpace_comap_eq_of_comp (h : ∀ x, ‖f x‖ = v (equiv v x)) :
-    UniformSpace.comap f inferInstance = (normedField v).toUniformSpace := by
-  simp only [← pseudoMetricSpace_induced_of_comp h, PseudoMetricSpace.toUniformSpace]
+@[deprecated "Use IsUniformInducing.comap_uniformSpace in combination with
+  AddMonoidHomClass.isometry_of_norm" (since := "2025-09-25")]
+theorem uniformSpace_comap_eq_of_comp (h : ∀ x, ‖f x‖ = v x) :
+    UniformSpace.comap f inferInstance = (normedField v).toUniformSpace :=
+  IsUniformInducing.comap_uniformSpace
+    (AddMonoidHomClass.isometry_of_norm _ h).isUniformInducing
 
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
 `f` is uniform inducing. -/
-theorem isUniformInducing_of_comp (h : ∀ x, ‖f x‖ = v (equiv v x)) : IsUniformInducing f :=
-  isUniformInducing_iff_uniformSpace.2 <| uniformSpace_comap_eq_of_comp h
+@[deprecated "Use Isometry.isUniformInducing in combination with
+  AddMonoidHomClass.isometry_of_norm" (since := "2025-09-25")]
+theorem isUniformInducing_of_comp (h : ∀ x, ‖f x‖ = v x) : IsUniformInducing f :=
+  (AddMonoidHomClass.isometry_of_norm _ h).isUniformInducing
 
 end WithAbs
 
@@ -81,54 +89,46 @@ variable {L : Type*} [NormedField L] [CompleteSpace L] {f : WithAbs v →+* L} {
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field
 `L`, then we can extend that embedding to an embedding on the completion `v.Completion →+* L`. -/
-abbrev extensionEmbeddingOfComp (h : ∀ x, ‖f x‖ = v (equiv v x)) : v.Completion →+* L :=
-  UniformSpace.Completion.extensionHom _ (isUniformInducing_of_comp h).uniformContinuous.continuous
+@[deprecated Isometry.extensionHom (since := "2025-09-25")]
+abbrev extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v x) : v.Completion →+* L :=
+  (AddMonoidHomClass.isometry_of_norm _ h).extensionHom
 
-theorem extensionEmbeddingOfComp_coe (h : ∀ x, ‖f x‖ = v (equiv v x)) (x : K) :
-    extensionEmbeddingOfComp h x = f x := by
-  rw [← UniformSpace.Completion.extensionHom_coe f
-    (isUniformInducing_of_comp h).uniformContinuous.continuous]
+@[deprecated "Use Isometry.extensionHom_coe in combination with AddMonoidHomClass.isometry_of_norm"
+  (since := "2025-09-25")]
+theorem extensionEmbedding_of_comp_coe (h : ∀ x, ‖f x‖ = v x) (x : K) :
+    (AddMonoidHomClass.isometry_of_norm _ h).extensionHom x = f x :=
+  AddMonoidHomClass.isometry_of_norm _ h |>.extensionHom_coe _
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
 then the extended embedding `v.Completion →+* L` preserves distances. -/
-theorem extensionEmbeddingOfComp_dist_eq (h : ∀ x, ‖f x‖ = v (equiv v x))
-    (x y : v.Completion) :
-    dist (extensionEmbeddingOfComp h x) (extensionEmbeddingOfComp h y) =
-      dist x y := by
-  refine UniformSpace.Completion.induction_on₂ x y ?_ (fun x y => ?_)
-  · refine isClosed_eq ?_ continuous_dist
-    exact continuous_iff_continuous_dist.1 UniformSpace.Completion.continuous_extension
-  · simp only [extensionEmbeddingOfComp_coe]
-    exact UniformSpace.Completion.dist_eq x y ▸ (WithAbs.isometry_of_comp h).dist_eq _ _
+@[deprecated "Use Isometry.dist_eq in combination with AddMonoidHomClass.isometry_of_norm"
+  (since := "2025-09-25")]
+theorem extensionEmbedding_dist_eq_of_comp (h : ∀ x, ‖f x‖ = v x) (x y : v.Completion) :
+    let f := AddMonoidHomClass.isometry_of_norm _ h |>.extensionHom
+    dist (f x) (f y) = dist x y :=
+  AddMonoidHomClass.isometry_of_norm _ h |>.completion_extension.dist_eq _ _
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
 then the extended embedding `v.Completion →+* L` is an isometry. -/
-theorem isometry_extensionEmbeddingOfComp (h : ∀ x, ‖f x‖ = v (equiv v x)) :
-    Isometry (extensionEmbeddingOfComp h) :=
-  Isometry.of_dist_eq <| extensionEmbeddingOfComp_dist_eq h
+@[deprecated "Use Isometry.completion_extension in combination with
+  AddMonoidHomClass.isometry_of_norm" (since := "2025-09-25")]
+theorem isometry_extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v x) :
+    Isometry (AddMonoidHomClass.isometry_of_norm _ h |>.extensionHom) :=
+  AddMonoidHomClass.isometry_of_norm _ h |>.completion_extension
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
 then the extended embedding `v.Completion →+* L` is a closed embedding. -/
-theorem isClosedEmbedding_extensionEmbeddingOfComp (h : ∀ x, ‖f x‖ = v (equiv v x)) :
-    IsClosedEmbedding (extensionEmbeddingOfComp h) :=
-  (isometry_extensionEmbeddingOfComp h).isClosedEmbedding
-
-@[deprecated (since := "2025-09-24")]
-noncomputable alias extensionEmbedding_of_comp := extensionEmbeddingOfComp
-@[deprecated (since := "2025-09-24")]
-alias extensionEmbedding_of_comp_coe := extensionEmbeddingOfComp_coe
-@[deprecated (since := "2025-09-24")]
-alias extensionEmbedding_dist_eq_of_comp := extensionEmbeddingOfComp_dist_eq
-@[deprecated (since := "2025-09-24")]
-alias isometry_extensionEmbedding_of_comp := isometry_extensionEmbeddingOfComp
-@[deprecated (since := "2025-09-24")]
-alias isClosedEmbedding_extensionEmbedding_of_comp := isClosedEmbedding_extensionEmbeddingOfComp
+@[deprecated "Use Isometry.isClosedEmbedding in combination with Isometry.completion_extension
+  and AddMonoidHomClass.isometry_of_norm" (since := "2025-09-25")]
+theorem isClosedEmbedding_extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v x) :
+    IsClosedEmbedding (AddMonoidHomClass.isometry_of_norm _ h |>.extensionHom) :=
+  (AddMonoidHomClass.isometry_of_norm _ h).completion_extension.isClosedEmbedding
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field
 that is locally compact, then the completion of the first normed field is also locally compact. -/
-theorem locallyCompactSpace [LocallyCompactSpace L] (h : ∀ x, ‖f x‖ = v (equiv v x)) :
+theorem locallyCompactSpace [LocallyCompactSpace L] (h : Isometry f) :
     LocallyCompactSpace (v.Completion) :=
-  (isClosedEmbedding_extensionEmbeddingOfComp h).locallyCompactSpace
+  h.completion_extension.isClosedEmbedding.locallyCompactSpace
 
 section RingHomLift
 
@@ -137,24 +137,20 @@ variable {K L : Type*} [Field K] [Field L] {w : AbsoluteValue L ℝ} {σ : WithA
 /-- If `L/K` and `w` is an absolute value on `L` factors through `K` via an embedding `σ : K →+* L`
 to give the absolute value `v` on `K`, then `mapOfComp` is natural ring homomorphism
 `v.Completion →+* w.Completion` lifting `σ`. -/
-abbrev mapOfComp (h : ∀ x, w (equiv w (σ x)) = v (equiv v x)) :
+abbrev mapOfComp (h : Isometry σ) :
     v.Completion →+* w.Completion :=
-  UniformSpace.Completion.mapRingHom σ (isUniformInducing_of_comp h).uniformContinuous.continuous
+  h.mapRingHom
 
-theorem mapOfComp_coe (h : ∀ x, w (equiv w (σ x)) = v (equiv v x)) (x : WithAbs v) :
+theorem mapOfComp_coe (h : Isometry σ) (x : WithAbs v) :
     mapOfComp h x = σ x :=
-  UniformSpace.Completion.mapRingHom_coe (isUniformInducing_of_comp h).uniformContinuous x
+  h.mapRingHom_coe _
 
-theorem mapOfComp_dist_eq (h : ∀ x, w (equiv w (σ x)) = v (equiv v x)) (x y : v.Completion) :
-    dist (mapOfComp h x) (mapOfComp h y) = dist x y := by
-  refine UniformSpace.Completion.induction_on₂ x y ?_ fun x y => ?_
-  · refine isClosed_eq ?_ continuous_dist
-    exact continuous_iff_continuous_dist.1 UniformSpace.Completion.continuous_extension
-  · rw [mapOfComp_coe, mapOfComp_coe, UniformSpace.Completion.dist_eq]
-    exact UniformSpace.Completion.dist_eq x y ▸ (isometry_of_comp h).dist_eq x y
+theorem mapOfComp_dist_eq (h : Isometry σ) (x y : v.Completion) :
+    dist (mapOfComp h x) (mapOfComp h y) = dist x y :=
+  h.completion_map.dist_eq _ _
 
-theorem isometry_mapOfComp (h : ∀ x, w (equiv w (σ x)) = v (equiv v x)) :
-    Isometry (mapOfComp h) := Isometry.of_dist_eq <| mapOfComp_dist_eq h
+theorem isometry_mapOfComp (h : Isometry σ) :
+    Isometry (mapOfComp h) := h.completion_map
 
 end RingHomLift
 

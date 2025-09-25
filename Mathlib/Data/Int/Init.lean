@@ -107,7 +107,7 @@ where
   neg : ∀ n : ℕ, motive (b + -[n+1])
   | 0 => pred _ Int.le_rfl zero
   | n + 1 => by
-    refine cast (by rw [Int.add_sub_assoc]; rfl) (pred _ (Int.le_of_lt ?_) (neg n))
+    refine cast (by cutsat) (pred _ (Int.le_of_lt ?_) (neg n))
     cutsat
 
 variable {z b zero succ pred}
@@ -143,13 +143,7 @@ end inductionOn'
 @[elab_as_elim]
 protected lemma le_induction {m : ℤ} {motive : ∀ n, m ≤ n → Prop} (base : motive m m.le_refl)
     (succ : ∀ n hmn, motive n hmn → motive (n + 1) (le_add_one hmn)) : ∀ n hmn, motive n hmn := by
-  refine fun n ↦ Int.inductionOn' n m ?_ ?_ ?_
-  · intro
-    exact base
-  · intro k hle hi _
-    exact succ k hle (hi hle)
-  · intro k hle _ hle'
-    cutsat
+  refine fun n ↦ Int.inductionOn' n m ?_ ?_ ?_ <;> grind
 
 /-- See `Int.inductionOn'` for an induction in both directions. -/
 @[elab_as_elim]
