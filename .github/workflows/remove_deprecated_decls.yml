@@ -55,8 +55,8 @@ jobs:
           # WARNING: we assume that all lines in the output of 'lake build' that begin with "mv" are safe to run
           # the rest of the build should be silent as we will only ever run this on master
           grep "$mv" linter.out >> delete_deprecations.sh
+          printf $'\nHere is the content of delete_deprecations.sh:\n---\n'
           chmod 755 delete_deprecations.sh
-
           cat delete_deprecations.sh
 
       - name: remove outdated deprecated declarations
@@ -72,7 +72,6 @@ jobs:
             echo "Dry run enabled, not modifying files"
           else
             echo "Modifying files..."
-            chmod u+x delete_deprecations.sh
             ./delete_deprecations.sh
           fi
 
