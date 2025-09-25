@@ -105,11 +105,6 @@ theorem extensionEmbedding_coe (x : WithAbs v.1) :
   extensionEmbeddingOfComp_coe v.norm_embedding_eq x
 
 @[simp]
-theorem extensionEmbedding_coeTail (x : K) :
-    extensionEmbedding v x = v.embedding x:= by
-  rw [extensionEmbedding_coe, RingEquiv.apply_symm_apply]
-
-@[simp]
 theorem extensionEmbeddingOfIsReal_coe {v : InfinitePlace K} (hv : IsReal v) (x : WithAbs v.1) :
     extensionEmbeddingOfIsReal hv x = embedding_of_isReal hv (WithAbs.equiv v.1 x) :=
   extensionEmbeddingOfComp_coe (v.norm_embedding_of_isReal hv) x
@@ -152,10 +147,10 @@ alias isClosed_image_extensionEmbedding_of_isReal := isClosed_image_extensionEmb
 theorem subfield_ne_real_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) :
     (extensionEmbedding v).fieldRange ≠ Complex.ofRealHom.fieldRange := by
   contrapose! hv
-  simp only [not_isComplex_iff_isReal, isReal_iff]
-  ext x
-  obtain ⟨r, hr⟩ := hv ▸ extensionEmbedding_coeTail v x ▸ RingHom.mem_fieldRange_self _ _
-  simp only [ComplexEmbedding.conjugate_coe_eq, ← hr, Complex.ofRealHom_eq_coe, Complex.conj_ofReal]
+  refine not_isComplex_iff_isReal.2 <| isReal_iff.2 <| RingHom.ext fun x ↦ ?_
+  obtain ⟨r, hr⟩ := hv ▸ RingHom.mem_fieldRange_self (extensionEmbedding v) (x : v.Completion)
+  rw [extensionEmbedding_coe, RingEquiv.apply_symm_apply] at hr
+  simp [← hr]
 
 /-- If `v` is a complex infinite place, then the embedding `v.Completion →+* ℂ` is surjective. -/
 theorem surjective_extensionEmbedding_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) :
