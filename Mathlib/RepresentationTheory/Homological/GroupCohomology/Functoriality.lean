@@ -203,10 +203,7 @@ alias cochainsMap_f_0_comp_zeroCochainsLequiv := cochainsMap_f_0_comp_cochainsIs
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cochainsMap_f_1_comp_cochainsIso₁ :
-    (cochainsMap f φ).f 1 ≫ (cochainsIso₁ B).hom = (cochainsIso₁ A).hom ≫ cochainsMap₁ f φ := by
-  ext x
-  simp only [cochainsMap_f]
-  rfl
+    (cochainsMap f φ).f 1 ≫ (cochainsIso₁ B).hom = (cochainsIso₁ A).hom ≫ cochainsMap₁ f φ := rfl
 
 @[deprecated (since := "2025-06-25")]
 alias cochainsMap_f_1_comp_oneCochainsIso := cochainsMap_f_1_comp_cochainsIso₁

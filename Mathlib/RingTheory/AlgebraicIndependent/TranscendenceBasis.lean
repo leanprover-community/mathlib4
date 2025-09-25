@@ -3,8 +3,8 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Matroid.IndepAxioms
-import Mathlib.Data.Matroid.Rank.Cardinal
+import Mathlib.Combinatorics.Matroid.IndepAxioms
+import Mathlib.Combinatorics.Matroid.Rank.Cardinal
 import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
 import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 
@@ -262,9 +262,9 @@ private def indepMatroid : IndepMatroid A where
     rw [← isTranscendenceBasis_iff_maximal] at B_base ⊢
     cases subsingleton_or_nontrivial R
     · rw [isTranscendenceBasis_iff_of_subsingleton] at B_base ⊢
-      contrapose! h
+      by_contra!
       have ⟨b, hb⟩ := B_base
-      exact ⟨b, ⟨hb, fun hbI ↦ h ⟨b, hbI⟩⟩, .of_subsingleton⟩
+      exact h b ⟨hb, fun hbI ↦ this ⟨b, hbI⟩⟩ .of_subsingleton
     apply I_ind.isTranscendenceBasis_iff_isAlgebraic.mpr
     replace B_base := B_base.isAlgebraic
     simp_rw [id_eq]
@@ -475,7 +475,7 @@ theorem isTranscendenceBasis_of_lift_le_trdeg_of_finite
     [Finite ι] [alg : Algebra.IsAlgebraic (adjoin R (range x)) A]
     (le : lift.{w} #ι ≤ lift.{u} (trdeg R A)) : IsTranscendenceBasis R x := by
   have ⟨_, h⟩ := lift_mk_le'.mp (le.trans <| lift_le.mpr <| trdeg_le_cardinalMk R (range x))
-  have := surjective_onto_range.bijective_of_nat_card_le (Nat.card_le_card_of_injective _ h)
+  have := rangeFactorization_surjective.bijective_of_nat_card_le (Nat.card_le_card_of_injective _ h)
   refine .of_subtype_range (fun _ _ ↦ (this.1 <| Subtype.ext ·)) ?_
   have := isDomain_of_adjoin_range R (range x)
   rw [← matroid_spanning_iff, ← matroid_cRank_eq] at *

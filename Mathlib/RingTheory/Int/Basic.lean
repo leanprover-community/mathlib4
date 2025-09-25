@@ -92,15 +92,20 @@ theorem prime_two_or_dvd_of_dvd_two_mul_pow_self_two {m : ℤ} {p : ℕ} (hp : N
     rw [sq, Int.natAbs_mul] at hpp
     exact or_self_iff.mp ((Nat.Prime.dvd_mul hp).mp hpp)
 
-theorem Int.exists_prime_and_dvd {n : ℤ} (hn : n.natAbs ≠ 1) : ∃ p, Prime p ∧ p ∣ n := by
+namespace Int
+
+theorem exists_prime_and_dvd {n : ℤ} (hn : n.natAbs ≠ 1) : ∃ p, Prime p ∧ p ∣ n := by
   obtain ⟨p, pp, pd⟩ := Nat.exists_prime_and_dvd hn
   exact ⟨p, Nat.prime_iff_prime_int.mp pp, Int.natCast_dvd.mpr pd⟩
 
-
-theorem Int.prime_iff_natAbs_prime {k : ℤ} : Prime k ↔ Nat.Prime k.natAbs :=
+theorem prime_iff_natAbs_prime {k : ℤ} : Prime k ↔ Nat.Prime k.natAbs :=
   (Int.associated_natAbs k).prime_iff.trans Nat.prime_iff_prime_int.symm
 
-namespace Int
+instance instDecidablePredPrime : DecidablePred (Prime : ℤ → Prop) := fun m ↦
+  decidable_of_iff (Nat.Prime m.natAbs) prime_iff_natAbs_prime.symm
+
+instance (priority := 100) : DecidablePred (Irreducible : ℤ → Prop) := fun m ↦
+  decidable_of_iff (Prime m) irreducible_iff_prime.symm
 
 theorem span_natAbs (a : ℤ) : Ideal.span ({(a.natAbs : ℤ)} : Set ℤ) = Ideal.span {a} := by
   rw [Ideal.span_singleton_eq_span_singleton]

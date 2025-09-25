@@ -158,6 +158,25 @@ theorem contMDiffWithinAt_id : ContMDiffWithinAt I I n (id : M → M) s x :=
 
 end id
 
+/-! ### Iterated functions -/
+
+section Iterate
+
+/-- The iterates of `C^n` functions on domains are `C^n`. -/
+theorem ContMDiffOn.iterate {f : M → M} (hf : ContMDiffOn I I n f s)
+    (hmaps : Set.MapsTo f s s) (k : ℕ) :
+    ContMDiffOn I I n (f^[k]) s := by
+  induction k with
+  | zero => simpa using contMDiffOn_id
+  | succ k h => simpa using h.comp hf hmaps
+
+/-- The iterates of `C^n` functions are `C^n`. -/
+theorem ContMDiff.iterate {f : M → M} (hf : ContMDiff I I n f) (k : ℕ) :
+    ContMDiff I I n (f^[k]) :=
+  contMDiffOn_univ.mp ((contMDiffOn_univ.mpr hf).iterate (univ.mapsTo_univ f) k)
+
+end Iterate
+
 /-! ### Constants are `C^n` -/
 
 section const
@@ -394,10 +413,10 @@ lemma contMDiff_isOpenEmbedding [Nonempty M] :
   haveI := h.isManifold_singleton (I := I) (n := ω)
   rw [@contMDiff_iff _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace]
   use h.continuous
-  intros x y
+  intro x y
   -- show the function is actually the identity on the range of I ∘ e
   apply contDiffOn_id.congr
-  intros z hz
+  intro z hz
   -- factorise into the chart `e` and the model `id`
   simp only [mfld_simps]
   rw [h.toPartialHomeomorph_right_inv]
@@ -422,10 +441,10 @@ lemma contMDiffOn_isOpenEmbedding_symm [Nonempty M] :
   constructor
   · rw [← h.toPartialHomeomorph_target]
     exact (h.toPartialHomeomorph e).continuousOn_symm
-  · intros z hz
+  · intro z hz
     -- show the function is actually the identity on the range of I ∘ e
     apply contDiffOn_id.congr
-    intros z hz
+    intro z hz
     -- factorise into the chart `e` and the model `id`
     simp only [mfld_simps]
     have : I.symm z ∈ range e := by

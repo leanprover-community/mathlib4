@@ -48,7 +48,7 @@ variable {R M N : Type*} [CommRing R] [PartialOrder R] [TopologicalSpace R] [Clo
 
 lemma isClosed_dual (hp : ∀ x, Continuous (p x)) : IsClosed (dual p s : Set N) := by
   rw [← s.biUnion_of_singleton]
-  simp_rw [dual_iUnion, Submodule.iInf_coe, dual_singleton]
+  simp_rw [dual_iUnion, Submodule.coe_iInf, dual_singleton]
   exact isClosed_biInter fun x hx ↦ isClosed_Ici.preimage <| hp _
 
 end PointedCone
@@ -113,7 +113,7 @@ open ConvexCone in
 /-- Geometric interpretation of **Farkas' lemma**. Also stronger version of the
 **Hahn-Banach separation theorem** for proper cones. -/
 theorem hyperplane_separation (C : ProperCone ℝ E) (hKconv : Convex ℝ K) (hKcomp : IsCompact K)
-    (hKC : Disjoint K C) : ∃ f : E →L[ℝ] ℝ, (∀ x ∈ C, 0 ≤ f x) ∧ ∀ x ∈ K, f x < 0 := by
+    (hKC : Disjoint K C) : ∃ f : StrongDual ℝ E, (∀ x ∈ C, 0 ≤ f x) ∧ ∀ x ∈ K, f x < 0 := by
   obtain rfl | ⟨x₀, hx₀⟩ := K.eq_empty_or_nonempty
   · exact ⟨0, by simp⟩
   obtain ⟨f, u, v, hu, huv, hv⟩ :=
@@ -128,7 +128,7 @@ open ConvexCone in
 /-- Geometric interpretation of **Farkas' lemma**. Also stronger version of the
 **Hahn-Banach separation theorem** for proper cones. -/
 theorem hyperplane_separation_point (C : ProperCone ℝ E) (hx₀ : x₀ ∉ C) :
-    ∃ f : E →L[ℝ] ℝ, (∀ x ∈ C, 0 ≤ f x) ∧ f x₀ < 0 := by
+    ∃ f : StrongDual ℝ E, (∀ x ∈ C, 0 ≤ f x) ∧ f x₀ < 0 := by
   simpa [*] using C.hyperplane_separation (convex_singleton x₀)
 
 /-- The **double dual of a proper cone** is itself. -/

@@ -7,7 +7,7 @@ import Mathlib.RingTheory.RingHom.Smooth
 import Mathlib.RingTheory.RingHom.Unramified
 
 /-!
-# Etale ring homomorphisms
+# Étale ring homomorphisms
 
 We show the meta properties of étale morphisms.
 -/
@@ -18,7 +18,7 @@ namespace RingHom
 
 variable {R S : Type u} [CommRing R] [CommRing S]
 
-/-- A ring hom `R →+* S` is etale, if `S` is an etale `R`-algebra. -/
+/-- A ring hom `R →+* S` is étale, if `S` is an étale `R`-algebra. -/
 @[algebraize RingHom.Etale.toAlgebra]
 def Etale {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : Prop :=
   @Algebra.Etale R _ S _ f.toAlgebra

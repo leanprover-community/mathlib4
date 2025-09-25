@@ -40,44 +40,53 @@ with target `X` all satisfying `P`.
 
 This is merely a coverage in the pretopology defined by `P`, and it would be optimal
 if we could reuse the existing API about pretopologies, However, the definitions of sieves and
-grothendieck topologies uses `Prop`s, so that the actual open sets and immersions are hard to
+Grothendieck topologies uses `Prop`s, so that the actual open sets and immersions are hard to
 obtain. Also, since such a coverage in the pretopology usually contains a proper class of
 immersions, it is quite hard to glue them, reason about finite covers, etc.
 
 Note: The `map_prop` field is equipped with a default argument `by infer_instance`. In general
 this causes worse error messages, but in practice `P` is mostly defined via `class`.
 -/
-structure Cover (P : MorphismProperty Scheme.{u}) (X : Scheme.{u}) where
+structure Cover (P : MorphismProperty Scheme.{u}) (S : Scheme.{u}) where
   /-- index set of a cover of a scheme `X` -/
-  J : Type v
+  I₀ : Type v
   /-- the components of a cover -/
-  obj (j : J) : Scheme
+  X (j : I₀) : Scheme
   /-- the components map to `X` -/
-  map (j : J) : obj j ⟶ X
-  /-- given a point of `x : X`, `f x` is the index of the component which contains `x` -/
-  f (x : X) : J
+  f (j : I₀) : X j ⟶ S
+  /-- given a point of `x : X`, `idx x` is the index of the component which contains `x` -/
+  idx (x : S) : I₀
   /-- the components cover `X` -/
-  covers (x : X) : x ∈ Set.range (map (f x)).base
+  covers (x : S) : x ∈ Set.range (f (idx x)).base
   /-- the component maps satisfy `P` -/
-  map_prop (j : J) : P (map j) := by infer_instance
+  map_prop (j : I₀) : P (f j) := by infer_instance
+
+@[deprecated (since := "2025-09-19")]
+alias Cover.J := Cover.I₀
+
+@[deprecated (since := "2025-09-19")]
+alias Cover.obj := Cover.X
+
+@[deprecated (since := "2025-09-19")]
+alias Cover.map := Cover.f
 
 variable {P : MorphismProperty Scheme.{u}}
 
 variable {X Y Z : Scheme.{u}} (𝒰 : X.Cover P) (f : X ⟶ Z) (g : Y ⟶ Z)
-variable [∀ x, HasPullback (𝒰.map x ≫ f) g]
+variable [∀ x, HasPullback (𝒰.f x ≫ f) g]
 
 theorem Cover.iUnion_range {X : Scheme.{u}} (𝒰 : X.Cover P) :
-    ⋃ i, Set.range (𝒰.map i).base = Set.univ := by
+    ⋃ i, Set.range (𝒰.f i).base = Set.univ := by
   rw [Set.eq_univ_iff_forall]
   intro x
   rw [Set.mem_iUnion]
-  exact ⟨𝒰.f x, 𝒰.covers x⟩
+  exact ⟨𝒰.idx x, 𝒰.covers x⟩
 
-lemma Cover.exists_eq (𝒰 : X.Cover P) (x : X) : ∃ i y, (𝒰.map i).base y = x :=
+lemma Cover.exists_eq (𝒰 : X.Cover P) (x : X) : ∃ i y, (𝒰.f i).base y = x :=
   ⟨_, 𝒰.covers x⟩
 
-instance Cover.nonempty_of_nonempty [Nonempty X] (𝒰 : X.Cover P) : Nonempty 𝒰.J :=
-  Nonempty.map 𝒰.f ‹_›
+instance Cover.nonempty_of_nonempty [Nonempty X] (𝒰 : X.Cover P) : Nonempty 𝒰.I₀ :=
+  Nonempty.map 𝒰.idx ‹_›
 
 /-- Given a family of schemes with morphisms to `X` satisfying `P` that jointly
 cover `X`, `Cover.mkOfCovers` is an associated `P`-cover of `X`. -/
@@ -85,49 +94,49 @@ cover `X`, `Cover.mkOfCovers` is an associated `P`-cover of `X`. -/
 def Cover.mkOfCovers (J : Type*) (obj : J → Scheme.{u}) (map : (j : J) → obj j ⟶ X)
     (covers : ∀ x, ∃ j y, (map j).base y = x)
     (map_prop : ∀ j, P (map j) := by infer_instance) : X.Cover P where
-  J := J
-  obj := obj
-  map := map
-  f x := (covers x).choose
+  I₀ := J
+  X := obj
+  f := map
+  idx x := (covers x).choose
   covers x := (covers x).choose_spec
   map_prop := map_prop
 
 /-- Turn a `P`-cover into a `Q`-cover by showing that the components satisfy `Q`. -/
-def Cover.changeProp (Q : MorphismProperty Scheme.{u}) (𝒰 : X.Cover P) (h : ∀ j, Q (𝒰.map j)) :
+def Cover.changeProp (Q : MorphismProperty Scheme.{u}) (𝒰 : X.Cover P) (h : ∀ j, Q (𝒰.f j)) :
     X.Cover Q where
-  J := 𝒰.J
-  obj := 𝒰.obj
-  map := 𝒰.map
+  I₀ := 𝒰.I₀
+  X := 𝒰.X
   f := 𝒰.f
+  idx := 𝒰.idx
   covers := 𝒰.covers
   map_prop := h
 
 /-- Given a `P`-cover `{ Uᵢ }` of `X`, and for each `Uᵢ` a `P`-cover, we may combine these
 covers to form a `P`-cover of `X`. -/
-@[simps! J obj map]
-def Cover.bind [P.IsStableUnderComposition] (f : ∀ x : 𝒰.J, (𝒰.obj x).Cover P) : X.Cover P where
-  J := Σ i : 𝒰.J, (f i).J
-  obj x := (f x.1).obj x.2
-  map x := (f x.1).map x.2 ≫ 𝒰.map x.1
-  f x := ⟨_, (f _).f (𝒰.covers x).choose⟩
+@[simps! I₀ X f]
+def Cover.bind [P.IsStableUnderComposition] (g : ∀ x : 𝒰.I₀, (𝒰.X x).Cover P) : X.Cover P where
+  I₀ := Σ i : 𝒰.I₀, (g i).I₀
+  X x := (g x.1).X x.2
+  f x := (g x.1).f x.2 ≫ 𝒰.f x.1
+  idx x := ⟨_, (g _).idx (𝒰.covers x).choose⟩
   covers x := by
     let y := (𝒰.covers x).choose
-    have hy : (𝒰.map (𝒰.f x)).base y = x := (𝒰.covers x).choose_spec
-    rcases (f (𝒰.f x)).covers y with ⟨z, hz⟩
-    change x ∈ Set.range ((f (𝒰.f x)).map ((f (𝒰.f x)).f y) ≫ 𝒰.map (𝒰.f x)).base
+    have hy : (𝒰.f (𝒰.idx x)).base y = x := (𝒰.covers x).choose_spec
+    rcases (g (𝒰.idx x)).covers y with ⟨z, hz⟩
+    change x ∈ Set.range ((g (𝒰.idx x)).f ((g (𝒰.idx x)).idx y) ≫ 𝒰.f (𝒰.idx x)).base
     use z
     simp only [comp_coeBase, TopCat.hom_comp, ContinuousMap.comp_apply]
     rw [hz, hy]
-  map_prop _ := P.comp_mem _ _ ((f _).map_prop _) (𝒰.map_prop _)
+  map_prop _ := P.comp_mem _ _ ((g _).map_prop _) (𝒰.map_prop _)
 
 /-- An isomorphism `X ⟶ Y` is a `P`-cover of `Y`. -/
-@[simps J obj map]
+@[simps I₀ X f]
 def coverOfIsIso [P.ContainsIdentities] [P.RespectsIso] {X Y : Scheme.{u}} (f : X ⟶ Y)
     [IsIso f] : Cover.{v} P Y where
-  J := PUnit.{v + 1}
-  obj _ := X
-  map _ := f
-  f _ := PUnit.unit
+  I₀ := PUnit.{v + 1}
+  X _ := X
+  f _ := f
+  idx _ := PUnit.unit
   covers x := by
     rw [Set.range_eq_univ.mpr]
     all_goals try trivial
@@ -137,13 +146,13 @@ def coverOfIsIso [P.ContainsIdentities] [P.RespectsIso] {X Y : Scheme.{u}} (f : 
 
 /-- We construct a cover from another, by providing the needed fields and showing that the
 provided fields are isomorphic with the original cover. -/
-@[simps J obj map]
+@[simps I₀ X f]
 def Cover.copy [P.RespectsIso] {X : Scheme.{u}} (𝒰 : X.Cover P)
     (J : Type*) (obj : J → Scheme)
-    (map : ∀ i, obj i ⟶ X) (e₁ : J ≃ 𝒰.J) (e₂ : ∀ i, obj i ≅ 𝒰.obj (e₁ i))
-    (h : ∀ i, map i = (e₂ i).hom ≫ 𝒰.map (e₁ i)) : X.Cover P :=
-  { J, obj, map
-    f := fun x ↦ e₁.symm (𝒰.f x)
+    (map : ∀ i, obj i ⟶ X) (e₁ : J ≃ 𝒰.I₀) (e₂ : ∀ i, obj i ≅ 𝒰.X (e₁ i))
+    (h : ∀ i, map i = (e₂ i).hom ≫ 𝒰.f (e₁ i)) : X.Cover P :=
+  { I₀ := J, X := obj, f := map
+    idx := fun x ↦ e₁.symm (𝒰.idx x)
     covers := fun x ↦ by
       rw [h, Scheme.comp_base, TopCat.coe_comp, Set.range_comp, Set.range_eq_univ.mpr,
         Set.image_univ, e₁.rightInverse_symm]
@@ -154,22 +163,22 @@ def Cover.copy [P.RespectsIso] {X : Scheme.{u}} (𝒰 : X.Cover P)
       exact 𝒰.map_prop (e₁ j) }
 
 /-- The pushforward of a cover along an isomorphism. -/
-@[simps! J obj map]
+@[simps! I₀ X f]
 def Cover.pushforwardIso [P.RespectsIso] [P.ContainsIdentities] [P.IsStableUnderComposition]
     {X Y : Scheme.{u}} (𝒰 : Cover.{v} P X) (f : X ⟶ Y) [IsIso f] :
     Cover.{v} P Y :=
-  ((coverOfIsIso.{v, u} f).bind fun _ => 𝒰).copy 𝒰.J _ _
-    ((Equiv.punitProd _).symm.trans (Equiv.sigmaEquivProd PUnit 𝒰.J).symm) (fun _ => Iso.refl _)
+  ((coverOfIsIso.{v, u} f).bind fun _ => 𝒰).copy 𝒰.I₀ _ _
+    ((Equiv.punitProd _).symm.trans (Equiv.sigmaEquivProd PUnit 𝒰.I₀).symm) (fun _ => Iso.refl _)
     fun _ => (Category.id_comp _).symm
 
 /-- Adding map satisfying `P` into a cover gives another cover. -/
 @[simps]
 def Cover.add {X Y : Scheme.{u}} (𝒰 : X.Cover P) (f : Y ⟶ X) (hf : P f := by infer_instance) :
     X.Cover P where
-  J := Option 𝒰.J
-  obj i := Option.rec Y 𝒰.obj i
-  map i := Option.rec f 𝒰.map i
-  f x := some (𝒰.f x)
+  I₀ := Option 𝒰.I₀
+  X i := Option.rec Y 𝒰.X i
+  f i := Option.rec f 𝒰.f i
+  idx x := some (𝒰.idx x)
   covers := 𝒰.covers
   map_prop j := by
     obtain ⟨_ | _⟩ := j
@@ -219,11 +228,11 @@ stage of the import tree, but this API is used in the case of `P = IsOpenImmersi
 obtain these results in the general case. -/
 @[simps]
 def Cover.pullbackCover [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
-    {X W : Scheme.{u}} (𝒰 : X.Cover P) (f : W ⟶ X) [∀ x, HasPullback f (𝒰.map x)] : W.Cover P where
-  J := 𝒰.J
-  obj x := pullback f (𝒰.map x)
-  map _ := pullback.fst _ _
-  f x := 𝒰.f (f.base x)
+    {X W : Scheme.{u}} (𝒰 : X.Cover P) (f : W ⟶ X) [∀ x, HasPullback f (𝒰.f x)] : W.Cover P where
+  I₀ := 𝒰.I₀
+  X x := pullback f (𝒰.f x)
+  f _ := pullback.fst _ _
+  idx x := 𝒰.idx (f.base x)
   covers x := by
     obtain ⟨y, hy⟩ := 𝒰.covers (f.base x)
     exact IsJointlySurjectivePreserving.exists_preimage_fst_triplet_of_prop
@@ -233,27 +242,27 @@ def Cover.pullbackCover [P.IsStableUnderBaseChange] [IsJointlySurjectivePreservi
 /-- The family of morphisms from the pullback cover to the original cover. -/
 def Cover.pullbackHom [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
     {X W : Scheme.{u}} (𝒰 : X.Cover P)
-    (f : W ⟶ X) (i) [∀ x, HasPullback f (𝒰.map x)] :
-    (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i :=
-  pullback.snd f (𝒰.map i)
+    (f : W ⟶ X) (i) [∀ x, HasPullback f (𝒰.f x)] :
+    (𝒰.pullbackCover f).X i ⟶ 𝒰.X i :=
+  pullback.snd f (𝒰.f i)
 
 @[reassoc (attr := simp)]
 lemma Cover.pullbackHom_map [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
-    {X W : Scheme.{u}} (𝒰 : X.Cover P) (f : W ⟶ X) [∀ (x : 𝒰.J), HasPullback f (𝒰.map x)] (i) :
-    𝒰.pullbackHom f i ≫ 𝒰.map i = (𝒰.pullbackCover f).map i ≫ f := pullback.condition.symm
+    {X W : Scheme.{u}} (𝒰 : X.Cover P) (f : W ⟶ X) [∀ (x : 𝒰.I₀), HasPullback f (𝒰.f x)] (i) :
+    𝒰.pullbackHom f i ≫ 𝒰.f i = (𝒰.pullbackCover f).f i ≫ f := pullback.condition.symm
 
 /-- Given a cover on `X`, we may pull them back along a morphism `f : W ⟶ X` to obtain
 a cover of `W`. This is similar to `Scheme.Cover.pullbackCover`, but here we
-take `pullback (𝒰.map x) f` instead of `pullback f (𝒰.map x)`. -/
+take `pullback (𝒰.f x) f` instead of `pullback f (𝒰.f x)`. -/
 @[simps]
 def Cover.pullbackCover' [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
     {X W : Scheme.{u}} (𝒰 : X.Cover P) (f : W ⟶ X)
-    [∀ x, HasPullback (𝒰.map x) f] :
+    [∀ x, HasPullback (𝒰.f x) f] :
     W.Cover P where
-  J := 𝒰.J
-  obj x := pullback (𝒰.map x) f
-  map _ := pullback.snd _ _
-  f x := 𝒰.f (f.base x)
+  I₀ := 𝒰.I₀
+  X x := pullback (𝒰.f x) f
+  f _ := pullback.snd _ _
+  idx x := 𝒰.idx (f.base x)
   covers x := by
     obtain ⟨y, hy⟩ := 𝒰.covers (f.base x)
     exact IsJointlySurjectivePreserving.exists_preimage_snd_triplet_of_prop
@@ -265,11 +274,11 @@ def Cover.inter [P.IsStableUnderBaseChange] [P.IsStableUnderComposition]
     [IsJointlySurjectivePreserving P]
     {X : Scheme.{u}} (𝒰₁ : Scheme.Cover.{v₁} P X)
     (𝒰₂ : Scheme.Cover.{v₂} P X)
-    [∀ (i : 𝒰₁.J) (j : 𝒰₂.J), HasPullback (𝒰₁.map i) (𝒰₂.map j)] : X.Cover P where
-  J := 𝒰₁.J × 𝒰₂.J
-  obj ij := pullback (𝒰₁.map ij.1) (𝒰₂.map ij.2)
-  map ij := pullback.fst _ _ ≫ 𝒰₁.map ij.1
-  f x := ⟨𝒰₁.f x, 𝒰₂.f x⟩
+    [∀ (i : 𝒰₁.I₀) (j : 𝒰₂.I₀), HasPullback (𝒰₁.f i) (𝒰₂.f j)] : X.Cover P where
+  I₀ := 𝒰₁.I₀ × 𝒰₂.I₀
+  X ij := pullback (𝒰₁.f ij.1) (𝒰₂.f ij.2)
+  f ij := pullback.fst _ _ ≫ 𝒰₁.f ij.1
+  idx x := ⟨𝒰₁.idx x, 𝒰₂.idx x⟩
   covers x := by
     simp only [comp_coeBase, TopCat.coe_comp, Set.mem_range, Function.comp_apply]
     obtain ⟨y₁, hy₁⟩ := 𝒰₁.covers x
@@ -287,37 +296,46 @@ spectra of rings.
 Note: The `map_prop` field is equipped with a default argument `by infer_instance`. In general
 this causes worse error messages, but in practice `P` is mostly defined via `class`.
 -/
-structure AffineCover (P : MorphismProperty Scheme.{u}) (X : Scheme.{u}) where
-  /-- index set of an affine cover of a scheme `X` -/
-  J : Type v
+structure AffineCover (P : MorphismProperty Scheme.{u}) (S : Scheme.{u}) where
+  /-- index set of an affine cover of a scheme `S` -/
+  I₀ : Type v
   /-- the ring associated to a component of an affine cover -/
-  obj (j : J) : CommRingCat.{u}
-  /-- the components map to `X` -/
-  map (j : J) : Spec (obj j) ⟶ X
-  /-- given a point of `x : X`, `f x` is the index of the component which contains `x` -/
-  f (x : X) : J
-  /-- the components cover `X` -/
-  covers (x : X) : x ∈ Set.range (map (f x)).base
+  X (j : I₀) : CommRingCat.{u}
+  /-- the components map to `S` -/
+  f (j : I₀) : Spec (X j) ⟶ S
+  /-- given a point of `x : S`, `idx x` is the index of the component which contains `x` -/
+  idx (x : S) : I₀
+  /-- the components cover `S` -/
+  covers (x : S) : x ∈ Set.range (f (idx x)).base
   /-- the component maps satisfy `P` -/
-  map_prop (j : J) : P (map j) := by infer_instance
+  map_prop (j : I₀) : P (f j) := by infer_instance
+
+@[deprecated (since := "2025-09-19")]
+alias AffineCover.J := AffineCover.I₀
+
+@[deprecated (since := "2025-09-19")]
+alias AffineCover.obj := AffineCover.X
+
+@[deprecated (since := "2025-09-19")]
+alias AffineCover.map := AffineCover.f
 
 /-- The cover associated to an affine cover. -/
 @[simps]
-def AffineCover.cover {X : Scheme.{u}} (𝒰 : X.AffineCover P) : X.Cover P where
-  obj j := Spec (𝒰.obj j)
-  J := 𝒰.J
-  map := 𝒰.map
+def AffineCover.cover {S : Scheme.{u}} (𝒰 : S.AffineCover P) : S.Cover P where
+  I₀ := 𝒰.I₀
+  X j := Spec (𝒰.X j)
   f := 𝒰.f
+  idx := 𝒰.idx
   covers := 𝒰.covers
   map_prop := 𝒰.map_prop
 
 /-- Replace the index type of a cover by an equivalent one. -/
 @[simps]
-def Cover.reindex (𝒰 : Cover.{v} P X) {ι : Type*} (e : ι ≃ 𝒰.J) : Cover P X where
-  J := ι
-  obj := 𝒰.obj ∘ e
-  map i := 𝒰.map (e i)
-  f := e.symm ∘ 𝒰.f
+def Cover.reindex (𝒰 : Cover.{v} P X) {ι : Type*} (e : ι ≃ 𝒰.I₀) : Cover P X where
+  I₀ := ι
+  X := 𝒰.X ∘ e
+  f i := 𝒰.f (e i)
+  idx := e.symm ∘ 𝒰.idx
   covers x := by
     convert 𝒰.covers _
     dsimp only [Function.comp_apply]
@@ -327,10 +345,10 @@ def Cover.reindex (𝒰 : Cover.{v} P X) {ι : Type*} (e : ι ≃ 𝒰.J) : Cove
 /-- Any `v`-cover `𝒰` induces a `u`-cover indexed by the points of `X`. -/
 @[simps!]
 def Cover.ulift (𝒰 : Cover.{v} P X) : Cover.{u} P X where
-  J := X
-  obj x := 𝒰.obj (𝒰.f x)
-  map x := 𝒰.map (𝒰.f x)
-  f := id
+  I₀ := X
+  X x := 𝒰.X (𝒰.idx x)
+  f x := 𝒰.f (𝒰.idx x)
+  idx := id
   covers := 𝒰.covers
   map_prop _ := 𝒰.map_prop _
 
@@ -344,11 +362,11 @@ indexing types.
 @[ext]
 structure Cover.Hom {X : Scheme.{u}} (𝒰 𝒱 : Cover.{v} P X) where
   /-- The map on indexing types associated to a morphism of covers. -/
-  idx : 𝒰.J → 𝒱.J
+  idx : 𝒰.I₀ → 𝒱.I₀
   /-- The morphism between open subsets associated to a morphism of covers. -/
-  app (j : 𝒰.J) : 𝒰.obj j ⟶ 𝒱.obj (idx j)
-  app_prop (j : 𝒰.J) : P (app j) := by infer_instance
-  w (j : 𝒰.J) : app j ≫ 𝒱.map _ = 𝒰.map _ := by cat_disch
+  app (j : 𝒰.I₀) : 𝒰.X j ⟶ 𝒱.X (idx j)
+  app_prop (j : 𝒰.I₀) : P (app j) := by infer_instance
+  w (j : 𝒰.I₀) : app j ≫ 𝒱.f _ = 𝒰.f _ := by cat_disch
 
 attribute [reassoc (attr := simp)] Cover.Hom.w
 
@@ -373,21 +391,21 @@ instance Cover.category [P.IsMultiplicative] {X : Scheme.{u}} : Category (Cover.
 variable [P.IsMultiplicative]
 
 @[simp]
-lemma Cover.id_idx_apply {X : Scheme.{u}} (𝒰 : X.Cover P) (j : 𝒰.J) :
+lemma Cover.id_idx_apply {X : Scheme.{u}} (𝒰 : X.Cover P) (j : 𝒰.I₀) :
     (𝟙 𝒰 : 𝒰 ⟶ 𝒰).idx j = j := rfl
 
 @[simp]
-lemma Cover.id_app {X : Scheme.{u}} (𝒰 : X.Cover P) (j : 𝒰.J) :
+lemma Cover.id_app {X : Scheme.{u}} (𝒰 : X.Cover P) (j : 𝒰.I₀) :
     (𝟙 𝒰 : 𝒰 ⟶ 𝒰).app j = 𝟙 _ := rfl
 
 @[simp]
 lemma Cover.comp_idx_apply {X : Scheme.{u}} {𝒰 𝒱 𝒲 : X.Cover P}
-    (f : 𝒰 ⟶ 𝒱) (g : 𝒱 ⟶ 𝒲) (j : 𝒰.J) :
+    (f : 𝒰 ⟶ 𝒱) (g : 𝒱 ⟶ 𝒲) (j : 𝒰.I₀) :
     (f ≫ g).idx j = g.idx (f.idx j) := rfl
 
 @[simp]
 lemma Cover.comp_app {X : Scheme.{u}} {𝒰 𝒱 𝒲 : X.Cover P}
-    (f : 𝒰 ⟶ 𝒱) (g : 𝒱 ⟶ 𝒲) (j : 𝒰.J) :
+    (f : 𝒰 ⟶ 𝒱) (g : 𝒱 ⟶ 𝒲) (j : 𝒰.I₀) :
     (f ≫ g).app j = f.app j ≫ g.app _ := rfl
 
 end category

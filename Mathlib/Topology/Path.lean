@@ -113,10 +113,23 @@ When you delete this deprecated lemma, please rename `Path.coe_mk'` to `Path.coe
 theorem coe_mk : ⇑(γ : C(I, X)) = γ :=
   rfl
 
+@[simp]
+theorem range_coe : range ((↑) : Path x y → C(I, X)) = {f | f 0 = x ∧ f 1 = y} :=
+  Subset.antisymm (range_subset_iff.mpr fun γ ↦ ⟨γ.source, γ.target⟩) fun f ⟨hf₀, hf₁⟩ ↦
+    ⟨⟨f, hf₀, hf₁⟩, rfl⟩
+
 /-- Any function `φ : Π (a : α), Path (x a) (y a)` can be seen as a function `α × I → X`. -/
 instance instHasUncurryPath {α : Type*} {x y : α → X} :
     HasUncurry (∀ a : α, Path (x a) (y a)) (α × I) X :=
   ⟨fun φ p => φ p.1 p.2⟩
+
+@[simp high]
+lemma source_mem_range (γ : Path x y) : x ∈ range ⇑γ :=
+  ⟨0, Path.source γ⟩
+
+@[simp high]
+lemma target_mem_range (γ : Path x y) : y ∈ range ⇑γ :=
+  ⟨1, Path.target γ⟩
 
 /-- The constant path from a point to itself -/
 @[refl, simps!]
@@ -373,6 +386,8 @@ def cast (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : Path x' y' where
   source' := by simp [hx]
   target' := by simp [hy]
 
+@[simp] theorem cast_rfl_rfl (γ : Path x y) : γ.cast rfl rfl = γ := rfl
+
 @[simp]
 theorem symm_cast {a₁ a₂ b₁ b₂ : X} (γ : Path a₂ b₂) (ha : a₁ = a₂) (hb : b₁ = b₂) :
     (γ.cast ha hb).symm = γ.symm.cast hb ha :=
@@ -391,6 +406,15 @@ theorem extend_cast {x' y'} (γ : Path x y) (hx : x' = x) (hy : y' = y) :
 @[simp]
 theorem cast_coe (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : (γ.cast hx hy : I → X) = γ :=
   rfl
+
+lemma bijective_cast {x' y' : X} (hx : x' = x) (hy : y' = y) : Bijective (Path.cast · hx hy) := by
+  subst_vars; exact bijective_id
+
+@[congr]
+lemma exists_congr {x₁ x₂ y₁ y₂ : X} {p : Path x₁ y₁ → Prop}
+    (hx : x₁ = x₂) (hy : y₁ = y₂) :
+    (∃ γ, p γ) ↔ (∃ (γ : Path x₂ y₂), p (γ.cast hx hy)) :=
+  bijective_cast hx hy |>.surjective.exists
 
 @[continuity, fun_prop]
 theorem symm_continuous_family {ι : Type*} [TopologicalSpace ι]

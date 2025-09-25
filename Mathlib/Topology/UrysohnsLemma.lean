@@ -5,9 +5,10 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Analysis.Normed.Affine.AddTorsor
-import Mathlib.Analysis.NormedSpace.FunctionSeries
+import Mathlib.Analysis.Normed.Group.FunctionSeries
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Ordered
+import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Topology.GDelta.Basic
 

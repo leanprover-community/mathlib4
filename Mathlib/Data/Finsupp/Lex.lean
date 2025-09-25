@@ -91,7 +91,7 @@ theorem Lex.single_strictAnti : StrictAnti (fun (a : α) ↦ toLex (single a 1))
   use a
   constructor
   · intro d hd
-    simp only [Finsupp.single_eq_of_ne hd.ne', Finsupp.single_eq_of_ne (hd.trans h).ne']
+    simp only [Finsupp.single_eq_of_ne hd.ne, Finsupp.single_eq_of_ne (hd.trans h).ne]
   · simp [h.ne']
 
 theorem Lex.single_lt_iff {a b : α} : toLex (single b 1) < toLex (single a 1) ↔ a < b :=

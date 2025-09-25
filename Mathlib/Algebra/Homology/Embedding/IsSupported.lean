@@ -111,9 +111,7 @@ lemma isSupportedOutside_op_iff :
 variable {K e} in
 lemma IsStrictlySupportedOutside.isSupportedOutside (h : K.IsStrictlySupportedOutside e) :
     K.IsSupportedOutside e where
-  exactAt i := by
-    rw [exactAt_iff]
-    exact ShortComplex.exact_of_isZero_X₂ _ (h.isZero i)
+  exactAt i := ShortComplex.exact_of_isZero_X₂ _ (h.isZero i)
 
 instance [HasZeroObject C] : (0 : HomologicalComplex C c').IsStrictlySupported e where
   isZero i _ := (eval _ _ i).map_isZero (Limits.isZero_zero _)

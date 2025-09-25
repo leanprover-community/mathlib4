@@ -131,7 +131,7 @@ variable {φ : R →+* S}
 private instance : UniformSpace (MvPolynomial σ R) :=
   comap toMvPowerSeries (Pi.uniformSpace _)
 
-/-- The induced uniform structure of MvPolynomial σ R is an add group uniform structure -/
+/-- The induced uniform structure of MvPolynomial σ R is an additive group uniform structure -/
 private instance [IsUniformAddGroup R] : IsUniformAddGroup (MvPolynomial σ R) :=
   IsUniformAddGroup.comap coeToMvPowerSeries.ringHom
 
@@ -168,7 +168,7 @@ theorem _root_.MvPolynomial.toMvPowerSeries_uniformContinuous
   let D := Iic n₀
   have hD : Set.Finite D := finite_Iic _
   have : ∀ d ∈ D, ∀ᶠ (p : MvPolynomial σ R) in 𝓝 0, φ (p.coeff d) ∈ I := fun d hd ↦ by
-    have : Tendsto (φ ∘ coeff R d ∘ toMvPowerSeries) (𝓝 0) (𝓝 0) :=
+    have : Tendsto (φ ∘ coeff d ∘ toMvPowerSeries) (𝓝 0) (𝓝 0) :=
       hφ.comp (continuous_coeff R d) |>.comp continuous_induced_dom |>.tendsto' 0 0 (map_zero _)
     filter_upwards [this.eventually_mem hI] with f hf
     simpa using hf
@@ -204,7 +204,7 @@ theorem eval₂_coe (f : MvPolynomial σ R) :
   rw [← MvPolynomial.coe_inj, this.choose_spec]
 
 @[simp]
-theorem eval₂_C (r : R) : eval₂ φ a (C σ R r) = φ r := by
+theorem eval₂_C (r : R) : eval₂ φ a (C r) = φ r := by
   rw [← coe_C, eval₂_coe, MvPolynomial.eval₂_C]
 
 @[simp]
@@ -258,7 +258,7 @@ theorem continuous_eval₂ (hφ : Continuous φ) (ha : HasEval a) :
 
 theorem hasSum_eval₂ (hφ : Continuous φ) (ha : HasEval a) (f : MvPowerSeries σ R) :
     HasSum
-    (fun (d : σ →₀ ℕ) ↦ φ (coeff R d f) * (d.prod fun s e => (a s) ^ e))
+    (fun (d : σ →₀ ℕ) ↦ φ (coeff d f) * (d.prod fun s e => (a s) ^ e))
     (MvPowerSeries.eval₂ φ a f) := by
   rw [← coe_eval₂Hom hφ ha, eval₂Hom_eq_extend hφ ha]
   convert (hasSum_of_monomials_self f).map (eval₂Hom hφ ha) (?_) with d
@@ -268,7 +268,7 @@ theorem hasSum_eval₂ (hφ : Continuous φ) (ha : HasEval a) (f : MvPowerSeries
 
 theorem eval₂_eq_tsum (hφ : Continuous φ) (ha : HasEval a) (f : MvPowerSeries σ R) :
     MvPowerSeries.eval₂ φ a f =
-      ∑' (d : σ →₀ ℕ), φ (coeff R d f) * (d.prod fun s e => (a s) ^ e) :=
+      ∑' (d : σ →₀ ℕ), φ (coeff d f) * (d.prod fun s e => (a s) ^ e) :=
   (hasSum_eval₂ hφ ha f).tsum_eq.symm
 
 theorem eval₂_unique (hφ : Continuous φ) (ha : HasEval a)
@@ -326,14 +326,14 @@ theorem aeval_unique {ε : MvPowerSeries σ R →ₐ[R] S} (hε : Continuous ε)
   simp
 
 theorem hasSum_aeval (ha : HasEval a) (f : MvPowerSeries σ R) :
-    HasSum (fun (d : σ →₀ ℕ) ↦ (coeff R d f) • (d.prod fun s e => (a s) ^ e))
+    HasSum (fun (d : σ →₀ ℕ) ↦ (coeff d f) • (d.prod fun s e => (a s) ^ e))
       (MvPowerSeries.aeval ha f) := by
   simp_rw [coe_aeval, ← algebraMap_smul (R := R) S, smul_eq_mul]
   exact hasSum_eval₂ (continuous_algebraMap R S) ha f
 
 theorem aeval_eq_sum (ha : HasEval a) (f : MvPowerSeries σ R) :
     MvPowerSeries.aeval ha f =
-      tsum (fun (d : σ →₀ ℕ) ↦ (coeff R d f) • (d.prod fun s e => (a s) ^ e)) :=
+      tsum (fun (d : σ →₀ ℕ) ↦ (coeff d f) • (d.prod fun s e => (a s) ^ e)) :=
   (hasSum_aeval ha f).tsum_eq.symm
 
 theorem comp_aeval (ha : HasEval a)

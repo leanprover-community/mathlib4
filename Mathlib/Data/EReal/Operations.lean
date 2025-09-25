@@ -872,11 +872,11 @@ def evalERealMul : PositivityExt where eval {u α} zα pα e := do
       | _ => pure .none
     | .nonnegative pa =>
       match (← core zα pα b).toNonneg with
-      | .some pb => pure (.nonnegative q(EReal.mul_nonneg $pa $pb))
-      | .none => pure .none
+      | some pb => pure (.nonnegative q(EReal.mul_nonneg $pa $pb))
+      | none => pure .none
     | .nonzero pa =>
       match (← core zα pα b).toNonzero with
-      | .some pb => pure (.nonzero q(mul_ne_zero $pa $pb))
+      | some pb => pure (.nonzero q(mul_ne_zero $pa $pb))
       | none => pure .none
     | _ => pure .none
   | _, _, _ => throwError "not a product of 2 `EReal`s"

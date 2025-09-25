@@ -11,14 +11,14 @@ import Mathlib.Algebra.Exact
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 /-!
-# The module of kaehler differentials
+# The module of Kähler differentials
 
 ## Main results
 
-- `KaehlerDifferential`: The module of kaehler differentials. For an `R`-algebra `S`, we provide
+- `KaehlerDifferential`: The module of Kähler differentials. For an `R`-algebra `S`, we provide
   the notation `Ω[S⁄R]` for `KaehlerDifferential R S`.
   Note that the slash is `\textfractionsolidus`.
-- `KaehlerDifferential.D`: The derivation into the module of kaehler differentials.
+- `KaehlerDifferential.D`: The derivation into the module of Kähler differentials.
 - `KaehlerDifferential.span_range_derivation`: The image of `D` spans `Ω[S⁄R]` as an `S`-module.
 - `KaehlerDifferential.linearMapEquivDerivation`:
   The isomorphism `Hom_R(Ω[S⁄R], M) ≃ₗ[S] Der_R(S, M)`.
@@ -500,9 +500,7 @@ noncomputable def KaehlerDifferential.kerTotal : Submodule S (S →₀ S) :=
       Set.range fun x : R => single (algebraMap R S x) 1)
 
 unsuppress_compilation in
--- Porting note: was `local notation x "𝖣" y => (KaehlerDifferential.kerTotal R S).mkQ (single y x)`
--- but not having `DFunLike.coe` leads to `kerTotal_mkQ_single_smul` failing.
-local notation3 x "𝖣" y => DFunLike.coe (KaehlerDifferential.kerTotal R S).mkQ (single y x)
+local notation3 x "𝖣" y => (KaehlerDifferential.kerTotal R S).mkQ (single y x)
 
 theorem KaehlerDifferential.kerTotal_mkQ_single_add (x y z) : (z𝖣x + y) = (z𝖣x) + z𝖣y := by
   rw [← map_add, eq_comm, ← sub_eq_zero, ← map_sub (Submodule.mkQ (kerTotal R S)),
@@ -645,11 +643,9 @@ theorem KaehlerDifferential.kerTotal_map [Algebra R B] [IsScalarTower R A B] [Is
     map_one, map_add, map_mul]
   simp_rw [sup_assoc, ← (h.prodMap h).range_comp]
   congr!
-  -- Porting note: new
-  simp_rw [← IsScalarTower.algebraMap_apply R A B]
   rw [sup_eq_right]
   apply Submodule.span_mono
-  simp_rw [IsScalarTower.algebraMap_apply R S B]
+  simp_rw [← IsScalarTower.algebraMap_apply R A B, IsScalarTower.algebraMap_apply R S B]
   exact Set.range_comp_subset_range (algebraMap R S)
     fun x => Finsupp.single (algebraMap S B x) (1 : B)
 
@@ -753,15 +749,16 @@ lemma KaehlerDifferential.range_mapBaseChange :
     LinearMap.range (mapBaseChange R A B) = LinearMap.ker (map R A B B) := by
   apply le_antisymm
   · rintro _ ⟨x, rfl⟩
-    induction' x with r s
-    · simp
-    · obtain ⟨x, rfl⟩ := linearCombination_surjective _ _ s
+    induction x with
+    | zero => simp
+    | tmul r s =>
+      obtain ⟨x, rfl⟩ := linearCombination_surjective _ _ s
       simp only [mapBaseChange_tmul, LinearMap.mem_ker, map_smul]
       induction x using Finsupp.induction_linear
       · simp
       · simp [smul_add, *]
       · simp
-    · rw [map_add]; exact add_mem ‹_› ‹_›
+    | add => rw [map_add]; exact add_mem ‹_› ‹_›
   · convert_to (kerTotal A B).map (Finsupp.linearCombination B (D R B)) ≤ _
     · rw [KaehlerDifferential.ker_map]
       congr 1

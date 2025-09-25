@@ -295,12 +295,12 @@ lemma multiplicativeClosure_eq_multiplicativeClosure' :
       | id x => exact .id x
       | of_comp f g hf hg hr => exact W.multiplicativeClosure.comp_mem f g (.of f hf) hr
 
-/-- A class of morphisms `W` has the of-postcomp property wrt. `W'` if whenever
+/-- A class of morphisms `W` has the of-postcomp property w.r.t. `W'` if whenever
 `g` is in `W'` and `f ≫ g` is in `W`, also `f` is in `W`. -/
 class HasOfPostcompProperty (W W' : MorphismProperty C) : Prop where
   of_postcomp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : W' g → W (f ≫ g) → W f
 
-/-- A class of morphisms `W` has the of-precomp property wrt. `W'` if whenever
+/-- A class of morphisms `W` has the of-precomp property w.r.t. `W'` if whenever
 `f` is in `W'` and `f ≫ g` is in `W`, also `g` is in `W`. -/
 class HasOfPrecompProperty (W W' : MorphismProperty C) : Prop where
   of_precomp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : W' f → W (f ≫ g) → W g

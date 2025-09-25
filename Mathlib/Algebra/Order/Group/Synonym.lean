@@ -221,8 +221,12 @@ instance [h : CommGroup α] : CommGroup (Lex α) := h
 @[to_additive (attr := simp)]
 theorem toLex_one [One α] : toLex (1 : α) = 1 := rfl
 
+@[to_additive (attr := simp)] lemma toLex_eq_one [One α] {a : α} : toLex a = 1 ↔ a = 1 := .rfl
+
 @[to_additive (attr := simp)]
 theorem ofLex_one [One α] : (ofLex 1 : α) = 1 := rfl
+
+@[to_additive (attr := simp)] lemma ofLex_eq_one [One α] {a : Lex α} : ofLex a = 1 ↔ a = 1 := .rfl
 
 @[to_additive (attr := simp)]
 theorem toLex_mul [Mul α] (a b : α) : toLex (a * b) = toLex a * toLex b := rfl

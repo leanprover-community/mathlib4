@@ -106,7 +106,7 @@ private lemma mul_inv_eq_inv_mul_of_doubling_lt_two_aux (h : #(A * A) < 2 * #A) 
   rw [mul_inv_eq_iff_eq_mul, mul_assoc, ← hzxwy, inv_mul_cancel_left]
 
 -- TODO: is there a way to get wlog to make `mul_inv_eq_inv_mul_of_doubling_lt_two_aux` a goal?
--- ie wlog in the target rather than hypothesis
+-- i.e. wlog in the target rather than hypothesis
 -- (BM: third time seeing this pattern)
 -- I'm thinking something like wlog_suffices, where I could write
 -- wlog_suffices : A⁻¹ * A ⊆ A * A⁻¹
@@ -216,7 +216,6 @@ private lemma weak_invMulSubgroup_bound (h : #(A * A) < (3 / 2 : ℚ) * #A) :
     rw [← Nat.cast_pow, sq, ← card_product, card_eq_sum_card_fiberwise h₃, Nat.cast_sum]
     refine (sum_lt_sum_of_nonempty (by simp [h₀]) h₂).trans_eq' ?_
     simp only [sum_const, nsmul_eq_mul, mul_comm]
-  have : (0 : ℚ) < #A := by simpa [card_pos]
   rw [← Nat.cast_lt (α := ℚ), Nat.cast_mul, Nat.cast_two]
   -- passing between ℕ- and ℚ-inequalities is annoying, here and above
   nlinarith

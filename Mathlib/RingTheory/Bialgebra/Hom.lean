@@ -18,7 +18,7 @@ This file defines bundled homomorphisms of `R`-bialgebras. We simply mimic
 * `Bialgebra.counitBialgHom R A : A →ₐc[R] R`: the counit of a bialgebra as a bialgebra
   homomorphism.
 
-## Notations
+## Notation
 
 * `A →ₐc[R] B` : `R`-bialgebra homomorphism from `A` to `B`.
 
@@ -100,8 +100,10 @@ end BialgHomClass
 
 namespace BialgHom
 
-variable {R A B C D : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-  [Semiring B] [Algebra R B] [Semiring C] [Algebra R C] [Semiring D] [Algebra R D]
+variable {R A B C D : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
+
+section AlgebraCoalgebra
+variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
   [CoalgebraStruct R A] [CoalgebraStruct R B] [CoalgebraStruct R C] [CoalgebraStruct R D]
 
 instance funLike : FunLike (A →ₐc[R] B) A B where
@@ -126,15 +128,6 @@ def Simps.apply {R α β : Type*} [CommSemiring R]
     (f : α →ₐc[R] β) : α → β := f
 
 initialize_simps_projections BialgHom (toFun → apply)
-
-/-- Construct a bialgebra hom from an algebra hom respecting counit and comultiplication. -/
-@[simps] def ofAlgHom (f : A →ₐ[R] B) (counit_comp : counit ∘ₗ f.toLinearMap = counit)
-    (map_comp_comul : map f.toLinearMap f.toLinearMap ∘ₗ comul = comul ∘ₗ f.toLinearMap) :
-    A →ₐc[R] B where
-  __ := f
-  map_smul' := map_smul f
-  counit_comp := counit_comp
-  map_comp_comul := map_comp_comul
 
 @[simp]
 protected theorem coe_coe {F : Type*} [FunLike F A B] [BialgHomClass F R A B] (f : F) :
@@ -299,6 +292,21 @@ theorem one_apply (x : A) : (1 : A →ₐc[R] A) x = x :=
 theorem mul_apply (φ ψ : A →ₐc[R] A) (x : A) : (φ * ψ) x = φ (ψ x) :=
   rfl
 
+end AlgebraCoalgebra
+
+variable [Bialgebra R A] [Bialgebra R B]
+
+/-- Construct a bialgebra hom from an algebra hom respecting counit and comultiplication. -/
+@[simps!]
+def ofAlgHom (f : A →ₐ[R] B) (counit_comp : (counitAlgHom R B).comp f = counitAlgHom R A)
+    (map_comp_comul :
+      (Algebra.TensorProduct.map f f).comp (comulAlgHom _ _) = (comulAlgHom _ _).comp f) :
+    A →ₐc[R] B where
+  __ := f
+  map_smul' := map_smul f
+  counit_comp := congr(($counit_comp).toLinearMap)
+  map_comp_comul := congr(($map_comp_comul).toLinearMap)
+
 end BialgHom
 
 namespace Bialgebra
@@ -307,7 +315,7 @@ variable {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
 variable (R A) in
 /-- The unit of a bialgebra as a `BialgHom`. -/
 noncomputable def unitBialgHom : R →ₐc[R] A :=
-  .ofAlgHom (Algebra.ofId R A) (by ext; simp) (by ext; simp [Algebra.TensorProduct.one_def])
+  .ofAlgHom (Algebra.ofId R A) (by ext) (by ext)
 
 variable (R A) in
 /-- The counit of a bialgebra as a `BialgHom`. -/

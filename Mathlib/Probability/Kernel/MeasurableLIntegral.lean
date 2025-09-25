@@ -115,13 +115,8 @@ variable [IsSFiniteKernel κ] [IsSFiniteKernel η]
 /-- Auxiliary lemma for `Measurable.lintegral_kernel_prod_right`. -/
 theorem Kernel.measurable_lintegral_indicator_const {t : Set (α × β)} (ht : MeasurableSet t)
     (c : ℝ≥0∞) : Measurable fun a => ∫⁻ b, t.indicator (Function.const (α × β) c) (a, b) ∂κ a := by
-  -- Porting note: was originally by
-  -- `simp_rw [lintegral_indicator_const_comp measurable_prodMk_left ht _]`
-  -- but this has no effect, so added the `conv` below
-  conv =>
-    congr
-    ext
-    erw [lintegral_indicator_const_comp measurable_prodMk_left ht _]
+  unfold Function.const
+  simp_rw [lintegral_indicator_const_comp measurable_prodMk_left ht _]
   exact Measurable.const_mul (measurable_kernel_prodMk_left ht) c
 
 /-- For an s-finite kernel `κ` and a function `f : α → β → ℝ≥0∞` which is measurable when seen as a
@@ -153,10 +148,7 @@ theorem _root_.Measurable.lintegral_kernel_prod_right {f : α → β → ℝ≥0
       (fun a => ∫⁻ b, g₁ (a, b) + g₂ (a, b) ∂κ a) =
         (fun a => ∫⁻ b, g₁ (a, b) ∂κ a) + fun a => ∫⁻ b, g₂ (a, b) ∂κ a := by
       ext1 a
-      rw [Pi.add_apply]
-      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw` (`Function.comp` reducibility)
-      erw [lintegral_add_left (g₁.measurable.comp measurable_prodMk_left)]
-      simp_rw [Function.comp_apply]
+      rw [Pi.add_apply, lintegral_add_left (g₁.measurable.comp' measurable_prodMk_left)]
     rw [h_add]
     exact Measurable.add hm₁ hm₂
 
@@ -167,10 +159,9 @@ theorem _root_.Measurable.lintegral_kernel_prod_right' {f : α × β → ℝ≥0
 @[fun_prop]
 theorem _root_.Measurable.lintegral_kernel_prod_right'' {f : β × γ → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun x => ∫⁻ y, f (x, y) ∂η (a, x) := by
-  -- Porting note: used `Prod.mk a` instead of `fun x => (a, x)` below
   change
     Measurable
-      ((fun x => ∫⁻ y, (fun u : (α × β) × γ => f (u.1.2, u.2)) (x, y) ∂η x) ∘ Prod.mk a)
+      ((fun x => ∫⁻ y, (fun u : (α × β) × γ => f (u.1.2, u.2)) (x, y) ∂η x) ∘ fun x => (a, x))
   -- Porting note: specified `κ`, `f`.
   refine (Measurable.lintegral_kernel_prod_right' (κ := η)
     (f := (fun u ↦ f (u.fst.snd, u.snd))) ?_).comp measurable_prodMk_left
@@ -199,10 +190,8 @@ theorem _root_.Measurable.lintegral_kernel {κ : Kernel α β} {f : β → ℝ�
     Measurable fun a => ∫⁻ b, f b ∂κ a := by fun_prop
 
 theorem _root_.Measurable.setLIntegral_kernel {f : β → ℝ≥0∞} (hf : Measurable f) {s : Set β}
-    (hs : MeasurableSet s) : Measurable fun a => ∫⁻ b in s, f b ∂κ a := by
-  -- Porting note: was term mode proof (`Function.comp` reducibility)
-  refine Measurable.setLIntegral_kernel_prod_right ?_ hs
-  fun_prop
+    (hs : MeasurableSet s) : Measurable fun a => ∫⁻ b in s, f b ∂κ a :=
+  Measurable.setLIntegral_kernel_prod_right (by fun_prop) hs
 
 end Lintegral
 

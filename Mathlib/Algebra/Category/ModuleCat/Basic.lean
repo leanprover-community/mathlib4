@@ -46,7 +46,7 @@ variable (R : Type u) [Ring R]
 
 /-- The category of R-modules and their morphisms.
 
-Note that in the case of `R = ℤ`, we can not
+Note that in the case of `R = ℤ`, we cannot
 impose here that the `ℤ`-multiplication field from the module structure is defeq to the one coming
 from the `isAddCommGroup` structure (contrary to what we do for all module structures in
 mathlib), which creates some difficulties down the road. -/

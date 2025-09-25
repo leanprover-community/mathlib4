@@ -764,7 +764,7 @@ lemma diagonal_isomorphisms : (isomorphisms C).diagonal = monomorphisms C :=
   ext _ _ fun _ _ _ ↦ pullback.isIso_diagonal_iff _
 
 /-- If `P` is multiplicative and stable under base change, having the of-postcomp property
-wrt. `Q` is equivalent to `Q` implying `P` on the diagonal. -/
+w.r.t. `Q` is equivalent to `Q` implying `P` on the diagonal. -/
 lemma hasOfPostcompProperty_iff_le_diagonal [P.IsStableUnderBaseChange]
     [P.IsMultiplicative] {Q : MorphismProperty C} [Q.IsStableUnderBaseChange] :
     P.HasOfPostcompProperty Q ↔ Q ≤ P.diagonal := by
@@ -842,6 +842,17 @@ lemma universally_mk' (P : MorphismProperty C) [P.RespectsIso] {X Y : C} (g : X 
   exact H ..
 
 end Universally
+
+variable (P : MorphismProperty C)
+
+/-- `P` has pullbacks if for every `f` satisfying `P`, pullbacks of arbitrary morphisms along `f`
+exist. -/
+protected class HasPullbacks : Prop where
+  hasPullback {X Y S : C} {f : X ⟶ S} (g : Y ⟶ S) : P f → HasPullback f g := by infer_instance
+
+instance [HasPullbacks C] : P.HasPullbacks where
+
+alias hasPullback := HasPullbacks.hasPullback
 
 end MorphismProperty
 

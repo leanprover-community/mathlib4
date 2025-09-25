@@ -152,8 +152,8 @@ example (h : a + b ≠ 0) (H : a • x = b • y) : x = (b / (a + b)) • (x + y
 
 end
 
-example [CommSemiring K] [PartialOrder K] [IsOrderedRing K]
-    [AddCommMonoid V] [PartialOrder V] [IsOrderedCancelAddMonoid V] [Module K V] [OrderedSMul K V]
+example [CommSemiring K] [PartialOrder K] [IsOrderedRing K] [AddCommMonoid V] [PartialOrder V]
+    [IsOrderedCancelAddMonoid V] [Module K V] [PosSMulStrictMono K V]
     {x y r : V} (hx : x < r) (hy : y < r) {a b : K} (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1) :
     a • x + b • y < r := by
   linear_combination (norm := skip) a • hx + b • hy + hab • r
@@ -161,16 +161,16 @@ example [CommSemiring K] [PartialOrder K] [IsOrderedRing K]
   module
 
 example [CommSemiring K] [PartialOrder K] [IsOrderedRing K]
-    [AddCommMonoid V] [PartialOrder V] [IsOrderedCancelAddMonoid V] [Module K V] [OrderedSMul K V]
+    [AddCommMonoid V] [PartialOrder V] [IsOrderedCancelAddMonoid V] [Module K V] [PosSMulMono K V]
     {x y z : V} (hyz : y ≤ z) {a b : K} (hb : 0 ≤ b) (hab : a + b = 1) (H : z ≤ a • x + b • y) :
     a • z ≤ a • x := by
   linear_combination (norm := skip) b • hyz + hab • z + H
   apply le_of_eq
   module
 
-example [CommRing K] [PartialOrder K] [IsOrderedRing K]
-    [AddCommGroup V] [PartialOrder V] [IsOrderedAddMonoid V] [Module K V] [OrderedSMul K V]
-    {x y : V} (hx : 0 < x) (hxy : x < y) {a b c : K} (hc : 0 < c) (hac : c < a) (hab : a + b ≤ 1):
+example [CommRing K] [PartialOrder K] [IsOrderedRing K] [AddCommGroup V] [PartialOrder V]
+    [IsOrderedAddMonoid V] [Module K V] [IsStrictOrderedModule K V]
+    {x y : V} (hx : 0 < x) (hxy : x < y) {a b c : K} (hc : 0 < c) (hac : c < a) (hab : a + b ≤ 1) :
     c • x + b • y < y := by
   have := hx.trans hxy
   linear_combination (norm := skip) hab • y + hac • y + c • hxy

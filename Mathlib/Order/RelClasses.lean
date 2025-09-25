@@ -227,11 +227,11 @@ instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : IsIrr
 instance (r : α → α → Prop) [i : IsWellFounded α r] : IsWellFounded α (Relation.TransGen r) :=
   ⟨i.wf.transGen⟩
 
-/-- A class for a well founded relation `<`. -/
+/-- A class for a well-founded relation `<`. -/
 abbrev WellFoundedLT (α : Type*) [LT α] : Prop :=
   IsWellFounded α (· < ·)
 
-/-- A class for a well founded relation `>`. -/
+/-- A class for a well-founded relation `>`. -/
 abbrev WellFoundedGT (α : Type*) [LT α] : Prop :=
   IsWellFounded α (· > ·)
 

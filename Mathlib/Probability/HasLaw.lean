@@ -85,9 +85,8 @@ lemma IndepFun.hasLaw_fun_mul {M : Type*} [Monoid M] {mM : MeasurableSpace M} [M
 lemma HasLaw.integral_comp {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {X : Ω → 𝓧} (hX : HasLaw X μ P) {f : 𝓧 → E} (hf : AEStronglyMeasurable f μ) :
     P[f ∘ X] = ∫ x, f x ∂μ := by
-  rw [← hX.map_eq, integral_map hX.aemeasurable]
-  · rfl
-  · rwa [hX.map_eq]
+  rw [← hX.map_eq, integral_map hX.aemeasurable, Function.comp_def]
+  rwa [hX.map_eq]
 
 lemma HasLaw.lintegral_comp {X : Ω → 𝓧} (hX : HasLaw X μ P) {f : 𝓧 → ℝ≥0∞}
     (hf : AEMeasurable f μ) : ∫⁻ ω, f (X ω) ∂P = ∫⁻ x, f x ∂μ := by

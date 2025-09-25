@@ -25,7 +25,7 @@ exact pairings and duals.
 * `comp_rightAdjointMate`: The adjoint mates of the composition is the composition of
   adjoint mates.
 
-## Notations
+## Notation
 
 * `η_` and `ε_` denote the coevaluation and evaluation morphism of an exact pairing.
 * `Xᘁ` and `ᘁX` denote the right and left dual of an object, as well as the adjoint
@@ -541,39 +541,35 @@ def exactPairingCongr {X X' Y Y' : C} [ExactPairing X' Y'] (i : X ≅ X') (j : Y
 def rightDualIso {X Y₁ Y₂ : C} (p₁ : ExactPairing X Y₁) (p₂ : ExactPairing X Y₂) : Y₁ ≅ Y₂ where
   hom := @rightAdjointMate C _ _ X X ⟨Y₂⟩ ⟨Y₁⟩ (𝟙 X)
   inv := @rightAdjointMate C _ _ X X ⟨Y₁⟩ ⟨Y₂⟩ (𝟙 X)
-  -- Porting note: no implicit arguments were required below:
   hom_inv_id := by
-    rw [← @comp_rightAdjointMate C _ _ X X X ⟨Y₁⟩ ⟨Y₂⟩ ⟨Y₁⟩, Category.comp_id,
-      @rightAdjointMate_id _ _ _ _ ⟨Y₁⟩]
+    -- Make all arguments explicit, because we want to find them by unification not synthesis.
+    rw [← @comp_rightAdjointMate, Category.comp_id, @rightAdjointMate_id]
     rfl
   inv_hom_id := by
-    rw [← @comp_rightAdjointMate C _ _ X X X ⟨Y₂⟩ ⟨Y₁⟩ ⟨Y₂⟩, Category.comp_id,
-      @rightAdjointMate_id _ _ _ _ ⟨Y₂⟩]
+    rw [← @comp_rightAdjointMate, Category.comp_id, @rightAdjointMate_id]
     rfl
 
 /-- Left duals are isomorphic. -/
 def leftDualIso {X₁ X₂ Y : C} (p₁ : ExactPairing X₁ Y) (p₂ : ExactPairing X₂ Y) : X₁ ≅ X₂ where
   hom := @leftAdjointMate C _ _ Y Y ⟨X₂⟩ ⟨X₁⟩ (𝟙 Y)
   inv := @leftAdjointMate C _ _ Y Y ⟨X₁⟩ ⟨X₂⟩ (𝟙 Y)
-  -- Porting note: no implicit arguments were required below:
   hom_inv_id := by
-    rw [← @comp_leftAdjointMate C _ _ Y Y Y ⟨X₁⟩ ⟨X₂⟩ ⟨X₁⟩, Category.comp_id,
-      @leftAdjointMate_id _ _ _ _ ⟨X₁⟩]
+    -- Make all arguments explicit, because we want to find them by unification not synthesis.
+    rw [← @comp_leftAdjointMate C, Category.comp_id, @leftAdjointMate_id]
     rfl
   inv_hom_id := by
-    rw [← @comp_leftAdjointMate C _ _ Y Y Y ⟨X₂⟩ ⟨X₁⟩ ⟨X₂⟩, Category.comp_id,
-      @leftAdjointMate_id _ _ _ _ ⟨X₂⟩]
+    rw [← @comp_leftAdjointMate C, Category.comp_id, @leftAdjointMate_id]
     rfl
 
 @[simp]
 theorem rightDualIso_id {X Y : C} (p : ExactPairing X Y) : rightDualIso p p = Iso.refl Y := by
   ext
-  simp only [rightDualIso, Iso.refl_hom, @rightAdjointMate_id _ _ _ _ ⟨Y⟩]
+  simp only [rightDualIso, Iso.refl_hom, @rightAdjointMate_id]
 
 @[simp]
 theorem leftDualIso_id {X Y : C} (p : ExactPairing X Y) : leftDualIso p p = Iso.refl X := by
   ext
-  simp only [leftDualIso, Iso.refl_hom, @leftAdjointMate_id _ _ _ _ ⟨X⟩]
+  simp only [leftDualIso, Iso.refl_hom, @leftAdjointMate_id]
 
 /-- A right rigid monoidal category is one in which every object has a right dual. -/
 class RightRigidCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] where

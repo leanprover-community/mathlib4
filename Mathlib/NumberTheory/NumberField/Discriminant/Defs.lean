@@ -9,7 +9,6 @@ import Init.Data.List.Nat.Pairwise
 import Init.Data.List.Nat.Range
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.RingTheory.Localization.NormTrace
-import Mathlib.Analysis.Normed.Field.Lemmas
 
 /-!
 # Number field discriminant
@@ -60,6 +59,10 @@ theorem discr_eq_discr_of_algEquiv {L : Type*} [Field L] [NumberField L] (f : K 
     Basis.map_apply]
   rfl
 
+theorem discr_eq_discr_of_ringEquiv {L : Type*} [Field L] [NumberField L] (f : K ≃+* L) :
+    discr K = discr L :=
+  discr_eq_discr_of_algEquiv _ <| AlgEquiv.ofRingEquiv (f := f) fun _ ↦ by simp
+
 end NumberField
 
 namespace Rat
@@ -80,7 +83,7 @@ theorem numberField_discr : discr ℚ = 1 := by
         AddEquiv.coe_toIntLinearEquiv, Basis.singleton_apply,
         show (AddEquiv.symm ↑ringOfIntegersEquiv) (1 : ℤ) = ringOfIntegersEquiv.symm 1 by rfl,
         map_one, mul_one]
-    _ = 1 := by rw [Algebra.trace_eq_matrix_trace b]; norm_num
+    _ = 1 := by rw [Algebra.trace_eq_matrix_trace b]; simp
 
 alias _root_.NumberField.discr_rat := numberField_discr
 

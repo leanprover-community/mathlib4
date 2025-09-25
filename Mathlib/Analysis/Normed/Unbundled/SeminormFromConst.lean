@@ -133,7 +133,7 @@ def seminormFromConst : RingSeminorm R where
     intro n
     have h_add : f ((x + y) * c ^ n) ≤ f (x * c ^ n) + f (y * c ^ n) := by
       simp only [add_mul, map_add_le_add f _ _]
-    simp only [seminormFromConst_seq, div_add_div_same]
+    simp only [seminormFromConst_seq, ← add_div]
     gcongr
   neg' x := by
     apply tendsto_nhds_unique_of_eventuallyEq (seminormFromConst_isLimit hf1 hc hpm (-x))
@@ -146,7 +146,7 @@ def seminormFromConst : RingSeminorm R where
         (𝓝 (seminormFromConst' hf1 hc hpm (x * y))) := by
       apply (seminormFromConst_isLimit hf1 hc hpm (x * y)).comp
         (tendsto_atTop_atTop_of_monotone (fun _ _ hnm ↦ by
-          simp only [mul_le_mul_left, Nat.succ_pos', hnm]) _)
+          simp only [mul_le_mul_iff_right₀, Nat.succ_pos', hnm]) _)
       · rintro n; use n; omega
     refine le_of_tendsto_of_tendsto' hlim ((seminormFromConst_isLimit hf1 hc hpm x).mul
       (seminormFromConst_isLimit hf1 hc hpm y)) (fun n ↦ ?_)

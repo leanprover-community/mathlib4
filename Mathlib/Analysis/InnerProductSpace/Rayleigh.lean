@@ -57,19 +57,17 @@ theorem rayleigh_smul (x : E) {c : 𝕜} (hc : c ≠ 0) :
     rayleighQuotient T (c • x) = rayleighQuotient T x := by
   by_cases hx : x = 0
   · simp [hx]
-  field_simp [norm_smul, T.reApplyInnerSelf_smul]
-  ring
+  simp [field, norm_smul, T.reApplyInnerSelf_smul]
 
 theorem image_rayleigh_eq_image_rayleigh_sphere {r : ℝ} (hr : 0 < r) :
     rayleighQuotient T '' {0}ᶜ = rayleighQuotient T '' sphere 0 r := by
   ext a
   constructor
   · rintro ⟨x, hx : x ≠ 0, hxT⟩
-    have : ‖x‖ ≠ 0 := by simp [hx]
     let c : 𝕜 := ↑‖x‖⁻¹ * r
     have : c ≠ 0 := by simp [c, hx, hr.ne']
     refine ⟨c • x, ?_, ?_⟩
-    · field_simp [c, norm_smul, abs_of_pos hr]
+    · simp [field, c, norm_smul, abs_of_pos hr]
     · rw [T.rayleigh_smul x this]
       exact hxT
   · rintro ⟨x, hx, hxT⟩
@@ -143,12 +141,12 @@ theorem eq_smul_self_of_isLocalExtrOn_real (hT : IsSelfAdjoint T) {x₀ : F}
     simpa [hb] using h₂
   let c : ℝ := -b⁻¹ * a
   have hc : T x₀ = c • x₀ := by
-    have : b * (b⁻¹ * a) = a := by field_simp [mul_comm]
+    have : b * (b⁻¹ * a) = a := by field_simp
     apply smul_right_injective F hb
     simp [c, eq_neg_of_add_eq_zero_left h₂, ← mul_smul, this]
   convert hc
   have := congr_arg (fun x => ⟪x, x₀⟫_ℝ) hc
-  field_simp [inner_smul_left, real_inner_self_eq_norm_mul_norm, sq] at this ⊢
+  simp [field, inner_smul_left, real_inner_self_eq_norm_mul_norm, mul_comm a] at this ⊢
   exact this
 
 end Real

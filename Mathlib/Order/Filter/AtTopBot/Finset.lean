@@ -65,4 +65,9 @@ lemma tendsto_toRight_atTop :
   obtain ⟨t, H⟩ := hs
   exact ⟨.disjSum ∅ t, fun b hb ↦ H _ (by simpa [← Finset.coe_subset, Set.subset_def] using hb)⟩
 
+theorem tendsto_finset_powerset_atTop_atTop : Tendsto (Finset.powerset (α := α)) atTop atTop := by
+  classical
+  refine tendsto_atTop_atTop.mpr fun t ↦ ⟨t.sup id, fun _ hu _ hv ↦ ?_⟩
+  exact Finset.mem_powerset.mpr <| (Finset.le_sup_of_le hv fun _ h ↦ h).trans hu
+
 end Filter

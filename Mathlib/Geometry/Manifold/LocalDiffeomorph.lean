@@ -13,9 +13,10 @@ import Mathlib.Topology.IsLocalHomeomorph
 In this file, we define `C^n` local diffeomorphisms between manifolds.
 
 A `C^n` map `f : M → N` is a **local diffeomorphism at `x`** iff there are neighbourhoods `s`
-and `t` of `x` and `f x`, respectively such that `f` restricts to a diffeomorphism
-between `s` and `t`. `f` is called a **local diffeomorphism on s** iff it is a local diffeomorphism
-at every `x ∈ s`, and a **local diffeomorphism** iff it is a local diffeomorphism on `univ`.
+and `t` of `x` and `f x`, respectively, such that `f` restricts to a diffeomorphism
+between `s` and `t`. `f` is called a **local diffeomorphism on `s`** iff it is a local
+diffeomorphism at every `x ∈ s`, and a **local diffeomorphism** iff it is a local diffeomorphism on
+`univ`.
 
 ## Main definitions
 * `IsLocalDiffeomorphAt I J n f x`: `f` is a `C^n` local diffeomorphism at `x`
@@ -25,10 +26,10 @@ at every `x ∈ s`, and a **local diffeomorphism** iff it is a local diffeomorph
 ## Main results
 * Each of `Diffeomorph`, `IsLocalDiffeomorph`, `IsLocalDiffeomorphOn` and `IsLocalDiffeomorphAt`
   implies the next condition.
-* `IsLocalDiffeomorph.isLocalHomeomorph`: a local diffeomorphisms is a local homeomorphism,
-  similarly for local diffeomorphism on `s`
+* `IsLocalDiffeomorph.isLocalHomeomorph`: a local diffeomorphism is a local homeomorphism,
+  and similarly for a local diffeomorphism on `s`.
 * `IsLocalDiffeomorph.isOpen_range`: the image of a local diffeomorphism is open
-* `IslocalDiffeomorph.diffeomorph_of_bijective`:
+* `IsLocalDiffeomorph.diffeomorph_of_bijective`:
   a bijective local diffeomorphism is a diffeomorphism
 
 * `Diffeomorph.mfderivToContinuousLinearEquiv`: each differential of a `C^n` diffeomorphism

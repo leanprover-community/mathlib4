@@ -159,18 +159,14 @@ variable {H : Type u → Type s} [Applicative H]
 def comp (η' : ApplicativeTransformation G H) (η : ApplicativeTransformation F G) :
     ApplicativeTransformation F H where
   app _ x := η' (η x)
-  -- Porting note: something has gone wrong with `simp [functor_norm]`,
-  -- which should suffice for the next two.
-  preserves_pure' x := by simp only [preserves_pure]
-  preserves_seq' x y := by simp only [preserves_seq]
+  preserves_pure' x := by simp [functor_norm]
+  preserves_seq' x y := by simp [functor_norm]
 
 @[simp]
 theorem comp_apply (η' : ApplicativeTransformation G H) (η : ApplicativeTransformation F G)
     {α : Type u} (x : F α) : η'.comp η x = η' (η x) :=
   rfl
 
--- Porting note: in mathlib3 we also had the assumption `[LawfulApplicative I]` because
--- this was assumed
 theorem comp_assoc {I : Type u → Type t} [Applicative I]
     (η'' : ApplicativeTransformation H I) (η' : ApplicativeTransformation G H)
     (η : ApplicativeTransformation F G) : (η''.comp η').comp η = η''.comp (η'.comp η) :=

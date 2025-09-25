@@ -122,7 +122,7 @@ theorem primesBelow_card_eq_primeCounting' (n : ℕ) : #n.primesBelow = primeCou
   exact (count_eq_card_filter_range Prime n).symm
 
 /-- A linear upper bound on the size of the `primeCounting'` function -/
-theorem primeCounting'_add_le {a k : ℕ} (h0 : 0 < a) (h1 : a < k) (n : ℕ) :
+theorem primeCounting'_add_le {a k : ℕ} (h0 : a ≠ 0) (h1 : a < k) (n : ℕ) :
     π' (k + n) ≤ π' k + Nat.totient a * (n / a + 1) :=
   calc
     π' (k + n) ≤ #{p ∈ range k | p.Prime} + #{p ∈ Ico k (k + n) | p.Prime} := by

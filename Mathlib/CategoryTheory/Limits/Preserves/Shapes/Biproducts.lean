@@ -259,17 +259,22 @@ instance hasBiproduct_of_preserves : HasBiproduct (F.obj ∘ f) :=
     { bicone := F.mapBicone (biproduct.bicone f)
       isBilimit := isBilimitOfPreserves _ (biproduct.isBilimit _) }
 
+/-- This instance applies more often than `hasBiproduct_of_preserves`, but the discrimination
+tree key matches a lot more (since it does not look through lambdas). -/
+instance (priority := low) hasBiproduct_of_preserves' : HasBiproduct fun i => F.obj (f i) :=
+  HasBiproduct.mk
+    { bicone := F.mapBicone (biproduct.bicone f)
+      isBilimit := isBilimitOfPreserves _ (biproduct.isBilimit _) }
+
 /-- If `F` preserves a biproduct, we get a definitionally nice isomorphism
 `F.obj (⨁ f) ≅ ⨁ (F.obj ∘ f)`. -/
 abbrev mapBiproduct : F.obj (⨁ f) ≅ ⨁ F.obj ∘ f :=
   biproduct.uniqueUpToIso _ (isBilimitOfPreserves _ (biproduct.isBilimit _))
 
 theorem mapBiproduct_hom :
-    haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
     (mapBiproduct F f).hom = biproduct.lift fun j => F.map (biproduct.π f j) := rfl
 
 theorem mapBiproduct_inv :
-    haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
     (mapBiproduct F f).inv = biproduct.desc fun j => F.map (biproduct.ι f j) := rfl
 
 end Bicone
@@ -364,20 +369,16 @@ section Bicone
 variable {J : Type w₁} (f : J → C) [HasBiproduct f] [PreservesBiproduct f F] {W : C}
 
 theorem biproduct.map_lift_mapBiprod (g : ∀ j, W ⟶ f j) :
-    -- Porting note: we need haveI to tell Lean about hasBiproduct_of_preserves F f
-    haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
     F.map (biproduct.lift g) ≫ (F.mapBiproduct f).hom = biproduct.lift fun j => F.map (g j) := by
   ext j
   dsimp only [Function.comp_def]
   simp only [mapBiproduct_hom, Category.assoc, biproduct.lift_π, ← F.map_comp]
 
 theorem biproduct.mapBiproduct_inv_map_desc (g : ∀ j, f j ⟶ W) :
-    -- Porting note: we need haveI to tell Lean about hasBiproduct_of_preserves F f
-    haveI : HasBiproduct fun j => F.obj (f j) := hasBiproduct_of_preserves F f
     (F.mapBiproduct f).inv ≫ F.map (biproduct.desc g) = biproduct.desc fun j => F.map (g j) := by
   ext j
   dsimp only [Function.comp_def]
-  simp only [mapBiproduct_inv, ← Category.assoc, biproduct.ι_desc ,← F.map_comp]
+  simp only [mapBiproduct_inv, ← Category.assoc, biproduct.ι_desc, ← F.map_comp]
 
 theorem biproduct.mapBiproduct_hom_desc (g : ∀ j, f j ⟶ W) :
     ((F.mapBiproduct f).hom ≫ biproduct.desc fun j => F.map (g j)) = F.map (biproduct.desc g) := by

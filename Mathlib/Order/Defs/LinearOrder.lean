@@ -8,6 +8,7 @@ import Batteries.Tactic.Trans
 import Mathlib.Data.Ordering.Basic
 import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.Push.Attr
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.TypeStar
 import Mathlib.Order.Defs.PartialOrder
@@ -44,7 +45,7 @@ implicit arguments, requires us to unfold the defs and split the `if`s in the de
 3. seeing if we can split by cases on the arguments, then see if the defs work themselves out
   (useful when `compare` is defined via a `match` statement, as it is for `Bool`) -/
 macro "compareOfLessAndEq_rfl" : tactic =>
-  `(tactic| (intros a b; first | rfl |
+  `(tactic| (intro a b; first | rfl |
     (simp only [compare, compareOfLessAndEq]; split_ifs <;> rfl) |
     (induction a <;> induction b <;> simp +decide only)))
 
@@ -76,7 +77,7 @@ attribute [instance 900] LinearOrder.toDecidableLT
 attribute [instance 900] LinearOrder.toDecidableLE
 attribute [instance 900] LinearOrder.toDecidableEq
 
-instance : Lean.Grind.LinearOrder α where
+instance : Std.IsLinearOrder α where
   le_total := LinearOrder.le_total
 
 lemma le_total : ∀ a b : α, a ≤ b ∨ b ≤ a := LinearOrder.le_total
@@ -86,14 +87,8 @@ lemma lt_of_not_ge (h : ¬b ≤ a) : a < b := lt_of_le_not_ge (le_of_not_ge h) h
 
 @[deprecated (since := "2025-05-11")] alias le_of_not_le := le_of_not_ge
 
-lemma lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a :=
-  Or.elim (le_total a b)
-    (fun h : a ≤ b =>
-      Or.elim (Decidable.lt_or_eq_of_le h) (fun h : a < b => Or.inl h) fun h : a = b =>
-        Or.inr (Or.inl h))
-    fun h : b ≤ a =>
-    Or.elim (Decidable.lt_or_eq_of_le h) (fun h : b < a => Or.inr (Or.inr h)) fun h : b = a =>
-      Or.inr (Or.inl h.symm)
+lemma lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a := by
+  grind [le_total, Decidable.lt_or_eq_of_le]
 
 lemma le_of_not_gt (h : ¬b < a) : a ≤ b :=
   match lt_trichotomy a b with
@@ -118,8 +113,8 @@ lemma ne_iff_lt_or_gt : a ≠ b ↔ a < b ∨ b < a := ⟨lt_or_gt_of_ne, (Or.el
 
 lemma lt_iff_not_ge : a < b ↔ ¬b ≤ a := ⟨not_le_of_gt, lt_of_not_ge⟩
 
-@[simp] lemma not_lt : ¬a < b ↔ b ≤ a := ⟨le_of_not_gt, not_lt_of_ge⟩
-@[simp] lemma not_le : ¬a ≤ b ↔ b < a := lt_iff_not_ge.symm
+@[simp, push] lemma not_lt : ¬a < b ↔ b ≤ a := ⟨le_of_not_gt, not_lt_of_ge⟩
+@[simp, push] lemma not_le : ¬a ≤ b ↔ b < a := lt_iff_not_ge.symm
 
 lemma eq_or_gt_of_not_lt (h : ¬a < b) : a = b ∨ b < a :=
   if h₁ : a = b then Or.inl h₁ else Or.inr (lt_of_not_ge fun hge => h (lt_of_le_of_ne hge h₁))
@@ -137,7 +132,9 @@ theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α}
     (H : d < c → b < a) (h : a ≤ b) : c ≤ d :=
   le_of_not_gt fun h' => not_le_of_gt (H h') h
 
+@[grind =]
 lemma min_def (a b : α) : min a b = if a ≤ b then a else b := by rw [LinearOrder.min_def a]
+@[grind =]
 lemma max_def (a b : α) : max a b = if a ≤ b then b else a := by rw [LinearOrder.max_def a]
 
 lemma min_le_left (a b : α) : min a b ≤ a := by
@@ -255,16 +252,16 @@ lemma compare_eq_iff_eq : compare a b = .eq ↔ a = b := by
   case _ _ h => rwa [false_iff]
 
 lemma compare_le_iff_le : compare a b ≠ .gt ↔ a ≤ b := by
-  cases h : compare a b <;> simp
-  · exact le_of_lt <| compare_lt_iff_lt.1 h
-  · exact le_of_eq <| compare_eq_iff_eq.1 h
-  · exact compare_gt_iff_gt.1 h
+  cases h : compare a b
+  · simpa using le_of_lt <| compare_lt_iff_lt.1 h
+  · simpa using le_of_eq <| compare_eq_iff_eq.1 h
+  · simpa using compare_gt_iff_gt.1 h
 
 lemma compare_ge_iff_ge : compare a b ≠ .lt ↔ b ≤ a := by
-  cases h : compare a b <;> simp
-  · exact compare_lt_iff_lt.1 h
-  · exact le_of_eq <| (·.symm) <| compare_eq_iff_eq.1 h
-  · exact le_of_lt <| compare_gt_iff_gt.1 h
+  cases h : compare a b
+  · simpa using compare_lt_iff_lt.1 h
+  · simpa using le_of_eq <| (·.symm) <| compare_eq_iff_eq.1 h
+  · simpa using le_of_lt <| compare_gt_iff_gt.1 h
 
 lemma compare_iff (a b : α) {o : Ordering} : compare a b = o ↔ o.Compares a b := by
   cases o <;> simp only [Ordering.Compares]

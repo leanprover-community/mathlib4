@@ -54,9 +54,7 @@ theorem Gamma_integrand_isLittleO (s : ℝ) :
   have : (fun x : ℝ => exp (-x) * x ^ s / exp (-(1 / 2) * x)) =
       (fun x : ℝ => exp (1 / 2 * x) / x ^ s)⁻¹ := by
     ext1 x
-    field_simp [exp_ne_zero, exp_neg, ← Real.exp_add]
-    left
-    ring
+    simp [field, ← exp_nsmul, exp_neg]
   rw [this]
   exact (tendsto_exp_mul_div_rpow_atTop s (1 / 2) one_half_pos).inv_tendsto_atTop
 
@@ -145,7 +143,7 @@ section GammaRecurrence
 
 /-- The indefinite version of the `Γ` function, `Γ(s, X) = ∫ x ∈ 0..X, exp(-x) x ^ (s - 1)`. -/
 def partialGamma (s : ℂ) (X : ℝ) : ℂ :=
-  ∫ x in (0)..X, (-x).exp * x ^ (s - 1)
+  ∫ x in 0..X, (-x).exp * x ^ (s - 1)
 
 theorem tendsto_partialGamma {s : ℂ} (hs : 0 < s.re) :
     Tendsto (fun X : ℝ => partialGamma s X) atTop (𝓝 <| GammaIntegral s) :=
@@ -253,12 +251,14 @@ noncomputable def GammaAux : ℕ → ℂ → ℂ
 
 theorem GammaAux_recurrence1 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
     GammaAux n s = GammaAux n (s + 1) / s := by
-  induction' n with n hn generalizing s
-  · simp only [CharP.cast_eq_zero, Left.neg_neg_iff] at h1
+  induction n generalizing s with
+  | zero =>
+    simp only [CharP.cast_eq_zero, Left.neg_neg_iff] at h1
     dsimp only [GammaAux]; rw [GammaIntegral_add_one h1]
     rw [mul_comm, mul_div_cancel_right₀]; contrapose! h1; rw [h1]
     simp
-  · dsimp only [GammaAux]
+  | succ n hn =>
+    dsimp only [GammaAux]
     have hh1 : -(s + 1).re < n := by
       rw [Nat.cast_add, Nat.cast_one] at h1
       rw [add_re, one_re]; linarith
@@ -287,10 +287,11 @@ irreducible_def Gamma (s : ℂ) : ℂ :=
   GammaAux ⌊1 - s.re⌋₊ s
 
 theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamma s = GammaAux n s := by
-  have u : ∀ k : ℕ, GammaAux (⌊1 - s.re⌋₊ + k) s = Gamma s := by
-    intro k; induction' k with k hk
-    · simp [Gamma]
-    · rw [← hk, ← add_assoc]
+  have u : ∀ k : ℕ, GammaAux (⌊1 - s.re⌋₊ + k) s = Gamma s := fun k ↦ by
+    induction k with
+    | zero => simp [Gamma]
+    | succ k hk =>
+      rw [← hk, ← add_assoc]
       refine (GammaAux_recurrence2 s (⌊1 - s.re⌋₊ + k) ?_).symm
       rw [Nat.cast_add]
       have i0 := Nat.sub_one_lt_floor (1 - s.re)
@@ -302,7 +303,7 @@ theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamma s = Ga
   · apply Nat.le_of_lt_succ
     exact_mod_cast lt_of_le_of_lt (Nat.floor_le h) (by linarith : 1 - s.re < n + 1)
   · rw [Nat.floor_of_nonpos]
-    · omega
+    · cutsat
     · linarith
 
 /-- The recurrence relation for the `Γ` function. -/

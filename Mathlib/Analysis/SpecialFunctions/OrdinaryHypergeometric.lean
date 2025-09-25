@@ -140,7 +140,7 @@ variable {𝕂 : Type*} (𝔸 : Type*) [RCLike 𝕂] [NormedDivisionRing 𝔸] [
 theorem ordinaryHypergeometric_radius_top_of_neg_nat₁ {k : ℕ} :
     (ordinaryHypergeometricSeries 𝔸 (-(k : 𝕂)) b c).radius = ⊤ := by
   refine FormalMultilinearSeries.radius_eq_top_of_forall_image_add_eq_zero _ (1 + k) fun n ↦ ?_
-  exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat (-(k : 𝕂)) b c (by aesop) (by omega)
+  exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat (-(k : 𝕂)) b c (by aesop) (by cutsat)
 
 theorem ordinaryHypergeometric_radius_top_of_neg_nat₂ {k : ℕ} :
     (ordinaryHypergeometricSeries 𝔸 a (-(k : 𝕂)) c).radius = ⊤ := by
@@ -150,7 +150,7 @@ theorem ordinaryHypergeometric_radius_top_of_neg_nat₂ {k : ℕ} :
 theorem ordinaryHypergeometric_radius_top_of_neg_nat₃ {k : ℕ} :
     (ordinaryHypergeometricSeries 𝔸 a b (-(k : 𝕂))).radius = ⊤ := by
   refine FormalMultilinearSeries.radius_eq_top_of_forall_image_add_eq_zero _ (1 + k) fun n ↦ ?_
-  exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat a b (-(k : 𝕂)) (by aesop) (by omega)
+  exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat a b (-(k : 𝕂)) (by aesop) (by cutsat)
 
 /-- An iff variation on `ordinaryHypergeometricSeries_eq_zero_of_nonpos_int` for `[RCLike 𝕂]`. -/
 lemma ordinaryHypergeometricSeries_eq_zero_iff (n : ℕ) :

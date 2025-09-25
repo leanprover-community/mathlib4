@@ -6,16 +6,16 @@ Authors: Jireh Loreaux
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.RCLike.Lemmas
 import Mathlib.Topology.TietzeExtension
-import Mathlib.Analysis.NormedSpace.HomeomorphBall
-import Mathlib.Analysis.NormedSpace.RCLike
+import Mathlib.Analysis.Normed.Module.Ball.Homeomorph
+import Mathlib.Analysis.Normed.Module.RCLike.Basic
 /-!
-# Finite dimensional topological vector spaces over `ℝ` satisfy the Tietze extension property
+# Finite-dimensional topological vector spaces over `ℝ` satisfy the Tietze extension property
 
 There are two main results here:
 
-- `RCLike.instTietzeExtensionTVS`: finite dimensional topological vector spaces over `ℝ` (or `ℂ`)
+- `RCLike.instTietzeExtensionTVS`: finite-dimensional topological vector spaces over `ℝ` (or `ℂ`)
   have the Tietze extension property.
-- `BoundedContinuousFunction.exists_norm_eq_restrict_eq`: when mapping into a finite dimensional
+- `BoundedContinuousFunction.exists_norm_eq_restrict_eq`: when mapping into a finite-dimensional
   normed vector space over `ℝ` (or `ℂ`), the extension can be chosen to preserve the norm of the
   bounded continuous function it extends.
 
@@ -106,7 +106,7 @@ a bounded continuous function `g : Y →ᵇ ℝ` of the same norm such that `g �
 theorem exists_norm_eq_restrict_eq (f : s →ᵇ E) :
     ∃ g : X →ᵇ E, ‖g‖ = ‖f‖ ∧ g.restrict s = f := by
   by_cases hf : ‖f‖ = 0; · exact ⟨0, by aesop⟩
-  have := Metric.instTietzeExtensionClosedBall.{u, v} 𝕜 (0 : E) (by aesop : 0 < ‖f‖)
+  have := Metric.instTietzeExtensionClosedBall.{u, v} 𝕜 (0 : E) (by simp_all : 0 < ‖f‖)
   have hf' x : f x ∈ Metric.closedBall 0 ‖f‖ := by simpa using f.norm_coe_le_norm x
   obtain ⟨g, hg_mem, hg⟩ := (f : C(s, E)).exists_forall_mem_restrict_eq hs hf'
   simp only [Metric.mem_closedBall, dist_zero_right] at hg_mem

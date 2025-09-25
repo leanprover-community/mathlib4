@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.AddGroupWithTop
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Data.ENat.Defs
@@ -249,10 +250,11 @@ theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = t
   · rw [← coe_sub, toNat_coe, toNat_coe, toNat_coe]
 
 @[simp] theorem toNat_mul (a b : ℕ∞) : (a * b).toNat = a.toNat * b.toNat := by
-  cases a <;> cases b <;> simp
+  cases a <;> cases b
+  · simp
   · rename_i b; cases b <;> simp
   · rename_i a; cases a <;> simp
-  · rw [← coe_mul, toNat_coe]
+  · simp only [toNat_coe]; rw [← coe_mul, toNat_coe]
 
 theorem toNat_eq_iff {m : ℕ∞} {n : ℕ} (hn : n ≠ 0) : toNat m = n ↔ m = n := by
   induction m <;> simp [hn.symm]
@@ -300,11 +302,12 @@ lemma coe_lt_coe {n m : ℕ} : (n : ℕ∞) < (m : ℕ∞) ↔ n < m := by simp
 lemma coe_le_coe {n m : ℕ} : (n : ℕ∞) ≤ (m : ℕ∞) ↔ n ≤ m := by simp
 
 @[elab_as_elim]
-theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ n : ℕ, P n → P n.succ)
-    (htop : (∀ n : ℕ, P n) → P ⊤) : P a := by
-  have A : ∀ n : ℕ, P n := fun n => Nat.recOn n h0 hsuc
+theorem nat_induction {motive : ℕ∞ → Prop} (a : ℕ∞) (zero : motive 0)
+    (succ : ∀ n : ℕ, motive n → motive n.succ)
+    (top : (∀ n : ℕ, motive n) → motive ⊤) : motive a := by
+  have A : ∀ n : ℕ, motive n := fun n => Nat.recOn n zero succ
   cases a
-  · exact htop A
+  · exact top A
   · exact A _
 
 lemma add_one_pos : 0 < n + 1 :=
@@ -361,32 +364,19 @@ lemma add_right_injective_of_ne_top {n : ℕ∞} (hn : n ≠ ⊤) : Function.Inj
   simp_rw [add_comm n _]
   exact add_left_injective_of_ne_top hn
 
-lemma mul_left_strictMono (ha : a ≠ 0) (h_top : a ≠ ⊤) : StrictMono (a * ·) := by
-  lift a to ℕ using h_top
-  intro x y hxy
-  induction x with
-  | top => simp at hxy
-  | coe x =>
-  induction y with
-  | top =>
-    simp only [mul_top ha, ← ENat.coe_mul]
-    exact coe_lt_top (a * x)
-  | coe y =>
-  simp only
-  rw [← ENat.coe_mul, ← ENat.coe_mul, ENat.coe_lt_coe]
-  rw [ENat.coe_lt_coe] at hxy
-  exact Nat.mul_lt_mul_of_pos_left hxy (Nat.pos_of_ne_zero (by simpa using ha))
+lemma mul_right_strictMono (ha : a ≠ 0) (h_top : a ≠ ⊤) : StrictMono (a * ·) :=
+  WithTop.mul_right_strictMono (pos_iff_ne_zero.2 ha) h_top
 
-lemma mul_right_strictMono (ha : a ≠ 0) (h_top : a ≠ ⊤) : StrictMono (· * a) := by
-  simpa [show (· * a) = (a * ·) by simp [mul_comm]] using mul_left_strictMono ha h_top
+lemma mul_left_strictMono (ha : a ≠ 0) (h_top : a ≠ ⊤) : StrictMono (· * a) :=
+  WithTop.mul_left_strictMono (pos_iff_ne_zero.2 ha) h_top
 
 @[simp]
 lemma mul_le_mul_left_iff {x y : ℕ∞} (ha : a ≠ 0) (h_top : a ≠ ⊤) : a * x ≤ a * y ↔ x ≤ y :=
-  (ENat.mul_left_strictMono ha h_top).le_iff_le
+  (ENat.mul_right_strictMono ha h_top).le_iff_le
 
 @[simp]
 lemma mul_le_mul_right_iff {x y : ℕ∞} (ha : a ≠ 0) (h_top : a ≠ ⊤) : x * a ≤ y * a ↔ x ≤ y :=
-  (ENat.mul_right_strictMono ha h_top).le_iff_le
+  (ENat.mul_left_strictMono ha h_top).le_iff_le
 
 @[gcongr]
 lemma mul_le_mul_of_le_right {x y : ℕ∞} (hxy : x ≤ y) (ha : a ≠ 0) (h_top : a ≠ ⊤) :
@@ -531,17 +521,19 @@ protected def _root_.MonoidWithZeroHom.ENatMap {S : Type*} [MulZeroOneClass S] [
     toFun := ENat.map f
     map_mul' := fun x y => by
       have : ∀ z, map f z = 0 ↔ z = 0 := fun z =>
-        (Option.map_injective hf).eq_iff' f.toZeroHom.ENatMap.map_zero
+        (WithTop.map_injective hf).eq_iff' f.toZeroHom.ENatMap.map_zero
       rcases Decidable.eq_or_ne x 0 with (rfl | hx)
       · simp
       rcases Decidable.eq_or_ne y 0 with (rfl | hy)
       · simp
-      induction' x with x
-      · simp [hy, this]
-      induction' y with y
-      · have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
-        simp [mul_top hx, WithTop.mul_top this]
-      · simp [← Nat.cast_mul, - coe_mul] }
+      induction x with
+      | top => simp [hy, this]
+      | coe x =>
+        induction y with
+        | top =>
+          have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
+          simp [mul_top hx, WithTop.mul_top this]
+        | coe y => simp [← Nat.cast_mul, - coe_mul] }
 
 /-- A version of `ENat.map` for `RingHom`s. -/
 @[simps -fullyApplied]

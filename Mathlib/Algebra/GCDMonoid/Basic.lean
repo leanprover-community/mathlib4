@@ -381,6 +381,7 @@ theorem isUnit_gcd_one_right [GCDMonoid α] (a : α) : IsUnit (gcd a 1) :=
 
 theorem gcd_one_right' [GCDMonoid α] (a : α) : Associated (gcd a 1) 1 := by simp
 
+@[gcongr]
 theorem gcd_dvd_gcd [GCDMonoid α] {a b c d : α} (hab : a ∣ b) (hcd : c ∣ d) : gcd a c ∣ gcd b d :=
   dvd_gcd ((gcd_dvd_left _ _).trans hab) ((gcd_dvd_right _ _).trans hcd)
 
@@ -437,17 +438,17 @@ theorem gcd_eq_left_iff [NormalizedGCDMonoid α] (a b : α) (h : normalize a = a
 theorem gcd_eq_right_iff [NormalizedGCDMonoid α] (a b : α) (h : normalize b = b) :
     gcd a b = b ↔ b ∣ a := by simpa only [gcd_comm a b] using gcd_eq_left_iff b a h
 
-theorem gcd_dvd_gcd_mul_left [GCDMonoid α] (m n k : α) : gcd m n ∣ gcd (k * m) n :=
-  gcd_dvd_gcd (dvd_mul_left _ _) dvd_rfl
+theorem gcd_dvd_gcd_mul_left [GCDMonoid α] (m n k : α) : gcd m n ∣ gcd (k * m) n := by
+  grw [← dvd_mul_left]
 
-theorem gcd_dvd_gcd_mul_right [GCDMonoid α] (m n k : α) : gcd m n ∣ gcd (m * k) n :=
-  gcd_dvd_gcd (dvd_mul_right _ _) dvd_rfl
+theorem gcd_dvd_gcd_mul_right [GCDMonoid α] (m n k : α) : gcd m n ∣ gcd (m * k) n := by
+  grw [← dvd_mul_right]
 
-theorem gcd_dvd_gcd_mul_left_right [GCDMonoid α] (m n k : α) : gcd m n ∣ gcd m (k * n) :=
-  gcd_dvd_gcd dvd_rfl (dvd_mul_left _ _)
+theorem gcd_dvd_gcd_mul_left_right [GCDMonoid α] (m n k : α) : gcd m n ∣ gcd m (k * n) := by
+  grw [← dvd_mul_left]
 
-theorem gcd_dvd_gcd_mul_right_right [GCDMonoid α] (m n k : α) : gcd m n ∣ gcd m (n * k) :=
-  gcd_dvd_gcd dvd_rfl (dvd_mul_right _ _)
+theorem gcd_dvd_gcd_mul_right_right [GCDMonoid α] (m n k : α) : gcd m n ∣ gcd m (n * k) := by
+  grw [← dvd_mul_right]
 
 theorem Associated.gcd_eq_left [NormalizedGCDMonoid α] {m n : α} (h : Associated m n) (k : α) :
     gcd m k = gcd n k :=
@@ -531,8 +532,7 @@ theorem pow_dvd_of_mul_eq_pow [GCDMonoid α] {a b c d₁ d₂ : α} (ha : a ≠ 
     · apply IsUnit.dvd
       apply IsUnit.pow
       apply isUnit_of_dvd_one
-      apply dvd_trans _ hab.dvd
-      apply gcd_dvd_gcd hd₁ (dvd_refl b)
+      grw [hd₁, hab.dvd]
   have h2 : d₁ ^ k ∣ a * b := by
     use d₂ ^ k
     rw [h, hc]
@@ -807,6 +807,48 @@ theorem lcm_eq_of_associated_right [NormalizedGCDMonoid α] {m n : α} (h : Asso
     lcm k m = lcm k n :=
   dvd_antisymm_of_normalize_eq (normalize_lcm _ _) (normalize_lcm _ _) (lcm_dvd_lcm dvd_rfl h.dvd)
     (lcm_dvd_lcm dvd_rfl h.symm.dvd)
+
+section Divisibility
+
+variable [GCDMonoid α] {m n a b c : α}
+
+variable (m n) in
+@[simp] theorem lcm_dvd_mul : lcm m n ∣ m * n :=
+  lcm_dvd (by simp) (by simp)
+
+theorem dvd_lcm_of_dvd_left (h : a ∣ b) (c : α) : a ∣ lcm b c :=
+  h.trans (dvd_lcm_left b c)
+
+alias Dvd.dvd.lcm_right := dvd_lcm_of_dvd_left
+
+theorem dvd_of_lcm_right_dvd (h : lcm a b ∣ c) : a ∣ c :=
+  (dvd_lcm_left a b).trans h
+
+theorem dvd_lcm_of_dvd_right (h : a ∣ b) (c : α) : a ∣ lcm c b :=
+  h.trans (dvd_lcm_right c b)
+
+alias Dvd.dvd.lcm_left := dvd_lcm_of_dvd_right
+
+theorem dvd_of_lcm_left_dvd (h : lcm a b ∣ c) : b ∣ c :=
+  (dvd_lcm_right a b).trans h
+
+namespace Prime
+variable {p : α} (hp : Prime p)
+
+include hp
+
+theorem dvd_or_dvd_of_dvd_lcm (h : p ∣ lcm a b) : p ∣ a ∨ p ∣ b :=
+  dvd_or_dvd hp (h.trans (lcm_dvd_mul a b))
+
+theorem dvd_lcm : p ∣ lcm a b ↔ p ∣ a ∨ p ∣ b :=
+  ⟨hp.dvd_or_dvd_of_dvd_lcm, (Or.elim · (dvd_lcm_of_dvd_left · _) (dvd_lcm_of_dvd_right · _))⟩
+
+theorem not_dvd_lcm (ha : ¬ p ∣ a) (hb : ¬ p ∣ b) : ¬ p ∣ lcm a b :=
+  hp.dvd_lcm.not.mpr <| not_or.mpr ⟨ha, hb⟩
+
+end Prime
+
+end Divisibility
 
 end LCM
 

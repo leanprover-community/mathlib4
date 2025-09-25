@@ -153,9 +153,9 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
           (Real.cos_pos_of_mem_Ioo <| abs_lt.1 <| (abs_of_pos (mul_pos hd₀ hb)).symm ▸ hb'),
         fun w hw => ?_⟩
     replace hw : |im (aff w)| ≤ d * b := by
-      rw [← Real.closedBall_eq_Icc] at hw
-      rwa [im_ofReal_mul, sub_im, mul_I_im, ofReal_re, _root_.abs_mul, abs_of_pos hd₀,
-        mul_le_mul_left hd₀]
+      rw [← Real.closedBall_eq_Icc, mem_closedBall, Real.dist_eq] at hw
+      rw [im_ofReal_mul, sub_im, mul_I_im, ofReal_re, _root_.abs_mul, abs_of_pos hd₀]
+      gcongr
     simpa only [aff, re_ofReal_mul, _root_.abs_mul, abs_of_pos hd₀, sub_re, mul_I_re, ofReal_im,
       zero_mul, neg_zero, sub_zero] using
       norm_exp_mul_exp_add_exp_neg_le_of_abs_im_le ε₀.le hw hb'.le

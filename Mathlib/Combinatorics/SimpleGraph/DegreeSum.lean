@@ -127,11 +127,12 @@ theorem even_card_odd_degree_vertices [Fintype V] [DecidableRel G.Adj] :
     rw [Nat.cast_sum, ← sum_filter_ne_zero] at h
     rw [sum_congr (g := fun _v ↦ (1 : ZMod 2)) rfl] at h
     · simp only [mul_one, nsmul_eq_mul, sum_const, Ne] at h
-      rw [← ZMod.eq_zero_iff_even]
+      rw [← ZMod.natCast_eq_zero_iff_even]
       convert h
-      exact ZMod.ne_zero_iff_odd.symm
+      exact ZMod.natCast_ne_zero_iff_odd.symm
     · intro v
-      rw [mem_filter_univ, Ne, ZMod.eq_zero_iff_even, ZMod.eq_one_iff_odd, ← Nat.not_even_iff_odd]
+      rw [mem_filter_univ, Ne, ZMod.natCast_eq_zero_iff_even, ZMod.natCast_eq_one_iff_odd,
+        ← Nat.not_even_iff_odd]
       tauto
 
 theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRel G.Adj] (v : V)
@@ -150,7 +151,7 @@ theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRe
   simp only [hc]
   rw [← filter_filter, filter_ne', card_erase_of_mem]
   · refine ⟨k - 1, tsub_eq_of_eq_add <| hg.trans ?_⟩
-    omega
+    cutsat
   · rwa [mem_filter_univ]
 
 theorem exists_ne_odd_degree_of_exists_odd_degree [Fintype V] [DecidableRel G.Adj] (v : V)

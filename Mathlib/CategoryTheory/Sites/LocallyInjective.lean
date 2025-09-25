@@ -239,7 +239,7 @@ instance isLocallyInjective_forget [IsLocallyInjective φ] :
 lemma isLocallyInjective_iff_injective :
     IsLocallyInjective φ ↔ ∀ (X : Cᵒᵖ), Function.Injective (φ.val.app X) :=
   Presheaf.isLocallyInjective_iff_injective_of_separated _ _ (by
-    apply Presieve.isSeparated_of_isSheaf
+    apply Presieve.IsSheaf.isSeparated
     rw [← isSheaf_iff_isSheaf_of_type]
     exact ((sheafCompose J (forget D)).obj F₁).2)
 

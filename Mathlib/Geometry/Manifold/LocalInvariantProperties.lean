@@ -266,7 +266,7 @@ structure groupoid (by composition in the source space and in the target space),
 expressing it in charted spaces does not depend on the element of the maximal atlas one uses
 both in the source and in the target manifolds, provided they are defined around `x` and `g x`
 respectively, and provided `g` is continuous within `s` at `x` (otherwise, the local behavior
-of `g` at `x` can not be captured with a chart in the target). -/
+of `g` at `x` cannot be captured with a chart in the target). -/
 theorem liftPropWithinAt_indep_chart_aux (he : e ∈ G.maximalAtlas M) (xe : x ∈ e.source)
     (he' : e' ∈ G.maximalAtlas M) (xe' : x ∈ e'.source) (hf : f ∈ G'.maximalAtlas M')
     (xf : g x ∈ f.source) (hf' : f' ∈ G'.maximalAtlas M') (xf' : g x ∈ f'.source)
@@ -648,7 +648,7 @@ variable {H₁ : Type*} [TopologicalSpace H₁] {H₂ : Type*} [TopologicalSpace
 theorem HasGroupoid.comp
     (H : ∀ e ∈ G₂, LiftPropOn (IsLocalStructomorphWithinAt G₁) (e : H₂ → H₂) e.source) :
     @HasGroupoid H₁ _ H₃ _ (ChartedSpace.comp H₁ H₂ H₃) G₁ :=
-  let _ := ChartedSpace.comp H₁ H₂ H₃ -- Porting note: need this to synthesize `ChartedSpace H₁ H₃`
+  let _ := ChartedSpace.comp H₁ H₂ H₃
   { compatible := by
       rintro _ _ ⟨e, he, f, hf, rfl⟩ ⟨e', he', f', hf', rfl⟩
       apply G₁.locality

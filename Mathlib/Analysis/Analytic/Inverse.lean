@@ -81,7 +81,7 @@ series. -/
 theorem leftInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E) :
     p.removeZero.leftInv i x = p.leftInv i x := by
   ext1 n
-  induction' n using Nat.strongRec' with n IH
+  induction n using Nat.strongRec' with | _ n IH
   match n with
   | 0 => simp -- if one replaces `simp` with `refl`, the proof times out in the kernel.
   | 1 => simp -- TODO: why?
@@ -186,7 +186,7 @@ series. -/
 theorem rightInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F) (x : E) :
     p.removeZero.rightInv i x = p.rightInv i x := by
   ext1 n
-  induction' n using Nat.strongRec' with n IH
+  induction n using Nat.strongRec' with | _ n IH
   match n with
   | 0 => simp only [rightInv_coeff_zero]
   | 1 => simp only [rightInv_coeff_one]
@@ -270,7 +270,7 @@ theorem rightInv_coeff (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] 
     simp only [rightInv, neg_inj]
     congr (config := { closePost := false }) 1
     ext v
-    have N : 0 < n + 2 := by norm_num
+    have N : 0 < n + 2 := by simp
     have : ((p 1) fun _ : Fin 1 => 0) = 0 := ContinuousMultilinearMap.map_zero _
     simp [comp_rightInv_aux1 N, this, comp_rightInv_aux2, -Set.toFinset_setOf]
 
@@ -543,7 +543,7 @@ theorem radius_rightInv_pos_of_radius_pos
     _ ≤ ∑ k ∈ Ico 1 (n + 1), a ^ k * ‖p.rightInv i x k‖ :=
       (haveI : ∀ k ∈ Ico 1 (n + 1), 0 ≤ a ^ k * ‖p.rightInv i x k‖ := fun k _ => by positivity
       single_le_sum this (by simp [hn]))
-    _ ≤ (I + 1) * a := IRec (n + 1) (by norm_num)
+    _ ≤ (I + 1) * a := IRec (n + 1) (by simp)
 
 /-- If a a formal multilinear series has a positive radius of convergence, then its left inverse
 also has a positive radius of convergence. -/

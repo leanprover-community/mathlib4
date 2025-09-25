@@ -29,7 +29,7 @@ def toModifiers (nm : Name) (newDoc : Option (TSyntax `Lean.Parser.Command.docCo
   let env ← getEnv
   let d ← getConstInfo nm
   let mods : Modifiers :=
-  { docString? := newDoc
+  { docString? := newDoc.map (·, doc.verso.get (← getOptions))
     visibility :=
     if isPrivateNameExport nm then
       Visibility.private
@@ -55,6 +55,7 @@ def toPreDefinition (nm newNm : Name) (newType newValue : Expr)
   let mods ← toModifiers nm newDoc
   let predef : PreDefinition :=
   { ref := Syntax.missing
+    binders := mkNullNode #[]
     kind := if d.isDef then DefKind.def else DefKind.theorem
     levelParams := d.levelParams
     modifiers := mods

@@ -101,9 +101,10 @@ theorem triangle_succ (n : ℕ) : (n + 1) * (n + 1 - 1) / 2 = n * (n - 1) / 2 + 
 
 /-- `choose n 2` is the `n`-th triangle number. -/
 theorem choose_two_right (n : ℕ) : choose n 2 = n * (n - 1) / 2 := by
-  induction' n with n ih
-  · simp
-  · rw [triangle_succ n, choose, ih]
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [triangle_succ n, choose, ih]
     simp [Nat.add_comm]
 
 theorem choose_pos : ∀ {n k}, k ≤ n → 0 < choose n k
@@ -301,7 +302,7 @@ theorem choose_le_middle (r n : ℕ) : choose n r ≤ choose n (n / 2) := by
     · apply choose_le_middle_of_le_half_left a
     · rw [← choose_symm b]
       apply choose_le_middle_of_le_half_left
-      omega
+      cutsat
   · rw [choose_eq_zero_of_lt b]
     apply zero_le
 
@@ -312,9 +313,9 @@ theorem choose_le_succ (a c : ℕ) : choose a c ≤ choose a.succ c := by
   cases c <;> simp [Nat.choose_succ_succ]
 
 theorem choose_le_add (a b c : ℕ) : choose a c ≤ choose (a + b) c := by
-  induction' b with b_n b_ih
-  · simp
-  exact le_trans b_ih (choose_le_succ (a + b_n) c)
+  induction b with
+  | zero => simp
+  | succ b_n b_ih => exact b_ih.trans (choose_le_succ (a + b_n) c)
 
 theorem choose_le_choose {a b : ℕ} (c : ℕ) (h : a ≤ b) : choose a c ≤ choose b c :=
   Nat.add_sub_cancel' h ▸ choose_le_add a (b - a) c
@@ -360,19 +361,21 @@ theorem multichoose_succ_succ (n k : ℕ) :
 
 @[simp]
 theorem multichoose_one (k : ℕ) : multichoose 1 k = 1 := by
-  induction' k with k IH; · simp
-  simp [multichoose_succ_succ 0 k, IH]
+  induction k with
+  | zero => simp
+  | succ k IH => simp [multichoose_succ_succ 0 k, IH]
 
 @[simp]
 theorem multichoose_two (k : ℕ) : multichoose 2 k = k + 1 := by
-  induction' k with k IH; · simp
-  rw [multichoose, IH]
-  simp [Nat.add_comm]
+  induction k with
+  | zero => simp
+  | succ k IH => rw [multichoose, IH]; simp [Nat.add_comm]
 
 @[simp]
 theorem multichoose_one_right (n : ℕ) : multichoose n 1 = n := by
-  induction' n with n IH; · simp
-  simp [multichoose_succ_succ n 0, IH]
+  induction n with
+  | zero => simp
+  | succ n IH => simp [multichoose_succ_succ n 0, IH]
 
 theorem multichoose_eq : ∀ n k : ℕ, multichoose n k = (n + k - 1).choose k
   | _, 0 => by simp

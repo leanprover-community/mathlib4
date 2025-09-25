@@ -83,7 +83,7 @@ def homMk {F : C ⥤ Type w} (x y : F.Elements) (f : x.1 ⟶ y.1) (hf : F.map f 
 
 @[ext]
 theorem ext (F : C ⥤ Type w) {x y : F.Elements} (f g : x ⟶ y) (w : f.val = g.val) : f = g :=
-  Subtype.ext_val w
+  Subtype.ext w
 
 @[simp]
 theorem comp_val {F : C ⥤ Type w} {p q r : F.Elements} {f : p ⟶ q} {g : q ⟶ r} :
@@ -264,6 +264,32 @@ def costructuredArrowYonedaEquivalenceFunctorProj (F : Cᵒᵖ ⥤ Type v) :
 @[simps!]
 def costructuredArrowYonedaEquivalenceInverseπ (F : Cᵒᵖ ⥤ Type v) :
     (costructuredArrowYonedaEquivalence F).inverse ⋙ (π F).leftOp ≅ CostructuredArrow.proj _ _ :=
+  Iso.refl _
+
+/-- The opposite of the category of elements of a presheaf of types
+is equivalent to a category of costructured arrows for the Yoneda embedding functor. -/
+@[simps]
+def costructuredArrowULiftYonedaEquivalence (F : Cᵒᵖ ⥤ Type max w v) :
+    F.Elementsᵒᵖ ≌ CostructuredArrow uliftYoneda.{w} F where
+  functor :=
+    { obj x := CostructuredArrow.mk (uliftYonedaEquiv.{w}.symm x.unop.2)
+      map f := CostructuredArrow.homMk f.1.1.unop (by
+        dsimp
+        rw [← uliftYonedaEquiv_symm_map, map_snd]) }
+  inverse :=
+    { obj X := op (F.elementsMk _ (uliftYonedaEquiv.{w} X.hom))
+      map f := (homMk _ _ f.left.op (by
+        dsimp
+        rw [← CostructuredArrow.w f, uliftYonedaEquiv_naturality, Quiver.Hom.unop_op])).op }
+  unitIso := NatIso.ofComponents (fun x ↦ Iso.op (isoMk _ _ (Iso.refl _) (by simp)))
+    (fun f ↦ Quiver.Hom.unop_inj (by aesop))
+  counitIso := NatIso.ofComponents (fun X ↦ CostructuredArrow.isoMk (Iso.refl _))
+
+/-- The equivalence of categories `costructuredArrowULiftYonedaEquivalence`
+commutes with the projections. -/
+def costructuredArrowULiftYonedaEquivalenceFunctorCompProjIso (F : Cᵒᵖ ⥤ Type max w v) :
+    (costructuredArrowULiftYonedaEquivalence.{w} F).functor ⋙ CostructuredArrow.proj _ _ ≅
+      (π F).leftOp :=
   Iso.refl _
 
 end CategoryOfElements

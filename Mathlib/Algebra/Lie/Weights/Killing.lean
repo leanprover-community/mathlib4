@@ -276,6 +276,10 @@ lemma cartanEquivDual_symm_apply_mem_corootSpace (α : Weight K H L) :
       Submodule.smul_mem _ _ heα, f, hfα, by simpa [inv_smul_eq_iff₀ hf]⟩
   exact lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg_aux heα hfα he
 
+@[simp] lemma coroot_mem_corootSpace (α : Weight K H L) :
+    coroot α ∈ corootSpace α :=
+  nsmul_mem (Submodule.smul_mem _ _ <| cartanEquivDual_symm_apply_mem_corootSpace α) _
+
 /-- Given a splitting Cartan subalgebra `H` of a finite-dimensional Lie algebra with non-singular
 Killing form, the corresponding roots span the dual space of `H`. -/
 @[simp]
@@ -473,7 +477,7 @@ lemma isCompl_ker_weight_span_coroot (α : Weight K H L) :
       using isCompl_top_bot
   else
     rw [← coe_corootSpace_eq_span_singleton]
-    apply Module.Dual.isCompl_ker_of_disjoint_of_ne_bot (by aesop)
+    apply Module.Dual.isCompl_ker_of_disjoint_of_ne_bot (by simp_all)
       (disjoint_ker_weight_corootSpace α)
     replace hα : corootSpace α ≠ ⊥ := by simpa using hα
     rwa [ne_eq, ← LieSubmodule.toSubmodule_inj] at hα
@@ -521,7 +525,7 @@ lemma traceForm_eq_zero_of_mem_ker_of_mem_span_coroot {α : Weight K H L} {x y :
   else
     have hβ : β.IsNonZero := by
       contrapose! hα
-      simp only [not_not, ← coroot_eq_zero_iff] at hα ⊢
+      simp only [← coroot_eq_zero_iff] at hα ⊢
       rwa [hyp]
     have : α.ker = β.ker := by
       rw [← orthogonal_span_coroot_eq_ker α, hyp, orthogonal_span_coroot_eq_ker]
@@ -590,7 +594,7 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
     have h₀ : finrank K (rootSpace H α) ≠ 0 := by
       convert_to finrank K (rootSpace H α).toSubmodule ≠ 0
       simpa using α.genWeightSpace_ne_bot
-    omega
+    cutsat
   intro contra
   obtain ⟨h, e, f, ht, heα, hfα⟩ := exists_isSl2Triple_of_weight_isNonZero hα
   let F : rootSpace H α →ₗ[K] K := killingForm K L f ∘ₗ (rootSpace H α).subtype
@@ -640,6 +644,63 @@ lemma mem_sl2SubalgebraOfRoot_iff {α : Weight K H L} (hα : α.IsNonZero) {h e 
     fun ⟨c₁, c₂, c₃, hx⟩ ↦ ⟨c₁ * ce⁻¹, c₂ * cf⁻¹, c₃ * ce⁻¹ * cf⁻¹, ?_⟩⟩
   · simp [hx, mul_smul]
   · simp [hx, mul_smul, hce₀, hcf₀]
+
+/-- The `sl₂` subalgebra associated to a root, regarded as a Lie submodule over the Cartan
+subalgebra. -/
+noncomputable def sl2SubmoduleOfRoot {α : Weight K H L} (hα : α.IsNonZero) :
+    LieSubmodule K H L where
+  __ := sl2SubalgebraOfRoot hα
+  lie_mem {h} x hx := by
+    suffices ⁅(h : L), x⁆ ∈ sl2SubalgebraOfRoot hα by simpa
+    obtain ⟨h', e, f, ht, heα, hfα⟩ := exists_isSl2Triple_of_weight_isNonZero hα
+    replace hx : x ∈ sl2SubalgebraOfRoot hα := hx
+    obtain ⟨c₁, c₂, c₃, rfl⟩ := (mem_sl2SubalgebraOfRoot_iff hα ht heα hfα).mp hx
+    rw [mem_sl2SubalgebraOfRoot_iff hα ht heα hfα, lie_add, lie_add, lie_smul, lie_smul, lie_smul]
+    have he_wt : ⁅(h : L), e⁆ = α h • e := lie_eq_smul_of_mem_rootSpace heα h
+    have hf_wt : ⁅(h : L), f⁆ = (-α) h • f := lie_eq_smul_of_mem_rootSpace hfα h
+    have hef_zero : ⁅(h : L), ⁅e, f⁆⁆ = 0 := by
+      suffices h_coroot_in_zero : ⁅e, f⁆ ∈ rootSpace H (0 : H → K) from
+        lie_eq_smul_of_mem_rootSpace h_coroot_in_zero h ▸ (zero_smul K ⁅e, f⁆)
+      rw [ht.lie_e_f, IsSl2Triple.h_eq_coroot hα ht heα hfα, rootSpace_zero_eq K L H]
+      exact (coroot α).property
+    exact ⟨c₁ * α h, c₂ * (-α h), 0, by simp [he_wt, hf_wt, hef_zero, smul_smul]⟩
+
+/-- The coroot space of `α` viewed as a submodule of the ambient Lie algebra `L`.
+This represents the image of the coroot space under the inclusion `H ↪ L`. -/
+noncomputable abbrev corootSubmodule (α : Weight K H L) : LieSubmodule K H L :=
+  LieSubmodule.map H.toLieSubmodule.incl (corootSpace α)
+
+open Submodule in
+lemma sl2SubmoduleOfRoot_eq_sup (α : Weight K H L) (hα : α.IsNonZero) :
+    sl2SubmoduleOfRoot hα = genWeightSpace L α ⊔ genWeightSpace L (-α) ⊔ corootSubmodule α := by
+  ext x
+  obtain ⟨h', e, f, ht, heα, hfα⟩ := exists_isSl2Triple_of_weight_isNonZero hα
+  refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
+  · replace hx : x ∈ sl2SubalgebraOfRoot hα := hx
+    obtain ⟨c₁, c₂, c₃, rfl⟩ := (mem_sl2SubalgebraOfRoot_iff hα ht heα hfα).mp hx
+    refine add_mem (add_mem ?_ ?_) ?_
+    · exact mem_sup_left <| mem_sup_left <| smul_mem _ _ heα
+    · exact mem_sup_left <| mem_sup_right <| smul_mem _ _ hfα
+    · suffices ∃ y ∈ corootSpace α, H.subtype y = c₃ • h' from
+        mem_sup_right <| by simpa [ht.lie_e_f, -Subtype.exists]
+      refine ⟨c₃ • coroot α, smul_mem _ _ <| by simp, ?_⟩
+      rw [IsSl2Triple.h_eq_coroot hα ht heα hfα, map_smul, subtype_apply]
+  · have aux {β : Weight K H L} (hβ : β.IsNonZero) {y g : L}
+        (hy : y ∈ genWeightSpace L β) (hg : g ∈ rootSpace H β) (hg_ne_zero : g ≠ 0) :
+        ∃ c : K, y = c • g := by
+      obtain ⟨c, hc⟩ := (finrank_eq_one_iff_of_nonzero' ⟨g, hg⟩
+        (by rwa [ne_eq, LieSubmodule.mk_eq_zero])).mp (finrank_rootSpace_eq_one β hβ) ⟨y, hy⟩
+      exact ⟨c, by simpa using hc.symm⟩
+    obtain ⟨x_αneg, hx_αneg, x_h, ⟨y, hy_coroot, rfl⟩, rfl⟩ := mem_sup.mp hx
+    obtain ⟨x_pos, hx_pos, x_neg, hx_neg, rfl⟩ := mem_sup.mp hx_αneg
+    obtain ⟨c₁, rfl⟩ := aux hα hx_pos heα ht.e_ne_zero
+    obtain ⟨c₂, rfl⟩ := aux (Weight.IsNonZero.neg hα) hx_neg hfα ht.f_ne_zero
+    obtain ⟨c₃, rfl⟩ : ∃ c₃ : K, c₃ • coroot α = y := by
+      simpa [← mem_span_singleton, ← coe_corootSpace_eq_span_singleton α]
+    change _ ∈ sl2SubalgebraOfRoot hα
+    rw [mem_sl2SubalgebraOfRoot_iff hα ht heα hfα]
+    use c₁, c₂, c₃
+    simp [ht.lie_e_f, IsSl2Triple.h_eq_coroot hα ht heα hfα, -LieSubmodule.incl_coe]
 
 /-- The collection of roots as a `Finset`. -/
 noncomputable abbrev _root_.LieSubalgebra.root : Finset (Weight K H L) := {α | α.IsNonZero}

@@ -332,13 +332,13 @@ lemma twoTorsionPolynomial_disc_of_char_three : W.twoTorsionPolynomial.disc = W.
 
 end CharThree
 
--- TODO: change to `[IsUnit ...]` once #17458 is merged
+-- TODO: change to `[IsUnit ...]` once https://github.com/leanprover-community/mathlib4/issues/17458 is merged
 lemma twoTorsionPolynomial_disc_isUnit (hu : IsUnit (2 : R)) :
     IsUnit W.twoTorsionPolynomial.disc ↔ IsUnit W.Δ := by
   rw [twoTorsionPolynomial_disc, IsUnit.mul_iff, show (16 : R) = 2 ^ 4 by norm_num1]
   exact and_iff_right <| hu.pow 4
 
--- TODO: change to `[IsUnit ...]` once #17458 is merged
+-- TODO: change to `[IsUnit ...]` once https://github.com/leanprover-community/mathlib4/issues/17458 is merged
 -- TODO: In this case `IsUnit W.Δ` is just `W.IsElliptic`, consider removing/rephrasing this result
 lemma twoTorsionPolynomial_disc_ne_zero [Nontrivial R] (hu : IsUnit (2 : R)) (hΔ : IsUnit W.Δ) :
     W.twoTorsionPolynomial.disc ≠ 0 :=
@@ -348,7 +348,7 @@ end TorsionPolynomial
 
 /-! ## Elliptic curves -/
 
--- TODO: change to `protected abbrev IsElliptic := IsUnit W.Δ` once #17458 is merged
+-- TODO: change to `protected abbrev IsElliptic := IsUnit W.Δ` once https://github.com/leanprover-community/mathlib4/issues/17458 is merged
 /-- `WeierstrassCurve.IsElliptic` is a typeclass which asserts that a Weierstrass curve is an
 elliptic curve: that its discriminant is a unit. Note that this definition is only mathematically
 accurate for certain rings whose Picard group has trivial 12-torsion, such as a field or a PID. -/
@@ -426,7 +426,7 @@ lemma j_eq_zero_iff_of_char_three [IsReduced R] : W.j = 0 ↔ W.b₂ = 0 := by
 
 end CharThree
 
--- TODO: this is defeq to `twoTorsionPolynomial_disc_ne_zero` once #17458 is merged,
+-- TODO: this is defeq to `twoTorsionPolynomial_disc_ne_zero` once https://github.com/leanprover-community/mathlib4/issues/17458 is merged,
 -- TODO: consider removing/rephrasing this result
 lemma twoTorsionPolynomial_disc_ne_zero_of_isElliptic [Nontrivial R] (hu : IsUnit (2 : R)) :
     W.twoTorsionPolynomial.disc ≠ 0 :=

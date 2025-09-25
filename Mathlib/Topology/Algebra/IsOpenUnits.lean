@@ -47,7 +47,7 @@ instance (priority := 900) {M : Type*} [Group M] [TopologicalSpace M] [Continuou
   isOpenEmbedding_unitsVal := toUnits_homeomorph.symm.isOpenEmbedding
 
 instance (priority := 900) {M : Type*} [GroupWithZero M]
-    [TopologicalSpace M] [HasContinuousInv₀ M] [T1Space M] : IsOpenUnits M where
+    [TopologicalSpace M] [ContinuousInv₀ M] [T1Space M] : IsOpenUnits M where
   isOpenEmbedding_unitsVal := by
     refine ⟨Units.isEmbedding_val₀, ?_⟩
     convert (isClosed_singleton (X := M) (x := 0)).isOpen_compl
@@ -55,14 +55,14 @@ instance (priority := 900) {M : Type*} [GroupWithZero M]
     simp only [Set.mem_range, Set.mem_compl_iff, Set.mem_singleton_iff]
     exact isUnit_iff_ne_zero
 
-/-- If `R` has the `I`-adic topology where `I` is contained in the jacobson radical
+/-- If `R` has the `I`-adic topology where `I` is contained in the Jacobson radical
 (e.g. when `R` is complete or local), then `Rˣ` is an open subspace of `R`. -/
 lemma IsOpenUnits.of_isAdic {R : Type*} [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
     {I : Ideal R}
     (hR : IsAdic I) (hI : I ≤ Ideal.jacobson ⊥) :
     IsOpenUnits R := by
   refine ⟨.of_continuous_injective_isOpenMap Units.continuous_val Units.val_injective ?_⟩
-  refine (TopologicalGroup.isOpenMap_iff_nhds_one (f := Units.coeHom R)).mpr ?_
+  refine (IsTopologicalGroup.isOpenMap_iff_nhds_one (f := Units.coeHom R)).mpr ?_
   rw [nhds_induced, nhds_prod_eq]
   simp only [Units.embedProduct_apply, Units.val_one, inv_one, MulOpposite.op_one]
   intro s hs

@@ -27,7 +27,7 @@ import Mathlib.Topology.Instances.Rat
 * `Continuous.measurable` : a continuous function is measurable;
 * `Continuous.measurable2` : if `f : α → β` and `g : α → γ` are measurable and `op : β × γ → δ`
   is continuous, then `fun x => op (f x, g y)` is measurable;
-* `Measurable.add` etc : dot notation for arithmetic operations on `Measurable` predicates,
+* `Measurable.add` etc. : dot notation for arithmetic operations on `Measurable` predicates,
   and similarly for `dist` and `edist`;
 * `AEMeasurable.add` : similar dot notation for almost everywhere measurable functions;
 -/
@@ -571,9 +571,12 @@ theorem Continuous.aemeasurable2 [SecondCountableTopologyEither α β]
     AEMeasurable (fun a => c (f a) (g a)) μ :=
   h.measurable.comp_aemeasurable (hf.prodMk hg)
 
-instance (priority := 100) HasContinuousInv₀.measurableInv [GroupWithZero γ] [T1Space γ]
-    [HasContinuousInv₀ γ] : MeasurableInv γ :=
+instance (priority := 100) ContinuousInv₀.measurableInv [GroupWithZero γ] [T1Space γ]
+    [ContinuousInv₀ γ] : MeasurableInv γ :=
   ⟨measurable_of_continuousOn_compl_singleton 0 continuousOn_inv₀⟩
+
+@[deprecated (since := "2025-09-01")] alias HasContinuousInv₀.measurableInv :=
+  ContinuousInv₀.measurableInv
 
 @[to_additive]
 instance (priority := 100) ContinuousMul.measurableMul₂ [SecondCountableTopology γ] [Mul γ]

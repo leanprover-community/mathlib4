@@ -63,7 +63,7 @@ If `x` is a point of `X`, this is the canonical morphism from `Spec(O_x)` to `X`
 -/
 noncomputable def Scheme.fromSpecStalk (X : Scheme) (x : X) :
     Spec (X.presheaf.stalk x) ⟶ X :=
-  (isAffineOpen_opensRange (X.affineOpenCover.map x)).fromSpecStalk (X.affineOpenCover.covers x)
+  (isAffineOpen_opensRange (X.affineOpenCover.f x)).fromSpecStalk (X.affineOpenCover.covers x)
 
 @[simps over] noncomputable
 instance (X : Scheme.{u}) (x : X) : (Spec (X.presheaf.stalk x)).Over X := ⟨X.fromSpecStalk x⟩

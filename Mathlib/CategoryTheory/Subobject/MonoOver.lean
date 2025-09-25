@@ -394,9 +394,7 @@ def imageForgetAdj : image ⊣ forget X :=
                     fac := Over.w k }
             · apply image.lift_fac
           left_inv := fun _ => Subsingleton.elim _ _
-          right_inv := fun k => by
-            ext
-            simp } }
+          right_inv := fun k => by simp } }
 
 instance : (forget X).IsRightAdjoint :=
   ⟨_, ⟨imageForgetAdj⟩⟩

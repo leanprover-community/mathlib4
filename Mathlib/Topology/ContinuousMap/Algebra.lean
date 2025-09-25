@@ -133,8 +133,8 @@ theorem pow_apply [Monoid β] [ContinuousMul β] (f : C(α, β)) (n : ℕ) (x : 
     (f ^ n) x = f x ^ n :=
   rfl
 
--- don't make auto-generated `coe_nsmul` and `nsmul_apply` simp, as the linter complains they're
--- redundant WRT `coe_smul`
+-- Don't make auto-generated `coe_nsmul` and `nsmul_apply` simp, as the linter complains they're
+-- redundant w.r.t. `coe_smul`
 attribute [simp] coe_pow pow_apply
 
 @[to_additive]
@@ -142,7 +142,7 @@ theorem pow_comp [Monoid γ] [ContinuousMul γ] (f : C(β, γ)) (n : ℕ) (g : C
     (f ^ n).comp g = f.comp g ^ n :=
   rfl
 
--- don't make `nsmul_comp` simp as the linter complains it's redundant WRT `smul_comp`
+-- Don't make `nsmul_comp` simp as the linter complains it's redundant w.r.t. `smul_comp`
 attribute [simp] pow_comp
 
 /-! ### `inv` and `neg` -/
@@ -200,8 +200,8 @@ theorem zpow_apply [Group β] [IsTopologicalGroup β] (f : C(α, β)) (z : ℤ) 
     (f ^ z) x = f x ^ z :=
   rfl
 
--- don't make auto-generated `coe_zsmul` and `zsmul_apply` simp as the linter complains they're
--- redundant WRT `coe_smul`
+-- Don't make auto-generated `coe_zsmul` and `zsmul_apply` simp as the linter complains they're
+-- redundant w.r.t. `coe_smul`
 attribute [simp] coe_zpow zpow_apply
 
 @[to_additive]
@@ -209,7 +209,7 @@ theorem zpow_comp [Group γ] [IsTopologicalGroup γ] (f : C(β, γ)) (z : ℤ) (
     (f ^ z).comp g = f.comp g ^ z :=
   rfl
 
--- don't make `zsmul_comp` simp as the linter complains it's redundant WRT `smul_comp`
+-- Don't make `zsmul_comp` simp as the linter complains it's redundant w.r.t. `smul_comp`
 attribute [simp] zpow_comp
 
 end ContinuousMap

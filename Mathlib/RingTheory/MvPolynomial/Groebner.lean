@@ -143,7 +143,7 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
         apply le_of_eq
         simp only [EmbeddingLike.apply_eq_iff_eq]
         apply degree_smul (Units.isRegular _)
-      · simp only [Finsupp.single_eq_of_ne (Ne.symm hj), mul_zero, degree_zero, map_zero]
+      · simp only [Finsupp.single_eq_of_ne hj, mul_zero, degree_zero, map_zero]
         apply bot_le
     · simp
   push_neg at hb'

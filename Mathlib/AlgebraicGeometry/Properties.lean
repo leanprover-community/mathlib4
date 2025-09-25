@@ -31,12 +31,12 @@ variable (X : Scheme)
 
 instance : T0Space X :=
   T0Space.of_open_cover fun x => ⟨_, X.affineCover.covers x,
-    (X.affineCover.map x).opensRange.2, IsEmbedding.t0Space (Y := PrimeSpectrum _)
-    (isAffineOpen_opensRange (X.affineCover.map x)).isoSpec.schemeIsoToHomeo.isEmbedding⟩
+    (X.affineCover.f x).opensRange.2, IsEmbedding.t0Space (Y := PrimeSpectrum _)
+    (isAffineOpen_opensRange (X.affineCover.f x)).isoSpec.schemeIsoToHomeo.isEmbedding⟩
 
 instance : QuasiSober X := by
   apply (config := { allowSynthFailures := true })
-    quasiSober_of_open_cover (Set.range fun x => Set.range <| (X.affineCover.map x).base)
+    quasiSober_of_open_cover (Set.range fun x => Set.range <| (X.affineCover.f x).base)
   · rintro ⟨_, i, rfl⟩; exact (X.affineCover.map_prop i).base_open.isOpen_range
   · rintro ⟨_, i, rfl⟩
     exact @IsOpenEmbedding.quasiSober _ _ _ _ _
@@ -49,8 +49,8 @@ instance {X : Scheme.{u}} : PrespectralSpace X :=
   have (Y : Scheme.{u}) (_ : IsAffine Y) : PrespectralSpace Y :=
     .of_isClosedEmbedding (Y := PrimeSpectrum _) _
       Y.isoSpec.hom.homeomorph.isClosedEmbedding
-  have (i : _) : PrespectralSpace (X.affineCover.map i).opensRange.1 :=
-    this (X.affineCover.map i).opensRange (isAffineOpen_opensRange (X.affineCover.map i))
+  have (i : _) : PrespectralSpace (X.affineCover.f i).opensRange.1 :=
+    this (X.affineCover.f i).opensRange (isAffineOpen_opensRange (X.affineCover.f i))
   .of_isOpenCover X.affineCover.isOpenCover_opensRange
 
 /-- A scheme `X` is reduced if all `𝒪ₓ(U)` are reduced. -/
@@ -131,7 +131,7 @@ theorem reduce_to_affine_global (P : ∀ {X : Scheme} (_ : X.Opens), Prop)
   let U' : Opens _ := ⟨_, (X.affineBasisCover.map_prop j).base_open.isOpen_range⟩
   let i' : U' ⟶ U := homOfLE i
   refine ⟨U', hx, i', ?_⟩
-  obtain ⟨_, _, rfl, rfl, h₂'⟩ := h₂ _ _ (X.affineBasisCover.map j)
+  obtain ⟨_, _, rfl, rfl, h₂'⟩ := h₂ _ _ (X.affineBasisCover.f j)
   apply h₂'
   apply h₃
 
@@ -141,7 +141,7 @@ theorem reduce_to_affine_nbhd (P : ∀ (X : Scheme) (_ : X), Prop)
     ∀ (X : Scheme) (x : X), P X x := by
   intro X x
   obtain ⟨y, e⟩ := X.affineCover.covers x
-  convert h₂ (X.affineCover.map (X.affineCover.f x)) y _
+  convert h₂ (X.affineCover.f (X.affineCover.idx x)) y _
   · rw [e]
   apply h₁
 
@@ -160,7 +160,7 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : X.Opens
     rw [← X.sheaf.presheaf.germ_res_apply i x hx s]
     exact H
   | h₂ X Y f =>
-    refine ⟨f ⁻¹ᵁ f.opensRange, f.opensRange, by ext1; simp, rfl, ?_⟩
+    refine ⟨f ⁻¹ᵁ f.opensRange, f.opensRange, by simp, rfl, ?_⟩
     rintro H hX s hs _ ⟨x, rfl⟩
     haveI := isReduced_of_isOpenImmersion f
     specialize H (f.app _ s) _ x ⟨x, rfl⟩
@@ -295,5 +295,10 @@ theorem map_injective_of_isIntegral [IsIntegral X] {U V : X.Opens} (i : U ⟶ V)
   simp_rw [Ne, ← Opens.not_nonempty_iff_eq_bot, Classical.not_not]
   apply nonempty_preirreducible_inter U.isOpen (RingedSpace.basicOpen _ _).isOpen
   simpa using H
+
+noncomputable
+instance [IsIntegral X] : OrderTop X where
+  top := genericPoint X
+  le_top a := genericPoint_specializes a
 
 end AlgebraicGeometry

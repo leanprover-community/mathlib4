@@ -157,9 +157,14 @@ theorem IsCompl.projection_apply (hpq : IsCompl p q) (x : E) :
   rfl
 
 @[simp]
+theorem coe_linearProjOfIsCompl_apply (hpq : IsCompl p q) (x : E) :
+    (p.linearProjOfIsCompl q hpq x : E) = hpq.projection x :=
+  rfl
+
+@[simp]
 theorem IsCompl.projection_apply_mem (hpq : IsCompl p q) (x : E) :
-    hpq.projection x ∈ p := by
-  simp [projection]
+    hpq.projection x ∈ p :=
+  SetLike.coe_mem _
 
 @[simp]
 theorem linearProjOfIsCompl_apply_left (h : IsCompl p q) (x : p) :
@@ -188,7 +193,7 @@ theorem linearProjOfIsCompl_apply_eq_zero_iff (h : IsCompl p q) {x : E} :
 @[simp]
 theorem IsCompl.projection_apply_eq_zero_iff (hpq : IsCompl p q) {x : E} :
     hpq.projection x = 0 ↔ x ∈ q := by
-  simp [projection, linearProjOfIsCompl_apply_eq_zero_iff hpq]
+  simp [projection, -coe_linearProjOfIsCompl_apply]
 
 theorem linearProjOfIsCompl_apply_right' (h : IsCompl p q) (x : E) (hx : x ∈ q) :
     linearProjOfIsCompl p q h x = 0 :=
@@ -212,14 +217,18 @@ theorem linearProjOfIsCompl_comp_subtype (h : IsCompl p q) :
     (linearProjOfIsCompl p q h).comp p.subtype = LinearMap.id :=
   LinearMap.ext <| linearProjOfIsCompl_apply_left h
 
-theorem linearProjOfIsCompl_idempotent (h : IsCompl p q) (x : E) :
-    linearProjOfIsCompl p q h (linearProjOfIsCompl p q h x) = linearProjOfIsCompl p q h x :=
+theorem linearProjOfIsCompl_isCompl_projection (h : IsCompl p q) (x : E) :
+    linearProjOfIsCompl p q h (h.projection x) = linearProjOfIsCompl p q h x :=
   linearProjOfIsCompl_apply_left h _
 
+@[deprecated (since := "2025-07-29")] alias linearProjOfIsCompl_idempotent :=
+  linearProjOfIsCompl_isCompl_projection
+
 /-- The linear projection onto a subspace along its complement is an idempotent. -/
+@[simp]
 theorem IsCompl.projection_isIdempotentElem (hpq : IsCompl p q) :
-    IsIdempotentElem hpq.projection := by
-  simp [projection, IsIdempotentElem, LinearMap.ext_iff]
+    IsIdempotentElem hpq.projection :=
+  LinearMap.ext fun _ ↦ congr($(linearProjOfIsCompl_isCompl_projection hpq _))
 
 theorem existsUnique_add_of_isCompl_prod (hc : IsCompl p q) (x : E) :
     ∃! u : p × q, (u.fst : E) + u.snd = x :=
@@ -230,28 +239,32 @@ theorem existsUnique_add_of_isCompl (hc : IsCompl p q) (x : E) :
   let ⟨u, hu₁, hu₂⟩ := existsUnique_add_of_isCompl_prod hc x
   ⟨u.1, u.2, hu₁, fun r s hrs => Prod.eq_iff_fst_eq_snd_eq.1 (hu₂ ⟨r, s⟩ hrs)⟩
 
-theorem linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self (hpq : IsCompl p q) (x : E) :
-    (p.linearProjOfIsCompl q hpq x + q.linearProjOfIsCompl p hpq.symm x : E) = x := by
-  dsimp only [linearProjOfIsCompl]
+theorem IsCompl.projection_add_projection_eq_self (hpq : IsCompl p q) (x : E) :
+    hpq.projection x + hpq.symm.projection x = x := by
+  dsimp only [IsCompl.projection, linearProjOfIsCompl]
   rw [← prodComm_trans_prodEquivOfIsCompl _ _ hpq]
   exact (prodEquivOfIsCompl _ _ hpq).apply_symm_apply x
+
+@[deprecated (since := "2025-07-29")] alias linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self :=
+  IsCompl.projection_add_projection_eq_self
 
 @[deprecated (since := "2025-07-11")] alias linear_proj_add_linearProjOfIsCompl_eq_self :=
   linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self
 
-lemma linearProjOfIsCompl_eq_self_sub_linearProjOfIsCompl (hpq : IsCompl p q) (x : E) :
-    (q.linearProjOfIsCompl p hpq.symm x : E) = x - (p.linearProjOfIsCompl q hpq x : E) := by
-  rw [eq_sub_iff_add_eq, linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self]
+lemma IsCompl.projection_eq_self_sub_projection (hpq : IsCompl p q) (x : E) :
+    hpq.symm.projection x = x - hpq.projection x := by
+  rw [eq_sub_iff_add_eq, projection_add_projection_eq_self]
+
+@[deprecated (since := "2025-07-29")] alias linearProjOfIsCompl_eq_self_sub_linearProjOfIsCompl :=
+  IsCompl.projection_eq_self_sub_projection
 
 /-- The projection to `p` along `q` of `x` equals `x` if and only if `x ∈ p`. -/
-@[simp] lemma linearProjOfIsCompl_eq_self_iff (hpq : IsCompl p q) (x : E) :
-    (p.linearProjOfIsCompl q hpq x : E) = x ↔ x ∈ p := by
-  rw [eq_comm, ← sub_eq_zero, ← linearProjOfIsCompl_eq_self_sub_linearProjOfIsCompl,
-    coe_eq_zero, linearProjOfIsCompl_apply_eq_zero_iff]
-
 @[simp] lemma IsCompl.projection_eq_self_iff (hpq : IsCompl p q) (x : E) :
     hpq.projection x = x ↔ x ∈ p := by
-  rw [hpq.projection_apply, linearProjOfIsCompl_eq_self_iff hpq]
+  rw [eq_comm, ← sub_eq_zero, ← projection_eq_self_sub_projection, projection_apply_eq_zero_iff]
+
+@[deprecated (since := "2025-07-29")] alias linearProjOfIsCompl_eq_self_iff :=
+  IsCompl.projection_eq_self_iff
 
 end Submodule
 
@@ -326,6 +339,14 @@ theorem ofIsCompl_smul {R : Type*} [CommRing R] {E : Type*} [AddCommGroup E] [Mo
     {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} (c : R) : ofIsCompl h (c • φ) (c • ψ) = c • ofIsCompl h φ ψ :=
   ofIsCompl_eq _ (by simp) (by simp)
 
+theorem surjective_comp_linearProjOfIsCompl (h : IsCompl p q) [Module R M] :
+    Function.Surjective (comp (p.linearProjOfIsCompl q h) : (M →ₗ[R] E) → _) :=
+  fun f ↦ ⟨p.subtype ∘ₗ f, by ext; simp⟩
+
+theorem surjective_comp_subtype_of_isComplemented (h : IsComplemented p) [Module R M] :
+    Function.Surjective fun f : E →ₗ[R] M ↦ f ∘ₗ p.subtype :=
+  have ⟨q, h⟩ := h; fun f ↦ ⟨f ∘ₗ p.linearProjOfIsCompl q h, by ext; simp⟩
+
 @[simp]
 theorem range_ofIsCompl (hpq : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} :
     range (ofIsCompl hpq φ ψ) = range φ ⊔ range ψ := by
@@ -338,8 +359,8 @@ theorem range_ofIsCompl (hpq : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[
     all_goals rintro - ⟨x, rfl⟩; exact ⟨x, by simp⟩
 
 theorem ofIsCompl_subtype_zero_eq (hpq : IsCompl p q) :
-    ofIsCompl hpq p.subtype 0 = p.subtype ∘ₗ p.linearProjOfIsCompl q hpq := by
-  simp [ofIsCompl_eq_add]
+    ofIsCompl hpq p.subtype 0 = hpq.projection := by
+  simp [ofIsCompl_eq_add, IsCompl.projection]
 
 theorem ofIsCompl_symm (hpq : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} :
     ofIsCompl hpq.symm ψ φ = ofIsCompl hpq φ ψ := by
@@ -502,7 +523,7 @@ theorem codRestrict_ker {f : M →ₗ[S] M} (h : IsProj m f) : ker h.codRestrict
   f.ker_codRestrict m _
 
 theorem isCompl {f : E →ₗ[R] E} (h : IsProj p f) : IsCompl p (ker f) := by
-  rw [← codRestrict_ker]
+  rw [← codRestrict_ker h]
   exact isCompl_of_proj h.codRestrict_apply_cod
 
 theorem eq_conj_prod_map' {f : E →ₗ[R] E} (h : IsProj p f) :

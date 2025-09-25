@@ -148,7 +148,7 @@ protected theorem map_one : v 1 = 1 :=
 protected theorem map_mul : ∀ x y, v (x * y) = v x * v y :=
   v.map_mul'
 
--- Porting note: LHS side simplified so created map_add'
+-- `simp`-normal form is `map_add'`
 protected theorem map_add : ∀ x y, v (x + y) ≤ max (v x) (v y) :=
   v.map_add_le_max'
 
@@ -488,6 +488,11 @@ lemma IsNontrivial.exists_lt_one {Γ₀ : Type*} [LinearOrderedCommGroupWithZero
   · use x⁻¹
     simp [- map_inv₀, ← one_lt_val_iff, hx]
 
+theorem isNontrivial_iff_exists_lt_one {Γ₀ : Type*}
+    [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀) :
+    v.IsNontrivial ↔ ∃ x, x ≠ 0 ∧ v x < 1 :=
+  ⟨fun h ↦ by simpa using h.exists_lt_one (v := v), fun ⟨x, hx0, hx1⟩ ↦ ⟨x, by simp [hx0, hx1.ne]⟩⟩
+
 lemma IsNontrivial.exists_one_lt {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
     {v : Valuation K Γ₀} [hv : v.IsNontrivial] :
     ∃ x : K, v x ≠ 0 ∧ 1 < v x := by
@@ -801,7 +806,6 @@ theorem ofValuation_apply (v : Valuation R (Multiplicative Γ₀ᵒᵈ)) (r : R)
 
 end
 
--- Porting note: Lean get confused about namespaces and instances below
 @[simp]
 theorem map_zero : v 0 = (⊤ : Γ₀) :=
   Valuation.map_zero v
@@ -810,15 +814,17 @@ theorem map_zero : v 0 = (⊤ : Γ₀) :=
 theorem map_one : v 1 = (0 : Γ₀) :=
   Valuation.map_one v
 
-/- Porting note: helper wrapper to coerce `v` to the correct function type -/
-/-- A helper function for Lean to inferring types correctly -/
-def asFun : R → Γ₀ := v
+/-- A helper function for Lean to inferring types correctly.
+
+Deprecated since it is unused.
+-/
+@[deprecated "Use `⇑v` instead" (since := "2025-09-04")] def asFun : R → Γ₀ := v
 
 @[simp]
 theorem map_mul : ∀ (x y : R), v (x * y) = v x + v y :=
   Valuation.map_mul v
 
--- Porting note: LHS simplified so created map_add' and removed simp tag
+-- `simp`-normal form is `map_add'`
 theorem map_add : ∀ (x y : R), min (v x) (v y) ≤ v (x + y) :=
   Valuation.map_add v
 

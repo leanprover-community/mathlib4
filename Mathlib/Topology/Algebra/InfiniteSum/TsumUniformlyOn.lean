@@ -5,7 +5,7 @@ Authors: Chris Birkbeck
 -/
 import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 import Mathlib.Analysis.Calculus.UniformLimitsDeriv
-import Mathlib.Analysis.NormedSpace.FunctionSeries
+import Mathlib.Analysis.Normed.Group.FunctionSeries
 import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 
 /-!
@@ -69,14 +69,14 @@ theorem derivWithin_tsum {f : ι → E → F} (hs : IsOpen s) {x : E} (hx : x �
     (hf : ∀ y ∈ s, Summable fun n ↦ f n y)
     (h : SummableLocallyUniformlyOn (fun n ↦ (derivWithin (fun z ↦ f n z) s)) s)
     (hf2 : ∀ n r, r ∈ s → DifferentiableAt E (f n) r) :
-    derivWithin (fun z ↦ ∑' n , f n z) s x = ∑' n, derivWithin (f n) s x := by
+    derivWithin (fun z ↦ ∑' n, f n z) s x = ∑' n, derivWithin (f n) s x := by
   apply HasDerivWithinAt.derivWithin ?_ (hs.uniqueDiffWithinAt hx)
   apply HasDerivAt.hasDerivWithinAt
-  apply hasDerivAt_of_tendstoLocallyUniformlyOn hs _ _ (fun y hy ↦(hf y hy).hasSum ) hx
+  apply hasDerivAt_of_tendstoLocallyUniformlyOn hs _ _ (fun y hy ↦ (hf y hy).hasSum) hx
     (f' := fun n : Finset ι ↦ fun a ↦ ∑ i ∈ n, derivWithin (fun z ↦ f i z) s a)
   · obtain ⟨g, hg⟩ := h
     apply (hasSumLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn.mp hg).congr_right
-    exact fun _ hb ↦ Eq.symm (hg.tsum_eqOn hb)
+    exact fun _ hb ↦ (hg.tsum_eqOn hb).symm
   · filter_upwards with t r hr using HasDerivAt.fun_sum
       (fun q hq ↦ ((hf2 q r hr).differentiableWithinAt.hasDerivWithinAt.hasDerivAt)
       (hs.mem_nhds hr))
@@ -92,17 +92,18 @@ theorem iteratedDerivWithin_tsum {f : ι → E → F} (m : ℕ) (hs : IsOpen s)
       (fun n ↦ (iteratedDerivWithin k (fun z ↦ f n z) s)) s)
     (hf2 : ∀ n k r, k ≤ m → r ∈ s →
       DifferentiableAt E (iteratedDerivWithin k (fun z ↦ f n z) s) r) :
-    iteratedDerivWithin m (fun z ↦ ∑' n , f n z) s x = ∑' n, iteratedDerivWithin m (f n) s x := by
-  induction' m  with m hm generalizing x
-  · simp
-  · simp_rw [iteratedDerivWithin_succ]
-    rw [← derivWithin_tsum hs hx _  _ (fun n r hr ↦ hf2 n m r (by omega) hr)]
-    · exact derivWithin_congr (fun t ht ↦ hm ht (fun k hk1 hkm ↦ h k hk1 (by omega))
-          (fun k r e hr he ↦ hf2 k r e (by omega) he)) (hm hx (fun k hk1 hkm ↦ h k hk1 (by omega))
-          (fun k r e hr he ↦ hf2 k r e (by omega) he))
+    iteratedDerivWithin m (fun z ↦ ∑' n, f n z) s x = ∑' n, iteratedDerivWithin m (f n) s x := by
+  induction m generalizing x with
+  | zero => simp
+  | succ m hm =>
+    simp_rw [iteratedDerivWithin_succ]
+    rw [← derivWithin_tsum hs hx _  _ (fun n r hr ↦ hf2 n m r (by cutsat) hr)]
+    · exact derivWithin_congr (fun t ht ↦ hm ht (fun k hk1 hkm ↦ h k hk1 (by cutsat))
+          (fun k r e hr he ↦ hf2 k r e (by cutsat) he)) (hm hx (fun k hk1 hkm ↦ h k hk1 (by cutsat))
+          (fun k r e hr he ↦ hf2 k r e (by cutsat) he))
     · intro r hr
       by_cases hm2 : m = 0
       · simp [hm2, hsum r hr]
-      · exact ((h m (by omega) (by omega)).summable hr).congr (fun _ ↦ by simp)
+      · exact ((h m (by cutsat) (by cutsat)).summable hr).congr (fun _ ↦ by simp)
     · exact SummableLocallyUniformlyOn_congr
-        (fun _ _ ht ↦ iteratedDerivWithin_succ) (h (m + 1) (by omega) (by omega))
+        (fun _ _ ht ↦ iteratedDerivWithin_succ) (h (m + 1) (by cutsat) (by cutsat))

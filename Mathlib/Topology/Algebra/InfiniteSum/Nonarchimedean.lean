@@ -79,7 +79,7 @@ lemma cauchySeq_of_tendsto_div_nhds_one {f : ℕ → G}
   clear h hMN'
   induction k with
   | zero => simp
-  | succ k ih => simpa using t.mul_mem (hN _ (by omega : N ≤ M + k)) ih
+  | succ k ih => simpa using t.mul_mem (hN _ (by cutsat : N ≤ M + k)) ih
 
 /-- Let `G` be a complete nonarchimedean multiplicative abelian group, and let `f : α → G` be a
 function that tends to one on the filter of cofinite sets. Then `f` is unconditionally

@@ -87,10 +87,7 @@ theorem corners_theorem (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound ε �
     rwa [mul_le_iff_le_one_left] at this
     positivity
   have := noAccidental hA
-  rw [Nat.floor_lt' (by positivity), inv_lt_iff_one_lt_mul₀'] at hG
-  swap
-  · have : ε / 9 ≤ 1 := by linarith
-    positivity
+  rw [Nat.floor_lt' (by positivity), inv_lt_iff_one_lt_mul₀' (by positivity)] at hG
   refine hG.not_ge (le_of_mul_le_mul_right ?_ (by positivity : (0 : ℝ) < card G ^ 2))
   classical
   have h₁ := (farFromTriangleFree_graph hAε).le_card_cliqueFinset
@@ -121,18 +118,18 @@ theorem corners_theorem_nat (hε : 0 < ε) (hn : cornersTheoremBound (ε / 9) �
   have := hA.of_image this.isAddFreimanHom Fin.val_injective.injOn <| by
     refine Set.image_subset_iff.2 <| hAn.trans fun x hx ↦ ?_
     simp only [coe_range, Set.mem_prod, Set.mem_Iio] at hx
-    exact ⟨Fin.natCast_strictMono (by omega) hx.1, Fin.natCast_strictMono (by omega) hx.2⟩
+    exact ⟨Fin.natCast_strictMono (by cutsat) hx.1, Fin.natCast_strictMono (by cutsat) hx.2⟩
   rw [← coe_image] at this
-  refine corners_theorem (ε / 9) (by positivity) (by simp; omega) _ ?_ this
+  refine corners_theorem (ε / 9) (by positivity) (by simp; cutsat) _ ?_ this
   calc
     _ = ε / 9 * (2 * n + 1) ^ 2 := by simp
-    _ ≤ ε / 9 * (2 * n + n) ^ 2 := by gcongr; simp; unfold cornersTheoremBound at hn; omega
+    _ ≤ ε / 9 * (2 * n + n) ^ 2 := by gcongr; simp; unfold cornersTheoremBound at hn; cutsat
     _ = ε * n ^ 2 := by ring
     _ ≤ #A := hAε
     _ = _ := by
       rw [card_image_of_injOn]
       have : Set.InjOn Nat.cast (range n) :=
-        (CharP.natCast_injOn_Iio (Fin (2 * n).succ) (2 * n).succ).mono (by simp; omega)
+        (CharP.natCast_injOn_Iio (Fin (2 * n).succ) (2 * n).succ).mono (by simp; cutsat)
       exact (this.prodMap this).mono hAn
 
 /-- **Roth's theorem** for finite abelian groups.
@@ -178,19 +175,19 @@ theorem roth_3ap_theorem_nat (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound
   rw [this] at hA
   have := Fin.isAddFreimanIso_Iio two_ne_zero (le_refl (2 * n))
   have := hA.of_image this.isAddFreimanHom Fin.val_injective.injOn <| Set.image_subset_iff.2 <|
-      hAn.trans fun x hx ↦ Fin.natCast_strictMono (by omega) <| by
+      hAn.trans fun x hx ↦ Fin.natCast_strictMono (by cutsat) <| by
         simpa only [coe_range, Set.mem_Iio] using hx
   rw [← coe_image] at this
-  refine roth_3ap_theorem (ε / 3) (by positivity) (by simp; omega) _ ?_ this
+  refine roth_3ap_theorem (ε / 3) (by positivity) (by simp; cutsat) _ ?_ this
   calc
     _ = ε / 3 * (2 * n + 1) := by simp
-    _ ≤ ε / 3 * (2 * n + n) := by gcongr; simp; unfold cornersTheoremBound at hG; omega
+    _ ≤ ε / 3 * (2 * n + n) := by gcongr; simp; unfold cornersTheoremBound at hG; cutsat
     _ = ε * n := by ring
     _ ≤ #A := hAε
     _ = _ := by
       rw [card_image_of_injOn]
       exact (CharP.natCast_injOn_Iio (Fin (2 * n).succ) (2 * n).succ).mono <| hAn.trans <| by
-        simp; omega
+        simp; cutsat
 
 open Asymptotics Filter
 

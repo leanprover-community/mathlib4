@@ -10,7 +10,7 @@ import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 /-!
 # Bounded at infinity
 
-For complex valued functions on the upper half plane, this file defines the filter
+For complex-valued functions on the upper half plane, this file defines the filter
 `UpperHalfPlane.atImInfty` required for defining when functions are bounded at infinity and zero at
 infinity. Both of which are relevant for defining modular forms.
 -/
@@ -78,5 +78,12 @@ lemma tendsto_coe_atImInfty :
   simpa only [atImInfty, tendsto_comap_iff, Function.comp_def,
     funext UpperHalfPlane.coe_im] using tendsto_comap
 
+lemma tendsto_smul_atImInfty {g : GL (Fin 2) ℝ} (hg : g 1 0 = 0) :
+    Tendsto (fun τ ↦ g • τ) atImInfty atImInfty := by
+  suffices Tendsto (fun τ ↦ |g 0 0 / g 1 1| * τ.im) atImInfty atTop by
+    simpa [atImInfty, Function.comp_def, im_smul, num, denom, hg, abs_div, abs_mul,
+      abs_of_pos (UpperHalfPlane.im_pos _), mul_div_right_comm]
+  apply tendsto_comap.const_mul_atTop
+  simpa [Matrix.det_fin_two, hg] using g.det_ne_zero
 
 end UpperHalfPlane

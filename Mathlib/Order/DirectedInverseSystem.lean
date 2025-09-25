@@ -47,7 +47,7 @@ to work.
 
 It is possible to circumvent the introduction of the `compat` condition using Zorn's lemma;
 if there is a chain of natural families (i.e. for any two families in the chain, one is an
-extension of the other) over lowersets (which are all of the form `Iic`, `Iio`, or `univ`),
+extension of the other) over lower sets (which are all of the form `Iic`, `Iio`, or `univ`),
 we can clearly take the union to get a natural family that extends them all. If a maximal
 natural family has domain `Iic i` or `Iio i` (`i` a limit), we already know how to extend it
 one step further to `Iic i⁺` or `Iic i` respectively, so it must be the case that the domain
@@ -361,7 +361,7 @@ induces a bijection at the limit ordinal. -/
 @[simps] def invLimEquiv : limit f i ≃ limit (piLTProj (X := X)) i where
   toFun t := ⟨fun l ↦ equiv l (t.1 l), fun _ _ h ↦ Eq.symm <| by simp_rw [← t.2 h]; apply nat⟩
   invFun t := ⟨fun l ↦ (equiv l).symm (t.1 l),
-    fun _ _ h ↦ (Equiv.eq_symm_apply _).mpr <| by rw [nat, ← t.2 h]; simp⟩
+    fun _ _ h ↦ (Equiv.eq_symm_apply _).mpr <| by rw [nat, ← t.2 h] <;> simp⟩
   left_inv t := by ext; apply Equiv.left_inv
   right_inv t := by ext1; ext1; apply Equiv.right_inv
 

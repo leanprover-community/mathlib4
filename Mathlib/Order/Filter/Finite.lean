@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
 import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Order.CompleteLattice.Finset
 import Mathlib.Order.Filter.Basic
 
 /-!
@@ -120,7 +121,7 @@ theorem exists_iInter_of_mem_iInf {ι : Sort*} {α : Type*} {f : ι → Filter �
   rw [← iInf_range' (g := (·))] at hs
   let ⟨_, _, V, hVs, _, _, hVU'⟩ := mem_iInf'.1 hs
   use V ∘ rangeFactorization f, fun i ↦ hVs (rangeFactorization f i)
-  rw [hVU', ← surjective_onto_range.iInter_comp, comp_def]
+  rw [hVU', ← rangeFactorization_surjective.iInter_comp, comp_def]
 
 theorem mem_iInf_of_finite {ι : Sort*} [Finite ι] {α : Type*} {f : ι → Filter α} (s) :
     (s ∈ ⨅ i, f i) ↔ ∃ t : ι → Set α, (∀ i, t i ∈ f i) ∧ s = ⋂ i, t i := by

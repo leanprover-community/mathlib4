@@ -50,6 +50,10 @@ example {α} [CommRing α] (a b c d e : α) :
   (-(a * b) + c + d) * e = (c + (d + -a * b)) * e := by ring
 example (a n s : ℕ) : a * (n - s) = (n - s) * a := by ring
 
+example {α} [CommRing α] (x : α) : (2 : ℕ) • x = x + x := by ring
+example {α} [CommRing α] (x : α) : (2 : ℤ) • x = x + x := by ring
+example {α} [CommRing α] (x : α) : (-2 : ℤ) • x = -x - x := by ring
+
 section Rat
 
 variable [Field α]
@@ -114,7 +118,14 @@ example : 22 + 7 * 4 + 3 * 8 = 0 + 7 * 4 + 46 := by
 
 -- Example with ring failing to discharge, to normalizing the goal
 
-/-- info: Try this: ring_nf -/
+/--
+info: Try this:
+  ring_nf
+  ⏎
+  The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+    ⏎
+  Note that `ring` works primarily in *commutative* rings. If you have a noncommutative ring, abelian group or module, consider using `noncomm_ring`, `abel` or `module` instead.
+-/
 #guard_msgs in
 example : (22 + 7 * 4 + 3 * 8 = 0 + 7 * 4 + 47) = (74 = 75) := by
   conv => ring
@@ -127,7 +138,14 @@ example (x : ℕ) : 22 + 7 * x + 3 * 8 = 0 + 7 * x + 46 := by
 
 -- Example with ring failing to discharge, to normalizing the goal
 
-/-- info: Try this: ring_nf -/
+/--
+info: Try this:
+  ring_nf
+  ⏎
+  The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+    ⏎
+  Note that `ring` works primarily in *commutative* rings. If you have a noncommutative ring, abelian group or module, consider using `noncomm_ring`, `abel` or `module` instead.
+-/
 #guard_msgs in
 example (x : ℕ) : (22 + 7 * x + 3 * 8 = 0 + 7 * x + 46 + 1)
                     = (7 * x + 46 = 7 * x + 47) := by
@@ -208,6 +226,14 @@ example (x : ℤ) (R : ℤ → ℤ → Prop) : True := by
   trivial
 
 end
+
+-- new behaviour as of https://github.com/leanprover-community/mathlib4/issues/27562
+-- (Previously, because of a metavariable instantiation issue, the tactic succeeded as a no-op.)
+/-- error: ring_nf made no progress at h -/
+#guard_msgs in
+example {R : Type*} [CommSemiring R] {x y : R} : True := by
+  have h : x + y = 3 := test_sorry
+  ring_nf at h
 
 -- Test that `ring_nf` doesn't unfold local let expressions, and `ring_nf!` does
 set_option linter.unusedTactic false in

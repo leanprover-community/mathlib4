@@ -9,9 +9,9 @@ import Mathlib.ModelTheory.Semantics
 import Mathlib.Algebra.Ring.Equiv
 
 /-!
-# First Order Language of Rings
+# First-Order Language of Rings
 
-This file defines the first order language of rings, as well as defining instance of `Add`, `Mul`,
+This file defines the first-order language of rings, as well as defining instance of `Add`, `Mul`,
 etc. on terms in the language.
 
 ## Main Definitions
@@ -291,7 +291,7 @@ attribute [local instance] addOfRingStructure mulOfRingStructure negOfRingStruct
 
 /--
 Given a Type `R` with a `Language.ring.Structure R`, the instance given by
-`addOfRingStructure` etc are compatible with the `Language.ring.Structure` instance on `R`.
+`addOfRingStructure` etc. are compatible with the `Language.ring.Structure` instance on `R`.
 
 This definition is only to be used when `addOfRingStructure`, `mulOfRingStructure` etc
 are local instances.

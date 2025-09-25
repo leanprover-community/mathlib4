@@ -45,8 +45,6 @@ local notation "LE₁E₂" => TotalSpace (F₁ →L[𝕜] F₂) (fun (b : B) ↦
 
 section
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11083):
--- moved slow parts to separate lemmas
 theorem contMDiffOn_continuousLinearMapCoordChange
     [ContMDiffVectorBundle n F₁ E₁ IB] [ContMDiffVectorBundle n F₂ E₂ IB]
     [MemTrivializationAtlas e₁] [MemTrivializationAtlas e₁']
@@ -162,7 +160,7 @@ variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B�
 another base map `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending smoothly
 on `m`, one can apply `ϕ m` to `g m`, and the resulting map is `C^n`.
 
-Note that the smoothness of `ϕ` can not be always be stated as smoothness of a map into a manifold,
+Note that the smoothness of `ϕ` cannot be always be stated as smoothness of a map into a manifold,
 as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` are smooth manifolds only when `b₁` and `b₂` are
 globally smooth, but we want to apply this lemma with only local information. Therefore, we
 formulate it using smoothness of `ϕ` read in coordinates.
@@ -203,7 +201,7 @@ lemma ContMDiffWithinAt.clm_apply_of_inCoordinates
 another base map `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending smoothly
 on `m`, one can apply `ϕ m` to `g m`, and the resulting map is `C^n`.
 
-Note that the smoothness of `ϕ` can not be always be stated as smoothness of a map into a manifold,
+Note that the smoothness of `ϕ` cannot be always be stated as smoothness of a map into a manifold,
 as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` are smooth manifolds only when `b₁` and `b₂` are
 globally smooth, but we want to apply this lemma with only local information. Therefore, we
 formulate it using smoothness of `ϕ` read in coordinates.

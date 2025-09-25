@@ -41,7 +41,6 @@ structure MonCat : Type (u + 1) where
   [str : Monoid carrier]
 
 attribute [instance] AddMonCat.str MonCat.str
-attribute [to_additive existing] MonCat.carrier MonCat.str
 
 initialize_simps_projections AddMonCat (carrier → coe, -str)
 initialize_simps_projections MonCat (carrier → coe, -str)
@@ -73,8 +72,6 @@ structure MonCat.Hom (A B : MonCat.{u}) where
   private mk ::
   /-- The underlying monoid homomorphism. -/
   hom' : A →* B
-
-attribute [to_additive existing AddMonCat.Hom.mk] MonCat.Hom.mk
 
 namespace MonCat
 
@@ -225,7 +222,6 @@ structure CommMonCat : Type (u + 1) where
   [str : CommMonoid carrier]
 
 attribute [instance] AddCommMonCat.str CommMonCat.str
-attribute [to_additive existing] CommMonCat.carrier CommMonCat.str
 
 initialize_simps_projections AddCommMonCat (carrier → coe, -str)
 initialize_simps_projections CommMonCat (carrier → coe, -str)
@@ -257,8 +253,6 @@ structure CommMonCat.Hom (A B : CommMonCat.{u}) where
   private mk ::
   /-- The underlying monoid homomorphism. -/
   hom' : A →* B
-
-attribute [to_additive existing AddCommMonCat.Hom.mk] CommMonCat.Hom.mk
 
 namespace CommMonCat
 

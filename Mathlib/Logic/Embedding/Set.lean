@@ -86,40 +86,31 @@ subtypes `{x // p x} ⊕ {x // q x}` such that `¬ p x` is sent to the right, wh
 `Disjoint p q`.
 
 See also `Equiv.sumCompl`, for when `IsCompl p q`. -/
-@[simps apply]
+@[simps (attr := grind =) apply]
 def subtypeOrEquiv (p q : α → Prop) [DecidablePred p] (h : Disjoint p q) :
     { x // p x ∨ q x } ≃ { x // p x } ⊕ { x // q x } where
   toFun := subtypeOrLeftEmbedding p q
   invFun :=
     Sum.elim (Subtype.impEmbedding _ _ fun x hx ↦ (Or.inl hx : p x ∨ q x))
       (Subtype.impEmbedding _ _ fun x hx ↦ (Or.inr hx : p x ∨ q x))
-  left_inv x := by
-    by_cases hx : p x
-    · rw [subtypeOrLeftEmbedding_apply_left _ hx]
-      simp [Subtype.ext_iff]
-    · rw [subtypeOrLeftEmbedding_apply_right _ hx]
-      simp [Subtype.ext_iff]
+  left_inv x := by grind
   right_inv x := by
     cases x with
-    | inl x =>
-      simp only [Sum.elim_inl]
-      rw [subtypeOrLeftEmbedding_apply_left]
-      · simp
-      · simpa using x.prop
+    | inl x => grind
     | inr x =>
       simp only [Sum.elim_inr]
       rw [subtypeOrLeftEmbedding_apply_right]
-      · simp
+      · grind
       · suffices ¬p x by simpa
         intro hp
         simpa using h.le_bot x ⟨hp, x.prop⟩
 
-@[simp]
+@[simp, grind =]
 theorem subtypeOrEquiv_symm_inl (p q : α → Prop) [DecidablePred p] (h : Disjoint p q)
     (x : { x // p x }) : (subtypeOrEquiv p q h).symm (Sum.inl x) = ⟨x, Or.inl x.prop⟩ :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem subtypeOrEquiv_symm_inr (p q : α → Prop) [DecidablePred p] (h : Disjoint p q)
     (x : { x // q x }) : (subtypeOrEquiv p q h).symm (Sum.inr x) = ⟨x, Or.inr x.prop⟩ :=
   rfl

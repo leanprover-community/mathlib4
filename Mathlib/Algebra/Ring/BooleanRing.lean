@@ -46,7 +46,7 @@ variable {α β γ : Type*}
 
 /-- A Boolean ring is a ring where multiplication is idempotent. -/
 class BooleanRing (α) extends Ring α where
-  /-- Multiplication in a boolean ring is idempotent. -/
+  /-- Multiplication in a Boolean ring is idempotent. -/
   isIdempotentElem (a : α) : IsIdempotentElem a
 
 namespace BooleanRing
@@ -160,9 +160,8 @@ def sup : Max α :=
 def inf : Min α :=
   ⟨(· * ·)⟩
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add priority 100. lower instance priority
-scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.sup
-scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.inf
+scoped [BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.sup
+scoped [BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.inf
 open BooleanAlgebraOfBooleanRing
 
 theorem sup_comm (a b : α) : a ⊔ b = b ⊔ a := by
@@ -229,8 +228,7 @@ def toBooleanAlgebra : BooleanAlgebra α :=
       norm_num [mul_add, mul_self, add_self]
       rw [← add_assoc, add_self] }
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add priority 100. lower instance priority
-scoped[BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.toBooleanAlgebra
+scoped[BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.toBooleanAlgebra
 
 end BooleanRing
 

@@ -9,14 +9,14 @@ import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
 /-!
 # Quasi Measure Preserving Functions
 
-A map `f : α → β` is said to be *quasi measure preserving* (a.k.a. non-singular) w.r.t. measures
+A map `f : α → β` is said to be *quasi-measure-preserving* (a.k.a. non-singular) w.r.t. measures
 `μa` and `μb` if it is measurable and `μb s = 0` implies `μa (f ⁻¹' s) = 0`.
 That last condition can also be written `μa.map f ≪ μb` (the map of `μa` by `f` is
 absolutely continuous with respect to `μb`).
 
 ## Main definitions
 
-* `MeasureTheory.Measure.QuasiMeasurePreserving f μa μb`: `f` is quasi measure preserving with
+* `MeasureTheory.Measure.QuasiMeasurePreserving f μa μb`: `f` is quasi-measure-preserving with
   respect to `μa` and `μb`.
 
 -/
@@ -33,7 +33,7 @@ variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : Measurable
 
 namespace Measure
 
-/-- A map `f : α → β` is said to be *quasi measure preserving* (a.k.a. non-singular) w.r.t. measures
+/-- A map `f : α → β` is said to be *quasi-measure-preserving* (a.k.a. non-singular) w.r.t. measures
 `μa` and `μb` if it is measurable and `μb s = 0` implies `μa (f ⁻¹' s) = 0`. -/
 @[fun_prop]
 structure QuasiMeasurePreserving {m0 : MeasurableSpace α} (f : α → β)
@@ -158,7 +158,7 @@ theorem liminf_preimage_iterate_ae_eq {f : α → α} (hf : QuasiMeasurePreservi
   liminf_ae_eq_of_forall_ae_eq (fun n => (preimage f)^[n] s) fun n ↦ by
     simpa only [Set.preimage_iterate_eq] using hf.preimage_iterate_ae_eq n hs
 
-/-- For a quasi measure preserving self-map `f`, if a null measurable set `s` is a.e. invariant,
+/-- For a quasi-measure-preserving self-map `f`, if a null measurable set `s` is a.e. invariant,
 then it is a.e. equal to a measurable invariant set.
 -/
 theorem exists_preimage_eq_of_preimage_ae {f : α → α} (h : QuasiMeasurePreserving f μ μ)

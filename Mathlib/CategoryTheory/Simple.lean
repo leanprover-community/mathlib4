@@ -16,7 +16,7 @@ We define simple objects in any category with zero morphisms.
 A simple object is an object `Y` such that any monomorphism `f : X ⟶ Y`
 is either an isomorphism or zero (but not both).
 
-This is formalized as a `Prop` valued typeclass `Simple X`.
+This is formalized as a `Prop`-valued typeclass `Simple X`.
 
 In some contexts, especially representation theory, simple objects are called "irreducibles".
 
@@ -216,7 +216,7 @@ instance {X : C} [Simple X] : IsSimpleOrder (Subobject X) where
 
 /-- If `X` has subobject lattice `{⊥, ⊤}`, then `X` is simple. -/
 theorem simple_of_isSimpleOrder_subobject (X : C) [IsSimpleOrder (Subobject X)] : Simple X := by
-  constructor; intros Y f hf; constructor
+  constructor; intro Y f hf; constructor
   · intro i
     rw [Subobject.isIso_iff_mk_eq_top] at i
     intro w

@@ -42,7 +42,7 @@ theorem cardinalMk_eq_sum_lift : #(WType β) = sum fun a ↦ #(WType β) ^ lift.
 theorem cardinalMk_le_of_le' {κ : Cardinal.{max u v}}
     (hκ : (sum fun a : α => κ ^ lift.{u} #(β a)) ≤ κ) :
     #(WType β) ≤ κ := by
-  induction' κ using Cardinal.inductionOn with γ
+  induction κ using Cardinal.inductionOn with | _ γ
   simp_rw [← lift_umax.{v, u}] at hκ
   nth_rewrite 1 [← lift_id'.{v, u} #γ] at hκ
   simp_rw [← mk_arrow, ← mk_sigma, le_def] at hκ

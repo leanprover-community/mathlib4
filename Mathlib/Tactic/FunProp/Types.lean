@@ -91,7 +91,7 @@ structure Context where
   constToUnfold : TreeSet Name Name.quickCmp :=
     .ofArray defaultNamesToUnfold _
   /-- Custom discharger to satisfy theorem hypotheses. -/
-  disch : Expr → MetaM (Option Expr) := fun _ => pure .none
+  disch : Expr → MetaM (Option Expr) := fun _ => pure none
   /-- current transition depth -/
   transitionDepth := 0
 
@@ -146,7 +146,7 @@ structure Result where
 def defaultUnfoldPred : Name → Bool :=
   defaultNamesToUnfold.contains
 
-/-- Get predicate on names indicating if theys should be unfolded. -/
+/-- Get predicate on names indicating whether they should be unfolded. -/
 def unfoldNamePred : FunPropM (Name → Bool) := do
   let toUnfold := (← read).constToUnfold
   return fun n => toUnfold.contains n

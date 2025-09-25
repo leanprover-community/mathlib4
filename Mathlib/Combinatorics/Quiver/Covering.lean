@@ -187,7 +187,6 @@ theorem Prefunctor.pathStar_injective (hφ : ∀ u, Injective (φ.star u)) (u : 
     rcases p₂ with - | ⟨p₂, e₂⟩
     · intro; rfl -- Porting note: goal not present in lean3.
     · intro h
-      -- Porting note: added `Sigma.mk.inj_iff`
       simp only [mapPath_cons, Sigma.mk.inj_iff] at h
       exfalso
       obtain ⟨h, h'⟩ := h

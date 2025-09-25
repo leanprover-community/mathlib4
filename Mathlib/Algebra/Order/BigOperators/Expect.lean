@@ -136,7 +136,7 @@ section LinearOrderedAddCommGroup
 variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] [Module ℚ≥0 α] [PosSMulMono ℚ≥0 α]
 
 lemma abs_expect_le (s : Finset ι) (f : ι → α) : |𝔼 i ∈ s, f i| ≤ 𝔼 i ∈ s, |f i| :=
-  le_expect_of_subadditive abs_zero abs_add (fun _ ↦ abs_nnqsmul _)
+  le_expect_of_subadditive abs_zero abs_add_le (fun _ ↦ abs_nnqsmul _)
 
 end LinearOrderedAddCommGroup
 
@@ -188,7 +188,7 @@ def evalFinsetExpect : PositivityExt where eval {u α} zα pα e := do
     let rbody ← core zα pα body
     let p_pos : Option Q(0 < $e) := ← (do
       let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
-      let .some ps ← proveFinsetNonempty s | pure none
+      let some ps ← proveFinsetNonempty s | pure none
       let .some pα' ← trySynthInstanceQ q(IsOrderedCancelAddMonoid $α) | pure none
       let .some instαordsmul ← trySynthInstanceQ q(PosSMulStrictMono ℚ≥0 $α) | pure none
       assumeInstancesCommute

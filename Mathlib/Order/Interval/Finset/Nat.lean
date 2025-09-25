@@ -164,29 +164,29 @@ theorem Ico_insert_succ_left (h : a < b) : insert a (Ico a.succ b) = Ico a b := 
 lemma Icc_insert_succ_left (h : a ≤ b) : insert a (Icc (a + 1) b) = Icc a b := by
   ext x
   simp only [mem_insert, mem_Icc]
-  omega
+  cutsat
 
 @[deprecated Finset.insert_Icc_eq_Icc_succ_right (since := "2025-04-24")]
 lemma Icc_insert_succ_right (h : a ≤ b + 1) : insert (b + 1) (Icc a b) = Icc a (b + 1) := by
   ext x
   simp only [mem_insert, mem_Icc]
-  omega
+  cutsat
 
 theorem image_sub_const_Ico (h : c ≤ a) :
     ((Ico a b).image fun x => x - c) = Ico (a - c) (b - c) := by
   ext x
   simp_rw [mem_image, mem_Ico]
-  refine ⟨?_, fun h ↦ ⟨x + c, by omega⟩⟩
+  refine ⟨?_, fun h ↦ ⟨x + c, by cutsat⟩⟩
   rintro ⟨x, hx, rfl⟩
-  omega
+  cutsat
 
 theorem Ico_image_const_sub_eq_Ico (hac : a ≤ c) :
     ((Ico a b).image fun x => c - x) = Ico (c + 1 - b) (c + 1 - a) := by
   ext x
   simp_rw [mem_image, mem_Ico]
-  refine ⟨?_, fun h ↦ ⟨c - x, by omega⟩⟩
+  refine ⟨?_, fun h ↦ ⟨c - x, by cutsat⟩⟩
   rintro ⟨x, hx, rfl⟩
-  omega
+  cutsat
 
 set_option linter.deprecated false in
 theorem Ico_succ_left_eq_erase_Ico : Ico a.succ b = erase (Ico a b) a := by
@@ -240,8 +240,8 @@ theorem image_Ico_mod (n a : ℕ) : (Ico n (n + a)).image (· % a) = range a := 
       rw [Nat.mul_add, mul_one, ← add_assoc, hn]
     · rw [Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt hia]
   · refine ⟨i + a * (n / a), ⟨?_, ?_⟩, ?_⟩
-    · omega
-    · omega
+    · cutsat
+    · cutsat
     · rw [Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt hia]
 
 section Multiset
@@ -289,9 +289,9 @@ theorem range_add_eq_union : range (a + b) = range a ∪ (range b).map (addLeftE
   ext x
   simp only [Ico_zero_eq_range, mem_image, mem_range, addLeftEmbedding_apply, mem_Ico]
   constructor
-  · omega
+  · cutsat
   · rintro h
-    exact ⟨x - a, by omega⟩
+    exact ⟨x - a, by cutsat⟩
 
 end Finset
 
@@ -315,7 +315,7 @@ lemma Nat.strong_decreasing_induction (base : ∃ n, ∀ m > n, P m) (step : ∀
   · rintro ⟨b, hb⟩
     rcases base with ⟨n, hn⟩
     specialize @hb (n + b + 1) (fun m hm ↦ hn _ _)
-    all_goals omega
+    all_goals cutsat
 
 theorem Nat.decreasing_induction_of_infinite
     (h : ∀ n, P (n + 1) → P n) (hP : { x | P x }.Infinite) (n : ℕ) : P n :=

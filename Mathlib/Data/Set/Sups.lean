@@ -19,7 +19,7 @@ This file defines a few binary operations on `Set α` for use in set family comb
 
 ## Notation
 
-We define the following notation in locale `SetFamily`:
+We define the following notation in scope `SetFamily`:
 * `s ⊻ t`
 * `s ⊼ t`
 

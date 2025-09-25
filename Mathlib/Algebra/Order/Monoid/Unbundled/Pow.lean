@@ -120,7 +120,7 @@ lemma pow_le_pow_mul_of_sq_le_mul [MulLeftMono M] {a b : M} (hab : a ^ 2 ≤ b *
   | n + 2, _ => by
     calc
       a ^ (n + 2) = a ^ (n + 1) * a := by rw [pow_succ]
-      _ ≤ b ^ n * a * a := mul_le_mul_right' (pow_le_pow_mul_of_sq_le_mul hab (by omega)) _
+      _ ≤ b ^ n * a * a := mul_le_mul_right' (pow_le_pow_mul_of_sq_le_mul hab (by cutsat)) _
       _ = b ^ n * a ^ 2 := by rw [mul_assoc, sq]
       _ ≤ b ^ n * (b * a) := mul_le_mul_left' hab _
       _ = b ^ (n + 1) * a := by rw [← mul_assoc, ← pow_succ]
@@ -289,6 +289,10 @@ theorem Right.pow_lt_one_iff [MulRightStrictMono M] {n : ℕ} {x : M}
     (hn : 0 < n) : x ^ n < 1 ↔ x < 1 :=
   haveI := mulRightMono_of_mulRightStrictMono M
   ⟨fun H => not_le.mp fun k => H.not_ge <| Right.one_le_pow_of_le k, Right.pow_lt_one_of_lt hn⟩
+
+@[to_additive]
+instance [MulLeftStrictMono M] [MulRightStrictMono M] : IsMulTorsionFree M where
+  pow_left_injective _ hn := (pow_left_strictMono hn).injective
 
 end LinearOrder
 

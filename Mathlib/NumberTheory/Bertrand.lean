@@ -63,6 +63,16 @@ theorem real_main_inequality {x : ℝ} (x_large : (512 : ℝ) ≤ x) :
     mul_div 2 x, mul_div_left_comm, ← mul_one_sub, (by norm_num1 : (1 : ℝ) - 2 / 3 = 1 / 3),
     mul_one_div, ← log_nonpos_iff (hf' x h5).le, ← hf x h5]
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11083): the proof was rewritten, because it was too slow
+  -- Original:
+  /-
+  have h : ConcaveOn ℝ (Set.Ioi 0.5) f := by
+    refine ((strictConcaveOn_log_Ioi.concaveOn.subset (Set.Ioi_subset_Ioi _)
+      (convex_Ioi 0.5)).add ((strictConcaveOn_sqrt_mul_log_Ioi.concaveOn.comp_linearMap
+      ((2 : ℝ) • LinearMap.id)).subset
+      (fun a ha => lt_of_eq_of_lt _ ((mul_lt_mul_iff_right₀ two_pos).mpr ha)) (convex_Ioi 0.5))).sub
+      ((convex_on_id (convex_Ioi (0.5 : ℝ))).smul (div_nonneg (log_nonneg _) _))
+    norm_num
+  -/
   have h : ConcaveOn ℝ (Set.Ioi 0.5) f := by
     apply ConcaveOn.sub
     · apply ConcaveOn.add
@@ -73,7 +83,7 @@ theorem real_main_inequality {x : ℝ} (x_large : (512 : ℝ) ≤ x) :
       ext x
       simp only [Set.mem_Ioi, Set.mem_preimage, LinearMap.smul_apply,
         LinearMap.id_coe, id_eq, smul_eq_mul]
-      rw [← mul_lt_mul_left (two_pos)]
+      rw [← mul_lt_mul_iff_right₀ (two_pos)]
       norm_num1
       rfl
     apply ConvexOn.smul
@@ -129,7 +139,7 @@ theorem centralBinom_factorization_small (n : ℕ) (n_large : 2 < n)
     centralBinom n = ∏ p ∈ Finset.range (2 * n / 3 + 1), p ^ (centralBinom n).factorization p := by
   refine (Eq.trans ?_ n.prod_pow_factorization_centralBinom).symm
   apply Finset.prod_subset
-  · exact Finset.range_subset.2 (add_le_add_right (Nat.div_le_self _ _) _)
+  · exact Finset.range_subset_range.2 (add_le_add_right (Nat.div_le_self _ _) _)
   intro x hx h2x
   rw [Finset.mem_range, Nat.lt_succ_iff] at hx h2x
   rw [not_le, div_lt_iff_lt_mul three_pos, mul_comm x] at h2x
@@ -201,8 +211,7 @@ for each number ≤ n.
 theorem exists_prime_lt_and_le_two_mul_succ {n} (q) {p : ℕ} (prime_p : Nat.Prime p)
     (covering : p ≤ 2 * q) (H : n < q → ∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n) (hn : n < p) :
     ∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n := by
-  by_cases h : p ≤ 2 * n; · exact ⟨p, prime_p, hn, h⟩
-  exact H (lt_of_mul_lt_mul_left' (lt_of_lt_of_le (not_le.1 h) covering))
+  grind
 
 /--
 **Bertrand's Postulate**: For any positive natural number, there is a prime which is greater than

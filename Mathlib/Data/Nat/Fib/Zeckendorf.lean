@@ -45,7 +45,7 @@ increasing sequence of non-consecutive numbers greater than or equal to `2`.
 This is relevant for Zeckendorf's theorem, since if we write a natural `n` as a sum of Fibonacci
 numbers `(l.map fib).sum`, `IsZeckendorfRep l` exactly means that we can't simplify any expression
 of the form `fib n + fib (n + 1) = fib (n + 2)`, `fib 1 = fib 2` or `fib 0 = 0` in the sum. -/
-def IsZeckendorfRep (l : List ℕ) : Prop := (l ++ [0]).Chain' (fun a b ↦ b + 2 ≤ a)
+def IsZeckendorfRep (l : List ℕ) : Prop := (l ++ [0]).IsChain (fun a b ↦ b + 2 ≤ a)
 
 @[simp]
 lemma IsZeckendorfRep_nil : IsZeckendorfRep [] := by simp [IsZeckendorfRep]
@@ -54,10 +54,10 @@ lemma IsZeckendorfRep.sum_fib_lt : ∀ {n l}, IsZeckendorfRep l → (∀ a ∈ (
     (l.map fib).sum < fib n
   | _, [], _, hn => fib_pos.2 <| hn _ rfl
   | n, a :: l, hl, hn => by
-    simp only [IsZeckendorfRep, cons_append, chain'_iff_pairwise, pairwise_cons] at hl
+    simp only [IsZeckendorfRep, cons_append, isChain_iff_pairwise, pairwise_cons] at hl
     have : ∀ b, b ∈ head? (l ++ [0]) → b < a - 1 :=
       fun b hb ↦ lt_tsub_iff_right.2 <| hl.1 _ <| mem_of_mem_head? hb
-    simp only [mem_append, mem_singleton, ← chain'_iff_pairwise, or_imp, forall_and, forall_eq,
+    simp only [mem_append, mem_singleton, ← isChain_iff_pairwise, or_imp, forall_and, forall_eq,
       zero_add] at hl
     simp only [map, List.sum_cons]
     refine (add_lt_add_left (sum_fib_lt hl.2 this) _).trans_le ?_
@@ -151,9 +151,9 @@ lemma zeckendorf_sum_fib : ∀ {l}, IsZeckendorfRep l → zeckendorf (l.map fib)
   | [], _ => by simp only [map_nil, List.sum_nil, zeckendorf_zero]
   | a :: l, hl => by
     have hl' := hl
-    simp only [IsZeckendorfRep, cons_append, chain'_iff_pairwise, pairwise_cons, mem_append,
+    simp only [IsZeckendorfRep, cons_append, isChain_iff_pairwise, pairwise_cons, mem_append,
       mem_singleton, or_imp, forall_and, forall_eq, zero_add] at hl
-    rw [← chain'_iff_pairwise] at hl
+    rw [← isChain_iff_pairwise] at hl
     have ha : 0 < a := hl.1.2.trans_lt' zero_lt_two
     suffices h : greatestFib (fib a + sum (map fib l)) = a by
       simp only [map, List.sum_cons, add_pos_iff, fib_pos.2 ha, true_or, zeckendorf_of_pos, h,

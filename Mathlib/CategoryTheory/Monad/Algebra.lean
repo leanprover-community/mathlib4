@@ -59,9 +59,6 @@ structure Hom (A B : Algebra T) where
   /-- Compatibility with the structure morphism, for a morphism of algebras. -/
   h : (T : C ⥤ C).map f ≫ B.a = A.a ≫ f := by cat_disch
 
--- Porting note: no need to restate axioms in lean4.
---restate_axiom hom.h
-
 attribute [reassoc (attr := simp)] Hom.h
 
 namespace Hom
@@ -82,7 +79,6 @@ instance : CategoryStruct (Algebra T) where
   id := Hom.id
   comp := @Hom.comp _ _ _
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Adding this `ext` lemma to help automation below.
 @[ext]
 lemma Hom.ext' (X Y : Algebra T) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext h
 
@@ -168,15 +164,10 @@ def adj : T.free ⊣ T.forget :=
 /-- Given an algebra morphism whose carrier part is an isomorphism, we get an algebra isomorphism.
 -/
 theorem algebra_iso_of_iso {A B : Algebra T} (f : A ⟶ B) [IsIso f.f] : IsIso f :=
-  ⟨⟨{   f := inv f.f
-        h := by
-          rw [IsIso.eq_comp_inv f.f, Category.assoc, ← f.h]
-          simp },
-      by cat_disch⟩⟩
+  ⟨⟨{ f := inv f.f, h := by simp }, by cat_disch⟩⟩
 
 instance forget_reflects_iso : T.forget.ReflectsIsomorphisms where
-  -- Porting note: Is this the right approach to introduce instances?
-  reflects {_ _} f := fun [IsIso f.f] => algebra_iso_of_iso T f
+  reflects {_ _} f [IsIso f.f] := algebra_iso_of_iso T f
 
 instance forget_faithful : T.forget.Faithful where
 
@@ -209,7 +200,6 @@ def algebraFunctorOfMonadHom {T₁ T₂ : Monad C} (h : T₂ ⟶ T₁) : Algebra
 /--
 The identity monad morphism induces the identity functor from the category of algebras to itself.
 -/
--- Porting note: `semireducible -> default`
 @[simps (rhsMd := .default)]
 def algebraFunctorOfMonadHomId {T₁ : Monad C} : algebraFunctorOfMonadHom (𝟙 T₁) ≅ 𝟭 _ :=
   NatIso.ofComponents fun X => Algebra.isoMk (Iso.refl _)
@@ -266,12 +256,6 @@ structure Coalgebra (G : Comonad C) : Type max u₁ v₁ where
   coassoc : a ≫ G.δ.app A = a ≫ G.map a := by cat_disch
 
 
--- Porting note: no need to restate axioms in lean4.
-
---restate_axiom coalgebra.counit'
-
---restate_axiom coalgebra.coassoc'
-
 attribute [reassoc] Coalgebra.counit Coalgebra.coassoc
 
 namespace Coalgebra
@@ -285,9 +269,6 @@ structure Hom (A B : Coalgebra G) where
   f : A.A ⟶ B.A
   /-- Compatibility with the structure morphism, for a morphism of coalgebras. -/
   h : A.a ≫ (G : C ⥤ C).map f = f ≫ B.a := by cat_disch
-
--- Porting note: no need to restate axioms in lean4.
---restate_axiom hom.h
 
 attribute [reassoc (attr := simp)] Hom.h
 
@@ -307,7 +288,6 @@ instance : CategoryStruct (Coalgebra G) where
   id := Hom.id
   comp := @Hom.comp _ _ _
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Adding `ext` lemma to help automation below.
 @[ext]
 lemma Hom.ext' (X Y : Coalgebra G) (f g : X ⟶ Y) (h : f.f = g.f) : f = g := Hom.ext h
 
@@ -399,8 +379,7 @@ theorem coalgebra_iso_of_iso {A B : Coalgebra G} (f : A ⟶ B) [IsIso f.f] : IsI
       by cat_disch⟩⟩
 
 instance forget_reflects_iso : G.forget.ReflectsIsomorphisms where
-  -- Porting note: Is this the right approach to introduce instances?
-  reflects {_ _} f := fun [IsIso f.f] => coalgebra_iso_of_iso G f
+  reflects {_ _} f [IsIso f.f] := coalgebra_iso_of_iso G f
 
 instance forget_faithful : (forget G).Faithful where
 

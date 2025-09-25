@@ -86,10 +86,11 @@ theorem plus_def (P Q : RegularExpression α) : plus P Q = P + Q :=
 theorem comp_def (P Q : RegularExpression α) : comp P Q = P * Q :=
   rfl
 
--- This was renamed to `matches'` during the port of Lean 4 as `matches` is a reserved word.
-/-- `matches' P` provides a language which contains all strings that `P` matches -/
--- Porting note: was '@[simp] but removed based on
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/simpNF.20issues.20in.20Computability.2ERegularExpressions.20!4.232306/near/328355362
+/-- `matches' P` provides a language which contains all strings that `P` matches.
+
+Not named `matches` since that is a reserved word.
+-/
+@[simp]
 def matches' : RegularExpression α → Language α
   | 0 => 0
   | 1 => 1
@@ -98,23 +99,18 @@ def matches' : RegularExpression α → Language α
   | P * Q => P.matches' * Q.matches'
   | star P => P.matches'∗
 
-@[simp]
 theorem matches'_zero : (0 : RegularExpression α).matches' = 0 :=
   rfl
 
-@[simp]
 theorem matches'_epsilon : (1 : RegularExpression α).matches' = 1 :=
   rfl
 
-@[simp]
 theorem matches'_char (a : α) : (char a).matches' = {[a]} :=
   rfl
 
-@[simp]
 theorem matches'_add (P Q : RegularExpression α) : (P + Q).matches' = P.matches' + Q.matches' :=
   rfl
 
-@[simp]
 theorem matches'_mul (P Q : RegularExpression α) : (P * Q).matches' = P.matches' * Q.matches' :=
   rfl
 
@@ -125,7 +121,6 @@ theorem matches'_pow (P : RegularExpression α) : ∀ n : ℕ, (P ^ n).matches' 
       (congrFun (congrArg HMul.hMul (matches'_pow P n)) (matches' P))
       (pow_succ _ n).symm
 
-@[simp]
 theorem matches'_star (P : RegularExpression α) : P.star.matches' = P.matches'∗ :=
   rfl
 

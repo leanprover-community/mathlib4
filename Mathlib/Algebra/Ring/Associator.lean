@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bernhard Reinke
 -/
 import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Tactic.Abel
 
 /-!
@@ -39,6 +40,12 @@ theorem associator_cocycle (a b c d : R) :
     + (associator a b c) * d = 0 := by
   simp only [associator, mul_sub, sub_mul]
   abel1
+
+open MulOpposite in
+@[simp]
+lemma associator_op (x y z : Rᵐᵒᵖ) :
+    associator x y z = -op (associator (unop z) (unop y) (unop x)) := by
+  simp only [associator_apply, ← unop_mul, ← unop_sub, op_unop, neg_sub]
 
 end NonUnitalNonAssocRing
 

@@ -68,7 +68,7 @@ variable {X Y : C} (f : X ⟶ Y)
 
 /-- A factorisation of a morphism `f = e ≫ m`, with `m` monic. -/
 structure MonoFactorisation (f : X ⟶ Y) where
-  I : C -- Porting note: violates naming conventions but can't think a better replacement
+  I : C
   m : I ⟶ Y
   [m_mono : Mono m]
   e : X ⟶ I
@@ -102,7 +102,7 @@ theorem ext {F F' : MonoFactorisation f} (hI : F.I = F'.I)
     (hm : F.m = eqToHom hI ≫ F'.m) : F = F' := by
   obtain ⟨_, Fm, _, Ffac⟩ := F; obtain ⟨_, Fm', _, Ffac'⟩ := F'
   cases hI
-  simp? at hm says simp only [eqToHom_refl, Category.id_comp] at hm
+  replace hm : Fm = Fm' := by simpa using hm
   congr
   apply (cancel_mono Fm).1
   rw [Ffac, hm, Ffac']
@@ -221,7 +221,7 @@ variable (f)
 
 /-- Data exhibiting that a morphism `f` has an image. -/
 structure ImageFactorisation (f : X ⟶ Y) where
-  F : MonoFactorisation f -- Porting note: another violation of the naming convention
+  F : MonoFactorisation f
   isImage : IsImage F
 
 attribute [inherit_doc ImageFactorisation] ImageFactorisation.F ImageFactorisation.isImage
@@ -320,6 +320,18 @@ theorem image.isImage_lift (F : MonoFactorisation f) : (Image.isImage f).lift F 
 theorem IsImage.lift_ι {F : MonoFactorisation f} (hF : IsImage F) :
     hF.lift (Image.monoFactorisation f) ≫ image.ι f = F.m :=
   hF.lift_fac _
+
+@[reassoc (attr := simp)]
+theorem image.lift_mk_factorThruImage :
+    image.lift { I := image f, m := ι f, e := factorThruImage f } ≫ image.ι f = image.ι f :=
+  (Image.isImage f).lift_fac _
+
+@[reassoc (attr := simp)]
+theorem image.lift_mk_comp {C : Type u} [Category.{v} C] {X Y Z : C}
+    (f : X ⟶ Y) (g : Y ⟶ Z) [HasImage g] [HasImage (f ≫ g)]
+    (h : Y ⟶ image g) (H : (f ≫ h) ≫ image.ι g = f ≫ g) :
+    image.lift { I := image g, m := ι g, e := (f ≫ h) } ≫ image.ι g = image.ι (f ≫ g) :=
+  image.lift_fac _
 
 -- TODO we could put a category structure on `MonoFactorisation f`,
 -- with the morphisms being `g : I ⟶ I'` commuting with the `m`s
@@ -441,23 +453,11 @@ def image.eqToHom (h : f = f') : image f ⟶ image f' :=
 instance (h : f = f') : IsIso (image.eqToHom h) :=
   ⟨⟨image.eqToHom h.symm,
       ⟨(cancel_mono (image.ι f)).1 (by
-          -- Porting note: added let's for used to be a simp [image.eqToHom]
-          let F : MonoFactorisation f' :=
-            ⟨image f, image.ι f, factorThruImage f, (by cat_disch)⟩
-          dsimp [image.eqToHom]
-          rw [Category.id_comp,Category.assoc,image.lift_fac F]
-          let F' : MonoFactorisation f :=
-            ⟨image f', image.ι f', factorThruImage f', (by cat_disch)⟩
-          rw [image.lift_fac F'] ),
+          subst h
+          simp [image.eqToHom, Category.assoc, Category.id_comp]),
         (cancel_mono (image.ι f')).1 (by
-          -- Porting note: added let's for used to be a simp [image.eqToHom]
-          let F' : MonoFactorisation f :=
-            ⟨image f', image.ι f', factorThruImage f', (by cat_disch)⟩
-          dsimp [image.eqToHom]
-          rw [Category.id_comp,Category.assoc,image.lift_fac F']
-          let F : MonoFactorisation f' :=
-            ⟨image f, image.ι f, factorThruImage f, (by cat_disch)⟩
-          rw [image.lift_fac F])⟩⟩⟩
+          subst h
+          simp [image.eqToHom])⟩⟩⟩
 
 /-- An equation between morphisms gives an isomorphism between the images. -/
 def image.eqToIso (h : f = f') : image f ≅ image f' :=
@@ -469,8 +469,8 @@ the image inclusion maps commute with `image.eqToIso`.
 theorem image.eq_fac [HasEqualizers C] (h : f = f') :
     image.ι f = (image.eqToIso h).hom ≫ image.ι f' := by
   apply image.ext
-  dsimp [asIso,image.eqToIso, image.eqToHom]
-  rw [image.lift_fac] -- Porting note: simp did not fire with this it seems
+  subst h
+  simp [asIso,image.eqToIso, image.eqToHom]
 
 end
 
@@ -488,8 +488,7 @@ def image.preComp [HasImage g] [HasImage (f ≫ g)] : image (f ≫ g) ⟶ image 
 @[reassoc (attr := simp)]
 theorem image.preComp_ι [HasImage g] [HasImage (f ≫ g)] :
     image.preComp f g ≫ image.ι g = image.ι (f ≫ g) := by
-      dsimp [image.preComp]
-      rw [image.lift_fac] -- Porting note: also here, see image.eq_fac
+      simp [image.preComp]
 
 @[reassoc (attr := simp)]
 theorem image.factorThruImage_preComp [HasImage g] [HasImage (f ≫ g)] :
@@ -512,9 +511,8 @@ theorem image.preComp_comp {W : C} (h : Z ⟶ W) [HasImage (g ≫ h)] [HasImage 
     image.preComp f (g ≫ h) ≫ image.preComp g h =
       image.eqToHom (Category.assoc f g h).symm ≫ image.preComp (f ≫ g) h := by
   apply (cancel_mono (image.ι h)).1
-  dsimp [image.preComp, image.eqToHom]
-  repeat (rw [Category.assoc,image.lift_fac])
-  rw [image.lift_fac,image.lift_fac]
+  simp only [preComp, Category.assoc, fac, lift_mk_comp, eqToHom]
+  rw [image.lift_fac]
 
 variable [HasEqualizers C]
 
@@ -673,8 +671,6 @@ section
 
 attribute [local ext] ImageMap
 
-/- Porting note: ImageMap.mk.injEq has LHS simplify to True due to the next instance
-We make a replacement -/
 theorem ImageMap.map_uniq_aux {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] {sq : f ⟶ g}
     (map : image f.hom ⟶ image g.hom)
     (map_ι : map ≫ image.ι g.hom = image.ι f.hom ≫ sq.right := by cat_disch)
@@ -683,11 +679,11 @@ theorem ImageMap.map_uniq_aux {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] 
   have : map ≫ image.ι g.hom = map' ≫ image.ι g.hom := by rw [map_ι,map_ι']
   apply (cancel_mono (image.ι g.hom)).1 this
 
--- Porting note: added to get variant on ImageMap.mk.injEq below
 theorem ImageMap.map_uniq {f g : Arrow C} [HasImage f.hom] [HasImage g.hom]
     {sq : f ⟶ g} (F G : ImageMap sq) : F.map = G.map := by
   apply ImageMap.map_uniq_aux _ F.map_ι _ G.map_ι
 
+/-- `@[simp]`-normal form of `ImageMap.mk.injEq`. -/
 @[simp]
 theorem ImageMap.mk.injEq' {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] {sq : f ⟶ g}
     (map : image f.hom ⟶ image g.hom)

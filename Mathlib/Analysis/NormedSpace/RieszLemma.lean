@@ -3,7 +3,7 @@ Copyright (c) 2019 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo, Yury Kudryashov
 -/
-import Mathlib.Analysis.NormedSpace.Real
+import Mathlib.Analysis.Normed.Module.RCLike.Real
 import Mathlib.Analysis.Seminorm
 import Mathlib.Topology.MetricSpace.HausdorffDistance
 
@@ -74,7 +74,7 @@ strictly larger than the norm of an element of norm `> 1`. For a version without
 `riesz_lemma`.
 
 Since we are considering a general nontrivially normed field, there may be a gap in possible norms
-(for instance no element of norm in `(1,2)`). Hence, we can not allow `R` arbitrarily close to `1`,
+(for instance no element of norm in `(1,2)`). Hence, we cannot allow `R` arbitrarily close to `1`,
 and require `R > ‖c‖` for some `c : 𝕜` with norm `> 1`.
 -/
 theorem riesz_lemma_of_norm_lt {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖c‖ < R) {F : Subspace 𝕜 E}
@@ -93,7 +93,7 @@ theorem riesz_lemma_of_norm_lt {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖
   set y' := d⁻¹ • y
   have yy' : y = d • y' := by simp [y', smul_smul, mul_inv_cancel₀ d0]
   calc
-    1 = ‖c‖ / R * (R / ‖c‖) := by field_simp [Rpos.ne', (zero_lt_one.trans hc).ne']
+    1 = ‖c‖ / R * (R / ‖c‖) := by field_simp
     _ ≤ ‖c‖ / R * ‖d • x‖ := by gcongr
     _ = ‖d‖ * (‖c‖ / R * ‖x‖) := by
       simp only [norm_smul]

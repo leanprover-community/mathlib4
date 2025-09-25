@@ -89,7 +89,6 @@ we have `IsAdjoinRootMonic.powerBasis`.
 Bundling `Monic` into this structure is very useful when working with explicit `f`s such as
 `X^2 - C a * X - C b` since it saves you carrying around the proofs of monicity.
 -/
--- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
 structure IsAdjoinRootMonic {R : Type u} (S : Type v) [CommSemiring R] [Semiring S] [Algebra R S]
     (f : R[X]) extends IsAdjoinRoot S f where
   monic : Monic f
@@ -107,8 +106,11 @@ variable (h : IsAdjoinRoot S f)
 /-- `(h : IsAdjoinRoot S f).root` is the root of `f` that can be adjoined to generate `S`. -/
 def root : S := h.map X
 
+set_option linter.unusedSectionVars false in
 include h in
-theorem subsingleton [Subsingleton R] : Subsingleton S := h.map_surjective.subsingleton
+@[deprecated "use Algebra.subsingleton" (since := "2025-09-10")]
+theorem subsingleton [Subsingleton R] : Subsingleton S := by
+  have := h; exact Algebra.subsingleton R S
 
 theorem algebraMap_apply (x : R) :
     algebraMap R S x = h.map (Polynomial.C x) := AlgHom.algebraMap_eq_apply h.map rfl
@@ -134,6 +136,22 @@ theorem aeval_root_self : aeval h.root f = 0 := by simp
 
 @[deprecated (since := "2025-07-23")] alias aeval_root := aeval_root_self
 
+theorem adjoin_root_eq_top : Algebra.adjoin R {h.root} = ⊤ := by
+  rw [Algebra.adjoin_singleton_eq_range_aeval, AlgHom.range_eq_top, aeval_root_eq_map]
+  exact h.map_surjective
+
+/-- Extensionality of the `IsAdjoinRoot` structure itself. See `IsAdjoinRootMonic.ext_elem`
+for extensionality of the ring elements. -/
+theorem ext_map (h' : IsAdjoinRoot S f) (eq : ∀ x, h.map x = h'.map x) : h = h' := by
+  cases h; cases h'; congr
+  exact AlgHom.ext eq
+
+/-- Extensionality of the `IsAdjoinRoot` structure itself. See `IsAdjoinRootMonic.ext_elem`
+for extensionality of the ring elements. -/
+@[ext]
+theorem ext (h' : IsAdjoinRoot S f) (eq : h.root = h'.root) : h = h' :=
+  h.ext_map h' (fun x => by rw [← h.aeval_root_eq_map, ← h'.aeval_root_eq_map, eq])
+
 /-- Choose an arbitrary representative so that `h.map (h.repr x) = x`.
 
 If `f` is monic, use `IsAdjoinRootMonic.modByMonicHom` for a unique choice of representative.
@@ -150,17 +168,118 @@ theorem repr_zero_mem_span : h.repr 0 ∈ Ideal.span ({f} : Set R[X]) := by simp
 theorem repr_add_sub_repr_add_repr_mem_span (x y : S) :
     h.repr (x + y) - (h.repr x + h.repr y) ∈ Ideal.span ({f} : Set R[X]) := by simp [← h.ker_map]
 
-/-- Extensionality of the `IsAdjoinRoot` structure itself. See `IsAdjoinRootMonic.ext_elem`
-for extensionality of the ring elements. -/
-theorem ext_map (h' : IsAdjoinRoot S f) (eq : ∀ x, h.map x = h'.map x) : h = h' := by
-  cases h; cases h'; congr
-  exact AlgHom.ext eq
+section Equiv
 
-/-- Extensionality of the `IsAdjoinRoot` structure itself. See `IsAdjoinRootMonic.ext_elem`
-for extensionality of the ring elements. -/
-@[ext]
-theorem ext (h' : IsAdjoinRoot S f) (eq : h.root = h'.root) : h = h' :=
-  h.ext_map h' (fun x => by rw [← h.aeval_root_eq_map, ← h'.aeval_root_eq_map, eq])
+variable {T : Type*} [Ring T] [Algebra R T]
+
+/-- Algebra isomorphism with `R[X]/(f)`. -/
+def adjoinRootAlgEquiv : AdjoinRoot f ≃ₐ[R] S :=
+  (Ideal.quotientEquivAlgOfEq R h.ker_map.symm).trans <|
+    Ideal.quotientKerAlgEquivOfSurjective h.map_surjective
+
+@[simp]
+theorem adjoinRootAlgEquiv_apply_mk (g : R[X]) :
+    h.adjoinRootAlgEquiv (AdjoinRoot.mk f g) = h.map g := rfl
+
+theorem adjoinRootAlgEquiv_apply_eq_map (a : AdjoinRoot f) :
+    h.adjoinRootAlgEquiv a = h.map (AdjoinRoot.mk_surjective a).choose := by
+  rw (occs := [1]) [← (AdjoinRoot.mk_surjective a).choose_spec, adjoinRootAlgEquiv_apply_mk]
+
+theorem adjoinRootAlgEquiv_symm_apply_eq_mk (a : S) :
+    h.adjoinRootAlgEquiv.symm a = AdjoinRoot.mk f (h.repr a) := by
+  rw (occs := [1]) [AlgEquiv.symm_apply_eq, ← h.map_repr a, adjoinRootAlgEquiv_apply_mk]
+
+@[simp]
+theorem adjoinRootAlgEquiv_apply_root : h.adjoinRootAlgEquiv (AdjoinRoot.root f) = h.root := rfl
+
+@[simp]
+theorem adjoinRootAlgEquiv_symm_apply_root : h.adjoinRootAlgEquiv.symm h.root = AdjoinRoot.root f :=
+  (AlgEquiv.symm_apply_eq h.adjoinRootAlgEquiv).mpr rfl
+
+variable (h' : IsAdjoinRoot T f)
+
+/-- Adjoining a root gives a unique algebra up to isomorphism.
+
+This is the converse of `IsAdjoinRoot.ofAlgEquiv`: this turns an `IsAdjoinRoot` into an
+`AlgEquiv`, and `IsAdjoinRoot.ofAlgEquiv` turns an `AlgEquiv` into an `IsAdjoinRoot`.
+-/
+def algEquiv : S ≃ₐ[R] T := h.adjoinRootAlgEquiv.symm.trans h'.adjoinRootAlgEquiv
+
+@[deprecated (since := "2025-08-13")] noncomputable alias aequiv := algEquiv
+
+theorem algEquiv_def : h.algEquiv h' = h.adjoinRootAlgEquiv.symm.trans h'.adjoinRootAlgEquiv := rfl
+
+@[simp]
+theorem algEquiv_root : h.algEquiv h' h.root = h'.root := by simp [algEquiv_def]
+
+@[deprecated (since := "2025-08-13")] alias aequiv_root := algEquiv_root
+
+@[simp]
+theorem algEquiv_map : AlgHom.comp (h.algEquiv h') h.map = h'.map := by
+  ext; simp
+
+@[deprecated (since := "2025-08-13")] alias aequiv_map := algEquiv_map
+
+@[simp]
+theorem algEquiv_apply_map (z : R[X]) : h.algEquiv h' (h.map z) = h'.map z := by
+  rw [← h.algEquiv_map h']; simp [-algEquiv_map]
+
+@[simp] theorem algEquiv_self : h.algEquiv h = AlgEquiv.refl := by ext; simp [algEquiv_def]
+
+@[deprecated (since := "2025-08-13")] alias aequiv_self := algEquiv_self
+
+@[simp] theorem algEquiv_symm : (h.algEquiv h').symm = h'.algEquiv h := rfl
+
+@[deprecated (since := "2025-08-13")] alias aequiv_symm := algEquiv_symm
+
+@[simp]
+theorem algEquiv_algEquiv {U : Type*} [Ring U] [Algebra R U] (h'' : IsAdjoinRoot U f) (x) :
+    (h'.algEquiv h'') (h.algEquiv h' x) = h.algEquiv h'' x := by simp [algEquiv_def]
+
+@[deprecated (since := "2025-08-13")] alias aequiv_aequiv := algEquiv_algEquiv
+
+@[simp]
+theorem algEquiv_trans {U : Type*} [Ring U] [Algebra R U] (h'' : IsAdjoinRoot U f) :
+    (h.algEquiv h').trans (h'.algEquiv h'') = h.algEquiv h'' := by ext; simp
+
+@[deprecated (since := "2025-08-13")] alias aequiv_trans := algEquiv_trans
+
+/-- Transfer `IsAdjoinRoot` across an algebra isomorphism.
+
+This is the converse of `IsAdjoinRoot.algEquiv`: this turns an `AlgEquiv` into an `IsAdjoinRoot`,
+and `IsAdjoinRoot.algEquiv` turns an `IsAdjoinRoot` into an `AlgEquiv`.
+-/
+@[simps! map_apply]
+def ofAlgEquiv (e : S ≃ₐ[R] T) : IsAdjoinRoot T f where
+  map := (e : S →ₐ[R] T).comp h.map
+  map_surjective := e.surjective.comp h.map_surjective
+  ker_map := by ext; simp [Ideal.mem_span_singleton]
+
+@[deprecated (since := "2025-08-13")] alias ofEquiv := ofAlgEquiv
+
+@[simp] theorem ofAlgEquiv_root (e : S ≃ₐ[R] T) : (h.ofAlgEquiv e).root = e h.root := rfl
+
+@[deprecated (since := "2025-08-13")] alias ofEquiv_root := ofAlgEquiv_root
+
+@[simp]
+theorem algEquiv_ofAlgEquiv {U : Type*} [Ring U] [Algebra R U] (e : T ≃ₐ[R] U) :
+    h.algEquiv (h'.ofAlgEquiv e) = (h.algEquiv h').trans e := by
+  ext a
+  simp [algEquiv_def, AlgEquiv.trans_apply, adjoinRootAlgEquiv_apply_eq_map, ofAlgEquiv_map_apply]
+
+@[deprecated (since := "2025-08-13")] alias aequiv_ofEquiv := algEquiv_ofAlgEquiv
+
+@[simp]
+theorem ofAlgEquiv_algEquiv {U : Type*} [Ring U] [Algebra R U] (h'' : IsAdjoinRoot U f)
+    (e : S ≃ₐ[R] T) : (h.ofAlgEquiv e).algEquiv h'' = e.symm.trans (h.algEquiv h'') := by
+  ext a
+  simp_rw [algEquiv_def, AlgEquiv.trans_apply, EmbeddingLike.apply_eq_iff_eq,
+           AlgEquiv.symm_apply_eq, adjoinRootAlgEquiv_apply_eq_map, ofAlgEquiv_map_apply,
+           ← adjoinRootAlgEquiv_apply_eq_map, AlgEquiv.apply_symm_apply]
+
+@[deprecated (since := "2025-08-13")] alias ofEquiv_aequiv := ofAlgEquiv_algEquiv
+
+end Equiv
 
 section lift
 
@@ -242,6 +361,8 @@ theorem eq_liftHom (g : S →ₐ[R] T) (hroot : g h.root = x) : g = h.liftHom x 
 
 end lift
 
+theorem isAlgebraic_root (hf : f ≠ 0) : IsAlgebraic R h.root := ⟨f, by simp [hf]⟩
+
 end IsAdjoinRoot
 
 namespace AdjoinRoot
@@ -282,6 +403,10 @@ theorem isAdjoinRootMonic_root_eq_root (hf : Monic f) :
     (AdjoinRoot.isAdjoinRootMonic f hf).root = AdjoinRoot.root f := by simp
 
 end AdjoinRoot
+
+/-- If `S` is `R`-isomorphic to `R[X]/(f)`, then `S` is given by adjoining a root of `f`. -/
+abbrev IsAdjoinRoot.ofAdjoinRootEquiv (e : AdjoinRoot f ≃ₐ[R] S) : IsAdjoinRoot S f :=
+  ofAlgEquiv (AdjoinRoot.isAdjoinRoot f) e
 
 namespace IsAdjoinRootMonic
 
@@ -335,8 +460,7 @@ def basis : Basis (Fin (natDegree f)) R S :=
     { toFun x := (h.modByMonicHom x).toFinsupp.comapDomain _ Fin.val_injective.injOn
       invFun g := h.map (ofFinsupp (g.mapDomain Fin.val))
       left_inv x := by
-        cases subsingleton_or_nontrivial R
-        · subsingleton [h.subsingleton]
+        nontriviality R using Algebra.subsingleton R S
         simp only
         rw [Finsupp.mapDomain_comapDomain, Polynomial.eta, h.map_modByMonicHom x]
         · exact Fin.val_injective
@@ -366,18 +490,12 @@ def basis : Basis (Fin (natDegree f)) R S :=
 
 @[simp]
 theorem basis_apply (i) : h.basis i = h.root ^ (i : ℕ) :=
-  Basis.apply_eq_iff.mpr <|
-    show (h.modByMonicHom (h.toIsAdjoinRoot.root ^ (i : ℕ))).toFinsupp.comapDomain _
-          Fin.val_injective.injOn = Finsupp.single _ _ by
-      ext j
-      rw [Finsupp.comapDomain_apply, modByMonicHom_root_pow]
-      · rw [X_pow_eq_monomial, toFinsupp_monomial, Finsupp.single_apply_left Fin.val_injective]
-      · exact i.is_lt
+  Basis.apply_eq_iff.mpr <| by simp [IsAdjoinRootMonic.basis]
 
 include h in
 theorem deg_pos [Nontrivial S] : 0 < natDegree f := by
   rcases h.basis.index_nonempty with ⟨⟨i, hi⟩⟩
-  exact (Nat.zero_le _).trans_lt hi
+  exact Nat.zero_lt_of_lt hi
 
 include h in
 theorem deg_ne_zero [Nontrivial S] : natDegree f ≠ 0 := h.deg_pos.ne'
@@ -393,11 +511,24 @@ def powerBasis : PowerBasis R S where
 @[simp]
 theorem basis_repr (x : S) (i : Fin (natDegree f)) :
     h.basis.repr x i = (h.modByMonicHom x).coeff (i : ℕ) := by
-  change (h.modByMonicHom x).toFinsupp.comapDomain _ Fin.val_injective.injOn i = _
-  rw [Finsupp.comapDomain_apply, Polynomial.toFinsupp_apply]
+  simp [IsAdjoinRootMonic.basis, toFinsupp_apply]
 
 theorem basis_one (hdeg : 1 < natDegree f) : h.basis ⟨1, hdeg⟩ = h.root := by
   rw [h.basis_apply, Fin.val_mk, pow_one]
+
+include h in
+theorem finite : Module.Finite R S := (powerBasis h).finite
+
+include h in
+theorem finrank [StrongRankCondition R] : Module.finrank R S = f.natDegree :=
+  (powerBasis h).finrank
+
+/--
+See `finrank_quotient_span_eq_natDegree` for a more general version over a field.
+-/
+theorem _root_.finrank_quotient_span_eq_natDegree' [StrongRankCondition R] (hf : f.Monic) :
+    Module.finrank R (R[X] ⧸ Ideal.span {f}) = f.natDegree :=
+  (AdjoinRoot.isAdjoinRootMonic _ hf).finrank
 
 /-- `IsAdjoinRootMonic.liftPolyₗ` lifts a linear map on polynomials to a linear map on `S`. -/
 @[simps!]
@@ -414,16 +545,13 @@ def coeff : S →ₗ[R] ℕ → R :=
 
 theorem coeff_apply_lt (z : S) (i : ℕ) (hi : i < natDegree f) :
     h.coeff z i = h.basis.repr z ⟨i, hi⟩ := by
-  simp only [coeff,
-    liftPolyₗ_apply, LinearMap.coe_mk, h.basis_repr]
-  rfl
+  simp [coeff]
 
 theorem coeff_apply_coe (z : S) (i : Fin (natDegree f)) : h.coeff z i = h.basis.repr z i :=
   h.coeff_apply_lt z i i.prop
 
 theorem coeff_apply_le (z : S) (i : ℕ) (hi : natDegree f ≤ i) : h.coeff z i = 0 := by
-  simp only [coeff,
-    liftPolyₗ_apply, LinearMap.coe_mk]
+  simp only [coeff, liftPolyₗ_apply, LinearMap.coe_mk, AddHom.coe_mk]
   nontriviality R
   exact
     Polynomial.coeff_eq_zero_of_degree_lt
@@ -500,113 +628,49 @@ theorem lift_self : h.lift (algebraMap R S) h.root h.aeval_root_self = RingHom.i
 
 end lift
 
+section mkOfAdjoinEqTop
+
+variable [IsDomain R] [IsDomain S] [NoZeroSMulDivisors R S] [IsIntegrallyClosed R]
+    {α : S} {hα : IsIntegral R α} {hα₂ : Algebra.adjoin R {α} = ⊤}
+
+variable (hα hα₂) in
+/-- If `α` generates `S` as an algebra, then `S` is given by adjoining a root of `minpoly R α`. -/
+def mkOfAdjoinEqTop : IsAdjoinRoot S (minpoly R α) where
+  map := aeval α
+  map_surjective := by
+    rw [← Set.range_eq_univ, ← AlgHom.coe_range, ← Algebra.adjoin_singleton_eq_range_aeval,
+      hα₂, Algebra.coe_top]
+  ker_map := by
+    ext
+    simpa [Ideal.mem_span_singleton] using minpoly.isIntegrallyClosed_dvd_iff hα _
+
+variable (hα hα₂) in
+/-- If `α` generates `S` as an algebra, then `S` is given by adjoining a root of `minpoly R α`. -/
+abbrev _root_.IsAdjoinRootMonic.mkOfAdjoinEqTop : IsAdjoinRootMonic S (minpoly R α) where
+  __ := IsAdjoinRoot.mkOfAdjoinEqTop hα hα₂
+  monic := minpoly.monic hα
+
+@[simp]
+theorem mkOfAdjoinEqTop_root : (IsAdjoinRoot.mkOfAdjoinEqTop hα hα₂).root = α := by
+  simp [IsAdjoinRoot.mkOfAdjoinEqTop, IsAdjoinRoot.root]
+
+end mkOfAdjoinEqTop
+
 section Equiv
 
-variable {T : Type*} [CommRing T] [Algebra R T]
-
-/-- Adjoining a root gives a unique ring up to algebra isomorphism.
-
-This is the converse of `IsAdjoinRoot.ofAlgEquiv`: this turns an `IsAdjoinRoot` into an
-`AlgEquiv`, and `IsAdjoinRoot.ofAlgEquiv` turns an `AlgEquiv` into an `IsAdjoinRoot`.
--/
-def algEquiv (h' : IsAdjoinRoot T f) : S ≃ₐ[R] T :=
-  { h.liftHom h'.root h'.aeval_root_self with
-    toFun := h.liftHom h'.root h'.aeval_root_self
-    invFun := h'.liftHom h.root h.aeval_root_self
-    left_inv x := by rw [← h.map_repr x]; simp [- map_repr]
-    right_inv x := by rw [← h'.map_repr x]; simp [- map_repr] }
-
-@[deprecated (since := "2025-08-13")] noncomputable alias aequiv := algEquiv
+variable {T : Type*} [CommRing T] [Algebra R T] (h' : IsAdjoinRoot T f) {U : Type*} [CommRing U]
 
 @[simp]
-theorem algEquiv_map (h' : IsAdjoinRoot T f) (z : R[X]) : h.algEquiv h' (h.map z) = h'.map z := by
-  rw [algEquiv, AlgEquiv.coe_mk, Equiv.coe_fn_mk, liftHom_map, aeval_root_eq_map]
-
-@[deprecated (since := "2025-08-13")] alias aequiv_map := algEquiv_map
-
-@[simp]
-theorem algEquiv_root (h' : IsAdjoinRoot T f) : h.algEquiv h' h.root = h'.root := by
-  rw [algEquiv, AlgEquiv.coe_mk, Equiv.coe_fn_mk, liftHom_root]
-
-@[deprecated (since := "2025-08-13")] alias aequiv_root := algEquiv_root
-
-@[simp]
-theorem algEquiv_self : h.algEquiv h = AlgEquiv.refl := by
-  ext a; exact h.lift_self_apply a
-
-@[deprecated (since := "2025-08-13")] alias aequiv_self := algEquiv_self
-
-@[simp]
-theorem algEquiv_symm (h' : IsAdjoinRoot T f) : (h.algEquiv h').symm = h'.algEquiv h := rfl
-
-@[deprecated (since := "2025-08-13")] alias aequiv_symm := algEquiv_symm
-
-@[simp]
-theorem lift_algEquiv {U : Type*} [CommRing U] (h' : IsAdjoinRoot T f) (i : R →+* U) (x hx z) :
-    h'.lift i x hx (h.algEquiv h' z) = h.lift i x hx z := by
-  rw [← h.map_repr z, algEquiv_map, lift_map, lift_map]
+theorem lift_algEquiv (i : R →+* U) (x hx z) :
+    h'.lift i x hx (h.algEquiv h' z) = h.lift i x hx z := by rw [← h.map_repr z]; simp [- map_repr]
 
 @[deprecated (since := "2025-08-13")] alias lift_aequiv := lift_algEquiv
 
 @[simp]
-theorem liftHom_algEquiv {U : Type*} [CommRing U] [Algebra R U] (h' : IsAdjoinRoot T f)
-    (x : U) (hx z) : h'.liftHom x hx (h.algEquiv h' z) = h.liftHom x hx z :=
-  h.lift_algEquiv h' _ _ hx _
+theorem liftHom_algEquiv [Algebra R U] (x : U) (hx z) :
+    h'.liftHom x hx (h.algEquiv h' z) = h.liftHom x hx z := h.lift_algEquiv h' _ _ hx _
 
 @[deprecated (since := "2025-08-13")] alias liftHom_aequiv := liftHom_algEquiv
-
-@[simp]
-theorem algEquiv_algEquiv {U : Type*} [CommRing U] [Algebra R U]
-    (h' : IsAdjoinRoot T f) (h'' : IsAdjoinRoot U f) (x) :
-    (h'.algEquiv h'') (h.algEquiv h' x) = h.algEquiv h'' x :=
-  h.liftHom_algEquiv _ _ h''.aeval_root_self _
-
-@[deprecated (since := "2025-08-13")] alias aequiv_aequiv := algEquiv_algEquiv
-
-@[simp]
-theorem algEquiv_trans {U : Type*} [CommRing U] [Algebra R U]
-    (h' : IsAdjoinRoot T f) (h'' : IsAdjoinRoot U f) :
-    (h.algEquiv h').trans (h'.algEquiv h'') = h.algEquiv h'' := by
-  ext z
-  exact h.algEquiv_algEquiv h' h'' z
-
-@[deprecated (since := "2025-08-13")] alias aequiv_trans := algEquiv_trans
-
-/-- Transfer `IsAdjoinRoot` across an algebra isomorphism.
-
-This is the converse of `IsAdjoinRoot.algEquiv`: this turns an `AlgEquiv` into an `IsAdjoinRoot`,
-and `IsAdjoinRoot.algEquiv` turns an `IsAdjoinRoot` into an `AlgEquiv`.
--/
-@[simps! map_apply]
-def ofAlgEquiv (e : S ≃ₐ[R] T) : IsAdjoinRoot T f where
-  map := (e : S →ₐ[R] T).comp h.map
-  map_surjective := e.surjective.comp h.map_surjective
-  ker_map := by ext; simp [Ideal.mem_span_singleton]
-
-@[deprecated (since := "2025-08-13")] alias ofEquiv := ofAlgEquiv
-
-@[simp]
-theorem ofAlgEquiv_root (e : S ≃ₐ[R] T) : (h.ofAlgEquiv e).root = e h.root := rfl
-
-@[deprecated (since := "2025-08-13")] alias ofEquiv_root := ofAlgEquiv_root
-
-@[simp]
-theorem algEquiv_ofAlgEquiv {U : Type*} [CommRing U] [Algebra R U]
-    (h' : IsAdjoinRoot T f) (e : T ≃ₐ[R] U) :
-    h.algEquiv (h'.ofAlgEquiv e) = (h.algEquiv h').trans e := by
-  ext a; rw [← h.map_repr a, algEquiv_map, AlgEquiv.trans_apply, algEquiv_map, ofAlgEquiv_map_apply]
-
-@[deprecated (since := "2025-08-13")] alias aequiv_ofEquiv := algEquiv_ofAlgEquiv
-
-@[simp]
-theorem ofAlgEquiv_algEquiv {U : Type*} [CommRing U] [Algebra R U]
-    (h' : IsAdjoinRoot U f) (e : S ≃ₐ[R] T) :
-    (h.ofAlgEquiv e).algEquiv h' = e.symm.trans (h.algEquiv h') := by
-  ext a
-  rw [← (h.ofAlgEquiv e).map_repr a, algEquiv_map, AlgEquiv.trans_apply, ofAlgEquiv_map_apply,
-    e.symm_apply_apply, algEquiv_map]
-
-@[deprecated (since := "2025-08-13")] alias ofEquiv_aequiv := ofAlgEquiv_algEquiv
 
 end Equiv
 
@@ -636,15 +700,41 @@ open AdjoinRoot IsAdjoinRoot minpoly PowerBasis IsAdjoinRootMonic Algebra
 theorem Algebra.adjoin.powerBasis'_minpoly_gen [IsDomain R] [IsDomain S] [NoZeroSMulDivisors R S]
     [IsIntegrallyClosed R] {x : S} (hx' : IsIntegral R x) :
     minpoly R x = minpoly R (Algebra.adjoin.powerBasis' hx').gen := by
-  haveI := isDomain_of_prime (prime_of_isIntegrallyClosed hx')
-  haveI :=
+  have := isDomain_of_prime (prime_of_isIntegrallyClosed hx')
+  have :=
     noZeroSMulDivisors_of_prime_of_degree_ne_zero (prime_of_isIntegrallyClosed hx')
-      (ne_of_lt (degree_pos hx')).symm
+      (degree_pos hx').ne'
   rw [← minpolyGen_eq, adjoin.powerBasis', minpolyGen_map, minpolyGen_eq,
     AdjoinRoot.powerBasis'_gen, ← isAdjoinRoot_root_eq_root _,
-    ← isAdjoinRootMonic_toAdjoinRoot,
+    ← isAdjoinRootMonic_toAdjoinRoot _ (monic hx'),
     minpoly_eq (AdjoinRoot.isAdjoinRootMonic _ (monic hx')) (irreducible hx')]
 
 end Algebra
 
 end CommRing
+
+section Field
+
+open scoped IntermediateField
+
+variable {F E : Type*} [Field F] [Field E] [Algebra F E] {f : F[X]}
+
+namespace IsAdjoinRoot
+
+theorem primitive_element_root (h : IsAdjoinRoot E f) : F⟮h.root⟯ = ⊤ :=
+  IntermediateField.adjoin_eq_top_of_algebra F {h.root} (adjoin_root_eq_top h)
+
+/-- If `α` is primitive in `E/f`, then `E` is given by adjoining a root of `minpoly F α`. -/
+abbrev mkOfPrimitiveElement {α : E} (hα : IsIntegral F α) (hα₂ : F⟮α⟯ = ⊤) :
+    IsAdjoinRoot E (minpoly F α) :=
+  mkOfAdjoinEqTop hα (Algebra.adjoin_eq_top_of_primitive_element hα hα₂)
+
+/-- If `α` is primitive in `E/f`, then `E` is given by adjoining a root of `minpoly F α`. -/
+abbrev _root_.IsAdjoinRootMonic.mkOfPrimitiveElement
+    {α : E} (hα : IsIntegral F α) (hα₂ : F⟮α⟯ = ⊤) : IsAdjoinRootMonic E (minpoly F α) where
+  __ := IsAdjoinRoot.mkOfPrimitiveElement hα hα₂
+  monic := minpoly.monic hα
+
+end IsAdjoinRoot
+
+end Field

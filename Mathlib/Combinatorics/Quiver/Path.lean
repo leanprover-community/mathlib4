@@ -78,6 +78,9 @@ theorem eq_nil_of_length_zero (p : Path a a) (hzero : p.length = 0) : p = nil :=
   · rfl
   · simp at hzero
 
+@[simp]
+lemma length_toPath {a b : V} (e : a ⟶ b) : e.toPath.length = 1 := rfl
+
 /-- Composition of paths. -/
 def comp {a b : V} : ∀ {c}, Path a b → Path b c → Path a c
   | _, p, nil => p
@@ -171,7 +174,7 @@ lemma length_ne_zero_iff_eq_comp (p : Path a b) :
   refine ⟨fun h ↦ ?_, ?_⟩
   · have h_len : p.length = (p.length - 1) + 1 := by omega
     obtain ⟨c, e, p', hp', rfl⟩ := Path.eq_toPath_comp_of_length_eq_succ p h_len
-    exact ⟨c, e, p', rfl, by omega⟩
+    exact ⟨c, e, p', rfl, by cutsat⟩
   · rintro ⟨c, p', e, rfl, h⟩
     simp [h]
 
@@ -180,8 +183,8 @@ lemma length_ne_zero_iff_eq_cons :
     p.length ≠ 0 ↔ ∃ (c : V) (p' : Path a c) (e : c ⟶ b), p = p'.cons e := by
   refine ⟨fun h ↦ ?_, ?_⟩
   · cases p with
-  | nil => simp at h
-  | cons p' e => exact ⟨_, p', e, rfl⟩
+    | nil => simp at h
+    | cons p' e => exact ⟨_, p', e, rfl⟩
   · rintro ⟨c, p', e, rfl⟩
     simp
 
@@ -204,10 +207,19 @@ theorem toList_comp (p : Path a b) : ∀ {c} (q : Path b c), (p.comp q).toList =
   | _, nil => by simp
   | _, @cons _ _ _ d _ q _ => by simp [toList_comp]
 
-theorem toList_chain_nonempty :
-    ∀ {b} (p : Path a b), p.toList.Chain (fun x y => Nonempty (y ⟶ x)) b
-  | _, nil => List.Chain.nil
-  | _, cons p f => p.toList_chain_nonempty.cons ⟨f⟩
+theorem isChain_toList_nonempty :
+    ∀ {b} (p : Path a b), (p.toList).IsChain (fun x y => Nonempty (y ⟶ x))
+  | _, nil => .nil
+  | _, cons nil _ => .singleton _
+  | _, cons (cons p g) _ => List.IsChain.cons_cons ⟨g⟩ (isChain_toList_nonempty (cons p g))
+
+theorem isChain_cons_toList_nonempty :
+    ∀ {b} (p : Path a b), (b :: p.toList).IsChain (fun x y => Nonempty (y ⟶ x))
+  | _, nil => .singleton _
+  | _, cons p f => p.isChain_cons_toList_nonempty.cons_cons ⟨f⟩
+
+@[deprecated (since := "2025-09-19")]
+alias toList_chain_nonempty := isChain_cons_toList_nonempty
 
 variable [∀ a b : V, Subsingleton (a ⟶ b)]
 
@@ -259,8 +271,8 @@ def decidableEqBddPathsOfDecidableEq (n : ℕ) (h₁ : DecidableEq V)
       match v', v'', h₁ v' v'' with
       | _, _, isTrue (Eq.refl _) =>
         if h : α = β then
-          have hp' : p'.length ≤ n := by simp [Quiver.Path.length] at hp; omega
-          have hq' : q'.length ≤ n := by simp [Quiver.Path.length] at hq; omega
+          have hp' : p'.length ≤ n := by simp [Quiver.Path.length] at hp; cutsat
+          have hq' : q'.length ≤ n := by simp [Quiver.Path.length] at hq; cutsat
           if h'' : (⟨p', hp'⟩ : BoundedPaths _ _ n) = ⟨q', hq'⟩ then
             isTrue <| by
               apply Subtype.ext
