@@ -60,7 +60,6 @@ lemma sub_of_isSFiniteKernel [IsSFiniteKernel κ] [IsSFiniteKernel η]
   rw [sub_def, dif_pos]
   exact ⟨inferInstance, inferInstance⟩
 
--- todo name
 lemma sub_apply_eq_rnDeriv_add_singularPart [∀ η : Kernel α β, Decidable (IsSFiniteKernel η)]
     [IsSFiniteKernel κ] [IsSFiniteKernel η] (a : α) :
     (κ - η) a = η.withDensity (fun a ↦ κ.rnDeriv η a - 1) a + κ.singularPart η a := by
@@ -79,14 +78,10 @@ lemma sub_apply [∀ η : Kernel α β, Decidable (IsSFiniteKernel η)] [IsFinit
   filter_upwards [Kernel.rnDeriv_eq_rnDeriv_measure (κ := κ) (η := η) (a := a)] with b hb
   simp [← hb]
 
-omit [CountableOrCountablyGenerated α β] in
-lemma le_iff (κ η : Kernel α β) : κ ≤ η ↔ ∀ a, κ a ≤ η a := Iff.rfl
-
 lemma sub_le_self [∀ η : Kernel α β, Decidable (IsSFiniteKernel η)] [IsFiniteKernel κ]
     [IsFiniteKernel η] :
     κ - η ≤ κ := by
-  rw [le_iff]
-  intro a
+  refine le_iff.mpr fun a ↦ ?_
   rw [sub_apply]
   exact Measure.sub_le
 
@@ -120,12 +115,6 @@ lemma sub_apply_eq_zero_iff_le [∀ η : Kernel α β, Decidable (IsSFiniteKerne
 lemma sub_eq_zero_iff_le [∀ η : Kernel α β, Decidable (IsSFiniteKernel η)]
     [IsFiniteKernel κ] [IsFiniteKernel η] : κ - η = 0 ↔ κ ≤ η := by
   simp [Kernel.ext_iff, le_iff, sub_apply_eq_zero_iff_le]
-
-lemma measurableSet_eq_zero (κ : Kernel α β) [IsFiniteKernel κ] :
-    MeasurableSet {a | κ a = 0} := by
-  have h_sing : {a | κ a = 0} = {a | κ a ⟂ₘ κ a} := by ext; simp
-  rw [h_sing]
-  exact measurableSet_mutuallySingular κ κ
 
 lemma measurableSet_le [∀ η : Kernel α β, Decidable (IsSFiniteKernel η)]
     (κ η : Kernel α β) [IsFiniteKernel κ] [IsFiniteKernel η] :
