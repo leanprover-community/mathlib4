@@ -22,8 +22,9 @@ of quadratic forms. Most results require `𝕜 = ℝ` or `ℂ`.
 
 ## Main results
 
-* `Matrix.posDef_iff_eq_conjTranspose_mul_self`: a matrix `M : Matrix n n 𝕜` is positive
-  definite iff it has the form `Bᴴ * B` for some _invertible_ `B`.
+* `Matrix.PosSemidef.fromBlocks₁₁` and `Matrix.PosSemidef.fromBlocks₂₂`: If a matrix `A` is
+  positive definite, then `[A B; Bᴴ D]` is positive semidefinite if and only if `D - Bᴴ A⁻¹ B` is
+  positive semidefinite.
 -/
 
 open scoped ComplexOrder
