@@ -4,14 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yong-Gyu Choi
 -/
 import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.RingTheory.TensorProduct.LeftMinusRight
+import Mathlib.RingTheory.TensorProduct.IncludeLeftSubRight
+import Mathlib.RingTheory.RingHom.FaithfullyFlat
 
 /-!
-# Equalizer of the inclusions to pushout in `CommRingCat`
+# Equalizer of inclusions to pushout in `CommRingCat`
 
 Given a map `f : R ⟶ S` in `CommRingCat`, we prove that the equalizer of the two maps
-`pushout.inl : S ⟶ pushout f f` and `pushout.inr : S ⟶ pushout f f` is canonically isomorphic to `R`
-if `R ⟶ S` is a faithfully flat ring map.
+`pushout.inl : S ⟶ pushout f f` and `pushout.inr : S ⟶ pushout f f` is canonically isomorphic
+to `R` when `R ⟶ S` is a faithfully flat ring map.
 
 Note that, under `CommRingCat.pushoutCoconeIsColimit`, the two maps `inl` and `inr` above can be
 written as `s ↦ s ⊗ₜ[R] 1` and `s ↦ 1 ⊗ₜ[R] s`, respectively.
@@ -68,21 +69,21 @@ variable {R S : CommRingCat.{u}} (f : R ⟶ S)
 noncomputable def toEqualizer :
     R →+* (equalizerFork (pushoutCoconeSelf f).inl (pushoutCoconeSelf f).inr).pt := by
   algebraize [f.hom]
-  exact Algebra.TensorProduct.toEqLocus R S
+  exact Algebra.TensorProduct.toEqLocusOfInclusion R S
 
 /-- If `f : R ⟶ S` is an injective map in `CommRingCat`, then `toEqualizer f` is injective. -/
 lemma toEqualizer.inj_of_inj (hf : Function.Injective f.hom) :
     Function.Injective (toEqualizer f) := by
   algebraize [f.hom]
-  exact Algebra.TensorProduct.toEqLocus.inj R S hf
+  exact Algebra.TensorProduct.toEqLocusOfInclusion_injective R S hf
 
 /-- If `f : R ⟶ S` is a map in `CommRingCat` such that the pair of `algebraMap : R → S` and
 `includeLeft - includeRight : S → S ⊗[R] S` is exact, then `toEqualizer f` is surjective. -/
 lemma toEqualizer.surj_of_exactLeftMinusRight
-    (hf : @Algebra.TensorProduct.ExactLeftMinusRight R S _ _ f.hom.toAlgebra) :
+    (hf : @Algebra.TensorProduct.Exact.IncludeLeftSubRight R S _ _ f.hom.toAlgebra) :
     Function.Surjective (toEqualizer f) := by
   algebraize [f.hom]
-  exact Algebra.TensorProduct.toEqLocus.surj R S hf
+  exact Algebra.TensorProduct.toEqLocusOfInclusion_surjective R S hf
 
 /-- If `f : R ⟶ S` is a faithfully flat map in `CommRingCat`, then `toEqualizer f` is bijective. -/
 lemma toEqualizer.bij_of_faithfullyFlat (hf : f.hom.FaithfullyFlat) :
@@ -91,7 +92,7 @@ lemma toEqualizer.bij_of_faithfullyFlat (hf : f.hom.FaithfullyFlat) :
   · exact toEqualizer.inj_of_inj _ (RingHom.FaithfullyFlat.injective hf)
   · algebraize [f.hom]
     exact toEqualizer.surj_of_exactLeftMinusRight _
-      (Algebra.TensorProduct.ExactLeftMinusRight.of_faithfullyFlat R S)
+      (Algebra.TensorProduct.Exact.includeLeftSubRight_of_faithfullyFlat R S)
 
 end toEqualizer
 
