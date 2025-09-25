@@ -31,7 +31,7 @@ of some code.
 * `Nat.Partrec.Code.smn`: The $S_n^m$ theorem.
 * `Nat.Partrec.Code.exists_code`: Partial recursiveness is equivalent to being the eval of a code.
 * `Nat.Partrec.Code.evaln_prim`: `evaln` is primitive recursive.
-* `Nat.Partrec.Code.fixed_point`: Roger's fixed point theorem.
+* `Nat.Partrec.Code.fixed_point`: Rogers' fixed-point theorem.
 * `Nat.Partrec.Code.fixed_point₂`: Kleene's second recursion theorem.
 
 ## References
@@ -454,18 +454,18 @@ theorem computable_recOn {α σ} [Primcodable α] [Primcodable σ] {c : α → C
 end
 
 /-- The interpretation of a `Nat.Partrec.Code` as a partial function.
-* `Nat.Partrec.Code.zero`: The constant zero function.
-* `Nat.Partrec.Code.succ`: The successor function.
-* `Nat.Partrec.Code.left`: Left unpairing of a pair of ℕ (encoded by `Nat.pair`)
-* `Nat.Partrec.Code.right`: Right unpairing of a pair of ℕ (encoded by `Nat.pair`)
-* `Nat.Partrec.Code.pair`: Pairs the outputs of argument codes using `Nat.pair`.
-* `Nat.Partrec.Code.comp`: Composition of two argument codes.
-* `Nat.Partrec.Code.prec`: Primitive recursion. Given an argument of the form `Nat.pair a n`:
-  * If `n = 0`, returns `eval cf a`.
-  * If `n = succ k`, returns `eval cg (pair a (pair k (eval (prec cf cg) (pair a k))))`
-* `Nat.Partrec.Code.rfind'`: Minimization. For `f` an argument of the form `Nat.pair a m`,
-  `rfind' f m` returns the least `a` such that `f a m = 0`, if one exists and `f b m` terminates
-  for `b < a`
+* `Nat.Partrec.Code.zero`: the constant zero function
+* `Nat.Partrec.Code.succ`: the successor function
+* `Nat.Partrec.Code.left`: left unpairing of a pair of ℕ (encoded by `Nat.pair`)
+* `Nat.Partrec.Code.right`: right unpairing of a pair of ℕ (encoded by `Nat.pair`)
+* `Nat.Partrec.Code.pair`: pairs the outputs of argument codes using `Nat.pair`
+* `Nat.Partrec.Code.comp`: composition of two argument codes
+* `Nat.Partrec.Code.prec`: primitive recursion. Given an argument of the form `Nat.pair a n`:
+  * if `n = 0`, returns `eval cf a`
+  * if `n = succ k`, returns `eval cg (pair a (pair k (eval (prec cf cg) (pair a k))))`
+* `Nat.Partrec.Code.rfind'`: minimization. For an input of the form `Nat.pair a m`,
+  it returns the least `k ≥ m` such that `eval cf (Nat.pair a k)` yields `0`,
+  if such a `k` exists and `eval cf (Nat.pair a i)` terminates for all `i` with `m ≤ i < k`
 -/
 def eval : Code → ℕ →. ℕ
   | zero => pure 0
@@ -1006,7 +1006,7 @@ theorem eval_part : Partrec₂ eval :=
       ((Computable.snd.pair (fst.comp fst)).pair (snd.comp fst))).to₂).of_eq
     fun a => by simp [eval_eq_rfindOpt]
 
-/-- **Roger's fixed-point theorem**: any total, computable `f` has a fixed point.
+/-- **Rogers' fixed-point theorem**: any total, computable `f` has a fixed point.
 That is, under the interpretation given by `Nat.Partrec.Code.eval`, there is a code `c`
 such that `c` and `f c` have the same evaluation.
 -/
