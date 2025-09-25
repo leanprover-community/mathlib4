@@ -565,9 +565,7 @@ lemma ext_prod {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace
     exact h .univ .univ
   refine MeasurableSpace.induction_on_inter generateFrom_prod.symm isPiSystem_prod (by simp)
     ?_ ?_ ?_ s hs
-  · intro t ht
-    simp only [Set.mem_image2, Set.mem_setOf_eq] at ht
-    obtain ⟨s, hs, t, ht, rfl⟩ := ht
+  · rintro - ⟨s, hs, t, ht, rfl⟩
     exact h hs ht
   · intro t ht
     simp_rw [measure_compl ht (measure_ne_top _ _)]
