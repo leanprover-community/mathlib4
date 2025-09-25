@@ -156,7 +156,7 @@ theorem discrim_le_zero (hp : p.degree = 2) (h : ∀ x : K, 0 ≤ p.eval x) : p.
     ring
 
 lemma discrim_le_zero_of_nonpos (hp : p.degree = 2) (h : ∀ x : K, p.eval x ≤ 0) : p.disc ≤ 0 := by
-  rw [discrim_neg hp]
+  rw [← discrim_neg hp]
   apply discrim_le_zero
   · simp [hp]
   intro x
@@ -182,7 +182,7 @@ theorem discrim_lt_zero (hp : p.degree = 2) (h : ∀ x : K, 0 < p.eval x) :
 
 lemma discrim_lt_zero_of_neg (hp : p.degree = 2) (h : ∀ x : K, p.eval x < 0) :
     p.disc < 0 := by
-  rw [discrim_neg hp]
+  rw [← discrim_neg hp]
   apply discrim_lt_zero
   · simp [hp]
   intro x
