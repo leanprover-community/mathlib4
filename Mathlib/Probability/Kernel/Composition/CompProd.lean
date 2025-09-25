@@ -560,9 +560,9 @@ instance IsSFiniteKernel.compProd (κ : Kernel α β) (η : Kernel (α × β) γ
 because the products of types `α × β × γ` and `(α × β) × γ` are different. -/
 lemma compProd_assoc {δ : Type*} {mδ : MeasurableSpace δ}
     {κ : Kernel α β} {η : Kernel (α × β) γ} {ξ : Kernel (α × β × γ) δ} :
-    κ ⊗ₖ η ⊗ₖ ξ
-      = (κ ⊗ₖ (η ⊗ₖ (ξ.comap MeasurableEquiv.prodAssoc (MeasurableEquiv.measurable _)))).map
-        MeasurableEquiv.prodAssoc.symm := by
+    (κ ⊗ₖ (η ⊗ₖ (ξ.comap MeasurableEquiv.prodAssoc (MeasurableEquiv.measurable _)))).map
+        MeasurableEquiv.prodAssoc.symm
+      = κ ⊗ₖ η ⊗ₖ ξ := by
   by_cases hκ : IsSFiniteKernel κ
   swap; · simp [hκ]
   by_cases hη : IsSFiniteKernel η
