@@ -483,7 +483,7 @@ protected lemma IsTrans.sInter {ℛ : Set <| SetRel α α} (hℛ : ∀ R ∈ ℛ
     SetRel.IsTrans (⋂₀ ℛ) where
   trans _a _b _c hab hbc R hR := (hℛ R hR).trans _ _ _ (hab R hR) <| hbc R hR
 
-instance isTrans_iInter {ι : Sort*} {R : ι → SetRel α α} [∀ i, (R i).IsTrans] :
+instance isTrans_iInter {R : ι → SetRel α α} [∀ i, (R i).IsTrans] :
     SetRel.IsTrans (⋂ i, R i) := .sInter <| by simpa
 
 instance isTrans_id : (.id : SetRel α α).IsTrans where trans _ _ _ := .trans
