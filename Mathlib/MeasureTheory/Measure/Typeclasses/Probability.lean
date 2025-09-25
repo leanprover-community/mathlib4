@@ -92,7 +92,7 @@ theorem Measure.isProbabilityMeasure_map {f : α → β} (hf : AEMeasurable f μ
     IsProbabilityMeasure (map f μ) :=
   ⟨by simp [map_apply_of_aemeasurable, hf]⟩
 
-theorem Measure.isProbabilityMeasure_of_isProbabilityMeasure_map {μ : Measure α} {f : α → β}
+theorem Measure.isProbabilityMeasure_of_map {μ : Measure α} {f : α → β}
     (hf : AEMeasurable f μ) [IsProbabilityMeasure (μ.map f)] : IsProbabilityMeasure μ where
   measure_univ := by
     rw [← Set.preimage_univ (f := f), ← map_apply_of_aemeasurable hf .univ]
