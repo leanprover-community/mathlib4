@@ -28,7 +28,7 @@ theorem ofDigits_eq_sum_mapIdx_aux (b : ℕ) (l : List ℕ) :
     l.zipWith (fun a i : ℕ => a * b ^ (i + 1)) (List.range l.length) =
       l.zipWith (fun a i=> b * (a * b ^ i)) (List.range l.length)
     by simp [this]
-  congr; ext; simp [pow_succ]; ring
+  congr; ext; ring
 
 theorem ofDigits_eq_sum_mapIdx (b : ℕ) (L : List ℕ) :
     ofDigits b L = (L.mapIdx fun i a => a * b ^ i).sum := by
