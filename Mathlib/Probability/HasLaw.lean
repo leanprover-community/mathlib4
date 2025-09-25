@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: EtienneMarion
 -/
 import Mathlib.Probability.Density
-import Mathlib.Probability.Moments.Variance
-import Mathlib.Probability.ProductMeasure
 import Mathlib.Probability.Independence.InfinitePi
+import Mathlib.Probability.Moments.Variance
 
 /-!
 # Law of a random variable
@@ -156,3 +155,5 @@ lemma exists_iid {ι : Type v} {𝓧 : Type u} {m𝓧 : MeasurableSpace 𝓧}
 end Existence
 
 end ProbabilityTheory
+
+#min_imports
