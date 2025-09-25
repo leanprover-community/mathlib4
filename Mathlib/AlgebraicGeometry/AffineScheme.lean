@@ -211,10 +211,12 @@ noncomputable instance forgetToScheme_preservesLimits : PreservesLimits forgetTo
   change PreservesLimits (equivCommRingCat.functor ⋙ Scheme.Spec)
   infer_instance
 
+/-- `AffineScheme.forgetToScheme` creates limits for cospans. -/
 noncomputable def forgetToScheme_createsLimits {X Y Z : AffineScheme.{u}}
     (f : X ⟶ Z) (g : Y ⟶ Z) : CreatesLimit (cospan f g) AffineScheme.forgetToScheme.{u} :=
   createsLimitOfReflectsIsomorphismsOfPreserves
 
+/-- `AffineScheme.forgetToScheme.op` creates colimits for spans. -/
 noncomputable def forgetToScheme_op_createsColimits {X Y Z : AffineScheme.{u}}
     (f : X ⟶ Z) (g : Y ⟶ Z) : CreatesColimit (span f.op g.op) AffineScheme.forgetToScheme.{u}.op :=
   let : PreservesColimits AffineScheme.forgetToScheme.{u}.op := preservesColimits_op _
