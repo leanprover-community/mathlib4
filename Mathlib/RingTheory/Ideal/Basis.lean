@@ -46,7 +46,6 @@ theorem constr_basisSpanSingleton {N : Type*} [Semiring N] [Module N S] [SMulCom
 
 end Ideal
 
--- Porting note: added explicit coercion `(b i : S)`
 /-- If `I : Ideal S` has a basis over `R`,
 `x ∈ I` iff it is a linear combination of basis vectors. -/
 theorem Basis.mem_ideal_iff {ι R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]

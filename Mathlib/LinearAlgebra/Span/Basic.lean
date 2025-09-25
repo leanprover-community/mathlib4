@@ -19,7 +19,7 @@ import Mathlib.Order.OmegaCompletePartialOrder
 
 * `Submodule.span s` is defined to be the smallest submodule containing the set `s`.
 
-## Notations
+## Notation
 
 * We introduce the notation `R ∙ v` for the span of a singleton, `Submodule.span R {v}`.  This is
   `\span`, not the same as the scalar multiplication `•`/`\bub`.
@@ -728,6 +728,10 @@ variable (R M) in
 theorem span_singleton_eq_range (x : M) :
     (R ∙ x) = range (toSpanSingleton R M x) :=
   range_toSpanSingleton x |>.symm
+
+theorem comp_toSpanSingleton [AddCommMonoid M₂] [Module R M₂] (f : M →ₗ[R] M₂) (x : M) :
+    f ∘ₗ toSpanSingleton R M x = toSpanSingleton R M₂ (f x) := by
+  ext; simp
 
 theorem submoduleOf_span_singleton_of_mem (N : Submodule R M) {x : M} (hx : x ∈ N) :
     (span R {x}).submoduleOf N = span R {⟨x, hx⟩} := by

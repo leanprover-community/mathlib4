@@ -7,7 +7,7 @@ import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
 import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 import Mathlib.Algebra.DirectSum.Decomposition
-import Mathlib.Analysis.NormedSpace.RCLike
+import Mathlib.Analysis.Normed.Module.RCLike.Basic
 
 /-!
 # Orthogonal projections in finite-dimensional spaces
@@ -158,7 +158,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
     · obtain ⟨V, hV₁, hV₂⟩ := IH φ hn'
       exact ⟨V, hV₁.trans n.le_succ, hV₂⟩
     -- Take a nonzero element `v` of the orthogonal complement of `W`.
-    haveI : Nontrivial Wᗮ := nontrivial_of_finrank_pos (by omega : 0 < finrank ℝ Wᗮ)
+    haveI : Nontrivial Wᗮ := nontrivial_of_finrank_pos (by cutsat : 0 < finrank ℝ Wᗮ)
     obtain ⟨v, hv⟩ := exists_ne (0 : Wᗮ)
     have hφv : φ v ∈ Wᗮ := by
       intro w hw
@@ -289,7 +289,7 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
     obtain rfl | hij := Decidable.eq_or_ne i j
     · rw [orthogonalProjection_mem_subspace_eq_self, DFinsupp.single_eq_same]
     · rw [orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero,
-        DFinsupp.single_eq_of_ne hij.symm]
+        DFinsupp.single_eq_of_ne hij]
       exact hV.isOrtho hij.symm x.prop
   | add x y hx hy =>
     simp_rw [map_add]
