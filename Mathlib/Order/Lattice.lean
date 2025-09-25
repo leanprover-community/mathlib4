@@ -368,7 +368,7 @@ theorem inf_idem (a : α) : a ⊓ a = a := by simp
 
 instance : Std.IdempotentOp (α := α) (· ⊓ ·) := ⟨inf_idem⟩
 
-@[grind _=_]
+@[grind =]
 theorem inf_comm (a b : α) : a ⊓ b = b ⊓ a := @sup_comm αᵒᵈ _ _ _
 
 instance : Std.Commutative (α := α) (· ⊓ ·) := ⟨inf_comm⟩

@@ -84,7 +84,7 @@ theorem Disjoint.out (h : Disjoint a b) (x : α) : x ≤ a → x ≤ b → x = �
 grind_pattern Disjoint.out => Disjoint a b, x ≤ a
 grind_pattern Disjoint.out => Disjoint a b, x ≤ b
 
-@[simp]
+@[simp, grind =]
 theorem disjoint_self : Disjoint a a ↔ a = ⊥ :=
   ⟨fun hd ↦ bot_unique <| hd le_rfl le_rfl, fun h _ ha _ ↦ ha.trans_eq h⟩
 
@@ -105,8 +105,8 @@ theorem Disjoint.eq_bot_of_ge (hab : Disjoint a b) : b ≤ a → b = ⊥ :=
 
 grind_pattern Disjoint.eq_bot_of_le => Disjoint a b, b ≤ a
 
-lemma Disjoint.eq_iff (hab : Disjoint a b) : a = b ↔ a = ⊥ ∧ b = ⊥ := by aesop
-lemma Disjoint.ne_iff (hab : Disjoint a b) : a ≠ b ↔ a ≠ ⊥ ∨ b ≠ ⊥ := by grind [eq_iff]
+lemma Disjoint.eq_iff (hab : Disjoint a b) : a = b ↔ a = ⊥ ∧ b = ⊥ := by grind
+lemma Disjoint.ne_iff (hab : Disjoint a b) : a ≠ b ↔ a ≠ ⊥ ∨ b ≠ ⊥ := by grind
 
 theorem disjoint_of_le_iff_left_eq_bot (h : a ≤ b) :
     Disjoint a b ↔ a = ⊥ := by grind
@@ -260,7 +260,7 @@ theorem Codisjoint.out (h : Codisjoint a b) (x : α) : a ≤ x → b ≤ x → �
 grind_pattern Codisjoint.out => Codisjoint a b, a ≤ x
 grind_pattern Codisjoint.out => Codisjoint a b, b ≤ x
 
-@[simp]
+@[simp, grind =]
 theorem codisjoint_self : Codisjoint a a ↔ a = ⊤ :=
   ⟨fun hd ↦ top_unique <| hd le_rfl le_rfl, fun h _ ha _ ↦ h.symm.trans_le ha⟩
 
@@ -281,8 +281,8 @@ theorem Codisjoint.eq_top_of_ge (hab : Codisjoint a b) : a ≤ b → b = ⊤ :=
 
 grind_pattern Codisjoint.eq_top_of_ge => Codisjoint a b, a ≤ b
 
-lemma Codisjoint.eq_iff (hab : Codisjoint a b) : a = b ↔ a = ⊤ ∧ b = ⊤ := by aesop
-lemma Codisjoint.ne_iff (hab : Codisjoint a b) : a ≠ b ↔ a ≠ ⊤ ∨ b ≠ ⊤ := by grind [eq_iff]
+lemma Codisjoint.eq_iff (hab : Codisjoint a b) : a = b ↔ a = ⊤ ∧ b = ⊤ := by grind
+lemma Codisjoint.ne_iff (hab : Codisjoint a b) : a ≠ b ↔ a ≠ ⊤ ∨ b ≠ ⊤ := by grind
 
 end PartialOrderTop
 
