@@ -72,6 +72,7 @@ jobs:
             echo "Dry run enabled, not modifying files"
           else
             echo "Modifying files..."
+            chmod u+x delete_deprecations.sh
             ./delete_deprecations.sh
           fi
 
