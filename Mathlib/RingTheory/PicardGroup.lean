@@ -329,7 +329,6 @@ section Algebra
 section algEquivOfRing
 variable (A : Type*) [Semiring A] [Algebra R A] [Module.Invertible R A]
 
-set_option synthInstance.maxHeartbeats 99999 in
 /-- If an `R`-algebra `A` is also an invertible `R`-module, then it is in fact isomorphic to the
 base ring `R`. The algebra structure gives us a map `A ⊗ A → A`, which after tensoring by `Aᵛ`
 becomes a map `A → R`, which is the inverse map we seek. -/
