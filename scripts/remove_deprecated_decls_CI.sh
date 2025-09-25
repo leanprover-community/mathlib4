@@ -14,6 +14,8 @@ set -x
 remote_name=origin-bot
 branch_name=deprecated-decls
 owner_name=leanprover-community
+from_date="${1:-from date not set}"
+to_date="${2:-to date not set}"
 
 # Exit if the branch already exists
 git fetch --quiet "$remote_name"

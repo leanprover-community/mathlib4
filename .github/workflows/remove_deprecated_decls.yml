@@ -100,7 +100,7 @@ jobs:
 
     - name: file a new PR to remove outdated deprecated declarations
       id: pr
-      run: ./scripts/remove_deprecated_decls_CI.sh
+      run: ./scripts/remove_deprecated_decls_CI.sh "${DEPRECATION_DATE_FROM}" "${DEPRECATION_DATE_TO}"
       env:
         DEPLOY_GITHUB_TOKEN: ${{ secrets.UPDATE_NOLINTS_TOKEN }}
         DEPRECATION_DATE_FROM: ${{ steps.remove.outputs.deprecation_date_from }}
