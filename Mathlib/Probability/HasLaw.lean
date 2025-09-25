@@ -151,7 +151,7 @@ lemma exists_iid {ι : Type v} {𝓧 : Type u} {m𝓧 : MeasurableSpace 𝓧}
     (μ : Measure 𝓧) [IsProbabilityMeasure μ] :
     ∃ Ω : Type (max u v), ∃ _ : MeasurableSpace Ω, ∃ P : Measure Ω, ∃ X : ι → Ω → 𝓧,
       (∀ i, HasLaw (X i) μ P) ∧ (iIndepFun X P) :=
-    exists_hasLaw_indepFun (ι := ι) (fun _ ↦ 𝓧) (fun _ ↦ μ)
+  exists_hasLaw_indepFun (ι := ι) (fun _ ↦ 𝓧) (fun _ ↦ μ)
 
 end Existence
 
