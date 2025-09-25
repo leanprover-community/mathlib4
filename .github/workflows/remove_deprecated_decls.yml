@@ -79,11 +79,11 @@ jobs:
 
         # TODO: set deprecation_date_from and deprecation_date_to outputs (extract from linter.out?)
         # maybe this could be done in the previous step?
-        printf $'\nHere is the content of git diff:\n---\n'
+        printf -- $'\nHere is the content of git diff:\n---\n'
         git diff
 
         # TODO: remove the following command once everything is working
-        printf $'---\nHere is the content of Mathlib/New.lean:\n---\n'
+        printf -- $'---\nHere is the content of Mathlib/New.lean:\n---\n'
         cat Mathlib/New.lean
         exit 1 # still WIP, don't do anything below
 
