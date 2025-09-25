@@ -90,12 +90,12 @@ variable {L : Type*} [NormedField L] [CompleteSpace L] {f : WithAbs v →+* L} {
 /-- If the absolute value of a normed field factors through an embedding into another normed field
 `L`, then we can extend that embedding to an embedding on the completion `v.Completion →+* L`. -/
 @[deprecated Isometry.extensionHom (since := "2025-09-25")]
-abbrev extensionEmbeddingOfComp (h : ∀ x, ‖f x‖ = v x) : v.Completion →+* L :=
+abbrev extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v x) : v.Completion →+* L :=
   (AddMonoidHomClass.isometry_of_norm _ h).extensionHom
 
 @[deprecated "Use Isometry.extensionHom_coe in combination with AddMonoidHomClass.isometry_of_norm"
   (since := "2025-09-25")]
-theorem extensionEmbeddingOfComp_coe (h : ∀ x, ‖f x‖ = v x) (x : K) :
+theorem extensionEmbedding_of_comp_coe (h : ∀ x, ‖f x‖ = v x) (x : K) :
     (AddMonoidHomClass.isometry_of_norm _ h).extensionHom x = f x :=
   AddMonoidHomClass.isometry_of_norm _ h |>.extensionHom_coe _
 
@@ -103,7 +103,7 @@ theorem extensionEmbeddingOfComp_coe (h : ∀ x, ‖f x‖ = v x) (x : K) :
 then the extended embedding `v.Completion →+* L` preserves distances. -/
 @[deprecated "Use Isometry.dist_eq in combination with AddMonoidHomClass.isometry_of_norm"
   (since := "2025-09-25")]
-theorem extensionEmbeddingOfComp_dist_eq (h : ∀ x, ‖f x‖ = v x) (x y : v.Completion) :
+theorem extensionEmbedding_dist_eq_of_comp (h : ∀ x, ‖f x‖ = v x) (x y : v.Completion) :
     let f := AddMonoidHomClass.isometry_of_norm _ h |>.extensionHom
     dist (f x) (f y) = dist x y :=
   AddMonoidHomClass.isometry_of_norm _ h |>.completion_extension.dist_eq _ _
@@ -112,7 +112,7 @@ theorem extensionEmbeddingOfComp_dist_eq (h : ∀ x, ‖f x‖ = v x) (x y : v.C
 then the extended embedding `v.Completion →+* L` is an isometry. -/
 @[deprecated "Use Isometry.completion_extension in combination with
   AddMonoidHomClass.isometry_of_norm" (since := "2025-09-25")]
-theorem isometry_extensionEmbeddingOfComp (h : ∀ x, ‖f x‖ = v x) :
+theorem isometry_extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v x) :
     Isometry (AddMonoidHomClass.isometry_of_norm _ h |>.extensionHom) :=
   AddMonoidHomClass.isometry_of_norm _ h |>.completion_extension
 
@@ -120,20 +120,9 @@ theorem isometry_extensionEmbeddingOfComp (h : ∀ x, ‖f x‖ = v x) :
 then the extended embedding `v.Completion →+* L` is a closed embedding. -/
 @[deprecated "Use Isometry.isClosedEmbedding in combination with Isometry.completion_extension
   and AddMonoidHomClass.isometry_of_norm" (since := "2025-09-25")]
-theorem isClosedEmbedding_extensionEmbeddingOfComp (h : ∀ x, ‖f x‖ = v x) :
+theorem isClosedEmbedding_extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v x) :
     IsClosedEmbedding (AddMonoidHomClass.isometry_of_norm _ h |>.extensionHom) :=
   (AddMonoidHomClass.isometry_of_norm _ h).completion_extension.isClosedEmbedding
-
-@[deprecated (since := "2025-09-24")]
-noncomputable alias extensionEmbedding_of_comp := extensionEmbeddingOfComp
-@[deprecated (since := "2025-09-24")]
-alias extensionEmbedding_of_comp_coe := extensionEmbeddingOfComp_coe
-@[deprecated (since := "2025-09-24")]
-alias extensionEmbedding_dist_eq_of_comp := extensionEmbeddingOfComp_dist_eq
-@[deprecated (since := "2025-09-24")]
-alias isometry_extensionEmbedding_of_comp := isometry_extensionEmbeddingOfComp
-@[deprecated (since := "2025-09-24")]
-alias isClosedEmbedding_extensionEmbedding_of_comp := isClosedEmbedding_extensionEmbeddingOfComp
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field
 that is locally compact, then the completion of the first normed field is also locally compact. -/
