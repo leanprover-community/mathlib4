@@ -156,7 +156,7 @@ end CylindersClosed
 /-! ## Patterns and occurrences -/
 
 section SubshiftDef
-variable (A : Type*) [TopologicalSpace A] [Inhabited A]
+variable (A : Type*) [TopologicalSpace A]
 variable (G : Type*) [Group G]
 
 /-- A subshift is a closed, shift-invariant subset. -/
@@ -172,14 +172,18 @@ end SubshiftDef
 
 
 section AddSubshiftDef
-variable (A : Type*) [TopologicalSpace A] [Inhabited A]
+variable (A : Type*) [TopologicalSpace A]
 variable (G : Type*) [AddGroup G]
 
-/-- Additive version of the definition of subshift -/
+/-- Additive version of the definition of subshift. -/
 structure AddSubshift : Type _ where
+  /-- The underlying set of configurations (additive group version). -/
   carrier : Set (G → A)
+  /-- Closedness of `carrier`. -/
   isClosed : IsClosed carrier
+  /-- Shift invariance of `carrier` for the additive shift `addShift`. -/
   shiftInvariant : ∀ g : G, ∀ x ∈ carrier, addShift g x ∈ carrier
+
 end AddSubshiftDef
 
 attribute [to_additive existing SymbolicDynamics.AddSubshift]
@@ -192,6 +196,8 @@ def fullShift (A G) [TopologicalSpace A] [Group G] : Subshift A G :=
   isClosed := isClosed_univ,
   shiftInvariant := by intro _ _ _; simp }
 
+attribute [inherit_doc SymbolicDynamics.fullShift] SymbolicDynamics.addFullShift
+
 /-- A finite pattern: finite support in `G` and values on it. -/
 structure Pattern (A : Type*) (G : Type*) [Group G] where
   /-- Finite support of the pattern. -/
@@ -201,7 +207,9 @@ structure Pattern (A : Type*) (G : Type*) [Group G] where
 
 /-- Additive version of `Pattern`. -/
 structure AddPattern (A : Type*) (G : Type*) [AddGroup G] : Type _ where
+  /-- Finite support of the pattern (subset of `G`). -/
   support : Finset G
+  /-- The symbol at each point of the support. -/
   data    : support → A
 
 attribute [to_additive existing SymbolicDynamics.AddPattern]
@@ -218,6 +226,8 @@ def domino {A : Type*}
   refine
   { support := ({i, j} : Finset G)
   , data := fun ⟨z, hz⟩ => if z = i then ai else aj }
+
+attribute [inherit_doc SymbolicDynamics.domino] SymbolicDynamics.addDomino
 
 end Dominos
 
