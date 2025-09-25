@@ -41,11 +41,13 @@ instance instAddCommGroup : AddCommGroup ℤ where
   nsmul_succ n x :=
     show (n + 1 : ℤ) * x = n * x + x
     by rw [Int.add_mul, Int.one_mul]
-  zsmul := (·*·)
+  zsmul := (· * ·)
   zsmul_zero' := Int.zero_mul
   zsmul_succ' m n := by
-    simp only [natCast_succ, Int.add_mul, Int.add_comm, Int.one_mul]
-  zsmul_neg' m n := by simp only [negSucc_eq, natCast_succ, Int.neg_mul]
+    simp only [HSMul.hSMul, SMul.smul, succ_eq_add_one, natCast_succ, Int.add_mul, one_mul,
+      Int.add_comm]
+  zsmul_neg' m n := by simp only [HSMul.hSMul, SMul.smul, negSucc_eq, Int.neg_mul, succ_eq_add_one,
+    natCast_succ]
   sub_eq_add_neg _ _ := Int.sub_eq_add_neg
 
 /-!

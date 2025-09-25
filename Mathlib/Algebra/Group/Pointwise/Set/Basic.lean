@@ -614,7 +614,7 @@ scoped[Pointwise] attribute [instance] Set.monoid Set.addMonoid
 -- `pow_left_mono`
 
 @[to_additive]
-protected lemma pow_right_monotone (hs : 1 ∈ s) : Monotone (s ^ ·) :=
+protected lemma pow_right_monotone (hs : 1 ∈ s) : Monotone (fun (n : ℕ) => s ^ n) :=
   pow_right_monotone <| one_subset.2 hs
 
 @[to_additive (attr := gcongr)]
@@ -640,7 +640,7 @@ lemma pow_subset_pow_mul_of_sq_subset_mul (hst : s ^ 2 ⊆ t * s) (hn : n ≠ 0)
 lemma empty_pow (hn : n ≠ 0) : (∅ : Set α) ^ n = ∅ := match n with | n + 1 => by simp [pow_succ]
 
 @[to_additive]
-lemma Nonempty.pow (hs : s.Nonempty) : ∀ {n}, (s ^ n).Nonempty
+lemma Nonempty.pow (hs : s.Nonempty) : ∀ {n : ℕ}, (s ^ n).Nonempty
   | 0 => by simp
   | n + 1 => by rw [pow_succ]; exact hs.pow.mul hs
 
@@ -655,7 +655,7 @@ set_option push_neg.use_distrib true in
     exact empty_pow hn
 
 @[to_additive (attr := simp) nsmul_singleton]
-lemma singleton_pow (a : α) : ∀ n, ({a} : Set α) ^ n = {a ^ n}
+lemma singleton_pow (a : α) : ∀ (n : ℕ), ({a} : Set α) ^ n = {a ^ n}
   | 0 => by simp [singleton_one]
   | n + 1 => by simp [pow_succ, singleton_pow _ n]
 
@@ -690,7 +690,7 @@ protected theorem _root_.IsUnit.set : IsUnit a → IsUnit ({a} : Set α) :=
   IsUnit.map (singletonMonoidHom : α →* Set α)
 
 @[to_additive nsmul_prod]
-lemma prod_pow [Monoid β] (s : Set α) (t : Set β) : ∀ n, (s ×ˢ t) ^ n = (s ^ n) ×ˢ (t ^ n)
+lemma prod_pow [Monoid β] (s : Set α) (t : Set β) : ∀ (n : ℕ), (s ×ˢ t) ^ n = (s ^ n) ×ˢ (t ^ n)
   | 0 => by simp
   | n + 1 => by simp [pow_succ, prod_pow _ _ n]
 
@@ -974,7 +974,7 @@ lemma image_pow_of_ne_zero [MulHomClass F α β] :
   | n + 2, _ => by simp [image_mul, pow_succ _ n.succ, image_pow_of_ne_zero]
 
 @[to_additive]
-lemma image_pow [MonoidHomClass F α β] (f : F) (s : Set α) : ∀ n, f '' (s ^ n) = (f '' s) ^ n
+lemma image_pow [MonoidHomClass F α β] (f : F) (s : Set α) : ∀ (n : ℕ), f '' (s ^ n) = (f '' s) ^ n
   | 0 => by simp [singleton_one]
   | n + 1 => image_pow_of_ne_zero n.succ_ne_zero ..
 

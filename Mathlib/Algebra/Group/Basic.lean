@@ -163,7 +163,7 @@ lemma pow_eq_pow_mod (m : ℕ) (ha : a ^ n = 1) : a ^ m = a ^ (m % n) := by
     a ^ m = a ^ (m % n + n * (m / n)) := by rw [Nat.mod_add_div]
     _ = a ^ (m % n) := by simp [pow_add, pow_mul, ha]
 
-@[to_additive] lemma pow_mul_pow_eq_one : ∀ n, a * b = 1 → a ^ n * b ^ n = 1
+@[to_additive] lemma pow_mul_pow_eq_one : ∀ (n : ℕ), a * b = 1 → a ^ n * b ^ n = 1
   | 0, _ => by simp
   | n + 1, h =>
     calc
@@ -209,7 +209,7 @@ variable [CommMonoid M] {x y z : M}
 theorem inv_unique (hy : x * y = 1) (hz : x * z = 1) : y = z :=
   left_inv_eq_right_inv (Trans.trans (mul_comm _ _) hy) hz
 
-@[to_additive nsmul_add] lemma mul_pow (a b : M) : ∀ n, (a * b) ^ n = a ^ n * b ^ n
+@[to_additive nsmul_add] lemma mul_pow (a b : M) : ∀ (n : ℕ), (a * b) ^ n = a ^ n * b ^ n
   | 0 => by rw [pow_zero, pow_zero, pow_zero, one_mul]
   | n + 1 => by rw [pow_succ', pow_succ', pow_succ', mul_pow, mul_mul_mul_comm]
 

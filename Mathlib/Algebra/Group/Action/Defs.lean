@@ -427,7 +427,7 @@ variable {M}
 section Monoid
 variable [Monoid N] [MulAction M N] [IsScalarTower M N N] [SMulCommClass M N N]
 
-lemma smul_pow (r : M) (x : N) : ∀ n, (r • x) ^ n = r ^ n • x ^ n
+lemma smul_pow (r : M) (x : N) : ∀ (n : ℕ), (r • x) ^ n = r ^ n • x ^ n
   | 0 => by simp
   | n + 1 => by rw [pow_succ', smul_pow _ _ n, smul_mul_smul_comm, ← pow_succ', ← pow_succ']
 

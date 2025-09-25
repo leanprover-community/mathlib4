@@ -558,42 +558,55 @@ theorem npowRec_eq_npowBinRec : @npowRecAuto = @npowBinRecAuto := by
   | 0 => rw [npowRec, npowBinRec.go, Nat.binaryRec_zero]
   | k + 1 => rw [npowBinRec.go_spec, npowRec_eq]
 
+/-- Multiplication by a natural number. -/
+class NSMul (M : Type*) where
+  /-- Multiplication by a natural number. -/
+  protected nsmul : ℕ → M → M
+
+/-- An `NSMul` gives rise to a `SMul ℕ M` instance. -/
+instance NSMul.toSMul {M : Type*} [NSMul M] : SMul ℕ M :=
+  ⟨NSMul.nsmul⟩
+
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
-class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
+class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M, NSMul M where
   /-- Multiplication by a natural number.
   Set this to `nsmulRec` unless `Module` diamonds are possible. -/
-  protected nsmul : ℕ → M → M
+  protected nsmul := nsmulRec
   /-- Multiplication by `(0 : ℕ)` gives `0`. -/
-  protected nsmul_zero : ∀ x, nsmul 0 x = 0 := by intros; rfl
+  protected nsmul_zero : ∀ (x : M), 0 • x = 0 := by intros; rfl
   /-- Multiplication by `(n + 1 : ℕ)` behaves as expected. -/
-  protected nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = nsmul n x + x := by intros; rfl
+  protected nsmul_succ : ∀ (n : ℕ) (x : M), (n + 1) • x = n • x + x := by intros; rfl
 
 attribute [instance 150] AddSemigroup.toAdd
 attribute [instance 50] AddZeroClass.toAdd
 
+/-- Exponentiation by a natural number. -/
+class NPow (M : Type*) where
+  /-- Exponentiation by a natural number. -/
+  protected npow : ℕ → M → M
+
+/-- An `NPow` gives rise to a `Pow M ℕ` instance. -/
+instance NPow.toNatPow {M : Type*} [NPow M] : Pow M ℕ where
+  pow m n := NPow.npow n m
+
+attribute [to_additive existing] NPow
+attribute [to_additive existing NSMul.toSMul] NPow.toNatPow
+
 /-- A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
 @[to_additive]
-class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
+class Monoid (M : Type u) extends Semigroup M, MulOneClass M, NPow M where
   /-- Raising to the power of a natural number. -/
-  protected npow : ℕ → M → M := npowRecAuto
+  protected npow := npowRecAuto
   /-- Raising to the power `(0 : ℕ)` gives `1`. -/
-  protected npow_zero : ∀ x, npow 0 x = 1 := by intros; rfl
+  protected npow_zero : ∀ (x : M), x ^ 0 = 1 := by intros; rfl
   /-- Raising to the power `(n + 1 : ℕ)` behaves as expected. -/
-  protected npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = npow n x * x := by intros; rfl
-
-@[default_instance high] instance Monoid.toNatPow {M : Type*} [Monoid M] : Pow M ℕ :=
-  ⟨fun x n ↦ Monoid.npow n x⟩
-
-instance AddMonoid.toNatSMul {M : Type*} [AddMonoid M] : SMul ℕ M :=
-  ⟨AddMonoid.nsmul⟩
-
-attribute [to_additive existing toNatSMul] Monoid.toNatPow
+  protected npow_succ : ∀ (n : ℕ) (x : M), x ^ (n + 1) = x ^ n * x := by intros; rfl
 
 section Monoid
 variable {M : Type*} [Monoid M] {a b c : M}
 
 @[to_additive (attr := simp) nsmul_eq_smul]
-theorem npow_eq_pow (n : ℕ) (x : M) : Monoid.npow n x = x ^ n :=
+theorem npow_eq_pow (n : ℕ) (x : M) : Monoid.toNPow.npow n x = x ^ n :=
   rfl
 
 @[to_additive] lemma left_inv_eq_right_inv (hba : b * a = 1) (hac : a * c = 1) : b = c := by
@@ -637,7 +650,7 @@ lemma pow_three' (a : M) : a ^ 3 = a * a * a := by rw [pow_succ, pow_two]
 lemma pow_three (a : M) : a ^ 3 = a * (a * a) := by rw [pow_succ', pow_two]
 
 -- This lemma is higher priority than later `smul_zero` so that the `simpNF` is happy
-@[to_additive (attr := simp high) nsmul_zero] lemma one_pow : ∀ n, (1 : M) ^ n = 1
+@[to_additive (attr := simp high) nsmul_zero] lemma one_pow : ∀ (n : ℕ), (1 : M) ^ n = 1
   | 0 => pow_zero _
   | n + 1 => by rw [pow_succ, one_pow, one_mul]
 
@@ -825,6 +838,27 @@ field of individual `DivInvMonoid`s constructed using that default value will no
 `.instance` transparency. -/
 def DivInvMonoid.div' {G : Type u} [Monoid G] [Inv G] (a b : G) : G := a * b⁻¹
 
+/-- Scalar multiplication by an integer. -/
+class ZSMul (G : Type*) where
+  /-- Scalar multiplication by an integer. -/
+  protected zsmul : ℤ → G → G
+
+/-- A `ZSMul` gives rise to a `SMul ℤ G` instance. -/
+instance ZSMul.toSMul {G : Type*} [ZSMul G] : SMul ℤ G :=
+  ⟨ZSMul.zsmul⟩
+
+/-- Exponentiation by an integer. -/
+class ZPow (G : Type*) where
+  /-- Exponentiation by an integer. -/
+  protected zpow : ℤ → G → G
+
+/-- An `ZPow` gives rise to a `Pow G ℤ` instance. -/
+instance ZPow.toPow {G : Type*} [ZPow G] : Pow G ℤ where
+  pow g n := ZPow.zpow n g
+
+attribute [to_additive existing] ZPow
+attribute [to_additive existing ZSMul.toSMul] ZPow.toPow
+
 /-- A `DivInvMonoid` is a `Monoid` with operations `/` and `⁻¹` satisfying
 `div_eq_mul_inv : ∀ a b, a / b = a * b⁻¹`.
 
@@ -843,19 +877,19 @@ In the same way, adding a `zpow` field makes it possible to avoid definitional f
 in diamonds. See the definition of `Monoid` and Note [forgetful inheritance] for more
 explanations on this.
 -/
-class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
+class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G, ZPow G where
   protected div := DivInvMonoid.div'
   /-- `a / b := a * b⁻¹` -/
   protected div_eq_mul_inv : ∀ a b : G, a / b = a * b⁻¹ := by intros; rfl
   /-- The power operation: `a ^ n = a * ··· * a`; `a ^ (-n) = a⁻¹ * ··· a⁻¹` (`n` times) -/
-  protected zpow : ℤ → G → G := zpowRec npowRec
+  protected zpow := zpowRec npowRec
   /-- `a ^ 0 = 1` -/
-  protected zpow_zero' : ∀ a : G, zpow 0 a = 1 := by intros; rfl
+  protected zpow_zero' : ∀ a : G, a ^ (0 : ℤ) = 1 := by intros; rfl
   /-- `a ^ (n + 1) = a ^ n * a` -/
-  protected zpow_succ' (n : ℕ) (a : G) : zpow n.succ a = zpow n a * a := by
+  protected zpow_succ' (n : ℕ) (a : G) : a ^ (n.succ : ℤ) = a ^ (n : ℤ) * a := by
     intros; rfl
   /-- `a ^ -(n + 1) = (a ^ (n + 1))⁻¹` -/
-  protected zpow_neg' (n : ℕ) (a : G) : zpow (Int.negSucc n) a = (zpow n.succ a)⁻¹ := by intros; rfl
+  protected zpow_neg' (n : ℕ) (a : G) : a ^ (Int.negSucc n) = (a ^ (n.succ : ℤ))⁻¹ := by intros; rfl
 
 /-- In a class equipped with instances of both `AddMonoid` and `Neg`, this definition records what
 the default definition for `Sub` would be: `a + -b`.  This is later provided as the default value
@@ -885,28 +919,21 @@ In the same way, adding a `zsmul` field makes it possible to avoid definitional 
 in diamonds. See the definition of `AddMonoid` and Note [forgetful inheritance] for more
 explanations on this.
 -/
-class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
+class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G, ZSMul G where
   protected sub := SubNegMonoid.sub'
   protected sub_eq_add_neg : ∀ a b : G, a - b = a + -b := by intros; rfl
   /-- Multiplication by an integer.
   Set this to `zsmulRec` unless `Module` diamonds are possible. -/
-  protected zsmul : ℤ → G → G
-  protected zsmul_zero' : ∀ a : G, zsmul 0 a = 0 := by intros; rfl
+  protected zsmul := zsmulRec nsmulRec
+  protected zsmul_zero' : ∀ a : G, (0 : ℤ) • a = 0 := by intros; rfl
   protected zsmul_succ' (n : ℕ) (a : G) :
-      zsmul n.succ a = zsmul n a + a := by
+      (n.succ : ℤ) • a = (n : ℤ) • a + a := by
     intros; rfl
-  protected zsmul_neg' (n : ℕ) (a : G) : zsmul (Int.negSucc n) a = -zsmul n.succ a := by
+  protected zsmul_neg' (n : ℕ) (a : G) :
+      (Int.negSucc n) • a = - ((n.succ : ℤ) • a) := by
     intros; rfl
 
 attribute [to_additive SubNegMonoid] DivInvMonoid
-
-instance DivInvMonoid.toZPow {M} [DivInvMonoid M] : Pow M ℤ :=
-  ⟨fun x n ↦ DivInvMonoid.zpow n x⟩
-
-instance SubNegMonoid.toZSMul {M} [SubNegMonoid M] : SMul ℤ M :=
-  ⟨SubNegMonoid.zsmul⟩
-
-attribute [to_additive existing] DivInvMonoid.toZPow
 
 /-- A group is called *cyclic* if it is generated by a single element. -/
 class IsAddCyclic (G : Type u) [SMul ℤ G] : Prop where
@@ -927,7 +954,7 @@ section DivInvMonoid
 variable [DivInvMonoid G]
 
 @[to_additive (attr := simp) zsmul_eq_smul] theorem zpow_eq_pow (n : ℤ) (x : G) :
-    DivInvMonoid.zpow n x = x ^ n :=
+    DivInvMonoid.toZPow.zpow n x = x ^ n :=
   rfl
 
 @[to_additive (attr := simp) zero_zsmul] theorem zpow_zero (a : G) : a ^ (0 : ℤ) = 1 :=
