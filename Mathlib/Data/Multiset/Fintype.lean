@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Logic.Function.CompTypeclasses
 
 /-!
 # Multiset coercion to type
@@ -314,17 +315,16 @@ theorem mapEquiv_apply (s : Multiset α) (f : α → β) (v : s) : s.mapEquiv f 
 
 /--
 `e : s ≃ t` induced by `t.map g = s.map f`, which composes in the following way: `f = g ∘ e`
-(`Multiset.comp_coe_eq_comp_coe_comp_equivOfMapEq`).
+(`Multiset.compTriple_equivOfMapEq`).
 -/
 noncomputable def equivOfMapEq {γ : Type*} [DecidableEq γ] {f : α → γ} {g : β → γ}
     {s : Multiset α} {t : Multiset β} (h : s.map f = t.map g) : s ≃ t :=
   (mapEquiv s f) |>.trans (cast h) |>.trans (mapEquiv t g).symm
 
-theorem comp_coe_eq_comp_coe_comp_equivOfMapEq {γ : Type*} [DecidableEq γ]
+instance compTriple_equivOfMapEq {γ : Type*} [DecidableEq γ]
     {f : α → γ} {g : β → γ} {s : Multiset α} {t : Multiset β} (h : s.map f = t.map g) :
-    f ∘ (↑) = g ∘ (↑) ∘ equivOfMapEq h := by
-  ext x
-  simp [equivOfMapEq, ← mapEquiv_apply t g]
+    CompTriple (equivOfMapEq h) (g ∘ (↑)) (f ∘ (↑)) where
+  comp_eq := by ext; simp [equivOfMapEq, ← mapEquiv_apply t g]
 
 /-- The canonical equivalence between a type and its `Finset.univ.val` coerced to a type. -/
 noncomputable def equivCoeValUniv (α : Type*) [DecidableEq α] [Fintype α] :
@@ -336,15 +336,15 @@ noncomputable def equivCoeValUniv (α : Type*) [DecidableEq α] [Fintype α] :
 
 /--
 `e : α ≃ β` induced by `Finset.univ.val.map f = Finset.univ.val.map g`,
-which composes in the following way: `f = g ∘ e` (`Multiset.eq_comp_equivOfMapUnivEq`).
+which composes in the following way: `f = g ∘ e` (`Multiset.compTriple_equivOfMapUnivEq`).
 -/
 noncomputable def equivOfMapUnivEq {γ : Type*} [DecidableEq γ] [Fintype α] [Fintype β]
     {f : α → γ} {g : β → γ} (h : Finset.univ.val.map f = Finset.univ.val.map g) : α ≃ β :=
   (equivCoeValUniv α) |>.trans (equivOfMapEq h) |>.trans (equivCoeValUniv β).symm
 
-theorem eq_comp_equivOfMapUnivEq {γ : Type*} [DecidableEq γ] [Fintype α] [Fintype β]
+instance compTriple_equivOfMapUnivEq {γ : Type*} [DecidableEq γ] [Fintype α] [Fintype β]
     {f : α → γ} {g : β → γ} (h : Finset.univ.val.map f = Finset.univ.val.map g) :
-    f = g ∘ equivOfMapUnivEq h :=
-  funext fun x => congr_fun (comp_coe_eq_comp_coe_comp_equivOfMapEq h) ⟨x, _⟩
+    CompTriple (equivOfMapUnivEq h) g f where
+  comp_eq := funext fun x => congr_fun (compTriple_equivOfMapEq h).comp_eq ⟨x, _⟩
 
 end Multiset
