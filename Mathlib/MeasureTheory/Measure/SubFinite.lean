@@ -3,7 +3,8 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
+import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
+import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
 import Mathlib.MeasureTheory.Measure.Sub
 
 /-!
@@ -28,48 +29,40 @@ variable {α : Type*} {mα : MeasurableSpace α} {μ ν ξ : Measure α}
 lemma sub_le_iff_le_add [IsFiniteMeasure μ] [IsFiniteMeasure ν] : μ - ν ≤ ξ ↔ μ ≤ ξ + ν := by
   refine ⟨fun h ↦ ?_, sub_le_of_le_add⟩
   obtain ⟨s, hs⟩ := exists_isHahnDecomposition μ ν
-  suffices μ.restrict s ≤ ξ.restrict s + ν.restrict s
-      ∧ μ.restrict sᶜ ≤ ξ.restrict sᶜ + ν.restrict sᶜ by
-    have h_eq_restrict (μ : Measure α) : μ = μ.restrict s + μ.restrict sᶜ := by
-      rw [restrict_add_restrict_compl hs.measurableSet]
-    rw [h_eq_restrict μ, h_eq_restrict ξ, h_eq_restrict ν]
-    suffices μ.restrict s + μ.restrict sᶜ
-        ≤ ξ.restrict s + ν.restrict s + (ξ.restrict sᶜ + ν.restrict sᶜ) by
-      refine this.trans_eq ?_
-      abel
-    gcongr
-    · exact this.1
-    · exact this.2
-  constructor
-  · have h_le := hs.le_on
-    refine h_le.trans ?_
-    exact Measure.le_add_left le_rfl
-  · have h_le := hs.ge_on_compl
+  have h_le_s : μ.restrict s ≤ ξ.restrict s + ν.restrict s :=
+    hs.le_on.trans (Measure.le_add_left le_rfl)
+  have h_le_s_compl : μ.restrict sᶜ ≤ ξ.restrict sᶜ + ν.restrict sᶜ := by
     have h' : μ.restrict sᶜ - ν.restrict sᶜ ≤ ξ.restrict sᶜ := by
       rw [← restrict_sub_eq_restrict_sub_restrict hs.measurableSet.compl]
       exact restrict_mono subset_rfl h
-    exact (sub_le_iff_le_add_of_le h_le).mp h'
+    exact (sub_le_iff_le_add_of_le hs.ge_on_compl).mp h'
+  rw [← restrict_add_restrict_compl (μ := μ) hs.measurableSet,
+    ← restrict_add_restrict_compl (μ := ξ) hs.measurableSet,
+    ← restrict_add_restrict_compl (μ := ν) hs.measurableSet]
+  suffices μ.restrict s + μ.restrict sᶜ
+    ≤ ξ.restrict s + ν.restrict s + (ξ.restrict sᶜ + ν.restrict sᶜ) from this.trans_eq (by abel)
+  gcongr
 
 lemma add_sub_of_mutuallySingular (h : μ ⟂ₘ ξ) : μ + (ν - ξ) = μ + ν - ξ := by
   let s := h.nullSet
   have hs : MeasurableSet s := h.measurableSet_nullSet
-  suffices μ.restrict s + (ν - ξ).restrict s = μ.restrict s + ν.restrict s - ξ.restrict s
-      ∧ μ.restrict sᶜ + (ν - ξ).restrict sᶜ = μ.restrict sᶜ + ν.restrict sᶜ - ξ.restrict sᶜ by
-    calc μ + (ν - ξ)
-    _ = μ.restrict s + μ.restrict sᶜ + (ν - ξ).restrict s + (ν - ξ).restrict sᶜ := by
-      rw [restrict_add_restrict_compl hs, add_assoc, restrict_add_restrict_compl hs]
-    _ = μ.restrict s + (ν - ξ).restrict s + (μ.restrict sᶜ + (ν - ξ).restrict sᶜ) := by abel
-    _ = (μ.restrict s + ν.restrict s - ξ.restrict s) +
-        (μ.restrict sᶜ + ν.restrict sᶜ - ξ.restrict sᶜ) := by rw [this.1, this.2]
-    _ = (μ + ν - ξ).restrict s + (μ + ν - ξ).restrict sᶜ := by
-        simp [restrict_sub_eq_restrict_sub_restrict hs,
-          restrict_sub_eq_restrict_sub_restrict hs.compl]
-    _ = μ + ν - ξ := by rw [restrict_add_restrict_compl hs]
-  constructor
-  · rw [h.restrict_nullSet, restrict_sub_eq_restrict_sub_restrict hs]
+  have h_le_s : μ.restrict s + (ν - ξ).restrict s = μ.restrict s + ν.restrict s - ξ.restrict s := by
+    rw [h.restrict_nullSet, restrict_sub_eq_restrict_sub_restrict hs]
     simp
-  · rw [restrict_sub_eq_restrict_sub_restrict hs.compl, h.restrict_compl_nullSet]
+  have h_le_s_compl : μ.restrict sᶜ + (ν - ξ).restrict sᶜ
+      = μ.restrict sᶜ + ν.restrict sᶜ - ξ.restrict sᶜ := by
+    rw [restrict_sub_eq_restrict_sub_restrict hs.compl, h.restrict_compl_nullSet]
     simp
+  calc μ + (ν - ξ)
+  _ = μ.restrict s + μ.restrict sᶜ + (ν - ξ).restrict s + (ν - ξ).restrict sᶜ := by
+    rw [restrict_add_restrict_compl hs, add_assoc, restrict_add_restrict_compl hs]
+  _ = μ.restrict s + (ν - ξ).restrict s + (μ.restrict sᶜ + (ν - ξ).restrict sᶜ) := by abel
+  _ = (μ.restrict s + ν.restrict s - ξ.restrict s) +
+      (μ.restrict sᶜ + ν.restrict sᶜ - ξ.restrict sᶜ) := by rw [h_le_s, h_le_s_compl]
+  _ = (μ + ν - ξ).restrict s + (μ + ν - ξ).restrict sᶜ := by
+      simp [restrict_sub_eq_restrict_sub_restrict hs,
+        restrict_sub_eq_restrict_sub_restrict hs.compl]
+  _ = μ + ν - ξ := by rw [restrict_add_restrict_compl hs]
 
 /-- Auxiliary lemma for `withDensity_sub`. -/
 private lemma withDensity_sub_aux {f g : α → ℝ≥0∞} [IsFiniteMeasure (μ.withDensity g)]
@@ -78,9 +71,7 @@ private lemma withDensity_sub_aux {f g : α → ℝ≥0∞} [IsFiniteMeasure (μ
   refine le_antisymm ?_ ?_
   · refine sub_le_of_le_add ?_
     rw [← withDensity_add_right _ hg]
-    refine withDensity_mono (ae_of_all _ fun x ↦ ?_)
-    simp only [Pi.add_apply, Pi.sub_apply]
-    exact le_tsub_add
+    exact withDensity_mono (ae_of_all _ fun x ↦ le_tsub_add)
   · rw [sub_def, le_sInf_iff]
     intro ξ hξ
     simp only [Set.mem_setOf_eq] at hξ
@@ -92,8 +83,7 @@ private lemma withDensity_sub_aux {f g : α → ℝ≥0∞} [IsFiniteMeasure (μ
     simp only [Pi.sub_apply]
     rw [lintegral_sub hg]
     · rwa [tsub_le_iff_right]
-    · rw [← withDensity_apply _ hs]
-      simp
+    · simp [← withDensity_apply _ hs]
     · exact ae_restrict_of_ae hgf
 
 lemma withDensity_sub {f g : α → ℝ≥0∞} [IsFiniteMeasure (μ.withDensity g)]
@@ -102,9 +92,7 @@ lemma withDensity_sub {f g : α → ℝ≥0∞} [IsFiniteMeasure (μ.withDensity
   refine le_antisymm ?_ ?_
   · refine sub_le_of_le_add ?_
     rw [← withDensity_add_right _ hg]
-    refine withDensity_mono (ae_of_all _ fun x ↦ ?_)
-    simp only [Pi.add_apply, Pi.sub_apply]
-    exact le_tsub_add
+    exact withDensity_mono (ae_of_all _ fun x ↦ le_tsub_add)
   · let t := {x | f x ≤ g x}
     have ht : MeasurableSet t := measurableSet_le hf hg
     rw [← restrict_add_restrict_compl (μ := μ.withDensity (f - g)) ht,
@@ -116,9 +104,7 @@ lemma withDensity_sub {f g : α → ℝ≥0∞} [IsFiniteMeasure (μ.withDensity
       simpa [tsub_eq_zero_iff_le]
     rw [h_zero, zero_add]
     suffices (μ.withDensity (f - g)).restrict tᶜ
-        ≤ (μ.withDensity f - μ.withDensity g).restrict tᶜ by
-      refine this.trans ?_
-      exact Measure.le_add_left le_rfl
+      ≤ (μ.withDensity f - μ.withDensity g).restrict tᶜ from this.trans (Measure.le_add_left le_rfl)
     rw [restrict_sub_eq_restrict_sub_restrict ht.compl]
     simp_rw [restrict_withDensity ht.compl]
     have : IsFiniteMeasure ((μ.restrict tᶜ).withDensity g) := by
