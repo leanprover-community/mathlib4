@@ -211,7 +211,7 @@ theorem d_nonsquare_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : ¬IsSquare 
   have hp := a.prop
   rintro ⟨b, rfl⟩
   simp_rw [← sq, ← mul_pow, sq_sub_sq, Int.mul_eq_one_iff_eq_one_or_neg_one] at hp
-  omega
+  cutsat
 
 /-- A solution with `x = 1` is trivial. -/
 theorem eq_one_of_x_eq_one (h₀ : d ≠ 0) {a : Solution₁ d} (ha : a.x = 1) : a = 1 := by
@@ -494,7 +494,7 @@ theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
   · let m : ℤ := -n - 1
     have hm : n = -m - 1 := by simp only [m, neg_sub, sub_neg_eq_add, add_tsub_cancel_left]
     rw [hm, sub_add_cancel, ← neg_add', zpow_neg, zpow_neg, y_inv, y_inv, neg_lt_neg_iff]
-    exact H _ (by omega)
+    exact H _ (by cutsat)
 
 /-- If `a` is a fundamental solution, then `(a^m).y < (a^n).y` if and only if `m < n`. -/
 theorem zpow_y_lt_iff_lt {a : Solution₁ d} (h : IsFundamental a) (m n : ℤ) :
