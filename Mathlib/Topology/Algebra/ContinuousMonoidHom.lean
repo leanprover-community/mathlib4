@@ -545,18 +545,16 @@ end ContinuousMulEquiv
 
 namespace MulEquiv
 
-variable {G H} [Mul G] [Mul H] (e : G ≃* H)
+variable {G H} [Mul G] [Mul H] (e : G ≃* H) (he : ∀ s, IsOpen (e ⁻¹' s) ↔ IsOpen s)
+include he
 
 /-- A `MulEquiv` that respects open sets is a `ContinuousMulEquiv`. -/
 @[to_additive /-- An `AddEquiv` that respects open sets is a `ContinuousAddEquiv`. -/]
-def toContinuousMulEquiv (he : ∀ s, IsOpen (e ⁻¹' s) ↔ IsOpen s) :
-    G ≃ₜ* H where
+def toContinuousMulEquiv : G ≃ₜ* H where
   __ := e
   __ := e.toEquiv.toHomeomorph he
--- apply symm toEquiv
 
-variable {e} (he : ∀ s, IsOpen (e ⁻¹' s) ↔ IsOpen s)
-include he
+variable {e}
 
 @[simp] lemma toContinuousMulEquiv_apply (g : G) : e.toContinuousMulEquiv he g = e g :=
   rfl

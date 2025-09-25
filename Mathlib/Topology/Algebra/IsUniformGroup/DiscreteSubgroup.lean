@@ -24,7 +24,7 @@ as a topological group, to `H` as a subgroup of `G`. This is `subgroupOfEquivOfL
 `ContinuousMulEquiv`. -/
 @[to_additive (attr := simps! apply) /-- If `G` has a topology, and `H ≤ K` are
 subgroups, then `H` as a subgroup of `K` is isomorphic, as a topological group, to `H` as a subgroup
-of `G`. This is `subgroupOfEquivOfLe` upgraded to a `ContinuousAddEquiv`.-/]
+of `G`. This is `addSubgroupOfEquivOfLe` upgraded to a `ContinuousAddEquiv`.-/]
 def Subgroup.subgroupOfContinuousMulEquivOfLe {H K : Subgroup G} (hHK : H ≤ K) :
     (H.subgroupOf K) ≃ₜ* H :=
   (subgroupOfEquivOfLe hHK).toContinuousMulEquiv (by
@@ -40,19 +40,16 @@ lemma Subgroup.subgroupOfContinuousMulEquivOfLe_symm_apply
   rfl
 
 @[to_additive (attr := simp)]
-lemma Subgroup.subgroupOfContinuousMulEquivOfLe_toMulEquiv {G : Type*} [Group G]
-    [TopologicalSpace G] {H K : Subgroup G} (hHK : H ≤ K) :
+lemma Subgroup.subgroupOfContinuousMulEquivOfLe_toMulEquiv {H K : Subgroup G} (hHK : H ≤ K) :
     (subgroupOfContinuousMulEquivOfLe hHK : H.subgroupOf K ≃* H) = subgroupOfEquivOfLe hHK := by
   rfl
 
-variable [IsTopologicalGroup G]
+variable [IsTopologicalGroup G] [T2Space G]
 
 /-- If `G` is a topological group and `H` a finite-index subgroup, then `G` is topologically
 discrete iff `H` is. -/
 @[to_additive]
-lemma Subgroup.discreteTopology_iff_of_index_ne_zero
-    {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [T2Space G]
-    {H : Subgroup G} (hind : H.index ≠ 0) :
+lemma Subgroup.discreteTopology_iff_of_index_ne_zero {H : Subgroup G} (hind : H.index ≠ 0) :
     DiscreteTopology H ↔ DiscreteTopology G := by
   refine ⟨fun hH ↦ ?_, fun hG ↦ instDiscreteTopologySubtype⟩
   let s (i : G ⧸ H) : Set G := QuotientGroup.mk ⁻¹' {i}
@@ -76,9 +73,7 @@ lemma Subgroup.discreteTopology_iff_of_index_ne_zero
     simp only [Set.singleton_mul, Set.image_mul_left, Set.mem_preimage, Homeomorph.coe_mulLeft]
 
 @[to_additive]
-lemma Subgroup.discreteTopology_iff_of_finite_relIndex
-    {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [T2Space G]
-    {H K : Subgroup G} (hHK : H ≤ K) (hind : H.relIndex K ≠ 0) :
-    DiscreteTopology H ↔ DiscreteTopology K := by
+lemma Subgroup.discreteTopology_iff_of_finite_relIndex {H K : Subgroup G} (hHK : H ≤ K)
+    (hind : H.relIndex K ≠ 0) : DiscreteTopology H ↔ DiscreteTopology K := by
   rw [← discreteTopology_iff_of_index_ne_zero hind,
     (subgroupOfContinuousMulEquivOfLe hHK).symm.discreteTopology_iff]
