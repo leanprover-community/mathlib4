@@ -109,12 +109,13 @@ def extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Complet
   (v.isometry_embedding_of_isReal hv).extensionHom
 
 @[simp]
-theorem extensionEmbedding_coe (x : K) : extensionEmbedding v x = v.embedding x :=
+theorem extensionEmbedding_coe (x : WithAbs v.1) :
+    extensionEmbedding v x = v.embedding (WithAbs.equiv v.1 x) :=
   v.isometry_embedding.extensionHom_coe _
 
 @[simp]
-theorem extensionEmbeddingOfIsReal_coe {v : InfinitePlace K} (hv : IsReal v) (x : K) :
-    extensionEmbeddingOfIsReal hv x = embedding_of_isReal hv x :=
+theorem extensionEmbeddingOfIsReal_coe {v : InfinitePlace K} (hv : IsReal v) (x : WithAbs v.1) :
+    extensionEmbeddingOfIsReal hv x = embedding_of_isReal hv (WithAbs.equiv v.1 x) :=
   (v.isometry_embedding_of_isReal hv).extensionHom_coe _
 
 @[deprecated (since := "2025-09-24")]
@@ -157,7 +158,7 @@ theorem subfield_ne_real_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) :
   contrapose! hv
   refine not_isComplex_iff_isReal.2 <| isReal_iff.2 <| RingHom.ext fun x ↦ ?_
   obtain ⟨r, hr⟩ := hv ▸ RingHom.mem_fieldRange_self (extensionEmbedding v) (x : v.Completion)
-  rw [extensionEmbedding_coe, RingEquiv.apply_symm_apply] at hr
+  simp only [extensionEmbedding_coe, RingEquiv.apply_symm_apply] at hr
   simp [← hr]
 
 /-- If `v` is a complex infinite place, then the embedding `v.Completion →+* ℂ` is surjective. -/
@@ -219,17 +220,16 @@ open Completion
 
 variable {L : Type*} [Field L] [Algebra K L] (w : v.Extension L) {v}
 
-open WithAbs in
-theorem apply_algebraMap_apply (x : WithAbs v.1) :
-    w.1 (equiv w.abs (algebraMap (WithAbs v.1) (WithAbs w.abs) x)) = v (equiv v.1 x) := by
-  exact WithAbs.equiv_algebraMap_apply v.1 w.abs _ ▸ comp_of_comap_eq w.comap_eq _
+theorem isometry_algebraMap : Isometry (algebraMap (WithAbs v.1) (WithAbs w.abs)) := by
+  apply AddMonoidHomClass.isometry_of_norm
+  exact fun _ ↦ WithAbs.equiv_algebraMap_apply v.1 w.abs _ ▸ comp_of_comap_eq w.comap_eq _
 
-instance : Algebra v.Completion w.1.Completion := mapOfComp (apply_algebraMap_apply w) |>.toAlgebra
+instance : Algebra v.Completion w.1.Completion := w.isometry_algebraMap.mapRingHom.toAlgebra
 
 @[simp]
 theorem algebraMap_coe (x : WithAbs v.1) :
-    algebraMap v.Completion w.1.Completion x = algebraMap (WithAbs v.1) (WithAbs w.abs) x := by
-  rw [RingHom.algebraMap_toAlgebra, mapOfComp_coe]
+    algebraMap v.Completion w.1.Completion x = algebraMap (WithAbs v.1) (WithAbs w.abs) x :=
+  w.isometry_algebraMap.mapRingHom_coe _
 
 open UniformSpace.Completion NumberField.ComplexEmbedding in
 theorem extensionEmbedding_algebraMap
