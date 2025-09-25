@@ -5,6 +5,7 @@ Authors: David Loeffler
 -/
 
 import Mathlib.GroupTheory.Index
+import Mathlib.Topology.Algebra.ContinuousMonoidHom
 import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 
 /-!
@@ -18,25 +19,30 @@ open Filter Topology Uniformity
 
 variable {G : Type*} [Group G] [TopologicalSpace G]
 
-/-- If `G` has a topology, and `H ≤ K` are subgroups, then `H` as a subgroup of `K` is homeomorphic
-to `H` as a subgroup of `G`. This is `subgroupOfEquivOfLe` bundled as a `Homeomorph`. -/
-@[to_additive (attr := simps! apply symm_apply) /-- If `G` has a topology, and `H ≤ K` are
-subgroups, then `H` as a subgroup of `K` is homeomorphic to `H` as a subgroup of `G`. This is
-`subgroupOfEquivOfLe` bundled as a `Homeomorph`.-/]
-def Subgroup.subgroupOfHomeomorphOfLe {G : Type*} [Group G] [TopologicalSpace G]
-    {H K : Subgroup G} (hHK : H ≤ K) :
-    (H.subgroupOf K) ≃ₜ H :=
-  (subgroupOfEquivOfLe hHK).toHomeomorph (by
-    simp only [subgroupOfEquivOfLe, MulEquiv.toEquiv_eq_coe, EquivLike.coe_coe, MulEquiv.coe_mk,
-      Equiv.coe_fn_mk, Topology.IsInducing.subtypeVal.isOpen_iff, SetLike.coe_sort_coe,
+/-- If `G` has a topology, and `H ≤ K` are subgroups, then `H` as a subgroup of `K` is isomorphic,
+as a topological group, to `H` as a subgroup of `G`. This is `subgroupOfEquivOfLe` upgraded to a
+`ContinuousMulEquiv`. -/
+@[to_additive (attr := simps! apply) /-- If `G` has a topology, and `H ≤ K` are
+subgroups, then `H` as a subgroup of `K` is isomorphic, as a topological group, to `H` as a subgroup
+of `G`. This is `subgroupOfEquivOfLe` upgraded to a `ContinuousAddEquiv`.-/]
+def Subgroup.subgroupOfContinuousMulEquivOfLe {H K : Subgroup G} (hHK : H ≤ K) :
+    (H.subgroupOf K) ≃ₜ* H :=
+  (subgroupOfEquivOfLe hHK).toContinuousMulEquiv (by
+    simp only [subgroupOfEquivOfLe, Topology.IsInducing.subtypeVal.isOpen_iff,
       exists_exists_and_eq_and]
-    simpa only [Set.ext_iff, Subtype.forall, mem_subgroupOf] using fun s ↦ exists_congr
+    simpa [Set.ext_iff] using fun s ↦ exists_congr
       fun t ↦ and_congr_right fun _ ↦ ⟨fun aux g hgh ↦ aux g (hHK hgh) hgh, by grind⟩)
 
-@[to_additive]
-lemma Subgroup.subgroupOfHomeomorphOfLe_toEquiv {G : Type*} [Group G] [TopologicalSpace G]
-    {H K : Subgroup G} (hHK : H ≤ K) :
-    (subgroupOfHomeomorphOfLe hHK : H.subgroupOf K ≃ H) = subgroupOfEquivOfLe hHK := by
+@[to_additive (attr := simp)]
+lemma Subgroup.subgroupOfContinuousMulEquivOfLe_symm_apply
+    {H K : Subgroup G} (hHK : H ≤ K) (g : H) :
+    (subgroupOfContinuousMulEquivOfLe hHK).symm g = ⟨⟨g.1, hHK g.2⟩, g.2⟩ :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma Subgroup.subgroupOfContinuousMulEquivOfLe_toMulEquiv {G : Type*} [Group G]
+    [TopologicalSpace G] {H K : Subgroup G} (hHK : H ≤ K) :
+    (subgroupOfContinuousMulEquivOfLe hHK : H.subgroupOf K ≃* H) = subgroupOfEquivOfLe hHK := by
   rfl
 
 variable [IsTopologicalGroup G]
@@ -75,4 +81,4 @@ lemma Subgroup.discreteTopology_iff_of_finite_relIndex
     {H K : Subgroup G} (hHK : H ≤ K) (hind : H.relIndex K ≠ 0) :
     DiscreteTopology H ↔ DiscreteTopology K := by
   rw [← discreteTopology_iff_of_index_ne_zero hind,
-    (subgroupOfHomeomorphOfLe hHK).symm.discreteTopology_iff]
+    (subgroupOfContinuousMulEquivOfLe hHK).symm.discreteTopology_iff]
