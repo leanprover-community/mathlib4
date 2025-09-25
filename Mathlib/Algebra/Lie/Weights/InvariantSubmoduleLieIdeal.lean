@@ -174,11 +174,31 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
             obtain ⟨i, hi⟩ := exists_root_index χ (get_isNonZero χ w_chi)
             obtain ⟨j, hj⟩ := exists_root_index α.1 α.2.2
             have h_pairing_zero : S.pairing i j = 0 := by
-              obtain ⟨i', j', hi', hj', h_zero⟩ := pairing_zero_of_bot_sum_diff_spaces
-                H χ α.1 (get_isNonZero χ w_chi) α.2.2 w_plus w_minus h_plus_bot h_minus_bot
-              have h_i_eq : i = i' := Function.Embedding.injective S.root (by rw [hi, hi'])
-              have h_j_eq : j = j' := Function.Embedding.injective S.root (by rw [hj, hj'])
-              rwa [h_i_eq, h_j_eq]
+              apply RootPairing.pairing_eq_zero_of_add_notMem_of_sub_notMem S.toRootPairing
+              · intro h_eq
+                have h_chi_eq_alpha : χ.toLinear = α.1.toLinear := by
+                  rw [← hi, ← hj, h_eq]
+                exact w_minus (by rw [h_chi_eq_alpha, sub_self])
+              · intro h_eq
+                have h_chi_neg_alpha : χ.toLinear = -α.1.toLinear := by
+                  rw [← hi, ← hj, h_eq]
+                have h_add_zero : χ.toLinear + α.1.toLinear = 0 := by
+                  rw [h_chi_neg_alpha, neg_add_cancel]
+                exact w_plus h_add_zero
+              · intro h_mem
+                have h_nontrivial : genWeightSpace L (S.root i + S.root j) ≠ ⊥ := by
+                  obtain ⟨idx, hidx⟩ := h_mem
+                  rw [← hidx]
+                  exact idx.val.genWeightSpace_ne_bot
+                rw [hi, hj] at h_nontrivial
+                exact h_nontrivial h_plus_bot
+              · intro h_mem
+                have h_nontrivial : genWeightSpace L (S.root i - S.root j) ≠ ⊥ := by
+                  obtain ⟨idx, hidx⟩ := h_mem
+                  rw [← hidx]
+                  exact idx.val.genWeightSpace_ne_bot
+                rw [hi, hj] at h_nontrivial
+                exact h_nontrivial h_minus_bot
 
             have h_pos_zero : ⁅x_χ, m_pos⁆ = 0 := by
               have h_in_bot : ⁅x_χ, m_pos⁆ ∈ (⊥ : LieSubmodule K H L) := by
