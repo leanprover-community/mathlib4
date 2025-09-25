@@ -85,18 +85,18 @@ jobs:
       - name: build doc-gen4
         working-directory: docbuild
         run: |
-          env DISABLE_EQUATIONS=1 lake build doc-gen4 | tee -a "${{ steps.buildlog.filename }}"
+          env DISABLE_EQUATIONS=1 lake build doc-gen4 | tee -a "${{ steps.buildlog.outputs.filename }}"
 
       - name: build import graph
         working-directory: .
         run: |
-          lake exe graph mathlib.html | tee -a "${{ steps.buildlog.filename }}"
+          lake exe graph mathlib.html | tee -a "${{ steps.buildlog.outputs.filename }}"
 
       - name: generate docs
         working-directory: docbuild
         run: |
-          lake build Batteries:docs Qq:docs Aesop:docs ProofWidgets:docs Mathlib:docs Archive:docs Counterexamples:docs docs:docs | tee -a "${{ steps.buildlog.filename }}"
-          lake build Mathlib:docsHeader | tee -a "${{ steps.buildlog.filename }}"
+          lake build Batteries:docs Qq:docs Aesop:docs ProofWidgets:docs Mathlib:docs Archive:docs Counterexamples:docs docs:docs | tee -a "${{ steps.buildlog.outputs.filename }}"
+          lake build Mathlib:docsHeader | tee -a "${{ steps.buildlog.outputs.filename }}"
 
       - name: clean up
         if: always()
@@ -113,8 +113,8 @@ jobs:
           SHA=${{ github.sha }} \
           REPO=${{ github.repository }} \
           RUN_ID=${{ github.run_id }} \
-          SUCCESS=${{ success() }} \
-            ./scripts/zulip_build_report.sh "${{ steps.buildlog.filename }}" >> "${GITHUB_OUTPUT}"
+          SUCCESS=${{ job.status == 'success' }} \
+            ./scripts/zulip_build_report.sh "${{ steps.buildlog.outputs.filename }}" >> "${GITHUB_OUTPUT}"
 
       - name: Send message on Zulip
         uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
