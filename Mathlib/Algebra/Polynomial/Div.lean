@@ -704,6 +704,11 @@ lemma le_rootMultiplicity_mul {p q : R[X]} (x : R) (hpq : p * q ≠ 0) :
   rw [le_rootMultiplicity_iff hpq, pow_add]
   gcongr <;> apply pow_rootMultiplicity_dvd
 
+lemma le_rootMultiplicity_div {p q : R[X]} (hq : q ≠ 0) (hpq : p ∣ q) (x : R) :
+    rootMultiplicity x p ≤ rootMultiplicity x q := by
+  have ⟨d, h⟩ := hpq
+  exact h ▸ Nat.le_of_add_right_le (le_rootMultiplicity_mul x <| h ▸ hq)
+
 lemma pow_rootMultiplicity_not_dvd (p0 : p ≠ 0) (a : R) :
     ¬(X - C a) ^ (rootMultiplicity a p + 1) ∣ p := by rw [← rootMultiplicity_le_iff p0]
 
