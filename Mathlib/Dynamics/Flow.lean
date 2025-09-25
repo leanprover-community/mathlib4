@@ -177,7 +177,7 @@ theorem mem_orbit (x : α) (t : τ) : ϕ t x ∈ orbit ϕ x := ϕ.toAddAction.me
 
 theorem mem_orbit_self (x : α) : x ∈ orbit ϕ x := ϕ.toAddAction.mem_orbit_self x
 
-theorem nonempty_orbit (x : α) : Set.Nonempty (orbit ϕ x) := ϕ.toAddAction.orbit_nonempty x
+theorem nonempty_orbit (x : α) : Set.Nonempty (orbit ϕ x) := ϕ.toAddAction.nonempty_orbit x
 
 theorem mem_orbit_of_mem_orbit {x₁ x₂ : α} (t : τ) (h : x₂ ∈ orbit ϕ x₁) : ϕ t x₂ ∈ orbit ϕ x₁ :=
   ϕ.toAddAction.mem_orbit_of_mem_orbit t h
