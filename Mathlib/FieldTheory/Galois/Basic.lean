@@ -247,6 +247,12 @@ lemma fixedField_antitone : Antitone (@fixedField F _ E _ _) :=
   ext
   simp [mem_bot]
 
+theorem fixingSubgroup_sup {K L : IntermediateField F E} :
+    (K ⊔ L).fixingSubgroup = K.fixingSubgroup ⊓ L.fixingSubgroup := by
+  ext φ
+  exact ⟨fun h ↦ ⟨fixingSubgroup_antitone le_sup_left h, fixingSubgroup_antitone le_sup_right h⟩,
+    by simp [← Subgroup.zpowers_le, ← IntermediateField.le_iff_le]⟩
+
 /-- The fixing subgroup of `K : IntermediateField F E` is isomorphic to `E ≃ₐ[K] E`. -/
 def fixingSubgroupEquiv : fixingSubgroup K ≃* E ≃ₐ[K] E where
   toFun ϕ := { AlgEquiv.toRingEquiv (ϕ : E ≃ₐ[F] E) with commutes' := ϕ.mem }
@@ -590,21 +596,9 @@ theorem restrictRestrictAlgEquivMapHom_apply (φ : E ≃ₐ[L] E) (x : K) :
 theorem restrictRestrictAlgEquivMapHom_injective (h : K ⊔ L = ⊤) :
     Function.Injective (restrictRestrictAlgEquivMapHom F K L E) := by
   refine (injective_iff_map_eq_one _).mpr fun φ hφ ↦ ?_
-  have : φ ∈ fixingSubgroup ⊤ := by
-    refine (IntermediateField.mem_fixingSubgroup_iff _ _).mpr fun _ hx ↦ ?_
-    rw [← SetLike.mem_coe, ← coe_restrictScalars F, restrictScalars_top, ← h, SetLike.mem_coe,
-      sup_def] at hx
-    induction hx using adjoin_induction F with
-    | mem x hx =>
-      obtain hx | hx := hx
-      · rw [← Subtype.coe_mk x hx, ← restrictRestrictAlgEquivMapHom_apply,
-          congr_arg ((↑) : K → E) (AlgEquiv.congr_fun hφ _), AlgEquiv.one_apply]
-      · rw [← Subtype.coe_mk x hx, ← algebraMap_apply, AlgEquiv.commutes, algebraMap_apply]
-    | algebraMap x => rw [IsScalarTower.algebraMap_apply F L E, AlgEquiv.commutes]
-    | add x y _ _ hx hy => rw [map_add, hx, hy]
-    | inv x _ hx => rw [map_inv₀, hx]
-    | mul x y _ _ hx hy => rw [map_mul, hx, hy]
-  rwa [fixingSubgroup_top, Subgroup.mem_bot] at this
+  suffices h : MulSemiringAction.toAlgAut (E ≃ₐ[↥L] E) F E φ = 1 by rwa [AlgEquiv.ext_iff] at h ⊢
+  rw [← Subgroup.mem_bot, ← fixingSubgroup_top, ← h, fixingSubgroup_sup]
+  exact ⟨fun x ↦ (hφ ▸ restrictRestrictAlgEquivMapHom_apply K L φ x).symm, φ.commutes⟩
 
 theorem restrictRestrictAlgEquivMapHom_surjective [FiniteDimensional F K] [FiniteDimensional L E]
     [IsGalois L E] (h : K ⊓ L = ⊥) :
