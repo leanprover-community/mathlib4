@@ -55,10 +55,10 @@ theorem Disjoint.symm ⦃a b : α⦄ : Disjoint a b → Disjoint b a :=
 theorem symmetric_disjoint : Symmetric (Disjoint : α → α → Prop) :=
   Disjoint.symm
 
-@[simp, grind]
+@[simp, grind ←]
 theorem disjoint_bot_left : Disjoint ⊥ a := fun _ hbot _ ↦ hbot
 
-@[simp, grind]
+@[simp]
 theorem disjoint_bot_right : Disjoint a ⊥ := fun _ _ hbot ↦ hbot
 
 @[gcongr] theorem Disjoint.mono (h₁ : a ≤ b) (h₂ : c ≤ d) : Disjoint b d → Disjoint a c :=
@@ -231,10 +231,10 @@ theorem Codisjoint.symm ⦃a b : α⦄ : Codisjoint a b → Codisjoint b a :=
 theorem symmetric_codisjoint : Symmetric (Codisjoint : α → α → Prop) :=
   Codisjoint.symm
 
-@[simp, grind]
+@[simp, grind ←]
 theorem codisjoint_top_left : Codisjoint ⊤ a := fun _ htop _ ↦ htop
 
-@[simp, grind]
+@[simp]
 theorem codisjoint_top_right : Codisjoint a ⊤ := fun _ _ htop ↦ htop
 
 @[gcongr] theorem Codisjoint.mono (h₁ : a ≤ b) (h₂ : c ≤ d) : Codisjoint a c → Codisjoint b d :=
