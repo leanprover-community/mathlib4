@@ -599,9 +599,7 @@ lemma ext_prod₃ {α β γ : Type*} {mα : MeasurableSpace α} {mβ : Measurabl
       generateFrom_prod isCountablySpanning_measurableSet ?_).symm
     exact isCountablySpanning_measurableSet.prod isCountablySpanning_measurableSet
   · exact MeasurableSpace.isPiSystem_measurableSet.prod isPiSystem_prod
-  · intro t ht
-    simp only [mem_image2, mem_setOf_eq, exists_exists_and_exists_and_eq_and, C, C₂] at ht
-    obtain ⟨s, hs, t, ht, u, hu, rfl⟩ := ht
+  · rintro - ⟨s, hs, -, ⟨t, ht, u, hu, rfl⟩, rfl⟩
     exact h hs ht hu
   · intro t ht h
     simp_rw [measure_compl ht (measure_ne_top _ _), h, h_univ]
