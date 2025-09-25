@@ -578,7 +578,7 @@ theorem mul_conjTranspose_self [StarOrderedRing R] [NoZeroDivisors R] (A : Matri
 
 In a nontrivial commutative ring with nontrivial index, this is never positive definite
 (see `Matrix.not_posDef_vecMulVec`). -/
-theorem _root_.Matrix.posDef_vecMulVec_star [StarOrderedRing R] [NoZeroDivisors R] (a : n → R)
+theorem _root_.Matrix.posDef_vecMulVec_self_star [StarOrderedRing R] [NoZeroDivisors R] (a : n → R)
     (ha : Function.Injective (dotProduct · a)) :
     (vecMulVec a (star a)).PosDef := by
   simp only [vecMulVec_eq Unit, ← conjTranspose_replicateCol]
@@ -588,7 +588,7 @@ theorem _root_.Matrix.posDef_vecMulVec_star [StarOrderedRing R] [NoZeroDivisors 
 
 In a nontrivial commutative ring with nontrivial index, this is never positive definite
 (see `Matrix.not_posDef_vecMulVec`). -/
-theorem _root_.Matrix.posDef_star_vecMulVec [StarOrderedRing R] [NoZeroDivisors R] (a : n → R)
+theorem _root_.Matrix.posDef_vecMulVec_star_self [StarOrderedRing R] [NoZeroDivisors R] (a : n → R)
     (ha : Function.Injective (dotProduct a)) :
     (vecMulVec (star a) a).PosDef := by
   simp only [vecMulVec_eq Unit, ← conjTranspose_replicateRow]
