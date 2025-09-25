@@ -20,18 +20,24 @@ variable {G : Type*} [Group G] [TopologicalSpace G]
 
 /-- If `G` has a topology, and `H ≤ K` are subgroups, then `H` as a subgroup of `K` is homeomorphic
 to `H` as a subgroup of `G`. This is `subgroupOfEquivOfLe` bundled as a `Homeomorph`. -/
-@[to_additive /-- If `G` has a topology, and `H ≤ K` are subgroups, then `H` as a subgroup of `K`
-is homeomorphic to `H` as a subgroup of `G`. This is `subgroupOfEquivOfLe` bundled as a
-`Homeomorph`.-/]
+@[to_additive (attr := simps! apply symm_apply) /-- If `G` has a topology, and `H ≤ K` are
+subgroups, then `H` as a subgroup of `K` is homeomorphic to `H` as a subgroup of `G`. This is
+`subgroupOfEquivOfLe` bundled as a `Homeomorph`.-/]
 def Subgroup.subgroupOfHomeomorphOfLe {G : Type*} [Group G] [TopologicalSpace G]
-    {H K : Subgroup G} (h : H ≤ K) :
+    {H K : Subgroup G} (hHK : H ≤ K) :
     (H.subgroupOf K) ≃ₜ H :=
-  (subgroupOfEquivOfLe h).toHomeomorph (by
+  (subgroupOfEquivOfLe hHK).toHomeomorph (by
     simp only [subgroupOfEquivOfLe, MulEquiv.toEquiv_eq_coe, EquivLike.coe_coe, MulEquiv.coe_mk,
       Equiv.coe_fn_mk, Topology.IsInducing.subtypeVal.isOpen_iff, SetLike.coe_sort_coe,
       exists_exists_and_eq_and]
     simpa only [Set.ext_iff, Subtype.forall, mem_subgroupOf] using fun s ↦ exists_congr
-      fun t ↦ and_congr_right fun _ ↦ ⟨fun aux g hgh ↦ aux g (h hgh) hgh, by grind⟩)
+      fun t ↦ and_congr_right fun _ ↦ ⟨fun aux g hgh ↦ aux g (hHK hgh) hgh, by grind⟩)
+
+@[to_additive]
+lemma Subgroup.subgroupOfHomeomorphOfLe_toEquiv {G : Type*} [Group G] [TopologicalSpace G]
+    {H K : Subgroup G} (hHK : H ≤ K) :
+    (subgroupOfHomeomorphOfLe hHK : H.subgroupOf K ≃ H) = subgroupOfEquivOfLe hHK := by
+  rfl
 
 variable [IsTopologicalGroup G]
 
