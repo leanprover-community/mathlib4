@@ -223,4 +223,17 @@ end Map
 
 end CommSemiring
 
+section DivisionRing
+
+variable [DivisionRing R] [Nontrivial S] [Semiring S]
+variable {f : R →+* S} {p : R[X]}
+
+theorem map_eq_zero_iff_from_divisionRing : p.map f = 0 ↔ p = 0 :=
+  Polynomial.map_eq_zero_iff <| RingHom.injective_from_divisionRing f
+
+theorem map_ne_zero_iff_from_divisionRing : p.map f ≠ 0 ↔ p ≠ 0 :=
+  Polynomial.map_ne_zero_iff <| RingHom.injective_from_divisionRing f
+
+end DivisionRing
+
 end Polynomial
