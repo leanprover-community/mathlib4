@@ -4,6 +4,7 @@ on:
   push: # delete the "push" trigger and uncomment the "schedule" trigger below before merging!
     branches:
       - remove_deprecations_linter_dev
+      - remove_deprecations_linter_dev_upstream
   # schedule:
   #   - cron: "5 4 * * 1" # At 04:05, on Monday
   workflow_dispatch:
