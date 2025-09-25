@@ -29,7 +29,8 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           ## fetch the whole repository, as we want to push to it later
-          fetch-depth: 0
+          # TODO: restore the fetch depth to 0 once we are happy with the action
+          #fetch-depth: 0
 
       - name: Configure Lean
         uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
