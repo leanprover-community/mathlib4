@@ -546,16 +546,20 @@ instance (priority := 100) isAtomistic_of_complementedLattice [ComplementedLatti
         rw [← Subtype.coe_le_coe, Subtype.coe_mk]
         exact le_sSup ⟨ha.of_isAtom_coe_Iic, a.2⟩, fun _ => And.left⟩
 
-theorem iSupIndep.iInf {ι : Type*} {β : ι → Type*} (f : (i : ι) → β i → α)
-    (h_indep : ∀ a : ι, iSupIndep (f a)) : iSupIndep (fun b : (a : ι) → β a ↦ ⨅ a, f a (b a)) := by
+/--
+If each family `f i` is `iSupIndep`, then the family of pointwise infima
+`k ↦ ⨅ i, f i (k i)` is also `iSupIndep`.
+-/
+theorem iSupIndep.iInf {ι : Type*} {κ : ι → Type*} (f : (i : ι) → κ i → α)
+    (h_indep : ∀ i : ι, iSupIndep (f i)) : iSupIndep (fun k : (i : ι) → κ i ↦ ⨅ i, f i (k i)) := by
   rw [iSupIndep_iff_supIndep_of_injOn (iSupIndep.injOn_iInf _ h_indep)]
   intro s
   induction s using Finset.strongInduction with
   | H s ih =>
     by_cases hs : 1 < s.card; swap
     · by_cases hcard0 : s.card = 0 <;> grind [Finset.card_eq_zero, Finset.card_eq_one]
-    · obtain ⟨b₁, b₂, hb₁, hb₂, hb₁₂⟩ := Finset.one_lt_card_iff.mp hs
-      obtain ⟨i, hi⟩ : ∃ i : ι, b₁ i ≠ b₂ i := Function.ne_iff.mp hb₁₂
+    · obtain ⟨k₁, k₂, _, _, h⟩ := Finset.one_lt_card_iff.mp hs
+      obtain ⟨i, hi⟩ : ∃ i : ι, k₁ i ≠ k₂ i := Function.ne_iff.mp h
       classical
       rw [← Finset.image_biUnion_filter_eq s (· i)]
       refine Finset.SupIndep.biUnion ?_ (by grind)
