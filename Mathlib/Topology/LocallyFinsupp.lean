@@ -207,7 +207,7 @@ variable (U) in
 /--
 Functions with locally finite support within `U` form an additive subgroup of functions X → Y.
 -/
-protected def addSubgroup [AddCommGroup Y] : AddSubgroup (X → Y) where
+protected def addSubmonoid [AddMonoid Y] : AddSubmonoid (X → Y) where
   carrier := {f | f.support ⊆ U ∧ ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support)}
   zero_mem' := by
     simp only [support_subset_iff, ne_eq, mem_setOf_eq, Pi.zero_apply, not_true_eq_false,
@@ -230,10 +230,21 @@ protected def addSubgroup [AddCommGroup Y] : AddSubgroup (X → Y) where
       by_contra hCon
       push_neg at hCon
       simp_all
-  neg_mem' {f} hf := by
-    simp_all
 
-protected lemma memAddSubgroup  [AddCommGroup Y] (D : locallyFinsuppWithin U Y) :
+protected lemma memAddSubmonoid  [AddMonoid Y] (D : locallyFinsuppWithin U Y) :
+    (D : X → Y) ∈ locallyFinsuppWithin.addSubmonoid U :=
+  ⟨D.supportWithinDomain, D.supportLocallyFiniteWithinDomain⟩
+
+variable (U) in
+/--
+Functions with locally finite support within `U` form an additive subgroup of functions X → Y.
+-/
+protected def addSubgroup [AddGroup Y] : AddSubgroup (X → Y) where
+  carrier := {f | f.support ⊆ U ∧ ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support)}
+  __ := locallyFinsuppWithin.addSubmonoid U
+  neg_mem' {f} hf := by simp_all
+
+protected lemma memAddSubgroup  [AddGroup Y] (D : locallyFinsuppWithin U Y) :
     (D : X → Y) ∈ locallyFinsuppWithin.addSubgroup U :=
   ⟨D.supportWithinDomain, D.supportLocallyFiniteWithinDomain⟩
 
@@ -241,39 +252,58 @@ protected lemma memAddSubgroup  [AddCommGroup Y] (D : locallyFinsuppWithin U Y) 
 Assign a function with locally finite support within `U` to a function in the subgroup.
 -/
 @[simps]
-def mk_of_mem [AddCommGroup Y] (f : X → Y) (hf : f ∈ locallyFinsuppWithin.addSubgroup U) :
+def mk_of_mem [AddMonoid Y] (f : X → Y) (hf : f ∈ locallyFinsuppWithin.addSubmonoid U) :
     locallyFinsuppWithin U Y := ⟨f, hf.1, hf.2⟩
 
-instance [AddCommGroup Y] : Zero (locallyFinsuppWithin U Y) where
+instance [AddMonoid Y] : Zero (locallyFinsuppWithin U Y) where
   zero := mk_of_mem 0 <| zero_mem _
 
-instance [AddCommGroup Y]: Add (locallyFinsuppWithin U Y) where
-  add D₁ D₂ := mk_of_mem (D₁ + D₂) <| add_mem D₁.memAddSubgroup D₂.memAddSubgroup
+instance [AddMonoid Y]: Add (locallyFinsuppWithin U Y) where
+  add D₁ D₂ := mk_of_mem (D₁ + D₂) <| add_mem D₁.memAddSubmonoid D₂.memAddSubmonoid
 
-instance [AddCommGroup Y] : Neg (locallyFinsuppWithin U Y) where
-  neg D := mk_of_mem (-D) <| neg_mem D.memAddSubgroup
+instance [AddMonoid Y] : SMul ℕ (locallyFinsuppWithin U Y) where
+  smul n D := mk_of_mem (n • D) <| nsmul_mem D.memAddSubmonoid n
 
-instance [AddCommGroup Y] : Sub (locallyFinsuppWithin U Y) where
-  sub D₁ D₂ := mk_of_mem (D₁ - D₂) <| sub_mem D₁.memAddSubgroup D₂.memAddSubgroup
+/--
+Assign a function with locally finite support within `U` to a function in the subgroup.
+-/
+@[simps]
+def mk_of_mem' [AddGroup Y] (f : X → Y) (hf : f ∈ locallyFinsuppWithin.addSubgroup U) :
+    locallyFinsuppWithin U Y := ⟨f, hf.1, hf.2⟩
 
-instance [AddCommGroup Y] : SMul ℕ (locallyFinsuppWithin U Y) where
-  smul n D := mk_of_mem (n • D) <| nsmul_mem D.memAddSubgroup n
+instance [AddGroup Y] : Neg (locallyFinsuppWithin U Y) where
+  neg D := mk_of_mem' (-D) <| neg_mem D.memAddSubgroup
 
-instance [AddCommGroup Y] : SMul ℤ (locallyFinsuppWithin U Y) where
-  smul n D := mk_of_mem (n • D) <| zsmul_mem D.memAddSubgroup n
+instance [AddGroup Y] : Sub (locallyFinsuppWithin U Y) where
+  sub D₁ D₂ := mk_of_mem' (D₁ - D₂) <| sub_mem D₁.memAddSubgroup D₂.memAddSubgroup
 
-@[simp] lemma coe_zero [AddCommGroup Y] :
+instance [AddGroup Y] : SMul ℤ (locallyFinsuppWithin U Y) where
+  smul n D := mk_of_mem' (n • D) <| zsmul_mem D.memAddSubgroup n
+
+@[simp] lemma coe_zero [AddMonoid Y] :
     ((0 : locallyFinsuppWithin U Y) : X → Y) = 0 := rfl
-@[simp] lemma coe_add [AddCommGroup Y] (D₁ D₂ : locallyFinsuppWithin U Y) :
+@[simp] lemma coe_add [AddMonoid Y] (D₁ D₂ : locallyFinsuppWithin U Y) :
     (↑(D₁ + D₂) : X → Y) = D₁ + D₂ := rfl
-@[simp] lemma coe_neg [AddCommGroup Y] (D : locallyFinsuppWithin U Y) :
+@[simp] lemma coe_neg [AddGroup Y] (D : locallyFinsuppWithin U Y) :
     (↑(-D) : X → Y) = -(D : X → Y) := rfl
-@[simp] lemma coe_sub [AddCommGroup Y] (D₁ D₂ : locallyFinsuppWithin U Y) :
+@[simp] lemma coe_sub [AddGroup Y] (D₁ D₂ : locallyFinsuppWithin U Y) :
     (↑(D₁ - D₂) : X → Y) = D₁ - D₂ := rfl
-@[simp] lemma coe_nsmul [AddCommGroup Y] (D : locallyFinsuppWithin U Y) (n : ℕ) :
+@[simp] lemma coe_nsmul [AddMonoid Y] (D : locallyFinsuppWithin U Y) (n : ℕ) :
     (↑(n • D) : X → Y) = n • (D : X → Y) := rfl
-@[simp] lemma coe_zsmul [AddCommGroup Y] (D : locallyFinsuppWithin U Y) (n : ℤ) :
+@[simp] lemma coe_zsmul [AddGroup Y] (D : locallyFinsuppWithin U Y) (n : ℤ) :
     (↑(n • D) : X → Y) = n • (D : X → Y) := rfl
+
+instance [AddMonoid Y] : AddMonoid (locallyFinsuppWithin U Y) :=
+  Injective.addMonoid (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
+    _ coe_injective coe_zero coe_add coe_nsmul
+
+instance [AddCommMonoid Y] : AddCommMonoid (locallyFinsuppWithin U Y) :=
+  Injective.addCommMonoid (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
+    _ coe_injective coe_zero coe_add coe_nsmul
+
+instance [AddGroup Y] : AddGroup (locallyFinsuppWithin U Y) :=
+  Injective.addGroup (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
+    _ coe_injective coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
 
 instance [AddCommGroup Y] : AddCommGroup (locallyFinsuppWithin U Y) :=
   Injective.addCommGroup (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
