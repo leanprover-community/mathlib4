@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Janos Wolosz
 -/
 import Mathlib.Algebra.Lie.Weights.RootSystem
+import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 
 /-!
 # Invariant submodule to Lie ideal construction
