@@ -46,17 +46,10 @@ variable {R : Type*}
 
 variable [CommRing R] {p : R[X]}
 
-@[simp] lemma discrim_neg (hp : p.degree = 2) : p.disc  = (-p).disc := by
+@[simp] lemma discrim_neg (hp : p.degree = 2) : (-p).disc = p.disc := by
   have e0 : (-p).degree = 2 := by
     simp [hp]
   rw [p.disc_of_degree_eq_two hp, (-p).disc_of_degree_eq_two e0]
-  simp
-
-@[simp] lemma discrim_neg'' (hp : p.natDegree = 2) : p.disc  = (-p).disc := by
-  have e0 : (-p).natDegree = 2 := by
-    rw [p.natDegree_neg, hp]
-  rw [p.disc_of_degree_eq_two ((degree_eq_iff_natDegree_eq_of_pos Nat.zero_lt_two).mpr hp),
-    (-p).disc_of_degree_eq_two ((degree_eq_iff_natDegree_eq_of_pos Nat.zero_lt_two).mpr e0)]
   simp
 
 lemma discrim_eq_sq_of_quadratic_eq_zero {x : R} (hp : p.degree = 2) (h : IsRoot p x) :
