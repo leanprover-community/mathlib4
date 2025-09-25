@@ -142,6 +142,7 @@ theorem ofMonComonObjX_mul (M : Mon (Comon C)) :
 
 @[deprecated (since := "2025-09-15")] alias ofMon_Comon_ObjX_mul := ofMonComonObjX_mul
 
+attribute [local instance] ComonObj.instTensorUnit in
 attribute [local simp] MonObj.tensorObj.one_def MonObj.tensorObj.mul_def tensorμ in
 /-- The object level part of the backward direction of `Comon (Mon C) ≌ Mon (Comon C)` -/
 @[simps]
