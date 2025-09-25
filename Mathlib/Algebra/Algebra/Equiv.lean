@@ -820,7 +820,8 @@ def ULift.algEquiv {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Alge
 
 /-- If an `R`-algebra `A` is isomorphic to `R` as `R`-module, then it is in fact isomorphic to `R`
 as `R`-algebra (but via a different map). -/
-@[simps] def LinearEquiv.algEquivOfRing {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
+@[simps] def LinearEquiv.algEquivOfRing
+    {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
     (e : R ≃ₗ[R] A) : R ≃ₐ[R] A where
   __ := Algebra.ofId R A
   invFun x := e.symm (e 1 * x)
