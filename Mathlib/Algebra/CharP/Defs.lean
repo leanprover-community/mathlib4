@@ -180,7 +180,6 @@ lemma dvd {x : ℕ} (hx : (x : R) = 0) : ringChar R ∣ x :=
 lemma eq_zero [CharZero R] : ringChar R = 0 :=
   eq R 0
 
-@[simp]
 lemma Nat.cast_ringChar : (ringChar R : R) = 0 := by rw [ringChar.spec]
 
 @[simp]
