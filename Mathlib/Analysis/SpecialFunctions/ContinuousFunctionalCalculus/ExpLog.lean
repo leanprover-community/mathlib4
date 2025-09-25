@@ -58,9 +58,9 @@ namespace CFC
 section RCLikeNormed
 
 variable {𝕜 : Type*} {A : Type*} [RCLike 𝕜] {p : A → Prop} [NormedRing A]
-  [StarRing A] [IsTopologicalRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
-  [ContinuousFunctionalCalculus 𝕜 A p]
+  [StarRing A] [IsTopologicalRing A] [NormedAlgebra 𝕜 A] [ContinuousFunctionalCalculus 𝕜 A p]
 
+open scoped ContinuousFunctionalCalculus in
 lemma exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
     cfc (exp 𝕜 : 𝕜 → 𝕜) a = exp 𝕜 a := by
   conv_rhs => rw [← cfc_id 𝕜 a ha, cfc_apply id a ha]
@@ -76,7 +76,7 @@ end RCLikeNormed
 section RealNormed
 
 variable {A : Type*} [NormedRing A] [StarRing A]
-  [IsTopologicalRing A] [NormedAlgebra ℝ A] [CompleteSpace A]
+  [IsTopologicalRing A] [NormedAlgebra ℝ A]
   [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 lemma real_exp_eq_normedSpace_exp {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :
@@ -95,7 +95,7 @@ end RealNormed
 section ComplexNormed
 
 variable {A : Type*} {p : A → Prop} [NormedRing A] [StarRing A]
-  [NormedAlgebra ℂ A] [CompleteSpace A] [ContinuousFunctionalCalculus ℂ A p]
+  [NormedAlgebra ℂ A] [ContinuousFunctionalCalculus ℂ A p]
 
 lemma complex_exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
     cfc Complex.exp a = exp ℂ a :=
@@ -144,8 +144,6 @@ lemma log_pow (n : ℕ) (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, x ≠ 0)
   have ha₂'' : ContinuousOn Real.log ((· ^ n) '' spectrum ℝ a)  := by fun_prop (disch := aesop)
   rw [log, ← cfc_pow_id (R := ℝ) a n ha₁, ← cfc_comp' Real.log (· ^ n) a ha₂'', log]
   simp_rw [Real.log_pow, ← Nat.cast_smul_eq_nsmul ℝ n, cfc_const_mul (n : ℝ) Real.log a ha₂']
-
-variable [CompleteSpace A]
 
 lemma log_exp (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : log (NormedSpace.exp ℝ a) = a := by
   have hcont : ContinuousOn Real.log (Real.exp '' spectrum ℝ a) := by fun_prop (disch := simp)
