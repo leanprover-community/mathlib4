@@ -59,7 +59,7 @@ theorem IntervalIntegrable.ae_hasDerivAt_integral {f : ℝ → ℝ} {a b c : ℝ
   have hg : LocallyIntegrable g volume :=
     integrableOn_congr_fun (by grind [EqOn]) (by simp) |>.mpr hf.left
       |>.integrable_of_forall_notMem_eq_zero (by grind) |>.locallyIntegrable
-  filter_upwards [LocallyIntegrable.ae_eq_deriv_integral hg c, h₁, h₂] with x hx _ _ _
+  filter_upwards [LocallyIntegrable.ae_hasDerivAt_integral hg c, h₁, h₂] with x hx _ _ _
   refine HasDerivWithinAt.hasDerivAt (s := Ioo a b) ?_ <| Ioo_mem_nhds (by grind) (by grind)
   rw [show f x = g x by grind]
   refine hx.hasDerivWithinAt.congr (fun y hy ↦ ?_) ?_
