@@ -314,7 +314,7 @@ def linearEquivOfLeftInverse (hfg : Function.LeftInverse f g) : M ≃ₗ[R] N :=
 a right inverse of `g`, then in fact `f` is also the left inverse of `g`, and we promote this to
 an `R`-module isomorphism. -/
 def linearEquivOfRightInverse (hfg : Function.RightInverse f g) : M ≃ₗ[R] N :=
-  .ofLinear f g (LinearMap.ext <| leftInverse_of_rightInverse hfg) (LinearMap.ext hfg) 
+  .ofLinear f g (LinearMap.ext <| leftInverse_of_rightInverse hfg) (LinearMap.ext hfg)
 
 @[simp] lemma linearEquivOfRightInverse_apply (hfg : Function.RightInverse f g) (x : M) :
     linearEquivOfRightInverse hfg x = f x := rfl
