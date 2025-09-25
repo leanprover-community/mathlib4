@@ -481,11 +481,7 @@ That is, we can propagate the predicate down the chain.
 theorem IsChain.induction (p : α → Prop) (l : List α) (h : IsChain r l)
     (carries : ∀ ⦃x y : α⦄, r x y → p x → p y) (initial : (lne : l ≠ []) → p (l.head lne)) :
     ∀ i ∈ l, p i := by
-  induction l using twoStepInduction with
-  | nil => grind
-  | singleton => grind
-  | cons_cons a b l IH IH2 =>
-    grind
+  induction l using twoStepInduction with grind
 
 @[deprecated (since := "2025-09-24")] alias Chain'.induction := IsChain.induction
 
