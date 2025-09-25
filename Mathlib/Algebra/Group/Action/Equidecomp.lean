@@ -66,7 +66,9 @@ by applying some element of `S` to `a` instead.
 
 More familiarly, the restriction of `f` to `A` is the result of partitioning `A` into finitely many
 pieces, then applying a single element of `G` to each piece. -/
-def IsDecompOn (f : X → X) (A : Set X) (S : Finset G) : Prop := ∀ a ∈ A, ∃ g ∈ S, f a = g • a
+def IsDecompOn (f : X → X) (A : Set X) (S : Finset G) : Prop := ∀
+
+ a ∈ A, ∃ g ∈ S, f a = g • a
 
 variable (X G)
 
@@ -99,10 +101,18 @@ noncomputable def element_witness (f : Equidecomp X G) (a : X) (h : a ∈ f.sour
 open Classical in noncomputable def minimal_witness (f : Equidecomp X G) : Finset G :=
   {w ∈ f.witness | ∃ a, ∃ h, f.element_witness a h = w}
 
+theorem minimal_witness_subset (f : Equidecomp X G) : f.minimal_witness ⊆ f.witness := by
+  simp [witness, minimal_witness]
+
 theorem element_witness_mem_minimal_witness (f : Equidecomp X G) (a : X) (h : a ∈ f.source) :
   f.element_witness a h ∈ f.minimal_witness := by
-    sorry
+    simp [minimal_witness]
+    apply And.intro
+    . simp [witness, element_witness]
+      sorry
 
+    . use a
+      use h
 
 theorem apply_mem_target {f : Equidecomp X G} {x : X} (h : x ∈ f.source) :
     f x ∈ f.target := by simp [h]
@@ -224,12 +234,11 @@ theorem refl_symm : (refl X G).symm = refl X G := rfl
 theorem restr_refl_symm (A : Set X) :
     ((Equidecomp.refl X G).restr A).symm = (Equidecomp.refl X G).restr A := rfl
 
-
-open Classical
-
-open Classical in noncomputable def source.to_finpartition {f: Equidecomp X G} : Finpartition f.source where
-  parts := Finset.image (fun g : f.minimal_witness↦ Subtype.val '' {a : f.source | (f.isDecompOn a (Subtype.coe_prop a)).choose = g})
-           f.minimal_witness.attach
+open scoped Classical in noncomputable def source.to_finpartition {f : Equidecomp X G} :
+  Finpartition f.source where
+  parts := Finset.image (fun g : f.minimal_witness ↦
+              Subtype.val '' {a : f.source | (f.isDecompOn a (Subtype.coe_prop a)).choose = g})
+                  f.minimal_witness.attach
   supIndep := by
     rw [Finset.SupIndep]
     simp only [Finset.mem_image, Finset.mem_attach, true_and, Subtype.exists, exists_prop, id_eq,
@@ -273,7 +282,6 @@ open Classical in noncomputable def source.to_finpartition {f: Equidecomp X G} :
       . exact element_witness_mem_minimal_witness f x hx
       . use hx
         simp_rw [element_witness]
-
 
 
   bot_notMem := by
