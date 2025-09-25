@@ -47,7 +47,7 @@ theorem LocallyIntegrable.ae_hasDerivAt_integral {f : ℝ → ℝ} (hf : Locally
 /-- The interval version of the *Lebesgue Differentiation Theorem*: if `f : ℝ → ℝ` is integrable on
 `uIoc a b`, and `c ∈ uIoc a b`, then for almost every `x ∈ uIcc a b`, the derivative of
 `∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`. -/
-theorem IntervalIntegrable.ae_eq_deriv_integral {f : ℝ → ℝ} {a b c : ℝ}
+theorem IntervalIntegrable.ae_hasDerivAt_integral {f : ℝ → ℝ} {a b c : ℝ}
     (hf : IntervalIntegrable f volume a b) (hc : c ∈ uIcc a b) :
     ∀ᵐ x, x ∈ uIcc a b → HasDerivAt (fun x => ∫ (t : ℝ) in c..x, f t) (f x) x := by
   wlog hab : a ≤ b
