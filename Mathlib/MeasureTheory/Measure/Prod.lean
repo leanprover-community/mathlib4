@@ -625,13 +625,7 @@ lemma ext_prod₃_iff' {α β γ : Type*} {mα : MeasurableSpace α} {mβ : Meas
     μ = ν ↔ (∀ {s : Set α} {t : Set β} {u : Set γ},
       MeasurableSet s → MeasurableSet t → MeasurableSet u →
       μ ((s ×ˢ t) ×ˢ u) = ν ((s ×ˢ t) ×ˢ u)) := by
-  have : μ = ν ↔ μ.map MeasurableEquiv.prodAssoc = ν.map MeasurableEquiv.prodAssoc := by
-    refine ⟨fun h ↦ by rw [h], fun h ↦ ?_⟩
-    have h_map_map (μ : Measure ((α × β) × γ)) :
-        μ = (μ.map MeasurableEquiv.prodAssoc).map MeasurableEquiv.prodAssoc.symm := by
-      simp
-    rw [h_map_map μ, h_map_map ν, h]
-  rw [this, ext_prod₃_iff]
+  rw [← MeasurableEquiv.prodAssoc.map_measurableEquiv_injective.eq_iff, ext_prod₃_iff]
   have h_eq (ν : Measure ((α × β) × γ)) {s : Set α} {t : Set β} {u : Set γ}
       (hs : MeasurableSet s) (ht : MeasurableSet t) (hu : MeasurableSet u) :
       ν.map MeasurableEquiv.prodAssoc (s ×ˢ (t ×ˢ u)) = ν ((s ×ˢ t) ×ˢ u) := by
