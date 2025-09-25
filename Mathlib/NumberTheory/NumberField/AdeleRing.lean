@@ -102,7 +102,7 @@ ring to the mixed embedding `x ↦ (φᵢ(x))ᵢ` of `K` into the space `ℝ ^ r
 `(r₁, r₂)` is the signature of `K` and `φᵢ` are the complex embeddings of `K`. -/
 theorem mixedEmbedding_eq_algebraMap_comp {x : K} :
     mixedEmbedding K x = ringEquiv_mixedSpace K (algebraMap K _ x) := by
-  ext <;> simp
+  ext v <;> simp
 
 end InfiniteAdeleRing
 
