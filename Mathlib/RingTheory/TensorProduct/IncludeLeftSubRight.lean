@@ -3,9 +3,8 @@ Copyright (c) 2025 Yong-Gyu Choi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yong-Gyu Choi
 -/
-import Mathlib.Algebra.Exact
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.RingHom.FaithfullyFlat
+import Mathlib.Algebra.Category.Ring.Constructions
+import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 /-!
 # Exactness properties of the difference map for tensor products
