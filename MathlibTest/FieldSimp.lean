@@ -429,6 +429,49 @@ example {x y z : ℚ} (h : x * y = x * z) : True := by
   guard_hyp h : x * y = x * z
   exact trivial
 
+example {x y a b : ℚ} (hx : 0 < x) (hy : 0 < y) (ha : 0 < a) (hb : 0 < b) :
+    (a * x + b * y)⁻¹ ≤ a * x⁻¹ + b * y⁻¹ := by
+  field_simp
+  guard_target = x * y ≤ (a * x + b * y) * (a * y + x * b)
+  exact test_sorry
+
+-- vary `<` vs `≤`, `≥` vs `≤`
+example {x y a b : ℚ} (hx : x > 0) (hy : 0 < y) (ha : 0 ≤ a) (hb : 0 < b) :
+    a * x⁻¹ + b * y⁻¹ ≥ (a * x + b * y)⁻¹ := by
+  field_simp
+  guard_target = x * y ≤ (a * x + b * y) * (a * y + x * b)
+  exact test_sorry
+
+example {x y a b : ℚ} (hx : 0 < x) (hy : 0 < y) (ha : 0 < a) (hb : 0 < b) :
+    (a * x + b * y)⁻¹ < a * x⁻¹ + b * y⁻¹ := by
+  field_simp
+  guard_target = x * y < (a * x + b * y) * (a * y + x * b)
+  exact test_sorry
+
+example {x y : ℚ} (hx : 0 < x) :
+    ((x ^ 2 - y ^ 2) / (x ^ 2 + y ^ 2)) ^ 2 + (2 * x * y / (x ^ 2 + y ^ 2)) ^ 2 ≤ 1 := by
+  field_simp
+  guard_target = (x ^ 2 - y ^ 2) ^ 2 + x ^ 2 * y ^ 2 * 2 ^ 2 ≤ (x ^ 2 + y ^ 2) ^ 2
+  exact test_sorry
+
+example {x y : ℚ} (hx : 0 < x) :
+    ((x ^ 2 - y ^ 2) / (x ^ 2 + y ^ 2)) ^ 2 + (2 * x * y / (x ^ 2 + y ^ 2)) ^ 2 ≤ 1 := by
+  simp only [field]
+  guard_target = (x ^ 2 - y ^ 2) ^ 2 + x ^ 2 * y ^ 2 * 2 ^ 2 ≤ (x ^ 2 + y ^ 2) ^ 2
+  exact test_sorry
+
+example {x y : ℚ} (hx : 0 < x) :
+    ((x ^ 2 - y ^ 2) / (x ^ 2 + y ^ 2)) ^ 2 + (2 * x * y / (x ^ 2 + y ^ 2)) ^ 2 < 1 := by
+  field_simp
+  guard_target = (x ^ 2 - y ^ 2) ^ 2 + x ^ 2 * y ^ 2 * 2 ^ 2 < (x ^ 2 + y ^ 2) ^ 2
+  exact test_sorry
+
+example {x y : ℚ} (hx : 0 < x) :
+    ((x ^ 2 - y ^ 2) / (x ^ 2 + y ^ 2)) ^ 2 + (2 * x * y / (x ^ 2 + y ^ 2)) ^ 2 < 1 := by
+  simp only [field]
+  guard_target = (x ^ 2 - y ^ 2) ^ 2 + x ^ 2 * y ^ 2 * 2 ^ 2 < (x ^ 2 + y ^ 2) ^ 2
+  exact test_sorry
+
 section
 
 -- TODO (new implementation): do we want `field_simp` to reduce this to `⊢ x * y = z * y ^ 2`?
@@ -449,6 +492,39 @@ example {x y z : ℚ} : (x / y ^ 2 = z / y) ↔ (x / y / y = z / y) := by
   obtain rfl | hy := eq_or_ne y 0
   · simp
   ring_nf
+
+end
+
+/-! Sometimes it takes iterated alternation betweeen `ring_nf` and `field_simp` in order to
+normalize properly.
+
+It is not clear whether or not this iterated alternation always achieves the "obvious" normalization
+eventually. Nor is it clear whether, if so, there are any bounds on how many iterations are needed.
+-/
+section
+
+-- modified from 2021 American Mathematics Competition 12B, problem 9
+example (P : ℝ → Prop) {x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
+    P ((4 * x + y) / x / (x / (3 * x + y)) - (5 * x + y) / x / (x / (2 * x + y))) := by
+  ring_nf
+  fail_if_success (guard_target = P 2) -- this simply records current behaviour, delete if needed
+  field_simp
+  fail_if_success (guard_target = P 2) -- this simply records current behaviour, delete if needed
+  ring_nf
+  fail_if_success (guard_target = P 2) -- this simply records current behaviour, delete if needed
+  field_simp
+  guard_target = P 2
+  exact test_sorry
+
+example (P : ℝ → Prop) {x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
+    P ((4 * x + y) / x / (x / (3 * x + y)) - (5 * x + y) / x / (x / (2 * x + y))) := by
+  field_simp
+  fail_if_success (guard_target = P 2) -- this simply records current behaviour, delete if needed
+  ring_nf
+  fail_if_success (guard_target = P 2) -- this simply records current behaviour, delete if needed
+  field_simp
+  guard_target = P 2
+  exact test_sorry
 
 end
 
