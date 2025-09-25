@@ -8,7 +8,8 @@ import Mathlib.Util.Notation3
 /-!
 The command `poly_variable` names variables in any combination of `Polynomial`, `MvPolynomial`,
 `RatFunc`, `PowerSeries`, `MvPowerSeries`, and `LaurentSeries`, where the `Mv` is restricted to
-`Fin n`.
+`Fin n`. This list of functors can be expanded easily if and when more polynomial-like functors are
+introduced (using `register_poly_notation`, see below).
 
 The notation introduced by `poly_variable` is local.
 
@@ -17,20 +18,110 @@ Usage:
 ```lean
 variable (R : Type) [CommRing R]
 
-poly_variable R[[X,Y]][t]⸨a⸩(u)
+-- This produces `R[[x,y]][t] := Polynomial (MvPowerSeries (Fin 2) R)`, and
+-- `x := Polynomial.C (MvPowerSeries.X 0) : R[[x,y]][t]`, and
+-- `y := Polynomial.C (MvPowerSeries.X 1) : R[[x,y]][t]`, and
+-- `t := Polynomial.X : R[[x,y]][t]`
+poly_variable R[[x,y]][t]
 
-#check X -- X : R[[X,Y]][t]⸨a⸩(u)
-#check t -- t : R[[X,Y]][t]⸨a⸩(u)
+poly_variable (ZMod 37)[a]
+
+-- The two commands below produce `R[p] := Polynomial R`, and then
+-- `(R[p])[[q]] := PowerSeries R[p]` which is `PowerSeries (Polynomial R)`, and also
+-- `p := Polynomial.X : R[p]`, and
+-- `q := PowerSeries.X : (R[p])[[q]]`
+poly_variable R[p]
+poly_variable (R[p])[[q]]
+
+poly_variable R[u,] -- produces `R[u,] := MvPolynomial (Fin 1) R` where `u` is the formal variable.
+poly_variable R[] -- produces `R[] := MvPolynomial (Fin 0) R` with no formal variables.
 ```
 
-For the edge case of `MvPolynomial (Fin 1) R`, use the syntax `R[u,]` with a trailing comma.
+It is used with exactly one expression as input (`R[[x,y]][t]` above), and does the following:
+1. First, it identifies the base ring in the following way: if the first part of the input is one
+  identifier (which can be a section variable like `R` or a constant like `ℕ`), then it is taken as
+  the base ring, no matter what follows it. Otherwise, if the user wishes to specify a base ring
+  that is a more complicated term (such as `ZMod 37` or `R[p]`), then parentheses are **required**.
+  In the above, this is exemplified by `(ZMod 37)[a]` and `(R[p])[q]`.
+2. Then, it computes the term corresponding to the whole ring recursively using the rest of the
+  input, so for example `R[[x,y]][t]` has base ring `R`, so the whole expression computes to
+  `Polynomial (MvPowerSeries (Fin 2) R)`. It is done from left to right (in the input), which
+  corresponds to the order from inwards to outwards (in the output).
+3. To do so, the input is broken down into parts, where each part has an opening bracket, a
+  comma-separated list of variables, and a closing bracket. In the example `R[[x,y]][t]`, after the
+  base ring, the input is broken down into two parts: the first part is `[[x,y]]` where `[[` is the
+  opening bracket, `]]` is the closing bracket, and the list of variables is `x,y` with two
+  variables; and the second part is `[t]` with opening bracket being `[`, closing bracket being `]`,
+  and the list is `t` with only one variable and no commas.
+4. The parts are then evaluated from left to right. Firstly, we determine whether this is a
+  multivariate notation (which usually has `Mv` in the name, such as `MvPolynomial`) or a univariate
+  notation (which has no `Mv`, such as `Polynomial`), using the following procedure: if the list of
+  variables consists of exactly one variable with no commas (such as `t` above), then the part
+  (`[t]`) is treated as a univariate notation; otherwise, it is treated as a multivariate notation,
+  so the part `[[x,y]]` combined with the base ring `R` produces `MvPowerSeries (Fin 2) R`, where
+  `2` is just the length of the list of variables. (See edge cases below.)
+5. Then the whole term is computed recursively, starting with the base ring `R`, it reads the part
+  `[[x,y]]` and produces `MvPowerSeries (Fin 2) R`, and then it reads the part `[t]` and produces
+  `Polynomial (MvPowerSeries (Fin 2) R)`, which is the result of the big ring.
+6. Then the notation is set up so that one can type `R[[x,y]][t]` in any code that follows, and
+  refer to the big ring `Polynomial (MvPowerSeries (Fin 2) R)`. The delaborator is also set up in
+  the reverse direction, which means that any occurrence of `Polynomial (MvPowerSeries (Fin 2) R)`
+  in the code below will be printed as `R[[x,y]][t]`.
+7. Afterwards, each variable is assigned a meaning, which is an element of the big ring. This is
+  done by repeatedly applying the appropriate `.X` and `.C` functions of the functors, for example
+  `x` in `R[[x,y]]` is `MvPowerSeries.X 0`, and then we use `Polynomial.C` to transport it to the
+  following `[t]` part, so in conclusion `x` in `R[[x,y]][t]` is `Polynomial.C (MvPowerSeries.X 0)`.
+  Similarly, `y` in `R[[x,y]][t]` computes to `Polynomial.C (MvPowerSeries.X 1)`, and `t` computes
+  to `Polynomial.X`.
+8. Note that all of these variables (`x`, `y`, and `t`) are assumed to be elements of the big ring
+  (which is `R[[x,y]][t]`, which is `Polynomial (MvPowerSeries (Fin 2) R)`).
+9. The only valid variable inputs are identifiers, which means a variable cannot contain spaces, and
+  cannot already have an assigned meaning (so `Nat` is not valid).
+10. Then, notation is set up again so that `x` is a valid term that means
+  `Polynomial.C (MvPowerSeries.X 0)`, and again any occurrence of `Polynomial.C (MvPowerSeries.X 0)`
+  prints as `x`.
+11. Multivariate functors (such as `MvPolynomial` and `MvPowerSeries`) typically allow any indexing
+  type, but this notation only produces `Fin n` where `n` is the length of the list of variables.
+
+For the edge case of `MvPolynomial (Fin 1) R`, use the syntax `R[u,]` with a trailing comma. And the
+edge case of `MvPolynomial (Fin 0) R` is just `R[]`.
+
+Using more code to explain, the command `poly_variable R[a,b][c]` is roughly equivalent to the
+following code:
+```lean
+local notation3 "R" "[" "a" "," "b" "]" "[" "c" "]" => Polynomial (MvPolynomial (Fin 2) R)
+local notation3 "a" => (Polynomial.C (MvPolynomial.X 0) : R[a,b][c])
+local notation3 "b" => (Polynomial.C (MvPolynomial.X 1) : R[a,b][c])
+local notation3 "c" => (Polynomial.X : R[a,b][c])
+```
+where one can see that the notation is set up for the big ring, and also for each variable that
+occurs.
 
 To register new polynomial-like functors, use the command `register_poly_notation`:
 
 ```lean
-register_poly_notation "[" X "]" Polynomial Polynomial.C Polynomial.X
-register_poly_notation "[" X, ... "]" MvPolynomial MvPolynomial.C MvPolynomial.X
+register_poly_notation "[" "]" Polynomial Polynomial.C Polynomial.X
+register_poly_notation (mv := true) "[" "]" MvPolynomial MvPolynomial.C MvPolynomial.X
 ```
+
+The user needs to supply (in this exact order):
+1. optionally `(mv := true)` to denote a multivariate notation, or omit it to mean univariate;
+2. the opening bracket, which is `"["` above;
+3. the closing bracket, which is `"]"` above;
+4. the functor itself, which is `Polynomial` above;
+5. the constant function, which is `Polynomial.C` above; this is the map from the base ring `R` to
+  the polynomial ring `Polynomial R`, meaning that we have `Polynomial.C : R → Polynomial R`.
+  (It does not matter that in the actual implementation this is actually a ring homomorphism,
+  because the syntax `Polynomial.C r` works regardless.)
+6. the formal variable function, which is `Polynomial.X`. This produces one constant in
+  `Polynomial R` since it is univariate, and for the multivariate situation, `MvPolynomial.X` is a
+  function from the indexing set (which is `Fin n` in this notation) to the polynomial ring. In
+  effect, for univariate we have `Polynomial.X : Polynomial R`, and for multivariate we have
+  `MvPolynomial.X : Fin n → MvPolynomial (Fin n) R`.
+
+The last three inputs are **not required** to be constants, meaning that they can be more
+complicated terms such as `(HahnSeries.single 1 1)` for the functor `LaurentSeries`. In this case,
+again parentheses are required.
 
 The registration is global and should only be done once for each functor.
 -/
