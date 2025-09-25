@@ -21,7 +21,7 @@ to_date="${2:-to date not set}"
 git fetch --quiet "$remote_name"
 git rev-parse --verify --quiet "refs/remotes/${remote_name}/${branch_name}" && exit 0
 
-pr_title="chore: remove deprecated declarations from $DEPRECATION_DATE_FROM to $DEPRECATION_DATE_TO"
+pr_title="chore: remove deprecated declarations from $from_date to $to_date"
 pr_body='I am happy to remove some deprecated declarations for you!'
 
 git checkout -b "$branch_name"
@@ -47,4 +47,4 @@ pr_id="$(gh_api "repos/${owner_name}/mathlib4/pulls" -X POST -d @- <<EOF | jq -r
 EOF
 )"
 
-printf $'message<<EOF\n\'Please review #%s, which removes deprecated declarations older than %s.\'\nEOF\n' "${pr_id}" "${DEPRECATION_DATE}" | tee -a "${GITHUB_OUTPUT}"
+printf $'message<<EOF\n\'Please review #%s, which removes deprecated declarations older than %s.\'\nEOF\n' "${pr_id}" "${to_date}" | tee -a "${GITHUB_OUTPUT}"
