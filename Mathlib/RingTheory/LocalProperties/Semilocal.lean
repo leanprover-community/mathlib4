@@ -43,8 +43,8 @@ variable
 section isLocalized_maximal
 
 include f in
-/-- A module `M` over a semilocal ring `R` is finite if its
-  localization at every maximal ideal is finite. -/
+/-- A module `M` over a semilocal ring `R` is finite if
+its localization at every maximal ideal is finite. -/
 theorem Module.Finite.of_isLocalized_maximal
     (H : ∀ (P : Ideal R) [P.IsMaximal], Module.Finite (Rₚ P) (Mₚ P)) :
     Module.Finite R M := by
@@ -61,8 +61,8 @@ theorem Module.Finite.of_isLocalized_maximal
   exact Submodule.subset_span ⟨_, by simpa using ⟨_, _, x.2, rfl⟩, rfl⟩
 
 variable {M} in
-/-- A submodule `N` of a module `M` over a semilocal ring `R` is finitely generated if its
-localization at every maximal ideal is finitely generated. -/
+/-- A submodule `N` of a module `M` over a semilocal ring `R` is finitely generated if
+its localization at every maximal ideal is finitely generated. -/
 theorem Submodule.fg_of_isLocalized_maximal (N : Submodule R M)
     (H : ∀ (P : Ideal R) [P.IsMaximal], (Submodule.localized' (Rₚ P) P.primeCompl (f P) N).FG) :
     N.FG := by
@@ -88,8 +88,8 @@ end localized_maximal
 
 section IsLocalization
 
-/-- A semilocal ring `R` is Noetherian if its
-localization at every maximal ideal is a Noetherian ring. -/
+/-- A semilocal ring `R` is Noetherian if
+its localization at every maximal ideal is a Noetherian ring. -/
 theorem IsNoetherianRing.of_isLocalization_maximal
     (H : ∀ (P : Ideal R) [P.IsMaximal], IsNoetherianRing (Rₚ P)) :
     IsNoetherianRing R where
@@ -111,8 +111,7 @@ variable
   [∀ (P : Ideal R) [P.IsMaximal], Algebra R (Rₚ P)]
   [∀ (P : Ideal R) [P.IsMaximal], IsLocalization.AtPrime (Rₚ P) P]
 
-/-- If a semilocal integral domain `R` is a PID at all of its maximal ideals, then it is a PID.
-This is the `IsLocalization` version. -/
+/-- A semilocal integral domain `A` is a PID if its localization at every maximal ideal is a PID. -/
 theorem isPrincipalIdealRing_of_isPrincipalIdealRing_isLocalization [IsDomain R]
     (hpid : ∀ (P : Ideal R) [P.IsMaximal], IsPrincipalIdealRing (Rₚ P)) :
     IsPrincipalIdealRing R := by
