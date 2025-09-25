@@ -23,13 +23,6 @@ open Set Filter Function
 
 open scoped Topology
 
-lemma Monotone.sum_range_sub {u : ℕ → ℝ} (hu : Monotone u) (n : ℕ) :
-    ∑ i ∈ Finset.range n, dist (u i) (u (i + 1)) = u n - u 0 := by
-  rw [← Finset.sum_range_sub]
-  congr; ext i
-  rw [dist_comm, Real.dist_eq, abs_eq_self.mpr]
-  linarith [@hu i (i + 1) (by omega)]
-
 namespace AbsolutelyContinuousOnInterval
 
 /-- The filter on the collection of all the finite sequences of `uIoc` intervals induced by the
@@ -332,7 +325,12 @@ theorem boundedVariationOn {f : ℝ → ℝ} {a b : ℝ} (hf : AbsolutelyContinu
           rw [uIoc_of_le (hp1 (by omega))]
           rfl
       · simp only
-        rw [hp1.sum_range_sub]
+        suffices p.2.val p.1 - p.2.val 0 < δ by
+          convert this
+          rw [← Finset.sum_range_sub]
+          congr; ext i
+          rw [dist_comm, Real.dist_eq, abs_eq_self.mpr]
+          linarith [@hp1 i (i + 1) (by omega)]
         linarith [mem_Icc.mp (hp2 p.1), mem_Icc.mp (hp2 0)]
     have veq: (∑ i ∈ Finset.range p.1, edist (f (p.2.val (i + 1))) (f (p.2.val i))).toReal =
         ∑ i ∈ Finset.range p.1, dist (f (p.2.val i)) (f (p.2.val (i + 1))) := by
