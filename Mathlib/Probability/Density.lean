@@ -52,7 +52,7 @@ which we currently do not have.
 
 open scoped MeasureTheory NNReal ENNReal
 
-open TopologicalSpace MeasureTheory MeasureTheory.Measure ProbabilityTheory
+open TopologicalSpace MeasureTheory Measure ProbabilityTheory
 
 noncomputable section
 
