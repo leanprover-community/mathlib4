@@ -212,9 +212,14 @@ instance [IsZeroOrProbabilityMeasure μ] [IsZeroOrMarkovKernel κ] :
 
 /-- `Measure.compProd` is associative. We have to insert `MeasurableEquiv.prodAssoc`
 because the products of types `α × β × γ` and `(α × β) × γ` are different. -/
-lemma compProd_assoc {γ : Type*} {mγ : MeasurableSpace γ} {η : Kernel (α × β) γ}
-    [SFinite μ] [IsSFiniteKernel κ] [IsSFiniteKernel η] :
+lemma compProd_assoc {γ : Type*} {mγ : MeasurableSpace γ} {η : Kernel (α × β) γ} :
     μ ⊗ₘ κ ⊗ₘ η = (μ ⊗ₘ (κ ⊗ₖ η)).map MeasurableEquiv.prodAssoc.symm := by
+  by_cases hμ : SFinite μ
+  swap; · simp [hμ]
+  by_cases hκ : IsSFiniteKernel κ
+  swap; · simp [hκ]
+  by_cases hη : IsSFiniteKernel η
+  swap; · simp [hη]
   ext s hs
   rw [Measure.compProd_apply hs, Measure.map_apply (by fun_prop) hs,
     Measure.compProd_apply (hs.preimage (by fun_prop)), Measure.lintegral_compProd]
@@ -226,8 +231,7 @@ lemma compProd_assoc {γ : Type*} {mγ : MeasurableSpace γ} {η : Kernel (α ×
 
 /-- `Measure.compProd` is associative. We have to insert `MeasurableEquiv.prodAssoc`
 because the products of types `α × β × γ` and `(α × β) × γ` are different. -/
-lemma compProd_assoc' {γ : Type*} {mγ : MeasurableSpace γ} {η : Kernel (α × β) γ}
-    [SFinite μ] [IsSFiniteKernel κ] [IsSFiniteKernel η] :
+lemma compProd_assoc' {γ : Type*} {mγ : MeasurableSpace γ} {η : Kernel (α × β) γ} :
     μ ⊗ₘ (κ ⊗ₖ η) = ((μ ⊗ₘ κ) ⊗ₘ η).map MeasurableEquiv.prodAssoc := by
   simp [Measure.compProd_assoc]
 
