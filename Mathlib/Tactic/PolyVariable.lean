@@ -26,6 +26,11 @@ poly_variable R[[x,y]][t]
 
 poly_variable (ZMod 37)[a]
 
+-- Leaving the base ring as underscore creates notation for every ring.
+poly_variable _[r]
+-- So for example `Int[r]` is now valid and refers to `Polynomial Int`, and
+-- `r` can refer to `Polynomial.X` with any base ring.
+
 -- The two commands below produce `R[p] := Polynomial R`, and then
 -- `(R[p])[[q]] := PowerSeries R[p]` which is `PowerSeries (Polynomial R)`, and also
 -- `p := Polynomial.X : R[p]`, and
@@ -42,7 +47,8 @@ It is used with exactly one expression as input (`R[[x,y]][t]` above), and does 
   identifier (which can be a section variable like `R` or a constant like `ℕ`), then it is taken as
   the base ring, no matter what follows it. Otherwise, if the user wishes to specify a base ring
   that is a more complicated term (such as `ZMod 37` or `R[p]`), then parentheses are **required**.
-  In the above, this is exemplified by `(ZMod 37)[a]` and `(R[p])[q]`.
+  In the above, this is exemplified by `(ZMod 37)[a]` and `(R[p])[q]`. There is a special usecase:
+  if the base ring is an underscore `_` (such as `_[r]` above), then it is allowed to be any ring.
 2. Then, it computes the term corresponding to the whole ring recursively using the rest of the
   input, so for example `R[[x,y]][t]` has base ring `R`, so the whole expression computes to
   `Polynomial (MvPowerSeries (Fin 2) R)`. It is done from left to right (in the input), which
