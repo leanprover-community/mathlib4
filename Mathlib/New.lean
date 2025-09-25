@@ -1,3 +1,5 @@
+import Mathlib.Tactic.Linter.RemoveDeprecations
+
 @[deprecated (since := "2025-09-01")] example : True := trivial
 
 example := 0
