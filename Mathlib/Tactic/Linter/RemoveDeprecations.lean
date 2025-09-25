@@ -56,7 +56,10 @@ Since each command ends where the next one starts, once the file has been fully 
 structure RemoveDeprecations where
   /-- The positions of the commands that have not yet been elaborated. -/
   firstLast : Std.HashSet String.Pos
-  /-- The ranges of the commands that should be removed. -/
+  /--
+  The "strict" ranges of the commands that should be removed:
+  this does *not* include trailing whitespace and comments.
+  -/
   removals : Std.HashSet String.Range
   deriving Inhabited
 
@@ -83,7 +86,7 @@ If `s` is a terminal command, then `rd.firstLast` is not updated.
 -/
 def update (oldDate newDate : String) (rd : RemoveDeprecations) (s : Syntax) : RemoveDeprecations :=
   if Parser.isTerminalCommand s then rd else
-  match s.getRange? with
+  match s.getRangeWithTrailing? with
   | none => rd
   | some rg =>
     let ans := {rd with
@@ -96,7 +99,7 @@ def update (oldDate newDate : String) (rd : RemoveDeprecations) (s : Syntax) : R
         let since := since.getString
         if oldDate ≤ since && since ≤ newDate then
           --dbg_trace "removing this"
-          {ans with removals := rd.removals.insert rg}
+          {ans with removals := rd.removals.insert (s.getRange?.getD rg)}
         else ans
       | _ =>
         ans
