@@ -112,17 +112,17 @@ lemma sub_eq_zero_iff_le [∀ η : Kernel α β, Decidable (IsSFiniteKernel η)]
   simp [Kernel.ext_iff, le_iff, sub_apply_eq_zero_iff_le]
 
 /-- The set of points where one finite kernel is less than or equal to another is measurable. -/
-lemma measurableSet_le [∀ η : Kernel α β, Decidable (IsSFiniteKernel η)]
-    (κ η : Kernel α β) [IsFiniteKernel κ] [IsFiniteKernel η] :
+lemma measurableSet_le (κ η : Kernel α β) [IsFiniteKernel κ] [IsFiniteKernel η] :
     MeasurableSet {a | κ a ≤ η a} := by
+  classical
   have h_sub : {a | κ a ≤ η a} = {a | (κ - η) a = 0} := by ext; simp [sub_apply_eq_zero_iff_le]
   rw [h_sub]
   exact measurableSet_eq_zero _
 
 /-- The set of points where two finite kernels are equal is measurable. -/
-lemma measurableSet_eq [∀ η : Kernel α β, Decidable (IsSFiniteKernel η)]
-    (κ η : Kernel α β) [IsFiniteKernel κ] [IsFiniteKernel η] :
+lemma measurableSet_eq (κ η : Kernel α β) [IsFiniteKernel κ] [IsFiniteKernel η] :
     MeasurableSet {a | κ a = η a} := by
+  classical
   have h_sub : {a | κ a = η a} = {a | (κ - η) a = 0} ∩ {a | (η - κ) a = 0} := by
     ext
     simp only [Set.mem_setOf_eq, Set.mem_inter_iff, sub_apply_eq_zero_iff_le]
