@@ -556,8 +556,7 @@ theorem prod_eq {μ : Measure α} [SigmaFinite μ] {ν : Measure β} [SigmaFinit
 /-- Two finite measures on a product that are equal on products of sets are equal. -/
 lemma ext_prod {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
     {μ ν : Measure (α × β)} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    (h : ∀ {s : Set α} {t : Set β} (_ : MeasurableSet s) (_ : MeasurableSet t),
-      μ (s ×ˢ t) = ν (s ×ˢ t)) :
+    (h : ∀ {s : Set α} {t : Set β}, MeasurableSet s → MeasurableSet t → μ (s ×ˢ t) = ν (s ×ˢ t)) :
     μ = ν := by
   ext s hs
   have h_univ : μ univ = ν univ := by
@@ -575,16 +574,16 @@ lemma ext_prod {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace
 /-- Two finite measures on a product are equal iff they are equal on products of sets. -/
 lemma ext_prod_iff {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
     {μ ν : Measure (α × β)} [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-    μ = ν ↔ ∀ {s : Set α} {t : Set β} (_ : MeasurableSet s) (_ : MeasurableSet t),
-      μ (s ×ˢ t) = ν (s ×ˢ t) :=
+    μ = ν
+      ↔ ∀ {s : Set α} {t : Set β}, MeasurableSet s → MeasurableSet t → μ (s ×ˢ t) = ν (s ×ˢ t) :=
   ⟨fun h s t hs ht ↦ by rw [h], Measure.ext_prod⟩
 
 /-- Two finite measures on a product `α × β × γ` that are equal on products of sets are equal.
 See `ext_prod₃'` for the same statement for `(α × β) × γ`. -/
 lemma ext_prod₃ {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
     {mγ : MeasurableSpace γ} {μ ν : Measure (α × β × γ)} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    (h : ∀ {s : Set α} {t : Set β} {u : Set γ} (_ : MeasurableSet s) (_ : MeasurableSet t)
-      (_ : MeasurableSet u), μ (s ×ˢ t ×ˢ u) = ν (s ×ˢ t ×ˢ u)) :
+    (h : ∀ {s : Set α} {t : Set β} {u : Set γ},
+      MeasurableSet s → MeasurableSet t → MeasurableSet u → μ (s ×ˢ t ×ˢ u) = ν (s ×ˢ t ×ˢ u)) :
     μ = ν := by
   ext s hs
   have h_univ : μ univ = ν univ := by
