@@ -54,6 +54,16 @@ theorem le_add_left_iff [AddCommSemigroup X] [Sub X] [Preorder X] [OrderedSub X]
 theorem lt_add_left_iff [AddCommGroup X] [LT X] [AddLeftStrictMono X] (a b c : X) :
     c < b + a ↔ c - b < a := sub_lt_iff_lt_add'.symm
 
+/- ### Negation -/
+
+attribute [isolate] neg_eq_iff_eq_neg neg_lt lt_neg
+
+theorem neg_le_iff [AddCommGroup X] [LE X] [AddRightMono X] {a b : X} : - a ≤ b ↔ -b ≤ a := by
+  rw [neg_le_iff_add_nonneg, neg_le_iff_add_nonneg, add_comm]
+
+theorem le_neg_iff [AddCommGroup X] [LE X] [AddRightMono X] {a b : X} : b ≤ - a ↔ a ≤ -b := by
+  rw [le_neg_iff_add_nonpos_right, le_neg_iff_add_nonpos_right, add_comm]
+
 /- ### Subtraction -/
 
 attribute [isolate] sub_eq_iff_eq_add tsub_le_iff_right sub_lt_iff_lt_add le_sub_iff_add_le
@@ -121,6 +131,10 @@ theorem le_mul_left_iff [CommGroupWithZero X] [PartialOrder X] [MulPosReflectLT 
 @[isolate]
 theorem lt_mul_left_iff [CommGroupWithZero X] [PartialOrder X] [MulPosReflectLT X] (a : X) {b : X}
     (c : X) (hb : 0 < b) : c < b * a ↔ c / b < a := by rw [div_lt_iff₀ hb, mul_comm]
+
+/- ### Inversion -/
+
+attribute [isolate] inv_eq_iff_eq_inv inv_le_comm₀ inv_lt_comm₀ le_inv_comm₀ lt_inv_comm₀
 
 /- ### Division -/
 
