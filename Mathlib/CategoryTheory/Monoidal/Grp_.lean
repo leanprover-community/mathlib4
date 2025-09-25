@@ -257,8 +257,6 @@ theorem inv_hom [GrpObj A] [GrpObj B] (f : A ⟶ B) [IsMonHom f] : ι ≫ f = f 
 lemma toMonObj_injective {X : C} :
     Function.Injective (@GrpObj.toMonObj C ‹_› ‹_› X) := by
   intro h₁ h₂ e
-  let X₁ : Grp_ C := @Grp_.mk _ _ _ X h₁
-  let X₂ : Grp_ C := @Grp_.mk _ _ _ X h₂
   suffices h₁.inv = h₂.inv by cases h₁; congr!
   apply lift_left_mul_ext (𝟙 _)
   rw [left_inv]
