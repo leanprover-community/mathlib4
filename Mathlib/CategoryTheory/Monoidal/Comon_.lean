@@ -104,15 +104,12 @@ attribute [instance] Comon.comon
 
 namespace Comon
 
+attribute [local instance] ComonObj.instTensorUnit in
 variable (C) in
 /-- The trivial comonoid object. We later show this is terminal in `Comon C`.
-
-Uses the explicit comonoid structure to avoid instance conflicts.
 -/
 @[simps!]
-def trivial : Comon C :=
-  { X := 𝟙_ C
-    comon := ComonObj.instTensorUnit C }
+def trivial : Comon C := mk (𝟙_ C)
 
 instance : Inhabited (Comon C) :=
   ⟨trivial C⟩

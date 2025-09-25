@@ -47,9 +47,7 @@ def toComon (A : CommComon C) : Comon C := ⟨A.X⟩
 
 section
 
-/-- Local instance for the comonoid structure on the tensor unit. -/
-local instance instComonObjTensorUnit : ComonObj (𝟙_ C) := ComonObj.instTensorUnit C
-
+attribute [local instance] ComonObj.instTensorUnit in
 /-- The trivial comonoid on the unit object is commutative. -/
 instance instCommComonObjUnit : IsCommComonObj (𝟙_ C) where
   comul_comm := by
@@ -60,13 +58,11 @@ instance instCommComonObjUnit : IsCommComonObj (𝟙_ C) where
 
 end
 
+attribute [local instance] ComonObj.instTensorUnit in
 variable (C) in
 /-- The trivial commutative comonoid object. We later show this is initial in `CommComon C`. -/
 @[simps!]
-def trivial : CommComon C where
-  X := 𝟙_ C
-  comon := ComonObj.instTensorUnit C
-  comm := instCommComonObjUnit
+def trivial : CommComon C := mk (𝟙_ C)
 
 instance : Inhabited (CommComon C) :=
   ⟨trivial C⟩
