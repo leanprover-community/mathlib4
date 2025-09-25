@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jaafar Tanoukhi
 -/
 import Mathlib.Combinatorics.Digraph.Basic
-import Mathlib.Data.FunLike.Fintype
 import Mathlib.Logic.Embedding.Set
 
 /-!
