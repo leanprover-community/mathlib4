@@ -676,6 +676,7 @@ variable {R S : Type*} [Semiring R] [Semiring S] [Module R M₁] [Module R M₂]
 /-- The linear map `fun x => c x • f`.  Associates to a scalar-valued linear map and an element of
 `M₂` the `M₂`-valued linear map obtained by multiplying the two (a.k.a. tensoring by `M₂`).
 See also `ContinuousLinearMap.smulRightₗ` and `ContinuousLinearMap.smulRightL`. -/
+@[simps coe]
 def smulRight (c : M₁ →L[R] S) (f : M₂) : M₁ →L[R] M₂ :=
   { c.toLinearMap.smulRight f with cont := c.2.smul continuous_const }
 
@@ -899,7 +900,7 @@ theorem projKerOfRightInverse_apply_idem [IsTopologicalAddGroup M] (f₁ : M →
 theorem projKerOfRightInverse_comp_inv [IsTopologicalAddGroup M] (f₁ : M →SL[σ₁₂] M₂)
     (f₂ : M₂ →SL[σ₂₁] M) (h : Function.RightInverse f₂ f₁) (y : M₂) :
     f₁.projKerOfRightInverse f₂ h (f₂ y) = 0 :=
-  Subtype.ext_iff_val.2 <| by simp [h y]
+  Subtype.ext_iff.2 <| by simp [h y]
 
 end
 
@@ -1143,7 +1144,7 @@ theorem closedComplemented_bot : ClosedComplemented (⊥ : Submodule R M) :=
 
 @[simp]
 theorem closedComplemented_top : ClosedComplemented (⊤ : Submodule R M) :=
-  ⟨(id R M).codRestrict ⊤ fun _x => trivial, fun x => Subtype.ext_iff_val.2 <| by simp⟩
+  ⟨(id R M).codRestrict ⊤ fun _x => trivial, fun x => Subtype.ext_iff.2 <| by simp⟩
 
 end Submodule
 
@@ -1232,3 +1233,28 @@ theorem IsIdempotentElem.isClosed_range [T1Space M] {p : M →L[R] M}
   hp.range_eq_ker ▸ isClosed_ker (1 - p)
 
 end ContinuousLinearMap
+
+section topDualPairing
+
+variable {𝕜 E : Type*} [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [AddCommMonoid E]
+  [Module 𝕜 E] [TopologicalSpace E] [ContinuousConstSMul 𝕜 𝕜]
+
+variable (𝕜 E) in
+/-- The canonical pairing of a vector space and its topological dual. -/
+def topDualPairing : (E →L[𝕜] 𝕜) →ₗ[𝕜] E →ₗ[𝕜] 𝕜 :=
+  ContinuousLinearMap.coeLM 𝕜
+
+@[deprecated (since := "2025-08-3")] alias NormedSpace.dualPairing := topDualPairing
+
+@[deprecated (since := "2025-09-03")] alias strongDualPairing := topDualPairing
+
+@[simp]
+theorem topDualPairing_apply (v : E →L[𝕜] 𝕜)
+    (x : E) : topDualPairing 𝕜 E v x = v x :=
+  rfl
+
+@[deprecated (since := "2025-08-3")] alias NormedSpace.dualPairing_apply := topDualPairing_apply
+
+@[deprecated (since := "2025-09-03")] alias StrongDual.dualPairing_apply := topDualPairing_apply
+
+end topDualPairing
