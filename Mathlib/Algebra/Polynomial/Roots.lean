@@ -727,12 +727,32 @@ theorem Monic.isUnit_leadingCoeff_of_dvd {a p : R[X]} (hp : Monic p) (hap : a �
     IsUnit a.leadingCoeff :=
   isUnit_of_dvd_one (by simpa only [hp.leadingCoeff] using leadingCoeff_dvd_leadingCoeff hap)
 
+theorem Irreducible.roots_card_le_one (hirr : Irreducible p) : p.roots.card ≤ 1 := by
+  by_contra hcard
+  have ⟨q, hq⟩ := p.prod_multiset_X_sub_C_dvd
+  have ⟨x₁, hx₁⟩ := card_pos_iff_exists_mem.mp <| show 0 < p.roots.card by cutsat
+  have ⟨q₁, hq₁⟩ := exists_cons_of_mem hx₁
+  have := hq₁ ▸ Multiset.card_cons x₁ q₁
+  have ⟨x₂, hx₂⟩ := card_pos_iff_exists_mem.mp <| show 0 < q₁.card by cutsat
+  have ⟨q₂, hq₂⟩ := exists_cons_of_mem hx₂
+  simp [hq₁, hq₂, mul_assoc] at hq
+  obtain hu | hu := hirr.isUnit_or_isUnit hq <;> apply degree_eq_zero_of_isUnit at hu <;> simp at hu
+  have := Nat.WithBot.add_eq_zero_iff.mp hu |>.left
+  contradiction
+
+theorem Irreducible.roots_zero_of_natDegree_ne_one (hirr : Irreducible p) (hdeg : p.natDegree ≠ 1) :
+    p.roots = 0 := by
+  by_contra hroots
+  have ⟨x, hx⟩ := exists_mem_of_ne_zero hroots
+  exact hdeg <| natDegree_eq_of_degree_eq_some <|
+    degree_eq_one_of_irreducible_of_root hirr (mem_roots'.mp hx).right
+
 /-- To check a monic polynomial is irreducible, it suffices to check only for
 divisors that have smaller degree.
 
 See also: `Polynomial.Monic.irreducible_iff_natDegree`.
 -/
-theorem Monic.irreducible_iff_degree_lt {p : R[X]} (p_monic : Monic p) (p_1 : p ≠ 1) :
+theorem Monic.irreducible_iff_degree_lt (p_monic : Monic p) (p_1 : p ≠ 1) :
     Irreducible p ↔ ∀ q, degree q ≤ ↑(p.natDegree / 2) → q ∣ p → IsUnit q := by
   simp only [p_monic.irreducible_iff_lt_natDegree_lt p_1, Finset.mem_Ioc, and_imp,
     natDegree_pos_iff_degree_pos, natDegree_le_iff_degree_le]
