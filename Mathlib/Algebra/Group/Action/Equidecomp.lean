@@ -6,7 +6,7 @@ Authors: Felix Weilacher
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Logic.Equiv.PartialEquiv
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-
+import Mathlib.Order.Partition.Finpartition
 /-!
 # Equidecompositions
 
@@ -213,6 +213,65 @@ theorem refl_symm : (refl X G).symm = refl X G := rfl
 theorem restr_refl_symm (A : Set X) :
     ((Equidecomp.refl X G).restr A).symm = (Equidecomp.refl X G).restr A := rfl
 
+variable {f: Equidecomp X G}
+open Classical
+#check (fun g : f.witness ↦ {a : f.source | (f.isDecompOn a sorry).choose = g})
+#check Finset.image (fun g : f.witness ↦ {a : X | a ∈ f.source ∧ (f.isDecompOn a sorry).choose = g})
+
+
+open Classical in noncomputable def source.to_finpartition {f: Equidecomp X G} : Finpartition f.source where
+  parts := Finset.image (fun g : f.witness ↦ Subtype.val '' {a : f.source | (f.isDecompOn a (Subtype.coe_prop a)).choose = g})
+              f.witness.attach
+  supIndep := by
+    rw [Finset.SupIndep]
+    simp only [Finset.mem_image, Finset.mem_attach, true_and, Subtype.exists, exists_prop, id_eq,
+      Finset.sup_set_eq_biUnion, disjoint_iUnion_right, forall_exists_index, and_imp,
+      forall_apply_eq_imp_iff₂]
+    intro t ht a1 ha h1 i hi
+    rw [Finset.subset_image_iff] at ht
+    rcases ht with ⟨s, ⟨ht1, ht2⟩⟩
+    --- h1
+    rw [← ht2] at h1
+
+    -- hi
+    rw [← ht2] at hi
+    simp at hi
+
+    rcases hi with ⟨a, ⟨⟨h3, hi1⟩, hi2⟩⟩
+
+    subst hi2
+    simp only [Subtype.val_injective, disjoint_image_iff]
+    rw [Set.disjoint_iff]
+    simp
+    rw [Set.eq_empty_iff_forall_notMem]
+    simp only [mem_inter_iff, mem_setOf_eq, not_and, Subtype.forall]
+
+    intro x ha1 h4
+    rw [h4]
+    simp at h1
+    grind
+  sup_parts := by
+    simp only [Finset.sup_image, id_comp, Finset.sup_set_eq_biUnion, Finset.mem_attach, iUnion_true]
+    apply le_antisymm
+    . simp only [le_eq_subset, iUnion_subset_iff, image_subset_iff, Subtype.coe_preimage_self,
+      subset_univ, implies_true]
+    . simp only [le_eq_subset]
+      sorry
+  bot_notMem := by
+    by_cases hC: A.Nonempty
+    simp only [bot_eq_empty, Finset.mem_image, Finset.mem_attach, image_eq_empty, true_and,
+      Subtype.exists, exists_prop, not_exists, not_and]
+    intro x hx
+    push_neg
+    rw [Set.nonempty_def]
+    simp only [mem_setOf_eq, Subtype.exists]
+
+
+
+
+
+
 end Group
+
 
 end Equidecomp
