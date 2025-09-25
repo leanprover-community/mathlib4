@@ -127,6 +127,14 @@ lemma measurableSet_eq_zero (κ : Kernel α β) [IsFiniteKernel κ] :
   rw [h_sing]
   exact measurableSet_mutuallySingular κ κ
 
+lemma measurableSet_le [∀ η : Kernel α β, Decidable (IsSFiniteKernel η)]
+    (κ η : Kernel α β) [IsFiniteKernel κ] [IsFiniteKernel η] :
+    MeasurableSet {a | κ a ≤ η a} := by
+  have h_sub : {a | κ a ≤ η a} = {a | (κ - η) a = 0} := by
+    ext; simp [sub_apply_eq_zero_iff_le]
+  rw [h_sub]
+  exact measurableSet_eq_zero _
+
 lemma measurableSet_eq [∀ η : Kernel α β, Decidable (IsSFiniteKernel η)]
     (κ η : Kernel α β) [IsFiniteKernel κ] [IsFiniteKernel η] :
     MeasurableSet {a | κ a = η a} := by
