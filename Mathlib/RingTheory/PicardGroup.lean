@@ -287,6 +287,12 @@ instance : Module.Invertible A (A ⊗[R] M) :=
   .right (M := A ⊗[R] Dual R M) <| (AlgebraTensorModule.distribBaseChange ..).symm ≪≫ₗ
     AlgebraTensorModule.congr (.refl A A) (linearEquiv R M) ≪≫ₗ AlgebraTensorModule.rid ..
 
+variable {R M N A} in
+theorem of_isLocalization (S : Submonoid R) [IsLocalization S A]
+    (f : M →ₗ[R] N) [IsLocalizedModule S f] [Module A N] [IsScalarTower R A N] :
+    Module.Invertible A N :=
+  .congr (IsLocalizedModule.isBaseChange S A f).equiv
+
 instance (L) [AddCommMonoid L] [Module R L] [Module A L] [IsScalarTower R A L]
     [Module.Invertible A L] : Module.Invertible A (L ⊗[R] M) :=
   .congr (AlgebraTensorModule.cancelBaseChange R A A L M)
@@ -429,6 +435,34 @@ instance [IsLocalRing R] : Subsingleton (Pic R) :=
   subsingleton_iff.mpr fun _ _ _ _ ↦ free_of_flat_of_isLocalRing
 
 end CommRing.Pic
+
+namespace Module.Invertible
+
+variable (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] [Module.Invertible R A]
+
+private theorem bijective_ofId_of_isLocalRing [IsLocalRing R] :
+    Function.Bijective (Algebra.ofId R A) :=
+  let ⟨e⟩ := (free_iff_linearEquiv (R := R) (M := A)).mp inferInstance
+  e.symm.algEquivOfRing.bijective
+
+noncomputable def algEquivOfRing : R ≃ₐ[R] A :=
+  .ofBijective (Algebra.ofId R A) <| by
+    refine bijective_of_isLocalized_maximal
+      (fun P _ ↦ Localization.AtPrime P)
+      (fun P _ ↦ Algebra.linearMap R (Localization.AtPrime P))
+      (fun P _ ↦ LocalizedModule P.primeCompl A)
+      (fun P _ ↦ LocalizedModule.mkLinearMap _ _)
+      (Algebra.linearMap R A)
+      fun P _ ↦ ?_
+    have : Module.Invertible (Localization.AtPrime P) (LocalizedModule P.primeCompl A) :=
+      .of_isLocalization P.primeCompl (LocalizedModule.mkLinearMap _ _)
+    convert bijective_ofId_of_isLocalRing (Localization.AtPrime P) (LocalizedModule P.primeCompl A)
+    refine funext fun x ↦ Localization.induction_on x fun _ ↦ ?_
+    rw [Algebra.ofId_apply, Localization.mk_eq_mk', LocalizedModule.algebraMap_mk',
+      IsLocalization.mk'_eq_mk', IsLocalizedModule.map_mk', IsLocalizedModule.mk_eq_mk']
+    rfl
+
+end Module.Invertible
 
 end CommRing
 
