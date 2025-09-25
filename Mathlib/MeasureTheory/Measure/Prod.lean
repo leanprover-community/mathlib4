@@ -567,10 +567,8 @@ lemma ext_prod {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace
     ?_ ?_ ?_ s hs
   · rintro - ⟨s, hs, t, ht, rfl⟩
     exact h hs ht
-  · intro t ht
-    simp_rw [measure_compl ht (measure_ne_top _ _)]
-    intro h
-    rw [h, h_univ]
+  · intro t ht h
+    simp_rw [measure_compl ht (measure_ne_top _ _), h, h_univ]
   · intro f h_disj hf h_eq
     simp_rw [measure_iUnion h_disj hf, h_eq]
 
