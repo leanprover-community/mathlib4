@@ -655,7 +655,7 @@ def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageDa
       #[`Mathlib.Init, `Mathlib.Tactic.DeclarationNames]
     let exclude := [
       `Init, `Std, `Lean,
-      `Aesop, `Qq, `Plausible, `ImportGraph, `ProofWidgets, `LeanSearchClient
+      `Aesop, `Qq, `Plausible, `ImportGraph, `ProofWidgets, `LeanSearchClient, `Reap
     ]
     let importsToCheck := imports.filter (fun imp ↦ !exclude.any (·.isPrefixOf imp))
       |>.filter (fun imp ↦ !matchingPrefixes.any (·.isPrefixOf imp))
