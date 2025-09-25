@@ -70,7 +70,7 @@ end
 
 @[simps! counit]
 instance {a : B} : Comonad (𝟙 a) :=
-  inferInstanceAs <| ComonObj (MonoidalCategory.tensorUnit (a ⟶ a))
+  ComonObj.instTensorUnit (a ⟶ a)
 
 /-- An oplax functor from the trivial bicategory to `B` defines a comonad in `B`. -/
 def ofOplaxFromUnit (F : OplaxFunctor (LocallyDiscrete (Discrete Unit)) B) :
