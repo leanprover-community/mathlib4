@@ -101,11 +101,7 @@ theorem splitOn_intercalate [DecidableEq α] (x : α) (hx : ∀ l ∈ ls, x ∉ 
   induction ls with | nil => contradiction | cons hd tl ih => ?_
   cases tl
   · suffices hd.splitOn x = [hd] by simpa [flatten]
-    refine splitOnP_eq_single _ _ ?_
-    intro y hy H
-    rw [eq_of_beq H] at hy
-    refine hx hd ?_ hy
-    simp
+    exact splitOnP_eq_single _ _ (by grind)
   · simp only [intersperse_cons₂, singleton_append, flatten_cons]
     specialize ih _ _
     · grind
