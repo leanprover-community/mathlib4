@@ -47,12 +47,17 @@ variable (ϕ : τ → α → α) (s : Set α)
 theorem isInvariant_iff_image : IsInvariant ϕ s ↔ ∀ t, ϕ t '' s ⊆ s := by
   simp_rw [IsInvariant, mapsTo_iff_image_subset]
 
-/-- A set `s ⊆ α` is forward invariant under `ϕ : τ → α → α` if `ϕ t s ⊆ s` for all `t ≥ 0`. -/
+/-- A set `s ⊆ α` is forward-invariant under `ϕ : τ → α → α` if `ϕ t s ⊆ s` for all `t ≥ 0`. -/
 def IsForwardInvariant [Preorder τ] [Zero τ] (ϕ : τ → α → α) (s : Set α) : Prop :=
   ∀ ⦃t⦄, 0 ≤ t → MapsTo (ϕ t) s s
 
+@[deprecated (since := "2025-09-25")] alias IsFwInvariant := IsForwardInvariant
+
 theorem IsInvariant.isForwardInvariant [Preorder τ] [Zero τ] {ϕ : τ → α → α} {s : Set α}
     (h : IsInvariant ϕ s) : IsForwardInvariant ϕ s := fun t _ht => h t
+
+@[deprecated (since := "2025-09-25")]
+alias IsInvariant.isFwInvariant := IsInvariant.isForwardInvariant
 
 /-- If `τ` is a `CanonicallyOrderedAdd` monoid (e.g., `ℕ` or `ℝ≥0`), then the notions
 `IsForwardInvariant` and `IsInvariant` are equivalent. -/
@@ -60,12 +65,18 @@ theorem IsForwardInvariant.isInvariant [AddMonoid τ] [PartialOrder τ] [Canonic
     {ϕ : τ → α → α} {s : Set α}
     (h : IsForwardInvariant ϕ s) : IsInvariant ϕ s := fun t => h (zero_le t)
 
+@[deprecated (since := "2025-09-25")]
+alias IsFwInvariant.isInvariant := IsForwardInvariant.isInvariant
+
 /-- If `τ` is a `CanonicallyOrderedAdd` monoid (e.g., `ℕ` or `ℝ≥0`), then the notions
 `IsForwardInvariant` and `IsInvariant` are equivalent. -/
 theorem isForwardInvariant_iff_isInvariant [AddMonoid τ] [PartialOrder τ] [CanonicallyOrderedAdd τ]
     {ϕ : τ → α → α} {s : Set α} :
     IsForwardInvariant ϕ s ↔ IsInvariant ϕ s :=
   ⟨IsForwardInvariant.isInvariant, IsInvariant.isForwardInvariant⟩
+
+@[deprecated (since := "2025-09-25")]
+alias isFwInvariant_iff_isInvariant := isForwardInvariant_iff_isInvariant
 
 end Invariant
 
@@ -166,7 +177,7 @@ theorem mem_orbit (x : α) (t : τ) : ϕ t x ∈ orbit ϕ x := ϕ.toAddAction.me
 
 theorem mem_orbit_self (x : α) : x ∈ orbit ϕ x := ϕ.toAddAction.mem_orbit_self x
 
-theorem orbit_nonempty (x : α) : Set.Nonempty (orbit ϕ x) := ϕ.toAddAction.orbit_nonempty x
+theorem nonempty_orbit (x : α) : Set.Nonempty (orbit ϕ x) := ϕ.toAddAction.orbit_nonempty x
 
 theorem mem_orbit_of_mem_orbit {x₁ x₂ : α} (t : τ) (h : x₂ ∈ orbit ϕ x₁) : ϕ t x₂ ∈ orbit ϕ x₁ :=
   ϕ.toAddAction.mem_orbit_of_mem_orbit t h
@@ -190,7 +201,7 @@ def forwardOrbit (x : α) : Set α := orbit ϕ.restrictNonneg x
 theorem forwardOrbit_eq_range_nonneg (x : α) :
     forwardOrbit ϕ x = Set.range (fun t : {t : τ // 0 ≤ t} => ϕ t x) := rfl
 
-/-- The forward orbit of a point under a flow `ϕ` is forward invariant under `ϕ`. -/
+/-- The forward orbit of a point under a flow `ϕ` is forward-invariant under `ϕ`. -/
 theorem isForwardInvariant_forwardOrbit (x : α) : IsForwardInvariant ϕ (forwardOrbit ϕ x) :=
   fun t h => IsInvariant.isForwardInvariant (isInvariant_orbit ϕ.restrictNonneg x) (t := ⟨t, h⟩) h
 
