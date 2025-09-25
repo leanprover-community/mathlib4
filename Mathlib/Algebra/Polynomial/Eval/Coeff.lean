@@ -61,6 +61,12 @@ theorem coeff_zero_eq_eval_zero (p : R[X]) : coeff p 0 = p.eval 0 :=
 theorem zero_isRoot_of_coeff_zero_eq_zero {p : R[X]} (hp : p.coeff 0 = 0) : IsRoot p 0 := by
   rwa [coeff_zero_eq_eval_zero] at hp
 
+theorem coeff_zero_eq_zero_of_zero_isRoot {p : R[X]} (hp : IsRoot p 0) : p.coeff 0 = 0 := by
+  rwa [coeff_zero_eq_eval_zero]
+
+theorem zero_isRoot_iff_coeff_zero_eq_zero {p : R[X]} : IsRoot p 0 ↔ p.coeff 0 = 0 :=
+  ⟨coeff_zero_eq_zero_of_zero_isRoot, zero_isRoot_of_coeff_zero_eq_zero⟩
+
 end Eval
 
 section Map
