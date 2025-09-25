@@ -39,10 +39,10 @@ namespace AbsolutelyContinuousOnInterval
 
 /-- The filter on the collection of all the finite sequences of `uIoc` intervals induced by the
 function that the finite sequence of the intervals to the total length of the intervals -/
-def TotalLengthFilter : Filter (ℕ × (ℕ → ℝ × ℝ)) := Filter.comap
+def totalLengthFilter : Filter (ℕ × (ℕ → ℝ × ℝ)) := Filter.comap
   (fun E ↦ ∑ i ∈ Finset.range E.1, dist (E.2 i).1 (E.2 i).2) (𝓝[≥] 0)
 
-lemma TotalLengthFilter_hasBasis : TotalLengthFilter.HasBasis
+lemma hasBasis_totalLengthFilter : TotalLengthFilter.HasBasis
     (fun (ε : ℝ) => 0 < ε)
     (fun (ε : ℝ) => {E | ∑ i ∈ Finset.range E.1, dist (E.2 i).1 (E.2 i).2 < ε}) := by
   convert Filter.HasBasis.comap _ (nhdsGE_basis _) <;> try infer_instance
@@ -89,6 +89,7 @@ theorem absolutelyContinuousOnInterval_iff (f : ℝ → ℝ) (a b : ℝ) :
   rw [Filter.HasBasis.tendsto_iff (TotalLengthFilter_hasBasis.inf_principal _)
         TotalLengthFilter_hasBasis]
   simp +contextual [imp.swap]
+
 namespace AbsolutelyContinuousOnInterval
 
 theorem symm {f : ℝ → ℝ} {a b : ℝ} (hf : AbsolutelyContinuousOnInterval f a b) :
@@ -279,11 +280,9 @@ theorem boundedVariationOn {f : ℝ → ℝ} {a b : ℝ} (hf : AbsolutelyContinu
   · specialize @this f b a hf.symm (by linarith)
     rwa [uIcc_comm]
   rw [uIcc_of_le hab0]
-  by_cases hab1 : a = b
-  · rw [show Icc a b = {a} by simp [hab1]]
-    simp [BoundedVariationOn]
-  · have hab : a < b := lt_of_le_of_ne hab0 hab1
-    rw [absolutelyContinuousOnInterval_iff] at hf
+  rcases hab0.eq_or_lt with rfl | hab
+  · simp [BoundedVariationOn]
+  · rw [absolutelyContinuousOnInterval_iff] at hf
     obtain ⟨δ, hδ1, hδ2⟩ := hf 1 (by linarith)
     have hab1 : 0 < b - a := by linarith
     obtain ⟨n, hn⟩ := exists_nat_one_div_lt (div_pos hδ1 hab1)
@@ -296,13 +295,13 @@ theorem boundedVariationOn {f : ℝ → ℝ} {a b : ℝ} (hf : AbsolutelyContinu
       apply Monotone.mul_const Nat.mono_cast
       simp only [δ']
       refine div_nonneg ?_ ?_ <;> linarith
-    have v_sum: eVariationOn f (Icc a b) =
+    have v_sum : eVariationOn f (Icc a b) =
         ∑ i ∈ Finset.range (n + 1), eVariationOn f (Icc (a + i * δ') (a + (i + 1) * δ')) := by
       convert eVariationOn.sum' f (I := fun i ↦ a + i * δ') h_mono
       · simp
       · simp only [Nat.cast_add, Nat.cast_one, δ']; field_simp; abel
       · norm_cast
-    have v_each (x y : ℝ) (hxy1 : a ≤ x) (hxy2 : x ≤ y) (hxy3 : y < x + δ) (hxy4 : y ≤ b):
+    have v_each (x y : ℝ) (hxy1 : a ≤ x) (hxy2 : x ≤ y) (hxy3 : y < x + δ) (hxy4 : y ≤ b) :
         eVariationOn f (Icc x y) ≤ 1 := by
       simp only [eVariationOn]
       rw [iSup_le_iff]
