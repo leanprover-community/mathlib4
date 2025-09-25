@@ -97,7 +97,7 @@ lemma order_gt_zero_then_deriv_n_neg_1 (f : ℂ → ℂ) z₀ (hf : AnalyticAt �
         exact fun_const_smul hg
       · refine fun_mul ?_ (AnalyticAt.deriv hg)
         · refine fun_sub ?_ ?_
-          · refine Differentiable.analyticAt (differentiable_id') z₀
+          · refine Differentiable.analyticAt (differentiable_fun_id) z₀
           · refine Differentiable.analyticAt (differentiable_const z₀) z₀
     · constructor
       · simp_all only [gt_iff_lt, ne_eq, smul_eq_mul, nsmul_eq_mul,
@@ -321,6 +321,18 @@ lemma deriv_n_neg_1_then_order_gt_zero (f : ℂ → ℂ) z₀ (hf : AnalyticAt �
         rw [this]
         exact Hn'
   }
+
+theorem factorial_mul_Deriv (r : ℕ) (z z₀ : ℂ) (f: ℂ → ℂ) :
+   f z  = (z - z₀)^r * (deriv f z₀) := by {
+    sorry
+   }
+
+theorem factorial_mul_Deriv' (r : ℕ) (z₀ : ℂ) (f: ℂ → ℂ) :
+    deriv^[r] f z₀ = (r.factorial) * (deriv f z₀) := by
+  induction r with
+  | zero =>
+    sorry
+  | succ k ih => sorry
 
 lemma iterated_deriv_eq_zero_iff_order_eq_n :
   ∀ z₀ n (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀) (ho : analyticOrderAt f z₀ ≠ ⊤),

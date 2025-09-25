@@ -104,7 +104,7 @@ lemma isIntegral_c₁γ : IsIntegral ℤ (c₁ • γ') := by
   · rename_i H2; rw [H2]; rw [← IsIntegral.neg_iff, neg_smul, neg_neg]; exact h
 
 lemma c₁b (n : ℕ) : 1 ≤ n → k ≤ n - 1 → 1 ≤ (a : ℕ) → 1 ≤ (b : ℕ) →
-  IsIntegral ℤ (c₁^(n - 1) • (a + b • β') ^ k) := by
+  IsIntegral ℤ (c₁ ^ (n - 1) • (a + b • β') ^ k) := by
   intros hn hkn ha hb
   have : c₁^(n - 1) = c₁^(n - 1 - k) * c₁^k := by
     rwa [← pow_add, Nat.sub_add_cancel]
@@ -204,7 +204,7 @@ macro_rules | `(c_coeffs0) => `(c_coeffs0 K α' β' γ' q u t)
 
 open Nat in include hq0 in omit hq0 in
 lemma c1a0 :
- IsIntegral ℤ (c₁^(a * l) • (α' ^ (a * l : ℕ))) := by
+ IsIntegral ℤ (c₁ ^ (a * l) • (α' ^ (a * l : ℕ))) := by
   apply c₁ac K α' β' γ' α' a l a l ?_ ?_
   · rw [mul_comm]
   · rw [← zsmul_eq_mul]; exact isIntegral_c₁α K α' β' γ'
@@ -217,7 +217,7 @@ lemma c1c0 : IsIntegral ℤ (c₁ ^ (b * l) • (γ'^ (b * l : ℕ))) := by
 
 open Nat in include hq0 in
 lemma c1a :
- IsIntegral ℤ (c₁^(m * q) • (α' ^ ((a) * (l) : ℕ))) := by
+ IsIntegral ℤ (c₁^(m * q) • (α' ^ (a * l : ℕ))) := by
   apply c₁ac K α' β' γ' α' (m) q (a) ((l)) ?_ ?_
   · rw [mul_comm]
     exact Nat.mul_le_mul
@@ -227,7 +227,7 @@ lemma c1a :
   · rw [← zsmul_eq_mul]; exact isIntegral_c₁α K α' β' γ'
 
 open Nat in include hq0 in
-lemma c1c : IsIntegral ℤ (c₁ ^ (m * q) • (γ'^ ((b) * (l) : ℕ))) := by
+lemma c1c : IsIntegral ℤ (c₁ ^ (m * q) • (γ'^ (b * l : ℕ))) := by
   apply c₁ac K α' β' γ' γ' (m) q (b) (l) ?_ ?_
   · rw [mul_comm]
     exact Nat.mul_le_mul
@@ -410,19 +410,18 @@ lemma sum_b
         (i1 + i2 • β) - (j1 + j2 • β) = 0 := Iff.symm sub_eq_zero
       rw [h1] at H
       have h2 : ↑i1 + ↑i2 • β - (↑j1 + ↑j2 • β) = 0 ↔
-         ↑i1 + i2 • β - ↑j1 - ↑j2 • β = 0 := by {
+         ↑i1 + i2 • β - ↑j1 - ↑j2 • β = 0 := by
           simp_all only [ne_eq, Int.cast_sub, nsmul_eq_mul,
-            iff_true, sub_self, add_sub_cancel_left]}
+            iff_true, sub_self, add_sub_cancel_left]
       rw [h2] at H
       have h3 : ↑i1 + i2 • β - ↑j1 - j2 • β = 0 ↔
-          ↑i1 - ↑j1 + ↑i2 • β - ↑j2 • β = 0 := by {
-        ring_nf}
+          ↑i1 - ↑j1 + ↑i2 • β - ↑j2 • β = 0 := by
+        ring_nf
       rw [h3] at H
-      have hij2 : i2 ≠ j2 := by {
+      have hij2 : i2 ≠ j2 := by
         by_contra HC
         apply Heq
         exact HC
-        }
       have h4 : ↑i1 - ↑j1 + ↑i2 • β - ↑j2 • β = 0 ↔
         ↑i1 - ↑j1 + (i2 - ↑j2 : ℂ) • β = 0 := by {
         rw [sub_eq_add_neg]
@@ -432,25 +431,25 @@ lemma sum_b
         rw [← sub_eq_add_neg]}
       rw [h4] at H
       have h5 : ↑i1 - ↑j1 + (i2 - ↑j2 : ℂ) • β =0 ↔
-       ↑i1 - ↑j1 = - ((i2 - ↑j2 : ℂ) • β) := by {
-        rw [add_eq_zero_iff_eq_neg]}
+       ↑i1 - ↑j1 = - ((i2 - ↑j2 : ℂ) • β) := by
+        rw [add_eq_zero_iff_eq_neg]
       rw [h5] at H
       have h6 : ↑i1 - ↑j1 = - ((i2 - ↑j2 : ℂ) • β) ↔
-          ↑i1 - ↑j1 = (↑j2 - ↑i2 : ℂ) • β := by {
+          ↑i1 - ↑j1 = (↑j2 - ↑i2 : ℂ) • β := by
         refine Eq.congr_right ?_
         simp only [smul_eq_mul]
         rw [← neg_mul]
-        simp only [neg_sub]}
+        simp only [neg_sub]
       rw [h6] at H
       have h7 : ↑i1 - ↑j1 = (↑j2 - ↑i2 : ℂ) • β ↔
-         (↑i1 - ↑j1) /(↑j2 - ↑i2 : ℂ) =  β := by {
+         (↑i1 - ↑j1) /(↑j2 - ↑i2 : ℂ) =  β := by
         simp only [smul_eq_mul]
         rw [div_eq_iff, mul_comm]
         intros HC
         apply hij2
         rw [sub_eq_zero] at HC
         simp only [Nat.cast_inj] at HC
-        exact HC.symm}
+        exact HC.symm
       rw [h7] at H
       rw [H.symm]
       simp only [Int.cast_sub, Int.cast_natCast]}
@@ -517,7 +516,7 @@ lemma isInt_β_bound_low : IsIntegral ℤ (c₁ • (↑a + b • β')) := by {
     · rw [← zsmul_eq_mul]; exact isIntegral_c₁β K α' β' γ'}
 
 include hirr habc σ hq0 in
-lemma bound_c₁β : 1 ≤ house ((c₁ •(q + q • β'))) := by
+lemma bound_c₁β : 1 ≤ house ((c₁ • (q + q • β'))) := by
   apply house_gt_one_of_isIntegral
   exact isInt_β_bound K α' β' γ' q
   simp only [zsmul_eq_mul, ne_eq, mul_eq_zero, Int.cast_eq_zero, not_or]
@@ -825,9 +824,8 @@ lemma house_add_mul_leq : house (c₁ •(↑a + b • β')) ≤
     simp only [Int.cast_abs, mul_one, le_refl]
 
 omit hirr htriv habc hq0 h2mq
-lemma c₃_pow :  c₃  ^ ↑(n K q : ℝ) = c₂^ ↑(n K q) *
-  ((1 + house (β'))^ ↑(n K q)) *
-  (((Real.sqrt ((2*m)))) ^ ↑(n K q)) *
+lemma c₃_pow :  c₃  ^ ↑(n K q : ℝ) = c₂^ ↑(n K q) * ((1 + house (β'))^ ↑(n K q)) *
+   (((Real.sqrt ((2*m)))) ^ ↑(n K q)) *
   (max 1 (((house (α') ^ (2*m^2)) * house (γ') ^(2*m^2))^2*m))^ ↑(n K q) := by
     unfold c₃
     simp only [Real.rpow_natCast]
@@ -847,7 +845,7 @@ lemma q_eq_n_etc : ↑q ^ (n K q - 1) ≤ (Real.sqrt (2*m)^(n-1))* (Real.sqrt n)
     · simp only [Nat.cast_nonneg]
     · norm_cast;simp only [zero_le]
 
-lemma sq_n : (Real.sqrt n)^((n K q : ℝ)-1) = (n : ℝ) ^ (((n K q : ℝ) - 1)/2) := by
+lemma sq_n : (Real.sqrt n)^((n K q : ℝ)-1) = (n : ℝ) ^ (((n K q : ℝ) - 1)/2) := by stop
   nth_rw 1 [Real.sqrt_eq_rpow, ← Real.rpow_mul, mul_comm, mul_div]
   simp only [mul_one]; simp only [Nat.cast_nonneg]
 
@@ -880,28 +878,26 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
              house (c₁ • α') ^ (m * q) *
              house (c₁ • γ') ^ (m * q) := ?_
 
-         _ ≤ (|c₁| * (|(q : ℤ)| * (1 + house (β')))) ^ (n K q - 1) *
-             (|c₁| * house (α')) ^ (m * q) *
-             (|c₁| * house (γ')) ^ (m * q) := ?_
+         _ ≤ (|c₁| * (|(q : ℤ)| * (1 + house (β')))) ^ (n - 1) *
+             (|c₁| * house (α')) ^ (m * (2 * (m * n))) *
+             (|c₁| * house (γ')) ^ (m * (2 * (m * n))) := ?_
 
-         _= |c₁ ^ (n K q - 1)| • (↑|↑q| * (1 + house (β'))) ^ (n K q - 1) *
-            |c₁ ^ (m K * q)| • house α' ^ (m K * q) *
-            |c₁ ^ (m K * q)| • house γ' ^ (m K * q) := ?_
+         _= |c₁ ^ (n - 1)| • (↑|↑q| * (1 + house (β'))) ^ (n - 1) *
+            |c₁ ^ (m * (2 * (m K * n K q)))| • house α' ^ (m * (2 * (m * n))) *
+            |c₁ ^ (m * (2 * (m K * n K q)))| • house γ' ^ (m * (2 * (m * n))) := ?_
 
-         _ = ↑|c₁| ^ ((n K q - 1) + (2 * m K * q))
-            * (↑|↑q| ^ (n K q - 1) * (1 + house β') ^ (n K q - 1) *
-               house α' ^ (m K * q) * house γ' ^ (m K * q)) := ?_
+         _ = ↑|c₁| ^ ((n - 1) + (2 * m * (2 * (m * n))))
+            * (↑|↑q| ^ (n - 1) * (1 + house β') ^ (n - 1) *
+               house α' ^ (m * (2 * (m K * n K q))) * house γ' ^ (m K * (2 * (m K * n K q)))) := ?_
 
-         _ ≤  ↑(c₂ K α' β' γ')^n * (↑|↑q| ^ (n K q - 1) * (1 + house β') ^ (n K q - 1) *
-               house α' ^ (m K * q) * house γ' ^ (m K * q)) := ?_
+         _ ≤  ↑(c₂)^n * (↑|↑q| ^ (n - 1) * (1 + house β') ^ (n - 1) *
+               house α' ^ (m * (2 * (m K * n K q))) * house γ' ^ (m * (2 * (m K * n K q)))) := ?_
 
          _ ≤ (c₃)^(n : ℝ) * ((Real.sqrt n)^((n  : ℝ)-1)) := ?_
 
-         _ ≤ (c₃ K α' β' γ' ^ (n: ℝ) * (n : ℝ) ^ (((n  : ℝ) - 1) / 2)) := ?_
+         _ ≤ (c₃ ^ (n: ℝ) * (n : ℝ) ^ (((n  : ℝ) - 1) / 2)) := ?_
 
-    · unfold c_coeffs0
-      unfold _root_.b _root_.l _root_.a
-      rw [triple_comm K (c₁^k : ℤ) (c₁^(a * l): ℤ) (c₁^(b * l) : ℤ)
+    · rw [triple_comm K (c₁^k : ℤ) (c₁^(a * l): ℤ) (c₁^(b * l) : ℤ)
         (((a : ℕ) + b • β')^(k : ℕ)) (α' ^ (a * l)) (γ' ^ (b * l))]
     · simp only [nsmul_eq_mul, zsmul_eq_mul, Int.cast_pow]
       trans
@@ -953,17 +949,26 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
         · apply pow_nonneg; apply house_nonneg
     · apply mul_le_mul
       · apply mul_le_mul
-        · refine pow_le_pow_left₀ ?_ ?_ (n K q - 1)
+        · refine pow_le_pow_left₀ ?_ ?_ (n - 1)
           · apply house_nonneg
           · rw [← mul_assoc]
             apply house_add_mul_leq
-        · refine pow_le_pow_left₀ ?_ ?_ (m K * q)
-          · apply house_nonneg
-          · calc _ ≤ house (c₁ : K)  * house (α') := ?_
-               _ ≤ _ := ?_
-            · simp only [zsmul_eq_mul]
-              apply house_mul_le
-            · simp only [house_intCast, Int.cast_abs, le_refl]
+        · calc _ ≤ house (c₁ • α') ^ (m K * (2 * (m K * n K q))) := ?_
+               _ ≤ (↑|c₁| * house α') ^ (m K * (2 * (m K * n K q))) := ?_
+          · refine
+            house_alg_int_leq_pow (c₁ K α' β' γ' • α') (m K * q) (m K * (2 * (m K * n K q))) ?_ ?_
+              ?_
+            · sorry
+            · exact c₁αneq0 α β hirr htriv K σ α' β' γ' habc
+            · exact isIntegral_c₁α K α' β' γ'
+          --· sorry
+          · refine pow_le_pow_left₀ ?_ ?_ (m K * (2 * (m K * n K q)))
+            · apply house_nonneg
+            · calc _ ≤ house (c₁ : K)  * house (α') := ?_
+                   _ ≤ _ := ?_
+              · simp only [zsmul_eq_mul]
+                apply house_mul_le
+              · simp only [house_intCast, Int.cast_abs, le_refl]
         · apply pow_nonneg; apply house_nonneg
         · apply pow_nonneg;
           · apply mul_nonneg
@@ -973,7 +978,19 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
               · refine Left.add_nonneg ?_ ?_
                 · simp only [zero_le_one]
                 · exact house_nonneg β'
-      · refine pow_le_pow_left₀ ?_ ?_ (m K * q)
+      · calc _ ≤ house (c₁ • γ') ^ (m K * (2 * (m K * n K q))) := ?_
+             _ ≤ (↑|c₁| * house γ') ^ (m K * (2 * (m K * n K q))) := ?_
+        · refine
+            house_alg_int_leq_pow (c₁ K α' β' γ' • γ') (m K * q) (m K * (2 * (m K * n K q))) ?_ ?_
+              ?_
+          · apply mul_le_mul
+            · apply Preorder.le_refl
+            · sorry
+            · simp only [zero_le]
+            · simp only [zero_le]
+          · exact c₁cneq0 α β hirr htriv K σ α' β' γ' habc
+          · exact isIntegral_c₁γ K α' β' γ'
+        refine pow_le_pow_left₀ ?_ ?_ (m K * (2 * (m K * n K q)))
         · apply house_nonneg
         · calc _ ≤ house (c₁ : K)  * house (γ') := ?_
                _ ≤ _ := ?_
@@ -1012,11 +1029,11 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
       simp only [Int.cast_abs, Int.cast_pow]
     · have := triple_comm ℝ
        |(c₁^(n - 1) : ℤ)|
-       |(c₁^(m * q) : ℤ)|
-       |(c₁^(m * q) : ℤ)|
+       |(c₁^(m * (2 * (m K * n K q))) : ℤ)|
+       |(c₁^(m * (2 * (m K * n K q))) : ℤ)|
        ((↑|↑q| * (1 + house (β')))^(n-1))
-       ((house α') ^ (m * q))
-       ((house γ') ^ (m * q))
+       ((house α') ^ (m * (2 * (m K * n K q))))
+       ((house γ') ^ (m * (2 * (m K * n K q))))
       rw [← this]; clear this
       rw [abs_pow]
       rw [abs_pow]
@@ -1033,7 +1050,7 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
       rw [pow_mul]
       apply mul_le_mul
       · simp only [Int.cast_abs]
-        calc _ ≤   ↑(c₁)^ (n - 1 + 2 * m * q) := ?_
+        calc _ ≤  ↑(c₁)^ (n - 1 + 2 * m * (2 * (m * n K q))) := ?_
              _ ≤ ((c₁ : ℝ) ^ (1 + 2 * m * (2 * m))) ^ n :=?_
         · refine (pow_le_pow_iff_left₀ ?_ ?_ ?_).mpr ?_
           · simp only [abs_nonneg]
@@ -1049,15 +1066,17 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
                 obtain ⟨left_1, right_1⟩ := habc
                 obtain ⟨left_2, right_1⟩ := right_1
                 subst left_2 left_1
-                apply Aesop.BuiltinRules.not_intro
-                intro a_1
-                subst a_1
-                simp_all only [lt_self_iff_false]
+                sorry
           · apply abs_le_of_sq_le_sq (le_refl _) (sorry)
         · rw [← pow_mul]
           refine pow_le_pow_right₀ ?_ ?_
           · sorry
-          · sorry
+          · rw [add_mul]
+            simp only [one_mul]
+            refine Nat.add_le_add ?_ ?_
+            · simp only [tsub_le_iff_right, le_add_iff_nonneg_right, zero_le]
+            · simp only [mul_assoc]
+              apply Preorder.le_refl
         · simp only [Int.cast_pow]
           rfl
       · apply Preorder.le_refl
@@ -1069,11 +1088,12 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
       · rfl
       · calc _ ≤ (Real.sqrt (2*m)^(n-1))* (Real.sqrt n)^(n-1)
                 * ((1 + house β') ^ (n K q - 1) *
-                  (house α' ^ (m K * q) * house γ' ^ (m K * q))) := ?_
+                  (house α' ^ (m K * (2 * (m K * n K q))) *
+                    house γ' ^ (m K * (2 * (m K * n K q))))) := ?_
 
              _ ≤ (Real.sqrt (2*m)^(n-1))
-                * ((1 + house β') ^ (n K q - 1) * (house α' ^ (m K * q)
-                * house γ' ^ (m K * q))) * (Real.sqrt n)^((n  : ℝ)-1) := ?_
+                * ((1 + house β') ^ (n K q - 1) * (house α' ^ (m K * (2 * (m K * n K q)))
+                * house γ' ^ (m K * (2 * (m K * n K q))))) * (Real.sqrt n)^((n  : ℝ)-1) := ?_
 
              _ ≤ √(2 * ↑(m K)) ^ (n K q - 1) *
                 ((1 + house β') ^ (n K q - 1) * (house α' ^ (m K * 2 * m * n)
@@ -1082,7 +1102,6 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
              _ ≤ √(2 * ↑(m K)) ^ (n) *
                ((1 + house β') ^ (n) * (house α' ^ (m K * 2 * m)) ^ n
                 * (house γ' ^ (m K * 2 * m)) ^ n) *  (Real.sqrt n)^((n  : ℝ)-1) := ?_
-
 
         · apply mul_le_mul
           · simp only [Nat.abs_cast]
@@ -1096,7 +1115,15 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
         · simp only [mul_assoc]
           apply mul_le_mul
           · apply Preorder.le_refl
-          · sorry
+          · apply mul_le_mul
+            · apply Preorder.le_refl
+            · apply mul_le_mul
+              · sorry
+              · sorry
+              · sorry
+              · sorry
+            · sorry
+            · sorry
           · sorry
           · sorry
         · simp only [mul_assoc]
@@ -1114,7 +1141,7 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
               · sorry
               · sorry
             · sorry
-            · sorry
+            · apply pow_nonneg; sorry
           · sorry
           · sorry
         · nth_rw 2 [← mul_assoc]
@@ -1131,7 +1158,12 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
               · rw [← mul_pow]
                 refine pow_le_pow_left₀ ?_ ?_ n
                 · sorry
-                · sorry
+                · have : ((m K * 2) * m K) = ( 2 * m^2) := sorry
+                  rw [this]; clear this
+                  calc _ ≤ ((house α' ^ (2 * m K ^ 2) * house γ' ^ (2 * m K ^ 2)) ^ 2 * ↑(m K)) := ?_
+                       _ ≤ max 1 ((house α' ^ (2 * m K ^ 2) * house γ' ^ (2 * m K ^ 2)) ^ 2 * ↑(m K)) := ?_
+                  · sorry
+                  · sorry
               · apply Preorder.le_refl
               · sorry
               · sorry
@@ -1147,6 +1179,7 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
 }
 
 #exit
+
 def applylemma82 := NumberField.house.exists_ne_zero_int_vec_house_le K
   (A K α' β' γ' q)
   (hM_neq0 α β hirr htriv K σ α' β' γ' habc q hq0 h2mq)
@@ -2117,19 +2150,16 @@ lemma ρ_is_int :
           · rw [← zsmul_eq_mul]; exact isIntegral_c₁α K α' β' γ'
       · have : c₁ ^ (m K * q - (b * l₀)) *
            (c₁ ^ (b * l₀)) =
-              (c₁ ^ ((m K * q))) := by {
+              (c₁ ^ ((m K * q))) := by
           rw [← pow_add,Nat.sub_add_cancel]
           nth_rw 1 [mul_comm]
           apply mul_le_mul
           · simp only [Fin.is_le']
           · change b ≤ q
-            have : ↑(finProdFinEquiv.symm.toFun x).2 ≤ q := by {
-              exact Fin.is_le'
-            }
+            have : ↑(finProdFinEquiv.symm.toFun x).2 ≤ q := Fin.is_le'
             exact bar' (finProdFinEquiv.symm.toFun t).2
           · simp only [zero_le]
           · simp only [zero_le]
-           }
         rw [← this]
         simp only [zsmul_eq_mul, Int.cast_mul, Int.cast_pow]
         rw [mul_assoc]
@@ -2147,8 +2177,7 @@ lemma ρ_is_int :
     nth_rw 1 [mul_comm]
     rw [mul_assoc]
     apply IsIntegral.mul
-    · exact RingOfIntegers.isIntegral_coe
-        ((η) x)
+    · exact RingOfIntegers.isIntegral_coe ((η) x)
     · rw [mul_comm]
       --let l₀ : ℕ := (finProdFinEquiv.symm.1 u).1 + 1
       rw [← zsmul_eq_mul]
@@ -2992,8 +3021,7 @@ omit hirr htriv
   habc
   hq0
   h2mq in
-lemma zneq0 : ∀ (h : z ∈ S.U K) (k' : Fin (m K)),
-    (z - (k' + 1 : ℂ)) ≠ 0 := by
+lemma zneq0 : ∀ (h : z ∈ S.U K) (k' : Fin (m K)), (z - (k' + 1 : ℂ)) ≠ 0 := by
   intros hz k'
   dsimp [S.U, ks] at hz
   simp only [coe_image, coe_range, mem_compl_iff,
@@ -3050,9 +3078,10 @@ lemma SR_analytic_S.U : AnalyticOn ℂ SR (S.U K) := by {
       · exact analyticOn_const
     · apply AnalyticOn.fun_zpow
       · apply AnalyticOnSubset
-        · sorry
-        · sorry
-        · exact S.U K
+        · have : S.U K ⊆ Set.univ := by {exact fun ⦃a⦄ a ↦ trivial}
+          exact this
+        · simp only [analyticOn_univ]
+          sorry
       · intros z hz
         dsimp [S.U,ks] at hz
         simp only [coe_image, coe_range, mem_compl_iff,
@@ -3319,6 +3348,8 @@ lemma hcauchy (l' : Fin (m K)) :
   · intros x hx
     apply AnalyticAt.differentiableAt
     exact holS α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq x
+
+
 
 --#check sys_coe'_bar
 def sys_coeff_foo_S : ρᵣ = Complex.log α ^ (-↑(r : ℤ)) * (S) ↑↑(l₀) := by {
