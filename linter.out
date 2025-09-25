@@ -1,0 +1,9 @@
+✔ [2/7] Built Mathlib.Tactic.Linter.DirectoryDependency (1.1s)
+✔ [3/7] Built Mathlib.Tactic.Linter.Header (967ms)
+✔ [4/7] Built Mathlib.Tactic.Linter.RemoveDeprecations (646ms)
+⚠ [5/7] Built Mathlib.New (359ms)
+warning: Mathlib/New.lean:3:2: `[deprecated]` attribute should specify either a new name or a deprecation message
+warning: Mathlib/New.lean:17:2: `[deprecated]` attribute should specify either a new name or a deprecation message
+warning: Mathlib/New.lean:19:2: `[deprecated]` attribute should specify either a new name or a deprecation message
+✔ [6/7] Built Mathlib (352ms)
+Build completed successfully (7 jobs).
