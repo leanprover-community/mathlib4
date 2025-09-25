@@ -246,7 +246,7 @@ theorem FP.mul_two {M} [Semigroup M] (a : Stream' M) (i j : ℕ) (ij : i < j) :
   have := FP.singleton (a.drop i).tail d
   rw [Stream'.tail_eq_drop, Stream'.get_drop, Stream'.get_drop] at this
   convert this
-  omega
+  cutsat
 
 @[to_additive]
 theorem FP.finset_prod {M} [CommMonoid M] (a : Stream' M) (s : Finset ℕ) (hs : s.Nonempty) :
