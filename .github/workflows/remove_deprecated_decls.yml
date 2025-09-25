@@ -56,6 +56,8 @@ jobs:
           grep linter.out "$mv" >> delete_deprecations.sh
           chmod 755 delete_deprecations.sh
 
+          cat delete_deprecations.sh
+
       - name: remove outdated deprecated declarations
         id: remove
         shell: bash
@@ -69,11 +71,14 @@ jobs:
             echo "Dry run enabled, not modifying files"
           else
             echo "Modifying files..."
-            # TODO: parse linter.out and actually run the mv commands below
+            ./delete_deprecations.sh
           fi
 
           # TODO: set deprecation_date_from and deprecation_date_to outputs (extract from linter.out?)
           # maybe this could be done in the previous step?
+
+          git diff
+          exit 1 # still WIP, don't do anything below
 
       - name: configure git setup
         run: |
