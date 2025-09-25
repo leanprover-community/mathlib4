@@ -676,6 +676,7 @@ variable {R S : Type*} [Semiring R] [Semiring S] [Module R M₁] [Module R M₂]
 /-- The linear map `fun x => c x • f`.  Associates to a scalar-valued linear map and an element of
 `M₂` the `M₂`-valued linear map obtained by multiplying the two (a.k.a. tensoring by `M₂`).
 See also `ContinuousLinearMap.smulRightₗ` and `ContinuousLinearMap.smulRightL`. -/
+@[simps coe]
 def smulRight (c : M₁ →L[R] S) (f : M₂) : M₁ →L[R] M₂ :=
   { c.toLinearMap.smulRight f with cont := c.2.smul continuous_const }
 
