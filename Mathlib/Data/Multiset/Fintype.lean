@@ -312,7 +312,10 @@ noncomputable def mapEquiv (s : Multiset α) (f : α → β) : s ≃ s.map f :=
 theorem mapEquiv_apply (s : Multiset α) (f : α → β) (v : s) : s.mapEquiv f v = f v :=
   (Multiset.mapEquiv_aux s f).out.2 v
 
-/-- `s ≃ t` induced by `t.map g = s.map f`. -/
+/--
+`e : s ≃ t` induced by `t.map g = s.map f`, which composes in the following way: `f = g ∘ e`
+(`Multiset.comp_coe_eq_comp_coe_comp_equivOfMapEq`).
+-/
 noncomputable def equivOfMapEq {γ : Type*} [DecidableEq γ] {f : α → γ} {g : β → γ}
     {s : Multiset α} {t : Multiset β} (h : s.map f = t.map g) : s ≃ t :=
   (mapEquiv s f) |>.trans (cast h) |>.trans (mapEquiv t g).symm
@@ -331,7 +334,10 @@ noncomputable def equivCoeValUniv (α : Type*) [DecidableEq α] [Fintype α] :
   left_inv x := rfl
   right_inv := fun ⟨x, i⟩ ↦ by simp only [Subsingleton.elim (h := by simp; infer_instance) ⟨0, _⟩ i]
 
-/-- `α ≃ β` induced by `(univ α).map g = (univ β).map f`. -/
+/--
+`e : α ≃ β` induced by `Finset.univ.val.map f = Finset.univ.val.map g`,
+which composes in the following way: `f = g ∘ e` (`Multiset.eq_comp_equivOfMapUnivEq`).
+-/
 noncomputable def equivOfMapUnivEq {γ : Type*} [DecidableEq γ] [Fintype α] [Fintype β]
     {f : α → γ} {g : β → γ} (h : Finset.univ.val.map f = Finset.univ.val.map g) : α ≃ β :=
   (equivCoeValUniv α) |>.trans (equivOfMapEq h) |>.trans (equivCoeValUniv β).symm
