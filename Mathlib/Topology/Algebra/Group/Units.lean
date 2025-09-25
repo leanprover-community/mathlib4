@@ -19,7 +19,8 @@ open Units
 
 /-- If a submonoid is open in a topological monoid, then its units form an open subset
 of the units of the monoid. -/
-@[to_additive]
+@[to_additive /-- If a subgroup of the additive units is open in a topological additive monoid,
+then its additive units form an open subset of the additive units of the monoid. -/]
 lemma Submonoid.isOpen_units {M : Type*} [TopologicalSpace M] [Monoid M]
     {U : Submonoid M} (hU : IsOpen (U : Set M)) : IsOpen (U.units : Set Mˣ) :=
   (hU.preimage Units.continuous_val).inter (hU.preimage Units.continuous_coe_inv)
