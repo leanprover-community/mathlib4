@@ -74,7 +74,7 @@ theorem Equiv.Perm.viaFintypeEmbedding_apply_image (a : α) :
 theorem Equiv.Perm.viaFintypeEmbedding_apply_mem_range {b : β} (h : b ∈ Set.range f) :
     e.viaFintypeEmbedding f b = f (e (f.invOfMemRange ⟨b, h⟩)) := by
   simp only [viaFintypeEmbedding, Function.Embedding.invOfMemRange]
-  rw [Equiv.Perm.extendDomain_apply_subtype]
+  rw [Equiv.Perm.extendDomain_apply_subtype _ _ h]
   congr
 
 theorem Equiv.Perm.viaFintypeEmbedding_apply_notMem_range {b : β} (h : b ∉ Set.range f) :

@@ -92,7 +92,7 @@ section Examples
 @[simp]
 theorem bernoulli'_zero : bernoulli' 0 = 1 := by
   rw [bernoulli'_def]
-  norm_num
+  simp
 
 @[simp]
 theorem bernoulli'_one : bernoulli' 1 = 1 / 2 := by
