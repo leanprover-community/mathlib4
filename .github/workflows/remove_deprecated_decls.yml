@@ -107,6 +107,7 @@ jobs:
         DEPRECATION_DATE_TO: ${{ steps.remove.outputs.deprecation_date_to }}
 
     - name: Send Zulip message
+      #if: false
       uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
@@ -115,4 +116,4 @@ jobs:
         to: 'nightly-testing'
         type: 'stream'
         topic: 'Mathlib `remove outdated deprecated declarations`'
-        content: '${{ steps.pr.outputs.message }}'
+        content: ${{ steps.pr.outputs.message }}
