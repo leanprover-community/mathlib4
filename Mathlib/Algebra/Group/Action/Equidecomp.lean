@@ -93,6 +93,17 @@ def witness (f : Equidecomp X G) : Finset G := f.isDecompOn'.choose
 theorem isDecompOn (f : Equidecomp X G) : IsDecompOn f f.source f.witness :=
   f.isDecompOn'.choose_spec
 
+noncomputable def element_witness (f : Equidecomp X G) (a : X) (h : a ∈ f.source) : G :=
+    (f.isDecompOn a h).choose
+
+open Classical in noncomputable def minimal_witness (f : Equidecomp X G) : Finset G :=
+  {w ∈ f.witness | ∃ a, ∃ h, f.element_witness a h = w}
+
+theorem element_witness_mem_minimal_witness (f : Equidecomp X G) (a : X) (h : a ∈ f.source) :
+  f.element_witness a h ∈ f.minimal_witness := by
+    sorry
+
+
 theorem apply_mem_target {f : Equidecomp X G} {x : X} (h : x ∈ f.source) :
     f x ∈ f.target := by simp [h]
 
@@ -213,15 +224,12 @@ theorem refl_symm : (refl X G).symm = refl X G := rfl
 theorem restr_refl_symm (A : Set X) :
     ((Equidecomp.refl X G).restr A).symm = (Equidecomp.refl X G).restr A := rfl
 
-variable {f: Equidecomp X G}
-open Classical
-#check (fun g : f.witness ↦ {a : f.source | (f.isDecompOn a sorry).choose = g})
-#check Finset.image (fun g : f.witness ↦ {a : X | a ∈ f.source ∧ (f.isDecompOn a sorry).choose = g})
 
+open Classical
 
 open Classical in noncomputable def source.to_finpartition {f: Equidecomp X G} : Finpartition f.source where
-  parts := Finset.image (fun g : f.witness ↦ Subtype.val '' {a : f.source | (f.isDecompOn a (Subtype.coe_prop a)).choose = g})
-              f.witness.attach
+  parts := Finset.image (fun g : f.minimal_witness↦ Subtype.val '' {a : f.source | (f.isDecompOn a (Subtype.coe_prop a)).choose = g})
+           f.minimal_witness.attach
   supIndep := by
     rw [Finset.SupIndep]
     simp only [Finset.mem_image, Finset.mem_attach, true_and, Subtype.exists, exists_prop, id_eq,
@@ -256,18 +264,35 @@ open Classical in noncomputable def source.to_finpartition {f: Equidecomp X G} :
     . simp only [le_eq_subset, iUnion_subset_iff, image_subset_iff, Subtype.coe_preimage_self,
       subset_univ, implies_true]
     . simp only [le_eq_subset]
-      sorry
+      rw [Set.subset_def]
+      simp only [mem_iUnion, mem_image, mem_setOf_eq, Subtype.exists, exists_and_right,
+        exists_eq_right, exists_prop]
+      intro x hx
+      use f.element_witness x hx
+      apply And.intro
+      . exact element_witness_mem_minimal_witness f x hx
+      . use hx
+        simp_rw [element_witness]
+
+
+
   bot_notMem := by
-    by_cases hC: A.Nonempty
+    --by_cases hC: f.source.Nonempty
     simp only [bot_eq_empty, Finset.mem_image, Finset.mem_attach, image_eq_empty, true_and,
       Subtype.exists, exists_prop, not_exists, not_and]
     intro x hx
     push_neg
     rw [Set.nonempty_def]
     simp only [mem_setOf_eq, Subtype.exists]
+    --
 
-
-
+    rw [Equidecomp.minimal_witness] at hx
+    simp at hx
+    rcases hx with ⟨hx, ⟨a, ⟨ha, ha1⟩⟩⟩
+    use a
+    use ha
+    rw [← ha1]
+    simp_rw [Equidecomp.element_witness]
 
 
 
