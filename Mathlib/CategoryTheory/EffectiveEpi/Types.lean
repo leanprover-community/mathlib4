@@ -103,8 +103,8 @@ lemma regularEpi_iff_surjective {X Y : Type u} {f : X ⟶ Y} :
 /-- A morphism in the category of types is an effective epimorphism if and only if
 it is a surjective function. -/
 lemma effectiveEpi_iff_surjective {X Y : Type u} {f : X ⟶ Y} : EffectiveEpi f ↔ Surjective f where
-  mp := fun h => regularEpi_iff_surjective.mp ⟨by infer_instance⟩
-  mpr := fun h => by
+  mp h := regularEpi_iff_surjective.mp ⟨by infer_instance⟩
+  mpr h := by
     let := (regularEpi_iff_surjective.mpr h).some
     infer_instance
 
