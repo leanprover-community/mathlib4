@@ -188,7 +188,7 @@ theorem hasFTaylorSeriesUpToOn_top_iff_add (hN : ∞ ≤ N) (k : ℕ) :
     constructor
     · exact (H 0).zero_eq
     · intro m _
-      apply (H m.succ).fderivWithin m (by norm_cast; omega)
+      apply (H m.succ).fderivWithin m (by norm_cast; cutsat)
     · intro m _
       apply (H m).cont m (by simp)
 
