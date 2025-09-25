@@ -324,6 +324,13 @@ lemma natDegree_eq_one : p.natDegree = 1 ↔ ∃ a ≠ 0, ∃ b, C a * X + C b =
   · rintro ⟨a, ha, b, rfl⟩
     simp [ha]
 
+theorem isRoot_subsingleton_of_degree_eq_one [IsLeftCancelMul R] [IsRightCancelAdd R]
+    (h : p.natDegree = 1) : { x | IsRoot p x }.Subsingleton := by
+  intro x hx y hy
+  have ⟨a, ha, b, hp⟩ := Polynomial.natDegree_eq_one.mp h
+  simp [← hp] at hx hy
+  exact mul_left_cancel <| add_right_cancel <| hy ▸ hx
+
 variable [NoZeroDivisors R]
 
 theorem degree_mul_C (a0 : a ≠ 0) : (p * C a).degree = p.degree := by
