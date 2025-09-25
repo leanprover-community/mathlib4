@@ -8,6 +8,7 @@ import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Rel
 import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Data.Sym.Sym2
+import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
 # Simple graphs
