@@ -188,6 +188,8 @@ protected abbrev ring [Ring R] (zero : f 0 = 0)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (natCast : ∀ n : ℕ, f n = n)
     (intCast : ∀ n : ℤ, f n = n) : Ring S where
   toSemiring := hf.semiring f zero one add mul nsmul npow natCast
+  -- zsmul included here explicitly to make sure it's picked correctly by `fast_instance%`.
+  zsmul := fun n x ↦ n • x
   __ := hf.addGroupWithOne f zero one add neg sub nsmul zsmul natCast intCast
   __ := hf.addCommGroup f zero add neg sub (swap nsmul) (swap zsmul)
 
