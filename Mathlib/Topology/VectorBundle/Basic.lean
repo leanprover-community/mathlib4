@@ -505,7 +505,7 @@ variable {R B F} {ι : Type*}
 variable (Z : VectorBundleCore R B F ι)
 
 /-- Natural identification to a `FiberBundleCore`. -/
-@[simps (config := mfld_cfg)]
+@[simps (attr := mfld_simps) -fullyApplied]
 def toFiberBundleCore : FiberBundleCore ι B F :=
   { Z with
     coordChange := fun i j b => Z.coordChange i j b
