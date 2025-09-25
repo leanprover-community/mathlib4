@@ -18,8 +18,8 @@ finitely many maximal ideals).
   localization at every maximal ideal is finite.
 * `IsNoetherianRing.of_isLocalization_maximal`: A semilocal ring `R` is Noetherian if its
   localization at every maximal ideal is a Noetherian ring.
-* `isPrincipalIdealRing_of_isPrincipalIdealRing_isLocalization`: A semilocal integral domain `A` is
-  a PID if its localization at every maximal ideal is a PID.
+* `isPrincipalIdealRing_of_isPrincipalIdealRing_isLocalization_maximal`: A semilocal
+  integral domain `A` is a PID if its localization at every maximal ideal is a PID.
 -/
 
 section CommSemiring
@@ -40,7 +40,7 @@ variable
   (f : ∀ (P : Ideal R) [P.IsMaximal], M →ₗ[R] Mₚ P)
   [∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (f P)]
 
-section isLocalized_maximal
+section IsLocalized
 
 include f in
 /-- A module `M` over a semilocal ring `R` is finite if
@@ -69,9 +69,9 @@ theorem Submodule.fg_of_isLocalized_maximal (N : Submodule R M)
   simp_rw [← Module.Finite.iff_fg] at ⊢ H
   exact .of_isLocalized_maximal _ _ _ (fun P ↦ N.toLocalized' (Rₚ P) P.primeCompl (f P)) H
 
-end isLocalized_maximal
+end IsLocalized
 
-section localized_maximal
+section Localized
 
 theorem Module.Finite.of_localized_maximal
     (H : ∀ (P : Ideal R) [P.IsMaximal],
@@ -84,7 +84,7 @@ theorem Submodule.fg_of_localized_maximal (N : Submodule R M)
     (H : ∀ (P : Ideal R) [P.IsMaximal], (N.localized P.primeCompl).FG) :
     N.FG := N.fg_of_isLocalized_maximal _ _ _ H
 
-end localized_maximal
+end Localized
 
 section IsLocalization
 
@@ -112,7 +112,7 @@ variable
   [∀ (P : Ideal R) [P.IsMaximal], IsLocalization.AtPrime (Rₚ P) P]
 
 /-- A semilocal integral domain `A` is a PID if its localization at every maximal ideal is a PID. -/
-theorem isPrincipalIdealRing_of_isPrincipalIdealRing_isLocalization [IsDomain R]
+theorem isPrincipalIdealRing_of_isPrincipalIdealRing_isLocalization_maximal [IsDomain R]
     (hpid : ∀ (P : Ideal R) [P.IsMaximal], IsPrincipalIdealRing (Rₚ P)) :
     IsPrincipalIdealRing R := by
   have : IsNoetherianRing R :=
