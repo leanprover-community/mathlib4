@@ -486,8 +486,8 @@ lemma compProd_assoc {δ : Type*} {mδ : MeasurableSpace δ}
   swap; · exact measurable_kernel_prodMk_left' hs a
   congr with b
   rw [compProd_apply]
-  swap; · exact hs.preimage (by fun_prop)
-  congr
+  · congr
+  · exact hs.preimage (by fun_prop)
 
 lemma compProd_add_left (μ κ : Kernel α β) (η : Kernel (α × β) γ)
     [IsSFiniteKernel μ] [IsSFiniteKernel κ] :
