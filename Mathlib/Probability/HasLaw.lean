@@ -146,7 +146,7 @@ lemma exists_hasLaw_indepFun {ι : Type v} (𝓧 : ι → Type u)
   funext i
   exact ((measurePreserving_eval_infinitePi μ i).map_eq).symm
 
-lemma exists_iid {ι : Type v} {𝓧 : Type u} {m𝓧 : MeasurableSpace 𝓧}
+lemma exists_iid (ι : Type v) {𝓧 : Type u} {m𝓧 : MeasurableSpace 𝓧}
     (μ : Measure 𝓧) [IsProbabilityMeasure μ] :
     ∃ Ω : Type (max u v), ∃ _ : MeasurableSpace Ω, ∃ P : Measure Ω, ∃ X : ι → Ω → 𝓧,
       (∀ i, HasLaw (X i) μ P) ∧ (iIndepFun X P) :=
