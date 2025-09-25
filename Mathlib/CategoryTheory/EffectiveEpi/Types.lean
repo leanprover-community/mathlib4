@@ -98,7 +98,7 @@ it is a surjective function. -/
 lemma regularEpi_iff_surjective {X Y : Type u} {f : X ⟶ Y} :
     Nonempty (RegularEpi f) ↔ Surjective f where
   mp := fun ⟨_⟩ => surjective_of_epi _
-  mpr := fun hf => ⟨regularEpiPullbackOfSurjective hf⟩
+  mpr hf := ⟨regularEpiPullbackOfSurjective hf⟩
 
 /-- A morphism in the category of types is an effective epimorphism if and only if
 it is a surjective function. -/
