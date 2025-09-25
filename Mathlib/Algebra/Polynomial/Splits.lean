@@ -544,12 +544,13 @@ theorem aeval_root_derivative_of_splits [Algebra K L] [DecidableEq L] {P : K[X]}
   nth_rw 1 [eq_prod_roots_of_monic_of_splits_id hmo hP]
   rw [eval_multiset_prod_X_sub_C_derivative hr]
 
-/-- If `P` is a monic polynomial that splits, then `coeff P 0` equals the product of the roots. -/
-theorem prod_roots_eq_coeff_zero_of_monic_of_splits {P : K[X]} (hmo : P.Monic)
-    (hP : P.Splits (RingHom.id K)) : coeff P 0 = (-1) ^ P.natDegree * P.roots.prod := by
-  nth_rw 1 [eq_prod_roots_of_monic_of_splits_id hmo hP]
-  rw [coeff_zero_eq_eval_zero, eval_multiset_prod, Multiset.map_map]
-  simp_rw [Function.comp_apply, eval_sub, eval_X, zero_sub, eval_C]
+theorem prod_roots_mul_leadingCoeff_eq_coeff_zero_of_splits {P : K[X]}
+    (hP : P.Splits (RingHom.id K)) :
+    coeff P 0 = P.leadingCoeff * (-1) ^ P.natDegree * P.roots.prod := by
+  nth_rw 1 [eq_prod_roots_of_splits_id hP]
+  rw [coeff_zero_eq_eval_zero, eval_mul, eval_multiset_prod, Multiset.map_map]
+  simp_rw [Function.comp_apply, eval_sub, eval_X, zero_sub, eval_C, mul_assoc]
+  congr
   conv_lhs =>
     congr
     congr
@@ -557,13 +558,25 @@ theorem prod_roots_eq_coeff_zero_of_monic_of_splits {P : K[X]} (hmo : P.Monic)
     rw [neg_eq_neg_one_mul]
   simp only [splits_iff_card_roots.1 hP, neg_mul, one_mul, Multiset.prod_map_neg]
 
+/-- If `P` is a monic polynomial that splits, then `coeff P 0` equals the product of the roots. -/
+theorem prod_roots_eq_coeff_zero_of_monic_of_splits {P : K[X]} (hmo : P.Monic)
+    (hP : P.Splits (RingHom.id K)) : coeff P 0 = (-1) ^ P.natDegree * P.roots.prod := by
+  convert prod_roots_mul_leadingCoeff_eq_coeff_zero_of_splits hP
+  simp [hmo]
+
+theorem sum_roots_mul_leadingCoeff_eq_nextCoeff_of_split {P : K[X]}
+    (hP : P.Splits (RingHom.id K)) : P.nextCoeff = -P.roots.sum * P.leadingCoeff := by
+  nth_rw 1 [eq_prod_roots_of_splits_id hP]
+  rw [nextCoeff_C_mul, mul_comm, Monic.nextCoeff_multiset_prod _ _ fun a ha => _]
+  · simp_rw [nextCoeff_X_sub_C, Multiset.sum_map_neg']
+  · simp only [monic_X_sub_C, implies_true]
+
 /-- If `P` is a monic polynomial that splits, then `P.nextCoeff` equals the sum of the roots. -/
 theorem sum_roots_eq_nextCoeff_of_monic_of_split {P : K[X]} (hmo : P.Monic)
     (hP : P.Splits (RingHom.id K)) : P.nextCoeff = -P.roots.sum := by
-  nth_rw 1 [eq_prod_roots_of_monic_of_splits_id hmo hP]
-  rw [Monic.nextCoeff_multiset_prod _ _ fun a ha => _]
-  · simp_rw [nextCoeff_X_sub_C, Multiset.sum_map_neg']
-  · simp only [monic_X_sub_C, implies_true]
+  rw [← mul_one <| -P.roots.sum]
+  convert sum_roots_mul_leadingCoeff_eq_nextCoeff_of_split hP
+  simp [hmo]
 
 end Splits
 
