@@ -458,6 +458,37 @@ instance IsSFiniteKernel.compProd (κ : Kernel α β) (η : Kernel (α × β) γ
   rw [compProd_def]
   infer_instance
 
+/-- `Kernel.compProd` is associative. We have to insert `MeasurableEquiv.prodAssoc` in two places
+because the products of types `α × β × γ` and `(α × β) × γ` are different. -/
+lemma compProd_assoc {δ : Type*} {mδ : MeasurableSpace δ}
+    {κ : Kernel α β} {η : Kernel (α × β) γ} {ξ : Kernel (α × β × γ) δ} :
+    (κ ⊗ₖ (η ⊗ₖ (ξ.comap MeasurableEquiv.prodAssoc (MeasurableEquiv.measurable _)))).map
+        MeasurableEquiv.prodAssoc.symm
+      = κ ⊗ₖ η ⊗ₖ ξ := by
+  by_cases hκ : IsSFiniteKernel κ
+  swap; · simp [hκ]
+  by_cases hη : IsSFiniteKernel η
+  swap; · simp [hη]
+  by_cases hξ : IsSFiniteKernel ξ
+  swap
+  · have : ¬ IsSFiniteKernel
+        (ξ.comap MeasurableEquiv.prodAssoc (MeasurableEquiv.measurable _)) := by
+      refine fun h_sfin ↦ hξ ?_
+      have : ξ = (ξ.comap MeasurableEquiv.prodAssoc (MeasurableEquiv.measurable _)).comap
+          MeasurableEquiv.prodAssoc.symm (MeasurableEquiv.measurable _) := by
+        simp [← comap_comp_right]
+      rw [this]
+      infer_instance
+    simp [hξ, this]
+  ext a s hs
+  rw [compProd_apply hs, map_apply' _ (by fun_prop) _ hs,
+    compProd_apply (hs.preimage (by fun_prop)), lintegral_compProd]
+  swap; · exact measurable_kernel_prodMk_left' hs a
+  congr with b
+  rw [compProd_apply]
+  · congr
+  · exact hs.preimage (by fun_prop)
+
 lemma compProd_add_left (μ κ : Kernel α β) (η : Kernel (α × β) γ)
     [IsSFiniteKernel μ] [IsSFiniteKernel κ] :
     (μ + κ) ⊗ₖ η = μ ⊗ₖ η + κ ⊗ₖ η := by
