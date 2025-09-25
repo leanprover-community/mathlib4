@@ -453,6 +453,36 @@ theorem _root_.Matrix.posDef_inv_iff [DecidableEq n] {M : Matrix n n K} :
 
 end Field
 
+section SchurComplement
+
+variable [StarOrderedRing R']
+
+theorem fromBlocks₁₁ [DecidableEq m] {A : Matrix m m R'}
+    (B : Matrix m n R') (D : Matrix n n R') (hA : A.PosDef) [Invertible A] :
+    (fromBlocks A B Bᴴ D).PosSemidef ↔ (D - Bᴴ * A⁻¹ * B).PosSemidef := by
+  rw [PosSemidef, IsHermitian.fromBlocks₁₁ _ _ hA.1]
+  constructor
+  · refine fun h => ⟨h.1, fun x => ?_⟩
+    have := h.2 (-((A⁻¹ * B) *ᵥ x) ⊕ᵥ x)
+    rwa [dotProduct_mulVec, schur_complement_eq₁₁ B D _ _ hA.1, neg_add_cancel, dotProduct_zero,
+      zero_add, ← dotProduct_mulVec] at this
+  · refine fun h => ⟨h.1, fun x => ?_⟩
+    rw [dotProduct_mulVec, ← Sum.elim_comp_inl_inr x, schur_complement_eq₁₁ B D _ _ hA.1]
+    apply le_add_of_nonneg_of_le
+    · rw [← dotProduct_mulVec]
+      apply hA.posSemidef.2
+    · rw [← dotProduct_mulVec (star (x ∘ Sum.inr))]
+      apply h.2
+
+theorem fromBlocks₂₂ [DecidableEq n] (A : Matrix m m R')
+    (B : Matrix m n R') {D : Matrix n n R'} (hD : D.PosDef) [Invertible D] :
+    (fromBlocks A B Bᴴ D).PosSemidef ↔ (A - B * D⁻¹ * Bᴴ).PosSemidef := by
+  rw [← posSemidef_submatrix_equiv (Equiv.sumComm n m), Equiv.sumComm_apply,
+    fromBlocks_submatrix_sum_swap_sum_swap]
+  convert fromBlocks₁₁ Bᴴ A hD <;> simp
+
+end SchurComplement
+
 end PosDef
 
 end Matrix
