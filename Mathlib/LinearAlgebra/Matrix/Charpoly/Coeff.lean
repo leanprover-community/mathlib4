@@ -298,6 +298,19 @@ lemma reverse_charpoly (M : Matrix n n R) :
     diagonal_one, invert.map_det]
   simp [t_inv, map_sub, map_one, map_mul, t, smul_eq_diagonal_mul]
 
+theorem charpoly_inv (A : Matrix n n R) (h : IsUnit A) :
+    A⁻¹.charpoly = (-1) ^ Fintype.card n * C (Ring.inverse A.det) * A.charpolyRev := by
+  have : Invertible A := h.invertible
+  calc
+  _ = (scalar n X - C.mapMatrix A⁻¹).det := rfl
+  _ = C A⁻¹.det * (C.mapMatrix A * (scalar n X - C.mapMatrix A⁻¹)).det := by
+    rw [det_mul, ← RingHom.map_det, ← mul_assoc, ← C_mul, ← det_mul, inv_mul_of_invertible]
+    simp
+  _ = _ := by
+    rw [mul_sub, ← RingHom.map_mul, mul_inv_of_invertible, RingHom.map_one, ← neg_sub, det_neg,
+      det_one_sub_mul_comm, charpolyRev, smul_eq_diagonal_mul]
+    simp
+    ring
 
 @[simp] lemma eval_charpolyRev :
     eval 0 M.charpolyRev = 1 := by
@@ -344,20 +357,6 @@ lemma isNilpotent_charpoly_sub_pow_of_isNilpotent (hM : IsNilpotent M) :
     le_trans (natDegree_sub_le _ _) (by simp)
   rw [← isNilpotent_reflect_iff aux, reflect_sub, ← reverse, M.reverse_charpoly]
   simpa [p, hp]
-
-theorem charpoly_inv (A : Matrix n n R) (h : IsUnit A) :
-    A⁻¹.charpoly = C ((-1) ^ Fintype.card n * (A⁻¹).det) * A.charpoly.reverse :=
-  have : Invertible A := h.invertible
-  calc
-  _ = (scalar n X - C.mapMatrix A⁻¹).det := rfl
-  _ = C A⁻¹.det * (C.mapMatrix A * (scalar n X - C.mapMatrix A⁻¹)).det := by
-    rw [det_mul, ← RingHom.map_det, ← mul_assoc, ← C_mul, ← det_mul, inv_mul_of_invertible]
-    simp
-  _ = _ := by
-    rw [mul_sub, ← RingHom.map_mul, mul_inv_of_invertible, RingHom.map_one, ← neg_sub, det_neg,
-      det_one_sub_mul_comm, reverse_charpoly, charpolyRev, scalar_apply, smul_eq_diagonal_mul,
-      RingHom.mapMatrix_apply, C_mul, C_pow, C_neg, C_1]
-    ring
 
 end reverse
 
