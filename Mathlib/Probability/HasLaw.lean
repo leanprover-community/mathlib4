@@ -54,11 +54,11 @@ lemma HasLaw.measurePreserving (h₁ : HasLaw X μ P) (h₂ : Measurable X) :
   map_eq := h₁.map_eq
 
 theorem HasLaw.isFiniteMeasure_iff (hX : HasLaw X μ P) :
-    IsFiniteMeasure P ↔ IsFiniteMeasure μ := by
+    IsFiniteMeasure μ ↔ IsFiniteMeasure P := by
   rw [← hX.map_eq, isFiniteMeasure_map_iff hX.aemeasurable]
 
 theorem HasLaw.isProbabilityMeasure_iff (hX : HasLaw X μ P) :
-    IsProbabilityMeasure P ↔ IsProbabilityMeasure μ := by
+    IsProbabilityMeasure μ ↔ IsProbabilityMeasure P := by
   rw [← hX.map_eq, isProbabilityMeasure_map_iff hX.aemeasurable]
 
 @[fun_prop]
