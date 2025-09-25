@@ -211,6 +211,15 @@ noncomputable instance forgetToScheme_preservesLimits : PreservesLimits forgetTo
   change PreservesLimits (equivCommRingCat.functor ⋙ Scheme.Spec)
   infer_instance
 
+noncomputable def forgetToScheme_createsLimits {X Y Z : AffineScheme.{u}}
+    (f : X ⟶ Z) (g : Y ⟶ Z) : CreatesLimit (cospan f g) AffineScheme.forgetToScheme.{u} :=
+  createsLimitOfReflectsIsomorphismsOfPreserves
+
+noncomputable def forgetToScheme_op_createsColimits {X Y Z : AffineScheme.{u}}
+    (f : X ⟶ Z) (g : Y ⟶ Z) : CreatesColimit (span f.op g.op) AffineScheme.forgetToScheme.{u}.op :=
+  let : PreservesColimits AffineScheme.forgetToScheme.{u}.op := preservesColimits_op _
+  createsColimitOfReflectsIsomorphismsOfPreserves
+
 end AffineScheme
 
 /-- An open subset of a scheme is affine if the open subscheme is affine. -/
@@ -239,6 +248,14 @@ theorem exists_isAffineOpen_mem_and_subset {X : Scheme.{u}} {x : X}
   obtain ⟨R, f, hf⟩ := AlgebraicGeometry.Scheme.exists_affine_mem_range_and_range_subset hxU
   exact ⟨Scheme.Hom.opensRange f (H := hf.1),
     ⟨AlgebraicGeometry.isAffineOpen_opensRange f (H := hf.1), hf.2.1, hf.2.2⟩⟩
+
+instance Scheme.isAffine_local_affine {X : Scheme.{u}} {x : X} :
+    IsAffine (Scheme.Opens.toScheme (X.local_affine x).choose.obj) := by
+  let f : Scheme.Opens.toScheme (X.local_affine x).choose.obj ≅
+      AlgebraicGeometry.Spec (X.local_affine x).choose_spec.choose :=
+    Scheme.fullyFaithfulForgetToLocallyRingedSpace.preimageIso
+      (X.local_affine x).choose_spec.choose_spec.some
+  exact IsAffine.of_isIso f.hom
 
 instance Scheme.isAffine_affineCover (X : Scheme) (i : X.affineCover.I₀) :
     IsAffine (X.affineCover.X i) :=
@@ -1182,4 +1199,46 @@ def Scheme.arrowStalkMapSpecIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : Prime
     simp
 
 end Stalks
+
+section BasicOpenToAffineOpens
+
+variable {X Y : Scheme.{u}} [IsAffine X] (f : X.carrier ⟶ Y.carrier)
+
+/-- For a continuous map `f : X.carrier ⟶ Y.carrier` between schemes with `X` affine,
+each point `x : X` has a basic open neighborhood contained in the preimage of an affine open
+of `Y` containing `f x`. This version returns an element of `X.Opens`. -/
+lemma exists_basicOpen_to_affineOpens' (x : X) : ∃ (U' : X.Opens),
+    U' ∈ Set.range (X.basicOpen : Γ(X, ⊤).carrier → X.Opens) ∧ x ∈ U' ∧
+      U' ≤ (Y.local_affine (f x)).choose.obj.comap f.hom :=
+  TopologicalSpace.Opens.isBasis_iff_nbhd.mp (isBasis_basicOpen X)
+    ((Y.local_affine (f x)).choose.obj.mem_comap.mpr
+      (TopologicalSpace.Opens.mem_mk.mpr (Y.local_affine (f x)).choose.property))
+
+/-- For a continuous map `f : X.carrier ⟶ Y.carrier` between schemes with `X` affine,
+each point `x : X` has a basic open neighborhood contained in the preimage of an affine open
+of `Y` containing `f x`. This version returns a global section `r : Γ(X, ⊤)`. -/
+lemma exists_basicOpen_to_affineOpens (x : X) : ∃ (r : Γ(X, ⊤)), x ∈ X.basicOpen r ∧
+    X.basicOpen r ≤ ⇑f ⁻¹' (Y.local_affine (f x)).choose.obj.carrier := by
+  fconstructor
+  · exact (exists_basicOpen_to_affineOpens' f x).choose_spec.left.choose
+  · constructor
+    · rw [(exists_basicOpen_to_affineOpens' f x).choose_spec.left.choose_spec]
+      exact (exists_basicOpen_to_affineOpens' f x).choose_spec.right.left
+    · rw [(exists_basicOpen_to_affineOpens' f x).choose_spec.left.choose_spec]
+      exact (exists_basicOpen_to_affineOpens' f x).choose_spec.right.right
+
+/-- Open cover of an affine scheme by basic opens that map into affine opens under a given
+continuous map into another scheme. -/
+noncomputable def affinePreimageCover : X.OpenCover where
+  I₀ := X.carrier
+  X x := (X.basicOpen (exists_basicOpen_to_affineOpens f x).choose).toScheme
+  f x := (X.basicOpen (exists_basicOpen_to_affineOpens f x).choose).ι
+  idx x := x
+  covers _ := by
+    rw [Scheme.Opens.range_ι]
+    exact (exists_basicOpen_to_affineOpens _ _).choose_spec.left
+  map_prop := by infer_instance
+
+end BasicOpenToAffineOpens
+
 end AlgebraicGeometry
