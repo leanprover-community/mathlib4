@@ -30,6 +30,13 @@ jobs:
           ## fetch the whole repository, as we want to push to it later
           fetch-depth: 0
 
+      - name: Configure Lean
+        uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
+        with:
+          auto-config: false
+          use-github-cache: false
+          use-mathlib-cache: false
+
       - name: run linter
         env:
           DATE_RANGE: ${{ inputs.date_range }}
