@@ -384,13 +384,13 @@ variable {f g : C₀(α, β)}
 
 /-- The type of continuous functions vanishing at infinity, with the uniform distance induced by the
 inclusion `ZeroAtInftyContinuousMap.toBCF`, is a pseudo-metric space. -/
-noncomputable instance instPseudoMetricSpace : PseudoMetricSpace C₀(α, β) :=
+noncomputable instance instPseudoMetricSpace : PseudoMetricSpace C₀(α, β) := fast_instance%
   PseudoMetricSpace.induced toBCF inferInstance
 
 /-- The type of continuous functions vanishing at infinity, with the uniform distance induced by the
 inclusion `ZeroAtInftyContinuousMap.toBCF`, is a metric space. -/
 noncomputable instance instMetricSpace {β : Type*} [MetricSpace β] [Zero β] :
-    MetricSpace C₀(α, β) :=
+    MetricSpace C₀(α, β) := fast_instance%
   MetricSpace.induced _ (toBCF_injective α β) inferInstance
 
 @[simp]
@@ -444,11 +444,11 @@ field `𝕜` whenever `β` is as well.
 section NormedSpace
 
 noncomputable instance instSeminormedAddCommGroup [SeminormedAddCommGroup β] :
-    SeminormedAddCommGroup C₀(α, β) :=
+    SeminormedAddCommGroup C₀(α, β) := fast_instance%
   SeminormedAddCommGroup.induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
 
 noncomputable instance instNormedAddCommGroup [NormedAddCommGroup β] :
-    NormedAddCommGroup C₀(α, β) :=
+    NormedAddCommGroup C₀(α, β) := fast_instance%
   NormedAddCommGroup.induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
     (toBCF_injective α β)
 
