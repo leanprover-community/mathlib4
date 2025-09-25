@@ -210,15 +210,13 @@ noncomputable def invtSubmoduleToLieIdeal (q : Submodule K (Dual K H))
                 rw [hi_val, hj_val] at h_pairing_eq
                 exact h_pairing_eq.symm
               obtain ⟨h_elem, hh_elem, hh_eq⟩ := hm_h
-              have h_lie_eq_smul : ⁅(h_elem : L), x_χ⁆ = (χ.toLinear) h_elem • x_χ :=
+              have h_lie_eq_smul : ⁅(h_elem : L), x_χ⁆ = χ h_elem • x_χ :=
                 lie_eq_smul_of_mem_rootSpace hx_χ h_elem
-              have h_chi_h_zero : (χ.toLinear) h_elem = 0 := by
+              have h_chi_h_zero : χ h_elem = 0 := by
                 obtain ⟨c, hc⟩ := Submodule.mem_span_singleton.mp <| by
                   rw [← coe_corootSpace_eq_span_singleton α.1, LieSubmodule.mem_toSubmodule]
                   exact hh_elem
-                rw [← hc, LinearMap.map_smul]
-                have h_convert : (χ.toLinear) (coroot α.1) = χ (coroot α.1) := rfl
-                rw [h_convert, h_chi_coroot_zero, smul_zero]
+                rw [← hc, map_smul, h_chi_coroot_zero, smul_zero]
               have h_bracket_elem : ⁅x_χ, (h_elem : L)⁆ = 0 := by
                 rw [← lie_skew, h_lie_eq_smul, h_chi_h_zero, zero_smul, neg_zero]
               rw [← hh_eq]
