@@ -421,7 +421,7 @@ protected lemma IsSymm.sInter {ℛ : Set <| SetRel α α} (hℛ : ∀ R ∈ ℛ,
     SetRel.IsSymm (⋂₀ ℛ) where
   symm _a _b hab R hR := (hℛ R hR).symm _ _ <| hab R hR
 
-instance isSymm_iInter {ι : Sort*} {R : ι → SetRel α α} [∀ i, (R i).IsSymm] :
+instance isSymm_iInter {R : ι → SetRel α α} [∀ i, (R i).IsSymm] :
     SetRel.IsSymm (⋂ i, R i) := .sInter <| by simpa
 
 instance isSymm_id : (SetRel.id : SetRel α α).IsSymm where symm _ _ := .symm
