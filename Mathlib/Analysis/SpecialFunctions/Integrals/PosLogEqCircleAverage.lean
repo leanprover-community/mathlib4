@@ -252,8 +252,7 @@ Trivial corollary of
 with center `c` and radius `R`, then the circle average
 `circleAverage (log ‖· - u‖) c R` equals `log R`.
 -/
-@[simp]
-lemma circleAverage_logAbs_affine (hu : a ∈ closedBall c |R|) :
+lemma circleAverage_log_norm_sub_const_of_mem_closedBall (hu : a ∈ closedBall c |R|) :
     circleAverage (log ‖· - a‖) c R = log R := by
   by_cases hR : R = 0
   · simp_all
