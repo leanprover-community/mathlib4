@@ -30,14 +30,12 @@ variable {α β γ : Type*}
 section OptionCongr
 
 /-- A universe-polymorphic version of `EquivFunctor.mapEquiv Option e`. -/
-@[simps apply]
+@[simps (attr := grind =) apply]
 def optionCongr (e : α ≃ β) : Option α ≃ Option β where
   toFun := Option.map e
   invFun := Option.map e.symm
   left_inv x := (Option.map_map _ _ _).trans <| e.symm_comp_self.symm ▸ congr_fun Option.map_id x
   right_inv x := (Option.map_map _ _ _).trans <| e.self_comp_symm.symm ▸ congr_fun Option.map_id x
-
-attribute [grind =] optionCongr_apply
 
 @[simp]
 theorem optionCongr_refl : optionCongr (Equiv.refl α) = Equiv.refl _ :=

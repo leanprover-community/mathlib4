@@ -472,10 +472,8 @@ theorem subtypeOrLeftEmbedding_apply {p q : α → Prop} [DecidablePred p]
 
 /-- A subtype `{x // p x}` can be injectively sent to into a subtype `{x // q x}`,
 if `p x → q x` for all `x : α`. -/
-@[simps]
+@[simps (attr := grind =)]
 def Subtype.impEmbedding (p q : α → Prop) (h : ∀ x, p x → q x) : { x // p x } ↪ { x // q x } :=
   ⟨fun x => ⟨x, h x x.prop⟩, fun x y => by simp [Subtype.ext_iff]⟩
-
-attribute [grind =] Subtype.impEmbedding_apply_coe
 
 end Subtype

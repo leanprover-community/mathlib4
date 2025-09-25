@@ -199,7 +199,7 @@ def _root_.Homeomorph.toPartialHomeomorphOfImageEq (e : X ≃ₜ Y) (s : Set X) 
   continuousOn_invFun := e.symm.continuous.continuousOn
 
 /-- A homeomorphism induces a partial homeomorphism on the whole space -/
-@[simps! (config := mfld_cfg)]
+@[simps! (attr := mfld_simps) -fullyApplied]
 def _root_.Homeomorph.toPartialHomeomorph (e : X ≃ₜ Y) : PartialHomeomorph X Y :=
   e.toPartialHomeomorphOfImageEq univ isOpen_univ univ <| by rw [image_univ, e.surjective.range_eq]
 
@@ -617,7 +617,7 @@ theorem restrOpen_source (s : Set X) (hs : IsOpen s) : (e.restrOpen s hs).source
 sure that the restriction is well defined whatever the set s, since partial homeomorphisms are by
 definition defined on open sets. In applications where `s` is open, this coincides with the
 restriction of partial equivalences -/
-@[simps! (config := mfld_cfg) apply symm_apply, simps! -isSimp source target]
+@[simps! (attr := mfld_simps) -fullyApplied apply symm_apply, simps! -isSimp source target]
 protected def restr (s : Set X) : PartialHomeomorph X Y :=
   e.restrOpen (interior s) isOpen_interior
 
@@ -647,7 +647,7 @@ theorem restr_source_inter (s : Set X) : e.restr (e.source ∩ s) = e.restr s :=
   simp [e.open_source.interior_eq, ← inter_assoc]
 
 /-- The identity on the whole space as a partial homeomorphism. -/
-@[simps! (config := mfld_cfg) apply, simps! -isSimp source target]
+@[simps! (attr := mfld_simps) -fullyApplied apply, simps! -isSimp source target]
 protected def refl (X : Type*) [TopologicalSpace X] : PartialHomeomorph X X :=
   (Homeomorph.refl X).toPartialHomeomorph
 
@@ -692,7 +692,7 @@ section ofSet
 variable {s : Set X} (hs : IsOpen s)
 
 /-- The identity partial equivalence on a set `s` -/
-@[simps! (config := mfld_cfg) apply, simps! -isSimp source target]
+@[simps! (attr := mfld_simps) -fullyApplied apply, simps! -isSimp source target]
 def ofSet (s : Set X) (hs : IsOpen s) : PartialHomeomorph X X where
   toPartialEquiv := PartialEquiv.ofSet s
   open_source := hs
@@ -946,7 +946,7 @@ end EqOnSource
 section Prod
 
 /-- The product of two partial homeomorphisms, as a partial homeomorphism on the product space. -/
-@[simps! (config := mfld_cfg) toPartialEquiv apply,
+@[simps! (attr := mfld_simps) -fullyApplied toPartialEquiv apply,
   simps! -isSimp source target symm_apply]
 def prod (eX : PartialHomeomorph X X') (eY : PartialHomeomorph Y Y') :
     PartialHomeomorph (X × Y) (X' × Y') where
@@ -1163,7 +1163,7 @@ theorem nhds_eq_comap_inf_principal {x} (hx : x ∈ e.source) :
 
 /-- If a partial homeomorphism has source and target equal to univ, then it induces a homeomorphism
 between the whole spaces, expressed in this definition. -/
-@[simps (config := mfld_cfg) apply symm_apply]
+@[simps (attr := mfld_simps) -fullyApplied apply symm_apply]
 -- TODO: add a `PartialEquiv` version
 def toHomeomorphOfSourceEqUnivTargetEqUniv (h : e.source = (univ : Set X)) (h' : e.target = univ) :
     X ≃ₜ Y where
@@ -1253,7 +1253,7 @@ variable (f : X → Y) (h : IsOpenEmbedding f)
 /-- An open embedding of `X` into `Y`, with `X` nonempty, defines a partial homeomorphism
 whose source is all of `X`. The converse is also true; see
 `PartialHomeomorph.to_isOpenEmbedding`. -/
-@[simps! (config := mfld_cfg) apply source target]
+@[simps! (attr := mfld_simps) -fullyApplied apply source target]
 noncomputable def toPartialHomeomorph [Nonempty X] : PartialHomeomorph X Y :=
   PartialHomeomorph.ofContinuousOpen (h.isEmbedding.injective.injOn.toPartialEquiv f univ)
     h.continuous.continuousOn h.isOpenMap isOpen_univ
