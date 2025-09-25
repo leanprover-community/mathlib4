@@ -47,4 +47,4 @@ pr_id="$(gh_api "repos/${owner_name}/mathlib4/pulls" -X POST -d @- <<EOF | jq -r
 EOF
 )"
 
-printf $'message<<EOF\n\'Please review #%s, which removes deprecated declarations older than %s.\'\nEOF\n' "${pr_id}" "${to_date}" | tee -a "${GITHUB_OUTPUT}"
+printf $'message<<EOF\nPlease review #%s, which removes deprecated declarations older than %s.\nEOF\n' "${pr_id}" "${to_date}" | tee -a "${GITHUB_OUTPUT}"
