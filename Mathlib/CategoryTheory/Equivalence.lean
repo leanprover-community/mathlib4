@@ -339,13 +339,18 @@ end
 protected def mk (F : C ⥤ D) (G : D ⥤ C) (η : 𝟭 C ≅ F ⋙ G) (ε : G ⋙ F ≅ 𝟭 D) : C ≌ D :=
   ⟨F, G, adjointifyη η ε, ε, adjointify_η_ε η ε⟩
 
+variable (C) in
 /-- Equivalence of categories is reflexive. -/
 @[refl, simps]
 def refl : C ≌ C :=
-  ⟨𝟭 C, 𝟭 C, Iso.refl _, Iso.refl _, fun _ => Category.id_comp _⟩
+  ⟨𝟭 C, 𝟭 C, Iso.rfl, Iso.rfl, fun _ => Category.id_comp _⟩
+
+/-- The same as `Equivalence.refl` but with the argument implicit. -/
+@[simp]
+protected abbrev rfl : C ≌ C := refl C
 
 instance : Inhabited (C ≌ C) :=
-  ⟨refl⟩
+  ⟨.rfl⟩
 
 /-- Equivalence of categories is symmetric. -/
 @[symm, simps]
@@ -496,7 +501,7 @@ section
 -- The power structure is nevertheless useful.
 /-- Natural number powers of an auto-equivalence.  Use `(^)` instead. -/
 def powNat (e : C ≌ C) : ℕ → (C ≌ C)
-  | 0 => Equivalence.refl
+  | 0 => Equivalence.rfl
   | 1 => e
   | n + 2 => e.trans (powNat e (n + 1))
 
@@ -509,7 +514,7 @@ instance : Pow (C ≌ C) ℤ :=
   ⟨pow⟩
 
 @[simp]
-theorem pow_zero (e : C ≌ C) : e ^ (0 : ℤ) = Equivalence.refl :=
+theorem pow_zero (e : C ≌ C) : e ^ (0 : ℤ) = Equivalence.rfl :=
   rfl
 
 @[simp]
@@ -632,7 +637,7 @@ noncomputable def asEquivalence (F : C ⥤ D) [F.IsEquivalence] : C ≌ D where
   counitIso := NatIso.ofComponents F.objObjPreimageIso (by simp [inv])
 
 instance isEquivalence_refl : IsEquivalence (𝟭 C) :=
-  Equivalence.refl.isEquivalence_functor
+  Equivalence.rfl.isEquivalence_functor
 
 instance isEquivalence_inv (F : C ⥤ D) [IsEquivalence F] : IsEquivalence F.inv :=
   F.asEquivalence.symm.isEquivalence_functor

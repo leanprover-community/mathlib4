@@ -203,7 +203,7 @@ lemma mk'' (h : E.inverse.IsTriangulated) : E.IsTriangulated where
 /--
 The identity equivalence is triangulated.
 -/
-instance refl : (Equivalence.refl (C := C)).IsTriangulated := by
+instance refl : (Equivalence.refl C).IsTriangulated := by
   dsimp [Equivalence.IsTriangulated]
   rw [refl_toAdjunction]
   infer_instance

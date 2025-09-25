@@ -114,6 +114,10 @@ def refl (X : C) : X ≅ X where
 
 attribute [grind =] refl_hom refl_inv
 
+/-- The same as `Iso.refl` except with the argument implicit. -/
+@[simp]
+protected abbrev rfl {X : C} : X ≅ X := refl X
+
 instance : Inhabited (X ≅ X) := ⟨Iso.refl X⟩
 
 theorem nonempty_iso_refl (X : C) : Nonempty (X ≅ X) := ⟨default⟩

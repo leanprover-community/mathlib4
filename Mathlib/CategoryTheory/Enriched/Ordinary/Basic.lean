@@ -218,7 +218,7 @@ instance : Category (TransportEnrichment F C) := inferInstanceAs (Category C)
 /-- If `C` is an ordinary enriched category, the category structure on `TransportEnrichment F C`
 is trivially equivalent to the one on `C` itself. -/
 def TransportEnrichment.ofOrdinaryEnrichedCategoryEquiv : TransportEnrichment F C ≌ C :=
-  Equivalence.refl
+  Equivalence.rfl
 
 open EnrichedCategory
 
