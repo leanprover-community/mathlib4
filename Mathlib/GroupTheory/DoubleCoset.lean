@@ -253,6 +253,9 @@ theorem right_bot_eq_right_quot (H : Subgroup G) :
   ext
   simp_rw [← rel_bot_eq_right_group_rel H]
 
+@[deprecated (since := "2025-07-12")]
+alias _root_.Doset.right_bot_eq_right_quot := right_bot_eq_right_quot
+
 theorem iUnion_finset_quotToDoubleCoset (H K : Subgroup G) :
     (∃ I : Finset (Quotient (H : Set G) K), ⋃ i ∈ I, quotToDoubleCoset H K i = .univ) ↔
     Finite (Quotient (H : Set G) K) := by
@@ -340,8 +343,5 @@ theorem union_finset_rightRel_cover (H K : Subgroup G) (t : Finset (Quotient H K
   refine ⟨a.1, ?_⟩
   simp only [Subtype.coe_prop, SetLike.mem_coe, true_and]
   exact ⟨1, Subgroup.one_mem K, by simpa using ha⟩
-
-@[deprecated (since := "2025-07-12")]
-alias _root_.Doset.right_bot_eq_right_quot := right_bot_eq_right_quot
 
 end DoubleCoset
