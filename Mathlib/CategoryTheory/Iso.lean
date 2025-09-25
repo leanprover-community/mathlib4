@@ -107,12 +107,10 @@ theorem nonempty_iso_symm (X Y : C) : Nonempty (X ≅ Y) ↔ Nonempty (Y ≅ X) 
   ⟨fun h => ⟨h.some.symm⟩, fun h => ⟨h.some.symm⟩⟩
 
 /-- Identity isomorphism. -/
-@[refl, simps]
+@[refl, simps (attr := grind =)]
 def refl (X : C) : X ≅ X where
   hom := 𝟙 X
   inv := 𝟙 X
-
-attribute [grind =] refl_hom refl_inv
 
 instance : Inhabited (X ≅ X) := ⟨Iso.refl X⟩
 
@@ -122,12 +120,10 @@ theorem nonempty_iso_refl (X : C) : Nonempty (X ≅ X) := ⟨default⟩
 theorem refl_symm (X : C) : (Iso.refl X).symm = Iso.refl X := rfl
 
 /-- Composition of two isomorphisms -/
-@[simps]
+@[simps (attr := grind =)]
 def trans (α : X ≅ Y) (β : Y ≅ Z) : X ≅ Z where
   hom := α.hom ≫ β.hom
   inv := β.inv ≫ α.inv
-
-attribute [grind =] trans_hom trans_inv
 
 @[simps]
 instance instTransIso : Trans (α := C) (· ≅ ·) (· ≅ ·) (· ≅ ·) where
