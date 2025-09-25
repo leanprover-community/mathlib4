@@ -50,11 +50,7 @@ section
 attribute [local instance] ComonObj.instTensorUnit in
 /-- The trivial comonoid on the unit object is commutative. -/
 instance instCommComonObjUnit : IsCommComonObj (𝟙_ C) where
-  comul_comm := by
-    simp only [instTensorUnit_comul, braiding_tensorUnit_right]
-    rw [← Category.assoc]
-    rw [← unitors_equal]
-    simp only [Iso.inv_hom_id, Category.id_comp]
+  comul_comm := by simp [← unitors_equal]
 
 end
 
