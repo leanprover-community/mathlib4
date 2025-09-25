@@ -47,7 +47,7 @@ lemma surjective_fromCoequalizerPullbackCone (hf : Surjective f) :
   obtain ⟨x, _⟩ := hf y
   exact ⟨Quot.mk _ x, by simpa⟩
 
-/-- If `f : X ⟶ Y` is surjective, then `fromCoequalizerPullbackCone f` is surjective. -/
+/-- If `f : X ⟶ Y` is surjective, then `fromCoequalizerPullbackCone f` is bijective. -/
 lemma bijective_fromCoequalizerPullbackCone (hf : Surjective f) :
     Bijective (fromCoequalizerPullbackCone f) :=
   ⟨injective_fromCoequalizerPullbackCone f, surjective_fromCoequalizerPullbackCone hf⟩
