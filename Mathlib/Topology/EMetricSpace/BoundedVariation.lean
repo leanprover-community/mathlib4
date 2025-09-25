@@ -433,7 +433,6 @@ theorem Icc_add_Icc (f : α → E) {s : Set α} {a b c : α} (hab : a ≤ b) (hb
     ⟨⟨hb, le_rfl, hbc⟩, inter_subset_right.trans Icc_subset_Ici_self⟩
   rw [← eVariationOn.union f A B, ← inter_union_distrib_left, Icc_union_Icc_eq_Icc hab hbc]
 
-
 theorem sum (f : α → E) {s : Set α} {E : ℕ → α} (hE : Monotone E) {n : ℕ}
     (hn : ∀ i, 0 < i → i ≤ n → E i ∈ s) :
     eVariationOn f (s ∩ Icc (E 0) (E (n + 1))) = ∑ i ∈ Finset.range (n + 1),
@@ -441,12 +440,12 @@ theorem sum (f : α → E) {s : Set α} {E : ℕ → α} (hE : Monotone E) {n : 
     induction n with
     | zero => simp
     | succ n ih =>
-      rw [← Icc_add_Icc (b := E (n + 1))]
-      · rw [ih (by intros; apply hn <;> omega)]
-        symm; apply Finset.sum_range_succ
-      · apply hE; omega
-      · apply hE; omega
-      · apply hn <;> omega
+    rw [← Icc_add_Icc (b := E (n + 1))]
+    · rw [ih (by intros; apply hn <;> omega)]
+      symm; apply Finset.sum_range_succ
+    · apply hE; omega
+    · apply hE; omega
+    · apply hn <;> omega
 
 theorem sum' (f : α → E) {I : ℕ → α} (hI : Monotone I) {n : ℕ} :
     eVariationOn f (Icc (I 0) (I (n + 1))) = ∑ i ∈ Finset.range (n + 1),
