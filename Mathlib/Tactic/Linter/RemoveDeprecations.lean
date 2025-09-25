@@ -83,7 +83,7 @@ If `s` is a terminal command, then `rd.firstLast` is not updated.
 -/
 def update (oldDate newDate : String) (rd : RemoveDeprecations) (s : Syntax) : RemoveDeprecations :=
   if Parser.isTerminalCommand s then rd else
-  match s.getRangeWithTrailing? with
+  match s.getRange? with
   | none => rd
   | some rg =>
     let ans := {rd with
