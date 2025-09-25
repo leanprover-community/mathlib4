@@ -1200,7 +1200,7 @@ def Scheme.arrowStalkMapSpecIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : Prime
 
 end Stalks
 
-section BasicOpenToAffineOpens
+section AffinePreimageCover
 
 variable {X Y : Scheme.{u}} [IsAffine X] (f : X.carrier ⟶ Y.carrier)
 
@@ -1239,6 +1239,6 @@ noncomputable def affinePreimageCover : X.OpenCover where
     exact (exists_basicOpen_to_affineOpens _ _).choose_spec.left
   map_prop := by infer_instance
 
-end BasicOpenToAffineOpens
+end AffinePreimageCover
 
 end AlgebraicGeometry
