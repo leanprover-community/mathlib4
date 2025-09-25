@@ -79,7 +79,7 @@ number `a` is to consider the cases `a = ∞` and `a ≠ ∞`, and use the tacti
 in the second case. This instance is even more useful if one already has `ha : a ≠ ∞` in the
 context, or if we have `(f : α → ℝ≥0∞) (hf : ∀ x, f x ≠ ∞)`.
 
-## Notations
+## Notation
 
 * `ℝ≥0∞`: the type of the extended nonnegative real numbers;
 * `ℝ≥0`: the type of nonnegative real numbers `[0, ∞)`; defined in `Data.Real.NNReal`;

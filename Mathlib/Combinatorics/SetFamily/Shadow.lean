@@ -111,7 +111,7 @@ See also `Finset.mem_shadow_iff_exists_sdiff`. -/
 lemma mem_shadow_iff_exists_mem_card_add_one : t ∈ ∂ 𝒜 ↔ ∃ s ∈ 𝒜, t ⊆ s ∧ #s = #t + 1 := by
   refine mem_shadow_iff_exists_sdiff.trans <| exists_congr fun t ↦ and_congr_right fun _ ↦
     and_congr_right fun hst ↦ ?_
-  rw [card_sdiff hst, tsub_eq_iff_eq_add_of_le, add_comm]
+  rw [card_sdiff_of_subset hst, tsub_eq_iff_eq_add_of_le, add_comm]
   exact card_mono hst
 
 lemma mem_shadow_iterate_iff_exists_card :
@@ -141,7 +141,7 @@ lemma mem_shadow_iterate_iff_exists_mem_card_add :
     t ∈ ∂^[k] 𝒜 ↔ ∃ s ∈ 𝒜, t ⊆ s ∧ #s = #t + k := by
   refine mem_shadow_iterate_iff_exists_sdiff.trans <| exists_congr fun t ↦ and_congr_right fun _ ↦
     and_congr_right fun hst ↦ ?_
-  rw [card_sdiff hst, tsub_eq_iff_eq_add_of_le, add_comm]
+  rw [card_sdiff_of_subset hst, tsub_eq_iff_eq_add_of_le, add_comm]
   exact card_mono hst
 
 /-- The shadow of a family of `r`-sets is a family of `r - 1`-sets. -/
@@ -156,7 +156,7 @@ lemma _root_.Set.Sized.shadow_iterate (h𝒜 : (𝒜 : Set (Finset α)).Sized r)
     (∂^[k] 𝒜 : Set (Finset α)).Sized (r - k) := by
   simp_rw [Set.Sized, mem_coe, mem_shadow_iterate_iff_exists_sdiff]
   rintro t ⟨s, hs, hts, rfl⟩
-  rw [card_sdiff hts, ← h𝒜 hs, Nat.sub_sub_self (card_le_card hts)]
+  rw [card_sdiff_of_subset hts, ← h𝒜 hs, Nat.sub_sub_self (card_le_card hts)]
 
 theorem sized_shadow_iff (h : ∅ ∉ 𝒜) :
     (∂ 𝒜 : Set (Finset α)).Sized r ↔ (𝒜 : Set (Finset α)).Sized (r + 1) := by
@@ -222,7 +222,7 @@ lemma mem_upShadow_iff_exists_mem_card_add_one :
     t ∈ ∂⁺ 𝒜 ↔ ∃ s ∈ 𝒜, s ⊆ t ∧ #t = #s + 1 := by
   refine mem_upShadow_iff_exists_sdiff.trans <| exists_congr fun t ↦ and_congr_right fun _ ↦
     and_congr_right fun hst ↦ ?_
-  rw [card_sdiff hst, tsub_eq_iff_eq_add_of_le, add_comm]
+  rw [card_sdiff_of_subset hst, tsub_eq_iff_eq_add_of_le, add_comm]
   exact card_mono hst
 
 lemma mem_upShadow_iterate_iff_exists_card :
@@ -257,7 +257,7 @@ lemma mem_upShadow_iterate_iff_exists_mem_card_add :
     t ∈ ∂⁺^[k] 𝒜 ↔ ∃ s ∈ 𝒜, s ⊆ t ∧ #t = #s + k := by
   refine mem_upShadow_iterate_iff_exists_sdiff.trans <| exists_congr fun t ↦ and_congr_right fun _ ↦
     and_congr_right fun hst ↦ ?_
-  rw [card_sdiff hst, tsub_eq_iff_eq_add_of_le, add_comm]
+  rw [card_sdiff_of_subset hst, tsub_eq_iff_eq_add_of_le, add_comm]
   exact card_mono hst
 
 /-- The upper shadow of a family of `r`-sets is a family of `r + 1`-sets. -/
@@ -292,7 +292,7 @@ theorem mem_upShadow_iff_exists_mem_card_add :
       rfl
     · rintro ⟨t, ht, hts, hcard⟩
       obtain ⟨u, htu, hus, hu⟩ := Finset.exists_subsuperset_card_eq hts (Nat.le_add_right _ 1)
-        (by omega)
+        (by cutsat)
       refine ⟨u, mem_upShadow_iff_exists_mem_card_add_one.2 ⟨t, ht, htu, hu⟩, hus, ?_⟩
       rw [hu, ← hcard, add_right_comm]
       rfl

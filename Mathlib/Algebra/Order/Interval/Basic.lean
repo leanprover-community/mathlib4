@@ -160,10 +160,12 @@ namespace Interval
 variable (s t : Interval α)
 
 @[to_additive (attr := simp)]
-theorem bot_mul : ⊥ * t = ⊥ := WithBot.map₂_bot_left _ _
+theorem bot_mul : ⊥ * t = ⊥ :=
+  WithBot.map₂_bot_left _ _
 
 @[to_additive]
-theorem mul_bot : s * ⊥ = ⊥ := WithBot.map₂_bot_right _ _
+theorem mul_bot : s * ⊥ = ⊥ :=
+  WithBot.map₂_bot_right _ _
 
 -- simp can already prove `add_bot`
 attribute [simp] mul_bot
