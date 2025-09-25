@@ -80,31 +80,26 @@ lemma sub_apply [∀ η : Kernel α β, Decidable (IsSFiniteKernel η)] [IsFinit
 
 lemma sub_le_self [∀ η : Kernel α β, Decidable (IsSFiniteKernel η)] [IsFiniteKernel κ]
     [IsFiniteKernel η] :
-    κ - η ≤ κ := by
-  refine le_iff.mpr fun a ↦ ?_
-  rw [sub_apply]
-  exact Measure.sub_le
+    κ - η ≤ κ := le_iff.mpr fun a ↦ by rw [sub_apply]; exact Measure.sub_le
 
-instance [∀ η : Kernel α β, Decidable (IsSFiniteKernel η)]
-    [IsFiniteKernel κ] [IsFiniteKernel η] : IsFiniteKernel (κ - η) :=
-  isFiniteKernel_of_le sub_le_self
+instance [∀ η : Kernel α β, Decidable (IsSFiniteKernel η)] [IsFiniteKernel κ] [IsFiniteKernel η] :
+    IsFiniteKernel (κ - η) := isFiniteKernel_of_le sub_le_self
 
 lemma sub_apply_eq_zero_iff_le [∀ η : Kernel α β, Decidable (IsSFiniteKernel η)]
     [IsFiniteKernel κ] [IsFiniteKernel η] (a : α) : (κ - η) a = 0 ↔ κ a ≤ η a := by
+  have h_meas : Measurable (Function.uncurry (fun a ↦ κ.rnDeriv η a - 1)) := by fun_prop
+  have h_meas' a : Measurable (κ.rnDeriv η a - 1) := by fun_prop
   simp_rw [sub_apply_eq_rnDeriv_add_singularPart,
-    add_eq_zero_iff_of_nonneg (Measure.zero_le _) (Measure.zero_le _)]
+    add_eq_zero_iff_of_nonneg (Measure.zero_le _) (Measure.zero_le _),
+    singularPart_eq_zero_iff_absolutelyContinuous κ η a, Kernel.withDensity_apply _ h_meas,
+    withDensity_eq_zero_iff (h_meas' _).aemeasurable]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [Kernel.withDensity_apply _ (by fun_prop), withDensity_eq_zero_iff (by fun_prop)] at h
-    rw [singularPart_eq_zero_iff_absolutelyContinuous κ η a] at h
-    rw [← Measure.rnDeriv_le_one_iff_le h.2]
+  · rw [← Measure.rnDeriv_le_one_iff_le h.2]
     filter_upwards [h.1, rnDeriv_eq_rnDeriv_measure (κ := κ) (η := η) (a := a)] with b hb1 hb2
     rw [← hb2]
     simp only [Pi.sub_apply, Pi.one_apply, Pi.zero_apply] at hb1
     rwa [tsub_eq_zero_iff_le] at hb1
-  · rw [(singularPart_eq_zero_iff_absolutelyContinuous κ η a).mpr
-        (Measure.absolutelyContinuous_of_le h)]
-    rw [Kernel.withDensity_apply _ (by fun_prop), withDensity_eq_zero_iff (by fun_prop)]
-    simp only [and_true]
+  · simp only [Measure.absolutelyContinuous_of_le h, and_true]
     suffices κ.rnDeriv η a ≤ᵐ[η a] 1 by
       filter_upwards [this] with b hb
       simpa [tsub_eq_zero_iff_le] using hb
@@ -116,24 +111,23 @@ lemma sub_eq_zero_iff_le [∀ η : Kernel α β, Decidable (IsSFiniteKernel η)]
     [IsFiniteKernel κ] [IsFiniteKernel η] : κ - η = 0 ↔ κ ≤ η := by
   simp [Kernel.ext_iff, le_iff, sub_apply_eq_zero_iff_le]
 
+/-- The set of points where one finite kernel is less than or equal to another is measurable. -/
 lemma measurableSet_le [∀ η : Kernel α β, Decidable (IsSFiniteKernel η)]
     (κ η : Kernel α β) [IsFiniteKernel κ] [IsFiniteKernel η] :
     MeasurableSet {a | κ a ≤ η a} := by
-  have h_sub : {a | κ a ≤ η a} = {a | (κ - η) a = 0} := by
-    ext; simp [sub_apply_eq_zero_iff_le]
+  have h_sub : {a | κ a ≤ η a} = {a | (κ - η) a = 0} := by ext; simp [sub_apply_eq_zero_iff_le]
   rw [h_sub]
   exact measurableSet_eq_zero _
 
+/-- The set of points where two finite kernels are equal is measurable. -/
 lemma measurableSet_eq [∀ η : Kernel α β, Decidable (IsSFiniteKernel η)]
     (κ η : Kernel α β) [IsFiniteKernel κ] [IsFiniteKernel η] :
     MeasurableSet {a | κ a = η a} := by
   have h_sub : {a | κ a = η a} = {a | (κ - η) a = 0} ∩ {a | (η - κ) a = 0} := by
-    ext1 a
+    ext
     simp only [Set.mem_setOf_eq, Set.mem_inter_iff, sub_apply_eq_zero_iff_le]
     exact ⟨fun h ↦ by simp [h], fun h ↦ le_antisymm h.1 h.2⟩
   rw [h_sub]
-  refine MeasurableSet.inter ?_ ?_
-  · exact measurableSet_eq_zero _
-  · exact measurableSet_eq_zero _
+  exact (measurableSet_eq_zero _).inter (measurableSet_eq_zero _)
 
 end ProbabilityTheory.Kernel
