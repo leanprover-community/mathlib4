@@ -1,0 +1,21 @@
+✔ [2/7] Built Mathlib.Tactic.Linter.DirectoryDependency (1.1s)
+✔ [3/7] Built Mathlib.Tactic.Linter.Header (971ms)
+✔ [4/7] Built Mathlib.Tactic.Linter.RemoveDeprecations (678ms)
+⚠ [5/7] Built Mathlib.New (368ms)
+warning: Mathlib/New.lean:3:2: `[deprecated]` attribute should specify either a new name or a deprecation message
+warning: Mathlib/New.lean:17:2: `[deprecated]` attribute should specify either a new name or a deprecation message
+warning: Mathlib/New.lean:19:2: `[deprecated]` attribute should specify either a new name or a deprecation message
+info: Mathlib/New.lean:19:0: 3,4d2
+< @[deprecated (since := "2025-09-01")] example : True := trivial
+< 
+8,13d5
+< set_option pp.all true in
+< open Nat in
+< variable {j : Int} in
+< @[deprecated Nat (since := "2025-08-01")] example : True := trivial
+< 
+< -- A comment for `example := 1`
+info: Mathlib/New.lean:19:0: bash
+mv -f /home/runner/work/mathlib4/mathlib4/.lake/build/lib/lean/Mathlib/New.lean.tmp /home/runner/work/mathlib4/mathlib4/Mathlib/New.lean
+✔ [6/7] Built Mathlib (358ms)
+Build completed successfully (7 jobs).
