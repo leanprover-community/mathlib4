@@ -28,6 +28,9 @@ of quadratic forms. Most results require `𝕜 = ℝ` or `ℂ`.
   definite iff it has the form `Bᴴ * B` for some _invertible_ `B`.
 * `Matrix.PosSemidef.sqrt` : the unique positive semidefinite square root of a positive semidefinite
   matrix. (See `Matrix.PosSemidef.eq_sqrt_of_sq_eq` for the proof of uniqueness.)
+* `Matrix.PosSemidef.fromBlocks₁₁` and `Matrix.PosSemidef.fromBlocks₂₂`: If a matrix `A` is
+  positive definite, then `[A B; Bᴴ D]` is positive semidefinite if and only if `D - Bᴴ A⁻¹ B` is
+  positive semidefinite.
 -/
 
 open scoped ComplexOrder
@@ -666,6 +669,36 @@ theorem commute_iff {A B : Matrix n n 𝕜} (hA : A.PosDef) (hB : B.PosDef) :
   classical
   rw [hA.posSemidef.commute_iff hB.posSemidef]
   exact ⟨fun h => h.posDef_iff_isUnit.mpr <| hA.isUnit.mul hB.isUnit, fun h => h.posSemidef⟩
+
+section SchurComplement
+
+variable [StarOrderedRing R']
+
+theorem fromBlocks₁₁ [DecidableEq m] {A : Matrix m m R'}
+    (B : Matrix m n R') (D : Matrix n n R') (hA : A.PosDef) [Invertible A] :
+    (fromBlocks A B Bᴴ D).PosSemidef ↔ (D - Bᴴ * A⁻¹ * B).PosSemidef := by
+  rw [PosSemidef, IsHermitian.fromBlocks₁₁ _ _ hA.1]
+  constructor
+  · refine fun h => ⟨h.1, fun x => ?_⟩
+    have := h.2 (-((A⁻¹ * B) *ᵥ x) ⊕ᵥ x)
+    rwa [dotProduct_mulVec, schur_complement_eq₁₁ B D _ _ hA.1, neg_add_cancel, dotProduct_zero,
+      zero_add, ← dotProduct_mulVec] at this
+  · refine fun h => ⟨h.1, fun x => ?_⟩
+    rw [dotProduct_mulVec, ← Sum.elim_comp_inl_inr x, schur_complement_eq₁₁ B D _ _ hA.1]
+    apply le_add_of_nonneg_of_le
+    · rw [← dotProduct_mulVec]
+      apply hA.posSemidef.2
+    · rw [← dotProduct_mulVec (star (x ∘ Sum.inr))]
+      apply h.2
+
+theorem fromBlocks₂₂ [DecidableEq n] (A : Matrix m m R')
+    (B : Matrix m n R') {D : Matrix n n R'} (hD : D.PosDef) [Invertible D] :
+    (fromBlocks A B Bᴴ D).PosSemidef ↔ (A - B * D⁻¹ * Bᴴ).PosSemidef := by
+  rw [← posSemidef_submatrix_equiv (Equiv.sumComm n m), Equiv.sumComm_apply,
+    fromBlocks_submatrix_sum_swap_sum_swap]
+  convert fromBlocks₁₁ Bᴴ A hD <;> simp
+
+end SchurComplement
 
 end PosDef
 
