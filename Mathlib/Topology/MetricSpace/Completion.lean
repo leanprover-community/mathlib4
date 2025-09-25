@@ -204,6 +204,7 @@ theorem Isometry.completion_map [PseudoMetricSpace β] {f : α → β}
     (h : Isometry f) : Isometry (Completion.map f) :=
   (coe_isometry.comp h).completion_extension
 
+/-- The extension of an isometry to the completion of the domain. -/
 def Isometry.extensionHom [Ring α] [IsTopologicalRing α] [IsUniformAddGroup α] [Ring β]
     [PseudoMetricSpace β] [IsUniformAddGroup β] [IsTopologicalRing β] [CompleteSpace β]
     [T0Space β] {f : α →+* β} (h : Isometry f) : Completion α →+* β :=
