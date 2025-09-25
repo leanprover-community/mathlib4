@@ -100,8 +100,7 @@ theorem Measure.isProbabilityMeasure_of_map {μ : Measure α} {f : α → β}
 
 theorem Measure.isProbabilityMeasure_map_iff {μ : Measure α} {f : α → β}
     (hf : AEMeasurable f μ) : IsProbabilityMeasure (μ.map f) ↔ IsProbabilityMeasure μ :=
-  ⟨fun _ ↦ isProbabilityMeasure_of_isProbabilityMeasure_map hf,
-    fun _ ↦ isProbabilityMeasure_map hf⟩
+  ⟨fun _ ↦ isProbabilityMeasure_of_map hf, fun _ ↦ isProbabilityMeasure_map hf⟩
 
 instance IsProbabilityMeasure_comap_equiv (f : β ≃ᵐ α) : IsProbabilityMeasure (μ.comap f) := by
   rw [← MeasurableEquiv.map_symm]; exact isProbabilityMeasure_map f.symm.measurable.aemeasurable
