@@ -21,7 +21,7 @@ open Units
 of the units of the monoid. -/
 @[to_additive]
 lemma Submonoid.isOpen_units {M : Type*} [TopologicalSpace M] [Monoid M]
-  {U : Submonoid M} (hU : IsOpen (U : Set M)) : IsOpen (U.units : Set Mˣ) :=
+    {U : Submonoid M} (hU : IsOpen (U : Set M)) : IsOpen (U.units : Set Mˣ) :=
   (hU.preimage Units.continuous_val).inter (hU.preimage Units.continuous_coe_inv)
 
 /-- The monoid homeomorphism between the units of a product of topological monoids
