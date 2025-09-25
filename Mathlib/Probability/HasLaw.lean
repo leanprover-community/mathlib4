@@ -155,5 +155,3 @@ lemma exists_iid {ι : Type v} {𝓧 : Type u} {m𝓧 : MeasurableSpace 𝓧}
 end Existence
 
 end ProbabilityTheory
-
-#min_imports

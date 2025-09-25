@@ -187,7 +187,7 @@ lemma intervalIntegrable_charFun {μ : Measure ℝ} [IsFiniteMeasure μ] {a b : 
   IntervalIntegrable.mono_fun' (g := fun _ ↦ μ.real Set.univ) (by simp)
     stronglyMeasurable_charFun.aestronglyMeasurable (ae_of_all _ norm_charFun_le)
 
-lemma charFun_map_smul [BorelSpace E] [SecondCountableTopology E] (r : ℝ) (t : E) :
+lemma charFun_map_smul [BorelSpace E] (r : ℝ) (t : E) :
     charFun (μ.map (r • ·)) t = charFun μ (r • t) := by
   rw [charFun_apply, charFun_apply,
     integral_map (by fun_prop) (Measurable.aestronglyMeasurable <| by fun_prop)]
