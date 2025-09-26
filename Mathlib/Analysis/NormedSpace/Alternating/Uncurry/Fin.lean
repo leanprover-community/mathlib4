@@ -82,7 +82,7 @@ private lemma uncurryFinCLM.aux_apply (f : E →L[𝕜] E [⋀^Fin n]→L[𝕜] 
   simp [aux, AlternatingMap.uncurryFin_apply]
 
 variable (𝕜 E F) in
-/-- `AlternaringMap.uncurryFin` as a linear map. -/
+/-- `AlternaringMap.uncurryFin` as a continuous linear map. -/
 @[irreducible]
 noncomputable def uncurryFinCLM : (E →L[𝕜] E [⋀^Fin n]→L[𝕜] F) →L[𝕜] E [⋀^Fin (n + 1)]→L[𝕜] F :=
   AlternatingMap.mkContinuousLinear uncurryFinCLM.aux (n + 1) fun f v ↦ calc
