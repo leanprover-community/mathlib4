@@ -187,11 +187,6 @@ protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β where
 protected def withTopMap (f : α ↪o β) : WithTop α ↪o WithTop β :=
   { f.dual.withBotMap.dual with toFun := WithTop.map f }
 
-@[deprecated (since := "2025-08-21")] protected alias withBotCoe := WithBot.coeOrderHom
-@[deprecated (since := "2025-08-21")] alias withBotCoe_apply := WithBot.coeOrderHom_apply
-@[deprecated (since := "2025-08-21")] protected alias withTopCoe := WithTop.coeOrderHom
-@[deprecated (since := "2025-08-21")] alias withTopCoe_apply := WithTop.coeOrderHom_apply
-
 end OrderEmbedding
 
 namespace OrderIso

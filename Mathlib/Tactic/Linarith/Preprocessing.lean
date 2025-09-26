@@ -129,14 +129,6 @@ def mk_natCast_nonneg_prf (p : Expr × Expr) : MetaM (Option Expr) :=
       trace[linarith] "Got exception when using cast {e.toMessageData}"
       return none
 
-/-- Ordering on `Expr`. -/
-@[deprecated
-  "Use `Expr.lt` and `Expr.equal` or `Expr.eqv` directly. \
-  If you need to order expressions, consider ordering them by order seen, with AtomM."
-  (since := "2025-08-31")]
-def Expr.Ord : Ord Expr :=
-⟨fun a b => if Expr.lt a b then .lt else if a.equal b then .eq else .gt⟩
-
 /--
 If `h` is an equality or inequality between natural numbers,
 `natToInt` lifts this inequality to the integers.

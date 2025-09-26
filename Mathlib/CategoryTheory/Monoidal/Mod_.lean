@@ -38,8 +38,6 @@ class ModObj (X : D) where
   /-- The action map is compatible with multiplication. -/
   mul_smul' (X) : μ ⊵ₗ X ≫ smul = (αₗ M M X).hom ≫ M ⊴ₗ smul ≫ smul := by cat_disch
 
-@[deprecated (since := "2025-09-14")] alias Mod_Class := ModObj
-
 attribute [reassoc] ModObj.mul_smul' ModObj.one_smul'
 
 @[inherit_doc] scoped[MonObj] notation "γ" => ModObj.smul

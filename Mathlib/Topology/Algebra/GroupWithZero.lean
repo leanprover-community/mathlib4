@@ -80,8 +80,6 @@ class ContinuousInv₀ (G₀ : Type*) [Zero G₀] [Inv G₀] [TopologicalSpace G
 
 export ContinuousInv₀ (continuousAt_inv₀)
 
-@[deprecated (since := "2025-09-01")] alias HasContinuousInv₀ := ContinuousInv₀
-
 section Inv₀
 
 variable [Zero G₀] [Inv G₀] [TopologicalSpace G₀] [ContinuousInv₀ G₀] {l : Filter α} {f : α → G₀}
@@ -315,9 +313,6 @@ theorem ContinuousInv₀.of_nhds_one (h : Tendsto Inv.inv (𝓝 (1 : G₀)) (�
     rw [ContinuousAt, ← map_mul_left_nhds_one₀ hx, ← nhds_translation_mul_inv₀ hx',
       tendsto_map'_iff, tendsto_comap_iff]
     simpa only [Function.comp_def, mul_inv_rev, mul_inv_cancel_right₀ hx']
-
-@[deprecated (since := "2025-09-01")] alias HasContinuousInv₀.of_nhds_one :=
-  ContinuousInv₀.of_nhds_one
 
 end map_comap
 

@@ -233,10 +233,6 @@ theorem _root_.Function.Commute.set_image {f g : α → α} (h : Function.Commut
     Function.Commute (image f) (image g) :=
   Function.Semiconj.set_image h
 
-@[deprecated image_mono (since := "2025-08-01")]
-theorem image_subset {a b : Set α} (f : α → β) (h : a ⊆ b) : f '' a ⊆ f '' b :=
-  image_mono h
-
 theorem image_union (f : α → β) (s t : Set α) : f '' (s ∪ t) = f '' s ∪ f '' t := by grind
 
 @[simp]
@@ -515,8 +511,6 @@ theorem imageFactorization_eq {f : α → β} {s : Set α} :
 theorem imageFactorization_surjective {f : α → β} {s : Set α} :
     Surjective (imageFactorization f s) :=
   fun ⟨_, ⟨a, ha, rfl⟩⟩ => ⟨⟨a, ha⟩, rfl⟩
-
-@[deprecated (since := "2025-08-18")] alias surjective_onto_image := imageFactorization_surjective
 
 /-- If the only elements outside `s` are those left fixed by `σ`, then mapping by `σ` has no effect.
 -/
@@ -882,8 +876,6 @@ theorem coe_comp_rangeFactorization (f : ι → β) : (↑) ∘ rangeFactorizati
 
 theorem rangeFactorization_surjective : Surjective (rangeFactorization f) :=
   fun ⟨_, ⟨i, rfl⟩⟩ => ⟨i, rfl⟩
-
-@[deprecated (since := "2025-08-18")] alias surjective_onto_range := rangeFactorization_surjective
 
 theorem image_eq_range (f : α → β) (s : Set α) : f '' s = range fun x : s => f x := by
   ext

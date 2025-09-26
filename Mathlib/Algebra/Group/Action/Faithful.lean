@@ -61,9 +61,6 @@ instance RightCancelMonoid.faithfulSMul [RightCancelMonoid α] : FaithfulSMul α
 instance LeftCancelMonoid.to_faithfulSMul_mulOpposite [LeftCancelMonoid α] : FaithfulSMul αᵐᵒᵖ α :=
   ⟨fun h ↦ MulOpposite.unop_injective <| mul_left_cancel (h 1)⟩
 
-@[deprecated (since := "2025-09-15")]
-alias LefttCancelMonoid.to_faithfulSMul_mulOpposite := LeftCancelMonoid.to_faithfulSMul_mulOpposite
-
 instance (R : Type*) [MulOneClass R] : FaithfulSMul R R := ⟨fun {r₁ r₂} h ↦ by simpa using h 1⟩
 
 lemma faithfulSMul_iff_injective_smul_one (R A : Type*)

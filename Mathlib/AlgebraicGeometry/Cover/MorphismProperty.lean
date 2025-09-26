@@ -61,15 +61,6 @@ structure Cover (P : MorphismProperty Scheme.{u}) (S : Scheme.{u}) where
   /-- the component maps satisfy `P` -/
   map_prop (j : I₀) : P (f j) := by infer_instance
 
-@[deprecated (since := "2025-09-19")]
-alias Cover.J := Cover.I₀
-
-@[deprecated (since := "2025-09-19")]
-alias Cover.obj := Cover.X
-
-@[deprecated (since := "2025-09-19")]
-alias Cover.map := Cover.f
-
 variable {P : MorphismProperty Scheme.{u}}
 
 variable {X Y Z : Scheme.{u}} (𝒰 : X.Cover P) (f : X ⟶ Z) (g : Y ⟶ Z)
@@ -309,15 +300,6 @@ structure AffineCover (P : MorphismProperty Scheme.{u}) (S : Scheme.{u}) where
   covers (x : S) : x ∈ Set.range (f (idx x)).base
   /-- the component maps satisfy `P` -/
   map_prop (j : I₀) : P (f j) := by infer_instance
-
-@[deprecated (since := "2025-09-19")]
-alias AffineCover.J := AffineCover.I₀
-
-@[deprecated (since := "2025-09-19")]
-alias AffineCover.obj := AffineCover.X
-
-@[deprecated (since := "2025-09-19")]
-alias AffineCover.map := AffineCover.f
 
 /-- The cover associated to an affine cover. -/
 @[simps]

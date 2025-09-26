@@ -50,9 +50,6 @@ class Bornology (α : Type*) where
   /-- The cobounded filter in a bornology is smaller than the cofinite filter. -/
   le_cofinite (α) : cobounded ≤ cofinite
 
-@[deprecated (since := "2025-09-06")] alias Bornology.cobounded' := Bornology.cobounded
-@[deprecated (since := "2025-09-06")] alias Bornology.le_cofinite' := Bornology.le_cofinite
-
 @[ext]
 lemma Bornology.ext (t t' : Bornology α)
     (h_cobounded : @Bornology.cobounded α t = @Bornology.cobounded α t') :

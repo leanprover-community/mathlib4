@@ -1032,8 +1032,6 @@ lemma tail_cons (h : G.Adj u v) (p : G.Walk v w) :
   | .nil => rfl
   | .cons h q => rfl
 
-@[deprecated (since := "2025-08-19")] alias tail_cons_eq := tail_cons
-
 @[simp]
 lemma dropLast_nil : (@nil _ G v).dropLast = nil := rfl
 

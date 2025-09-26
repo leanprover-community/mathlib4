@@ -169,9 +169,6 @@ theorem spectrum_real_eq_range_eigenvalues :
   conv_lhs => rw [hA.spectral_theorem, ← spectrum.algebraMap_mem_iff 𝕜]
   simp
 
-@[deprecated (since := "2025-08-14")]
-alias eigenvalues_eq_spectrum_real := spectrum_real_eq_range_eigenvalues
-
 /-- The eigenvalues of a Hermitian matrix `A` are all zero iff `A = 0`. -/
 theorem eigenvalues_eq_zero_iff :
     hA.eigenvalues = 0 ↔ A = 0 := by

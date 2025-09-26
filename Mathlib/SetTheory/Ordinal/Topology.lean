@@ -164,11 +164,6 @@ theorem isSuccLimit_of_mem_frontier (ha : a ∈ frontier s) : IsSuccLimit a := b
 @[deprecated (since := "2025-07-08")]
 alias isLimit_of_mem_frontier := isSuccLimit_of_mem_frontier
 
-@[deprecated Order.isNormal_iff_strictMono_and_continuous (since := "2025-08-21")]
-theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u}) :
-    IsNormal f ↔ StrictMono f ∧ Continuous f :=
-  Order.isNormal_iff_strictMono_and_continuous
-
 theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
     IsNormal (enumOrd s) ↔ IsClosed s := by
   have Hs := enumOrd_strictMono hs

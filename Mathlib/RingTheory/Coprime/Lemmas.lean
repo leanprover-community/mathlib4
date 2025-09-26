@@ -48,9 +48,6 @@ theorem Nat.isCoprime_iff_coprime {m n : ℕ} : IsCoprime (m : ℤ) n ↔ Nat.Co
 
 alias ⟨IsCoprime.natCoprime, Nat.Coprime.isCoprime⟩ := Nat.isCoprime_iff_coprime
 
-@[deprecated (since := "2025-08-25")]
-alias IsCoprime.nat_coprime := IsCoprime.natCoprime
-
 theorem Nat.Coprime.cast {R : Type*} [CommRing R] {a b : ℕ} (h : Nat.Coprime a b) :
     IsCoprime (a : R) (b : R) :=
   mod_cast h.isCoprime.intCast

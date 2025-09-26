@@ -71,8 +71,6 @@ instance nonneg.hasMemOrNegMem {T : Type*} [Ring T] [LinearOrder T] [IsOrderedRi
     HasMemOrNegMem (nonneg T) where
   mem_or_neg_mem := mem_or_neg_mem (AddGroupCone.nonneg T)
 
-@[deprecated (since := "2025-08-21")] alias nonneg.isMaxCone := nonneg.hasMemOrNegMem
-
 end RingCone
 
 variable {S R : Type*} [Ring R] [SetLike S R] (C : S)

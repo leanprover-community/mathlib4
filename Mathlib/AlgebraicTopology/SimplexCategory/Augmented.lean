@@ -70,9 +70,6 @@ def equivAugmentedCosimplicialObjectFunctorCompPointIso :
     ((evaluation _ _).obj .star : (AugmentedSimplexCategory ⥤ C) ⥤ C) :=
   .refl _
 
-@[deprecated (since := "2025-08-22")] alias equivAugmentedCosimplicialObjecFunctorCompPointIso :=
-  equivAugmentedCosimplicialObjectFunctorCompPointIso
-
 /-- Through the equivalence `(AugmentedSimplexCategory ⥤ C) ≌ CosimplicialObject.Augmented C`,
 the arrow attached to the cosimplicial object is the one obtained by evaluation at the unique arrow
 `star ⟶ of [0]`. -/

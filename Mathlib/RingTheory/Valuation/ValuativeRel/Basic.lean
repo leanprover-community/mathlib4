@@ -557,9 +557,6 @@ lemma _root_.Valuation.apply_posSubmonoid_ne_zero {Γ : Type*} [LinearOrderedCom
     v (x : R) ≠ 0 := by
   simp [(isEquiv v (valuation R)).ne_zero, valuation_posSubmonoid_ne_zero]
 
-@[deprecated (since := "2025-08-06")]
-alias valuation_posSubmonoid_ne_zero_of_compatible := _root_.Valuation.apply_posSubmonoid_ne_zero
-
 @[simp]
 lemma _root_.Valuation.apply_posSubmonoid_pos {Γ : Type*} [LinearOrderedCommMonoidWithZero Γ]
     (v : Valuation R Γ) [v.Compatible] (x : posSubmonoid R) :
@@ -691,8 +688,6 @@ are determined by the relation `· ≤ᵥ ·`. -/
 class IsValuativeTopology (R : Type*) [CommRing R] [ValuativeRel R] [TopologicalSpace R] where
   mem_nhds_iff {s : Set R} {x : R} : s ∈ 𝓝 (x : R) ↔
     ∃ γ : (ValueGroupWithZero R)ˣ, (x + ·) '' { z | valuation _ z < γ } ⊆ s
-
-@[deprecated (since := "2025-08-01")] alias ValuativeTopology := IsValuativeTopology
 
 namespace ValuativeRel
 

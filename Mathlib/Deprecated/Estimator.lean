@@ -49,23 +49,6 @@ class EstimatorData (a : Thunk α) (ε : Type*) where
   /-- Generate an improved lower bound. -/
   improve : ε → Option ε
 
-/--
-Given `[Estimator a ε]`
-* we have `bound a e ≤ a.get`, and
-* `improve a e` returns none iff `bound a e = a.get`,
-  and otherwise it returns a strictly better bound.
--/
-@[deprecated "No replacement: this was only used \
-  in the implementation of the removed `rw_search` tactic." (since := "2025-09-11")]
-class Estimator [Preorder α] (a : Thunk α) (ε : Type*) extends EstimatorData a ε where
-  /-- The calculated bounds are always lower bounds. -/
-  bound_le e : bound e ≤ a.get
-  /-- Calling `improve` either gives a strictly better bound,
-  or a proof that the current bound is exact. -/
-  improve_spec e : match improve e with
-    | none => bound e = a.get
-    | some e' => bound e < bound e'
-
 -- Everything in this file is deprecated,
 -- but we'll just add the deprecation attribute to the main class.
 set_option linter.deprecated false

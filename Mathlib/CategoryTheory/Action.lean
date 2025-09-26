@@ -159,9 +159,6 @@ protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort*
   cases inv_smul_eq_iff.mpr h.symm
   rfl
 
-@[deprecated (since := "2025-08-21")]
-alias cases' := ActionCategory.cases
-
 variable {H : Type*} [Group H]
 
 /-- Given `G` acting on `X`, a functor from the corresponding action groupoid to a group `H`

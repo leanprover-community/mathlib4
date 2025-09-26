@@ -153,8 +153,6 @@ def algEquivOfIso (i : A ≅ B) : A ≃ₐ[R] B where
   left_inv x := by simp
   right_inv x := by simp
 
-@[deprecated (since := "2025-08-22")] alias ofIso := algEquivOfIso
-
 /-- Algebra equivalences between `Algebra`s are the same as isomorphisms in `CommAlgCat`. -/
 @[simps]
 def isoEquivAlgEquiv : (of R X ≅ of R Y) ≃ (X ≃ₐ[R] Y) where

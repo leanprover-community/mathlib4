@@ -28,6 +28,4 @@ class IsIntegralClosure (A R B : Type*) [CommRing R] [CommSemiring A] [CommRing 
 
 namespace IsIntegralClosure
 
-@[deprecated (since := "2025-08-29")] alias algebraMap_injective' := algebraMap_injective
-
 end IsIntegralClosure

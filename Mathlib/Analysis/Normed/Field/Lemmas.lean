@@ -108,9 +108,6 @@ instance (priority := 100) NormedDivisionRing.to_continuousInv₀ : ContinuousIn
   refine (((continuous_const.sub continuous_id).norm.div_const _).div_const _).tendsto' _ _ ?_
   simp
 
-@[deprecated (since := "2025-09-01")] alias NormedDivisionRing.to_hasContinuousInv₀ :=
-  NormedDivisionRing.to_continuousInv₀
-
 -- see Note [lower instance priority]
 /-- A normed division ring is a topological division ring. -/
 instance (priority := 100) NormedDivisionRing.to_isTopologicalDivisionRing :

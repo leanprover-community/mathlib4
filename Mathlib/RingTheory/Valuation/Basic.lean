@@ -814,12 +814,6 @@ theorem map_zero : v 0 = (⊤ : Γ₀) :=
 theorem map_one : v 1 = (0 : Γ₀) :=
   Valuation.map_one v
 
-/-- A helper function for Lean to inferring types correctly.
-
-Deprecated since it is unused.
--/
-@[deprecated "Use `⇑v` instead" (since := "2025-09-04")] def asFun : R → Γ₀ := v
-
 @[simp]
 theorem map_mul : ∀ (x y : R), v (x * y) = v x + v y :=
   Valuation.map_mul v

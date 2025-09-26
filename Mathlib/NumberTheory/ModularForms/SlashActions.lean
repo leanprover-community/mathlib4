@@ -71,8 +71,6 @@ private def privateSlash (k : ℤ) (γ : GL (Fin 2) ℝ) (f : ℍ → ℂ) (x : 
   σ γ (f (γ • x)) * |γ.det.val| ^ (k - 1) * UpperHalfPlane.denom γ x ^ (-k)
 
 -- Why is `noncomputable` flag needed here, when we're in a noncomputable section already?
-@[deprecated (since := "2025-09-19")] noncomputable alias slash := privateSlash
-
 -- temporary notation until the instance is built
 local notation:100 f " ∣[" k "] " γ:100 => ModularForm.privateSlash k γ f
 

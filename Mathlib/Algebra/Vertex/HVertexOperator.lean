@@ -79,9 +79,6 @@ def of_coeff (f : Γ → V →ₗ[R] W) (hf : ∀ (x : V), (Function.support (f 
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
-@[deprecated (since := "2025-08-30")] alias coeff_add := map_add
-@[deprecated (since := "2025-08-30")] alias coeff_smul := map_smul
-
 @[simp]
 theorem coeff_of_coeff (f : Γ → V →ₗ[R] W)
     (hf : ∀ (x : V), (Function.support (fun g => f g x)).IsPWO) : (of_coeff f hf).coeff = f :=

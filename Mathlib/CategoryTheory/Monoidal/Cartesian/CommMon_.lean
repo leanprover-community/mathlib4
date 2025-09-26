@@ -28,6 +28,3 @@ lemma IsCommMonObj.ofRepresentableBy (F : Cᵒᵖ ⥤ CommMonCat) (α : (F ⋙ f
     ConcreteCategory.forget_map_eq_coe, Equiv.apply_symm_apply, map_mul,
     ← ConcreteCategory.forget_map_eq_coe, ← Functor.comp_map, ← α.homEquiv_comp, op_tensorObj,
     Functor.comp_obj, braiding_hom_fst, braiding_hom_snd, _root_.mul_comm]
-
-@[deprecated (since := "2025-09-14")]
-alias IsCommMon.ofRepresentableBy := IsCommMonObj.ofRepresentableBy

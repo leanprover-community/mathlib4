@@ -1044,10 +1044,6 @@ lemma mem_sum {a : M} {s : Finset ι} {m : ι → Multiset M} :
     a ∈ ∑ i ∈ s, m i ↔ ∃ i ∈ s, a ∈ m i := by
   induction s using Finset.cons_induction with grind
 
-@[deprecated Multiset.mem_sum (since := "2025-08-24")]
-theorem _root_.Finset.mem_sum {f : ι → Multiset M} (s : Finset ι) (b : M) :
-    (b ∈ ∑ x ∈ s, f x) ↔ ∃ a ∈ s, b ∈ f a := Multiset.mem_sum
-
 variable [DecidableEq ι]
 
 theorem toFinset_sum_count_eq (s : Multiset ι) : ∑ a ∈ s.toFinset, s.count a = card s := by

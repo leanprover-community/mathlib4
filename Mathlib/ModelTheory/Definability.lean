@@ -131,16 +131,10 @@ theorem definable_biInter_finset {ι : Type*} {f : ι → Set (α → M)}
   rw [← Finset.inf_set_eq_iInter]
   exact definable_finset_inf hf s
 
-@[deprecated (since := "2025-08-28")]
-alias definable_finset_biInter := definable_biInter_finset
-
 theorem definable_biUnion_finset {ι : Type*} {f : ι → Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) (s : Finset ι) : A.Definable L (⋃ i ∈ s, f i) := by
   rw [← Finset.sup_set_eq_biUnion]
   exact definable_finset_sup hf s
-
-@[deprecated (since := "2025-08-28")]
-alias definable_finset_biUnion := definable_biUnion_finset
 
 @[simp]
 theorem Definable.compl {s : Set (α → M)} (hf : A.Definable L s) : A.Definable L sᶜ := by

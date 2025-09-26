@@ -349,9 +349,6 @@ theorem restrict_biUnion_finset_congr {s : Finset ι} {t : ι → Set α} :
     simp only [forall_eq_or_imp, iUnion_iUnion_eq_or_left, Finset.mem_insert]
     rw [restrict_union_congr, ← hs]
 
-@[deprecated (since := "2025-08-28")]
-alias restrict_finset_biUnion_congr := restrict_biUnion_finset_congr
-
 theorem restrict_iUnion_congr [Countable ι] {s : ι → Set α} :
     μ.restrict (⋃ i, s i) = ν.restrict (⋃ i, s i) ↔ ∀ i, μ.restrict (s i) = ν.restrict (s i) := by
   refine ⟨fun h i => restrict_congr_mono (subset_iUnion _ _) h, fun h => ?_⟩

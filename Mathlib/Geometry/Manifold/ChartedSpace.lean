@@ -1362,9 +1362,6 @@ lemma StructureGroupoid.subtypeRestr_mem_maximalAtlas {e : PartialHomeomorph M H
   exact ⟨G.trans_restricted he (chart_mem_atlas H (x : M)) hs,
          G.trans_restricted (chart_mem_atlas H (x : M)) he hs⟩
 
-@[deprecated (since := "2025-08-17")] alias StructureGroupoid.restriction_in_maximalAtlas :=
-  StructureGroupoid.subtypeRestr_mem_maximalAtlas
-
 /-! ### Structomorphisms -/
 
 /-- A `G`-diffeomorphism between two charted spaces is a homeomorphism which, when read in the

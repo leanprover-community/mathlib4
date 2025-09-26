@@ -59,8 +59,6 @@ def range [RingHomSurjective τ₁₂] (f : F) : Submodule R₂ M₂ :=
 theorem coe_range [RingHomSurjective τ₁₂] (f : F) : (range f : Set M₂) = Set.range f :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias range_coe := coe_range
-
 theorem range_toAddSubmonoid [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) :
     (range f).toAddSubmonoid = AddMonoidHom.mrange f :=
   rfl

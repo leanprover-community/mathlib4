@@ -85,7 +85,4 @@ lemma isProbabilityMeasure_geometricMeasure (hp_pos : 0 < p) (hp_le_one : p ≤ 
     IsProbabilityMeasure (geometricMeasure hp_pos hp_le_one) :=
   PMF.toMeasure.isProbabilityMeasure (geometricPMF hp_pos hp_le_one)
 
-@[deprecated (since := "2025-08-28")] alias isProbabilityMeasureGeometric :=
-  isProbabilityMeasure_geometricMeasure
-
 end ProbabilityTheory

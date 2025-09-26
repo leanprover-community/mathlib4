@@ -679,14 +679,6 @@ theorem final_toCostructuredArrow_comp_pre {c : Cocone (F ⋙ yoneda)} (hc : IsC
       CostructuredArrow.toOver yoneda c.pt))
   exact Over.isoMk (hc.coconePointUniqueUpToIso isc) (hc.hom_ext fun i => by simp)
 
-@[deprecated (since := "2025-08-16")] alias restrictedYoneda := restrictedULiftYoneda
-@[deprecated (since := "2025-08-16")] alias isExtensionAlongYoneda := isExtensionAlongULiftYoneda
-@[deprecated (since := "2025-08-16")] alias isLeftKanExtension_along_yoneda_iff :=
-  isLeftKanExtension_along_uliftYoneda_iff
-@[deprecated (since := "2025-08-16")] alias yonedaAdjunction := uliftYonedaAdjunction
-@[deprecated (since := "2025-08-16")] alias uniqueExtensionAlongYoneda :=
-  uniqueExtensionAlongULiftYoneda
-
 end Presheaf
 
 end CategoryTheory

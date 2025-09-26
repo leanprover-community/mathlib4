@@ -100,9 +100,6 @@ instance (priority := 100) IsStrictOrderedRing.toContinuousInv₀ [ContinuousMul
   · filter_upwards [Ioi_mem_nhds (inv_lt_one_of_one_lt₀ hx)] with y hy
     exact inv_lt_of_inv_lt₀ (by positivity) hy
 
-@[deprecated (since := "2025-09-01")] alias IsStrictOrderedRing.toHasContinuousInv₀ :=
-  IsStrictOrderedRing.toContinuousInv₀
-
 end Semifield
 
 /-- If a (possibly non-unital and/or non-associative) ring `R` admits a submultiplicative

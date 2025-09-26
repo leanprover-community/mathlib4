@@ -113,19 +113,12 @@ theorem integral_biUnion_finset {ι : Type*} (t : Finset ι) {s : ι → Set X}
       exact fun i hi => (h's.2 i hi (ne_of_mem_of_not_mem hi hat).symm).1
     · exact Finset.measurableSet_biUnion _ hs.2
 
-@[deprecated (since := "2025-08-28")]
-alias integral_finset_biUnion := integral_biUnion_finset
-
 theorem integral_iUnion_fintype {ι : Type*} [Fintype ι] {s : ι → Set X}
     (hs : ∀ i, MeasurableSet (s i)) (h's : Pairwise (Disjoint on s))
     (hf : ∀ i, IntegrableOn f (s i) μ) : ∫ x in ⋃ i, s i, f x ∂μ = ∑ i, ∫ x in s i, f x ∂μ := by
   convert integral_biUnion_finset Finset.univ (fun i _ => hs i) _ fun i _ => hf i
   · simp
   · simp [pairwise_univ, h's]
-
-@[deprecated (since := "2025-08-28")]
-alias integral_fintype_iUnion := integral_iUnion_fintype
-
 
 theorem setIntegral_empty : ∫ x in ∅, f x ∂μ = 0 := by
   rw [Measure.restrict_empty, integral_zero_measure]

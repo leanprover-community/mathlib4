@@ -74,8 +74,6 @@ theorem isIntegrallyClosed : IsIntegrallyClosed O := by
   exact
     (IsIntegrallyClosed.integralClosure_eq_bot_iff K).mp (Valuation.Integers.integralClosure hv)
 
-@[deprecated (since := "2025-09-04")] alias integrallyClosed := isIntegrallyClosed
-
 instance isIntegrallyClosed_integers (v : Valuation K Γ₀) :
     IsIntegrallyClosed v.integer :=
   (Valuation.integer.integers v).isIntegrallyClosed

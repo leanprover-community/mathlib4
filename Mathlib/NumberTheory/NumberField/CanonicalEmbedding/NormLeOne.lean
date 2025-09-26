@@ -176,9 +176,6 @@ theorem normLeOne_eq_preimage_image :
     ← mem_normLeOne] at hy₁ ⊢
   rwa [← hy₂]
 
-@[deprecated (since := "2025-07-27")]
-alias normLeOne_eq_primeage_image := normLeOne_eq_preimage_image
-
 open scoped Classical in
 theorem normAtAllPlaces_normLeOne :
     normAtAllPlaces '' (normLeOne K) =
@@ -644,9 +641,6 @@ open scoped Classical in
 theorem interior_paramSet :
     interior (paramSet K) = Set.univ.pi fun w ↦ if w = w₀ then Set.Iio 0 else Set.Ioo 0 1 := by
   simp [interior_pi_set Set.finite_univ, apply_ite]
-
-@[deprecated (since := "2025-08-26")] alias measurableSet_interior_paramSet :=
-  measurableSet_interior
 
 open scoped Classical in
 theorem closure_paramSet :

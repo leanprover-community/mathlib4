@@ -146,9 +146,6 @@ def GrothendieckTopology.toPretopology (J : GrothendieckTopology C) : Pretopolog
     rintro Y g ⟨W, h, g, hg, rfl⟩
     exact ⟨_, h, _, ⟨_, _, _, hf, hg, rfl⟩, by simp⟩
 
-@[deprecated (since := "2025-09-19")]
-alias Pretopology.ofGrothendieck := GrothendieckTopology.toPretopology
-
 /-- We have a Galois insertion from pretopologies to Grothendieck topologies. -/
 def Pretopology.gi : GaloisInsertion
     (toGrothendieck (C := C)) (GrothendieckTopology.toPretopology (C := C)) where
@@ -166,9 +163,6 @@ def Pretopology.gi : GaloisInsertion
 lemma GrothendieckTopology.mem_toPretopology (t : GrothendieckTopology C) {X : C} (S : Presieve X) :
     S ∈ t.toPretopology X ↔ Sieve.generate S ∈ t X :=
   Iff.rfl
-
-@[deprecated (since := "2025-09-19")]
-alias Pretopology.mem_ofGrothendieck := GrothendieckTopology.mem_toPretopology
 
 namespace Pretopology
 

@@ -732,34 +732,6 @@ alias lt_mul_of_limit := lt_mul_iff_of_isSuccLimit
 instance : PosMulStrictMono Ordinal where
   elim a _b _c h := (isNormal_mul_right a.2).strictMono h
 
-@[deprecated mul_lt_mul_iff_right₀ (since := "2025-08-26")]
-theorem mul_lt_mul_iff_left {a b c : Ordinal} (a0 : 0 < a) : a * b < a * c ↔ b < c :=
-  mul_lt_mul_iff_right₀ a0
-
-@[deprecated mul_le_mul_left (since := "2025-08-26")]
-theorem mul_le_mul_iff_left {a b c : Ordinal} (a0 : 0 < a) : a * b ≤ a * c ↔ b ≤ c :=
-  mul_le_mul_iff_right₀ a0
-
-@[deprecated mul_lt_mul_of_pos_left (since := "2025-08-26")]
-protected lemma mul_lt_mul_of_pos_left {a b c : Ordinal} (h : a < b) (c0 : 0 < c) : c * a < c * b :=
-  mul_lt_mul_of_pos_left h c0
-
-@[deprecated mul_pos (since := "2025-08-26")]
-protected theorem mul_pos {a b : Ordinal} (h₁ : 0 < a) (h₂ : 0 < b) : 0 < a * b :=
-  mul_pos h₁ h₂
-
-@[deprecated mul_ne_zero (since := "2025-08-26")]
-protected theorem mul_ne_zero {a b : Ordinal} (ha : a ≠ 0) (hb : b ≠ 0) : a * b ≠ 0 :=
-  mul_ne_zero ha hb
-
-@[deprecated mul_le_mul_left (since := "2025-08-26")]
-theorem le_of_mul_le_mul_left {a b c : Ordinal} (h : c * a ≤ c * b) (h0 : 0 < c) : a ≤ b :=
-  (mul_le_mul_iff_right₀ h0).mp h
-
-@[deprecated mul_left_cancel_iff_of_pos (since := "2025-08-26")]
-theorem mul_right_inj {a b c : Ordinal} (a0 : 0 < a) : a * b = a * c ↔ b = c :=
-  mul_left_cancel_iff_of_pos a0
-
 theorem isSuccLimit_mul {a b : Ordinal} (a0 : 0 < a) : IsSuccLimit b → IsSuccLimit (a * b) :=
   (isNormal_mul_right a0).isSuccLimit
 

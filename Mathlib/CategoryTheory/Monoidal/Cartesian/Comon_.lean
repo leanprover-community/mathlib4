@@ -37,8 +37,6 @@ def cartesianComon : C ⥤ Comon C where
   }
   map f := .mk' f
 
-@[deprecated (since := "2025-09-15")] alias cartesianComon_ := cartesianComon
-
 variable {C}
 
 @[simp] theorem counit_eq_toUnit (A : C) [ComonObj A] : ε[A] = toUnit _ := by ext
@@ -59,8 +57,6 @@ the canonical comonoid structure on the underlying object.
 @[simps] def isoCartesianComon (A : Comon C) : A ≅ (cartesianComon C).obj A.X :=
   { hom := .mk' (𝟙 _)
     inv := .mk' (𝟙 _) }
-
-@[deprecated (since := "2025-09-15")] alias iso_cartesianComon_ := isoCartesianComon
 
 /--
 The category of comonoid objects in a Cartesian monoidal category is equivalent

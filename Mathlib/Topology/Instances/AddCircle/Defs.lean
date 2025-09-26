@@ -470,11 +470,6 @@ lemma isOfFinAddOrder_iff_exists_rat_eq_div {a : 𝕜} :
     IsOfFinAddOrder (a : AddCircle p) ↔ ∃ q : ℚ, (q : 𝕜) = a / p := by
   simpa using not_isOfFinAddOrder_iff_forall_rat_ne_div.not_right
 
-@[deprecated not_isOfFinAddOrder_iff_forall_rat_ne_div (since := "2025-08-13")]
-theorem addOrderOf_coe_eq_zero_iff_forall_rat_ne_div {a : 𝕜} :
-    addOrderOf (a : AddCircle p) = 0 ↔ ∀ q : ℚ, (q : 𝕜) ≠ a / p := by
-  simp [not_isOfFinAddOrder_iff_forall_rat_ne_div]
-
 variable (p)
 
 /-- The natural bijection between points of order `n` and natural numbers less than and coprime to

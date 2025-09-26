@@ -41,20 +41,6 @@ ordered module, ordered scalar, ordered smul, ordered action, ordered vector spa
 
 deprecated_module (since := "2025-08-25")
 
-/-- The ordered scalar product property is when an ordered additive commutative monoid
-with a partial order has a scalar multiplication which is compatible with the order. Note that this
-is different from `IsOrderedSMul`, which uses `≤`, has no semiring assumption, and has no positivity
-constraint on the defining conditions.
--/
-@[deprecated IsStrictOrderedModule (since := "2025-08-25")]
-class OrderedSMul (R M : Type*) [Semiring R] [PartialOrder R]
-    [AddCommMonoid M] [PartialOrder M] [SMulWithZero R M] :
-  Prop where
-  /-- Scalar multiplication by positive elements preserves the order. -/
-  protected smul_lt_smul_of_pos : ∀ {a b : M}, ∀ {c : R}, a < b → 0 < c → c • a < c • b
-  /-- If `c • a < c • b` for some positive `c`, then `a < b`. -/
-  protected lt_of_smul_lt_smul_of_pos : ∀ {a b : M}, ∀ {c : R}, c • a < c • b → 0 < c → a < b
-
 variable {ι 𝕜 R M N : Type*}
 
 section OrderedSMul

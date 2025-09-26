@@ -727,8 +727,6 @@ theorem vecMul_smul [Fintype m] [DistribSMul R α] [SMulCommClass R α α]
   ext
   exact dotProduct_smul _ _ _
 
-@[deprecated (since := "2025-08-14")] alias smul_mulVec_assoc := smul_mulVec
-
 @[simp]
 theorem mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] (M : Matrix m n R)
     (j : n) (x : R) : M *ᵥ Pi.single j x = MulOpposite.op x • M.col j :=
@@ -1009,11 +1007,6 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring α]
-
-@[deprecated mulVec_smul (since := "2025-08-14")]
-theorem mulVec_smul_assoc [Fintype n] (A : Matrix m n α) (b : n → α) (a : α) :
-    A *ᵥ (a • b) = a • A *ᵥ b :=
-  mulVec_smul _ _ _
 
 end CommSemiring
 
