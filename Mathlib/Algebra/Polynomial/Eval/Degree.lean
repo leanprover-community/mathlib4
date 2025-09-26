@@ -209,7 +209,9 @@ end Map
 
 end Semiring
 
-section CommSemiring.Eval
+section CommSemiring
+
+section Eval
 
 section
 
@@ -238,9 +240,13 @@ theorem iterate_comp_eval :
 
 end
 
-end CommSemiring.Eval
+end Eval
 
-section DivisionRing.Map
+end CommSemiring
+
+section DivisionRing
+
+section Map
 
 variable [DivisionRing R] [Nontrivial S] [Semiring S] (f : R →+* S) (p : R[X])
 
@@ -258,7 +264,9 @@ theorem nextCoeff_map_from_divisionRing : (p.map f).nextCoeff = f p.nextCoeff :=
   · simp [h₀, nextCoeff]
   simp [h₀, nextCoeff_map_of_leadingCoeff_ne_zero]
 
-end DivisionRing.Map
+end Map
+
+end DivisionRing
 
 section
 variable [Semiring R] [CommRing S] [IsDomain S] (φ : R →+* S) {f : R[X]}
