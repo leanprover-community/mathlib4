@@ -70,11 +70,9 @@ noncomputable def regularEpiPullbackObjOfSurjective (hf : Surjective f) : Regula
   isColimit := by
     refine Cofork.isColimitOfIsos _
       (coequalizerIsCoequalizer (Types.pullbackCone f f).fst (Types.pullbackCone f f).snd) _
-      (.refl _) (.refl _) (coequalizerPullbackConeOfSurjective hf) ?_ ?_ ?_
-    · simp
-    · simp
-    · rw [coequalizerPullbackConeOfSurjective]
-      cat_disch
+      (.refl _) (.refl _) (coequalizerPullbackConeOfSurjective hf) (by simp) (by simp) ?_
+    rw [coequalizerPullbackConeOfSurjective]
+    cat_disch
 
 /-- For a morphism `f : X ⟶ Y` in the category of types which is surjective as a function, then
 `f : X ⟶ Y` has a structure of a regular epimorphism as the coequalizer of the two pullbackCone
