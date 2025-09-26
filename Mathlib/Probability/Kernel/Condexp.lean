@@ -234,9 +234,8 @@ lemma condDistrib_apply_ae_eq_condExpKernel_map {β γ : Type*} {mβ : Measurabl
     {mγ : MeasurableSpace γ} [StandardBorelSpace β] [Nonempty β] {X : Ω → β} {Y : Ω → γ}
     (hX : Measurable X) (hY : Measurable Y) {s : Set β} (hs : MeasurableSet s) :
     (fun a ↦ condDistrib X Y μ (Y a) s)
-      =ᵐ[μ] fun a ↦ (condExpKernel μ (MeasurableSpace.comap Y inferInstance)).map X a s := by
-  have hT_meas {s : Set γ} (hs : MeasurableSet s) :
-      MeasurableSet[MeasurableSpace.comap Y inferInstance] (Y ⁻¹' s) := by
+      =ᵐ[μ] fun a ↦ (condExpKernel μ (mγ.comap Y)).map X a s := by
+  have hT_meas {s : Set γ} (hs : MeasurableSet s) : MeasurableSet[mγ.comap Y] (Y ⁻¹' s) := by
     rw [MeasurableSpace.measurableSet_comap]
     exact ⟨s, hs, rfl⟩
   simp_rw [Kernel.map_apply _ hX, Measure.map_apply hX hs]
