@@ -17,7 +17,7 @@ of requiring self adjointness in the definition.
 
 * `LinearMap.IsPositive` : a linear map is positive if it is symmetric and
   `∀ x, 0 ≤ re ⟪T x, x⟫`.
-* `ContinuousLinearMap.IsPositive` : a continuous linear map is positive if it is self adjoint and
+* `ContinuousLinearMap.IsPositive` : a continuous linear map is positive if it is symmetric and
   `∀ x, 0 ≤ re ⟪T x, x⟫`.
 
 ## Main statements
@@ -214,19 +214,25 @@ end LinearMap
 
 namespace ContinuousLinearMap
 
-/-- A continuous linear endomorphism `T` of a Hilbert space is **positive** if it is self adjoint
+/-- A continuous linear endomorphism `T` of a Hilbert space is **positive** if it is symmetric
   and `∀ x, 0 ≤ re ⟪T x, x⟫`. -/
-abbrev IsPositive (T : E →L[𝕜] E) := T.toLinearMap.IsPositive
+def IsPositive (T : E →L[𝕜] E) : Prop :=
+  (∀ x y, ⟪T x, y⟫ = ⟪x, T y⟫) ∧ ∀ x, 0 ≤ T.reApplyInnerSelf x
 
+/-- In a complete space, a continuous linear endomorphism `T` is **positive** if it is
+symmetric and `∀ x, 0 ≤ re ⟪T x, x⟫`. -/
 theorem isPositive_def [CompleteSpace E] {T : E →L[𝕜] E} :
     T.IsPositive ↔ IsSelfAdjoint T ∧ ∀ x, 0 ≤ T.reApplyInnerSelf x := by
-  simp [IsPositive, LinearMap.IsPositive, isSelfAdjoint_iff_isSymmetric, reApplyInnerSelf_apply]
+  simp [IsPositive, isSelfAdjoint_iff_isSymmetric, LinearMap.IsSymmetric]
+
+theorem IsPositive.isSymmetric {T : E →L[𝕜] E} (hT : T.IsPositive) :
+    T.IsSymmetric := hT.1
 
 theorem IsPositive.isSelfAdjoint [CompleteSpace E] {T : E →L[𝕜] E} (hT : IsPositive T) :
-    IsSelfAdjoint T := hT.1.isSelfAdjoint
+    IsSelfAdjoint T := hT.isSymmetric.isSelfAdjoint
 
-theorem IsPositive.inner_left_eq_inner_right {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
-    ⟪T x, x⟫ = ⟪x, T x⟫ := hT.1 _ _
+theorem IsPositive.inner_left_eq_inner_right {T : E →L[𝕜] E} (hT : IsPositive T) (x y : E) :
+    ⟪T x, y⟫ = ⟪x, T y⟫ := hT.isSymmetric _ _
 
 theorem IsPositive.re_inner_nonneg_left {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
     0 ≤ re ⟪T x, x⟫ := hT.2 x
@@ -250,7 +256,7 @@ theorem isPositive_iff (T : E →L[𝕜] E) :
 open ComplexOrder in
 theorem isPositive_iff' [CompleteSpace E] (T : E →L[𝕜] E) :
     IsPositive T ↔ IsSelfAdjoint T ∧ ∀ x, 0 ≤ ⟪T x, x⟫ := by
-  simp [isSelfAdjoint_iff_isSymmetric, LinearMap.isPositive_iff]
+  simp [isSelfAdjoint_iff_isSymmetric, isPositive_iff]
 
 open ComplexOrder in
 theorem IsPositive.inner_nonneg_left {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
@@ -260,8 +266,10 @@ open ComplexOrder in
 theorem IsPositive.inner_nonneg_right {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
     0 ≤ ⟪x, T x⟫ := hT.toLinearMap.inner_nonneg_right x
 
+@[simp]
 theorem isPositive_zero : IsPositive (0 : E →L[𝕜] E) := LinearMap.isPositive_zero
 
+@[simp]
 theorem isPositive_id : IsPositive (id 𝕜 E : E →L[𝕜] E) := LinearMap.isPositive_id
 
 @[simp]
