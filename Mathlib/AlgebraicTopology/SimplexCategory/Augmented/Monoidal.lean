@@ -17,8 +17,8 @@ Through the (not in mathlib) equivalence between `AugmentedSimplexCategory` and 
 of finite ordinals, the tensor products corresponds to ordinal sum.
 
 As the unit of this structure is an initial object, for every `x y : AugmentedSimplexCategory`,
-there are maps `AugmentedSimplexCategory.φ₁ x y : x ⟶ x ⊗ y` and
-`AugmentedSimplexCategory.φ₂ x y : y ⟶ x ⊗ y`. The main API for working with the tensor product
+there are maps `AugmentedSimplexCategory.inl x y : x ⟶ x ⊗ y` and
+`AugmentedSimplexCategory.inr x y : y ⟶ x ⊗ y`. The main API for working with the tensor product
 of maps is given by  `AugmentedSimplexCategory.tensorObj_hom_ext`, which characterizes maps
 `x ⊗ y ⟶ z` in terms of their composition with these two maps. We also characterize the behaviour
 of the associator isomorphism with respect to these maps.
@@ -154,48 +154,47 @@ lemma id_star_whiskerRight {x : AugmentedSimplexCategory} : 𝟙 WithInitial.sta
 
 /-- Thanks to `tensorUnit` being initial in `AugmentedSimplexCategory`, we get
 a morphism `Δ ⟶ Δ ⊗ Δ'` for every pair of objects `Δ, Δ'`. -/
-def φ₁ (x y : AugmentedSimplexCategory) : x ⟶ x ⊗ y :=
+def inl (x y : AugmentedSimplexCategory) : x ⟶ x ⊗ y :=
   (ρ_ x).inv ≫ _ ◁ (WithInitial.starInitial.to y)
 
 /-- Thanks to `tensorUnit` being initial in `AugmentedSimplexCategory`, we get
 a morphism `Δ' ⟶ Δ ⊗ Δ'` for every pair of objects `Δ, Δ'`. -/
-def φ₂ (x y : AugmentedSimplexCategory) : y ⟶ x ⊗ y :=
+def inr (x y : AugmentedSimplexCategory) : y ⟶ x ⊗ y :=
   (λ_ y).inv ≫ (WithInitial.starInitial.to x) ▷ _
 
-/-- Again, to ease type checking, we also provide a version of φ₁ that lives in
+/-- Again, to ease type checking, we also provide a version of inl that lives in
 `SimplexCategory`. -/
-abbrev φ₁' (x y : SimplexCategory) : x ⟶ tensorObjOf x y := WithInitial.down <| φ₁ (.of x) (.of y)
+abbrev inl' (x y : SimplexCategory) : x ⟶ tensorObjOf x y := WithInitial.down <| inl (.of x) (.of y)
 
-/-- Again, to ease type checking, we also provide a version of φ₂ that lives in
+/-- Again, to ease type checking, we also provide a version of inr that lives in
 `SimplexCategory`. -/
-abbrev φ₂' (x y : SimplexCategory) : y ⟶ tensorObjOf x y := WithInitial.down <| φ₂ (.of x) (.of y)
+abbrev inr' (x y : SimplexCategory) : y ⟶ tensorObjOf x y := WithInitial.down <| inr (.of x) (.of y)
 
-lemma φ₁'_eval (x y : SimplexCategory) (i : Fin (x.len + 1)) :
-    (φ₁' x y).toOrderHom i = (i.castAdd _).cast (Nat.succ_add x.len (y.len + 1)) := by
-  dsimp [φ₁', φ₁, MonoidalCategoryStruct.rightUnitor, MonoidalCategoryStruct.whiskerLeft,
+lemma inl'_eval (x y : SimplexCategory) (i : Fin (x.len + 1)) :
+    (inl' x y).toOrderHom i = (i.castAdd _).cast (Nat.succ_add x.len (y.len + 1)) := by
+  dsimp [inl', inl, MonoidalCategoryStruct.rightUnitor, MonoidalCategoryStruct.whiskerLeft,
     tensorHom, WithInitial.down, rightUnitor, tensorObj]
   ext
   simp [OrderEmbedding.toOrderHom]
 
-lemma φ₂'_eval (x y : SimplexCategory) (i : Fin (y.len + 1)) :
-    (φ₂' x y).toOrderHom i = (i.natAdd _).cast (Nat.succ_add x.len (y.len + 1)) := by
-  dsimp [φ₂', φ₂, MonoidalCategoryStruct.leftUnitor, MonoidalCategoryStruct.whiskerRight,
+lemma inr'_eval (x y : SimplexCategory) (i : Fin (y.len + 1)) :
+    (inr' x y).toOrderHom i = (i.natAdd _).cast (Nat.succ_add x.len (y.len + 1)) := by
+  dsimp [inr', inr, MonoidalCategoryStruct.leftUnitor, MonoidalCategoryStruct.whiskerRight,
     tensorHom, WithInitial.down, leftUnitor, tensorObj]
   ext
   simp [OrderEmbedding.toOrderHom]
 
-/-- We can characterize morphisms out of a tensor product via their precomposition with `φ₁` and
-`φ₂`. -/
+/-- We can characterize morphisms out of a tensor product via their precomposition with `inl` and
+`inr`. -/
 @[ext]
 theorem tensorObj_hom_ext {x y z : AugmentedSimplexCategory} (f g : x ⊗ y ⟶ z)
-    (h₁ : φ₁ _ _ ≫ f = φ₁ _ _ ≫ g)
-    (h₂ : φ₂ _ _ ≫ f = φ₂ _ _ ≫ g)
-    : f = g :=
+    (h₁ : inl _ _ ≫ f = inl _ _ ≫ g)
+    (h₂ : inr _ _ ≫ f = inr _ _ ≫ g) : f = g :=
   match x, y, z, f, g with
   | .of x, .of y, .of z, f, g => by
     change (tensorObjOf x y) ⟶ z at f g
-    change φ₁' _ _ ≫ f = φ₁' _ _ ≫ g at h₁
-    change φ₂' _ _ ≫ f = φ₂' _ _ ≫ g at h₂
+    change inl' _ _ ≫ f = inl' _ _ ≫ g at h₁
+    change inr' _ _ ≫ f = inr' _ _ ≫ g at h₂
     ext i
     let j : Fin ((x.len + 1) + (y.len + 1)) := i.cast (Nat.succ_add x.len (y.len + 1)).symm
     have : i = j.cast (Nat.succ_add x.len (y.len + 1)) := rfl
@@ -203,31 +202,31 @@ theorem tensorObj_hom_ext {x y z : AugmentedSimplexCategory} (f g : x ⊗ y ⟶ 
     cases j using Fin.addCases (m := x.len + 1) (n := y.len + 1) with
     | left j =>
       rw [SimplexCategory.Hom.ext_iff, OrderHom.ext_iff] at h₁
-      simpa [← φ₁'_eval, ConcreteCategory.hom, Fin.ext_iff] using congrFun h₁ j
+      simpa [← inl'_eval, ConcreteCategory.hom, Fin.ext_iff] using congrFun h₁ j
     | right j =>
       rw [SimplexCategory.Hom.ext_iff, OrderHom.ext_iff] at h₂
-      simpa [← φ₂'_eval, ConcreteCategory.hom, Fin.ext_iff] using congrFun h₂ j
+      simpa [← inr'_eval, ConcreteCategory.hom, Fin.ext_iff] using congrFun h₂ j
   | .of x, .star, .of z, f, g => by
-      simp only [φ₁, Category.assoc, Iso.cancel_iso_inv_left, Limits.IsInitial.to_self,
+      simp only [inl, Category.assoc, Iso.cancel_iso_inv_left, Limits.IsInitial.to_self,
         whiskerLeft_id_star] at h₁
       simpa [Category.id_comp f, Category.id_comp g] using h₁
   | .star, .of y, .of z, f, g => by
-      simp only [φ₂, Category.assoc, Iso.cancel_iso_inv_left, Limits.IsInitial.to_self,
+      simp only [inr, Category.assoc, Iso.cancel_iso_inv_left, Limits.IsInitial.to_self,
         id_star_whiskerRight] at h₂
       simpa [Category.id_comp f, Category.id_comp g] using h₂
   | .star, .star, .of z, f, g => rfl
   | .star, .star, .star, f, g => rfl
 
 @[reassoc (attr := simp)]
-lemma φ₁_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
-    (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) : φ₁ x₁ x₂ ≫ (f₁ ⊗ₘ f₂) = f₁ ≫ φ₁ y₁ y₂ :=
+lemma inl_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
+    (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) : inl x₁ x₂ ≫ (f₁ ⊗ₘ f₂) = f₁ ≫ inl y₁ y₂ :=
   match x₁, y₁, x₂, y₂, f₁, f₂ with
   | .of x₁, .of y₁, .of x₂, .of y₂, f₁, f₂ => by
-    change φ₁' _ _ ≫ tensorHomOf _ _ = WithInitial.down f₁ ≫ φ₁' _ _
+    change inl' _ _ ≫ tensorHomOf _ _ = WithInitial.down f₁ ≫ inl' _ _
     ext i : 3
     dsimp [tensorHomOf]
-    have e₁ := φ₁'_eval x₁ x₂ i
-    have e₂ := φ₁'_eval y₁ y₂ <| (WithInitial.down f₁).toOrderHom i
+    have e₁ := inl'_eval x₁ x₂ i
+    have e₂ := inl'_eval y₁ y₂ <| (WithInitial.down f₁).toOrderHom i
     simp only [SimplexCategory.len_mk] at e₁ e₂
     rw [e₁, e₂]
     simp only [SimplexCategory.eqToHom_toOrderHom, SimplexCategory.len_mk,
@@ -244,15 +243,15 @@ lemma φ₁_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
   | .star, _, _, _, _, _ => rfl
 
 @[reassoc (attr := simp)]
-lemma φ₂_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
-    (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) : φ₂ x₁ x₂ ≫ (f₁ ⊗ₘ f₂) = f₂ ≫ φ₂ y₁ y₂ :=
+lemma inr_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
+    (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) : inr x₁ x₂ ≫ (f₁ ⊗ₘ f₂) = f₂ ≫ inr y₁ y₂ :=
   match x₁, y₁, x₂, y₂, f₁, f₂ with
   | .of x₁, .of y₁, .of x₂, .of y₂, f₁, f₂ => by
-    change φ₂' _ _ ≫ tensorHomOf _ _ = WithInitial.down f₂ ≫ φ₂' _ _
+    change inr' _ _ ≫ tensorHomOf _ _ = WithInitial.down f₂ ≫ inr' _ _
     ext i : 3
     dsimp [tensorHomOf]
-    have e₁ := φ₂'_eval x₁ x₂ i
-    have e₂ := φ₂'_eval y₁ y₂ <| (WithInitial.down f₂).toOrderHom i
+    have e₁ := inr'_eval x₁ x₂ i
+    have e₂ := inr'_eval y₁ y₂ <| (WithInitial.down f₂).toOrderHom i
     simp only [SimplexCategory.len_mk] at e₁ e₂
     rw [e₁, e₂]
     simp only [SimplexCategory.eqToHom_toOrderHom, SimplexCategory.len_mk,
@@ -270,18 +269,18 @@ lemma φ₂_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
   | _, _, .star, _, _, _ => rfl
 
 @[reassoc (attr := simp)]
-lemma φ₂_comp_associator (x y z : AugmentedSimplexCategory) :
-    φ₂ _ _ ≫ (α_ x y z).hom = φ₂ _ _ ≫ φ₂ _ _ :=
+lemma inr_comp_associator (x y z : AugmentedSimplexCategory) :
+    inr _ _ ≫ (α_ x y z).hom = inr _ _ ≫ inr _ _ :=
   match x, y, z with
   | .of x, .of y, .of z => by
-    change φ₂' _ _ ≫ WithInitial.down _ = φ₂' _ _ ≫ φ₂' _ _
+    change inr' _ _ ≫ WithInitial.down _ = inr' _ _ ≫ inr' _ _
     ext i : 3
     dsimp [MonoidalCategoryStruct.associator, associator]
     simp only [eqToHom_toOrderHom, SimplexCategory.len_mk, OrderEmbedding.toOrderHom_coe,
       OrderIso.coe_toOrderEmbedding, Fin.castOrderIso_apply]
-    have e₁ := φ₂'_eval (tensorObjOf x y) z i
-    have e₂ := φ₂'_eval y z i
-    have e₃ := φ₂'_eval x (tensorObjOf y z) <|
+    have e₁ := inr'_eval (tensorObjOf x y) z i
+    have e₂ := inr'_eval y z i
+    have e₃ := inr'_eval x (tensorObjOf y z) <|
       Fin.cast (by simp +arith) <| i.natAdd (y.len + 1)
     simp only [SimplexCategory.len_mk] at e₁ e₂ e₃
     rw [e₁, e₂, e₃]
@@ -291,16 +290,16 @@ lemma φ₂_comp_associator (x y z : AugmentedSimplexCategory) :
   | _, _, .star => by cat_disch
 
 @[reassoc (attr := simp)]
-lemma φ₁_comp_φ₁_comp_associator (x y z : AugmentedSimplexCategory) :
-    φ₁ _ _ ≫ φ₁ _ _ ≫ (α_ x y z).hom = φ₁ _ _ :=
+lemma inl_comp_inl_comp_associator (x y z : AugmentedSimplexCategory) :
+    inl _ _ ≫ inl _ _ ≫ (α_ x y z).hom = inl _ _ :=
   match x, y, z with
   | .of x, .of y, .of z => by
-    change φ₁' _ _ ≫ φ₁' _ _ ≫ WithInitial.down _ = φ₁' _ _
+    change inl' _ _ ≫ inl' _ _ ≫ WithInitial.down _ = inl' _ _
     ext i : 3
     dsimp [MonoidalCategoryStruct.associator, associator]
-    have e₁ := φ₁'_eval x y i
-    have e₂ := φ₁'_eval x (tensorObjOf y z) i
-    have e₃ := φ₁'_eval (tensorObjOf x y) z <| Fin.cast (by simp +arith) <| i.castAdd (y.len + 1)
+    have e₁ := inl'_eval x y i
+    have e₂ := inl'_eval x (tensorObjOf y z) i
+    have e₃ := inl'_eval (tensorObjOf x y) z <| Fin.cast (by simp +arith) <| i.castAdd (y.len + 1)
     simp only [SimplexCategory.len_mk] at e₁ e₂ e₃
     rw [e₁, e₂, e₃]
     ext; simp +arith
@@ -309,17 +308,17 @@ lemma φ₁_comp_φ₁_comp_associator (x y z : AugmentedSimplexCategory) :
   | _, _, .star => by cat_disch
 
 @[reassoc (attr := simp)]
-lemma φ₂_comp_φ₁_comp_associator (x y z : AugmentedSimplexCategory) :
-    φ₂ _ _ ≫ φ₁ _ _ ≫ (α_ x y z).hom = φ₁ _ _ ≫ φ₂ _ _ :=
+lemma inr_comp_inl_comp_associator (x y z : AugmentedSimplexCategory) :
+    inr _ _ ≫ inl _ _ ≫ (α_ x y z).hom = inl _ _ ≫ inr _ _ :=
   match x, y, z with
   | .of x, .of y, .of z => by
-    change φ₂' _ _ ≫ φ₁' _ _ ≫ WithInitial.down _ = φ₁' _ _ ≫ φ₂' _ _
+    change inr' _ _ ≫ inl' _ _ ≫ WithInitial.down _ = inl' _ _ ≫ inr' _ _
     ext i : 3
     dsimp [MonoidalCategoryStruct.associator, associator]
-    have e₁ := φ₁'_eval y z i
-    have e₂ := φ₂'_eval x y i
-    have e₃ := φ₁'_eval (tensorObjOf x y) z <| Fin.cast (by simp +arith) <| i.natAdd (x.len + 1)
-    have e₄ := φ₂'_eval x (tensorObjOf y z) <| Fin.cast (by simp +arith) <| i.castAdd (z.len + 1)
+    have e₁ := inl'_eval y z i
+    have e₂ := inr'_eval x y i
+    have e₃ := inl'_eval (tensorObjOf x y) z <| Fin.cast (by simp +arith) <| i.natAdd (x.len + 1)
+    have e₄ := inr'_eval x (tensorObjOf y z) <| Fin.cast (by simp +arith) <| i.castAdd (z.len + 1)
     simp only [SimplexCategory.len_mk] at e₁ e₂ e₃ e₄
     rw [e₁, e₂, e₃, e₄]
     ext; simp +arith
@@ -334,9 +333,9 @@ theorem tensor_comp {x₁ y₁ z₁ x₂ y₂ z₂ : AugmentedSimplexCategory}
 
 theorem tensor_id (x y : AugmentedSimplexCategory) : (𝟙 x) ⊗ₘ (𝟙 y) = 𝟙 (x ⊗ y) := by
   ext
-  · simpa [φ₁, MonoidalCategoryStruct.whiskerLeft, MonoidalCategoryStruct.whiskerRight] using
+  · simpa [inl, MonoidalCategoryStruct.whiskerLeft, MonoidalCategoryStruct.whiskerRight] using
       (tensor_comp (𝟙 x) (WithInitial.starInitial.to y) (𝟙 x) (𝟙 y)).symm
-  · simpa [φ₂, MonoidalCategoryStruct.whiskerLeft, MonoidalCategoryStruct.whiskerRight] using
+  · simpa [inr, MonoidalCategoryStruct.whiskerLeft, MonoidalCategoryStruct.whiskerRight] using
       (tensor_comp (WithInitial.starInitial.to x) (𝟙 y) (𝟙 x) (𝟙 y)).symm
 
 instance : MonoidalCategory AugmentedSimplexCategory :=
