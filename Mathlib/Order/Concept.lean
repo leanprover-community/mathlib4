@@ -247,27 +247,21 @@ def IsIntent (r : α → β → Prop) (t : Set β) := upperPolar r (lowerPolar r
 
 theorem IsIntent.eq (h : IsIntent r t) : upperPolar r (lowerPolar r t) = t := h
 
-theorem isIntent_iff : IsIntent r t ↔ ∃ s, upperPolar r s = t :=
-  ⟨fun h ↦ ⟨_, h⟩, fun ⟨s, h⟩ ↦ h ▸ upperPolar_lowerPolar_upperPolar r s⟩
+theorem isIntent_iff : IsIntent r t ↔ ∃ s, upperPolar r s = t := isExtent_iff
 
-theorem isIntent_upperPolar (s : Set α) : IsIntent r (upperPolar r s) :=
-  isIntent_iff.2 ⟨_, rfl⟩
+theorem isIntent_upperPolar (s : Set α) : IsIntent r (upperPolar r s) := isExtent_lowerPolar _
 
-theorem isIntent_univ : IsIntent r univ := (gc_upperPolar_lowerPolar r).l_u_bot
+theorem isIntent_univ : IsIntent r univ := isExtent_univ
 
-theorem IsIntent.inter {t' : Set β} : t.IsIntent r → t'.IsIntent r → (t ∩ t').IsIntent r := by
-  simp_rw [isIntent_iff, forall_exists_index]
-  rintro s rfl s' rfl
-  exact ⟨_, upperPolar_union r s s'⟩
+theorem IsIntent.inter {t' : Set β} : t.IsIntent r → t'.IsIntent r → (t ∩ t').IsIntent r :=
+  IsExtent.inter
 
-theorem isIntent_iInter (f : ι → Set β) (hf : ∀ i, (f i).IsIntent r) : (⋂ i, f i).IsIntent r := by
-  rw [isIntent_iff]
-  exact ⟨_, (upperPolar_iUnion ..).trans (iInter_congr hf)⟩
+theorem isIntent_iInter (f : ι → Set β) (hf : ∀ i, (f i).IsIntent r) : (⋂ i, f i).IsIntent r :=
+  isExtent_iInter _ hf
 
 theorem isIntent_iInter₂ (f : ∀ i, κ i → Set β) (hf : ∀ i j, (f i j).IsIntent r) :
-    (⋂ (i) (j), f i j).IsIntent r := by
-  rw [isIntent_iff]
-  exact ⟨_, (upperPolar_iUnion₂ ..).trans (iInter₂_congr hf)⟩
+    (⋂ (i) (j), f i j).IsIntent r :=
+  isExtent_iInter₂ _ hf
 
 end Set
 
