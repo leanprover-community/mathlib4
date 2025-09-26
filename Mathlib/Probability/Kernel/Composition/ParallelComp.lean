@@ -105,8 +105,7 @@ lemma deterministic_parallelComp_deterministic
     (deterministic f hf) ∥ₖ (deterministic g hg)
       = deterministic (Prod.map f g) (hf.prodMap hg) := by
   ext x : 1
-  rw [parallelComp_apply, deterministic_apply, deterministic_apply, deterministic_apply, Prod.map,
-    Measure.dirac_prod_dirac]
+  simp_rw [parallelComp_apply, deterministic_apply, Prod.map, Measure.dirac_prod_dirac]
 
 lemma lintegral_parallelComp [IsSFiniteKernel κ] [IsSFiniteKernel η]
     (ac : α × γ) {g : β × δ → ℝ≥0∞} (hg : Measurable g) :
