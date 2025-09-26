@@ -7,7 +7,7 @@ import Mathlib.Algebra.Module.Submodule.Range
 import Mathlib.LinearAlgebra.Span.Defs
 
 /-!
-# Some lemmas about linear functionals
+# Some lemmas about linear functionals on division rings
 
 This file proves some results on linear functionals on division semirings.
 
