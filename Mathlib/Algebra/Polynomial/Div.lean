@@ -769,11 +769,8 @@ lemma aeval_ne_zero_of_irredicble_natDegree_ne_one
 
 lemma isRoot_subsingleton_of_irreducible [IsLeftCancelMul R] [IsRightCancelAdd R]
     (hi : Irreducible p) : { x | p.IsRoot x }.Subsingleton :=
-  fun _ hx ↦ (
-    isRoot_subsingleton_of_degree_eq_one <|
-    natDegree_eq_of_degree_eq_some <|
-    degree_eq_one_of_irreducible_of_root hi hx
-  ) hx
+  fun _ hx ↦ (subsingleton_isRoot_of_natDegree_eq_one <| natDegree_eq_of_degree_eq_some <|
+    degree_eq_one_of_irreducible_of_root hi hx) hx
 
 lemma leadingCoeff_divByMonic_X_sub_C (p : R[X]) (hp : degree p ≠ 0) (a : R) :
     leadingCoeff (p /ₘ (X - C a)) = leadingCoeff p := by
