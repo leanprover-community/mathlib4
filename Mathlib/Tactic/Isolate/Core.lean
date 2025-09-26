@@ -122,6 +122,7 @@ elab "#query_isolate_lemmas" e0:(ppSpace colGt name)? e1:(ppSpace colGt name)?
   let f : Name := TSyntax.getName e1
   let i : Nat := TSyntax.getNat e2
   let b : Bool := ← do
+    -- TODO figure out how to parse boolean as "false"/"true", not 0/1
     match TSyntax.getNat e3 with
     | 0  => pure false
     | 1 => pure true
