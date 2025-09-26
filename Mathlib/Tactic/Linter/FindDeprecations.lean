@@ -111,23 +111,23 @@ def deprecatedHashMap (oldDate newDate : String) :
       if modName.getRoot != repo then continue
       if oldDate ≤ since && since ≤ newDate then
         continue
-      try
+--      try
         --let lean ← findLean searchPath modName
-        let lean := (modName.components.foldl (init := "")
-          fun a b => (a.push System.FilePath.pathSeparator) ++ b.toString) ++ ".lean"
-        dbg_trace lean
-        let file ← IO.FS.readFile lean
-        dbg_trace file.take 80
-        let fm := FileMap.ofString file
-        let rg : String.Range := ⟨fm.ofPosition rgStart, fm.ofPosition rgStop⟩
-        --dbg_trace (rgStart, rgStop)
-        fin := fin.alter lean fun a =>
-          (a.getD #[⟨fm.positions.back!, fm.positions.back! + ⟨1⟩⟩]).binInsert (·.1 < ·.1) rg
-      catch e =>
-        if let .error ref msg := e then
-          logInfoAt ref m!"error on {modName}: {msg}"
-        --dbg_trace "error on {modName}"
-        continue
+      let lean := (modName.components.foldl (init := "")
+        fun a b => (a.push System.FilePath.pathSeparator) ++ b.toString) ++ ".lean"
+      dbg_trace lean
+      let file ← IO.FS.readFile lean
+      dbg_trace file.take 80
+      let fm := FileMap.ofString file
+      let rg : String.Range := ⟨fm.ofPosition rgStart, fm.ofPosition rgStop⟩
+      --dbg_trace (rgStart, rgStop)
+      fin := fin.alter lean fun a =>
+        (a.getD #[⟨fm.positions.back!, fm.positions.back! + ⟨1⟩⟩]).binInsert (·.1 < ·.1) rg
+--      catch e =>
+--        if let .error ref msg := e then
+--          logInfoAt ref m!"error on {modName}: {msg}"
+--        --dbg_trace "error on {modName}"
+--        continue
   return fin
 
 def removeDeprecations (fname : String) (rgs : Array String.Range) : IO String := do
