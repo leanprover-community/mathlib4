@@ -54,7 +54,8 @@ lemma eq_mul_mul_of_aroots_quadratic_eq_pair [CommRing T] [CommRing S] [IsDomain
     (by simpa [← aroots_def, haroots, ← Multiset.card_pair]
       using (map (algebraMap T S) p).card_roots')
   rw [← coeff_map, ← coeff_map]
-  exact eq_mul_mul_of_roots_quadratic_eq_pair e1 haroots
+  exact eq_mul_mul_of_roots_quadratic_eq_pair
+    ((degree_eq_iff_natDegree_eq_of_pos Nat.zero_lt_two).mpr e1) haroots
 
 /-- **Vieta's formula** for quadratics as an iff. -/
 lemma roots_quadratic_eq_pair_iff_of_ne_zero [CommRing R] [IsDomain R] {x1 x2 : R} {p : R[X]}
@@ -75,7 +76,8 @@ lemma roots_quadratic_eq_pair_iff_of_ne_zero [CommRing R] [IsDomain R] {x1 x2 : 
     simpa [ep, hvieta.1, hvieta.2] using by ring_nf
   ⟨fun h => ⟨eq_neg_mul_add_of_roots_quadratic_eq_pair
     ((degree_eq_iff_natDegree_eq_of_pos Nat.zero_lt_two).mpr hp) h,
-    eq_mul_mul_of_roots_quadratic_eq_pair hp h⟩,
+    eq_mul_mul_of_roots_quadratic_eq_pair
+      ((degree_eq_iff_natDegree_eq_of_pos Nat.zero_lt_two).mpr hp) h⟩,
     roots_of_ne_zero_of_vieta⟩
 
 /-- **Vieta's formula** for quadratics as an iff (`aroots` version). -/
