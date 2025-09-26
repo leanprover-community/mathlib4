@@ -103,6 +103,11 @@ jobs:
         echo '#!/usr/bin/env bash' > delete_deprecations.sh
         # WARNING: we assume that all lines in the output of 'lake build' that begin with "mv" are safe to run
         # the rest of the build should be silent as we will only ever run this on master
+
+        echo "::group::Content of linter.out"
+        cat linter.out
+        echo "::endgroup::"
+
         grep --no-filename '^mv' linter.out linter_archive.out linter_counterexamples.out | sort --unique >> delete_deprecations.sh
         sed -i 's=_with_option.lean$=.lean=' delete_deprecations.sh
         chmod 755 delete_deprecations.sh
