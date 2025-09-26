@@ -56,12 +56,21 @@ lemma prod_comp_left [SFinite μ] [SFinite ν] {κ : Kernel α γ} [IsSFiniteKer
   rw [← Measure.prod_comp_right, ← h1] at h2
   exact h2.symm
 
-end MeasureTheory.Measure
-
-lemma MeasureTheory.Measure.parallelComp_comp_compProd
-    [IsSFiniteKernel κ] {η : Kernel β γ} [IsSFiniteKernel η] :
+lemma parallelComp_comp_compProd [IsSFiniteKernel κ] {η : Kernel β γ} [IsSFiniteKernel η] :
     (Kernel.id ∥ₖ η) ∘ₘ (μ ⊗ₘ κ) = μ ⊗ₘ (η ∘ₖ κ) := by
   by_cases hμ : SFinite μ
   swap; · simp [hμ]
   rw [Measure.compProd_eq_comp_prod, Measure.compProd_eq_comp_prod, Measure.comp_assoc,
     Kernel.parallelComp_comp_prod, Kernel.id_comp]
+
+lemma compProd_map [SFinite μ] [IsSFiniteKernel κ] {f : β → γ} (hf : Measurable f) :
+    μ ⊗ₘ (κ.map f) = (μ ⊗ₘ κ).map (Prod.map id f) := by
+  calc μ ⊗ₘ (κ.map f)
+  _ = (Kernel.id ∥ₖ Kernel.deterministic f hf) ∘ₘ (Kernel.id ×ₖ κ) ∘ₘ μ := by
+    rw [comp_assoc, Kernel.parallelComp_comp_prod, compProd_eq_comp_prod,
+      Kernel.id_comp, Kernel.deterministic_comp_eq_map]
+  _ = (Kernel.id ∥ₖ Kernel.deterministic f hf) ∘ₘ (μ ⊗ₘ κ) := by rw [compProd_eq_comp_prod]
+  _ = (μ ⊗ₘ κ).map (Prod.map id f) := by
+    rw [Kernel.id, Kernel.deterministic_parallelComp_deterministic, deterministic_comp_eq_map]
+
+end MeasureTheory.Measure
