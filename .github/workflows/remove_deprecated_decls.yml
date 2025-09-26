@@ -142,7 +142,7 @@ jobs:
 
         # TODO: set deprecation_date_from and deprecation_date_to outputs (extract from linter.out?)
         # maybe this could be done in the previous step?
-        sed -i 's=_with_option$==' Mathlib.lean
+        sed -i '/_with_option$/d' Mathlib.lean
         echo "::group::Here is the content of git diff:"
         git diff
         echo "::endgroup::"
