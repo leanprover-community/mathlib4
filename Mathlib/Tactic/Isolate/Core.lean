@@ -146,6 +146,7 @@ def isolateStep (x : Expr) (P : Expr) : MetaM (List MVarId × Simp.Result) := do
   let xExpr' := if lhsContains then lhs' else rhs'
   let some relName := rel.getAppFn.constName? | throwError "{rel} is not an explicit relation"
   let (xApp, xArgs) := xExpr'.withApp fun e a => (e, a)
+  if xArgs.size == 0 then throwError "{x} is already isolated in {P}"
   let some xAppName := xApp.getAppFn.constName? | throwError "{xApp} is not an explicit function"
   guard !(xApp.hasLooseBVar 0) <|> throwError "{x} is not localized to a single argument of {xExpr}"
   let xArg' := xArgs.filter fun arg ↦ arg.hasLooseBVar 0

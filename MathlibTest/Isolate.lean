@@ -15,7 +15,7 @@ notation "ℝ" => Real
 
 private axiom test_sorry : ∀ {α}, α
 
--- set_option trace.debug true
+set_option trace.debug true
 
 example {x y z : ℝ} (_hy : 0 < y) : (x + 3) * y ^ 2 - 2 = z := by
   isolate x + 3
@@ -50,24 +50,40 @@ example {x y z : ℝ} (_hy : 0 < y) : z < (x + 3) * y ^ 2 - 2 := by
   exact test_sorry
 
 set_option linter.unusedVariables false in
-example {x y z : ℝ} (_hy : 0 < y) (H : z < (x + 3) * y ^ 2 - 2 ) : True := by
+example {x y z : ℝ} (_hy : 0 < y) (H : z < (x + 3) * y ^ 2 - 2) : True := by
   isolate x + 3 at H
   exact trivial
 
+-- a term can be "isolated" even if it doesn't contain free variables
+example {x y : ℝ} : x + 3 = y := by
+  isolate (3:ℝ)
+  guard_target = 3 = y - x
+  exact test_sorry
+
 /-- error: x + 3 should appear in only one (not both) of x + 3 and (x + 3) * y ^ 2 - 2 -/
 #guard_msgs in
-example {x y z : ℝ} (_hy : 0 < y) (H : x + 3 < (x + 3) * y ^ 2 - 2 ) : True := by
-  isolate x + 3 at H
+example {x y z : ℝ} (_hy : 0 < y) : x + 3 < (x + 3) * y ^ 2 - 2 := by
+  isolate x + 3
 
 /-- error: x + 2 should appear in either z or (x + 3) * y ^ 2 - 2 -/
 #guard_msgs in
-example {x y z : ℝ} (_hy : 0 < y) (H : z < (x + 3) * y ^ 2 - 2 ) : True := by
-  isolate x + 2 at H
+example {x y z : ℝ} (_hy : 0 < y) : z < (x + 3) * y ^ 2 - 2 := by
+  isolate x + 2
 
 /-- error: No x + 2 term was found anywhere to isolate -/
 #guard_msgs in
-example {x y z : ℝ} (_hy : 0 < y) (H : z < (x + 3) * y ^ 2 - 2 ) : True := by
+example {x y z : ℝ} (_hy : 0 < y) : z < (x + 3) * y ^ 2 - 2 := by
   isolate x + 2 at *
+
+/-- error: x + 3 is already isolated in x + 3 = y -/
+#guard_msgs in
+example {x y : ℝ} : x + 3 = y := by
+  isolate x + 3
+
+/-- error: f is not an explicit function -/
+#guard_msgs in
+example (x : ℝ) (f : ℝ → ℝ) : f x = 12 := by
+  isolate x
 
 /-- info: [Mathlib.Tactic.Isolate.add_right_le_iff] -/
 #guard_msgs in
