@@ -129,6 +129,11 @@ theorem map_roots_card_eq_natDegree_of_isUnit_leadingCoeff {A B : Type*} [CommRi
     (p.map f).roots.card = p.natDegree :=
   natDegree_map_of_isUnit_leadingCoeff f h ▸ roots_card_eq_natDegree
 
+theorem map_roots_card_eq_natDegree_of_injective {A B : Type*} [CommRing A] [Field B]
+    [IsAlgClosed B] (f : A →+* B) {p : A[X]} (hf : Function.Injective f) :
+    (p.map f).roots.card = p.natDegree :=
+  natDegree_map_eq_of_injective hf ▸ roots_card_eq_natDegree
+
 theorem map_roots_card_eq_natDegree_from_simpleRing {A B : Type*} [Ring A] [IsSimpleRing A]
     [Field B] [IsAlgClosed B] (f : A →+* B) {p : A[X]} : (p.map f).roots.card = p.natDegree :=
   natDegree_map_from_simpleRing f p ▸ roots_card_eq_natDegree
@@ -142,6 +147,10 @@ theorem aroots_card_eq_natDegree_of_isUnit_leadingCoeff {A B : Type*} [CommRing 
     [IsAlgClosed B] [Algebra A B] {p : A[X]} (h : IsUnit p.leadingCoeff) :
     (p.aroots B).card = p.natDegree :=
   map_roots_card_eq_natDegree_of_isUnit_leadingCoeff _ h
+
+theorem aroots_card_eq_natDegree {A B : Type*} [CommRing A] [Field B] [IsAlgClosed B] [Algebra A B]
+    [FaithfulSMul A B] {p : A[X]} : (p.aroots B).card = p.natDegree :=
+  map_roots_card_eq_natDegree_of_injective _ <| FaithfulSMul.algebraMap_injective _ _
 
 theorem aroots_card_eq_natDegree_from_field {A B : Type*} [CommRing A] [IsSimpleRing A]
     [Field B] [IsAlgClosed B] [Algebra A B] {p : A[X]} : (p.aroots B).card = p.natDegree :=
