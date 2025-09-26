@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Independence.Kernel
-import Mathlib.Probability.Kernel.Composition.MeasureComp
-import Mathlib.Probability.Kernel.Composition.Lemmas
 import Mathlib.Probability.Kernel.CompProdEqIff
+import Mathlib.Probability.Kernel.Composition.Lemmas
 import Mathlib.Probability.Kernel.Condexp
 
 /-!
