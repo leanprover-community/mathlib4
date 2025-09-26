@@ -114,7 +114,7 @@ def deprecatedHashMap (oldDate newDate : String) :
 --      try
         --let lean ← findLean searchPath modName
       let lean := (modName.components.foldl (init := "")
-        fun a b => (a.push System.FilePath.pathSeparator) ++ b.toString) ++ ".lean"
+        fun a b => (a.push System.FilePath.pathSeparator) ++ b.toString) ++ ".lean" |>.drop 1
       dbg_trace lean
       let file ← IO.FS.readFile lean
       dbg_trace file.take 80
