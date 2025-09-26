@@ -63,17 +63,21 @@ end
 
 This is Proposition 6.1.17(i) in [Kashiwara2006].
 -/
-theorem closedUnderLimitsOfShape_walkingParallelPair_isIndObject [HasEqualizers C] :
-    ClosedUnderLimitsOfShape WalkingParallelPair (IsIndObject (C := C)) := by
-  apply closedUnderLimitsOfShape_of_limit
-  intro F hF h
-  obtain ⟨P⟩ := nonempty_indParallelPairPresentation (h WalkingParallelPair.zero)
-    (h WalkingParallelPair.one) (F.map WalkingParallelPairHom.left)
-    (F.map WalkingParallelPairHom.right)
-  exact IsIndObject.map
-    (HasLimit.isoOfNatIso (P.parallelPairIsoParallelPairCompYoneda.symm ≪≫
-      (diagramIsoParallelPair _).symm)).hom
-    (isIndObject_limit_comp_yoneda_comp_colim (parallelPair P.φ P.ψ)
-      (fun i => isIndObject_limit_comp_yoneda _))
+instance isClosedUnderLimitsOfShape_isIndObject_walkingParallelPair [HasEqualizers C] :
+    ObjectProperty.IsClosedUnderLimitsOfShape (IsIndObject (C := C)) WalkingParallelPair :=
+  .mk' (by
+    rintro _ ⟨F, h⟩
+    obtain ⟨P⟩ := nonempty_indParallelPairPresentation (h WalkingParallelPair.zero)
+      (h WalkingParallelPair.one) (F.map WalkingParallelPairHom.left)
+      (F.map WalkingParallelPairHom.right)
+    exact IsIndObject.map
+      (HasLimit.isoOfNatIso (P.parallelPairIsoParallelPairCompYoneda.symm ≪≫
+        (diagramIsoParallelPair _).symm)).hom
+      (isIndObject_limit_comp_yoneda_comp_colim (parallelPair P.φ P.ψ)
+        (fun i => isIndObject_limit_comp_yoneda _)))
+
+@[deprecated (since := "2025-09-22")]
+alias closedUnderLimitsOfShape_walkingParallelPair_isIndObject :=
+  isClosedUnderLimitsOfShape_isIndObject_walkingParallelPair
 
 end CategoryTheory.Limits
