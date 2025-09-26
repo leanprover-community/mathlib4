@@ -28,10 +28,10 @@ This file contains the following parts of gradient.
 * the definition of gradient.
 * the theorems translating between `HasGradientAtFilter` and `HasFDerivAtFilter`,
   `HasGradientWithinAt` and `HasFDerivWithinAt`, `HasGradientAt` and `HasFDerivAt`,
-  `Gradient` and `fderiv`.
+  `gradient` and `fderiv`.
 * theorems the Uniqueness of Gradient.
 * the theorems translating between  `HasGradientAtFilter` and `HasDerivAtFilter`,
-  `HasGradientAt` and `HasDerivAt`, `Gradient` and `deriv` when `F = 𝕜`.
+  `HasGradientAt` and `HasDerivAt`, `gradient` and `deriv` when `F = 𝕜`.
 * the theorems about the congruence of the gradient.
 * the theorems about the gradient of constant function.
 * the theorems about the continuity of a function admitting a gradient.
