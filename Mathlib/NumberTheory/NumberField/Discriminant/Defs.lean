@@ -61,7 +61,7 @@ theorem discr_eq_discr_of_algEquiv {L : Type*} [Field L] [NumberField L] (f : K 
 
 theorem discr_eq_discr_of_ringEquiv {L : Type*} [Field L] [NumberField L] (f : K ≃+* L) :
     discr K = discr L :=
-  discr_eq_discr_of_algEquiv _ <| AlgEquiv.ofRingEquiv (f := f) fun _ ↦ by simp
+  discr_eq_discr_of_algEquiv _ <| AlgEquiv.ofCommutes f fun _ ↦ by simp
 
 end NumberField
 
