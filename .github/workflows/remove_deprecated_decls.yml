@@ -67,6 +67,7 @@ jobs:
         else
           echo "There are files with deprecated declarations in the specified date range"
           tmpMod="${tmplean%.lean}"
+          printf $'Removing line containing %s from Mathlib.lean\n' "${tmpMod/\//.}"
           sed -i "/${tmpMod/\//.}/d" Mathlib.lean
         fi
 
