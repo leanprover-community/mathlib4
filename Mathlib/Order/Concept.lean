@@ -350,9 +350,9 @@ alias strictMono_snd := strictAnti_intent
 
 instance instLatticeConcept : Lattice (Concept α β r) where
   sup := (· ⊔ ·)
-  le_sup_left := fun _ _ => intent_subset_intent_iff.1 inter_subset_left
-  le_sup_right := fun _ _ => intent_subset_intent_iff.1 inter_subset_right
-  sup_le := fun c d e => by
+  le_sup_left _ _ := intent_subset_intent_iff.1 inter_subset_left
+  le_sup_right _ _ := intent_subset_intent_iff.1 inter_subset_right
+  sup_le _ _ _ := by
     simp_rw [← intent_subset_intent_iff]
     exact subset_inter
 
