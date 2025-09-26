@@ -330,7 +330,7 @@ theorem summable_matrix_transpose {f : X → Matrix m n R} :
   Summable.map_iff_of_equiv (Matrix.transposeAddEquiv m n R)
     continuous_id.matrix_transpose continuous_id.matrix_transpose
 
-theorem Matrix.transpose_tsum [T2Space R] {f : X → Matrix m n R} :
+theorem Matrix.transpose_tsum [L.NeBot] [T2Space R] {f : X → Matrix m n R} :
     (∑'[L] x, f x)ᵀ = ∑'[L] x, (f x)ᵀ := by
   by_cases hf : Summable f L
   · exact hf.hasSum.matrix_transpose.tsum_eq.symm
@@ -351,7 +351,7 @@ theorem summable_matrix_conjTranspose [StarAddMonoid R] [ContinuousStar R] {f : 
   Summable.map_iff_of_equiv (Matrix.conjTransposeAddEquiv m n R)
     continuous_id.matrix_conjTranspose continuous_id.matrix_conjTranspose
 
-theorem Matrix.conjTranspose_tsum [StarAddMonoid R] [ContinuousStar R] [T2Space R]
+theorem Matrix.conjTranspose_tsum [L.NeBot] [StarAddMonoid R] [ContinuousStar R] [T2Space R]
     {f : X → Matrix m n R} : (∑'[L] x, f x)ᴴ = ∑'[L] x, (f x)ᴴ := by
   by_cases hf : Summable f L
   · exact hf.hasSum.matrix_conjTranspose.tsum_eq.symm
@@ -372,7 +372,7 @@ theorem summable_matrix_diagonal [DecidableEq n] {f : X → n → R} :
   Summable.map_iff_of_leftInverse (Matrix.diagonalAddMonoidHom n R) (Matrix.diagAddMonoidHom n R)
     continuous_id.matrix_diagonal continuous_matrix_diag fun A => diag_diagonal A
 
-theorem Matrix.diagonal_tsum [DecidableEq n] [T2Space R] {f : X → n → R} :
+theorem Matrix.diagonal_tsum [L.NeBot] [DecidableEq n] [T2Space R] {f : X → n → R} :
     diagonal (∑'[L] x, f x) = ∑'[L] x, diagonal (f x) := by
   by_cases hf : Summable f L
   · exact hf.hasSum.matrix_diagonal.tsum_eq.symm
@@ -405,7 +405,7 @@ theorem summable_matrix_blockDiagonal [DecidableEq p] {f : X → p → Matrix m 
     (blockDiagAddMonoidHom m n p R) continuous_id.matrix_blockDiagonal
     continuous_id.matrix_blockDiag fun A => blockDiag_blockDiagonal A
 
-theorem Matrix.blockDiagonal_tsum [DecidableEq p] [T2Space R] {f : X → p → Matrix m n R} :
+theorem Matrix.blockDiagonal_tsum [L.NeBot] [DecidableEq p] [T2Space R] {f : X → p → Matrix m n R} :
     blockDiagonal (∑'[L] x, f x) = ∑'[L] x, blockDiagonal (f x) := by
   by_cases hf : Summable f L
   · exact hf.hasSum.matrix_blockDiagonal.tsum_eq.symm
@@ -436,7 +436,7 @@ theorem summable_matrix_blockDiagonal' [DecidableEq l] {f : X → ∀ i, Matrix 
     (blockDiag'AddMonoidHom m' n' R) continuous_id.matrix_blockDiagonal'
     continuous_id.matrix_blockDiag' fun A => blockDiag'_blockDiagonal' A
 
-theorem Matrix.blockDiagonal'_tsum [DecidableEq l] [T2Space R]
+theorem Matrix.blockDiagonal'_tsum [L.NeBot] [DecidableEq l] [T2Space R]
     {f : X → ∀ i, Matrix (m' i) (n' i) R} :
     blockDiagonal' (∑'[L] x, f x) = ∑'[L] x, blockDiagonal' (f x) := by
   by_cases hf : Summable f L

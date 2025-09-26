@@ -375,7 +375,7 @@ theorem multipliable_apply [CommMonoid β] [ContinuousMul β] {γ : Type*} {f : 
 
 @[to_additive]
 theorem tprod_apply [T2Space β] [CommMonoid β] [ContinuousMul β] {γ : Type*} {f : γ → C(α, β)}
-    {L : SummationFilter γ} (hf : Multipliable f L) (x : α) :
+    {L : SummationFilter γ} (hf : Multipliable f L) [L.NeBot] (x : α) :
     ∏'[L] i : γ, f i x = (∏'[L] i : γ, f i) x :=
   (hasProd_apply hf.hasProd x).tprod_eq
 

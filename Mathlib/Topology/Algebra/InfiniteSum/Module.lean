@@ -26,7 +26,7 @@ theorem Summable.const_smul (b : γ) (hf : Summable f L) : Summable (fun i ↦ b
 
 /-- Infinite sums commute with scalar multiplication. Version for scalars living in a `Monoid`, but
   requiring a summability hypothesis. -/
-protected theorem Summable.tsum_const_smul [T2Space α] (b : γ) (hf : Summable f L) :
+protected theorem Summable.tsum_const_smul [T2Space α] [L.NeBot] (b : γ) (hf : Summable f L) :
     ∑'[L] i, b • f i = b • ∑'[L] i, f i :=
   (hf.hasSum.const_smul _).tsum_eq
 
@@ -35,7 +35,8 @@ protected theorem Summable.tsum_const_smul [T2Space α] (b : γ) (hf : Summable 
 /-- Infinite sums commute with scalar multiplication. Version for scalars living in a `Group`, but
   not requiring any summability hypothesis. -/
 lemma tsum_const_smul' {γ : Type*} [Group γ] [DistribMulAction γ α] [ContinuousConstSMul γ α]
-    [T2Space α] (g : γ) : ∑'[L] (i : β), g • f i = g • ∑'[L] (i : β), f i := by
+    [T2Space α] [L.NeBot] (g : γ) :
+    ∑'[L] (i : β), g • f i = g • ∑'[L] (i : β), f i := by
   by_cases hf : Summable f L
   · exact hf.tsum_const_smul g
   rw [tsum_eq_zero_of_not_summable hf]
@@ -51,7 +52,8 @@ lemma tsum_const_smul' {γ : Type*} [Group γ] [DistribMulAction γ α] [Continu
   `DivisionRing`; no summability hypothesis. This could be made to work for a
   `[GroupWithZero γ]` if there was such a thing as `DistribMulActionWithZero`. -/
 lemma tsum_const_smul'' {γ : Type*} [DivisionSemiring γ] [Module γ α] [ContinuousConstSMul γ α]
-    [T2Space α] (g : γ) : ∑'[L] (i : β), g • f i = g • ∑'[L] (i : β), f i := by
+    [T2Space α] [L.NeBot] (g : γ) :
+    ∑'[L] (i : β), g • f i = g • ∑'[L] (i : β), f i := by
   rcases eq_or_ne g 0 with rfl | hg
   · simp
   · exact tsum_const_smul' (Units.mk0 g hg)
@@ -74,7 +76,7 @@ theorem HasSum.smul_const {r : R} (hf : HasSum f r L) (a : M) :
 theorem Summable.smul_const (hf : Summable f L) (a : M) : Summable (fun z ↦ f z • a) L :=
   (hf.hasSum.smul_const _).summable
 
-protected theorem Summable.tsum_smul_const [T2Space M] (hf : Summable f L) (a : M) :
+protected theorem Summable.tsum_smul_const [T2Space M] [L.NeBot] (hf : Summable f L) (a : M) :
     ∑'[L] z, f z • a = (∑'[L] z, f z) • a :=
   (hf.hasSum.smul_const _).tsum_eq
 
@@ -135,7 +137,7 @@ protected theorem ContinuousLinearMap.summable {f : ι → M} (φ : M →SL[σ] 
 
 alias Summable.mapL := ContinuousLinearMap.summable
 
-protected theorem ContinuousLinearMap.map_tsum [T2Space M₂] {f : ι → M} (φ : M →SL[σ] M₂)
+protected theorem ContinuousLinearMap.map_tsum [T2Space M₂] [L.NeBot] {f : ι → M} (φ : M →SL[σ] M₂)
     (hf : Summable f L) : φ (∑'[L] z, f z) = ∑'[L] z, φ (f z) :=
   (hf.hasSum.mapL φ).tsum_eq.symm
 
@@ -154,8 +156,9 @@ protected theorem ContinuousLinearEquiv.summable {f : ι → M} (e : M ≃SL[σ]
     (Summable (fun b : ι ↦ e (f b)) L) ↔ Summable f L :=
   ⟨fun hf ↦ (e.hasSum.1 hf.hasSum).summable, (e : M →SL[σ] M₂).summable⟩
 
-theorem ContinuousLinearEquiv.tsum_eq_iff [T2Space M] [T2Space M₂] {f : ι → M} (e : M ≃SL[σ] M₂)
-    {y : M₂} : (∑'[L] z, e (f z)) = y ↔ ∑'[L] z, f z = e.symm y := by
+theorem ContinuousLinearEquiv.tsum_eq_iff [L.NeBot] [T2Space M] [T2Space M₂]
+    {f : ι → M} (e : M ≃SL[σ] M₂) {y : M₂} :
+    (∑'[L] z, e (f z)) = y ↔ ∑'[L] z, f z = e.symm y := by
   by_cases hf : Summable f L
   · exact
       ⟨fun h ↦ (e.hasSum.mp ((e.summable.mpr hf).hasSum_iff.mpr h)).tsum_eq, fun h ↦
@@ -167,8 +170,8 @@ theorem ContinuousLinearEquiv.tsum_eq_iff [T2Space M] [T2Space M₂] {f : ι →
       simp
     · simpa using congr_arg (fun z ↦ e z) H
 
-protected theorem ContinuousLinearEquiv.map_tsum [T2Space M] [T2Space M₂] {f : ι → M}
-    (e : M ≃SL[σ] M₂) : e (∑'[L] z, f z) = ∑'[L] z, e (f z) := by
+protected theorem ContinuousLinearEquiv.map_tsum [T2Space M] [T2Space M₂] [L.NeBot]
+    {f : ι → M} (e : M ≃SL[σ] M₂) : e (∑'[L] z, f z) = ∑'[L] z, e (f z) := by
   refine symm (e.tsum_eq_iff.mpr ?_)
   rw [e.symm_apply_apply _]
 

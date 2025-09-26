@@ -32,7 +32,7 @@ variable [CommMonoid α] [TopologicalSpace α]
 
 @[to_additive]
 theorem hasProd_pi_single [DecidableEq β] (b : β) (a : α) : HasProd (Pi.mulSingle b a) a := by
-  convert hasProd_ite_eq b a
+  convert hasProd_ite_eq (L := unconditional β) b a
   simp [Pi.mulSingle_apply]
 
 @[to_additive (attr := simp)]
@@ -318,8 +318,8 @@ theorem Pi.multipliable {f : ι → ∀ x, X x} :
   simp only [Multipliable, Pi.hasProd, Classical.skolem]
 
 @[to_additive]
-theorem tprod_apply [∀ x, T2Space (X x)] {f : ι → ∀ x, X x} {x : α} (hf : Multipliable f L) :
-    (∏'[L] i, f i) x = ∏'[L] i, f i x :=
+theorem tprod_apply [L.NeBot] [∀ x, T2Space (X x)] {f : ι → ∀ x, X x} {x : α}
+    (hf : Multipliable f L) : (∏'[L] i, f i) x = ∏'[L] i, f i x :=
   (Pi.hasProd.mp hf.hasProd x).tprod_eq.symm
 
 end Pi
@@ -362,14 +362,14 @@ theorem summable_op : (Summable (fun a ↦ op (f a)) L) ↔ Summable f L:=
 theorem summable_unop {f : β → αᵐᵒᵖ} : (Summable (fun a ↦ unop (f a)) L) ↔ Summable f L :=
   ⟨Summable.op, Summable.unop⟩
 
-theorem tsum_op [T2Space α] :
+theorem tsum_op [T2Space α] [L.NeBot] :
     ∑'[L] x, op (f x) = op (∑'[L] x, f x) := by
   by_cases h : Summable f L
   · exact h.hasSum.op.tsum_eq
   · have ho := summable_op.not.mpr h
     rw [tsum_eq_zero_of_not_summable h, tsum_eq_zero_of_not_summable ho, op_zero]
 
-theorem tsum_unop [T2Space α] {f : β → αᵐᵒᵖ} :
+theorem tsum_unop [T2Space α] [L.NeBot] {f : β → αᵐᵒᵖ} :
     ∑'[L] x, unop (f x) = unop (∑'[L] x, f x) :=
   op_injective tsum_op.symm
 

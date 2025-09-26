@@ -40,7 +40,7 @@ theorem Summable.mul_right (a) (hf : Summable f L) : Summable (fun i ↦ f i * a
 
 section tsum
 
-variable [T2Space α]
+variable [T2Space α] [L.NeBot]
 
 protected theorem Summable.tsum_mul_left (a) (hf : Summable f L) :
       ∑'[L] i, a * f i = a * ∑'[L] i, f i :=
@@ -93,7 +93,7 @@ theorem summable_mul_right_iff (h : a ≠ 0) : (Summable (fun i ↦ f i * a) L) 
 theorem summable_div_const_iff (h : a ≠ 0) : (Summable (fun i ↦ f i / a) L) ↔ Summable f L := by
   simpa only [div_eq_mul_inv] using summable_mul_right_iff (inv_ne_zero h)
 
-theorem tsum_mul_left [T2Space α] :
+theorem tsum_mul_left [T2Space α] [L.NeBot] :
     ∑'[L] x, a * f x = a * ∑'[L] x, f x := by
   classical
   exact if hf : Summable f L then hf.tsum_mul_left a
@@ -101,14 +101,14 @@ theorem tsum_mul_left [T2Space α] :
   else by rw [tsum_eq_zero_of_not_summable hf,
               tsum_eq_zero_of_not_summable (mt (summable_mul_left_iff ha).mp hf), mul_zero]
 
-theorem tsum_mul_right [T2Space α] : ∑'[L] x, f x * a = (∑'[L] x, f x) * a := by
+theorem tsum_mul_right [T2Space α] [L.NeBot] : ∑'[L] x, f x * a = (∑'[L] x, f x) * a := by
   classical
   exact if hf : Summable f L then hf.tsum_mul_right a
   else if ha : a = 0 then by simp [ha]
   else by rw [tsum_eq_zero_of_not_summable hf,
               tsum_eq_zero_of_not_summable (mt (summable_mul_right_iff ha).mp hf), zero_mul]
 
-theorem tsum_div_const [T2Space α] : ∑'[L] x, f x / a = (∑'[L] x, f x) / a := by
+theorem tsum_div_const [T2Space α] [L.NeBot] : ∑'[L] x, f x / a = (∑'[L] x, f x) / a := by
   simpa only [div_eq_mul_inv] using tsum_mul_right
 
 theorem HasSum.const_div (h : HasSum (fun x ↦ 1 / f x) a L) (b : α) :
@@ -201,13 +201,13 @@ theorem summable_mul_prod_iff_summable_mul_sigma_antidiagonal :
       Summable fun x : Σ n : A, antidiagonal n ↦ f (x.2 : A × A).1 * g (x.2 : A × A).2 :=
   Finset.sigmaAntidiagonalEquivProd.summable_iff.symm
 
-variable [T3Space α] [IsTopologicalSemiring α]
+variable [T3Space α] [IsTopologicalSemiring α] [L.NeBot] [L.LeAtTop]
 
 theorem summable_sum_mul_antidiagonal_of_summable_mul
     (h : Summable fun x : A × A ↦ f x.1 * g x.2) :
     Summable fun n ↦ ∑ kl ∈ antidiagonal n, f kl.1 * g kl.2 := by
   rw [summable_mul_prod_iff_summable_mul_sigma_antidiagonal] at h
-  conv => congr; ext; rw [← Finset.sum_finset_coe, ← tsum_fintype]
+  conv => congr; ext; rw [← Finset.sum_finset_coe, ← tsum_fintype (L := unconditional _)]
   exact h.sigma' fun n ↦ (hasSum_fintype _).summable
 
 /-- The **Cauchy product formula** for the product of two infinites sums indexed by `ℕ`, expressed
@@ -218,11 +218,10 @@ summable. -/
 protected theorem Summable.tsum_mul_tsum_eq_tsum_sum_antidiagonal (hf : Summable f)
     (hg : Summable g) (hfg : Summable fun x : A × A ↦ f x.1 * g x.2) :
     ((∑' n, f n) * ∑' n, g n) = ∑' n, ∑ kl ∈ antidiagonal n, f kl.1 * g kl.2 := by
-  conv_rhs => congr; ext; rw [← Finset.sum_finset_coe, ← tsum_fintype]
+  conv_rhs => congr; ext; rw [← Finset.sum_finset_coe, ← tsum_fintype (L := unconditional _)]
   rw [hf.tsum_mul_tsum hg hfg, ← sigmaAntidiagonalEquivProd.tsum_eq (_ : A × A → α)]
   exact (summable_mul_prod_iff_summable_mul_sigma_antidiagonal.mp hfg).tsum_sigma'
     (fun n ↦ (hasSum_fintype _).summable)
-
 
 @[deprecated (since := "2025-04-12")] alias tsum_mul_tsum_eq_tsum_sum_antidiagonal :=
   Summable.tsum_mul_tsum_eq_tsum_sum_antidiagonal

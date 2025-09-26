@@ -67,7 +67,7 @@ theorem multipliable_iff_of_multipliable_div (hfg : Multipliable (fun b ↦ f b 
   ⟨fun hf ↦ hf.trans_div <| by simpa only [inv_div] using hfg.inv, fun hg ↦ hg.trans_div hfg⟩
 
 @[to_additive]
-theorem HasProd.update (hf : HasProd f a₁ L) (b : β) [DecidableEq β] (a : α) :
+theorem HasProd.update [L.LeAtTop] (hf : HasProd f a₁ L) (b : β) [DecidableEq β] (a : α) :
     HasProd (update f b a) (a / f b * a₁) L := by
   convert (hasProd_ite_eq b (a / f b) (L := L)).mul hf with b'
   by_cases h : b' = b
@@ -76,7 +76,7 @@ theorem HasProd.update (hf : HasProd f a₁ L) (b : β) [DecidableEq β] (a : α
   · simp only [h, update_of_ne, if_false, Ne, one_mul, not_false_iff]
 
 @[to_additive]
-theorem Multipliable.update (hf : Multipliable f L) (b : β) [DecidableEq β] (a : α) :
+theorem Multipliable.update [L.LeAtTop] (hf : Multipliable f L) (b : β) [DecidableEq β] (a : α) :
     Multipliable (update f b a) L :=
   (hf.hasProd.update b a).multipliable
 
@@ -120,7 +120,7 @@ theorem Set.Finite.multipliable_compl_iff {s : Set β} (hs : s.Finite) :
   (hs.multipliable f).multipliable_compl_iff
 
 @[to_additive]
-theorem hasProd_ite_div_hasProd [DecidableEq β] (hf : HasProd f a L) (b : β) :
+theorem hasProd_ite_div_hasProd [L.LeAtTop] [DecidableEq β] (hf : HasProd f a L) (b : β) :
     HasProd (fun n ↦ ite (n = b) 1 (f n)) (a / f b) L := by
   convert hf.update b 1 using 1
   · ext n

@@ -22,7 +22,7 @@ theorem hasSum_iff_hasSum_compl (f : β → α) (a : α) :
 
 /-- A function `f` is summable in a uniform additive group `α` if and only if it is summable in
 `Completion α` and its sum in `Completion α` lies in the range of `toCompl : α →+ Completion α`. -/
-theorem summable_iff_summable_compl_and_tsum_mem (f : β → α) :
+theorem summable_iff_summable_compl_and_tsum_mem [L.NeBot] (f : β → α) :
     Summable f L ↔ Summable (toCompl ∘ f) L ∧ ∑'[L] i, toCompl (f i) ∈ Set.range toCompl :=
   (isDenseInducing_toCompl α).summable_iff_tsum_comp_mem_range f
 
@@ -47,6 +47,6 @@ theorem summable_iff_cauchySeq_finset_and_tsum_mem (f : β → α) :
 
 /-- If a function `f` is summable in a uniform additive group `α`, then its sum in `α` is the same
 as its sum in `Completion α`. -/
-theorem Summable.toCompl_tsum {f : β → α} (hf : Summable f L) :
+theorem Summable.toCompl_tsum [L.NeBot] {f : β → α} (hf : Summable f L) :
     ∑'[L] i, toCompl (f i) = ∑'[L] i, f i :=
   (hf.map_tsum toCompl (continuous_coe α)).symm

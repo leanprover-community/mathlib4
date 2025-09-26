@@ -472,7 +472,7 @@ theorem summable_ofReal {f : α → ℝ} : (Summable (fun x => (f x : 𝕜)) L) 
     ofRealCLM.summable⟩
 
 @[norm_cast]
-theorem ofReal_tsum (f : α → ℝ) : (↑(∑'[L] a, f a) : 𝕜) = ∑'[L] a, (f a : 𝕜) := by
+theorem ofReal_tsum [L.NeBot] (f : α → ℝ) : (↑(∑'[L] a, f a) : 𝕜) = ∑'[L] a, (f a : 𝕜) := by
   by_cases h : Summable f L
   · exact ContinuousLinearMap.map_tsum ofRealCLM h
   · rw [tsum_eq_zero_of_not_summable h,
@@ -484,10 +484,10 @@ theorem hasSum_re {f : α → 𝕜} {x : 𝕜} (h : HasSum f x L) : HasSum (fun 
 theorem hasSum_im {f : α → 𝕜} {x : 𝕜} (h : HasSum f x L) : HasSum (fun x => im (f x)) (im x) L :=
   imCLM.hasSum h
 
-theorem re_tsum {f : α → 𝕜} (h : Summable f L) : re (∑'[L] a, f a) = ∑'[L] a, re (f a) :=
+theorem re_tsum [L.NeBot] {f : α → 𝕜} (h : Summable f L) : re (∑'[L] a, f a) = ∑'[L] a, re (f a) :=
   reCLM.map_tsum h
 
-theorem im_tsum {f : α → 𝕜} (h : Summable f L) : im (∑'[L] a, f a) = ∑'[L] a, im (f a) :=
+theorem im_tsum [L.NeBot] {f : α → 𝕜} (h : Summable f L) : im (∑'[L] a, f a) = ∑'[L] a, im (f a) :=
   imCLM.map_tsum h
 
 variable {𝕜}
@@ -541,7 +541,7 @@ theorem summable_ofReal {f : α → ℝ} : (Summable (fun x => (f x : ℂ)) L) �
   RCLike.summable_ofReal _
 
 @[norm_cast]
-theorem ofReal_tsum (f : α → ℝ) : (↑(∑'[L] a, f a) : ℂ) = ∑'[L] a, ↑(f a) :=
+theorem ofReal_tsum [L.NeBot] (f : α → ℝ) : (↑(∑'[L] a, f a) : ℂ) = ∑'[L] a, ↑(f a) :=
   RCLike.ofReal_tsum _ _
 
 theorem hasSum_re {f : α → ℂ} {x : ℂ} (h : HasSum f x L) : HasSum (fun x => (f x).re) x.re L :=
@@ -550,10 +550,10 @@ theorem hasSum_re {f : α → ℂ} {x : ℂ} (h : HasSum f x L) : HasSum (fun x 
 theorem hasSum_im {f : α → ℂ} {x : ℂ} (h : HasSum f x L) : HasSum (fun x => (f x).im) x.im L :=
   RCLike.hasSum_im ℂ h
 
-theorem re_tsum {f : α → ℂ} (h : Summable f L) : (∑'[L] a, f a).re = ∑'[L] a, (f a).re :=
+theorem re_tsum [L.NeBot] {f : α → ℂ} (h : Summable f L) : (∑'[L] a, f a).re = ∑'[L] a, (f a).re :=
   RCLike.re_tsum _ h
 
-theorem im_tsum {f : α → ℂ} (h : Summable f L) : (∑'[L] a, f a).im = ∑'[L] a, (f a).im :=
+theorem im_tsum [L.NeBot] {f : α → ℂ} (h : Summable f L) : (∑'[L] a, f a).im = ∑'[L] a, (f a).im :=
   RCLike.im_tsum _ h
 
 theorem hasSum_iff (f : α → ℂ) (c : ℂ) :
