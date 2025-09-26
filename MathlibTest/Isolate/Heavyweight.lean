@@ -6,7 +6,7 @@ Authors: Heather Macbeth
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Data.Real.Sqrt
-import Mathlib.Tactic.Isolate.Tagging
+import Mathlib.Tactic.Isolate
 
 open Real
 

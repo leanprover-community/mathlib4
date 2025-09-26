@@ -35,8 +35,8 @@ Such a lemma will be used to isolate a term appearing in the `x` position in a r
 `f a₁ a₂ ... x ... aₖ ~ y`, converting it to a logically equivalent relation `x ~' G` with the `x`
 "isolated".
 
-It is permissible for there to be any number of antecedents to such a lemma; they will generate
-"side goals" when the `isolate` tactic is used.
+It is permissible for there to be any number of antecedents to such a lemma. If not solved by
+unification or the discharger, they will generate "side goals" when the `isolate` tactic is used.
 
 If the given declaration is a valid `@[isolate]` lemma, we return the relation `~'` and function `f`
 identified in the key hypothesis, together with the index of the `x` free-variable argument in the
@@ -217,13 +217,13 @@ def isolateAtTarget (x : Expr) (g : MVarId) : MetaM (List MVarId) := do
   let mainGoal ← applySimpResultToTarget g P r
   pure (mainGoal :: mvars)
 
-open Parser Tactic in
+open Elab Parser Tactic in
 elab "isolate" x:term loc:(location)? : tactic => do
-  let x ← Elab.Tactic.elabTerm x none
-  let loc := (loc.map Elab.Tactic.expandLocation).getD (.targets #[] true)
-  Elab.Tactic.withLocation loc
-    (fun fvar ↦ Elab.Tactic.liftMetaTactic <| isolateAtLocalDecl x fvar)
-    (Elab.Tactic.liftMetaTactic <| isolateAtTarget x)
+  let x ← elabTerm x none
+  let loc := (loc.map expandLocation).getD (.targets #[] true)
+  withLocation loc
+    (fun fvar ↦ liftMetaTactic <| isolateAtLocalDecl x fvar)
+    (liftMetaTactic <| isolateAtTarget x)
     fun _ ↦ throwError m!"No {x} term was found anywhere to isolate"
 
 end Mathlib.Tactic.Isolate
