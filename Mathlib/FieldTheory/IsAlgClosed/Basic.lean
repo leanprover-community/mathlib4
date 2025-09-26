@@ -129,8 +129,8 @@ theorem map_roots_card_eq_natDegree_of_isUnit_leadingCoeff {A B : Type*} [CommRi
     (p.map f).roots.card = p.natDegree :=
   natDegree_map_of_isUnit_leadingCoeff f h ▸ roots_card_eq_natDegree
 
-theorem map_roots_card_eq_natDegree_from_divisionRing {A B : Type*} [DivisionRing A] [Field B]
-    [IsAlgClosed B] (f : A →+* B) {p : A[X]} : (p.map f).roots.card = p.natDegree :=
+theorem map_roots_card_eq_natDegree_from_simpleRing {A B : Type*} [Ring A] [IsSimpleRing A]
+    [Field B] [IsAlgClosed B] (f : A →+* B) {p : A[X]} : (p.map f).roots.card = p.natDegree :=
   natDegree_map_from_simpleRing f p ▸ roots_card_eq_natDegree
 
 theorem aroots_card_eq_natDegree_of_leadingCoeff_ne_zero {A B : Type*} [CommRing A] [Field B]
@@ -143,17 +143,17 @@ theorem aroots_card_eq_natDegree_of_isUnit_leadingCoeff {A B : Type*} [CommRing 
     (p.aroots B).card = p.natDegree :=
   map_roots_card_eq_natDegree_of_isUnit_leadingCoeff _ h
 
-theorem aroots_card_eq_natDegree_from_field {A B : Type*} [Field A] [Field B] [IsAlgClosed B]
-    [Algebra A B] {p : A[X]} : (p.aroots B).card = p.natDegree :=
-  map_roots_card_eq_natDegree_from_divisionRing _
+theorem aroots_card_eq_natDegree_from_field {A B : Type*} [CommRing A] [IsSimpleRing A]
+    [Field B] [IsAlgClosed B] [Algebra A B] {p : A[X]} : (p.aroots B).card = p.natDegree :=
+  map_roots_card_eq_natDegree_from_simpleRing _
 
 theorem exists_eval₂_eq_zero_of_injective {R : Type*} [Semiring R] [IsAlgClosed k] (f : R →+* k)
     (hf : Function.Injective f) (p : R[X]) (hp : p.degree ≠ 0) : ∃ x, p.eval₂ f x = 0 :=
   let ⟨x, hx⟩ := exists_root (p.map f) (by rwa [degree_map_eq_of_injective hf])
   ⟨x, by rwa [eval₂_eq_eval_map, ← IsRoot]⟩
 
-theorem exists_eval₂_eq_zero {R : Type*} [DivisionRing R] [IsAlgClosed k] (f : R →+* k) (p : R[X])
-    (hp : p.degree ≠ 0) : ∃ x, p.eval₂ f x = 0 :=
+theorem exists_eval₂_eq_zero {R : Type*} [Ring R] [IsSimpleRing R] [IsAlgClosed k] (f : R →+* k)
+    (p : R[X]) (hp : p.degree ≠ 0) : ∃ x, p.eval₂ f x = 0 :=
   exists_eval₂_eq_zero_of_injective f f.injective p hp
 
 variable (k)
