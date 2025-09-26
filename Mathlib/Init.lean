@@ -15,7 +15,6 @@ import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.Linter.Multigoal
 import Mathlib.Tactic.Linter.OldObtain
 -- The following import contains the environment extension for the unused tactic linter.
-import Mathlib.Tactic.Linter.RemoveDeprecations
 import Mathlib.Tactic.Linter.UnusedTacticExtension
 import Mathlib.Tactic.Linter.UnusedTactic
 import Mathlib.Tactic.Linter.Style
