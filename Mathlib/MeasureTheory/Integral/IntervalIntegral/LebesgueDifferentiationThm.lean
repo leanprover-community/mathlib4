@@ -18,7 +18,7 @@ is locally integrable, then for almost every `x`, for any `c : ℝ`, the derivat
 `∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`.
 
 * `IntervalIntegrable.ae_hasDerivAt_integral` is the local version. It states that if `f : ℝ → ℝ`
-is integrable on `uIoc a b`, then for almost every `x ∈ uIcc a b`, for any `c ∈ uIoc a b`, the
+is interval integrable on `a..b`, then for almost every `x ∈ uIcc a b`, for any `c ∈ uIcc a b`, the
 derivative of `∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`.
 -/
 
@@ -54,7 +54,7 @@ theorem LocallyIntegrable.ae_hasDerivAt_integral {f : ℝ → ℝ} (hf : Locally
         intervalIntegral.integral_of_le, hy, this]
 
 /-- The (local) interval version of the *Lebesgue Differentiation Theorem*: if `f : ℝ → ℝ` is
-integrable on `uIoc a b`, then for almost every `x ∈ uIcc a b`, for any `c ∈ uIoc a b`, the
+interval integrable on `a..b`, then for almost every `x ∈ uIcc a b`, for any `c ∈ uIcc a b`, the
 derivative of `∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`. -/
 theorem IntervalIntegrable.ae_hasDerivAt_integral {f : ℝ → ℝ} {a b : ℝ}
     (hf : IntervalIntegrable f volume a b) :
