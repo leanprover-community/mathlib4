@@ -42,6 +42,8 @@ jobs:
         NEW_DATE: "2025-09-20"
       run: |
         # Retrieve the cache for the unmodified repository
+        # show the current pwd:
+        printf $'Current directory is: %s\n' "$(pwd)"
         for repo in Mathlib Archive Counterexamples; do
           lake exe cache get "$repo" || true
         done
