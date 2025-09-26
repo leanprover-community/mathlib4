@@ -3630,6 +3630,7 @@ import Mathlib.Data.Set.Finite.Range
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Functor
 import Mathlib.Data.Set.Image
+import Mathlib.Data.Set.Image_with_option
 import Mathlib.Data.Set.Inclusion
 import Mathlib.Data.Set.Insert
 import Mathlib.Data.Set.Lattice
@@ -4008,6 +4009,7 @@ import Mathlib.GroupTheory.MonoidLocalization.DivPairs
 import Mathlib.GroupTheory.MonoidLocalization.Finite
 import Mathlib.GroupTheory.MonoidLocalization.GrothendieckGroup
 import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
+import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero_with_option
 import Mathlib.GroupTheory.MonoidLocalization.Order
 import Mathlib.GroupTheory.Nilpotent
 import Mathlib.GroupTheory.NoncommCoprod
@@ -4220,6 +4222,7 @@ import Mathlib.LinearAlgebra.Finsupp.Supported
 import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 import Mathlib.LinearAlgebra.FreeAlgebra
 import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.LinearAlgebra.FreeModule.Basic_with_option
 import Mathlib.LinearAlgebra.FreeModule.Determinant
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
@@ -5639,6 +5642,7 @@ import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.Localization.Cardinality
 import Mathlib.RingTheory.Localization.Defs
+import Mathlib.RingTheory.Localization.Defs_with_option
 import Mathlib.RingTheory.Localization.Finiteness
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Free
@@ -5903,6 +5907,7 @@ import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Valuation.ValuationSubring
 import Mathlib.RingTheory.Valuation.ValuativeRel
 import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
+import Mathlib.RingTheory.Valuation.ValuativeRel.Basic_with_option
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.RingTheory.WittVector.Compare
 import Mathlib.RingTheory.WittVector.Complete
@@ -6432,6 +6437,7 @@ import Mathlib.Topology.Algebra.Valued.LocallyCompact
 import Mathlib.Topology.Algebra.Valued.NormedValued
 import Mathlib.Topology.Algebra.Valued.ValuationTopology
 import Mathlib.Topology.Algebra.Valued.ValuativeRel
+import Mathlib.Topology.Algebra.Valued.ValuativeRel_with_option
 import Mathlib.Topology.Algebra.Valued.ValuedField
 import Mathlib.Topology.Algebra.Valued.WithVal
 import Mathlib.Topology.Algebra.Valued.WithZeroMulInt
