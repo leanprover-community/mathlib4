@@ -108,6 +108,10 @@ jobs:
         cat linter.out
         echo "::endgroup::"
 
+        echo "::group::Content of a random file"
+        cat Mathlib/GroupTheory/MonoidLocalization/MonoidWithZero_with_option.lean
+        echo "::endgroup::"
+
         grep --no-filename '^mv' linter.out linter_archive.out linter_counterexamples.out | sort --unique >> delete_deprecations.sh
         sed -i 's=_with_option.lean$=.lean=' delete_deprecations.sh
         chmod 755 delete_deprecations.sh
