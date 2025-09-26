@@ -51,7 +51,7 @@ because the more bundled version usually does not work with dot notation.
   `α →o Π i, π i`;
 * `OrderHom.Subtype.val`: embedding `Subtype.val : Subtype p → α` as a bundled monotone map;
 * `OrderHom.dual`: reinterpret a monotone map `α →o β` as a monotone map `αᵒᵈ →o βᵒᵈ`;
-* `OrderIso.dualIso`: order isomorphism between `α →o β` and `(αᵒᵈ →o βᵒᵈ)ᵒᵈ`;
+* `OrderHom.dualIso`: order isomorphism between `α →o β` and `(αᵒᵈ →o βᵒᵈ)ᵒᵈ`;
 * `OrderHom.compl`: order isomorphism `α ≃o αᵒᵈ` given by taking complements in a
   Boolean algebra;
 
@@ -992,7 +992,7 @@ def piIso [Preorder α] : (α →o ∀ i, π i) ≃o ∀ i, α →o π i where
   map_rel_iff' := forall_swap
 
 /-- `OrderHom.dual` as an order isomorphism. -/
-def dualIso (α β : Type*) [Preorder α] [Preorder β] : (α →o β) ≃o (αᵒᵈ →o βᵒᵈ)ᵒᵈ where
+def _root_.OrderHom.dualIso (α β : Type*) [Preorder α] [Preorder β] : (α →o β) ≃o (αᵒᵈ →o βᵒᵈ)ᵒᵈ where
   toEquiv := OrderHom.dual.trans OrderDual.toDual
   map_rel_iff' := Iff.rfl
 
