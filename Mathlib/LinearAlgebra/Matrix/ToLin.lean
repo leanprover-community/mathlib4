@@ -697,6 +697,12 @@ theorem LinearMap.toMatrix_toSpanSingleton [DecidableEq m] (v₁ : Module.Basis 
     (toSpanSingleton R M₂ x).toMatrix v₁ v₂ = vecMulVec (v₂.repr x) v₁ := by
   ext; simp [toMatrix_apply, vecMulVec_apply, mul_comm]
 
+@[simp]
+lemma LinearMap.toMatrix_smulRight (f : M₁ →ₗ[R] R) (x : M₂) :
+    toMatrix v₁ v₂ (f.smulRight x) = vecMulVec (v₂.repr x) (f ∘ v₁) := by
+  ext i j
+  simpa [toMatrix_apply, vecMulVec_apply] using mul_comm _ _
+
 theorem Matrix.toLin_apply (M : Matrix m n R) (v : M₁) :
     Matrix.toLin v₁ v₂ M v = ∑ j, (M *ᵥ v₁.repr v) j • v₂ j :=
   show v₂.equivFun.symm (Matrix.toLin' M (v₁.repr v)) = _ by
