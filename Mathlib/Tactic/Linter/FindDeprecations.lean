@@ -113,7 +113,9 @@ def deprecatedHashMap (oldDate newDate : String) :
         continue
       try
         let lean ← findLean searchPath modName
+        dbg_trace lean
         let file ← IO.FS.readFile lean
+        dbg_trace file.take 80
         let fm := FileMap.ofString file
         let rg : String.Range := ⟨fm.ofPosition rgStart, fm.ofPosition rgStop⟩
         --dbg_trace (rgStart, rgStop)
