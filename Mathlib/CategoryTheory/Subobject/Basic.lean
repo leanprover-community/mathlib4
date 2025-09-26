@@ -70,7 +70,7 @@ In fact, in an abelian category (I'm not sure in what generality beyond that),
 -/
 
 
-universe w' w v₁ v₂ u₁ u₂
+universe w' w v₁ v₂ v₃ u₁ u₂ u₃
 
 noncomputable section
 
@@ -516,6 +516,23 @@ def lowerEquivalence {A : C} {B : D} (e : MonoOver A ≌ MonoOver B) : Subobject
     convert ThinSkeleton.map_iso_eq e.counitIso
     · exact (ThinSkeleton.map_comp_eq _ _).symm
     · exact ThinSkeleton.map_id_eq.symm
+
+section Limits
+
+variable {J : Type u₃} [Category.{v₃} J]
+
+instance hasLimitsOfShape [HasLimitsOfShape J (Over X)] :
+    HasLimitsOfShape J (Subobject X) := by
+  apply hasLimitsOfShape_thinSkeleton
+
+instance hasFiniteLimits [HasFiniteLimits (Over X)] : HasFiniteLimits (Subobject X) where
+  out _ _ _ := by infer_instance
+
+instance hasLimitsOfSize [HasLimitsOfSize.{w, w'} (Over X)] :
+    HasLimitsOfSize.{w, w'} (Subobject X) where
+  has_limits_of_shape _ _ := by infer_instance
+
+end Limits
 
 section Colimits
 
