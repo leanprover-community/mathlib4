@@ -31,11 +31,6 @@ register_simp_attr functor_norm
 /-- Simp set for `functor_norm` -/
 register_simp_attr monad_norm
 
-/-- The simpset `field_simps` is used by the tactic `field_simp` to
-reduce an expression in a field to an expression of the form `n / d` where `n` and `d` are
-division-free. -/
-register_simp_attr field_simps
-
 /-- Simp attribute for lemmas about `Even` -/
 register_simp_attr parity_simps
 
@@ -106,7 +101,7 @@ default simp lemmas:
 ```
 -MonoidalCategory.whiskerLeft_id, -MonoidalCategory.id_whiskerRight,
 -MonoidalCategory.tensor_comp, -MonoidalCategory.tensor_comp_assoc,
--Mon_Class.mul_assoc, -Mon_Class.mul_assoc_assoc
+-MonObj.mul_assoc, -MonObj.mul_assoc_assoc
 ```
 
 The general algorithm it follows is to push the associators `α_` and commutators `β_` inwards until

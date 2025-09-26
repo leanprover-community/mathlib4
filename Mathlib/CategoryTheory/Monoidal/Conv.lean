@@ -8,13 +8,13 @@ import Mathlib.CategoryTheory.Monoidal.Comon_
 /-!
 # The convolution monoid.
 
-When `M : Comon_ C` and `N : Mon_ C`, the morphisms `M.X ⟶ N.X` form a monoid (in Type).
+When `M : Comon C` and `N : Mon C`, the morphisms `M.X ⟶ N.X` form a monoid (in Type).
 -/
 
 universe v₁ u₁
 namespace CategoryTheory
 open MonoidalCategory
-open Mon_Class Comon_Class
+open MonObj ComonObj
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C]
 
 /--
@@ -24,7 +24,7 @@ def Conv (M N : C) : Type v₁ := M ⟶ N
 
 namespace Conv
 
-variable {M : C} {N : C} [Comon_Class M] [Mon_Class N]
+variable {M : C} {N : C} [ComonObj M] [MonObj N]
 
 instance : One (Conv M N) where
   one := ε[M] ≫ η[N]
