@@ -3,15 +3,14 @@ Copyright (c) 2025 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Tactic.GCongr.Core
 import Mathlib.Control.Basic
-import Qq
+import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.Relation.Symm
 
 /-! # Tactic for isolating a subexpression within a given relation -/
 
 namespace Mathlib.Tactic.Isolate
-open Lean Meta Qq
-
+open Lean Meta
 
 initialize registerTraceClass `Meta.isolate
 
@@ -134,28 +133,6 @@ elab "#query_isolate_lemmas" e0:(ppSpace colGt name)? e1:(ppSpace colGt name)?
   | some lems => logInfo m!"{lems}"
   | none => logInfo "No lemmas with this key found"
 
--- TODO move this
-/-- Given a term `e : Prop` of the form `a ~ b`, use `@[symm]` lemmas to construct a `Simp.Result`
-proving the equivalence of `e` with `b ~ a` . -/
-def _root_.Lean.Expr.eqSymm (e : Expr) : MetaM Simp.Result := do
-  have e : Q(Prop) := e
-  let .app (.app rel lhs) rhs := e | failure
-  let lemmas ← (Symm.symmExt.getState (← getEnv)).getMatch rel
-  guard !lemmas.isEmpty <|> throwError "no appropriate symmetry lemma found"
-  have e' : Q(Prop) := .app (.app rel rhs) lhs
-  let ((pf1 : Q($e → $e')), (pf2 : Q($e' → $e))) : Q($e → $e') × Q($e' → $e) := ← do
-    let m1 ← mkFreshExprMVarQ q($e → $e')
-    let m2 ← mkFreshExprMVarQ q($e' → $e)
-    let s ← saveState
-    for lem in lemmas do
-      restoreState s
-      let [] ← m1.mvarId!.applyConst lem | failure
-      let [] ← m2.mvarId!.applyConst lem | failure
-      return (← instantiateMVars m1, ← instantiateMVars m2)
-    throwError "no appropriate symmetry lemma found"
-  let pf : Q($e = $e') := q(propext ⟨$pf1, $pf2⟩)
-  pure { expr := e', proof? := some pf }
-
 def isolateStep (x : Expr) (P : Expr) : MetaM (List MVarId × Simp.Result) := do
   let .app (.app rel lhs) rhs ← whnfR P | throwError "{P} should be a relation"
   let lhs' ← Meta.kabstract lhs x
@@ -197,7 +174,7 @@ def isolateStep (x : Expr) (P : Expr) : MetaM (List MVarId × Simp.Result) := do
         guard (← isDefEq P' lemLHS)
         -- If that succeeded, we know what `P'` will be transformed to, namely the instantiated RHS
         -- of the lemma.
-        let Q : Q(Prop) := ← instantiateMVars lemRHS
+        let Q ← instantiateMVars lemRHS
         -- Collect the unassigned metavariables, i.e. side goals.
         let mvars := (← args.mapM getMVars).flatten
         -- We attempt to resolve each of these side goals;
@@ -220,23 +197,23 @@ def isolateStep (x : Expr) (P : Expr) : MetaM (List MVarId × Simp.Result) := do
     throwError "no suitable lemmas found"
   | _ => throwError "{x} is not localized to a single 'argument of {xExpr}"
 
-partial def isolateStepRec (x : Expr) (P : Expr) : MetaM (List MVarId × Simp.Result) := do
+partial def isolate (x : Expr) (P : Expr) : MetaM (List MVarId × Simp.Result) := do
   let (mvars, r) ← isolateStep x P
   try
-    let (mvars', r') ← isolateStepRec x r.expr
+    let (mvars', r') ← isolate x r.expr
     return (mvars ++ mvars', ← r.mkEqTrans r')
   catch _ =>
     return (mvars, r)
 
-def isolateStepHyp (x : Expr) (fvar : FVarId) (g : MVarId) : MetaM (List MVarId) := do
+def isolateAtLocalDecl (x : Expr) (fvar : FVarId) (g : MVarId) : MetaM (List MVarId) := do
   let P ← fvar.getType
-  let ⟨mvars, r⟩ ← isolateStepRec x P
+  let ⟨mvars, r⟩ ← isolate x P
   let some (_, newGoal) ← applySimpResultToLocalDecl g fvar r false | throwError "zz"
   pure (newGoal :: mvars)
 
-def isolateStepTarget (x : Expr) (g : MVarId) : MetaM (List MVarId) := do
+def isolateAtTarget (x : Expr) (g : MVarId) : MetaM (List MVarId) := do
   let P ← g.getType
-  let ⟨mvars, r⟩ ← isolateStepRec x P
+  let ⟨mvars, r⟩ ← isolate x P
   let mainGoal ← applySimpResultToTarget g P r
   pure (mainGoal :: mvars)
 
@@ -245,8 +222,8 @@ elab "isolate" x:term loc:(location)? : tactic => do
   let x ← Elab.Tactic.elabTerm x none
   let loc := (loc.map Elab.Tactic.expandLocation).getD (.targets #[] true)
   Elab.Tactic.withLocation loc
-    (fun fvar ↦ Elab.Tactic.liftMetaTactic <| isolateStepHyp x fvar)
-    (Elab.Tactic.liftMetaTactic <| isolateStepTarget x)
+    (fun fvar ↦ Elab.Tactic.liftMetaTactic <| isolateAtLocalDecl x fvar)
+    (Elab.Tactic.liftMetaTactic <| isolateAtTarget x)
     fun _ ↦ throwError m!"No {x} term was found anywhere to isolate"
 
 end Mathlib.Tactic.Isolate
