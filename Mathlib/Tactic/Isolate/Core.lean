@@ -95,9 +95,9 @@ initialize registerBuiltinAttribute {
   name := `isolate
   descr := "isolation"
   add decl _ kind := do
-    -- parse the proposed isolation lemma to find the the relation `~'` and function `f`
-    -- identified in the key hypothesis, together with the index of the designated free variable
-    -- in the argument list of `f`, and a boolean specifying which side of the relation `f` is on.
+    -- parse the proposed isolation lemma to find the relation `~'` and function `f` identified in
+    -- the key hypothesis, together with the index of the designated free variable in the argument
+    -- list of `f`, and a boolean specifying which side of the relation `f` is on.
     let key : Name × Name × Nat × Bool ← MetaM.run' (parseIsolateLemma decl)
     trace[Meta.isolate] "Recorded as a isolation lemma for {key}"
     -- store this lemma in the environment extension for isolation lemmas, with the relation,
