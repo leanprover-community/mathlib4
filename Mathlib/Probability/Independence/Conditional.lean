@@ -729,15 +729,13 @@ lemma condIndepFun_of_measurable_right {mβ : MeasurableSpace β} {mβ' : Measur
 
 lemma condIndepFun_self_left {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     {X : Ω → β} {Z : Ω → β'} (hX : Measurable X) (hZ : Measurable Z) :
-    CondIndepFun (mβ'.comap Z) hZ.comap_le Z X μ := by
-  refine condIndepFun_of_measurable_left ?_ hX
-  rw [measurable_iff_comap_le]
+    CondIndepFun (mβ'.comap Z) hZ.comap_le Z X μ :=
+  condIndepFun_of_measurable_left (comap_measurable Z) hX
 
 lemma condIndepFun_self_right {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     {X : Ω → β} {Z : Ω → β'} (hX : Measurable X) (hZ : Measurable Z) :
-    CondIndepFun (mβ'.comap Z) hZ.comap_le X Z μ := by
-  refine condIndepFun_of_measurable_right hX ?_
-  rw [measurable_iff_comap_le]
+    CondIndepFun (mβ'.comap Z) hZ.comap_le X Z μ :=
+  condIndepFun_of_measurable_right hX (comap_measurable Z)
 
 section iCondIndepFun
 variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}
