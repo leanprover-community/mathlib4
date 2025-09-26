@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 
-import Mathlib.Analysis.Normed.Algebra.Spectrum
 import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 import Mathlib.Topology.ContinuousMap.ContinuousSqrt
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # The exponential and logarithm based on the continuous functional calculus
@@ -58,9 +58,9 @@ namespace CFC
 section RCLikeNormed
 
 variable {𝕜 : Type*} {A : Type*} [RCLike 𝕜] {p : A → Prop} [NormedRing A]
-  [StarRing A] [IsTopologicalRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
-  [ContinuousFunctionalCalculus 𝕜 A p]
+  [StarRing A] [IsTopologicalRing A] [NormedAlgebra 𝕜 A] [ContinuousFunctionalCalculus 𝕜 A p]
 
+open scoped ContinuousFunctionalCalculus in
 lemma exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
     cfc (exp 𝕜 : 𝕜 → 𝕜) a = exp 𝕜 a := by
   conv_rhs => rw [← cfc_id 𝕜 a ha, cfc_apply id a ha]
@@ -76,7 +76,7 @@ end RCLikeNormed
 section RealNormed
 
 variable {A : Type*} [NormedRing A] [StarRing A]
-  [IsTopologicalRing A] [NormedAlgebra ℝ A] [CompleteSpace A]
+  [IsTopologicalRing A] [NormedAlgebra ℝ A]
   [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 lemma real_exp_eq_normedSpace_exp {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :
@@ -95,7 +95,7 @@ end RealNormed
 section ComplexNormed
 
 variable {A : Type*} {p : A → Prop} [NormedRing A] [StarRing A]
-  [NormedAlgebra ℂ A] [CompleteSpace A] [ContinuousFunctionalCalculus ℂ A p]
+  [NormedAlgebra ℂ A] [ContinuousFunctionalCalculus ℂ A p]
 
 lemma complex_exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
     cfc Complex.exp a = exp ℂ a :=
@@ -159,8 +159,6 @@ lemma log_pow' [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A] 
     rw [StarOrderedRing.isStrictlyPositive_iff_spectrum_pos (R := ℝ) a] at ha
     grind
   grind [log_pow]
-
-variable [CompleteSpace A]
 
 open NormedSpace in
 @[grind =]
