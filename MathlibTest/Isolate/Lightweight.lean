@@ -135,7 +135,7 @@ example {x y z : ℝ} (_hy : 0 < y) : z < (x + 3) * y ^ 2 - 2 := by
 example {x y : ℝ} : x + 3 = y := by
   isolate x + 3
 
-/-- error: f is not an explicit function -/
+/-- error: f should be a concrete function, for example it cannot be a variable -/
 #guard_msgs in
 example (x : ℝ) (f : ℝ → ℝ) : f x = 12 := by
   isolate x
@@ -152,16 +152,48 @@ example (x : ℝ) (f : ℝ → ℝ) : f x = 12 := by
 theorem eq_add_right_iff [AddGroup X] (a b c : X) : c = a + b ↔ a = c - b := test_sorry
 
 /--
-error: @[isolate] attribute only applies to lemmas proving f x ∼ y ↔ x ∼' g y.
- No relation with at least two arguments found in the conclusion a * (b + c) = a * b + a * c
+error: @[isolate] attribute only applies to lemmas with a conclusion of the form f a₁ a₂ ... x ... aₖ ~ y ↔ x ~' G.
+ If-and-only-if structure not identified in this lemma's conclusion a * (b + c) = a * b + a * c
 -/
 #guard_msgs in
 attribute [isolate] mul_add
 
+axiom Prime : Nat → Prop
+
 /--
-error: @[isolate] attribute only applies to lemmas proving f x ∼ y ↔ x ∼' g y.
- Leading LHS function f is not a constant in the conclusion f a = b ↔ a = f b
+error: @[isolate] attribute only applies to lemmas with a conclusion of the form f a₁ a₂ ... x ... aₖ ~ y ↔ x ~' G.
+ Here the conclusion has the form Prime a ↔ _, but Prime a could not be parsed as a relation
 -/
 #guard_msgs in
 @[isolate]
-theorem foo (f : ℝ → ℝ) (a b : ℝ) : f a = b ↔ a = f b := test_sorry
+theorem foo (a b c : Nat) : Prime a ↔ a = b + c := test_sorry
+
+/-- error: f should be a concrete function, for example it cannot be a variable -/
+#guard_msgs in
+@[isolate]
+theorem foo' (f : ℝ → ℝ) (a b : ℝ) : f a = b ↔ a = f b := test_sorry
+
+/--
+error: @[isolate] attribute only applies to lemmas with a conclusion of the form f a₁ a₂ ... x ... aₖ ~ y ↔ x ~' G.
+ Here the conclusion has the form _ ↔ a ^ 2 = b + c, but one side of a ^ 2 = b + c should be a free variable
+-/
+#guard_msgs in
+@[isolate]
+theorem foo'' (a b c : ℝ) : a ^ 2 = b ↔ a ^ 2 = b + c := test_sorry
+
+/--
+error: @[isolate] attribute only applies to lemmas with a conclusion of the form f a₁ a₂ ... x ... aₖ ~ y ↔ x ~' G.
+ Here the conclusion has the form a + a = b ↔ _, but the variable a should appear only once in the expression a + a
+-/
+#guard_msgs in
+@[isolate]
+theorem foo''' (a b c : ℝ) : a + a = b ↔ a = b - a := test_sorry
+
+/--
+error: @[isolate] attribute only applies to lemmas with a conclusion of the form f a₁ a₂ ... x ... aₖ ~ y ↔ x ~' G.
+ Here the conclusion has the form a ^ 2 + b =
+  c ↔ _, but the variable a should appear as directly as an argument of the operation @HAdd.hAdd
+-/
+#guard_msgs in
+@[isolate]
+theorem foo'''' (a b c : ℝ) : a ^ 2 + b = c ↔ a = b + c := test_sorry
