@@ -346,7 +346,7 @@ lemma toCatCommSqOver_mapIso_mkNatIso_eq_mkIso :
     (toCatCommSqOver F G X).mapIso (mkNatIso e₁ e₂ coh) =
     CategoricalPullback.mkIso e₁ e₂
       (by simpa [functorEquiv, toCatCommSqOver] using coh) := by
-  aesop
+  cat_disch
 
 /-- Comparing mkNatIso with the corresponding construction one can deduce from
 `functorEquiv`. -/
@@ -398,10 +398,6 @@ def transform (X : Type u₇) [Category.{v₇} X] :
           snd := whiskerRight f.snd ψ.right
           w := by
             ext x
-            dsimp
-            simp only [Category.comp_id, Category.id_comp,
-              CatCommSq.iso_inv_naturality_assoc, Category.assoc,
-              NatIso.cancel_natIso_inv_left, Functor.comp_obj]
             simp [← Functor.map_comp_assoc] } }
   map {ψ ψ'} η :=
     { app S :=
@@ -409,11 +405,7 @@ def transform (X : Type u₇) [Category.{v₇} X] :
         snd := { app y := η.right.app (S.snd.obj y) }
         w := by
           ext t
-          dsimp
-          simp only [Category.comp_id, Category.id_comp, Category.assoc,
-            CatCospanTransformMorphism.right_coherence_app, Functor.comp_obj,
-            NatTrans.naturality_assoc]
-          haveI := ψ.squareLeft.iso.inv.app (S.fst.obj t) ≫=
+          have := ψ.squareLeft.iso.inv.app (S.fst.obj t) ≫=
             η.left_coherence_app (S.fst.obj t)
           simp only [Iso.inv_hom_id_app_assoc] at this
           simp [this] } }
