@@ -176,6 +176,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`MathlibTest.Header, `Plausible),
   (`MathlibTest.Header, `ProofWidgets),
   (`MathlibTest.Header, `Qq),
+  (`MathlibTest.Header, `Reap),
   -- (`MathlibTest.Header, `Mathlib.Tactic),
   -- (`MathlibTest.Header, `Mathlib.Deprecated),
   (`MathlibTest.Header, `Batteries),
