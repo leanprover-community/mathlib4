@@ -36,10 +36,7 @@ jobs:
         use-github-cache: false
         use-mathlib-cache: false
 
-    - name: set up deprecated doubles
-      env:
-        OLD_DATE: "2025-08-01"
-        NEW_DATE: "2025-08-02"
+    - name: Retrieve caches for unmodified repositories
       run: |
         # Retrieve the cache for the unmodified repository
         # show the current pwd:
@@ -49,6 +46,12 @@ jobs:
           lake exe cache get "$repo" || true
           echo "::endgroup::"
         done
+
+    - name: set up deprecated doubles
+      env:
+        OLD_DATE: "2025-08-01"
+        NEW_DATE: "2025-08-02"
+      run: |
         # We create a temporary file to run the command that adds the set_option linter.removeDeprecations
         # to the relevant files and saves the modified files with a new name
         tmplean="$(mktemp -p Mathlib --suffix=.lean RMDXXX)"
