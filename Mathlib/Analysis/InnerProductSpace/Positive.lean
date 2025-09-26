@@ -250,10 +250,18 @@ theorem IsPositive.re_inner_nonneg_right {T : E →L[𝕜] E} (hT : IsPositive T
     0 ≤ re ⟪x, T x⟫ := hT.toLinearMap.re_inner_nonneg_right x
 
 open ComplexOrder in
+/-- An operator is positive iff it is symmetric and `0 ≤ ⟪T x, x⟫`.
+
+For the version with `IsSelfAdjoint` instead of `IsSymmetric`, see
+`ContinuousLinearMap.isPositive_iff'`. -/
 theorem isPositive_iff (T : E →L[𝕜] E) :
     IsPositive T ↔ T.IsSymmetric ∧ ∀ x, 0 ≤ ⟪T x, x⟫ := LinearMap.isPositive_iff _
 
 open ComplexOrder in
+/-- An operator is positive iff it is self-adjoint and `0 ≤ ⟪T x, x⟫`.
+
+For the version with `IsSymmetric` instead of `IsSelfAdjoint`, see
+`ContinuousLinearMap.isPositive_iff`. -/
 theorem isPositive_iff' [CompleteSpace E] (T : E →L[𝕜] E) :
     IsPositive T ↔ IsSelfAdjoint T ∧ ∀ x, 0 ≤ ⟪T x, x⟫ := by
   simp [isSelfAdjoint_iff_isSymmetric, isPositive_iff]
