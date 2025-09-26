@@ -32,8 +32,6 @@ where `p` is the unique real number such that `∑ a_i b_i^p = 1`.
 
 ## Main definitions and results
 
-* `asympBound`: The asymptotic bound satisfied by an Akra-Bazzi recurrence, namely
-  `n^p (1 + ∑ g(u) / u^(p+1))`
 * `isTheta_asympBound`: The main result stating that
   `T(n) ∈ Θ(n^p (1 + ∑_{u=0}^{n-1} g(n) / u^{p+1}))`
 
@@ -62,16 +60,6 @@ prove the version with a sum here, as it is simpler and more relevant for algori
 
 open Finset Real Filter Asymptotics
 open scoped Topology
-
-/-!
-### Definition of Akra-Bazzi recurrences
-
-This section defines the predicate `AkraBazziRecurrence T g a b r` which states that `T`
-satisfies the recurrence
-`T(n) = ∑_{i=0}^{k-1} a_i T(r_i(n)) + g(n)`
-with appropriate conditions on the various parameters.
--/
-
 
 namespace AkraBazziRecurrence
 
