@@ -335,9 +335,6 @@ protected lemma HasCompactMulSupport.inv {α β : Type*} [TopologicalSpace α] [
     HasCompactMulSupport (f⁻¹) := by
   simpa only [HasCompactMulSupport, mulTSupport, mulSupport_inv] using hf
 
-@[deprecated (since := "2025-07-31")] alias HasCompactSupport.neg' := HasCompactSupport.neg
-@[deprecated (since := "2025-07-31")] alias HasCompactMulSupport.inv' := HasCompactMulSupport.inv
-
 @[to_additive]
 theorem HasCompactSupport.div {α β : Type*} [TopologicalSpace α] [DivisionMonoid β]
     {f f' : α → β} (hf : HasCompactMulSupport f) (hf' : HasCompactMulSupport f') :

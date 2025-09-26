@@ -749,12 +749,6 @@ lemma IsTopologicalGroup.isOpenMap_iff_nhds_one
   refine (Filter.map_mono h).trans ?_
   simp [Function.comp_def]
 
-@[deprecated (since := "2025-09-16")]
-alias TopologicalGroup.isOpenMap_iff_nhds_one := IsTopologicalGroup.isOpenMap_iff_nhds_one
-
-@[deprecated (since := "2025-09-16")]
-alias TopologicalGroup.isOpenMap_iff_nhds_zero := IsTopologicalAddGroup.isOpenMap_iff_nhds_zero
-
 -- TODO: unify with `QuotientGroup.isOpenQuotientMap_mk`
 /-- Let `A` and `B` be topological groups, and let `φ : A → B` be a continuous surjective group
 homomorphism. Assume furthermore that `φ` is a quotient map (i.e., `V ⊆ B`

@@ -38,12 +38,6 @@ theorem continuous_linear_iff {f : P →ᵃ[R] Q} : Continuous f.linear ↔ Cont
   rw [this]
   simp only [Homeomorph.comp_continuous_iff, Homeomorph.comp_continuous_iff']
 
-/-- An affine map is continuous iff its underlying linear map is continuous. See also
-`AffineMap.continuous_linear_iff`. -/
-@[deprecated continuous_linear_iff (since := "2025-09-13")]
-theorem continuous_iff {f : P →ᵃ[R] Q} : Continuous f ↔ Continuous f.linear :=
-  continuous_linear_iff.symm
-
 /-- If `f` is an affine map, then its linear part is an open map iff `f` is an open map. -/
 theorem isOpenMap_linear_iff {f : P →ᵃ[R] Q} : IsOpenMap f.linear ↔ IsOpenMap f := by
   inhabit P

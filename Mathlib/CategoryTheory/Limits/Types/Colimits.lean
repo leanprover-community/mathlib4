@@ -185,10 +185,6 @@ theorem Colimit.ι_map_apply {F G : J ⥤ Type u} [HasColimitsOfShape J (Type u)
 
 -- These were variations of the aliased lemmas with different universe variables.
 -- It appears those are now strictly more powerful.
-@[deprecated (since := "2025-08-22")] alias Colimit.w_apply' := Colimit.w_apply
-@[deprecated (since := "2025-08-22")] alias Colimit.ι_desc_apply' := Colimit.ι_desc_apply
-@[deprecated (since := "2025-08-22")] alias Colimit.ι_map_apply' := Colimit.ι_map_apply
-
 variable {F} in
 theorem colimit_sound {j j' : J} {x : F.obj j} {x' : F.obj j'} (f : j ⟶ j')
     (w : F.map f x = x') : colimit.ι F j x = colimit.ι F j' x' := by

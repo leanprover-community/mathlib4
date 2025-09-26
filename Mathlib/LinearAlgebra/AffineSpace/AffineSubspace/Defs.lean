@@ -356,8 +356,6 @@ theorem direction_mk' (p : P) (direction : Submodule k V) :
     simpa using direction.sub_mem hp₁ hp₂
   · exact fun hv => ⟨v +ᵥ p, vadd_mem_mk' _ hv, p, self_mem_mk' _ _, (vadd_vsub _ _).symm⟩
 
-@[deprecated (since := "2025-08-15")] alias mem_mk'_iff_vsub_mem := mem_mk'
-
 /-- Constructing an affine subspace from a point in a subspace and that subspace's direction
 yields the original subspace. -/
 @[simp]
@@ -724,8 +722,6 @@ points. -/
 @[simp]
 theorem coe_inf (s₁ s₂ : AffineSubspace k P) : (s₁ ⊓ s₂ : Set P) = (s₁ : Set P) ∩ s₂ :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias inf_coe := coe_inf
 
 /-- A point is in the inf of two affine subspaces if and only if it is in both of them. -/
 theorem mem_inf_iff (p : P) (s₁ s₂ : AffineSubspace k P) : p ∈ s₁ ⊓ s₂ ↔ p ∈ s₁ ∧ p ∈ s₂ :=

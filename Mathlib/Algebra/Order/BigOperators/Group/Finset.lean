@@ -377,12 +377,6 @@ lemma single_le_prod_of_canonicallyOrdered {i : ι} (hi : i ∈ s) :
   have := CanonicallyOrderedMul.toIsOrderedMonoid (α := M)
   single_le_prod' (fun _ _ ↦ one_le _) hi
 
-@[deprecated (since := "2025-09-06")]
-alias _root_.CanonicallyOrderedCommMonoid.single_le_prod := single_le_prod_of_canonicallyOrdered
-
-@[deprecated (since := "2025-09-06")]
-alias _root_.CanonicallyOrderedAddCommMonoid.single_le_sum := single_le_sum_of_canonicallyOrdered
-
 @[to_additive sum_le_sum_of_subset]
 theorem prod_le_prod_of_subset' (h : s ⊆ t) : ∏ x ∈ s, f x ≤ ∏ x ∈ t, f x :=
   have := CanonicallyOrderedMul.toIsOrderedMonoid (α := M)

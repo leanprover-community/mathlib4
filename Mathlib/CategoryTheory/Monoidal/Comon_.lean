@@ -72,8 +72,6 @@ class IsComonHom (f : M ⟶ N) : Prop where
   hom_counit (f) : f ≫ ε = ε := by cat_disch
   hom_comul (f) : f ≫ Δ = Δ ≫ (f ⊗ₘ f) := by cat_disch
 
-@[deprecated (since := "2025-09-15")] alias IsComon_Hom := IsComonHom
-
 attribute [reassoc (attr := simp)] IsComonHom.hom_counit IsComonHom.hom_comul
 
 instance : IsComonHom (𝟙 M) where
@@ -95,8 +93,6 @@ structure Comon where
   /-- The underlying object of a comonoid object. -/
   X : C
   [comon : ComonObj X]
-
-@[deprecated (since := "2025-09-15")] alias Comon_ := Comon
 
 attribute [instance] Comon.comon
 
@@ -252,16 +248,12 @@ abbrev ComonToMonOpOpObjMon (A : Comon C) : MonObj (op A.X) where
       comul_assoc_flip, op_comp, op_comp_assoc]
     rfl
 
-@[deprecated (since := "2025-09-15")] alias Comon_ToMon_OpOpObjMon := ComonToMonOpOpObjMon
-
 /--
 Turn a comonoid object into a monoid object in the opposite category.
 -/
 @[simps] def ComonToMonOpOpObj (A : Comon C) : Mon Cᵒᵖ where
   X := op A.X
   mon := ComonToMonOpOpObjMon A
-
-@[deprecated (since := "2025-09-15")] alias Comon_ToMon_OpOpObj := ComonToMonOpOpObj
 
 variable (C) in
 /--
@@ -274,8 +266,6 @@ The contravariant functor turning comonoid objects into monoid objects in the op
       isMonHom_hom.one_hom := by apply Quiver.Hom.unop_inj; simp
       isMonHom_hom.mul_hom := by apply Quiver.Hom.unop_inj; simp }
 
-@[deprecated (since := "2025-09-15")] alias Comon_ToMon_OpOp := ComonToMonOpOp
-
 /-- Auxiliary definition for `MonOpOpToComonObj`. -/
 abbrev MonOpOpToComonObjComon (A : Mon Cᵒᵖ) : ComonObj (unop A.X) where
   counit := η[A.X].unop
@@ -287,16 +277,12 @@ abbrev MonOpOpToComonObjComon (A : Mon Cᵒᵖ) : ComonObj (unop A.X) where
       MonObj.mul_assoc_flip]
     rfl
 
-@[deprecated (since := "2025-09-15")] alias Mon_OpOpToComonObjComon := MonOpOpToComonObjComon
-
 /--
 Turn a monoid object in the opposite category into a comonoid object.
 -/
 @[simps] def MonOpOpToComonObj (A : Mon Cᵒᵖ) : Comon C where
   X := unop A.X
   comon := MonOpOpToComonObjComon A
-
-@[deprecated (since := "2025-09-15")] alias Mon_OpOpToComonObj := MonOpOpToComonObj
 
 variable (C)
 
@@ -310,8 +296,6 @@ def MonOpOpToComon : (Mon Cᵒᵖ)ᵒᵖ ⥤ Comon C where
     { hom := f.unop.hom.unop
       isComonHom_hom.hom_counit := by apply Quiver.Hom.op_inj; simp
       isComonHom_hom.hom_comul := by apply Quiver.Hom.op_inj; simp [op_tensorHom] }
-
-@[deprecated (since := "2025-09-15")] alias Mon_OpOpToComon_ := MonOpOpToComon
 
 /--
 Comonoid objects are contravariantly equivalent to monoid objects in the opposite category.

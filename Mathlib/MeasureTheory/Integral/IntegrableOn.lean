@@ -74,9 +74,6 @@ theorem HasFiniteIntegral.restrict_of_bounded [NormedAddCommGroup E] {f : α →
   haveI : IsFiniteMeasure (μ.restrict s) := ⟨by rwa [Measure.restrict_apply_univ]⟩
   .of_bounded hf
 
-@[deprecated (since := "2025-07-26")]
-alias hasFiniteIntegral_restrict_of_bounded := HasFiniteIntegral.restrict_of_bounded
-
 variable [NormedAddCommGroup E] {f g : α → ε} {s t : Set α} {μ ν : Measure α}
   [TopologicalSpace ε] [ContinuousENorm ε]
 

@@ -93,60 +93,30 @@ theorem mapMulHom_id : mapMulHom (MulHom.id α) = MonoidHom.id (WithOne α) := b
   ext x
   induction x <;> rfl
 
-@[deprecated (since := "2025-08-26")]
-alias map_id := mapMulHom_id
-@[deprecated (since := "2025-08-26")]
-alias _root_.WithZero.map_id := WithZero.mapAddHom_id
-
 @[to_additive]
 theorem mapMulHom_injective {f : α →ₙ* β} (hf : Function.Injective f) :
     Function.Injective (mapMulHom f)
   | none, none, _ => rfl
   | (a₁ : α), (a₂ : α), H => by simpa [hf.eq_iff] using H
 
-@[deprecated (since := "2025-08-26")]
-alias map_injective := mapMulHom_injective
-@[deprecated (since := "2025-08-26")]
-alias _root_.WithZero.map_injective := WithZero.mapAddHom_injective
-
 @[to_additive]
 theorem mapMulHom_injective' :
     Function.Injective (WithOne.mapMulHom (α := α) (β := β)) :=
   fun f g h ↦ MulHom.ext fun x ↦ coe_injective <| by simp only [← mapMulHom_coe, h]
 
-@[deprecated (since := "2025-08-26")]
-alias map_injective' := mapMulHom_injective'
-@[deprecated (since := "2025-08-26")]
-alias _root_.WithZero.map_injective' := WithZero.mapAddHom_injective'
-
 @[to_additive (attr := simp)]
 theorem mapMulHom_inj {f g : α →ₙ* β} : mapMulHom f = mapMulHom g ↔ f = g :=
   mapMulHom_injective'.eq_iff
-
-@[deprecated (since := "2025-08-26")]
-alias map_inj := mapMulHom_inj
-@[deprecated (since := "2025-08-26")]
-alias _root_.WithZero.map_inj := WithZero.mapAddHom_inj
 
 @[to_additive]
 theorem mapMulHom_mapMulHom (f : α →ₙ* β) (g : β →ₙ* γ) (x) :
     mapMulHom g (mapMulHom f x) = mapMulHom (g.comp f) x := by
   induction x <;> rfl
 
-@[deprecated (since := "2025-08-26")]
-alias map_map := mapMulHom_mapMulHom
-@[deprecated (since := "2025-08-26")]
-alias _root_.WithZero.map_map := WithZero.mapAddHom_mapAddHom
-
 @[to_additive (attr := simp)]
 theorem mapMulHom_comp (f : α →ₙ* β) (g : β →ₙ* γ) :
     mapMulHom (g.comp f) = (mapMulHom g).comp (mapMulHom f) :=
   MonoidHom.ext fun x => (mapMulHom_mapMulHom f g x).symm
-
-@[deprecated (since := "2025-08-26")]
-alias map_comp := mapMulHom_comp
-@[deprecated (since := "2025-08-26")]
-alias _root_.WithZero.map_comp := WithZero.mapAddHom_comp
 
 /-- A version of `Equiv.optionCongr` for `WithOne`. -/
 @[to_additive (attr := simps apply) /-- A version of `Equiv.optionCongr` for `WithZero`. -/]

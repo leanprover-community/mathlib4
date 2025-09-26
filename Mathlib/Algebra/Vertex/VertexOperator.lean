@@ -61,9 +61,6 @@ theorem coeff_eq_ncoeff (A : VertexOperator R V)
     (n : ℤ) : HVertexOperator.coeff A n = A [[-n - 1]] := by
   rw [ncoeff_apply, neg_sub, Int.sub_neg, add_sub_cancel_left]
 
-@[deprecated (since := "2025-08-30")] alias ncoeff_add := map_add
-@[deprecated (since := "2025-08-30")] alias ncoeff_smul := map_smul
-
 theorem ncoeff_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
     (h : -n - 1 < HahnSeries.order ((HahnModule.of R).symm (A x))) : (A [[n]]) x = 0 := by
   simp only [ncoeff, HVertexOperator.coeff, LinearMap.coe_mk, AddHom.coe_mk]

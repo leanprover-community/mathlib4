@@ -368,8 +368,6 @@ theorem condExpIndSMul_smul [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (hs :
     condExpIndSMul hm hs hμs (c • x) = c • condExpIndSMul hm hs hμs x := by
   simp_rw [condExpIndSMul, toSpanSingleton_smul, smul_compLpL, smul_apply]
 
-@[deprecated (since := "2025-08-28")] alias condExpIndSMul_smul' := condExpIndSMul_smul
-
 theorem condExpIndSMul_ae_eq_smul (hm : m ≤ m0) (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : G) :
     condExpIndSMul hm hs hμs x =ᵐ[μ] fun a =>
       (condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a • x :=

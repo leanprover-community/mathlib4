@@ -494,13 +494,6 @@ def deriveLawfulTraversable (m : MVarId) : TermElabM Unit := do
         simpGoal m (← rules [(``Traversable.naturality_pf, false)] [] false) then
     m.refl
 
-/-- The deriving handler for `LawfulTraversable`. -/
-@[deprecated "This has not been used in Mathlib for some time, and broke on nightly-2025-09-11. \
-  Without an active maintainer, it has been deprecated." (since := "2025-09-11")]
-def lawfulTraversableDeriveHandler : DerivingHandler :=
-  higherOrderDeriveHandler ``LawfulTraversable deriveLawfulTraversable
-    [traversableDeriveHandler, lawfulFunctorDeriveHandler] (fun n arg => mkAppOptM n #[arg, none])
-
 set_option linter.deprecated false in
 initialize registerDerivingHandler ``LawfulTraversable lawfulTraversableDeriveHandler
 

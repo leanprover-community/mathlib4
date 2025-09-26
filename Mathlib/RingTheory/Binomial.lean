@@ -444,8 +444,6 @@ theorem choose_succ_succ [NatPowAssoc R] (r : R) (k : ℕ) :
   rw [Nat.factorial_succ, mul_smul,
     ← descPochhammer_eq_factorial_smul_choose r, descPochhammer_succ_succ_smeval r k]
 
-@[deprecated (since := "2025-08-17")] alias choose_eq_nat_choose := choose_natCast
-
 theorem choose_smul_choose [NatPowAssoc R] (r : R) {n k : ℕ} (hkn : k ≤ n) :
     (Nat.choose n k) • choose r n = choose r k * choose (r - k) (n - k) := by
   rw [← nsmul_right_inj (Nat.factorial_ne_zero n),

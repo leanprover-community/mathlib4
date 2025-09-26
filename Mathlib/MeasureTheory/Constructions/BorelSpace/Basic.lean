@@ -575,9 +575,6 @@ instance (priority := 100) ContinuousInv₀.measurableInv [GroupWithZero γ] [T1
     [ContinuousInv₀ γ] : MeasurableInv γ :=
   ⟨measurable_of_continuousOn_compl_singleton 0 continuousOn_inv₀⟩
 
-@[deprecated (since := "2025-09-01")] alias HasContinuousInv₀.measurableInv :=
-  ContinuousInv₀.measurableInv
-
 @[to_additive]
 instance (priority := 100) ContinuousMul.measurableMul₂ [SecondCountableTopology γ] [Mul γ]
     [ContinuousMul γ] : MeasurableMul₂ γ :=

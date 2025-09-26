@@ -411,8 +411,6 @@ theorem map₁_one (φ : (Action.res _ 1).obj A ⟶ B) :
     map 1 φ 1 = 0 := by
   simp [← cancel_epi (H1π _)]
 
-@[deprecated (since := "2025-07-31")]
-alias map_1_one := map₁_one
 @[deprecated (since := "2025-06-09")]
 alias H1Map_one := map_1_one
 

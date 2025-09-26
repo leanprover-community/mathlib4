@@ -83,8 +83,6 @@ variable {J} in
 theorem IsSheaf.isSeparated {P : Cᵒᵖ ⥤ Type w} (h : IsSheaf J P) : IsSeparated J P :=
   fun S hS => (h S hS).isSeparatedFor
 
-@[deprecated (since := "2025-08-28")] alias isSeparated_of_isSheaf := IsSheaf.isSeparated
-
 section
 
 variable {J} {P₁ : Cᵒᵖ ⥤ Type w} {P₂ : Cᵒᵖ ⥤ Type w'}

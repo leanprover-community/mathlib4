@@ -47,10 +47,6 @@ protected theorem LocalizationMap.map_zero (f : LocalizationMap S N) : f 0 = 0 :
 def LocalizationMap.toMonoidWithZeroHom (f : LocalizationMap S N) : M →*₀ N :=
   { f with map_zero' := f.map_zero }
 
-@[deprecated (since := "2025-08-01")] alias LocalizationWithZeroMap := LocalizationMap
-@[deprecated (since := "2025-08-01")]
-alias LocalizationWithZeroMap.toMonoidWithZeroHom := LocalizationMap.toMonoidWithZeroHom
-
 end Submonoid
 
 namespace Localization
@@ -144,14 +140,6 @@ theorem noZeroDivisors (f : LocalizationMap S N) [NoZeroDivisors M] : NoZeroDivi
 end LocalizationMap
 
 namespace LocalizationWithZeroMap
-
-@[deprecated (since := "2025-08-01")]
-alias isLeftRegular_of_le_isCancelMulZero := LocalizationMap.isCancelMulZero
-@[deprecated (since := "2025-08-01")]
-alias leftCancelMulZero_of_le_isLeftRegular := LocalizationMap.isCancelMulZero
-@[deprecated (since := "2025-08-01")] alias lift := LocalizationMap.lift₀
-@[deprecated (since := "2025-08-01")] alias lift_def := LocalizationMap.lift₀_def
-@[deprecated (since := "2025-08-01")] alias lift_apply := LocalizationMap.lift₀_apply
 
 end LocalizationWithZeroMap
 

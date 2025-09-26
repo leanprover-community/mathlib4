@@ -318,9 +318,6 @@ end FiniteType
 
 end AlgHom
 
-@[deprecated (since := "2025-08-12")] alias algebraMap_finiteType_iff_algebra_finiteType :=
-  RingHom.finiteType_algebraMap
-
 section MonoidAlgebra
 
 variable {R : Type*} {M : Type*}

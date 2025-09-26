@@ -413,17 +413,9 @@ theorem congr_fun_rfl {α β : Sort*} (f : α → β) (a : α) : congr_fun (Eq.r
 theorem congr_fun_congr_arg {α β γ : Sort*} (f : α → β → γ) {a a' : α} (p : a = a') (b : β) :
     congr_fun (congr_arg f p) b = congr_arg (fun a ↦ f a b) p := rfl
 
-@[deprecated (since := "2025-09-16")] alias Eq.rec_eq_cast := eqRec_eq_cast
-
-@[deprecated (since := "2025-09-16")] alias eqRec_heq' := eqRec_heq_self
-
 theorem rec_heq_of_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : C a} {y : β}
     (e : a = b) (h : x ≍ y) : e ▸ x ≍ y :=
   eqRec_heq_iff_heq.mpr h
-
-@[deprecated (since := "2025-09-16")] alias rec_heq_iff_heq := eqRec_heq_iff_heq
-
-@[deprecated (since := "2025-09-16")] alias heq_rec_iff_heq := heq_eqRec_iff_heq
 
 @[simp]
 theorem cast_heq_iff_heq {α β γ : Sort _} (e : α = β) (a : α) (c : γ) :

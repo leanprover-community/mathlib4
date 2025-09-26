@@ -165,17 +165,10 @@ lemma IsSelfAdjoint.quasispectrumRestricts {a : A} (ha : IsSelfAdjoint a) :
     QuasispectrumRestricts a Complex.reCLM :=
   isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts |>.mp ha |>.2
 
-@[deprecated (since := "2025-09-16")]
-alias isSelfAdjoint_iff_isStarNormal_and_spectrumRestricts :=
-  isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts
-
 /-- A normal element whose `ℂ`-quasispectrum is contained in `ℝ` is selfadjoint. -/
 lemma QuasispectrumRestricts.isSelfAdjoint (a : A) (ha : QuasispectrumRestricts a Complex.reCLM)
     [IsStarNormal a] : IsSelfAdjoint a :=
   isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts.mpr ⟨‹_›, ha⟩
-
-@[deprecated (since := "2025-09-16")]
-alias SpectrumRestricts.isSelfAdjoint := QuasispectrumRestricts.isSelfAdjoint
 
 instance IsSelfAdjoint.instNonUnitalContinuousFunctionalCalculus :
     NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint :=
@@ -231,10 +224,6 @@ lemma CFC.exists_sqrt_of_isSelfAdjoint_of_quasispectrumRestricts {A : Type*} [No
     apply ha₂ x at hx
     simp [← sq, Real.sq_sqrt hx]
 
-@[deprecated (since := "2025-09-16")]
-alias CFC.exists_sqrt_of_isSelfAdjoint_of_spectrumRestricts :=
-  CFC.exists_sqrt_of_isSelfAdjoint_of_quasispectrumRestricts
-
 variable {A : Type*} [NonUnitalRing A] [PartialOrder A] [StarRing A] [StarOrderedRing A]
 variable [TopologicalSpace A] [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
 variable [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
@@ -246,10 +235,6 @@ lemma nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts {a : A} :
   rintro ⟨ha₁, ha₂⟩
   obtain ⟨x, hx, -, rfl⟩ := CFC.exists_sqrt_of_isSelfAdjoint_of_quasispectrumRestricts ha₁ ha₂
   simpa [sq, hx.star_eq] using star_mul_self_nonneg x
-
-@[deprecated (since := "2025-09-16")]
-alias nonneg_iff_isSelfAdjoint_and_spectrumRestricts :=
-  nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts
 
 open NNReal in
 instance Nonneg.instNonUnitalContinuousFunctionalCalculus :

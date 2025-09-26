@@ -947,12 +947,6 @@ theorem not_surjective_of_ordinal {α : Type*} [Small.{u} α] (f : α → Ordina
 theorem not_injective_of_ordinal {α : Type*} [Small.{u} α] (f : Ordinal.{u} → α) :
     ¬ Injective f := fun h ↦ not_surjective_of_ordinal _ (invFun_surjective h)
 
-@[deprecated (since := "2025-08-21")]
-alias not_surjective_of_ordinal_of_small := not_surjective_of_ordinal
-
-@[deprecated (since := "2025-08-21")]
-alias not_injective_of_ordinal_of_small := not_injective_of_ordinal
-
 /-- The type of ordinals in universe `u` is not `Small.{u}`. This is the type-theoretic analog of
 the Burali-Forti paradox. -/
 theorem not_small_ordinal : ¬Small.{u} Ordinal.{max u v} := fun h =>

@@ -18,9 +18,4 @@ namespace Std.HashMap
 
 variable {α β γ : Type _} [BEq α] [Hashable α]
 
-/-- Apply a function to the values of a hash map. -/
-@[deprecated Std.HashMap.map (since := "2025-08-18")]
-def mapVal (f : α → β → γ) (m : HashMap α β) : HashMap α γ :=
-  m.fold (fun acc k v => acc.insert k (f k v)) ∅
-
 end Std.HashMap

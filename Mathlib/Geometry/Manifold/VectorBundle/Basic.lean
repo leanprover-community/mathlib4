@@ -517,9 +517,6 @@ theorem Trivialization.contMDiffAt_section_iff {s : ∀ x, E x} {x₀ : B}
   simp_rw [← contMDiffWithinAt_univ]
   exact e.contMDiffWithinAt_section univ hx₀
 
-@[deprecated (since := "2025-09-15")]
-alias contMDiffAt_section_of_mem_baseSet := Trivialization.contMDiffAt_section_iff
-
 /-- Smoothness of a `C^n` section on `s` can be determined
 using any trivialisation whose `baseSet` contains `s`. -/
 theorem Trivialization.contMDiffOn_section_iff {s : ∀ x, E x} {a : Set B}
@@ -532,9 +529,6 @@ theorem Trivialization.contMDiffOn_section_iff {s : ∀ x, E x} {a : Set B}
   · exact ((e.contMDiffAt_section_iff (ha' hx)).mp this).contMDiffWithinAt
   · exact ((e.contMDiffAt_section_iff (ha' hx)).mpr this).contMDiffWithinAt
 
-@[deprecated (since := "2025-09-15")]
-alias contMDiffOn_section_of_mem_baseSet := Trivialization.contMDiffOn_section_iff
-
 /-- For any trivialization `e`, the smoothness of a `C^n` section on `e.baseSet`
 can be determined using `e`. -/
 theorem Trivialization.contMDiffOn_section_baseSet_iff {s : ∀ x, E x}
@@ -543,9 +537,6 @@ theorem Trivialization.contMDiffOn_section_baseSet_iff {s : ∀ x, E x}
     ContMDiffOn IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet ↔
       ContMDiffOn IB 𝓘(𝕜, F) n (fun x ↦ (e ⟨x, s x⟩).2) e.baseSet :=
   e.contMDiffOn_section_iff e.open_baseSet subset_rfl
-
-@[deprecated (since := "2025-09-15")]
-alias contMDiffOn_section_of_mem_baseSet₀ := Trivialization.contMDiffOn_section_baseSet_iff
 
 end
 

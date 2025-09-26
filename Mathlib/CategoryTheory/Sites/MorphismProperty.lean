@@ -112,9 +112,6 @@ variable {P Q : MorphismProperty C}
 lemma pretopology_monotone (hPQ : P ≤ Q) : P.pretopology ≤ Q.pretopology :=
   precoverage_monotone hPQ
 
-@[deprecated (since := "2025-08-28")]
-alias pretopology_le := pretopology_monotone
-
 variable (P Q) in
 lemma pretopology_inf : (P ⊓ Q).pretopology = P.pretopology ⊓ Q.pretopology := by
   ext : 1

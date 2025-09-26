@@ -25,8 +25,6 @@ structure CommMon where
   [mon : MonObj X]
   [comm : IsCommMonObj X]
 
-@[deprecated (since := "2025-09-15")] alias CommMon_ := CommMon
-
 attribute [instance] CommMon.mon CommMon.comm
 
 namespace CommMon
@@ -34,8 +32,6 @@ namespace CommMon
 /-- A commutative monoid object is a monoid object. -/
 @[simps X]
 def toMon (A : CommMon C) : Mon C := ⟨A.X⟩
-
-@[deprecated (since := "2025-09-15")] alias toMon_ := toMon
 
 variable (C) in
 /-- The trivial commutative monoid object. We later show this is initial in `CommMon C`.
@@ -80,16 +76,12 @@ variable (C)
 def forget₂Mon : CommMon C ⥤ Mon C :=
   inducedFunctor CommMon.toMon
 
-@[deprecated (since := "2025-09-15")] alias forget₂Mon_ := forget₂Mon
-
 /-- The forgetful functor from commutative monoid objects to monoid objects
 is fully faithful. -/
 def fullyFaithfulForget₂Mon : (forget₂Mon C).FullyFaithful :=
   fullyFaithfulInducedFunctor _
 -- The `Full, Faithful` instances should be constructed by a deriving handler.
 -- https://github.com/leanprover-community/mathlib4/issues/380
-
-@[deprecated (since := "2025-09-15")] alias fullyFaithfulForget₂Mon_ := fullyFaithfulForget₂Mon
 
 instance : (forget₂Mon C).Full := InducedCategory.full _
 instance : (forget₂Mon C).Faithful := InducedCategory.faithful _

@@ -206,8 +206,6 @@ instance completeLattice : CompleteLattice (Submodule R M) :=
 theorem coe_inf : ↑(p ⊓ q) = (p ∩ q : Set M) :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias inf_coe := coe_inf
-
 @[simp]
 theorem mem_inf {p q : Submodule R M} {x : M} : x ∈ p ⊓ q ↔ x ∈ p ∧ x ∈ q :=
   Iff.rfl
@@ -215,8 +213,6 @@ theorem mem_inf {p q : Submodule R M} {x : M} : x ∈ p ⊓ q ↔ x ∈ p ∧ x 
 @[simp]
 theorem coe_sInf (P : Set (Submodule R M)) : (↑(sInf P) : Set M) = ⋂ p ∈ P, ↑p :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias sInf_coe := coe_sInf
 
 @[simp]
 theorem coe_finsetInf {ι} (s : Finset ι) (p : ι → Submodule R M) :
@@ -227,13 +223,9 @@ theorem coe_finsetInf {ι} (s : Finset ι) (p : ι → Submodule R M) :
   · rw [Finset.inf_insert, coe_inf, ih]
     simp
 
-@[deprecated (since := "2025-08-31")] alias finset_inf_coe := coe_finsetInf
-
 @[simp]
 theorem coe_iInf {ι} (p : ι → Submodule R M) : (↑(⨅ i, p i) : Set M) = ⋂ i, ↑(p i) := by
   rw [iInf, coe_sInf]; simp only [Set.mem_range, Set.iInter_exists, Set.iInter_iInter_eq']
-
-@[deprecated (since := "2025-08-31")] alias iInf_coe := coe_iInf
 
 @[simp]
 theorem mem_sInf {S : Set (Submodule R M)} {x : M} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
@@ -247,8 +239,6 @@ theorem mem_iInf {ι} (p : ι → Submodule R M) {x} : (x ∈ ⨅ i, p i) ↔ �
 theorem mem_finsetInf {ι} {s : Finset ι} {p : ι → Submodule R M} {x : M} :
     x ∈ s.inf p ↔ ∀ i ∈ s, x ∈ p i := by
   simp only [← SetLike.mem_coe, coe_finsetInf, Set.mem_iInter]
-
-@[deprecated (since := "2025-08-31")] alias mem_finset_inf := mem_finsetInf
 
 lemma inf_iInf {ι : Sort*} [Nonempty ι] {p : ι → Submodule R M} (q : Submodule R M) :
     q ⊓ ⨅ i, p i = ⨅ i, q ⊓ p i :=

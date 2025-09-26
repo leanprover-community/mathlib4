@@ -185,9 +185,6 @@ theorem coe_mk_contLinear_eq_linear (f : P →ᵃ[R] Q) (h) :
     ((⟨f, h⟩ : P →ᴬ[R] Q).contLinear : V → W) = f.linear :=
   rfl
 
-@[deprecated (since := "2025-09-17")]
-alias coe_mk_const_linear_eq_linear := coe_mk_contLinear_eq_linear
-
 theorem coe_linear_eq_coe_contLinear (f : P →ᴬ[R] Q) :
     ((f : P →ᵃ[R] Q).linear : V → W) = (⇑f.contLinear : V → W) :=
   rfl

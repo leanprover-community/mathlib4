@@ -34,9 +34,6 @@ theorem totallySeparatedSpace_of_t0_of_basis_clopen [T0Space X]
     exact ⟨Vᶜ, V, hV.1.compl.isOpen, hV.1.isOpen, notMem_subset hV.2.2 hy.2, hV.2.1,
       (union_comm _ _ ▸ union_compl_self V).superset, disjoint_compl_left⟩
 
-@[deprecated (since := "2025-09-11")]
-alias totallySeparatedSpace_of_t1_of_basis_clopen := totallySeparatedSpace_of_t0_of_basis_clopen
-
 variable [T2Space X] [CompactSpace X] [TotallyDisconnectedSpace X]
 
 theorem nhds_basis_clopen (x : X) : (𝓝 x).HasBasis (fun s : Set X => x ∈ s ∧ IsClopen s) id :=

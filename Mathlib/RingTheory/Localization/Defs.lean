@@ -113,9 +113,6 @@ variable [IsLocalization M S]
 
 section
 
-@[deprecated (since := "2025-09-04")] alias map_units' := IsLocalization.map_units
-@[deprecated (since := "2025-09-04")] alias surj' := IsLocalization.surj
-
 variable (M) {S}
 
 variable (S) in
@@ -165,17 +162,11 @@ abbrev toLocalizationMap : M.LocalizationMap S where
   surj' := IsLocalization.surj _
   exists_of_eq _ _ := IsLocalization.exists_of_eq
 
-@[deprecated (since := "2025-08-01")] alias toLocalizationWithZeroMap := toLocalizationMap
-
 @[simp]
 lemma toLocalizationMap_toMonoidHom :
     (toLocalizationMap M S).toMonoidHom = (algebraMap R S : R →*₀ S) := rfl
 
-@[deprecated (since := "2025-08-13")] alias toLocalizationMap_toMap := toLocalizationMap_toMonoidHom
-
 @[simp] lemma coe_toLocalizationMap : ⇑(toLocalizationMap M S) = algebraMap R S := rfl
-
-@[deprecated (since := "2025-08-13")] alias toLocalizationMap_toMap_apply := coe_toLocalizationMap
 
 lemma toLocalizationMap_apply (x) : toLocalizationMap M S x = algebraMap R S x := rfl
 

@@ -177,8 +177,6 @@ theorem chain'_singleton (a : α) : Chain' R [a] :=
 theorem chain'_cons_cons {x y l} : Chain' R (x :: y :: l) ↔ R x y ∧ Chain' R (y :: l) :=
   chain_cons
 
-@[deprecated (since := "2025-08-12")] alias chain'_cons := chain'_cons_cons
-
 theorem chain'_isInfix : ∀ l : List α, Chain' (fun x y => [x, y] <:+: l) l
   | [] => chain'_nil
   | [_] => chain'_singleton _
@@ -235,8 +233,6 @@ protected theorem Chain'.sublist [IsTrans α R] (hl : l₂.Chain' R) (h : l₁ <
 
 theorem Chain'.cons_cons {x y l} (h₁ : R x y) (h₂ : Chain' R (y :: l)) : Chain' R (x :: y :: l) :=
   chain'_cons_cons.2 ⟨h₁, h₂⟩
-
-@[deprecated (since := "2025-08-12")] alias Chain'.cons := Chain'.cons_cons
 
 theorem Chain'.tail : ∀ {l}, Chain' R l → Chain' R l.tail
   | [], _ => trivial

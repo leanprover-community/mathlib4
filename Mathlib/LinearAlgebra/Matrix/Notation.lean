@@ -177,10 +177,6 @@ variable [AddCommMonoid α] [Mul α]
 theorem dotProduct_of_isEmpty [Fintype n'] [IsEmpty n'] (v w : n' → α) : v ⬝ᵥ w = 0 :=
   Finset.sum_of_isEmpty _
 
-@[deprecated "Use Matrix.dotProduct_of_isEmpty instead." (since := "2025-09-07")]
-theorem dotProduct_empty (v w : Fin 0 → α) : v ⬝ᵥ w = 0 :=
-  Finset.sum_empty
-
 @[simp]
 theorem cons_dotProduct (x : α) (v : Fin n → α) (w : Fin n.succ → α) :
     vecCons x v ⬝ᵥ w = x * vecHead w + v ⬝ᵥ vecTail w := by

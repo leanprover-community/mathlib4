@@ -46,14 +46,10 @@ theorem inv_goldenRatio : φ⁻¹ = -ψ := by
   simp [field, add_mul, mul_sub]
   ring
 
-@[deprecated (since := "2025-08-23")] alias _root_.inv_gold := inv_goldenRatio
-
 /-- The opposite of the golden ratio is the inverse of its conjugate. -/
 theorem inv_goldenConj : ψ⁻¹ = -φ := by
   rw [inv_eq_iff_eq_inv, ← neg_inv, ← neg_eq_iff_eq_neg]
   exact inv_goldenRatio.symm
-
-@[deprecated (since := "2025-08-23")] alias _root_.inv_goldConj := inv_goldenConj
 
 @[simp]
 theorem goldenRatio_mul_goldenConj : φ * ψ = -1 := by
@@ -61,42 +57,27 @@ theorem goldenRatio_mul_goldenConj : φ * ψ = -1 := by
   rw [← sq_sub_sq]
   norm_num
 
-@[deprecated (since := "2025-08-23")] alias _root_.gold_mul_goldConj := goldenRatio_mul_goldenConj
-
 @[simp]
 theorem goldenConj_mul_goldenRatio : ψ * φ = -1 := by
   rw [mul_comm]
   exact goldenRatio_mul_goldenConj
-
-@[deprecated (since := "2025-08-23")] alias _root_.goldConj_mul_gold := goldenConj_mul_goldenRatio
 
 @[simp]
 theorem goldenRatio_add_goldenConj : φ + ψ = 1 := by
   rw [goldenRatio, goldenConj]
   ring
 
-@[deprecated (since := "2025-08-23")] alias _root_.gold_add_goldConj := goldenRatio_add_goldenConj
-
 theorem one_sub_goldenConj : 1 - φ = ψ := by
   linarith [goldenRatio_add_goldenConj]
-
-@[deprecated (since := "2025-08-23")] alias _root_.one_sub_goldConj := one_sub_goldenConj
 
 theorem one_sub_goldenRatio : 1 - ψ = φ := by
   linarith [goldenRatio_add_goldenConj]
 
-@[deprecated (since := "2025-08-23")] alias _root_.one_sub_gold := one_sub_goldenRatio
-
 @[simp]
 theorem goldenRatio_sub_goldenConj : φ - ψ = √5 := by ring
 
-@[deprecated (since := "2025-08-23")] alias _root_.gold_sub_goldConj := goldenRatio_sub_goldenConj
-
 theorem goldenRatio_pow_sub_goldenRatio_pow (n : ℕ) : φ ^ (n + 2) - φ ^ (n + 1) = φ ^ n := by
   rw [goldenRatio]; ring_nf; norm_num; ring
-
-@[deprecated (since := "2025-08-23")]
-alias gold_pow_sub_gold_pow := goldenRatio_pow_sub_goldenRatio_pow
 
 @[simp 1200]
 theorem goldenRatio_sq : φ ^ 2 = φ + 1 := by
@@ -104,53 +85,35 @@ theorem goldenRatio_sq : φ ^ 2 = φ + 1 := by
   ring_nf
   rw [Real.sq_sqrt] <;> norm_num
 
-@[deprecated (since := "2025-08-23")] alias _root_.gold_sq := goldenRatio_sq
-
 @[simp 1200]
 theorem goldenConj_sq : ψ ^ 2 = ψ + 1 := by
   rw [goldenConj, ← sub_eq_zero]
   ring_nf
   rw [Real.sq_sqrt] <;> norm_num
 
-@[deprecated (since := "2025-08-23")] alias _root_.goldConj_sq := goldenConj_sq
-
 theorem goldenRatio_pos : 0 < φ :=
   mul_pos (by apply add_pos <;> norm_num) <| inv_pos.2 zero_lt_two
 
-@[deprecated (since := "2025-08-23")] alias _root_.gold_pos := goldenRatio_pos
-
 theorem goldenRatio_ne_zero : φ ≠ 0 :=
   ne_of_gt goldenRatio_pos
-
-@[deprecated (since := "2025-08-23")] alias _root_.gold_ne_zero := goldenRatio_ne_zero
 
 theorem one_lt_goldenRatio : 1 < φ := by
   refine lt_of_mul_lt_mul_left ?_ (le_of_lt goldenRatio_pos)
   simp [← sq, zero_lt_one]
 
-@[deprecated (since := "2025-08-23")] alias _root_.one_lt_gold := one_lt_goldenRatio
-
 theorem goldenRatio_lt_two : φ < 2 := by calc
   (1 + √5) / 2 < (1 + 3) / 2 := by gcongr; rw [sqrt_lt'] <;> norm_num
   _ = 2 := by norm_num
 
-@[deprecated (since := "2025-08-23")] alias _root_.gold_lt_two := goldenRatio_lt_two
-
 theorem goldenConj_neg : ψ < 0 := by
   linarith [one_sub_goldenConj, one_lt_goldenRatio]
-
-@[deprecated (since := "2025-08-23")] alias _root_.goldConj_neg := goldenConj_neg
 
 theorem goldenConj_ne_zero : ψ ≠ 0 :=
   ne_of_lt goldenConj_neg
 
-@[deprecated (since := "2025-08-23")] alias _root_.goldConj_ne_zero := goldenConj_ne_zero
-
 theorem neg_one_lt_goldenConj : -1 < ψ := by
   rw [neg_lt, ← inv_goldenRatio]
   exact inv_lt_one_of_one_lt₀ one_lt_goldenRatio
-
-@[deprecated (since := "2025-08-23")] alias _root_.neg_one_lt_goldConj := neg_one_lt_goldenConj
 
 /-!
 ## Irrationality
@@ -165,8 +128,6 @@ theorem goldenRatio_irrational : Irrational φ := by
   norm_num
   field_simp
 
-@[deprecated (since := "2025-08-23")] alias _root_.gold_irrational := goldenRatio_irrational
-
 /-- The conjugate of the golden ratio is irrational. -/
 theorem goldenConj_irrational : Irrational ψ := by
   have := Nat.Prime.irrational_sqrt (show Nat.Prime 5 by norm_num)
@@ -174,8 +135,6 @@ theorem goldenConj_irrational : Irrational ψ := by
   convert this.ratCast_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
   norm_num
   field_simp
-
-@[deprecated (since := "2025-08-23")] alias _root_.goldConj_irrational := goldenConj_irrational
 
 /-!
 ## Links with Fibonacci sequence
@@ -215,16 +174,10 @@ theorem geom_goldenRatio_isSol_fibRec : fibRec.IsSolution (φ ^ ·) := by
   rw [fibRec.geom_sol_iff_root_charPoly, fibRec_charPoly_eq]
   simp
 
-@[deprecated (since := "2025-08-23")]
-alias _root_.geom_gold_isSol_fibRec := geom_goldenRatio_isSol_fibRec
-
 /-- The geometric sequence `fun n ↦ ψ^n` is a solution of `fibRec`. -/
 theorem geom_goldenConj_isSol_fibRec : fibRec.IsSolution (ψ ^ ·) := by
   rw [fibRec.geom_sol_iff_root_charPoly, fibRec_charPoly_eq]
   simp
-
-@[deprecated (since := "2025-08-23")]
-alias geom_goldConj_isSol_fibRec := geom_goldenConj_isSol_fibRec
 
 end Fibrec
 
@@ -261,9 +214,6 @@ theorem fib_succ_sub_goldenRatio_mul_fib (n : ℕ) : Nat.fib (n + 1) - φ * Nat.
   have nz : √5 ≠ 0 := by norm_num
   rw [← (mul_inv_cancel₀ nz).symm, one_mul]
 
-@[deprecated (since := "2025-08-23")]
-alias _root_.fib_golden_conj_exp := fib_succ_sub_goldenRatio_mul_fib
-
 /-- Relationship between the Fibonacci Sequence, Golden Ratio and its exponents -/
 lemma goldenRatio_mul_fib_succ_add_fib (n : ℕ) : φ * Nat.fib (n + 1) + Nat.fib n = φ ^ (n + 1) := by
   induction n with
@@ -275,8 +225,5 @@ lemma goldenRatio_mul_fib_succ_add_fib (n : ℕ) : φ * Nat.fib (n + 1) + Nat.fi
           Nat.cast_add, goldenRatio_sq]; ring
       _ = φ * ((Nat.fib n) + φ * (Nat.fib (n + 1))) := by ring
       _ = φ ^ (n + 2) := by rw [add_comm, ih]; ring
-
-@[deprecated (since := "2025-08-23")]
-alias _root_.fib_golden_exp' := goldenRatio_mul_fib_succ_add_fib
 
 end Real

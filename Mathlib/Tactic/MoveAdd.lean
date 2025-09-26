@@ -113,10 +113,6 @@ def Lean.Expr.getExprInputs : Expr → Array Expr
   | proj _ _ e        => #[e]
   | _ => #[]
 
-/-- `size e` returns the number of subexpressions of `e`. -/
-@[deprecated Lean.Expr.sizeWithoutSharing (since := "2025-09-04")]
-partial def Lean.Expr.size (e : Expr) : ℕ := (e.getExprInputs.map size).foldl (· + ·) 1
-
 namespace Mathlib.MoveAdd
 
 section ExprProcessing

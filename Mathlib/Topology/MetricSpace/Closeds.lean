@@ -73,9 +73,6 @@ theorem Closeds.isClosed_subsets_of_isClosed (hs : IsClosed s) :
     exact ⟨y, hu hy, Dxy⟩
   rwa [hs.closure_eq] at this
 
-@[deprecated (since := "2025-08-20")]
-alias isClosed_subsets_of_isClosed := Closeds.isClosed_subsets_of_isClosed
-
 /-- By definition, the edistance on `Closeds α` is given by the Hausdorff edistance -/
 theorem Closeds.edist_eq {s t : Closeds α} : edist s t = hausdorffEdist (s : Set α) t :=
   rfl
@@ -242,9 +239,6 @@ theorem isometry_toCloseds : Isometry (@NonemptyCompacts.toCloseds α _ _) :=
 theorem isUniformEmbedding_toCloseds :
     IsUniformEmbedding (@NonemptyCompacts.toCloseds α _ _) :=
   isometry_toCloseds.isUniformEmbedding
-
-@[deprecated (since := "2025-08-20")]
-alias ToCloseds.isUniformEmbedding := isUniformEmbedding_toCloseds
 
 /-- `NonemptyCompacts.toCloseds` is continuous (as it is an isometry) -/
 @[fun_prop]

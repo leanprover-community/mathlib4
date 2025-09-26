@@ -26,10 +26,6 @@ variable [DivisionSemiring K] {a b c d : K}
 
 theorem add_div (a b c : K) : (a + b) / c = a / c + b / c := by simp_rw [div_eq_mul_inv, add_mul]
 
-@[deprecated add_div (since := "2025-08-25")]
-theorem div_add_div_same (a b c : K) : a / c + b / c = (a + b) / c :=
-  (add_div _ _ _).symm
-
 theorem same_add_div (h : b ≠ 0) : (b + a) / b = 1 + a / b := by rw [← div_self h, add_div]
 
 theorem div_add_same (h : b ≠ 0) : (a + b) / b = a / b + 1 := by rw [← div_self h, add_div]

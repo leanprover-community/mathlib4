@@ -296,19 +296,6 @@ theorem extend_preimage_inter_eq :
       (f.extend I).symm ⁻¹' s ∩ range I ∩ (f.extend I).symm ⁻¹' t := by
   mfld_set_tac
 
-@[deprecated "Removed without replacement" (since := "2025-08-27")]
-theorem extend_symm_preimage_inter_range_eventuallyEq_aux {s : Set M} {x : M} (hx : x ∈ f.source) :
-    ((f.extend I).symm ⁻¹' s ∩ range I : Set _) =ᶠ[𝓝 (f.extend I x)]
-      ((f.extend I).target ∩ (f.extend I).symm ⁻¹' s : Set _) := by
-  rw [f.extend_target, inter_assoc, inter_comm (range I)]
-  conv =>
-    congr
-    · skip
-    rw [← univ_inter (_ ∩ range I)]
-  refine (eventuallyEq_univ.mpr ?_).symm.inter EventuallyEq.rfl
-  refine I.continuousAt_symm.preimage_mem_nhds (f.open_target.mem_nhds ?_)
-  simp_rw [f.extend_coe, Function.comp_apply, I.left_inv, f.mapsTo hx]
-
 theorem extend_symm_preimage_inter_range_eventuallyEq {s : Set M} {x : M} (hs : s ⊆ f.source)
     (hx : x ∈ f.source) :
     ((f.extend I).symm ⁻¹' s ∩ range I : Set _) =ᶠ[𝓝 (f.extend I x)] f.extend I '' s := by

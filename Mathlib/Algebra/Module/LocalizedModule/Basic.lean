@@ -543,8 +543,6 @@ variable (f : M →ₗ[R] M') (g : M →ₗ[R] M'')
 attribute [nolint docBlame] IsLocalizedModule.map_units IsLocalizedModule.surj
   IsLocalizedModule.exists_of_eq
 
-@[deprecated (since := "2025-09-05")] alias IsLocalizedModule.surj' := IsLocalizedModule.surj
-
 lemma IsLocalizedModule.eq_iff_exists [IsLocalizedModule S f] {x₁ x₂} :
     f x₁ = f x₂ ↔ ∃ c : S, c • x₁ = c • x₂ :=
   Iff.intro exists_of_eq fun ⟨c, h⟩ ↦ by

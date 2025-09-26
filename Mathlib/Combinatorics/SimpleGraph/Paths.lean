@@ -78,10 +78,6 @@ is `u` (which appears exactly twice). -/
 structure IsCycle {u : V} (p : G.Walk u u) : Prop extends isCircuit : IsCircuit p where
   support_nodup : p.support.tail.Nodup
 
-@[deprecated (since := "2025-08-26")] protected alias IsPath.toIsTrail := IsPath.isTrail
-@[deprecated (since := "2025-08-26")] protected alias IsCircuit.toIsTrail := IsCircuit.isTrail
-@[deprecated (since := "2025-08-26")] protected alias IsCycle.toIsCircuit := IsCycle.isCircuit
-
 @[simp]
 theorem isTrail_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
     (p.copy hu hv).IsTrail ↔ p.IsTrail := by

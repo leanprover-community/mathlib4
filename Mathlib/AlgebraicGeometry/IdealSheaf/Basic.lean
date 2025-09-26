@@ -390,9 +390,6 @@ section ofIsClosed
 
 open _root_.PrimeSpectrum TopologicalSpace
 
-@[deprecated (since := "2025-08-10")] alias Scheme.zeroLocus_radical :=
-  AlgebraicGeometry.Scheme.zeroLocus_radical
-
 /-- The radical of a ideal sheaf. -/
 @[simps! ideal]
 def radical (I : IdealSheafData X) : IdealSheafData X :=

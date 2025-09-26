@@ -143,12 +143,8 @@ theorem filter_congr_decidable (s : Finset α) (p : α → Prop) (h : DecidableP
 @[simp]
 theorem filter_true {h} (s : Finset α) : @filter _ (fun _ => True) h s = s := by ext; simp
 
-@[deprecated (since := "2025-08-24")] alias filter_True := filter_true
-
 @[simp]
 theorem filter_false {h} (s : Finset α) : @filter _ (fun _ => False) h s = ∅ := by ext; simp
-
-@[deprecated (since := "2025-08-24")] alias filter_False := filter_false
 
 variable {p q}
 

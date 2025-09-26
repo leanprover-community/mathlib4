@@ -711,9 +711,6 @@ theorem ContinuousWithinAt.eq_const_of_mem_closure [TopologicalSpace Y] [T1Space
   rw [← Set.mem_singleton_iff, ← closure_singleton]
   exact h.mem_closure hx ht
 
-@[deprecated (since := "2025-08-22")] alias ContinousWithinAt.eq_const_of_mem_closure :=
-  ContinuousWithinAt.eq_const_of_mem_closure
-
 theorem ContinuousWithinAt.eqOn_const_closure [TopologicalSpace Y] [T1Space Y]
     {f : X → Y} {s : Set X} {c : Y} (h : ∀ x ∈ closure s, ContinuousWithinAt f s x)
     (ht : s.EqOn f (fun _ ↦ c)) : (closure s).EqOn f (fun _ ↦ c) := by

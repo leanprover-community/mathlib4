@@ -371,9 +371,6 @@ lemma IsHermitian.posSemidef_iff_eigenvalues_nonneg [DecidableEq n] {A : Matrix 
   refine (posSemidef_diagonal_iff.mpr ?_).mul_mul_conjTranspose_same _
   simpa using h
 
-@[deprecated (since := "2025-08-17")] alias ⟨_, IsHermitian.posSemidef_of_eigenvalues_nonneg⟩ :=
-  IsHermitian.posSemidef_iff_eigenvalues_nonneg
-
 /-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0`. -/
 theorem PosSemidef.dotProduct_mulVec_zero_iff
     {A : Matrix n n 𝕜} (hA : PosSemidef A) (x : n → 𝕜) :

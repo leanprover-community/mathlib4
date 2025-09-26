@@ -388,10 +388,6 @@ instance [IsCancelAdd R] : IsStrictOrderedModule R A where
     obtain ⟨ha₀, ha⟩ := ha
     exact ⟨r • a, smul_ne_zero hr₀ ha₀, smul_mem_closure_star_mul hr ha, add_smul ..⟩
 
-@[deprecated smul_lt_smul_of_pos_left (since := "2025-08-24")]
-lemma StarModule.smul_lt_smul_of_pos {a b : A} {c : R} (hab : a < b)
-    (hc : 0 < c) : c • a < c • b := smul_lt_smul_of_pos_left hab hc
-
 end StarModule
 
 section OrderClass

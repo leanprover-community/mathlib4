@@ -680,9 +680,6 @@ instance {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] 
     IsDomain (HahnSeries Γ R) :=
   NoZeroDivisors.to_isDomain _
 
-@[deprecated (since := "2025-08-11")] alias orderTop_add_orderTop_le_orderTop_mul :=
-  orderTop_add_le_mul
-
 @[simp]
 theorem order_mul {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
     [NonUnitalNonAssocSemiring R]

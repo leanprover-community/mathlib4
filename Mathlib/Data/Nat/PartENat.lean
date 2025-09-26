@@ -56,11 +56,6 @@ PartENat, ℕ∞
 
 open Part hiding some
 
-/-- Type of natural numbers with infinity (`⊤`) -/
-@[deprecated ENat (since := "2025-09-01")]
-def PartENat : Type :=
-  Part ℕ
-
 set_option linter.deprecated false
 
 namespace PartENat

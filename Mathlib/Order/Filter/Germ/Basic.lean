@@ -115,8 +115,6 @@ def const {l : Filter α} (b : β) : (Germ l β) := ofFun fun _ => b
 instance coeTail : CoeTail β (Germ l β) :=
   ⟨const⟩
 
-@[deprecated (since := "2025-08-28")] alias coeTC := coeTail
-
 /-- A germ `P` of functions `α → β` is constant w.r.t. `l`. -/
 def IsConstant {l : Filter α} (P : Germ l β) : Prop :=
   P.liftOn (fun f ↦ ∃ b : β, f =ᶠ[l] (fun _ ↦ b)) <| by

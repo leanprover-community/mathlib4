@@ -38,12 +38,8 @@ def toGrp_ (A : CommGrp_ C) : Grp_ C := ⟨A.X⟩
 @[simps X]
 def toCommMon (A : CommGrp_ C) : CommMon C := ⟨A.X⟩
 
-@[deprecated (since := "2025-09-15")] alias toCommMon_ := toCommMon
-
 /-- A commutative group object is a monoid object. -/
 abbrev toMon (A : CommGrp_ C) : Mon C := (toCommMon A).toMon
-
-@[deprecated (since := "2025-09-15")] alias toMon_ := toMon
 
 variable (C) in
 /-- The trivial commutative group object. -/
@@ -110,15 +106,10 @@ theorem forget₂Grp_map_hom {A B : CommGrp_ C} (f : A ⟶ B) : ((forget₂Grp_ 
 def forget₂CommMon : CommGrp_ C ⥤ CommMon C :=
   inducedFunctor CommGrp_.toCommMon
 
-@[deprecated (since := "2025-09-15")] alias forget₂CommMon_ := forget₂CommMon
-
 /-- The forgetful functor from commutative group objects to commutative monoid objects is fully
 faithful. -/
 def fullyFaithfulForget₂CommMon : (forget₂CommMon C).FullyFaithful :=
   fullyFaithfulInducedFunctor _
-
-@[deprecated (since := "2025-09-15")]
-alias fullyFaithfulForget₂CommMon_ := fullyFaithfulForget₂CommMon
 
 instance : (forget₂CommMon C).Full := InducedCategory.full _
 instance : (forget₂CommMon C).Faithful := InducedCategory.faithful _

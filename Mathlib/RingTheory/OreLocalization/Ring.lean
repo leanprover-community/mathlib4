@@ -68,14 +68,6 @@ variable {R : Type*} [Semiring R] {S : Submonoid R} [OreSet S]
 
 attribute [local instance] OreLocalization.oreEqv
 
-@[deprecated zero_mul (since := "2025-08-20")]
-protected theorem zero_mul (x : R[S⁻¹]) : 0 * x = 0 :=
-  OreLocalization.zero_smul x
-
-@[deprecated mul_zero (since := "2025-08-20")]
-protected theorem mul_zero (x : R[S⁻¹]) : x * 0 = 0 :=
-  OreLocalization.smul_zero x
-
 protected theorem left_distrib (x y z : R[S⁻¹]) : x * (y + z) = x * y + x * z :=
   OreLocalization.smul_add _ _ _
 

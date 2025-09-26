@@ -479,8 +479,6 @@ theorem ZLattice.FG [hs : IsZLattice K L] : L.FG := by
     rw [ker_mkQ, inf_of_le_right (span_le.mpr h_incl)]
     exact fg_span (LinearIndependent.setFinite h_lind)
 
-@[deprecated (since := "2025-08-11")] alias Zlattice.FG := ZLattice.FG
-
 theorem ZLattice.module_finite [IsZLattice K L] : Module.Finite ℤ L :=
   Module.Finite.iff_fg.mpr (ZLattice.FG K L)
 

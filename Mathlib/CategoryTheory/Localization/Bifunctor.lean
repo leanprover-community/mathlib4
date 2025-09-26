@@ -63,8 +63,6 @@ class Lifting₂ (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂) (W₁ : MorphismP
 variable (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
   (F : C₁ ⥤ C₂ ⥤ E) (F' : D₁ ⥤ D₂ ⥤ E) [Lifting₂ L₁ L₂ W₁ W₂ F F']
 
-@[deprecated (since := "2025-08-22")] alias Lifting₂.iso' := Lifting.iso
-
 /-- If `Lifting₂ L₁ L₂ W₁ W₂ F F'` holds, then `Lifting L₂ W₂ (F.obj X₁) (F'.obj (L₁.obj X₁))`
 holds for any `X₁ : C₁`. -/
 noncomputable def Lifting₂.fst (X₁ : C₁) :

@@ -318,10 +318,6 @@ theorem divp_one (a : α) : a /ₚ 1 = a :=
 theorem divp_assoc (a b : α) (u : αˣ) : a * b /ₚ u = a * (b /ₚ u) :=
   mul_assoc _ _ _
 
-@[deprecated divp_assoc (since := "2025-08-25")]
-theorem divp_assoc' (x y : α) (u : αˣ) : x * (y /ₚ u) = x * y /ₚ u :=
-  (divp_assoc _ _ _).symm
-
 @[simp]
 theorem divp_inv (u : αˣ) : a /ₚ u⁻¹ = a * u :=
   rfl

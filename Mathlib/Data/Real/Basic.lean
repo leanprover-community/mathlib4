@@ -354,9 +354,6 @@ instance instIsOrderedAddMonoid : IsOrderedAddMonoid ℝ where
       change Pos _ at *
       rwa [add_sub_add_left_eq_sub]
 
-@[deprecated (since := "2025-09-15")]
-protected alias add_lt_add_iff_left := _root_.add_lt_add_iff_left
-
 instance instIsStrictOrderedRing : IsStrictOrderedRing ℝ :=
   .of_mul_pos fun a b ↦ by
     induction a using Real.ind_mk
