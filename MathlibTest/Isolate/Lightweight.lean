@@ -49,6 +49,20 @@ example {x y z : ℝ} (_hy : 0 < y) : z < (x + 3) * y ^ 2 - 2 := by
   guard_target = (z + 2) / y ^ 2 < x + 3
   exact test_sorry
 
+-- quoted in `isolate` tactic docstring
+example (a b : ℝ) (f : ℝ → ℝ) : 5 * f a - 3 < b := by
+  isolate f a
+  guard_target = f a < (b + 3) / 5
+  exact test_sorry
+
+-- quoted in `isolate` tactic docstring
+example (a b c : ℝ) (f : ℝ → ℝ) : c * f a - 3 < b := by
+  isolate f a
+  guard_target = f a < (b + 3) / c
+  exact test_sorry
+  guard_target = 0 < c
+  exact test_sorry
+
 set_option linter.unusedVariables false in
 -- isolate term in a hypothesis
 example {x y z : ℝ} (_hy : 0 < y) (H : z < (x + 3) * y ^ 2 - 2) : True := by
@@ -135,7 +149,7 @@ example (x : ℝ) (f : ℝ → ℝ) : f x = 12 := by
 /-- error: Please rephrase this lemma in the symmetric form a + b ~ c ↔ _. -/
 #guard_msgs in
 @[isolate]
-theorem add_right_eq_iff [AddGroup X] (a b c : X) : c = a + b ↔ a = c - b := test_sorry
+theorem eq_add_right_iff [AddGroup X] (a b c : X) : c = a + b ↔ a = c - b := test_sorry
 
 /--
 error: @[isolate] attribute only applies to lemmas proving f x ∼ y ↔ x ∼' g y.
