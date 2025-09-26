@@ -17,8 +17,7 @@ This file contains some results about matrices and dual spaces.
 matrix, linear_map, transpose, dual
 -/
 
-
-open Matrix
+open Matrix Module
 
 section Transpose
 

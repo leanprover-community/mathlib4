@@ -99,7 +99,7 @@ lemma colimit_add_mk_eq' {j : J} (x y : F.obj j) :
 theorem colimit_smul_mk_eq (r : R) (x : Σ j, F.obj j) : r • M.mk F x = M.mk F ⟨x.1, r • x.2⟩ :=
   rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/pull/11083): writing directly the `Module` instance makes things very slow.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11083): writing directly the `Module` instance makes things very slow.
 instance colimitMulAction : MulAction R (M F) where
   one_smul x := by
     obtain ⟨j, x, rfl⟩ := M.mk_surjective F x
@@ -140,7 +140,7 @@ def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
   ofHom
     { ((AddCommGrp.FilteredColimits.colimitCocone
       (F ⋙ forget₂ (ModuleCat R) AddCommGrp.{max v u})).ι.app j).hom with
-    map_smul' := fun r x => by erw [colimit_smul_mk_eq F r ⟨j, x⟩]; rfl }
+    map_smul' := by solve_by_elim }
 
 /-- The cocone over the proposed colimit module. -/
 def colimitCocone : Cocone F where
@@ -162,9 +162,9 @@ def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
     congr_fun ((forget _).congr_map (h.fac ((forget₂ _ _).mapCocone t) j)) x
   ofHom
     { f with
-    map_smul' := fun r x => by
-      obtain ⟨j, x, rfl⟩ := M.mk_surjective F x
-      simp [hf] }
+      map_smul' := fun r x => by
+        obtain ⟨j, x, rfl⟩ := M.mk_surjective F x
+        simp [hf] }
 
 @[reassoc (attr := simp)]
 lemma ι_colimitDesc (t : Cocone F) (j : J) :

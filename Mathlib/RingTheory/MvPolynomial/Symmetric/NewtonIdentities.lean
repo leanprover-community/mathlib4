@@ -21,7 +21,7 @@ from an identity implemented in mathlib as `Finset.sum_involution`. Namely, we u
 `Finset.sum_involution` to show that `∑ t ∈ pairs σ k, weight σ R k t = 0`. We then identify
 `(-1) ^ k * k * esymm σ R k` with the terms of the weight sum for which `t.fst` has
 cardinality `k`, and `(-1) ^ i * esymm σ R i * psum σ R (k - i)` with the terms of the weight sum
-for which `t.fst` has cardinality `i` for `i < k` , and we thereby derive the main result
+for which `t.fst` has cardinality `i` for `i < k`, and we thereby derive the main result
 `(-1) ^ k * k * esymm σ R k + ∑ i ∈ range k, (-1) ^ i * esymm σ R i * psum σ R (k - i) = 0` (or
 rather, two equivalent forms which provide direct definitions for `esymm` and `psum` in lower-degree
 terms).
@@ -72,8 +72,6 @@ private lemma pairMap_of_snd_mem_fst {t : Finset σ × σ} (h : t.snd ∈ t.fst)
 private lemma pairMap_of_snd_notMem_fst {t : Finset σ × σ} (h : t.snd ∉ t.fst) :
     pairMap σ t = (t.fst.cons t.snd h, t.snd) := by
   simp [pairMap, h]
-
-@[deprecated (since := "2025-05-24")] alias pairMap_of_snd_nmem_fst := pairMap_of_snd_notMem_fst
 
 @[simp]
 private theorem pairMap_involutive : (pairMap σ).Involutive := by
@@ -156,7 +154,7 @@ private theorem sum_filter_pairs_eq_sum_powersetCard_mem_filter_antidiagonal_sum
   apply sum_finset_product
   simp only [mem_filter, mem_powersetCard_univ, mem_univ, and_true, and_iff_right_iff_imp]
   rintro p hp
-  have : #p.fst ≤ k := by apply le_of_lt; aesop
+  have : #p.fst ≤ k := by apply le_of_lt; simp_all
   aesop
 
 private lemma filter_pairs_lt (k : ℕ) :
@@ -180,12 +178,7 @@ private theorem disjoint_filter_pairs_lt_filter_pairs_eq (k : ℕ) :
 private theorem disjUnion_filter_pairs_eq_pairs (k : ℕ) :
     disjUnion {t ∈ pairs σ k | #t.1 < k} {t ∈ pairs σ k | #t.1 = k}
       (disjoint_filter_pairs_lt_filter_pairs_eq σ k) = pairs σ k := by
-  simp only [disjUnion_eq_union, Finset.ext_iff, pairs, filter_filter, mem_filter]
-  intro a
-  rw [← filter_or, mem_filter]
-  refine ⟨fun ha ↦ by tauto, fun ha ↦ ?_⟩
-  have hacard := le_iff_lt_or_eq.mp ha.2.1
-  tauto
+  grind [MvPolynomial.NewtonIdentities.pairs]
 
 end DecidableEq
 
@@ -265,7 +258,7 @@ theorem psum_eq_mul_esymm_sub_sum (k : ℕ) (h : 0 < k) :
   have : {a ∈ antidiagonal k | a.fst < k ∧ ¬0 < a.fst} = {(0, k)} := by
     ext a
     rw [mem_filter, mem_antidiagonal, mem_singleton]
-    refine ⟨?_, by rintro rfl; omega⟩
+    refine ⟨?_, by rintro rfl; cutsat⟩
     rintro ⟨ha, ⟨_, ha0⟩⟩
     rw [← ha, Nat.eq_zero_of_not_pos ha0, zero_add, ← Nat.eq_zero_of_not_pos ha0]
   rw [this, sum_singleton] at sub_both_sides

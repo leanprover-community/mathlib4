@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
 import Mathlib.Probability.Kernel.Composition.CompNotation
+import Mathlib.Probability.Kernel.Composition.KernelLemmas
 import Mathlib.Probability.Kernel.Composition.MeasureCompProd
-import Mathlib.Probability.Kernel.Composition.Prod
 
 /-!
 # Lemmas about the composition of a measure and a kernel
@@ -26,7 +26,7 @@ variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β
 lemma comp_assoc {η : Kernel β γ} : η ∘ₘ (κ ∘ₘ μ) = (η ∘ₖ κ) ∘ₘ μ :=
   Measure.bind_bind κ.aemeasurable η.aemeasurable
 
-/-- This lemma allows to rewrite the compostion of a measure and a kernel as the composition
+/-- This lemma allows to rewrite the composition of a measure and a kernel as the composition
 of two kernels, which allows to transfer properties of `∘ₖ` to `∘ₘ`. -/
 lemma comp_eq_comp_const_apply : κ ∘ₘ μ = (κ ∘ₖ (Kernel.const Unit μ)) () := by
   rw [Kernel.comp_apply, Kernel.const_apply]
@@ -72,12 +72,20 @@ instance [IsZeroOrProbabilityMeasure μ] [IsZeroOrMarkovKernel κ] :
     IsZeroOrProbabilityMeasure (κ ∘ₘ μ) := by
   rw [← snd_compProd]; infer_instance
 
+@[simp]
+lemma _root_.ProbabilityTheory.Kernel.comp_const (κ : Kernel β γ) (μ : Measure β) :
+    κ ∘ₖ Kernel.const α μ = Kernel.const α (κ ∘ₘ μ) := rfl
+
 lemma map_comp (μ : Measure α) (κ : Kernel α β) {f : β → γ} (hf : Measurable f) :
     (κ ∘ₘ μ).map f = (κ.map f) ∘ₘ μ := by
   ext s hs
   rw [Measure.map_apply hf hs, Measure.bind_apply (hf hs) κ.aemeasurable,
     Measure.bind_apply hs (Kernel.aemeasurable _)]
   simp_rw [Kernel.map_apply' _ hf _ hs]
+
+@[simp]
+lemma discard_comp (μ : Measure α) : Kernel.discard α ∘ₘ μ = μ .univ • Measure.dirac () := by
+  ext s hs; simp [Measure.bind_apply hs (Kernel.aemeasurable _), mul_comm]
 
 section CompProd
 
@@ -160,3 +168,37 @@ lemma absolutelyContinuous_comp_of_countable [Countable α] [MeasurableSingleton
 end AbsolutelyContinuous
 
 end MeasureTheory.Measure
+
+namespace ProbabilityTheory
+
+variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+
+section BoolKernel
+
+variable {π : Measure Bool}
+
+@[simp]
+lemma Kernel.comp_boolKernel (κ : Kernel α β) (μ ν : Measure α) :
+    κ ∘ₖ (boolKernel μ ν) = boolKernel (κ ∘ₘ μ) (κ ∘ₘ ν) := by
+  ext b : 1
+  rw [comp_apply]
+  cases b <;> simp
+
+lemma boolKernel_comp_measure (μ ν : Measure α) (π : Measure Bool) :
+    Kernel.boolKernel μ ν ∘ₘ π = π {true} • ν + π {false} • μ := by
+  ext s hs
+  rw [Measure.bind_apply hs (Kernel.aemeasurable _)]
+  simp [lintegral_fintype, mul_comm]
+
+lemma absolutelyContinuous_boolKernel_comp_left (μ ν : Measure α) (hπ : π {false} ≠ 0) :
+    μ ≪ Kernel.boolKernel μ ν ∘ₘ π :=
+  boolKernel_comp_measure _ _ _ ▸ add_comm _ (π {true} • ν) ▸
+    (Measure.absolutelyContinuous_smul hπ).add_right _
+
+lemma absolutelyContinuous_boolKernel_comp_right (μ ν : Measure α) (hπ : π {true} ≠ 0) :
+    ν ≪ Kernel.boolKernel μ ν ∘ₘ π :=
+  boolKernel_comp_measure _ _ _ ▸ (Measure.absolutelyContinuous_smul hπ).add_right _
+
+end BoolKernel
+
+end ProbabilityTheory

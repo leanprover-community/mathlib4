@@ -103,8 +103,6 @@ denoted by `s ×ℂ t`. -/
 def reProdIm (s t : Set ℝ) : Set ℂ :=
   re ⁻¹' s ∩ im ⁻¹' t
 
-@[deprecated (since := "2024-12-03")] protected alias Set.reProdIm := reProdIm
-
 @[inherit_doc]
 infixl:72 " ×ℂ " => reProdIm
 
@@ -288,7 +286,7 @@ namespace SMul
 -- instance made scoped to avoid situations like instance synthesis
 -- of `SMul ℂ ℂ` trying to proceed via `SMul ℂ ℝ`.
 /-- Scalar multiplication by `R` on `ℝ` extends to `ℂ`. This is used here and in
-`Matlib.Data.Complex.Module` to transfer instances from `ℝ` to `ℂ`, but is not
+`Mathlib/Data/Complex/Module.lean` to transfer instances from `ℝ` to `ℂ`, but is not
 needed outside, so we make it scoped. -/
 scoped instance instSMulRealComplex {R : Type*} [SMul R ℝ] : SMul R ℂ where
   smul r x := ⟨r • x.re - 0 * x.im, r • x.im + 0 * x.re⟩
@@ -429,7 +427,7 @@ lemma im_zsmul (n : ℤ) (z : ℂ) : (n • z).im = n • z.im := smul_im ..
 
 /-- This defines the complex conjugate as the `star` operation of the `StarRing ℂ`. It
 is recommended to use the ring endomorphism version `starRingEnd`, available under the
-notation `conj` in the locale `ComplexConjugate`. -/
+notation `conj` in the scope `ComplexConjugate`. -/
 instance : StarRing ℂ where
   star z := ⟨z.re, -z.im⟩
   star_involutive x := by simp only [eta, neg_neg]
@@ -602,7 +600,7 @@ theorem I_sq : I ^ 2 = -1 := by rw [sq, I_mul_I]
 lemma I_pow_three : I ^ 3 = -I := by rw [pow_succ, I_sq, neg_one_mul]
 
 @[simp]
-theorem I_pow_four : I ^ 4 = 1 := by rw [(by norm_num : 4 = 2 * 2), pow_mul, I_sq, neg_one_sq]
+theorem I_pow_four : I ^ 4 = 1 := by rw [(by simp : 4 = 2 * 2), pow_mul, I_sq, neg_one_sq]
 
 lemma I_pow_eq_pow_mod (n : ℕ) : I ^ n = I ^ (n % 4) := by
   conv_lhs => rw [← Nat.div_add_mod n 4]
@@ -755,7 +753,7 @@ theorem im_eq_sub_conj (z : ℂ) : (z.im : ℂ) = (z - conj z) / (2 * I) := by
 
 /-- Show the imaginary number ⟨x, y⟩ as an "x + y*I" string
 
-Note that the Real numbers used for x and y will show as cauchy sequences due to the way Real
+Note that the Real numbers used for x and y will show as Cauchy sequences due to the way Real
 numbers are represented.
 -/
 unsafe instance instRepr : Repr ℂ where

@@ -142,14 +142,13 @@ theorem add_rpow_le_rpow_add {p : ℝ} (a b : ℝ≥0) (hp1 : 1 ≤ p) : a ^ p +
   by_cases h_zero : a + b = 0
   · simp [add_eq_zero.mp h_zero, hp_pos.ne']
   have h_nonzero : ¬(a = 0 ∧ b = 0) := by rwa [add_eq_zero] at h_zero
-  have h_add : a / (a + b) + b / (a + b) = 1 := by rw [div_add_div_same, div_self h_zero]
+  have h_add : a / (a + b) + b / (a + b) = 1 := by rw [← add_div, div_self h_zero]
   have h := add_rpow_le_one_of_add_le_one (a / (a + b)) (b / (a + b)) h_add.le hp1
   rw [div_rpow a (a + b), div_rpow b (a + b)] at h
   have hab_0 : (a + b) ^ p ≠ 0 := by simp [h_nonzero]
   have hab_0' : 0 < (a + b) ^ p := zero_lt_iff.mpr hab_0
   have h_mul : (a + b) ^ p * (a ^ p / (a + b) ^ p + b ^ p / (a + b) ^ p) ≤ (a + b) ^ p := by
-    nth_rw 4 [← mul_one ((a + b) ^ p)]
-    exact (mul_le_mul_left hab_0').mpr h
+    nth_rw 4 [← mul_one ((a + b) ^ p)]; gcongr
   rwa [div_eq_mul_inv, div_eq_mul_inv, mul_add, mul_comm (a ^ p), mul_comm (b ^ p), ← mul_assoc, ←
     mul_assoc, mul_inv_cancel₀ hab_0, one_mul, one_mul] at h_mul
 
@@ -228,11 +227,7 @@ theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0∞) (hw' : ∑ 
   refine le_of_top_imp_top_of_toNNReal_le ?_ ?_
   · -- first, prove `(∑ i ∈ s, w i * z i) ^ p = ⊤ → ∑ i ∈ s, (w i * z i ^ p) = ⊤`
     rw [rpow_eq_top_iff, sum_eq_top, sum_eq_top]
-    intro h
-    simp only [and_false, hp_not_neg, false_or] at h
-    rcases h.left with ⟨a, H, ha⟩
-    use a, H
-    rwa [← h_top_iff_rpow_top a H]
+    grind
   · -- second, suppose both `(∑ i ∈ s, w i * z i) ^ p ≠ ⊤` and `∑ i ∈ s, (w i * z i ^ p) ≠ ⊤`,
     -- and prove `((∑ i ∈ s, w i * z i) ^ p).toNNReal ≤ (∑ i ∈ s, (w i * z i ^ p)).toNNReal`,
     -- by using `NNReal.rpow_arith_mean_le_arith_mean_rpow`.

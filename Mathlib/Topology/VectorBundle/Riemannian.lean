@@ -29,6 +29,8 @@ depends continuously on the base point, we register automatically an instance of
 
 The general theory should be built assuming `[IsContinuousRiemannianBundle F E]`, while the
 `[RiemannianBundle E]` mechanism is only to build data in specific situations.
+As instances related to Riemannian bundles are both costly and quite specific, they are scoped
+to the `Bundle` namespace.
 
 ## Keywords
 Vector bundle, Riemannian metric
@@ -406,28 +408,38 @@ variable (E) in
 /-- Class used to create an inner product structure space on the fibers of a fiber bundle, without
 creating diamonds. Use as follows:
 * `instance : RiemannianBundle E := ⟨g⟩` where `g : RiemannianMetric E` registers the inner product
-space on the fibers;
+  space on the fibers;
 * `instance : RiemannianBundle E := ⟨g.toRiemannianMetric⟩` where
-`g : ContinuousRiemannianMetric F E` registers the inner product space on the fibers, and the fact
-that it varies continuously (i.e., a `[IsContinuousRiemannianBundle]` instance).
+  `g : ContinuousRiemannianMetric F E` registers the inner product space on the fibers, and the fact
+  that it varies continuously (i.e., a `[IsContinuousRiemannianBundle]` instance).
 * `instance : RiemannianBundle E := ⟨g.toRiemannianMetric⟩` where
-`g : ContMDiffRiemannianMetric IB n F E` registers the inner product space on the fibers, and the
-fact that it varies smoothly (and continuously), i.e., `[IsContMDiffRiemannianBundle]` and
-`[IsContinuousRiemannianBundle]` instances.
+  `g : ContMDiffRiemannianMetric IB n F E` registers the inner product space on the fibers, and the
+  fact that it varies smoothly (and continuously), i.e., `[IsContMDiffRiemannianBundle]` and
+  `[IsContinuousRiemannianBundle]` instances.
 -/
 class RiemannianBundle where
   /-- The family of inner products on the fibers -/
   g : RiemannianMetric E
 
-/- The normal priority for an instance which always applies like this one should be 100.
-We use 80 as this is rather specialized, so we want other paths to be tried first typically. -/
-noncomputable instance (priority := 80) [h : RiemannianBundle E] (b : B) :
+/-- A fiber in a bundle satisfying the `[RiemannianBundle E]` typeclass inherits
+a `NormedAddCommGroup` structure.
+
+The normal priority for an instance which always applies like this one should be 100.
+We use 80 as this is rather specialized, so we want other paths to be tried first typically.
+As this instance is quite specific and very costly because of higher-order unification, we
+also scope it to the `Bundle` namespace. -/
+noncomputable scoped instance (priority := 80) [h : RiemannianBundle E] (b : B) :
     NormedAddCommGroup (E b) :=
   (h.g.toCore b).toNormedAddCommGroupOfTopology (h.g.continuousAt b) (h.g.isVonNBounded b)
 
-/- The normal priority for an instance which always applies like this one should be 100.
-We use 80 as this is rather specialized, so we want other paths to be tried first typically. -/
-noncomputable instance (priority := 80) [h : RiemannianBundle E] (b : B) :
+/-- A fiber in a bundle satisfying the `[RiemannianBundle E]` typeclass inherits
+an `InnerProductSpace ℝ` structure.
+
+The normal priority for an instance which always applies like this one should be 100.
+We use 80 as this is rather specialized, so we want other paths to be tried first typically.
+As this instance is quite specific and very costly because of higher-order unification, we
+also scope it to the `Bundle` namespace. -/
+noncomputable scoped instance (priority := 80) [h : RiemannianBundle E] (b : B) :
     InnerProductSpace ℝ (E b) :=
   .ofCoreOfTopology (h.g.toCore b) (h.g.continuousAt b) (h.g.isVonNBounded b)
 

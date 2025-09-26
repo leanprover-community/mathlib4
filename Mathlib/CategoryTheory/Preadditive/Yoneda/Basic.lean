@@ -6,6 +6,7 @@ Authors: Markus Himmel
 import Mathlib.CategoryTheory.Preadditive.Opposite
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.Grp.Preadditive
+import Mathlib.Algebra.Category.Grp.Yoneda
 
 /-!
 # The Yoneda embedding for preadditive categories
@@ -145,5 +146,10 @@ def preadditiveYonedaMap (X : C) :
   app Y := AddCommGrp.ofHom F.mapAddHom
 
 end
+
+/-- The preadditive coyoneda functor for the category `AddCommGrp` agrees with
+`AddCommGrp.coyoneda`. -/
+def _root_.AddCommGrp.preadditiveCoyonedaIso : preadditiveCoyoneda ≅ AddCommGrp.coyoneda :=
+  NatIso.ofComponents fun X ↦ NatIso.ofComponents fun Y ↦ AddCommGrp.homAddEquiv.toAddCommGrpIso
 
 end CategoryTheory

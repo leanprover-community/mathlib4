@@ -82,7 +82,7 @@ theorem IsOrderedCancelMonoid.toMulRightReflectLT :
   inferInstance
 
 -- See note [lower instance priority]
-@[to_additive IsOrderedCancelAddMonoid.toIsCancelAdd]
+@[to_additive]
 instance (priority := 100) IsOrderedCancelMonoid.toIsCancelMul : IsCancelMul α where
   mul_left_cancel _ _ _ h :=
     (le_of_mul_le_mul_left' h.le).antisymm <| le_of_mul_le_mul_left' h.ge

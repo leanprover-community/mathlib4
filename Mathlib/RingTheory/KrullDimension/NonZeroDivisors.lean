@@ -51,7 +51,7 @@ lemma ringKrullDim_quotient_succ_le_of_nonZeroDivisor
   refine le_trans ?_ (le_iSup _ ((l.map Subtype.val (fun _ _ ↦ id)).cons p' hp'))
   simp
 
-/-- If `R →+* S` is surjective whose kernel contains a nonzerodivisor, then `dim S + 1 ≤ dim R`. -/
+/-- If `R →+* S` is surjective whose kernel contains a nonzero divisor, then `dim S + 1 ≤ dim R`. -/
 lemma ringKrullDim_succ_le_of_surjective (f : R →+* S) (hf : Function.Surjective f)
     {r : R} (hr : r ∈ R⁰) (hr' : f r = 0) : ringKrullDim S + 1 ≤ ringKrullDim R := by
   refine le_trans ?_ (ringKrullDim_quotient_succ_le_of_nonZeroDivisor hr)
@@ -95,7 +95,7 @@ lemma ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (σ : Type*) :
     push_cast
     exact ringKrullDim_add_natCard_le_ringKrullDim_mvPolynomial _
   · simp only [ENat.card_eq_top_of_infinite, WithBot.coe_top]
-    suffices ringKrullDim (MvPolynomial σ R) = ⊤ by aesop
+    suffices ringKrullDim (MvPolynomial σ R) = ⊤ by simp_all
     rw [WithBot.eq_top_iff_forall_ge]
     intro n
     let ι := Infinite.natEmbedding σ ∘ Fin.val (n := n + 1)
@@ -113,5 +113,5 @@ lemma ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (σ : Type*) :
 open PowerSeries in
 lemma ringKrullDim_succ_le_ringKrullDim_powerseries :
     ringKrullDim R + 1 ≤ ringKrullDim (PowerSeries R) :=
-  ringKrullDim_succ_le_of_surjective (constantCoeff R) (⟨C R ·, rfl⟩)
+  ringKrullDim_succ_le_of_surjective constantCoeff (⟨C ·, rfl⟩)
     MvPowerSeries.X_mem_nonzeroDivisors constantCoeff_X

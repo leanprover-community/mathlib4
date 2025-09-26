@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
+import Mathlib.Data.Rel
 import Mathlib.Order.Filter.SmallSets
 import Mathlib.Topology.UniformSpace.Defs
 import Mathlib.Topology.ContinuousOn
@@ -19,7 +20,7 @@ of uniform structures on `X`, as well as the pullback (`UniformSpace.comap`) of 
 coming from the pullback of filters.
 Like distance functions, uniform structures cannot be pushed forward in general.
 
-## Notations
+## Notation
 
 Localized in `Uniformity`, we have the notation `𝓤 X` for the uniformity on a uniform space `X`,
 and `○` for composition of relations, seen as terms with type `Set (X × X)`.
@@ -35,6 +36,7 @@ But it makes a more systematic use of the filter library.
 -/
 
 open Set Filter Topology
+open scoped Uniformity
 
 universe u v ua ub uc ud
 
@@ -43,7 +45,13 @@ universe u v ua ub uc ud
 -/
 
 variable {α : Type ua} {β : Type ub} {γ : Type uc} {δ : Type ud} {ι : Sort*}
-open Uniformity
+
+open scoped SetRel in
+lemma IsOpen.relComp [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
+    {s : SetRel α β} {t : SetRel β γ} (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ○ t) := by
+  conv =>
+    arg 1; equals ⋃ b, (fun p => (p.1, b)) ⁻¹' s ∩ (fun p => (b, p.2)) ⁻¹' t => ext ⟨_, _⟩; simp
+  exact isOpen_iUnion fun a ↦ hs.preimage (by fun_prop) |>.inter <| ht.preimage (by fun_prop)
 
 section UniformSpace
 
@@ -231,9 +239,6 @@ theorem isOpen_iff_isOpen_ball_subset {s : Set α} :
         (ball_mono interior_subset x).trans hV'⟩
   · obtain ⟨V, hV, -, hV'⟩ := h x hx
     exact ⟨V, hV, hV'⟩
-
-@[deprecated (since := "2024-11-18")] alias
-isOpen_iff_open_ball_subset := isOpen_iff_isOpen_ball_subset
 
 /-- The uniform neighborhoods of all points of a dense set cover the whole space. -/
 theorem Dense.biUnion_uniformity_ball {s : Set α} {U : Set (α × α)} (hs : Dense s) (hU : U ∈ 𝓤 α) :

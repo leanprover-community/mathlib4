@@ -81,7 +81,7 @@ open List in
 * 2: $f n = O(a ^ n)$ for some $-R < a < R$;
 * 3: $f n = O(a ^ n)$ for some $0 < a < R$;
 * 4: there exist `a < R` and `C` such that one of `C` and `R` is positive and $|f n| ≤ Ca^n$
-     for all `n`;
+  for all `n`;
 * 5: there exists `0 < a < R` and a positive `C` such that $|f n| ≤ Ca^n$ for all `n`;
 * 6: there exists `a < R` such that $|f n| ≤ a ^ n$ for sufficiently large `n`;
 * 7: there exists `0 < a < R` such that $|f n| ≤ a ^ n$ for sufficiently large `n`.
@@ -426,7 +426,7 @@ lemma hasSum_choose_mul_geometric_of_norm_lt_one'
         simp only [Real.norm_eq_abs, abs_cast, cast_pow, norm_pow]
         norm_cast
         calc (n + k).choose k
-          _ ≤ (2 * n).choose k := choose_le_choose k (by omega)
+          _ ≤ (2 * n).choose k := choose_le_choose k (by cutsat)
           _ ≤ (2 * n) ^ k := Nat.choose_le_pow _ _
           _ = 2 ^ k * n ^ k := Nat.mul_pow 2 n k
       convert hasSum_sum_range_mul_of_summable_norm' I1 ih.summable
@@ -435,7 +435,7 @@ lemma hasSum_choose_mul_geometric_of_norm_lt_one'
             ∑ i ∈ Finset.range (n + 1), ↑((i + k).choose k) * r ^ n := by
           apply Finset.sum_congr rfl (fun i hi ↦ ?_)
           simp only [Finset.mem_range] at hi
-          rw [mul_assoc, ← pow_add, show i + (n - i) = n by omega]
+          rw [mul_assoc, ← pow_add, show i + (n - i) = n by cutsat]
         simp [this, ← sum_mul, ← Nat.cast_sum, sum_range_add_choose n k, add_assoc]
       · rw [ih.tsum_eq, (hasSum_geom_series_inverse r hr).tsum_eq, pow_succ]
 
@@ -651,10 +651,7 @@ theorem not_summable_of_ratio_norm_eventually_ge {α : Type*} [SeminormedAddComm
     specialize hN₀ N hNN₀
     simp only [comp_apply, zero_add] at h''
     exact hN h''.symm
-  · intro i
-    dsimp only [comp_apply]
-    convert hN₀ (i + N) (hNN₀.trans (N.le_add_left i)) using 3
-    ac_rfl
+  · grind
 
 theorem not_summable_of_ratio_test_tendsto_gt_one {α : Type*} [SeminormedAddCommGroup α]
     {f : ℕ → α} {l : ℝ} (hl : 1 < l) (h : Tendsto (fun n ↦ ‖f (n + 1)‖ / ‖f n‖) atTop (𝓝 l)) :
@@ -727,7 +724,7 @@ theorem Antitone.cauchySeq_series_mul_of_tendsto_zero_of_bounded (hfa : Antitone
   have hfa' : Monotone fun n ↦ -f n := fun _ _ hab ↦ neg_le_neg <| hfa hab
   have hf0' : Tendsto (fun n ↦ -f n) atTop (𝓝 0) := by
     convert hf0.neg
-    norm_num
+    simp
   convert (hfa'.cauchySeq_series_mul_of_tendsto_zero_of_bounded hf0' hzb).neg
   simp
 
@@ -782,8 +779,8 @@ theorem Monotone.tendsto_le_alternating_series
     simp_rw [_root_.pow_succ', show (-1 : E) ^ (2 * n) = 1 by simp, neg_one_mul, one_mul,
       ← sub_eq_add_neg, sub_le_iff_le_add]
     gcongr
-    exact hfm (by omega)
-  exact ha.le_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; omega) tendsto_id)) _
+    exact hfm (by cutsat)
+  exact ha.le_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; cutsat) tendsto_id)) _
 
 /-- Partial sums of an alternating monotone series with an odd number of terms provide
 lower bounds on the limit. -/
@@ -797,8 +794,8 @@ theorem Monotone.alternating_series_le_tendsto
     simp_rw [_root_.pow_succ', show (-1 : E) ^ (2 * n) = 1 by simp, neg_one_mul, neg_neg, one_mul,
       ← sub_eq_add_neg, sub_add_eq_add_sub, le_sub_iff_add_le]
     gcongr
-    exact hfm (by omega)
-  exact hm.ge_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; omega) tendsto_id)) _
+    exact hfm (by cutsat)
+  exact hm.ge_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; cutsat) tendsto_id)) _
 
 /-- Partial sums of an alternating antitone series with an even number of terms provide
 lower bounds on the limit. -/
@@ -811,8 +808,8 @@ theorem Antitone.alternating_series_le_tendsto
     simp_rw [_root_.pow_succ', show (-1 : E) ^ (2 * n) = 1 by simp, neg_one_mul, one_mul,
       ← sub_eq_add_neg, le_sub_iff_add_le]
     gcongr
-    exact hfa (by omega)
-  exact hm.ge_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; omega) tendsto_id)) _
+    exact hfa (by cutsat)
+  exact hm.ge_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; cutsat) tendsto_id)) _
 
 /-- Partial sums of an alternating antitone series with an odd number of terms provide
 upper bounds on the limit. -/
@@ -825,8 +822,47 @@ theorem Antitone.tendsto_le_alternating_series
     simp_rw [_root_.pow_succ', show (-1 : E) ^ (2 * n) = 1 by simp, neg_one_mul, neg_neg, one_mul,
       ← sub_eq_add_neg, sub_add_eq_add_sub, sub_le_iff_le_add]
     gcongr
-    exact hfa (by omega)
-  exact ha.le_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; omega) tendsto_id)) _
+    exact hfa (by cutsat)
+  exact ha.le_of_tendsto (hfl.comp (tendsto_atTop_mono (fun n ↦ by dsimp; cutsat) tendsto_id)) _
+
+theorem Summable.tendsto_alternating_series_tsum
+    {E} [Ring E] [UniformSpace E] [IsUniformAddGroup E] [CompleteSpace E]
+    {f : ℕ → E} (hfs : Summable f) :
+    Tendsto (fun n => (∑ i ∈ range n, (-1) ^ i * f i)) atTop (𝓝 (∑' i : ℕ, (-1) ^ i * f i)) :=
+  Summable.tendsto_sum_tsum_nat hfs.alternating
+
+-- TODO: generalize to conditionally-convergent sums
+-- see https://github.com/leanprover-community/mathlib4/pull/29577#discussion_r2343447344
+theorem alternating_series_error_bound
+    {E} [Ring E] [LinearOrder E] [IsOrderedRing E]
+    [UniformSpace E] [IsUniformAddGroup E] [CompleteSpace E] [OrderClosedTopology E]
+    (f : ℕ → E) (hfa : Antitone f) (hfs : Summable f) (n : ℕ) :
+    |(∑' i : ℕ, (-1) ^ i * f i) - (∑ i ∈ range n, (-1) ^ i * f i)| ≤ f n := by
+  obtain h := hfs.tendsto_alternating_series_tsum
+  have upper := hfa.alternating_series_le_tendsto h
+  have lower := hfa.tendsto_le_alternating_series h
+  have I (n : ℕ) : 0 ≤ f n := by
+    apply le_of_tendsto hfs.tendsto_atTop_zero
+    filter_upwards [Ici_mem_atTop n] with m hm using hfa hm
+  obtain (h | h) := even_or_odd n
+  · obtain ⟨n, rfl⟩ := even_iff_exists_two_mul.mp h
+    specialize upper n
+    specialize lower n
+    simp only [sum_range_succ, even_two, Even.mul_right, Even.neg_pow, one_pow, one_mul] at lower
+    rw [abs_sub_le_iff]
+    constructor
+    · rwa [sub_le_iff_le_add, add_comm]
+    · rw [sub_le_iff_le_add, add_comm]
+      exact upper.trans (le_add_of_nonneg_right (I (2 * n)))
+  · obtain ⟨n, rfl⟩ := odd_iff_exists_bit1.mp h
+    specialize upper (n + 1)
+    specialize lower n
+    rw [Nat.mul_add, Finset.sum_range_succ] at upper
+    rw [abs_sub_le_iff]
+    constructor
+    · rw [sub_le_iff_le_add, add_comm]
+      exact lower.trans (le_add_of_nonneg_right (I (2 * n + 1)))
+    · simpa [Finset.sum_range_succ, add_comm, pow_add] using upper
 
 end
 
@@ -870,7 +906,7 @@ lemma tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded [NormedAddGroup K
   refine Metric.nhds_basis_closedBall.tendsto_right_iff.mpr fun ε hε0 ↦ ?_
   filter_upwards [hc, hasBasis_cobounded_norm.tendsto_right_iff.mp hf (c / ε) trivial,
     hf.eventually_ne_cobounded 0] with x hfgc hεf hf0
-  rcases eq_or_gt_of_le ((norm_nonneg _).trans hfgc) with rfl | hc0
+  rcases eq_or_lt_of_le ((norm_nonneg _).trans hfgc) with rfl | hc0
   · simpa [(smul_eq_zero_iff_right hf0).mp (norm_le_zero_iff.mp hfgc)] using hε0.le
   calc
     _ = ‖g x‖ := by simp

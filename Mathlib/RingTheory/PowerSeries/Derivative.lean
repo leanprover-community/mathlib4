@@ -36,10 +36,10 @@ The formal derivative of a power series in one variable.
 This is defined here as a function, but will be packaged as a
 derivation `derivative` on `R⟦X⟧`.
 -/
-noncomputable def derivativeFun (f : R⟦X⟧) : R⟦X⟧ := mk fun n ↦ coeff R (n + 1) f * (n + 1)
+noncomputable def derivativeFun (f : R⟦X⟧) : R⟦X⟧ := mk fun n ↦ coeff (n + 1) f * (n + 1)
 
 theorem coeff_derivativeFun (f : R⟦X⟧) (n : ℕ) :
-    coeff R n f.derivativeFun = coeff R (n + 1) f * (n + 1) := by
+    coeff n f.derivativeFun = coeff (n + 1) f * (n + 1) := by
   rw [derivativeFun, coeff_mk]
 
 theorem derivativeFun_coe (f : R[X]) : (f : R⟦X⟧).derivativeFun = derivative f := by
@@ -52,10 +52,10 @@ theorem derivativeFun_add (f g : R⟦X⟧) :
   rw [coeff_derivativeFun, map_add, map_add, coeff_derivativeFun,
     coeff_derivativeFun, add_mul]
 
-theorem derivativeFun_C (r : R) : derivativeFun (C R r) = 0 := by
+theorem derivativeFun_C (r : R) : derivativeFun (C r) = 0 := by
   ext n
   -- Note that `map_zero` didn't get picked up, apparently due to a missing `FunLike.coe`
-  rw [coeff_derivativeFun, coeff_succ_C, zero_mul, (coeff R n).map_zero]
+  rw [coeff_derivativeFun, coeff_succ_C, zero_mul, (coeff n).map_zero]
 
 theorem trunc_derivativeFun (f : R⟦X⟧) (n : ℕ) :
     trunc n f.derivativeFun = derivative (trunc (n + 1) f) := by
@@ -85,7 +85,7 @@ theorem derivativeFun_mul (f g : R⟦X⟧) :
     trunc_derivativeFun, ← map_add, ← derivativeFun_coe_mul_coe, coeff_derivativeFun]
 
 theorem derivativeFun_one : derivativeFun (1 : R⟦X⟧) = 0 := by
-  rw [← map_one (C R), derivativeFun_C (1 : R)]
+  rw [← map_one C, derivativeFun_C (1 : R)]
 
 theorem derivativeFun_smul (r : R) (f : R⟦X⟧) : derivativeFun (r • f) = r • derivativeFun f := by
   rw [smul_eq_C_mul, smul_eq_C_mul, derivativeFun_mul, derivativeFun_C, smul_zero, add_zero,
@@ -105,10 +105,10 @@ scoped notation "d⁄dX" => derivative
 
 variable {R}
 
-@[simp] theorem derivative_C (r : R) : d⁄dX R (C R r) = 0 := derivativeFun_C r
+@[simp] theorem derivative_C (r : R) : d⁄dX R (C r) = 0 := derivativeFun_C r
 
 theorem coeff_derivative (f : R⟦X⟧) (n : ℕ) :
-    coeff R n (d⁄dX R f) = coeff R (n + 1) f * (n + 1) := coeff_derivativeFun f n
+    coeff n (d⁄dX R f) = coeff (n + 1) f * (n + 1) := coeff_derivativeFun f n
 
 theorem derivative_coe (f : R[X]) : d⁄dX R f = Polynomial.derivative f := derivativeFun_coe f
 
@@ -140,13 +140,13 @@ is a `CommRing`. -/
 
 /-- If `f` and `g` have the same constant term and derivative, then they are equal. -/
 theorem derivative.ext {R} [CommRing R] [NoZeroSMulDivisors ℕ R] {f g} (hD : d⁄dX R f = d⁄dX R g)
-    (hc : constantCoeff R f = constantCoeff R g) : f = g := by
+    (hc : constantCoeff f = constantCoeff g) : f = g := by
   ext n
   cases n with
   | zero =>
     rw [coeff_zero_eq_constantCoeff, hc]
   | succ n =>
-    have equ : coeff R n (d⁄dX R f) = coeff R n (d⁄dX R g) := by rw [hD]
+    have equ : coeff n (d⁄dX R f) = coeff n (d⁄dX R g) := by rw [hD]
     rwa [coeff_derivative, coeff_derivative, ← cast_succ, mul_comm, ← nsmul_eq_mul,
       mul_comm, ← nsmul_eq_mul, smul_right_inj n.succ_ne_zero] at equ
 
@@ -156,7 +156,7 @@ theorem derivative.ext {R} [CommRing R] [NoZeroSMulDivisors ℕ R] {f g} (hD : d
   simp
 
 @[simp] theorem derivative_invOf {R} [CommRing R] (f : R⟦X⟧) [Invertible f] :
-    d⁄dX R ⅟ f = -⅟ f ^ 2 * d⁄dX R f := by
+    d⁄dX R ⅟f = -⅟f ^ 2 * d⁄dX R f := by
   rw [Derivation.leibniz_invOf, smul_eq_mul]
 
 /-
@@ -164,7 +164,7 @@ The following theorem is stated only in the case that `R` is a field. This is be
 there is currently no instance of `Inv R⟦X⟧` for more general base rings `R`.
 -/
 @[simp] theorem derivative_inv' {R} [Field R] (f : R⟦X⟧) : d⁄dX R f⁻¹ = -f⁻¹ ^ 2 * d⁄dX R f := by
-  by_cases h : constantCoeff R f = 0
+  by_cases h : constantCoeff f = 0
   · suffices f⁻¹ = 0 by
       rw [this, pow_two, zero_mul, neg_zero, zero_mul, map_zero]
     rwa [MvPowerSeries.inv_eq_zero]

@@ -57,8 +57,8 @@ class IsOrderedVAdd (G P : Type*) [LE G] [LE P] [VAdd G P] : Prop where
   protected vadd_le_vadd_right : ∀ c d : G, c ≤ d → ∀ a : P, c +ᵥ a ≤ d +ᵥ a
 
 /-- An ordered scalar multiplication is a bi-monotone scalar multiplication. Note that this is
-different from `OrderedSMul`, which uses strict inequality, requires `G` to be a semiring, and the
-defining conditions are restricted to positive elements of `G`. -/
+different from `IsOrderedModule` whose defining conditions are restricted to nonnegative elements.
+-/
 @[to_additive]
 class IsOrderedSMul (G P : Type*) [LE G] [LE P] [SMul G P] : Prop where
   protected smul_le_smul_left : ∀ a b : P, a ≤ b → ∀ c : G, c • a ≤ c • b
@@ -133,7 +133,7 @@ namespace SMul
 @[to_additive]
 theorem smul_lt_smul_of_le_of_lt [LE G] [Preorder P] [SMul G P] [IsOrderedCancelSMul G P]
     {a b : G} {c d : P} (h₁ : a ≤ b) (h₂ : c < d) :
-  a • c < b • d := by
+    a • c < b • d := by
   refine lt_of_le_of_lt (IsOrderedSMul.smul_le_smul_right a b h₁ c) ?_
   refine lt_of_le_not_ge (IsOrderedSMul.smul_le_smul_left c d (le_of_lt h₂) b) ?_
   by_contra hbdc

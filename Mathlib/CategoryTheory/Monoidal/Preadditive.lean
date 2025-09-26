@@ -29,10 +29,10 @@ Note we don't `extend Preadditive C` here, as `Abelian C` already extends it,
 and we'll need to have both typeclasses sometimes.
 -/
 class MonoidalPreadditive : Prop where
-  whiskerLeft_zero : ∀ {X Y Z : C}, X ◁ (0 : Y ⟶ Z) = 0 := by aesop_cat
-  zero_whiskerRight : ∀ {X Y Z : C}, (0 : Y ⟶ Z) ▷ X = 0 := by aesop_cat
-  whiskerLeft_add : ∀ {X Y Z : C} (f g : Y ⟶ Z), X ◁ (f + g) = X ◁ f + X ◁ g := by aesop_cat
-  add_whiskerRight : ∀ {X Y Z : C} (f g : Y ⟶ Z), (f + g) ▷ X = f ▷ X + g ▷ X := by aesop_cat
+  whiskerLeft_zero : ∀ {X Y Z : C}, X ◁ (0 : Y ⟶ Z) = 0 := by cat_disch
+  zero_whiskerRight : ∀ {X Y Z : C}, (0 : Y ⟶ Z) ▷ X = 0 := by cat_disch
+  whiskerLeft_add : ∀ {X Y Z : C} (f g : Y ⟶ Z), X ◁ (f + g) = X ◁ f + X ◁ g := by cat_disch
+  add_whiskerRight : ∀ {X Y Z : C} (f g : Y ⟶ Z), (f + g) ▷ X = f ▷ X + g ▷ X := by cat_disch
 
 attribute [simp] MonoidalPreadditive.whiskerLeft_zero MonoidalPreadditive.zero_whiskerRight
 attribute [simp] MonoidalPreadditive.whiskerLeft_add MonoidalPreadditive.add_whiskerRight
@@ -118,7 +118,7 @@ instance (X : C) : PreservesFiniteBiproducts (tensorLeft X) where
         { preserves := fun {b} i => ⟨isBilimitOfTotal _ (by
             dsimp
             simp_rw [← id_tensorHom]
-            simp only [← tensor_comp, Category.comp_id, ← tensor_sum, ← tensor_id,
+            simp only [tensorHom_comp_tensorHom, Category.comp_id, ← tensor_sum, ← id_tensorHom_id,
               IsBilimit.total i])⟩ } }
 
 instance (X : C) : PreservesFiniteBiproducts (tensorRight X) where
@@ -128,7 +128,7 @@ instance (X : C) : PreservesFiniteBiproducts (tensorRight X) where
         { preserves := fun {b} i => ⟨isBilimitOfTotal _ (by
             dsimp
             simp_rw [← tensorHom_id]
-            simp only [← tensor_comp, Category.comp_id, ← sum_tensor, ← tensor_id,
+            simp only [tensorHom_comp_tensorHom, Category.comp_id, ← sum_tensor, ← id_tensorHom_id,
                IsBilimit.total i])⟩ } }
 
 variable [HasFiniteBiproducts C]
@@ -295,10 +295,7 @@ theorem leftDistributor_ext_left {J : Type} [Finite J] {X Y : C} {f : J → C} {
   cases nonempty_fintype J
   apply (cancel_epi (leftDistributor X f).inv).mp
   ext
-  simp? [leftDistributor_inv, Preadditive.comp_sum_assoc, biproduct.ι_π_assoc, dite_comp] says
-    simp only [leftDistributor_inv, Preadditive.comp_sum_assoc, biproduct.ι_π_assoc, dite_comp,
-      zero_comp, Finset.sum_dite_eq, Finset.mem_univ, ↓reduceIte, eqToHom_refl, Category.id_comp]
-  apply w
+  simp [w]
 
 @[ext]
 theorem leftDistributor_ext_right {J : Type} [Finite J] {X Y : C} {f : J → C} {g h : X ⟶ Y ⊗ ⨁ f}
@@ -307,11 +304,7 @@ theorem leftDistributor_ext_right {J : Type} [Finite J] {X Y : C} {f : J → C} 
   cases nonempty_fintype J
   apply (cancel_mono (leftDistributor Y f).hom).mp
   ext
-  simp? [leftDistributor_hom, Preadditive.sum_comp, Preadditive.comp_sum_assoc, biproduct.ι_π,
-      comp_dite] says
-    simp only [leftDistributor_hom, Category.assoc, Preadditive.sum_comp, biproduct.ι_π, comp_dite,
-      comp_zero, Finset.sum_dite_eq', Finset.mem_univ, ↓reduceIte, eqToHom_refl, Category.comp_id]
-  apply w
+  simp [w]
 
 -- One might wonder how many iterated tensor products we need simp lemmas for.
 -- The answer is two: this lemma is needed to verify the pentagon identity.
@@ -341,10 +334,7 @@ theorem rightDistributor_ext_left {J : Type} [Finite J]
   cases nonempty_fintype J
   apply (cancel_epi (rightDistributor f X).inv).mp
   ext
-  simp? [rightDistributor_inv, Preadditive.comp_sum_assoc, biproduct.ι_π_assoc, dite_comp] says
-    simp only [rightDistributor_inv, Preadditive.comp_sum_assoc, biproduct.ι_π_assoc, dite_comp,
-      zero_comp, Finset.sum_dite_eq, Finset.mem_univ, ↓reduceIte, eqToHom_refl, Category.id_comp]
-  apply w
+  simp [w]
 
 @[ext]
 theorem rightDistributor_ext_right {J : Type} [Finite J]
@@ -354,11 +344,7 @@ theorem rightDistributor_ext_right {J : Type} [Finite J]
   cases nonempty_fintype J
   apply (cancel_mono (rightDistributor f Y).hom).mp
   ext
-  simp? [rightDistributor_hom, Preadditive.sum_comp, Preadditive.comp_sum_assoc, biproduct.ι_π,
-      comp_dite] says
-    simp only [rightDistributor_hom, Category.assoc, Preadditive.sum_comp, biproduct.ι_π, comp_dite,
-      comp_zero, Finset.sum_dite_eq', Finset.mem_univ, ↓reduceIte, eqToHom_refl, Category.comp_id]
-  apply w
+  simp [w]
 
 @[ext]
 theorem rightDistributor_ext₂_left {J : Type} [Finite J]
