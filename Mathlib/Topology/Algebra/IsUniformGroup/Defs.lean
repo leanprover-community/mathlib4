@@ -813,15 +813,57 @@ theorem IsUniformGroup.ext_iff {G : Type*} [Group G] {u v : UniformSpace G}
 
 end
 
-#where
+section OfLeftAndRight
 
+variable [UniformSpace β] [Group β] [IsLeftUniformGroup β] [IsRightUniformGroup β]
+
+open Prod (snd) in
+/-- Note: this assumes `[IsLeftUniformGroup β] [IsRightUniformGroup β]` instead of the more typical
+(and equivalent) `[IsUniformGroup β]` because this is used in the proof of said equivalence. -/
+@[to_additive /-- Note: this assumes `[IsLeftUniformAddGroup β] [IsRightUniformAddGroup β]`
+instead of the more typical (and equivalent) `[IsUniformAddGroup β]` because this is used
+in the proof of said equivalence. -/]
+theorem tendsto_conj_comap_nhds_one :
+    Tendsto (fun gx : β × β ↦ gx.1 * gx.2 * gx.1⁻¹) (comap snd (𝓝 1)) (𝓝 1) := by
+  let φ : β × β → β := fun gx ↦ gx.1 * gx.2 * gx.1⁻¹
+  let ψ : β × β ≃ β × β := (Equiv.refl β).prodShear (fun b ↦ Equiv.mulLeft b)
+  have φ_comp_ψ_inv : φ ∘ ψ.symm = fun gx ↦ gx.2 * gx.1⁻¹ := by ext; simp [φ, ψ]
+  have : comap snd (𝓝 1) = map ψ.symm (𝓤 β) := by
+    rw [← map_inj ψ.injective, map_map, ψ.self_comp_symm, map_id, ← comap_equiv_symm,
+        comap_comap, uniformity_eq_comap_inv_mul_nhds_one]
+    rfl
+  rw [this, tendsto_map'_iff, uniformity_eq_comap_mul_inv_nhds_one, φ_comp_ψ_inv]
+  exact tendsto_comap
+
+open Prod (fst snd) in
 @[to_additive]
-instance (priority := 100) [UniformSpace β] [Group β] [IsLeftUniformGroup β]
-    [IsRightUniformGroup β] : IsUniformGroup β where
+instance (priority := 100) IsUniformGroup.ofLeftRight : IsUniformGroup β where
   uniformContinuous_div := by
-    rw [UniformContinuous, uniformity_eq_comap_mul_inv_nhds_one β, tendsto_comap_iff,
-      uniformity_prod_eq_prod, tendsto_map'_iff]
-    simp [Function.comp_def, div_eq_mul_inv, ← mul_assoc]
+    let φ : (β × β) × (β × β) → β := fun ⟨⟨x₁, x₂⟩, ⟨y₁, y₂⟩⟩ ↦ x₂ * y₂⁻¹ * y₁ * x₁⁻¹
+    let ψ : (β × β) × (β × β) → β := fun ⟨⟨x₁, x₂⟩, ⟨y₁, y₂⟩⟩ ↦ (x₁⁻¹ * x₂) * (y₂⁻¹ * y₁)
+    let conj : β × β → β := fun gx ↦ gx.1 * gx.2 * gx.1⁻¹
+    suffices Tendsto φ (𝓤 β ×ˢ 𝓤 β) (𝓝 1) by
+      rw [UniformContinuous, uniformity_eq_comap_mul_inv_nhds_one β, tendsto_comap_iff,
+        uniformity_prod_eq_prod, tendsto_map'_iff]
+      simpa [Function.comp_def, div_eq_mul_inv, ← mul_assoc]
+    have φ_ψ_conj : φ = conj ∘ (fun xy ↦ ⟨xy.1.1, ψ xy⟩) := by
+      ext
+      simp [φ, ψ, conj, mul_assoc]
+    rw [φ_ψ_conj]
+    refine tendsto_conj_comap_nhds_one.comp ?_
+    rw [tendsto_comap_iff, ← one_mul 1]
+    refine .mul ?_ ?_
+    · rw [uniformity_eq_comap_inv_mul_nhds_one]
+      exact tendsto_comap.comp tendsto_fst
+    · rw [uniformity_eq_comap_inv_mul_nhds_one_swapped]
+      exact tendsto_comap.comp tendsto_snd
+
+theorem eventually_forall_conj_nhds_one {p : α → Prop}
+    (hp : ∀ᶠ x in 𝓝 1, p x) :
+    ∀ᶠ x in 𝓝 1, ∀ g, p (g * x * g⁻¹) := by
+  simpa using tendsto_conj_comap_nhds_one.eventually hp
+
+end OfLeftAndRight
 
 end IsUniformGroup
 
