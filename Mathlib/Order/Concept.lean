@@ -526,8 +526,8 @@ alias strictMono_snd := strictAnti_intent
 @[simp]
 theorem ofObjects_le_iff : ofObjects r s ≤ c ↔ s ⊆ c.extent := by
   rw [← extent_subset_extent_iff]
-  refine ⟨((subset_lowerPolar_upperPolar r s).trans ·), fun h ↦ ?_⟩
-  simpa using (lowerPolar_anti r).comp (upperPolar_anti r) h
+  exact ⟨((subset_lowerPolar_upperPolar r s).trans ·),
+    (isExtent_extent c).lowerPolar_upperPolar_subset⟩
 
 theorem le_ofObjects_of_subset (h : c.extent ⊆ s) : c ≤ ofObjects r s := by
   simpa using (lowerPolar_anti r).comp (upperPolar_anti r) h
@@ -535,8 +535,8 @@ theorem le_ofObjects_of_subset (h : c.extent ⊆ s) : c ≤ ofObjects r s := by
 @[simp]
 theorem le_ofAttributes_iff : c ≤ ofAttributes r t ↔ t ⊆ c.intent := by
   rw [← intent_subset_intent_iff]
-  refine ⟨((subset_upperPolar_lowerPolar r t).trans ·), fun h ↦ ?_⟩
-  simpa using (upperPolar_anti r).comp (lowerPolar_anti r) h
+  exact ⟨((subset_upperPolar_lowerPolar r t).trans ·),
+    (isIntent_intent c).upperPolar_lowerPolar_subset⟩
 
 theorem ofAttributes_le_of_subset (h : c.intent ⊆ t) : ofAttributes r t ≤ c := by
   rw [← intent_subset_intent_iff]
