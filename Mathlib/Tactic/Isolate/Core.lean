@@ -218,7 +218,7 @@ def isolateAtTarget (x : Expr) (g : MVarId) : MetaM (List MVarId) := do
 
 open Elab Parser Tactic in
 elab "isolate" x:term loc:(location)? : tactic => do
-  let x ← elabTerm x none
+  let x ← elabTerm x none (mayPostpone := true)
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   withLocation loc
     (fun fvar ↦ liftMetaTactic <| isolateAtLocalDecl x fvar)

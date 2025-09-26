@@ -64,6 +64,24 @@ example {x y z : ℝ} (_hy : 0 < y) (H : z < (x + 3) * y ^ 2 - 2) : x + 3 - 4 < 
   guard_target = x + 3 < y + 4
   exact test_sorry
 
+-- isolate term specified by a pattern
+example {x y z : ℝ} (_hy : 0 < y) : (x + 3) * y ^ 2 - 2 = z := by
+  isolate _ + _
+  guard_target = x + 3 = (z + 2) / y ^ 2
+  exact test_sorry
+
+-- isolate term specified by a pattern
+example {x y : ℝ} : x ^ 2 + 3 = y := by
+  isolate _ ^ 2
+  guard_target = x ^ 2 = y - 3
+  exact test_sorry
+
+-- isolate a term whose elaboration must be delayed, so as to avoid choosing a default instance
+example {x y : ℝ} : x + 3 = y := by
+  isolate 3
+  guard_target = 3 = y - x
+  exact test_sorry
+
 -- isolate on the RHS of a symmetric relation
 example {x y z : ℝ} (_hy : 0 < y) : z = (x + 3) * y ^ 2 - 2 := by
   isolate x + 3
