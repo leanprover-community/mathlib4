@@ -521,17 +521,19 @@ protected def _root_.MonoidWithZeroHom.ENatMap {S : Type*} [MulZeroOneClass S] [
     toFun := ENat.map f
     map_mul' := fun x y => by
       have : ∀ z, map f z = 0 ↔ z = 0 := fun z =>
-        (Option.map_injective hf).eq_iff' f.toZeroHom.ENatMap.map_zero
+        (WithTop.map_injective hf).eq_iff' f.toZeroHom.ENatMap.map_zero
       rcases Decidable.eq_or_ne x 0 with (rfl | hx)
       · simp
       rcases Decidable.eq_or_ne y 0 with (rfl | hy)
       · simp
-      induction' x with x
-      · simp [hy, this]
-      induction' y with y
-      · have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
-        simp [mul_top hx, WithTop.mul_top this]
-      · simp [← Nat.cast_mul, - coe_mul] }
+      induction x with
+      | top => simp [hy, this]
+      | coe x =>
+        induction y with
+        | top =>
+          have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
+          simp [mul_top hx, WithTop.mul_top this]
+        | coe y => simp [← Nat.cast_mul, - coe_mul] }
 
 /-- A version of `ENat.map` for `RingHom`s. -/
 @[simps -fullyApplied]

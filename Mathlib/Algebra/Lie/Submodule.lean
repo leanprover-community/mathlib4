@@ -105,7 +105,7 @@ protected theorem zero_mem : (0 : M) ∈ N :=
 
 @[simp]
 theorem mk_eq_zero {x} (h : x ∈ N) : (⟨x, h⟩ : N) = 0 ↔ x = 0 :=
-  Subtype.ext_iff_val
+  Subtype.ext_iff
 
 @[simp]
 theorem coe_toSet_mk (S : Set M) (h₁ h₂ h₃ h₄) :
@@ -136,7 +136,7 @@ protected def copy (s : Set M) (hs : s = ↑N) : LieSubmodule R L M where
   smul_mem' := by exact hs.symm ▸ N.smul_mem'
   lie_mem := by exact hs.symm ▸ N.lie_mem
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_copy (S : LieSubmodule R L M) (s : Set M) (hs : s = ↑S) : (S.copy s hs : Set M) = s :=
   rfl
 
