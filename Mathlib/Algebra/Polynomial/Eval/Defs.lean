@@ -546,7 +546,6 @@ protected theorem map_list_prod (L : List R[X]) : L.prod.map f = (L.map <| map f
 protected theorem map_pow (n : ℕ) : (p ^ n).map f = p.map f ^ n :=
   (mapRingHom f).map_pow _ _
 
-@[simp]
 theorem eval_map (x : S) : (p.map f).eval x = p.eval₂ f x :=
   (eval₂_eq_eval_map f).symm
 
