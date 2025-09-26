@@ -5022,6 +5022,7 @@ import Mathlib.Order.CompleteLattice.SetLike
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Order.CompletePartialOrder
 import Mathlib.Order.CompleteSublattice
+import Mathlib.Order.Completion
 import Mathlib.Order.Concept
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Defs
@@ -5031,7 +5032,6 @@ import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.Copy
 import Mathlib.Order.CountableDenseLinearOrder
 import Mathlib.Order.Cover
-import Mathlib.Order.Dedekind
 import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Order.Defs.PartialOrder
 import Mathlib.Order.Defs.Unbundled

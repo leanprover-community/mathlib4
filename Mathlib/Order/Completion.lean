@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
 import Mathlib.Order.Concept
+import Mathlib.Order.UpperLower.CompleteLattice
 
 /-!
 # Dedekind-MacNeille completion
@@ -67,31 +68,35 @@ theorem image_right_subset_upperBounds {β : Type*} [Preorder β] {f : α → β
 though it is injective only on partial orders. -/
 def of (a : α) : DedekindCut α :=
   (Concept.ofObject _ a).copy
+    (Iic a) (by ext; simpa [mem_lowerPolar_iff] using forall_ge_iff_le.symm)
+    (Ici a) (by ext; simp)
 
 @[simp] theorem left_of (a : α) : (of a).left = Iic a := rfl
 @[simp] theorem right_of (a : α) : (of a).right = Ici a := rfl
 
-#exit
-@[simp]
-theorem ofElement_le_ofElement {a b : α} : ofElement a ≤ ofElement b ↔ a ≤ b := by
-  simp [← fst_subset_fst_iff]
+@[simp] theorem ofObject_eq_of (a : α) : ofObject (· ≤ ·) a = of a := (copy_eq ..).symm
+@[simp] theorem ofAttribute_eq_of (a : α) : ofAttribute (· ≤ ·) a = of a := by ext; simp
 
 @[simp]
-theorem ofElement_lt_ofElement {a b : β} : ofElement a < ofElement b ↔ a < b := by
+theorem of_le_of {a b : α} : of a ≤ of b ↔ a ≤ b := by
+  simpa using ofObject_le_ofAttribute_iff (r := (· ≤ ·)) (a := a)
+
+@[simp]
+theorem of_lt_of {a b : β} : of a < of b ↔ a < b := by
   simp [lt_iff_le_not_ge]
 
 @[simp]
-theorem ofElement_inj {a b : β} : ofElement a = ofElement b ↔ a = b := by
+theorem of_inj {a b : β} : of a = of b ↔ a = b := by
   simp [le_antisymm_iff]
 
-/-- `DedekindCut.ofElement` as an `OrderEmbedding`. -/
-@[simps!]
-def ofElementEmbedding : β ↪o DedekindCut β where
-  toFun := ofElement
-  inj' _ _ := ofElement_inj.1
-  map_rel_iff' := ofElement_le_ofElement
+/-- `DedekindCut.of` as an `OrderEmbedding`. -/
+@[simps! apply]
+def ofEmbedding : β ↪o DedekindCut β where
+  toFun := of
+  inj' _ _ := of_inj.1
+  map_rel_iff' := of_le_of
 
-@[simp] theorem ofElementEmbedding_coe : ⇑(@ofElementEmbedding β _) = ofElement := rfl
+@[simp] theorem ofEmbedding_coe : ⇑(@ofEmbedding β _) = of := rfl
 
 /-- Any order embedding `β ↪o γ` into a complete lattice factors through `DedekindCut β`.
 
@@ -99,20 +104,20 @@ This map is defined so that `factorEmbedding f A = sSup (f '' A.fst)`. Although 
 `factorEmbedding f A = sInf (f '' A.snd)` would also work, these do **not** in general give equal
 embeddings. -/
 def factorEmbedding (f : β ↪o γ) : DedekindCut β ↪o γ :=
-  .ofMapLEIff (fun A ↦ sSup (f '' A.fst)) <| by
+  .ofMapLEIff (fun A ↦ sSup (f '' A.left)) <| by
     refine fun A B ↦ ⟨fun h x hx ↦ ?_, fun h ↦ sSup_le_sSup (image_mono h)⟩
-    simp_rw [← lowerBounds_snd]
+    simp_rw [← lowerBounds_right]
     simp_rw [le_sSup_iff, sSup_le_iff, forall_mem_image] at h
     intro y hy
     rw [← f.le_iff_le]
-    exact h _ (image_snd_subset_upperBounds f.monotone _ (mem_image_of_mem _ hy)) hx
+    exact h _ (image_right_subset_upperBounds f.monotone _ (mem_image_of_mem _ hy)) hx
 
 theorem factorEmbedding_apply (f : β ↪o γ) (A : DedekindCut β) :
-    factorEmbedding f A = sSup (f '' A.fst) :=
+    factorEmbedding f A = sSup (f '' A.left) :=
   rfl
 
 @[simp]
-theorem factorEmbedding_ofElement (f : β ↪o γ) (x : β) : factorEmbedding f (ofElement x) = f x := by
+theorem factorEmbedding_ofElement (f : β ↪o γ) (x : β) : factorEmbedding f (of x) = f x := by
   rw [factorEmbedding_apply]
   apply le_antisymm (by simp)
   rw [le_sSup_iff]
@@ -122,7 +127,26 @@ theorem factorEmbedding_ofElement (f : β ↪o γ) (x : β) : factorEmbedding f 
 /-- The Dedekind-MacNeille completion of a partial order is the smallest complete lattice containing
 it, in the sense that any embedding into any complete lattice factors through it. -/
 theorem factorEmbedding_factors (f : β ↪o γ) :
-    ofElementEmbedding.trans (factorEmbedding f) = f := by
+    ofEmbedding.trans (factorEmbedding f) = f := by
   ext; simp
+
+noncomputable instance : DecidableLE (DedekindCut α) :=
+  Classical.decRel _
+
+variable {α : Type*} [LinearOrder α]
+
+instance : IsTotal (DedekindCut α) (· ≤ ·) where
+  total x y := le_total (α := LowerSet α) ⟨_, isLowerSet_extent_le x⟩ ⟨_, isLowerSet_extent_le y⟩
+
+noncomputable instance : LinearOrder (DedekindCut α) where
+  min_def x y := congrFun₂ inf_eq_minDefault x y
+  max_def x y := congrFun₂ sup_eq_maxDefault x y
+  le_total := total_of _
+  toDecidableLE := inferInstance
+
+noncomputable instance : CompleteLinearOrder (DedekindCut α) where
+  __ := inferInstanceAs (LinearOrder _)
+  __ := inferInstanceAs (CompleteLattice _)
+  __ := LinearOrder.toBiheytingAlgebra _
 
 end DedekindCut
