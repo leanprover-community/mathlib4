@@ -50,9 +50,25 @@ example {x y z : ℝ} (_hy : 0 < y) : z < (x + 3) * y ^ 2 - 2 := by
   exact test_sorry
 
 set_option linter.unusedVariables false in
+-- isolate term in a hypothesis
 example {x y z : ℝ} (_hy : 0 < y) (H : z < (x + 3) * y ^ 2 - 2) : True := by
   isolate x + 3 at H
+  guard_hyp H : (z + 2) / y ^ 2 < x + 3
   exact trivial
+
+set_option linter.unusedVariables false in
+-- isolate term in wildcard location
+example {x y z : ℝ} (_hy : 0 < y) (H : z < (x + 3) * y ^ 2 - 2) : x + 3 - 4 < y := by
+  isolate x + 3 at *
+  guard_hyp H : (z + 2) / y ^ 2 < x + 3
+  guard_target = x + 3 < y + 4
+  exact test_sorry
+
+-- isolate on the RHS of a symmetric relation
+example {x y z : ℝ} (_hy : 0 < y) : z = (x + 3) * y ^ 2 - 2 := by
+  isolate x + 3
+  guard_target = x + 3 = (z + 2) / y ^ 2
+  exact test_sorry
 
 -- a term can be "isolated" even if it doesn't contain free variables
 example {x y : ℝ} : x + 3 = y := by
@@ -85,6 +101,13 @@ example {x y : ℝ} : x + 3 = y := by
 example (x : ℝ) (f : ℝ → ℝ) : f x = 12 := by
   isolate x
 
+/-! ### Tagging -/
+
 /-- info: [Mathlib.Tactic.Isolate.add_right_le_iff] -/
 #guard_msgs in
 #query_isolate_lemmas `LE.le `HAdd.hAdd 4 0
+
+/-- error: Please rephrase this lemma in the symmetric form a + b ~ c ↔ _. -/
+#guard_msgs in
+@[isolate]
+theorem add_right_eq_iff [AddGroup X] (a b c : X) : c = a + b ↔ a = c - b := test_sorry

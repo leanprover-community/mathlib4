@@ -64,6 +64,9 @@ def parseIsolateLemma (decl : Name) : MetaM (Name × Name × Nat × Bool) := do
     throwError (failTarget m!"")
   unless rhsA.isFVar || rhsB.isFVar do
     throwError (failTarget m!"")
+  let symmLems ← (Symm.symmExt.getState (← getEnv)).getMatch lhsRel
+  if !symmLems.isEmpty && !lhsB.isFVar then
+    throwError "Please rephrase this lemma in the symmetric form {lhsB} ~ {lhsA} ↔ _."
   let lhsSymm := !lhsB.isFVar
   let lhsApp := if lhsSymm then lhsB else lhsA
   let rhsFVar := if !rhsA.isFVar then rhsB.fvarId! else rhsA.fvarId!
@@ -131,7 +134,27 @@ elab "#query_isolate_lemmas" e0:(ppSpace colGt name)? e1:(ppSpace colGt name)?
   | some lems => logInfo m!"{lems}"
   | none => logInfo "No lemmas with this key found"
 
-open Qq
+-- TODO move this
+/-- Given a term `e : Prop` of the form `a ~ b`, use `@[symm]` lemmas to construct a `Simp.Result`
+proving the equivalence of `e` with `b ~ a` . -/
+def _root_.Lean.Expr.eqSymm (e : Expr) : MetaM Simp.Result := do
+  have e : Q(Prop) := e
+  let .app (.app rel lhs) rhs := e | failure
+  let lemmas ← (Symm.symmExt.getState (← getEnv)).getMatch rel
+  guard !lemmas.isEmpty <|> throwError "no appropriate symmetry lemma found"
+  have e' : Q(Prop) := .app (.app rel rhs) lhs
+  let ((pf1 : Q($e → $e')), (pf2 : Q($e' → $e))) : Q($e → $e') × Q($e' → $e) := ← do
+    let m1 ← mkFreshExprMVarQ q($e → $e')
+    let m2 ← mkFreshExprMVarQ q($e' → $e)
+    let s ← saveState
+    for lem in lemmas do
+      restoreState s
+      let [] ← m1.mvarId!.applyConst lem | failure
+      let [] ← m2.mvarId!.applyConst lem | failure
+      return (← instantiateMVars m1, ← instantiateMVars m2)
+    throwError "no appropriate symmetry lemma found"
+  let pf : Q($e = $e') := q(propext ⟨$pf1, $pf2⟩)
+  pure { expr := e', proof? := some pf }
 
 def isolateStep (x : Expr) (P : Expr) : MetaM (List MVarId × Simp.Result) := do
   let .app (.app rel lhs) rhs ← whnfR P | throwError "{P} should be a relation"
@@ -143,6 +166,9 @@ def isolateStep (x : Expr) (P : Expr) : MetaM (List MVarId × Simp.Result) := do
     throwError "{x} should appear in only one (not both) of {lhs} and {rhs}"
   if !(lhsContains || rhsContains) then
     throwError "{x} should appear in either {lhs} or {rhs}"
+  let symmetric? := !(← (Symm.symmExt.getState (← getEnv)).getMatch rel).isEmpty
+  let symmResult ← do if symmetric? && !lhsContains then Expr.eqSymm P else pure { expr := P }
+  let P' := symmResult.expr
   let xExpr := if lhsContains then lhs else rhs
   let xExpr' := if lhsContains then lhs' else rhs'
   let some relName := rel.getAppFn.constName? | throwError "{rel} is not an explicit relation"
@@ -155,7 +181,7 @@ def isolateStep (x : Expr) (P : Expr) : MetaM (List MVarId × Simp.Result) := do
   | #[xArg] =>
     -- Look up the `@[isolate]` lemmas with the right relation, function, argument index and
     -- LHS/RHS positioning.
-    let key := (relName, xAppName, xArgs.findIdx (· == xArg), !lhsContains)
+    let key := (relName, xAppName, xArgs.findIdx (· == xArg), !symmetric? && !lhsContains)
     let isolateDict := isolateExt.getState (← getEnv)
     let lemmas := isolateDict.getD key #[]
     let s ← saveState
@@ -167,9 +193,9 @@ def isolateStep (x : Expr) (P : Expr) : MetaM (List MVarId × Simp.Result) := do
         let eTy ← inferType e
         let (args, _, ty) ← forallMetaTelescopeReducing eTy
         let .app (.app _ lemLHS) lemRHS := ty | throwError "ill-formed @[isolate] lemma {lem}"
-        -- Attempt to unify `lemLHS` with the expression `P` being worked on.
-        guard (← isDefEq P lemLHS)
-        -- If that succeeded, we know what `P` will be transformed to, namely the instantiated RHS
+        -- Attempt to unify `lemLHS` with the expression `P'` being worked on.
+        guard (← isDefEq P' lemLHS)
+        -- If that succeeded, we know what `P'` will be transformed to, namely the instantiated RHS
         -- of the lemma.
         let Q : Q(Prop) := ← instantiateMVars lemRHS
         -- Collect the unassigned metavariables, i.e. side goals.
@@ -187,9 +213,9 @@ def isolateStep (x : Expr) (P : Expr) : MetaM (List MVarId × Simp.Result) := do
             GCongr.gcongrDischarger mvar
           catch _ =>
             unresolvedMVars := unresolvedMVars.push mvar
-        -- Make the proof of `P ↔ Q` (dependent on these side goals) and send it back.
+        -- Make the proof of `P' ↔ Q` (dependent on these side goals) and send it back.
         let pf ← mkAppM ``propext #[← mkAppOptM lem (args.map some)]
-        return (unresolvedMVars.toList, { expr := Q, proof? := some pf })
+        return (unresolvedMVars.toList, ← symmResult.mkEqTrans { expr := Q, proof? := some pf })
       catch _ => s.restore
     throwError "no suitable lemmas found"
   | _ => throwError "{x} is not localized to a single 'argument of {xExpr}"
