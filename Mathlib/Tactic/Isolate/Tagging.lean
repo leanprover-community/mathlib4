@@ -7,7 +7,7 @@ import Mathlib.Tactic.Isolate.Core
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 
-set_option autoImplicit true
+/-! # @[isolate] lemmas for elementary functions -/
 
 variable {X : Type*}
 
