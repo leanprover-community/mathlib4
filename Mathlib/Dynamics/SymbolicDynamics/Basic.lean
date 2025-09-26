@@ -8,49 +8,94 @@ import Mathlib.Topology.Basic
 import Mathlib.Topology.Constructions
 import Mathlib.Data.Finset.Basic
 import Mathlib.Logic.Equiv.Defs
-
 /-!
 # Symbolic dynamics on groups
 
 This file develops a minimal API for symbolic dynamics over an arbitrary group `G`.
-Provided a finite set `A`, the ambient space is the space of functions from `G` to `A`,
-hence it inherits the product topology from the Π-type. We define the right-translation action,
-cylinders, finite patterns, their occurrences, forbidden sets, and subshifts (closed,
-shift-invariant subsets). Basic topological statements (e.g. cylinders are clopen,
+Given a finite alphabet `A`, the ambient configuration space is the set of functions
+`G → A`, endowed with the product topology. We define the right-translation action,
+cylinders, finite patterns, their occurrences, forbidden sets, and subshifts
+(closed, shift-invariant subsets). Basic topological facts (e.g. cylinders are clopen,
 occurrence sets are clopen, forbidden sets are closed) are proved under discreteness
 assumptions on the alphabet.
 
-The file is group-generic. Geometry specific to `ℤ^d` (boxes/cubes and the
-box-based entropy) is kept in a separate specialization.
+The development is group-generic. Geometry specific to `ℤ^d` (boxes/cubes and the
+box-based entropy) is deferred to a separate specialization.
 
 ## Main definitions
 
-* `shift g x` — right translation: in the multiplicative notation: `(shift g x) h = x (h * g)`;
-  additive notation (e.g. for `ℤ^d`): `(addShift v x) u = x (u + v)`.
+* `mulShift g x` — right translation: in multiplicative notation `(mulShift g x) h = x (h * g)`;
+  additive notation `(addShift v x) u = x (u + v)`.
 * `cylinder U x` — configurations agreeing with `x` on a finite set `U ⊆ G`.
 * `Pattern A G` — finite support together with values on that support.
 * `Pattern.occursIn p x g` — occurrence of `p` in `x` at translate `g`.
 * `forbids F` — configurations avoiding every pattern in `F`.
 * `Subshift A G` — closed, shift-invariant subsets of the full shift.
+* `X_F F` — the subshift defined by forbidding a family of patterns.
+* `SFT F` — a subshift of finite type defined by a finite set of forbidden patterns.
+* `languageOn X U` — the set of patterns of shape `U` obtained by restricting some `x ∈ X`.
 
 ## Conventions
 
 We use a **right** action of `G` on configurations:
-`(shift g x) h = x (h * g)`. In additive notation (e.g. for `ℤ^d`) this is
-`(shift v x) u = x (u + v)`.
+`(mulShift g x) h = x (h * g)`.
+In additive notation (e.g. for `ℤ^d`):
+`(addShift v x) u = x (u + v)`.
+
+## Design choice: ambient vs. inner (subshift-relative) viewpoint
+
+All core notions (shift, cylinder, occurrence, language, …) are defined **in the
+ambient full shift** `(G → A)`. A subshift is then a closed, invariant subset,
+bundled as `Subshift A G`. Working inside a subshift is done by restriction.
+
+**Motivation.**
+If cylinders and shifts were defined only *inside* a subshift, local ergonomics
+would improve but global operations would become awkward. For instance, to prove
+that for finite shape `U`:
+
+`languageOn (X ∪ Y) U = languageOn X U ∪ languageOn Y U,`
+
+one must eventually move both sides to the ambient pattern type. Similar issues
+arise for intersections, factors, and products. By contrast, with ambient
+definitions these set-theoretic identities are tautological.
+Thus the file develops the theory ambiently, and subshifts reuse it by restriction.
+
+**Working inside a subshift.**
+For `Y : Subshift A G`, cylinders and occurrence sets *inside `Y`* are simply
+preimages of the ambient ones under the inclusion `Y → (G → A)`. For example:
+
+`{ y : Y | ∀ i ∈ U, (y : G → A) i = (x : G → A) i } = (Subtype.val) ⁻¹’ (cylinder U (x : G → A)).`
+
+Shift invariance guarantees that the ambient shift restricts to `Y`.
+
+**Ergonomics.**
+Thin wrappers (e.g. `Subshift.shift`, `Subshift.cylinder`, `Subshift.languageOn`)
+may be added for convenience. They introduce no new theory and unfold to the
+ambient definitions.
+
+## Namespacing policy
+
+All ambient definitions live under the namespace `SymbolicDynamics.Ambiant`.
+If inner, subshift-relative wrappers are provided, they will be placed in the
+subnamespace `SymbolicDynamics.Inner`. This separation avoids name clashes
+between the two viewpoints, since both may naturally want to reuse names like
+`cylinder`, `shift`, `occursAt`, or `languageOn`.
 
 ## Implementation notes
 
 * Openness/closedness results for cylinders and occurrence sets use
-  `[DiscreteTopology A]`. The closedness proofs that enumerate values additionally
-  require `[Fintype A]`, `[DecidableEq A]`, and `[DecidableEq G]` (for `Finset` manipulations
-  and `Function.update`).
+  `[DiscreteTopology A]`. Closedness proofs that enumerate values additionally
+  require `[Fintype A]`, `[DecidableEq A]`, and `[DecidableEq G]` (for `Finset`
+  manipulations and `Function.update`).
 -/
+
 
 noncomputable section
 open Set Topology
 
 namespace SymbolicDynamics
+
+namespace Ambiant
 
 /-! ## Full shift and shift action -/
 
@@ -67,7 +112,7 @@ variable [Group G]
 def mulShift (g : G) (x : G → A) : G → A :=
   fun h => x (h * g)
 
-attribute [inherit_doc SymbolicDynamics.mulShift] SymbolicDynamics.addShift
+attribute [inherit_doc SymbolicDynamics.Ambiant.mulShift] SymbolicDynamics.Ambiant.addShift
 
 end ShiftDefinition
 
@@ -186,17 +231,17 @@ structure AddSubshift : Type _ where
 
 end AddSubshiftDef
 
-attribute [to_additive existing SymbolicDynamics.AddSubshift]
-  SymbolicDynamics.Subshift
+attribute [to_additive existing SymbolicDynamics.Ambiant.AddSubshift]
+  SymbolicDynamics.Ambiant.Subshift
 
 /-- Example: the full shift on alphabet A. -/
-@[to_additive SymbolicDynamics.addFullShift]
+@[to_additive SymbolicDynamics.Ambiant.addFullShift]
 def fullShift (A G) [TopologicalSpace A] [Group G] : Subshift A G :=
 { carrier := Set.univ,
   isClosed := isClosed_univ,
   shiftInvariant := by intro _ _ _; simp }
 
-attribute [inherit_doc SymbolicDynamics.fullShift] SymbolicDynamics.addFullShift
+attribute [inherit_doc SymbolicDynamics.Ambiant.fullShift] SymbolicDynamics.Ambiant.addFullShift
 
 /-- A finite pattern: finite support in `G` and values on it. -/
 structure Pattern (A : Type*) (G : Type*) [Group G] where
@@ -212,8 +257,8 @@ structure AddPattern (A : Type*) (G : Type*) [AddGroup G] : Type _ where
   /-- The symbol at each point of the support. -/
   data    : support → A
 
-attribute [to_additive existing SymbolicDynamics.AddPattern]
-  SymbolicDynamics.Pattern
+attribute [to_additive existing SymbolicDynamics.Ambiant.AddPattern]
+  SymbolicDynamics.Ambiant.Pattern
 
 section Dominos
 
@@ -227,7 +272,7 @@ def domino {A : Type*}
   { support := ({i, j} : Finset G)
   , data := fun ⟨z, hz⟩ => if z = i then ai else aj }
 
-attribute [inherit_doc SymbolicDynamics.domino] SymbolicDynamics.addDomino
+attribute [inherit_doc SymbolicDynamics.Ambiant.domino] SymbolicDynamics.Ambiant.addDomino
 
 end Dominos
 
@@ -242,14 +287,15 @@ variable [Group G]
 def Pattern.occursIn (p : Pattern A G) (x : G → A) (g : G) : Prop :=
   ∀ (h) (hh : h ∈ p.support), x (h * g) = p.data ⟨h, hh⟩
 
-attribute [inherit_doc SymbolicDynamics.Pattern.occursIn] SymbolicDynamics.Pattern.addOccursIn
+attribute [inherit_doc SymbolicDynamics.Ambiant.Pattern.occursIn]
+  SymbolicDynamics.Ambiant.Pattern.addOccursIn
 
 /-- Configurations avoiding every pattern in `F`. -/
 @[to_additive addForbids]
 def forbids (F : Set (Pattern A G)) : Set (G → A) :=
   { x | ∀ p ∈ F, ∀ g : G, ¬ p.occursIn x g }
 
-attribute [inherit_doc SymbolicDynamics.forbids] SymbolicDynamics.addForbids
+attribute [inherit_doc SymbolicDynamics.Ambiant.forbids] SymbolicDynamics.Ambiant.addForbids
 
 end Forbids
 
@@ -285,15 +331,16 @@ variable [Group G] [DecidableEq G]
 def patternToOriginConfig (p : Pattern A G) : G → A :=
   fun i ↦ if h : i ∈ p.support then p.data ⟨i, h⟩ else default
 
-attribute [inherit_doc SymbolicDynamics.patternToOriginConfig]
-  SymbolicDynamics.addPatternToOriginConfig
+attribute [inherit_doc SymbolicDynamics.Ambiant.patternToOriginConfig]
+  SymbolicDynamics.Ambiant.addPatternToOriginConfig
 
 /-- Translate a pattern to occur at `v`. -/
 @[to_additive addPatternToConfig]
 def patternToConfig (p : Pattern A G) (v : G) : G → A :=
   mulShift (v⁻¹) (patternToOriginConfig p)
 
-attribute [inherit_doc SymbolicDynamics.patternToConfig] SymbolicDynamics.addPatternToConfig
+attribute [inherit_doc SymbolicDynamics.Ambiant.patternToConfig]
+  SymbolicDynamics.Ambiant.addPatternToConfig
 
 /-- Restrict a configuration to a finite support, seen as a pattern. -/
 @[to_additive addPatternFromConfig]
@@ -301,7 +348,8 @@ def patternFromConfig (x : G → A) (U : Finset G) : Pattern A G :=
   { support := U,
     data := fun i => x i.1 }
 
-attribute [inherit_doc SymbolicDynamics.patternFromConfig] SymbolicDynamics.addPatternFromConfig
+attribute [inherit_doc SymbolicDynamics.Ambiant.patternFromConfig]
+  SymbolicDynamics.Ambiant.addPatternFromConfig
 
 end PatternFromToConfig
 
@@ -383,14 +431,14 @@ def X_F (F : Set (Pattern A G)) : Subshift A G :=
   isClosed := forbids_closed F,
   shiftInvariant := forbids_shift_invariant F }
 
-attribute [inherit_doc SymbolicDynamics.X_F] SymbolicDynamics.addX_F
+attribute [inherit_doc SymbolicDynamics.Ambiant.X_F] SymbolicDynamics.Ambiant.addX_F
 
 /-- Subshift of finite type defined by a finite family of forbidden patterns. -/
 @[to_additive addSFT]
 def SFT (F : Finset (Pattern A G)) : Subshift A G :=
   X_F (F : Set (Pattern A G))
 
-attribute [inherit_doc SymbolicDynamics.SFT] SymbolicDynamics.addSFT
+attribute [inherit_doc SymbolicDynamics.Ambiant.SFT] SymbolicDynamics.Ambiant.addSFT
 
 end DefSubshiftByForbidden
 
@@ -406,7 +454,8 @@ variable [Group G]
 def FixedSupport (A : Type*) (G : Type*) [Group G] (U : Finset G) :=
   { p : Pattern A G // p.support = U }
 
-attribute [inherit_doc SymbolicDynamics.FixedSupport] SymbolicDynamics.AddFixedSupport
+attribute [inherit_doc SymbolicDynamics.Ambiant.FixedSupport]
+  SymbolicDynamics.Ambiant.AddFixedSupport
 
 /-- `FixedSupport A G U ≃ (U → A)`; gives finiteness immediately. -/
 @[to_additive addEquivFun]
@@ -417,9 +466,9 @@ def equivFun {U : Finset G} :
   left_inv := by rintro ⟨p,hU⟩; apply Subtype.ext; cases hU; rfl
   right_inv := by intro f; rfl
 
-attribute [inherit_doc SymbolicDynamics.equivFun] SymbolicDynamics.addEquivFun
+attribute [inherit_doc SymbolicDynamics.Ambiant.equivFun] SymbolicDynamics.Ambiant.addEquivFun
 
-@[to_additive SymbolicDynamics.addFintypeFixedSupport] noncomputable
+@[to_additive SymbolicDynamics.Ambiant.addFintypeFixedSupport] noncomputable
 instance fintypeFixedSupport {U : Finset G} :
     Fintype (FixedSupport A G U) := by
   classical exact Fintype.ofEquiv (U → A) (equivFun (A := A) (G := G) (U := U)).symm
@@ -429,7 +478,7 @@ instance fintypeFixedSupport {U : Finset G} :
 def languageOn (X : Set (G → A)) (U : Finset G) : Set (Pattern A G) :=
   { p | ∃ x ∈ X, patternFromConfig x U = p }
 
-attribute [inherit_doc SymbolicDynamics.languageOn] SymbolicDynamics.addLanguageOn
+attribute [inherit_doc SymbolicDynamics.Ambiant.languageOn] SymbolicDynamics.Ambiant.addLanguageOn
 
 
 /-- Cardinality of the finite-support language. -/
@@ -444,15 +493,19 @@ noncomputable def languageCardOn (X : Set (G → A)) (U : Finset G) : ℕ := by
     |>.subset (by intro y hy; simp)
   exact hfin.toFinset.card
 
-attribute [inherit_doc SymbolicDynamics.languageCardOn] SymbolicDynamics.addLanguageCardOn
+attribute [inherit_doc SymbolicDynamics.Ambiant.languageCardOn]
+  SymbolicDynamics.Ambiant.addLanguageCardOn
 
 /-- Number of patterns of a subshift on a finite shape `U`. -/
 @[to_additive addPatternCountOn]
 noncomputable def patternCountOn (Y : Subshift A G) (U : Finset G) : ℕ :=
   languageCardOn (A := A) (G := G) Y.carrier U
 
-attribute [inherit_doc SymbolicDynamics.patternCountOn] SymbolicDynamics.addPatternCountOn
+attribute [inherit_doc SymbolicDynamics.Ambiant.patternCountOn]
+  SymbolicDynamics.Ambiant.addPatternCountOn
 
 end Language
+
+end Ambiant
 
 end SymbolicDynamics
