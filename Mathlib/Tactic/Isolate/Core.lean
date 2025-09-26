@@ -6,7 +6,32 @@ Authors: Heather Macbeth
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Relation.Symm
 
-/-! # Tactic for isolating a subexpression within a given relation -/
+/-! # Tactic for isolating a subexpression within a given relation
+
+The `isolate` tactic "solves for x" in an equation or relation. For example:
+```
+example (a b : ℝ) (f : ℝ → ℝ) : 5 * f a - 3 < b := by
+  isolate f a
+  -- new goal: `⊢ f a < (b + 3) / 5`
+```
+
+This is done by maintaining an environment extension `Mathlib.Tactic.Isolate.isolateExt`, containing
+lemmas (tagged `@[isolate]`) whose conclusion is of the form `f a₁ a₂ ... x ... aₖ ~ y ↔ x ~' G` for
+some relations `~` and `~'`, some free variables `x` and `y`, and some operation `f`. When presented
+with a relational hypothesis or goal, `isolate e` recursively rewrites by `@[isolate]` lemmas to
+make `e` less deeply nested.
+
+This transformation may generate side goals, as needed by the `@[isolate]` lemmas being invoked.
+The `isolate` tactic will attempt to justify such side goals using the `gcongr` discharger
+(currently a wrapper for `positivity`) (as in the above example), unification, or type class
+inference, but if unsuccessful will present the side goal to the user. For example:
+```
+example (a b c : ℝ) (f : ℝ → ℝ) : c * f a - 3 < b := by
+  isolate f a
+  -- new goal: `⊢ f a < (b + 3) / c`
+  -- second (side) new goal: `⊢ 0 < c`
+```
+-/
 
 namespace Mathlib.Tactic.Isolate
 open Lean Meta

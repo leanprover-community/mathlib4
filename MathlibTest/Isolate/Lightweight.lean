@@ -6,7 +6,7 @@ Authors: Heather Macbeth
 import Mathlib.Tactic.Isolate
 import Mathlib.Tactic.Positivity
 
--- We deliberately mock R here so that we don't have to import the deps
+-- We deliberately mock ℝ here so that we don't have to import the deps
 axiom Real : Type
 notation "ℝ" => Real
 @[instance] axiom Real.field : Field ℝ
@@ -146,11 +146,6 @@ example (x : ℝ) (f : ℝ → ℝ) : f x = 12 := by
 #guard_msgs in
 #query_isolate_lemmas `LE.le `HAdd.hAdd 4 0
 
-/-- error: Please rephrase this lemma in the symmetric form a + b ~ c ↔ _. -/
-#guard_msgs in
-@[isolate]
-theorem eq_add_right_iff [AddGroup X] (a b c : X) : c = a + b ↔ a = c - b := test_sorry
-
 /--
 error: @[isolate] attribute only applies to lemmas with a conclusion of the form f a₁ a₂ ... x ... aₖ ~ y ↔ x ~' G.
  If-and-only-if structure not identified in this lemma's conclusion a * (b + c) = a * b + a * c
@@ -167,6 +162,11 @@ error: @[isolate] attribute only applies to lemmas with a conclusion of the form
 #guard_msgs in
 @[isolate]
 theorem foo (a b c : Nat) : Prime a ↔ a = b + c := test_sorry
+
+/-- error: Please rephrase this lemma in the symmetric form a + b ~ c ↔ _. -/
+#guard_msgs in
+@[isolate]
+theorem eq_add_right_iff [AddGroup X] (a b c : X) : c = a + b ↔ a = c - b := test_sorry
 
 /-- error: f should be a concrete function, for example it cannot be a variable -/
 #guard_msgs in
