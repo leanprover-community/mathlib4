@@ -42,7 +42,9 @@ jobs:
         NEW_DATE: "2025-09-20"
       run: |
         # Retrieve the cache for the unmodified repository
-        lake exe cache get || true
+        for repo in Mathlib Archive Counterexamples; do
+          lake exe cache get "$repo" || true
+        done
         # We create a temporary file to run the command that adds the set_option linter.removeDeprecations
         # to the relevant files and saves the modified files with a new name
         tmplean="$(mktemp -p Mathlib --suffix=.lean)"
