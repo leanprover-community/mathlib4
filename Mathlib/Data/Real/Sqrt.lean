@@ -212,7 +212,6 @@ theorem sqrt_le_iff : √x ≤ y ↔ 0 ≤ y ∧ x ≤ y ^ 2 := by
 theorem sqrt_lt (hx : 0 ≤ x) (hy : 0 ≤ y) : √x < y ↔ x < y ^ 2 := by
   rw [← sqrt_lt_sqrt_iff hx, sqrt_sq hy]
 
-@[isolate]
 theorem sqrt_lt' (hy : 0 < y) : √x < y ↔ x < y ^ 2 := by
   rw [← sqrt_lt_sqrt_iff_of_pos (pow_pos hy _), sqrt_sq hy.le]
 
@@ -359,6 +358,7 @@ theorem sqrt_div_self' : √x / x = 1 / √x := by rw [← div_sqrt, one_div_div
 
 theorem sqrt_div_self : √x / x = (√x)⁻¹ := by rw [sqrt_div_self', one_div]
 
+@[isolate]
 theorem lt_sqrt (hx : 0 ≤ x) : x < √y ↔ x ^ 2 < y := by
   rw [← sqrt_lt_sqrt_iff (sq_nonneg _), sqrt_sq hx]
 
