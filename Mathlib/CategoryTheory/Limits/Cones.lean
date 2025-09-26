@@ -417,7 +417,6 @@ def forget : Cone F ⥤ C where
 
 variable (G : C ⥤ D)
 
-set_option diagnostics true in
 /-- A functor `G : C ⥤ D` sends cones over `F` to cones over `F ⋙ G` functorially. -/
 @[simps]
 def functoriality : Cone F ⥤ Cone (F ⋙ G) where
@@ -428,7 +427,7 @@ def functoriality : Cone F ⥤ Cone (F ⋙ G) where
           naturality := by intros; erw [← G.map_comp]; simp } }
   map f :=
     { hom := G.map f.hom
-      w := fun j => by simp [-ConeMorphism.w, ← f.w j] }
+      w := ConeMorphism.map_w f G }
 
 /-- Functoriality is functorial. -/
 def functorialityCompFunctoriality (H : D ⥤ E) :
@@ -648,7 +647,7 @@ def functoriality : Cocone F ⥤ Cocone (F ⋙ G) where
           naturality := by intros; erw [← G.map_comp]; simp } }
   map f :=
     { hom := G.map f.hom
-      w := by intros; rw [← Functor.map_comp, CoconeMorphism.w] }
+      w := CoconeMorphism.map_w f G }
 
 /-- Functoriality is functorial. -/
 def functorialityCompFunctoriality (H : D ⥤ E) :
