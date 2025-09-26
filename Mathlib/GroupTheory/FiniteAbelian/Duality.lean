@@ -43,8 +43,6 @@ lemma exists_apply_ne_one_aux
   obtain ⟨i, hi⟩ : ∃ i : ι, e a i ≠ 1 := by
     contrapose! ha
     exact (MulEquiv.map_eq_one_iff e).mp <| funext ha
-  have hi : (e a i).toAdd ≠ 0 := by
-    simp only [ne_eq, toAdd_eq_zero, hi, not_false_eq_true]
   obtain ⟨φi, hφi⟩ := H (n i) (dvd_exponent e i) ((e a i).toAdd) hi
   use (φi.comp (Pi.evalMonoidHom (fun (i : ι) ↦ Multiplicative (ZMod (n i))) i)).comp e
   simpa only [coe_comp, coe_coe, Function.comp_apply, Pi.evalMonoidHom_apply, ne_eq] using hφi

@@ -280,7 +280,7 @@ section
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
--- Porting note: would it be okay to use this more generally?
+-- TODO: would it be okay to use this more generally?
 attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Eq
 
 /-- A binary fan with vertex `P` consists of the two projections `π₁ : P ⟶ X` and `π₂ : P ⟶ Y`. -/
@@ -654,7 +654,7 @@ theorem prod.lift_fst_comp_snd_comp {W X Y Z : C} [HasBinaryProduct W Y] [HasBin
   simp
 
 -- We take the right-hand side here to be simp normal form, as this way composition lemmas for
--- `f ≫ h` and `g ≫ k` can fire (e.g. `id_comp`) , while `map_fst` and `map_snd` can still work just
+-- `f ≫ h` and `g ≫ k` can fire (e.g. `id_comp`), while `map_fst` and `map_snd` can still work just
 -- as well.
 @[reassoc (attr := simp)]
 theorem prod.map_map {A₁ A₂ A₃ B₁ B₂ B₃ : C} [HasBinaryProduct A₁ B₁] [HasBinaryProduct A₂ B₂]
@@ -758,7 +758,7 @@ theorem coprod.desc_comp_inl_comp_inr {W X Y Z : C} [HasBinaryCoproduct W Y]
   rw [← coprod.map_desc]; simp
 
 -- We take the right-hand side here to be simp normal form, as this way composition lemmas for
--- `f ≫ h` and `g ≫ k` can fire (e.g. `id_comp`) , while `inl_map` and `inr_map` can still work just
+-- `f ≫ h` and `g ≫ k` can fire (e.g. `id_comp`), while `inl_map` and `inr_map` can still work just
 -- as well.
 @[reassoc (attr := simp)]
 theorem coprod.map_map {A₁ A₂ A₃ B₁ B₂ B₃ : C} [HasBinaryCoproduct A₁ B₁] [HasBinaryCoproduct A₂ B₂]
@@ -1352,7 +1352,7 @@ variable {sXY : BinaryFan X Y} {sYZ : BinaryFan Y Z}
 /-- Given binary fans `sXY` over `X Y`, and `sYZ` over `Y Z`, and `s` over `sXY.X Z`,
 if `sYZ` is a limit cone we can construct a binary fan over `X sYZ.X`.
 
-This is an ingredient of building the associator for a cartesian category. -/
+This is an ingredient of building the associator for a Cartesian category. -/
 def BinaryFan.assoc (Q : IsLimit sYZ) (s : BinaryFan sXY.pt Z) : BinaryFan X sYZ.pt :=
   mk (s.fst ≫ sXY.fst) (Q.lift (mk (s.fst ≫ sXY.snd) s.snd))
 
@@ -1367,7 +1367,7 @@ lemma BinaryFan.assoc_snd (Q : IsLimit sYZ) (s : BinaryFan sXY.pt Z) :
 /-- Given binary fans `sXY` over `X Y`, and `sYZ` over `Y Z`, and `s` over `X sYZ.X`,
 if `sYZ` is a limit cone we can construct a binary fan over `sXY.X Z`.
 
-This is an ingredient of building the associator for a cartesian category. -/
+This is an ingredient of building the associator for a Cartesian category. -/
 def BinaryFan.assocInv (P : IsLimit sXY) (s : BinaryFan X sYZ.pt) : BinaryFan sXY.pt Z :=
   BinaryFan.mk (P.lift (BinaryFan.mk s.fst (s.snd ≫ sYZ.fst))) (s.snd ≫ sYZ.snd)
 
@@ -1392,15 +1392,11 @@ protected def IsLimit.assoc (P : IsLimit sXY) (Q : IsLimit sYZ) {s : BinaryFan s
     · apply P.hom_ext
       rintro ⟨⟨⟩⟩ <;> simp
       · exact w ⟨.left⟩
-      · specialize w ⟨.right⟩
-        simp? at w says
-          simp only [pair_obj_right, BinaryFan.assoc_snd,
-            Functor.const_obj_obj, pair_obj_left] at w
+      · replace w : m ≫ Q.lift (BinaryFan.mk (s.fst ≫ sXY.snd) s.snd) = t.π.app ⟨.right⟩ := by
+          simpa using w ⟨.right⟩
         simp [← w]
-    · specialize w ⟨.right⟩
-      simp? at w says
-        simp only [pair_obj_right, BinaryFan.assoc_snd,
-          Functor.const_obj_obj, pair_obj_left] at w
+    · replace w : m ≫ Q.lift (BinaryFan.mk (s.fst ≫ sXY.snd) s.snd) = t.π.app ⟨.right⟩ := by
+        simpa using w ⟨.right⟩
       simp [← w]
 
 /-- Given two pairs of limit cones corresponding to the parenthesisations of `X × Y × Z`,

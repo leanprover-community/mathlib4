@@ -26,7 +26,7 @@ Let `R` be a ring, and `I` be a left ideal of `R`
 
 * `Ideal.jacobson I` is the Jacobson radical, i.e. the infimum of all maximal ideals containing `I`.
 
-* `Ideal.IsLocal I` is the proposition that the jacobson radical of `I` is itself a maximal ideal
+* `Ideal.IsLocal I` is the proposition that the Jacobson radical of `I` is itself a maximal ideal
 
 Furthermore when `I` is a two-sided ideal of `R`
 
@@ -34,9 +34,9 @@ Furthermore when `I` is a two-sided ideal of `R`
 
 ## Main statements
 
-* `mem_jacobson_iff` gives a characterization of members of the jacobson of I
+* `mem_jacobson_iff` gives a characterization of members of the Jacobson of I
 
-* `Ideal.isLocal_of_isMaximal_radical`: if the radical of I is maximal then so is the jacobson
+* `Ideal.isLocal_of_isMaximal_radical`: if the radical of I is maximal then so is the Jacobson
   radical
 
 ## Tags
@@ -177,7 +177,7 @@ theorem map_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f) 
     RingHom.ker f ≤ I → map f I.jacobson = (map f I).jacobson := by
   intro h
   unfold Ideal.jacobson
-  -- Porting note: dot notation for `RingHom.ker` does not work
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): dot notation for `RingHom.ker` does not work
   have : ∀ J ∈ { J : Ideal R | I ≤ J ∧ J.IsMaximal }, RingHom.ker f ≤ J :=
     fun J hJ => le_trans h hJ.left
   refine Trans.trans (map_sInf hf this) (le_antisymm ?_ ?_)
@@ -295,7 +295,6 @@ theorem mem_jacobson_bot {x : R} : x ∈ jacobson (⊥ : Ideal R) ↔ ∀ y, IsU
 
 /-- An ideal `I` of `R` is equal to its Jacobson radical if and only if
 the Jacobson radical of the quotient ring `R/I` is the zero ideal -/
--- Porting note: changed `Quotient.mk'` to ``
 theorem jacobson_eq_iff_jacobson_quotient_eq_bot :
     I.jacobson = I ↔ jacobson (⊥ : Ideal (R ⧸ I)) = ⊥ := by
   have hf : Function.Surjective (Ideal.Quotient.mk I) := Submodule.Quotient.mk_surjective I
@@ -311,7 +310,6 @@ theorem jacobson_eq_iff_jacobson_quotient_eq_bot :
 
 /-- The standard radical and Jacobson radical of an ideal `I` of `R` are equal if and only if
 the nilradical and Jacobson radical of the quotient ring `R/I` coincide -/
--- Porting note: changed `Quotient.mk'` to ``
 theorem radical_eq_jacobson_iff_radical_quotient_eq_jacobson_bot :
     I.radical = I.jacobson ↔ radical (⊥ : Ideal (R ⧸ I)) = jacobson ⊥ := by
   have hf : Function.Surjective (Ideal.Quotient.mk I) := Submodule.Quotient.mk_surjective I
@@ -343,7 +341,7 @@ variable [CommRing R]
 
 /-- An ideal `I` is local iff its Jacobson radical is maximal. -/
 class IsLocal (I : Ideal R) : Prop where
-  /-- A ring `R` is local if and only if its jacobson radical is maximal -/
+  /-- A ring `R` is local if and only if its Jacobson radical is maximal -/
   out : IsMaximal (jacobson I)
 
 theorem isLocal_iff {I : Ideal R} : IsLocal I ↔ IsMaximal (jacobson I) :=

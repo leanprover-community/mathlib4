@@ -8,9 +8,9 @@ import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
 /-!
-# Algebras over artinian rings
+# Algebras over Artinian rings
 
-In this file we collect results about algebras over artinian rings.
+In this file we collect results about algebras over Artinian rings.
 -/
 
 namespace IsArtinianRing
@@ -20,7 +20,7 @@ variable [CommRing R] [IsArtinianRing R] [CommRing A] [Algebra R A]
 
 open nonZeroDivisors
 
-/-- In an `R`-algebra over an artinian ring `R`, if an element is integral and
+/-- In an `R`-algebra over an Artinian ring `R`, if an element is integral and
 is not a zero divisor, then it is a unit. -/
 theorem isUnit_of_isIntegral_of_nonZeroDivisor {a : A}
     (hi : IsIntegral R a) (ha : a ∈ A⁰) : IsUnit a :=
@@ -32,18 +32,18 @@ theorem isUnit_of_isIntegral_of_nonZeroDivisor {a : A}
   have hb : b ∈ B⁰ := comap_nonZeroDivisors_le_of_injective hinj ha
   (isUnit_of_mem_nonZeroDivisors hb).map B.subtype
 
-/-- Integral element of an algebra over artinian ring `R` is either a zero divisor or a unit. -/
+/-- Integral element of an algebra over Artinian ring `R` is either a zero divisor or a unit. -/
 theorem isUnit_iff_nonZeroDivisor_of_isIntegral {a : A}
     (hi : IsIntegral R a) : IsUnit a ↔ a ∈ A⁰ :=
   ⟨IsUnit.mem_nonZeroDivisors, isUnit_of_isIntegral_of_nonZeroDivisor hi⟩
 
-/-- In an `R`-algebra over an artinian ring `R`, if an element is integral and
+/-- In an `R`-algebra over an Artinian ring `R`, if an element is integral and
 is not a zero divisor, then it is a unit. -/
 theorem isUnit_of_nonZeroDivisor_of_isIntegral' [Algebra.IsIntegral R A] {a : A}
     (ha : a ∈ A⁰) : IsUnit a :=
   isUnit_of_isIntegral_of_nonZeroDivisor (R := R) (Algebra.IsIntegral.isIntegral a) ha
 
-/-- Integral element of an algebra over artinian ring `R` is either a zero divisor or a unit. -/
+/-- Integral element of an algebra over Artinian ring `R` is either a zero divisor or a unit. -/
 theorem isUnit_iff_nonZeroDivisor_of_isIntegral' [Algebra.IsIntegral R A] {a : A} :
     IsUnit a ↔ a ∈ A⁰ :=
   isUnit_iff_nonZeroDivisor_of_isIntegral (R := R) (Algebra.IsIntegral.isIntegral a)

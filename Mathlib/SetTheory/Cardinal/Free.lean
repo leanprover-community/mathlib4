@@ -112,7 +112,7 @@ See also `Infinite.nonempty_field`. -/
 instance nonempty_commRing [Nonempty α] : Nonempty (CommRing α) := by
   obtain hR | hR := finite_or_infinite α
   · obtain ⟨x⟩ := nonempty_fintype α
-    have : NeZero (Fintype.card α) := ⟨by inhabit α; simp⟩
+    have : NeZero (Fintype.card α) := ⟨by simp⟩
     classical
     obtain ⟨e⟩ := Fintype.truncEquivFin α
     exact ⟨open scoped Fin.CommRing in e.commRing⟩
