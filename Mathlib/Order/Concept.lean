@@ -252,24 +252,13 @@ theorem intent_injective : Injective (@intent α β r) := fun _ _ => ext'
 alias snd_injective := intent_injective
 
 /-- Copy a concept, adjusting definitional equalities. -/
+@[simps!]
 def copy (c : Concept α β r) (e : Set α) (he : e = c.extent) (i : Set β) (hi : i = c.intent) :
     Concept α β r where
   extent := e
   intent := i
   upperPolar_extent := by simp_all
   lowerPolar_intent := by simp_all
-
-@[simp]
-theorem extent_copy (c : Concept α β r)
-    (e : Set α) (he : e = c.extent) (i : Set β) (hi : i = c.intent) :
-    (c.copy e he i hi).extent = e :=
-  rfl
-
-@[simp]
-theorem intent_copy (c : Concept α β r)
-    (e : Set α) (he : e = c.extent) (i : Set β) (hi : i = c.intent) :
-    (c.copy e he i hi).intent = i :=
-  rfl
 
 theorem copy_eq (c : Concept α β r)
     (e : Set α) (he : e = c.extent) (i : Set β) (hi : i = c.intent) :
