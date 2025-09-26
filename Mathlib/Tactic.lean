@@ -128,6 +128,7 @@ import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.IrreducibleDef
+import Mathlib.Tactic.Isolate
 import Mathlib.Tactic.Isolate.Core
 import Mathlib.Tactic.Isolate.Tagging
 import Mathlib.Tactic.Lemma
