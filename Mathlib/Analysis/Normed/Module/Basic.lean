@@ -462,8 +462,9 @@ See Note [reducible non-instances].
 abbrev NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
   RestrictScalars.normedSpace _ 𝕜' E
 
-theorem NormedSpace.restrictScalars_eq [NormedSpace 𝕜 E] [IsScalarTower 𝕜 𝕜' E] :
-    restrictScalars 𝕜 𝕜' E = ‹_› := by
+theorem NormedSpace.restrictScalars_eq {E : Type*} [SeminormedAddCommGroup E]
+    [h : NormedSpace 𝕜 E] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E] :
+    NormedSpace.restrictScalars 𝕜 𝕜' E = h := by
   ext
   apply algebraMap_smul
 
