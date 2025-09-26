@@ -267,10 +267,10 @@ lemma commSqOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) (c : Cocone F
   w := by
     apply Sigma.hom_ext
     intro j
-    simp only [id_obj, const_obj_obj, colimit.ι_desc_assoc, Discrete.functor_obj_eq_as, Cofan.mk_pt,
-      Cofan.mk_ι_app, MonoFactorisation.fac, colimit.ι_desc]
+    simp only [colimit.ι_desc_assoc, Discrete.functor_obj_eq_as, Cofan.mk_pt, Cofan.mk_ι_app,
+      MonoFactorisation.fac, colimit.ι_desc]
     convert (c.ι.app j).w
-    simp only [id_obj, const_obj_obj, CostructuredArrow.right_eq_id, const_obj_map, comp_id]
+    simp only [const_obj_obj, CostructuredArrow.right_eq_id, const_obj_map, comp_id]
     exact rfl
 
 /-- A helper function, providing the lift structure used to construct colimits. -/
