@@ -120,6 +120,12 @@ theorem IsChain.lt_of_le [PartialOrder α] {s : Set α} (h : IsChain (· ≤ ·)
     IsChain (· < ·) s := fun _a ha _b hb hne ↦
   (h ha hb hne).imp hne.lt_of_le hne.lt_of_le'
 
+protected theorem IsChain.sdiff {s t : Set α} (h : IsChain r s) : IsChain r (s \ t) :=
+  fun a ha b hb hne ↦ @h a (Set.mem_of_mem_inter_left ha) b (Set.mem_of_mem_inter_left hb) hne
+
+protected theorem IsChain.coe_univ {s : Set α} (h : IsChain r s) : @IsChain ↑s (r ↑· ↑·) Set.univ :=
+  fun a _ b _ hne ↦  @h a a.property b b.property (Subtype.coe_ne_coe.mpr hne)
+
 section Rel
 
 variable {r : α → α → Prop} {r' : β → β → Prop} {s : Set α}
