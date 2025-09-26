@@ -52,8 +52,8 @@ lemmas must have a conclusion of the form `f a₁ a₂ ... x ... aₖ ~ y ↔ x 
 * between two relations `~` and `~'`;
 * with a free variable `y` on one side of the relation `~` and a free variable `x` on one side of
   the relation `~'`
-* and with a function application as the other side of the relation `~`, with `x` appearing exactly
-  once among the arguments to that function.
+* and with a function application on one side of the relation `~` (the other side from `y`), with
+  `x` appearing exactly once among the arguments to that function.
 
 Such a lemma will be used to isolate a term appearing in the `x` position in a relation like
 `f a₁ a₂ ... x ... aₖ ~ y`, converting it to a logically equivalent relation `x ~' G` with the `x`
