@@ -79,27 +79,25 @@ lemma roots_quadratic_eq_pair_iff_of_ne_zero [CommRing R] [IsDomain R] {x1 x2 : 
 
 /-- **Vieta's formula** for quadratics as an iff (`aroots` version). -/
 lemma aroots_quadratic_eq_pair_iff_of_ne_zero [CommRing T] [CommRing S] [IsDomain S]
-    [Algebra T S] {p : T[X]} {x1 x2 : S} (ha : (map (algebraMap T S) p).natDegree = 2) :
+    [Algebra T S] {p : T[X]} {x1 x2 : S} (ha : (map (algebraMap T S) p).degree = 2) :
     p.aroots S = {x1, x2} ↔
       algebraMap T S (p.coeff 1) = -algebraMap T S (p.coeff 2) * (x1 + x2) ∧
       algebraMap T S (p.coeff 0) = algebraMap T S (p.coeff 2) * x1 * x2 := by
-  rw [roots_quadratic_eq_pair_iff_of_ne_zero
-    ((degree_eq_iff_natDegree_eq_of_pos Nat.zero_lt_two).mpr ha), coeff_map, coeff_map, coeff_map]
+  rw [roots_quadratic_eq_pair_iff_of_ne_zero ha, coeff_map, coeff_map, coeff_map]
 
 /-- **Vieta's formula** for quadratics as an iff (`Field` version). -/
 lemma roots_quadratic_eq_pair_iff_of_ne_zero' [Field R] {p : R[X]} {x1 x2 : R}
-    (hp : p.natDegree = 2) : p.roots = {x1, x2} ↔
+    (hp : p.degree = 2) : p.roots = {x1, x2} ↔
       x1 + x2 = -(p.coeff 1) / (p.coeff 2) ∧ x1 * x2 = (p.coeff 0) / (p.coeff 2) := by
-  rw [roots_quadratic_eq_pair_iff_of_ne_zero
-    ((degree_eq_iff_natDegree_eq_of_pos Nat.zero_lt_two).mpr hp)]
-  have h0 : (p.coeff 2) ≠ 0 := coeff_ne_zero_of_eq_natDegree Nat.zero_lt_two hp
+  rw [roots_quadratic_eq_pair_iff_of_ne_zero hp]
+  have h0 : (p.coeff 2) ≠ 0 := coeff_ne_zero_of_eq_degree hp
   field_simp
   exact and_congr ⟨fun h => by linear_combination h, fun h => by linear_combination h⟩
     ⟨fun h => by linear_combination -h, fun h => by linear_combination -h⟩
 
 /-- **Vieta's formula** for quadratics as an iff (`aroots, Field` version). -/
 lemma aroots_quadratic_eq_pair_iff_of_ne_zero' [CommRing T] [Field S] [Algebra T S] {p : T[X]}
-    {x1 x2 : S} (ha : (map (algebraMap T S) p).natDegree = 2) :
+    {x1 x2 : S} (ha : (map (algebraMap T S) p).degree = 2) :
     p.aroots S = {x1, x2} ↔
       x1 + x2 = -algebraMap T S (p.coeff 1) / algebraMap T S (p.coeff 2) ∧
       x1 * x2 = algebraMap T S (p.coeff 0) / algebraMap T S (p.coeff 2) := by
