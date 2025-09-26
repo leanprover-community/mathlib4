@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Set.Lattice
+import Mathlib.Order.Closure
 
 /-!
 # Formal concept analysis
@@ -48,16 +49,10 @@ which `r` relates to all elements of `s`. -/
 def upperPolar (s : Set α) : Set β :=
   { b | ∀ ⦃a⦄, a ∈ s → r a b }
 
-@[deprecated (since := "2025-07-10")]
-alias intentClosure := upperPolar
-
 /-- The lower polar of `t : Set β` along a relation `r : α → β → Prop` is the set of all elements
 which `r` relates to all elements of `t`. -/
 def lowerPolar (t : Set β) : Set α :=
   { a | ∀ ⦃b⦄, b ∈ t → r a b }
-
-@[deprecated (since := "2025-07-10")]
-alias extentClosure := lowerPolar
 
 variable {r} {a : α} {b : β}
 
@@ -75,6 +70,10 @@ variable (r)
 
 theorem gc_upperPolar_lowerPolar :
     GaloisConnection (toDual ∘ upperPolar r) (lowerPolar r ∘ ofDual) := fun _ _ =>
+  subset_upperPolar_iff_subset_lowerPolar
+
+theorem gc_lowerPolar_upperPolar :
+    GaloisConnection (toDual ∘ lowerPolar r) (upperPolar r ∘ ofDual) := fun _ _ =>
   subset_upperPolar_iff_subset_lowerPolar
 
 @[deprecated (since := "2025-07-10")]
@@ -202,6 +201,22 @@ theorem lowerPolar_anti : Antitone (lowerPolar r) :=
 @[deprecated (since := "2025-07-10")]
 alias extentClosure_anti := lowerPolar_anti
 
+theorem lowerPolar_upperPolar_monotone : Monotone (lowerPolar r ∘ upperPolar r) :=
+  (lowerPolar_anti r).comp (upperPolar_anti r)
+
+theorem upperPolar_lowerPolar_monotone : Monotone (upperPolar r ∘ lowerPolar r) :=
+  (upperPolar_anti r).comp (lowerPolar_anti r)
+
+/-- The `extentClosure` of a set is the smallest extent containing it. -/
+@[simps!]
+def extentClosure (r : α → β → Prop) : ClosureOperator (Set α) :=
+  (gc_upperPolar_lowerPolar r).closureOperator
+
+/-- The `intentClosure` of a set is the smallest intent containing it. -/
+@[simps!]
+def intentClosure (r : α → β → Prop) : ClosureOperator (Set β) :=
+  (gc_lowerPolar_upperPolar r).closureOperator
+
 /-! ### `IsIntent` and `IsExtent` -/
 
 
@@ -239,6 +254,11 @@ theorem isExtent_iInter₂ (f : ∀ i, κ i → Set α) (hf : ∀ i j, (f i j).I
   rw [isExtent_iff]
   exact ⟨_, (lowerPolar_iUnion₂ ..).trans (iInter₂_congr hf)⟩
 
+theorem IsExtent.lowerPolar_upperPolar_subset {s' : Set α} (h : IsExtent r s) (hs' : s' ⊆ s) :
+    lowerPolar r (upperPolar r s') ⊆ s := by
+  rw [← h.eq]
+  exact lowerPolar_upperPolar_monotone r hs'
+
 /-- A set is an intent when either of the following equivalent definitions holds:
 
 - The `upperPolar` of its `lowerPolar` is itself.
@@ -268,6 +288,11 @@ theorem isIntent_iInter₂ (f : ∀ i, κ i → Set β) (hf : ∀ i j, (f i j).I
     (⋂ (i) (j), f i j).IsIntent r := by
   rw [isIntent_iff]
   exact ⟨_, (upperPolar_iUnion₂ ..).trans (iInter₂_congr hf)⟩
+
+theorem IsIntent.upperPolar_lowerPolar_subset {t' : Set β} (h : IsIntent r t) (ht' : t' ⊆ t) :
+    upperPolar r (lowerPolar r t') ⊆ t := by
+  rw [← h.eq]
+  exact upperPolar_lowerPolar_monotone r ht'
 
 end Set
 
@@ -544,11 +569,11 @@ instance : InfSet (Concept α β r) where
   sInf S := (isExtent_iInter₂ _ fun c (_ : c ∈ S) => c.isExtent_extent).concept
 
 instance : CompleteLattice (Concept α β r) where
-  le_sSup := fun _ _ hc => intent_subset_intent_iff.1 <| biInter_subset_of_mem hc
-  sSup_le := fun _ _ hc =>
+  le_sSup _ _ hc := intent_subset_intent_iff.1 <| biInter_subset_of_mem hc
+  sSup_le _ _ hc :=
     intent_subset_intent_iff.1 <| subset_iInter₂ fun d hd => intent_subset_intent_iff.2 <| hc d hd
-  sInf_le := fun _ _ => biInter_subset_of_mem
-  le_sInf := fun _ _ => subset_iInter₂
+  sInf_le _ _ := biInter_subset_of_mem
+  le_sInf _ _ := subset_iInter₂
 
 @[deprecated (since := "2025-09-26")]
 alias extent_top := top_extent
