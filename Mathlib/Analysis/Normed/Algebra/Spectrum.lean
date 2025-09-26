@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
-import Mathlib.Analysis.Analytic.RadiusLiminf
 import Mathlib.Analysis.Real.Spectrum
 import Mathlib.Analysis.Normed.Algebra.Exponential
 import Mathlib.Analysis.Normed.Algebra.UnitizationL1
