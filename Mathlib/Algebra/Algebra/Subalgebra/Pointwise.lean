@@ -74,7 +74,7 @@ scoped[Pointwise] attribute [instance] Subalgebra.pointwiseMulAction
 
 open Pointwise
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_pointwise_smul (m : R') (S : Subalgebra R A) : ↑(m • S) = m • (S : Set A) :=
   rfl
 

@@ -105,7 +105,7 @@ instance : Inhabited (Subfield K) :=
 theorem mem_top (x : K) : x ∈ (⊤ : Subfield K) :=
   Set.mem_univ x
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_top : ((⊤ : Subfield K) : Set K) = Set.univ :=
   rfl
 
@@ -148,7 +148,7 @@ def map (s : Subfield K) : Subfield L :=
       rintro _ ⟨x, hx, rfl⟩
       exact ⟨x⁻¹, s.inv_mem hx, map_inv₀ f x⟩ }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_map : (s.map f : Set L) = f '' s :=
   rfl
 
@@ -180,7 +180,7 @@ variable (g : L →+* M) (f : K →+* L)
 def fieldRange : Subfield L :=
   ((⊤ : Subfield K).map f).copy (Set.range f) Set.image_univ.symm
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_fieldRange : (f.fieldRange : Set L) = Set.range f :=
   rfl
 
@@ -223,7 +223,7 @@ instance : Min (Subfield K) :=
         Subring.mem_inf.mpr
           ⟨s.inv_mem (Subring.mem_inf.mp hx).1, t.inv_mem (Subring.mem_inf.mp hx).2⟩ }⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_inf (p p' : Subfield K) : ((p ⊓ p' : Subfield K) : Set K) = p.carrier ∩ p'.carrier :=
   rfl
 

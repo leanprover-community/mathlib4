@@ -355,7 +355,7 @@ instance : Top (Subsemiring R) :=
 theorem mem_top (x : R) : x ∈ (⊤ : Subsemiring R) :=
   Set.mem_univ x
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_top : ((⊤ : Subsemiring R) : Set R) = Set.univ :=
   rfl
 
@@ -368,7 +368,7 @@ instance : Min (Subsemiring R) :=
   ⟨fun s t =>
     { s.toSubmonoid ⊓ t.toSubmonoid, s.toAddSubmonoid ⊓ t.toAddSubmonoid with carrier := s ∩ t }⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_inf (p p' : Subsemiring R) : ((p ⊓ p' : Subsemiring R) : Set R) = (p : Set R) ∩ p' :=
   rfl
 
