@@ -182,7 +182,6 @@ lemma Algebra.trace_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [C
     letI : IsScalarTower A B C := IsScalarTower.of_algebraMap_eq' he.symm
     rw [Algebra.trace_eq_matrix_trace b,
       Algebra.trace_eq_matrix_trace (b.mapCoeffs e.symm (by simp [Algebra.smul_def, ← he]))]
-    change e.toAddMonoidHom _ = _
     rw [AddMonoidHom.map_trace]
     congr
     ext i j
