@@ -61,6 +61,15 @@ lemma of_bijective (hf : Function.Bijective f) : f.FaithfullyFlat := by
     exact (RingEquiv.ofBijective f hf).injective (by simp)
   rw [← PrimeSpectrum.specComap_comp_apply, this, PrimeSpectrum.specComap_id]
 
+lemma injective (hf : f.FaithfullyFlat) : Function.Injective ⇑f := by
+  algebraize [f]
+  intro r r' hrr'
+  apply Module.FaithfullyFlat.tensorProduct_mk_injective (A := R) (B := S) R
+  simp only [TensorProduct.mk_apply]
+  rw [← mul_one r, ← mul_one r']
+  simp only [← smul_eq_mul, ← TensorProduct.smul_tmul]
+  simp only [Algebra.smul_def, mul_one, RingHom.algebraMap_toAlgebra, hrr']
+
 lemma respectsIso : RespectsIso FaithfullyFlat :=
   stableUnderComposition.respectsIso (fun e ↦ .of_bijective e.bijective)
 

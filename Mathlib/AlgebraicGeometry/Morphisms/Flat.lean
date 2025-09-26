@@ -7,7 +7,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 import Mathlib.AlgebraicGeometry.Morphisms.Affine
 import Mathlib.AlgebraicGeometry.PullbackCarrier
-import Mathlib.RingTheory.RingHom.Flat
+import Mathlib.RingTheory.RingHom.FaithfullyFlat
 
 /-!
 # Flat morphisms
@@ -114,6 +114,27 @@ lemma isQuotientMap_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [Qua
   · exact (surjective_iff (Spec.map φ)).mp inferInstance
   · apply RingHom.Flat.generalizingMap_comap
     rwa [← HasRingHomProperty.Spec_iff (P := @Flat)]
+
+/-- A flat surjective morphism of schemes is an epimorphism in the category of schemes. -/
+lemma epi_of_flat_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [Surjective f] : Epi f := by
+  constructor
+  intro _ g g' hg
+  apply Scheme.Hom.ext'
+  apply LocallyRingedSpace.Hom.ext'
+  fapply SheafedSpace.hom_stalk_ext
+  · apply ((TopCat.epi_iff_surjective f.base).mpr Surjective.surj).left_cancellation g.base g'.base
+    rw [← Scheme.comp_coeBase, hg, Scheme.comp_coeBase]
+  · intro y
+    change g.stalkMap y = _ ≫ g'.stalkMap y
+    obtain ⟨x, hx⟩ := ‹Surjective f›.surj y
+    rw [← hx]
+    algebraize [(f.stalkMap x).hom]
+    haveI : Module.FaithfullyFlat (Y.presheaf.stalk (f.base.hom x)) (X.presheaf.stalk x) :=
+      @Module.FaithfullyFlat.of_flat_of_isLocalHom _ _ _ _ _ _ _
+        (Flat.stalkMap f x) (f.toLRSHom.prop x)
+    apply ConcreteCategory.mono_of_injective _ (‹RingHom.FaithfullyFlat _›.injective)
+      |>.right_cancellation _ _
+    simp only [← Scheme.stalkMap_comp, Category.assoc, Scheme.stalkMap_congr_hom _ _ hg x]
 
 end Flat
 
