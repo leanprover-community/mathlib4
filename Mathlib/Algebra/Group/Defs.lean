@@ -533,8 +533,8 @@ theorem npowBinRec.go_spec {M : Type*} [Semigroup M] [One M] (k : ℕ) (m n : M)
   | bit b k' k'0 ih =>
     rw [Nat.binaryRec_eq _ _ (Or.inl rfl), ih _ _ k'0]
     cases b <;> simp only [Nat.bit, cond_false, cond_true, npowRec'_two_mul]
-    rw [npowRec'_succ (by omega), npowRec'_two_mul, ← npowRec'_two_mul,
-      ← npowRec'_mul_comm (by omega), mul_assoc]
+    rw [npowRec'_succ (by cutsat), npowRec'_two_mul, ← npowRec'_two_mul,
+      ← npowRec'_mul_comm (by cutsat), mul_assoc]
 
 /--
 An abbreviation for `npowRec` with an additional typeclass assumption on associativity
@@ -977,7 +977,7 @@ theorem div_eq_mul_inv (a b : G) : a / b = a * b⁻¹ :=
 
 alias division_def := div_eq_mul_inv
 
-@[to_additive, field_simps] -- The attributes are out of order on purpose
+@[to_additive]
 theorem inv_eq_one_div (x : G) : x⁻¹ = 1 / x := by rw [div_eq_mul_inv, one_mul]
 
 @[to_additive]
