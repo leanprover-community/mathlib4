@@ -46,7 +46,7 @@ variable (R : Type u) [Ring R]
 
 /-- The category of R-modules and their morphisms.
 
-Note that in the case of `R = ℤ`, we can not
+Note that in the case of `R = ℤ`, we cannot
 impose here that the `ℤ`-multiplication field from the module structure is defeq to the one coming
 from the `isAddCommGroup` structure (contrary to what we do for all module structures in
 mathlib), which creates some difficulties down the road. -/
@@ -339,6 +339,14 @@ theorem subsingleton_of_isZero (h : IsZero M) : Subsingleton M := by
   refine subsingleton_of_forall_eq 0 (fun x ↦ ?_)
   rw [← LinearMap.id_apply (R := R) x, ← ModuleCat.hom_id]
   simp only [(CategoryTheory.Limits.IsZero.iff_id_eq_zero M).mp h, hom_zero, LinearMap.zero_apply]
+
+lemma isZero_iff_subsingleton : IsZero M ↔ Subsingleton M where
+  mp := subsingleton_of_isZero
+  mpr _ := isZero_of_subsingleton M
+
+@[simp]
+lemma isZero_of_iff_subsingleton {M : Type*} [AddCommGroup M] [Module R M] :
+    IsZero (of R M) ↔ Subsingleton M := isZero_iff_subsingleton
 
 end AddCommGroup
 

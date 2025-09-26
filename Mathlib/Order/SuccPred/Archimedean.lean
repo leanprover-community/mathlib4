@@ -55,19 +55,20 @@ theorem exists_succ_iterate_iff_le : (∃ n, succ^[n] a = b) ↔ a ≤ b := by
 
 /-- Induction principle on a type with a `SuccOrder` for all elements above a given element `m`. -/
 @[elab_as_elim]
-theorem Succ.rec {P : α → Prop} {m : α} (h0 : P m) (h1 : ∀ n, m ≤ n → P n → P (succ n)) ⦃n : α⦄
-    (hmn : m ≤ n) : P n := by
-  obtain ⟨n, rfl⟩ := hmn.exists_succ_iterate; clear hmn
+theorem Succ.rec {m : α} {P : ∀ n, m ≤ n → Prop} (rfl : P m le_rfl)
+    (succ : ∀ n (hmn : m ≤ n), P n hmn → P (succ n) (hmn.trans <| le_succ _)) ⦃n : α⦄
+    (hmn : m ≤ n) : P n hmn := by
+  obtain ⟨n, rfl⟩ := hmn.exists_succ_iterate
   induction n with
-  | zero => exact h0
+  | zero => exact rfl
   | succ n ih =>
-    rw [Function.iterate_succ_apply']
-    exact h1 _ (id_le_iterate_of_id_le le_succ n m) ih
+    simp_rw [Function.iterate_succ_apply']
+    exact succ _ (id_le_iterate_of_id_le le_succ n m) (ih _)
 
 theorem Succ.rec_iff {p : α → Prop} (hsucc : ∀ a, p a ↔ p (succ a)) {a b : α} (h : a ≤ b) :
     p a ↔ p b := by
   obtain ⟨n, rfl⟩ := h.exists_succ_iterate
-  exact Iterate.rec (fun b => p a ↔ p b) (fun c hc => hc.trans (hsucc _)) Iff.rfl n
+  exact Iterate.rec (fun b => p a ↔ p b) Iff.rfl (fun c hc => hc.trans (hsucc _)) n
 
 lemma le_total_of_codirected {r v₁ v₂ : α} (h₁ : r ≤ v₁) (h₂ : r ≤ v₂) : v₁ ≤ v₂ ∨ v₂ ≤ v₁ := by
   obtain ⟨n, rfl⟩ := h₁.exists_succ_iterate
@@ -99,9 +100,10 @@ theorem exists_pred_iterate_iff_le : (∃ n, pred^[n] b = a) ↔ a ≤ b :=
 
 /-- Induction principle on a type with a `PredOrder` for all elements below a given element `m`. -/
 @[elab_as_elim]
-theorem Pred.rec {P : α → Prop} {m : α} (h0 : P m) (h1 : ∀ n, n ≤ m → P n → P (pred n)) ⦃n : α⦄
-    (hmn : n ≤ m) : P n :=
-  Succ.rec (α := αᵒᵈ) (P := P) h0 h1 hmn
+theorem Pred.rec {m : α} {P : ∀ n, n ≤ m → Prop} (rfl : P m le_rfl)
+    (pred : ∀ n (hnm : n ≤ m), P n hnm → P (pred n) ((pred_le _).trans hnm)) ⦃n : α⦄
+    (hnm : n ≤ m) : P n hnm :=
+  Succ.rec (α := αᵒᵈ) (P := P) rfl pred hnm
 
 theorem Pred.rec_iff {p : α → Prop} (hsucc : ∀ a, p a ↔ p (pred a)) {a b : α} (h : a ≤ b) :
     p a ↔ p b :=
@@ -238,7 +240,7 @@ instance (priority := 100) WellFoundedLT.toIsPredArchimedean [h : WellFoundedLT 
   ⟨fun {a b} => by
     refine WellFounded.fix (C := fun b => a ≤ b → ∃ n, Nat.iterate pred n b = a)
       h.wf ?_ b
-    intros b ih hab
+    intro b ih hab
     replace hab := eq_or_lt_of_le hab
     rcases hab with (rfl | hab)
     · exact ⟨0, rfl⟩

@@ -647,8 +647,8 @@ theorem desc_op_comp_opCoproductIsoProduct_hom [HasCoproduct Z] {X : C} (π : (a
     (Sigma.desc π).op ≫ (opCoproductIsoProduct Z).hom = Pi.lift (fun a ↦ (π a).op) := by
   convert desc_op_comp_opCoproductIsoProduct'_hom (coproductIsCoproduct Z)
     (productIsProduct (op <| Z ·)) (Cofan.mk _ π)
-  · ext; simp [Sigma.desc, coproductIsCoproduct]
-  · ext; simp [Pi.lift, productIsProduct]
+  · simp [Sigma.desc, coproductIsCoproduct]
+  · simp [Pi.lift, productIsProduct]
 
 end OppositeCoproducts
 
@@ -743,8 +743,8 @@ theorem opProductIsoCoproduct_inv_comp_lift [HasProduct Z] {X : C} (π : (a : α
     (opProductIsoCoproduct Z).inv ≫ (Pi.lift π).op  = Sigma.desc (fun a ↦ (π a).op) := by
   convert opProductIsoCoproduct'_inv_comp_lift (productIsProduct Z)
     (coproductIsCoproduct (op <| Z ·)) (Fan.mk _ π)
-  · ext; simp [Pi.lift, productIsProduct]
-  · ext; simp [Sigma.desc, coproductIsCoproduct]
+  · simp [Pi.lift, productIsProduct]
+  · simp [Sigma.desc, coproductIsCoproduct]
 
 end OppositeProducts
 
@@ -1046,7 +1046,7 @@ end Pullback
 section Pushout
 
 /-- The pushout of `f` and `g` in `C` is isomorphic to the pullback of
- `f.op` and `g.op` in `Cᵒᵖ`. -/
+`f.op` and `g.op` in `Cᵒᵖ`. -/
 noncomputable def pushoutIsoUnopPullback {X Y Z : C} (f : X ⟶ Z) (g : X ⟶ Y) [h : HasPushout f g]
     [HasPullback f.op g.op] : pushout f g ≅ unop (pullback f.op g.op) :=
   IsColimit.coconePointUniqueUpToIso (@colimit.isColimit _ _ _ _ _ h)

@@ -30,7 +30,7 @@ class Functorial (F : C → D) : Type max v₁ v₂ u₁ u₂ where
   map_comp : ∀ {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z}, map (f ≫ g) = map f ≫ map g := by
     cat_disch
 
-attribute [simp] Functorial.map_id Functorial.map_comp
+attribute [simp, grind =] Functorial.map_id Functorial.map_comp
 export Functorial (map)
 
 namespace Functor
@@ -39,14 +39,14 @@ namespace Functor
 -/
 def of (F : C → D) [I : Functorial.{v₁, v₂} F] : C ⥤ D :=
   { I with obj := F
-           map := map F }
+           map := Functorial.map F }
 
 end Functor
 
 instance (F : C ⥤ D) : Functorial.{v₁, v₂} F.obj :=
   { F with map := F.map }
 
-@[simp]
+@[simp, grind =]
 theorem map_functorial_obj (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) : map F.obj f = F.map f :=
   rfl
 

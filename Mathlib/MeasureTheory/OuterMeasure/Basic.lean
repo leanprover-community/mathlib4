@@ -53,6 +53,9 @@ theorem measure_mono (h : s ⊆ t) : μ s ≤ μ t :=
 theorem measure_mono_null (h : s ⊆ t) (ht : μ t = 0) : μ s = 0 :=
   eq_bot_mono (measure_mono h) ht
 
+lemma pos_mono ⦃s t : Set α⦄ (h : s ⊆ t) (hs : 0 < μ s) :
+    0 < μ t := hs.trans_le <| measure_mono h
+
 lemma measure_eq_top_mono (h : s ⊆ t) (hs : μ s = ∞) : μ t = ∞ := eq_top_mono (measure_mono h) hs
 lemma measure_lt_top_mono (h : s ⊆ t) (ht : μ t < ∞) : μ s < ∞ := (measure_mono h).trans_lt ht
 

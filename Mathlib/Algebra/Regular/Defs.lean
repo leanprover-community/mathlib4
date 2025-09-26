@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Notation.Defs
-import Mathlib.Logic.Function.Defs
 
 /-!
 # Regular elements
@@ -19,15 +18,15 @@ variable {R : Type*} [Mul R]
 
 /-- A left-regular element is an element `c` such that multiplication on the left by `c`
 is injective. -/
-@[to_additive "An add-left-regular element is an element `c` such that addition
-    on the left by `c` is injective."]
+@[to_additive /-- An add-left-regular element is an element `c` such that addition
+    on the left by `c` is injective. -/]
 def IsLeftRegular (c : R) :=
   (c * ·).Injective
 
 /-- A right-regular element is an element `c` such that multiplication on the right by `c`
 is injective. -/
-@[to_additive "An add-right-regular element is an element `c` such that addition
-    on the right by `c` is injective."]
+@[to_additive /-- An add-right-regular element is an element `c` such that addition
+    on the right by `c` is injective. -/]
 def IsRightRegular (c : R) :=
   (· * c).Injective
 
@@ -35,7 +34,7 @@ def IsRightRegular (c : R) :=
 on the right is injective. -/
 structure IsAddRegular {R : Type*} [Add R] (c : R) : Prop where
   /-- An add-regular element `c` is left-regular -/
-  left : IsAddLeftRegular c -- Porting note: It seems like to_additive is misbehaving
+  left : IsAddLeftRegular c
   /-- An add-regular element `c` is right-regular -/
   right : IsAddRightRegular c
 

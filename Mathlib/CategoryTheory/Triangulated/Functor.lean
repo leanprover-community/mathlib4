@@ -57,7 +57,7 @@ instance [Faithful F] : Faithful F.mapTriangle where
 
 instance [Full F] [Faithful F] : Full F.mapTriangle where
   map_surjective {X Y} f :=
-   ⟨{ hom₁ := F.preimage f.hom₁
+    ⟨{hom₁ := F.preimage f.hom₁
       hom₂ := F.preimage f.hom₂
       hom₃ := F.preimage f.hom₃
       comm₁ := F.map_injective
