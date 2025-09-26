@@ -36,6 +36,34 @@ jobs:
         use-github-cache: false
         use-mathlib-cache: false
 
+    - name: set up deprecated doubles
+      env:
+        OLD_DATE: "2025-07-19"
+        NEW_DATE: "2025-09-20"
+      run: |
+        # Retrieve the cache for the unmodified repository
+        lake exe cache get || true
+        # We create a temporary file to run the command that adds the set_option linter.removeDeprecations
+        # to the relevant files and saves the modified files with a new name
+        tmplean=Mathlib/"$(mktemp)".lean
+        {
+          for repo in Mathlib Archive Counterexamples; do
+            printf $'import %s\n' "$repo"
+          done
+          printf $'#regenerate_deprecations "%s" "%s" really\n' "$OLD_DATE" "$NEW_DATE"
+        } | tee -a "${tmplean}"
+        # This will add the new files, whose names end in `_with_option.lean`.
+        lake build "${tmplean}"
+        # We then add the new files to `Mathlib.lean`
+        if lake exe mk_all; then
+          echo "Successfully updated Mathlib.lean"
+          # TODO: exit more gracefully, but there is nothing to do, since no files contain
+          # deprecated declarations in the specified date range
+          exit 1
+        else
+          echo "There are files with deprecated declarations in the specified date range"
+        fi
+
     - name: run linter
       env:
         DATE_RANGE: ${{ inputs.date_range }}
@@ -65,6 +93,7 @@ jobs:
         # WARNING: we assume that all lines in the output of 'lake build' that begin with "mv" are safe to run
         # the rest of the build should be silent as we will only ever run this on master
         grep --no-filename '^mv' linter.out linter_archive.out linter_counterexamples.out | sort --unique >> delete_deprecations.sh
+        sed -i 's=_with_option.lean$=.lean=' delete_deprecations.sh
         chmod 755 delete_deprecations.sh
         echo "::group::Here is the content of delete_deprecations.sh"
         cat delete_deprecations.sh
@@ -84,6 +113,8 @@ jobs:
         else
           echo "Modifying files..."
           ./delete_deprecations.sh
+          # TODO: here may be a good place to remove the `\nset_option linter.removeDeprecations...\n` lines
+          # removing also the line break before and after.
         fi
 
         # TODO: set deprecation_date_from and deprecation_date_to outputs (extract from linter.out?)
