@@ -30,7 +30,7 @@ class CountableCategory (J : Type*) [Category J] : Prop where
 
 attribute [instance] CountableCategory.countableObj CountableCategory.countableHom
 
-instance countablerCategoryDiscreteOfCountable (J : Type*) [Countable J] :
+instance countableCategoryDiscreteOfCountable (J : Type*) [Countable J] :
     CountableCategory (Discrete J) where
 
 instance : CountableCategory ℕ where
@@ -79,8 +79,6 @@ end CountableCategory
 
 instance (α : Type*) [Category α] [FinCategory α] : CountableCategory α where
 
-instance : CountableCategory ℕ where
-
 open Opposite
 
 /-- The opposite of a countable category is countable. -/
@@ -89,6 +87,7 @@ instance countableCategoryOpposite {J : Type*} [Category J] [CountableCategory J
   countableObj := Countable.of_equiv _ equivToOpposite
   countableHom j j' := Countable.of_equiv _ (opEquiv j j').symm
 
+attribute [local instance] uliftCategory in
 /-- Applying `ULift` to morphisms and objects of a category preserves countability. -/
 instance countableCategoryUlift {J : Type v} [Category J] [CountableCategory J] :
     CountableCategory.{max w v} (ULiftHom.{w, max w v} (ULift.{w, v} J)) where

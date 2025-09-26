@@ -1,59 +1,59 @@
 /-
 Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Simon Hudon, Alice Laroche, Frédéric Dupuis, Jireh Loreaux
+Authors: Jovan Gerbscheid, Patrick Massot, Simon Hudon, Alice Laroche, Frédéric Dupuis,
+Jireh Loreaux
 -/
-
 import Lean.Elab.Tactic.Location
-import Mathlib.Data.Set.Defs
+import Mathlib.Tactic.Push.Attr
 import Mathlib.Logic.Basic
-import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Tactic.Conv
+import Mathlib.Util.AtLocation
 
 /-!
-# The `push_neg` tactic
+# The `push`, `push_neg` and `pull` tactics
 
-The `push_neg` tactic pushes negations inside expressions: it can be applied to goals as well
-as local hypotheses and also works as a `conv` tactic.
+The `push` tactic pushes a given constant inside expressions: it can be applied to goals as well
+as local hypotheses and also works as a `conv` tactic. `push_neg` is a macro for `push Not`.
+
+The `pull` tactic does the reverse: it pulls the given constant towards the head of the expression.
 -/
 
-namespace Mathlib.Tactic.PushNeg
+namespace Mathlib.Tactic.Push
 
-open Lean Meta Elab.Tactic Parser.Tactic
+variable (p q : Prop) {α : Sort*} (s : α → Prop)
 
-variable (p q : Prop) {α : Sort*} {β : Type*} (s : α → Prop)
+-- The more specific `Classical.not_imp` is attempted before the more general `not_forall_eq`.
+-- This happens because `not_forall_eq` is handled manually in `pushNegBuiltin`.
+attribute [push] not_not not_or Classical.not_imp not_false_eq_true not_true_eq_false
+attribute [push ←] ne_eq
 
-theorem not_not_eq : (¬ ¬ p) = p := propext not_not
+@[push] theorem not_iff : ¬ (p ↔ q) ↔ (p ∧ ¬ q) ∨ (¬ p ∧ q) :=
+  _root_.not_iff.trans <| iff_iff_and_or_not_and_not.trans <| by rw [not_not, or_comm]
+@[push] theorem not_exists : (¬ ∃ x, s x) ↔ (∀ x, binderNameHint x s <| ¬ s x) :=
+  _root_.not_exists
+
+-- TODO: lemmas involving `∃` should be tagged using `binderNameHint`,
+-- and lemmas involving `∀` would need manual rewriting to keep the binder name.
+attribute [push]
+  forall_const forall_and forall_or_left forall_or_right forall_eq forall_eq' forall_self_imp
+  exists_const exists_or exists_and_left exists_and_right exists_eq exists_eq'
+  and_or_left and_or_right and_true true_and and_false false_and
+  or_and_left or_and_right or_true true_or or_false false_or
+
+-- these lemmas are only for the `pull` tactic
+attribute [push low]
+  forall_and_left forall_and_right -- needs lower priority than `forall_and` in the `pull` tactic
+
+attribute [push ←] Function.id_def
+
+-- TODO: decide if we want this lemma, and if so, fix the proofs that break as a result
+-- @[push high] theorem Nat.not_nonneg_iff_eq_zero (n : Nat) : ¬ 0 < n ↔ n = 0 :=
+--   Nat.not_lt.trans Nat.le_zero
+
 theorem not_and_eq : (¬ (p ∧ q)) = (p → ¬ q) := propext not_and
 theorem not_and_or_eq : (¬ (p ∧ q)) = (¬ p ∨ ¬ q) := propext not_and_or
-theorem not_or_eq : (¬ (p ∨ q)) = (¬ p ∧ ¬ q) := propext not_or
 theorem not_forall_eq : (¬ ∀ x, s x) = (∃ x, ¬ s x) := propext not_forall
-theorem not_exists_eq : (¬ ∃ x, s x) = (∀ x, ¬ s x) := propext not_exists
-theorem not_implies_eq : (¬ (p → q)) = (p ∧ ¬ q) := propext Classical.not_imp
-theorem not_ne_eq (x y : α) : (¬ (x ≠ y)) = (x = y) := ne_eq x y ▸ not_not_eq _
-theorem not_iff : (¬ (p ↔ q)) = ((p ∧ ¬ q) ∨ (¬ p ∧ q)) := propext <|
-  _root_.not_iff.trans <| iff_iff_and_or_not_and_not.trans <| by rw [not_not, or_comm]
-
-section LinearOrder
-variable [LinearOrder β]
-
-theorem not_le_eq (a b : β) : (¬ (a ≤ b)) = (b < a) := propext not_le
-theorem not_lt_eq (a b : β) : (¬ (a < b)) = (b ≤ a) := propext not_lt
-theorem not_ge_eq (a b : β) : (¬ (a ≥ b)) = (a < b) := propext not_le
-theorem not_gt_eq (a b : β) : (¬ (a > b)) = (a ≤ b) := propext not_lt
-
-end LinearOrder
-
-theorem not_nonempty_eq (s : Set β) : (¬ s.Nonempty) = (s = ∅) := by
-  have A : ∀ (x : β), x ∉ (∅ : Set β) := fun x ↦ id
-  simp only [Set.Nonempty, not_exists, eq_iff_iff]
-  exact ⟨fun h ↦ Set.ext (fun x ↦ by simp only [h x, false_iff, A]), fun h ↦ by rwa [h]⟩
-
-theorem ne_empty_eq_nonempty (s : Set β) : (s ≠ ∅) = s.Nonempty := by
-  rw [ne_eq, ← not_nonempty_eq s, not_not]
-
-theorem empty_ne_eq_nonempty (s : Set β) : (∅ ≠ s) = s.Nonempty := by
-  rw [ne_comm, ne_empty_eq_nonempty]
 
 /-- Make `push_neg` use `not_and_or` rather than the default `not_and`. -/
 register_option push_neg.use_distrib : Bool :=
@@ -61,120 +61,238 @@ register_option push_neg.use_distrib : Bool :=
     group := ""
     descr := "Make `push_neg` use `not_and_or` rather than the default `not_and`." }
 
-/-- Push negations at the top level of the current expression. -/
-def transformNegationStep (e : Expr) : SimpM (Option Simp.Step) := do
-  -- Wrapper around `Simp.Step.visit`
-  let mkSimpStep (e : Expr) (pf : Expr) : Simp.Step :=
-    Simp.Step.visit { expr := e, proof? := some pf }
-  -- Try applying the inequality lemma and verify that we do get a defeq type.
-  -- Sometimes there might be the wrong LinearOrder available!
-  let handleIneq (e₁ e₂ : Expr) (notThm : Name) : SimpM (Option Simp.Step) := do
-    try
-      -- Allowed to fail if it can't synthesize an instance:
-      let thm ← mkAppM notThm #[e₁, e₂]
-      let some (_, lhs, rhs) := (← inferType thm).eq? | failure -- this should never fail
-      -- Make sure the inferred instances are right:
-      guard <| ← isDefEq e lhs
-      return some <| mkSimpStep rhs thm
-    catch _ => return none
-  let e_whnf ← whnfR e
-  let some ex := e_whnf.not? | return Simp.Step.continue
-  let ex := (← instantiateMVars ex).cleanupAnnotations
-  match ex.getAppFnArgs with
-  | (``Not, #[e]) =>
-      return mkSimpStep e (← mkAppM ``not_not_eq #[e])
-  | (``And, #[p, q]) =>
-      match ← getBoolOption `push_neg.use_distrib with
-      | false => return mkSimpStep (.forallE `_ p (mkNot q) default) (← mkAppM ``not_and_eq #[p, q])
-      | true  => return mkSimpStep (mkOr (mkNot p) (mkNot q)) (← mkAppM ``not_and_or_eq #[p, q])
-  | (``Or, #[p, q]) =>
-      return mkSimpStep (mkAnd (mkNot p) (mkNot q)) (← mkAppM ``not_or_eq #[p, q])
-  | (``Iff, #[p, q]) =>
-      return mkSimpStep (mkOr (mkAnd p (mkNot q)) (mkAnd (mkNot p) q)) (← mkAppM ``not_iff #[p, q])
-  | (``Eq, #[ty, e₁, e₂]) =>
-      if ty.isAppOfArity ``Set 1 then
-        -- test if equality is of the form `s = ∅`, and negate it to `s.Nonempty`
-        if e₂.isAppOfArity ``EmptyCollection.emptyCollection 2 then
-          let thm ← mkAppM ``ne_empty_eq_nonempty #[e₁]
-          let some (_, _, rhs) := (← inferType thm).eq? | return none
-          return mkSimpStep rhs thm
-        -- test if equality is of the form `∅ = s`, and negate it to `s.Nonempty`
-        if e₁.isAppOfArity ``EmptyCollection.emptyCollection 2 then
-          let thm ← mkAppM ``empty_ne_eq_nonempty #[e₂]
-          let some (_, _, rhs) := (← inferType thm).eq? | return none
-          return mkSimpStep rhs thm
-      -- negate `a = b` to `a ≠ b`
-      return Simp.Step.visit { expr := ← mkAppM ``Ne #[e₁, e₂] }
-  | (``Ne, #[_ty, e₁, e₂]) =>
-      return mkSimpStep (← mkAppM ``Eq #[e₁, e₂]) (← mkAppM ``not_ne_eq #[e₁, e₂])
-  | (``LE.le, #[_ty, _inst, e₁, e₂]) => handleIneq e₁ e₂ ``not_le_eq
-  | (``LT.lt, #[_ty, _inst, e₁, e₂]) => handleIneq e₁ e₂ ``not_lt_eq
-  | (``GE.ge, #[_ty, _inst, e₁, e₂]) => handleIneq e₁ e₂ ``not_ge_eq
-  | (``GT.gt, #[_ty, _inst, e₁, e₂]) => handleIneq e₁ e₂ ``not_gt_eq
-  | (``Set.Nonempty, #[_ty, e]) =>
-      -- negate `s.Nonempty` to `s = ∅`
-      let thm ← mkAppM ``not_nonempty_eq #[e]
-      let some (_, _, rhs) := (← inferType thm).eq? | return none
-      return mkSimpStep rhs thm
-  | (``Exists, #[_, .lam n typ bo bi]) =>
-      return mkSimpStep (.forallE n typ (mkNot bo) bi)
-                        (← mkAppM ``not_exists_eq #[.lam n typ bo bi])
-  | (``Exists, #[_, _]) =>
-      return none
-  | _ => match ex with
-          | .forallE name ty body binfo => do
-              if (← isProp ty) && !body.hasLooseBVars then
-                return mkSimpStep (← mkAppM ``And #[ty, mkNot body])
-                  (← mkAppM ``not_implies_eq #[ty, body])
-              else
-                let body' : Expr := .lam name ty (mkNot body) binfo
-                let body'' : Expr := .lam name ty body binfo
-                return mkSimpStep (← mkAppM ``Exists #[body']) (← mkAppM ``not_forall_eq #[body''])
-          | _ => return none
-
-/-- Recursively push negations at the top level of the current expression. This is needed
-to handle e.g. triple negation. -/
-partial def transformNegation (e : Expr) : SimpM Simp.Step := do
-  let Simp.Step.visit r₁ ← transformNegationStep e | return Simp.Step.continue
-  match r₁.proof? with
-  | none => return Simp.Step.continue r₁
-  | some _ => do
-      let Simp.Step.visit r₂ ← transformNegation r₁.expr | return Simp.Step.visit r₁
-      return Simp.Step.visit (← r₁.mkEqTrans r₂)
-
-/-- Common entry point to `push_neg` as a conv. -/
-def pushNegCore (tgt : Expr) : MetaM Simp.Result := do
-  let myctx : Simp.Context ← Simp.mkContext { eta := true, zeta := false, proj := false }
-      (simpTheorems := #[ ])
-      (congrTheorems := (← getSimpCongrTheorems))
-  (·.1) <$> Simp.main tgt myctx (methods := { pre := transformNegation })
+open Lean Meta Elab.Tactic Parser.Tactic
 
 /--
-Push negations into the conclusion of an expression.
-For instance, an expression `¬ ∀ x, ∃ y, x ≤ y` will be transformed by `push_neg` into
-`∃ x, ∀ y, y < x`. Variable names are conserved.
-This tactic pushes negations inside expressions. For instance, given a hypothesis
-```lean
-| ¬ ∀ ε > 0, ∃ δ > 0, ∀ x, |x - x₀| ≤ δ → |f x - y₀| ≤ ε)
-```
-writing `push_neg` will turn the target into
-```lean
-| ∃ ε, ε > 0 ∧ ∀ δ, δ > 0 → (∃ x, |x - x₀| ≤ δ ∧ ε < |f x - y₀|),
-```
-(The pretty printer does *not* use the abbreviations `∀ δ > 0` and `∃ ε > 0` but this issue
-has nothing to do with `push_neg`).
-
-Note that names are conserved by this tactic, contrary to what would happen with `simp`
-using the relevant lemmas.
-
-This tactic has two modes: in standard mode, it transforms `¬(p ∧ q)` into `p → ¬q`, whereas in
-distrib mode it produces `¬p ∨ ¬q`. To use distrib mode, use `set_option push_neg.use_distrib true`.
+`pushNegBuiltin` is a simproc for pushing `¬` in a way that can't be done
+using the `@[push]` attribute.
+- `¬ (p ∧ q)` turns into `p → ¬ q` or `¬ p ∨ ¬ q`, depending on the option `push_neg.use_distrib`.
+- `¬ ∀ a, p` turns into `∃ a, ¬ p`, where the binder name `a` is preserved.
 -/
-syntax (name := pushNegConv) "push_neg" : conv
+private def pushNegBuiltin : Simp.Simproc := fun e => do
+  let e := (← instantiateMVars e).cleanupAnnotations
+  match e with
+  | .app (.app (.const ``And _) p) q =>
+    if ← getBoolOption `push_neg.use_distrib then
+      return mkSimpStep (mkOr (mkNot p) (mkNot q)) (mkApp2 (.const ``not_and_or_eq []) p q)
+    else
+      return mkSimpStep (.forallE `_ p (mkNot q) .default) (mkApp2 (.const ``not_and_eq []) p q)
+  | .forallE name ty body binfo =>
+    let body' : Expr := .lam name ty (mkNot body) binfo
+    let body'' : Expr := .lam name ty body binfo
+    return mkSimpStep (← mkAppM ``Exists #[body']) (← mkAppM ``not_forall_eq #[body''])
+  | _ =>
+    return Simp.Step.continue
+where
+  mkSimpStep (e : Expr) (pf : Expr) : Simp.Step :=
+    Simp.Step.continue (some { expr := e, proof? := some pf })
 
-/-- Execute `push_neg` as a conv tactic. -/
-@[tactic pushNegConv] def elabPushNegConv : Tactic := fun _ ↦ withMainContext do
-  Conv.applySimpResult (← pushNegCore (← instantiateMVars (← Conv.getLhs)))
+/-- The `simp` configuration used in `push`. -/
+def pushSimpConfig : Simp.Config where
+  zeta := false
+  proj := false
+
+/-- Try to rewrite using a `push` lemma. -/
+def pushStep (head : Head) : Simp.Simproc := fun e => do
+  let e_whnf ← whnf e
+  let some e_head := Head.ofExpr? e_whnf | return Simp.Step.continue
+  unless e_head == head do
+    return Simp.Step.continue
+  let thms := pushExt.getState (← getEnv)
+  if let some r ← Simp.rewrite? e thms {} "push" false then
+    -- We return `.visit r` instead of `.continue r`, because in the case of a triple negation,
+    -- after rewriting `¬ ¬ ¬ p` into `¬ p`, we may want to rewrite `¬ p` again.
+    return Simp.Step.visit r
+  if let some e := e_whnf.not? then
+    pushNegBuiltin e
+  else
+    return Simp.Step.continue
+
+/-- Common entry point to the implementation of `push`. -/
+def pushCore (head : Head) (tgt : Expr) (disch? : Option Simp.Discharge) : MetaM Simp.Result := do
+  let ctx : Simp.Context ← Simp.mkContext pushSimpConfig
+      (simpTheorems := #[])
+      (congrTheorems := ← getSimpCongrTheorems)
+  let methods := match disch? with
+    | none => { pre := pushStep head }
+    | some disch => { pre := pushStep head, discharge? := disch, wellBehavedDischarge := false }
+  (·.1) <$> Simp.main tgt ctx (methods := methods)
+
+/-- Try to rewrite using a `pull` lemma. -/
+def pullStep (head : Head) : Simp.Simproc := fun e => do
+  let thms := pullExt.getState (← getEnv)
+  -- We can't use `Simp.rewrite?` here, because we need to only allow rewriting with theorems
+  -- that pull the correct head.
+  let candidates ← Simp.withSimpIndexConfig <| thms.getMatchWithExtra e
+  if candidates.isEmpty then
+    return Simp.Step.continue
+  let candidates := candidates.insertionSort fun e₁ e₂ => e₁.1.1.priority > e₂.1.1.priority
+  for ((thm, thm_head), numExtraArgs) in candidates do
+    if thm_head == head then
+      if let some result ← Simp.tryTheoremWithExtraArgs? e thm numExtraArgs then
+        return Simp.Step.continue result
+  return Simp.Step.continue
+
+/-- Common entry point to the implementation of `pull`. -/
+def pullCore (head : Head) (tgt : Expr) (disch? : Option Simp.Discharge) : MetaM Simp.Result := do
+  let ctx : Simp.Context ← Simp.mkContext pushSimpConfig
+      (simpTheorems := #[])
+      (congrTheorems := ← getSimpCongrTheorems)
+  let methods := match disch? with
+    | none => { post := pullStep head }
+    | some disch => { post := pullStep head, discharge? := disch, wellBehavedDischarge := false }
+  (·.1) <$> Simp.main tgt ctx (methods := methods)
+
+section ElabHead
+open Elab Term
+
+/-- Return `true` if `stx` is an underscore, i.e. `_` or `fun $_ => _`/`fun $_ ↦ _`. -/
+partial def isUnderscore : Term → Bool
+  | `(_) | `(fun $_ => _) => true
+  | _ => false
+
+/-- `resolvePushId?` is a version of `resolveId?` that also supports notations like `_ ∈ _`,
+`∃ x, _` and `∑ x, _`. -/
+def resolvePushId? (stx : Term) : TermElabM (Option Expr) := do
+  match ← liftMacroM <| expandMacros stx with
+  | `($f $args*) =>
+    -- Note: we would like to insist that all arguments in the notation are given as underscores,
+    -- but for example `∑ x, _` expands to `Finset.sum Finset.univ fun _ ↦ _`,
+    -- in which `Finset.univ` is not an underscore. So instead
+    -- we only insist that the last argument is an underscore.
+    if args.back?.all isUnderscore then
+      try resolveId? f catch _ => return none
+    else
+      return none
+  | `(binop% $f _ _)
+  | `(binop_lazy% $f _ _)
+  | `(leftact% $f _ _)
+  | `(rightact% $f _ _)
+  | `(binrel% $f _ _)
+  | `(binrel_no_prop% $f _ _)
+  | `(unop% $f _)
+  | f => try resolveId? f catch _ => return none
+
+/-- Elaborator for the argument passed to `push`. It accepts a constant, or a function -/
+def elabHead (stx : Term) : TermElabM Head := withRef stx do
+  -- we elaborate `stx` to get an appropriate error message if the term isn't well formed,
+  -- and to add hover information
+  _ ← withTheReader Term.Context ({ · with ignoreTCFailures := true }) <|
+    Term.withoutModifyingElabMetaStateWithInfo <| Term.withoutErrToSorry <| Term.elabTerm stx none
+  match stx with
+  | `(fun $_ => _) => return .lambda
+  | `(∀ $_, _) => return .forall
+  | _ =>
+    match ← resolvePushId? stx with
+    | some (.const c _) => return .const c
+    | _ => throwError "Could not resolve `push` argument {stx}. \
+      Expected either a constant, e.g. `push Not`, \
+      or notation with underscores, e.g. `push ¬ _`"
+
+end ElabHead
+
+/-- Elaborate the `(disch := ...)` syntax for a `simp`-like tactic. -/
+def elabDischarger (stx : TSyntax ``discharger) : TacticM Simp.Discharge :=
+  (·.2) <$> tacticToDischarge stx.raw[3]
+
+/--
+`push` pushes the given constant away from the head of the expression. For example
+- `push _ ∈ _` rewrites `x ∈ {y} ∪ zᶜ` into `x = y ∨ ¬ x ∈ z`.
+- `push (disch := positivity) Real.log` rewrites `log (a * b ^ 2)` into `log a + 2 * log b`.
+- `push ¬ _` is the same as `push_neg` or `push Not`, and it rewrites
+  `¬ ∀ ε > 0, ∃ δ > 0, δ < ε` into `∃ ε > 0, ∀ δ > 0, ε ≤ δ`.
+
+In addition to constants, `push` can be used to push `fun` and `∀` binders:
+- `push fun _ ↦ _` rewrites `fun x => f x ^ 2 + 5` into `f ^ 2 + 5`
+- `push ∀ _, _` rewrites `∀ a, p a ∧ q a` into `(∀ a, p a) ∧ (∀ a, q a)`.
+
+The `push` tactic can be extended using the `@[push]` attribute.
+
+To instead move a constant closer to the head of the expression, use the `pull` tactic.
+
+To push a constant at a hypothesis, use the `push ... at h` or `push ... at *` syntax.
+-/
+elab (name := push) "push" disch?:(discharger)? head:(ppSpace colGt term) loc:(location)? :
+    tactic => do
+  let disch? ← disch?.mapM elabDischarger
+  let head ← elabHead head
+  let loc := (loc.map expandLocation).getD (.targets #[] true)
+  transformAtLocation (pushCore head · disch?) "push" loc (failIfUnchanged := true) false
+
+/--
+Push negations into the conclusion or a hypothesis.
+For instance, a hypothesis `h : ¬ ∀ x, ∃ y, x ≤ y` will be transformed by `push_neg at h` into
+`h : ∃ x, ∀ y, y < x`. Binder names are preserved.
+
+`push_neg` is a special case of the more general `push` tactic, namely `push Not`.
+The `push` tactic can be extended using the `@[push]` attribute. `push` has special-casing
+built in for `push Not`, so that it can preserve binder names, and so that `¬ (p ∧ q)` can be
+transformed to either `p → ¬ q` (the default) or `¬ p ∨ ¬ q`. To get `¬ p ∨ ¬ q`, use
+`set_option push_neg.use_distrib true`.
+
+Another example: given a hypothesis
+```lean
+h : ¬ ∀ ε > 0, ∃ δ > 0, ∀ x, |x - x₀| ≤ δ → |f x - y₀| ≤ ε
+```
+writing `push_neg at h` will turn `h` into
+```lean
+h : ∃ ε > 0, ∀ δ > 0, ∃ x, |x - x₀| ≤ δ ∧ ε < |f x - y₀|
+```
+Note that binder names are preserved by this tactic, contrary to what would happen with `simp`
+using the relevant lemmas. One can use this tactic at the goal using `push_neg`,
+at every hypothesis and the goal using `push_neg at *` or at selected hypotheses and the goal
+using say `push_neg at h h' ⊢`, as usual.
+-/
+macro (name := push_neg) "push_neg" loc:(location)? : tactic => `(tactic| push Not $[$loc]?)
+
+/--
+`pull` is the inverse tactic to `push`.
+It pulls the given constant towards the head of the expression. For example
+- `pull _ ∈ _` rewrites `x ∈ y ∨ ¬ x ∈ z` into `x ∈ y ∪ zᶜ`.
+- `pull (disch := positivity) Real.log` rewrites `log a + 2 * log b` into `log (a * b ^ 2)`.
+- `pull fun _ ↦ _` rewrites `f ^ 2 + 5` into `fun x => f x ^ 2 + 5` where `f` is a function.
+
+A lemma is considered a `pull` lemma if its reverse direction is a `push` lemma
+that actually moves the given constant away from the head. For example
+- `not_or : ¬ (p ∨ q) ↔ ¬ p ∧ ¬ q` is a `pull` lemma, but `not_not : ¬ ¬ p ↔ p` is not.
+- `log_mul : log (x * y) = log x + log y` is a `pull` lemma, but `log_abs : log |x| = log x` is not.
+- `Pi.mul_def : f * g = fun (i : ι) => f i * g i` and `Pi.one_def : 1 = fun (x : ι) => 1` are both
+  `pull` lemmas for `fun`, because every `push fun _ ↦ _` lemma is also considered a `pull` lemma.
+
+TODO: define a `@[pull]` attribute for tagging `pull` lemmas that are not `push` lemmas.
+-/
+elab (name := pull) "pull" disch?:(discharger)? head:(ppSpace colGt term) loc:(location)? :
+    tactic => do
+  let disch? ← disch?.mapM elabDischarger
+  let head ← elabHead head
+  let loc := (loc.map expandLocation).getD (.targets #[] true)
+  transformAtLocation (pullCore head · disch?) "pull" loc (failIfUnchanged := true) false
+
+/-- A simproc variant of `push fun _ ↦ _`, to be used as `simp [↓pushFun]`. -/
+simproc_decl _root_.pushFun (fun _ ↦ ?_) := pushStep .lambda
+
+/-- A simproc variant of `pull fun _ ↦ _`, to be used as `simp [pullFun]`. -/
+simproc_decl _root_.pullFun (_) := pullStep .lambda
+
+section Conv
+
+@[inherit_doc push]
+elab "push" disch?:(discharger)? head:(ppSpace colGt term) : conv => withMainContext do
+  let disch? ← disch?.mapM elabDischarger
+  let head ← elabHead head
+  Conv.applySimpResult (← pushCore head (← instantiateMVars (← Conv.getLhs)) disch?)
+
+@[inherit_doc push_neg]
+macro "push_neg" : conv => `(conv| push Not)
+
+/--
+The syntax is `#push head e`, where `head` is a constant and `e` is an expression,
+which will print the `push head` form of `e`.
+
+`#push` understands local variables, so you can use them to introduce parameters.
+-/
+macro (name := pushCommand) tk:"#push " head:ident ppSpace e:term : command =>
+  `(command| #conv%$tk push $head:ident => $e)
 
 /--
 The syntax is `#push_neg e`, where `e` is an expression,
@@ -182,56 +300,52 @@ which will print the `push_neg` form of `e`.
 
 `#push_neg` understands local variables, so you can use them to introduce parameters.
 -/
-macro (name := pushNeg) tk:"#push_neg " e:term : command => `(command| #conv%$tk push_neg => $e)
+macro (name := pushNegCommand) tk:"#push_neg " e:term : command => `(command| #push%$tk Not $e)
 
-/-- Execute main loop of `push_neg` at the main goal. -/
-def pushNegTarget : TacticM Unit := withMainContext do
-  let goal ← getMainGoal
-  let tgt ← instantiateMVars (← goal.getType)
-  let newGoal ← applySimpResultToTarget goal tgt (← pushNegCore tgt)
-  if newGoal == goal then throwError "push_neg made no progress"
-  replaceMainGoal [newGoal]
-
-
-/-- Execute main loop of `push_neg` at a local hypothesis. -/
-def pushNegLocalDecl (fvarId : FVarId) : TacticM Unit := withMainContext do
-  let ldecl ← fvarId.getDecl
-  if ldecl.isAuxDecl then return
-  let tgt ← instantiateMVars ldecl.type
-  let goal ← getMainGoal
-  let myres ← pushNegCore tgt
-  let some (_, newGoal) ← applySimpResultToLocalDecl goal fvarId myres False | failure
-  if newGoal == goal then throwError "push_neg made no progress"
-  replaceMainGoal [newGoal]
+@[inherit_doc pull]
+elab "pull" disch?:(discharger)? head:(ppSpace colGt term) : conv => withMainContext do
+  let disch? ← disch?.mapM elabDischarger
+  let head ← elabHead head
+  Conv.applySimpResult (← pullCore head (← instantiateMVars (← Conv.getLhs)) disch?)
 
 /--
-Push negations into the conclusion of a hypothesis.
-For instance, a hypothesis `h : ¬ ∀ x, ∃ y, x ≤ y` will be transformed by `push_neg at h` into
-`h : ∃ x, ∀ y, y < x`. Variable names are conserved.
-This tactic pushes negations inside expressions. For instance, given a hypothesis
-```lean
-h : ¬ ∀ ε > 0, ∃ δ > 0, ∀ x, |x - x₀| ≤ δ → |f x - y₀| ≤ ε)
-```
-writing `push_neg at h` will turn `h` into
-```lean
-h : ∃ ε, ε > 0 ∧ ∀ δ, δ > 0 → (∃ x, |x - x₀| ≤ δ ∧ ε < |f x - y₀|),
-```
-(The pretty printer does *not* use the abbreviations `∀ δ > 0` and `∃ ε > 0` but this issue
-has nothing to do with `push_neg`).
+The syntax is `#pull head e`, where `head` is a constant and `e` is an expression,
+which will print the `pull head` form of `e`.
 
-Note that names are conserved by this tactic, contrary to what would happen with `simp`
-using the relevant lemmas. One can also use this tactic at the goal using `push_neg`,
-at every hypothesis and the goal using `push_neg at *` or at selected hypotheses and the goal
-using say `push_neg at h h' ⊢` as usual.
-
-This tactic has two modes: in standard mode, it transforms `¬(p ∧ q)` into `p → ¬q`, whereas in
-distrib mode it produces `¬p ∨ ¬q`. To use distrib mode, use `set_option push_neg.use_distrib true`.
+`#pull` understands local variables, so you can use them to introduce parameters.
 -/
-elab "push_neg" loc:(location)? : tactic =>
-  let loc := (loc.map expandLocation).getD (.targets #[] true)
-  withLocation loc
-    pushNegLocalDecl
-    pushNegTarget
-    (fun _ ↦ logInfo "push_neg couldn't find a negation to push")
+macro (name := pullCommand) tk:"#pull " head:ident ppSpace e:term : command =>
+  `(command| #conv%$tk pull $head:ident => $e)
 
-end Mathlib.Tactic.PushNeg
+end Conv
+
+section DiscrTree
+
+/--
+`#push_discr_tree X` shows the discrimination tree of all lemmas used by `push X`.
+This can be helpful when you are constructing a set of `push` lemmas for the constant `X`.
+-/
+syntax (name := pushTree) "#push_discr_tree " (colGt term) : command
+
+@[command_elab pushTree, inherit_doc pushTree]
+def elabPushTree : Elab.Command.CommandElab := fun stx => do
+  Elab.Command.runTermElabM fun _ => do
+  let head ← elabHead ⟨stx[1]⟩
+  let thms := pushExt.getState (← getEnv)
+  let mut logged := false
+  for (key, trie) in thms.root do
+    let matchesHead (k : DiscrTree.Key) : Bool :=
+      match k, head with
+      | .const c _, .const c' => c == c'
+      | .other    , .lambda  => true
+      | .arrow    , .forall  => true
+      | _         , _        => false
+    if matchesHead key then
+      logInfo m! "DiscrTree branch for {key}:{indentD (format trie)}"
+      logged := true
+  unless logged do
+    logInfo m! "There are no `push` theorems for `{head.toString}`"
+
+end DiscrTree
+
+end Mathlib.Tactic.Push

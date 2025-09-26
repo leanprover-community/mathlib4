@@ -195,7 +195,6 @@ theorem iUnion_def : π.iUnion = ⋃ J ∈ π, ↑J := rfl
 
 theorem iUnion_def' : π.iUnion = ⋃ J ∈ π.boxes, ↑J := rfl
 
--- Porting note: Previous proof was `:= Set.mem_iUnion₂`
 @[simp]
 theorem mem_iUnion : x ∈ π.iUnion ↔ ∃ J ∈ π, x ∈ J := by
   convert Set.mem_iUnion₂
@@ -262,7 +261,7 @@ function. -/
 def biUnion (πi : ∀ J : Box ι, Prepartition J) : Prepartition I where
   boxes := π.boxes.biUnion fun J => (πi J).boxes
   le_of_mem' J hJ := by
-    simp only [Finset.mem_biUnion, exists_prop, mem_boxes] at hJ
+    simp only [Finset.mem_biUnion, mem_boxes] at hJ
     rcases hJ with ⟨J', hJ', hJ⟩
     exact ((πi J').le_of_mem hJ).trans (π.le_of_mem hJ')
   pairwiseDisjoint := by
@@ -343,7 +342,7 @@ theorem biUnion_assoc (πi : ∀ J, Prepartition J) (πi' : Box ι → ∀ J : B
     (π.biUnion fun J => (πi J).biUnion (πi' J)) =
       (π.biUnion πi).biUnion fun J => πi' (π.biUnionIndex πi J) J := by
   ext J
-  simp only [mem_biUnion, exists_prop]
+  simp only [mem_biUnion]
   constructor
   · rintro ⟨J₁, hJ₁, J₂, hJ₂, hJ⟩
     refine ⟨J₂, ⟨J₁, hJ₁, hJ₂⟩, ?_⟩
@@ -424,7 +423,7 @@ def restrict (π : Prepartition I) (J : Box ι) : Prepartition J :=
       rcases Finset.mem_image.1 hJ' with ⟨J', -, rfl⟩
       exact inf_le_left)
     (by
-      simp only [Set.Pairwise, onFun, Finset.mem_coe, Finset.mem_image]
+      simp only [Set.Pairwise, Finset.mem_coe, Finset.mem_image]
       rintro _ ⟨J₁, h₁, rfl⟩ _ ⟨J₂, h₂, rfl⟩ Hne
       have : J₁ ≠ J₂ := by
         rintro rfl

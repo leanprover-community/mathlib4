@@ -95,7 +95,7 @@ def mapMono (K : ChainComplex C ℕ) {Δ' Δ : SimplexCategory} (i : Δ' ⟶ Δ)
 variable (Δ) in
 theorem mapMono_id : mapMono K (𝟙 Δ) = 𝟙 _ := by
   unfold mapMono
-  simp only [eq_self_iff_true, eqToHom_refl, dite_eq_ite, if_true]
+  simp only [eqToHom_refl, dite_eq_ite, if_true]
 
 theorem mapMono_δ₀' (i : Δ' ⟶ Δ) [Mono i] (hi : Isδ₀ i) : mapMono K i = K.d Δ.len Δ'.len := by
   unfold mapMono
@@ -134,11 +134,11 @@ theorem mapMono_comp (i' : Δ'' ⟶ Δ') (i : Δ' ⟶ Δ) [Mono i'] [Mono i] :
   -- case where i : Δ' ⟶ Δ is the identity
   by_cases h₁ : Δ = Δ'
   · subst h₁
-    simp only [SimplexCategory.eq_id_of_mono i, comp_id, id_comp, mapMono_id K, eqToHom_refl]
+    simp only [SimplexCategory.eq_id_of_mono i, comp_id, id_comp, mapMono_id K]
   -- case where i' : Δ'' ⟶ Δ' is the identity
   by_cases h₂ : Δ' = Δ''
   · subst h₂
-    simp only [SimplexCategory.eq_id_of_mono i', comp_id, id_comp, mapMono_id K, eqToHom_refl]
+    simp only [SimplexCategory.eq_id_of_mono i', comp_id, id_comp, mapMono_id K]
   -- then the RHS is always zero
   obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt (len_lt_of_mono i h₁)
   obtain ⟨k', hk'⟩ := Nat.exists_eq_add_of_lt (len_lt_of_mono i' h₂)
@@ -148,7 +148,7 @@ theorem mapMono_comp (i' : Δ'' ⟶ Δ') (i : Δ' ⟶ Δ) [Mono i'] [Mono i] :
     simp only [left_eq_add, h, add_eq_zero, and_false, reduceCtorEq] at eq
   · by_contra h
     simp only [h.1, add_right_inj] at eq
-    omega
+    cutsat
   -- in all cases, the LHS is also zero, either by definition, or because d ≫ d = 0
   by_cases h₃ : Isδ₀ i
   · by_cases h₄ : Isδ₀ i'
@@ -329,7 +329,7 @@ theorem PInfty_on_Γ₀_splitting_summand_eq_self (K : ChainComplex C ℕ) {n : 
       (PInfty : K[Γ₀.obj K] ⟶ _).f n =
       ((Γ₀.splitting K).cofan _).inj (Splitting.IndexSet.id (op ⦋n⦌)) := by
   rw [PInfty_f]
-  rcases n with _|n
+  rcases n with _ | n
   · simpa only [P_f_0_eq] using comp_id _
   · exact (HigherFacesVanish.on_Γ₀_summand_id K n).comp_P_eq_self
 

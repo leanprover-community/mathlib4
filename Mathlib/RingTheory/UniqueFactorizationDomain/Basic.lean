@@ -74,14 +74,16 @@ theorem prime_factors_unique [CancelCommMonoidWithZero α] :
       (∀ x ∈ f, Prime x) → (∀ x ∈ g, Prime x) → f.prod ~ᵤ g.prod → Multiset.Rel Associated f g := by
   classical
   intro f
-  induction' f using Multiset.induction_on with p f ih
-  · intros g _ hg h
+  induction f using Multiset.induction_on with
+  | empty =>
+    intro g _ hg h
     exact Multiset.rel_zero_left.2 <|
       Multiset.eq_zero_of_forall_notMem fun x hx =>
         have : IsUnit g.prod := by simpa [associated_one_iff_isUnit] using h.symm
         (hg x hx).not_unit <|
           isUnit_iff_dvd_one.2 <| (Multiset.dvd_prod hx).trans (isUnit_iff_dvd_one.1 this)
-  · intros g hf hg hfg
+  | cons p f ih =>
+    intro g hf hg hfg
     let ⟨b, hbg, hb⟩ :=
       (exists_associated_mem_of_dvd_prod (hf p (by simp)) fun q hq => hg _ hq) <|
         hfg.dvd_iff_dvd_right.1 (show p ∣ (p ::ₘ f).prod by simp)
@@ -167,10 +169,6 @@ theorem irreducible_iff_prime_of_existsUnique_irreducible_factors [CancelCommMon
             Or.inr <| hq.dvd_iff_dvd_left.2 <| hfb.2.dvd_iff_dvd_right.1 (Multiset.dvd_prod hqb)⟩,
     Prime.irreducible⟩
 
-@[deprecated (since := "2024-12-17")]
-alias irreducible_iff_prime_of_exists_unique_irreducible_factors :=
-  irreducible_iff_prime_of_existsUnique_irreducible_factors
-
 namespace UniqueFactorizationMonoid
 
 variable [CancelCommMonoidWithZero α]
@@ -220,7 +218,7 @@ theorem factors_pow {x : α} (n : ℕ) :
     Multiset.Rel Associated (factors (x ^ n)) (n • factors x) := by
   match n with
   | 0 => rw [zero_nsmul, pow_zero, factors_one, Multiset.rel_zero_right]
-  | n+1 =>
+  | n + 1 =>
     by_cases h0 : x = 0
     · simp [h0, zero_pow n.succ_ne_zero, nsmul_zero]
     · rw [pow_succ', succ_nsmul']
@@ -399,9 +397,6 @@ theorem of_existsUnique_irreducible_factors [CancelCommMonoidWithZero α]
     (by
       convert eif using 7
       simp_rw [irreducible_iff_prime_of_existsUnique_irreducible_factors eif uif])
-
-@[deprecated (since := "2024-12-17")]
-alias of_exists_unique_irreducible_factors := of_existsUnique_irreducible_factors
 
 variable {R : Type*} [CancelCommMonoidWithZero R] [UniqueFactorizationMonoid R]
 

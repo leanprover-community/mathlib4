@@ -65,14 +65,15 @@ lemma innerProbChar_zero : innerProbChar (0 : E) = 1 := by simp [innerProbChar]
 
 /-- The bounded continuous map `x ↦ exp (L x * I)`, for a continuous linear form `L`. -/
 noncomputable
-def probCharDual (L : Dual ℝ F) : F →ᵇ ℂ :=
-  char continuous_probChar (L := isBoundedBilinearMap_apply.symm.toContinuousLinearMap.toLinearMap₂)
+def probCharDual (L : StrongDual ℝ F) : F →ᵇ ℂ :=
+  char continuous_probChar
+    (L := isBoundedBilinearMap_apply.symm.toContinuousLinearMap.toLinearMap₁₂)
     isBoundedBilinearMap_apply.symm.continuous L
 
-lemma probCharDual_apply (L : Dual ℝ F) (x : F) : probCharDual L x = exp (L x * I) := rfl
+lemma probCharDual_apply (L : StrongDual ℝ F) (x : F) : probCharDual L x = exp (L x * I) := rfl
 
 @[simp]
-lemma probCharDual_zero : probCharDual (0 : Dual ℝ F) = 1 := by simp [probCharDual]
+lemma probCharDual_zero : probCharDual (0 : StrongDual ℝ F) = 1 := by simp [probCharDual]
 
 end BoundedContinuousFunction
 
@@ -105,7 +106,7 @@ theorem ext_of_integral_char_eq (he : Continuous e) (he' : e ≠ 1)
       fun a ha => Integrable.const_mul (integrable P (char he hL a)) _
   rw [hsum P, hsum P']
   apply Finset.sum_congr rfl fun i _ => ?_
-  simp only [smul_eq_mul, MeasureTheory.integral_const_mul, mul_eq_mul_left_iff]
+  simp only [MeasureTheory.integral_const_mul, mul_eq_mul_left_iff]
   exact Or.inl (h i)
 
 end ext
@@ -249,14 +250,14 @@ variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : Measurab
   [NormedAddCommGroup F] [NormedSpace ℝ F] {mF : MeasurableSpace F}
   {μ : Measure E} {ν : Measure F}
 
-/-- The characteristic function of a measure in a normed space, function from `Dual ℝ E` to `ℂ`
-with `charFunDual μ L = ∫ v, exp (L v * I) ∂μ`. -/
+/-- The characteristic function of a measure in a normed space, function from `StrongDual ℝ E` to
+`ℂ` with `charFunDual μ L = ∫ v, exp (L v * I) ∂μ`. -/
 noncomputable
-def charFunDual (μ : Measure E) (L : Dual ℝ E) : ℂ := ∫ v, probCharDual L v ∂μ
+def charFunDual (μ : Measure E) (L : StrongDual ℝ E) : ℂ := ∫ v, probCharDual L v ∂μ
 
-lemma charFunDual_apply (L : Dual ℝ E) : charFunDual μ L = ∫ v, exp (L v * I) ∂μ := rfl
+lemma charFunDual_apply (L : StrongDual ℝ E) : charFunDual μ L = ∫ v, exp (L v * I) ∂μ := rfl
 
-lemma charFunDual_eq_charFun_map_one [OpensMeasurableSpace E] (L : Dual ℝ E) :
+lemma charFunDual_eq_charFun_map_one [OpensMeasurableSpace E] (L : StrongDual ℝ E) :
     charFunDual μ L = charFun (μ.map L) 1 := by
   rw [charFunDual_apply]
   have : ∫ x, cexp (L x * I) ∂μ = ∫ x, cexp (x * I) ∂(μ.map L) := by
@@ -266,7 +267,7 @@ lemma charFunDual_eq_charFun_map_one [OpensMeasurableSpace E] (L : Dual ℝ E) :
   rw [this, charFun_apply]
   simp
 
-lemma charFun_map_eq_charFunDual_smul [OpensMeasurableSpace E] (L : Dual ℝ E) (u : ℝ) :
+lemma charFun_map_eq_charFunDual_smul [OpensMeasurableSpace E] (L : StrongDual ℝ E) (u : ℝ) :
     charFun (μ.map L) u = charFunDual μ (u • L) := by
   rw [charFunDual_apply]
   have : ∫ x, cexp ((u • L) x * I) ∂μ = ∫ x, cexp (u * x * I) ∂(μ.map L) := by
@@ -282,18 +283,18 @@ lemma charFun_eq_charFunDual_toDualMap {E : Type*} [NormedAddCommGroup E] [Inner
     charFun μ t = charFunDual μ (InnerProductSpace.toDualMap ℝ E t) := by
   simp [charFunDual_apply, charFun_apply, real_inner_comm]
 
-lemma charFunDual_map [OpensMeasurableSpace E] [BorelSpace F] (L : E →L[ℝ] F) (L' : Dual ℝ F) :
-    charFunDual (μ.map L) L' = charFunDual μ (L'.comp L) := by
+lemma charFunDual_map [OpensMeasurableSpace E] [BorelSpace F] (L : E →L[ℝ] F)
+    (L' : StrongDual ℝ F) : charFunDual (μ.map L) L' = charFunDual μ (L'.comp L) := by
   rw [charFunDual_eq_charFun_map_one, charFunDual_eq_charFun_map_one,
     Measure.map_map (by fun_prop) (by fun_prop)]
   simp
 
 @[simp]
-lemma charFunDual_dirac [OpensMeasurableSpace E] {x : E} (L : Dual ℝ E) :
+lemma charFunDual_dirac [OpensMeasurableSpace E] {x : E} (L : StrongDual ℝ E) :
     charFunDual (Measure.dirac x) L = cexp (L x * I) := by
   rw [charFunDual_apply, integral_dirac]
 
-lemma charFunDual_map_add_const [BorelSpace E] (r : E) (L : Dual ℝ E) :
+lemma charFunDual_map_add_const [BorelSpace E] (r : E) (L : StrongDual ℝ E) :
     charFunDual (μ.map (· + r)) L = charFunDual μ L * cexp (L r * I) := by
   rw [charFunDual_apply, charFunDual_apply, integral_map (by fun_prop) (by fun_prop),
     ← integral_mul_const]
@@ -303,18 +304,18 @@ lemma charFunDual_map_add_const [BorelSpace E] (r : E) (L : Dual ℝ E) :
   simp only [map_add, ofReal_add]
   ring
 
-lemma charFunDual_map_const_add [BorelSpace E] (r : E) (L : Dual ℝ E) :
+lemma charFunDual_map_const_add [BorelSpace E] (r : E) (L : StrongDual ℝ E) :
     charFunDual (μ.map (r + ·)) L = charFunDual μ L * cexp (L r * I) := by
   simp_rw [add_comm r]
   exact charFunDual_map_add_const _ _
 
 /-- The characteristic function of a product of measures is a product of
 characteristic functions. -/
-lemma charFunDual_prod [SFinite μ] [SFinite ν] (L : Dual ℝ (E × F)) :
+lemma charFunDual_prod [SFinite μ] [SFinite ν] (L : StrongDual ℝ (E × F)) :
     charFunDual (μ.prod ν) L
       = charFunDual μ (L.comp (.inl ℝ E F)) * charFunDual ν (L.comp (.inr ℝ E F)) := by
-  let L₁ : Dual ℝ E := L.comp (.inl ℝ E F)
-  let L₂ : Dual ℝ F := L.comp (.inr ℝ E F)
+  let L₁ : StrongDual ℝ E := L.comp (.inl ℝ E F)
+  let L₂ : StrongDual ℝ F := L.comp (.inr ℝ E F)
   simp_rw [charFunDual_apply, ← L.comp_inl_add_comp_inr, ofReal_add, add_mul,
     Complex.exp_add]
   rw [integral_prod_mul (f := fun x ↦ cexp ((L₁ x * I))) (g := fun x ↦ cexp ((L₂ x * I)))]
@@ -330,19 +331,19 @@ theorem Measure.ext_of_charFunDual [CompleteSpace E]
     ?_ ?_ (fun L ↦ funext_iff.mp h L)
   · intro v hv
     rw [ne_eq, LinearMap.ext_iff]
-    simp only [ContinuousLinearMap.toLinearMap₂_apply, LinearMap.zero_apply, not_forall]
-    change ∃ L : Dual ℝ E, L v ≠ 0
+    simp only [ContinuousLinearMap.toLinearMap₁₂_apply, LinearMap.zero_apply, not_forall]
+    change ∃ L : StrongDual ℝ E, L v ≠ 0
     by_contra! h
     exact hv (NormedSpace.eq_zero_of_forall_dual_eq_zero _ h)
   · exact isBoundedBilinearMap_apply.symm.continuous
 
 /-- The characteristic function of a convolution of measures
 is the product of the respective characteristic functions. -/
-lemma charFunDual_conv {μ ν : Measure E} [IsFiniteMeasure μ] [IsFiniteMeasure ν] (L : Dual ℝ E) :
-    charFunDual (μ ∗ ν) L = charFunDual μ L * charFunDual ν L := by
+lemma charFunDual_conv {μ ν : Measure E} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    (L : StrongDual ℝ E) : charFunDual (μ ∗ ν) L = charFunDual μ L * charFunDual ν L := by
   simp_rw [charFunDual_apply]
   rw [integral_conv]
-  · simp [inner_add_left, add_mul, Complex.exp_add, integral_const_mul, integral_mul_const]
+  · simp [add_mul, Complex.exp_add, integral_const_mul, integral_mul_const]
   · exact (integrable_const (1 : ℝ)).mono (by fun_prop) (by simp)
 
 end NormedSpace

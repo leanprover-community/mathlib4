@@ -72,7 +72,7 @@ lemma tensorObj_map_tmul {X Y : Cᵒᵖ} (f : X ⟶ Y) (m₁ : M₁.obj X) (m₂
 /-- The tensor product of two morphisms of presheaves of modules. -/
 @[simps]
 noncomputable def tensorHom (f : M₁ ⟶ M₂) (g : M₃ ⟶ M₄) : tensorObj M₁ M₃ ⟶ tensorObj M₂ M₄ where
-  app X := f.app X ⊗ g.app X
+  app X := f.app X ⊗ₘ g.app X
   naturality {X Y} φ := ModuleCat.MonoidalCategory.tensor_ext (fun m₁ m₃ ↦ by
     dsimp
     rw [tensorObj_map_tmul]
@@ -109,8 +109,8 @@ noncomputable instance monoidalCategoryStruct :
 noncomputable instance monoidalCategory :
     MonoidalCategory (PresheafOfModules.{u} (R ⋙ forget₂ _ _)) where
   tensorHom_def _ _ := by ext1; apply tensorHom_def
-  tensor_id _ _ := by ext1; apply tensor_id
-  tensor_comp _ _ _ _ := by ext1; apply tensor_comp
+  id_tensorHom_id _ _ := by ext1; apply id_tensorHom_id
+  tensorHom_comp_tensorHom _ _ _ _ := by ext1; apply tensorHom_comp_tensorHom
   whiskerLeft_id M₁ M₂ := by
     ext1 X
     apply MonoidalCategory.whiskerLeft_id (C := ModuleCat (R.obj X))

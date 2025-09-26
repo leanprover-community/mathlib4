@@ -27,6 +27,9 @@ lemma succ_eq_succ : ∀ a : WithBot α, succ a = Order.succ a
   | ⊥ => rfl
   | (a : α) => rfl
 
+lemma lt_succ [NoMaxOrder α] (x : WithBot α) : x < x.succ :=
+  succ_eq_succ x ▸ Order.lt_succ x
+
 lemma succ_mono : Monotone (succ : WithBot α → α)
   | ⊥, _, _ => by simp
   | (a : α), ⊥, hab => by simp at hab

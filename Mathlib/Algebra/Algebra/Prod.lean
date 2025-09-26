@@ -103,8 +103,6 @@ their codomains. -/
 def prodEquiv : (A →ₐ[R] B) × (A →ₐ[R] C) ≃ (A →ₐ[R] B × C) where
   toFun f := f.1.prod f.2
   invFun f := ((fst _ _ _).comp f, (snd _ _ _).comp f)
-  left_inv f := by ext <;> rfl
-  right_inv f := by ext <;> rfl
 
 /-- `Prod.map` of two algebra homomorphisms. -/
 def prodMap {D : Type*} [Semiring D] [Algebra R D] (f : A →ₐ[R] B) (g : C →ₐ[R] D) :
@@ -115,6 +113,28 @@ def prodMap {D : Type*} [Semiring D] [Algebra R D] (f : A →ₐ[R] B) (g : C �
 end AlgHom
 
 namespace AlgEquiv
+
+section
+
+variable {S T A B : Type*} [Semiring A] [Semiring B]
+  [Semiring S] [Semiring T] [Algebra R S] [Algebra R T] [Algebra R A] [Algebra R B]
+
+/-- Product of algebra isomorphisms. -/
+def prodCongr (l : S ≃ₐ[R] A) (r : T ≃ₐ[R] B) : (S × T) ≃ₐ[R] A × B :=
+  .ofRingEquiv (f := RingEquiv.prodCongr l r) <| by simp
+
+variable (l : S ≃ₐ[R] A) (r : T ≃ₐ[R] B)
+
+-- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low]
+lemma prodCongr_apply (x : S × T) : prodCongr l r x = Equiv.prodCongr l r x := rfl
+
+-- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low]
+lemma prodCongr_symm_apply (x : A × B) :
+    (prodCongr l r).symm x = (Equiv.prodCongr l r).symm x := rfl
+
+end
 
 /-- Multiplying by the trivial algebra from the right does not change the structure.
 This is the `AlgEquiv` version of `LinearEquiv.prodUnique` and `RingEquiv.prodZeroRing.symm`. -/

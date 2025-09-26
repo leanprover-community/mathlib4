@@ -32,7 +32,7 @@ open Real Set MeasureTheory Filter Asymptotics intervalIntegral
 
 open scoped Real Topology FourierTransform RealInnerProductSpace
 
-open Complex hiding exp continuous_exp abs_of_nonneg sq_abs
+open Complex hiding exp continuous_exp
 
 noncomputable section
 
@@ -225,7 +225,7 @@ theorem _root_.fourierIntegral_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
   · rw [← div_div, div_self <| ofReal_ne_zero.mpr pi_ne_zero, one_div, inv_cpow, ← one_div]
     rw [Ne, arg_eq_pi_iff, not_and_or, not_lt]
     exact Or.inl hb.le
-  · field_simp [ofReal_ne_zero.mpr pi_ne_zero]
+  · field_simp
     ring_nf
     simp only [I_sq]
     ring
@@ -261,9 +261,9 @@ theorem integrable_cexp_neg_mul_sq_norm_add_of_euclideanSpace
   simp only [neg_mul, Function.comp_def]
   convert integrable_cexp_neg_mul_sum_add hb (fun i ↦ c * w i) using 3 with v
   simp only [EuclideanSpace.measurableEquiv, MeasurableEquiv.symm_mk, MeasurableEquiv.coe_mk,
-    EuclideanSpace.norm_eq, WithLp.equiv_symm_pi_apply, Real.norm_eq_abs, sq_abs, PiLp.inner_apply,
+    EuclideanSpace.norm_eq, Real.norm_eq_abs, sq_abs, PiLp.inner_apply,
     RCLike.inner_apply, conj_trivial, ofReal_sum, ofReal_mul, Finset.mul_sum, neg_mul,
-    Finset.sum_neg_distrib, mul_assoc, add_left_inj, neg_inj]
+    Finset.sum_neg_distrib, mul_assoc]
   norm_cast
   rw [sq_sqrt]
   · simp [Finset.mul_sum, mul_comm]
@@ -278,8 +278,8 @@ theorem integrable_cexp_neg_mul_sq_norm_add (hb : 0 < b.re) (c : ℂ) (w : V) :
   convert integrable_cexp_neg_mul_sq_norm_add_of_euclideanSpace
     hb c (e.symm w) with v
   simp only [neg_mul, Function.comp_apply, LinearIsometryEquiv.norm_map,
-    LinearIsometryEquiv.symm_symm, conj_trivial, ofReal_sum,
-    ofReal_mul, LinearIsometryEquiv.inner_map_eq_flip]
+    LinearIsometryEquiv.symm_symm,
+    LinearIsometryEquiv.inner_map_eq_flip]
 
 theorem integral_cexp_neg_sum_mul_add {ι : Type*} [Fintype ι] {b : ι → ℂ}
     (hb : ∀ i, 0 < (b i).re) (c : ι → ℂ) :
@@ -304,11 +304,10 @@ theorem integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace
       (π / b) ^ (Fintype.card ι / 2 : ℂ) * cexp (c ^ 2 * ‖w‖^2 / (4 * b)) := by
   have := (EuclideanSpace.volume_preserving_measurableEquiv ι).symm
   rw [← this.integral_comp (MeasurableEquiv.measurableEmbedding _)]
-  simp only [neg_mul, Function.comp_def]
+  simp only [neg_mul]
   convert integral_cexp_neg_mul_sum_add hb (fun i ↦ c * w i) using 5 with _x y
-  · simp only [EuclideanSpace.measurableEquiv, MeasurableEquiv.symm_mk, MeasurableEquiv.coe_mk,
-      EuclideanSpace.norm_eq, WithLp.equiv_symm_pi_apply, Real.norm_eq_abs, sq_abs, neg_mul,
-      neg_inj, mul_eq_mul_left_iff]
+  · simp only [EuclideanSpace.coe_measurableEquiv_symm, EuclideanSpace.norm_eq, PiLp.toLp_apply,
+      Real.norm_eq_abs, sq_abs, neg_mul, neg_inj, mul_eq_mul_left_iff]
     norm_cast
     left
     rw [sq_sqrt]
@@ -354,7 +353,7 @@ theorem _root_.fourierIntegral_gaussian_innerProductSpace' (hb : 0 < b.re) (x w 
     simp [inner_sub_left]
     ring
   · have : b ≠ 0 := by contrapose! hb; rw [hb, zero_re]
-    field_simp [mul_pow]
+    simp [mul_pow]
     ring
 
 theorem _root_.fourierIntegral_gaussian_innerProductSpace (hb : 0 < b.re) (w : V) :

@@ -245,17 +245,17 @@ theorem exists_code.comp {m n} {f : List.Vector ℕ n →. ℕ} {g : Fin n → L
   · obtain ⟨cf, hf⟩ := hf
     exact
       ⟨cf.comp cg, fun v => by
-        simp [hg, hf, map_bind, seq_bind_eq, Function.comp_def]
+        simp [hg, hf, map_bind]
         rfl⟩
   clear hf f
   induction n with
-  | zero => exact ⟨nil, fun v => by simp [Vector.mOfFn, Bind.bind]; rfl⟩
+  | zero => exact ⟨nil, fun v => by simp [Vector.mOfFn]; rfl⟩
   | succ n IH =>
     obtain ⟨cg, hg₁⟩ := hg 0
     obtain ⟨cl, hl⟩ := IH fun i => hg i.succ
     exact
       ⟨cons cg cl, fun v => by
-        simp [Vector.mOfFn, hg₁, map_bind, seq_bind_eq, bind_assoc, (· ∘ ·), hl]
+        simp [Vector.mOfFn, hg₁, map_bind, hl]
         rfl⟩
 
 theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
@@ -267,7 +267,7 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     | succ => exact ⟨succ, fun ⟨[v], _⟩ => rfl⟩
     | get i =>
       refine Fin.succRec (fun n => ?_) (fun n i IH => ?_) i
-      · exact ⟨head, fun ⟨List.cons a as, _⟩ => by simp [Bind.bind]; rfl⟩
+      · exact ⟨head, fun ⟨List.cons a as, _⟩ => by simp; rfl⟩
       · obtain ⟨c, h⟩ := IH
         exact ⟨c.comp tail, fun v => by simpa [← Vector.get_tail, Bind.bind] using h v.tail⟩
     | comp g hf hg IHf IHg =>
@@ -285,8 +285,7 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
         Vector.head_cons, PFun.coe_val, Vector.tail_val]
       simp only [← Part.pure_eq_some] at hf hg ⊢
       induction v.head with
-        simp [prec, hf, Part.bind_assoc, ← Part.bind_some_eq_map, Part.bind_some,
-          show ∀ x, pure x = [x] from fun _ => rfl, Bind.bind, Functor.map]
+        simp [prec, hf, Part.bind_assoc, ← Part.bind_some_eq_map, Part.bind_some, Bind.bind]
       | succ n _ =>
       suffices ∀ a b, a + b = n →
         (n.succ :: 0 ::
@@ -310,7 +309,7 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
         rfl
       | succ b IH =>
         refine PFun.mem_fix_iff.2 (Or.inr ⟨_, ?_, IH (a + 1) (by rwa [add_right_comm])⟩)
-        simp only [hg, eval, Part.bind_some, Nat.rec_add_one, List.tail_nil, List.tail_cons, pure]
+        simp only [hg, Part.bind_some, List.tail_cons, pure]
         exact Part.mem_some_iff.2 rfl
   | comp g _ _ IHf IHg => exact exists_code.comp IHf IHg
   | @rfind n f _ IHf =>
@@ -319,10 +318,10 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     simp only [Part.map_eq_map, Part.map_some, Vector.cons_val, PFun.coe_val,
       show ∀ x, pure x = [x] from fun _ => rfl] at hf ⊢
     refine Part.ext fun x => ?_
-    simp only [rfind, Part.bind_eq_bind, Part.pure_eq_some, Part.map_eq_map, Part.bind_some,
-      exists_prop, cons_eval, comp_eval, fix_eval, tail_eval, succ_eval, zero'_eval,
-      List.headI_nil, List.headI_cons, pred_eval, Part.map_some, false_eq_decide_iff,
-      Part.mem_bind_iff, List.length, Part.mem_map_iff, Nat.mem_rfind, List.tail_nil,
+    simp only [rfind, Part.bind_eq_bind, Part.pure_eq_some, Part.bind_some,
+      cons_eval, comp_eval, fix_eval, tail_eval, succ_eval, zero'_eval,
+      List.headI_cons, pred_eval, Part.map_some, false_eq_decide_iff,
+      Part.mem_bind_iff, Part.mem_map_iff, Nat.mem_rfind,
       List.tail_cons, true_eq_decide_iff, Part.mem_some_iff, Part.map_bind]
     constructor
     · rintro ⟨v', h1, rfl⟩
@@ -342,7 +341,7 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
       have := PFun.mem_fix_iff.1 h2
       simp only [hf, Part.bind_some] at this
       split_ifs at this with h
-      · simp only [List.headI_nil, List.headI_cons, exists_false, or_false, Part.mem_some_iff,
+      · simp only [List.headI_cons, exists_false, or_false, Part.mem_some_iff,
           List.tail_cons, false_and, Sum.inl.injEq, reduceCtorEq] at this
         subst this
         exact ⟨_, ⟨h, @(hm)⟩, rfl⟩
@@ -366,8 +365,8 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
       | succ n IH =>
         refine IH (fun {m} h' => hm (Nat.lt_succ_of_lt h'))
           (PFun.mem_fix_iff.2 (Or.inr ⟨_, ?_, this⟩))
-        simp only [hf, hm n.lt_succ_self, Part.bind_some, List.headI, eq_self_iff_true, if_false,
-          Part.mem_some_iff, and_self_iff, List.tail_cons]
+        simp only [hf, hm n.lt_succ_self, Part.bind_some, List.headI, if_false,
+          Part.mem_some_iff, List.tail_cons]
 
 end Code
 
@@ -534,7 +533,7 @@ equality, not a simulation; the original and embedded machines move in lock-step
 embedded machine reaches the halt state. -/
 theorem stepNormal_then (c) (k k' : Cont) (v) :
     stepNormal c (k.then k') v = (stepNormal c k v).then k' := by
-  induction c generalizing k v with simp only [Cont.then, stepNormal, *]
+  induction c generalizing k v with simp only [stepNormal, *]
   | cons c c' ih _ => rw [← ih, Cont.then]
   | comp c c' _ ih' => rw [← ih', Cont.then]
   | case => cases v.headI <;> simp only [Nat.rec_zero]
@@ -616,7 +615,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
       refine ⟨v', h₁, ?_⟩
       rw [stepRet] at h
       revert h
-      by_cases he : v'.headI = 0 <;> simp only [exists_prop, if_pos, if_false, he] <;> intro h
+      by_cases he : v'.headI = 0 <;> simp only [if_pos, if_false, he] <;> intro h
       · refine ⟨_, Part.mem_some _, ?_⟩
         rw [reaches_eval]
         · exact h
@@ -661,7 +660,7 @@ theorem code_is_ok (c) : Code.Ok c := by
   induction c with (intro k v; rw [stepNormal])
   | cons f fs IHf IHfs =>
     rw [Code.eval, IHf]
-    simp only [bind_assoc, Cont.eval, pure_bind]; congr; funext v
+    simp only [bind_assoc, pure_bind]; congr; funext v
     rw [reaches_eval]; swap
     · exact ReflTransGen.single rfl
     rw [stepRet, IHfs]; congr; funext v'
@@ -669,7 +668,7 @@ theorem code_is_ok (c) : Code.Ok c := by
       exact reaches_eval (ReflTransGen.single rfl)
   | comp f g IHf IHg =>
     rw [Code.eval, IHg]
-    simp only [bind_assoc, Cont.eval, pure_bind]; congr; funext v
+    simp only [bind_assoc]; congr; funext v
     rw [reaches_eval]; swap
     · exact ReflTransGen.single rfl
     rw [stepRet, IHf]
@@ -685,7 +684,7 @@ theorem stepNormal_eval (c v) : eval step (stepNormal c Cont.halt v) = Cfg.halt 
 theorem stepRet_eval {k v} : eval step (stepRet k v) = Cfg.halt <$> k.eval v := by
   induction k generalizing v with
   | halt =>
-    simp only [mem_eval, Cont.eval, map_pure]
+    simp only [Cont.eval, map_pure]
     exact Part.eq_some_iff.2 (mem_eval.2 ⟨ReflTransGen.refl, rfl⟩)
   | cons₁ fs as k IH =>
     rw [Cont.eval, stepRet, code_is_ok]
@@ -701,7 +700,7 @@ theorem stepRet_eval {k v} : eval step (stepRet k v) = Cfg.halt <$> k.eval v := 
     · exact ReflTransGen.single rfl
     rw [IH, bind_pure_comp]
   | fix f k IH =>
-    rw [Cont.eval, stepRet]; simp only [bind_pure_comp]
+    rw [Cont.eval, stepRet]; simp only
     split_ifs; · exact IH
     simp only [← bind_pure_comp, bind_assoc, cont_eval_fix (code_is_ok _)]
     congr; funext; rw [bind_pure_comp, ← IH]

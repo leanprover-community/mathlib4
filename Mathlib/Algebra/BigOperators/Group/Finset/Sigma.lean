@@ -27,18 +27,18 @@ variable [CommMonoid β]
 For rewriting in the reverse direction, use `Finset.prod_sigma'`.
 
 See also `Fintype.prod_sigma` for the product over the whole type. -/
-@[to_additive "The sum over a sigma type equals the sum of the fiberwise sums. For rewriting
+@[to_additive /-- The sum over a sigma type equals the sum of the fiberwise sums. For rewriting
 in the reverse direction, use `Finset.sum_sigma'`.
 
-See also `Fintype.sum_sigma` for the sum over the whole type."]
+See also `Fintype.sum_sigma` for the sum over the whole type. -/]
 theorem prod_sigma {σ : α → Type*} (s : Finset α) (t : ∀ a, Finset (σ a)) (f : Sigma σ → β) :
     ∏ x ∈ s.sigma t, f x = ∏ a ∈ s, ∏ s ∈ t a, f ⟨a, s⟩ := by
   simp_rw [← disjiUnion_map_sigma_mk, prod_disjiUnion, prod_map, Function.Embedding.sigmaMk_apply]
 
 /-- The product over a sigma type equals the product of the fiberwise products. For rewriting
 in the reverse direction, use `Finset.prod_sigma`. -/
-@[to_additive "The sum over a sigma type equals the sum of the fiberwise sums. For rewriting
-in the reverse direction, use `Finset.sum_sigma`"]
+@[to_additive /-- The sum over a sigma type equals the sum of the fiberwise sums. For rewriting
+in the reverse direction, use `Finset.sum_sigma` -/]
 theorem prod_sigma' {σ : α → Type*} (s : Finset α) (t : ∀ a, Finset (σ a)) (f : ∀ a, σ a → β) :
     (∏ a ∈ s, ∏ s ∈ t a, f a s) = ∏ x ∈ s.sigma t, f x.1 x.2 :=
   Eq.symm <| prod_sigma s t fun x => f x.1 x.2
@@ -71,16 +71,16 @@ theorem prod_finset_product_right' (r : Finset (α × γ)) (s : Finset γ) (t : 
 
 /-- The product over a product set equals the product of the fiberwise products. For rewriting
 in the reverse direction, use `Finset.prod_product'`. -/
-@[to_additive "The sum over a product set equals the sum of the fiberwise sums. For rewriting
-in the reverse direction, use `Finset.sum_product'`"]
+@[to_additive /-- The sum over a product set equals the sum of the fiberwise sums. For rewriting
+in the reverse direction, use `Finset.sum_product'` -/]
 theorem prod_product (s : Finset γ) (t : Finset α) (f : γ × α → β) :
     ∏ x ∈ s ×ˢ t, f x = ∏ x ∈ s, ∏ y ∈ t, f (x, y) :=
   prod_finset_product (s ×ˢ t) s (fun _a => t) fun _p => mem_product
 
 /-- The product over a product set equals the product of the fiberwise products. For rewriting
 in the reverse direction, use `Finset.prod_product`. -/
-@[to_additive "The sum over a product set equals the sum of the fiberwise sums. For rewriting
-in the reverse direction, use `Finset.sum_product`"]
+@[to_additive /-- The sum over a product set equals the sum of the fiberwise sums. For rewriting
+in the reverse direction, use `Finset.sum_product` -/]
 theorem prod_product' (s : Finset γ) (t : Finset α) (f : γ → α → β) :
     ∏ x ∈ s ×ˢ t, f x.1 x.2 = ∏ x ∈ s, ∏ y ∈ t, f x y :=
   prod_product ..
@@ -91,15 +91,15 @@ theorem prod_product_right (s : Finset γ) (t : Finset α) (f : γ × α → β)
   prod_finset_product_right (s ×ˢ t) t (fun _a => s) fun _p => mem_product.trans and_comm
 
 /-- An uncurried version of `Finset.prod_product_right`. -/
-@[to_additive "An uncurried version of `Finset.sum_product_right`"]
+@[to_additive /-- An uncurried version of `Finset.sum_product_right` -/]
 theorem prod_product_right' (s : Finset γ) (t : Finset α) (f : γ → α → β) :
     ∏ x ∈ s ×ˢ t, f x.1 x.2 = ∏ y ∈ t, ∏ x ∈ s, f x y :=
   prod_product_right ..
 
 /-- Generalization of `Finset.prod_comm` to the case when the inner `Finset`s depend on the outer
 variable. -/
-@[to_additive "Generalization of `Finset.sum_comm` to the case when the inner `Finset`s depend on
-the outer variable."]
+@[to_additive /-- Generalization of `Finset.sum_comm` to the case when the inner `Finset`s depend on
+the outer variable. -/]
 theorem prod_comm' {s : Finset γ} {t : γ → Finset α} {t' : Finset α} {s' : α → Finset γ}
     (h : ∀ x y, x ∈ s ∧ y ∈ t x ↔ x ∈ s' y ∧ y ∈ t') {f : γ → α → β} :
     (∏ x ∈ s, ∏ y ∈ t x, f x y) = ∏ y ∈ t', ∏ x ∈ s' y, f x y := by

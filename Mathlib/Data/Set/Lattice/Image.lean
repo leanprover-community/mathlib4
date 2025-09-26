@@ -310,7 +310,7 @@ section Image
 
 theorem image_iUnion {f : α → β} {s : ι → Set α} : (f '' ⋃ i, s i) = ⋃ i, f '' s i := by
   ext1 x
-  simp only [mem_image, mem_iUnion, ← exists_and_right, ← exists_and_left, exists_swap (α := α)]
+  simp only [mem_image, mem_iUnion, ← exists_and_right, exists_swap (α := α)]
 
 theorem image_iUnion₂ (f : α → β) (s : ∀ i, κ i → Set α) :
     (f '' ⋃ (i) (j), s i j) = ⋃ (i) (j), f '' s i j := by simp_rw [image_iUnion]
@@ -452,6 +452,16 @@ theorem iUnion_prod_of_monotone [SemilatticeSup α] {s : α → Set β} {t : α 
     exact ⟨⟨x, hz⟩, x, hw⟩
   · intro x hz x' hw
     exact ⟨x ⊔ x', hs le_sup_left hz, ht le_sup_right hw⟩
+
+lemma biUnion_prod {α β γ} (s : Set α) (t : Set β) (f : α → Set γ) (g : β → Set δ) :
+    ⋃ x ∈ s ×ˢ t, f x.1 ×ˢ g x.2 = (⋃ x ∈ s, f x) ×ˢ (⋃ x ∈ t, g x) := by
+  ext ⟨_, _⟩
+  simp only [mem_iUnion, mem_prod, exists_prop, Prod.exists]; tauto
+
+/-- Analogue of `biSup_prod` for sets. -/
+lemma biUnion_prod' (s : Set β) (t : Set γ) (f : β × γ → Set α) :
+    ⋃ x ∈ s ×ˢ t, f x = ⋃ (i ∈ s) (j ∈ t), f (i, j) :=
+  biSup_prod
 
 theorem sInter_prod_sInter_subset (S : Set (Set α)) (T : Set (Set β)) :
     ⋂₀ S ×ˢ ⋂₀ T ⊆ ⋂ r ∈ S ×ˢ T, r.1 ×ˢ r.2 :=

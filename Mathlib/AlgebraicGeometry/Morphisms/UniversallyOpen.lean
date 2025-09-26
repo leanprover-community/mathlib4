@@ -99,14 +99,14 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 @[stacks 01U1]
 lemma isOpenMap_of_generalizingMap [LocallyOfFinitePresentation f]
     (hf : GeneralizingMap f.base) : IsOpenMap f.base := by
-  show topologically IsOpenMap f
+  change topologically IsOpenMap f
   wlog hY : ∃ R, Y = Spec R
   · rw [IsLocalAtTarget.iff_of_openCover (P := topologically IsOpenMap) Y.affineCover]
     intro i
     dsimp only [Scheme.Cover.pullbackHom]
     refine this _ ?_ ⟨_, rfl⟩
     exact IsLocalAtTarget.of_isPullback (P := topologically GeneralizingMap)
-      (iY := Y.affineCover.map i) (IsPullback.of_hasPullback ..) hf
+      (iY := Y.affineCover.f i) (IsPullback.of_hasPullback ..) hf
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
   · rw [IsLocalAtSource.iff_of_openCover (P := topologically IsOpenMap) X.affineCover]
@@ -124,7 +124,7 @@ lemma isOpenMap_of_generalizingMap [LocallyOfFinitePresentation f]
 lemma Flat.generalizingMap [Flat f] : GeneralizingMap f.base := by
   have := HasRingHomProperty.of_isLocalAtSource_of_isLocalAtTarget.{u}
     (topologically GeneralizingMap)
-  show topologically GeneralizingMap f
+  change topologically GeneralizingMap f
   rw [HasRingHomProperty.iff_appLE (P := topologically GeneralizingMap)]
   intro U V e
   algebraize [(f.appLE U V e).hom]

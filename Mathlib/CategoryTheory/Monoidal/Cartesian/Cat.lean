@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 /-!
 # Chosen finite products in `Cat`
 
-This file proves that the cartesian product of a pair of categories agrees with the
+This file proves that the Cartesian product of a pair of categories agrees with the
 product in `Cat`, and provides the associated `CartesianMonoidalCategory` instance.
 -/
 
@@ -19,12 +19,26 @@ namespace Cat
 
 open Limits
 
+attribute [local instance] uliftCategory in
 /-- The chosen terminal object in `Cat`. -/
 abbrev chosenTerminal : Cat := Cat.of (ULift (ULiftHom (Discrete Unit)))
 
 /-- The chosen terminal object in `Cat` is terminal. -/
 def chosenTerminalIsTerminal : IsTerminal chosenTerminal :=
   IsTerminal.ofUniqueHom (fun _ ↦ (Functor.const _).obj ⟨⟨⟨⟩⟩⟩) fun _ _ ↦ rfl
+
+/-- The type of functors out of the chosen terminal category is equivalent to the type of objects
+in the target category. TODO: upgrade to an equivalence of categories. -/
+def fromChosenTerminalEquiv {C : Type u} [Category.{v} C] : Cat.chosenTerminal ⥤ C ≃ C where
+  toFun F := F.obj ⟨⟨()⟩⟩
+  invFun := (Functor.const _).obj
+  left_inv _ := by
+    apply Functor.ext
+    · rintro ⟨⟨⟨⟩⟩⟩ ⟨⟨⟨⟩⟩⟩ ⟨⟨⟨⟨⟩⟩⟩⟩
+      simp only [eqToHom_refl, Category.comp_id, Category.id_comp]
+      exact (Functor.map_id _ _).symm
+    · intro; rfl
+  right_inv _ := rfl
 
 /-- The chosen product of categories `C × D` yields a product cone in `Cat`. -/
 def prodCone (C D : Cat.{v, u}) : BinaryFan C D :=
@@ -77,7 +91,7 @@ lemma whiskerRight_snd {A : Cat} {B : Cat} (f : A ⟶ B) (X : Cat) :
     (f ▷ X) ⋙ Prod.snd _ _  = Prod.snd _ _ := rfl
 
 lemma tensorHom {A : Cat} {B : Cat} (f : A ⟶ B) {X : Cat} {Y : Cat} (g : X ⟶ Y) :
-    f ⊗ g = f.prod g := rfl
+    f ⊗ₘ g = f.prod g := rfl
 
 lemma tensorUnit : 𝟙_ Cat = Cat.chosenTerminal := rfl
 

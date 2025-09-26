@@ -124,9 +124,9 @@ theorem exists_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Finite (α
     refine ⟨fun ⟨hne, h'⟩ ↦ ?_, ?_⟩
     · have hle' : i + 1 ≤ j := h.lt_of_ne <| by rintro rfl; simp [π_refl] at hne
       exact congr_arg Sigma.fst <| h' (i+1) (π hle' b) ⟨by simp, by rw [π_trans]⟩ ⟨hle', by simp⟩
-        (fun h ↦ by apply_fun Sigma.fst at h; simp at h)
+        (fun h ↦ by simp at h)
     rintro rfl
-    refine ⟨fun h ↦ by apply_fun Sigma.fst at h; simp at h, ?_⟩
+    refine ⟨fun h ↦ by simp at h, ?_⟩
     rintro j c ⟨hij : i ≤ j, hcb : π _ c = π _ b⟩ ⟨hji : j ≤ i + 1, rfl : π hji b = c⟩ hne
     replace hne := show i ≠ j by rintro rfl; contradiction
     obtain rfl := hji.antisymm (hij.lt_of_ne hne)
@@ -142,7 +142,7 @@ theorem exists_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Finite (α
     simp only [αs, subset_def, mem_preimage, mem_singleton_iff, mem_Ici, Sigma.forall]
     exact fun i x h ↦ ⟨zero_le i, h⟩
   have hfin : ∀ (a : αs), {x | a ⋖ x}.Finite := by
-    refine fun ⟨i,a⟩ ↦ ((hfin i a).image (fun b ↦ ⟨_,b⟩)).subset ?_
+    refine fun ⟨i, a⟩ ↦ ((hfin i a).image (fun b ↦ ⟨_, b⟩)).subset ?_
     simp only [αs, hcovby, subset_def, mem_setOf_eq, mem_image, and_imp, Sigma.forall]
     exact fun j b ⟨_, _⟩ hj ↦ ⟨π hj.le b, by rwa [π_trans], by cases hj; rw [π_refl]⟩
   obtain ⟨f, hf0, hf⟩ := exists_orderEmbedding_covby_of_forall_covby_finite hfin ha₀inf

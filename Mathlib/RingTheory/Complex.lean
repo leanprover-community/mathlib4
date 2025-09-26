@@ -3,7 +3,7 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Complex.Module
+import Mathlib.LinearAlgebra.Complex.Module
 import Mathlib.RingTheory.Norm.Defs
 import Mathlib.RingTheory.Trace.Defs
 
@@ -18,11 +18,11 @@ theorem Algebra.leftMulMatrix_complex (z : ℂ) :
   rw [Algebra.leftMulMatrix_eq_repr_mul, Complex.coe_basisOneI_repr, Complex.coe_basisOneI, mul_re,
     mul_im, Matrix.of_apply]
   fin_cases j <;> dsimp only [Fin.zero_eta, Fin.mk_one, Matrix.cons_val]
-  · simp only [Fin.zero_eta, id_eq, Matrix.cons_val_zero, one_re, mul_one, one_im, mul_zero,
-      sub_zero, zero_add, Matrix.cons_val_fin_one]
+  · simp only [one_re, mul_one, one_im, mul_zero,
+      sub_zero, zero_add]
     fin_cases i <;> rfl
-  · simp only [Fin.mk_one, id_eq, Matrix.cons_val_one, Matrix.head_cons, I_re, mul_zero, I_im,
-      mul_one, zero_sub, add_zero, Matrix.cons_val_fin_one]
+  · simp only [I_re, mul_zero, I_im,
+      mul_one, zero_sub, add_zero]
     fin_cases i <;> rfl
 
 theorem Algebra.trace_complex_apply (z : ℂ) : Algebra.trace ℝ ℂ z = 2 * z.re := by
