@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
+import Mathlib.Algebra.Algebra.StrictPositivity
 import Mathlib.Tactic.ContinuousFunctionalCalculus
 import Mathlib.Topology.Algebra.Polynomial
 import Mathlib.Topology.Algebra.Star.Real
@@ -900,6 +901,13 @@ lemma cfcHom_nonneg_iff [NonnegSpectrumClass R A] {a : A} (ha : p a) {f : C(spec
   · exact fun hf x ↦ (cfcHom_map_spectrum ha (R := R) _ ▸ spectrum_nonneg_of_nonneg hf) ⟨x, rfl⟩
   · simpa using (cfcHom_mono ha (f := 0) (g := f) ·)
 
+lemma cfcHom_isStrictlyPositive_iff [NonnegSpectrumClass R A] {a : A} (ha : p a)
+    {f : C(spectrum R a, R)} : IsStrictlyPositive (cfcHom ha f) ↔ ∀ x, 0 < f x := by
+  refine ⟨fun hf x => hf.spectrum_pos <| cfcHom_map_spectrum (R := R) ha _ ▸ Set.mem_range_self x,
+    fun h => ⟨cfcHom_nonneg_iff _ |>.mpr fun x => le_of_lt (h x), ?_⟩⟩
+  apply spectrum.isUnit_of_zero_notMem (R := R)
+  grind [cfcHom_map_spectrum, ne_of_lt]
+
 lemma cfc_mono {f g : R → R} {a : A} (h : ∀ x ∈ spectrum R a, f x ≤ g x)
     (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
     (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac) :
@@ -918,6 +926,17 @@ lemma cfc_nonneg_iff [NonnegSpectrumClass R A] (f : R → R) (a : A)
 lemma StarOrderedRing.nonneg_iff_spectrum_nonneg [NonnegSpectrumClass R A] (a : A)
     (ha : p a := by cfc_tac) : 0 ≤ a ↔ ∀ x ∈ spectrum R a, 0 ≤ x := by
   have := cfc_nonneg_iff (id : R → R) a (by fun_prop) ha
+  simpa [cfc_id _ a ha] using this
+
+lemma cfc_isStrictlyPositive_iff [NonnegSpectrumClass R A] (f : R → R) (a : A)
+    (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
+    (ha : p a := by cfc_tac) : IsStrictlyPositive (cfc f a) ↔ ∀ x ∈ spectrum R a, 0 < f x := by
+  rw [cfc_apply .., cfcHom_isStrictlyPositive_iff]
+  simp
+
+lemma StarOrderedRing.isStrictlyPositive_iff_spectrum_pos [NonnegSpectrumClass R A] (a : A)
+    (ha : p a := by cfc_tac) : IsStrictlyPositive a ↔ ∀ x ∈ spectrum R a, 0 < x := by
+  have := cfc_isStrictlyPositive_iff (id : R → R) a (by fun_prop) ha
   simpa [cfc_id _ a ha] using this
 
 lemma cfc_nonneg {f : R → R} {a : A} (h : ∀ x ∈ spectrum R a, 0 ≤ f x) :
