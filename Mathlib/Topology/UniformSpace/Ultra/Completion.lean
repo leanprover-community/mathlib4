@@ -25,12 +25,10 @@ lemma IsUniformInducing.isUltraUniformity [IsUltraUniformity Y] {f : X → Y}
     (hf : IsUniformInducing f) : IsUltraUniformity X :=
   hf.comap_uniformSpace ▸ .comap inferInstance f
 
-lemma IsSymmetricRel.cauchyFilter_gen {s : Set (X × X)} (h : IsSymmetricRel s) :
-    IsSymmetricRel (CauchyFilter.gen s) := by
-  simp [IsSymmetricRel, CauchyFilter.gen, h.mem_filter_prod_comm]
+instance CauchyFilter.isSymm_gen {s : SetRel X X} [s.IsSymm] : (gen s).IsSymm where
+  symm _ := by simp [CauchyFilter.gen, h.mem_filter_prod_comm]
 
-lemma IsTransitiveRel.cauchyFilter_gen {s : Set (X × X)} (hs : IsTransitiveRel s) :
-    IsTransitiveRel (CauchyFilter.gen s) := by
+lemma CauchyFilter.isTrans_gen {s : SetRel X X} [s.IsTrans] : (gen s).IsTrans := by
   simp only [IsTransitiveRel, CauchyFilter.gen, mem_setOf_eq]
   intro f g h hfg hgh
   exact hs.mem_filter_prod_comm hfg hgh

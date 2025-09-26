@@ -281,6 +281,8 @@ lemma IsSymmetricRel.preimage_prodMap {U : Set (β × β)} (ht : IsSymmetricRel 
     IsSymmetricRel (Prod.map f f ⁻¹' U) :=
   Set.ext fun _ ↦ ht.mk_mem_comm
 
+set_option linter.deprecated false in
+@[deprecated SetRel.isSymm_image (since := "2025-03-05")]
 lemma IsSymmetricRel.image_prodMap {U : Set (α × α)} (ht : IsSymmetricRel U) (f : α → β) :
     IsSymmetricRel (Prod.map f f '' U) := by
   rw [IsSymmetricRel, ← image_swap_eq_preimage_swap, ← image_comp, ← Prod.map_comp_swap, image_comp,
