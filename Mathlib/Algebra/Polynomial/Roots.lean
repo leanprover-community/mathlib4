@@ -114,7 +114,7 @@ theorem isRoot_of_mem_roots (h : a ∈ p.roots) : IsRoot p a :=
 theorem roots_zero_iff_isRoot_bot (hp0 : p ≠ 0) : p.roots = 0 ↔ p.IsRoot = ⊥ := by
   constructor <;> intro h
   · ext a
-    simp
+    simp only [IsRoot, Pi.bot_apply, Prop.bot_eq_false, iff_false]
     exact mem_roots hp0 |>.not.mp <| by simp [h]
   · exact eq_zero_of_forall_notMem fun x hx ↦ h ▸ mem_roots hp0 |>.mp hx
 
