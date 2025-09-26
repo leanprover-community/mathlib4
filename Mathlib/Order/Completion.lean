@@ -100,8 +100,8 @@ def ofEmbedding : β ↪o DedekindCut β where
 
 /-- Any order embedding `β ↪o γ` into a complete lattice factors through `DedekindCut β`.
 
-This map is defined so that `factorEmbedding f A = sSup (f '' A.fst)`. Although the construction
-`factorEmbedding f A = sInf (f '' A.snd)` would also work, these do **not** in general give equal
+This map is defined so that `factorEmbedding f A = sSup (f '' A.left)`. Although the construction
+`factorEmbedding f A = sInf (f '' A.right)` would also work, these do **not** in general give equal
 embeddings. -/
 def factorEmbedding (f : β ↪o γ) : DedekindCut β ↪o γ :=
   .ofMapLEIff (fun A ↦ sSup (f '' A.left)) <| by
