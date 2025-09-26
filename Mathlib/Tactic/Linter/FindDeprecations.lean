@@ -119,8 +119,10 @@ def deprecatedHashMap (oldDate newDate : String) :
         --dbg_trace (rgStart, rgStop)
         fin := fin.alter lean.toString fun a =>
           (a.getD #[⟨fm.positions.back!, fm.positions.back! + ⟨1⟩⟩]).binInsert (·.1 < ·.1) rg
-      catch _ =>
-        dbg_trace "error on {modName}"
+      catch e =>
+        if let .error ref msg := e then
+          logInfoAt ref m!"error on {modName}: {msg}"
+        --dbg_trace "error on {modName}"
         continue
   return fin
 
