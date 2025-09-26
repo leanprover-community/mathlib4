@@ -243,6 +243,12 @@ lemma fixedField_antitone : Antitone (@fixedField F _ E _ _) :=
   ext
   simp [mem_bot]
 
+theorem fixingSubgroup_sup {K L : IntermediateField F E} :
+    (K ⊔ L).fixingSubgroup = K.fixingSubgroup ⊓ L.fixingSubgroup := by
+  ext φ
+  exact ⟨fun h ↦ ⟨fixingSubgroup_antitone le_sup_left h, fixingSubgroup_antitone le_sup_right h⟩,
+    by simp [← Subgroup.zpowers_le, ← IntermediateField.le_iff_le]⟩
+
 /-- The fixing subgroup of `K : IntermediateField F E` is isomorphic to `E ≃ₐ[K] E`. -/
 def fixingSubgroupEquiv : fixingSubgroup K ≃* E ≃ₐ[K] E where
   toFun ϕ := { AlgEquiv.toRingEquiv (ϕ : E ≃ₐ[F] E) with commutes' := ϕ.mem }
@@ -587,8 +593,6 @@ section restrictRestrictAlgEquivMapHom
 
 namespace IntermediateField
 
-variable {F E : Type*} [Field F] [Field E] [Algebra F E] (K L : IntermediateField F E) [Normal F K]
-
 /--
 The map from the `Gal(E/L)` to `Gal(K/F)` where `E/L/F` and `E/K/F` are two towers of
 extensions induced by the restriction to `K`. Note that we do require `K/F` to be normal but not
@@ -597,47 +601,39 @@ map is surjective, see `IntermediateField.restrictRestrictMapHom_surjective`.
 This map is injective if the compositum of `K` and `L` is `E`,
 see `IntermediateField.restrictRestrictAlgEquivMapHom_injective`.
 -/
-noncomputable def restrictRestrictAlgEquivMapHom :
+noncomputable def restrictRestrictAlgEquivMapHom (F K L E : Type*) [Field F] [Field K] [Field L]
+    [Field E] [Algebra F K] [Algebra F L] [Algebra F E] [Algebra K E] [Algebra L E]
+    [IsScalarTower F K E] [IsScalarTower F L E] [Normal F K] :
     (E ≃ₐ[L] E) →* (K ≃ₐ[F] K) :=
   (AlgEquiv.restrictNormalHom K).comp (MulSemiringAction.toAlgAut (E ≃ₐ[L] E) F E)
 
+variable {F E : Type*} [Field F] [Field E] [Algebra F E] (K L : IntermediateField F E) [Normal F K]
+
 @[simp]
 theorem restrictRestrictAlgEquivMapHom_apply (φ : E ≃ₐ[L] E) (x : K) :
-    restrictRestrictAlgEquivMapHom K L φ x = φ x := by
+    restrictRestrictAlgEquivMapHom F K L E φ x = φ x := by
   simp [restrictRestrictAlgEquivMapHom, AlgEquiv.restrictNormalHom_apply]
 
 theorem restrictRestrictAlgEquivMapHom_injective (h : K ⊔ L = ⊤) :
-    Function.Injective (restrictRestrictAlgEquivMapHom K L) := by
+    Function.Injective (restrictRestrictAlgEquivMapHom F K L E) := by
   refine (injective_iff_map_eq_one _).mpr fun φ hφ ↦ ?_
-  have : φ ∈ fixingSubgroup ⊤ := by
-    refine (IntermediateField.mem_fixingSubgroup_iff _ _).mpr fun _ hx ↦ ?_
-    rw [← SetLike.mem_coe, ← coe_restrictScalars F, restrictScalars_top, ← h, SetLike.mem_coe,
-      sup_def] at hx
-    induction hx using adjoin_induction F with
-    | mem x hx =>
-      obtain hx | hx := hx
-      · rw [← Subtype.coe_mk x hx, ← restrictRestrictAlgEquivMapHom_apply,
-          congr_arg ((↑) : K → E) (AlgEquiv.congr_fun hφ _), AlgEquiv.one_apply]
-      · rw [← Subtype.coe_mk x hx, ← algebraMap_apply, AlgEquiv.commutes, algebraMap_apply]
-    | algebraMap x => rw [IsScalarTower.algebraMap_apply F L E, AlgEquiv.commutes]
-    | add x y _ _ hx hy => rw [map_add, hx, hy]
-    | inv x _ hx => rw [map_inv₀, hx]
-    | mul x y _ _ hx hy => rw [map_mul, hx, hy]
-  rwa [fixingSubgroup_top, Subgroup.mem_bot] at this
+  suffices h : MulSemiringAction.toAlgAut (E ≃ₐ[↥L] E) F E φ = 1 by rwa [AlgEquiv.ext_iff] at h ⊢
+  rw [← Subgroup.mem_bot, ← fixingSubgroup_top, ← h, fixingSubgroup_sup]
+  exact ⟨fun x ↦ (hφ ▸ restrictRestrictAlgEquivMapHom_apply K L φ x).symm, φ.commutes⟩
 
 theorem restrictRestrictAlgEquivMapHom_surjective [FiniteDimensional F K] [FiniteDimensional L E]
     [IsGalois L E] (h : K ⊓ L = ⊥) :
-    Function.Surjective (restrictRestrictAlgEquivMapHom K L) := by
-  suffices fixedField (restrictRestrictAlgEquivMapHom K L).range = ⊥ from
+    Function.Surjective (restrictRestrictAlgEquivMapHom F K L E) := by
+  suffices fixedField (restrictRestrictAlgEquivMapHom F K L E).range = ⊥ from
      MonoidHom.range_eq_top.mp <|
-      fixingSubgroup_fixedField (restrictRestrictAlgEquivMapHom K L).range ▸
+      fixingSubgroup_fixedField (restrictRestrictAlgEquivMapHom F K L E).range ▸
         this ▸ fixingSubgroup_bot
   refine eq_bot_iff.mpr fun ⟨x, hx₁⟩ hx₂ ↦ ?_
   obtain ⟨⟨y, hy⟩, rfl⟩ : x ∈ Set.range (algebraMap L E) := by
     refine mem_bot.mp <| (IsGalois.mem_bot_iff_fixed _).mpr fun φ ↦ ?_
     rw [← restrictRestrictAlgEquivMapHom_apply K L φ ⟨x, hx₁⟩]
     rw [mem_fixedField_iff] at hx₂
-    exact congr_arg ((↑) : K → E) <| hx₂ (restrictRestrictAlgEquivMapHom K L φ) ⟨φ, rfl⟩
+    exact congr_arg ((↑) : K → E) <| hx₂ (restrictRestrictAlgEquivMapHom F K L E φ) ⟨φ, rfl⟩
   obtain ⟨z, rfl⟩ : y ∈ (⊥ : IntermediateField F E) := h ▸ mem_inf.mpr ⟨hx₁, hy⟩
   exact mem_bot.mp ⟨z, rfl⟩
 
