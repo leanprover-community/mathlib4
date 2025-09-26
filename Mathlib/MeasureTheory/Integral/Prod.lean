@@ -222,11 +222,11 @@ protected theorem MeasureTheory.AEStronglyMeasurable.of_comp_fst {f : α → X} 
   hf.prod_swap.of_comp_snd hν
 
 theorem MeasureTheory.AEStronglyMeasurable.comp_fst_iff [SFinite μ] [SFinite ν] {f : α → X}
-    (hν : ν ≠ 0) : AEStronglyMeasurable (f <| ·.1) (μ.prod ν) ↔ AEStronglyMeasurable f μ :=
+    (hν : ν ≠ 0) : AEStronglyMeasurable (f ·.1) (μ.prod ν) ↔ AEStronglyMeasurable f μ :=
   ⟨(.of_comp_fst · hν), .comp_fst⟩
 
 theorem MeasureTheory.AEStronglyMeasurable.comp_snd_iff [SFinite ν] {f : β → X}
-    (hμ : μ ≠ 0) : AEStronglyMeasurable (f <| ·.2) (μ.prod ν) ↔ AEStronglyMeasurable f ν :=
+    (hμ : μ ≠ 0) : AEStronglyMeasurable (f ·.2) (μ.prod ν) ↔ AEStronglyMeasurable f ν :=
   ⟨(.of_comp_snd · hμ), .comp_snd⟩
 
 end
