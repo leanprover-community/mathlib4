@@ -410,12 +410,6 @@ def forget : Cone F ⥤ C where
   obj t := t.pt
   map f := f.hom
 
-variable {F} in
-/-- Given a cone isomorphism, produce an isomorphism of the object parts. -/
-@[simps!]
-def _root_.CategoryTheory.Iso.conePt {c c' : Cone F} (e : c ≅ c') : c.pt ≅ c'.pt :=
-  (Cones.forget F).mapIso e
-
 variable (G : C ⥤ D)
 
 /-- A functor `G : C ⥤ D` sends cones over `F` to cones over `F ⋙ G` functorially. -/
@@ -631,12 +625,6 @@ def forget : Cocone F ⥤ C where
   obj t := t.pt
   map f := f.hom
 
-variable {F} in
-/-- Given a cocone isomorphism, produce an isomorphism of the object parts. -/
-@[simps!]
-def _root_.CategoryTheory.Iso.coconePt {c c' : Cocone F} (e : c ≅ c') : c.pt ≅ c'.pt :=
-  (Cocones.forget F).mapIso e
-
 variable (G : C ⥤ D)
 
 /-- A functor `G : C ⥤ D` sends cocones over `F` to cocones over `F ⋙ G` functorially. -/
@@ -844,14 +832,14 @@ def mapCoconeWhisker {E : K ⥤ J} {c : Cocone F} :
     mapCocone H (c.whisker E) ≅ (mapCocone H c).whisker E :=
   Cocones.ext (Iso.refl _)
 
-/-- `mapCone` is compatible with `Cones.IsoPt`. -/
-lemma mapCone_π_isoPt {c c' : Cone F} (e : c ≅ c') (j : J) :
-    (H.mapIso e.conePt).hom ≫ (H.mapCone c').π.app j = (H.mapCone c).π.app j := by
+/-- `mapCone` is compatible with `Cones.forget`. -/
+lemma mapCone_π_forget {c c' : Cone F} (e : c ⟶ c') (j : J) :
+    H.map ((Cones.forget F).map e) ≫ (H.mapCone c').π.app j = (H.mapCone c).π.app j := by
   simp [← map_comp]
 
-/-- `mapCocone` is compatible with `Cocones.IsoPt`. -/
-lemma mapCocone_ι_isoPt {c c' : Cocone F} (e : c ≅ c') (j : J) :
-    (H.mapCocone c).ι.app j ≫ (H.mapIso e.coconePt).hom = (H.mapCocone c').ι.app j := by
+/-- `mapCocone` is compatible with `Cocones.forget`. -/
+lemma mapCocone_ι_forget {c c' : Cocone F} (e : c ⟶ c') (j : J) :
+    (H.mapCocone c).ι.app j ≫ H.map ((Cocones.forget F).map e) = (H.mapCocone c').ι.app j := by
   simp [← map_comp]
 
 end Functor
