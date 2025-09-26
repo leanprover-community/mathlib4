@@ -45,7 +45,7 @@ jobs:
         lake exe cache get || true
         # We create a temporary file to run the command that adds the set_option linter.removeDeprecations
         # to the relevant files and saves the modified files with a new name
-        tmplean=Mathlib/"$(mktemp)".lean
+        tmplean="$(mktemp -p Mathlib --suffix=.lean)"
         {
           for repo in Mathlib Archive Counterexamples; do
             printf $'import %s\n' "$repo"
