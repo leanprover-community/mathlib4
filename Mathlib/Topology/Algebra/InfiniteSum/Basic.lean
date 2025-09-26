@@ -144,7 +144,7 @@ lemma hasProd_singleton (m : β) (f : β → α) : HasProd (({m} : Set β).restr
   hasProd_unique (Set.restrict {m} f)
 
 @[to_additive]
-theorem hasProd_ite_eq [L.LeAtTop] (b : β) [DecidablePred (· = b)] (a : α) :
+theorem hasProd_ite_eq (b : β) [DecidablePred (· = b)] (a : α) (L := unconditional β) [L.LeAtTop] :
     HasProd (fun b' ↦ if b' = b then a else 1) a L := by
   convert hasProd_single b (hf := fun b' hb' ↦ if_neg hb') (L := L)
   exact (if_pos rfl).symm
@@ -338,9 +338,9 @@ theorem HasProd.update' [L.LeAtTop] [L.NeBot] {α : Type*} [TopologicalSpace α]
     split_ifs with hb'
     · simpa only [Function.update_apply, hb', eq_self_iff_true] using mul_comm (f b) x
     · simp only [Function.update_apply, hb', if_false]
-  have h := hf.mul (hasProd_ite_eq b x)
+  have h := hf.mul (hasProd_ite_eq b x L)
   simp_rw [this] at h
-  exact HasProd.unique h (hf'.mul (hasProd_ite_eq b (f b)))
+  exact HasProd.unique h (hf'.mul (hasProd_ite_eq b (f b) L))
 
 /-- Version of `hasProd_ite_div_hasProd` for `CommMonoid` rather than `CommGroup`.
 Rather than showing that the `ite` expression has a specific product in terms of `HasProd`, it gives
@@ -437,7 +437,7 @@ theorem tprod_tprod_eq_mulSingle
     _ = f b c := tprod_eq_mulSingle _ hfb
 
 @[to_additive (attr := simp)]
-theorem tprod_ite_eq [L.LeAtTop] (b : β) [DecidablePred (· = b)] (a : α) :
+theorem tprod_ite_eq (b : β) [DecidablePred (· = b)] (a : α) (L := unconditional β) [L.LeAtTop] :
     ∏'[L] b', (if b' = b then a else 1) = a := by
   rw [tprod_eq_mulSingle b]
   · simp
