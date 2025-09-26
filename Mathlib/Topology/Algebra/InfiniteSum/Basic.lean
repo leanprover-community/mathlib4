@@ -413,7 +413,7 @@ theorem tprod_fintype [L.LeAtTop] [Fintype β] (f : β → α) : ∏'[L] b, f b 
   apply tprod_eq_prod; simp
 
 @[to_additive]
-theorem prod_eq_tprod_mulIndicator [L.LeAtTop] (f : β → α) (s : Finset β) :
+theorem prod_eq_tprod_mulIndicator (f : β → α) (s : Finset β) (L := unconditional β) [L.LeAtTop] :
     ∏ x ∈ s, f x = ∏'[L] x, Set.mulIndicator (↑s) f x := by
   rw [tprod_eq_prod' (Set.mulSupport_mulIndicator_subset),
       Finset.prod_mulIndicator_subset _ Finset.Subset.rfl]
