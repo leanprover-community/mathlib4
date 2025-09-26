@@ -260,10 +260,8 @@ open ComplexOrder in
 theorem IsPositive.inner_nonneg_right {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
     0 ≤ ⟪x, T x⟫ := hT.toLinearMap.inner_nonneg_right x
 
-@[simp]
 theorem isPositive_zero : IsPositive (0 : E →L[𝕜] E) := LinearMap.isPositive_zero
 
-@[simp]
 theorem isPositive_id : IsPositive (id 𝕜 E : E →L[𝕜] E) := LinearMap.isPositive_id
 
 @[simp]
