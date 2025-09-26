@@ -5,6 +5,7 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Polynomial.Coeff
 import Mathlib.Algebra.Polynomial.Eval.Defs
+import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Evaluation of polynomials
@@ -229,17 +230,17 @@ end Map
 
 end CommSemiring
 
-section DivisionRing
+section SimpleRing
 
-variable [DivisionRing R] [Nontrivial S] [Semiring S]
+variable [Ring R] [IsSimpleRing R] [Semiring S] [Nontrivial S]
 variable {f : R →+* S} {p : R[X]}
 
-theorem map_eq_zero_iff_from_divisionRing : p.map f = 0 ↔ p = 0 :=
-  Polynomial.map_eq_zero_iff <| RingHom.injective_from_divisionRing f
+theorem map_eq_zero_iff_from_simpleRing : p.map f = 0 ↔ p = 0 :=
+  Polynomial.map_eq_zero_iff <| RingHom.injective f
 
-theorem map_ne_zero_iff_from_divisionRing : p.map f ≠ 0 ↔ p ≠ 0 :=
-  Polynomial.map_ne_zero_iff <| RingHom.injective_from_divisionRing f
+theorem map_ne_zero_iff_from_simpleRing : p.map f ≠ 0 ↔ p ≠ 0 :=
+  Polynomial.map_ne_zero_iff <| RingHom.injective f
 
-end DivisionRing
+end SimpleRing
 
 end Polynomial
