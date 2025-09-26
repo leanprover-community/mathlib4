@@ -23,7 +23,7 @@ for predicates `C → Prop`.
 
 -/
 
-universe v v' u u'
+universe w v v' u u'
 
 namespace CategoryTheory
 
