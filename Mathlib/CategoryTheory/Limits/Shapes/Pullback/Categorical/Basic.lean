@@ -372,16 +372,16 @@ open Functor
 
 section transform
 
-variable {A' : Type u₄} {B' : Type u₅} {C' : Type u₆}
-  [Category.{v₄} A'] [Category.{v₅} B'] [Category.{v₆} C']
-  {F' : A' ⥤ B'} {G' : C' ⥤ B'}
+variable {A₁ : Type u₄} {B₁ : Type u₅} {C₁ : Type u₆}
+  [Category.{v₄} A₁] [Category.{v₅} B₁] [Category.{v₆} C₁]
+  {F₁ : A₁ ⥤ B₁} {G₁ : C₁ ⥤ B₁}
 
 /-- Functorially transform a `CatCommSqOver F G X` by whiskering it with a
 `CatCospanTransform`. -/
 @[simps]
 def transform (X : Type u₇) [Category.{v₇} X] :
-    CatCospanTransform F G F' G' ⥤
-      CatCommSqOver F G X ⥤ CatCommSqOver F' G' X where
+    CatCospanTransform F G F₁ G₁ ⥤
+      CatCommSqOver F G X ⥤ CatCommSqOver F₁ G₁ X where
   obj ψ :=
     { obj S :=
         { fst := S.fst ⋙ ψ.left
@@ -418,15 +418,15 @@ def transform (X : Type u₇) [Category.{v₇} X] :
           simp only [Iso.inv_hom_id_app_assoc] at this
           simp [this] } }
 
-variable {A'' : Type u₇} {B'' : Type u₈} {C'' : Type u₉}
-  [Category.{v₇} A''] [Category.{v₈} B''] [Category.{v₉} C'']
-  {F'' : A'' ⥤ B''} {G'' : C'' ⥤ B''}
+variable {A₂ : Type u₇} {B₂ : Type u₈} {C₂ : Type u₉}
+  [Category.{v₇} A₂] [Category.{v₈} B₂] [Category.{v₉} C₂]
+  {F₂ : A₂ ⥤ B₂} {G₂ : C₂ ⥤ B₂}
 
 /-- The construction `CatCommSqOver.transform` respects vertical composition
 of `CatCospanTransform`s. -/
 @[simps!]
 def transformObjComp (X : Type u₁₀) [Category.{v₁₀} X]
-    (ψ : CatCospanTransform F G F' G') (ψ' : CatCospanTransform F' G' F'' G'') :
+    (ψ : CatCospanTransform F G F₁ G₁) (ψ' : CatCospanTransform F₁ G₁ F₂ G₂) :
     (transform X).obj (ψ.comp ψ') ≅ (transform X).obj ψ ⋙ (transform X).obj ψ' :=
   NatIso.ofComponents fun _ =>
     CategoricalPullback.mkIso
@@ -448,8 +448,8 @@ open scoped CatCospanTransform
 
 lemma transform_map_whiskerLeft
     (X : Type u₇) [Category.{v₇} X]
-    (ψ : CatCospanTransform F G F' G')
-    {φ φ' : CatCospanTransform F' G' F'' G''} (α : φ ⟶ φ') :
+    (ψ : CatCospanTransform F G F₁ G₁)
+    {φ φ' : CatCospanTransform F₁ G₁ F₂ G₂} (α : φ ⟶ φ') :
     (transform X).map (ψ ◁ α) =
     (transformObjComp X ψ φ).hom ≫
       whiskerLeft (transform X|>.obj ψ) (transform X|>.map α) ≫
@@ -458,8 +458,8 @@ lemma transform_map_whiskerLeft
 
 lemma transform_map_whiskerRight
     (X : Type u₇) [Category.{v₇} X]
-    {ψ ψ' : CatCospanTransform F G F' G'} (α : ψ ⟶ ψ')
-    (φ : CatCospanTransform F' G' F'' G'') :
+    {ψ ψ' : CatCospanTransform F G F₁ G₁} (α : ψ ⟶ ψ')
+    (φ : CatCospanTransform F₁ G₁ F₂ G₂) :
     (transform X).map (α ▷ φ) =
     (transformObjComp X ψ φ).hom ≫
       whiskerRight (transform X|>.map α) (transform X|>.obj φ) ≫
@@ -467,12 +467,12 @@ lemma transform_map_whiskerRight
   cat_disch
 
 lemma transform_map_associator
-    {A''' : Type u₁₀} {B''' : Type u₁₁} {C''' : Type u₁₂}
-    [Category.{v₁₀} A'''] [Category.{v₁₁} B'''] [Category.{v₁₂} C''']
-    {F''' : A''' ⥤ B'''} {G''' : C''' ⥤ B'''}
+    {A₃ : Type u₁₀} {B₃ : Type u₁₁} {C₃ : Type u₁₂}
+    [Category.{v₁₀} A₃] [Category.{v₁₁} B₃] [Category.{v₁₂} C₃]
+    {F₃ : A₃ ⥤ B₃} {G₃ : C₃ ⥤ B₃}
     (X : Type u₁₃) [Category.{v₁₃} X]
-    (ψ : CatCospanTransform F G F' G') (φ : CatCospanTransform F' G' F'' G'')
-    (τ : CatCospanTransform F'' G'' F''' G''') :
+    (ψ : CatCospanTransform F G F₁ G₁) (φ : CatCospanTransform F₁ G₁ F₂ G₂)
+    (τ : CatCospanTransform F₂ G₂ F₃ G₃) :
     (transform X).map (α_ ψ φ τ).hom =
     (transformObjComp X (ψ.comp φ) τ).hom ≫
       whiskerRight (transformObjComp X ψ φ).hom (transform X|>.obj τ) ≫
@@ -483,7 +483,7 @@ lemma transform_map_associator
   cat_disch
 
 lemma transform_map_leftUnitor (X : Type u₇) [Category.{v₇} X]
-    (ψ : CatCospanTransform F G F' G') :
+    (ψ : CatCospanTransform F G F₁ G₁) :
     (transform X).map (λ_ ψ).hom =
     (transformObjComp X (.id F G) ψ).hom ≫
       whiskerRight (transformObjId X F G).hom (transform X|>.obj ψ) ≫
@@ -491,10 +491,10 @@ lemma transform_map_leftUnitor (X : Type u₇) [Category.{v₇} X]
   cat_disch
 
 lemma transform_map_rightUnitor (X : Type u₇) [Category.{v₇} X]
-    (ψ : CatCospanTransform F G F' G') :
+    (ψ : CatCospanTransform F G F₁ G₁) :
     (transform X).map (ρ_ ψ).hom =
-    (transformObjComp X ψ (.id F' G')).hom ≫
-      whiskerLeft (transform X|>.obj ψ) (transformObjId X F' G').hom ≫
+    (transformObjComp X ψ (.id F₁ G₁)).hom ≫
+      whiskerLeft (transform X|>.obj ψ) (transformObjId X F₁ G₁).hom ≫
       (transform X|>.obj ψ).rightUnitor.hom := by
   cat_disch
 
@@ -590,9 +590,9 @@ end precompose
 
 section compatibility
 
-variable {A' : Type u₄} {B' : Type u₅} {C' : Type u₆}
-  [Category.{v₄} A'] [Category.{v₅} B'] [Category.{v₆} C']
-  {F' : A' ⥤ B'} {G' : C' ⥤ B'}
+variable {A₁ : Type u₄} {B₁ : Type u₅} {C₁ : Type u₆}
+  [Category.{v₄} A₁] [Category.{v₅} B₁] [Category.{v₆} C₁]
+  {F₁ : A₁ ⥤ B₁} {G₁ : C₁ ⥤ B₁}
 
 /-- The canonical compatibility square between (the object components of)
 `precompose` and `transform`.
@@ -604,10 +604,10 @@ categorical cospans with value in pseudofunctors
 @[simps!]
 instance precomposeObjTransformObjSquare
     {X : Type u₇} {Y : Type u₈} [Category.{v₇} X] [Category.{v₈} Y]
-    (ψ : CatCospanTransform F G F' G') (U : X ⥤ Y) :
+    (ψ : CatCospanTransform F G F₁ G₁) (U : X ⥤ Y) :
     CatCommSq
       (precompose F G|>.obj U) (transform Y|>.obj ψ)
-      (transform X|>.obj ψ) (precompose F' G'|>.obj U) where
+      (transform X|>.obj ψ) (precompose F₁ G₁|>.obj U) where
   iso := NatIso.ofComponents fun _ =>
     CategoricalPullback.mkIso
       (Functor.associator _ _ _)
@@ -619,20 +619,20 @@ instance precomposeObjTransformObjSquare
 /-- The square `precomposeObjTransformObjSquare` is itself natural. -/
 lemma precomposeObjTransformObjSquare_iso_hom_naturality₂
     {X : Type u₇} {Y : Type u₈} [Category.{v₇} X] [Category.{v₈} Y]
-    (ψ : CatCospanTransform F G F' G')
+    (ψ : CatCospanTransform F G F₁ G₁)
     {U V : X ⥤ Y} (α : U ⟶ V) :
     whiskerRight (precompose F G|>.map α) (transform X|>.obj ψ) ≫
-      (CatCommSq.iso _ (transform Y|>.obj ψ) _ (precompose F' G'|>.obj V)).hom =
-    (CatCommSq.iso _ (transform Y|>.obj ψ) _ (precompose F' G'|>.obj U)).hom ≫
-      whiskerLeft (transform Y|>.obj ψ) (precompose F' G'|>.map α) := by
+      (CatCommSq.iso _ (transform Y|>.obj ψ) _ (precompose F₁ G₁|>.obj V)).hom =
+    (CatCommSq.iso _ (transform Y|>.obj ψ) _ (precompose F₁ G₁|>.obj U)).hom ≫
+      whiskerLeft (transform Y|>.obj ψ) (precompose F₁ G₁|>.map α) := by
   cat_disch
 
 /-- The square `precomposeObjTransformOBjSquare` respects identities. -/
 lemma precomposeObjTransformObjSquare_iso_hom_id
-    (ψ : CatCospanTransform F G F' G') (X : Type u₇) [Category.{v₇} X] :
+    (ψ : CatCospanTransform F G F₁ G₁) (X : Type u₇) [Category.{v₇} X] :
     (CatCommSq.iso (precompose F G|>.obj <| 𝟭 X) (transform X|>.obj ψ)
-      (transform X|>.obj ψ) (precompose F' G'|>.obj <| 𝟭 X)).hom ≫
-      whiskerLeft (transform X|>.obj ψ) (precomposeObjId F' G' X).hom =
+      (transform X|>.obj ψ) (precompose F₁ G₁|>.obj <| 𝟭 X)).hom ≫
+      whiskerLeft (transform X|>.obj ψ) (precomposeObjId F₁ G₁ X).hom =
     whiskerRight (precomposeObjId F G X).hom (transform X|>.obj ψ) ≫
       (Functor.leftUnitor _).hom ≫ (Functor.rightUnitor _).inv := by
   cat_disch
@@ -641,18 +641,18 @@ lemma precomposeObjTransformObjSquare_iso_hom_id
 lemma precomposeObjTransformObjSquare_iso_hom_comp
     {X : Type u₇} {Y : Type u₈} {Z : Type u₉}
     [Category.{v₇} X] [Category.{v₈} Y] [Category.{v₉} Z]
-    (ψ : CatCospanTransform F G F' G')
+    (ψ : CatCospanTransform F G F₁ G₁)
     (U : X ⥤ Y) (V : Y ⥤ Z) :
     (CatCommSq.iso (precompose F G|>.obj <| U ⋙ V) (transform Z|>.obj ψ)
-      (transform X|>.obj ψ) (precompose F' G'|>.obj <| U ⋙ V)).hom ≫
-      whiskerLeft (transform Z|>.obj ψ) (precomposeObjComp F' G' U V).hom =
+      (transform X|>.obj ψ) (precompose F₁ G₁|>.obj <| U ⋙ V)).hom ≫
+      whiskerLeft (transform Z|>.obj ψ) (precomposeObjComp F₁ G₁ U V).hom =
     whiskerRight (precomposeObjComp F G U V).hom (transform X|>.obj ψ) ≫
       (Functor.associator _ _ _).hom ≫
       whiskerLeft (precompose F G|>.obj V)
         (CatCommSq.iso _ (transform _|>.obj ψ) _ _).hom ≫
       (Functor.associator _ _ _).inv ≫
       whiskerRight (CatCommSq.iso _ _ _ _).hom
-        (precompose F' G'|>.obj U) ≫
+        (precompose F₁ G₁|>.obj U) ≫
       (Functor.associator _ _ _).hom := by
   cat_disch
 
@@ -665,10 +665,10 @@ bicategory of categories to pseudofunctors of categorical cospans
 @[simps!]
 instance transformObjPrecomposeObjSquare
     {X : Type u₇} {Y : Type u₈} [Category.{v₇} X] [Category.{v₈} Y]
-    (U : X ⥤ Y) (ψ : CatCospanTransform F G F' G') :
+    (U : X ⥤ Y) (ψ : CatCospanTransform F G F₁ G₁) :
     CatCommSq
       (transform Y|>.obj ψ) (precompose F G|>.obj U)
-      (precompose F' G'|>.obj U) (transform X|>.obj ψ) where
+      (precompose F₁ G₁|>.obj U) (transform X|>.obj ψ) where
   iso := NatIso.ofComponents fun _ =>
     CategoricalPullback.mkIso
       (Functor.associator _ _ _).symm
@@ -680,8 +680,8 @@ instance transformObjPrecomposeObjSquare
 /-- The square `transformObjPrecomposeObjSquare` is itself natural. -/
 lemma transformObjPrecomposeObjSquare_iso_hom_naturality₂
     {X : Type u₇} {Y : Type u₈} [Category.{v₇} X] [Category.{v₈} Y]
-    (U : X ⥤ Y) {ψ ψ' : CatCospanTransform F G F' G'} (η : ψ ⟶ ψ') :
-    whiskerRight (transform Y|>.map η) (precompose F' G'|>.obj U) ≫
+    (U : X ⥤ Y) {ψ ψ' : CatCospanTransform F G F₁ G₁} (η : ψ ⟶ ψ') :
+    whiskerRight (transform Y|>.map η) (precompose F₁ G₁|>.obj U) ≫
       (CatCommSq.iso _ (precompose F G|>.obj U) _ (transform X|>.obj ψ')).hom =
     (CatCommSq.iso _ (precompose F G|>.obj U) _ (transform X|>.obj ψ)).hom ≫
       whiskerLeft (precompose F G|>.obj U) (transform X|>.map η) := by
@@ -701,19 +701,19 @@ lemma transformObjPrecomposeObjSquare_iso_hom_id
 
 /-- The square `transformPrecomposeSquare` respects compositions. -/
 lemma transformPrecomposeObjSquare_iso_hom_comp
-    {A'' : Type u₇} {B'' : Type u₈} {C'' : Type u₉}
-    [Category.{v₇} A''] [Category.{v₈} B''] [Category.{v₉} C'']
-    {F'' : A'' ⥤ B''} {G'' : C'' ⥤ B''}
+    {A₂ : Type u₇} {B₂ : Type u₈} {C₂ : Type u₉}
+    [Category.{v₇} A₂] [Category.{v₈} B₂] [Category.{v₉} C₂]
+    {F₂ : A₂ ⥤ B₂} {G₂ : C₂ ⥤ B₂}
     {X : Type u₁₀} {Y : Type u₁₁} [Category.{v₁₀} X] [Category.{v₁₁} Y]
-    (U : X ⥤ Y) (ψ : CatCospanTransform F G F' G')
-    (ψ' : CatCospanTransform F' G' F'' G'') :
+    (U : X ⥤ Y) (ψ : CatCospanTransform F G F₁ G₁)
+    (ψ' : CatCospanTransform F₁ G₁ F₂ G₂) :
     (CatCommSq.iso (transform Y|>.obj <| ψ.comp ψ') (precompose F G|>.obj U)
-      (precompose F'' G''|>.obj U) (transform X|>.obj <| ψ.comp ψ')).hom ≫
+      (precompose F₂ G₂|>.obj U) (transform X|>.obj <| ψ.comp ψ')).hom ≫
       whiskerLeft (precompose F G|>.obj U) (transformObjComp X ψ ψ').hom =
-    whiskerRight (transformObjComp Y ψ ψ').hom (precompose F'' G''|>.obj U) ≫
+    whiskerRight (transformObjComp Y ψ ψ').hom (precompose F₂ G₂|>.obj U) ≫
       (Functor.associator _ _ _).hom ≫
       whiskerLeft (transform Y|>.obj ψ)
-        (CatCommSq.iso _ (precompose F' G'|>.obj U)
+        (CatCommSq.iso _ (precompose F₁ G₁|>.obj U)
           _ (transform X|>.obj ψ')).hom ≫
       (Functor.associator _ _ _).inv ≫
       whiskerRight (CatCommSq.iso _ _ _ _).hom (transform X|>.obj ψ') ≫
