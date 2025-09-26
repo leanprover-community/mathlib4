@@ -46,6 +46,12 @@ abbrev left (A : DedekindCut α) : Set α := A.extent
 /-- The right set of a Dedekind cut. This is an alias for `Concept.intent`. -/
 abbrev right (A : DedekindCut α) : Set α := A.intent
 
+/-- See `DedekindCut.ext'` for a version using the right set. -/
+@[ext] theorem ext {A B : DedekindCut α} (h : A.left = B.left) : A = B := Concept.ext h
+
+/-- See `DedekindCut.ext` for a version using the left set. -/
+theorem ext' {A B : DedekindCut α} (h : A.right = B.right) : A = B := Concept.ext' h
+
 @[simp]
 theorem upperBounds_left (A : DedekindCut α) : upperBounds A.left = A.right :=
   A.upperPolar_extent
@@ -100,14 +106,14 @@ def ofEmbedding : β ↪o DedekindCut β where
 
 @[simp]
 theorem of_sSup (A : DedekindCut γ) : of (sSup A.left) = A := by
-  apply Concept.ext'
+  apply ext'
   ext
-  rw [← right, ← right, right_of, mem_Ici, sSup_le_iff, ← upperBounds_left, mem_upperBounds]
+  rw [right_of, mem_Ici, sSup_le_iff, ← upperBounds_left, mem_upperBounds]
 
 @[simp]
 theorem of_sInf (A : DedekindCut γ) : of (sInf A.right) = A := by
   ext
-  rw [← left, ← left, left_of, mem_Iic, le_sInf_iff, ← lowerBounds_right, mem_lowerBounds]
+  rw [left_of, mem_Iic, le_sInf_iff, ← lowerBounds_right, mem_lowerBounds]
 
 /-- Any order embedding `β ↪o γ` into a complete lattice factors through `DedekindCut β`.
 
