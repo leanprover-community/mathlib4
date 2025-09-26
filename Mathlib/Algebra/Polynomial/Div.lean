@@ -758,14 +758,13 @@ lemma isRoot_eq_bot_of_irreducible_natDegree_ne_one
   le_bot_iff.mp fun _ ↦ not_isRoot_of_irreducible_natDegree_ne_one hi hdeg
 
 lemma aeval_ne_zero_of_irredicble_natDegree_ne_one
-    {A B : Type*} [CommRing A] [IsDomain A] [Ring B] [Algebra A B]
-    (hinj : Function.Injective (algebraMap A B))
+    {A B : Type*} [CommRing A] [IsDomain A] [Ring B] [Algebra A B] [FaithfulSMul A B]
     {p : A[X]} (hi : Irreducible p) (hdeg : p.natDegree ≠ 1)
     {x : B} (hx : x ∈ (algebraMap A B).range) : Polynomial.aeval x p ≠ 0 := by
   have ⟨y, hy⟩ := hx
   rw [← hy, aeval_algebraMap_apply_eq_algebraMap_eval]
-  exact fun heq ↦
-    not_isRoot_of_irreducible_natDegree_ne_one hi hdeg <| hinj <| map_zero (algebraMap A B) ▸ heq
+  exact fun heq ↦ not_isRoot_of_irreducible_natDegree_ne_one hi hdeg <|
+    FaithfulSMul.algebraMap_injective _ _ <| map_zero (algebraMap A B) ▸ heq
 
 lemma subsingleton_isRoot_of_irreducible [IsLeftCancelMulZero R] [IsRightCancelAdd R]
     (hi : Irreducible p) : { x | p.IsRoot x }.Subsingleton :=
