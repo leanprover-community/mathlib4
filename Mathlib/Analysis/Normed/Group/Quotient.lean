@@ -201,7 +201,7 @@ variable (S) in
 /-- The seminormed group structure on the quotient by a subgroup. -/
 @[to_additive /-- The seminormed group structure on the quotient by an additive subgroup. -/]
 noncomputable instance instSeminormedCommGroup : SeminormedCommGroup (M ⧸ S) where
-  toUniformSpace := IsTopologicalGroup.toUniformSpace (M ⧸ S)
+  toUniformSpace := IsTopologicalGroup.rightUniformSpace (M ⧸ S)
   __ := groupSeminorm.toSeminormedCommGroup
   uniformity_dist := by
     rw [uniformity_eq_comap_nhds_one', (nhds_one_hasBasis.comap _).eq_biInf]
