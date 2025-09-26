@@ -81,16 +81,14 @@ def parseIsolateLemma (decl : Name) : MetaM (Name × Name × Nat × Bool) := do
   trace[debug] "adding {relName}, {lhsHead}, {i}"
   return (relName, lhsHead, i, lhsSymm)
 
-/-- Attribute marking "isolation" (`isolate`) lemmas.  Such lemmas must have a conclusion of the
-form `f a₁ a₂ ... x ... aₖ ~ y ↔ x ~' G`; that is,
-* an if-and-only-if statement;
-* between two relations `~` and `~'`;
-* with a free variable `y` on one side of the relation `~` and a free variable `x` on one side of
-  the relation `~'`
-* and with a function application as the other side of the relation `~`, with `x` appearing exactly
-  once among the arguments to that function.
+/-- Attribute marking "isolation" (`isolate`) lemmas. Candidate lemmas are parsed using the function
+`Mathlib.Tactic.Isolate.parseIsolateLemma`. If successful, we obtain a key, comprising
+* the relation `~'` and function `f` identified in the key hypothesis;
+* the index of the `x` free-variable argument in the function `f`;
+* a boolean recording whether `f` occurs on the RHS (`true`) or LHS (`false`) of the relation `~`.
 
-The antecedents of such a lemma are considered to generate "side goals". -/
+The lemma is then added to the environment extension `Mathlib.Tactic.Isolate.isolateExt`, stored
+under this key. -/
 initialize registerBuiltinAttribute {
   name := `isolate
   descr := "isolation"
