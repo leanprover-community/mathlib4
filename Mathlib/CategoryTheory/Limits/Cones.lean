@@ -289,6 +289,11 @@ instance {c d : Cone F} (f : c ≅ d) : IsIso f.hom.hom := ⟨f.inv.hom, by simp
 
 instance {c d : Cone F} (f : c ≅ d) : IsIso f.inv.hom := ⟨f.hom.hom, by simp⟩
 
+@[reassoc (attr := simp)]
+lemma ConeMorphism.map_w {c c' : Cone F} (f : c ⟶ c') (G : C ⥤ D) (j : J) :
+    G.map f.hom ≫ G.map (c'.π.app j) = G.map (c.π.app j) := by
+  simp only [← map_comp, ConeMorphism.w]
+
 namespace Cones
 
 /-- To give an isomorphism between cones, it suffices to give an
@@ -412,6 +417,7 @@ def forget : Cone F ⥤ C where
 
 variable (G : C ⥤ D)
 
+set_option diagnostics true in
 /-- A functor `G : C ⥤ D` sends cones over `F` to cones over `F ⋙ G` functorially. -/
 @[simps]
 def functoriality : Cone F ⥤ Cone (F ⋙ G) where
@@ -505,6 +511,11 @@ lemma CoconeMorphism.inv_hom_id {c d : Cocone F} (f : c ≅ d) : f.inv.hom ≫ f
 instance {c d : Cocone F} (f : c ≅ d) : IsIso f.hom.hom := ⟨f.inv.hom, by simp⟩
 
 instance {c d : Cocone F} (f : c ≅ d) : IsIso f.inv.hom := ⟨f.hom.hom, by simp⟩
+
+@[reassoc (attr := simp)]
+lemma CoconeMorphism.map_w {c c' : Cocone F} (f : c ⟶ c') (G : C ⥤ D) (j : J) :
+    G.map (c.ι.app j) ≫ G.map f.hom = G.map (c'.ι.app j) := by
+  simp only [← map_comp, CoconeMorphism.w]
 
 namespace Cocones
 
@@ -831,16 +842,6 @@ def mapConeWhisker {E : K ⥤ J} {c : Cone F} : mapCone H (c.whisker E) ≅ (map
 def mapCoconeWhisker {E : K ⥤ J} {c : Cocone F} :
     mapCocone H (c.whisker E) ≅ (mapCocone H c).whisker E :=
   Cocones.ext (Iso.refl _)
-
-@[reassoc (attr := simp)]
-lemma map_coneMorphism {c c' : Cone F} (e : c ⟶ c') (j : J) :
-    H.map e.hom ≫ H.map (c'.π.app j) = H.map (c.π.app j) := by
-  simp only [← map_comp, ConeMorphism.w]
-
-@[reassoc (attr := simp)]
-lemma map_coconeMorphism {c c' : Cocone F} (e : c ⟶ c') (j : J) :
-    H.map (c.ι.app j) ≫ H.map e.hom = H.map (c'.ι.app j) := by
-  simp only [← map_comp, CoconeMorphism.w]
 
 end Functor
 
