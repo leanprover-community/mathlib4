@@ -72,7 +72,10 @@ theorem log_exp (x : ℝ) : log (exp x) = x :=
   exp_injective <| exp_log (exp_pos x)
 
 @[isolate]
-theorem log_eq_iff_eq_log (hx : 0 < x) : log x = y ↔ x = exp y := by rw [← exp_eq_exp, exp_log hx]
+theorem log_eq_iff_eq_exp (hx : 0 < x) : log x = y ↔ x = exp y := by rw [← exp_eq_exp, exp_log hx]
+
+@[isolate]
+theorem exp_eq_iff_eq_log (hx : 0 < x) : exp y = x ↔ y = log x := by grind [log_eq_iff_eq_exp]
 
 theorem exp_one_mul_le_exp {x : ℝ} : exp 1 * x ≤ exp x := by
   by_cases hx0 : x ≤ 0
@@ -157,13 +160,25 @@ theorem log_lt_log_iff (hx : 0 < x) (hy : 0 < y) : log x < log y ↔ x < y := by
 theorem log_le_iff_le_exp (hx : 0 < x) : log x ≤ y ↔ x ≤ exp y := by rw [← exp_le_exp, exp_log hx]
 
 @[isolate]
+theorem le_exp_iff_log_le (hx : 0 < x) : x ≤ exp y ↔ log x ≤ y := by rw [log_le_iff_le_exp hx]
+
+@[isolate]
 theorem log_lt_iff_lt_exp (hx : 0 < x) : log x < y ↔ x < exp y := by rw [← exp_lt_exp, exp_log hx]
+
+@[isolate]
+theorem lt_exp_iff_log_lt (hx : 0 < x) : x < exp y ↔ log x < y := by rw [log_lt_iff_lt_exp hx]
 
 @[isolate]
 theorem le_log_iff_exp_le (hy : 0 < y) : x ≤ log y ↔ exp x ≤ y := by rw [← exp_le_exp, exp_log hy]
 
 @[isolate]
+theorem exp_le_iff_le_log (hx : 0 < x) : exp y ≤ x ↔ y ≤ log x := by rw [le_log_iff_exp_le hx]
+
+@[isolate]
 theorem lt_log_iff_exp_lt (hy : 0 < y) : x < log y ↔ exp x < y := by rw [← exp_lt_exp, exp_log hy]
+
+@[isolate]
+theorem exp_lt_iff_lt_log (hx : 0 < x) : exp y < x ↔ y < log x := by rw [lt_log_iff_exp_lt hx]
 
 theorem log_pos_iff (hx : 0 ≤ x) : 0 < log x ↔ 1 < x := by
   rcases hx.eq_or_lt with (rfl | hx)

@@ -70,6 +70,13 @@ example {x y z : ℝ} (_hy : 0 < y) : z = (x + 3) * y ^ 2 - 2 := by
   guard_target = x + 3 = (z + 2) / y ^ 2
   exact test_sorry
 
+-- isolation of an expression will proceed as far as possible, even if the expression cannot be
+-- fully isolated
+example {x : ℕ} {y : ℚ} : ↑(x + 2) + 3 = y := by
+  isolate x
+  guard_target = ↑(x + 2) = y - 3
+  exact test_sorry
+
 -- a term can be "isolated" even if it doesn't contain free variables
 example {x y : ℝ} : x + 3 = y := by
   isolate (3:ℝ)

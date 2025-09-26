@@ -562,14 +562,30 @@ lemma rpow_le_rpow_iff_of_neg (hx : 0 < x) (hy : 0 < y) (hz : z < 0) : x ^ z ≤
 lemma le_rpow_inv_iff_of_pos (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ≤ y ^ z⁻¹ ↔ x ^ z ≤ y := by
   rw [← rpow_le_rpow_iff hx _ hz, rpow_inv_rpow] <;> positivity
 
+@[isolate]
+lemma rpow_le_iff_of_pos (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ^ z ≤ y ↔ x ≤ y ^ z⁻¹ := by
+  grind [le_rpow_inv_iff_of_pos]
+
 lemma rpow_inv_le_iff_of_pos (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ^ z⁻¹ ≤ y ↔ x ≤ y ^ z := by
   rw [← rpow_le_rpow_iff _ hy hz, rpow_inv_rpow] <;> positivity
+
+@[isolate]
+lemma le_rpow_iff_of_pos (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ≤ y ^ z ↔ x ^ z⁻¹ ≤ y := by
+  grind [rpow_inv_le_iff_of_pos]
 
 lemma lt_rpow_inv_iff_of_pos (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x < y ^ z⁻¹ ↔ x ^ z < y :=
   lt_iff_lt_of_le_iff_le <| rpow_inv_le_iff_of_pos hy hx hz
 
+@[isolate]
+lemma rpow_lt_iff_of_pos (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ^ z < y ↔ x < y ^ z⁻¹ := by
+  grind [lt_rpow_inv_iff_of_pos]
+
 lemma rpow_inv_lt_iff_of_pos (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ^ z⁻¹ < y ↔ x < y ^ z :=
   lt_iff_lt_of_le_iff_le <| le_rpow_inv_iff_of_pos hy hx hz
+
+@[isolate]
+lemma lt_rpow_iff_of_pos (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x < y ^ z ↔ x ^ z⁻¹ < y := by
+  grind [rpow_inv_lt_iff_of_pos]
 
 theorem le_rpow_inv_iff_of_neg (hx : 0 < x) (hy : 0 < y) (hz : z < 0) :
     x ≤ y ^ z⁻¹ ↔ y ≤ x ^ z := by
@@ -768,6 +784,10 @@ lemma rpow_inv_eq (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : z ≠ 0) : x ^ z⁻¹ = y 
 
 lemma eq_rpow_inv (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : z ≠ 0) : x = y ^ z⁻¹ ↔ x ^ z = y := by
   rw [← rpow_left_inj hx _ hz, rpow_inv_rpow hy hz]; positivity
+
+@[isolate]
+lemma rpow_eq_iff (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : z ≠ 0) : x ^ z = y ↔ x = y ^ z⁻¹ := by
+  grind [rpow_inv_eq]
 
 theorem le_rpow_iff_log_le (hx : 0 < x) (hy : 0 < y) : x ≤ y ^ z ↔ log x ≤ z * log y := by
   rw [← log_le_log_iff hx (rpow_pos_of_pos hy z), log_rpow hy]
