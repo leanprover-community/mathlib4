@@ -47,7 +47,7 @@ jobs:
         done
         # We create a temporary file to run the command that adds the set_option linter.removeDeprecations
         # to the relevant files and saves the modified files with a new name
-        tmplean="$(mktemp -p Mathlib --suffix=.lean)"
+        tmplean="$(mktemp -p Mathlib --suffix=.lean RMDXXX)"
         {
           for repo in Mathlib Archive Counterexamples; do
             printf $'import %s\n' "$repo"
@@ -64,6 +64,9 @@ jobs:
           exit 1
         else
           echo "There are files with deprecated declarations in the specified date range"
+          tmpMod="${tmplean%.lean}"
+          echo "${tmpMod//\//.}"
+          sed -i "${tmplean}" Mathlib.lean
         fi
 
     - name: run linter
