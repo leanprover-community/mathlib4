@@ -53,7 +53,7 @@ elab (name := field) "field" d:(discharger)? args:(simpArgs)? : tactic => withMa
   let disch ← parseDischarger d args
   let s0 ← saveState
   -- run `field_simp` (only at the top level, not recursively)
-  liftMetaTactic1 (transformAtTarget ((AtomM.run .reducible ∘ reduceEq disch) ·) "field"
+  liftMetaTactic1 (transformAtTarget ((AtomM.run .reducible ∘ reduceProp disch) ·) "field"
     (failIfUnchanged := False) · default)
   let s1 ← saveState
   try
