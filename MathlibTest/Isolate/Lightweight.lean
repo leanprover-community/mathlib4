@@ -3,7 +3,7 @@ Copyright (c) 2025 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Tactic.Isolate.Tagging
+import Mathlib.Tactic.Isolate
 import Mathlib.Tactic.Positivity
 
 -- We deliberately mock R here so that we don't have to import the deps
