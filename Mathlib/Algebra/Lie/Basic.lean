@@ -181,18 +181,6 @@ instance lieAlgebraSelfModule : LieModule R L L where
   smul_lie t x m := by rw [← lie_skew, ← lie_skew x m, LieAlgebra.lie_smul, smul_neg]
   lie_smul := by apply LieAlgebra.lie_smul
 
-/-- The Lie bracket, as a bilinear map. -/
-@[simps]
-def LieAlgebra.bracketLinear (R L M) [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M]
-    [Module R M] [LieRingModule L M] [LieModule R L M] :
-    L →ₗ[R] M →ₗ[R] M where
-  toFun := fun x ↦ {
-    toFun := fun y ↦ ⁅x, y⁆
-    map_add' := by simp
-    map_smul' r y := by simp }
-  map_add' X Y := by ext; simp
-  map_smul' c X := by ext; simp
-
 @[simp]
 theorem neg_lie : ⁅-x, m⁆ = -⁅x, m⁆ := by
   rw [← sub_eq_zero, sub_neg_eq_add, ← add_lie]
