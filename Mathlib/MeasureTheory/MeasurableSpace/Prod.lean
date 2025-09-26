@@ -73,8 +73,7 @@ lemma isPiSystem_prod :
 lemma MeasurableSpace.comap_prodMk {α β γ : Type*} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
     (X : α → β) (Y : α → γ) :
     (mβ.prod mγ).comap (fun ω ↦ (X ω, Y ω)) = mβ.comap X ⊔ mγ.comap Y := by
-  rw [(by rfl : mβ.prod mγ = Prod.instMeasurableSpace)]
-  simp_rw [Prod.instMeasurableSpace, MeasurableSpace.prod, comap_sup, comap_comp]
+  simp_rw [MeasurableSpace.prod, comap_sup, comap_comp]
   rfl
 
 /-- The comap of `Prod.map` is the product of the comaps. -/
