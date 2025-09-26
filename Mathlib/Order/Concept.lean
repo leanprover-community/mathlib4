@@ -107,9 +107,10 @@ theorem lowerPolar_empty : lowerPolar r ∅ = univ :=
 alias extentClosure_empty := lowerPolar_empty
 
 @[simp]
-theorem mem_upperPolar_singleton_iff {a b} : b ∈ upperPolar r {a} ↔ r a b := by
+theorem mem_upperPolar_singleton_iff : b ∈ upperPolar r {a} ↔ r a b := by
   simp_rw [mem_upperPolar_iff, mem_singleton_iff, forall_eq]
 
+@[simp]
 theorem mem_lowerPolar_singleton_iff : a ∈ lowerPolar r {b} ↔ r a b := by
   simp_rw [mem_lowerPolar_iff, mem_singleton_iff, forall_eq]
 
@@ -245,6 +246,8 @@ theorem isExtent_iInter₂ (f : ∀ i, κ i → Set α) (hf : ∀ i j, (f i j).I
 - The set is the `upperPolar` of some other set. -/
 def IsIntent (r : α → β → Prop) (t : Set β) := upperPolar r (lowerPolar r t) = t
 
+theorem IsIntent.eq (h : IsIntent r t) : upperPolar r (lowerPolar r t) = t := h
+
 theorem isIntent_iff : IsIntent r t ↔ ∃ s, upperPolar r s = t :=
   ⟨fun h ↦ ⟨_, h⟩, fun ⟨s, h⟩ ↦ h ▸ upperPolar_lowerPolar_upperPolar r s⟩
 
@@ -308,6 +311,7 @@ variable {c d : Concept α β r} {c' : Concept α α r'}
 
 attribute [simp] upperPolar_extent lowerPolar_intent
 
+/-- See `Concept.ext'` for a version using the intent. -/
 @[ext]
 theorem ext (h : c.extent = d.extent) : c = d := by
   obtain ⟨s₁, t₁, rfl, _⟩ := c
@@ -315,6 +319,7 @@ theorem ext (h : c.extent = d.extent) : c = d := by
   substs h
   rfl
 
+/-- See `Concept.ext` for a version using the extent. -/
 theorem ext' (h : c.intent = d.intent) : c = d := by
   obtain ⟨s₁, t₁, _, rfl⟩ := c
   obtain ⟨s₂, t₂, _, rfl⟩ := d
