@@ -93,7 +93,7 @@ noncomputable def testAgainstCLM {f : X → E} (hf : LocallyIntegrable f μ) (K 
       integrableOn_isCompact (hf.locallyIntegrableOn K) K.isCompact
     set g := fun x ↦ ‖φ‖ * ‖f x‖ with g_def
     have hg : Integrable g (μ.restrict K) := hf'.norm.const_mul _
-    have h : ∀ᵐ (x : X) ∂(μ.restrict K), ‖(fun a ↦ (φ a) • f a) x‖ ≤ g x := by
+    have h : ∀ᵐ x ∂(μ.restrict K), ‖φ x • f x‖ ≤ g x := by
       apply ae_of_all
       intro x
       grw [g_def, norm_smul, norm_coe_le_norm]
