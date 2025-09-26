@@ -36,8 +36,8 @@ lemma injective_fromCoequalizerPullbackCone : Injective (fromCoequalizerPullback
   intro z₁ z₂ h
   rw [← Quot.out_eq z₁, ← Quot.out_eq z₂]
   have h' : f (Quot.out z₁) = f (Quot.out z₂) := by
-    rwa [← Coequalizer.desc_mk _ _ f _ _, ← Coequalizer.desc_mk _ _ f _ _,
-      Coequalizer.mk, Coequalizer.mk, Quot.out_eq, Quot.out_eq]
+    rwa [← Coequalizer.desc_mk _ _ f, ← Coequalizer.desc_mk _ _ f, Coequalizer.mk, Coequalizer.mk,
+      Quot.out_eq, Quot.out_eq]
   exact Quot.sound (Coequalizer.Rel.intro (Subtype.mk (Prod.mk _ _) h'))
 
 /-- If `f : X ⟶ Y` is surjective, so is `fromCoequalizerPullbackCone f`. -/
