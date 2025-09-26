@@ -480,7 +480,6 @@ theorem termDefinable₁_iff_exists_term {f : M → M} : A.TermDefinable₁ L f 
   simp only [Equiv.funUnique_symm_apply, uniqueElim_const, Function.comp_apply]
   congr!
 
-
 /-- A `TermDefinable₁` function has a graph that's `Definable₂`. -/
 theorem TermDefinable₁.graph_definable₂ {f : M → M} (h : A.TermDefinable₁ L f) :
     A.Definable₂ L f.graph := by
