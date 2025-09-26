@@ -370,13 +370,14 @@ open Function
 
 variable [Semiring S] {f : R →+* S}
 
-alias leadingCoeff_map' := leadingCoeff_map_of_injective
+@[deprecated (since := "2025-09-27")] alias leadingCoeff_map' := leadingCoeff_map_of_injective
+@[deprecated (since := "2025-09-27")]
 alias leadingCoeff_of_injective := leadingCoeff_map_of_injective
-alias nextCoeff_map := nextCoeff_map_of_injective
+@[deprecated (since := "2025-09-27")] alias nextCoeff_map := nextCoeff_map_of_injective
 
 theorem monic_of_injective (hf : Injective f) {p : R[X]} (hp : (p.map f).Monic) : p.Monic := by
   apply hf
-  rw [← leadingCoeff_of_injective hf, hp.leadingCoeff, f.map_one]
+  rw [← leadingCoeff_map_of_injective hf, hp.leadingCoeff, f.map_one]
 
 theorem _root_.Function.Injective.monic_map_iff (hf : Injective f) {p : R[X]} :
     p.Monic ↔ (p.map f).Monic :=
