@@ -57,23 +57,23 @@ variable [LocallyCompactSpace X] [T2Space X] [SecondCountableTopology X]
 open TopologicalSpace LocallyIntegrableOn
 
 omit [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E] [NormedSpace ℝ E] in
-theorem integrable_smul_LocallyIntegrable {f : X → E} (hf : LocallyIntegrable f μ)
-  (K : Compacts X) (φ : X →ᵇ 𝕜) :
-    Integrable (fun x ↦ (φ x) • (f x)) (μ.restrict K) := by
-  refine integrableOn_isCompact ?_ K.isCompact
-  exact LocallyIntegrableOn.continuousOn_smul K.isCompact.isClosed.isLocallyClosed
-    (hf.locallyIntegrableOn K) φ.continuous.continuousOn
+theorem integrable_smul_LocallyIntegrable {f : X → E} (hf : LocallyIntegrable f μ) (K : Compacts X)
+  (φ : X →ᵇ 𝕜) :
+    Integrable (fun x ↦ (φ x) • (f x)) (μ.restrict K) :=
+  integrableOn_isCompact
+    ((hf.locallyIntegrableOn K).continuousOn_smul K.isCompact.isClosed.isLocallyClosed
+      φ.continuous.continuousOn)
+    K.isCompact
 
 variable [SMulCommClass ℝ 𝕜 E]
 
 variable (𝕜) {μ}
 
-/-- `testAgainstLocallyIntegrableₗ` wraps the integral against a locally  integrable function `f` on
-a fixed compact `K` as a `𝕜`-linear map on scalar valued bounded continuous functions -/
-noncomputable def testAgainsₗ {f : X → E} (hf : LocallyIntegrable f μ)
-  (K : Compacts X) :
+/-- `testAgainstLocallyIntegrableₗ` wraps the integral against a locally integrable function `f` on
+a fixed compact `K` as a `𝕜`-linear map on scalar valued bounded continuous functions. -/
+noncomputable def testAgainsₗ {f : X → E} (hf : LocallyIntegrable f μ) (K : Compacts X) :
     (X →ᵇ 𝕜) →ₗ[𝕜] E where
-  toFun := fun φ : (X →ᵇ 𝕜) ↦ ∫ (x : X), φ x • f x ∂(μ.restrict K)
+  toFun φ := ∫ (x : X), φ x • f x ∂(μ.restrict K)
   map_add' := by
     intro φ Φ
     simp_rw [add_apply, add_smul, integral_add (integrable_smul_LocallyIntegrable μ hf K φ)
@@ -82,10 +82,9 @@ noncomputable def testAgainsₗ {f : X → E} (hf : LocallyIntegrable f μ)
     intro c φ
     simp_rw [coe_smul, RingHom.id_apply, ← integral_smul c (fun (x : X) ↦  φ x • f x), smul_assoc]
 
-/-- `testAgainstLocallyIntegrableₗ` wraps the integral against a locally  integrable function `f` on
-a fixed compact `K` as a continuous `𝕜`-linear map on scalar valued bounded continuous functions -/
-noncomputable def testAgainstCLM {f : X → E} (hf : LocallyIntegrable f μ)
-  (K : Compacts X) :
+/-- `testAgainstLocallyIntegrableₗ` wraps the integral against a locally integrable function `f` on
+a fixed compact `K` as a continuous `𝕜`-linear map on scalar valued bounded continuous functions. -/
+noncomputable def testAgainstCLM {f : X → E} (hf : LocallyIntegrable f μ) (K : Compacts X) :
     (X →ᵇ 𝕜) →L[𝕜] E :=
   (testAgainsₗ 𝕜 hf K).mkContinuous (∫ x, ‖f x‖ ∂(μ.restrict K))
   (by
@@ -93,12 +92,11 @@ noncomputable def testAgainstCLM {f : X → E} (hf : LocallyIntegrable f μ)
     have hf' : Integrable f (μ.restrict K) :=
       integrableOn_isCompact (hf.locallyIntegrableOn K) K.isCompact
     set g := fun x ↦ ‖φ‖ * ‖f x‖ with g_def
-    have hg : Integrable g (μ.restrict K) := (Integrable.norm hf').const_mul _
+    have hg : Integrable g (μ.restrict K) := hf'.norm.const_mul _
     have h : ∀ᵐ (x : X) ∂(μ.restrict K), ‖(fun a ↦ (φ a) • f a) x‖ ≤ g x := by
       apply ae_of_all
       intro x
-      simp only [g, norm_smul]
-      bound [φ.norm_coe_le_norm x]
+      grw [g_def, norm_smul, norm_coe_le_norm]
     apply le_trans (norm_integral_le_of_norm_le hg h)
     rw [mul_comm, integral_const_mul_of_integrable hf'.norm]
   )
