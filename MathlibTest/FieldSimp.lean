@@ -411,7 +411,8 @@ example {x : ℚ} (hx : x ≠ 0) : x * x⁻¹ = 1 := by
 -- `field` will suggest `field_simp` on failure, if `field_simp` does anything.
 
 /--
-info: Try this: field_simp
+info: Try this:
+  field_simp
 ---
 error: unsolved goals
 x y z : ℚ
@@ -437,7 +438,8 @@ the top level, not recursively in subexpressions.
 (`ring1` acts only at the top level, so for consistency we also clear denominators only at the top
 level.) -/
 /--
-info: Try this: field_simp
+info: Try this:
+  field_simp
 ---
 error: unsolved goals
 a b : ℚ
@@ -623,7 +625,8 @@ example {a b : ℚ} (H : b + a ≠ 0) : a / (a + b) + b / (b + a) = 1 := by
   field
 
 /--
-info: Try this: field_simp
+info: Try this:
+  field_simp
 ---
 error: unsolved goals
 a b : ℚ
@@ -636,7 +639,8 @@ example {a b : ℚ} (H : b + a ≠ 0) : a / (a + b) + b / (b + a) = 1 := by
   field
 
 /--
-info: Try this: field_simp
+info: Try this:
+  field_simp
 ---
 error: unsolved goals
 a b : ℚ
@@ -654,7 +658,8 @@ example {a b : ℚ} (H : a + b + 1 ≠ 0) :
   field
 
 /--
-info: Try this: field_simp
+info: Try this:
+  field_simp
 ---
 error: unsolved goals
 a b : ℚ
@@ -668,7 +673,8 @@ example {a b : ℚ} (H : a + b + 1 ≠ 0) :
   field
 
 /--
-info: Try this: field_simp
+info: Try this:
+  field_simp
 ---
 error: unsolved goals
 a b : ℚ
