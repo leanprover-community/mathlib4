@@ -331,6 +331,20 @@ instance addCommMonoid : AddCommMonoid (M ⊗[R] N) :=
   { TensorProduct.addCommSemigroup _ _ with
     toAddMonoid := TensorProduct.addMonoid }
 
+variable (R)
+
+theorem _root_.IsAddUnit.tmul_left {n : N} (hn : IsAddUnit n) (m : M) : IsAddUnit (m ⊗ₜ[R] n) := by
+  rw [isAddUnit_iff_exists_neg] at hn ⊢
+  have ⟨b, eq⟩ := hn
+  exact ⟨m ⊗ₜ[R] b, by rw [← tmul_add, eq, tmul_zero]⟩
+
+theorem _root_.IsAddUnit.tmul_right {m : M} (hm : IsAddUnit m) (n : N) : IsAddUnit (m ⊗ₜ[R] n) := by
+  rw [isAddUnit_iff_exists_neg] at hm ⊢
+  have ⟨b, eq⟩ := hm
+  exact ⟨b ⊗ₜ[R] n, by rw [← add_tmul, eq, zero_tmul]⟩
+
+variable {R}
+
 instance leftDistribMulAction : DistribMulAction R' (M ⊗[R] N) :=
   have : ∀ (r : R') (m : M) (n : N), r • m ⊗ₜ[R] n = (r • m) ⊗ₜ n := fun _ _ _ => rfl
   { smul_add := fun r x y => TensorProduct.smul_add r x y
