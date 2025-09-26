@@ -681,6 +681,8 @@ lemma touchpointWeights_empty_pos {i j : Fin (n + 1)} (hne : i ≠ j) :
     0 < s.touchpointWeights ∅ i j := by
   simpa [sign_eq_one_iff] using s.sign_touchpointWeights_empty hne
 
+attribute [local instance] Nat.AtLeastTwo.neZero_sub_one
+
 lemma touchpoint_empty_mem_interior_faceOpposite [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
     s.touchpoint ∅ i ∈ (s.faceOpposite i).interior := by
   rw [faceOpposite, ← affineCombination_touchpointWeights,
