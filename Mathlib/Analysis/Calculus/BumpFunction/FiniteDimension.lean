@@ -93,8 +93,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       rcases exists_smooth_tsupport_subset (hs.mem_nhds hx) with ⟨f, hf⟩
       let g : ι := ⟨f, (subset_tsupport f).trans hf.1, hf.2.1, hf.2.2.1, hf.2.2.2.1⟩
       have : x ∈ support (g : E → ℝ) := by
-        simp only [g, hf.2.2.2.2, mem_support, Ne, one_ne_zero,
-          not_false_iff]
+        simp only [g, hf.2.2.2.2, mem_support, Ne, one_ne_zero, not_false_iff]
       exact mem_iUnion_of_mem _ this
     simp_rw [← this]
     apply isOpen_iUnion_countable
@@ -103,9 +102,8 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
   obtain ⟨g0, hg⟩ : ∃ g0 : ℕ → ι, T = range g0 := by
     apply Countable.exists_eq_range T_count
     rcases eq_empty_or_nonempty T with (rfl | hT)
-    · simp only [ι] at hT
-      simp only [← hT, mem_empty_iff_false, iUnion_of_empty, iUnion_empty, Set.not_nonempty_empty]
-          at h's
+    · simp only [← hT, mem_empty_iff_false, iUnion_of_empty, iUnion_empty, Set.not_nonempty_empty]
+        at h's
     · exact hT
   let g : ℕ → E → ℝ := fun n => (g0 n).1
   have g_s : ∀ n, support (g n) ⊆ s := fun n => (g0 n).2.1
@@ -113,10 +111,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
     rw [← hT] at hx
     obtain ⟨i, iT, hi⟩ : ∃ i ∈ T, x ∈ support (i : E → ℝ) := by
       simpa only [mem_iUnion, exists_prop] using hx
-    rw [hg, mem_range] at iT
-    rcases iT with ⟨n, hn⟩
-    rw [← hn] at hi
-    exact ⟨n, hi⟩
+    grind
   have g_smooth : ∀ n, ContDiff ℝ ∞ (g n) := fun n => (g0 n).2.2.2.1
   have g_comp_supp : ∀ n, HasCompactSupport (g n) := fun n => (g0 n).2.2.1
   have g_nonneg : ∀ n x, 0 ≤ g n x := fun n x => ((g0 n).2.2.2.2 (mem_range_self x)).1
@@ -152,7 +147,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       _ = M⁻¹ * δ n * ‖iteratedFDeriv ℝ i (g n) x‖ := by
         rw [norm_smul _ (iteratedFDeriv ℝ i (g n) x), Real.norm_of_nonneg]; positivity
       _ ≤ M⁻¹ * δ n * M := by gcongr; exact (hR i x).trans (IR i hi)
-      _ = δ n := by field_simp
+      _ = δ n := by simp [field]
   choose r rpos hr using this
   have S : ∀ x, Summable fun n => (r n • g n) x := fun x ↦ by
     refine .of_nnnorm_bounded δc.summable fun n => ?_
@@ -176,8 +171,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       contDiff_tsum_of_eventually (fun n => (g_smooth n).const_smul (r n))
         (fun k _ => (NNReal.hasSum_coe.2 δc).summable) ?_
     intro i _
-    simp only [Nat.cofinite_eq_atTop,
-      Filter.eventually_atTop]
+    simp only [Nat.cofinite_eq_atTop, Filter.eventually_atTop]
     exact ⟨i, fun n hn x => hr _ _ hn _⟩
   · rintro - ⟨y, rfl⟩
     refine ⟨tsum_nonneg fun n => mul_nonneg (rpos n).le (g_nonneg n y), le_trans ?_ c_lt.le⟩
@@ -295,10 +289,12 @@ theorem w_mul_φ_nonneg (D : ℝ) (x y : E) : 0 ≤ w D y * φ (x - y) :=
 
 variable (E)
 
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
+set_option linter.unusedSimpArgs false in
 theorem w_integral {D : ℝ} (Dpos : 0 < D) : ∫ x : E, w D x ∂μ = 1 := by
   simp_rw [w, integral_smul]
   rw [integral_comp_inv_smul_of_nonneg μ (u : E → ℝ) Dpos.le, abs_of_nonneg Dpos.le, mul_comm]
-  field_simp [(u_int_pos E).ne']
+  simp [field, (u_int_pos E).ne']
 
 theorem w_support {D : ℝ} (Dpos : 0 < D) : support (w D : E → ℝ) = ball 0 D := by
   have B : D • ball (0 : E) 1 = ball 0 D := by
@@ -403,20 +399,17 @@ theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
       · apply ball_subset_ball' _ hy
         simp only [hz, norm_smul, abs_of_nonneg Dpos.le, abs_of_nonneg B.le, dist_zero_right,
           Real.norm_eq_abs, abs_div]
-        simp only [div_le_iff₀ B, field_simps]
-        ring_nf
-        rfl
+        field_simp
+        linarith only
       · have ID : ‖D / (1 + D) - 1‖ = 1 / (1 + D) := by
           rw [Real.norm_of_nonpos]
-          · simp only [B.ne', Ne, not_false_iff, mul_one, neg_sub, add_tsub_cancel_right,
-              field_simps]
-          · simp only [B.ne', Ne, not_false_iff, mul_one, field_simps]
-            apply div_nonpos_of_nonpos_of_nonneg _ B.le
+          · simp [field]
+          · field_simp
             linarith only
         rw [← mem_closedBall_iff_norm']
         apply closedBall_subset_closedBall' _ (ball_subset_closedBall hy)
         rw [← one_smul ℝ x, dist_eq_norm, hz, ← sub_smul, one_smul, norm_smul, ID]
-        simp only [div_le_iff₀ B, field_simps]
+        field_simp
         nlinarith only [hx, D_lt_one]
     apply lt_of_lt_of_le _ (measure_mono C)
     apply measure_ball_pos

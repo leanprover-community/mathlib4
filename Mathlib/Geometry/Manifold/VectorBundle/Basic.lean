@@ -164,8 +164,9 @@ bundle at all, just that it is a fiber bundle over a charted base space.
 
 namespace Bundle
 
-/-- Characterization of `C^n` functions into a vector bundle. -/
-theorem contMDiffWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x₀ : M} :
+/-- Characterization of `C^n` functions into a vector bundle.
+Version at a point within a set. -/
+theorem contMDiffWithinAt_totalSpace {f : M → TotalSpace F E} {s : Set M} {x₀ : M} :
     ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F)) n f s x₀ ↔
       ContMDiffWithinAt IM IB n (fun x => (f x).proj) s x₀ ∧
       ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) s x₀ := by
@@ -185,22 +186,22 @@ theorem contMDiffWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x�
     exact hx
   · simp only [mfld_simps]
 
-/-- Characterization of `C^n` functions into a vector bundle. -/
-theorem contMDiffAt_totalSpace (f : M → TotalSpace F E) (x₀ : M) :
+/-- Characterization of `C^n` functions into a vector bundle. Version at a point. -/
+theorem contMDiffAt_totalSpace {f : M → TotalSpace F E} {x₀ : M} :
     ContMDiffAt IM (IB.prod 𝓘(𝕜, F)) n f x₀ ↔
-      ContMDiffAt IM IB n (fun x => (f x).proj) x₀ ∧
-        ContMDiffAt IM 𝓘(𝕜, F) n (fun x => (trivializationAt F E (f x₀).proj (f x)).2) x₀ := by
-  simp_rw [← contMDiffWithinAt_univ]; exact contMDiffWithinAt_totalSpace f
+      ContMDiffAt IM IB n (fun x ↦ (f x).proj) x₀ ∧
+        ContMDiffAt IM 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) x₀ := by
+  simp_rw [← contMDiffWithinAt_univ]; exact contMDiffWithinAt_totalSpace
 
 /-- Characterization of `C^n` sections within a set at a point of a vector bundle. -/
-theorem contMDiffWithinAt_section (s : ∀ x, E x) (a : Set B) (x₀ : B) :
-    ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F)) n (fun x => TotalSpace.mk' F x (s x)) a x₀ ↔
+theorem contMDiffWithinAt_section {s : ∀ x, E x} {a : Set B} {x₀ : B} :
+    ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) a x₀ ↔
       ContMDiffWithinAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) a x₀ := by
   simp_rw [contMDiffWithinAt_totalSpace, and_iff_right_iff_imp]; intro; exact contMDiffWithinAt_id
 
 /-- Characterization of `C^n` sections of a vector bundle. -/
-theorem contMDiffAt_section (s : ∀ x, E x) (x₀ : B) :
-    ContMDiffAt IB (IB.prod 𝓘(𝕜, F)) n (fun x => TotalSpace.mk' F x (s x)) x₀ ↔
+theorem contMDiffAt_section {s : ∀ x, E x} (x₀ : B) :
+    ContMDiffAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀ ↔
       ContMDiffAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) x₀ := by
   simp_rw [contMDiffAt_totalSpace, and_iff_right_iff_imp]; intro; exact contMDiffAt_id
 
@@ -213,25 +214,37 @@ theorem contMDiff_proj : ContMDiff (IB.prod 𝓘(𝕜, F)) IB n (π F E) := fun 
 
 theorem contMDiffOn_proj {s : Set (TotalSpace F E)} :
     ContMDiffOn (IB.prod 𝓘(𝕜, F)) IB n (π F E) s :=
-  (Bundle.contMDiff_proj E).contMDiffOn
+  (contMDiff_proj E).contMDiffOn
 
 theorem contMDiffAt_proj {p : TotalSpace F E} : ContMDiffAt (IB.prod 𝓘(𝕜, F)) IB n (π F E) p :=
-  (Bundle.contMDiff_proj E).contMDiffAt
+  (contMDiff_proj E).contMDiffAt
 
 theorem contMDiffWithinAt_proj {s : Set (TotalSpace F E)} {p : TotalSpace F E} :
     ContMDiffWithinAt (IB.prod 𝓘(𝕜, F)) IB n (π F E) s p :=
-  (Bundle.contMDiffAt_proj E).contMDiffWithinAt
+  (contMDiffAt_proj E).contMDiffWithinAt
 
 variable (𝕜) [∀ x, AddCommMonoid (E x)]
 variable [∀ x, Module 𝕜 (E x)] [VectorBundle 𝕜 F E]
 
-theorem contMDiff_zeroSection : ContMDiff IB (IB.prod 𝓘(𝕜, F)) n (zeroSection F E) := fun x ↦ by
+theorem contMDiff_zeroSection : ContMDiff IB (IB.prod 𝓘(𝕜, F)) n (zeroSection F E) := by
+  intro x
   unfold zeroSection
-  rw [Bundle.contMDiffAt_section]
+  rw [contMDiffAt_section]
   apply (contMDiffAt_const (c := 0)).congr_of_eventuallyEq
   filter_upwards [(trivializationAt F E x).open_baseSet.mem_nhds
     (mem_baseSet_trivializationAt F E x)] with y hy
     using congr_arg Prod.snd <| (trivializationAt F E x).zeroSection 𝕜 hy
+
+theorem contMDiffOn_zeroSection {t : Set B} :
+    ContMDiffOn IB (IB.prod 𝓘(𝕜, F)) n (zeroSection F E) t :=
+  (contMDiff_zeroSection _ _).contMDiffOn
+
+theorem contMDiffAt_zeroSection {x : B} : ContMDiffAt IB (IB.prod 𝓘(𝕜, F)) n (zeroSection F E) x :=
+  (contMDiff_zeroSection _ _).contMDiffAt
+
+theorem contMDiffWithinAt_zeroSection {t : Set B} {x : B} :
+    ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F)) n (zeroSection F E) t x :=
+  (contMDiff_zeroSection _ _ x).contMDiffWithinAt
 
 end Bundle
 
@@ -262,8 +275,6 @@ class ContMDiffVectorBundle : Prop where
     ∀ (e e' : Trivialization F (π F E)) [MemTrivializationAtlas e] [MemTrivializationAtlas e'],
       ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun b : B => (e.coordChangeL 𝕜 e' b : F →L[𝕜] F))
         (e.baseSet ∩ e'.baseSet)
-
-@[deprecated (since := "2025-01-09")] alias SmoothVectorBundle := ContMDiffVectorBundle
 
 variable {F E} in
 protected theorem ContMDiffVectorBundle.of_le {m n : WithTop ℕ∞} (hmn : m ≤ n)
@@ -448,7 +459,7 @@ theorem Trivialization.contMDiffWithinAt_iff {f : M → TotalSpace F E} {s : Set
     ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F)) n f s x₀ ↔
       ContMDiffWithinAt IM IB n (fun x => (f x).proj) s x₀ ∧
       ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun x ↦ (e (f x)).2) s x₀ :=
-  (contMDiffWithinAt_totalSpace _).trans <| and_congr_right fun h ↦
+  contMDiffWithinAt_totalSpace.trans <| and_congr_right fun h ↦
     Trivialization.contMDiffWithinAt_snd_comp_iff₂ h FiberBundle.mem_trivializationAt_proj_source he
 
 theorem Trivialization.contMDiffAt_iff {f : M → TotalSpace F E} {x₀ : M} (he : f x₀ ∈ e.source) :
@@ -484,6 +495,58 @@ theorem Trivialization.contMDiffOn_symm (e : Trivialization F (π F E)) [MemTriv
     contMDiffOn_snd.congr fun x hx ↦ ?_⟩
   rw [e.apply_symm_apply hx]
 
+/-- Smoothness of a `C^n` section at `x₀` within a set `a` can be determined
+using any trivialisation whose `baseSet` contains `x₀`. -/
+theorem Trivialization.contMDiffWithinAt_section {s : ∀ x, E x} (a : Set B) {x₀ : B}
+    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B)}
+    [MemTrivializationAtlas e] (hx₀ : x₀ ∈ e.baseSet) :
+    ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) a x₀ ↔
+      ContMDiffWithinAt IB 𝓘(𝕜, F) n (fun x ↦ (e ⟨x, s x⟩).2) a x₀ := by
+  rw [e.contMDiffWithinAt_iff]
+  · change ContMDiffWithinAt IB IB n id a x₀ ∧ _ ↔ _
+    simp [contMDiffWithinAt_id]
+  · rwa [mem_source]
+
+/-- Smoothness of a `C^n` section at `x₀` can be determined
+using any trivialisation whose `baseSet` contains `x₀`. -/
+theorem Trivialization.contMDiffAt_section_iff {s : ∀ x, E x} {x₀ : B}
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
+    [MemTrivializationAtlas e] (hx₀ : x₀ ∈ e.baseSet) :
+    ContMDiffAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀ ↔
+      ContMDiffAt IB 𝓘(𝕜, F) n (fun x ↦ (e ⟨x, s x⟩).2) x₀ := by
+  simp_rw [← contMDiffWithinAt_univ]
+  exact e.contMDiffWithinAt_section univ hx₀
+
+@[deprecated (since := "2025-09-15")]
+alias contMDiffAt_section_of_mem_baseSet := Trivialization.contMDiffAt_section_iff
+
+/-- Smoothness of a `C^n` section on `s` can be determined
+using any trivialisation whose `baseSet` contains `s`. -/
+theorem Trivialization.contMDiffOn_section_iff {s : ∀ x, E x} {a : Set B}
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
+    [MemTrivializationAtlas e] (ha : IsOpen a) (ha' : a ⊆ e.baseSet) :
+    ContMDiffOn IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) a ↔
+      ContMDiffOn IB 𝓘(𝕜, F) n (fun x ↦ (e ⟨x, s x⟩).2) a := by
+  refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩ <;>
+  have := (h x hx).contMDiffAt <| ha.mem_nhds hx
+  · exact ((e.contMDiffAt_section_iff (ha' hx)).mp this).contMDiffWithinAt
+  · exact ((e.contMDiffAt_section_iff (ha' hx)).mpr this).contMDiffWithinAt
+
+@[deprecated (since := "2025-09-15")]
+alias contMDiffOn_section_of_mem_baseSet := Trivialization.contMDiffOn_section_iff
+
+/-- For any trivialization `e`, the smoothness of a `C^n` section on `e.baseSet`
+can be determined using `e`. -/
+theorem Trivialization.contMDiffOn_section_baseSet_iff {s : ∀ x, E x}
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
+    [MemTrivializationAtlas e] :
+    ContMDiffOn IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet ↔
+      ContMDiffOn IB 𝓘(𝕜, F) n (fun x ↦ (e ⟨x, s x⟩).2) e.baseSet :=
+  e.contMDiffOn_section_iff e.open_baseSet subset_rfl
+
+@[deprecated (since := "2025-09-15")]
+alias contMDiffOn_section_of_mem_baseSet₀ := Trivialization.contMDiffOn_section_baseSet_iff
+
 end
 
 /-! ### Core construction for `C^n` vector bundles -/
@@ -497,8 +560,6 @@ variable {ι : Type*} (Z : VectorBundleCore 𝕜 B F ι)
 class IsContMDiff (IB : ModelWithCorners 𝕜 EB HB) (n : WithTop ℕ∞) : Prop where
   contMDiffOn_coordChange :
     ∀ i j, ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (Z.coordChange i j) (Z.baseSet i ∩ Z.baseSet j)
-
-@[deprecated (since := "2025-01-09")] alias IsSmooth := IsContMDiff
 
 theorem contMDiffOn_coordChange (IB : ModelWithCorners 𝕜 EB HB) [h : Z.IsContMDiff IB n] (i j : ι) :
     ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (Z.coordChange i j) (Z.baseSet i ∩ Z.baseSet j) :=
@@ -579,8 +640,6 @@ class IsContMDiff (a : VectorPrebundle 𝕜 F E) (n : WithTop ℕ∞) : Prop whe
           ∀ (b : B) (_ : b ∈ e.baseSet ∩ e'.baseSet) (v : F),
             f b v = (e' ⟨b, e.symm b v⟩).2
 
-@[deprecated (since := "2025-01-09")] alias IsSmooth := IsContMDiff
-
 variable (a : VectorPrebundle 𝕜 F E) [ha : a.IsContMDiff IB n] {e e' : Pretrivialization F (π F E)}
 
 variable (IB n) in
@@ -591,23 +650,16 @@ noncomputable def contMDiffCoordChange (he : e ∈ a.pretrivializationAtlas)
     (he' : e' ∈ a.pretrivializationAtlas) (b : B) : F →L[𝕜] F :=
   Classical.choose (ha.exists_contMDiffCoordChange e he e' he') b
 
-@[deprecated (since := "2025-01-09")] alias smoothCoordChange := contMDiffCoordChange
-
 theorem contMDiffOn_contMDiffCoordChange (he : e ∈ a.pretrivializationAtlas)
     (he' : e' ∈ a.pretrivializationAtlas) :
     ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (a.contMDiffCoordChange n IB he he')
       (e.baseSet ∩ e'.baseSet) :=
   (Classical.choose_spec (ha.exists_contMDiffCoordChange e he e' he')).1
 
-@[deprecated (since := "2025-01-09")]
-alias contMDiffOn_smoothCoordChange := contMDiffOn_contMDiffCoordChange
-
 theorem contMDiffCoordChange_apply (he : e ∈ a.pretrivializationAtlas)
     (he' : e' ∈ a.pretrivializationAtlas) {b : B} (hb : b ∈ e.baseSet ∩ e'.baseSet) (v : F) :
     a.contMDiffCoordChange n IB he he' b v = (e' ⟨b, e.symm b v⟩).2 :=
   (Classical.choose_spec (ha.exists_contMDiffCoordChange e he e' he')).2 b hb v
-
-@[deprecated (since := "2025-01-09")] alias smoothCoordChange_apply := contMDiffCoordChange_apply
 
 theorem mk_contMDiffCoordChange (he : e ∈ a.pretrivializationAtlas)
     (he' : e' ∈ a.pretrivializationAtlas) {b : B} (hb : b ∈ e.baseSet ∩ e'.baseSet) (v : F) :
@@ -616,8 +668,6 @@ theorem mk_contMDiffCoordChange (he : e ∈ a.pretrivializationAtlas)
   · rw [e.mk_symm hb.1 v, e'.coe_fst', e.proj_symm_apply' hb.1]
     rw [e.proj_symm_apply' hb.1]; exact hb.2
   · exact a.contMDiffCoordChange_apply he he' hb v
-
-@[deprecated (since := "2025-01-09")] alias mk_smoothCoordChange := mk_contMDiffCoordChange
 
 variable (IB) in
 /-- Make a `ContMDiffVectorBundle` from a `ContMDiffVectorPrebundle`. -/
@@ -632,7 +682,5 @@ theorem contMDiffVectorBundle : @ContMDiffVectorBundle n
       rw [a.contMDiffCoordChange_apply he he' hb v, ContinuousLinearEquiv.coe_coe,
         Trivialization.coordChangeL_apply]
       exacts [rfl, hb] }
-
-@[deprecated (since := "2025-01-09")] alias smoothVectorBundle := contMDiffVectorBundle
 
 end VectorPrebundle

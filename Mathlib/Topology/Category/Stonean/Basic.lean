@@ -244,7 +244,7 @@ end CompHaus
 namespace Profinite
 
 /-- If `X` is profinite, `presentation X` is a Stonean space equipped with an epimorphism down to
-    `X` (see `Profinite.presentation.π` and `Profinite.presentation.epi_π`). -/
+`X` (see `Profinite.presentation.π` and `Profinite.presentation.epi_π`). -/
 noncomputable
 def presentation (X : Profinite) : Stonean where
   toTop := (profiniteToCompHaus.obj X).projectivePresentation.p.toTop

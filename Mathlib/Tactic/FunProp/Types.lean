@@ -72,7 +72,7 @@ structure Config where
   from differentiability and then differentiability from smoothness (`ContDiff ℝ ∞`) requires
   `maxTransitionDepth = 2`. The default value of one expects that transition theorems are
   transitively closed e.g. there is a transition theorem that infers continuity directly from
-  smoothenss.
+  smoothness.
 
   Setting `maxTransitionDepth` to zero will disable all transition theorems. This can be very
   useful when `fun_prop` should fail quickly. For example when using `fun_prop` as discharger in
@@ -91,7 +91,7 @@ structure Context where
   constToUnfold : TreeSet Name Name.quickCmp :=
     .ofArray defaultNamesToUnfold _
   /-- Custom discharger to satisfy theorem hypotheses. -/
-  disch : Expr → MetaM (Option Expr) := fun _ => pure .none
+  disch : Expr → MetaM (Option Expr) := fun _ => pure none
   /-- current transition depth -/
   transitionDepth := 0
 
@@ -136,7 +136,7 @@ def Context.increaseTransitionDepth (ctx : Context) : Context :=
 /-- Monad to run `fun_prop` tactic in. -/
 abbrev FunPropM := ReaderT FunProp.Context <| StateT FunProp.State MetaM
 
-set_option linter.style.docString false in
+set_option linter.style.docString.empty false in
 /-- Result of `funProp`, it is a proof of function property `P f` -/
 structure Result where
   /-- -/
@@ -146,7 +146,7 @@ structure Result where
 def defaultUnfoldPred : Name → Bool :=
   defaultNamesToUnfold.contains
 
-/-- Get predicate on names indicating if theys shoulds be unfolded. -/
+/-- Get predicate on names indicating whether they should be unfolded. -/
 def unfoldNamePred : FunPropM (Name → Bool) := do
   let toUnfold := (← read).constToUnfold
   return fun n => toUnfold.contains n
@@ -165,7 +165,7 @@ def withIncreasedTransitionDepth {α} (go : FunPropM (Option α)) : FunPropM (Op
   let newDepth := (← read).transitionDepth + 1
   if newDepth > maxDepth then
     trace[Meta.Tactic.fun_prop]
-   "maximum transition depth ({maxDepth}) reached
+    "maximum transition depth ({maxDepth}) reached
     if you want `fun_prop` to continue then increase the maximum depth with \
     `fun_prop (maxTransitionDepth := {newDepth})`"
     return none

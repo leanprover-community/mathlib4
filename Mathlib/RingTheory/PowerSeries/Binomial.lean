@@ -43,11 +43,16 @@ def binomialSeries (A) [One A] [SMul R A] (r : R) : PowerSeries A :=
 
 @[simp]
 lemma binomialSeries_coeff [Semiring A] [SMul R A] (r : R) (n : ℕ) :
-    (coeff A n) (binomialSeries A r) = Ring.choose r n • 1 :=
+    coeff n (binomialSeries A r) = Ring.choose r n • 1 :=
   coeff_mk n fun n ↦ Ring.choose r n • 1
 
 @[simp]
-lemma binomialSeries_add [Semiring A] [Algebra R A] (r s : R) :
+lemma binomialSeries_constantCoeff [Ring A] [Algebra R A] (r : R) :
+    constantCoeff (binomialSeries A r) = 1 := by
+  simp [← coeff_zero_eq_constantCoeff_apply]
+
+@[simp]
+lemma binomialSeries_add [Ring A] [Algebra R A] (r s : R) :
     binomialSeries A (r + s) = binomialSeries A r * binomialSeries A s := by
   ext n
   simp only [binomialSeries_coeff, Ring.add_choose_eq n (Commute.all r s), coeff_mul,
@@ -56,25 +61,18 @@ lemma binomialSeries_add [Semiring A] [Algebra R A] (r s : R) :
   rw [mul_comm, mul_smul]
 
 @[simp]
-lemma binomialSeries_nat [CommRing A] (d : ℕ) :
-    binomialSeries A (d : ℤ) = (1 + X) ^ d := by
+lemma binomialSeries_nat [Ring A] [Algebra R A] (d : ℕ) :
+    binomialSeries A (d : R) = (1 + X) ^ d := by
   ext n
-  by_cases h : d < n
-  · rw [binomialSeries_coeff, add_comm, add_pow, map_sum, Ring.choose_natCast, natCast_zsmul,
-      Nat.choose_eq_zero_of_lt h, zero_nsmul, sum_eq_zero]
-    intro k hk
-    rw [one_pow, mul_one, coeff_X_pow_mul']
-    have hkd : k ≤ d := mem_range_succ_iff.mp hk
-    simp only [hkd.trans (le_of_lt h), ↓reduceIte]
-    rw [← map_natCast (C A), coeff_ne_zero_C (by omega)]
-  · rw [binomialSeries_coeff, add_comm, add_pow]
-    simp only [zsmul_eq_mul, mul_one, one_pow, map_sum]
-    rw [sum_eq_single_of_mem n (by simp only [mem_range]; omega) ?_, coeff_X_pow_mul',
-      Ring.choose_eq_nat_choose]
-    · simp
-    · intro k hk hkn
-      rw [mul_comm, ← map_natCast (C A), coeff_C_mul_X_pow]
-      exact if_neg (Ne.symm hkn)
+  have hright : (1 + X) ^ d = (((1 : Polynomial A) + (Polynomial.X)) ^ d).toPowerSeries := by
+    simp
+  rw [hright, Polynomial.coeff_coe, binomialSeries_coeff, Polynomial.coeff_one_add_X_pow]
+  simp [Ring.choose_natCast, Nat.cast_smul_eq_nsmul]
+
+@[simp]
+lemma binomialSeries_zero [Ring A] [Algebra R A] :
+    binomialSeries A (0 : R) = (1 : A⟦X⟧) := by
+  simpa using binomialSeries_nat 0
 
 lemma rescale_neg_one_invOneSubPow [CommRing A] (d : ℕ) :
     rescale (-1 : A) (invOneSubPow A d) = binomialSeries A (-d : ℤ) := by
@@ -87,7 +85,7 @@ lemma rescale_neg_one_invOneSubPow [CommRing A] (d : ℕ) :
     simp only [invOneSubPow, coeff_mk, Nat.cast_add, Nat.cast_one, neg_add_rev, Int.reduceNeg,
       zsmul_eq_mul, mul_one]
     rw [show (-1 : ℤ) + -d = -(d + 1) by abel, Ring.choose_neg, Nat.choose_symm_add, Units.smul_def,
-      show (d : ℤ) + 1 + n - 1 = d + n by omega, ← Nat.cast_add, Ring.choose_eq_nat_choose]
+      show (d : ℤ) + 1 + n - 1 = d + n by cutsat, ← Nat.cast_add, Ring.choose_natCast]
     norm_cast
 
 end PowerSeries

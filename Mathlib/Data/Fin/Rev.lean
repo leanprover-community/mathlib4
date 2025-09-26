@@ -3,7 +3,7 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez, Joel Riou, Yury Kudryashov
 -/
-import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Fin.SuccPred
 /-!
 # Reverse on `Fin n`
 
@@ -107,11 +107,11 @@ lemma predAbove_rev_right (p : Fin n) (i : Fin (n + 1)) :
 lemma rev_predAbove {n : ℕ} (p : Fin n) (i : Fin (n + 1)) :
     (predAbove p i).rev = predAbove p.rev i.rev := by rw [predAbove_rev_left, rev_rev]
 
-lemma add_rev_cast (j : Fin (n+1)) : j.1 + j.rev.1 = n := by
+lemma add_rev_cast (j : Fin (n + 1)) : j.1 + j.rev.1 = n := by
   obtain ⟨j, hj⟩ := j
   simp [Nat.add_sub_cancel' <| le_of_lt_succ hj]
 
-lemma rev_add_cast (j : Fin (n+1)) : j.rev.1 + j.1 = n := by
+lemma rev_add_cast (j : Fin (n + 1)) : j.rev.1 + j.1 = n := by
   rw [Nat.add_comm, j.add_rev_cast]
 
 end Fin

@@ -82,6 +82,20 @@ theorem mongePoint_eq_smul_vsub_vadd_circumcenter {n : ℕ} (s : Simplex ℝ P n
         s.circumcenter :=
   rfl
 
+/-- **Sylvester's theorem**: The position of the Monge point relative to the circumcenter via the
+sum of vectors to the vertices. -/
+theorem smul_mongePoint_vsub_circumcenter_eq_sum_vsub {n : ℕ} (s : Simplex ℝ P (n + 2)) :
+    (n + 1) • (s.mongePoint -ᵥ s.circumcenter) = ∑ i, (s.points i -ᵥ s.circumcenter) := by
+  rw [mongePoint_eq_smul_vsub_vadd_circumcenter, vadd_vsub, ← smul_assoc]
+  simp only [Nat.cast_add, Nat.cast_ofNat, Nat.cast_one, Nat.add_one_sub_one, nsmul_eq_mul]
+  field_simp
+  have h : Invertible (n + 2 + 1 : ℝ) := by norm_cast; apply invertibleOfPos
+  rw [smul_eq_iff_eq_invOf_smul, smul_sum]
+  unfold Finset.centroid
+  rw [← Finset.sum_smul_vsub_const_eq_affineCombination_vsub _ _ _ _ (by simp)]
+  simp only [centroidWeights_apply, card_univ, Fintype.card_fin, Nat.cast_add, Nat.cast_ofNat,
+    Nat.cast_one, invOf_eq_inv]
+
 /-- The Monge point lies in the affine span. -/
 theorem mongePoint_mem_affineSpan {n : ℕ} (s : Simplex ℝ P n) :
     s.mongePoint ∈ affineSpan ℝ (Set.range s.points) :=
@@ -106,7 +120,7 @@ theorem sum_mongePointWeightsWithCircumcenter (n : ℕ) :
     ∑ i, mongePointWeightsWithCircumcenter n i = 1 := by
   simp_rw [sum_pointsWithCircumcenter, mongePointWeightsWithCircumcenter, sum_const, card_fin,
     nsmul_eq_mul]
-  field_simp
+  simp [field]
   ring
 
 /-- The Monge point of an (n+2)-simplex, in terms of
@@ -122,19 +136,13 @@ theorem mongePoint_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ}
     ← LinearMap.map_smul, weightedVSub_vadd_affineCombination]
   congr with i
   rw [Pi.add_apply, Pi.smul_apply, smul_eq_mul, Pi.sub_apply]
-  -- Porting note: replaced
-  -- have hn1 : (n + 1 : ℝ) ≠ 0 := mod_cast Nat.succ_ne_zero _
-  have hn1 : (n + 1 : ℝ) ≠ 0 := n.cast_add_one_ne_zero
   cases i <;>
       simp_rw [centroidWeightsWithCircumcenter, circumcenterWeightsWithCircumcenter,
         mongePointWeightsWithCircumcenter] <;>
     rw [add_tsub_assoc_of_le (by decide : 1 ≤ 2), (by decide : 2 - 1 = 1)]
   · rw [if_pos (mem_univ _), sub_zero, add_zero, card_fin]
-    -- Porting note: replaced
-    -- have hn3 : (n + 2 + 1 : ℝ) ≠ 0 := mod_cast Nat.succ_ne_zero _
-    have hn3 : (n + 2 + 1 : ℝ) ≠ 0 := by norm_cast
-    field_simp [hn1, hn3, mul_comm]
-  · field_simp [hn1]
+    field_simp
+  · simp [field]
     ring
 
 /-- The weights for the Monge point of an (n+2)-simplex, minus the
@@ -324,7 +332,13 @@ theorem orthocenter_eq_smul_vsub_vadd_circumcenter (t : Triangle ℝ P) :
       (3 : ℝ) • ((univ : Finset (Fin 3)).centroid ℝ t.points -ᵥ t.circumcenter : V) +ᵥ
         t.circumcenter := by
   rw [orthocenter_eq_mongePoint, mongePoint_eq_smul_vsub_vadd_circumcenter]
-  norm_num
+  simp
+
+/-- **Sylvester's theorem**, specialized to triangles. -/
+theorem orthocenter_vsub_circumcenter_eq_sum_vsub (t : Triangle ℝ P) :
+    t.orthocenter -ᵥ t.circumcenter = ∑ i, (t.points i -ᵥ t.circumcenter) := by
+  rw [← t.smul_mongePoint_vsub_circumcenter_eq_sum_vsub, zero_add, one_smul,
+    orthocenter_eq_mongePoint]
 
 /-- The orthocenter lies in the affine span. -/
 theorem orthocenter_mem_affineSpan (t : Triangle ℝ P) :
@@ -366,7 +380,7 @@ theorem eq_orthocenter_of_forall_mem_altitude {t : Triangle ℝ P} {i₁ i₂ : 
   rw [orthocenter_eq_mongePoint]
   have ha : ∀ i, i₃ ≠ i → p ∈ t.mongePlane i₃ i := by
     intro i hi
-    obtain rfl | rfl : i₁ = i ∨ i₂ = i := by omega
+    obtain rfl | rfl : i₁ = i ∨ i₂ = i := by cutsat
     all_goals assumption
   exact eq_mongePoint_of_forall_mem_mongePlane ha
 
@@ -399,6 +413,23 @@ theorem dist_orthocenter_reflection_circumcenter_finset (t : Triangle ℝ P) {i�
       t.circumradius := by
   simp only [coe_insert, coe_singleton]
   exact dist_orthocenter_reflection_circumcenter _ h
+
+/-- The distance from the circumcenter to the reflection of the orthocenter in a side equals the
+circumradius. -/
+theorem dist_circumcenter_reflection_orthocenter (t : Triangle ℝ P) {i₁ i₂ : Fin 3} (h : i₁ ≠ i₂) :
+    dist t.circumcenter (reflection (affineSpan ℝ (t.points '' {i₁, i₂})) t.orthocenter) =
+      t.circumradius := by
+  rw [EuclideanGeometry.dist_reflection, dist_comm, dist_orthocenter_reflection_circumcenter t h]
+
+/-- The distance from the circumcenter to the reflection of the orthocenter in a side equals the
+circumradius, variant using a `Finset`. -/
+theorem dist_circumcenter_reflection_orthocenter_finset (t : Triangle ℝ P) {i₁ i₂ : Fin 3}
+    (h : i₁ ≠ i₂) :
+    dist t.circumcenter
+      (reflection (affineSpan ℝ (t.points '' ↑({i₁, i₂} : Finset (Fin 3)))) t.orthocenter) =
+      t.circumradius := by
+  simp only [coe_insert, coe_singleton]
+  exact dist_circumcenter_reflection_orthocenter _ h
 
 /-- The affine span of the orthocenter and a vertex is contained in
 the altitude. -/
@@ -578,7 +609,6 @@ theorem affineSpan_of_orthocentricSystem {s : Set P} (ho : OrthocentricSystem s)
   refine ext_of_direction_eq ?_
     ⟨p 0, mem_affineSpan ℝ (Set.mem_range_self _), mem_affineSpan ℝ (hps (Set.mem_range_self _))⟩
   have hfd : FiniteDimensional ℝ (affineSpan ℝ s).direction := by rw [hs]; infer_instance
-  haveI := hfd
   refine Submodule.eq_of_le_of_finrank_eq (direction_le (affineSpan_mono ℝ hps)) ?_
   rw [hs, direction_affineSpan, direction_affineSpan, ha.finrank_vectorSpan (Fintype.card_fin _),
     t.independent.finrank_vectorSpan (Fintype.card_fin _)]

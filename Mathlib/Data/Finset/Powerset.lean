@@ -29,7 +29,7 @@ def powerset (s : Finset α) : Finset (Finset α) :=
   ⟨(s.1.powerset.pmap Finset.mk) fun _t h => nodup_of_le (mem_powerset.1 h) s.nodup,
     s.nodup.powerset.pmap fun _a _ha _b _hb => congr_arg Finset.val⟩
 
-@[simp]
+@[simp, grind =]
 theorem mem_powerset {s t : Finset α} : s ∈ powerset t ↔ s ⊆ t := by
   cases s
   simp [powerset, mem_mk, mem_pmap, mk.injEq, exists_prop, exists_eq_right,
@@ -140,7 +140,7 @@ variable [DecidableEq α]
 def ssubsets (s : Finset α) : Finset (Finset α) :=
   erase (powerset s) s
 
-@[simp]
+@[simp, grind =]
 theorem mem_ssubsets {s t : Finset α} : t ∈ s.ssubsets ↔ t ⊂ s := by
   rw [ssubsets, mem_erase, mem_powerset, ssubset_iff_subset_ne, and_comm]
 
@@ -183,7 +183,7 @@ def powersetCard (n : ℕ) (s : Finset α) : Finset (Finset α) :=
   ⟨((s.1.powersetCard n).pmap Finset.mk) fun _t h => nodup_of_le (mem_powersetCard.1 h).1 s.2,
     s.2.powersetCard.pmap fun _a _ha _b _hb => congr_arg Finset.val⟩
 
-@[simp] lemma mem_powersetCard : s ∈ powersetCard n t ↔ s ⊆ t ∧ card s = n := by
+@[simp, grind =] lemma mem_powersetCard : s ∈ powersetCard n t ↔ s ⊆ t ∧ card s = n := by
   cases s; simp [powersetCard, val_le_iff.symm]
 
 @[simp]
@@ -306,11 +306,7 @@ theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) 
     constructor
     · classical
       intro h
-      have : map f (filter (fun x => (f x ∈ t)) s) = t := by
-        ext x
-        simp only [mem_map, mem_filter]
-        exact ⟨fun ⟨_y, ⟨_hy₁, hy₂⟩, hy₃⟩ => hy₃ ▸ hy₂,
-          fun hx => let ⟨y, hy⟩ := mem_map.1 (h.1 hx); ⟨y, ⟨hy.1, hy.2 ▸ hx⟩, hy.2⟩⟩
+      have : map f (filter (fun x => (f x ∈ t)) s) = t := by grind
       refine ⟨_, ?_, this⟩
       rw [← card_map f, this, h.2]; simp
     · rintro ⟨a, ⟨has, rfl⟩, rfl⟩

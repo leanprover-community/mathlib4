@@ -13,9 +13,9 @@ import Mathlib.Analysis.Calculus.FDeriv.Prod
 import Mathlib.Analysis.Normed.Module.Completion
 
 /-!
-# Frechet derivatives of analytic functions.
+# Fréchet derivatives of analytic functions.
 
-A function expressible as a power series at a point has a Frechet derivative there.
+A function expressible as a power series at a point has a Fréchet derivative there.
 Also the special case in terms of `deriv` when the domain is 1-dimensional.
 
 As an application, we show that continuous multilinear maps are smooth. We also compute their
@@ -598,10 +598,8 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
     toFormalMultilinearSeries, dif_pos (Nat.add_sub_of_le Fintype.card_pos).symm]
   simp_rw [domDomCongr_apply, compContinuousLinearMap_apply, ContinuousLinearMap.proj_apply,
     Function.update_apply, (Equiv.injective _).eq_iff, ite_apply]
-  congr; ext j
-  obtain rfl | hj := eq_or_ne j i
-  · rw [Function.update_self, if_pos rfl]
-  · rw [Function.update_of_ne hj, if_neg hj]
+  congr
+  grind [Function.update_self, Function.update_of_ne]
 
 protected theorem hasFDerivAt [DecidableEq ι] : HasFDerivAt f (f.linearDeriv x) x := by
   rw [← changeOrigin_toFormalMultilinearSeries]
@@ -635,7 +633,7 @@ theorem _root_.HasFDerivAt.multilinear_comp
 /-- Technical lemma used in the proof of `hasFTaylorSeriesUpTo_iteratedFDeriv`, to compare sums
 over embedding of `Fin k` and `Fin (k + 1)`. -/
 private lemma _root_.Equiv.succ_embeddingFinSucc_fst_symm_apply {ι : Type*} [DecidableEq ι]
-    {n : ℕ} (e : Fin (n+1) ↪ ι) {k : ι}
+    {n : ℕ} (e : Fin (n + 1) ↪ ι) {k : ι}
     (h'k : k ∈ Set.range (Equiv.embeddingFinSucc n ι e).1) (hk : k ∈ Set.range e) :
     Fin.succ ((Equiv.embeddingFinSucc n ι e).1.toEquivRange.symm ⟨k, h'k⟩)
       = e.toEquivRange.symm ⟨k, hk⟩ := by
@@ -695,7 +693,7 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
         ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk]
       rw [Function.update_of_ne]
       contrapose! hke
-      rw [show k = _ from Subtype.ext_iff_val.1 hke, Equiv.embeddingFinSucc_snd e]
+      rw [show k = _ from Subtype.ext_iff.1 hke, Equiv.embeddingFinSucc_snd e]
       exact Set.mem_range_self _
   · rintro n -
     apply continuous_finset_sum _ (fun e _ ↦ ?_)
@@ -710,9 +708,6 @@ theorem norm_iteratedFDeriv_le (n : ℕ) (x : (i : ι) → E i) :
       ≤ Nat.descFactorial (Fintype.card ι) n * ‖f‖ * ‖x‖ ^ (Fintype.card ι - n) := by
   rw [f.iteratedFDeriv_eq]
   exact f.norm_iteratedFDeriv_le' n x
-
-@[deprecated (since := "2025-02-15")] alias cPolynomialAt := cpolynomialAt
-@[deprecated (since := "2025-02-15")] alias cPolynomialOn := cpolynomialOn
 
 end ContinuousMultilinearMap
 

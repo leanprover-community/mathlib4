@@ -152,7 +152,7 @@ open Subgroup
 variable {α : Type*} [Group α] (a : α)
 
 /-- See also `Fintype.card_zpowers`. -/
-@[to_additive (attr := simp) "See also `Fintype.card_zmultiples`."]
+@[to_additive (attr := simp) /-- See also `Fintype.card_zmultiples`. -/]
 theorem Nat.card_zpowers : Nat.card (zpowers a) = orderOf a := by
   have := Nat.card_congr (MulAction.orbitZPowersEquiv a (1 : α))
   rwa [Nat.card_zmod, orbit_subgroup_one_eq_self] at this
@@ -179,7 +179,7 @@ open Equiv Function MulAction
 
 /-- Partition `G ⧸ H` into orbits of the action of `g : G`. -/
 noncomputable def quotientEquivSigmaZMod :
-    G ⧸ H ≃ Σq : orbitRel.Quotient (zpowers g) (G ⧸ H), ZMod (minimalPeriod (g • ·) q.out) :=
+    G ⧸ H ≃ Σ q : orbitRel.Quotient (zpowers g) (G ⧸ H), ZMod (minimalPeriod (g • ·) q.out) :=
   (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)).trans
     (sigmaCongrRight fun q => orbitZPowersEquiv g q.out)
 

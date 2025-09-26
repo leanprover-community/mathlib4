@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Limits.MorphismProperty
 
 /-!
 
-# Etale morphisms
+# Étale morphisms
 
 A morphism of schemes `f : X ⟶ Y` is étale if it is smooth of relative dimension zero. We
 also define the category of schemes étale over `X`.
@@ -60,7 +60,7 @@ instance : MorphismProperty.HasOfPostcompProperty
   intro X Y f ⟨hft, hfu⟩
   exact inferInstanceAs <| IsEtale (pullback.diagonal f)
 
-/-- If `f ≫ g` is etale and `g` unramified, then `f` is étale. -/
+/-- If `f ≫ g` is étale and `g` unramified, then `f` is étale. -/
 lemma of_comp {Z : Scheme.{u}} (g : Y ⟶ Z) [IsEtale (f ≫ g)] [LocallyOfFiniteType g]
     [FormallyUnramified g] : IsEtale f :=
   of_postcomp _ (W' := @LocallyOfFiniteType ⊓ @FormallyUnramified) f g ⟨‹_›, ‹_›⟩ ‹_›
@@ -84,11 +84,11 @@ instance : Category X.Etale :=
   inferInstanceAs <| Category (MorphismProperty.Over @IsEtale ⊤ X)
 
 /-- The forgetful functor from schemes étale over `X` to schemes over `X`. -/
-noncomputable def Etale.forget : X.Etale ⥤ Over X :=
+def Etale.forget : X.Etale ⥤ Over X :=
   MorphismProperty.Over.forget @IsEtale ⊤ X
 
 /-- The forgetful functor from schemes étale over `X` to schemes over `X` is fully faithful. -/
-noncomputable def Etale.forgetFullyFaithful : (Etale.forget X).FullyFaithful :=
+def Etale.forgetFullyFaithful : (Etale.forget X).FullyFaithful :=
   MorphismProperty.Comma.forgetFullyFaithful _ _ _
 
 instance : (Etale.forget X).Full :=

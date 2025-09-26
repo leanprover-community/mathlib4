@@ -19,13 +19,15 @@ variable (α : Type*)
 instance (priority := 100) Semiring.toGrindSemiring [s : Semiring α] :
     Grind.Semiring α :=
   { s with
+    nsmul := ⟨s.nsmul⟩
+    npow := ⟨fun a n => a^n⟩
     ofNat | 0 | 1 | n + 2 => inferInstance
     natCast := inferInstance
     add_zero := by simp [add_zero]
     mul_one := by simp [mul_one]
     zero_mul := by simp [zero_mul]
-    pow_zero := by simp
-    pow_succ := by simp [pow_succ]
+    pow_zero a := by simp
+    pow_succ a n := by simp [pow_succ]
     ofNat_eq_natCast
     | 0 => Nat.cast_zero.symm
     | 1 => Nat.cast_one.symm
@@ -38,7 +40,8 @@ instance (priority := 100) Semiring.toGrindSemiring [s : Semiring α] :
       rfl
     | n + 2 => by
       change Nat.cast (n + 2 + 1) = Nat.cast (n + 2) + 1
-      rw [← AddMonoidWithOne.natCast_succ] }
+      rw [← AddMonoidWithOne.natCast_succ]
+    nsmul_eq_natCast_mul n a := nsmul_eq_mul n a }
 
 instance (priority := 100) CommSemiring.toGrindCommSemiring [s : CommSemiring α] :
     Grind.CommSemiring α :=
@@ -48,14 +51,19 @@ instance (priority := 100) CommSemiring.toGrindCommSemiring [s : CommSemiring α
 instance (priority := 100) Ring.toGrindRing [s : Ring α] :
     Grind.Ring α :=
   { s, Semiring.toGrindSemiring α with
+    nsmul := ⟨s.nsmul⟩
+    npow := ⟨fun a n => a^n⟩
+    zsmul := ⟨s.zsmul⟩
     natCast := inferInstance
     intCast := inferInstance
+    neg_zsmul i a := neg_zsmul a i
     neg_add_cancel := by simp [neg_add_cancel]
     intCast_ofNat
     | 0 => Int.cast_zero
     | 1 => Int.cast_one
     | _ + 2 => Int.cast_ofNat _
-    intCast_neg := Int.cast_neg }
+    intCast_neg := Int.cast_neg
+    zsmul_natCast_eq_nsmul n a := natCast_zsmul a n }
 
 instance (priority := 100) CommRing.toGrindCommRing [s : CommRing α] :
     Grind.CommRing α :=
@@ -76,12 +84,13 @@ attribute [local instance] Grind.Semiring.natCast Grind.Ring.intCast in
 -- will give a result defeq to the original `CommRing α`.
 example (s : Grind.CommRing α) : CommRing α :=
   { s with
-    zero_add := Grind.Semiring.zero_add
+    zero_add := Grind.AddCommMonoid.zero_add
     right_distrib := Grind.Semiring.right_distrib
     mul_zero := Grind.Semiring.mul_zero
     one_mul := Grind.Semiring.one_mul
     nsmul := nsmulRec
     zsmul := zsmulRec
+    npow := npowRec
     natCast := Nat.cast
     natCast_zero :=  Grind.Semiring.natCast_zero
     natCast_succ n := Grind.Semiring.natCast_succ n

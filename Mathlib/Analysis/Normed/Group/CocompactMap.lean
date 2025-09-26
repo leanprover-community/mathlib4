@@ -35,7 +35,7 @@ theorem CocompactMapClass.norm_le [ProperSpace F] [FunLike 𝓕 E F] [CocompactM
   rcases closedBall_compl_subset_of_mem_cocompact h 0 with ⟨r, hr⟩
   use r
   intro x hx
-  suffices x ∈ f⁻¹' (Metric.closedBall 0 ε)ᶜ by aesop
+  suffices x ∈ f⁻¹' (Metric.closedBall 0 ε)ᶜ by simp_all
   apply hr
   simp [hx]
 

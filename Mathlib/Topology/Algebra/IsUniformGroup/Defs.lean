@@ -3,7 +3,7 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Topology.UniformSpace.Basic
+import Mathlib.Topology.UniformSpace.DiscreteUniformity
 import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
@@ -20,7 +20,7 @@ group naturally induces a uniform structure.
 ## Main results
 
 * `IsTopologicalAddGroup.toUniformSpace` and `comm_topologicalAddGroup_is_uniform` can be used
-  to construct a canonical uniformity for a topological add group.
+  to construct a canonical uniformity for a topological additive group.
 
 See `Mathlib/Topology/Algebra/IsUniformGroup/Basic.lean` for further results.
 -/
@@ -187,6 +187,11 @@ theorem uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (
       _ ≤ (𝓤 α).map fun x : α × α => (x.1 * a, x.2 * a) :=
         Filter.map_mono (uniformContinuous_id.mul uniformContinuous_const)
       )
+
+/-- The discrete uniformity makes a group a `IsUniformGroup. -/
+@[to_additive /-- The discrete uniformity makes an additive group a `IsUniformAddGroup`. -/]
+instance [UniformSpace β] [Group β] [DiscreteUniformity β] : IsUniformGroup β where
+  uniformContinuous_div := DiscreteUniformity.uniformContinuous (β × β) fun p ↦ p.1 / p.2
 
 namespace MulOpposite
 
@@ -356,9 +361,9 @@ theorem uniformContinuous_of_tendsto_one {hom : Type*} [UniformSpace β] [Group 
 /-- A group homomorphism (a bundled morphism of a type that implements `MonoidHomClass`) between
 two uniform groups is uniformly continuous provided that it is continuous at one. See also
 `continuous_of_continuousAt_one`. -/
-@[to_additive "An additive group homomorphism (a bundled morphism of a type that implements
+@[to_additive /-- An additive group homomorphism (a bundled morphism of a type that implements
 `AddMonoidHomClass`) between two uniform additive groups is uniformly continuous provided that it
-is continuous at zero. See also `continuous_of_continuousAt_zero`."]
+is continuous at zero. See also `continuous_of_continuousAt_zero`. -/]
 theorem uniformContinuous_of_continuousAt_one {hom : Type*} [UniformSpace β] [Group β]
     [IsUniformGroup β] [FunLike hom α β] [MonoidHomClass hom α β]
     (f : hom) (hf : ContinuousAt f 1) :
@@ -372,8 +377,8 @@ theorem MonoidHom.uniformContinuous_of_continuousAt_one [UniformSpace β] [Group
 
 /-- A homomorphism from a uniform group to a discrete uniform group is continuous if and only if
 its kernel is open. -/
-@[to_additive "A homomorphism from a uniform additive group to a discrete uniform additive group is
-continuous if and only if its kernel is open."]
+@[to_additive /-- A homomorphism from a uniform additive group to a discrete uniform additive group
+is continuous if and only if its kernel is open. -/]
 theorem IsUniformGroup.uniformContinuous_iff_isOpen_ker {hom : Type*} [UniformSpace β]
     [DiscreteTopology β] [Group β] [IsUniformGroup β] [FunLike hom α β] [MonoidHomClass hom α β]
     {f : hom} :
@@ -383,18 +388,6 @@ theorem IsUniformGroup.uniformContinuous_iff_isOpen_ker {hom : Type*} [UniformSp
   · apply uniformContinuous_of_continuousAt_one
     rw [ContinuousAt, nhds_discrete β, map_one, tendsto_pure]
     exact hf.mem_nhds (map_one f)
-
-@[deprecated (since := "2024-11-18")] alias UniformAddGroup.uniformContinuous_iff_open_ker :=
-  IsUniformAddGroup.uniformContinuous_iff_isOpen_ker
-@[to_additive existing UniformAddGroup.uniformContinuous_iff_open_ker,
-deprecated (since := "2024-11-18")] alias UniformGroup.uniformContinuous_iff_open_ker :=
-  IsUniformGroup.uniformContinuous_iff_isOpen_ker
-@[deprecated (since := "2025-03-30")] alias UniformAddGroup.uniformContinuous_iff_isOpen_ker :=
-  IsUniformAddGroup.uniformContinuous_iff_isOpen_ker
-@[to_additive existing UniformAddGroup.uniformContinuous_iff_isOpen_ker,
-deprecated (since := "2025-03-30")] alias UniformGroup.uniformContinuous_iff_isOpen_ker :=
-  IsUniformGroup.uniformContinuous_iff_isOpen_ker
-
 
 @[to_additive]
 theorem uniformContinuous_monoidHom_of_continuous {hom : Type*} [UniformSpace β] [Group β]
@@ -418,13 +411,13 @@ Warning: in general the right and left uniformities do not coincide and so one d
 `IsUniformGroup` structure. Two important special cases where they _do_ coincide are for
 commutative groups (see `isUniformGroup_of_commGroup`) and for compact groups (see
 `topologicalGroup_is_uniform_of_compactSpace`). -/
-@[to_additive "The right uniformity on a topological additive group (as opposed to the left
+@[to_additive /-- The right uniformity on a topological additive group (as opposed to the left
 uniformity).
 
 Warning: in general the right and left uniformities do not coincide and so one does not obtain a
 `IsUniformAddGroup` structure. Two important special cases where they _do_ coincide are for
 commutative additive groups (see `isUniformAddGroup_of_addCommGroup`) and for compact
-additive groups (see `topologicalAddGroup_is_uniform_of_compactSpace`)."]
+additive groups (see `topologicalAddGroup_is_uniform_of_compactSpace`). -/]
 def IsTopologicalGroup.toUniformSpace : UniformSpace G where
   uniformity := comap (fun p : G × G => p.2 / p.1) (𝓝 1)
   symm :=
@@ -468,9 +461,6 @@ theorem isUniformGroup_of_commGroup : IsUniformGroup G := by
     div_div_div_comm _ (Prod.snd (Prod.snd _)), ← nhds_prod_eq]
   exact (continuous_div'.tendsto' 1 1 (div_one 1)).comp tendsto_comap
 
-@[deprecated (since := "2025-02-28")]
-alias comm_topologicalAddGroup_is_uniform := isUniformAddGroup_of_addCommGroup
-@[to_additive existing, deprecated (since := "2025-02-28")]
 alias comm_topologicalGroup_is_uniform := isUniformGroup_of_commGroup
 @[deprecated (since := "2025-03-30")]
 alias uniformAddGroup_of_addCommGroup := isUniformAddGroup_of_addCommGroup

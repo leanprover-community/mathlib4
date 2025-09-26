@@ -119,7 +119,7 @@ theorem proj_prop_eq_self (hh : ∀ i x, x ∈ C → x i ≠ false → J i) : π
 
 theorem proj_comp_of_subset (h : ∀ i, J i → K i) : (Proj J ∘ Proj K) =
     (Proj J : (I → Bool) → (I → Bool)) := by
-  ext x i; dsimp [Proj]; aesop
+  ext x i; dsimp [Proj]; simp_all
 
 theorem proj_eq_of_subset (h : ∀ i, J i → K i) : π (π C K) J = π C J := by
   ext x
@@ -156,13 +156,13 @@ theorem projRestricts_eq_comp (hJK : ∀ i, J i → K i) (hKL : ∀ i, K i → L
     ProjRestricts C hJK ∘ ProjRestricts C hKL = ProjRestricts C (fun i ↦ hKL i ∘ hJK i) := by
   ext x i
   simp only [π, Proj, Function.comp_apply, ProjRestricts_coe]
-  aesop
+  simp_all
 
 theorem projRestricts_comp_projRestrict (h : ∀ i, J i → K i) :
     ProjRestricts C h ∘ ProjRestrict C K = ProjRestrict C J := by
   ext x i
   simp only [π, Proj, Function.comp_apply, ProjRestricts_coe, ProjRestrict_coe]
-  aesop
+  simp_all
 
 variable (J)
 
@@ -295,16 +295,16 @@ and `[i₁, i₂, ...] < [j₁, j₂, ...]` if either `i₁ < j₁`, or `i₁ = 
 Terms `m = [i₁, i₂, ..., iᵣ]` of this type will be used to represent products of the form
 `e C i₁ ··· e C iᵣ : LocallyConstant C ℤ` . The function associated to `m` is `m.eval`.
 -/
-def Products (I : Type*) [LinearOrder I] := {l : List I // l.Chain' (· > ·)}
+def Products (I : Type*) [LinearOrder I] := {l : List I // l.IsChain (· > ·)}
 
 namespace Products
 
 instance : LinearOrder (Products I) :=
-  inferInstanceAs (LinearOrder {l : List I // l.Chain' (· > ·)})
+  inferInstanceAs (LinearOrder {l : List I // l.IsChain (· > ·)})
 
 @[simp]
 theorem lt_iff_lex_lt (l m : Products I) : l < m ↔ List.Lex (· < ·) l.val m.val := by
-  cases l; cases m; rw [Subtype.mk_lt_mk]; exact Iff.rfl
+  simp
 
 instance [WellFoundedLT I] : WellFoundedLT (Products I) := by
   have : (· < · : Products I → _ → _) = (fun l m ↦ List.Lex (· < ·) l.val m.val) := by
@@ -326,7 +326,7 @@ def isGood (l : Products I) : Prop :=
 
 theorem rel_head!_of_mem [Inhabited I] {i : I} {l : Products I} (hi : i ∈ l.val) :
     i ≤ l.val.head! :=
-  List.Sorted.le_head! (List.chain'_iff_pairwise.mp l.prop) hi
+  List.Sorted.le_head! (List.isChain_iff_pairwise.mp l.prop) hi
 
 theorem head!_le_of_lt [Inhabited I] {q l : Products I} (h : q < l) (hq : q.val ≠ []) :
     q.val.head! ≤ l.val.head! :=
@@ -509,7 +509,7 @@ theorem Products.prop_of_isGood_of_contained {l : Products I} (o : Ordinal) (h :
     (hsC : contained C o) (i : I) (hi : i ∈ l.val) : ord I i < o := by
   by_contra h'
   apply h
-  suffices eval C l = 0 by simp [this, Submodule.zero_mem]
+  suffices eval C l = 0 by simp [this]
   ext x
   simp only [eval_eq, LocallyConstant.coe_zero, Pi.zero_apply, ite_eq_right_iff, one_ne_zero]
   contrapose! h'
@@ -563,7 +563,7 @@ theorem injective_πs (o : Ordinal) : Function.Injective (πs C o) :=
     (Set.surjective_mapsTo_image_restrict _ _)
 
 /-- The `ℤ`-linear map induced by precomposition of the projection
-    `π C (ord I · < o₂) → π C (ord I · < o₁)` for `o₁ ≤ o₂`. -/
+`π C (ord I · < o₂) → π C (ord I · < o₁)` for `o₁ ≤ o₂`. -/
 @[simps!]
 noncomputable
 def πs' {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) :
@@ -583,7 +583,8 @@ namespace Products
 
 theorem lt_ord_of_lt {l m : Products I} {o : Ordinal} (h₁ : m < l)
     (h₂ : ∀ i ∈ l.val, ord I i < o) : ∀ i ∈ m.val, ord I i < o :=
-  List.Sorted.lt_ord_of_lt (List.chain'_iff_pairwise.mp l.2) (List.chain'_iff_pairwise.mp m.2) h₁ h₂
+  List.Sorted.lt_ord_of_lt (List.isChain_iff_pairwise.mp l.2)
+    (List.isChain_iff_pairwise.mp m.2) h₁ h₂
 
 theorem eval_πs {l : Products I} {o : Ordinal} (hlt : ∀ i ∈ l.val, ord I i < o) :
     πs C o (l.eval (π C (ord I · < o))) = l.eval C := by
@@ -626,7 +627,7 @@ theorem isGood_mono {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
     (hl : l.isGood (π C (ord I · < o₁))) : l.isGood (π C (ord I · < o₂)) := by
   intro hl'
   apply hl
-  rwa [eval_πs_image' C h (prop_of_isGood  C _ hl), ← eval_πs' C h (prop_of_isGood  C _ hl),
+  rwa [eval_πs_image' C h (prop_of_isGood C _ hl), ← eval_πs' C h (prop_of_isGood C _ hl),
     Submodule.apply_mem_span_image_iff_mem_span (injective_πs' C h)] at hl'
 
 end Products

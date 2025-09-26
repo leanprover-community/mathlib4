@@ -308,7 +308,9 @@ theorem ofInt'_neg : ∀ n : ℤ, ofInt' (-n) = -ofInt' n
   | (n + 1 : ℕ) => show Num.toZNumNeg _ = -Num.toZNum _ by rw [Num.zneg_toZNum]
 
 theorem of_to_int' : ∀ n : ZNum, ZNum.ofInt' n = n
-  | 0 => by dsimp [ofInt', cast_zero]; erw [Num.ofNat'_zero, Num.toZNum]
+  | 0 => by
+    dsimp [ofInt', cast_zero]
+    simp only [Num.ofNat'_zero, Num.toZNum]
   | pos a => by rw [cast_pos, ← PosNum.cast_to_nat, ← Num.ofInt'_toZNum, PosNum.of_to_nat]; rfl
   | neg a => by
     rw [cast_neg, ofInt'_neg, ← PosNum.cast_to_nat, ← Num.ofInt'_toZNum, PosNum.of_to_nat]; rfl
@@ -543,17 +545,19 @@ theorem divMod_to_nat_aux {n d : PosNum} {q r : Num} (h₁ : (r : ℕ) + d * ((q
 theorem divMod_to_nat (d n : PosNum) :
     (n / d : ℕ) = (divMod d n).1 ∧ (n % d : ℕ) = (divMod d n).2 := by
   rw [Nat.div_mod_unique (PosNum.cast_pos _)]
-  induction' n with n IH n IH
-  · exact
-      divMod_to_nat_aux (by simp) (Nat.mul_le_mul_left 2 (PosNum.cast_pos d : (0 : ℕ) < d))
-  · unfold divMod
+  induction n with
+  | one =>
+    exact divMod_to_nat_aux (by simp) (Nat.mul_le_mul_left 2 (PosNum.cast_pos d : (0 : ℕ) < d))
+  | bit1 n IH =>
+    unfold divMod
     -- Porting note: `cases'` didn't rewrite at `this`, so `revert` & `intro` are required.
     revert IH; obtain ⟨q, r⟩ := divMod d n; intro IH
     simp only at IH ⊢
     apply divMod_to_nat_aux <;> simp only [Num.cast_bit1, cast_bit1]
     · rw [← two_mul, ← two_mul, add_right_comm, mul_left_comm, ← mul_add, IH.1]
     · omega
-  · unfold divMod
+  | bit0 n IH =>
+    unfold divMod
     -- Porting note: `cases'` didn't rewrite at `this`, so `revert` & `intro` are required.
     revert IH; obtain ⟨q, r⟩ := divMod d n; intro IH
     simp only at IH ⊢

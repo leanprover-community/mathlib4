@@ -169,7 +169,7 @@ See https://ncatlab.org/nlab/show/adjoint+triangle+theorem
 -/
 lemma isLeftAdjoint_triangle_lift {U : A ⥤ B} {F : B ⥤ A} (L : C ⥤ B) (adj₁ : F ⊣ U)
     [∀ X, RegularMono (adj₁.unit.app X)] [HasCoreflexiveEqualizers C]
-    [(L ⋙ F).IsLeftAdjoint ] : L.IsLeftAdjoint where
+    [(L ⋙ F).IsLeftAdjoint] : L.IsLeftAdjoint where
   exists_rightAdjoint :=
     ⟨LiftRightAdjoint.constructRightAdjoint L _ adj₁ (Adjunction.ofIsLeftAdjoint _),
       ⟨Adjunction.adjunctionOfEquivRight _ _⟩⟩

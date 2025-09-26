@@ -83,7 +83,7 @@ theorem parallelepiped_comp_equiv (v : ι → E) (e : ι' ≃ ι) :
     · simpa only [Equiv.symm_apply_apply] using h.1 (e i)
     · simpa only [Equiv.symm_apply_apply] using h.2 (e i)
   rw [this, ← image_comp]
-  congr 1 with x
+  ext x
   have := fun z : ι' → ℝ => e.symm.sum_comp fun i => z i • v (e i)
   simp_rw [Equiv.apply_symm_apply] at this
   simp_rw [Function.comp_apply, mem_image, mem_Icc, K, Equiv.piCongrLeft'_apply, this]
@@ -176,8 +176,10 @@ section NormedSpace
 
 variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
 
+namespace Module.Basis
+
 /-- The parallelepiped spanned by a basis, as a compact set with nonempty interior. -/
-def Basis.parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
+def parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
   carrier := _root_.parallelepiped b
   isCompact' := IsCompact.image isCompact_Icc
       (continuous_finset_sum Finset.univ fun (i : ι) (_H : i ∈ Finset.univ) =>
@@ -194,16 +196,16 @@ def Basis.parallelepiped (b : Basis ι ℝ E) : PositiveCompacts E where
     rwa [← Homeomorph.image_interior, image_nonempty]
 
 @[simp]
-theorem Basis.coe_parallelepiped (b : Basis ι ℝ E) :
+theorem coe_parallelepiped (b : Basis ι ℝ E) :
     (b.parallelepiped : Set E) = _root_.parallelepiped b := rfl
 
 @[simp]
-theorem Basis.parallelepiped_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
+theorem parallelepiped_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
     (b.reindex e).parallelepiped = b.parallelepiped :=
   PositiveCompacts.ext <|
     (congr_arg _root_.parallelepiped (b.coe_reindex e)).trans (parallelepiped_comp_equiv b e.symm)
 
-theorem Basis.parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
+theorem parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
     (b.map e).parallelepiped = b.parallelepiped.map e
     (haveI := FiniteDimensional.of_fintype_basis b
     LinearMap.continuous_of_finiteDimensional e.toLinearMap)
@@ -211,7 +213,7 @@ theorem Basis.parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
     LinearMap.isOpenMap_of_finiteDimensional _ e.surjective) :=
   PositiveCompacts.ext (image_parallelepiped e.toLinearMap _).symm
 
-theorem Basis.prod_parallelepiped (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
+theorem prod_parallelepiped (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
     (v.prod w).parallelepiped = v.parallelepiped.prod w.parallelepiped := by
   ext x
   simp only [Basis.coe_parallelepiped, TopologicalSpace.PositiveCompacts.coe_prod, Set.mem_prod,
@@ -245,10 +247,10 @@ variable [MeasurableSpace E] [BorelSpace E]
 
 /-- The Lebesgue measure associated to a basis, giving measure `1` to the parallelepiped spanned
 by the basis. -/
-irreducible_def Basis.addHaar (b : Basis ι ℝ E) : Measure E :=
+irreducible_def addHaar (b : Basis ι ℝ E) : Measure E :=
   Measure.addHaarMeasure b.parallelepiped
 
-instance IsAddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : IsAddHaarMeasure b.addHaar := by
+instance _root_.isAddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : IsAddHaarMeasure b.addHaar := by
   rw [Basis.addHaar]; exact Measure.isAddHaarMeasure_addHaarMeasure _
 
 instance (b : Basis ι ℝ E) : SigmaFinite b.addHaar := by
@@ -257,33 +259,35 @@ instance (b : Basis ι ℝ E) : SigmaFinite b.addHaar := by
 
 /-- Let `μ` be a σ-finite left invariant measure on `E`. Then `μ` is equal to the Haar measure
 defined by `b` iff the parallelepiped defined by `b` has measure `1` for `μ`. -/
-theorem Basis.addHaar_eq_iff [SecondCountableTopology E] (b : Basis ι ℝ E) (μ : Measure E)
+theorem addHaar_eq_iff [SecondCountableTopology E] (b : Basis ι ℝ E) (μ : Measure E)
     [SigmaFinite μ] [IsAddLeftInvariant μ] :
     b.addHaar = μ ↔ μ b.parallelepiped = 1 := by
   rw [Basis.addHaar_def]
   exact addHaarMeasure_eq_iff b.parallelepiped μ
 
 @[simp]
-theorem Basis.addHaar_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
+theorem addHaar_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
     (b.reindex e).addHaar = b.addHaar := by
   rw [Basis.addHaar, b.parallelepiped_reindex e, ← Basis.addHaar]
 
-theorem Basis.addHaar_self (b : Basis ι ℝ E) : b.addHaar (_root_.parallelepiped b) = 1 := by
+theorem addHaar_self (b : Basis ι ℝ E) : b.addHaar (_root_.parallelepiped b) = 1 := by
   rw [Basis.addHaar]; exact addHaarMeasure_self
 
 variable [MeasurableSpace F] [BorelSpace F] [SecondCountableTopologyEither E F]
 
-theorem Basis.prod_addHaar (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
+theorem prod_addHaar (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
     (v.prod w).addHaar = v.addHaar.prod w.addHaar := by
   have : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis v
   have : FiniteDimensional ℝ F := FiniteDimensional.of_fintype_basis w
   simp [(v.prod w).addHaar_eq_iff, Basis.prod_parallelepiped, Basis.addHaar_self]
 
+end Module.Basis
+
 end NormedSpace
 
 end Fintype
 
-/-- A finite dimensional inner product space has a canonical measure, the Lebesgue measure giving
+/-- A finite-dimensional inner product space has a canonical measure, the Lebesgue measure giving
 volume `1` to the parallelepiped spanned by any orthonormal basis. We define the measure using
 some arbitrary choice of orthonormal basis. The fact that it works with any orthonormal basis
 is proved in `orthonormalBasis.volume_parallelepiped`.
@@ -304,7 +308,7 @@ instance (priority := 100) measureSpaceOfInnerProductSpace [NormedAddCommGroup E
 
 instance [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
     [MeasurableSpace E] [BorelSpace E] : IsAddHaarMeasure (volume : Measure E) :=
-  IsAddHaarMeasure_basis_addHaar _
+  isAddHaarMeasure_basis_addHaar _
 
 /- This instance should not be necessary, but Lean has difficulties to find it in product
 situations if we do not declare it explicitly. -/

@@ -93,14 +93,14 @@ def SkyscraperPresheafFunctor.map' {a b : C} (f : a ⟶ b) :
 theorem SkyscraperPresheafFunctor.map'_id {a : C} :
     SkyscraperPresheafFunctor.map' p₀ (𝟙 a) = 𝟙 _ := by
   ext U
-  simp only [SkyscraperPresheafFunctor.map'_app]; split_ifs <;> aesop_cat
+  simp only [SkyscraperPresheafFunctor.map'_app]; split_ifs <;> cat_disch
 
 theorem SkyscraperPresheafFunctor.map'_comp {a b c : C} (f : a ⟶ b) (g : b ⟶ c) :
     SkyscraperPresheafFunctor.map' p₀ (f ≫ g) =
       SkyscraperPresheafFunctor.map' p₀ f ≫ SkyscraperPresheafFunctor.map' p₀ g := by
   ext U
   simp only [SkyscraperPresheafFunctor.map'_app]
-  split_ifs with h <;> aesop_cat
+  split_ifs with h <;> cat_disch
 
 /-- Taking skyscraper presheaf at a point is functorial: `c ↦ skyscraper p₀ c` defines a functor by
 sending every `f : a ⟶ b` to the natural transformation `α` defined as: `α(U) = f : a ⟶ b` if
@@ -223,7 +223,7 @@ theorem skyscraperPresheaf_isSheaf : (skyscraperPresheaf p₀ A).IsSheaf := by
           · exact terminalIsTerminal
           · #adaptation_note /-- 2024-03-24
             Previously the universe annotation was not needed here. -/
-            exact Set.notMem_empty PUnit.unit.{u+1})))
+            exact Set.notMem_empty PUnit.unit.{u + 1})))
 
 /--
 The skyscraper presheaf supported at `p₀` with value `A` is the sheaf that assigns `A` to all opens
@@ -360,7 +360,7 @@ def skyscraperPresheafStalkAdjunction [HasColimits C] :
     · simp
       rfl
 
-instance [HasColimits C] : (skyscraperPresheafFunctor p₀ : C ⥤ Presheaf C X).IsRightAdjoint  :=
+instance [HasColimits C] : (skyscraperPresheafFunctor p₀ : C ⥤ Presheaf C X).IsRightAdjoint :=
   (skyscraperPresheafStalkAdjunction _).isRightAdjoint
 
 instance [HasColimits C] : (Presheaf.stalkFunctor C p₀).IsLeftAdjoint :=
@@ -383,7 +383,7 @@ def stalkSkyscraperSheafAdjunction [HasColimits C] :
   right_triangle_components _ :=
     Sheaf.Hom.ext ((skyscraperPresheafStalkAdjunction p₀).right_triangle_components _)
 
-instance [HasColimits C] : (skyscraperSheafFunctor p₀ : C ⥤ Sheaf C X).IsRightAdjoint  :=
+instance [HasColimits C] : (skyscraperSheafFunctor p₀ : C ⥤ Sheaf C X).IsRightAdjoint :=
   (stalkSkyscraperSheafAdjunction _).isRightAdjoint
 
 end

@@ -266,7 +266,6 @@ theorem exists_model_card_eq (h : ∃ M : ModelType.{u, v, max u v} T, Infinite 
     ∃ N : ModelType.{u, v, w} T, #N = κ := by
   cases h with
   | intro M MI =>
-    haveI := MI
     obtain ⟨N, hN, rfl⟩ := exists_elementarilyEquivalent_card_eq L M κ h1 h2
     haveI : Nonempty N := hN.nonempty
     exact ⟨hN.theory_model.bundled, rfl⟩

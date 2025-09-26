@@ -344,6 +344,7 @@ def invEmbedding (j : Fin n) : Fin (c.blocksFun (c.index j)) :=
 theorem coe_invEmbedding (j : Fin n) : (c.invEmbedding j : ℕ) = j - c.sizeUpTo (c.index j) :=
   rfl
 
+@[simp]
 theorem embedding_comp_inv (j : Fin n) : c.embedding (c.index j) (c.invEmbedding j) = j := by
   rw [Fin.ext_iff]
   apply add_tsub_cancel_of_le (c.sizeUpTo_index_le j)
@@ -398,6 +399,7 @@ theorem mem_range_embedding_iff' {j : Fin n} {i : Fin c.length} :
     rw [h]
     exact c.mem_range_embedding j
 
+@[simp]
 theorem index_embedding (i : Fin c.length) (j : Fin (c.blocksFun i)) :
     c.index (c.embedding i j) = i := by
   symm
@@ -410,7 +412,7 @@ theorem invEmbedding_comp (i : Fin c.length) (j : Fin (c.blocksFun i)) :
 
 /-- Equivalence between the disjoint union of the blocks (each of them seen as
 `Fin (c.blocksFun i)`) with `Fin n`. -/
-def blocksFinEquiv : (Σi : Fin c.length, Fin (c.blocksFun i)) ≃ Fin n where
+def blocksFinEquiv : (Σ i : Fin c.length, Fin (c.blocksFun i)) ≃ Fin n where
   toFun x := c.embedding x.1 x.2
   invFun j := ⟨c.index j, c.invEmbedding j⟩
   left_inv x := by
@@ -583,7 +585,7 @@ protected def cast (c : Composition m) (hmn : m = n) : Composition n where
 @[simp]
 theorem cast_rfl (c : Composition n) : c.cast rfl = c := rfl
 
-theorem cast_heq (c : Composition m) (hmn : m = n) : HEq (c.cast hmn) c := by subst m; rfl
+theorem cast_heq (c : Composition m) (hmn : m = n) : c.cast hmn ≍ c := by subst m; rfl
 
 theorem cast_eq_cast (c : Composition m) (hmn : m = n) :
     c.cast hmn = cast (hmn ▸ rfl) c := by
@@ -722,13 +724,7 @@ theorem map_length_splitWrtCompositionAux {ns : List ℕ} :
     ∀ {l : List α}, ns.sum ≤ l.length → map length (l.splitWrtCompositionAux ns) = ns := by
   induction ns with
   | nil => simp [splitWrtCompositionAux]
-  | cons n ns IH =>
-    intro l h; simp only [sum_cons] at h
-    have := le_trans (Nat.le_add_right _ _) h
-    simp only [splitWrtCompositionAux_cons]; dsimp
-    rw [length_take, IH] <;> simp [length_drop]
-    · assumption
-    · exact le_tsub_of_add_le_left h
+  | cons n ns IH => grind [splitWrtCompositionAux_cons]
 
 /-- When one splits a list along a composition `c`, the lengths of the sublists thus created are
 given by the block sizes in `c`. -/
@@ -756,8 +752,7 @@ theorem getElem_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ}
   | nil => cases hi
   | cons n ns IH =>
     rcases i with - | i
-    · rw [Nat.add_zero, List.take_zero, sum_nil]
-      simp
+    · simp
     · simp only [splitWrtCompositionAux, getElem_cons_succ, IH, take,
           sum_cons, splitAt_eq, drop_take, drop_drop]
       rw [Nat.add_sub_add_left]
@@ -848,10 +843,9 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       convert add_lt_add_right i.is_lt 1
       apply (Nat.succ_pred_eq_of_pos _).symm
       exact Nat.lt_of_lt_pred (Fin.pos i)
-    simp only [add_comm, Fin.ext_iff, Fin.val_zero, Fin.val_last, exists_prop, Set.toFinset_setOf,
-      Finset.mem_univ, Finset.mem_filter, add_eq_zero, and_false,
-      add_left_inj, false_or, true_and, reduceCtorEq]
-    simp_rw [this, false_or, ← Fin.ext_iff, exists_eq_right']
+    simp_rw [add_comm, Fin.ext_iff, Fin.val_zero, Fin.val_last, exists_prop, Set.toFinset_setOf,
+      Finset.mem_filter_univ, reduceCtorEq, this, false_or, add_left_inj, ← Fin.ext_iff,
+      exists_eq_right']
 
 instance compositionAsSetFintype (n : ℕ) : Fintype (CompositionAsSet n) :=
   Fintype.ofEquiv _ (compositionAsSetEquiv n).symm
@@ -1009,17 +1003,9 @@ theorem CompositionAsSet.toComposition_blocks (c : CompositionAsSet n) :
 @[simp]
 theorem CompositionAsSet.toComposition_boundaries (c : CompositionAsSet n) :
     c.toComposition.boundaries = c.boundaries := by
-  ext j
-  simp only [c.mem_boundaries_iff_exists_blocks_sum_take_eq, Composition.boundaries, Finset.mem_map]
-  constructor
-  · rintro ⟨i, _, hi⟩
-    refine ⟨i.1, ?_, ?_⟩
-    · simpa [c.card_boundaries_eq_succ_length] using i.2
-    · simp [Composition.boundary, Composition.sizeUpTo, ← hi]
-  · rintro ⟨i, i_lt, hi⟩
-    refine ⟨Fin.ofNat _ i, by simp, ?_⟩
-    rw [c.card_boundaries_eq_succ_length] at i_lt
-    simp [Composition.boundary, Nat.mod_eq_of_lt i_lt, Composition.sizeUpTo, hi]
+  ext ⟨j, hj⟩
+  simp [c.mem_boundaries_iff_exists_blocks_sum_take_eq, Composition.boundaries,
+    c.card_boundaries_eq_succ_length, Composition.boundary, Composition.sizeUpTo, Fin.exists_iff]
 
 @[simp]
 theorem Composition.toCompositionAsSet_boundaries (c : Composition n) :

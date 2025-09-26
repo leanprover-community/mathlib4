@@ -134,7 +134,7 @@ lemma llr_tilted_left [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν)
     (llr (μ.tilted f) ν) =ᵐ[μ] fun x ↦ f x - log (∫ z, exp (f z) ∂μ) + llr μ ν x := by
   cases eq_zero_or_neZero μ with
   | inl hμ =>
-    simp only [hμ, ae_zero, Filter.EventuallyEq]; exact Filter.eventually_bot
+    simp only [hμ, ae_zero, Filter.EventuallyEq, Filter.eventually_bot]
   | inr h0 =>
     filter_upwards [hμν.ae_le (toReal_rnDeriv_tilted_left μ hfν), Measure.rnDeriv_pos hμν,
       hμν.ae_le (Measure.rnDeriv_lt_top μ ν)] with x hx hx_pos hx_lt_top
@@ -174,7 +174,7 @@ lemma llr_tilted_right [SigmaFinite μ] [SigmaFinite ν]
   cases eq_zero_or_neZero ν with
   | inl h =>
     have hμ : μ = 0 := by ext s _; exact hμν (by simp [h])
-    simp only [hμ, ae_zero, Filter.EventuallyEq]; exact Filter.eventually_bot
+    simp only [hμ, ae_zero, Filter.EventuallyEq, Filter.eventually_bot]
   | inr h0 =>
     filter_upwards [hμν.ae_le (toReal_rnDeriv_tilted_right μ ν hf), Measure.rnDeriv_pos hμν,
       hμν.ae_le (Measure.rnDeriv_lt_top μ ν)] with x hx hx_pos hx_lt_top

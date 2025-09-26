@@ -179,14 +179,14 @@ instance [CompactSpace X] [QuasiSeparatedSpace Y] (f g : X ⟶ Y) :
 theorem QuasiSeparated.of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated (f ≫ g)] :
     QuasiSeparated f := by
   let 𝒰 := (Z.affineCover.pullbackCover g).bind fun x => Scheme.affineCover _
-  have (i : _) : IsAffine (𝒰.obj i) := by dsimp [𝒰]; infer_instance
+  have (i : _) : IsAffine (𝒰.X i) := by dsimp [𝒰]; infer_instance
   apply HasAffineProperty.of_openCover
     ((Z.affineCover.pullbackCover g).bind fun x => Scheme.affineCover _)
   rintro ⟨i, j⟩; dsimp at i j
   refine @quasiSeparatedSpace_of_quasiSeparated _ _ ?_
-    (HasAffineProperty.of_isPullback (.of_hasPullback _ (Z.affineCover.map i)) ‹_›) ?_
+    (HasAffineProperty.of_isPullback (.of_hasPullback _ (Z.affineCover.f i)) ‹_›) ?_
   · exact pullback.map _ _ _ _ (𝟙 _) _ _ (by simp) (Category.comp_id _) ≫
-      (pullbackRightPullbackFstIso g (Z.affineCover.map i) f).hom
+      (pullbackRightPullbackFstIso g (Z.affineCover.f i) f).hom
   · exact inferInstance
 
 theorem exists_eq_pow_mul_of_isAffineOpen (X : Scheme) (U : X.Opens) (hU : IsAffineOpen U)
@@ -235,7 +235,7 @@ theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme
       simp only [TopCat.Presheaf.restrictOpenCommRingCat_apply, Scheme.basicOpen_res]
       exact inf_le_inf h₂ le_rfl
   use n
-  intros m hm
+  intro m hm
   rw [← tsub_add_cancel_of_le hm]
   simp only [TopCat.Presheaf.restrictOpenCommRingCat_apply,
     pow_add, map_pow, map_mul, mul_assoc, ← Functor.map_comp, ← op_comp, homOfLE_comp,
@@ -277,15 +277,11 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     haveI := hs'.to_subtype
     cases nonempty_fintype s
     replace hs : S ⊓ U.1 = iSup fun i : s => (i : X.Opens) := by ext1; simpa using hs
-    have hs₁ : ∀ i : s, i.1.1 ≤ S := by
-      #adaptation_note /-- 2025-06-21 lean4#8914 This `change` does nothing. -/
-      intro i; -- change (i : X.Opens) ≤ S
+    have hs₁ (i : s) : i.1.1 ≤ S := by
       refine le_trans ?_ (inf_le_left (b := U.1))
       rw [hs]
       exact le_iSup (fun (i : s) => (i : X.Opens)) i
-    have hs₂ : ∀ i : s, i.1.1 ≤ U.1 := by
-      #adaptation_note /-- 2025-06-21 lean4#8914 This `change` does nothing. -/
-      intro i; -- change (i : X.Opens) ≤ U
+    have hs₂ (i : s) : i.1.1 ≤ U.1 := by
       refine le_trans ?_ (inf_le_right (a := S))
       rw [hs]
       exact le_iSup (fun (i : s) => (i : X.Opens)) i

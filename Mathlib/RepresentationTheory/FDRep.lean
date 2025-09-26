@@ -4,13 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.FGModuleCat.Limits
+import Mathlib.Algebra.Category.FGModuleCat.Colimits
 import Mathlib.CategoryTheory.Monoidal.Rigid.Braided
 import Mathlib.CategoryTheory.Preadditive.Schur
 import Mathlib.RepresentationTheory.Basic
 import Mathlib.RepresentationTheory.Rep
 
 /-!
-# `FDRep k G` is the category of finite dimensional `k`-linear representations of `G`.
+# `FDRep k G` is the category of finite-dimensional `k`-linear representations of `G`.
 
 If `V : FDRep k G`, there is a coercion that allows you to treat `V` as a type,
 and this type comes equipped with `Module k V` and `FiniteDimensional k V` instances.
@@ -148,6 +149,12 @@ instance : HasForget₂ (FDRep R G) (Rep R G) where
 theorem forget₂_ρ (V : FDRep R G) : ((forget₂ (FDRep R G) (Rep R G)).obj V).ρ = V.ρ := by
   ext g v; rfl
 
+instance [IsNoetherianRing R] : PreservesFiniteLimits (forget₂ (FDRep R G) (Rep R G)) :=
+  inferInstanceAs <| PreservesFiniteLimits <| (forget₂ (FGModuleCat R) (ModuleCat R)).mapAction G
+
+instance : PreservesFiniteColimits (forget₂ (FDRep R G) (Rep R G)) :=
+  inferInstanceAs <| PreservesFiniteColimits <| (forget₂ (FGModuleCat R) (ModuleCat R)).mapAction G
+
 -- Verify that the monoidal structure is available.
 example : MonoidalCategory (FDRep R G) := by infer_instance
 
@@ -176,6 +183,14 @@ def forget₂HomLinearEquiv (X Y : FDRep R G) :
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun f := ⟨(forget₂ (FGModuleCat R) (ModuleCat R)).map f.hom, f.comm⟩
+
+instance : (forget₂ (FDRep R G) (Rep R G)).Full := by
+  dsimp [forget₂, HasForget₂.forget₂]
+  infer_instance
+
+instance : (forget₂ (FDRep R G) (Rep R G)).Faithful := by
+  dsimp [forget₂, HasForget₂.forget₂]
+  infer_instance
 
 end FDRep
 
@@ -210,10 +225,9 @@ open scoped MonoidalCategory
 /-- Auxiliary definition for `FDRep.dualTensorIsoLinHom`. -/
 noncomputable def dualTensorIsoLinHomAux :
     (FDRep.of ρV.dual ⊗ W).V ≅ (FDRep.of (linHom ρV W.ρ)).V :=
-  -- Porting note: had to make `V` explicit
-  LinearEquiv.toFGModuleCatIso (V := (FDRep.of ρV.dual ⊗ W).V) (dualTensorHomEquiv k V W)
+  LinearEquiv.toFGModuleCatIso (dualTensorHomEquiv k V W)
 
-/-- When `V` and `W` are finite dimensional representations of a group `G`, the isomorphism
+/-- When `V` and `W` are finite-dimensional representations of a group `G`, the isomorphism
 `dualTensorHomEquiv k V W` of vector spaces induces an isomorphism of representations. -/
 noncomputable def dualTensorIsoLinHom : FDRep.of ρV.dual ⊗ W ≅ FDRep.of (linHom ρV W.ρ) := by
   refine Action.mkIso (dualTensorIsoLinHomAux ρV W) (fun g => ?_)

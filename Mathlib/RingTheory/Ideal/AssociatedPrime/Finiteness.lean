@@ -10,9 +10,9 @@ import Mathlib.RingTheory.Spectrum.Prime.Defs
 
 /-!
 
-# Finitely generated module over noetherian ring have finitely many associated primes.
+# Finitely generated module over Noetherian ring have finitely many associated primes.
 
-In this file we proved that any finitely generated module over a noetherian ring have finitely many
+In this file we proved that any finitely generated module over a Noetherian ring have finitely many
 associated primes.
 
 ## Main results
@@ -72,7 +72,7 @@ theorem Submodule.isQuotientEquivQuotientPrime_iff {N₁ N₂ : Submodule A M} :
       simp [← Quotient.mk_smul, SetLike.le_def, submoduleOf]
     · rw [mapQ, ← range_eq_top, range_liftQ, range_comp]
       have := congr($(hx').submoduleOf N₂)
-      rw [submoduleOf_self, submoduleOf_sup_of_le (by aesop) (by aesop),
+      rw [submoduleOf_self, submoduleOf_sup_of_le (by simp_all) (by simp_all),
         submoduleOf_span_singleton_of_mem _ hxN₂] at this
       simpa [← span_singleton_eq_range, LinearMap.range_toSpanSingleton] using this.symm
 
@@ -83,7 +83,7 @@ a chain of submodules `0 = M₀ ≤ M₁ ≤ M₂ ≤ ... ≤ Mₙ = M` of `M`, 
 `Mᵢ₊₁ / Mᵢ` is isomorphic to `A / pᵢ` for some prime ideal `pᵢ` of `A`. -/
 @[stacks 00L0]
 theorem IsNoetherianRing.exists_relSeries_isQuotientEquivQuotientPrime :
-    ∃ s : RelSeries (Submodule.IsQuotientEquivQuotientPrime (A := A) (M := M)),
+    ∃ s : RelSeries {(N₁, N₂) | Submodule.IsQuotientEquivQuotientPrime (A := A) (M := M) N₁ N₂},
       s.head = ⊥ ∧ s.last = ⊤ := by
   refine WellFoundedGT.induction_top ⟨⊥, .singleton _ ⊥, rfl, rfl⟩ ?_
   rintro N hN ⟨s, hs₁, hs₂⟩

@@ -49,7 +49,7 @@ variable (C : Type*) [Category C]
 split as a composition `p = e ≫ i` with `i ≫ e = 𝟙 _` -/
 class IsIdempotentComplete : Prop where
   /-- A category is idempotent complete iff all idempotent endomorphisms `p`
-    split as a composition `p = e ≫ i` with `i ≫ e = 𝟙 _` -/
+  split as a composition `p = e ≫ i` with `i ≫ e = 𝟙 _` -/
   idempotents_split :
     ∀ (X : C) (p : X ⟶ X), p ≫ p = p → ∃ (Y : C) (i : Y ⟶ X) (e : X ⟶ Y), i ≫ e = 𝟙 Y ∧ e ≫ i = p
 
@@ -60,8 +60,7 @@ the equalizer of the identity and this idempotent exists. -/
 theorem isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent :
     IsIdempotentComplete C ↔ ∀ (X : C) (p : X ⟶ X), p ≫ p = p → HasEqualizer (𝟙 X) p := by
   constructor
-  · intro
-    intro X p hp
+  · intro _ X p hp
     rcases IsIdempotentComplete.idempotents_split X p hp with ⟨Y, i, e, ⟨h₁, h₂⟩⟩
     exact
       ⟨Nonempty.intro
@@ -123,11 +122,7 @@ theorem split_imp_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X
     ∃ (Y' : C) (i' : Y' ⟶ X') (e' : X' ⟶ Y'), i' ≫ e' = 𝟙 Y' ∧ e' ≫ i' = p' := by
   rcases h with ⟨Y, i, e, ⟨h₁, h₂⟩⟩
   use Y, i ≫ φ.hom, φ.inv ≫ e
-  constructor
-  · slice_lhs 2 3 => rw [φ.hom_inv_id]
-    rw [id_comp, h₁]
-  · slice_lhs 2 3 => rw [h₂]
-    rw [hpp', ← assoc, φ.inv_hom_id, id_comp]
+  grind
 
 theorem split_iff_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X')
     (hpp' : p ≫ φ.hom = φ.hom ≫ p') :
@@ -138,9 +133,7 @@ theorem split_iff_of_iso {X X' : C} (φ : X ≅ X') (p : X ⟶ X) (p' : X' ⟶ X
   · apply split_imp_of_iso φ.symm p' p
     rw [← comp_id p, ← φ.hom_inv_id]
     slice_rhs 2 3 => rw [hpp']
-    slice_rhs 1 2 => erw [φ.inv_hom_id]
-    simp only [id_comp]
-    rfl
+    simp
 
 theorem Equivalence.isIdempotentComplete {D : Type*} [Category D] (ε : C ≌ D)
     (h : IsIdempotentComplete C) : IsIdempotentComplete D := by

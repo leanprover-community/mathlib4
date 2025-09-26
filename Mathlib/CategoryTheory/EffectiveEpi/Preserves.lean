@@ -172,7 +172,7 @@ class ReflectsEffectiveEpiFamilies (F : C ⥤ D) : Prop where
 
 lemma effectiveEpiFamily_of_map (F : C ⥤ D) [ReflectsEffectiveEpiFamilies.{u} F]
     {α : Type u} {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B))
-    (h : EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a))) :
+    (h : EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a ↦ F.map (π a))) :
     EffectiveEpiFamily X π :=
   ReflectsEffectiveEpiFamilies.reflects X π h
 
@@ -190,7 +190,7 @@ class ReflectsFiniteEffectiveEpiFamilies (F : C ⥤ D) : Prop where
 
 lemma finite_effectiveEpiFamily_of_map (F : C ⥤ D) [ReflectsFiniteEffectiveEpiFamilies F]
     {α : Type} [Finite α] {B : C} (X : α → C) (π : (a : α) → (X a ⟶ B))
-    (h : EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a  ↦ F.map (π a))) :
+    (h : EffectiveEpiFamily (fun a ↦ F.obj (X a)) (fun a ↦ F.map (π a))) :
     EffectiveEpiFamily X π :=
   ReflectsFiniteEffectiveEpiFamilies.reflects X π h
 
@@ -205,9 +205,6 @@ instance (F : C ⥤ D) [ReflectsFiniteEffectiveEpiFamilies F] : ReflectsEffectiv
     rw [effectiveEpi_iff_effectiveEpiFamily] at h
     have := F.finite_effectiveEpiFamily_of_map _ _ h
     infer_instance
-
-instance (F : C ⥤ D) [IsEquivalence F] : F.PreservesEffectiveEpiFamilies where
-  preserves _ _ := inferInstance
 
 instance (F : C ⥤ D) [IsEquivalence F] : F.ReflectsEffectiveEpiFamilies where
   reflects {α B} X π _ := by
