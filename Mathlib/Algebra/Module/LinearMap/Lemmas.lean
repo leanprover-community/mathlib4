@@ -7,10 +7,15 @@ import Mathlib.Algebra.Module.Submodule.Range
 import Mathlib.LinearAlgebra.Span.Defs
 
 /-!
-# Some lemmas about linear maps
+# Some lemmas about linear functionals
 
-This file shows some results on linear functionals on division semirings, such as
-`LinearMap.surjective_iff_ne_zero` and `LinearMap.range_smulRight_apply`.
+This file proves some results on linear functionals on division semirings.
+
+## Main results
+
+* `LinearMap.surjective_iff_ne_zero`: a linear functional `f` is surjective iff `f ≠ 0`.
+* `LinearMap.range_smulRight_apply`: for a nonzero linear functional `f` and element `x`,
+the range of `f.smulRight x` is the span of the set `{x}`.
 -/
 
 namespace LinearMap
