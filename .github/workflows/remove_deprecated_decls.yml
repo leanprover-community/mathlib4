@@ -2,7 +2,7 @@ name: Remove outdated deprecated declarations
 
 on:
   push:
-    # delete the "push" trigger and uncomment the "schedule" trigger below before merging!
+    # TODO: delete the "push" trigger and uncomment the "schedule" trigger below before merging!
     branches:
     - remove_deprecations_linter_dev
     - remove_deprecations_linter_dev_upstream
@@ -28,10 +28,6 @@ jobs:
     if: github.repository == 'leanprover-community/mathlib4'
     steps:
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      #with:
-      ## fetch the whole repository, as we want to push to it later
-      # TODO: restore the fetch depth to 0 once we are happy with the action
-      #fetch-depth: 0
 
     - name: Configure Lean
       uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
@@ -48,18 +44,31 @@ jobs:
         # TODO: provide date input to lake build here via DATE_RANGE
         # WARNING: make sure the string is escaped properly as this is user input!
         # can we pass the environment variable directly to lake?
+        echo "::group::lake build output"
         lake build | tee linter.out
+        echo "::endgroup::"
 
-        # TODO: do the same for Archive/ and Counterexamples/
+        echo "::group::lake build Archive output"
+        lake build Archive | tee linter_archive.out
+        echo "::endgroup::"
+
+        echo "::group::lake build Counterexamples output"
+        lake build Counterexamples | tee linter_counterexamples.out
+        echo "::endgroup::"
+
+        # Question: Can we run this on MathlibTest as well?
+        # I do see some tests for DeprecatedModule.lean but I'm not sure if the linter will try to remove them
+        # If not, we'll have to remember to check manually for deprecations there from time to time
 
         # construct script for deleting deprecations
-        echo '#!/bin/bash' > delete_deprecations.sh
+        echo '#!/usr/bin/env bash' > delete_deprecations.sh
         # WARNING: we assume that all lines in the output of 'lake build' that begin with "mv" are safe to run
         # the rest of the build should be silent as we will only ever run this on master
-        grep '^mv' linter.out | sort --unique >> delete_deprecations.sh
-        printf $'\nHere is the content of delete_deprecations.sh:\n---\n'
+        grep '^mv' linter.out linter_archive.out linter_counterexamples.out | sort --unique >> delete_deprecations.sh
         chmod 755 delete_deprecations.sh
+        echo "::group::Here is the content of delete_deprecations.sh"
         cat delete_deprecations.sh
+        echo "::endgroup::"
 
     - name: remove outdated deprecated declarations
       id: remove
@@ -79,13 +88,9 @@ jobs:
 
         # TODO: set deprecation_date_from and deprecation_date_to outputs (extract from linter.out?)
         # maybe this could be done in the previous step?
-        printf -- $'\nHere is the content of git diff:\n---\n'
+        echo "::group::Here is the content of git diff:"
         git diff
-
-        # TODO: remove the following command once everything is working
-        #printf -- $'---\nHere is the content of Mathlib/New.lean:\n---\n'
-        #cat Mathlib/New.lean
-        #exit 1 # still WIP, don't do anything below
+        echo "::endgroup::"
 
     - name: configure git setup
       run: |
@@ -107,7 +112,7 @@ jobs:
         DEPRECATION_DATE_TO: ${{ steps.remove.outputs.deprecation_date_to }}
 
     - name: Send Zulip message
-      if: false # TODO: change to "true" once everything is working
+      if: false # TODO: change to "steps.pr.outcome == 'success'" once everything is working
       uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
