@@ -664,26 +664,33 @@ def parseDischarger (d : Option (TSyntax ``discharger)) (args : Option (TSyntax 
     | _ => throwError "could not parse the provided discharger {d}"
 
 /--
-The goal of `field_simp` is to reduce an expression in a field to an expression of the form `n / d`
-where neither `n` nor `d` contains any division symbol.
-
-If the goal is an (in)equality, this tactic will also clear the denominators, so that the proof
-can normally be concluded by an application of `ring`.
-
-For example,
-```lean
-example (a b c d x y : ℂ) (hx : x ≠ 0) (hy : y ≠ 0) :
-    a + b / x + c / x ^ 2 + d / x ^ 3 = a + x⁻¹ * (y * b / y + (d / x + c) / x) := by
+The goal of `field_simp` is to bring expressions in (semi-)fields over a common denominator, i.e. to
+reduce them to expressions of the form `n / d` where neither `n` nor `d` contains any division
+symbol. For example, `x / (1 - y) / (1 + y / (1 - y))` is reduced to `x / (1 - y + y)`:
+```
+example (x y z : ℚ) (hy : 1 - y ≠ 0) :
+    ⌊x / (1 - y) / (1 + y / (1 - y))⌋ < 3 := by
   field_simp
-  ring
+  -- new goal: `⊢ ⌊x / (1 - y + y)⌋ < 3`
 ```
 
-Cancelling and combining denominators often requires "nonzeroness" side conditions. The `field_simp`
-tactic attempts to discharge these, and will omit such steps if it cannot discharge the
-corresponding side conditions. The discharger will try, among other things, `positivity` and
-`norm_num`, and will also use any nonzeroness proofs included explicitly (e.g. `field_simp [hx]`).
-If your expression is not completely reduced by `field_simp`, check the denominators of the
-resulting expression and provide proofs that they are nonzero to enable further progress.
+The `field_simp` tactic will also clear denominators in field *(in)equalities*, by
+cross-multiplying. For example, `field_simp` will clear the `x` denominators in the following
+equation:
+```
+example {K : Type*} [Field K] {x : K} (hx0 : x ≠ 0) :
+    (x + 1 / x) ^ 2 + (x + 1 / x) = 1 := by
+  field_simp
+  -- new goal: `⊢ (x ^ 2 + 1) * (x ^ 2 + 1 + x) = x ^ 2`
+```
+
+Cancelling and combining denominators will generally require checking "nonzeroness"/"positivity"
+side conditions. The `field_simp` tactic attempts to discharge these, and will omit such steps if it
+cannot discharge the corresponding side conditions. The discharger will try, among other things,
+`positivity` and `norm_num`, and will also use any nonzeroness/positivity proofs included explicitly
+(e.g. `field_simp [hx]`). If your expression is not completely reduced by `field_simp`, check the
+denominators of the resulting expression and provide proofs that they are nonzero/positive to enable
+further progress.
 -/
 elab (name := fieldSimp) "field_simp" d:(discharger)? args:(simpArgs)? loc:(location)? :
     tactic => withMainContext do
@@ -694,7 +701,30 @@ elab (name := fieldSimp) "field_simp" d:(discharger)? args:(simpArgs)? loc:(loca
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   transformAtLocation (m ·) "field_simp" (failIfUnchanged := true) (mayCloseGoalFromHyp := true) loc
 
-@[inherit_doc fieldSimp]
+/--
+The goal of the `field_simp` conv tactic is to bring an expression in a (semi-)field over a common
+denominator, i.e. to reduce it to an expression of the form `n / d` where neither `n` nor `d`
+contains any division symbol. For example, `x / (1 - y) / (1 + y / (1 - y))` is reduced to
+`x / (1 - y + y)`:
+```
+example (x y z : ℚ) (hy : 1 - y ≠ 0) :
+    ⌊x / (1 - y) / (1 + y / (1 - y))⌋ < 3 := by
+  conv => enter [1, 1]; field_simp
+  -- new goal: `⊢ ⌊x / (1 - y + y)⌋ < 3`
+```
+
+As in this example, cancelling and combining denominators will generally require checking
+"nonzeroness" side conditions. The `field_simp` tactic attempts to discharge these, and will omit
+such steps if it cannot discharge the corresponding side conditions. The discharger will try, among
+other things, `positivity` and `norm_num`, and will also use any nonzeroness proofs included
+explicitly (e.g. `field_simp [hx]`). If your expression is not completely reduced by `field_simp`,
+check the denominators of the resulting expression and provide proofs that they are nonzero to
+enable further progress.
+
+The `field_simp` conv tactic is a variant of the main (i.e., not conv) `field_simp` tactic. The
+latter operates recursively on subexpressions, bringing *every* field-expression encountered to the
+form `n / d`.
+-/
 elab "field_simp" d:(discharger)? args:(simpArgs)? : conv => do
   -- find the expression `x` to `conv` on
   let x ← Conv.getLhs
@@ -704,7 +734,31 @@ elab "field_simp" d:(discharger)? args:(simpArgs)? : conv => do
   -- convert `x` to the output of the normalization
   Conv.applySimpResult r
 
-@[inherit_doc fieldSimp]
+/--
+The goal of the simprocs grouped under the `field` attribute is to clear denominators in
+(semi-)field (in)equalities, by bringing LHS and RHS each over a common denominator and then
+cross-multiplying. For example, the `field` simproc will clear the `x` denominators in the following
+equation:
+```
+example {K : Type*} [Field K] {x : K} (hx0 : x ≠ 0) :
+    (x + 1 / x) ^ 2 + (x + 1 / x) = 1 := by
+  simp only [field]
+  -- new goal: `⊢ (x ^ 2 + 1) * (x ^ 2 + 1 + x) = x ^ 2`
+```
+
+The `field` simproc-set's functionality is a variant of the more general `field_simp` tactic, which
+not only clears denominators in field (in)equalities but also brings isolated field expressions into
+the normal form `n / d` (where neither `n` nor `d` contains any division symbol). (For confluence
+reasons, the `field` simprocs also have a slightly different normal form from `field_simp`'s.)
+
+Cancelling and combining denominators will generally require checking "nonzeroness"/"positivity"
+side conditions. The `field` simproc-set attempts to discharge these, and will omit such steps if it
+cannot discharge the corresponding side conditions. The discharger will try, among other things,
+`positivity` and `norm_num`, and will also use any nonzeroness/positivity proofs included explicitly
+in the simp call (e.g. `simp [field, hx]`). If your (in)equality is not completely reduced by the
+`field` simproc-set, check the denominators of the resulting (in)equality and provide proofs that
+they are nonzero/positive to enable further progress.
+-/
 def proc : Simp.Simproc := fun (t : Expr) ↦ do
   let ctx ← Simp.getContext
   let disch e : MetaM Expr := Prod.fst <$> (FieldSimp.discharge e).run ctx >>= Option.getM
@@ -724,7 +778,7 @@ simproc_decl fieldEq (Eq _ _) := FieldSimp.proc
 simproc_decl fieldLe (LE.le _ _) := FieldSimp.proc
 simproc_decl fieldLt (LT.lt _ _) := FieldSimp.proc
 
-attribute [field, inherit_doc FieldSimp.fieldSimp] fieldEq fieldLe fieldLt
+attribute [field, inherit_doc FieldSimp.proc] fieldEq fieldLe fieldLt
 
 /-!
  We register `field_simp` with the `hint` tactic.
