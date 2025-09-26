@@ -180,7 +180,7 @@ protected def copy (S : Submonoid M) (s : Set M) (hs : s = S) : Submonoid M wher
 
 variable {S : Submonoid M}
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_copy {s : Set M} (hs : s = S) : (S.copy s hs : Set M) = s :=
   rfl
 
@@ -228,11 +228,11 @@ theorem mem_bot {x : M} : x ∈ (⊥ : Submonoid M) ↔ x = 1 :=
 theorem mem_top (x : M) : x ∈ (⊤ : Submonoid M) :=
   Set.mem_univ x
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_top : ((⊤ : Submonoid M) : Set M) = Set.univ :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_bot : ((⊥ : Submonoid M) : Set M) = {1} :=
   rfl
 
@@ -244,7 +244,7 @@ instance : Min (Submonoid M) :=
       one_mem' := ⟨S₁.one_mem, S₂.one_mem⟩
       mul_mem' := fun ⟨hx, hx'⟩ ⟨hy, hy'⟩ => ⟨S₁.mul_mem hx hy, S₂.mul_mem hx' hy'⟩ }⟩
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_inf (p p' : Submonoid M) : ((p ⊓ p' : Submonoid M) : Set M) = (p : Set M) ∩ p' :=
   rfl
 
