@@ -1000,6 +1000,17 @@ theorem IndepFun.comp₀ {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     filter_upwards [haψ] with ω hωψ
     simp [hωψ]
 
+lemma indepFun_const_left {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+    [IsZeroOrMarkovKernel κ] (c : β') (X : Ω → β) :
+    IndepFun (fun _ ↦ c) X κ μ := by
+  rw [IndepFun, MeasurableSpace.comap_const]
+  exact indep_bot_left _
+
+lemma indepFun_const_right {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+    [IsZeroOrMarkovKernel κ] (X : Ω → β) (c : β') :
+    IndepFun X (fun _ ↦ c) κ μ :=
+  (indepFun_const_left c X).symm
+
 theorem IndepFun.neg_right {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'} [Neg β']
     [MeasurableNeg β'] (hfg : IndepFun f g κ μ) :
     IndepFun f (-g) κ μ := hfg.comp measurable_id measurable_neg
