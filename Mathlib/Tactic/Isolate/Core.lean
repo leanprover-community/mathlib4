@@ -316,7 +316,7 @@ example (a b c : ℝ) (f : ℝ → ℝ) : c * f a - 3 < b := by
 
 The `isolate` tactic is extensible. Coverage may be extended to new relations and new
 operations-to-be-undone by tagging appropriate lemmas with the `@[isolate]` attribute. -/
-elab "isolate" x:term loc:(location)? : tactic => do
+elab "isolate" x:term loc:(location)? : tactic => withMainContext do
   let x ← elabTerm x none (mayPostpone := true)
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   withLocation loc

@@ -115,6 +115,14 @@ example {x y : ℝ} : x + 3 = y := by
   guard_target = 3 = y - x
   exact test_sorry
 
+-- check context is correct
+example (a : ℚ) : True := by
+  have z : ℚ := test_sorry
+  have : z - 3 ≤ a := by
+    isolate z
+    exact test_sorry
+  exact trivial
+
 /-- error: x + 3 should appear in only one (not both) of x + 3 and (x + 3) * y ^ 2 - 2 -/
 #guard_msgs in
 example {x y z : ℝ} (_hy : 0 < y) : x + 3 < (x + 3) * y ^ 2 - 2 := by
