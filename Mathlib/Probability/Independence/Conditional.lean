@@ -710,44 +710,17 @@ lemma condIndepFun_of_measurable_left {mβ : MeasurableSpace β} {mβ' : Measura
     CondIndepFun m' hm' X Y μ := by
   rw [condIndepFun_iff _ hm' _ _ (hX.mono hm' le_rfl) hY]
   rintro _ _ ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
-  have h_ind_eq ω : (X ⁻¹' s ∩ Y ⁻¹' t).indicator (fun _ ↦ (1 : ℝ)) ω
-      = (X ⁻¹' s).indicator (fun _ ↦ (1 : ℝ)) ω * (Y ⁻¹' t).indicator (fun _ ↦ (1 : ℝ)) ω := by
-    simp only [Set.indicator, Set.mem_inter_iff, Set.mem_preimage, mul_ite, mul_one, mul_zero]
-    split_ifs with h1 h2 h3 h4 h5
-    · rfl
-    · exfalso
-      rw [Set.mem_inter_iff] at h1
-      refine h3 h1.1
-    · exfalso
-      rw [Set.mem_inter_iff] at h1
-      exact h2 h1.2
-    · exfalso
-      rw [Set.mem_inter_iff] at h1
-      exact h1 ⟨h5, h4⟩
-    · rfl
-    · rfl
-  calc μ[(X ⁻¹' s ∩ Y ⁻¹' t).indicator fun ω ↦ (1 : ℝ)|m']
-  _ = μ[fun ω ↦ (X ⁻¹' s).indicator (fun _ ↦ 1) ω * (Y ⁻¹' t).indicator (fun _ ↦ 1) ω|m'] := by
-      simp_rw [← h_ind_eq]
-  _ =ᵐ[μ] fun ω ↦ (X ⁻¹' s).indicator (fun _ ↦ 1) ω * μ[(Y ⁻¹' t).indicator (fun _ ↦ 1)|m'] ω := by
-    refine condExp_mul_of_stronglyMeasurable_left ?_ ?_ ?_
-    · exact (Measurable.indicator (by fun_prop) (hX hs)).stronglyMeasurable
-    · have : ((X ⁻¹' s).indicator fun x ↦ (1 : ℝ)) * (Y ⁻¹' t).indicator (fun x ↦ 1)
-          = (X ⁻¹' s ∩ Y ⁻¹' t).indicator (fun _ ↦ (1 : ℝ)) := by ext; simp [h_ind_eq]
-      rw [this]
-      rw [integrable_indicator_iff]
-      · exact (integrable_const (1 : ℝ)).integrableOn
-      · exact (hm' _ (hX hs)).inter (hY ht)
-    · rw [integrable_indicator_iff]
-      · exact (integrable_const (1 : ℝ)).integrableOn
-      · exact hY ht
-  _ =ᵐ[μ] μ[(X ⁻¹' s).indicator fun ω ↦ 1|m'] * μ[(Y ⁻¹' t).indicator fun ω ↦ 1|m'] := by
+  rw [show (fun ω : Ω ↦ (1 : ℝ)) = 1 from rfl, Set.inter_indicator_one]
+  calc μ[(X ⁻¹' s).indicator 1 * (Y ⁻¹' t).indicator 1|m']
+  _ =ᵐ[μ] (X ⁻¹' s).indicator 1 * μ[(Y ⁻¹' t).indicator 1|m'] := by
+    refine condExp_stronglyMeasurable_mul_of_bound hm' (stronglyMeasurable_const.indicator (hX hs))
+      ((integrable_indicator_iff (hY ht)).2 integrableOn_const) 1 (ae_of_all μ fun ω ↦ ?_)
+    rw [Set.indicator]
+    split_ifs with h <;> simp
+  _ =ᵐ[μ] μ[(X ⁻¹' s).indicator 1|m'] * μ[(Y ⁻¹' t).indicator 1|m'] := by
     nth_rw 2 [condExp_of_stronglyMeasurable hm']
-    · rfl
-    · exact (Measurable.indicator (by fun_prop) (hX hs)).stronglyMeasurable
-    · rw [integrable_indicator_iff]
-      · exact (integrable_const (1 : ℝ)).integrableOn
-      · exact hm' _ (hX hs)
+    · exact stronglyMeasurable_const.indicator (hX hs)
+    · exact (integrable_indicator_iff ((hX.le hm') hs)).2 integrableOn_const
 
 lemma condIndepFun_of_measurable_right {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     {X : Ω → β} {Y : Ω → β'} (hX : Measurable X) (hY : Measurable[m'] Y) :
@@ -756,15 +729,13 @@ lemma condIndepFun_of_measurable_right {mβ : MeasurableSpace β} {mβ' : Measur
 
 lemma condIndepFun_self_left {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     {X : Ω → β} {Z : Ω → β'} (hX : Measurable X) (hZ : Measurable Z) :
-    CondIndepFun (mβ'.comap Z) hZ.comap_le Z X μ := by
-  refine condIndepFun_of_measurable_left ?_ hX
-  rw [measurable_iff_comap_le]
+    CondIndepFun (mβ'.comap Z) hZ.comap_le Z X μ :=
+  condIndepFun_of_measurable_left (comap_measurable Z) hX
 
 lemma condIndepFun_self_right {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     {X : Ω → β} {Z : Ω → β'} (hX : Measurable X) (hZ : Measurable Z) :
-    CondIndepFun (mβ'.comap Z) hZ.comap_le X Z μ := by
-  refine condIndepFun_of_measurable_right hX ?_
-  rw [measurable_iff_comap_le]
+    CondIndepFun (mβ'.comap Z) hZ.comap_le X Z μ :=
+  condIndepFun_of_measurable_right hX (comap_measurable Z)
 
 section iCondIndepFun
 variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}
