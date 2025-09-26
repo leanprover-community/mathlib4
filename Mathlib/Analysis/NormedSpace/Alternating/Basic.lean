@@ -310,6 +310,7 @@ variable (𝕜 E)
   NNReal.eq <| norm_constOfIsEmpty _ _ _
 
 variable (ι F) in
+/-- `constOfIsEmpty` as a linear isometry equivalence. -/
 @[simps]
 def constOfIsEmptyLIE [IsEmpty ι] : F ≃ₗᵢ[𝕜] (E [⋀^ι]→L[𝕜] F) where
   toFun := constOfIsEmpty _ _ _
