@@ -510,6 +510,19 @@ def IsTopologicalGroup.rightUniformSpace : UniformSpace G where
   nhds_eq_comap_uniformity _ := by
     simp only [comap_comap, Function.comp_def, ← div_eq_mul_inv, nhds_translation_div]
 
+variable {G}
+
+@[to_additive]
+lemma isRightUniformGroup_iff_rightUniformSpace {G : Type*} [U : UniformSpace G] [Group G]
+    [IsTopologicalGroup G] :
+    IsRightUniformGroup G ↔ U = IsTopologicalGroup.rightUniformSpace G :=
+  ⟨fun H ↦ by ext; rw [uniformity_eq_comap_mul_inv_nhds_one G]; rfl, fun H ↦ ⟨H ▸ rfl⟩⟩
+
+@[to_additive]
+theorem IsRightUniformGroup.rightUniformSpace_eq {G : Type*} [U : UniformSpace G] [Group G]
+    [IsRightUniformGroup G] : IsTopologicalGroup.rightUniformSpace G = U := by
+  rw [← isRightUniformGroup_iff_rightUniformSpace.mp inferInstance]
+
 attribute [local instance] IsTopologicalGroup.rightUniformSpace
 
 @[to_additive]
@@ -548,6 +561,17 @@ def IsTopologicalGroup.leftUniformSpace : UniformSpace G where
     simpa [mul_assoc] using V_mul _ hz₁ _ hz₂
   nhds_eq_comap_uniformity _ := by
     sorry
+
+@[to_additive]
+lemma isLeftUniformGroup_iff_leftUniformSpace {G : Type*} [U : UniformSpace G] [Group G]
+    [IsTopologicalGroup G] :
+    IsLeftUniformGroup G ↔ U = IsTopologicalGroup.leftUniformSpace G :=
+  ⟨fun H ↦ by ext; rw [uniformity_eq_comap_inv_mul_nhds_one G]; rfl, fun H ↦ ⟨H ▸ rfl⟩⟩
+
+@[to_additive]
+theorem IsLeftUniformGroup.leftUniformSpace_eq {G : Type*} [U : UniformSpace G] [Group G]
+    [IsLeftUniformGroup G] : IsTopologicalGroup.leftUniformSpace G = U := by
+  rw [← isLeftUniformGroup_iff_leftUniformSpace.mp inferInstance]
 
 attribute [local instance] IsTopologicalGroup.leftUniformSpace
 
@@ -836,8 +860,9 @@ theorem tendsto_conj_comap_nhds_one :
   exact tendsto_comap
 
 open Prod (fst snd) in
+variable (β) in
 @[to_additive]
-instance (priority := 100) IsUniformGroup.ofLeftRight : IsUniformGroup β where
+instance (priority := 100) IsUniformGroup.of_left_right : IsUniformGroup β where
   uniformContinuous_div := by
     let φ : (β × β) × (β × β) → β := fun ⟨⟨x₁, x₂⟩, ⟨y₁, y₂⟩⟩ ↦ x₂ * y₂⁻¹ * y₁ * x₁⁻¹
     let ψ : (β × β) × (β × β) → β := fun ⟨⟨x₁, x₂⟩, ⟨y₁, y₂⟩⟩ ↦ (x₁⁻¹ * x₂) * (y₂⁻¹ * y₁)
@@ -865,6 +890,26 @@ theorem eventually_forall_conj_nhds_one {p : α → Prop}
 
 end OfLeftAndRight
 
+section OfComm
+
+variable (G : Type*) [CommGroup G] [UniformSpace G] [IsLeftOrRightUniformGroup G]
+
+@[to_additive]
+instance (priority := 100) IsUniformGroup.of_comm : IsUniformGroup G := by
+  rcases ‹IsLeftOrRightUniformGroup G›
+  · have : IsLeftUniformGroup G := by
+      constructor
+      conv_rhs => congr; enter [x]; rw [mul_comm]
+      exact uniformity_eq_comap_mul_inv_nhds_one G
+    infer_instance
+  · have : IsRightUniformGroup G := by
+      constructor
+      conv_rhs => congr; enter [x]; rw [mul_comm]
+      exact uniformity_eq_comap_inv_mul_nhds_one G
+    infer_instance
+
+end OfComm
+
 end IsUniformGroup
 
 section TopologicalCommGroup
@@ -878,17 +923,13 @@ variable (G : Type*) [CommGroup G]
 variable [TopologicalSpace G] [IsTopologicalGroup G]
 section
 
-attribute [local instance] IsTopologicalGroup.toUniformSpace
+attribute [local instance] IsTopologicalGroup.rightUniformSpace
 
 variable {G}
 
-@[to_additive]
+@[to_additive (attr := deprecated IsUniformGroup.of_comm (since := "2025-09-26"))]
 theorem isUniformGroup_of_commGroup : IsUniformGroup G := by
-  constructor
-  simp only [UniformContinuous, uniformity_prod_eq_prod, uniformity_eq_comap_nhds_one',
-    tendsto_comap_iff, tendsto_map'_iff, prod_comap_comap_eq, Function.comp_def,
-    div_div_div_comm _ (Prod.snd (Prod.snd _)), ← nhds_prod_eq]
-  exact (continuous_div'.tendsto' 1 1 (div_one 1)).comp tendsto_comap
+  infer_instance
 
 alias comm_topologicalGroup_is_uniform := isUniformGroup_of_commGroup
 @[deprecated (since := "2025-03-30")]
@@ -900,11 +941,8 @@ open Set
 
 end
 
-@[to_additive]
-theorem IsUniformGroup.toUniformSpace_eq {G : Type*} [u : UniformSpace G] [Group G]
-    [IsUniformGroup G] : IsTopologicalGroup.toUniformSpace G = u := by
-  ext : 1
-  rw [uniformity_eq_comap_nhds_one' G, uniformity_eq_comap_nhds_one G]
+@[to_additive (attr := deprecated IsRightUniformGroup.rightUniformSpace_eq (since := "2025-09-26"))]
+alias IsUniformGroup.toUniformSpace_eq := IsRightUniformGroup.rightUniformSpace_eq
 
 end TopologicalCommGroup
 
