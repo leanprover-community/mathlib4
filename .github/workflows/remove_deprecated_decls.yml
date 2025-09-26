@@ -65,7 +65,6 @@ jobs:
         else
           echo "There are files with deprecated declarations in the specified date range"
           tmpMod="${tmplean%.lean}"
-          echo "${tmpMod//\//.}"
           sed -i "/${tmplean}/d" Mathlib.lean
         fi
 
