@@ -40,10 +40,10 @@ abbrev DedekindCut := Concept α α (· ≤ ·)
 
 namespace DedekindCut
 
-/-- The left set of a Dedekind cut. -/
+/-- The left set of a Dedekind cut. This is an alias for `Concept.extent`. -/
 abbrev left (A : DedekindCut α) : Set α := A.extent
 
-/-- The right set of a Dedekind cut. -/
+/-- The right set of a Dedekind cut. This is an alias for `Concept.intent`. -/
 abbrev right (A : DedekindCut α) : Set α := A.intent
 
 @[simp]
