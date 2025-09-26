@@ -288,10 +288,18 @@ lemma IsSymmetricRel.image_prodMap {U : Set (α × α)} (ht : IsSymmetricRel U) 
   rw [IsSymmetricRel, ← image_swap_eq_preimage_swap, ← image_comp, ← Prod.map_comp_swap, image_comp,
       image_swap_eq_preimage_swap, ht]
 
+set_option linter.deprecated false in
+@[deprecated SetRel.prod_subset_comm (since := "2025-03-05")]
 lemma IsSymmetricRel.prod_subset_comm {s : Set (α × α)} {t u : Set α} (hs : IsSymmetricRel s) :
     t ×ˢ u ⊆ s ↔ u ×ˢ t ⊆ s := by
   rw [← hs.eq, ← image_subset_iff, image_swap_prod, hs.eq]
 
+lemma SetRel.mem_filter_prod_comm (R : SetRel α α) {f g : Filter α} [R.IsSymm] :
+    R ∈ f ×ˢ g ↔ R ∈ g ×ˢ f := by
+  rw [← R.inv_eq_self, SetRel.inv, ← mem_map, ← prod_comm, ← SetRel.inv, R.inv_eq_self]
+
+set_option linter.deprecated false in
+@[deprecated SetRel.mem_filter_prod_comm (since := "2025-03-05")]
 lemma IsSymmetricRel.mem_filter_prod_comm {s : Set (α × α)} {f g : Filter α}
     (hs : IsSymmetricRel s) :
     s ∈ f ×ˢ g ↔ s ∈ g ×ˢ f := by
