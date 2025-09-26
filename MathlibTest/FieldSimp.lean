@@ -273,6 +273,16 @@ example (hx : x ≠ 0) (hy : y ≠ 0) : P ((x * y) * (y * x)⁻¹) := by test_fi
 #guard_msgs in
 example (hy : y ≠ 0) : P (x ^ 1 * y * x ^ 2 * y⁻¹) := by test_field_simp
 
+/-- info: P (x / (1 - y + y)) -/
+#guard_msgs in
+example (hy : 1 - y ≠ 0): P (x / (1 - y) / (1 + y / (1 - y))) := by test_field_simp
+
+-- test `conv` tactic
+example (hy : 1 - y ≠ 0) : P (x / (1 - y) / (1 + y / (1 - y))) := by
+  conv => enter [1]; field_simp
+  guard_target = P (x / (1 - y + y))
+  exact test_sorry
+
 /-! ### Three atoms -/
 
 /-- info: P (x * y * z) -/
@@ -372,17 +382,23 @@ example {x : ℚ} (hx : x ≠ 0) : x * x⁻¹ = 1 := by field
 example {a b : ℚ} (h : b ≠ 0) : a / b + 2 * a / b + (-a) / b + (- (2 * a)) / b = 0 := by field
 example {x y : ℚ} (hx : x + y ≠ 0) : x / (x + y) + y / (x + y) = 1 := by field
 
+example {x : ℚ} : x ^ 2 / (x ^ 2 + 1) + 1 / (x ^ 2 + 1) = 1 := by field
+
 example {x y : ℚ} (hx : 0 < x) :
     ((x ^ 2 - y ^ 2) / (x ^ 2 + y ^ 2)) ^ 2 + (2 * x * y / (x ^ 2 + y ^ 2)) ^ 2 = 1 := by
   field
 
--- example from the `field_simp` docstring
 example {K : Type*} [Field K] (a b c d x y : K) (hx : x ≠ 0) (hy : y ≠ 0) :
     a + b / x + c / x ^ 2 + d / x ^ 3 = a + x⁻¹ * (y * b / y + (d / x + c) / x) := by
   field
 
 example {a b : ℚ} (ha : a ≠ 0) : a / (a * b) - 1 / b = 0 := by field
 example {x : ℚ} : x ^ 2 * x⁻¹ = x := by field
+
+-- testing that mdata is cleared before parsing goal
+example {x : ℚ} (hx : x ≠ 0) : x * x⁻¹ = 1 := by
+  have : 1 = 1 := rfl
+  field
 
 /-! ### Mid-proof use -/
 
@@ -471,6 +487,24 @@ example {x y : ℚ} (hx : 0 < x) :
   simp only [field]
   guard_target = (x ^ 2 - y ^ 2) ^ 2 + x ^ 2 * y ^ 2 * 2 ^ 2 < (x ^ 2 + y ^ 2) ^ 2
   exact test_sorry
+
+-- used in `field_simp` docstring
+example {K : Type*} [Field K] {x : K} (hx : x ^ 5 = 1) (hx0 : x ≠ 0) (hx1 : x - 1 ≠ 0) :
+    (x + 1 / x) ^ 2 + (x + 1 / x) = 1 := by
+  field_simp
+  guard_target = (x ^ 2 + 1) * (x ^ 2 + 1 + x) = x ^ 2
+  calc
+    (x ^ 2 + 1) * (x ^ 2 + 1 + x) = (x ^ 5 - 1) / (x - 1) + x ^ 2 := by field
+    _ = x ^ 2 := by simp [hx]
+
+-- used in `field` simproc-set docstring
+example {K : Type*} [Field K] {x : K} (hx : x ^ 5 = 1) (hx0 : x ≠ 0) (hx1 : x - 1 ≠ 0) :
+    (x + 1 / x) ^ 2 + (x + 1 / x) = 1 := by
+  simp only [field]
+  guard_target = (x ^ 2 + 1) * (x ^ 2 + 1 + x) = x ^ 2
+  calc
+    (x ^ 2 + 1) * (x ^ 2 + 1 + x) = (x ^ 5 - 1) / (x - 1) + x ^ 2 := by field
+    _ = x ^ 2 := by simp [hx]
 
 section
 
@@ -574,6 +608,12 @@ example {x y : ℚ} (hx : y ≠ 0) {f : ℚ → ℚ} (hf : ∀ t, f t ≠ 0) :
 example {x y z : ℚ} (hx : y ≠ 0) {f : ℚ → ℚ} (hf : ∀ t, f t ≠ 0) :
     f (y * x / (y ^ 2 / z)) / f (z / (y / x)) = 1 := by
   field_simp [hf]
+
+open Finset in
+example (n : ℕ) : ∏ i ∈ range n, (1 - (i + 2 : ℚ)⁻¹) < 1 := by
+  field_simp
+  guard_target = ∏ x ∈ range n, ((x:ℚ) + 2 - 1) / (x + 2) < 1
+  exact test_sorry
 
 /-! ## Performance -/
 
