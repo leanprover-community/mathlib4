@@ -454,11 +454,11 @@ theorem hasSum_conj' {f : α → 𝕜} {x : 𝕜} : HasSum (fun x => conj (f x))
   conjCLE.hasSum'
 
 @[simp]
-theorem summable_conj {f : α → 𝕜} : (Summable (fun x => conj (f x))) ↔ Summable f :=
+theorem summable_conj {f : α → 𝕜} : Summable (fun x => conj (f x)) L ↔ Summable f L :=
   summable_star_iff
 
 variable {𝕜} in
-theorem conj_tsum (f : α → 𝕜) : conj (∑' a, f a) = ∑' a, conj (f a) :=
+theorem conj_tsum [L.NeBot] (f : α → 𝕜) : conj (∑'[L] a, f a) = ∑'[L] a, conj (f a) :=
   tsum_star
 
 @[simp, norm_cast]
@@ -467,7 +467,7 @@ theorem hasSum_ofReal {f : α → ℝ} {x : ℝ} : HasSum (fun x => (f x : 𝕜)
     ofRealCLM.hasSum⟩
 
 @[simp, norm_cast]
-theorem summable_ofReal {f : α → ℝ} : (Summable (fun x => (f x : 𝕜)) L) ↔ Summable f L :=
+theorem summable_ofReal {f : α → ℝ} : Summable (fun x => (f x : 𝕜)) L ↔ Summable f L :=
   ⟨fun h => by simpa only [RCLike.reCLM_apply, RCLike.ofReal_re] using reCLM.summable h,
     ofRealCLM.summable⟩
 
@@ -529,7 +529,7 @@ theorem hasSum_conj' {f : α → ℂ} {x : ℂ} : HasSum (fun x => conj (f x)) (
 theorem summable_conj {f : α → ℂ} : (Summable fun x => conj (f x)) ↔ Summable f :=
   RCLike.summable_conj _
 
-theorem conj_tsum (f : α → ℂ) : conj (∑' a, f a) = ∑' a, conj (f a) :=
+theorem conj_tsum [L.NeBot] (f : α → ℂ) : conj (∑'[L] a, f a) = ∑'[L] a, conj (f a) :=
   RCLike.conj_tsum _
 
 @[simp, norm_cast]

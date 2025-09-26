@@ -21,7 +21,7 @@ open Filter Finset Function
 
 open scoped Topology
 
-variable {α β γ : Type*}
+variable {α β γ : Type*} {L : SummationFilter β}
 
 
 /-! ## Product, Sigma and Pi types -/
@@ -61,7 +61,6 @@ end ProdDomain
 section ProdCodomain
 
 variable [CommMonoid α] [TopologicalSpace α] [CommMonoid γ] [TopologicalSpace γ]
-{L : SummationFilter β}
 
 @[to_additive HasSum.prodMk]
 theorem HasProd.prodMk {f : β → α} {g : β → γ} {a : α} {b : γ} (hf : HasProd f a L)
@@ -331,7 +330,7 @@ section MulOpposite
 
 open MulOpposite
 
-variable [AddCommMonoid α] [TopologicalSpace α] {f : β → α} {a : α} {L : SummationFilter β}
+variable [AddCommMonoid α] [TopologicalSpace α] {f : β → α} {a : α}
 
 theorem HasSum.op (hf : HasSum f a L) : HasSum (fun a ↦ op (f a)) (op a) L :=
   (hf.map (@opAddEquiv α _) continuous_op :)
@@ -382,25 +381,25 @@ section ContinuousStar
 variable [AddCommMonoid α] [TopologicalSpace α] [StarAddMonoid α] [ContinuousStar α] {f : β → α}
   {a : α}
 
-theorem HasSum.star (h : HasSum f a) : HasSum (fun b ↦ star (f b)) (star a) := by
+theorem HasSum.star (h : HasSum f a L) : HasSum (fun b ↦ star (f b)) (star a) L := by
   simpa only using h.map (starAddEquiv : α ≃+ α) continuous_star
 
-theorem Summable.star (hf : Summable f) : Summable fun b ↦ star (f b) :=
+theorem Summable.star (hf : Summable f L) : Summable (fun b ↦ star (f b)) L :=
   hf.hasSum.star.summable
 
-theorem Summable.ofStar (hf : Summable fun b ↦ Star.star (f b)) : Summable f := by
+theorem Summable.ofStar (hf : Summable (fun b ↦ Star.star (f b)) L) : Summable f L := by
   simpa only [star_star] using hf.star
 
 @[simp]
-theorem summable_star_iff : (Summable fun b ↦ star (f b)) ↔ Summable f :=
+theorem summable_star_iff : Summable (fun b ↦ star (f b)) L ↔ Summable f L :=
   ⟨Summable.ofStar, Summable.star⟩
 
 @[simp]
-theorem summable_star_iff' : Summable (star f) ↔ Summable f :=
+theorem summable_star_iff' : Summable (star f) L ↔ Summable f L :=
   summable_star_iff
 
-theorem tsum_star [T2Space α] : star (∑' b, f b) = ∑' b, star (f b) := by
-  by_cases hf : Summable f
+theorem tsum_star [T2Space α] [L.NeBot] : star (∑'[L] b, f b) = ∑'[L] b, star (f b) := by
+  by_cases hf : Summable f L
   · exact hf.hasSum.star.tsum_eq.symm
   · rw [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable (mt Summable.ofStar hf),
       star_zero]
