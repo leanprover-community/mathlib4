@@ -3,7 +3,6 @@ Copyright (c) 2025 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Control.Basic
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Relation.Symm
 
