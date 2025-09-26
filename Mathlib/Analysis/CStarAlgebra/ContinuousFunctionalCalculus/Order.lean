@@ -388,11 +388,7 @@ theorem _root_.IsStrictlyPositive.nonneg_add {a b : A}
 lemma _root_.isStrictlyPositive_add {a b : A}
     (h : IsStrictlyPositive a ∧ 0 ≤ b ∨ 0 ≤ a ∧ IsStrictlyPositive b) :
     IsStrictlyPositive (a + b) := by
-  obtain h|h := h
-  case inl =>
-    exact IsStrictlyPositive.add_nonneg h.1 h.2
-  case inr =>
-    exact IsStrictlyPositive.nonneg_add h.1 h.2
+  grind [IsStrictlyPositive.add_nonneg, IsStrictlyPositive.nonneg_add]
 
 end CStarAlgebra
 
