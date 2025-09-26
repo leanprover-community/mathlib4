@@ -334,6 +334,30 @@ theorem factorial_mul_Deriv' (r : ℕ) (z₀ : ℂ) (f: ℂ → ℂ) :
     sorry
   | succ k ih => sorry
 
+lemma  existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
+  (hf : AnalyticAt ℂ R z) (hf : ∀ z : ℂ, AnalyticAt ℂ R₁ z)
+  (hR₁ : ∀ z, R z  = (z - z₀)^r * R₁ z) :
+  ∀ k ≤ r, ∃ R₂ : ℂ → ℂ, deriv^[k] R z = k.factorial*(z- z₀)^(r-k) * (R₁ z +
+    (z-z₀)*R₂ z) := by {
+      intros k hkr
+      induction' k with k IH
+      sorry
+      sorry
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 lemma iterated_deriv_eq_zero_iff_order_eq_n :
   ∀ z₀ n (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀) (ho : analyticOrderAt f z₀ ≠ ⊤),
     (∀ k < n, deriv^[k] f z₀ = 0) ∧ (deriv^[n] f z₀ ≠ 0)

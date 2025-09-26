@@ -852,7 +852,7 @@ lemma sq_n : (Real.sqrt n)^((n K q : ℝ)-1) = (n : ℝ) ^ (((n K q : ℝ) - 1)/
 include hirr htriv habc hq0 h2mq in
 lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
   house ((algebraMap (𝓞 K) K) ((A K α' β' γ' q) u t)) ≤
-      (c₃ ^ (n : ℝ) * (n : ℝ) ^ (((n : ℝ) - 1) / 2))  := by {
+      (c₃ ^ (n : ℝ) * (n : ℝ) ^ (((n : ℝ) - 1) / 2))  := by { stop
     --simp (config := { unfoldPartialApp := true }) only [A, sys_coe]
     unfold A sys_coe'
     simp only [RingOfIntegers.restrict, RingOfIntegers.map_mk]
@@ -958,7 +958,11 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
           · refine
             house_alg_int_leq_pow (c₁ K α' β' γ' • α') (m K * q) (m K * (2 * (m K * n K q))) ?_ ?_
               ?_
-            · sorry
+            · apply mul_le_mul
+              · apply Preorder.le_refl
+              · exact (by { have H := q_le_two_mn K q h2mq; rw [mul_assoc] at H; exact H })
+              · simp only [zero_le]
+              · simp only [zero_le]
             · exact c₁αneq0 α β hirr htriv K σ α' β' γ' habc
             · exact isIntegral_c₁α K α' β' γ'
           --· sorry
@@ -981,11 +985,11 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
       · calc _ ≤ house (c₁ • γ') ^ (m K * (2 * (m K * n K q))) := ?_
              _ ≤ (↑|c₁| * house γ') ^ (m K * (2 * (m K * n K q))) := ?_
         · refine
-            house_alg_int_leq_pow (c₁ K α' β' γ' • γ') (m K * q) (m K * (2 * (m K * n K q))) ?_ ?_
-              ?_
+            house_alg_int_leq_pow (c₁ K α' β' γ' • γ') (m K * q)
+              (m K * (2 * (m K * n K q))) ?_ ?_ ?_
           · apply mul_le_mul
             · apply Preorder.le_refl
-            · sorry
+            · exact (by { have H := q_le_two_mn K q h2mq; rw [mul_assoc] at H; exact H })
             · simp only [zero_le]
             · simp only [zero_le]
           · exact c₁cneq0 α β hirr htriv K σ α' β' γ' habc
@@ -1160,8 +1164,10 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
                 · sorry
                 · have : ((m K * 2) * m K) = ( 2 * m^2) := sorry
                   rw [this]; clear this
-                  calc _ ≤ ((house α' ^ (2 * m K ^ 2) * house γ' ^ (2 * m K ^ 2)) ^ 2 * ↑(m K)) := ?_
-                       _ ≤ max 1 ((house α' ^ (2 * m K ^ 2) * house γ' ^ (2 * m K ^ 2)) ^ 2 * ↑(m K)) := ?_
+                  calc _ ≤ ((house α' ^ (2 * m K ^ 2) * house γ' ^ (2 * m K ^ 2)) ^ 2
+                    * ↑(m K)) := ?_
+                       _ ≤ max 1 ((house α' ^ (2 * m K ^ 2) * house γ' ^ (2 * m K ^ 2))
+                        ^ 2 * ↑(m K)) := ?_
                   · sorry
                   · sorry
               · apply Preorder.le_refl
@@ -1178,7 +1184,6 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
       rw [← sq_n]
 }
 
-#exit
 
 def applylemma82 := NumberField.house.exists_ne_zero_int_vec_house_le K
   (A K α' β' γ' q)
@@ -1420,7 +1425,8 @@ lemma vandermonde_det_ne_zero : det (V α β q) ≠ 0 := by
 
 open Differentiable Complex
 
-def R : ℂ → ℂ := fun x => ∑ t, σ ((η) t) * exp (ρ α β q t * x)
+def R : ℂ → ℂ := fun x => ∑ t, (canonicalEmbedding K) ((algebraMap (𝓞 K) K) ((η) t)) σ
+  * exp (ρ α β q t * x)
 
 macro_rules | `(R) => `(R α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq)
 
@@ -1925,7 +1931,7 @@ def ρᵣ : ℂ := (log α)^(-r : ℤ) * deriv^[r] (R) (l₀)
 macro_rules | `(ρᵣ) => `(ρᵣ α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq)
 
 include htriv habc in
-lemma sys_coe'_bar  :
+lemma sys_coe'_bar :
   exp (ρ α β q t * l₀) * ρ α β q t ^ (r : ℕ) * log α ^ (-r : ℤ) = σ (sys_coe_r) := by {
     nth_rw 2 [ρ]
     rw [mul_pow, mul_assoc, mul_assoc]
@@ -2439,179 +2445,292 @@ lemma eq5 : c₅ ^ (- r : ℤ) < norm (Algebra.norm ℚ ρ) := by
 
 
 
-def c₆ : ℝ := sorry
 
-def c₇ : ℝ := sorry
 
-lemma eq6a : house ρ ≤ (q*q) *
-   ((c₄ ^ (n : ℝ)) * ((n)^((1/2)*((n)+1))) * (c₆* q) ^r * (c₇)^(q : ℤ)) := by {sorry}
 
-def c₈ : ℝ := sorry --max (c₄^n * (n^(1/2)*(n+1))*q^2*(c₆*q)^n*(c₇)^(q : ℤ)) 1
---max (c₈^r) ((c₈)^r * r ^ (r+3/2))
 
-lemma eq6 : house ρ ≤ c₈^r * r^(r + 3/2) := by {
-  unfold rho
-  calc _ ≤ ∑ t, house ( ((algebraMap (𝓞 K) K) ((η) t)) * (sys_coe_r)) := ?_
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+lemma one_leq_c1rho : 1 ≤ ↑(cρ) := sorry
+
+def c₆ : ℝ := house (1 + β')
+
+macro_rules | `(c₆) => `(c₆ K β')
+
+def c₇ : ℝ := house (α')^m * house (γ')^m
+
+macro_rules | `(c₇) => `(c₇ K α' β')
+
+def c₈ : ℝ := 2 * m * c₄* c₆ * 2* m * c₇^(2*m)
+
+macro_rules | `(c₈) => `(c₈ K hd α' β' γ')
+
+lemma eq6a : house ρ ≤ (q*q) * ((c₄ ^ (n : ℝ)) * ((n)^((1/2)*(n+1))) *
+   (c₆* q) ^r * (c₇)^(q)) := by {
+  calc _ ≤  house (cρ * ρ) := ?_
+
+       _ ≤ ∑ t, house ( ((algebraMap (𝓞 K) K) ((η) t)) * (sys_coe_r)) := ?_
 
        _ ≤ (∑ t, house (algebraMap (𝓞 K) K ((η) t)) * house (sys_coe_r)) := ?_
 
-       _ ≤ (∑ (t: Fin (q*q)), (c₄ ^ (n : ℝ)) * ((n : ℝ)^(((n : ℝ)+ 1)/2) ) *
-          house (sys_coe_r)) := ?_
+       _ ≤ cρ * (∑ t, house (algebraMap (𝓞 K) K ((η) t)) * house (sys_coe_r)) := ?_
 
-       _ ≤ (∑ t : Fin (q*q), (c₄ ^ (n : ℝ)) * ((n : ℝ)^(((n : ℝ)+ 1)/2) ) *
-           (house (a + b • β') ^ r * house (α') ^ (a * l₀) * house (γ') ^ (b * l₀))) := ?_
+       _ ≤ (∑ t, house (algebraMap (𝓞 K) K ((η) t)) *
+           (house ( c₁ • (a + b • β')) ^ r * house (c₁ • α') ^ (a * l₀) *
+              house (c₁ • γ') ^ (b * l₀))) := ?_
+
+       _ ≤ (∑ t, house (algebraMap (𝓞 K) K ((η) t)) *
+           (house ( c₁ • (a + b • β')) ^ r * house (c₁ • α') ^ (m * q) *
+              house (c₁ • γ') ^  (m * q))) := ?_
 
        _ ≤  (∑ t : Fin (q*q), (c₄ ^ (n : ℝ)) * ((n : ℝ)^(((n : ℝ)+ 1)/2) ) *
            ((Nat.sqrt (2*m K) * (1 + house (β')))^ r*
            (house (α') ^ (2*m K^2)) * house (γ') ^(2*m K^2))) := ?_
 
        _ ≤ (q*q) *((c₄ ^ (n : ℝ)) * ((n)^((1/2)*((n)+1))) * (c₆* q) ^r * (c₇)^(q : ℤ)) := ?_
-
-       _ ≤ c₈^r * r^(r + 3/2) := ?_
-
-  · apply house_sum_le_sum_house
-  · apply sum_le_sum
-    intros i hi
-    apply house_mul_le
-  · apply sum_le_sum
-    intros i hi
-    have := fromlemma82_bound α β hirr htriv K σ hd α' β' γ' habc q i hq0 h2mq
-    apply mul_le_mul
-    · exact this
-    · apply Preorder.le_refl
-    · apply house_nonneg
-    · apply mul_nonneg
-      · simp only [Real.rpow_natCast]
-        apply pow_nonneg
-        ·  apply (le_trans zero_le_one (one_leq_c₄ ..))
-      · apply Real.rpow_nonneg
-        simp only [Nat.cast_nonneg]
-  · apply sum_le_sum
-    intros i hi
-    apply mul_le_mul
-    · simp only [Real.rpow_natCast, le_refl]
-    · unfold sys_coe_r
-      trans
-      · apply house_mul_le
-      · rw [mul_comm]
-        nth_rw 1 [mul_assoc]
-        have : house (↑a + b • β') ^ r *
-          (house α' ^ (a * l₀) * house γ' ^ (b * l₀)) =
-          house γ' ^ (b * l₀) *
-          (house (↑a + b • β') ^ r * (house α' ^ (a * l₀))) := by {
-            rw [← mul_assoc]
-            rw [mul_comm (house γ' ^ (b * l₀))]}
-        rw [this]
-        clear this
-        apply mul_le_mul
-        · trans
-          · apply house_pow_le
-          · apply Preorder.le_refl
-        · trans
-          · apply house_mul_le
-          · apply mul_le_mul
-            · trans
-              · apply house_pow_le
-              · apply Preorder.le_refl
-            · trans
-              · apply house_pow_le
-              · apply Preorder.le_refl
-            · apply house_nonneg
-            · apply pow_nonneg
-              apply house_nonneg
-        · apply house_nonneg
-        · apply pow_nonneg
-          · apply house_nonneg
-    · apply house_nonneg
-    · apply mul_nonneg
-      · simp only [Real.rpow_natCast]
-        apply pow_nonneg
-        · sorry
-      · apply Real.rpow_nonneg
-        simp only [Nat.cast_nonneg]
-  · apply sum_le_sum
-    intros i hi
-    simp only [Real.rpow_natCast, nsmul_eq_mul]
-    apply mul_le_mul
-    · simp only [le_refl]
-    · apply mul_le_mul
-      · apply mul_le_mul
-        · refine pow_le_pow_left₀ ?_ ?_ r
-          sorry
-          sorry
-        · sorry
-        · apply pow_nonneg
-          · apply house_nonneg
-        · sorry
-      · sorry
-      · apply pow_nonneg
-        apply house_nonneg
-      · apply mul_nonneg
-        · apply pow_nonneg
-          apply mul_nonneg
-          · simp only [Nat.cast_nonneg]
-          · trans
-            · apply zero_le_one
-            · simp only [le_add_iff_nonneg_right]
-              apply house_nonneg
-        · apply pow_nonneg
-          apply house_nonneg
-    · apply mul_nonneg
-      · apply mul_nonneg
-        · apply pow_nonneg
-          apply house_nonneg
-        · apply pow_nonneg
-          apply house_nonneg
-      · apply pow_nonneg
-        apply house_nonneg
-    · sorry
-  · rw [sum_const, card_univ, Fintype.card_fin]
-    simp only [Real.rpow_natCast, Nat.reduceDiv,
-      zero_mul, pow_zero, mul_one, nsmul_eq_mul,
-      Nat.cast_mul, zpow_natCast]
-    apply mul_le_mul
-    · simp only [le_refl]
-    · apply mul_le_mul
-      · sorry
-      · sorry
-      · apply mul_nonneg
-        · apply mul_nonneg
-          apply pow_nonneg
-          · apply mul_nonneg
-            · simp only [Nat.cast_nonneg]
-            · trans
-              · apply zero_le_one
-              · simp only [le_add_iff_nonneg_right]
-                apply house_nonneg
-          · apply pow_nonneg
-            apply house_nonneg
-        · apply pow_nonneg
-          apply house_nonneg
-      · apply mul_nonneg
-        · sorry
-        · apply pow_nonneg
-          apply mul_nonneg
-          · sorry
-          · exact Nat.cast_nonneg' q
-    · apply mul_nonneg
-      · sorry
-      · apply mul_nonneg
-        · apply mul_nonneg
-          apply pow_nonneg
-          apply mul_nonneg
-          · simp only [Nat.cast_nonneg]
-          · trans
-            · apply zero_le_one
-            · simp only [le_add_iff_nonneg_right]
-              apply house_nonneg
-          · apply pow_nonneg
-            apply house_nonneg
-        · apply pow_nonneg
-          apply house_nonneg
-    · simp_all only [Nat.cast_pos,
-        mul_nonneg_iff_of_pos_left, Nat.cast_nonneg]
   · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  -- · apply house_sum_le_sum_house
+  -- · apply sum_le_sum
+  --   intros i hi
+  --   apply house_mul_le
+  -- · nth_rw  1 [← one_mul ( a:= ∑ t_1,
+  --   house ((algebraMap (𝓞 K) K) (η α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq t_1)) *
+  --     house (sys_coe_r α β hirr htriv K σ hd α' β' γ' habc q t hq0 h2mq))]
+  --   apply mul_le_mul
+  --   · sorry
+  --   · apply Preorder.le_refl
+  --   · sorry
+  --   · sorry
+  -- · apply sum_le_sum
+  --   intros i hi
+  --   have := fromlemma82_bound α β hirr htriv K σ hd α' β' γ' habc q i hq0 h2mq
+  --   apply mul_le_mul
+  --   · exact this
+  --   · apply Preorder.le_refl
+  --   · apply house_nonneg
+  --   · apply mul_nonneg
+  --     · simp only [Real.rpow_natCast]
+  --       apply pow_nonneg
+  --       ·  apply (le_trans zero_le_one (one_leq_c₄ ..))
+  --     · apply Real.rpow_nonneg
+  --       simp only [Nat.cast_nonneg]
+  -- · apply sum_le_sum
+  --   intros i hi
+  --   apply mul_le_mul
+  --   · simp only [Real.rpow_natCast, le_refl]
+  --   · unfold sys_coe_r
+  --     trans
+  --     · apply house_mul_le
+  --     · rw [mul_comm]
+  --       nth_rw 1 [mul_assoc]
+  --       have : house (↑a + b • β') ^ r *
+  --         (house α' ^ (a * l₀) * house γ' ^ (b * l₀)) =
+  --         house γ' ^ (b * l₀) *
+  --         (house (↑a + b • β') ^ r * (house α' ^ (a * l₀))) := by {
+  --           rw [← mul_assoc]
+  --           rw [mul_comm (house γ' ^ (b * l₀))]}
+  --       rw [this]
+  --       clear this
+  --       apply mul_le_mul
+  --       · trans
+  --         · apply house_pow_le
+  --         · apply Preorder.le_refl
+  --       · trans
+  --         · apply house_mul_le
+  --         · apply mul_le_mul
+  --           · trans
+  --             · apply house_pow_le
+  --             · apply Preorder.le_refl
+  --           · trans
+  --             · apply house_pow_le
+  --             · apply Preorder.le_refl
+  --           · apply house_nonneg
+  --           · apply pow_nonneg
+  --             apply house_nonneg
+  --       · apply house_nonneg
+  --       · apply pow_nonneg
+  --         · apply house_nonneg
+  --   · apply house_nonneg
+  --   · apply mul_nonneg
+  --     · simp only [Real.rpow_natCast]
+  --       apply pow_nonneg
+  --       · sorry
+  --     · apply Real.rpow_nonneg
+  --       simp only [Nat.cast_nonneg]
+  -- · apply sum_le_sum
+  --   intros i hi
+  --   simp only [Real.rpow_natCast, nsmul_eq_mul]
+  --   apply mul_le_mul
+  --   · simp only [le_refl]
+  --   · apply mul_le_mul
+  --     · apply mul_le_mul
+  --       · refine pow_le_pow_left₀ ?_ ?_ r
+  --         sorry
+  --         sorry
+  --       · sorry
+  --       · apply pow_nonneg
+  --         · apply house_nonneg
+  --       · sorry
+  --     · sorry
+  --     · apply pow_nonneg
+  --       apply house_nonneg
+  --     · apply mul_nonneg
+  --       · apply pow_nonneg
+  --         apply mul_nonneg
+  --         · simp only [Nat.cast_nonneg]
+  --         · trans
+  --           · apply zero_le_one
+  --           · simp only [le_add_iff_nonneg_right]
+  --             apply house_nonneg
+  --       · apply pow_nonneg
+  --         apply house_nonneg
+  --   · apply mul_nonneg
+  --     · apply mul_nonneg
+  --       · apply pow_nonneg
+  --         apply house_nonneg
+  --       · apply pow_nonneg
+  --         apply house_nonneg
+  --     · apply pow_nonneg
+  --       apply house_nonneg
+  --   · sorry
+  -- · rw [sum_const, card_univ, Fintype.card_fin]
+  --   simp only [Real.rpow_natCast, Nat.reduceDiv,
+  --     zero_mul, pow_zero, mul_one, nsmul_eq_mul,
+  --     Nat.cast_mul, zpow_natCast]
+  --   apply mul_le_mul
+  --   · simp only [le_refl]
+  --   · apply mul_le_mul
+  --     · sorry
+  --     · sorry
+  --     · apply mul_nonneg
+  --       · apply mul_nonneg
+  --         apply pow_nonneg
+  --         · apply mul_nonneg
+  --           · simp only [Nat.cast_nonneg]
+  --           · trans
+  --             · apply zero_le_one
+  --             · simp only [le_add_iff_nonneg_right]
+  --               apply house_nonneg
+  --         · apply pow_nonneg
+  --           apply house_nonneg
+  --       · apply pow_nonneg
+  --         apply house_nonneg
+  --     · apply mul_nonneg
+  --       · sorry
+  --       · apply pow_nonneg
+  --         apply mul_nonneg
+  --         · sorry
+  --         · exact Nat.cast_nonneg' q
+  --   · apply mul_nonneg
+  --     · sorry
+  --     · apply mul_nonneg
+  --       · apply mul_nonneg
+  --         apply pow_nonneg
+  --         apply mul_nonneg
+  --         · simp only [Nat.cast_nonneg]
+  --         · trans
+  --           · apply zero_le_one
+  --           · simp only [le_add_iff_nonneg_right]
+  --             apply house_nonneg
+  --         · apply pow_nonneg
+  --           apply house_nonneg
+  --       · apply pow_nonneg
+  --         apply house_nonneg
+  --   · simp_all only [Nat.cast_pos,
+  --       mul_nonneg_iff_of_pos_left, Nat.cast_nonneg]
+  -- · sorry
 }
+
+lemma eq6b : (q*q) *
+  ((c₄ ^ (n : ℝ)) * ((n)^((1/2)*(n+1))) * (c₆* q) ^r * (c₇)^(q)) ≤ c₈^r * r^(r + 3/2) := sorry
+
+lemma eq6 : house ρ ≤ c₈^r * r^(r + 3/2) := by sorry
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3358,7 +3477,7 @@ def sys_coeff_foo_S : ρᵣ = Complex.log α ^ (-↑(r : ℤ)) * (S) ↑↑(l₀
   dsimp [ρᵣ]
   congr
   · sorry
-  }
+    }
 
 lemma eq7 (l' : Fin (m K)) :
   ρᵣ = log α ^ (-r : ℤ) * ((2 * ↑Real.pi * I)⁻¹ *
@@ -3376,9 +3495,9 @@ def c₁₀ : ℝ := sorry
 
 lemma abs_R : norm ((R) z) ≤ (c₁₀)^r * r^(1/2*(r+3)) := by
 
-  calc _ ≤ ∑ t, (‖σ ↑((η) t)‖ * ‖cexp (ρ α β q t * z)‖) := ?_
+  calc _ ≤ ∑ t, (‖(canonicalEmbedding K) ((algebraMap (𝓞 K) K) ((η) t)) σ‖ * ‖cexp (ρ α β q t * z)‖) := ?_
 
-       _ ≤ ∑ t : Fin (q*q), ((c₄)^(n : ℝ) * (n) ^((n +1)/2) *
+       _ ≤ ∑ t : Fin (q*q), ((c₄)^(n : ℝ) * (n) ^(((n:ℝ) +1)/2) *
          (Real.exp ((q+q*(norm β))* m *(1+r/q))*(norm α))) := ?_
 
        _ ≤ (q*q) * ((c₄)^(n : ℝ) * (n) ^((1/2)*(n +1))*(c₉)^(r+q)) := ?_
@@ -3394,8 +3513,8 @@ lemma abs_R : norm ((R) z) ≤ (c₁₀)^r * r^(1/2*(r+3)) := by
     apply mul_le_mul
     · have lemma82 := fromlemma82_bound
         α β hirr htriv K σ hd α' β' γ' habc q i hq0 h2mq
+      unfold house at lemma82
       sorry
-      --exact lemma82
     · --unfold ρ
       have : ∀ i, ‖cexp (ρ α β q i * z)‖ ≤
          (Real.exp ((q+q*(norm β))* m *(1+r/q)) * (norm α)) := sorry
