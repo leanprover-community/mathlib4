@@ -674,17 +674,13 @@ theorem LinearMap.toMatrix_smulBasis_left {G} [Group G] [DistribMulAction G M₁
     [SMulCommClass G R M₁] (g : G) (f : M₁ →ₗ[R] M₂) :
     LinearMap.toMatrix (g • v₁) v₂ f =
       LinearMap.toMatrix v₁ v₂ (f ∘ₗ DistribMulAction.toLinearMap _ _ g) := by
-  ext
-  rw [LinearMap.toMatrix_apply, LinearMap.toMatrix_apply]
-  dsimp
+  rfl
 
 theorem LinearMap.toMatrix_smulBasis_right {G} [Group G] [DistribMulAction G M₂]
     [SMulCommClass G R M₂] (g : G) (f : M₁ →ₗ[R] M₂) :
     LinearMap.toMatrix v₁ (g • v₂) f =
       LinearMap.toMatrix v₁ v₂ (DistribMulAction.toLinearMap _ _ g⁻¹ ∘ₗ f) := by
-  ext
-  rw [LinearMap.toMatrix_apply, LinearMap.toMatrix_apply]
-  dsimp
+  rfl
 
 end Finite
 
@@ -700,6 +696,12 @@ then this is the column matrix of `v₂.repr x`.` -/
 theorem LinearMap.toMatrix_toSpanSingleton [DecidableEq m] (v₁ : Module.Basis m R R) (x : M₂) :
     (toSpanSingleton R M₂ x).toMatrix v₁ v₂ = vecMulVec (v₂.repr x) v₁ := by
   ext; simp [toMatrix_apply, vecMulVec_apply, mul_comm]
+
+@[simp]
+lemma LinearMap.toMatrix_smulRight (f : M₁ →ₗ[R] R) (x : M₂) :
+    toMatrix v₁ v₂ (f.smulRight x) = vecMulVec (v₂.repr x) (f ∘ v₁) := by
+  ext i j
+  simpa [toMatrix_apply, vecMulVec_apply] using mul_comm _ _
 
 theorem Matrix.toLin_apply (M : Matrix m n R) (v : M₁) :
     Matrix.toLin v₁ v₂ M v = ∑ j, (M *ᵥ v₁.repr v) j • v₂ j :=

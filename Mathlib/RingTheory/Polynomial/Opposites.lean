@@ -76,10 +76,7 @@ theorem opRingEquiv_symm_C_mul_X_pow (r : Rᵐᵒᵖ) (n : ℕ) :
 
 @[simp]
 theorem coeff_opRingEquiv (p : R[X]ᵐᵒᵖ) (n : ℕ) :
-    (opRingEquiv R p).coeff n = op ((unop p).coeff n) := by
-  induction p with | _ p
-  cases p
-  rfl
+    (opRingEquiv R p).coeff n = op ((unop p).coeff n) := rfl
 
 @[simp]
 theorem support_opRingEquiv (p : R[X]ᵐᵒᵖ) : (opRingEquiv R p).support = (unop p).support := by

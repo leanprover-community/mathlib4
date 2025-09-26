@@ -141,11 +141,11 @@
   "Mathlib.Tactic.Order",
   "Mathlib.Tactic.PPWithUniv",
   "Mathlib.Tactic.Peel",
-  "Mathlib.Tactic.Polyrith",
   "Mathlib.Tactic.Positivity",
   "Mathlib.Tactic.Positivity.Basic",
   "Mathlib.Tactic.Positivity.Finset",
   "Mathlib.Tactic.Push",
+  "Mathlib.Tactic.Push.Attr",
   "Mathlib.Tactic.Qify",
   "Mathlib.Tactic.RSuffices",
   "Mathlib.Tactic.Recover",
@@ -200,7 +200,7 @@
   "Mathlib.Tactic.Linter",
   "Mathlib.Init"],
  "ignore":
- {"Mathlib.Util.Notation3": ["Lean.Elab.BuiltinCommand"],
+ {"Mathlib.Util.Notation3": ["Lean.Elab.AuxDef", "Lean.Elab.BuiltinCommand"],
   "Mathlib.Topology.UniformSpace.Defs": ["Mathlib.Tactic.Monotonicity.Basic"],
   "Mathlib.Topology.Sober": ["Mathlib.Algebra.HierarchyDesign"],
   "Mathlib.Topology.Sheaves.Forget": ["Mathlib.Algebra.Category.Ring.Limits"],
@@ -255,6 +255,7 @@
   ["Mathlib.Order.BoundedOrder.Basic", "Mathlib.Order.Lattice"],
   "Mathlib.Tactic.NormNum.ModEq":
   ["Mathlib.Data.Int.ModEq", "Mathlib.Tactic.NormNum.DivMod"],
+  "Mathlib.Tactic.NormNum.Parity": ["Mathlib.Algebra.Ring.Int.Parity"],
   "Mathlib.Tactic.NormNum.Ineq":
   ["Mathlib.Algebra.Order.Field.Defs", "Mathlib.Algebra.Order.Monoid.WithTop"],
   "Mathlib.Tactic.NormNum.BigOperators":
@@ -301,6 +302,7 @@
    "Mathlib.Tactic.Positivity.Core"],
   "Mathlib.Tactic.FinCases": ["Mathlib.Data.Fintype.Basic"],
   "Mathlib.Tactic.FieldSimp.Lemmas": ["Mathlib.Algebra.Field.Power"],
+  "Mathlib.Tactic.FieldSimp": ["Mathlib.Tactic.FieldSimp.Attr"],
   "Mathlib.Tactic.Eval": ["Qq.Macro"],
   "Mathlib.Tactic.DeriveFintype":
   ["Mathlib.Data.Fintype.Basic",
@@ -360,6 +362,7 @@
   ["Mathlib.LinearAlgebra.FreeModule.IdealQuotient"],
   "Mathlib.RingTheory.Finiteness.Defs": ["Mathlib.Data.Finsupp.Defs"],
   "Mathlib.RingTheory.Adjoin.Basic": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
+  "Mathlib.RingTheory.PowerSeries.Restricted": ["Mathlib.Tactic.Bound"],
   "Mathlib.RepresentationTheory.FdRep":
   ["Mathlib.CategoryTheory.Monoidal.Rigid.Braided"],
   "Mathlib.RepresentationTheory.FDRep":
@@ -387,6 +390,7 @@
   "Mathlib.NumberTheory.ArithmeticFunction": ["Mathlib.Tactic.ArithMult"],
   "Mathlib.MeasureTheory.MeasurableSpace.Embedding": ["Mathlib.Tactic.FunProp"],
   "Mathlib.MeasureTheory.MeasurableSpace.Defs": ["Mathlib.Tactic.FunProp.Attr"],
+  "Mathlib.Logic.Relation": ["Mathlib.Logic.Basic"],
   "Mathlib.Logic.Nontrivial.Defs": ["Mathlib.Init.Logic"],
   "Mathlib.Logic.Function.Defs": ["Mathlib.Tactic.AdaptationNote"],
   "Mathlib.Logic.Function.Basic": ["Batteries.Tactic.Init"],
@@ -460,6 +464,7 @@
   "Mathlib.Data.FunLike.Basic": ["Mathlib.Logic.Function.Basic"],
   "Mathlib.Data.Finsupp.Notation": ["Mathlib.Data.Finsupp.Single"],
   "Mathlib.Data.Finset.Insert": ["Mathlib.Data.Finset.Attr"],
+  "Mathlib.Data.Finset.Image": ["Mathlib.Data.Finset.Lattice.Lemmas"],
   "Mathlib.Data.ByteArray": ["Batteries.Data.ByteSubarray"],
   "Mathlib.Data.Bool.Basic": ["Batteries.Tactic.Init"],
   "Mathlib.Control.Traversable.Instances": ["Mathlib.Control.Applicative"],
@@ -479,6 +484,7 @@
   "Mathlib.CategoryTheory.Sites.IsSheafFor":
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono"],
   "Mathlib.CategoryTheory.Preadditive.Basic": ["Mathlib.Algebra.Module.End"],
+  "Mathlib.CategoryTheory.NatTrans": ["Mathlib.Tactic.CategoryTheory.Reassoc"],
   "Mathlib.CategoryTheory.Monoidal.Rigid.Basic":
   ["Mathlib.Tactic.CategoryTheory.Monoidal.Basic"],
   "Mathlib.CategoryTheory.Monoidal.Mon_":
@@ -490,6 +496,7 @@
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback",
    "Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
   "Mathlib.CategoryTheory.Limits.IsLimit": ["Batteries.Tactic.Congr"],
+  "Mathlib.CategoryTheory.Iso": ["Mathlib.Tactic.CategoryTheory.Reassoc"],
   "Mathlib.CategoryTheory.Functor.Basic":
   ["Mathlib.Tactic.CategoryTheory.CheckCompositions"],
   "Mathlib.CategoryTheory.Bicategory.Functor.Oplax":
@@ -555,7 +562,9 @@
   "Mathlib.Algebra.Group.Idempotent": ["Mathlib.Data.Subtype"],
   "Mathlib.Algebra.Group.Even": ["Mathlib.Data.Set.Operations"],
   "Mathlib.Algebra.Group.Defs":
-  ["Mathlib.Algebra.Notation.Defs", "Mathlib.Tactic.OfNat"],
+  ["Mathlib.Algebra.Notation.Defs",
+   "Mathlib.Logic.Function.Defs",
+   "Mathlib.Tactic.OfNat"],
   "Mathlib.Algebra.GeomSum": ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
   "Mathlib.Algebra.Category.Ring.Basic":
   ["Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso"],
