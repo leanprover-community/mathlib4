@@ -98,6 +98,17 @@ def ofEmbedding : β ↪o DedekindCut β where
 
 @[simp] theorem ofEmbedding_coe : ⇑(@ofEmbedding β _) = of := rfl
 
+@[simp]
+theorem of_sSup (A : DedekindCut γ) : of (sSup A.left) = A := by
+  apply Concept.ext'
+  ext
+  rw [← right, ← right, right_of, mem_Ici, sSup_le_iff, ← upperBounds_left, mem_upperBounds]
+
+@[simp]
+theorem of_sInf (A : DedekindCut γ) : of (sInf A.right) = A := by
+  ext
+  rw [← left, ← left, left_of, mem_Iic, le_sInf_iff, ← lowerBounds_right, mem_lowerBounds]
+
 /-- Any order embedding `β ↪o γ` into a complete lattice factors through `DedekindCut β`.
 
 This map is defined so that `factorEmbedding f A = sSup (f '' A.left)`. Although the construction
@@ -129,6 +140,17 @@ it, in the sense that any embedding into any complete lattice factors through it
 theorem factorEmbedding_factors (f : β ↪o γ) :
     ofEmbedding.trans (factorEmbedding f) = f := by
   ext; simp
+
+/-- `DedekindCut.of` as an `OrderIso`. -/
+@[simps! apply]
+def ofIso : γ ≃o DedekindCut γ where
+  invFun := factorEmbedding (OrderIso.refl _).toOrderEmbedding
+  left_inv := factorEmbedding_ofElement _
+  right_inv x := by simp [factorEmbedding]
+  __ := ofEmbedding
+
+theorem ofIso_symm_apply (A : DedekindCut γ) : ofIso.symm A = sSup A.left :=
+  (factorEmbedding_apply ..).trans <| by simp
 
 noncomputable instance : DecidableLE (DedekindCut α) :=
   Classical.decRel _
