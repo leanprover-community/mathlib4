@@ -409,6 +409,7 @@ example {x : ℚ} (hx : x ≠ 0) : x * x⁻¹ = 1 := by
   field
 
 -- `field` will suggest `field_simp` on failure, if `field_simp` does anything.
+
 /--
 info: Try this: field_simp
 ---
@@ -450,72 +451,6 @@ example (a b : ℚ) (f : ℚ → ℚ) : f (a ^ 2 * b / a) - f (b ^ 2 * a / b) = 
 example (a b : ℚ) (f : ℚ → ℚ) : f (a ^ 2 * b / a) - f (b ^ 2 * a / b) = 0 := by
   field_simp
   ring1
-
--- `field` does not fully clear denominators in these examples, but calling different normalizations
--- in succession eventually succeeds.
-
--- This example is used in the `field` docstring.
-example {a b : ℚ} (H : b + a ≠ 0) : a / (a + b) + b / (b + a) = 1 := by
-  ring_nf at *
-  field
-
-/--
-info: Try this: field_simp
----
-error: unsolved goals
-a b : ℚ
-H : b + a ≠ 0
-⊢ (a + b) / (a + b) = 1
--/
-#guard_msgs in
-example {a b : ℚ} (H : b + a ≠ 0) : a / (a + b) + b / (b + a) = 1 := by
-  ring_nf
-  field
-
-/--
-info: Try this: field_simp
----
-error: unsolved goals
-a b : ℚ
-H : b + a ≠ 0
-⊢ a * (b + a) / (a + b) + b = b + a
--/
-#guard_msgs in
-example {a b : ℚ} (H : b + a ≠ 0) : a / (a + b) + b / (b + a) = 1 := by
-  field
-
-example {a b : ℚ} (H : a + b + 1 ≠ 0) :
-    a / (a + (b + 1) ^ 2 / (b + 1)) + (b + 1) / (b + a + 1) = 1 := by
-  field_simp
-  ring_nf at *
-  field
-
-/--
-info: Try this: field_simp
----
-error: unsolved goals
-a b : ℚ
-H : 1 + a + b ≠ 0
-⊢ a * (1 + a + b) / (a + b * 2 / (1 + b) + b ^ 2 / (1 + b) + 1 / (1 + b)) + b + 1 = 1 + a + b
--/
-#guard_msgs in
-example {a b : ℚ} (H : a + b + 1 ≠ 0) :
-    a / (a + (b + 1) ^ 2 / (b + 1)) + (b + 1) / (b + a + 1) = 1 := by
-  ring_nf at *
-  field
-
-/--
-info: Try this: field_simp
----
-error: unsolved goals
-a b : ℚ
-H : a + b + 1 ≠ 0
-⊢ a / (a + (b + 1)) + (b + 1) / (b + a + 1) = 1
--/
-#guard_msgs in
-example {a b : ℚ} (H : a + b + 1 ≠ 0) :
-    a / (a + (b + 1) ^ 2 / (b + 1)) + (b + 1) / (b + a + 1) = 1 := by
-  field
 
 /-! ### Mid-proof use -/
 
@@ -614,7 +549,7 @@ example {K : Type*} [Field K] {x : K} (hx : x ^ 5 = 1) (hx0 : x ≠ 0) (hx1 : x 
     (x ^ 2 + 1) * (x ^ 2 + 1 + x) = (x ^ 5 - 1) / (x - 1) + x ^ 2 := by field
     _ = x ^ 2 := by simp [hx]
 
--- used in `field` simproc docstring
+-- used in `field` simproc-set docstring
 example {K : Type*} [Field K] {x : K} (hx : x ^ 5 = 1) (hx0 : x ≠ 0) (hx1 : x - 1 ≠ 0) :
     (x + 1 / x) ^ 2 + (x + 1 / x) = 1 := by
   simp only [field]
@@ -652,9 +587,10 @@ normalize properly.
 It is not clear whether or not this iterated alternation always achieves the "obvious" normalization
 eventually. Nor is it clear whether, if so, there are any bounds on how many iterations are needed.
 -/
-section
 
 -- modified from 2021 American Mathematics Competition 12B, problem 9
+section
+
 example (P : ℝ → Prop) {x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
     P ((4 * x + y) / x / (x / (3 * x + y)) - (5 * x + y) / x / (x / (2 * x + y))) := by
   ring_nf
@@ -676,6 +612,73 @@ example (P : ℝ → Prop) {x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
   field_simp
   guard_target = P 2
   exact test_sorry
+
+end
+
+section
+
+-- This example is used in the `field` docstring.
+example {a b : ℚ} (H : b + a ≠ 0) : a / (a + b) + b / (b + a) = 1 := by
+  ring_nf at *
+  field
+
+/--
+info: Try this: field_simp
+---
+error: unsolved goals
+a b : ℚ
+H : b + a ≠ 0
+⊢ (a + b) / (a + b) = 1
+-/
+#guard_msgs in
+example {a b : ℚ} (H : b + a ≠ 0) : a / (a + b) + b / (b + a) = 1 := by
+  ring_nf
+  field
+
+/--
+info: Try this: field_simp
+---
+error: unsolved goals
+a b : ℚ
+H : b + a ≠ 0
+⊢ a * (b + a) / (a + b) + b = b + a
+-/
+#guard_msgs in
+example {a b : ℚ} (H : b + a ≠ 0) : a / (a + b) + b / (b + a) = 1 := by
+  field
+
+example {a b : ℚ} (H : a + b + 1 ≠ 0) :
+    a / (a + (b + 1) ^ 2 / (b + 1)) + (b + 1) / (b + a + 1) = 1 := by
+  field_simp
+  ring_nf at *
+  field
+
+/--
+info: Try this: field_simp
+---
+error: unsolved goals
+a b : ℚ
+H : 1 + a + b ≠ 0
+⊢ a * (1 + a + b) / (a + b * 2 / (1 + b) + b ^ 2 / (1 + b) + 1 / (1 + b)) + b + 1 = 1 + a + b
+-/
+#guard_msgs in
+example {a b : ℚ} (H : a + b + 1 ≠ 0) :
+    a / (a + (b + 1) ^ 2 / (b + 1)) + (b + 1) / (b + a + 1) = 1 := by
+  ring_nf at *
+  field
+
+/--
+info: Try this: field_simp
+---
+error: unsolved goals
+a b : ℚ
+H : a + b + 1 ≠ 0
+⊢ a / (a + (b + 1)) + (b + 1) / (b + a + 1) = 1
+-/
+#guard_msgs in
+example {a b : ℚ} (H : a + b + 1 ≠ 0) :
+    a / (a + (b + 1) ^ 2 / (b + 1)) + (b + 1) / (b + a + 1) = 1 := by
+  field
 
 end
 

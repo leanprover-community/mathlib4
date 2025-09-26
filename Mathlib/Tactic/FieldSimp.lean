@@ -691,8 +691,8 @@ pattern.
 Cancelling and combining denominators will generally require checking "nonzeroness"/"positivity"
 side conditions. The `field_simp` tactic attempts to discharge these, and will omit such steps if it
 cannot discharge the corresponding side conditions. The discharger will try, among other things,
-`positivity` and `norm_num`, and will also use any nonzeroness proofs included explicitly (e.g.
-`field_simp [hx]`). If your expression is not completely reduced by `field_simp`, check the
+`positivity` and `norm_num`, and will also use any nonzeroness/positivity proofs included explicitly
+(e.g. `field_simp [hx]`). If your expression is not completely reduced by `field_simp`, check the
 denominators of the resulting expression and provide proofs that they are nonzero/positive to enable
 further progress.
 -/
@@ -751,16 +751,17 @@ example {K : Type*} [Field K] {x : K} (hx0 : x ≠ 0) :
 ```
 
 The `field` simproc-set's functionality is a variant of the more general `field_simp` tactic, which
-clears denominators in field (in)equalities as well as bringing isolated field expressions into the
-normal form `n / d` (where neither `n` nor `d` contains any division symbol).
+not only clears denominators in field (in)equalities but also brings isolated field expressions into
+the normal form `n / d` (where neither `n` nor `d` contains any division symbol). (For confluence
+reasons, the `field` simprocs also have a slightly different normal form from `field_simp`'s.)
 
 Cancelling and combining denominators will generally require checking "nonzeroness"/"positivity"
 side conditions. The `field` simproc-set attempts to discharge these, and will omit such steps if it
 cannot discharge the corresponding side conditions. The discharger will try, among other things,
-`positivity` and `norm_num`, and will also use any nonzeroness proofs included explicitly in the
-simp call (e.g. `simp [field, hx]`). If your (in)equality is not completely reduced by the `field`
-simproc-set, check the denominators of the resulting (in)equality and provide proofs that they are
-nonzero/positive to enable further progress.
+`positivity` and `norm_num`, and will also use any nonzeroness/positivity proofs included explicitly
+in the simp call (e.g. `simp [field, hx]`). If your (in)equality is not completely reduced by the
+`field` simproc-set, check the denominators of the resulting (in)equality and provide proofs that
+they are nonzero/positive to enable further progress.
 -/
 def proc : Simp.Simproc := fun (t : Expr) ↦ do
   let ctx ← Simp.getContext
