@@ -3,6 +3,8 @@ Copyright (c) 2025 Luigi Massacci. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luigi Massacci
 -/
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 
 /-!
@@ -21,7 +23,7 @@ as a continuous linear map on bounded continuous functions
 -/
 
 open MeasureTheory Filter
-open scoped ENNReal NNReal BoundedContinuousFunction Topology
+open scoped BoundedContinuousFunction Topology
 
 namespace BoundedContinuousFunction
 
@@ -60,16 +62,14 @@ namespace LocallyIntegrable
 variable {𝕜 : Type*} [NormedField 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
 variable [LocallyCompactSpace X] [T2Space X] [SecondCountableTopology X]
 
-open TopologicalSpace LocallyIntegrableOn
+open TopologicalSpace
 
 omit [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E] [NormedSpace ℝ E] in
 theorem integrable_smul_LocallyIntegrable {f : X → E} (hf : LocallyIntegrable f μ) (K : Compacts X)
   (φ : X →ᵇ 𝕜) :
     Integrable (fun x ↦ (φ x) • (f x)) (μ.restrict K) :=
-  integrableOn_isCompact
-    ((hf.locallyIntegrableOn K).continuousOn_smul K.isCompact.isClosed.isLocallyClosed
-      φ.continuous.continuousOn)
-    K.isCompact
+  ((hf.locallyIntegrableOn K).continuousOn_smul K.isCompact.isClosed.isLocallyClosed
+    φ.continuous.continuousOn).integrableOn_isCompact K.isCompact
 
 variable [SMulCommClass ℝ 𝕜 E]
 
@@ -97,7 +97,7 @@ noncomputable def testAgainstCLM {f : X → E} (hf : LocallyIntegrable f μ) (K 
   (by
     intro φ
     have hf' : Integrable f (μ.restrict K) :=
-      integrableOn_isCompact (hf.locallyIntegrableOn K) K.isCompact
+      (hf.locallyIntegrableOn K).integrableOn_isCompact K.isCompact
     set g := fun x ↦ ‖φ‖ * ‖f x‖ with g_def
     have hg : Integrable g (μ.restrict K) := hf'.norm.const_mul _
     have h : ∀ᵐ x ∂(μ.restrict K), ‖φ x • f x‖ ≤ g x := by
