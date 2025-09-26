@@ -25,30 +25,53 @@ open Concept Set
 
 variable {α β γ : Type*} [Preorder α] [PartialOrder β] [CompleteLattice γ]
 
+variable (α) in
+/-- The **Dedekind-MacNeille completion** of a partial order is the smallest complete lattice that
+contains it. We define here the type of Dedekind cuts of `α` as the `Concept` lattice of the `≤`
+relation of `α`.
+
+For `A : DedekindCut α`, the sets `A.left` and `A.right` are related by
+`upperBounds A.left = A.right` and `lowerBounds A.right = A.left`.
+
+The file `Order.Dedekind` proves that if `α` is a partial order and `β` is a complete lattice, any
+embedding `α ↪o β` factors through `DedekindCut α`. -/
+abbrev DedekindCut := Concept α α (· ≤ ·)
+
 namespace DedekindCut
 
-theorem image_fst_subset_lowerBounds {β : Type*} [Preorder β] {f : α → β} (hf : Monotone f)
-    (A : DedekindCut α) : f '' A.fst ⊆ lowerBounds (f '' A.snd) := by
-  rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
-  exact hf <| rel_fst_snd hx hy
+/-- The left set of a Dedekind cut. -/
+abbrev left (A : DedekindCut α) : Set α := A.extent
 
-theorem image_snd_subset_upperBounds {β : Type*} [Preorder β] {f : α → β} (hf : Monotone f)
-    (A : DedekindCut α) : f '' A.snd ⊆ upperBounds (f '' A.fst) := by
+/-- The right set of a Dedekind cut. -/
+abbrev right (A : DedekindCut α) : Set α := A.intent
+
+@[simp]
+theorem upperBounds_left (A : DedekindCut α) : upperBounds A.left = A.right :=
+  A.upperPolar_extent
+
+@[simp]
+theorem lowerBounds_right (A : DedekindCut α) : lowerBounds A.right = A.left :=
+  A.lowerPolar_intent
+
+theorem image_left_subset_lowerBounds {β : Type*} [Preorder β] {f : α → β} (hf : Monotone f)
+    (A : DedekindCut α) : f '' A.left ⊆ lowerBounds (f '' A.right) := by
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
-  exact hf <| rel_fst_snd hy hx
+  exact hf <| rel_extent_intent hx hy
+
+theorem image_right_subset_upperBounds {β : Type*} [Preorder β] {f : α → β} (hf : Monotone f)
+    (A : DedekindCut α) : f '' A.right ⊆ upperBounds (f '' A.left) := by
+  rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
+  exact hf <| rel_extent_intent hy hx
 
 /-- Convert an element into its Dedekind cut (`Iic a`, `Ici a`). This map is order-preserving,
 though it is injective only on partial orders. -/
-@[simps!]
-def ofElement (a : α) : DedekindCut α where
-  fst := Iic a
-  snd := Ici a
-  closure_fst := upperBounds_Iic
-  closure_snd := lowerBounds_Ici
+def of (a : α) : DedekindCut α :=
+  (Concept.ofObject _ a).copy
 
-@[simp] theorem fst_ofElement (a : α) : (ofElement a).fst = Iic a := rfl
-@[simp] theorem snd_ofElement (a : α) : (ofElement a).snd = Ici a := rfl
+@[simp] theorem left_of (a : α) : (of a).left = Iic a := rfl
+@[simp] theorem right_of (a : α) : (of a).right = Ici a := rfl
 
+#exit
 @[simp]
 theorem ofElement_le_ofElement {a b : α} : ofElement a ≤ ofElement b ↔ a ≤ b := by
   simp [← fst_subset_fst_iff]
