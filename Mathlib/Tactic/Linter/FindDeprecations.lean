@@ -51,11 +51,7 @@ def addAfterImports (fname s : String) : CommandElabM String := do
   let fileSubstring := file.toSubstring
   return {fileSubstring with stopPos := pos}.toString ++ s ++
     {fileSubstring with startPos := pos}.toString
-run_cmd
-  --let fname ← getFileName
-  let fname := "Mathlib/Logic/Basic.lean"
-  dbg_trace (← addAfterImports fname
-    "\nset_option linter.removeDeprecations \"2025-07-19 2025-09-20\"\n")
+
 /--
 If `nm` is the name of a declaration, then `getDeprecatedInfo nm` returns the
 `DeprecationInfo` data for `nm`.
@@ -149,7 +145,6 @@ elab "#regenerate_deprecations " oldDate:str newDate:str really?:("really")? : c
   let oldDate := oldDate.getString
   let newDate := newDate.getString
   let dmap ← deprecatedHashMap oldDate newDate
-  --dbg_trace "{dmap.fold (init := 0) fun tot _ rgs => tot + rgs.size - 1} deprecations among {dmap.size} files"
   for (mod, rgs) in dmap.toArray.qsort (·.1 < ·.1) do
     let option := s!"\nset_option linter.removeDeprecations \"{oldDate} {newDate}\"\n"
     dbg_trace s!"Adding '{option}' to '{mod}'"
@@ -162,13 +157,12 @@ elab "#regenerate_deprecations " oldDate:str newDate:str really?:("really")? : c
     if false then
     let mod1 := repo ++ (mod.splitOn repo).getLast!
     let rgs := cleanUpRanges rgs
-    --dbg_trace "From '{mod1}' remove\n{rgs.map fun | ⟨a, b⟩ => (a, b)}\n---\n{← removeDeprecations mod rgs}"
     let num := rgs.size - 1
     dbg_trace "remove {num} declaration{if num == 1 then " " else "s"} from '{mod1}'"
     if really?.isSome then
       IO.FS.writeFile mod (← removeDeprecations mod rgs)
 
-#regenerate_deprecations "2025-07-19" "2025-09-20" --really
+--#regenerate_deprecations "2025-07-19" "2025-09-20" --really
 
 open Lean Elab Command in
 elab "#remove_deprecated_declarations " oldDate:str newDate:str really?:("really")? : command => do
@@ -176,80 +170,16 @@ elab "#remove_deprecated_declarations " oldDate:str newDate:str really?:("really
   let oldDate := oldDate.getString
   let newDate := newDate.getString
   let dmap ← deprecatedHashMap oldDate newDate
-  dbg_trace "{dmap.fold (init := 0) fun tot _ rgs => tot + rgs.size - 1} deprecations among {dmap.size} files"
+  dbg_trace "{dmap.fold (init := 0) fun tot _ rgs => tot + rgs.size - 1} \
+      deprecations among {dmap.size} files"
   for (mod, rgs) in dmap.toArray.qsort (·.1 < ·.1) do
     let mod1 := repo ++ (mod.splitOn repo).getLast!
     let rgs := cleanUpRanges rgs
-    dbg_trace "From '{mod1}' remove\n{rgs.map fun | ⟨a, b⟩ => (a, b)}\n---\n{← removeDeprecations mod rgs}"
+    dbg_trace
+      "From '{mod1}' remove\n{rgs.map fun | ⟨a, b⟩ => (a, b)}\n---\n{← removeDeprecations mod rgs}"
     let num := rgs.size - 1
     dbg_trace "remove {num} declaration{if num == 1 then " " else "s"} from '{mod1}'"
     if really?.isSome then
       IO.FS.writeFile mod (← removeDeprecations mod rgs)
 
-#remove_deprecated_declarations "2025-07-19" "2025-09-20" --really
-
-#exit
-
-/--
-info: import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
-import Mathlib.Order.RelClasses
-import Mathlib.Tactic.Linter.DeprecatedModule
-
-deprecated_module (since := "2025-09-02")
-
-whatsnew in
-whatsnew in
-theorem NotDeprecated : True := trivial
--/
-#guard_msgs in
-run_cmd
-  let modName : Name := `Mathlib.Deprecated.Order
-  let oldDate := "2025-09-02"
-  let dmap ← deprecatedHashMap oldDate
-  let lean ← findLean (← getSrcSearchPath) modName
-  let file ← IO.FS.readFile lean
-  for (d, rgs) in dmap do
-    if d != file then continue
-    else
-/-
-  let fm := FileMap.ofString file
-  --dbg_trace file
-
-  let mut rgs := #[]
-  --for nm in #[``X, ``Y, ``Z, ``NotDeprecated] do
-  for (nm, _) in (← getEnv).constants.map₁ do
-    --if nm == ``X then dbg_trace "found {nm}"
-    if let some ⟨mod, rgStart, rgStop, since⟩ ← getDeprecatedInfo nm false
-    then
-      if mod != modName then
-        --if nm == ``X then dbg_trace "wrong mod {mod}"
-        continue
-      if since < oldDate then
-        --if nm == ``X then dbg_trace "wrong since {since}"
-        continue
-      let rg : String.Range := ⟨fm.ofPosition rgStart, fm.ofPosition rgStop⟩
-      rgs := rgs.binInsert (·.1 < ·.1) rg
-  --dbg_trace rgs.size
-  --dbg_trace rgs.map fun | {start := a, stop := b} => (a, b)
-  --let rgs : Array String.Range := #[]
-  rgs := rgs.push (⟨fm.positions.back!, default⟩)
--/
-  let mut curr : String.Pos := 0
-  let mut fileSubstring := file.toSubstring
-  let mut tot := ""
-  for next in rgs do
-    let part := {fileSubstring with stopPos := next.start}.toString
-    tot := tot ++ part
-    curr := next.start
-    fileSubstring := {fileSubstring with startPos := next.stop}.trimLeft
-  dbg_trace tot
-
-
-
-run_cmd
-  for nm in #[``X, ``Y, ``Z] do
-    let ⟨mod, rgStart, rgStop, since⟩ ← getDeprecatedInfo nm true
-#eval do
-  findLean (← getSrcSearchPath) `Mathlib.Deprecated.Order
-
-#check findModuleOf?
+--#remove_deprecated_declarations "2025-07-19" "2025-09-20" --really
