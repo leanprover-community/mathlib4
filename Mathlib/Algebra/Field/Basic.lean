@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Ring.GrindInstances
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.Ring.Invertible
@@ -119,11 +118,6 @@ theorem one_div_mul_sub_mul_one_div_eq_one_div_add_one_div (ha : a ≠ 0) (hb : 
 -- see Note [lower instance priority]
 instance (priority := 100) DivisionRing.isDomain : IsDomain K :=
   NoZeroDivisors.to_isDomain _
-
-/-- A ring homomorphism from a division ring to a non-trivial semiring is injective. -/
-theorem RingHom.injective_from_divisionRing {S F : Type*} [Nontrivial S] [Semiring S]
-    [FunLike F K S] [rc : RingHomClass F K S] (f : F) : Function.Injective f :=
-  injective_iff_map_eq_zero' _ |>.mpr fun _ ↦ map_eq_zero _
 
 protected theorem Commute.div_sub_div (hbc : Commute b c) (hbd : Commute b d) (hb : b ≠ 0)
     (hd : d ≠ 0) : a / b - c / d = (a * d - b * c) / (b * d) := by
