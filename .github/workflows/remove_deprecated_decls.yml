@@ -45,7 +45,9 @@ jobs:
         # show the current pwd:
         printf $'Current directory is: %s\n' "$(pwd)"
         for repo in Mathlib Archive Counterexamples; do
+          echo "::group::Retrieving the cache for ${repo}"
           lake exe cache get "$repo" || true
+          echo "::endgroup::"
         done
         # We create a temporary file to run the command that adds the set_option linter.removeDeprecations
         # to the relevant files and saves the modified files with a new name
