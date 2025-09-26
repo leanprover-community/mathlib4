@@ -22,10 +22,6 @@ the concept lattice of its `≤`.
 Concept lattices are usually defined from a *context*, that is the triple `(α, β, r)`, but the type
 of `r` determines `α` and `β` already, so we do not define contexts as a separate object.
 
-## TODO
-
-Prove the fundamental theorem of concept lattices.
-
 ## References
 
 * [Davey, Priestley *Introduction to Lattices and Order*][davey_priestley]
@@ -611,6 +607,8 @@ instance : SupSet (Concept α β r) where
 instance : InfSet (Concept α β r) where
   sInf S := (isExtent_iInter₂ _ fun c (_ : c ∈ S) => c.isExtent_extent).concept
 
+/-- One half of the **fundamental theorem of concept lattices**: every concept lattice is a complete
+lattice. -/
 instance : CompleteLattice (Concept α β r) where
   le_sSup _ _ hc := intent_subset_intent_iff.1 <| biInter_subset_of_mem hc
   sSup_le _ _ hc :=

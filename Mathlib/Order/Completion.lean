@@ -147,7 +147,10 @@ theorem factorEmbedding_factors (f : β ↪o γ) :
     ofEmbedding.trans (factorEmbedding f) = f := by
   ext; simp
 
-/-- `DedekindCut.of` as an `OrderIso`. -/
+/-- `DedekindCut.of` as an `OrderIso`.
+
+This provides the second half of the **fundamental theorem of concept lattices**: every complete
+lattice is isomorphic to a concept lattice. -/
 @[simps! apply]
 def ofIso : γ ≃o DedekindCut γ where
   invFun := factorEmbedding (OrderIso.refl _).toOrderEmbedding
