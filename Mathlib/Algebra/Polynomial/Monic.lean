@@ -49,11 +49,8 @@ theorem Monic.as_sum (hp : p.Monic) :
   suffices C (p.coeff p.natDegree) = 1 by rw [this, one_mul]
   exact congr_arg C hp
 
-theorem ne_zero_of_ne_zero_of_monic (hp : p ≠ 0) (hq : Monic q) : q ≠ 0 := by
-  rintro rfl
-  rw [Monic.def, leadingCoeff_zero] at hq
-  rw [← mul_one p, ← C_1, ← hq, C_0, mul_zero] at hp
-  exact hp rfl
+@[deprecated (since := "2025-08-14")] alias ne_zero_of_ne_zero_of_monic :=
+  Monic.ne_zero_of_polynomial_ne
 
 theorem Monic.map [Semiring S] (f : R →+* S) (hp : Monic p) : Monic (p.map f) := by
   unfold Monic
@@ -546,8 +543,6 @@ theorem leadingCoeff_smul_of_smul_regular {S : Type*} [SMulZeroClass S R] {k : S
 theorem monic_of_isUnit_leadingCoeff_inv_smul (h : IsUnit p.leadingCoeff) :
     Monic (h.unit⁻¹ • p) := by
   rw [Monic.def, leadingCoeff_smul_of_smul_regular _ (isSMulRegular_of_group _), Units.smul_def]
-  obtain ⟨k, hk⟩ := h
-  simp only [← hk, smul_eq_mul, ← Units.val_mul, Units.val_eq_one, inv_mul_eq_iff_eq_mul]
   simp
 
 theorem isUnit_leadingCoeff_mul_right_eq_zero_iff (h : IsUnit p.leadingCoeff) {q : R[X]} :

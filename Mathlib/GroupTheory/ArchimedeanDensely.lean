@@ -271,7 +271,7 @@ lemma LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered (G : Type*)
   intro e H
   rw [denselyOrdered_iff_of_orderIsoClass e] at H
   obtain ⟨_, _⟩ := exists_between (one_pos (α := ℤ))
-  omega
+  cutsat
 
 variable (G) in
 /-- Any linearly ordered mul-archimedean group is either isomorphic (and order-isomorphic)
@@ -455,6 +455,12 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_disc
     intro a _ _ b _ hb0
     refine inv_strictAnti₀ ?_
     simp [zero_lt_iff, hb0]
+
+instance instWellFoundedGTWithZeroMultiplicativeIntLeOne :
+    WellFoundedGT { v : ℤᵐ⁰ // v ≤ 1 } :=
+  { wf :=
+    (LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete_of_ne_zero
+    one_ne_zero).mpr instNonemptyOfInhabited }
 
 end WellFounded
 
