@@ -5335,6 +5335,7 @@ import Mathlib.Probability.ProductMeasure
 import Mathlib.Probability.StrongLaw
 import Mathlib.Probability.UniformOn
 import Mathlib.Probability.Variance
+import Mathlib.RMDcEq
 import Mathlib.RepresentationTheory.Basic
 import Mathlib.RepresentationTheory.Character
 import Mathlib.RepresentationTheory.Coinduced
