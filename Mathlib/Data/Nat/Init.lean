@@ -455,7 +455,7 @@ instance (priority := 100) toNeZero (n : ℕ) [n.AtLeastTwo] : NeZero n :=
   ⟨Nat.ne_of_gt (Nat.le_of_lt one_lt)⟩
 
 variable (n) in
-lemma neZero_sub_one : NeZero (n - 1) := ⟨by have := prop (n := n); omega⟩
+lemma neZero_sub_one : NeZero (n - 1) := ⟨by have := prop (n := n); cutsat⟩
 
 end AtLeastTwo
 
