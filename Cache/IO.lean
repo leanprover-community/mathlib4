@@ -32,6 +32,7 @@ def isPartOfMathlibCache (mod : Name) : Bool := #[
   `Cli,
   `ImportGraph,
   `LeanSearchClient,
+  `Reap,
   `Plausible,
   `Qq,
   `ProofWidgets,
