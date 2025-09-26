@@ -85,7 +85,7 @@ functor when `n = 0`. -/
 def shiftFunctorZero' (n : ℤ) (h : n = 0) :
     shiftFunctor C n ≅ 𝟭 _ :=
   NatIso.ofComponents (fun K => Hom.isoOfComponents
-    (fun i => K.shiftFunctorObjXIso _ _ _ (by omega))
+    (fun i => K.shiftFunctorObjXIso _ _ _ (by cutsat))
     (fun _ _ _ => by simp [h])) (fun _ ↦ by ext; simp)
 
 /-- The compatibility of the shift functors on `CochainComplex C ℤ` with respect
@@ -94,7 +94,7 @@ to the addition of integers. -/
 def shiftFunctorAdd' (n₁ n₂ n₁₂ : ℤ) (h : n₁ + n₂ = n₁₂) :
     shiftFunctor C n₁₂ ≅ shiftFunctor C n₁ ⋙ shiftFunctor C n₂ :=
   NatIso.ofComponents (fun K => Hom.isoOfComponents
-    (fun i => K.shiftFunctorObjXIso _ _ _ (by omega))
+    (fun i => K.shiftFunctorObjXIso _ _ _ (by cutsat))
     (fun _ _ _ => by
       subst h
       dsimp
