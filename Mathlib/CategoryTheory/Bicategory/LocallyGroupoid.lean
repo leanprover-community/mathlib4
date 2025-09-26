@@ -33,13 +33,13 @@ universe w₁ w₂ v₁ v₂ u₁ u₂
 
 /-- A bicategory is locally groupoidal if the categories of 1-morphisms are groupoids. -/
 @[kerodon 009Q]
-abbrev IsLocallyGroupoid (B : Type*) [Bicategory B] := ∀ (b c : B), IsGroupoid (b ⟶ c)
+abbrev IsLocallyGroupoid (B : Type u₁) [Bicategory.{w₁, v₁} B] := ∀ (b c : B), IsGroupoid (b ⟶ c)
 
 /-- Given a bicategory `B`, `Pith B` is the bicategory obtain by discarding the non-invertible
 2-cells from `B`. We implement this as a wrapper type for `B`, and use `CategoryTheory.Core`
 to discard the non-invertible morphisms. -/
 @[kerodon 00AL]
-structure Pith (B : Type*) where
+structure Pith (B : Type u₁) where
   /-- The underlying object of the bicategory. -/
   as : B
 
@@ -66,7 +66,7 @@ lemma id_of (a : Pith B) : (𝟙 a : a ⟶ a).of = 𝟙 a.as := rfl
 @[simp]
 lemma comp_of {a b c : Pith B} (f : a ⟶ b) (g : b ⟶ c) : (f ≫ g).of = f.of ≫ g.of := rfl
 
-instance homGroupoid  (a b : Pith B) :
+instance homGroupoid (a b : Pith B) :
     Groupoid.{w₁} (a ⟶ b) := inferInstanceAs <| Groupoid <| Core _
 
 @[ext]
@@ -93,15 +93,9 @@ leftUnitor_inv_iso_hom rightUnitor_hom_iso rightUnitor_inv_iso_hom rightUnitor_i
 instance : Bicategory.{w₁, v₁} (Pith B) where
   whiskerLeft x _ _ f := CoreHom.mk <| whiskerLeftIso x.of (CoreHom.iso f)
   whiskerRight f y := CoreHom.mk <| whiskerRightIso (CoreHom.iso f) y.of
-  leftUnitor x :=
-    { hom := CoreHom.mk <| leftUnitor x.of
-      inv := CoreHom.mk (leftUnitor x.of|>.symm) }
-  rightUnitor x :=
-    { hom := CoreHom.mk <| rightUnitor x.of
-      inv := CoreHom.mk (rightUnitor x.of|>.symm) }
-  associator x y z :=
-    { hom := CoreHom.mk <| associator x.of y.of z.of
-      inv := CoreHom.mk (associator x.of y.of z.of|>.symm) }
+  leftUnitor x := Core.isoMk <| leftUnitor x.of
+  rightUnitor x := Core.isoMk <| rightUnitor x.of
+  associator x y z := Core.isoMk <| associator x.of y.of z.of
   whisker_exchange η θ := by
     ext
     simp [whisker_exchange]
@@ -122,22 +116,18 @@ variable {B} in
 /-- Any pseudofunctor from a (2,1)-category to a bicategory factors through
 the pith of the target bicateogry. -/
 @[simps!]
-noncomputable def pseudofunctorToPith {B' : Type*} [Bicategory B']
+noncomputable def pseudofunctorToPith {B' : Type u₂} [Bicategory.{w₂, v₂} B']
     [IsLocallyGroupoid B'] (F : Pseudofunctor B' B) :
     Pseudofunctor B' (Pith B) where
   obj x := .mk <| F.obj x
   map f := .mk <| F.map f
   map₂ f := .mk <| asIso <| F.map₂ f
-  mapId x :=
-    { hom := .mk <| F.mapId x
-      inv := .mk (F.mapId x|>.symm) }
-  mapComp f g :=
-    { hom := .mk <| F.mapComp f g
-      inv := .mk <| (F.mapComp f g).symm }
+  mapId x := Core.isoMk <| F.mapId x
+  mapComp f g := Core.isoMk <| F.mapComp f g
 
 section
 
-variable {B} {B' : Type*} [Bicategory B'] [IsLocallyGroupoid B'] (F : Pseudofunctor B' B)
+variable {B} {B' : Type u₂} [Bicategory.{w₂, v₂} B'] [IsLocallyGroupoid B'] (F : Pseudofunctor B' B)
 
 /-- The hom direction of the (strong) natural isomorphism of pseudofunctors
 between `(pseudofunctorToPith F).comp (inclusion B)` and `F`. -/
