@@ -162,11 +162,11 @@ a morphism `Δ' ⟶ Δ ⊗ Δ'` for every pair of objects `Δ, Δ'`. -/
 def inr (x y : AugmentedSimplexCategory) : y ⟶ x ⊗ y :=
   (λ_ y).inv ≫ (WithInitial.starInitial.to x) ▷ _
 
-/-- Again, to ease type checking, we also provide a version of inl that lives in
+/-- To ease type checking, we also provide a version of inl that lives in
 `SimplexCategory`. -/
 abbrev inl' (x y : SimplexCategory) : x ⟶ tensorObjOf x y := WithInitial.down <| inl (.of x) (.of y)
 
-/-- Again, to ease type checking, we also provide a version of inr that lives in
+/-- To ease type checking, we also provide a version of inr that lives in
 `SimplexCategory`. -/
 abbrev inr' (x y : SimplexCategory) : y ⟶ tensorObjOf x y := WithInitial.down <| inr (.of x) (.of y)
 
