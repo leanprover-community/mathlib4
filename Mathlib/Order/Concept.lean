@@ -220,8 +220,6 @@ theorem IsExtent.eq (h : IsExtent r s) : lowerPolar r (upperPolar r s) = s := h
 theorem isExtent_iff : IsExtent r s ↔ ∃ t, lowerPolar r t = s :=
   ⟨fun h ↦ ⟨_, h⟩, fun ⟨t, h⟩ ↦ h ▸ lowerPolar_upperPolar_lowerPolar r t⟩
 
-alias ⟨IsExtent.exists_lowerPolar, _⟩ := isExtent_iff
-
 theorem isExtent_lowerPolar (t : Set β) : IsExtent r (lowerPolar r t) :=
   isExtent_iff.2 ⟨_, rfl⟩
 
@@ -251,8 +249,6 @@ theorem IsIntent.eq (h : IsIntent r t) : upperPolar r (lowerPolar r t) = t := h
 
 theorem isIntent_iff : IsIntent r t ↔ ∃ s, upperPolar r s = t :=
   ⟨fun h ↦ ⟨_, h⟩, fun ⟨s, h⟩ ↦ h ▸ upperPolar_lowerPolar_upperPolar r s⟩
-
-alias ⟨IsIntent.exists_upperPolar, _⟩ := isIntent_iff
 
 theorem isIntent_upperPolar (s : Set α) : IsIntent r (upperPolar r s) :=
   isIntent_iff.2 ⟨_, rfl⟩
