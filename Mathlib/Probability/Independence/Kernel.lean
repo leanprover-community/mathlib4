@@ -1009,7 +1009,7 @@ lemma indepFun_const_left {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'
 lemma indepFun_const_right {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [IsZeroOrMarkovKernel κ] (X : Ω → β) (c : β') :
     IndepFun X (fun _ ↦ c) κ μ :=
-  (Kernel.indepFun_const_left c X).symm
+  (indepFun_const_left c X).symm
 
 theorem IndepFun.neg_right {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'} [Neg β']
     [MeasurableNeg β'] (hfg : IndepFun f g κ μ) :
