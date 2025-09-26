@@ -569,7 +569,7 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
     obtain ⟨ϖ, hϖ⟩ := intValuation_exists_uniformizer v
     have : Valued.v (algebraMap R (v.adicCompletion K) ϖ) = (exp (1 : ℤ))⁻¹ := by
       simp [valuedAdicCompletion_eq_valuation, valuation_of_algebraMap, hϖ, exp]
-    have hϖ0 : ϖ ≠ 0 := by rintro rfl; simp at hϖ
+    have hϖ0 : ϖ ≠ 0 := by rintro rfl; simp [exp_ne_zero.symm] at hϖ
     refine ⟨ϖ^(log (Valued.v a)).natAbs, pow_mem (mem_nonZeroDivisors_of_ne_zero hϖ0) _, ?_⟩
     -- now manually translate the goal (an inequality in ℤᵐ⁰) to an inequality of "log" of ℤ
     simp only [map_pow, mem_adicCompletionIntegers, map_mul, this, inv_pow, ← exp_nsmul, nsmul_one,
