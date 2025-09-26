@@ -142,6 +142,7 @@ jobs:
         echo "::group::Here is the content of git diff:"
         git diff
         echo "::endgroup::"
+        sed -i 's=_with_option$==' Mathlib.lean
 
     - name: configure git setup
       run: |
