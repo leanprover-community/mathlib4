@@ -470,11 +470,11 @@ instance : InfSet (Concept α β r) where
   sInf S := (isExtent_iInter₂ _ fun c (_ : c ∈ S) => c.isExtent_extent).concept
 
 instance : CompleteLattice (Concept α β r) where
-  le_sSup := fun _ _ hc => intent_subset_intent_iff.1 <| biInter_subset_of_mem hc
-  sSup_le := fun _ _ hc =>
+  le_sSup _ _ hc := intent_subset_intent_iff.1 <| biInter_subset_of_mem hc
+  sSup_le _ _ hc :=
     intent_subset_intent_iff.1 <| subset_iInter₂ fun d hd => intent_subset_intent_iff.2 <| hc d hd
-  sInf_le := fun _ _ => biInter_subset_of_mem
-  le_sInf := fun _ _ => subset_iInter₂
+  sInf_le _ _ := biInter_subset_of_mem
+  le_sInf _ _ := subset_iInter₂
 
 @[deprecated (since := "2025-09-26")]
 alias extent_top := top_extent
