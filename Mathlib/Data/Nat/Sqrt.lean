@@ -98,9 +98,12 @@ private lemma sqrt_isSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
     simp only [Nat.mul_add, Nat.add_mul, Nat.one_mul, Nat.mul_one, ← Nat.add_assoc]
     rw [Nat.lt_add_one_iff, Nat.add_assoc, ← Nat.mul_two]
     refine le_trans (Nat.le_of_eq (div_add_mod' (n + 2) 2).symm) ?_
-    rw [Nat.add_comm, Nat.add_le_add_iff_right, add_mod_right]
-    simp only [Nat.zero_lt_two, add_div_right, succ_mul_succ]
-    refine le_trans (b := 1) ?_ ?_ <;> grind
+    rw [show (n + 2) / 2 * 2 + (n + 2) % 2 = n + 2 by grind]
+    simp only [shiftLeft_eq, Nat.one_mul]
+    refine Nat.le_of_lt (Nat.le_trans lt_log2_self (le_add_right_of_le ?_))
+    rw [← Nat.pow_add]
+    apply Nat.pow_le_pow_right (by decide)
+    grind
 
 lemma sqrt_le (n : ℕ) : sqrt n * sqrt n ≤ n := (sqrt_isSqrt n).left
 
@@ -169,8 +172,14 @@ lemma sqrt_eq' (n : ℕ) : sqrt (n ^ 2) = n := sqrt_add_eq' n (zero_le _)
 lemma sqrt_succ_le_succ_sqrt (n : ℕ) : sqrt n.succ ≤ n.sqrt.succ :=
   le_of_lt_succ <| sqrt_lt.2 <| (have := sqrt_le_add n; by grind)
 
+@[simp]
+lemma log2_two : (2 : ℕ).log2 = 1 := rfl
+
+@[simp]
+lemma sqrt_two : sqrt 2 = 1 := by simp [sqrt, sqrt.iter]
+
 lemma add_one_sqrt_le_of_ne_zero {n : ℕ} (hn : n ≠ 0) : (n + 1).sqrt ≤ n :=
-  le_induction le_rfl (fun n _ ih ↦ le_trans n.succ.sqrt_succ_le_succ_sqrt (succ_le_succ ih)) n
+  le_induction (by simp) (fun n _ ih ↦ le_trans n.succ.sqrt_succ_le_succ_sqrt (succ_le_succ ih)) n
     (Nat.pos_of_ne_zero hn)
 
 lemma exists_mul_self (x : ℕ) : (∃ n, n * n = x) ↔ sqrt x * sqrt x = x :=

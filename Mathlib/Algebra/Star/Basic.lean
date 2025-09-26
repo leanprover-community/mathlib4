@@ -367,7 +367,7 @@ instance Int.instStarRing : StarRing ℤ := starRingOfComm
 instance Nat.instTrivialStar : TrivialStar ℕ := ⟨fun _ ↦ rfl⟩
 instance Int.instTrivialStar : TrivialStar ℤ := ⟨fun _ ↦ rfl⟩
 
-/-- A star module `A` over a star ring `R` is a module which is a star add monoid,
+/-- A star module `A` over a star ring `R` is a module which is a star additive monoid,
 and the two star structures are compatible in the sense
 `star (r • a) = star r • star a`.
 

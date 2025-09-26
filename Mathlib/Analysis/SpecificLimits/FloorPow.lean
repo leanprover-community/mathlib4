@@ -64,7 +64,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     filter_upwards [Ici_mem_atTop M] with n hn
     have exN : ∃ N, n < c N := by
       rcases (tendsto_atTop.1 ctop (n + 1)).exists with ⟨N, hN⟩
-      exact ⟨N, by omega⟩
+      exact ⟨N, by cutsat⟩
     let N := Nat.find exN
     have ncN : n < c N := Nat.find_spec exN
     have aN : a + 1 ≤ N := by
@@ -118,7 +118,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     filter_upwards [Ici_mem_atTop M] with n hn
     have exN : ∃ N, n < c N := by
       rcases (tendsto_atTop.1 ctop (n + 1)).exists with ⟨N, hN⟩
-      exact ⟨N, by omega⟩
+      exact ⟨N, by cutsat⟩
     let N := Nat.find exN
     have ncN : n < c N := Nat.find_spec exN
     have aN : a + 1 ≤ N := by
@@ -255,7 +255,6 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
         simp only [one_div, Real.log_inv, Real.log_pow, mul_neg, neg_inj]
         field_simp [(Real.log_pos hc).ne']
       rw [Real.rpow_sub A, I]
-      have : c ^ 2 - 1 ≠ 0 := (sub_pos.2 (one_lt_pow₀ hc two_ne_zero)).ne'
       simp
       ring
     _ ≤ c ^ 3 * (c - 1)⁻¹ / j ^ 2 := by gcongr
