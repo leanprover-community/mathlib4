@@ -52,7 +52,8 @@ variable [CommRing R] {p : R[X]}
   rw [p.disc_of_degree_eq_two hp, (-p).disc_of_degree_eq_two e0]
   simp
 
-lemma discrim_eq_sq_of_quadratic_eq_zero {x : R} (hp : p.degree = 2) (h : IsRoot p x) :
+-- c.f. discrim_eq_sq_of_quadratic_eq_zero
+lemma discrim_eq_sq_of_quadratic_of_isRoot {x : R} (hp : p.degree = 2) (h : IsRoot p x) :
     p.disc = (2 * (p.coeff 2) * x + (p.coeff 1)) ^ 2 := by
   rw [p.disc_of_degree_eq_two hp]
   rw [p.eq_quadratic_of_degree_le_two (le_of_eq hp)] at h
@@ -60,10 +61,11 @@ lemma discrim_eq_sq_of_quadratic_eq_zero {x : R} (hp : p.degree = 2) (h : IsRoot
   linear_combination -4 * (p.coeff 2) * h
 
 /-- A quadratic has roots if and only if its discriminant equals some square.
+c.f. quadratic_eq_zero_iff_discrim_eq_sq
 -/
-theorem quadratic_eq_zero_iff_discrim_eq_sq [NeZero (2 : R)] [NoZeroDivisors R]
+theorem quadratic_isRoot_iff_discrim_eq_sq [NeZero (2 : R)] [NoZeroDivisors R]
     (hp : p.degree = 2) (x : R) : IsRoot p x ↔ p.disc = (2 * (p.coeff 2) * x + p.coeff 1) ^ 2 := by
-  refine ⟨Polynomial.discrim_eq_sq_of_quadratic_eq_zero hp, fun h ↦ ?_⟩
+  refine ⟨Polynomial.discrim_eq_sq_of_quadratic_of_isRoot hp, fun h ↦ ?_⟩
   rw [p.disc_of_degree_eq_two hp] at h
   have ha : 2 * 2 * (p.coeff 2) ≠ 0 := mul_ne_zero (mul_ne_zero (NeZero.ne _) (NeZero.ne _))
     (coeff_ne_zero_of_eq_degree hp)
@@ -72,10 +74,12 @@ theorem quadratic_eq_zero_iff_discrim_eq_sq [NeZero (2 : R)] [NoZeroDivisors R]
   apply mul_left_cancel₀ ha --(coeff_ne_zero_of_eq_degree hp)
   linear_combination -h
 
-/-- A quadratic has no root if its discriminant has no square root. -/
-theorem quadratic_ne_zero_of_discrim_ne_sq (hp : p.degree = 2) (h : ∀ s : R, p.disc ≠ s^2) (x : R) :
-    ¬ IsRoot p x :=
-  mt (Polynomial.discrim_eq_sq_of_quadratic_eq_zero hp) (h _)
+/-- A quadratic has no root if its discriminant has no square root.
+c.f. quadratic_ne_zero_of_discrim_ne_sq
+-/
+theorem quadratic_not_isRoot_of_discrim_ne_sq (hp : p.degree = 2) (h : ∀ s : R, p.disc ≠ s^2)
+    (x : R) : ¬ IsRoot p x :=
+  mt (Polynomial.discrim_eq_sq_of_quadratic_of_isRoot hp) (h _)
 
 end Ring
 
@@ -83,35 +87,41 @@ section Field
 
 variable {K : Type*} [Field K] [NeZero (2 : K)] {p : K[X]}
 
-/-- Roots of a quadratic equation. -/
-theorem quadratic_eq_zero_iff (hp : p.degree = 2) {s : K} (h : p.disc = s * s) (x : K) :
+/-- Roots of a quadratic equation.
+c.f. quadratic_eq_zero_iff
+-/
+theorem quadratic_isRoot_iff (hp : p.degree = 2) {s : K} (h : p.disc = s * s) (x : K) :
     IsRoot p x ↔ x = (-(p.coeff 1) + s) / (2 * (p.coeff 2)) ∨
       x = (-(p.coeff 1) - s) / (2 * (p.coeff 2)) := by
-  rw [quadratic_eq_zero_iff_discrim_eq_sq hp _, h, sq, mul_self_eq_mul_self_iff]
+  rw [quadratic_isRoot_iff_discrim_eq_sq hp _, h, sq, mul_self_eq_mul_self_iff]
   have ha : (p.coeff 2) ≠ 0 := coeff_ne_zero_of_eq_degree hp
   field_simp
   grind
 
-/-- A quadratic has roots if its discriminant has square roots -/
-theorem exists_quadratic_eq_zero (hp : p.degree = 2) (h : ∃ s, p.disc = s * s) :
+/-- A quadratic has roots if its discriminant has square roots
+c.f. exists_quadratic_eq_zero
+-/
+theorem exists_quadratic_isRoot (hp : p.degree = 2) (h : ∃ s, p.disc = s * s) :
     ∃ x, IsRoot p x := by
   rcases h with ⟨s, hs⟩
   use (-(p.coeff 1) + s) / (2 * (p.coeff 2))
-  rw [quadratic_eq_zero_iff hp hs]
+  rw [quadratic_isRoot_iff hp hs]
   simp
 
-/-- Root of a quadratic when its discriminant equals zero -/
-theorem quadratic_eq_zero_iff_of_discrim_eq_zero (hp : p.degree = 2) (h : p.disc = 0) (x : K) :
+/-- Root of a quadratic when its discriminant equals zero
+c.f. quadratic_eq_zero_iff_of_discrim_eq_zero
+-/
+theorem quadratic_isRoot_iff_of_discrim_eq_zero (hp : p.degree = 2) (h : p.disc = 0) (x : K) :
     IsRoot p x ↔ x = -(p.coeff 1) / (2 * (p.coeff 2)) := by
   have : p.disc = 0 * 0 := by rw [h, mul_zero]
-  rw [quadratic_eq_zero_iff hp this, add_zero, sub_zero, or_self_iff]
+  rw [quadratic_isRoot_iff hp this, add_zero, sub_zero, or_self_iff]
 
 theorem discrim_eq_zero_of_existsUnique (hp : p.degree = 2) (h : ∃! x, IsRoot p x) :
     p.disc = 0 := by
   let a := p.coeff 2
   let b := p.coeff 1
   let c := p.coeff 0
-  simp_rw [quadratic_eq_zero_iff_discrim_eq_sq hp] at h
+  simp_rw [quadratic_isRoot_iff_discrim_eq_sq hp] at h
   generalize p.disc = d at h
   obtain ⟨x, rfl, hx⟩ := h
   specialize hx (-(x + b / a))
@@ -124,7 +134,7 @@ theorem discrim_eq_zero_of_existsUnique (hp : p.degree = 2) (h : ∃! x, IsRoot 
 theorem discrim_eq_zero_iff (hp : p.degree = 2) :
     p.disc  = 0 ↔ (∃! x, IsRoot p x) := by
   refine ⟨fun hd => ?_, discrim_eq_zero_of_existsUnique hp⟩
-  simp_rw [quadratic_eq_zero_iff_of_discrim_eq_zero hp hd, existsUnique_eq]
+  simp_rw [quadratic_isRoot_iff_of_discrim_eq_zero hp hd, existsUnique_eq]
 
 end Field
 
@@ -176,7 +186,7 @@ theorem discrim_lt_zero (hp : p.degree = 2) (h : ∀ x : K, 0 < p.eval x) :
   refine lt_of_le_of_ne (discrim_le_zero hp this) fun h' ↦ ?_
   have := h (-b / (2 * a))
   have hr : IsRoot p (-b / (2 * a)) := by
-    rw [quadratic_eq_zero_iff_of_discrim_eq_zero hp h' (-b / (2 * a))]
+    rw [quadratic_isRoot_iff_of_discrim_eq_zero hp h' (-b / (2 * a))]
   rw [IsRoot.def] at hr
   linarith
 
