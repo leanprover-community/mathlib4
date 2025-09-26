@@ -832,15 +832,15 @@ def mapCoconeWhisker {E : K ⥤ J} {c : Cocone F} :
     mapCocone H (c.whisker E) ≅ (mapCocone H c).whisker E :=
   Cocones.ext (Iso.refl _)
 
-/-- `mapCone` is compatible with `Cones.forget`. -/
-lemma mapCone_π_forget {c c' : Cone F} (e : c ⟶ c') (j : J) :
-    H.map ((Cones.forget F).map e) ≫ (H.mapCone c').π.app j = (H.mapCone c).π.app j := by
-  simp [← map_comp]
+@[reassoc (attr := simp)]
+lemma map_coneMorphism {c c' : Cone F} (e : c ⟶ c') (j : J) :
+    H.map e.hom ≫ H.map (c'.π.app j) = H.map (c.π.app j) := by
+  simp only [← map_comp, ConeMorphism.w]
 
-/-- `mapCocone` is compatible with `Cocones.forget`. -/
-lemma mapCocone_ι_forget {c c' : Cocone F} (e : c ⟶ c') (j : J) :
-    (H.mapCocone c).ι.app j ≫ H.map ((Cocones.forget F).map e) = (H.mapCocone c').ι.app j := by
-  simp [← map_comp]
+@[reassoc (attr := simp)]
+lemma map_coconeMorphism {c c' : Cocone F} (e : c ⟶ c') (j : J) :
+    H.map (c.ι.app j) ≫ H.map e.hom = H.map (c'.ι.app j) := by
+  simp only [← map_comp, CoconeMorphism.w]
 
 end Functor
 
