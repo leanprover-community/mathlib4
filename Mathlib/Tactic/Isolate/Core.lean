@@ -153,30 +153,43 @@ def isolateStep (x : Expr) (P : Expr) : MetaM (List MVarId × Simp.Result) := do
   let xArg' := xArgs.filter fun arg ↦ arg.hasLooseBVar 0
   match xArg' with
   | #[xArg] =>
+    -- Look up the `@[isolate]` lemmas with the right relation, function, argument index and
+    -- LHS/RHS positioning.
     let key := (relName, xAppName, xArgs.findIdx (· == xArg), !lhsContains)
-    let env := isolateExt.getState (← getEnv)
-    let lemmas := env.getD key #[]
+    let isolateDict := isolateExt.getState (← getEnv)
+    let lemmas := isolateDict.getD key #[]
     let s ← saveState
+    -- Loop ove the lemmas to see if any apply:
     for lem in lemmas do
       try
+        -- An `@[isolate]` lemma has the structure `_ → _ → ... → _ → (lemLHS ↔ lemRHS)`; parse this
         let e ← mkConstWithFreshMVarLevels lem
         let eTy ← inferType e
         let (args, _, ty) ← forallMetaTelescopeReducing eTy
         let .app (.app _ lemLHS) lemRHS := ty | throwError "ill-formed @[isolate] lemma {lem}"
+        -- Attempt to unify `lemLHS` with the expression `P` being worked on.
         guard (← isDefEq P lemLHS)
+        -- If that succeeded, we know what `P` will be transformed to, namely the instantiated RHS
+        -- of the lemma.
         let Q : Q(Prop) := ← instantiateMVars lemRHS
+        -- Collect the unassigned metavariables, i.e. side goals.
         let mvars := (← args.mapM getMVars).flatten
-        let mut mvars' : Array MVarId := #[]
+        -- We attempt to resolve each of these side goals;
+        -- we collect those side goals which are not resolved.
+        let mut unresolvedMVars : Array MVarId := #[]
         for mvar in mvars do
           try
-            GCongr.gcongrDischarger mvar
-          catch _ => try
+            -- attempt to solve the side goal by typeclass inference
             mvar.inferInstance
+          catch _ => try
+            -- attempt to solve the side goal using `gcongr`'s discharger (currently this is a
+            -- wrapper for `positivity`)
+            GCongr.gcongrDischarger mvar
           catch _ =>
-            mvars' := mvars'.push mvar
-        let z ← mkAppOptM lem (args.map some)
-        let pf ← mkAppM ``propext #[z]
-        return (mvars'.toList, { expr := Q, proof? := some pf })
+            unresolvedMVars := unresolvedMVars.push mvar
+        -- Make the proof of `P ↔ Q` (dependent on these side goals) and send it back.
+        let pf ← mkAppM ``propext #[← mkAppOptM lem (args.map some)]
+        return (unresolvedMVars.toList, { expr := Q, proof? := some pf })
       catch _ => s.restore
     throwError "no suitable lemmas found"
   | _ => throwError "{x} is not localized to a single 'argument of {xExpr}"
