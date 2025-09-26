@@ -171,7 +171,7 @@ instance [∀ n, IsZeroOrProbabilityMeasure (μ n)] (I : Finset ℕ) :
 instance [∀ n, IsProbabilityMeasure (μ n)] (I : Finset ℕ) :
     IsProbabilityMeasure (inducedFamily μ I) := by
   rw [inducedFamily]
-  exact isProbabilityMeasure_map (measurable_restrict₂ _).aemeasurable
+  exact Measure.isProbabilityMeasure_map (measurable_restrict₂ _).aemeasurable
 
 /-- Given a family of measures `μ : (n : ℕ) → Measure (Π i : Iic n, X i)`, the induced family
 equals `μ` over the intervals `Iic n`. -/
