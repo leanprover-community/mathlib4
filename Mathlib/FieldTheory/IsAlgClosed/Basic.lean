@@ -127,7 +127,7 @@ theorem map_roots_card_eq_natDegree_of_leadingCoeff_ne_zero {A B : Type*} [CommR
 theorem map_roots_card_eq_natDegree_of_leadingCoeff_isUnit {A B : Type*} [CommRing A] [Field B]
     [IsAlgClosed B] (f : A →+* B) {p : A[X]} (h : IsUnit p.leadingCoeff) :
     (p.map f).roots.card = p.natDegree :=
-  natDegree_map_of_leadingCoeff_isUnit f h ▸ roots_card_eq_natDegree
+  natDegree_map_of_isUnit_leadingCoeff f h ▸ roots_card_eq_natDegree
 
 theorem map_roots_card_eq_natDegree_from_divisionRing {A B : Type*} [DivisionRing A] [Field B]
     [IsAlgClosed B] (f : A →+* B) {p : A[X]} : (p.map f).roots.card = p.natDegree :=
