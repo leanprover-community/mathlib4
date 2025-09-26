@@ -428,7 +428,6 @@ theorem uniqueDiffWithinAt_univ : UniqueDiffWithinAt 𝕜 univ x := by
 theorem uniqueDiffOn_univ : UniqueDiffOn 𝕜 (univ : Set E) :=
   fun _ _ => uniqueDiffWithinAt_univ
 
-@[simp]
 theorem uniqueDiffOn_empty : UniqueDiffOn 𝕜 (∅ : Set E) :=
   fun _ hx => hx.elim
 
