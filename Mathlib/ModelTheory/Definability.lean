@@ -486,9 +486,8 @@ theorem TermDefinable₁.graph_definable₂ {f : M → M} (h : A.TermDefinable�
   obtain ⟨t, h⟩ := h.termDefinable.tupleGraph_definable A L
   use t.relabel (Sum.elim (fun _ ↦ 0) (fun _ ↦ 1))
   ext v
-  convert Set.ext_iff.1 h (Sum.elim (fun _ ↦ v 0) (fun _ ↦ v 1))
-  rw [mem_setOf, mem_setOf, Formula.realize_relabel, Sum.comp_elim]
-  rfl
+  convert Set.ext_iff.1 h (v ∘ Sum.elim (fun _ ↦ 0) (fun _ ↦ 1))
+  simp
 
 /-- The identity function is `TermDefinable₁` -/
 @[fun_prop]
