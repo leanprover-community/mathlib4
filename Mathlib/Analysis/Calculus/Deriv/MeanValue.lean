@@ -519,7 +519,7 @@ theorem domain_mvt {f : E → ℝ} {s : Set E} {x y : E} {f' : E → StrongDual 
     (hf _ (hmaps ht)).comp_hasDerivWithinAt t AffineMap.hasDerivWithinAt_lineMap hmaps
   -- apply 1-variable mean value theorem to pullback
   have hMVT : ∃ t ∈ Ioo (0 : ℝ) 1, f' (g t) (y - x) = (f (g 1) - f (g 0)) / (1 - 0) := by
-    refine exists_hasDerivAt_eq_slope (f ∘ g) _ (by norm_num) ?_ ?_
+    refine exists_hasDerivAt_eq_slope (f ∘ g) _ (by simp) ?_ ?_
     · exact fun t Ht => (hfg t Ht).continuousWithinAt
     · exact fun t Ht => (hfg t <| hsub Ht).hasDerivAt (Icc_mem_nhds Ht.1 Ht.2)
   -- reinterpret on domain
