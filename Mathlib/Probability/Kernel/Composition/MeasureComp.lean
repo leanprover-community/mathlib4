@@ -92,7 +92,7 @@ lemma discard_comp (μ : Measure α) : Kernel.discard α ∘ₘ μ = μ .univ �
 lemma copy_comp_map {f : α → β} (hf : AEMeasurable f μ) :
     Kernel.copy β ∘ₘ (μ.map f) = μ.map (fun a ↦ (f a, f a)) := by
   rw [Kernel.copy, deterministic_comp_eq_map, AEMeasurable.map_map_of_aemeasurable (by fun_prop) hf]
-  congr
+  rfl
 
 section CompProd
 
