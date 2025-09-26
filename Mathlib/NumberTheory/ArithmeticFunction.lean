@@ -939,7 +939,7 @@ theorem sigma_eq_one_iff (k n : ℕ) : σ k n = 1 ↔ n = 1 := by
     rw [← sigma_zero_eq_one_iff]
     have zero_lt_sigma := sigma_pos 0 n hn0
     have sigma_zero_le_sigma := sigma_mono 0 k n (Nat.zero_le k)
-    omega
+    cutsat
   · rintro rfl
     simp
 
@@ -1097,7 +1097,7 @@ theorem moebius_eq_or (n : ℕ) : μ n = 0 ∨ μ n = 1 ∨ μ n = -1 := by
 
 theorem moebius_ne_zero_iff_eq_or {n : ℕ} : μ n ≠ 0 ↔ μ n = 1 ∨ μ n = -1 := by
   have := moebius_eq_or n
-  omega
+  cutsat
 
 theorem moebius_sq_eq_one_of_squarefree {l : ℕ} (hl : Squarefree l) : μ l ^ 2 = 1 := by
   rw [moebius_apply_of_squarefree hl, ← pow_mul, mul_comm, pow_mul, neg_one_sq, one_pow]
