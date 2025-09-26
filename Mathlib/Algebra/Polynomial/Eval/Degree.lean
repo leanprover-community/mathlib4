@@ -179,6 +179,12 @@ theorem leadingCoeff_map_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f (leadin
   unfold leadingCoeff
   simp [hf, natDegree_map_of_leadingCoeff_ne_zero]
 
+theorem nextCoeff_map_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f p.leadingCoeff ≠ 0) :
+    (p.map f).nextCoeff = f p.nextCoeff := by
+  unfold nextCoeff
+  simp [hf, natDegree_map_of_leadingCoeff_ne_zero]
+  split_ifs <;> simp
+
 variable (f) in
 theorem degree_map_of_leadingCoeff_isUnit [Nontrivial S] (hf : IsUnit <| p.leadingCoeff) :
     (p.map f).degree = p.degree :=
@@ -192,9 +198,14 @@ theorem natDegree_map_of_leadingCoeff_isUnit [Nontrivial S] (hf : IsUnit <| p.le
 
 variable (f) in
 theorem leadingCoeff_map_of_leadingCoeff_isUnit [Nontrivial S] (hf : IsUnit <| p.leadingCoeff) :
-    (p.map f).leadingCoeff = f (p.leadingCoeff) :=
+    (p.map f).leadingCoeff = f p.leadingCoeff :=
   leadingCoeff_map_of_leadingCoeff_ne_zero _ <| fun h ↦ not_isUnit_zero <|
     h ▸ RingHom.isUnit_map _ hf
+
+variable (f) in
+theorem nextCoeff_map_of_leadingCoeff_isUnit [Nontrivial S] (hf : IsUnit <| p.leadingCoeff) :
+    (p.map f).nextCoeff = f p.nextCoeff :=
+  nextCoeff_map_of_leadingCoeff_ne_zero _ <| fun h ↦ not_isUnit_zero <| h ▸ RingHom.isUnit_map _ hf
 
 end Map
 
@@ -241,8 +252,13 @@ theorem degree_map_from_divisionRing : (p.map f).degree = p.degree := by
 theorem natDegree_map_from_divisionRing : (p.map f).natDegree = p.natDegree :=
   natDegree_eq_natDegree <| degree_map_from_divisionRing f p
 
-theorem leadingCoeff_map_from_divisionRing : (p.map f).leadingCoeff = f (p.leadingCoeff) := by
+theorem leadingCoeff_map_from_divisionRing : (p.map f).leadingCoeff = f p.leadingCoeff := by
   by_cases h₀ : p = 0 <;> simp [h₀, leadingCoeff_map_of_leadingCoeff_ne_zero]
+
+theorem nextCoeff_map_from_divisionRing : (p.map f).nextCoeff = f p.nextCoeff := by
+  by_cases h₀ : p = 0
+  · simp [h₀, nextCoeff]
+  simp [h₀, nextCoeff_map_of_leadingCoeff_ne_zero]
 
 end DivisionRing.Map
 
