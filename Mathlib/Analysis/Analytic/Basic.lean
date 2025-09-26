@@ -406,7 +406,7 @@ theorem HasFPowerSeriesWithinOnBall.coeff_zero (hf : HasFPowerSeriesWithinOnBall
     intro i hi
     have : 0 < i := pos_iff_ne_zero.2 hi
     exact ContinuousMultilinearMap.map_coord_zero _ (⟨0, this⟩ : Fin i) rfl
-  have A := (hf.hasSum (by simp) zero_mem).unique (hasSum_single _ _ this)
+  have A := (hf.hasSum (by simp) zero_mem).unique (hasSum_single _ this)
   simpa [v_eq] using A.symm
 
 theorem HasFPowerSeriesOnBall.coeff_zero (hf : HasFPowerSeriesOnBall f pf x r)
