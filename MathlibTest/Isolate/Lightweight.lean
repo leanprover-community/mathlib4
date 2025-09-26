@@ -118,3 +118,18 @@ example (x : ℝ) (f : ℝ → ℝ) : f x = 12 := by
 #guard_msgs in
 @[isolate]
 theorem add_right_eq_iff [AddGroup X] (a b c : X) : c = a + b ↔ a = c - b := test_sorry
+
+/--
+error: @[isolate] attribute only applies to lemmas proving f x ∼ y ↔ x ∼' g y.
+ No relation with at least two arguments found in the conclusion a * (b + c) = a * b + a * c
+-/
+#guard_msgs in
+attribute [isolate] mul_add
+
+/--
+error: @[isolate] attribute only applies to lemmas proving f x ∼ y ↔ x ∼' g y.
+ Leading LHS function f is not a constant in the conclusion f a = b ↔ a = f b
+-/
+#guard_msgs in
+@[isolate]
+theorem foo (f : ℝ → ℝ) (a b : ℝ) : f a = b ↔ a = f b := test_sorry
