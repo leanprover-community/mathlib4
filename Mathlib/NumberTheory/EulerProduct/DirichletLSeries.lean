@@ -167,8 +167,7 @@ lemma DirichletCharacter.LSeries_changeLevel {M N : ℕ} [NeZero N]
     (hMN : M ∣ N) (χ : DirichletCharacter ℂ M) {s : ℂ} (hs : 1 < s.re) :
     LSeries ↗(changeLevel hMN χ) s =
       LSeries ↗χ s * ∏ p ∈ N.primeFactors, (1 - χ p * p ^ (-s)) := by
-  rw [prod_eq_tprod_mulIndicator («L» := unconditional ℕ),
-    ← DirichletCharacter.LSeries_eulerProduct_tprod _ hs,
+  rw [prod_eq_tprod_mulIndicator, ← DirichletCharacter.LSeries_eulerProduct_tprod _ hs,
     ← DirichletCharacter.LSeries_eulerProduct_tprod _ hs]
   -- convert to a form suitable for `tprod_subtype`
   have (f : Primes → ℂ) : ∏' (p : Primes), f p = ∏' (p : ↑{p : ℕ | p.Prime}), f p := rfl

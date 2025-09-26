@@ -1084,7 +1084,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
       congr with i
       rw [tsum_subtype (G i) (fun C ↦ (μ.restrict (P C)) t)]
     _ = ∑ C ∈ Cs, ∑ i ∈ F, C.toSet.indicator (fun _ ↦ (μ.restrict (P C)) t) i := by
-      rw [sum_eq_tsum_indicator (L := unconditional _)]
+      rw [sum_eq_tsum_indicator]
       congr with C
       by_cases hC : C ∈ F.powerset <;> by_cases hC' : C = ∅ <;>
         simp [hC, hC', Cs, G, indicator, -Finset.mem_powerset, -coe_powerset]
