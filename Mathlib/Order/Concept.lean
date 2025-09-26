@@ -282,26 +282,26 @@ theorem codisjoint_extent_intent [IsTrichotomous α r'] [IsTrans α r'] :
   · contradiction
   · assumption
 
-instance instSupConcept : Max (Concept α β r) :=
-  ⟨fun c d =>
+instance instMaxConcept : Max (Concept α β r) where
+  max c d :=
     { extent := lowerPolar r (c.intent ∩ d.intent)
       intent := c.intent ∩ d.intent
       upperPolar_extent := by
         rw [← c.upperPolar_extent, ← d.upperPolar_extent, ← upperPolar_union,
           upperPolar_lowerPolar_upperPolar]
-      lowerPolar_intent := rfl }⟩
+      lowerPolar_intent := rfl }
 
-instance instInfConcept : Min (Concept α β r) :=
-  ⟨fun c d =>
+instance instMinConcept : Min (Concept α β r) where
+  min c d :=
     { extent := c.extent ∩ d.extent
       intent := upperPolar r (c.extent ∩ d.extent)
       upperPolar_extent := rfl
       lowerPolar_intent := by
         rw [← c.lowerPolar_intent, ← d.lowerPolar_intent, ← lowerPolar_union,
-          lowerPolar_upperPolar_lowerPolar] }⟩
+          lowerPolar_upperPolar_lowerPolar] }
 
 instance instSemilatticeInfConcept : SemilatticeInf (Concept α β r) :=
-  (extent_injective.semilatticeInf _) fun _ _ => rfl
+  extent_injective.semilatticeInf _ fun _ _ => rfl
 
 @[simp]
 theorem extent_subset_extent_iff : c.extent ⊆ d.extent ↔ c ≤ d :=
@@ -348,14 +348,13 @@ theorem strictAnti_intent : StrictAnti (@intent α β r) := fun _ _ =>
 @[deprecated (since := "2025-07-10")]
 alias strictMono_snd := strictAnti_intent
 
-instance instLatticeConcept : Lattice (Concept α β r) :=
-  { Concept.instSemilatticeInfConcept with
-    sup := (· ⊔ ·)
-    le_sup_left := fun _ _ => intent_subset_intent_iff.1 inter_subset_left
-    le_sup_right := fun _ _ => intent_subset_intent_iff.1 inter_subset_right
-    sup_le := fun c d e => by
-      simp_rw [← intent_subset_intent_iff]
-      exact subset_inter }
+instance instLatticeConcept : Lattice (Concept α β r) where
+  sup := (· ⊔ ·)
+  le_sup_left := fun _ _ => intent_subset_intent_iff.1 inter_subset_left
+  le_sup_right := fun _ _ => intent_subset_intent_iff.1 inter_subset_right
+  sup_le := fun c d e => by
+    simp_rw [← intent_subset_intent_iff]
+    exact subset_inter
 
 instance instBoundedOrderConcept : BoundedOrder (Concept α β r) where
   top := ⟨univ, upperPolar r univ, rfl, eq_univ_of_forall fun _ _ hb => hb trivial⟩
@@ -363,58 +362,42 @@ instance instBoundedOrderConcept : BoundedOrder (Concept α β r) where
   bot := ⟨lowerPolar r univ, univ, eq_univ_of_forall fun _ _ ha => ha trivial, rfl⟩
   bot_le _ := intent_subset_intent_iff.1 <| subset_univ _
 
-instance : SupSet (Concept α β r) :=
-  ⟨fun S =>
+instance : SupSet (Concept α β r) where
+  sSup S :=
     { extent := lowerPolar r (⋂ c ∈ S, intent c)
       intent := ⋂ c ∈ S, intent c
       upperPolar_extent := by
         simp_rw [← upperPolar_extent, ← upperPolar_iUnion₂, upperPolar_lowerPolar_upperPolar]
-      lowerPolar_intent := rfl }⟩
+      lowerPolar_intent := rfl }
 
-instance : InfSet (Concept α β r) :=
-  ⟨fun S =>
+instance : InfSet (Concept α β r) where
+  sInf S :=
     { extent := ⋂ c ∈ S, extent c
       intent := upperPolar r (⋂ c ∈ S, extent c)
       upperPolar_extent := rfl
       lowerPolar_intent := by
-        simp_rw [← lowerPolar_intent, ← lowerPolar_iUnion₂, lowerPolar_upperPolar_lowerPolar] }⟩
+        simp_rw [← lowerPolar_intent, ← lowerPolar_iUnion₂, lowerPolar_upperPolar_lowerPolar] }
 
-instance : CompleteLattice (Concept α β r) :=
-  { Concept.instLatticeConcept,
-    Concept.instBoundedOrderConcept with
-    sup := Concept.instSupConcept.max
-    le_sSup := fun _ _ hc => intent_subset_intent_iff.1 <| biInter_subset_of_mem hc
-    sSup_le := fun _ _ hc =>
-      intent_subset_intent_iff.1 <| subset_iInter₂ fun d hd => intent_subset_intent_iff.2 <| hc d hd
-    inf := Concept.instInfConcept.min
-    sInf_le := fun _ _ => biInter_subset_of_mem
-    le_sInf := fun _ _ => subset_iInter₂ }
+instance : CompleteLattice (Concept α β r) where
+  le_sSup _ _ hc := intent_subset_intent_iff.1 <| biInter_subset_of_mem hc
+  sSup_le _ _ hc :=
+    intent_subset_intent_iff.1 <| subset_iInter₂ fun d hd => intent_subset_intent_iff.2 <| hc d hd
+  sInf_le _ _ := biInter_subset_of_mem
+  le_sInf _ _ := subset_iInter₂
 
-@[simp]
-theorem extent_top : (⊤ : Concept α β r).extent = univ :=
-  rfl
+@[simp] theorem extent_top : (⊤ : Concept α β r).extent = univ := rfl
+@[simp] theorem intent_top : (⊤ : Concept α β r).intent = upperPolar r univ := rfl
 
 @[deprecated (since := "2025-07-10")]
 alias top_fst := extent_top
-
-@[simp]
-theorem intent_top : (⊤ : Concept α β r).intent = upperPolar r univ :=
-  rfl
-
 @[deprecated (since := "2025-07-10")]
 alias top_snd := intent_top
 
-@[simp]
-theorem extent_bot : (⊥ : Concept α β r).extent = lowerPolar r univ :=
-  rfl
+@[simp] theorem extent_bot : (⊥ : Concept α β r).extent = lowerPolar r univ := rfl
+@[simp] theorem intent_bot : (⊥ : Concept α β r).intent = univ := rfl
 
 @[deprecated (since := "2025-07-10")]
 alias bot_fst := extent_bot
-
-@[simp]
-theorem intent_bot : (⊥ : Concept α β r).intent = univ :=
-  rfl
-
 @[deprecated (since := "2025-07-10")]
 alias bot_snd := intent_bot
 
