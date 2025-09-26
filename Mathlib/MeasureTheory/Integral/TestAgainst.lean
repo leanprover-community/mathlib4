@@ -1,13 +1,8 @@
 /-
-Copyright (c) 2023 Kalle Kytölä. All rights reserved.
+Copyright (c) 2025 Luigi Massacci. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kalle Kytölä
+Authors: Luigi Massacci
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
-import Mathlib.Topology.ContinuousMap.Bounded.Normed
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 
 /-!
@@ -52,12 +47,12 @@ noncomputable def testAgainstCLM (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 
   (testAgainstₗ μ 𝕜).mkContinuous (measureUnivNNReal μ)
     (fun f ↦ le_trans (f.norm_integral_le_mul_norm _) le_rfl)
 
-variable {𝕜 : Type*} [NormedField 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
-variable [LocallyCompactSpace X] [T2Space X] [SecondCountableTopology X]
-
 end FiniteMeasure
 
 namespace LocallyIntegrable
+
+variable {𝕜 : Type*} [NormedField 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
+variable [LocallyCompactSpace X] [T2Space X] [SecondCountableTopology X]
 
 open TopologicalSpace LocallyIntegrableOn
 
@@ -92,7 +87,7 @@ a fixed compact `K` as a continuous `𝕜`-linear map on scalar valued bounded c
 noncomputable def testAgainstCLM {f : X → E} (hf : LocallyIntegrable f μ)
   (K : Compacts X) :
     (X →ᵇ 𝕜) →L[𝕜] E :=
-  (testAgainstLocallyIntegrableₗ 𝕜 hf K).mkContinuous (∫ x, ‖f x‖ ∂(μ.restrict K))
+  (testAgainsₗ 𝕜 hf K).mkContinuous (∫ x, ‖f x‖ ∂(μ.restrict K))
   (by
     intro φ
     have hf' : Integrable f (μ.restrict K) :=
@@ -108,7 +103,7 @@ noncomputable def testAgainstCLM {f : X → E} (hf : LocallyIntegrable f μ)
     rw [mul_comm, integral_const_mul_of_integrable hf'.norm]
   )
 
-end LocallyIntegrabe
+end LocallyIntegrable
 
 end BochnerIntegral
 
