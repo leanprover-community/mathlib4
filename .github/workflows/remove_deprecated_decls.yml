@@ -52,12 +52,14 @@ jobs:
         # We create a temporary file to run the command that adds the set_option linter.removeDeprecations
         # to the relevant files and saves the modified files with a new name
         tmplean="$(mktemp -p Mathlib --suffix=.lean RMDXXX)"
+        echo "::group::Creating ${tmplean} file"
         {
           for repo in Mathlib Archive Counterexamples; do
             printf $'import %s\n' "$repo"
           done
           printf $'#regenerate_deprecations "%s" "%s" really\n' "$OLD_DATE" "$NEW_DATE"
         } | tee -a "${tmplean}"
+        echo "::endgroup::"
         # This will add the new files, whose names end in `_with_option.lean`.
         lake build "${tmplean}"
         # We then add the new files to `Mathlib.lean`
