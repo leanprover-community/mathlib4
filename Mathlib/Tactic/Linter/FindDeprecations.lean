@@ -145,7 +145,7 @@ def removeDeprecations (fname : String) (rgs : Array String.Range) : IO String :
   return tot
 
 open Lean Elab Command in
-elab "#regenerate_deprecations " oldDate:str newDate:str really?:("really")? : command => do
+elab "#regenerate_deprecations " oldDate:str ppSpace newDate:str really?:(&" really")? : command => do
   let repo := repo.toString
   let oldDate := oldDate.getString
   let newDate := newDate.getString
