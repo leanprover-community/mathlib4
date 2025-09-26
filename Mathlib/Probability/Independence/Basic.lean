@@ -733,6 +733,16 @@ theorem IndepFun.comp₀ {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β
     IndepFun (φ ∘ f) (ψ ∘ g) μ :=
   Kernel.IndepFun.comp₀ hfg (by simp [hf]) (by simp [hg]) (by simp [hφ]) (by simp [hψ])
 
+lemma indepFun_const_left {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+    [IsZeroOrProbabilityMeasure μ] (c : β) (X : Ω → β') :
+    IndepFun (fun _ ↦ c) X μ :=
+  Kernel.indepFun_const_left c X
+
+lemma indepFun_const_right {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+    [IsZeroOrProbabilityMeasure μ] (X : Ω → β) (c : β') :
+    IndepFun X (fun _ ↦ c) μ :=
+  Kernel.indepFun_const_right X c
+
 theorem IndepFun.neg_right {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'} [Neg β']
     [MeasurableNeg β'] (hfg : IndepFun f g μ) :
     IndepFun f (-g) μ := hfg.comp measurable_id measurable_neg
