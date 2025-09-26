@@ -60,7 +60,7 @@ def isLimit : IsLimit (BinaryFan.mk (fst F₁ F₂) (snd F₁ F₂)) :=
     (IsLimit.postcomposeHomEquiv (mapPairIso (by exact Iso.refl _) (by exact Iso.refl _)) _).1
       (IsLimit.ofIsoLimit
         (tensorProductIsBinaryProduct (X := F₁.obj j) (Y := F₂.obj j))
-        (Cones.ext (Iso.refl _) (by rintro ⟨_|_⟩; all_goals aesop_cat))))
+        (Cones.ext (Iso.refl _) (by rintro ⟨_ | _⟩; all_goals cat_disch))))
 
 end chosenProd
 

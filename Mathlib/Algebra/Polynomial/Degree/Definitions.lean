@@ -100,7 +100,7 @@ theorem degree_eq_iff_natDegree_eq {p : R[X]} {n : ℕ} (hp : p ≠ 0) :
 
 theorem degree_eq_iff_natDegree_eq_of_pos {p : R[X]} {n : ℕ} (hn : 0 < n) :
     p.degree = n ↔ p.natDegree = n := by
-  obtain rfl|h := eq_or_ne p 0
+  obtain rfl | h := eq_or_ne p 0
   · simp [hn.ne]
   · exact degree_eq_iff_natDegree_eq h
 
@@ -365,7 +365,6 @@ theorem natDegree_C_mul_X_pow_le (a : R) (n : ℕ) : natDegree (C a * X ^ n) ≤
   natDegree_le_iff_degree_le.2 <| degree_C_mul_X_pow_le _ _
 
 theorem degree_erase_le (p : R[X]) (n : ℕ) : degree (p.erase n) ≤ degree p := by
-  rcases p with ⟨p⟩
   simp only [erase_def, degree, support]
   apply sup_mono
   rw [Finsupp.support_erase]

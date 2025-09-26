@@ -122,14 +122,14 @@ variable {s : Finset ι} {n : μ} {f : ι → μ}
 
 @[simp] lemma mem_piAntidiag : f ∈ piAntidiag s n ↔ s.sum f = n ∧ ∀ i, f i ≠ 0 → i ∈ s := by
   rw [piAntidiag]
-  induction' Fintype.truncEquivFinOfCardEq (Fintype.card_coe s) using Trunc.ind with e
+  induction Fintype.truncEquivFinOfCardEq (Fintype.card_coe s) using Trunc.ind with | _ e
   simp only [Trunc.lift_mk, mem_map, mem_finAntidiagonal, Embedding.coeFn_mk]
   constructor
   · rintro ⟨f, ⟨hf, rfl⟩, rfl⟩
     rw [sum_dite_of_true fun _ ↦ id]
     exact ⟨Fintype.sum_equiv e _ _ (by simp), by simp +contextual⟩
   · rintro ⟨rfl, hf⟩
-    refine ⟨f ∘ (↑) ∘ e.symm, ?_, by ext i; have := not_imp_comm.1 (hf i); aesop⟩
+    refine ⟨f ∘ (↑) ∘ e.symm, ?_, by grind⟩
     rw [← sum_attach s]
     exact Fintype.sum_equiv e.symm _ _ (by simp)
 

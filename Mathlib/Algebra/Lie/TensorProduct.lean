@@ -130,8 +130,6 @@ theorem toLinearMap_map (f : M →ₗ⁅R,L⁆ P) (g : N →ₗ⁅R,L⁆ Q) :
     (map f g : M ⊗[R] N →ₗ[R] P ⊗[R] Q) = TensorProduct.map (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :=
   rfl
 
-@[deprecated (since := "2024-12-30")] alias coe_linearMap_map := toLinearMap_map
-
 @[simp]
 nonrec theorem map_tmul (f : M →ₗ⁅R,L⁆ P) (g : N →ₗ⁅R,L⁆ Q) (m : M) (n : N) :
     map f g (m ⊗ₜ n) = f m ⊗ₜ g n :=
@@ -194,7 +192,7 @@ theorem lieIdeal_oper_eq_tensor_map_range :
     ⁅I, N⁆ = ((toModuleHom R L M).comp (mapIncl I N : I ⊗[R] N →ₗ⁅R,L⁆ L ⊗[R] M)).range := by
   rw [← toSubmodule_inj, lieIdeal_oper_eq_linear_span, LieModuleHom.toSubmodule_range,
     LieModuleHom.toLinearMap_comp, LinearMap.range_comp, mapIncl_def, toLinearMap_map,
-    TensorProduct.map_range_eq_span_tmul, Submodule.map_span]
+    TensorProduct.range_map_eq_span_tmul, Submodule.map_span]
   congr; ext m; constructor
   · rintro ⟨⟨x, hx⟩, ⟨n, hn⟩, rfl⟩; use x ⊗ₜ n; constructor
     · use ⟨x, hx⟩, ⟨n, hn⟩; rfl

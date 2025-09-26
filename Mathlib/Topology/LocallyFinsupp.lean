@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
 import Mathlib.Algebra.Group.Subgroup.Defs
+import Mathlib.Algebra.Group.Support
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Topology.Separation.Hausdorff
 import Mathlib.Topology.DiscreteSubset
@@ -174,7 +175,7 @@ protected def addSubgroup [AddCommGroup Y] : AddSubgroup (X → Y) where
   carrier := {f | f.support ⊆ U ∧ ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support)}
   zero_mem' := by
     simp only [support_subset_iff, ne_eq, mem_setOf_eq, Pi.zero_apply, not_true_eq_false,
-      IsEmpty.forall_iff, implies_true, support_zero', inter_empty, finite_empty, and_true,
+      IsEmpty.forall_iff, implies_true, support_zero, inter_empty, finite_empty, and_true,
       true_and]
     exact fun _ _ ↦ ⟨⊤, univ_mem⟩
   add_mem' {f g} hf hg := by

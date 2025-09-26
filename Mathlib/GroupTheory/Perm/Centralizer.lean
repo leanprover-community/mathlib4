@@ -473,7 +473,7 @@ theorem nat_card_range_toPermHom :
   simp only [← SetLike.coe_sort_coe, Fintype.card_eq_nat_card]
   congr
   ext
-  rw [SetLike.mem_coe, mem_range_toPermHom_iff', Set.mem_setOf_eq, ← beq_eq_beq]
+  rw [SetLike.mem_coe, mem_range_toPermHom_iff', Set.mem_setOf_eq]
 
 section Kernel
 /- Here, we describe the kernel of `g.OnCycleFactors.toPermHom` -/
@@ -667,7 +667,7 @@ theorem card_of_cycleType_eq_zero_iff {m : Multiset ℕ} :
       ↔ ¬ ((m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a)) := by
   rw [Finset.card_eq_zero, Finset.filter_eq_empty_iff,
     ← exists_with_cycleType_iff, not_exists]
-  aesop
+  simp
 
 theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
     #({g | g.cycleType = m} : Finset (Perm α)) *

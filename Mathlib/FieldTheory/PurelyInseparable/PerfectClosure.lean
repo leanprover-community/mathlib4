@@ -344,7 +344,6 @@ family of elements of `E` which is `F`-linearly independent, then `{ u_i ^ (q ^ 
 theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable [Algebra.IsSeparable F E]
     (h : LinearIndependent F v) : LinearIndependent F (v · ^ q ^ n) := by
   classical
-  have halg := Algebra.IsSeparable.isAlgebraic F E
   rw [linearIndependent_iff_finset_linearIndependent] at h ⊢
   intro s
   let E' := adjoin F (s.image v : Set E)
@@ -418,7 +417,7 @@ theorem perfectField_of_perfectClosure_eq_bot [h : PerfectField E] (eq : perfect
     exact ⟨z, (algebraMap F E).injective (by rw [RingHom.map_frobenius]; rw [h])⟩
   exact PerfectRing.toPerfectField F p
 
-/-- If `E / F` is a separable extension, `E` is perfect, then `F` is also prefect. -/
+/-- If `E / F` is a separable extension, `E` is perfect, then `F` is also perfect. -/
 theorem perfectField_of_isSeparable_of_perfectField_top [Algebra.IsSeparable F E] [PerfectField E] :
     PerfectField F :=
   perfectField_of_perfectClosure_eq_bot F E (perfectClosure.eq_bot_of_isSeparable F E)

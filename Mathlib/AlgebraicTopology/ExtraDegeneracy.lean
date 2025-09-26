@@ -62,13 +62,13 @@ structure ExtraDegeneracy (X : SimplicialObject.Augmented C) where
   s' : point.obj X ⟶ drop.obj X _⦋0⦌
   /-- the extra degeneracy -/
   s : ∀ n : ℕ, drop.obj X _⦋n⦌ ⟶ drop.obj X _⦋n + 1⦌
-  s'_comp_ε : s' ≫ X.hom.app (op ⦋0⦌) = 𝟙 _ := by aesop_cat
-  s₀_comp_δ₁ : s 0 ≫ X.left.δ 1 = X.hom.app (op ⦋0⦌) ≫ s' := by aesop_cat
-  s_comp_δ₀ : ∀ n : ℕ, s n ≫ X.left.δ 0 = 𝟙 _ := by aesop_cat
+  s'_comp_ε : s' ≫ X.hom.app (op ⦋0⦌) = 𝟙 _ := by cat_disch
+  s₀_comp_δ₁ : s 0 ≫ X.left.δ 1 = X.hom.app (op ⦋0⦌) ≫ s' := by cat_disch
+  s_comp_δ₀ : ∀ n : ℕ, s n ≫ X.left.δ 0 = 𝟙 _ := by cat_disch
   s_comp_δ :
-    ∀ (n : ℕ) (i : Fin (n + 2)), s (n + 1) ≫ X.left.δ i.succ = X.left.δ i ≫ s n := by aesop_cat
+    ∀ (n : ℕ) (i : Fin (n + 2)), s (n + 1) ≫ X.left.δ i.succ = X.left.δ i ≫ s n := by cat_disch
   s_comp_σ :
-    ∀ (n : ℕ) (i : Fin (n + 1)), s n ≫ X.left.σ i.succ = X.left.σ i ≫ s (n + 1) := by aesop_cat
+    ∀ (n : ℕ) (i : Fin (n + 1)), s n ≫ X.left.σ i.succ = X.left.σ i ≫ s (n + 1) := by cat_disch
 
 namespace ExtraDegeneracy
 

@@ -10,7 +10,7 @@ import Mathlib.Data.Finsupp.Fin
 /-!
 # `Finsupp.sum` and `Finsupp.prod` over `Fin`
 
-This file contains theorems relevant to big operators in finitely supported functions over `Fin`.
+This file contains theorems relevant to big operators on finitely supported functions over `Fin`.
 -/
 
 namespace Finsupp

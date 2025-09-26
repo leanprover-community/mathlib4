@@ -155,8 +155,8 @@ lemma iso_hom_app (a : A) (X : C) :
 @[simp, reassoc]
 lemma iso_inv_app (a : A) (X : C) :
     (commShiftOfLocalization.iso L W F F' a).inv.app (L.obj X) =
-        (shiftFunctor E a).map ((Lifting.iso L W F F').hom.app X) ≫
-        (F.commShiftIso a).inv.app X ≫
+      (shiftFunctor E a).map ((Lifting.iso L W F F').hom.app X) ≫
+      (F.commShiftIso a).inv.app X ≫
       (Lifting.iso L W F F').inv.app (X⟦a⟧) ≫
       F'.map ((L.commShiftIso a).hom.app X) := by
   simp [commShiftOfLocalization.iso]
@@ -221,7 +221,7 @@ lemma commShiftOfLocalization_iso_inv_app (a : A) (X : C) :
     (F'.commShiftIso a).inv.app (L.obj X) =
       (shiftFunctor E a).map ((Lifting.iso L W F F').hom.app X) ≫
       (F.commShiftIso a).inv.app X ≫ (Lifting.iso L W F F').inv.app (X⟦a⟧) ≫
-     F'.map ((L.commShiftIso a).hom.app X) := by
+      F'.map ((L.commShiftIso a).hom.app X) := by
   apply commShiftOfLocalization.iso_inv_app
 
 end Functor

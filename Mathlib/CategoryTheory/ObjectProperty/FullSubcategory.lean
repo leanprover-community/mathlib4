@@ -141,12 +141,6 @@ instance [F.Faithful] : (P.lift F hF).Faithful :=
 instance [F.Full] : (P.lift F hF).Full :=
   Functor.Full.of_comp_faithful_iso (P.liftCompιIso F hF)
 
-instance [F.Faithful] : (P.lift F hF).Faithful :=
-  Functor.Faithful.of_comp_iso (P.liftCompιIso F hF)
-
-instance [F.Full] : (P.lift F hF).Full :=
-  Functor.Full.of_comp_faithful_iso (P.liftCompιIso F hF)
-
 variable {Q}
 
 /-- When `h : P ≤ Q`, this is the canonical isomorphism
