@@ -124,7 +124,7 @@ theorem map_roots_card_eq_natDegree_of_leadingCoeff_ne_zero {A B : Type*} [CommR
     (p.map f).roots.card = p.natDegree :=
   natDegree_map_of_leadingCoeff_ne_zero _ hf ▸ roots_card_eq_natDegree
 
-theorem map_roots_card_eq_natDegree_of_leadingCoeff_isUnit {A B : Type*} [CommRing A] [Field B]
+theorem map_roots_card_eq_natDegree_of_isUnit_leadingCoeff {A B : Type*} [CommRing A] [Field B]
     [IsAlgClosed B] (f : A →+* B) {p : A[X]} (h : IsUnit p.leadingCoeff) :
     (p.map f).roots.card = p.natDegree :=
   natDegree_map_of_isUnit_leadingCoeff f h ▸ roots_card_eq_natDegree
@@ -138,10 +138,10 @@ theorem aroots_card_eq_natDegree_of_leadingCoeff_ne_zero {A B : Type*} [CommRing
     (p.aroots B).card = p.natDegree :=
   map_roots_card_eq_natDegree_of_leadingCoeff_ne_zero _ hf
 
-theorem aroots_card_eq_natDegree_of_leadingCoeff_isUnit {A B : Type*} [CommRing A] [Field B]
+theorem aroots_card_eq_natDegree_of_isUnit_leadingCoeff {A B : Type*} [CommRing A] [Field B]
     [IsAlgClosed B] [Algebra A B] {p : A[X]} (h : IsUnit p.leadingCoeff) :
     (p.aroots B).card = p.natDegree :=
-  map_roots_card_eq_natDegree_of_leadingCoeff_isUnit _ h
+  map_roots_card_eq_natDegree_of_isUnit_leadingCoeff _ h
 
 theorem aroots_card_eq_natDegree_from_field {A B : Type*} [Field A] [Field B] [IsAlgClosed B]
     [Algebra A B] {p : A[X]} : (p.aroots B).card = p.natDegree :=
