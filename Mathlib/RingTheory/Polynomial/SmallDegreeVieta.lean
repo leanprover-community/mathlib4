@@ -17,8 +17,7 @@ variable {R T S : Type*}
 
 /-- **Vieta's formula** for quadratics. -/
 lemma eq_neg_mul_add_of_roots_quadratic_eq_pair [CommRing R] [IsDomain R] {x1 x2 : R} {p : R[X]}
-    (hp : p.degree = 2) (hroots : p.roots = {x1, x2}) :
-    p.coeff 1 = -p.coeff 2 * (x1 + x2) := by
+    (hp : p.degree = 2) (hroots : p.roots = {x1, x2}) : p.coeff 1 = -p.coeff 2 * (x1 + x2) := by
   have hp_roots_card : p.roots.card = p.degree := by
     rw [hp, hroots, Multiset.card_pair, Nat.cast_ofNat]
   simpa [leadingCoeff, natDegree_eq_of_degree_eq_some hp, hroots, mul_assoc, add_comm x1] using
@@ -27,12 +26,12 @@ lemma eq_neg_mul_add_of_roots_quadratic_eq_pair [CommRing R] [IsDomain R] {x1 x2
 
 /-- **Vieta's formula** for quadratics. -/
 lemma eq_mul_mul_of_roots_quadratic_eq_pair [CommRing R] [IsDomain R] {x1 x2 : R} {p : R[X]}
-    (hp : p.natDegree = 2) (hroots : p.roots = {x1, x2}) :
-    p.coeff 0 = p.coeff 2 * x1 * x2 := by
-  have hp_roots_card : p.roots.card = p.natDegree := by
-    rw [hp, hroots, Multiset.card_pair]
-  simpa [leadingCoeff, hp, hroots, mul_assoc, add_comm x1] using
-    coeff_eq_esymm_roots_of_card hp_roots_card (k := 0) (by simp [hp])
+    (hp : p.degree = 2) (hroots : p.roots = {x1, x2}) : p.coeff 0 = p.coeff 2 * x1 * x2 := by
+  have hp_roots_card : p.roots.card = p.degree := by
+    rw [hp, hroots, Multiset.card_pair, Nat.cast_ofNat]
+  simpa [leadingCoeff, natDegree_eq_of_degree_eq_some hp, hroots, mul_assoc, add_comm x1] using
+    coeff_eq_esymm_roots_of_card (natDegree_eq_of_degree_eq_some hp_roots_card.symm).symm (k := 0)
+      (by simp [natDegree_eq_of_degree_eq_some hp])
 
 lemma eq_neg_mul_add_of_aroots_quadratic_eq_pair
     [CommRing T] [CommRing S] [IsDomain S] [Algebra T S] {p : T[X]} {x1 x2 : S}
