@@ -132,31 +132,29 @@ section Bounds
 /-- See `avgRisk_le_mul` for the usual case in which `κ` is a Markov kernel. -/
 lemma avgRisk_le_mul' (P : Kernel Θ 𝓧) (κ : Kernel 𝓧 𝓨) (π : Measure Θ)
     {C : ℝ≥0} (hℓC : ∀ θ y, ℓ θ y ≤ C) :
-    avgRisk ℓ P κ π ≤ C * IsFiniteKernel.bound κ * IsFiniteKernel.bound P * π Set.univ :=
+    avgRisk ℓ P κ π ≤ C * κ.bound * P.bound * π Set.univ :=
   calc ∫⁻ θ, ∫⁻ y, ℓ θ y ∂(κ ∘ₖ P) θ ∂π
-  _ ≤ ∫⁻ θ, ∫⁻ y, C ∂(κ ∘ₖ P) θ ∂π := by
-    gcongr with θ y
-    exact hℓC θ y
+  _ ≤ ∫⁻ θ, ∫⁻ y, C ∂(κ ∘ₖ P) θ ∂π := by gcongr with θ y; exact hℓC θ y
   _ = ∫⁻ θ, C * ∫⁻ x, κ x .univ ∂P θ ∂π := by simp [Kernel.comp_apply' _ _ _ .univ]
-  _ ≤ ∫⁻ θ, C * ∫⁻ x, IsFiniteKernel.bound κ ∂P θ ∂π := by
+  _ ≤ ∫⁻ θ, C * ∫⁻ x, κ.bound ∂P θ ∂π := by
     gcongr with θ x
     exact Kernel.measure_le_bound κ x Set.univ
-  _ ≤ ∫⁻ θ, C * IsFiniteKernel.bound κ * IsFiniteKernel.bound P ∂π := by
+  _ ≤ ∫⁻ θ, C * κ.bound * P.bound ∂π := by
     conv_lhs => simp only [lintegral_const, ← mul_assoc]
     gcongr with θ
     exact Kernel.measure_le_bound P θ Set.univ
-  _ = C * IsFiniteKernel.bound κ * IsFiniteKernel.bound P * π Set.univ := by simp
+  _ = C * κ.bound * P.bound * π Set.univ := by simp
 
 lemma avgRisk_le_mul (P : Kernel Θ 𝓧) (κ : Kernel 𝓧 𝓨) [IsMarkovKernel κ]
     (π : Measure Θ) {C : ℝ≥0} (hℓC : ∀ θ y, ℓ θ y ≤ C) :
-    avgRisk ℓ P κ π ≤ C * IsFiniteKernel.bound P * π Set.univ := by
+    avgRisk ℓ P κ π ≤ C * P.bound * π Set.univ := by
   refine (avgRisk_le_mul' P κ π hℓC).trans_eq ?_
   rcases isEmpty_or_nonempty 𝓧 <;> simp
 
 /-- For a bounded loss, the Bayes risk with respect to a prior is bounded by a constant. -/
 lemma bayesRisk_le_mul [h𝓨 : Nonempty 𝓨] (P : Kernel Θ 𝓧) (π : Measure Θ)
     {C : ℝ≥0} (hℓC : ∀ θ y, ℓ θ y ≤ C) :
-    bayesRisk ℓ P π ≤ C * IsFiniteKernel.bound P * π Set.univ := by
+    bayesRisk ℓ P π ≤ C * P.bound * π Set.univ := by
   refine iInf₂_le_of_le (Kernel.const 𝓧 (Measure.dirac h𝓨.some)) inferInstance ?_
   exact avgRisk_le_mul P (Kernel.const 𝓧 (Measure.dirac h𝓨.some)) π hℓC
 
@@ -165,7 +163,7 @@ lemma bayesRisk_lt_top [h𝓨 : Nonempty 𝓨] (P : Kernel Θ 𝓧)
     [IsFiniteKernel P] (π : Measure Θ) [IsFiniteMeasure π] {C : ℝ≥0} (hℓC : ∀ θ y, ℓ θ y ≤ C) :
     bayesRisk ℓ P π < ∞ := by
   refine (bayesRisk_le_mul P π hℓC).trans_lt ?_
-  simp [ENNReal.mul_lt_top_iff, IsFiniteKernel.bound_lt_top P]
+  simp [ENNReal.mul_lt_top_iff, P.bound_lt_top]
 
 end Bounds
 
