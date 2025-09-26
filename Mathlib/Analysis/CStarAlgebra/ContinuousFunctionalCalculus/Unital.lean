@@ -697,7 +697,7 @@ lemma cfc_algebraMap (r : R) (f : R → R) : cfc f (algebraMap R A r) = algebraM
 @[simp] lemma cfc_apply_one {f : R → R} : cfc f (1 : A) = algebraMap R A (f 1) := by
   simpa using cfc_algebraMap (A := A) 1 f
 
-@[simp]
+@[simp, grind ←]
 instance IsStarNormal.cfc_map (f : R → R) (a : A) : IsStarNormal (cfc f a) where
   star_comm_self := by
     rw [Commute, SemiconjBy]
@@ -708,12 +708,12 @@ instance IsStarNormal.cfc_map (f : R → R) (a : A) : IsStarNormal (cfc f a) whe
     · simp [cfc_apply_of_not_continuousOn a h]
 
 -- The following two lemmas are just `cfc_predicate`, but specific enough for the `@[simp]` tag.
-@[simp]
+@[simp, grind ←]
 protected lemma IsSelfAdjoint.cfc [ContinuousFunctionalCalculus R A IsSelfAdjoint]
     {f : R → R} {a : A} : IsSelfAdjoint (cfc f a) :=
   cfc_predicate _ _
 
-@[simp]
+@[simp, grind ←]
 lemma cfc_nonneg_of_predicate [LE A]
     [ContinuousFunctionalCalculus R A (0 ≤ ·)] {f : R → R} {a : A} : 0 ≤ cfc f a :=
   cfc_predicate _ _

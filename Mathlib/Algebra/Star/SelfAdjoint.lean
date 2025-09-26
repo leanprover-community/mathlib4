@@ -67,18 +67,19 @@ theorem all [Star R] [TrivialStar R] (r : R) : IsSelfAdjoint r :=
 theorem star_eq [Star R] {x : R} (hx : IsSelfAdjoint x) : star x = x :=
   hx
 
+@[grind =]
 theorem _root_.isSelfAdjoint_iff [Star R] {x : R} : IsSelfAdjoint x ↔ star x = x :=
   Iff.rfl
 
-@[simp]
+@[simp, grind =]
 theorem star_iff [InvolutiveStar R] {x : R} : IsSelfAdjoint (star x) ↔ IsSelfAdjoint x := by
   simpa only [IsSelfAdjoint, star_star] using eq_comm
 
-@[simp]
+@[simp, grind]
 theorem star_mul_self [Mul R] [StarMul R] (x : R) : IsSelfAdjoint (star x * x) := by
   simp only [IsSelfAdjoint, star_mul, star_star]
 
-@[simp]
+@[simp, grind]
 theorem mul_star_self [Mul R] [StarMul R] (x : R) : IsSelfAdjoint (x * star x) := by
   simpa only [star_star] using star_mul_self (star x)
 
@@ -90,7 +91,7 @@ lemma commute_iff {R : Type*} [Mul R] [StarMul R] {x y : R}
   · simpa only [star_mul, hx.star_eq, hy.star_eq] using h.symm
 
 /-- Functions in a `StarHomClass` preserve self-adjoint elements. -/
-@[aesop 10% apply]
+@[aesop 10% apply, grind ←]
 theorem map {F R S : Type*} [Star R] [Star S] [FunLike F R S] [StarHomClass F R S]
     {x : R} (hx : IsSelfAdjoint x) (f : F) : IsSelfAdjoint (f x) :=
   show star (f x) = f x from map_star f x ▸ congr_arg f hx
@@ -101,7 +102,7 @@ theorem _root_.isSelfAdjoint_map {F R S : Type*} [Star R] [Star S] [FunLike F R 
     [StarHomClass F R S] [TrivialStar R] (f : F) (x : R) : IsSelfAdjoint (f x) :=
   (IsSelfAdjoint.all x).map f
 
-@[aesop 10% apply]
+@[aesop 10% apply, grind ←]
 theorem isStarNormal {R : Type*} [Mul R] [Star R] {x : R} (hx : IsSelfAdjoint x) :
     IsStarNormal x := ⟨by simp only [Commute, SemiconjBy, hx.star_eq]⟩
 
@@ -110,9 +111,9 @@ section AddMonoid
 variable [AddMonoid R] [StarAddMonoid R]
 
 variable (R) in
-@[simp] protected theorem zero : IsSelfAdjoint (0 : R) := star_zero R
+@[simp, grind] protected theorem zero : IsSelfAdjoint (0 : R) := star_zero R
 
-@[aesop 90% apply]
+@[aesop 90% apply, grind ←]
 theorem add {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjoint (x + y) := by
   simp only [isSelfAdjoint_iff, star_add, hx.star_eq, hy.star_eq]
 
@@ -122,11 +123,11 @@ section AddGroup
 
 variable [AddGroup R] [StarAddMonoid R]
 
-@[aesop safe apply]
+@[aesop safe apply, grind ←]
 theorem neg {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint (-x) := by
   simp only [isSelfAdjoint_iff, star_neg, hx.star_eq]
 
-@[aesop 90% apply]
+@[aesop 90% apply, grind ←]
 theorem sub {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjoint (x - y) := by
   simp only [isSelfAdjoint_iff, star_sub, hx.star_eq, hy.star_eq]
 
@@ -136,11 +137,11 @@ section AddCommMonoid
 
 variable [AddCommMonoid R] [StarAddMonoid R]
 
-@[simp]
+@[simp, grind]
 theorem add_star_self (x : R) : IsSelfAdjoint (x + star x) := by
   simp only [isSelfAdjoint_iff, add_comm, star_add, star_star]
 
-@[simp]
+@[simp, grind]
 theorem star_add_self (x : R) : IsSelfAdjoint (star x + x) := by
   simp only [isSelfAdjoint_iff, add_comm, star_add, star_star]
 
@@ -150,15 +151,15 @@ section Semigroup
 
 variable [Semigroup R] [StarMul R]
 
-@[aesop safe apply]
+@[aesop safe apply, grind ←]
 theorem conjugate {x : R} (hx : IsSelfAdjoint x) (z : R) : IsSelfAdjoint (z * x * star z) := by
   simp only [isSelfAdjoint_iff, star_mul, star_star, mul_assoc, hx.star_eq]
 
-@[aesop safe apply]
+@[aesop safe apply, grind ←]
 theorem conjugate' {x : R} (hx : IsSelfAdjoint x) (z : R) : IsSelfAdjoint (star z * x * z) := by
   simp only [isSelfAdjoint_iff, star_mul, star_star, mul_assoc, hx.star_eq]
 
-@[aesop 90% apply]
+@[aesop 90% apply, grind ←]
 theorem conjugate_self {x : R} (hx : IsSelfAdjoint x) {z : R} (hz : IsSelfAdjoint z) :
     IsSelfAdjoint (z * x * z) := by nth_rewrite 2 [← hz]; exact conjugate hx z
 
@@ -169,7 +170,7 @@ section MulOneClass
 variable [MulOneClass R] [StarMul R]
 variable (R)
 
-@[simp] protected theorem one : IsSelfAdjoint (1 : R) :=
+@[simp, grind] protected theorem one : IsSelfAdjoint (1 : R) :=
   star_one R
 
 end MulOneClass
@@ -178,7 +179,7 @@ section Monoid
 
 variable [Monoid R] [StarMul R]
 
-@[aesop safe apply]
+@[aesop safe apply, grind ←]
 theorem pow {x : R} (hx : IsSelfAdjoint x) (n : ℕ) : IsSelfAdjoint (x ^ n) := by
   simp only [isSelfAdjoint_iff, star_pow, hx.star_eq]
 
@@ -198,11 +199,11 @@ section Semiring
 
 variable [Semiring R] [StarRing R]
 
-@[simp]
+@[simp, grind ←]
 protected theorem natCast (n : ℕ) : IsSelfAdjoint (n : R) :=
   star_natCast _
 
-@[simp]
+@[simp, grind]
 protected theorem ofNat (n : ℕ) [n.AtLeastTwo] : IsSelfAdjoint (ofNat(n) : R) :=
   .natCast n
 
@@ -230,7 +231,7 @@ section Ring
 
 variable [Ring R] [StarRing R]
 
-@[simp]
+@[simp, grind ←]
 protected theorem intCast (z : ℤ) : IsSelfAdjoint (z : R) :=
   star_intCast _
 
@@ -240,11 +241,11 @@ section Group
 
 variable [Group R] [StarMul R]
 
-@[aesop safe apply]
+@[aesop safe apply, grind ←]
 theorem inv {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint x⁻¹ := by
   simp only [isSelfAdjoint_iff, star_inv, hx.star_eq]
 
-@[aesop safe apply]
+@[aesop safe apply, grind ←]
 theorem zpow {x : R} (hx : IsSelfAdjoint x) (n : ℤ) : IsSelfAdjoint (x ^ n) := by
   simp only [isSelfAdjoint_iff, star_zpow, hx.star_eq]
 
@@ -254,11 +255,11 @@ section GroupWithZero
 
 variable [GroupWithZero R] [StarMul R]
 
-@[aesop safe apply]
+@[aesop safe apply, grind ←]
 theorem inv₀ {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint x⁻¹ := by
   simp only [isSelfAdjoint_iff, star_inv₀, hx.star_eq]
 
-@[aesop safe apply]
+@[aesop safe apply, grind ←]
 theorem zpow₀ {x : R} (hx : IsSelfAdjoint x) (n : ℤ) : IsSelfAdjoint (x ^ n) := by
   simp only [isSelfAdjoint_iff, star_zpow₀, hx.star_eq]
 
@@ -273,7 +274,7 @@ section DivisionRing
 
 variable [DivisionRing R] [StarRing R]
 
-@[simp]
+@[simp, grind]
 protected theorem ratCast (x : ℚ) : IsSelfAdjoint (x : R) :=
   star_ratCast _
 
@@ -283,6 +284,7 @@ section Semifield
 
 variable [Semifield R] [StarRing R]
 
+@[grind ←]
 theorem div {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjoint (x / y) := by
   simp only [isSelfAdjoint_iff, star_div₀, hx.star_eq, hy.star_eq]
 
@@ -296,6 +298,7 @@ theorem smul [Star R] [Star A] [SMul R A] [StarModule R A]
     IsSelfAdjoint (r • x) := by
   simp only [isSelfAdjoint_iff, star_smul, hr.star_eq, hx.star_eq]
 
+@[grind =]
 theorem smul_iff [Monoid R] [StarMul R] [Star A]
     [MulAction R A] [StarModule R A] {r : R} (hr : IsSelfAdjoint r) (hu : IsUnit r) {x : A} :
     IsSelfAdjoint (r • x) ↔ IsSelfAdjoint x := by
@@ -334,11 +337,12 @@ section AddGroup
 
 variable [AddGroup R] [StarAddMonoid R]
 
+@[grind =]
 theorem mem_iff {x : R} : x ∈ selfAdjoint R ↔ star x = x := by
   rw [← AddSubgroup.mem_carrier]
   exact Iff.rfl
 
-@[simp, norm_cast]
+@[simp, norm_cast, grind =]
 theorem star_val_eq {x : selfAdjoint R} : star (x : R) = x :=
   x.prop
 
@@ -495,6 +499,7 @@ section AddGroup
 
 variable [AddCommGroup R] [StarAddMonoid R]
 
+@[grind =]
 theorem mem_iff {x : R} : x ∈ skewAdjoint R ↔ star x = -x := by
   rw [← AddSubgroup.mem_carrier]
   exact Iff.rfl
@@ -512,9 +517,11 @@ section Ring
 
 variable [Ring R] [StarRing R]
 
+@[grind ←]
 theorem conjugate {x : R} (hx : x ∈ skewAdjoint R) (z : R) : z * x * star z ∈ skewAdjoint R := by
   simp only [mem_iff, star_mul, star_star, mem_iff.mp hx, neg_mul, mul_neg, mul_assoc]
 
+@[grind ←]
 theorem conjugate' {x : R} (hx : x ∈ skewAdjoint R) (z : R) : star z * x * z ∈ skewAdjoint R := by
   simp only [mem_iff, star_mul, star_star, mem_iff.mp hx, neg_mul, mul_neg, mul_assoc]
 
@@ -532,7 +539,7 @@ section SMul
 
 variable [Star R] [TrivialStar R] [AddCommGroup A] [StarAddMonoid A]
 
-@[aesop 90% (rule_sets := [SetLike])]
+@[aesop 90% (rule_sets := [SetLike]), grind ←]
 theorem smul_mem [Monoid R] [DistribMulAction R A] [StarModule R A] (r : R) {x : A}
     (h : x ∈ skewAdjoint A) : r • x ∈ skewAdjoint A := by
   rw [mem_iff, star_smul, star_trivial, mem_iff.mp h, smul_neg r]

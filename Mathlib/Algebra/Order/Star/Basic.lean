@@ -176,7 +176,9 @@ lemma IsSelfAdjoint.mono {x y : R} (h : x ≤ y) (hx : IsSelfAdjoint x) : IsSelf
   rintro - ⟨s, rfl⟩
   simp
 
-@[aesop 10% apply]
+grind_pattern IsSelfAdjoint.mono => x ≤ y, IsSelfAdjoint x
+
+@[aesop 10% apply, grind ←]
 lemma IsSelfAdjoint.of_nonneg {x : R} (hx : 0 ≤ x) : IsSelfAdjoint x :=
   .mono hx <| .zero R
 
@@ -187,11 +189,11 @@ alias LE.le.isSelfAdjoint := IsSelfAdjoint.of_nonneg
 lemma LE.le.star_eq {x : R} (hx : 0 ≤ x) : star x = x :=
   hx.isSelfAdjoint.star_eq
 
-@[simp]
+@[simp, grind]
 theorem star_mul_self_nonneg (r : R) : 0 ≤ star r * r :=
   StarOrderedRing.nonneg_iff.mpr <| AddSubmonoid.subset_closure ⟨r, rfl⟩
 
-@[simp]
+@[simp, grind]
 theorem mul_star_self_nonneg (r : R) : 0 ≤ r * star r := by
   simpa only [star_star] using star_mul_self_nonneg (star r)
 
@@ -203,7 +205,7 @@ protected theorem IsSelfAdjoint.mul_self_nonneg {a : R} (ha : IsSelfAdjoint a) :
 theorem IsStarProjection.nonneg {p : R} (hp : IsStarProjection p) : 0 ≤ p :=
   hp.isIdempotentElem ▸ hp.isSelfAdjoint.mul_self_nonneg
 
-@[aesop safe apply]
+@[aesop safe apply, grind ←]
 theorem conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c := by
   rw [StarOrderedRing.nonneg_iff] at ha
   refine AddSubmonoid.closure_induction (fun x hx => ?_)
@@ -216,7 +218,7 @@ theorem conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c :
       _ ≤ star c * x * c + star c * y * c := add_le_add_left hy _
       _ ≤ _ := by rw [mul_add, add_mul]
 
-@[aesop safe apply]
+@[aesop safe apply, grind ←]
 theorem conjugate_nonneg' {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ c * a * star c := by
   simpa only [star_star] using conjugate_nonneg ha (star c)
 
@@ -270,11 +272,11 @@ lemma star_le_iff {x y : R} : star x ≤ y ↔ x ≤ star y := by rw [← star_l
 
 lemma star_lt_iff {x y : R} : star x < y ↔ x < star y := by rw [← star_lt_star_iff, star_star]
 
-@[simp]
+@[simp, grind =]
 lemma star_nonneg_iff {x : R} : 0 ≤ star x ↔ 0 ≤ x := by
   simpa using star_le_star_iff (x := 0) (y := x)
 
-@[simp]
+@[simp, grind =]
 lemma star_nonpos_iff {x : R} : star x ≤ 0 ↔ x ≤ 0 := by
   simpa using star_le_star_iff (x := x) (y := 0)
 

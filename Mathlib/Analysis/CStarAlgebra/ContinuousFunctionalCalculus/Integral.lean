@@ -141,7 +141,7 @@ lemma cfc_integral' [NormedSpace ℝ A] (f : X → 𝕜 → 𝕜) (a : A)
     rw [continuousOn_iff_continuous_restrict]
     refine continuous_congr key₁ |>.mpr ?_
     exact map_continuous (∫ x, mkD ((spectrum 𝕜 a).restrict (f x)) 0 ∂μ)
-  simp_rw [cfc_eq_cfcL_mkD _ a, cfcL_integral a _ hf₂ ha]
+  simp_rw [cfc_eq_cfcL_mkD _ a ha, cfcL_integral a _ hf₂ ha]
   congr
   ext z
   rw [← key₁, key₂]
@@ -300,7 +300,7 @@ lemma cfcₙ_integral' [NormedSpace ℝ A] (f : X → 𝕜 → 𝕜) (a : A)
       refine continuous_congr key₁ |>.mpr ?_
       exact map_continuous (∫ x, mkD ((quasispectrum 𝕜 a).restrict (f x)) 0 ∂μ)
     · exact integral_eq_zero_of_ae hf₂
-  simp_rw [cfcₙ_eq_cfcₙL_mkD _ a, cfcₙL_integral a _ hf₃ ha]
+  simp_rw [cfcₙ_eq_cfcₙL_mkD _ a ha, cfcₙL_integral a _ hf₃ ha]
   congr
   ext z
   rw [← key₁, key₂]
