@@ -98,9 +98,11 @@ def update (oldDate newDate : String) (rd : RemoveDeprecations) (s : Syntax) : R
       | `(attr| deprecated $[$id?]? $[$text?]? (since := $since)) =>
         let since := since.getString
         if oldDate ≤ since && since ≤ newDate then
-          --dbg_trace "removing this"
+          dbg_trace "removing {id?.getD (mkIdent `alias?)} deprecated since {since}"
           {ans with removals := rd.removals.insert (s.getRange?.getD rg)}
-        else ans
+        else
+          --dbg_trace "NOT removing this"
+          ans
       | _ =>
         ans
     else
@@ -150,6 +152,7 @@ def removeDeprecationsLinter : Linter where run stx := do
   -- When `rd.firstLast` is empty, the current command is the last to be elaborated.
   -- Hence, this is where we can reconstruct the file without the deprecations.
   if rd.firstLast.isEmpty then
+    --dbg_trace "After checking firstLast"
     let fm ← getFileMap
     let replacements := rd.removals.toArray.qsort (·.start < ·.start)
     if !replacements.isEmpty then
