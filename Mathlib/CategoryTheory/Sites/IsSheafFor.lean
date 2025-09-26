@@ -347,24 +347,34 @@ end Pullback
 /-- Given a morphism of presheaves `f : P ⟶ Q`, we can take a family of elements valued in `P` to a
 family of elements valued in `Q` by composing with `f`.
 -/
+@[deprecated map (since := "2025-09-25")]
 def FamilyOfElements.compPresheafMap (f : P ⟶ Q) (x : FamilyOfElements P R) :
     FamilyOfElements Q R := fun Y g hg => f.app (op Y) (x g hg)
 
 @[simp]
-theorem FamilyOfElements.compPresheafMap_id (x : FamilyOfElements P R) :
-    x.compPresheafMap (𝟙 P) = x :=
+lemma FamilyOfElements.map_id (x : FamilyOfElements P R) :
+    x.map (𝟙 _) = x :=
   rfl
 
 @[simp]
-theorem FamilyOfElements.compPresheafMap_comp (x : FamilyOfElements P R) (f : P ⟶ Q)
-    (g : Q ⟶ U) : (x.compPresheafMap f).compPresheafMap g = x.compPresheafMap (f ≫ g) :=
+lemma FamilyOfElements.map_comp (x : FamilyOfElements P R) (f : P ⟶ Q) (g : Q ⟶ U) :
+    (x.map f).map g = x.map (f ≫ g) := by
   rfl
 
-theorem FamilyOfElements.Compatible.compPresheafMap (f : P ⟶ Q) {x : FamilyOfElements P R}
-    (h : x.Compatible) : (x.compPresheafMap f).Compatible := by
+theorem FamilyOfElements.Compatible.map (f : P ⟶ Q) {x : FamilyOfElements P R}
+    (h : x.Compatible) : (x.map f).Compatible := by
   intro Z₁ Z₂ W g₁ g₂ f₁ f₂ h₁ h₂ eq
-  unfold FamilyOfElements.compPresheafMap
+  unfold FamilyOfElements.map
   rwa [← FunctorToTypes.naturality, ← FunctorToTypes.naturality, h]
+
+@[deprecated (since := "2025-09-25")] alias FamilyOfElements.compPresheafMap_id :=
+  FamilyOfElements.map_id
+
+@[deprecated (since := "2025-09-25")] alias FamilyOfElements.compPresheafMap_comp :=
+  FamilyOfElements.map_comp
+
+@[deprecated (since := "2025-09-25")] alias FamilyOfElements.Compatible.compPresheafMap :=
+  FamilyOfElements.Compatible.map
 
 /--
 The given element `t` of `P.obj (op X)` is an *amalgamation* for the family of elements `x` if every
@@ -377,12 +387,15 @@ equation (2).
 def FamilyOfElements.IsAmalgamation (x : FamilyOfElements P R) (t : P.obj (op X)) : Prop :=
   ∀ ⦃Y : C⦄ (f : Y ⟶ X) (h : R f), P.map f.op t = x f h
 
-theorem FamilyOfElements.IsAmalgamation.compPresheafMap {x : FamilyOfElements P R} {t} (f : P ⟶ Q)
-    (h : x.IsAmalgamation t) : (x.compPresheafMap f).IsAmalgamation (f.app (op X) t) := by
+theorem FamilyOfElements.IsAmalgamation.map {x : FamilyOfElements P R} {t} (f : P ⟶ Q)
+    (h : x.IsAmalgamation t) : (x.map f).IsAmalgamation (f.app (op X) t) := by
   intro Y g hg
-  dsimp [FamilyOfElements.compPresheafMap]
+  dsimp [FamilyOfElements.map]
   change (f.app _ ≫ Q.map _) _ = _
   rw [← f.naturality, types_comp_apply, h g hg]
+
+@[deprecated (since := "2025-09-25")] alias FamilyOfElements.IsAmalgamation.compPresheafMap :=
+  FamilyOfElements.IsAmalgamation.map
 
 theorem is_compatible_of_exists_amalgamation (x : FamilyOfElements P R)
     (h : ∃ t, x.IsAmalgamation t) : x.Compatible := by
