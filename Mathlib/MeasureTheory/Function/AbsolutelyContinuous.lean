@@ -26,7 +26,16 @@ open scoped Topology
 namespace AbsolutelyContinuousOnInterval
 
 /-- The filter on the collection of all the finite sequences of `uIoc` intervals induced by the
-function that the finite sequence of the intervals to the total length of the intervals -/
+function that maps the finite sequence of the intervals to the total length of the intervals.
+Details:
+1. Technically the filter is on `ℕ × (ℕ → ℝ × ℝ)`. A finite sequence
+`uIoc a₀ b₀, ..., uIoc aₙ₋₁ bₙ₋₁` is represented by any `E : ℕ × (ℕ → ℝ × ℝ)` which satisfies
+`E.1 = n` and `E.2 i = (aᵢ, bᵢ)` for `i < n`. Its total length is
+`∑ i ∈ Finset.range E.1, dist (E.2 i).1 (E.2 i).2)`.
+2. For a sequence `F : ℕ → ℕ × (ℕ → ℝ × ℝ)`, `F` convergence along `totalLengthFilter` means that
+the total length of `F j`, i.e., `∑ i ∈ Finset.range (F j).1, dist ((F j).2 i).1 ((F j).2 i).2)`,
+tends to `0` as `j` tends to infinity.
+-/
 def totalLengthFilter : Filter (ℕ × (ℕ → ℝ × ℝ)) := Filter.comap
   (fun E ↦ ∑ i ∈ Finset.range E.1, dist (E.2 i).1 (E.2 i).2) (𝓝[≥] 0)
 
