@@ -63,6 +63,14 @@ lemma bracket_eq_zero_of_isCentral (h : S.IsCentral) (x y : S.L) (hy : y ∈ S.p
     ⁅x, y⁆ = 0 :=
   h hy x
 
+lemma isAbelian_of_IsCentral (h : S.IsCentral) : IsLieAbelian N := by
+  refine ⟨fun x y ↦ ?_⟩
+  suffices S.incl ⁅x, y⁆ = 0 by
+    exact (LinearMap.map_eq_zero_iff S.incl.toLinearMap S.incl_injective).mp this
+  rw [LieHom.map_lie]
+  exact bracket_eq_zero_of_isCentral S h (S.incl x) (S.incl y) <|
+    LieHom.mem_ker.mpr <| proj_incl S y
+
 lemma bracket_eq_of_sub_mem_kernel (h : S.IsCentral) (x y z : S.L) (hyz : y - z ∈ S.proj.ker) :
     ⁅x, y⁆ = ⁅x, z⁆ := by
   rw [← sub_eq_zero, ← lie_sub]
@@ -81,32 +89,96 @@ lemma bracket_sub_bracket_mem_kernel {s : M →ₗ[R] S.L} (hs : S.proj.toLinear
 
 section ofTwoCocycle
 
-variable [AddCommGroup V] [Module R V] (c : twoCocycle R L V)
+variable [LieRing V] [LieAlgebra R V] (h : IsLieAbelian V) (c : twoCocycle R L V)
 
-lemma isCentral_ofTwoCocycle :
-    (ofTwoCocycle c).IsCentral := by
+/-- The Lie algebra map inclusion of a central extension derived from a 2-cocycle. -/
+@[simps]
+def twoCocycleIncl : V →ₗ⁅R⁆ (ofTwoCocycleAlg c) where
+  toLinearMap := {
+    toFun v := ofProd c (0, v)
+    map_add' _ _ := by
+      rw [← of_add, Prod.zero_mk_add_zero_mk]
+    map_smul' _ _ := by rw [← of_smul, Equiv.apply_eq_iff_eq, RingHom.id_apply, Prod.smul_zero_mk]}
+  map_lie' {x y} := by simp [bracket_ofTwoCocycleAlg]
+
+/-- A Lie extension from a trivial 2-cocycle, but an extension of `L` by
+`(twoCocycleProj c).ker` instead of `V`. They are equal but not definitionally so. -/
+@[simps]
+def ofTwoCocycle : Extension R V L where
+  L := ofTwoCocycleAlg c
+  instLieRing := inferInstance
+  instLieAlgebra := inferInstance
+  incl := twoCocycleIncl h c
+  proj := twoCocycleProj c
+  extension := by
+    refine { ker_eq_bot := ?_, range_eq_top := ?_, exact := ?_ }
+    · ext v
+      simp [twoCocycleIncl, ← of_zero]
+    · refine (LieHom.range_eq_top (twoCocycleProj c)).mpr ?_
+      exact surjective_of_cocycle c
+    · ext x
+      constructor
+      · intro h
+        simp only [twoCocycleIncl, LieHom.mem_range, LieHom.coe_mk] at h
+        obtain ⟨y, hy⟩ := h
+        simp only [twoCocycleProj, ← hy]
+        rfl
+      · intro h
+        use ((ofProd c).symm x).2
+        have : ((ofProd c).symm x).1 = 0 := h
+        simp [twoCocycleIncl, ← this]
+
+lemma twoCocycleProj_eq : (twoCocycleProj c) = (ofTwoCocycle h c).proj := rfl
+
+/-- The canonical linear section of an extension attached to a 2-cocycle. -/
+@[simps]
+def sectionTwoCocycleRight : L →ₗ[R] (ofTwoCocycleAlg c) where
+  toFun x := ofProd c (x, 0)
+  map_add' _ _ := by rw [← of_add, Prod.mk_zero_add_mk_zero]
+  map_smul' _ _ := by rw [← of_smul, Equiv.apply_eq_iff_eq, RingHom.id_apply, Prod.smul_mk_zero]
+
+/-- superfluous -/
+lemma ofTwoCocycle_section_comp_proj :
+    (ofTwoCocycle h c).proj.toLinearMap ∘ₗ (sectionTwoCocycleRight c) = LinearMap.id := by
+  rfl
+
+/-- The left section of an extension attached to a 2-cocycle. -/
+@[simps]
+def sectionTwoCocycleLeft : (ofTwoCocycle h c).L →ₗ[R] V where
+  toFun x := ((ofProd c).symm x).2
+  map_add' _ _ := by rw [of_symm_add, Prod.snd_add]
+  map_smul' _ _ := by rw [of_symm_smul, Prod.smul_snd, RingHom.id_apply]
+
+lemma isCentral_ofTwoCocycle : (ofTwoCocycle h c).IsCentral := by
   rw [IsCentral_iff, LieModule.trivial_iff_le_maximal_trivial]
   intro x hx
-  simp_all only [LieHom.mem_ker, LieModule.mem_maxTrivSubmodule, Extension.ofTwoCocycle]
+  simp only [ofTwoCocycle, twoCocycleProj, LieHom.mem_ker, LieHom.coe_mk] at hx
   intro y
-  simp_all only [IsExtension.extension_L, IsExtension.extension_instLieRing,
-    IsExtension.extension_instLieAlgebra, IsExtension.extension_proj, bracket_ofTwoCocycleAlg]
-  rw [show x = ofProd c (x.carrier.1, x.carrier.2) by rfl, twoCocycleProj] at hx
-  simp [show x.carrier.1 = 0 by exact hx, Prod.mk_zero_zero]
+  rw [bracket_ofTwoCocycleAlg, hx, lie_zero, map_zero, Prod.mk_zero_zero, of_zero]
+
+/-- An equivalence of extensions induced by a coboundary translation. -/
+@[simps]
+def Equiv.ofCoboundary (c' : twoCocycle R L V) (x : oneCochain R L V)
+    (hcc' : c' = c + d₁₂ R L V x) :
+    Equiv (ofTwoCocycle h c) (ofTwoCocycle h c') where
+  toLieEquiv := LieEquiv.ofCoboundary c c' x hcc'
+  incl_comm := by ext; simp
+  proj_comm := by ext; simp
 
 /-- Construct a cocycle from a module-split central extension. -/
+@[simps]
 def twoCocycleOfSplitting (E : Extension R N M) (hE : E.IsCentral) {s : M →ₗ[R] E.L}
     (hs : E.proj.toLinearMap ∘ₗ s = LinearMap.id) (p : E.L →ₗ[R] N) :
     twoCocycle R M N where
   val := {
-    toBilin := {
+    val := {
       toFun a := {
           toFun b := p ⁅s a, s b⁆
           map_add' _ _ := by simp
           map_smul' _ _ := by simp }
       map_add' _ _ := by ext; simp
       map_smul' _ _ := by ext; simp }
-    alt _ := by simp }
+    property _ := by simp }
   property := by
     ext x y z
     simp only [d₂₃_apply_apply, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.zero_apply,
@@ -120,8 +192,40 @@ def twoCocycleOfSplitting (E : Extension R N M) (hE : E.IsCentral) {s : M →ₗ
     · exact E.bracket_sub_bracket_mem_kernel hs z x
     · exact E.bracket_sub_bracket_mem_kernel hs y z
 
+@[simp]
+lemma twoCocycleOfSplitting_ofTwoCocycle :
+    (ofTwoCocycle h c).twoCocycleOfSplitting (isCentral_ofTwoCocycle h c)
+      (ofTwoCocycle_section_comp_proj h c) (sectionTwoCocycleLeft h c) = c := by
+  ext x y
+  simp [sectionTwoCocycleLeft, bracket_ofTwoCocycleAlg]
+
+/-!
+/-- The 2-coboundary corresponding to an equivalence of module-split extensions. -/
+def Equiv.coboundaryOf (E E' : Extension R N M) (e : Equiv E E') (hE : E.IsCentral) {s : M →ₗ[R] E.L}
+    (hs : E.proj.toLinearMap ∘ₗ s = LinearMap.id) (p : E.L →ₗ[R] N) : twoCoboundary R N M where
+  val := {
+    val := {
+      toFun x := {
+        toFun y := sorry
+        map_add' := sorry
+        map_smul' := sorry }
+      map_add' := sorry
+      map_smul' := sorry }
+    property := sorry }
+  property := sorry
+
+def ofTwoCocycle_twoCocycleOfSplitting (E : Extension R N M) (hE : E.IsCentral) {s : M →ₗ[R] E.L}
+    (hs : E.proj.toLinearMap ∘ₗ s = LinearMap.id) (p : E.L →ₗ[R] N) :
+    Equiv (ofTwoCocycle (E.isAbelian_of_IsCentral hE) (twoCocycleOfSplitting E hE hs p)) E where
+  toLieEquiv := by
+
+    sorry
+  incl_comm := sorry
+  proj_comm := sorry
+
 -- shearing a splitting by a translation yields a difference of coboundary?
 -- make a correspondence with cohomology!!
+-/
 
 end ofTwoCocycle
 
