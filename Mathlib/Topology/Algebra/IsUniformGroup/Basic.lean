@@ -201,7 +201,7 @@ open Filter
 
 variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
-attribute [local instance] IsTopologicalGroup.toUniformSpace
+attribute [local instance] IsTopologicalGroup.rightUniformSpace
 
 @[to_additive]
 theorem topologicalGroup_is_uniform_of_compactSpace [CompactSpace G] : IsUniformGroup G :=
@@ -245,21 +245,21 @@ variable {ι α G : Type*} [Group G] [u : UniformSpace G] [IsTopologicalGroup G]
 
 @[to_additive]
 theorem tendstoUniformly_iff (F : ι → α → G) (f : α → G) (p : Filter ι)
-    (hu : IsTopologicalGroup.toUniformSpace G = u) :
+    (hu : IsTopologicalGroup.rightUniformSpace G = u) :
     TendstoUniformly F f p ↔ ∀ u ∈ 𝓝 (1 : G), ∀ᶠ i in p, ∀ a, F i a / f a ∈ u :=
   hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩,
     fun h _ ⟨u, hu, hv⟩ => mem_of_superset (h u hu) fun _ hi a => hv (hi a)⟩
 
 @[to_additive]
 theorem tendstoUniformlyOn_iff (F : ι → α → G) (f : α → G) (p : Filter ι) (s : Set α)
-    (hu : IsTopologicalGroup.toUniformSpace G = u) :
+    (hu : IsTopologicalGroup.rightUniformSpace G = u) :
     TendstoUniformlyOn F f p s ↔ ∀ u ∈ 𝓝 (1 : G), ∀ᶠ i in p, ∀ a ∈ s, F i a / f a ∈ u :=
   hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩,
     fun h _ ⟨u, hu, hv⟩ => mem_of_superset (h u hu) fun _ hi a ha => hv (hi a ha)⟩
 
 @[to_additive]
 theorem tendstoLocallyUniformly_iff [TopologicalSpace α] (F : ι → α → G) (f : α → G)
-    (p : Filter ι) (hu : IsTopologicalGroup.toUniformSpace G = u) :
+    (p : Filter ι) (hu : IsTopologicalGroup.rightUniformSpace G = u) :
     TendstoLocallyUniformly F f p ↔
       ∀ u ∈ 𝓝 (1 : G), ∀ (x : α), ∃ t ∈ 𝓝 x, ∀ᶠ i in p, ∀ a ∈ t, F i a / f a ∈ u :=
   hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩, fun h _ ⟨u, hu, hv⟩ x =>
@@ -268,7 +268,7 @@ theorem tendstoLocallyUniformly_iff [TopologicalSpace α] (F : ι → α → G) 
 
 @[to_additive]
 theorem tendstoLocallyUniformlyOn_iff [TopologicalSpace α] (F : ι → α → G) (f : α → G)
-    (p : Filter ι) (s : Set α) (hu : IsTopologicalGroup.toUniformSpace G = u) :
+    (p : Filter ι) (s : Set α) (hu : IsTopologicalGroup.rightUniformSpace G = u) :
     TendstoLocallyUniformlyOn F f p s ↔
       ∀ u ∈ 𝓝 (1 : G), ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, ∀ᶠ i in p, ∀ a ∈ t, F i a / f a ∈ u :=
   hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩, fun h _ ⟨u, hu, hv⟩ x =>
@@ -278,6 +278,29 @@ theorem tendstoLocallyUniformlyOn_iff [TopologicalSpace α] (F : ι → α → G
 end IsTopologicalGroup
 
 open Filter Set Function
+
+section
+
+variable {α : Type*} {β : Type*} {hom : Type*}
+variable [TopologicalSpace α] [Group α] [IsTopologicalGroup α]
+
+-- β is a dense subgroup of α, inclusion is denoted by e
+variable [TopologicalSpace β] [Group β]
+variable [FunLike hom β α] [MonoidHomClass hom β α] {e : hom}
+
+@[to_additive]
+theorem tendsto_div_comap_self (de : IsDenseInducing e) (x₀ : α) :
+    Tendsto (fun t : β × β => t.2 / t.1) ((comap fun p : β × β => (e p.1, e p.2)) <| 𝓝 (x₀, x₀))
+      (𝓝 1) := by
+  have comm : ((fun x : α × α => x.2 / x.1) ∘ fun t : β × β => (e t.1, e t.2)) =
+      e ∘ fun t : β × β => t.2 / t.1 := by
+    ext t
+    simp
+  have lim : Tendsto (fun x : α × α => x.2 / x.1) (𝓝 (x₀, x₀)) (𝓝 (e 1)) := by
+    simpa using (continuous_div'.comp (@continuous_swap α α _ _)).tendsto (x₀, x₀)
+  simpa using de.tendsto_comap_nhds_nhds lim comm
+
+end
 
 namespace IsDenseInducing
 
@@ -427,15 +450,15 @@ we must explicitly provide it in order to consider completeness. See
 structure. -/]
 instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G]
     [IsTopologicalGroup G] [FirstCountableTopology G] (N : Subgroup G) [N.Normal]
-    [@CompleteSpace G (IsTopologicalGroup.toUniformSpace G)] :
-    @CompleteSpace (G ⧸ N) (IsTopologicalGroup.toUniformSpace (G ⧸ N)) := by
+    [@CompleteSpace G (IsTopologicalGroup.rightUniformSpace G)] :
+    @CompleteSpace (G ⧸ N) (IsTopologicalGroup.rightUniformSpace (G ⧸ N)) := by
   /- Since `G ⧸ N` is a topological group it is a uniform space, and since `G` is first countable
     the uniformities of both `G` and `G ⧸ N` are countably generated. Moreover, we may choose a
     sequential antitone neighborhood basis `u` for `𝓝 (1 : G)` so that `(u (n + 1)) ^ 2 ⊆ u n`, and
     this descends to an antitone neighborhood basis `v` for `𝓝 (1 : G ⧸ N)`. Since `𝓤 (G ⧸ N)` is
     countably generated, it suffices to show any Cauchy sequence `x` converges. -/
-  letI : UniformSpace (G ⧸ N) := IsTopologicalGroup.toUniformSpace (G ⧸ N)
-  letI : UniformSpace G := IsTopologicalGroup.toUniformSpace G
+  letI : UniformSpace (G ⧸ N) := IsTopologicalGroup.rightUniformSpace (G ⧸ N)
+  letI : UniformSpace G := IsTopologicalGroup.rightUniformSpace G
   haveI : (𝓤 (G ⧸ N)).IsCountablyGenerated := comap.isCountablyGenerated _ _
   obtain ⟨u, hu, u_mul⟩ := IsTopologicalGroup.exists_antitone_basis_nhds_one G
   obtain ⟨hv, v_anti⟩ := hu.map ((↑) : G → G ⧸ N)
@@ -526,7 +549,7 @@ significant care was taken so that the uniform structure inherent in that settin
 (definitionally) with the uniform structure provided here. -/]
 instance QuotientGroup.completeSpace (G : Type u) [Group G] [us : UniformSpace G] [IsUniformGroup G]
     [FirstCountableTopology G] (N : Subgroup G) [N.Normal] [hG : CompleteSpace G] :
-    @CompleteSpace (G ⧸ N) (IsTopologicalGroup.toUniformSpace (G ⧸ N)) := by
+    @CompleteSpace (G ⧸ N) (IsTopologicalGroup.rightUniformSpace (G ⧸ N)) := by
   rw [← @IsUniformGroup.toUniformSpace_eq _ us _ _] at hG
   infer_instance
 
