@@ -149,6 +149,11 @@ theorem uncurryFin_smul {S : Type*} [Monoid S] [DistribMulAction S F] [Continuou
   ext v
   simp [uncurryFin_apply, smul_comm _ c, Finset.smul_sum]
 
+theorem uncurryFin_constOfIsEmptyLIE_comp (f : E →L[𝕜] F) :
+    uncurryFin (constOfIsEmptyLIE 𝕜 E F (Fin 0) ∘L f) = ofSubsingleton _ _ _ (0 : Fin 1) f := by
+  ext
+  simp [uncurryFin_apply]
+
 /-- If `f` is a symmetric continuous bilinear map
 taking values in the space of continuous alternating maps,
 then the twice uncurried `f` is zero. -/
