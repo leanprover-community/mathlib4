@@ -347,8 +347,8 @@ theorem subsingleton_isRoot_of_natDegree_eq_one [IsLeftCancelMulZero R] [IsRight
     (h : p.natDegree = 1) : { x | IsRoot p x }.Subsingleton := by
   intro x hx y hy
   have ⟨a, ha, b, hp⟩ := Polynomial.natDegree_eq_one.mp h
-  simp [← hp] at hx hy
-  exact IsLeftCancelMulZero.mul_left_cancel_of_ne_zero ha <| add_right_cancel <| hy ▸ hx
+  simp only [← hp, IsRoot, eval_add, eval_mul_X, eval_C, Set.mem_setOf_eq] at hx hy
+  exact mul_left_cancel₀ ha <| add_right_cancel <| hy ▸ hx
 
 variable [NoZeroDivisors R]
 
