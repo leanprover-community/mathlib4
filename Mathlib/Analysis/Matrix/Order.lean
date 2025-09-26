@@ -141,14 +141,11 @@ end sqrtDeprecated
 theorem dotProduct_mulVec_zero_iff {A : Matrix n n 𝕜} (hA : PosSemidef A) (x : n → 𝕜) :
     star x ⬝ᵥ A *ᵥ x = 0 ↔ A *ᵥ x = 0 := by
   classical
-  constructor
-  · obtain ⟨B, rfl⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp hA.nonneg
-    rw [← Matrix.mulVec_mulVec, dotProduct_mulVec, star_eq_conjTranspose,
-      vecMul_conjTranspose, star_star, dotProduct_star_self_eq_zero]
-    intro h0
-    rw [h0, mulVec_zero]
-  · intro h0
-    rw [h0, dotProduct_zero]
+  refine ⟨fun h ↦ ?_, fun h ↦ h ▸ dotProduct_zero _⟩
+  obtain ⟨B, rfl⟩ := CStarAlgebra.nonneg_iff_eq_star_mul_self.mp hA.nonneg
+  simp_rw [← Matrix.mulVec_mulVec, dotProduct_mulVec _ _ (B *ᵥ x), star_eq_conjTranspose,
+    vecMul_conjTranspose, star_star, dotProduct_star_self_eq_zero] at h ⊢
+  rw [h, mulVec_zero]
 
 /-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0` (linear maps version). -/
 theorem toLinearMap₂'_zero_iff [DecidableEq n]
