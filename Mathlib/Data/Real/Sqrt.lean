@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Floris van Doorn, Yury Kudryashov
 -/
 import Mathlib.Topology.Instances.NNReal.Lemmas
 import Mathlib.Topology.Order.MonotoneContinuity
-import Mathlib.Tactic.Isolate.Core
+import Mathlib.Tactic.Isolate
 
 /-!
 # Square root of a real number

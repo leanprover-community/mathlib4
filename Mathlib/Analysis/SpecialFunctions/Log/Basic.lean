@@ -7,7 +7,7 @@ import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Data.Nat.Factorization.Defs
 import Mathlib.Analysis.Normed.Module.RCLike.Real
 import Mathlib.Data.Rat.Cast.CharZero
-import Mathlib.Tactic.Isolate.Core
+import Mathlib.Tactic.Isolate
 
 /-!
 # Real logarithm
