@@ -204,6 +204,7 @@ alias extentClosure_anti := lowerPolar_anti
 
 /-! ### `IsIntent` and `IsExtent` -/
 
+
 namespace Set
 
 variable {r}
