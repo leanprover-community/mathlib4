@@ -141,7 +141,7 @@ theorem hasseDeriv_single_add (k : ℕ) (n : ℤ) (x : V) :
   dsimp only [hasseDeriv_coeff]
   by_cases h : m = n
   · simp [h]
-  · simp [h, show m + k ≠ n + k by omega]
+  · simp [h, show m + k ≠ n + k by cutsat]
 
 @[simp]
 theorem hasseDeriv_single (k : ℕ) (n : ℤ) (x : V) :
@@ -242,7 +242,7 @@ theorem single_order_mul_powerSeriesPart (x : R⸨X⸩) :
       exact order_le_of_coeff_ne_zero h.symm
     · contrapose! h
       simp only [Set.mem_range, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk] at h
-      omega
+      cutsat
 
 theorem ofPowerSeries_powerSeriesPart (x : R⸨X⸩) :
     ofPowerSeries ℤ R x.powerSeriesPart = single (-x.order) 1 * x := by
@@ -267,13 +267,13 @@ theorem coe_algebraMap [CommSemiring R] :
 @[simps (rhsMd := .all) +simpRhs]
 instance of_powerSeries_localization [CommRing R] :
     IsLocalization (Submonoid.powers (PowerSeries.X : R⟦X⟧)) R⸨X⸩ where
-  map_units' := by
+  map_units := by
     rintro ⟨_, n, rfl⟩
     refine ⟨⟨single (n : ℤ) 1, single (-n : ℤ) 1, ?_, ?_⟩, ?_⟩
     · simp
     · simp
     · dsimp; rw [ofPowerSeries_X_pow]
-  surj' z := by
+  surj z := by
     by_cases h : 0 ≤ z.order
     · refine ⟨⟨PowerSeries.X ^ Int.natAbs z.order * powerSeriesPart z, 1⟩, ?_⟩
       simp only [RingHom.map_one, mul_one, RingHom.map_mul, coe_algebraMap, ofPowerSeries_X_pow,
@@ -532,7 +532,7 @@ theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : K⸨X⸩}
   by_cases ord_nonpos : f.order ≤ 0
   · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat ord_nonpos
     obtain ⟨m, hm⟩ := Int.eq_ofNat_of_zero_le (neg_le_iff_add_nonneg.mp (hs ▸ h_n_ord))
-    obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (a := D + s) (by omega)
+    obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (a := D + s) (by cutsat)
     rw [eq_add_neg_of_add_eq hm, add_comm, ← hs, ← powerSeriesPart_coeff]
     apply (intValuation_le_iff_coeff_lt_eq_zero K F).mp _ m (by linarith)
     rw [hF, ofPowerSeries_powerSeriesPart f, hs, neg_neg, ← hd, neg_add_rev, map_mul, exp_add,
@@ -541,7 +541,7 @@ theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : K⸨X⸩}
   · rw [not_le] at ord_nonpos
     obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat (Int.neg_nonpos_of_nonneg (le_of_lt ord_nonpos))
     obtain ⟨m, hm⟩ := Int.eq_ofNat_of_zero_le (a := n - s) (by omega)
-    obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (a := D - s) (by omega)
+    obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (a := D - s) (by cutsat)
     rw [(sub_eq_iff_eq_add).mp hm, add_comm, ← neg_neg (s : ℤ), ← hs, neg_neg,
       ← powerSeriesPart_coeff]
     apply (intValuation_le_iff_coeff_lt_eq_zero K F).mp _ m (by linarith)
@@ -567,7 +567,7 @@ theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : K⸨X⸩} :
       intro n hn
       rw [powerSeriesPart_coeff f n, hs]
       apply h_val_f
-      omega
+      cutsat
   · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat
       <| neg_nonpos_of_nonneg <| le_of_lt <| not_le.mp ord_nonpos
     rw [neg_inj] at hs
@@ -583,7 +583,7 @@ theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : K⸨X⸩} :
       intro n hn
       rw [powerSeriesPart_coeff f n, hs]
       apply h_val_f (s + n)
-      omega
+      cutsat
 
 /- Two Laurent series whose difference has small valuation have the same coefficients for
 small enough indices. -/
@@ -611,7 +611,7 @@ theorem val_le_one_iff_eq_coe (f : K⸨X⸩) : Valued.v f ≤ (1 : ℤᵐ⁰) �
       Set.mem_range, not_exists, reduceCtorEq]
     intro
   · simp only [not_false_eq_true]
-  · omega
+  · cutsat
 
 end LaurentSeries
 

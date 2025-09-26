@@ -565,19 +565,16 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
   · use 1
     simp [ha]
   · rw [notMem_adicCompletionIntegers] at ha
-    -- Let the additive valuation of a be -d with d>0
-    obtain ⟨d, hd⟩ : ∃ d : ℤ, Valued.v a = exp d :=
-      Option.ne_none_iff_exists'.mp <| (lt_trans zero_lt_one ha).ne'
     -- let ϖ be a uniformiser
     obtain ⟨ϖ, hϖ⟩ := intValuation_exists_uniformizer v
-    have hϖ0 : ϖ ≠ 0 := by rintro rfl; simp [exp_ne_zero.symm] at hϖ
-    -- use ϖ^d
-    refine ⟨ϖ^d.natAbs, pow_mem (mem_nonZeroDivisors_of_ne_zero hϖ0) _, ?_⟩
-    -- now manually translate the goal (an inequality in ℤᵐ⁰) to an inequality in ℤ
-    rw [mem_adicCompletionIntegers, algebraMap.coe_pow, map_mul, hd, map_pow,
-      valuedAdicCompletion_eq_valuation, valuation_of_algebraMap, hϖ, ← exp_nsmul, ← exp_add,
-      ← exp_zero, exp_le_exp]
-    simp [le_abs_self]
+    have : Valued.v (algebraMap R (v.adicCompletion K) ϖ) = (exp (1 : ℤ))⁻¹ := by
+      simp [valuedAdicCompletion_eq_valuation, valuation_of_algebraMap, hϖ, exp]
+    have hϖ0 : ϖ ≠ 0 := by rintro rfl; simp at hϖ
+    refine ⟨ϖ^(log (Valued.v a)).natAbs, pow_mem (mem_nonZeroDivisors_of_ne_zero hϖ0) _, ?_⟩
+    -- now manually translate the goal (an inequality in ℤᵐ⁰) to an inequality of "log" of ℤ
+    simp only [map_pow, mem_adicCompletionIntegers, map_mul, this, inv_pow, ← exp_nsmul, nsmul_one,
+      Int.natCast_natAbs]
+    exact mul_inv_le_one_of_le₀ (le_exp_log.trans (by simp [le_abs_self])) (zero_le _)
 
 section AbsoluteValue
 

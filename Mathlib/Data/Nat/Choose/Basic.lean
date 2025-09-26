@@ -302,7 +302,7 @@ theorem choose_le_middle (r n : ℕ) : choose n r ≤ choose n (n / 2) := by
     · apply choose_le_middle_of_le_half_left a
     · rw [← choose_symm b]
       apply choose_le_middle_of_le_half_left
-      omega
+      cutsat
   · rw [choose_eq_zero_of_lt b]
     apply zero_le
 
