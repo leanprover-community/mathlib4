@@ -88,7 +88,7 @@ def prod (H : Subgroup G) (K : Subgroup N) : Subgroup (G × N) :=
   { Submonoid.prod H.toSubmonoid K.toSubmonoid with
     inv_mem' := fun hx => ⟨H.inv_mem' hx.1, K.inv_mem' hx.2⟩ }
 
-@[to_additive coe_prod]
+@[to_additive (attr := norm_cast) coe_prod]
 theorem coe_prod (H : Subgroup G) (K : Subgroup N) :
     (H.prod K : Set (G × N)) = (H : Set G) ×ˢ (K : Set N) :=
   rfl
