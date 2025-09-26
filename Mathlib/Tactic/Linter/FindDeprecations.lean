@@ -109,7 +109,8 @@ def deprecatedHashMap (oldDate newDate : String) :
     if let some ⟨modName, rgStart, rgStop, since⟩ ← getDeprecatedInfo nm false
     then
       if modName.getRoot != repo then continue
-      if oldDate ≤ since && since ≤ newDate then
+      --dbg_trace s!"{nm} in {modName} since {since}: {(oldDate ≤ since : Bool)} {(since ≤ newDate : Bool)}"
+      if !(oldDate ≤ since && since ≤ newDate) then
         continue
 --      try
         --let lean ← findLean searchPath modName
