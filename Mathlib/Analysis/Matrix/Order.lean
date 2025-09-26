@@ -21,10 +21,9 @@ open Matrix
 namespace Matrix
 
 section PartialOrder
-variable {R : Type*} [Ring R] [StarRing R] [PartialOrder R] [AddLeftMono R]
 
 /-- The preorder on matrices given by `A ≤ B := (B - A).PosSemidef`. -/
-abbrev instPreOrder [AddLeftMono R] : Preorder (Matrix n n R) where
+abbrev instPreOrder : Preorder (Matrix n n 𝕜) where
   le A B := (B - A).PosSemidef
   le_refl A := sub_self A ▸ PosSemidef.zero
   le_trans A B C h₁ h₂ := sub_add_sub_cancel C B A ▸ h₂.add h₁
@@ -33,9 +32,9 @@ scoped[MatrixOrder] attribute [instance] Matrix.instPreOrder
 
 open MatrixOrder
 
-lemma le_iff {A B : Matrix n n R} : A ≤ B ↔ (B - A).PosSemidef := Iff.rfl
+lemma le_iff {A B : Matrix n n 𝕜} : A ≤ B ↔ (B - A).PosSemidef := Iff.rfl
 
-lemma nonneg_iff {A : Matrix n n R} : 0 ≤ A ↔ A.PosSemidef := by rw [le_iff, sub_zero]
+lemma nonneg_iff {A : Matrix n n 𝕜} : 0 ≤ A ↔ A.PosSemidef := by rw [le_iff, sub_zero]
 
 protected alias ⟨LE.le.posSemidef, PosSemidef.nonneg⟩ := nonneg_iff
 
