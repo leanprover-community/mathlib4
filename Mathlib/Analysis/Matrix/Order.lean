@@ -11,6 +11,21 @@ import Mathlib.LinearAlgebra.Matrix.PosDef
 /-!
 # The partial order on matrices
 
+This file constructs the partial order and star ordered instances on matrices on `𝕜`.
+This allows us to use more general results from C⋆-algebras, like `CFC.sqrt`.
+
+## Main results
+
+* `Matrix.instPartialOrder`: the partial order on matrices given by `x ≤ y := (y - x).PosSemidef`.
+* `Matrix.PosSemidef.dotProduct_mulVec_zero_iff`: for a positive semi-definite matrix `A`,
+we have x⋆ A x = 0` iff `A x = 0
+* `Matrix.PosDef.matrixInnerProductSpace`: the inner product on matrices induced by a
+positive definite matrix `M`: `⟪x, y⟫ = (y * M * xᴴ).trace`.
+
+## Implementation notes
+
+Note that the partial order instance is scoped to `MatrixOrder`.
+Please `open scoped MatrixOrder` to use this.
 -/
 
 variable {𝕜 n : Type*} [RCLike 𝕜] [Fintype n]
