@@ -550,7 +550,7 @@ protected theorem map_pow (n : ℕ) : (p ^ n).map f = p.map f ^ n :=
 theorem eval_map (x : S) : (p.map f).eval x = p.eval₂ f x :=
   (eval₂_eq_eval_map f).symm
 
-lemma eval_map' (x : R) :
+lemma eval_map_apply (x : R) :
     (p.map f).eval (f x) = f (p.eval x) :=
   eval_map f _ ▸ eval₂_at_apply _ _
 
