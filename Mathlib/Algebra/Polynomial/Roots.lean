@@ -598,6 +598,10 @@ theorem mem_rootSet_of_injective [CommRing S] {p : S[X]} [Algebra S R]
   classical
   exact Multiset.mem_toFinset.trans (mem_roots_map_of_injective h hp)
 
+theorem mem_rootSet'' [CommRing S] {p : S[X]} [Algebra S R] [FaithfulSMul S R] {x : R}
+    (hp : p ≠ 0) : x ∈ p.rootSet R ↔ aeval x p = 0 :=
+  mem_rootSet_of_injective (FaithfulSMul.algebraMap_injective _ _) hp
+
 @[simp]
 theorem nthRootsFinset_toSet {n : ℕ} (h : 0 < n) (a : R) :
     nthRootsFinset n a = {r | r ^ n = a} := by
