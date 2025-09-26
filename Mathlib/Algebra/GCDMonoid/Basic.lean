@@ -447,7 +447,6 @@ theorem gcd_eq_right_iff [NormalizedGCDMonoid α] (a b : α) (h : normalize b = 
     gcd a b = b ↔ b ∣ a := by simpa only [gcd_comm a b] using gcd_eq_left_iff b a h
 
 theorem gcd_dvd_gcd_mul_left [GCDMonoid α] (m n k : α) : gcd m n ∣ gcd (k * m) n := by
-
   grw [← dvd_mul_left]
 
 theorem gcd_dvd_gcd_mul_right [GCDMonoid α] (m n k : α) : gcd m n ∣ gcd (m * k) n := by
