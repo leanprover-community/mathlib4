@@ -67,7 +67,7 @@ jobs:
         else
           echo "There are files with deprecated declarations in the specified date range"
           tmpMod="${tmplean%.lean}"
-          sed -i "/${tmplean}/d" Mathlib.lean
+          sed -i "/${tmpMod/\//.}/d" Mathlib.lean
         fi
 
     - name: run linter
