@@ -38,8 +38,8 @@ jobs:
 
     - name: set up deprecated doubles
       env:
-        OLD_DATE: "2025-07-19"
-        NEW_DATE: "2025-09-20"
+        OLD_DATE: "2025-08-01"
+        NEW_DATE: "2025-08-02"
       run: |
         # Retrieve the cache for the unmodified repository
         # show the current pwd:
