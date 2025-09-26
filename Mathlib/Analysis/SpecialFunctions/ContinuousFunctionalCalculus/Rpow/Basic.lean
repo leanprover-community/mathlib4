@@ -93,7 +93,7 @@ noncomputable instance (priority := 100) : Pow A ℝ≥0 where
 @[simp]
 lemma nnrpow_eq_pow {a : A} {y : ℝ≥0} : nnrpow a y = a ^ y := rfl
 
-@[simp]
+@[simp, grind]
 lemma nnrpow_nonneg {a : A} {x : ℝ≥0} : 0 ≤ a ^ x := cfcₙ_predicate _ a
 
 lemma nnrpow_def {a : A} {y : ℝ≥0} : a ^ y = cfcₙ (NNReal.nnrpow · y) a := rfl
@@ -226,7 +226,7 @@ section sqrt
 /-- Square roots of operators, based on the non-unital continuous functional calculus. -/
 noncomputable def sqrt (a : A) : A := cfcₙ NNReal.sqrt a
 
-@[simp]
+@[simp, grind]
 lemma sqrt_nonneg (a : A) : 0 ≤ sqrt a := cfcₙ_predicate _ a
 
 lemma sqrt_eq_nnrpow (a : A) : sqrt a = a ^ (1 / 2 : ℝ≥0) := by
@@ -381,7 +381,7 @@ noncomputable instance (priority := 100) : Pow A ℝ where
 @[simp]
 lemma rpow_eq_pow {a : A} {y : ℝ} : rpow a y = a ^ y := rfl
 
-@[simp]
+@[simp, grind]
 lemma rpow_nonneg {a : A} {y : ℝ} : 0 ≤ a ^ y := cfc_predicate _ a
 
 lemma rpow_def {a : A} {y : ℝ} : a ^ y = cfc (fun x : ℝ≥0 => x ^ y) a := rfl
@@ -484,7 +484,7 @@ lemma rpow_intCast (a : Aˣ) (n : ℤ) (ha : (0 : A) ≤ a := by cfc_tac) :
 noncomputable def _root_.Units.cfcRpow (a : Aˣ) (x : ℝ) (ha : (0 : A) ≤ a := by cfc_tac) : Aˣ :=
   ⟨(a : A) ^ x, (a : A) ^ (-x), rpow_mul_rpow_neg x (by simp), rpow_neg_mul_rpow x (by simp)⟩
 
-@[aesop safe apply]
+@[aesop safe apply, grind ←]
 lemma _root_.IsUnit.cfcRpow {a : A} (ha : IsUnit a) (x : ℝ) (ha_nonneg : 0 ≤ a := by cfc_tac) :
     IsUnit (a ^ x) :=
   ha.unit.cfcRpow x |>.isUnit
@@ -495,6 +495,7 @@ lemma spectrum_rpow (a : A) (x : ℝ)
     spectrum ℝ≥0 (a ^ x) = (· ^ x) '' spectrum ℝ≥0 a :=
   cfc_map_spectrum (· ^ x : ℝ≥0 → ℝ≥0) a ha h
 
+@[grind =]
 lemma isUnit_rpow_iff (a : A) (y : ℝ) (hy : y ≠ 0) (ha : 0 ≤ a := by cfc_tac) :
     IsUnit (a ^ y) ↔ IsUnit a := by
   nontriviality A
@@ -635,6 +636,7 @@ lemma rpow_sqrt_nnreal {a : A} {x : ℝ≥0}
     have h₁ : 0 ≤ (x : ℝ) := NNReal.zero_le_coe
     rw [sqrt_eq_rpow, rpow_rpow_of_exponent_nonneg _ _ _ (by simp) h₁, one_div_mul_eq_div]
 
+@[grind =]
 lemma isUnit_nnrpow_iff (a : A) (y : ℝ≥0) (hy : y ≠ 0) (ha : 0 ≤ a := by cfc_tac) :
     IsUnit (a ^ y) ↔ IsUnit a := by
   rw [nnrpow_eq_rpow (pos_of_ne_zero hy)]
@@ -646,6 +648,7 @@ lemma _root_.IsUnit.cfcNNRpow (a : A) (y : ℝ≥0) (ha_unit : IsUnit a) (hy : y
     (ha : 0 ≤ a := by cfc_tac) : IsUnit (a ^ y) :=
   (isUnit_nnrpow_iff a y hy ha).mpr ha_unit
 
+@[grind =]
 lemma isUnit_sqrt_iff (a : A) (ha : 0 ≤ a := by cfc_tac) : IsUnit (sqrt a) ↔ IsUnit a := by
   rw [sqrt_eq_rpow]
   exact isUnit_rpow_iff a _ (by simp) ha
@@ -654,6 +657,19 @@ lemma isUnit_sqrt_iff (a : A) (ha : 0 ≤ a := by cfc_tac) : IsUnit (sqrt a) ↔
 lemma _root_.IsUnit.cfcSqrt (a : A) (ha_unit : IsUnit a) (ha : 0 ≤ a := by cfc_tac) :
     IsUnit (sqrt a) :=
   (isUnit_sqrt_iff a ha).mpr ha_unit
+
+@[aesop safe apply]
+lemma _root_.IsStrictlyPositive.nnrpow {a : A} {y : ℝ≥0} (ha : IsStrictlyPositive a) (hy : y ≠ 0) :
+    IsStrictlyPositive (a ^ y) := by grind
+
+@[aesop safe apply]
+lemma _root_.IsStrictlyPositive.sqrt {a : A} (ha : IsStrictlyPositive a) :
+    IsStrictlyPositive (sqrt a) := by grind
+
+omit [T2Space A] [IsTopologicalRing A] in
+@[aesop safe apply]
+lemma _root_.IsStrictlyPositive.rpow {a : A} {y : ℝ} (ha : IsStrictlyPositive a) :
+    IsStrictlyPositive (a ^ y) := by grind
 
 end unital_vs_nonunital
 
