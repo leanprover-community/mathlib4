@@ -324,6 +324,8 @@ example {a : ℝ≥0} {b : ℝ} (ha : 0 < a) : 0 < a ^ b := by positivity
 example {a : ℝ≥0∞} {b : ℝ} : 0 ≤ a ^ b := by positivity
 example {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hb : 0 ≤ b) : 0 < a ^ b := by positivity
 example {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hb : 0 < b) : 0 < a ^ b := by positivity
+example {a : ℝ≥0∞} : 0 < a ^ 0 := by positivity
+example {a : ℝ≥0∞} {b : ℝ} (ha : 0 < a) (hat : a ≠ ⊤) : 0 < a ^ b := by positivity
 example {a : ℝ} : 0 < a ^ 0 := by positivity
 
 example {a : ℤ} (ha : 3 < a) : 0 ≤ a ^ 2 + a := by positivity
