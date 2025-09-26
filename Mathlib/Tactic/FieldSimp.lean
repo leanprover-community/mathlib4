@@ -747,8 +747,9 @@ example {K : Type*} [Field K] {x : K} (hx0 : x ≠ 0) :
 ```
 
 The `field` simproc-set's functionality is a variant of the more general `field_simp` tactic, which
-clears denominators in field (in)equalities as well as bringing isolated field expressions into the
-normal form `n / d` (where neither `n` nor `d` contains any division symbol).
+not only clears denominators in field (in)equalities but also brings isolated field expressions into
+the normal form `n / d` (where neither `n` nor `d` contains any division symbol). (For confluence
+reasons, the `field` simprocs also have a slightly different normal form from `field_simp`'s.)
 
 Cancelling and combining denominators will generally require checking "nonzeroness"/"positivity"
 side conditions. The `field` simproc-set attempts to discharge these, and will omit such steps if it
