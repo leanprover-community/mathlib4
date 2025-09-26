@@ -134,6 +134,11 @@ instance (priority := 100) ModularFormClass.modularForm :
   holo := ModularForm.holo'
   bdd_at_infty := ModularForm.bdd_at_infty'
 
+@[fun_prop]
+lemma ModularFormClass.continuous {k : ℤ} {Γ : Subgroup SL(2, ℤ)}
+    {F : Type*} [FunLike F ℍ ℂ] [ModularFormClass F Γ k] (f : F) :
+  Continuous f := (ModularFormClass.holo f).continuous
+
 instance (priority := 100) CuspForm.funLike : FunLike (CuspForm Γ k) ℍ ℂ where
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr; exact DFunLike.ext' h

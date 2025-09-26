@@ -162,9 +162,7 @@ def comap (N : Matroid β) (f : α → β) : Matroid α :=
 @[simp] lemma comap_dep_iff :
     (N.comap f).Dep I ↔ N.Dep (f '' I) ∨ (N.Indep (f '' I) ∧ ¬ InjOn f I) := by
   rw [Dep, comap_indep_iff, not_and, comap_ground_eq, Dep, image_subset_iff]
-  refine ⟨fun ⟨hi, h⟩ ↦ ?_, ?_⟩
-  · rw [and_iff_left h, ← imp_iff_not_or]
-    exact fun hI ↦ ⟨hI, hi hI⟩
+  refine ⟨by grind, ?_⟩
   rintro (⟨hI, hIE⟩ | hI)
   · exact ⟨fun h ↦ (hI h).elim, hIE⟩
   rw [iff_true_intro hI.1, iff_true_intro hI.2, implies_true, true_and]
@@ -459,9 +457,7 @@ lemma map_comap {f : α → β} (h_range : N.E ⊆ range f) (hf : InjOn f (f ⁻
     (N.comap f).map f hf = N := by
   refine ext_indep (by simpa [image_preimage_eq_iff]) ?_
   simp only [map_ground, comap_ground_eq, map_indep_iff, comap_indep_iff, forall_subset_image_iff]
-  refine fun I hI ↦ ⟨fun ⟨I₀, ⟨hI₀, _⟩, hII₀⟩ ↦ ?_, fun h ↦ ⟨_, ⟨h, hf.mono hI⟩, rfl⟩⟩
-  suffices h : I₀ ⊆ f ⁻¹' N.E by rw [InjOn.image_eq_image_iff hf hI h] at hII₀; rwa [hII₀]
-  exact (subset_preimage_image f I₀).trans <| preimage_mono (f := f) hI₀.subset_ground
+  exact fun I hI ↦ ⟨by grind, fun h ↦ ⟨_, ⟨h, hf.mono hI⟩, rfl⟩⟩
 
 lemma comap_map {f : α → β} (hf : f.Injective) : (M.map f hf.injOn).comap f = M := by
   simp [ext_iff_indep, preimage_image_eq _ hf, and_iff_left hf.injOn,
