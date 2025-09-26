@@ -144,6 +144,33 @@ def removeDeprecations (fname : String) (rgs : Array String.Range) : IO String :
   return tot
 
 open Lean Elab Command in
+elab "#regenerate_deprecations " oldDate:str newDate:str really?:("really")? : command => do
+  let repo := repo.toString
+  let oldDate := oldDate.getString
+  let newDate := newDate.getString
+  let dmap ← deprecatedHashMap oldDate newDate
+  --dbg_trace "{dmap.fold (init := 0) fun tot _ rgs => tot + rgs.size - 1} deprecations among {dmap.size} files"
+  for (mod, rgs) in dmap.toArray.qsort (·.1 < ·.1) do
+    let option := s!"\nset_option linter.removeDeprecations \"{oldDate} {newDate}\"\n"
+    dbg_trace s!"Adding '{option}' to '{mod}'"
+    let optionAdded ← addAfterImports mod option
+    --dbg_trace optionAdded
+    let newName := mod.dropRight ".lean".length ++ "_with_option.lean"
+    dbg_trace s!"Writing to '{newName}'"
+    if really?.isSome then
+      IO.FS.writeFile newName optionAdded
+    if false then
+    let mod1 := repo ++ (mod.splitOn repo).getLast!
+    let rgs := cleanUpRanges rgs
+    --dbg_trace "From '{mod1}' remove\n{rgs.map fun | ⟨a, b⟩ => (a, b)}\n---\n{← removeDeprecations mod rgs}"
+    let num := rgs.size - 1
+    dbg_trace "remove {num} declaration{if num == 1 then " " else "s"} from '{mod1}'"
+    if really?.isSome then
+      IO.FS.writeFile mod (← removeDeprecations mod rgs)
+
+#regenerate_deprecations "2025-07-19" "2025-09-20" --really
+
+open Lean Elab Command in
 elab "#remove_deprecated_declarations " oldDate:str newDate:str really?:("really")? : command => do
   let repo := repo.toString
   let oldDate := oldDate.getString
@@ -153,7 +180,7 @@ elab "#remove_deprecated_declarations " oldDate:str newDate:str really?:("really
   for (mod, rgs) in dmap.toArray.qsort (·.1 < ·.1) do
     let mod1 := repo ++ (mod.splitOn repo).getLast!
     let rgs := cleanUpRanges rgs
-    --dbg_trace "From '{mod1}' remove\n{rgs.map fun | ⟨a, b⟩ => (a, b)}\n---\n{← removeDeprecations mod rgs}"
+    dbg_trace "From '{mod1}' remove\n{rgs.map fun | ⟨a, b⟩ => (a, b)}\n---\n{← removeDeprecations mod rgs}"
     let num := rgs.size - 1
     dbg_trace "remove {num} declaration{if num == 1 then " " else "s"} from '{mod1}'"
     if really?.isSome then
