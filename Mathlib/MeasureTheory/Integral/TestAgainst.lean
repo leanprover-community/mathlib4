@@ -6,12 +6,18 @@ Authors: Luigi Massacci
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 
 /-!
-# Integration of bounded continuous functions
+# Integration of bounded continuous functions against finite measures and locally integrable maps
 
-In this file, some results are collected about integrals of bounded continuous functions. They are
-mostly specializations of results in general integration theory, but they are used directly in this
-specialized form in some other files, in particular in those related to the topology of weak
-convergence of probability measures and finite measures.
+In this file, some specialized definitions are introduced for bundling properties of integrals of
+bounded continuous functions against finite measures and locally integrable maps.
+They are meant to be used as intermediate constructions for the development of distribution theory.
+
+## Main definitions
+
+- `FiniteMeasure.testAgainstCLM` wraps the integral with respect to a finite measure
+as a continuous linear map on bounded continuous functions
+- `LocallyIntegrable.testAgainstCLM` wraps the integral against a locally integrable function as
+as a continuous linear map on bounded continuous functions
 -/
 
 open MeasureTheory Filter
@@ -30,7 +36,7 @@ variable [NormedSpace ℝ E]
 
 namespace FiniteMeasure
 
-/-- `integralFiniteMeasureₗ` wraps the integral with respect to a finite measure `μ`
+/-- `FiniteMeasure.testAgainstₗ` wraps the integral with respect to a finite measure `μ`
 as a `𝕜`-linear map on bounded continuous functions -/
 noncomputable def testAgainstₗ (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 E]
   [SMulCommClass ℝ 𝕜 E] [IsFiniteMeasure μ] :
@@ -39,7 +45,7 @@ noncomputable def testAgainstₗ (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 
   map_add' f g := integral_add (f.integrable μ) (g.integrable μ)
   map_smul' c f := integral_smul c f
 
-/-- `integralFiniteMeasureCLM` wraps the integral with respect to a finite measure `μ`
+/-- `FiniteMeasure.testAgainstCLM` wraps the integral with respect to a finite measure `μ`
 as a continuous `𝕜`-linear map on bounded continuous functions -/
 noncomputable def testAgainstCLM (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 E]
   [SMulCommClass ℝ 𝕜 E] [IsFiniteMeasure μ] :
@@ -69,9 +75,9 @@ variable [SMulCommClass ℝ 𝕜 E]
 
 variable (𝕜) {μ}
 
-/-- `testAgainstLocallyIntegrableₗ` wraps the integral against a locally integrable function `f` on
+/-- `LocallyIntegrable.testAgainstₗ` wraps the integral against a locally integrable function `f` on
 a fixed compact `K` as a `𝕜`-linear map on scalar valued bounded continuous functions. -/
-noncomputable def testAgainsₗ {f : X → E} (hf : LocallyIntegrable f μ) (K : Compacts X) :
+noncomputable def testAgainstₗ {f : X → E} (hf : LocallyIntegrable f μ) (K : Compacts X) :
     (X →ᵇ 𝕜) →ₗ[𝕜] E where
   toFun φ := ∫ (x : X), φ x • f x ∂(μ.restrict K)
   map_add' := by
@@ -82,11 +88,12 @@ noncomputable def testAgainsₗ {f : X → E} (hf : LocallyIntegrable f μ) (K :
     intro c φ
     simp_rw [coe_smul, RingHom.id_apply, ← integral_smul c (fun (x : X) ↦  φ x • f x), smul_assoc]
 
-/-- `testAgainstLocallyIntegrableₗ` wraps the integral against a locally integrable function `f` on
-a fixed compact `K` as a continuous `𝕜`-linear map on scalar valued bounded continuous functions. -/
+/-- `LocallyIntegrable.testAgainstCLM` wraps the integral against a locally integrable
+function `f` on a fixed compact `K` as a continuous `𝕜`-linear map on scalar valued bounded
+continuous functions. -/
 noncomputable def testAgainstCLM {f : X → E} (hf : LocallyIntegrable f μ) (K : Compacts X) :
     (X →ᵇ 𝕜) →L[𝕜] E :=
-  (testAgainsₗ 𝕜 hf K).mkContinuous (∫ x, ‖f x‖ ∂(μ.restrict K))
+  (testAgainstₗ 𝕜 hf K).mkContinuous (∫ x, ‖f x‖ ∂(μ.restrict K))
   (by
     intro φ
     have hf' : Integrable f (μ.restrict K) :=
