@@ -87,7 +87,7 @@ lemma DisjWithin_mono {a b c d : ℝ} (habcd : uIcc c d ⊆ uIcc a b) : disjWith
     := by
   simp +contextual only [disjWithin, Finset.mem_range, setOf_subset_setOf, and_true,
     and_imp, Prod.forall]
-  exact fun (n I h1 h2 i hi) ↦ ⟨habcd (h1 i hi).left, habcd (h1 i hi).right⟩
+  exact fun (n I h _ i hi) ↦ ⟨habcd (h i hi).left, habcd (h i hi).right⟩
 
 end AbsolutelyContinuousOnInterval
 
@@ -123,15 +123,13 @@ namespace AbsolutelyContinuousOnInterval
 
 theorem symm {f : ℝ → ℝ} {a b : ℝ} (hf : AbsolutelyContinuousOnInterval f a b) :
     AbsolutelyContinuousOnInterval f b a := by
-  simp only [AbsolutelyContinuousOnInterval] at *
-  rwa [DisjWithin_comm]
+  simp_all [AbsolutelyContinuousOnInterval, DisjWithin_comm]
 
 theorem mono {f : ℝ → ℝ} {a b c d : ℝ} (hf : AbsolutelyContinuousOnInterval f a b)
     (habcd : uIcc c d ⊆ uIcc a b) :
     AbsolutelyContinuousOnInterval f c d := by
   simp only [AbsolutelyContinuousOnInterval, Tendsto] at *
-  refine le_trans ?_ hf
-  apply Filter.map_mono
+  refine le_trans (Filter.map_mono ?_) hf
   gcongr; exact DisjWithin_mono habcd
 
 theorem fun_add {f g : ℝ → ℝ} {a b : ℝ}
@@ -172,7 +170,7 @@ theorem const_mul {f : ℝ → ℝ} {a b : ℝ} (hf : AbsolutelyContinuousOnInte
       (Filter.HasBasis.comap _ hasBasis_totalLengthFilter)]
   intro ε hε
   have : |α| ≥ 0 := by simp
-  refine ⟨ε / (|α| + 1) , by positivity, ?_⟩
+  refine ⟨ε / (|α| + 1), by positivity, ?_⟩
   simp only [preimage_setOf_eq]
   intro E hE
   simp only [mem_setOf_eq] at hE ⊢
@@ -249,11 +247,11 @@ on `uIcc a b`. -/
 theorem fun_mul {f g : ℝ → ℝ} {a b : ℝ}
     (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
     AbsolutelyContinuousOnInterval (fun x ↦ f x * g x) a b := by
-  obtain ⟨C, hC1, hC2⟩ := hf.exists_pos_bound
-  obtain ⟨D, hD1, hD2⟩ := hg.exists_pos_bound
+  obtain ⟨C, _, hC⟩ := hf.exists_pos_bound
+  obtain ⟨D, _, hD⟩ := hg.exists_pos_bound
   simp only [AbsolutelyContinuousOnInterval, Filter.tendsto_iff_comap] at *
-  have h0 : totalLengthFilter ⊓ 𝓟 (disjWithin a b) ≤ 𝓟 (disjWithin a b) := by exact inf_le_right
-  refine le_trans (le_inf (le_inf hf hg) h0) ?_
+  have h₀ : totalLengthFilter ⊓ 𝓟 (disjWithin a b) ≤ 𝓟 (disjWithin a b) := inf_le_right
+  refine le_trans (le_inf (le_inf hf hg) h₀) ?_
   rw [Filter.HasBasis.le_basis_iff
       ( ((Filter.HasBasis.comap _ hasBasis_totalLengthFilter).inf
         (Filter.HasBasis.comap _ hasBasis_totalLengthFilter)).inf_principal _)
@@ -275,11 +273,11 @@ theorem fun_mul {f g : ℝ → ℝ} {a b : ℝ}
       gcongr
       · rw [← smul_eq_mul, ← smul_eq_mul, dist_smul₀]
         gcongr
-        exact hC2 _ (this.left i hi |>.left)
+        exact hC _ (this.left i hi |>.left)
       · rw [mul_comm _ (g (I i).2), mul_comm _ (g (I i).2), ← smul_eq_mul, ← smul_eq_mul,
             dist_smul₀]
         gcongr
-        exact hD2 _ (this.left i hi |>.right)
+        exact hD _ (this.left i hi |>.right)
   _ = C * ∑ i ∈ Finset.range n, dist (g ((I i).1)) (g ((I i).2)) +
       D * ∑ i ∈ Finset.range n, dist (f ((I i).1)) (f ((I i).2)) := by
     rw [Finset.sum_add_distrib, Finset.mul_sum, Finset.mul_sum]
@@ -300,18 +298,17 @@ theorem LipschitzOnWith.absolutelyContinuousOnInterval {f : ℝ → ℝ} {a b : 
   intro ε hε
   use ε / (K + 1)
   refine ⟨by positivity, ?_⟩
-  intro (n, I) hnI1 hnI2
-  simp only [disjWithin, mem_setOf_eq] at hnI1
-  simp only at hnI2
+  intro (n, I) hnI₁ hnI₂
+  simp only [disjWithin, mem_setOf_eq] at hnI₁
+  simp only at hnI₂
   simp only [LipschitzOnWith] at hfK
   calc
   _ ≤ ∑ i ∈ Finset.range n, K * dist (I i).1 (I i).2 := by
     apply Finset.sum_le_sum
     intro i hi
-    have := hfK (hnI1.left i hi).left (hnI1.left i hi).right
-    apply ENNReal.toReal_mono at this
-    · rwa [ENNReal.toReal_mul, ← dist_edist, ← dist_edist] at this
-    · exact Ne.symm (not_eq_of_beq_eq_false rfl)
+    have := hfK (hnI₁.left i hi).left (hnI₁.left i hi).right
+    apply ENNReal.toReal_mono (Ne.symm (not_eq_of_beq_eq_false rfl)) at this
+    rwa [ENNReal.toReal_mul, ← dist_edist, ← dist_edist] at this
   _ = K * ∑ i ∈ Finset.range n, dist (I i).1 (I i).2 := by symm; exact Finset.mul_sum _ _ _
   _ ≤ K * (ε / (K + 1)) := by gcongr
   _ < (K + 1) * (ε / (K + 1)) := by gcongr; linarith
@@ -322,20 +319,20 @@ namespace AbsolutelyContinuousOnInterval
 /-- If `f` is absolutely continuous on `uIcc a b`, then `f` has bounded variation on `uIcc a b`. -/
 theorem boundedVariationOn {f : ℝ → ℝ} {a b : ℝ} (hf : AbsolutelyContinuousOnInterval f a b) :
     BoundedVariationOn f (uIcc a b) := by
-  wlog hab0 : a ≤ b
+  wlog hab₀ : a ≤ b
   · specialize @this f b a hf.symm (by linarith)
     rwa [uIcc_comm]
-  rw [uIcc_of_le hab0]
-  rcases hab0.eq_or_lt with rfl | hab
+  rw [uIcc_of_le hab₀]
+  rcases hab₀.eq_or_lt with rfl | hab
   · simp [BoundedVariationOn]
   rw [absolutelyContinuousOnInterval_iff] at hf
-  obtain ⟨δ, hδ1, hδ2⟩ := hf 1 (by linarith)
-  have hab1 : 0 < b - a := by linarith
-  obtain ⟨n, hn⟩ := exists_nat_one_div_lt (div_pos hδ1 hab1)
+  obtain ⟨δ, hδ₁, hδ₂⟩ := hf 1 (by linarith)
+  have hab₁ : 0 < b - a := by linarith
+  obtain ⟨n, hn⟩ := exists_nat_one_div_lt (div_pos hδ₁ hab₁)
   set δ' := (b - a) / (n + 1)
-  have hδ3 : δ' < δ := by
+  have hδ₃ : δ' < δ := by
     dsimp only [δ']
-    convert mul_lt_mul_of_pos_right hn hab1 using 1 <;> field_simp
+    convert mul_lt_mul_of_pos_right hn hab₁ using 1 <;> field_simp
   have h_mono : Monotone fun (i : ℕ) ↦ a + ↑i * δ' := by
     apply Monotone.const_add
     apply Monotone.mul_const Nat.mono_cast
@@ -349,22 +346,21 @@ theorem boundedVariationOn {f : ℝ → ℝ} {a b : ℝ} (hf : AbsolutelyContinu
     · norm_cast
   have v_each (x y : ℝ) (hxy1 : a ≤ x) (hxy2 : x ≤ y) (hxy3 : y < x + δ) (hxy4 : y ≤ b) :
       eVariationOn f (Icc x y) ≤ 1 := by
-    simp only [eVariationOn]
-    rw [iSup_le_iff]
+    simp only [eVariationOn, iSup_le_iff]
     intro p
-    obtain ⟨hp1, hp2⟩ := p.2.property
+    obtain ⟨hp₁, hp₂⟩ := p.2.property
     have vf: ∑ i ∈ Finset.range p.1, dist (f (p.2.val i)) (f (p.2.val (i + 1))) ≤ 1 := by
       suffices ∑ i ∈ Finset.range p.1, dist (f (p.2.val i)) (f (p.2.val (i + 1))) < 1 by
         linarith
-      apply hδ2 (p.1, (fun i ↦ (p.2.val i, p.2.val (i + 1))))
+      apply hδ₂ (p.1, (fun i ↦ (p.2.val i, p.2.val (i + 1))))
       · simp only [disjWithin, mem_setOf_eq]
         constructor
-        · have : Icc x y ⊆ uIcc a b := by rw [uIcc_of_le hab0]; gcongr
+        · have : Icc x y ⊆ uIcc a b := by rw [uIcc_of_le hab₀]; gcongr
           intro i hi
-          constructor <;> exact this (hp2 _)
+          constructor <;> exact this (hp₂ _)
         · rw [PairwiseDisjoint]
-          convert hp1.pairwise_disjoint_on_Ioc_succ.set_pairwise (Finset.range p.1) using 3
-          rw [uIoc_of_le (hp1 (by omega))]
+          convert hp₁.pairwise_disjoint_on_Ioc_succ.set_pairwise (Finset.range p.1) using 3
+          rw [uIoc_of_le (hp₁ (by omega))]
           rfl
       · simp only
         suffices p.2.val p.1 - p.2.val 0 < δ by
@@ -372,8 +368,8 @@ theorem boundedVariationOn {f : ℝ → ℝ} {a b : ℝ} (hf : AbsolutelyContinu
           rw [← Finset.sum_range_sub]
           congr; ext i
           rw [dist_comm, Real.dist_eq, abs_eq_self.mpr]
-          linarith [@hp1 i (i + 1) (by omega)]
-        linarith [mem_Icc.mp (hp2 p.1), mem_Icc.mp (hp2 0)]
+          linarith [@hp₁ i (i + 1) (by omega)]
+        linarith [mem_Icc.mp (hp₂ p.1), mem_Icc.mp (hp₂ 0)]
     have veq: (∑ i ∈ Finset.range p.1, edist (f (p.2.val (i + 1))) (f (p.2.val i))).toReal =
         ∑ i ∈ Finset.range p.1, dist (f (p.2.val i)) (f (p.2.val (i + 1))) := by
       rw [ENNReal.toReal_sum (by simp [edist_ne_top])]
