@@ -210,15 +210,13 @@ theorem MeasureTheory.AEStronglyMeasurable.prodMk_right [SFinite μ] [SFinite ν
   hf.prod_swap.prodMk_left
 
 protected theorem MeasureTheory.AEStronglyMeasurable.of_comp_snd {f : β → X} [SFinite ν]
-    (hf : AEStronglyMeasurable (fun z : α × β => f z.2) (μ.prod ν))
-    (hμ : μ ≠ 0) : AEStronglyMeasurable f ν := by
+    (hf : AEStronglyMeasurable (f ·.2) (μ.prod ν)) (hμ : μ ≠ 0) : AEStronglyMeasurable f ν := by
   have := NeZero.mk hμ
   obtain ⟨y, hy⟩ := hf.prodMk_left.exists
   exact hy
 
 protected theorem MeasureTheory.AEStronglyMeasurable.of_comp_fst {f : α → X} [SFinite μ] [SFinite ν]
-    (hf : AEStronglyMeasurable (fun z : α × β => f z.1) (μ.prod ν)) (hν : ν ≠ 0) :
-    AEStronglyMeasurable f μ :=
+    (hf : AEStronglyMeasurable (f ·.1) (μ.prod ν)) (hν : ν ≠ 0) : AEStronglyMeasurable f μ :=
   hf.prod_swap.of_comp_snd hν
 
 theorem MeasureTheory.AEStronglyMeasurable.comp_fst_iff [SFinite μ] [SFinite ν] {f : α → X}
