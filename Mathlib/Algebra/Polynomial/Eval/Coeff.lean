@@ -227,17 +227,4 @@ end Map
 
 end CommSemiring
 
-section SimpleRing
-
-variable [Ring R] [IsSimpleRing R] [Semiring S] [Nontrivial S]
-variable {f : R →+* S} {p : R[X]}
-
-theorem map_eq_zero_iff_from_simpleRing : p.map f = 0 ↔ p = 0 :=
-  Polynomial.map_eq_zero_iff <| RingHom.injective f
-
-theorem map_ne_zero_iff_from_simpleRing : p.map f ≠ 0 ↔ p ≠ 0 :=
-  Polynomial.map_ne_zero_iff <| RingHom.injective f
-
-end SimpleRing
-
 end Polynomial
