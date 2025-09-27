@@ -1040,9 +1040,8 @@ theorem indepFun_iff_compProd_map_prod_eq_compProd_prod_map_map
     by_cases hωu : ω ∈ u
     swap; · simp [hωu]
     simp only [hωu, ↓reduceIte]
-    rw [Kernel.map_apply _ (by fun_prop), Measure.map_apply (by fun_prop) (hs.prod ht),
-      mk_preimage_prod, hω, Kernel.prod_apply_prod, Kernel.map_apply' _ (by fun_prop),
-        Kernel.map_apply' _ (by fun_prop)]
+    rw [map_apply _ (by fun_prop), Measure.map_apply (by fun_prop) (hs.prod ht),
+      mk_preimage_prod, hω, prod_apply_prod, map_apply' _ (by fun_prop), map_apply' _ (by fun_prop)]
     exacts [ht, hs]
   · intro s t hs ht
     rw [Measure.ext_prod₃_iff] at h
