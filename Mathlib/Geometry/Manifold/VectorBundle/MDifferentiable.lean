@@ -524,7 +524,7 @@ variable {ι : Type*} {t : ι → (x : B) → E x}
 
 open Function
 
-/-- The sum of a locally finite collection of sections is differentiable iff each section is.
+/-- The sum of a locally finite collection of sections is differentiable if each section is.
 Version at a point within a set. -/
 lemma MDifferentiableWithinAt.sum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
@@ -561,7 +561,7 @@ lemma MDifferentiableWithinAt.sum_section_of_locallyFinite
     simpa using ⟨h, Set.mem_of_mem_inter_right hy⟩
   exact hi this
 
-/-- The sum of a locally finite collection of sections is `C^k` at `x` iff each section is. -/
+/-- The sum of a locally finite collection of sections is differentiable at `x` if each section is. -/
 lemma MDifferentiableAt.sum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
     (ht' : ∀ i, MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t i x)) x₀) :
