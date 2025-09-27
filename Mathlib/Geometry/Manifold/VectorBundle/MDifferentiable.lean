@@ -561,7 +561,8 @@ lemma MDifferentiableWithinAt.sum_section_of_locallyFinite
     simpa using ⟨h, Set.mem_of_mem_inter_right hy⟩
   exact hi this
 
-/-- The sum of a locally finite collection of sections is differentiable at `x` if each section is. -/
+/-- The sum of a locally finite collection of sections is differentiable at `x`
+if each section is. -/
 lemma MDifferentiableAt.sum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
     (ht' : ∀ i, MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t i x)) x₀) :
@@ -569,21 +570,20 @@ lemma MDifferentiableAt.sum_section_of_locallyFinite
   simp_rw [← mdifferentiableWithinAt_univ] at ht' ⊢
   exact .sum_section_of_locallyFinite ht ht'
 
-/-- The sum of a locally finite collection of sections is `C^k` on a set `u` iff each section is. -/
+/-- The sum of a locally finite collection of sections is differentiable on a set `u`
+if each section is. -/
 lemma MDifferentiableOn.sum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
     (ht' : ∀ i, MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t i x)) u) :
     MDifferentiableOn I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) u :=
   fun x hx ↦ .sum_section_of_locallyFinite ht (ht' · x hx)
 
-/-- The sum of a locally finite collection of sections is `C^k` iff each section is. -/
+/-- The sum of a locally finite collection of sections is differentiable if each section is. -/
 lemma MDifferentiable.sum_section_of_locallyFinite (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
     (ht' : ∀ i, MDifferentiable I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (t i x))) :
     MDifferentiable I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (∑' i, (t i x))) :=
   fun x ↦ .sum_section_of_locallyFinite ht fun i ↦ ht' i x
 
--- Future: the next four lemmas can presumably be generalised, but some hypotheses on the supports
--- of the sections `t i` are necessary.
 lemma MDifferentiableWithinAt.finsum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : B | t i x ≠ 0})
     (ht' : ∀ i, MDifferentiableWithinAt I (I.prod 𝓘(𝕜, F))
