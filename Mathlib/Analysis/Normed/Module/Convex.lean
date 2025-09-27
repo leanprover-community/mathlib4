@@ -8,6 +8,7 @@ import Mathlib.Analysis.Convex.PathConnected
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Normed.Group.Pointwise
 import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.Analysis.Normed.Module.RCLike.Real
 
 /-!
 # Metric properties of convex sets in normed spaces
@@ -60,6 +61,46 @@ theorem convex_ball (a : E) (r : ℝ) : Convex ℝ (Metric.ball a r) := by
 
 theorem convex_closedBall (a : E) (r : ℝ) : Convex ℝ (Metric.closedBall a r) := by
   simpa only [Metric.closedBall, sep_univ] using (convexOn_univ_dist a).convex_le r
+
+theorem convexHull_sphere_zero_eq_ball (F : Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
+    [Nontrivial F] {r : ℝ} (hr : 0 ≤ r) :
+      convexHull ℝ (Metric.sphere (0 : F) r) = Metric.closedBall 0 r := by
+  ext x
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [mem_convexHull_iff] at h
+    exact h (Metric.closedBall 0 r) sphere_subset_closedBall <| convex_closedBall 0 r
+  rw [mem_convexHull_iff]
+  intro U hU_sub hU
+  have zero_mem : (0 : F) ∈ U := by
+    obtain ⟨z, hz⟩ := (@NormedSpace.sphere_nonempty F _ _ _ 0 r).mpr hr
+    have := @Convex.midpoint_mem ℝ F _ _ _ _ _ ?_ U z (- z) hU (hU_sub hz) ?_
+    · simp_all
+    · use 2⁻¹
+      rw [inv_mul_cancel₀]
+      exact two_ne_zero
+      rw [mul_inv_cancel₀]
+      exact two_ne_zero
+    · apply hU_sub
+      aesop
+  by_cases hr₀ : r = 0
+  · rw [hr₀, closedBall_zero, mem_singleton_iff] at h
+    rwa [h]
+  by_cases x_zero : x = 0
+  · rwa [x_zero]
+  replace hU := hU.starConvex zero_mem
+  simp at h
+  set z := (r * ‖x‖⁻¹) • x with hz_def
+  have hz : z ∈ sphere 0 r := by
+    simp_all [norm_smul]
+  replace hz : z ∈ U := hU_sub hz
+  have hr₁ : r⁻¹ * ‖x‖ ≤ 1 := by
+    grw [h]
+    exact inv_mul_le_one
+  have := @StarConvex.smul_mem ℝ F _ _ _ _ _ z U hU hz (r⁻¹ * ‖x‖) (by positivity) hr₁
+  rwa [hz_def, ← smul_assoc, smul_eq_mul, ← mul_assoc, mul_comm, mul_comm r⁻¹, mul_assoc _ r⁻¹,
+    inv_mul_cancel₀ hr₀, mul_one, inv_mul_cancel₀, one_smul] at this
+  simp [x_zero]
+
 
 /-- Given a point `x` in the convex hull of `s` and a point `y`, there exists a point
 of `s` at distance at least `dist x y` from `y`. -/
