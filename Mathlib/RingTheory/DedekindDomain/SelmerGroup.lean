@@ -18,7 +18,7 @@ valuation divisible by $n$ for all prime ideals $v$ away from $S$. In other word
 $$ K(S, n) := \{x(K^\times)^n \in K^\times / (K^\times)^n \ \mid \
                 \forall v \notin S, \ \mathrm{ord}_v(x) \equiv 0 \pmod n\}. $$
 
-There is a fundamental short exact sequence
+There is a fundamental short-exact sequence
 $$ 1 \to R_S^\times / (R_S^\times)^n \to K(S, n) \to \mathrm{Cl}_S(R)[n] \to 0, $$
 where $R_S^\times$ is the $S$-unit group of $R$ and $\mathrm{Cl}_S(R)$ is the $S$-class group of
 $R$. If the flanking groups are both finite, then $K(S, n)$ is finite by the first isomorphism
@@ -47,8 +47,8 @@ This file defines the Selmer group $K(S, n)$ and some basic facts.
 The Selmer group is typically defined as a subgroup of the Galois cohomology group $H^1(K, \mu_n)$
 with certain local conditions defined by $v$-adic valuations, where $\mu_n$ is the group of $n$-th
 roots of unity over a separable closure of $K$. Here $H^1(K, \mu_n)$ is identified with
-$K^\times / (K^\times)^n$ by the long exact sequence from Kummer theory and Hilbert's theorem 90,
-and the fundamental short exact sequence becomes an easy consequence of the snake lemma. This file
+$K^\times / (K^\times)^n$ by the long-exact sequence from Kummer theory and Hilbert's theorem 90,
+and the fundamental short-exact sequence becomes an easy consequence of the snake lemma. This file
 will define all the maps explicitly for computational purposes, but isomorphisms to the Galois
 cohomological definition will be provided when possible.
 

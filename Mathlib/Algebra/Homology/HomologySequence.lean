@@ -11,10 +11,10 @@ import Mathlib.Algebra.Homology.HomologicalComplexLimits
 /-!
 # The homology sequence
 
-If `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` is a short exact sequence in a category of complexes
+If `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` is a short-exact sequence in a category of complexes
 `HomologicalComplex C c` in an abelian category (i.e. `S` is a short complex in
 that category and satisfies `hS : S.ShortExact`), then whenever `i` and `j` are degrees
-such that `hij : c.Rel i j`, then there is a long exact sequence :
+such that `hij : c.Rel i j`, then there is a long-exact sequence :
 `... ⟶ S.X₁.homology i ⟶ S.X₂.homology i ⟶ S.X₃.homology i ⟶ S.X₁.homology j ⟶ ...`.
 The connecting homomorphism `S.X₃.homology i ⟶ S.X₁.homology j` is `hS.δ i j hij`, and
 the exactness is asserted as lemmas `hS.homology_exact₁`, `hS.homology_exact₂` and
@@ -214,7 +214,7 @@ variable {S : ShortComplex (HomologicalComplex C c)}
 
 namespace HomologySequence
 
-/-- Given a short exact short complex `S : HomologicalComplex C c`, and degrees `i` and `j`
+/-- Given a short-exact short complex `S : HomologicalComplex C c`, and degrees `i` and `j`
 such that `c.Rel i j`, this is the snake diagram whose four lines are respectively
 obtained by applying the functors `homologyFunctor C c i`, `opcyclesFunctor C c i`,
 `cyclesFunctor C c j`, `homologyFunctor C c j` to `S`. Applying the snake lemma to this
@@ -272,7 +272,7 @@ namespace ShortComplex
 
 namespace ShortExact
 
-/-- The connecting homomorphism `S.X₃.homology i ⟶ S.X₁.homology j` for a short exact
+/-- The connecting homomorphism `S.X₃.homology i ⟶ S.X₁.homology j` for a short-exact
 short complex `S`. -/
 noncomputable def δ : S.X₃.homology i ⟶ S.X₁.homology j := (snakeInput hS i j hij).δ
 
