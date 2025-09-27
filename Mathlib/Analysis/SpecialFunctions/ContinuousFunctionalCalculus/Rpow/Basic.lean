@@ -672,15 +672,15 @@ lemma _root_.IsStrictlyPositive.rpow {a : A} {y : ℝ} (ha : IsStrictlyPositive 
     IsStrictlyPositive (a ^ y) := by grind
 
 /-- For an element `a` in a C⋆-algebra, TFAE:
-* `a` is strictly positive,
-* `sqrt a` is strictly positive and `a = sqrt a * sqrt a`,
-* `sqrt a` is invertible and `a = sqrt a * sqrt a`,
-* `a = b * b` for some strictly positive `b`,
-* `a = b * b` for some self-adjoint and invertible `b`,
-* `a = star b * b` for some invertible `b`,
-* `a = b * star b` for some invertible `b`,
-* `0 ≤ b` and `a` is invertible,
-* `a` is self-adjoint and has positive spectrum. -/
+1. `a` is strictly positive,
+2. `sqrt a` is strictly positive and `a = sqrt a * sqrt a`,
+3. `sqrt a` is invertible and `a = sqrt a * sqrt a`,
+4. `a = b * b` for some strictly positive `b`,
+5. `a = b * b` for some self-adjoint and invertible `b`,
+6. `a = star b * b` for some invertible `b`,
+7. `a = b * star b` for some invertible `b`,
+8. `0 ≤ a` and `a` is invertible,
+9. `a` is self-adjoint and has positive spectrum. -/
 theorem _root_.CStarAlgebra.isStrictlyPositive_TFAE {a : A} :
     [IsStrictlyPositive a,
      IsStrictlyPositive (sqrt a) ∧ a = sqrt a * sqrt a,
@@ -710,10 +710,10 @@ theorem _root_.CStarAlgebra.isStrictlyPositive_iff_isStrictlyPositive_sqrt_and_e
 theorem _root_.CStarAlgebra.isStrictlyPositive_iff_isUnit_sqrt_and_eq_sqrt_mul_sqrt
     {a : A} : IsStrictlyPositive a ↔ IsUnit (sqrt a) ∧ a = sqrt a * sqrt a :=
   CStarAlgebra.isStrictlyPositive_TFAE.out 0 2
-theorem _root_.CStarAlgebra.isStrictlyPositive_iff_eq_isStrictlyPositive_mul_self
+theorem _root_.CStarAlgebra.isStrictlyPositive_iff_exists_isStrictlyPositive_and_eq_mul_self
     {a : A} : IsStrictlyPositive a ↔ ∃ b, IsStrictlyPositive b ∧ a = b * b :=
   CStarAlgebra.isStrictlyPositive_TFAE.out 0 3
-theorem _root_.CStarAlgebra.isStrictlyPositive_iff_eq_isUnit_and_isSelfAdjoint_mul_self
+theorem _root_.CStarAlgebra.isStrictlyPositive_iff_exists_isUnit_and_isSelfAdjoint_and_eq_mul_self
     {a : A} : IsStrictlyPositive a ↔ ∃ b, IsUnit b ∧ IsSelfAdjoint b ∧ a = b * b :=
   CStarAlgebra.isStrictlyPositive_TFAE.out 0 4
 theorem _root_.CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self
