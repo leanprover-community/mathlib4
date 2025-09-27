@@ -56,8 +56,8 @@ attribute [local simp] zero_lt_iff
 
 instance : IsTopologicalDivisionRing K := by
   letI := IsTopologicalAddGroup.toUniformSpace K
-  letI := isUniformAddGroup_of_addCommGroup (G := K)
-  open scoped Valued in infer_instance
+  haveI := isUniformAddGroup_of_addCommGroup (G := K)
+  infer_instance
 
 lemma isCompact_closedBall (γ : ValueGroupWithZero K) : IsCompact { x | valuation K x ≤ γ } := by
   obtain ⟨γ, rfl⟩ := ValuativeRel.valuation_surjective γ
