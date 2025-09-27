@@ -490,6 +490,7 @@ lemma Ideal.Quotient.normal [P.IsMaximal] [Q.IsMaximal] :
 
 attribute [local instance] Ideal.Quotient.field in
 include G in
+/-- If the extension `B/Q` over `A/P` is separable, then it is finite dimensional. -/
 lemma Ideal.Quotient.finite_of_isInvariant [P.IsMaximal] [Q.IsMaximal]
     [SMulCommClass G A B] [Algebra.IsSeparable (A ⧸ P) (B ⧸ Q)] :
     Module.Finite (A ⧸ P) (B ⧸ Q) := by
