@@ -107,6 +107,14 @@ instance [AddCommGroupWithOne R] : AddCommGroupWithOne (HahnSeries Γ R) where
   intCast_ofNat n := by simp [← single_zero_natCast, ← single_zero_intCast]
   intCast_negSucc n := by simp [← single_zero_natCast, ← single_zero_intCast]
 
+theorem pos_orderTop_single_sub {Γ} [PartialOrder Γ] [AddGroup Γ] [AddRightStrictMono Γ] [Zero R]
+    {g g' : Γ} (h : g < g') (r : R) :
+    0 < (single (g' - g) r).orderTop := by
+  by_cases hr : r = 0
+  · simp [hr]
+  · rw [orderTop_single hr, WithTop.coe_pos]
+    exact sub_pos.mpr h
+
 end HahnSeries
 
 /-- We introduce a type alias for `HahnSeries` in order to work with scalar multiplication by
@@ -141,24 +149,33 @@ end
 
 section SMul
 
-variable [PartialOrder Γ] [AddCommMonoid V] [SMul R V]
+variable [PartialOrder Γ] [SMul R V]
 
-instance instAddCommMonoid : AddCommMonoid (HahnModule Γ R V) :=
+instance instZero [Zero V] : Zero (HahnModule Γ R V) :=
+  inferInstanceAs <| Zero (HahnSeries Γ V)
+instance instAddCommMonoid [AddCommMonoid V] : AddCommMonoid (HahnModule Γ R V) :=
   inferInstanceAs <| AddCommMonoid (HahnSeries Γ V)
+instance instAddCommGroup [AddCommGroup V] : AddCommGroup (HahnModule Γ R V) :=
+  inferInstanceAs <| AddCommGroup (HahnSeries Γ V)
 instance instBaseSMul {V} [Monoid R] [AddMonoid V] [DistribMulAction R V] :
     SMul R (HahnModule Γ R V) :=
   inferInstanceAs <| SMul R (HahnSeries Γ V)
 
-@[simp] theorem of_zero : of R (0 : HahnSeries Γ V) = 0 := rfl
-@[simp] theorem of_add (x y : HahnSeries Γ V) : of R (x + y) = of R x + of R y := rfl
+@[simp] theorem of_zero [Zero V] : of R (0 : HahnSeries Γ V) = 0 := rfl
+@[simp] theorem of_add [AddCommMonoid V] (x y : HahnSeries Γ V) :
+    of R (x + y) = of R x + of R y := rfl
+@[simp] theorem of_sub [AddCommGroup V] (x y : HahnSeries Γ V) :
+    of R (x - y) = of R x - of R y := rfl
 
-@[simp] theorem of_symm_zero : (of R).symm (0 : HahnModule Γ R V) = 0 := rfl
-@[simp] theorem of_symm_add (x y : HahnModule Γ R V) :
+@[simp] theorem of_symm_zero [Zero V] : (of R).symm (0 : HahnModule Γ R V) = 0 := rfl
+@[simp] theorem of_symm_add [AddCommMonoid V] (x y : HahnModule Γ R V) :
     (of R).symm (x + y) = (of R).symm x + (of R).symm y := rfl
+@[simp] theorem of_symm_sub [AddCommGroup V] (x y : HahnModule Γ R V) :
+    (of R).symm (x - y) = (of R).symm x - (of R).symm y := rfl
 
-variable [PartialOrder Γ'] [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ']
+variable [PartialOrder Γ'] [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [Zero R] [AddCommMonoid V]
 
-instance instSMul [Zero R] : SMul (HahnSeries Γ R) (HahnModule Γ' R V) where
+instance instSMul : SMul (HahnSeries Γ R) (HahnModule Γ' R V) where
   smul x y := (of R) {
     coeff := fun a =>
       ∑ ij ∈ VAddAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support a,
@@ -175,7 +192,7 @@ instance instSMul [Zero R] : SMul (HahnSeries Γ R) (HahnModule Γ' R V) where
           simp [not_nonempty_iff_eq_empty.1 ha]
         isPWO_support_vaddAntidiagonal.mono h }
 
-theorem coeff_smul [Zero R] (x : HahnSeries Γ R) (y : HahnModule Γ' R V) (a : Γ') :
+theorem coeff_smul (x : HahnSeries Γ R) (y : HahnModule Γ' R V) (a : Γ') :
     ((of R).symm <| x • y).coeff a =
       ∑ ij ∈ VAddAntidiagonal x.isPWO_support ((of R).symm y).isPWO_support a,
         x.coeff ij.fst • ((of R).symm y).coeff ij.snd :=

@@ -58,6 +58,7 @@ theorem powerSeriesFamily_of_orderTop_pos {x : HahnSeries Γ V} (hx : 0 < x.orde
     powerSeriesFamily x f n = f.coeff n • x ^ n := by
   simp [hx]
 
+@[simp]
 theorem powerSeriesFamily_hsum_zero (f : PowerSeries R) :
     (powerSeriesFamily 0 f).hsum = f.constantCoeff • (1 : HahnSeries Γ V) := by
   ext g
@@ -180,6 +181,10 @@ def heval : PowerSeries R →ₐ[R] HahnSeries Γ R where
     simp only [coeff_hsum, smulFamily_toFun, coeff_C, powers_toFun, ite_smul, zero_smul]
     rw [finsum_eq_single _ 0 fun n hn => by simp [hn]]
     by_cases hg : g = 0 <;> simp [hg, Algebra.algebraMap_eq_smul_one]
+
+theorem heval_of_orderTop_not_pos (hx : ¬ 0 < x.orderTop) (a : PowerSeries R) :
+    heval x a = constantCoeff a • 1 := by
+  simp [powerSeriesFamily_of_not_orderTop_pos hx]
 
 theorem heval_mul {a b : PowerSeries R} :
     heval x (a * b) = heval x a * heval x b :=
