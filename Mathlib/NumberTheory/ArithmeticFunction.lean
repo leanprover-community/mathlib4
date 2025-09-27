@@ -785,8 +785,7 @@ theorem eq_zero_of_squarefree_of_dvd_eq_zero [MonoidWithZero R] {f : ArithmeticF
     (h_zero : f m = 0) :
     f n = 0 := by
   rcases hmn with ⟨k, rfl⟩
-  simp only [MulZeroClass.zero_mul, hf.map_mul_of_coprime
-    (coprime_of_squarefree_mul hn), h_zero]
+  simp only [zero_mul, hf.map_mul_of_coprime (coprime_of_squarefree_mul hn), h_zero]
 
 end IsMultiplicative
 
