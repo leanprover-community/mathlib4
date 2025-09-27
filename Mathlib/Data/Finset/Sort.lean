@@ -219,23 +219,33 @@ theorem listMap_orderEmbOfFin_finRange (s : Finset α) {k : ℕ} (h : s.card = k
   obtain rfl : k = (s.sort (· ≤ ·)).length := by simp [h]
   exact List.finRange_map_getElem (s.sort (· ≤ ·))
 
-/-- The bijection `orderEmbOfFin s h` sends `0` to the minimum of `s`. -/
-theorem orderEmbOfFin_zero {s : Finset α} {k : ℕ} (h : s.card = k) (hz : 0 < k) :
+/-- The bijection `orderEmbOfFin s h` sends `⟨0, ⋯⟩` to the minimum of `s`. -/
+theorem orderEmbOfFin_mk_zero {s : Finset α} {k : ℕ} (h : s.card = k) (hz : 0 < k) :
     orderEmbOfFin s h ⟨0, hz⟩ = s.min' (card_pos.mp (h.symm ▸ hz)) := by
   simp only [orderEmbOfFin_apply, Fin.getElem_fin, sorted_zero_eq_min']
 
+/-- The bijection `orderEmbOfFin s h` sends `0` to the minimum of `s`. -/
+theorem orderEmbOfFin_zero {s : Finset α} {k : ℕ} [NeZero k] (h : s.card = k) :
+    orderEmbOfFin s h 0 = s.min' (card_ne_zero.mp (h.symm ▸ NeZero.ne k)) :=
+  orderEmbOfFin_mk_zero _ _
+
 /-- The bijection `orderEmbOfFin s h` sends `k-1` to the maximum of `s`. -/
-theorem orderEmbOfFin_last {s : Finset α} {k : ℕ} (h : s.card = k) (hz : 0 < k) :
+theorem orderEmbOfFin_mk_last {s : Finset α} {k : ℕ} (h : s.card = k) (hz : 0 < k) :
     orderEmbOfFin s h ⟨k - 1, Nat.sub_lt hz (Nat.succ_pos 0)⟩ =
       s.max' (card_pos.mp (h.symm ▸ hz)) := by
   simp [orderEmbOfFin_apply, max'_eq_sorted_last, h]
+
+/-- The bijection `orderEmbOfFin s h` sends `Fin.last _` to the maximum of `s`. -/
+theorem orderEmbOfFin_last {s : Finset α} {k : ℕ} (h : s.card = k + 1) :
+    orderEmbOfFin s h (Fin.last k) =
+      s.max' (card_pos.mp <| h.symm ▸ Nat.succ_pos _) :=
+  orderEmbOfFin_mk_last _ <| Nat.succ_pos _
 
 /-- `orderEmbOfFin {a} h` sends any argument to `a`. -/
 @[simp]
 theorem orderEmbOfFin_singleton (a : α) (i : Fin 1) :
     orderEmbOfFin {a} (card_singleton a) i = a := by
-  rw [Subsingleton.elim i ⟨0, Nat.zero_lt_one⟩, orderEmbOfFin_zero _ Nat.zero_lt_one,
-    min'_singleton]
+  rw [Subsingleton.elim i 0, orderEmbOfFin_zero _, min'_singleton]
 
 /-- Any increasing map `f` from `Fin k` to a finset of cardinality `k` has to coincide with
 the increasing bijection `orderEmbOfFin s h`. -/
