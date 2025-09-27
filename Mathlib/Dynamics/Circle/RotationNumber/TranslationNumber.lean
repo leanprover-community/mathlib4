@@ -24,8 +24,8 @@ translation number of `f : CircleDeg1Lift`, prove some estimates relating `f^n(x
 case of a continuous map `f` we also prove that `f` admits a point `x` such that `f^n(x)=x+m` if and
 only if `τ(f)=m/n`.
 
-Maps of this type naturally appear as lifts of orientation preserving circle homeomorphisms. More
-precisely, let `f` be an orientation preserving homeomorphism of the circle $S^1=ℝ/ℤ$, and
+Maps of this type naturally appear as lifts of orientation-preserving circle homeomorphisms. More
+precisely, let `f` be an orientation-preserving homeomorphism of the circle $S^1=ℝ/ℤ$, and
 consider a real number `a` such that
 `⟦a⟧ = f 0`, where `⟦⟧` means the natural projection `ℝ → ℝ/ℤ`. Then there exists a unique
 continuous function `F : ℝ → ℝ` such that `F 0 = a` and `⟦F x⟧ = f ⟦x⟧` for all `x` (this fact is
@@ -821,7 +821,7 @@ theorem translationNumber_eq_rat_iff (hf : Continuous f) {m : ℤ} {n : ℕ} (hn
   exact (f ^ n).translationNumber_eq_int_iff (f.continuous_pow hf n)
 
 /-- Consider two actions `f₁ f₂ : G →* CircleDeg1Lift` of a group on the real line by lifts of
-orientation preserving circle homeomorphisms. Suppose that for each `g : G` the homeomorphisms
+orientation-preserving circle homeomorphisms. Suppose that for each `g : G` the homeomorphisms
 `f₁ g` and `f₂ g` have equal rotation numbers. Then there exists `F : CircleDeg1Lift` such that
 `F * f₁ g = f₂ g * F` for all `g : G`.
 

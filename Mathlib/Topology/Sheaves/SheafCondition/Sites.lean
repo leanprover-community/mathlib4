@@ -17,7 +17,7 @@ on spaces.
 
 We also specialize results about sheaves on sites to sheaves on spaces; we show that the inclusion
 functor from a topological basis to `TopologicalSpace.Opens` is cover dense, that open maps
-induce cover preserving functors, and that open embeddings induce continuous functors.
+induce cover-preserving functors, and that open embeddings induce continuous functors.
 
 -/
 
