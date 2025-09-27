@@ -30,7 +30,7 @@ We also provide the instance `HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsA
 
 universe v u
 
-open CategoryTheory TopologicalSpace Opposite
+open CategoryTheory Limits TopologicalSpace Opposite
 
 namespace AlgebraicGeometry
 
@@ -185,6 +185,16 @@ lemma isAffineHom_of_forall_exists_isAffineOpen
   rw [HasAffineProperty.iff_of_iSup_eq_top (P := @IsAffineHom) fun i ↦ ⟨U i, hU i⟩]
   · exact hfU
   · exact top_le_iff.mp (fun x _ ↦ by simpa using ⟨x, hxU x⟩)
+
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [IsAffineHom f] [IsAffine Y] :
+    IsAffine (pullback f g) :=
+  letI : IsAffineHom (pullback.snd f g) := MorphismProperty.pullback_snd _ _ ‹_›
+  isAffine_of_isAffineHom (pullback.snd f g)
+
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [IsAffineHom g] [IsAffine X] :
+    IsAffine (pullback f g) :=
+  letI : IsAffineHom (pullback.fst f g) := MorphismProperty.pullback_fst _ _ ‹_›
+  isAffine_of_isAffineHom (pullback.fst f g)
 
 /-- If the underlying map of a morphism is inducing and has closed range, then it is affine. -/
 @[stacks 04DE]
