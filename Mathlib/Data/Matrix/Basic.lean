@@ -880,4 +880,31 @@ variable {R m α}
 
 end Transpose
 
+section NonUnitalNonAssocSemiring
+variable {ι : Type*} [NonUnitalNonAssocSemiring α] [Fintype n]
+
+theorem sum_mulVec (s : Finset ι) (x : ι → Matrix m n α) (y : n → α) :
+    (∑ i ∈ s, x i) *ᵥ y = ∑ i ∈ s, x i *ᵥ y := by
+  ext
+  simp only [mulVec, dotProduct, sum_apply, Finset.sum_mul, Finset.sum_apply]
+  rw [Finset.sum_comm]
+
+theorem mulVec_sum (x : Matrix m n α) (s : Finset ι) (y : ι → (n → α)) :
+    x *ᵥ ∑ i ∈ s, y i = ∑ i ∈ s, x *ᵥ y i := by
+  ext
+  simp only [mulVec, dotProduct_sum, Finset.sum_apply]
+
+theorem sum_vecMul (s : Finset ι) (x : ι → (n → α)) (y : Matrix n m α) :
+    (∑ i ∈ s, x i) ᵥ* y = ∑ i ∈ s, x i ᵥ* y := by
+  ext
+  simp only [vecMul, sum_dotProduct, Finset.sum_apply]
+
+theorem vecMul_sum (x : n → α) (s : Finset ι) (y : ι → Matrix n m α) :
+    x ᵥ* (∑ i ∈ s, y i) = ∑ i ∈ s, x ᵥ* y i := by
+  ext
+  simp only [vecMul, dotProduct, sum_apply, Finset.mul_sum, Finset.sum_apply]
+  rw [Finset.sum_comm]
+
+end NonUnitalNonAssocSemiring
+
 end Matrix
