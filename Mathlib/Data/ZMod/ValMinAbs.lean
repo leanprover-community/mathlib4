@@ -11,7 +11,7 @@ import Mathlib.Tactic.Linarith
 -/
 
 namespace ZMod
-variable {n : ℕ} {a : ZMod n}
+variable {n : ℕ} {a b : ZMod n}
 
 /-- Returns the integer in the same equivalence class as `x` that is closest to `0`.
 
@@ -39,6 +39,10 @@ lemma coe_valMinAbs : ∀ {n : ℕ} (x : ZMod n), (x.valMinAbs : ZMod n) = x
 
 lemma injective_valMinAbs : (valMinAbs : ZMod n → ℤ).Injective :=
   Function.injective_iff_hasLeftInverse.2 ⟨_, coe_valMinAbs⟩
+
+@[simp]
+theorem valMinAbs_inj : a.valMinAbs = b.valMinAbs ↔ a = b :=
+  ZMod.injective_valMinAbs.eq_iff
 
 lemma valMinAbs_nonneg_iff [NeZero n] (x : ZMod n) : 0 ≤ x.valMinAbs ↔ x.val ≤ n / 2 := by
   rw [valMinAbs_def_pos]; split_ifs with h
@@ -88,17 +92,17 @@ lemma natAbs_valMinAbs_le [NeZero n] (x : ZMod n) : x.valMinAbs.natAbs ≤ n / 2
   · rw [← neg_le_neg_iff, ← neg_mul, ← h]
     exact x.valMinAbs_mem_Ioc.1.le
 
+theorem eq_neg_of_valMinAbs_eq_neg_valMinAbs (h : a.valMinAbs = -b.valMinAbs) : a = -b := by
+  rcases eq_zero_or_neZero n with rfl | hn <;> simp_all [valMinAbs_spec]
+
 @[simp]
 lemma valMinAbs_zero : ∀ n, (0 : ZMod n).valMinAbs = 0
   | 0 => by simp only [valMinAbs_def_zero]
   | n + 1 => by simp only [valMinAbs_def_pos, if_true, Int.ofNat_zero, zero_le, val_zero]
 
 @[simp]
-lemma valMinAbs_eq_zero (x : ZMod n) : x.valMinAbs = 0 ↔ x = 0 := by
-  rcases n with - | n
-  · simp
-  rw [← valMinAbs_zero n.succ]
-  apply injective_valMinAbs.eq_iff
+lemma valMinAbs_eq_zero (x : ZMod n) : x.valMinAbs = 0 ↔ x = 0 :=
+  injective_valMinAbs.eq_iff' <| valMinAbs_zero _
 
 lemma natCast_natAbs_valMinAbs [NeZero n] (a : ZMod n) :
     (a.valMinAbs.natAbs : ZMod n) = if a.val ≤ (n : ℕ) / 2 then a else -a := by
@@ -126,6 +130,20 @@ lemma natAbs_valMinAbs_neg (a : ZMod n) : (-a).valMinAbs.natAbs = a.valMinAbs.na
   by_cases h2a : 2 * a.val = n
   · rw [a.neg_eq_self_iff.2 (Or.inr h2a)]
   · rw [valMinAbs_neg_of_ne_half h2a, Int.natAbs_neg]
+
+theorem natAbs_valMinAbs_eq_natAbs_valMinAbs :
+    a.valMinAbs.natAbs = b.valMinAbs.natAbs ↔ a = b ∨ a = -b := by
+  constructor
+  · rw [Int.natAbs_eq_natAbs_iff, valMinAbs_inj]
+    exact Or.imp_right eq_neg_of_valMinAbs_eq_neg_valMinAbs
+  · rintro (rfl | rfl)
+    · rfl
+    · rw [natAbs_valMinAbs_neg]
+
+theorem abs_valMinAbs_eq_abs_valMinAbs :
+    |a.valMinAbs| = |b.valMinAbs| ↔ a = b ∨ a = -b := by
+  rw [← natAbs_valMinAbs_eq_natAbs_valMinAbs, Int.abs_eq_natAbs, Int.abs_eq_natAbs]
+  norm_cast
 
 lemma val_eq_ite_valMinAbs [NeZero n] (a : ZMod n) :
     (a.val : ℤ) = a.valMinAbs + if a.val ≤ n / 2 then 0 else n := by
