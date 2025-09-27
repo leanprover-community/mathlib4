@@ -43,6 +43,7 @@ warning: 'simp' is a flexible tactic modifying '⊢'…
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
 info: … and 'rw [add_comm]' uses '⊢'!
+
 -/
 #guard_msgs in
 -- `norm_num` is allowed after `simp`, but "passes along the stain".
@@ -69,6 +70,13 @@ example (h : False) : False ∧ True := by
 
 -- Currently, `positivity` is not marked as flexible (as it only applies to goals in a very
 -- particular shape). We use this test to record the current behaviour.
+/--
+warning: 'simp' is a flexible tactic modifying '⊢'…
+
+Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: … and 'positivity' uses '⊢'!
+-/
 #guard_msgs in
 example {k l : ℤ} : 0 ≤ k ^ 2 + 4 * l * 0 := by
   simp
@@ -102,6 +110,13 @@ example {X : Type*} [TopologicalSpace X] {f : X → ℕ} {g : ℕ → X}
 -- Currently, `fun_prop` is *not* marked as flexible (as it is rather structural on the exact
 -- shape of the goal, and e.g. changing the goal to a defeq one could break the proof).
 -- This test documents this behaviour.
+/--
+warning: 'simp' is a flexible tactic modifying '⊢'…
+
+Note: This linter can be disabled with `set_option linter.flexible false`
+---
+info: … and 'fun_prop' uses '⊢'!
+-/
 #guard_msgs in
 example {X : Type*} [TopologicalSpace X] {f : X → ℕ} {g : ℕ → X}
     (hf : Continuous f) (hg : Continuous g) :
