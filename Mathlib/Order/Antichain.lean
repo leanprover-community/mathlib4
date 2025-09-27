@@ -163,6 +163,12 @@ theorem preimage_compl [BooleanAlgebra α] (hs : IsAntichain (· ≤ ·) s) :
     IsAntichain (· ≤ ·) (compl ⁻¹' s) := fun _ ha _ ha' hne hle =>
   hs ha' ha (fun h => hne (compl_inj_iff.mp h.symm)) (compl_le_compl hle)
 
+protected theorem diff {s t : Set α} (h : IsAntichain r s) : IsAntichain r (s \ t) :=
+  h.subset Set.diff_subset
+
+protected theorem coe_univ {s : Set α} (h : IsAntichain r s) : @IsAntichain ↑s (r ↑· ↑·) Set.univ :=
+  fun a _ b _ hne ↦  @h a a.property b b.property (Subtype.coe_ne_coe.mpr hne)
+
 end IsAntichain
 
 theorem isAntichain_singleton (a : α) (r : α → α → Prop) : IsAntichain r {a} :=
