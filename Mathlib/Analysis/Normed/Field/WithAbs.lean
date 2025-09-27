@@ -5,6 +5,7 @@ Authors: Salvatore Mercuri
 -/
 import Mathlib.Analysis.Normed.Module.Completion
 import Mathlib.Analysis.Normed.Ring.WithAbs
+import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # WithAbs for fields
@@ -15,7 +16,7 @@ on an absolute value. This is useful when dealing with several absolute values o
 In particular this allows us to define the completion of a field at a given absolute value.
 -/
 
-open Topology
+open Filter Topology
 
 noncomputable section
 
@@ -29,6 +30,17 @@ instance normedField [Field R] (v : AbsoluteValue R ℝ) : NormedField (WithAbs 
   v.toNormedField
 
 end more_instances
+
+theorem tendsto_one_div_one_add_pow_nhds_one {R : Type*} [Field R] {v : AbsoluteValue R ℝ}
+    {a : R} (ha : v a < 1) :
+    atTop.Tendsto (fun n ↦ (WithAbs.equiv v).symm (1 / (1 + a ^ n))) (𝓝 1) := by
+  simp only [one_div, map_inv₀]
+  refine inv_one (G := WithAbs v) ▸ (tendsto_inv_iff₀ one_ne_zero).2 ?_
+  rw [tendsto_iff_norm_sub_tendsto_zero]
+  simp only [inv_one, map_add, map_one, map_pow, add_sub_cancel_left, norm_pow,
+    tendsto_pow_atTop_nhds_zero_iff, abs_norm]
+  rw [WithAbs.norm_eq_abv, RingEquiv.apply_symm_apply]
+  exact ha
 
 /-!
 ### The completion of a field at an absolute value.
