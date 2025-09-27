@@ -538,6 +538,15 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
       congr
       exact (Real.norm_of_nonneg (f_nn x)).symm
 
+theorem tendsto_of_forall_isOpen_le_liminf_nat' {μ : ProbabilityMeasure Ω}
+    {μs : ℕ → ProbabilityMeasure Ω}
+    (h_opens : ∀ G, IsOpen G → (μ : Measure Ω) G ≤ liminf (fun i ↦ (μs i : Measure Ω) G) atTop) :
+    atTop.Tendsto (fun i ↦ μs i) (𝓝 μ) := by
+  refine ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mpr ?_
+  apply tendsto_integral_of_forall_integral_le_liminf_integral
+  intro f f_nn
+  exact integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure f_nn h_opens
+
 /-- One implication of the portmanteau theorem:
 If for all open sets G we have the liminf condition `μ(G) ≤ liminf μsₙ(G)`, then the measures
 μsₙ converge weakly to the measure μ.
@@ -547,10 +556,7 @@ theorem tendsto_of_forall_isOpen_le_liminf_nat {μ : ProbabilityMeasure Ω}
     {μs : ℕ → ProbabilityMeasure Ω}
     (h_opens : ∀ G, IsOpen G → μ G ≤ atTop.liminf (fun i ↦ μs i G)) :
     atTop.Tendsto (fun i ↦ μs i) (𝓝 μ) := by
-  refine ProbabilityMeasure.tendsto_iff_forall_integral_tendsto.mpr ?_
-  apply tendsto_integral_of_forall_integral_le_liminf_integral
-  intro f f_nn
-  apply integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure (f := f) f_nn
+  refine tendsto_of_forall_isOpen_le_liminf_nat' ?_
   intro G G_open
   specialize h_opens G G_open
   have aux : ENNReal.ofNNReal (liminf (fun i ↦ μs i G) atTop) =
@@ -563,6 +569,15 @@ theorem tendsto_of_forall_isOpen_le_liminf_nat {μ : ProbabilityMeasure Ω}
   simp only [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, aux] at obs
   convert obs
   simp only [Function.comp_apply, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
+
+theorem tendsto_of_forall_isOpen_le_liminf' {ι : Type*} {μ : ProbabilityMeasure Ω}
+    {μs : ι → ProbabilityMeasure Ω} {L : Filter ι} [L.IsCountablyGenerated]
+    (h_opens : ∀ G, IsOpen G → (μ : Measure Ω) G ≤ L.liminf (fun i ↦ (μs i : Measure Ω) G)) :
+    L.Tendsto (fun i ↦ μs i) (𝓝 μ) := by
+  apply Filter.tendsto_of_seq_tendsto (fun u hu ↦ ?_)
+  apply tendsto_of_forall_isOpen_le_liminf_nat' (fun G hG ↦ ?_)
+  apply (h_opens G hG).trans
+  exact liminf_le_liminf_of_le hu
 
 /-- One implication of the portmanteau theorem:
 If for all open sets G we have the liminf condition `μ(G) ≤ liminf μsₙ(G)`, then the measures
