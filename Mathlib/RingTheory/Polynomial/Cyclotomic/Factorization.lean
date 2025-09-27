@@ -39,7 +39,7 @@ variable [hp : Fact p.Prime]
 /-- The degree of an irreducible monic factor of the `n` cyclotomic polynomial over a finite field.
   This is a special case of `natDegree_of_dvd_cyclotomic_of_irreducible` below. -/
 private theorem natDegree_of_dvd_cyclotomic_of_irreducible_of_monic (hP : P ∣ cyclotomic n K)
-  (hPirr : Irreducible P) (hPmo : P.Monic) :
+      (hPirr : Irreducible P) (hPmo : P.Monic) :
     P.natDegree = orderOf (unitOfCoprime _ (hn.pow_left f)) := by
   have : Fact (Irreducible P) := ⟨hPirr⟩
   have := hPmo.finite_adjoinRoot
@@ -93,7 +93,10 @@ theorem natDegree_of_dvd_cyclotomic_of_irreducible (hP : P ∣ cyclotomic n K)
     (irreducible_mul_leadingCoeff_inv.mpr hPirr) (monic_mul_leadingCoeff_inv hPirr.ne_zero)
 
 open UniqueFactorizationMonoid in
-theorem baz (hP : P ∣ cyclotomic n K)
+/-- Let `K` be a finite field of cardinality `p ^ f` and let `P` be a factor of the `n`-th
+  cyclotomic polynomial over `K`, where `p` and `n` are coprime. If the degree of `P` is
+  the multiplicative order of `p ^ f` modulo `n` the `P` is irreducible. -/
+theorem irreducible_of_dvd_cyclotomic_of_natDegree (hP : P ∣ cyclotomic n K)
     (hPdeg : P.natDegree = orderOf (unitOfCoprime _ (hn.pow_left f))) : Irreducible P := by
   classical
   have hP0 : P ≠ 0 := ne_zero_of_dvd_ne_zero (cyclotomic_ne_zero n K) hP
@@ -107,38 +110,31 @@ theorem baz (hP : P ∣ cyclotomic n K)
     ((dvd_iff_normalizedFactors_le_normalizedFactors hP0 (cyclotomic_ne_zero n K)).mp hP) HQ
 
 omit hK in
-theorem baz' {n : ℕ} {P : (ZMod p)[X]} (hpn : ¬p ∣ n)
+/-- Let `P` be a factor of the `n`-th cyclotomic polynomial over `ZMod p`, where `p` does not divide
+  `n`. If the degree of `P` is the multiplicative order of `p` modulo `n` the `P` is irreducible. -/
+theorem _root_.ZMod.irreducible_of_dvd_cyclotomic_of_natDegree {P : (ZMod p)[X]} (hpn : ¬p ∣ n)
       (hP : P ∣ cyclotomic n (ZMod p))
       (hPdeg : P.natDegree = orderOf (unitOfCoprime _ (hp.1.coprime_iff_not_dvd.mpr hpn))) :
     Irreducible P :=
-  baz (f := 1) (p := p) (by simp) (by simpa using hp.1.coprime_iff_not_dvd.mpr hpn) hP (by simpa)
-
-omit hK in
-lemma uff {n : ℕ} (hn : n.Prime) (hpn : p ≠ n) : p.Coprime n :=
-  hp.1.coprime_iff_not_dvd.mpr (fun h ↦ hpn <|
-    Nat.prime_eq_prime_of_dvd_pow hp.1 hn (m := 1) (by simpa))
-
-omit hK in
-theorem baz'' {n : ℕ} (hn : n.Prime) {P : (ZMod p)[X]} (hpn : p ≠ n)
-      (hP : P ∣ cyclotomic n (ZMod p))
-      (hPdeg : P.natDegree = orderOf (unitOfCoprime _ (uff hn hpn))) :
-    Irreducible P :=
-  baz' (fun h ↦ hpn <| Nat.prime_eq_prime_of_dvd_pow hp.1 hn (m := 1) (by simpa)) hP hPdeg
+  Polynomial.irreducible_of_dvd_cyclotomic_of_natDegree (f := 1) (p := p) (by simp)
+    (by simpa using hp.1.coprime_iff_not_dvd.mpr hpn) hP (by simpa)
 
 open UniqueFactorizationMonoid Nat
 
 variable [DecidableEq K]
 
-theorem boh (hP : P ∈ normalizedFactors (cyclotomic n K)) :
+theorem natDegree_of_mem_normalizedFactors_cyclotomic
+      (hP : P ∈ normalizedFactors (cyclotomic n K)) :
     P.natDegree = orderOf (unitOfCoprime _ (hn.pow_left f)) :=
   natDegree_of_dvd_cyclotomic_of_irreducible hK hn (dvd_of_mem_normalizedFactors hP)
     (irreducible_of_normalized_factor P hP)
 
-theorem blah : (normalizedFactors (cyclotomic n K)).toFinset.card =
+theorem normalizedFactors_cyclotomic_card : (normalizedFactors (cyclotomic n K)).toFinset.card =
     φ n / orderOf (unitOfCoprime _ (hn.pow_left f)) := by
   have h := prod_normalizedFactors (cyclotomic_ne_zero n K)
   have : ∀ P ∈ normalizedFactors (cyclotomic n K), P.natDegree = orderOf
-    (unitOfCoprime _ (hn.pow_left f)) := fun P hP ↦ boh hK hn hP
+    (unitOfCoprime _ (hn.pow_left f)) := fun P hP ↦ natDegree_of_mem_normalizedFactors_cyclotomic
+      hK hn hP
   have H := natDegree_eq_of_degree_eq <| degree_eq_degree_of_associated h
   rw [natDegree_cyclotomic, natDegree_multiset_prod _ (zero_notMem_normalizedFactors _),
     map_congr rfl this] at H
