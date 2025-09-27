@@ -197,7 +197,7 @@ theorem induction_on₃ {α' β' : Type*} [MeasurableSpace α'] [TopologicalSpac
 end
 
 /-!
-### Composition of an a.e. equal function with a (quasi) measure preserving function
+### Composition of an a.e. equal function with a (quasi-)measure-preserving function
 -/
 
 section compQuasiMeasurePreserving
