@@ -905,11 +905,11 @@ theorem sSupFun_strictMono [IsOrderedAddMonoid R] {c : Set (Partial seed)}
     LinearPMap.sSup_apply _ hmem ⟨(y - x).val, hf⟩
   rw [this]
   obtain ⟨f', _, hf'⟩ := (Set.mem_image _ _ _).mp hmem
-  have hmono: StrictMono f := hf'.symm ▸ f'.prop.strictMono
+  have hmono : StrictMono f := hf'.symm ▸ f'.prop.strictMono
   rw [show 0 = f 0 by simp]
   apply hmono
-  change 0 < y - x
-  simpa using h
+  rw [← Subtype.coe_lt_coe]
+  simp [h]
 
 theorem le_sSupFun {c : Set (Partial seed)} (hc : DirectedOn (· ≤ ·) c)
     {f : Partial seed} (hf : f ∈ c) :

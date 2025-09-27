@@ -41,7 +41,7 @@ section IsCusp
 
 /-- The *cusps* of a subgroup of `GL(2, ℝ)` are the fixed points of parabolic elements of `g`. -/
 def IsCusp (c : OnePoint ℝ) (𝒢 : Subgroup (GL (Fin 2) ℝ)) : Prop :=
-    ∃ g ∈ 𝒢, g.IsParabolic ∧ g • c = c
+  ∃ g ∈ 𝒢, g.IsParabolic ∧ g • c = c
 
 open Pointwise in
 lemma IsCusp.smul {c : OnePoint ℝ} {𝒢 : Subgroup (GL (Fin 2) ℝ)} (hc : IsCusp c 𝒢)
