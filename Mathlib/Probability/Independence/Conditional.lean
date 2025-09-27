@@ -818,6 +818,33 @@ theorem condIndepFun_iff_map_prod_eq_prod_condDistrib_prod_condDistrib
     · exact (h_left hs ht hu).symm
     · exact (h_right hs ht hu).symm
 
+/-- A property of deterministic kernels. -/
+lemma prod_prodMkLeft_comp_prod_deterministic {γ δ ε : Type*}
+    {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+    {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ} {mε : MeasurableSpace ε}
+    (κ : Kernel γ β) [IsSFiniteKernel κ] (η : Kernel ε β') [IsSFiniteKernel η]
+    (ξ : Kernel (β × ε) δ) [IsSFiniteKernel ξ]
+    {f : γ → ε} (hf : Measurable f) :
+    (ξ ×ₖ Kernel.prodMkLeft β η) ∘ₖ (κ ×ₖ Kernel.deterministic f hf)
+      = (ξ ∘ₖ (κ ×ₖ Kernel.deterministic f hf)) ×ₖ (η ∘ₖ Kernel.deterministic f hf) := by
+  ext ω s hs
+  simp_rw [Kernel.prod_apply, Kernel.comp_apply, Kernel.prod_apply]
+  rw [Measure.prod_apply hs,  Measure.bind_apply hs, lintegral_prod, Measure.lintegral_bind,
+    lintegral_prod]
+  · congr with b
+    rw [Kernel.deterministic_apply, lintegral_dirac', lintegral_dirac']
+    · rw [Kernel.prod_apply' _ _ _ hs]
+      simp [Measure.dirac_bind (Kernel.measurable _)]
+    · refine (Measurable.lintegral_kernel ?_).comp measurable_prodMk_left
+      exact measurable_measure_prodMk_left hs
+    · exact (Kernel.measurable_coe _ hs).comp measurable_prodMk_left
+  · refine (Measurable.lintegral_kernel ?_).aemeasurable
+    exact measurable_measure_prodMk_left hs
+  · fun_prop
+  · exact (measurable_measure_prodMk_left hs).aemeasurable
+  · exact (Kernel.measurable_coe _ hs).aemeasurable
+  · fun_prop
+
 lemma condIndepFun_iff_condDistrib_prod_ae_eq_prodMkLeft
     {γ : Type*} {mγ : MeasurableSpace γ} {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [StandardBorelSpace β] [Nonempty β] [StandardBorelSpace β'] [Nonempty β']
@@ -838,27 +865,10 @@ lemma condIndepFun_iff_condDistrib_prod_ae_eq_prodMkLeft
       rw [Measure.compProd_eq_comp_prod, Measure.comp_assoc, Measure.comp_assoc]
       congr 2
       rw [Kernel.comp_assoc, Kernel.swap_prod]
-      ext ω : 1
-      simp_rw [Kernel.prod_apply]
-      rw [Kernel.comp_apply, Kernel.prod_apply, Kernel.id_apply, ← Measure.compProd_eq_comp_prod]
-      ext s hs
-      rw [Measure.compProd_apply hs, Measure.prod_apply hs]
-      rw [lintegral_prod, lintegral_prod]
-      · congr with b
-        rw [lintegral_dirac', lintegral_dirac']
-        · simp
-        · exact (Kernel.measurable_kernel_prodMk_left hs).comp measurable_prodMk_left
-        · change Measurable fun y ↦ (Kernel.const _ ((condDistrib g k μ) ω) (b, y))
-            (Prod.mk (b, y) ⁻¹' s)
-          exact (Kernel.measurable_kernel_prodMk_left hs).comp measurable_prodMk_left
-      · refine Measurable.aemeasurable ?_
-        have : Measurable fun a ↦ (Kernel.prodMkLeft _ (condDistrib g k μ) a) (Prod.mk a ⁻¹' s) :=
-          Kernel.measurable_kernel_prodMk_left hs
-        exact this
-      · refine Measurable.aemeasurable ?_
-        have : Measurable fun x ↦ (Kernel.const _ ((condDistrib g k μ) ω) x) (Prod.mk x ⁻¹' s) :=
-          Kernel.measurable_kernel_prodMk_left hs
-        exact this
+      have h := prod_prodMkLeft_comp_prod_deterministic (condDistrib f k μ) (condDistrib g k μ)
+        Kernel.id measurable_id
+      rw [← Kernel.id] at h
+      simpa using h.symm
     _ = (Kernel.id ×ₖ Kernel.prodMkLeft β (condDistrib g k μ)) ∘ₘ μ.map (fun a ↦ (f a, k a)) := by
       rw [compProd_map_condDistrib hf.aemeasurable, Measure.swap_comp,
         Measure.map_map (by fun_prop) (by fun_prop)]
