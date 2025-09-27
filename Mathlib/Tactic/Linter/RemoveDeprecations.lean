@@ -78,6 +78,22 @@ and adds it if it is not.
 def toggleEntry {α} [BEq α] [Hashable α] (h : Std.HashSet α) (a : α) : Std.HashSet α :=
   if h.contains a then h.erase a else h.insert a
 
+instance : ToString String.Range where
+  toString | ⟨s, e⟩ => s!"({s}, {e})"
+#check Lean.Elab.HeaderSyntax.imports
+--run_cmd
+--  let a ← withImporting
+--#check
+
+run_cmd
+  let (imps, pos, msgs) ← parseImports "import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero_with_option" "test.lean"
+  dbg_trace imps
+  logInfo m!"{pos}"
+  --logInfo msgs.reportedPlusUnreported.toArray
+
+  let (a, b) ← withImportModules imps {} fun e => pure (e.constants.map₁.size, e.find? `Submonoid.LocalizationMap.subsingleton |>.isSome)
+  dbg_trace (a, b)
+
 /--
 `update rd s` updates `rd` by toggling the presence of the starting and ending
 positions of the syntax `s` in `rd.firstLast`.
@@ -85,7 +101,10 @@ If `s` is a `deprecated` attribute, then its range is added to `rd.removals`.
 If `s` is a terminal command, then `rd.firstLast` is not updated.
 -/
 def update (oldDate newDate : String) (rd : RemoveDeprecations) (s : Syntax) : RemoveDeprecations :=
-  if Parser.isTerminalCommand s then rd else
+  if Parser.isTerminalCommand s then
+    --dbg_trace (s.getRangeWithTrailing?, s.getRange?)
+    rd
+  else
   match s.getRangeWithTrailing? with
   | none => rd
   | some rg =>
@@ -98,7 +117,8 @@ def update (oldDate newDate : String) (rd : RemoveDeprecations) (s : Syntax) : R
       | `(attr| deprecated $[$id?]? $[$text?]? (since := $since)) =>
         let since := since.getString
         if oldDate ≤ since && since ≤ newDate then
-          dbg_trace "removing {id?.getD (mkIdent `alias?)} deprecated since {since}"
+          --dbg_trace ""
+          --dbg_trace "removing deprecation since {since}"
           {ans with removals := rd.removals.insert (s.getRange?.getD rg)}
         else
           --dbg_trace "NOT removing this"
@@ -142,6 +162,7 @@ def removeDeprecationsLinter : Linter where run stx := do
     throwError "The first date should not be later than the second date!"
   if (← get).messages.hasErrors then
     return
+  dbg_trace (stx.getRange?, stx.getRangeWithTrailing?.map (·.stop))
   if (← RemoveDeprecationsExt.get).firstLast.isEmpty then
     let fm ← getFileMap
     let (_, fileStartPos, _) ← parseImports fm.source (← getFileName)
@@ -149,8 +170,10 @@ def removeDeprecationsLinter : Linter where run stx := do
       initializeExt fm (fm.ofPosition fileStartPos)
   RemoveDeprecationsExt.modify (update oldDate newDate · stx)
   let rd ← RemoveDeprecationsExt.get
+  --dbg_trace rd.firstLast.toArray.qsort (·.1 < ·.1)
   -- When `rd.firstLast` is empty, the current command is the last to be elaborated.
   -- Hence, this is where we can reconstruct the file without the deprecations.
+  --if rd.firstLast.isEmpty || Parser.isTerminalCommand stx then
   if rd.firstLast.isEmpty then
     --dbg_trace "After checking firstLast"
     let fm ← getFileMap
@@ -160,6 +183,7 @@ def removeDeprecationsLinter : Linter where run stx := do
       --dbg_trace "{stx.getKind} completed the whole syntax!:\n{replacements}"
       let fname ← getFileName
       let tmpFname := fname.replace "Mathlib" ".lake/build/lib/lean/Mathlib" ++ ".tmp"
+      --let tmpFname := fname ++ ".tmp"
       dbg_trace "bash\nmv -f {tmpFname} {fname}"
       --dbg_trace cleanUpDeprecations
 
