@@ -63,12 +63,9 @@ lemma of_bijective (hf : Function.Bijective f) : f.FaithfullyFlat := by
 
 lemma injective (hf : f.FaithfullyFlat) : Function.Injective ⇑f := by
   algebraize [f]
-  intro r r' hrr'
-  apply Module.FaithfullyFlat.tensorProduct_mk_injective (A := R) (B := S) R
-  simp only [TensorProduct.mk_apply]
-  rw [← mul_one r, ← mul_one r']
-  simp only [← smul_eq_mul, ← TensorProduct.smul_tmul]
-  simp only [Algebra.smul_def, mul_one, RingHom.algebraMap_toAlgebra, hrr']
+  intro _ _ h
+  apply (smul_left_injective' : Function.Injective (· • · : R → S → S))
+  simp only [Algebra.smul_def, RingHom.algebraMap_toAlgebra, h]
 
 lemma respectsIso : RespectsIso FaithfullyFlat :=
   stableUnderComposition.respectsIso (fun e ↦ .of_bijective e.bijective)

@@ -81,7 +81,7 @@ lemma Module.FaithfullyFlat.tensorProduct_mk_injective (M : Type*) [AddCommGroup
   rw [this, coe_comp, LinearEquiv.coe_coe, EmbeddingLike.comp_injective]
   exact Algebra.TensorProduct.mk_one_injective_of_isScalarTower _
 
-instance : FaithfulSMul A B := by
+instance Module.FaithfullyFlat.faithfulSMul : FaithfulSMul A B := by
   constructor
   intro a₁ a₂ ha
   apply Module.FaithfullyFlat.tensorProduct_mk_injective (A := A) (B := B) A
