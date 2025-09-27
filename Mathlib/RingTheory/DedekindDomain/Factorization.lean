@@ -370,10 +370,8 @@ theorem count_mul' (I I' : FractionalIdeal R⁰ K) [Decidable (I ≠ 0 ∧ I' �
     count K v (I * I') = if I ≠ 0 ∧ I' ≠ 0 then count K v I + count K v I' else 0 := by
   split_ifs with h
   · exact count_mul K v h.1 h.2
-  · push_neg at h
-    by_cases hI : I = 0
-    · rw [hI, MulZeroClass.zero_mul, count, dif_pos (Eq.refl _)]
-    · rw [h hI, MulZeroClass.mul_zero, count, dif_pos (Eq.refl _)]
+  · rw [← mul_ne_zero_iff, not_ne_iff] at h
+    rw [h, count_zero]
 
 /-- val_v(1) = 0. -/
 theorem count_one : count K v (1 : FractionalIdeal R⁰ K) = 0 := by
@@ -398,7 +396,7 @@ theorem count_prod {ι} (s : Finset ι) (I : ι → FractionalIdeal R⁰ K) (hS 
 theorem count_pow (n : ℕ) (I : FractionalIdeal R⁰ K) :
     count K v (I ^ n) = n * count K v I := by
   induction n with
-  | zero => rw [pow_zero, ofNat_zero, MulZeroClass.zero_mul, count_one]
+  | zero => rw [pow_zero, ofNat_zero, zero_mul, count_one]
   | succ n h =>
     classical rw [pow_succ, count_mul']
     by_cases hI : I = 0
@@ -406,7 +404,7 @@ theorem count_pow (n : ℕ) (I : FractionalIdeal R⁰ K) :
         rw [not_and', not_not, ne_eq]
         intro h
         exact absurd hI h
-      rw [if_neg h_neg, hI, count_zero, MulZeroClass.mul_zero]
+      rw [if_neg h_neg, hI, count_zero, mul_zero]
     · rw [if_pos (And.intro (pow_ne_zero n hI) hI), h, Nat.cast_add,
         Nat.cast_one]
       ring
@@ -494,7 +492,7 @@ theorem count_finprod_coprime (exps : HeightOneSpectrum R → ℤ) :
     · rw [count_mul' K v, if_pos h, hI, hI', add_zero]
     · rw [count_mul' K v, if_neg h]
   · intro w hw
-    rw [count_zpow, count_maximal_coprime K v hw, MulZeroClass.mul_zero]
+    rw [count_zpow, count_maximal_coprime K v hw, mul_zero]
 
 theorem count_finsuppProd (exps : HeightOneSpectrum R →₀ ℤ) :
     count K v (exps.prod (HeightOneSpectrum.asIdeal · ^ ·)) = exps v := by
