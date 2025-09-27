@@ -1053,9 +1053,8 @@ theorem indepFun_iff_compProd_map_prod_eq_compProd_prod_map_map
     rw [Measure.compProd_apply_prod hu (hs.prod ht),
       Measure.compProd_apply_prod hu (hs.prod ht)] at h
     convert h with ω ω
-    · rw [Kernel.map_apply' _ (by fun_prop) _ (hs.prod ht), mk_preimage_prod]
-    · rw [Kernel.prod_apply_prod, Kernel.map_apply' _ (by fun_prop) _ hs,
-        Kernel.map_apply' _ (by fun_prop) _ ht]
+    · rw [map_apply' _ (by fun_prop) _ (hs.prod ht), mk_preimage_prod]
+    · rw [prod_apply_prod, map_apply' _ (by fun_prop) _ hs, map_apply' _ (by fun_prop) _ ht]
 
 section iIndepFun
 variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}
