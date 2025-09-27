@@ -90,7 +90,7 @@ end Units
 theorem IsUnit.neg [Monoid α] [HasDistribNeg α] {a : α} : IsUnit a → IsUnit (-a)
   | ⟨x, hx⟩ => hx ▸ (-x).isUnit
 
-@[simp]
+@[simp, grind =]
 theorem IsUnit.neg_iff [Monoid α] [HasDistribNeg α] (a : α) : IsUnit (-a) ↔ IsUnit a :=
   ⟨fun h => neg_neg a ▸ h.neg, IsUnit.neg⟩
 
@@ -124,6 +124,7 @@ section Semiring
 
 variable [Semiring α] [Semiring β]
 
+@[grind ←]
 theorem isUnit_map (f : α →+* β) {a : α} : IsUnit a → IsUnit (f a) :=
   IsUnit.map f
 
