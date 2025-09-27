@@ -685,7 +685,6 @@ theorem finprod_mem_union_inter' (hs : (s ∩ mulSupport f).Finite) (ht : (t ∩
   rw [← finprod_mem_inter_mulSupport f s, ← finprod_mem_inter_mulSupport f t, ←
     finprod_mem_union_inter hs ht, ← union_inter_distrib_right, finprod_mem_inter_mulSupport, ←
     finprod_mem_inter_mulSupport f (s ∩ t)]
-  congr 2
   rw [inter_left_comm, inter_assoc, inter_assoc, inter_self, inter_left_comm]
 
 /-- A more general version of `finprod_mem_union` that requires `s ∩ mulSupport f` and
