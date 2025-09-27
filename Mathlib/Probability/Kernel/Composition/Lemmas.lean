@@ -23,14 +23,14 @@ variable {α β γ δ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace
 
 namespace ProbabilityTheory.Kernel
 
-/-- If `κ` was deterministic, this would be true even if `Kernel.prodMkLeft β η` was a more general
+/-- If `κ` was deterministic, this would be true even if `η.prodMkLeft β` was a more general
 kernel since `κ ×ₖ Kernel.deterministic f hf` would be deterministic and commute with copying.
 Here `κ` is not deterministic, but it is discarded in one branch of the copy. -/
 lemma prod_prodMkLeft_comp_prod_deterministic {β' ε : Type*}
     {mβ' : MeasurableSpace β'} {mε : MeasurableSpace ε}
     (κ : Kernel γ β) [IsSFiniteKernel κ] (η : Kernel ε β') [IsSFiniteKernel η]
     (ξ : Kernel (β × ε) δ) [IsSFiniteKernel ξ] {f : γ → ε} (hf : Measurable f) :
-    (ξ ×ₖ prodMkLeft β η) ∘ₖ (κ ×ₖ deterministic f hf)
+    (ξ ×ₖ η.prodMkLeft β) ∘ₖ (κ ×ₖ deterministic f hf)
       = (ξ ∘ₖ (κ ×ₖ deterministic f hf)) ×ₖ (η ∘ₖ deterministic f hf) := by
   ext ω s hs
   simp_rw [prod_apply, comp_apply, Kernel.prod_apply]
