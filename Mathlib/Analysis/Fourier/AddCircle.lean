@@ -415,30 +415,7 @@ theorem tsum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
     ∑' i : ℤ, ‖fourierCoeff f i‖ ^ 2 = ∫ t : AddCircle T, ‖f t‖ ^ 2 ∂haarAddCircle :=
   (hasSum_sq_fourierCoeff _).tsum_eq
 
-lemma AddCircle.measurePreserving_equivIoc {a : ℝ} :
-    MeasurePreserving (equivIoc T a) volume (Measure.comap Subtype.val volume) := by
-  have h := (measurableEquivIoc T a).measurable
-  refine ⟨h, ?_⟩
-  ext s hs
-  rw [comap_apply _ Subtype.val_injective (fun _ ↦ measurableSet_Ioc.subtype_image) _ hs,
-    map_apply (by measurability) hs, add_projection_respects_measure T a (by exact h hs)]
-  congr!
-  ext x
-  simp only [mem_inter_iff, mem_preimage, mem_image, Subtype.exists, exists_and_right,
-    exists_eq_right]
-  rw [and_comm, ← exists_prop]
-  congr! with hx
-  rw [equivIoc_coe_eq hx]
-
 namespace MeasureTheory
-
-lemma MemLp.memLp_liftIoc {a : ℝ} {f : ℝ → ℂ} {p : ℝ≥0∞}
-    (hLp : MemLp f p (volume.restrict (Ioc a (a + T)))) :
-      MemLp (liftIoc T a f) p := by
-  simp only [liftIoc, Set.restrict_def, Function.comp_def]
-  apply hLp.comp_measurePreserving
-  refine .comp (measurePreserving_subtype_coe measurableSet_Ioc) ?_
-  exact measurePreserving_equivIoc
 
 lemma memLp_haarAddCircle_iff {f : AddCircle T → ℂ} {p : ℝ≥0∞} :
     MemLp f p haarAddCircle ↔ MemLp f p := by
