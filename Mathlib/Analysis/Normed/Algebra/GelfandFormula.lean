@@ -169,11 +169,12 @@ noncomputable def _root_.NormedRing.algEquivComplexOfComplete (hA : ∀ {a : A},
   let nt : Nontrivial A := ⟨⟨1, 0, hA.mp ⟨⟨1, 1, mul_one _, mul_one _⟩, rfl⟩⟩⟩
   { Algebra.ofId ℂ A with
     toFun := algebraMap ℂ A
-    invFun := fun a => (@spectrum.nonempty _ _ _ _ nt a).some
-    left_inv := fun z => by
+    invFun a := (@spectrum.nonempty _ _ _ _ nt a).some
+    left_inv z := by
       simpa only [@scalar_eq _ _ _ _ _ nt _] using
         (@spectrum.nonempty _ _ _ _ nt <| algebraMap ℂ A z).some_mem
-    right_inv := fun a => algebraMap_eq_of_mem (@hA) (@spectrum.nonempty _ _ _ _ nt a).some_mem }
+    right_inv a := algebraMap_eq_of_mem (@hA) (@spectrum.nonempty _ _ _ _ nt a).some_mem
+    map_smul' := by simp [Algebra.smul_def] }
 
 end Complex
 
