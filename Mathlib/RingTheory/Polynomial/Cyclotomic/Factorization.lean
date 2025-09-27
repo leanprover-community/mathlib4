@@ -143,15 +143,14 @@ theorem normalizedFactors_cyclotomic_card : (normalizedFactors (cyclotomic n K))
   rw [← H, mul_div_left _ (orderOf_pos _), toFinset_card_of_nodup]
   refine nodup_iff_count_le_one.mpr (fun P ↦ ?_)
   by_contra! H
-  have : Squarefree (cyclotomic n K) := by
+  have sq : Squarefree (cyclotomic n K) := by
+    refine cyclotomic_squarefree (fun H ↦ ?_)
     have := charP_of_card_eq_prime_pow hK
-    refine ((X_pow_sub_one_separable_iff.mpr (fun Hn ↦ ?_)).of_dvd
-      (cyclotomic.dvd_X_pow_sub_one n K)).squarefree
-    refine hp.out.coprime_iff_not_dvd.mp ((Nat.coprime_pow_left_iff
+    exact hp.out.coprime_iff_not_dvd.mp ((coprime_pow_left_iff
       (pos_of_ne_zero <| f_ne_zero hK) _ _).mp (hn.pow_left f))
-        ((CharP.cast_eq_zero_iff K p _).mp Hn)
+        ((CharP.cast_eq_zero_iff K p _).mp H)
   have hP : P ∈ normalizedFactors (cyclotomic n K) := count_pos.mp (by omega)
-  refine (prime_of_normalized_factor _ hP).not_unit (this P ?_)
+  refine (prime_of_normalized_factor _ hP).not_unit (sq P ?_)
   have : {P, P} ≤ normalizedFactors (cyclotomic n K) := by
     refine le_iff_count.mpr (fun Q ↦ ?_)
     by_cases hQ : Q = P
