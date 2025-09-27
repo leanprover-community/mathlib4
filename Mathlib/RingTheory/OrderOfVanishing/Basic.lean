@@ -39,8 +39,6 @@ lemma ord_one : ord R 1 = 0 := by
 
 end Ring
 
-
-
 variable [CommRing R] [Module R M]
 
 /--
@@ -115,6 +113,14 @@ theorem ord_mul {a b : R} (hb : b ∈ nonZeroDivisors R) :
   rw [this] at lem
   rw [lem, mul_comm]
 
+/--
+Variation of `ord_mul` where the user has to show the first input is a non
+zero divisor rather than the second.
+-/
+lemma ord_mul' {a b : R} (ha : a ∈ nonZeroDivisors R) :
+    ord R (a * b) = ord R a + ord R b := by
+  rw [mul_comm, ord_mul R ha, add_comm]
+
 open Classical in
 /--
 Zero preserving monoid homomorphism from a nontrivial commutative ring `R` to `ℕᵐ⁰`.
@@ -141,6 +147,25 @@ def ordMonoidWithZeroHom [Nontrivial R] : R →*₀ ℤᵐ⁰ where
       congr
       exact ord_mul R b
     all_goals simp_all [mul_mem_nonZeroDivisors]
+
+
+variable {R} in
+/--
+If `x` is a non zero divisor, `ordMonoidWithZeroHom` is equal to the canonical embedding
+of `Ring.ord R x` into `WithZero (Multiplicative ℤ)`.
+-/
+@[simp]
+theorem ordMonoidWithZeroHom_eq_ord [Nontrivial R] (x : R) (h : x ∈ nonZeroDivisors R) :
+    ordMonoidWithZeroHom R x =
+  WithZero.map' (Nat.castAddMonoidHom ℤ).toMultiplicative (Ring.ord R x) := dif_pos h
+
+variable {R} in
+/--
+If `x` is not a non zero divisor, `ordMonoidWithZeroHom` is equal to `0`.
+-/
+@[simp]
+theorem ordMonoidWithZeroHom_eq_zero [Nontrivial R] (x : R) (h : x ∉ nonZeroDivisors R) :
+    ordMonoidWithZeroHom R x = 0 := dif_neg h
 
 /--
 The quotient of a Noetherian ring of krull dimension less than or equal to `1` by a principal ideal
