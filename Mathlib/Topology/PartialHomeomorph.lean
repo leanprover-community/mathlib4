@@ -934,8 +934,7 @@ lemma restr_eqOnSource_restr {s' : Set X}
     e.restr s ≈ e.restr s' := by
   constructor
   · simpa [e.restr_source]
-  · simp
-    exact fun ⦃x⦄ ↦ congrFun rfl
+  · simp [Set.eqOn_refl]
 
 lemma restr_inter_source : e.restr (e.source ∩ s) ≈ e.restr s :=
   e.restr_eqOnSource_restr (by simp [interior_eq_iff_isOpen.mpr e.open_source])

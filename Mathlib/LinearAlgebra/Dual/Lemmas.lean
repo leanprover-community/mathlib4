@@ -194,7 +194,7 @@ theorem eval_apply_eq_zero_iff (v : V) : (eval K V) v = 0 ↔ v = 0 :=
 
 theorem forall_dual_apply_eq_zero_iff (v : V) : (∀ φ : Module.Dual K V, φ v = 0) ↔ v = 0 := by
   rw [← eval_apply_eq_zero_iff K v, LinearMap.ext_iff]
-  rfl
+  simp only [eval_apply, zero_apply]
 
 @[simp]
 theorem subsingleton_dual_iff : Subsingleton (Dual K V) ↔ Subsingleton V :=
@@ -440,10 +440,8 @@ theorem dualRestrict_comp_dualLift (W : Subspace K V) : W.dualRestrict.comp W.du
   simp
 
 theorem dualRestrict_leftInverse (W : Subspace K V) :
-    Function.LeftInverse W.dualRestrict W.dualLift := fun x =>
-  show W.dualRestrict.comp W.dualLift x = x by
-    rw [dualRestrict_comp_dualLift]
-    rfl
+    Function.LeftInverse W.dualRestrict W.dualLift := fun x => by
+  rw [← LinearMap.comp_apply, dualRestrict_comp_dualLift, End.one_apply]
 
 theorem dualLift_rightInverse (W : Subspace K V) :
     Function.RightInverse W.dualLift W.dualRestrict :=
