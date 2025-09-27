@@ -107,6 +107,14 @@ instance [AddCommGroupWithOne R] : AddCommGroupWithOne (HahnSeries Γ R) where
   intCast_ofNat n := by simp [← single_zero_natCast, ← single_zero_intCast]
   intCast_negSucc n := by simp [← single_zero_natCast, ← single_zero_intCast]
 
+theorem pos_orderTop_single_sub {Γ} [PartialOrder Γ] [AddGroup Γ] [AddRightStrictMono Γ] [Zero R]
+    {g g' : Γ} (h : g < g') (r : R) :
+    0 < (single (g' - g) r).orderTop := by
+  by_cases hr : r = 0
+  · simp [hr]
+  · rw [orderTop_single hr, WithTop.coe_pos]
+    exact sub_pos.mpr h
+
 end HahnSeries
 
 /-- We introduce a type alias for `HahnSeries` in order to work with scalar multiplication by
