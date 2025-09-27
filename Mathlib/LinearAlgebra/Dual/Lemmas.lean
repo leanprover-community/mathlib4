@@ -1000,6 +1000,16 @@ end FiniteDimensional
 
 end VectorSpace
 
+theorem span_flip_eq_top_iff_linearIndependent {ι α F} [Finite ι] [Field F] {f : ι → α → F} :
+    span F (Set.range <| flip f) = ⊤ ↔ LinearIndependent F f := by
+  rw [linearIndependent_iff_ker, ← Submodule.map_eq_top_iff (e := Finsupp.llift F F F ι),
+    ← Subspace.dualCoannihilator_dualAnnihilator_eq (W := map ..), dualAnnihilator_eq_top_iff]
+  congr!
+  rw [SetLike.ext'_iff, map_span, Submodule.coe_dualCoannihilator_span, ← Set.range_comp]
+  ext
+  simp [funext_iff, Finsupp.linearCombination, Finsupp.sum, Finset.sum_apply]
+  rfl
+
 namespace TensorProduct
 
 variable (R A : Type*) (M : Type*) (N : Type*)
