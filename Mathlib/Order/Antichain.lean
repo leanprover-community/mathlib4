@@ -228,6 +228,28 @@ theorem IsAntichain.bot_mem_iff [OrderBot α] (hs : IsAntichain (· ≤ ·) s) :
 theorem IsAntichain.top_mem_iff [OrderTop α] (hs : IsAntichain (· ≤ ·) s) : ⊤ ∈ s ↔ s = {⊤} :=
   isGreatest_top_iff.symm.trans hs.greatest_iff
 
+theorem IsAntichain.minimal_mem_iff (hs : IsAntichain (· ≤ ·) s) : Minimal (· ∈ s) a ↔ a ∈ s :=
+  ⟨fun h ↦ h.prop, fun h ↦ ⟨h, fun _ hys hyx ↦ (hs.eq hys h hyx).symm.le⟩⟩
+
+theorem IsAntichain.maximal_mem_iff (hs : IsAntichain (· ≤ ·) s) : Maximal (· ∈ s) a ↔ a ∈ s :=
+  hs.to_dual.minimal_mem_iff
+
+/-- If `t` is an antichain shadowing and including the set of maximal elements of `s`,
+then `t` *is* the set of maximal elements of `s`. -/
+theorem IsAntichain.eq_setOf_maximal (ht : IsAntichain (· ≤ ·) t)
+    (h : ∀ x, Maximal (· ∈ s) x → x ∈ t) (hs : ∀ a ∈ t, ∃ b, b ≤ a ∧ Maximal (· ∈ s) b) :
+    {x | Maximal (· ∈ s) x} = t := by
+  refine Set.ext fun x ↦ ⟨h _, fun hx ↦ ?_⟩
+  obtain ⟨y, hyx, hy⟩ := hs x hx
+  rwa [← ht.eq (h y hy) hx hyx]
+
+/-- If `t` is an antichain shadowed by and including the set of minimal elements of `s`,
+then `t` *is* the set of minimal elements of `s`. -/
+theorem IsAntichain.eq_setOf_minimal (ht : IsAntichain (· ≤ ·) t)
+    (h : ∀ x, Minimal (· ∈ s) x → x ∈ t) (hs : ∀ a ∈ t, ∃ b, a ≤ b ∧ Minimal (· ∈ s) b) :
+    {x | Minimal (· ∈ s) x} = t :=
+  ht.to_dual.eq_setOf_maximal h hs
+
 end Preorder
 
 section PartialOrder
@@ -237,6 +259,12 @@ variable [PartialOrder α]
 theorem isAntichain_iff_forall_not_lt :
     IsAntichain (· ≤ ·) s ↔ ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → ¬a < b :=
   ⟨fun hs _ ha _ => hs.not_lt ha, fun hs _ ha _ hb h h' => hs ha hb <| h'.lt_of_ne h⟩
+
+theorem setOf_maximal_antichain (P : α → Prop) : IsAntichain (· ≤ ·) {x | Maximal P x} :=
+  fun _ hx _ ⟨hy, _⟩ hne hle ↦ hne (hle.antisymm <| hx.2 hy hle)
+
+theorem setOf_minimal_antichain (P : α → Prop) : IsAntichain (· ≤ ·) {x | Minimal P x} :=
+  (setOf_maximal_antichain (α := αᵒᵈ) P).swap
 
 end PartialOrder
 
