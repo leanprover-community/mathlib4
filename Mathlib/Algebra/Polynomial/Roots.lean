@@ -737,17 +737,11 @@ theorem Monic.isUnit_leadingCoeff_of_dvd {a p : R[X]} (hp : Monic p) (hap : a �
   isUnit_of_dvd_one (by simpa only [hp.leadingCoeff] using leadingCoeff_dvd_leadingCoeff hap)
 
 theorem Irreducible.roots_card_le_one (hirr : Irreducible p) : p.roots.card ≤ 1 := by
-  by_contra hcard
-  have ⟨q, hq⟩ := p.prod_multiset_X_sub_C_dvd
-  have ⟨x₁, hx₁⟩ := card_pos_iff_exists_mem.mp <| show 0 < p.roots.card by cutsat
-  have ⟨q₁, hq₁⟩ := exists_cons_of_mem hx₁
-  have := hq₁ ▸ Multiset.card_cons x₁ q₁
-  have ⟨x₂, hx₂⟩ := card_pos_iff_exists_mem.mp <| show 0 < q₁.card by cutsat
-  have ⟨q₂, hq₂⟩ := exists_cons_of_mem hx₂
-  simp [hq₁, hq₂, mul_assoc] at hq
-  obtain hu | hu := hirr.isUnit_or_isUnit hq <;> apply degree_eq_zero_of_isUnit at hu <;> simp at hu
-  have := Nat.WithBot.add_eq_zero_iff.mp hu |>.left
-  contradiction
+  obtain hp | ⟨x, hx⟩ := p.roots.empty_or_exists_mem
+  · simp [hp]
+  convert p.card_roots'
+  exact (natDegree_eq_of_degree_eq_some <| degree_eq_one_of_irreducible_of_root hirr <|
+    isRoot_of_mem_roots hx).symm
 
 theorem Irreducible.roots_zero_of_natDegree_ne_one (hirr : Irreducible p) (hdeg : p.natDegree ≠ 1) :
     p.roots = 0 := by
