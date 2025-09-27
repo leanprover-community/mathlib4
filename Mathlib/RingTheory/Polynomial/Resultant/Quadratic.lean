@@ -9,6 +9,7 @@ import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Linarith.Frontend
 import Mathlib.RingTheory.Polynomial.Resultant.Basic
 import Mathlib.Algebra.Polynomial.Degree.SmallDegree
+import Mathlib.RingTheory.Polynomial.SmallDegreeVieta
 
 /-!
 # Quadratic discriminants and roots of a quadratic
@@ -56,7 +57,7 @@ variable [CommRing R] {p : R[X]}
 lemma discrim_eq_sq_of_quadratic_of_isRoot {x : R} (hp : p.degree = 2) (h : IsRoot p x) :
     p.disc = (2 * (p.coeff 2) * x + (p.coeff 1)) ^ 2 := by
   rw [p.disc_of_degree_eq_two hp]
-  rw [p.eq_quadratic_of_degree_le_two (le_of_eq hp)] at h
+  rw [p.eq_quadratic_of_degree_le_two hp] at h
   simp at h
   linear_combination -4 * (p.coeff 2) * h
 
@@ -69,7 +70,7 @@ theorem quadratic_isRoot_iff_discrim_eq_sq [NeZero (2 : R)] [NoZeroDivisors R]
   rw [p.disc_of_degree_eq_two hp] at h
   have ha : 2 * 2 * (p.coeff 2) ≠ 0 := mul_ne_zero (mul_ne_zero (NeZero.ne _) (NeZero.ne _))
     (coeff_ne_zero_of_eq_degree hp)
-  rw [p.eq_quadratic_of_degree_le_two (le_of_eq hp)]
+  rw [p.eq_quadratic_of_degree_le_two hp]
   simp
   apply mul_left_cancel₀ ha --(coeff_ne_zero_of_eq_degree hp)
   linear_combination -h
@@ -148,7 +149,7 @@ theorem discrim_le_zero (hp : p.degree = 2) (h : ∀ x : K, 0 ≤ p.eval x) : p.
   let b := p.coeff 1
   let c := p.coeff 0
   rw [p.disc_of_degree_eq_two hp, sq]
-  rw [p.eq_quadratic_of_degree_le_two (le_of_eq hp)] at h
+  rw [p.eq_quadratic_of_degree_le_two hp] at h
   simp at h
   obtain ha | ha : a < 0 ∨ 0 < a := lt_or_gt_of_ne (coeff_ne_zero_of_eq_degree hp)
   -- if a < 0
