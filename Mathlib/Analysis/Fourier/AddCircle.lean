@@ -391,6 +391,70 @@ theorem tsum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
     rw [← H₁, H₂, H₃]
   · exact L2.integrable_inner f f
 
+lemma integral_liftIoc_sq_eq {a b : ℝ} [hab : Fact (0 < b - a)] {f : ℝ → ℂ} :
+    ∫ (t : AddCircle (b - a)), ‖liftIoc (b - a) a f t‖^2 ∂haarAddCircle =
+    (b - a)⁻¹ • ∫ x in a..b, ‖f x‖ ^ 2 := by
+  have hab' : a < b := lt_add_neg_iff_lt.mp hab.out
+  rw [eq_inv_smul_iff₀ (by linarith)]
+  conv in (b-a) =>
+    rw [←ENNReal.toReal_ofReal (by linarith : 0 ≤ b-a)]
+  rw [←integral_smul_measure, ←volume_eq_smul_haarAddCircle, ←AddCircle.intervalIntegral_preimage,
+    add_sub_cancel]
+  apply intervalIntegral.integral_congr_ae
+  filter_upwards with _ hx
+  congr
+  rw [uIoc_of_le (le_of_lt hab'), ←add_sub_cancel a b] at hx
+  exact liftIoc_coe_apply hx
+
+lemma memLp_liftIoc_of_memLp {a b : ℝ} [hab : Fact (0 < b - a)] {f : ℝ → ℂ} {p : ℝ≥0∞}
+    (hLp : MemLp f p (volume.restrict (Ioc a b))) : MemLp (liftIoc (b - a) a f) p
+    := by
+  rw [←add_sub_cancel a b] at hLp
+  rw [←(AddCircle.measurePreserving_mk (b-a) a).map_eq]
+  apply (memLp_map_measure_iff _ _).mpr
+  · apply hLp.ae_eq
+    rw [Filter.EventuallyEq, ae_restrict_iff' measurableSet_Ioc]
+    filter_upwards with _ h
+    rw [←liftIoc_coe_apply (f:=f) h]
+    rfl
+  · rw [aestronglyMeasurable_iff_aemeasurable, ←map_comap_subtype_coe measurableSet_Ioc,
+      map_map (by exact fun ⦃t⦄ a ↦ a) measurable_subtype_coe, liftIoc]
+    apply AEMeasurable.comp_measurable _ (measurableEquivIoc (b-a) a).measurable
+    rw [map_map (measurableEquivIoc _ _).measurable]
+    · have : ⇑(measurableEquivIoc (b - a) a) ∘ QuotientAddGroup.mk ∘ Subtype.val = _root_.id :=
+        Function.RightInverse.id (measurableEquivIoc _ _).right_inv
+      rw [this, Measure.map_id]
+      apply AEMeasurable.comp_measurable _ measurable_subtype_coe
+      rw [map_comap_subtype_coe measurableSet_Ioc]
+      exact hLp.aemeasurable
+    · exact (measurableEquivIoc _ _).measurable_invFun
+  · exact Measurable.aemeasurable fun t a ↦ a
+
+lemma memLp_liftIoc_of_memLp' {a b : ℝ} [hab : Fact (0 < b - a)] {f : ℝ → ℂ} {p : ℝ≥0∞}
+    (hLp : MemLp f p (volume.restrict (Ioc a b))) : MemLp (liftIoc (b - a) a f) p haarAddCircle
+    := by
+  have h := memLp_liftIoc_of_memLp hLp
+  rw [volume_eq_smul_haarAddCircle] at h
+  have h' := MemLp.smul_measure h (ENNReal.inv_ne_top.mpr (ENNReal.ofReal_ne_zero_iff.mpr hab.out))
+  simpa [smul_smul,
+    ENNReal.inv_mul_cancel (ENNReal.ofReal_ne_zero_iff.mpr hab.out) ENNReal.ofReal_ne_top] using h'
+
+/-- **Parseval's identity**: for a function `f` which is square integrable on (a,b],
+the sum of the squared norms of the Fourier coefficients equals the `L²` norm of `f`. -/
+theorem tsum_sq_fourierCoeffOn
+    {a b : ℝ} {f : ℝ → ℂ} (hab : a < b) (hL2 : MemLp f 2 (volume.restrict (Ioc a b))) :
+    ∑' (i : ℤ), ‖fourierCoeffOn hab f i‖ ^ 2 = (b - a)⁻¹ • ∫ x in a..b, ‖f x‖ ^ 2 := by
+  haveI := Fact.mk (by linarith : 0 < b - a)
+  have h := (memLp_liftIoc_of_memLp' hL2).coeFn_toLp
+  rw [←integral_liftIoc_sq_eq,
+      ←integral_congr_ae (h.mono (fun x hx => congrArg (fun x => ‖x‖^2) hx)),
+      ←tsum_sq_fourierCoeff]
+  conv in fourierCoeffOn _ _ _ =>
+    apply integral_congr_ae
+    apply Filter.EventuallyEq.smul (by rfl)
+    apply h.symm
+  congr
+
 end FourierL2
 
 section Convergence
