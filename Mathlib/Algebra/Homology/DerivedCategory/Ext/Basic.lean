@@ -297,8 +297,7 @@ lemma mk₀_add (f g : X ⟶ Y) : mk₀ (f + g) = mk₀ f + mk₀ g := by
 @[simps! symm_apply]
 noncomputable def addEquiv₀ : Ext X Y 0 ≃+ (X ⟶ Y) where
   toEquiv := homEquiv₀
-  map_add' x y := by apply
-    homEquiv₀.symm.injective (by simp [mk₀_add])
+  map_add' x y := homEquiv₀.symm.injective (by simp [mk₀_add])
 
 @[simp]
 lemma mk₀_addEquiv₀_apply (f : Ext X Y 0) :
