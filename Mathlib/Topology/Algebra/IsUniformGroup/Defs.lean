@@ -144,13 +144,23 @@ theorem Filter.Tendsto.uniformity_div {ι : Type*} {f g : ι → α × α} {l : 
   rw [div_eq_mul_inv]
   exact hf.uniformity_mul hg.uniformity_inv
 
-@[to_additive]
+/-- If `f : ι → G × G` converges to the uniformity, then any `g : ι → G × G` converges to the
+uniformity iff `f * g` does. This is often useful when `f` is valued in the diagonal,
+in which case its convergence is automatic. -/
+@[to_additive /-- If `f : ι → G × G` converges to the uniformity, then any `g : ι → G × G`
+converges to the uniformity iff `f + g` does. This is often useful when `f` is valued in the
+diagonal, in which case its convergence is automatic. -/]
 theorem Filter.Tendsto.uniformity_mul_iff_right {ι : Type*} {f g : ι → α × α} {l : Filter ι}
     (hf : Tendsto f l (𝓤 α)) :
     Tendsto (f * g) l (𝓤 α) ↔ Tendsto g l (𝓤 α) :=
   ⟨fun hfg ↦ by simpa using hf.uniformity_inv.uniformity_mul hfg, hf.uniformity_mul⟩
 
-@[to_additive]
+/-- If `g : ι → G × G` converges to the uniformity, then any `f : ι → G × G` converges to the
+uniformity iff `f * g` does. This is often useful when `g` is valued in the diagonal,
+in which case its convergence is automatic. -/
+@[to_additive /-- If `g : ι → G × G` converges to the uniformity, then any `f : ι → G × G`
+converges to the uniformity iff `f + g` does. This is often useful when `g` is valued in the
+diagonal, in which case its convergence is automatic. -/]
 theorem Filter.Tendsto.uniformity_mul_iff_left {ι : Type*} {f g : ι → α × α} {l : Filter ι}
     (hg : Tendsto g l (𝓤 α)) :
     Tendsto (f * g) l (𝓤 α) ↔ Tendsto f l (𝓤 α) :=
