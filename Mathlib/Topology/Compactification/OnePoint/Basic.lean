@@ -40,7 +40,7 @@ open Set Filter Topology
 ### Definition and basic properties
 
 In this section we define `OnePoint X` to be the disjoint union of `X` and `∞`, implemented as
-`Option X`. Then we restate some lemmas about `Option X` for `OnePoint X`.
+`WithTop X`. Then we restate some lemmas about `WithTop X` for `OnePoint X`.
 -/
 
 
@@ -48,30 +48,30 @@ variable {X Y : Type*}
 
 /-- The OnePoint extension of an arbitrary topological space `X` -/
 def OnePoint (X : Type*) :=
-  Option X
+  WithTop X
 
 /-- The repr uses the notation from the `OnePoint` locale. -/
 instance [Repr X] : Repr (OnePoint X) :=
   ⟨fun o _ =>
     match o with
-    | none => "∞"
-    | some a => "↑" ++ repr a⟩
+    | .top => "∞"
+    | .some a => "↑" ++ repr a⟩
 
 namespace OnePoint
 
 /-- The point at infinity -/
-@[match_pattern] def infty : OnePoint X := none
+@[match_pattern] def infty : OnePoint X := .top
 
 @[inherit_doc]
 scoped notation "∞" => OnePoint.infty
 
 /-- Coercion from `X` to `OnePoint X`. -/
-@[coe, match_pattern] def some : X → OnePoint X := Option.some
+@[coe, match_pattern] def some : X → OnePoint X := WithTop.some
 
 @[simp]
 lemma some_eq_iff (x₁ x₂ : X) : (some x₁ = some x₂) ↔ (x₁ = x₂) := by
   rw [iff_eq_eq]
-  exact Option.some.injEq x₁ x₂
+  exact WithTop.coe_inj.eq
 
 instance : CoeTC X (OnePoint X) := ⟨some⟩
 
@@ -79,20 +79,20 @@ instance : Inhabited (OnePoint X) := ⟨∞⟩
 
 protected lemma «forall» {p : OnePoint X → Prop} :
     (∀ (x : OnePoint X), p x) ↔ p ∞ ∧ ∀ (x : X), p x :=
-  Option.forall
+  WithTop.forall
 
 protected lemma «exists» {p : OnePoint X → Prop} :
     (∃ x, p x) ↔ p ∞ ∨ ∃ (x : X), p x :=
-  Option.exists
+  WithTop.exists
 
 instance [Fintype X] : Fintype (OnePoint X) :=
-  inferInstanceAs (Fintype (Option X))
+  inferInstanceAs (Fintype (WithTop X))
 
 instance infinite [Infinite X] : Infinite (OnePoint X) :=
-  inferInstanceAs (Infinite (Option X))
+  inferInstanceAs (Infinite (WithTop X))
 
 theorem coe_injective : Function.Injective ((↑) : X → OnePoint X) :=
-  Option.some_injective X
+  WithTop.coe_injective
 
 @[norm_cast]
 theorem coe_eq_coe {x y : X} : (x : OnePoint X) = y ↔ x = y :=
@@ -114,7 +114,7 @@ protected def rec {C : OnePoint X → Sort*} (infty : C ∞) (coe : ∀ x : X, C
   | (x : X) => coe x
 
 /-- An elimination principle for `OnePoint`. -/
-@[inline] protected def elim : OnePoint X → Y → (X → Y) → Y := Option.elim
+@[inline] protected def elim (x : OnePoint X) (y : Y) (f : X → Y) : Y := x.mapD y f
 
 @[simp] theorem elim_infty (y : Y) (f : X → Y) : ∞.elim y f = y := rfl
 
@@ -173,15 +173,15 @@ theorem coe_preimage_infty : ((↑) : X → OnePoint X) ⁻¹' {∞} = ∅ := by
 /-- Extend a map `f : X → Y` to a map `OnePoint X → OnePoint Y`
 by sending infinity to infinity. -/
 protected def map (f : X → Y) : OnePoint X → OnePoint Y :=
-  Option.map f
+  WithTop.map f
 
 @[simp] theorem map_infty (f : X → Y) : OnePoint.map f ∞ = ∞ := rfl
 @[simp] theorem map_some (f : X → Y) (x : X) : (x : OnePoint X).map f = f x := rfl
-@[simp] theorem map_id : OnePoint.map (id : X → X) = id := Option.map_id
+@[simp] theorem map_id : OnePoint.map (id : X → X) = id := WithTop.map_id
 
 theorem map_comp {Z : Type*} (f : Y → Z) (g : X → Y) :
     OnePoint.map (f ∘ g) = OnePoint.map f ∘ OnePoint.map g :=
-  (Option.map_comp_map _ _).symm
+  (WithTop.map_comp_map _ _).symm
 
 /-!
 ### Topological space structure on `OnePoint X`
@@ -584,7 +584,7 @@ instance (X : Type*) [TopologicalSpace X] [DiscreteTopology X] :
       refine ⟨{some val}, {some val}ᶜ, ?_, isOpen_compl_singleton, rfl, hxy.symm, by simp,
         disjoint_compl_right⟩
       rw [OnePoint.isOpen_iff_of_notMem]
-      exacts [isOpen_discrete _, (Option.some_ne_none val).symm]
+      exacts [isOpen_discrete _, WithTop.coe_ne_top.symm]
 
 section Uniqueness
 
@@ -644,7 +644,7 @@ open OnePoint
 to the homeomorphism of their one point compactifications. -/
 @[simps]
 def onePointCongr (h : X ≃ₜ Y) : OnePoint X ≃ₜ OnePoint Y where
-  __ := h.toEquiv.optionCongr
+  __ := h.toEquiv.withTopCongr
   toFun := OnePoint.map h
   invFun := OnePoint.map h.symm
   continuous_toFun := continuous_map (map_continuous h) h.map_coclosedCompact.le
