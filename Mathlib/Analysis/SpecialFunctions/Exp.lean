@@ -148,8 +148,6 @@ lemma UniformContinuousOn.cexp (a : ℝ) : UniformContinuousOn exp {x : ℂ | x.
   rw [hrr]
   exact div_two_lt_of_pos hε
 
-@[deprecated (since := "2025-02-11")] alias UniformlyContinuousOn.cexp := UniformContinuousOn.cexp
-
 end ComplexContinuousExpComp
 
 namespace Real
