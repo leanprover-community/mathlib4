@@ -26,15 +26,6 @@ variable {R K : Type*}
 namespace Nat
 
 -- TODO: should these lemmas be `simp`? `norm_cast`?
-
-section LinearOrderedCommSemiring
-variable [CommSemiring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorSemiring R]
-
-theorem cast_mul_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : R) : ⌊n * a⌋₊ / n = ⌊a⌋₊ := by
-  rw [mul_comm, mul_cast_floor_div_cancel hn]
-
-end LinearOrderedCommSemiring
-
 section LinearOrderedSemifield
 variable [Semifield K] [LinearOrder K] [IsStrictOrderedRing K] [FloorSemiring K]
 
