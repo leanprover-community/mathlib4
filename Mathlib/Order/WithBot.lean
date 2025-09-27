@@ -110,6 +110,20 @@ theorem some_eq_map_iff {f : α → β} {y : β} {v : WithBot α} :
     .some y = WithBot.map f v ↔ ∃ x, v = .some x ∧ f x = y := by
   cases v <;> simp [eq_comm]
 
+theorem map_id : map (id : α → α) = id :=
+  Option.map_id
+
+@[simp]
+theorem map_map (h : β → γ) (g : α → β) (a : WithBot α) : map h (map g a) = map (h ∘ g) a :=
+  Option.map_map h g a
+
+theorem comp_map (h : β → γ) (g : α → β) (x : WithBot α) : x.map (h ∘ g) = (x.map g).map h :=
+  (map_map ..).symm
+
+@[simp] theorem map_comp_map (f : α → β) (g : β → γ) :
+    WithBot.map g ∘ WithBot.map f = WithBot.map (g ∘ f) :=
+  Option.map_comp_map f g
+
 theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ}
     (h : g₁ ∘ f₁ = g₂ ∘ f₂) (a : α) :
     map g₁ (map f₁ a) = map g₂ (map f₂ a) :=
@@ -580,6 +594,20 @@ theorem map_eq_some_iff {f : α → β} {y : β} {v : WithTop α} :
 theorem some_eq_map_iff {f : α → β} {y : β} {v : WithTop α} :
     .some y = WithTop.map f v ↔ ∃ x, v = .some x ∧ f x = y := by
   cases v <;> simp [eq_comm]
+
+theorem map_id : map (id : α → α) = id :=
+  Option.map_id
+
+@[simp]
+theorem map_map (h : β → γ) (g : α → β) (a : WithTop α) : map h (map g a) = map (h ∘ g) a :=
+  Option.map_map h g a
+
+theorem comp_map (h : β → γ) (g : α → β) (x : WithTop α) : x.map (h ∘ g) = (x.map g).map h :=
+  (map_map ..).symm
+
+@[simp] theorem map_comp_map (f : α → β) (g : β → γ) :
+    WithTop.map g ∘ WithTop.map f = WithTop.map (g ∘ f) :=
+  Option.map_comp_map f g
 
 theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ}
     (h : g₁ ∘ f₁ = g₂ ∘ f₂) (a : α) : map g₁ (map f₁ a) = map g₂ (map f₂ a) :=

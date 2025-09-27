@@ -550,13 +550,7 @@ theorem prod_roots_mul_leadingCoeff_eq_coeff_zero_of_splits {P : K[X]}
   nth_rw 1 [eq_prod_roots_of_splits_id hP]
   rw [coeff_zero_eq_eval_zero, eval_mul, eval_multiset_prod, Multiset.map_map]
   simp_rw [Function.comp_apply, eval_sub, eval_X, zero_sub, eval_C, mul_assoc]
-  congr
-  conv_lhs =>
-    congr
-    congr
-    ext
-    rw [neg_eq_neg_one_mul]
-  simp only [splits_iff_card_roots.1 hP, neg_mul, one_mul, Multiset.prod_map_neg]
+  simp only [splits_iff_card_roots.1 hP, Multiset.prod_map_neg]
 
 /-- If `P` is a monic polynomial that splits, then `coeff P 0` equals the product of the roots. -/
 theorem prod_roots_eq_coeff_zero_of_monic_of_splits {P : K[X]} (hmo : P.Monic)

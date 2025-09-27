@@ -100,7 +100,7 @@ protected def copy (S : NonUnitalStarSubsemiring R) (s : Set R) (hs : s = ↑S) 
       rw [hs] at hx ⊢
       exact S.star_mem' hx }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_copy (S : NonUnitalStarSubsemiring R) (s : Set R) (hs : s = ↑S) :
     (S.copy s hs : Set R) = s :=
   rfl

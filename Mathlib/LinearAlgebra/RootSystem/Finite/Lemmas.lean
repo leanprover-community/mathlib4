@@ -90,6 +90,8 @@ lemma coxeterWeightIn_mem_set_of_isCrystallographic :
   cutsat
 
 variable [IsDomain R]
+-- This makes an `IsAddTorsionFree R` instance available, which `grind` needs below.
+open scoped IsDomain
 
 lemma pairingIn_pairingIn_mem_set_of_isCrystallographic :
     (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈

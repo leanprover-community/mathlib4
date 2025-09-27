@@ -725,7 +725,7 @@ theorem Measure.mconv_smul_right (μ : Measure M) (ν : Measure M) [SFinite ν] 
   unfold mconv
   rw [Measure.prod_smul_right, Measure.map_smul]
 
-variable {G : Type*} [Group G] [MeasureSpace G] [MeasurableMul₂ G] [MeasurableInv G]
+variable {G : Type*} [Group G] {mG : MeasurableSpace G} [MeasurableMul₂ G] [MeasurableInv G]
   {μ : Measure G} [SFinite μ] [IsMulLeftInvariant μ]
 
 @[to_additive]

@@ -6,6 +6,7 @@ Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Comma.Over.Basic
 import Mathlib.CategoryTheory.IsConnected
+import Mathlib.CategoryTheory.Filtered.Final
 
 /-!
 # Connected limits in the over category
@@ -99,5 +100,27 @@ instance forgetPreservesConnectedLimits [IsConnected J] {B : C} :
 instance has_connected_limits {B : C} [IsConnected J] [HasLimitsOfShape J C] :
     HasLimitsOfShape J (Over B) where
   has_limit F := hasLimit_of_created F (forget B)
+
+/-- The functor taking a cone over `F` to a cone over `Over.post F : Over i ⥤ Over (F.obj i)`.
+This takes limit cones to limit cones when `J` is cofiltered. See `isLimitConePost` -/
+@[simps]
+def conePost (F : J ⥤ C) (i : J) : Cone F ⥤ Cone (Over.post (X := i) F) where
+  obj c := { pt := Over.mk (c.π.app i), π := { app X := Over.homMk (c.π.app X.left) } }
+  map f := { hom := Over.homMk f.hom }
+
+/-- `conePost` is compatible with the forgetful functors on over categories. -/
+@[simps!]
+def conePostIso (F : J ⥤ C) (i : J) :
+    conePost F i ⋙ Cones.functoriality _ (Over.forget (F.obj i)) ≅
+      Cones.whiskering (Over.forget _) := .refl _
+
+attribute [local instance] IsCofiltered.isConnected in
+/-- The functor taking a cone over `F` to a cone over `Over.post F : Over i ⥤ Over (F.obj i)`
+preserves limit cones -/
+noncomputable
+def isLimitConePost [IsCofilteredOrEmpty J] {F : J ⥤ C} {c : Cone F} (i : J) (hc : IsLimit c) :
+    IsLimit ((conePost F i).obj c) :=
+  isLimitOfReflects (Over.forget _)
+    ((Functor.Initial.isLimitWhiskerEquiv (Over.forget i) c).symm hc)
 
 end CategoryTheory.Over
