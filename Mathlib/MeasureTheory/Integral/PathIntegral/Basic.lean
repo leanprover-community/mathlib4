@@ -469,7 +469,7 @@ variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace �
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
   {a b : E} {s : Set E} {ω : E → E →L[𝕜] F}
 
-/-- The integral of `ω` along `[a -[ℝ] b]` has derivative `ω a` in `b` at `b = a`.
+/-- The integral of `ω` along `[a -[ℝ] b]`, as a function of `b`, has derivative `ω a` at `b = a`.
 This is a `HasFDerivWithinAt` version assuming that `ω` is continuous within `s`
 in a neighborhood of `a` within `s`. -/
 theorem HasFDerivWithinAt.pathIntegral_segment_source' (hs : Convex ℝ s)
