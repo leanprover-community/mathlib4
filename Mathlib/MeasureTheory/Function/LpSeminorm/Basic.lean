@@ -171,8 +171,9 @@ end Neg
 
 section Const
 
-/-- The class of constant Lp functions. Has only `p = ∞` and `μ.IsFiniteMeasure` instances. -/
+
 variable (ε) in
+/-- The class of constant Lp functions. Has only `p = ∞` and `μ.IsFiniteMeasure` instances. -/
 class MemLp.Const (p : ℝ≥0∞) (μ : Measure α) where
   eLpNorm_const_lt_top' (c : ε) (hc : ‖c‖ₑ ≠ ∞) : eLpNorm (fun _ ↦ c) p μ < ∞
 
