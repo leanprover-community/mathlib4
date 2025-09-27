@@ -156,6 +156,15 @@ theorem aroots_card_eq_natDegree_from_field {A B : Type*} [CommRing A] [IsSimple
     [Field B] [IsAlgClosed B] [Algebra A B] {p : A[X]} : (p.aroots B).card = p.natDegree :=
   map_roots_card_eq_natDegree_from_simpleRing _
 
+theorem dvd_iff_roots_le_roots [IsAlgClosed k] {p q : k[X]} (hp : p ≠ 0) (hq : q ≠ 0) :
+    p ∣ q ↔ p.roots ≤ q.roots :=
+  Splits.dvd_iff_roots_le_roots (splits _) hp hq
+
+theorem associated_iff_roots_eq_roots [IsAlgClosed k] {p q : k[X]} (hp : p ≠ 0) (hq : q ≠ 0) :
+    Associated p q ↔ p.roots = q.roots :=
+  ⟨roots_congr, fun h ↦ associated_of_dvd_dvd (dvd_iff_roots_le_roots hp hq |>.mpr <| le_of_eq h)
+    (dvd_iff_roots_le_roots hq hp |>.mpr <| le_of_eq h.symm)⟩
+
 theorem exists_eval₂_eq_zero_of_injective {R : Type*} [Semiring R] [IsAlgClosed k] (f : R →+* k)
     (hf : Function.Injective f) (p : R[X]) (hp : p.degree ≠ 0) : ∃ x, p.eval₂ f x = 0 :=
   let ⟨x, hx⟩ := exists_root (p.map f) (by rwa [degree_map_eq_of_injective hf])
@@ -552,7 +561,7 @@ theorem Polynomial.isRoot_of_isRoot_iff_dvd_derivative_mul {K : Type*} [Field K]
   · rw [eq_C_of_derivative_eq_zero hdf0]
     simp only [derivative_C, zero_mul, dvd_zero, implies_true]
   have hdg :  f.derivative * g ≠ 0 := mul_ne_zero hdf0 hg0
-  classical rw [Splits.dvd_iff_roots_le_roots (IsAlgClosed.splits f) hf0 hdg, Multiset.le_iff_count]
+  classical rw [IsAlgClosed.dvd_iff_roots_le_roots hf0 hdg, Multiset.le_iff_count]
   simp only [count_roots, rootMultiplicity_mul hdg]
   refine forall_imp fun a => ?_
   by_cases haf : f.eval a = 0
