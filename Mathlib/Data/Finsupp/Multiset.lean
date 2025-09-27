@@ -59,8 +59,8 @@ theorem toMultiset_sum_single (s : Finset ι) (n : ℕ) :
   simp_rw [toMultiset_sum, Finsupp.toMultiset_single, Finset.sum_nsmul, sum_multiset_singleton]
 
 @[simp]
-theorem card_toMultiset (f : α →₀ ℕ) : Multiset.card (toMultiset f) = f.sum fun _ => id := by
-  simp [toMultiset_apply, Function.id_def]
+theorem card_toMultiset (f : α →₀ ℕ) : Multiset.card (toMultiset f) = f.sum fun _ x ↦ x := by
+  simp [toMultiset_apply]
 
 theorem toMultiset_map (f : α →₀ ℕ) (g : α → β) :
     f.toMultiset.map g = toMultiset (f.mapDomain g) := by
@@ -173,7 +173,7 @@ theorem toFinsupp_inter (s t : Multiset α) : toFinsupp (s ∩ t) = toFinsupp s 
   simp
 
 @[simp]
-theorem toFinsupp_sum_eq (s : Multiset α) : s.toFinsupp.sum (fun _ ↦ id) = Multiset.card s := by
+theorem toFinsupp_sum_eq (s : Multiset α) : s.toFinsupp.sum (fun _ x ↦ x) = Multiset.card s := by
   rw [← Finsupp.card_toMultiset, toFinsupp_toMultiset]
 
 end Multiset
@@ -207,7 +207,7 @@ theorem coe_orderIsoMultiset_symm [DecidableEq ι] :
 theorem toMultiset_strictMono : StrictMono (@toMultiset ι) := by
   classical exact (@orderIsoMultiset ι _).strictMono
 
-theorem sum_id_lt_of_lt (m n : ι →₀ ℕ) (h : m < n) : (m.sum fun _ => id) < n.sum fun _ => id := by
+theorem sum_id_lt_of_lt (m n : ι →₀ ℕ) (h : m < n) : m.sum (fun _ x ↦ x) < n.sum fun _ x ↦ x := by
   rw [← card_toMultiset, ← card_toMultiset]
   apply Multiset.card_lt_card
   exact toMultiset_strictMono h
@@ -237,15 +237,14 @@ variable [DecidableEq α] (n : ℕ)
 finitely-supported maps `α →₀ ℕ` with total mass `n`.
 
 See also `Sym.equivNatSumOfFintype` when `α` is finite. -/
-def equivNatSum :
-    Sym α n ≃ {P : α →₀ ℕ // P.sum (fun _ ↦ id) = n} :=
+def equivNatSum : Sym α n ≃ {P : α →₀ ℕ // P.sum (fun _ x ↦ x) = n} :=
   Multiset.toFinsupp.toEquiv.subtypeEquiv <| by simp
 
 @[simp] lemma coe_equivNatSum_apply_apply (s : Sym α n) (a : α) :
     (equivNatSum α n s : α →₀ ℕ) a = (s : Multiset α).count a :=
   rfl
 
-@[simp] lemma coe_equivNatSum_symm_apply (P : {P : α →₀ ℕ // P.sum (fun _ ↦ id) = n}) :
+@[simp] lemma coe_equivNatSum_symm_apply (P : {P : α →₀ ℕ // P.sum (fun _ x ↦ x) = n}) :
     ((equivNatSum α n).symm P : Multiset α) = Finsupp.toMultiset P :=
   rfl
 
