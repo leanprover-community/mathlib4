@@ -34,12 +34,22 @@ protected abbrev mulZeroClass [MulZeroClass β] : MulZeroClass α := by
   let mul := e.mul
   apply e.injective.mulZeroClass _ <;> intros <;> exact e.apply_symm_apply _
 
-
 /-- Transfer `MulZeroOneClass` across an `Equiv` -/
 protected abbrev mulZeroOneClass [MulZeroOneClass β] : MulZeroOneClass α := by
   let zero := e.zero
   let one := e.one
   let mul := e.mul
   apply e.injective.mulZeroOneClass _ <;> intros <;> exact e.apply_symm_apply _
+
+/-- Transfer `MonoidWithZero` across an `Equiv` -/
+protected abbrev monoidWithZero [MonoidWithZero β] : MonoidWithZero α := by
+  let _ := e.mulZeroOneClass
+  let _ := e.pow ℕ
+  apply e.injective.monoidWithZero _ <;> intros <;> exact e.apply_symm_apply _
+
+/-- Transfer `CommMonoidWithZero` across an `Equiv` -/
+protected abbrev commMonoidWithZero [CommMonoidWithZero β] : CommMonoidWithZero α := by
+  let _ := e.monoidWithZero
+  apply e.injective.commMonoidWithZero _ <;> intros <;> exact e.apply_symm_apply _
 
 end Equiv
