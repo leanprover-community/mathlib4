@@ -762,26 +762,10 @@ lemma condIndepFun_iff_map_prod_eq_prod_comp_trim
           ∘ₘ μ.trim hm' := by
   rw [condIndepFun_iff_compProd_map_prod_eq_compProd_prod_map_map hf hg]
   congr!
-  swap; · rw [Measure.compProd_eq_comp_prod]
-  calc (μ.trim hm' ⊗ₘ (condExpKernel μ m').map fun ω ↦ (f ω, g ω))
-  _ = (Kernel.id ∥ₖ Kernel.deterministic (fun ω ↦ (f ω, g ω)) (by fun_prop))
-      ∘ₘ (μ.trim hm' ⊗ₘ (condExpKernel μ m')) := by
-    rw [Measure.compProd_eq_parallelComp_comp_copy_comp, ← Kernel.deterministic_comp_eq_map,
-      ← Kernel.parallelComp_id_left_comp_parallelComp, Measure.comp_assoc, Kernel.comp_assoc,
-      Kernel.parallelComp_comp_copy, ← Measure.comp_assoc, Measure.compProd_eq_comp_prod]
-  _ = (Kernel.id ∥ₖ Kernel.deterministic (fun ω ↦ (f ω, g ω)) (by fun_prop))
-      ∘ₘ (@Measure.map _ _ _ (m'.prod _) (fun ω ↦ (ω, ω)) μ) := by
-    congr
-    exact compProd_trim_condExpKernel hm'
-  _ = _ := by
-    rw [← Measure.deterministic_comp_eq_map, Measure.comp_assoc,
-      ← Kernel.deterministic_prod_deterministic (g := fun ω ↦ ω),
-      Kernel.parallelComp_comp_prod, Kernel.deterministic_comp_deterministic, Kernel.id_comp,
-      Kernel.deterministic_prod_deterministic, Measure.deterministic_comp_eq_map]
-    · rfl
-    · exact measurable_id.mono le_rfl hm'
-    · fun_prop
-    · exact Measurable.prodMk (measurable_id.mono le_rfl hm') measurable_id
+  · rw [Measure.compProd_map (by fun_prop), compProd_trim_condExpKernel,
+      Measure.map_map (by fun_prop) ((measurable_id.mono le_rfl hm').prodMk measurable_id)]
+    rfl
+  · rw [Measure.compProd_eq_comp_prod]
 
 section iCondIndepFun
 variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}
