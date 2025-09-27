@@ -556,9 +556,9 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
       rw [Basis.coe_mk, Subtype.range_coe_subtype, Set.setOf_mem_eq, ← Set.toFinset_nonempty]
       contrapose! h
       rw [Set.toFinset_diff, Finset.sdiff_eq_empty_iff_subset] at h
-      replace h := Finset.card_le_card h
-      rwa [not_lt, h_card, ← topEquiv.finrank_eq, ← h_spanE, ← ht_span,
+      rw [h_card, ← topEquiv.finrank_eq, ← h_spanE, ← ht_span,
         finrank_span_set_eq_card ht_lin]
+      grw [h]
     -- Assume that `e ∪ {v}` is not `ℤ`-linear independent then we get the contradiction
     suffices ¬ LinearIndepOn ℤ id (insert v (Set.range e)) by
       contrapose! this
