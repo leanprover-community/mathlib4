@@ -229,9 +229,7 @@ instance instAlgebra : Algebra R (Matrix n n α) where
   smul_def' r x := by ext; simp [Matrix.scalar, Algebra.smul_def r]
 
 theorem algebraMap_matrix_apply {r : R} {i j : n} :
-    algebraMap R (Matrix n n α) r i j = if i = j then algebraMap R α r else 0 := by
-  dsimp [algebraMap, Algebra.algebraMap, Matrix.scalar]
-  split_ifs with h <;> simp [h]
+    algebraMap R (Matrix n n α) r i j = if i = j then algebraMap R α r else 0 := rfl
 
 theorem algebraMap_eq_diagonal (r : R) :
     algebraMap R (Matrix n n α) r = diagonal (algebraMap R (n → α) r) := rfl
