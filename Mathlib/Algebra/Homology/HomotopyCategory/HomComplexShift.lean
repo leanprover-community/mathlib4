@@ -407,7 +407,6 @@ lemma δ_rightShift (a n' m' : ℤ) (hn' : n' + a = n) (m : ℤ) (hm' : m' + a =
       Linear.comp_units_smul, assoc, HomologicalComplex.XIsoOfEq_inv_comp_d,
       add_comp, HomologicalComplex.d_comp_XIsoOfEq_inv, Linear.units_smul_comp, smul_add,
       add_right_inj, smul_smul]
-    congr 1
     simp only [← hm', add_comm m', Int.negOnePow_add, ← mul_assoc,
       Int.units_mul_self, one_mul]
   · have hnm' : ¬ n' + 1 = m' := fun _ => hnm (by cutsat)
