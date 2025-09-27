@@ -16,13 +16,15 @@ field of characteristic `p`, where `p` and `n` are coprime.
 
 ## Main results
 
-* `Polynomial.degree_cyclotomic` : The degree of `cyclotomic n` is `totient n`.
+* `Polynomial.natDegree_of_dvd_cyclotomic_of_irreducible` : Let `K` be a finite field of cardinality
+  `p ^ f` and let `P` be an irreducible factor of the `n`-th cyclotomic polynomial over `K`, where
+  `p` and `n` are coprime. Then the degree of `P` is the multiplicative order of `p ^ f` modulo `n`.
 
 -/
 
 namespace Polynomial
 
-variable {K : Type*} [Field K] [Fintype K] {p f n : ℕ}
+variable {K : Type*} [Field K] [Fintype K] {p f n : ℕ} {P : K[X]}
   (hK : Fintype.card K = p ^ f) (hn : p.Coprime n)
 
 open ZMod AdjoinRoot FiniteField Multiset
@@ -34,7 +36,10 @@ private lemma f_ne_zero : f ≠ 0 := fun h0 ↦ not_subsingleton K <|
 
 variable [hp : Fact p.Prime]
 
-theorem foo {P : K[X]} (hP : P ∣ cyclotomic n K) (hPirr : Irreducible P) (hPmo : P.Monic) :
+/-- The degree of an irreducible monic factor of the `n` cyclotomic polynomial over a finite field.
+  This is a special case of `natDegree_of_dvd_cyclotomic_of_irreducible` below. -/
+private theorem natDegree_of_dvd_cyclotomic_of_irreducible_of_monic (hP : P ∣ cyclotomic n K)
+  (hPirr : Irreducible P) (hPmo : P.Monic) :
     P.natDegree = orderOf (unitOfCoprime _ (hn.pow_left f)) := by
   have : Fact (Irreducible P) := ⟨hPirr⟩
   have := hPmo.finite_adjoinRoot
@@ -70,8 +75,11 @@ theorem foo {P : K[X]} (hP : P ∣ cyclotomic n K) (hPirr : Irreducible P) (hPmo
       ← Nat.cast_pow, natCast_eq_natCast_iff, hζ.eq_orderOf, ← hζ'.pow_eq_pow_iff_modEq, this,
       pow_one]
 
-theorem bar {P : K[X]} (hP : P ∣ cyclotomic n K) (hPirr : Irreducible P) :
-    P.natDegree = orderOf (unitOfCoprime _ (hn.pow_left f)) := by
+/-- Let `K` be a finite field of cardinality `p ^ f` and let `P` be an irreducible factor of the
+  `n`-th cyclotomic polynomial over `K`, where `p` and `n` are coprime. Then the degree of `P` is
+  the multiplicative order of `p ^ f` modulo `n`. -/
+theorem natDegree_of_dvd_cyclotomic_of_irreducible (hP : P ∣ cyclotomic n K)
+    (hPirr : Irreducible P) : P.natDegree = orderOf (unitOfCoprime _ (hn.pow_left f)) := by
   obtain ⟨A, hA⟩ := hP
   have hQ : P * C P.leadingCoeff⁻¹ ∣ cyclotomic n K := by
     refine ⟨A * C P.leadingCoeff, ?_⟩
@@ -80,11 +88,12 @@ theorem bar {P : K[X]} (hP : P ∣ cyclotomic n K) (hPirr : Irreducible P) :
       _ = P * (C P.leadingCoeff⁻¹ * C P.leadingCoeff) * A := by
         simp [← C_mul, leadingCoeff_ne_zero.mpr hPirr.ne_zero]
       _ = _ := by ring
-  simpa [← natDegree_mul_leadingCoeff_self_inv P] using foo hK hn hQ
+  simpa [← natDegree_mul_leadingCoeff_self_inv P] using
+    natDegree_of_dvd_cyclotomic_of_irreducible_of_monic hK hn hQ
     (irreducible_mul_leadingCoeff_inv.mpr hPirr) (monic_mul_leadingCoeff_inv hPirr.ne_zero)
 
 open UniqueFactorizationMonoid in
-theorem baz {P : K[X]} (hP : P ∣ cyclotomic n K)
+theorem baz (hP : P ∣ cyclotomic n K)
     (hPdeg : P.natDegree = orderOf (unitOfCoprime _ (hn.pow_left f))) : Irreducible P := by
   classical
   have hP0 : P ≠ 0 := ne_zero_of_dvd_ne_zero (cyclotomic_ne_zero n K) hP
@@ -92,7 +101,8 @@ theorem baz {P : K[X]} (hP : P ∣ cyclotomic n K)
     pos_of_ne_zero <| fun h ↦ orderOf_eq_zero_iff.mp (h ▸ hPdeg.symm) <| isOfFinOrder_of_finite ..
   refine (associated_of_dvd_of_natDegree_le (dvd_of_mem_normalizedFactors HQ) hP0 ?_).irreducible
     (irreducible_of_normalized_factor Q HQ)
-  rw [hPdeg, ← bar hK hn ?_ (irreducible_of_normalized_factor Q HQ)]
+  rw [hPdeg, ← natDegree_of_dvd_cyclotomic_of_irreducible hK hn ?_
+    (irreducible_of_normalized_factor Q HQ)]
   exact dvd_of_mem_normalizedFactors <| mem_of_le
     ((dvd_iff_normalizedFactors_le_normalizedFactors hP0 (cyclotomic_ne_zero n K)).mp hP) HQ
 
@@ -119,9 +129,10 @@ open UniqueFactorizationMonoid Nat
 
 variable [DecidableEq K]
 
-theorem boh {P : K[X]} (hP : P ∈ normalizedFactors (cyclotomic n K)) :
+theorem boh (hP : P ∈ normalizedFactors (cyclotomic n K)) :
     P.natDegree = orderOf (unitOfCoprime _ (hn.pow_left f)) :=
-  bar hK hn (dvd_of_mem_normalizedFactors hP) (irreducible_of_normalized_factor P hP)
+  natDegree_of_dvd_cyclotomic_of_irreducible hK hn (dvd_of_mem_normalizedFactors hP)
+    (irreducible_of_normalized_factor P hP)
 
 theorem blah : (normalizedFactors (cyclotomic n K)).toFinset.card =
     φ n / orderOf (unitOfCoprime _ (hn.pow_left f)) := by
