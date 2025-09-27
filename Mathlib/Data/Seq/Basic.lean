@@ -48,7 +48,7 @@ theorem length_cons {x : α} {s : Seq α} (h : s.Terminates) :
 @[simp]
 theorem length'_cons (x : α) (s : Seq α) :
     (cons x s).length' = s.length' + 1 := by
-  by_cases h : (cons x s).Terminates <;>  have h' := h <;> rw [terminates_cons_iff] at h'
+  by_cases h : (cons x s).Terminates <;> have h' := h <;> rw [terminates_cons_iff] at h'
   · simp [length'_of_terminates h, length'_of_terminates h', length_cons h']
   · simp [length'_of_not_terminates h, length'_of_not_terminates h']
 
