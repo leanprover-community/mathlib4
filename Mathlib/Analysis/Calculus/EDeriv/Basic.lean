@@ -18,10 +18,11 @@ and the second exterior derivative of a form is zero.
 open Filter ContinuousAlternatingMap Set
 open scoped Topology
 
-variable {𝕜 E F : Type*}
+variable {𝕜 E F G : Type*}
   [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
   {n m k : ℕ} {r : WithTop ℕ∞}
   {ω ω₁ ω₂ : E → E [⋀^Fin n]→L[𝕜] F} {s t : Set E} {x : E}
 
@@ -38,7 +39,7 @@ noncomputable def ederivWithin (ω : E → E [⋀^Fin n]→L[𝕜] F) (s : Set E
 theorem ederivWithin_univ (ω : E → E [⋀^Fin n]→L[𝕜] F) :
     ederivWithin ω univ = ederiv ω := by
   ext1 x
-  rw[ederivWithin, ederiv, fderivWithin_univ]
+  rw [ederivWithin, ederiv, fderivWithin_univ]
 
 theorem ederivWithin_add (hsx : UniqueDiffWithinAt 𝕜 s x)
     (hω₁ : DifferentiableWithinAt 𝕜 ω₁ s x) (hω₂ : DifferentiableWithinAt 𝕜 ω₂ s x) :
@@ -174,3 +175,10 @@ theorem ederiv_ederiv_apply (hω : ContDiffAt 𝕜 r ω x) (hr : minSmoothness �
 /-- Second exterior derivative of a sufficiently smooth differential form is zero. -/
 theorem ederiv_ederiv (h : ContDiff 𝕜 r ω) (hr : minSmoothness 𝕜 2 ≤ r) : ederiv (ederiv ω) = 0 :=
   funext fun _ ↦ ederiv_ederiv_apply h.contDiffAt hr
+
+theorem ederiv_pullback (ω : F → F [⋀^Fin n]→L[𝕜] G) (f : E → F) :
+    ederiv (fun x ↦ (ω (f x)).compContinuousLinearMap (fderiv 𝕜 f x)) x =
+      (ederiv ω (f x)).compContinuousLinearMap (fderiv 𝕜 f x) := by
+  ext v
+  rw [ederiv_apply, ContinuousAlternatingMap.compContinuousLinearMap_apply, ederiv_apply]
+  
