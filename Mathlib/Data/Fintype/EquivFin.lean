@@ -543,10 +543,10 @@ theorem exists_subset_card_eq (α : Type*) [Infinite α] (n : ℕ) : ∃ s : Fin
 theorem exists_superset_card_eq [Infinite α] (s : Finset α) (n : ℕ) (hn : #s ≤ n) :
     ∃ t : Finset α, s ⊆ t ∧ #t = n := by
   induction n generalizing s with
-  | zero => exact ⟨s, subset_refl _, Nat.eq_zero_of_le_zero hn⟩
+  | zero => exact ⟨s, subset_rfl, Nat.eq_zero_of_le_zero hn⟩
   | succ n IH =>
     rcases hn.eq_or_lt with hn' | hn'
-    · exact ⟨s, subset_refl _, hn'⟩
+    · exact ⟨s, subset_rfl, hn'⟩
     obtain ⟨t, hs, ht⟩ := IH _ (Nat.le_of_lt_succ hn')
     obtain ⟨x, hx⟩ := exists_notMem_finset t
     refine ⟨Finset.cons x t hx, hs.trans (Finset.subset_cons _), ?_⟩
