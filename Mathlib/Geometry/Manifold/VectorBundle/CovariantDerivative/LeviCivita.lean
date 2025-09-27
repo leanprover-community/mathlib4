@@ -251,9 +251,14 @@ lemma rhs_aux_addZ (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) (hZ' : MDiff (T% Z'))
 
 omit [IsManifold I ∞ M] in
 variable (X Y Z) in
+lemma rhs_aux_smulX_apply (f : M → ℝ) (x) : rhs_aux I (f • X) Y Z x = f x • rhs_aux I X Y Z x := by
+  simp [rhs_aux]
+
+omit [IsManifold I ∞ M] in
+variable (X Y Z) in
 lemma rhs_aux_smulX (f : M → ℝ) : rhs_aux I (f • X) Y Z = f • rhs_aux I X Y Z := by
   ext x
-  simp [rhs_aux]
+  exact rhs_aux_smulX_apply ..
 
 variable (X) in
 lemma rhs_aux_smulY_apply {f : M → ℝ}
@@ -500,6 +505,70 @@ lemma leviCivitaRhs_smulY_const [CompleteSpace E] {a : ℝ}
   ext x
   exact leviCivitaRhs_smulY_const_apply (hX x) (hY x) (hZ x)
 
+lemma leviCivitaRhs'_smulY_apply [CompleteSpace E] {f : M → ℝ}
+    (hf : MDiffAt f x) (hX : MDiffAt  (T% X) x) (hY : MDiffAt  (T% Y) x) (hZ : MDiffAt  (T% Z) x) :
+    leviCivitaRhs' I X (f • Y) Z x =
+      f x • leviCivitaRhs' I X Y Z x
+        + (bar _ <| mfderiv% f x (X x)) • leviCivitaRhs' I X Y Z x := by
+  simp only [leviCivitaRhs']
+  simp_rw [rhs_aux_smulX I Y Z X f]
+  simp only [product_smul_left, Pi.add_apply, Pi.sub_apply, smul_eq_mul]
+  simp only [Pi.mul_apply]
+  rw [rhs_aux_smulY_apply I X hf hY hZ]
+  rw [rhs_aux_smulZ_apply I Z hf hX hY]
+
+
+
+  have aux2 := mlieBracket_smul_right (V := Z) hf hY
+  have aux := mlieBracket_smul_left (W := X) hf hY
+  have h1 : ⟪Z, mlieBracket I (f • Y) X⟫ x =
+      - bar _ (((mfderiv I 𝓘(ℝ, ℝ) f x) (X x))) • ⟪Z, Y⟫ x + f x • ⟪Z, mlieBracket I Y X⟫ x := by
+    simp_rw [product_apply, aux, inner_add_right]
+    congr
+    · simp [bar]; rw [real_inner_smul_right]
+    · rw [inner_smul_right_eq_smul]
+  rw [h1]
+
+  have h2 : ⟪X, mlieBracket I Z (f • Y)⟫ x =
+      bar _ (((mfderiv I 𝓘(ℝ, ℝ) f x) (Z x))) • ⟪X, Y⟫ x + f x • ⟪X, mlieBracket I Z Y⟫ x := by
+    simp_rw [product_apply, aux2, inner_add_right]
+    congr
+    · simp [bar]; rw [real_inner_smul_right]
+    · rw [inner_smul_right_eq_smul]
+  rw [h2]
+
+  set A := rhs_aux I X Y Z x
+  set B := rhs_aux I Y Z X x
+  set C := rhs_aux I Z X Y x
+  dsimp
+  set dfx := (mfderiv I 𝓘(ℝ, ℝ) f x)
+  set D := ⟪Y, mlieBracket I X Z⟫ x
+  set E := ⟪Z, mlieBracket I Y X⟫ x
+  set F := ⟪X, mlieBracket I Z Y⟫ x
+
+  simp [bar]
+  -- obvious now?
+  sorry
+
+  -- -- TODO: clean up this proof!
+  -- let f : M → ℝ := fun _ ↦ a
+  -- have : rhs_aux I (a • Y) Z X x = a • rhs_aux I Y Z X x := by
+  --   trans rhs_aux I (f • Y) Z X x
+  --   · rfl
+  --   rw [rhs_aux_smulX I Y (f := f) (Y := Z) (Z := X)]
+  --   rfl
+  -- rw [this, rhs_aux_smulZ_const_apply I _ hX hY]
+  -- -- is there a better abstraction for "Lie bracket conv mode"?
+  -- have : ⟪Z, mlieBracket I (a • Y) X⟫ x = a • ⟪Z, mlieBracket I Y X⟫ x := by
+  --   simp_rw [product_apply, mlieBracket_const_smul_left (W := X) hY, inner_smul_right_eq_smul]
+  -- rw [this]
+  -- have aux2 : ⟪X, mlieBracket I Z (a • Y)⟫ x = a • ⟪X, mlieBracket I Z Y⟫ x := by
+  --   simp_rw [product_apply,  mlieBracket_const_smul_right (V := Z) hY, inner_smul_right_eq_smul]
+  -- rw [aux2]
+  -- simp
+  -- ring
+
+#exit
 lemma leviCivitaRhs'_addZ_apply [CompleteSpace E]
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x)
     (hZ : MDiffAt (T% Z) x) (hZ' : MDiffAt (T% Z') x) :
@@ -787,8 +856,10 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
         exact Subsingleton.eq_zero (X x)
       simp [lcCandidate_aux, hE, this]
     simp only [lcCandidate_aux, hE, ↓reduceDIte]
+    -- missing lemma: simp_rw [leviCivitaRhs_smulY_apply]
     sorry
 
+#exit
 -- The candidate definition is a covariant derivative on each local frame's domain.
 lemma isCovariantDerivativeOn_lcCandidate [FiniteDimensional ℝ E]
     (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e] :
