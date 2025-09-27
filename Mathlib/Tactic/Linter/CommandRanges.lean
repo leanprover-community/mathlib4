@@ -35,7 +35,7 @@ def commandRangesLinter : Linter where run stx := do
     if let some rg := stx.getRangeWithTrailing? then ranges.push rg.stop else ranges
   let fm ← getFileMap
   let positions := ranges.map fm.toPosition
-  logInfo m!"{ranges} -- {positions}"
+  logInfo m!"{ranges}" -- {positions}"
 
 initialize addLinter commandRangesLinter
 
