@@ -6,7 +6,6 @@ Authors: Patrick Massot
 
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.CongrM
-import Batteries.Lean.Position
 
 /-! # CongrM widget
 
@@ -50,6 +49,6 @@ open scoped Json in
 /-- Display a widget panel allowing to generate a `congrm` call with holes specified by selecting
 subexpressions in the goal. -/
 elab stx:"congrm?" : tactic => do
-  let some replaceRange := (← getFileMap).rangeOfStx? stx | return
+  let some replaceRange := (← getFileMap).lspRangeOfStx? stx | return
   Widget.savePanelWidgetInfo CongrMSelectionPanel.javascriptHash
     (pure <| json% { replaceRange: $(replaceRange) }) stx

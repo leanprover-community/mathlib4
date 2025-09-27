@@ -3,7 +3,6 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Batteries.Lean.Position
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.GCongr
 
@@ -49,6 +48,6 @@ open scoped Json in
 /-- Display a widget panel allowing to generate a `gcongr` call with holes specified by selecting
 subexpressions in the goal. -/
 elab stx:"gcongr?" : tactic => do
-  let some replaceRange := (← getFileMap).rangeOfStx? stx | return
+  let some replaceRange := (← getFileMap).lspRangeOfStx? stx | return
   Widget.savePanelWidgetInfo GCongrSelectionPanel.javascriptHash
     (pure <| json% { replaceRange: $(replaceRange) }) stx

@@ -151,12 +151,12 @@ include hw
   let ⟨p2, d1, d2, d3, d4, c1, c2, c3, c4, hk⟩ := hw
   ⟨p2.symm, d2, d1, d4, d3, c3, c4, c1, c2, by rwa [inter_comm]⟩
 
-@[grind]
+@[grind →]
 lemma fst_notMem_right : w₁ ∉ t :=
   fun h ↦ hw.isPathGraph3Compl.not_adj_fst <| hw.isNClique_right.1 (mem_insert_self ..)
     (mem_insert_of_mem h) hw.isPathGraph3Compl.ne_fst
 
-@[grind]
+@[grind →]
 lemma snd_notMem_left : w₂ ∉ s := hw.symm.fst_notMem_right
 
 /--
@@ -186,11 +186,11 @@ lemma not_colorable_succ : ¬ G.Colorable (r + 1) := by
     apply (C.valid _ hcx.symm).elim
     exact hw.isNClique_left.1 (by simp) (by simp [hx]) fun h ↦ hw.notMem_left (h ▸ hx)
 
-@[grind]
+@[grind →]
 lemma card_left : s.card = r := by
   simp [← Nat.succ_inj, ← hw.isNClique_left.2, hw.notMem_left]
 
-@[grind]
+@[grind →]
 lemma card_right : t.card = r := hw.symm.card_left
 
 lemma card_inter_lt_of_cliqueFree (h : G.CliqueFree (r + 2)) : k < r := by

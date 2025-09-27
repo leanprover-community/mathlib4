@@ -10,7 +10,7 @@ import Mathlib.Util.AssertExists
 # Join of a list of lists
 
 This file proves basic properties of `List.flatten`, which concatenates a list of lists. It is
-defined in `Init.Data.List.Basic`.
+defined in `Init.Prelude`.
 -/
 
 -- Make sure we don't import algebra
@@ -40,6 +40,10 @@ theorem drop_take_succ_eq_cons_getElem (L : List α) (i : Nat) (h : i < L.length
 `(x ++ l₁) ++ (x ++ l₂) ++ ... ++ (x ++ lₙ) ++ x` where `L = [l₁, l₂, ..., lₙ]`. -/
 theorem append_flatten_map_append (L : List (List α)) (x : List α) :
     x ++ (L.map (· ++ x)).flatten = (L.map (x ++ ·)).flatten ++ x := by
-  induction L with grind
+  induction L with
+  | nil => rw [map_nil, flatten_nil, append_nil, map_nil, flatten, nil_append]
+  | cons _ _ ih =>
+    rw [map_cons, flatten_cons, map_cons, flatten_cons, append_assoc, ih, append_assoc,
+      append_assoc]
 
 end List
