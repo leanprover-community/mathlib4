@@ -115,7 +115,7 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
     refine Function.support_subset_iff'.2 fun x hx => ?_
     simp only [hgv hx, Pi.zero_apply, zero_smul]
   have gc_mem : MemLp (fun x => g x • c) p μ := by
-    refine MemLp.smul (memLp_top_const _) ?_ (p := p) (q := ∞)
+    refine MemLp.smul (memLp_const _) ?_ (p := p) (q := ∞)
     refine ⟨g.continuous.aestronglyMeasurable, ?_⟩
     have : eLpNorm (v.indicator fun _x => (1 : ℝ)) p μ < ⊤ :=
       (eLpNorm_indicator_const_le _ _).trans_lt <| by simp [lt_top_iff_ne_top, hμv.ne]

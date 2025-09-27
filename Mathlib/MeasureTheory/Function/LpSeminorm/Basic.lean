@@ -171,6 +171,12 @@ end Neg
 
 section Const
 
+
+variable (ε) in
+/-- The class of constant Lp functions. Has only `p = ∞` and `μ.IsFiniteMeasure` instances. -/
+class MemLp.Const (p : ℝ≥0∞) (μ : Measure α) where
+  eLpNorm_const_lt_top' (c : ε) (hc : ‖c‖ₑ ≠ ∞) : eLpNorm (fun _ ↦ c) p μ < ∞
+
 variable {ε' ε'' : Type*} [TopologicalSpace ε'] [ContinuousENorm ε']
   [TopologicalSpace ε''] [ESeminormedAddMonoid ε'']
 
@@ -208,6 +214,20 @@ theorem eLpNorm_const (c : ε) (h0 : p ≠ 0) (hμ : μ ≠ 0) :
   · simp [h_top, eLpNormEssSup_const c hμ]
   simp [eLpNorm_eq_eLpNorm' h0 h_top, eLpNorm'_const, ENNReal.toReal_pos h0 h_top]
 
+instance [IsFiniteMeasure μ] : MemLp.Const ε p μ where
+  eLpNorm_const_lt_top' c hc := by
+    by_cases h0 : p = 0 ∨ μ = 0
+    · aesop
+    · push_neg at h0
+      rw [eLpNorm_const c h0.1 h0.2]
+      finiteness
+
+export MeasureTheory.MemLp.Const (eLpNorm_const_lt_top')
+
+theorem memLp_const_of_enorm [TopologicalSpace ε] [MemLp.Const ε p μ] {c : ε}
+    (hc : ‖c‖ₑ ≠ ∞) : MemLp (fun _ ↦ c) p μ :=
+  ⟨aestronglyMeasurable_const, MemLp.Const.eLpNorm_const_lt_top' _ hc⟩
+
 theorem eLpNorm_const' (c : ε) (h0 : p ≠ 0) (h_top : p ≠ ∞) :
     eLpNorm (fun _ : α => c) p μ = ‖c‖ₑ * μ Set.univ ^ (1 / ENNReal.toReal p) := by
   simp [eLpNorm_eq_eLpNorm' h0 h_top, eLpNorm'_const, ENNReal.toReal_pos h0 h_top]
@@ -234,35 +254,17 @@ theorem eLpNorm_const_lt_top_iff {p : ℝ≥0∞} {c : F} (hp_ne_zero : p ≠ 0)
     eLpNorm (fun _ : α => c) p μ < ∞ ↔ c = 0 ∨ μ Set.univ < ∞ := by
   rw [eLpNorm_const_lt_top_iff_enorm enorm_ne_top hp_ne_zero hp_ne_top]; simp
 
-theorem memLp_const_enorm {c : ε'} (hc : ‖c‖ₑ ≠ ⊤) [IsFiniteMeasure μ] :
-    MemLp (fun _ : α ↦ c) p μ := by
-  refine ⟨aestronglyMeasurable_const, ?_⟩
-  by_cases h0 : p = 0
-  · simp [h0]
-  by_cases hμ : μ = 0
-  · simp [hμ]
-  rw [eLpNorm_const c h0 hμ]
-  finiteness
+theorem eLpNorm_const_lt_top [MemLp.Const E p μ] (c : E) : eLpNorm (fun _ ↦ c) p μ < ∞ :=
+  MemLp.Const.eLpNorm_const_lt_top' c (by simp)
 
-theorem memLp_const (c : E) [IsFiniteMeasure μ] : MemLp (fun _ : α => c) p μ :=
-  memLp_const_enorm enorm_ne_top
-
-theorem memLp_top_const_enorm {c : ε'} (hc : ‖c‖ₑ ≠ ⊤) :
-    MemLp (fun _ : α ↦ c) ∞ μ :=
-  ⟨aestronglyMeasurable_const, by by_cases h : μ = 0 <;> simp [eLpNorm_const _, h, hc.lt_top]⟩
-
-theorem memLp_top_const (c : E) : MemLp (fun _ : α => c) ∞ μ :=
-  memLp_top_const_enorm enorm_ne_top
+theorem memLp_const (c : E) [MemLp.Const E p μ] : MemLp (fun _ ↦ c) p μ :=
+  memLp_const_of_enorm (by simp)
 
 theorem memLp_const_iff_enorm
     {p : ℝ≥0∞} {c : ε''} (hc : ‖c‖ₑ ≠ ⊤) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     MemLp (fun _ : α ↦ c) p μ ↔ ‖c‖ₑ = 0 ∨ μ Set.univ < ∞ := by
   simp_all [MemLp, aestronglyMeasurable_const,
     eLpNorm_const_lt_top_iff_enorm hc hp_ne_zero hp_ne_top]
-
-theorem memLp_const_iff {p : ℝ≥0∞} {c : E} (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
-    MemLp (fun _ : α => c) p μ ↔ c = 0 ∨ μ Set.univ < ∞ := by
-  rw [memLp_const_iff_enorm enorm_ne_top hp_ne_zero hp_ne_top]; simp
 
 end Const
 
@@ -365,6 +367,9 @@ theorem eLpNorm_mono_real {f : α → F} {g : α → ℝ} (h : ∀ x, ‖f x‖ 
 theorem eLpNormEssSup_le_of_ae_enorm_bound {f : α → ε} {C : ℝ≥0∞} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) :
     eLpNormEssSup f μ ≤ C :=
   essSup_le_of_ae_le C hfC
+
+instance : MemLp.Const ε ∞ μ where
+  eLpNorm_const_lt_top' c hc := eLpNormEssSup_le_of_ae_enorm_bound (by simp) |>.trans_lt hc.lt_top
 
 theorem eLpNormEssSup_le_of_ae_nnnorm_bound {f : α → F} {C : ℝ≥0} (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) :
     eLpNormEssSup f μ ≤ C :=
@@ -557,7 +562,7 @@ theorem memLp_top_of_bound {f : α → E} (hf : AEStronglyMeasurable f μ) (C : 
 
 theorem MemLp.of_enorm_bound [IsFiniteMeasure μ] {f : α → ε} (hf : AEStronglyMeasurable f μ)
     {C : ℝ≥0∞} (hC : C ≠ ∞) (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) : MemLp f p μ := by
-  apply (memLp_const_enorm hC).of_le_enorm (ε' := ℝ≥0∞) hf <| hfC.mono fun _x hx ↦ ?_
+  apply (memLp_const_of_enorm hC).of_le_enorm (ε' := ℝ≥0∞) hf <| hfC.mono fun _x hx ↦ ?_
   rw [enorm_eq_self]; exact hx
 
 theorem MemLp.of_bound [IsFiniteMeasure μ] {f : α → E} (hf : AEStronglyMeasurable f μ) (C : ℝ)
