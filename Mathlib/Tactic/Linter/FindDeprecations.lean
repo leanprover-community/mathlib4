@@ -158,7 +158,7 @@ elab "#regenerate_deprecations " oldDate:str ppSpace newDate:str really?:(&" rea
     let optionAdded ← addAfterImports mod option
     --dbg_trace optionAdded
     let newName := mod.dropRight ".lean".length ++ "_with_option.lean"
-    logInfo m!"Adding '{option}' to '{mod}'\nWriting to '{newName}'\n"
+    logInfo m!"Adding '{option}' to '{mod}'\nWriting to {indentD newName}\n"
     if really?.isSome then
       IO.FS.writeFile newName optionAdded
     if false then
