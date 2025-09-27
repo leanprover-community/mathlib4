@@ -111,7 +111,7 @@ The output contains all the declarations that were deprecated after `oldDate`
 and before `newDate`.
 -/
 def deprecatedHashMap (oldDate newDate : String) :
-    CommandElabM (Std.HashMap String (Array (Name × String.Range))) := do
+    CommandElabM (Std.HashMap (Name × String) (Array (Name × String.Range))) := do
   let mut fin := ∅
   --let searchPath ← getSrcSearchPath
   for (nm, _) in (← getEnv).constants.map₁ do
@@ -131,7 +131,7 @@ def deprecatedHashMap (oldDate newDate : String) :
       let fm := FileMap.ofString file
       let rg : String.Range := ⟨fm.ofPosition rgStart, fm.ofPosition rgStop⟩
       --dbg_trace (rgStart, rgStop)
-      fin := fin.alter lean fun a => (a.getD #[]).binInsert (·.2.1 < ·.2.1) (decl, rg)
+      fin := fin.alter (modName, lean) fun a => (a.getD #[]).binInsert (·.2.1 < ·.2.1) (decl, rg)
 --      catch e =>
 --        if let .error ref msg := e then
 --          logInfoAt ref m!"error on {modName}: {msg}"
@@ -144,7 +144,8 @@ def removeDeprecations (fname : String) (rgs : Array String.Range) : IO String :
   let mut curr : String.Pos := 0
   let mut fileSubstring := file.toSubstring
   let mut tot := ""
-  for next in rgs do
+  let last := fileSubstring.stopPos
+  for next in rgs.push ⟨last, last⟩ do
     if next.start < curr then continue
     let part := {fileSubstring with stopPos := next.start}.toString
     tot := tot ++ part
@@ -161,7 +162,7 @@ def parseLine (line : String) : Option (List String.Pos) :=
   | _ => none
 
 def rewriteOneFile (fname : String) (rgs : Array (Name × String.Range)) :
-    CommandElabM String := do
+    CommandElabM (String × String) := do
   let option :=
     s!"\nimport Mathlib.Tactic.Linter.CommandRanges\n\
       set_option linter.commandRanges true\n"
@@ -177,17 +178,18 @@ def rewriteOneFile (fname : String) (rgs : Array (Name × String.Range)) :
   logInfo m!"Adding '{option}' to '{fname}'\nWriting to {indentD fname_with_option}\n\
           {m!"\n".joinSep rgsPos.toList}\n{m!"\n".joinSep (rgs.map (m!"{·}")).toList}"
   IO.FS.writeFile fname_with_option fileWithOptionAdded
-  let fname.ranges := fname_with_option ++ ".ranges"
   let ranges := rgs.map (·.2)
-  let cmd : IO.Process.SpawnArgs := {cmd := "lake", args := #["build", fname.ranges]}
-  dbg_trace ← IO.Process.run cmd
+  let cmd : IO.Process.SpawnArgs := {cmd := "lake", args := #["build", fname_with_option]}
 
-  let lakeInfoOfPositions ← IO.Process.run cmd -- ← IO.FS.lines fname.ranges
+  logInfo m!"Retrieving command positions from '{fname_with_option}'"
+  let lakeInfoOfPositions ← IO.Process.output cmd -- ← IO.FS.lines fname.ranges
+  logInfo lakeInfoOfPositions.stdout
+  --IO.FS.removeFile fname_with_option
   -- `stringPositions` consists of lists of the form `[p₁, p₂, p₃]`, where
   -- * `p₁` is the start of a command;
   -- * `p₂` is the end of the command, excluding trailing whitespace and comments;
   -- * `p₁` is the end of the command, including trailing whitespace and comments.
-  let stringPositions := (lakeInfoOfPositions.splitOn "\n").map parseLine |>.reduceOption
+  let stringPositions := (lakeInfoOfPositions.stdout.splitOn "\n").map parseLine |>.reduceOption
   let mut removals : Array (List String.Pos) := #[]
   -- For each range `rg` in `ranges`, we isolate the unique entry of `stringPositions` that
   -- entirely contains `rg`
@@ -203,7 +205,7 @@ def rewriteOneFile (fname : String) (rgs : Array (Name × String.Range)) :
     | _ => logInfo "Something went wrong!"
   let rems := removals.map fun | [a, b, _c] => (⟨a, b⟩ : String.Range) | _ => default
   --dbg_trace rems
-  removeDeprecations fname rems
+  return (fname_with_option, ← removeDeprecations fname rems)
 
 
 open Lean Elab Command in
@@ -212,7 +214,7 @@ elab "#regenerate_deprecations " oldDate:str ppSpace newDate:str really?:(&" rea
   let oldDate := oldDate.getString
   let newDate := newDate.getString
   let dmap ← deprecatedHashMap oldDate newDate
-  for (mod, rgs) in dmap.toArray.qsort (·.1 < ·.1) do
+  for ((_, mod), rgs) in dmap.toArray.qsort (·.1.2 < ·.1.2) do
     let option :=
       s!"\nimport Mathlib.Tactic.Linter.CommandRanges\n\
         set_option linter.commandRanges true\n"
@@ -246,7 +248,7 @@ def rewriteWithoutDeprecations (oldDate newDate : String) :
     s!"\nimport Mathlib.Tactic.Linter.CommandRanges\n\
       set_option linter.commandRanges true\n"
   let offset := option.toSubstring.stopPos
-  for (fname, namesAndRanges) in dmap do
+  for ((_, fname), namesAndRanges) in dmap do
     --let fname := "Mathlib/RingTheory/IsAdjoinRoot.lean"
     --let filWithRanges := "Mathlib/RingTheory/IsAdjoinRoot_with_option.lean.ranges"
     let fnameWithRanges := fname.dropRight ".lean".length ++ "_with_option.lean.ranges"
@@ -297,7 +299,7 @@ elab "#remove_deprecated_declarations " oldDate:str newDate:str really?:("really
   let dmap ← deprecatedHashMap oldDate newDate
   dbg_trace "{dmap.fold (init := 0) fun tot _ rgs => tot + rgs.size - 1} \
       deprecations among {dmap.size} files"
-  for (mod, rgs) in dmap.toArray.qsort (·.1 < ·.1) do
+  for ((_, mod), rgs) in dmap.toArray.qsort (·.1.2 < ·.1.2) do
     let mod1 := repo ++ (mod.splitOn repo).getLast!
     --let rgs := cleanUpRanges rgs
     dbg_trace
