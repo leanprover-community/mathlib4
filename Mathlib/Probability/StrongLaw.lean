@@ -25,7 +25,7 @@ This file also contains the Lᵖ version of the strong law of large numbers prov
 ## Implementation
 
 The main point is to prove the result for real-valued random variables, as the general case
-of Banach-space valued random variables follows from this case and approximation by simple
+of Banach-space-valued random variables follows from this case and approximation by simple
 functions. The real version is given in `ProbabilityTheory.strong_law_ae_real`.
 
 We follow the proof by Etemadi
@@ -215,7 +215,7 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
     (hKN : K ≤ N) :
     ∑ j ∈ range K, ℙ {ω | X ω ∈ Set.Ioc (j : ℝ) N} ≤ ENNReal.ofReal (𝔼[X] + 1) := by
   let ρ : Measure ℝ := Measure.map X ℙ
-  haveI : IsProbabilityMeasure ρ := isProbabilityMeasure_map hint.aemeasurable
+  haveI : IsProbabilityMeasure ρ := Measure.isProbabilityMeasure_map hint.aemeasurable
   have A : ∑ j ∈ range K, ∫ _ in j..N, (1 : ℝ) ∂ρ ≤ 𝔼[X] + 1 :=
     calc
       ∑ j ∈ range K, ∫ _ in j..N, (1 : ℝ) ∂ρ =
@@ -702,7 +702,7 @@ lemma strong_law_ae_of_measurable
   Then the strong law for `φ (X n)` implies the strong law for `X n`, up to a small
   error controlled by `n⁻¹ ∑_{i=0}^{n-1} ‖X i - φ (X i)‖`. This one is also controlled thanks
   to the one-dimensional law of large numbers: it converges ae to `𝔼[‖X 0 - φ (X 0)‖]`, which
-  is arbitrarily small for well chosen `φ`. -/
+  is arbitrarily small for well-chosen `φ`. -/
   let s : Set E := Set.range (X 0) ∪ {0}
   have zero_s : 0 ∈ s := by simp [s]
   have : SeparableSpace s := h'.separableSpace_range_union_singleton
