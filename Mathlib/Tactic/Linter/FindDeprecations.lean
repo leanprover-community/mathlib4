@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 --import Mathlib --.Deprecated.Order
 import Lean
+import ImportGraph.Imports
 --import Mathlib.mwe_deprecations
 
 /-!
@@ -220,8 +221,35 @@ def rewriteOneFile (fname : String) (rgs : Array (Name × String.Range)) :
   --dbg_trace rems
   return (fname_with_option, ← removeDeprecations fname rems)
 
+/-- The `<` partial order on modules: `importLT env mod₁ mod₂` means that `mod₂` imports `mod₁`. -/
+def importLT (env : Environment) (f1 f2 : Name) : Bool :=
+  (env.findRedundantImports #[f1, f2]).contains f1
 
-open Lean Elab Command in
+elab "#clear_deprecations " oldDate:str ppSpace newDate:str really?:(&" really")? : command => do
+  --let f (fname : String) : Bool := true --#[].contains fname
+  let oldDate := oldDate.getString --"2025-09-10"
+  let newDate := newDate.getString --"2025-09-10"
+  let fmap ← deprecatedHashMap oldDate newDate
+  let mut filesToRemove := #[]
+  let env ← getEnv
+  let sortedFMap := fmap.toArray.qsort fun ((a, _), _) ((b, _), _) => importLT env b a
+  for ((_modName, fname), noDeprs) in sortedFMap do
+    --dbg_trace fname
+    --if false then
+    let msg := m!"\n* ".joinSep
+      (noDeprs.map (fun (decl, rg) => m!"{.ofConstName decl}: {rg}")).toList
+    logInfo
+      m!"The deprecations in the date range {oldDate} to {newDate} in{indentD fname}\n\
+        are:\n\n* {msg}"
+    let (toRemove, fileWithoutDeprecations) ← rewriteOneFile fname noDeprs
+    dbg_trace fileWithoutDeprecations
+    if really?.isSome then
+      IO.FS.writeFile fname fileWithoutDeprecations
+    filesToRemove := filesToRemove.push toRemove
+  dbg_trace "Removing {filesToRemove}"
+  for tmp in filesToRemove do
+    IO.FS.removeFile tmp
+
 elab "#regenerate_deprecations " oldDate:str ppSpace newDate:str really?:(&" really")? : command => do
   let repo := repo.toString
   let oldDate := oldDate.getString
