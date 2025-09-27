@@ -209,7 +209,6 @@ lemma swap_prod {κ : Kernel α β} [IsSFiniteKernel κ] {η : Kernel α γ} [Is
     (swap β γ) ∘ₖ (κ ×ₖ η) = (η ×ₖ κ) := by
   rw [swap_comp_eq_map, map_prod_swap]
 
-
 lemma deterministic_prod_deterministic {f : α → β} {g : α → γ}
     (hf : Measurable f) (hg : Measurable g) :
     deterministic f hf ×ₖ deterministic g hg
