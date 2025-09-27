@@ -282,7 +282,8 @@ lemma eq_zero_or_eq_zero_of_smul_eq_zero [NoZeroSMulDivisors A B]
   -- two elements. So we need to dispose of the cases `#U = 0` and `#U = 1` first.
   by_cases hU' : U = ∅
   · simp [hU']
-  obtain ⟨z, hz⟩ : ∃ z, z ∈ U := nonempty_iff_ne_empty.mpr hU'
+  push_neg at hU'
+  obtain ⟨z, hz⟩ : ∃ z, z ∈ U := hU'
   by_cases hU'' : U = {z}
   · simpa [hU''] using hfg z hz
   apply (nontrivial_iff_ne_singleton hz).mpr at hU''

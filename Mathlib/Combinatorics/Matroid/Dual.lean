@@ -177,8 +177,9 @@ theorem IsBase.compl_inter_isBasis_of_inter_isBasis (hB : M.IsBase B) (hBX : M.I
   simp only [diff_inter_self_eq_diff, mem_diff, not_and, not_not, imp_iff_right he.1.1] at he
   simp_rw [dual_dep_iff_forall, insert_subset_iff, and_iff_right he.1.1,
     and_iff_left (inter_subset_left.trans diff_subset)]
-  refine fun B' hB' ↦ by_contra (fun hem ↦ ?_)
-  rw [nonempty_iff_ne_empty, not_ne_iff, ← union_singleton, diff_inter_diff,
+  refine fun B' hB' ↦ ?_
+  by_contra! hem
+  rw [← union_singleton, diff_inter_diff,
     union_inter_distrib_right, union_empty_iff, singleton_inter_eq_empty, diff_eq,
     inter_right_comm, inter_eq_self_of_subset_right hB'.subset_ground, ← diff_eq,
     diff_eq_empty] at hem

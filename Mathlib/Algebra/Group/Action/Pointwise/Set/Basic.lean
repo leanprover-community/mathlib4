@@ -260,7 +260,7 @@ theorem smul_set_compl : a • sᶜ = (a • s)ᶜ := by
 @[to_additive]
 theorem smul_inter_ne_empty_iff {s t : Set α} {x : α} :
     x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a * b⁻¹ = x := by
-  rw [← nonempty_iff_ne_empty]
+  push_neg
   constructor
   · rintro ⟨a, h, ha⟩
     obtain ⟨b, hb, rfl⟩ := mem_smul_set.mp h
@@ -276,7 +276,7 @@ theorem smul_inter_ne_empty_iff' {s t : Set α} {x : α} :
 @[to_additive]
 theorem op_smul_inter_ne_empty_iff {s t : Set α} {x : αᵐᵒᵖ} :
     x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ s ∧ b ∈ t) ∧ a⁻¹ * b = MulOpposite.unop x := by
-  rw [← nonempty_iff_ne_empty]
+  push_neg
   constructor
   · rintro ⟨a, h, ha⟩
     obtain ⟨b, hb, rfl⟩ := mem_smul_set.mp h

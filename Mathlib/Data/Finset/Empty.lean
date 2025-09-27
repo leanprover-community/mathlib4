@@ -95,7 +95,7 @@ instance inhabitedFinset : Inhabited (Finset α) :=
 theorem empty_val : (∅ : Finset α).1 = 0 :=
   rfl
 
-@[simp, grind]
+@[simp, grind, push]
 theorem notMem_empty (a : α) : a ∉ (∅ : Finset α) := by
   simp only [mem_def, empty_val, notMem_zero, not_false_iff]
 
@@ -140,10 +140,16 @@ theorem not_ssubset_empty (s : Finset α) : ¬s ⊂ ∅ := by grind
 theorem nonempty_of_ne_empty {s : Finset α} (h : s ≠ ∅) : s.Nonempty :=
   exists_mem_of_ne_zero (mt val_eq_zero.1 h)
 
+@[push ←]
 theorem nonempty_iff_ne_empty {s : Finset α} : s.Nonempty ↔ s ≠ ∅ :=
   ⟨Nonempty.ne_empty, nonempty_of_ne_empty⟩
 
-@[simp]
+/-- A variant of `nonempty_iff_ne_empty` used by `push`. -/
+@[push ←]
+theorem nonempty_iff_empty_ne {s : Finset α} : s.Nonempty ↔ ∅ ≠ s :=
+  nonempty_iff_ne_empty.trans ne_comm
+
+@[simp, push]
 theorem not_nonempty_iff_eq_empty {s : Finset α} : ¬s.Nonempty ↔ s = ∅ :=
   nonempty_iff_ne_empty.not.trans not_not
 

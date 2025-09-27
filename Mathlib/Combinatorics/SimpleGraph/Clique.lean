@@ -414,7 +414,7 @@ theorem CliqueFree.comap {H : SimpleGraph β} (f : H ↪g G) : G.CliqueFree n �
 theorem cliqueFree_of_card_lt [Fintype α] (hc : card α < n) : G.CliqueFree n := by
   by_contra h
   refine Nat.lt_le_asymm hc ?_
-  rw [cliqueFree_iff, not_isEmpty_iff] at h
+  rw [not_cliqueFree_iff] at h
   simpa only [Fintype.card_fin] using Fintype.card_le_of_embedding h.some.toEmbedding
 
 /-- A complete `r`-partite graph has no `n`-cliques for `r < n`. -/
@@ -804,10 +804,10 @@ lemma IsIndepSet.nonempty_mem_compl_mem_edge
     [Fintype α] [DecidableEq α] {s : Finset α} (indA : G.IsIndepSet s) {e} (he : e ∈ G.edgeSet) :
     { b ∈ sᶜ | b ∈ e }.Nonempty := by
   obtain ⟨v, w⟩ := e
-  by_contra c
+  by_contra! c
   rw [IsIndepSet] at indA
   rw [mem_edgeSet] at he
-  rw [not_nonempty_iff_eq_empty, filter_eq_empty_iff] at c
+  rw [filter_eq_empty_iff] at c
   simp_rw [mem_compl, Sym2.mem_iff, not_or] at c
   by_cases vins : v ∈ s
   · have wins : w ∈ s := by by_contra wnins; exact (c wnins).right rfl

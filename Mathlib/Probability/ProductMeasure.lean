@@ -187,8 +187,8 @@ theorem partialTraj_const_restrict₂ {a b : ℕ} :
     by_cases hs : s.Nonempty
     · rw [Subsingleton.eq_univ_of_nonempty hs, @measure_univ .., measure_univ]
       exact (IsMarkovKernel.map _ (measurable_restrict₂ _)) |>.isProbabilityMeasure x
-    · rw [Set.not_nonempty_iff_eq_empty.1 hs]
-      simp
+    · push_neg at hs
+      simp [hs]
 
 /-- `partialTraj κ a b` is a kernel which up to an equivalence is equal to
 `Kernel.id ×ₖ (κ a ⊗ₖ ... ⊗ₖ κ (b - 1))`. This lemma therefore states that if the kernel `κ i`

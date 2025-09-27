@@ -334,12 +334,12 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
     eVariationOn f s + eVariationOn f t ≤ eVariationOn f (s ∪ t) := by
   by_cases hs : s = ∅
   · simp [hs]
-  have : Nonempty { u // Monotone u ∧ ∀ i : ℕ, u i ∈ s } :=
-    nonempty_monotone_mem (nonempty_iff_ne_empty.2 hs)
+  push_neg at hs
+  have : Nonempty { u // Monotone u ∧ ∀ i : ℕ, u i ∈ s } := nonempty_monotone_mem hs
   by_cases ht : t = ∅
   · simp [ht]
-  have : Nonempty { u // Monotone u ∧ ∀ i : ℕ, u i ∈ t } :=
-    nonempty_monotone_mem (nonempty_iff_ne_empty.2 ht)
+  push_neg at ht
+  have : Nonempty { u // Monotone u ∧ ∀ i : ℕ, u i ∈ t } := nonempty_monotone_mem ht
   refine ENNReal.iSup_add_iSup_le ?_
   /- We start from two sequences `u` and `v` along `s` and `t` respectively, and we build a new
     sequence `w` along `s ∪ t` by juxtaposing them. Its variation is larger than the sum of the

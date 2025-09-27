@@ -46,8 +46,8 @@ lemma iff_of_unique [Unique ι] :
   refine ⟨fun ⟨s, hs, V, hc, hcov⟩ ↦ ?_, fun ⟨V, hc, h⟩ ↦ ?_⟩
   · by_cases h : s = ∅
     · aesop
-    · obtain rfl : s = {default} := by
-        rw [← Set.univ_unique, Subsingleton.eq_univ_of_nonempty (Set.nonempty_iff_ne_empty.mpr h)]
+    · push_neg at h
+      obtain rfl : s = {default} := by rw [← Set.univ_unique, Subsingleton.eq_univ_of_nonempty h]
       aesop
   · refine ⟨{default}, Set.finite_singleton _, fun i h ↦ h ▸ V, fun i ↦ ?_, by simpa⟩
     rintro rfl

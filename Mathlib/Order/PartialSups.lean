@@ -228,7 +228,8 @@ theorem ciSup_partialSups_eq [ConditionallyCompleteLattice α]
   · refine (ciSup_le fun i ↦ ?_).antisymm (ciSup_mono ?_ <| le_partialSups f)
     · simpa only [partialSups_eq_ciSup_Iic] using ciSup_le fun i ↦ le_ciSup h _
     · rwa [bddAbove_range_partialSups]
-  · exact congr_arg _ (funext (not_nonempty_iff.mp hι).elim)
+  · push_neg at hι
+    exact congr_arg _ (funext hι.elim)
 
 /-- Version of `ciSup_partialSups_eq` without boundedness assumptions, but requiring a
 `ConditionallyCompleteLinearOrder` rather than just a `ConditionallyCompleteLattice`. -/
