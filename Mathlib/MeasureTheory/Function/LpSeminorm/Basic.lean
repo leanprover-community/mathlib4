@@ -220,6 +220,8 @@ instance [IsFiniteMeasure μ] : MemLp.Const ε p μ where
       rw [eLpNorm_const c h0.1 h0.2]
       finiteness
 
+export MeasureTheory.MemLp.Const (eLpNorm_const_lt_top')
+
 theorem memLp_const_of_enorm [TopologicalSpace ε] [MemLp.Const ε p μ] {c : ε}
     (hc : ‖c‖ₑ ≠ ∞) : MemLp (fun _ ↦ c) p μ :=
   ⟨aestronglyMeasurable_const, MemLp.Const.eLpNorm_const_lt_top' _ hc⟩
