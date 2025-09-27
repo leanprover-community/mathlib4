@@ -51,14 +51,14 @@ abbrev convStarAddMonoid : StarAddMonoid (E →ₗ[R] F) where
 
 scoped[ConvolutionStar] attribute [instance] LinearMap.convStarAddMonoid
 
-theorem isSelfAdjoint_iff_map_star {S : Type*} [FunLike S E F] [LinearMapClass S R E F] (f : S) :
-    IsSelfAdjoint (f : E →ₗ[R] F) ↔ ∀ x, f (star x) = star (f x) := by
-  simp_rw [IsSelfAdjoint, LinearMap.ext_iff, convStar_apply, star_eq_iff_star_eq, eq_comm, coe_coe]
+theorem isSelfAdjoint_iff_map_star (f : E →ₗ[R] F) :
+    IsSelfAdjoint f ↔ ∀ x, f (star x) = star (f x) := by
+  simp_rw [IsSelfAdjoint, LinearMap.ext_iff, convStar_apply, star_eq_iff_star_eq, eq_comm]
 
 @[simp]
 protected theorem _root_.StarHomClass.isSelfAdjoint {S : Type*} [FunLike S E F]
     [LinearMapClass S R E F] [StarHomClass S E F] {f : S} : IsSelfAdjoint (f : E →ₗ[R] F) :=
-  isSelfAdjoint_iff_map_star f |>.mpr (map_star f)
+  isSelfAdjoint_iff_map_star _ |>.mpr (map_star f)
 
 variable {G : Type*} [AddCommMonoid G] [Module R G] [StarAddMonoid G] [StarModule R G]
 
