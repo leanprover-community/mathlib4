@@ -253,15 +253,27 @@ theorem opow_mul_add_pos {b v : Ordinal} (hb : b ≠ 0) (u : Ordinal) (hv : v �
   (opow_pos u <| Ordinal.pos_iff_ne_zero.2 hb).trans_le <|
     (le_mul_left _ <| Ordinal.pos_iff_ne_zero.2 hv).trans <| le_add_right _ _
 
-theorem opow_mul_add_lt_opow_mul_succ {b u w : Ordinal} (v : Ordinal) (hw : w < b ^ u) :
-    b ^ u * v + w < b ^ u * succ v := by
-  rwa [mul_succ, add_lt_add_iff_left]
+theorem opow_mul_add_lt_opow_mul {b u w x : Ordinal} {v : Ordinal} (hw : w < b ^ u) (hv : v < x) :
+    b ^ u * v + w < b ^ u * x := by
+  apply lt_of_lt_of_le (b := b ^ u * (v + 1))
+  · rwa [mul_add_one, add_lt_add_iff_left]
+  · exact mul_le_mul_left' (add_one_le_of_lt hv) _
 
+@[deprecated opow_mul_add_lt_opow_mul (since := "2025-08-27")]
+theorem opow_mul_add_lt_opow_mul_succ {b u w : Ordinal} (v : Ordinal) (hw : w < b ^ u) :
+    b ^ u * v + w < b ^ u * succ v :=
+  opow_mul_add_lt_opow_mul hw (lt_succ v)
+
+theorem opow_mul_add_lt_opow {b u v w x : Ordinal} (hv : v < b) (hw : w < b ^ u) (hu : u < x) :
+    b ^ u * v + w < b ^ x := by
+  apply (opow_mul_add_lt_opow_mul hw hv).trans_le
+  rw [← opow_succ]
+  exact opow_le_opow_right hv.pos (succ_le_of_lt hu)
+
+@[deprecated opow_mul_add_lt_opow_succ (since := "2025-08-27")]
 theorem opow_mul_add_lt_opow_succ {b u v w : Ordinal} (hvb : v < b) (hw : w < b ^ u) :
-    b ^ u * v + w < b ^ succ u := by
-  convert (opow_mul_add_lt_opow_mul_succ v hw).trans_le
-    (mul_le_mul_left' (succ_le_of_lt hvb) _) using 1
-  exact opow_succ b u
+    b ^ u * v + w < b ^ succ u :=
+  opow_mul_add_lt_opow hvb hw (lt_succ u)
 
 /-! ### Ordinal logarithm -/
 
