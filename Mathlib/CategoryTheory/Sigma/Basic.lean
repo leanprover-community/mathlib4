@@ -94,7 +94,7 @@ def natTrans {F G : (Σ i, C i) ⥤ D} (h : ∀ i : I, incl i ⋙ F ⟶ incl i �
   app := fun ⟨j, X⟩ => (h j).app X
   naturality := by
     rintro ⟨j, X⟩ ⟨_, _⟩ ⟨f⟩
-    apply (h j).naturality
+    simpa using (h j).naturality f
 
 @[simp]
 lemma natTrans_app {F G : (Σ i, C i) ⥤ D} (h : ∀ i : I, incl i ⋙ F ⟶ incl i ⋙ G) (i : I)
@@ -149,7 +149,7 @@ lemma inclDesc_inv_app (i : I) (X : C i) : (inclDesc F i).inv.app X = 𝟙 ((F i
 def descUniq (q : (Σ i, C i) ⥤ D) (h : ∀ i, incl i ⋙ q ≅ F i) : q ≅ desc F :=
   NatIso.ofComponents (fun ⟨i, X⟩ => (h i).app X) <| by
     rintro ⟨i, X⟩ ⟨_, _⟩ ⟨f⟩
-    apply (h i).hom.naturality f
+    simpa using (h i).hom.naturality f
 
 @[simp]
 lemma descUniq_hom_app (q : (Σ i, C i) ⥤ D) (h : ∀ i, incl i ⋙ q ≅ F i) (i : I) (X : C i) :
@@ -192,7 +192,7 @@ lemma map_map {j : J} {X Y : C (g j)} (f : X ⟶ Y) :
 -/
 @[simps!]
 def inclCompMap (j : J) : incl j ⋙ map C g ≅ incl (g j) :=
-  Iso.refl _
+  NatIso.ofComponents (fun _ => Iso.refl _)
 
 variable (I)
 
@@ -205,9 +205,11 @@ variable {I} {K : Type w₃}
 
 /-- The functor `Sigma.map` applied to a composition is a composition of functors. -/
 @[simps!]
-def mapComp (f : K → J) (g : J → I) : map (fun x ↦ C (g x)) f ⋙ (map C g :) ≅ map C (g ∘ f) :=
+def mapComp (f : K → J) (g : J → I) : map (fun x ↦ C (g x)) f ⋙ map C g ≅ map C (g ∘ f) :=
   (descUniq _ _) fun k =>
-    (Functor.isoWhiskerRight (inclCompMap _ f k) (map C g :) :) ≪≫ inclCompMap _ g (f k)
+    (Functor.associator _ _ _).symm ≪≫
+      Functor.isoWhiskerRight (inclCompMap (fun x ↦ C (g x)) f k) (map C g) ≪≫
+        inclCompMap C g (f k)
 
 end
 
@@ -218,8 +220,13 @@ variable {D : I → Type u₁} [∀ i, Category.{v₁} (D i)]
 
 /-- Assemble an `I`-indexed family of functors into a functor between the sigma types.
 -/
+@[simps! -isSimp]
 def sigma (F : ∀ i, C i ⥤ D i) : (Σ i, C i) ⥤ Σ i, D i :=
   desc fun i => F i ⋙ incl i
+
+theorem sigma_map_mk (F : ∀ i, C i ⥤ D i) (i : I) (X Y : C i) (f : X ⟶ Y) :
+    (sigma F).map (SigmaHom.mk f) = SigmaHom.mk ((F i).map f) := by
+  simp [sigma_map, descMap]
 
 end Functor
 
@@ -234,6 +241,7 @@ def sigma (α : ∀ i, F i ⟶ G i) : Functor.sigma F ⟶ Functor.sigma G where
   app f := SigmaHom.mk ((α f.1).app _)
   naturality := by
     rintro ⟨i, X⟩ ⟨_, _⟩ ⟨f⟩
+    simp only [Functor.sigma_map_mk]
     change SigmaHom.mk _ = SigmaHom.mk _
     rw [(α i).naturality]
 

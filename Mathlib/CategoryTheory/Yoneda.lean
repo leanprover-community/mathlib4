@@ -193,7 +193,7 @@ def objOpOp (X : C) : coyoneda.obj (op (op X)) ≅ yoneda.obj X :=
 /-- Taking the `unop` of morphisms is a natural isomorphism. -/
 def opIso : yoneda ⋙ (whiskeringLeft _ _ _).obj (opOp C) ≅ coyoneda :=
   NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun Y ↦ (opEquiv (op Y) X).toIso)
-    (fun _ ↦ rfl)) (fun _ ↦ rfl)
+    (fun _ ↦ by simp; rfl )) (fun _ ↦ by simp; rfl)
 
 end Coyoneda
 
@@ -553,14 +553,16 @@ variable (C)
 /-- The "Yoneda evaluation" functor, which sends `X : Cᵒᵖ` and `F : Cᵒᵖ ⥤ Type`
 to `F.obj X`, functorially in both `X` and `F`.
 -/
+@[simps! -isSimp]
 def yonedaEvaluation : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁) ⥤ Type max u₁ v₁ :=
   evaluationUncurried Cᵒᵖ (Type v₁) ⋙ uliftFunctor
 
 @[simp]
 theorem yonedaEvaluation_map_down (P Q : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)) (α : P ⟶ Q)
     (x : (yonedaEvaluation C).obj P) :
-    ((yonedaEvaluation C).map α x).down = α.2.app Q.1 (P.2.map α.1 x.down) :=
-  rfl
+    ((yonedaEvaluation C).map α x).down = α.2.app Q.1 (P.2.map α.1 x.down) := by
+  simp only [evaluationUncurried_obj, yonedaEvaluation_map]
+  exact (FunctorToTypes.naturality _ _ _ _ _).symm
 
 /-- The "Yoneda pairing" functor, which sends `X : Cᵒᵖ` and `F : Cᵒᵖ ⥤ Type`
 to `yoneda.op.obj X ⟶ F`, functorially in both `X` and `F`.
@@ -575,8 +577,26 @@ lemma yonedaPairingExt {X : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)} {x y : (yonedaPa
 
 @[simp]
 theorem yonedaPairing_map (P Q : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)) (α : P ⟶ Q) (β : (yonedaPairing C).obj P) :
-    (yonedaPairing C).map α β = yoneda.map α.1.unop ≫ β ≫ α.2 :=
-  rfl
+    (yonedaPairing C).map α β = yoneda.map α.1.unop ≫ β ≫ α.2 := by
+  simp [yonedaPairing]
+
+universe w in
+variable {C} in
+/-- A bijection `(yoneda.obj X ⋙ uliftFunctor ⟶ F) ≃ F.obj (op X)` which is a variant
+of `yonedaEquiv` with heterogeneous universes. -/
+def yonedaCompUliftFunctorEquiv (F : Cᵒᵖ ⥤ Type max v₁ w) (X : C) :
+    (yoneda.obj X ⋙ uliftFunctor ⟶ F) ≃ F.obj (op X) where
+  toFun φ := φ.app (op X) (ULift.up (𝟙 _))
+  invFun f :=
+    { app := fun _ x => F.map (ULift.down x).op f }
+  left_inv φ := by
+    ext Y f
+    dsimp
+    rw [← FunctorToTypes.naturality]
+    simp only [Functor.comp_map, yoneda_obj_obj, uliftFunctor_map, yoneda_obj_map,
+      Quiver.Hom.unop_op, Category.comp_id]
+    rfl
+  right_inv f := by simp
 
 /-- The Yoneda lemma asserts that the Yoneda pairing
 `(X : Cᵒᵖ, F : Cᵒᵖ ⥤ Type) ↦ (yoneda.obj (unop X) ⟶ F)`
@@ -623,7 +643,15 @@ def largeCurriedYonedaLemma {C : Type u₁} [Category.{v₁} C] :
 /-- Version of the Yoneda lemma where the presheaf is fixed but the argument varies. -/
 def yonedaOpCompYonedaObj {C : Type u₁} [Category.{v₁} C] (P : Cᵒᵖ ⥤ Type v₁) :
     yoneda.op ⋙ yoneda.obj P ≅ P ⋙ uliftFunctor.{u₁} :=
-  isoWhiskerRight largeCurriedYonedaLemma ((evaluation _ _).obj P)
+  calc yoneda.op ⋙ yoneda.obj P
+      ≅ (yoneda.op ⋙ coyoneda) ⋙ (evaluation _ _).obj P :=
+      NatIso.ofComponents fun _ => Iso.refl _
+    _ ≅ (evaluation Cᵒᵖ (Type v₁) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁, v₁}) ⋙
+          (evaluation _ _).obj P :=
+      isoWhiskerRight largeCurriedYonedaLemma ((evaluation _ _).obj P)
+    _ ≅ P ⋙ uliftFunctor.{u₁, v₁} :=
+      NatIso.ofComponents fun _ => Iso.refl _
+
 
 /-- The curried version of yoneda lemma when `C` is small. -/
 def curriedYonedaLemma' {C : Type u₁} [SmallCategory C] :
@@ -769,8 +797,10 @@ def coyonedaEvaluation : C × (C ⥤ Type v₁) ⥤ Type max u₁ v₁ :=
 @[simp]
 theorem coyonedaEvaluation_map_down (P Q : C × (C ⥤ Type v₁)) (α : P ⟶ Q)
     (x : (coyonedaEvaluation C).obj P) :
-    ((coyonedaEvaluation C).map α x).down = α.2.app Q.1 (P.2.map α.1 x.down) :=
-  rfl
+    ((coyonedaEvaluation C).map α x).down = α.2.app Q.1 (P.2.map α.1 x.down) := by
+  simp only [evaluationUncurried_obj, coyonedaEvaluation, Functor.comp_map, evaluationUncurried_map,
+    NatTrans.naturality, uliftFunctor_map, types_comp_apply]
+  exact (FunctorToTypes.naturality _ _ _ _ _).symm
 
 /-- The "Coyoneda pairing" functor, which sends `X : C` and `F : C ⥤ Type`
 to `coyoneda.rightOp.obj X ⟶ F`, functorially in both `X` and `F`.
@@ -785,8 +815,8 @@ lemma coyonedaPairingExt {X : C × (C ⥤ Type v₁)} {x y : (coyonedaPairing C)
 
 @[simp]
 theorem coyonedaPairing_map (P Q : C × (C ⥤ Type v₁)) (α : P ⟶ Q) (β : (coyonedaPairing C).obj P) :
-    (coyonedaPairing C).map α β = coyoneda.map α.1.op ≫ β ≫ α.2 :=
-  rfl
+    (coyonedaPairing C).map α β = coyoneda.map α.1.op ≫ β ≫ α.2 := by
+  simp [coyonedaPairing]
 
 variable {C} in
 /-- A bijection `(coyoneda.obj X ⋙ uliftFunctor ⟶ F) ≃ F.obj (unop X)` which is a variant
@@ -800,8 +830,8 @@ def coyonedaCompUliftFunctorEquiv (F : C ⥤ Type max v₁ w) (X : Cᵒᵖ) :
     ext Y f
     dsimp
     rw [← FunctorToTypes.naturality]
-    dsimp
-    rw [Category.id_comp]
+    simp only [Functor.comp_map, coyoneda_obj_obj, uliftFunctor_map, coyoneda_obj_map,
+      Category.id_comp]
     rfl
   right_inv f := by simp
 
@@ -850,7 +880,14 @@ def largeCurriedCoyonedaLemma {C : Type u₁} [Category.{v₁} C] :
 /-- Version of the Coyoneda lemma where the presheaf is fixed but the argument varies. -/
 def coyonedaCompYonedaObj {C : Type u₁} [Category.{v₁} C] (P : C ⥤ Type v₁) :
     coyoneda.rightOp ⋙ yoneda.obj P ≅ P ⋙ uliftFunctor.{u₁} :=
-  isoWhiskerRight largeCurriedCoyonedaLemma ((evaluation _ _).obj P)
+  calc coyoneda.rightOp ⋙ yoneda.obj P
+      ≅ (coyoneda.rightOp ⋙ coyoneda) ⋙ (evaluation _ _).obj P :=
+      NatIso.ofComponents fun _ => Iso.refl _
+    _ ≅ (evaluation C (Type v₁) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁, v₁}) ⋙
+          (evaluation _ _).obj P :=
+      isoWhiskerRight largeCurriedCoyonedaLemma ((evaluation _ _).obj P)
+    _ ≅ P ⋙ uliftFunctor.{u₁, v₁} :=
+      NatIso.ofComponents fun _ => Iso.refl _
 
 /-- The curried version of coyoneda lemma when `C` is small. -/
 def curriedCoyonedaLemma' {C : Type u₁} [SmallCategory C] :
@@ -979,7 +1016,7 @@ def compYonedaCompWhiskeringLeft {D : Type u₂} [Category.{v₂} D] {F : C ⥤ 
     (hF : F.FullyFaithful) : F ⋙ yoneda ⋙ (whiskeringLeft _ _ _).obj F.op ⋙
       (Functor.whiskeringRight _ _ _).obj uliftFunctor.{v₁} ≅
       yoneda ⋙ (Functor.whiskeringRight _ _ _).obj uliftFunctor.{v₂} :=
-  NatIso.ofComponents (fun X => hF.homNatIso _)
+  NatIso.ofComponents (fun X => associator _ _ _ ≪≫ hF.homNatIso _)
     (fun f => by ext; exact Equiv.ulift.injective (hF.map_injective (by simp)))
 
 /-- `FullyFaithful.homEquiv` as a natural isomorphism. -/
