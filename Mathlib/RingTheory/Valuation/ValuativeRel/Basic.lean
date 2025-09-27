@@ -692,8 +692,6 @@ class IsValuativeTopology (R : Type*) [CommRing R] [ValuativeRel R] [Topological
   mem_nhds_iff {s : Set R} {x : R} : s ∈ 𝓝 (x : R) ↔
     ∃ γ : (ValueGroupWithZero R)ˣ, (x + ·) '' { z | valuation _ z < γ } ⊆ s
 
-@[deprecated (since := "2025-08-01")] alias ValuativeTopology := IsValuativeTopology
-
 namespace ValuativeRel
 
 variable {R Γ : Type*} [CommRing R] [ValuativeRel R] [LinearOrderedCommGroupWithZero Γ]

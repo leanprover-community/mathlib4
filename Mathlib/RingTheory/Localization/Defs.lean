@@ -165,8 +165,6 @@ abbrev toLocalizationMap : M.LocalizationMap S where
   surj' := IsLocalization.surj _
   exists_of_eq _ _ := IsLocalization.exists_of_eq
 
-@[deprecated (since := "2025-08-01")] alias toLocalizationWithZeroMap := toLocalizationMap
-
 @[simp]
 lemma toLocalizationMap_toMonoidHom :
     (toLocalizationMap M S).toMonoidHom = (algebraMap R S : R →*₀ S) := rfl
