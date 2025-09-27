@@ -36,14 +36,14 @@ of `1` in `L`.
   are `n` `n`th roots of unity in `L`.
 
 * `cyclotomicCharacter L p : (L ≃+* L) →* ℤ_[p]ˣ` sends `g` to the unique `j` such
-  that `g(ζ) = ζ ^ (j mod pⁱ)` for all `pⁱ`'th roots of unity `ζ`.
+  that `g(ζ) = ζ ^ (j mod pⁱ)` for all `pⁱ`-th roots of unity `ζ`.
 
   Note: This is defined to be the trivial character if `L` has no enough roots of unity.
 
 ## Implementation note
 
 In theory this could be set up as some theory about monoids, being a character
-on monoid isomorphisms, but under the hypotheses that the `n`'th roots of unity
+on monoid isomorphisms, but under the hypotheses that the `n`-th roots of unity
 are cyclic. The advantage of sticking to integral domains is that finite subgroups
 are guaranteed to be cyclic, so the weaker assumption that there are `n` `n`th
 roots of unity is enough. All the applications I'm aware of are when `L` is a
@@ -84,8 +84,8 @@ theorem rootsOfUnity.integer_power_of_ringEquiv' (g : L ≃+* L) :
   simpa using rootsOfUnity.integer_power_of_ringEquiv n g
 
 /-- `modularCyclotomicCharacter_aux g n` is a non-canonical auxiliary integer `j`,
-  only well-defined modulo the number of `n`'th roots of unity in `L`, such that `g(ζ)=ζ^j`
-  for all `n`'th roots of unity `ζ` in `L`. -/
+  only well-defined modulo the number of `n`-th roots of unity in `L`, such that `g(ζ)=ζ^j`
+  for all `n`-th roots of unity `ζ` in `L`. -/
 noncomputable def modularCyclotomicCharacter.aux (g : L ≃+* L) (n : ℕ) [NeZero n] : ℤ :=
   (rootsOfUnity.integer_power_of_ringEquiv n g).choose
 
@@ -115,7 +115,7 @@ theorem modularCyclotomicCharacter.pow_dvd_aux_pow_sub_aux_pow
 
 /-- If `g` is a ring automorphism of `L`, and `n : ℕ+`, then
   `modularCyclotomicCharacter.toFun n g` is the `j : ZMod d` such that `g(ζ)=ζ^j` for all
-  `n`'th roots of unity. Here `d` is the number of `n`th roots of unity in `L`. -/
+  `n`-th roots of unity. Here `d` is the number of `n`th roots of unity in `L`. -/
 noncomputable def modularCyclotomicCharacter.toFun (n : ℕ) [NeZero n] (g : L ≃+* L) :
     ZMod (Fintype.card (rootsOfUnity n L)) :=
   modularCyclotomicCharacter.aux g n
@@ -179,7 +179,7 @@ variable (L)
 
 /-- Given a positive integer `n`, `modularCyclotomicCharacter' n` is a
 multiplicative homomorphism from the automorphisms of a field `L` to `(ℤ/dℤ)ˣ`,
-where `d` is the number of `n`'th roots of unity in `L`. It is uniquely
+where `d` is the number of `n`-th roots of unity in `L`. It is uniquely
 characterised by the property that `g(ζ)=ζ^(modularCyclotomicCharacter n g)`
 for `g` an automorphism of `L` and `ζ` an `n`th root of unity. -/
 noncomputable
@@ -296,7 +296,7 @@ variable (L) in
 /--
 Suppose `L` is a domain containing all `pⁱ`-th primitive roots with `p` a (rational) prime.
 If `g` is a ring automorphism of `L`, then `cyclotomicCharacter L p g` is the unique `j : ℤₚ` such
-that `g(ζ) = ζ ^ (j mod pⁱ)` for all `pⁱ`'th roots of unity `ζ`.
+that `g(ζ) = ζ ^ (j mod pⁱ)` for all `pⁱ`-th roots of unity `ζ`.
 
 Note: This is the trivial character when `L` does not contain all `pⁱ`-th primitive roots.
 -/

@@ -38,7 +38,7 @@ lemma Submodule.finite_quotient_smul [Finite (R ⧸ I)] [Finite (M ⧸ N)] (hN :
     exact (I • N).toAddSubgroup.finite_quotient_of_finiteIndex
   suffices Nat.card (N ⧸ (I • N).comap N.subtype) ≠ 0 by
     constructor
-    rw [← AddSubgroup.relindex_mul_index
+    rw [← AddSubgroup.relIndex_mul_index
       (H := (I • N).toAddSubgroup) (K := N.toAddSubgroup) Submodule.smul_le_right]
     have inst : Finite (M ⧸ N.toAddSubgroup) := ‹_›
     exact mul_ne_zero this AddSubgroup.index_ne_zero_of_finite
@@ -60,7 +60,7 @@ lemma Submodule.index_smul_le [Finite (R ⧸ I)]
     (I • N).toAddSubgroup.index ≤ I.toAddSubgroup.index ^ s.card * N.toAddSubgroup.index := by
   classical
   cases nonempty_fintype (R ⧸ I)
-  rw [← AddSubgroup.relindex_mul_index
+  rw [← AddSubgroup.relIndex_mul_index
     (H := (I • N).toAddSubgroup) (K := N.toAddSubgroup) Submodule.smul_le_right]
   gcongr
   change (Nat.card (N ⧸ (I • N).comap N.subtype)) ≤ Nat.card (R ⧸ I) ^ s.card

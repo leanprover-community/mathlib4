@@ -286,7 +286,7 @@ def stoppers : Std.HashSet Name :=
   `abel` and `abel!`, `group`, `ring` and `ring!`, `module`, `field_simp`, `norm_num`,
   `linarith`, `nlinarith` and `nlinarith!`, `norm_cast`, `tauto`,
   `aesop`, `cfc_tac` (and `cfc_zero_tac` and `cfc_cont_tac`),
-  `fun_prop`, `continuity` and `measurability`, `positivity`, `finiteness`, `finiteness?`,
+  `continuity` and `measurability`, `finiteness`, `finiteness?`,
   `split`, `split_ifs`.
 -/
 def flexible : Std.HashSet Name :=
@@ -306,7 +306,6 @@ def flexible : Std.HashSet Name :=
     `Mathlib.Tactic.RingNF.tacticRing!,
     `Mathlib.Tactic.Module.tacticModule,
     `Mathlib.Tactic.FieldSimp.fieldSimp,
-    `Mathlib.Tactic.Positivity.positivity,
     ``Lean.Parser.Tactic.grind,
     `Mathlib.Tactic.normNum,
     `Mathlib.Tactic.linarith,
@@ -315,7 +314,8 @@ def flexible : Std.HashSet Name :=
     `Mathlib.Tactic.LinearCombination.linearCombination,
     ``Lean.Parser.Tactic.tacticNorm_cast__,
     `Aesop.Frontend.Parser.aesopTactic,
-    -- `cfc_tac` and `cfc_zero_tac` use `aesop` under the hood, `cfc_cont_tactic` also uses `fun_prop`.
+    -- `cfc_tac` and `cfc_zero_tac` use `aesop` under the hood,
+    -- `cfc_cont_tactic` uses `fun_prop`: in practice, this should be robust enough.
     `cfcTac,
     `cfcZeroTac,
     `cfcContTac,
@@ -325,7 +325,6 @@ def flexible : Std.HashSet Name :=
     `finiteness,
     `finiteness?,
     `Mathlib.Tactic.Tauto.tauto,
-    `Mathlib.Meta.FunProp.funPropTacStx,
     `Lean.Parser.Tactic.split,
     `Mathlib.Tactic.splitIfs }
 

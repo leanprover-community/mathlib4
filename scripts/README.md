@@ -41,6 +41,9 @@ to learn about it as well!
   It assumes that the only difference between master and the current status of the PR consists
   of renames. More precisely, any change on a line that contains a declaration name
   and is not a rename, will likely confuse the script.
+- `create_deprecated_modules.lean` defines the `#create_deprecated_modules` command that
+  automatically generates the `deprecated_module` entries, gathering information from `git`.
+  The expectation is that this will be expanded to a fully automated process that happens in CI.
 - `migrate_to_fork.py`
   Helps contributors migrate from having direct write access to the main repository
   to using a fork-based workflow. This comprehensive script automates the entire migration process:
@@ -57,7 +60,7 @@ to learn about it as well!
   Requires GitHub CLI (`gh`) installed and authenticated. Safe to run multiple times.
 - `githelper.py`
   The subcommand `githelper.py fix` helps contributors fix their git repository setup
-  by step-by-step converting it from its current state to a well defined target state.
+  by step-by-step converting it from its current state to a well-defined target state.
   The target state mostly matches the state after of a freshly cloned fork (`gh repo clone <fork>`)
   and looks like this:
 
@@ -127,6 +130,8 @@ to learn about it as well!
 - `downstream_repos.yml` contains basic information about significant downstream repositories.
 - `downstream-tags.py` is a script to check whether a given tag exists on the downstream
   repositories listed in `downstream_repos.yml`.
+- `downstream_dashboard.py` inspects the CI infrastructure of each repository in
+  `downstream_repos.yml` and makes actionable suggestions for improvement or automation.
 
 **Managing and tracking technical debt**
 - `technical-debt-metrics.sh`
@@ -135,10 +140,6 @@ to learn about it as well!
 - `long_file_report.sh`
   Prints the list of the 10 longest Lean files in `Mathlib`.
   This output is automatically posted to zulip once a week.
-
-**Mathlib tactics**
-- `polyrith_sage.py`, `polyrith_sage_helper.py` are required for `polyrith`
-  to communication with the Sage server.
 
 **Data files with linter exceptions**
 - `nolints.json` contains exceptions for all `env_linter`s in mathlib.

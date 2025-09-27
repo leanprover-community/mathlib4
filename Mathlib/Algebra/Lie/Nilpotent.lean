@@ -332,7 +332,7 @@ theorem isNilpotent_toEnd_of_isNilpotent₂ [IsNilpotent L M] (x y : L) :
     _root_.IsNilpotent (toEnd R L M x ∘ₗ toEnd R L M y) := by
   obtain ⟨k, hM⟩ := IsNilpotent.nilpotent R L M
   replace hM : lowerCentralSeries R L M (2 * k) = ⊥ := by
-    rw [eq_bot_iff, ← hM]; exact antitone_lowerCentralSeries R L M (by omega)
+    rw [eq_bot_iff, ← hM]; exact antitone_lowerCentralSeries R L M (by cutsat)
   use k
   ext m
   rw [Module.End.pow_apply, LinearMap.zero_apply, ← LieSubmodule.mem_bot (R := R) (L := L), ← hM]
