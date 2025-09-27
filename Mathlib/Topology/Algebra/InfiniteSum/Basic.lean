@@ -395,8 +395,7 @@ theorem tprod_one' [L.NeBot] [T2Space α] : ∏'[L] _, (1 : α) = 1 := by
 
 @[to_additive (attr := simp)]
 theorem tprod_empty [IsEmpty β] : ∏'[L] b, f b = 1 := by
-  have : (mulSupport f ∩ L.support).Finite := by convert Set.finite_empty; apply Subsingleton.elim
-  simp [tprod_def, finprod_of_isEmpty, show L.HasSupport by infer_instance, this]
+  convert tprod_one (L := L)
 
 @[to_additive]
 theorem tprod_congr {f g : β → α}
