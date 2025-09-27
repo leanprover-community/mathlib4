@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 
 /-!
 # Ramification of infinite places of a number field
@@ -29,7 +30,7 @@ This file studies the ramification of infinite places of a number field.
 number field, infinite places, ramification
 -/
 
-open NumberField Fintype Module
+open NumberField Fintype Module ComplexEmbedding
 
 namespace NumberField.InfinitePlace
 
@@ -74,6 +75,11 @@ lemma isReal_comap_iff (f : k ≃+* K) {w : InfinitePlace K} :
 lemma comap_surjective [Algebra k K] [Algebra.IsAlgebraic k K] :
     Function.Surjective (comap · (algebraMap k K)) := fun w ↦
   ⟨(mk (ComplexEmbedding.lift K  w.embedding)), by simp⟩
+
+theorem comap_embedding_of_isReal (f : k →+* K) {w : InfinitePlace K} (h : (w.comap f).IsReal) :
+    (w.comap f).embedding = w.embedding.comp f := by
+   rw [← mk_embedding w, comap_mk, mk_embedding, embedding_mk_eq_of_isReal
+    (by rwa [← isReal_mk_iff, ← comap_mk, mk_embedding])]
 
 lemma mult_comap_le (f : k →+* K) (w : InfinitePlace K) : mult (w.comap f) ≤ mult w := by
   rw [mult, mult]
@@ -223,6 +229,11 @@ lemma isUnramified_iff :
 theorem isRamified_iff : w.IsRamified k ↔ w.IsComplex ∧ (w.comap (algebraMap k K)).IsReal :=
   not_isUnramified_iff
 
+theorem IsRamified.isComplex (h : w.IsRamified k) : w.IsComplex := (isRamified_iff.1 h).1
+
+theorem IsRamified.isReal (h : w.IsRamified k) : (w.comap (algebraMap k K)).IsReal :=
+  (isRamified_iff.1 h).2
+
 theorem IsRamified.ne_conjugate {w₁ w₂ : InfinitePlace K} (h : w₂.IsRamified k) :
     w₁.embedding ≠ ComplexEmbedding.conjugate w₂.embedding := by
   by_cases h_eq : w₁ = w₂
@@ -230,6 +241,46 @@ theorem IsRamified.ne_conjugate {w₁ w₂ : InfinitePlace K} (h : w₂.IsRamifi
     exact Ne.symm (h_eq ▸ h.1)
   · contrapose! h_eq
     rw [← mk_embedding w₁, h_eq, mk_conjugate_eq, mk_embedding]
+
+lemma IsRamified.conjugate_embedding_comp {w : InfinitePlace K} (h : w.IsRamified k) :
+    (conjugate w.embedding).comp (algebraMap k K) = (w.comap (algebraMap k K)).embedding := by
+  rw [conjugate_comp, ← comap_embedding_of_isReal _ h.isReal,  ← ComplexEmbedding.isReal_iff,
+    ← isReal_iff]
+  exact h.isReal
+
+lemma IsRamified.isMixed_embedding {w : InfinitePlace K} (h : w.IsRamified k) :
+    IsMixed k w.embedding :=
+  ⟨comap_embedding_of_isReal _ h.isReal ▸ isReal_iff.1 h.isReal, isComplex_iff.1 h.isComplex⟩
+
+lemma IsRamified.isMixed_conjugate_embedding {w : InfinitePlace K} (h : w.IsRamified k) :
+    IsMixed k (conjugate w.embedding) :=
+  ⟨h.conjugate_embedding_comp ▸ isReal_iff.1 h.isReal,
+    by simpa using isComplex_iff.1 <| h.isComplex⟩
+
+lemma _root_.NumberField.ComplexEmbedding.IsMixed.mk_isRamified {φ : K →+* ℂ} (h : IsMixed k φ) :
+    (mk φ).IsRamified k := by
+  rw [isRamified_iff, isComplex_iff, comap_mk, isReal_iff, embedding_mk_eq_of_isReal h.1]
+  exact ⟨by rcases embedding_mk_eq φ with (_ | _) <;> aesop, h.1⟩
+
+lemma IsUnramified.isUnmixed {w : InfinitePlace K} (h : w.IsUnramified k) :
+    IsUnmixed k w.embedding := by
+  intro hw
+  rw [← isReal_mk_iff, ← NumberField.InfinitePlace.comap_mk, mk_embedding] at hw
+  exact isReal_iff.1 <| (isUnramified_iff.1 h).resolve_right (not_isComplex_iff_isReal.2 hw)
+
+lemma IsUnramified.isUnmixed_conjugate {w : InfinitePlace K} (h : w.IsUnramified k) :
+    IsUnmixed k (conjugate w.embedding) := by
+  intro hw
+  simp [← isReal_mk_iff, ← comap_mk] at hw
+  simpa using isReal_iff.1 <| (isUnramified_iff.1 h).resolve_right (not_isComplex_iff_isReal.2 hw)
+
+lemma _root_.NumberField.ComplexEmbedding.IsUnmixed.mk_isUnramified {φ : K →+* ℂ}
+    (h : IsUnmixed k φ) :
+    (mk φ).IsUnramified k := by
+  rw [isUnramified_iff, isReal_iff]
+  by_cases hv : ComplexEmbedding.IsReal (φ.comp (algebraMap k K))
+  · exact .inl <| by simp [embedding_mk_eq_of_isReal, h hv]
+  · exact .inr <| by simpa using (isReal_mk_iff.not.2 hv)
 
 variable (k)
 
