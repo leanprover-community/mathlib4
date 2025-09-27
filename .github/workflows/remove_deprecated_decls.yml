@@ -60,25 +60,26 @@ jobs:
           for repo in Mathlib Archive Counterexamples; do
             printf $'import %s\n' "$repo"
           done
-          printf $'#regenerate_deprecations "%s" "%s" really\n' "$OLD_DATE" "$NEW_DATE"
+          printf $'#clear_deprecations "%s" "%s" really\n' "$OLD_DATE" "$NEW_DATE"
         } | tee -a "${tmplean}"
         echo "::endgroup::"
         # This will add the new files, whose names end in `_with_option.lean`.
         lake build "${tmplean}"
-        # We then add the new files to `Mathlib.lean`
-        if lake exe mk_all; then
-          echo "Successfully updated Mathlib.lean"
-          # TODO: exit more gracefully, but there is nothing to do, since no files contain
-          # deprecated declarations in the specified date range
-          exit 1
-        else
-          echo "There are files with deprecated declarations in the specified date range"
-          tmpMod="${tmplean%.lean}"
-          printf $'Removing line containing %s from Mathlib.lean\n' "${tmpMod/\//.}"
-          sed -i "/${tmpMod/\//.}/d" Mathlib.lean
-        fi
+        ## We then add the new files to `Mathlib.lean`
+        #if lake exe mk_all; then
+        #  echo "Successfully updated Mathlib.lean"
+        #  # TODO: exit more gracefully, but there is nothing to do, since no files contain
+        #  # deprecated declarations in the specified date range
+        #  exit 1
+        #else
+        #  echo "There are files with deprecated declarations in the specified date range"
+        #  tmpMod="${tmplean%.lean}"
+        #  printf $'Removing line containing %s from Mathlib.lean\n' "${tmpMod/\//.}"
+        #  sed -i "/${tmpMod/\//.}/d" Mathlib.lean
+        #fi
 
     - name: run linter
+      if: 'false'
       env:
         DATE_RANGE: ${{ inputs.date_range }}
       run: |
@@ -123,6 +124,7 @@ jobs:
         echo "::endgroup::"
 
     - name: remove outdated deprecated declarations
+      if: 'false'
       id: remove
       shell: bash
       run: |
@@ -163,8 +165,10 @@ jobs:
       run: ./scripts/remove_deprecated_decls_CI.sh "${DEPRECATION_DATE_FROM}" "${DEPRECATION_DATE_TO}"
       env:
         DEPLOY_GITHUB_TOKEN: ${{ secrets.UPDATE_NOLINTS_TOKEN }}
-        DEPRECATION_DATE_FROM: ${{ steps.remove.outputs.deprecation_date_from }}
-        DEPRECATION_DATE_TO: ${{ steps.remove.outputs.deprecation_date_to }}
+        DEPRECATION_DATE_FROM: "2025-08-01"
+        #${{ steps.remove.outputs.deprecation_date_from }}
+        DEPRECATION_DATE_TO: "2025-08-02"
+        #${{ steps.remove.outputs.deprecation_date_to }}
 
     - name: Send Zulip message
       if: false # TODO: change to "steps.pr.outcome == 'success'" once everything is working
