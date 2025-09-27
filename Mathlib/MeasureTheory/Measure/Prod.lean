@@ -815,10 +815,10 @@ namespace MeasurePreserving
 variable {δ : Type*} [MeasurableSpace δ] {μa : Measure α} {μb : Measure β} {μc : Measure γ}
   {μd : Measure δ}
 
-/-- Let `f : α → β` be a measure preserving map.
-For a.e. all `a`, let `g a : γ → δ` be a measure preserving map.
+/-- Let `f : α → β` be a measure-preserving map.
+For a.e. all `a`, let `g a : γ → δ` be a measure-preserving map.
 Also suppose that `g` is measurable as a function of two arguments.
-Then the map `fun (a, c) ↦ (f a, g a c)` is a measure preserving map
+Then the map `fun (a, c) ↦ (f a, g a c)` is a measure-preserving map
 for the product measures on `α × γ` and `β × δ`.
 
 Some authors call a map of the form `fun (a, c) ↦ (f a, g a c)` a *skew product* over `f`,

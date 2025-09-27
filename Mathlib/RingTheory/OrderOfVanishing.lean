@@ -117,7 +117,7 @@ theorem ord_mul {a b : R} (hb : b ∈ nonZeroDivisors R) :
 
 open Classical in
 /--
-Zero preserving monoid homomorphism from a nontrivial commutative ring `R` to `ℕᵐ⁰`.
+Zero-preserving monoid homomorphism from a nontrivial commutative ring `R` to `ℕᵐ⁰`.
 
 Note that we cannot just use `fun x ↦ ord R x` without further assumptions on `R`.
 This is because if R is finite length, then ord R 0 will be some non top value,
