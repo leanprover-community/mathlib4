@@ -5,6 +5,7 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Polynomial.Eval.Degree
 import Mathlib.Algebra.Prime.Lemmas
+import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Theory of degrees of polynomials
