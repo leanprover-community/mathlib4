@@ -3,6 +3,7 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Fabian Glöckle, Kyle Miller
 -/
+import Mathlib.Algebra.Module.LinearMap.DivisionRing
 import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.LinearAlgebra.Dimension.ErdosKaplansky
 import Mathlib.LinearAlgebra.Dual.Basis
@@ -711,15 +712,13 @@ variable {f : Module.Dual K V₁}
 
 section
 variable (hf : f ≠ 0)
-include hf
 
-lemma range_eq_top_of_ne_zero :
-    LinearMap.range f = ⊤ := by
-  obtain ⟨v, hv⟩ : ∃ v, f v ≠ 0 := by contrapose! hf; ext v; simpa using hf v
-  rw [eq_top_iff]
-  exact fun x _ ↦ ⟨x • (f v)⁻¹ • v, by simp [inv_mul_cancel₀ hv]⟩
+lemma range_eq_top_of_ne_zero {K V₁ : Type*} [Semifield K] [AddCommMonoid V₁] [Module K V₁]
+    {f : Module.Dual K V₁} (hf : f ≠ 0) : LinearMap.range f = ⊤ :=
+  LinearMap.range_eq_top.mpr (LinearMap.surjective hf)
 
 variable [FiniteDimensional K V₁]
+include hf
 
 lemma finrank_ker_add_one_of_ne_zero :
     finrank K (LinearMap.ker f) + 1 = finrank K V₁ := by
