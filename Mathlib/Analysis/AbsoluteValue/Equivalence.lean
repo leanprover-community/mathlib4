@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Analysis.Normed.Field.WithAbs
 
 /-!
 # Equivalence of real-valued absolute values
@@ -153,7 +154,7 @@ end LinearOrderedSemifield
 
 section Real
 
-open Real
+open Real Topology
 
 variable {F : Type*} [Field F] {v w : AbsoluteValue F ℝ}
 
@@ -212,6 +213,42 @@ theorem isEquiv_iff_exists_rpow_eq {v w : AbsoluteValue F ℝ} :
       rpow_inv_log (v.pos hb₀) (h.eq_one_iff.not.2 hb₁), exp_one_rpow, exp_log (w.pos hb₀)]
   · exact ⟨1, zero_lt_one, funext fun x ↦ by rcases eq_or_ne x 0 with rfl | h₀ <;>
       aesop (add simp [h.isNontrivial_congr])⟩
+
+theorem IsEquiv.equivWithAbs_image_mem_nhds_zero (h : v.IsEquiv w) {U : Set (WithAbs v)}
+    (hU : U ∈ 𝓝 0) : WithAbs.equivWithAbs v w '' U ∈ 𝓝 0 := by
+  rw [Metric.mem_nhds_iff] at hU ⊢
+  obtain ⟨ε, hε, hU⟩ := hU
+  obtain ⟨c, hc, hvw⟩ := isEquiv_iff_exists_rpow_eq.1 h
+  refine ⟨ε ^ c, rpow_pos_of_pos hε _, fun x hx ↦ ?_⟩
+  rw [← RingEquiv.apply_symm_apply (WithAbs.equivWithAbs v w) x]
+  refine Set.mem_image_of_mem _ (hU ?_)
+  rw [Metric.mem_ball, dist_zero_right, WithAbs.norm_eq_abv, ← funext_iff.1 hvw,
+    rpow_lt_rpow_iff (v.nonneg _) hε.le hc] at hx
+  simpa [WithAbs.norm_eq_abv]
+
+open Topology IsTopologicalAddGroup in
+theorem IsEquiv.isEmbedding_equivWithAbs (h : v.IsEquiv w) :
+    IsEmbedding (WithAbs.equivWithAbs v w) := by
+  refine IsInducing.isEmbedding <| isInducing_iff_nhds_zero.2 <| Filter.ext fun U ↦
+    ⟨fun hU ↦ ?_, fun hU ↦ ?_⟩
+  · exact ⟨WithAbs.equivWithAbs v w '' U, h.equivWithAbs_image_mem_nhds_zero hU,
+      by simp [RingEquiv.image_eq_preimage, Set.preimage_preimage]⟩
+  · rw [← RingEquiv.coe_toEquiv, ← Filter.map_equiv_symm] at hU
+    obtain ⟨s, hs, hss⟩ := Filter.mem_map_iff_exists_image.1 hU
+    rw [← RingEquiv.coe_toEquiv_symm, WithAbs.equivWithAbs_symm] at hss
+    exact Filter.mem_of_superset (h.symm.equivWithAbs_image_mem_nhds_zero hs) hss
+
+theorem isEquiv_iff_isHomeomorph (v w : AbsoluteValue F ℝ) :
+    v.IsEquiv w ↔ IsHomeomorph (WithAbs.equivWithAbs v w) := by
+  rw [isHomeomorph_iff_isEmbedding_surjective]
+  refine ⟨fun h ↦ ⟨h.isEmbedding_equivWithAbs, RingEquiv.surjective _⟩, fun ⟨hi, _⟩ ↦ ?_⟩
+  refine isEquiv_iff_lt_one_iff.2 fun x ↦ ?_
+  conv_lhs => rw [← (WithAbs.equiv v).apply_symm_apply x]
+  conv_rhs => rw [← (WithAbs.equiv w).apply_symm_apply x]
+  simp_rw [← WithAbs.norm_eq_abv, ← tendsto_pow_atTop_nhds_zero_iff_norm_lt_one]
+  exact ⟨fun h ↦ by simpa [Function.comp_def] using (hi.continuous.tendsto 0).comp h, fun h ↦ by
+    simpa [Function.comp_def] using (hi.continuous_iff (f := (WithAbs.equivWithAbs v w).symm)).2
+      continuous_id |>.tendsto 0 |>.comp h ⟩
 
 end Real
 
