@@ -29,8 +29,8 @@ We use the filter version to prove that absolutely continuous functions are clos
 * addition - `AbsolutelyContinuousOnInterval.fun_add`, `AbsolutelyContinuousOnInterval.add`;
 * scalar multiplication - `AbsolutelyContinuousOnInterval.const_mul`;
 * negation - `AbsolutelyContinuousOnInterval.fun_neg`, `AbsolutelyContinuousOnInterval.neg`;
-* substraction - `AbsolutelyContinuousOnInterval.fun_sub`, `AbsolutelyContinuousOnInterval.sub`;
-* multplication - `AbsolutelyContinuousOnInterval.fun_mul`, `AbsolutelyContinuousOnInterval.mul`;
+* subtraction - `AbsolutelyContinuousOnInterval.fun_sub`, `AbsolutelyContinuousOnInterval.sub`;
+* multiplication - `AbsolutelyContinuousOnInterval.fun_mul`, `AbsolutelyContinuousOnInterval.mul`;
 and that absolutely continuous implies uniform continuous in
 `AbsolutelyContinuousOnInterval.uniformlyContinuousOn`
 
@@ -80,10 +80,10 @@ def disjWithin (a b : ℝ) := {E : ℕ × (ℕ → ℝ × ℝ) |
   (∀ i ∈ Finset.range E.1, (E.2 i).1 ∈ uIcc a b ∧ (E.2 i).2 ∈ uIcc a b) ∧
   Set.PairwiseDisjoint (Finset.range E.1) (fun i ↦ uIoc (E.2 i).1 (E.2 i).2)}
 
-lemma DisjWithin_comm (a b : ℝ) : disjWithin a b = disjWithin b a := by
+lemma disjWithin_comm (a b : ℝ) : disjWithin a b = disjWithin b a := by
   rw [disjWithin, disjWithin, uIcc_comm]
 
-lemma DisjWithin_mono {a b c d : ℝ} (habcd : uIcc c d ⊆ uIcc a b) : disjWithin c d ⊆ disjWithin a b
+lemma disjWithin_mono {a b c d : ℝ} (habcd : uIcc c d ⊆ uIcc a b) : disjWithin c d ⊆ disjWithin a b
     := by
   simp +contextual only [disjWithin, Finset.mem_range, setOf_subset_setOf, and_true,
     and_imp, Prod.forall]
@@ -138,7 +138,7 @@ theorem fun_add {f g : ℝ → ℝ} {a b : ℝ}
   simp only [AbsolutelyContinuousOnInterval, Filter.tendsto_iff_comap] at *
   refine le_trans (le_inf hf hg) ?_
   rw [Filter.HasBasis.le_basis_iff
-      ( (Filter.HasBasis.comap _ hasBasis_totalLengthFilter).inf
+      ((Filter.HasBasis.comap _ hasBasis_totalLengthFilter).inf
         (Filter.HasBasis.comap _ hasBasis_totalLengthFilter))
       (Filter.HasBasis.comap _ hasBasis_totalLengthFilter)]
   intro ε hε
