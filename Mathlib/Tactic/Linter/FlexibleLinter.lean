@@ -282,7 +282,8 @@ def stoppers : Std.HashSet Name :=
     ``cdot }
 
 /-- `SyntaxNodeKind`s that are allowed to follow a flexible tactic:
-  `simp`, `simp_all`, `simpa`, `dsimp`, `grind`, `constructor`, `congr`, `done`, `rfl`, `omega`,
+  `simp`, `simp_all`, `simpa`, `dsimp`, `grind`, `constructor`, `congr`, `done`, `rfl`,
+  `omega` and `cutsat`, `grobner`
   `abel` and `abel!`, `group`, `ring` and `ring!`, `module`, `field_simp`, `norm_num`,
   `linarith`, `nlinarith` and `nlinarith!`, `norm_cast`, `tauto`,
   `aesop`, `cfc_tac` (and `cfc_zero_tac` and `cfc_cont_tac`),
@@ -307,6 +308,8 @@ def flexible : Std.HashSet Name :=
     `Mathlib.Tactic.Module.tacticModule,
     `Mathlib.Tactic.FieldSimp.fieldSimp,
     ``Lean.Parser.Tactic.grind,
+    ``Lean.Parser.Tactic.grobner,
+    ``Lean.Parser.Tactic.cutsat,
     `Mathlib.Tactic.normNum,
     `Mathlib.Tactic.linarith,
     `Mathlib.Tactic.nlinarith,

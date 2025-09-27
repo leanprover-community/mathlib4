@@ -168,11 +168,23 @@ example (h : False) : 0 ≠ 0 := by
   try (simp; done)
   exact h.elim
 
--- `grind` is another flexible tactic.
+-- `grind` is another flexible tactic,
 #guard_msgs in
 example {x y : Nat} : 0 + x + (y + x) = x + x + y := by
   simp
   grind
+
+-- as are its `grobner` and `cutsat` front-ends.
+#guard_msgs in
+example {x y : Nat} : 0 + x + (y + x) = x + x + y := by
+  simp
+  grobner
+
+-- `cutsat` is another flexible tactic.
+#guard_msgs in
+example {x y : Nat} : 0 + x + (y + x) = x + x + y := by
+  simp
+  cutsat
 
 /--
 warning: 'simp' is a flexible tactic modifying '⊢'…
