@@ -671,6 +671,61 @@ omit [T2Space A] [IsTopologicalRing A] in
 lemma _root_.IsStrictlyPositive.rpow {a : A} {y : ℝ} (ha : IsStrictlyPositive a) :
     IsStrictlyPositive (a ^ y) := by grind
 
+/-- For an element `a` in a C⋆-algebra, TFAE:
+1. `a` is strictly positive,
+2. `sqrt a` is strictly positive and `a = sqrt a * sqrt a`,
+3. `sqrt a` is invertible and `a = sqrt a * sqrt a`,
+4. `a = b * b` for some strictly positive `b`,
+5. `a = b * b` for some self-adjoint and invertible `b`,
+6. `a = star b * b` for some invertible `b`,
+7. `a = b * star b` for some invertible `b`,
+8. `0 ≤ a` and `a` is invertible,
+9. `a` is self-adjoint and has positive spectrum. -/
+theorem _root_.CStarAlgebra.isStrictlyPositive_TFAE {a : A} :
+    [IsStrictlyPositive a,
+     IsStrictlyPositive (sqrt a) ∧ a = sqrt a * sqrt a,
+     IsUnit (sqrt a) ∧ a = sqrt a * sqrt a,
+     ∃ b, IsStrictlyPositive b ∧ a = b * b,
+     ∃ b, IsUnit b ∧ IsSelfAdjoint b ∧ a = b * b,
+     ∃ b, IsUnit b ∧ a = star b * b,
+     ∃ b, IsUnit b ∧ a = b * star b,
+     0 ≤ a ∧ IsUnit a,
+     IsSelfAdjoint a ∧ ∀ x ∈ spectrum ℝ a, 0 < x].TFAE := by
+  tfae_have 1 ↔ 8 := IsStrictlyPositive.iff_of_unital
+  tfae_have 1 ↔ 9 := ⟨fun h => ⟨h.isSelfAdjoint,
+      StarOrderedRing.isStrictlyPositive_iff_spectrum_pos a |>.mp h⟩,
+    fun h => (StarOrderedRing.isStrictlyPositive_iff_spectrum_pos a).mpr h.2⟩
+  tfae_have 1 → 2 := fun h => ⟨h.sqrt, sqrt_mul_sqrt_self a |>.symm⟩
+  tfae_have 2 → 3 := fun h => ⟨h.1.isUnit, h.2⟩
+  tfae_have 3 → 4 := fun h => ⟨sqrt a, h.1.isStrictlyPositive (sqrt_nonneg _), h.2⟩
+  tfae_have 4 → 5 := fun ⟨b, hb, hab⟩ => ⟨b, hb.isUnit, hb.isSelfAdjoint, hab⟩
+  tfae_have 5 → 6 := fun ⟨b, hb, hbsa, hab⟩ => ⟨b, hb, hbsa.symm ▸ hab⟩
+  tfae_have 6 → 7 := fun ⟨b, hb, hab⟩ => ⟨star b, hb.star, star_star b |>.symm ▸ hab⟩
+  tfae_have 7 → 8 := fun ⟨b, hb, hab⟩ => ⟨hab ▸ mul_star_self_nonneg _, hab ▸ hb.mul hb.star⟩
+  tfae_finish
+
+theorem _root_.CStarAlgebra.isStrictlyPositive_iff_isStrictlyPositive_sqrt_and_eq_sqrt_mul_sqrt
+    {a : A} : IsStrictlyPositive a ↔ IsStrictlyPositive (sqrt a) ∧ a = sqrt a * sqrt a :=
+  CStarAlgebra.isStrictlyPositive_TFAE.out 0 1
+theorem _root_.CStarAlgebra.isStrictlyPositive_iff_isUnit_sqrt_and_eq_sqrt_mul_sqrt
+    {a : A} : IsStrictlyPositive a ↔ IsUnit (sqrt a) ∧ a = sqrt a * sqrt a :=
+  CStarAlgebra.isStrictlyPositive_TFAE.out 0 2
+theorem _root_.CStarAlgebra.isStrictlyPositive_iff_exists_isStrictlyPositive_and_eq_mul_self
+    {a : A} : IsStrictlyPositive a ↔ ∃ b, IsStrictlyPositive b ∧ a = b * b :=
+  CStarAlgebra.isStrictlyPositive_TFAE.out 0 3
+theorem _root_.CStarAlgebra.isStrictlyPositive_iff_exists_isUnit_and_isSelfAdjoint_and_eq_mul_self
+    {a : A} : IsStrictlyPositive a ↔ ∃ b, IsUnit b ∧ IsSelfAdjoint b ∧ a = b * b :=
+  CStarAlgebra.isStrictlyPositive_TFAE.out 0 4
+theorem _root_.CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self
+    {a : A} : IsStrictlyPositive a ↔ ∃ b, IsUnit b ∧ a = star b * b :=
+  CStarAlgebra.isStrictlyPositive_TFAE.out 0 5
+theorem _root_.CStarAlgebra.isStrictlyPositive_iff_eq_mul_star_self
+    {a : A} : IsStrictlyPositive a ↔ ∃ b, IsUnit b ∧ a = b * star b :=
+  CStarAlgebra.isStrictlyPositive_TFAE.out 0 6
+theorem _root_.CStarAlgebra.isStrictlyPositive_iff_isSelfAdjoint_and_spectrum_pos
+    {a : A} : IsStrictlyPositive a ↔ IsSelfAdjoint a ∧ ∀ x ∈ spectrum ℝ a, 0 < x :=
+  CStarAlgebra.isStrictlyPositive_TFAE.out 0 8
+
 end unital_vs_nonunital
 
 end Unital
