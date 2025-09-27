@@ -840,9 +840,9 @@ theorem map_roots_filter_range_eq_roots_map [IsDomain A] [IsDomain B] {f : A →
   ext b
   rw [Multiset.count_filter]
   split_ifs with h
-  · have ⟨a, h⟩ := h
-    simp [← h, hf, Multiset.count_map_eq_count', eq_rootMultiplicity_map hf]
-  · refine (Multiset.count_eq_zero.mpr fun h' ↦ h <| ?_).symm
+  · obtain ⟨a, rfl⟩ := h
+    simp [hf, Multiset.count_map_eq_count', eq_rootMultiplicity_map hf]
+  · refine (Multiset.count_eq_zero.mpr fun h' ↦ h ?_).symm
     exact Exists.imp (fun _ ↦ And.right) <| Multiset.mem_map.mp h'
 
 theorem card_roots_le_map [IsDomain A] [IsDomain B] {p : A[X]} {f : A →+* B} (h : p.map f ≠ 0) :

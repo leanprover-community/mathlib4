@@ -181,8 +181,7 @@ theorem leadingCoeff_map_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f (leadin
 
 theorem nextCoeff_map_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f p.leadingCoeff ≠ 0) :
     (p.map f).nextCoeff = f p.nextCoeff := by
-  unfold nextCoeff
-  simp [hf, natDegree_map_of_leadingCoeff_ne_zero]
+  rw [nextCoeff, nextCoeff, natDegree_map_of_leadingCoeff_ne_zero _ hf]
   split_ifs <;> simp
 
 variable (f) in
