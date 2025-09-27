@@ -541,16 +541,7 @@ lemma MDifferentiableWithinAt.sum_section_of_locallyFinite
       (fun x ↦ TotalSpace.mk' F x (∑ i ∈ s, (t i x))) (u ∩ u') x₀ :=
      MDifferentiableWithinAt.sum_section fun i ↦ ((ht' i).mono inter_subset_left)
   apply (mdifferentiableWithinAt_inter hu').mp
-  apply this.congr fun y hy ↦ ?_
-  · rw [TotalSpace.mk_inj, tsum_eq_sum']
-    refine support_subset_iff'.mpr fun i hi ↦ ?_
-    by_contra! h
-    have : i ∈ s.toFinset := by
-      refine Set.mem_toFinset.mpr ?_
-      simp only [s, ne_eq, Set.mem_setOf_eq]
-      use x₀
-      simpa using ⟨h, mem_of_mem_nhds hu'⟩
-    exact hi this
+  apply this.congr' (fun y hy ↦ ?_) inter_subset_right (mem_of_mem_nhds hu')
   rw [TotalSpace.mk_inj, tsum_eq_sum']
   refine support_subset_iff'.mpr fun i hi ↦ ?_
   by_contra! h
@@ -558,7 +549,7 @@ lemma MDifferentiableWithinAt.sum_section_of_locallyFinite
     refine Set.mem_toFinset.mpr ?_
     simp only [s, ne_eq, Set.mem_setOf_eq]
     use y
-    simpa using ⟨h, Set.mem_of_mem_inter_right hy⟩
+    simp [h, hy]
   exact hi this
 
 /-- The sum of a locally finite collection of sections is differentiable at `x`
