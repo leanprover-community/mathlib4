@@ -106,7 +106,7 @@ lemma basisQuotient_repr {ι} [Fintype ι] (b : Basis ι R S) (x) (i) :
     Ideal.Quotient.mk_smul_mk_quotient_map_quotient, ← Algebra.smul_def]
   rw [← map_sum, Basis.sum_repr b x]
 
-lemma exists_maximalIdeal_pow_le_of_finite_quotient (I : Ideal R) [Finite (R ⧸ I)] :
+lemma exists_maximalIdeal_pow_le_of_finite_quotient (I : Ideal R) [IsArtinianRing (R ⧸ I)] :
     ∃ n, maximalIdeal R ^ n ≤ I := by
   by_cases hI : I = ⊤
   · simp [hI]
