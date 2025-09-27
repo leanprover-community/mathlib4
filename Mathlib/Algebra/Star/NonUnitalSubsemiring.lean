@@ -23,7 +23,7 @@ universe v w w'
 
 variable {A : Type v} {B : Type w} {C : Type w'}
 
-/-- A sub star semigroup is a subset of a magma which is closed under the `star`. -/
+/-- A sub-star semigroup is a subset of a magma which is closed under the `star`. -/
 structure SubStarSemigroup (M : Type v) [Mul M] [Star M] : Type v
     extends Subsemigroup M where
   /-- The `carrier` of a `StarSubset` is closed under the `star` operation. -/
