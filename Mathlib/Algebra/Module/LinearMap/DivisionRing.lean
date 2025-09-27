@@ -23,18 +23,17 @@ variable {R M M₁ : Type*} [AddCommMonoid M] [AddCommMonoid M₁]
 
 theorem surjective_iff_ne_zero [DivisionSemiring R] [Module R M] {f : M →ₗ[R] R} :
     Function.Surjective f ↔ f ≠ 0 := by
-  refine ⟨ne_zero_of_surjective, fun hf z => ?_⟩
+  refine ⟨ne_zero_of_surjective, fun hf z ↦ ?_⟩
   obtain ⟨y, hy⟩ : ∃ y, f y ≠ 0 := by simpa [Ne, LinearMap.ext_iff] using hf
-  use (z * (f y)⁻¹) • y
-  simp [hy]
+  exact ⟨(z * (f y)⁻¹) • y, by simp [hy]⟩
 
 protected alias ⟨_, surjective⟩ := surjective_iff_ne_zero
 
 theorem range_smulRight_apply_of_surjective [Semiring R] [Module R M] [Module R M₁]
     {f : M →ₗ[R] R} (hf : Function.Surjective f) (x : M₁) :
-    range (f.smulRight x) = Submodule.span R {x} := Submodule.ext fun z => by
+    range (f.smulRight x) = Submodule.span R {x} := Submodule.ext fun z ↦ by
   simp_rw [mem_range, smulRight_apply, Submodule.mem_span_singleton]
-  refine ⟨fun ⟨w, hw⟩ => ⟨f w, hw ▸ rfl⟩, fun ⟨w, hw⟩ => ?_⟩
+  refine ⟨fun ⟨w, hw⟩ ↦ ⟨f w, hw ▸ rfl⟩, fun ⟨w, hw⟩ ↦ ?_⟩
   obtain ⟨y, rfl⟩ := hf w
   exact ⟨y, hw⟩
 
