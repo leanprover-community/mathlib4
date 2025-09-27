@@ -37,7 +37,7 @@ theorem integral_deriv_of_contDiffOn_Icc (h : ContDiffOn ℝ 1 f (Icc a b)) (hab
     apply ((h x ⟨hx.1.le, hx.2.le⟩).differentiableWithinAt le_rfl).differentiableAt
     exact Icc_mem_nhds hx.1 hx.2
   · have := (h.derivWithin (m := 0) (uniqueDiffOn_Icc h'ab) (by simp)).continuousOn
-    apply (this.intervalIntegrable_of_Icc (μ := volume) hab).congr
+    apply (this.intervalIntegrable_of_Icc (μ := volume) hab).congr_ae
     simp only [hab, uIoc_of_le]
     rw [← restrict_Ioo_eq_restrict_Ioc]
     filter_upwards [self_mem_ae_restrict measurableSet_Ioo] with x hx
