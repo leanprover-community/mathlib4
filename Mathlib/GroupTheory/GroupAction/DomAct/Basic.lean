@@ -64,7 +64,7 @@ library) include:
 - a continuous action on `X` generates an action on `C(X, Y)`;
 - a measurable action on `X` generates an action on `{ f : X → Y // Measurable f }`;
 - a quasi-measure-preserving action on `X` generates an action on `X →ₘ[μ] Y`;
-- a measure preserving action generates an isometric action on `MeasureTheory.Lp _ _ _`.
+- a measure-preserving action generates an isometric action on `MeasureTheory.Lp _ _ _`.
 
 ### Left action vs right action
 
