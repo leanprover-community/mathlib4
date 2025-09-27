@@ -17,10 +17,13 @@ import Mathlib.CategoryTheory.Sites.Sheafification
 
 noncomputable section
 
-open CategoryTheory Limits
+open CategoryTheory Presheaf
 
 variable {C : Type*} [Category C] (J : GrothendieckTopology C) (A : Type*) [Category A]
 
 instance [HasSheafify J A] [CartesianMonoidalCategory A] [CartesianClosed (Cᵒᵖ ⥤ A)] :
     CartesianClosed (Sheaf J A) :=
-  cartesianClosedOfReflective (sheafToPresheaf _ _)
+  cartesianClosedOfReflective' (sheafToPresheaf _ _) {
+    obj F := ⟨F.1, (isSheaf_of_iso_iff <| Classical.choice <| F.2.choose_spec).1 (Sheaf.cond _)⟩
+    map f := ⟨f⟩
+  } (Iso.refl _)
