@@ -5,28 +5,29 @@ Authors: David Loeffler
 -/
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
+import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Order.LiminfLimsup
+
 
 /-!
 # Summation filters
 
 We define a `SummationFilter` on `β` to be a filter on the finite subsets of `β`. These are used
-in defining summability.
+in defining summability: if `L` is a summation filter, we define the `L`-sum of `f` to be the
+limit along `L` of the sums over finsets (if this limit exists). This file only develops the basic
+machinery of summation filters - the key definitions `HasSum`, `tsum` and `summable` (and their
+product variants) are in the file `Mathlib.Topology.Algebra.InfiniteSum.Defs`.
 -/
 
 open Set Filter Function
 
 variable {α β γ : Type*}
 
-/-- A filter on the set of finsets of a type. (Used for defining summation methods.) -/
+/-- A filter on the set of finite subsets of a type `β`. (Used for defining infinite topological
+sums and products, as limits along the given filter of partial sums / products over finsets.) -/
 structure SummationFilter (β) where
   /-- The filter -/
   filter : Filter (Finset β)
-
-/-- Unconditional summation: a function on `β` is said to be *unconditionally summable* if its
-partial sums over finite subsets converge with respect to the `atTop` filter. -/
-@[simps] def unconditional (β) : SummationFilter β where
-  filter := atTop
 
 namespace SummationFilter
 
@@ -38,14 +39,10 @@ class LeAtTop (L : SummationFilter β) : Prop where
 lemma le_atTop (L : SummationFilter β) [L.LeAtTop] : L.filter ≤ atTop :=
   LeAtTop.le_atTop'
 
-instance : (unconditional β).LeAtTop := ⟨le_rfl⟩
-
 /-- Typeclass asserting that a summation filter is non-vacuous (if this is not satisfied, then
 every function is summable with every possible sum simultaneously). -/
 class NeBot (L : SummationFilter β) : Prop where
   private ne_bot' : L.filter.NeBot
-
-instance : (unconditional β).NeBot := ⟨atTop_neBot⟩
 
 /-- Makes the `NeBot` instance visible to the typeclass machinery. -/
 instance (L : SummationFilter β) [L.NeBot] : L.filter.NeBot := NeBot.ne_bot'
@@ -102,23 +99,33 @@ instance (L : SummationFilter β) [L.LeAtTop] : HasSupport L where
 lemma eventually_mem_or_not_mem (L : SummationFilter β) [HasSupport L] (b : β) :
     (∀ᶠ s in L.filter, b ∈ s) ∨ (∀ᶠ s in L.filter, b ∉ s) :=
   or_iff_not_imp_left.mpr fun hb ↦ by
-    filter_upwards [HasSupport.eventually_le_support'] with a ha using Set.notMem_subset ha hb
+    filter_upwards [L.eventually_le_support] with a ha using notMem_subset ha hb
 
 end has_support
 
 section map_comap
 
-/-- Pushforward of a summation filter along a map (mostly useful for embeddings). -/
+/-- Pushforward of a summation filter along an embedding.
+
+(We define this only for embeddings, rather than arbitrary maps, since this is the only case needed
+for the intended applications, and this avoids requiring a `DecidableEq` instance on `γ`.) -/
 @[simps] def map (L : SummationFilter β) (f : β ↪ γ) : SummationFilter γ where
   filter := L.filter.map (Finset.map f)
 
 @[simp] lemma support_map (L : SummationFilter β) [L.NeBot] (f : β ↪ γ) :
     (L.map f).support = f '' L.support := ext fun c ↦ by
   rcases em (c ∈ range f) with ⟨b, rfl⟩ | hc
-  · simp [SummationFilter.support]
-  · refine ⟨fun hc' ↦ ?_, by grind⟩
-    have := Eventually.exists hc'
-    grind
+  · simp [support]
+  · exact ⟨fun hc' ↦ have := hc'.exists; by grind, by grind⟩
+
+/-- If `L` has well-defined support, then so does its map along an embedding. -/
+instance (L : SummationFilter β) [HasSupport L] (f : β ↪ γ) : HasSupport (L.map f) where
+  eventually_le_support' := by
+    by_cases h : L.NeBot
+    · simp only [map_filter, eventually_map, Finset.coe_map, image_subset_iff, support_map]
+      filter_upwards [L.eventually_le_support] with a using by grind
+    · have : L.filter = ⊥ := by contrapose! h; exact ⟨⟨h⟩⟩
+      simp [this]
 
 /-- Pullback of a summation filter along an embedding. -/
 @[simps] def comap (L : SummationFilter β) (f : γ ↪ β) : SummationFilter γ where
@@ -134,19 +141,111 @@ instance (L : SummationFilter β) [HasSupport L] (f : γ ↪ β) : HasSupport (L
     simp only [support_comap, comap_filter, eventually_map, Finset.coe_preimage]
     filter_upwards [L.eventually_le_support] with a using Set.preimage_mono
 
-/-- If `L` has well-defined support, then so does its map along an embedding. -/
-instance (L : SummationFilter β) [HasSupport L] (f : β ↪ γ) : HasSupport (L.map f) where
-  eventually_le_support' := by
-    by_cases h : L.NeBot
-    · simp only [map_filter, eventually_map, Finset.coe_map, image_subset_iff, support_map]
-      filter_upwards [L.eventually_le_support] with a using by grind
-    · have : L.filter = ⊥ := by contrapose! h; exact ⟨⟨h⟩⟩
-      simp [this]
+instance (L : SummationFilter β) [LeAtTop L] (f : γ ↪ β) : LeAtTop (L.comap f) where
+  le_atTop' := support_eq_univ_iff.mp (by simp)
 
 end map_comap
+
+end SummationFilter
+
+open SummationFilter
+
+section examples
+/-!
+## Examples of summation filters
+-/
+variable (β)
+
+/-- **Unconditional summation**: a function on `β` is said to be *unconditionally summable* if its
+partial sums over finite subsets converge with respect to the `atTop` filter. -/
+@[simps] def unconditional : SummationFilter β where
+  filter := atTop
+
+instance : (unconditional β).LeAtTop := ⟨le_rfl⟩
+
+instance : (unconditional β).NeBot := ⟨atTop_neBot⟩
 
 /-- This instance is useful for some measure-theoretic statements. -/
 instance [Countable β] : IsCountablyGenerated (unconditional β).filter :=
   atTop.isCountablyGenerated
 
-end SummationFilter
+/-- The unconditional filter is preserved by comaps. -/
+@[simp] lemma SummationFilter.comap_unconditional {β} (f : γ ↪ β) :
+    (unconditional β).comap f = unconditional γ := by
+  classical
+  simp only [unconditional, comap]
+  congr 1 with s
+  simp only [mem_map, mem_atTop_sets, ge_iff_le, Finset.le_eq_subset, mem_preimage]
+  constructor <;> rintro ⟨t, ht⟩
+  · refine ⟨t.preimage f (by simp), fun x hx ↦ ?_⟩
+    simpa [Finset.union_eq_right.mpr hx] using ht (t ∪ x.map f) t.subset_union_left
+  · exact ⟨_, fun b hb ↦ ht _ (Finset.map_subset_iff_subset_preimage.mp hb)⟩
+
+/-- If `β` is finite, then `unconditional β` is the only summation filter `L` on `β` satisfying
+`L.LeAtTop` and `L.NeBot`. -/
+lemma SummationFilter.eq_unconditional_of_finite {β} [Finite β]
+    (L : SummationFilter β) [L.LeAtTop] [L.NeBot] : L = unconditional β := by
+  classical
+  haveI := Fintype.ofFinite β
+  have hAtTop : (atTop : Filter (Finset β)) = pure Finset.univ := by
+    rw [(isTop_iff_eq_top.mpr rfl).atTop_eq (a := Finset.univ), ← Finset.top_eq_univ,
+      Ici_top, principal_singleton]
+  have hL := L.le_atTop
+  have hL' : ∅ ∉ L.filter := empty_mem_iff_bot.not.mpr <| NeBot.ne_bot'.1
+  cases L with | mk F =>
+  simp only [unconditional, hAtTop] at *
+  congr 1
+  refine eq_of_le_of_ge hL (pure_le_iff.mpr ?_)
+  contrapose! hL'
+  obtain ⟨s, hs, hs'⟩ := hL'
+  simpa [inter_singleton_eq_empty.mpr hs'] using inter_mem hs (le_pure_iff.mp hL)
+
+section conditionalTop
+
+variable [Preorder β] [LocallyFiniteOrder β]
+
+/-- **Conditional summation**, for ordered types `β` such that closed intervals `[x, y]` are
+finite: this corresponds to limits of finite sums over larger and larger intervals. -/
+@[simps] def conditional : SummationFilter β where
+  filter := (atBot ×ˢ atTop).map (fun p ↦ Finset.Icc p.1 p.2)
+
+instance : (conditional β).LeAtTop := ⟨support_eq_univ_iff.mp <| by
+  simpa [eq_univ_iff_forall, support, -eventually_and]
+    using fun x ↦ prod_mem_prod (eventually_le_atBot x) (eventually_ge_atTop x)⟩
+
+instance [Nonempty β] [IsDirected β (· ≤ ·)] [IsDirected β (· ≥ ·)] : (conditional β).NeBot :=
+  ⟨by simp; infer_instance⟩
+
+instance [IsCountablyGenerated (atTop : Filter β)] [IsCountablyGenerated (atBot : Filter β)] :
+    IsCountablyGenerated (conditional β).filter :=
+  map.isCountablyGenerated ..
+
+/-- When `β` has a bottom element, `conditional β` is given by limits over finite intervals
+`{y | y ≤ x}` as `x → atTop`. -/
+@[simp high] -- want this to be prioritized over `conditional_filter` when they both apply
+lemma conditional_filter_eq_map_Iic {γ} [PartialOrder γ] [LocallyFiniteOrder γ] [OrderBot γ] :
+    (conditional γ).filter = atTop.map Finset.Iic := by
+  simp [(isBot_bot).atBot_eq, comp_def, Finset.Icc_bot]
+
+/-- When `β` has a top element, `conditional β` is given by limits over finite intervals
+`{y | x ≤ y}` as `x → atBot`. -/
+@[simp high] -- want this to be prioritized over `conditional_filter` when they both apply
+lemma conditional_filter_eq_map_Ici {γ} [PartialOrder γ] [LocallyFiniteOrder γ] [OrderTop γ] :
+    (conditional γ).filter = atBot.map Finset.Ici := by
+  simp [(isTop_top).atTop_eq, comp_def, Finset.Icc_top]
+
+/-- Conditional summation over `ℕ` is given by limits of sums over `Finset.range n` as `n → ∞`. -/
+@[simp high + 1] -- want this to be prioritized over `conditional_filter_eq_map_Ici`
+lemma conditional_filter_eq_map_range : (conditional ℕ).filter = atTop.map Finset.range := by
+  have (n : ℕ) : Finset.Iic n = Finset.range (n + 1) := by ext x; simp [Nat.lt_succ]
+  simp only [conditional_filter_eq_map_Iic, funext this]
+  apply le_antisymm <;>
+      rw [← Tendsto] <;>
+      simp only [tendsto_atTop', mem_map, mem_atTop_sets, mem_preimage] <;>
+      rintro s ⟨a, ha⟩
+  · exact ⟨a + 1, fun b hb ↦ ha (b + 1) (by omega)⟩
+  · exact ⟨a + 1, fun b hb ↦ by convert ha (b - 1) (by omega); omega⟩
+
+end conditionalTop
+
+end examples
