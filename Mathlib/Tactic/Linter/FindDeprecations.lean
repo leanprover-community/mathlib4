@@ -153,14 +153,12 @@ elab "#regenerate_deprecations " oldDate:str ppSpace newDate:str really?:(&" rea
   let dmap ← deprecatedHashMap oldDate newDate
   for (mod, rgs) in dmap.toArray.qsort (·.1 < ·.1) do
     let option :=
-      s!"\nimport Mathlib.Tactic.Linter.RemoveDeprecations\n\
-        set_option linter.style.header false\n\
-        set_option linter.removeDeprecations \"{oldDate} {newDate}\"\n"
-    dbg_trace s!"Adding '{option}' to '{mod}'"
+      s!"\nimport Mathlib.Tactic.Linter.CommandRanges\n\
+        set_option linter.commandRanges true\n"
     let optionAdded ← addAfterImports mod option
     --dbg_trace optionAdded
     let newName := mod.dropRight ".lean".length ++ "_with_option.lean"
-    dbg_trace s!"Writing to '{newName}'"
+    logInfo m!"Adding '{option}' to '{mod}'\nWriting to '{newName}'\n"
     if really?.isSome then
       IO.FS.writeFile newName optionAdded
     if false then
