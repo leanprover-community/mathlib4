@@ -2,6 +2,8 @@
 
 set -euxo pipefail
 
+ln -s $(lean --print-prefix)/{lib,include} ./scripts/bench/fake-root
+
 temci exec --config ./scripts/bench/temci-config.yml >2
 temci report --reporter codespeed2 |\
   sed 's/instructions:u/instructions/g' |\
