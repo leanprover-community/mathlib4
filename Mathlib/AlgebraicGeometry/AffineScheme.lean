@@ -252,12 +252,11 @@ theorem exists_isAffineOpen_mem_and_subset {X : Scheme.{u}} {x : X}
     ⟨AlgebraicGeometry.isAffineOpen_opensRange f (H := hf.1), hf.2.1, hf.2.2⟩⟩
 
 instance Scheme.isAffine_local_affine {X : Scheme.{u}} {x : X} :
-    IsAffine (Scheme.Opens.toScheme (X.local_affine x).choose.obj) := by
-  let f : Scheme.Opens.toScheme (X.local_affine x).choose.obj ≅
-      AlgebraicGeometry.Spec (X.local_affine x).choose_spec.choose :=
+    IsAffine (Opens.toScheme (X.local_affine x).choose.obj) := by
+  let : Opens.toScheme (X.local_affine x).choose.obj ≅ Spec (X.local_affine x).choose_spec.choose :=
     Scheme.fullyFaithfulForgetToLocallyRingedSpace.preimageIso
       (X.local_affine x).choose_spec.choose_spec.some
-  exact IsAffine.of_isIso f.hom
+  exact IsAffine.of_isIso this.hom
 
 instance Scheme.isAffine_affineCover (X : Scheme) (i : X.affineCover.I₀) :
     IsAffine (X.affineCover.X i) :=
