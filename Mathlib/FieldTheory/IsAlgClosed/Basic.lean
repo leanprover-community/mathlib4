@@ -119,17 +119,17 @@ theorem roots_card_eq_natDegree [IsAlgClosed k] {p : k[X]} : p.roots.card = p.na
   have ⟨_, _, hdeg, hroots⟩ := exists_prod_multiset_X_sub_C_mul p
   simp [← hdeg, roots_eq_zero_iff_natDegree_zero.mp hroots]
 
-theorem map_roots_card_eq_natDegree_of_leadingCoeff_ne_zero {A B : Type*} [CommRing A] [Field B]
+theorem map_roots_card_eq_natDegree_of_leadingCoeff_ne_zero {A B : Type*} [Semiring A] [Field B]
     [IsAlgClosed B] (f : A →+* B) {p : A[X]} (hf : f p.leadingCoeff ≠ 0) :
     (p.map f).roots.card = p.natDegree :=
   natDegree_map_of_leadingCoeff_ne_zero _ hf ▸ roots_card_eq_natDegree
 
-theorem map_roots_card_eq_natDegree_of_isUnit_leadingCoeff {A B : Type*} [CommRing A] [Field B]
+theorem map_roots_card_eq_natDegree_of_isUnit_leadingCoeff {A B : Type*} [Semiring A] [Field B]
     [IsAlgClosed B] (f : A →+* B) {p : A[X]} (h : IsUnit p.leadingCoeff) :
     (p.map f).roots.card = p.natDegree :=
   natDegree_map_of_isUnit_leadingCoeff f h ▸ roots_card_eq_natDegree
 
-theorem map_roots_card_eq_natDegree_of_injective {A B : Type*} [CommRing A] [Field B]
+theorem map_roots_card_eq_natDegree_of_injective {A B : Type*} [Semiring A] [Field B]
     [IsAlgClosed B] (f : A →+* B) {p : A[X]} (hf : Function.Injective f) :
     (p.map f).roots.card = p.natDegree :=
   natDegree_map_eq_of_injective hf ▸ roots_card_eq_natDegree
