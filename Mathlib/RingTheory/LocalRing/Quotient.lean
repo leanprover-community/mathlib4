@@ -106,8 +106,8 @@ lemma basisQuotient_repr {ι} [Fintype ι] (b : Basis ι R S) (x) (i) :
     Ideal.Quotient.mk_smul_mk_quotient_map_quotient, ← Algebra.smul_def]
   rw [← map_sum, Basis.sum_repr b x]
 
-lemma exists_maximalIdeal_pow_le_of_finite_quotient (I : Ideal R) [IsArtinianRing (R ⧸ I)] :
-    ∃ n, maximalIdeal R ^ n ≤ I := by
+lemma exists_maximalIdeal_pow_le_of_isArtinianRing_quotient
+    (I : Ideal R) [IsArtinianRing (R ⧸ I)] : ∃ n, maximalIdeal R ^ n ≤ I := by
   by_cases hI : I = ⊤
   · simp [hI]
   have : Nontrivial (R ⧸ I) := Ideal.Quotient.nontrivial hI
@@ -121,6 +121,10 @@ lemma exists_maximalIdeal_pow_le_of_finite_quotient (I : Ideal R) [IsArtinianRin
   rw [jacobson_eq_maximalIdeal _ bot_ne_top, ← this, ← Ideal.map_pow, Ideal.zero_eq_bot,
     Ideal.map_eq_bot_iff_le_ker, Ideal.mk_ker] at hn
   exact ⟨n, hn⟩
+
+@[deprecated (since := "2025-09-27")]
+alias exists_maximalIdeal_pow_le_of_finite_quotient :=
+  exists_maximalIdeal_pow_le_of_isArtinianRing_quotient
 
 lemma finite_quotient_iff [IsNoetherianRing R] [Finite (ResidueField R)] {I : Ideal R} :
     Finite (R ⧸ I) ↔ ∃ n, (maximalIdeal R) ^ n ≤ I := by
