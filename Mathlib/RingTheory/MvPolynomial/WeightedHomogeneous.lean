@@ -6,7 +6,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.Algebra.GradedMonoid
-import Mathlib.Algebra.MvPolynomial.Basic
+import Mathlib.Algebra.MvPolynomial.Degrees
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Data.Finsupp.Weight
 import Mathlib.RingTheory.GradedAlgebra.Basic
@@ -112,6 +112,29 @@ theorem weightedTotalDegree_zero (w : σ → M) :
 theorem le_weightedTotalDegree (w : σ → M) {φ : MvPolynomial σ R} {d : σ →₀ ℕ}
     (hd : d ∈ φ.support) : weight w d ≤ φ.weightedTotalDegree w :=
   le_sup hd
+
+open Classical in
+/-- The `degrees` of a polynomial `p` is a special case of the `weightedTotalDegree` of `p` where
+  the weights are singletons containing each variable. -/
+theorem weightedTotalDegree_eq_degrees (p : MvPolynomial σ R) :
+    weightedTotalDegree (fun i => {i}) p = degrees p := by
+  rfl
+
+/-- The `totalDegree` of a polynomial `p` is a special case of the `weightedTotalDegree` of `p`
+  where all of the weights are `1`. -/
+theorem weightedTotalDegree_eq_totalDegree (p : MvPolynomial σ R) :
+    weightedTotalDegree (fun _ => 1) p = totalDegree p := by
+  simp [weightedTotalDegree, totalDegree, weight, linearCombination]
+
+open Classical in
+/-- The `degreeOf` a variable `i` for a polynomial `p` is a special case of the
+  `weightedTotalDegree` of `p` where `i` has the only nonzero weight and that weight is `1`. -/
+theorem weightedTotalDegree_eq_degreeOf (i : σ) (p : MvPolynomial σ R) :
+    weightedTotalDegree (if · = i then 1 else 0) p = degreeOf i p := by
+  simp only [weightedTotalDegree, degreeOf, degrees, weight, linearCombination,
+    Multiset.count_finset_sup]
+  congr; ext d
+  by_cases h : d i = 0 <;> simp [h]
 
 end OrderBot
 
