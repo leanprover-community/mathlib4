@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Johannes Hölzl
+Authors: Patrick Massot, Johannes Hölzl, Anatole Dedecker
 -/
 import Mathlib.Topology.UniformSpace.DiscreteUniformity
 import Mathlib.Topology.Algebra.Group.Basic
@@ -30,6 +30,98 @@ assert_not_exists Cauchy
 noncomputable section
 
 open Uniformity Topology Filter Pointwise
+
+section LeftRight
+
+open Filter Set
+
+variable {G Gₗ Gᵣ Hₗ Hᵣ X : Type*}
+
+class IsRightUniformAddGroup (G : Type*) [UniformSpace G] [AddGroup G] : Prop
+    extends IsTopologicalAddGroup G where
+  uniformity_eq :
+    𝓤 G = comap (fun x : G × G ↦ x.2 + (-x.1)) (𝓝 0)
+
+@[to_additive]
+class IsRightUniformGroup (G : Type*) [UniformSpace G] [Group G] : Prop
+    extends IsTopologicalGroup G where
+  uniformity_eq :
+    𝓤 G = comap (fun x : G × G ↦ x.2 * x.1⁻¹) (𝓝 1)
+
+class IsLeftUniformAddGroup (G : Type*) [UniformSpace G] [AddGroup G] : Prop
+    extends IsTopologicalAddGroup G where
+  uniformity_eq :
+    𝓤 G = comap (fun x : G × G ↦ (-x.1) + x.2) (𝓝 0)
+
+@[to_additive]
+class IsLeftUniformGroup (G : Type*) [UniformSpace G] [Group G] : Prop
+    extends IsTopologicalGroup G where
+  uniformity_eq :
+    𝓤 G = comap (fun x : G × G ↦ x.1⁻¹ * x.2) (𝓝 1)
+
+class inductive IsLeftOrRightUniformAddGroup (G : Type*) [UniformSpace G] [AddGroup G] : Prop
+| right [IsRightUniformAddGroup G] : IsLeftOrRightUniformAddGroup G
+| left [IsLeftUniformAddGroup G] : IsLeftOrRightUniformAddGroup G
+
+@[to_additive]
+class inductive IsLeftOrRightUniformGroup (G : Type*) [UniformSpace G] [Group G] : Prop
+| right [IsRightUniformGroup G] : IsLeftOrRightUniformGroup G
+| left [IsLeftUniformGroup G] : IsLeftOrRightUniformGroup G
+
+attribute [instance] IsLeftOrRightUniformAddGroup.left
+attribute [instance] IsLeftOrRightUniformAddGroup.right
+attribute [instance] IsLeftOrRightUniformGroup.left
+attribute [instance] IsLeftOrRightUniformGroup.right
+
+variable [UniformSpace G] [Group G] [IsLeftOrRightUniformGroup G]
+variable [UniformSpace Gₗ] [UniformSpace Gᵣ] [Group Gₗ] [Group Gᵣ]
+variable [UniformSpace Hₗ] [UniformSpace Hᵣ] [Group Hₗ] [Group Hᵣ]
+variable [IsLeftUniformGroup Gₗ] [IsRightUniformGroup Gᵣ]
+variable [IsLeftUniformGroup Hₗ] [IsRightUniformGroup Hᵣ]
+variable [UniformSpace X]
+
+@[to_additive]
+instance : IsTopologicalGroup G := by
+  rcases ‹IsLeftOrRightUniformGroup G› <;> infer_instance
+
+variable (Gₗ Gᵣ)
+
+@[to_additive]
+lemma uniformity_eq_comap_mul_inv_nhds_one :
+    𝓤 Gᵣ = comap (fun x : Gᵣ × Gᵣ ↦ x.2 * x.1⁻¹) (𝓝 1) :=
+  IsRightUniformGroup.uniformity_eq
+
+@[to_additive]
+lemma uniformity_eq_comap_inv_mul_nhds_one :
+    𝓤 Gₗ = comap (fun x : Gₗ × Gₗ ↦ x.1⁻¹ * x.2) (𝓝 1) :=
+  IsLeftUniformGroup.uniformity_eq
+
+@[to_additive]
+lemma uniformity_eq_comap_mul_inv_nhds_one_swapped :
+    𝓤 Gᵣ = comap (fun x : Gᵣ × Gᵣ ↦ x.1 * x.2⁻¹) (𝓝 1) := by
+  rw [← comap_swap_uniformity, uniformity_eq_comap_mul_inv_nhds_one, comap_comap]
+  rfl
+
+@[to_additive]
+lemma uniformity_eq_comap_inv_mul_nhds_one_swapped :
+    𝓤 Gₗ = comap (fun x : Gₗ × Gₗ ↦ x.2⁻¹ * x.1) (𝓝 1) := by
+  rw [← comap_swap_uniformity, uniformity_eq_comap_inv_mul_nhds_one, comap_comap]
+  rfl
+
+@[to_additive]
+theorem uniformity_eq_comap_nhds_one : 𝓤 Gᵣ = comap (fun x : Gᵣ × Gᵣ => x.2 / x.1) (𝓝 1) := by
+  simp_rw [div_eq_mul_inv]
+  exact uniformity_eq_comap_mul_inv_nhds_one Gᵣ
+
+@[to_additive]
+theorem uniformity_eq_comap_nhds_one_swapped :
+    𝓤 Gᵣ = comap (fun x : Gᵣ × Gᵣ => x.1 / x.2) (𝓝 1) := by
+  rw [← comap_swap_uniformity, uniformity_eq_comap_nhds_one, comap_comap]
+  rfl
+
+variable {Gₗ Gᵣ}
+
+end LeftRight
 
 section IsUniformGroup
 
