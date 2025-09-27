@@ -12,7 +12,7 @@ import Mathlib.Topology.Algebra.UniformRing
 
 Given a commutative ring `R` and an ideal `I` in `R`, this file constructs the unique
 topology on `R` which is compatible with the ring structure and such that a set is a neighborhood
-of zero if and only if it contains a power of `I`. This topology is non-archimedean: every
+of zero if and only if it contains a power of `I`. This topology is non-Archimedean: every
 neighborhood of zero contains an open subgroup, namely a power of `I`.
 
 It also studies the predicate `IsAdic` which states that a given topological ring structure is
@@ -28,7 +28,7 @@ corresponding adic topology to the type class inference system.
 * `Ideal.adic_basis`: the basis of submodules given by powers of an ideal.
 * `Ideal.adicTopology`: the adic topology associated to an ideal. It has the above basis
   for neighborhoods of zero.
-* `Ideal.nonarchimedean`: the adic topology is non-archimedean
+* `Ideal.nonarchimedean`: the adic topology is non-Archimedean
 * `isAdic_iff`: A topological ring is `J`-adic if and only if it admits the powers of `J` as
   a basis of open neighborhoods of zero.
 * `WithIdeal`: a class registering an ideal in a ring.
@@ -75,7 +75,7 @@ def ringFilterBasis (I : Ideal R) :=
   I.adic_basis.toRing_subgroups_basis.toRingFilterBasis
 
 /-- The adic topology associated to an ideal `I`. This topology admits powers of `I` as a basis of
-neighborhoods of zero. It is compatible with the ring structure and is non-archimedean. -/
+neighborhoods of zero. It is compatible with the ring structure and is non-Archimedean. -/
 def adicTopology (I : Ideal R) : TopologicalSpace R :=
   (adic_basis I).topology
 

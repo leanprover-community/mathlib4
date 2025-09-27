@@ -41,7 +41,7 @@ theorem mk_le_mk_smul (a : M) (k : K) : mk a ≤ mk (k • a) := by
 
 variable (K)
 
-/-- Given an upper set `s` of archimedean classes in a linearly ordered module `M` with Archimedean
+/-- Given an upper set `s` of Archimedean classes in a linearly ordered module `M` with Archimedean
 scalars, all elements belonging to these classes form a submodule, except when `s = ⊤` for which the
 set would be empty. For `s = ⊤`, we assign the junk value `⊥`.
 

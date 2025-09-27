@@ -21,7 +21,7 @@ open ValuativeRel WithZero
 
 namespace Padic
 
--- TODO: should this be automatic from a nonarchimedean nontrivially normed field?
+-- TODO: should this be automatic from a non-Archimedean nontrivially normed field?
 instance : ValuativeRel ℚ_[p] := .ofValuation mulValuation
 
 instance : Valuation.Compatible (mulValuation (p := p)) := .ofValuation _

@@ -102,7 +102,7 @@ alias equiv_on_nat_iff_equiv := exists_nat_rpow_iff_isEquiv
 section Non_archimedean
 
 /-!
-### The non-archimedean case
+### The non-Archimedean case
 
 Every bounded absolute value on `ℚ` is equivalent to a `p`-adic absolute value.
 -/
@@ -225,7 +225,7 @@ lemma exists_pos_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) := by
   rw [neg_neg]
   exact (rpow_logb (mod_cast pprime.pos) (mod_cast pprime.ne_one) hp0).symm
 
--- ## Non-archimedean case: end goal
+-- ## Non-Archimedean case: end goal
 
 include hf_nontriv bdd in
 /-- If `f` is bounded and not trivial, then it is equivalent to a p-adic absolute value. -/

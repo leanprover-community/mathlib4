@@ -18,7 +18,7 @@ a.k.a. the interval `[0, ∞)`. We also define the following operations and stru
 
 * `a + b` and `a * b` are the restrictions of addition and multiplication of real numbers to `ℝ≥0`;
   these operations together with `0 = ⟨0, _⟩` and `1 = ⟨1, _⟩` turn `ℝ≥0` into a conditionally
-  complete linear ordered archimedean commutative semifield; we have no typeclass for this in
+  complete linear ordered Archimedean commutative semifield; we have no typeclass for this in
   `mathlib` yet, so we define the following instances instead:
 
   - `LinearOrderedSemiring ℝ≥0`;

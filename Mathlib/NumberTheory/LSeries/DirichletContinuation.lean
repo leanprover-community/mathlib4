@@ -20,7 +20,7 @@ All definitions and theorems are in the `DirichletCharacter` namespace.
 
 * `LFunction χ s`: the L-function, defined as a linear combination of Hurwitz zeta functions.
 * `completedLFunction χ s`: the completed L-function, which for *almost* all `s` is equal to
-  `LFunction χ s * gammaFactor χ s` where `gammaFactor χ s` is the archimedean Gamma-factor.
+  `LFunction χ s * gammaFactor χ s` where `gammaFactor χ s` is the Archimedean Gamma-factor.
 * `rootNumber`: the global root number of the L-series of `χ` (for `χ` primitive; junk otherwise).
 
 ## Main theorems

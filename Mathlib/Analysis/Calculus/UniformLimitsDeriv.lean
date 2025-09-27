@@ -449,7 +449,7 @@ theorem UniformCauchySeqOnFilter.one_smulRight {l' : Filter 𝕜}
     (hf' : UniformCauchySeqOnFilter f' l l') :
     UniformCauchySeqOnFilter (fun n => fun z => (1 : 𝕜 →L[𝕜] 𝕜).smulRight (f' n z)) l l' := by
   -- The tricky part of this proof is that operator norms are written in terms of `≤` whereas
-  -- metrics are written in terms of `<`. So we need to shrink `ε` utilizing the archimedean
+  -- metrics are written in terms of `<`. So we need to shrink `ε` utilizing the Archimedean
   -- property of `ℝ`
   rw [SeminormedAddGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_zero,
     Metric.tendstoUniformlyOnFilter_iff] at hf' ⊢
@@ -497,7 +497,7 @@ theorem hasDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
   simp_rw [hasDerivAt_iff_hasFDerivAt] at hf ⊢
   -- Now we need to rewrite hf' in terms of `ContinuousLinearMap`s. The tricky part is that
   -- operator norms are written in terms of `≤` whereas metrics are written in terms of `<`. So we
-  -- need to shrink `ε` utilizing the archimedean property of `ℝ`
+  -- need to shrink `ε` utilizing the Archimedean property of `ℝ`
   have hf' : TendstoUniformlyOnFilter F' G' l (𝓝 x) := by
     rw [Metric.tendstoUniformlyOnFilter_iff] at hf' ⊢
     intro ε hε

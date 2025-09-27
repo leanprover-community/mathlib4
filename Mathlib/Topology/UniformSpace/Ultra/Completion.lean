@@ -8,12 +8,12 @@ import Mathlib.Topology.UniformSpace.Ultra.Basic
 import Mathlib.Topology.UniformSpace.Ultra.Constructions
 
 /-!
-# Completions of ultrametric (nonarchimedean) uniform spaces
+# Completions of ultrametric (non-Archimedean) uniform spaces
 
 ## Main results
 
-* `IsUltraUniformity.completion_iff`: a Hausdorff completion has a nonarchimedean uniformity
-  iff the underlying space has a nonarchimedean uniformity.
+* `IsUltraUniformity.completion_iff`: a Hausdorff completion has a non-Archimedean uniformity
+  iff the underlying space has a non-Archimedean uniformity.
 
 -/
 
