@@ -46,21 +46,6 @@ theorem Monic.eq_X_add_C (hm : p.Monic) (hnd : p.natDegree = 1) : p = X + C (p.c
 theorem exists_eq_X_add_C_of_natDegree_le_one (h : natDegree p ≤ 1) : ∃ a b, p = C a * X + C b :=
   ⟨p.coeff 1, p.coeff 0, eq_X_add_C_of_natDegree_le_one h⟩
 
-theorem eq_quadratic_of_degree_le_two (hp : degree p ≤ 2) :
-    p = C (p.coeff 2) * X ^ 2 + C (p.coeff 1) * X + C (p.coeff 0) :=
-  ext fun n₁ =>
-    Nat.casesOn n₁ (by simp only [Nat.zero_eq, coeff_add, mul_coeff_zero, coeff_C_zero,
-      coeff_X_pow, OfNat.zero_ne_ofNat, ↓reduceIte, mul_zero, coeff_X_zero, add_zero,
-      zero_add]) fun n₂ =>
-      Nat.casesOn n₂ (by simp [coeff_C]) fun n₃ =>
-        Nat.casesOn n₃ (by simp) fun m => by
-          have : degree p < m.succ.succ.succ := lt_of_le_of_lt hp (compare_gt_iff_gt.mp rfl)
-          simp [coeff_eq_zero_of_degree_lt this]
-
-theorem eq_quadratic_of_natDegree_le_two (hp : natDegree p ≤ 2) :
-    p = C (p.coeff 2) * X ^ 2 + C (p.coeff 1) * X + C (p.coeff 0) :=
-  eq_quadratic_of_degree_le_two <| degree_le_of_natDegree_le hp
-
 end Semiring
 
 section Semiring
