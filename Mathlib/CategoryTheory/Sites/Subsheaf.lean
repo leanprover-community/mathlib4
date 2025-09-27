@@ -133,22 +133,22 @@ theorem Subpresheaf.sheafify_sheafify (h : Presieve.IsSheaf J F) :
 noncomputable def Subpresheaf.sheafifyLift (f : G.toPresheaf ⟶ F') (h : Presieve.IsSheaf J F') :
     (G.sheafify J).toPresheaf ⟶ F' where
   app _ s := (h (G.sieveOfSection s.1) s.prop).amalgamate
-    (_) ((G.family_of_elements_compatible s.1).compPresheafMap f)
+    (_) ((G.family_of_elements_compatible s.1).map f)
   naturality := by
     intro U V i
     ext s
     apply (h _ ((Subpresheaf.sheafify J G).toPresheaf.map i s).prop).isSeparatedFor.ext
     intro W j hj
     refine (Presieve.IsSheafFor.valid_glue (h _ ((G.sheafify J).toPresheaf.map i s).2)
-      ((G.family_of_elements_compatible _).compPresheafMap _) _ hj).trans ?_
+      ((G.family_of_elements_compatible _).map _) _ hj).trans ?_
     dsimp
     conv_rhs => rw [← FunctorToTypes.map_comp_apply]
     change _ = F'.map (j ≫ i.unop).op _
     refine Eq.trans ?_ (Presieve.IsSheafFor.valid_glue (h _ s.2)
-      ((G.family_of_elements_compatible s.1).compPresheafMap f) (j ≫ i.unop) ?_).symm
-    · dsimp [Presieve.FamilyOfElements.compPresheafMap]
+      ((G.family_of_elements_compatible s.1).map f) (j ≫ i.unop) ?_).symm
+    · dsimp [Presieve.FamilyOfElements.map]
       exact congr_arg _ (Subtype.ext (FunctorToTypes.map_comp_apply _ _ _ _).symm)
-    · dsimp [Presieve.FamilyOfElements.compPresheafMap] at hj ⊢
+    · dsimp [Presieve.FamilyOfElements.map] at hj ⊢
       rwa [FunctorToTypes.map_comp_apply]
 
 theorem Subpresheaf.to_sheafifyLift (f : G.toPresheaf ⟶ F') (h : Presieve.IsSheaf J F') :
@@ -158,7 +158,7 @@ theorem Subpresheaf.to_sheafifyLift (f : G.toPresheaf ⟶ F') (h : Presieve.IsSh
   intro V i hi
   have := elementwise_of% f.naturality
   exact (Presieve.IsSheafFor.valid_glue (h _ ((homOfLe (_ : _ ≤ sheafify _ _)).app _ _).2)
-    ((G.family_of_elements_compatible _).compPresheafMap _) _ _).trans (this _ _)
+    ((G.family_of_elements_compatible _).map _) _ _).trans (this _ _)
 
 theorem Subpresheaf.to_sheafify_lift_unique (h : Presieve.IsSheaf J F')
     (l₁ l₂ : (G.sheafify J).toPresheaf ⟶ F')
