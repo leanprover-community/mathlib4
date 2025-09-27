@@ -124,13 +124,13 @@ def gluedScheme : Scheme := by
     D.toLocallyRingedSpaceGlueData.toGlueData.glued
   intro x
   obtain ⟨i, y, rfl⟩ := D.toLocallyRingedSpaceGlueData.ι_jointly_surjective x
-  refine ⟨_, ((D.U i).affineCover.f y).toLRSHom ≫
+  obtain ⟨j, z, hz⟩ := (D.U i).affineCover.exists_eq y
+  refine ⟨_, ((D.U i).affineCover.f j).toLRSHom ≫
     D.toLocallyRingedSpaceGlueData.toGlueData.ι i, ?_⟩
   constructor
   · simp only [LocallyRingedSpace.comp_toShHom, SheafedSpace.comp_base, TopCat.hom_comp,
       ContinuousMap.coe_comp, Set.range_comp]
-    refine Set.mem_image_of_mem _ ?_
-    exact (D.U i).affineCover.covers y
+    exact Set.mem_image_of_mem _ ⟨z, hz⟩
   · infer_instance
 
 instance : CreatesColimit 𝖣.diagram.multispan forgetToLocallyRingedSpace :=
@@ -251,8 +251,9 @@ def openCover (D : Scheme.GlueData) : OpenCover D.glued where
   I₀ := D.J
   X := D.U
   f := D.ι
-  idx x := (D.ι_jointly_surjective x).choose
-  covers x := ⟨_, (D.ι_jointly_surjective x).choose_spec.choose_spec⟩
+  mem₀ := by
+    rw [presieve₀_mem_precoverage_iff]
+    exact ⟨D.ι_jointly_surjective, inferInstance⟩
 
 end GlueData
 
@@ -409,7 +410,7 @@ instance : IsIso 𝒰.fromGlued :=
     apply PresheafedSpace.IsOpenImmersion.to_iso
   isIso_of_reflects_iso _ F
 
-/-- Given an open cover of `X`, and a morphism `𝒰.X x ⟶ Y` for each open subscheme in the cover,
+/-- Given an open cover of `X`, and a morphism `𝒰.obj x ⟶ Y` for each open subscheme in the cover,
 such that these morphisms are compatible in the intersection (pullback), we may glue the morphisms
 together into a morphism `X ⟶ Y`.
 
@@ -451,7 +452,11 @@ end Cover
 lemma hom_ext_of_forall {X Y : Scheme} (f g : X ⟶ Y)
     (H : ∀ x : X, ∃ U : X.Opens, x ∈ U ∧ U.ι ≫ f = U.ι ≫ g) : f = g := by
   choose U hxU hU using H
-  let 𝒰 : X.OpenCover := { I₀ := X, X i := (U i), f i := (U i).ι, idx x := x, covers := by simpa }
+  let 𝒰 : X.OpenCover := {
+    I₀ := X, X i := (U i), f i := (U i).ι,
+    mem₀ := by
+      rw [presieve₀_mem_precoverage_iff]
+      refine ⟨fun x ↦ ⟨x, by simpa using hxU x⟩, inferInstance⟩ }
   exact 𝒰.hom_ext _ _ hU
 
 /-!
@@ -724,7 +729,7 @@ def isColimitForgetToLocallyRingedSpace :
         ← cancel_epi (Hom.isoOpensRange (F.map _)).hom.toLRSHom]
       simp only [Opens.iSupOpenCover, Cover.ulift, V, ← comp_toLRSHom_assoc,
         Cover.ι_fromGlued_assoc, homOfLE_ι, Hom.isoOpensRange_hom_ι]
-      generalize_proofs _ h
+      generalize_proofs _ _ h
       rw [homOfLE_tAux F ↓i ↓j h.choose.2.1 h.choose.2.2, Iso.hom_inv_id_assoc]
       exact (s.w h.choose.2.1).trans (s.w h.choose.2.2).symm)
   fac s j := by
@@ -748,17 +753,14 @@ instance : CreatesColimit F Scheme.forgetToLocallyRingedSpace :=
   CategoryTheory.createsColimitOfReflectsIsomorphismsOfPreserves
 
 /-- The open cover of the colimit of a locally directed diagram by the components. -/
+@[simps! I₀ X f]
 def openCover : (colimit F).OpenCover :=
-  ((coverOfIsIso ((isColimit F).coconePointUniqueUpToIso (colimit.isColimit F)).hom).bind
-    fun i ↦ (glueData F).openCover).copy J F.obj (colimit.ι F)
+  Cover.copy ((coverOfIsIso ((isColimit F).coconePointUniqueUpToIso (colimit.isColimit F)).hom).bind
+    fun i ↦ (glueData F).openCover) J F.obj (colimit.ι F)
     ((equivShrink J).trans <| (Equiv.uniqueSigma fun (_ : Unit) ↦ Shrink J).symm)
     (fun _ ↦ F.mapIso (eqToIso (by simp [GlueData.openCover, glueData]))) fun i ↦ by
   change colimit.ι F i = _ ≫ (glueData F).ι (equivShrink J i) ≫ _
   simp [← Category.assoc, ← Iso.comp_inv_eq, cocone]
-
-@[simp] lemma openCover_I₀ : (openCover F).I₀ = J := rfl
-@[simp] lemma openCover_X : (openCover F).X = F.obj := rfl
-@[simp] lemma openCover_f : (openCover F).f = colimit.ι F := rfl
 
 instance (i) : IsOpenImmersion (colimit.ι F i) :=
   inferInstanceAs (IsOpenImmersion ((openCover F).f i))

@@ -160,8 +160,8 @@ instance (x : X) : IsAffine (X.affineCover.X x) :=
 
 instance [IsIntegral X] (x : X) :
     IsFractionRing (X.presheaf.stalk x) X.functionField :=
-  let U : X.Opens := (X.affineCover.f x).opensRange
-  have hU : IsAffineOpen U := isAffineOpen_opensRange (X.affineCover.f x)
+  let U : X.Opens := (X.affineCover.f ((X.affineCover.idx x))).opensRange
+  have hU : IsAffineOpen U := isAffineOpen_opensRange (X.affineCover.f _)
   let x : U := ⟨x, X.affineCover.covers x⟩
   have : Nonempty U := ⟨x⟩
   let M := (hU.primeIdealOf x).asIdeal.primeCompl

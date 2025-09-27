@@ -168,13 +168,14 @@ def Scheme.openCoverOfISupEqTop {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
   I₀ := s
   X i := U i
   f i := (U i).ι
-  idx x :=
-    haveI : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : X.Opens) by trivial
-    (Opens.mem_iSup.mp this).choose
-  covers x := by
-    erw [Subtype.range_coe]
-    have : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : X.Opens) by trivial
-    exact (Opens.mem_iSup.mp this).choose_spec
+  mem₀ := by
+    rw [presieve₀_mem_precoverage_iff]
+    refine ⟨fun x ↦ ?_, inferInstance⟩
+    have hx : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : X.Opens) by trivial
+    rw [Opens.mem_iSup] at hx
+    obtain ⟨i, hi⟩ := hx
+    use i
+    simpa
 
 /-- The open sets of an open subscheme corresponds to the open sets containing in the subset. -/
 @[simps!]
@@ -273,8 +274,13 @@ def Scheme.Opens.iSupOpenCover {J : Type*} {X : Scheme} (U : J → X.Opens) :
   I₀ := J
   X i := U i
   f j := X.homOfLE (le_iSup _ _)
-  idx x := (TopologicalSpace.Opens.mem_iSup.mp x.2).choose
-  covers x := ⟨⟨x.1, (TopologicalSpace.Opens.mem_iSup.mp x.2).choose_spec⟩, Subtype.ext (by simp)⟩
+  mem₀ := by
+    rw [presieve₀_mem_precoverage_iff]
+    refine ⟨fun x ↦ ?_, inferInstance⟩
+    obtain ⟨i, hi⟩ := TopologicalSpace.Opens.mem_iSup.mp x.2
+    use i, ⟨x.1, hi⟩
+    apply Subtype.ext
+    simp
 
 variable (X) in
 /-- The functor taking open subsets of `X` to open subschemes of `X`. -/
