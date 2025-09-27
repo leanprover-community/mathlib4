@@ -95,9 +95,6 @@ theorem basis_repr_norm_le_const_mul_house (α : 𝓞 K) (i : K →+* ℂ) :
     _ = ↑(finrank ℚ K) * ‖((basisMatrix K).transpose)⁻¹‖ * house (algebraMap (𝓞 K) K α) := by
       simp [Embeddings.card, mul_assoc]
 
-@[deprecated (since := "2025-02-17")] alias basis_repr_abs_le_const_mul_house :=
-  basis_repr_norm_le_const_mul_house
-
 /-- `newBasis K` defines a reindexed basis of the ring of integers of `K`,
   adjusted by the inverse of the equivalence `equivReindex`. -/
 private def newBasis := (RingOfIntegers.basis K).reindex (equivReindex K).symm

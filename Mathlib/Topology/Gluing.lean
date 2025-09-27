@@ -142,9 +142,7 @@ theorem rel_equiv : Equivalence D.Rel :=
 open CategoryTheory.Limits.WalkingParallelPair
 
 theorem eqvGen_of_π_eq
-    -- Porting note: was `{x y : ∐ D.U}`
-    {x y : sigmaObj (β := D.toGlueData.J) (C := TopCat) D.toGlueData.U}
-    (h : 𝖣.π x = 𝖣.π y) :
+    {x y : ↑(∐ D.U)} (h : 𝖣.π x = 𝖣.π y) :
     Relation.EqvGen
       (Function.Coequalizer.Rel 𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap) x y := by
   delta GlueData.π Multicoequalizer.sigmaπ at h
@@ -165,13 +163,8 @@ theorem eqvGen_of_π_eq
           (colimit.isoColimitCocone (Types.coequalizerColimit _ _)).hom)
         this :
       _)
-  -- Porting note: was
-  -- simp only [eqToHom_refl, types_comp_apply, colimit.ι_map_assoc,
-  --   diagramIsoParallelPair_hom_app, colimit.isoColimitCocone_ι_hom, types_id_apply] at this
-  -- See https://github.com/leanprover-community/mathlib4/issues/5026
-  rw [colimit.ι_map_assoc, diagramIsoParallelPair_hom_app, eqToHom_refl,
-    colimit.isoColimitCocone_ι_hom, types_comp_apply, types_id_apply, types_comp_apply,
-    types_id_apply] at this
+  simp only [eqToHom_refl, colimit.ι_map_assoc, diagramIsoParallelPair_hom_app,
+    colimit.isoColimitCocone_ι_hom, Category.id_comp] at this
   exact Quot.eq.1 this
 
 theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
@@ -295,7 +288,6 @@ structure MkCore where
   t_inter : ∀ ⦃i j⦄ (k) (x : V i j), ↑x ∈ V i k → (((↑) : (V j i) → (U j)) (t i j x)) ∈ V j k
   cocycle :
     ∀ (i j k) (x : V i j) (h : ↑x ∈ V i k),
-      -- Porting note: the underscore in the next line was `↑(t i j x)`, but Lean type-mismatched
       (((↑) : (V k j) → (U k)) (t j k ⟨_, t_inter k x h⟩)) = ((↑) : (V k i) → (U k)) (t i k ⟨x, h⟩)
 
 theorem MkCore.t_inv (h : MkCore) (i j : h.J) (x : h.V j i) : h.t i j ((h.t j i) x) = x := by

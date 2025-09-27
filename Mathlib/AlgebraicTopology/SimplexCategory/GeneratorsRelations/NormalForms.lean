@@ -88,7 +88,7 @@ lemma cons (L : List ℕ) (hL : IsAdmissible (m + 1) L) (a : ℕ) (ha : a ≤ m)
       · simp [ha]
       · haveI := hL.le _ <| Nat.lt_of_succ_lt_succ hi
         rw [List.getElem_cons_succ]
-        omega
+        cutsat
 
 /-- The tail of an `m`-admissible list is (m+1)-admissible. -/
 lemma tail (a : ℕ) (l : List ℕ) (h : IsAdmissible m (a::l)) :

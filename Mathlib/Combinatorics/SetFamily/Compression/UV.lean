@@ -30,12 +30,12 @@ minimise the shadow.
 
 ## Notation
 
-`𝓒` (typed with `\MCC`) is notation for `UV.compression` in locale `FinsetFamily`.
+`𝓒` (typed with `\MCC`) is notation for `UV.compression` in scope `FinsetFamily`.
 
 ## Notes
 
 Even though our emphasis is on `Finset α`, we define UV-compressions more generally in a generalized
-boolean algebra, so that one can use it for `Set α`.
+Boolean algebra, so that one can use it for `Set α`.
 
 ## References
 
@@ -64,7 +64,7 @@ theorem sup_sdiff_injOn [GeneralizedBooleanAlgebra α] (u v : α) :
 -- The namespace is here to distinguish from other compressions.
 namespace UV
 
-/-! ### UV-compression in generalized boolean algebras -/
+/-! ### UV-compression in generalized Boolean algebras -/
 
 
 section GeneralizedBooleanAlgebra
@@ -280,8 +280,8 @@ variable [DecidableEq α] {𝒜 : Finset (Finset α)} {u v : Finset α} {r : ℕ
 theorem card_compress (huv : #u = #v) (a : Finset α) : #(compress u v a) = #a := by
   unfold compress
   split_ifs with h
-  · rw [card_sdiff (h.2.trans le_sup_left), sup_eq_union, card_union_of_disjoint h.1.symm, huv,
-      add_tsub_cancel_right]
+  · rw [card_sdiff_of_subset (h.2.trans le_sup_left), sup_eq_union,
+      card_union_of_disjoint h.1.symm, huv, add_tsub_cancel_right]
   · rfl
 
 lemma _root_.Set.Sized.uvCompression (huv : #u = #v) (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
@@ -334,7 +334,7 @@ theorem shadow_compression_subset_compression_shadow (u v : Finset α)
           sup_sdiff_mem_of_mem_compression Ht hvt <| disjoint_of_erase_right hau huvs.1, a, ?_, ?_⟩
       · rw [sup_eq_union, mem_sdiff, mem_union]
         exact ⟨Or.inl hat, hav⟩
-      · rw [← erase_sdiff_comm, sup_eq_union, erase_union_distrib, erase_eq_of_notMem hau]
+      · simp [← erase_sdiff_comm, erase_union_distrib, erase_eq_of_notMem hau]
   intro s hs𝒜' hs𝒜
   -- This is going to be useful a couple of times so let's name it.
   have m : ∀ y, y ∉ s → insert y s ∉ 𝒜 := fun y h a => hs𝒜 (mem_shadow_iff_insert_mem.2 ⟨y, h, a⟩)
