@@ -7,6 +7,7 @@ import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Order.Directed
 import Mathlib.Order.Hom.Set
+import Mathlib.Order.Preorder.Finite
 
 /-!
 # Chains and flags
@@ -158,6 +159,20 @@ lemma IsChain.not_le [Preorder α] (hs : IsChain (· ≤ ·) s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) : ¬ x ≤ y ↔ y < x :=
   ⟨(hs.lt_of_not_ge hx hy ·), fun h h' ↦ h'.not_gt h⟩
 
+theorem IsChain.exists_isTop [Preorder α] [Finite s] (hn : Nonempty s) (hs : IsChain (· ≤ ·) s) :
+    ∃ x : s, IsTop x := by
+  obtain ⟨x, hx₁, hx₂⟩ := s.toFinite.exists_maximal (Set.nonempty_coe_sort.mp hn)
+  refine ⟨⟨x, hx₁⟩, fun a ↦ ?_⟩
+  by_cases h' : x = a.1
+  · simp [h']
+  · rcases hs hx₁ a.2 h' with h'' | h''
+    · exact hx₂ a.2 h''
+    · exact h''
+
+theorem IsChain.exists_isBot [Preorder α] [Finite s] (hn : Nonempty s) (hs : IsChain (· ≤ ·) s) :
+    ∃ x : s, IsBot x :=
+  hs.symm.exists_isTop (α := αᵒᵈ) hn
+
 theorem IsMaxChain.isChain (h : IsMaxChain r s) : IsChain r s :=
   h.1
 
@@ -177,6 +192,26 @@ lemma IsMaxChain.image {s : β → β → Prop} (e : r ≃r s) {c : Set α} (hc 
     rw [← e.coe_fn_toEquiv, ← e.toEquiv.eq_preimage_iff_image_eq, preimage_equiv_eq_image_symm]
     exact hc.2 (ht.image _ _ _ fun _ _ ↦ by exact e.symm.map_rel_iff.2)
       ((e.toEquiv.subset_symm_image _ _).2 hf)
+
+theorem IsMaxChain.exists_isMax [Preorder α] [Finite s] (hn : Nonempty s)
+    (hs : IsMaxChain (· ≤ ·) s) : ∃ x : α, x ∈ s ∧ IsMax x := by
+  by_contra! hh
+  obtain ⟨x, hx₁, hx₂⟩ := s.toFinite.exists_maximal (Set.nonempty_coe_sort.mp hn)
+  have := hh x hx₁
+  simp only [IsMax, not_forall] at this
+  obtain ⟨z, hz₁, hz₂⟩ := this
+  have : IsChain (· ≤ ·) (s ∪ {z}) := by
+    refine isChain_union.mpr ⟨hs.isChain, IsChain.singleton, fun a ha₁ ↦ ?_⟩
+    by_cases h' : x = a
+    · grind
+    · rcases hs.1 hx₁ ha₁ h' with h'' | h'' <;> grind [le_trans]
+  refine hz₂ (hx₂ ?_ hz₁)
+  rw [hs.2 this (by simp)]
+  simp
+
+theorem IsMaxChain.exists_isMin [Preorder α] [Finite s] (hn : Nonempty s)
+    (hs : IsMaxChain (· ≤ ·) s) : ∃ x : α, x ∈ s ∧ IsMin x :=
+  hs.symm.exists_isMax (α := αᵒᵈ) hn
 
 open Classical in
 /-- Given a set `s`, if there exists a chain `t` strictly including `s`, then `SuccChain s`
