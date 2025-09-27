@@ -122,7 +122,7 @@ section Semiring
 variable [Semiring R]
 
 /-- The `n`th monomial as multivariate formal power series:
-  it is defined as the `R`-linear map from `R` to the semi-ring
+  it is defined as the `R`-linear map from `R` to the semiring
   of multivariate formal power series associating to each `a`
   the map sending `n : σ →₀ ℕ` to the value `a`
   and sending all other `x : σ →₀ ℕ` different from `n` to `0`. -/
@@ -708,7 +708,7 @@ theorem coeff_eq_zero_of_constantCoeff_nilpotent {f : MvPowerSeries σ R} {m : �
   rw [prod_congr rfl hs', prod_const]
   suffices m ≤ #s by
     obtain ⟨m', hm'⟩ := Nat.exists_eq_add_of_le this
-    rw [hm', pow_add, hf, MulZeroClass.zero_mul]
+    rw [hm', pow_add, hf, zero_mul]
   rw [← Nat.add_le_add_iff_right, add_comm #s,
     Finset.card_sdiff_add_card_eq_card (filter_subset _ _), card_range]
   apply le_trans _ hn
