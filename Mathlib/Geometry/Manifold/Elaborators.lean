@@ -3,9 +3,8 @@ Copyright (c) 2025 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.VectorBundle.Tangent
-import Mathlib.Geometry.Manifold.BumpFunction
-import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
+import Mathlib.Geometry.Manifold.ContMDiff.Defs
+import Mathlib.Geometry.Manifold.MFDeriv.Defs
 import Mathlib.Geometry.Manifold.Traces
 
 /-!
@@ -14,16 +13,16 @@ import Mathlib.Geometry.Manifold.Traces
 This file defines custom elaborators for differential geometry, to allow for more compact notation.
 There are two classes of elaborators. The first provides more compact notation for differentiability
 and continuous differentiability on manifolds, including inference of the model with corners.
-They allow writing
+All these elaborators are scoped to the `Manifold` namespace. They allow writing
 - `MDiff f` for `MDifferentiable I J f`
 - `MDiffAt f x` for `MDifferentiableAt I J f x`
 - `MDiff[u] f` for `MDifferentiableOn I J f u`
-- `MDiffAt[u] f` for `DifferentiableWithinAt I J f u x`
+- `MDiffAt[u] f x` for `MDifferentiableWithinAt I J f u x`
 - `CMDiff n f` for `ContMDiff I J n f`
 - `CMDiffAt n f x` for `ContMDiffAt I J n f x`
 - `CMDiff[u] n f` for `ContMDiffOn I J n f u`
-- `CMDiffAt[u] n f` for `ContMDiffWithinAt I J n f u x`,
-- `mfderiv[u] f x` for `mfderivWithin I J f s x`,
+- `CMDiffAt[u] n f x` for `ContMDiffWithinAt I J n f u x`,
+- `mfderiv[u] f x` for `mfderivWithin I J f u x`,
 - `mfderiv% f x` for `mfderiv I J f x`.
 
 In each of these cases, the models with corners are inferred from the domain and codomain of `f`.
@@ -60,16 +59,15 @@ the following.
   is correct 90% of the time)
 - fix pretty-printing: currently, the `commandStart` linter expects some different formatting
 - better error messages: forgetting e.g. the `T%` elaborator yields cryptic errors
-- make all these elaborators scoped to the `Manifold` namespace
 - further testing and fixing of edge cases
 - add test for the difference between `CMDiff` and `ContMDiff%` (and decide on one behaviour)
 - added tests for all of the above
+- add delaborators for these elaborators
 
 -/
 
 open scoped Bundle Manifold ContDiff
 
-section
 open Lean Meta Elab Tactic
 open Mathlib.Tactic
 
@@ -84,6 +82,8 @@ def _root_.Lean.Expr.getUniverse (e : Expr) : TermElabM (Level) := do
 @[match_pattern] def mkApp12 (f a b c d e g e₁ e₂ e₃ e₄ e₅ e₆ : Expr) :=
   mkApp6 (mkApp6 f a b c d e g) e₁ e₂ e₃ e₄ e₅ e₆
 
+namespace Manifold
+
 /-- Elaborator for sections in a fibre bundle: converts a section as a dependent function
 to a non-dependent function into the total space. This handles the cases of
 - sections of a trivial bundle
@@ -95,17 +95,17 @@ This elaborator operates purely syntactically, by analysing the local contexts f
 hypothesis for the above cases. Therefore, it is (hopefully) fast enough to always run.
 -/
 -- TODO: document how this elaborator works, any gotchas, etc.
-elab "T% " t:term : term => do
+elab:max "T% " t:term:arg : term => do
   let e ← Term.elabTerm t none
   let etype ← inferType e >>= instantiateMVars
   match etype with
-  | .forallE x base (mkApp3 (.const `Bundle.Trivial _) E E' _) _ =>
+  | .forallE x base (mkApp3 (.const ``Bundle.Trivial _) E E' _) _ =>
     trace[TotalSpaceMk] "Section of a trivial bundle"
-    if E == base then
+    if ← withReducible (isDefEq E base) then
       return ← withLocalDecl x BinderInfo.default base fun x ↦ do
         let body ← mkAppM ``Bundle.TotalSpace.mk' #[E', x, .app e x]
         mkLambdaFVars #[x] body
-  | .forallE x base (mkApp12 (.const `TangentSpace _) _k _ E _ _ _H _ _I _M _ _ _x) _ =>
+  | .forallE x base (mkApp12 (.const ``TangentSpace _) _k _ E _ _ _H _ _I _M _ _ _x) _ =>
     trace[TotalSpaceMk] "Vector field"
     return ← withLocalDecl x BinderInfo.default base fun x ↦ do
       let body ← mkAppM ``Bundle.TotalSpace.mk' #[E, x, .app e x]
@@ -116,7 +116,7 @@ elab "T% " t:term : term => do
       let decltype ← inferType decl >>= instantiateMVars
       match decltype with
       | mkApp7 (.const `FiberBundle _) _ F _ _ E _ _ =>
-        if E == V then
+        if ← withReducible (isDefEq E V) then
           return ← withLocalDecl x BinderInfo.default base fun x ↦ do
             let body ← mkAppM ``Bundle.TotalSpace.mk' #[F, x, .app e x]
             mkLambdaFVars #[x] body
@@ -125,10 +125,12 @@ elab "T% " t:term : term => do
     trace[TotalSpaceMk] "Section of a trivial bundle as a non-dependent function"
     let us ← src.getUniverse
     let ut ← tgt.getUniverse
-    let triv_bundle := mkAppN (.const `Bundle.Trivial [us, ut]) #[src, tgt]
+    -- TODO: can `tgt` depend on `x` in a way that is not a function application?
+    -- Check that `x` is not a bound variable in `tgt`!
+    let trivBundle := mkAppN (.const `Bundle.Trivial [us, ut]) #[src, tgt]
     return ← withLocalDecl x BinderInfo.default src fun x ↦ do
       let body := mkAppN (.const ``Bundle.TotalSpace.mk' [us, ut, ut])
-        #[src, triv_bundle, tgt, x, .app e x]
+        #[src, trivBundle, tgt, x, .app e x]
       mkLambdaFVars #[x] body
   | _ => pure ()
   return e
@@ -147,11 +149,11 @@ This implementation is not maximally robust yet, but already useful.
 -- FIXME: better failure when trying to find a `NormedField` instance
 def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
     trace[MDiffElab] m!"Searching a model for: {e}"
-    if let mkApp3 (.const `Bundle.TotalSpace _) _ F V := e then
-      if let mkApp12 (.const `TangentSpace _) _k _ _E _ _ _H _ I M _ _ _x := V then
+    if let mkApp3 (.const ``Bundle.TotalSpace _) _ F V := e then
+      if let mkApp12 (.const ``TangentSpace _) _k _ _E _ _ _H _ I M _ _ _x := V then
         trace[MDiffElab] m!"This is the total space of the tangent bundle of {M}"
         let srcIT : Term ← PrettyPrinter.delab I
-        let resTerm : Term ← `(ModelWithCorners.prod $srcIT ModelWithCorners.tangent $srcIT)
+        let resTerm : Term ← ``(ModelWithCorners.prod $srcIT ModelWithCorners.tangent $srcIT)
         let res ← Term.elabTerm resTerm none
         trace[MDiffElab] m!"Found model: {res}"
         return res
@@ -164,7 +166,7 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
         for decl in ← getLocalHyps do
           let decltype ← inferType decl >>= instantiateMVars
           match decltype with
-          | mkApp4 (.const `NormedSpace _) K' E _ _ =>
+          | mkApp4 (.const ``NormedSpace _) K' E _ _ =>
             if E == F then
               K := K'
               trace[MDiffElab] m!"{F} is a normed field over {K}"
@@ -177,7 +179,7 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
         let kT : Term ← PrettyPrinter.delab K
         let srcIT : Term ← PrettyPrinter.delab srcI
         let FT : Term ← PrettyPrinter.delab F
-        let iTerm : Term ← `(ModelWithCorners.prod $srcIT 𝓘($kT, $FT))
+        let iTerm : Term ← ``(ModelWithCorners.prod $srcIT 𝓘($kT, $FT))
         let I ← Term.elabTerm iTerm none
         trace[MDiffElab] m!"Found model: {I}"
         return I
@@ -192,12 +194,12 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
     for decl in ← getLocalHyps do
       let decltype ← inferType decl >>= instantiateMVars
       match decltype with
-      | mkApp4 (.const `ChartedSpace _) H' _ M _ =>
+      | mkApp4 (.const ``ChartedSpace _) H' _ M _ =>
         if M == e then
           H := H'
           trace[MDiffElab] m!"H is: {H}"
           Hok := true
-      | mkApp4 (.const `NormedSpace _) K' E _ _ =>
+      | mkApp4 (.const ``NormedSpace _) K' E _ _ =>
         if E == e then
           K := K'
           trace[MDiffElab] m!"Field is: {K}"
@@ -208,15 +210,15 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
     if Kok then
       let eT : Term ← PrettyPrinter.delab e
       let eK : Term ← PrettyPrinter.delab K
-      let iTerm : Term ← `(𝓘($eK, $eT))
+      let iTerm : Term ← ``(𝓘($eK, $eT))
       let I ← Term.elabTerm iTerm none
       trace[MDiffElab] m!"Found model: {I}"
       return I
       -- let uK ← K.getUniverse
-      -- let normedFieldK ← synthInstance (.app (.const `NontriviallyNormedField [uK]) K)
+      -- let normedFieldK ← synthInstance (.app (.const ``NontriviallyNormedField [uK]) K)
       -- trace[MDiffElab] m!"NontriviallyNormedField instance is: {normedFieldK}"
       -- let ue ← e.getUniverse
-      -- let normedGroupE ← synthInstance (.app (.const `NormedAddCommGroup  [ue]) e)
+      -- let normedGroupE ← synthInstance (.app (.const ``NormedAddCommGroup  [ue]) e)
       -- trace[MDiffElab] m!"NormedAddCommGroup  instance is: {normedGroupE}"
       -- return mkAppN (.const `modelWithCornersSelf [uK, ue])
       --   #[K, normedFieldK, e, normedGroupE, normedSpaceInst]
@@ -224,7 +226,7 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
       for decl in ← getLocalHyps do
         let decltype ← inferType decl >>= instantiateMVars
         match decltype with
-        | mkApp7 (.const `ModelWithCorners  _) _ _ _ _ _ H' _ =>
+        | mkApp7 (.const ``ModelWithCorners  _) _ _ _ _ _ H' _ =>
           if H' == H then
             trace[MDiffElab] m!"Found model: {decl}"
             return decl
@@ -239,8 +241,6 @@ def find_model (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM
       return I
 
     throwError "Couldn’t find models with corners"
-
--- TODO: scope all these elaborators to the `Manifold` namespace
 
 /-- `MDiffAt[s] f x` elaborates to `MDifferentiableWithinAt I J f s x`,
 trying to determine `I` and `J` from the local context.
@@ -262,17 +262,6 @@ elab:max "MDiffAt[" s:term:arg "]" f:term:arg : term => do
 trying to determine `I` and `J` from the local context.
 The argument `x` can be omitted. -/
 elab:max "MDiffAt" t:term:arg : term => do
-  let e ← Term.elabTerm t none
-  let etype ← inferType e >>= instantiateMVars
-  match etype with
-  | .forallE _ src tgt _ =>
-    let srcI ← find_model src
-    let tgtI ← find_model tgt (src, srcI)
-    return ← mkAppM ``MDifferentiableAt #[srcI, tgtI, e]
-  | _ => throwError m!"Term {e} is not a function."
-
--- FIXME: remove in favour of MDiffAt (once that one is scoped)
-elab:max "MDifferentiableAt%" t:term:arg : term => do
   let e ← Term.elabTerm t none
   let etype ← inferType e >>= instantiateMVars
   match etype with
@@ -333,7 +322,7 @@ trying to determine `I` and `J` from the local context.
 The argument `x` can be omitted. -/
 elab:max "CMDiffAt" nt:term:arg t:term:arg : term => do
   let e ← Term.elabTerm t none
-  let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
+  let wtn ← Term.elabTerm (← ``(WithTop ℕ∞)) none
   let ne ← Term.elabTermEnsuringType nt wtn
   let etype ← inferType e >>= instantiateMVars
   match etype with
@@ -348,7 +337,7 @@ trying to determine `I` and `J` from the local context. -/
 elab:max "CMDiff[" s:term:arg "]" nt:term:arg f:term:arg : term => do
   let es ← Term.elabTerm s none
   let ef ← Term.elabTerm f none
-  let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
+  let wtn ← Term.elabTerm (← ``(WithTop ℕ∞)) none
   let ne ← Term.elabTermEnsuringType nt wtn
   let _estype ← inferType es >>= instantiateMVars
   let eftype ← inferType ef >>= instantiateMVars
@@ -366,19 +355,6 @@ elab:max "CMDiff" nt:term:arg f:term:arg : term => do
   let e ← Term.elabTerm f none
   let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
   let ne ← Term.elabTerm nt wtn
-  let etype ← inferType e >>= instantiateMVars
-  match etype with
-  | .forallE _ src tgt _ =>
-    let srcI ← find_model src
-    let tgtI ← find_model tgt (src, srcI)
-    return ← mkAppM ``ContMDiff #[srcI, tgtI, ne, e]
-  | _ => throwError m!"Term {e} is not a function."
-
--- TODO: remove in favour of CMDiff (after aligning their behaviour and adding a test for it!)
-elab:max "ContMDiff%" nt:term:arg f:term:arg : term => do
-  let e ← Term.elabTerm f none
-  let wtn ← Term.elabTerm (← `(WithTop ℕ∞)) none
-  let ne ← Term.elabTermEnsuringType nt wtn
   let etype ← inferType e >>= instantiateMVars
   match etype with
   | .forallE _ src tgt _ =>
@@ -414,4 +390,4 @@ elab:max "mfderiv%" t:term:arg : term => do
     return ← mkAppM `mfderiv #[srcI, tgtI, e]
   | _ => throwError m!"Term {e} is not a function."
 
-end
+end Manifold
