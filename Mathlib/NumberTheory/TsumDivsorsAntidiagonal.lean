@@ -117,6 +117,6 @@ lemma tsum_pow_div_one_sub_eq_tsum_sigma {r : 𝕜} (hr : ‖r‖ < 1) (k : ℕ)
   have h00 := tsum_prod_pow_eq_tsum_sigma k hr
   rw [Summable.tsum_comm (by apply (summable_prod_mul_pow k hr).prod_symm)] at h00
   rw [← h00]
-  exact tsum_congr₂ <| fun b c ↦ by simp [mul_comm b.val c.val, pow_mul]
+  exact tsum_congr₂ <| fun b c ↦ by simp [mul_comm c.val b.val, pow_mul]
 
 end tsum
