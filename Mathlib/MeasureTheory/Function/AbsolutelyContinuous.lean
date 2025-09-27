@@ -123,14 +123,14 @@ namespace AbsolutelyContinuousOnInterval
 
 theorem symm {f : ℝ → ℝ} {a b : ℝ} (hf : AbsolutelyContinuousOnInterval f a b) :
     AbsolutelyContinuousOnInterval f b a := by
-  simp_all [AbsolutelyContinuousOnInterval, DisjWithin_comm]
+  simp_all [AbsolutelyContinuousOnInterval, disjWithin_comm]
 
 theorem mono {f : ℝ → ℝ} {a b c d : ℝ} (hf : AbsolutelyContinuousOnInterval f a b)
     (habcd : uIcc c d ⊆ uIcc a b) :
     AbsolutelyContinuousOnInterval f c d := by
   simp only [AbsolutelyContinuousOnInterval, Tendsto] at *
   refine le_trans (Filter.map_mono ?_) hf
-  gcongr; exact DisjWithin_mono habcd
+  gcongr; exact disjWithin_mono habcd
 
 theorem fun_add {f g : ℝ → ℝ} {a b : ℝ}
     (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
