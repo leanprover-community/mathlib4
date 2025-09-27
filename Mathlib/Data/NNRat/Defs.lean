@@ -54,9 +54,8 @@ instance Rat.instZeroLEOneClass : ZeroLEOneClass ℚ where
   zero_le_one := rfl
 
 instance Rat.instPosMulMono : PosMulMono ℚ where
-  elim := fun r p q h => by
-    simp only [mul_comm]
-    simpa [sub_mul, sub_nonneg] using Rat.mul_nonneg (sub_nonneg.2 h) r.2
+  mul_le_mul_of_nonneg_left r hr p q hpq := by
+    simpa [mul_sub, sub_nonneg] using Rat.mul_nonneg hr (sub_nonneg.2 hpq)
 
 deriving instance CommSemiring for NNRat
 deriving instance LinearOrder for NNRat
