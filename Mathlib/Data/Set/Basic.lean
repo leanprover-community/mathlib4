@@ -106,9 +106,11 @@ theorem le_eq_subset : ((· ≤ ·) : Set α → Set α → Prop) = (· ⊆ ·) 
 theorem lt_eq_ssubset : ((· < ·) : Set α → Set α → Prop) = (· ⊂ ·) :=
   rfl
 
+@[grind =]
 theorem le_iff_subset : s ≤ t ↔ s ⊆ t :=
   Iff.rfl
 
+@[grind =]
 theorem lt_iff_ssubset : s < t ↔ s ⊂ t :=
   Iff.rfl
 
@@ -214,9 +216,11 @@ theorem mem_def {a : α} {s : Set α} : a ∈ s ↔ s a :=
 theorem setOf_bijective : Bijective (setOf : (α → Prop) → Set α) :=
   bijective_id
 
+@[grind =]
 theorem subset_setOf {p : α → Prop} {s : Set α} : s ⊆ setOf p ↔ ∀ x, x ∈ s → p x :=
   Iff.rfl
 
+@[grind =]
 theorem setOf_subset {p : α → Prop} {s : Set α} : setOf p ⊆ s ↔ ∀ x, p x → x ∈ s :=
   Iff.rfl
 
@@ -294,6 +298,8 @@ theorem mem_of_eq_of_mem {x y : α} {s : Set α} (hx : x = y) (h : y ∈ s) : x 
 theorem Subset.antisymm {a b : Set α} (h₁ : a ⊆ b) (h₂ : b ⊆ a) : a = b :=
   Set.ext fun _ => ⟨@h₁ _, @h₂ _⟩
 
+grind_pattern Subset.antisymm => a ⊆ b, b ⊆ a
+
 theorem Subset.antisymm_iff {a b : Set α} : a = b ↔ a ⊆ b ∧ b ⊆ a :=
   ⟨fun e => ⟨e.subset, e.symm.subset⟩, fun ⟨h₁, h₂⟩ => Subset.antisymm h₁ h₂⟩
 
@@ -342,6 +348,7 @@ protected theorem ssubset_of_subset_of_ssubset {s₁ s₂ s₃ : Set α} (hs₁s
     (hs₂s₃ : s₂ ⊂ s₃) : s₁ ⊂ s₃ :=
   ⟨Subset.trans hs₁s₂ hs₂s₃.1, fun hs₃s₁ => hs₂s₃.2 (Subset.trans hs₃s₁ hs₁s₂)⟩
 
+@[simp, grind ←]
 theorem notMem_empty (x : α) : x ∉ (∅ : Set α) :=
   id
 
@@ -365,6 +372,8 @@ theorem nonempty_def : s.Nonempty ↔ ∃ x, x ∈ s :=
 theorem nonempty_of_mem {x} (h : x ∈ s) : s.Nonempty :=
   ⟨x, h⟩
 
+grind_pattern nonempty_of_mem => x ∈ s, s.Nonempty
+
 theorem Nonempty.not_subset_empty : s.Nonempty → ¬s ⊆ ∅
   | ⟨_, hx⟩, hs => hs hx
 
@@ -379,6 +388,7 @@ protected theorem Nonempty.some_mem (h : s.Nonempty) : h.some ∈ s :=
 @[gcongr] theorem Nonempty.mono (ht : s ⊆ t) (hs : s.Nonempty) : t.Nonempty :=
   hs.imp ht
 
+@[grind ←]
 theorem nonempty_of_not_subset (h : ¬s ⊆ t) : (s \ t).Nonempty :=
   let ⟨x, xs, xt⟩ := not_subset.1 h
   ⟨x, xs, xt⟩
@@ -386,6 +396,7 @@ theorem nonempty_of_not_subset (h : ¬s ⊆ t) : (s \ t).Nonempty :=
 theorem nonempty_of_ssubset (ht : s ⊂ t) : (t \ s).Nonempty :=
   nonempty_of_not_subset ht.2
 
+@[grind →]
 theorem Nonempty.of_diff (h : (s \ t).Nonempty) : s.Nonempty :=
   h.imp fun _ => And.left
 
@@ -398,13 +409,15 @@ theorem Nonempty.inl (hs : s.Nonempty) : (s ∪ t).Nonempty :=
 theorem Nonempty.inr (ht : t.Nonempty) : (s ∪ t).Nonempty :=
   ht.imp fun _ => Or.inr
 
-@[simp]
+@[simp, grind =]
 theorem union_nonempty : (s ∪ t).Nonempty ↔ s.Nonempty ∨ t.Nonempty :=
   exists_or
 
+@[grind →]
 theorem Nonempty.left (h : (s ∩ t).Nonempty) : s.Nonempty :=
   h.imp fun _ => And.left
 
+@[grind →]
 theorem Nonempty.right (h : (s ∩ t).Nonempty) : t.Nonempty :=
   h.imp fun _ => And.right
 
@@ -625,11 +638,11 @@ theorem MemUnion.elim {x : α} {a b : Set α} {P : Prop} (H₁ : x ∈ a ∪ b) 
 theorem mem_union (x : α) (a b : Set α) : x ∈ a ∪ b ↔ x ∈ a ∨ x ∈ b :=
   Iff.rfl
 
-@[simp]
+@[simp, grind =]
 theorem union_self (a : Set α) : a ∪ a = a :=
   ext fun _ => or_self_iff
 
-@[simp]
+@[simp, grind =]
 theorem union_empty (a : Set α) : a ∪ ∅ = a :=
   ext fun _ => iff_of_eq (or_false _)
 
@@ -637,6 +650,7 @@ theorem union_empty (a : Set α) : a ∪ ∅ = a :=
 theorem empty_union (a : Set α) : ∅ ∪ a = a :=
   ext fun _ => iff_of_eq (false_or _)
 
+@[grind =]
 theorem union_comm (a b : Set α) : a ∪ b = b ∪ a :=
   ext fun _ => or_comm
 
@@ -715,7 +729,7 @@ theorem union_empty_iff {s t : Set α} : s ∪ t = ∅ ↔ s = ∅ ∧ t = ∅ :
   simp only [← subset_empty_iff]
   exact union_subset_iff
 
-@[simp]
+@[simp, grind =]
 theorem union_univ (s : Set α) : s ∪ univ = univ := sup_top_eq _
 
 @[simp]
@@ -747,11 +761,11 @@ theorem mem_of_mem_inter_left {x : α} {a b : Set α} (h : x ∈ a ∩ b) : x �
 theorem mem_of_mem_inter_right {x : α} {a b : Set α} (h : x ∈ a ∩ b) : x ∈ b :=
   h.right
 
-@[simp]
+@[simp, grind =]
 theorem inter_self (a : Set α) : a ∩ a = a :=
   ext fun _ => and_self_iff
 
-@[simp]
+@[simp, grind =]
 theorem inter_empty (a : Set α) : a ∩ ∅ = ∅ :=
   ext fun _ => iff_of_eq (and_false _)
 
@@ -759,6 +773,7 @@ theorem inter_empty (a : Set α) : a ∩ ∅ = ∅ :=
 theorem empty_inter (a : Set α) : ∅ ∩ a = ∅ :=
   ext fun _ => iff_of_eq (false_and _)
 
+@[grind =]
 theorem inter_comm (a b : Set α) : a ∩ b = b ∩ a :=
   ext fun _ => and_comm
 
@@ -965,10 +980,11 @@ theorem subset_of_mem_powerset {x s : Set α} (h : x ∈ 𝒫 s) : x ⊆ s := @h
 theorem mem_powerset_iff (x s : Set α) : x ∈ 𝒫 s ↔ x ⊆ s :=
   Iff.rfl
 
+@[grind =]
 theorem powerset_inter (s t : Set α) : 𝒫(s ∩ t) = 𝒫 s ∩ 𝒫 t :=
   ext fun _ => subset_inter_iff
 
-@[simp]
+@[simp, grind =]
 theorem powerset_mono : 𝒫 s ⊆ 𝒫 t ↔ s ⊆ t :=
   ⟨fun h => @h _ (fun _ h => h), fun h _ hu _ ha => h (hu ha)⟩
 
@@ -978,11 +994,11 @@ theorem monotone_powerset : Monotone (powerset : Set α → Set (Set α)) := fun
 theorem powerset_nonempty : (𝒫 s).Nonempty :=
   ⟨∅, fun _ h => empty_subset s h⟩
 
-@[simp]
+@[simp, grind =]
 theorem powerset_empty : 𝒫(∅ : Set α) = {∅} :=
   ext fun _ => subset_empty_iff
 
-@[simp]
+@[simp, grind =]
 theorem powerset_univ : 𝒫(univ : Set α) = univ :=
   eq_univ_of_forall subset_univ
 
