@@ -681,8 +681,7 @@ theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
     simp_rw [Set.coe_setOf, Nat.card_eq_fintype_card, ← Fintype.card_coe, Finset.mem_filter,
       Finset.mem_univ, true_and, ← isConj_iff_cycleType_eq, isConj_comm (g := g)]
   · -- empty case
-    convert MulZeroClass.zero_mul _
-    exact (card_of_cycleType_eq_zero_iff α).mpr hm
+    rw [(card_of_cycleType_eq_zero_iff α).mpr hm, zero_mul]
 
 /-- Cardinality of the `Finset` of `Equiv.Perm α` of given `cycleType` -/
 theorem card_of_cycleType (m : Multiset ℕ) :

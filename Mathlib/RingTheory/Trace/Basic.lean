@@ -234,16 +234,14 @@ theorem sum_embeddings_eq_finrank_mul [FiniteDimensional K F] [Algebra.IsSeparab
   haveI : FiniteDimensional L F := FiniteDimensional.right K L F
   haveI : Algebra.IsSeparable L F := Algebra.isSeparable_tower_top_of_isSeparable K L F
   letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
-  letI : ∀ f : L →ₐ[K] E, Fintype (haveI := f.toRingHom.toAlgebra; AlgHom L F E) := ?_
-  · rw [Fintype.sum_equiv algHomEquivSigma (fun σ : F →ₐ[K] E => _) fun σ => σ.1 pb.gen, ←
-      Finset.univ_sigma_univ, Finset.sum_sigma, ← Finset.sum_nsmul]
-    · refine Finset.sum_congr rfl fun σ _ => ?_
-      letI : Algebra L E := σ.toRingHom.toAlgebra
-      simp only [Finset.sum_const, Finset.card_univ, ← AlgHom.card L F E]
-      congr!
-    · intro σ
-      simp only [algHomEquivSigma, Equiv.coe_fn_mk, AlgHom.restrictDomain, AlgHom.comp_apply,
-        IsScalarTower.coe_toAlgHom']
+  rw [Fintype.sum_equiv algHomEquivSigma (fun σ : F →ₐ[K] E => _) fun σ => σ.1 pb.gen,
+    ← Finset.univ_sigma_univ, Finset.sum_sigma, ← Finset.sum_nsmul]
+  · refine Finset.sum_congr rfl fun σ _ => ?_
+    letI : Algebra L E := σ.toRingHom.toAlgebra
+    simp_rw [Finset.sum_const, Finset.card_univ, ← AlgHom.card L F E]
+  · intro σ
+    simp only [algHomEquivSigma, Equiv.coe_fn_mk, AlgHom.restrictDomain, AlgHom.comp_apply,
+      IsScalarTower.coe_toAlgHom']
 
 theorem trace_eq_sum_embeddings [FiniteDimensional K L] [Algebra.IsSeparable K L] {x : L} :
     algebraMap K E (Algebra.trace K L x) = ∑ σ : L →ₐ[K] E, σ x := by

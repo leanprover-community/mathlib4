@@ -1122,11 +1122,9 @@ theorem liftNC_smul [MulOneClass G] {R : Type*} [Semiring R] (f : k →+* R) (g 
     liftNC (f : k →+ R) g (c • φ) = f c * liftNC (f : k →+ R) g φ := by
   suffices this :
     (liftNC ↑f g).comp (smulAddHom k (SkewMonoidAlgebra k G) c) =
-      (AddMonoidHom.mulLeft (f c)).comp (liftNC ↑f g) by exact DFunLike.congr_fun this φ
+      (AddMonoidHom.mulLeft (f c)).comp (liftNC ↑f g) by simpa using congr($this φ)
   refine addHom_ext' fun a => AddMonoidHom.ext fun b => ?_
-  simp only [AddMonoidHom.coe_comp, Function.comp_apply, singleAddHom_apply, smulAddHom_apply,
-    smul_single, smul_eq_mul, AddMonoidHom.coe_mulLeft]
-  simp [liftNC_single, liftNC_single, AddMonoidHom.coe_coe, map_mul, mul_assoc]
+  simp [smul_single, mul_assoc]
 
 variable (k G) [Monoid G] [MulSemiringAction G k]
 
@@ -1196,9 +1194,7 @@ theorem nonUnitalAlgHom_ext [DistribMulAction k A] {φ₁ φ₂ : SkewMonoidAlge
   apply distribMulActionHom_ext'
   intro a
   ext
-  simp [DistribMulActionHom.comp_apply, NonUnitalAlgHom.coe_to_distribMulActionHom,
-    DistribMulActionHom.single_toFun, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
-    singleAddHom_apply, h]
+  simp [singleAddHom_apply, h]
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext high]
