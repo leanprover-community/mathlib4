@@ -13,6 +13,9 @@ d
 
 open Lean Elab Command
 
+instance : ToString String.Range where
+  toString | ⟨s, e⟩ => s!"({s}, {e})"
+
 /--
 This is the name of the directory containing all the files that should be inspected.
 For reporting, the script assumes there is no sub-dir of the `repo` dir that contains
@@ -31,6 +34,8 @@ The main structure containing the information a deprecated declaration.
 structure DeprecationInfo where
   /-- `module` is the name of the module containing the deprecated declaration. -/
   module : Name
+  /-- `decl` is the name of the deprecated declaration. -/
+  decl : Name
   /-- `rgStart` is the `Position` where the deprecated declaration starts. -/
   rgStart : Position
   /-- `rgStop` is the `Position` where the deprecated declaration ends. -/
@@ -74,7 +79,11 @@ def getDeprecatedInfo (nm : Name) (verbose? : Bool) :
           logInfo
             s!"In the module '{mod}', the declaration {nm} at {rg.pos}--{rg.endPos} \
               is deprecated since {since}"
-        return some {module := mod, rgStart := rg.pos, rgStop := rg.endPos, since := since}
+        return some { module := mod
+                      decl := nm
+                      rgStart := rg.pos
+                      rgStop := rg.endPos
+                      since := since }
   return none
 
 /--
@@ -102,11 +111,11 @@ The output contains all the declarations that were deprecated after `oldDate`
 and before `newDate`.
 -/
 def deprecatedHashMap (oldDate newDate : String) :
-    CommandElabM (Std.HashMap String (Array String.Range)) := do
+    CommandElabM (Std.HashMap String (Array (Name × String.Range))) := do
   let mut fin := ∅
   --let searchPath ← getSrcSearchPath
   for (nm, _) in (← getEnv).constants.map₁ do
-    if let some ⟨modName, rgStart, rgStop, since⟩ ← getDeprecatedInfo nm false
+    if let some ⟨modName, decl, rgStart, rgStop, since⟩ ← getDeprecatedInfo nm false
     then
       if modName.getRoot != repo then continue
       --dbg_trace s!"{nm} in {modName} since {since}: {(oldDate ≤ since : Bool)} {(since ≤ newDate : Bool)}"
@@ -122,8 +131,7 @@ def deprecatedHashMap (oldDate newDate : String) :
       let fm := FileMap.ofString file
       let rg : String.Range := ⟨fm.ofPosition rgStart, fm.ofPosition rgStop⟩
       --dbg_trace (rgStart, rgStop)
-      fin := fin.alter lean fun a =>
-        (a.getD #[⟨fm.positions.back!, fm.positions.back! + ⟨1⟩⟩]).binInsert (·.1 < ·.1) rg
+      fin := fin.alter lean fun a => (a.getD #[]).binInsert (·.2.1 < ·.2.1) (decl, rg)
 --      catch e =>
 --        if let .error ref msg := e then
 --          logInfoAt ref m!"error on {modName}: {msg}"
@@ -158,18 +166,25 @@ elab "#regenerate_deprecations " oldDate:str ppSpace newDate:str really?:(&" rea
     let optionAdded ← addAfterImports mod option
     --dbg_trace optionAdded
     let newName := mod.dropRight ".lean".length ++ "_with_option.lean"
-    logInfo m!"Adding '{option}' to '{mod}'\nWriting to {indentD newName}\n"
+    --let rgs := cleanUpRanges rgs
+    let file ← IO.FS.readFile mod
+    let fm := file.toFileMap
+    let rgsPos := rgs.map fun (decl, ⟨s, e⟩) =>
+      m!"{.ofConstName decl} {(fm.toPosition s, fm.toPosition e)}"
+    logInfo m!"Adding '{option}' to '{mod}'\nWriting to {indentD newName}\n\
+            {m!"\n".joinSep rgsPos.toList}"
     if really?.isSome then
       IO.FS.writeFile newName optionAdded
     if false then
     let mod1 := repo ++ (mod.splitOn repo).getLast!
-    let rgs := cleanUpRanges rgs
     let num := rgs.size - 1
     dbg_trace "remove {num} declaration{if num == 1 then " " else "s"} from '{mod1}'"
     if really?.isSome then
-      IO.FS.writeFile mod (← removeDeprecations mod rgs)
+      IO.FS.writeFile mod (← removeDeprecations mod (rgs.map (·.2)))
 
 --#regenerate_deprecations "2025-07-19" "2025-09-20" --really
+
+abbrev rangeFile : System.FilePath := "Mathlib/Data/Rat/Floor_with_option.ranges"
 
 open Lean Elab Command in
 elab "#remove_deprecated_declarations " oldDate:str newDate:str really?:("really")? : command => do
@@ -181,12 +196,12 @@ elab "#remove_deprecated_declarations " oldDate:str newDate:str really?:("really
       deprecations among {dmap.size} files"
   for (mod, rgs) in dmap.toArray.qsort (·.1 < ·.1) do
     let mod1 := repo ++ (mod.splitOn repo).getLast!
-    let rgs := cleanUpRanges rgs
+    --let rgs := cleanUpRanges rgs
     dbg_trace
-      "From '{mod1}' remove\n{rgs.map fun | ⟨a, b⟩ => (a, b)}\n---\n{← removeDeprecations mod rgs}"
+      "From '{mod1}' remove\n{rgs.map fun | ⟨a, b⟩ => (a, b)}\n---\n{← removeDeprecations mod (rgs.map (·.2))}\n---"
     let num := rgs.size - 1
     dbg_trace "remove {num} declaration{if num == 1 then " " else "s"} from '{mod1}'"
     if really?.isSome then
-      IO.FS.writeFile mod (← removeDeprecations mod rgs)
+      IO.FS.writeFile mod (← removeDeprecations mod (rgs.map (·.2)))
 
 --#remove_deprecated_declarations "2025-07-19" "2025-09-20" --really
