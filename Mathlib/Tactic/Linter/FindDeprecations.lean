@@ -161,6 +161,19 @@ def parseLine (line : String) : Option (List String.Pos) :=
     some <| nums.map fun s => ⟨s.toNat?.getD 0⟩
   | _ => none
 
+/--
+Takes as input a file path `fname` and an array of pairs `(declName, range of declaration)`.
+The `declName` is mostly for printing information, but is not used essentially by the function.
+
+It returns the pair `(temp file name, file without the commands that generated the declarations)`.
+
+In the course of doing so, the function creates a temporary file from `fname`, by
+* adding the import `Mathlib.Tactic.Linter.CommandRanges` and
+* setting the `linter.commandRanges` option to `true`.
+
+It parses the temporary file, capturing the output and uses the command ranges to remove the
+ranges of the *commands* that generated the passed declaration ranges.
+-/
 def rewriteOneFile (fname : String) (rgs : Array (Name × String.Range)) :
     CommandElabM (String × String) := do
   let option :=
