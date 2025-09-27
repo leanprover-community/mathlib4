@@ -120,7 +120,7 @@ lemma isQuotientMap_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [Qua
 lemma epi_of_flat_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [Surjective f] : Epi f := by
   apply CategoryTheory.Functor.epi_of_epi_map (Scheme.forgetToLocallyRingedSpace)
   apply CategoryTheory.Functor.epi_of_epi_map (LocallyRingedSpace.forgetToSheafedSpace)
-  apply SheafedSpace.mono_of_base_surjective_of_stalk_mono _ ‹Surjective f›.surj
+  apply SheafedSpace.epi_of_base_surjective_of_stalk_mono _ ‹Surjective f›.surj
   intro x
   apply ConcreteCategory.mono_of_injective
   algebraize [(f.stalkMap x).hom]
