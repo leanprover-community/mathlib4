@@ -244,37 +244,6 @@ end Eval
 
 end CommSemiring
 
-section SimpleRing
-
-section Map
-
-variable [Ring R] [IsSimpleRing R] [Semiring S] [Nontrivial S] (f : R →+* S) (p : R[X])
-
-theorem degree_map_from_simpleRing : (p.map f).degree = p.degree := by
-  by_cases h₀ : p = 0
-  · simp [h₀]
-  exact degree_map_eq_of_leadingCoeff_ne_zero _ fun h ↦ leadingCoeff_ne_zero.mpr h₀ <|
-    f.injective <| by simp [h]
-
-theorem natDegree_map_from_simpleRing : (p.map f).natDegree = p.natDegree :=
-  natDegree_eq_natDegree <| degree_map_from_simpleRing f p
-
-theorem leadingCoeff_map_from_simpleRing : (p.map f).leadingCoeff = f p.leadingCoeff := by
-  by_cases h₀ : p = 0
-  · simp [h₀]
-  exact leadingCoeff_map_of_leadingCoeff_ne_zero _ fun h ↦ leadingCoeff_ne_zero.mpr h₀ <|
-    f.injective <| by simp [h]
-
-theorem nextCoeff_map_from_simpleRing : (p.map f).nextCoeff = f p.nextCoeff := by
-  by_cases h₀ : p = 0
-  · simp [h₀, nextCoeff]
-  exact nextCoeff_map_of_leadingCoeff_ne_zero _ fun h ↦ leadingCoeff_ne_zero.mpr h₀ <|
-    f.injective <| by simp [h]
-
-end Map
-
-end SimpleRing
-
 section
 variable [Semiring R] [CommRing S] [IsDomain S] (φ : R →+* S) {f : R[X]}
 

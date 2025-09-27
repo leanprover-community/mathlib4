@@ -287,8 +287,7 @@ theorem leadingCoeff_map_of_injective {f : R →+* S} {p : Polynomial R} (hf : F
 
 theorem nextCoeff_map_of_injective {f : R →+* S} {p : Polynomial R} (hf : Function.Injective f) :
     (p.map f).nextCoeff = f p.nextCoeff := by
-  unfold nextCoeff
-  rw [natDegree_map_eq_of_injective hf]
+  simp only [hf, nextCoeff, natDegree_map_eq_of_injective]
   split_ifs <;> simp
 
 theorem natDegree_pos_of_nextCoeff_ne_zero (h : p.nextCoeff ≠ 0) : 0 < p.natDegree := by
@@ -297,6 +296,24 @@ theorem natDegree_pos_of_nextCoeff_ne_zero (h : p.nextCoeff ≠ 0) : 0 < p.natDe
 end Degree
 
 end Semiring
+
+section SimpleRing
+
+variable [Ring R] [IsSimpleRing R] [Semiring S] [Nontrivial S] (f : R →+* S) (p : R[X])
+
+theorem degree_map_from_simpleRing : (p.map f).degree = p.degree :=
+  degree_map_eq_of_injective f.injective
+
+theorem natDegree_map_from_simpleRing : (p.map f).natDegree = p.natDegree :=
+  natDegree_map_eq_of_injective f.injective
+
+theorem leadingCoeff_map_from_simpleRing : (p.map f).leadingCoeff = f p.leadingCoeff :=
+  leadingCoeff_map_of_injective f.injective
+
+theorem nextCoeff_map_from_simpleRing : (p.map f).nextCoeff = f p.nextCoeff :=
+  nextCoeff_map_of_injective f.injective
+
+end SimpleRing
 
 section Ring
 
