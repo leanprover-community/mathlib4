@@ -55,18 +55,14 @@ lemma eq_mul_mul_of_roots_quadratic_eq_pair [CommRing R] [IsDomain R] {x1 x2 : R
 
 lemma eq_neg_mul_add_of_aroots_quadratic_eq_pair
     [CommRing T] [CommRing S] [IsDomain S] [Algebra T S] {p : T[X]} {x1 x2 : S}
-    (hp : p.degree = 2) (haroots : p.aroots S = {x1, x2}) :
+    (hp : p.degree ≤ 2) (haroots : p.aroots S = {x1, x2}) :
     algebraMap T S (p.coeff 1) = -algebraMap T S (p.coeff 2) * (x1 + x2) := by
   have hn : (map (algebraMap T S) p) ≠ 0 := by
     by_contra hc
     rw [aroots_def, hc, roots_zero] at haroots
     simp_all only [Multiset.insert_eq_cons, Multiset.zero_ne_cons]
-  have e1 : (map (algebraMap T S) p).degree = 2 := le_antisymm
-    (by simpa [← hp] using degree_map_le)
-    (by simpa [← aroots_def, haroots, ← Multiset.card_pair]
-      using (map (algebraMap T S) p).card_roots hn)
   rw [← coeff_map, ← coeff_map]
-  exact eq_neg_mul_add_of_roots_quadratic_eq_pair (le_of_eq e1) haroots
+  exact eq_neg_mul_add_of_roots_quadratic_eq_pair (le_trans degree_map_le hp) haroots
 
 /-- **Vieta's formula** for quadratics (`aroots` version). -/
 lemma eq_mul_mul_of_aroots_quadratic_eq_pair [CommRing T] [CommRing S] [IsDomain S] [Algebra T S]
