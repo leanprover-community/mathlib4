@@ -335,7 +335,7 @@ theorem ContinuousLinearMap.quasiMeasurePreserving (f : E →L[ℝ] E) (hf : f.d
 
 
 theorem map_addHaar_smul {r : ℝ} (hr : r ≠ 0) :
-    Measure.map (r • ·) μ = ENNReal.ofReal (abs (r ^ finrank ℝ E)⁻¹) • μ := by
+    Measure.map (r • ·) μ = ‖r‖₊⁻¹ ^ finrank ℝ E • μ := by
   let f : E →ₗ[ℝ] E := r • (1 : E →ₗ[ℝ] E)
   change Measure.map f μ = _
   have hf : LinearMap.det f ≠ 0 := by
@@ -343,7 +343,7 @@ theorem map_addHaar_smul {r : ℝ} (hr : r ≠ 0) :
     intro h
     exact hr (pow_eq_zero h)
   simp only [f, map_linearMap_addHaar_eq_smul_addHaar μ hf, mul_one, LinearMap.det_smul, map_one]
-
+#exit
 theorem quasiMeasurePreserving_smul {r : ℝ} (hr : r ≠ 0) :
     QuasiMeasurePreserving (r • ·) μ μ := by
   refine ⟨measurable_const_smul r, ?_⟩
