@@ -721,12 +721,8 @@ lemma bar [FiniteDimensional ℝ E] (e : Trivialization E (TotalSpace.proj: Tang
 lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e] :
     IsCovariantDerivativeOn E (lcCandidate_aux I (M := M) e) e.baseSet where
-  addX X X' σ x hx := by
+  addX {_X _X' _σ x} hX hX' hσ hx:= by
     by_cases hE : Subsingleton E; · simp [lcCandidate_aux, hE]
-    -- these three sorries seem to be necessary!
-    have hX : MDiffAt (T% X) x := sorry
-    have hX' : MDiffAt (T% X') x := sorry
-    have hσ : MDiffAt (T% σ) x := sorry
     simp only [lcCandidate_aux, hE, ↓reduceDIte]
     simp only [← Finset.sum_add_distrib, ← add_smul]
     congr; ext i
@@ -741,19 +737,16 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
       (contMDiffAt_orthonormalFrame_of_mem b e i hx)
         |>.mdifferentiableAt le_rfl
     sorry -- convert this works, except for different local orders...
-  smulX X σ g x hx := by
+  smulX {_X _σ _g _x} hX hσ hg hx := by
     by_cases hE : Subsingleton E; · simp [lcCandidate_aux, hE]
     simp only [lcCandidate_aux, hE, ↓reduceDIte]
-    have hX : MDiff (T% X) := sorry -- might need this (hopefully not!)
-    have hg : MDiff g := sorry -- might need this (hopefully not!)
     rw [Finset.smul_sum]
     congr; ext i
-    rw [leviCivitaRhs_smulX] <;> try assumption
-    rotate_left
-    · sorry -- missing hyp!
-    · sorry -- missing hyp!
+    rw [leviCivitaRhs_smulX_apply] <;> try assumption
+    swap
+    · sorry -- easy: orthonormal frame is C^n, given the basis (which is always C^n)
     simp [← smul_assoc]
-  smul_const_σ X σ a x hx := by
+  smul_const_σ {X _σ x} a hX hσ hx := by
     by_cases hE : Subsingleton E
     · have : X x = 0 := by
         have : Subsingleton (TangentSpace I x) := inferInstanceAs (Subsingleton E)
@@ -761,19 +754,16 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
       simp [lcCandidate_aux, hE, this]
     simp only [lcCandidate_aux, hE, ↓reduceDIte]
     rw [Finset.smul_sum]; congr; ext i
-    have hX : MDiffAt (T% X) x := sorry
-    have hσ : MDiffAt (T% σ) x := sorry
     -- missing helper lemma
     --have : MDiffAt (T% ((Basis.ofVectorSpace ℝ E).orthonormalFrame e i)) x := sorry
-    rw [leviCivitaRhs_smulY_const_apply (I := I)]
-    rotate_left
-    · apply hX
-    · apply hσ
+    rw [leviCivitaRhs_smulY_const_apply hX hσ, ← smul_assoc]
     · sorry -- orthonormal frame is diff at x
-    rw [← smul_assoc]
-  addσ X σ σ' x hσ hσ' hx := by
-    have hX : MDiffAt (T% X) x := sorry -- missing assumption!
-    by_cases hE : Subsingleton E; · have : X x = 0 := sorry; simp [lcCandidate_aux, hE, this]
+  addσ {X σ σ' x} hX hσ hσ' hx := by
+    by_cases hE : Subsingleton E
+    · have : X x = 0 := by
+        have : Subsingleton (TangentSpace I x) := inferInstanceAs (Subsingleton E)
+        exact Subsingleton.eq_zero (X x)
+      simp [lcCandidate_aux, hE, this]
     simp only [lcCandidate_aux, hE, ↓reduceDIte]
     simp only [← Finset.sum_add_distrib, ← add_smul]
     congr; ext i
@@ -792,7 +782,9 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     convert this <;> sorry
   leibniz X σ g x hσ hg hx := by
     by_cases hE : Subsingleton E
-    · have : X x = 0 := sorry
+    · have : X x = 0 := by
+        have : Subsingleton (TangentSpace I x) := inferInstanceAs (Subsingleton E)
+        exact Subsingleton.eq_zero (X x)
       simp [lcCandidate_aux, hE, this]
     simp only [lcCandidate_aux, hE, ↓reduceDIte]
     sorry

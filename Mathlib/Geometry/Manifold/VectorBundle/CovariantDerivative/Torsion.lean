@@ -60,9 +60,9 @@ lemma torsion_add_left_apply [CompleteSpace E]
     (hf : IsCovariantDerivativeOn E f U) (hx : x ∈ U)
     (hX : MDiffAt (T% X) x) (hX' : MDiffAt (T% X') x) :
     torsion f (X + X') Y x = torsion f X Y x + torsion f X' Y x := by
-  simp [torsion, hf.addX X X' (x := x)]
-  rw [hf.addσ Y hX hX', VectorField.mlieBracket_add_left hX hX']
-  module
+  sorry -- simp [torsion, hf.addX (x := x) (hx := sorry) hX hX']
+  -- rw [hf.addσ Y hX hX', VectorField.mlieBracket_add_left hX hX']
+  -- module
 
 lemma torsion_add_right_apply [CompleteSpace E] (hf : IsCovariantDerivativeOn E f U) (hx : x ∈ U)
     (hX : MDiffAt (T% X) x)
@@ -79,10 +79,10 @@ lemma torsion_smul_left_apply [CompleteSpace E]
     -- TODO: making hx an auto-param := by trivial doesn't fire at the application sites below
     {f : M → ℝ} (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) :
     torsion F (f • X) Y x = f x • torsion F X Y x := by
-  simp only [torsion, Pi.sub_apply, hF.smulX X Y f]
+  sorry /-simp only [torsion, Pi.sub_apply, hF.smulX (X := X) (σ := Y) (f := f)]
   rw [hF.leibniz Y hX hf hx, VectorField.mlieBracket_smul_left hf hX]
   simp [bar, smul_sub]
-  abel
+  abel -/
 
 variable (X) in
 lemma torsion_smul_right_apply [CompleteSpace E]
