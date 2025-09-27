@@ -149,7 +149,7 @@ Attempts to determine the GitHub repository of a version of Mathlib from its Git
 If the current commit coincides with a PR ref, it will determine the source fork
 of that PR rather than just using the origin remote.
 -/
-def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
+def getRemoteRepo (isMathlibRoot : Bool) (mathlibDepPath : FilePath) : IO RepoInfo := do
 
   -- Since currently we need to push a PR to `leanprover-community/mathlib` build a user cache,
   -- we check if we are a special branch or a branch with PR. This leaves out non-PRed fork
@@ -175,7 +175,7 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
                                   branchName.startsWith "bump/" ||
                                   isDetachedAtNightlyTesting
 
-    if shouldUseNightlyTesting then
+    if isMathlibRoot && shouldUseNightlyTesting then
       -- Try to use nightly-testing remote
       let repo ← getRepoFromRemote mathlibDepPath "nightly-testing"
         s!"Branch '{branchName}' should use the nightly-testing remote, but it's not configured.\n\
@@ -488,7 +488,7 @@ def getFiles
   if let some repo := repo? then
     downloadFiles repo hashMap forceDownload parallel (warnOnMissing := true)
   else
-    let repoInfo ← getRemoteRepo (← read).mathlibDepPath
+    let repoInfo ← getRemoteRepo isMathlibRoot (← read).mathlibDepPath
 
     -- Build list of repositories to download from in order
     let repos : List String :=
