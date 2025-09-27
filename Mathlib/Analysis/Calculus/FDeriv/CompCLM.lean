@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Bilinear
+import Mathlib.Analysis.NormedSpace.Alternating.Basic
 
 /-!
 # Multiplicative operations on derivatives
@@ -14,7 +15,7 @@ see the module docstring of `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`.
 This file contains the usual formulas (and existence assertions) for the derivative of
 
 * composition of continuous linear maps
-* application of continuous linear maps to a constant
+* application of continuous (multi)linear maps to a constant
 -/
 
 
@@ -210,5 +211,71 @@ theorem fderiv_continuousMultilinear_apply_const_apply (hc : DifferentiableAt �
   simp [fderiv_continuousMultilinear_apply_const hc]
 
 end ContinuousMultilinearApplyConst
+
+section ContinuousAlternatingMapApplyConst
+
+/-! ### Derivative of the application of continuous alternating maps to a constant -/
+
+variable {ι : Type*} [Fintype ι] {c : E → E [⋀^ι]→L[𝕜] F} {c' : E →L[𝕜] (E [⋀^ι]→L[𝕜] F)}
+
+@[fun_prop]
+theorem HasStrictFDerivAt.continuousAlternatingMap_apply_const (hc : HasStrictFDerivAt c c' x)
+    (u : ι → E) : HasStrictFDerivAt (c · u) (c'.flipAlternating u) x :=
+  (ContinuousAlternatingMap.apply 𝕜 E F u).hasStrictFDerivAt.comp x hc
+
+@[fun_prop]
+theorem HasFDerivWithinAt.continuousAlternatingMap_apply_const (hc : HasFDerivWithinAt c c' s x)
+    (u : ι → E) :
+    HasFDerivWithinAt (c · u) (c'.flipAlternating u) s x :=
+  (ContinuousAlternatingMap.apply 𝕜 E F u).hasFDerivAt.comp_hasFDerivWithinAt x hc
+
+@[fun_prop]
+theorem HasFDerivAt.continuousAlternatingMap_apply_const (hc : HasFDerivAt c c' x) (u : ι → E) :
+    HasFDerivAt (fun y ↦ (c y) u) (c'.flipAlternating u) x :=
+  (ContinuousAlternatingMap.apply 𝕜 E F u).hasFDerivAt.comp x hc
+
+@[fun_prop]
+theorem DifferentiableWithinAt.continuousAlternatingMap_apply_const
+    (hc : DifferentiableWithinAt 𝕜 c s x) (u : ι → E) :
+    DifferentiableWithinAt 𝕜 (fun y ↦ (c y) u) s x :=
+  (hc.hasFDerivWithinAt.continuousAlternatingMap_apply_const u).differentiableWithinAt
+
+@[fun_prop]
+theorem DifferentiableAt.continuousAlternatingMap_apply_const (hc : DifferentiableAt 𝕜 c x)
+    (u : ι → E) :
+    DifferentiableAt 𝕜 (fun y ↦ (c y) u) x :=
+  (hc.hasFDerivAt.continuousAlternatingMap_apply_const u).differentiableAt
+
+@[fun_prop]
+theorem DifferentiableOn.continuousAlternatingMap_apply_const (hc : DifferentiableOn 𝕜 c s)
+    (u : ι → E) : DifferentiableOn 𝕜 (fun y ↦ (c y) u) s :=
+  fun x hx ↦ (hc x hx).continuousAlternatingMap_apply_const u
+
+@[fun_prop]
+theorem Differentiable.continuousAlternatingMap_apply_const (hc : Differentiable 𝕜 c) (u : ι → E) :
+    Differentiable 𝕜 fun y ↦ (c y) u := fun x ↦ (hc x).continuousAlternatingMap_apply_const u
+
+theorem fderivWithin_continuousAlternatingMap_apply_const (hxs : UniqueDiffWithinAt 𝕜 s x)
+    (hc : DifferentiableWithinAt 𝕜 c s x) (u : ι → E) :
+    fderivWithin 𝕜 (fun y ↦ (c y) u) s x = ((fderivWithin 𝕜 c s x).flipAlternating u) :=
+  (hc.hasFDerivWithinAt.continuousAlternatingMap_apply_const u).fderivWithin hxs
+
+theorem fderiv_continuousAlternatingMap_apply_const (hc : DifferentiableAt 𝕜 c x) (u : ι → E) :
+    (fderiv 𝕜 (fun y ↦ (c y) u) x) = (fderiv 𝕜 c x).flipAlternating u :=
+  (hc.hasFDerivAt.continuousAlternatingMap_apply_const u).fderiv
+
+/-- Application of a `ContinuousAlternatingMap` to a constant commutes with `fderivWithin`. -/
+theorem fderivWithin_continuousAlternatingMap_apply_const_apply (hxs : UniqueDiffWithinAt 𝕜 s x)
+    (hc : DifferentiableWithinAt 𝕜 c s x) (u : ι → E) (m : E) :
+    (fderivWithin 𝕜 (fun y ↦ (c y) u) s x) m = (fderivWithin 𝕜 c s x) m u := by
+  simp [fderivWithin_continuousAlternatingMap_apply_const hxs hc]
+
+/-- Application of a `ContinuousAlternatingMap` to a constant commutes with `fderiv`. -/
+theorem fderiv_continuousAlternatingMap_apply_const_apply (hc : DifferentiableAt 𝕜 c x)
+    (u : ι → E) (m : E) :
+    (fderiv 𝕜 (fun y ↦ (c y) u) x) m = (fderiv 𝕜 c x) m u := by
+  simp [fderiv_continuousAlternatingMap_apply_const hc]
+
+end ContinuousAlternatingMapApplyConst
 
 end
