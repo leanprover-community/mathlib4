@@ -130,6 +130,9 @@ theorem natDegree_of_mem_normalizedFactors_cyclotomic
   natDegree_of_dvd_cyclotomic_of_irreducible hK hn (dvd_of_mem_normalizedFactors hP)
     (irreducible_of_normalized_factor P hP)
 
+/-- Let `K` be a finite field of cardinality `p ^ f` and let `P` be an irreducible factor of the
+  `n`-th cyclotomic polynomial over `K`, where `p` and `n` are coprime. This result computes the
+  number of irreducible factors of `cyclotomic n K`. -/
 theorem normalizedFactors_cyclotomic_card : (normalizedFactors (cyclotomic n K)).toFinset.card =
     φ n / orderOf (unitOfCoprime _ (hn.pow_left f)) := by
   have h := prod_normalizedFactors (cyclotomic_ne_zero n K)
