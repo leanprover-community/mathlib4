@@ -32,6 +32,7 @@ variable (L M : Type*) [LieRing L] [AddCommGroup M] [LieAlgebra R L] [Module R M
 /-- Lie algebra 1-cochains over `L` with coefficients in the trivial module `M`. -/
 abbrev oneCochain := L →ₗ[R] M
 
+/-- A twoCochain is an alternating linear map. -/
 def twoCochain : Submodule R (L →ₗ[R] L →ₗ[R] M) where
   carrier := {c | ∀ x, c x x = 0}
   add_mem' {a b} ha hb x := by simp [ha x, hb x]

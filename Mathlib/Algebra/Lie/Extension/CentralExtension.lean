@@ -75,7 +75,17 @@ lemma bracket_eq_of_sub_mem_kernel (h : S.IsCentral) (x y z : S.L) (hyz : y - z 
     ⁅x, y⁆ = ⁅x, z⁆ := by
   rw [← sub_eq_zero, ← lie_sub]
   exact S.bracket_eq_zero_of_isCentral h x (y - z) hyz
+/-!
+lemma isCentral_of_equiv (S' : Extension R N M) (h : S.IsCentral) (e : Equiv S S') :
+    IsCentral S' := by
+  refine (IsCentral_iff S').mpr ⟨fun x m ↦ ?_⟩
+  suffices ⁅e.toLieEquiv.symm x, e.toLieEquiv.symm m⁆ = 0 by
+    rw [← LieEquiv.map_lie] at this
+    have : e.toLieEquiv.symm ⁅x, m.val⁆ = e.toLieEquiv.symm 0 := by
+      rw [this]
 
+  sorry
+-/
 @[simp]
 lemma comp_eq_id {s : M →ₗ[R] S.L} (hs : S.proj.toLinearMap ∘ₗ s = LinearMap.id)
     (x : M) :
@@ -143,11 +153,15 @@ lemma ofTwoCocycle_section_comp_proj :
   rfl
 
 /-- The left section of an extension attached to a 2-cocycle. -/
-@[simps]
 def sectionTwoCocycleLeft : (ofTwoCocycle h c).L →ₗ[R] V where
   toFun x := ((ofProd c).symm x).2
   map_add' _ _ := by rw [of_symm_add, Prod.snd_add]
   map_smul' _ _ := by rw [of_symm_smul, Prod.smul_snd, RingHom.id_apply]
+
+-- simpNF linter doesn't like this as a simp lemma.
+lemma sectionTwoCocycleLeft_apply (x : (ofTwoCocycle h c).L) :
+    sectionTwoCocycleLeft h c x = ((ofProd c).symm x).2 := by
+  rfl
 
 lemma isCentral_ofTwoCocycle : (ofTwoCocycle h c).IsCentral := by
   rw [IsCentral_iff, LieModule.trivial_iff_le_maximal_trivial]
@@ -199,21 +213,31 @@ lemma twoCocycleOfSplitting_ofTwoCocycle :
   ext x y
   simp [sectionTwoCocycleLeft, bracket_ofTwoCocycleAlg]
 
+lemma proj_comp_equiv_comp_section (E E' : Extension R N M) (e : Equiv E E') {s : M →ₗ[R] E.L}
+    (hs : E.proj.toLinearMap ∘ₗ s = LinearMap.id) :
+    E'.proj.toLinearMap ∘ₗ (e.toLieEquiv ∘ₗ s) = LinearMap.id := by
+  ext
+  simp [← hs, ← e.proj_comm]
 /-!
 /-- The 2-coboundary corresponding to an equivalence of module-split extensions. -/
-def Equiv.coboundaryOf (E E' : Extension R N M) (e : Equiv E E') (hE : E.IsCentral) {s : M →ₗ[R] E.L}
-    (hs : E.proj.toLinearMap ∘ₗ s = LinearMap.id) (p : E.L →ₗ[R] N) : twoCoboundary R N M where
+def Equiv.coboundaryOf (E E' : Extension R N M) (e : Equiv E E') (hE : E.IsCentral)
+    {s : M →ₗ[R] E.L} (hs : E.proj.toLinearMap ∘ₗ s = LinearMap.id) (p : E.L →ₗ[R] N) :
+    twoCoboundary R M N where
   val := {
     val := {
       toFun x := {
-        toFun y := sorry
-        map_add' := sorry
+        toFun y :=
+          (E.twoCocycleOfSplitting hE hs p).val x y -
+          (E'.twoCocycleOfSplitting (isCentral_of_equiv E E' hE e)
+            (proj_comp_equiv_comp_section E E' e hs) (p ∘ₗ e.toLieEquiv.toLinearEquiv.symm)).val x y
+        map_add' _ _ := by sorry
         map_smul' := sorry }
       map_add' := sorry
       map_smul' := sorry }
     property := sorry }
   property := sorry
 
+/-- An isomorphism of extensions -/
 def ofTwoCocycle_twoCocycleOfSplitting (E : Extension R N M) (hE : E.IsCentral) {s : M →ₗ[R] E.L}
     (hs : E.proj.toLinearMap ∘ₗ s = LinearMap.id) (p : E.L →ₗ[R] N) :
     Equiv (ofTwoCocycle (E.isAbelian_of_IsCentral hE) (twoCocycleOfSplitting E hE hs p)) E where
@@ -222,10 +246,9 @@ def ofTwoCocycle_twoCocycleOfSplitting (E : Extension R N M) (hE : E.IsCentral) 
     sorry
   incl_comm := sorry
   proj_comm := sorry
-
+-/
 -- shearing a splitting by a translation yields a difference of coboundary?
 -- make a correspondence with cohomology!!
--/
 
 end ofTwoCocycle
 
