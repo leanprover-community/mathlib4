@@ -767,6 +767,140 @@ lemma condIndepFun_iff_map_prod_eq_prod_comp_trim
     rfl
   · rw [Measure.compProd_eq_comp_prod]
 
+theorem condIndepFun_comap_iff_map_prod_eq_prod_condDistrib_prod_condDistrib
+    {γ : Type*} {mγ : MeasurableSpace γ} {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+    [StandardBorelSpace β] [Nonempty β] [StandardBorelSpace β'] [Nonempty β']
+    (hf : Measurable f) (hg : Measurable g) {k : Ω → γ} (hk : Measurable k) :
+    CondIndepFun _ hk.comap_le f g μ
+      ↔ μ.map (fun ω ↦ (k ω, f ω, g ω))
+        = (Kernel.id ×ₖ (condDistrib f k μ ×ₖ condDistrib g k μ)) ∘ₘ μ.map k := by
+  rw [condIndepFun_iff_map_prod_eq_prod_comp_trim hf hg]
+  simp_rw [Measure.ext_prod₃_iff]
+  have hk_meas {s : Set γ} (hs : MeasurableSet s) : MeasurableSet[mγ.comap k] (k ⁻¹' s) :=
+    ⟨s, hs, rfl⟩
+  have h_left {s : Set γ} {t : Set β} {u : Set β'} (hs : MeasurableSet s) (ht : MeasurableSet t)
+      (hu : MeasurableSet u) :
+      (μ.map (fun ω ↦ (k ω, f ω, g ω))) (s ×ˢ t ×ˢ u)
+        = (@Measure.map _ _ _ ((mγ.comap k).prod inferInstance)
+          (fun ω ↦ (ω, f ω, g ω)) μ) ((k ⁻¹' s) ×ˢ t ×ˢ u) := by
+    rw [Measure.map_apply (by fun_prop) (hs.prod (ht.prod hu)),
+      Measure.map_apply _ ((hk_meas hs).prod (ht.prod hu))]
+    · simp [Set.mk_preimage_prod]
+    · refine Measurable.prodMk ?_ (by fun_prop)
+      exact Measurable.mono measurable_id le_rfl hk.comap_le
+  have h_right {s : Set γ} {t : Set β} {u : Set β'} (hs : MeasurableSet s) (ht : MeasurableSet t)
+      (hu : MeasurableSet u) :
+      ((Kernel.id ×ₖ (condDistrib f k μ ×ₖ condDistrib g k μ)) ∘ₘ μ.map k) (s ×ˢ t ×ˢ u)
+      = ((Kernel.id ×ₖ
+        ((condExpKernel μ (mγ.comap k)).map f ×ₖ (condExpKernel μ (mγ.comap k)).map g)) ∘ₘ
+        μ.trim hk.comap_le) ((k ⁻¹' s) ×ˢ t ×ˢ u) := by
+    rw [Measure.bind_apply ((hk_meas hs).prod (ht.prod hu)) (by fun_prop),
+      Measure.bind_apply (hs.prod (ht.prod hu)) (by fun_prop), lintegral_map ?_ (by fun_prop),
+      lintegral_trim]
+    rotate_left
+    · exact Kernel.measurable_coe _ ((hk_meas hs).prod (ht.prod hu))
+    · exact Kernel.measurable_coe _ (hs.prod (ht.prod hu))
+    refine lintegral_congr_ae ?_
+    filter_upwards [condDistrib_apply_ae_eq_condExpKernel_map hf hk ht,
+      condDistrib_apply_ae_eq_condExpKernel_map hg hk hu] with a haX haT
+    simp_rw [Kernel.prod_apply_prod]
+    simp only [Kernel.id_apply, Measure.dirac_apply' _ hs]
+    rw [@Measure.dirac_apply' _ (mγ.comap k) _ _ (hk_meas hs)]
+    congr
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · intro s t u hs ht hu
+    specialize h (s := k ⁻¹' s) (hk_meas hs) ht hu
+    convert h
+    · exact h_left hs ht hu
+    · exact h_right hs ht hu
+  · rintro _ t u ⟨s, hs, rfl⟩ ht hu
+    specialize h hs ht hu
+    convert h
+    · exact (h_left hs ht hu).symm
+    · exact (h_right hs ht hu).symm
+
+lemma condIndepFun_iff_condDistrib_prod_ae_eq_prodMkLeft
+    {γ : Type*} {mγ : MeasurableSpace γ} {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+    [StandardBorelSpace β] [Nonempty β] [StandardBorelSpace β'] [Nonempty β']
+    (hf : Measurable f) (hg : Measurable g) {k : Ω → γ} (hk : Measurable k) :
+    CondIndepFun (mγ.comap k) hk.comap_le g f μ
+      ↔ condDistrib g (fun ω ↦ (f ω, k ω)) μ
+          =ᵐ[μ.map (fun ω ↦ (f ω, k ω))] Kernel.prodMkLeft _ (condDistrib g k μ) := by
+  rw [condDistrib_ae_eq_iff_measure_eq_compProd (μ := μ) (hf.prodMk hk).aemeasurable
+    hg.aemeasurable, condIndepFun_comap_iff_map_prod_eq_prod_condDistrib_prod_condDistrib hg hf hk,
+    Measure.compProd_eq_comp_prod]
+  let e : γ × β' × β ≃ᵐ (β × γ) × β' := {
+    toFun := fun p ↦ ((p.2.2, p.1), p.2.1)
+    invFun := fun p ↦ (p.1.2, p.2, p.1.1)
+    left_inv p := by simp
+    right_inv p := by simp
+    measurable_toFun := by simp only [Equiv.coe_fn_mk]; fun_prop
+    measurable_invFun := by simp only [Equiv.coe_fn_symm_mk]; fun_prop }
+  have h_eq : ((condDistrib f k μ ×ₖ Kernel.id) ×ₖ condDistrib g k μ) ∘ₘ μ.map k
+      = (Kernel.id ×ₖ Kernel.prodMkLeft β (condDistrib g k μ)) ∘ₘ μ.map (fun a ↦ (f a, k a)) := by
+    calc ((condDistrib f k μ ×ₖ Kernel.id) ×ₖ condDistrib g k μ) ∘ₘ μ.map k
+    _ = (Kernel.id ×ₖ Kernel.prodMkLeft β (condDistrib g k μ)) ∘ₘ Kernel.swap _ _
+        ∘ₘ (μ.map k ⊗ₘ condDistrib f k μ) := by
+      rw [Measure.compProd_eq_comp_prod, Measure.comp_assoc, Measure.comp_assoc]
+      congr 2
+      rw [Kernel.comp_assoc, Kernel.swap_prod]
+      ext ω : 1
+      simp_rw [Kernel.prod_apply]
+      rw [Kernel.comp_apply, Kernel.prod_apply, Kernel.id_apply, ← Measure.compProd_eq_comp_prod]
+      ext s hs
+      rw [Measure.compProd_apply hs, Measure.prod_apply hs]
+      simp only [Kernel.prodMkLeft_apply]
+      rw [lintegral_prod, lintegral_prod]
+      · congr with b
+        rw [lintegral_dirac', lintegral_dirac']
+        · sorry
+        · sorry
+      · refine Measurable.aemeasurable ?_
+        have : Measurable fun a ↦ (Kernel.prodMkLeft _ (condDistrib g k μ) a) (Prod.mk a ⁻¹' s) :=
+          Kernel.measurable_kernel_prodMk_left hs
+        exact this
+      · refine Measurable.aemeasurable ?_
+        have : Measurable fun x ↦ (Kernel.const _ ((condDistrib g k μ) ω) x) (Prod.mk x ⁻¹' s) :=
+          Kernel.measurable_kernel_prodMk_left hs
+        exact this
+    _ = (Kernel.id ×ₖ Kernel.prodMkLeft β (condDistrib g k μ)) ∘ₘ μ.map (fun a ↦ (f a, k a)) := by
+      congr
+      rw [compProd_map_condDistrib hf.aemeasurable, Measure.swap_comp,
+        Measure.map_map (by fun_prop) (by fun_prop)]
+      rfl
+  rw [← h_eq]
+  have h1 : μ.map (fun x ↦ ((f x, k x), g x)) = (μ.map (fun a ↦ (k a , g a, f a))).map e := by
+    rw [Measure.map_map (by fun_prop) (by fun_prop)]
+    congr
+  have h1_symm : μ.map (fun a ↦ (k a , g a, f a))
+      = (μ.map (fun x ↦ ((f x, k x), g x))).map e.symm := by
+    rw [h1, Measure.map_map (by fun_prop) (by fun_prop), MeasurableEquiv.symm_comp_self,
+      Measure.map_id]
+  have h2 : (condDistrib f k μ ×ₖ Kernel.id ×ₖ condDistrib g k μ) ∘ₘ μ.map k
+      = ((Kernel.id ×ₖ (condDistrib g k μ ×ₖ condDistrib f k μ)) ∘ₘ μ.map k).map e := by
+    rw [← Measure.deterministic_comp_eq_map e.measurable, Measure.comp_assoc]
+    congr 2
+    ext ω : 1
+    rw [Kernel.prod_apply, Kernel.prod_apply, Kernel.id_apply, Kernel.comp_apply,
+      Kernel.prod_apply, Kernel.prod_apply, Kernel.id_apply, Measure.deterministic_comp_eq_map]
+    rw [Measure.ext_prod₃_iff']
+    intro s t u hs ht hu
+    rw [Measure.prod_prod, Measure.prod_prod,
+      Measure.map_apply (by fun_prop) ((hs.prod ht).prod hu)]
+    have : e ⁻¹' ((s ×ˢ t) ×ˢ u) = t ×ˢ u ×ˢ s := by
+      ext x
+      simp only [MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, Set.mem_preimage, Set.mem_prod, e]
+      tauto
+    rw [this]
+    simp_rw [Measure.prod_prod]
+    ring
+  have h2_symm : (Kernel.id ×ₖ (condDistrib g k μ ×ₖ condDistrib f k μ)) ∘ₘ μ.map k
+      = ((condDistrib f k μ ×ₖ Kernel.id ×ₖ condDistrib g k μ) ∘ₘ μ.map k).map e.symm := by
+    rw [h2, Measure.map_map (by fun_prop) (by fun_prop), MeasurableEquiv.symm_comp_self,
+      Measure.map_id]
+  rw [h1, h2]
+  exact ⟨fun h ↦ by rw [h], fun h ↦ by rw [h1_symm, h1, h2_symm, h2, h]⟩
+
 section iCondIndepFun
 variable {β : ι → Type*} {m : ∀ i, MeasurableSpace (β i)} {f : ∀ i, Ω → β i}
 
