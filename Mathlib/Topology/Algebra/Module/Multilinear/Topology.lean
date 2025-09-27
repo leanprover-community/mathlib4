@@ -62,7 +62,7 @@ instance instTopologicalSpace [TopologicalSpace F] [IsTopologicalAddGroup F] :
 instance instUniformSpace [UniformSpace F] [IsUniformAddGroup F] :
     UniformSpace (ContinuousMultilinearMap 𝕜 E F) :=
   .replaceTopology (.comap toUniformOnFun <| UniformOnFun.uniformSpace _ _ _) <| by
-    rw [instTopologicalSpace, IsUniformAddGroup.toUniformSpace_eq]; rfl
+    rw [instTopologicalSpace, IsUniformAddGroup.rightUniformSpace_eq]; rfl
 
 section IsUniformAddGroup
 

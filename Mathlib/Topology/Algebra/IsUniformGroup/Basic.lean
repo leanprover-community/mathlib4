@@ -533,7 +533,7 @@ already equipped with a uniform structure.
 [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 
 Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` does not inherit a
-uniform structure, so it is still provided manually via `IsTopologicalGroup.toUniformSpace`.
+uniform structure, so it is still provided manually via `IsTopologicalGroup.rightUniformSpace`.
 In the most common use cases, this coincides (definitionally) with the uniform structure on the
 quotient obtained via other means. -/
 @[to_additive /-- The quotient `G ⧸ N` of a complete first countable uniform additive group
@@ -543,14 +543,14 @@ subspaces are complete. In contrast to `QuotientAddGroup.completeSpace'`, in thi
 [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 
 Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` does not inherit a
-uniform structure, so it is still provided manually via `IsTopologicalAddGroup.toUniformSpace`.
+uniform structure, so it is still provided manually via `IsTopologicalAddGroup.rightUniformSpace`.
 In the most common use case ─ quotients of normed additive commutative groups by subgroups ─
 significant care was taken so that the uniform structure inherent in that setting coincides
 (definitionally) with the uniform structure provided here. -/]
 instance QuotientGroup.completeSpace (G : Type u) [Group G] [us : UniformSpace G] [IsUniformGroup G]
     [FirstCountableTopology G] (N : Subgroup G) [N.Normal] [hG : CompleteSpace G] :
     @CompleteSpace (G ⧸ N) (IsTopologicalGroup.rightUniformSpace (G ⧸ N)) := by
-  rw [← @IsUniformGroup.toUniformSpace_eq _ us _ _] at hG
+  rw [← @IsUniformGroup.rightUniformSpace_eq _ us _ _] at hG
   infer_instance
 
 end CompleteQuotient
