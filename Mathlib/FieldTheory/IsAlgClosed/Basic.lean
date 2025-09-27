@@ -152,10 +152,6 @@ theorem aroots_card_eq_natDegree {A B : Type*} [CommRing A] [Field B] [IsAlgClos
     [FaithfulSMul A B] {p : A[X]} : (p.aroots B).card = p.natDegree :=
   map_roots_card_eq_natDegree_of_injective _ <| FaithfulSMul.algebraMap_injective _ _
 
-theorem aroots_card_eq_natDegree_from_field {A B : Type*} [CommRing A] [IsSimpleRing A]
-    [Field B] [IsAlgClosed B] [Algebra A B] {p : A[X]} : (p.aroots B).card = p.natDegree :=
-  map_roots_card_eq_natDegree_from_simpleRing _
-
 theorem dvd_iff_roots_le_roots [IsAlgClosed k] {p q : k[X]} (hp : p ≠ 0) (hq : q ≠ 0) :
     p ∣ q ↔ p.roots ≤ q.roots :=
   Splits.dvd_iff_roots_le_roots (splits _) hp hq

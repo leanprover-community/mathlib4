@@ -201,7 +201,7 @@ instance {L : Type*} [Field k] [Field L] [Algebra k L] [Algebra.IsAlgebraic k L]
   isAlgClosed := inferInstance
 
 theorem aroots_card_eq_natDegree {p : k[X]} : (p.aroots <| AlgebraicClosure k).card = p.natDegree :=
-  IsAlgClosed.aroots_card_eq_natDegree_from_field
+  IsAlgClosed.aroots_card_eq_natDegree
 
 end AlgebraicClosure
 
