@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Order.Filter.AtTopBot.BigOperators
 import Mathlib.Topology.Algebra.InfiniteSum.SummationFilter
 import Mathlib.Topology.Separation.Hausdorff
+import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
 
 /-!
 # Infinite sum and product in a topological monoid

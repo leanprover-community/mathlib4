@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Topology.Algebra.InfiniteSum.Defs
 import Mathlib.Topology.Algebra.Monoid.Defs
+import Mathlib.Order.Filter.AtTopBot.BigOperators
 
 /-!
 # Lemmas on infinite sums and products in topological monoids
