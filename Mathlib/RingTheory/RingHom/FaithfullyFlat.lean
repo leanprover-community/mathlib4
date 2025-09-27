@@ -63,9 +63,7 @@ lemma of_bijective (hf : Function.Bijective f) : f.FaithfullyFlat := by
 
 lemma injective (hf : f.FaithfullyFlat) : Function.Injective ⇑f := by
   algebraize [f]
-  intro _ _ h
-  apply (smul_left_injective' : Function.Injective (· • · : R → S → S))
-  simp only [Algebra.smul_def, RingHom.algebraMap_toAlgebra, h]
+  exact FaithfulSMul.algebraMap_injective R S
 
 lemma respectsIso : RespectsIso FaithfullyFlat :=
   stableUnderComposition.respectsIso (fun e ↦ .of_bijective e.bijective)
