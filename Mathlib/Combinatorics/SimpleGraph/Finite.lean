@@ -243,8 +243,9 @@ theorem incidenceFinset_subset [DecidableEq V] [Fintype G.edgeSet] :
   Set.toFinset_subset_toFinset.mpr (G.incidenceSet_subset v)
 
 /-- The degree of a vertex is at most the number of edges. -/
-theorem degree_le_card_edgeFinset [DecidableEq V] [Fintype G.edgeSet] :
+theorem degree_le_card_edgeFinset [Fintype G.edgeSet] :
     G.degree v ≤ #G.edgeFinset := by
+  classical
   rw [← card_incidenceFinset_eq_degree]
   exact card_le_card (G.incidenceFinset_subset v)
 
