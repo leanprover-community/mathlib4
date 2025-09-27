@@ -21,6 +21,38 @@ variable {α β γ δ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace
   {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ}
   {μ : Measure α} {ν : Measure β} {κ : Kernel α β}
 
+namespace ProbabilityTheory.Kernel
+
+/-- If `κ` was deterministic, this would be true even if `Kernel.prodMkLeft β η` was a more general
+kernel since `κ ×ₖ Kernel.deterministic f hf` would be deterministic and commute with copying.
+Here `κ` is not deterministic, but it is discarded in one branch of the copy. -/
+lemma prod_prodMkLeft_comp_prod_deterministic {β' ε : Type*}
+    {mβ' : MeasurableSpace β'} {mε : MeasurableSpace ε}
+    (κ : Kernel γ β) [IsSFiniteKernel κ] (η : Kernel ε β') [IsSFiniteKernel η]
+    (ξ : Kernel (β × ε) δ) [IsSFiniteKernel ξ] {f : γ → ε} (hf : Measurable f) :
+    (ξ ×ₖ prodMkLeft β η) ∘ₖ (κ ×ₖ deterministic f hf)
+      = (ξ ∘ₖ (κ ×ₖ deterministic f hf)) ×ₖ (η ∘ₖ deterministic f hf) := by
+  ext ω s hs
+  simp_rw [prod_apply, comp_apply, Kernel.prod_apply]
+  rw [Measure.prod_apply hs, Measure.bind_apply hs, MeasureTheory.lintegral_prod,
+    Measure.lintegral_bind,
+    MeasureTheory.lintegral_prod]
+  · congr with b
+    rw [deterministic_apply, lintegral_dirac', lintegral_dirac']
+    · rw [prod_apply' _ _ _ hs]
+      simp [Measure.dirac_bind (Kernel.measurable _)]
+    · refine (Measurable.lintegral_kernel ?_).comp measurable_prodMk_left
+      exact measurable_measure_prodMk_left hs
+    · exact (Kernel.measurable_coe _ hs).comp measurable_prodMk_left
+  · refine (Measurable.lintegral_kernel ?_).aemeasurable
+    exact measurable_measure_prodMk_left hs
+  · fun_prop
+  · exact (measurable_measure_prodMk_left hs).aemeasurable
+  · exact (Kernel.measurable_coe _ hs).aemeasurable
+  · fun_prop
+
+end ProbabilityTheory.Kernel
+
 namespace MeasureTheory.Measure
 
 lemma compProd_eq_parallelComp_comp_copy_comp [SFinite μ] :

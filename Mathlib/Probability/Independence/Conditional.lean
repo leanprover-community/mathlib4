@@ -767,6 +767,9 @@ lemma condIndepFun_iff_map_prod_eq_prod_comp_trim
     rfl
   · rw [Measure.compProd_eq_comp_prod]
 
+/-- Two random variables `f, g` are conditionally independent given a third `k` if the
+joint distribution of `k, f, g` factors into a product of their conditional distributions
+given `k`. -/
 theorem condIndepFun_iff_map_prod_eq_prod_condDistrib_prod_condDistrib
     {γ : Type*} {mγ : MeasurableSpace γ} {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [StandardBorelSpace β] [Nonempty β] [StandardBorelSpace β'] [Nonempty β']
@@ -818,34 +821,10 @@ theorem condIndepFun_iff_map_prod_eq_prod_condDistrib_prod_condDistrib
     · exact (h_left hs ht hu).symm
     · exact (h_right hs ht hu).symm
 
-/-- A property of deterministic kernels. -/
-lemma prod_prodMkLeft_comp_prod_deterministic {γ δ ε : Type*}
-    {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
-    {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ} {mε : MeasurableSpace ε}
-    (κ : Kernel γ β) [IsSFiniteKernel κ] (η : Kernel ε β') [IsSFiniteKernel η]
-    (ξ : Kernel (β × ε) δ) [IsSFiniteKernel ξ]
-    {f : γ → ε} (hf : Measurable f) :
-    (ξ ×ₖ Kernel.prodMkLeft β η) ∘ₖ (κ ×ₖ Kernel.deterministic f hf)
-      = (ξ ∘ₖ (κ ×ₖ Kernel.deterministic f hf)) ×ₖ (η ∘ₖ Kernel.deterministic f hf) := by
-  ext ω s hs
-  simp_rw [Kernel.prod_apply, Kernel.comp_apply, Kernel.prod_apply]
-  rw [Measure.prod_apply hs,  Measure.bind_apply hs, lintegral_prod, Measure.lintegral_bind,
-    lintegral_prod]
-  · congr with b
-    rw [Kernel.deterministic_apply, lintegral_dirac', lintegral_dirac']
-    · rw [Kernel.prod_apply' _ _ _ hs]
-      simp [Measure.dirac_bind (Kernel.measurable _)]
-    · refine (Measurable.lintegral_kernel ?_).comp measurable_prodMk_left
-      exact measurable_measure_prodMk_left hs
-    · exact (Kernel.measurable_coe _ hs).comp measurable_prodMk_left
-  · refine (Measurable.lintegral_kernel ?_).aemeasurable
-    exact measurable_measure_prodMk_left hs
-  · fun_prop
-  · exact (measurable_measure_prodMk_left hs).aemeasurable
-  · exact (Kernel.measurable_coe _ hs).aemeasurable
-  · fun_prop
-
-lemma condIndepFun_iff_condDistrib_prod_ae_eq_prodMkLeft
+/-- Two random variables `f, g` are conditionally independent given a third `k` if the
+conditional distribution of `g` given `k` and `f` is equal to the conditional distribution of `g`
+given `k`. -/
+theorem condIndepFun_iff_condDistrib_prod_ae_eq_prodMkLeft
     {γ : Type*} {mγ : MeasurableSpace γ} {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [StandardBorelSpace β] [Nonempty β] [StandardBorelSpace β'] [Nonempty β']
     (hf : Measurable f) (hg : Measurable g) {k : Ω → γ} (hk : Measurable k) :
@@ -865,8 +844,8 @@ lemma condIndepFun_iff_condDistrib_prod_ae_eq_prodMkLeft
       rw [Measure.compProd_eq_comp_prod, Measure.comp_assoc, Measure.comp_assoc]
       congr 2
       rw [Kernel.comp_assoc, Kernel.swap_prod]
-      have h := prod_prodMkLeft_comp_prod_deterministic (condDistrib f k μ) (condDistrib g k μ)
-        Kernel.id measurable_id
+      have h := Kernel.prod_prodMkLeft_comp_prod_deterministic (condDistrib f k μ)
+        (condDistrib g k μ) Kernel.id measurable_id
       rw [← Kernel.id] at h
       simpa using h.symm
     _ = (Kernel.id ×ₖ Kernel.prodMkLeft β (condDistrib g k μ)) ∘ₘ μ.map (fun a ↦ (f a, k a)) := by
