@@ -153,6 +153,59 @@ def removeDeprecations (fname : String) (rgs : Array String.Range) : IO String :
       ({fileSubstring with startPos := next.stop}.dropWhile (!·.isWhitespace)).trimLeft
   return tot
 
+def parseLine (line : String) : Option (List String.Pos) :=
+  match (line.dropRight 1).splitOn ": [" with
+  | [_, rest] =>
+    let nums := rest.splitOn ", "
+    some <| nums.map fun s => ⟨s.toNat?.getD 0⟩
+  | _ => none
+
+def rewriteOneFile (fname : String) (rgs : Array (Name × String.Range)) :
+    CommandElabM String := do
+  let option :=
+    s!"\nimport Mathlib.Tactic.Linter.CommandRanges\n\
+      set_option linter.commandRanges true\n"
+  let offset := option.toSubstring.stopPos
+  let fileWithOptionAdded ← addAfterImports fname option
+  --dbg_trace optionAdded
+  let fname_with_option := fname.dropRight ".lean".length ++ "_with_option.lean"
+  --let rgs := cleanUpRanges rgs
+  let file ← IO.FS.readFile fname
+  let fm := file.toFileMap
+  let rgsPos := rgs.map fun (decl, ⟨s, e⟩) =>
+    m!"{.ofConstName decl} {(fm.toPosition s, fm.toPosition e)}"
+  logInfo m!"Adding '{option}' to '{fname}'\nWriting to {indentD fname_with_option}\n\
+          {m!"\n".joinSep rgsPos.toList}\n{m!"\n".joinSep (rgs.map (m!"{·}")).toList}"
+  IO.FS.writeFile fname_with_option fileWithOptionAdded
+  let fname.ranges := fname_with_option ++ ".ranges"
+  let ranges := rgs.map (·.2)
+  let cmd : IO.Process.SpawnArgs := {cmd := "lake", args := #["build", fname.ranges]}
+  dbg_trace ← IO.Process.run cmd
+
+  let lakeInfoOfPositions ← IO.Process.run cmd -- ← IO.FS.lines fname.ranges
+  -- `stringPositions` consists of lists of the form `[p₁, p₂, p₃]`, where
+  -- * `p₁` is the start of a command;
+  -- * `p₂` is the end of the command, excluding trailing whitespace and comments;
+  -- * `p₁` is the end of the command, including trailing whitespace and comments.
+  let stringPositions := (lakeInfoOfPositions.splitOn "\n").map parseLine |>.reduceOption
+  let mut removals : Array (List String.Pos) := #[]
+  -- For each range `rg` in `ranges`, we isolate the unique entry of `stringPositions` that
+  -- entirely contains `rg`
+  for rg in ranges do
+    -- We select the range among the
+    let candidate := stringPositions.filterMap (fun arr ↦
+      let a := arr.head! - offset
+      let b := arr[arr.length - 1]! - offset
+      if a ≤ rg.start ∧ rg.stop ≤ b then some (arr.map (· - offset)) else none)
+    --dbg_trace s!"{rg} {candidate}"
+    match candidate with
+    | [d@([_, _, _])] => removals := removals.push d
+    | _ => logInfo "Something went wrong!"
+  let rems := removals.map fun | [a, b, _c] => (⟨a, b⟩ : String.Range) | _ => default
+  --dbg_trace rems
+  removeDeprecations fname rems
+
+
 open Lean Elab Command in
 elab "#regenerate_deprecations " oldDate:str ppSpace newDate:str really?:(&" really")? : command => do
   let repo := repo.toString
@@ -183,13 +236,6 @@ elab "#regenerate_deprecations " oldDate:str ppSpace newDate:str really?:(&" rea
       IO.FS.writeFile mod (← removeDeprecations mod (rgs.map (·.2)))
 
 --#regenerate_deprecations "2025-07-19" "2025-09-20" --really
-
-def parseLine (line : String) : Option (List String.Pos) :=
-  match (line.dropRight 1).splitOn ": [" with
-  | [_, rest] =>
-    let nums := rest.splitOn ", "
-    some <| nums.map fun s => ⟨s.toNat?.getD 0⟩
-  | _ => none
 
 def rewriteWithoutDeprecations (oldDate newDate : String) :
     CommandElabM (Std.HashMap String String) := do
