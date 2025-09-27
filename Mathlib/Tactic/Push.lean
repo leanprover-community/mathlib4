@@ -291,8 +291,9 @@ which will print the `push head` form of `e`.
 
 `#push` understands local variables, so you can use them to introduce parameters.
 -/
-macro (name := pushCommand) tk:"#push " head:ident ppSpace e:term : command =>
-  `(command| #conv%$tk push $head:ident => $e)
+macro (name := pushCommand)
+    tk:"#push" disch?:(discharger)? ppSpace head:term " => " e:term : command =>
+  `(command| #conv%$tk push $[$disch?:discharger]? $head:term => $e)
 
 /--
 The syntax is `#push_neg e`, where `e` is an expression,
@@ -314,8 +315,9 @@ which will print the `pull head` form of `e`.
 
 `#pull` understands local variables, so you can use them to introduce parameters.
 -/
-macro (name := pullCommand) tk:"#pull " head:ident ppSpace e:term : command =>
-  `(command| #conv%$tk pull $head:ident => $e)
+macro (name := pullCommand)
+    tk:"#pull" disch?:(discharger)? ppSpace head:term " => " e:term : command =>
+  `(command| #conv%$tk pull $[$disch?:discharger]? $head:term => $e)
 
 end Conv
 

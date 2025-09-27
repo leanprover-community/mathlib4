@@ -2,7 +2,7 @@ import Mathlib.Tactic.Push
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.Insert
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 private axiom test_sorry : ∀ {α}, α
 
@@ -55,3 +55,22 @@ info: DiscrTree branch for Or:
 #push_discr_tree Or
 
 end logic
+
+section log
+
+example (a b : ℝ) (ha : 0 < a) (hb : 0 < b) : Real.log (a * b) = Real.log a + Real.log b := by
+  pull (disch := positivity) Real.log
+  rfl
+
+variable (a b c : Real) (ha : 0 < a) (hc : 0 < c)
+
+/-- info: ↑4 * Real.log a + -Real.log c - b * Real.log a + b -/
+#guard_msgs in
+#push (disch := positivity) Real.log => Real.log (a ^ 4 * c⁻¹ / a ^ b * Real.exp b)
+
+/-- info: Real.log (a ^ 4 * c⁻¹ / a ^ b) + b -/
+#guard_msgs in
+#pull (disch := positivity) Real.log => 4 * Real.log a + -Real.log c - b * Real.log a + b
+
+
+end log
