@@ -731,7 +731,7 @@ theorem completeTheory.subset [MT : M ⊨ T] : T ⊆ L.completeTheory M :=
 end Theory
 
 instance model_completeTheory : M ⊨ L.completeTheory M :=
-  Theory.model_iff_subset_completeTheory.2 (subset_refl _)
+  Theory.model_iff_subset_completeTheory.2 subset_rfl
 
 variable (M N)
 
