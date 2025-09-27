@@ -827,8 +827,10 @@ theorem map_roots_le_of_injective [IsDomain A] [IsDomain B] (p : A[X]) {f : A �
   exact map_roots_le ((Polynomial.map_ne_zero_iff hf).mpr hp0)
 
 theorem map_roots_card_le_degree {A B : Type*} [Semiring A] [CommRing B] [IsDomain B]
-    {f : A →+* B} (p : A[X]) (h : p.map f ≠ 0) : (p.map f).roots.card ≤ p.degree :=
-  card_roots h |>.trans degree_map_le
+    {f : A →+* B} (p : A[X]) (hp0 : p ≠ 0) : (p.map f).roots.card ≤ p.degree := by
+  by_cases hpm0 : p.map f = 0
+  · simp [hp0, hpm0, Polynomial.zero_le_degree_iff]
+  exact card_roots hpm0 |>.trans degree_map_le
 
 theorem map_roots_card_le_natDegree {A B : Type*} [Semiring A] [CommRing B] [IsDomain B]
     {f : A →+* B} (p : A[X]) : (p.map f).roots.card ≤ p.natDegree :=
@@ -860,13 +862,13 @@ theorem roots_map_of_injective_of_card_eq_natDegree [IsDomain A] [IsDomain B] {p
     {f : A →+* B} (hf : Function.Injective f) (hroots : Multiset.card p.roots = p.natDegree) :
     p.roots.map f = (p.map f).roots := by
   apply Multiset.eq_of_le_of_card_le (map_roots_le_of_injective p hf)
-  simpa only [Multiset.card_map, hroots] using (card_roots' _).trans natDegree_map_le
+  simpa only [Multiset.card_map, hroots] using map_roots_card_le_natDegree p
 
 theorem roots_map_of_map_ne_zero_of_card_eq_natDegree [IsDomain A] [IsDomain B] {p : A[X]}
     (f : A →+* B) (h : p.map f ≠ 0) (hroots : p.roots.card = p.natDegree) :
     p.roots.map f = (p.map f).roots :=
   eq_of_le_of_card_le (map_roots_le h) <| by
-    simpa only [Multiset.card_map, hroots] using (p.map f).card_roots'.trans natDegree_map_le
+    simpa only [Multiset.card_map, hroots] using map_roots_card_le_natDegree p
 
 theorem Monic.roots_map_of_card_eq_natDegree [IsDomain A] [IsDomain B] {p : A[X]} (hm : p.Monic)
     (f : A →+* B) (hroots : p.roots.card = p.natDegree) : p.roots.map f = (p.map f).roots :=
