@@ -117,7 +117,7 @@ lemma isQuotientMap_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [Qua
 
 /-- A flat surjective morphism of schemes is an epimorphism in the category of schemes. -/
 @[stacks 02VW]
-lemma epi_of_flat_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [Surjective f] : Epi f := by
+lemma epi_of_flat_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [Surjective f] : Epi f := by
   apply CategoryTheory.Functor.epi_of_epi_map (Scheme.forgetToLocallyRingedSpace)
   apply CategoryTheory.Functor.epi_of_epi_map (LocallyRingedSpace.forgetToSheafedSpace)
   apply SheafedSpace.epi_of_base_surjective_of_stalk_mono _ ‹Surjective f›.surj
