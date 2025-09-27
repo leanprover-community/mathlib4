@@ -553,47 +553,46 @@ theorem prod_eq {μ : Measure α} [SigmaFinite μ] {ν : Measure β} [SigmaFinit
     isPiSystem_measurableSet isPiSystem_measurableSet μ.toFiniteSpanningSetsIn
     ν.toFiniteSpanningSetsIn fun s hs t ht => h s t hs ht
 
+-- This is not true for σ-finite measures. See the discussion at
+-- https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/Uniqueness.20of.20sigma-finite.20measures.20on.20a.20product.20space/with/541741071
 /-- Two finite measures on a product that are equal on products of sets are equal. -/
 lemma ext_prod {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
-    {μ ν : Measure (α × β)} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    (h : ∀ {s : Set α} {t : Set β} (_ : MeasurableSet s) (_ : MeasurableSet t),
-      μ (s ×ˢ t) = ν (s ×ˢ t)) :
+    {μ ν : Measure (α × β)} [IsFiniteMeasure μ]
+    (h : ∀ {s : Set α} {t : Set β}, MeasurableSet s → MeasurableSet t → μ (s ×ˢ t) = ν (s ×ˢ t)) :
     μ = ν := by
   ext s hs
   have h_univ : μ univ = ν univ := by
     rw [← univ_prod_univ]
     exact h .univ .univ
+  have : IsFiniteMeasure ν := ⟨by simp [← h_univ]⟩
   refine MeasurableSpace.induction_on_inter generateFrom_prod.symm isPiSystem_prod (by simp)
     ?_ ?_ ?_ s hs
-  · intro t ht
-    simp only [Set.mem_image2, Set.mem_setOf_eq] at ht
-    obtain ⟨s, hs, t, ht, rfl⟩ := ht
+  · rintro - ⟨s, hs, t, ht, rfl⟩
     exact h hs ht
-  · intro t ht
-    simp_rw [measure_compl ht (measure_ne_top _ _)]
-    intro h
-    rw [h, h_univ]
+  · intro t ht h
+    simp_rw [measure_compl ht (measure_ne_top _ _), h, h_univ]
   · intro f h_disj hf h_eq
     simp_rw [measure_iUnion h_disj hf, h_eq]
 
 /-- Two finite measures on a product are equal iff they are equal on products of sets. -/
 lemma ext_prod_iff {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
-    {μ ν : Measure (α × β)} [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-    μ = ν ↔ ∀ {s : Set α} {t : Set β} (_ : MeasurableSet s) (_ : MeasurableSet t),
-      μ (s ×ˢ t) = ν (s ×ˢ t) :=
+    {μ ν : Measure (α × β)} [IsFiniteMeasure μ] :
+    μ = ν
+      ↔ ∀ {s : Set α} {t : Set β}, MeasurableSet s → MeasurableSet t → μ (s ×ˢ t) = ν (s ×ˢ t) :=
   ⟨fun h s t hs ht ↦ by rw [h], Measure.ext_prod⟩
 
 /-- Two finite measures on a product `α × β × γ` that are equal on products of sets are equal.
 See `ext_prod₃'` for the same statement for `(α × β) × γ`. -/
 lemma ext_prod₃ {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
-    {mγ : MeasurableSpace γ} {μ ν : Measure (α × β × γ)} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    (h : ∀ {s : Set α} {t : Set β} {u : Set γ} (_ : MeasurableSet s) (_ : MeasurableSet t)
-      (_ : MeasurableSet u), μ (s ×ˢ t ×ˢ u) = ν (s ×ˢ t ×ˢ u)) :
+    {mγ : MeasurableSpace γ} {μ ν : Measure (α × β × γ)} [IsFiniteMeasure μ]
+    (h : ∀ {s : Set α} {t : Set β} {u : Set γ},
+      MeasurableSet s → MeasurableSet t → MeasurableSet u → μ (s ×ˢ t ×ˢ u) = ν (s ×ˢ t ×ˢ u)) :
     μ = ν := by
   ext s hs
   have h_univ : μ univ = ν univ := by
     simp_rw [← univ_prod_univ]
     exact h .univ .univ .univ
+  have : IsFiniteMeasure ν := ⟨by simp [← h_univ]⟩
   let C₂ := image2 (· ×ˢ ·) { t : Set β | MeasurableSet t } { u : Set γ | MeasurableSet u }
   let C := image2 (· ×ˢ ·) { s : Set α | MeasurableSet s } C₂
   refine MeasurableSpace.induction_on_inter (s := C) ?_ ?_ (by simp) ?_ ?_ ?_ s hs
@@ -601,21 +600,17 @@ lemma ext_prod₃ {α β γ : Type*} {mα : MeasurableSpace α} {mβ : Measurabl
       generateFrom_prod isCountablySpanning_measurableSet ?_).symm
     exact isCountablySpanning_measurableSet.prod isCountablySpanning_measurableSet
   · exact MeasurableSpace.isPiSystem_measurableSet.prod isPiSystem_prod
-  · intro t ht
-    simp only [mem_image2, mem_setOf_eq, exists_exists_and_exists_and_eq_and, C, C₂] at ht
-    obtain ⟨s, hs, t, ht, u, hu, rfl⟩ := ht
+  · rintro - ⟨s, hs, -, ⟨t, ht, u, hu, rfl⟩, rfl⟩
     exact h hs ht hu
-  · intro t ht
-    simp_rw [measure_compl ht (measure_ne_top _ _)]
-    intro h
-    rw [h, h_univ]
+  · intro t ht h
+    simp_rw [measure_compl ht (measure_ne_top _ _), h, h_univ]
   · intro f h_disj hf h_eq
     simp_rw [measure_iUnion h_disj hf, h_eq]
 
 /-- Two finite measures on a product `α × β × γ` are equal iff they are equal on products of sets.
 See `ext_prod₃_iff'` for the same statement for `(α × β) × γ`. -/
 lemma ext_prod₃_iff {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
-    {mγ : MeasurableSpace γ} {μ ν : Measure (α × β × γ)} [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+    {mγ : MeasurableSpace γ} {μ ν : Measure (α × β × γ)} [IsFiniteMeasure μ] :
     μ = ν ↔ (∀ {s : Set α} {t : Set β} {u : Set γ},
       MeasurableSet s → MeasurableSet t → MeasurableSet u → μ (s ×ˢ t ×ˢ u) = ν (s ×ˢ t ×ˢ u)) :=
   ⟨fun h s t u hs ht hu ↦ by rw [h], Measure.ext_prod₃⟩
@@ -623,17 +618,11 @@ lemma ext_prod₃_iff {α β γ : Type*} {mα : MeasurableSpace α} {mβ : Measu
 /-- Two finite measures on a product `(α × β) × γ` are equal iff they are equal on products of sets.
 See `ext_prod₃_iff` for the same statement for `α × β × γ`. -/
 lemma ext_prod₃_iff' {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
-    {mγ : MeasurableSpace γ} {μ ν : Measure ((α × β) × γ)} [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+    {mγ : MeasurableSpace γ} {μ ν : Measure ((α × β) × γ)} [IsFiniteMeasure μ] :
     μ = ν ↔ (∀ {s : Set α} {t : Set β} {u : Set γ},
       MeasurableSet s → MeasurableSet t → MeasurableSet u →
       μ ((s ×ˢ t) ×ˢ u) = ν ((s ×ˢ t) ×ˢ u)) := by
-  have : μ = ν ↔ μ.map MeasurableEquiv.prodAssoc = ν.map MeasurableEquiv.prodAssoc := by
-    refine ⟨fun h ↦ by rw [h], fun h ↦ ?_⟩
-    have h_map_map (μ : Measure ((α × β) × γ)) :
-        μ = (μ.map MeasurableEquiv.prodAssoc).map MeasurableEquiv.prodAssoc.symm := by
-      simp
-    rw [h_map_map μ, h_map_map ν, h]
-  rw [this, ext_prod₃_iff]
+  rw [← MeasurableEquiv.prodAssoc.map_measurableEquiv_injective.eq_iff, ext_prod₃_iff]
   have h_eq (ν : Measure ((α × β) × γ)) {s : Set α} {t : Set β} {u : Set γ}
       (hs : MeasurableSet s) (ht : MeasurableSet t) (hu : MeasurableSet u) :
       ν.map MeasurableEquiv.prodAssoc (s ×ˢ (t ×ˢ u)) = ν ((s ×ˢ t) ×ˢ u) := by
