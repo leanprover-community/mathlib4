@@ -97,7 +97,9 @@ lemma card'' [Finite k] : Nat.card (ℙ k V) = (Nat.card V - 1) / (Nat.card k - 
 lemma card_of_finrank [Finite k] {n : ℕ} (h : Module.finrank k V = n) :
     Nat.card (ℙ k V) = ∑ i ∈ Finset.range n, Nat.card k ^ i := by
   wlog hf : Finite V
-  · have : Infinite (ℙ k V) := by contrapose! h; exact (finite_iff_of_finite k V).mp h
+  · have : Infinite (ℙ k V) := by
+      contrapose! hf
+      rwa [finite_iff_of_finite] at hf
     have : n = 0 := by
       rw [← h]
       apply Module.finrank_of_not_finite

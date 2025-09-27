@@ -282,7 +282,8 @@ theorem baseEmbedding_pos {x : seed.baseEmbedding.domain} (hx : 0 < x) :
     contrapose! hne with hempty
     apply DFinsupp.sum_eq_zero
     intro c
-    simpa using DFinsupp.notMem_support_iff.mp (forall_not_of_not_exists hempty c)
+    rw [DFinsupp.notMem_support_iff.mp (by simp [hempty])]
+    simp
   have htop : f.support.min' hsupport ≠ ⊤ := by
     by_contra! h
     have h : ⊤ ∈ f.support := h ▸ f.support.min'_mem hsupport
