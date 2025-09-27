@@ -182,6 +182,13 @@ lemma eq_zero [CharZero R] : ringChar R = 0 :=
 
 lemma Nat.cast_ringChar : (ringChar R : R) = 0 := by rw [ringChar.spec]
 
+@[simp]
+lemma ringChar_eq_one : ringChar R = 1 ↔ Subsingleton R := by
+  rw [← Nat.dvd_one, ← spec, eq_comm, Nat.cast_one, subsingleton_iff_zero_eq_one]
+
+@[nontriviality]
+lemma ringChar_subsingleton [Subsingleton R] : ringChar R = 1 := by simpa
+
 end ringChar
 
 lemma CharP.neg_one_ne_one [AddGroupWithOne R] (p : ℕ) [CharP R p] [Fact (2 < p)] :
