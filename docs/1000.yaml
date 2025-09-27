@@ -1320,6 +1320,9 @@ Q1134296:
 
 Q1134776:
   title: Dilworth's theorem
+  url: https://github.com/vlad902/misc-lean-proofs/blob/main/MiscLeanProofs/Dilworth.lean
+  authors: Vlad Tsyrklevich
+  date: 2025
 
 Q1135706:
   title: Harnack's theorem
