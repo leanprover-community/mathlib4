@@ -260,29 +260,43 @@ theorem abs_sub_lt_one_of_floor_eq_floor {R : Type*}
 lemma floor_eq_self_iff_mem (a : R) : ⌊a⌋ = a ↔ a ∈ Set.range Int.cast := by
   aesop
 
+section LinearOrderedRing
+variable {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R] {a b : R}
+
+theorem mul_cast_floor_div_cancel_of_pos {n : ℤ} (hn : 0 < n) (a : R) : ⌊a * n⌋ / n = ⌊a⌋ := by
+  refine eq_of_forall_le_iff fun m ↦ ?_
+  rw [Int.le_ediv_iff_mul_le hn, le_floor, le_floor, cast_mul,
+    mul_le_mul_iff_of_pos_right (cast_pos.mpr hn)]
+
+theorem mul_natCast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : R) : ⌊a * n⌋ / n = ⌊a⌋ := by
+  simpa using mul_cast_floor_div_cancel_of_pos (n := n) (by positivity) a
+
+section LinearOrderedCommRing
+
+variable {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R] {a : R}
+
+theorem cast_mul_floor_div_cancel_of_pos {n : ℤ} (hn : 0 < n) (a : R) : ⌊n * a⌋ / n = ⌊a⌋ := by
+  rw [mul_comm, mul_cast_floor_div_cancel_of_pos hn]
+
+theorem natCast_mul_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : R) : ⌊n * a⌋ / n = ⌊a⌋ := by
+  rw [mul_comm, mul_natCast_floor_div_cancel hn]
+
+end LinearOrderedCommRing
+
+end LinearOrderedRing
+
 section LinearOrderedField
 variable {k : Type*} [Field k] [LinearOrder k] [IsStrictOrderedRing k] [FloorRing k] {a b : k}
 
 theorem floor_div_cast_of_nonneg {n : ℤ} (hn : 0 ≤ n) (a : k) : ⌊a / n⌋ = ⌊a⌋ / n := by
-  obtain rfl | hn := hn.eq_or_lt
-  · simp
-  refine eq_of_forall_le_iff fun m ↦ ?_
-  rw [Int.le_ediv_iff_mul_le hn, le_floor, le_floor, le_div_iff₀ (by positivity), cast_mul]
+  if h : n = 0 then
+    simp [h]
+  else
+    nth_rw 2 [show a = a / n * n by simp [h]]
+    rw [mul_cast_floor_div_cancel_of_pos (lt_of_le_of_ne' hn h)]
 
 theorem floor_div_natCast (a : k) (n : ℕ) : ⌊a / n⌋ = ⌊a⌋ / n := by
   simpa using floor_div_cast_of_nonneg n.cast_nonneg a
-
-theorem cast_mul_floor_div_cancel_of_pos {n : ℤ} (hn : 0 < n) (a : k) : ⌊n * a⌋ / n = ⌊a⌋ := by
-  simpa [hn.ne'] using (floor_div_cast_of_nonneg hn.le (↑n * a)).symm
-
-lemma mul_cast_floor_div_cancel_of_pos {n : ℤ} (hn : 0 < n) (a : k) : ⌊a * n⌋ / n = ⌊a⌋ := by
-  rw [mul_comm, cast_mul_floor_div_cancel_of_pos hn]
-
-theorem natCast_mul_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : k) : ⌊n * a⌋ / n = ⌊a⌋ := by
-  simpa using cast_mul_floor_div_cancel_of_pos (n := n) (by cutsat) a
-
-theorem mul_natCast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) {a : k} : ⌊a * n⌋ / n = ⌊a⌋ := by
-  rw [mul_comm, natCast_mul_floor_div_cancel hn]
 
 end LinearOrderedField
 
