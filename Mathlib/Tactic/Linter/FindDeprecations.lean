@@ -172,7 +172,7 @@ elab "#regenerate_deprecations " oldDate:str ppSpace newDate:str really?:(&" rea
     let rgsPos := rgs.map fun (decl, ⟨s, e⟩) =>
       m!"{.ofConstName decl} {(fm.toPosition s, fm.toPosition e)}"
     logInfo m!"Adding '{option}' to '{mod}'\nWriting to {indentD newName}\n\
-            {m!"\n".joinSep rgsPos.toList}"
+            {m!"\n".joinSep rgsPos.toList}\n{m!"\n".joinSep (rgs.map (m!"{·}")).toList}"
     if really?.isSome then
       IO.FS.writeFile newName optionAdded
     if false then
@@ -183,6 +183,63 @@ elab "#regenerate_deprecations " oldDate:str ppSpace newDate:str really?:(&" rea
       IO.FS.writeFile mod (← removeDeprecations mod (rgs.map (·.2)))
 
 --#regenerate_deprecations "2025-07-19" "2025-09-20" --really
+
+def parseLine (line : String) : Option (List String.Pos) :=
+  match (line.dropRight 1).splitOn ": [" with
+  | [_, rest] =>
+    let nums := rest.splitOn ", "
+    some <| nums.map fun s => ⟨s.toNat?.getD 0⟩
+  | _ => none
+
+def rewriteWithoutDeprecations (oldDate newDate : String) :
+    CommandElabM (Std.HashMap String String) := do
+  let dmap ← deprecatedHashMap oldDate newDate
+  dbg_trace dmap.toList
+  let mut finalMap := ∅
+  let option :=
+    s!"\nimport Mathlib.Tactic.Linter.CommandRanges\n\
+      set_option linter.commandRanges true\n"
+  let offset := option.toSubstring.stopPos
+  for (fname, namesAndRanges) in dmap do
+    --let fname := "Mathlib/RingTheory/IsAdjoinRoot.lean"
+    --let filWithRanges := "Mathlib/RingTheory/IsAdjoinRoot_with_option.lean.ranges"
+    let fnameWithRanges := fname.dropRight ".lean".length ++ "_with_option.lean.ranges"
+
+    let ranges := namesAndRanges.map (·.2)
+    --dbg_trace namesAndRanges.size
+    let file ← IO.FS.lines fnameWithRanges
+    -- `stringPositions` consists of lists of the form `[p₁, p₂, p₃]`, where
+    -- * `p₁` is the start of a command;
+    -- * `p₂` is the end of the command, excluding trailing whitespace and comments;
+    -- * `p₁` is the end of the command, including trailing whitespace and comments.
+    let stringPositions := file.map parseLine |>.reduceOption
+    let mut removals : Array (List String.Pos) := #[]
+    -- For each range `rg` in `ranges`, we isolate the unique entry of `stringPositions` that
+    -- entirely contains `rg`
+    for rg in ranges do
+      -- We select the range among the
+      let candidate := stringPositions.filterMap (fun arr ↦
+        let a := arr.head! - offset
+        let b := arr[arr.length - 1]! - offset
+        if a ≤ rg.start ∧ rg.stop ≤ b then some (arr.map (· - offset)) else none)
+      --dbg_trace s!"{rg} {candidate}"
+      match candidate with
+      | #[d@([_, _, _])] => removals := removals.push d
+      | _ => logInfo "Something went wrong!"
+    let rems := removals.map fun | [a, b, _c] => (⟨a, b⟩ : String.Range) | _ => default
+    --dbg_trace rems
+    let newFile ← removeDeprecations ( fname) rems
+    finalMap := finalMap.insert fname newFile
+--    if write? then
+--      IO.FS.writeFile (fname.push '1') newFile
+--      let diff ← IO.Process.output {cmd := "diff", args := #[fname, fname.push '1']}
+--      dbg_trace diff.stdout
+--    else
+--      dbg_trace "New file:\n---\n{newFile}---"
+    --dbg_trace newFile
+    --dbg_trace #[fname, fname.push '1']
+    --dbg_trace removals
+  return finalMap
 
 abbrev rangeFile : System.FilePath := "Mathlib/Data/Rat/Floor_with_option.ranges"
 
