@@ -85,6 +85,7 @@ instance : ToString String.Range where
 --  let a ← withImporting
 --#check
 
+/-
 run_cmd
   let (imps, pos, msgs) ← parseImports "import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero_with_option" "test.lean"
   dbg_trace imps
@@ -93,6 +94,7 @@ run_cmd
 
   let (a, b) ← withImportModules imps {} fun e => pure (e.constants.map₁.size, e.find? `Submonoid.LocalizationMap.subsingleton |>.isSome)
   dbg_trace (a, b)
+-/
 
 /--
 `update rd s` updates `rd` by toggling the presence of the starting and ending
