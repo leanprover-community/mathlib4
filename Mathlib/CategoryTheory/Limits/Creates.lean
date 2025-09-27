@@ -656,7 +656,7 @@ instance compCreatesColimitsOfShape [CreatesColimitsOfShape J F] [CreatesColimit
 instance compCreatesColimits [CreatesColimitsOfSize.{w, w'} F] [CreatesColimitsOfSize.{w, w'} G] :
     CreatesColimitsOfSize.{w, w'} (F ⋙ G) where CreatesColimitsOfShape := inferInstance
 
-instance compPreservesColimitOfCreates [CreatesColimit K F] [PreservesColimit K (F ⋙ G)] :
+instance preservesColimit_comp_of_createsColimit [CreatesColimit K F] [PreservesColimit K (F ⋙ G)] :
     PreservesColimit (K ⋙ F) G where
   preserves hc := ⟨IsColimit.ofIsoColimit (isColimitOfPreserves (F ⋙ G) (liftedColimitIsColimit hc))
     ((Functor.mapCoconeMapCocone (liftColimit hc)).symm ≪≫
