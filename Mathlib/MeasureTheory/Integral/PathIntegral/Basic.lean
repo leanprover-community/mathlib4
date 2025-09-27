@@ -474,6 +474,19 @@ variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace �
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
   {a b : E} {s : Set E} {ω : E → E →L[𝕜] F}
 
+/-!
+### Derivative of the path integral w.r.t. the right endpoint
+
+In this section we prove that the integral of `ω` along `[a -[ℝ] b]`, as a function of `b`,
+has derivative `ω a` at `b = a`.
+We provide several versions of this theorem, for `HasFDerivWithinAt` and `HasFDerivAt`,
+as well as for continuity near a point and for continuity on the whole set or space.
+
+Note that we take the derivative at the left endpoint of the segment.
+Similar facts about the derivative at a different point are true
+provided that `ω` is a closed 1-form (formalization WIP, see #24019).
+-/
+
 /-- The integral of `ω` along `[a -[ℝ] b]`, as a function of `b`, has derivative `ω a` at `b = a`.
 This is a `HasFDerivWithinAt` version assuming that `ω` is continuous within a convex set `s`
 in a neighborhood of `a` within `s`. -/
