@@ -172,12 +172,8 @@ theorem deriv_const_add' (c : F) : (deriv (c + f ·)) = deriv f :=
   funext fun _ ↦ deriv_const_add c
 
 lemma differentiableAt_comp_const_add {a b : 𝕜} :
-    DifferentiableAt 𝕜 (fun x ↦ f (b + x)) a ↔ DifferentiableAt 𝕜 f (b + a) := by
-  refine ⟨fun H ↦ ?_, fun H ↦ H.comp _ (differentiable_id.const_add _).differentiableAt⟩
-  convert DifferentiableAt.comp (b + a) (by simpa)
-    (differentiable_id.const_add (-b)).differentiableAt
-  ext
-  simp
+    DifferentiableAt 𝕜 (fun x ↦ f (b + x)) a ↔ DifferentiableAt 𝕜 f (b + a) :=
+  differentiableAt_comp_add_left b
 
 lemma differentiableAt_comp_add_const {a b : 𝕜} :
     DifferentiableAt 𝕜 (fun x ↦ f (x + b)) a ↔ DifferentiableAt 𝕜 f (a + b) := by
