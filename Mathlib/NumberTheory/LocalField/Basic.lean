@@ -76,7 +76,7 @@ lemma isCompact_closedBall (γ : ValueGroupWithZero K) : IsCompact { x | valuati
       simp only [ne_eq, map_eq_zero] at hr
       refine ⟨r ^ 2, by simpa using hr, by simpa [pow_two], fun x hx ↦ hrs ?_⟩
       simp only [map_pow, Set.mem_setOf_eq] at hx ⊢
-      refine hx.trans_lt (by simpa [pow_two, hr])
+      exact hx.trans_lt (by simpa [pow_two, hr])
     · refine ⟨r', hr', hr, .trans ?_ hrs⟩
       intro x hx
       dsimp at hx ⊢
