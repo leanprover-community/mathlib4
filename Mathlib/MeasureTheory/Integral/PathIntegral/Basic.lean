@@ -84,8 +84,7 @@ variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace �
 
 This definition is used to factor out common parts of lemmas
 about `PathIntegrable` and `pathIntegral`. -/
-@[irreducible]
-noncomputable def pathIntegralFun (ω : E → E →L[𝕜] F) (γ : Path a b) (t : ℝ) : F :=
+noncomputable irreducible_def pathIntegralFun (ω : E → E →L[𝕜] F) (γ : Path a b) (t : ℝ) : F :=
   letI : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
   ω (γ.extend t) (derivWithin γ.extend I t)
 
@@ -107,7 +106,7 @@ because calculus-related definitions in Mathlib expect globally defined function
 @[irreducible]
 noncomputable def pathIntegral (ω : E → E →L[𝕜] F) (γ : Path a b) : F :=
   letI : NormedSpace ℝ F := .restrictScalars ℝ 𝕜 F
-  ∫ t in (0)..1, pathIntegralFun ω γ t
+  ∫ t in 0..1, pathIntegralFun ω γ t
 
 -- TODO: use `∈`
 @[inherit_doc pathIntegral]
@@ -470,7 +469,7 @@ variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace �
   {a b : E} {s : Set E} {ω : E → E →L[𝕜] F}
 
 /-- The integral of `ω` along `[a -[ℝ] b]`, as a function of `b`, has derivative `ω a` at `b = a`.
-This is a `HasFDerivWithinAt` version assuming that `ω` is continuous within `s`
+This is a `HasFDerivWithinAt` version assuming that `ω` is continuous within a convex set `s`
 in a neighborhood of `a` within `s`. -/
 theorem HasFDerivWithinAt.pathIntegral_segment_source' (hs : Convex ℝ s)
     (hω : ∀ᶠ x in 𝓝[s] a, ContinuousWithinAt ω s x) (ha : a ∈ s) :
