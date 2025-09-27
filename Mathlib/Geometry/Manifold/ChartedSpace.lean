@@ -1490,7 +1490,7 @@ def PartialHomeomorph.toStructomorph {e : PartialHomeomorph M H} (he : e ∈ atl
           (G.restriction_mem_maximalAtlas_subtype he h c' hc') }
   · push_neg at h
     have : IsEmpty t := isEmpty_coe_sort.mpr
-      (by convert e.image_source_eq_target ▸ image_eq_empty.mpr (isEmpty_coe_sort.mp this))
+      (by convert e.image_source_eq_target ▸ image_eq_empty.mpr (isEmpty_coe_sort.mp h))
     exact { Homeomorph.empty with
       -- `c'` cannot exist: it would be the restriction of `chartAt H x` at some `x ∈ t`.
       mem_groupoid := fun _ c' _ ⟨_, ⟨x, _⟩, _⟩ ↦ (this.false x).elim }
