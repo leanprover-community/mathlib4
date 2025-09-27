@@ -94,7 +94,7 @@ instance instNonUnitalCommRing (n : ℕ) [NeZero n] : NonUnitalCommRing (Fin n) 
 
 instance instCommMonoid (n : ℕ) [NeZero n] : CommMonoid (Fin n) where
   one_mul := Fin.one_mul'
-  mul_one := Fin.mul_one'
+  mul_one := Fin.mul_one
 
 /-- Note this is more general than `Fin.instCommRing` as it applies (vacuously) to `Fin 0` too. -/
 instance instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) where
