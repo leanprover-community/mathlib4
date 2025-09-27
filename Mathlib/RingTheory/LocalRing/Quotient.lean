@@ -128,7 +128,7 @@ alias exists_maximalIdeal_pow_le_of_finite_quotient :=
 
 lemma finite_quotient_iff [IsNoetherianRing R] [Finite (ResidueField R)] {I : Ideal R} :
     Finite (R ⧸ I) ↔ ∃ n, (maximalIdeal R) ^ n ≤ I := by
-  refine ⟨fun _ ↦ exists_maximalIdeal_pow_le_of_finite_quotient I, ?_⟩
+  refine ⟨fun _ ↦ exists_maximalIdeal_pow_le_of_isArtinianRing_quotient I, ?_⟩
   rintro ⟨n, hn⟩
   have : Finite (R ⧸ maximalIdeal R) := ‹_›
   have := (Ideal.finite_quotient_pow (IsNoetherian.noetherian (maximalIdeal R)) n)
