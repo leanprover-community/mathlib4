@@ -7,7 +7,6 @@ import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.CharP.Lemmas
 import Mathlib.GroupTheory.Perm.Cycle.Type
 import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # Characteristic and cardinality
