@@ -150,9 +150,9 @@ notation3 "∑'[" L "]" (...)", "r:67:(scoped f => tsum f L) => r
 
 -- see Note [operator precedence of big operators]
 @[inherit_doc tprod]
-notation3 "∏' "(...)", "r:67:(scoped f => tprod f) => r
+notation3 "∏' "(...)", "r:67:(scoped f => tprod f (unconditional _)) => r
 @[inherit_doc tsum]
-notation3 "∑' "(...)", "r:67:(scoped f => tsum f) => r
+notation3 "∑' "(...)", "r:67:(scoped f => tsum f (unconditional _)) => r
 
 variable {f : β → α} {a : α} {s : Finset β}
 
