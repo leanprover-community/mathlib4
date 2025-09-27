@@ -24,11 +24,7 @@ universe u
 
 noncomputable section
 
-open CategoryTheory
-
-open ContinuousMap
-
-open scoped ContinuousMap
+open CategoryTheory ContinuousMap FundamentalGroupoid
 
 /-- A simply connected space is one whose fundamental groupoid is equivalent to `Discrete Unit` -/
 @[mk_iff simply_connected_def]
@@ -88,3 +84,19 @@ theorem simply_connected_iff_paths_homotopic' {Y : Type*} [TopologicalSpace Y] :
       PathConnectedSpace Y ∧ ∀ {x y : Y} (p₁ p₂ : Path x y), Path.Homotopic p₁ p₂ := by
   convert simply_connected_iff_paths_homotopic (Y := Y)
   simp [Path.Homotopic.Quotient, Setoid.eq_top_iff]; rfl
+
+/-- A space is simply connected iff it is path connected and every loop is homotopic to the
+constant loop. -/
+theorem simply_connected_iff_loops_trivial {Y : Type*} [TopologicalSpace Y] :
+    SimplyConnectedSpace Y ↔
+      PathConnectedSpace Y ∧ ∀ {x : Y} (p : Path x x), p.Homotopic (Path.refl x) := by
+  apply Iff.trans simply_connected_iff_paths_homotopic'
+  rw [and_congr_right_iff]
+  intro _
+  constructor
+  · intro h x p
+    exact h p (Path.refl x)
+  · intro h _ _ p₁ p₂
+    have := (fromPath'_eq_iff_homotopic _ _).mpr (h (p₁.trans p₂.symm))
+    rw [← fromPath'_eq_iff_homotopic]
+    aesop_cat
