@@ -594,6 +594,8 @@ class Functor.IsEquivalence (F : C ⥤ D) : Prop where
   full : F.Full := by infer_instance
   essSurj : F.EssSurj := by infer_instance
 
+instance {F : C ⥤ D} [F.Faithful] [F.Full] [F.EssSurj] : F.IsEquivalence where
+
 instance Equivalence.isEquivalence_functor (F : C ≌ D) : IsEquivalence F.functor where
 
 instance Equivalence.isEquivalence_inverse (F : C ≌ D) : IsEquivalence F.inverse :=
