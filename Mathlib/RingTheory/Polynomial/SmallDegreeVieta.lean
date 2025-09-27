@@ -29,7 +29,6 @@ lemma eq_neg_mul_add_of_roots_quadratic_eq_pair [CommRing R] [IsDomain R] {x1 x2
     simp_all only [degree_zero, bot_le, roots_zero, Multiset.insert_eq_cons, Multiset.zero_ne_cons]
   have c2 : 2 = p.roots.card := by
     rw [hroots, Multiset.card_pair]
-  have i4 : p.degree ≤ p.roots.card := le_of_eq_of_le' (congrArg Nat.cast (id c2)) hp
   have hp_roots_card : p.roots.card = p.degree := le_antisymm (Polynomial.card_roots hn)
     (le_of_eq_of_le' (congrArg Nat.cast (id c2)) hp)
   have hp' : p.degree = 2 := by
