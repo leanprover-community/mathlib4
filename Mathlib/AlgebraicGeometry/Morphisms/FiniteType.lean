@@ -68,6 +68,14 @@ instance locallyOfFiniteType_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @LocallyOfFiniteType :=
   HasRingHomProperty.isStableUnderBaseChange RingHom.finiteType_isStableUnderBaseChange
 
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [LocallyOfFiniteType g] :
+    LocallyOfFiniteType (pullback.fst f g) :=
+  MorphismProperty.pullback_fst f g inferInstance
+
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [LocallyOfFiniteType f] :
+    LocallyOfFiniteType (pullback.snd f g) :=
+  MorphismProperty.pullback_snd f g inferInstance
+
 instance {R} [CommRing R] [IsJacobsonRing R] : JacobsonSpace Spec(R) :=
   inferInstanceAs (JacobsonSpace (PrimeSpectrum R))
 
