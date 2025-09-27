@@ -122,6 +122,8 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
   apply Nat.card_congr
   exact Equiv.mk (fun ϕ => iso.trans (ϕ.trans iso.symm)) fun ϕ => iso.symm.trans (ϕ.trans iso)
 
+/-- A galois extension with finite galois group is finite dimensional.
+The dimension is then equal to the order of the galois group via `IsGalois.card_aut_eq_finrank`. -/
 lemma finiteDimensional_of_finite [IsGalois F E] [Finite (E ≃ₐ[F] E)] : FiniteDimensional F E := by
   by_contra H
   obtain ⟨K, h₁, h₂⟩ := exists_lt_finrank_of_infinite_dimensional H (Nat.card (E ≃ₐ[F] E))
