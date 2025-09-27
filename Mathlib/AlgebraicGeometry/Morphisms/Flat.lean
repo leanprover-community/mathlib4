@@ -116,6 +116,7 @@ lemma isQuotientMap_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [Qua
     rwa [← HasRingHomProperty.Spec_iff (P := @Flat)]
 
 /-- A flat surjective morphism of schemes is an epimorphism in the category of schemes. -/
+@[stacks 02VW]
 lemma epi_of_flat_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [Surjective f] : Epi f := by
   constructor
   intro _ g g' hg
