@@ -393,7 +393,7 @@ theorem dpow_mem_span_of_mem_span {S : Set A} (hS : S ⊆ I) {k : ℕ} (hk : k �
       exact fun _ hn ↦ by simp only [hI.dpow_eval_zero hn, zero_mem]
     · intro x y hx hy hx_pow hy_pow n hn
       rw [hI.dpow_add' (hSI hx) (hSI hy)]
-      apply Submodule.sum_mem (span _)
+      apply Submodule.sum_mem (span (α := A) _)
       intro m _
       by_cases hm0 : m = 0
       · rw [hm0]; exact (span _).mul_mem_left _ (hy_pow n hn)

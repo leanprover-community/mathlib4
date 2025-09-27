@@ -30,15 +30,19 @@ section Semiring
 
 namespace Ideal
 
-variable [Semiring α] (I : Ideal α) {a b : α}
-
-instance (priority := low) : IsTwoSided (⊥ : Ideal α) :=
+instance (priority := low) [NonUnitalNonAssocSemiring α] : IsTwoSided (⊥ : Ideal α) :=
   ⟨fun _ h ↦ by rw [h, zero_mul]; exact zero_mem _⟩
 
-instance (priority := low) : IsTwoSided (⊤ : Ideal α) := ⟨fun _ _ ↦ trivial⟩
+instance (priority := low) [Mul α] [AddCommMonoid α] : IsTwoSided (⊤ : Ideal α) :=
+  ⟨fun _ _ ↦ trivial⟩
 
-instance (priority := low) {ι} (I : ι → Ideal α) [∀ i, (I i).IsTwoSided] : (⨅ i, I i).IsTwoSided :=
+instance (priority := low) [Mul α] [AddCommMonoid α] {ι} (I : ι → Ideal α)
+    [∀ i, (I i).IsTwoSided] : (⨅ i, I i).IsTwoSided :=
   ⟨fun _ h ↦ (Submodule.mem_iInf _).mpr (mul_mem_right _ _ <| (Submodule.mem_iInf _).mp h ·)⟩
+
+section Semiring
+
+variable [Semiring α] (I : Ideal α) {a b : α}
 
 theorem eq_top_of_unit_mem (x y : α) (hx : x ∈ I) (h : y * x = 1) : I = ⊤ :=
   eq_top_iff.2 fun z _ =>
@@ -57,9 +61,11 @@ theorem eq_top_iff_one : I = ⊤ ↔ (1 : α) ∈ I :=
 theorem ne_top_iff_one : I ≠ ⊤ ↔ (1 : α) ∉ I :=
   not_congr I.eq_top_iff_one
 
+end Semiring
+
 section Lattice
 
-variable {R : Type u} [Semiring R]
+variable {R : Type u} [NonUnitalNonAssocSemiring R]
 
 theorem mem_sup_left {S T : Ideal R} : ∀ {x : R}, x ∈ S → x ∈ S ⊔ T :=
   @le_sup_left _ _ S T
@@ -96,10 +102,8 @@ section DivisionSemiring
 
 variable {K : Type u} [DivisionSemiring K] (I : Ideal K)
 
-namespace Ideal
-
 /-- All ideals in a division (semi)ring are trivial. -/
-theorem eq_bot_or_top : I = ⊥ ∨ I = ⊤ := by
+theorem Ideal.eq_bot_or_top : I = ⊥ ∨ I = ⊤ := by
   rw [or_iff_not_imp_right]
   change _ ≠ _ → _
   rw [Ideal.ne_top_iff_one]
@@ -108,7 +112,5 @@ theorem eq_bot_or_top : I = ⊥ ∨ I = ⊤ := by
   intro r hr
   by_cases H : r = 0; · simpa
   simpa [H, h1] using I.mul_mem_left r⁻¹ hr
-
-end Ideal
 
 end DivisionSemiring
