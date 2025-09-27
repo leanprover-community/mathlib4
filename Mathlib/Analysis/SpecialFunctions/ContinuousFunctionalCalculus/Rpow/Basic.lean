@@ -349,9 +349,9 @@ theorem _root_.CStarAlgebra.nonneg_TFAE {a : A} :
 
 theorem _root_.CStarAlgebra.nonneg_iff_eq_sqrt_mul_sqrt {a : A} :
     0 ≤ a ↔ a = sqrt a * sqrt a := CStarAlgebra.nonneg_TFAE.out 0 1
-theorem _root_.CStarAlgebra.nonneg_iff_eq_nonneg_mul_self {a : A} :
+theorem _root_.CStarAlgebra.nonneg_iff_exists_nonneg_and_eq_mul_self {a : A} :
     0 ≤ a ↔ ∃ b, 0 ≤ b ∧ a = b * b := CStarAlgebra.nonneg_TFAE.out 0 2
-theorem _root_.CStarAlgebra.nonneg_iff_eq_isSelfAdjoint_mul_self {a : A} :
+theorem _root_.CStarAlgebra.nonneg_iff_exists_isSelfAdjoint_and_eq_mul_self {a : A} :
     0 ≤ a ↔ ∃ b, IsSelfAdjoint b ∧ a = b * b := CStarAlgebra.nonneg_TFAE.out 0 3
 theorem _root_.CStarAlgebra.nonneg_iff_eq_star_mul_self {a : A} :
     0 ≤ a ↔ ∃ b, a = star b * b := CStarAlgebra.nonneg_TFAE.out 0 4
