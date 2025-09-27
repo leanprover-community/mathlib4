@@ -33,6 +33,8 @@ a few of which rely on the fact that subtraction is continuous.
 
 -/
 
+assert_not_exists Cardinal
+
 noncomputable section
 
 open Filter Metric Set TopologicalSpace Topology
