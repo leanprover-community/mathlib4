@@ -444,14 +444,14 @@ variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 Warning: in general the right and left uniformities do not coincide and so one does not obtain a
 `IsUniformGroup` structure. Two important special cases where they _do_ coincide are for
 commutative groups (see `isUniformGroup_of_commGroup`) and for compact groups (see
-`topologicalGroup_is_uniform_of_compactSpace`). -/
+`IsUniformGroup.of_compactSpace`). -/
 @[to_additive /-- The right uniformity on a topological additive group (as opposed to the left
 uniformity).
 
 Warning: in general the right and left uniformities do not coincide and so one does not obtain a
 `IsUniformAddGroup` structure. Two important special cases where they _do_ coincide are for
 commutative additive groups (see `isUniformAddGroup_of_addCommGroup`) and for compact
-additive groups (see `topologicalAddGroup_is_uniform_of_compactSpace`). -/]
+additive groups (see `IsUniformAddGroup.of_compactSpace`). -/]
 def IsTopologicalGroup.toUniformSpace : UniformSpace G where
   uniformity := comap (fun p : G × G => p.2 / p.1) (𝓝 1)
   symm :=
