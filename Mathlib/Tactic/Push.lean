@@ -301,7 +301,7 @@ which will print the `push_neg` form of `e`.
 
 `#push_neg` understands local variables, so you can use them to introduce parameters.
 -/
-macro (name := pushNegCommand) tk:"#push_neg " e:term : command => `(command| #push%$tk Not $e)
+macro (name := pushNegCommand) tk:"#push_neg " e:term : command => `(command| #push%$tk Not => $e)
 
 @[inherit_doc pull]
 elab "pull" disch?:(discharger)? head:(ppSpace colGt term) : conv => withMainContext do

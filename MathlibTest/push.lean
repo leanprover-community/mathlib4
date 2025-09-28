@@ -12,15 +12,15 @@ variable {p q r : Prop}
 
 /-- info: (q ∧ (p ∨ q)) ∧ r ∧ (p ∨ r) -/
 #guard_msgs in
-#push Or False ∧ p ∨ q ∧ r
+#push Or => False ∧ p ∨ q ∧ r
 
 /-- info: (p ∨ q) ∧ (p ∨ r) -/
 #guard_msgs in
-#push Or (p ∨ q) ∧ (p ∨ r)
+#push Or => (p ∨ q) ∧ (p ∨ r)
 
 /-- info: (p ∧ q ∨ q) ∨ p ∧ r ∨ r -/
 #guard_msgs in
-#push And (p ∨ True) ∧ (q ∨ r)
+#push And => (p ∨ True) ∧ (q ∨ r)
 
 example {r : ℕ → Prop} : ∀ n : ℕ, p ∨ r n ∧ q ∧ n = 1 := by
   push ∀ n, _
