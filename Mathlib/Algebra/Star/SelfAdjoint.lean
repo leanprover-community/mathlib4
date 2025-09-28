@@ -192,6 +192,11 @@ lemma _root_.IsUnit.isSelfAdjoint_conjugate_iff' {a u : R} (hu : IsUnit u) :
     IsSelfAdjoint (star u * a * u) ↔ IsSelfAdjoint a := by
   simpa using hu.star.isSelfAdjoint_conjugate_iff
 
+@[deprecated (since := "2025-09-28")] alias _root_.isSelfAdjoint_conjugate_iff_of_isUnit :=
+  IsUnit.isSelfAdjoint_conjugate_iff
+@[deprecated (since := "2025-09-28")] alias _root_.isSelfAdjoint_conjugate_iff_of_isUnit' :=
+  IsUnit.isSelfAdjoint_conjugate_iff'
+
 end Monoid
 
 section Semiring
