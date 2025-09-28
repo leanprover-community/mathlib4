@@ -38,7 +38,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
 
 section
 
-/-- If `s` has the unique differential property at `x`, `f` is differentiable within `s` at x` and
+/-- If `s` has the unique differential property at `x`, `f` is differentiable within `s` at `x` and
 its derivative has dense range, then `f '' s` has the unique differential property at `f x`. -/
 theorem UniqueMDiffWithinAt.image_denseRange (hs : UniqueMDiffWithinAt I s x)
     {f : M → M'} {f' : E →L[𝕜] E'} (hf : HasMFDerivWithinAt I I' f s x f')

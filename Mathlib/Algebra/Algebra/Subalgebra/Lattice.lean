@@ -52,7 +52,7 @@ theorem sup_def (S T : Subalgebra R A) : S ⊔ T = adjoin R (S ∪ T : Set A) :=
 
 theorem sSup_def (S : Set (Subalgebra R A)) : sSup S = adjoin R (⋃₀ (SetLike.coe '' S)) := rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_top : (↑(⊤ : Subalgebra R A) : Set A) = Set.univ := rfl
 
 @[simp]
@@ -228,7 +228,7 @@ theorem mem_bot {x : A} : x ∈ (⊥ : Subalgebra R A) ↔ x ∈ Set.range (alge
 theorem toSubmodule_bot : Subalgebra.toSubmodule (⊥ : Subalgebra R A) = 1 :=
   Submodule.one_eq_range.symm
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_bot : ((⊥ : Subalgebra R A) : Set A) = Set.range (algebraMap R A) := rfl
 
 theorem eq_top_iff {S : Subalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
@@ -563,8 +563,9 @@ theorem adjoin_eq_span : Subalgebra.toSubmodule (adjoin R s) = span R (Submonoid
   · intro r hr
     rcases Subsemiring.mem_closure_iff_exists_list.1 hr with ⟨L, HL, rfl⟩
     clear hr
-    induction' L with hd tl ih
-    · exact zero_mem _
+    induction L with
+    | nil => exact zero_mem _
+    | cons hd tl ih => ?_
     rw [List.forall_mem_cons] at HL
     rw [List.map_cons, List.sum_cons]
     refine Submodule.add_mem _ ?_ (ih HL.2)
@@ -574,8 +575,9 @@ theorem adjoin_eq_span : Subalgebra.toSubmodule (adjoin R s) = span R (Submonoid
       rcases this with ⟨z, r, hr, hzr⟩
       rw [← hzr]
       exact smul_mem _ _ (subset_span hr)
-    induction' hd with hd tl ih
-    · exact ⟨1, 1, (Submonoid.closure s).one_mem', one_smul _ _⟩
+    induction hd with
+    | nil => exact ⟨1, 1, (Submonoid.closure s).one_mem', one_smul _ _⟩
+    | cons hd tl ih => ?_
     rw [List.forall_mem_cons] at HL
     rcases ih HL.2 with ⟨z, r, hr, hzr⟩
     rw [List.prod_cons, ← hzr]

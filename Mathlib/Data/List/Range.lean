@@ -27,19 +27,33 @@ variable {α : Type u}
 theorem getElem_range'_1 {n m} (i) (H : i < (range' n m).length) :
     (range' n m)[i] = n + i := by simp
 
-theorem chain'_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
-    Chain' r (range n.succ) ↔ ∀ m < n, r m m.succ := by
-  rw [range_succ]
-  induction' n with n hn
-  · simp
-  · rw [range_succ]
-    simp only [append_assoc, singleton_append, chain'_append_cons_cons, chain'_singleton, and_true]
-    rw [hn, forall_lt_succ]
+theorem isChain_range (r : ℕ → ℕ → Prop) (n : ℕ) :
+    IsChain r (range n) ↔ ∀ m < n - 1, r m m.succ := by
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    simp only [range_succ, Nat.add_one_sub_one, Nat.lt_sub_iff_add_lt] at hn ⊢
+    cases n with
+    | zero => simp
+    | succ n =>
+      simp only [range_succ, Nat.add_lt_add_iff_right, succ_eq_add_one, append_assoc, cons_append,
+        nil_append, isChain_append_cons_cons, IsChain.singleton, and_true] at hn ⊢
+      rw [hn, forall_lt_succ_right]
 
-theorem chain_range_succ (r : ℕ → ℕ → Prop) (n a : ℕ) :
-    Chain r a (range n.succ) ↔ r a 0 ∧ ∀ m < n, r m m.succ := by
-  rw [range_succ_eq_map, chain_cons, and_congr_right_iff, ← chain'_range_succ, range_succ_eq_map]
+theorem isChain_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
+    IsChain r (range n.succ) ↔ ∀ m < n, r m m.succ := by
+  rw [isChain_range, succ_eq_add_one, Nat.add_one_sub_one]
+
+theorem isChain_cons_range_succ (r : ℕ → ℕ → Prop) (n a : ℕ) :
+    IsChain r (a :: range n.succ) ↔ r a 0 ∧ ∀ m < n, r m m.succ := by
+  rw [range_succ_eq_map, isChain_cons_cons, and_congr_right_iff,
+    ← isChain_range_succ, range_succ_eq_map]
   exact fun _ => Iff.rfl
+
+@[deprecated (since := "2025-09-21")]
+alias chain_range_succ := isChain_cons_range_succ
+@[deprecated (since := "2025-09-24")]
+alias chain'_range_succ := isChain_range_succ
 
 section Ranges
 
@@ -65,7 +79,7 @@ theorem ranges_disjoint (l : List ℕ) :
       rw [mem_map]
       rintro ⟨v, _, rfl⟩
       rw [mem_range] at hu
-      omega
+      cutsat
     · rw [pairwise_map]
       apply Pairwise.imp _ hl
       intro u v

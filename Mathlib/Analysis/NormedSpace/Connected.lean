@@ -25,6 +25,7 @@ Statements with connectedness instead of path-connectedness are also given.
 -/
 
 assert_not_exists Subgroup.index Nat.divisors
+-- TODO assert_not_exists Cardinal
 
 open Convex Set Metric
 

@@ -25,7 +25,7 @@ This ensures `simp` works with entries only when (some) entries are already give
 In other words, this notation will only appear in the output of `simp` if it
 already appears in the input.
 
-## Notations
+## Notation
 
 The main new notation is `![a, b]`, which gets expanded to `vecCons a (vecCons b vecEmpty)`.
 
@@ -163,7 +163,7 @@ dsimproc cons_val (Matrix.vecCons _ _ _) := fun e => do
     let etailn_whnf : Q(ℕ) ← Meta.whnfD etailn
     if let Expr.lit (.natVal length) := etailn_whnf then
       pure (length, false, q(OfNat.ofNat $etailn_whnf))
-    else if let .some ((base : Q(ℕ)), offset) ← (Meta.isOffset? etailn_whnf).run then
+    else if let some ((base : Q(ℕ)), offset) ← (Meta.isOffset? etailn_whnf).run then
       let offset_e : Q(ℕ) := mkNatLit offset
       pure (offset, true, q($base + $offset))
     else
@@ -260,14 +260,17 @@ open Lean Qq in
 /-- `mkVecLiteralQ ![x, y, z]` produces the term `q(![$x, $y, $z])`. -/
 def _root_.PiFin.mkLiteralQ {u : Level} {α : Q(Type u)} {n : ℕ} (elems : Fin n → Q($α)) :
     Q(Fin $n → $α) :=
-  loop 0 (Nat.zero_le _) q(vecEmpty)
+  loop 0 q(vecEmpty)
 where
-  loop (i : ℕ) (hi : i ≤ n) (rest : Q(Fin $i → $α)) : let i' : Nat := i + 1; Q(Fin $(i') → $α) :=
+  /-- The core logic of `loop` is that `loop 0 ![] = ![a 0, a 1, a 2] = loop 1 ![a 2]`, where
+  recursion starts from the end. In this example, on the right-hand side, the variable `rest := 1`
+  tracks the length of the current generated notation `![a 2]`, and the last used index is
+  `n - rest` (`= 3 - 1 = 2`). -/
+  loop (i : ℕ) (rest : Q(Fin $i → $α)) : Q(Fin $n → $α) :=
     if h : i < n then
-      loop (i + 1) h q(vecCons $(elems (Fin.rev ⟨i, h⟩)) $rest)
+      loop (i + 1) q(vecCons $(elems (Fin.rev ⟨i, h⟩)) $rest)
     else
       rest
-attribute [nolint docBlame] _root_.PiFin.mkLiteralQ.loop
 
 open Lean Qq in
 protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToExpr (Fin n → α) :=
@@ -298,7 +301,7 @@ def vecAppend {α : Type*} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fi
 
 theorem vecAppend_eq_ite {α : Type*} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) :
     vecAppend ho u v = fun i : Fin o =>
-      if h : (i : ℕ) < m then u ⟨i, h⟩ else v ⟨(i : ℕ) - m, by omega⟩ := by
+      if h : (i : ℕ) < m then u ⟨i, h⟩ else v ⟨(i : ℕ) - m, by cutsat⟩ := by
   ext i
   rw [vecAppend, Fin.append, Function.comp_apply, Fin.addCases]
   congr with hi
@@ -316,8 +319,13 @@ theorem empty_vecAppend (v : Fin n → α) : vecAppend n.zero_add.symm ![] v = v
   simp [vecAppend_eq_ite]
 
 @[simp]
+theorem vecAppend_empty (v : Fin n → α) : vecAppend rfl v ![] = v := by
+  ext
+  simp [vecAppend_eq_ite]
+
+@[simp]
 theorem cons_vecAppend (ho : o + 1 = m + 1 + n) (x : α) (u : Fin m → α) (v : Fin n → α) :
-    vecAppend ho (vecCons x u) v = vecCons x (vecAppend (by omega) u v) := by
+    vecAppend ho (vecCons x u) v = vecCons x (vecAppend (by cutsat) u v) := by
   ext i
   simp_rw [vecAppend_eq_ite]
   split_ifs with h
@@ -332,7 +340,7 @@ theorem cons_vecAppend (ho : o + 1 = m + 1 + n) (x : α) (u : Fin m → α) (v :
 
 /-- `vecAlt0 v` gives a vector with half the length of `v`, with
 only alternate elements (even-numbered). -/
-def vecAlt0 (hm : m = n + n) (v : Fin m → α) (k : Fin n) : α := v ⟨(k : ℕ) + k, by omega⟩
+def vecAlt0 (hm : m = n + n) (v : Fin m → α) (k : Fin n) : α := v ⟨(k : ℕ) + k, by cutsat⟩
 
 /-- `vecAlt1 v` gives a vector with half the length of `v`, with
 only alternate elements (odd-numbered). -/
@@ -351,7 +359,7 @@ theorem vecAlt0_vecAppend (v : Fin n → α) :
   · rw [Fin.val_mk, not_lt] at h
     simp only [Nat.mod_eq_sub_mod h]
     refine (Nat.mod_eq_of_lt ?_).symm
-    omega
+    cutsat
 
 theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) :
     vecAlt1 rfl (vecAppend rfl v v) = v ∘ (fun n ↦ (n + n) + 1) := by
@@ -366,9 +374,9 @@ theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) :
     · simp [Nat.mod_eq_of_lt, h]
     · rw [Fin.val_mk, not_lt] at h
       simp only [Nat.mod_add_mod,
-        Nat.mod_eq_sub_mod h, show 1 % (n + 2) = 1 from Nat.mod_eq_of_lt (by omega)]
+        Nat.mod_eq_sub_mod h, show 1 % (n + 2) = 1 from Nat.mod_eq_of_lt (by cutsat)]
       refine (Nat.mod_eq_of_lt ?_).symm
-      omega
+      cutsat
 
 @[simp]
 theorem vecHead_vecAlt0 (hm : m + 2 = n + 1 + (n + 1)) (v : Fin (m + 2) → α) :
@@ -391,7 +399,7 @@ end bits
 
 @[simp]
 theorem cons_vecAlt0 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m → α) :
-    vecAlt0 h (vecCons x (vecCons y u)) = vecCons x (vecAlt0 (by omega) u) := by
+    vecAlt0 h (vecCons x (vecCons y u)) = vecCons x (vecAlt0 (by cutsat) u) := by
   ext i
   simp_rw [vecAlt0]
   rcases i with ⟨⟨⟩ | i, hi⟩
@@ -405,7 +413,7 @@ theorem empty_vecAlt0 (α) {h} : vecAlt0 h (![] : Fin 0 → α) = ![] := by
 
 @[simp]
 theorem cons_vecAlt1 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m → α) :
-    vecAlt1 h (vecCons x (vecCons y u)) = vecCons y (vecAlt1 (by omega) u) := by
+    vecAlt1 h (vecCons x (vecCons y u)) = vecCons y (vecAlt1 (by cutsat) u) := by
   ext i
   simp_rw [vecAlt1]
   rcases i with ⟨⟨⟩ | i, hi⟩

@@ -10,7 +10,7 @@ import Lean.Util.FoldConsts
 /-!
 A rudimentary export format, adapted from
 <https://github.com/leanprover-community/lean/blob/master/doc/export_format.md>
-with support for lean 4 kernel primitives.
+with support for Lean 4 kernel primitives.
 -/
 
 open Lean

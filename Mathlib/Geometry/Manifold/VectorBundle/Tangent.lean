@@ -114,9 +114,12 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
     · exact I.uniqueDiffWithinAt_image
     · rw [Function.comp_apply, i.1.extend_left_inv hxi]
 
--- Porting note: moved to a separate `simp high` lemma b/c `simp` can simplify the LHS
-@[simp high]
+/-- `simp`-normal form is `tangentBundleCore_localTriv_baseSet`. -/
 theorem tangentBundleCore_baseSet (i) : (tangentBundleCore I M).baseSet i = i.1.source := rfl
+
+@[simp]
+theorem tangentBundleCore_localTriv_baseSet (i) :
+    ((tangentBundleCore I M).localTriv i).baseSet = i.1.source := rfl
 
 theorem tangentBundleCore_coordChange_achart (x x' z : M) :
     (tangentBundleCore I M).coordChange (achart H x) (achart H x') z =
@@ -276,21 +279,20 @@ theorem symmL_trivializationAt_eq_core {b₀ b : M} (hb : b ∈ (chartAt H b₀)
 @[deprecated (since := "2025-07-03")]
 alias trivializationAt_symmL := symmL_trivializationAt_eq_core
 
--- Porting note: `simp` simplifies LHS to `.id _ _`
+/-! The lemmas below have high priority because `simp` simplifies the LHS to `.id _ _`;
+we prefer `1` as the simp-normal form. -/
 @[simp high, mfld_simps]
 theorem coordChange_model_space (b b' x : F) :
     (tangentBundleCore 𝓘(𝕜, F) F).coordChange (achart F b) (achart F b') x = 1 := by
   simpa only [tangentBundleCore_coordChange, mfld_simps] using
     fderivWithin_id uniqueDiffWithinAt_univ
 
--- Porting note: `simp` simplifies LHS to `.id _ _`
 @[simp high, mfld_simps]
 theorem symmL_model_space (b b' : F) :
     (trivializationAt F (TangentSpace 𝓘(𝕜, F)) b).symmL 𝕜 b' = (1 : F →L[𝕜] F) := by
   rw [TangentBundle.symmL_trivializationAt_eq_core, coordChange_model_space]
   apply mem_univ
 
--- Porting note: `simp` simplifies LHS to `.id _ _`
 @[simp high, mfld_simps]
 theorem continuousLinearMapAt_model_space (b b' : F) :
     (trivializationAt F (TangentSpace 𝓘(𝕜, F)) b).continuousLinearMapAt 𝕜 b' = (1 : F →L[𝕜] F) := by

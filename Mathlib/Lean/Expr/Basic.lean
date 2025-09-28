@@ -38,7 +38,7 @@ namespace Name
 
 /-- Find the largest prefix `n` of a `Name` such that `f n != none`, then replace this prefix
 with the value of `f n`. -/
-def mapPrefix (f : Name → Option Name) (n : Name) : Name := Id.run do
+@[specialize] def mapPrefix (f : Name → Option Name) (n : Name) : Name := Id.run do
   if let some n' := f n then return n'
   match n with
   | anonymous => anonymous
@@ -363,6 +363,11 @@ def getBinderName (e : Expr) : MetaM (Option Name) := do
   | .forallE (binderName := n) .. | .lam (binderName := n) .. => pure (some n)
   | _ => pure none
 
+/-- Map binder names in a nested forall `(a₁ : α₁) → ... → (aₙ : αₙ) → _` -/
+def mapForallBinderNames : Expr → (Name → Name) → Expr
+  | .forallE n d b bi, f => .forallE (f n) d (mapForallBinderNames b f) bi
+  | e, _ => e
+
 open Lean.Elab.Term
 /-- Annotates a `binderIdent` with the binder information from an `fvar`. -/
 def addLocalVarInfoForBinderIdent (fvar : Expr) (tk : TSyntax ``binderIdent) : MetaM Unit :=
@@ -421,6 +426,7 @@ def reduceProjStruct? (e : Expr) : MetaM (Option Expr) := do
     return none
 
 /-- Returns true if `e` contains a name `n` where `p n` is true. -/
+@[specialize]
 def containsConst (e : Expr) (p : Name → Bool) : Bool :=
   Option.isSome <| e.find? fun | .const n _ => p n | _ => false
 

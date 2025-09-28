@@ -39,12 +39,7 @@ and the morphisms of the monoidal category become the 2-morphisms.)
 @[nolint unusedArguments]
 def MonoidalSingleObj (C : Type u) [Category.{v} C] [MonoidalCategory C] :=
   Unit
--- The `Inhabited` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance : Inhabited (MonoidalSingleObj C) := by
-  unfold MonoidalSingleObj
-  infer_instance
+deriving Inhabited
 
 open MonoidalCategory
 

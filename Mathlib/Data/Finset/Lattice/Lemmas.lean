@@ -64,20 +64,19 @@ theorem Nonempty.inr {s t : Finset α} (h : t.Nonempty) : (s ∪ t).Nonempty :=
 theorem insert_eq (a : α) (s : Finset α) : insert a s = {a} ∪ s :=
   rfl
 
-@[simp]
+@[simp, grind =]
 lemma singleton_union (x : α) (s : Finset α) : {x} ∪ s = insert x s :=
   rfl
 
-@[simp]
+@[simp, grind =]
 lemma union_singleton (x : α) (s : Finset α) : s ∪ {x} = insert x s := by
-  rw [Finset.union_comm]
-  rfl
+  rw [Finset.union_comm, singleton_union]
 
-@[simp]
+@[simp, grind =]
 theorem insert_union (a : α) (s t : Finset α) : insert a s ∪ t = insert a (s ∪ t) := by
   simp only [insert_eq, union_assoc]
 
-@[simp]
+@[simp, grind =]
 theorem union_insert (a : α) (s t : Finset α) : s ∪ insert a t = insert a (s ∪ t) := by
   simp only [insert_eq, union_left_comm]
 
@@ -138,6 +137,16 @@ theorem inter_insert_of_notMem {s₁ s₂ : Finset α} {a : α} (h : a ∉ s₁)
 
 @[deprecated (since := "2025-05-23")] alias inter_insert_of_not_mem := inter_insert_of_notMem
 
+@[grind =]
+theorem inter_insert {s₁ s₂ : Finset α} {a : α} :
+    insert a s₁ ∩ s₂ = if a ∈ s₂ then insert a (s₁ ∩ s₂) else s₁ ∩ s₂ := by
+  split_ifs <;> simp [*]
+
+@[grind =]
+theorem insert_inter {s₁ s₂ : Finset α} {a : α} :
+    s₁ ∩ insert a s₂ = if a ∈ s₁ then insert a (s₁ ∩ s₂) else s₁ ∩ s₂ := by
+  split_ifs <;> simp [*]
+
 @[simp]
 theorem singleton_inter_of_mem {a : α} {s : Finset α} (H : a ∈ s) : {a} ∩ s = {a} :=
   show insert a ∅ ∩ s = insert a ∅ by rw [insert_inter_of_mem H, empty_inter]
@@ -149,6 +158,7 @@ theorem singleton_inter_of_notMem {a : α} {s : Finset α} (H : a ∉ s) : {a} �
 
 @[deprecated (since := "2025-05-23")] alias singleton_inter_of_not_mem := singleton_inter_of_notMem
 
+@[grind =]
 lemma singleton_inter {a : α} {s : Finset α} :
     {a} ∩ s = if a ∈ s then {a} else ∅ := by
   split_ifs with h <;> simp [h]
@@ -184,8 +194,8 @@ variable [DecidableEq α] {l l' : List α}
 
 @[simp]
 theorem toFinset_append : toFinset (l ++ l') = l.toFinset ∪ l'.toFinset := by
-  induction' l with hd tl hl
-  · simp
-  · simp [hl]
+  induction l with
+  | nil => simp
+  | cons hd tl hl => simp [hl]
 
 end List
