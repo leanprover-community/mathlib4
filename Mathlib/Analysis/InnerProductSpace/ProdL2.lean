@@ -16,14 +16,14 @@ $$
 This is recorded in this file as an inner product space instance on `WithLp 2 (E × F)`.
 -/
 
+open Module
+open scoped InnerProductSpace
+
 variable {𝕜 ι₁ ι₂ E F : Type*}
 variable [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [NormedAddCommGroup F]
   [InnerProductSpace 𝕜 F]
 
 namespace WithLp
-open scoped InnerProductSpace
-
-variable (E F)
 
 noncomputable instance instProdInnerProductSpace :
     InnerProductSpace 𝕜 (WithLp 2 (E × F)) where
@@ -39,13 +39,9 @@ noncomputable instance instProdInnerProductSpace :
     simp only [smul_fst, inner_smul_left, smul_snd]
     ring
 
-variable {E F}
-
 @[simp]
 theorem prod_inner_apply (x y : WithLp 2 (E × F)) :
-    ⟪x, y⟫_𝕜 =
-      ⟪(WithLp.equiv 2 (E × F) x).fst, (WithLp.equiv 2 (E × F) y).fst⟫_𝕜 +
-      ⟪(WithLp.equiv 2 (E × F) x).snd, (WithLp.equiv 2 (E × F) y).snd⟫_𝕜 := rfl
+    ⟪x, y⟫_𝕜 = ⟪(ofLp x).fst, (ofLp y).fst⟫_𝕜 + ⟪(ofLp x).snd, (ofLp y).snd⟫_𝕜 := rfl
 
 end WithLp
 
@@ -60,12 +56,11 @@ def prod (v : OrthonormalBasis ι₁ 𝕜 E) (w : OrthonormalBasis ι₂ 𝕜 F)
   ((v.toBasis.prod w.toBasis).map (WithLp.linearEquiv 2 𝕜 (E × F)).symm).toOrthonormalBasis
   (by
     constructor
-    · simp only [Sum.forall, norm_eq_sqrt_re_inner (𝕜 := 𝕜), Real.sqrt_eq_one]
-      simp [← Real.sqrt_eq_one, ← norm_eq_sqrt_re_inner (𝕜 := 𝕜), v.orthonormal.1, w.orthonormal.1]
+    · simp
     · unfold Pairwise
       simp only [ne_eq, Basis.map_apply, Basis.prod_apply, LinearMap.coe_inl,
         OrthonormalBasis.coe_toBasis, LinearMap.coe_inr, WithLp.linearEquiv_symm_apply,
-        WithLp.prod_inner_apply, Equiv.apply_symm_apply, Sum.forall, Sum.elim_inl,
+        WithLp.prod_inner_apply, WithLp.ofLp_toLp, Sum.forall, Sum.elim_inl,
         Function.comp_apply, inner_zero_right, add_zero, Sum.elim_inr, zero_add, Sum.inl.injEq,
         reduceCtorEq, not_false_eq_true, inner_zero_left, imp_self, implies_true, and_true,
         Sum.inr.injEq, true_and]

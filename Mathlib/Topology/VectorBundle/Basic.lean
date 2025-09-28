@@ -437,7 +437,7 @@ theorem apply_eq_prod_continuousLinearEquivAt (e : Trivialization F (π F E)) [e
   · refine e.coe_fst ?_
     rw [e.source_eq]
     exact hb
-  · simp only [coe_coe, continuousLinearEquivAt_apply]
+  · simp only [continuousLinearEquivAt_apply]
 
 protected theorem zeroSection (e : Trivialization F (π F E)) [e.IsLinear R] {x : B}
     (hx : x ∈ e.baseSet) : e (zeroSection F E x) = (x, 0) := by
@@ -505,7 +505,7 @@ variable {R B F} {ι : Type*}
 variable (Z : VectorBundleCore R B F ι)
 
 /-- Natural identification to a `FiberBundleCore`. -/
-@[simps (config := mfld_cfg)]
+@[simps (attr := mfld_simps) -fullyApplied]
 def toFiberBundleCore : FiberBundleCore ι B F :=
   { Z with
     coordChange := fun i j b => Z.coordChange i j b

@@ -11,8 +11,6 @@ import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 # The monoidal closed structure on `Module R`.
 -/
 
-suppress_compilation
-
 universe v w x u
 
 open CategoryTheory Opposite
@@ -22,7 +20,7 @@ namespace ModuleCat
 variable {R : Type u} [CommRing R]
 
 /-- Auxiliary definition for the `MonoidalClosed` instance on `Module R`.
-(This is only a separate definition in order to speed up typechecking. )
+(This is only a separate definition in order to speed up typechecking.)
 -/
 def monoidalClosedHomEquiv (M N P : ModuleCat.{u} R) :
     ((MonoidalCategory.tensorLeft M).obj N ⟶ P) ≃
@@ -32,10 +30,7 @@ def monoidalClosedHomEquiv (M N P : ModuleCat.{u} R) :
   left_inv f := by
     ext : 1
     apply TensorProduct.ext'
-    intro m n
-    simp only [Hom.hom₂_ofHom₂, LinearMap.comp_apply, hom_comp,
-      MonoidalCategory.curriedTensor_obj_obj]
-    erw [MonoidalCategory.braiding_hom_apply m n, TensorProduct.lift.tmul]
+    solve_by_elim
 
 instance : MonoidalClosed (ModuleCat.{u} R) where
   closed M :=

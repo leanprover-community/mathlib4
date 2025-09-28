@@ -57,7 +57,7 @@ lemma nil_takeUntil (p : G.Walk u v) (hwp : w ∈ p.support) :
   cases p with
   | nil => simp only [takeUntil, eq_mpr_eq_cast] at hnil; exact hnil.eq
   | cons h q =>
-    simp only [support_cons, List.mem_cons, false_or] at hwp
+    simp only [support_cons, List.mem_cons] at hwp
     obtain hl | hr := hwp
     · exact hl.symm
     · by_contra! hc
@@ -105,9 +105,9 @@ theorem count_support_takeUntil_eq_one {u v w : V} (p : G.Walk v w) (h : u ∈ p
   induction p
   · rw [mem_support_nil_iff] at h
     subst u
-    simp!
+    simp
   · cases h
-    · simp!
+    · simp
     · simp! only
       split_ifs with h' <;> rw [eq_comm] at h' <;> subst_vars <;> simp! [*, List.count_cons]
 
@@ -117,10 +117,10 @@ theorem count_edges_takeUntil_le_one {u v w : V} (p : G.Walk v w) (h : u ∈ p.s
   | nil =>
     rw [mem_support_nil_iff] at h
     subst u
-    simp!
+    simp
   | cons ha p' ih =>
     cases h
-    · simp!
+    · simp
     · simp! only
       split_ifs with h'
       · subst h'
@@ -187,21 +187,23 @@ theorem length_dropUntil_le {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
   rw [length_append, add_comm] at this
   exact Nat.le.intro this
 
+lemma takeUntil_append_of_mem_left {x : V} (p : G.Walk u v) (q : G.Walk v w) (hx : x ∈ p.support) :
+    (p.append q).takeUntil x (subset_support_append_left _ _ hx) = p.takeUntil _ hx  := by
+  induction p with
+  | nil => rw [mem_support_nil_iff] at hx; subst_vars; simp
+  | @cons u _ _ _ _ ih =>
+    rw [support_cons] at hx
+    by_cases hxu : u = x
+    · subst_vars; simp
+    · have := List.mem_of_ne_of_mem (fun hf ↦ hxu hf.symm) hx
+      simp_rw [takeUntil_cons this hxu, cons_append,
+        takeUntil_cons (subset_support_append_left _ _ this) hxu]
+      simpa using ih _ this
+
 lemma getVert_takeUntil {u v : V} {n : ℕ} {p : G.Walk u v} (hw : w ∈ p.support)
     (hn : n ≤ (p.takeUntil w hw).length) : (p.takeUntil w hw).getVert n = p.getVert n := by
-  cases p with
-  | nil => simp only [support_nil, List.mem_singleton] at hw; aesop
-  | cons h q =>
-    by_cases huw : w = u
-    · subst huw
-      simp_all
-    simp only [support_cons, List.mem_cons, huw, false_or] at hw
-    by_cases hn0 : n = 0
-    · aesop
-    simp only [takeUntil_cons hw ((Ne.eq_def _ _).mpr huw).symm, length_cons,
-      getVert_cons _ _ hn0] at hn ⊢
-    apply q.getVert_takeUntil hw
-    omega
+  conv_rhs => rw [← take_spec p hw, getVert_append]
+  cases hn.lt_or_eq <;> simp_all
 
 lemma snd_takeUntil (hsu : w ≠ u) (p : G.Walk u v) (h : w ∈ p.support) :
     (p.takeUntil w h).snd = p.snd := by
@@ -209,6 +211,25 @@ lemma snd_takeUntil (hsu : w ≠ u) (p : G.Walk u v) (h : w ∈ p.support) :
   by_contra! hc
   simp only [Nat.lt_one_iff, ← nil_iff_length_eq, nil_takeUntil] at hc
   exact hsu hc.symm
+
+lemma getVert_length_takeUntil {p : G.Walk v w} (h : u ∈ p.support) :
+    p.getVert (p.takeUntil _ h).length = u := by
+  have := congr_arg₂ (y := (p.takeUntil _ h).length) getVert (p.take_spec h) rfl
+  grind [getVert_append, getVert_zero]
+
+lemma getVert_lt_length_takeUntil_ne {n : ℕ} {p : G.Walk v w} (h : u ∈ p.support)
+    (hn : n < (p.takeUntil _ h).length) : p.getVert n ≠ u := by
+  rintro rfl
+  have h₁ : n < (p.takeUntil _ h).support.dropLast.length := by simpa
+  have : p.getVert n ∈ (p.takeUntil _ h).support.dropLast := by
+    simp_rw [p.getVert_takeUntil h hn.le ▸ getVert_eq_support_getElem _ hn.le,
+      ← List.getElem_dropLast h₁, List.getElem_mem h₁]
+  have := support_eq_concat _ ▸ p.count_support_takeUntil_eq_one h
+  grind [List.not_mem_of_count_eq_zero]
+
+theorem getVert_le_length_takeUntil_eq_iff {n : ℕ} {p : G.Walk v w} (h : u ∈ p.support)
+    (hn : n ≤ (p.takeUntil _ h).length) : p.getVert n = u ↔ n = (p.takeUntil _ h).length := by
+  grind [getVert_length_takeUntil, getVert_lt_length_takeUntil_ne]
 
 lemma length_takeUntil_lt {u v w : V} {p : G.Walk v w} (h : u ∈ p.support) (huw : u ≠ w) :
     (p.takeUntil u h).length < p.length := by
@@ -219,29 +240,7 @@ lemma length_takeUntil_lt {u v w : V} {p : G.Walk v w} (h : u ∈ p.support) (hu
 lemma takeUntil_takeUntil {w x : V} (p : G.Walk u v) (hw : w ∈ p.support)
     (hx : x ∈ (p.takeUntil w hw).support) :
     (p.takeUntil w hw).takeUntil x hx = p.takeUntil x (p.support_takeUntil_subset hw hx) := by
-  induction p, w, hw using takeUntil.induct with
-  | case1 u v h =>
-    #adaptation_note
-    /-- Prior to `nightly-2025-02-24` this was just `aesop`. -/
-    simp at h
-    subst h
-    simp
-  | case2 _ _ q _ hadj hu' =>
-    simp only [takeUntil_first, support_nil, List.mem_singleton] at hx
-    subst hx
-    simp
-  | case3 a w' v' hadj q u' hu' hau' ih =>
-    rw [← Ne.eq_def] at hau'
-    simp only [support_cons, List.mem_cons, hau'.symm, false_or] at hu'
-    simp only [takeUntil_cons hu' hau' hadj, support_cons, List.mem_cons] at hx
-    by_cases hx' : x = a
-    · aesop
-    · replace hx : x ∈ (q.takeUntil u' hu').support := by simpa [hx'] using hx
-      push_neg at hx'
-      conv_lhs =>
-        enter [1]
-        rw [takeUntil_cons hu' hau' hadj]
-      rw [takeUntil_cons hx hx'.symm hadj, ih _, takeUntil_cons _ hx'.symm]
+  simp_rw [← takeUntil_append_of_mem_left _ (p.dropUntil w hw) hx, take_spec]
 
 lemma notMem_support_takeUntil_support_takeUntil_subset {p : G.Walk u v} {w x : V} (h : x ≠ w)
     (hw : w ∈ p.support) (hx : x ∈ (p.takeUntil w hw).support) :
@@ -254,7 +253,7 @@ lemma notMem_support_takeUntil_support_takeUntil_subset {p : G.Walk u v} {w x : 
   have h2 : ((p.takeUntil w hw).takeUntil x hx).length < (p.takeUntil w hw).length := by
     exact length_takeUntil_lt _ h
   simp only [takeUntil_takeUntil] at h1 h2
-  omega
+  cutsat
 
 @[deprecated (since := "2025-05-23")]
 alias not_mem_support_takeUntil_support_takeUntil_subset :=
@@ -283,35 +282,15 @@ theorem rotate_edges {u v : V} (c : G.Walk v v) (h : u ∈ c.support) :
 
 end WalkDecomp
 
-/-- Given a walk `w` and a node in the support, there exists a natural `n`, such that given node
-is the `n`-th node (zero-indexed) in the walk. In addition, `n` is at most the length of the path.
+/-- Given a walk `p` and a node in the support, there exists a natural `n`, such that given node
+is the `n`-th node (zero-indexed) in the walk. In addition, `n` is at most the length of the walk.
 Due to the definition of `getVert` it would otherwise be legal to return a larger `n` for the last
 node. -/
 theorem mem_support_iff_exists_getVert {u v w : V} {p : G.Walk v w} :
     u ∈ p.support ↔ ∃ n, p.getVert n = u ∧ n ≤ p.length := by
   classical
-  constructor
-  · intro h
-    obtain ⟨q, r, hqr⟩ := SimpleGraph.Walk.mem_support_iff_exists_append.mp h
-    use q.length
-    rw [hqr, Walk.getVert_append]
-    simp only [lt_self_iff_false, ↓reduceIte, Nat.sub_self, getVert_zero, length_append,
-      Nat.le_add_right, and_self]
-  · rintro ⟨n, hn⟩
-    rw [mem_support_iff]
-    cases n with
-    | zero => aesop
-    | succ n =>
-      right
-      have hnp : ¬ p.Nil := by
-        rw [nil_iff_length_eq]
-        omega
-      rw [← support_tail_of_not_nil _ hnp, mem_support_iff_exists_getVert]
-      use n
-      rwa [getVert_tail, ← Nat.add_one_le_add_one_iff, length_tail_add_one hnp]
-termination_by p.length
-decreasing_by
-· simp_wf
-  rw [Nat.lt_iff_add_one_le, length_tail_add_one hnp]
+  exact Iff.intro
+    (fun h ↦ ⟨_, p.getVert_length_takeUntil h, p.length_takeUntil_le h⟩)
+    (fun ⟨_, h, _⟩ ↦ h ▸ getVert_mem_support _ _)
 
 end SimpleGraph.Walk

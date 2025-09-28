@@ -3,6 +3,7 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
@@ -133,7 +134,7 @@ theorem mem_cylinder_iff_eq {x y : ∀ n, E n} {n : ℕ} :
     exact self_mem_cylinder _ _
 
 theorem mem_cylinder_comm (x y : ∀ n, E n) (n : ℕ) : y ∈ cylinder x n ↔ x ∈ cylinder y n := by
-  simp [mem_cylinder_iff_eq, eq_comm]
+  simp [eq_comm]
 
 theorem mem_cylinder_iff_le_firstDiff {x y : ∀ n, E n} (hne : x ≠ y) (i : ℕ) :
     x ∈ cylinder y i ↔ i ≤ firstDiff x y := by
@@ -260,7 +261,7 @@ protected theorem dist_comm (x y : ∀ n, E n) : dist x y = dist y x := by
 protected theorem dist_nonneg (x y : ∀ n, E n) : 0 ≤ dist x y := by
   rcases eq_or_ne x y with (rfl | h)
   · simp [dist]
-  · simp [dist, h, zero_le_two]
+  · simp [dist, h]
 
 theorem dist_triangle_nonarch (x y z : ∀ n, E n) : dist x z ≤ max (dist x y) (dist y z) := by
   rcases eq_or_ne x z with (rfl | hxz)
@@ -580,7 +581,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
     rcases eq_or_ne x y with (rfl | hxy)
     · simp
     rcases eq_or_ne (f x) (f y) with (h' | hfxfy)
-    · simp [h', dist_nonneg]
+    · simp [h']
     have I2 : cylinder x (firstDiff x y) = cylinder y (firstDiff x y) := by
       rw [← mem_cylinder_iff_eq]
       apply mem_cylinder_firstDiff
@@ -680,7 +681,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
     and we define `f x` there to be the unique point in the intersection.
     This function is continuous and surjective by design. -/
   letI : MetricSpace (ℕ → ℕ) := PiNat.metricSpaceNatNat
-  have I0 : (0 : ℝ) < 1 / 2 := by norm_num
+  have I0 : (0 : ℝ) < 1 / 2 := by simp
   have I1 : (1 / 2 : ℝ) < 1 := by norm_num
   rcases exists_dense_seq α with ⟨u, hu⟩
   let s : Set (ℕ → ℕ) := { x | (⋂ n : ℕ, closedBall (u (x n)) ((1 / 2) ^ n)).Nonempty }
@@ -783,7 +784,7 @@ theorem dist_summable (x y : ∀ i, F i) :
     Summable fun i : ι => min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) := by
   refine .of_nonneg_of_le (fun i => ?_) (fun i => min_le_left _ _)
     summable_geometric_two_encode
-  exact le_min (pow_nonneg (by norm_num) _) dist_nonneg
+  exact le_min (pow_nonneg (by simp) _) dist_nonneg
 
 theorem min_dist_le_dist_pi (x y : ∀ i, F i) (i : ι) :
     min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) ≤ dist x y :=
@@ -848,9 +849,9 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
           { p : (∀ i : ι, F i) × ∀ i : ι, F i | dist (p.fst i) (p.snd i) < δ }
       · rintro ⟨i, hi⟩
         refine mem_iInf_of_mem δ (mem_iInf_of_mem δpos ?_)
-        simp only [Prod.forall, imp_self, mem_principal, Subset.rfl]
+        simp only [mem_principal, Subset.rfl]
       · rintro ⟨x, y⟩ hxy
-        simp only [mem_iInter, mem_setOf_eq, SetCoe.forall, Finset.mem_range, Finset.mem_coe] at hxy
+        simp only [mem_iInter, mem_setOf_eq, SetCoe.forall, Finset.mem_coe] at hxy
         calc
           dist x y = ∑' i : ι, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) := rfl
           _ = (∑ i ∈ K, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i))) +

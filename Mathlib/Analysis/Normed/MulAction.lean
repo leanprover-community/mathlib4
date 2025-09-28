@@ -109,6 +109,15 @@ instance (priority := 100) NormMulClass.toNormSMulClass_op [SeminormedRing α] [
     NormSMulClass αᵐᵒᵖ α where
   norm_smul a b := mul_comm ‖b‖ ‖a‖ ▸ norm_mul b a.unop
 
+/-- Mixin class for scalar-multiplication actions with a strictly multiplicative norm, i.e.
+`‖r • x‖ₑ = ‖r‖ₑ * ‖x‖ₑ`. -/
+class ENormSMulClass (α β : Type*) [ENorm α] [ENorm β] [SMul α β] : Prop where
+  protected enorm_smul (r : α) (x : β) : ‖r • x‖ₑ = ‖r‖ₑ * ‖x‖ₑ
+
+lemma enorm_smul [ENorm α] [ENorm β] [SMul α β] [ENormSMulClass α β] (r : α) (x : β) :
+    ‖r • x‖ₑ = ‖r‖ₑ * ‖x‖ₑ :=
+  ENormSMulClass.enorm_smul r x
+
 variable [SeminormedRing α] [SeminormedAddGroup β] [SMul α β]
 
 theorem NormSMulClass.of_nnnorm_smul (h : ∀ (r : α) (x : β), ‖r • x‖₊ = ‖r‖₊ * ‖x‖₊) :
@@ -120,7 +129,8 @@ variable [NormSMulClass α β]
 theorem nnnorm_smul (r : α) (x : β) : ‖r • x‖₊ = ‖r‖₊ * ‖x‖₊ :=
   NNReal.eq <| norm_smul r x
 
-lemma enorm_smul (r : α) (x : β) : ‖r • x‖ₑ = ‖r‖ₑ * ‖x‖ₑ := by simp [enorm, nnnorm_smul]
+instance (priority := 100) : ENormSMulClass α β where
+  enorm_smul r x := by simp [enorm, nnnorm_smul]
 
 instance Pi.instNormSMulClass {ι : Type*} {β : ι → Type*} [Fintype ι]
     [SeminormedRing α] [∀ i, SeminormedAddGroup (β i)] [∀ i, SMul α (β i)]

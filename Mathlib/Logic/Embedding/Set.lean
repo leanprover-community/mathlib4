@@ -46,8 +46,8 @@ def optionElim {α β} (f : α ↪ β) (x : β) (h : x ∉ Set.range f) : Option
 def optionEmbeddingEquiv (α β) : (Option α ↪ β) ≃ Σ f : α ↪ β, ↥(Set.range f)ᶜ where
   toFun f := ⟨Embedding.some.trans f, f none, fun ⟨x, hx⟩ ↦ Option.some_ne_none x <| f.injective hx⟩
   invFun f := f.1.optionElim f.2 f.2.2
-  left_inv f := ext <| by rintro (_ | _) <;> simp [Option.coe_def]
-  right_inv := fun ⟨f, y, hy⟩ ↦ by ext <;> simp [Option.coe_def]
+  left_inv f := ext <| by rintro (_ | _) <;> simp
+  right_inv := fun ⟨f, y, hy⟩ ↦ by ext <;> simp
 
 /-- Restrict the codomain of an embedding. -/
 def codRestrict {α β} (p : Set β) (f : α ↪ β) (H : ∀ a, f a ∈ p) : α ↪ p :=
@@ -56,8 +56,6 @@ def codRestrict {α β} (p : Set β) (f : α ↪ β) (H : ∀ a, f a ∈ p) : α
 @[simp]
 theorem codRestrict_apply {α β} (p) (f : α ↪ β) (H a) : codRestrict p f H a = ⟨f a, H a⟩ :=
   rfl
-
-open Set
 
 /-- `Set.image` as an embedding `Set α ↪ Set β`. -/
 @[simps apply]
@@ -88,40 +86,31 @@ subtypes `{x // p x} ⊕ {x // q x}` such that `¬ p x` is sent to the right, wh
 `Disjoint p q`.
 
 See also `Equiv.sumCompl`, for when `IsCompl p q`. -/
-@[simps apply]
+@[simps (attr := grind =) apply]
 def subtypeOrEquiv (p q : α → Prop) [DecidablePred p] (h : Disjoint p q) :
     { x // p x ∨ q x } ≃ { x // p x } ⊕ { x // q x } where
   toFun := subtypeOrLeftEmbedding p q
   invFun :=
     Sum.elim (Subtype.impEmbedding _ _ fun x hx ↦ (Or.inl hx : p x ∨ q x))
       (Subtype.impEmbedding _ _ fun x hx ↦ (Or.inr hx : p x ∨ q x))
-  left_inv x := by
-    by_cases hx : p x
-    · rw [subtypeOrLeftEmbedding_apply_left _ hx]
-      simp [Subtype.ext_iff]
-    · rw [subtypeOrLeftEmbedding_apply_right _ hx]
-      simp [Subtype.ext_iff]
+  left_inv x := by grind
   right_inv x := by
     cases x with
-    | inl x =>
-      simp only [Sum.elim_inl]
-      rw [subtypeOrLeftEmbedding_apply_left]
-      · simp
-      · simpa using x.prop
+    | inl x => grind
     | inr x =>
       simp only [Sum.elim_inr]
       rw [subtypeOrLeftEmbedding_apply_right]
-      · simp
+      · grind
       · suffices ¬p x by simpa
         intro hp
         simpa using h.le_bot x ⟨hp, x.prop⟩
 
-@[simp]
+@[simp, grind =]
 theorem subtypeOrEquiv_symm_inl (p q : α → Prop) [DecidablePred p] (h : Disjoint p q)
     (x : { x // p x }) : (subtypeOrEquiv p q h).symm (Sum.inl x) = ⟨x, Or.inl x.prop⟩ :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem subtypeOrEquiv_symm_inr (p q : α → Prop) [DecidablePred p] (h : Disjoint p q)
     (x : { x // q x }) : (subtypeOrEquiv p q h).symm (Sum.inr x) = ⟨x, Or.inr x.prop⟩ :=
   rfl
@@ -137,10 +126,10 @@ variable {α ι : Type*} {s t r : Set α}
   toFun := Sum.elim (↑) (↑)
   inj' := by
     rintro (⟨a, ha⟩ | ⟨a, ha⟩) (⟨b, hb⟩ | ⟨b, hb⟩)
-    · simp [Subtype.val_inj]
+    · simp
     · simpa using h.ne_of_mem ha hb
     · simpa using h.symm.ne_of_mem ha hb
-    simp [Subtype.val_inj]
+    simp
 
 @[norm_cast] lemma Function.Embedding.coe_sumSet (h : Disjoint s t) :
     (Function.Embedding.sumSet h : s ⊕ t → α) = Sum.elim (↑) (↑) := rfl

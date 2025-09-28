@@ -9,7 +9,7 @@ import Mathlib.Tactic.ToAdditive
 /-!
 # Notations for operations involving order and algebraic structure
 
-## Notations
+## Notation
 
 * `a⁺ᵐ = a ⊔ 1`: *Positive component* of an element `a` of a multiplicative lattice ordered group
 * `a⁻ᵐ = a⁻¹ ⊔ 1`: *Negative component* of an element `a` of a multiplicative lattice ordered group
@@ -44,7 +44,7 @@ export LeOnePart (leOnePart)
 export PosPart (posPart)
 export NegPart (negPart)
 
-@[inherit_doc] postfix:max "⁺ᵐ " => OneLePart.oneLePart
+@[inherit_doc] postfix:max "⁺ᵐ" => OneLePart.oneLePart
 @[inherit_doc] postfix:max "⁻ᵐ" => LeOnePart.leOnePart
 @[inherit_doc] postfix:max "⁺" => PosPart.posPart
 @[inherit_doc] postfix:max "⁻" => NegPart.negPart

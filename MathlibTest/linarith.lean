@@ -123,7 +123,7 @@ example (a b c : Rat) (h2 : b + 2 > 3 + b) : False := by
 
 -- We haven't implemented `restrict_type` yet.
 -- example (a b c : ℚ) (x y : ℤ) (h1 : x ≤ 3*y) (h2 : b + 2 > 3 + b) : false :=
--- by linarith (config := {restrict_type := ℚ})
+-- by linarith (restrict_type := ℚ)
 
 example (g v V c h : Rat) (h1 : h = 0) (h2 : v = V) (h3 : V > 0) (h4 : g > 0)
     (h5 : 0 ≤ c) (h6 : c < 1) : v ≤ V := by
@@ -472,7 +472,7 @@ example (a1 a2 a3 b1 b2 b3 c1 c2 c3 d1 d2 d3 : ℕ)
     (h2 : c1 + c2 + c3 = d1 + d2 + d3) :
     a1 * c1 + a2 * c1 + a3 * c1 + a1 * c2 + a2 * c2 + a3 * c2 + a1 * c3 + a2 * c3 + a3 * c3 =
     b1 * d1 + b2 * d1 + b3 * d1 + b1 * d2 + b2 * d2 + b3 * d2 + b1 * d3 + b2 * d3 + b3 * d3 := by
-  nlinarith --(config := { oracle := some .fourierMotzkin })
+  nlinarith --(oracle := some .fourierMotzkin)
 
 -- This should not be slower than the example below with the Fourier-Motzkin oracle
 example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
@@ -481,7 +481,7 @@ example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
 
 example (p q r s t u v w : ℕ) (h1 : p + u = q + t) (h2 : r + w = s + v) :
     p * r + q * s + (t * w + u * v) = p * s + q * r + (t * v + u * w) := by
-  nlinarith (config := { oracle := .fourierMotzkin })
+  nlinarith (oracle := .fourierMotzkin)
 
 section
 -- Tests involving a norm, including that squares in a type where `sq_nonneg` does not apply
@@ -607,18 +607,18 @@ example (k : ℤ) (h : k < 1) (h₁ : -1 < k) : k = 0 := by
   change _ at h₁
   linarith
 
-/-- error: unknown identifier 'garbage' -/
+/-- error: Unknown identifier `garbage` -/
 #guard_msgs in
 example (q : Prop) (p : ∀ (x : ℤ), q → 1 = 2) : 1 = 2 := by
   linarith [p _ garbage]
 
-/-- error: unknown identifier 'garbage' -/
+/-- error: Unknown identifier `garbage` -/
 #guard_msgs in
 example (q : Prop) (p : ∀ (x : ℤ), q → 1 = 2) : 1 = 2 := by
   nlinarith [p _ garbage]
 
 /--
-error: don't know how to synthesize placeholder for argument 'x'
+error: don't know how to synthesize placeholder for argument `x`
 context:
 q : Prop
 p : ∀ (x : ℤ), 1 = 2
@@ -695,7 +695,7 @@ example (a b c d e : ℚ)
     (hd : a + b + c + 2 * d + e = 7)
     (he : a + b + c + d + 2 * e = 8) :
     e = 3 := by
-  linarith (config := { oracle := .fourierMotzkin })
+  linarith (oracle := .fourierMotzkin)
 
 #guard_msgs in
 /-- https://github.com/leanprover-community/mathlib4/issues/2717 -/
@@ -711,7 +711,7 @@ example {x1 x2 x3 x4 x5 x6 x7 x8 : ℚ} :
     -x8 + x7 - x5 + x1 < 0 →
     x7 - x5 < 0 → False := by
   intros
-  linarith (config := { oracle := .fourierMotzkin })
+  linarith (oracle := .fourierMotzkin)
 
 section findSquares
 
@@ -736,3 +736,40 @@ end findSquares
 -- `Expr.mdata` should be ignored by linarith
 example (x : Int) (h : x = -2) : x = no_index(-2) := by
   linarith [h]
+
+/-!
+From https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Adding.20an.20extra.20hypothesis.20breaks.20linarith/near/533973472
+-/
+namespace metavariables
+
+theorem foo {i m : ℕ} : i ∣ 2 ^ m → m = m := fun _ => rfl
+
+variable (k a i : ℕ)
+
+theorem base (h : (a : ℤ) * 2 ^ k = 2 ^ i) : True := by
+  have := foo ⟨2^k, by linarith⟩
+  guard_hyp this : i = i
+  trivial
+
+-- It's not clear which of the following should succeed and which should fail.
+-- For now this primarily serves to record behavior changes.
+
+theorem before_i (useless : i ≤ i) (h : (a : ℤ) * 2 ^ k = 2 ^ i) : True := by
+  have := foo ⟨2^k, by linarith⟩
+  guard_hyp this : i = i
+  trivial
+
+theorem before_k (useless : k ≤ k) (h : (a : ℤ) * 2 ^ k = 2 ^ i) : True := by
+  have := foo ⟨2^k, by linarith⟩
+  guard_hyp this : i = i
+  trivial
+
+theorem after_i_fails (h : (a : ℤ) * 2 ^ k = 2 ^ i) (useless : i ≤ i) : True := by
+  fail_if_success have := foo ⟨2^k, by linarith⟩
+  trivial
+
+theorem after_k_fails (h : (a : ℤ) * 2 ^ k = 2 ^ i) (useless : k ≤ k) : True := by
+  fail_if_success have := foo ⟨2^k, by linarith⟩
+  trivial
+
+end metavariables

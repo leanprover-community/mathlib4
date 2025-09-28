@@ -27,7 +27,7 @@ of `x` with `↑x`. This tactic also works for a function `f : α → ℚ` with 
 
 ## Notation
 
-`ℚ≥0` is notation for `NNRat` in locale `NNRat`.
+`ℚ≥0` is notation for `NNRat` in scope `NNRat`.
 
 ## Huge warning
 
@@ -260,7 +260,7 @@ theorem toNNRat_le_toNNRat_iff (hp : 0 ≤ p) : toNNRat q ≤ toNNRat p ↔ q �
 
 @[simp]
 theorem toNNRat_lt_toNNRat_iff' : toNNRat q < toNNRat p ↔ q < p ∧ 0 < p := by
-  simp [← coe_lt_coe, toNNRat, lt_irrefl]
+  simp [← coe_lt_coe, toNNRat]
 
 theorem toNNRat_lt_toNNRat_iff (h : 0 < p) : toNNRat q < toNNRat p ↔ q < p :=
   toNNRat_lt_toNNRat_iff'.trans (and_iff_left h)
@@ -293,7 +293,7 @@ theorem lt_toNNRat_iff_coe_lt {q : ℚ≥0} : q < toNNRat p ↔ ↑q < p :=
 
 theorem toNNRat_mul (hp : 0 ≤ p) : toNNRat (p * q) = toNNRat p * toNNRat q := by
   rcases le_total 0 q with hq | hq
-  · ext; simp [toNNRat, hp, hq, max_eq_left, mul_nonneg]
+  · ext; simp [toNNRat, hp, hq, mul_nonneg]
   · have hpq := mul_nonpos_of_nonneg_of_nonpos hp hq
     rw [toNNRat_eq_zero.2 hq, toNNRat_eq_zero.2 hpq, mul_zero]
 
@@ -367,9 +367,9 @@ lemma divNat_inj (h₁ : d₁ ≠ 0) (h₂ : d₂ ≠ 0) : divNat n₁ d₁ = di
 
 lemma natCast_eq_divNat (n : ℕ) : (n : ℚ≥0) = divNat n 1 := (num_divNat_den _).symm
 
-lemma divNat_mul_divNat (n₁ n₂ : ℕ) {d₁ d₂} (hd₁ : d₁ ≠ 0) (hd₂ : d₂ ≠ 0) :
+lemma divNat_mul_divNat (n₁ n₂ : ℕ) {d₁ d₂} :
     divNat n₁ d₁ * divNat n₂ d₂ = divNat (n₁ * n₂) (d₁ * d₂) := by
-  ext; push_cast; exact Rat.divInt_mul_divInt _ _ (mod_cast hd₁) (mod_cast hd₂)
+  ext; push_cast; exact Rat.divInt_mul_divInt _ _
 
 lemma divNat_mul_left {a : ℕ} (ha : a ≠ 0) (n d : ℕ) : divNat (a * n) (a * d) = divNat n d := by
   ext; push_cast; exact Rat.divInt_mul_left (mod_cast ha)
@@ -398,10 +398,10 @@ lemma mul_def (q r : ℚ≥0) : q * r = divNat (q.num * r.num) (q.den * r.den) :
   ext; simp [Rat.mul_eq_mkRat, Rat.mkRat_eq_divInt, num_coe, den_coe]
 
 theorem lt_def {p q : ℚ≥0} : p < q ↔ p.num * q.den < q.num * p.den := by
-  rw [← NNRat.coe_lt_coe, Rat.lt_def]; norm_cast
+  rw [← NNRat.coe_lt_coe, Rat.lt_iff]; norm_cast
 
 theorem le_def {p q : ℚ≥0} : p ≤ q ↔ p.num * q.den ≤ q.num * p.den := by
-  rw [← NNRat.coe_le_coe, Rat.le_def]; norm_cast
+  rw [← NNRat.coe_le_coe, Rat.le_iff]; norm_cast
 
 end NNRat
 

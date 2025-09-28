@@ -96,7 +96,7 @@ theorem SupIrred.finset_sup_eq (ha : SupIrred a) (h : s.sup f = a) : ∃ i ∈ s
   induction s using Finset.induction with
   | empty => simpa [ha.ne_bot] using h.symm
   | insert i s _ ih =>
-    simp only [exists_prop, exists_mem_insert] at ih ⊢
+    simp only [exists_mem_insert] at ih ⊢
     rw [sup_insert] at h
     exact (ha.2 h).imp_right ih
 
@@ -104,7 +104,7 @@ theorem SupPrime.le_finset_sup (ha : SupPrime a) : a ≤ s.sup f ↔ ∃ i ∈ s
   classical
   induction s using Finset.induction with
   | empty => simp [ha.ne_bot]
-  | insert i s _ ih => simp only [exists_prop, exists_mem_insert, sup_insert, ha.le_sup, ih]
+  | insert i s _ ih => simp only [exists_mem_insert, sup_insert, ha.le_sup, ih]
 
 variable [WellFoundedLT α]
 

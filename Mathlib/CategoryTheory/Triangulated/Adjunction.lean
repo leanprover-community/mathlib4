@@ -79,7 +79,7 @@ lemma isTriangulated_rightAdjoint [F.IsTriangulated] : G.IsTriangulated where
       obtain ⟨α, hα⟩ := T.coyoneda_exact₂ hT ((adj.homEquiv _ _).symm ψ)
         ((adj.homEquiv _ _).injective (by simpa [homEquiv_counit, homEquiv_unit, ← h₁'] using hφ))
       have eq := DFunLike.congr_arg (adj.homEquiv _ _ ) hα
-      simp only [homEquiv_counit, Functor.id_obj, homEquiv_unit, comp_id,
+      simp only [homEquiv_counit, homEquiv_unit, comp_id,
         Functor.map_comp, unit_naturality_assoc, right_triangle_components] at eq
       have eq' := comp_distTriang_mor_zero₁₂ _ mem
       dsimp at eq eq'

@@ -233,7 +233,7 @@ protected def filter (𝓕 : Filter <| β × β) : Filter ((α →ᵤ β) × (α
 protected def phi (α β : Type*) (uvx : ((α →ᵤ β) × (α →ᵤ β)) × α) : β × β :=
   (uvx.fst.fst uvx.2, uvx.1.2 uvx.2)
 
-set_option quotPrecheck false -- Porting note: error message suggested to do this
+set_option quotPrecheck false -- Porting note: we need a `[quot_precheck]` instance on fbinop%
 /- This is a lower adjoint to `UniformFun.filter` (see `UniformFun.gc`).
 The exact definition of the lower adjoint `l` is not interesting; we will only use that it exists
 (in `UniformFun.mono` and `UniformFun.iInf_eq`) and that
@@ -305,7 +305,7 @@ protected theorem hasBasis_uniformity_of_basis {ι : Sort*} {p : ι → Prop} {s
     (fun _ hU =>
       let ⟨i, hi, hiU⟩ := h.mem_iff.mp hU
       ⟨i, hi, fun _ huv x => hiU (huv x)⟩)
-    fun i hi => ⟨s i, h.mem_of_mem hi, subset_refl _⟩
+    fun i hi => ⟨s i, h.mem_of_mem hi, subset_rfl⟩
 
 /-- For `f : α →ᵤ β`, `𝓝 f` admits the family `{g | ∀ x, (f x, g x) ∈ V}` for `V ∈ 𝓑` as a filter
 basis, for any basis `𝓑` of `𝓤 β`. -/
@@ -399,12 +399,10 @@ protected theorem postcomp_uniformContinuous [UniformSpace γ] {f : γ → β}
     UniformContinuous (ofFun ∘ (f ∘ ·) ∘ toFun : (α →ᵤ γ) → α →ᵤ β) := by
   -- This is a direct consequence of `UniformFun.comap_eq`
     refine uniformContinuous_iff.mpr ?_
-    exact (UniformFun.mono (uniformContinuous_iff.mp hf)).trans_eq UniformFun.comap_eq
-    -- Porting note: the original calc proof below gives a deterministic timeout
-    --calc
-    --  𝒰(α, γ, _) ≤ 𝒰(α, γ, ‹UniformSpace β›.comap f) :=
-    --    UniformFun.mono (uniformContinuous_iff.mp hf)
-    --  _ = 𝒰(α, β, _).comap (f ∘ ·) := @UniformFun.comap_eq α β γ _ f
+    calc
+      𝒰(α, γ, _) ≤ 𝒰(α, γ, ‹UniformSpace β›.comap f) :=
+        UniformFun.mono (uniformContinuous_iff.mp hf)
+      _ = 𝒰(α, β, _).comap (f ∘ ·) := by exact UniformFun.comap_eq
 
 /-- Turn a uniform isomorphism `γ ≃ᵤ β` into a uniform isomorphism `(α →ᵤ γ) ≃ᵤ (α →ᵤ β)` by
 post-composing. -/
@@ -791,7 +789,7 @@ def uniformEquivUniformFun (h : univ ∈ 𝔖) : (α →ᵤ[𝔖] β) ≃ᵤ (α
   uniformContinuous_invFun := uniformContinuous_ofUniformFun _ _
 
 /-- If `𝔖` and `𝔗` are families of sets in `α`, then the identity map
-`(α →ᵤ[𝔗] β) → (α →ᵤ[𝔖] β)` is uniformly continuous if every `s ∈ 𝔖` is containined in a finite
+`(α →ᵤ[𝔗] β) → (α →ᵤ[𝔖] β)` is uniformly continuous if every `s ∈ 𝔖` is contained in a finite
 union of elements of `𝔗`.
 
 With more API around `Order.Ideal`, this could be phrased in that language instead. -/
@@ -999,7 +997,7 @@ protected lemma continuous_rng_iff {X : Type*} [TopologicalSpace X] {f : X → (
       Continuous (UniformFun.ofFun ∘ s.restrict ∘ UniformOnFun.toFun 𝔖 ∘ f) := by
   simp only [continuous_iff_continuousAt, ContinuousAt,
     UniformOnFun.tendsto_iff_tendstoUniformlyOn, UniformFun.tendsto_iff_tendstoUniformly,
-    tendstoUniformlyOn_iff_tendstoUniformly_comp_coe, @forall_swap X, Function.comp_apply,
+    tendstoUniformlyOn_iff_tendstoUniformly_comp_coe, @forall_swap X,
     Function.comp_def, restrict_eq, UniformFun.toFun_ofFun]
 
 instance [CompleteSpace β] : CompleteSpace (α →ᵤ[𝔖] β) := by
@@ -1175,7 +1173,7 @@ theorem UniformContinuousOn.comp_tendstoUniformlyOn_eventually {t : Set α}
     {g : β → γ} (hg : UniformContinuousOn g s) (h : TendstoUniformlyOn F f p t) :
     TendstoUniformlyOn (fun i x ↦ g (F i x)) (fun x => g (f x)) p t := by
   rw [tendstoUniformlyOn_iff_restrict]
-  apply UniformContinuousOn.comp_tendstoUniformly_eventually (by simpa using hF )
+  apply UniformContinuousOn.comp_tendstoUniformly_eventually (by simpa using hF)
      (by simpa using hf) hg (tendstoUniformlyOn_iff_restrict.mp h)
 
 end UniformComposition

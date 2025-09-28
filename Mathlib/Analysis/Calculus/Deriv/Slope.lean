@@ -113,7 +113,7 @@ theorem range_derivWithin_subset_closure_span_image
     exact mem_image_of_mem _ hy.1.2
   · apply Submodule.closure_subset_topologicalClosure_span
     suffices A : f x ∈ closure (f '' (s ∩ t)) from
-      closure_mono (image_subset _ inter_subset_right) A
+      closure_mono (image_mono inter_subset_right) A
     apply ContinuousWithinAt.mem_closure_image
     · apply H'.continuousWithinAt.mono inter_subset_left
     rw [mem_closure_iff_nhdsWithin_neBot]
@@ -201,8 +201,7 @@ lemma HasDerivWithinAt.nonpos_of_antitoneOn (hx : AccPt x (𝓟 s))
 /-- The derivative within a set of an antitone function is nonpositive. -/
 lemma AntitoneOn.derivWithin_nonpos (hg : AntitoneOn g s) :
     derivWithin g s x ≤ 0 := by
-  have : MonotoneOn (fun x ↦ -g x) s := hg.neg
-  simpa [derivWithin.neg] using this.derivWithin_nonneg
+  simpa [derivWithin.fun_neg] using hg.neg.derivWithin_nonneg
 
 /-- If an antitone function has a derivative, then this derivative is nonpositive. -/
 lemma HasDerivAt.nonpos_of_antitone (hd : HasDerivAt g g' x) (hg : Antitone g) : g' ≤ 0 := by

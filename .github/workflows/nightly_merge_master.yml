@@ -19,12 +19,7 @@ jobs:
           ref: nightly-testing
           path: nightly-testing
           token: ${{ secrets.NIGHTLY_TESTING }}
-      - name: Checkout master from main repo
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          ref: master
-          path: upstream
-          fetch-depth: 1
+          fetch-depth: 0
 
       - name: Configure Lean
         uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
@@ -32,6 +27,7 @@ jobs:
           auto-config: false
           use-github-cache: false
           use-mathlib-cache: false
+          lake-package-directory: "nightly-testing" # We will run `lake update` here later.
 
       - name: Configure Git User
         run: |
@@ -42,15 +38,15 @@ jobs:
       - name: Merge master to nightly favoring nightly changes
         run: |
           cd nightly-testing
-          git remote add upstream ../upstream
-          git fetch upstream
+          git remote add upstream https://github.com/leanprover-community/mathlib4.git
+          git fetch upstream master
           # Merge master into nightly-testing, resolving conflicts in favor of nightly-testing
           # If the merge goes badly, we proceed anyway via '|| true'.
           # CI will report failures on the 'nightly-testing' branch direct to Zulip.
           git merge upstream/master --strategy-option ours --no-commit --allow-unrelated-histories || true
           # We aggressively run `lake update`, to avoid having to do this by hand.
           # When Batteries changes break Mathlib, this will likely show up on nightly-testing first.
-          lake update
+          lake update -v
           git add .
           # If there's nothing to do (because there are no new commits from master),
           # that's okay, hence the '|| true'.

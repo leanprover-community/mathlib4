@@ -6,6 +6,7 @@ Authors: Kim Morrison
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.Algebra.Colimit.Module
+import Mathlib.Algebra.Module.Shrink
 
 /-!
 # The category of R-modules has all limits
@@ -81,7 +82,7 @@ def limitπLinearMap (j) :
   toFun := (Types.Small.limitCone (F ⋙ forget (ModuleCat R))).π.app j
   map_smul' _ _ := by
     simp only [Types.Small.limitCone_π_app,
-      ← Shrink.linearEquiv_apply (F ⋙ forget (ModuleCat R)).sections R, map_smul]
+      ← Shrink.linearEquiv_apply R (F ⋙ forget (ModuleCat R)).sections, map_smul]
     simp only [Shrink.linearEquiv_apply]
     rfl
   map_add' _ _ := by
@@ -256,8 +257,7 @@ def directLimitIsColimit : IsColimit (directLimitCocone G f) where
       rw [← h]
       rfl
     ext
-    simp only [this]
-    apply Module.DirectLimit.lift_unique
+    simp [this]
 
 end DirectLimit
 
