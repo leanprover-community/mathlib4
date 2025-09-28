@@ -193,6 +193,12 @@ theorem UniformCauchySeqOn.div (hf : UniformCauchySeqOn f l s) (hf' : UniformCau
 
 end UniformConvergence
 
+@[to_additive]
+instance IsUniformGroup.of_compactSpace [UniformSpace β] [Group β] [ContinuousDiv β]
+    [CompactSpace β] :
+    IsUniformGroup β where
+  uniformContinuous_div := CompactSpace.uniformContinuous_of_continuous continuous_div'
+
 end IsUniformGroup
 
 section IsTopologicalGroup
@@ -203,11 +209,9 @@ variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 attribute [local instance] IsTopologicalGroup.toUniformSpace
 
-@[to_additive]
+@[to_additive (attr := deprecated IsUniformGroup.of_compactSpace (since := "2025-09-27"))]
 theorem topologicalGroup_is_uniform_of_compactSpace [CompactSpace G] : IsUniformGroup G :=
-  ⟨by
-    apply CompactSpace.uniformContinuous_of_continuous
-    exact continuous_div'⟩
+  inferInstance
 
 variable {G}
 
