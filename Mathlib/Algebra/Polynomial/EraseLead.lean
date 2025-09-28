@@ -259,38 +259,35 @@ theorem nextCoeff_eq_zero_of_eraseLead_eq_zero (h : f.eraseLead = 0) : f.nextCoe
 end EraseLead
 
 /-- An induction lemma for polynomials. It takes a natural number `N` as a parameter, that is
-required to be at least as big as the `nat_degree` of the polynomial.  This is useful to prove
+required to be at least as big as the `natDegree` of the polynomial.  This is useful to prove
 results where you want to change each term in a polynomial to something else depending on the
-`nat_degree` of the polynomial itself and not on the specific `nat_degree` of each term. -/
-theorem induction_with_natDegree_le (P : R[X] → Prop) (N : ℕ) (P_0 : P 0)
-    (P_C_mul_pow : ∀ n : ℕ, ∀ r : R, r ≠ 0 → n ≤ N → P (C r * X ^ n))
-    (P_C_add : ∀ f g : R[X], f.natDegree < g.natDegree → g.natDegree ≤ N → P f → P g → P (f + g)) :
-    ∀ f : R[X], f.natDegree ≤ N → P f := by
-  intro f df
-  generalize hd : #f.support = c
-  revert f
-  induction' c with c hc
-  · intro f _ f0
-    convert P_0
-    simpa [support_eq_empty, card_eq_zero] using f0
-  · intro f df f0
+`natDegree` of the polynomial itself and not on the specific `natDegree` of each term. -/
+theorem induction_with_natDegree_le (motive : R[X] → Prop) (N : ℕ) (zero : motive 0)
+    (C_mul_pow : ∀ n : ℕ, ∀ r : R, r ≠ 0 → n ≤ N → motive (C r * X ^ n))
+    (add : ∀ f g : R[X], f.natDegree < g.natDegree → g.natDegree ≤ N →
+      motive f → motive g → motive (f + g)) (f : R[X]) (df : f.natDegree ≤ N) : motive f := by
+  induction hf : #f.support generalizing f with
+  | zero =>
+    convert zero
+    simpa [support_eq_empty, card_eq_zero] using hf
+  | succ c hc =>
     rw [← eraseLead_add_C_mul_X_pow f]
     cases c
-    · convert P_C_mul_pow f.natDegree f.leadingCoeff ?_ df using 1
+    · convert C_mul_pow f.natDegree f.leadingCoeff ?_ df using 1
       · convert zero_add (C (leadingCoeff f) * X ^ f.natDegree)
-        rw [← card_support_eq_zero, card_support_eraseLead' f0]
-      · rw [leadingCoeff_ne_zero, Ne, ← card_support_eq_zero, f0]
+        rw [← card_support_eq_zero, card_support_eraseLead' hf]
+      · rw [leadingCoeff_ne_zero, Ne, ← card_support_eq_zero, hf]
         exact zero_ne_one.symm
-    refine P_C_add f.eraseLead _ ?_ ?_ ?_ ?_
+    refine add f.eraseLead _ ?_ ?_ ?_ ?_
     · refine (eraseLead_natDegree_lt ?_).trans_le (le_of_eq ?_)
-      · exact (Nat.succ_le_succ (Nat.succ_le_succ (Nat.zero_le _))).trans f0.ge
+      · exact (Nat.succ_le_succ (Nat.succ_le_succ (Nat.zero_le _))).trans hf.ge
       · rw [natDegree_C_mul_X_pow _ _ (leadingCoeff_ne_zero.mpr _)]
         rintro rfl
-        simp at f0
+        simp at hf
     · exact (natDegree_C_mul_X_pow_le f.leadingCoeff f.natDegree).trans df
-    · exact hc _ (eraseLead_natDegree_le_aux.trans df) (card_support_eraseLead' f0)
-    · refine P_C_mul_pow _ _ ?_ df
-      rw [Ne, leadingCoeff_eq_zero, ← card_support_eq_zero, f0]
+    · exact hc _ (eraseLead_natDegree_le_aux.trans df) (card_support_eraseLead' hf)
+    · refine C_mul_pow _ _ ?_ df
+      rw [Ne, leadingCoeff_eq_zero, ← card_support_eq_zero, hf]
       exact Nat.succ_ne_zero _
 
 /-- Let `φ : R[x] → S[x]` be an additive map, `k : ℕ` a bound, and `fu : ℕ → ℕ` a

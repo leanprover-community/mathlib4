@@ -3,7 +3,7 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Sophie Morel, Yury Kudryashov
 -/
-import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
+import Mathlib.Analysis.Normed.Operator.NormedSpace
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Data.Fintype.CardEmbedding
 import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
@@ -160,7 +160,7 @@ theorem bound_of_shell_of_norm_map_coord_zero (f : MultilinearMap 𝕜 E G)
   push_neg at hm
   choose δ hδ0 hδm_lt hle_δm _ using fun i => rescale_to_shell_semi_normed (hc i) (hε i) (hm i)
   have hδ0 : 0 < ∏ i, ‖δ i‖ := prod_pos fun i _ => norm_pos_iff.2 (hδ0 i)
-  simpa [map_smul_univ, norm_smul, prod_mul_distrib, mul_left_comm C, mul_le_mul_left hδ0] using
+  simpa [map_smul_univ, norm_smul, prod_mul_distrib, mul_left_comm C, hδ0] using
     hf (fun i => δ i • m i) hle_δm hδm_lt
 
 /-- If a continuous multilinear map in finitely many variables on normed spaces satisfies
@@ -207,35 +207,35 @@ theorem norm_image_sub_le_of_bound' [DecidableEq ι] (f : MultilinearMap 𝕜 E 
   have A :
     ∀ s : Finset ι,
       ‖f m₁ - f (s.piecewise m₂ m₁)‖ ≤
-        C * ∑ i ∈ s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by
-    intro s
-    induction' s using Finset.induction with i s his Hrec
-    · simp
-    have I :
-      ‖f (s.piecewise m₂ m₁) - f ((insert i s).piecewise m₂ m₁)‖ ≤
-        C * ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by
-      have A : (insert i s).piecewise m₂ m₁ = Function.update (s.piecewise m₂ m₁) i (m₂ i) :=
-        s.piecewise_insert _ _ _
-      have B : s.piecewise m₂ m₁ = Function.update (s.piecewise m₂ m₁) i (m₁ i) := by
-        simp [his]
-      rw [B, A, ← f.map_update_sub]
-      apply le_trans (H _)
-      gcongr with j
-      by_cases h : j = i
-      · rw [h]
-        simp
-      · by_cases h' : j ∈ s <;> simp [h', h]
-    calc
-      ‖f m₁ - f ((insert i s).piecewise m₂ m₁)‖ ≤
-          ‖f m₁ - f (s.piecewise m₂ m₁)‖ +
-            ‖f (s.piecewise m₂ m₁) - f ((insert i s).piecewise m₂ m₁)‖ := by
-        rw [← dist_eq_norm, ← dist_eq_norm, ← dist_eq_norm]
-        exact dist_triangle _ _ _
-      _ ≤ (C * ∑ i ∈ s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖) +
-            C * ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ :=
-        (add_le_add Hrec I)
-      _ = C * ∑ i ∈ insert i s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by
-        simp [his, add_comm, left_distrib]
+        C * ∑ i ∈ s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := fun s ↦ by
+    induction s using Finset.induction with
+    | empty => simp
+    | insert i s his Hrec =>
+      have I :
+        ‖f (s.piecewise m₂ m₁) - f ((insert i s).piecewise m₂ m₁)‖ ≤
+          C * ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by
+        have A : (insert i s).piecewise m₂ m₁ = Function.update (s.piecewise m₂ m₁) i (m₂ i) :=
+          s.piecewise_insert _ _ _
+        have B : s.piecewise m₂ m₁ = Function.update (s.piecewise m₂ m₁) i (m₁ i) := by
+          simp [his]
+        rw [B, A, ← f.map_update_sub]
+        apply le_trans (H _)
+        gcongr with j
+        by_cases h : j = i
+        · rw [h]
+          simp
+        · by_cases h' : j ∈ s <;> simp [h', h]
+      calc
+        ‖f m₁ - f ((insert i s).piecewise m₂ m₁)‖ ≤
+            ‖f m₁ - f (s.piecewise m₂ m₁)‖ +
+              ‖f (s.piecewise m₂ m₁) - f ((insert i s).piecewise m₂ m₁)‖ := by
+          rw [← dist_eq_norm, ← dist_eq_norm, ← dist_eq_norm]
+          exact dist_triangle _ _ _
+        _ ≤ (C * ∑ i ∈ s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖) +
+              C * ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ :=
+          (add_le_add Hrec I)
+        _ = C * ∑ i ∈ insert i s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by
+          simp [his, add_comm, left_distrib]
   convert A univ
   simp
 

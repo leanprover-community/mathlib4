@@ -9,7 +9,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 /-!
 # Counting measure
 
-In this file we define the counting measure `MeasurTheory.Measure.count`
+In this file we define the counting measure `MeasureTheory.Measure.count`
 as `MeasureTheory.Measure.sum MeasureTheory.Measure.dirac`
 and prove basic properties of this measure.
 -/
@@ -36,10 +36,7 @@ theorem le_count_apply : ∑' _ : s, (1 : ℝ≥0∞) ≤ count s :=
     _ ≤ count s := le_sum_apply _ _
 
 theorem count_apply (hs : MeasurableSet s) : count s = s.encard := by
-  simp [count, hs, ← tsum_subtype, Set.encard]
-
-@[deprecated measure_empty (since := "2025-02-06")]
-theorem count_empty : count (∅ : Set α) = 0 := measure_empty
+  simp [count, hs, ← tsum_subtype]
 
 @[simp]
 theorem count_apply_finset' {s : Finset α} (hs : MeasurableSet (s : Set α)) :
@@ -158,7 +155,7 @@ instance count.instSigmaFinite [MeasurableSingletonClass α] [Countable α] :
 
 instance count.isFiniteMeasure [Finite α] :
     IsFiniteMeasure (Measure.count : Measure α) :=
-  ⟨by cases nonempty_fintype α; simp [Measure.count_apply, finite_univ]⟩
+  ⟨by simp [Measure.count_apply]⟩
 
 @[simp]
 lemma count_univ : count (univ : Set α) = ENat.card α := by simp [count_apply .univ, encard_univ]

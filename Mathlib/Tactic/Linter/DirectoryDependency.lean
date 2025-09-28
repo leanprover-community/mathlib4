@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Lean.Elab.Command
 import Lean.Elab.ParseImportsFast
+-- This file is imported by the Header linter, hence has no mathlib imports.
 
 /-! # The `directoryDependency` linter
 
@@ -44,7 +45,7 @@ def Lean.Name.prefix? (n : Name) : Option Name :=
 
 /-- Collect all prefixes of names in `ns` into a single `NameSet`. -/
 def Lean.Name.collectPrefixes (ns : Array Name) : NameSet :=
-  ns.foldl (fun ns n => ns.union n.prefixes) ∅
+  ns.foldl (fun ns n => ns.append n.prefixes) ∅
 
 /-- Find a name in `ns` that starts with prefix `p`. -/
 def Lean.Name.prefixToName (p : Name) (ns : Array Name) : Option Name :=
@@ -144,7 +145,7 @@ def getAllLeft (r : NamePrefixRel) (n : Name) : NameSet := Id.run do
   let matchingPrefixes := n.prefixes.filter (fun prf ↦ r.containsKey prf)
   let mut allRules := NameSet.empty
   for prefix_ in matchingPrefixes do
-    let some rules := RBMap.find? r prefix_ | unreachable!
+    let some rules := r.find? prefix_ | unreachable!
     allRules := allRules.append rules
   allRules
 
@@ -228,7 +229,6 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Logic, `Mathlib.Util),
   (`Mathlib.Logic, `Mathlib.Tactic),
   (`Mathlib.Logic.Fin.Rotate, `Mathlib.Algebra.Group.Fin.Basic),
-  (`Mathlib.Logic.Hydra, `Mathlib.GroupTheory),
   (`Mathlib.Logic, `Mathlib.Algebra.Notation),
   (`Mathlib.Logic, `Mathlib.Algebra.NeZero),
   (`Mathlib.Logic, `Mathlib.Data),
@@ -280,6 +280,7 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
 
   -- The following are a list of existing non-dependent top-level directory pairs.
   (`Mathlib.Algebra, `Mathlib.AlgebraicGeometry),
+  (`Mathlib.Algebra, `Mathlib.Analysis),
   (`Mathlib.Algebra, `Mathlib.Computability),
   (`Mathlib.Algebra, `Mathlib.Condensed),
   (`Mathlib.Algebra, `Mathlib.Geometry),
@@ -387,8 +388,10 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Control, `Mathlib.Topology),
   (`Mathlib.Data, `Mathlib.AlgebraicGeometry),
   (`Mathlib.Data, `Mathlib.AlgebraicTopology),
+  (`Mathlib.Data, `Mathlib.Analysis),
   (`Mathlib.Data, `Mathlib.Computability),
   (`Mathlib.Data, `Mathlib.Condensed),
+  (`Mathlib.Data, `Mathlib.FieldTheory),
   (`Mathlib.Data, `Mathlib.Geometry.Euclidean),
   (`Mathlib.Data, `Mathlib.Geometry.Group),
   (`Mathlib.Data, `Mathlib.Geometry.Manifold),
@@ -464,6 +467,7 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.LinearAlgebra, `Mathlib.ModelTheory),
   (`Mathlib.LinearAlgebra, `Mathlib.Probability),
   (`Mathlib.LinearAlgebra, `Mathlib.Testing),
+  (`Mathlib.LinearAlgebra, `Mathlib.Topology),
   (`Mathlib.MeasureTheory, `Mathlib.AlgebraicGeometry),
   (`Mathlib.MeasureTheory, `Mathlib.AlgebraicTopology),
   (`Mathlib.MeasureTheory, `Mathlib.Computability),
@@ -581,8 +585,13 @@ outside `Mathlib/Algebra/Notation.lean`.
 -/
 def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Algebra.Lie, `Mathlib.RepresentationTheory),
+  (`Mathlib.Algebra.Module.ZLattice, `Mathlib.Analysis),
   (`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation),
   (`Mathlib.Deprecated, `Mathlib.Deprecated),
+  (`Mathlib.LinearAlgebra.Complex, `Mathlib.Topology), -- Complex numbers are analysis/topology.
+  (`Mathlib.LinearAlgebra.Matrix, `Mathlib.Topology), -- For e.g. spectra.
+  (`Mathlib.LinearAlgebra.QuadraticForm, `Mathlib.Topology), -- For real/complex quadratic forms.
+  (`Mathlib.LinearAlgebra.SesquilinearForm, `Mathlib.Topology), -- for links with positive semidefinite matrices
   (`Mathlib.Topology.Algebra, `Mathlib.Algebra),
   (`Mathlib.Topology.Compactification, `Mathlib.Geometry.Manifold)
 ]

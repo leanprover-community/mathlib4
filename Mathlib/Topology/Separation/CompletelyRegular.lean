@@ -7,6 +7,7 @@ import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.UnitInterval
 import Mathlib.Topology.Compactification.StoneCech
 import Mathlib.Topology.Order.Lattice
+import Mathlib.Analysis.Real.Cardinality
 
 /-!
 # Completely regular topological spaces.
@@ -38,7 +39,7 @@ This file defines `CompletelyRegularSpace` and `T35Space`.
 
 The present definition `CompletelyRegularSpace` is a slight modification of the one given in
 [russell1974]. There it's assumed that any point `x ∈ Kᶜ` is separated from the closed set `K` by a
-continuous *real* valued function `f` (as opposed to `f` being unit-interval-valued). This can be
+continuous *real*-valued function `f` (as opposed to `f` being unit-interval-valued). This can be
 converted to the present definition by replacing a real-valued `f` by `h ∘ g ∘ f`, with
 `g : x ↦ max(x, 0)` and `h : x ↦ min(x, 1)`. Some sources (e.g. [russell1974]) also assume that a
 completely regular space is T₁. Here a completely regular space that is also T₁ is called a T₃.₅
@@ -170,12 +171,12 @@ lemma isInducing_stoneCechUnit [CompletelyRegularSpace X] :
     intro U hxU hU
     obtain ⟨f, hf, efx, hfU⟩ :=
       CompletelyRegularSpace.completely_regular_isOpen x U hU hxU
-    conv at hfU => equals Uᶜ ⊆ f ⁻¹' {1} => ext; simp [EqOn, subset_def]
+    conv at hfU => equals Uᶜ ⊆ f ⁻¹' {1} => simp [EqOn, subset_def]
     rw [← compl_subset_comm, ← preimage_compl, ← stoneCechExtend_extends hf, preimage_comp] at hfU
     refine ⟨stoneCechExtend hf ⁻¹' {1}ᶜ, ?_,
       isOpen_compl_singleton.preimage (continuous_stoneCechExtend hf), hfU⟩
     rw [mem_preimage, stoneCechExtend_stoneCechUnit, efx, mem_compl_iff, mem_singleton_iff]
-    norm_num
+    simp
 
 lemma isDenseInducing_stoneCechUnit [CompletelyRegularSpace X] :
     IsDenseInducing (stoneCechUnit : X → StoneCech X) where
@@ -186,6 +187,28 @@ lemma completelyRegularSpace_iff_isInducing_stoneCechUnit :
     CompletelyRegularSpace X ↔ IsInducing (stoneCechUnit : X → StoneCech X) where
   mp _ := isInducing_stoneCechUnit
   mpr hs := hs.completelyRegularSpace
+
+open TopologicalSpace Cardinal in
+theorem CompletelyRegularSpace.isTopologicalBasis_clopens_of_cardinalMk_lt_continuum
+    [CompletelyRegularSpace X] (hX : Cardinal.mk X < continuum) :
+    IsTopologicalBasis {s : Set X | IsClopen s} := by
+  refine isTopologicalBasis_of_isOpen_of_nhds (fun x s ↦ IsClopen.isOpen s) (fun x s hxs hs ↦ ?_)
+  choose f hf using completely_regular_isOpen x s hs hxs
+  obtain ⟨hfc, hf₀, hf₁⟩ := hf
+  let R := Set.range f
+  have hR : lift.{u, 0} (Cardinal.mk R) < lift.{0, u} continuum := by
+    simpa [R] using mk_range_le_lift.trans_lt (lift_strictMono hX)
+  rw [lift_continuum, ← lift_continuum.{u, 0}, lift_lt, ← mk_Icc_real zero_lt_one, ← unitInterval]
+    at hR
+  obtain ⟨r, hr⟩ : ∃ r : I, r ∈ Rᶜ := compl_nonempty_of_mk_lt_mk hR
+  have hr' : ∀ (x : X), f x ≠ r := by simpa [R] using hr
+  have hrclopen : f ⁻¹' Iio r = f ⁻¹' Iic r := by
+    ext; simp [le_iff_lt_or_eq, hr']
+  refine ⟨f ⁻¹' Iio r, ⟨hrclopen ▸ isClosed_Iic.preimage hfc, isOpen_Iio.preimage hfc⟩, ?_, ?_⟩
+  · simp [hf₀, hrclopen]
+  · refine preimage_subset_iff.mpr (fun x ↦ ?_)
+    contrapose!; intro hxs
+    simpa [hf₁ hxs] using le_one'
 
 /-- A T₃.₅ space is a completely regular space that is also T₀. -/
 @[mk_iff]
@@ -213,7 +236,7 @@ lemma separatesPoints_continuous_of_t35Space [T35Space X] :
   intro x y x_ne_y
   obtain ⟨f, f_cont, f_zero, f_one⟩ :=
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
-  exact ⟨fun x ↦ f x, continuous_subtype_val.comp f_cont, by aesop⟩
+  exact ⟨fun x ↦ f x, continuous_subtype_val.comp f_cont, by simp_all⟩
 
 @[deprecated (since := "2025-04-13")]
 alias separatesPoints_continuous_of_completelyRegularSpace := separatesPoints_continuous_of_t35Space
@@ -223,7 +246,7 @@ lemma separatesPoints_continuous_of_t35Space_Icc [T35Space X] :
   intro x y x_ne_y
   obtain ⟨f, f_cont, f_zero, f_one⟩ :=
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
-  exact ⟨f, f_cont, by aesop⟩
+  exact ⟨f, f_cont, by simp_all⟩
 
 @[deprecated (since := "2025-04-13")]
 alias separatesPoints_continuous_of_completelyRegularSpace_Icc :=
@@ -231,7 +254,7 @@ alias separatesPoints_continuous_of_completelyRegularSpace_Icc :=
 
 lemma injective_stoneCechUnit_of_t35Space [T35Space X] :
     Function.Injective (stoneCechUnit : X → StoneCech X) := by
-  intros a b hab
+  intro a b hab
   contrapose hab
   obtain ⟨f, fc, fab⟩ := separatesPoints_continuous_of_t35Space_Icc hab
   exact fun q ↦ fab (eq_if_stoneCechUnit_eq fc q)

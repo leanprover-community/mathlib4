@@ -62,7 +62,7 @@ lemma Submodule.iUnion_ssubset_of_forall_ne_top_of_card_lt (s : Finset ι) (p : 
       suffices ∃ z₁ z₂, z₁ ≠ z₂ ∧ f z₁ = f z₂ by
         obtain ⟨z₁, z₂, hne, heq⟩ := this
         exact ⟨f z₁, hf' (mem_univ _), z₁, z₁.property, z₂, z₂.property,
-          Subtype.coe_ne_coe.mpr hne, by specialize hf z₁; aesop, by specialize hf z₂; aesop⟩
+          Subtype.coe_ne_coe.mpr hne, by specialize hf z₁; simp_all, by specialize hf z₂; aesop⟩
       have key : s.card < sxy.encard := by
         refine lt_of_add_lt_add_right <| lt_of_lt_of_le h₂ ?_
         have : Injective (fun t : K ↦ x + t • y) :=

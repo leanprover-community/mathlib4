@@ -3,6 +3,7 @@ import Archive.Examples.Eisenstein
 import Archive.Examples.IfNormalization.Result
 import Archive.Examples.IfNormalization.Statement
 import Archive.Examples.IfNormalization.WithoutAesop
+import Archive.Examples.Kuratowski
 import Archive.Examples.MersennePrimes
 import Archive.Examples.PropEncodable
 import Archive.Hairer
@@ -27,10 +28,12 @@ import Archive.Imo.Imo1986Q5
 import Archive.Imo.Imo1987Q1
 import Archive.Imo.Imo1988Q6
 import Archive.Imo.Imo1994Q1
+import Archive.Imo.Imo1997Q3
 import Archive.Imo.Imo1998Q2
 import Archive.Imo.Imo2001Q2
 import Archive.Imo.Imo2001Q3
 import Archive.Imo.Imo2001Q4
+import Archive.Imo.Imo2001Q5
 import Archive.Imo.Imo2001Q6
 import Archive.Imo.Imo2005Q3
 import Archive.Imo.Imo2005Q4
@@ -54,6 +57,7 @@ import Archive.Imo.Imo2024Q2
 import Archive.Imo.Imo2024Q3
 import Archive.Imo.Imo2024Q5
 import Archive.Imo.Imo2024Q6
+import Archive.Kuratowski
 import Archive.MiuLanguage.Basic
 import Archive.MiuLanguage.DecisionNec
 import Archive.MiuLanguage.DecisionSuf

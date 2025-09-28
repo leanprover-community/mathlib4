@@ -151,7 +151,7 @@ lemma geom_sum₂_mul_of_le (hxy : x ≤ y) (n : ℕ) :
   simp_all only [Finset.mem_range]
   rw [mul_comm]
   congr
-  omega
+  cutsat
 
 lemma geom_sum_mul_of_one_le (hx : 1 ≤ x) (n : ℕ) :
     (∑ i ∈ range n, x ^ i) * (x - 1) = x ^ n - 1 := by simpa using geom_sum₂_mul_of_ge hx n
@@ -246,7 +246,7 @@ protected lemma Commute.geom_sum₂_succ_eq (h : Commute x y) {n : ℕ} :
   refine sum_congr rfl fun i hi => ?_
   suffices n - 1 - i + 1 = n - i by rw [this]
   rw [Finset.mem_range] at hi
-  omega
+  cutsat
 
 protected lemma Commute.geom_sum₂_Ico_mul (h : Commute x y) {m n : ℕ}
     (hmn : m ≤ n) :
@@ -296,24 +296,37 @@ lemma mul_geom_sum₂_Ico (x y : R) {m n : ℕ} (hmn : m ≤ n) :
 
 end CommRing
 
-lemma nat_sub_dvd_pow_sub_pow (x y n : ℕ) : x - y ∣ x ^ n - y ^ n := by
+namespace Nat
+variable {m k : ℕ} (x y n : ℕ)
+
+protected lemma sub_dvd_pow_sub_pow : x - y ∣ x ^ n - y ^ n := by
   rcases le_or_gt y x with h | h
   · have : y ^ n ≤ x ^ n := Nat.pow_le_pow_left h _
     exact mod_cast sub_dvd_pow_sub_pow (x : ℤ) (↑y) n
   · have : x ^ n ≤ y ^ n := Nat.pow_le_pow_left h.le _
     exact (Nat.sub_eq_zero_of_le this).symm ▸ dvd_zero (x - y)
 
-lemma nat_pow_one_sub_dvd_pow_mul_sub_one (x m n : ℕ) : x ^ m - 1 ∣ x ^ (m * n) - 1 := by
-  nth_rw 2 [← Nat.one_pow n]
-  rw [Nat.pow_mul x m n]
-  apply nat_sub_dvd_pow_sub_pow (x ^ m) 1
+@[deprecated (since := "2025-08-23")] alias nat_sub_dvd_pow_sub_pow := Nat.sub_dvd_pow_sub_pow
 
-lemma Odd.nat_add_dvd_pow_add_pow (x y : ℕ) {n : ℕ} (h : Odd n) : x + y ∣ x ^ n + y ^ n :=
+lemma sub_one_dvd_pow_sub_one : x - 1 ∣ x ^ n - 1 := by
+  simpa using x.sub_dvd_pow_sub_pow 1 n
+
+@[deprecated (since := "2025-08-23")]
+alias nat_pow_one_sub_dvd_pow_mul_sub_one := Nat.sub_one_dvd_pow_sub_one
+
+lemma pow_sub_pow_dvd_pow_sub_pow (hmk : m ∣ k) : x ^ m - y ^ m ∣ x ^ k - y ^ k := by
+  obtain ⟨n, rfl⟩ := hmk; simpa [pow_mul] using (x ^ m).sub_dvd_pow_sub_pow (y ^ m) n
+
+lemma pow_sub_one_dvd_pow_sub_one (hmk : m ∣ k) : x ^ m - 1 ∣ x ^ k - 1 := by
+  simpa using pow_sub_pow_dvd_pow_sub_pow x 1 hmk
+
+lemma _root_.Odd.nat_add_dvd_pow_add_pow {n : ℕ} (h : Odd n) : x + y ∣ x ^ n + y ^ n :=
   mod_cast Odd.add_dvd_pow_add_pow (x : ℤ) (↑y) h
 
 /-- Value of a geometric sum over the naturals. Note: see `geom_sum_mul_add` for a formulation
 that avoids division and subtraction. -/
-lemma Nat.geomSum_eq {m : ℕ} (hm : 2 ≤ m) (n : ℕ) :
-    ∑ k ∈ range n, m ^ k = (m ^ n - 1) / (m - 1) := by
+lemma geomSum_eq (hm : 2 ≤ m) (n : ℕ) : ∑ k ∈ range n, m ^ k = (m ^ n - 1) / (m - 1) := by
   refine (Nat.div_eq_of_eq_mul_left (tsub_pos_iff_lt.2 hm) <| tsub_eq_of_eq_add ?_).symm
-  simpa only [tsub_add_cancel_of_le (by omega : 1 ≤ m), eq_comm] using geom_sum_mul_add (m - 1) n
+  simpa only [tsub_add_cancel_of_le (by cutsat : 1 ≤ m), eq_comm] using geom_sum_mul_add (m - 1) n
+
+end Nat
