@@ -5,7 +5,6 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Kernel.Composition.Lemmas
 import Mathlib.Probability.Kernel.Disintegration.Unique
-import Mathlib.Probability.Notation
 
 /-!
 # Regular conditional probability distribution
