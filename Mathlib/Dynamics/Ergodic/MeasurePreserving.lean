@@ -7,9 +7,9 @@ import Mathlib.MeasureTheory.Measure.AEMeasurable
 import Mathlib.Order.Filter.EventuallyConst
 
 /-!
-# Measure preserving maps
+# Measure-preserving maps
 
-We say that `f : α → β` is a measure preserving map w.r.t. measures `μ : Measure α` and
+We say that `f : α → β` is a measure-preserving map w.r.t. measures `μ : Measure α` and
 `ν : Measure β` if `f` is measurable and `map f μ = ν`. In this file we define the predicate
 `MeasureTheory.MeasurePreserving` and prove its basic properties.
 
@@ -23,7 +23,7 @@ Isabelle formalization.
 
 ## Tags
 
-measure preserving map, measure
+measure-preserving map, measure
 -/
 
 open MeasureTheory.Measure Function Set
@@ -36,7 +36,7 @@ namespace MeasureTheory
 
 variable {μa : Measure α} {μb : Measure β} {μc : Measure γ} {μd : Measure δ}
 
-/-- `f` is a measure preserving map w.r.t. measures `μa` and `μb` if `f` is measurable
+/-- `f` is a measure-preserving map w.r.t. measures `μa` and `μb` if `f` is measurable
 and `map f μa = μb`. -/
 structure MeasurePreserving (f : α → β)
   (μa : Measure α := by volume_tac) (μb : Measure β := by volume_tac) : Prop where

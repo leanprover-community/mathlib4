@@ -100,26 +100,30 @@ lemma length_toList (x : RelSeries r) : x.toList.length = x.length + 1 :=
 lemma toList_singleton (x : α) : (singleton r x).toList = [x] :=
   rfl
 
-lemma toList_chain' (x : RelSeries r) : x.toList.Chain' (· ~[r] ·) := by
-  rw [List.chain'_iff_get]
+lemma isChain_toList (x : RelSeries r) : x.toList.IsChain (· ~[r] ·) := by
+  rw [List.isChain_iff_get]
   intro i h
   convert x.step ⟨i, by simpa [toList] using h⟩ <;> apply List.get_ofFn
+
+@[deprecated (since := "2025-09-24")] alias toList_chain' := isChain_toList
 
 lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m =>
   List.eq_nil_iff_forall_not_mem.mp m (x 0) <| List.mem_ofFn.mpr ⟨_, rfl⟩
 
 /-- Every nonempty list satisfying the chain condition gives a relation series -/
 @[simps]
-def fromListChain' (x : List α) (x_ne_nil : x ≠ []) (hx : x.Chain' (· ~[r] ·)) : RelSeries r where
+def fromListIsChain (x : List α) (x_ne_nil : x ≠ []) (hx : x.IsChain (· ~[r] ·)) : RelSeries r where
   length := x.length - 1
   toFun i := x[Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos_iff.mpr x_ne_nil) i]
-  step i := List.chain'_iff_get.mp hx i i.2
+  step i := List.isChain_iff_get.mp hx i _
+
+@[deprecated (since := "2025-09-24")] alias fromListChain' := fromListIsChain
 
 /-- Relation series of `r` and nonempty list of `α` satisfying `r`-chain condition bijectively
 corresponds to each other. -/
-protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' (· ~[r] ·)} where
-  toFun x := ⟨_, x.toList_ne_nil, x.toList_chain'⟩
-  invFun x := fromListChain' _ x.2.1 x.2.2
+protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.IsChain (· ~[r] ·)} where
+  toFun x := ⟨_, x.toList_ne_nil, x.isChain_toList⟩
+  invFun x := fromListIsChain _ x.2.1 x.2.2
   left_inv x := ext (by simp [toList]) <| by ext; dsimp; apply List.get_ofFn
   right_inv x := by
     refine Subtype.ext (List.ext_get ?_ fun n hn1 _ => by dsimp; apply List.get_ofFn)
@@ -259,14 +263,17 @@ lemma toList_getElem_zero_eq_head (p : RelSeries r) : p.toList[0] = p.head :=
   p.toList_getElem_eq_apply_of_lt_length (by simp)
 
 @[simp]
-lemma toList_fromListChain' (l : List α) (l_ne_nil : l ≠ []) (hl : l.Chain' (· ~[r] ·)) :
-    (fromListChain' l l_ne_nil hl).toList = l :=
+lemma toList_fromListIsChain (l : List α) (l_ne_nil : l ≠ []) (hl : l.IsChain (· ~[r] ·)) :
+    (fromListIsChain l l_ne_nil hl).toList = l :=
   Subtype.ext_iff.mp <| RelSeries.Equiv.right_inv ⟨l, ⟨l_ne_nil, hl⟩⟩
 
 @[simp]
-lemma head_fromListChain' (l : List α) (l_ne_nil : l ≠ []) (hl : l.Chain' (· ~[r] ·)) :
-    (fromListChain' l l_ne_nil hl).head = l.head l_ne_nil := by
+lemma head_fromListIsChain (l : List α) (l_ne_nil : l ≠ []) (hl : l.IsChain (· ~[r] ·)) :
+    (fromListIsChain l l_ne_nil hl).head = l.head l_ne_nil := by
   simp [← apply_zero, List.getElem_zero_eq_head]
+
+@[deprecated (since := "2025-09-24")] alias toList_fromListChain' := toList_fromListIsChain
+@[deprecated (since := "2025-09-24")] alias head_fromListChain' := head_fromListIsChain
 
 @[simp]
 lemma getLast_toList (p : RelSeries r) : p.toList.getLast (by simp [toList]) = p.last := by
@@ -503,12 +510,14 @@ lemma toList_cons (p : RelSeries r) (x : α) (hx : x ~[r] p.head) :
   rw [cons, toList_append]
   simp
 
-lemma fromListChain'_cons (l : List α) (l_ne_nil : l ≠ [])
-    (hl : l.Chain' (· ~[r] ·)) (x : α) (hx : x ~[r] l.head l_ne_nil) :
-    fromListChain' (x :: l) (by simp) (hl.cons_of_ne_nil l_ne_nil hx) =
-      (fromListChain' l l_ne_nil hl).cons x (by simpa) := by
+lemma fromListIsChain_cons (l : List α) (l_ne_nil : l ≠ [])
+    (hl : l.IsChain (· ~[r] ·)) (x : α) (hx : x ~[r] l.head l_ne_nil) :
+    fromListIsChain (x :: l) (by simp) (hl.cons_of_ne_nil l_ne_nil hx) =
+      (fromListIsChain l l_ne_nil hl).cons x (by simpa) := by
   apply toList_injective
   simp
+
+@[deprecated (since := "2025-09-24")] alias fromListChain'_cons := fromListIsChain_cons
 
 lemma append_cons {p q : RelSeries r} {x : α} (hx : x ~[r] p.head) (hq : p.last ~[r] q.head) :
     (p.cons x hx).append q (by simpa) = (p.append q hq).cons x (by simpa) := by
