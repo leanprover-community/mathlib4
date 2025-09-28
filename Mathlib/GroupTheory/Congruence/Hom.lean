@@ -65,12 +65,6 @@ relation `c` equals `c`. -/]
 theorem ker_mkMulHom_eq (c : Con M) : ker (mkMulHom c) = c :=
   ext fun _ _ => Quotient.eq''
 
-attribute [deprecated Con.ker (since := "2025-03-23")] mulKer
-attribute [deprecated AddCon.ker (since := "2025-03-23")] AddCon.addKer
-
-attribute [deprecated Con.ker_mkMulHom_eq (since := "2025-03-23")] mul_ker_mk_eq
-attribute [deprecated AddCon.ker_mkAddHom_eq (since := "2025-03-23")] AddCon.add_ker_mk_eq
-
 /-- Given a function `f`, the smallest congruence relation containing the binary relation on `f`'s
 image defined by '`x ≈ y` iff the elements of `f⁻¹(x)` are related to the elements of `f⁻¹(y)`
 by a congruence relation `c`.' -/
