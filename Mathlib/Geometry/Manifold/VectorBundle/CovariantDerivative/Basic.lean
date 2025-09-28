@@ -340,8 +340,8 @@ structure IsCovariantDerivativeOn [IsManifold I 1 M]
     (hX : MDiffAt (T% X) x) (hσ : MDiffAt (T% σ) x) (hσ' : MDiffAt (T% σ') x)
     (hx : x ∈ s := by trivial) :
     f X (σ + σ') x = f X σ x + f X σ' x
-  leibniz (X : Π x : M, TangentSpace I x) {σ : Π x : M, V x} {g : M → 𝕜} {x}
-    (hσ : MDiffAt (T% σ) x) (hg : MDiffAt g x) (hx : x ∈ s := by trivial):
+  leibniz {X : Π x : M, TangentSpace I x} {σ : Π x : M, V x} {g : M → 𝕜} {x}
+    (hX : MDiffAt (T% X) x) (hσ : MDiffAt (T% σ) x) (hg : MDiffAt g x) (hx : x ∈ s := by trivial):
     f X (g • σ) x = (g • f X σ) x + (bar _ <| mfderiv I 𝓘(𝕜) g x (X x)) • σ x
   smul_const_σ {X : Π x : M, TangentSpace I x} {σ : Π x : M, V x} {x} (a : 𝕜)
     (hX : MDiffAt (T% X) x) (hσ : MDiffAt (T% σ) x) (hx : x ∈ s := by trivial) :
@@ -377,7 +377,7 @@ lemma mono
   addX {_X _X' _σ} _x hX hX' hσ hx := hf.addX hX hX' hσ (hst hx)
   smulX {_X _σ _g} _x hX hσ hg hx := hf.smulX hX hσ hg (hst hx)
   addσ {_X _σ _σ' _x} hX hσ hσ' hx := hf.addσ hX hσ hσ' (hst hx)
-  leibniz X _ _ _ hσ hf' hx := hf.leibniz X hσ hf' (hst hx)
+  leibniz {_X _σ _f _x} hX hσ hf' hx := hf.leibniz hX hσ hf' (hst hx)
   smul_const_σ {_X _σ _x} a hX hσ hx := hf.smul_const_σ a hX hσ (hst hx)
 
 lemma iUnion {ι : Type*}
@@ -392,9 +392,9 @@ lemma iUnion {ι : Type*}
   addσ {_X _σ _σ' _x} hX hσ hσ' hx := by
     obtain ⟨si, ⟨i, rfl⟩, hxsi⟩ := hx
     exact (hf i).addσ hX hσ hσ'
-  leibniz X σ f x hσ hf' hx := by
+  leibniz {X σ f x} hX hσ hf' hx := by
     obtain ⟨si, ⟨i, rfl⟩, hxsi⟩ := hx
-    exact (hf i).leibniz _ hσ hf'
+    exact (hf i).leibniz hX hσ hf'
   smul_const_σ {_X _σ _x} a hX hσ hx := by
     obtain ⟨si, ⟨i, rfl⟩, hxsi⟩ := hx
     exact (hf i).smul_const_σ _ hX hσ
@@ -481,8 +481,8 @@ def convexCombination
   smul_const_σ {_X _σ _x} a hX hσ hx := by
     simp [hf.smul_const_σ a hX hσ, hf'.smul_const_σ a hX hσ]
     module
-  leibniz X σ φ x hσ hφ hx := by
-    simp [hf.leibniz X hσ hφ, hf'.leibniz X hσ hφ]
+  leibniz {X σ φ x} hX hσ hφ hx := by
+    simp [hf.leibniz hX hσ hφ, hf'.leibniz hX hσ hφ]
     module
 
 /-- A convex combination of two `C^k` connections is a `C^k` connection. -/
@@ -525,13 +525,13 @@ def convexCombination' {ι : Type*} {s : Finset ι} [Nonempty s]
     ext i
     simp [(h i).smul_const_σ a hX hσ]
     module
-  leibniz X σ g x hσ hg hx := by
+  leibniz {X σ g x} hX hσ hg hx := by
     calc ∑ i ∈ s, f i x • (cov i) X (g • σ) x
       _ = ∑ i ∈ s, ((g • (f i • (cov i) X σ)) x
             + f i x • (bar (g x)) ((mfderiv I 𝓘(𝕜) g x) (X x)) • σ x) := by
         congr
         ext i
-        rw [(h i).leibniz _ hσ hg]
+        rw [(h i).leibniz hX hσ hg]
         simp_rw [Pi.smul_apply', smul_add, add_left_inj]
         rw [smul_comm]
       _ = ∑ i ∈ s, ((g • (f i • (cov i) X σ)) x)
@@ -573,8 +573,8 @@ lemma add_one_form [∀ (x : M), IsTopologicalAddGroup (V x)]
     simp [hf.addσ hX hσ hσ']
     abel
   smul_const_σ {_X _σ _x} a hX hσ hx := by simp [hf.smul_const_σ a hX hσ]
-  leibniz X σ g x hσ hg hx := by
-    simp [hf.leibniz X hσ hg]
+  leibniz {X σ g x} hX hσ hg hx := by
+    simp [hf.leibniz hX hσ hg]
     module
 
 end operations
@@ -596,7 +596,7 @@ noncomputable def trivial [IsManifold I 1 M] :
     rw [mfderiv_add hσ hσ']
     rfl
   smul_const_σ {_X _σ _x} a hX hσ hx := by rw [mfderiv_const_smul]
-  leibniz X σ f x hσ hf hx := by
+  leibniz {X σ f x} hX hσ hf hx := by
     rw [mdifferentiableAt_section] at hσ
     exact mfderiv_smul hσ hf (X x)
 
@@ -748,9 +748,10 @@ noncomputable def trivial [IsManifold I 1 M] : CovariantDerivative I F (Trivial 
       rw [mfderiv_add hσ hσ']
       rfl
     smul_const_σ {_X _σ _x} a hX hσ hx := by rw [mfderiv_const_smul]
-    leibniz X σ f x hσ hf hx := by
+    leibniz {X σ f x} hX hσ hf hx := by
       rw [mdifferentiableAt_section] at hσ
       exact mfderiv_smul hσ hf (X x) }
+
 end trivial_bundle
 
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
@@ -846,8 +847,9 @@ lemma differenceAux_smul_eq
     {cov cov' : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
     {u : Set M} (hcov : IsCovariantDerivativeOn F cov u)
     (hcov' : IsCovariantDerivativeOn F cov' u)
-    (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (f : M → ℝ)
+    {X : Π x : M, TangentSpace I x} (σ : Π x : M, V x) (f : M → ℝ)
     {x : M} (hx : x ∈ u := by trivial)
+    (hX : MDiffAt (T% X) x)
     (hσ : MDiffAt (T% σ) x)
     (hf : MDiffAt f x) :
     differenceAux cov cov' X ((f : M → ℝ) • σ) x = f x • differenceAux cov cov' X σ x:=
@@ -855,7 +857,7 @@ lemma differenceAux_smul_eq
     _ = cov X ((f : M → ℝ) • σ) x - cov' X ((f : M → ℝ) • σ) x := rfl
     _ = (f x • cov X σ x +  (bar _ <| mfderiv I 𝓘(ℝ) f x (X x)) • σ x)
         - (f x • cov' X σ x +  (bar _ <| mfderiv I 𝓘(ℝ) f x (X x)) • σ x) := by
-      simp [hcov.leibniz X hσ hf, hcov'.leibniz X hσ hf]
+      simp [hcov.leibniz hX hσ hf, hcov'.leibniz hX hσ hf]
     _ = f x • cov X σ x - f x • cov' X σ x := by simp
     _ = f x • (cov X σ x - cov' X σ x) := by simp [smul_sub]
     _ = _ := rfl
@@ -878,6 +880,7 @@ lemma differenceAux_tensorial
     [T2Space M] [IsManifold I ∞ M] [FiniteDimensional ℝ E]
     [FiniteDimensional ℝ F] [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {X X' : Π x : M, TangentSpace I x} {σ σ' : Π x : M, V x} {x₀ : M}
+    (hX' : MDiffAt (T% X') x₀)
     (hσ : MDiffAt (T% σ) x₀)
     (hσ' : MDiffAt (T% σ') x₀)
     (hXX' : X x₀ = X' x₀) (hσσ' : σ x₀ = σ' x₀) (hx : x₀ ∈ u := by trivial) :
@@ -896,13 +899,12 @@ lemma differenceAux_tensorial
     change φ σ x₀ = φ σ' x₀
     apply tensoriality_criterion (E := E) (I := I) F V F V hσ hσ' hσσ'
     · intro f σ x hf
-      exact hcov.differenceAux_smul_eq hcov' X' σ f hx hf x
+      exact hcov.differenceAux_smul_eq hcov' σ f hx hX' hf x
     · intro σ σ' hσ hσ'
       unfold φ differenceAux
       simp
       rw [hcov.addσ, hcov'.addσ] <;> try assumption
       abel
-      repeat sorry -- missing smoothness hypotheses
 
 lemma isBilinearMap_differenceAux
     [FiniteDimensional ℝ F] [T2Space M] [FiniteDimensional ℝ E] [IsManifold I ∞ M]
@@ -969,12 +971,12 @@ lemma difference_apply [∀ x, FiniteDimensional ℝ (V x)] [∀ x, T2Space (V x
     {s : Set M} {x : M}
     (hcov : IsCovariantDerivativeOn F cov s)
     (hcov' : IsCovariantDerivativeOn F cov' s)
-    (hx : x ∈ s := by trivial) (X : Π x, TangentSpace I x) {σ : Π x, V x}
-    (hσ : MDiffAt (T% σ) x) :
+    (hx : x ∈ s := by trivial) {X : Π x, TangentSpace I x} {σ : Π x, V x}
+    (hX : MDiffAt (T% X) x) (hσ : MDiffAt (T% σ) x) :
     difference hcov hcov' x (X x) (σ x) =
       cov X σ x - cov' X σ x := by
   simp only [difference, hx, reduceDIte]
-  exact hcov.differenceAux_tensorial hcov' (mdifferentiable_extend ..) hσ (extend_apply_self _)
+  exact hcov.differenceAux_tensorial hcov' hX (mdifferentiable_extend ..) hσ (extend_apply_self _)
     (extend_apply_self _) hx
 
 -- The classification of real connections over a trivial bundle
@@ -996,6 +998,7 @@ lemma exists_one_form {cov : (Π x : M, TangentSpace I x) → (M → F) → (M �
   intro X σ x hx hσ
   rw [difference_apply]
   · module
+  · sorry -- TODO: missing smoothness hypothesis, right?
   · assumption
 
 noncomputable def one_form {cov : (Π x : M, TangentSpace I x) → (M → F) → (M → F)}
@@ -1106,7 +1109,7 @@ lemma Trivialization.covDeriv_isCovariantDerivativeOn [IsManifold I 1 M] :
   smulX {_X _σ} c' x hX hσ hx := by sorry
   addσ {_X _σ _σ' _x} hX hσ hσ' hx := by sorry
   smul_const_σ {_X _σ _x} a hX hσ hx := by sorry
-  leibniz X σ f x hσ hf hx := by sorry
+  leibniz {X σ f x} hX hσ hf hx := by sorry
 
 end from_trivialization
 

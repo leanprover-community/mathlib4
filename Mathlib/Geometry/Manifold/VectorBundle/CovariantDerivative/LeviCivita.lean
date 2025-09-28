@@ -842,7 +842,7 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     set f := b.orthonormalFrame e i
     have : MDiffAt (T% f) x := mdifferentiableAt_orthonormalFrame_of_mem b e i hx
     sorry -- `convert this`, except for mismatch between different orders
-  leibniz X σ g x hσ hg hx := by
+  leibniz {X σ g x} hX hσ hg hx := by
     by_cases hE : Subsingleton E
     · have : X x = 0 := by
         have : Subsingleton (TangentSpace I x) := inferInstanceAs (Subsingleton E)
@@ -856,7 +856,6 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     let ⟨r, o⟩ := exists_wellOrder (↑(Basis.ofVectorSpaceIndex ℝ E))
     have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
 
-    have hX : MDiffAt (T% X) x := sorry -- missing hypothesis?
     let Z (i : (Basis.ofVectorSpaceIndex ℝ E)) := ((Basis.ofVectorSpace ℝ E).orthonormalFrame e i)
     have hZ : IsOrthonormalFrameOn I E 1 Z e.baseSet :=
       (Basis.ofVectorSpace ℝ E).orthonormalFrame_isOrthonormalFrameOn e
