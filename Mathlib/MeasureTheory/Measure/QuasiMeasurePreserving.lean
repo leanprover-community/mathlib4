@@ -7,16 +7,16 @@ import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
 import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
 
 /-!
-# Quasi Measure Preserving Functions
+# Quasi-Measure-Preserving Functions
 
-A map `f : α → β` is said to be *quasi measure preserving* (a.k.a. non-singular) w.r.t. measures
+A map `f : α → β` is said to be *quasi-measure-preserving* (a.k.a. non-singular) w.r.t. measures
 `μa` and `μb` if it is measurable and `μb s = 0` implies `μa (f ⁻¹' s) = 0`.
 That last condition can also be written `μa.map f ≪ μb` (the map of `μa` by `f` is
 absolutely continuous with respect to `μb`).
 
 ## Main definitions
 
-* `MeasureTheory.Measure.QuasiMeasurePreserving f μa μb`: `f` is quasi measure preserving with
+* `MeasureTheory.Measure.QuasiMeasurePreserving f μa μb`: `f` is quasi-measure-preserving with
   respect to `μa` and `μb`.
 
 -/
@@ -33,16 +33,20 @@ variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : Measurable
 
 namespace Measure
 
-/-- A map `f : α → β` is said to be *quasi measure preserving* (a.k.a. non-singular) w.r.t. measures
+/-- A map `f : α → β` is said to be *quasi-measure-preserving* (a.k.a. non-singular) w.r.t. measures
 `μa` and `μb` if it is measurable and `μb s = 0` implies `μa (f ⁻¹' s) = 0`. -/
+@[fun_prop]
 structure QuasiMeasurePreserving {m0 : MeasurableSpace α} (f : α → β)
   (μa : Measure α := by volume_tac)
   (μb : Measure β := by volume_tac) : Prop where
   protected measurable : Measurable f
   protected absolutelyContinuous : μa.map f ≪ μb
 
+attribute [fun_prop] QuasiMeasurePreserving.measurable
+
 namespace QuasiMeasurePreserving
 
+@[fun_prop]
 protected theorem id {_m0 : MeasurableSpace α} (μ : Measure α) : QuasiMeasurePreserving id μ μ :=
   ⟨measurable_id, map_id.absolutelyContinuous⟩
 
@@ -66,6 +70,7 @@ theorem mono (ha : μa' ≪ μa) (hb : μb ≪ μb') (h : QuasiMeasurePreserving
     QuasiMeasurePreserving f μa' μb' :=
   (h.mono_left ha).mono_right hb
 
+@[fun_prop]
 protected theorem comp {g : β → γ} {f : α → β} (hg : QuasiMeasurePreserving g μb μc)
     (hf : QuasiMeasurePreserving f μa μb) : QuasiMeasurePreserving (g ∘ f) μa μc :=
   ⟨hg.measurable.comp hf.measurable, by
@@ -111,7 +116,7 @@ theorem preimage_ae_eq {s t : Set β} (hf : QuasiMeasurePreserving f μa μb) (h
     f ⁻¹' s =ᵐ[μa] f ⁻¹' t :=
   EventuallyLE.antisymm (hf.preimage_mono_ae h.le) (hf.preimage_mono_ae h.symm.le)
 
-/-- The preimage of a null measurable set under a (quasi) measure preserving map is a null
+/-- The preimage of a null measurable set under a (quasi-)measure-preserving map is a null
 measurable set. -/
 theorem _root_.MeasureTheory.NullMeasurableSet.preimage {s : Set β} (hs : NullMeasurableSet s μb)
     (hf : QuasiMeasurePreserving f μa μb) : NullMeasurableSet (f ⁻¹' s) μa :=
@@ -120,9 +125,11 @@ theorem _root_.MeasureTheory.NullMeasurableSet.preimage {s : Set β} (hs : NullM
 
 theorem preimage_iterate_ae_eq {s : Set α} {f : α → α} (hf : QuasiMeasurePreserving f μ μ) (k : ℕ)
     (hs : f ⁻¹' s =ᵐ[μ] s) : f^[k] ⁻¹' s =ᵐ[μ] s := by
-  induction' k with k ih; · rfl
-  rw [iterate_succ, preimage_comp]
-  exact EventuallyEq.trans (hf.preimage_ae_eq ih) hs
+  induction k with
+  | zero => rfl
+  | succ k ih =>
+    rw [iterate_succ, preimage_comp]
+    exact EventuallyEq.trans (hf.preimage_ae_eq ih) hs
 
 theorem image_zpow_ae_eq {s : Set α} {e : α ≃ α} (he : QuasiMeasurePreserving e μ μ)
     (he' : QuasiMeasurePreserving e.symm μ μ) (k : ℤ) (hs : e '' s =ᵐ[μ] s) :
@@ -151,7 +158,7 @@ theorem liminf_preimage_iterate_ae_eq {f : α → α} (hf : QuasiMeasurePreservi
   liminf_ae_eq_of_forall_ae_eq (fun n => (preimage f)^[n] s) fun n ↦ by
     simpa only [Set.preimage_iterate_eq] using hf.preimage_iterate_ae_eq n hs
 
-/-- For a quasi measure preserving self-map `f`, if a null measurable set `s` is a.e. invariant,
+/-- For a quasi-measure-preserving self-map `f`, if a null measurable set `s` is a.e. invariant,
 then it is a.e. equal to a measurable invariant set.
 -/
 theorem exists_preimage_eq_of_preimage_ae {f : α → α} (h : QuasiMeasurePreserving f μ μ)
@@ -213,6 +220,14 @@ theorem NullMeasurableSet.mono_ac (h : NullMeasurableSet s μ) (hle : ν ≪ μ)
 
 theorem NullMeasurableSet.mono (h : NullMeasurableSet s μ) (hle : ν ≤ μ) : NullMeasurableSet s ν :=
   h.mono_ac hle.absolutelyContinuous
+
+lemma NullMeasurableSet.smul_measure (h : NullMeasurableSet s μ) (c : ℝ≥0∞) :
+    NullMeasurableSet s (c • μ) :=
+  h.mono_ac (Measure.AbsolutelyContinuous.rfl.smul_left c)
+
+lemma nullMeasurableSet_smul_measure_iff {c : ℝ≥0∞} (hc : c ≠ 0) :
+    NullMeasurableSet s (c • μ) ↔ NullMeasurableSet s μ :=
+  ⟨fun h ↦ h.mono_ac (Measure.absolutelyContinuous_smul hc), fun h ↦ h.smul_measure c⟩
 
 theorem AEDisjoint.preimage {ν : Measure β} {f : α → β} {s t : Set β} (ht : AEDisjoint ν s t)
     (hf : QuasiMeasurePreserving f μ ν) : AEDisjoint μ (f ⁻¹' s) (f ⁻¹' t) :=

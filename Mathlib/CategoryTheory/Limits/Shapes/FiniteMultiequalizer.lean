@@ -58,8 +58,8 @@ instance [DecidableEq J.L] [DecidableEq J.R] : FinCategory (WalkingMultispan J) 
             | .fst a => True
             | .snd a => False
           apply ne_of_apply_ne f
-          conv_lhs => tactic => subst h₁; simp only [eqToHom_refl, Category.id_comp, f]
-          conv_rhs => tactic => subst h₂; simp only [eqToHom_refl, Category.id_comp, f]
+          conv_lhs => tactic => subst h₁; simp only [eqToHom_refl, f]
+          conv_rhs => tactic => subst h₂; simp only [eqToHom_refl, f]
           simp
         all_goals simp⟩, by rintro ⟨⟩ <;> simp⟩
     | .right a, .left b => ⟨∅, by rintro ⟨⟩⟩

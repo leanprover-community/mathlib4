@@ -90,12 +90,12 @@ structure Measure.MeasureDense (μ : Measure X) (𝒜 : Set (Set X)) : Prop wher
   approx : ∀ s, MeasurableSet s → μ s ≠ ∞ → ∀ ε : ℝ, 0 < ε → ∃ t ∈ 𝒜, μ (s ∆ t) < ENNReal.ofReal ε
 
 theorem Measure.MeasureDense.nonempty (h𝒜 : μ.MeasureDense 𝒜) : 𝒜.Nonempty := by
-  rcases h𝒜.approx ∅ MeasurableSet.empty (by simp) 1 (by norm_num) with ⟨t, ht, -⟩
+  rcases h𝒜.approx ∅ MeasurableSet.empty (by simp) 1 (by simp) with ⟨t, ht, -⟩
   exact ⟨t, ht⟩
 
 theorem Measure.MeasureDense.nonempty' (h𝒜 : μ.MeasureDense 𝒜) :
     {s | s ∈ 𝒜 ∧ μ s ≠ ∞}.Nonempty := by
-  rcases h𝒜.approx ∅ MeasurableSet.empty (by simp) 1 (by norm_num) with ⟨t, ht, hμt⟩
+  rcases h𝒜.approx ∅ MeasurableSet.empty (by simp) 1 (by simp) with ⟨t, ht, hμt⟩
   refine ⟨t, ht, ?_⟩
   convert ne_top_of_lt hμt
   rw [← bot_eq_empty, bot_symmDiff]
@@ -138,9 +138,8 @@ theorem Measure.MeasureDense.indicatorConstLp_subset_closure (h𝒜 : μ.Measure
     obtain ⟨t, ht, hμt⟩ := h𝒜.nonempty'
     refine ⟨t, ht, hμt, ?_⟩
     simp_rw [indicatorConstLp]
-    congr
     simp
-  · have p_pos : 0 < p := lt_of_lt_of_le (by norm_num) one_le_p.elim
+  · have p_pos : 0 < p := lt_of_lt_of_le (by simp) one_le_p.elim
     rintro - ⟨s, ms, hμs, rfl⟩
     refine Metric.mem_closure_iff.2 fun ε hε ↦ ?_
     have aux : 0 < (ε / ‖c‖) ^ p.toReal := rpow_pos_of_pos (div_pos hε (norm_pos_iff.2 hc)) _
@@ -151,10 +150,10 @@ theorem Measure.MeasureDense.indicatorConstLp_subset_closure (h𝒜 : μ.Measure
     calc
       ‖c‖ * μ.real (s ∆ t) ^ (1 / p.toReal)
         < ‖c‖ * (ENNReal.ofReal ((ε / ‖c‖) ^ p.toReal)).toReal ^ (1 / p.toReal) := by
-          rw [_root_.mul_lt_mul_left (norm_pos_iff.2 hc)]
-          refine Real.rpow_lt_rpow (by simp) ?_
-            (one_div_pos.2 <| toReal_pos p_pos.ne.symm p_ne_top.elim)
-          rwa [measureReal_def, toReal_lt_toReal (measure_symmDiff_ne_top hμs hμt) ofReal_ne_top]
+          have := toReal_pos p_pos.ne.symm p_ne_top.elim
+          rw [measureReal_def]
+          gcongr
+          exact ofReal_ne_top
       _ = ε := by
         rw [toReal_ofReal (rpow_nonneg (div_nonneg hε.le (norm_nonneg _)) _),
           one_div, Real.rpow_rpow_inv (div_nonneg hε.le (norm_nonneg _))
@@ -422,7 +421,7 @@ section SecondCountableLp
 then the associated `Lᵖ` space is second-countable. -/
 instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.SeparableSpace E] :
     SecondCountableTopology (Lp E p μ) := by
-  -- It is enough to show that the space is separable, i.e. admits a countable and dense susbet.
+  -- It is enough to show that the space is separable, i.e. admits a countable and dense subset.
   refine @UniformSpace.secondCountable_of_separable _ _ _ ?_
   -- There exists a countable and measure-dense family, and we can keep only the sets with finite
   -- measure while preserving the two properties. This family is denoted `𝒜₀`.
@@ -431,7 +430,7 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
   set 𝒜₀ := {s | s ∈ 𝒜 ∧ μ s ≠ ∞}
   have count_𝒜₀ : 𝒜₀.Countable := count_𝒜.mono fun _ ⟨h, _⟩ ↦ h
   -- `1 ≤ p` so `p ≠ 0`, we prove it now as it is often needed.
-  have p_ne_zero : p ≠ 0 := ne_of_gt <| lt_of_lt_of_le (by norm_num) one_le_p.elim
+  have p_ne_zero : p ≠ 0 := ne_of_gt <| lt_of_lt_of_le (by simp) one_le_p.elim
   -- `E` is second-countable, therefore separable and admits a countable and dense subset `u`.
   rcases exists_countable_dense E with ⟨u, countable_u, dense_u⟩
   -- The countable and dense subset of `Lᵖ` we are going to build is the set of finite sums of
@@ -443,7 +442,7 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
   let D := {s : Lp E p μ | ∃ n d t, s = key n d t}
   refine ⟨D, ?_, ?_⟩
   · -- Countability directly follows from countability of `u` and `𝒜₀`. The function `f` below
-    -- is the uncurryfied version of `key`, which is easier to manipulate as countability of the
+    -- is the uncurried version of `key`, which is easier to manipulate as countability of the
     -- domain is automatically inferred.
     let f (nds : Σ n : ℕ, (Fin n → u) × (Fin n → 𝒜₀)) : Lp E p μ := key nds.1 nds.2.1 nds.2.2
     have := count_𝒜₀.to_subtype

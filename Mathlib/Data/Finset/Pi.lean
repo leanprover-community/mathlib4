@@ -9,7 +9,7 @@ import Mathlib.Data.Multiset.Pi
 import Mathlib.Logic.Function.DependsOn
 
 /-!
-# The cartesian product of finsets
+# The Cartesian product of finsets
 
 ## Main definitions
 
@@ -112,7 +112,7 @@ theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, F
                 dedup <|
                   (Multiset.pi s.1 fun a : α => (t a).val).map fun f a' h' =>
                     Multiset.Pi.cons s.1 a b f a' (h ▸ h'))))
-      _ (insert_val_of_not_mem ha)
+      _ (insert_val_of_notMem ha)
   subst s'; rw [pi_cons]
   congr; funext b
   exact ((pi s t).nodup.map <| Multiset.Pi.cons_injective ha).dedup.symm

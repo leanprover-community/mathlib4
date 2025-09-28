@@ -132,13 +132,12 @@ def spine (m : ℕ) (h : m ≤ n + 1 := by omega) (Δ : X _⦋m⦌ₙ₊₁) : P
   arrow i := X.map (tr (mkOfSucc i)).op Δ
   arrow_src i := by
     dsimp only [tr, trunc, SimplicialObject.Truncated.trunc, incl,
-      whiskeringLeft_obj_obj, id_eq, Functor.comp_map, Functor.op_map,
+      Functor.whiskeringLeft_obj_obj, id_eq, Functor.comp_map, Functor.op_map,
       Quiver.Hom.unop_op]
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp, δ_one_mkOfSucc,
-      Fin.coe_castSucc, Fin.coe_eq_castSucc]
+    rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp, δ_one_mkOfSucc]
   arrow_tgt i := by
     dsimp only [tr, trunc, SimplicialObject.Truncated.trunc, incl,
-      whiskeringLeft_obj_obj, id_eq, Functor.comp_map, Functor.op_map,
+      Functor.whiskeringLeft_obj_obj, id_eq, Functor.comp_map, Functor.op_map,
       Quiver.Hom.unop_op]
     rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp, δ_zero_mkOfSucc]
 
@@ -171,7 +170,7 @@ lemma spine_map_vertex (Δ : X _⦋m⦌ₙ₊₁) (a : ℕ) (hₐ : a ≤ n + 1)
     SimplexCategory.const_comp]
 
 lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ m) (Δ : X _⦋m⦌ₙ₊₁) :
-    X.spine l (by omega) (X.map (tr (subinterval j l h)).op Δ) =
+    X.spine l (by cutsat) (X.map (tr (subinterval j l h)).op Δ) =
       (X.spine m hₘ Δ).interval j l h := by
   ext i
   · dsimp only [spine_vertex, Path.interval]
@@ -281,7 +280,7 @@ lemma spine_map_vertex (Δ : X _⦋n⦌) {m : ℕ}
 
 lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ n) (Δ : X _⦋n⦌) :
     X.spine l (X.map (subinterval j l h).op Δ) = (X.spine n Δ).interval j l h :=
-  truncation (n + 1) |>.obj X |>.spine_map_subinterval n (by omega) j l h Δ
+  truncation (n + 1) |>.obj X |>.spine_map_subinterval n (by cutsat) j l h Δ
 
 end spine
 

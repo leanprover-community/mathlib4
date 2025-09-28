@@ -125,8 +125,7 @@ theorem dvd_prime {p m : ℕ+} (pp : p.Prime) : m ∣ p ↔ m = 1 ∨ m = p := b
   simp
 
 theorem Prime.ne_one {p : ℕ+} : p.Prime → p ≠ 1 := by
-  intro pp
-  intro contra
+  intro pp contra
   apply Nat.Prime.ne_one pp
   rw [PNat.coe_eq_one_iff]
   apply contra
@@ -163,7 +162,7 @@ theorem coprime_coe {m n : ℕ+} : Nat.Coprime ↑m ↑n ↔ m.Coprime n := by
 theorem Coprime.mul {k m n : ℕ+} : m.Coprime k → n.Coprime k → (m * n).Coprime k := by
   repeat rw [← coprime_coe]
   rw [mul_coe]
-  apply Nat.Coprime.mul
+  apply Nat.Coprime.mul_left
 
 theorem Coprime.mul_right {k m n : ℕ+} : k.Coprime m → k.Coprime n → k.Coprime (m * n) := by
   repeat rw [← coprime_coe]

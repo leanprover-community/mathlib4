@@ -255,7 +255,6 @@ variable (R) [NonAssocRing R]
 theorem char_ne_zero_of_finite (p : ℕ) [CharP R p] [Finite R] : p ≠ 0 := by
   rintro rfl
   haveI : CharZero R := charP_to_charZero R
-  cases nonempty_fintype R
   exact absurd Nat.cast_injective (not_injective_infinite_finite ((↑) : ℕ → R))
 
 theorem ringChar_ne_zero_of_finite [Finite R] : ringChar R ≠ 0 :=
@@ -280,7 +279,7 @@ end CharP
 /-
 Preliminary definitions and results for the Frobenius map.
 Necessary here for simple results about sums of `p`-powers that are used in files forbidding
-to import algebra-related definitions (see `Mathlib.Algebra.CharP.Two.lean`).
+to import algebra-related definitions (see `Mathlib/Algebra/CharP/Two.lean`).
 -/
 section Frobenius
 

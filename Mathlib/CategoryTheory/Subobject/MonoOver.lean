@@ -6,9 +6,11 @@ Authors: Bhavik Mehta, Kim Morrison
 import Mathlib.CategoryTheory.Comma.Over.Pullback
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Restrict
+import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+import Mathlib.CategoryTheory.WithTerminal.Cone
 
 /-!
 # Monomorphisms over a fixed object
@@ -36,16 +38,20 @@ and was ported to mathlib by Kim Morrison.
 -/
 
 
-universe v₁ v₂ u₁ u₂
+universe w' w v₁ v₂ v₃ u₁ u₂ u₃
 
 noncomputable section
 
 namespace CategoryTheory
 
-open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Functor
 
 variable {C : Type u₁} [Category.{v₁} C] {X Y Z : C}
 variable {D : Type u₂} [Category.{v₂} D]
+
+/-- The object property in `Over X` of the structure morphism being a monomorphism. -/
+abbrev Over.isMono (X : C) : ObjectProperty (Over X) :=
+  fun f : Over X => Mono f.hom
 
 /-- The category of monomorphisms into `X` as a full subcategory of the over category.
 This isn't skeletal, so it's not a partial order.
@@ -53,7 +59,7 @@ This isn't skeletal, so it's not a partial order.
 Later we define `Subobject X` as the quotient of this by isomorphisms.
 -/
 def MonoOver (X : C) :=
-  ObjectProperty.FullSubcategory fun f : Over X => Mono f.hom
+  ObjectProperty.FullSubcategory (Over.isMono X)
 
 instance (X : C) : Category (MonoOver X) :=
   ObjectProperty.FullSubcategory.category _
@@ -107,7 +113,9 @@ instance : (forget X).Faithful :=
 instance mono (f : MonoOver X) : Mono f.arrow :=
   f.property
 
-/-- The category of monomorphisms over X is a thin category,
+instance {X : C} {f : MonoOver X} : Mono ((MonoOver.forget X).obj f).hom := f.mono
+
+/-- The category of monomorphisms over X is a thin category,s
 which makes defining its skeleton easy. -/
 instance isThin {X : C} : Quiver.IsThin (MonoOver X) := fun f g =>
   ⟨by
@@ -123,18 +131,18 @@ theorem w {f g : MonoOver X} (k : f ⟶ g) : k.left ≫ g.arrow = f.arrow :=
 
 /-- Convenience constructor for a morphism in monomorphisms over `X`. -/
 abbrev homMk {f g : MonoOver X} (h : f.obj.left ⟶ g.obj.left)
-    (w : h ≫ g.arrow = f.arrow := by aesop_cat) : f ⟶ g :=
+    (w : h ≫ g.arrow = f.arrow := by cat_disch) : f ⟶ g :=
   Over.homMk h w
 
 /-- Convenience constructor for an isomorphism in monomorphisms over `X`. -/
 @[simps]
 def isoMk {f g : MonoOver X} (h : f.obj.left ≅ g.obj.left)
-    (w : h.hom ≫ g.arrow = f.arrow := by aesop_cat) : f ≅ g where
+    (w : h.hom ≫ g.arrow = f.arrow := by cat_disch) : f ≅ g where
   hom := homMk h.hom w
   inv := homMk h.inv (by rw [h.inv_comp_eq, w])
 
 /-- If `f : MonoOver X`, then `mk' f.arrow` is of course just `f`, but not definitionally, so we
-    package it as an isomorphism. -/
+package it as an isomorphism. -/
 @[simps!]
 def mk'ArrowIso {X : C} (f : MonoOver X) : mk' f.arrow ≅ f :=
   isoMk (Iso.refl _)
@@ -199,6 +207,35 @@ def slice {A : C} {f : Over A}
   counitIso :=
     MonoOver.liftComp _ _ _ _ ≪≫
       MonoOver.liftIso _ _ f.iteratedSliceEquiv.counitIso ≪≫ MonoOver.liftId
+
+section Limits
+
+variable {J : Type u₃} [Category.{v₃} J] (X : C)
+
+lemma closedUnderLimitsOfShape_isMono :
+    ClosedUnderLimitsOfShape J (Over.isMono X) := by
+  refine fun F _ hc p ↦ ⟨fun g h e ↦ ?_⟩
+  apply IsLimit.hom_ext <| WithTerminal.isLimitEquiv.invFun hc
+  intro j; cases j with
+  | of j => have := p j; rw [← cancel_mono ((F.obj j).hom)]; simpa
+  | star => exact e
+
+instance hasLimit (F : J ⥤ MonoOver X) [HasLimit (F ⋙ (Over.isMono X).ι)] :
+    HasLimit F := by
+  apply hasLimit_of_closedUnderLimits (closedUnderLimitsOfShape_isMono X)
+
+instance hasLimitsOfShape [HasLimitsOfShape J (Over X)] :
+    HasLimitsOfShape J (MonoOver X) := by
+  apply hasLimitsOfShape_of_closedUnderLimits (closedUnderLimitsOfShape_isMono X)
+
+instance hasFiniteLimits [HasFiniteLimits (Over X)] : HasFiniteLimits (MonoOver X) where
+  out _ _ _ := by apply hasLimitsOfShape X
+
+instance hasLimitsOfSize [HasLimitsOfSize.{w, w'} (Over X)] :
+    HasLimitsOfSize.{w, w'} (MonoOver X) where
+  has_limits_of_shape _ _ := by apply hasLimitsOfShape X
+
+end Limits
 
 section Pullback
 
@@ -303,7 +340,7 @@ section
 variable (X)
 
 /-- An equivalence of categories `e` between `C` and `D` induces an equivalence between
-    `MonoOver X` and `MonoOver (e.functor.obj X)` whenever `X` is an object of `C`. -/
+`MonoOver X` and `MonoOver (e.functor.obj X)` whenever `X` is an object of `C`. -/
 @[simps]
 def congr (e : C ≌ D) : MonoOver X ≌ MonoOver (e.functor.obj X) where
   functor :=
@@ -392,9 +429,7 @@ def imageForgetAdj : image ⊣ forget X :=
                     fac := Over.w k }
             · apply image.lift_fac
           left_inv := fun _ => Subsingleton.elim _ _
-          right_inv := fun k => by
-            ext
-            simp } }
+          right_inv := fun k => by simp } }
 
 instance : (forget X).IsRightAdjoint :=
   ⟨_, ⟨imageForgetAdj⟩⟩

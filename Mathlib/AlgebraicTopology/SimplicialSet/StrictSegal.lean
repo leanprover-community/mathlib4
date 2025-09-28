@@ -19,7 +19,7 @@ TODO: Show that these are the only examples: that a `StrictSegal` simplicial set
 the nerve of its homotopy category.
 
 `StrictSegal` simplicial sets have an important property of being 2-coskeletal which is proven
-in `Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal`.
+in `Mathlib/AlgebraicTopology/SimplicialSet/Coskeletal.lean`.
 
 -/
 
@@ -129,7 +129,7 @@ theorem spineToSimplex_interval (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
 
 theorem spineToSimplex_edge (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
     X.map (tr (intervalEdge j l hjl)).op (sx.spineToSimplex m h f) =
-      sx.spineToDiagonal l (by omega) (f.interval j l hjl) := by
+      sx.spineToDiagonal l (by cutsat) (f.interval j l hjl) := by
   dsimp only [spineToDiagonal, Function.comp_apply]
   rw [← spineToSimplex_interval, ← FunctorToTypes.map_comp_apply, ← op_comp,
     ← tr_comp, diag_subinterval_eq]
@@ -205,7 +205,7 @@ variable {X : SSet.Truncated.{u} (n + 2)} (sx : StrictSegal X) (m : ℕ)
 lemma spine_δ_arrow_eq (hij : j = i.succ.castSucc) :
     (X.spine m _ (X.map (tr (δ j)).op
       (sx.spineToSimplex (m + 1) _ f))).arrow i =
-      sx.spineToDiagonal 2 (by omega) (f.interval i 2 (by omega)) := by
+      sx.spineToDiagonal 2 (by cutsat) (f.interval i 2 (by cutsat)) := by
   rw [spine_arrow, ← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
     mkOfSucc_δ_eq hij, spineToSimplex_edge]
 
@@ -380,7 +380,7 @@ arrows not contained in the original path can be recovered as the diagonal edge
 of the `spineToSimplex` that "composes" arrows `i` and `i + 1`. -/
 lemma spine_δ_arrow_eq (h : j = i.succ.castSucc) :
     (X.spine n (X.δ j (sx.spineToSimplex f))).arrow i =
-      sx.spineToDiagonal (f.interval i 2 (by omega)) := by
+      sx.spineToDiagonal (f.interval i 2 (by cutsat)) := by
   simp only [SimplicialObject.δ, spine_arrow]
   rw [← FunctorToTypes.map_comp_apply, ← op_comp]
   rw [mkOfSucc_δ_eq h, spineToSimplex_edge]

@@ -22,7 +22,7 @@ then saying that `fun i ↦ support (f i)` tendsto `(𝓝 0).smallSets` is a way
 
 open Filter
 
-open Filter Set
+open Set
 
 variable {α β : Type*} {ι : Sort*}
 
@@ -83,6 +83,12 @@ theorem eventually_smallSets' {p : Set α → Prop} (hp : ∀ ⦃s t⦄, s ⊆ t
   eventually_smallSets.trans <|
     exists_congr fun s => Iff.rfl.and ⟨fun H => H s Subset.rfl, fun hs _t ht => hp ht hs⟩
 
+theorem HasBasis.eventually_smallSets {α : Type*} {ι : Sort*} {p : ι → Prop} {l : Filter α}
+    {s : ι → Set α} {q : Set α → Prop} {hl : l.HasBasis p s}
+    (hq : ∀ ⦃s t : Set α⦄, s ⊆ t → q t → q s) :
+    (∀ᶠ s in l.smallSets, q s) ↔ ∃ i, p i ∧ q (s i) := by
+  rw [l.eventually_smallSets' hq, hl.exists_iff hq]
+
 theorem frequently_smallSets {p : Set α → Prop} :
     (∃ᶠ s in l.smallSets, p s) ↔ ∀ t ∈ l, ∃ s, s ⊆ t ∧ p s :=
   l.hasBasis_smallSets.frequently_iff
@@ -90,12 +96,24 @@ theorem frequently_smallSets {p : Set α → Prop} :
 theorem frequently_smallSets_mem (l : Filter α) : ∃ᶠ s in l.smallSets, s ∈ l :=
   frequently_smallSets.2 fun t ht => ⟨t, Subset.rfl, ht⟩
 
+theorem frequently_smallSets' {α : Type*} {l : Filter α} {p : Set α → Prop}
+    (hp : ∀ ⦃s t : Set α⦄, s ⊆ t → p s → p t) :
+    (∃ᶠ s in l.smallSets, p s) ↔ ∀ t ∈ l, p t := by
+  convert not_iff_not.mpr <| l.eventually_smallSets' (p := (¬ p ·)) (by tauto)
+  simp
+
+theorem HasBasis.frequently_smallSets {α : Type*} {ι : Sort*} {p : ι → Prop} {l : Filter α}
+    {s : ι → Set α} {q : Set α → Prop} {hl : l.HasBasis p s}
+    (hq : ∀ ⦃s t : Set α⦄, s ⊆ t → q s → q t) :
+    (∃ᶠ s in l.smallSets, q s) ↔ ∀ i, p i → q (s i) := by
+  rw [Filter.frequently_smallSets' hq, hl.forall_iff hq]
+
 @[simp]
 lemma tendsto_image_smallSets {f : α → β} :
     Tendsto (f '' ·) la.smallSets lb.smallSets ↔ Tendsto f la lb := by
   rw [tendsto_smallSets_iff]
   refine forall₂_congr fun u hu ↦ ?_
-  rw [eventually_smallSets' fun s t hst ht ↦ (image_subset _ hst).trans ht]
+  rw [eventually_smallSets' fun s t hst ht ↦ (image_mono hst).trans ht]
   simp only [image_subset_iff, exists_mem_subset_iff, mem_map]
 
 alias ⟨_, Tendsto.image_smallSets⟩ := tendsto_image_smallSets

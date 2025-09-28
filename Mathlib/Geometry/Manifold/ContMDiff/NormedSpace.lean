@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
 import Mathlib.Geometry.Manifold.ContMDiff.Constructions
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Prod
+import Mathlib.Analysis.Normed.Operator.Prod
 
 /-! ## Equivalence of smoothness with the basic definition for functions between vector spaces
 
@@ -105,9 +105,6 @@ theorem ContinuousLinearMap.contMDiffWithinAt (L : E →L[𝕜] F) {s x} :
 theorem ContinuousLinearMap.contMDiffOn (L : E →L[𝕜] F) {s} : ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, F) n L s :=
   L.contMDiff.contMDiffOn
 
-@[deprecated (since := "2024-11-20")]
-alias ContinuousLinearMap.smooth := ContinuousLinearMap.contMDiff
-
 theorem ContMDiffWithinAt.clm_precomp {f : M → F₁ →L[𝕜] F₂} {s : Set M} {x : M}
     (hf : ContMDiffWithinAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) n f s x) :
     ContMDiffWithinAt I 𝓘(𝕜, (F₂ →L[𝕜] F₃) →L[𝕜] (F₁ →L[𝕜] F₃)) n
@@ -177,8 +174,9 @@ theorem ContMDiff.clm_comp {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ →L
     (hg : ContMDiff I 𝓘(𝕜, F₁ →L[𝕜] F₃) n g) (hf : ContMDiff I 𝓘(𝕜, F₂ →L[𝕜] F₁) n f) :
     ContMDiff I 𝓘(𝕜, F₂ →L[𝕜] F₃) n fun x => (g x).comp (f x) := fun x => (hg x).clm_comp (hf x)
 
-/-- Applying a linear map to a vector is smooth within a set. Version in vector spaces. For a
-version in nontrivial vector bundles, see `ContMDiffWithinAt.clm_apply_of_inCoordinates`. -/
+/-- Applying a linear map to a vector is smooth within a set. Version in vector spaces. For
+versions in nontrivial vector bundles, see `ContMDiffWithinAt.clm_apply_of_inCoordinates` and
+`ContMDiffWithinAt.clm_bundle_apply`. -/
 theorem ContMDiffWithinAt.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → F₁} {s : Set M} {x : M}
     (hg : ContMDiffWithinAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) n g s x)
     (hf : ContMDiffWithinAt I 𝓘(𝕜, F₁) n f s x) :
@@ -188,8 +186,9 @@ theorem ContMDiffWithinAt.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → 
     (by apply ContDiff.contDiffAt; exact contDiff_fst.clm_apply contDiff_snd) (hg.prodMk_space hf)
     (by simp_rw [preimage_univ, subset_univ])
 
-/-- Applying a linear map to a vector is smooth. Version in vector spaces. For a
-version in nontrivial vector bundles, see `ContMDiffAt.clm_apply_of_inCoordinates`. -/
+/-- Applying a linear map to a vector is smooth. Version in vector spaces. For
+versions in nontrivial vector bundles, see `ContMDiffAt.clm_apply_of_inCoordinates` and
+`ContMDiffAt.clm_bundle_apply`. -/
 nonrec theorem ContMDiffAt.clm_apply {g : M → F₁ →L[𝕜] F₂} {f : M → F₁} {x : M}
     (hg : ContMDiffAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) n g x) (hf : ContMDiffAt I 𝓘(𝕜, F₁) n f x) :
     ContMDiffAt I 𝓘(𝕜, F₂) n (fun x => g x (f x)) x :=
@@ -265,8 +264,6 @@ variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 theorem contMDiff_smul : ContMDiff (𝓘(𝕜).prod 𝓘(𝕜, V)) 𝓘(𝕜, V) ⊤ fun p : 𝕜 × V => p.1 • p.2 :=
   contMDiff_iff.2 ⟨continuous_smul, fun _ _ => contDiff_smul.contDiffOn⟩
 
-@[deprecated (since := "2024-11-20")] alias smooth_smul := contMDiff_smul
-
 theorem ContMDiffWithinAt.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiffWithinAt I 𝓘(𝕜) n f s x)
     (hg : ContMDiffWithinAt I 𝓘(𝕜, V) n g s x) :
     ContMDiffWithinAt I 𝓘(𝕜, V) n (fun p => f p • g p) s x :=
@@ -283,11 +280,3 @@ theorem ContMDiffOn.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiffOn I 𝓘
 theorem ContMDiff.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiff I 𝓘(𝕜) n f)
     (hg : ContMDiff I 𝓘(𝕜, V) n g) : ContMDiff I 𝓘(𝕜, V) n fun p => f p • g p := fun x =>
   (hf x).smul (hg x)
-
-@[deprecated (since := "2024-11-20")] alias SmoothWithinAt.smul := ContMDiffWithinAt.smul
-
-@[deprecated (since := "2024-11-20")] alias SmoothAt.smul := ContMDiffAt.smul
-
-@[deprecated (since := "2024-11-20")] alias SmoothOn.smul := ContMDiffOn.smul
-
-@[deprecated (since := "2024-11-20")] alias Smooth.smul := ContMDiff.smul

@@ -16,7 +16,7 @@ to a class of morphisms `W j : MorphismProperty (C j)`, then the product
 functor `Functor.pi L : (∀ j, C j) ⥤ ∀ j, D j` is a localization
 functor for the product class of morphisms `MorphismProperty.pi W`.
 The proof proceeds by induction on the cardinal of `J` using the
-main result of the file `Mathlib.CategoryTheory.Localization.Prod`.
+main result of the file `Mathlib/CategoryTheory/Localization/Prod.lean`.
 
 -/
 
@@ -57,17 +57,17 @@ instance pi {J : Type w} [Finite J] {C : J → Type u₁} {D : J → Type u₂}
     let L₁ := (L none).prod (Functor.pi (fun j => L (some j)))
     haveI : CatCommSq (Pi.optionEquivalence C).symm.functor L₁ (Functor.pi L)
       (Pi.optionEquivalence D).symm.functor :=
-        ⟨NatIso.pi' (by rintro (_|i) <;> apply Iso.refl)⟩
+        ⟨NatIso.pi' (by rintro (_ | i) <;> apply Iso.refl)⟩
     refine IsLocalization.of_equivalences L₁
       ((W none).prod (MorphismProperty.pi (fun j => W (some j)))) (Functor.pi L) _
       (Pi.optionEquivalence C).symm (Pi.optionEquivalence D).symm ?_ ?_
     · intro ⟨X₁, X₂⟩ ⟨Y₁, Y₂⟩ f ⟨hf₁, hf₂⟩
       refine ⟨_, _, (Pi.optionEquivalence C).inverse.map f, ?_, ⟨Iso.refl _⟩⟩
-      rintro (_|i)
+      rintro (_ | i)
       · exact hf₁
       · apply hf₂
     · apply MorphismProperty.IsInvertedBy.pi
-      rintro (_|i) <;> apply Localization.inverts
+      rintro (_ | i) <;> apply Localization.inverts
 
 /-- If `L : C ⥤ D` is a localization functor for `W : MorphismProperty C`, then
 the induced functor `(Discrete J ⥤ C) ⥤ (Discrete J ⥤ D)` is also a localization

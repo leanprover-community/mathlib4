@@ -35,19 +35,21 @@ namespace AlgebraicGeometry
 namespace Scheme
 
 /-- The Zariski pretopology on the category of schemes. -/
-def zariskiPretopology : Pretopology (Scheme.{u}) :=
+def zariskiPretopology : Pretopology Scheme.{u} :=
   pretopology @IsOpenImmersion
 
 /-- The Zariski topology on the category of schemes. -/
-abbrev zariskiTopology : GrothendieckTopology (Scheme.{u}) :=
-  zariskiPretopology.toGrothendieck
+abbrev zariskiTopology : GrothendieckTopology Scheme.{u} :=
+  grothendieckTopology IsOpenImmersion
+
+lemma zariskiTopology_eq : zariskiTopology.{u} = zariskiPretopology.toGrothendieck := rfl
 
 instance subcanonical_zariskiTopology : zariskiTopology.Subcanonical := by
   apply GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj
   intro X
   rw [Presieve.isSheaf_pretopology]
   rintro Y S ⟨𝓤,rfl⟩ x hx
-  let e : Y ⟶ X := 𝓤.glueMorphisms (fun j => x (𝓤.map _) (.mk _)) <| by
+  let e : Y ⟶ X := 𝓤.glueMorphisms (fun j => x (𝓤.f _) (.mk _)) <| by
     intro i j
     apply hx
     exact Limits.pullback.condition
@@ -59,7 +61,7 @@ instance subcanonical_zariskiTopology : zariskiTopology.Subcanonical := by
     apply 𝓤.hom_ext
     intro j
     rw [𝓤.ι_glueMorphisms]
-    exact h (𝓤.map j) (.mk j)
+    exact h (𝓤.f j) (.mk j)
 
 end Scheme
 

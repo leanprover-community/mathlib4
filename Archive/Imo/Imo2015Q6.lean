@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
 import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Group.Int.Sum
+import Mathlib.Algebra.Order.Ring.Int
 
 /-!
 # IMO 2015 Q6
@@ -66,7 +68,7 @@ section Pool
 
 lemma exists_add_eq_of_mem_pool {z : ℤ} (hz : z ∈ pool a t) : ∃ u < t, u + a u = t + z := by
   induction t generalizing z with
-  | zero => simp only [pool, not_mem_empty] at hz
+  | zero => simp only [pool, notMem_empty] at hz
   | succ t ih =>
     simp_rw [pool, mem_map, Equiv.coe_toEmbedding, Equiv.subRight_apply] at hz
     obtain ⟨y, my, ey⟩ := hz
@@ -89,17 +91,19 @@ lemma pool_subset_Icc : ∀ {t}, pool a t ⊆ Icc 0 2014
     · exact h ▸ ha.1 t
     · have := pool_subset_Icc h₂; rw [mem_Icc] at this ⊢; omega
 
-lemma not_mem_pool_self : a t ∉ pool a t := by
+lemma notMem_pool_self : a t ∉ pool a t := by
   by_contra h
   obtain ⟨u, lu, hu⟩ := exists_add_eq_of_mem_pool h
   exact lu.ne (ha.2 hu)
+
+@[deprecated (since := "2025-05-23")] alias not_mem_pool_self := notMem_pool_self
 
 /-- The number of balls stays unchanged if there is a ball with height 0 and increases by 1
 otherwise. -/
 lemma card_pool_succ : #(pool a (t + 1)) = #(pool a t) + if 0 ∈ pool a t then 0 else 1 := by
   have nms : a t ∉ (pool a t).erase 0 := by
-    rw [mem_erase, not_and_or]; exact .inr (not_mem_pool_self ha)
-  rw [pool, card_map, card_insert_of_not_mem nms, card_erase_eq_ite]
+    rw [mem_erase, not_and_or]; exact .inr (notMem_pool_self ha)
+  rw [pool, card_map, card_insert_of_notMem nms, card_erase_eq_ite]
   split_ifs with h
   · have := card_pos.mpr ⟨0, h⟩; omega
   · rfl
@@ -125,12 +129,12 @@ include ha hbN
 lemma b_pos : 0 < b := by
   by_contra! h; rw [nonpos_iff_eq_zero] at h; subst h
   replace hbN : ∀ t, #(pool a t) = 0 := fun t ↦ by
-    obtain h | h := le_or_lt t N
+    obtain h | h := le_or_gt t N
     · have : #(pool a t) ≤ #(pool a N) := monotone_card_pool ha h
       rwa [hbN _ le_rfl, nonpos_iff_eq_zero] at this
     · exact hbN _ h.le
   have cp1 : #(pool a 1) = 1 := by
-    simp_rw [card_pool_succ ha, pool, card_empty, not_mem_empty, ite_false]
+    simp_rw [card_pool_succ ha, pool, card_empty, notMem_empty, ite_false]
   apply absurd (hbN 1); omega
 
 include ht in
@@ -144,7 +148,7 @@ include ht in
 lemma sum_sub_sum_eq_sub : ∑ x ∈ pool a (t + 1), x - ∑ x ∈ pool a t, x = a t - b := by
   simp_rw [pool, sum_map, Equiv.coe_toEmbedding, Equiv.subRight_apply]
   have nms : a t ∉ (pool a t).erase 0 := by
-    rw [mem_erase, not_and_or]; exact .inr (not_mem_pool_self ha)
+    rw [mem_erase, not_and_or]; exact .inr (notMem_pool_self ha)
   rw [sum_insert nms, sum_erase_eq_sub (h := zero_mem_pool ha hbN ht), sum_sub_distrib, sum_const,
     nsmul_one, hbN _ ht]
   omega
@@ -166,7 +170,7 @@ lemma le_sum_pool : ∑ i ∈ range b, (i : ℤ) ≤ ∑ x ∈ pool a t, x := by
 include ht in
 lemma sum_pool_le : ∑ x ∈ pool a t, x ≤ ∑ i ∈ range (b - 1), (2014 - i : ℤ) := by
   have zmp := zero_mem_pool ha hbN ht
-  rw [← insert_erase zmp, sum_insert (not_mem_erase _ _), zero_add]
+  rw [← insert_erase zmp, sum_insert (notMem_erase _ _), zero_add]
   convert sum_le_sum_range fun x mx ↦ ?_
   · rw [card_erase_of_mem zmp, hbN _ ht]
   · exact (mem_Icc.mp ((pool_subset_Icc ha) (mem_erase.mp mx).2)).2
@@ -177,7 +181,7 @@ theorem result (ha : Condition a) :
     ∃ b > 0, ∃ N, ∀ m ≥ N, ∀ n > m, |∑ j ∈ Ico m n, (a j - b)| ≤ 1007 ^ 2 := by
   obtain ⟨b, N, hbN⟩ := exists_max_card_pool ha
   have bp := b_pos ha hbN
-  use b, Int.ofNat_pos.mpr bp, N; intro m hm n hn; rw [sum_telescope ha hbN hm hn]
+  use b, Int.natCast_pos.mpr bp, N; intro m hm n hn; rw [sum_telescope ha hbN hm hn]
   calc
     _ ≤ ∑ i ∈ range (b - 1), (2014 - i : ℤ) - ∑ i ∈ range b, (i : ℤ) :=
       abs_sub_le_of_le_of_le (le_sum_pool ha hbN (hm.trans hn.le))
@@ -189,7 +193,7 @@ theorem result (ha : Condition a) :
         rw [mem_range] at mx; omega
       rw [sum_congr rfl sc, sum_const, card_range, nsmul_eq_mul, Nat.cast_pred bp]
     _ ≤ _ := by
-      rw [← mul_le_mul_left zero_lt_four, ← mul_assoc,
+      rw [← mul_le_mul_iff_right₀ zero_lt_four, ← mul_assoc,
         show 4 * 1007 ^ 2 = ((b - 1 : ℤ) + (2015 - b)) ^ 2 by simp]
       exact four_mul_le_sq_add ..
 

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Logic.Function.Basic
+import Mathlib.Logic.Unique
 import Mathlib.Util.CompileInductive
 import Mathlib.Tactic.Simps.NotationClass
 
@@ -134,15 +135,12 @@ For non-dependent functions you can also use the abbreviation `FunLike`.
 This typeclass is used in the definition of the homomorphism typeclasses,
 such as `ZeroHomClass`, `MulHomClass`, `MonoidHomClass`, ....
 -/
-@[notation_class * toFun Simps.findCoercionArgs]
+@[notation_class* toFun Simps.findCoercionArgs]
 class DFunLike (F : Sort*) (α : outParam (Sort*)) (β : outParam <| α → Sort*) where
   /-- The coercion from `F` to a function. -/
   coe : F → ∀ a : α, β a
   /-- The coercion to functions must be injective. -/
   coe_injective' : Function.Injective coe
-
--- https://github.com/leanprover/lean4/issues/2096
-compile_def% DFunLike.coe
 
 /-- The class `FunLike F α β` (`Fun`ction-`Like`) expresses that terms of type `F`
 have an injective coercion to functions from `α` to `β`.
@@ -201,7 +199,12 @@ theorem exists_ne {f g : F} (h : f ≠ g) : ∃ x, f x ≠ g x :=
 
 /-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search. -/
 lemma subsingleton_cod [∀ a, Subsingleton (β a)] : Subsingleton F :=
-  ⟨fun _ _ ↦ coe_injective <| Subsingleton.elim _ _⟩
+  coe_injective.subsingleton
+
+include β in
+/-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search. -/
+lemma subsingleton_dom [IsEmpty α] : Subsingleton F :=
+  coe_injective.subsingleton
 
 end DFunLike
 

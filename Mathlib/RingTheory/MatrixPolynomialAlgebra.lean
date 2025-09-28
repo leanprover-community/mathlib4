@@ -51,7 +51,7 @@ noncomputable def matPolyEquiv : Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X] :=
     (polyEquivTensor R (Matrix n n R)).symm
 
 @[simp] theorem matPolyEquiv_symm_C (M : Matrix n n R) : matPolyEquiv.symm (C M) = M.map C := by
-  simp [matPolyEquiv, ← C_eq_algebraMap]
+  simp [matPolyEquiv]
 
 @[simp] theorem matPolyEquiv_map_C (M : Matrix n n R) : matPolyEquiv (M.map C) = C M := by
   rw [← matPolyEquiv_symm_C, AlgEquiv.apply_symm_apply]
@@ -68,22 +68,22 @@ open Finset
 
 unseal Algebra.TensorProduct.mul in
 theorem matPolyEquiv_coeff_apply_aux_1 (i j : n) (k : ℕ) (x : R) :
-    matPolyEquiv (stdBasisMatrix i j <| monomial k x) = monomial k (stdBasisMatrix i j x) := by
-  simp only [matPolyEquiv, AlgEquiv.trans_apply, matrixEquivTensor_apply_stdBasisMatrix]
+    matPolyEquiv (single i j <| monomial k x) = monomial k (single i j x) := by
+  simp only [matPolyEquiv, AlgEquiv.trans_apply, matrixEquivTensor_apply_single]
   apply (polyEquivTensor R (Matrix n n R)).injective
   simp only [AlgEquiv.apply_symm_apply,Algebra.TensorProduct.comm_tmul,
     polyEquivTensor_apply, eval₂_monomial]
-  simp only [Algebra.TensorProduct.tmul_mul_tmul, one_pow, one_mul, Matrix.mul_one,
-    Algebra.TensorProduct.tmul_pow, Algebra.TensorProduct.includeLeft_apply]
+  simp only [one_pow,
+    Algebra.TensorProduct.tmul_pow]
   rw [← smul_X_eq_monomial, ← TensorProduct.smul_tmul]
-  congr with i' <;> simp [stdBasisMatrix]
+  congr with i' <;> simp [single]
 
 theorem matPolyEquiv_coeff_apply_aux_2 (i j : n) (p : R[X]) (k : ℕ) :
-    coeff (matPolyEquiv (stdBasisMatrix i j p)) k = stdBasisMatrix i j (coeff p k) := by
+    coeff (matPolyEquiv (single i j p)) k = single i j (coeff p k) := by
   refine Polynomial.induction_on' p ?_ ?_
   · intro p q hp hq
     ext
-    simp [hp, hq, coeff_add, add_apply, stdBasisMatrix_add]
+    simp [hp, hq, coeff_add, add_apply, single_add]
   · intro k x
     simp only [matPolyEquiv_coeff_apply_aux_1, coeff_monomial]
     split_ifs <;>
@@ -99,11 +99,10 @@ theorem matPolyEquiv_coeff_apply (m : Matrix n n R[X]) (k : ℕ) (i j : n) :
     simp [hp, hq]
   · intro i' j' x
     rw [matPolyEquiv_coeff_apply_aux_2]
-    dsimp [stdBasisMatrix]
+    dsimp [single]
     split_ifs <;> rename_i h
-    · rcases h with ⟨rfl, rfl⟩
-      simp [stdBasisMatrix]
-    · simp [stdBasisMatrix, h]
+    · constructor
+    · simp
 
 @[simp]
 theorem matPolyEquiv_symm_apply_coeff (p : (Matrix n n R)[X]) (i j : n) (k : ℕ) :
@@ -116,7 +115,7 @@ theorem matPolyEquiv_smul_one (p : R[X]) :
     matPolyEquiv (p • (1 : Matrix n n R[X])) = p.map (algebraMap R (Matrix n n R)) := by
   ext m i j
   simp only [matPolyEquiv_coeff_apply, smul_apply, one_apply, smul_eq_mul, mul_ite, mul_one,
-    mul_zero, coeff_map, algebraMap_matrix_apply, Algebra.id.map_eq_id, RingHom.id_apply]
+    mul_zero, coeff_map, algebraMap_matrix_apply, Algebra.algebraMap_self, RingHom.id_apply]
   split_ifs <;> simp
 
 @[simp]
@@ -124,13 +123,44 @@ lemma matPolyEquiv_map_smul (p : R[X]) (M : Matrix n n R[X]) :
     matPolyEquiv (p • M) = p.map (algebraMap _ _) * matPolyEquiv M := by
   rw [← one_mul M, ← smul_mul_assoc, map_mul, matPolyEquiv_smul_one, one_mul]
 
+theorem matPolyEquiv_symm_map_eval (M : (Matrix n n R)[X]) (r : R) :
+    (matPolyEquiv.symm M).map (eval r) = M.eval (scalar n r) := by
+  suffices ((aeval r).mapMatrix.comp matPolyEquiv.symm.toAlgHom : (Matrix n n R)[X] →ₐ[R] _) =
+      (eval₂AlgHom' (AlgHom.id R _) (scalar n r)
+        fun x => (scalar_commute _ (Commute.all _) _).symm) from
+    DFunLike.congr_fun this M
+  ext : 1
+  · ext M : 1
+    simp [Function.comp_def]
+  · simp
+
+theorem matPolyEquiv_eval_eq_map (M : Matrix n n R[X]) (r : R) :
+    (matPolyEquiv M).eval (scalar n r) = M.map (eval r) := by
+  simpa only [AlgEquiv.symm_apply_apply] using (matPolyEquiv_symm_map_eval (matPolyEquiv M) r).symm
+
+-- I feel like this should use `Polynomial.algHom_eval₂_algebraMap`
+theorem matPolyEquiv_eval (M : Matrix n n R[X]) (r : R) (i j : n) :
+    (matPolyEquiv M).eval (scalar n r) i j = (M i j).eval r := by
+  rw [matPolyEquiv_eval_eq_map, map_apply]
+
 theorem support_subset_support_matPolyEquiv (m : Matrix n n R[X]) (i j : n) :
     support (m i j) ⊆ support (matPolyEquiv m) := by
   intro k
   contrapose
-  simp only [not_mem_support_iff]
+  simp only [notMem_support_iff]
   intro hk
   rw [← matPolyEquiv_coeff_apply, hk, zero_apply]
+
+theorem eval_det {R : Type*} [CommRing R] (M : Matrix n n R[X]) (r : R) :
+    Polynomial.eval r M.det = (Polynomial.eval (scalar n r) (matPolyEquiv M)).det := by
+  rw [Polynomial.eval, ← coe_eval₂RingHom, RingHom.map_det]
+  exact congr_arg det <| ext fun _ _ ↦ matPolyEquiv_eval _ _ _ _ |>.symm
+
+lemma eval_det_add_X_smul {R : Type*} [CommRing R] (A : Matrix n n R[X]) (M : Matrix n n R) :
+    (det (A + (X : R[X]) • M.map C)).eval 0 = (det A).eval 0 := by
+  simp only [eval_det, map_zero, map_add, eval_add, Algebra.smul_def, map_mul]
+  simp only [Algebra.algebraMap_eq_smul_one, matPolyEquiv_smul_one, map_X, X_mul, eval_mul_X,
+    mul_zero, add_zero]
 
 variable {A}
 /-- Extend a ring hom `A → Mₙ(R)` to a ring hom `A[X] → Mₙ(R[X])`. -/
@@ -141,7 +171,7 @@ variable {S : Type*} [CommSemiring S] (f : S →+* Matrix n n R)
 
 lemma evalRingHom_mapMatrix_comp_polyToMatrix :
     (evalRingHom 0).mapMatrix.comp f.polyToMatrix = f.comp (evalRingHom 0) := by
-  ext <;> simp [RingHom.polyToMatrix, ← AlgEquiv.symm_toRingEquiv, diagonal, apply_ite]
+  ext <;> simp [RingHom.polyToMatrix, - AlgEquiv.symm_toRingEquiv, diagonal, apply_ite]
 
 lemma evalRingHom_mapMatrix_comp_compRingEquiv {m} [Fintype m] [DecidableEq m] :
     (evalRingHom 0).mapMatrix.comp (compRingEquiv m n R[X]) =

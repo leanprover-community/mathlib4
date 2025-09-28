@@ -24,6 +24,9 @@ We show several results related to the (path)-connectedness of subsets of real v
 Statements with connectedness instead of path-connectedness are also given.
 -/
 
+assert_not_exists Subgroup.index Nat.divisors
+-- TODO assert_not_exists Cardinal
+
 open Convex Set Metric
 
 section TopologicalVectorSpace
@@ -42,7 +45,7 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
   obtain ⟨a, ha⟩ : sᶜ.Nonempty := (hs.dense_compl ℝ).nonempty
   refine ⟨a, ha, ?_⟩
   intro b hb
-  rcases eq_or_ne a b with rfl|hab
+  rcases eq_or_ne a b with rfl | hab
   · exact JoinedIn.refl ha
   /- Assume `b ≠ a`. Write `a = c - x` and `b = c + x` for some nonzero `x`. Choose `y` which
   is linearly independent from `x`. Then the segments joining `a = c - x` to `c + ty` are pairwise
@@ -172,7 +175,7 @@ theorem isPathConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr
   /- when `r > 0`, we write the sphere as the image of `{0}ᶜ` under the map
   `y ↦ x + (r * ‖y‖⁻¹) • y`. Since the image under a continuous map of a path connected set
   is path connected, this concludes the proof. -/
-  rcases hr.eq_or_lt with rfl|rpos
+  rcases hr.eq_or_lt with rfl | rpos
   · simpa using isPathConnected_singleton x
   let f : E → E := fun y ↦ x + (r * ‖y‖⁻¹) • y
   have A : ContinuousOn f {0}ᶜ := by
@@ -204,7 +207,7 @@ theorem isConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr : 0
 /-- In a real vector space of dimension `> 1`, any sphere is preconnected. -/
 theorem isPreconnected_sphere (h : 1 < Module.rank ℝ E) (x : E) (r : ℝ) :
     IsPreconnected (sphere x r) := by
-  rcases le_or_lt 0 r with hr|hr
+  rcases le_or_gt 0 r with hr|hr
   · exact (isConnected_sphere h x hr).isPreconnected
   · simpa [hr] using isPreconnected_empty
 

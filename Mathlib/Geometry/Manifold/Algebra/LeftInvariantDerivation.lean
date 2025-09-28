@@ -35,12 +35,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} {E :
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) (G : Type*)
   [TopologicalSpace G] [ChartedSpace H G] [Monoid G] [ContMDiffMul I ∞ G] (g h : G)
 
--- Generate trivial has_sizeof instance. It prevents weird type class inference timeout problems
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/12096): removed @[nolint instance_priority], linter not ported yet
--- @[local nolint instance_priority, local instance 10000]
--- private def disable_has_sizeof {α} : SizeOf α :=
---   ⟨fun _ => 0⟩
-
 /-- Left-invariant global derivations.
 
 A global derivation is left-invariant if it is equal to its pullback along left multiplication by
@@ -76,8 +70,6 @@ variable {r : 𝕜} {X Y : LeftInvariantDerivation I G} {f f' : C^∞⟮I, G; �
 
 theorem toFun_eq_coe : X.toFun = ⇑X :=
   rfl
-
--- Porting note: now LHS is the same as RHS
 
 theorem coe_injective :
     @Function.Injective (LeftInvariantDerivation I G) (_ → C^∞⟮I, G; 𝕜⟯) DFunLike.coe :=
@@ -120,7 +112,7 @@ instance : Inhabited (LeftInvariantDerivation I G) :=
 instance : Add (LeftInvariantDerivation I G) where
   add X Y :=
     ⟨X + Y, fun g => by
-      simp only [map_add, Derivation.coe_add, left_invariant', Pi.add_apply]⟩
+      simp only [map_add, left_invariant']⟩
 
 instance : Neg (LeftInvariantDerivation I G) where
   neg X := ⟨-X, fun g => by simp [left_invariant']⟩
@@ -208,10 +200,8 @@ theorem evalAt_mul : evalAt (g * h) X = 𝒅ₕ (L_apply I g h) (evalAt h X) := 
   ext f
   rw [← left_invariant, hfdifferential_apply, hfdifferential_apply, L_mul, fdifferential_comp,
     fdifferential_apply]
-  -- Porting note: more aggressive here
-  erw [LinearMap.comp_apply]
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [fdifferential_apply, ← hfdifferential_apply, left_invariant]
+  simp only [ContMDiffMap.comp_apply, LinearMap.comp_apply]
+  rw [fdifferential_apply, ← hfdifferential_apply (smoothLeftMul_one I h), left_invariant]
 
 theorem comp_L : (X f).comp (𝑳 I g) = X (f.comp (𝑳 I g)) := by
   ext h
@@ -253,7 +243,7 @@ instance : LieRing (LeftInvariantDerivation I G) where
   lie_self X := by ext1; simp only [commutator_apply, sub_self]; rfl
   leibniz_lie X Y Z := by
     ext1
-    simp only [commutator_apply, coe_add, coe_sub, map_sub, Pi.add_apply]
+    simp only [commutator_apply, coe_add, map_sub, Pi.add_apply]
     ring
 
 instance : LieAlgebra 𝕜 (LeftInvariantDerivation I G) where

@@ -79,11 +79,7 @@ namespace WithLower
 @[match_pattern] def ofLower : WithLower α ≃ α := Equiv.refl _
 
 @[simp] lemma toLower_symm : (@toLower α).symm = ofLower := rfl
-@[deprecated (since := "2024-12-16")] alias to_WithLower_symm_eq := toLower_symm
-
 @[simp] lemma ofLower_symm : (@ofLower α).symm = toLower := rfl
-@[deprecated (since := "2024-12-16")] alias of_WithLower_symm_eq := ofLower_symm
-
 @[simp] lemma toLower_ofLower (a : WithLower α) : toLower (ofLower a) = a := rfl
 
 @[simp] lemma ofLower_toLower (a : α) : ofLower (toLower a) = a := rfl
@@ -140,9 +136,7 @@ namespace WithUpper
 @[match_pattern] def ofUpper : WithUpper α ≃ α := Equiv.refl _
 
 @[simp] lemma toUpper_symm {α} : (@toUpper α).symm = ofUpper := rfl
-@[deprecated (since := "2024-12-16")] alias to_WithUpper_symm_eq := toUpper_symm
 @[simp] lemma ofUpper_symm : (@ofUpper α).symm = toUpper := rfl
-@[deprecated (since := "2024-12-16")] alias of_WithUpper_symm_eq := ofUpper_symm
 @[simp] lemma toUpper_ofUpper (a : WithUpper α) : toUpper (ofUpper a) = a := rfl
 @[simp] lemma ofUpper_toUpper (a : α) : ofUpper (toUpper a) = a := rfl
 lemma toUpper_inj {a b : α} : toUpper a = toUpper b ↔ a = b := Iff.rfl
@@ -360,7 +354,7 @@ lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ ∃ a, (
     · intro b hb
       simp only [sInter_image, mem_iInter, mem_compl_iff]
       intro s hs
-      obtain ⟨a,ha⟩ := (subset_insert_iff_of_not_mem hUS).mp hS1 hs
+      obtain ⟨a, ha⟩ := (subset_insert_iff_of_notMem hUS).mp hS1 hs
       subst hS2 ha
       simp_all only [compl_Ici, mem_Ici, sSup_le_iff, mem_setOf_eq, mem_Iio, not_lt]
     · intro b hb
@@ -559,4 +553,4 @@ instance : IsUpper Prop where
         rcases hs with (rfl | rfl)
         · use True
         · use False)
-      (by rintro _ ⟨a, rfl⟩; by_cases a <;> aesop (add simp [Ioi, lt_iff_le_not_le]))
+      (by rintro _ ⟨a, rfl⟩; by_cases a <;> aesop (add simp [Ioi, lt_iff_le_not_ge]))

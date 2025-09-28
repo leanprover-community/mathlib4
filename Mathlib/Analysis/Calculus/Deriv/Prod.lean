@@ -30,7 +30,7 @@ variable {f₁ : 𝕜 → F} {f₁' : F} {x : 𝕜} {s : Set 𝕜} {L : Filter �
 
 section CartesianProduct
 
-/-! ### Derivative of the cartesian product of two functions -/
+/-! ### Derivative of the Cartesian product of two functions -/
 
 
 variable {G : Type w} [NormedAddCommGroup G] [NormedSpace 𝕜 G]

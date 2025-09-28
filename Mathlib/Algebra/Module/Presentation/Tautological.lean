@@ -54,8 +54,6 @@ noncomputable def tautologicalRelationsSolutionEquiv {N : Type w} [AddCommGroup 
   invFun f :=
     { var := f
       linearCombination_var_relation := by rintro (_ | _) <;> simp }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The obvious solution of `tautologicalRelations A M` in the module `M`. -/
 @[simps! var]

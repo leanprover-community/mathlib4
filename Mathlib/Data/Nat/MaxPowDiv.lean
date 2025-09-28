@@ -53,7 +53,7 @@ theorem go_spec (k p n : ℕ) :
       (1 < p → 0 < n → ¬p ∣ (go k p n).2) := by
   fun_induction go with
   | case1 k n h ih =>
-    unfold go
+    conv_lhs => unfold go
     rw [if_pos h, ih.1, pow_succ, mul_assoc, Nat.mul_div_cancel' (Nat.dvd_of_mod_eq_zero h.2.2)]
     refine ⟨rfl, fun hp hn ↦ ih.2 hp ?_⟩
     apply_rules [Nat.div_pos, zero_le_one.trans_lt hp, Nat.le_of_dvd, Nat.dvd_of_mod_eq_zero h.2.2]
@@ -66,10 +66,10 @@ theorem go_spec (k p n : ℕ) :
 theorem go_succ (k p n : ℕ) : go (k + 1) p n = ((go k p n).1 + 1, (go k p n).2) := by
   fun_induction go with
   | case1 _ _ h ih =>
-    unfold go
+    conv_lhs => unfold go
     simp only [if_pos h, ih]
   | case2 _ _ h =>
-    unfold go
+    conv_lhs => unfold go
     simp only [if_neg h]
 
 @[simp]
@@ -80,7 +80,7 @@ theorem not_dvd_snd {p n : ℕ} (hp : 1 < p) (hn : 0 < n) : ¬p ∣ (maxPowDvdDi
   simpa [maxPowDvdDiv] using (go_spec 0 p n).2 hp hn
 
 theorem of_base_le_one {p : ℕ} (hp : p ≤ 1) (n : ℕ) : maxPowDvdDiv p n = (0, n) := by
-  simp [maxPowDvdDiv, go, hp.not_lt]
+  simp [maxPowDvdDiv, go, hp.not_gt]
 
 @[simp] theorem zero_left (n : ℕ) : maxPowDvdDiv 0 n = (0, n) := of_base_le_one (Nat.zero_le _) _
 @[simp] theorem one_left (n : ℕ) : maxPowDvdDiv 1 n = (0, n) := of_base_le_one le_rfl _

@@ -32,7 +32,7 @@ theorem splitOnP.go_acc (xs acc : List α) :
     simp only [splitOnP, go]; split
     · simp only [modifyHead, reverse_nil, append_nil]
     · rw [ih [hd], modifyHead_modifyHead, ih]
-      congr; funext x; simp only [reverse_cons, append_assoc]; rfl
+      congr; grind
 
 theorem splitOnP_ne_nil (xs : List α) : xs.splitOnP p ≠ [] := splitOnP.go_ne_nil _ _ _
 
@@ -82,7 +82,7 @@ theorem splitOnP_first (h : ∀ x ∈ xs, ¬p x) (sep : α) (hsep : p sep) (as :
 /-- `intercalate [x]` is the left inverse of `splitOn x` -/
 theorem intercalate_splitOn (x : α) [DecidableEq α] : [x].intercalate (xs.splitOn x) = xs := by
   simp only [intercalate, splitOn]
-  induction' xs with hd tl ih; · simp [flatten]
+  induction xs with | nil => simp [flatten] | cons hd tl ih => ?_
   rcases h' : splitOnP (· == x) tl with - | ⟨hd', tl'⟩; · exact (splitOnP_ne_nil _ tl h').elim
   rw [h'] at ih
   rw [splitOnP_cons]
@@ -97,27 +97,16 @@ consisting of each nonempty list of lists `ls` whose elements do not contain `x`
 theorem splitOn_intercalate [DecidableEq α] (x : α) (hx : ∀ l ∈ ls, x ∉ l) (hls : ls ≠ []) :
     ([x].intercalate ls).splitOn x = ls := by
   simp only [intercalate]
-  induction' ls with hd tl ih; · contradiction
+  induction ls with | nil => contradiction | cons hd tl ih => ?_
   cases tl
   · suffices hd.splitOn x = [hd] by simpa [flatten]
-    refine splitOnP_eq_single _ _ ?_
-    intro y hy H
-    rw [eq_of_beq H] at hy
-    refine hx hd ?_ hy
-    simp
+    exact splitOnP_eq_single _ _ (by grind)
   · simp only [intersperse_cons₂, singleton_append, flatten]
     specialize ih _ _
-    · intro l hl
-      apply hx l
-      simp only [mem_cons] at hl ⊢
-      exact Or.inr hl
-    · exact List.noConfusion
-    have := splitOnP_first (· == x) hd ?h x (beq_self_eq_true _)
-    case h =>
-      intro y hy H
-      rw [eq_of_beq H] at hy
-      exact hx hd (.head _) hy
+    · grind
+    · grind
     simp only [splitOn] at ih ⊢
+    have := splitOnP_first (· == x) hd (by grind) x (beq_self_eq_true _)
     rw [this, ih]
 
 end List

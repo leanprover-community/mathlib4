@@ -84,6 +84,8 @@ titlesPathsAndRegexes=(
   "disabled simpNF lints"          "*"      "nolint simpNF"
   "erw"                            "*"      "erw \["
   "maxHeartBeats modifications"    ":^MathlibTest" "^ *set_option .*maxHeartbeats.* [0-9][0-9]*"
+  "CommRing (Fin n) instances"     "*"      "^open Fin.CommRing "
+  "NatCast (Fin n) instances"      "*"      "^open Fin.NatCast "
 )
 
 for i in ${!titlesPathsAndRegexes[@]}; do

@@ -13,7 +13,7 @@ This file defines intersecting families and proves their basic properties.
 
 ## Main declarations
 
-* `Set.Intersecting`: Predicate for a set of elements in a generalized boolean algebra to be an
+* `Set.Intersecting`: Predicate for a set of elements in a generalized Boolean algebra to be an
   intersecting family.
 * `Set.Intersecting.card_le`: An intersecting family can only take up to half the elements, because
   `a` and `aᶜ` cannot simultaneously be in it.
@@ -44,10 +44,13 @@ def Intersecting (s : Set α) : Prop :=
 theorem Intersecting.mono (h : t ⊆ s) (hs : s.Intersecting) : t.Intersecting := fun _a ha _b hb =>
   hs (h ha) (h hb)
 
-theorem Intersecting.not_bot_mem (hs : s.Intersecting) : ⊥ ∉ s := fun h => hs h h disjoint_bot_left
+theorem Intersecting.bot_notMem (hs : s.Intersecting) : ⊥ ∉ s := fun h => hs h h disjoint_bot_left
+
+@[deprecated (since := "2025-05-24")]
+alias Intersecting.not_bot_mem := Intersecting.bot_notMem
 
 theorem Intersecting.ne_bot (hs : s.Intersecting) (ha : a ∈ s) : a ≠ ⊥ :=
-  ne_of_mem_of_not_mem ha hs.not_bot_mem
+  ne_of_mem_of_not_mem ha hs.bot_notMem
 
 theorem intersecting_empty : (∅ : Set α).Intersecting := fun _ => False.elim
 
@@ -128,18 +131,23 @@ theorem Intersecting.exists_mem_finset [DecidableEq α] {𝒜 : Set (Finset α)}
 
 variable [BooleanAlgebra α]
 
-theorem Intersecting.not_compl_mem {s : Set α} (hs : s.Intersecting) {a : α} (ha : a ∈ s) :
+theorem Intersecting.compl_notMem {s : Set α} (hs : s.Intersecting) {a : α} (ha : a ∈ s) :
     aᶜ ∉ s := fun h => hs ha h disjoint_compl_right
 
-theorem Intersecting.not_mem {s : Set α} (hs : s.Intersecting) {a : α} (ha : aᶜ ∈ s) : a ∉ s :=
+@[deprecated (since := "2025-05-24")]
+alias Intersecting.not_compl_mem := Intersecting.compl_notMem
+
+theorem Intersecting.notMem {s : Set α} (hs : s.Intersecting) {a : α} (ha : aᶜ ∈ s) : a ∉ s :=
   fun h => hs ha h disjoint_compl_left
+
+@[deprecated (since := "2025-05-23")] alias Intersecting.not_mem := Intersecting.notMem
 
 theorem Intersecting.disjoint_map_compl {s : Finset α} (hs : (s : Set α).Intersecting) :
     Disjoint s (s.map ⟨compl, compl_injective⟩) := by
   rw [Finset.disjoint_left]
   rintro x hx hxc
   obtain ⟨x, hx', rfl⟩ := mem_map.mp hxc
-  exact hs.not_compl_mem hx' hx
+  exact hs.compl_notMem hx' hx
 
 theorem Intersecting.card_le [Fintype α] {s : Finset α} (hs : (s : Set α).Intersecting) :
     2 * #s ≤ Fintype.card α := by
@@ -162,13 +170,13 @@ theorem Intersecting.is_max_iff_card_eq (hs : (s : Set α).Intersecting) :
     refine eq_univ_of_forall fun a => ?_
     simp_rw [mem_union, mem_preimage]
     by_contra! ha
-    refine s.ne_insert_of_not_mem _ ha.1 (h _ ?_ <| s.subset_insert _)
+    refine s.ne_insert_of_notMem _ ha.1 (h _ ?_ <| s.subset_insert _)
     rw [coe_insert]
     refine hs.insert ?_ fun b hb hab => ha.2 <| (hs.isUpperSet' h) hab.le_compl_left hb
     rintro rfl
     have := h {⊤} (by rw [coe_singleton]; exact intersecting_singleton.2 top_ne_bot)
     rw [compl_bot] at ha
-    rw [coe_eq_empty.1 ((hs.isUpperSet' h).not_top_mem.1 ha.2)] at this
+    rw [coe_eq_empty.1 ((hs.isUpperSet' h).top_notMem.1 ha.2)] at this
     exact Finset.singleton_ne_empty _ (this <| Finset.empty_subset _).symm
 
 theorem Intersecting.exists_card_eq (hs : (s : Set α).Intersecting) :

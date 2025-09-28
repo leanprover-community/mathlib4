@@ -26,7 +26,7 @@ to transport over to `Option.{v}`. `ULiftable` is an attempt at improving the si
 
 
 ## Main definitions
-  * `ULiftable` class
+* `ULiftable` class
 
 ## Tags
 

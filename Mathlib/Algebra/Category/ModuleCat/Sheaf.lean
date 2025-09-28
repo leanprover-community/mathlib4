@@ -119,7 +119,7 @@ lemma add_val {M N : SheafOfModules.{v} R} (f g : M ⟶ N) :
 
 instance : Preadditive (SheafOfModules.{v} R) where
   add_comp := by intros; ext1; dsimp; simp only [Preadditive.add_comp]
-  comp_add := by intros; ext1; dsimp; simp only [Preadditive.comp_add]
+  comp_add := by tauto
 
 instance : (forget R).Additive where
 
@@ -130,7 +130,7 @@ variable {R}
 /-- The type of sections of a sheaf of modules. -/
 abbrev sections (M : SheafOfModules.{v} R) : Type _ := M.val.sections
 
-/-- The map `M.sections → N.sections` induced by a morphisms `M ⟶ N` of sheaves of modules. -/
+/-- The map `M.sections → N.sections` induced by a morphism `M ⟶ N` of sheaves of modules. -/
 abbrev sectionsMap {M N : SheafOfModules.{v} R} (f : M ⟶ N) (s : M.sections) : N.sections :=
   PresheafOfModules.sectionsMap f.val s
 

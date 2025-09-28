@@ -13,13 +13,13 @@ import Mathlib.Data.Finite.Prod
 We show a type `F` with a `DFunLike F α β` is finite if both `α` and `β` are finite.
 This corresponds to the following two pairs of declarations:
 
- * `DFunLike.fintype` is a definition stating all `DFunLike`s are finite if their domain and
-   codomain are.
- * `DFunLike.finite` is a lemma stating all `DFunLike`s are finite if their domain and
-   codomain are.
- * `FunLike.fintype` is a non-dependent version of `DFunLike.fintype` and
- * `FunLike.finite` is a non-dependent version of `DFunLike.finite`, because dependent instances
-   are harder to infer.
+* `DFunLike.fintype` is a definition stating all `DFunLike`s are finite if their domain and
+  codomain are.
+* `DFunLike.finite` is a lemma stating all `DFunLike`s are finite if their domain and
+  codomain are.
+* `FunLike.fintype` is a non-dependent version of `DFunLike.fintype` and
+* `FunLike.finite` is a non-dependent version of `DFunLike.finite`, because dependent instances
+  are harder to infer.
 
 You can use these to produce instances for specific `DFunLike` types.
 (Although there might be options for `Fintype` instances with better definitional behaviour.)

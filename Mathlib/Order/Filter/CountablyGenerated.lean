@@ -91,7 +91,7 @@ section IsCountablyGenerated
 
 protected theorem HasAntitoneBasis.mem_iff [Preorder ι] {l : Filter α} {s : ι → Set α}
     (hs : l.HasAntitoneBasis s) {t : Set α} : t ∈ l ↔ ∃ i, s i ⊆ t :=
-  hs.toHasBasis.mem_iff.trans <| by simp only [exists_prop, true_and]
+  hs.toHasBasis.mem_iff.trans <| by simp only [true_and]
 
 protected theorem HasAntitoneBasis.mem [Preorder ι] {l : Filter α} {s : ι → Set α}
     (hs : l.HasAntitoneBasis s) (i : ι) : s i ∈ l :=
@@ -217,7 +217,7 @@ instance iInf.isCountablyGenerated {ι : Sort*} {α : Type*} [Countable ι] (f :
     [∀ i, IsCountablyGenerated (f i)] : IsCountablyGenerated (⨅ i, f i) := by
   choose s hs using fun i => exists_antitone_basis (f i)
   rw [← PLift.down_surjective.iInf_comp]
-  refine HasCountableBasis.isCountablyGenerated ⟨hasBasis_iInf fun n => (hs _).1, ?_⟩
+  refine HasCountableBasis.isCountablyGenerated ⟨.iInf fun n => (hs _).1, ?_⟩
   refine (countable_range <| Sigma.map ((↑) : Finset (PLift ι) → Set (PLift ι)) fun _ => id).mono ?_
   rintro ⟨I, f⟩ ⟨hI, -⟩
   lift I to Finset (PLift ι) using hI

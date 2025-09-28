@@ -64,7 +64,7 @@ instance pullback_snd_iso_of_left_iso : IsIso (pullback.snd f g) := by
   refine ⟨⟨pullback.lift (g ≫ inv f) (𝟙 _) (by simp), ?_, by simp⟩⟩
   ext
   · simp [← pullback.condition_assoc]
-  · simp [pullback.condition_assoc]
+  · simp
 
 @[reassoc (attr := simp)]
 lemma pullback_inv_snd_fst_of_left_isIso :
@@ -111,7 +111,7 @@ theorem hasPullback_of_right_iso : HasPullback f g :=
 
 attribute [local instance] hasPullback_of_right_iso
 
-instance pullback_snd_iso_of_right_iso : IsIso (pullback.fst f g) := by
+instance pullback_fst_iso_of_right_iso : IsIso (pullback.fst f g) := by
   refine ⟨⟨pullback.lift (𝟙 _) (f ≫ inv g) (by simp), ?_, by simp⟩⟩
   ext
   · simp
@@ -166,7 +166,7 @@ instance pushout_inr_iso_of_left_iso : IsIso (pushout.inr f g) := by
   refine ⟨⟨pushout.desc (inv f ≫ g) (𝟙 _) (by simp), by simp, ?_⟩⟩
   ext
   · simp [← pushout.condition]
-  · simp [pushout.condition_assoc]
+  · simp
 
 @[reassoc (attr := simp)]
 lemma pushout_inl_inv_inr_of_right_isIso :
@@ -216,7 +216,7 @@ attribute [local instance] hasPushout_of_right_iso
 instance pushout_inl_iso_of_right_iso : IsIso (pushout.inl _ _ : _ ⟶ pushout f g) := by
   refine ⟨⟨pushout.desc (𝟙 _) (inv g ≫ f) (by simp), by simp, ?_⟩⟩
   ext
-  · simp [← pushout.condition]
+  · simp
   · simp [pushout.condition]
 
 @[reassoc (attr := simp)]

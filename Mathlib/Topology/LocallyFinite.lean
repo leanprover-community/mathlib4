@@ -95,12 +95,12 @@ theorem continuousOn_iUnion {g : X → Y} (hf : LocallyFinite f) (h_cl : ∀ i, 
 protected theorem continuous' {g : X → Y} (hf : LocallyFinite f) (h_cov : ⋃ i, f i = univ)
     (hc : ∀ i x, x ∈ closure (f i) → ContinuousWithinAt g (f i) x) :
     Continuous g :=
-  continuous_iff_continuousOn_univ.2 <| h_cov ▸ hf.continuousOn_iUnion' hc
+  continuousOn_univ.1 <| h_cov ▸ hf.continuousOn_iUnion' hc
 
 protected theorem continuous {g : X → Y} (hf : LocallyFinite f) (h_cov : ⋃ i, f i = univ)
     (h_cl : ∀ i, IsClosed (f i)) (h_cont : ∀ i, ContinuousOn g (f i)) :
     Continuous g :=
-  continuous_iff_continuousOn_univ.2 <| h_cov ▸ hf.continuousOn_iUnion h_cl h_cont
+  continuousOn_univ.1 <| h_cov ▸ hf.continuousOn_iUnion h_cl h_cont
 
 protected theorem closure (hf : LocallyFinite f) : LocallyFinite fun i => closure (f i) := by
   intro x
@@ -138,7 +138,7 @@ theorem exists_forall_eventually_eq_prod {π : X → Sort*} {f : ℕ → ∀ x :
   choose U hUx hU using hf
   choose N hN using fun x => (hU x).bddAbove
   replace hN : ∀ (x), ∀ n > N x, ∀ y ∈ U x, f (n + 1) y = f n y :=
-    fun x n hn y hy => by_contra fun hne => hn.lt.not_le <| hN x ⟨y, hne, hy⟩
+    fun x n hn y hy => by_contra fun hne => hn.lt.not_ge <| hN x ⟨y, hne, hy⟩
   replace hN : ∀ (x), ∀ n ≥ N x + 1, ∀ y ∈ U x, f n y = f (N x + 1) y :=
     fun x n hn y hy => Nat.le_induction rfl (fun k hle => (hN x _ hle _ hy).trans) n hn
   refine ⟨fun x => f (N x + 1) x, fun x => ?_⟩
@@ -194,8 +194,6 @@ theorem locallyFinite_sum {f : ι ⊕ ι' → Set X} :
 theorem LocallyFinite.sumElim {g : ι' → Set X} (hf : LocallyFinite f) (hg : LocallyFinite g) :
     LocallyFinite (Sum.elim f g) :=
   locallyFinite_sum.mpr ⟨hf, hg⟩
-
-@[deprecated (since := "2025-02-20")] alias LocallyFinite.sum_elim := LocallyFinite.sumElim
 
 theorem locallyFinite_option {f : Option ι → Set X} :
     LocallyFinite f ↔ LocallyFinite (f ∘ some) := by

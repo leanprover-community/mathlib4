@@ -54,8 +54,8 @@ section Composition
 /-!
 ### Derivative of the composition of a vector function and a scalar function
 
-We use `scomp` in lemmas on composition of vector valued and scalar valued functions, and `comp`
-in lemmas on composition of scalar valued functions, in analogy for `smul` and `mul` (and also
+We use `scomp` in lemmas on composition of vector-valued and scalar-valued functions, and `comp`
+in lemmas on composition of scalar-valued functions, in analogy for `smul` and `mul` (and also
 because the `comp` version with the shorter name will show up much more often in applications).
 The formula for the derivative involves `smul` in `scomp` lemmas, which can be reduced to
 usual multiplication in `comp` lemmas.
@@ -206,6 +206,16 @@ theorem HasDerivWithinAt.comp_hasFDerivWithinAt_of_eq {f : E → 𝕜'} {f' : E 
     HasFDerivWithinAt (h₂ ∘ f) (h₂' • f') s x := by
   rw [hy] at hh; exact hh.comp_hasFDerivWithinAt x hf hst
 
+theorem HasDerivWithinAt.comp_hasFDerivAt {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} {t} (x)
+    (hh : HasDerivWithinAt h₂ h₂' t (f x)) (hf : HasFDerivAt f f' x) (ht : ∀ᶠ x' in 𝓝 x, f x' ∈ t) :
+    HasFDerivAt (h₂ ∘ f) (h₂' • f') x :=
+  hh.comp_hasFDerivAtFilter x hf <| tendsto_nhdsWithin_iff.mpr ⟨hf.continuousAt, ht⟩
+
+theorem HasDerivWithinAt.comp_hasFDerivAt_of_eq {f : E → 𝕜'} {f' : E →L[𝕜] 𝕜'} {t} (x)
+    (hh : HasDerivWithinAt h₂ h₂' t y) (hf : HasFDerivAt f f' x) (ht : ∀ᶠ x' in 𝓝 x, f x' ∈ t)
+    (hy : y = f x) : HasFDerivAt (h₂ ∘ f) (h₂' • f') x := by
+  subst y; exact hh.comp_hasFDerivAt x hf ht
+
 /-! ### Derivative of the composition of two scalar functions -/
 
 theorem HasDerivAtFilter.comp (hh₂ : HasDerivAtFilter h₂ h₂' (h x) L')
@@ -266,6 +276,15 @@ theorem HasDerivAt.comp_hasDerivWithinAt_of_eq (hh₂ : HasDerivAt h₂ h₂' y)
     HasDerivWithinAt (h₂ ∘ h) (h₂' * h') s x := by
   rw [hy] at hh₂; exact hh₂.comp_hasDerivWithinAt x hh
 
+theorem HasDerivWithinAt.comp_hasDerivAt {t} (hh₂ : HasDerivWithinAt h₂ h₂' t (h x))
+    (hh : HasDerivAt h h' x) (ht : ∀ᶠ x' in 𝓝 x, h x' ∈ t) : HasDerivAt (h₂ ∘ h) (h₂' * h') x :=
+  HasDerivAtFilter.comp x hh₂ hh <| tendsto_nhdsWithin_iff.mpr ⟨hh.continuousAt, ht⟩
+
+theorem HasDerivWithinAt.comp_hasDerivAt_of_eq {t} (hh₂ : HasDerivWithinAt h₂ h₂' t y)
+    (hh : HasDerivAt h h' x) (ht : ∀ᶠ x' in 𝓝 x, h x' ∈ t) (hy : y = h x) :
+    HasDerivAt (h₂ ∘ h) (h₂' * h') x := by
+  subst y; exact hh₂.comp_hasDerivAt x hh ht
+
 theorem derivWithin_comp (hh₂ : DifferentiableWithinAt 𝕜' h₂ s' (h x))
     (hh : DifferentiableWithinAt 𝕜 h s x) (hs : MapsTo h s s') :
     derivWithin (h₂ ∘ h) s x = derivWithin h₂ s' (h x) * derivWithin h s x := by
@@ -273,28 +292,20 @@ theorem derivWithin_comp (hh₂ : DifferentiableWithinAt 𝕜' h₂ s' (h x))
   · exact (hh₂.hasDerivWithinAt.comp x hh.hasDerivWithinAt hs).derivWithin hsx
   · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
-@[deprecated (since := "2024-10-31")] alias derivWithin.comp := derivWithin_comp
-
 theorem derivWithin_comp_of_eq (hh₂ : DifferentiableWithinAt 𝕜' h₂ s' y)
     (hh : DifferentiableWithinAt 𝕜 h s x) (hs : MapsTo h s s')
     (hy : h x = y) :
     derivWithin (h₂ ∘ h) s x = derivWithin h₂ s' (h x) * derivWithin h s x := by
   subst hy; exact derivWithin_comp x hh₂ hh hs
 
-@[deprecated (since := "2024-10-31")] alias derivWithin.comp_of_eq := derivWithin_comp_of_eq
-
 theorem deriv_comp (hh₂ : DifferentiableAt 𝕜' h₂ (h x)) (hh : DifferentiableAt 𝕜 h x) :
     deriv (h₂ ∘ h) x = deriv h₂ (h x) * deriv h x :=
   (hh₂.hasDerivAt.comp x hh.hasDerivAt).deriv
-
-@[deprecated (since := "2024-10-31")] alias deriv.comp := deriv_comp
 
 theorem deriv_comp_of_eq (hh₂ : DifferentiableAt 𝕜' h₂ y) (hh : DifferentiableAt 𝕜 h x)
     (hy : h x = y) :
     deriv (h₂ ∘ h) x = deriv h₂ (h x) * deriv h x := by
   subst hy; exact deriv_comp x hh₂ hh
-
-@[deprecated (since := "2024-10-31")] alias deriv.comp_of_eq := deriv_comp_of_eq
 
 protected nonrec theorem HasDerivAtFilter.iterate {f : 𝕜 → 𝕜} {f' : 𝕜}
     (hf : HasDerivAtFilter f f' x L) (hL : Tendsto f L L) (hx : f x = x) (n : ℕ) :
@@ -344,6 +355,16 @@ theorem HasFDerivWithinAt.comp_hasDerivWithinAt_of_eq {t : Set F}
     HasDerivWithinAt (l ∘ f) (l' f') s x := by
   rw [hy] at hl; exact hl.comp_hasDerivWithinAt x hf hst
 
+theorem HasFDerivWithinAt.comp_hasDerivAt {t : Set F} (hl : HasFDerivWithinAt l l' t (f x))
+    (hf : HasDerivAt f f' x) (ht : ∀ᶠ x' in 𝓝 x, f x' ∈ t) : HasDerivAt (l ∘ f) (l' f') x := by
+  simpa only [one_apply, one_smul, smulRight_apply, coe_comp', (· ∘ ·)] using
+    (hl.comp_hasFDerivAt x hf.hasFDerivAt ht).hasDerivAt
+
+theorem HasFDerivWithinAt.comp_hasDerivAt_of_eq {t : Set F} (hl : HasFDerivWithinAt l l' t y)
+    (hf : HasDerivAt f f' x) (ht : ∀ᶠ x' in 𝓝 x, f x' ∈ t) (hy : y = f x) :
+    HasDerivAt (l ∘ f) (l' f') x := by
+  subst y; exact hl.comp_hasDerivAt x hf ht
+
 theorem HasFDerivAt.comp_hasDerivWithinAt (hl : HasFDerivAt l l' (f x))
     (hf : HasDerivWithinAt f f' s x) : HasDerivWithinAt (l ∘ f) (l' f') s x :=
   hl.hasFDerivWithinAt.comp_hasDerivWithinAt x hf (mapsTo_univ _ _)
@@ -383,30 +404,18 @@ theorem fderivWithin_comp_derivWithin {t : Set F} (hl : DifferentiableWithinAt �
   · exact (hl.hasFDerivWithinAt.comp_hasDerivWithinAt x hf.hasDerivWithinAt hs).derivWithin hsx
   · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
-@[deprecated (since := "2024-10-31")]
-alias fderivWithin.comp_derivWithin := fderivWithin_comp_derivWithin
-
 theorem fderivWithin_comp_derivWithin_of_eq {t : Set F} (hl : DifferentiableWithinAt 𝕜 l t y)
     (hf : DifferentiableWithinAt 𝕜 f s x) (hs : MapsTo f s t) (hy : y = f x) :
     derivWithin (l ∘ f) s x = (fderivWithin 𝕜 l t (f x) : F → E) (derivWithin f s x) := by
   rw [hy] at hl; exact fderivWithin_comp_derivWithin x hl hf hs
 
-@[deprecated (since := "2024-10-31")]
-alias fderivWithin.comp_derivWithin_of_eq := fderivWithin_comp_derivWithin_of_eq
-
 theorem fderiv_comp_deriv (hl : DifferentiableAt 𝕜 l (f x)) (hf : DifferentiableAt 𝕜 f x) :
     deriv (l ∘ f) x = (fderiv 𝕜 l (f x) : F → E) (deriv f x) :=
   (hl.hasFDerivAt.comp_hasDerivAt x hf.hasDerivAt).deriv
-
-@[deprecated (since := "2024-10-31")]
-alias fderiv.comp_deriv := fderiv_comp_deriv
 
 theorem fderiv_comp_deriv_of_eq (hl : DifferentiableAt 𝕜 l y) (hf : DifferentiableAt 𝕜 f x)
     (hy : y = f x) :
     deriv (l ∘ f) x = (fderiv 𝕜 l (f x) : F → E) (deriv f x) := by
   rw [hy] at hl; exact fderiv_comp_deriv x hl hf
-
-@[deprecated (since := "2024-10-31")]
-alias fderiv.comp_deriv_of_eq := fderiv_comp_deriv_of_eq
 
 end CompositionVector

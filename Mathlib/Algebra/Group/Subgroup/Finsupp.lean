@@ -32,9 +32,16 @@ theorem exists_finsupp_of_mem_closure_range (hx : x ∈ closure (Set.range f)) :
     use -a
     rw [Finsupp.prod_neg_index]
     · simp
-    · simp [zpow_neg]
+    · simp
 
-variable {f x} in
+@[to_additive]
+theorem exists_of_mem_closure_range [Fintype ι] (hx : x ∈ closure (Set.range f)) :
+    ∃ a : ι → ℤ, x = ∏ i, f i ^ a i := by
+  obtain ⟨a, rfl⟩ := exists_finsupp_of_mem_closure_range f x hx
+  exact ⟨a, by simp⟩
+
+variable {f x}
+
 @[to_additive]
 theorem mem_closure_range_iff :
     x ∈ closure (Set.range f) ↔ ∃ a : ι →₀ ℤ, x = a.prod (f · ^ ·) := by
@@ -43,16 +50,15 @@ theorem mem_closure_range_iff :
   exact Submonoid.prod_mem _ fun i hi ↦ zpow_mem (subset_closure (Set.mem_range_self i)) _
 
 @[to_additive]
-theorem exists_of_mem_closure_range [Fintype ι] (hx : x ∈ closure (Set.range f)) :
-    ∃ a : ι → ℤ, x = ∏ i, f i ^ a i := by
-  obtain ⟨a, rfl⟩ := exists_finsupp_of_mem_closure_range f x hx
-  exact ⟨a, by simp⟩
-
-variable {f x} in
-@[to_additive]
 theorem mem_closure_range_iff_of_fintype [Fintype ι] :
     x ∈ closure (Set.range f) ↔ ∃ a : ι → ℤ, x = ∏ i, f i ^ a i := by
   rw [Finsupp.equivFunOnFinite.symm.exists_congr_left, mem_closure_range_iff]
   simp
+
+@[to_additive]
+theorem mem_closure_iff_of_fintype {s : Set M} [Fintype s] :
+    x ∈ closure s ↔ ∃ a : s → ℤ, x = ∏ i : s, i.1 ^ a i := by
+  conv_lhs => rw [← Subtype.range_coe (s := s)]
+  exact mem_closure_range_iff_of_fintype
 
 end Subgroup

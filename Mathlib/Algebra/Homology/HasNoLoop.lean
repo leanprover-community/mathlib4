@@ -31,7 +31,7 @@ lemma not_rel_self : ¬ c.Rel j j :=
   HasNoLoop.not_rel_self j
 
 variable {j} in
-lemma not_rel_of_eq {j' : ι } (h : j = j') : ¬ c.Rel j j' := by
+lemma not_rel_of_eq {j' : ι} (h : j = j') : ¬ c.Rel j j' := by
   subst h
   exact c.not_rel_self j
 

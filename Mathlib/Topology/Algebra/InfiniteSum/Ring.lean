@@ -160,7 +160,7 @@ theorem HasSum.mul (hf : HasSum f s) (hg : HasSum g t)
   (hf.mul_eq hg hu).symm ▸ hu
 
 /-- Product of two infinites sums indexed by arbitrary types.
-    See also `tsum_mul_tsum_of_summable_norm` if `f` and `g` are absolutely summable. -/
+See also `tsum_mul_tsum_of_summable_norm` if `f` and `g` are absolutely summable. -/
 protected theorem Summable.tsum_mul_tsum (hf : Summable f) (hg : Summable g)
     (hfg : Summable fun x : ι × κ ↦ f x.1 * g x.2) :
     ((∑' x, f x) * ∑' y, g y) = ∑' z : ι × κ, f z.1 * g z.2 :=
@@ -193,7 +193,7 @@ variable [TopologicalSpace α] [NonUnitalNonAssocSemiring α] {f g : A → α}
 `(n, k, l) : Σ (n : ℕ), antidiagonal n ↦ f k * g l` is summable. -/
 theorem summable_mul_prod_iff_summable_mul_sigma_antidiagonal :
     (Summable fun x : A × A ↦ f x.1 * g x.2) ↔
-      Summable fun x : Σn : A, antidiagonal n ↦ f (x.2 : A × A).1 * g (x.2 : A × A).2 :=
+      Summable fun x : Σ n : A, antidiagonal n ↦ f (x.2 : A × A).1 * g (x.2 : A × A).2 :=
   Finset.sigmaAntidiagonalEquivProd.summable_iff.symm
 
 variable [T3Space α] [IsTopologicalSemiring α]

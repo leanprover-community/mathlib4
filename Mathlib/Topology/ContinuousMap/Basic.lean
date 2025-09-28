@@ -50,21 +50,24 @@ protected theorem continuousAt (f : C(α, β)) (x : α) : ContinuousAt f x :=
 theorem map_specializes (f : C(α, β)) {x y : α} (h : x ⤳ y) : f x ⤳ f y :=
   h.map f.2
 
-section
-
-variable (α β)
+section DiscreteTopology
+variable [DiscreteTopology α]
 
 /--
 The continuous functions from `α` to `β` are the same as the plain functions when `α` is discrete.
 -/
 @[simps]
-def equivFnOfDiscrete [DiscreteTopology α] : C(α, β) ≃ (α → β) :=
+def equivFnOfDiscrete : C(α, β) ≃ (α → β) :=
   ⟨fun f => f,
     fun f => ⟨f, continuous_of_discreteTopology⟩,
     fun _ => by ext; rfl,
     fun _ => by ext; rfl⟩
 
-end
+@[simp] lemma coe_equivFnOfDiscrete : ⇑equivFnOfDiscrete = (DFunLike.coe : C(α, β) → α → β) := rfl
+
+@[simp] lemma equivFnOfDiscrete_symm_apply (f : α → β) : equivFnOfDiscrete.symm f = f := rfl
+
+end DiscreteTopology
 
 variable (α)
 
@@ -149,6 +152,19 @@ instance [Nonempty α] [Nontrivial β] : Nontrivial C(α, β) :=
   ⟨let ⟨b₁, b₂, hb⟩ := exists_pair_ne β
   ⟨const _ b₁, const _ b₂, fun h => hb <| DFunLike.congr_fun h <| Classical.arbitrary α⟩⟩
 
+/-- The bijection `C(X₁, Y₁) ≃ C(X₂, Y₂)` induced by homeomorphisms
+`e : X₁ ≃ₜ X₂` and `e' : Y₁ ≃ₜ Y₂`. -/
+@[simps]
+def _root_.Homeomorph.continuousMapCongr {X₁ X₂ Y₁ Y₂ : Type*}
+    [TopologicalSpace X₁] [TopologicalSpace X₂]
+    [TopologicalSpace Y₁] [TopologicalSpace Y₂]
+    (e : X₁ ≃ₜ X₂) (e' : Y₁ ≃ₜ Y₂) :
+    C(X₁, Y₁) ≃ C(X₂, Y₂) where
+  toFun f := ContinuousMap.comp ⟨_, e'.continuous⟩ (f.comp ⟨_, e.symm.continuous⟩)
+  invFun g := ContinuousMap.comp ⟨_, e'.symm.continuous⟩ (g.comp ⟨_, e.continuous⟩)
+  left_inv _ := by aesop
+  right_inv _ := by aesop
+
 section Prod
 
 variable {α₁ α₂ β₁ β₂ : Type*} [TopologicalSpace α₁] [TopologicalSpace α₂] [TopologicalSpace β₁]
@@ -209,8 +225,6 @@ each term. This is a version of `Equiv.piCurry` for continuous maps.
 def sigmaEquiv : (∀ i, C(X i, A)) ≃ C((Σ i, X i), A) where
   toFun := sigma
   invFun f i := f.comp (sigmaMk i)
-  left_inv := by intro; ext; simp
-  right_inv := by intro; ext; simp
 
 end Sigma
 
@@ -241,8 +255,6 @@ each term
 def piEquiv : (∀ i, C(A, X i)) ≃ C(A, ∀ i, X i) where
   toFun := pi
   invFun f i := (eval i).comp f
-  left_inv := by intro; ext; simp [pi]
-  right_inv := by intro; ext; simp [pi]
 
 /-- Combine a collection of bundled continuous maps `C(X i, Y i)` into a bundled continuous map
 `C(∀ i, X i, ∀ i, Y i)`. -/
@@ -289,6 +301,52 @@ def restrictPreimage (f : C(α, β)) (s : Set β) : C(f ⁻¹' s, s) :=
     (map_continuousAt f _).restrictPreimage⟩
 
 end Restrict
+
+section mkD
+
+/--
+Interpret `f : α → β` as an element of `C(α, β)`, falling back to the default value
+`default : C(α, β)` if `f` is not continuous.
+This is mainly intended to be used for `C(α, β)`-valued integration. For example, if a family of
+functions `f : ι → α → β` satisfies that `f i` is continuous for almost every `i`, you can write
+the `C(α, β)`-valued integral "`∫ i, f i`" as `∫ i, ContinuousMap.mkD (f i) 0`.
+-/
+noncomputable def mkD (f : α → β) (default : C(α, β)) : C(α, β) :=
+  open scoped Classical in
+  if h : Continuous f then ⟨_, h⟩ else default
+
+lemma mkD_of_continuous {f : α → β} {g : C(α, β)} (hf : Continuous f) :
+    mkD f g = ⟨f, hf⟩ := by
+  simp only [mkD, hf, ↓reduceDIte]
+
+lemma mkD_of_not_continuous {f : α → β} {g : C(α, β)} (hf : ¬ Continuous f) :
+    mkD f g = g := by
+  simp only [mkD, hf, ↓reduceDIte]
+
+lemma mkD_apply_of_continuous {f : α → β} {g : C(α, β)} {x : α} (hf : Continuous f) :
+    mkD f g x = f x := by
+  rw [mkD_of_continuous hf, coe_mk]
+
+lemma mkD_of_continuousOn {s : Set α} {f : α → β} {g : C(s, β)}
+    (hf : ContinuousOn f s) :
+    mkD (s.restrict f) g = ⟨s.restrict f, hf.restrict⟩ :=
+  mkD_of_continuous hf.restrict
+
+lemma mkD_of_not_continuousOn {s : Set α} {f : α → β} {g : C(s, β)}
+    (hf : ¬ ContinuousOn f s) :
+    mkD (s.restrict f) g = g := by
+  rw [continuousOn_iff_continuous_restrict] at hf
+  exact mkD_of_not_continuous hf
+
+lemma mkD_apply_of_continuousOn {s : Set α} {f : α → β} {g : C(s, β)} {x : s}
+    (hf : ContinuousOn f s) :
+    mkD (s.restrict f) g x = f x := by
+  rw [mkD_of_continuousOn hf, coe_mk, Set.restrict_apply]
+
+lemma mkD_eq_self {f g : C(α, β)} : mkD f g = f :=
+  mkD_of_continuous f.continuous
+
+end mkD
 
 section Gluing
 

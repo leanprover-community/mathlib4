@@ -14,7 +14,7 @@ import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 -/
 
 
-assert_not_exists Submonoid Finset Star
+assert_not_exists Submonoid Finset TrivialStar
 
 open Function
 

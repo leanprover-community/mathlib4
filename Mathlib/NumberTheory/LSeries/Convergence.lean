@@ -75,7 +75,7 @@ lemma LSeries.abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable' {f : ℕ → �
     refine le_of_eq <| sInf_eq_bot.mpr fun y hy ↦ ?_
     cases y with
     | bot => simp at hy
-    | coe y => exact ⟨_,  ⟨_, h _ <| EReal.bot_lt_coe _, rfl⟩, mod_cast sub_one_lt y⟩
+    | coe y => exact ⟨_, ⟨_, h _ <| EReal.bot_lt_coe _, rfl⟩, mod_cast sub_one_lt y⟩
     | top => exact ⟨_, ⟨_, h _ <| EReal.bot_lt_coe 0, rfl⟩, EReal.zero_lt_top⟩
 
 /-- If `‖f n‖` is bounded by a constant times `n^x`, then the abscissa of absolute convergence
@@ -133,7 +133,7 @@ lemma LSeries.abscissaOfAbsConv_binop_le {F : (ℕ → ℂ) → (ℕ → ℂ) �
     (hF : ∀ {f g s}, LSeriesSummable f s → LSeriesSummable g s → LSeriesSummable (F f g) s)
     (f g : ℕ → ℂ) :
     abscissaOfAbsConv (F f g) ≤ max (abscissaOfAbsConv f) (abscissaOfAbsConv g) := by
-  refine abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable' fun x hx ↦  hF ?_ ?_
+  refine abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable' fun x hx ↦ hF ?_ ?_
   · exact LSeriesSummable_of_abscissaOfAbsConv_lt_re <|
       (ofReal_re x).symm ▸ (le_max_left ..).trans_lt hx
   · exact LSeriesSummable_of_abscissaOfAbsConv_lt_re <|

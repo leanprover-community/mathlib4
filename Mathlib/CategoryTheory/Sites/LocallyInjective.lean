@@ -90,15 +90,15 @@ instance [IsIso φ] : IsLocallyInjective J φ :=
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance isLocallyInjective_forget [IsLocallyInjective J φ] :
-    IsLocallyInjective J (whiskerRight φ (forget D)) where
+    IsLocallyInjective J (Functor.whiskerRight φ (forget D)) where
   equalizerSieve_mem x y h := equalizerSieve_mem J φ x y h
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma isLocallyInjective_forget_iff :
-    IsLocallyInjective J (whiskerRight φ (forget D)) ↔ IsLocallyInjective J φ := by
+    IsLocallyInjective J (Functor.whiskerRight φ (forget D)) ↔ IsLocallyInjective J φ := by
   constructor
   · intro
-    exact ⟨fun x y h => equalizerSieve_mem J (whiskerRight φ (forget D)) x y h⟩
+    exact ⟨fun x y h => equalizerSieve_mem J (Functor.whiskerRight φ (forget D)) x y h⟩
   · intro
     infer_instance
 
@@ -239,7 +239,7 @@ instance isLocallyInjective_forget [IsLocallyInjective φ] :
 lemma isLocallyInjective_iff_injective :
     IsLocallyInjective φ ↔ ∀ (X : Cᵒᵖ), Function.Injective (φ.val.app X) :=
   Presheaf.isLocallyInjective_iff_injective_of_separated _ _ (by
-    apply Presieve.isSeparated_of_isSheaf
+    apply Presieve.IsSheaf.isSeparated
     rw [← isSheaf_iff_isSheaf_of_type]
     exact ((sheafCompose J (forget D)).obj F₁).2)
 

@@ -171,7 +171,7 @@ theorem iterate_bijective (h : Bijective f') : ∀ n : ℕ, Bijective (f' ^ n)
 
 theorem injective_of_iterate_injective {n : ℕ} (hn : n ≠ 0) (h : Injective (f' ^ n)) :
     Injective f' := by
-  rw [← Nat.succ_pred_eq_of_pos (show 0 < n by omega), iterate_succ, coe_comp] at h
+  rw [← Nat.succ_pred_eq_of_pos (show 0 < n by cutsat), iterate_succ, coe_comp] at h
   exact h.of_comp
 
 theorem surjective_of_iterate_surjective {n : ℕ} (hn : n ≠ 0) (h : Surjective (f' ^ n)) :
@@ -340,13 +340,14 @@ end AddCommMonoid
 
 section Module
 
-variable [Semiring R] [Semiring S] [AddCommMonoid M] [AddCommMonoid M₂]
-variable [Module R M] [Module R M₂] [Module S M₂] [SMulCommClass R S M₂]
+variable [Semiring R] [Semiring S] [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
+variable [Module R M] [Module R M₁] [Module R M₂] [Module S M₁] [Module S M₂]
+variable [SMulCommClass R S M₁] [SMulCommClass R S M₂]
 variable (S)
 
 /-- Applying a linear map at `v : M`, seen as `S`-linear map from `M →ₗ[R] M₂` to `M₂`.
 
- See `LinearMap.applyₗ` for a version where `S = R`. -/
+See `LinearMap.applyₗ` for a version where `S = R`. -/
 @[simps]
 def applyₗ' : M →+ (M →ₗ[R] M₂) →ₗ[S] M₂ where
   toFun v :=
@@ -356,6 +357,19 @@ def applyₗ' : M →+ (M →ₗ[R] M₂) →ₗ[S] M₂ where
   map_zero' := LinearMap.ext fun f => f.map_zero
   map_add' _ _ := LinearMap.ext fun f => f.map_add _ _
 
+variable [CompatibleSMul M₁ M₂ S R]
+
+/-- Composition by `f : M₂ → M₃` is a linear map from the space of linear maps `M → M₂`
+to the space of linear maps `M → M₃`. -/
+def compRight (f : M₁ →ₗ[R] M₂) : (M →ₗ[R] M₁) →ₗ[S] M →ₗ[R] M₂ where
+  toFun g := f.comp g
+  map_add' _ _ := LinearMap.ext fun _ ↦ map_add f _ _
+  map_smul' _ _ := LinearMap.ext fun _ ↦ map_smul_of_tower ..
+
+@[simp]
+theorem compRight_apply (f : M₁ →ₗ[R] M₂) (g : M →ₗ[R] M₁) : compRight S f g = f.comp g :=
+  rfl
+
 end Module
 
 section CommSemiring
@@ -363,17 +377,6 @@ section CommSemiring
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
 variable [Module R M] [Module R M₂] [Module R M₃]
 variable (f : M →ₗ[R] M₂)
-
-/-- Composition by `f : M₂ → M₃` is a linear map from the space of linear maps `M → M₂`
-to the space of linear maps `M → M₃`. -/
-def compRight (f : M₂ →ₗ[R] M₃) : (M →ₗ[R] M₂) →ₗ[R] M →ₗ[R] M₃ where
-  toFun g := f.comp g
-  map_add' _ _ := LinearMap.ext fun _ => map_add f _ _
-  map_smul' _ _ := LinearMap.ext fun _ => map_smul f _ _
-
-@[simp]
-theorem compRight_apply (f : M₂ →ₗ[R] M₃) (g : M →ₗ[R] M₂) : compRight f g = f.comp g :=
-  rfl
 
 /-- Applying a linear map at `v : M`, seen as a linear map from `M →ₗ[R] M₂` to `M₂`.
 See also `LinearMap.applyₗ'` for a version that works with two different semirings.

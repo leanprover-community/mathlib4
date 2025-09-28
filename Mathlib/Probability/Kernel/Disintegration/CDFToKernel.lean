@@ -61,7 +61,7 @@ variable {f : α × β → ℚ → ℝ}
 /-- a function `f : α × β → ℚ → ℝ` is called a rational conditional kernel CDF of `κ` with respect
 to `ν` if is measurable, if `fun b ↦ f (a, b) x` is `(ν a)`-integrable for all `a : α` and `x : ℝ`
 and for all measurable sets `s : Set β`, `∫ b in s, f (a, b) x ∂(ν a) = (κ a).real (s ×ˢ Iic x)`.
-Also the `ℚ → ℝ` function `f (a, b)` should satisfy the properties of a Sieltjes function for
+Also the `ℚ → ℝ` function `f (a, b)` should satisfy the properties of a Stieltjes function for
 `(ν a)`-almost all `b : β`. -/
 structure IsRatCondKernelCDF (f : α × β → ℚ → ℝ) (κ : Kernel α (β × ℝ)) (ν : Kernel α β) :
     Prop where
@@ -163,7 +163,7 @@ lemma setLIntegral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondK
   rw [← Monotone.measure_iInter]
   · rw [← prod_iInter]
     congr with y
-    simp only [mem_iInter, mem_Iic, Subtype.forall, Subtype.coe_mk]
+    simp only [mem_iInter, mem_Iic, Subtype.forall]
     exact ⟨le_of_forall_lt_rat_imp_le, fun hyx q hq ↦ hyx.trans hq.le⟩
   · exact fun i j hij ↦ prod_mono_right (by gcongr)
   · exact fun i ↦ (hs.prod measurableSet_Iic).nullMeasurableSet
@@ -334,7 +334,7 @@ lemma _root_.MeasureTheory.Measure.iInf_rat_gt_prod_Iic {ρ : Measure (α × ℝ
   rw [← Monotone.measure_iInter]
   · rw [← prod_iInter]
     congr with x : 1
-    simp only [mem_iInter, mem_Iic, Subtype.forall, Subtype.coe_mk]
+    simp only [mem_iInter, mem_Iic, Subtype.forall]
     refine ⟨fun h ↦ ?_, fun h a hta ↦ h.trans ?_⟩
     · refine le_of_forall_lt_rat_imp_le fun q htq ↦ h q ?_
       exact mod_cast htq
@@ -562,13 +562,13 @@ lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
     rw [← lintegral_add_compl _ ht₁]
     have h_eq1 : ∫⁻ x in t₁, hf.toKernel f (a, x) (Prod.mk x ⁻¹' t₁ ×ˢ t₂) ∂(ν a)
         = ∫⁻ x in t₁, hf.toKernel f (a, x) t₂ ∂(ν a) := by
-      refine setLIntegral_congr_fun ht₁ (Eventually.of_forall fun a ha ↦ ?_)
+      refine setLIntegral_congr_fun ht₁ (fun a ha ↦ ?_)
       rw [mk_preimage_prod_right ha]
     have h_eq2 :
         ∫⁻ x in t₁ᶜ, hf.toKernel f (a, x) (Prod.mk x ⁻¹' t₁ ×ˢ t₂) ∂(ν a) = 0 := by
       suffices h_eq_zero :
           ∀ x ∈ t₁ᶜ, hf.toKernel f (a, x) (Prod.mk x ⁻¹' t₁ ×ˢ t₂) = 0 by
-        rw [setLIntegral_congr_fun ht₁.compl (Eventually.of_forall h_eq_zero)]
+        rw [setLIntegral_congr_fun ht₁.compl h_eq_zero]
         simp only [lintegral_const, zero_mul]
       intro a hat₁
       rw [mem_compl_iff] at hat₁
@@ -604,7 +604,7 @@ lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
       have h_disj := hf_disj hij
       rw [Function.onFun, disjoint_iff_inter_eq_empty] at h_disj ⊢
       ext1 x
-      simp only [mem_inter_iff, mem_setOf_eq, mem_empty_iff_false, iff_false]
+      simp only [mem_inter_iff, mem_empty_iff_false, iff_false]
       intro h_mem_both
       suffices (a, x) ∈ ∅ by rwa [mem_empty_iff_false] at this
       rwa [← h_disj, mem_inter_iff]

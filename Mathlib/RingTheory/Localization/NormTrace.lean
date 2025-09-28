@@ -16,11 +16,11 @@ This file contains results on the combination of `IsLocalization` and `Algebra.n
 
 ## Main results
 
- * `Algebra.norm_localization`: let `S` be an extension of `R` and `Rₘ Sₘ` be localizations at `M`
+* `Algebra.norm_localization`: let `S` be an extension of `R` and `Rₘ Sₘ` be localizations at `M`
   of `R S` respectively. Then the norm of `a : Sₘ` over `Rₘ` is the norm of `a : S` over `R`
   if `S` is free as `R`-module.
 
- * `Algebra.trace_localization`: let `S` be an extension of `R` and `Rₘ Sₘ` be localizations at `M`
+* `Algebra.trace_localization`: let `S` be an extension of `R` and `Rₘ Sₘ` be localizations at `M`
   of `R S` respectively. Then the trace of `a : Sₘ` over `Rₘ` is the trace of `a : S` over `R`
   if `S` is free as `R`-module.
 
@@ -34,7 +34,7 @@ field norm, algebra norm, localization
 
 -/
 
-
+open Module
 open scoped nonZeroDivisors
 
 variable (R : Type*) {S : Type*} [CommRing R] [CommRing S] [Algebra R S]

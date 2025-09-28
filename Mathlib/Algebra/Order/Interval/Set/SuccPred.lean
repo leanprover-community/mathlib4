@@ -15,13 +15,13 @@ order.
 ## Notes
 
 Please keep in sync with:
-* `Mathlib.Algebra.Order.Interval.Finset.SuccPred`
-* `Mathlib.Order.Interval.Finset.SuccPred`
-* `Mathlib.Order.Interval.Set.SuccPred`
+* `Mathlib/Algebra/Order/Interval/Finset/SuccPred.lean`
+* `Mathlib/Order/Interval/Finset/SuccPred.lean`
+* `Mathlib/Order/Interval/Set/SuccPred.lean`
 
 ## TODO
 
-Copy over `insert` lemmas from `Mathlib.Order.Interval.Finset.Nat`.
+Copy over `insert` lemmas from `Mathlib/Order/Interval/Finset/Nat.lean`.
 -/
 
 open Function Order OrderDual

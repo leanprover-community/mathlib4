@@ -3,7 +3,7 @@ Copyright (c) 2020 Kevin Lacker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker
 -/
-import Mathlib.Data.Nat.Digits
+import Mathlib.Data.Nat.Digits.Lemmas
 
 /-!
 # IMO 1960 Q1
@@ -71,7 +71,7 @@ theorem searchUpTo_step {c n} (H : SearchUpTo c n) {c' n'} (ec : c + 1 = c') (en
   obtain ⟨h₁, ⟨m, rfl⟩, h₂⟩ := id p
   by_cases h : 11 * m < c * 11; · exact H _ h p
   obtain rfl : m = c := by omega
-  rw [Nat.mul_div_cancel_left _ (by norm_num : 11 > 0), mul_comm] at h₂
+  rw [Nat.mul_div_cancel_left _ (by simp : 11 > 0), mul_comm] at h₂
   refine (H' h₂).imp ?_ ?_ <;> · rintro rfl; norm_num
 
 theorem searchUpTo_end {c} (H : SearchUpTo c 1001) {n : ℕ} (ppn : ProblemPredicate n) :
@@ -83,7 +83,7 @@ theorem right_direction {n : ℕ} : ProblemPredicate n → SolutionPredicate n :
   iterate 82
     replace :=
       searchUpTo_step this (by norm_num1; rfl) (by norm_num1; rfl) rfl
-        (by norm_num <;> decide)
+        (by simp +decide)
   exact searchUpTo_end this
 
 /-

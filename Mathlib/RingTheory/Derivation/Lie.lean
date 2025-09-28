@@ -43,8 +43,8 @@ theorem commutator_apply : ⁅D1, D2⁆ a = D1 (D2 a) - D2 (D1 a) :=
 instance : LieRing (Derivation R A A) where
   add_lie d e f := by ext a; simp only [commutator_apply, add_apply, map_add]; ring
   lie_add d e f := by ext a; simp only [commutator_apply, add_apply, map_add]; ring
-  lie_self d := by ext a; simp only [commutator_apply, add_apply, map_add]; ring_nf; simp
-  leibniz_lie d e f := by ext a; simp only [commutator_apply, add_apply, sub_apply, map_sub]; ring
+  lie_self d := by ext a; simp only [commutator_apply]; ring_nf; simp
+  leibniz_lie d e f := by ext a; simp only [commutator_apply, add_apply, map_sub]; ring
 
 instance instLieAlgebra : LieAlgebra R (Derivation R A A) :=
   { Derivation.instModule with

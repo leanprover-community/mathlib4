@@ -38,7 +38,7 @@ noncomputable section
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
-open Module
+open Module InnerProductSpace
 
 open scoped RealInnerProductSpace
 
@@ -86,7 +86,7 @@ top-dimensional forms on `E`. -/
 theorem det_eq_neg_det_of_opposite_orientation (h : e.toBasis.orientation ≠ f.toBasis.orientation) :
     e.toBasis.det = -f.toBasis.det := by
   rw [e.toBasis.det.eq_smul_basis_det f.toBasis]
-  simp [e.det_to_matrix_orthonormalBasis_of_opposite_orientation f h, neg_one_smul]
+  simp [e.det_to_matrix_orthonormalBasis_of_opposite_orientation f h]
 
 variable [Nonempty ι]
 
@@ -175,7 +175,7 @@ irreducible_def volumeForm : E [⋀^Fin n]→ₗ[ℝ] ℝ := by
 theorem volumeForm_zero_pos [_i : Fact (finrank ℝ E = 0)] :
     Orientation.volumeForm (positiveOrientation : Orientation ℝ E (Fin 0)) =
       AlternatingMap.constLinearEquivOfIsEmpty 1 := by
-  simp [volumeForm, Or.by_cases, if_pos]
+  simp [volumeForm, Or.by_cases]
 
 theorem volumeForm_zero_neg [_i : Fact (finrank ℝ E = 0)] :
     Orientation.volumeForm (-positiveOrientation : Orientation ℝ E (Fin 0)) =
@@ -305,9 +305,9 @@ theorem volumeForm_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ
 theorem volumeForm_comp_linearIsometryEquiv (φ : E ≃ₗᵢ[ℝ] E)
     (hφ : 0 < LinearMap.det (φ.toLinearEquiv : E →ₗ[ℝ] E)) (x : Fin n → E) :
     o.volumeForm (φ ∘ x) = o.volumeForm x := by
-  rcases n with - | n -- Porting note: need to explicitly prove `FiniteDimensional ℝ E`
+  rcases n with - | n
   · refine o.eq_or_eq_neg_of_isEmpty.elim ?_ ?_ <;> rintro rfl <;> simp
-  haveI : FiniteDimensional ℝ E := .of_fact_finrank_eq_succ n
+  have : FiniteDimensional ℝ E := .of_fact_finrank_eq_succ n
   convert o.volumeForm_map φ (φ ∘ x)
   · symm
     rwa [← o.map_eq_iff_det_pos φ.toLinearEquiv] at hφ

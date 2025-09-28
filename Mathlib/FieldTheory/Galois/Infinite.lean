@@ -135,9 +135,9 @@ lemma fixingSubgroup_fixedField (H : ClosedSubgroup (K ≃ₐ[k] K)) [IsGalois k
     (IntermediateField.fixedField H.toSubgroup)).mp le_rfl)
   intro σ hσ
   by_contra h
-  have nhd : H.carrierᶜ ∈ nhds σ := H.isClosed'.isOpen_compl.mem_nhds h
-  rw [GroupFilterBasis.nhds_eq (x₀ := σ) (galGroupBasis k K)] at nhd
-  rcases nhd with ⟨b, ⟨gp, ⟨L, hL, eq'⟩, eq⟩, sub⟩
+  have nhds : H.carrierᶜ ∈ nhds σ := H.isClosed'.isOpen_compl.mem_nhds h
+  rw [GroupFilterBasis.nhds_eq (x₀ := σ) (galGroupBasis k K)] at nhds
+  rcases nhds with ⟨b, ⟨gp, ⟨L, hL, eq'⟩, eq⟩, sub⟩
   rw [← eq'] at eq
   have := hL.out
   let L' : FiniteGaloisIntermediateField k K := {
@@ -237,7 +237,6 @@ theorem normal_iff_isGalois (L : IntermediateField k K) [IsGalois k K] :
       IntermediateField.fixedField <| g x.1
     have (x : K) : (g x).Normal :=
       Subgroup.Normal.map h (restrictNormalHom (adjoin k {x})) (restrictNormalHom_surjective K)
-    have (l : L) := IsGalois.of_fixedField_normal_subgroup (g l.1)
     have (l : L) : Normal k (f l) :=
       Normal.of_algEquiv <| IntermediateField.liftAlgEquiv <| IntermediateField.fixedField (g l.1)
     have n : Normal k ↥(⨆ l : L, f l) := IntermediateField.normal_iSup k K f
@@ -253,8 +252,7 @@ theorem normal_iff_isGalois (L : IntermediateField k K) [IsGalois k K] :
           fixedField_fixingSubgroup L, IntermediateField.mem_inf, hl, true_and]
           using adjoin_simple_le_iff.mp le_rfl
     rw [this] at n
-    let _ : Algebra.IsSeparable k L := Algebra.isSeparable_tower_bot_of_isSeparable k L K
-    apply IsGalois.mk
+    constructor
   · simpa only [IntermediateFieldEquivClosedSubgroup, RelIso.coe_fn_mk, Equiv.coe_fn_mk,
       ← L.restrictNormalHom_ker] using MonoidHom.normal_ker (restrictNormalHom L)
 

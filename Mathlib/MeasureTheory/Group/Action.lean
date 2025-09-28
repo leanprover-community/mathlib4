@@ -15,7 +15,7 @@ import Mathlib.Order.Filter.EventuallyConst
 # Measures invariant under group actions
 
 A measure `μ : Measure α` is said to be *invariant* under an action of a group `G` if scalar
-multiplication by `c : G` is a measure preserving map for all `c`. In this file we define a
+multiplication by `c : G` is a measure-preserving map for all `c`. In this file we define a
 typeclass for measures invariant under action of an (additive or multiplicative) group and prove
 some basic properties of such measures.
 -/
@@ -61,13 +61,14 @@ variable {m : MeasurableSpace α} [SMul G α]
   (μ : Measure α) [SMulInvariantMeasure G α μ] {s : Set α}
 
 /-- See also `measure_preimage_smul_of_nullMeasurableSet` and `measure_preimage_smul`. -/
-@[to_additive "See also `measure_preimage_smul_of_nullMeasurableSet` and `measure_preimage_smul`."]
+@[to_additive
+/-- See also `measure_preimage_smul_of_nullMeasurableSet` and `measure_preimage_smul`. -/]
 theorem measure_preimage_smul_le (c : G) (s : Set α) : μ ((c • ·) ⁻¹' s) ≤ μ s :=
   (outerMeasure_le_iff (m := .map (c • ·) μ.1)).2
     (fun _s hs ↦ (SMulInvariantMeasure.measure_preimage_smul _ hs).le) _
 
 /-- See also `smul_ae`. -/
-@[to_additive "See also `vadd_ae`."]
+@[to_additive /-- See also `vadd_ae`. -/]
 theorem tendsto_smul_ae (c : G) : Filter.Tendsto (c • ·) (ae μ) (ae μ) := fun _s hs ↦
   eq_bot_mono (measure_preimage_smul_le μ c _) hs
 
@@ -215,7 +216,7 @@ variable [MeasurableSpace G] [MeasurableSMul G α] in
 
 - 5: for any `c : G`, scalar multiplication by `c` maps `μ` to `μ`;
 
-- 6: for any `c : G`, scalar multiplication by `c` is a measure preserving map. -/
+- 6: for any `c : G`, scalar multiplication by `c` is a measure-preserving map. -/
 @[to_additive]
 theorem smulInvariantMeasure_tfae :
     List.TFAE
@@ -255,7 +256,7 @@ theorem smulInvariantMeasure_tfae :
 
 - 5: for any `c : G`, vector addition of `c` maps `μ` to `μ`;
 
-- 6: for any `c : G`, vector addition of `c` is a measure preserving map. -/
+- 6: for any `c : G`, vector addition of `c` is a measure-preserving map. -/
 add_decl_doc vaddInvariantMeasure_tfae
 
 variable {G}

@@ -9,14 +9,14 @@ import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 import Mathlib.ModelTheory.Algebra.Field.Basic
 
 /-!
-# First order theory of fields
+# First-order theory of fields
 
-This file defines the first order theory of fields of characteristic `p` as a theory over the
+This file defines the first-order theory of fields of characteristic `p` as a theory over the
 language of rings
 
 ## Main definitions
 
-- `FirstOrder.Language.Theory.fieldOfChar` : the first order theory of fields of characteristic `p`
+- `FirstOrder.Language.Theory.fieldOfChar` : the first-order theory of fields of characteristic `p`
   as a theory over the language of rings
 -/
 
@@ -35,9 +35,9 @@ noncomputable def eqZero (n : ℕ) : Language.ring.Sentence :=
 
 @[simp] theorem realize_eqZero [CommRing K] [CompatibleRing K] (n : ℕ)
     (v : Empty → K) : (Formula.Realize (eqZero n) v) ↔ ((n : K) = 0) := by
-  simp [eqZero, Term.realize]
+  simp [eqZero]
 
-/-- The first order theory of fields of characteristic `p` as a theory over the language of rings -/
+/-- The first-order theory of fields of characteristic `p` as a theory over the language of rings -/
 def _root_.FirstOrder.Language.Theory.fieldOfChar (p : ℕ) : Language.ring.Theory :=
   Theory.field ∪
   if p = 0
@@ -53,7 +53,7 @@ instance model_hasChar_of_charP [Field K] [CompatibleRing K] [CharP K p] :
     simp [hp.ne_zero, hp, Sentence.Realize]
   | inr hp =>
     subst hp
-    simp only [ite_false, ite_true, Theory.model_iff, Set.mem_image, Set.mem_setOf_eq,
+    simp only [ite_true, Theory.model_iff, Set.mem_image, Set.mem_setOf_eq,
       Sentence.Realize, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
       Formula.realize_not, realize_eqZero, ← CharZero.charZero_iff_forall_prime_ne_zero]
     exact CharP.charP_to_charZero K

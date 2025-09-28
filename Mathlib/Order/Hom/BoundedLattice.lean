@@ -178,16 +178,16 @@ section BooleanAlgebra
 variable [BooleanAlgebra α] [BooleanAlgebra β] [FunLike F α β] [BoundedLatticeHomClass F α β]
 variable (f : F)
 
-/-- Special case of `map_compl` for boolean algebras. -/
+/-- Special case of `map_compl` for Boolean algebras. -/
 theorem map_compl' (a : α) : f aᶜ = (f a)ᶜ :=
   (isCompl_compl.map _).compl_eq.symm
 
-/-- Special case of `map_sdiff` for boolean algebras. -/
+/-- Special case of `map_sdiff` for Boolean algebras. -/
 theorem map_sdiff' (a b : α) : f (a \ b) = f a \ f b := by
   rw [sdiff_eq, sdiff_eq, map_inf, map_compl']
 
 open scoped symmDiff in
-/-- Special case of `map_symmDiff` for boolean algebras. -/
+/-- Special case of `map_symmDiff` for Boolean algebras. -/
 theorem map_symmDiff' (a b : α) : f (a ∆ b) = f a ∆ f b := by
   rw [symmDiff, symmDiff, map_sup, map_sdiff', map_sdiff']
 
@@ -680,8 +680,6 @@ lattices. -/
 def dual : SupBotHom α β ≃ InfTopHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨SupHom.dual f.toSupHom, f.map_bot'⟩
   invFun f := ⟨SupHom.dual.symm f.toInfHom, f.map_top'⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp] theorem dual_id : SupBotHom.dual (SupBotHom.id α) = InfTopHom.id _ := rfl
 
@@ -712,8 +710,6 @@ lattices. -/
 protected def dual : InfTopHom α β ≃ SupBotHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨InfHom.dual f.toInfHom, f.map_top'⟩
   invFun f := ⟨InfHom.dual.symm f.toSupHom, f.map_bot'⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp]
 theorem dual_id : InfTopHom.dual (InfTopHom.id α) = SupBotHom.id _ :=
@@ -746,8 +742,6 @@ bounded lattices. -/
 protected def dual : BoundedLatticeHom α β ≃ BoundedLatticeHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨LatticeHom.dual f.toLatticeHom, f.map_bot', f.map_top'⟩
   invFun f := ⟨LatticeHom.dual.symm f.toLatticeHom, f.map_bot', f.map_top'⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp]
 theorem dual_id : BoundedLatticeHom.dual (BoundedLatticeHom.id α) = BoundedLatticeHom.id _ :=

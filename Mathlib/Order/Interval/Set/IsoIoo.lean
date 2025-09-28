@@ -36,4 +36,4 @@ def orderIsoIooNegOneOne (k : Type*) [Field k] [LinearOrder k] [IsStrictOrderedR
         hy.trans_lt (lt_one_add _), *]
   · refine fun x ↦ Subtype.ext ?_
     have : 0 < 1 - |(x : k)| := sub_pos.2 (abs_lt.2 x.2)
-    field_simp [abs_div, this.ne', abs_of_pos this]
+    simp [field, abs_div, abs_of_pos this]

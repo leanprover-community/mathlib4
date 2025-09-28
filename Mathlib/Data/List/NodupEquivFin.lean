@@ -51,7 +51,7 @@ the set of elements of `l`. -/
 def getEquiv (l : List α) (H : Nodup l) : Fin (length l) ≃ { x // x ∈ l } where
   toFun i := ⟨get l i, get_mem _ _⟩
   invFun x := ⟨idxOf (↑x) l, idxOf_lt_length_iff.2 x.2⟩
-  left_inv i := by simp only [List.get_idxOf, eq_self_iff_true, Fin.eta, Subtype.coe_mk, H]
+  left_inv i := by simp only [List.get_idxOf, Fin.eta, H]
   right_inv x := by simp
 
 /-- If `l` lists all the elements of `α` without duplicates, then `List.get` defines
@@ -105,8 +105,9 @@ then `Sublist l l'`.
 -/
 theorem sublist_of_orderEmbedding_getElem?_eq {l l' : List α} (f : ℕ ↪o ℕ)
     (hf : ∀ ix : ℕ, l[ix]? = l'[f ix]?) : l <+ l' := by
-  induction' l with hd tl IH generalizing l' f
-  · simp
+  induction l generalizing l' f with
+  | nil => simp
+  | cons hd tl IH => ?_
   have : some hd = l'[f 0]? := by simpa using hf 0
   rw [eq_comm, List.getElem?_eq_some_iff] at this
   obtain ⟨w, h⟩ := this
@@ -126,9 +127,6 @@ theorem sublist_of_orderEmbedding_getElem?_eq {l l' : List α} (f : ℕ ↪o ℕ
   apply List.Sublist.append _ (IH _ this)
   rw [List.singleton_sublist, ← h, l'.getElem_take' _ (Nat.lt_succ_self _)]
   exact List.getElem_mem _
-
-@[deprecated (since := "2025-02-15")] alias sublist_of_orderEmbedding_get?_eq :=
-sublist_of_orderEmbedding_getElem?_eq
 
 /-- A `l : List α` is `Sublist l l'` for `l' : List α` iff
 there is `f`, an order-preserving embedding of `ℕ` into `ℕ` such that
@@ -154,9 +152,6 @@ theorem sublist_iff_exists_orderEmbedding_getElem?_eq {l l' : List α} :
         · simpa using hf _
   · rintro ⟨f, hf⟩
     exact sublist_of_orderEmbedding_getElem?_eq f hf
-
-@[deprecated (since := "2025-02-15")] alias sublist_iff_exists_orderEmbedding_get?_eq :=
-sublist_iff_exists_orderEmbedding_getElem?_eq
 
 /-- A `l : List α` is `Sublist l l'` for `l' : List α` iff
 there is `f`, an order-preserving embedding of `Fin l.length` into `Fin l'.length` such that
@@ -189,7 +184,7 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
       dsimp only
       split_ifs with hi hj hj
       · rwa [Fin.val_fin_lt, f.lt_iff_lt]
-      · omega
+      · cutsat
       · exact absurd (h.trans hj) hi
       · simpa using h
     · intro i
@@ -209,7 +204,7 @@ theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
       ∃ (n m : Fin l.length) (_ : n < m),
         x = l.get n ∧ x = l.get m := by
   classical
-    rw [duplicate_iff_two_le_count, le_count_iff_replicate_sublist,
+    rw [duplicate_iff_two_le_count, ← replicate_sublist_iff,
       sublist_iff_exists_fin_orderEmbedding_get_eq]
     constructor
     · rintro ⟨f, hf⟩

@@ -64,17 +64,36 @@ lemma CFC.monotoneOn_one_sub_one_add_inv :
   exact rpow_neg_one_le_rpow_neg_one (add_nonneg zero_le_one ha) (by gcongr) <|
     isUnit_of_le isUnit_one zero_le_one <| le_add_of_nonneg_right ha
 
+lemma CFC.monotoneOn_one_sub_one_add_inv_real :
+    MonotoneOn (cfcₙ (fun x : ℝ => 1 - (1 + x)⁻¹)) (Set.Ici (0 : A)) := by
+  intro a (ha : 0 ≤ a) b (hb : 0 ≤ b) hab
+  calc _ = cfcₙ (fun x : ℝ≥0 => 1 - (1 + x)⁻¹) a := by
+          rw [cfcₙ_nnreal_eq_real _ _ ha]
+          refine cfcₙ_congr ?_
+          intro x hx
+          have hx' : 0 ≤ x := by grind
+          simp [hx']
+    _ ≤ cfcₙ (fun x : ℝ≥0 => 1 - (1 + x)⁻¹) b :=
+          CFC.monotoneOn_one_sub_one_add_inv ha hb hab
+    _ = cfcₙ (fun x : ℝ => 1 - (1 + x)⁻¹) b := by
+          rw [cfcₙ_nnreal_eq_real _ _ hb]
+          refine cfcₙ_congr ?_
+          intro x hx
+          have hx' : 0 ≤ x := by grind
+          simp [hx']
+
 lemma Set.InvOn.one_sub_one_add_inv : Set.InvOn (fun x ↦ 1 - (1 + x)⁻¹) (fun x ↦ x * (1 - x)⁻¹)
     {x : ℝ≥0 | x < 1} {x : ℝ≥0 | x < 1} := by
   have : (fun x : ℝ≥0 ↦ x * (1 + x)⁻¹) = fun x ↦ 1 - (1 + x)⁻¹ := by
     ext x : 1
-    field_simp
-    simp [tsub_mul, inv_mul_cancel₀]
+    simp [field, mul_tsub]
   rw [← this]
   constructor <;> intro x (hx : x < 1)
   · have : 0 < 1 - x := tsub_pos_of_lt hx
-    field_simp [tsub_add_cancel_of_le hx.le, tsub_tsub_cancel_of_le hx.le]
-  · field_simp [mul_tsub]
+    simp [field, tsub_add_cancel_of_le hx.le]
+  · simp [mul_assoc, ← mul_inv, mul_tsub]
+    field_simp
+    simp
 
 lemma norm_cfcₙ_one_sub_one_add_inv_lt_one (a : A) :
     ‖cfcₙ (fun x : ℝ≥0 ↦ 1 - (1 + x)⁻¹) a‖ < 1 :=
@@ -148,7 +167,7 @@ lemma tendsto_mul_right_of_forall_nonneg_tendsto {l : Filter A}
     (h : ∀ m, 0 ≤ m → ‖m‖ < 1 → Tendsto (· * m) l (𝓝 m)) (m : A) :
     Tendsto (· * m) l (𝓝 m) := by
   obtain ⟨n, c, x, rfl⟩ := mem_span_set'.mp <| by
-    show m ∈ span ℂ ({x | 0 ≤ x} ∩ ball 0 1)
+    change m ∈ span ℂ ({x | 0 ≤ x} ∩ ball 0 1)
     simp [span_nonneg_inter_unitBall]
   simp_rw [Finset.mul_sum]
   refine tendsto_finset_sum _ fun i _ ↦ ?_
@@ -252,7 +271,7 @@ private lemma tendsto_mul_right_approximateUnit (m : A) :
   generalize (x : A⁺¹) = x, (m : A⁺¹) = m at *
   set g : ℝ≥0 → ℝ≥0 := fun y ↦ 1 - (1 + y)⁻¹
   have hg : Continuous g := by
-    rw [continuous_iff_continuousOn_univ]
+    rw [← continuousOn_univ]
     fun_prop (disch := intro _ _; positivity)
   have hg' : ContinuousOn (fun y ↦ (1 + ε⁻¹ ^ 2 • y)⁻¹) (spectrum ℝ≥0 m) :=
     ContinuousOn.inv₀ (by fun_prop) fun _ _ ↦ by positivity
@@ -263,10 +282,9 @@ private lemma tendsto_mul_right_approximateUnit (m : A) :
       cfc (fun y : ℝ≥0 ↦ y * (1 + ε⁻¹ ^ 2 • y)⁻¹ * y) m by
     rw [this]
     refine nnnorm_cfc_nnreal_le fun y hy ↦ ?_
-    field_simp
     calc
-      y * ε ^ 2 * y / (ε ^ 2 + y) ≤ ε ^ 2 * 1 := by
-        rw [mul_div_assoc]
+      y * (1 + ε⁻¹ ^ 2 • y)⁻¹ * y = y * ε ^ 2 * (y / (ε ^ 2 + y)) := by simp [field]
+      _ ≤ ε ^ 2 * 1 := by
         gcongr
         · refine mul_le_of_le_one_left (zero_le _) ?_
           have hm' := hm₂.le

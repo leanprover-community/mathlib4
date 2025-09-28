@@ -1,5 +1,7 @@
-import Mathlib.Tactic.DeriveTraversable
+import Mathlib.Deprecated.Tactic.DeriveTraversable
 import Mathlib.Control.Traversable.Instances
+
+set_option linter.style.commandStart false
 
 namespace Testing
 

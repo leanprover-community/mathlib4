@@ -58,10 +58,6 @@ lemma mem_locallyConstant_essImage_of_isColimit_mapCocone (X : CondensedSet.{u})
     Condensed.isoLocallyConstantOfIsColimit _ h
   exact ⟨_, ⟨e.functor.preimageIso ((sheafToPresheaf _ _).preimageIso i.symm)⟩⟩
 
-@[deprecated (since := "2024-12-25")]
-alias mem_locallyContant_essImage_of_isColimit_mapCocone :=
-  mem_locallyConstant_essImage_of_isColimit_mapCocone
-
 /--
 `CondensedSet.LocallyConstant.functor` is left adjoint to the forgetful functor from condensed
 sets to sets.
@@ -184,10 +180,6 @@ lemma mem_locallyConstant_essImage_of_isColimit_mapCocone (X : LightCondSet.{u})
   let i : X.val ≅ (LightCondSet.LocallyConstant.functor.obj _).val :=
     LightCondensed.isoLocallyConstantOfIsColimit _ h
   exact ⟨_, ⟨((sheafToPresheaf _ _).preimageIso i.symm)⟩⟩
-
-@[deprecated (since := "2024-12-25")]
-alias mem_locallyContant_essImage_of_isColimit_mapCocone :=
-  mem_locallyConstant_essImage_of_isColimit_mapCocone
 
 /--
 `LightCondSet.LocallyConstant.functor` is left adjoint to the forgetful functor from light condensed

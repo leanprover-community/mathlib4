@@ -31,7 +31,7 @@ This is a concrete implementation that is useful for simplicity and computabilit
 sequence, cauchy, abs val, absolute value
 -/
 
-assert_not_exists Finset Module Submonoid FloorRing Module
+assert_not_exists Finset Module Submonoid FloorRing
 
 variable {α β : Type*}
 
@@ -76,6 +76,7 @@ theorem rat_inv_continuous_lemma {β : Type*} [DivisionRing β] (abv : β → α
   rw [mul_assoc, inv_mul_cancel_right₀ b0.ne', ← mul_assoc, mul_inv_cancel₀ a0.ne', one_mul]
   refine h.trans_le ?_
   gcongr
+  exact mul_nonneg a0.le ε0.le
 
 end
 
@@ -92,7 +93,6 @@ variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] [Ring β]
   {abv : β → α} [IsAbsoluteValue abv] {f g : ℕ → β}
 
 -- see Note [nolint_ge]
---@[nolint ge_or_gt] -- Porting note: restore attribute
 theorem cauchy₂ (hf : IsCauSeq abv f) {ε : α} (ε0 : 0 < ε) :
     ∃ i, ∀ j ≥ i, ∀ k ≥ i, abv (f j - f k) < ε := by
   refine (hf _ (half_pos ε0)).imp fun i hi j ij k ik => ?_
@@ -182,7 +182,6 @@ def ofEq (f : CauSeq β abv) (g : ℕ → β) (e : ∀ i, f i = g i) : CauSeq β
 variable [IsAbsoluteValue abv]
 
 -- see Note [nolint_ge]
--- @[nolint ge_or_gt] -- Porting note: restore attribute
 theorem cauchy₂ (f : CauSeq β abv) {ε} :
     0 < ε → ∃ i, ∀ j ≥ i, ∀ k ≥ i, abv (f j - f k) < ε :=
   f.2.cauchy₂
@@ -359,7 +358,7 @@ instance ring : Ring (CauSeq β abv) :=
 
 instance {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv] : CommRing (CauSeq β abv) :=
   { CauSeq.ring with
-    mul_comm := fun a b => ext fun n => by simp [mul_left_comm, mul_comm] }
+    mul_comm := fun a b => ext fun n => by simp [mul_comm] }
 
 /-- `LimZero f` holds when `f` approaches 0. -/
 def LimZero {abv : β → α} (f : CauSeq β abv) : Prop :=
@@ -433,12 +432,9 @@ theorem limZero_congr {f g : CauSeq β abv} (h : f ≈ g) : LimZero f ↔ LimZer
 
 theorem abv_pos_of_not_limZero {f : CauSeq β abv} (hf : ¬LimZero f) :
     ∃ K > 0, ∃ i, ∀ j ≥ i, K ≤ abv (f j) := by
-  haveI := Classical.propDecidable
   by_contra nk
   refine hf fun ε ε0 => ?_
-  simp? [not_forall] at nk says
-    simp only [gt_iff_lt, ge_iff_le, not_exists, not_and, not_forall, Classical.not_imp,
-      not_le] at nk
+  simp only [not_exists, not_and, not_forall, not_le] at nk
   obtain ⟨i, hi⟩ := f.cauchy₃ (half_pos ε0)
   rcases nk _ (half_pos ε0) i with ⟨j, ij, hj⟩
   refine ⟨j, fun k jk => ?_⟩
@@ -483,7 +479,7 @@ theorem mul_not_equiv_zero {f g : CauSeq _ abv} (hf : ¬f ≈ 0) (hg : ¬g ≈ 0
   have hN' := hN i (le_max_left _ _)
   have hN1' := hN1 i (le_trans (le_max_left _ _) (le_max_right _ _))
   have hN1' := hN2 i (le_trans (le_max_right _ _) (le_max_right _ _))
-  apply not_le_of_lt hN'
+  apply not_le_of_gt hN'
   change _ ≤ abv (_ * _)
   rw [abv_mul abv]
   gcongr
@@ -578,7 +574,7 @@ theorem not_limZero_of_pos {f : CauSeq α abs} : Pos f → ¬LimZero f
   | ⟨_, F0, hF⟩, H =>
     let ⟨_, h⟩ := exists_forall_ge_and hF (H _ F0)
     let ⟨h₁, h₂⟩ := h _ le_rfl
-    not_lt_of_le h₁ (abs_lt.1 h₂).2
+    not_lt_of_ge h₁ (abs_lt.1 h₂).2
 
 theorem const_pos {x : α} : Pos (const x) ↔ 0 < x :=
   ⟨fun ⟨_, K0, _, h⟩ => lt_of_lt_of_le K0 (h _ le_rfl), fun h => ⟨x, h, 0, fun _ _ => le_rfl⟩⟩
@@ -606,7 +602,9 @@ protected theorem mul_pos {f g : CauSeq α abs} : Pos f → Pos g → Pos (f * g
       mul_le_mul h₁ h₂ (le_of_lt G0) (le_trans (le_of_lt F0) h₁)⟩
 
 theorem trichotomy (f : CauSeq α abs) : Pos f ∨ LimZero f ∨ Pos (-f) := by
-  rcases Classical.em (LimZero f) with h | h <;> simp [*]
+  rcases Classical.em (LimZero f) with h | h
+  · simp [*]
+  simp only [false_or, h]
   rcases abv_pos_of_not_limZero h with ⟨K, K0, hK⟩
   rcases exists_forall_ge_and hK (f.cauchy₃ K0) with ⟨i, hi⟩
   refine (le_total 0 (f i)).imp ?_ ?_ <;>
@@ -662,12 +660,12 @@ instance : Preorder (CauSeq α abs) where
     | Or.inl fg, Or.inr gh => Or.inl <| lt_of_lt_of_eq fg gh
     | Or.inr fg, Or.inl gh => Or.inl <| lt_of_eq_of_lt fg gh
     | Or.inr fg, Or.inr gh => Or.inr <| Setoid.trans fg gh
-  lt_iff_le_not_le _ _ :=
+  lt_iff_le_not_ge _ _ :=
     ⟨fun h => ⟨Or.inl h, not_or_intro (mt (lt_trans h) lt_irrefl) (not_limZero_of_pos h)⟩,
       fun ⟨h₁, h₂⟩ => h₁.resolve_right (mt (fun h => Or.inr (Setoid.symm h)) h₂)⟩
 
 theorem le_antisymm {f g : CauSeq α abs} (fg : f ≤ g) (gf : g ≤ f) : f ≈ g :=
-  fg.resolve_left (not_lt_of_le gf)
+  fg.resolve_left (not_lt_of_ge gf)
 
 theorem lt_total (f g : CauSeq α abs) : f < g ∨ f ≈ g ∨ g < f :=
   (trichotomy (g - f)).imp_right fun h =>

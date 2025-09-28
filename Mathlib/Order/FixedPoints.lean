@@ -203,7 +203,7 @@ theorem le_map_sup_fixedPoints (x y : fixedPoints f) : (x ⊔ y : α) ≤ f (x �
     (x ⊔ y : α) = f x ⊔ f y := congr_arg₂ (· ⊔ ·) x.2.symm y.2.symm
     _ ≤ f (x ⊔ y) := f.mono.le_map_sup x y
 
--- Porting note: `x ⊓ y` without the `.val`sw fails to synthesize `Inf` instance
+-- Porting note: `x ⊓ y` without the `.val`s fails to synthesize `Inf` instance
 theorem map_inf_fixedPoints_le (x y : fixedPoints f) : f (x ⊓ y) ≤ x.val ⊓ y.val :=
   f.dual.le_map_sup_fixedPoints x y
 

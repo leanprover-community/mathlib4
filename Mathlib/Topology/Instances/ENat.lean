@@ -33,9 +33,6 @@ instance : OrderTopology ℕ∞ := ⟨rfl⟩
 theorem isEmbedding_natCast : IsEmbedding ((↑) : ℕ → ℕ∞) :=
   Nat.strictMono_cast.isEmbedding_of_ordConnected <| range_natCast ▸ ordConnected_Iio
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_natCast := isEmbedding_natCast
-
 theorem isOpenEmbedding_natCast : IsOpenEmbedding ((↑) : ℕ → ℕ∞) :=
   ⟨isEmbedding_natCast, range_natCast ▸ isOpen_Iio⟩
 
@@ -71,7 +68,7 @@ instance : ContinuousAdd ℕ∞ := by
 instance : ContinuousMul ℕ∞ where
   continuous_mul :=
     have key (a : ℕ∞) : ContinuousAt (· * ·).uncurry (a, ⊤) := by
-      rcases (zero_le a).eq_or_gt with rfl | ha
+      rcases (zero_le a).eq_or_lt with rfl | ha
       · simp [ContinuousAt, nhds_prod_eq]
       · simp only [ContinuousAt, Function.uncurry, mul_top ha.ne']
         refine tendsto_nhds_top_mono continuousAt_snd ?_

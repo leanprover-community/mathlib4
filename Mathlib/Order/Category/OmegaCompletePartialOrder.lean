@@ -18,8 +18,8 @@ an `OmegaCompletePartialOrder`.
 
 ## Main definitions
 
- * `ωCPO`
-   * an instance of `Category` and `ConcreteCategory`
+* `ωCPO`
+  * an instance of `Category` and `ConcreteCategory`
 
 -/
 
@@ -96,7 +96,7 @@ instance omegaCompletePartialOrderEqualizer {α β : Type*} [OmegaCompletePartia
   OmegaCompletePartialOrder.subtype _ fun c hc => by
     rw [f.continuous, g.continuous]
     congr 1
-    apply OrderHom.ext; funext x -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext`
+    ext x
     apply hc _ ⟨_, rfl⟩
 
 namespace HasEqualizers

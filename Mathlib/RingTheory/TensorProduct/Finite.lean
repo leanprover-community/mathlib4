@@ -74,13 +74,6 @@ section ModuleAndAlgebra
 
 variable (R A B M N : Type*)
 
-/-- Porting note: reminding Lean about this instance for Module.Finite.base_change -/
-noncomputable local instance
-    [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M] [Module R M] :
-    Module A (TensorProduct R A M) :=
-  haveI : SMulCommClass R A A := IsScalarTower.to_smulCommClass
-  TensorProduct.leftModule
-
 instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M]
     [Module R M] [h : Module.Finite R M] : Module.Finite A (TensorProduct R A M) := by
   classical
@@ -90,12 +83,9 @@ instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [
     induction x with
     | zero => exact zero_mem _
     | tmul x y =>
-      -- Porting note: new TC reminder
-      haveI : IsScalarTower R A (TensorProduct R A M) := TensorProduct.isScalarTower_left
       rw [Finset.coe_image, ← Submodule.span_span_of_tower R, Submodule.span_image, hs,
-        Submodule.map_top, LinearMap.range_coe]
-      change _ ∈ Submodule.span A (Set.range <| TensorProduct.mk R A M 1)
-      rw [← mul_one x, ← smul_eq_mul, ← TensorProduct.smul_tmul']
+        Submodule.map_top, LinearMap.coe_range, ← mul_one x, ← smul_eq_mul,
+        ← TensorProduct.smul_tmul']
       exact Submodule.smul_mem _ x (Submodule.subset_span <| Set.mem_range_self y)
     | add x y hx hy => exact Submodule.add_mem _ hx hy
 
@@ -110,19 +100,19 @@ section NontrivialTensorProduct
 
 variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] [Module.Finite R M] [Nontrivial M]
 
-lemma Module.exists_isPrincipal_quotient_of_finite  :
+lemma Module.exists_isPrincipal_quotient_of_finite :
     ∃ N : Submodule R M, N ≠ ⊤ ∧ Submodule.IsPrincipal (⊤ : Submodule R (M ⧸ N)) := by
   obtain ⟨n, f, hf⟩ := @Module.Finite.exists_fin R M _ _ _ _
   let s := { m : ℕ | Submodule.span R (f '' (Fin.val ⁻¹' (Set.Iio m))) ≠ ⊤ }
   have hns : ∀ x ∈ s, x < n := by
-    refine fun x hx ↦ lt_iff_not_le.mpr fun e ↦ ?_
+    refine fun x hx ↦ lt_iff_not_ge.mpr fun e ↦ ?_
     have : (Fin.val ⁻¹' Set.Iio x : Set (Fin n)) = Set.univ := by ext y; simpa using y.2.trans_le e
     simp [s, this, hf] at hx
-  have hs₁ : s.Nonempty := ⟨0, by simp [s, show Set.Iio 0 = ∅ by ext; simp]⟩
+  have hs₁ : s.Nonempty := ⟨0, by simp [s]⟩
   have hs₂ : BddAbove s := ⟨n, fun x hx ↦ (hns x hx).le⟩
   have hs := Nat.sSup_mem hs₁ hs₂
   refine ⟨_, hs, ⟨⟨Submodule.mkQ _ (f ⟨_, hns _ hs⟩), ?_⟩⟩⟩
-  have := not_not.mp (not_mem_of_csSup_lt (Order.lt_succ _) hs₂)
+  have := not_not.mp (notMem_of_csSup_lt (Order.lt_succ _) hs₂)
   rw [← Set.image_singleton, ← Submodule.map_span,
     ← (Submodule.comap_injective_of_surjective (Submodule.mkQ_surjective _)).eq_iff,
     Submodule.comap_map_eq, Submodule.ker_mkQ, Submodule.comap_top, ← this, ← Submodule.span_union,

@@ -29,7 +29,7 @@ theorem Monic.irreducible_iff_roots_eq_zero_of_degree_le_three {p : R[X]} (hp : 
       (Nat.div_le_div_right hp3).antisymm
         (by apply Nat.div_le_div_right (c := 2) hp2),
     show Finset.Ioc 0 1 = {1} from rfl,
-    Finset.mem_singleton, Multiset.eq_zero_iff_forall_not_mem, mem_roots hp0, ← dvd_iff_isRoot]
+    Finset.mem_singleton, Multiset.eq_zero_iff_forall_notMem, mem_roots hp0, ← dvd_iff_isRoot]
   refine ⟨fun h r ↦ h _ (monic_X_sub_C r) (natDegree_X_sub_C r), fun h q hq hq1 ↦ ?_⟩
   rw [hq.eq_X_add_C hq1, ← sub_neg_eq_add, ← C_neg]
   apply h
@@ -58,10 +58,10 @@ lemma irreducible_of_degree_le_three_of_not_isRoot
   rw [Finset.mem_Icc] at hdeg
   by_cases hdeg2 : 2 ≤ p.natDegree
   · rw [Polynomial.irreducible_iff_roots_eq_zero_of_degree_le_three hdeg2 hdeg.2]
-    apply Multiset.eq_zero_of_forall_not_mem
-    aesop
+    apply Multiset.eq_zero_of_forall_notMem
+    simp_all
   · apply Polynomial.irreducible_of_degree_eq_one
-    rw [← Nat.cast_one, Polynomial.degree_eq_iff_natDegree_eq_of_pos (by norm_num)]
+    rw [← Nat.cast_one, Polynomial.degree_eq_iff_natDegree_eq_of_pos (by simp)]
     exact le_antisymm (by rwa [not_le, Nat.lt_succ_iff] at hdeg2) hdeg.1
 
 end Field

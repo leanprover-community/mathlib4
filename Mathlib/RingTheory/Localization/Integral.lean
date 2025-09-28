@@ -5,7 +5,6 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Polynomial.Lifts
-import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.RingTheory.Algebraic.Integral
 import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 import Mathlib.RingTheory.Localization.FractionRing
@@ -47,10 +46,13 @@ noncomputable def coeffIntegerNormalization (p : S[X]) (i : ℕ) : R :=
         (p.coeff i) (Finset.mem_image.mpr ⟨i, hi, rfl⟩))
   else 0
 
-theorem coeffIntegerNormalization_of_not_mem_support (p : S[X]) (i : ℕ) (h : coeff p i = 0) :
+theorem coeffIntegerNormalization_of_coeff_zero (p : S[X]) (i : ℕ) (h : coeff p i = 0) :
     coeffIntegerNormalization M p i = 0 := by
-  simp only [coeffIntegerNormalization, h, mem_support_iff, eq_self_iff_true, not_true, Ne,
+  simp only [coeffIntegerNormalization, h, mem_support_iff, not_true, Ne,
     dif_neg, not_false_iff]
+
+@[deprecated (since := "2025-05-23")]
+alias coeffIntegerNormalization_of_not_mem_support := coeffIntegerNormalization_of_coeff_zero
 
 theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
     (h : coeffIntegerNormalization M p i ≠ 0) : i ∈ p.support := by
@@ -66,7 +68,7 @@ noncomputable def integerNormalization (p : S[X]) : R[X] :=
 theorem integerNormalization_coeff (p : S[X]) (i : ℕ) :
     (integerNormalization M p).coeff i = coeffIntegerNormalization M p i := by
   simp +contextual [integerNormalization, coeff_monomial,
-    coeffIntegerNormalization_of_not_mem_support]
+    coeffIntegerNormalization_of_coeff_zero]
 
 theorem integerNormalization_spec (p : S[X]) :
     ∃ b : M, ∀ i, algebraMap R S ((integerNormalization M p).coeff i) = (b : R) • p.coeff i := by
@@ -79,8 +81,7 @@ theorem integerNormalization_spec (p : S[X]) :
       Classical.choose_spec
         (Classical.choose_spec (exist_integer_multiples_of_finset M (p.support.image p.coeff))
           (p.coeff i) (Finset.mem_image.mpr ⟨i, hi, rfl⟩))
-  · rw [RingHom.map_zero, not_mem_support_iff.mp hi, smul_zero]
-    -- Porting note: was `convert (smul_zero _).symm, ...`
+  · rw [RingHom.map_zero, notMem_support_iff.mp hi, smul_zero]
 
 theorem integerNormalization_map_to_map (p : S[X]) :
     ∃ b : M, (integerNormalization M p).map (algebraMap R S) = (b : R) • p :=
@@ -100,8 +101,7 @@ theorem integerNormalization_eval₂_eq_zero (g : S →+* R') (p : S[X]) {x : R'
 
 theorem integerNormalization_aeval_eq_zero [Algebra R R'] [Algebra S R'] [IsScalarTower R S R']
     (p : S[X]) {x : R'} (hx : aeval x p = 0) : aeval x (integerNormalization M p) = 0 := by
-  rw [aeval_def, IsScalarTower.algebraMap_eq R S R',
-    integerNormalization_eval₂_eq_zero _ (algebraMap _ _) _ hx]
+  rwa [aeval_def, IsScalarTower.algebraMap_eq R S R', integerNormalization_eval₂_eq_zero]
 
 end IntegerNormalization
 
@@ -119,8 +119,7 @@ theorem integerNormalization_eq_zero_iff {p : K[X]} :
   refine Polynomial.ext_iff.trans (Polynomial.ext_iff.trans ?_).symm
   obtain ⟨⟨b, nonzero⟩, hb⟩ := integerNormalization_spec (nonZeroDivisors A) p
   constructor <;> intro h i
-  · -- Porting note: avoided some defeq abuse
-    rw [coeff_zero, ← to_map_eq_zero_iff (K := K), hb i, h i, coeff_zero, smul_zero]
+  · rw [coeff_zero, ← to_map_eq_zero_iff (K := K), hb i, h i, coeff_zero, smul_zero]
   · have hi := h i
     rw [Polynomial.coeff_zero, ← @to_map_eq_zero_iff A _ K, hb i, Algebra.smul_def] at hi
     apply Or.resolve_left (eq_zero_or_eq_zero_of_mul_eq_zero hi)
@@ -194,7 +193,6 @@ theorem is_integral_localization_at_leadingCoeff {x : S} (p : R[X]) (hp : aeval 
             (show _ ≤ (Algebra.algebraMapSubmonoid S M).comap _ from M.le_comap_map) :
           Rₘ →+* _).IsIntegralElem
       (algebraMap S Sₘ x) :=
-  -- Porting note: added `haveI`
   haveI : IsLocalization (Submonoid.map (algebraMap R S) M) Sₘ :=
     inferInstanceAs (IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ)
   (algebraMap R S).isIntegralElem_localization_at_leadingCoeff x p hp M hM
@@ -219,14 +217,11 @@ theorem isIntegral_localization [Algebra.IsIntegral R S] :
   · obtain ⟨p, hp⟩ := Algebra.IsIntegral.isIntegral (R := R) s
     exact hx.symm ▸ is_integral_localization_at_leadingCoeff p hp.2 (hp.1.symm ▸ M.one_mem)
 
-@[nolint unusedHavesSuffices] -- It claims the `have : IsLocalization` line is unnecessary,
-                              -- but remove it and the proof won't work.
 theorem isIntegral_localization' {R S : Type*} [CommRing R] [CommRing S] {f : R →+* S}
     (hf : f.IsIntegral) (M : Submonoid R) :
     (map (Localization (M.map (f : R →* S))) f
           (M.le_comap_map : _ ≤ Submonoid.comap (f : R →* S) _) :
         Localization M →+* _).IsIntegral :=
-  -- Porting note: added
   let _ := f.toAlgebra
   have : Algebra.IsIntegral R S := ⟨hf⟩
   have : IsLocalization (Algebra.algebraMapSubmonoid S M)
@@ -253,7 +248,7 @@ theorem IsLocalization.scaleRoots_commonDenom_mem_lifts (p : Rₘ[X])
     · exact RingHom.mem_range_self _ _
     · rw [← Algebra.smul_def]
       exact ⟨_, IsLocalization.map_integerMultiple M p.support p.coeff ⟨n, h₁⟩⟩
-  · rw [Polynomial.not_mem_support_iff] at h₁
+  · rw [Polynomial.notMem_support_iff] at h₁
     rw [h₁, zero_mul]
     exact zero_mem (algebraMap R Rₘ).range
 
@@ -292,12 +287,12 @@ open Algebra
 the integral closure `C` of `A` in `L` has fraction field `L`. -/
 theorem isFractionRing_of_algebraic [Algebra.IsAlgebraic A L]
     (inj : ∀ x, algebraMap A L x = 0 → x = 0) : IsFractionRing C L :=
-  { map_units' := fun ⟨y, hy⟩ =>
+  { map_units := fun ⟨y, hy⟩ =>
       IsUnit.mk0 _
         (show algebraMap C L y ≠ 0 from fun h =>
           mem_nonZeroDivisors_iff_ne_zero.mp hy
             ((injective_iff_map_eq_zero (algebraMap C L)).mp (algebraMap_injective C A L) _ h))
-    surj' := fun z =>
+    surj := fun z =>
       let ⟨x, hx, int⟩ := (Algebra.IsAlgebraic.isAlgebraic z).exists_integral_multiple
       ⟨⟨mk' C _ int, algebraMap _ _ x, mem_nonZeroDivisors_of_ne_zero fun h ↦
         hx (inj _ <| by rw [IsScalarTower.algebraMap_apply A C L, h, RingHom.map_zero])⟩, by
@@ -359,28 +354,8 @@ theorem isAlgebraic_iff' [Field K] [IsDomain R] [Algebra R K] [Algebra S K]
     obtain ⟨a : S, b, ha, rfl⟩ := div_surjective (A := S) x
     obtain ⟨f, hf₁, hf₂⟩ := h b
     rw [div_eq_mul_inv]
-    refine IsIntegral.mul ?_ ?_
-    · rw [← isAlgebraic_iff_isIntegral]
-      refine .extendScalars
-        (FaithfulSMul.algebraMap_injective R (FractionRing R)) ?_
-      exact .algebraMap (h a)
-    · rw [← isAlgebraic_iff_isIntegral]
-      use (f.map (algebraMap R (FractionRing R))).reverse
-      constructor
-      · rwa [Ne, Polynomial.reverse_eq_zero, ← Polynomial.degree_eq_bot,
-          Polynomial.degree_map_eq_of_injective
-            (FaithfulSMul.algebraMap_injective R (FractionRing R)),
-          Polynomial.degree_eq_bot]
-      · have : Invertible (algebraMap S K b) :=
-          IsUnit.invertible
-            (isUnit_of_mem_nonZeroDivisors
-              (mem_nonZeroDivisors_iff_ne_zero.2 fun h =>
-                nonZeroDivisors.ne_zero ha
-                  ((injective_iff_map_eq_zero (algebraMap S K)).1
-                    (FaithfulSMul.algebraMap_injective _ _) b h)))
-        rw [Polynomial.aeval_def, ← invOf_eq_inv, Polynomial.eval₂_reverse_eq_zero_iff,
-          Polynomial.eval₂_map, ← IsScalarTower.algebraMap_eq, ← Polynomial.aeval_def,
-          Polynomial.aeval_algebraMap_apply, hf₂, RingHom.map_zero]
+    refine .mul ?_ (.inv ?_) <;> exact isAlgebraic_iff_isIntegral.mp <|
+      (h _).algebraMap.extendScalars (FaithfulSMul.algebraMap_injective R _)
   · intro h x
     obtain ⟨f, hf₁, hf₂⟩ := h (algebraMap S K x)
     use f, hf₁
@@ -445,7 +420,7 @@ lemma isAlgebraic_of_isFractionRing {R S} (K L) [CommRing R] [CommRing S] [Field
   · apply IsIntegral.tower_top (R := R)
     apply IsIntegral.map (IsScalarTower.toAlgHom R S L)
     exact Algebra.IsIntegral.isIntegral x
-  · show IsIntegral _ _
+  · change IsIntegral _ _
     rw [← isAlgebraic_iff_isIntegral, ← IsAlgebraic.invOf_iff, isAlgebraic_iff_isIntegral]
     apply IsIntegral.tower_top (R := R)
     apply IsIntegral.map (IsScalarTower.toAlgHom R S L)

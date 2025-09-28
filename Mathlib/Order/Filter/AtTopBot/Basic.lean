@@ -442,7 +442,7 @@ theorem tendsto_add_atTop_iff_nat {f : ℕ → α} {l : Filter α} (k : ℕ) :
 theorem map_div_atTop_eq_nat (k : ℕ) (hk : 0 < k) : map (fun a => a / k) atTop = atTop :=
   map_atTop_eq_of_gc (fun b => k * b + (k - 1)) 1 (fun _ _ h => Nat.div_le_div_right h)
     (fun a b _ => by rw [Nat.div_le_iff_le_mul_add_pred hk])
-    fun b _ => by rw [Nat.mul_add_div hk, Nat.div_eq_of_lt, Nat.add_zero]; omega
+    fun b _ => by rw [Nat.mul_add_div hk, Nat.div_eq_of_lt, Nat.add_zero]; cutsat
 
 section NeBot
 variable [Preorder β] {l : Filter α} [NeBot l] {f : α → β}
@@ -451,8 +451,8 @@ theorem not_bddAbove_of_tendsto_atTop [NoMaxOrder β] (h : Tendsto f l atTop) :
     ¬BddAbove (range f) := by
   rintro ⟨M, hM⟩
   have : ∀ x, f x ≤ M := by aesop
-  have : ∅ = f ⁻¹' Ioi M := by aesop (add forward safe not_le_of_lt)
-  apply Filter.empty_not_mem l
+  have : ∅ = f ⁻¹' Ioi M := by aesop (add forward safe not_le_of_gt)
+  apply Filter.empty_notMem l
   aesop (add safe Ioi_mem_atTop)
 
 theorem not_bddBelow_of_tendsto_atBot [NoMinOrder β] (h : Tendsto f l atBot) :

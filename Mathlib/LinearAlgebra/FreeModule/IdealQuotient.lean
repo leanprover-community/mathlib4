@@ -9,14 +9,16 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
 
 ## Main results
 
- - `Ideal.quotientEquivPiSpan`: `S ⧸ I`, if `S` is finite free as a module over a PID `R`,
-   can be written as a product of quotients of `R` by principal ideals.
+- `Ideal.quotientEquivPiSpan`: `S ⧸ I`, if `S` is finite free as a module over a PID `R`,
+  can be written as a product of quotients of `R` by principal ideals.
 
 -/
 
+open Module
+open scoped DirectSum
+
 namespace Ideal
 
-open scoped DirectSum
 
 variable {ι R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 variable [IsDomain R] [IsPrincipalIdealRing R] [IsDomain S] [Finite ι]

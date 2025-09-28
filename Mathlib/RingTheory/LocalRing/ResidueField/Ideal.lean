@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Localization.AtPrime.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
@@ -78,13 +78,13 @@ lemma Ideal.injective_algebraMap_quotient_residueField :
     Function.Injective (algebraMap (R ⧸ I) I.ResidueField) := by
   rw [RingHom.injective_iff_ker_eq_bot]
   refine (Ideal.ker_quotient_lift _ _).trans ?_
-  show map (Quotient.mk I) (RingHom.ker (algebraMap R I.ResidueField)) = ⊥
+  change map (Quotient.mk I) (RingHom.ker (algebraMap R I.ResidueField)) = ⊥
   rw [Ideal.ker_algebraMap_residueField, map_quotient_self]
 
 instance : IsFractionRing (R ⧸ I) I.ResidueField where
-  map_units' y := isUnit_iff_ne_zero.mpr
+  map_units y := isUnit_iff_ne_zero.mpr
     (map_ne_zero_of_mem_nonZeroDivisors _ I.injective_algebraMap_quotient_residueField y.2)
-  surj' x := by
+  surj x := by
     obtain ⟨x, rfl⟩ := IsLocalRing.residue_surjective x
     obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.mk'_surjective I.primeCompl x
     refine ⟨⟨Ideal.Quotient.mk _ x, ⟨Ideal.Quotient.mk _ s, ?_⟩⟩, ?_⟩
@@ -104,3 +104,28 @@ lemma Ideal.bijective_algebraMap_quotient_residueField (I : Ideal R) [I.IsMaxima
     Function.Bijective (algebraMap (R ⧸ I) I.ResidueField) :=
   ⟨I.injective_algebraMap_quotient_residueField, IsFractionRing.surjective_iff_isField.mpr
     ((Quotient.maximal_ideal_iff_isField_quotient I).mp inferInstance)⟩
+
+section LiesOver
+
+variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B] [Algebra R A] [Algebra A B]
+    [Algebra R B] [IsScalarTower R A B]
+
+noncomputable
+instance (p : Ideal A) [p.IsPrime] (q : Ideal B) [q.IsPrime] [q.LiesOver p] :
+    Algebra p.ResidueField q.ResidueField :=
+  (Ideal.ResidueField.mapₐ p q Ideal.LiesOver.over).toAlgebra
+
+instance (p : Ideal A) [p.IsPrime] (q : Ideal B) [q.IsPrime] [q.LiesOver p] :
+    IsScalarTower R p.ResidueField q.ResidueField := .of_algebraMap_eq'
+  ((Ideal.ResidueField.mapₐ p q Ideal.LiesOver.over).restrictScalars R).comp_algebraMap.symm
+
+instance (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p]
+    (Q : Ideal B) [Q.IsPrime] [Q.LiesOver q] [Q.LiesOver p] :
+    IsScalarTower p.ResidueField q.ResidueField Q.ResidueField := by
+  refine .of_algebraMap_eq fun x ↦ ?_
+  simp only [RingHom.algebraMap_toAlgebra, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
+    Ideal.ResidueField.mapₐ_apply, Ideal.ResidueField.map, IsLocalRing.ResidueField.map_map,
+    IsScalarTower.algebraMap_eq R A B,
+    ← Localization.localRingHom_comp]
+
+end LiesOver

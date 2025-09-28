@@ -19,7 +19,7 @@ In this file we introduce typeclasses and definitions for lattice operations.
 * `Top`: type class for the `⊤` notation
 * `Bot`: type class for the `⊥` notation
 
-## Notations
+## Notation
 
 * `xᶜ`: complement in a lattice;
 * `x ⊔ y`: supremum/join, which is notation for `max x y`;
@@ -46,18 +46,6 @@ export HasCompl (compl)
 postfix:1024 "ᶜ" => compl
 
 /-! ### `Sup` and `Inf` -/
-
-/-- Typeclass for the `⊔` (`\lub`) notation -/
-@[deprecated Max (since := "2024-11-06"), notation_class, ext]
-class Sup (α : Type*) where
-  /-- Least upper bound (`\lub` notation) -/
-  sup : α → α → α
-
-/-- Typeclass for the `⊓` (`\glb`) notation -/
-@[deprecated Min (since := "2024-11-06"), notation_class, ext]
-class Inf (α : Type*) where
-  /-- Greatest lower bound (`\glb` notation) -/
-  inf : α → α → α
 
 attribute [ext] Min Max
 
@@ -112,7 +100,7 @@ private def hasLinearOrder (u : Level) (α : Q(Type u)) (cls : Q(Type u → Type
 
 /-- Delaborate `max x y` into `x ⊔ y` if the type is not a linear order. -/
 @[delab app.Max.max]
-def delabSup : Delab := do
+def delabSup : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
   let_expr f@Max.max α inst _ _ := ← getExpr | failure
   have u := f.constLevels![0]!
   if ← hasLinearOrder u α q(Max) q($(linearOrderToMax u)) inst then
@@ -124,7 +112,7 @@ def delabSup : Delab := do
 
 /-- Delaborate `min x y` into `x ⊓ y` if the type is not a linear order. -/
 @[delab app.Min.min]
-def delabInf : Delab := do
+def delabInf : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
   let_expr f@Min.min α inst _ _ := ← getExpr | failure
   have u := f.constLevels![0]!
   if ← hasLinearOrder u α q(Min) q($(linearOrderToMin u)) inst then
@@ -146,7 +134,7 @@ class HImp (α : Type*) where
 
 The difference between `HasCompl` and `HNot` is that the former belongs to Heyting algebras,
 while the latter belongs to co-Heyting algebras. They are both pseudo-complements, but `compl`
-underestimates while `HNot` overestimates. In boolean algebras, they are equal.
+underestimates while `HNot` overestimates. In Boolean algebras, they are equal.
 See `hnot_eq_compl`.
 -/
 @[notation_class]

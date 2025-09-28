@@ -91,14 +91,14 @@ theorem Lex.single_strictAnti : StrictAnti (fun (a : α) ↦ toLex (single a 1))
   use a
   constructor
   · intro d hd
-    simp only [Finsupp.single_eq_of_ne hd.ne', Finsupp.single_eq_of_ne (hd.trans h).ne']
-  · simp only [single_eq_same, single_eq_of_ne (ne_of_lt h).symm, zero_lt_one]
+    simp only [Finsupp.single_eq_of_ne hd.ne, Finsupp.single_eq_of_ne (hd.trans h).ne]
+  · simp [h.ne']
 
 theorem Lex.single_lt_iff {a b : α} : toLex (single b 1) < toLex (single a 1) ↔ a < b :=
-  Lex.single_strictAnti.lt_iff_lt
+  Lex.single_strictAnti.lt_iff_gt
 
 theorem Lex.single_le_iff {a b : α} : toLex (single b 1) ≤ toLex (single a 1) ↔ a ≤ b :=
-  Lex.single_strictAnti.le_iff_le
+  Lex.single_strictAnti.le_iff_ge
 
 theorem Lex.single_antitone : Antitone (fun (a : α) ↦ toLex (single a 1)) :=
   Lex.single_strictAnti.antitone
@@ -114,7 +114,7 @@ theorem lt_of_forall_lt_of_lt (a b : Lex (α →₀ N)) (i : α) :
 
 theorem lex_le_iff_of_unique [Unique α] {a b : Lex (α →₀ N)} :
     a ≤ b ↔ ofLex a default ≤ ofLex b default := by
-  simp only [le_iff_eq_or_lt, EmbeddingLike.apply_eq_iff_eq]
+  simp only [le_iff_eq_or_lt]
   apply or_congr _ lex_lt_iff_of_unique
   conv_lhs => rw [← toLex_ofLex a, ← toLex_ofLex b, toLex_inj]
   simp only [Finsupp.ext_iff, Unique.forall_iff]

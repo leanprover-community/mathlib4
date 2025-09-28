@@ -168,6 +168,9 @@ theorem le_sSup_iff (h : BddAbove s) (h' : s.Nonempty) :
 theorem sSup_empty : sSup (∅ : Set ℝ) = 0 :=
   dif_neg <| by simp
 
+theorem sInf_univ : sInf (@Set.univ ℝ) = 0 := by
+  simp [sInf_def]
+
 @[simp] lemma iSup_of_isEmpty [IsEmpty ι] (f : ι → ℝ) : ⨆ i, f i = 0 := by
   dsimp [iSup]
   convert Real.sSup_empty
@@ -306,12 +309,12 @@ theorem cauSeq_converges (f : CauSeq ℝ abs) : ∃ x, f ≈ const abs x := by
   have ub : ∃ x, ∀ y ∈ s, y ≤ x := (exists_gt f).imp ub'
   refine ⟨sSup s, ((lt_total _ _).resolve_left fun h => ?_).resolve_right fun h => ?_⟩
   · rcases h with ⟨ε, ε0, i, ih⟩
-    refine (csSup_le lb (ub' _ ?_)).not_lt (sub_lt_self _ (half_pos ε0))
+    refine (csSup_le lb (ub' _ ?_)).not_gt (sub_lt_self _ (half_pos ε0))
     refine ⟨_, half_pos ε0, i, fun j ij => ?_⟩
     rw [sub_apply, const_apply, sub_right_comm, le_sub_iff_add_le, add_halves]
     exact ih _ ij
   · rcases h with ⟨ε, ε0, i, ih⟩
-    refine (le_csSup ub ?_).not_lt ((lt_add_iff_pos_left _).2 (half_pos ε0))
+    refine (le_csSup ub ?_).not_gt ((lt_add_iff_pos_left _).2 (half_pos ε0))
     refine ⟨_, half_pos ε0, i, fun j ij => ?_⟩
     rw [sub_apply, const_apply, add_comm, ← sub_sub, le_sub_iff_add_le, add_halves]
     exact ih _ ij
@@ -374,7 +377,7 @@ lemma exists_natCast_add_one_lt_pow_of_one_lt (ha : 1 < a) : ∃ m : ℕ, (m + 1
     rw [← q.num_div_den, one_lt_div (by positivity)] at hq
     rw [q.mul_den_eq_num]
     norm_cast at hq ⊢
-    omega
+    cutsat
   use 2 * k ^ 2
   calc
     ((2 * k ^ 2 : ℕ) + 1 : ℝ) ≤ 2 ^ (2 * k) := mod_cast Nat.two_mul_sq_add_one_le_two_pow_two_mul _

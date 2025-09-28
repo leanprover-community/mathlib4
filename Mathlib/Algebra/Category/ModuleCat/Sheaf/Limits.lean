@@ -13,8 +13,7 @@ In this file, it is shown that under suitable assumptions,
 limits exist in the category `SheafOfModules R`.
 
 ## TODO
-* do the same for colimits (which requires constructing
-the associated sheaf of modules functor)
+* do the same for colimits (which requires constructing the associated sheaf of modules functor)
 
 -/
 
@@ -54,8 +53,7 @@ variable (F : D ⥤ SheafOfModules.{v} R)
 
 instance (X : Cᵒᵖ) : Small.{v} (((F ⋙ forget _) ⋙ PresheafOfModules.evaluation _ X) ⋙
     CategoryTheory.forget _).sections := by
-  change Small.{v} ((F ⋙ evaluation R X) ⋙ CategoryTheory.forget _).sections
-  infer_instance
+  solve_by_elim
 
 noncomputable instance createsLimit : CreatesLimit F (forget _) :=
   createsLimitOfFullyFaithfulOfIso' (limit.isLimit (F ⋙ forget _))

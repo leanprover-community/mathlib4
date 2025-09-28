@@ -35,11 +35,11 @@ open Finset Nat
 
 /-- The `n`th truncation of a formal power series to a polynomial -/
 def trunc (n : ℕ) (φ : R⟦X⟧) : R[X] :=
-  ∑ m ∈ Ico 0 n, Polynomial.monomial m (coeff R m φ)
+  ∑ m ∈ Ico 0 n, Polynomial.monomial m (coeff m φ)
 
 theorem coeff_trunc (m) (n) (φ : R⟦X⟧) :
-    (trunc n φ).coeff m = if m < n then coeff R m φ else 0 := by
-  simp [trunc, Polynomial.coeff_sum, Polynomial.coeff_monomial, Nat.lt_succ_iff]
+    (trunc n φ).coeff m = if m < n then coeff m φ else 0 := by
+  simp [trunc, Polynomial.coeff_monomial]
 
 @[simp]
 theorem trunc_zero (n) : trunc n (0 : R⟦X⟧) = 0 :=
@@ -50,29 +50,24 @@ theorem trunc_zero (n) : trunc n (0 : R⟦X⟧) = 0 :=
 @[simp]
 theorem trunc_one (n) : trunc (n + 1) (1 : R⟦X⟧) = 1 :=
   Polynomial.ext fun m => by
-    rw [coeff_trunc, coeff_one, Polynomial.coeff_one]
-    split_ifs with h _ h'
-    · rfl
-    · rfl
-    · subst h'; simp at h
-    · rfl
+    grind [PowerSeries.coeff_trunc, PowerSeries.coeff_one, Polynomial.coeff_one]
 
 @[simp]
-theorem trunc_C (n) (a : R) : trunc (n + 1) (C R a) = Polynomial.C a :=
+theorem trunc_C (n) (a : R) : trunc (n + 1) (C a) = Polynomial.C a :=
   Polynomial.ext fun m => by
     rw [coeff_trunc, coeff_C, Polynomial.coeff_C]
-    split_ifs with H <;> first |rfl|try simp_all
+    split_ifs with H <;> first | rfl | try simp_all
 
 @[simp]
 theorem trunc_add (n) (φ ψ : R⟦X⟧) : trunc n (φ + ψ) = trunc n φ + trunc n ψ :=
   Polynomial.ext fun m => by
-    simp only [coeff_trunc, AddMonoidHom.map_add, Polynomial.coeff_add]
+    simp only [coeff_trunc, Polynomial.coeff_add]
     split_ifs with H
     · rfl
     · rw [zero_add]
 
 theorem trunc_succ (f : R⟦X⟧) (n : ℕ) :
-    trunc n.succ f = trunc n f + Polynomial.monomial n (coeff R n f) := by
+    trunc n.succ f = trunc n f + Polynomial.monomial n (coeff n f) := by
   rw [trunc, Ico_zero_eq_range, sum_range_succ, trunc, Ico_zero_eq_range]
 
 theorem natDegree_trunc_lt (f : R⟦X⟧) (n) : (trunc (n + 1) f).natDegree < n + 1 := by
@@ -96,7 +91,7 @@ theorem degree_trunc_lt (f : R⟦X⟧) (n) : (trunc n f).degree < n := by
   · rfl
 
 theorem eval₂_trunc_eq_sum_range {S : Type*} [Semiring S] (s : S) (G : R →+* S) (n) (f : R⟦X⟧) :
-    (trunc n f).eval₂ G s = ∑ i ∈ range n, G (coeff R i f) * s ^ i := by
+    (trunc n f).eval₂ G s = ∑ i ∈ range n, G (coeff i f) * s ^ i := by
   cases n with
   | zero =>
     rw [trunc_zero', range_zero, sum_empty, eval₂_zero]
@@ -130,18 +125,31 @@ lemma trunc_X_of {n : ℕ} (hn : 2 ≤ n) : trunc n X = (Polynomial.X : R[X]) :=
     | succ n => exact trunc_X n
 
 @[simp]
-lemma trunc_one_left (p : R⟦X⟧) : trunc (R := R) 1 p = .C (coeff R 0 p) := by
+lemma trunc_one_left (p : R⟦X⟧) : trunc (R := R) 1 p = .C (coeff 0 p) := by
   ext i; simp +contextual [coeff_trunc, Polynomial.coeff_C]
 
 lemma trunc_one_X : trunc (R := R) 1 X = 0 := by simp
 
 @[simp]
-lemma trunc_C_mul (n : ℕ) (r : R) (f : R⟦X⟧) : trunc n (C R r * f) = .C r * trunc n f := by
+lemma trunc_C_mul (n : ℕ) (r : R) (f : R⟦X⟧) : trunc n (C r * f) = .C r * trunc n f := by
   ext i; simp [coeff_trunc]
 
 @[simp]
-lemma trunc_mul_C (n : ℕ) (f : R⟦X⟧) (r : R) : trunc n (f * C R r) = trunc n f * .C r := by
+lemma trunc_mul_C (n : ℕ) (f : R⟦X⟧) (r : R) : trunc n (f * C r) = trunc n f * .C r := by
   ext i; simp [coeff_trunc]
+
+/-- Split off the first `n` coefficients. -/
+lemma eq_shift_mul_X_pow_add_trunc (n : ℕ) (f : R⟦X⟧) :
+    f = (mk fun i ↦ coeff (i + n) f) * X ^ n + (f.trunc n : R⟦X⟧) := by
+  ext j
+  rw [map_add, Polynomial.coeff_coe, coeff_mul_X_pow', coeff_trunc]
+  simp_rw [← not_le]
+  split_ifs with h <;> simp [h]
+
+/-- Split off the first `n` coefficients. -/
+lemma eq_X_pow_mul_shift_add_trunc (n : ℕ) (f : R⟦X⟧) :
+    f = X ^ n * (mk fun i ↦ coeff (i + n) f) + (f.trunc n : R⟦X⟧) := by
+  rw [← (commute_X_pow _ n).eq, ← eq_shift_mul_X_pow_add_trunc]
 
 end Trunc
 
@@ -153,7 +161,7 @@ Lemmas in this section involve the coercion `R[X] → R⟦X⟧`, so they may onl
 variable {R : Type*} [CommSemiring R]
 
 open Nat hiding pow_succ pow_zero
-open Polynomial Finset Finset.Nat
+open Finset Finset.Nat
 
 theorem trunc_trunc_of_le {n m} (f : R⟦X⟧) (hnm : n ≤ m := by rfl) :
     trunc n ↑(trunc m f) = trunc n f := by
@@ -208,19 +216,19 @@ theorem trunc_coe_eq_self {n} {f : R[X]} (hn : natDegree f < n) : trunc n (f : R
 /-- The function `coeff n : R⟦X⟧ → R` is continuous. I.e. `coeff n f` depends only on a sufficiently
 long truncation of the power series `f`. -/
 theorem coeff_coe_trunc_of_lt {n m} {f : R⟦X⟧} (h : n < m) :
-    coeff R n (trunc m f) = coeff R n f := by
+    coeff n (trunc m f) = coeff n f := by
   rwa [coeff_coe, coeff_trunc, if_pos]
 
 /-- The `n`-th coefficient of `f*g` may be calculated
 from the truncations of `f` and `g`. -/
-theorem coeff_mul_eq_coeff_trunc_mul_trunc₂ {n a b} (f g) (ha : n < a) (hb : n < b) :
-    coeff R n (f * g) = coeff R n (trunc a f * trunc b g) := by
+theorem coeff_mul_eq_coeff_trunc_mul_trunc₂ {n a b} (f g : R⟦X⟧) (ha : n < a) (hb : n < b) :
+    coeff n (f * g) = coeff n ((trunc a f : R⟦X⟧) * (trunc b g : R⟦X⟧)) := by
   symm
   rw [← coeff_coe_trunc_of_lt n.lt_succ_self, ← trunc_trunc_mul_trunc, trunc_trunc_of_le f ha,
     trunc_trunc_of_le g hb, trunc_trunc_mul_trunc, coeff_coe_trunc_of_lt n.lt_succ_self]
 
 theorem coeff_mul_eq_coeff_trunc_mul_trunc {d n} (f g) (h : d < n) :
-    coeff R d (f * g) = coeff R d (trunc n f * trunc n g) :=
+    coeff d (f * g) = coeff d ((trunc n f : R⟦X⟧) * (trunc n g : R⟦X⟧)) :=
   coeff_mul_eq_coeff_trunc_mul_trunc₂ f g h h
 
 end Trunc

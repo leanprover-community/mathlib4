@@ -93,7 +93,7 @@ private def S.decode (n : ℕ) : S :=
     S.nat p.2
   else
     have : p.1 ≤ n := Nat.unpair_left_le n
-    have := Nat.unpair_lt (by omega : 1 ≤ n)
+    have := Nat.unpair_lt (by cutsat : 1 ≤ n)
     have := nat_unpair_lt_2 h
     S.cons (S.decode (p.1 - 1)) (S.decode p.2)
 
@@ -320,7 +320,7 @@ private def mkEncodableInstanceCmds (ctx : Deriving.Context) (typeNames : Array 
 
 private def mkEncodableCmds (indVal : InductiveVal) (declNames : Array Name) :
     TermElabM (Array Syntax) := do
-  let ctx ← mkContext "encodable" indVal.name
+  let ctx ← mkContext ``Encodable "encodable" indVal.name
   let toSFunNames : Array Name ← ctx.auxFunNames.mapM fun name => do
     let .str n' s := name.eraseMacroScopes | unreachable!
     mkFreshUserName <| .str n' (s ++ "_toS")
