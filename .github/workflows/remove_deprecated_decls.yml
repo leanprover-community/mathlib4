@@ -157,10 +157,12 @@ jobs:
           printf $'#clear_deprecations "%s" "%s" %s\n' "$OLD_DATE" "$NEW_DATE" "$REALLY"
         } | tee -a "${tmplean}"
         echo "::endgroup::"
+
         # This will add the new files, whose names end in `_with_option.lean`.
         echo "::group::Building ${tmplean} file -- this may take a while"
         lake build "${tmplean}"
         echo "::endgroup::"
+
         ## We then add the new files to `Mathlib.lean`
         #if lake exe mk_all; then
         #  echo "Successfully updated Mathlib.lean"
