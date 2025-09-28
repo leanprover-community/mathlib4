@@ -20,6 +20,7 @@ See the doc-string for the command for more information.
 
 open Lean Elab Command
 
+/-- A convenience instance to print a `String.Range` as the corresponding pair of `String.Pos`. -/
 local instance : ToString String.Range where
   toString | ⟨s, e⟩ => s!"({s}, {e})"
 
