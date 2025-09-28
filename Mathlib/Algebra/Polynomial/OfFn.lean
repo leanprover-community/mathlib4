@@ -108,7 +108,7 @@ theorem ofFn_comp_toFn_eq_id_of_natDegree_lt {n : ℕ} {p : R[X]} (h_deg : p.nat
   ext i
   by_cases h : i < n
   · simp [h, toFn]
-  · have : p.coeff i = 0 := coeff_eq_zero_of_natDegree_lt <| by omega
+  · have : p.coeff i = 0 := coeff_eq_zero_of_natDegree_lt <| by cutsat
     simp_all
 
 end ofFn
