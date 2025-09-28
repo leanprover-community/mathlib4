@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Olivia Röhrig
 -/
 import Mathlib.Combinatorics.SimpleGraph.Maps
-import Mathlib.Data.Finset.Pairwise
+import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.ZMod.Defs
 
 /-!
 # Edge labellings

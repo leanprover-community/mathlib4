@@ -8,6 +8,7 @@ import Mathlib.Data.Fin.SuccPredOrder
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.SuccPred.Relation
 import Mathlib.Tactic.FinCases
+import Mathlib.Data.ZMod.Defs
 
 /-!
 # The Hasse diagram as a graph

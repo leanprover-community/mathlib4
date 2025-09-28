@@ -6,6 +6,9 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov
 import Mathlib.Combinatorics.SimpleGraph.Maps
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Sym.Card
+import Mathlib.Algebra.GroupWithZero.Nat
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 
 /-!
 # Definitions for finite and locally finite graphs
