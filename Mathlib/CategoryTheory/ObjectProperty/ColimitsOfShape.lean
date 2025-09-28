@@ -54,7 +54,7 @@ lemma strictColimitsOfShape_monotone {Q : ObjectProperty C} (h : P ≤ Q) :
   exact ⟨F, fun j ↦ h _ (hF j)⟩
 
 /-- A structure expressing that `X : C` is the colimit of a functor
-`diag : J ⥤ C` such that `P (diag.obj j)` hold for all `j`. -/
+`diag : J ⥤ C` such that `P (diag.obj j)` holds for all `j`. -/
 structure ColimitOfShape (X : C) extends ColimitPresentation J X where
   prop_diag_obj (j : J) : P (diag.obj j)
 
@@ -64,12 +64,11 @@ variable {P J}
 
 /-- If `F : J ⥤ C` is a functor that has a colimit and is such that for all `j`,
 `F.obj j` satisfies a property `P`, then this structure expresses that `colimit F`
-is indeed a colimits of objects satisfying `P`. -/
+is indeed a colimit of objects satisfying `P`. -/
+@[simps toColimitPresentation]
 noncomputable def colimit (F : J ⥤ C) [HasColimit F] (hF : ∀ j, P (F.obj j)) :
     P.ColimitOfShape J (colimit F) where
-  diag := F
-  ι := _
-  isColimit := colimit.isColimit _
+  toColimitPresentation := .colimit F
   prop_diag_obj := hF
 
 /-- If `X` is a colimit indexed by `J` of objects satisfying a property `P`, then
@@ -81,7 +80,7 @@ def ofIso {X : C} (h : P.ColimitOfShape J X) {Y : C} (e : X ≅ Y) :
   prop_diag_obj := h.prop_diag_obj
 
 /-- If `X` is a colimit indexed by `J` of objects satisfying a property `P`,
-it is also a colimit indexed by `J` of objects satisfyind `Q` if `P ≤ Q`. -/
+it is also a colimit indexed by `J` of objects satisfying `Q` if `P ≤ Q`. -/
 @[simps toColimitPresentation]
 def ofLE {X : C} (h : P.ColimitOfShape J X) {Q : ObjectProperty C} (hPQ : P ≤ Q) :
     Q.ColimitOfShape J X where
@@ -132,7 +131,7 @@ lemma colimitsOfShape_isoClosure :
   intro X ⟨h⟩
   choose obj h₁ h₂ using h.prop_diag_obj
   exact
-   ⟨{ toColimitPresentation := h.chgDiag (h.diag.isoCopyObj obj (fun j ↦ (h₂ j).some)).symm
+   ⟨{ toColimitPresentation := h.changeDiag (h.diag.isoCopyObj obj (fun j ↦ (h₂ j).some)).symm
       prop_diag_obj := h₁ }⟩
 
 instance [ObjectProperty.Small.{w} P] [LocallySmall.{w} C] [Small.{w} J] [LocallySmall.{w} J] :

@@ -64,6 +64,14 @@ def self (X : C) : ColimitPresentation PUnit.{s + 1} X where
   ι := 𝟙 _
   isColimit := isColimitConstCocone _ _
 
+/-- If `F : J ⥤ C` is a functor that has a colimit, then this is the obvious
+colimit presentation of `colimit F`. -/
+noncomputable def colimit (F : J ⥤ C) [HasColimit F] :
+    ColimitPresentation J (colimit F) where
+  diag := F
+  ι := _
+  isColimit := colimit.isColimit _
+
 /-- If `F` preserves colimits of shape `J`, it maps colimit presentations of `X` to
 colimit presentations of `F(X)`. -/
 @[simps]
@@ -77,7 +85,7 @@ def map (P : ColimitPresentation J X) {D : Type*} [Category D] (F : C ⥤ D)
 /-- If `P` is a colimit presentation of `X`, it is possible to define another
 colimit presentation of `X` where `P.diag` is replaced by an isomorphic functor. -/
 @[simps]
-def chgDiag (P : ColimitPresentation J X) {F : J ⥤ C} (e : F ≅ P.diag) :
+def changeDiag (P : ColimitPresentation J X) {F : J ⥤ C} (e : F ≅ P.diag) :
     ColimitPresentation J X where
   diag := F
   ι := e.hom ≫ P.ι
@@ -237,7 +245,7 @@ structure LimitPresentation (J : Type w) [Category.{t} J] (X : C) where
   diag : J ⥤ C
   /-- The natural maps `sᵢ : X ⟶ Dᵢ`. -/
   π : (Functor.const J).obj X ⟶ diag
-  /-- `X` is the colimit of the `Dᵢ` via `sᵢ`. -/
+  /-- `X` is the limit of the `Dᵢ` via `sᵢ`. -/
   isLimit : IsLimit (Cone.mk _ π)
 
 variable {J : Type w} [Category.{t} J] {X : C}
@@ -261,6 +269,14 @@ def self (X : C) : LimitPresentation PUnit.{s + 1} X where
   π := 𝟙 _
   isLimit := isLimitConstCone _ _
 
+/-- If `F : J ⥤ C` is a functor that has a limit, then this is the obvious
+limit presentation of `limit F`. -/
+noncomputable def limit (F : J ⥤ C) [HasLimit F] :
+    LimitPresentation J (limit F) where
+  diag := F
+  π := _
+  isLimit := limit.isLimit _
+
 /-- If `F` preserves limits of shape `J`, it maps limit presentations of `X` to
 limit presentations of `F(X)`. -/
 @[simps]
@@ -274,7 +290,7 @@ def map (P : LimitPresentation J X) {D : Type*} [Category D] (F : C ⥤ D)
 /-- If `P` is a limit presentation of `X`, it is possible to define another
 limit presentation of `X` where `P.diag` is replaced by an isomorphic functor. -/
 @[simps]
-def chgDiag (P : LimitPresentation J X) {F : J ⥤ C} (e : F ≅ P.diag) :
+def changeDiag (P : LimitPresentation J X) {F : J ⥤ C} (e : F ≅ P.diag) :
     LimitPresentation J X where
   diag := F
   π := P.π ≫ e.inv

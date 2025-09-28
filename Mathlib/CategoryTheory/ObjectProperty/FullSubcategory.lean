@@ -15,7 +15,7 @@ of objects in `C` satisfying `P`.
 
 -/
 
-universe w v v' u u'
+universe v v' u u'
 
 namespace CategoryTheory
 
