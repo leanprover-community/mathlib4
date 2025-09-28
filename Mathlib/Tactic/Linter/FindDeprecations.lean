@@ -14,7 +14,7 @@ d
 
 open Lean Elab Command
 
-instance : ToString String.Range where
+local instance : ToString String.Range where
   toString | ⟨s, e⟩ => s!"({s}, {e})"
 
 /--
@@ -28,6 +28,7 @@ def repo : Name := `Mathlib
 /--
 The main structure containing the information a deprecated declaration.
 * `module` is the name of the module containing the deprecated declaration;
+* `decl` is the name of the deprecated declaration;
 * `rgStart` is the `Position` where the deprecated declaration starts;
 * `rgStop` is the `Position` where the deprecated declaration ends;
 * `since` is the date when the declaration was deprecated.
