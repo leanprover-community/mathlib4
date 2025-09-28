@@ -561,15 +561,26 @@ lemma HasMFDerivWithinAt.prodMap {t : Set M'} {x' : M'} {f : M → N} {g : M' �
     HasMFDerivWithinAt (I.prod I') (J.prod J') (Prod.map f g) (s ×ˢ t) (x, x')
       ((mfderivWithin I J f s x).prodMap (mfderivWithin I' J' g t x')) := by
   refine ⟨hf.1.prodMap hg.1, ?_⟩
-  -- need to work; the items are not defeq...
-  --apply HasFDerivWithinAt.prodMap
-  -- have aux := hf.2.prodMap hg.2
-  -- have h1 := hf.2
-  -- have h2 := hg.2
-  -- convert h1.prodMk h2
-  -- have aux := h1.prodMk h2
-  sorry
+  have : (writtenInExtChartAt (I.prod I') (J.prod J') (x, x') (Prod.map f g)) =
+    Prod.map (writtenInExtChartAt I J x f) (writtenInExtChartAt I' J' x' g) := sorry
+  rw [this]
+  have h1 := hf.2
+  have h2 := hg.2
+  set s1 := (extChartAt I x).symm ⁻¹' s ∩ range I
+  set s2 := (extChartAt I' x').symm ⁻¹' t ∩ range I'
+  have : ((extChartAt (I.prod I') (x, x')).symm ⁻¹' s ×ˢ t ∩ range (I.prod I')) = s1 ×ˢ s2 := sorry
+  rw [this]
+  have : ((mfderivWithin I J f s x).prodMap (mfderivWithin I' J' g t x')) = df.prodMap dg := sorry
+  rw [this]
+  set p := (extChartAt (I.prod I') (x, x')) (x, x')
+  have : extChartAt I x x = p.1 := sorry
+  rw [this] at h1
+  have : extChartAt I' x' x' = p.2 := sorry
+  rw [this] at h2
+  exact HasFDerivWithinAt.prodMap ((extChartAt (I.prod I') (x, x')) (x, x')) h1 h2
 
+
+#exit
 lemma HasMFDerivAt.prodMap {x' : M'} {f : M → N} {g : M' → N'}
     {df : TangentSpace I x →L[𝕜] TangentSpace J (f x)} (hf : HasMFDerivAt I J f x df)
     {dg : TangentSpace I' x' →L[𝕜] TangentSpace J' (g x')}
