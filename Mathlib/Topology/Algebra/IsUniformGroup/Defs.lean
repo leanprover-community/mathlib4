@@ -125,6 +125,47 @@ theorem Filter.Tendsto.uniformity_mul {ι : Type*} {f g : ι → α × α} {l : 
     simpa [UniformContinuous, uniformity_prod_eq_prod] using uniformContinuous_mul (α := α)
   this.comp (hf.prodMk hg)
 
+@[to_additive]
+theorem Filter.Tendsto.uniformity_inv {ι : Type*} {f : ι → α × α} {l : Filter ι}
+    (hf : Tendsto f l (𝓤 α)) :
+    Tendsto (f⁻¹) l (𝓤 α) :=
+  have : Tendsto (· ⁻¹) (𝓤 α) (𝓤 α) := uniformContinuous_inv
+  this.comp hf
+
+@[to_additive]
+theorem Filter.Tendsto.uniformity_inv_iff {ι : Type*} {f : ι → α × α} {l : Filter ι} :
+    Tendsto (f⁻¹) l (𝓤 α) ↔ Tendsto f l (𝓤 α) :=
+  ⟨fun H ↦ inv_inv f ▸ H.uniformity_inv, Filter.Tendsto.uniformity_inv⟩
+
+@[to_additive]
+theorem Filter.Tendsto.uniformity_div {ι : Type*} {f g : ι → α × α} {l : Filter ι}
+    (hf : Tendsto f l (𝓤 α)) (hg : Tendsto g l (𝓤 α)) :
+    Tendsto (f / g) l (𝓤 α) := by
+  rw [div_eq_mul_inv]
+  exact hf.uniformity_mul hg.uniformity_inv
+
+/-- If `f : ι → G × G` converges to the uniformity, then any `g : ι → G × G` converges to the
+uniformity iff `f * g` does. This is often useful when `f` is valued in the diagonal,
+in which case its convergence is automatic. -/
+@[to_additive /-- If `f : ι → G × G` converges to the uniformity, then any `g : ι → G × G`
+converges to the uniformity iff `f + g` does. This is often useful when `f` is valued in the
+diagonal, in which case its convergence is automatic. -/]
+theorem Filter.Tendsto.uniformity_mul_iff_right {ι : Type*} {f g : ι → α × α} {l : Filter ι}
+    (hf : Tendsto f l (𝓤 α)) :
+    Tendsto (f * g) l (𝓤 α) ↔ Tendsto g l (𝓤 α) :=
+  ⟨fun hfg ↦ by simpa using hf.uniformity_inv.uniformity_mul hfg, hf.uniformity_mul⟩
+
+/-- If `g : ι → G × G` converges to the uniformity, then any `f : ι → G × G` converges to the
+uniformity iff `f * g` does. This is often useful when `g` is valued in the diagonal,
+in which case its convergence is automatic. -/
+@[to_additive /-- If `g : ι → G × G` converges to the uniformity, then any `f : ι → G × G`
+converges to the uniformity iff `f + g` does. This is often useful when `g` is valued in the
+diagonal, in which case its convergence is automatic. -/]
+theorem Filter.Tendsto.uniformity_mul_iff_left {ι : Type*} {f g : ι → α × α} {l : Filter ι}
+    (hg : Tendsto g l (𝓤 α)) :
+    Tendsto (f * g) l (𝓤 α) ↔ Tendsto f l (𝓤 α) :=
+  ⟨fun hfg ↦ by simpa using hfg.uniformity_mul hg.uniformity_inv, fun hf ↦ hf.uniformity_mul hg⟩
+
 @[to_additive UniformContinuous.const_nsmul]
 theorem UniformContinuous.pow_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f) :
     ∀ n : ℕ, UniformContinuous fun x => f x ^ n
@@ -247,18 +288,11 @@ variable (α)
 
 @[to_additive]
 theorem uniformity_eq_comap_nhds_one : 𝓤 α = comap (fun x : α × α => x.2 / x.1) (𝓝 (1 : α)) := by
-  rw [nhds_eq_comap_uniformity, Filter.comap_comap]
-  refine le_antisymm (Filter.map_le_iff_le_comap.1 ?_) ?_
-  · intro s hs
-    rcases mem_uniformity_of_uniformContinuous_invariant uniformContinuous_div hs with ⟨t, ht, hts⟩
-    refine mem_map.2 (mem_of_superset ht ?_)
-    rintro ⟨a, b⟩
-    simpa [subset_def] using hts a b a
-  · intro s hs
-    rcases mem_uniformity_of_uniformContinuous_invariant uniformContinuous_mul hs with ⟨t, ht, hts⟩
-    refine ⟨_, ht, ?_⟩
-    rintro ⟨a, b⟩
-    simpa [subset_def] using hts 1 (b / a) a
+  refine eq_of_forall_le_iff fun 𝓕 ↦ ?_
+  rw [nhds_eq_comap_uniformity, comap_comap, ← tendsto_iff_comap,
+    ← (tendsto_diag_uniformity Prod.fst 𝓕).uniformity_mul_iff_left, ← tendsto_id']
+  congrm Tendsto ?_ _ _
+  ext <;> simp
 
 @[to_additive]
 theorem uniformity_eq_comap_nhds_one_swapped :
