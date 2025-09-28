@@ -174,7 +174,7 @@ lemma length_ne_zero_iff_eq_comp (p : Path a b) :
   refine ⟨fun h ↦ ?_, ?_⟩
   · have h_len : p.length = (p.length - 1) + 1 := by omega
     obtain ⟨c, e, p', hp', rfl⟩ := Path.eq_toPath_comp_of_length_eq_succ p h_len
-    exact ⟨c, e, p', rfl, by omega⟩
+    exact ⟨c, e, p', rfl, by cutsat⟩
   · rintro ⟨c, p', e, rfl, h⟩
     simp [h]
 
@@ -207,10 +207,19 @@ theorem toList_comp (p : Path a b) : ∀ {c} (q : Path b c), (p.comp q).toList =
   | _, nil => by simp
   | _, @cons _ _ _ d _ q _ => by simp [toList_comp]
 
-theorem toList_chain_nonempty :
-    ∀ {b} (p : Path a b), p.toList.Chain (fun x y => Nonempty (y ⟶ x)) b
-  | _, nil => List.Chain.nil
-  | _, cons p f => p.toList_chain_nonempty.cons ⟨f⟩
+theorem isChain_toList_nonempty :
+    ∀ {b} (p : Path a b), (p.toList).IsChain (fun x y => Nonempty (y ⟶ x))
+  | _, nil => .nil
+  | _, cons nil _ => .singleton _
+  | _, cons (cons p g) _ => List.IsChain.cons_cons ⟨g⟩ (isChain_toList_nonempty (cons p g))
+
+theorem isChain_cons_toList_nonempty :
+    ∀ {b} (p : Path a b), (b :: p.toList).IsChain (fun x y => Nonempty (y ⟶ x))
+  | _, nil => .singleton _
+  | _, cons p f => p.isChain_cons_toList_nonempty.cons_cons ⟨f⟩
+
+@[deprecated (since := "2025-09-19")]
+alias toList_chain_nonempty := isChain_cons_toList_nonempty
 
 variable [∀ a b : V, Subsingleton (a ⟶ b)]
 
@@ -262,8 +271,8 @@ def decidableEqBddPathsOfDecidableEq (n : ℕ) (h₁ : DecidableEq V)
       match v', v'', h₁ v' v'' with
       | _, _, isTrue (Eq.refl _) =>
         if h : α = β then
-          have hp' : p'.length ≤ n := by simp [Quiver.Path.length] at hp; omega
-          have hq' : q'.length ≤ n := by simp [Quiver.Path.length] at hq; omega
+          have hp' : p'.length ≤ n := by simp [Quiver.Path.length] at hp; cutsat
+          have hq' : q'.length ≤ n := by simp [Quiver.Path.length] at hq; cutsat
           if h'' : (⟨p', hp'⟩ : BoundedPaths _ _ n) = ⟨q', hq'⟩ then
             isTrue <| by
               apply Subtype.ext
