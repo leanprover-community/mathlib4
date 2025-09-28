@@ -89,22 +89,6 @@ def getDeprecatedInfo (nm : Name) (verbose? : Bool) :
   return none
 
 /--
-Assume that the input `fin` is sorted so that the `start` of each entry is not larger than
-the start of the following one.
-`cleanUpRanges fin` is the sub-array of `fin` consisting of all the entries that do not
-correspond to ranges entirely contained in the previous one.
--/
-def cleanUpRanges (fin : Array String.Range) : Array String.Range :=
-  fin.foldl (init := #[]) fun tot n =>
-    if let some back := tot.back? then
-      if back.start ≤ n.start && n.stop ≤ back.stop then
-        tot
-      else
-        tot.push n
-    else
-        tot.push n
-
-/--
 The output is the `HashMap` whose keys are the names of the files containing
 deprecated declarations, and whose values are the arrays of ranges
 corresponding to the deprecated declarations in that file.
