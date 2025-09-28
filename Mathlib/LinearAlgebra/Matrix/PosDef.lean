@@ -718,8 +718,8 @@ theorem _root_.Matrix.IsUnit.posDef_conjugate_iff' [DecidableEq n] {x U : Matrix
 open Matrix
 
 theorem _root_.Matrix.IsUnit.posDef_conjugate_iff [DecidableEq n] {x U : Matrix n n R}
-    (hU : IsUnit U) :
-    PosDef (U * x * star U) ↔ x.PosDef := by simpa using hU.star.posDef_conjugate_iff'
+    (hU : IsUnit U) : PosDef (U * x * star U) ↔ x.PosDef := by
+  simpa using hU.star.posDef_conjugate_iff'
 
 open scoped Kronecker in
 theorem kronecker {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
