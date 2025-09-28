@@ -120,6 +120,9 @@ def MonObj.ofRepresentableBy (F : Cᵒᵖ ⥤ MonCat.{w}) (α : (F ⋙ forget _)
 
 @[deprecated (since := "2025-09-09")] alias Mon_Class.ofRepresentableBy := MonObj.ofRepresentableBy
 
+@[deprecated (since := "2025-03-07")]
+alias MonObjOfRepresentableBy := MonObj.ofRepresentableBy
+
 @[deprecated (since := "2025-09-09")] alias Mon_ClassOfRepresentableBy := MonObj.ofRepresentableBy
 
 /-- If `M` is a monoid object, then `Hom(X, M)` has a monoid structure. -/
