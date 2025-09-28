@@ -195,8 +195,8 @@ lemma condDistrib_comp_self (hX : AEMeasurable X μ) {f : β → Ω} (hf : Measu
 lemma condDistrib_const (hX : AEMeasurable X μ) (c : Ω) :
     condDistrib (fun _ ↦ c) X μ =ᵐ[μ.map X] Kernel.deterministic (fun _ ↦ c) (by fun_prop) := by
   have : (fun _ : α ↦ c) = (fun _ : β ↦ c) ∘ X := rfl
-  conv_lhs => rw [this]
-  filter_upwards [condDistrib_comp_self hX (by fun_prop : Measurable (fun _ ↦ c))] with b hb
+  rw [this]
+  filter_upwards [condDistrib_comp_self hX (measurable_const (a := c))] with b hb
   rw [hb]
 
 lemma condDistrib_map {γ : Type*} {mγ : MeasurableSpace γ}
