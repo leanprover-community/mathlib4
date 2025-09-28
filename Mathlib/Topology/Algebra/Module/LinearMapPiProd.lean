@@ -222,6 +222,10 @@ def single [DecidableEq ι] (i : ι) : φ i →L[R] (∀ i, φ i) where
   toLinearMap := .single R φ i
   cont := continuous_single _
 
+lemma sum_comp_single [Fintype ι] [DecidableEq ι] (L : (Π i, φ i) →L[R] M) (v : Π i, φ i) :
+    ∑ i, L.comp (.single R φ i) (v i) = L v := by
+  simp [← map_sum, LinearMap.sum_single_apply]
+
 end Pi
 
 section Ring
