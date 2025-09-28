@@ -151,7 +151,7 @@ jobs:
             printf $'import %s\n' "$repo"
           done
           REALLY=$([ "$DRY_RUN" = "true" ] && echo "" || echo "really")
-          printf $'#clear_deprecations "%s" "%s" "%s"\n' "$OLD_DATE" "$NEW_DATE" "$REALLY"
+          printf $'#clear_deprecations "%s" "%s" %s\n' "$OLD_DATE" "$NEW_DATE" "$REALLY"
         } | tee -a "${tmplean}"
         echo "::endgroup::"
         # This will add the new files, whose names end in `_with_option.lean`.
