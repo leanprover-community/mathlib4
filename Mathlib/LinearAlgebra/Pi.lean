@@ -149,7 +149,7 @@ lemma single_apply [DecidableEq ι] {i : ι} (v : φ i) :
 lemma sum_single_apply [Fintype ι] [DecidableEq ι] (v : Π i, φ i) :
     ∑ i, Pi.single i (v i) = v := by
   ext i
-  simp [single_apply, Fintype.sum_pi_single]
+  simp
 
 @[simp]
 theorem coe_single [DecidableEq ι] (i : ι) :
