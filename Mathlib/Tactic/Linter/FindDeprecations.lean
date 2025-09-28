@@ -115,7 +115,7 @@ and before `newDate`.
 def deprecatedHashMap (oldDate newDate : String) :
     CommandElabM (Std.HashMap (Name × String) (Array (Name × String.Range))) := do
   let mut fin := ∅
-  let searchPath ← getSrcSearchPath
+  --let searchPath ← getSrcSearchPath
   for (nm, _) in (← getEnv).constants.map₁ do
     if let some ⟨modName, decl, rgStart, rgStop, since⟩ ← getDeprecatedInfo nm false
     then
@@ -124,16 +124,16 @@ def deprecatedHashMap (oldDate newDate : String) :
       if !(oldDate ≤ since && since ≤ newDate) then
         continue
 --      try
-      --let lean := (modName.components.foldl (init := "")
-      --  fun a b => (a.push System.FilePath.pathSeparator) ++ b.toString) ++ ".lean" |>.drop 1
-      let lean ← findLean searchPath modName
+      let lean := (modName.components.foldl (init := "")
+        fun a b => (a.push System.FilePath.pathSeparator) ++ b.toString) ++ ".lean" |>.drop 1
+      --let lean ← findLean searchPath modName
       dbg_trace lean
       let file ← IO.FS.readFile lean
       --dbg_trace file.take 80
       let fm := FileMap.ofString file
       let rg : String.Range := ⟨fm.ofPosition rgStart, fm.ofPosition rgStop⟩
       --dbg_trace (rgStart, rgStop)
-      fin := fin.alter (modName, lean.toString) fun a =>
+      fin := fin.alter (modName, lean) fun a =>
         (a.getD #[]).binInsert (·.2.1 < ·.2.1) (decl, rg)
 --      catch e =>
 --        if let .error ref msg := e then

@@ -80,7 +80,7 @@ def toggleEntry {α} [BEq α] [Hashable α] (h : Std.HashSet α) (a : α) : Std.
 
 instance : ToString String.Range where
   toString | ⟨s, e⟩ => s!"({s}, {e})"
-#check Lean.Elab.HeaderSyntax.imports
+--#check Lean.Elab.HeaderSyntax.imports
 --run_cmd
 --  let a ← withImporting
 --#check
