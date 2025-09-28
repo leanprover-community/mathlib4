@@ -115,7 +115,7 @@ and before `newDate`.
 def deprecatedHashMap (oldDate newDate : String) :
     CommandElabM (Std.HashMap (Name × String) (Array (Name × String.Range))) := do
   let mut fin := ∅
-  --let searchPath ← getSrcSearchPath
+  let searchPath ← getSrcSearchPath
   for (nm, _) in (← getEnv).constants.map₁ do
     if let some ⟨modName, decl, rgStart, rgStop, since⟩ ← getDeprecatedInfo nm false
     then
@@ -124,22 +124,32 @@ def deprecatedHashMap (oldDate newDate : String) :
       if !(oldDate ≤ since && since ≤ newDate) then
         continue
 --      try
-        --let lean ← findLean searchPath modName
-      let lean := (modName.components.foldl (init := "")
-        fun a b => (a.push System.FilePath.pathSeparator) ++ b.toString) ++ ".lean" |>.drop 1
-      --dbg_trace lean
+      --let lean := (modName.components.foldl (init := "")
+      --  fun a b => (a.push System.FilePath.pathSeparator) ++ b.toString) ++ ".lean" |>.drop 1
+      let lean ← findLean searchPath modName
+      dbg_trace lean
       let file ← IO.FS.readFile lean
       --dbg_trace file.take 80
       let fm := FileMap.ofString file
       let rg : String.Range := ⟨fm.ofPosition rgStart, fm.ofPosition rgStop⟩
       --dbg_trace (rgStart, rgStop)
-      fin := fin.alter (modName, lean) fun a => (a.getD #[]).binInsert (·.2.1 < ·.2.1) (decl, rg)
+      fin := fin.alter (modName, lean.toString) fun a =>
+        (a.getD #[]).binInsert (·.2.1 < ·.2.1) (decl, rg)
 --      catch e =>
 --        if let .error ref msg := e then
 --          logInfoAt ref m!"error on {modName}: {msg}"
 --        --dbg_trace "error on {modName}"
 --        continue
   return fin
+/-
+run_cmd
+  let modName := `Mathlib.Tactic.Linter.FindDeprecations
+  if modName != (← getMainModule) then
+    logError "Warning!"
+  let modName ← getMainModule
+  let fname ← findLean (← getSrcSearchPath) modName
+  dbg_trace fname
+-/
 
 def removeDeprecations (fname : String) (rgs : Array String.Range) : IO String := do
   let file ← IO.FS.readFile fname
@@ -250,105 +260,3 @@ elab "#clear_deprecations " oldDate:str ppSpace newDate:str really?:(&" really")
   dbg_trace "Removing {filesToRemove}"
   for tmp in filesToRemove do
     IO.FS.removeFile tmp
-
-elab "#regenerate_deprecations " oldDate:str ppSpace newDate:str really?:(&" really")? : command => do
-  let repo := repo.toString
-  let oldDate := oldDate.getString
-  let newDate := newDate.getString
-  let dmap ← deprecatedHashMap oldDate newDate
-  for ((_, mod), rgs) in dmap.toArray.qsort (·.1.2 < ·.1.2) do
-    let option :=
-      s!"\nimport Mathlib.Tactic.Linter.CommandRanges\n\
-        set_option linter.commandRanges true\n"
-    let optionAdded ← addAfterImports mod option
-    --dbg_trace optionAdded
-    let newName := mod.dropRight ".lean".length ++ "_with_option.lean"
-    --let rgs := cleanUpRanges rgs
-    let file ← IO.FS.readFile mod
-    let fm := file.toFileMap
-    let rgsPos := rgs.map fun (decl, ⟨s, e⟩) =>
-      m!"{.ofConstName decl} {(fm.toPosition s, fm.toPosition e)}"
-    logInfo m!"Adding '{option}' to '{mod}'\nWriting to {indentD newName}\n\
-            {m!"\n".joinSep rgsPos.toList}\n{m!"\n".joinSep (rgs.map (m!"{·}")).toList}"
-    if really?.isSome then
-      IO.FS.writeFile newName optionAdded
-    if false then
-    let mod1 := repo ++ (mod.splitOn repo).getLast!
-    let num := rgs.size - 1
-    dbg_trace "remove {num} declaration{if num == 1 then " " else "s"} from '{mod1}'"
-    if really?.isSome then
-      IO.FS.writeFile mod (← removeDeprecations mod (rgs.map (·.2)))
-
---#regenerate_deprecations "2025-07-19" "2025-09-20" --really
-
-def rewriteWithoutDeprecations (oldDate newDate : String) :
-    CommandElabM (Std.HashMap String String) := do
-  let dmap ← deprecatedHashMap oldDate newDate
-  dbg_trace dmap.toList
-  let mut finalMap := ∅
-  let option :=
-    s!"\nimport Mathlib.Tactic.Linter.CommandRanges\n\
-      set_option linter.commandRanges true\n"
-  let offset := option.toSubstring.stopPos
-  for ((_, fname), namesAndRanges) in dmap do
-    --let fname := "Mathlib/RingTheory/IsAdjoinRoot.lean"
-    --let filWithRanges := "Mathlib/RingTheory/IsAdjoinRoot_with_option.lean.ranges"
-    let fnameWithRanges := fname.dropRight ".lean".length ++ "_with_option.lean.ranges"
-
-    let ranges := namesAndRanges.map (·.2)
-    --dbg_trace namesAndRanges.size
-    let file ← IO.FS.lines fnameWithRanges
-    -- `stringPositions` consists of lists of the form `[p₁, p₂, p₃]`, where
-    -- * `p₁` is the start of a command;
-    -- * `p₂` is the end of the command, excluding trailing whitespace and comments;
-    -- * `p₁` is the end of the command, including trailing whitespace and comments.
-    let stringPositions := file.map parseLine |>.reduceOption
-    let mut removals : Array (List String.Pos) := #[]
-    -- For each range `rg` in `ranges`, we isolate the unique entry of `stringPositions` that
-    -- entirely contains `rg`
-    for rg in ranges do
-      -- We select the range among the
-      let candidate := stringPositions.filterMap (fun arr ↦
-        let a := arr.head! - offset
-        let b := arr[arr.length - 1]! - offset
-        if a ≤ rg.start ∧ rg.stop ≤ b then some (arr.map (· - offset)) else none)
-      --dbg_trace s!"{rg} {candidate}"
-      match candidate with
-      | #[d@([_, _, _])] => removals := removals.push d
-      | _ => logInfo "Something went wrong!"
-    let rems := removals.map fun | [a, b, _c] => (⟨a, b⟩ : String.Range) | _ => default
-    --dbg_trace rems
-    let newFile ← removeDeprecations ( fname) rems
-    finalMap := finalMap.insert fname newFile
---    if write? then
---      IO.FS.writeFile (fname.push '1') newFile
---      let diff ← IO.Process.output {cmd := "diff", args := #[fname, fname.push '1']}
---      dbg_trace diff.stdout
---    else
---      dbg_trace "New file:\n---\n{newFile}---"
-    --dbg_trace newFile
-    --dbg_trace #[fname, fname.push '1']
-    --dbg_trace removals
-  return finalMap
-
-abbrev rangeFile : System.FilePath := "Mathlib/Data/Rat/Floor_with_option.ranges"
-
-open Lean Elab Command in
-elab "#remove_deprecated_declarations " oldDate:str newDate:str really?:("really")? : command => do
-  let repo := repo.toString
-  let oldDate := oldDate.getString
-  let newDate := newDate.getString
-  let dmap ← deprecatedHashMap oldDate newDate
-  dbg_trace "{dmap.fold (init := 0) fun tot _ rgs => tot + rgs.size - 1} \
-      deprecations among {dmap.size} files"
-  for ((_, mod), rgs) in dmap.toArray.qsort (·.1.2 < ·.1.2) do
-    let mod1 := repo ++ (mod.splitOn repo).getLast!
-    --let rgs := cleanUpRanges rgs
-    dbg_trace
-      "From '{mod1}' remove\n{rgs.map fun | ⟨a, b⟩ => (a, b)}\n---\n{← removeDeprecations mod (rgs.map (·.2))}\n---"
-    let num := rgs.size - 1
-    dbg_trace "remove {num} declaration{if num == 1 then " " else "s"} from '{mod1}'"
-    if really?.isSome then
-      IO.FS.writeFile mod (← removeDeprecations mod (rgs.map (·.2)))
-
---#remove_deprecated_declarations "2025-07-19" "2025-09-20" --really
