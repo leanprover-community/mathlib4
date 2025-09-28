@@ -559,7 +559,7 @@ lemma HasMFDerivWithinAt.prodMap {t : Set M'} {x' : M'} {f : M → N} {g : M' �
     {dg : TangentSpace I' x' →L[𝕜] TangentSpace J' (g x')}
     (hg : HasMFDerivWithinAt I' J' g t x' dg) :
     HasMFDerivWithinAt (I.prod I') (J.prod J') (Prod.map f g) (s ×ˢ t) (x, x')
-      ((mfderivWithin I J f s x).prodMap (mfderivWithin I' J' g t x')) := by
+      (df.prodMap dg) := by
   refine ⟨hf.1.prodMap hg.1, ?_⟩
   have : (writtenInExtChartAt (I.prod I') (J.prod J') (x, x') (Prod.map f g)) =
     Prod.map (writtenInExtChartAt I J x f) (writtenInExtChartAt I' J' x' g) := sorry
@@ -570,15 +570,7 @@ lemma HasMFDerivWithinAt.prodMap {t : Set M'} {x' : M'} {f : M → N} {g : M' �
   set s2 := (extChartAt I' x').symm ⁻¹' t ∩ range I'
   have : ((extChartAt (I.prod I') (x, x')).symm ⁻¹' s ×ˢ t ∩ range (I.prod I')) = s1 ×ˢ s2 := sorry
   rw [this]
-  have : ((mfderivWithin I J f s x).prodMap (mfderivWithin I' J' g t x')) = df.prodMap dg := sorry
-  rw [this]
-  set p := (extChartAt (I.prod I') (x, x')) (x, x')
-  have : extChartAt I x x = p.1 := sorry
-  rw [this] at h1
-  have : extChartAt I' x' x' = p.2 := sorry
-  rw [this] at h2
-  exact HasFDerivWithinAt.prodMap ((extChartAt (I.prod I') (x, x')) (x, x')) h1 h2
-
+  exact HasFDerivWithinAt.prodMap _ h1 h2
 
 #exit
 lemma HasMFDerivAt.prodMap {x' : M'} {f : M → N} {g : M' → N'}
