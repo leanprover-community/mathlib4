@@ -105,6 +105,8 @@ def deprecatedHashMap (oldDate newDate : String) :
     then
       if !(oldDate ≤ since && since ≤ newDate) then
         continue
+      -- Ideally, `lean` would be computed by `← findLean (← getSrcSearchPath) modName`
+      -- However, while this works locally, CI throws the error ` unknown module prefix 'Mathlib'`
       let lean := (modName.components.foldl (init := "")
         fun a b => (a.push System.FilePath.pathSeparator) ++ b.toString) ++ ".lean" |>.drop 1
       --let lean ← findLean searchPath modName
