@@ -56,7 +56,7 @@ end FiniteMeasure
 namespace LocallyIntegrable
 
 variable {𝕜 : Type*} [NormedField 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
-variable [LocallyCompactSpace X] [T2Space X] [SecondCountableTopology X]
+variable [T2Space X] [SecondCountableTopologyEither X 𝕜]
 
 open TopologicalSpace
 
@@ -64,8 +64,7 @@ omit [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E] [NormedSpace
 theorem integrable_smul_LocallyIntegrable {f : X → E} (hf : LocallyIntegrable f μ) (K : Compacts X)
     (φ : X →ᵇ 𝕜) :
     Integrable (fun x ↦ (φ x) • (f x)) (μ.restrict K) :=
-  ((hf.locallyIntegrableOn K).continuousOn_smul K.isCompact.isClosed.isLocallyClosed
-      φ.continuous.continuousOn).integrableOn_isCompact K.isCompact
+    (hf.integrableOn_isCompact K.isCompact).continuousOn_smul φ.continuous.continuousOn K.isCompact
 
 variable [SMulCommClass ℝ 𝕜 E]
 
