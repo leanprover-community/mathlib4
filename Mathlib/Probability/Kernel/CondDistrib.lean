@@ -5,7 +5,6 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Kernel.Composition.Lemmas
 import Mathlib.Probability.Kernel.Disintegration.Unique
-import Mathlib.Probability.Notation
 
 /-!
 # Regular conditional probability distribution
@@ -143,7 +142,7 @@ end Measurability
 `condKernel`. -/
 theorem condDistrib_ae_eq_of_measure_eq_compProd_of_measurable
     (hX : Measurable X) (hY : Measurable Y)
-    (κ : Kernel β Ω) [IsFiniteKernel κ] (hκ : μ.map (fun x => (X x, Y x)) = μ.map X ⊗ₘ κ) :
+    {κ : Kernel β Ω} [IsFiniteKernel κ] (hκ : μ.map (fun x => (X x, Y x)) = μ.map X ⊗ₘ κ) :
     condDistrib Y X μ =ᵐ[μ.map X] κ := by
   have heq : μ.map X = (μ.map (fun x ↦ (X x, Y x))).fst := by
     ext s hs
@@ -158,16 +157,13 @@ theorem condDistrib_ae_eq_of_measure_eq_compProd_of_measurable
 /-- `condDistrib` is a.e. uniquely defined as the kernel satisfying the defining property of
 `condKernel`. -/
 lemma condDistrib_ae_eq_of_measure_eq_compProd
-    (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ) (κ : Kernel β Ω) [IsFiniteKernel κ]
+    (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ) {κ : Kernel β Ω} [IsFiniteKernel κ]
     (hκ : μ.map (fun x => (X x, Y x)) = μ.map X ⊗ₘ κ) :
     condDistrib Y X μ =ᵐ[μ.map X] κ := by
-  suffices ∀ᵐ x ∂μ.map (hX.mk X), condDistrib (hY.mk Y) (hX.mk X) μ x = κ x by
-    rw [Measure.map_congr hX.ae_eq_mk]
-    convert this using 3 with b
-    rw [condDistrib_congr hY.ae_eq_mk hX.ae_eq_mk, Filter.EventuallyEq]
+  suffices condDistrib (hY.mk Y) (hX.mk X) μ =ᵐ[μ.map (hX.mk X)] κ by
+    rwa [Measure.map_congr hX.ae_eq_mk, condDistrib_congr hY.ae_eq_mk hX.ae_eq_mk]
   refine condDistrib_ae_eq_of_measure_eq_compProd_of_measurable (μ := μ)
-      hX.measurable_mk hY.measurable_mk κ
-    ((Eq.trans ?_ hκ).trans ?_)
+    hX.measurable_mk hY.measurable_mk ((Eq.trans ?_ hκ).trans ?_)
   · refine Measure.map_congr ?_
     filter_upwards [hX.ae_eq_mk, hY.ae_eq_mk] with a haX haY using by rw [haX, haY]
   · rw [Measure.map_congr hX.ae_eq_mk]
@@ -175,13 +171,13 @@ lemma condDistrib_ae_eq_of_measure_eq_compProd
 lemma condDistrib_ae_eq_iff_measure_eq_compProd
     (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ) (κ : Kernel β Ω) [IsFiniteKernel κ] :
   (condDistrib Y X μ =ᵐ[μ.map X] κ) ↔ μ.map (fun x => (X x, Y x)) = μ.map X ⊗ₘ κ := by
-  refine ⟨fun h ↦ ?_, condDistrib_ae_eq_of_measure_eq_compProd hX hY κ⟩
+  refine ⟨fun h ↦ ?_, condDistrib_ae_eq_of_measure_eq_compProd hX hY⟩
   rw [Measure.compProd_congr h.symm, compProd_map_condDistrib hY]
 
 lemma condDistrib_comp {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} [StandardBorelSpace Ω']
     [Nonempty Ω'] (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ) {f : Ω → Ω'} (hf : Measurable f) :
     condDistrib (f ∘ Y) X μ =ᵐ[μ.map X] (condDistrib Y X μ).map f := by
-  refine condDistrib_ae_eq_of_measure_eq_compProd hX (by fun_prop) _ ?_
+  refine condDistrib_ae_eq_of_measure_eq_compProd hX (by fun_prop) ?_
   calc μ.map (fun x ↦ (X x, (f ∘ Y) x))
   _ = (μ.map (fun x ↦ (X x, Y x))).map (Prod.map id f) := by
     rw [AEMeasurable.map_map_of_aemeasurable (by fun_prop) (by fun_prop)]
@@ -191,15 +187,18 @@ lemma condDistrib_comp {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} [StandardBorel
 
 lemma condDistrib_comp_self (hX : AEMeasurable X μ) {f : β → Ω} (hf : Measurable f) :
     condDistrib (f ∘ X) X μ =ᵐ[μ.map X] Kernel.deterministic f hf := by
-  refine condDistrib_ae_eq_of_measure_eq_compProd hX (by fun_prop) _ ?_
+  refine condDistrib_ae_eq_of_measure_eq_compProd hX (by fun_prop) ?_
   rw [Measure.compProd_deterministic, AEMeasurable.map_map_of_aemeasurable (by fun_prop) hX]
   rfl
+
+lemma condDistrib_self (hY : AEMeasurable Y μ) : condDistrib Y Y μ =ᵐ[μ.map Y] Kernel.id := by
+  simpa using condDistrib_comp_self hY measurable_id
 
 lemma condDistrib_const (hX : AEMeasurable X μ) (c : Ω) :
     condDistrib (fun _ ↦ c) X μ =ᵐ[μ.map X] Kernel.deterministic (fun _ ↦ c) (by fun_prop) := by
   have : (fun _ : α ↦ c) = (fun _ : β ↦ c) ∘ X := rfl
-  conv_lhs => rw [this]
-  filter_upwards [condDistrib_comp_self hX (by fun_prop : Measurable (fun _ ↦ c))] with b hb
+  rw [this]
+  filter_upwards [condDistrib_comp_self hX (measurable_const (a := c))] with b hb
   rw [hb]
 
 lemma condDistrib_map {γ : Type*} {mγ : MeasurableSpace γ}
@@ -207,10 +206,10 @@ lemma condDistrib_map {γ : Type*} {mγ : MeasurableSpace γ}
     (hX : AEMeasurable X (ν.map f)) (hY : AEMeasurable Y (ν.map f)) (hf : AEMeasurable f ν) :
     condDistrib Y X (ν.map f) =ᵐ[ν.map (X ∘ f)] condDistrib (Y ∘ f) (X ∘ f) ν := by
   rw [← AEMeasurable.map_map_of_aemeasurable hX hf]
-  refine condDistrib_ae_eq_of_measure_eq_compProd (μ := ν.map f) hX hY _ ?_
+  refine condDistrib_ae_eq_of_measure_eq_compProd (μ := ν.map f) hX hY ?_
   rw [AEMeasurable.map_map_of_aemeasurable hX hf, compProd_map_condDistrib (by fun_prop),
     AEMeasurable.map_map_of_aemeasurable (by fun_prop) hf]
-  congr
+  rfl
 
 lemma condDistrib_fst_prod {γ : Type*} {mγ : MeasurableSpace γ}
     (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ) (ν : Measure γ) [IsProbabilityMeasure ν] :
@@ -218,8 +217,8 @@ lemma condDistrib_fst_prod {γ : Type*} {mγ : MeasurableSpace γ}
   have : μ = (μ.prod ν).map (fun ω ↦ ω.1) := by simp [Measure.map_fst_prod]
   have h_map := condDistrib_map (X := X) (Y := Y) (f := Prod.fst (α := α) (β := γ))
       (ν := μ.prod ν) (mα := inferInstance) (mβ := inferInstance)
-      (by simpa using hX) (by simpa using hY) (by fun_prop)
-  rw [← AEMeasurable.map_map_of_aemeasurable (by simpa using hX) (by fun_prop)] at h_map
+      (by simpa) (by simpa) (by fun_prop)
+  rw [← AEMeasurable.map_map_of_aemeasurable (by simpa) (by fun_prop)] at h_map
   simp only [Measure.map_fst_prod, measure_univ, one_smul] at h_map
   exact h_map.symm
 
@@ -229,8 +228,8 @@ lemma condDistrib_snd_prod {γ : Type*} {mγ : MeasurableSpace γ}
   have : μ = (μ.prod ν).map (fun ω ↦ ω.1) := by simp [Measure.map_fst_prod]
   have h_map := condDistrib_map (X := X) (Y := Y) (f := Prod.snd (β := α) (α := γ))
       (ν := ν.prod μ) (mα := inferInstance) (mβ := inferInstance)
-      (by simpa using hX) (by simpa using hY) (by fun_prop)
-  rw [← AEMeasurable.map_map_of_aemeasurable (by simpa using hX) (by fun_prop)] at h_map
+      (by simpa) (by simpa) (by fun_prop)
+  rw [← AEMeasurable.map_map_of_aemeasurable (by simpa) (by fun_prop)] at h_map
   simp only [Measure.map_snd_prod, measure_univ, one_smul] at h_map
   exact h_map.symm
 

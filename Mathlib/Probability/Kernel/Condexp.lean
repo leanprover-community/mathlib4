@@ -235,14 +235,10 @@ lemma condDistrib_apply_ae_eq_condExpKernel_map {β γ : Type*} {mβ : Measurabl
     (hX : Measurable X) (hY : Measurable Y) {s : Set β} (hs : MeasurableSet s) :
     (fun a ↦ condDistrib X Y μ (Y a) s)
       =ᵐ[μ] fun a ↦ (condExpKernel μ (mγ.comap Y)).map X a s := by
-  have hT_meas {s : Set γ} (hs : MeasurableSet s) : MeasurableSet[mγ.comap Y] (Y ⁻¹' s) := by
-    rw [MeasurableSpace.measurableSet_comap]
-    exact ⟨s, hs, rfl⟩
-  simp_rw [Kernel.map_apply _ hX, Measure.map_apply hX hs]
+  simp_rw [Kernel.map_apply' _ hX _ hs]
   filter_upwards [condDistrib_ae_eq_condExp hY hX (μ := μ) hs,
     condExpKernel_ae_eq_condExp hY.comap_le (μ := μ) (hX hs)] with a ha₁ ha₂
-  rw [Measure.real] at ha₁ ha₂
-  rw [← ENNReal.toReal_eq_toReal (by simp) (by simp), ha₁, ha₂]
+  rw [← measureReal_eq_measureReal_iff, ha₁, ha₂]
 
 theorem condExp_ae_eq_integral_condExpKernel' [NormedAddCommGroup F] {f : Ω → F}
     [NormedSpace ℝ F] [CompleteSpace F] (hf_int : Integrable f μ) :
