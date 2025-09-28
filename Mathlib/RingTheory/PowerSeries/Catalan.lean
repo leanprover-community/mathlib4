@@ -60,29 +60,11 @@ theorem coeff_X_mul_catalanSeries (n : ℕ) (hn : 0 < n) :
   rw [sum_coeff_X_catalanSeries n hn]
 
 theorem catalanSeries_one_add_X_mul_self_sq : catalanSeries = 1 + X * catalanSeries ^ 2 := by
-  rw [pow_two, ← mul_assoc]
   ext n
-  by_cases hn : n = 0
-  · aesop
-  · have hn' : 0 < n := by omega
-    simp [catalanSeries_coeff, hn]
-    rw [coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ
-      (fun x y => coeff x (X * catalanSeries) * coeff y catalanSeries), Nat.succ_eq_add_one]
-    rw [sum_range_eq_add_Ico _ (by omega)]
-    simp
-    by_cases hn1 : n = 1
-    · simp [hn1, catalan_one, catalanSeries_coeff]
-    · have hn1' : 1 < n := by omega
-      have : ∑ x ∈ Ico 1 (n + 1), (coeff x) (X * catalanSeries) * catalan (n - x) =
-        ∑ x ∈ Ico 1 (n + 1), catalan (x - 1) * catalan (n - x) := by
-        apply sum_congr rfl
-        intros x hx
-        simp at hx
-        rw [coeff_X_mul_catalanSeries x (by omega)]
-      rw [this, sum_Ico_eq_sum_range]
-      simp only [add_tsub_cancel_right, add_tsub_cancel_left]
-      rw [show n = n - 1 + 1 by omega, catalan_succ' (n - 1), Nat.sum_antidiagonal_eq_sum_range_succ
-        (fun x y => catalan x * catalan y), Nat.succ_eq_add_one, show n - 1 + 1 = n by omega]
-      simp_rw [show ∀ x, n - 1 - x = n - (1 + x) by omega]
+  cases n with
+  | zero => simp
+  | succ n =>
+    simp_rw [map_add, coeff_one, if_neg n.succ_ne_zero, zero_add, coeff_succ_X_mul, sq,
+      coeff_mul, catalanSeries_coeff, catalan_succ']
 
 end PowerSeries
