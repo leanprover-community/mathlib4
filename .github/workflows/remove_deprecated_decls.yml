@@ -85,8 +85,8 @@ jobs:
             from_date=$(parse_date_safely "${RAW_FROM_DATE}")
           fi
         else
-          echo "No raw_from_date provided, using 6 months ago"
-          from_date=$(date -d '6 months ago' +%Y-%m-%d)
+          echo "No raw_from_date provided, using 5 years ago"
+          from_date=$(date -d '5 years ago' +%Y-%m-%d)
         fi
 
         # Process to_date
@@ -100,8 +100,8 @@ jobs:
             to_date=$(parse_date_safely "${RAW_TO_DATE}")
           fi
         else
-          echo "No raw_to_date provided, using today"
-          to_date=$(date +%Y-%m-%d)
+          echo "No raw_to_date provided, using 6 months ago"
+          to_date=$(date -d '6 months ago' +%Y-%m-%d)
         fi
 
         echo "Parsed dates - from: $from_date, to: $to_date"
