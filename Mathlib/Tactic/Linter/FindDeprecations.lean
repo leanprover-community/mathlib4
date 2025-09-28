@@ -47,6 +47,10 @@ def getPosAfterImports (fname : String) : CommandElabM String.Pos := do
   let (_, fileStartPos, _) ← parseImports fm.source (← getFileName)
   return fm.ofPosition fileStartPos
 
+/--
+`addAfterImports fname s` returns the content of the file `fname`, with the string `s` added
+after the imports of `fname`.
+-/
 def addAfterImports (fname s : String) : CommandElabM String := do
   let pos ← getPosAfterImports fname
   let file ← IO.FS.readFile fname
