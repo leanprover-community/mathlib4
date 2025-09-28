@@ -877,21 +877,32 @@ end
 
 variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
 
+variable (M) in
+/-- A choice of Levi-Civita connection on the tangent bundle `TM` of a Riemannian manifold `(M, g)`:
+this is unique up to the value on non-differentiable vector fields.
+If you know the Levi-Civita connection already, you can use `IsLeviCivitaConnection` instead. -/
+private noncomputable def LeviCivitaConnection_aux [FiniteDimensional ℝ E]
+    (o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)) :
+    CovariantDerivative I E (TangentSpace I : M → Type _) where
+  -- This is the existence part of the proof: take the formula derived above
+  -- and prove it satisfies all the conditions.
+  toFun := lcCandidate I M o
+  isCovariantDerivativeOn := by
+    rw [← iUnion_source_chartAt H M]
+    let t := fun x ↦ trivializationAt E (TangentSpace I : M → Type _) x
+    apply IsCovariantDerivativeOn.iUnion (s := fun i ↦ (t i).baseSet) fun i ↦ ?_
+    exact isCovariantDerivativeOn_lcCandidate I _
+
 -- TODO: make g part of the notation!
 variable (M) in
 /-- A choice of Levi-Civita connection on the tangent bundle `TM` of a Riemannian manifold `(M, g)`:
 this is unique up to the value on non-differentiable vector fields.
 If you know the Levi-Civita connection already, you can use `IsLeviCivitaConnection` instead. -/
 noncomputable def LeviCivitaConnection [FiniteDimensional ℝ E] :
-    CovariantDerivative I E (TangentSpace I : M → Type _) where
-  -- This is the existence part of the proof: take the formula derived above
-  -- and prove it satisfies all the conditions.
-  toFun := lcCandidate I M
-  isCovariantDerivativeOn := by
-    rw [← iUnion_source_chartAt H M]
-    let t := fun x ↦ trivializationAt E (TangentSpace I : M → Type _) x
-    apply IsCovariantDerivativeOn.iUnion (s := fun i ↦ (t i).baseSet) fun i ↦ ?_
-    exact isCovariantDerivativeOn_lcCandidate I _
+    CovariantDerivative I E (TangentSpace I : M → Type _) :=
+  -- TODO: somehow choose an ordering here, how to do this right?
+  -- let ⟨r, o⟩ := exists_wellOrder (↑(Basis.ofVectorSpaceIndex ℝ E))
+  LeviCivitaConnection_aux I M sorry
 
 -- TODO: move this section to `Torsion.lean`
 section
@@ -1047,7 +1058,7 @@ theorem LeviCivitaConnection.christoffelSymbol_symm [FiniteDimensional ℝ E] (x
     have (X : Π y : M, TangentSpace I y) : X = 0 := sorry
     intro hx''
     intro i j k
-    simp only [LeviCivitaConnection]
+    simp only [LeviCivitaConnection, LeviCivitaConnection_aux]
     unfold lcCandidate
     simp only [lcCandidate_aux, hE, ↓reduceDIte]
 
@@ -1069,7 +1080,7 @@ theorem LeviCivitaConnection.christoffelSymbol_symm [FiniteDimensional ℝ E] (x
   have aux : ∀ k, ⟪LeviCivitaConnection I M (s i) (s j), (s k)⟫ x'
       = ⟪LeviCivitaConnection I M (s j) (s i), (s k)⟫ x' := by
     intro k
-    simp only [LeviCivitaConnection]
+    simp only [LeviCivitaConnection, LeviCivitaConnection_aux]
     unfold lcCandidate
     rw [product_apply, product_apply]
     simp only [lcCandidate_aux, hE, ↓reduceDIte]
@@ -1131,15 +1142,15 @@ lemma baz [FiniteDimensional ℝ E] : (LeviCivitaConnection I M).IsLeviCivitaCon
       apply Subsingleton.eq_zero X
     refine ⟨?_, ?_⟩
     · intro X Y Z x
-      simp only [LeviCivitaConnection]
+      simp only [LeviCivitaConnection, LeviCivitaConnection_aux]
       unfold lcCandidate
       simp [this]
-    · simp only [isTorsionFree_def, LeviCivitaConnection]
+    · simp only [isTorsionFree_def, LeviCivitaConnection, LeviCivitaConnection_aux]
       unfold lcCandidate torsion
       ext; simp [this]
   refine ⟨?_, ?_⟩
   · intro X Y Z x
-    unfold LeviCivitaConnection lcCandidate
+    unfold LeviCivitaConnection LeviCivitaConnection_aux lcCandidate
     simp only [lcCandidate_aux, hE, ↓reduceDIte]
     --simp [product_apply]
     sorry -- compatible
