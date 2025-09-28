@@ -88,7 +88,7 @@ def prod (H : Subgroup G) (K : Subgroup N) : Subgroup (G × N) :=
   { Submonoid.prod H.toSubmonoid K.toSubmonoid with
     inv_mem' := fun hx => ⟨H.inv_mem' hx.1, K.inv_mem' hx.2⟩ }
 
-@[to_additive coe_prod]
+@[to_additive (attr := norm_cast) coe_prod]
 theorem coe_prod (H : Subgroup G) (K : Subgroup N) :
     (H.prod K : Set (G × N)) = (H : Set G) ×ˢ (K : Set N) :=
   rfl
@@ -848,7 +848,7 @@ instance normal_inf_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : 
   ⟨fun n hmem g => ⟨hH.conj_mem n hmem.1 g, hK.conj_mem n hmem.2 g⟩⟩
 
 @[to_additive]
-theorem normal_iInf_normal {ι : Type*} {a : ι → Subgroup G}
+theorem normal_iInf_normal {ι : Sort*} {a : ι → Subgroup G}
     (norm : ∀ i : ι, (a i).Normal) : (iInf a).Normal := by
   constructor
   intro g g_in_iInf h

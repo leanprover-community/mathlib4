@@ -292,7 +292,8 @@ lemma esymmAlgHom_fin_bijective (n : ℕ) :
   rw [← AlgHom.mem_range]
   obtain rfl | h0 := eq_or_ne p 0
   · exact Subalgebra.zero_mem _
-  induction' he : p.supDegree toLex using WellFoundedLT.induction with t ih generalizing p; subst he
+  induction he : p.supDegree toLex using WellFoundedLT.induction generalizing p with | _ t ih
+  subst he
   let t := Finsupp.equivFunOnFinite.symm (invAccumulate n n <| ↑(ofLex <| p.supDegree toLex))
   have hd :
       (esymmAlgHomMonomial _ t <| p.leadingCoeff toLex).supDegree toLex = p.supDegree toLex := by

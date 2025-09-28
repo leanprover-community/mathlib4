@@ -56,8 +56,6 @@ namespace Matroid
 /-- `M.IsCircuit C` means that `C` is a minimal dependent set in `M`. -/
 def IsCircuit (M : Matroid α) := Minimal M.Dep
 
-@[deprecated (since := "2025-02-14")] alias Circuit := IsCircuit
-
 lemma isCircuit_def : M.IsCircuit C ↔ Minimal M.Dep C := Iff.rfl
 
 lemma IsCircuit.dep (hC : M.IsCircuit C) : M.Dep C :=
@@ -552,6 +550,9 @@ lemma IsCocircuit.isCircuit (hK : M.IsCocircuit K) : M✶.IsCircuit K :=
 
 lemma IsCircuit.isCocircuit (hC : M.IsCircuit C) : M✶.IsCocircuit C := by
   rwa [isCocircuit_def, dual_dual]
+
+lemma IsCocircuit.nonempty (hC : M.IsCocircuit C) : C.Nonempty :=
+  hC.isCircuit.nonempty
 
 @[aesop unsafe 10% (rule_sets := [Matroid])]
 lemma IsCocircuit.subset_ground (hC : M.IsCocircuit C) : C ⊆ M.E :=

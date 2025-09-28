@@ -715,7 +715,17 @@ lemma IsLocallyFiniteMeasure.withDensity_ofReal {f : α → ℝ} (hf : Continuou
 
 section Conv
 
-variable {G : Type*} [Group G] [MeasureSpace G] [MeasurableMul₂ G] [MeasurableInv G]
+variable {M : Type*} [Monoid M] [MeasurableSpace M]
+
+-- `mconv_smul_left` is in the `Convolution` file. This lemma is here because this is the file in
+-- which we prove the instance that gives `SFinite (c • ν)`.
+@[to_additive conv_smul_right]
+theorem Measure.mconv_smul_right (μ : Measure M) (ν : Measure M) [SFinite ν] (s : ℝ≥0∞) :
+    μ ∗ₘ (s • ν) = s • (μ ∗ₘ ν) := by
+  unfold mconv
+  rw [Measure.prod_smul_right, Measure.map_smul]
+
+variable {G : Type*} [Group G] {mG : MeasurableSpace G} [MeasurableMul₂ G] [MeasurableInv G]
   {μ : Measure G} [SFinite μ] [IsMulLeftInvariant μ]
 
 @[to_additive]
