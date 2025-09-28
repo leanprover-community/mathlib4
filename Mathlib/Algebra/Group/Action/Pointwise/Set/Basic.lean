@@ -41,9 +41,6 @@ lemma smul_set_prod {M α : Type*} [SMul M α] [SMul M β] (c : M) (s : Set α) 
     c • (s ×ˢ t) = (c • s) ×ˢ (c • t) :=
   prodMap_image_prod (c • ·) (c • ·) s t
 
-@[deprecated (since := "2025-03-11")]
-alias vadd_set_sum := vadd_set_prod
-
 @[to_additive]
 lemma smul_set_pi {G ι : Type*} {α : ι → Type*} [Group G] [∀ i, MulAction G (α i)]
     (c : G) (I : Set ι) (s : ∀ i, Set (α i)) : c • I.pi s = I.pi (c • s) :=

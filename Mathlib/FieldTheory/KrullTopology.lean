@@ -68,19 +68,10 @@ subsets `Gal(L/E)` of `L ≃ₐ[K] L`, where `E/K` is finite. -/
 def fixedByFinite (K L : Type*) [Field K] [Field L] [Algebra K L] : Set (Subgroup (L ≃ₐ[K] L)) :=
   IntermediateField.fixingSubgroup '' finiteExts K L
 
-@[deprecated (since := "2025-03-16")]
-alias IntermediateField.finiteDimensional_bot := IntermediateField.instFiniteSubtypeMemBot
-
-@[deprecated (since := "2025-03-12")]
-alias IntermediateField.fixingSubgroup.bot := IntermediateField.fixingSubgroup_bot
-
 /-- If `L/K` is a field extension, then we have `Gal(L/K) ∈ fixedByFinite K L`. -/
 theorem top_fixedByFinite {K L : Type*} [Field K] [Field L] [Algebra K L] :
     ⊤ ∈ fixedByFinite K L :=
   ⟨⊥, IntermediateField.instFiniteSubtypeMemBot K, IntermediateField.fixingSubgroup_bot⟩
-
-@[deprecated (since := "2025-03-16")]
-alias finiteDimensional_sup := IntermediateField.finiteDimensional_sup
 
 /-- Given a field extension `L/K`, `galBasis K L` is the filter basis on `L ≃ₐ[K] L` whose sets
 are `Gal(L/E)` for intermediate fields `E` with `E/K` finite dimensional. -/

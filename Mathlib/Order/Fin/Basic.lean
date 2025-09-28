@@ -53,9 +53,6 @@ theorem coe_min (a b : Fin n) : ↑(min a b) = (min a b : ℕ) := rfl
 
 theorem compare_eq_compare_val (a b : Fin n) : compare a b = compare a.val b.val := rfl
 
-@[deprecated (since := "2025-03-01")] alias coe_sup := coe_max
-@[deprecated (since := "2025-03-01")] alias coe_inf := coe_min
-
 instance instLinearOrder : LinearOrder (Fin n) :=
   Fin.val_injective.linearOrder _
     Fin.le_iff_val_le_val Fin.lt_iff_val_lt_val coe_min coe_max compare_eq_compare_val

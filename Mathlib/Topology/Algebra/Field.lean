@@ -47,8 +47,6 @@ variable (K)
 continuous, including inversion. -/
 class IsTopologicalDivisionRing : Prop extends IsTopologicalRing K, ContinuousInv₀ K
 
-@[deprecated (since := "2025-03-25")] alias TopologicalDivisionRing := IsTopologicalDivisionRing
-
 section Subfield
 
 variable {α : Type*} [Field α] [TopologicalSpace α] [IsTopologicalDivisionRing α]

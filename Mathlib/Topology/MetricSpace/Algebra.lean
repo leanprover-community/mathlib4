@@ -117,8 +117,6 @@ class IsBoundedSMul : Prop where
   dist_smul_pair' : ∀ x : α, ∀ y₁ y₂ : β, dist (x • y₁) (x • y₂) ≤ dist x 0 * dist y₁ y₂
   dist_pair_smul' : ∀ x₁ x₂ : α, ∀ y : β, dist (x₁ • y) (x₂ • y) ≤ dist x₁ x₂ * dist y 0
 
-@[deprecated (since := "2025-03-10")] alias BoundedSMul := IsBoundedSMul
-
 variable {α β}
 variable [IsBoundedSMul α β]
 

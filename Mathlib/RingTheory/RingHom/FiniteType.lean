@@ -231,15 +231,5 @@ theorem finiteType_isLocal : PropertyIsLocal @FiniteType :=
     (finiteType_stableUnderComposition.stableUnderCompositionWithLocalizationAway
       finiteType_holdsForLocalizationAway).right⟩
 
-@[deprecated (since := "2025-03-01")]
-alias finiteType_is_local := finiteType_isLocal
-
 end RingHom
 
-@[deprecated (since := "2025-03-14")]
-alias RingHom.IsLocalization.lift_mem_adjoin_finsetIntegerMultiple :=
-  IsLocalization.lift_mem_adjoin_finsetIntegerMultiple
-
-@[deprecated (since := "2025-03-14")]
-alias RingHom.IsLocalization.exists_smul_mem_of_mem_adjoin :=
-  IsLocalization.exists_smul_mem_of_mem_adjoin
