@@ -46,7 +46,7 @@ variable {F F' F'' : Cᵒᵖ ⥤ Type w} (G G' : Subpresheaf F)
 /-- Every subpresheaf of a separated presheaf is itself separated. -/
 theorem Subpresheaf.isSeparated {J : GrothendieckTopology C} (h : Presieve.IsSeparated J F) :
     Presieve.IsSeparated J G.toPresheaf :=
-  fun S hS _ _ _ hx₁ hx₂ ↦ Subtype.ext <| h S hS _ _ _ (hx₁.map G.ι) (hx₂.map G.ι)
+  fun _ S hS _ _ _ hx₁ hx₂ ↦ Subtype.ext <| h S hS _ _ _ (hx₁.map G.ι) (hx₂.map G.ι)
 
 /-- The sheafification of a subpresheaf as a subpresheaf.
 Note that this is a sheaf only when the whole presheaf is a sheaf. -/
