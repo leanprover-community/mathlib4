@@ -104,7 +104,7 @@ instance finite_residueField_of_compactSpace : Finite (ResidueField R) :=
 lemma isOpen_iff_finite_quotient {I : Ideal R} :
     IsOpen (X := R) I ↔ Finite (R ⧸ I) := by
   refine ⟨AddSubgroup.quotient_finite_of_isOpen I.toAddSubgroup, fun H ↦ ?_⟩
-  obtain ⟨n, hn⟩ := exists_maximalIdeal_pow_le_of_finite_quotient I
+  obtain ⟨n, hn⟩ := exists_maximalIdeal_pow_le_of_isArtinianRing_quotient I
   exact AddSubgroup.isOpen_mono (H₁ := (maximalIdeal R ^ n).toAddSubgroup)
     (H₂ := I.toAddSubgroup) hn (isOpen_maximalIdeal_pow R n)
 
