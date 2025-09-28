@@ -167,10 +167,7 @@ theorem absorbent_iff_eventually_nhdsNE_zero :
     Absorbent 𝕜 s ↔ ∀ x : E, ∀ᶠ c : 𝕜 in 𝓝[≠] 0, c • x ∈ s :=
   forall_congr' fun x ↦ by simp only [absorbs_iff_eventually_nhdsNE_zero, mapsTo_singleton]
 
-@[deprecated (since := "2025-03-03")]
-alias absorbent_iff_eventually_nhdsWithin_zero := absorbent_iff_eventually_nhdsNE_zero
-
-alias ⟨Absorbent.eventually_nhdsNE_zero, _⟩ := absorbent_iff_eventually_nhdsWithin_zero
+alias ⟨Absorbent.eventually_nhdsNE_zero, _⟩ := absorbent_iff_eventually_nhdsNE_zero
 
 @[deprecated (since := "2025-03-03")]
 alias Absorbent.eventually_nhdsWithin_zero := Absorbent.eventually_nhdsNE_zero
