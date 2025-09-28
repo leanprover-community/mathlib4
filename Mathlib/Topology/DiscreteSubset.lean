@@ -117,10 +117,10 @@ theorem discreteTopology_biUnion_finset {ι : Type*} {I : Finset ι} {s : ι →
     DiscreteTopology (⋃ i ∈ I, s i) := by
   classical
   induction I using Finset.induction_on with
-  | empty => rw [show ⋃ i ∈ ∅, s i = ∅ by simp]; infer_instance
+  | empty => rw [biUnion_empty_finset]; infer_instance
   | insert a I _ IH =>
     rw [Finset.forall_mem_insert] at hs hs'
-    rw [(by simp : ⋃ i ∈ insert a I, s i = s a ∪ ⋃ i ∈ I, s i)]
+    rw [Finset.set_biUnion_insert]
     exact discreteTopology_union hs.1 (IH hs.2 hs'.2) hs'.1 (isClosed_biUnion_finset hs'.2)
 
 /-- The union of finitely many discrete closed subsets is discrete. -/
