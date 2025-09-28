@@ -5,7 +5,6 @@ Authors: David Loeffler
 -/
 
 import Mathlib.GroupTheory.Commensurable
-import Mathlib.GroupTheory.Index
 import Mathlib.Topology.Algebra.ContinuousMonoidHom
 import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 
