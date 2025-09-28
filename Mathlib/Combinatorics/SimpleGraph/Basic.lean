@@ -812,24 +812,19 @@ end Incidence
 
 section Subsingleton
 
-theorem subsingleton_iff_eq_top_and_eq_bot : Subsingleton V ↔ G = ⊤ ∧ G = ⊥ := by
-  refine ⟨fun h ↦ ?_, fun ⟨h₁, h₂⟩ ↦ ?_⟩
-  · constructor
-    all_goals
-    · ext x y
-      have := (subsingleton_iff.mp h) x y
-      grind [Adj.ne']
-  · contrapose! h₂
-    obtain ⟨x, y, hxy⟩ := not_subsingleton_iff_nontrivial.mp h₂
-    exact edgeSet_nonempty.mp ⟨Sym2.mk (x, y), by simp [hxy, h₁]⟩
-
-theorem nontrivial_of_ne_top (h : G ≠ ⊤) : Nontrivial V := by
+theorem subsingleton_iff_subsingleton : Subsingleton V ↔ Subsingleton (SimpleGraph V) := by
+  refine ⟨fun _ ↦ Unique.instSubsingleton, fun h ↦ ?_⟩
   contrapose! h
-  exact subsingleton_iff_eq_top_and_eq_bot _ |>.mp (not_nontrivial_iff_subsingleton.mp h) |>.1
+  obtain ⟨_, _, hne⟩ := not_subsingleton_iff_nontrivial.mp h
+  exact not_subsingleton_iff_nontrivial.mpr ⟨⊤, ⊥, ne_of_not_le fun a ↦ by simpa using a hne⟩
 
-theorem nontrivial_of_ne_bot (h : G ≠ ⊥) : Nontrivial V := by
+theorem nontrivial_of_ne_bot {G : SimpleGraph V} (h : G ≠ ⊥) : Nontrivial V := by
   contrapose! h
-  exact subsingleton_iff_eq_top_and_eq_bot _ |>.mp (not_nontrivial_iff_subsingleton.mp h) |>.2
+  exact subsingleton_iff_subsingleton.mp (not_nontrivial_iff_subsingleton.mp h) |>.allEq _ _
+
+theorem nontrivial_of_ne_top {G : SimpleGraph V} (h : G ≠ ⊤) : Nontrivial V := by
+  contrapose! h
+  exact subsingleton_iff_subsingleton.mp (not_nontrivial_iff_subsingleton.mp h) |>.allEq _ _
 
 end Subsingleton
 
