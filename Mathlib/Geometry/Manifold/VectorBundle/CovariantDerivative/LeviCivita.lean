@@ -508,8 +508,7 @@ lemma leviCivitaRhs_smulY_const [CompleteSpace E] {a : ℝ}
 lemma leviCivitaRhs'_smulY_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt  (T% X) x) (hY : MDiffAt  (T% Y) x) (hZ : MDiffAt  (T% Z) x) :
     leviCivitaRhs' I X (f • Y) Z x =
-      f x • leviCivitaRhs' I X Y Z x
-        + (bar _ <| mfderiv% f x (X x)) • leviCivitaRhs' I X Y Z x := by
+      f x • leviCivitaRhs' I X Y Z x + (bar _ <| mfderiv% f x (X x)) • 2 * ⟪Y, Z⟫ x := by
   simp only [leviCivitaRhs']
   simp_rw [rhs_aux_smulX I Y Z X f]
   simp only [product_smul_left, Pi.add_apply, Pi.sub_apply, smul_eq_mul, Pi.mul_apply]
@@ -544,40 +543,19 @@ lemma leviCivitaRhs'_smulY_apply [CompleteSpace E] {f : M → ℝ}
   change f x * A + bar _ (dfx (X x)) * G1 + f x * B - (f x * C + bar _ (dfx (Z x)) * G2)
     - f x * D - (-H * G1 + f x * E) + (K * G2 + f x * F) = _
   rw [← H_eq, ← K_eq]
-  ring_nf
-  -- missing computation (if this is actually true...)
-  have pre : G1 + G1 = A + (B - C) + (-D - E) + F := by
-    simp only [G1, A, B, C, D, E, F, rhs_aux]
-    set A' := (mfderiv I 𝓘(ℝ, ℝ) ⟪Y, Z⟫ x) (X x)
-    abel
-    sorry
-  have : H * G1 * 2 = A * H + (H * B - H * C) + (-(H * D) - H * E) + H * F := by
-    trans H * (G1 + G1)
-    · ring
-    rw [mul_comm A H, pre]
-    ring
-  rw [this]
   ring
 
-  -- -- TODO: clean up this proof!
-  -- let f : M → ℝ := fun _ ↦ a
-  -- have : rhs_aux I (a • Y) Z X x = a • rhs_aux I Y Z X x := by
-  --   trans rhs_aux I (f • Y) Z X x
-  --   · rfl
-  --   rw [rhs_aux_smulX I Y (f := f) (Y := Z) (Z := X)]
-  --   rfl
-  -- rw [this, rhs_aux_smulZ_const_apply I _ hX hY]
-  -- -- is there a better abstraction for "Lie bracket conv mode"?
-  -- have : ⟪Z, mlieBracket I (a • Y) X⟫ x = a • ⟪Z, mlieBracket I Y X⟫ x := by
-  --   simp_rw [product_apply, mlieBracket_const_smul_left (W := X) hY, inner_smul_right_eq_smul]
-  -- rw [this]
-  -- have aux2 : ⟪X, mlieBracket I Z (a • Y)⟫ x = a • ⟪X, mlieBracket I Z Y⟫ x := by
-  --   simp_rw [product_apply,  mlieBracket_const_smul_right (V := Z) hY, inner_smul_right_eq_smul]
-  -- rw [aux2]
-  -- simp
-  -- ring
+lemma leviCivitaRhs_smulY_apply [CompleteSpace E] {f : M → ℝ}
+    (hf : MDiffAt f x) (hX : MDiffAt  (T% X) x) (hY : MDiffAt  (T% Y) x) (hZ : MDiffAt  (T% Z) x) :
+    leviCivitaRhs I X (f • Y) Z x =
+      f x • leviCivitaRhs I X Y Z x + (bar _ <| mfderiv% f x (X x)) • ⟪Y, Z⟫ x := by
+  simp only [leviCivitaRhs, Pi.smul_apply, leviCivitaRhs'_smulY_apply I hf hX hY hZ]
+  rw [smul_add, smul_comm]
+  congr 1
+  rw [← smul_eq_mul]
+  match_scalars
+  field_simp
 
-#exit
 lemma leviCivitaRhs'_addZ_apply [CompleteSpace E]
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x)
     (hZ : MDiffAt (T% Z) x) (hZ' : MDiffAt (T% Z') x) :
