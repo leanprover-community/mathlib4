@@ -45,9 +45,6 @@ lemma orderSucc_castSucc {n : ℕ} (i : Fin n) :
     Order.succ i.castSucc = i.succ := by
   simp [orderSucc_apply]
 
-@[deprecated (since := "2025-02-06")] alias succ_eq := orderSucc_eq
-@[deprecated (since := "2025-02-06")] alias succ_apply := orderSucc_apply
-
 instance : ∀ {n : ℕ}, PredOrder (Fin n)
   | 0 => by constructor <;> first | intro a; exact elim0 a
   | n + 1 =>
@@ -75,8 +72,5 @@ lemma orderPred_zero (n : ℕ) :
 lemma orderPred_succ {n : ℕ} (i : Fin n) :
     Order.pred i.succ = i.castSucc :=
   rfl
-
-@[deprecated (since := "2025-02-06")] alias pred_eq := orderPred_eq
-@[deprecated (since := "2025-02-06")] alias pred_apply := orderPred_apply
 
 end Fin

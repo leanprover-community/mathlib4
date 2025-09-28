@@ -763,9 +763,6 @@ theorem foldl_fixed {a : α} : ∀ l : List β, foldl (fun a _ => a) a l = a :=
 theorem foldr_fixed {b : β} : ∀ l : List α, foldr (fun _ b => b) b l = b :=
   foldr_fixed' fun _ => rfl
 
-@[deprecated foldr_cons_nil (since := "2025-02-10")]
-theorem foldr_eta (l : List α) : foldr cons [] l = l := foldr_cons_nil
-
 theorem reverse_foldl {l : List α} : reverse (foldl (fun t h => h :: t) [] l) = l := by
   simp
 
@@ -913,18 +910,7 @@ end FoldlMFoldrM
 
 /-! ### intersperse -/
 
-@[deprecated (since := "2025-02-07")] alias intersperse_singleton := intersperse_single
-@[deprecated (since := "2025-02-07")] alias intersperse_cons_cons := intersperse_cons₂
-
 /-! ### map for partial functions -/
-
-@[deprecated "Deprecated without replacement." (since := "2025-02-07")]
-theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {l : List α} (hx : x ∈ l) :
-    SizeOf.sizeOf x < SizeOf.sizeOf l := by
-  induction l with | nil => ?_ | cons h t ih => ?_ <;> cases hx <;> rw [cons.sizeOf_spec]
-  · cutsat
-  · specialize ih ‹_›
-    cutsat
 
 /-! ### filter -/
 
