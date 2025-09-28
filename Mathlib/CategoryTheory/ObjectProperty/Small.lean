@@ -9,6 +9,9 @@ import Mathlib.Logic.Small.Basic
 /-!
 # Smallness of a property of objects
 
+In this file, given `P : ObjectProperty C`, we define
+`ObjectProperty.Small.{w} P` as an abbreviation for `Small.{w} (Subtype P)`.
+
 -/
 
 universe w v u
