@@ -57,6 +57,14 @@ lemma HasLaw.measurePreserving (h₁ : HasLaw X μ P) (h₂ : Measurable X) :
 protected lemma HasLaw.id : HasLaw id μ μ where
   map_eq := map_id
 
+protected theorem HasLaw.isFiniteMeasure_iff (hX : HasLaw X μ P) :
+    IsFiniteMeasure μ ↔ IsFiniteMeasure P := by
+  rw [← hX.map_eq, isFiniteMeasure_map_iff hX.aemeasurable]
+
+protected theorem HasLaw.isProbabilityMeasure_iff (hX : HasLaw X μ P) :
+    IsProbabilityMeasure μ ↔ IsProbabilityMeasure P := by
+  rw [← hX.map_eq, isProbabilityMeasure_map_iff hX.aemeasurable]
+
 @[fun_prop]
 lemma HasLaw.comp {𝒴 : Type*} {m𝒴 : MeasurableSpace 𝒴} {ν : Measure 𝒴} {Y : 𝓧 → 𝒴}
     (hY : HasLaw Y ν μ) (hX : HasLaw X μ P) : HasLaw (Y ∘ X) ν P where
