@@ -59,7 +59,7 @@ lemma strictColimitsOfShape_monotone {Q : ObjectProperty C} (h : P ≤ Q) :
   exact ⟨F, fun j ↦ h _ (hF j)⟩
 
 /-- A structure expressing that `X : C` is the colimit of a functor
-`diag : J ⥤ C` such that `P (diag.obj j)` hold for all `j`. -/
+`diag : J ⥤ C` such that `P (diag.obj j)` holds for all `j`. -/
 structure ColimitOfShape (X : C) extends ColimitPresentation J X where
   prop_diag_obj (j : J) : P (diag.obj j)
 
