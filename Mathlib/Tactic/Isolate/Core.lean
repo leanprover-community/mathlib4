@@ -150,13 +150,13 @@ if-and-only-if from `a + x < y` (i.e. `HAdd.hAdd _ _ _ a x < y`), use the follow
 #query_isolate_lemmas `LT.lt `HAdd.hAdd 5 0
 ```
 -/
-elab "#query_isolate_lemmas" e0:(ppSpace colGt name)? e1:(ppSpace colGt name)?
+elab "#query_isolate_lemmas" e0:(ppSpace colGt ident)? e1:(ppSpace colGt ident)?
     e2:(ppSpace colGt num)? e3:(ppSpace colGt num)? : command => do
   let (some e0, some e1, some e2, some e3) := (e0, e1, e2, e3) |
     logInfo "Please provide the relation, function and index for the isolation hypothesis type \
       you are interested in"
-  let rel : Name := TSyntax.getName e0
-  let f : Name := TSyntax.getName e1
+  let rel : Name := e0.getId
+  let f : Name := e1.getId
   let i : Nat := TSyntax.getNat e2
   let b : Bool := ← do
     -- TODO figure out how to parse boolean as "false"/"true", not 0/1
