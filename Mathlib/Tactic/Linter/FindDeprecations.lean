@@ -118,36 +118,18 @@ def deprecatedHashMap (oldDate newDate : String) :
     if let some ⟨modName, decl, rgStart, rgStop, since⟩ ← getDeprecatedInfo nm false
     then
       if modName.getRoot != repo then continue
-      --dbg_trace s!"{nm} in {modName} since {since}: {(oldDate ≤ since : Bool)} {(since ≤ newDate : Bool)}"
       if !(oldDate ≤ since && since ≤ newDate) then
         continue
---      try
       let lean := (modName.components.foldl (init := "")
         fun a b => (a.push System.FilePath.pathSeparator) ++ b.toString) ++ ".lean" |>.drop 1
       --let lean ← findLean searchPath modName
       dbg_trace lean
       let file ← IO.FS.readFile lean
-      --dbg_trace file.take 80
       let fm := FileMap.ofString file
       let rg : String.Range := ⟨fm.ofPosition rgStart, fm.ofPosition rgStop⟩
-      --dbg_trace (rgStart, rgStop)
       fin := fin.alter (modName, lean) fun a =>
         (a.getD #[]).binInsert (·.2.1 < ·.2.1) (decl, rg)
---      catch e =>
---        if let .error ref msg := e then
---          logInfoAt ref m!"error on {modName}: {msg}"
---        --dbg_trace "error on {modName}"
---        continue
   return fin
-/-
-run_cmd
-  let modName := `Mathlib.Tactic.Linter.FindDeprecations
-  if modName != (← getMainModule) then
-    logError "Warning!"
-  let modName ← getMainModule
-  let fname ← findLean (← getSrcSearchPath) modName
-  dbg_trace fname
--/
 
 def removeDeprecations (fname : String) (rgs : Array String.Range) : IO String := do
   let file ← IO.FS.readFile fname
