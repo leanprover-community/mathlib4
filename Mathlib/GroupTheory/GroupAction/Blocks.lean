@@ -78,7 +78,7 @@ theorem IsPartition.of_orbits :
   · intro x
     exact ⟨_, ⟨x, rfl⟩, mem_orbit_self x⟩
   · rintro ⟨a, ha : orbit G a = ∅⟩
-    exact (MulAction.orbit_nonempty a).ne_empty ha
+    exact (MulAction.nonempty_orbit a).ne_empty ha
 
 end orbits
 
