@@ -151,7 +151,7 @@ theorem norm_smul {ι : Type*} [Fintype ι] [Nonempty ι] {B : Basis ι K L} {i 
     (hBi : B i = (1 : L)) (k : K) (y : L) :
     B.norm ((algebraMap K L) k * y) = B.norm ((algebraMap K L) k) * B.norm y := by
   by_cases hk : k = 0
-  · rw [hk, map_zero, MulZeroClass.zero_mul, B.norm_zero, MulZeroClass.zero_mul]
+  · rw [hk, map_zero, zero_mul, B.norm_zero, zero_mul]
   · rw [norm_extends hBi]
     obtain ⟨i, _, hi⟩ := exists_mem_eq_sup' univ_nonempty (fun i ↦ ‖B.repr y i‖)
     obtain ⟨j, _, hj⟩ := exists_mem_eq_sup' univ_nonempty
