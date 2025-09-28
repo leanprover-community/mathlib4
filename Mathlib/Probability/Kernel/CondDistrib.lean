@@ -215,8 +215,8 @@ lemma condDistrib_fst_prod {γ : Type*} {mγ : MeasurableSpace γ}
   have : μ = (μ.prod ν).map (fun ω ↦ ω.1) := by simp [Measure.map_fst_prod]
   have h_map := condDistrib_map (X := X) (Y := Y) (f := Prod.fst (α := α) (β := γ))
       (ν := μ.prod ν) (mα := inferInstance) (mβ := inferInstance)
-      (by simpa using hX) (by simpa using hY) (by fun_prop)
-  rw [← AEMeasurable.map_map_of_aemeasurable (by simpa using hX) (by fun_prop)] at h_map
+      (by simpa) (by simpa) (by fun_prop)
+  rw [← AEMeasurable.map_map_of_aemeasurable (by simpa) (by fun_prop)] at h_map
   simp only [Measure.map_fst_prod, measure_univ, one_smul] at h_map
   exact h_map.symm
 
