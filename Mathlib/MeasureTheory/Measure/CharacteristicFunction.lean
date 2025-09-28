@@ -398,7 +398,7 @@ lemma charFunDual_prod' (p : ℝ≥0∞) [Fact (1 ≤ p)] [SFinite μ] [SFinite 
   simp_rw [charFunDual_apply, ← integral_prod_mul, ← Complex.exp_add, ← add_mul, ← ofReal_add,
     L.comp_apply, ← map_add, ContinuousLinearMap.comp_inl_add_comp_inr]
   rw [← MeasurableEquiv.coe_toLp, integral_map_equiv]
-  simp [prodContinuousLinearEquiv_symm_apply]
+  simpa
 
 /-- The characteristic function of a product of measures is a product of
 characteristic functions. This is the version for Banach spaces, see `charFunDual_pi`
