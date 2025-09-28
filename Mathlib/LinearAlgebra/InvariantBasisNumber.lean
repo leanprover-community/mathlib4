@@ -240,16 +240,7 @@ theorem card_eq_of_linearEquiv {α β : Type*} [Fintype α] [Fintype β] (f : (�
 
 theorem nontrivial_of_invariantBasisNumber : Nontrivial R := by
   by_contra! h
-  refine zero_ne_one (eq_of_fin_equiv R ?_)
-  haveI : Subsingleton (Fin 1 → R) :=
-    Subsingleton.intro fun a b => funext fun x => Subsingleton.elim _ _
-  exact
-    { toFun := 0
-      invFun := 0
-      map_add' := by simp
-      map_smul' := by simp
-      left_inv := fun _ => by simp [eq_iff_true_of_subsingleton]
-      right_inv := fun _ => by simp [eq_iff_true_of_subsingleton] }
+  exact zero_ne_one <| eq_of_fin_equiv R <| LinearEquiv.ofSubsingleton _ _
 
 end
 

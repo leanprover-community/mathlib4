@@ -93,12 +93,14 @@ example {G H : AddCommGrpCat.{u}} (f : G ⟶ H) [Mono f] : Function.Injective f 
 
 instance : (free.{u}).PreservesMonomorphisms where
   preserves {X Y} f _ := by
-    by_cases! hX : IsEmpty X
-    · constructor
+    cases isEmpty_or_nonempty X with
+    | inl hX =>
+      constructor
       intros
       apply (IsInitial.isInitialObj free _
         ((Types.initial_iff_empty X).2 hX).some).isZero.eq_of_tgt
-    · have hf : Function.Injective f := by rwa [← mono_iff_injective]
+    | inr _ =>
+      have hf : Function.Injective f := by rwa [← mono_iff_injective]
       obtain ⟨g, hg⟩ := hf.hasLeftInverse
       have : IsSplitMono f := IsSplitMono.mk' { retraction := g }
       infer_instance
