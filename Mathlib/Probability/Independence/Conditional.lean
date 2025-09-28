@@ -748,7 +748,7 @@ equivalent to a.e. equality. See `condIndepFun_iff_map_prod_eq_prod_map_map` for
 version with kernels.
 
 For a random variable `f`, `(condExpKernel μ m').map f` is the law of the conditional expectation
-of `f` given `m'`: `(condExpKernel μ m').map f ω s = μ⟦f ⁻¹' s | m'⟧ ω`. -/
+of `f` given `m'`: almost surely, `(condExpKernel μ m').map f ω s = μ⟦f ⁻¹' s | m'⟧ ω`. -/
 theorem condIndepFun_iff_compProd_map_prod_eq_compProd_prod_map_map
     {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'} (hf : Measurable f) (hg : Measurable g) :
     CondIndepFun m' hm' f g μ
@@ -762,7 +762,7 @@ for all measurable sets `s` and `t` (see `condIndepFun_iff_condExp_inter_preimag
 Here, this is phrased with Markov kernels associated to the conditional expectations.
 
 For a random variable `f`, `(condExpKernel μ m').map f` is the law of the conditional expectation
-of `f` given `m'`: `(condExpKernel μ m').map f ω s = μ⟦f ⁻¹' s | m'⟧ ω`. -/
+of `f` given `m'`: almost surely, `(condExpKernel μ m').map f ω s = μ⟦f ⁻¹' s | m'⟧ ω`. -/
 theorem condIndepFun_iff_map_prod_eq_prod_map_map
     {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'} [CountableOrCountablyGenerated Ω (β × β')]
     (hf : Measurable f) (hg : Measurable g) :
@@ -776,7 +776,7 @@ theorem condIndepFun_iff_map_prod_eq_prod_map_map
 as a product involving the conditional expectations of `f` and `g` given `m'`.
 
 For a random variable `f`, `(condExpKernel μ m').map f` is the law of the conditional expectation
-of `f` given `m'`: `(condExpKernel μ m').map f ω s = μ⟦f ⁻¹' s | m'⟧ ω`. -/
+of `f` given `m'`: almost surely, `(condExpKernel μ m').map f ω s = μ⟦f ⁻¹' s | m'⟧ ω`. -/
 lemma condIndepFun_iff_map_prod_eq_prod_comp_trim
     {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'} (hf : Measurable f) (hg : Measurable g) :
     CondIndepFun m' hm' f g μ
