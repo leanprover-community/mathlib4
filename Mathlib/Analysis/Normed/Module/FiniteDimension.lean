@@ -5,19 +5,19 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.Normed.Group.Lemmas
-import Mathlib.Analysis.Normed.Affine.AddTorsor
 import Mathlib.Analysis.Normed.Affine.Isometry
-import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
+import Mathlib.Analysis.Normed.Operator.NormedSpace
 import Mathlib.Analysis.NormedSpace.RieszLemma
-import Mathlib.Analysis.NormedSpace.Pointwise
+import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 import Mathlib.Logic.Encodable.Pi
+import Mathlib.Topology.Algebra.AffineSubspace
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Instances.Matrix
 import Mathlib.LinearAlgebra.Dimension.LinearMap
 
 /-!
-# Finite dimensional normed spaces over complete fields
+# Finite-dimensional normed spaces over complete fields
 
 Over a complete nontrivially normed field, in finite dimension, all norms are equivalent and all
 linear maps are continuous. Moreover, a finite-dimensional subspace is always complete and closed.
@@ -60,7 +60,7 @@ variable {F E₁ : Type*} [SeminormedAddCommGroup F] [NormedAddCommGroup E₁]
 variable {R₁ : Type*} [Field R₁] [Module R₁ E₁] [Module R₁ F] [FiniteDimensional R₁ E₁]
   [FiniteDimensional R₁ F]
 
-/-- A linear isometry between finite dimensional spaces of equal dimension can be upgraded
+/-- A linear isometry between finite-dimensional spaces of equal dimension can be upgraded
 to a linear isometry equivalence. -/
 def toLinearIsometryEquiv (li : E₁ →ₗᵢ[R₁] F) (h : finrank R₁ E₁ = finrank R₁ F) :
     E₁ ≃ₗᵢ[R₁] F where
@@ -89,7 +89,7 @@ variable {𝕜 : Type*} {V₁ V₂ : Type*} {P₁ P₂ : Type*} [NormedField �
 
 variable [FiniteDimensional 𝕜 V₁] [FiniteDimensional 𝕜 V₂]
 
-/-- An affine isometry between finite dimensional spaces of equal dimension can be upgraded
+/-- An affine isometry between finite-dimensional spaces of equal dimension can be upgraded
 to an affine isometry equivalence. -/
 def toAffineIsometryEquiv [Inhabited P₁] (li : P₁ →ᵃⁱ[𝕜] P₂) (h : finrank 𝕜 V₁ = finrank 𝕜 V₂) :
     P₁ ≃ᵃⁱ[𝕜] P₂ :=
@@ -270,6 +270,19 @@ theorem isOpen_setOf_nat_le_rank (n : ℕ) :
     continuous_pi fun x => (ContinuousLinearMap.apply 𝕜 F (x : E)).continuous
   exact isOpen_setOf_linearIndependent.preimage this
 
+theorem isOpen_setOf_affineIndependent {ι : Type*} [Finite ι] :
+    IsOpen {p : ι → E | AffineIndependent 𝕜 p} := by
+  classical
+  rcases isEmpty_or_nonempty ι with h | ⟨⟨i₀⟩⟩
+  · exact isOpen_discrete _
+  · simp_rw [affineIndependent_iff_linearIndependent_vsub 𝕜 _ i₀]
+    let ι' := { x // x ≠ i₀ }
+    cases nonempty_fintype ι
+    haveI : Fintype ι' := Subtype.fintype _
+    convert_to
+      IsOpen ((fun (p : ι → E) (i : ι') ↦ p i -ᵥ p i₀) ⁻¹' {p : ι' → E | LinearIndependent 𝕜 p})
+    exact isOpen_setOf_linearIndependent.preimage (by fun_prop)
+
 namespace Module.Basis
 
 theorem opNNNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[𝕜] F} (M : ℝ≥0)
@@ -366,7 +379,7 @@ theorem AffineSubspace.closed_of_finiteDimensional {P : Type*} [MetricSpace P]
 
 section Riesz
 
-/-- In an infinite dimensional space, given a finite number of points, one may find a point
+/-- In an infinite-dimensional space, given a finite number of points, one may find a point
 with norm at most `R` which is at distance at least `1` of all these points. -/
 theorem exists_norm_le_le_norm_sub_of_finset {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖c‖ < R)
     (h : ¬FiniteDimensional 𝕜 E) (s : Finset E) : ∃ x : E, ‖x‖ ≤ R ∧ ∀ y ∈ s, 1 ≤ ‖y - x‖ := by
@@ -583,7 +596,7 @@ instance {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
   have : FiniteDimensional 𝕜 E := .of_locallyCompactSpace 𝕜
   exact FiniteDimensional.proper 𝕜 S
 
-/-- If `E` is a finite dimensional normed real vector space, `x : E`, and `s` is a neighborhood of
+/-- If `E` is a finite-dimensional normed real vector space, `x : E`, and `s` is a neighborhood of
 `x` that is not equal to the whole space, then there exists a point `y ∈ frontier s` at distance
 `Metric.infDist x sᶜ` from `x`. See also
 `IsCompact.exists_mem_frontier_infDist_compl_eq_dist`. -/
@@ -616,9 +629,9 @@ nonrec theorem IsCompact.exists_mem_frontier_infDist_compl_eq_dist {E : Type*}
     rw [frontier_eq_closure_inter_closure] at hx'
     rw [Metric.infDist_zero_of_mem_closure hx'.2, dist_self]
 
-/-- In a finite dimensional vector space over `ℝ`, the series `∑ x, ‖f x‖` is unconditionally
+/-- In a finite-dimensional vector space over `ℝ`, the series `∑ x, ‖f x‖` is unconditionally
 summable if and only if the series `∑ x, f x` is unconditionally summable. One implication holds in
-any complete normed space, while the other holds only in finite dimensional spaces. -/
+any complete normed space, while the other holds only in finite-dimensional spaces. -/
 theorem summable_norm_iff {α E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {f : α → E} : (Summable fun x => ‖f x‖) ↔ Summable f := by
   refine ⟨Summable.of_norm, fun hf ↦ ?_⟩

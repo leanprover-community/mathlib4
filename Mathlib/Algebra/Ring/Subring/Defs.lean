@@ -129,9 +129,6 @@ lemma subtype_injective :
 theorem coe_subtype : (subtype s : s → R) = ((↑) : s → R) :=
   rfl
 
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
-
 @[simp, norm_cast]
 theorem coe_natCast (n : ℕ) : ((n : s) : R) = n := rfl
 
@@ -366,9 +363,6 @@ lemma subtype_injective (s : Subring R) :
 @[simp]
 theorem coe_subtype : ⇑s.subtype = ((↑) : s → R) :=
   rfl
-
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
 
 @[norm_cast]
 theorem coe_natCast (n : ℕ) : ((n : s) : R) = n := rfl

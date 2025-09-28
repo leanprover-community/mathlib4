@@ -5,6 +5,7 @@ Authors: Chris Birkbeck
 -/
 
 import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
+import Mathlib.Topology.Algebra.InfiniteSum.Field
 
 /-!
 # Summability of logarithms
@@ -38,7 +39,7 @@ lemma cexp_tsum_eq_tprod (hfn : ∀ i, f i ≠ 0) (hf : Summable fun i ↦ log (
 
 lemma summable_log_one_add_of_summable {f : ι → ℂ} (hf : Summable f) :
     Summable (fun i ↦ log (1 + f i)) := by
-  apply (hf.norm.mul_left _).of_norm_bounded_eventually
+  apply (hf.norm.mul_left (3 / 2)).of_norm_bounded_eventually
   filter_upwards [hf.norm.tendsto_cofinite_zero.eventually_le_const one_half_pos] with i hi
     using norm_log_one_add_half_le_self hi
 
@@ -163,7 +164,7 @@ lemma multipliable_one_add_of_summable [CompleteSpace R]
   refine ⟨Metric.ball (∏ i ∈ s, (1 + f i)) (ε / 2), ⟨s, fun b hb ↦ ?_⟩, ?_⟩
   · rw [← union_sdiff_of_subset hb, prod_union sdiff_disjoint.symm,
       Metric.mem_ball, dist_eq_norm_sub, ← mul_sub_one,
-      show ε / 2 = r₁ * (ε / (2 * r₁)) by field_simp [hr₁]; ring]
+      show ε / 2 = r₁ * (ε / (2 * r₁)) by field_simp]
     apply (norm_mul_le _ _).trans_lt
     refine lt_of_le_of_lt (b := r₁ * ‖∏ x ∈ b \ s, (1 + f x) - 1‖) ?_ ?_
     · refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)

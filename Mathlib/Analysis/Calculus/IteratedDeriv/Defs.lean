@@ -339,4 +339,4 @@ lemma AnalyticAt.hasFPowerSeriesAt {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   left
   rw [div_eq_iff, mul_comm, h_fact_smul, ← iteratedDeriv_eq_iteratedFDeriv]
   norm_cast
-  exact Nat.factorial_ne_zero _
+  positivity

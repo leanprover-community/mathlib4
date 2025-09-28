@@ -297,11 +297,7 @@ theorem tprodL_coe : (tprodL 𝕜).toMultilinearMap = tprod 𝕜 (s := E) := by
 @[simp]
 theorem liftIsometry_symm_apply (l : (⨂[𝕜] i, E i) →L[𝕜] F) :
     (liftIsometry 𝕜 E F).symm l = l.compContinuousMultilinearMap (tprodL 𝕜) := by
-  ext m
-  change (liftEquiv 𝕜 E F).symm l m = _
-  simp only [liftEquiv_symm_apply, lift_symm, MultilinearMap.coe_mkContinuous,
-    LinearMap.compMultilinearMap_apply, ContinuousLinearMap.coe_coe,
-    ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply, tprodL_toFun]
+  rfl
 
 @[simp]
 theorem liftIsometry_tprodL :
@@ -337,12 +333,7 @@ theorem mapL_coe : (mapL f).toLinearMap = map (fun i ↦ (f i).toLinearMap) := b
 
 @[simp]
 theorem mapL_apply (x : ⨂[𝕜] i, E i) : mapL f x = map (fun i ↦ (f i).toLinearMap) x := by
-  induction x using PiTensorProduct.induction_on with
-  | smul_tprod =>
-    simp only [mapL, map_smul, liftIsometry_apply_apply, lift.tprod,
-    ContinuousMultilinearMap.coe_coe, ContinuousMultilinearMap.compContinuousLinearMap_apply,
-    tprodL_toFun, map_tprod, ContinuousLinearMap.coe_coe]
-  | add _ _ hx hy => simp only [map_add, hx, hy]
+  rfl
 
 /-- Given submodules `pᵢ ⊆ Eᵢ`, this is the natural map: `⨂[𝕜] i, pᵢ → ⨂[𝕜] i, Eᵢ`.
 This is the continuous version of `PiTensorProduct.mapIncl`.
