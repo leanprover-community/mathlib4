@@ -170,7 +170,7 @@ theorem absorbent_iff_eventually_nhdsNE_zero :
 @[deprecated (since := "2025-03-03")]
 alias absorbent_iff_eventually_nhdsWithin_zero := absorbent_iff_eventually_nhdsNE_zero
 
-alias ⟨Absorbent.eventually_nhdsNE_zero, _⟩ := absorbent_iff_eventually_nhdsWithin_zero
+alias ⟨Absorbent.eventually_nhdsNE_zero, _⟩ := absorbent_iff_eventually_nhdsNE_zero
 
 @[deprecated (since := "2025-03-03")]
 alias Absorbent.eventually_nhdsWithin_zero := Absorbent.eventually_nhdsNE_zero
