@@ -9,13 +9,23 @@ import Mathlib.Topology.Algebra.Group.Basic
 /-!
 # Uniform structure on topological groups
 
-This file defines uniform groups and its additive counterpart. These typeclasses should be
-preferred over using `[TopologicalSpace α] [IsTopologicalGroup α]` since every topological
-group naturally induces a uniform structure.
+Given a topological group `G`, one can naturally build two uniform structures
+(the "left" and "right" ones) on `G` inducing its topology.
+This file defines typeclasses for groups equipped with either of these uniform strucure, as well
+as a separate typeclass for the (very common) case where the given uniform structure
+coincides with **both** the left and right uniform structures.
 
 ## Main declarations
+
+* `IsRightUniformGroup` and `IsRightUniformAddGroup`: Multiplicative and topological additive groups
+  endowed with the associated right uniform structure. This means that two points `x` and `y`
+  are close precisely when `y * x⁻¹` is close to `1` / `y + (-x)` close to `0`.
+* `IsLeftUniformGroup` and `IsLeftUniformAddGroup`: Multiplicative and topological additive groups
+  endowed with the associated right uniform structure. This means that two points `x` and `y`
+  are close precisely when `x⁻¹ * y` is close to `1` / `(-x) + y` close to `0`.
 * `IsUniformGroup` and `IsUniformAddGroup`: Multiplicative and additive uniform groups,
-  i.e., groups with uniformly continuous `(*)` and `(⁻¹)` / `(+)` and `(-)`.
+  i.e., groups with uniformly continuous `(*)` and `(⁻¹)` / `(+)` and `(-)`. This corresponds
+  to the conjuction of the two conditions above, although this result is not in Mathlib yet.
 
 ## Main results
 
@@ -23,6 +33,13 @@ group naturally induces a uniform structure.
   to construct a canonical uniformity for a topological additive group.
 
 See `Mathlib/Topology/Algebra/IsUniformGroup/Basic.lean` for further results.
+
+## Implementation Notes
+
+Since the most frequent use case is `G` being a commutative additive groups, `Mathlib` originally
+did essentially all the theory under the assumption `IsUniformGroup G`.
+For this reason, you may find results stated under this assumption even though they may hold
+under either `IsRightUniformGroup G` or `IsLeftUniformGroup G`.
 -/
 
 assert_not_exists Cauchy
@@ -37,33 +54,68 @@ open Filter Set
 
 variable {G Gₗ Gᵣ Hₗ Hᵣ X : Type*}
 
+/-- A **right-uniform additive group** is a topological additive group endowed with the associated
+right uniform structure: the uniformity filter `𝓤 G` is the inverse image of `𝓝 0` by the map
+`(x, y) ↦ y + (-x)`.
+
+In other words, we declare that two points `x` and `y` are infinitely close
+precisely when `y + (-x)` is infinitely close to `0`. -/
 class IsRightUniformAddGroup (G : Type*) [UniformSpace G] [AddGroup G] : Prop
     extends IsTopologicalAddGroup G where
   uniformity_eq :
     𝓤 G = comap (fun x : G × G ↦ x.2 + (-x.1)) (𝓝 0)
 
+/-- A **right-uniform group** is a topological group endowed with the associated
+right uniform structure: the uniformity filter `𝓤 G` is the inverse image of `𝓝 1` by the map
+`(x, y) ↦ y * x⁻¹`.
+
+In other words, we declare that two points `x` and `y` are infinitely close
+precisely when `y * x⁻¹` is infinitely close to `1`. -/
 @[to_additive]
 class IsRightUniformGroup (G : Type*) [UniformSpace G] [Group G] : Prop
     extends IsTopologicalGroup G where
   uniformity_eq :
     𝓤 G = comap (fun x : G × G ↦ x.2 * x.1⁻¹) (𝓝 1)
 
+/-- A **left-uniform additive group** is a topological additive group endowed with the associated
+right uniform structure: the uniformity filter `𝓤 G` is the inverse image of `𝓝 0` by the map
+`(x, y) ↦ (-x) + y`.
+
+In other words, we declare that two points `x` and `y` are infinitely close
+precisely when `(-x) + y` is infinitely close to `0`. -/
 class IsLeftUniformAddGroup (G : Type*) [UniformSpace G] [AddGroup G] : Prop
     extends IsTopologicalAddGroup G where
   uniformity_eq :
     𝓤 G = comap (fun x : G × G ↦ (-x.1) + x.2) (𝓝 0)
 
+/-- A **left-uniform group** is a topological group endowed with the associated
+right uniform structure: the uniformity filter `𝓤 G` is the inverse image of `𝓝 1` by the map
+`(x, y) ↦ x⁻¹ * y`.
+
+In other words, we declare that two points `x` and `y` are infinitely close
+precisely when `x⁻¹ * y` is infinitely close to `1`. -/
 @[to_additive]
 class IsLeftUniformGroup (G : Type*) [UniformSpace G] [Group G] : Prop
     extends IsTopologicalGroup G where
   uniformity_eq :
     𝓤 G = comap (fun x : G × G ↦ x.1⁻¹ * x.2) (𝓝 1)
 
+/-- `IsLeftOrRightUniformAddGroup G` means that we have either `IsRightUniformAddGroup G`
+or `IsLeftUniformAddGroup G`. This is a purely utilitary typeclass to avoid duplicating
+API for results common to the left and the right uniformity.
+
+For example, `UniformContinuous.add_const` will eventually hold in this generality. -/
+@[mk_iff]
 class inductive IsLeftOrRightUniformAddGroup (G : Type*) [UniformSpace G] [AddGroup G] : Prop
 | right [IsRightUniformAddGroup G] : IsLeftOrRightUniformAddGroup G
 | left [IsLeftUniformAddGroup G] : IsLeftOrRightUniformAddGroup G
 
-@[to_additive]
+/-- `IsLeftOrRightUniformGroup G` means that we have either `IsRightUniformGroup G`
+or `IsRightUniformGroup G`. This is a purely utilitary typeclass to avoid duplicating
+API for results common to the left and the right uniformity.
+
+For example, `UniformContinuous.mul_const` will eventually hold in this generality. -/
+@[to_additive, mk_iff]
 class inductive IsLeftOrRightUniformGroup (G : Type*) [UniformSpace G] [Group G] : Prop
 | right [IsRightUniformGroup G] : IsLeftOrRightUniformGroup G
 | left [IsLeftUniformGroup G] : IsLeftOrRightUniformGroup G
@@ -73,7 +125,7 @@ attribute [instance] IsLeftOrRightUniformAddGroup.right
 attribute [instance] IsLeftOrRightUniformGroup.left
 attribute [instance] IsLeftOrRightUniformGroup.right
 
-variable [Group G] [UniformSpace G] [IsLeftOrRightUniformGroup G]
+variable [UniformSpace G] [Group G] [IsLeftOrRightUniformGroup G]
 variable [UniformSpace Gₗ] [UniformSpace Gᵣ] [Group Gₗ] [Group Gᵣ]
 variable [UniformSpace Hₗ] [UniformSpace Hᵣ] [Group Hₗ] [Group Hᵣ]
 variable [IsLeftUniformGroup Gₗ] [IsRightUniformGroup Gᵣ]
@@ -599,14 +651,32 @@ open Filter Set
 
 variable {α : Type*} {β : Type*}
 
-/-- A uniform group is a group in which multiplication and inversion are uniformly continuous. -/
+/-- A uniform group is a group in which multiplication and inversion are uniformly continuous.
+
+`IsUniformGroup G` is equivalent to the fact that `G` is a topological group, and the uniformity
+coincides with **both** the associated left and right uniformities
+(this fact is not in Mathlib yet).
+
+Since there are topological groups where these two uniformities do **not** coincide,
+not all topological groups admit a uniform group structure in this sense. This is however the
+case for commutative groups, which are the main motivation for the existence of this
+typeclass. -/
 class IsUniformGroup (α : Type*) [UniformSpace α] [Group α] : Prop where
   uniformContinuous_div : UniformContinuous fun p : α × α => p.1 / p.2
 
 @[deprecated (since := "2025-03-26")] alias UniformGroup := IsUniformGroup
 
-/-- A uniform additive group is an additive group in which addition
-  and negation are uniformly continuous. -/
+/-- A uniform additive group is an additive group in which addition and negation are
+uniformly continuous.
+
+`IsUniformAddGroup G` is equivalent to the fact that `G` is a topological additive group, and the
+uniformity coincides with **both** the associated left and right uniformities
+(this fact is not in Mathlib yet).
+
+Since there are topological groups where these two uniformities do **not** coincide,
+not all topological groups admit a uniform group structure in this sense. This is however the
+case for commutative groups, which are the main motivation for the existence of this
+typeclass. -/
 class IsUniformAddGroup (α : Type*) [UniformSpace α] [AddGroup α] : Prop where
   uniformContinuous_sub : UniformContinuous fun p : α × α => p.1 - p.2
 
