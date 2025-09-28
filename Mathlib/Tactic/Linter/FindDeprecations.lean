@@ -7,6 +7,8 @@ Authors: Damiano Testa
 import ImportGraph.Imports
 
 /-!
+# The `#clear_deprecations` command
+
 This file defines the `#clear_deprecations date₁ date₂ really` command.
 
 This function is intended for automated use by the `remove_deprecations` automation.
