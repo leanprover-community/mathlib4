@@ -4,13 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
 import Mathlib.Logic.Basic
-import Mathlib.Logic.Function.Defs
 import Mathlib.Order.Defs.LinearOrder
 
 /-!
 # Booleans
 
-This file proves various trivial lemmas about booleans and their
+This file proves various trivial lemmas about Booleans and their
 relation to decidable propositions.
 
 ## Tags
@@ -23,17 +22,17 @@ namespace Bool
 section
 
 /-!
-This section contains lemmas about booleans which were present in core Lean 3.
-The remainder of this file contains lemmas about booleans from mathlib 3.
+This section contains lemmas about Booleans which were present in core Lean 3.
+The remainder of this file contains lemmas about Booleans from mathlib 3.
 -/
 
-theorem true_eq_false_eq_False : ¬true = false := by decide
+theorem true_eq_false_eq_False : ¬(true = false) := by decide
 
-theorem false_eq_true_eq_False : ¬false = true := by decide
+theorem false_eq_true_eq_False : ¬(false = true) := by decide
 
-theorem eq_false_eq_not_eq_true (b : Bool) : (¬b = true) = (b = false) := by simp
+theorem eq_false_eq_not_eq_true (b : Bool) : (¬(b = true)) = (b = false) := by simp
 
-theorem eq_true_eq_not_eq_false (b : Bool) : (¬b = false) = (b = true) := by simp
+theorem eq_true_eq_not_eq_false (b : Bool) : (¬(b = false)) = (b = true) := by simp
 
 theorem eq_false_of_not_eq_true {b : Bool} : ¬b = true → b = false :=
   Eq.mp (eq_false_eq_not_eq_true b)
@@ -47,19 +46,15 @@ theorem and_eq_true_eq_eq_true_and_eq_true (a b : Bool) :
 theorem or_eq_true_eq_eq_true_or_eq_true (a b : Bool) :
     ((a || b) = true) = (a = true ∨ b = true) := by simp
 
-theorem not_eq_true_eq_eq_false (a : Bool) : (not a = true) = (a = false) := by cases a <;> simp
+theorem not_eq_true_eq_eq_false (a : Bool) : (not a = true) = (a = false) := by grind
 
-#adaptation_note /-- nightly-2024-03-05
-this is no longer a simp lemma, as the LHS simplifies. -/
 theorem and_eq_false_eq_eq_false_or_eq_false (a b : Bool) :
-    ((a && b) = false) = (a = false ∨ b = false) := by
-  cases a <;> cases b <;> simp
+    ((a && b) = false) = (a = false ∨ b = false) := by grind
 
 theorem or_eq_false_eq_eq_false_and_eq_false (a b : Bool) :
-    ((a || b) = false) = (a = false ∧ b = false) := by
-  cases a <;> cases b <;> simp
+    ((a || b) = false) = (a = false ∧ b = false) := by grind
 
-theorem not_eq_false_eq_eq_true (a : Bool) : (not a = false) = (a = true) := by cases a <;> simp
+theorem not_eq_false_eq_eq_true (a : Bool) : (not a = false) = (a = true) := by grind
 
 theorem coe_false : ↑false = False := by simp
 
@@ -77,7 +72,7 @@ theorem decide_true {p : Prop} [Decidable p] : p → decide p :=
 theorem of_decide_true {p : Prop} [Decidable p] : decide p → p :=
   (decide_iff p).1
 
-theorem bool_iff_false {b : Bool} : ¬b ↔ b = false := by cases b <;> decide
+theorem bool_iff_false {b : Bool} : ¬b ↔ b = false := by grind
 
 theorem bool_eq_false {b : Bool} : ¬b → b = false :=
   bool_iff_false.1
@@ -94,18 +89,17 @@ theorem of_decide_false {p : Prop} [Decidable p] : decide p = false → ¬p :=
 theorem decide_congr {p q : Prop} [Decidable p] [Decidable q] (h : p ↔ q) : decide p = decide q :=
   decide_eq_decide.mpr h
 
-theorem coe_xor_iff (a b : Bool) : xor a b ↔ Xor' (a = true) (b = true) := by
-  cases a <;> cases b <;> decide
+theorem coe_xor_iff (a b : Bool) : xor a b ↔ Xor' (a = true) (b = true) := by grind
 
 end
 
-theorem dichotomy (b : Bool) : b = false ∨ b = true := by cases b <;> simp
+theorem dichotomy (b : Bool) : b = false ∨ b = true := by grind
 
 theorem not_ne_id : not ≠ id := fun h ↦ false_ne_true <| congrFun h true
 
 theorem or_inl {a b : Bool} (H : a) : a || b := by simp [H]
 
-theorem or_inr {a b : Bool} (H : b) : a || b := by cases a <;> simp [H]
+theorem or_inr {a b : Bool} (H : b) : a || b := by grind
 
 theorem and_elim_left : ∀ {a b : Bool}, a && b → a := by decide
 
@@ -129,11 +123,9 @@ lemma eq_or_eq_not : ∀ a b, a = b ∨ a = !b := by decide
 -- TODO naming issue: these two `not` are different.
 theorem not_iff_not : ∀ {b : Bool}, !b ↔ ¬b := by simp
 
-theorem eq_true_of_not_eq_false' {a : Bool} : !a = false → a = true := by
-  cases a <;> decide
+theorem eq_true_of_not_eq_false' {a : Bool} : !a = false → a = true := by grind
 
-theorem eq_false_of_not_eq_true' {a : Bool} : !a = true → a = false := by
-  cases a <;> decide
+theorem eq_false_of_not_eq_true' {a : Bool} : !a = true → a = false := by grind
 
 theorem bne_eq_xor : bne = xor := by constructor
 
@@ -141,7 +133,7 @@ attribute [simp] xor_assoc
 
 theorem xor_iff_ne : ∀ {x y : Bool}, xor x y = true ↔ x ≠ y := by decide
 
-/-! ### De Morgan's laws for booleans -/
+/-! ### De Morgan's laws for Booleans -/
 
 instance linearOrder : LinearOrder Bool where
   le_refl := by decide
@@ -179,7 +171,13 @@ theorem or_le : ∀ {x y z}, x ≤ z → y ≤ z → (x || y) ≤ z := by decide
 def ofNat (n : Nat) : Bool :=
   decide (n ≠ 0)
 
-@[simp] lemma toNat_beq_zero (b : Bool) : (b.toNat == 0) = !b := by cases b <;> rfl
+@[simp, grind =]
+theorem ofNat_zero : ofNat 0 = false := rfl
+
+@[simp, grind =]
+theorem ofNat_add_one {n : Nat} : ofNat (n + 1) = true := rfl
+
+@[simp] lemma toNat_beq_zero (b : Bool) : (b.toNat == 0) = !b := by grind
 @[simp] lemma toNat_bne_zero (b : Bool) : (b.toNat != 0) =  b := by simp [bne]
 @[simp] lemma toNat_beq_one (b : Bool) : (b.toNat == 1) =  b := by cases b <;> rfl
 @[simp] lemma toNat_bne_one (b : Bool) : (b.toNat != 1) = !b := by simp [bne]
@@ -187,30 +185,21 @@ def ofNat (n : Nat) : Bool :=
 theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
   simp only [ofNat, ne_eq, _root_.decide_not]
   cases Nat.decEq n 0 with
-  | isTrue hn => rw [_root_.decide_eq_true hn]; exact Bool.false_le _
-  | isFalse hn =>
-    cases Nat.decEq m 0 with
-    | isFalse hm => rw [_root_.decide_eq_false hm]; exact Bool.le_true _
-    | isTrue hm => subst hm; have h := Nat.le_antisymm h (Nat.zero_le n); contradiction
+  | isTrue hn => grind [Bool.false_le]
+  | isFalse hn => cases Nat.decEq m 0 with grind [Bool.le_true]
 
 theorem toNat_le_toNat {b₀ b₁ : Bool} (h : b₀ ≤ b₁) : toNat b₀ ≤ toNat b₁ := by
   cases b₀ <;> cases b₁ <;> simp_all +decide
 
-theorem ofNat_toNat (b : Bool) : ofNat (toNat b) = b := by
-  cases b <;> rfl
+theorem ofNat_toNat (b : Bool) : ofNat (toNat b) = b := by grind [cases Bool]
 
 @[simp]
 theorem injective_iff {α : Sort*} {f : Bool → α} : Function.Injective f ↔ f false ≠ f true :=
-  ⟨fun Hinj Heq ↦ false_ne_true (Hinj Heq), fun H x y hxy ↦ by
-    cases x <;> cases y
-    · rfl
-    · exact (H hxy).elim
-    · exact (H hxy.symm).elim
-    · rfl⟩
+  ⟨fun Hinj Heq ↦ false_ne_true (Hinj Heq), fun H x y ↦ by grind [cases Bool]⟩
 
 /-- **Kaminski's Equation** -/
 theorem apply_apply_apply (f : Bool → Bool) (x : Bool) : f (f (f x)) = f x := by
-  cases x <;> cases h₁ : f true <;> cases h₂ : f false <;> simp only [h₁, h₂]
+  cases h₁ : f true <;> cases h₂ : f false <;> grind [cases Bool]
 
 /-- `xor3 x y c` is `((x XOR y) XOR c)`. -/
 protected def xor3 (x y c : Bool) :=

@@ -166,7 +166,7 @@ theorem lintegral_eq_nnreal {m : MeasurableSpace α} (f : α → ℝ≥0∞) (μ
     replace h : ψ.map ((↑) : ℝ≥0 → ℝ≥0∞) =ᵐ[μ] φ := h.mono fun a => ENNReal.coe_toNNReal
     have : ∀ x, ↑(ψ x) ≤ f x := fun x => le_trans ENNReal.coe_toNNReal_le_self (hφ x)
     exact le_iSup₂_of_le (φ.map ENNReal.toNNReal) this (ge_of_eq <| lintegral_congr h)
-  · have h_meas : μ (φ ⁻¹' {∞}) ≠ 0 := mt measure_zero_iff_ae_notMem.1 h
+  · have h_meas : μ (φ ⁻¹' {∞}) ≠ 0 := mt measure_eq_zero_iff_ae_notMem.1 h
     refine le_trans le_top (ge_of_eq <| (iSup_eq_top _).2 fun b hb => ?_)
     obtain ⟨n, hn⟩ : ∃ n : ℕ, b < n * μ (φ ⁻¹' {∞}) := exists_nat_mul_gt h_meas (ne_of_lt hb)
     use (const α (n : ℝ≥0)).restrict (φ ⁻¹' {∞})
@@ -218,7 +218,7 @@ theorem le_iInf₂_lintegral {ι : Sort*} {ι' : ι → Sort*} (f : ∀ i, ι' i
 theorem lintegral_mono_ae {f g : α → ℝ≥0∞} (h : ∀ᵐ a ∂μ, f a ≤ g a) :
     ∫⁻ a, f a ∂μ ≤ ∫⁻ a, g a ∂μ := by
   rcases exists_measurable_superset_of_null h with ⟨t, hts, ht, ht0⟩
-  have : ∀ᵐ x ∂μ, x ∉ t := measure_zero_iff_ae_notMem.1 ht0
+  have : ∀ᵐ x ∂μ, x ∉ t := measure_eq_zero_iff_ae_notMem.1 ht0
   rw [lintegral, lintegral]
   refine iSup₂_le fun s hfs ↦ le_iSup₂_of_le (s.restrict tᶜ) ?_ ?_
   · intro a

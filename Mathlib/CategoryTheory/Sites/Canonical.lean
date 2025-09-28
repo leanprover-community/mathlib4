@@ -81,11 +81,7 @@ theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type v) (U : Sieve X) (B : ∀ ⦃Y⦄ 
     trans s (m ≫ l ≫ h ≫ f) this
     · have := ht (U.downward_closed hf h) _ ((B _).downward_closed hl m)
       rw [op_comp, FunctorToTypes.map_comp_apply] at this
-      rw [this]
-      change s _ _ = s _ _
-      -- Porting note: the proof was `by simp`
-      congr 1
-      simp only [assoc]
+      grind
     · have h : s _ _ = _ := (ht hf _ hm).symm
       -- Porting note: this was done by `simp only [assoc] at`
       conv_lhs at h => congr; rw [assoc, assoc]

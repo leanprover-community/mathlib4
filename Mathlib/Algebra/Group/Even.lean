@@ -48,8 +48,8 @@ variable [Mul α]
 
 /-- An element `a` of a type `α` with multiplication satisfies `IsSquare a` if `a = r * r`,
 for some root `r : α`. -/
-@[to_additive "An element `a` of a type `α` with addition satisfies `Even a` if `a = r + r`,
-for some `r : α`."]
+@[to_additive /-- An element `a` of a type `α` with addition satisfies `Even a` if `a = r + r`,
+for some `r : α`. -/]
 def IsSquare (a : α) : Prop := ∃ r, a = r * r
 
 @[to_additive]
@@ -98,8 +98,11 @@ instance Multiplicative.instDecidablePredIsSquare [DecidablePred (Even : α → 
 
 end Add
 
-@[to_additive (attr := simp, grind)]
+@[to_additive (attr := simp)]
 lemma IsSquare.one [MulOneClass α] : IsSquare (1 : α) := ⟨1, (mul_one _).symm⟩
+
+grind_pattern IsSquare.one => IsSquare (1 : α)
+grind_pattern Even.zero => Even (0 : α)
 
 section MonoidHom
 variable [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β]
@@ -123,7 +126,7 @@ variable [Monoid α] {n : ℕ} {a : α}
 lemma isSquare_iff_exists_sq (a : α) : IsSquare a ↔ ∃ r, a = r ^ 2 := by simp [IsSquare, pow_two]
 
 @[to_additive Even.exists_two_nsmul
-  "Alias of the forwards direction of `even_iff_exists_two_nsmul`."]
+  /-- Alias of the forwards direction of `even_iff_exists_two_nsmul`. -/]
 alias ⟨IsSquare.exists_sq, _⟩ := isSquare_iff_exists_sq
 
 -- provable by simp in `Algebra.Ring.Parity`

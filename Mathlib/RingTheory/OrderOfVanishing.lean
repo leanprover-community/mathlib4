@@ -117,7 +117,7 @@ theorem ord_mul {a b : R} (hb : b ∈ nonZeroDivisors R) :
 
 open Classical in
 /--
-Zero preserving monoid homomorphism from a nontrivial commutative ring `R` to `ℕᵐ⁰`.
+Zero-preserving monoid homomorphism from a nontrivial commutative ring `R` to `ℕᵐ⁰`.
 
 Note that we cannot just use `fun x ↦ ord R x` without further assumptions on `R`.
 This is because if R is finite length, then ord R 0 will be some non top value,
@@ -167,8 +167,7 @@ Order of vanishing function for elements of the fraction field defined as the ex
 @[stacks 02MD]
 noncomputable
 def ordFrac : K →*₀ ℤᵐ⁰ :=
-  letI f := Submonoid.LocalizationWithZeroMap.lift (toLocalizationWithZeroMap (nonZeroDivisors R) K)
-    (ordMonoidWithZeroHom R)
+  letI f := (toLocalizationMap (nonZeroDivisors R) K).lift₀ (ordMonoidWithZeroHom R)
   haveI : ∀ (y : ↥(nonZeroDivisors R)), IsUnit (ordMonoidWithZeroHom R ↑y) := by
     intro y
     simp only [isUnit_iff_ne_zero, ne_eq]
