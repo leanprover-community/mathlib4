@@ -295,7 +295,7 @@ theorem append_left (u : Fin m → α) (v : Fin n → α) (i : Fin m) :
 /-- Variant of `append_left` using `Fin.castLE` instead of `Fin.castAdd`. -/
 @[simp]
 theorem append_left' (u : Fin m → α) (v : Fin n → α) (i : Fin m) :
-    append u v (Fin.castLE (by omega) i) = u i :=
+    append u v (Fin.castLE (by cutsat) i) = u i :=
   addCases_left _
 
 @[simp]
@@ -819,7 +819,7 @@ lemma exists_iff_succAbove {P : Fin (n + 1) → Prop} (p : Fin (n + 1)) :
     (∃ i, P i) ↔ P p ∨ ∃ i, P (p.succAbove i) where
   mp := by
     rintro ⟨i, hi⟩
-    induction' i using p.succAboveCases
+    induction i using p.succAboveCases
     · exact .inl hi
     · exact .inr ⟨_, hi⟩
   mpr := by rintro (h | ⟨i, hi⟩) <;> exact ⟨_, ‹_›⟩

@@ -40,7 +40,7 @@ initialize eqnsAttribute : NameMapExtension (Array Name) ←
     add   := fun
     | declName, `(attr| eqns $[$names]*) => do
       -- We used to be able to check here if equational lemmas have already been registered in
-      -- Leans `eqsnExt`, but that has been removed in #8519, so no warning in that case.
+      -- Leans `eqsnExt`, but that has been removed in https://github.com/leanprover-community/mathlib4/issues/8519, so no warning in that case.
       -- Now we just hope that the `GetEqnsFn` registered below will always run before
       -- Lean’s.
       names.mapM realizeGlobalConstNoOverloadWithInfo

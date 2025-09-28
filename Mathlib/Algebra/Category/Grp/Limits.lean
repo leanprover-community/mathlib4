@@ -451,7 +451,7 @@ def kernelIsoKer {G H : AddCommGrp.{u}} (f : G ⟶ H) :
         simp }
   inv := kernel.lift f (ofHom (AddSubgroup.subtype f.hom.ker)) <| by ext x; exact x.2
   hom_inv_id := by
-    -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): it would be nice to do the next two steps by a single `ext`,
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): it would be nice to do the next two steps by a single `ext`,
     -- but this will require thinking carefully about the relative priorities of `@[ext]` lemmas.
     refine equalizer.hom_ext ?_
     ext
