@@ -131,7 +131,6 @@ lemma levyProkhorovEDist_triangle [OpensMeasurableSpace Ω] (μ ν κ : Measure 
   apply levyProkhorovEDist_le_of_forall_add_pos_le
   intro ε B ε_pos ε_lt_top B_mble
   have half_ε_pos : 0 < ε / 2 := ENNReal.div_pos ε_pos.ne' ofNat_ne_top
-  have half_ε_lt_top : ε / 2 ≠ ∞ := by finiteness
   let r := levyProkhorovEDist μ ν + ε / 2
   let s := levyProkhorovEDist ν κ + ε / 2
   have lt_r : levyProkhorovEDist μ ν < r := lt_add_right LPμν_finite half_ε_pos.ne'
@@ -608,7 +607,7 @@ lemma LevyProkhorov.continuous_equiv_symm_probabilityMeasure :
       simp only [mem_Iio, compl_iUnion, mem_iInter, mem_compl_iff, not_forall, not_not,
                   exists_prop] at con
       obtain ⟨j, j_small, ω_in_Esj⟩ := con
-      exact disjoint_left.mp (Es_disjoint (show j ≠ i by omega)) ω_in_Esj ω_in_Esi
+      exact disjoint_left.mp (Es_disjoint (show j ≠ i by cutsat)) ω_in_Esj ω_in_Esi
     intro ω ω_in_B
     obtain ⟨i, hi⟩ := show ∃ n, ω ∈ Es n by simp only [← mem_iUnion, Es_cover, mem_univ]
     simp only [mem_Ici, mem_union, mem_iUnion, exists_prop]

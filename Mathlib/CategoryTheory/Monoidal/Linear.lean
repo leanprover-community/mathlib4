@@ -24,7 +24,6 @@ variable (R : Type*) [Semiring R]
 variable (C : Type*) [Category C] [Preadditive C] [Linear R C]
 variable [MonoidalCategory C]
 
--- Porting note: added `MonoidalPreadditive` as argument ``
 /-- A category is `MonoidalLinear R` if tensoring is `R`-linear in both factors.
 -/
 class MonoidalLinear [MonoidalPreadditive C] : Prop where

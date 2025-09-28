@@ -51,8 +51,12 @@ lemma hom_ext {X Y : SSet} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = 
   SimplicialObject.hom_ext _ _ w
 
 @[simp]
+lemma id_app (X : SSet) (n : SimplexCategoryᵒᵖ) :
+    NatTrans.app (𝟙 X) n = 𝟙 _ := rfl
+
+@[simp, reassoc]
 lemma comp_app {X Y Z : SSet} (f : X ⟶ Y) (g : Y ⟶ Z) (n : SimplexCategoryᵒᵖ) :
-    (f ≫ g).app n = f.app n ≫ g.app n := NatTrans.comp_app _ _ _
+    (f ≫ g).app n = f.app n ≫ g.app n := rfl
 
 /-- The constant map of simplicial sets `X ⟶ Y` induced by a simplex `y : Y _[0]`. -/
 @[simps]

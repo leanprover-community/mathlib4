@@ -291,16 +291,16 @@ private lemma not_irrational_exists_rep {x : ℝ} :
   obtain ⟨n, hn⟩ := j.exists
   have hn' : 0 < a ^ (2 * n + 1) / n ! * I n (π / 2) := mul_pos (k _) I_pos
   obtain ⟨z, hz⟩ : ∃ z : ℤ, (sinPoly n).eval₂ (Int.castRingHom ℝ) (a / b) * b ^ (2 * n + 1) = z :=
-    is_integer a b ((sinPoly_natDegree_le _).trans (by omega))
+    is_integer a b ((sinPoly_natDegree_le _).trans (by cutsat))
   have e := sinPoly_add_cosPoly_eval (π / 2) n
   rw [cos_pi_div_two, sin_pi_div_two, mul_zero, mul_one, add_zero] at e
   have : a ^ (2 * n + 1) / n ! * I n (π / 2) =
       eval₂ (Int.castRingHom ℝ) (π / 2) (sinPoly n) * b ^ (2 * n + 1) := by
     nth_rw 2 [h] at e
-    field_simp at e ⊢
+    simp [field, div_pow] at e ⊢
     linear_combination e
   have : (0 : ℝ) < z ∧ (z : ℝ) < 1 := by simp [← hz, ← h, ← this, hn', hn]
   norm_cast at this
-  omega
+  cutsat
 
 end
