@@ -227,6 +227,18 @@ def rewriteOneFile (fname : String) (rgs : Array (Name × String.Range)) :
 def importLT (env : Environment) (f1 f2 : Name) : Bool :=
   (env.findRedundantImports #[f1, f2]).contains f1
 
+/--
+`#clear_deprecations "YYYY₁-MM₁-DD₁" "YYYY₂-MM₂-DD₂" really` computes the declarations that have
+the `@[deprecated]` attribute and the `since` field satisfies
+`YYYY₁-MM₁-DD₁ ≤ since ≤ YYYY₂-MM₂-DD₂`.
+For each one of them, it retrieves the command that generated it and removes it.
+It also verbosely logs various steps of the computation.
+
+Running `#clear_deprecations "YYYY₁-MM₁-DD₁" "YYYY₂-MM₂-DD₂"`, without the trailing `really` skips
+the removal, but still emits the same verbose output.
+
+This function is intended for automated use by the `remove_deprecations` automation.
+-/
 elab "#clear_deprecations " oldDate:str ppSpace newDate:str really?:(&" really")? : command => do
   let oldDate := oldDate.getString
   let newDate := newDate.getString
