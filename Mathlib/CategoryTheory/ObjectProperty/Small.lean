@@ -25,4 +25,8 @@ instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P] :
     Small.{w} P.FullSubcategory :=
   small_of_surjective (f := fun (x : Subtype P) ↦ ⟨x.1, x.2⟩) (fun x ↦ ⟨⟨x.1, x.2⟩, rfl⟩)
 
+lemma Small.of_le {P Q : ObjectProperty C} [ObjectProperty.Small.{w} Q] (h : P ≤ Q) :
+    ObjectProperty.Small.{w} P :=
+  small_of_injective (Subtype.map_injective h Function.injective_id)
+
 end CategoryTheory.ObjectProperty
