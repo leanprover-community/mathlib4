@@ -219,6 +219,15 @@ lemma _root_.contMDiffAt_orthonormalFrame_of_mem (i : ι) {x : B} (hx : x ∈ e.
   -- #check' contMDiffOn_orthonormalFrame_baseSet
   (contMDiffOn_orthonormalFrame_baseSet b e i).contMDiffAt <| e.open_baseSet.mem_nhds hx
 
+-- TODO: add more variants with mdifferentiable!
+omit [ContMDiffVectorBundle n F E IB] [IsContMDiffRiemannianBundle IB n F E] in
+variable [ContMDiffVectorBundle 1 F E IB] [IsContMDiffRiemannianBundle IB 1 F E] in
+variable (b e) in
+lemma _root_.mdifferentiableAt_orthonormalFrame_of_mem (i : ι) {x : B} (hx : x ∈ e.baseSet) :
+    MDiffAt (T% b.orthonormalFrame e i) x := by
+  apply ContMDiffAt.mdifferentiableAt _ le_rfl
+  exact (contMDiffOn_orthonormalFrame_baseSet b e i).contMDiffAt <| e.open_baseSet.mem_nhds hx
+
 @[simp]
 lemma orthonormalFrame_apply_of_notMem {i : ι} (hx : x ∉ e.baseSet) :
     b.orthonormalFrame e i x = 0 := by

@@ -813,7 +813,7 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     -- missing helper lemma
     --have : MDiffAt (T% ((Basis.ofVectorSpace ℝ E).orthonormalFrame e i)) x := sorry
     rw [leviCivitaRhs_smulY_const_apply hX hσ, ← smul_assoc]
-    · sorry -- orthonormal frame is diff at x
+    · sorry -- orthonormal frame is differentiable at x
   addσ {X σ σ' x} hX hσ hσ' hx := by
     by_cases hE : Subsingleton E
     · have : X x = 0 := by
@@ -843,10 +843,43 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
         exact Subsingleton.eq_zero (X x)
       simp [lcCandidate_aux, hE, this]
     simp only [lcCandidate_aux, hE, ↓reduceDIte]
-    -- missing lemma: simp_rw [leviCivitaRhs_smulY_apply]
-    sorry
 
-#exit
+    have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
+    let b := Basis.ofVectorSpace ℝ E
+    have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
+    let ⟨r, o⟩ := exists_wellOrder (↑(Basis.ofVectorSpaceIndex ℝ E))
+    have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
+
+    have hX : MDiffAt (T% X) x := sorry -- missing hypothesis?
+    let Z (i : (Basis.ofVectorSpaceIndex ℝ E)) := ((Basis.ofVectorSpace ℝ E).orthonormalFrame e i)
+    have hZ : IsOrthonormalFrameOn I E 1 Z e.baseSet :=
+      (Basis.ofVectorSpace ℝ E).orthonormalFrame_isOrthonormalFrameOn e
+    have hZ' : ∑ i, ⟪σ, Z i⟫ x • Z i x = σ x := by
+      calc _
+        _ = ∑ i, hZ.repr i σ x • Z i x := by
+          congr; ext i
+          rw [hZ.repr_eq_inner' σ hx i, product_swap]
+        _ = σ x := (hZ.toIsLocalFrameOn.repr_sum_eq _ hx).symm
+    trans ∑ i, leviCivitaRhs I X (g • σ) (Z i) x • (Z i) x
+    · congr; ext i
+      simp [Z]
+      sorry -- mismatch of the chosen order, I suppose?
+    have (i : (Basis.ofVectorSpaceIndex ℝ E)) : MDiffAt (T% (Z i)) x :=
+      mdifferentiableAt_orthonormalFrame_of_mem _ _ i hx
+    have aux (i) := leviCivitaRhs_smulY_apply I hg hX hσ (this i)
+    simp_rw [aux]
+    trans ∑ i, (g x • leviCivitaRhs I X σ (Z i) x • Z i x)
+        + ∑ i, ((_root_.bar (g x)) ((mfderiv I 𝓘(ℝ, ℝ) g x) (X x)) • ⟪σ, Z i⟫ x) • Z i x
+    · sorry
+      -- rw [Finset.sum_add_distrib] is not it, because we're not summing over a finset...
+    have : ∑ i, g x • leviCivitaRhs I X σ (Z i) x • Z i x = (g • lcCandidate_aux I e X σ) x := by
+      sorry
+    rw [this]
+    congr
+    rw [← hZ']
+    set A := _root_.bar (g x) ((mfderiv I 𝓘(ℝ, ℝ) g x) (X x))
+    sorry -- sum over finset issue again
+
 -- The candidate definition is a covariant derivative on each local frame's domain.
 lemma isCovariantDerivativeOn_lcCandidate [FiniteDimensional ℝ E]
     (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e] :
