@@ -406,7 +406,7 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Dynamics, `Mathlib.CategoryTheory),
   (`Mathlib.Dynamics, `Mathlib.Computability),
   (`Mathlib.Dynamics, `Mathlib.Condensed),
-  -- convex geometry is imported in `Ergodic/Extreme`
+  -- Geometry.Convex is imported in `Dynamics/Ergodic/Extreme.lean`
   (`Mathlib.Dynamics, `Mathlib.Geometry.Euclidean),
   (`Mathlib.Dynamics, `Mathlib.Geometry.Group),
   (`Mathlib.Dynamics, `Mathlib.Geometry.Manifold),
