@@ -29,7 +29,7 @@ variable {𝕜 E F : Type*}
 noncomputable def ederiv (ω : E → E [⋀^Fin n]→L[𝕜] F) (x : E) : E [⋀^Fin (n + 1)]→L[𝕜] F :=
   .uncurryFin (fderiv 𝕜 ω x)
 
-/- Exterior derivative of a differential form within a set. -/
+/-- Exterior derivative of a differential form within a set. -/
 noncomputable def ederivWithin (ω : E → E [⋀^Fin n]→L[𝕜] F) (s : Set E) (x : E) :
     E [⋀^Fin (n + 1)]→L[𝕜] F :=
   .uncurryFin (fderivWithin 𝕜 ω s x)
