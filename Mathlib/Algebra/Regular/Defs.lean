@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Notation.Defs
-import Mathlib.Logic.Function.Defs
 
 /-!
 # Regular elements
