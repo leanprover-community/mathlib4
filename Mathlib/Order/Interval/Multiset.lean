@@ -55,13 +55,17 @@ def Ioc (a b : α) : Multiset α := (Finset.Ioc a b).val
 multiset. -/
 def Ioo (a b : α) : Multiset α := (Finset.Ioo a b).val
 
-@[simp, push] lemma mem_Icc : x ∈ Icc a b ↔ a ≤ x ∧ x ≤ b := by rw [Icc, ← Finset.mem_def, Finset.mem_Icc]
+@[simp, push]
+lemma mem_Icc : x ∈ Icc a b ↔ a ≤ x ∧ x ≤ b := by rw [Icc, ← Finset.mem_def, Finset.mem_Icc]
 
-@[simp, push] lemma mem_Ico : x ∈ Ico a b ↔ a ≤ x ∧ x < b := by rw [Ico, ← Finset.mem_def, Finset.mem_Ico]
+@[simp, push]
+lemma mem_Ico : x ∈ Ico a b ↔ a ≤ x ∧ x < b := by rw [Ico, ← Finset.mem_def, Finset.mem_Ico]
 
-@[simp, push] lemma mem_Ioc : x ∈ Ioc a b ↔ a < x ∧ x ≤ b := by rw [Ioc, ← Finset.mem_def, Finset.mem_Ioc]
+@[simp, push]
+lemma mem_Ioc : x ∈ Ioc a b ↔ a < x ∧ x ≤ b := by rw [Ioc, ← Finset.mem_def, Finset.mem_Ioc]
 
-@[simp, push] lemma mem_Ioo : x ∈ Ioo a b ↔ a < x ∧ x < b := by rw [Ioo, ← Finset.mem_def, Finset.mem_Ioo]
+@[simp, push]
+lemma mem_Ioo : x ∈ Ioo a b ↔ a < x ∧ x < b := by rw [Ioo, ← Finset.mem_def, Finset.mem_Ioo]
 
 end LocallyFiniteOrder
 
@@ -75,9 +79,11 @@ def Ici (a : α) : Multiset α := (Finset.Ici a).val
 /-- The multiset of elements `x` such that `a < x`. Basically `Set.Ioi a` as a multiset. -/
 def Ioi (a : α) : Multiset α := (Finset.Ioi a).val
 
-@[simp, push] lemma mem_Ici : x ∈ Ici a ↔ a ≤ x := by rw [Ici, ← Finset.mem_def, Finset.mem_Ici]
+@[simp, push]
+lemma mem_Ici : x ∈ Ici a ↔ a ≤ x := by rw [Ici, ← Finset.mem_def, Finset.mem_Ici]
 
-@[simp, push] lemma mem_Ioi : x ∈ Ioi a ↔ a < x := by rw [Ioi, ← Finset.mem_def, Finset.mem_Ioi]
+@[simp, push]
+lemma mem_Ioi : x ∈ Ioi a ↔ a < x := by rw [Ioi, ← Finset.mem_def, Finset.mem_Ioi]
 
 end LocallyFiniteOrderTop
 
@@ -90,9 +96,11 @@ def Iic (b : α) : Multiset α := (Finset.Iic b).val
 /-- The multiset of elements `x` such that `x < b`. Basically `Set.Iio b` as a multiset. -/
 def Iio (b : α) : Multiset α := (Finset.Iio b).val
 
-@[simp, push] lemma mem_Iic : x ∈ Iic b ↔ x ≤ b := by rw [Iic, ← Finset.mem_def, Finset.mem_Iic]
+@[simp, push]
+lemma mem_Iic : x ∈ Iic b ↔ x ≤ b := by rw [Iic, ← Finset.mem_def, Finset.mem_Iic]
 
-@[simp, push] lemma mem_Iio : x ∈ Iio b ↔ x < b := by rw [Iio, ← Finset.mem_def, Finset.mem_Iio]
+@[simp, push]
+lemma mem_Iio : x ∈ Iio b ↔ x < b := by rw [Iio, ← Finset.mem_def, Finset.mem_Iio]
 
 end LocallyFiniteOrderBot
 
