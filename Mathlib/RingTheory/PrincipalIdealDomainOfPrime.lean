@@ -46,9 +46,6 @@ open Ideal
 /-- If all prime ideals in a commutative ring are principal, so are all other ideals. -/
 theorem IsPrincipalIdealRing.of_prime (H : ∀ P : Ideal R, P.IsPrime → P.IsPrincipal) :
     IsPrincipalIdealRing R := by
-  refine ⟨isOka_isPrincipal.forall_of_forall_prime' (fun C hC₁ hC₂ I hI h ↦ ⟨sSup C, ?_, h⟩) H⟩
-  obtain ⟨x, hx⟩ := h
-  have : x ∈ sSup C := hx ▸ mem_span_singleton_self x
-  obtain ⟨J, J_mem_C, x_mem_J⟩ := Submodule.mem_sSup_of_directed ⟨I, hI⟩ hC₂.directedOn |>.1 this
-  suffices J_eq_sSup : J = sSup C from J_eq_sSup ▸ J_mem_C
-  exact le_antisymm (le_sSup J_mem_C) (hx ▸ (span_singleton_le_iff_mem J |>.2 x_mem_J))
+  refine ⟨isOka_isPrincipal.forall_of_forall_prime (fun I hI ↦ exists_maximal_not_principal ?_) H⟩
+  rw [isPrincipalIdealRing_iff, not_forall]
+  exact ⟨I, hI⟩
