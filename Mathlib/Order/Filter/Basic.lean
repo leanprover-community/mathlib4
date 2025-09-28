@@ -947,9 +947,6 @@ theorem EventuallyEq.prodMk {l} {f f' : α → β} (hf : f =ᶠ[l] f') {g g' : �
       intros
       simp only [*]
 
-@[deprecated (since := "2025-03-10")]
-alias EventuallyEq.prod_mk := EventuallyEq.prodMk
-
 -- See `EventuallyEq.comp_tendsto` further below for a similar statement w.r.t.
 -- composition on the right.
 theorem EventuallyEq.fun_comp {f g : α → β} {l : Filter α} (H : f =ᶠ[l] g) (h : β → γ) :

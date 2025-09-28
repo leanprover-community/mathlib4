@@ -116,9 +116,6 @@ instance (priority := 100) NormedDivisionRing.to_continuousInv₀ : ContinuousIn
 instance (priority := 100) NormedDivisionRing.to_isTopologicalDivisionRing :
     IsTopologicalDivisionRing α where
 
-@[deprecated (since := "2025-03-25")] alias NormedDivisionRing.to_topologicalDivisionRing :=
-  NormedDivisionRing.to_isTopologicalDivisionRing
-
 lemma NormedField.tendsto_norm_inv_nhdsNE_zero_atTop : Tendsto (fun x : α ↦ ‖x⁻¹‖) (𝓝[≠] 0) atTop :=
   (tendsto_inv_nhdsGT_zero.comp tendsto_norm_nhdsNE_zero).congr fun x ↦ (norm_inv x).symm
 

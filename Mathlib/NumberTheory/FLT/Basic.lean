@@ -173,9 +173,6 @@ lemma fermatLastTheoremWith'_of_semifield (𝕜 : Type*) [Semifield 𝕜] (n : �
     ⟨(mul_one a).symm, (mul_one b).symm, (mul_one c).symm⟩,
     ⟨ha.isUnit, hb.isUnit, hc.isUnit⟩⟩
 
-@[deprecated (since := "2025-03-21")]
-alias fermatLastTheoremWith'_of_field := fermatLastTheoremWith'_of_semifield
-
 lemma FermatLastTheoremWith'.fermatLastTheoremWith {R : Type*} [CommSemiring R] [IsDomain R]
     {n : ℕ} (h : FermatLastTheoremWith' R n)
     (hn : ∀ a b c : R, IsUnit a → IsUnit b → IsUnit c → a ^ n + b ^ n ≠ c ^ n) :
