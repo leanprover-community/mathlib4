@@ -733,7 +733,8 @@ theorem IsLeviCivitaConnection.uniqueness [FiniteDimensional ℝ E]
   · exact (hcov'.eq_leviCivitaRhs I X σ Z ).symm
 
 noncomputable def lcCandidate_aux [FiniteDimensional ℝ E]
-    (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e] :
+    (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e]
+    (o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)) :
     ((x : M) → TangentSpace I x) → ((x : M) → TangentSpace I x) → (x : M) → TangentSpace I x :=
   open scoped Classical in
   fun X Y x ↦
@@ -743,9 +744,6 @@ noncomputable def lcCandidate_aux [FiniteDimensional ℝ E]
   let b := Basis.ofVectorSpace ℝ E
   have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
   have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
-  have : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := by
-    choose r wo using exists_wellOrder _
-    exact r
   have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
   letI frame := b.orthonormalFrame e
   -- The coefficient of the desired tangent vector `∇ X Y x` w.r.t. `s i`
@@ -756,17 +754,19 @@ variable (M) in
 -- TODO: make g part of the notation!
 /-- Given two vector fields X and Y on TM, compute
 the candidate definition for the Levi-Civita connection on `TM`. -/
-noncomputable def lcCandidate [FiniteDimensional ℝ E] :
+noncomputable def lcCandidate [FiniteDimensional ℝ E]
+    (o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)) :
     (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) :=
   -- Use the preferred trivialisation at `x` to write down a candidate for the existence.
-  fun X Y x ↦ lcCandidate_aux I (trivializationAt E (TangentSpace I : M → Type _) x) X Y x
+  fun X Y x ↦ lcCandidate_aux I (trivializationAt E (TangentSpace I : M → Type _) x) o X Y x
 
 variable (X Y) in
 -- The above definition behaves well: for each compatible trivialisation e,
 -- using e on e.baseSet yields the same result as above.
 lemma bar [FiniteDimensional ℝ E] (e : Trivialization E (TotalSpace.proj: TangentBundle I M → M))
-    [MemTrivializationAtlas e] {x : M} (hx : x ∈ e.baseSet) :
-    lcCandidate I M X Y x = lcCandidate_aux I e X Y x := by
+    [MemTrivializationAtlas e] {o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)}
+    {x : M} (hx : x ∈ e.baseSet) :
+    lcCandidate I M o X Y x = lcCandidate_aux I e o X Y x := by
   by_cases hE : Subsingleton E
   · simp [lcCandidate, lcCandidate_aux, hE]
   · simp only [lcCandidate, lcCandidate_aux, hE, ↓reduceDIte]
@@ -775,73 +775,57 @@ lemma bar [FiniteDimensional ℝ E] (e : Trivialization E (TotalSpace.proj: Tang
 
 -- The candidate definition is a covariant derivative on each local frame's domain.
 lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
-    (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e] :
-    IsCovariantDerivativeOn E (lcCandidate_aux I (M := M) e) e.baseSet where
-  addX {_X _X' _σ x} hX hX' hσ hx:= by
+    (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e]
+    {o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)} :
+    IsCovariantDerivativeOn E (lcCandidate_aux I (M := M) e o) e.baseSet where
+  addX {_X _X' _σ x} hX hX' hσ hx := by
     by_cases hE : Subsingleton E; · simp [lcCandidate_aux, hE]
+    have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
     simp only [lcCandidate_aux, hE, ↓reduceDIte]
     simp only [← Finset.sum_add_distrib, ← add_smul]
     congr; ext i
     rw [leviCivitaRhs_addX_apply] <;> try assumption
-    let : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := Classical.choose (exists_wellOrder _)
-    have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
     let b := Basis.ofVectorSpace ℝ E
     have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
-    have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
-    set f := b.orthonormalFrame e i
-    have : MDiffAt (T% f) x := mdifferentiableAt_orthonormalFrame_of_mem b e i hx
-    sorry -- convert this works, except for different local orders...
+    exact mdifferentiableAt_orthonormalFrame_of_mem b e i hx
   smulX {_X _σ _g _x} hX hσ hg hx := by
     by_cases hE : Subsingleton E; · simp [lcCandidate_aux, hE]
+    have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
     simp only [lcCandidate_aux, hE, ↓reduceDIte]
     rw [Finset.smul_sum]
     congr; ext i
     rw [leviCivitaRhs_smulX_apply] <;> try assumption
     · simp [← smul_assoc]
-    -- side goal: orthonormal frame is differentiable
-    · let : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := Classical.choose (exists_wellOrder _)
-      have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
-      let b := Basis.ofVectorSpace ℝ E
+    · let b := Basis.ofVectorSpace ℝ E
       have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
-      have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
-      sorry -- works, except for different choice of order...
-      -- mdifferentiableAt_orthonormalFrame_of_mem _ _ i hx
+      exact mdifferentiableAt_orthonormalFrame_of_mem b e i hx
   smul_const_σ {X _σ x} a hX hσ hx := by
     by_cases hE : Subsingleton E
     · have : X x = 0 := by
         have : Subsingleton (TangentSpace I x) := inferInstanceAs (Subsingleton E)
         exact Subsingleton.eq_zero (X x)
       simp [lcCandidate_aux, hE, this]
+    have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
     simp only [lcCandidate_aux, hE, ↓reduceDIte]
     rw [Finset.smul_sum]; congr; ext i
     rw [leviCivitaRhs_smulY_const_apply hX hσ, ← smul_assoc]
-    · let : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := Classical.choose (exists_wellOrder _)
-      have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
-      let b := Basis.ofVectorSpace ℝ E
+    · let b := Basis.ofVectorSpace ℝ E
       have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
-      have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
-      set f := b.orthonormalFrame e i
-      have : MDiffAt (T% f) x := mdifferentiableAt_orthonormalFrame_of_mem b e i hx
-      sorry -- `this`, except for choice of ordering
+      exact mdifferentiableAt_orthonormalFrame_of_mem b e i hx
   addσ {X σ σ' x} hX hσ hσ' hx := by
     by_cases hE : Subsingleton E
     · have : X x = 0 := by
         have : Subsingleton (TangentSpace I x) := inferInstanceAs (Subsingleton E)
         exact Subsingleton.eq_zero (X x)
       simp [lcCandidate_aux, hE, this]
+    have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
     simp only [lcCandidate_aux, hE, ↓reduceDIte]
     simp only [← Finset.sum_add_distrib, ← add_smul]
     congr; ext i
     rw [leviCivitaRhs_addY_apply] <;> try assumption
-
-    have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
     let b := Basis.ofVectorSpace ℝ E
     have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
-    let ⟨r, o⟩ := exists_wellOrder (↑(Basis.ofVectorSpaceIndex ℝ E))
-    have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
-    set f := b.orthonormalFrame e i
-    have : MDiffAt (T% f) x := mdifferentiableAt_orthonormalFrame_of_mem b e i hx
-    sorry -- `convert this`, except for mismatch between different orders
+    exact mdifferentiableAt_orthonormalFrame_of_mem b e i hx
   leibniz {X σ g x} hX hσ hg hx := by
     by_cases hE : Subsingleton E
     · have : X x = 0 := by
@@ -853,9 +837,6 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
     let b := Basis.ofVectorSpace ℝ E
     have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
-    let ⟨r, o⟩ := exists_wellOrder (↑(Basis.ofVectorSpaceIndex ℝ E))
-    have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
-
     let Z (i : (Basis.ofVectorSpaceIndex ℝ E)) := ((Basis.ofVectorSpace ℝ E).orthonormalFrame e i)
     have hZ : IsOrthonormalFrameOn I E 1 Z e.baseSet :=
       (Basis.ofVectorSpace ℝ E).orthonormalFrame_isOrthonormalFrameOn e
@@ -866,9 +847,7 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
           rw [hZ.repr_eq_inner' σ hx i, product_swap]
         _ = σ x := (hZ.toIsLocalFrameOn.repr_sum_eq _ hx).symm
     trans ∑ i, leviCivitaRhs I X (g • σ) (Z i) x • (Z i) x
-    · congr; ext i
-      simp [Z]
-      sorry -- mismatch of the chosen order, I suppose?
+    · congr
     have (i : (Basis.ofVectorSpaceIndex ℝ E)) : MDiffAt (T% (Z i)) x :=
       mdifferentiableAt_orthonormalFrame_of_mem _ _ i hx
     have aux (i) := leviCivitaRhs_smulY_apply I hg hX hσ (this i)
@@ -877,19 +856,20 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
         + ∑ i, ((_root_.bar (g x)) ((mfderiv I 𝓘(ℝ, ℝ) g x) (X x)) • ⟪σ, Z i⟫ x) • Z i x
     · sorry
       -- rw [Finset.sum_add_distrib] is not it, because we're not summing over a finset...
-    have : ∑ i, g x • leviCivitaRhs I X σ (Z i) x • Z i x = (g • lcCandidate_aux I e X σ) x := by
+    have : ∑ i, g x • leviCivitaRhs I X σ (Z i) x • Z i x = (g • lcCandidate_aux I e o X σ) x := by
       sorry
     rw [this]
     congr
     rw [← hZ']
     set A := _root_.bar (g x) ((mfderiv I 𝓘(ℝ, ℝ) g x) (X x))
-    sorry -- sum over finset issue again
+    sorry -- sum over finset issue again -/
 
 -- The candidate definition is a covariant derivative on each local frame's domain.
 lemma isCovariantDerivativeOn_lcCandidate [FiniteDimensional ℝ E]
-    (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e] :
-    IsCovariantDerivativeOn E (lcCandidate I M) e.baseSet := by
-  apply IsCovariantDerivativeOn.congr (isCovariantDerivativeOn_lcCandidate_aux I e)
+    (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e]
+    {o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)} :
+    IsCovariantDerivativeOn E (lcCandidate I M o) e.baseSet := by
+  apply IsCovariantDerivativeOn.congr (isCovariantDerivativeOn_lcCandidate_aux I e (o := o))
   intro X σ x hx
   exact (bar I X σ e hx).symm
 
