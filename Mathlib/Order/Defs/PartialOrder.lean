@@ -134,6 +134,18 @@ def decidableLTOfDecidableLE [DecidableLE α] : DecidableLT α
       else isTrue <| lt_of_le_not_ge hab hba
     else isFalse fun hab' => hab (le_of_lt hab')
 
+/--
+Replace the `≤` and `<` fields in a preorder with provably equal (but not necessarily defeq) ones.
+-/
+-- See note [reducible non-instances]
+abbrev Preorder.copy {α : Type*} (o : Preorder α) (le lt : α → α → Prop)
+    (le_def : le = o.le) (lt_def : lt = o.lt) : Preorder α where
+  le
+  lt
+  le_refl := le_def ▸ o.le_refl
+  le_trans := le_def ▸ o.le_trans
+  lt_iff_le_not_ge := lt_def ▸ le_def ▸ o.lt_iff_le_not_ge
+
 /-- `WCovBy a b` means that `a = b` or `b` covers `a`.
 This means that `a ≤ b` and there is no element in between. This is denoted `a ⩿ b`.
 -/
@@ -196,5 +208,15 @@ protected lemma Decidable.le_iff_lt_or_eq [DecidableLE α] : a ≤ b ↔ a < b �
 
 lemma lt_or_eq_of_le : a ≤ b → a < b ∨ a = b := open scoped Classical in Decidable.lt_or_eq_of_le
 lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := open scoped Classical in Decidable.le_iff_lt_or_eq
+
+/--
+Replace the `≤` and `<` fields in a partial order
+with provably equal (but not necessarily defeq) ones.
+-/
+-- See note [reducible non-instances]
+abbrev PartialOrder.copy {α : Type*} (o : PartialOrder α) (le lt : α → α → Prop)
+    (le_def : le = o.le) (lt_def : lt = o.lt) : PartialOrder α where
+  toPreorder := o.toPreorder.copy le lt le_def lt_def
+  le_antisymm := le_def ▸ o.le_antisymm
 
 end PartialOrder
