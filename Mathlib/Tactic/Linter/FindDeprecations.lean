@@ -3,10 +3,8 @@ Copyright (c) 2025 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
---import Mathlib --.Deprecated.Order
---import Lean
+
 import ImportGraph.Imports
---import Mathlib.mwe_deprecations
 
 /-!
 d
@@ -188,14 +186,20 @@ ranges of the *commands* that generated the passed declaration ranges.
 -/
 def rewriteOneFile (fname : String) (rgs : Array (Name × String.Range)) :
     CommandElabM (String × String) := do
+  -- `option` is the extra text that we add to the files that contain deprecations.
+  -- We save these modified files with a different name then their originals, so that all their
+  -- dependencies still have valid `olean`s and we build them to collect the ranges of the commands
+  -- in each one of them.
   let option :=
     s!"\nimport Mathlib.Tactic.Linter.CommandRanges\n\
       set_option linter.commandRanges true\n"
+  -- `offset` represents the difference between a position in the modified file and the
+  -- corresponding position in the original file.
+  -- Since we added the modification right after the imports, the command positions of the old file
+  -- are always smaller than the command positions of the new file.
   let offset := option.toSubstring.stopPos
   let fileWithOptionAdded ← addAfterImports fname option
-  --dbg_trace optionAdded
   let fname_with_option := fname.dropRight ".lean".length ++ "_with_option.lean"
-  --let rgs := cleanUpRanges rgs
   let file ← IO.FS.readFile fname
   let fm := file.toFileMap
   let rgsPos := rgs.map fun (decl, ⟨s, e⟩) =>
@@ -204,49 +208,47 @@ def rewriteOneFile (fname : String) (rgs : Array (Name × String.Range)) :
           {m!"\n".joinSep rgsPos.toList}\n{m!"\n".joinSep (rgs.map (m!"{·}")).toList}"
   IO.FS.writeFile fname_with_option fileWithOptionAdded
   let ranges := rgs.map (·.2)
-  let cmd : IO.Process.SpawnArgs := {cmd := "lake", args := #["build", fname_with_option]}
 
   logInfo m!"Retrieving command positions from '{fname_with_option}'"
-  let lakeInfoOfPositions ← IO.Process.output cmd -- ← IO.FS.lines fname.ranges
-  logInfo lakeInfoOfPositions.stdout
-  --IO.FS.removeFile fname_with_option
+  let commandPositions ←
+    IO.Process.output {cmd := "lake", args := #["build", fname_with_option]}
   -- `stringPositions` consists of lists of the form `[p₁, p₂, p₃]`, where
   -- * `p₁` is the start of a command;
   -- * `p₂` is the end of the command, excluding trailing whitespace and comments;
   -- * `p₁` is the end of the command, including trailing whitespace and comments.
-  let stringPositions := (lakeInfoOfPositions.stdout.splitOn "\n").map parseLine |>.reduceOption
-  let mut removals : Array (List String.Pos) := #[]
+  let stringPositions := (commandPositions.stdout.splitOn "\n").map parseLine |>.reduceOption
+  let mut removals : Std.HashSet (List String.Pos) := ∅
   -- For each range `rg` in `ranges`, we isolate the unique entry of `stringPositions` that
-  -- entirely contains `rg`
+  -- entirely contains `rg`.  This helps catching the full range of `open Nat in @[deprecated] ...`,
+  -- rather than just the `@[deprecated] ...` range.
   for rg in ranges do
-    -- We select the range among the
     let candidate := stringPositions.filterMap (fun arr ↦
       let a := arr.head! - offset
       let b := arr[arr.length - 1]! - offset
       if a ≤ rg.start ∧ rg.stop ≤ b then some (arr.map (· - offset)) else none)
-    --dbg_trace s!"{rg} {candidate}"
     match candidate with
-    | [d@([_, _, _])] => removals := removals.push d
+    | [d@([_, _, _])] => removals := removals.insert d
     | _ => logInfo "Something went wrong!"
-  let rems := removals.map fun | [a, b, _c] => (⟨a, b⟩ : String.Range) | _ => default
-  --dbg_trace rems
-  return (fname_with_option, ← removeDeprecations fname rems)
+  -- We only remember the `start` and `end` of each command, ignoring trailing whitespace and
+  -- comments.  This means that we may err on the side of preserving comments that may have to be
+  -- manually removed, instead of having to manually add them back later on.
+  let rems : Std.HashSet _ := removals.fold (init := ∅) fun tot ↦ fun
+    | [a, b, _c] => tot.insert (⟨a, b⟩ : String.Range)
+    | _ => tot
+  return (fname_with_option, ← removeDeprecations fname (rems.toArray.qsort (·.1 < ·.1)))
 
 /-- The `<` partial order on modules: `importLT env mod₁ mod₂` means that `mod₂` imports `mod₁`. -/
 def importLT (env : Environment) (f1 f2 : Name) : Bool :=
   (env.findRedundantImports #[f1, f2]).contains f1
 
 elab "#clear_deprecations " oldDate:str ppSpace newDate:str really?:(&" really")? : command => do
-  --let f (fname : String) : Bool := true --#[].contains fname
-  let oldDate := oldDate.getString --"2025-09-10"
-  let newDate := newDate.getString --"2025-09-10"
+  let oldDate := oldDate.getString
+  let newDate := newDate.getString
   let fmap ← deprecatedHashMap oldDate newDate
   let mut filesToRemove := #[]
   let env ← getEnv
   let sortedFMap := fmap.toArray.qsort fun ((a, _), _) ((b, _), _) => importLT env b a
   for ((_modName, fname), noDeprs) in sortedFMap do
-    --dbg_trace fname
-    --if false then
     let msg := m!"\n* ".joinSep
       (noDeprs.map (fun (decl, rg) => m!"{.ofConstName decl}: {rg}")).toList
     logInfo
