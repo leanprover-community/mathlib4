@@ -82,6 +82,7 @@ theorem ContDiffAt.contDiffAt_norm_of_smul (h : ContDiffAt ℝ n (‖·‖) (t �
   replace hn : 1 ≤ n := ENat.add_one_natCast_le_withTop_of_lt hn
   obtain rfl | ht := eq_or_ne t 0
   · suffices Subsingleton E by
+      -- TODO lemma
       rw [eq_const_of_subsingleton (‖·‖) 0]
       exact contDiffAt_const
     rw [zero_smul] at h
