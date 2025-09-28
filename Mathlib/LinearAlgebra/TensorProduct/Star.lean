@@ -14,24 +14,22 @@ defines the `StarAddMonoid` and `StarModule` instances for tensor products.
 -/
 
 namespace TensorProduct
+variable {R A B : Type*}
+  [CommSemiring R] [StarRing R]
+  [AddCommMonoid A] [StarAddMonoid A] [Module R A] [StarModule R A]
+  [AddCommMonoid B] [StarAddMonoid B] [Module R B] [StarModule R B]
 
 open scoped TensorProduct
 
-variable {R A B : Type*} [CommSemiring R] [StarRing R]
-  [AddCommMonoid A] [AddCommMonoid B] [StarAddMonoid A] [StarAddMonoid B]
-  [Module R A] [Module R B] [StarModule R A] [StarModule R B]
-
 instance : Star (A ⊗[R] B) where
-  star x := map (starLinearEquiv R (A:=A)) (starLinearEquiv R).toLinearMap x
+  star x := map (starLinearEquiv R (A := A)) (starLinearEquiv R).toLinearMap x
 
 @[simp]
-theorem star_tmul (x : A) (y : B) :
-    star (x ⊗ₜ[R] y) = star x ⊗ₜ[R] star y :=
-  rfl
+theorem star_tmul (x : A) (y : B) : star (x ⊗ₜ[R] y) = star x ⊗ₜ[R] star y := rfl
 
 noncomputable instance : InvolutiveStar (A ⊗[R] B) where
   star_involutive x := by
-    simp [star, map_map, LinearEquiv.comp_coe]
+    simp only [star, map_map, LinearEquiv.comp_coe]
     convert congr($map_id x) <;> ext <;> simp
 
 noncomputable instance : StarAddMonoid (A ⊗[R] B) where
