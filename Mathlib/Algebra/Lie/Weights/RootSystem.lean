@@ -13,7 +13,7 @@ import Mathlib.Algebra.Algebra.Rat
 /-!
 # The root system associated with a Lie algebra
 
-We show that the roots of a finite dimensional splitting semisimple Lie algebra over a field of
+We show that the roots of a finite-dimensional splitting semisimple Lie algebra over a field of
 characteristic 0 form a root system. We achieve this by studying root chains.
 
 ## Main results
@@ -186,7 +186,7 @@ lemma chainLength_zero [Nontrivial L] : chainLength 0 β = 0 := by
   `β (coroot α) = q - r`. In particular, it is an integer. -/
 lemma apply_coroot_eq_cast :
     β (coroot α) = (chainBotCoeff α β - chainTopCoeff α β : ℤ) := by
-  rw [apply_coroot_eq_cast', ← chainTopCoeff_add_chainBotCoeff]; congr 1; omega
+  rw [apply_coroot_eq_cast', ← chainTopCoeff_add_chainBotCoeff]; congr 1; cutsat
 
 lemma le_chainBotCoeff_of_rootSpace_ne_top
     (hα : α.IsNonZero) (n : ℤ) (hn : rootSpace H (-n • α + β) ≠ ⊥) :
@@ -337,7 +337,7 @@ lemma eq_neg_one_or_eq_zero_or_eq_one_of_eq_smul
     swap
     · simp only [tsub_le_iff_right, le_add_iff_nonneg_right, Nat.cast_nonneg, neg_sub, true_and]
       rw [← Nat.cast_add, chainBotCoeff_add_chainTopCoeff, hn]
-      omega
+      cutsat
     rw [h, hk, ← Int.cast_smul_eq_zsmul K, ← add_smul] at this
     simp only [Int.cast_sub, Int.cast_natCast,
       sub_add_sub_cancel', add_sub_cancel_left, ne_eq] at this
@@ -369,7 +369,6 @@ lemma reflectRoot_isNonZero (α β : Weight K H L) (hβ : β.IsNonZero) :
   have : β (coroot α) = 0 := by
     by_cases hα : α.IsZero
     · simp [coroot_eq_zero_iff.mpr hα]
-    apply add_left_injective (β (coroot α))
     simpa [root_apply_coroot hα, mul_two] using congr_fun (sub_eq_zero.mp e) (coroot α)
   have : reflectRoot α β = β := by ext; simp [reflectRoot, this]
   exact hβ (this ▸ e)
@@ -381,7 +380,7 @@ field of characteristic zero, relative to a splitting Cartan subalgebra. -/
 def rootSystem :
     RootSystem H.root K (Dual K H) H :=
   RootSystem.mk'
-    IsReflexive.toPerfectPairingDual
+    .id
     { toFun := (↑)
       inj' := by
         intro α β h; ext x; simpa using LinearMap.congr_fun h x  }
@@ -402,8 +401,7 @@ lemma corootForm_rootSystem_eq_killing :
   rw [restrict_killingForm_eq_sum, RootPairing.CorootForm, ← Finset.sum_coe_sort (s := H.root)]
   rfl
 
-@[simp] lemma rootSystem_toPerfectPairing_apply (f x) : (rootSystem H).toPerfectPairing f x = f x :=
-  rfl
+@[simp] lemma rootSystem_toLinearMap_apply (f x) : (rootSystem H).toLinearMap f x = f x := rfl
 @[simp] lemma rootSystem_pairing_apply (α β) : (rootSystem H).pairing β α = β.1 (coroot α.1) := rfl
 @[simp] lemma rootSystem_root_apply (α) : (rootSystem H).root α = α := rfl
 @[simp] lemma rootSystem_coroot_apply (α) : (rootSystem H).coroot α = coroot α := rfl
@@ -425,7 +423,7 @@ instance : (rootSystem H).IsReduced where
 
 section IsSimple
 
--- Note that after #10068 (Cartan's criterion) is complete we can omit `[IsKilling K L]`
+-- Note that after https://github.com/leanprover-community/mathlib4/issues/10068 (Cartan's criterion) is complete we can omit `[IsKilling K L]`
 variable [IsSimple K L]
 
 open Weight in
@@ -453,12 +451,8 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
   have s₂' (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : j.1 (coroot i) = 0 := s₁' i j h₁ h₂
   have s₃ (i j : H.root) (h₁ : i ∈ Φ) (h₂ : j ∉ Φ) : genWeightSpace L (i.1.1 + j.1.1) = ⊥ := by
     by_contra h
-    have i_non_zero : i.1.IsNonZero := by
-      obtain ⟨val, hval⟩ := i
-      rwa [Finset.mem_filter_univ] at hval
-    have j_non_zero : j.1.IsNonZero := by
-      obtain ⟨val, hval⟩ := j
-      rwa [Finset.mem_filter_univ] at hval
+    have i_non_zero : i.1.IsNonZero := by grind
+    have j_non_zero : j.1.IsNonZero := by grind
     let r := Weight.mk (R := K) (L := H) (M := L) (i.1.1 + j.1.1) h
     have r₁ : r ≠ 0 := by
       intro a
@@ -467,7 +461,7 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
         simp at this; exact this)
       have := s₂ i j h₁ h₂
       rw [h_eq, coe_neg, Pi.neg_apply, root_apply_coroot j_non_zero] at this
-      field_simp at this
+      simp at this
     have r₂ : r ∈ H.root := by simp [isNonZero_iff_ne_zero, r₁]
     cases Classical.em (⟨r, r₂⟩ ∈ Φ) with
     | inl hl =>
@@ -584,9 +578,7 @@ lemma eq_top_of_invtSubmodule_ne_bot (q : Submodule K (Dual K H))
   have c₂ : I' ≠ ⊥ := by
     rw [← h] at s₆
     exact ne_of_apply_ne (LieIdeal.toLieSubalgebra K L) s₆
-  rcases this with h_bot | h_top
-  · contradiction
-  · contradiction
+  grind
 
 instance : (rootSystem H).IsIrreducible := by
   have _i := nontrivial_of_isIrreducible K L L

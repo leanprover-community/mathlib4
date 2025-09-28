@@ -28,7 +28,7 @@ variable {α : Type u} {β : Type v} {ι : Type*} {X : ι → Type*} [Topologica
 section TotallyDisconnected
 
 /-- A set `s` is called totally disconnected if every subset `t ⊆ s` which is preconnected is
-a subsingleton, ie either empty or a singleton. -/
+a subsingleton, i.e. either empty or a singleton. -/
 def IsTotallyDisconnected (s : Set α) : Prop :=
   ∀ t, t ⊆ s → IsPreconnected t → t.Subsingleton
 
@@ -123,6 +123,17 @@ lemma TotallyDisconnectedSpace.eq_of_continuous [TopologicalSpace β]
     (i j : α) : f i = f j :=
   (isPreconnected_univ.image f hf.continuousOn).subsingleton ⟨i, trivial, rfl⟩ ⟨j, trivial, rfl⟩
 
+/-- The bijection `C(X, Y) ≃ Y` when `Y` is totally disconnected and `X` is connected. -/
+@[simps! symm_apply_apply]
+noncomputable def TotallyDisconnectedSpace.continuousMapEquivOfConnectedSpace
+    (X Y : Type*) [TopologicalSpace X]
+    [TopologicalSpace Y] [TotallyDisconnectedSpace Y] [ConnectedSpace X] :
+    C(X, Y) ≃ Y where
+  toFun f := f (Classical.arbitrary _)
+  invFun y := ⟨fun _ ↦ y, by continuity⟩
+  left_inv f := ContinuousMap.ext (TotallyDisconnectedSpace.eq_of_continuous _ f.2 _)
+  right_inv _ := rfl
+
 theorem isTotallyDisconnected_of_image [TopologicalSpace β] {f : α → β} (hf : ContinuousOn f s)
     (hf' : Injective f) (h : IsTotallyDisconnected (f '' s)) : IsTotallyDisconnected s :=
   fun _t hts ht _x x_in _y y_in =>
@@ -134,9 +145,6 @@ lemma Topology.IsEmbedding.isTotallyDisconnected [TopologicalSpace β] {f : α �
     (hf : IsEmbedding f) (h : IsTotallyDisconnected (f '' s)) : IsTotallyDisconnected s :=
   isTotallyDisconnected_of_image hf.continuous.continuousOn hf.injective h
 
-@[deprecated (since := "2024-10-26")]
-alias Embedding.isTotallyDisconnected := IsEmbedding.isTotallyDisconnected
-
 lemma Topology.IsEmbedding.isTotallyDisconnected_image [TopologicalSpace β] {f : α → β} {s : Set α}
     (hf : IsEmbedding f) : IsTotallyDisconnected (f '' s) ↔ IsTotallyDisconnected s := by
   refine ⟨hf.isTotallyDisconnected, fun hs u hus hu ↦ ?_⟩
@@ -145,15 +153,9 @@ lemma Topology.IsEmbedding.isTotallyDisconnected_image [TopologicalSpace β] {f 
   rw [hf.isInducing.isPreconnected_image] at hu
   exact (hs v hvs hu).image _
 
-@[deprecated (since := "2024-10-26")]
-alias Embedding.isTotallyDisconnected_image := IsEmbedding.isTotallyDisconnected_image
-
 lemma Topology.IsEmbedding.isTotallyDisconnected_range [TopologicalSpace β] {f : α → β}
     (hf : IsEmbedding f) : IsTotallyDisconnected (range f) ↔ TotallyDisconnectedSpace α := by
   rw [totallyDisconnectedSpace_iff, ← image_univ, hf.isTotallyDisconnected_image]
-
-@[deprecated (since := "2024-10-26")]
-alias Embedding.isTotallyDisconnected_range := IsEmbedding.isTotallyDisconnected_range
 
 lemma totallyDisconnectedSpace_subtype_iff {s : Set α} :
     TotallyDisconnectedSpace s ↔ IsTotallyDisconnected s := by
@@ -308,7 +310,7 @@ theorem IsPreconnected.constant_of_mapsTo {S : Set α} (hS : IsPreconnected S)
     (hTm : MapsTo f S T) {x y : α} (hx : x ∈ S) (hy : y ∈ S) : f x = f y := by
   let F : S → T := hTm.restrict f S T
   suffices F ⟨x, hx⟩ = F ⟨y, hy⟩ by rwa [← Subtype.coe_inj] at this
-  exact (isPreconnected_iff_preconnectedSpace.mp hS).constant (hc.restrict_mapsTo _)
+  exact (isPreconnected_iff_preconnectedSpace.mp hS).constant (hc.mapsToRestrict _)
 
 /-- A version of `IsPreconnected.constant_of_mapsTo` that assumes that the codomain is nonempty and
 proves that `f` is equal to `const α y` on `S` for some `y ∈ T`. -/

@@ -3,9 +3,9 @@ Copyright (c) 2021 Lu-Ming Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lu-Ming Zhang
 -/
-import Mathlib.LinearAlgebra.Matrix.Symmetric
+import Mathlib.LinearAlgebra.Matrix.Kronecker
 import Mathlib.LinearAlgebra.Matrix.Orthogonal
-import Mathlib.Data.Matrix.Kronecker
+import Mathlib.LinearAlgebra.Matrix.Symmetric
 
 /-!
 # Diagonal matrices
@@ -155,7 +155,7 @@ theorem isDiag_fromBlocks_iff [Zero α] {A : Matrix m m α} {B : Matrix m n α} 
     convert IsDiag.fromBlocks ha hd
 
 /-- A symmetric block matrix `A.fromBlocks B C D` is diagonal
-    if `A` and `D` are diagonal and `B` is `0`. -/
+if `A` and `D` are diagonal and `B` is `0`. -/
 theorem IsDiag.fromBlocks_of_isSymm [Zero α] {A : Matrix m m α} {C : Matrix n m α}
     {D : Matrix n n α} (h : (A.fromBlocks 0 C D).IsSymm) (ha : A.IsDiag) (hd : D.IsDiag) :
     (A.fromBlocks 0 C D).IsDiag := by

@@ -91,7 +91,6 @@ instance (priority := 100) [IsFinite f] : IsProper f :=
 lemma UniversallyClosed.of_comp_of_isSeparated [UniversallyClosed (f ≫ g)] [IsSeparated g] :
     UniversallyClosed f := by
   rw [← Limits.pullback.lift_snd (𝟙 _) f (Category.id_comp (f ≫ g))]
-  have := MorphismProperty.pullback_snd (P := @UniversallyClosed) (f ≫ g) g inferInstance
   infer_instance
 
 @[stacks 01W6 "(2)"]
@@ -137,7 +136,7 @@ theorem finite_appTop_of_universallyClosed (f : X ⟶ Spec(K))
   obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
     (isBasis_affine_open X).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
   letI := ((Scheme.ΓSpecIso (.of K)).commRingCatIsoToRingEquiv.toMulEquiv.isField
-    _ (Field.toIsField K)).toField
+    (Field.toIsField K)).toField
   letI := (isField_of_universallyClosed K f).toField
   have : Nonempty U := ⟨⟨x, hxU⟩⟩
   apply RingHom.finite_of_algHom_finiteType_of_isJacobsonRing (A := Γ(X, U))

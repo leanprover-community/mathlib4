@@ -26,13 +26,22 @@ structure Retract (X Y : C) where
   i : X ⟶ Y
   /-- the split epimorphism -/
   r : Y ⟶ X
-  retract : i ≫ r = 𝟙 X := by aesop_cat
+  retract : i ≫ r = 𝟙 X := by cat_disch
 
 namespace Retract
 
 attribute [reassoc (attr := simp)] retract
 
 variable {X Y : C} (h : Retract X Y)
+
+open Opposite
+
+/-- Retracts are preserved when passing to the opposite category. -/
+@[simps]
+def op : Retract (op X) (op Y) where
+  i := h.r.op
+  r := h.i.op
+  retract := by simp [← op_comp, h.retract]
 
 /-- If `X` is a retract of `Y`, then `F.obj X` is a retract of `F.obj Y`. -/
 @[simps]

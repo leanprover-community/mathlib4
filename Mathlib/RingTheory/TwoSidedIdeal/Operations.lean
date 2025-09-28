@@ -196,9 +196,9 @@ lemma mem_span_iff_mem_addSubgroup_closure_absorbing {s : Set R}
     simp only [I, SetLike.mem_coe, mem_mk'] at hz
     induction hz using closure_induction with
     | mem x hx => exact hJ hx
-    | one => exact zero_mem _
-    | mul x y _ _ hx hy => exact J.add_mem hx hy
-    | inv x _ hx => exact J.neg_mem hx
+    | zero => exact zero_mem _
+    | add x y _ _ hx hy => exact J.add_mem hx hy
+    | neg x _ hx => exact J.neg_mem hx
 
 open Pointwise Set
 

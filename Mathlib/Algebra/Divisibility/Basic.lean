@@ -36,7 +36,7 @@ section Semigroup
 variable [Semigroup α] {a b c : α}
 
 /-- There are two possible conventions for divisibility, which coincide in a `CommMonoid`.
-    This matches the convention for ordinals. -/
+This matches the convention for ordinals. -/
 instance (priority := 100) semigroupDvd : Dvd α :=
   Dvd.mk fun a b => ∃ c, b = a * c
 
@@ -101,6 +101,9 @@ theorem mul_dvd_mul_left (a : α) (h : b ∣ c) : a * b ∣ a * c := by
   obtain ⟨d, rfl⟩ := h
   use d
   rw [mul_assoc]
+
+theorem IsLeftRegular.dvd_cancel_left (h : IsLeftRegular a) : a * b ∣ a * c ↔ b ∣ c :=
+  ⟨fun dvd ↦ have ⟨d, eq⟩ := dvd; ⟨d, h (eq.trans <| mul_assoc ..)⟩, mul_dvd_mul_left a⟩
 
 end Semigroup
 
@@ -187,11 +190,9 @@ section CommMonoid
 
 variable [CommMonoid α] {a b : α}
 
-@[gcongr]
-theorem mul_dvd_mul_right (h : a ∣ b) (c : α) : a * c ∣ b * c :=
-  mul_dvd_mul h (dvd_refl c)
+theorem mul_dvd_mul_right (h : a ∣ b) (c : α) : a * c ∣ b * c := by
+  gcongr
 
-@[gcongr]
 theorem pow_dvd_pow_of_dvd (h : a ∣ b) (n : ℕ) : a ^ n ∣ b ^ n := by
   induction n with
   | zero => simp
@@ -201,6 +202,6 @@ theorem pow_dvd_pow_of_dvd (h : a ∣ b) (n : ℕ) : a ^ n ∣ b ^ n := by
 
 @[gcongr]
 lemma pow_dvd_pow_of_dvd_of_le {m n : ℕ} (hab : a ∣ b) (hmn : m ≤ n) : a ^ m ∣ b ^ n := by
-  trans (a ^ n) <;> gcongr
+  trans (a ^ n) <;> [gcongr; apply_rules [pow_dvd_pow_of_dvd]]
 
 end CommMonoid

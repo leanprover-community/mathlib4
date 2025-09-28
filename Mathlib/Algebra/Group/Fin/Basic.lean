@@ -90,6 +90,12 @@ instance instAddRightCancelSemigroup (n : ℕ) : AddRightCancelSemigroup (Fin n)
 
 /-! ### Miscellaneous lemmas -/
 
+open scoped Fin.NatCast Fin.IntCast in
+/-- Variant of `Fin.intCast_def` with `Nat.cast` on the RHS. -/
+theorem intCast_def' {n : Nat} [NeZero n] (x : Int) :
+    (x : Fin n) = if 0 ≤ x then ↑x.natAbs else -↑x.natAbs :=
+  Fin.intCast_def _
+
 lemma coe_sub_one (a : Fin (n + 1)) : ↑(a - 1) = if a = 0 then n else a - 1 := by
   cases n
   · simp
@@ -156,6 +162,10 @@ lemma rev_add (a b : Fin n) : rev (a + b) = rev a - b := by
 
 lemma rev_sub (a b : Fin n) : rev (a - b) = rev a + b := by
   rw [rev_eq_iff, rev_add, rev_rev]
+
+lemma lt_add_one_of_succ_lt {n : ℕ} [NeZero n] {a : Fin n} (ha : a + 1 < n) : a < a + 1 := by
+  rw [lt_def, val_add, coe_ofNat_eq_mod, Nat.add_mod_mod, Nat.mod_eq_of_lt ha]
+  cutsat
 
 lemma add_lt_left_iff {n : ℕ} {a b : Fin n} : a + b < a ↔ rev b < a := by
   rw [← rev_lt_rev, Iff.comm, ← rev_lt_rev, rev_add, lt_sub_iff, rev_rev]

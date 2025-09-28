@@ -22,9 +22,9 @@ To avoid coercions, we rather consider `DividedPowers.dpow : ℕ → A → A`, e
 For `x y : A` and `m n : ℕ` such that `x ∈ I` and `y ∈ I`, one has
 * `DividedPowers.dpow_zero` : `dpow 0 x = 1`
 * `DividedPowers.dpow_one` : `dpow 1 x = 1`
-* `DividedPowers.dpow_add` : `dpow n (x + y) =
-(antidiagonal n).sum fun k ↦ dpow k.1 x * dpow k.2 y`,
-this is the binomial theorem without binomial coefficients.
+* `DividedPowers.dpow_add` :
+  `dpow n (x + y) = (antidiagonal n).sum fun k ↦ dpow k.1 x * dpow k.2 y`,
+  this is the binomial theorem without binomial coefficients.
 * `DividedPowers.dpow_mul`: `dpow n (a * x) = a ^ n * dpow n x`
 * `DividedPowers.mul_dpow` : `dpow m x * dpow n x = choose (m + n) m * dpow (m + n) x`
 * `DividedPowers.dpow_comp` : `dpow m (dpow n x) = uniformBell m n * dpow (m * n) x`
@@ -55,9 +55,9 @@ modules*][Roby-1963]
 ## Discussion
 
 * In practice, one often has a single such structure to handle on a given ideal,
-but several ideals of the same ring might be considered.
-Without any explicit mention of the ideal, it is not clear whether such structures
-should be provided as instances.
+  but several ideals of the same ring might be considered.
+  Without any explicit mention of the ideal, it is not clear whether such structures
+  should be provided as instances.
 
 * We do not provide any notation such as `a ^[n]` for `dpow a n`.
 
@@ -110,9 +110,7 @@ noncomputable def dividedPowersBot : DividedPowers (⊥ : Ideal A) where
     · simp [h]
     · symm
       apply sum_eq_zero
-      intro i hi
-      simp only [mem_antidiagonal] at hi
-      grind
+      grind [mem_antidiagonal]
   dpow_mul {n} _ _ hx := by
     rw [mem_bot.mp hx]
     simp only [mul_zero, true_and, mul_ite, mul_one]

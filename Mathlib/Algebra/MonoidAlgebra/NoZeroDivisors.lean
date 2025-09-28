@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.UniqueProds.Basic
-import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.Algebra.MonoidAlgebra.Opposite
 
 /-!
 # Variations on non-zero divisors in `AddMonoidAlgebra`s
@@ -90,7 +90,7 @@ instance [NoZeroDivisors R] [Mul A] [UniqueProds A] : NoZeroDivisors (MonoidAlge
 
 instance [IsCancelAdd R] [IsLeftCancelMulZero R] [Mul A] [UniqueProds A] :
     IsLeftCancelMulZero (MonoidAlgebra R A) where
-  mul_left_cancel_of_ne_zero {f g₁ g₂} hf eq := by
+  mul_left_cancel_of_ne_zero {f} hf {g₁ g₂} eq := by
     classical
     induction hg : g₁.support ∪ g₂.support using Finset.eraseInduction generalizing g₁ g₂ with
     | _ s ih =>
@@ -98,6 +98,7 @@ instance [IsCancelAdd R] [IsLeftCancelMulZero R] [Mul A] [UniqueProds A] :
     · simp_rw [Finset.union_eq_empty, support_eq_empty] at h; exact h.1.trans h.2.symm
     have ⟨af, haf, ag, hag, uniq⟩ := UniqueProds.uniqueMul_of_nonempty (support_nonempty_iff.2 hf) h
     have h := mul_apply_mul_eq_mul_of_uniqueMul (uniq.mono subset_rfl Finset.subset_union_left)
+    dsimp only at eq
     rw [eq, mul_apply_mul_eq_mul_of_uniqueMul (uniq.mono subset_rfl Finset.subset_union_right)] at h
     have := mul_left_cancel₀ (mem_support_iff.mp haf) h
     rw [← g₁.erase_add_single ag, ← g₂.erase_add_single ag, this] at eq ⊢

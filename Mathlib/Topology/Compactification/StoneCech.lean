@@ -127,11 +127,7 @@ theorem ultrafilter_comap_pure_nhds (b : Ultrafilter α) : comap pure (𝓝 b) �
 
 section Embedding
 
-theorem ultrafilter_pure_injective : Function.Injective (pure : α → Ultrafilter α) := by
-  intro x y h
-  have : {x} ∈ (pure x : Ultrafilter α) := singleton_mem_pure
-  rw [h] at this
-  exact (mem_singleton_iff.mp (mem_pure.mp this)).symm
+@[deprecated (since := "2025-08-14")] alias ultrafilter_pure_injective := Ultrafilter.pure_injective
 
 open TopologicalSpace
 
@@ -157,7 +153,7 @@ theorem isDenseInducing_pure : @IsDenseInducing _ _ ⊥ _ (pure : α → Ultrafi
 /-- `pure : α → Ultrafilter α` defines a dense embedding of `α` in `Ultrafilter α`. -/
 theorem isDenseEmbedding_pure : @IsDenseEmbedding _ _ ⊥ _ (pure : α → Ultrafilter α) :=
   letI : TopologicalSpace α := ⊥
-  { isDenseInducing_pure with injective := ultrafilter_pure_injective }
+  { isDenseInducing_pure with injective := Ultrafilter.pure_injective }
 
 end Embedding
 
