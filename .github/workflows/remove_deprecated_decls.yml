@@ -130,6 +130,8 @@ jobs:
         # Retrieve the cache for the unmodified repository
         # show the current pwd:
         printf $'Current directory is: %s\n' "$(pwd)"
+        printf $'Running lake env\n'
+        lake env | tr ':' '\n'
         for repo in Mathlib Archive Counterexamples; do
           echo "::group::Retrieving the cache for ${repo}"
           lake exe cache get "$repo" || true
