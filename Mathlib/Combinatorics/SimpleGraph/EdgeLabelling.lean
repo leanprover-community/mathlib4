@@ -6,9 +6,20 @@ Authors: Bhavik Mehta, Olivia Röhrig
 import Mathlib.Combinatorics.SimpleGraph.Maps
 import Mathlib.Data.Finset.Pairwise
 
+/-!
+# Edge labellings
+
+This module defines labellings of the edges of a graph.
+
+## Main definitions
+
+- `SimpleGraph.EdgeLabelling`: An assignment of a label from a given type to each edge of the graph.
+
+- `SimpleGraph.EdgeLabelling.labelGraph`: the graph consisting of all edges with a given label.
+-/
+
 open Finset
 open Fintype (card)
-
 
 namespace SimpleGraph
 
@@ -116,17 +127,6 @@ theorem mk_get (f : ∀ x y : V, G.Adj x y → K) (f_symm) (x y : V) (h : G.Adj 
     (EdgeLabelling.mk f f_symm).get x y h = f x y h :=
   rfl
 
-/-- `χ.MonochromaticOf m c` says that every edge in `m` is assigned the colour `c` by `m`. -/
-def MonochromaticOf (C : EdgeLabelling G K) (m : Set V) (c : K) : Prop :=
-  ∀ ⦃x⦄, x ∈ m → ∀ ⦃y⦄, y ∈ m → (h : G.Adj x y) → C.get x y h = c
-
-theorem monochromaticOf_iff_pairwise [DecidableRel G.Adj] (C : EdgeLabelling G K) {m : Set V}
-    {c : K} :
-    C.MonochromaticOf m c ↔ m.Pairwise fun x y => ∀ h : G.Adj x y, C.get x y h = c := by
-  refine forall₄_congr fun _ _ _ _ => ⟨fun _ _ => by simpa , fun ne ad => ?_⟩
-  simp only [ne_eq] at ne
-  exact (ne (G.ne_of_adj ad)) ad
-
 /--
 Given an edge labelling and a choice of label `k`, construct the graph corresponding to the edges
 labelled `k`.
@@ -180,11 +180,6 @@ abbrev pullback (C : TopEdgeLabelling V K) (f : V' ↪ V) : TopEdgeLabelling V' 
   EdgeLabelling.pullback C ⟨f, by simp⟩
 
 @[simp]
-lemma monochromaticOf_iff_ne_of_adj (C : TopEdgeLabelling V K) (m : Set V) (c : K) :
-C.MonochromaticOf m c ↔ ∀ ⦃x⦄, x ∈ m → ∀ ⦃y⦄, y ∈ m → (h : x ≠ y) → C.get x y h = c := by
-  simp_rw [← top_adj]; exact rfl.to_iff
-
-@[simp]
 theorem labelGraph_adj {C : TopEdgeLabelling V K} {k : K} (x y : V) :
     (C.labelGraph k).Adj x y ↔ ∃ H : x ≠ y, C.get x y H = k := by
   rw [EdgeLabelling.labelGraph_adj]
@@ -221,9 +216,5 @@ theorem TopEdgeLabelling.labelGraph_toTopEdgeLabelling [DecidableEq V]
   · rw [← h_1.choose_spec]
   have : ∀ {x : Fin 2},  x ≠ 1 → x = 0 := by decide
   exact (this ((not_exists.mp h_1) h)).symm
-
-instance [DecidableEq K] [DecidableEq V] [DecidableRel G.Adj] (C : EdgeLabelling G K) (m : Finset V)
-    (c : K) : Decidable (C.MonochromaticOf m c) :=
-  decidable_of_iff' _ C.monochromaticOf_iff_pairwise
 
 end SimpleGraph
