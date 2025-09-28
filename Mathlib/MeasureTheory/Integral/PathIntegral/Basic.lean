@@ -84,8 +84,8 @@ variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace �
 
 This definition is used to factor out common parts of lemmas
 about `PathIntegrable` and `pathIntegral`. -/
-@[irreducible]
-noncomputable def pathIntegralFun (ω : E → E →L[𝕜] F) (γ : Path a b) (t : ℝ) : F :=
+noncomputable irreducible_def pathIntegralFun (lemma := pathIntegralFun_def')
+    (ω : E → E →L[𝕜] F) (γ : Path a b) (t : ℝ) : F :=
   letI : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
   ω (γ.extend t) (derivWithin γ.extend I t)
 
@@ -104,10 +104,10 @@ defined as $\int_0^1 \omega(\gamma(t))(\gamma'(t))$.
 The actual definition uses `pathIntegralFun` which uses `Path.extend γ`
 and `derivWithin (Path.extend γ) (Set.Icc 0 1) t`,
 because calculus-related definitions in Mathlib expect globally defined functions as arguments. -/
-@[irreducible]
-noncomputable def pathIntegral (ω : E → E →L[𝕜] F) (γ : Path a b) : F :=
+noncomputable irreducible_def pathIntegral (lemma := pathIntegral_def')
+    (ω : E → E →L[𝕜] F) (γ : Path a b) : F :=
   letI : NormedSpace ℝ F := .restrictScalars ℝ 𝕜 F
-  ∫ t in (0)..1, pathIntegralFun ω γ t
+  ∫ t in 0..1, pathIntegralFun ω γ t
 
 -- TODO: use `∈`
 @[inherit_doc pathIntegral]
@@ -124,12 +124,17 @@ theorem pathIntegralFun_def [NormedSpace ℝ E] (ω : E → E →L[𝕜] F) (γ 
   simp only [pathIntegralFun, NormedSpace.restrictScalars_eq]
 
 theorem pathIntegral_def [NormedSpace ℝ F] (ω : E → E →L[𝕜] F) (γ : Path a b) :
-    pathIntegral ω γ = ∫ t in (0)..1, pathIntegralFun ω γ t := by
+    pathIntegral ω γ = ∫ t in 0..1, pathIntegralFun ω γ t := by
   simp only [pathIntegral, NormedSpace.restrictScalars_eq]
 
-theorem pathIntegral_def' [NormedSpace ℝ E] [NormedSpace ℝ F] (ω : E → E →L[𝕜] F) (γ : Path a b) :
-    pathIntegral ω γ = ∫ t in (0)..1, ω (γ.extend t) (derivWithin γ.extend I t) := by
+theorem pathIntegral_eq_intervalIntegral_deriv [NormedSpace ℝ E] [NormedSpace ℝ F]
+    (ω : E → E →L[𝕜] F) (γ : Path a b) :
+    ∫ᵖ x in γ, ω x = ∫ t in 0..1, ω (γ.extend t) (deriv γ.extend t) := by
   simp only [pathIntegral_def, pathIntegralFun_def]
+  apply intervalIntegral.integral_congr_ae_restrict
+  rw [uIoc_of_le zero_le_one, ← restrict_Ioo_eq_restrict_Ioc]
+  filter_upwards [ae_restrict_mem (by measurability)] with x hx
+  rw [derivWithin_of_mem_nhds (by simpa)]
 
 end Defs
 
@@ -159,8 +164,8 @@ theorem PathIntegrable.refl (ω : E → E →L[𝕜] F) (a : E) : PathIntegrable
 @[simp]
 theorem pathIntegralFun_cast (ω : E → E →L[𝕜] F) (γ : Path a b) (hc : c = a) (hd : d = b) :
     pathIntegralFun ω (γ.cast hc hd) = pathIntegralFun ω γ := by
-  unfold pathIntegralFun
-  rw [Path.extend_cast]
+  ext t
+  simp only [pathIntegralFun_def', Path.extend_cast]
 
 @[simp]
 theorem pathIntegral_cast (ω : E → E →L[𝕜] F) (γ : Path a b) (hc : c = a) (hd : d = b) :
@@ -280,7 +285,7 @@ theorem pathIntegrable_segment [NormedSpace ℝ E] :
   exact .mono Ioc_subset_Icc_self fun _t ↦ pathIntegralFun_segment ω a b
 
 theorem pathIntegral_segment [NormedSpace ℝ E] [NormedSpace ℝ F] (ω : E → E →L[𝕜] F) (a b : E) :
-    ∫ᵖ x in .segment a b, ω x = ∫ t in (0)..1, ω (lineMap a b t) (b - a) := by
+    ∫ᵖ x in .segment a b, ω x = ∫ t in 0..1, ω (lineMap a b t) (b - a) := by
   rw [pathIntegral_def]
   refine intervalIntegral.integral_congr fun t ht ↦ ?_
   rw [uIcc_of_le zero_le_one] at ht
@@ -333,9 +338,9 @@ theorem pathIntegralFun_add :
     pathIntegralFun (ω₁ + ω₂) γ = pathIntegralFun ω₁ γ + pathIntegralFun ω₂ γ := by
   ext; simp [pathIntegralFun]
 
-protected nonrec theorem PathIntegrable.add (h₁ : PathIntegrable ω₁ γ) (h₂ : PathIntegrable ω₂ γ) :
+protected theorem PathIntegrable.add (h₁ : PathIntegrable ω₁ γ) (h₂ : PathIntegrable ω₂ γ) :
     PathIntegrable (ω₁ + ω₂) γ := by
-  simpa [PathIntegrable] using h₁.add h₂
+  simpa [PathIntegrable] using IntervalIntegrable.add h₁ h₂
 
 theorem pathIntegral_add (h₁ : PathIntegrable ω₁ γ) (h₂ : PathIntegrable ω₂ γ) :
     pathIntegral (ω₁ + ω₂) γ = ∫ᵖ x in γ, ω₁ x + ∫ᵖ x in γ, ω₂ x := by
@@ -370,8 +375,8 @@ theorem pathIntegral_fun_zero : ∫ᵖ _ in γ, (0 : E →L[𝕜] F) = 0 := path
 theorem pathIntegralFun_neg : pathIntegralFun (-ω) γ = -pathIntegralFun ω γ := by
   ext; simp [pathIntegralFun]
 
-nonrec theorem PathIntegrable.neg (h : PathIntegrable ω γ) : PathIntegrable (-ω) γ := by
-  simpa [PathIntegrable] using h.neg
+theorem PathIntegrable.neg (h : PathIntegrable ω γ) : PathIntegrable (-ω) γ := by
+  simpa [PathIntegrable] using IntervalIntegrable.neg h
 
 theorem PathIntegrable.fun_neg (h : PathIntegrable ω γ) : PathIntegrable (-ω ·) γ :=
   h.neg
@@ -396,7 +401,7 @@ theorem pathIntegralFun_sub :
     pathIntegralFun (ω₁ - ω₂) γ = pathIntegralFun ω₁ γ - pathIntegralFun ω₂ γ := by
   simp [sub_eq_add_neg]
 
-protected nonrec theorem PathIntegrable.sub (h₁ : PathIntegrable ω₁ γ) (h₂ : PathIntegrable ω₂ γ) :
+protected theorem PathIntegrable.sub (h₁ : PathIntegrable ω₁ γ) (h₂ : PathIntegrable ω₂ γ) :
     PathIntegrable (ω₁ - ω₂) γ :=
   sub_eq_add_neg ω₁ ω₂ ▸ h₁.add h₂.neg
 
@@ -441,9 +446,9 @@ theorem pathIntegralFun_smul : pathIntegralFun (c • ω) γ = c • pathIntegra
   ext
   simp [pathIntegralFun]
 
-nonrec theorem PathIntegrable.smul (h : PathIntegrable ω γ) :
+theorem PathIntegrable.smul (h : PathIntegrable ω γ) :
     PathIntegrable (c • ω) γ := by
-  simpa [PathIntegrable] using h.smul c
+  simpa [PathIntegrable] using IntervalIntegrable.smul h c
 
 @[simp]
 theorem pathIntegrable_smul_iff : PathIntegrable (c • ω) γ ↔ c = 0 ∨ PathIntegrable ω γ := by
@@ -469,12 +474,33 @@ variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace �
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
   {a b : E} {s : Set E} {ω : E → E →L[𝕜] F}
 
-/-- The integral of `ω` along `[a -[ℝ] b]` has derivative `ω a` in `b` at `b = a`.
-This is a `HasFDerivWithinAt` version assuming that `ω` is continuous within `s`
+/-!
+### Derivative of the path integral w.r.t. the right endpoint
+
+In this section we prove that the integral of `ω` along `[a -[ℝ] b]`, as a function of `b`,
+has derivative `ω a` at `b = a`.
+We provide several versions of this theorem, for `HasFDerivWithinAt` and `HasFDerivAt`,
+as well as for continuity near a point and for continuity on the whole set or space.
+
+Note that we take the derivative at the left endpoint of the segment.
+Similar facts about the derivative at a different point are true
+provided that `ω` is a closed 1-form (formalization WIP, see #24019).
+-/
+
+/-- The integral of `ω` along `[a -[ℝ] b]`, as a function of `b`, has derivative `ω a` at `b = a`.
+This is a `HasFDerivWithinAt` version assuming that `ω` is continuous within a convex set `s`
 in a neighborhood of `a` within `s`. -/
 theorem HasFDerivWithinAt.pathIntegral_segment_source' (hs : Convex ℝ s)
     (hω : ∀ᶠ x in 𝓝[s] a, ContinuousWithinAt ω s x) (ha : a ∈ s) :
     HasFDerivWithinAt (∫ᵖ x in .segment a ·, ω x) (ω a) s a := by
+  /- Given `ε > 0`, take a number `δ > 0` such that `ω` is continuous on `ball a δ ∩ s`
+  and `‖ω z - ω a‖ ≤ ε` on this set.
+  Then for `b ∈ ball a δ ∩ s`, we have
+  `‖(∫ᵖ x in .segment a b, ω x) - ω a (b - a)‖
+    = ‖(∫ᵖ x in .segment a b, ω x) - ∫ᵖ x in .segment a b, ω a‖
+    ≤ ∫ x in 0..1, ‖ω x - ω a‖ * ‖b - a‖
+    ≤ ε * ‖b - a‖`
+  -/
   simp only [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO, Path.segment_same,
     pathIntegral_refl, sub_zero, Asymptotics.isLittleO_iff]
   intro ε hε
