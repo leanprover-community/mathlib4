@@ -85,7 +85,7 @@ def ofIso {X : C} (h : P.ColimitOfShape J X) {Y : C} (e : X ≅ Y) :
   prop_diag_obj := h.prop_diag_obj
 
 /-- If `X` is a colimit indexed by `J` of objects satisfying a property `P`,
-it is also a colimit indexed by `J` of objects satisfyind `Q` if `P ≤ Q`. -/
+it is also a colimit indexed by `J` of objects satisfying `Q` if `P ≤ Q`. -/
 @[simps toColimitPresentation]
 def ofLE {X : C} (h : P.ColimitOfShape J X) {Q : ObjectProperty C} (hPQ : P ≤ Q) :
     Q.ColimitOfShape J X where
