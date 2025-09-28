@@ -554,6 +554,13 @@ theorem MDifferentiable.prodMap (hf : MDifferentiable I I' f) (hg : MDifferentia
 @[deprecated (since := "2025-04-18")]
 alias MDifferentiable.prod_map := MDifferentiable.prodMap
 
+omit [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
+  [TopologicalSpace H'] [TopologicalSpace M'] [ChartedSpace H' M'] in
+@[simp]
+lemma foo (φ : PartialEquiv M H) (ψ : PartialEquiv M' H') :
+    ↑(φ.prod ψ).symm = Prod.map φ.symm ψ.symm := by
+  ext x <;> simp
+
 lemma HasMFDerivWithinAt.prodMap {t : Set M'} {x' : M'} {f : M → N} {g : M' → N'}
     {df : TangentSpace I x →L[𝕜] TangentSpace J (f x)} (hf : HasMFDerivWithinAt I J f s x df)
     {dg : TangentSpace I' x' →L[𝕜] TangentSpace J' (g x')}
@@ -568,9 +575,14 @@ lemma HasMFDerivWithinAt.prodMap {t : Set M'} {x' : M'} {f : M → N} {g : M' �
   have h2 := hg.2
   set s1 := (extChartAt I x).symm ⁻¹' s ∩ range I
   set s2 := (extChartAt I' x').symm ⁻¹' t ∩ range I'
-  have : ((extChartAt (I.prod I') (x, x')).symm ⁻¹' s ×ˢ t ∩ range (I.prod I')) = s1 ×ˢ s2 := sorry
+  have : ((extChartAt (I.prod I') (x, x')).symm ⁻¹' s ×ˢ t ∩ range (I.prod I')) = s1 ×ˢ s2 := by
+    simp only [mfld_simps, s1, s2]
+    rw [range_prodMap, foo I.toPartialEquiv I'.toPartialEquiv,
+      foo (chartAt H x).toPartialEquiv (chartAt H' x').toPartialEquiv]
+    ext x₀
+    constructor <;> intro hx₀ <;> simp_all
   rw [this]
-  exact HasFDerivWithinAt.prodMap _ h1 h2
+  exact h1.prodMap _ h2
 
 #exit
 lemma HasMFDerivAt.prodMap {x' : M'} {f : M → N} {g : M' → N'}
