@@ -49,9 +49,9 @@ open MatrixOrder
 
 lemma le_iff {A B : Matrix n n 𝕜} : A ≤ B ↔ (B - A).PosSemidef := Iff.rfl
 
-lemma nonneg_iff {A : Matrix n n 𝕜} : 0 ≤ A ↔ A.PosSemidef := by rw [le_iff, sub_zero]
+lemma nonneg_iff_posSemidef {A : Matrix n n 𝕜} : 0 ≤ A ↔ A.PosSemidef := by rw [le_iff, sub_zero]
 
-protected alias ⟨LE.le.posSemidef, PosSemidef.nonneg⟩ := nonneg_iff
+protected alias ⟨LE.le.posSemidef, PosSemidef.nonneg⟩ := nonneg_iff_posSemidef
 
 attribute [aesop 20% apply (rule_sets := [CStarAlgebra])] PosSemidef.nonneg
 
@@ -77,7 +77,7 @@ lemma instNonnegSpectrumClass : NonnegSpectrumClass ℝ (Matrix n n 𝕜) where
     intro x hx
     obtain ⟨i, rfl⟩ := Set.ext_iff.mp
       hA.posSemidef.1.spectrum_real_eq_range_eigenvalues x |>.mp hx
-    exact (nonneg_iff.mp hA).eigenvalues_nonneg _
+    exact hA.posSemidef.eigenvalues_nonneg _
 
 scoped[MatrixOrder] attribute [instance] instNonnegSpectrumClass
 
@@ -175,7 +175,7 @@ end PosSemidef
 lemma posSemidef_iff_eq_conjTranspose_mul_self {A : Matrix n n 𝕜} :
     PosSemidef A ↔ ∃ (B : Matrix n n 𝕜), A = Bᴴ * B := by
   classical
-  exact nonneg_iff (A := A) |>.eq ▸ CStarAlgebra.nonneg_iff_eq_star_mul_self
+  exact nonneg_iff_posSemidef (A := A) |>.eq ▸ CStarAlgebra.nonneg_iff_eq_star_mul_self
 
 @[deprecated (since := "2025-05-07")]
 alias posSemidef_iff_eq_transpose_mul_self := CStarAlgebra.nonneg_iff_eq_star_mul_self
@@ -195,7 +195,7 @@ theorem posSemidef_iff_isHermitian_and_spectrum_nonneg [DecidableEq n] {A : Matr
 theorem PosSemidef.commute_iff {A B : Matrix n n 𝕜} (hA : A.PosSemidef) (hB : B.PosSemidef) :
     Commute A B ↔ (A * B).PosSemidef := by
   classical
-  exact nonneg_iff (A := A * B).eq ▸ commute_iff_mul_nonneg hA.nonneg hB.nonneg
+  exact nonneg_iff_posSemidef (A := A * B).eq ▸ commute_iff_mul_nonneg hA.nonneg hB.nonneg
 
 /-- A positive semi-definite matrix is positive definite if and only if it is invertible. -/
 @[grind =]
@@ -212,7 +212,7 @@ theorem PosSemidef.posDef_iff_isUnit [DecidableEq n] {x : Matrix n n 𝕜}
 theorem PosDef.commute_iff {A B : Matrix n n 𝕜} (hA : A.PosDef) (hB : B.PosDef) :
     Commute A B ↔ (A * B).PosDef := by
   classical
-  rw [commute_iff_mul_nonneg hA.posSemidef.nonneg hB.posSemidef.nonneg, nonneg_iff]
+  rw [commute_iff_mul_nonneg hA.posSemidef.nonneg hB.posSemidef.nonneg, nonneg_iff_posSemidef]
   exact ⟨fun h => h.posDef_iff_isUnit.mpr <| hA.isUnit.mul hB.isUnit, fun h => h.posSemidef⟩
 
 lemma PosDef.posDef_sqrt [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) :
