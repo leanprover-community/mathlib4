@@ -683,6 +683,12 @@ omit [T2Space A] [IsTopologicalRing A] in
 lemma _root_.IsStrictlyPositive.rpow {a : A} {y : ℝ} (ha : IsStrictlyPositive a) :
     IsStrictlyPositive (a ^ y) := by grind
 
+omit [T2Space A] [IsTopologicalRing A] in
+theorem _root_.IsStrictlyPositive.commute_iff {a b : A} (ha : IsStrictlyPositive a)
+    (hb : IsStrictlyPositive b) : Commute a b ↔ IsStrictlyPositive (a * b) := by
+  rw [commute_iff_mul_nonneg ha.nonneg hb.nonneg]
+  exact ⟨fun h => ha.isUnit.mul hb.isUnit |>.isStrictlyPositive h, fun h => h.nonneg⟩
+
 /-- For an element `a` in a C⋆-algebra, TFAE:
 1. `a` is strictly positive,
 2. `sqrt a` is strictly positive and `a = sqrt a * sqrt a`,
