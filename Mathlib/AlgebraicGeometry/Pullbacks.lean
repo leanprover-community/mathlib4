@@ -602,13 +602,13 @@ section IsAffine
 
 lemma preservesColimit_affineScheme_Γ_span {X Y Z : AffineScheme} (f : X ⟶ Z) (g : Y ⟶ Z) :
     PreservesColimit (span f.op g.op ⋙ AffineScheme.forgetToScheme.op) Scheme.Γ :=
-  @CategoryTheory.compPreservesColimitOfCreates _ _ _ _ _ _ _ _ _
+  @CategoryTheory.preservesColimit_comp_of_createsColimit _ _ _ _ _ _ _ _ _
     AffineScheme.forgetToScheme.op Scheme.Γ (AffineScheme.forgetToScheme_op_createsColimits _ _)
       (by rw [← AffineScheme.Γ]; infer_instance)
 
 lemma preservesLimit_affineScheme_Γ_cospan {X Y Z : AffineScheme} (f : X ⟶ Z) (g : Y ⟶ Z) :
     PreservesLimit (cospan f g ⋙ AffineScheme.forgetToScheme) Scheme.Γ.rightOp := by
-  apply @CategoryTheory.compPreservesLimitOfCreates _ _ _ _ _ _ _ _ _
+  apply @CategoryTheory.preservesLimit_comp_of_createsLimit _ _ _ _ _ _ _ _ _
     AffineScheme.forgetToScheme Scheme.Γ.rightOp (AffineScheme.forgetToScheme_createsLimits _ _) ?_
   have : PreservesColimit (cospan f g).op (AffineScheme.forgetToScheme.op ⋙ Γ) := by
     rw [← AffineScheme.Γ]
