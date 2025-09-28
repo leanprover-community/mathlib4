@@ -680,6 +680,24 @@ instance isCyclotomicExtension [NeZero (n : K)] :
   · rw [← Algebra.eq_top_iff, ← SplittingField.adjoin_rootSet, eq_comm]
     exact IsCyclotomicExtension.adjoin_roots_cyclotomic_eq_adjoin_nth_roots hζ
 
+instance : IsCyclotomicExtension {0} K (CyclotomicField 0 K) where
+  exists_isPrimitiveRoot := by aesop
+  adjoin_roots x := by
+    have finrank : Module.finrank K (CyclotomicField 0 K) = 1 := by
+      have : Polynomial.IsSplittingField K K (Polynomial.cyclotomic 0 K) :=
+        Polynomial.isSplittingField_C 1
+      let e : K ≃ₗ[K] (CyclotomicField 0 K) :=
+        (Polynomial.IsSplittingField.algEquiv K (Polynomial.cyclotomic 0 K)).toLinearEquiv
+      simp [←LinearEquiv.finrank_eq e, finrank_self]
+    simp [Subalgebra.bot_eq_top_iff_finrank_eq_one.mpr finrank]
+
+omit [NeZero n]
+
+instance [CharZero K] : IsCyclotomicExtension {n} K (CyclotomicField n K) :=
+  match n with
+  | 0 => inferInstance
+  | _ + 1 => inferInstance
+
 instance [NumberField K] : NumberField (CyclotomicField n K) :=
   IsCyclotomicExtension.numberField {n} K _
 
@@ -788,12 +806,12 @@ instance isCyclotomicExtension [IsFractionRing A K] [NeZero ((n : ℕ) : A)] :
 
 instance [IsFractionRing A K] [IsDomain A] [NeZero (n : A)] :
     IsFractionRing (CyclotomicRing n A K) (CyclotomicField n K) where
-  map_units' := fun ⟨x, hx⟩ => by
+  map_units := fun ⟨x, hx⟩ => by
     rw [isUnit_iff_ne_zero]
     apply map_ne_zero_of_mem_nonZeroDivisors
     · apply adjoin_algebra_injective
     · exact hx
-  surj' x := by
+  surj x := by
     have : NeZero (n : K) := NeZero.nat_of_injective (IsFractionRing.injective A K)
     refine
       Algebra.adjoin_induction
