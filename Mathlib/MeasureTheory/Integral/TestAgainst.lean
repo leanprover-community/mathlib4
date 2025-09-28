@@ -3,7 +3,6 @@ Copyright (c) 2025 Luigi Massacci. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luigi Massacci
 -/
-import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 
@@ -17,9 +16,9 @@ They are meant to be used as intermediate constructions for the development of d
 ## Main definitions
 
 - `FiniteMeasure.testAgainstCLM` wraps the integral with respect to a finite measure
-as a continuous linear map on bounded continuous functions
+  as a continuous linear map on bounded continuous functions.
 - `LocallyIntegrable.testAgainstCLM` wraps the integral against a locally integrable function as
-as a continuous linear map on bounded continuous functions
+  as a continuous linear map on bounded continuous functions.
 -/
 
 open MeasureTheory Filter
@@ -29,17 +28,15 @@ namespace BoundedContinuousFunction
 
 section BochnerIntegral
 
-variable {X : Type*} [MeasurableSpace X] [TopologicalSpace X]
+variable {X : Type*} {mX : MeasurableSpace X} [TopologicalSpace X] [OpensMeasurableSpace X]
 variable (μ : Measure X)
-variable {E : Type*} [NormedAddCommGroup E]
-
-variable [OpensMeasurableSpace X] [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E]
-variable [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [SecondCountableTopology E] [MeasurableSpace E]
+  [BorelSpace E] [NormedSpace ℝ E]
 
 namespace FiniteMeasure
 
 /-- `FiniteMeasure.testAgainstₗ` wraps the integral with respect to a finite measure `μ`
-as a `𝕜`-linear map on bounded continuous functions -/
+as a `𝕜`-linear map on bounded continuous functions. -/
 noncomputable def testAgainstₗ (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 E]
   [SMulCommClass ℝ 𝕜 E] [IsFiniteMeasure μ] :
     (X →ᵇ E) →ₗ[𝕜] E where
@@ -48,7 +45,7 @@ noncomputable def testAgainstₗ (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 
   map_smul' c f := integral_smul c f
 
 /-- `FiniteMeasure.testAgainstCLM` wraps the integral with respect to a finite measure `μ`
-as a continuous `𝕜`-linear map on bounded continuous functions -/
+as a continuous `𝕜`-linear map on bounded continuous functions. -/
 noncomputable def testAgainstCLM (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 E]
   [SMulCommClass ℝ 𝕜 E] [IsFiniteMeasure μ] :
     (X →ᵇ E) →L[𝕜] E :=
