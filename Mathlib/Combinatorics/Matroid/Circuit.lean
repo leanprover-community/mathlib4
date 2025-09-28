@@ -551,6 +551,9 @@ lemma IsCocircuit.isCircuit (hK : M.IsCocircuit K) : M✶.IsCircuit K :=
 lemma IsCircuit.isCocircuit (hC : M.IsCircuit C) : M✶.IsCocircuit C := by
   rwa [isCocircuit_def, dual_dual]
 
+lemma IsCocircuit.nonempty (hC : M.IsCocircuit C) : C.Nonempty :=
+  hC.isCircuit.nonempty
+
 @[aesop unsafe 10% (rule_sets := [Matroid])]
 lemma IsCocircuit.subset_ground (hC : M.IsCocircuit C) : C ⊆ M.E :=
   hC.isCircuit.subset_ground

@@ -54,7 +54,7 @@ theorem HigherFacesVanish.comp_σ {Y : C} {X : SimplicialObject C} {n b q : ℕ}
 theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1)) (hi : n + 1 ≤ i + q) :
     X.σ i ≫ (P q).f (n + 1) = 0 := by
   induction q generalizing i with
-  | zero => omega
+  | zero => cutsat
   | succ q hq =>
     by_cases h : n + 1 ≤ (i : ℕ) + q
     · rw [P_succ, HomologicalComplex.comp_f, ← assoc, hq i h, zero_comp]
@@ -62,7 +62,7 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
       rcases n with _ | n
       · fin_cases i
         dsimp at h hi
-        rw [show q = 0 by omega]
+        rw [show q = 0 by cutsat]
         change X.σ 0 ≫ (P 1).f 1 = 0
         simp only [P_succ, HomologicalComplex.add_f_apply, comp_add,
           AlternatingFaceMapComplex.obj_d_eq, Hσ,
@@ -99,17 +99,17 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
         simp only [Finset.mem_univ, Finset.mem_filter] at hj
         obtain ⟨k, hk⟩ := Nat.le.dest (Nat.lt_succ_iff.mp (Fin.is_lt j))
         rw [add_comm] at hk
-        have hi' : i = Fin.castSucc ⟨i, by omega⟩ := by
+        have hi' : i = Fin.castSucc ⟨i, by cutsat⟩ := by
           ext
           simp only [Fin.castSucc_mk, Fin.eta]
         have eq := hq j.rev.succ (by
           simp only [← hk, Fin.rev_eq j hk.symm, Fin.succ_mk, Fin.val_mk]
-          omega)
+          cutsat)
         rw [assoc, assoc, assoc, hi',
           SimplicialObject.σ_comp_σ_assoc, reassoc_of% eq, zero_comp, comp_zero, comp_zero,
           comp_zero]
         simp only [Fin.rev_eq j hk.symm, Fin.le_iff_val_le_val]
-        omega
+        cutsat
 
 @[reassoc (attr := simp)]
 theorem σ_comp_PInfty (X : SimplicialObject C) {n : ℕ} (i : Fin (n + 1)) :
