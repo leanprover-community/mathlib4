@@ -105,7 +105,8 @@ theorem splits_of_splits_mul' {f g : K[X]} (hfg : (f * g).map i ≠ 0) (h : Spli
     Or.inr @fun g hgi hg =>
       Or.resolve_left h hfg hgi (by rw [Polynomial.map_mul]; exact hg.trans (dvd_mul_left _ _))⟩
 
-theorem splits_map_iff (j : L →+* F) {f : K[X]} : Splits j (f.map i) ↔ Splits (j.comp i) f := by
+theorem splits_map_iff {L : Type*} [CommRing L] (i : K →+* L) (j : L →+* F) {f : K[X]} :
+    Splits j (f.map i) ↔ Splits (j.comp i) f := by
   simp [Splits, Polynomial.map_map]
 
 theorem splits_one : Splits i 1 :=
