@@ -238,8 +238,7 @@ lemma condDistrib_apply_ae_eq_condExpKernel_map {β γ : Type*} {mβ : Measurabl
   simp_rw [Kernel.map_apply' _ hX _ hs]
   filter_upwards [condDistrib_ae_eq_condExp hY hX (μ := μ) hs,
     condExpKernel_ae_eq_condExp hY.comap_le (μ := μ) (hX hs)] with a ha₁ ha₂
-  rw [Measure.real] at ha₁ ha₂
-  rw [← ENNReal.toReal_eq_toReal (by simp) (by simp), ha₁, ha₂]
+  rw [← measureReal_eq_measureReal_iff, ha₁, ha₂]
 
 theorem condExp_ae_eq_integral_condExpKernel' [NormedAddCommGroup F] {f : Ω → F}
     [NormedSpace ℝ F] [CompleteSpace F] (hf_int : Integrable f μ) :
