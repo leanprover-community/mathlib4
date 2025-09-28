@@ -160,10 +160,8 @@ lemma condDistrib_ae_eq_of_measure_eq_compProd
     (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ) (κ : Kernel β Ω) [IsFiniteKernel κ]
     (hκ : μ.map (fun x => (X x, Y x)) = μ.map X ⊗ₘ κ) :
     condDistrib Y X μ =ᵐ[μ.map X] κ := by
-  suffices ∀ᵐ x ∂μ.map (hX.mk X), condDistrib (hY.mk Y) (hX.mk X) μ x = κ x by
-    rw [Measure.map_congr hX.ae_eq_mk]
-    convert this using 3 with b
-    rw [condDistrib_congr hY.ae_eq_mk hX.ae_eq_mk, Filter.EventuallyEq]
+  suffices condDistrib (hY.mk Y) (hX.mk X) μ =ᵐ[μ.map (hX.mk X)] κ by
+    rwa [Measure.map_congr hX.ae_eq_mk, condDistrib_congr hY.ae_eq_mk hX.ae_eq_mk]
   refine condDistrib_ae_eq_of_measure_eq_compProd_of_measurable (μ := μ)
       hX.measurable_mk hY.measurable_mk κ
     ((Eq.trans ?_ hκ).trans ?_)
