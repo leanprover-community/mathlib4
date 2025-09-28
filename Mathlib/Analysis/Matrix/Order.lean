@@ -209,6 +209,15 @@ theorem PosSemidef.posDef_iff_isUnit [DecidableEq n] {x : Matrix n n 𝕜}
   rw [← map_eq_zero_iff (f := (yᴴ * y).mulVecLin) (mulVec_injective_iff_isUnit.mpr h),
     mulVecLin_apply, ← mulVec_mulVec, hv, mulVec_zero]
 
+theorem isStrictlyPositive_iff_posDef [DecidableEq n] {x : Matrix n n 𝕜} :
+    IsStrictlyPositive x ↔ x.PosDef :=
+  ⟨fun h => h.nonneg.posSemidef.posDef_iff_isUnit.mpr h.isUnit,
+  fun h => h.isUnit.isStrictlyPositive h.posSemidef.nonneg⟩
+
+alias ⟨IsStrictlyPositive.posDef, PosDef.isStrictlyPositive⟩ := isStrictlyPositive_iff_posDef
+
+attribute [aesop 20% apply (rule_sets := [CStarAlgebra])] PosDef.isStrictlyPositive
+
 theorem PosDef.commute_iff {A B : Matrix n n 𝕜} (hA : A.PosDef) (hB : B.PosDef) :
     Commute A B ↔ (A * B).PosDef := by
   classical
