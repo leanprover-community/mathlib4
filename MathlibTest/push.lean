@@ -38,7 +38,7 @@ example {r : ℕ → Prop} : ∃ n : ℕ, p ∨ r n ∨ q ∧ n = 1 := by
 
 /-- info: p ∨ ∃ x, q ∧ x = 1 -/
 #guard_msgs in
-#pull Exists p ∨ q ∧ ∃ n : ℕ, n = 1
+#pull Exists => p ∨ q ∧ ∃ n : ℕ, n = 1
 
 /--
 info: DiscrTree branch for Or:
