@@ -332,7 +332,7 @@ theorem orthocenter_eq_smul_vsub_vadd_circumcenter (t : Triangle ℝ P) :
       (3 : ℝ) • ((univ : Finset (Fin 3)).centroid ℝ t.points -ᵥ t.circumcenter : V) +ᵥ
         t.circumcenter := by
   rw [orthocenter_eq_mongePoint, mongePoint_eq_smul_vsub_vadd_circumcenter]
-  norm_num
+  simp
 
 /-- **Sylvester's theorem**, specialized to triangles. -/
 theorem orthocenter_vsub_circumcenter_eq_sum_vsub (t : Triangle ℝ P) :
@@ -380,7 +380,7 @@ theorem eq_orthocenter_of_forall_mem_altitude {t : Triangle ℝ P} {i₁ i₂ : 
   rw [orthocenter_eq_mongePoint]
   have ha : ∀ i, i₃ ≠ i → p ∈ t.mongePlane i₃ i := by
     intro i hi
-    obtain rfl | rfl : i₁ = i ∨ i₂ = i := by omega
+    obtain rfl | rfl : i₁ = i ∨ i₂ = i := by cutsat
     all_goals assumption
   exact eq_mongePoint_of_forall_mem_mongePlane ha
 
