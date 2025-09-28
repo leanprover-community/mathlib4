@@ -1,6 +1,15 @@
 import Mathlib.GroupTheory.FreeGroup.Reduce
 import Mathlib
 
+variable {α X : Type*} [Fintype α]
+
+abbrev n := Fintype.card α
+
+variable  [MulAction (FreeGroup α) X]
+
+--- All Elements of the free Group that start with a certain letter
+def FreeGroup.startWith (w : α × Bool) :
+
 
 inductive Rot where
   | a : Rot
