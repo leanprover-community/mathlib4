@@ -57,7 +57,7 @@ theorem omega_mul (x y : R) :
 @[simp]
 theorem omega_mul_coe_mul (n x y : R) :
     (ω : QuadraticAlgebra R a b) * (↑n) * ⟨x, y⟩ = ⟨a * n * y, n * x + n * b * y⟩ := by
-  ext <;> simp ; ring
+  ext <;> simp; ring
 
 theorem omega_prop : (ω) * (ω) =
     (b : QuadraticAlgebra R a b) * (ω : QuadraticAlgebra R a b) + (a : QuadraticAlgebra R a b) := by
@@ -259,7 +259,7 @@ theorem norm_intCast (n : ℤ) : norm (n : QuadraticAlgebra R a b) = n * n :=
 @[simp]
 theorem norm_mul (z w : QuadraticAlgebra R a b) :
     norm (z * w) = norm z * norm w := by
-  simp [norm_def] ; ring
+  simp [norm_def]; ring
 
 /-- `norm` as a `MonoidHom`. -/
 def normMonoidHom : QuadraticAlgebra R a b →* R where
