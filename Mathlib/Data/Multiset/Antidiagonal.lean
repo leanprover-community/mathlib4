@@ -37,7 +37,7 @@ theorem antidiagonal_coe' (l : List α) : @antidiagonal α l = revzip (powersetA
 
 /-- A pair `(t₁, t₂)` of multisets is contained in `antidiagonal s`
     if and only if `t₁ + t₂ = s`. -/
-@[simp]
+@[simp, push]
 theorem mem_antidiagonal {s : Multiset α} {x : Multiset α × Multiset α} :
     x ∈ antidiagonal s ↔ x.1 + x.2 = s :=
   Quotient.inductionOn s fun l ↦ by

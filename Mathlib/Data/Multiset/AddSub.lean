@@ -105,7 +105,7 @@ theorem cons_add (a : α) (s t : Multiset α) : a ::ₘ s + t = a ::ₘ (s + t) 
 theorem add_cons (a : α) (s t : Multiset α) : s + a ::ₘ t = a ::ₘ (s + t) := by
   rw [Multiset.add_comm, cons_add, Multiset.add_comm]
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_add {a : α} {s t : Multiset α} : a ∈ s + t ↔ a ∈ s ∨ a ∈ t :=
   Quotient.inductionOn₂ s t fun _l₁ _l₂ => mem_append
 
@@ -354,6 +354,7 @@ lemma card_sub {s t : Multiset α} (h : t ≤ s) : card (s - t) = card s - card 
   simp only [count_sub, count_singleton]
   split <;> simp_all
 
+@[push]
 theorem mem_sub {a : α} {s t : Multiset α} :
     a ∈ s - t ↔ t.count a < s.count a := by
   rw [← count_pos, count_sub, Nat.sub_pos_iff_lt]

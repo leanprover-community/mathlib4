@@ -94,7 +94,7 @@ instance canLift (c) (p) [CanLift α β c p] :
     lift l to List β using hl
     exact ⟨l, map_coe _ _⟩
 
-@[simp]
+@[simp, push]
 theorem mem_map {f : α → β} {b : β} {s : Multiset α} : b ∈ map f s ↔ ∃ a, a ∈ s ∧ f a = b :=
   Quot.inductionOn s fun _l => List.mem_map
 

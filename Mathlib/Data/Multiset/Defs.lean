@@ -117,7 +117,7 @@ def Mem (s : Multiset α) (a : α) : Prop :=
 instance : Membership α (Multiset α) :=
   ⟨Mem⟩
 
-@[simp]
+@[simp, push]
 theorem mem_coe {a : α} {l : List α} : a ∈ (l : Multiset α) ↔ a ∈ l :=
   Iff.rfl
 
@@ -269,7 +269,7 @@ theorem pmap_congr {p q : α → Prop} {f : ∀ a, p a → β} {g : ∀ a, q a �
     ∀ {H₁ H₂}, (∀ a ∈ s, ∀ (h₁ h₂), f a h₁ = g a h₂) → pmap f s H₁ = pmap g s H₂ :=
   @(Quot.inductionOn s (fun l _H₁ _H₂ h => congr_arg _ <| List.pmap_congr_left l h))
 
-@[simp]
+@[simp, push]
 theorem mem_pmap {p : α → Prop} {f : ∀ a, p a → β} {s H b} :
     b ∈ pmap f s H ↔ ∃ (a : _) (h : a ∈ s), f a (H a h) = b :=
   Quot.inductionOn s (fun _l _H => List.mem_pmap) H
@@ -287,7 +287,7 @@ def attach (s : Multiset α) : Multiset { x // x ∈ s } :=
 theorem coe_attach (l : List α) : @Eq (Multiset { x // x ∈ l }) (@attach α l) l.attach :=
   rfl
 
-@[simp]
+@[simp, push]
 theorem mem_attach (s : Multiset α) : ∀ x, x ∈ s.attach :=
   Quot.inductionOn s fun _l => List.mem_attach _
 

@@ -1039,7 +1039,7 @@ end List
 
 namespace Multiset
 
-@[simp]
+@[simp, push]
 lemma mem_sum {a : M} {s : Finset ι} {m : ι → Multiset M} :
     a ∈ ∑ i ∈ s, m i ↔ ∃ i ∈ s, a ∈ m i := by
   induction s using Finset.cons_induction with grind

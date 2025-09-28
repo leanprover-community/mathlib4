@@ -220,7 +220,7 @@ def singleton (a : α) (b : β a) : Finmap β :=
 theorem keys_singleton (a : α) (b : β a) : (singleton a b).keys = {a} :=
   rfl
 
-@[simp]
+@[simp, push]
 theorem mem_singleton (x y : α) (b : β y) : x ∈ singleton y b ↔ x = y := by
   simp [singleton, mem_def]
 

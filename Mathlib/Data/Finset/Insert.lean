@@ -65,7 +65,7 @@ instance : Singleton α (Finset α) :=
 theorem singleton_val (a : α) : ({a} : Finset α).1 = {a} :=
   rfl
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_singleton {a b : α} : b ∈ ({a} : Finset α) ↔ b = a :=
   Multiset.mem_singleton
 
@@ -241,7 +241,7 @@ and the union is guaranteed to be disjoint. -/
 def cons (a : α) (s : Finset α) (h : a ∉ s) : Finset α :=
   ⟨a ::ₘ s.1, nodup_cons.2 ⟨h, s.2⟩⟩
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_cons {h} : b ∈ s.cons a h ↔ b = a ∨ b ∈ s :=
   Multiset.mem_cons
 
@@ -365,7 +365,7 @@ theorem insert_val_of_notMem {a : α} {s : Finset α} (h : a ∉ s) : (insert a 
 
 @[deprecated (since := "2025-05-23")] alias insert_val_of_not_mem := insert_val_of_notMem
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_insert : a ∈ insert b s ↔ a = b ∨ a ∈ s :=
   mem_ndinsert
 

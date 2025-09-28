@@ -1107,6 +1107,7 @@ theorem count_finset_sup [DecidableEq β] (s : Finset α) (f : α → Multiset �
   · intro i s _ ih
     rw [Finset.sup_insert, sup_eq_union, count_union, Finset.sup_insert, ih]
 
+@[push]
 theorem mem_sup {α β} [DecidableEq β] {s : Finset α} {f : α → Multiset β} {x : β} :
     x ∈ s.sup f ↔ ∃ v ∈ s, x ∈ f v := by
   induction s using Finset.cons_induction <;> simp [*]
@@ -1117,14 +1118,14 @@ namespace Finset
 variable [DecidableEq α] {s : Finset ι} {f : ι → Finset α} {a : α}
 
 set_option linter.docPrime false in
-@[simp] lemma mem_sup' (hs) : a ∈ s.sup' hs f ↔ ∃ i ∈ s, a ∈ f i := by
+@[simp, push] lemma mem_sup' (hs) : a ∈ s.sup' hs f ↔ ∃ i ∈ s, a ∈ f i := by
   induction hs using Nonempty.cons_induction <;> simp [*]
 
 set_option linter.docPrime false in
-@[simp] lemma mem_inf' (hs) : a ∈ s.inf' hs f ↔ ∀ i ∈ s, a ∈ f i := by
+@[simp, push] lemma mem_inf' (hs) : a ∈ s.inf' hs f ↔ ∀ i ∈ s, a ∈ f i := by
   induction hs using Nonempty.cons_induction <;> simp [*]
 
-@[simp] lemma mem_sup : a ∈ s.sup f ↔ ∃ i ∈ s, a ∈ f i := by
+@[simp, push] lemma mem_sup : a ∈ s.sup f ↔ ∃ i ∈ s, a ∈ f i := by
   induction s using cons_induction <;> simp [*]
 
 @[simp]

@@ -29,7 +29,7 @@ def powerset (s : Finset α) : Finset (Finset α) :=
   ⟨(s.1.powerset.pmap Finset.mk) fun _t h => nodup_of_le (mem_powerset.1 h) s.nodup,
     s.nodup.powerset.pmap fun _a _ha _b _hb => congr_arg Finset.val⟩
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_powerset {s t : Finset α} : s ∈ powerset t ↔ s ⊆ t := by
   cases s
   simp [powerset, mem_mk, mem_pmap, mk.injEq, exists_prop, exists_eq_right,

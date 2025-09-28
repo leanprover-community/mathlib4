@@ -151,6 +151,7 @@ protected theorem Nodup.pi {s : Multiset α} {t : ∀ a, Multiset (β a)} :
             by rw [eq]
           neb <| show b₁ = b₂ by rwa [Pi.cons_same, Pi.cons_same] at this)
 
+@[push]
 theorem mem_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) (f : ∀ a ∈ m, β a) :
     f ∈ pi m t ↔ ∀ (a) (h : a ∈ m), f a h ∈ t a := by
   induction m using Multiset.induction_on with
