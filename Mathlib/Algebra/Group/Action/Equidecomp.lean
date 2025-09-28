@@ -234,6 +234,11 @@ theorem refl_symm : (refl X G).symm = refl X G := rfl
 theorem restr_refl_symm (A : Set X) :
     ((Equidecomp.refl X G).restr A).symm = (Equidecomp.refl X G).restr A := rfl
 
+open scoped Classical in def from_partition (source : Set X)
+    (parts : Finpartition source) (witness : parts.parts → G) : Equidecomp X G where
+  toFun x := if x ∉ source then x else witness ⟨x, sorry⟩ • x
+
+
 open scoped Classical in noncomputable def source.to_finpartition {f : Equidecomp X G} :
   Finpartition f.source where
   parts := Finset.image (fun g : f.minimal_witness ↦
