@@ -55,10 +55,10 @@ open MeasureTheory MeasureTheory.Measure
 
 open scoped Nat NNReal ContDiff
 
-variable {𝕜 𝕜' D E F G V : Type*}
+variable {𝕜 𝕜' H D E F G V W R : Type*}
 
-variable [RCLike 𝕜]
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup V]
+variable [RCLike 𝕜] [NormedAddCommGroup D] [NormedAddCommGroup E] [NormedAddCommGroup F]
+  [NormedAddCommGroup G] [NormedAddCommGroup H] [NormedAddCommGroup V] [NormedAddCommGroup W]
 
 section definition
 
@@ -347,12 +347,18 @@ theorem toTemperedDistributionCLM_apply_apply (μ : Measure E := by volume_tac)
 
 end SchwartzMap
 
-variable [NormedSpace ℝ E] [NormedSpace ℝ F] [NormedSpace 𝕜 V] [NormedSpace 𝕜 F]
+section Construction
 
-def mkCLM (A : (𝓢(E, F) →L[𝕜] V) →ₗ[𝕜] (𝓢(E, F) →L[𝕜] V))
-  (hbound : ∀ (f : 𝓢(E, F)) (a : V →L[𝕜] 𝕜), ∃ (s : Finset (𝓢(E, F) × (V →L[𝕜] 𝕜))) (C : ℝ≥0),
+variable [NormedSpace ℝ E] [NormedSpace ℝ D]
+  [NormedSpace ℝ F] [NormedSpace 𝕜 F]
+  [NormedSpace ℝ G] [NormedSpace 𝕜 G]
+  [NormedSpace 𝕜 V] [NormedSpace 𝕜 W]
+
+variable (V W) in
+def mkCLM (A : (𝓢(E, F) →L[𝕜] V) →ₗ[𝕜] (𝓢(D, G) →L[𝕜] W))
+  (hbound : ∀ (f : 𝓢(D, G)) (a : W →L[𝕜] 𝕜), ∃ (s : Finset (𝓢(E, F) × (V →L[𝕜] 𝕜))) (C : ℝ≥0),
   ∀ (B : 𝓢(E, F) →L[𝕜] V), ∃ (g : 𝓢(E, F)) (b : V →L[𝕜] 𝕜) (_hb : (g, b) ∈ s),
-  ‖a ((A B) f)‖ ≤ C • ‖b (B g)‖) : 𝓢'(𝕜, E, F, V) →L[𝕜] 𝓢'(𝕜, E, F, V) where
+  ‖a ((A B) f)‖ ≤ C • ‖b (B g)‖) : 𝓢'(𝕜, E, F, V) →L[𝕜] 𝓢'(𝕜, D, G, W) where
   __ := (toWOT _ _ _).toLinearMap.comp (A.comp (toWOT _ _ _).symm.toLinearMap)
   cont := by
     apply Seminorm.continuous_from_bounded ContinuousLinearMapWOT.withSeminorms
@@ -367,24 +373,83 @@ def mkCLM (A : (𝓢(E, F) →L[𝕜] V) →ₗ[𝕜] (𝓢(E, F) →L[𝕜] V))
     unfold ContinuousLinearMapWOT.seminormFamily
     simpa using h'
 
+variable (V) in
+def mkCompCLM (A : 𝓢(D, G) →L[𝕜] 𝓢(E, F)) : 𝓢'(𝕜, E, F, V) →L[𝕜] 𝓢'(𝕜, D, G, V) :=
+    mkCLM V V
+      {toFun f := f ∘L A, map_add' f g := by simp, map_smul' := by simp}
+      (by
+        intro f a
+        use {(A f, a)}, 1
+        simp)
+
+@[simp]
+theorem mkCompCLM_apply_apply (A : 𝓢(D, G) →L[𝕜] 𝓢(E, F)) (f : 𝓢'(𝕜, E, F, V)) (g : 𝓢(D, G)) :
+    (mkCompCLM V A) f g = f (A g) := rfl
+
+theorem mkCompCLM_comp (A B : 𝓢(E, F) →L[𝕜] 𝓢(E, F)) :
+    (mkCompCLM V A) ∘L (mkCompCLM V B) = mkCompCLM V (B ∘L A) := by
+  ext f g y
+  simp only [coe_comp', Function.comp_apply, mkCompCLM_apply_apply]
+
+theorem mkCompCLM_id : (mkCompCLM V (.id 𝕜 𝓢(E, F))) = .id _ _ := by
+  ext f g y
+  simp only [mkCompCLM_apply_apply, coe_id', id_eq]
+
+end Construction
+
+section Multiplication
+
+variable [NormedSpace ℝ D]
+  [NormedSpace ℝ E] [NormedSpace 𝕜 E]
+  [NormedSpace ℝ F] [NormedSpace 𝕜 F]
+  [NormedSpace ℝ G] [NormedSpace 𝕜 G]
+  [NormedSpace 𝕜 V]
+
+variable (V) in
+/-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on Schwartz space,
+where `B` is a continuous `𝕜`-linear map and `g` is a function of temperate growth. -/
+def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth) :
+    𝓢'(𝕜, D, G, V) →L[𝕜] 𝓢'(𝕜, D, E, V) := mkCompCLM V (SchwartzMap.bilinLeftCLM B hg)
+
+variable [NonUnitalNormedRing R] [NormedSpace 𝕜 R] [NormedSpace ℝ R] [IsScalarTower 𝕜 R R]
+  [SMulCommClass 𝕜 R R]
+
+def mulLeftCLM {g : D → R} (hg : g.HasTemperateGrowth) : 𝓢'(𝕜, D, R, V) →L[𝕜] 𝓢'(𝕜, D, R, V) :=
+    bilinLeftCLM V (ContinuousLinearMap.mul 𝕜 R) hg
+
+variable (E V) in
+def smulLeftCLM {g : D → 𝕜} (hg : g.HasTemperateGrowth) : 𝓢'(𝕜, D, E, V) →L[𝕜] 𝓢'(𝕜, D, E, V) :=
+    bilinLeftCLM V (ContinuousLinearMap.lsmul 𝕜 𝕜).flip hg
+
+@[simp]
+theorem smulLeftCLM_apply_apply {g : D → 𝕜} (hg : g.HasTemperateGrowth) (f : 𝓢'(𝕜, D, E, V))
+    (f' : 𝓢(D, E)) : smulLeftCLM E V hg f f' =
+    f (SchwartzMap.bilinLeftCLM (ContinuousLinearMap.lsmul 𝕜 𝕜).flip hg f') :=
+  mkCompCLM_apply_apply _ _ _
+
+variable [MeasurableSpace D] [BorelSpace D] [SecondCountableTopology D] {μ : Measure D}
+  [μ.HasTemperateGrowth] [NormedSpace ℝ V]
+
+theorem smulLeftCLM_toTemperedDistributionCLM_eq {g : D → 𝕜} (hg : g.HasTemperateGrowth)
+    (f : 𝓢(D, E)) : smulLeftCLM (E →L[𝕜] V) V hg (toTemperedDistributionCLM 𝕜 D E V μ f) =
+    toTemperedDistributionCLM 𝕜 D E V μ (SchwartzMap.smulLeftCLM E hg f) := by
+  ext f' y
+  simp
+
+end Multiplication
+
+
 section deriv
 
+variable [NormedSpace ℝ E] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [NormedSpace 𝕜 V]
 
-variable [NormedSpace ℝ E]
-
+variable (V) in
 /-- The 1-dimensional derivative on Schwartz space as a continuous `𝕜`-linear map. -/
-def derivCLM : 𝓢'(𝕜, ℝ, F, V) →L[𝕜] 𝓢'(𝕜, ℝ, F, V) :=
-  mkCLM
-    {toFun f := f.comp (-SchwartzMap.derivCLM 𝕜), map_add' f g := by simp [add_comm],
-      map_smul' := by simp}
-    (by
-      intro f a
-      use {(SchwartzMap.derivCLM 𝕜 f, a)}, 1
-      exact fun _ ↦ ⟨SchwartzMap.derivCLM 𝕜 f, a, by simp, by simp⟩)
+def derivCLM : 𝓢'(𝕜, ℝ, F, V) →L[𝕜] 𝓢'(𝕜, ℝ, F, V) := mkCompCLM V (-SchwartzMap.derivCLM 𝕜)
 
 @[simp]
 theorem derivCLM_apply_apply (f : 𝓢'(𝕜, ℝ, F, V)) (g : 𝓢(ℝ, F)) :
-    derivCLM f g = f (-derivCLM 𝕜 g) := rfl
+    derivCLM V f g = f (-derivCLM 𝕜 g) := rfl
 
 open scoped ENNReal
 
@@ -392,7 +457,7 @@ variable [NormedSpace ℝ V]
 
 /-- The distributional derivative and the classical derivative coincide on `𝓢(ℝ, F)`. -/
 theorem derivCLM_toTemperedDistributionCLM_eq (f : 𝓢(ℝ, F)) :
-    derivCLM (toTemperedDistributionCLM 𝕜 ℝ F V volume f) =
+    derivCLM V (toTemperedDistributionCLM 𝕜 ℝ F V volume f) =
     toTemperedDistributionCLM 𝕜 ℝ F V volume (SchwartzMap.derivCLM 𝕜 f) := by
   ext
   simp [integral_clm_comp_deriv_right_eq_neg_left, integral_neg]
@@ -401,40 +466,33 @@ end deriv
 
 section pderiv
 
-variable (𝕜) in
+variable [NormedSpace ℝ E] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [NormedSpace 𝕜 V]
+
+variable (V) in
 def TemperedDistribution.pderivCLM (m : E) : 𝓢'(𝕜, E, F, V) →L[𝕜] 𝓢'(𝕜, E, F, V) :=
-  mkCLM
-    {toFun f := f.comp (-SchwartzMap.pderivCLM 𝕜 m), map_add' f g := by simp [add_comm],
-      map_smul' := by simp }
-    (by
-      intro f a
-      use {(SchwartzMap.pderivCLM 𝕜 m f, a)}, 1
-      exact fun _ ↦ ⟨SchwartzMap.pderivCLM 𝕜 m f, a, by simp, by simp⟩)
+  mkCompCLM V (-SchwartzMap.pderivCLM 𝕜 m)
 
 lemma pderivCLM_apply (m : E) (f : 𝓢'(𝕜, E, F, V)) (g : 𝓢(E, F)) :
-    TemperedDistribution.pderivCLM 𝕜 m f g = f (-SchwartzMap.pderivCLM 𝕜 m g) := by rfl
+    TemperedDistribution.pderivCLM V m f g = f (-SchwartzMap.pderivCLM 𝕜 m g) := by rfl
 
 end pderiv
 
 section fourier
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E]
-  {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℝ H] [FiniteDimensional ℝ H]
+  [NormedSpace ℂ E]
+  [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E]
+  [InnerProductSpace ℝ H] [FiniteDimensional ℝ H]
   [MeasurableSpace H] [BorelSpace H]
+  [NormedSpace 𝕜 V]
 
+variable (𝕜 H E V) in
 def fourierTransformCLM : 𝓢'(𝕜, H, E, V) →L[𝕜] 𝓢'(𝕜, H, E, V) :=
-  mkCLM
-    {toFun f := f.comp (SchwartzMap.fourierTransformCLM 𝕜), map_add' f g := by simp,
-      map_smul' := by simp}
-    (by
-      intro f x
-      use {(SchwartzMap.fourierTransformCLM 𝕜 f, x)}, 1
-      simp)
+  mkCompCLM V (SchwartzMap.fourierTransformCLM 𝕜)
 
 @[simp]
 theorem fourierTransformCLM_apply_apply (f : 𝓢'(𝕜, H, E, V)) (g : 𝓢(H, E)) :
-    fourierTransformCLM f g = f (g.fourierTransformCLM 𝕜) := rfl
+    fourierTransformCLM 𝕜 H E V f g = f (g.fourierTransformCLM 𝕜) := rfl
 
 variable (f : 𝓢(H, E))
 
@@ -444,13 +502,13 @@ variable [CompleteSpace E] [CompleteSpace V]
 /-- The distributional Fourier transform and the classical Fourier transform coincide on
 `𝓢(ℝ, F)`. -/
 theorem fourierTransformCLM_toTemperedDistributionCLM_eq (f : 𝓢(H, E)) :
-    _root_.fourierTransformCLM (toTemperedDistributionCLM ℂ H E V volume f) =
+    _root_.fourierTransformCLM ℂ H _ _ (toTemperedDistributionCLM ℂ H E V volume f) =
     toTemperedDistributionCLM ℂ H E V volume (f.fourierTransformCLM ℂ) := by
   ext g
   congr 1
   exact integral_bilin_fourierIntegral_eq_flip g f (.id ℂ _)
 
-example : fourierTransformCLM (delta' 𝕜 E (0 : H)) = volume.toTemperedDistribution 𝕜 E := by
+example : fourierTransformCLM _ _ _ _ (delta' 𝕜 E (0 : H)) = volume.toTemperedDistribution 𝕜 E := by
   ext f x
   simp [Real.fourierIntegral_eq]
 

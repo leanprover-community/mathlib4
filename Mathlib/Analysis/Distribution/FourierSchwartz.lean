@@ -75,8 +75,15 @@ noncomputable def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) := by
         apply Finset.le_sup this (f := fun p ↦ SchwartzMap.seminorm 𝕜 p.1 p.2 (E := V) (F := E))
     _ = _ := by simp [mul_assoc]
 
-@[simp] lemma fourierTransformCLM_apply (f : 𝓢(V, E)) :
-    fourierTransformCLM 𝕜 f = 𝓕 f := rfl
+noncomputable
+def fourierTransform (f : 𝓢(V, E)) : 𝓢(V, E) := fourierTransformCLM ℝ f
+
+@[simp]
+theorem fourierTransform_apply (f : 𝓢(V, E)) (x : V) : f.fourierTransform x = 𝓕 f x := rfl
+
+@[simp]
+theorem fourierTransformCLM_apply (f : 𝓢(V, E)) :
+    fourierTransformCLM 𝕜 f = f.fourierTransform := rfl
 
 variable
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F] [NormedSpace 𝕜 F] [SMulCommClass ℂ 𝕜 F]
@@ -114,11 +121,16 @@ noncomputable def fourierTransformCLE : 𝓢(V, E) ≃L[𝕜] 𝓢(V, E) where
   continuous_invFun := ContinuousLinearMap.continuous _
 
 @[simp] lemma fourierTransformCLE_apply (f : 𝓢(V, E)) :
-    fourierTransformCLE 𝕜 f = 𝓕 f := rfl
+    fourierTransformCLE 𝕜 f = f.fourierTransform := rfl
+
+noncomputable
+def fourierTransformInv (f : 𝓢(V, E)) : 𝓢(V, E) := (fourierTransformCLE ℝ).symm f
+
+@[simp] lemma fourierTransformInv_apply (f : 𝓢(V, E)) (x : V) :
+    f.fourierTransformInv x = 𝓕⁻ f x :=
+  (fourierIntegralInv_eq_fourierIntegral_neg f x).symm
 
 @[simp] lemma fourierTransformCLE_symm_apply (f : 𝓢(V, E)) :
-    (fourierTransformCLE 𝕜).symm f = 𝓕⁻ f := by
-  ext x
-  exact (fourierIntegralInv_eq_fourierIntegral_neg f x).symm
+    (fourierTransformCLE 𝕜).symm f = f.fourierTransformInv := rfl
 
 end SchwartzMap
