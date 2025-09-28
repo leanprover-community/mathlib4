@@ -80,7 +80,7 @@ noncomputable def testAgainstₗ {f : X → E} (hf : LocallyIntegrable f μ) (K 
     simp_rw [add_apply, add_smul, integral_add (integrable_smul_LocallyIntegrable μ hf K φ)
       (integrable_smul_LocallyIntegrable μ hf K Φ)]
   map_smul' c φ := by
-    simp_rw [coe_smul, RingHom.id_apply, ← integral_smul c (fun x ↦ φ x • f x), smul_assoc]
+    simp_rw [coe_smul, RingHom.id_apply, smul_assoc, integral_smul]
 
 /-- `LocallyIntegrable.testAgainstCLM` wraps the integral against a locally integrable
 function `f` on a fixed compact `K` as a continuous `𝕜`-linear map on scalar valued bounded
