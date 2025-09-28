@@ -139,6 +139,17 @@ def removeDeprecations (fname : String) (rgs : Array String.Range) : IO String :
       ({fileSubstring with startPos := next.stop}.dropWhile (!·.isWhitespace)).trimLeft
   return tot
 
+/--
+`parseLine line` assumes that the input string is of the form
+```
+info: File/Path.lean:12:0: [362, 398, 399]
+```
+and extracts `[362, 398, 399]`.
+It makes the assumption that there is a unique `: [` substring and then retrieves the numbers.
+
+Note that this is the output of `Mathlib.Linter.CommandRanges.commandRangesLinter`
+that the script here is parsing.
+-/
 def parseLine (line : String) : Option (List String.Pos) :=
   match (line.dropRight 1).splitOn ": [" with
   | [_, rest] =>
