@@ -4,10 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-import ImportGraph.Imports -- a comment
+import ImportGraph.Imports
 
 /-!
-d
+This file defines the `#clear_deprecations date₁ date₂ really` command.
+
+This function is intended for automated use by the `remove_deprecations` automation.
+It removes declarations that have been deprecated in the time range starting from `date₁` and
+ending with `date₂`.
+
+See the doc-string for the command for more information.
 -/
 
 open Lean Elab Command
