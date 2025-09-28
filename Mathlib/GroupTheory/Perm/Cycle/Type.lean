@@ -218,7 +218,7 @@ theorem isCycle_of_prime_order {σ : Perm α} (h1 : (orderOf σ).Prime)
     (h2 : #σ.support < 2 * orderOf σ) : σ.IsCycle := by
   obtain ⟨n, hn⟩ := cycleType_prime_order h1
   rw [← σ.sum_cycleType, hn, Multiset.sum_replicate, nsmul_eq_mul, Nat.cast_id,
-    mul_lt_mul_right (orderOf_pos σ), Nat.succ_lt_succ_iff, Nat.lt_succ_iff, Nat.le_zero] at h2
+    mul_lt_mul_iff_left₀ (orderOf_pos σ), Nat.succ_lt_succ_iff, Nat.lt_succ_iff, Nat.le_zero] at h2
   rw [← card_cycleType_eq_one, hn, card_replicate, h2]
 
 theorem cycleType_le_of_mem_cycleFactorsFinset {f g : Perm α} (hf : f ∈ g.cycleFactorsFinset) :
@@ -392,7 +392,7 @@ theorem isCycle_of_prime_order' {σ : Perm α} (h1 : (orderOf σ).Prime)
 theorem isCycle_of_prime_order'' {σ : Perm α} (h1 : (Fintype.card α).Prime)
     (h2 : orderOf σ = Fintype.card α) : σ.IsCycle :=
   isCycle_of_prime_order' ((congr_arg Nat.Prime h2).mpr h1) <| by
-    rw [← one_mul (Fintype.card α), ← h2, mul_lt_mul_right (orderOf_pos σ)]
+    rw [← one_mul (Fintype.card α), ← h2, mul_lt_mul_iff_left₀ (orderOf_pos σ)]
     exact one_lt_two
 
 section Cauchy
@@ -502,7 +502,7 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
     Exists.imp (fun g hg => orderOf_eq_prime ?_ fun hg' => hv2 ?_)
       (List.rotate_one_eq_self_iff_eq_replicate.mp (Subtype.ext_iff.mp (Subtype.ext_iff.mp hv1)))
   · rw [← List.prod_replicate, ← v.1.2, ← hg, show v.val.val.prod = 1 from v.2]
-  · rw [Subtype.ext_iff_val, Subtype.ext_iff_val, hg, hg', v.1.2]
+  · rw [Subtype.ext_iff, Subtype.ext_iff, hg, hg', v.1.2]
     simp only [v₀, List.Vector.replicate]
 
 -- TODO: Make the `Finite` version of this theorem the default
