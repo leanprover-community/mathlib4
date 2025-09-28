@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patience Ablett, Kevin Buzzard, Harald Carlens, Wayne Ng Kwing King, Michael Schlößer,
   Justus Springer, Andrew Yang, Jujian Zhang
 -/
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Basic
 import Mathlib.AlgebraicGeometry.ValuativeCriterion
 
