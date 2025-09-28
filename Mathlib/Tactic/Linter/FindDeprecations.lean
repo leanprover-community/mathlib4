@@ -118,6 +118,12 @@ def deprecatedHashMap (oldDate newDate : String) :
         (a.getD #[]).binInsert (·.2.1 < ·.2.1) (decl, rg)
   return fin
 
+/--
+`removeDeprecations fname rgs` reads the content of `fname` and removes from it the substrings
+whose ranges are in the array `rgs`.
+
+The command makes the assumption that `rgs` is *sorted*.
+-/
 def removeDeprecations (fname : String) (rgs : Array String.Range) : IO String := do
   let file ← IO.FS.readFile fname
   let mut curr : String.Pos := 0
