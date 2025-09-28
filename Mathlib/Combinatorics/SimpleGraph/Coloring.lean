@@ -436,7 +436,7 @@ theorem eq_top_of_chromaticNumber_eq_card [DecidableEq V] [Fintype V]
     apply Coloring.mk (fun x ↦ if h' : x ≠ b then ⟨x, by simp [h']⟩ else ⟨a, by simp [hne]⟩)
     grind [Adj.ne', adj_symm]
   rw [h, ← ENat.coe_one, ← ENat.coe_sub, ENat.coe_le_coe] at this
-  have := Fintype.one_lt_card_iff_nontrivial.mpr <| nontrivial_of_ne_top _ hh
+  have := Fintype.one_lt_card_iff_nontrivial.mpr <| nontrivial_of_ne_top hh
   grind
 
 theorem chromaticNumber_eq_card_iff [DecidableEq V] [Fintype V] :
