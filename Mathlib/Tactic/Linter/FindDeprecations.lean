@@ -20,9 +20,16 @@ See the doc-string for the command for more information.
 
 open Lean Elab Command
 
-/-- A convenience instance to print a `String.Range` as the corresponding pair of `String.Pos`. -/
 local instance : ToString String.Range where
   toString | ⟨s, e⟩ => s!"({s}, {e})"
+
+/--
+This is the name of the directory containing all the files that should be inspected.
+For reporting, the script assumes there is no sub-dir of the `repo` dir that contains
+`repo` as a substring.
+However, the script should still remove old deprecations correctly even if that happens.
+-/
+def repo : Name := `Mathlib
 
 /--
 The main structure containing the information a deprecated declaration.
@@ -111,6 +118,7 @@ def deprecatedHashMap (oldDate newDate : String) :
   for (nm, _) in (← getEnv).constants.map₁ do
     if let some ⟨modName, decl, rgStart, rgStop, since⟩ ← getDeprecatedInfo nm false
     then
+      if modName.getRoot != repo then continue
       if !(oldDate ≤ since && since ≤ newDate) then
         continue
       -- Ideally, `lean` would be computed by `← findLean (← getSrcSearchPath) modName`
