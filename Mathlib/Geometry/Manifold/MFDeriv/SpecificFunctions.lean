@@ -554,12 +554,13 @@ theorem MDifferentiable.prodMap (hf : MDifferentiable I I' f) (hg : MDifferentia
 @[deprecated (since := "2025-04-18")]
 alias MDifferentiable.prod_map := MDifferentiable.prodMap
 
-omit [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
-  [TopologicalSpace H'] [TopologicalSpace M'] [ChartedSpace H' M'] in
+-- TODO: move to the correct location!
 @[simp]
-lemma foo (φ : PartialEquiv M H) (ψ : PartialEquiv M' H') :
-    ↑(φ.prod ψ).symm = Prod.map φ.symm ψ.symm := by
-  ext x <;> simp
+lemma writtenInExtChart_prod {f : M → N} {g : M' → N'} {x : M} {x' : M'} :
+    (writtenInExtChartAt (I.prod I') (J.prod J') (x, x') (Prod.map f g)) =
+      Prod.map (writtenInExtChartAt I J x f) (writtenInExtChartAt I' J' x' g) := by
+  ext p <;>
+  simp [writtenInExtChartAt, I.toPartialEquiv.prod_symm, (chartAt H x).toPartialEquiv.prod_symm]
 
 lemma HasMFDerivWithinAt.prodMap {t : Set M'} {x' : M'} {f : M → N} {g : M' → N'}
     {df : TangentSpace I x →L[𝕜] TangentSpace J (f x)} (hf : HasMFDerivWithinAt I J f s x df)
@@ -568,21 +569,14 @@ lemma HasMFDerivWithinAt.prodMap {t : Set M'} {x' : M'} {f : M → N} {g : M' �
     HasMFDerivWithinAt (I.prod I') (J.prod J') (Prod.map f g) (s ×ˢ t) (x, x')
       (df.prodMap dg) := by
   refine ⟨hf.1.prodMap hg.1, ?_⟩
-  have : (writtenInExtChartAt (I.prod I') (J.prod J') (x, x') (Prod.map f g)) =
-    Prod.map (writtenInExtChartAt I J x f) (writtenInExtChartAt I' J' x' g) := sorry
-  rw [this]
-  have h1 := hf.2
-  have h2 := hg.2
-  set s1 := (extChartAt I x).symm ⁻¹' s ∩ range I
-  set s2 := (extChartAt I' x').symm ⁻¹' t ∩ range I'
-  have : ((extChartAt (I.prod I') (x, x')).symm ⁻¹' s ×ˢ t ∩ range (I.prod I')) = s1 ×ˢ s2 := by
-    simp only [mfld_simps, s1, s2]
-    rw [range_prodMap, foo I.toPartialEquiv I'.toPartialEquiv,
-      foo (chartAt H x).toPartialEquiv (chartAt H' x').toPartialEquiv]
+  have : ((extChartAt (I.prod I') (x, x')).symm ⁻¹' s ×ˢ t ∩ range (I.prod I')) =
+      ((extChartAt I x).symm ⁻¹' s ∩ range I) ×ˢ ((extChartAt I' x').symm ⁻¹' t ∩ range I') := by
+    simp only [mfld_simps]
+    rw [range_prodMap, I.toPartialEquiv.prod_symm, (chartAt H x).toPartialEquiv.prod_symm]
     ext x₀
     constructor <;> intro hx₀ <;> simp_all
-  rw [this]
-  exact h1.prodMap _ h2
+  rw [writtenInExtChart_prod, this]
+  exact hf.2.prodMap _ hg.2
 
 #exit
 lemma HasMFDerivAt.prodMap {x' : M'} {f : M → N} {g : M' → N'}
