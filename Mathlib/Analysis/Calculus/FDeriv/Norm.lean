@@ -81,12 +81,12 @@ theorem ContDiffAt.contDiffAt_norm_of_smul (h : ContDiffAt ℝ n (‖·‖) (t �
     exact ⟨univ, univ_mem, continuous_norm.continuousOn⟩
   replace hn : 1 ≤ n := ENat.add_one_natCast_le_withTop_of_lt hn
   obtain rfl | ht := eq_or_ne t 0
-  · by_cases! hE : Nontrivial E
-    · rw [zero_smul] at h
-      exact (mt (ContDiffAt.differentiableAt · (mod_cast hn)))
-        (not_differentiableAt_norm_zero E) h |>.elim
-    · rw [eq_const_of_subsingleton (‖·‖) 0]
+  · suffices Subsingleton E by
+      rw [eq_const_of_subsingleton (‖·‖) 0]
       exact contDiffAt_const
+    rw [zero_smul] at h
+    by_contra!
+    exact not_differentiableAt_norm_zero E <| h.differentiableAt hn
   · exact contDiffAt_norm_smul_iff ht |>.2 h
 
 theorem HasStrictFDerivAt.hasStrictFDerivAt_norm_smul
@@ -148,10 +148,10 @@ theorem differentiableAt_norm_smul (ht : t ≠ 0) :
 theorem DifferentiableAt.differentiableAt_norm_of_smul (h : DifferentiableAt ℝ (‖·‖) (t • x)) :
     DifferentiableAt ℝ (‖·‖) x := by
   obtain rfl | ht := eq_or_ne t 0
-  · by_cases! hE : Nontrivial E
-    · rw [zero_smul] at h
-      exact not_differentiableAt_norm_zero E h |>.elim
-    · exact (hasFDerivAt_of_subsingleton _ _).differentiableAt
+  · suffices Subsingleton E from (hasFDerivAt_of_subsingleton _ _).differentiableAt
+    rw [zero_smul] at h
+    by_contra!
+    exact not_differentiableAt_norm_zero E h
   · exact differentiableAt_norm_smul ht |>.2 h
 
 theorem DifferentiableAt.fderiv_norm_self {x : E} (h : DifferentiableAt ℝ (‖·‖) x) :
