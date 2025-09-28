@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Matthew Robert Ballard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Matthew Robert Ballard
+Authors: Matthew Robert Ballard, Yury Kudryashov
 -/
 import Mathlib.Algebra.Divisibility.Units
 import Mathlib.Algebra.Order.Ring.Nat
@@ -22,20 +22,24 @@ The implementation of `maxPowDvd` improves on the speed of `padicValNat`.
 namespace Nat
 
 /--
-Tail recursive function which returns the largest `k : ℕ` such that `p ^ k ∣ n` for any `p : ℕ`,
-as well as the ratio `n / p ^ k`.
+Find largest `k : ℕ` such that `p ^ k ∣ n` for any `p : ℕ`, as well as the ratio `n / p ^ k`.
+
+This function is written using "fuel recursion" so that it is 
 -/
 def maxPowDvdDiv (p n : ℕ) : ℕ × ℕ :=
-  go 0 p n
-  where go (k p n : ℕ) : ℕ × ℕ :=
-    if 1 < p ∧ 0 < n ∧ n % p = 0 then
-      go (k + 1) p (n / p)
+  if 1 < p ∧ 0 < n then
+    go p 0 n n
+  else
+    (0, n)
+  where
+  /-- Auxiliary definition for `Nat.maxPowDvdDiv`. -/
+  go
+  | _, res, n, 0 => (res, n)
+  | p, res, n, fuel + 1 =>
+    if n % p = 0 then
+      go p (res + 1) (n / p) fuel
     else
-      (k, n)
-    termination_by n
-    decreasing_by apply Nat.div_lt_self <;> tauto
-
-attribute [inherit_doc maxPowDvdDiv] maxPowDvdDiv.go
+      (res, n)
 
 /--
 Tail recursive function which returns the largest `k : ℕ` such that `p ^ k ∣ n` for any `p : ℕ`.
@@ -43,55 +47,60 @@ Tail recursive function which returns the largest `k : ℕ` such that `p ^ k ∣
 -/
 def maxPowDvd (p n : ℕ) : ℕ := (maxPowDvdDiv p n).1
 
-@[deprecated (since := "2025-04-22")]
+@[deprecated (since := "2025-09-27")]
 alias maxPowDiv := maxPowDvd
 
 namespace maxPowDvdDiv
 
-theorem go_spec (k p n : ℕ) :
-    p ^ (go k p n).1 * (go k p n).2 = p ^ k * n ∧
-      (1 < p → 0 < n → ¬p ∣ (go k p n).2) := by
-  fun_induction go with
-  | case1 k n h ih =>
-    conv_lhs => unfold go
-    rw [if_pos h, ih.1, pow_succ, mul_assoc, Nat.mul_div_cancel' (Nat.dvd_of_mod_eq_zero h.2.2)]
-    refine ⟨rfl, fun hp hn ↦ ih.2 hp ?_⟩
-    apply_rules [Nat.div_pos, zero_le_one.trans_lt hp, Nat.le_of_dvd, Nat.dvd_of_mod_eq_zero h.2.2]
-  | case2 k n h =>
-    unfold go
-    rw [if_neg h]
-    simp only [not_and, ← Nat.dvd_iff_mod_eq_zero] at h
-    exact ⟨rfl, h⟩
+theorem go_spec {p res n fuel : ℕ} (hp : 1 < p) (hn : 0 < n) (hfuel : n ≤ fuel) :
+    p ^ (go p res n fuel).1 * (go p res n fuel).2 = p ^ res * n ∧ ¬p ∣ (go p res n fuel).2 := by
+  induction fuel generalizing res n with
+  | zero => exact absurd hn hfuel.not_gt
+  | succ fuel ih =>
+    by_cases hnp : n % p = 0
+    case pos =>
+      rw [← Nat.dvd_iff_mod_eq_zero] at hnp
+      rcases hnp with ⟨m, rfl⟩
+      specialize @ih (res + 1) m (by grind) ?_
+      · rw [← Nat.lt_add_one_iff]
+        refine lt_of_lt_of_le ?_ hfuel
+        rwa [Nat.lt_mul_iff_one_lt_left (by grind)]
+      · simp [go, one_pos.trans hp, ih, pow_succ, mul_assoc]
+    case neg =>
+      simp [go, hnp, Nat.dvd_iff_mod_eq_zero]
 
-theorem go_succ (k p n : ℕ) : go (k + 1) p n = ((go k p n).1 + 1, (go k p n).2) := by
-  fun_induction go with
-  | case1 _ _ h ih =>
-    conv_lhs => unfold go
-    simp only [if_pos h, ih]
-  | case2 _ _ h =>
-    conv_lhs => unfold go
-    simp only [if_neg h]
+theorem go_unique {p k l n fuel : ℕ} (hp : 0 < p) (hdvd : ¬p ∣ n) (hfuel : l ≤ fuel) :
+    go p k (p ^ l * n) fuel = (k + l, n) := by
+  induction fuel generalizing k l with
+  | zero => simp_all [go]
+  | succ fuel ih =>
+    cases l with
+    | zero => simp [go, ← Nat.dvd_iff_mod_eq_zero, hdvd]
+    | succ l => simp_all [go, pow_succ, mul_right_comm _ p, add_assoc, add_comm 1 l]
 
 @[simp]
 theorem pow_mul_eq (p n : ℕ) : p ^ (maxPowDvdDiv p n).1 * (maxPowDvdDiv p n).2 = n := by
-  simpa [maxPowDvdDiv] using (go_spec 0 p n).1
-
+  unfold maxPowDvdDiv
+  split_ifs with h
+  · simp [go_spec, h]
+  · simp
+    
 theorem not_dvd_snd {p n : ℕ} (hp : 1 < p) (hn : 0 < n) : ¬p ∣ (maxPowDvdDiv p n).2 := by
-  simpa [maxPowDvdDiv] using (go_spec 0 p n).2 hp hn
+  simp [maxPowDvdDiv, go_spec, *]
 
 theorem of_base_le_one {p : ℕ} (hp : p ≤ 1) (n : ℕ) : maxPowDvdDiv p n = (0, n) := by
-  simp [maxPowDvdDiv, go, hp.not_gt]
+  simp [maxPowDvdDiv, hp.not_gt]
 
 @[simp] theorem zero_left (n : ℕ) : maxPowDvdDiv 0 n = (0, n) := of_base_le_one (Nat.zero_le _) _
 @[simp] theorem one_left (n : ℕ) : maxPowDvdDiv 1 n = (0, n) := of_base_le_one le_rfl _
 
 @[simp]
-theorem zero_right (p : ℕ) : maxPowDvdDiv p 0 = (0, 0) := by
-  simp [maxPowDvdDiv, go]
+theorem zero_right (p : ℕ) : maxPowDvdDiv p 0 = (0, 0) := by simp [maxPowDvdDiv]
 
 theorem of_not_dvd {p n : ℕ} (h : ¬p ∣ n) : maxPowDvdDiv p n = (0, n) := by
-  rw [maxPowDvdDiv, go]
-  simp [Nat.dvd_iff_mod_eq_zero.not.mp h]
+  cases n with
+  | zero => simp at h
+  | succ n => simp [maxPowDvdDiv, Nat.dvd_iff_mod_eq_zero.not.mp h, go]
 
 @[simp]
 theorem one_right (p : ℕ) : maxPowDvdDiv p 1 = (0, 1) := by
@@ -99,8 +108,16 @@ theorem one_right (p : ℕ) : maxPowDvdDiv p 1 = (0, 1) := by
 
 theorem base_mul {p n : ℕ} (hp : 1 < p) (hn : 0 < n) :
     p.maxPowDvdDiv (p * n) = ((p.maxPowDvdDiv n).1 + 1, (p.maxPowDvdDiv n).2) := by
-  unfold maxPowDvdDiv
-  rw [go, if_pos (by simp [*, hp.pos]), go_succ, Nat.mul_div_cancel_left _ hp.pos]
+  rw [maxPowDvdDiv, if_pos (by simp [*, hp.pos])]
+  conv in p * n => rw [← pow_mul_eq p n, ← mul_assoc, ← pow_add_one']
+  rw [go_unique hp.pos (not_dvd_snd hp hn), zero_add]
+  rw [add_one_le_iff]
+  calc
+    (p.maxPowDvdDiv n).1 < p ^ (p.maxPowDvdDiv n).1 := Nat.lt_pow_self hp
+    _ ≤ p ^ (p.maxPowDvdDiv n).1 * (p.maxPowDvdDiv n).2 := by
+      apply le_mul_of_le_of_one_le (by simp)
+    _ < p * n := by
+      rw [pow_mul_eq]
 
 theorem base_pow_mul {p n : ℕ} (hp : 1 < p) (hn : 0 < n) (k : ℕ) :
     p.maxPowDvdDiv (p ^ k * n) = ((p.maxPowDvdDiv n).1 + k, (p.maxPowDvdDiv n).2) := by
