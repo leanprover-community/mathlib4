@@ -725,8 +725,17 @@ open scoped Kronecker in
 theorem kronecker {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
     (hx : x.PosDef) (hy : y.PosDef) : (x ⊗ₖ y).PosDef := by
   classical
-  exact hx.posSemidef.kronecker hy.posSemidef |>.posDef_iff_isUnit.mpr <|
-    hx.isUnit.kronecker hy.isUnit
+  rw [hx.1.spectral_theorem, hy.1.spectral_theorem]
+  simp_rw [mul_kronecker_mul, star_eq_conjTranspose, ← conjTranspose_kronecker,
+    ← star_eq_conjTranspose]
+  have huu (U₁ U₂) : (⟨_, kronecker_mem_unitary (Subtype.mem U₁) (Subtype.mem U₂)⟩ :
+      unitaryGroup (n × m) 𝕜).1 = U₁ ⊗ₖ U₂ := rfl
+  have {n} [DecidableEq n] [Fintype n] (U : unitaryGroup n 𝕜) : IsUnit (U : Matrix n n 𝕜) :=
+    (unitary.toUnits U).isUnit
+  rw [← huu hx.1.eigenvectorUnitary hy.1.eigenvectorUnitary, (this _).posDef_conjugate_iff,
+    diagonal_kronecker_diagonal, posDef_diagonal_iff]
+  exact fun _ => mul_pos (RCLike.ofReal_pos.mpr <| hx.eigenvalues_pos _)
+    (RCLike.ofReal_pos.mpr <| hy.eigenvalues_pos _)
 
 end
 
