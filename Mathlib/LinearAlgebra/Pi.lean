@@ -146,6 +146,9 @@ lemma single_apply [DecidableEq ι] {i : ι} (v : φ i) :
     single R φ i v = Pi.single i v :=
   rfl
 
+lemma sum_single_apply [Fintype ι] [DecidableEq ι] (v : Π i, φ i) :
+    ∑ i, Pi.single i (v i) = v := by ext; simp
+
 @[simp]
 theorem coe_single [DecidableEq ι] (i : ι) :
     ⇑(single R φ i : φ i →ₗ[R] (i : ι) → φ i) = Pi.single i :=
