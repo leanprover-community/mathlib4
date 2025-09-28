@@ -133,7 +133,7 @@ example {x y z : ℝ} (_hy : 0 < y) : x + 3 < (x + 3) * y ^ 2 - 2 := by
 example {x y z : ℝ} (_hy : 0 < y) : z < (x + 3) * y ^ 2 - 2 := by
   isolate x + 2
 
-/-- error: No x + 2 term was found anywhere to isolate -/
+/-- error: No x + 2 terms found anywhere which could be isolated -/
 #guard_msgs in
 example {x y z : ℝ} (_hy : 0 < y) : z < (x + 3) * y ^ 2 - 2 := by
   isolate x + 2 at *

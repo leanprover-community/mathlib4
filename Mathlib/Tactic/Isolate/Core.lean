@@ -322,6 +322,6 @@ elab "isolate" x:term loc:(location)? : tactic => withMainContext do
   withLocation loc
     (fun fvar ↦ liftMetaTactic <| isolateAtLocalDecl x fvar)
     (liftMetaTactic <| isolateAtTarget x)
-    fun _ ↦ throwError m!"No {x} term was found anywhere to isolate"
+    fun _ ↦ throwError m!"No {x} terms found anywhere which could be isolated"
 
 end Mathlib.Tactic.Isolate
