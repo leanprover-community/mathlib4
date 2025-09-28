@@ -107,8 +107,8 @@ satisfy coherence properties with respect to `0 : A` and the addition in `A`. -/
 class CommShift where
   /-- The commutation isomorphisms for all `a`-shifts this functor is equipped with -/
   iso (a : A) : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a
-  zero : iso 0 = CommShift.isoZero F A := by aesop_cat
-  add (a b : A) : iso (a + b) = CommShift.isoAdd (iso a) (iso b) := by aesop_cat
+  zero : iso 0 = CommShift.isoZero F A := by cat_disch
+  add (a b : A) : iso (a + b) = CommShift.isoAdd (iso a) (iso b) := by cat_disch
 
 variable {A}
 
@@ -266,7 +266,7 @@ which commute with a shift by an additive monoid `A`, this typeclass
 asserts a compatibility of `τ` with these shifts. -/
 class CommShift : Prop where
   shift_comm (a : A) : (F₁.commShiftIso a).hom ≫ Functor.whiskerRight τ _ =
-    Functor.whiskerLeft _ τ ≫ (F₂.commShiftIso a).hom := by aesop_cat
+    Functor.whiskerLeft _ τ ≫ (F₂.commShiftIso a).hom := by cat_disch
 
 section
 

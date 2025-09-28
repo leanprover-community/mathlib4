@@ -628,8 +628,8 @@ variable (X) in
 `Filter.cocompact`. See also `Bornology.relativelyCompact` the bornology of sets with compact
 closure. -/
 def inCompact : Bornology X where
-  cobounded' := Filter.cocompact X
-  le_cofinite' := Filter.cocompact_le_cofinite
+  cobounded := Filter.cocompact X
+  le_cofinite := Filter.cocompact_le_cofinite
 
 theorem inCompact.isBounded_iff : @IsBounded _ (inCompact X) s ↔ ∃ t, IsCompact t ∧ s ⊆ t := by
   change sᶜ ∈ Filter.cocompact X ↔ _
@@ -912,7 +912,7 @@ theorem Topology.IsClosedEmbedding.isCompact_preimage (hf : IsClosedEmbedding f)
     {K : Set Y} (hK : IsCompact K) : IsCompact (f ⁻¹' K) :=
   hf.isInducing.isCompact_preimage (hf.isClosed_range) hK
 
-/-- A closed embedding is proper, ie, inverse images of compact sets are contained in compacts.
+/-- A closed embedding is proper, i.e., inverse images of compact sets are contained in compacts.
 Moreover, the preimage of a compact set is compact, see `IsClosedEmbedding.isCompact_preimage`. -/
 theorem Topology.IsClosedEmbedding.tendsto_cocompact (hf : IsClosedEmbedding f) :
     Tendsto f (Filter.cocompact X) (Filter.cocompact Y) :=
@@ -991,14 +991,14 @@ lemma IsCompact.sigma_exists_finite_sigma_eq {X : ι → Type*} [∀ i, Topologi
     ∃ (s : Set ι) (t : ∀ i, Set (X i)), s.Finite ∧ (∀ i, IsCompact (t i)) ∧ s.sigma t = u := by
   obtain ⟨s, hs⟩ := hu.elim_finite_subcover (fun i : ι ↦ Sigma.mk i '' (Sigma.mk i ⁻¹' Set.univ))
     (fun i ↦ isOpenMap_sigmaMk _ <| isOpen_univ.preimage continuous_sigmaMk)
-    fun x hx ↦ (by aesop)
+    fun x hx ↦ (by simp)
   use s, fun i ↦ Sigma.mk i ⁻¹' u, s.finite_toSet, fun i ↦ ?_, ?_
   · exact Topology.IsClosedEmbedding.sigmaMk.isCompact_preimage hu
   · ext x
     simp only [Set.mem_sigma_iff, Finset.mem_coe, Set.mem_preimage, and_iff_right_iff_imp]
     intro hx
     obtain ⟨i, hi⟩ := Set.mem_iUnion.mp (hs hx)
-    aesop
+    simp_all
 
 /-- The coproduct of the cocompact filters on two topological spaces is the cocompact filter on
 their product. -/

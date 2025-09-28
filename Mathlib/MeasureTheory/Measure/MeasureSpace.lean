@@ -658,6 +658,37 @@ theorem tendsto_measure_biInter_gt {ι : Type*} [LinearOrder ι] [TopologicalSpa
 theorem measure_if {x : β} {t : Set β} {s : Set α} [Decidable (x ∈ t)] :
     μ (if x ∈ t then s else ∅) = indicator t (fun _ => μ s) x := by split_ifs with h <;> simp [h]
 
+/-- On a countable space, two measures are equal if they agree on measurable atoms. -/
+lemma ext_of_measurableAtoms [Countable α] {μ ν : Measure α}
+    (h : ∀ x, μ (measurableAtom x) = ν (measurableAtom x)) : μ = ν := by
+  ext s hs
+  have h1 : s = ⋃ x ∈ s, measurableAtom x := by
+    ext y
+    simp only [mem_iUnion, exists_prop]
+    refine ⟨fun hy ↦ ?_, fun ⟨x, hx, hy⟩ ↦ ?_⟩
+    · exact ⟨y, hy, mem_measurableAtom_self y⟩
+    · exact mem_of_mem_measurableAtom hy hs hx
+  rw [← sUnion_image] at h1
+  rw [h1]
+  have h_count : (measurableAtom '' s).Countable := s.to_countable.image _
+  have h_disj : (measurableAtom '' s).Pairwise Disjoint := by
+    intro t ht t' ht' h_eq
+    obtain ⟨y, hys, hy⟩ := ht
+    obtain ⟨y', hy's, hy'⟩ := ht'
+    rw [← hy, ← hy'] at h_eq ⊢
+    refine disjoint_measurableAtom_of_notMem fun hyy' ↦ h_eq ?_
+    exact measurableAtom_eq_of_mem hyy'
+  have h_meas (t) (ht : t ∈ measurableAtom '' s) : MeasurableSet t := by
+    obtain ⟨x, hxs, hx⟩ := ht
+    rw [← hx]
+    exact MeasurableSet.measurableAtom_of_countable x
+  rw [measure_sUnion h_count h_disj h_meas, measure_sUnion h_count h_disj h_meas]
+  congr with s'
+  have hs' := s'.2
+  obtain ⟨x, hxs, hx⟩ := hs'
+  rw [← hx]
+  exact h x
+
 end
 
 section OuterMeasure

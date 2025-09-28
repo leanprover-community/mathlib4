@@ -199,9 +199,7 @@ theorem mulHom_apply (a b : ⨁ i, A i) : mulHom A a b = a * b := rfl
 
 theorem mulHom_of_of {i j} (a : A i) (b : A j) :
     mulHom A (of A i a) (of A j b) = of A (i + j) (GradedMonoid.GMul.mul a b) := by
-  unfold mulHom
-  simp only [toAddMonoid_of, flip_apply, coe_comp, Function.comp_apply]
-  rfl
+  simp
 
 theorem of_mul_of {i j} (a : A i) (b : A j) :
     of A i a * of A j b = of _ (i + j) (GradedMonoid.GMul.mul a b) :=
@@ -578,7 +576,7 @@ def liftRingHom :
       rw [← F.map_one]
       rfl,
       by
-      intros i j ai aj
+      intro i j ai aj
       simp only [AddMonoidHom.comp_apply, AddMonoidHom.coe_coe]
       rw [← F.map_mul (of A i ai), of_mul_of ai]⟩
   left_inv f := by

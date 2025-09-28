@@ -40,7 +40,7 @@ In most of this section, the domain `β` is assumed to be an `AddMonoid`.
 section SumProd
 
 /-- `prod f g` is the product of `g a (f a)` over the support of `f`. -/
-@[to_additive "`sum f g` is the sum of `g a (f a)` over the support of `f`. "]
+@[to_additive /-- `sum f g` is the sum of `g a (f a)` over the support of `f`. -/]
 def prod [Zero M] [CommMonoid N] (f : α →₀ M) (g : α → M → N) : N :=
   ∏ a ∈ f.support, g a (f a)
 
@@ -89,12 +89,10 @@ theorem prod_ite_eq [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M �
 
 theorem sum_ite_self_eq [DecidableEq α] {N : Type*} [AddCommMonoid N] (f : α →₀ N) (a : α) :
     (f.sum fun x v => ite (a = x) v 0) = f a := by
-  classical
-    convert f.sum_ite_eq a fun _ => id
-    simp [ite_eq_right_iff.2 Eq.symm]
+  simp_all
 
 /--
-The left hand side of `sum_ite_self_eq` simplifies; this is the variant that is useful for `simp`.
+The left-hand side of `sum_ite_self_eq` simplifies; this is the variant that is useful for `simp`.
 -/
 @[simp]
 theorem if_mem_support [DecidableEq α] {N : Type*} [Zero N] (f : α →₀ N) (a : α) :
@@ -103,7 +101,7 @@ theorem if_mem_support [DecidableEq α] {N : Type*} [Zero N] (f : α →₀ N) (
   exact fun h ↦ h.symm
 
 /-- A restatement of `prod_ite_eq` with the equality test reversed. -/
-@[to_additive (attr := simp) "A restatement of `sum_ite_eq` with the equality test reversed."]
+@[to_additive (attr := simp) /-- A restatement of `sum_ite_eq` with the equality test reversed. -/]
 theorem prod_ite_eq' [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M → N) :
     (f.prod fun x v => ite (x = a) (b x v) 1) = ite (a ∈ f.support) (b a (f a)) 1 := by
   dsimp [Finsupp.prod]
@@ -127,8 +125,8 @@ theorem prod_zpow {N} [DivisionCommMonoid N] [Fintype α] (f : α →₀ ℤ) (g
 /-- If `g` maps a second argument of 0 to 1, then multiplying it over the
 result of `onFinset` is the same as multiplying it over the original `Finset`. -/
 @[to_additive
-      "If `g` maps a second argument of 0 to 0, summing it over the
-      result of `onFinset` is the same as summing it over the original `Finset`."]
+      /-- If `g` maps a second argument of 0 to 0, summing it over the
+      result of `onFinset` is the same as summing it over the original `Finset`. -/]
 theorem onFinset_prod {s : Finset α} {f : α → M} {g : α → M → N} (hf : ∀ a, f a ≠ 0 → a ∈ s)
     (hg : ∀ a, g a 0 = 1) : (onFinset s f hf).prod g = ∏ a ∈ s, g a (f a) :=
   Finset.prod_subset support_onFinset_subset <| by simp +contextual [*]
@@ -136,8 +134,8 @@ theorem onFinset_prod {s : Finset α} {f : α → M} {g : α → M → N} (hf : 
 /-- Taking a product over `f : α →₀ M` is the same as multiplying the value on a single element
 `y ∈ f.support` by the product over `erase y f`. -/
 @[to_additive
-      " Taking a sum over `f : α →₀ M` is the same as adding the value on a
-      single element `y ∈ f.support` to the sum over `erase y f`. "]
+      /-- Taking a sum over `f : α →₀ M` is the same as adding the value on a
+      single element `y ∈ f.support` to the sum over `erase y f`. -/]
 theorem mul_prod_erase (f : α →₀ M) (y : α) (g : α → M → N) (hyf : y ∈ f.support) :
     g y (f y) * (erase y f).prod g = f.prod g := by
   classical
@@ -150,9 +148,9 @@ theorem mul_prod_erase (f : α →₀ M) (y : α) (g : α → M → N) (hyf : y 
 then its product over `f : α →₀ M` is the same as multiplying the value on any element
 `y : α` by the product over `erase y f`. -/
 @[to_additive
-      " Generalization of `Finsupp.add_sum_erase`: if `g` maps a second argument of 0
+      /-- Generalization of `Finsupp.add_sum_erase`: if `g` maps a second argument of 0
       to 0, then its sum over `f : α →₀ M` is the same as adding the value on any element
-      `y : α` to the sum over `erase y f`. "]
+      `y : α` to the sum over `erase y f`. -/]
 theorem mul_prod_erase' (f : α →₀ M) (y : α) (g : α → M → N) (hg : ∀ i : α, g i 0 = 1) :
     g y (f y) * (erase y f).prod g = f.prod g := by
   classical
@@ -307,9 +305,9 @@ theorem sum_sub [Zero M] [SubtractionCommMonoid G] {f : α →₀ M} {h₁ h₂ 
 if `h` is an additive-to-multiplicative homomorphism on the support.
 This is a more general version of `Finsupp.prod_add_index'`; the latter has simpler hypotheses. -/
 @[to_additive
-      "Taking the product under `h` is an additive homomorphism of finsupps, if `h` is an
+      /-- Taking the product under `h` is an additive homomorphism of finsupps, if `h` is an
       additive homomorphism on the support. This is a more general version of
-      `Finsupp.sum_add_index'`; the latter has simpler hypotheses."]
+      `Finsupp.sum_add_index'`; the latter has simpler hypotheses. -/]
 theorem prod_add_index [DecidableEq α] [AddZeroClass M] [CommMonoid N] {f g : α →₀ M}
     {h : α → M → N} (h_zero : ∀ a ∈ f.support ∪ g.support, h a 0 = 1)
     (h_add : ∀ a ∈ f.support ∪ g.support, ∀ (b₁ b₂), h a (b₁ + b₂) = h a b₁ * h a b₂) :
@@ -323,9 +321,9 @@ theorem prod_add_index [DecidableEq α] [AddZeroClass M] [CommMonoid N] {f g : �
 if `h` is an additive-to-multiplicative homomorphism.
 This is a more specialized version of `Finsupp.prod_add_index` with simpler hypotheses. -/
 @[to_additive
-      "Taking the sum under `h` is an additive homomorphism of finsupps,if `h` is an additive
+      /-- Taking the sum under `h` is an additive homomorphism of finsupps,if `h` is an additive
       homomorphism. This is a more specific version of `Finsupp.sum_add_index` with simpler
-      hypotheses."]
+      hypotheses. -/]
 theorem prod_add_index' [AddZeroClass M] [CommMonoid N] {f g : α →₀ M} {h : α → M → N}
     (h_zero : ∀ a, h a 0 = 1) (h_add : ∀ a b₁ b₂, h a (b₁ + b₂) = h a b₁ * h a b₂) :
     (f + g).prod h = f.prod h * g.prod h := by
@@ -489,8 +487,8 @@ theorem multiset_sum_sum [Zero M] [AddCommMonoid N] {f : α →₀ M} {h : α �
 /-- For disjoint `f1` and `f2`, and function `g`, the product of the products of `g`
 over `f1` and `f2` equals the product of `g` over `f1 + f2` -/
 @[to_additive
-      "For disjoint `f1` and `f2`, and function `g`, the sum of the sums of `g`
-      over `f1` and `f2` equals the sum of `g` over `f1 + f2`"]
+      /-- For disjoint `f1` and `f2`, and function `g`, the sum of the sums of `g`
+      over `f1` and `f2` equals the sum of `g` over `f1 + f2` -/]
 theorem prod_add_index_of_disjoint [AddCommMonoid M] {f1 f2 : α →₀ M}
     (hd : Disjoint f1.support f2.support) {β : Type*} [CommMonoid β] (g : α → M → β) :
     (f1 + f2).prod g = f1.prod g * f2.prod g := by

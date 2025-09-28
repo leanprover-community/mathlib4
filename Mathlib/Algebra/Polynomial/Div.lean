@@ -443,7 +443,7 @@ theorem coeff_divByMonic_X_sub_C (p : R[X]) (a : R) (n : ℕ) :
   nontriviality R
   by_cases hp : p.natDegree = 0
   · rw [(divByMonic_eq_zero_iff <| monic_X_sub_C a).mpr, coeff_zero]
-    apply degree_lt_degree; rw [hp, natDegree_X_sub_C]; norm_num
+    apply degree_lt_degree; rw [hp, natDegree_X_sub_C]; simp
   · apply coeff_eq_zero_of_natDegree_lt
     rw [natDegree_divByMonic p (monic_X_sub_C a), natDegree_X_sub_C]
     exact (Nat.pred_lt hp).trans_le h
@@ -470,7 +470,7 @@ theorem finiteMultiplicity_X_sub_C (a : R) (h0 : p ≠ 0) : FiniteMultiplicity (
   rw [degree_X_sub_C]
   decide
 
-/- Porting note: stripping out classical for decidability instance parameter might
+/- TODO: stripping out classical for decidability instance parameter might
 make for better ergonomics -/
 /-- The largest power of `X - C a` which divides `p`.
 This *could be* computable via the divisibility algorithm `Polynomial.decidableDvdMonic`,
@@ -484,10 +484,8 @@ def rootMultiplicity (a : R) (p : R[X]) : ℕ :=
       inferInstanceAs (Decidable ¬_)
     Nat.find (finiteMultiplicity_X_sub_C a h0)
 
-/- Porting note: added the following due to diamond with decidableProp and
-decidableDvdMonic see also [Zulip]
-(https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/non-defeq.20aliased.20instance) -/
 theorem rootMultiplicity_eq_nat_find_of_nonzero [DecidableEq R] {p : R[X]} (p0 : p ≠ 0) {a : R} :
+    -- `decidableDvdMonic` can't be an instance, so we inline it here.
     letI : DecidablePred fun n : ℕ => ¬(X - C a) ^ (n + 1) ∣ p := fun n =>
       have := decidableDvdMonic p ((monic_X_sub_C a).pow (n + 1))
       inferInstanceAs (Decidable ¬_)
@@ -679,19 +677,12 @@ lemma eval_divByMonic_eq_trailingCoeff_comp {p : R[X]} {t : R} :
     trailingCoeff, Nat.le_zero.1 (natTrailingDegree_le_of_ne_zero <|
       this ▸ eval_divByMonic_pow_rootMultiplicity_ne_zero t hp), this]
 
-/- Porting note: the ML3 proof no longer worked because of a conflict in the
-inferred type and synthesized type for `DecidableRel` when using `Nat.le_find_iff` from
-`Mathlib/Algebra/Polynomial/Div.lean` After some discussion on [Zulip]
-(https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/decidability.20leakage)
-introduced `Polynomial.rootMultiplicity_eq_nat_find_of_nonzero` to contain the issue
--/
 /-- The multiplicity of `a` as root of a nonzero polynomial `p` is at least `n` iff
 `(X - a) ^ n` divides `p`. -/
 lemma le_rootMultiplicity_iff (p0 : p ≠ 0) {a : R} {n : ℕ} :
     n ≤ rootMultiplicity a p ↔ (X - C a) ^ n ∣ p := by
   classical
-  rw [rootMultiplicity_eq_nat_find_of_nonzero p0, @Nat.le_find_iff _ (_)]
-  simp_rw [Classical.not_not]
+  simp_rw [rootMultiplicity_eq_nat_find_of_nonzero p0, @Nat.le_find_iff _ (_), Classical.not_not]
   refine ⟨fun h => ?_, fun h m hm => (pow_dvd_pow _ hm).trans h⟩
   rcases n with - | n
   · rw [pow_zero]

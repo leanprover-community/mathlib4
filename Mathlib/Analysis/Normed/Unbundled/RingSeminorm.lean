@@ -48,7 +48,7 @@ variable {R : Type*}
   values, is subadditive and submultiplicative and such that `f (-x) = f x` for all `x ∈ R`. -/
 structure RingSeminorm (R : Type*) [NonUnitalNonAssocRing R] extends AddGroupSeminorm R where
   /-- The property of a `RingSeminorm` that for all `x` and `y` in the ring, the norm of `x * y` is
-    less than the norm of `x` times the norm of `y`. -/
+  less than the norm of `x` times the norm of `y`. -/
   mul_le' : ∀ x y : R, toFun (x * y) ≤ toFun x * toFun y
 
 /-- A function `f : R → ℝ` is a norm on a (nonunital) ring if it is a seminorm and `f x = 0`
@@ -241,7 +241,6 @@ instance ringNormClass : RingNormClass (RingNorm R) R ℝ where
   map_neg_eq_map f := f.neg'
   eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero' _
 
--- Porting note: This is no longer `@[simp]` in Lean 4
 theorem toFun_eq_coe (p : RingNorm R) : p.toFun = p := rfl
 
 @[ext]
@@ -345,7 +344,6 @@ instance mulRingNormClass : MulRingNormClass (MulRingNorm R) R ℝ where
   map_neg_eq_map f := f.neg'
   eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero' _
 
--- Porting note: This no longer in `@[simp]`-normal form in Lean 4
 theorem toFun_eq_coe (p : MulRingNorm R) : p.toFun = p := rfl
 
 @[ext]

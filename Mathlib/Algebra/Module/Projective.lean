@@ -173,7 +173,7 @@ theorem Projective.of_split [Module.Projective R M]
 
 theorem Projective.of_equiv [Module.Projective R M]
     (e : M ≃ₗ[R] P) : Module.Projective R P :=
-  Projective.of_split e.symm e.toLinearMap (by ext; simp)
+  Projective.of_split e.symm e.toLinearMap (by simp)
 
 /-- A quotient of a projective module is projective iff it is a direct summand. -/
 theorem Projective.iff_split_of_projective [Module.Projective R M] (s : M →ₗ[R] P)
