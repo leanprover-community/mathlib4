@@ -6,7 +6,7 @@ Authors: Yury Kudryashov, Oliver Nash
 import Mathlib.Topology.PartialHomeomorph
 import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.Normed.Module.Ball.Pointwise
-import Mathlib.Data.Real.Sqrt
+import Mathlib.Analysis.Real.Sqrt
 
 /-!
 # (Local) homeomorphism between a normed space and a ball
