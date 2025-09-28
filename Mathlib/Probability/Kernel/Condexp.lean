@@ -235,7 +235,7 @@ lemma condDistrib_apply_ae_eq_condExpKernel_map {β γ : Type*} {mβ : Measurabl
     (hX : Measurable X) (hY : Measurable Y) {s : Set β} (hs : MeasurableSet s) :
     (fun a ↦ condDistrib X Y μ (Y a) s)
       =ᵐ[μ] fun a ↦ (condExpKernel μ (mγ.comap Y)).map X a s := by
-  simp_rw [Kernel.map_apply _ hX, Measure.map_apply hX hs]
+  simp_rw [Kernel.map_apply' _ hX _ hs]
   filter_upwards [condDistrib_ae_eq_condExp hY hX (μ := μ) hs,
     condExpKernel_ae_eq_condExp hY.comap_le (μ := μ) (hX hs)] with a ha₁ ha₂
   rw [Measure.real] at ha₁ ha₂
