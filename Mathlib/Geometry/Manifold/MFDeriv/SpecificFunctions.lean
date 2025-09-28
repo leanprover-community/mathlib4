@@ -570,7 +570,6 @@ lemma HasMFDerivWithinAt.prodMap {t : Set M'} {x' : M'} {f : M → N} {g : M' �
   rw [writtenInExtChart_prod, this]
   exact hf.2.prodMap _ hg.2
 
-#exit
 lemma HasMFDerivAt.prodMap {x' : M'} {f : M → N} {g : M' → N'}
     {df : TangentSpace I x →L[𝕜] TangentSpace J (f x)} (hf : HasMFDerivAt I J f x df)
     {dg : TangentSpace I' x' →L[𝕜] TangentSpace J' (g x')}
@@ -578,7 +577,9 @@ lemma HasMFDerivAt.prodMap {x' : M'} {f : M → N} {g : M' → N'}
     HasMFDerivAt (I.prod I') (J.prod J') (Prod.map f g) (x, x')
       ((mfderiv I J f x).prodMap (mfderiv I' J' g x')) := by
   simp_rw [← hasMFDerivWithinAt_univ, ← mfderivWithin_univ, ← univ_prod_univ]
-  exact hf.hasMFDerivWithinAt.prodMap hg.hasMFDerivWithinAt
+  convert hf.hasMFDerivWithinAt.prodMap hg.hasMFDerivWithinAt
+  · rw [mfderivWithin_univ]; exact hf.mfderiv
+  · rw [mfderivWithin_univ]; exact hg.mfderiv
 
 lemma mfderivWithin_prodMap {t : Set M'} {x' : M'} {f : M → N} {g : M' → N'}
     (hf : MDifferentiableWithinAt I J f s x) (hg : MDifferentiableWithinAt I' J' g t x')
