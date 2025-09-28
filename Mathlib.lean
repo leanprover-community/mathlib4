@@ -2198,7 +2198,6 @@ import Mathlib.CategoryTheory.EffectiveEpi.Enough
 import Mathlib.CategoryTheory.EffectiveEpi.Extensive
 import Mathlib.CategoryTheory.EffectiveEpi.Preserves
 import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
-import Mathlib.CategoryTheory.EffectiveEpi.Types
 import Mathlib.CategoryTheory.Elements
 import Mathlib.CategoryTheory.Elementwise
 import Mathlib.CategoryTheory.Endofunctor.Algebra
