@@ -38,9 +38,27 @@ open Lean Meta
 
 initialize registerTraceClass `Meta.isolate
 
+/-- Lemmas for the `isolate` tactic are stored in an environment extension
+`Mathlib.Tactic.Isolate.isolateExt`. Given a free variable `x` and a relational expression of the
+form `f a₁ a₂ ... x ... aₖ ~ y`, a key can be extracted, and the appropriate lemma(s) will be looked
+up in the environment extension using that key. This structure is the type for that key. -/
+structure IsolateLemmaKey where
+  /- the relation `~` in the relational expression -/
+  relation : Name
+  /- the function `f` in the relational expression -/
+  operation : Name
+  /-- the index of the `x` free-variable argument in the function `f` -/
+  arity : Nat
+  /- a boolean, `false` if the relational expression is `f a₁ a₂ ... x ... aₖ ~ y`, and `true` if it
+  is reversed (`y ~ f a₁ a₂ ... x ... aₖ`). -/
+  symm? : Bool
+deriving BEq, Hashable, Inhabited, Repr
+
+instance : ToFormat IsolateLemmaKey := ⟨repr⟩
+
 /-- Environment extension for "isolation" (`isolate`) lemmas. -/
-initialize isolateExt : SimpleScopedEnvExtension ((Name × Name × Nat × Bool) × Name)
-    (Std.HashMap (Name × Name × Nat × Bool) (Array Name)) ←
+initialize isolateExt : SimpleScopedEnvExtension (IsolateLemmaKey × Name)
+    (Std.HashMap IsolateLemmaKey (Array Name)) ←
   registerSimpleScopedEnvExtension {
     addEntry := fun m (n, lem) => m.insert n ((m.getD n #[]).push lem)
     initial := {}
@@ -66,7 +84,7 @@ If the given declaration is a valid `@[isolate]` lemma, we return the relation `
 identified in the key hypothesis, together with the index of the `x` free-variable argument in the
 function `f`, and a boolean recording whether `f` occurs on the RHS (`true`) or LHS (`false`) of the
 relation `~`. -/
-def parseIsolateLemma (decl : Name) : MetaM (Name × Name × Nat × Bool) := do
+def parseIsolateLemma (decl : Name) : MetaM IsolateLemmaKey := do
   let declTy := (← getConstInfo decl).type
   withReducible <| forallTelescopeReducing declTy fun _ targetTy => do
   let failTarget (m : MessageData) : MessageData :=
@@ -115,18 +133,14 @@ def parseIsolateLemma (decl : Name) : MetaM (Name × Name × Nat × Bool) := do
     guard (eArgs[i]!).isFVar <|>
       throwError (failLHS m!"the variable {x} should appear as directly as an argument of the \
         operation {eFn}")
-    return (relName, eFnName, i, lhsSymm)
+    return ⟨relName, eFnName, i, lhsSymm⟩
   | _ =>
     throwError (failLHS m!"the variable {x} should appear only once in the expression {e}")
 
 /-- Attribute marking "isolation" (`isolate`) lemmas. Candidate lemmas are parsed using the function
-`Mathlib.Tactic.Isolate.parseIsolateLemma`. If successful, we obtain a key, comprising
-* the relation `~'` and function `f` identified in the key hypothesis;
-* the index of the `x` free-variable argument in the function `f`;
-* a boolean recording whether `f` occurs on the RHS (`true`) or LHS (`false`) of the relation `~`.
-
-The lemma is then added to the environment extension `Mathlib.Tactic.Isolate.isolateExt`, stored
-under this key. -/
+`Mathlib.Tactic.Isolate.parseIsolateLemma`. If successful, we obtain a key of type
+`Mathlib.Tactic.Isolate.IsolateLemmaKey`. The lemma is then added to the environment extension
+`Mathlib.Tactic.Isolate.isolateExt`, stored under this key. -/
 initialize registerBuiltinAttribute {
   name := `isolate
   descr := "isolation"
@@ -134,7 +148,7 @@ initialize registerBuiltinAttribute {
     -- parse the proposed isolation lemma to find the relation `~'` and function `f` identified in
     -- the key hypothesis, together with the index of the designated free variable in the argument
     -- list of `f`, and a boolean specifying which side of the relation `f` is on.
-    let key : Name × Name × Nat × Bool ← MetaM.run' (parseIsolateLemma decl)
+    let key : IsolateLemmaKey ← MetaM.run' (parseIsolateLemma decl)
     trace[Meta.isolate] "Recorded as a isolation lemma for {key}"
     -- store this lemma in the environment extension for isolation lemmas, with the relation,
     -- function, argument index and "side" boolean jointly serving as the lookup key for this lemma.
@@ -164,7 +178,8 @@ elab "#query_isolate_lemmas" e0:(ppSpace colGt ident)? e1:(ppSpace colGt ident)?
     | 0  => pure false
     | 1 => pure true
     | _ => throwError "argument {e3} should be a boolean"
-  match (isolateExt.getState (← getEnv))[(rel, f, i, b)]? with
+  let key : IsolateLemmaKey := ⟨rel, f, i, b⟩
+  match (isolateExt.getState (← getEnv))[key]? with
   | some lems => logInfo m!"{lems}"
   | none => logInfo "No lemmas with this key found"
 
@@ -214,7 +229,7 @@ def isolateStep (x : Expr) (P : Expr) : MetaM (List MVarId × Simp.Result) := do
     let idx := args.findIdx (· == xArg)
     -- Look up the `@[isolate]` lemmas with the right relation, function, argument index and
     -- LHS/RHS positioning.
-    let key := (relName, fnName, idx, !symmetric? && !lhsContains)
+    let key : IsolateLemmaKey := ⟨relName, fnName, idx, !symmetric? && !lhsContains⟩
     let isolateDict := isolateExt.getState (← getEnv)
     let lemmas := isolateDict.getD key #[]
     let s ← saveState
