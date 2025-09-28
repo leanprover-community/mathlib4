@@ -512,43 +512,52 @@ lemma leviCivitaRhs'_smulY_apply [CompleteSpace E] {f : M → ℝ}
         + (bar _ <| mfderiv% f x (X x)) • leviCivitaRhs' I X Y Z x := by
   simp only [leviCivitaRhs']
   simp_rw [rhs_aux_smulX I Y Z X f]
-  simp only [product_smul_left, Pi.add_apply, Pi.sub_apply, smul_eq_mul]
-  simp only [Pi.mul_apply]
-  rw [rhs_aux_smulY_apply I X hf hY hZ]
-  rw [rhs_aux_smulZ_apply I Z hf hX hY]
+  simp only [product_smul_left, Pi.add_apply, Pi.sub_apply, smul_eq_mul, Pi.mul_apply]
+  rw [rhs_aux_smulY_apply I X hf hY hZ, rhs_aux_smulZ_apply I Z hf hX hY]
 
-
-
-  have aux2 := mlieBracket_smul_right (V := Z) hf hY
-  have aux := mlieBracket_smul_left (W := X) hf hY
+  -- TODO: is there a better abstraction for this kind of "Lie bracket conv mode"?
   have h1 : ⟪Z, mlieBracket I (f • Y) X⟫ x =
       - bar _ (((mfderiv I 𝓘(ℝ, ℝ) f x) (X x))) • ⟪Z, Y⟫ x + f x • ⟪Z, mlieBracket I Y X⟫ x := by
-    simp_rw [product_apply, aux, inner_add_right]
+    simp_rw [product_apply, mlieBracket_smul_left (W := X) hf hY, inner_add_right]
     congr
     · simp [bar]; rw [real_inner_smul_right]
     · rw [inner_smul_right_eq_smul]
-  rw [h1]
-
   have h2 : ⟪X, mlieBracket I Z (f • Y)⟫ x =
       bar _ (((mfderiv I 𝓘(ℝ, ℝ) f x) (Z x))) • ⟪X, Y⟫ x + f x • ⟪X, mlieBracket I Z Y⟫ x := by
-    simp_rw [product_apply, aux2, inner_add_right]
+    simp_rw [product_apply, mlieBracket_smul_right (V := Z) hf hY, inner_add_right]
     congr
     · simp [bar]; rw [real_inner_smul_right]
     · rw [inner_smul_right_eq_smul]
-  rw [h2]
+  rw [h1, h2, product_swap I Y Z]
 
   set A := rhs_aux I X Y Z x
   set B := rhs_aux I Y Z X x
   set C := rhs_aux I Z X Y x
-  dsimp
-  set dfx := (mfderiv I 𝓘(ℝ, ℝ) f x)
   set D := ⟪Y, mlieBracket I X Z⟫ x
   set E := ⟪Z, mlieBracket I Y X⟫ x
   set F := ⟪X, mlieBracket I Z Y⟫ x
-
-  simp [bar]
-  -- obvious now?
-  sorry
+  set G1 := ⟪Y, Z⟫ x
+  set G2 := ⟪X, Y⟫ x
+  set dfx := (mfderiv I 𝓘(ℝ, ℝ) f x)
+  set H := (bar (f x)) (dfx (X x)) with H_eq
+  set K := (bar (f x)) (dfx (Z x)) with K_eq
+  change f x * A + bar _ (dfx (X x)) * G1 + f x * B - (f x * C + bar _ (dfx (Z x)) * G2)
+    - f x * D - (-H * G1 + f x * E) + (K * G2 + f x * F) = _
+  rw [← H_eq, ← K_eq]
+  ring_nf
+  -- missing computation (if this is actually true...)
+  have pre : G1 + G1 = A + (B - C) + (-D - E) + F := by
+    simp only [G1, A, B, C, D, E, F, rhs_aux]
+    set A' := (mfderiv I 𝓘(ℝ, ℝ) ⟪Y, Z⟫ x) (X x)
+    abel
+    sorry
+  have : H * G1 * 2 = A * H + (H * B - H * C) + (-(H * D) - H * E) + H * F := by
+    trans H * (G1 + G1)
+    · ring
+    rw [mul_comm A H, pre]
+    ring
+  rw [this]
+  ring
 
   -- -- TODO: clean up this proof!
   -- let f : M → ℝ := fun _ ↦ a
