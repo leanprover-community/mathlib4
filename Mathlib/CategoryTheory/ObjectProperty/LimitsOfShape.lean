@@ -22,13 +22,6 @@ Under certain circumstances, the type of objects satisfying
 introduced is to deduce that the full subcategory of `P.limitsOfShape J`
 is essentially small.
 
-## TODO
-
-* formalize the closure of `P` under finite limits (which require
-iterating over `ℕ`), and more generally the closure under limits
-indexed by a category whose type of arrows has a cardinality
-that is bounded by a certain regular cardinal (@joelriou)
-
 -/
 
 universe w v' u' v u
