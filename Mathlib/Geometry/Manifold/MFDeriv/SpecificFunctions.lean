@@ -554,14 +554,6 @@ theorem MDifferentiable.prodMap (hf : MDifferentiable I I' f) (hg : MDifferentia
 @[deprecated (since := "2025-04-18")]
 alias MDifferentiable.prod_map := MDifferentiable.prodMap
 
--- TODO: move to the correct location!
-@[simp]
-lemma writtenInExtChart_prod {f : M → N} {g : M' → N'} {x : M} {x' : M'} :
-    (writtenInExtChartAt (I.prod I') (J.prod J') (x, x') (Prod.map f g)) =
-      Prod.map (writtenInExtChartAt I J x f) (writtenInExtChartAt I' J' x' g) := by
-  ext p <;>
-  simp [writtenInExtChartAt, I.toPartialEquiv.prod_symm, (chartAt H x).toPartialEquiv.prod_symm]
-
 lemma HasMFDerivWithinAt.prodMap {t : Set M'} {x' : M'} {f : M → N} {g : M' → N'}
     {df : TangentSpace I x →L[𝕜] TangentSpace J (f x)} (hf : HasMFDerivWithinAt I J f s x df)
     {dg : TangentSpace I' x' →L[𝕜] TangentSpace J' (g x')}
