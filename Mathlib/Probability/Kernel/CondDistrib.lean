@@ -207,7 +207,7 @@ lemma condDistrib_map {γ : Type*} {mγ : MeasurableSpace γ}
   refine condDistrib_ae_eq_of_measure_eq_compProd (μ := ν.map f) hX hY _ ?_
   rw [AEMeasurable.map_map_of_aemeasurable hX hf, compProd_map_condDistrib (by fun_prop),
     AEMeasurable.map_map_of_aemeasurable (by fun_prop) hf]
-  congr
+  rfl
 
 lemma condDistrib_fst_prod {γ : Type*} {mγ : MeasurableSpace γ}
     (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ) (ν : Measure γ) [IsProbabilityMeasure ν] :
