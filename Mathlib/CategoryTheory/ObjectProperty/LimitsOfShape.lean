@@ -53,7 +53,7 @@ lemma strictLimitsOfShape_monotone {Q : ObjectProperty C} (h : P ≤ Q) :
   exact ⟨F, fun j ↦ h _ (hF j)⟩
 
 /-- A structure expressing that `X : C` is the limit of a functor
-`diag : J ⥤ C` such that `P (diag.obj j)` hold for all `j`. -/
+`diag : J ⥤ C` such that `P (diag.obj j)` holds for all `j`. -/
 structure LimitOfShape (X : C) extends LimitPresentation J X where
   prop_diag_obj (j : J) : P (diag.obj j)
 
@@ -63,12 +63,10 @@ variable {P J}
 
 /-- If `F : J ⥤ C` is a functor that has a limit and is such that for all `j`,
 `F.obj j` satisfies a property `P`, then this structure expresses that `limit F`
-is indeed a limits of objects satisfying `P`. -/
+is indeed a limit of objects satisfying `P`. -/
 noncomputable def limit (F : J ⥤ C) [HasLimit F] (hF : ∀ j, P (F.obj j)) :
     P.LimitOfShape J (limit F) where
-  diag := F
-  π := _
-  isLimit := limit.isLimit _
+  toLimitPresentation := .limit F
   prop_diag_obj := hF
 
 /-- If `X` is a limit indexed by `J` of objects satisfying a property `P`, then
@@ -80,7 +78,7 @@ def ofIso {X : C} (h : P.LimitOfShape J X) {Y : C} (e : X ≅ Y) :
   prop_diag_obj := h.prop_diag_obj
 
 /-- If `X` is a limit indexed by `J` of objects satisfying a property `P`,
-it is also a limit indexed by `J` of objects satisfyind `Q` if `P ≤ Q`. -/
+it is also a limit indexed by `J` of objects satisfying `Q` if `P ≤ Q`. -/
 @[simps toLimitPresentation]
 def ofLE {X : C} (h : P.LimitOfShape J X) {Q : ObjectProperty C} (hPQ : P ≤ Q) :
     Q.LimitOfShape J X where
@@ -131,7 +129,7 @@ lemma limitsOfShape_isoClosure :
   intro X ⟨h⟩
   choose obj h₁ h₂ using h.prop_diag_obj
   exact
-   ⟨{ toLimitPresentation := h.chgDiag (h.diag.isoCopyObj obj (fun j ↦ (h₂ j).some)).symm
+   ⟨{ toLimitPresentation := h.changeDiag (h.diag.isoCopyObj obj (fun j ↦ (h₂ j).some)).symm
       prop_diag_obj := h₁ }⟩
 
 instance [ObjectProperty.Small.{w} P] [LocallySmall.{w} C] [Small.{w} J] [LocallySmall.{w} J] :
