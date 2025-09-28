@@ -13,6 +13,9 @@ for each command.
 
 This is useful for the "removeDeprecations" automation, since it helps identifying the exact range
 of each declaration that should be removed.
+
+This linter is strictly tied to the `#clear_deprecations` command in
+`Mathlib/Tactic/Linter/FindDeprecations.lean`.
 -/
 
 open Lean Elab Linter
