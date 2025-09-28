@@ -4,14 +4,18 @@ on:
   push:
     # TODO: delete the "push" trigger and uncomment the "schedule" trigger below before merging!
     branches:
-    - remove_deprecations_linter_dev
     - remove_deprecations_linter_dev_upstream
   # schedule:
   #   - cron: "5 4 * * 1" # At 04:05, on Monday
   workflow_dispatch:
     inputs:
-      date_range:
-        description: 'date range (YYYY-MM-DD YYYY-MM-DD): remove deprecated declarations between these two dates (separated by a space)'
+      raw_from_date:
+        description: 'starting date for deprecations to remove: YYYY-MM-DD or valid input for date -d, like "3 months ago"'
+        required: false
+        default: ''
+        type: string
+      raw_to_date:
+        description: 'ending date for deprecations to remove: YYYY-MM-DD or valid input for date -d, like "2 weeks ago"'
         required: false
         default: ''
         type: string
@@ -27,6 +31,91 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository == 'leanprover-community/mathlib4'
     steps:
+    - name: Process dates
+      id: process_dates
+      shell: bash
+      env:
+        RAW_FROM_DATE: ${{ inputs.raw_from_date }}
+        RAW_TO_DATE: ${{ inputs.raw_to_date }}
+      run: |
+        set -euo pipefail
+
+        # Function to validate YYYY-MM-DD format
+        validate_iso_date() {
+          local date_str="$1"
+          if [[ "$date_str" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+            # Validate it's a real date by parsing it
+            if date -d "$date_str" >/dev/null 2>&1; then
+              echo "$date_str"
+              return 0
+            fi
+          fi
+          return 1
+        }
+
+        # Function to safely parse date using `date -d`
+        parse_date_safely() {
+          local input="$1"
+
+          # Basic shell injection protection - reject inputs with dangerous characters
+          if [[ "$input" =~ [\;\&\|\`\$\(\)] ]]; then
+            echo "Error: Invalid characters in date input: $input" >&2
+            return 1
+          fi
+
+          # Try to parse with date -d and extract YYYY-MM-DD format
+          local parsed_date
+          if parsed_date=$(date -d "$input" +%Y-%m-%d 2>/dev/null); then
+            echo "$parsed_date"
+            return 0
+          else
+            echo "Error: Unable to parse date: $input" >&2
+            return 1
+          fi
+        }
+
+        # Process from_date
+        if [[ -n "${RAW_FROM_DATE:-}" ]]; then
+          echo "Processing raw_from_date: '${RAW_FROM_DATE}'"
+
+          if from_date=$(validate_iso_date "${RAW_FROM_DATE}"); then
+            echo "Valid ISO date format detected"
+          else
+            echo "Not a valid ISO date, trying date parser..."
+            from_date=$(parse_date_safely "${RAW_FROM_DATE}")
+          fi
+        else
+          echo "No raw_from_date provided, using 6 months ago"
+          from_date=$(date -d '6 months ago' +%Y-%m-%d)
+        fi
+
+        # Process to_date
+        if [[ -n "${RAW_TO_DATE:-}" ]]; then
+          echo "Processing raw_to_date: '${RAW_TO_DATE}'"
+
+          if to_date=$(validate_iso_date "${RAW_TO_DATE}"); then
+            echo "Valid ISO date format detected"
+          else
+            echo "Not a valid ISO date, trying date parser..."
+            to_date=$(parse_date_safely "${RAW_TO_DATE}")
+          fi
+        else
+          echo "No raw_to_date provided, using today"
+          to_date=$(date +%Y-%m-%d)
+        fi
+
+        echo "Parsed dates - from: $from_date, to: $to_date"
+
+        # Validate date range - from_date should not be after to_date
+        if [[ "$from_date" > "$to_date" ]]; then
+          echo "Error: from_date ($from_date) cannot be after to_date ($to_date)" >&2
+          exit 1
+        fi
+
+        # Set outputs
+        echo "from_date=$from_date" >> "$GITHUB_OUTPUT"
+        echo "to_date=$to_date" >> "$GITHUB_OUTPUT"
+
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
     - name: Configure Lean
@@ -49,8 +138,9 @@ jobs:
 
     - name: set up deprecated doubles
       env:
-        OLD_DATE: "2025-08-01"
-        NEW_DATE: "2025-08-02"
+        OLD_DATE: "${{ steps.process_dates.outputs.from_date }}"
+        NEW_DATE: "${{ steps.process_dates.outputs.to_date }}"
+        DRY_RUN: "${{ toJson(inputs.dry_run) }}"
       run: |
         # We create a temporary file to run the command that adds the set_option linter.removeDeprecations
         # to the relevant files and saves the modified files with a new name
@@ -60,7 +150,8 @@ jobs:
           for repo in Mathlib Archive Counterexamples; do
             printf $'import %s\n' "$repo"
           done
-          printf $'#clear_deprecations "%s" "%s" really\n' "$OLD_DATE" "$NEW_DATE"
+          REALLY=$([ "$DRY_RUN" = "true" ] && echo "" || echo "really")
+          printf $'#clear_deprecations "%s" "%s" "%s"\n' "$OLD_DATE" "$NEW_DATE" "$REALLY"
         } | tee -a "${tmplean}"
         echo "::endgroup::"
         # This will add the new files, whose names end in `_with_option.lean`.
@@ -78,77 +169,6 @@ jobs:
         #  sed -i "/${tmpMod/\//.}/d" Mathlib.lean
         #fi
 
-    - name: run linter
-      if: 'false'
-      env:
-        DATE_RANGE: ${{ inputs.date_range }}
-      run: |
-        # We don't want to use the cache here since we need the `.tmp` files
-        # TODO: provide date input to lake build here via DATE_RANGE
-        # WARNING: make sure the string is escaped properly as this is user input!
-        # can we pass the environment variable directly to lake?
-        echo "::group::lake build output"
-        lake build | tee linter.out
-        echo "::endgroup::"
-
-        echo "::group::lake build Archive output"
-        lake build Archive | tee linter_archive.out
-        echo "::endgroup::"
-
-        echo "::group::lake build Counterexamples output"
-        lake build Counterexamples | tee linter_counterexamples.out
-        echo "::endgroup::"
-
-        # Question: Can we run this on MathlibTest as well?
-        # I do see some tests for DeprecatedModule.lean but I'm not sure if the linter will try to remove them
-        # If not, we'll have to remember to check manually for deprecations there from time to time
-
-        # construct script for deleting deprecations
-        echo '#!/usr/bin/env bash' > delete_deprecations.sh
-        # WARNING: we assume that all lines in the output of 'lake build' that begin with "mv" are safe to run
-        # the rest of the build should be silent as we will only ever run this on master
-
-        echo "::group::Content of linter.out"
-        cat linter.out
-        echo "::endgroup::"
-
-        echo "::group::Content of a random file"
-        cat Mathlib/GroupTheory/MonoidLocalization/MonoidWithZero_with_option.lean
-        echo "::endgroup::"
-
-        grep --no-filename '^mv' linter.out linter_archive.out linter_counterexamples.out | sort --unique >> delete_deprecations.sh
-        sed -i 's=_with_option.lean$=.lean=' delete_deprecations.sh
-        chmod 755 delete_deprecations.sh
-        echo "::group::Here is the content of delete_deprecations.sh"
-        cat delete_deprecations.sh
-        echo "::endgroup::"
-
-    - name: remove outdated deprecated declarations
-      if: 'false'
-      id: remove
-      shell: bash
-      run: |
-        # requirements:
-        # - must leave the mathlib4 repo in a state that is ready to commit and push
-        # - must assign step outputs named `deprecation_date_from` and `deprecation_date_to`
-        # which specify the date range of removed deprecations (for use in the PR title and Zulip message)
-
-        if [ "${{ toJson(inputs.dry_run) }}" = "true" ]; then
-          echo "Dry run enabled, not modifying files"
-        else
-          echo "Modifying files..."
-          ./delete_deprecations.sh
-          # TODO: here may be a good place to remove the `\nset_option linter.removeDeprecations...\n` lines
-          # removing also the line break before and after.
-        fi
-
-        # TODO: set deprecation_date_from and deprecation_date_to outputs (extract from linter.out?)
-        # maybe this could be done in the previous step?
-        sed -i '/_with_option$/d' Mathlib.lean
-        echo "::group::Here is the content of git diff:"
-        git diff
-        echo "::endgroup::"
-
     - name: configure git setup
       run: |
         git remote add origin-bot "https://leanprover-community-bot:${{ secrets.UPDATE_NOLINTS_TOKEN }}@github.com/leanprover-community/mathlib4.git"
@@ -165,10 +185,8 @@ jobs:
       run: ./scripts/remove_deprecated_decls_CI.sh "${DEPRECATION_DATE_FROM}" "${DEPRECATION_DATE_TO}"
       env:
         DEPLOY_GITHUB_TOKEN: ${{ secrets.UPDATE_NOLINTS_TOKEN }}
-        DEPRECATION_DATE_FROM: "2025-08-01"
-        #${{ steps.remove.outputs.deprecation_date_from }}
-        DEPRECATION_DATE_TO: "2025-08-02"
-        #${{ steps.remove.outputs.deprecation_date_to }}
+        DEPRECATION_DATE_FROM: ${{ steps.process_dates.outputs.from_date }}
+        DEPRECATION_DATE_TO: ${{ steps.process_dates.outputs.to_date }}
 
     - name: Send Zulip message
       if: false # TODO: change to "steps.pr.outcome == 'success'" once everything is working
