@@ -42,6 +42,12 @@ variable [LE α] {s t : NonemptyInterval α}
 theorem toProd_injective : Injective (toProd : NonemptyInterval α → α × α) :=
   fun s t h => by cases s; cases t; congr
 
+/-- Allow lifting a pair `(a, b)` with `a ≤ b` to `NonemptyInterval`
+in the `lift` tactic. -/
+instance instCanLift :
+    CanLift (α × α) (NonemptyInterval α) NonemptyInterval.toProd (fun x ↦ x.1 ≤ x.2) where
+  prf x hx := ⟨⟨x, hx⟩, rfl⟩
+
 /-- The injection that induces the order on intervals. -/
 def toDualProd : NonemptyInterval α → αᵒᵈ × α :=
   toProd
@@ -284,6 +290,7 @@ variable [LE α]
 
 -- The `Inhabited, LE, OrderBot` instances should be constructed by a deriving handler.
 -- https://github.com/leanprover-community/mathlib4/issues/380
+-- Note(kmill): `Interval` is an `abbrev`, so none of these `instance`s are needed.
 instance : Inhabited (Interval α) := WithBot.inhabited
 instance : LE (Interval α) := WithBot.le
 instance : OrderBot (Interval α) := WithBot.orderBot

@@ -63,7 +63,7 @@ open scoped Topology Convex
 section Module
 
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {f : E → ℝ} {f' : E →L[ℝ] ℝ} {s : Set E} {a x y : E}
+  {f : E → ℝ} {f' : StrongDual ℝ E} {s : Set E} {a x y : E}
 
 /-!
 ### Positive tangent cone
