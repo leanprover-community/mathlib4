@@ -24,7 +24,7 @@ More specifically, we introduce
   ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n)` for the model space used
   to define `n`-dimensional real manifolds with corners
 
-## Notations
+## Notation
 
 In the scope `Manifold`, we introduce the notations
 * `𝓡 n` for the identity model with corners on `EuclideanSpace ℝ (Fin n)`
@@ -74,15 +74,15 @@ instance [NeZero n] : TopologicalSpace (EuclideanHalfSpace n) :=
 instance : TopologicalSpace (EuclideanQuadrant n) :=
   instTopologicalSpaceSubtype
 
-instance [NeZero n] : Inhabited (EuclideanHalfSpace n) :=
-  ⟨⟨0, le_rfl⟩⟩
-
-instance : Inhabited (EuclideanQuadrant n) :=
-  ⟨⟨0, fun _ => le_rfl⟩⟩
-
 instance {n : ℕ} [NeZero n] : Zero (EuclideanHalfSpace n) := ⟨⟨fun _ ↦ 0, by simp⟩⟩
 
 instance {n : ℕ} : Zero (EuclideanQuadrant n) := ⟨⟨fun _ ↦ 0, by simp⟩⟩
+
+instance [NeZero n] : Inhabited (EuclideanHalfSpace n) :=
+  ⟨0⟩
+
+instance : Inhabited (EuclideanQuadrant n) :=
+  ⟨0⟩
 
 @[ext]
 theorem EuclideanQuadrant.ext (x y : EuclideanQuadrant n) (h : x.1 = y.1) : x = y :=

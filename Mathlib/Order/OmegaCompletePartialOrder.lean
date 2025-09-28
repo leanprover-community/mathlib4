@@ -585,8 +585,7 @@ theorem ωSup_bind {β γ : Type v} (c : Chain α) (f : α →o Part β) (g : α
     simp only [Part.mem_bind_iff, Chain.map_coe,
       Function.comp_apply, OrderHom.partBind_coe]
     exact ⟨_, hb, hy⟩
-  · intro i
-    intro y hy
+  · intro i y hy
     simp only [Part.mem_bind_iff, Chain.map_coe,
       Function.comp_apply, OrderHom.partBind_coe] at hy
     rcases hy with ⟨b, hb₀, hb₁⟩

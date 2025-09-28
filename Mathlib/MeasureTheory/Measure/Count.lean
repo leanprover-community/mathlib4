@@ -36,7 +36,7 @@ theorem le_count_apply : ∑' _ : s, (1 : ℝ≥0∞) ≤ count s :=
     _ ≤ count s := le_sum_apply _ _
 
 theorem count_apply (hs : MeasurableSet s) : count s = s.encard := by
-  simp [count, hs, ← tsum_subtype, Set.encard]
+  simp [count, hs, ← tsum_subtype]
 
 @[simp]
 theorem count_apply_finset' {s : Finset α} (hs : MeasurableSet (s : Set α)) :
@@ -155,7 +155,7 @@ instance count.instSigmaFinite [MeasurableSingletonClass α] [Countable α] :
 
 instance count.isFiniteMeasure [Finite α] :
     IsFiniteMeasure (Measure.count : Measure α) :=
-  ⟨by simp [Measure.count_apply, finite_univ]⟩
+  ⟨by simp [Measure.count_apply]⟩
 
 @[simp]
 lemma count_univ : count (univ : Set α) = ENat.card α := by simp [count_apply .univ, encard_univ]
