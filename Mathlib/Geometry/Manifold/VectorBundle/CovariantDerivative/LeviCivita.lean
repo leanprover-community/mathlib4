@@ -789,9 +789,7 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
     have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
     set f := b.orthonormalFrame e i
-    have : MDiffAt (T% f) x := -- missing API lemma!
-      (contMDiffAt_orthonormalFrame_of_mem b e i hx)
-        |>.mdifferentiableAt le_rfl
+    have : MDiffAt (T% f) x := mdifferentiableAt_orthonormalFrame_of_mem b e i hx
     sorry -- convert this works, except for different local orders...
   smulX {_X _σ _g _x} hX hσ hg hx := by
     by_cases hE : Subsingleton E; · simp [lcCandidate_aux, hE]
@@ -799,9 +797,15 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     rw [Finset.smul_sum]
     congr; ext i
     rw [leviCivitaRhs_smulX_apply] <;> try assumption
-    swap
-    · sorry -- easy: orthonormal frame is C^n, given the basis (which is always C^n)
-    simp [← smul_assoc]
+    · simp [← smul_assoc]
+    -- side goal: orthonormal frame is differentiable
+    · let : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := Classical.choose (exists_wellOrder _)
+      have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
+      let b := Basis.ofVectorSpace ℝ E
+      have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
+      have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
+      sorry -- works, except for different choice of order...
+      -- mdifferentiableAt_orthonormalFrame_of_mem _ _ i hx
   smul_const_σ {X _σ x} a hX hσ hx := by
     by_cases hE : Subsingleton E
     · have : X x = 0 := by
@@ -810,10 +814,15 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
       simp [lcCandidate_aux, hE, this]
     simp only [lcCandidate_aux, hE, ↓reduceDIte]
     rw [Finset.smul_sum]; congr; ext i
-    -- missing helper lemma
-    --have : MDiffAt (T% ((Basis.ofVectorSpace ℝ E).orthonormalFrame e i)) x := sorry
     rw [leviCivitaRhs_smulY_const_apply hX hσ, ← smul_assoc]
-    · sorry -- orthonormal frame is differentiable at x
+    · let : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := Classical.choose (exists_wellOrder _)
+      have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
+      let b := Basis.ofVectorSpace ℝ E
+      have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
+      have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
+      set f := b.orthonormalFrame e i
+      have : MDiffAt (T% f) x := mdifferentiableAt_orthonormalFrame_of_mem b e i hx
+      sorry -- `this`, except for choice of ordering
   addσ {X σ σ' x} hX hσ hσ' hx := by
     by_cases hE : Subsingleton E
     · have : X x = 0 := by
@@ -831,11 +840,8 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     let ⟨r, o⟩ := exists_wellOrder (↑(Basis.ofVectorSpaceIndex ℝ E))
     have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
     set f := b.orthonormalFrame e i
-    have : MDiffAt (T% f) x := -- missing API lemma!
-      (contMDiffAt_orthonormalFrame_of_mem b e i hx)
-        |>.mdifferentiableAt le_rfl
-    -- mismatch between different orders; the sorry above
-    convert this <;> sorry
+    have : MDiffAt (T% f) x := mdifferentiableAt_orthonormalFrame_of_mem b e i hx
+    sorry -- `convert this`, except for mismatch between different orders
   leibniz X σ g x hσ hg hx := by
     by_cases hE : Subsingleton E
     · have : X x = 0 := by
