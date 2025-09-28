@@ -74,6 +74,10 @@ macro_rules | `(c₁) => `(c₁ K α' β' γ')
 lemma one_leq_c₁ : 1 ≤ c₁ :=
   (Int.one_le_abs (mul_ne_zero (mul_ne_zero (c'_neq0 K α') (c'_neq0 K β')) (c'_neq0 K γ')))
 
+omit hirr in
+lemma zero_leq_c₁ : 0 ≤ c₁ :=
+  le_trans Int.one_nonneg (one_leq_c₁ K α' β' γ')
+
 lemma c₁_neq_zero : c₁ K α' β' γ' ≠ 0 := by
   have := one_leq_c₁ K α' β' γ'
   exact Ne.symm (Int.ne_of_lt this)
@@ -852,7 +856,7 @@ lemma sq_n : (Real.sqrt n)^((n K q : ℝ)-1) = (n : ℝ) ^ (((n K q : ℝ) - 1)/
 include hirr htriv habc hq0 h2mq in
 lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
   house ((algebraMap (𝓞 K) K) ((A K α' β' γ' q) u t)) ≤
-      (c₃ ^ (n : ℝ) * (n : ℝ) ^ (((n : ℝ) - 1) / 2))  := by { stop
+      (c₃ ^ (n : ℝ) * (n : ℝ) ^ (((n : ℝ) - 1) / 2))  := by {
     --simp (config := { unfoldPartialApp := true }) only [A, sys_coe]
     unfold A sys_coe'
     simp only [RingOfIntegers.restrict, RingOfIntegers.map_mk]
@@ -1064,17 +1068,15 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
               OfNat.ofNat_ne_zero, false_or, not_and, not_or]
             intros HN
             · constructor
-              · sorry
-              · simp_all only [ne_eq, map_eq_zero]
-                obtain ⟨left, right⟩ := htriv
-                obtain ⟨left_1, right_1⟩ := habc
-                obtain ⟨left_2, right_1⟩ := right_1
-                subst left_2 left_1
-                sorry
+              · aesop
+              · constructor
+                · aesop
+                · sorry
           · apply abs_le_of_sq_le_sq (le_refl _) (sorry)
         · rw [← pow_mul]
           refine pow_le_pow_right₀ ?_ ?_
-          · sorry
+          · norm_cast
+            exact one_leq_c₁ K α' β' γ'
           · rw [add_mul]
             simp only [one_mul]
             refine Nat.add_le_add ?_ ?_
@@ -1085,7 +1087,11 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
           rfl
       · apply Preorder.le_refl
       · sorry
-      · sorry
+      · apply pow_nonneg
+        simp only [Int.cast_pow]
+        apply pow_nonneg
+        simp only [Int.cast_nonneg]
+        exact zero_leq_c₁ K α' β' γ'
     · rw [c₃_pow K α' β' γ' q]
       simp only [mul_assoc]
       apply mul_le_mul
@@ -1112,8 +1118,11 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
             apply q_eq_n_etc K q h2mq
           · apply Preorder.le_refl
           · apply mul_nonneg
-            · sorry
-            · sorry
+            · apply pow_nonneg
+              · sorry
+            · apply mul_nonneg
+              · apply pow_nonneg; apply house_nonneg
+              · apply pow_nonneg; apply house_nonneg
           · sorry
         · sorry
         · simp only [mul_assoc]
@@ -1122,12 +1131,14 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
           · apply mul_le_mul
             · apply Preorder.le_refl
             · apply mul_le_mul
-              · sorry
-              · sorry
-              · sorry
-              · sorry
+              · apply Preorder.le_refl
+              · apply Preorder.le_refl
+              · apply mul_nonneg
+                · apply pow_nonneg; apply house_nonneg
+                · sorry
+              · apply pow_nonneg; apply house_nonneg
             · sorry
-            · sorry
+            · apply pow_nonneg; sorry
           · sorry
           · sorry
         · simp only [mul_assoc]
@@ -1142,9 +1153,15 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
               · rw [← pow_mul]
                 simp only [mul_assoc]
                 apply Preorder.le_refl
-              · sorry
-              · sorry
-            · sorry
+              · apply mul_nonneg
+                · apply pow_nonneg; apply house_nonneg
+                · sorry
+              · apply pow_nonneg; apply pow_nonneg; apply house_nonneg
+            · apply mul_nonneg;
+              · apply pow_nonneg; apply house_nonneg
+              · apply mul_nonneg;
+                · sorry
+                · sorry
             · apply pow_nonneg; sorry
           · sorry
           · sorry
@@ -1162,7 +1179,7 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
               · rw [← mul_pow]
                 refine pow_le_pow_left₀ ?_ ?_ n
                 · sorry
-                · have : ((m K * 2) * m K) = ( 2 * m^2) := sorry
+                · have : ((m K * 2) * m K) = (2 * m^2) := sorry
                   rw [this]; clear this
                   calc _ ≤ ((house α' ^ (2 * m K ^ 2) * house γ' ^ (2 * m K ^ 2)) ^ 2
                     * ↑(m K)) := ?_
@@ -1184,7 +1201,7 @@ lemma hAkl : --∀ (k : Fin (m K * n)) (l : Fin (q * q)),
       rw [← sq_n]
 }
 
-
+#exit
 def applylemma82 := NumberField.house.exists_ne_zero_int_vec_house_le K
   (A K α' β' γ' q)
   (hM_neq0 α β hirr htriv K σ α' β' γ' habc q hq0 h2mq)
@@ -3469,7 +3486,6 @@ lemma hcauchy (l' : Fin (m K)) :
     exact holS α β hirr htriv K σ hd α' β' γ' habc q hq0 h2mq x
 
 
-
 --#check sys_coe'_bar
 def sys_coeff_foo_S : ρᵣ = Complex.log α ^ (-↑(r : ℤ)) * (S) ↑↑(l₀) := by {
   unfold S
@@ -3489,13 +3505,16 @@ lemma eq7 (l' : Fin (m K)) :
   · rw [hcauchy]
     exact l₀
 
-def c₉ : ℝ := sorry
+def c₉ : ℝ := Real.exp (1 + house (β')) * Real.log (house (α'))*m
+
+macro_rules | `(c₉) => `(c₉ K α' β')
 
 def c₁₀ : ℝ := sorry
 
 lemma abs_R : norm ((R) z) ≤ (c₁₀)^r * r^(1/2*(r+3)) := by
 
-  calc _ ≤ ∑ t, (‖(canonicalEmbedding K) ((algebraMap (𝓞 K) K) ((η) t)) σ‖ * ‖cexp (ρ α β q t * z)‖) := ?_
+  calc _ ≤ ∑ t, (‖(canonicalEmbedding K) ((algebraMap (𝓞 K) K) ((η) t)) σ‖ *
+     ‖cexp (ρ α β q t * z)‖) := ?_
 
        _ ≤ ∑ t : Fin (q*q), ((c₄)^(n : ℝ) * (n) ^(((n:ℝ) +1)/2) *
          (Real.exp ((q+q*(norm β))* m *(1+r/q))*(norm α))) := ?_
