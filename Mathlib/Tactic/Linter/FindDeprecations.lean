@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-import ImportGraph.Imports
+import ImportGraph.Imports -- a comment
 
 /-!
 d
@@ -36,6 +36,11 @@ structure DeprecationInfo where
   /-- `since` is the date when the declaration was deprecated. -/
   since : String
 
+/--
+`getPosAfterImports fname` parses the imports of `fname` and returns the position just after them.
+
+This position is after all trailing whitespace and comments that may follow the imports of `fname`.
+-/
 def getPosAfterImports (fname : String) : CommandElabM String.Pos := do
   let file ← IO.FS.readFile fname
   let fm := file.toFileMap
