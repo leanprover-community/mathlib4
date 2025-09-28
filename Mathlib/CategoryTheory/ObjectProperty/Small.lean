@@ -22,6 +22,7 @@ variable {C : Type u} [Category.{v} C]
 
 /-- A property of objects is small relative to a universe `w`
 if the corresponding subtype is. -/
+@[pp_with_univ]
 protected abbrev Small (P : ObjectProperty C) : Prop := _root_.Small.{w} (Subtype P)
 
 instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P] :
