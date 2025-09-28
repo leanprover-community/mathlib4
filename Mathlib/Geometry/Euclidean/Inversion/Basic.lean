@@ -91,12 +91,11 @@ theorem dist_inversion_center (c x : P) (R : ℝ) : dist (inversion c R x) c = R
   rcases eq_or_ne x c with (rfl | hx)
   · simp
   have : dist x c ≠ 0 := dist_ne_zero.2 hx
-  -- was `field_simp [inversion, norm_smul, abs_div, ← dist_eq_norm_vsub, sq, mul_assoc]`,
-  -- but really slow. Replaced by `simp only ...` to speed up.
-  -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): reinstate `field_simp` once it is faster.
-  simp (disch := field_simp_discharge) only [inversion, sq, mul_div_assoc', div_mul_eq_mul_div,
-    div_div, dist_vadd_left, norm_smul, norm_div, norm_mul, Real.norm_eq_abs, abs_mul_abs_self,
-    abs_dist, ← dist_eq_norm_vsub, mul_assoc, eq_div_iff, div_eq_iff]
+  simp only [inversion]
+  field_simp
+  simp only [sq, dist_vadd_left, norm_smul, norm_div, norm_mul, Real.norm_eq_abs, abs_mul_abs_self,
+    abs_dist, ← dist_eq_norm_vsub]
+  field_simp
 
 /-- Distance from the center of an inversion to the image of a point under the inversion. This
 formula accidentally works for `x = c`. -/
@@ -163,11 +162,7 @@ theorem dist_inversion_mul_dist_center_eq (hx : x ≠ c) (hy : y ≠ c) :
   conv in dist _ y => rw [← inversion_inversion c hR y]
   rw [dist_inversion_inversion hx hy', dist_inversion_center]
   have : dist x c ≠ 0 := dist_ne_zero.2 hx
-  -- used to be `field_simp`, but was really slow; replaced by `simp only ...` to speed up
-  -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): reinstate `field_simp` once it is faster.
-  simp (disch := field_simp_discharge) only [mul_div_assoc', div_div_eq_mul_div, div_mul_eq_mul_div,
-    div_eq_iff]
-  ring
+  field_simp
 
 /-!
 ### Ptolemy's inequality
