@@ -73,8 +73,7 @@ theorem terminates_parallel.aux :
       simp only [parallel.aux2, rmap, List.foldr_cons, destruct_pure]
       split <;> simp
     · obtain ⟨a', e⟩ := IH m
-      simp only [parallel.aux2, rmap, List.foldr_cons]
-      simp? [parallel.aux2] at e says simp only [parallel.aux2, rmap] at e
+      simp only [parallel.aux2, rmap, List.foldr_cons] at ⊢ e
       rw [e]
       exact ⟨a', rfl⟩
   · intro s IH l S m
