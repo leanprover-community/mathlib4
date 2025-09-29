@@ -41,8 +41,8 @@ namespace ContinuousLinearMap
 
 variable (r) in
 theorem memLp_of_bilin {f : α → E} {g : α → F} (hf : MemLp f p μ) (hg : MemLp g q μ) :
-    MemLp (fun x ↦ B (f x) (g x)) r μ := by
-  exact MeasureTheory.MemLp.of_bilin (r := r) (B · ·) ‖B‖₊ hf hg
+    MemLp (fun x ↦ B (f x) (g x)) r μ :=
+  MeasureTheory.MemLp.of_bilin (r := r) (B · ·) ‖B‖₊ hf hg
     (B.aestronglyMeasurable_comp₂ hf.1 hg.1) (.of_forall fun _ ↦ B.le_opNorm₂ _ _)
 
 variable (r) in

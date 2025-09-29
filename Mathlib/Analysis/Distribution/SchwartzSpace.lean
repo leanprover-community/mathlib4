@@ -1371,7 +1371,7 @@ variable [NormedAddCommGroup V] [NormedSpace ℝ V]
 Version for a general bilinear map. -/
 theorem integral_bilinear_deriv_right_eq_neg_left (f : 𝓢(ℝ, E)) (g : 𝓢(ℝ, F))
     (L : E →L[ℝ] F →L[ℝ] V) :
-    ∫ (x : ℝ), (L (f x)) (deriv g x) = -∫ (x : ℝ), (L (deriv f x)) (g x) := by
+    ∫ (x : ℝ), (L (f x)) (deriv g x) = -∫ (x : ℝ), L (deriv f x) (g x) := by
   apply MeasureTheory.integral_bilinear_hasDerivAt_right_eq_neg_left_of_integrable
     f.hasDerivAt g.hasDerivAt
   all_goals rw [← MeasureTheory.memLp_one_iff_integrable]
@@ -1385,7 +1385,7 @@ variable [RCLike 𝕜] [NormedSpace 𝕜 F] [NormedSpace 𝕜 V]
 
 Version for a Schwartz function with values in continuous linear maps. -/
 theorem integral_clm_comp_deriv_right_eq_neg_left (f : 𝓢(ℝ, F)) (g : 𝓢(ℝ, F →L[𝕜] V)) :
-    ∫ (x : ℝ), (g x) (deriv f x) = -∫ (x : ℝ), (deriv g x) (f x) :=
+    ∫ (x : ℝ), g x (deriv f x) = -∫ (x : ℝ), deriv g x (f x) :=
   integral_bilinear_deriv_right_eq_neg_left g f
     ((ContinuousLinearMap.id 𝕜 (F →L[𝕜] V)).bilinearRestrictScalars ℝ)
 
