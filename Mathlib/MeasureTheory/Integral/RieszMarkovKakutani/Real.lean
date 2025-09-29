@@ -403,7 +403,7 @@ lemma measure_le_of_isCompact_of_integral {μ ν : Measure X} [ν.OuterRegular]
 /-- If two regular measures give the same integral for every function in `C_c(X, ℝ)`,
 then they are equal. -/
 theorem _root_.MeasureTheory.Measure.ext_of_integral_eq_on_compactlySupported {μ ν : Measure X}
-    [μ.Regular] [ν.Regular] (hμν : ∀ (f : C_c(X, ℝ)), ∫ (x : X), f x ∂μ = ∫ (x : X), f x ∂ν) :
+    [μ.Regular] [ν.Regular] (hμν : ∀ f : C_c(X, ℝ), ∫ x, f x ∂μ = ∫ x, f x ∂ν) :
     μ = ν := by
   apply Measure.OuterRegular.eq_of_eq_on_isOpen
   apply Measure.InnerRegularWRT.eq_on_q_of_eq_on_p Measure.Regular.innerRegular
