@@ -33,5 +33,4 @@ info:
     removeRanges file #[⟨⟨2⟩, ⟨3⟩⟩] == file.replace "2" ""
   IO.println <| removeRanges file #[⟨⟨2⟩, ⟨3⟩⟩, ⟨⟨7⟩, ⟨8⟩⟩]
   guard <| -- Also removing a range followed by whitespace, removes the trailing whitespace as well
-    removeRanges file #[⟨⟨2⟩, ⟨3⟩⟩, ⟨⟨7⟩, ⟨8⟩⟩] ==
-                 ((file.replace "2" "").replace "7" "").replace " " ""
+    removeRanges file #[⟨⟨2⟩, ⟨3⟩⟩, ⟨⟨7⟩, ⟨8⟩⟩] == ((file.replace "2" "").replace "7   " "")
