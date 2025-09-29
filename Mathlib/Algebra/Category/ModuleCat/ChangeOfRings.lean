@@ -37,7 +37,7 @@ import Mathlib.LinearAlgebra.TensorProduct.Tower
 * `ModuleCat.restrictCoextendScalarsAdj`: given rings `R, S` and a ring homomorphism
   `f : R ⟶ S` then `coextendScalars f` is the right adjoint of `restrictScalars f`.
 
-## List of notations
+## Notation
 Let `R, S` be rings and `f : R →+* S`
 * if `M` is an `R`-module, `s : S` and `m : M`, then `s ⊗ₜ[R, f] m` is the pure tensor
   `s ⊗ m : S ⊗[R, f] M`.
@@ -671,7 +671,8 @@ Given `R`-module X and `S`-module Y and a map `X ⟶ (restrictScalars f).obj Y`,
 def HomEquiv.fromExtendScalars {X Y} (g : X ⟶ (restrictScalars f).obj Y) :
     (extendScalars f).obj X ⟶ Y := by
   letI m1 : Module R S := Module.compHom S f; letI m2 : Module R Y := Module.compHom Y f
-  refine ofHom {toFun := fun z => TensorProduct.lift ?_ z, map_add' := ?_, map_smul' := ?_}
+  refine ofHom
+    {toFun := fun z => TensorProduct.lift (σ₁₂ := .id _) ?_ z, map_add' := ?_, map_smul' := ?_}
   · refine
     {toFun := fun s => HomEquiv.evalAt f s g, map_add' := fun (s₁ s₂ : S) => ?_,
       map_smul' := fun (r : R) (s : S) => ?_}

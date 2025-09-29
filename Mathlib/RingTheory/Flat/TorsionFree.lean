@@ -7,6 +7,7 @@ Authors: Matthew Jasper, Kevin Buzzard
 import Mathlib.Algebra.Module.Torsion
 import Mathlib.RingTheory.DedekindDomain.Dvr
 import Mathlib.RingTheory.Flat.Localization
+import Mathlib.RingTheory.Flat.Tensor
 import Mathlib.RingTheory.Ideal.IsPrincipal
 
 /-!

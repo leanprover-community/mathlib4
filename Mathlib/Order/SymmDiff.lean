@@ -31,7 +31,7 @@ In generalized Boolean algebras, the symmetric difference operator is:
 * `symmDiff_comm`: commutative, and
 * `symmDiff_assoc`: associative.
 
-## Notations
+## Notation
 
 * `a ∆ b`: `symmDiff a b`
 * `a ⇔ b`: `bihimp a b`
