@@ -39,7 +39,7 @@ We use the the `ε`-`δ` definition to prove that
 * Lipschitz continuous functions are absolutely continuous -
 `LipschitzOnWith.absolutelyContinuousOnInterval`;
 * absolutely continuous functions have bounded variation -
-`LipschitzOnWith.absolutelyContinuousOnInterval`.
+`AbsolutelyContinuousOnInterval.boundedVariationOn`.
 
 ## Tags
 absolutely continuous
