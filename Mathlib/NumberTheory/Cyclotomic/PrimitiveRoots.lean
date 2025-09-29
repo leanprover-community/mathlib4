@@ -129,10 +129,9 @@ theorem powerBasis_gen_mem_adjoin_zeta_sub_one :
 
 /-- The `PowerBasis` given by `η - 1`. -/
 @[simps!]
-noncomputable def subOnePowerBasis : PowerBasis K L :=
-  (hζ.powerBasis K).ofGenMemAdjoin
-    (((integral {n} K L).isIntegral ζ).sub isIntegral_one)
-    (hζ.powerBasis_gen_mem_adjoin_zeta_sub_one _)
+noncomputable def subOnePowerBasis : PowerBasis K L := by
+  apply PowerBasis.ofAdjoinEqTop (((integral {n} K L).isIntegral ζ).sub isIntegral_one)
+  exact PowerBasis.adjoin_eq_top_of_gen_mem_adjoin  (hζ.powerBasis_gen_mem_adjoin_zeta_sub_one _)
 
 variable {K} (C)
 
