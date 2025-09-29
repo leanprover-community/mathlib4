@@ -444,10 +444,13 @@ theorem integral_finset_sum_measure {ι} {f : α → E}
     ∑ i ∈ s, ∫ a, f a ∂(VectorMeasureWithPairing.mk B (μ i)) := by
   induction s using Finset.cons_induction_on with
   | empty => simp
-  | cons _ _ h ih =>
+  | cons _ t h ih =>
     rw [Finset.forall_mem_cons] at hf
     rw [Finset.sum_cons, Finset.sum_cons, ← ih hf.2]
-    exact integral_add_measure B hf.1 (integrable_finset_sum_measure.2 hf.2)
+    refine integral_add_measure B hf.1 ?_
+    apply Integrable.mono_measure
+    · exact (integrable_finset_sum_measure.2 hf.2)
+    · apply Finset.le_sum_of_subadditive (fun (μ : VectorMeasure α F) => μ.variation.ennrealToMeasure)
 
 theorem nndist_integral_add_measure_le_lintegral
     {f : α → G} (h₁ : Integrable f μ) (h₂ : Integrable f ν) :

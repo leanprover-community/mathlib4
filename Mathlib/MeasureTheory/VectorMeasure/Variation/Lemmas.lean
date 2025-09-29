@@ -18,7 +18,7 @@ import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
 
 -/
 
-open MeasureTheory BigOperators NNReal ENNReal Function Filter
+open MeasureTheory BigOperators NNReal ENNReal Function Filter Set
 
 namespace MeasureTheory.VectorMeasure
 
@@ -91,12 +91,12 @@ theorem triangle_inequality (μ ν : VectorMeasure X V) [ContinuousAdd V] :
     · apply le_sSup; simp; use ι
       exact ciSup_const (hι := Nonempty.intro hι)
 
-theorem triangle_inequality_ennrealToMeasure {s : Set X} (hs : MeasurableSet s)
-    (μ ν : VectorMeasure X V) [ContinuousAdd V] :
-    (μ + ν).variation.ennrealToMeasure s ≤
-    μ.variation.ennrealToMeasure s + ν.variation.ennrealToMeasure s := by
-  simp [ennrealToMeasure_apply hs]
-  exact triangle_inequality μ ν s hs
+theorem triangle_inequality_ennrealToMeasure (μ ν : VectorMeasure X V) [ContinuousAdd V] :
+    (μ + ν).variation.ennrealToMeasure ≤
+    μ.variation.ennrealToMeasure + ν.variation.ennrealToMeasure := by
+  rw [Measure.le_iff]
+  intro s hs
+  simpa [ennrealToMeasure_apply hs] using triangle_inequality μ ν s hs
 
 theorem eq_zero_of_zero_variation_univ (μ : VectorMeasure X V) :
     μ.variation Set.univ = 0 → μ = 0 := by
@@ -109,21 +109,39 @@ theorem restrict_comm_variation (s : Set X) (μ : VectorMeasure X V) :
   by_cases hsm : MeasurableSet s
   · simp [variation, var_aux, restrict, ht, hsm]
     apply le_antisymm
-    · apply sSup_le; intro b hb; obtain ⟨P, hP⟩ := hb
-      have iP : IsInnerPart t P := sorry
-      simp [apply_ite, ciSup_const (hι := Nonempty.intro iP)] at hP
-      rw [IsInnerPart] at iP
-      simp_all only [↓reduceIte, ← hP]
-      apply le_sSup
+    all_goals
+      apply sSup_le; intro b hb; obtain ⟨P, hP⟩ := hb
+      simp [apply_ite, ← hP]; intro iP; rw [IsInnerPart] at iP; apply le_sSup
+    · simp_all only [↓reduceIte]
       classical
-      let Q := P.image (fun p : Set X => p ∩ s)
+      let Q := (P.image (fun p : Set X => p ∩ s)).erase ∅
       use Q
-      have iQ : IsInnerPart (t ∩ s) Q := sorry
+      have iQ : IsInnerPart (t ∩ s) Q := by
+        refine ⟨?_, ⟨?_, ⟨?_, ?_⟩⟩⟩
+        all_goals intro q hq; simp_all [Q]; try simp only [and_comm] at hq
+        all_goals obtain ⟨a, ha⟩ := hq.2; rw [← ha.1]
+        · constructor;
+          · trans a
+            · exact inter_subset_left
+            · exact (iP.1 a ha.2)
+          · exact inter_subset_right
+        · refine MeasurableSet.inter ?_ ?_
+          · exact (iP.2.1 a ha.2)
+          · exact hsm
+        · intro p hp hap hap1; have := iP.2.2.1
+          simp [PairwiseDisjoint] at this
+          have := this ha.2 hp (by contrapose; intro f hf; rw [hf] at hap1; simp_all)
+          simp_all [disjoint_iff_inter_eq_empty]; rw [← ha.1]
+          exact subset_eq_empty (inter_subset_inter inter_subset_left inter_subset_left) this
       simp [ciSup_const (hι := Nonempty.intro iQ), Q]
-      refine Finset.sum_image (fun x hx y hy hxy ↦ ?_)
-      sorry
-    · sorry
-  sorry
+      #check Finset.sum_erase
+      #check Finset.sum_image
+    · use P
+      have iP : IsInnerPart t P := sorry
+      simp [ciSup_const (hι := Nonempty.intro iP)]
+      simp_all only [↓reduceIte]
+      refine Finset.sum_congr rfl (by intro x hx; congr; apply inter_eq_self_of_subset_left; aesop)
+  · simp [restrict_not_measurable μ hsm, restrict_not_measurable μ.variation hsm]
 
 lemma variation_neg {E} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (μ : VectorMeasure X E) : (-μ).variation = μ.variation := by
