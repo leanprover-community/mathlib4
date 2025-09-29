@@ -257,13 +257,11 @@ theorem power_basis_int'_dim [hcycl : IsCyclotomicExtension {p} ℚ K] (hζ : Is
 extension of `ℚ`. -/
 noncomputable def subOneIntegralPowerBasis [IsCyclotomicExtension {p ^ k} ℚ K]
     (hζ : IsPrimitiveRoot ζ (p ^ k)) : PowerBasis ℤ (𝓞 K) :=
-  PowerBasis.ofGenMemAdjoin' hζ.integralPowerBasis (RingOfIntegers.isIntegral _)
-    (by
-      simp only [integralPowerBasis_gen, toInteger]
-      convert Subalgebra.add_mem _ (self_mem_adjoin_singleton ℤ (⟨ζ - 1, _⟩ : 𝓞 K))
-        (Subalgebra.one_mem _)
-      · simp
-      · exact Subalgebra.sub_mem _ (hζ.isIntegral (NeZero.pos _)) (Subalgebra.one_mem _))
+  PowerBasis.ofAdjoinEqTop'
+    (RingOfIntegers.isIntegral ⟨ζ- 1, (hζ.isIntegral (NeZero.pos _)).sub isIntegral_one⟩) (by
+    refine hζ.integralPowerBasis.adjoin_eq_top_of_gen_mem_adjoin ?_
+    convert Subalgebra.add_mem _ (self_mem_adjoin_singleton ℤ _) (Subalgebra.one_mem _)
+    simp [RingOfIntegers.ext_iff, integralPowerBasis_gen, toInteger])
 
 @[simp]
 theorem subOneIntegralPowerBasis_gen [IsCyclotomicExtension {p ^ k} ℚ K]
