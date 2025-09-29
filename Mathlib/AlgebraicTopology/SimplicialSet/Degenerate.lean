@@ -246,7 +246,7 @@ lemma mem_degenerate_iff {n : ℕ} (x : A.obj (op (.mk n))) :
     rintro ⟨m, hm, f, _, ⟨y, rfl⟩⟩
     refine ⟨m, hm, f, inferInstance, ⟨⟨y, ?_⟩, rfl⟩⟩
     have := isSplitEpi_of_epi f
-    simpa only [Set.mem_preimage, ← op_comp, ← FunctorToTypes.map_comp_apply,
+    simpa [Set.mem_preimage, ← op_comp, ← FunctorToTypes.map_comp_apply,
       IsSplitEpi.id, op_id, FunctorToTypes.map_id_apply] using A.map (section_ f).op hx
 
 lemma mem_nonDegenerate_iff {n : ℕ} (x : A.obj (op (.mk n))) :
