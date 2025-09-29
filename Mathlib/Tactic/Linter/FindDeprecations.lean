@@ -137,13 +137,14 @@ def deprecatedHashMap (oldDate newDate : String) :
   return fin
 
 /--
-`removeDeprecations fname rgs` reads the content of `fname` and removes from it the substrings
-whose ranges are in the array `rgs`.
+`removeRanges file rgs` removes from the string `file` the substrings whose ranges are in the array
+`rgs`.
 
-The command makes the assumption that `rgs` is *sorted*.
+*Notes*.
+* The command makes the assumption that `rgs` is *sorted*.
+* The command removes all consecutive whitespace following the end of each range.
 -/
-def removeDeprecations (fname : String) (rgs : Array String.Range) : IO String := do
-  let file ← IO.FS.readFile fname
+def removeRanges (file : String) (rgs : Array String.Range) : String := Id.run do
   let mut curr : String.Pos := 0
   let mut fileSubstring := file.toSubstring
   let mut tot := ""
@@ -153,9 +154,17 @@ def removeDeprecations (fname : String) (rgs : Array String.Range) : IO String :
     let part := {fileSubstring with stopPos := next.start}.toString
     tot := tot ++ part
     curr := next.start
-    fileSubstring :=
-      ({fileSubstring with startPos := next.stop}.dropWhile (!·.isWhitespace)).trimLeft
+    fileSubstring := {fileSubstring with startPos := next.stop}.trimLeft
   return tot
+
+/--
+`removeDeprecations fname rgs` reads the content of `fname` and removes from it the substrings
+whose ranges are in the array `rgs`.
+
+The command makes the assumption that `rgs` is *sorted*.
+-/
+def removeDeprecations (fname : String) (rgs : Array String.Range) : IO String :=
+  return removeRanges (← IO.FS.readFile fname) rgs
 
 /--
 `parseLine line` assumes that the input string is of the form
@@ -172,6 +181,7 @@ def parseLine (line : String) : Option (List String.Pos) :=
   match (line.dropRight 1).splitOn ": [" with
   | [_, rest] =>
     let nums := rest.splitOn ", "
+    if nums == [""] then some [] else
     some <| nums.map fun s => ⟨s.toNat?.getD 0⟩
   | _ => none
 
