@@ -5,18 +5,18 @@ Authors: Tomáš Skřivan
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Basic
-public import Mathlib.Analysis.Calculus.FDeriv.Comp
-public import Mathlib.Analysis.Calculus.FDeriv.Prod
-public import Mathlib.Analysis.Calculus.FDeriv.Pi
-public import Mathlib.Analysis.Calculus.FDeriv.Add
-public import Mathlib.Analysis.Calculus.FDeriv.Mul
-public import Mathlib.Analysis.Calculus.Deriv.Inv
-public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
-public import Mathlib.Tactic.FunProp
+public meta import Mathlib.Analysis.Calculus.FDeriv.Basic
+public meta import Mathlib.Analysis.Calculus.FDeriv.Comp
+public meta import Mathlib.Analysis.Calculus.FDeriv.Prod
+public meta import Mathlib.Analysis.Calculus.FDeriv.Pi
+public meta import Mathlib.Analysis.Calculus.FDeriv.Add
+public meta import Mathlib.Analysis.Calculus.FDeriv.Mul
+public meta import Mathlib.Analysis.Calculus.Deriv.Inv
+public meta import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+public meta import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+public meta import Mathlib.Tactic.FunProp
 
-@[expose] public section
+public meta section
 
 deprecated_module
   "fun_prop knows about Differentiable(At/On) directly; no need to import this file any more"

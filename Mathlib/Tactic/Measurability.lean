@@ -5,10 +5,10 @@ Authors: Miyahara Kō
 -/
 module
 
-public import Mathlib.Tactic.Measurability.Init
-public import Mathlib.Algebra.Group.Defs
+public meta import Mathlib.Tactic.Measurability.Init
+public meta import Mathlib.Algebra.Group.Defs
 
-@[expose] public section
+public meta section
 
 /-!
 # Measurability

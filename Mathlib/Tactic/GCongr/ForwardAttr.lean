@@ -5,10 +5,10 @@ Authors: Mario Carneiro, Heather Macbeth
 -/
 module
 
-public import Mathlib.Init
-public import Batteries.Tactic.Basic
+public meta import Mathlib.Init
+public meta import Batteries.Tactic.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 # Environment extension for the forward-reasoning part of the `gcongr` tactic

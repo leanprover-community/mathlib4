@@ -5,12 +5,12 @@ Authors: Leonardo de Moura, Miyahara Kō
 -/
 module
 
-public import Mathlib.Tactic.CC.Datatypes
-public import Mathlib.Tactic.CC.Lemmas
-public import Mathlib.Tactic.Relation.Rfl
-public import Mathlib.Tactic.Relation.Symm
+public meta import Mathlib.Tactic.CC.Datatypes
+public meta import Mathlib.Tactic.CC.Lemmas
+public meta import Mathlib.Tactic.Relation.Rfl
+public meta import Mathlib.Tactic.Relation.Symm
 
-@[expose] public section
+public meta section
 
 /-!
 # Make proofs from a congruence closure

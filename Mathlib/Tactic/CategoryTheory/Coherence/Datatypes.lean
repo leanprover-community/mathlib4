@@ -5,10 +5,10 @@ Authors: Yuma Mizuno
 -/
 module
 
-public import Lean.Meta.Basic
-public import Mathlib.Init
+public meta import Lean.Meta.Basic
+public meta import Mathlib.Init
 
-@[expose] public section
+public meta section
 
 /-!
 # Datatypes for bicategory like structures

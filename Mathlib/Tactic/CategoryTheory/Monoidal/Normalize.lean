@@ -5,10 +5,10 @@ Authors: Yuma Mizuno
 -/
 module
 
-public import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
-public import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
+public meta import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
+public meta import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
 
-@[expose] public section
+public meta section
 
 /-!
 # Normalization of morphisms in monoidal categories

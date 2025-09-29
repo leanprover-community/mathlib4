@@ -5,11 +5,11 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Tactic.Core
-public import Mathlib.Tactic.FunProp
-public import Aesop
+public meta import Mathlib.Tactic.Core
+public meta import Mathlib.Tactic.FunProp
+public meta import Aesop
 
-@[expose] public section
+public meta section
 
 /-!
 

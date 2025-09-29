@@ -5,12 +5,12 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Tactic.NthRewrite
-public import Mathlib.Tactic.Widget.SelectPanelUtils
-public import Mathlib.Lean.GoalsLocation
-public import Mathlib.Lean.Meta.KAbstractPositions
+public meta import Mathlib.Tactic.NthRewrite
+public meta import Mathlib.Tactic.Widget.SelectPanelUtils
+public meta import Mathlib.Lean.GoalsLocation
+public meta import Mathlib.Lean.Meta.KAbstractPositions
 
-@[expose] public section
+public meta section
 
 /-!
 

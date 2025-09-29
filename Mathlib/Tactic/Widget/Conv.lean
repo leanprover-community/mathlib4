@@ -5,11 +5,11 @@ Authors: Robin Böhne, Wojciech Nawrocki, Patrick Massot
 -/
 module
 
-public import Mathlib.Tactic.Widget.SelectPanelUtils
-public import Mathlib.Data.String.Defs
-public import Batteries.Tactic.Lint
+public meta import Mathlib.Tactic.Widget.SelectPanelUtils
+public meta import Mathlib.Data.String.Defs
+public meta import Batteries.Tactic.Lint
 
-@[expose] public section
+public meta section
 
 /-! # Conv widget
 

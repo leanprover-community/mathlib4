@@ -5,10 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Lean.Elab.Tactic.Simp
-public import Mathlib.Init
+public meta import Lean.Elab.Tactic.Simp
+public meta import Mathlib.Init
 
-@[expose] public section
+public meta section
 
 /-! # `simp_intro` tactic -/
 

@@ -5,9 +5,9 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header
 
-@[expose] public section
+public meta section
 
 /-!
 #  The `commandStart` linter

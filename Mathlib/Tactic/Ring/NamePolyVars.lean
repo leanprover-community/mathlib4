@@ -5,9 +5,9 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Basic
+public meta import Mathlib.Algebra.MvPolynomial.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 The command `name_poly_vars` names variables in

@@ -5,9 +5,9 @@ Authors: Johan Commelin, Nick Kuhn, Arend Mellendijk, Christian Merten, Calle SÃ
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Tower
+public meta import Mathlib.Algebra.Algebra.Tower
 
-@[expose] public section
+public meta section
 
 /-!
 

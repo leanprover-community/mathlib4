@@ -5,10 +5,10 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Elab.Tactic.Basic
+public meta import Mathlib.Init
+public meta import Lean.Elab.Tactic.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 A tactic stub file for the `guard_hyp_nums` tactic.

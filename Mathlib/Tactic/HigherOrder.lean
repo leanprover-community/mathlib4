@@ -5,14 +5,14 @@ Authors: Simon Hudon
 -/
 module
 
-public import Lean.Meta.Tactic.Apply
-public import Lean.Meta.Tactic.Assumption
-public import Lean.Meta.MatchUtil
-public import Lean.Meta.Tactic.Intro
-public import Lean.Elab.DeclarationRange
-public import Mathlib.Tactic.Attr.Register
+public meta import Lean.Meta.Tactic.Apply
+public meta import Lean.Meta.Tactic.Assumption
+public meta import Lean.Meta.MatchUtil
+public meta import Lean.Meta.Tactic.Intro
+public meta import Lean.Elab.DeclarationRange
+public meta import Mathlib.Tactic.Attr.Register
 
-@[expose] public section
+public meta section
 
 /-!
 # HigherOrder attribute

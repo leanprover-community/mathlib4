@@ -5,11 +5,11 @@ Authors: Kim Morrison, Hanting Zhang
 -/
 module
 
-public import Mathlib.Tactic.Core
-public import Mathlib.Lean.Expr.Basic
-public import Mathlib.Data.Fintype.Basic
+public meta import Mathlib.Tactic.Core
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Mathlib.Data.Fintype.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 # The `fin_cases` tactic.

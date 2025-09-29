@@ -5,11 +5,11 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Widget.InteractiveGoal
-public import Lean.Elab.Deriving.Basic
+public meta import Mathlib.Init
+public meta import Lean.Widget.InteractiveGoal
+public meta import Lean.Elab.Deriving.Basic
 
-@[expose] public section
+public meta section
 
 /-! # SelectInsertParamsClass
 

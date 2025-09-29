@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Floris van Doorn, Mario Carneiro, Reid Barton, Johan C
 -/
 module
 
-public import Mathlib.Util.Tactic
-public import Mathlib.Logic.Function.Basic
+public meta import Mathlib.Util.Tactic
+public meta import Mathlib.Logic.Function.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 # `choose` tactic

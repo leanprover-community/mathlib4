@@ -5,9 +5,9 @@ Authors: Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.Iso
+public meta import Mathlib.CategoryTheory.Iso
 
-@[expose] public section
+public meta section
 
 /-!
 # Extension of `reassoc` to isomorphisms.

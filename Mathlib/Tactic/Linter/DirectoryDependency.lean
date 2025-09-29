@@ -5,10 +5,10 @@ Authors: Anne Baanen
 -/
 module
 
-public import Lean.Elab.Command
-public import Lean.Elab.ParseImportsFast
+public meta import Lean.Elab.Command
+public meta import Lean.Elab.ParseImportsFast
 
-@[expose] public section
+public meta section
 -- This file is imported by the Header linter, hence has no mathlib imports.
 
 /-! # The `directoryDependency` linter

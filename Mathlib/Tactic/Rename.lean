@@ -5,10 +5,10 @@ Authors: Gabriel Ebner
 -/
 module
 
-public import Lean.Elab.Tactic.ElabTerm
-public import Mathlib.Init
+public meta import Lean.Elab.Tactic.ElabTerm
+public meta import Mathlib.Init
 
-@[expose] public section
+public meta section
 
 /-!
 # The `rename'` tactic

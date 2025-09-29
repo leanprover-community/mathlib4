@@ -5,12 +5,12 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Elab.Command
-public import Lean.Server.InfoUtils
-public import Mathlib.Tactic.DeclarationNames
+public meta import Mathlib.Init
+public meta import Lean.Elab.Command
+public meta import Lean.Server.InfoUtils
+public meta import Mathlib.Tactic.DeclarationNames
 
-@[expose] public section
+public meta section
 
 /-!
 #  The `have` vs `let` linter

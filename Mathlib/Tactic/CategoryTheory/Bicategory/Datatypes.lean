@@ -5,10 +5,10 @@ Authors: Yuma Mizuno
 -/
 module
 
-public import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
-public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
+public meta import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
+public meta import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 
-@[expose] public section
+public meta section
 
 /-!
 # Expressions for bicategories

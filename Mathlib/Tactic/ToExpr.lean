@@ -5,9 +5,9 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Util.WhatsNew
+public meta import Mathlib.Util.WhatsNew
 
-@[expose] public section
+public meta section
 
 /-!
 # `ToExpr` instances for Mathlib

@@ -5,9 +5,9 @@ Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Tactic.GRewrite.Elab
+public meta import Mathlib.Tactic.GRewrite.Elab
 
-@[expose] public section
+public meta section
 
 /-!
 

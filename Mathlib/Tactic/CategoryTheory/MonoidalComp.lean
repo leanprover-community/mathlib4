@@ -5,9 +5,9 @@ Authors: Kim Morrison, Yuma Mizuno, Oleksandr Manzyuk
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Category
+public meta import Mathlib.CategoryTheory.Monoidal.Category
 
-@[expose] public section
+public meta section
 
 /-!
 # Monoidal composition `⊗≫` (composition up to associators)

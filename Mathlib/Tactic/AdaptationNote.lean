@@ -5,10 +5,10 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Meta.Tactic.TryThis
+public meta import Mathlib.Init
+public meta import Lean.Meta.Tactic.TryThis
 
-@[expose] public section
+public meta section
 
 /-!
 # Adaptation notes

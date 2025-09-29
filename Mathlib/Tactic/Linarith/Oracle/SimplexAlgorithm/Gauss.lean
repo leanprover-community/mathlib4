@@ -5,9 +5,9 @@ Authors: Vasily Nesterov
 -/
 module
 
-public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
+public meta import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
 
-@[expose] public section
+public meta section
 
 /-!
 # Gaussian Elimination algorithm

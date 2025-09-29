@@ -5,9 +5,9 @@ Authors: Yuma Mizuno
 -/
 module
 
-public import Mathlib.CategoryTheory.Bicategory.Basic
+public meta import Mathlib.CategoryTheory.Bicategory.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 # Bicategorical composition `⊗≫` (composition up to associators)

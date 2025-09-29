@@ -5,10 +5,10 @@ Authors: Adam Topaz
 -/
 module
 
-public import Mathlib.Lean.Expr.Basic
-public import Mathlib.Logic.Equiv.Defs
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Mathlib.Logic.Equiv.Defs
 
-@[expose] public section
+public meta section
 
 /-!
 # Associativity of products

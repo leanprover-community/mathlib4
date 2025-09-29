@@ -5,10 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Elab.Tactic.Conv.Pattern
+public meta import Mathlib.Init
+public meta import Lean.Elab.Tactic.Conv.Pattern
 
-@[expose] public section
+public meta section
 
 /-!
 # `casesm`, `cases_type`, `constructorm` tactics

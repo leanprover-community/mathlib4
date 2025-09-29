@@ -5,10 +5,10 @@ Authors: Damiano Testa
 -/
 module
 
-public import ImportGraph.Imports
-public import Mathlib.Tactic.MinImports
+public meta import ImportGraph.Imports
+public meta import Mathlib.Tactic.MinImports
 
-@[expose] public section
+public meta section
 
 /-! # The `minImports` linter
 

@@ -5,10 +5,10 @@ Authors: Mario Carneiro, Eric Wieser
 -/
 module
 
-public import Mathlib.Data.Nat.Factors
-public import Mathlib.Tactic.NormNum.Prime
+public meta import Mathlib.Data.Nat.Factors
+public meta import Mathlib.Tactic.NormNum.Prime
 
-@[expose] public section
+public meta section
 
 /-!
 # `simproc` for `Nat.primeFactorsList`

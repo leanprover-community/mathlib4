@@ -5,10 +5,10 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.NormNum.Basic
-public import Mathlib.Data.Nat.Prime.Basic
+public meta import Mathlib.Tactic.NormNum.Basic
+public meta import Mathlib.Data.Nat.Prime.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 # `norm_num` extensions on natural numbers

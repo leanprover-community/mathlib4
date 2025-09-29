@@ -5,12 +5,12 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Elab.Exception
-public import Batteries.Lean.NameMapAttribute
-public import Batteries.Tactic.Lint
+public meta import Mathlib.Init
+public meta import Lean.Elab.Exception
+public meta import Batteries.Lean.NameMapAttribute
+public meta import Batteries.Tactic.Lint
 
-@[expose] public section
+public meta section
 
 /-!
 # `@[notation_class]` attribute for `@[simps]`

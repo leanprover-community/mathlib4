@@ -5,12 +5,12 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Tactic.ProxyType
-public import Mathlib.Data.Fintype.Basic
-public import Mathlib.Data.Fintype.Sigma
-public import Mathlib.Data.Fintype.Sum
+public meta import Mathlib.Tactic.ProxyType
+public meta import Mathlib.Data.Fintype.Basic
+public meta import Mathlib.Data.Fintype.Sigma
+public meta import Mathlib.Data.Fintype.Sum
 
-@[expose] public section
+public meta section
 
 /-!
 # The `Fintype` derive handler

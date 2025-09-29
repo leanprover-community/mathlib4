@@ -5,10 +5,10 @@ Authors: Mario Carneiro, Evgenia Karunus, Kyle Miller
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Util.Trace
+public meta import Mathlib.Init
+public meta import Lean.Util.Trace
 
-@[expose] public section
+public meta section
 
 /-!
 # Explode command: datatypes

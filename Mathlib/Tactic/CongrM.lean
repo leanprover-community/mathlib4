@@ -5,10 +5,10 @@ Authors: Moritz Doll, Gabriel Ebner, Damiano Testa, Kyle Miller
 -/
 module
 
-public import Mathlib.Tactic.TermCongr
-public import Mathlib.Tactic.WithoutCDot
+public meta import Mathlib.Tactic.TermCongr
+public meta import Mathlib.Tactic.WithoutCDot
 
-@[expose] public section
+public meta section
 
 /-!
 # The `congrm` tactic

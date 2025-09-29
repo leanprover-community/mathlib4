@@ -5,12 +5,12 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Lean.Expr.Basic
-public import Mathlib.Lean.Meta.CongrTheorems
-public import Mathlib.Logic.Basic
-public import Mathlib.Tactic.CongrExclamation
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Mathlib.Lean.Meta.CongrTheorems
+public meta import Mathlib.Logic.Basic
+public meta import Mathlib.Tactic.CongrExclamation
 
-@[expose] public section
+public meta section
 
 /-! # `congr(...)` congruence quotations
 

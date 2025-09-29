@@ -5,9 +5,9 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Tactic.Order.Graph.Basic
+public meta import Mathlib.Tactic.Order.Graph.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 # Tarjan's Algorithm

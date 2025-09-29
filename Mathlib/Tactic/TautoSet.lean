@@ -5,10 +5,10 @@ Authors: Lenny Taelman
 -/
 module
 
-public import Mathlib.Data.Set.SymmDiff
-public import Mathlib.Data.Set.Disjoint
+public meta import Mathlib.Data.Set.SymmDiff
+public meta import Mathlib.Data.Set.Disjoint
 
-@[expose] public section
+public meta section
 
 /-!
 # The `tauto_set` tactic

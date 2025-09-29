@@ -5,12 +5,12 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Lean.Elab.Command
+public meta import Lean.Elab.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-public import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header
 
-@[expose] public section
+public meta section
 
 /-!
 # The `oldObtain` linter, against stream-of-consciousness `obtain`

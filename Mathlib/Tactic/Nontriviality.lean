@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel, Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.Nontriviality.Core
+public meta import Mathlib.Tactic.Nontriviality.Core
 
-@[expose] public section
+public meta section
 
 /-! # The `nontriviality` tactic. -/

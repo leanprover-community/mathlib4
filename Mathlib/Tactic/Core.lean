@@ -5,13 +5,13 @@ Authors: Arthur Paulino, Aurélien Saue, Mario Carneiro
 -/
 module
 
-public import Lean.Elab.PreDefinition.Basic
-public import Lean.Elab.Tactic.ElabTerm
-public import Lean.Meta.Tactic.Intro
-public import Mathlib.Lean.Expr.Basic
-public import Batteries.Tactic.OpenPrivate
+public meta import Lean.Elab.PreDefinition.Basic
+public meta import Lean.Elab.Tactic.ElabTerm
+public meta import Lean.Meta.Tactic.Intro
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Batteries.Tactic.OpenPrivate
 
-@[expose] public section
+public meta section
 
 /-!
 # Generally useful tactics.

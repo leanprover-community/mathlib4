@@ -5,10 +5,10 @@ Authors: Alex J. Best, Mac Malone
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Elab.Declaration
+public meta import Mathlib.Init
+public meta import Lean.Elab.Declaration
 
-@[expose] public section
+public meta section
 
 /-!
 # Suppressing compilation to executable code in a file or in a section

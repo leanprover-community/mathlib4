@@ -5,10 +5,10 @@ Authors: Sébastien Gouëzel, David Renshaw
 -/
 module
 
-public import Mathlib.Tactic.Positivity.Core
-public import Mathlib.Util.DischargerAsTactic
+public meta import Mathlib.Tactic.Positivity.Core
+public meta import Mathlib.Util.DischargerAsTactic
 
-@[expose] public section
+public meta section
 
 /-!
 # Discharger for `field_simp` tactic

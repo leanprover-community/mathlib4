@@ -5,12 +5,12 @@ Authors: Leonardo de Moura, Miyahara Kō
 -/
 module
 
-public import Batteries.Classes.Order
-public import Mathlib.Lean.Meta.Basic
-public import Mathlib.Lean.Meta.CongrTheorems
-public import Mathlib.Data.Ordering.Basic
+public meta import Batteries.Classes.Order
+public meta import Mathlib.Lean.Meta.Basic
+public meta import Mathlib.Lean.Meta.CongrTheorems
+public meta import Mathlib.Data.Ordering.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 # Datatypes for `cc`

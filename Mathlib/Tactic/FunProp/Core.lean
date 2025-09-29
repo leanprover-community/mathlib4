@@ -5,13 +5,13 @@ Authors: Tomáš Skřivan
 -/
 module
 
-public import Mathlib.Tactic.FunProp.Theorems
-public import Mathlib.Tactic.FunProp.ToBatteries
-public import Mathlib.Tactic.FunProp.Types
-public import Mathlib.Lean.Expr.Basic
-public import Batteries.Tactic.Exact
+public meta import Mathlib.Tactic.FunProp.Theorems
+public meta import Mathlib.Tactic.FunProp.ToBatteries
+public meta import Mathlib.Tactic.FunProp.Types
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Batteries.Tactic.Exact
 
-@[expose] public section
+public meta section
 
 /-!
 # Tactic `fun_prop` for proving function properties like `Continuous f`, `Differentiable ℝ f`, ...

@@ -5,10 +5,10 @@ Authors: Tomáš Skřivan
 -/
 module
 
-public import Mathlib.Tactic.FunProp.Decl
-public import Mathlib.Tactic.FunProp.Theorems
+public meta import Mathlib.Tactic.FunProp.Decl
+public meta import Mathlib.Tactic.FunProp.Theorems
 
-@[expose] public section
+public meta section
 
 /-!
 ## `funProp` attribute

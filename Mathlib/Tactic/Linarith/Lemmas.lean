@@ -5,15 +5,15 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public import Batteries.Tactic.Lint.Basic
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-public import Mathlib.Algebra.Order.Ring.Defs
-public import Mathlib.Algebra.Order.ZeroLEOne
-public import Mathlib.Data.Nat.Cast.Order.Ring
-public import Mathlib.Data.Int.Order.Basic
-public import Mathlib.Data.Ineq
+public meta import Batteries.Tactic.Lint.Basic
+public meta import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+public meta import Mathlib.Algebra.Order.Ring.Defs
+public meta import Mathlib.Algebra.Order.ZeroLEOne
+public meta import Mathlib.Data.Nat.Cast.Order.Ring
+public meta import Mathlib.Data.Int.Order.Basic
+public meta import Mathlib.Data.Ineq
 
-@[expose] public section
+public meta section
 
 /-!
 # Lemmas for `linarith`.

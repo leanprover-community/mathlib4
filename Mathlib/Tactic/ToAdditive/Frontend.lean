@@ -5,21 +5,21 @@ Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
 -/
 module
 
-public import Batteries.Tactic.Trans
-public import Lean.Elab.Tactic.Ext
-public import Lean.Meta.Tactic.Rfl
-public import Lean.Meta.Tactic.Symm
-public import Lean.Meta.Tactic.TryThis
-public import Mathlib.Data.Array.Defs
-public import Mathlib.Data.Nat.Notation
-public import Mathlib.Lean.Expr.ReplaceRec
-public import Mathlib.Lean.Meta.Simp
-public import Mathlib.Lean.Name
-public import Mathlib.Tactic.Eqns -- just to copy the attribute
-public import Mathlib.Tactic.Simps.Basic
-public import Mathlib.Tactic.ToAdditive.GuessName
+public meta import Batteries.Tactic.Trans
+public meta import Lean.Elab.Tactic.Ext
+public meta import Lean.Meta.Tactic.Rfl
+public meta import Lean.Meta.Tactic.Symm
+public meta import Lean.Meta.Tactic.TryThis
+public meta import Mathlib.Data.Array.Defs
+public meta import Mathlib.Data.Nat.Notation
+public meta import Mathlib.Lean.Expr.ReplaceRec
+public meta import Mathlib.Lean.Meta.Simp
+public meta import Mathlib.Lean.Name
+public meta import Mathlib.Tactic.Eqns -- just to copy the attribute
+public meta import Mathlib.Tactic.Simps.Basic
+public meta import Mathlib.Tactic.ToAdditive.GuessName
 
-@[expose] public section
+public meta section
 
 /-!
 # The `@[to_additive]` attribute.

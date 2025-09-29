@@ -5,13 +5,13 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public import Mathlib.Tactic.Linarith.Datatypes
-public import Mathlib.Tactic.Zify
-public import Mathlib.Tactic.CancelDenoms.Core
-public import Mathlib.Control.Basic
-public import Mathlib.Util.AtomM
+public meta import Mathlib.Tactic.Linarith.Datatypes
+public meta import Mathlib.Tactic.Zify
+public meta import Mathlib.Tactic.CancelDenoms.Core
+public meta import Mathlib.Control.Basic
+public meta import Mathlib.Util.AtomM
 
-@[expose] public section
+public meta section
 
 /-!
 # Linarith preprocessing

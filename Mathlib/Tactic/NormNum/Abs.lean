@@ -5,10 +5,10 @@ Authors: David Renshaw
 -/
 module
 
-public import Mathlib.Tactic.NormNum.Basic
-public import Mathlib.Data.Nat.Cast.Order.Ring
+public meta import Mathlib.Tactic.NormNum.Basic
+public meta import Mathlib.Data.Nat.Cast.Order.Ring
 
-@[expose] public section
+public meta section
 
 
 /-!

@@ -5,10 +5,10 @@ Authors: Arend Mellendijk
 -/
 module
 
-public import Mathlib.Init
-public import Aesop
+public meta import Mathlib.Init
+public meta import Aesop
 
-@[expose] public section
+public meta section
 
 /-!
 # arith_mult Rule Set

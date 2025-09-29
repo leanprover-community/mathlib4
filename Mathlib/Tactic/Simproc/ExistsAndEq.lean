@@ -5,9 +5,9 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Init
+public meta import Mathlib.Init
 
-@[expose] public section
+public meta section
 
 /-!
 # simproc for `∃ a', ... ∧ a' = a ∧ ...`

@@ -5,11 +5,11 @@ Authors: Michael Rothgang, Damiano Testa
 -/
 module
 
-public import Lean.Elab.Command
-public import Lean.Elab.ParseImportsFast
-public import Mathlib.Tactic.Linter.DirectoryDependency
+public meta import Lean.Elab.Command
+public meta import Lean.Elab.ParseImportsFast
+public meta import Mathlib.Tactic.Linter.DirectoryDependency
 
-@[expose] public section
+public meta section
 
 /-!
 #  The "header" linter

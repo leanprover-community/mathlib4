@@ -5,10 +5,10 @@ Authors: Mario Carneiro, Heather Macbeth
 -/
 module
 
-public import Mathlib.Tactic.GCongr.CoreAttrs
-public import Mathlib.Tactic.Hint
+public meta import Mathlib.Tactic.GCongr.CoreAttrs
+public meta import Mathlib.Tactic.Hint
 
-@[expose] public section
+public meta section
 
 /-! # Setup for the `gcongr` tactic
 

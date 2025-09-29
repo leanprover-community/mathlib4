@@ -5,12 +5,12 @@ Authors: Anne Baanen
 -/
 module
 
-public import Lean.Util.Heartbeats
-public import Lean.Server.InfoUtils
-public import Mathlib.Lean.ContextInfo
-public import Mathlib.Lean.Elab.Tactic.Meta
+public meta import Lean.Util.Heartbeats
+public meta import Lean.Server.InfoUtils
+public meta import Mathlib.Lean.ContextInfo
+public meta import Mathlib.Lean.Elab.Tactic.Meta
 
-@[expose] public section
+public meta section
 
 /-! # Tactic analysis framework
 

@@ -5,12 +5,12 @@ Authors: Mario Carneiro, Evgenia Karunus, Kyle Miller
 -/
 module
 
-public import Lean.Elab.Command
-public import Lean.PrettyPrinter
-public import Mathlib.Tactic.Explode.Datatypes
-public import Mathlib.Tactic.Explode.Pretty
+public meta import Lean.Elab.Command
+public meta import Lean.PrettyPrinter
+public meta import Mathlib.Tactic.Explode.Datatypes
+public meta import Mathlib.Tactic.Explode.Pretty
 
-@[expose] public section
+public meta section
 
 /-!
 # Explode command

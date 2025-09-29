@@ -5,9 +5,9 @@ Authors: Gabriel Ebner, Mario Carneiro
 -/
 module
 
-public import Mathlib.Util.WithWeakNamespace
+public meta import Mathlib.Util.WithWeakNamespace
 
-@[expose] public section
+public meta section
 
 /-! # `scoped[NS]` syntax
 

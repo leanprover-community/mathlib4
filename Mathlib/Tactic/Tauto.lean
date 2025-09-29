@@ -5,13 +5,13 @@ Authors: Simon Hudon, David Renshaw
 -/
 module
 
-public import Mathlib.Tactic.CasesM
-public import Mathlib.Tactic.Core
-public import Mathlib.Lean.Elab.Tactic.Basic
-public import Mathlib.Logic.Basic
-public import Qq
+public meta import Mathlib.Tactic.CasesM
+public meta import Mathlib.Tactic.Core
+public meta import Mathlib.Lean.Elab.Tactic.Basic
+public meta import Mathlib.Logic.Basic
+public meta import Qq
 
-@[expose] public section
+public meta section
 
 /-!
 The `tauto` tactic.

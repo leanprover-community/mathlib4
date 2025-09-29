@@ -5,9 +5,9 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Data.ENat.Basic
+public meta import Mathlib.Data.ENat.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 # `enat_to_nat`

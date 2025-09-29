@@ -5,12 +5,12 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Elab.Binders
-public import Lean.Elab.Tactic.ElabTerm
-public import Lean.Meta.Tactic.Generalize
+public meta import Mathlib.Init
+public meta import Lean.Elab.Binders
+public meta import Lean.Elab.Tactic.ElabTerm
+public meta import Lean.Meta.Tactic.Generalize
 
-@[expose] public section
+public meta section
 
 /-!
 # Backwards compatibility shim for `generalize`.

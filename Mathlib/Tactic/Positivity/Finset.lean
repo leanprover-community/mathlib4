@@ -5,12 +5,12 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
-public import Mathlib.Data.Finset.Density
-public import Mathlib.Tactic.NormNum.Basic
-public import Mathlib.Tactic.Positivity.Core
+public meta import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public meta import Mathlib.Data.Finset.Density
+public meta import Mathlib.Tactic.NormNum.Basic
+public meta import Mathlib.Tactic.Positivity.Core
 
-@[expose] public section
+public meta section
 
 /-!
 # Positivity extensions for finsets

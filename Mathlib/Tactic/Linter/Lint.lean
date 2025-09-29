@@ -5,10 +5,10 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Batteries.Tactic.Lint
-public import Mathlib.Tactic.DeclarationNames
+public meta import Batteries.Tactic.Lint
+public meta import Mathlib.Tactic.DeclarationNames
 
-@[expose] public section
+public meta section
 
 /-!
 # Linters for Mathlib

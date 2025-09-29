@@ -5,10 +5,10 @@ Authors: Arthur Paulino
 -/
 module
 
-public import Lean.Elab.ElabRules
-public import Mathlib.Util.Tactic
+public meta import Lean.Elab.ElabRules
+public meta import Mathlib.Util.Tactic
 
-@[expose] public section
+public meta section
 
 /-!
 # Defines the `swap_var` tactic

@@ -5,11 +5,11 @@ Authors: Eric Wieser, Kyle Miller
 -/
 module
 
-public import Lean.Elab.SyntheticMVars
-public import Lean
-public import Mathlib.Init
+public meta import Lean.Elab.SyntheticMVars
+public meta import Lean
+public meta import Mathlib.Init
 
-@[expose] public section
+public meta section
 /-!
 # The `fast_instance%` term elaborator
 -/

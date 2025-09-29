@@ -5,11 +5,11 @@ Authors: Yuma Mizuno
 -/
 module
 
-public import Mathlib.Tactic.CategoryTheory.Coherence.Basic
-public import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
-public import Mathlib.Tactic.CategoryTheory.Bicategory.PureCoherence
+public meta import Mathlib.Tactic.CategoryTheory.Coherence.Basic
+public meta import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
+public meta import Mathlib.Tactic.CategoryTheory.Bicategory.PureCoherence
 
-@[expose] public section
+public meta section
 
 /-!
 # `bicategory` tactic

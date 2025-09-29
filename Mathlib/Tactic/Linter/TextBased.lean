@@ -5,11 +5,11 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Batteries.Data.String.Matcher
-public import Mathlib.Data.Nat.Notation
-public import Lake.Util.Casing
+public meta import Batteries.Data.String.Matcher
+public meta import Mathlib.Data.Nat.Notation
+public meta import Lake.Util.Casing
 
-@[expose] public section
+public meta section
 
 -- Don't warn about the lake import: the above file has almost no imports, and this PR has been
 -- benchmarked.

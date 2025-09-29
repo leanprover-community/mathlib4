@@ -5,12 +5,12 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public import Mathlib.Data.Real.Irrational
-public import Mathlib.Tactic.NormNum.GCD
-public import Mathlib.Tactic.Rify
+public meta import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public meta import Mathlib.Data.Real.Irrational
+public meta import Mathlib.Tactic.NormNum.GCD
+public meta import Mathlib.Tactic.Rify
 
-@[expose] public section
+public meta section
 
 /-! # `norm_num` extension for `Irrational`
 

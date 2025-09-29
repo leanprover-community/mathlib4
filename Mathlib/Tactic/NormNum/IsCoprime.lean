@@ -5,10 +5,10 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.RingTheory.Coprime.Lemmas
-public import Mathlib.Tactic.NormNum.GCD
+public meta import Mathlib.RingTheory.Coprime.Lemmas
+public meta import Mathlib.Tactic.NormNum.GCD
 
-@[expose] public section
+public meta section
 
 /-! # `norm_num` extension for `IsCoprime`
 

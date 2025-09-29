@@ -5,11 +5,11 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Elab.Tactic.ElabTerm
-public import Lean.Meta.Eval
+public meta import Mathlib.Init
+public meta import Lean.Elab.Tactic.ElabTerm
+public meta import Lean.Meta.Eval
 
-@[expose] public section
+public meta section
 
 /-!
 # Defines the `trace` tactic.

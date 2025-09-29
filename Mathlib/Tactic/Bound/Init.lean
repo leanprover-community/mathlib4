@@ -5,10 +5,10 @@ Authors: Geoffrey Irving
 -/
 module
 
-public import Mathlib.Init
-public import Aesop.Frontend.Command
+public meta import Mathlib.Init
+public meta import Aesop.Frontend.Command
 
-@[expose] public section
+public meta section
 
 /-!
 # Bound Rule Set

@@ -5,9 +5,9 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Init
+public meta import Mathlib.Init
 
-@[expose] public section
+public meta section
 
 /-!
 # Support for `Sort*` and `Type*`.

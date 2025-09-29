@@ -5,9 +5,9 @@ Authors: Gabriel Ebner
 -/
 module
 
-public import Mathlib.Init
+public meta import Mathlib.Init
 
-@[expose] public section
+public meta section
 /-!
 # Variants of `haveI`/`letI` for use in do-notation.
 

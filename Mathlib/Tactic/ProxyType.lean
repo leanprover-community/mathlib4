@@ -5,10 +5,10 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Tactic.Core
-public import Mathlib.Logic.Equiv.Defs
+public meta import Mathlib.Tactic.Core
+public meta import Mathlib.Logic.Equiv.Defs
 
-@[expose] public section
+public meta section
 
 /-!
 # Generating "proxy types"

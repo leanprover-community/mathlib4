@@ -5,10 +5,10 @@ Authors: Miyahara Kō
 -/
 module
 
-public import Mathlib.SetTheory.Ordinal.Exponential
-public import Mathlib.Tactic.NormNum.Basic
+public meta import Mathlib.SetTheory.Ordinal.Exponential
+public meta import Mathlib.Tactic.NormNum.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 # `norm_num` extensions for Ordinals

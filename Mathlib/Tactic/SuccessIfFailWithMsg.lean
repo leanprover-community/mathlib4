@@ -5,12 +5,12 @@ Authors: Mario Carneiro, Simon Hudon, Sébastien Gouëzel, Kim Morrison, Thomas 
 -/
 module
 
-public import Lean.Elab.Eval
-public import Lean.Elab.Tactic.BuiltinTactic
-public import Mathlib.Init
-public import Lean.Meta.Tactic.TryThis
+public meta import Lean.Elab.Eval
+public meta import Lean.Elab.Tactic.BuiltinTactic
+public meta import Mathlib.Init
+public meta import Lean.Meta.Tactic.TryThis
 
-@[expose] public section
+public meta section
 
 /-!
 # Success If Fail With Message

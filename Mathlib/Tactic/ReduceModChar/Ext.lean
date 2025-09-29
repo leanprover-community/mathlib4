@@ -5,10 +5,10 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Meta.Tactic.Simp.Attr
+public meta import Mathlib.Init
+public meta import Lean.Meta.Tactic.Simp.Attr
 
-@[expose] public section
+public meta section
 
 /-!
 # `@[reduce_mod_char]` attribute

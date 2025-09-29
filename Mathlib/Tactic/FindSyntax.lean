@@ -5,10 +5,10 @@ Authors: Damiano Testa
 -/
 module
 
-public import Lean.Elab.Command
-public import Mathlib.Init
+public meta import Lean.Elab.Command
+public meta import Mathlib.Init
 
-@[expose] public section
+public meta section
 
 /-!
 #  The `#find_syntax` command

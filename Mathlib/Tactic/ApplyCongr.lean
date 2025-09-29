@@ -5,9 +5,9 @@ Authors: Lucas Allen, Kim Morrison
 -/
 module
 
-public import Mathlib.Tactic.Conv
+public meta import Mathlib.Tactic.Conv
 
-@[expose] public section
+public meta section
 
 /-!
 ## Introduce the `apply_congr` conv mode tactic.

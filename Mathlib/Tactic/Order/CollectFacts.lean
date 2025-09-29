@@ -5,11 +5,11 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Order.BoundedOrder.Basic
-public import Mathlib.Order.Lattice
-public import Qq
+public meta import Mathlib.Order.BoundedOrder.Basic
+public meta import Mathlib.Order.Lattice
+public meta import Qq
 
-@[expose] public section
+public meta section
 
 /-!
 # Facts collection for the `order` Tactic

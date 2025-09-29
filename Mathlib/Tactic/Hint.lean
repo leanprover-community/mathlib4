@@ -5,12 +5,12 @@ Authors: Kim Morrison
 -/
 module
 
-public import Lean.Meta.Tactic.TryThis
-public import Batteries.Linter.UnreachableTactic
-public import Batteries.Control.Nondet.Basic
-public import Mathlib.Init
+public meta import Lean.Meta.Tactic.TryThis
+public meta import Batteries.Linter.UnreachableTactic
+public meta import Batteries.Control.Nondet.Basic
+public meta import Mathlib.Init
 
-@[expose] public section
+public meta section
 
 /-!
 # The `hint` tactic.

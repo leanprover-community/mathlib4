@@ -5,12 +5,12 @@ Authors: Arthur Paulino, Edward Ayers, Mario Carneiro
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Elab.Binders
-public import Lean.Elab.SyntheticMVars
-public import Lean.Meta.Tactic.Assert
+public meta import Mathlib.Init
+public meta import Lean.Elab.Binders
+public meta import Lean.Elab.SyntheticMVars
+public meta import Lean.Meta.Tactic.Assert
 
-@[expose] public section
+public meta section
 
 /-!
 # Extending `have`, `let` and `suffices`

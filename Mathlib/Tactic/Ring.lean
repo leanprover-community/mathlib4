@@ -1,5 +1,5 @@
 module
 
-public import Mathlib.Tactic.Ring.Basic
-public import Mathlib.Tactic.Ring.RingNF
-public import Mathlib.Tactic.Ring.PNat
+public meta import Mathlib.Tactic.Ring.Basic
+public meta import Mathlib.Tactic.Ring.RingNF
+public meta import Mathlib.Tactic.Ring.PNat

@@ -5,13 +5,13 @@ Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Cast
-public import Mathlib.Data.Int.Cast.Lemmas
-public import Mathlib.Data.NNRat.Defs
-public import Mathlib.Tactic.Basic
-public import Mathlib.Tactic.Zify
+public meta import Mathlib.Algebra.Order.Ring.Cast
+public meta import Mathlib.Data.Int.Cast.Lemmas
+public meta import Mathlib.Data.NNRat.Defs
+public meta import Mathlib.Tactic.Basic
+public meta import Mathlib.Tactic.Zify
 
-@[expose] public section
+public meta section
 
 /-!
 # `qify` tactic

@@ -5,9 +5,9 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Tactic.PPWithUniv
+public meta import Mathlib.Tactic.PPWithUniv
 
-@[expose] public section
+public meta section
 
 /-! # `ToLevel` class
 

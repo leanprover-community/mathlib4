@@ -5,9 +5,9 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Tactic.Order.CollectFacts
+public meta import Mathlib.Tactic.Order.CollectFacts
 
-@[expose] public section
+public meta section
 
 /-!
 # Graphs for the `order` tactic

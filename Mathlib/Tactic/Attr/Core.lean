@@ -5,9 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Tactic.Attr.Register
+public meta import Mathlib.Tactic.Attr.Register
 
-@[expose] public section
+public meta section
 
 /-!
 # Simp tags for core lemmas

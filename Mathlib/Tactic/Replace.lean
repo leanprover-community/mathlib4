@@ -5,9 +5,9 @@ Authors: Arthur Paulino, Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.Have
+public meta import Mathlib.Tactic.Have
 
-@[expose] public section
+public meta section
 
 /-!
 # Extending `replace`

@@ -5,15 +5,15 @@ Authors: Damiano Testa
 -/
 module
 
-public import Lean.Elab.DefView
-public import Lean.Util.CollectAxioms
-public import ImportGraph.Imports
-public import ImportGraph.RequiredModules
+public meta import Lean.Elab.DefView
+public meta import Lean.Util.CollectAxioms
+public meta import ImportGraph.Imports
+public meta import ImportGraph.RequiredModules
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-public import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header
 
-@[expose] public section
+public meta section
 
 /-! # `#min_imports in` a command to find minimal imports
 

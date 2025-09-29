@@ -5,11 +5,11 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Elab.Eval
-public import Lean.Elab.Tactic.ElabTerm
+public meta import Mathlib.Init
+public meta import Lean.Elab.Eval
+public meta import Lean.Elab.Tactic.ElabTerm
 
-@[expose] public section
+public meta section
 
 /-!
 # The `applyWith` tactic

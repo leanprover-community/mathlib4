@@ -5,10 +5,10 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Init
-public import Qq.Macro
+public meta import Mathlib.Init
+public meta import Qq.Macro
 
-@[expose] public section
+public meta section
 
 /-!
 # The `eval%` term elaborator

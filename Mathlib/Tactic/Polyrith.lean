@@ -5,9 +5,9 @@ Authors: Dhruv Bhatia, Eric Wieser, Mario Carneiro, Thomas Zhu
 -/
 module
 
-public import Lean.Elab.Tactic.Basic
+public meta import Lean.Elab.Tactic.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 

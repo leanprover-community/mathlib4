@@ -5,9 +5,9 @@ Authors: Miyahara Kō
 -/
 module
 
-public import Mathlib.Tactic.ToAdditive.Frontend
+public meta import Mathlib.Tactic.ToAdditive.Frontend
 
-@[expose] public section
+public meta section
 
 /-!
 ## `@[to_additive]` attributes for basic types

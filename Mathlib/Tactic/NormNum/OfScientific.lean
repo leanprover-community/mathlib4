@@ -5,10 +5,10 @@ Authors: Mario Carneiro, Thomas Murrills
 -/
 module
 
-public import Mathlib.Tactic.NormNum.Basic
-public import Mathlib.Data.Rat.Cast.Lemmas
+public meta import Mathlib.Tactic.NormNum.Basic
+public meta import Mathlib.Data.Rat.Cast.Lemmas
 
-@[expose] public section
+public meta section
 
 /-!
 ## `norm_num` plugin for scientific notation.

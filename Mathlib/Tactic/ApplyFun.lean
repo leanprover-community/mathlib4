@@ -5,11 +5,11 @@ Authors: Keeley Hoek, Patrick Massot, Kim Morrison
 -/
 module
 
-public import Mathlib.Lean.Expr.Basic
-public import Mathlib.Order.Monotone.Basic
-public import Mathlib.Order.Hom.Basic
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Mathlib.Order.Monotone.Basic
+public meta import Mathlib.Order.Hom.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 # The `apply_fun` tactic.

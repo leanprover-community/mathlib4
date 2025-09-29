@@ -5,10 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Category.Basic
-public import Mathlib.Tactic.Conv
+public meta import Mathlib.CategoryTheory.Category.Basic
+public meta import Mathlib.Tactic.Conv
 
-@[expose] public section
+public meta section
 
 /-!
 # The `slice` tactic

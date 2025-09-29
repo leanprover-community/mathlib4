@@ -5,15 +5,15 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public import Mathlib.Algebra.Field.Basic
-public import Mathlib.Algebra.Order.Ring.Defs
-public import Mathlib.Data.Tree.Basic
-public import Mathlib.Logic.Basic
-public import Mathlib.Tactic.NormNum.Core
-public import Mathlib.Util.SynthesizeUsing
-public import Mathlib.Util.Qq
+public meta import Mathlib.Algebra.Field.Basic
+public meta import Mathlib.Algebra.Order.Ring.Defs
+public meta import Mathlib.Data.Tree.Basic
+public meta import Mathlib.Logic.Basic
+public meta import Mathlib.Tactic.NormNum.Core
+public meta import Mathlib.Util.SynthesizeUsing
+public meta import Mathlib.Util.Qq
 
-@[expose] public section
+public meta section
 
 /-!
 # A tactic for canceling numeric denominators

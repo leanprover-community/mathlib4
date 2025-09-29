@@ -5,9 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Tactic.GCongr.Core
+public meta import Mathlib.Tactic.GCongr.Core
 
-@[expose] public section
+public meta section
 
 /-!
 # gcongr attributes for lemmas up in the import chain

@@ -5,10 +5,10 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Group.Nat.Defs
-public import Mathlib.Tactic.ByContra
+public meta import Mathlib.Algebra.Group.Nat.Defs
+public meta import Mathlib.Tactic.ByContra
 
-@[expose] public section
+public meta section
 
 /-!
 # `lrat_proof` command

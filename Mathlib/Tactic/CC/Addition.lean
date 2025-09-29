@@ -5,10 +5,10 @@ Authors: Leonardo de Moura, Miyahara Kō
 -/
 module
 
-public import Mathlib.Data.Option.Defs
-public import Mathlib.Tactic.CC.MkProof
+public meta import Mathlib.Data.Option.Defs
+public meta import Mathlib.Tactic.CC.MkProof
 
-@[expose] public section
+public meta section
 
 /-!
 # Process when an new equation is added to a congruence closure

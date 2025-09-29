@@ -5,10 +5,10 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Tactic.Basic
-public import Mathlib.Order.Filter.Basic
+public meta import Mathlib.Tactic.Basic
+public meta import Mathlib.Order.Filter.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 # The `peel` tactic

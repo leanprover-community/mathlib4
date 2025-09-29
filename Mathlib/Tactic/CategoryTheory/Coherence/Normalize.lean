@@ -5,10 +5,10 @@ Authors: Yuma Mizuno
 -/
 module
 
-public import Lean.Meta.AppBuilder
-public import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
+public meta import Lean.Meta.AppBuilder
+public meta import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 
-@[expose] public section
+public meta section
 
 /-!
 # Normalization of 2-morphisms in bicategories

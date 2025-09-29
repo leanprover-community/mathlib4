@@ -5,10 +5,10 @@ Authors: Mario Carneiro, Heather Macbeth
 -/
 module
 
-public import Mathlib.Data.Int.ModEq
-public import Mathlib.Tactic.HaveI
+public meta import Mathlib.Data.Int.ModEq
+public meta import Mathlib.Tactic.HaveI
 
-@[expose] public section
+public meta section
 
 /-! # `mod_cases` tactic
 

@@ -5,9 +5,9 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Tactic.Basic
+public meta import Mathlib.Tactic.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 # `rsuffices` tactic

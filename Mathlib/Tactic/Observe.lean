@@ -5,12 +5,12 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Meta.Tactic.TryThis
-public import Lean.Elab.Tactic.ElabTerm
-public import Lean.Meta.Tactic.LibrarySearch
+public meta import Mathlib.Init
+public meta import Lean.Meta.Tactic.TryThis
+public meta import Lean.Elab.Tactic.ElabTerm
+public meta import Lean.Meta.Tactic.LibrarySearch
 
-@[expose] public section
+public meta section
 
 /-!
 # The `observe` tactic.

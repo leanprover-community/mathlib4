@@ -5,12 +5,12 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Elab.Tactic.Basic
-public import Lean.PrettyPrinter
-public import Lean.Elab.SyntheticMVars
+public meta import Mathlib.Init
+public meta import Lean.Elab.Tactic.Basic
+public meta import Lean.PrettyPrinter
+public meta import Lean.Elab.SyntheticMVars
 
-@[expose] public section
+public meta section
 
 /-!
 # `#check` tactic

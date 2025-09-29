@@ -5,11 +5,11 @@ Authors: Arthur Paulino, Damiano Testa
 -/
 module
 
-public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Lean.Meta
-public import Mathlib.Order.Defs.LinearOrder
+public meta import Mathlib.Algebra.Group.Basic
+public meta import Mathlib.Lean.Meta
+public meta import Mathlib.Order.Defs.LinearOrder
 
-@[expose] public section
+public meta section
 
 /-!
 

@@ -5,10 +5,10 @@ Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
 -/
 module
 
-public import Std.Data.TreeMap.Basic
-public import Mathlib.Data.String.Defs
+public meta import Std.Data.TreeMap.Basic
+public meta import Mathlib.Data.String.Defs
 
-@[expose] public section
+public meta section
 
 /-!
 # Name generation APIs for `to_additive`

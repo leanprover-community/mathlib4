@@ -5,10 +5,10 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Init
-public import Aesop
+public meta import Mathlib.Init
+public meta import Aesop
 
-@[expose] public section
+public meta section
 
 /-!
 # SetLike Rule Set

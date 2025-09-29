@@ -6,13 +6,13 @@ Jireh Loreaux
 -/
 module
 
-public import Lean.Elab.Tactic.Location
-public import Mathlib.Tactic.Push.Attr
-public import Mathlib.Logic.Basic
-public import Mathlib.Tactic.Conv
-public import Mathlib.Util.AtLocation
+public meta import Lean.Elab.Tactic.Location
+public meta import Mathlib.Tactic.Push.Attr
+public meta import Mathlib.Logic.Basic
+public meta import Mathlib.Tactic.Conv
+public meta import Mathlib.Util.AtLocation
 
-@[expose] public section
+public meta section
 
 /-!
 # The `push`, `push_neg` and `pull` tactics

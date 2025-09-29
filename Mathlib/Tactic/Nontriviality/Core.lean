@@ -5,11 +5,11 @@ Authors: Sébastien Gouëzel, Mario Carneiro
 -/
 module
 
-public import Qq.MetaM
-public import Mathlib.Logic.Nontrivial.Basic
-public import Mathlib.Tactic.Attr.Core
+public meta import Qq.MetaM
+public meta import Mathlib.Logic.Nontrivial.Basic
+public meta import Mathlib.Tactic.Attr.Core
 
-@[expose] public section
+public meta section
 
 /-! # The `nontriviality` tactic. -/
 

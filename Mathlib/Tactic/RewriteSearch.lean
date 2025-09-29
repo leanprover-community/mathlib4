@@ -5,10 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Elab.Tactic.Basic
+public meta import Mathlib.Init
+public meta import Lean.Elab.Tactic.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 # The `rw_search` tactic has been removed from Mathlib.

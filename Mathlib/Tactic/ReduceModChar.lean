@@ -5,14 +5,14 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.Data.ZMod.Basic
-public import Mathlib.RingTheory.Polynomial.Basic
-public import Mathlib.Tactic.NormNum.DivMod
-public import Mathlib.Tactic.NormNum.PowMod
-public import Mathlib.Tactic.ReduceModChar.Ext
-public import Mathlib.Util.AtLocation
+public meta import Mathlib.Data.ZMod.Basic
+public meta import Mathlib.RingTheory.Polynomial.Basic
+public meta import Mathlib.Tactic.NormNum.DivMod
+public meta import Mathlib.Tactic.NormNum.PowMod
+public meta import Mathlib.Tactic.ReduceModChar.Ext
+public meta import Mathlib.Util.AtLocation
 
-@[expose] public section
+public meta section
 
 /-!
 # `reduce_mod_char` tactic

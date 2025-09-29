@@ -5,11 +5,11 @@ Authors: Abby J. Goldberg, Mario Carneiro, Heather Macbeth
 -/
 module
 
-public import Mathlib.Algebra.Field.Defs
-public import Mathlib.Algebra.Order.Module.Defs
-public import Mathlib.Data.Ineq
+public meta import Mathlib.Algebra.Field.Defs
+public meta import Mathlib.Algebra.Order.Module.Defs
+public meta import Mathlib.Data.Ineq
 
-@[expose] public section
+public meta section
 
 /-!
 # Lemmas for the linear_combination tactic

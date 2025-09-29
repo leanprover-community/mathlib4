@@ -5,11 +5,11 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Elab.ElabRules
-public import Lean.DocString
+public meta import Mathlib.Init
+public meta import Lean.Elab.ElabRules
+public meta import Lean.DocString
 
-@[expose] public section
+public meta section
 
 /-!
 #  `extend_doc` command

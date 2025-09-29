@@ -5,11 +5,11 @@ Authors: Damiano Testa
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Elab.Tactic.ElabTerm
-public import Lean.Meta.Tactic.TryThis
+public meta import Mathlib.Init
+public meta import Lean.Elab.Tactic.ElabTerm
+public meta import Lean.Meta.Tactic.TryThis
 
-@[expose] public section
+public meta section
 /-!
 
 # Tactic `change? term`

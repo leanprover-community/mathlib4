@@ -5,14 +5,14 @@ Authors: Patrick Massot
 -/
 module
 
-public import Lean.Elab.Tactic.Calc
-public import Lean.Meta.Tactic.TryThis
+public meta import Lean.Elab.Tactic.Calc
+public meta import Lean.Meta.Tactic.TryThis
 
-public import Mathlib.Data.String.Defs
-public import Mathlib.Tactic.Widget.SelectPanelUtils
-public import Batteries.CodeAction.Attr
+public meta import Mathlib.Data.String.Defs
+public meta import Mathlib.Tactic.Widget.SelectPanelUtils
+public meta import Batteries.CodeAction.Attr
 
-@[expose] public section
+public meta section
 
 /-! # Calc widget
 

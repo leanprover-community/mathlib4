@@ -5,11 +5,11 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Tactic.Basic
-public import Batteries.Lean.Expr
-public import Batteries.Lean.Meta.UnusedNames
+public meta import Mathlib.Tactic.Basic
+public meta import Batteries.Lean.Expr
+public meta import Batteries.Lean.Meta.UnusedNames
 
-@[expose] public section
+public meta section
 
 /-!
 # lift tactic

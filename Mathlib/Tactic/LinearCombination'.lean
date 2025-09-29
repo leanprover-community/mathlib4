@@ -5,9 +5,9 @@ Authors: Abby J. Goldberg, Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.Ring
+public meta import Mathlib.Tactic.Ring
 
-@[expose] public section
+public meta section
 
 /-!
 # linear_combination' Tactic

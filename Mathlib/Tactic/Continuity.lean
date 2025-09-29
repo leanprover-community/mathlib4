@@ -5,9 +5,9 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Tactic.Continuity.Init
+public meta import Mathlib.Tactic.Continuity.Init
 
-@[expose] public section
+public meta section
 
 /-!
 # Continuity

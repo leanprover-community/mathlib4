@@ -5,12 +5,12 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Tower
-public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-public import Mathlib.Tactic.Ring
-public import Mathlib.Util.AtomM
+public meta import Mathlib.Algebra.Algebra.Tower
+public meta import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public meta import Mathlib.Tactic.Ring
+public meta import Mathlib.Util.AtomM
 
-@[expose] public section
+public meta section
 
 /-! # A tactic for normalization over modules
 

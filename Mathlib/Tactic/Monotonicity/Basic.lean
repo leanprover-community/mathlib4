@@ -5,10 +5,10 @@ Authors: Simon Hudon
 -/
 module
 
-public import Lean.Elab.Tactic.SolveByElim
-public import Mathlib.Tactic.Monotonicity.Attr
+public meta import Lean.Elab.Tactic.SolveByElim
+public meta import Mathlib.Tactic.Monotonicity.Attr
 
-@[expose] public section
+public meta section
 
 /-! # Monotonicity tactic
 

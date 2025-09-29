@@ -5,10 +5,10 @@ Authors: Yuma Mizuno
 -/
 module
 
-public import Lean.Meta.Tactic.Apply
-public import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
+public meta import Lean.Meta.Tactic.Apply
+public meta import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 
-@[expose] public section
+public meta section
 
 /-!
 # Coherence tactic

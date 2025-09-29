@@ -5,13 +5,13 @@ Authors: Johan Commelin, Reid Barton, Simon Hudon, Thomas Murrills, Mario Carnei
 -/
 module
 
-public import Qq
-public import Mathlib.Data.Nat.Notation
-public import Mathlib.Util.AtomM
-public import Mathlib.Data.List.TFAE
-public import Mathlib.Tactic.ExtendDoc
+public meta import Qq
+public meta import Mathlib.Data.Nat.Notation
+public meta import Mathlib.Util.AtomM
+public meta import Mathlib.Data.List.TFAE
+public meta import Mathlib.Tactic.ExtendDoc
 
-@[expose] public section
+public meta section
 
 /-!
 # The Following Are Equivalent (TFAE)

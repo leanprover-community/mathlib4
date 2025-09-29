@@ -5,12 +5,12 @@ Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
 -/
 module
 
-public import Mathlib.Tactic.Basic
-public import Mathlib.Tactic.Attr.Register
-public import Mathlib.Data.Int.Cast.Basic
-public import Mathlib.Order.Basic
+public meta import Mathlib.Tactic.Basic
+public meta import Mathlib.Tactic.Attr.Register
+public meta import Mathlib.Data.Int.Cast.Basic
+public meta import Mathlib.Order.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 # `zify` tactic

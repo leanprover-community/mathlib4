@@ -5,11 +5,11 @@ Authors: Thomas Browning, Patrick Massot
 -/
 module
 
-public import Mathlib.Tactic.Ring
-public import Mathlib.Tactic.FailIfNoProgress
-public import Mathlib.Algebra.Group.Commutator
+public meta import Mathlib.Tactic.Ring
+public meta import Mathlib.Tactic.FailIfNoProgress
+public meta import Mathlib.Algebra.Group.Commutator
 
-@[expose] public section
+public meta section
 
 /-!
 # `group` tactic

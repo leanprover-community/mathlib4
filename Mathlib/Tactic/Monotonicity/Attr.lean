@@ -5,10 +5,10 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Mathlib.Init
-public import Lean.LabelAttribute
+public meta import Mathlib.Init
+public meta import Lean.LabelAttribute
 
-@[expose] public section
+public meta section
 
 /-! # The @[mono] attribute -/
 

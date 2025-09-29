@@ -5,12 +5,12 @@ Authors: Alex J. Best, Kyle Miller
 -/
 module
 
-public import Lean.Elab.Tactic.Config
-public import Lean.Elab.Tactic.Location
-public import Mathlib.Lean.Expr.Basic
-public import Batteries.Lean.Expr
+public meta import Lean.Elab.Tactic.Config
+public meta import Lean.Elab.Tactic.Location
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Batteries.Lean.Expr
 
-@[expose] public section
+public meta section
 
 /-!
 # The `generalize_proofs` tactic

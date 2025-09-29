@@ -5,11 +5,11 @@ Authors: Kim Morrison, Newell Jensen
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Elab.SyntheticMVars
-public import Lean.Meta.Tactic.Constructor
+public meta import Mathlib.Init
+public meta import Lean.Elab.SyntheticMVars
+public meta import Lean.Meta.Tactic.Constructor
 
-@[expose] public section
+public meta section
 
 /-!
 # The `fconstructor` and `econstructor` tactics

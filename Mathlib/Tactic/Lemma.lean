@@ -5,10 +5,10 @@ Authors: Mario Carneiro, Kyle Miller
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Parser.Command
+public meta import Mathlib.Init
+public meta import Lean.Parser.Command
 
-@[expose] public section
+public meta section
 
 /-!
 # Support for `lemma` as a synonym for `theorem`.

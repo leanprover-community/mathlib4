@@ -5,14 +5,14 @@ Authors: Yuma Mizuno
 -/
 module
 
-public import ProofWidgets.Component.PenroseDiagram
-public import ProofWidgets.Component.Panel.Basic
-public import ProofWidgets.Presentation.Expr
-public import ProofWidgets.Component.HtmlDisplay
-public import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
-public import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
+public meta import ProofWidgets.Component.PenroseDiagram
+public meta import ProofWidgets.Component.Panel.Basic
+public meta import ProofWidgets.Presentation.Expr
+public meta import ProofWidgets.Component.HtmlDisplay
+public meta import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
+public meta import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
 
-@[expose] public section
+public meta section
 
 /-!
 # String Diagram Widget

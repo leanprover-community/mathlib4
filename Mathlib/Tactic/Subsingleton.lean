@@ -5,9 +5,9 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Logic.Basic
+public meta import Mathlib.Logic.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 # `subsingleton` tactic

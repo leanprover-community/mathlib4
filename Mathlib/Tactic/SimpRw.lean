@@ -5,9 +5,9 @@ Authors: Anne Baanen, Mario Carneiro, Alex J. Best
 -/
 module
 
-public import Mathlib.Init
+public meta import Mathlib.Init
 
-@[expose] public section
+public meta section
 
 /-!
 # The `simp_rw` tactic

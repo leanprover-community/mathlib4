@@ -5,11 +5,11 @@ Authors: Anne Baanen, Floris van Doorn
 -/
 module
 
-public import Mathlib.Tactic.NormNum.Basic
-public import Mathlib.Data.List.FinRange
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public meta import Mathlib.Tactic.NormNum.Basic
+public meta import Mathlib.Data.List.FinRange
+public meta import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 # `norm_num` plugin for big operators

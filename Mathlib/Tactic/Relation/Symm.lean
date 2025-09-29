@@ -5,10 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Meta.Tactic.Symm
+public meta import Mathlib.Init
+public meta import Lean.Meta.Tactic.Symm
 
-@[expose] public section
+public meta section
 
 /-!
 # `relSidesIfSymm?`

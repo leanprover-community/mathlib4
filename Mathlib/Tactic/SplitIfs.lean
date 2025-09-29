@@ -5,12 +5,12 @@ Authors: Gabriel Ebner, David Renshaw
 -/
 module
 
-public import Lean.Elab.Tactic.Location
-public import Lean.Meta.Tactic.SplitIf
-public import Lean.Elab.Tactic.Simp
-public import Mathlib.Tactic.Core
+public meta import Lean.Elab.Tactic.Location
+public meta import Lean.Meta.Tactic.SplitIf
+public meta import Lean.Elab.Tactic.Simp
+public meta import Mathlib.Tactic.Core
 
-@[expose] public section
+public meta section
 
 /-!
 Tactic to split if-then-else expressions.

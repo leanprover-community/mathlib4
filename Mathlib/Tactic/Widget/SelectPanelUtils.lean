@@ -5,12 +5,12 @@ Authors: Patrick Massot
 -/
 module
 
-public import Lean.Meta.ExprLens
-public import ProofWidgets.Component.MakeEditLink
-public import ProofWidgets.Component.OfRpcMethod -- needed in all files using this one.
-public import Mathlib.Tactic.Widget.SelectInsertParamsClass
+public meta import Lean.Meta.ExprLens
+public meta import ProofWidgets.Component.MakeEditLink
+public meta import ProofWidgets.Component.OfRpcMethod -- needed in all files using this one.
+public meta import Mathlib.Tactic.Widget.SelectInsertParamsClass
 
-@[expose] public section
+public meta section
 
 /-! # Selection panel utilities
 

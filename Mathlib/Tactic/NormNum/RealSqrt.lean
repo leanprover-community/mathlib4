@@ -5,9 +5,9 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public import Mathlib.Data.Real.Sqrt
+public meta import Mathlib.Data.Real.Sqrt
 
-@[expose] public section
+public meta section
 
 /-! # `norm_num` extension for `Real.sqrt`
 

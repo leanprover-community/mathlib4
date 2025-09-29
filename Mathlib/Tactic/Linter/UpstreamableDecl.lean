@@ -5,10 +5,10 @@ Authors: Damiano Testa, Anne Baanen
 -/
 module
 
-public import ImportGraph.Imports
-public import Mathlib.Init
+public meta import ImportGraph.Imports
+public meta import Mathlib.Init
 
-@[expose] public section
+public meta section
 
 /-! # The `upstreamableDecl` linter
 

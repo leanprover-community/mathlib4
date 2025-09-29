@@ -5,11 +5,11 @@ Authors: Yuma Mizuno
 -/
 module
 
-public import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
-public import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
-public import Mathlib.CategoryTheory.Category.Basic
+public meta import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
+public meta import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
+public meta import Mathlib.CategoryTheory.Category.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 # The Core function for `monoidal` and `bicategory` tactics

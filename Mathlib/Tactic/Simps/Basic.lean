@@ -5,12 +5,12 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Lean.Elab.Tactic.Simp
-public import Lean.Elab.App
-public import Mathlib.Tactic.Simps.NotationClass
-public import Mathlib.Lean.Expr.Basic
+public meta import Lean.Elab.Tactic.Simp
+public meta import Lean.Elab.App
+public meta import Mathlib.Tactic.Simps.NotationClass
+public meta import Mathlib.Lean.Expr.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 # Simps attribute

@@ -5,12 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Meta.Tactic.Simp.SimpTheorems
-public import Lean.Meta.Tactic.Simp.RegisterCommand
-public import Lean.LabelAttribute
+public meta import Mathlib.Init
+public meta import Lean.Meta.Tactic.Simp.SimpTheorems
+public meta import Lean.Meta.Tactic.Simp.RegisterCommand
+public meta import Lean.LabelAttribute
 
-@[expose] public section
+public meta section
 
 /-!
 # Attributes used in `Mathlib`

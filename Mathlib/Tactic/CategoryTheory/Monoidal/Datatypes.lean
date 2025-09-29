@@ -5,10 +5,10 @@ Authors: Yuma Mizuno
 -/
 module
 
-public import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
-public import Mathlib.Tactic.CategoryTheory.MonoidalComp
+public meta import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
+public meta import Mathlib.Tactic.CategoryTheory.MonoidalComp
 
-@[expose] public section
+public meta section
 
 /-!
 # Expressions for monoidal categories

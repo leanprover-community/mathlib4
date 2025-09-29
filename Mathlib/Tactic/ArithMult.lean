@@ -5,10 +5,10 @@ Authors: Arend Mellendijk
 -/
 module
 
-public import Mathlib.Tactic.Basic
-public import Mathlib.Tactic.ArithMult.Init
+public meta import Mathlib.Tactic.Basic
+public meta import Mathlib.Tactic.ArithMult.Init
 
-@[expose] public section
+public meta section
 
 /-!
 # Multiplicativity

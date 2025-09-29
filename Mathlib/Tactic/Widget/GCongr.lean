@@ -5,10 +5,10 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Tactic.Widget.SelectPanelUtils
-public import Mathlib.Tactic.GCongr
+public meta import Mathlib.Tactic.Widget.SelectPanelUtils
+public meta import Mathlib.Tactic.GCongr
 
-@[expose] public section
+public meta section
 
 /-! # GCongr widget
 

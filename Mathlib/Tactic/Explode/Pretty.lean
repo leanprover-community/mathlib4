@@ -5,10 +5,10 @@ Authors: Mario Carneiro, Evgenia Karunus, Kyle Miller
 -/
 module
 
-public import Lean.Meta.Basic
-public import Mathlib.Tactic.Explode.Datatypes
+public meta import Lean.Meta.Basic
+public meta import Mathlib.Tactic.Explode.Datatypes
 
-@[expose] public section
+public meta section
 
 /-!
 # Explode command: pretty

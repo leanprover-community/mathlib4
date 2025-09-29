@@ -5,11 +5,11 @@ Authors: Arthur Paulino, Patrick Massot
 -/
 module
 
-public import Lean.Elab.Tactic.Location
-public import Mathlib.Util.Tactic
-public import Mathlib.Lean.Expr.Basic
+public meta import Lean.Elab.Tactic.Location
+public meta import Mathlib.Util.Tactic
+public meta import Mathlib.Lean.Expr.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 # The `rename_bvar` tactic

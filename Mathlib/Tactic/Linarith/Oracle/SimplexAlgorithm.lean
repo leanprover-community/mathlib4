@@ -5,10 +5,10 @@ Authors: Vasily Nesterov
 -/
 module
 
-public import Mathlib.Tactic.Linarith.Datatypes
-public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.PositiveVector
+public meta import Mathlib.Tactic.Linarith.Datatypes
+public meta import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.PositiveVector
 
-@[expose] public section
+public meta section
 
 /-!
 # The oracle based on Simplex Algorithm

@@ -5,9 +5,9 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Data.PNat.Basic
+public meta import Mathlib.Data.PNat.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 # `pnat_to_nat`

@@ -5,14 +5,14 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Lean.Expr.Rat
-public import Mathlib.Tactic.Hint
-public import Mathlib.Tactic.NormNum.Result
-public import Mathlib.Util.AtLocation
-public import Mathlib.Util.Qq
-public import Lean.Elab.Tactic.Location
+public meta import Mathlib.Lean.Expr.Rat
+public meta import Mathlib.Tactic.Hint
+public meta import Mathlib.Tactic.NormNum.Result
+public meta import Mathlib.Util.AtLocation
+public meta import Mathlib.Util.Qq
+public meta import Lean.Elab.Tactic.Location
 
-@[expose] public section
+public meta section
 
 /-!
 ## `norm_num` core functionality

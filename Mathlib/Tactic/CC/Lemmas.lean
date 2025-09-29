@@ -5,9 +5,9 @@ Authors: Leonardo de Moura
 -/
 module
 
-public import Mathlib.Init
+public meta import Mathlib.Init
 
-@[expose] public section
+public meta section
 
 /-! Lemmas use by the congruence closure module -/
 

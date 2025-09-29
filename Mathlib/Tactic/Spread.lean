@@ -5,10 +5,10 @@ Authors: Gabriel Ebner
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Elab.Binders
+public meta import Mathlib.Init
+public meta import Lean.Elab.Binders
 
-@[expose] public section
+public meta section
 
 /-!
 # Macro for spread syntax (`__ := instSomething`) in structures.

@@ -5,13 +5,13 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Meta.Eqns
-public import Batteries.Lean.NameMapAttribute
-public import Lean.Elab.Exception
-public import Lean.Elab.InfoTree.Main
+public meta import Mathlib.Init
+public meta import Lean.Meta.Eqns
+public meta import Batteries.Lean.NameMapAttribute
+public meta import Lean.Elab.Exception
+public meta import Lean.Elab.InfoTree.Main
 
-@[expose] public section
+public meta section
 
 /-! # The `@[eqns]` attribute
 

@@ -5,10 +5,10 @@ Authors: Kevin Buzzard
 -/
 module
 
-public import Batteries.Tactic.Init
-public import Mathlib.Tactic.Push
+public meta import Batteries.Tactic.Init
+public meta import Mathlib.Tactic.Push
 
-@[expose] public section
+public meta section
 
 /-!
 # The `by_contra` tactic

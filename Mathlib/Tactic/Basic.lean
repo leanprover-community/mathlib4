@@ -5,15 +5,15 @@ Authors: Mario Carneiro, Kyle Miller
 -/
 module
 
-public import Lean
-public import Mathlib.Tactic.PPWithUniv
-public import Mathlib.Tactic.ExtendDoc
-public import Mathlib.Tactic.Lemma
-public import Mathlib.Tactic.TypeStar
-public import Mathlib.Tactic.Linter.OldObtain
-public import Mathlib.Tactic.Simproc.ExistsAndEq
+public meta import Lean
+public meta import Mathlib.Tactic.PPWithUniv
+public meta import Mathlib.Tactic.ExtendDoc
+public meta import Mathlib.Tactic.Lemma
+public meta import Mathlib.Tactic.TypeStar
+public meta import Mathlib.Tactic.Linter.OldObtain
+public meta import Mathlib.Tactic.Simproc.ExistsAndEq
 
-@[expose] public section
+public meta section
 
 /-!
 # Basic tactics and utilities for tactic writing

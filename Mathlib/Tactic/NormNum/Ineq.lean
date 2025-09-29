@@ -5,13 +5,13 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.NormNum.Eq
-public import Mathlib.Algebra.Order.Field.Defs
-public import Mathlib.Algebra.Order.Invertible
-public import Mathlib.Algebra.Order.Monoid.WithTop
-public import Mathlib.Algebra.Order.Ring.Cast
+public meta import Mathlib.Tactic.NormNum.Eq
+public meta import Mathlib.Algebra.Order.Field.Defs
+public meta import Mathlib.Algebra.Order.Invertible
+public meta import Mathlib.Algebra.Order.Monoid.WithTop
+public meta import Mathlib.Algebra.Order.Ring.Cast
 
-@[expose] public section
+public meta section
 
 /-!
 # `norm_num` extensions for inequalities.

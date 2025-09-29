@@ -5,10 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Ring.Int.Parity
-public import Mathlib.Tactic.NormNum.Core
+public meta import Mathlib.Algebra.Ring.Int.Parity
+public meta import Mathlib.Tactic.NormNum.Core
 
-@[expose] public section
+public meta section
 
 /-!
 # `norm_num` extensions for `Even` and `Odd`

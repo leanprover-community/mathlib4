@@ -5,10 +5,10 @@ Authors: Jireh Loreaux, Kim Morrison, Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Defs
-public import Mathlib.Tactic.Abel
+public meta import Mathlib.Algebra.Group.Action.Defs
+public meta import Mathlib.Tactic.Abel
 
-@[expose] public section
+public meta section
 
 /-! # The `noncomm_ring` tactic
 

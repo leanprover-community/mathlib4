@@ -5,13 +5,13 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Abs
-public import Mathlib.Algebra.Order.Ring.Defs
-public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-public import Mathlib.Data.Set.Lattice
-public import Mathlib.Tactic.Monotonicity.Attr
+public meta import Mathlib.Algebra.Order.Group.Abs
+public meta import Mathlib.Algebra.Order.Ring.Defs
+public meta import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+public meta import Mathlib.Data.Set.Lattice
+public meta import Mathlib.Tactic.Monotonicity.Attr
 
-@[expose] public section
+public meta section
 
 /-! # Lemmas for the `mono` tactic
 

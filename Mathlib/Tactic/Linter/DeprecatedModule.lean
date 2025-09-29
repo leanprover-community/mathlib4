@@ -5,10 +5,10 @@ Authors: Damiano Testa
 -/
 module
 
-public import Std.Time.Format
-public import Mathlib.Init
+public meta import Std.Time.Format
+public meta import Mathlib.Init
 
-@[expose] public section
+public meta section
 
 /-!
 #  The `deprecated.module` linter

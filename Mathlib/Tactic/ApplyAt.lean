@@ -5,10 +5,10 @@ Authors: Adam Topaz
 -/
 module
 
-public import Lean.Elab.Tactic.ElabTerm
-public import Mathlib.Lean.Meta.Basic
+public meta import Lean.Elab.Tactic.ElabTerm
+public meta import Mathlib.Lean.Meta.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 # Apply at

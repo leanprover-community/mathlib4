@@ -5,13 +5,13 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Batteries.Tactic.Exact
-public import Batteries.Tactic.Init
-public import Mathlib.Logic.Basic
-public import Mathlib.Util.AtomM
-public import Qq
+public meta import Batteries.Tactic.Exact
+public meta import Batteries.Tactic.Init
+public meta import Mathlib.Logic.Basic
+public meta import Mathlib.Util.AtomM
+public meta import Qq
 
-@[expose] public section
+public meta section
 
 /-!
 

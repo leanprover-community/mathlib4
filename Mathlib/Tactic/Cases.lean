@@ -5,12 +5,12 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Lean.Elab.Tactic.Induction
-public import Batteries.Tactic.OpenPrivate
-public import Mathlib.Lean.Expr.Basic
-public import Batteries.Data.List.Basic
+public meta import Lean.Elab.Tactic.Induction
+public meta import Batteries.Tactic.OpenPrivate
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Batteries.Data.List.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 # Backward compatible implementation of lean 3 `cases` tactic

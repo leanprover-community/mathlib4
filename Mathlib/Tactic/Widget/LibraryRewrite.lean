@@ -5,11 +5,11 @@ Authors: Jovan Gerbscheid, Anand Rao
 -/
 module
 
-public import Mathlib.Lean.Meta.RefinedDiscrTree
-public import Mathlib.Tactic.Widget.InteractiveUnfold
-public import ProofWidgets.Component.FilterDetails
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree
+public meta import Mathlib.Tactic.Widget.InteractiveUnfold
+public meta import ProofWidgets.Component.FilterDetails
 
-@[expose] public section
+public meta section
 
 /-!
 # Point & click library rewriting

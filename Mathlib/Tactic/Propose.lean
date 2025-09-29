@@ -5,15 +5,15 @@ Authors: Kim Morrison
 -/
 module
 
-public import Lean.Meta.Tactic.TryThis
-public import Lean.Meta.Tactic.SolveByElim
-public import Mathlib.Lean.Expr.Basic
-public import Mathlib.Lean.Meta
-public import Mathlib.Lean.Meta.Basic
-public import Batteries.Util.Cache
-public import Mathlib.Tactic.Core
+public meta import Lean.Meta.Tactic.TryThis
+public meta import Lean.Meta.Tactic.SolveByElim
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Mathlib.Lean.Meta
+public meta import Mathlib.Lean.Meta.Basic
+public meta import Batteries.Util.Cache
+public meta import Mathlib.Tactic.Core
 
-@[expose] public section
+public meta section
 
 /-!
 # Propose

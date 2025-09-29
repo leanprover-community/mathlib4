@@ -5,10 +5,10 @@ Authors: Eric Wieser
 -/
 module
 
-public import Lean.Elab.SyntheticMVars
-public import Mathlib.Init
+public meta import Lean.Elab.SyntheticMVars
+public meta import Mathlib.Init
 
-@[expose] public section
+public meta section
 
 /-!
 # The `without_cdot()` elaborator

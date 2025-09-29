@@ -5,10 +5,10 @@ Authors: Yuma Mizuno
 -/
 module
 
-public import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
-public import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
+public meta import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
+public meta import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
 
-@[expose] public section
+public meta section
 
 /-!
 # Coherence tactic for bicategories

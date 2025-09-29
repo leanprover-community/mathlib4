@@ -5,11 +5,11 @@ Authors: Vasily Nesterov
 -/
 module
 
-public import Lean.Meta.Basic
-public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.SimplexAlgorithm
-public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Gauss
+public meta import Lean.Meta.Basic
+public meta import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.SimplexAlgorithm
+public meta import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Gauss
 
-@[expose] public section
+public meta section
 
 /-!
 # `linarith` certificate search as an LP problem

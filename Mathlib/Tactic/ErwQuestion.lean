@@ -5,10 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Elab.Tactic.Rewrite
+public meta import Mathlib.Init
+public meta import Lean.Elab.Tactic.Rewrite
 
-@[expose] public section
+public meta section
 
 /-!
 # The `erw?` tactic

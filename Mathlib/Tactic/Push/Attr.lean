@@ -5,9 +5,9 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Lean.Expr.Basic
+public meta import Mathlib.Lean.Expr.Basic
 
-@[expose] public section
+public meta section
 
 /-!
 # The `@[push]` attribute for the `push`, `push_neg` and `pull` tactics

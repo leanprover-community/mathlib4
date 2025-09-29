@@ -5,10 +5,10 @@ Authors: Kyle Miller, Andreas Gittis
 -/
 module
 
-public import Mathlib.Data.Nat.Log
-public import Mathlib.Tactic.NormNum
+public meta import Mathlib.Data.Nat.Log
+public meta import Mathlib.Tactic.NormNum
 
-@[expose] public section
+public meta section
 
 /-! # `norm_num` extensions for `Nat.log` and `Nat.clog`
 

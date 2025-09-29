@@ -5,9 +5,9 @@ Authors: Kim Morrison, Kyle Miller
 -/
 module
 
-public import Mathlib.Tactic.CongrExclamation
+public meta import Mathlib.Tactic.CongrExclamation
 
-@[expose] public section
+public meta section
 
 /-!
 # The `convert` tactic.

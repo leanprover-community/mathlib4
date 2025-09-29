@@ -5,11 +5,11 @@ Authors: Mac Malone, Kyle Miller
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Elab.Command
-public import Lean.Elab.DeclUtil
+public meta import Mathlib.Init
+public meta import Lean.Elab.Command
+public meta import Lean.Elab.DeclUtil
 
-@[expose] public section
+public meta section
 
 /-!
 # `recall` command

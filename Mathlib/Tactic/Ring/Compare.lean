@@ -5,10 +5,10 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Mathlib.Tactic.Ring.Basic
-public import Mathlib.Tactic.NormNum.Ineq
+public meta import Mathlib.Tactic.Ring.Basic
+public meta import Mathlib.Tactic.NormNum.Ineq
 
-@[expose] public section
+public meta section
 
 /-!
 # Automation for proving inequalities in commutative (semi)rings

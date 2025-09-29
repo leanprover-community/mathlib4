@@ -5,10 +5,10 @@ Authors: Sebastian Zimmer
 -/
 module
 
-public import Mathlib.Data.Nat.Factorial.Basic
-public import Mathlib.Tactic.NormNum
+public meta import Mathlib.Data.Nat.Factorial.Basic
+public meta import Mathlib.Tactic.NormNum
 
-@[expose] public section
+public meta section
 
 /-! # `norm_num` extensions for factorials
 

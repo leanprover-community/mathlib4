@@ -5,9 +5,9 @@ Authors: Heather Macbeth
 -/
 module
 
-public import Mathlib.Tactic.Positivity.Core
+public meta import Mathlib.Tactic.Positivity.Core
 
-@[expose] public section
+public meta section
 
 /-!
 # Finiteness tactic

@@ -5,11 +5,11 @@ Authors: Joshua Clune
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Meta.Tactic.Clear
-public import Lean.Elab.Tactic.Basic
+public meta import Mathlib.Init
+public meta import Lean.Meta.Tactic.Clear
+public meta import Lean.Elab.Tactic.Basic
 
-@[expose] public section
+public meta section
 
 /-! # `clear_` tactic -/
 

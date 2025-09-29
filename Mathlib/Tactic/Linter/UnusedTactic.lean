@@ -5,14 +5,14 @@ Authors: Damiano Testa
 -/
 module
 
-public import Lean.Parser.Syntax
-public import Batteries.Tactic.Unreachable
+public meta import Lean.Parser.Syntax
+public meta import Batteries.Tactic.Unreachable
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-public import Mathlib.Tactic.Linter.Header
-public import Mathlib.Tactic.Linter.UnusedTacticExtension
+public meta import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.UnusedTacticExtension
 
-@[expose] public section
+public meta section
 
 /-!
 # The unused tactic linter

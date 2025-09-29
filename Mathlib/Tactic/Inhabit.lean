@@ -5,10 +5,10 @@ Authors: Joshua Clune
 -/
 module
 
-public import Lean.Elab.Tactic.ElabTerm
-public import Mathlib.Tactic.TypeStar
+public meta import Lean.Elab.Tactic.ElabTerm
+public meta import Mathlib.Tactic.TypeStar
 
-@[expose] public section
+public meta section
 
 /-!
 Defines the `inhabit α` tactic, which tries to construct an `Inhabited α` instance,

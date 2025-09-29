@@ -5,14 +5,14 @@ Authors: Kyle Miller
 -/
 module
 
-public import Lean.Meta.Transform
-public import Lean.Meta.Inductive
-public import Lean.Elab.Deriving.Basic
-public import Lean.Elab.Deriving.Util
-public import Mathlib.Logic.Encodable.Basic
-public import Mathlib.Data.Nat.Pairing
+public meta import Lean.Meta.Transform
+public meta import Lean.Meta.Inductive
+public meta import Lean.Elab.Deriving.Basic
+public meta import Lean.Elab.Deriving.Util
+public meta import Mathlib.Logic.Encodable.Basic
+public meta import Mathlib.Data.Nat.Pairing
 
-@[expose] public section
+public meta section
 
 /-!
 # `Encodable` deriving handler

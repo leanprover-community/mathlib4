@@ -5,12 +5,12 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Lean.Expr.Basic
-public import Mathlib.Tactic.Basic
-public import Batteries.Tactic.Lint.Misc
-public import Mathlib.Tactic.Linter.DeprecatedModule
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Mathlib.Tactic.Basic
+public meta import Batteries.Tactic.Lint.Misc
+public meta import Mathlib.Tactic.Linter.DeprecatedModule
 
-@[expose] public section
+public meta section
 
 deprecated_module "The extract_let tactic was moved to Lean core; \
   you can probably just remove this import" (since := "2025-05-02")

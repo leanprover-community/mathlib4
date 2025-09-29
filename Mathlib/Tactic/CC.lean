@@ -5,9 +5,9 @@ Authors: Leonardo de Moura, Miyahara Kō
 -/
 module
 
-public import Mathlib.Tactic.CC.Addition
+public meta import Mathlib.Tactic.CC.Addition
 
-@[expose] public section
+public meta section
 
 /-!
 # Congruence closure

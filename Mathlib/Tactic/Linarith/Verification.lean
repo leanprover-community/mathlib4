@@ -5,10 +5,10 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public import Mathlib.Tactic.Linarith.Parsing
-public import Mathlib.Util.Qq
+public meta import Mathlib.Tactic.Linarith.Parsing
+public meta import Mathlib.Util.Qq
 
-@[expose] public section
+public meta section
 
 /-!
 # Deriving a proof of false

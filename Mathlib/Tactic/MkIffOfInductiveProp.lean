@@ -5,13 +5,13 @@ Authors: Johannes Hölzl, David Renshaw
 -/
 module
 
-public import Lean.Elab.DeclarationRange
-public import Lean.Meta.Tactic.Cases
-public import Mathlib.Lean.Meta
-public import Mathlib.Lean.Name
-public import Mathlib.Tactic.TypeStar
+public meta import Lean.Elab.DeclarationRange
+public meta import Lean.Meta.Tactic.Cases
+public meta import Mathlib.Lean.Meta
+public meta import Mathlib.Lean.Name
+public meta import Mathlib.Tactic.TypeStar
 
-@[expose] public section
+public meta section
 
 /-!
 # mk_iff_of_inductive_prop

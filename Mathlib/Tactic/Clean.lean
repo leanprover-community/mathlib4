@@ -5,10 +5,10 @@ Authors: Mario Carneiro, Michail Karatarakis, Kyle Miller
 -/
 module
 
-public import Mathlib.Init
-public import Lean.Elab.SyntheticMVars
+public meta import Mathlib.Init
+public meta import Lean.Elab.SyntheticMVars
 
-@[expose] public section
+public meta section
 
 /-!
 # `clean%` term elaborator
