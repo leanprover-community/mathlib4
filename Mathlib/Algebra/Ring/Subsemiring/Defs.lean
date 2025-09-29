@@ -321,17 +321,6 @@ theorem coe_pow {R} [Semiring R] (s : Subsemiring R) (x : s) (n : ℕ) :
 instance toCommSemiring {R} [CommSemiring R] (s : Subsemiring R) : CommSemiring s :=
   { s.toSemiring with mul_comm := fun _ _ => Subtype.eq <| mul_comm _ _ }
 
-/-- A subsemiring of a left cancellative `NonAssocSemiring` is also left cancellative. -/
-instance isLeftCancelAdd [IsLeftCancelAdd R] : IsLeftCancelAdd s :=
-  s.toAddSubmonoid.isLeftCancelAdd
-
-/-- A subsemiring of a right cancellative `NonAssocSemiring` is also right cancellative. -/
-instance isRightCancelAdd [IsRightCancelAdd R] : IsRightCancelAdd s :=
-  s.toAddSubmonoid.isRightCancelAdd
-
-/-- A subsemiring of a cancellative `NonAssocSemiring` is also cancellative. -/
-instance isCancelAdd [IsCancelAdd R] : IsCancelAdd s where
-
 /-- The natural ring hom from a subsemiring of semiring `R` to `R`. -/
 def subtype : s →+* R :=
   { s.toSubmonoid.subtype, s.toAddSubmonoid.subtype with toFun := (↑) }

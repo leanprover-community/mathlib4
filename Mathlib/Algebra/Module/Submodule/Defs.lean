@@ -273,17 +273,6 @@ variable (p)
 instance addCommMonoid : AddCommMonoid p := fast_instance%
   { p.toAddSubmonoid.toAddCommMonoid with }
 
-/-- A submodule of a left cancellative module is also left cancellative. -/
-instance isLeftCancelAdd [IsLeftCancelAdd M] : IsLeftCancelAdd p :=
-  p.toAddSubmonoid.isLeftCancelAdd
-
-/-- A submodule of a right cancellative module is also right cancellative. -/
-instance isRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd p :=
-  p.toAddSubmonoid.isRightCancelAdd
-
-/-- A submodule of a cancellative module is also cancellative. -/
-instance isCancelAdd [IsCancelAdd M] : IsCancelAdd p where
-
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
     Module S p := fast_instance%
   { (show MulAction S p from p.toSubMulAction.mulAction') with
