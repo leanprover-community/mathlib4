@@ -278,10 +278,10 @@ lemma embeddingUpInt_areComplementary (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     AreComplementary (embeddingUpIntLE n₀) (embeddingUpIntGE n₁) where
   disjoint i₁ i₂ := by dsimp; omega
   union i := by
-    by_cases! hi : i ≤ n₀
+    by_cases hi : i ≤ n₀
     · obtain ⟨k, rfl⟩ := Int.exists_add_of_le hi
       exact Or.inl ⟨k, by dsimp; omega⟩
-    · obtain ⟨k, rfl⟩ := Int.exists_add_of_le hi.le
+    · obtain ⟨k, rfl⟩ := Int.exists_add_of_le (show n₁ ≤ i by omega)
       exact Or.inr ⟨k, rfl⟩
 
 end Embedding

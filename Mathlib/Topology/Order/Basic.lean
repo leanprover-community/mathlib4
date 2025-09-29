@@ -267,12 +267,12 @@ theorem induced_topology_eq_preorder [Preorder α] [Preorder β] [TopologicalSpa
   refine le_of_nhds_le_nhds fun a => ?_
   simp only [nhds_eq_order, nhds_induced, comap_inf, comap_iInf, comap_principal]
   refine inf_le_inf (le_iInf₂ fun b hb => ?_) (le_iInf₂ fun b hb => ?_)
-  · by_cases h : ∃ x, ¬(b < f x)
+  · by_cases! h : ∃ x, ¬(b < f x)
     · rcases h with ⟨x, hx⟩
       rcases H₁ hb hx with ⟨y, hya, hyb⟩
       exact iInf₂_le_of_le y hya (principal_mono.2 fun z hz => hyb.trans_lt (hf.2 hz))
     · exact le_principal_iff.2 (univ_mem' h)
-  · by_cases h : ∃ x, ¬(f x < b)
+  · by_cases! h : ∃ x, ¬(f x < b)
     · rcases h with ⟨x, hx⟩
       rcases H₂ hb hx with ⟨y, hya, hyb⟩
       exact iInf₂_le_of_le y hya (principal_mono.2 fun z hz => (hf.2 hz).trans_le hyb)

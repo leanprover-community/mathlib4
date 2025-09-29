@@ -268,7 +268,7 @@ instance (priority := 100) isLocalRing : IsLocalRing A :=
 
 instance le_total_ideal : IsTotal (Ideal A) LE.le := by
   constructor; intro α β
-  by_cases! h : ∀ x : B, x ∈ S → x ∈ T
+  by_cases! h : ∀ x : A, x ∈ α → x ∈ β
   · exact Or.inl h
   obtain ⟨a, h₁, h₂⟩ := h
   right
