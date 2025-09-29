@@ -360,7 +360,7 @@ section integralPositiveLinearMap
 
 -- Note: the assumption `IsFiniteMeasureOnCompacts μ` cannot be removed. For example, if
 -- `μ` is infinite on any nonempty set and `ν = 0`, then the hypothese are satisfied.
-lemma compare_measure_of_compact_sets {μ ν : Measure X} [ν.OuterRegular]
+lemma measure_le_of_isCompact_of_integral {μ ν : Measure X} [ν.OuterRegular]
     [IsFiniteMeasureOnCompacts ν] [IsFiniteMeasureOnCompacts μ]
     (hμν : ∀ (f : C_c(X, ℝ)), ∫ (x : X), f x ∂μ ≤ ∫ (x : X), f x ∂ν)
     ⦃K : Set X⦄ (hK : IsCompact K) : μ K ≤ ν K := by
