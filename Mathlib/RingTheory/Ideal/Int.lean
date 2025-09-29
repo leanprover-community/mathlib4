@@ -88,7 +88,7 @@ theorem absNorm_under_dvd_absNorm {S : Type*} [CommRing S] [IsDedekindDomain S] 
     simp_rw [absNorm_under_eq_sInf, h_main, ← AddMonoid.exponent_eq_sInf]
     exact AddGroup.exponent_dvd_card (G := S ⧸ I)
   · push_neg at h
-    rw [show absNorm I = 0 by exact AddSubgroup.index_eq_zero_iff_infinite.mpr h]
+    rw [absNorm_apply I, Submodule.cardQuot_apply, Nat.card_eq_zero_of_infinite]
     exact Nat.dvd_zero _
 
 end Ring
