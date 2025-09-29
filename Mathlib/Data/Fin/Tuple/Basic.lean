@@ -1068,46 +1068,28 @@ section Find
 
 variable {p q : Fin n → Prop} [DecidablePred p] [DecidablePred q] {i j : Fin n}
 
---⟨Nat.find (Fin.exists_iff.mp h), (Nat.find_spec (Fin.exists_iff.mp h)).fst⟩
-
 /-- `find p` returns the first index `k` where `p k` is satisfied,
   given that it is satisfied somewhere. -/
 protected def find : {n : ℕ} → {p : Fin n → Prop} → [DecidablePred p] → (h : ∃ k, p k) → Fin n
-  | 0, _, _, h => isEmptyElim h.choose
-  | _ + 1, p, _, h => if h0 : p 0 then 0 else
-    (Fin.find <| (exists_fin_succ.mp h).resolve_left h0).succ
+  | 0, _, _, h => isEmptyElim h.choose | _ + 1, p, _, h =>
+    if h0 : p 0 then 0 else Fin.succ <| Fin.find <| (exists_fin_succ.mp h).resolve_left h0
 
 /-- If `find p = i`, then `p i` holds -/
 theorem find_spec (h : ∃ k, p k) : p (Fin.find h) := by
-  induction n with | zero | succ n ih
-  · exact isEmptyElim h.choose
-  · unfold Fin.find
-    by_cases h0 : p 0
-    · rwa [dif_pos h0]
-    · rw [dif_neg h0]
-      exact ih ((exists_fin_succ.mp h).resolve_left h0)
+  induction n with | zero => exact isEmptyElim h.choose | succ n ih => unfold Fin.find; grind
 
 grind_pattern Fin.find_spec => Fin.find h
 
 /-- If `find p = i`, then `p j` does not hold for `j < i`, i.e., `i` is minimal among
 the indices where `p` holds. -/
-protected theorem find_min (h : ∃ k, p k) {j : Fin n} :
-    j < Fin.find h → ¬ p j := by
-  induction n with | zero | succ n ih
-  · exact isEmptyElim h.choose
-  · unfold Fin.find
-    by_cases h0 : p 0
-    · rw [dif_pos h0]
-      exact fun h => (not_lt_zero _ h).elim
-    · cases j using cases with | zero | succ j
-      · exact fun _ => h0
-      · rw [dif_neg h0, succ_lt_succ_iff]
-        exact ih _
+protected theorem find_min (h : ∃ k, p k) : {j : Fin n} → j < Fin.find h → ¬ p j := by
+  induction n with | zero => exact isEmptyElim h.choose | succ n ih =>
+  simp_rw [Fin.find, forall_fin_succ, apply_dite, succ_lt_succ_iff, not_lt_zero]; grind
 
 /-- If `find p = i`, then `p j` does not hold for `j < i`, i.e., `i` is minimal among
 the indices where `p` holds. -/
-protected theorem find_min' (h : ∃ k, p k) {j : Fin n} (hj : p j) :
-    Fin.find h ≤ j := le_of_not_gt fun l => Fin.find_min h l hj
+protected theorem find_min' (h : ∃ k, p k) {j : Fin n} :
+    p j → Fin.find h ≤ j := (Fin.find_min _ <| lt_of_not_ge ·).mtr
 
 theorem find_eq_iff {i : Fin n} (h : ∃ k, p k) : Fin.find h = i ↔ p i ∧ ∀ j < i, ¬ p j := by
   constructor
