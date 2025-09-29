@@ -132,8 +132,15 @@ variable [IsLeftUniformGroup Gₗ] [IsRightUniformGroup Gᵣ]
 variable [IsLeftUniformGroup Hₗ] [IsRightUniformGroup Hᵣ]
 variable [UniformSpace X]
 
-@[to_additive]
-instance : IsTopologicalGroup G := by
+/-- Note: We give this instance the lowest priority as any concrete type satisfying it will
+have an instance of either `IsLeftUniformGroup` or `IsRightUniformGroup`.
+
+In other words, this instance only appears in lemmas assuming `IsLeftOrRightUniformGroup G`. -/
+@[to_additive /-- Note: We give this instance the lowest priority as any concrete type satisfying
+it will have an instance of either `IsLeftUniformAddGroup` or `IsRightUniformAddGroup`.
+
+In other words, this instance only appears in lemmas assuming `IsLeftOrRightUniformAddGroup G`. -/]
+instance (priority := low) : IsTopologicalGroup G := by
   rcases ‹IsLeftOrRightUniformGroup G› <;> infer_instance
 
 variable (Gₗ Gᵣ)
