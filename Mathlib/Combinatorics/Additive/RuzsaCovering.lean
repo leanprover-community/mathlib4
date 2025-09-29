@@ -41,11 +41,10 @@ theorem ruzsa_covering_mul (hB : B.Nonempty) (hK : #(A * B) ≤ K * #B) :
       _ ≤ K * #B := hK
   by_cases hau : a ∈ F
   · exact subset_mul_left _ hB.one_mem_div hau
-  by_cases H : ∀ b ∈ F, Disjoint (a • B) (b • B)
+  by_cases! H : ∀ b ∈ F, Disjoint (a • B) (b • B)
   · refine (hFmax.not_gt ?_ <| ssubset_insert hau).elim
     rw [insert_subset_iff, coe_insert]
     exact ⟨⟨ha, hFA⟩, hF.insert fun _ hb _ ↦ H _ hb⟩
-  push_neg at H
   simp_rw [not_disjoint_iff, ← inv_smul_mem_iff] at H
   obtain ⟨b, hb, c, hc₁, hc₂⟩ := H
   exact mem_mul.2 ⟨b, hb, b⁻¹ * a, mem_div.2 ⟨_, hc₂, _, hc₁, by simp⟩, by simp⟩

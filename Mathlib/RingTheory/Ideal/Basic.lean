@@ -132,7 +132,7 @@ theorem pow_multiset_sum_mem_span_pow [DecidableEq α] (s : Multiset α) (n : �
   refine Submodule.sum_mem _ ?_
   intro c _hc
   rw [mem_span_insert]
-  by_cases h : n + 1 ≤ c
+  by_cases! h : n + 1 ≤ c
   · refine ⟨a ^ (c - (n + 1)) * s.sum ^ ((Multiset.card s + 1) * n + 1 - c) *
       ((Multiset.card s + 1) * n + 1).choose c, 0, Submodule.zero_mem _, ?_⟩
     rw [mul_comm _ (a ^ (n + 1))]
@@ -141,7 +141,7 @@ theorem pow_multiset_sum_mem_span_pow [DecidableEq α] (s : Multiset α) (n : �
   · use 0
     simp_rw [zero_mul, zero_add]
     refine ⟨_, ?_, rfl⟩
-    replace h : c ≤ n := Nat.lt_succ_iff.mp (not_le.mp h)
+    replace h : c ≤ n := Nat.lt_succ_iff.mp h
     have : (Multiset.card s + 1) * n + 1 - c = Multiset.card s * n + 1 + (n - c) := by
       rw [add_mul, one_mul, add_assoc, add_comm n 1, ← add_assoc, add_tsub_assoc_of_le h]
     rw [this, pow_add]

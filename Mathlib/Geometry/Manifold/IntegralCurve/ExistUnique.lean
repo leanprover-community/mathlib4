@@ -300,11 +300,10 @@ lemma IsMIntegralCurve.periodic_xor_injective [BoundarylessManifold I M]
   refine ⟨|a - b|, ?_, ?_⟩
   · rw [gt_iff_lt, abs_pos, sub_ne_zero]
     exact hne
-  · by_cases hab : a - b < 0
+  · by_cases! hab : a - b < 0
     · rw [abs_of_neg hab, neg_sub]
       exact hγ.periodic_of_eq hv heq.symm
-    · rw [not_lt] at hab
-      rw [abs_of_nonneg hab]
+    · rw [abs_of_nonneg hab]
       exact hγ.periodic_of_eq hv heq
 
 @[deprecated (since := "2025-08-12")] alias IsIntegralCurve.periodic_xor_injective :=

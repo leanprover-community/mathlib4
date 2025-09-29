@@ -217,7 +217,7 @@ values of `f` over `t` and `tᶜ` are different. -/
 theorem ae_eq_const_or_exists_average_ne_compl [IsFiniteMeasure μ] (hfi : Integrable f μ) :
     f =ᵐ[μ] const α (⨍ x, f x ∂μ) ∨
       ∃ t, MeasurableSet t ∧ μ t ≠ 0 ∧ μ tᶜ ≠ 0 ∧ (⨍ x in t, f x ∂μ) ≠ ⨍ x in tᶜ, f x ∂μ := by
-  refine or_iff_not_imp_right.mpr fun H => ?_; push_neg at H
+  refine or_iff_not_imp_right.mpr ?_; by_contra! H
   refine hfi.ae_eq_of_forall_setIntegral_eq _ _ (integrable_const _) fun t ht ht' => ?_; clear ht'
   simp only [const_apply, setIntegral_const]
   by_cases h₀ : μ t = 0

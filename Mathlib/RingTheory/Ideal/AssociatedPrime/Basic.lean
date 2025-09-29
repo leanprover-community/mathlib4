@@ -119,7 +119,7 @@ contained in the union of those of `M` and `M''`. -/
 theorem subset_union_of_exact (hf : Function.Injective f) (hfg : Function.Exact f g) :
     associatedPrimes R M' ⊆ associatedPrimes R M ∪ associatedPrimes R M'' := by
   rintro p ⟨_, x, hx⟩
-  by_cases h : ∃ a ∈ p.primeCompl, ∃ y : M, f y = a • x
+  by_cases! h : ∃ a ∈ p.primeCompl, ∃ y : M, f y = a • x
   · obtain ⟨a, ha, y, h⟩ := h
     left
     refine ⟨‹_›, y, le_antisymm (fun b hb ↦ ?_) (fun b hb ↦ ?_)⟩
@@ -133,8 +133,7 @@ theorem subset_union_of_exact (hf : Function.Injective f) (hfg : Function.Exact 
         ← LinearMap.mem_ker, ← hx] at hb
       contrapose! hb
       exact p.primeCompl.mul_mem hb ha
-  · push_neg at h
-    right
+  · right
     refine ⟨‹_›, g x, le_antisymm (fun b hb ↦ ?_) (fun b hb ↦ ?_)⟩
     · rw [hx] at hb
       rw [LinearMap.mem_ker, LinearMap.toSpanSingleton_apply] at hb ⊢

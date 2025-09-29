@@ -306,11 +306,10 @@ theorem coeff_mul_natTrailingDegree_add_natTrailingDegree : (p * q).coeff
       (h (mem_antidiagonal.mpr rfl)).elim
   rintro ⟨i, j⟩ h₁ h₂
   rw [mem_antidiagonal] at h₁
-  by_cases hi : i < p.natTrailingDegree
+  by_cases! hi : i < p.natTrailingDegree
   · rw [coeff_eq_zero_of_lt_natTrailingDegree hi, zero_mul]
-  by_cases hj : j < q.natTrailingDegree
+  by_cases! hj : j < q.natTrailingDegree
   · rw [coeff_eq_zero_of_lt_natTrailingDegree hj, mul_zero]
-  rw [not_lt] at hi hj
   refine (h₂ (Prod.ext_iff.mpr ?_).symm).elim
   exact (add_eq_add_iff_eq_and_eq hi hj).mp h₁.symm
 

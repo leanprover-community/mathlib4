@@ -156,11 +156,11 @@ theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Co
     exact Set.subset_union_left
   · rw [← Set.biUnion_preimage_singleton]
     refine hs.biUnion fun z hz => ?_
-    rcases em (∃ w, exp w = z) with (⟨w, rfl⟩ | hne)
-    · simp only [Set.preimage, Set.mem_singleton_iff, exp_eq_exp_iff_exists_int, Set.setOf_exists]
+    by_cases! h : ∃ w, exp w = z
+    · rcases h with ⟨w, rfl⟩
+      simp only [Set.preimage, Set.mem_singleton_iff, exp_eq_exp_iff_exists_int, Set.setOf_exists]
       exact Set.countable_iUnion fun m => Set.countable_singleton _
-    · push_neg at hne
-      simp [Set.preimage, hne]
+    · simp [Set.preimage, h]
 
 alias ⟨_, _root_.Set.Countable.preimage_cexp⟩ := countable_preimage_exp
 

@@ -91,9 +91,9 @@ theorem dpow_add_of_lt {n : ℕ} (hn_fac : IsUnit ((n - 1)! : A)) {m : ℕ} (hmn
 theorem dpow_add {n : ℕ} (hn_fac : IsUnit ((n - 1)! : A)) (hnI : I ^ n = 0) {m : ℕ} {x : A}
     (hx : x ∈ I) {y : A} (hy : y ∈ I) :
     dpow I m (x + y) = (Finset.antidiagonal m).sum fun k ↦ dpow I k.1 x * dpow I k.2 y := by
-  by_cases hmn : m < n
+  by_cases! hmn : m < n
   · exact dpow_add_of_lt hn_fac hmn hx hy
-  · have h_sub : I ^ m ≤ I ^ n := Ideal.pow_le_pow_right (not_lt.mp hmn)
+  · have h_sub : I ^ m ≤ I ^ n := Ideal.pow_le_pow_right hmn
     rw [dpow_eq_of_mem (Ideal.add_mem I hx hy)]
     simp only [dpow]
     have hxy : (x + y) ^ m = 0 := by
@@ -132,9 +132,9 @@ theorem dpow_mul_of_add_lt {n : ℕ} (hn_fac : IsUnit ((n - 1)! : A)) {m k : ℕ
 theorem mul_dpow {n : ℕ} (hn_fac : IsUnit ((n - 1).factorial : A)) (hnI : I ^ n = 0)
     {m k : ℕ} {x : A} (hx : x ∈ I) :
     dpow I m x * dpow I k x = ↑((m + k).choose m) * dpow I (m + k) x := by
-  by_cases hkm : m + k < n
+  by_cases! hkm : m + k < n
   · exact dpow_mul_of_add_lt hn_fac hkm hx
-  · have hxmk : x ^ (m + k) = 0 := Ideal.pow_eq_zero_of_mem hnI (not_lt.mp hkm) hx
+  · have hxmk : x ^ (m + k) = 0 := Ideal.pow_eq_zero_of_mem hnI hkm hx
     rw [dpow_eq_of_mem hx, dpow_eq_of_mem hx, dpow_eq_of_mem hx,
       mul_assoc, ← mul_assoc (x ^ m), mul_comm (x ^ m), mul_assoc _ (x ^ m), ← pow_add, hxmk,
       mul_zero, mul_zero, mul_zero, mul_zero]
@@ -159,9 +159,9 @@ theorem dpow_comp_of_mul_lt {n : ℕ} (hn_fac : IsUnit ((n - 1)! : A)) {m k : �
 theorem dpow_comp {n : ℕ} (hn_fac : IsUnit ((n - 1).factorial : A)) (hnI : I ^ n = 0)
     {m k : ℕ} (hk : k ≠ 0) {x : A} (hx : x ∈ I) :
     dpow I m (dpow I k x) = ↑(uniformBell m k) * dpow I (m * k) x := by
-  by_cases hmk : m * k < n
+  by_cases! hmk : m * k < n
   · exact dpow_comp_of_mul_lt hn_fac hk hmk hx
-  · have hxmk : x ^ (m * k) = 0 := Ideal.pow_eq_zero_of_mem hnI (not_lt.mp hmk) hx
+  · have hxmk : x ^ (m * k) = 0 := Ideal.pow_eq_zero_of_mem hnI hmk hx
     rw [dpow_eq_of_mem (dpow_mem hk hx), dpow_eq_of_mem hx, dpow_eq_of_mem hx,
       mul_pow, ← pow_mul, ← mul_assoc, mul_comm k, hxmk, mul_zero, mul_zero, mul_zero]
 

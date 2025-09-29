@@ -82,9 +82,9 @@ lemma LSeries.tendsto_cpow_mul_atTop {f : ℕ → ℂ} {n : ℕ} (h : ∀ m ≤ 
   -- get the prerequisites for applying dominated convergence
   have hys : Summable (F y) := by
     refine ((hs le_rfl).indicator {m | n + 1 < m}).congr fun m ↦ ?_
-    by_cases hm : n + 1 < m
+    by_cases! hm : n + 1 < m
     · simp [hF, hm, hm.ne']
-    · simp [hm, hF₀ _ (le_of_not_gt hm)]
+    · simp [hm, hF₀ _ hm]
   have hc (k : ℕ) : Tendsto (F · k) atTop (nhds 0) := by
     rcases lt_or_ge (n + 1) k with H | H
     · have H₀ : (0 : ℝ) ≤ k / (n + 1) := by positivity

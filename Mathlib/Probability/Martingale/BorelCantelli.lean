@@ -70,15 +70,15 @@ theorem leastGE_eq_min (π : Ω → ℕ) (r : ℝ) (ω : Ω) {n : ℕ} (hπn : �
     leastGE f r (π ω) ω = min (π ω) (leastGE f r n ω) := by
   classical
   refine le_antisymm (le_min (leastGE_le _) (leastGE_mono (hπn ω) r ω)) ?_
-  by_cases hle : π ω ≤ leastGE f r n ω
+  by_cases! hle : π ω ≤ leastGE f r n ω
   · rw [min_eq_left hle, leastGE]
     by_cases h : ∃ j ∈ Set.Icc 0 (π ω), f j ω ∈ Set.Ici r
     · refine hle.trans (Eq.le ?_)
       rw [leastGE, ← hitting_eq_hitting_of_exists (hπn ω) h]
     · simp only [hitting, if_neg h, le_rfl]
-  · rw [min_eq_right (not_le.1 hle).le, leastGE, leastGE, ←
+  · rw [min_eq_right hle.le, leastGE, leastGE, ←
       hitting_eq_hitting_of_exists (hπn ω) _]
-    rw [not_le, leastGE, hitting_lt_iff _ (hπn ω)] at hle
+    rw [leastGE, hitting_lt_iff _ (hπn ω)] at hle
     exact
       let ⟨j, hj₁, hj₂⟩ := hle
       ⟨j, ⟨hj₁.1, hj₁.2.le⟩, hj₂⟩

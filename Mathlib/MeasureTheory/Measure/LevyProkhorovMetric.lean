@@ -491,11 +491,10 @@ variable [MeasurableSpace Ω] [OpensMeasurableSpace Ω]
 lemma ProbabilityMeasure.toMeasure_add_pos_gt_mem_nhds (P : ProbabilityMeasure Ω)
     {G : Set Ω} (G_open : IsOpen G) {ε : ℝ≥0∞} (ε_pos : 0 < ε) :
     {Q | P.toMeasure G < Q.toMeasure G + ε} ∈ 𝓝 P := by
-  by_cases easy : P.toMeasure G < ε
+  by_cases! easy : P.toMeasure G < ε
   · exact Eventually.of_forall (fun _ ↦ lt_of_lt_of_le easy le_add_self)
   by_cases ε_top : ε = ∞
   · simp [ε_top, measure_lt_top]
-  simp only [not_lt] at easy
   have aux : P.toMeasure G - ε < liminf (fun Q ↦ Q.toMeasure G) (𝓝 P) := by
     apply lt_of_lt_of_le (ENNReal.sub_lt_self (by finiteness) _ _)
         <| ProbabilityMeasure.le_liminf_measure_open_of_tendsto tendsto_id G_open
@@ -516,13 +515,12 @@ lemma SeparableSpace.exists_measurable_partition_diam_le {ε : ℝ} (ε_pos : 0 
     ∃ (As : ℕ → Set Ω), (∀ n, MeasurableSet (As n)) ∧ (∀ n, Bornology.IsBounded (As n)) ∧
         (∀ n, diam (As n) ≤ ε) ∧ (⋃ n, As n = univ) ∧
         (Pairwise (fun (n m : ℕ) ↦ Disjoint (As n) (As m))) := by
-  by_cases X_emp : IsEmpty Ω
+  by_cases! X_emp : IsEmpty Ω
   · refine ⟨fun _ ↦ ∅, fun _ ↦ MeasurableSet.empty, fun _ ↦ Bornology.isBounded_empty, ?_, ?_,
             fun _ _ _ ↦ disjoint_of_subsingleton⟩
     · intro n
       simpa only [diam_empty] using LT.lt.le ε_pos
     · subsingleton
-  push_neg at X_emp
   obtain ⟨xs, xs_dense⟩ := exists_dense_seq Ω
   have half_ε_pos : 0 < ε / 2 := half_pos ε_pos
   set Bs := fun n ↦ Metric.ball (xs n) (ε / 2)

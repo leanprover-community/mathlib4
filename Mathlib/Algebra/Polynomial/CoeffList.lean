@@ -132,10 +132,10 @@ theorem coeffList_eraseLead (h : P ≠ 0) :
   · obtain ⟨w,h⟩ := (coeffList_eq_cons_leadingCoeff h)
     simp_all
   simp only [coeffList, List.map_reverse]
-  by_cases hkd : P.natDegree + 1 ≤ k + 1
+  by_cases! hkd : P.natDegree + 1 ≤ k + 1
   · rw [List.getElem?_eq_none]
       <;> simpa [hep, h] using by cutsat
-  obtain ⟨dk, hdk⟩ := exists_add_of_le (Nat.le_of_lt_succ (Nat.lt_of_not_ge hkd))
+  obtain ⟨dk, hdk⟩ := exists_add_of_le (Nat.le_of_lt_succ hkd)
   rw [List.getElem?_reverse (by simpa [withBotSucc_degree_eq_natDegree_add_one h] using hkd),
     List.getElem?_cons_succ, List.length_map, List.length_range, List.getElem?_map,
     List.getElem?_range (by cutsat), Option.map_some]
@@ -143,9 +143,9 @@ theorem coeffList_eraseLead (h : P ≠ 0) :
     rw [eraseLead_coeff_of_ne (f := P) dk (by cutsat)]
     congr
     cutsat
-  by_cases hkn : k < n
+  by_cases! hkn : k < n
   · simpa [List.getElem?_append, hkn] using coeff_eq_zero_of_natDegree_lt (by cutsat)
-  · rw [List.getElem?_append_right (List.length_replicate ▸ Nat.le_of_not_gt hkn),
+  · rw [List.getElem?_append_right (List.length_replicate ▸ hkn),
       List.length_replicate, List.getElem?_reverse, List.getElem?_map]
     · rw [List.length_map, List.length_range,
         List.getElem?_range (by cutsat), Option.map_some]

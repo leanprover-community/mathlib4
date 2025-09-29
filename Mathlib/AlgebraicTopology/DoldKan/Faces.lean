@@ -156,10 +156,10 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFac
   dsimp
   simp only [comp_add, add_comp, comp_id]
   -- when n < q, the result follows immediately from the assumption
-  by_cases hqn : n < q
+  by_cases! hqn : n < q
   · rw [v.comp_Hσ_eq_zero hqn, zero_comp, add_zero, v j (by cutsat)]
   -- we now assume that n≥q, and write n=a+q
-  obtain ⟨a, ha⟩ := Nat.le.dest (not_lt.mp hqn)
+  obtain ⟨a, ha⟩ := Nat.le.dest hqn
   rw [v.comp_Hσ_eq (show n = a + q by cutsat), neg_comp, add_neg_eq_zero, assoc, assoc]
   rcases n with - | m
   -- the boundary case n=0

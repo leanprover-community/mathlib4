@@ -183,7 +183,7 @@ set_option push_neg.use_distrib true in
 /-- Binary entropy has derivative `log (1 - p) - log p`.
 It's not differentiable at `0` or `1` but the junk values of `deriv` and `log` coincide there. -/
 lemma deriv_binEntropy (p : ℝ) : deriv binEntropy p = log (1 - p) - log p := by
-  by_cases hp : p ≠ 0 ∧ p ≠ 1
+  by_cases! hp : p ≠ 0 ∧ p ≠ 1
   · obtain ⟨hp₀, hp₁⟩ := hp
     rw [ne_comm, ← sub_ne_zero] at hp₁
     rw [binEntropy_eq_negMulLog_add_negMulLog_one_sub', deriv_fun_add, deriv_comp_const_sub,
@@ -192,7 +192,6 @@ lemma deriv_binEntropy (p : ℝ) : deriv binEntropy p = log (1 - p) - log p := b
     all_goals fun_prop (disch := assumption)
   -- pathological case where `deriv = 0` since `binEntropy` is not differentiable there
   · rw [deriv_zero_of_not_differentiableAt (differentiableAt_binEntropy_iff_ne_zero_one.not.2 hp)]
-    push_neg at hp
     obtain rfl | rfl := hp <;> simp
 
 /-! ### `q`-ary entropy -/
