@@ -20,8 +20,8 @@ instance MonoidWithZeroHom.instLinearOrderedCommGroupWithZeroMrange (v : F →*�
     LinearOrderedCommGroupWithZero (MonoidHom.mrange v) where
   __ : CommGroupWithZero (MonoidHom.mrange v) := inferInstance
   __ : LinearOrder (MonoidHom.mrange v) := inferInstance
-  bot := 0
-  bot_le a := show (0 : Γ₀) ≤ _ from zero_le'
+  bot := ⟨⊥, by simp [bot_eq_zero'']⟩
+  bot_le a := by simp [bot_eq_zero'', ← Subtype.coe_le_coe]
   zero_le_one := Subtype.coe_le_coe.mp zero_le_one
   mul_le_mul_left := by
     simp only [Subtype.forall, MonoidHom.mem_mrange, forall_exists_index, Submonoid.mk_mul_mk,
