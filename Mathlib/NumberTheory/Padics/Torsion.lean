@@ -35,7 +35,7 @@ lemma restrictRootsOfUnity_toZMod_injective :
   simp only [mem_rootsOfUnity] at hx
   rw [Subtype.ext_iff, Units.ext_iff]
   simp only [restrictRootsOfUnity_coe_apply, OneMemClass.coe_one, Units.val_one, Subgroup.mk_eq_one,
-    ← (ZMod.val_injective _).eq_iff, val_toZMod_eq_zmodSpec, ZMod.val_one]
+    ← (ZMod.val_injective _).eq_iff, val_toZMod_eq_zmodRepr, ZMod.val_one]
   intro h
   obtain ⟨c, hc⟩ := (norm_lt_one_iff_dvd _).mp (norm_sub_zmodRepr_lt_one x.val)
   suffices c = 0 by simpa [this, sub_eq_zero, h] using hc
@@ -83,7 +83,7 @@ lemma restrictRootsOfUnity_toZMod_surjective :
     simp only [aeval_sub, map_pow, aeval_X, ← Nat.cast_pow, map_one, derivative_sub,
       derivative_X_pow, map_natCast, derivative_one, sub_zero, map_mul, norm_mul, F]
     rw [norm_natCast_eq_one_iff.mpr, norm_natCast_eq_one_iff.mpr, one_mul, one_pow,
-        norm_lt_one_iff_dvd, ← zmodRepr_eq_zero_iff_dvd, ← val_toZMod_eq_zmodSpec]
+        norm_lt_one_iff_dvd, ← zmodRepr_eq_zero_iff_dvd, ← val_toZMod_eq_zmodRepr]
     · simpa [sub_eq_zero] using ZMod.pow_card_sub_one_eq_one hn
     · rw [Nat.coprime_pow_right_iff, Nat.coprime_comm, ← ZMod.isUnit_iff_coprime]
       · simp [hn]
@@ -98,11 +98,11 @@ lemma restrictRootsOfUnity_toZMod_surjective :
   have : ∀ x : ℤ_[p]ˣ, ∃ z : ℤ_[p]ˣ, z ^ (p - 1) = 1 ∧ z.val.zmodRepr = x.val.zmodRepr := by
     intro x
     have hx : ‖(x.val.zmodRepr : ℤ_[p]) ^ (p - 1) - 1‖ < 1 := by
-      rw [norm_lt_one_iff_dvd, ← zmodRepr_eq_zero_iff_dvd, ← val_toZMod_eq_zmodSpec]
-      simp only [← val_toZMod_eq_zmodSpec, ZMod.natCast_val, map_sub, map_pow,
+      rw [norm_lt_one_iff_dvd, ← zmodRepr_eq_zero_iff_dvd, ← val_toZMod_eq_zmodRepr]
+      simp only [← val_toZMod_eq_zmodRepr, ZMod.natCast_val, map_sub, map_pow,
         ZMod.ringHom_map_cast, map_one, ZMod.val_eq_zero, sub_eq_zero]
       refine ZMod.pow_card_sub_one_eq_one ?_
-      rw [ne_eq, ← ZMod.val_eq_zero, val_toZMod_eq_zmodSpec]
+      rw [ne_eq, ← ZMod.val_eq_zero, val_toZMod_eq_zmodRepr]
       exact zmodRepr_units_ne_zero x
     obtain ⟨z, hz, hz', hz'', hz'''⟩ := hensels_lemma (p := p) (F := F) (a := x.val.zmodRepr)
       (hF _ (zmodRepr_units_ne_zero _))
@@ -114,7 +114,6 @@ lemma restrictRootsOfUnity_toZMod_surjective :
     refine ⟨mkUnits hz'', ?_, ?_⟩
     · simpa [Units.ext_iff, F, sub_eq_zero] using hz
     · simp only [val_mkUnits, Subtype.coe_eta]
-      rw [eq_comm]
       apply zmodRepr_unique _ _ (zmodRepr_lt_p _)
       simp [F, derivative_X_pow,
         (norm_natCast_zmodRepr_eq x.val).resolve_right (zmodRepr_units_ne_zero _)] at hz'
@@ -126,7 +125,7 @@ lemma restrictRootsOfUnity_toZMod_surjective :
   obtain ⟨z, hz, hz'⟩ := this (mkUnits (u := (x.val.val.val : ℤ_[p])) hx)
   refine ⟨⟨z, hz⟩, ?_⟩
   simp [restrictRootsOfUnity, Subtype.ext_iff, Units.ext_iff]
-  rw [← (ZMod.val_injective _).eq_iff, val_toZMod_eq_zmodSpec, hz']
+  rw [← (ZMod.val_injective _).eq_iff, val_toZMod_eq_zmodRepr, hz']
   simp only [val_mkUnits, Subtype.coe_eta, zmodRepr_natCast_of_lt (ZMod.val_lt _)]
 
 /-- The `p - 1` roots-of-unity of the `p`-adic integers are isomorphic to the units of `ZMod p`. -/
