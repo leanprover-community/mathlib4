@@ -65,10 +65,10 @@ section
 
 variable {F F' : Type*} [FunLike F ℍ ℂ] [FunLike F' ℍ ℂ]
 
-lemma SlashInvariantFormClass.petersson_smul {k g τ} {Γ : Subgroup (GL (Fin 2) ℝ)} [HasDetOne Γ]
+lemma SlashInvariantFormClass.petersson_smul {k g τ} {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetOne]
     [SlashInvariantFormClass F Γ k] {f : F} [SlashInvariantFormClass F' Γ k] {f' : F'}
     (hg : g ∈ Γ) : petersson k f f' (g • τ) = petersson k f f' τ := by
-  simpa [SlashInvariantFormClass.slash_action_eq _ _ hg, HasDetOne.det_eq hg, σ]
+  simpa [SlashInvariantFormClass.slash_action_eq _ _ hg, Subgroup.HasDetOne.det_eq hg, σ]
     using (petersson_slash k f f' g τ).symm
 
 end
