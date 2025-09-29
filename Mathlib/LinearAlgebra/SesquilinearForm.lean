@@ -230,32 +230,32 @@ section PositiveSemidefinite
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] {I₁ I₂ : R →+* R}
 
-/-- A sesquilinear map `B` is **positive** if for any `x` we have `0 ≤ B x x`. -/
-structure IsPos [LE R] (B : M →ₛₗ[I₁] M →ₛₗ[I₂] R) where
+/-- A sesquilinear map `B` is **nonnegative** if for any `x` we have `0 ≤ B x x`. -/
+structure IsNonneg [LE R] (B : M →ₛₗ[I₁] M →ₛₗ[I₂] R) where
   nonneg : ∀ x, 0 ≤ B x x
 
-lemma isPos_def [LE R] {B : M →ₛₗ[I₁] M →ₛₗ[I₂] R} : B.IsPos ↔ ∀ x, 0 ≤ B x x :=
+lemma isNonneg_def [LE R] {B : M →ₛₗ[I₁] M →ₛₗ[I₂] R} : B.IsNonneg ↔ ∀ x, 0 ≤ B x x :=
   ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
 @[simp]
-lemma isPos_zero [Preorder R] : IsPos (0 : M →ₛₗ[I₁] M →ₛₗ[I₂] R) := ⟨fun _ ↦ le_rfl⟩
+lemma isNonneg_zero [Preorder R] : IsNonneg (0 : M →ₛₗ[I₁] M →ₛₗ[I₂] R) := ⟨fun _ ↦ le_rfl⟩
 
 /-- A sesquilinear map `B` is **positive semidefinite** if it is symmetric and positive. -/
-structure IsPosSemidef [LE R] (B : M →ₛₗ[I₁] M →ₗ[R] R) extends B.IsSymm, B.IsPos
+structure IsPosSemidef [LE R] (B : M →ₛₗ[I₁] M →ₗ[R] R) extends B.IsSymm, B.IsNonneg
 
 variable {B : M →ₛₗ[I₁] M →ₗ[R] R}
 
 lemma IsPosSemidef.isSymm [LE R] (h : B.IsPosSemidef) : B.IsSymm := h.toIsSymm
 
-lemma IsPosSemidef.isPos [LE R] (h : B.IsPosSemidef) : B.IsPos := h.toIsPos
+lemma IsPosSemidef.isNonneg [LE R] (h : B.IsPosSemidef) : B.IsNonneg := h.toIsNonneg
 
-lemma isPosSemidef_def [LE R] : B.IsPosSemidef ↔ B.IsSymm ∧ B.IsPos :=
-  ⟨fun h ↦ ⟨h.isSymm, h.isPos⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, h₂⟩⟩
+lemma isPosSemidef_def [LE R] : B.IsPosSemidef ↔ B.IsSymm ∧ B.IsNonneg :=
+  ⟨fun h ↦ ⟨h.isSymm, h.isNonneg⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, h₂⟩⟩
 
 @[simp]
 lemma isPosSemidef_zero [Preorder R] : IsPosSemidef (0 : M →ₛₗ[I₁] M →ₗ[R] R) where
   toIsSymm := isSymm_zero
-  toIsPos := isPos_zero
+  toIsNonneg := isNonneg_zero
 
 end PositiveSemidefinite
 
