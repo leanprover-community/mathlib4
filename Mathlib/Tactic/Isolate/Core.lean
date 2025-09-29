@@ -43,14 +43,14 @@ initialize registerTraceClass `Meta.isolate
 form `f a₁ a₂ ... x ... aₖ ~ y`, a key can be extracted, and the appropriate lemma(s) will be looked
 up in the environment extension using that key. This structure is the type for that key. -/
 structure IsolateLemmaKey where
-  /- the relation `~` in the relational expression -/
+  /-- the relation `~` in the relational expression -/
   relation : Name
-  /- the function `f` in the relational expression -/
+  /-- the function `f` in the relational expression -/
   operation : Name
   /-- the index of the `x` free-variable argument in the function `f` -/
   arity : Nat
-  /- a boolean, `false` if the relational expression is `f a₁ a₂ ... x ... aₖ ~ y`, and `true` if it
-  is reversed (`y ~ f a₁ a₂ ... x ... aₖ`). -/
+  /-- a boolean, `false` if the relational expression is `f a₁ a₂ ... x ... aₖ ~ y`, and `true` if
+  it is reversed (`y ~ f a₁ a₂ ... x ... aₖ`). -/
   symm? : Bool
 deriving BEq, Hashable, Inhabited, Repr
 
