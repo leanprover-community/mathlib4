@@ -508,13 +508,13 @@ theorem inr_comp_pushoutSymmetry_inv [HasPushout f g] :
 
 end PushoutSymmetry
 
-/-- `HasPullbackAlong f` represents a choice of pullback
+/-- `HasPullbacksAlong f` represents a choice of pullback
 for each morphism into the codomain of `f : X ⟶ Z`. -/
-abbrev HasPullbackAlong (f : X ⟶ Y) : Prop := ∀ {W} (h : W ⟶ Y), HasPullback h f
+abbrev HasPullbacksAlong (f : X ⟶ Y) : Prop := ∀ {W} (h : W ⟶ Y), HasPullback h f
 
-/-- `HasPushforwardAlong f` represents a choice of pushforward
+/-- `HasPushoutsAlong f` represents a choice of pushforward
 for each morphism out of the domain of `f : X ⟶ Z`. -/
-abbrev HasPushoutAlong (f : X ⟶ Y) : Prop := ∀ {W} (h : X ⟶ W), HasPushout h f
+abbrev HasPushoutsAlong (f : X ⟶ Y) : Prop := ∀ {W} (h : X ⟶ W), HasPushout h f
 
 variable (C)
 
