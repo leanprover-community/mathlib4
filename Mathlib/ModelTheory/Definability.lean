@@ -19,7 +19,7 @@ This file defines what it means for a set over a first-order structure to be def
   `(s : Set M)` is definable with parameters in `A`.
 - `Set.Definable₂` is defined so that `A.Definable₂ L s` indicates that
   `(s : Set (M × M))` is definable with parameters in `A`.
-- A `FirstOrder.Language.DefinableSet` is defined so that `L.DefinableSet A α` is the boolean
+- A `FirstOrder.Language.DefinableSet` is defined so that `L.DefinableSet A α` is the Boolean
   algebra of subsets of `α → M` defined by formulas with parameters in `A`.
 
 ## Main Results
@@ -205,9 +205,6 @@ theorem Definable.image_comp_sumInl_fin (m : ℕ) {s : Set (Sum α (Fin m) → M
       ⟨y ∘ Sum.inr, (congr (congr rfl (Sum.elim_comp_inl_inr y).symm) (funext finZeroElim)).mp hy⟩
   · rintro ⟨y, hy⟩
     exact ⟨Sum.elim x y, (congr rfl (funext finZeroElim)).mp hy, Sum.elim_comp_inl _ _⟩
-
-@[deprecated (since := "2025-02-21")] alias
-Definable.image_comp_sum_inl_fin := Definable.image_comp_sumInl_fin
 
 /-- Shows that definability is closed under finite projections. -/
 theorem Definable.image_comp_embedding {s : Set (β → M)} (h : A.Definable L s) (f : α ↪ β)

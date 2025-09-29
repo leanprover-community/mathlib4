@@ -80,9 +80,6 @@ theorem MemLp.eLpNorm_mk_lt_top {α E : Type*} [MeasurableSpace α] {μ : Measur
     [NormedAddCommGroup E] {p : ℝ≥0∞} {f : α → E} (hfp : MemLp f p μ) :
     eLpNorm (AEEqFun.mk f hfp.1) p μ < ∞ := by simp [hfp.2]
 
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.eLpNorm_mk_lt_top := MemLp.eLpNorm_mk_lt_top
-
 /-- Lp space -/
 def Lp {α} (E : Type*) {m : MeasurableSpace α} [NormedAddCommGroup E] (p : ℝ≥0∞)
     (μ : Measure α := by volume_tac) : AddSubgroup (α →ₘ[μ] E) where
@@ -150,9 +147,6 @@ theorem mem_Lp_iff_eLpNorm_lt_top {f : α →ₘ[μ] E} : f ∈ Lp E p μ ↔ eL
 theorem mem_Lp_iff_memLp {f : α →ₘ[μ] E} : f ∈ Lp E p μ ↔ MemLp f p μ := by
   simp [mem_Lp_iff_eLpNorm_lt_top, MemLp, f.stronglyMeasurable.aestronglyMeasurable]
 
-@[deprecated (since := "2025-02-21")]
-alias mem_Lp_iff_memℒp := mem_Lp_iff_memLp
-
 protected theorem antitone [IsFiniteMeasure μ] {p q : ℝ≥0∞} (hpq : p ≤ q) : Lp E q μ ≤ Lp E p μ :=
   fun f hf => (MemLp.mono_exponent ⟨f.aestronglyMeasurable, hf⟩ hpq).2
 
@@ -185,9 +179,6 @@ protected theorem aestronglyMeasurable (f : Lp E p μ) : AEStronglyMeasurable f 
 
 protected theorem memLp (f : Lp E p μ) : MemLp f p μ :=
   ⟨Lp.aestronglyMeasurable f, f.prop⟩
-
-@[deprecated (since := "2025-02-21")]
-alias memℒp := Lp.memLp
 
 variable (E p μ)
 
@@ -504,9 +495,6 @@ theorem MemLp.norm_rpow_div {f : α → E} (hf : MemLp f p μ) (q : ℝ≥0∞) 
     mul_one]
   exact hf.2.ne
 
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.norm_rpow_div := MemLp.norm_rpow_div
-
 theorem memLp_enorm_rpow_iff {q : ℝ≥0∞} {f : α → ε} (hf : AEStronglyMeasurable f μ) (q_zero : q ≠ 0)
     (q_top : q ≠ ∞) : MemLp (‖f ·‖ₑ ^ q.toReal) (p / q) μ ↔ MemLp f p μ := by
   refine ⟨fun h => ?_, fun h => h.enorm_rpow_div q⟩
@@ -531,9 +519,6 @@ theorem memLp_norm_rpow_iff {q : ℝ≥0∞} {f : α → E} (hf : AEStronglyMeas
   · rw [div_eq_mul_inv, inv_inv, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
       mul_one]
 
-@[deprecated (since := "2025-02-21")]
-alias memℒp_norm_rpow_iff := memLp_norm_rpow_iff
-
 theorem MemLp.enorm_rpow {f : α → ε} (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     MemLp (fun x : α => ‖f x‖ₑ ^ p.toReal) 1 μ := by
   convert hf.enorm_rpow_div p
@@ -543,9 +528,6 @@ theorem MemLp.norm_rpow {f : α → E} (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0
     MemLp (fun x : α => ‖f x‖ ^ p.toReal) 1 μ := by
   convert hf.norm_rpow_div p
   rw [div_eq_mul_inv, ENNReal.mul_inv_cancel hp_ne_zero hp_ne_top]
-
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.norm_rpow := MemLp.norm_rpow
 
 theorem AEEqFun.compMeasurePreserving_mem_Lp {β : Type*} [MeasurableSpace β]
     {μb : MeasureTheory.Measure β} {g : β →ₘ[μb] E} (hg : g ∈ Lp E p μb) {f : α → β}
@@ -631,9 +613,6 @@ theorem LipschitzWith.comp_memLp {α E F} {K} [MeasurableSpace α] {μ : Measure
     simpa [g0] using hg.norm_sub_le (f x) 0
   hL.of_le_mul (hg.continuous.comp_aestronglyMeasurable hL.1) (Eventually.of_forall this)
 
-@[deprecated (since := "2025-02-21")]
-alias LipschitzWith.comp_memℒp := LipschitzWith.comp_memLp
-
 theorem MeasureTheory.MemLp.of_comp_antilipschitzWith {α E F} {K'} [MeasurableSpace α]
     {μ : Measure α} [NormedAddCommGroup E] [NormedAddCommGroup F] {f : α → E} {g : E → F}
     (hL : MemLp (g ∘ f) p μ) (hg : UniformContinuous g) (hg' : AntilipschitzWith K' g)
@@ -647,9 +626,6 @@ theorem MeasureTheory.MemLp.of_comp_antilipschitzWith {α E F} {K'} [MeasurableS
     (hg'.isUniformEmbedding hg).isEmbedding.aestronglyMeasurable_comp_iff.1 hL.1
   exact hL.of_le_mul B (Filter.Eventually.of_forall A)
 
-@[deprecated (since := "2025-02-21")]
-alias MeasureTheory.Memℒp.of_comp_antilipschitzWith := MeasureTheory.MemLp.of_comp_antilipschitzWith
-
 lemma MeasureTheory.MemLp.continuousLinearMap_comp [NontriviallyNormedField 𝕜]
     [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {f : α → E}
     (h_Lp : MemLp f p μ) (L : E →L[𝕜] F) :
@@ -662,9 +638,6 @@ theorem memLp_comp_iff_of_antilipschitz {α E F} {K K'} [MeasurableSpace α] {μ
     [NormedAddCommGroup E] [NormedAddCommGroup F] {f : α → E} {g : E → F} (hg : LipschitzWith K g)
     (hg' : AntilipschitzWith K' g) (g0 : g 0 = 0) : MemLp (g ∘ f) p μ ↔ MemLp f p μ :=
   ⟨fun h => h.of_comp_antilipschitzWith hg.uniformContinuous hg' g0, fun h => hg.comp_memLp g0 h⟩
-
-@[deprecated (since := "2025-02-21")]
-alias memℒp_comp_iff_of_antilipschitz := memLp_comp_iff_of_antilipschitz
 
 /-- When `g` is a Lipschitz function sending `0` to `0` and `f` is in `Lp`, then `g ∘ f` is well
 defined as an element of `Lp`. -/
@@ -729,14 +702,8 @@ theorem coeFn_compLp' (L : E →L[𝕜] F) (f : Lp E p μ) : L.compLp f =ᵐ[μ]
 theorem comp_memLp (L : E →L[𝕜] F) (f : Lp E p μ) : MemLp (L ∘ f) p μ :=
   (Lp.memLp (L.compLp f)).ae_eq (L.coeFn_compLp' f)
 
-@[deprecated (since := "2025-02-21")]
-alias comp_memℒp := comp_memLp
-
 theorem comp_memLp' (L : E →L[𝕜] F) {f : α → E} (hf : MemLp f p μ) : MemLp (L ∘ f) p μ :=
   (L.comp_memLp (hf.toLp f)).ae_eq (EventuallyEq.fun_comp hf.coeFn_toLp _)
-
-@[deprecated (since := "2025-02-21")]
-alias comp_memℒp' := comp_memLp'
 
 section RCLike
 
@@ -746,9 +713,6 @@ theorem _root_.MeasureTheory.MemLp.ofReal {f : α → ℝ} (hf : MemLp f p μ) :
     MemLp (fun x => (f x : K)) p μ :=
   (@RCLike.ofRealCLM K _).comp_memLp' hf
 
-@[deprecated (since := "2025-02-21")]
-alias _root_.MeasureTheory.Memℒp.ofReal := _root_.MeasureTheory.MemLp.ofReal
-
 theorem _root_.MeasureTheory.memLp_re_im_iff {f : α → K} :
     MemLp (fun x ↦ RCLike.re (f x)) p μ ∧ MemLp (fun x ↦ RCLike.im (f x)) p μ ↔
       MemLp f p μ := by
@@ -757,9 +721,6 @@ theorem _root_.MeasureTheory.memLp_re_im_iff {f : α → K} :
   convert MeasureTheory.MemLp.add (ε := K) hre.ofReal (him.ofReal.const_mul RCLike.I)
   ext1 x
   rw [Pi.add_apply, mul_comm, RCLike.re_add_im]
-
-@[deprecated (since := "2025-02-21")]
-alias _root_.MeasureTheory.memℒp_re_im_iff := _root_.MeasureTheory.memLp_re_im_iff
 
 end RCLike
 
@@ -839,15 +800,9 @@ theorem _root_.MeasureTheory.MemLp.pos_part {f : α → ℝ} (hf : MemLp f p μ)
     MemLp (fun x => max (f x) 0) p μ :=
   lipschitzWith_pos_part.comp_memLp (max_eq_right le_rfl) hf
 
-@[deprecated (since := "2025-02-21")]
-alias _root_.MeasureTheory.Memℒp.pos_part := _root_.MeasureTheory.MemLp.pos_part
-
 theorem _root_.MeasureTheory.MemLp.neg_part {f : α → ℝ} (hf : MemLp f p μ) :
     MemLp (fun x => max (-f x) 0) p μ :=
   lipschitzWith_pos_part.comp_memLp (max_eq_right le_rfl) hf.neg
-
-@[deprecated (since := "2025-02-21")]
-alias _root_.MeasureTheory.Memℒp.neg_part := _root_.MeasureTheory.MemLp.neg_part
 
 /-- Positive part of a function in `L^p`. -/
 def posPart (f : Lp ℝ p μ) : Lp ℝ p μ :=

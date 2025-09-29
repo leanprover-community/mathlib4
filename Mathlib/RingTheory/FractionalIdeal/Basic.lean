@@ -599,6 +599,7 @@ instance commSemiring : CommSemiring (FractionalIdeal S P) :=
 
 instance : CanonicallyOrderedAdd (FractionalIdeal S P) where
   exists_add_of_le h := ⟨_, (sup_eq_right.mpr h).symm⟩
+  le_add_self _ _ := le_sup_right
   le_self_add _ _ := le_sup_left
 
 instance : IsOrderedRing (FractionalIdeal S P) :=

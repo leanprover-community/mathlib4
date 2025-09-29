@@ -80,8 +80,8 @@ universe u
 /-- A CHSH tuple in a *-monoid consists of 4 self-adjoint involutions `A₀ A₁ B₀ B₁` such that
 the `Aᵢ` commute with the `Bⱼ`.
 
-The physical interpretation is that `A₀` and `A₁` are a pair of boolean observables which
-are spacelike separated from another pair `B₀` and `B₁` of boolean observables.
+The physical interpretation is that `A₀` and `A₁` are a pair of Boolean observables which
+are spacelike separated from another pair `B₀` and `B₁` of Boolean observables.
 -/
 structure IsCHSHTuple {R} [Monoid R] [StarMul R] (A₀ A₁ B₀ B₁ : R) : Prop where
   A₀_inv : A₀ ^ 2 = 1

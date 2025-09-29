@@ -91,9 +91,6 @@ theorem subtype_injective : Function.Injective (subtype s) :=
 theorem coe_subtype : (subtype s : s → R) = ((↑) : s → R) :=
   rfl
 
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
-
 /-- A non-unital subsemiring of a `NonUnitalSemiring` is a `NonUnitalSemiring`. -/
 instance toNonUnitalSemiring {R} [NonUnitalSemiring R] [SetLike S R]
     [NonUnitalSubsemiringClass S R] : NonUnitalSemiring s := fast_instance%

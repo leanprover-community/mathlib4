@@ -97,7 +97,7 @@ theorem bind_congr' {f g : α → Option β} {x y : Option α} (hx : x = y)
 -- upstreamed it with a slightly different statement.
 theorem bind_congr'' {f g : α → Option β} {x : Option α}
     (h : ∀ a ∈ x, f a = g a) : x.bind f = x.bind g := by
-  cases x <;> simp only [bind_some, bind_none, mem_def, h]
+  grind [cases Option]
 
 theorem joinM_eq_join : joinM = @join α :=
   funext fun _ ↦ rfl
@@ -119,8 +119,6 @@ theorem map_injective' : Function.Injective (@Option.map α β) := fun f g h ↦
 @[simp]
 theorem map_inj {f g : α → β} : Option.map f = Option.map g ↔ f = g :=
   map_injective'.eq_iff
-
-attribute [simp] map_id
 
 @[simp]
 theorem map_eq_id {f : α → α} : Option.map f = id ↔ f = id :=
@@ -146,24 +144,22 @@ theorem mem_pmem {a : α} (h : ∀ a ∈ x, p a) (ha : a ∈ x) : f a (h a ha) �
 theorem pmap_bind {α β γ} {x : Option α} {g : α → Option β} {p : β → Prop} {f : ∀ b, p b → γ} (H)
     (H' : ∀ (a : α), ∀ b ∈ g a, b ∈ x >>= g) :
     pmap f (x >>= g) H = x >>= fun a ↦ pmap f (g a) fun _ h ↦ H _ (H' a _ h) := by
-  cases x <;> simp only [pmap, bind_eq_bind, bind_none, bind_some]
+  grind [cases Option]
 
 theorem bind_pmap {α β γ} {p : α → Prop} (f : ∀ a, p a → β) (x : Option α) (g : β → Option γ) (H) :
     pmap f x H >>= g = x.pbind fun a h ↦ g (f a (H _ h)) := by
-  cases x <;> simp only [pmap, bind_eq_bind, bind_none, bind_some, pbind]
+  grind [cases Option, pmap]
 
 variable {f x}
 
 theorem pbind_eq_none {f : ∀ a : α, a ∈ x → Option β}
     (h' : ∀ a (H : a ∈ x), f a H = none → x = none) : x.pbind f = none ↔ x = none := by
-  cases x
-  · simp
-  · simp only [pbind, iff_false, reduceCtorEq]
-    intro h
-    cases h' _ rfl h
+  grind [cases Option]
 
 theorem join_pmap_eq_pmap_join {f : ∀ a, p a → β} {x : Option (Option α)} (H) :
     (pmap (pmap f) x H).join = pmap f x.join fun a h ↦ H (some a) (mem_of_mem_join h) _ rfl := by
+  -- See https://github.com/leanprover/lean4/pull/10327
+  -- grind [cases Option]
   rcases x with (_ | _ | x) <;> simp
 
 theorem pmap_bind_id_eq_pmap_join {f : ∀ a, p a → β} {x : Option (Option α)} (H) :
@@ -190,10 +186,12 @@ theorem iget_of_mem [Inhabited α] {a : α} : ∀ {o : Option α}, a ∈ o → o
 theorem getD_default_eq_iget [Inhabited α] (o : Option α) :
     o.getD default = o.iget := by cases o <;> rfl
 
+@[simp, grind =]
+theorem failure_eq_none {α} : failure = (none : Option α) := rfl
+
 @[simp]
 theorem guard_eq_some' {p : Prop} [Decidable p] (u) : _root_.guard p = some u ↔ p := by
-  cases u
-  by_cases h : p <;> simp [_root_.guard, h]
+  grind [cases Option, _root_.guard]
 
 @[deprecated (since := "2025-04-04")] alias liftOrGet_choice := merge_eq_or_eq
 

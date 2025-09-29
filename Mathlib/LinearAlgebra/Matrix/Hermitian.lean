@@ -281,6 +281,11 @@ theorem isHermitian_iff_isSymmetric [Fintype n] [DecidableEq n] {A : Matrix n n 
     ext i j
     simpa [(Pi.single_star i 1).symm] using h (Pi.single i 1) (Pi.single j 1)
 
+theorem IsHermitian.im_star_dotProduct_mulVec_self [Fintype n] {A : Matrix n n α}
+    (hA : A.IsHermitian) (x : n → α) : RCLike.im (star x ⬝ᵥ A *ᵥ x) = 0 := by
+  classical
+  exact dotProduct_comm _ (star x) ▸ (isHermitian_iff_isSymmetric.mp hA).im_inner_self_apply _
+
 end RCLike
 
 end Matrix

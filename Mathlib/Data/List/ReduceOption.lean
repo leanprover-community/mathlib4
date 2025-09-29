@@ -140,7 +140,4 @@ theorem reduceOption_getElem?_iff {l : List (Option α)} {x : α} :
     (∃ i : ℕ, l[i]? = some (some x)) ↔ ∃ i : ℕ, l.reduceOption[i]? = some x := by
   rw [← mem_iff_getElem?, ← mem_iff_getElem?, reduceOption_mem_iff]
 
-@[deprecated (since := "2025-02-21")]
-alias reduceOption_get?_iff := reduceOption_getElem?_iff
-
 end List

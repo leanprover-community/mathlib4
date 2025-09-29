@@ -183,6 +183,46 @@ lemma resultant_deriv {f : R[X]} (hf : 0 < f.degree) :
     apply this
   simp only [mul_comm _ 2, pow_mul, neg_one_sq, one_pow, mul_one, implies_true]
 
+private lemma sylvesterDeriv_of_natDegree_eq_three {f : R[X]} (hf : f.natDegree = 3) :
+    f.sylvesterDeriv.reindex (finCongr <| by rw [hf]) (finCongr <| by rw [hf]) =
+    !![ f.coeff 0,         0, 1 * f.coeff 1,             0,             0;
+        f.coeff 1, f.coeff 0, 2 * f.coeff 2, 1 * f.coeff 1,             0;
+        f.coeff 2, f.coeff 1, 3 * f.coeff 3, 2 * f.coeff 2, 1 * f.coeff 1;
+        f.coeff 3, f.coeff 2,             0, 3 * f.coeff 3, 2 * f.coeff 2;
+                0,         1,             0,             0,             3] := by
+  ext ⟨i, hi⟩ ⟨j, hj⟩
+  -- In this proof we do as much as possible of the `simp` work before drilling down into the
+  -- `fin_cases` constructs. This means the simps are not terminal, so they are not squeezed;
+  -- but the proof runs much faster this way.
+  simp only [sylvesterDeriv, hf, OfNat.ofNat_ne_zero, ↓reduceDIte, sylvester, Fin.addCases,
+    Nat.add_one_sub_one, Fin.coe_castLT, mem_Icc, Fin.val_fin_le, Fin.coe_subNat, Fin.coe_cast,
+    tsub_le_iff_right, coeff_derivative, eq_rec_constant, dite_eq_ite, Nat.reduceMul, Nat.reduceSub,
+    Nat.cast_ofNat, Matrix.reindex_apply, finCongr_symm, Matrix.submatrix_apply, finCongr_apply,
+    Fin.cast_mk, Matrix.updateRow_apply, Fin.mk.injEq, Matrix.of_apply, Fin.mk_le_mk, one_mul,
+    Matrix.cons_val', Matrix.cons_val_fin_one]
+  have hi' : i ∈ Finset.range 5 := Finset.mem_range.mpr hi
+  have hj' : j ∈ Finset.range 5 := Finset.mem_range.mpr hj
+  fin_cases hi' <;>
+  · simp only [and_true, Fin.isValue, Fin.mk_one, Fin.reduceFinMk, Fin.zero_eta,
+      le_add_iff_nonneg_left, Matrix.cons_val_one, Matrix.cons_val_zero, Matrix.cons_val,
+      mul_one, Nat.cast_zero, Nat.reduceAdd, Nat.reduceEqDiff, Nat.reduceLeDiff, nonpos_iff_eq_zero,
+      OfNat.one_ne_ofNat, OfNat.zero_ne_ofNat, ↓reduceIte, zero_add, zero_le, zero_tsub]
+    fin_cases hj' <;> simp [mul_comm, one_add_one_eq_two, (by norm_num : (2 : R) + 1 = 3)]
+
+/-- Standard formula for the discriminant of a cubic polynomial. -/
+lemma disc_of_degree_eq_three {f : R[X]} (hf : f.degree = 3) :
+    disc f = f.coeff 2 ^ 2 * f.coeff 1 ^ 2
+              - 4 * f.coeff 3 * f.coeff 1 ^ 3
+              - 4 * f.coeff 2 ^ 3 * f.coeff 0
+              - 27 * f.coeff 3 ^ 2 * f.coeff 0 ^ 2
+              + 18 * f.coeff 3 * f.coeff 2 * f.coeff 1 * f.coeff 0 := by
+  apply natDegree_eq_of_degree_eq_some at hf
+  let e : Fin ((f.natDegree - 1) + f.natDegree) ≃ Fin 5 := finCongr (by rw [hf])
+  rw [disc, ← Matrix.det_reindex_self e, sylvesterDeriv_of_natDegree_eq_three hf]
+  simp [Matrix.det_succ_row_zero (n := 4), Matrix.det_succ_row_zero (n := 3), Fin.succAbove,
+    Matrix.det_fin_three, Finset.sum_fin_eq_sum_range, Finset.sum_range_succ, hf]
+  ring_nf
+
 end disc
 
 end Polynomial
