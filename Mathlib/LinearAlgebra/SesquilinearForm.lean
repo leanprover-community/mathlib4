@@ -240,7 +240,7 @@ lemma isNonneg_def [LE R] {B : M →ₛₗ[I₁] M →ₛₗ[I₂] R} : B.IsNonn
 @[simp]
 lemma isNonneg_zero [Preorder R] : IsNonneg (0 : M →ₛₗ[I₁] M →ₛₗ[I₂] R) := ⟨fun _ ↦ le_rfl⟩
 
-/-- A sesquilinear map `B` is **positive semidefinite** if it is symmetric and positive. -/
+/-- A sesquilinear map `B` is **positive semidefinite** if it is symmetric and nonnegative. -/
 structure IsPosSemidef [LE R] (B : M →ₛₗ[I₁] M →ₗ[R] R) extends B.IsSymm, B.IsNonneg
 
 variable {B : M →ₛₗ[I₁] M →ₗ[R] R}
