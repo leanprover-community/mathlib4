@@ -207,11 +207,11 @@ def rewriteOneFile (fname : String) (rgs : Array (Name × String.Range)) :
   let file ← IO.FS.readFile fname
   let fm := file.toFileMap
   let rgsPos := rgs.map fun (decl, ⟨s, e⟩) =>
-    m!"{.ofConstName decl} {(fm.toPosition s, fm.toPosition e)}"
+    m!"* {.ofConstName decl} {(fm.toPosition s, fm.toPosition e)}"
   let rgsStringPos := rgs.map (m!"{·.2}")
   let combinedRanges := rgsPos.zipWith (· ++ m!" " ++ ·) rgsStringPos |>.toList
   logInfo m!"Adding '{option}' to '{fname}'\nWriting to {indentD fname_with_option}\n\
-          {m!"\n".joinSep combinedRanges}"
+          Removing the following declarations\n{m!"\n".joinSep combinedRanges}"
   IO.FS.writeFile fname_with_option fileWithOptionAdded
   let ranges := rgs.map (·.2)
 
@@ -279,7 +279,8 @@ elab "#clear_deprecations " oldDate:str ppSpace newDate:str really?:(&" really")
     if really?.isSome then
       IO.FS.writeFile fname fileWithoutDeprecations
     filesToRemove := filesToRemove.push toRemove
-  logInfo m!"Removing\n* {m!"\n* ".joinSep (filesToRemove.map (m!"{·}")).toList}"
+  logInfo
+    m!"Removing the temporary files\n* {m!"\n* ".joinSep (filesToRemove.map (m!"{·}")).toList}"
   for tmp in filesToRemove do
     IO.FS.removeFile tmp
 
