@@ -3,8 +3,8 @@ Copyright (c) 2025 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.Lie.Abelian
+import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.Lie.Basic
 
 /-!
 # Lie algebra cohomology in low degree
