@@ -83,6 +83,7 @@ theorem hasBasis_nhds (x : R) :
       fun γ : (ValueGroupWithZero R)ˣ => { z | v (z - x) < γ } := by
   simp [Filter.hasBasis_iff, mem_nhds_iff']
 
+/-- A variant of `hasBasis_nhds` where `· ≠ 0` is unbundled. -/
 lemma hasBasis_nhds' (x : R) :
     (𝓝 x).HasBasis (· ≠ 0) ({ y | v (y - x) < · }) :=
   (hasBasis_nhds x).to_hasBasis (fun γ _ ↦ ⟨γ, by simp⟩)
@@ -95,6 +96,7 @@ theorem hasBasis_nhds_zero :
   convert hasBasis_nhds (0 : R); rw [sub_zero]
 
 variable (R) in
+/-- A variant of `hasBasis_nhds_zero` where `· ≠ 0` is unbundled. -/
 lemma hasBasis_nhds_zero' :
     (𝓝 0).HasBasis (· ≠ 0) ({ x | v x < · }) :=
   (hasBasis_nhds_zero R).to_hasBasis (fun γ _ ↦ ⟨γ, by simp⟩)
