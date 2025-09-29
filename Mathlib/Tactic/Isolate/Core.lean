@@ -54,6 +54,9 @@ structure IsolateLemmaKey where
   symm? : Bool
 deriving BEq, Hashable, Inhabited, Repr
 
+-- See https://github.com/leanprover/lean4/issues/10295
+attribute [nolint unusedArguments] instReprIsolateLemmaKey.repr
+
 instance : ToFormat IsolateLemmaKey := ⟨repr⟩
 
 /-- Environment extension for "isolation" (`isolate`) lemmas. -/
