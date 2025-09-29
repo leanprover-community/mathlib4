@@ -385,6 +385,10 @@ lemma one_apply_lt_one_iff [Nontrivial Γ₀] {x : R} : (1 : Valuation R Γ₀) 
   rw [one_apply_def]
   split_ifs <;> simp_all
 
+@[simp]
+lemma one_apply_eq_one_iff [Nontrivial Γ₀] {x : R} : (1 : Valuation R Γ₀) x = 1 ↔ x ≠ 0 :=
+  MonoidWithZeroHom.one_apply_eq_one_iff
+
 end One
 
 end Monoid

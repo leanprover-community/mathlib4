@@ -65,6 +65,7 @@ which is the natural relation arising from (the equivalence class of) a valuatio
 More precisely, if v is a valuation on R then the associated relation is `x ≤ᵥ y ↔ v x ≤ v y`.
 Use this class to talk about the case where `R` is equipped with an equivalence class
 of valuations. -/
+@[ext]
 class ValuativeRel (R : Type*) [CommRing R] where
   /-- The relation operator arising from `ValuativeRel`. -/
   rel : R → R → Prop
@@ -683,6 +684,15 @@ lemma valuation_surjective (γ : ValueGroupWithZero R) :
   use a, b
   simp [valuation, div_eq_mul_inv, ValueGroupWithZero.inv_mk (b : R) 1 b.prop]
 
+lemma exists_valuation_posSubmonoid_div_valuation_posSubmonoid_eq (γ : (ValueGroupWithZero R)ˣ) :
+    ∃ (a b : posSubmonoid R), valuation R a / valuation _ (b : R) = γ := by
+  obtain ⟨a, b, hab⟩ := valuation_surjective γ.val
+  lift a to posSubmonoid R using by
+    rw [posSubmonoid_def, ← valuation_eq_zero_iff]
+    intro H
+    simp [H, eq_comm] at hab
+  use a, b
+
 end ValuativeRel
 
 open Topology ValuativeRel in
@@ -733,6 +743,13 @@ lemma ValueGroupWithZero.embed_strictMono [v.Compatible] : StrictMono (embed v) 
   any_goals simp [zero_lt_iff]
   rw [← map_mul, ← map_mul, (isEquiv (valuation R) v).lt_iff_lt] at h
   simpa [embed] using h
+
+/-- For any `x ∈ posSubmonoid R`, the trivial valuation `1 : Valuation R Γ` sends `x` to `1`.
+In fact, this is true for any `x ≠ 0`. This lemma is a special case useful for shorthand of
+`x ∈ posSubmonoid R → x ≠ 0`. -/
+lemma one_apply_posSubmonoid [Nontrivial R] [NoZeroDivisors R] [DecidablePred fun x : R ↦ x = 0]
+    (x : posSubmonoid R) : (1 : Valuation R Γ) x = 1 :=
+  Valuation.one_apply_of_ne_zero (by simp)
 
 end ValuativeRel
 
