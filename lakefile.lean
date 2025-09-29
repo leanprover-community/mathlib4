@@ -31,6 +31,7 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.allScriptsDocumented, true⟩,
   ⟨`linter.pythonStyle, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
+  ⟨`linter.style.missingEnd, false⟩,  -- TODO
   -- ⟨`linter.nightlyRegressionSet, true⟩,
   -- `latest_import.yml` uses this comment: if you edit it, make sure that the workflow still works
 ]
@@ -40,6 +41,9 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
 abbrev mathlibLeanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩,
+    ⟨`experimental.module, true⟩,
+    ⟨`backward.privateInPublic, true⟩,
+    ⟨`backward.proofsInPublic, true⟩,
     ⟨`maxSynthPendingDepth, .ofNat 3⟩
   ] ++ -- options that are used in `lake build`
     mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
@@ -60,6 +64,7 @@ package mathlib where
 lean_lib Mathlib where
   -- Enforce Mathlib's default linters and style options.
   leanOptions := mathlibLeanOptions
+  moreLeanArgs := #["-Dbackward.privateInPublic.warn=false"]
 
 -- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
 -- `scripts/mk_all.lean`.
