@@ -132,16 +132,9 @@ section Symmetric
 
 variable [SymmetricCategory C]
 
-noncomputable instance : SymmetricCategory (LocalizedMonoidal L W ε) where
-  symmetry := by
-    suffices
-        (braidingNatIso L W ε).hom ≫ (flipFunctor _ _ _).map (braidingNatIso L W ε).hom = 𝟙 _ by
-      intro X Y
-      exact NatTrans.congr_app (NatTrans.congr_app this X) Y
-    apply natTrans₂_ext (L') (L') W W
-    intro X Y
-    change (β_ ((L').obj X) ((L').obj Y)).hom ≫ (β_ ((L').obj Y) ((L').obj X)).hom = 𝟙 _
-    simp [-Functor.map_braiding, β_hom_app, ← Functor.map_comp_assoc]
+noncomputable instance : SymmetricCategory (LocalizedMonoidal L W ε) := by
+  refine .ofCurried (natTrans₂_ext (L') (L') W W fun X Y ↦ ?_)
+  simp [-Functor.map_braiding, β_hom_app, ← Functor.map_comp_assoc]
 
 end Symmetric
 
