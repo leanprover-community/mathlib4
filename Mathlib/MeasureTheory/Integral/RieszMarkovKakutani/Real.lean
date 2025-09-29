@@ -367,8 +367,8 @@ lemma measure_le_of_isCompact_of_integral {μ ν : Measure X} [ν.OuterRegular]
   refine ENNReal.le_of_forall_pos_le_add fun ε hε hν ↦ ?_
   have hνK : ν K ≠ ⊤ := hν.ne
   have hμK : μ K ≠ ⊤ := hK.measure_lt_top.ne
-  obtain ⟨V, pV1, pV2, pV3⟩ : ∃ V ⊇ K, IsOpen V ∧ ν V ≤ ν K + ε := by
-    exact Set.exists_isOpen_le_add K ν (ne_of_gt (ENNReal.coe_lt_coe.mpr hε))
+  obtain ⟨V, pV1, pV2, pV3⟩ : ∃ V ⊇ K, IsOpen V ∧ ν V ≤ ν K + ε :=
+    exists_isOpen_le_add K ν (ne_of_gt (ENNReal.coe_lt_coe.mpr hε))
   suffices  (μ K).toReal ≤ (ν K).toReal + ε by
     rw [← ENNReal.toReal_le_toReal, ENNReal.toReal_add, ENNReal.coe_toReal]
     all_goals finiteness
