@@ -732,7 +732,11 @@ theorem IsLeviCivitaConnection.uniqueness [FiniteDimensional ℝ E]
   · exact hcov.eq_leviCivitaRhs I X σ Z
   · exact (hcov'.eq_leviCivitaRhs I X σ Z ).symm
 
-noncomputable def lcCandidate_aux [FiniteDimensional ℝ E]
+/-- Auxiliary definition towards defining the Levi-Civita connection on `M`:
+given a trivialisation `e` and a choice `o` of linear order on the standard basis of `E`,
+we take the expression defined by the Koszul formula (using the orthonormal frame determined by `e`
+and `o`). -/
+noncomputable def lcCandidateAux [FiniteDimensional ℝ E]
     (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e]
     (o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)) :
     ((x : M) → TangentSpace I x) → ((x : M) → TangentSpace I x) → (x : M) → TangentSpace I x :=
@@ -758,31 +762,31 @@ noncomputable def lcCandidate [FiniteDimensional ℝ E]
     (o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)) :
     (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) :=
   -- Use the preferred trivialisation at `x` to write down a candidate for the existence.
-  fun X Y x ↦ lcCandidate_aux I (trivializationAt E (TangentSpace I : M → Type _) x) o X Y x
+  fun X Y x ↦ lcCandidateAux I (trivializationAt E (TangentSpace I : M → Type _) x) o X Y x
 
 variable (X Y) in
--- The above definition behaves well: for each compatible trivialisation e,
--- using e on e.baseSet yields the same result as above.
-lemma lcCandidate_eq_lcCandidate_aux [FiniteDimensional ℝ E]
+/-- The definition `lcCandidate` behaves well: for each compatible trivialisation `e`,
+the candidate definition using `e` agrees with `lcCandidate` on `e.baseSet`. -/
+lemma lcCandidate_eq_lcCandidateAux [FiniteDimensional ℝ E]
     (e : Trivialization E (TotalSpace.proj: TangentBundle I M → M)) [MemTrivializationAtlas e]
     {o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)} {x : M} (hx : x ∈ e.baseSet) :
-    lcCandidate I M o X Y x = lcCandidate_aux I e o X Y x := by
+    lcCandidate I M o X Y x = lcCandidateAux I e o X Y x := by
   by_cases hE : Subsingleton E
-  · simp [lcCandidate, lcCandidate_aux, hE]
-  · simp only [lcCandidate, lcCandidate_aux, hE, ↓reduceDIte]
+  · simp [lcCandidate, lcCandidateAux, hE]
+  · simp only [lcCandidate, lcCandidateAux, hE, ↓reduceDIte]
     -- Now, start the real proof.
     sorry
 
-/-- The candidate definition `lcCandidate_aux` is a covariant derivative
+/-- The candidate definition `lcCandidateAux` is a covariant derivative
 on each local trivialisation's domain. -/
-lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
+lemma isCovariantDerivativeOn_lcCandidateAux [FiniteDimensional ℝ E]
     (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e]
     {o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)} :
-    IsCovariantDerivativeOn E (lcCandidate_aux I (M := M) e o) e.baseSet where
+    IsCovariantDerivativeOn E (lcCandidateAux I (M := M) e o) e.baseSet where
   addX {_X _X' _σ x} hX hX' hσ hx := by
-    by_cases hE : Subsingleton E; · simp [lcCandidate_aux, hE]
+    by_cases hE : Subsingleton E; · simp [lcCandidateAux, hE]
     have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
-    simp only [lcCandidate_aux, hE, ↓reduceDIte]
+    simp only [lcCandidateAux, hE, ↓reduceDIte]
     simp only [← Finset.sum_add_distrib, ← add_smul]
     congr; ext i
     rw [leviCivitaRhs_addX_apply] <;> try assumption
@@ -790,9 +794,9 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
     exact mdifferentiableAt_orthonormalFrame_of_mem b e i hx
   smulX {_X _σ _g _x} hX hσ hg hx := by
-    by_cases hE : Subsingleton E; · simp [lcCandidate_aux, hE]
+    by_cases hE : Subsingleton E; · simp [lcCandidateAux, hE]
     have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
-    simp only [lcCandidate_aux, hE, ↓reduceDIte]
+    simp only [lcCandidateAux, hE, ↓reduceDIte]
     rw [Finset.smul_sum]
     congr; ext i
     rw [leviCivitaRhs_smulX_apply] <;> try assumption
@@ -805,9 +809,9 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     · have : X x = 0 := by
         have : Subsingleton (TangentSpace I x) := inferInstanceAs (Subsingleton E)
         exact Subsingleton.eq_zero (X x)
-      simp [lcCandidate_aux, hE, this]
+      simp [lcCandidateAux, hE, this]
     have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
-    simp only [lcCandidate_aux, hE, ↓reduceDIte]
+    simp only [lcCandidateAux, hE, ↓reduceDIte]
     rw [Finset.smul_sum]; congr; ext i
     rw [leviCivitaRhs_smulY_const_apply hX hσ, ← smul_assoc]
     · let b := Basis.ofVectorSpace ℝ E
@@ -818,9 +822,9 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     · have : X x = 0 := by
         have : Subsingleton (TangentSpace I x) := inferInstanceAs (Subsingleton E)
         exact Subsingleton.eq_zero (X x)
-      simp [lcCandidate_aux, hE, this]
+      simp [lcCandidateAux, hE, this]
     have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
-    simp only [lcCandidate_aux, hE, ↓reduceDIte]
+    simp only [lcCandidateAux, hE, ↓reduceDIte]
     simp only [← Finset.sum_add_distrib, ← add_smul]
     congr; ext i
     rw [leviCivitaRhs_addY_apply] <;> try assumption
@@ -832,8 +836,8 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     · have : X x = 0 := by
         have : Subsingleton (TangentSpace I x) := inferInstanceAs (Subsingleton E)
         exact Subsingleton.eq_zero (X x)
-      simp [lcCandidate_aux, hE, this]
-    simp only [lcCandidate_aux, hE, ↓reduceDIte]
+      simp [lcCandidateAux, hE, this]
+    simp only [lcCandidateAux, hE, ↓reduceDIte]
 
     have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
     let b := Basis.ofVectorSpace ℝ E
@@ -856,8 +860,8 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     trans ∑ i, (g x • leviCivitaRhs I X σ (Z i) x • Z i x)
         + ∑ i, ((bar (g x)) ((mfderiv I 𝓘(ℝ, ℝ) g x) (X x)) • ⟪σ, Z i⟫ x) • Z i x
     · simp only [← Finset.sum_add_distrib, add_smul, smul_assoc]
-    have : ∑ i, g x • leviCivitaRhs I X σ (Z i) x • Z i x = (g • lcCandidate_aux I e o X σ) x := by
-      simp only [lcCandidate_aux, hE, ↓reduceDIte, Pi.smul_apply', Finset.smul_sum]
+    have : ∑ i, g x • leviCivitaRhs I X σ (Z i) x • Z i x = (g • lcCandidateAux I e o X σ) x := by
+      simp only [lcCandidateAux, hE, ↓reduceDIte, Pi.smul_apply', Finset.smul_sum]
       congr
     rw [this]
     simp_rw [← hZ', smul_assoc, Finset.smul_sum]
@@ -867,9 +871,9 @@ lemma isCovariantDerivativeOn_lcCandidate [FiniteDimensional ℝ E]
     (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e]
     {o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)} :
     IsCovariantDerivativeOn E (lcCandidate I M o) e.baseSet := by
-  apply IsCovariantDerivativeOn.congr (isCovariantDerivativeOn_lcCandidate_aux I e (o := o))
+  apply IsCovariantDerivativeOn.congr (isCovariantDerivativeOn_lcCandidateAux I e (o := o))
   intro X σ x hx
-  exact (lcCandidate_eq_lcCandidate_aux I X σ e hx).symm
+  exact (lcCandidate_eq_lcCandidateAux I X σ e hx).symm
 
 end
 
@@ -1056,7 +1060,7 @@ theorem LeviCivitaConnection.christoffelSymbol_symm [FiniteDimensional ℝ E] (x
     intro i j k
     simp only [LeviCivitaConnection, LeviCivitaConnection_aux]
     unfold lcCandidate
-    simp only [lcCandidate_aux, hE, ↓reduceDIte]
+    simp only [lcCandidateAux, hE, ↓reduceDIte]
 
     letI t := trivializationAt E (TangentSpace I) x;
     letI hs := (Basis.ofVectorSpace ℝ E).localFrame_isLocalFrameOn_baseSet I 1 t
@@ -1079,7 +1083,7 @@ theorem LeviCivitaConnection.christoffelSymbol_symm [FiniteDimensional ℝ E] (x
     simp only [LeviCivitaConnection, LeviCivitaConnection_aux]
     unfold lcCandidate
     rw [product_apply, product_apply]
-    simp only [lcCandidate_aux, hE, ↓reduceDIte]
+    simp only [lcCandidateAux, hE, ↓reduceDIte]
     -- Choose a linear order on ι: which one really does not matter for our result.
     have : LinearOrder ι := by
       choose r wo using exists_wellOrder _
@@ -1147,7 +1151,7 @@ lemma baz [FiniteDimensional ℝ E] : (LeviCivitaConnection I M).IsLeviCivitaCon
   refine ⟨?_, ?_⟩
   · intro X Y Z x
     unfold LeviCivitaConnection LeviCivitaConnection_aux lcCandidate
-    simp only [lcCandidate_aux, hE, ↓reduceDIte]
+    simp only [lcCandidateAux, hE, ↓reduceDIte]
     --simp [product_apply]
     sorry -- compatible
   · let s : M → Set M := fun x ↦ (trivializationAt E (fun (x : M) ↦ TangentSpace I x) x).baseSet
