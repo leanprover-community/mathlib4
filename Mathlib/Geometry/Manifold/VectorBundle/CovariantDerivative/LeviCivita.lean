@@ -919,6 +919,15 @@ noncomputable def ChristoffelSymbol
     (hs : IsLocalFrameOn I E n s U) (i j k : ι) : M → ℝ :=
   hs.repr k (f (s i) (s j))
 
+-- special case of `foobar` below; needed?
+lemma ChristoffelSymbol.sum_eq
+    (f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x))
+    {U : Set M} {ι : Type*} [Fintype ι] {s : ι → (x : M) → TangentSpace I x}
+    (hs : IsLocalFrameOn I E n s U) (i j : ι) (hx : x ∈ U) :
+    f (s i) (s j) x = ∑ k, (ChristoffelSymbol I f hs i j k x) • (s k) x := by
+  simp only [ChristoffelSymbol]
+  exact hs.repr_sum_eq _ hx
+
 variable {U : Set M}
   {f g : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x)}
   {ι : Type*} {s : ι → (x : M) → TangentSpace I x}
@@ -935,6 +944,33 @@ lemma eq_product_apply [Fintype ι]
     exact r
   have : LocallyFiniteOrderBot ι := by sorry
   rw [ChristoffelSymbol, hs.repr_eq_inner' (f (s i) (s j)) hx k, real_inner_comm]
+
+-- Lemma 4.3 in Lee, Chapter 5: first term still missing
+lemma foobar [Fintype ι] [FiniteDimensional ℝ E] (hf : IsCovariantDerivativeOn E f U)
+    (hs : IsLocalFrameOn I E 1 s U) {x : M} (hx : x ∈ U) :
+    f X Y x = ∑ k,
+      letI S₁ := ∑ i, ∑ j, (hs.repr i X) * (hs.repr j Y) * (ChristoffelSymbol I f hs i j k)
+      letI S₂ : M → ℝ := sorry -- first summand in Leibniz' rule!
+      S₁ x • s k x := by
+  have hY := hs.repr_sum_eq Y hx
+  -- should this be a separate lemma also?
+  have : ∀ x ∈ U, Y x = ∑ i, (hs.repr i) Y x • s i x := by
+    intro x hx
+    apply hs.repr_sum_eq Y hx
+  have : f X Y x = f X (fun x ↦ ∑ i, (hs.repr i) Y x • s i x) x := by
+    -- apply `congr_σ_of_eventuallyEq` from Basic.lean (after restoring it)
+    -- want U to be a neighbourhood of x to make this work
+    sorry
+  rw [this]
+  -- straightforward computation: use linearity and Leibniz rule
+  sorry
+
+/- TODO: prove some basic properties, such as
+- the Christoffel symbols are linear in cov
+- if (s_i) is a smooth local frame on U, then cov is smooth on U iff each Christoffel symbol is (?)
+- prove a `spec` equality
+- deduce: two covariant derivatives are equal iff their Christoffel symbols are equal
+-/
 
 lemma _root_.IsCovariantDerivativeOn.congr_of_christoffelSymbol_eq [Fintype ι]
     (hf : IsCovariantDerivativeOn E f U) (hg : IsCovariantDerivativeOn E g U)
@@ -977,22 +1013,6 @@ end
 -- Lemma 4.3 in Lee, Chapter 5: first term still missing
 variable {U : Set M} {ι : Type*} [Fintype ι] {s : ι → (x : M) → TangentSpace I x}
   {f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x)}
-
-lemma foobar (hf : IsCovariantDerivativeOn E f U)
-    (hs : IsLocalFrameOn I E 1 s U) (x : M) :
-    f X Y x = ∑ k,
-      let S₁ := ∑ i, ∑ j, (hs.repr i X) * (hs.repr j Y) * (ChristoffelSymbol I f hs i j k)
-      let S₂ : M → ℝ := sorry -- first summand in Leibniz' rule!
-      S₁ x • s k x :=
-  -- straightforward computation: write Y = ∑ i, hs.repr i Y and use linearity and Leibniz rule
-  sorry
-
-/- TODO: prove some basic properties, such as
-- the Christoffel symbols are linear in cov
-- if (s_i) is a smooth local frame on U, then cov is smooth on U iff each Christoffel symbol is (?)
-- prove a `spec` equality
-- deduce: two covariant derivatives are equal iff their Christoffel symbols are equal
--/
 
 -- errors: omit [IsContMDiffRiemannianBundle I 1 E fun x ↦ TangentSpace I x] in
 /-- Let `{s i}` be a local frame on `U` such that `[s i, s j] = 0` on `U` for all `i, j`.
