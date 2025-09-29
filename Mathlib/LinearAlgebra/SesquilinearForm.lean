@@ -224,13 +224,13 @@ theorem isSymm_iff_eq_flip {B : LinearMap.BilinForm R M} : B.IsSymm ↔ B = B.fl
 
 end Symmetric
 
-/-! ### Positive semidefinite bilinear maps -/
+/-! ### Positive semidefinite sesquilinear forms -/
 
 section PositiveSemidefinite
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] {I₁ I₂ : R →+* R}
 
-/-- A sesquilinear map `B` is **nonnegative** if for any `x` we have `0 ≤ B x x`. -/
+/-- A sesquilinear form `B` is **nonnegative** if for any `x` we have `0 ≤ B x x`. -/
 structure IsNonneg [LE R] (B : M →ₛₗ[I₁] M →ₛₗ[I₂] R) where
   nonneg : ∀ x, 0 ≤ B x x
 
@@ -240,7 +240,7 @@ lemma isNonneg_def [LE R] {B : M →ₛₗ[I₁] M →ₛₗ[I₂] R} : B.IsNonn
 @[simp]
 lemma isNonneg_zero [Preorder R] : IsNonneg (0 : M →ₛₗ[I₁] M →ₛₗ[I₂] R) := ⟨fun _ ↦ le_rfl⟩
 
-/-- A sesquilinear map `B` is **positive semidefinite** if it is symmetric and nonnegative. -/
+/-- A sesquilinear form `B` is **positive semidefinite** if it is symmetric and nonnegative. -/
 structure IsPosSemidef [LE R] (B : M →ₛₗ[I₁] M →ₗ[R] R) extends B.IsSymm, B.IsNonneg
 
 variable {B : M →ₛₗ[I₁] M →ₗ[R] R}
