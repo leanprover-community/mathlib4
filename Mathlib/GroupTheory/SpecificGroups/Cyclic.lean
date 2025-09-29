@@ -108,7 +108,7 @@ variable [Group α] [Group G] [Group G']
 @[to_additive /-- A non-cyclic additive group is non-trivial. -/]
 theorem Nontrivial.of_not_isCyclic (nc : ¬IsCyclic α) : Nontrivial α := by
   contrapose! nc
-  exact @isCyclic_of_subsingleton _ _ (not_nontrivial_iff_subsingleton.mp nc)
+  exact @isCyclic_of_subsingleton _ _ nc
 
 @[to_additive]
 theorem MonoidHom.map_cyclic [h : IsCyclic G] (σ : G →* G) :
@@ -263,7 +263,7 @@ instance Subgroup.isCyclic [IsCyclic α] (H : Subgroup α) : IsCyclic H :=
           exact mod_cast (Nat.find_spec hex).2
         have hk₃ : g ^ (k % Nat.find hex : ℤ) ∈ H :=
           (Subgroup.mul_mem_cancel_right H hk₂).1 <| by
-            rw [← zpow_add, Int.emod_add_ediv, hk]; exact hx
+            rw [← zpow_add, Int.emod_add_mul_ediv, hk]; exact hx
         have hk₄ : k % Nat.find hex = (k % Nat.find hex).natAbs := by
           rw [Int.natAbs_of_nonneg
               (Int.emod_nonneg _ (Int.natCast_ne_zero_iff_pos.2 (Nat.find_spec hex).1))]
@@ -693,7 +693,7 @@ lemma not_isCyclic_iff_exponent_eq_prime [Group α] {p : ℕ} (hp : p.Prime)
   interval_cases a
   · exact False.elim <| hg <| orderOf_eq_one_iff.mp <| by simp_all
   · simp_all
-  · exact False.elim <| h_cyc <| isCyclic_of_orderOf_eq_card g <| by omega
+  · exact False.elim <| h_cyc <| isCyclic_of_orderOf_eq_card g <| by cutsat
 
 end Exponent
 

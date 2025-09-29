@@ -20,7 +20,7 @@ This file implements diffeomorphisms.
   a diffeomorphism.
 * `ModelWithCorners.transContinuousLinearEquiv`: compose a given `ModelWithCorners` with a
   continuous linear equiv between the old and the new target spaces. Useful, e.g, to turn any
-  finite dimensional manifold into a manifold modelled on a Euclidean space.
+  finite-dimensional manifold into a manifold modelled on a Euclidean space.
 * `Diffeomorph.toTransContinuousLinearEquiv`: the identity diffeomorphism between `M` with
   model `I` and `M` with model `I.transContinuousLinearEquiv e`.
 
@@ -33,7 +33,7 @@ This file also provides diffeomorphisms related to products and disjoint unions.
 * `Diffeomorph.sumAssoc`: `(M ⊕ N) ⊕ P` is diffeomorphic to `M ⊕ (N ⊕ P)`
 * `Diffeomorph.sumEmpty`: `M ⊕ ∅` is diffeomorphic to `M`
 
-## Notations
+## Notation
 
 * `M ≃ₘ^n⟮I, I'⟯ M'`  := `Diffeomorph I J M N n`
 * `M ≃ₘ⟮I, I'⟯ M'`    := `Diffeomorph I J M N ∞`

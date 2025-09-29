@@ -20,7 +20,7 @@ of uniform structures on `X`, as well as the pullback (`UniformSpace.comap`) of 
 coming from the pullback of filters.
 Like distance functions, uniform structures cannot be pushed forward in general.
 
-## Notations
+## Notation
 
 Localized in `Uniformity`, we have the notation `𝓤 X` for the uniformity on a uniform space `X`,
 and `○` for composition of relations, seen as terms with type `Set (X × X)`.
