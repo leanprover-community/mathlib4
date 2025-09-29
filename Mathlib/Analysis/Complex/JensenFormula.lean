@@ -12,19 +12,16 @@ import Mathlib.Analysis.SpecialFunctions.Integrals.PosLogEqCircleAverage
 If a function `g : ℂ → ℂ` is analytic without zero on the closed ball with center `c` and radius
 `R`, then `log ‖g ·‖` is harmonic, and the mean value theorem of harmonic functions asserts that the
 circle average `circleAverage (log ‖g ·‖) c R` equals `log ‖g c‖`.  Note that `g c` equals
-`meromorphicTrailingCoeffAt f c` and see `circleAverage_nonVanishAnalytic` for the precise
+`meromorphicTrailingCoeffAt g c` and see `circleAverage_nonVanishAnalytic` for the precise
 statement.
 
 Jensen's Formula, formulated in `MeromorphicOn.circleAverage_log_norm` below, generalizes this to
-the setting where `g` is merely meromorphic. In that case, the `circleAverage (log ‖g ·‖) 0 R`
-equals `log `‖meromorphicTrailingCoeffAt g 0‖` plus a correction term that accounts for the zeros
+the setting where `g` is merely meromorphic. In that case, the `circleAverage (log ‖g ·‖) c R`
+equals `log `‖meromorphicTrailingCoeffAt g c‖` plus a correction term that accounts for the zeros
 and poles of `g` within the ball.
 -/
 
 open Filter MeromorphicAt MeromorphicOn Metric Real
-
-variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 /-!
 ## Circle Averages
@@ -41,7 +38,7 @@ of the associated factorized rational function over the boundary of the ball equ
 @[simp]
 lemma circleAverage_log_norm_factorizedRational {R : ℝ} {c : ℂ}
     (D : Function.locallyFinsuppWithin (closedBall c |R|) ℤ) :
-    circleAverage (∑ᶠ u, ((D u) * log ‖· - u‖)) c R = ∑ᶠ u, (D u) * log R := by
+    circleAverage (∑ᶠ u, (D u * log ‖· - u‖)) c R = ∑ᶠ u, D u * log R := by
   have h := D.finiteSupport (isCompact_closedBall c |R|)
   calc circleAverage (∑ᶠ u, ((D u) * log ‖· - u‖)) c R
   _ = circleAverage (∑ u ∈ h.toFinset, ((D u) * log ‖· - u‖)) c R := by
@@ -73,8 +70,8 @@ If  `g : ℂ → ℂ` is analytic without zero on the closed ball with center `c
 circle average `circleAverage (log ‖g ·‖) c R` equals `log ‖g c‖`.
 -/
 @[simp]
-lemma AnalyticOnNhd.circleAverage_log_norm_nonVanishing {R : ℝ} {c : ℂ} {g : ℂ → ℂ}
-    (h₁g : AnalyticOnNhd ℂ g (closedBall c |R|)) (h₂g : ∀ u : closedBall c |R|, g u ≠ 0) :
+lemma AnalyticOnNhd.circleAverage_log_norm_of_ne_zero {R : ℝ} {c : ℂ} {g : ℂ → ℂ}
+    (h₁g : AnalyticOnNhd ℂ g (closedBall c |R|)) (h₂g : ∀ u ∈ closedBall c |R|, g u ≠ 0) :
     circleAverage (Real.log ‖g ·‖) c R = Real.log ‖g c‖ :=
   HarmonicOnNhd.circleAverage_eq (fun x hx ↦ (h₁g x hx).harmonicAt_log_norm (h₂g ⟨x, hx⟩))
 
@@ -84,7 +81,7 @@ lemma AnalyticOnNhd.circleAverage_log_norm_nonVanishing {R : ℝ} {c : ℂ} {g :
 
 /-!
 **Jensen's Formula**: If `f : ℂ → ℂ` is meromorphic on the closed ball with center `c` and radius
-`R`, then the `circleAverage (log ‖f ·‖) 0 R` equals `log `‖meromorphicTrailingCoeffAt f 0‖` plus a
+`R`, then the `circleAverage (log ‖f ·‖) c R` equals `log ‖meromorphicTrailingCoeffAt f c‖` plus a
 correction term that accounts for the zeros and poles of `f` within the ball.
 -/
 theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → ℂ} (hR : R ≠ 0)
