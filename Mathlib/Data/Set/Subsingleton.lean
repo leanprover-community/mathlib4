@@ -263,11 +263,11 @@ theorem nontrivial_mono {α : Type*} {s t : Set α} (hst : s ⊆ t) (hs : Nontri
     Nontrivial t :=
   Nontrivial.coe_sort <| (nontrivial_coe_sort.1 hs).mono hst
 
-@[simp]
+@[simp, push]
 theorem not_subsingleton_iff : ¬s.Subsingleton ↔ s.Nontrivial := by
   simp_rw [Set.Subsingleton, Set.Nontrivial, not_forall, exists_prop]
 
-@[simp]
+@[simp, push]
 theorem not_nontrivial_iff : ¬s.Nontrivial ↔ s.Subsingleton :=
   Iff.not_left not_subsingleton_iff.symm
 

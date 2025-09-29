@@ -87,8 +87,7 @@ theorem turanGraph_eq_top : turanGraph n r = ⊤ ↔ r = 0 ∨ n ≤ r := by
 
 theorem turanGraph_cliqueFree (hr : 0 < r) : (turanGraph n r).CliqueFree (r + 1) := by
   rw [cliqueFree_iff]
-  by_contra h
-  rw [not_isEmpty_iff] at h
+  by_contra! h
   obtain ⟨f, ha⟩ := h
   simp only [turanGraph, top_adj] at ha
   obtain ⟨x, y, d, c⟩ := Fintype.exists_ne_map_eq_of_card_lt (fun x ↦

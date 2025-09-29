@@ -127,10 +127,10 @@ instance : Nontrivial (valueGroup v) :=
   ⟨1, ⟨generator v, by simp [← generator_zpowers_eq_valueGroup]⟩, ne_of_gt <| generator_lt_one v⟩
 
 instance [IsRankOneDiscrete v] : Nontrivial (valueMonoid v) := by
-  by_contra H
+  by_contra! H
   apply ((valueGroup v).nontrivial_iff_ne_bot).mp (by infer_instance)
   apply closure_eq_bot_iff.mpr
-  rw [not_nontrivial_iff_subsingleton, subsingleton_iff] at H
+  rw [subsingleton_iff] at H
   intro x hx
   specialize H ⟨x, hx⟩ ⟨1, one_mem_valueMonoid v⟩
   simpa using H
