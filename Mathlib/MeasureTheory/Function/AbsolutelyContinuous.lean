@@ -230,11 +230,12 @@ theorem exists_pos_bound (hf : AbsolutelyContinuousOnInterval f a b) :
   obtain ⟨C, hC⟩ := hf.exists_bound
   exact ⟨max C 1, by simp, fun x hx ↦ by simp [hC x hx]⟩
 
-/-- If `f` and `g` are absolutely continuous on `uIcc a b`, then `f * g` is absolutely continuous
+/-- If `f` and `g` are absolutely continuous on `uIcc a b`, then `f • g` is absolutely continuous
 on `uIcc a b`. -/
-theorem fun_mul {f g : ℝ → ℝ} {a b : ℝ}
+theorem fun_smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
+    {f : ℝ → M} {g : ℝ → F} {a b : ℝ}
     (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
-    AbsolutelyContinuousOnInterval (fun x ↦ f x * g x) a b := by
+    AbsolutelyContinuousOnInterval (fun x ↦ f x • g x) a b := by
   obtain ⟨C, _, hC⟩ := hf.exists_pos_bound
   obtain ⟨D, _, hD⟩ := hg.exists_pos_bound
   unfold AbsolutelyContinuousOnInterval at hf hg
@@ -248,22 +249,32 @@ theorem fun_mul {f g : ℝ → ℝ} {a b : ℝ}
   _ ≤ ∑ i ∈ Finset.range n, (C * dist (g ((I i).1)) (g ((I i).2)) +
         D * dist (f ((I i).1))  (f ((I i).2))) := by
     gcongr with i hi
-    trans dist (f (I i).1 * g (I i).1) (f (I i).1 * g (I i).2) +
-      dist (f (I i).1 * g (I i).2) (f (I i).2 * g (I i).2)
+    trans dist (f (I i).1 • g (I i).1) (f (I i).1 • g (I i).2) +
+      dist (f (I i).1 • g (I i).2) (f (I i).2 • g (I i).2)
     · exact dist_triangle _ _ _
     · simp only [disjWithin, mem_setOf_eq] at hnI
       gcongr
-      · rw [← smul_eq_mul, ← smul_eq_mul, dist_smul₀]
+      · rw [dist_smul₀]
         gcongr
         exact hC _ (hnI.left i hi |>.left)
-      · rw [mul_comm _ (g (I i).2), mul_comm _ (g (I i).2), ← smul_eq_mul, ← smul_eq_mul,
-            dist_smul₀]
+      · rw [mul_comm]
+        grw [dist_pair_smul]
         gcongr
+        rw [dist_zero_right]
         exact hD _ (hnI.left i hi |>.right)
   _ = C * ∑ i ∈ Finset.range n, dist (g ((I i).1)) (g ((I i).2)) +
       D * ∑ i ∈ Finset.range n, dist (f ((I i).1)) (f ((I i).2)) := by
     rw [Finset.sum_add_distrib, Finset.mul_sum, Finset.mul_sum]
 
+/-- If `f` and `g` are absolutely continuous on `uIcc a b`, then `f * g` is absolutely continuous
+on `uIcc a b`. -/
+theorem fun_mul {f g : ℝ → ℝ} {a b : ℝ}
+    (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
+    AbsolutelyContinuousOnInterval (fun x ↦ f x * g x) a b :=
+  hf.fun_smul hg
+
+/-- If `f` and `g` are absolutely continuous on `uIcc a b`, then `f * g` is absolutely continuous
+on `uIcc a b`. -/
 theorem mul {f g : ℝ → ℝ} {a b : ℝ}
     (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
     AbsolutelyContinuousOnInterval (fun x ↦ f x * g x) a b :=
