@@ -144,8 +144,8 @@ jobs:
         NEW_DATE: "${{ steps.process_dates.outputs.to_date }}"
         DRY_RUN: "${{ toJson(inputs.dry_run) }}"
       run: |
-        # We create a temporary file to run the command that adds the set_option linter.removeDeprecations
-        # to the relevant files and saves the modified files with a new name
+        # We create a temporary file importing `Mathlib`, `Archive` and `Counterexamples`
+        # and running `#clear_deprecations` with the expected date-range.
         tmplean="$(mktemp -p Mathlib --suffix=.lean RMDXXX)"
         echo "::group::Creating ${tmplean} file"
         {
