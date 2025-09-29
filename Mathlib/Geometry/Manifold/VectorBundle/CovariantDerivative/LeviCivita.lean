@@ -773,7 +773,8 @@ lemma bar [FiniteDimensional ℝ E] (e : Trivialization E (TotalSpace.proj: Tang
     -- Now, start the real proof.
     sorry
 
--- The candidate definition is a covariant derivative on each local frame's domain.
+/-- The candidate definition `lcCandidate_aux` is a covariant derivative
+on each local trivialisation's domain. -/
 lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e]
     {o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)} :
@@ -854,15 +855,12 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     simp_rw [aux]
     trans ∑ i, (g x • leviCivitaRhs I X σ (Z i) x • Z i x)
         + ∑ i, ((_root_.bar (g x)) ((mfderiv I 𝓘(ℝ, ℝ) g x) (X x)) • ⟪σ, Z i⟫ x) • Z i x
-    · sorry
-      -- rw [Finset.sum_add_distrib] is not it, because we're not summing over a finset...
+    · simp only [← Finset.sum_add_distrib, add_smul, smul_assoc]
     have : ∑ i, g x • leviCivitaRhs I X σ (Z i) x • Z i x = (g • lcCandidate_aux I e o X σ) x := by
-      sorry
+      simp only [lcCandidate_aux, hE, ↓reduceDIte, Pi.smul_apply', Finset.smul_sum]
+      congr
     rw [this]
-    congr
-    rw [← hZ']
-    set A := _root_.bar (g x) ((mfderiv I 𝓘(ℝ, ℝ) g x) (X x))
-    sorry -- sum over finset issue again -/
+    simp_rw [← hZ', smul_assoc, Finset.smul_sum]
 
 -- The candidate definition is a covariant derivative on each local frame's domain.
 lemma isCovariantDerivativeOn_lcCandidate [FiniteDimensional ℝ E]
