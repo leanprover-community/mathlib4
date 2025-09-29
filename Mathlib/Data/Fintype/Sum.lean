@@ -142,12 +142,9 @@ theorem Fintype.card_subtype_or_eq {α : Type*} [Fintype α] [DecidableEq α] {a
   simpa using Fintype.card_subtype_or_disjoint _ _ <| fun p hpa hpb ↦
     le_bot_iff.2 <| funext fun c ↦ by simpa using fun hpc ↦ h (hpa _ hpc ▸ hpb _ hpc)
 
-section
-
+attribute [local instance] Fintype.ofFinite in
 @[simp]
 theorem infinite_sum : Infinite (α ⊕ β) ↔ Infinite α ∨ Infinite β := by
   refine ⟨fun H => ?_, fun H => H.elim (@Sum.infinite_of_left α β) (@Sum.infinite_of_right α β)⟩
-  contrapose! H; haveI := fintypeOfNotInfinite H.1; haveI := fintypeOfNotInfinite H.2
-  exact Infinite.false
-
-end
+  contrapose! H; cases H
+  infer_instance
