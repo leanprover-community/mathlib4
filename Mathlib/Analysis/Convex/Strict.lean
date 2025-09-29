@@ -137,7 +137,7 @@ theorem StrictConvex.is_linear_preimage {s : Set F} (hs : StrictConvex 𝕜 s) {
 section LinearOrderedCancelAddCommMonoid
 
 variable [TopologicalSpace β] [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
-  [OrderTopology β] [Module 𝕜 β] [OrderedSMul 𝕜 β]
+  [OrderTopology β] [Module 𝕜 β] [PosSMulStrictMono 𝕜 β]
 
 protected theorem Set.OrdConnected.strictConvex {s : Set β} (hs : OrdConnected s) :
     StrictConvex 𝕜 s := by

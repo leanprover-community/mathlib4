@@ -117,10 +117,6 @@ def leftAdjointComparison
   · apply comparisonLeftAdjointHomEquiv
   · intro A B B' g h
     ext1
-    -- Porting note: the goal was previously closed by the following, which succeeds until
-    -- `Category.assoc`.
-    -- dsimp [comparisonLeftAdjointHomEquiv]
-    -- rw [← adj.homEquiv_naturality_right, Category.assoc]
     simp [Cofork.IsColimit.homIso, Adjunction.homEquiv_unit]
 
 /-- Provided we have the appropriate coequalizers, we have an adjunction to the comparison functor.
@@ -197,7 +193,6 @@ def counitCoequalizerOfReflectsCoequalizer (B : D)
     IsColimit (counitCofork (adj := adj) B) :=
   isColimitOfIsColimitCoforkMap G _ (beckCoequalizer ((comparison adj).obj B))
 
--- Porting note: Lean 3 didn't seem to need this
 instance
     [∀ A : adj.toMonad.Algebra, HasCoequalizer (F.map A.a) (adj.counit.app (F.obj A.A))]
     (B : D) : HasColimit (parallelPair

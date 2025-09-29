@@ -47,7 +47,7 @@ variable {ι α β : Type*}
 section SMul
 variable [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]
   [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
-  [Module α β] [OrderedSMul α β] {s : Finset ι} {σ : Perm ι} {f : ι → α} {g : ι → β}
+  [Module α β] [PosSMulMono α β] {s : Finset ι} {σ : Perm ι} {f : ι → α} {g : ι → β}
 
 /-- **Chebyshev's Sum Inequality**: When `f` and `g` monovary together (e.g. they are both
 monotone/antitone), the scalar product of their sum is less than the size of the set times their

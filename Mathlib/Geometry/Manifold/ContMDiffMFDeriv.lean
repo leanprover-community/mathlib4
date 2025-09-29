@@ -49,9 +49,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {m n : WithTop ℕ∞}
   -- declare functions, sets
   {f : M → M'} {s : Set M}
 
--- Porting note: section about deducing differentiability for `C^n` functions moved to
--- `Geometry.Manifold.MFDeriv.Basic`
-
 /-! ### The derivative of a `C^(n+1)` function is `C^n` -/
 
 section mfderiv
