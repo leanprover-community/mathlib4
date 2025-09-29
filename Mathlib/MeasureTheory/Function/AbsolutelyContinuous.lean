@@ -29,8 +29,8 @@ We use the filter version to prove that absolutely continuous functions are clos
 * addition - `AbsolutelyContinuousOnInterval.fun_add`, `AbsolutelyContinuousOnInterval.add`;
 * negation - `AbsolutelyContinuousOnInterval.fun_neg`, `AbsolutelyContinuousOnInterval.neg`;
 * subtraction - `AbsolutelyContinuousOnInterval.fun_sub`, `AbsolutelyContinuousOnInterval.sub`;
-* scalar multiplication - `AbsolutelyContinuousOnInterval.const_mul`,
-`AbsolutelyContinuousOnInterval.const_smul`;
+* scalar multiplication - `AbsolutelyContinuousOnInterval.const_smul`,
+`AbsolutelyContinuousOnInterval.const_mul`;
 * multiplication - `AbsolutelyContinuousOnInterval.fun_mul`, `AbsolutelyContinuousOnInterval.mul`;
 and that absolutely continuous implies uniform continuous in
 `AbsolutelyContinuousOnInterval.uniformlyContinuousOn`
