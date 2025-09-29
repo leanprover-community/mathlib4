@@ -271,8 +271,9 @@ theorem mul_cast_floor_div_cancel_of_pos {n : ℤ} (hn : 0 < n) (a : R) : ⌊a *
 theorem mul_natCast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : R) : ⌊a * n⌋ / n = ⌊a⌋ := by
   simpa using mul_cast_floor_div_cancel_of_pos (n := n) (by positivity) a
 
-section LinearOrderedCommRing
+end LinearOrderedRing
 
+section LinearOrderedCommRing
 variable {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R] {a : R}
 
 theorem cast_mul_floor_div_cancel_of_pos {n : ℤ} (hn : 0 < n) (a : R) : ⌊n * a⌋ / n = ⌊a⌋ := by
@@ -283,17 +284,14 @@ theorem natCast_mul_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : R) : ⌊n * a
 
 end LinearOrderedCommRing
 
-end LinearOrderedRing
-
 section LinearOrderedField
 variable {k : Type*} [Field k] [LinearOrder k] [IsStrictOrderedRing k] [FloorRing k] {a b : k}
 
 theorem floor_div_cast_of_nonneg {n : ℤ} (hn : 0 ≤ n) (a : k) : ⌊a / n⌋ = ⌊a⌋ / n := by
-  if h : n = 0 then
-    simp [h]
-  else
-    nth_rw 2 [show a = a / n * n by simp [h]]
-    rw [mul_cast_floor_div_cancel_of_pos (lt_of_le_of_ne' hn h)]
+  obtain rfl | hn := hn.eq_or_lt
+  · simp
+  nth_rw 2 [<-div_mul_cancel₀ (a := a) (ne_of_gt (Int.cast_pos.mpr hn))]
+  rw [mul_cast_floor_div_cancel_of_pos hn]
 
 theorem floor_div_natCast (a : k) (n : ℕ) : ⌊a / n⌋ = ⌊a⌋ / n := by
   simpa using floor_div_cast_of_nonneg n.cast_nonneg a
