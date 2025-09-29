@@ -79,20 +79,20 @@ theorem sum_fin [AddCommMonoid S] (f : ℕ → R → S) (hf : ∀ i, f i 0 = 0) 
   rw [sum_over_range' _ hf n ((natDegree_lt_iff_degree_lt hp).mpr hn),
     Fin.sum_univ_eq_sum_range fun i => f i (p.coeff i)]
 
-theorem as_sum_range' (p : R[X]) {n : ℕ} (hn : p.natDegree < n) :
+theorem as_sum_range' (p : R[X]) (n : ℕ) (hn : p.natDegree < n) :
     p = ∑ i ∈ range n, monomial i (coeff p i) :=
   p.sum_monomial_eq.symm.trans <| p.sum_over_range' monomial_zero_right _ hn
 
 theorem as_sum_range (p : R[X]) : p = ∑ i ∈ range (p.natDegree + 1), monomial i (coeff p i) :=
-  p.sum_monomial_eq.symm.trans <| p.sum_over_range <| monomial_zero_right
+  p.as_sum_range' _ (lt_add_one _)
 
 theorem as_sum_range_C_mul_X_pow' (p : R[X]) {n : ℕ} (hn : p.natDegree < n) :
     p = ∑ i ∈ range n, C (coeff p i) * X ^ i :=
-  (p.as_sum_range' hn).trans <| by simp only [C_mul_X_pow_eq_monomial]
+  (p.as_sum_range' _ hn).trans <| by simp only [C_mul_X_pow_eq_monomial]
 
 theorem as_sum_range_C_mul_X_pow (p : R[X]) :
     p = ∑ i ∈ range (p.natDegree + 1), C (coeff p i) * X ^ i :=
-  p.as_sum_range.trans <| by simp only [C_mul_X_pow_eq_monomial]
+  p.as_sum_range_C_mul_X_pow' (lt_add_one _)
 
 theorem mem_support_C_mul_X_pow {n a : ℕ} {c : R} (h : a ∈ support (C c * X ^ n)) : a = n :=
   mem_singleton.1 <| support_C_mul_X_pow' n c h
