@@ -350,7 +350,7 @@ theorem integral_rieszMeasure (f : C_c(X, ℝ)) : ∫ x, f x ∂(rieszMeasure Λ
   · exact integral_riesz_aux Λ f
 
 /-- The Riesz measure induced by a positive linear functional on `C_c(X, ℝ)` is regular. -/
-instance rieszMeasure_regular : (rieszMeasure Λ).Regular :=
+instance regular_rieszMeasure : (rieszMeasure Λ).Regular :=
   (rieszContent _).regular
 
 section integralPositiveLinearMap
