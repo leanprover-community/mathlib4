@@ -24,10 +24,8 @@ section
 variable [Zero R] [One R]
 
 /-- The representative of the root in the quadratic algebra -/
-def omega : QuadraticAlgebra R a b :=
+def ω : QuadraticAlgebra R a b :=
   ⟨0, 1⟩
-
-notation:25 "ω" => omega
 
 @[simp]
 theorem re_omega : (ω : QuadraticAlgebra R a b).re = 0 :=
@@ -67,7 +65,7 @@ theorem omega_prop' : (ω : QuadraticAlgebra R a b) * (ω) =
     b • (ω) + a • 1 := by
   simp [omega_prop, ← QuadraticAlgebra.coe_mul_eq_smul]
 
-theorem decompose {x y : R} :
+theorem mk_eq_add_smul_omega {x y : R} :
     (⟨x, y⟩ : QuadraticAlgebra R a b) = x + y • (ω : QuadraticAlgebra R a b) := by
   ext <;> simp
 
@@ -77,7 +75,7 @@ variable {A : Type*} [Ring A] [Algebra R A]
 theorem hom_ext {f g : QuadraticAlgebra R a b →ₐ[R] A}
     (h : f (ω) = g (ω)) : f = g := by
   ext ⟨x, y⟩
-  simp only [decompose, map_add, map_smul, h, add_left_inj]
+  simp only [mk_eq_add_smul_omega, map_add, map_smul, h, add_left_inj]
   change f (algebraMap R _ x) = g (algebraMap R _ x)
   simp only [AlgHom.commutes]
 
@@ -139,10 +137,8 @@ variable [Ring R]
 /-- The representative of the “other” root in the quadratic algebra.
 
 One has omega R a b + omega' R a b = b -/
-def omega' : QuadraticAlgebra R a b :=
+def ω' : QuadraticAlgebra R a b :=
   ⟨b, -1⟩
-
-notation:25 "ω'" => omega'
 
 @[simp]
 theorem re_omega' : (ω' : QuadraticAlgebra R a b).re = b :=
@@ -177,10 +173,10 @@ theorem star_mk (x y : R) :
   rfl
 
 theorem star_omega : star (ω : QuadraticAlgebra R a b) = (ω') := by
-  simp [star, omega, omega']
+  simp [star, ω, ω']
 
 theorem star_omega' : star (ω' : QuadraticAlgebra R a b) = (ω) := by
-  simp [star, omega, omega']
+  simp [star, ω, ω']
 
 @[simp]
 theorem star_re (z : QuadraticAlgebra R a b) :
@@ -302,7 +298,7 @@ theorem norm_eq_one_iff_mem_unitary {z : QuadraticAlgebra R a b} :
 /-- The kernel of the norm map on `QuadraticAlgebra R a b` equals
 the submonoid of unitary elements. -/
 theorem mker_norm_eq_unitary :
-    MonoidHom.mker (@normMonoidHom R _ a b) = unitary (QuadraticAlgebra R a b) :=
+    MonoidHom.mker (@normMonoidHom R a b _) = unitary (QuadraticAlgebra R a b) :=
   Submonoid.ext fun _ => norm_eq_one_iff_mem_unitary
 
 theorem coe_mem_nonZeroDivisors_iff {r : R} :
