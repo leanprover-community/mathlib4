@@ -27,13 +27,13 @@ given by projecting to the first factors, i.e.
 ## The CoGrothendieck construction
 
 Given a category `𝒮` and any pseudofunctor `F` from `𝒮ᵒᵖ` to `Cat`, we associate to it a category
-`∫ᶜ F`, defined as follows:
+`∫ᶜ F` (TODO: promote `CategoryStruct` to `Category` instance), defined as follows:
 * Objects: pairs `(S, a)` where `S` is an object of the base category and `a` is an object of the
   category `F(S)`.
 * Morphisms: morphisms `(R, b) ⟶ (S, a)` are defined as pairs `(f, h)` where `f : R ⟶ S` is a
   morphism in `𝒮` and `h : b ⟶ F(f)(a)`
 
-The category `∫ᶜ F` is equipped with a functor `∫ᶜ F ⥤ 𝒮`,
+The category `∫ᶜ F` is equipped with a functor `∫ᶜ F ⥤ 𝒮` (TODO: define this functor),
 given by projecting to the first factors, i.e.
 * On objects, it sends `(S, a)` to `S`
 * On morphisms, it sends `(f, h)` to `f`
