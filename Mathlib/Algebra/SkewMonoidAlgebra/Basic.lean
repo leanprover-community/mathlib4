@@ -1209,22 +1209,20 @@ variable [Monoid G] [CommSemiring k]
 variable {A : Type*} [Semiring A] [Algebra k A]
 
 /-- The instance `Algebra k (SkewMonoidAlgebra A G)` whenever we have `Algebra k A`.
-  In particular this provides the instance `Algebra k (SkewMonoidAlgebra k G)`.
-  This requires `SmulTrivAction G k A`. -/
-instance algebra [MulSemiringAction G A]
+  In particular this provides the instance `Algebra k (SkewMonoidAlgebra k G)`. -/
+instance [MulSemiringAction G A]
     [SMulCommClass G k A] : Algebra k (SkewMonoidAlgebra A G) where
   algebraMap := singleOneRingHom.comp (algebraMap k A)
   smul_def' r a := by
-    simp only [RingHom.coe_comp, comp_apply]
     ext
-    simp only [coeff_smul, Algebra.smul_def, singleOneRingHom, singleAddHom, ZeroHom.toFun_eq_coe,
-      ZeroHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, coeff_single_one_mul];
+    simp only [RingHom.coe_comp, comp_apply, coeff_smul, Algebra.smul_def, singleOneRingHom,
+      singleAddHom, ZeroHom.toFun_eq_coe, ZeroHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk,
+      OneHom.coe_mk, coeff_single_one_mul]
   commutes' r f := by
-    simp only [RingHom.coe_comp, comp_apply]
     ext
     simp only [singleOneRingHom, singleAddHom, ZeroHom.toFun_eq_coe, ZeroHom.coe_mk, RingHom.coe_mk,
       MonoidHom.coe_mk, OneHom.coe_mk, coeff_single_one_mul, Algebra.commutes, coeff_mul_single_one,
-      smul_algebraMap]
+      smul_algebraMap, RingHom.coe_comp, comp_apply]
 
 @[simp]
 theorem coe_algebraMap [MulSemiringAction G A] [SMulCommClass G k A] :
