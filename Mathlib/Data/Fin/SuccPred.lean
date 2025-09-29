@@ -172,10 +172,10 @@ theorem castSucc_le_succ {n} (i : Fin n) : i.castSucc ≤ i.succ := Nat.le_succ 
 
 theorem le_of_castSucc_lt_of_succ_lt {a b : Fin (n + 1)} {i : Fin n}
     (hl : castSucc i < a) (hu : b < succ i) : b < a := by
-  simp [Fin.lt_def, -val_fin_lt] at *; omega
+  simp [Fin.lt_def, -val_fin_lt] at *; cutsat
 
 theorem castSucc_lt_or_lt_succ (p : Fin (n + 1)) (i : Fin n) : castSucc i < p ∨ p < i.succ := by
-  simpa [Fin.lt_def, -val_fin_lt] using by omega
+  simpa [Fin.lt_def, -val_fin_lt] using by cutsat
 
 theorem succ_le_or_le_castSucc (p : Fin (n + 1)) (i : Fin n) : succ i ≤ p ∨ p ≤ i.castSucc := by
   rw [le_castSucc_iff, ← castSucc_lt_iff_succ_le]
@@ -183,9 +183,6 @@ theorem succ_le_or_le_castSucc (p : Fin (n + 1)) (i : Fin n) : succ i ≤ p ∨ 
 
 theorem eq_castSucc_of_ne_last {x : Fin (n + 1)} (h : x ≠ (last _)) :
     ∃ y, Fin.castSucc y = x := exists_castSucc_eq.mpr h
-
-@[deprecated (since := "2025-02-06")]
-alias exists_castSucc_eq_of_ne_last := eq_castSucc_of_ne_last
 
 theorem forall_fin_succ' {P : Fin (n + 1) → Prop} :
     (∀ i, P i) ↔ (∀ i : Fin n, P i.castSucc) ∧ P (.last _) :=
@@ -255,7 +252,7 @@ theorem coe_succ_lt_iff_lt {n : ℕ} {j k : Fin n} : (j : Fin (n + 1)) < k ↔ j
 
 @[simp]
 theorem range_castSucc {n : ℕ} : Set.range (castSucc : Fin n → Fin n.succ) =
-    ({ i | (i : ℕ) < n } : Set (Fin n.succ)) := range_castLE (by omega)
+    ({ i | (i : ℕ) < n } : Set (Fin n.succ)) := range_castLE (by cutsat)
 
 @[simp]
 theorem coe_of_injective_castSucc_symm {n : ℕ} (i : Fin n.succ) (hi) :

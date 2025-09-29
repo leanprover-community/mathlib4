@@ -76,11 +76,6 @@ theorem normalize_normalized_factor {a : α} :
   obtain ⟨y, _, rfl⟩ := Multiset.mem_map.1 hx
   apply normalize_idem
 
-theorem dvd_of_normalized_factor {a x : α} (hx : x ∈ normalizedFactors a) :
-    x ∣ a := by
-  obtain ⟨y, hy, rfl⟩ := Multiset.mem_map.mp hx
-  exact normalize_dvd_iff.mpr <| dvd_of_mem_factors hy
-
 theorem normalizedFactors_irreducible {a : α} (ha : Irreducible a) :
     normalizedFactors a = {normalize a} := by
   obtain ⟨p, a_assoc, hp⟩ :=
@@ -227,6 +222,8 @@ theorem dvd_of_mem_normalizedFactors {a p : α} (H : p ∈ normalizedFactors a) 
   · rw [hcases]
     exact dvd_zero p
   · exact dvd_trans (Multiset.dvd_prod H) (Associated.dvd (prod_normalizedFactors hcases))
+@[deprecated (since := "2025-08-26")]
+alias dvd_of_normalized_factor := dvd_of_mem_normalizedFactors
 
 theorem mem_normalizedFactors_iff [Subsingleton αˣ] {p x : α} (hx : x ≠ 0) :
     p ∈ normalizedFactors x ↔ Prime p ∧ p ∣ x := by
@@ -241,7 +238,7 @@ theorem mem_normalizedFactors_iff [Subsingleton αˣ] {p x : α} (hx : x ≠ 0) 
 theorem mem_normalizedFactors_iff' {p x : α} (h : x ≠ 0) :
     p ∈ normalizedFactors x ↔ Irreducible p ∧ normalize p = p ∧ p ∣ x := by
   refine ⟨fun h ↦ ⟨irreducible_of_normalized_factor p h, normalize_normalized_factor p h,
-    dvd_of_normalized_factor h⟩, fun ⟨h₁, h₂, h₃⟩ ↦ ?_⟩
+    dvd_of_mem_normalizedFactors h⟩, fun ⟨h₁, h₂, h₃⟩ ↦ ?_⟩
   obtain ⟨y, hy₁, hy₂⟩ := exists_mem_factors_of_dvd h h₁ h₃
   exact Multiset.mem_map.mpr ⟨y, hy₁, by
     rwa [← h₂, normalize_eq_normalize_iff_associated, Associated.comm]⟩
@@ -346,22 +343,22 @@ variable {β : Type*} [CancelCommMonoidWithZero β] [NormalizationMonoid β]
 If the monoid equiv `f : α ≃* β` commutes with `normalize` then, for `a : α`, it yields a
 bijection between the `normalizedFactors` of `a` and of `f a`.
 -/
-def normalizedFactorsEquiv [DecidableEq α] (he : ∀ x, normalize (f x) = f (normalize x)) (a : α) :
+def normalizedFactorsEquiv (he : ∀ x, normalize (f x) = f (normalize x)) (a : α) :
     {x // x ∈ normalizedFactors a} ≃ {y // y ∈ normalizedFactors (f a)} :=
-  Equiv.subtypeEquiv f fun x ↦
-    if ha : a = 0 then by simp [ha] else by
-      simp [mem_normalizedFactors_iff' ha,
+  Equiv.subtypeEquiv f fun x ↦ by
+    rcases eq_or_ne a 0 with rfl | ha
+    · simp
+    · simp [mem_normalizedFactors_iff' ha,
         mem_normalizedFactors_iff' (EmbeddingLike.map_ne_zero_iff.mpr ha), map_dvd_iff_dvd_symm,
         MulEquiv.irreducible_iff, he]
 
 @[simp]
-theorem normalizedFactorsEquiv_apply [DecidableEq α] (he : ∀ x, normalize (f x) = f (normalize x))
+theorem normalizedFactorsEquiv_apply (he : ∀ x, normalize (f x) = f (normalize x))
     {a p : α} (hp : p ∈ normalizedFactors a) :
     normalizedFactorsEquiv he a ⟨p, hp⟩ = f p := rfl
 
 @[simp]
-theorem normalizedFactorsEquiv_symm_apply [DecidableEq α]
-    (he : ∀ x, normalize (f x) = f (normalize x))
+theorem normalizedFactorsEquiv_symm_apply (he : ∀ x, normalize (f x) = f (normalize x))
     {a : α} {q : β} (hq : q ∈ normalizedFactors (f a)) :
     (normalizedFactorsEquiv he a).symm ⟨q, hq⟩ = (MulEquivClass.toMulEquiv f).symm q := rfl
 

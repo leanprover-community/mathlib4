@@ -87,7 +87,7 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
       aliases ← getAliasSyntax exp
     for id in (← getNamesFrom (stx.getPos?.getD default)) ++ aliases do
       let declName := id.getId
-      if declName.hasMacroScopes then continue
+      if declName.hasMacroScopes || isPrivateName declName then continue
       let nm := declName.components
       let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) ↦ x == y
         | continue

@@ -312,7 +312,7 @@ theorem rank_map_le (f : M →ₗ[R] M₁) (p : Submodule R M) :
 
 lemma Submodule.rank_mono {s t : Submodule R M} (h : s ≤ t) : Module.rank R s ≤ Module.rank R t :=
   (Submodule.inclusion h).rank_le_of_injective fun ⟨x, _⟩ ⟨y, _⟩ eq =>
-    Subtype.eq <| show x = y from Subtype.ext_iff_val.1 eq
+    Subtype.eq <| show x = y from Subtype.ext_iff.1 eq
 
 /-- Two linearly equivalent vector spaces have the same dimension, a version with different
 universes. -/
