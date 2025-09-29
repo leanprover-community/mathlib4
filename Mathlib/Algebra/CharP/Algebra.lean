@@ -57,7 +57,7 @@ theorem charP_of_injective_algebraMap {R A : Type*} [CommSemiring R] [Semiring A
     (h : Function.Injective (algebraMap R A)) (p : ℕ) [CharP R p] : CharP A p :=
   charP_of_injective_ringHom h p
 
-theorem charP_of_injective_algebraMap' (R : Type*) {A : Type*} [CommRing R] [CommRing A]
+theorem charP_of_injective_algebraMap' (R : Type*) {A : Type*} [CommRing R] [Semiring A]
     [Algebra R A] [FaithfulSMul R A] (p : ℕ) [CharP R p] : CharP A p :=
   charP_of_injective_ringHom (FaithfulSMul.algebraMap_injective R A) p
 
