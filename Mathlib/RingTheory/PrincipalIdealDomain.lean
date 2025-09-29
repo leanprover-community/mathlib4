@@ -487,26 +487,26 @@ variable {R}
 theorem nonPrincipals_eq_empty_iff : nonPrincipals R = ∅ ↔ IsPrincipalIdealRing R := by
   simp [Set.eq_empty_iff_forall_notMem, isPrincipalIdealRing_iff]
 
-/-- Any nonempty chain in the set of non-principal ideals has an upper bound which is non-principal.
+/-- Any chain in the set of non-principal ideals has an upper bound which is non-principal.
 (Namely, the union of the chain is such an upper bound.)
 
 If you want the existence of a maximal non-principal ideal see `Ideal.exists_maximal_not_principal`.
 -/
-theorem nonPrincipals_zorn (c : Set (Ideal R)) (hs : c ⊆ nonPrincipals R)
-    (hchain : IsChain (· ≤ ·) c) (K : Ideal R) (hKmem : K ∈ c) :
+theorem nonPrincipals_zorn (hR : ¬IsPrincipalIdealRing R) (c : Set (Ideal R))
+    (hs : c ⊆ nonPrincipals R) (hchain : IsChain (· ≤ ·) c) :
     ∃ I ∈ nonPrincipals R, ∀ J ∈ c, J ≤ I := by
-  refine ⟨sSup c, fun ⟨x, hx⟩ ↦ ?_, fun _ ↦ le_sSup⟩
-  have hxmem : x ∈ sSup c := hx.symm ▸ Submodule.mem_span_singleton_self x
-  obtain ⟨J, hJc, hxJ⟩ := (Submodule.mem_sSup_of_directed ⟨K, hKmem⟩ hchain.directedOn).1 hxmem
-  have hsSupJ : sSup c = J := le_antisymm (by simp [hx, Ideal.span_le, hxJ]) (le_sSup hJc)
-  exact hs hJc ⟨hsSupJ ▸ ⟨x, hx⟩⟩
+  by_cases H : c.Nonempty
+  · obtain ⟨K, hKmem⟩ := Set.nonempty_def.1 H
+    refine ⟨sSup c, fun ⟨x, hx⟩ ↦ ?_, fun _ ↦ le_sSup⟩
+    have hxmem : x ∈ sSup c := hx.symm ▸ Submodule.mem_span_singleton_self x
+    obtain ⟨J, hJc, hxJ⟩ := (Submodule.mem_sSup_of_directed ⟨K, hKmem⟩ hchain.directedOn).1 hxmem
+    have hsSupJ : sSup c = J := le_antisymm (by simp [hx, Ideal.span_le, hxJ]) (le_sSup hJc)
+    exact hs hJc ⟨hsSupJ ▸ ⟨x, hx⟩⟩
+  · simpa [Set.not_nonempty_iff_eq_empty.1 H, isPrincipalIdealRing_iff] using hR
 
 theorem exists_maximal_not_principal (hR : ¬IsPrincipalIdealRing R) :
-    ∃ I : Ideal R, Maximal (¬·.IsPrincipal) I := by
-  rw [isPrincipalIdealRing_iff, not_forall] at hR
-  obtain ⟨_, hI⟩ := hR
-  obtain ⟨M, -, hM⟩ := zorn_le_nonempty₀ _ nonPrincipals_zorn _ hI
-  exact ⟨M, hM⟩
+    ∃ I : Ideal R, Maximal (¬·.IsPrincipal) I :=
+  zorn_le₀ _ (nonPrincipals_zorn hR)
 
 end Ideal
 
