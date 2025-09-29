@@ -39,7 +39,7 @@ Several theorems proved in this file are known as Lagrange's theorem.
 assert_not_exists Field
 
 @[to_additive]
-lemma Subgroup.zpowers_eq_powers_sup_powers_inv {G : Type*} [Group G] (g : G) :
+lemma Subgroup.toSubmonoid_zpowers {G : Type*} [Group G] (g : G) :
     (Subgroup.zpowers g).toSubmonoid = Submonoid.powers g ⊔ Submonoid.powers g⁻¹ := by
   rw [zpowers_eq_closure, closure_toSubmonoid, Submonoid.closure_union, Submonoid.powers_eq_closure,
     Submonoid.powers_eq_closure, Set.inv_singleton]
