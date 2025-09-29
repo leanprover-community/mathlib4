@@ -40,13 +40,13 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
   have h' : ∀ p q, ∃ u v, MeasurableSet u ∧ MeasurableSet v ∧
       { x | f x < p } ⊆ u ∧ { x | q < f x } ⊆ v ∧ (p ∈ s → q ∈ s → p < q → μ (u ∩ v) = 0) := by
     intro p q
-    by_cases! H : p ∈ s ∧ q ∈ s ∧ p < q
+    by_cases H : p ∈ s ∧ q ∈ s ∧ p < q
     · rcases h p H.1 q H.2.1 H.2.2 with ⟨u, v, hu, hv, h'u, h'v, hμ⟩
       exact ⟨u, v, hu, hv, h'u, h'v, fun _ _ _ => hμ⟩
     · refine
         ⟨univ, univ, MeasurableSet.univ, MeasurableSet.univ, subset_univ _, subset_univ _,
           fun ps qs pq => ?_⟩
-      exact (H ps qs pq).elim
+      exact (H ⟨ps, qs, pq⟩).elim
   choose! u v huv using h'
   let u' : β → Set α := fun p => ⋂ q ∈ s ∩ Ioi p, u p q
   have u'_meas : ∀ i, MeasurableSet (u' i) := by

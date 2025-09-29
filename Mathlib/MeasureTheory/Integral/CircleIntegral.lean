@@ -476,7 +476,7 @@ theorem integral_sub_zpow_of_undef {n : ℤ} {c w : ℂ} {R : ℝ} (hn : n < 0)
 zero. -/
 theorem integral_sub_zpow_of_ne {n : ℤ} (hn : n ≠ -1) (c w : ℂ) (R : ℝ) :
     (∮ z in C(c, R), (z - w) ^ n) = 0 := by
-  by_cases H : w ∈ sphere c |R| ∧ n < -1
+  by_cases! H : w ∈ sphere c |R| ∧ n < -1
   · rcases H with ⟨hw, hn⟩
     exact integral_sub_zpow_of_undef (hn.trans (by decide)) hw
   have hd : ∀ z, z ≠ w ∨ -1 ≤ n →

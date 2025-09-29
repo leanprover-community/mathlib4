@@ -119,7 +119,7 @@ theorem StrictMonoOn.exists_deriv_lt_slope {x y : ℝ} {f : ℝ → ℝ} (hf : C
     ∃ a ∈ Ioo x y, deriv f a < (f y - f x) / (y - x) := by
   by_cases! h : ∀ w ∈ Ioo x y, deriv f w ≠ 0
   · apply StrictMonoOn.exists_deriv_lt_slope_aux hf hxy hf'_mono h
-  · cases h with ⟨w, ⟨hxw, hwy⟩, hw⟩
+  · rcases h with ⟨w, ⟨hxw, hwy⟩, hw⟩
     obtain ⟨a, ⟨hxa, haw⟩, ha⟩ : ∃ a ∈ Ioo x w, deriv f a < (f w - f x) / (w - x) := by
       apply StrictMonoOn.exists_deriv_lt_slope_aux _ hxw _ _
       · exact hf.mono (Icc_subset_Icc le_rfl hwy.le)
