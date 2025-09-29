@@ -327,7 +327,7 @@ instance [IsEmpty α] : Unique (Interval α) :=
 
 /-- Turn an interval into an interval in the dual order. -/
 def dual : Interval α ≃ Interval αᵒᵈ :=
-  NonemptyInterval.dual.optionCongr
+  NonemptyInterval.dual.withBotCongr
 
 end LE
 
