@@ -18,13 +18,12 @@ attribute [local instance] monadLiftOptionMetaM
 
 /-
 TODOs:
-* Handle division, inversion.
+* Handle division, inversion, algebraMap.
 * Handle exponents with general natural expressions. Will have to decide what to do with the
   expression in the base. `Ring` distributes both addition in the exponents and products in the
   base, having put the base into ring normal form. Here we'd probably want to put the base into
   algebra normal form, and distribute the exponents into the atoms if it's a single `smul`.
   For now we might just not normalize the base.
-* `algebra_nf` tactic that does cleanup
 * `polynomial(_nf)` tactics that do some preprocessing to deal with `monomial` and `Polynomial.C`
 * `match_coefficients` tactic that normalizes polynomials and matches corresponding coefficients.
 * Handle `algebraMap` in some way. Either with a preprocessing step or as a special case in `eval`
@@ -408,7 +407,7 @@ partial def eval {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(Comm
         -- TODO: Handle case if R extends R'
         return ← els
       if ! (← isDefEq A A') then
-        throwError "HSmul not implemented"
+        throwError "algebra: HSmul not implemented"
       have r : Q($R) := r'
       have a : Q($A) := a'
       let ⟨r'', vr, pr⟩ ← Ring.eval q($sR) cacheR q($r)
@@ -554,7 +553,7 @@ partial def inferBaseAux (e : Expr) :
   | Sub.sub _ _ _ a b => inferBaseAux a <|> inferBaseAux b
   | HPow.hPow _ _ _ _ a _ => inferBaseAux a
   /- Should it try to be clever here and return q(ℤ)
-    instead of q(ℕ) if there's negation or subtraction?
+    instead of q(ℕ) if there's negation or subtraction and no other ring?
     Maybe not... what if there's natural number subtraction. And if the desired ring doesn't
     appear in an smul / algebraMap the user shouldn't be too surprised that the tactic failed. -/
   | Neg.neg _ _ a => inferBaseAux a
@@ -602,6 +601,7 @@ def evalExprInfer (e : Expr) : AtomM Simp.Result := do
   let ⟨_, R⟩ ← inferBase e
   evalExpr R e
 
+/-- Attempt -/
 elab (name := algebraNF) "algebra_nf" tk:"!"? loc:(location)?  : tactic => do
   -- let mut cfg ← elabConfig cfg
   let mut cfg := {}
@@ -711,6 +711,9 @@ def equateScalars {a b : Q($A)} (va : ExSum q($sAlg) a) (vb : ExSum q($sAlg) b) 
         let pab ← mkFreshExprMVarQ q($r = $s)
         return ⟨q(sorry), pab.mvarId! :: ids⟩
 
+#check simpTarget
+
+#check Simp.Simproc
 def matchScalarsAux (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) : MetaM (List MVarId) :=
   do
   let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
@@ -728,8 +731,16 @@ def matchScalarsAux (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) 
   let sAlg ← synthInstanceQ q(Algebra $R $A)
   have e₁ : Q($A) := e₁; have e₂ : Q($A) := e₂
   let ⟨eq, mids⟩ ← AtomM.run .instances <| algCore q($sAlg) e₁ e₂
+  -- surely there's a better way to apply the cleanup routine to each goal.
+  let mut res : List MVarId := []
+  for id in mids do
+    let mut cfg := {}
+    let e ← id.getType
+    let r ← RingNF.cleanup cfg {expr := e, proof? := none}
+    let id' ← applySimpResultToTarget id e r
+    res := id' :: res
   g.assign eq
-  return mids
+  return res
 where
   /-- The core of `proveEq` takes expressions `e₁ e₂ : α` where `α` is a `CommSemiring`,
   and returns a proof that they are equal (or fails). -/
@@ -741,8 +752,7 @@ where
     profileitM Exception "algebra" (← getOptions) do
       let ⟨a, va, pa⟩ ← eval sAlg cr ca e₁
       let ⟨b, vb, pb⟩ ← eval sAlg cr ca e₂
-      let ⟨pb, mvars⟩ ← equateScalars sAlg va vb
-      /- TODO: extract lemma -/
+      let ⟨pab, mvars⟩ ← equateScalars sAlg va vb
       return ⟨q(sorry), mvars⟩
 
 elab (name := matchScalarsAlgWith) "match_scalars_alg" " with " R:term :tactic => withMainContext do
@@ -845,14 +855,19 @@ example {a b : ℤ} (x y : ℚ) : (a - b) • (x + y) = - b • x + a • (x + y
 example {a b : ℤ} (x y : ℚ) (ha : a = 2) : (a + b) • (x + y) = b • x + (2:ℤ) • (x + y) + b • y := by
   -- ring does nothing
   match_scalars_alg with ℤ
-  all_goals simp [ha]
-
+  sorry
+  sorry
 
 
 
 
 example (x y : ℚ) (a : ℤ) (h : 2 * a = 3) : (x + a • y)^2 = x^2 + 3 * x*y + a^2 • y^2 := by
   grind
+
+
+example : 2 = 1 := by
+  match_scalars_alg with ℕ
+  sorry
 
 
 
