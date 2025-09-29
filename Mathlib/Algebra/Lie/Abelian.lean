@@ -356,6 +356,8 @@ end IdealOperations
 section TrivialLieModule
 
 set_option linter.unusedVariables false in
+/-- A type synonym for an `R`-module to have a trivial Lie module structure. -/
+@[nolint unusedArguments]
 def TrivialLieModule (R L M : Type*) := M
 
 namespace TrivialLieModule
@@ -366,6 +368,7 @@ instance : AddCommGroup (TrivialLieModule R L M) := inferInstanceAs (AddCommGrou
 
 instance : Module R (TrivialLieModule R L M) := inferInstanceAs (Module R M)
 
+/-- The linear equivalence between a trivial Lie module and its underlying `R`-module. -/
 def equiv : (TrivialLieModule R L M) ≃ₗ[R] M := LinearEquiv.refl R M
 
 instance : LieRingModule L (TrivialLieModule R L M) where
