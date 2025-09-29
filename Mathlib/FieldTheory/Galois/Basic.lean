@@ -559,8 +559,8 @@ theorem tfae [FiniteDimensional F E] : List.TFAE [
 If `K/F` is a finite Galois extension then, for any extension `L/F`, the extension `KL/L`
 is also Galois.
 -/
-theorem sup (K L : IntermediateField F E) [IsGalois F K] [FiniteDimensional F K] (h : K ⊔ L = ⊤) :
-    IsGalois L E := by
+theorem sup_right (K L : IntermediateField F E) [IsGalois F K] [FiniteDimensional F K]
+    (h : K ⊔ L = ⊤) : IsGalois L E := by
   obtain ⟨T, hT₁, hT₂⟩ := IsGalois.is_separable_splitting_field F K
   let T' := Polynomial.map (algebraMap F L) T
   have : T'.IsSplittingField L E := by
