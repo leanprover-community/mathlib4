@@ -21,6 +21,7 @@ values `{-1, -1/2, 0, 1/2, 1}`.
 
 @[expose] public section
 
+-- TODO better location
 namespace IsIntegral
 
 variable {α R : Type*} [DivisionRing α] [CharZero α] {q : ℚ} {x : α}
