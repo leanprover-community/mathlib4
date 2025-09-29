@@ -1087,6 +1087,10 @@ protected theorem find_min (h : ∃ k, p k) : {j : Fin n} → j < Fin.find h →
   induction n with | zero => exact isEmptyElim h.choose | succ n ih =>
   simp_rw [Fin.find, forall_fin_succ, apply_dite, succ_lt_succ_iff, not_lt_zero]; grind
 
+@[simp] theorem val_find (h : ∃ k, p k) : (Fin.find h).val = Nat.find (Fin.exists_iff.mp h) :=
+  ((Nat.find_eq_iff _).mpr ⟨⟨is_lt _, Fin.find_spec _⟩,
+    fun _ hm ⟨_, hi⟩ => Fin.find_min h hm hi⟩).symm
+
 /-- If `find p = i`, then `p j` holds only for `i ≤ j`, i.e., `i` is minimal among
 the indices where `p` holds. -/
 protected theorem find_min' (h : ∃ k, p k) {j : Fin n} :
@@ -1111,11 +1115,6 @@ theorem find_eq_iff {i : Fin n} (h : ∃ k, p k) : Fin.find h = i ↔ p i ∧ �
 
 @[simp] lemma find_eq_zero {p : Fin (n + 1) → Prop} [DecidablePred p] (h : ∃ k, p k) :
   Fin.find h = 0 ↔ p 0 := by simp [find_eq_iff]
-
-@[simp] theorem val_find (h : ∃ k, p k) : (Fin.find h).val = Nat.find (Fin.exists_iff.mp h) := by
-  simp_rw [eq_comm (b := Nat.find _), Nat.find_eq_iff,
-    Fin.eta, is_lt, exists_const, not_exists, find_spec, true_and]
-  exact fun _ hm _ => Fin.find_min h hm
 
 /-- If a predicate `q` holds at some `x` and implies `p` up to that `x`, then
 the earliest `xq` such that `q xq` is at least the smallest `xp` where `p xp`.
