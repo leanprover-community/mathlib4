@@ -49,7 +49,8 @@ normalizations in some order.  For example, this statement:
 example {a b : ℚ} (H : b + a ≠ 0) : a / (a + b) + b / (b + a) = 1
 ```
 is not proved by `field` but is proved by `ring_nf at *; field`. -/
-elab (name := field) "field" d:(ppSpace discharger)? args:(ppSpace simpArgs)? : tactic => withMainContext do
+elab (name := field) "field" d:(ppSpace discharger)? args:(ppSpace simpArgs)? : tactic =>
+    withMainContext do
   let disch ← parseDischarger d args
   let s0 ← saveState
   -- run `field_simp` (only at the top level, not recursively)
