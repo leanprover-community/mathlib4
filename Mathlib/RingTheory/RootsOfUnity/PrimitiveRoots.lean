@@ -119,7 +119,7 @@ theorem pow_eq_one_iff_dvd (h : IsPrimitiveRoot ζ k) (l : ℕ) : ζ ^ l = 1 ↔
 
 theorem isUnit (h : IsPrimitiveRoot ζ k) (h0 : k ≠ 0) : IsUnit ζ := by
   apply isUnit_of_mul_eq_one ζ (ζ ^ (k - 1))
-  rw [← pow_succ', tsub_add_cancel_of_le (Nat.pos_iff_ne_zero.mpr h0).nat_succ_le, h.pow_eq_one]
+  rw [← pow_succ', Nat.sub_one_add_one h0, h.pow_eq_one]
 
 theorem pow_ne_one_of_pos_of_lt (h : IsPrimitiveRoot ζ k) (h0 : l ≠ 0) (hl : l < k) : ζ ^ l ≠ 1 :=
   mt (Nat.le_of_dvd (Nat.pos_iff_ne_zero.mpr h0) ∘ h.dvd_of_pow_eq_one _) <| not_le_of_gt hl
@@ -135,7 +135,7 @@ theorem pow_inj (h : IsPrimitiveRoot ζ k) ⦃i j : ℕ⦄ (hi : i < k) (hj : j 
   rw [← tsub_eq_zero_iff_le]
   apply Nat.eq_zero_of_dvd_of_lt _ (lt_of_le_of_lt tsub_le_self hj)
   apply h.dvd_of_pow_eq_one
-  rw [← ((h.isUnit (lt_of_le_of_lt (Nat.zero_le _) hi).ne').pow i).mul_left_inj, ← pow_add,
+  rw [← ((h.isUnit (Nat.ne_zero_of_lt hi)).pow i).mul_left_inj, ← pow_add,
     tsub_add_cancel_of_le hij, H, one_mul]
 
 theorem one : IsPrimitiveRoot (1 : M) 1 :=
