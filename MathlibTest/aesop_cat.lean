@@ -2,7 +2,7 @@ import Mathlib.CategoryTheory.Category.Basic
 
 structure Foo where
   x : Nat
-  w : x = 37 := by aesop_cat
+  w : x = 37 := by cat_disch
 
 /-- warning: declaration uses 'sorry' -/
 #guard_msgs in

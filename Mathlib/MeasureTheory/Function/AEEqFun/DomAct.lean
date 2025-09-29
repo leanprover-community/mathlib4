@@ -16,8 +16,8 @@ about it.
 
 ## Implementation notes
 
-In fact, it suffices to require that `(c • ·)` is only quasi measure-preserving but we don't have a
-typeclass for quasi measure-preserving actions yet.
+In fact, it suffices to require that `(c • ·)` is only quasi-measure-preserving but we do not have a
+typeclass for quasi-measure-preserving actions yet.
 
 ## Keywords
 

@@ -18,8 +18,7 @@ Files `Data.Multiset.NatAntidiagonal` and `Data.Finset.NatAntidiagonal` successi
 `List` definition we have here into `Multiset` and `Finset`.
 -/
 
-
-open List Function Nat
+open Function
 
 namespace List
 
@@ -39,7 +38,7 @@ theorem mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x
   · rintro rfl
     refine ⟨x.fst, ?_, ?_⟩
     · rw [mem_range]
-      omega
+      cutsat
     · exact Prod.ext rfl (by simp only [Nat.add_sub_cancel_left])
 
 /-- The length of the antidiagonal of `n` is `n + 1`. -/

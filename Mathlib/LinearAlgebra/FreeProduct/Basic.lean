@@ -84,8 +84,6 @@ def algEquivQuotAlgEquiv
       fun x y h ↦ by apply RingQuot.mkAlgHom_rel; simpa⟩))
     (by ext b; simp) (by ext a; simp)
 
-@[deprecated (since := "2024-12-07")] alias algEquiv_quot_algEquiv := algEquivQuotAlgEquiv
-
 /-- If two (semi)rings are equivalent and their quotients by a relation `rel` are defined,
 then their quotients are also equivalent.
 
@@ -96,8 +94,6 @@ def equivQuotEquiv {A B : Type v} [Semiring A] [Semiring B] (f : A ≃+* B) (rel
   let f_alg : A ≃ₐ[ℕ] B :=
     AlgEquiv.ofRingEquiv (f := f) (fun n ↦ by simp)
   algEquivQuotAlgEquiv f_alg rel |>.toRingEquiv
-
-@[deprecated (since := "2024-12-07")] alias equiv_quot_equiv := equivQuotEquiv
 
 end RingQuot
 
@@ -156,8 +152,6 @@ theorem rel_id (i : I) : rel R A (ι R <| lof R I A i 1) 1 := rel.id
 as a quotient of `PowerAlgebra R A` -/
 @[reducible] def asPowers := RingQuot <| FreeProduct.rel' R A
 
-@[deprecated (since := "2024-12-07")]
-alias _root_.LinearAlgebra.FreeProduct_ofPowers := asPowers
 @[deprecated (since := "2025-05-01")]
 alias _root_.LinearAlgebra.FreeProductOfPowers := asPowers
 
@@ -187,7 +181,7 @@ abbrev ι' : (⨁ i, A i) →ₗ[R] FreeProduct R A :=
   (mkAlgHom R A).toLinearMap ∘ₗ TensorAlgebra.ι R (M := ⨁ i, A i)
 
 @[simp] theorem ι_apply (x : ⨁ i, A i) :
-  ⟨Quot.mk (Rel <| rel R A) (TensorAlgebra.ι R x)⟩ = ι' R A x := by
+    ⟨Quot.mk (Rel <| rel R A) (TensorAlgebra.ι R x)⟩ = ι' R A x := by
     aesop (add simp [ι', mkAlgHom, RingQuot.mkAlgHom, mkRingHom])
 
 /-- The injection into the free product of any `1 : A i` is the 1 of the free product. -/

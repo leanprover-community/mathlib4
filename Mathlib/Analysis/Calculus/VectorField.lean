@@ -97,9 +97,7 @@ lemma lieBracketWithin_const_smul_left {c : 𝕜} (hV : DifferentiableWithinAt �
     (hs : UniqueDiffWithinAt 𝕜 s x) :
     lieBracketWithin 𝕜 (c • V) W s x =
       c • lieBracketWithin 𝕜 V W s x := by
-  simp only [lieBracketWithin, Pi.smul_apply, map_smul, smul_sub]
-  rw [fderivWithin_const_smul hs hV]
-  rfl
+  simp [lieBracketWithin, smul_sub, fderivWithin_const_smul hs hV]
 
 lemma lieBracket_const_smul_left {c : 𝕜} (hV : DifferentiableAt 𝕜 V x) :
     lieBracket 𝕜 (c • V) W x = c • lieBracket 𝕜 V W x := by
@@ -110,9 +108,7 @@ lemma lieBracketWithin_const_smul_right {c : 𝕜} (hW : DifferentiableWithinAt 
     (hs : UniqueDiffWithinAt 𝕜 s x) :
     lieBracketWithin 𝕜 V (c • W) s x =
       c • lieBracketWithin 𝕜 V W s x := by
-  simp only [lieBracketWithin, Pi.smul_apply, map_smul, smul_sub]
-  rw [fderivWithin_const_smul hs hW]
-  rfl
+  simp [lieBracketWithin, smul_sub, fderivWithin_const_smul hs hW]
 
 lemma lieBracket_const_smul_right {c : 𝕜} (hW : DifferentiableAt 𝕜 W x) :
     lieBracket 𝕜 V (c • W) x = c • lieBracket 𝕜 V W x := by

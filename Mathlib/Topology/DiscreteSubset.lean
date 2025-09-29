@@ -127,7 +127,7 @@ theorem Filter.self_mem_codiscreteWithin (U : Set X) :
 
 /-- If a set is codiscrete within `U`, then it is codiscrete within any subset of `U`. -/
 lemma Filter.codiscreteWithin.mono {U₁ U : Set X} (hU : U₁ ⊆ U) :
-   codiscreteWithin U₁ ≤ codiscreteWithin U := by
+    codiscreteWithin U₁ ≤ codiscreteWithin U := by
   refine (biSup_mono hU).trans <| iSup₂_mono fun _ _ ↦ ?_
   gcongr
 

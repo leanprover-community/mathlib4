@@ -133,7 +133,7 @@ variable {X Y Z : C}
 when `a + n = a'`. -/
 noncomputable def shift {a : M} [HasSmallLocalizedShiftedHom.{w} W M X Y]
     [HasSmallLocalizedShiftedHom.{w} W M Y Y]
-  (f : SmallShiftedHom.{w} W X Y a) (n a' : M) (h : a + n = a') :
+    (f : SmallShiftedHom.{w} W X Y a) (n a' : M) (h : a + n = a') :
     SmallHom.{w} W (X⟦n⟧) (Y⟦a'⟧) :=
   (SmallHom.shift f n).comp (SmallHom.mk W ((shiftFunctorAdd' C a n a' h).inv.app Y))
 

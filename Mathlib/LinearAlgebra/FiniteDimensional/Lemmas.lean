@@ -9,9 +9,9 @@ import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 import Mathlib.Tactic.IntervalCases
 
 /-!
-# Finite dimensional vector spaces
+# Finite-dimensional vector spaces
 
-This file contains some further development of finite dimensional vector spaces, their dimensions,
+This file contains some further development of finite-dimensional vector spaces, their dimensions,
 and linear maps on such spaces.
 
 Definitions are in `Mathlib/LinearAlgebra/FiniteDimensional/Defs.lean`
@@ -139,7 +139,7 @@ lemma ker_ne_bot_of_finrank_lt [FiniteDimensional K V] [FiniteDimensional K V₂
   have h₁ := f.finrank_range_add_finrank_ker
   have h₂ : finrank K (LinearMap.range f) ≤ finrank K V₂ := (LinearMap.range f).finrank_le
   suffices 0 < finrank K (LinearMap.ker f) from Submodule.one_le_finrank_iff.mp this
-  omega
+  cutsat
 
 end DivisionRing
 
@@ -366,7 +366,6 @@ theorem exists_ker_pow_eq_ker_pow_succ [FiniteDimensional K V] (f : End K V) :
           _ ≤ finrank K ↑(LinearMap.ker (f ^ n.succ)) := Nat.succ_le_of_lt h_finrank_lt_finrank
     have h_any_n_lt : ∀ n, n ≤ (finrank K V).succ → n ≤ finrank K V := fun n hn =>
       (h_le_ker_pow n hn).trans (Submodule.finrank_le _)
-    change False
     exact Nat.not_succ_le_self _ (h_any_n_lt (finrank K V).succ (finrank K V).succ.le_refl)
 
 theorem ker_pow_eq_ker_pow_finrank_of_le [FiniteDimensional K V] {f : End K V} {m : ℕ}

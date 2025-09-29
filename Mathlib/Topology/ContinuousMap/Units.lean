@@ -28,8 +28,8 @@ and the units of the monoid of continuous maps. -/
 -- `simps` generates some lemmas here with LHS not in simp normal form,
 -- so we write them out manually below.
 @[to_additive (attr := simps apply_val_apply symm_apply_apply_val)
-"Equivalence between continuous maps into the additive units of an additive monoid with continuous
-addition and the additive units of the additive monoid of continuous maps."]
+/-- Equivalence between continuous maps into the additive units of an additive monoid with
+continuous addition and the additive units of the additive monoid of continuous maps. -/]
 def unitsLift : C(X, Mˣ) ≃ C(X, M)ˣ where
   toFun f :=
     { val := ⟨fun x => f x, Units.continuous_val.comp f.continuous⟩
@@ -105,7 +105,7 @@ theorem spectrum_eq_preimage_range (f : C(X, R)) :
     smul_apply, one_apply]
 
 theorem spectrum_eq_range [CompleteSpace 𝕜] (f : C(X, 𝕜)) : spectrum 𝕜 f = Set.range f := by
-  rw [spectrum_eq_preimage_range, Algebra.id.map_eq_id]
+  rw [spectrum_eq_preimage_range, Algebra.algebraMap_self]
   exact Set.preimage_id
 
 end NormedField
