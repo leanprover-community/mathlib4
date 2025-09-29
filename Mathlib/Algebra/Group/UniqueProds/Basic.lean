@@ -431,7 +431,7 @@ open UniqueMul in
     let _ := isWellFounded_ssubset (α := ∀ i, G i) -- why need this?
     apply IsWellFounded.induction (· ⊂ ·) A; intro A ihA B hA
     apply IsWellFounded.induction (· ⊂ ·) B; intro B ihB hB
-    by_cases! hc : #A ≤ 1 ∧ #B ≤ 1
+    set_option push_neg.use_distrib true in by_cases! hc : #A ≤ 1 ∧ #B ≤ 1
     · exact of_card_le_one hA hB hc.1 hc.2
     obtain ⟨i, hc⟩ := exists_or.mpr (hc.imp exists_of_one_lt_card_pi exists_of_one_lt_card_pi)
     obtain ⟨ai, hA, bi, hB, hi⟩ := uniqueMul_of_nonempty (hA.image (· i)) (hB.image (· i))
