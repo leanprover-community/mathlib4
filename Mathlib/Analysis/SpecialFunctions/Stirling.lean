@@ -263,11 +263,9 @@ Sharper bounds due to Robbins are available, but are not yet formalised.
 theorem le_factorial_stirling (n : ℕ) : √(2 * π * n) * (n / exp 1) ^ n ≤ n ! := by
   obtain rfl | hn := eq_or_ne n 0
   · simp
-  calc
-    _ = (√(π * (2 * n)) * (n / exp 1) ^ n) := by congr! 2; ring
-    _ = (√π * √(2 * n) * (n / exp 1) ^ n) := by congr! 1; simp [sqrt_mul']
-    _ = √π * (√(2 * n) * (n / exp 1) ^ n) := by ring
-  rw [← le_div_iff₀ (by positivity)]
+  have : √(2 * π * n) * (n / exp 1) ^ n = √π * (√(2 * n) * (n / exp 1) ^ n) := by
+    simp [sqrt_mul']; ring
+  rw [this, ← le_div_iff₀ (by positivity)]
   exact sqrt_pi_le_stirlingSeq hn
 
 /--
