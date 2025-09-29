@@ -452,12 +452,6 @@ theorem integral_finset_sum_measure {ι} {f : α → E}
     · exact (integrable_finset_sum_measure.2 hf.2)
     · apply Finset.le_sum_of_subadditive (fun (μ : VectorMeasure α F) => μ.variation.ennrealToMeasure)
 
-theorem nndist_integral_add_measure_le_lintegral
-    {f : α → G} (h₁ : Integrable f μ) (h₂ : Integrable f ν) :
-    (nndist (∫ x, f x ∂μ) (∫ x, f x ∂(μ + ν)) : ℝ≥0∞) ≤ ∫⁻ x, ‖f x‖ₑ ∂ν := by
-  rw [integral_add_measure h₁ h₂, nndist_comm, nndist_eq_nnnorm, add_sub_cancel_left]
-  exact enorm_integral_le_lintegral_enorm _
-
 @[simp]
 theorem integral_smul_measure (B : E →L[ℝ] F →L[ℝ] G) (c : ℝ) :
     ∫ x, f x ∂(VectorMeasureWithPairing.mk (c • B) μ)
