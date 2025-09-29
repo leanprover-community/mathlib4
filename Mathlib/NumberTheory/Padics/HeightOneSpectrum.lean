@@ -56,106 +56,126 @@ def toRatpadicValuation (𝔭 : HeightOneSpectrum ℤ) :
       Valuation ℚ ℤᵐ⁰ :=
     Rat.padicValuation 𝔭.toNatGenerator
 
-set_option pp.proofs true in
-theorem _root_.Valuation.IsEquiv.exists_orderMonoidIso {K : Type*} [Ring K] {Γ₀ Γ₀' : Type*}
+instance {K : Type*} [Ring K] {Γ₀ : Type*}
+    [LinearOrderedCommGroupWithZero Γ₀]
+    {v : Valuation K Γ₀} : Preorder (WithVal v) := v.toPreorder
+
+theorem _root_.WithVal.le_def {K : Type*} [Ring K] {Γ₀ : Type*}
+    [LinearOrderedCommGroupWithZero Γ₀]
+    {v : Valuation K Γ₀} (a b : WithVal v) :
+    a ≤ b ↔ v (WithVal.equiv v a) ≤ v (WithVal.equiv v b) :=
+    Iff.rfl
+
+def _root_.WithVal.equivWithVal {K : Type*} [Ring K] {Γ₀ Γ₀' : Type*}
+    [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ₀']
+    (v : Valuation K Γ₀) (v' : Valuation K Γ₀') :
+    WithVal v ≃+* WithVal v' :=
+  (WithVal.equiv v).trans (WithVal.equiv v').symm
+
+def _root_.Valuation.IsEquiv.orderIso {K : Type*} [Ring K] {Γ₀ Γ₀' : Type*}
     [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ₀']
     {v : Valuation K Γ₀} {v' : Valuation K Γ₀'} (h : v.IsEquiv v') :
-    ∃ ϕ : Γ₀ ≃o Γ₀', ϕ ∘ v = v' := by
-  have hv : Function.Surjective v := sorry
-  have hv' : Function.Surjective v' := sorry
-  let toFun : Γ₀ → Γ₀' := fun γ ↦ v' (hv γ).choose
-  let invFun : Γ₀' → Γ₀ := fun γ' ↦ v (hv' γ').choose
-  let ϕ : Γ₀ ≃o Γ₀' := {
-    toFun := toFun
-    invFun := invFun
-    left_inv := by
-      simp [toFun, invFun, Function.leftInverse_iff_comp]
-      ext γ
-      simp
-      have := (hv γ).choose_spec
-      rw [← this]
-      sorry
-    right_inv := sorry
-    map_rel_iff' := by
-      intro a b
-      simp [toFun]
-      rw [← h]
-      rw [(hv a).choose_spec, (hv b).choose_spec]
-  }
-  use ϕ
-  simp [ϕ, toFun]
-  ext a
-  have := (hv (v a)).choose_spec
-  simp
+    WithVal v ≃+*o WithVal v' where
+  __ := WithVal.equivWithVal v v'
+  map_le_map_iff' := by
+    intro a b
+    have := h (WithVal.equiv v a) (WithVal.equiv v b)
+    rw [WithVal.le_def a b]
+    rw [this]
+    rfl
+
+theorem _root_.WithVal.valued_surjective {K : Type*} [Ring K] {Γ₀ : Type*}
+    [LinearOrderedCommGroupWithZero Γ₀]
+    (v : Valuation K Γ₀) : Function.Surjective (Valued.v : (WithVal v) → Γ₀) := by
   sorry
 
-def _root_.Valued.uniformEquiv_of_isEquiv_v {K : Type*} [Ring K] {Γ₀ : Type*}
-    [LinearOrderedCommGroupWithZero Γ₀]
-    [i : Valued K Γ₀] [i' : Valued K Γ₀] (h : i.v.IsEquiv i'.v) :
-    @UniformEquiv K K i.toUniformSpace i'.toUniformSpace := by
-  apply @Equiv.toUniformEquivOfIsUniformInducing K K i.toUniformSpace i'.toUniformSpace
-    (Equiv.refl _)
-  rw [@isUniformInducing_iff_uniformSpace]
-  obtain ⟨ϕ, hϕ⟩ := h.exists_orderMonoidIso
+def _root_.Valuation.IsEquiv.uniformEquiv {K : Type*} [DivisionRing K] {Γ₀ Γ₀' : Type*}
+    [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ₀'] [Nontrivial Γ₀]
+    {v : Valuation K Γ₀} {v' : Valuation K Γ₀'} (h : v.IsEquiv v') :
+    WithVal v ≃ᵤ WithVal v' := by
+  apply Equiv.toUniformEquivOfIsUniformInducing (WithVal.equivWithVal v v')
+  rw [isUniformInducing_iff_uniformSpace]
   ext u
-  rw [uniformity_comap]
-  simp
-  simp_rw [i.hasBasis_uniformity.mem_iff, i'.hasBasis_uniformity.mem_iff]
-  simp
+  simp [uniformity_comap, (Valued.hasBasis_uniformity _ _).mem_iff]
   constructor
   · rintro ⟨t, ⟨γ, hγ⟩, htu⟩
-    have : ϕ.symm γ ≠ 0 := by
-      intro h
-      rw [← i.v.map_zero] at h
-      have h := congrArg ϕ h
-      have := congrFun hϕ 0
-      rw [Function.comp_apply] at this
-      rw [this] at h
-      simp at h
+    obtain ⟨a, ha⟩ := WithVal.valued_surjective v' γ
+    have : Valued.v (h.orderIso.symm a) ≠ 0 := by
+      rw [← WithVal.apply_equiv]
+      simp
+      have := Units.ne_zero γ
+      rintro rfl
+      simp at ha
+      exact this ha.symm
     use Units.mk0 _ this
+    simp
     apply Set.Subset.trans _ htu
     intro p hp
     simp at hp
+    rw [← Function.Surjective.preimage_subset_preimage_iff
+      (f := Prod.map ⇑(WithVal.equivWithVal v v') ⇑(WithVal.equivWithVal v v'))
+      <| Function.RightInverse.surjective (congrFun rfl)] at hγ
     apply hγ
     simp
-    rw [← hϕ]
-    simp
-    exact ϕ.lt_symm_apply.1 hp
+    rw [← ha]
+    have : p.2 - p.1 < h.orderIso.symm a := hp
+    rw [← WithVal.apply_equiv, ← WithVal.apply_equiv]
+    have h'' := h.orderIso.toOrderIso.lt_symm_apply (x := p.2 - p.1) (y := a)
+    have h' : h.orderIso.toOrderIso.symm = h.orderIso.symm.toOrderIso := rfl
+    rw [h'] at h''
+    simp at h''
+    rw [h''] at this
+    exact this
   · rintro ⟨γ, hγ⟩
-    have : ϕ γ ≠ 0 := by
-      intro h
-      rw [← i'.v.map_zero] at h
-      rw [← hϕ] at h
-      simp at h
-    use u
-    refine ⟨?_, subset_rfl⟩
-    use Units.mk0 _ this
-    simp
-    apply Set.Subset.trans _ hγ
-    simp
-    intro a b hab
-    rw [← hϕ] at hab
-    simp at hab
-    exact hab
+    use Prod.map (WithVal.equivWithVal v v') (WithVal.equivWithVal v v') '' u
+    have hinj :
+        Function.Injective (Prod.map (WithVal.equivWithVal v v') (WithVal.equivWithVal v v')) := by
+      rw [Prod.map_injective]
+      exact ⟨RingEquiv.injective _, RingEquiv.injective _⟩
+    constructor
+    · obtain ⟨a, ha⟩ := WithVal.valued_surjective v γ
+      have : Valued.v (h.orderIso a) ≠ 0 := by
+        rw [← WithVal.apply_equiv]
+        simp
+        rintro rfl
+        simp at ha
+        exact  γ.ne_zero ha.symm
+      use Units.mk0 _ this
+      simp
+      rw [← Set.image_subset_image_iff
+        (f := Prod.map ⇑(WithVal.equivWithVal v v') ⇑(WithVal.equivWithVal v v'))
+        <| hinj] at hγ
+      apply Set.Subset.trans _ hγ
+      intro p hp
+      simp at hp
+      --rw [← WithVal.apply_equiv] at hp
+      --rw [← WithVal.apply_equiv] at hp
+      have : p.2 - p.1 < h.orderIso a := hp
+      use Prod.map (WithVal.equivWithVal v v').symm (WithVal.equivWithVal v v').symm p
+      simp [Prod.map_apply']
+      rw [← ha]
+      change (WithVal.equivWithVal v v').symm p.2 - (WithVal.equivWithVal v v').symm p.1 < a
+      have h' := OrderIso.symm_apply_lt (y := p.2 - p.1) (x := a) h.orderIso.toOrderIso
+      --simp only [OrderRingIso.toOrderIso_eq_coe, OrderRingIso.coe_toOrderIso] at h'
+      --rw [← h'] at this
+      have h'' : h.orderIso.toOrderIso.symm = h.orderIso.symm.toOrderIso := rfl
+      rw [h''] at h'
+      simp at h'
+      rw [← h'] at this
+      exact this
+    · rw [Set.preimage_image_eq _ hinj]
+
+theorem valuation_equiv_toRatpadicValuation (𝔭 : HeightOneSpectrum ℤ) :
+    (𝔭.valuation ℚ).IsEquiv (𝔭.toRatpadicValuation) := sorry
 
 -- prove this by showing valuations are equivalent?
 noncomputable def withValEquiv (𝔭 : HeightOneSpectrum ℤ) :
-    WithVal (𝔭.valuation ℚ) ≃ᵤ WithVal 𝔭.toRatpadicValuation := by
-  apply @Valued.uniformEquiv_of_isEquiv_v ℚ _ _ _
-    (inferInstanceAs (Valued (WithVal (𝔭.valuation ℚ)) ℤᵐ⁰))
-    (inferInstanceAs (Valued (WithVal (𝔭.toRatpadicValuation)) ℤᵐ⁰))
-  rw [Valuation.isEquiv_iff_val_le_one]
-  intro x
-  change 𝔭.valuation ℚ x ≤ 1 ↔ 𝔭.toRatpadicValuation x ≤ 1
-  rw [toRatpadicValuation]
-  rw [Rat.padicValuation_le_one_iff]
-  rw [toNatGenerator]
-  rw [HeightOneSpectrum.valuation_def]
-  rw [Valuation.extendToLocalization]
-  sorry
-
+    WithVal (𝔭.valuation ℚ) ≃ᵤ WithVal 𝔭.toRatpadicValuation :=
+  Valuation.IsEquiv.uniformEquiv 𝔭.valuation_equiv_toRatpadicValuation
 
 noncomputable
 def adicCompletionRatEquiv (𝔭 : HeightOneSpectrum ℤ) :
     𝔭.adicCompletion ℚ ≃ᵤ ℚ_[𝔭.toNatGenerator] :=
   UniformSpace.Completion.mapEquiv 𝔭.withValEquiv |>.trans Padic.withValUniformEquiv
+
+end IsDedekindDomain.HeightOneSpectrum
