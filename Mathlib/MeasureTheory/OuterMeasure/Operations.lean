@@ -139,11 +139,8 @@ instance instPartialOrder : PartialOrder (OuterMeasure α) where
   le_trans _ _ _ hab hbc s := le_trans (hab s) (hbc s)
   le_antisymm _ _ hab hba := ext fun s => le_antisymm (hab s) (hba s)
 
-instance instAddLeftMono {α : Type*} : AddLeftMono (OuterMeasure α) :=
-  ⟨fun _ν _μ₁ _μ₂ hμ s => add_le_add_left (hμ s) _⟩
-
 instance instIsOrderedAddMonoid {α : Type*} : IsOrderedAddMonoid (OuterMeasure α) where
-  add_le_add_left _ _ := add_le_add_left
+  add_le_add_left _ _ h _ s := add_le_add_left (h s) _
 
 instance orderBot : OrderBot (OuterMeasure α) :=
   { bot := 0,
