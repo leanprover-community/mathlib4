@@ -139,7 +139,7 @@ def degreeLTEquiv (R) [Semiring R] (n : ℕ) : degreeLT R n ≃ₗ[R] Fin n → 
     · subst hp0
       simp only [coeff_zero, LinearMap.map_zero, Finset.sum_const_zero]
     rw [mem_degreeLT, degree_eq_natDegree hp0, Nat.cast_lt] at hp
-    conv_rhs => rw [p.as_sum_range' hp, ← Fin.sum_univ_eq_sum_range]
+    conv_rhs => rw [p.as_sum_range' n hp, ← Fin.sum_univ_eq_sum_range]
   right_inv f := by
     ext i
     simp only [finset_sum_coeff]

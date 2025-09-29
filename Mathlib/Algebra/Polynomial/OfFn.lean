@@ -89,7 +89,7 @@ theorem ofFn_eq_sum_monomial {n : ℕ} (v : Fin n → R) : ofFn n v =
   by_cases h : n = 0
   · subst h
     simp [ofFn]
-  · rw [as_sum_range' (ofFn n v) <| ofFn_natDegree_lt (Nat.one_le_iff_ne_zero.mpr h) v]
+  · rw [as_sum_range' (ofFn n v) n <| ofFn_natDegree_lt (Nat.one_le_iff_ne_zero.mpr h) v]
     simp [Finset.sum_range]
 
 theorem toFn_comp_ofFn_eq_id (n : ℕ) (v : Fin n → R) : toFn n (ofFn n v) = v := by
