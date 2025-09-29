@@ -77,14 +77,6 @@ theorem _root_.MeasureTheory.Measure.ext_of_integral_eq_on_compactlySupported_nn
   erw [hμν f.nnrealPart, hμν (-f).nnrealPart]
   rfl
 
-/-- Integration as a positive linear functional on `C_c(X, ℝ≥0)`. -/
--- Note: the default generated `simps` lemma uses `Subtype.val` instead of `NNReal.toReal`.
-@[simps! apply]
-noncomputable def integralLinearMap (μ : Measure X) [OpensMeasurableSpace X]
-    [IsFiniteMeasureOnCompacts μ] :
-    C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0 :=
-  CompactlySupportedContinuousMap.toNNRealLinear (RealRMK.integralPositiveLinearMap μ)
-
 /-- If two regular measures induce the same linear functional on `C_c(X, ℝ≥0)`, then they are
 equal. -/
 @[simp]
