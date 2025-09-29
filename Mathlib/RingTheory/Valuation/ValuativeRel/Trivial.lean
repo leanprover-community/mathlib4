@@ -60,8 +60,8 @@ lemma subsingleton_units_valueGroupWithZero_of_trivialRel [ValuativeRel R]
   constructor
   intro a b
   have : (valuation R).IsEquiv (1 : Valuation R Γ) := isEquiv _ _
-  obtain ⟨r, s, hr⟩ := valuation_surjective_unit a
-  obtain ⟨t, u, ht⟩ := valuation_surjective_unit b
+  obtain ⟨r, s, hr⟩ := exists_valuation_posSubmonoid_div_valuation_posSubmonoid_eq a
+  obtain ⟨t, u, ht⟩ := exists_valuation_posSubmonoid_div_valuation_posSubmonoid_eq b
   rw [Units.ext_iff, ← hr, ← ht, div_eq_div_iff, ← map_mul, ← map_mul, this.val_eq] <;>
   simp [one_apply_posSubmonoid]
 

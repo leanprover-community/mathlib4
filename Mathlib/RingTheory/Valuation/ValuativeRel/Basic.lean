@@ -684,17 +684,14 @@ lemma valuation_surjective (γ : ValueGroupWithZero R) :
   use a, b
   simp [valuation, div_eq_mul_inv, ValueGroupWithZero.inv_mk (b : R) 1 b.prop]
 
-lemma valuation_surjective_unit (γ : (ValueGroupWithZero R)ˣ) :
+lemma exists_valuation_posSubmonoid_div_valuation_posSubmonoid_eq (γ : (ValueGroupWithZero R)ˣ) :
     ∃ (a b : posSubmonoid R), valuation R a / valuation _ (b : R) = γ := by
   obtain ⟨a, b, hab⟩ := valuation_surjective γ.val
-  refine ⟨⟨a, ?_⟩, b, hab⟩
-  rw [posSubmonoid_def]
-  intro H
-  suffices γ.val * (valuation R) b ≤ 0 by simp at this
-  rw [← hab]
-  simp only [isUnit_iff_ne_zero, ne_eq, Valuation.apply_posSubmonoid_ne_zero,
-    not_false_eq_true, IsUnit.div_mul_cancel]
-  rwa [← map_zero (valuation R), ← Valuation.Compatible.rel_iff_le]
+  lift a to posSubmonoid R using by
+    rw [posSubmonoid_def, ← valuation_eq_zero_iff]
+    intro H
+    simp [H, eq_comm] at hab
+  use a, b
 
 end ValuativeRel
 
