@@ -240,7 +240,7 @@ noncomputable def mynorm (φ : G →L[ℝ] G →L[ℝ] ℝ) : Seminorm ℝ G whe
 
 noncomputable def aux (φ : G →L[ℝ] G →L[ℝ] ℝ) : SeminormFamily ℝ G (Fin 1) := fun _ ↦ mynorm φ
 
-lemma bar (φ : G →L[ℝ] G →L[ℝ] ℝ) (hpos : ∀ v : G, v ≠ 0 → 0 < φ v v) : WithSeminorms (aux φ) :=
+lemma hoge (φ : G →L[ℝ] G →L[ℝ] ℝ) (hpos : ∀ v : G, v ≠ 0 → 0 < φ v v) : WithSeminorms (aux φ) :=
   -- In finite dimension there is a single topological vector space structure...
   -- and mynorm defines a norm, hence a TVS structure.
   sorry
@@ -263,7 +263,7 @@ lemma aux_tvs (G : Type*) [AddCommGroup G] [TopologicalSpace G] [Module ℝ G]
   -- (as in finite dimension there is a single topological vector space structure).
   -- The unit ball for the norm is von Neumann bounded wrt the topology defined by the norm
   -- (we have this in mathlib), so also for the initial topology.
-  rw [WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded (p := aux φ) (bar φ hpos)]
+  rw [WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded (p := aux φ) (hoge φ hpos)]
   intro I
   letI J : Finset (Fin 1) := {1}
   suffices ∃ r > 0, ∀ x ∈ {v | (φ v) v < 1}, (J.sup (aux φ)) x < r by

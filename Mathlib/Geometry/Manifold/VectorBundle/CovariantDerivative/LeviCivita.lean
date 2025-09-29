@@ -1077,7 +1077,7 @@ theorem LeviCivitaConnection.christoffelSymbol_symm [FiniteDimensional ℝ E] (x
       apply Subsingleton.eq_zero X
     have (X : Π y : M, TangentSpace I y) : X = 0 := sorry
     intro x'' hx'' i j k
-    simp only [LeviCivitaConnection_aux]
+    simp only [LeviCivitaConnection, LeviCivitaConnection_aux]
     unfold lcCandidate
     simp only [lcCandidateAux, hE, ↓reduceDIte]
 
