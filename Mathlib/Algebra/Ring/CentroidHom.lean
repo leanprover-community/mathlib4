@@ -13,7 +13,7 @@ import Mathlib.Algebra.Ring.Subsemiring.Basic
 /-!
 # Centroid homomorphisms
 
-Let `A` be a (non-unital, non-associative) algebra. The centroid of `A` is the set of linear maps
+Let `A` be a (nonunital, non-associative) algebra. The centroid of `A` is the set of linear maps
 `T` on `A` such that `T` commutes with left and right multiplication, that is to say, for all `a`
 and `b` in `A`,
 $$
