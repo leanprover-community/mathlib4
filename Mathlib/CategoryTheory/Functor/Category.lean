@@ -111,14 +111,12 @@ lemma id_comm (α β : (𝟭 C) ⟶ (𝟭 C)) : α ≫ β = β ≫ α := by
   exact (α.naturality (β.app X)).symm
 
 /-- `hcomp α β` is the horizontal composition of natural transformations. -/
-@[simps]
+@[simps (attr := grind =)]
 def hcomp {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) : F ⋙ H ⟶ G ⋙ I where
   app := fun X : C => β.app (F.obj X) ≫ I.map (α.app X)
 
 /-- Notation for horizontal composition of natural transformations. -/
 infixl:80 " ◫ " => hcomp
-
-attribute [grind =] hcomp_app
 
 theorem hcomp_id_app {H : D ⥤ E} (α : F ⟶ G) (X : C) : (α ◫ 𝟙 H).app X = H.map (α.app X) := by
   simp
@@ -138,14 +136,17 @@ end NatTrans
 namespace Functor
 
 /-- Flip the arguments of a bifunctor. See also `Currying.lean`. -/
-@[simps]
+@[simps (attr := grind =) obj_obj obj_map]
 protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
   obj k :=
     { obj := fun j => (F.obj j).obj k,
       map := fun f => (F.map f).app k, }
   map f := { app := fun j => (F.obj j).map f }
 
-attribute [grind =] flip_obj_obj flip_obj_map flip_map_app
+-- `@[simps]` doesn't produce a nicely stated lemma here:
+-- the implicit arguments for `app` use the definition of `flip`, rather than `flip` itself.
+@[simp, grind =] theorem flip_map_app (F : C ⥤ D ⥤ E) {d d' : D} (f : d ⟶ d') (c : C) :
+    (F.flip.map f).app c = (F.obj c).map f := rfl
 
 /-- The left unitor, a natural isomorphism `((𝟭 _) ⋙ F) ≅ F`.
 -/

@@ -31,7 +31,7 @@ theorem length_dropWhile_le (l : List α) : (dropWhile p l).length ≤ l.length 
   | cons head tail ih =>
     simp only [dropWhile, length_cons]
     split
-    · omega
+    · cutsat
     · simp
 
 variable {p} {l : List α}
@@ -54,7 +54,7 @@ theorem dropWhile_eq_self_iff : dropWhile p l = l ↔ ∀ hl : 0 < l.length, ¬p
       replace h := congrArg length h
       have := length_dropWhile_le p tl
       simp at h
-      omega
+      cutsat
     · simp [h_p_hd]
 
 @[simp]

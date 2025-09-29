@@ -148,7 +148,7 @@ protected theorem map_one : v 1 = 1 :=
 protected theorem map_mul : ∀ x y, v (x * y) = v x * v y :=
   v.map_mul'
 
--- Porting note: LHS side simplified so created map_add'
+-- `simp`-normal form is `map_add'`
 protected theorem map_add : ∀ x y, v (x + y) ≤ max (v x) (v y) :=
   v.map_add_le_max'
 
@@ -320,6 +320,20 @@ theorem map_eq_of_sub_lt (h : v (y - x) < v x) : v y = v x := by
   rw [max_eq_right (le_of_lt h)] at this
   simpa using this
 
+lemma map_sub_of_left_eq_zero (hx : v x = 0) : v (x - y) = v y := by
+  by_cases hy : v y = 0
+  · simpa [*] using map_sub v x y
+  · simp [*, map_sub_eq_of_lt_right, zero_lt_iff]
+
+lemma map_sub_of_right_eq_zero (hy : v y = 0) : v (x - y) = v x := by
+  rw [map_sub_swap, map_sub_of_left_eq_zero v hy]
+
+lemma map_add_of_left_eq_zero (hx : v x = 0) : v (x + y) = v y := by
+  rw [← sub_neg_eq_add, map_sub_of_left_eq_zero v hx, map_neg]
+
+lemma map_add_of_right_eq_zero (hy : v y = 0) : v (x + y) = v x := by
+  rw [add_comm, map_add_of_left_eq_zero v hy]
+
 theorem map_one_add_of_lt (h : v x < 1) : v (1 + x) = 1 := by
   rw [← v.map_one] at h
   simpa only [v.map_one] using v.map_add_eq_of_lt_left h
@@ -397,9 +411,7 @@ theorem val_le_one_iff (v : Valuation K Γ₀) {x : K} (h : x ≠ 0) : v x ≤ 1
   simp [one_le_inv₀ (v.pos_iff.2 h)]
 
 theorem val_eq_one_iff (v : Valuation K Γ₀) {x : K} : v x = 1 ↔ v x⁻¹ = 1 := by
-  by_cases h : x = 0
-  · simp only [map_inv₀, inv_eq_one]
-  · simpa only [le_antisymm_iff, And.comm] using and_congr (one_le_val_iff v h) (val_le_one_iff v h)
+  simp
 
 theorem val_le_one_or_val_inv_lt_one (v : Valuation K Γ₀) (x : K) : v x ≤ 1 ∨ v x⁻¹ < 1 := by
   by_cases h : x = 0
@@ -475,6 +487,11 @@ lemma IsNontrivial.exists_lt_one {Γ₀ : Type*} [LinearOrderedCommGroupWithZero
     simp [hx]
   · use x⁻¹
     simp [- map_inv₀, ← one_lt_val_iff, hx]
+
+theorem isNontrivial_iff_exists_lt_one {Γ₀ : Type*}
+    [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀) :
+    v.IsNontrivial ↔ ∃ x, x ≠ 0 ∧ v x < 1 :=
+  ⟨fun h ↦ by simpa using h.exists_lt_one (v := v), fun ⟨x, hx0, hx1⟩ ↦ ⟨x, by simp [hx0, hx1.ne]⟩⟩
 
 lemma IsNontrivial.exists_one_lt {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
     {v : Valuation K Γ₀} [hv : v.IsNontrivial] :
@@ -789,7 +806,6 @@ theorem ofValuation_apply (v : Valuation R (Multiplicative Γ₀ᵒᵈ)) (r : R)
 
 end
 
--- Porting note: Lean get confused about namespaces and instances below
 @[simp]
 theorem map_zero : v 0 = (⊤ : Γ₀) :=
   Valuation.map_zero v
@@ -798,15 +814,17 @@ theorem map_zero : v 0 = (⊤ : Γ₀) :=
 theorem map_one : v 1 = (0 : Γ₀) :=
   Valuation.map_one v
 
-/- Porting note: helper wrapper to coerce `v` to the correct function type -/
-/-- A helper function for Lean to inferring types correctly -/
-def asFun : R → Γ₀ := v
+/-- A helper function for Lean to inferring types correctly.
+
+Deprecated since it is unused.
+-/
+@[deprecated "Use `⇑v` instead" (since := "2025-09-04")] def asFun : R → Γ₀ := v
 
 @[simp]
 theorem map_mul : ∀ (x y : R), v (x * y) = v x + v y :=
   Valuation.map_mul v
 
--- Porting note: LHS simplified so created map_add' and removed simp tag
+-- `simp`-normal form is `map_add'`
 theorem map_add : ∀ (x y : R), min (v x) (v y) ≤ v (x + y) :=
   Valuation.map_add v
 

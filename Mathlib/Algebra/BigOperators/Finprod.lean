@@ -3,15 +3,14 @@ Copyright (c) 2020 Kexing Ying and Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Group.FiniteSupport
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Group.Support
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.Notation.FiniteSupport
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Finite products and sums over types and sets
@@ -171,7 +170,7 @@ notation3"∏ᶠ " (...) ", " r:67:(scoped f => finprod f) => r
 theorem finprod_eq_prod_plift_of_mulSupport_toFinset_subset {f : α → M}
     (hf : (mulSupport (f ∘ PLift.down)).Finite) {s : Finset (PLift α)} (hs : hf.toFinset ⊆ s) :
     ∏ᶠ i, f i = ∏ i ∈ s, f i.down := by
-  rw [finprod, dif_pos]
+  rw [finprod, dif_pos hf]
   refine Finset.prod_subset hs fun x _ hxf => ?_
   rwa [hf.mem_toFinset, notMem_mulSupport] at hxf
 
@@ -686,7 +685,6 @@ theorem finprod_mem_union_inter' (hs : (s ∩ mulSupport f).Finite) (ht : (t ∩
   rw [← finprod_mem_inter_mulSupport f s, ← finprod_mem_inter_mulSupport f t, ←
     finprod_mem_union_inter hs ht, ← union_inter_distrib_right, finprod_mem_inter_mulSupport, ←
     finprod_mem_inter_mulSupport f (s ∩ t)]
-  congr 2
   rw [inter_left_comm, inter_assoc, inter_assoc, inter_self, inter_left_comm]
 
 /-- A more general version of `finprod_mem_union` that requires `s ∩ mulSupport f` and
@@ -967,7 +965,7 @@ lemma finprod_mem_powerset_insert {f : Set α → M} {s : Set α} {a : α} (hs :
 lemma finprod_mem_powerset_diff_elem {f : Set α → M} {s : Set α} {a : α} (hs : s.Finite)
     (has : a ∈ s) : ∏ᶠ t ∈ 𝒫 s, f t = (∏ᶠ t ∈ 𝒫 (s \ {a}), f t)
     * ∏ᶠ t ∈ 𝒫 (s \ {a}), f (insert a t) := by
-  nth_rw 1 2 [← Set.insert_diff_self_of_mem has] -- second appearence hidden by notation
+  nth_rw 1 2 [← Set.insert_diff_self_of_mem has] -- second appearance hidden by notation
   exact finprod_mem_powerset_insert (hs.subset Set.diff_subset)
     (notMem_diff_of_mem (Set.mem_singleton a))
 
@@ -1087,11 +1085,11 @@ theorem Finset.mulSupport_of_fiberwise_prod_subset_image [DecidableEq β] (s : F
   exact Finset.nonempty_of_prod_ne_one h
 
 /-- Note that `b ∈ (s.filter (fun ab => Prod.fst ab = a)).image Prod.snd` iff `(a, b) ∈ s` so
-we can simplify the right hand side of this lemma. However the form stated here is more useful for
+we can simplify the right-hand side of this lemma. However the form stated here is more useful for
 iterating this lemma, e.g., if we have `f : α × β × γ → M`. -/
 @[to_additive
       /-- Note that `b ∈ (s.filter (fun ab => Prod.fst ab = a)).image Prod.snd` iff `(a, b) ∈ s` so
-      we can simplify the right hand side of this lemma. However the form stated here is more
+      we can simplify the right-hand side of this lemma. However the form stated here is more
       useful for iterating this lemma, e.g., if we have `f : α × β × γ → M`. -/]
 theorem finprod_mem_finset_product' [DecidableEq α] [DecidableEq β] (s : Finset (α × β))
     (f : α × β → M) :

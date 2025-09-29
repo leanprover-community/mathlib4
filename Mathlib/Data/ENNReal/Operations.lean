@@ -39,29 +39,27 @@ protected lemma pow_le_pow_left_iff {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ b ^ n �
 protected lemma pow_lt_pow_left_iff {n : ℕ} (hn : n ≠ 0) : a ^ n < b ^ n ↔ a < b :=
   (ENNReal.pow_right_strictMono hn).lt_iff_lt
 
-@[mono, gcongr] protected alias ⟨_, pow_le_pow_left⟩ := ENNReal.pow_le_pow_left_iff
+@[mono, gcongr] protected lemma pow_le_pow_left {n : ℕ} (h : a ≤ b) : a ^ n ≤ b ^ n :=
+  pow_le_pow_left' h n
 @[mono, gcongr] protected alias ⟨_, pow_lt_pow_left⟩ := ENNReal.pow_lt_pow_left_iff
 
--- TODO: generalize to `WithTop`
-theorem mul_left_strictMono (h0 : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a * ·) := by
-  lift a to ℝ≥0 using hinf
-  rw [coe_ne_zero] at h0
-  intro x y h
-  contrapose! h
-  simpa only [← mul_assoc, ← coe_mul, inv_mul_cancel₀ h0, coe_one, one_mul]
-    using mul_le_mul_left' h (↑a⁻¹)
+lemma mul_left_strictMono (h₀ : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (· * a) :=
+  WithTop.mul_left_strictMono (pos_iff_ne_zero.2 h₀) hinf
+
+lemma mul_right_strictMono (h₀ : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a * ·) :=
+  WithTop.mul_right_strictMono (pos_iff_ne_zero.2 h₀) hinf
 
 @[gcongr] protected theorem mul_lt_mul_left' (h0 : a ≠ 0) (hinf : a ≠ ⊤) (bc : b < c) :
     a * b < a * c :=
-  ENNReal.mul_left_strictMono h0 hinf bc
+  ENNReal.mul_right_strictMono h0 hinf bc
 
 @[gcongr] protected theorem mul_lt_mul_right' (h0 : a ≠ 0) (hinf : a ≠ ⊤) (bc : b < c) :
     b * a < c * a :=
-  mul_comm b a ▸ mul_comm c a ▸ ENNReal.mul_left_strictMono h0 hinf bc
+  mul_comm b a ▸ mul_comm c a ▸ ENNReal.mul_right_strictMono h0 hinf bc
 
 -- TODO: generalize to `WithTop`
 protected theorem mul_right_inj (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b = a * c ↔ b = c :=
-  (mul_left_strictMono h0 hinf).injective.eq_iff
+  (mul_right_strictMono h0 hinf).injective.eq_iff
 
 -- TODO: generalize to `WithTop`
 protected theorem mul_left_inj (h0 : c ≠ 0) (hinf : c ≠ ∞) : a * c = b * c ↔ a = b :=
@@ -69,7 +67,7 @@ protected theorem mul_left_inj (h0 : c ≠ 0) (hinf : c ≠ ∞) : a * c = b * c
 
 -- TODO: generalize to `WithTop`
 theorem mul_le_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b ≤ a * c ↔ b ≤ c :=
-  (mul_left_strictMono h0 hinf).le_iff_le
+  (mul_right_strictMono h0 hinf).le_iff_le
 
 -- TODO: generalize to `WithTop`
 theorem mul_le_mul_right : c ≠ 0 → c ≠ ∞ → (a * c ≤ b * c ↔ a ≤ b) :=
@@ -77,7 +75,7 @@ theorem mul_le_mul_right : c ≠ 0 → c ≠ ∞ → (a * c ≤ b * c ↔ a ≤ 
 
 -- TODO: generalize to `WithTop`
 theorem mul_lt_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b < a * c ↔ b < c :=
-  (mul_left_strictMono h0 hinf).lt_iff_lt
+  (mul_right_strictMono h0 hinf).lt_iff_lt
 
 -- TODO: generalize to `WithTop`
 theorem mul_lt_mul_right : c ≠ 0 → c ≠ ∞ → (a * c < b * c ↔ a < b) :=
@@ -417,7 +415,7 @@ theorem sub_right_inj {a b c : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≤ a) (hc :
     (cancel_of_ne <| ne_top_of_le_ne_top ha hc) hb hc
 
 protected theorem sub_mul (h : 0 < b → b < a → c ≠ ∞) : (a - b) * c = a * c - b * c := by
-  rcases le_or_gt a b with hab | hab; · simp [hab, mul_right_mono hab, tsub_eq_zero_of_le]
+  rcases le_or_gt a b with hab | hab; · simp [hab, mul_left_mono hab, tsub_eq_zero_of_le]
   rcases eq_or_lt_of_le (zero_le b) with (rfl | hb); · simp
   exact (cancel_of_ne <| mul_ne_top hab.ne_top (h hb hab)).tsub_mul
 

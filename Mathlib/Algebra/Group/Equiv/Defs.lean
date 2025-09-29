@@ -18,7 +18,7 @@ datatypes representing isomorphisms of `AddMonoid`s/`AddGroup`s and `Monoid`s/`G
 * `MulEquivClass`, `AddEquivClass`: classes for types containing bundled equivalences that
   preserve multiplication/addition.
 
-## Notations
+## Notation
 
 * ``infix ` ≃* `:25 := MulEquiv``
 * ``infix ` ≃+ `:25 := AddEquiv``
@@ -99,24 +99,8 @@ class MulEquivClass (F : Type*) (A B : outParam Type*) [Mul A] [Mul B] [EquivLik
 @[to_additive]
 alias MulEquivClass.map_eq_one_iff := EmbeddingLike.map_eq_one_iff
 
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated EmbeddingLike.map_eq_one_iff (since := "2024-11-10")]
-MulEquivClass.map_eq_one_iff
-attribute [deprecated EmbeddingLike.map_eq_zero_iff (since := "2024-11-10")]
-AddEquivClass.map_eq_zero_iff
-
-
 @[to_additive]
 alias MulEquivClass.map_ne_one_iff := EmbeddingLike.map_ne_one_iff
-
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated EmbeddingLike.map_ne_one_iff (since := "2024-11-10")]
-MulEquivClass.map_ne_one_iff
-attribute [deprecated EmbeddingLike.map_ne_zero_iff (since := "2024-11-10")]
-AddEquivClass.map_ne_zero_iff
-
 
 namespace MulEquivClass
 
@@ -447,6 +431,19 @@ def symmEquiv (P Q : Type*) [Mul P] [Mul Q] : (P ≃* Q) ≃ (Q ≃* P) where
   invFun := .symm
 
 end Mul
+
+/-- `Equiv.cast (congrArg _ h)` as a `MulEquiv`.
+
+Note that unlike `Equiv.cast`, this takes an equality of indices rather than an equality of types,
+to avoid having to deal with an equality of the algebraic structure itself. -/
+@[to_additive (attr := simps!) /-- `Equiv.cast (congrArg _ h)` as an `AddEquiv`.
+
+Note that unlike `Equiv.cast`, this takes an equality of indices rather than an equality of types,
+to avoid having to deal with an equality of the algebraic structure itself. -/]
+protected def cast {ι : Type*} {M : ι → Type*} [∀ i, Mul (M i)] {i j : ι} (h : i = j) :
+    M i ≃* M j where
+  toEquiv := Equiv.cast (congrArg _ h)
+  map_mul' _ _ := by cases h; rfl
 
 /-!
 ## Monoids

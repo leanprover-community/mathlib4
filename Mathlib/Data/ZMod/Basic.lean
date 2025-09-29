@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.CharP.Basic
-import Mathlib.Algebra.Module.End
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Data.Fintype.Units
 import Mathlib.GroupTheory.GroupAction.SubMulAction
@@ -463,9 +462,7 @@ lemma ringEquivCongr_val {a b : ℕ} (h : a = b) (x : ZMod a) :
   cases a <;> rfl
 
 lemma ringEquivCongr_intCast {a b : ℕ} (h : a = b) (z : ℤ) :
-    ZMod.ringEquivCongr h z = z := by
-  subst h
-  cases a <;> rfl
+    ZMod.ringEquivCongr h z = z := map_intCast (ringEquivCongr h) z
 
 end CharEq
 
@@ -568,7 +565,7 @@ theorem intCast_eq_iff (p : ℕ) (n : ℤ) (z : ZMod p) [NeZero p] :
   constructor
   · rintro rfl
     refine ⟨n / p, ?_⟩
-    rw [val_intCast, Int.emod_add_ediv]
+    rw [val_intCast, Int.emod_add_mul_ediv]
   · rintro ⟨k, rfl⟩
     rw [Int.cast_add, Int.cast_mul, Int.cast_natCast, Int.cast_natCast, natCast_val,
       ZMod.natCast_self, zero_mul, add_zero, cast_id]
@@ -735,19 +732,42 @@ theorem mul_inv_eq_gcd {n : ℕ} (a : ZMod n) : a * a⁻¹ = Nat.gcd a.val n := 
 theorem natCast_mod (a : ℕ) (n : ℕ) : ((a % n : ℕ) : ZMod n) = a :=
   (CharP.cast_eq_mod (ZMod n) n a).symm
 
+@[deprecated natCast_eq_natCast_iff (since := "2025-08-12")]
 theorem eq_iff_modEq_nat (n : ℕ) {a b : ℕ} : (a : ZMod n) = b ↔ a ≡ b [MOD n] :=
   natCast_eq_natCast_iff a b n
 
-theorem eq_zero_iff_even {n : ℕ} : (n : ZMod 2) = 0 ↔ Even n :=
-  (CharP.cast_eq_zero_iff (ZMod 2) 2 n).trans even_iff_two_dvd.symm
+theorem intCast_eq_zero_iff_even {n : ℤ} : (n : ZMod 2) = 0 ↔ Even n :=
+  (CharP.intCast_eq_zero_iff (ZMod 2) 2 n).trans even_iff_two_dvd.symm
 
-theorem eq_one_iff_odd {n : ℕ} : (n : ZMod 2) = 1 ↔ Odd n := by
-  rw [← @Nat.cast_one (ZMod 2), ZMod.eq_iff_modEq_nat, Nat.odd_iff, Nat.ModEq]
+alias ⟨_, _root_.Even.intCast_zmod_two⟩ := intCast_eq_zero_iff_even
 
-theorem ne_zero_iff_odd {n : ℕ} : (n : ZMod 2) ≠ 0 ↔ Odd n := by
-  constructor <;>
-    · contrapose
-      simp [eq_zero_iff_even]
+theorem natCast_eq_zero_iff_even {n : ℕ} : (n : ZMod 2) = 0 ↔ Even n :=
+  mod_cast intCast_eq_zero_iff_even (n := n)
+
+@[deprecated (since := "2025-08-25")]
+alias eq_zero_iff_even := natCast_eq_zero_iff_even
+
+alias ⟨_, _root_.Even.natCast_zmod_two⟩ := natCast_eq_zero_iff_even
+
+theorem intCast_eq_one_iff_odd {n : ℤ} : (n : ZMod 2) = 1 ↔ Odd n := by
+  rw [← Int.cast_one, ZMod.intCast_eq_intCast_iff, Int.odd_iff, Int.ModEq]
+  simp
+
+alias ⟨_, _root_.Odd.intCast_zmod_two⟩ := intCast_eq_one_iff_odd
+
+theorem natCast_eq_one_iff_odd {n : ℕ} : (n : ZMod 2) = 1 ↔ Odd n :=
+  mod_cast intCast_eq_one_iff_odd (n := n)
+
+@[deprecated (since := "2025-08-25")]
+alias eq_one_iff_odd := natCast_eq_one_iff_odd
+
+alias ⟨_, _root_.Odd.natCast_zmod_two⟩ := natCast_eq_one_iff_odd
+
+theorem natCast_ne_zero_iff_odd {n : ℕ} : (n : ZMod 2) ≠ 0 ↔ Odd n := by
+  simp [natCast_eq_zero_iff_even]
+
+@[deprecated (since := "2025-08-25")]
+alias ne_zero_iff_odd := natCast_ne_zero_iff_odd
 
 theorem coe_mul_inv_eq_one {n : ℕ} (x : ℕ) (h : Nat.Coprime x n) :
     ((x : ZMod n) * (x : ZMod n)⁻¹) = 1 := by
@@ -779,7 +799,7 @@ theorem val_coe_unit_coprime {n : ℕ} (u : (ZMod n)ˣ) : Nat.Coprime (u : ZMod 
   apply Nat.coprime_of_mul_modEq_one ((u⁻¹ : Units (ZMod (n + 1))) : ZMod (n + 1)).val
   have := Units.ext_iff.1 (mul_inv_cancel u)
   rw [Units.val_one] at this
-  rw [← eq_iff_modEq_nat, Nat.cast_one, ← this]; clear this
+  rw [← natCast_eq_natCast_iff, Nat.cast_one, ← this]; clear this
   rw [← natCast_zmod_val ((u * u⁻¹ : Units (ZMod (n + 1))) : ZMod (n + 1))]
   rw [Units.val_mul, val_mul, natCast_mod]
 
@@ -874,13 +894,13 @@ def chineseRemainder {m n : ℕ} (h : m.Coprime n) : ZMod (m * n) ≃+* ZMod m �
         intro x
         dsimp only [to_fun, inv_fun, ZMod.castHom_apply]
         conv_rhs => rw [← ZMod.natCast_zmod_val x]
-        rw [if_neg hmn0, ZMod.eq_iff_modEq_nat, ← Nat.modEq_and_modEq_iff_modEq_mul h,
+        rw [if_neg hmn0, ZMod.natCast_eq_natCast_iff, ← Nat.modEq_and_modEq_iff_modEq_mul h,
           Prod.fst_zmod_cast, Prod.snd_zmod_cast]
         refine
           ⟨(Nat.chineseRemainder h (cast x : ZMod m).val (cast x : ZMod n).val).2.left.trans ?_,
             (Nat.chineseRemainder h (cast x : ZMod m).val (cast x : ZMod n).val).2.right.trans ?_⟩
-        · rw [← ZMod.eq_iff_modEq_nat, ZMod.natCast_zmod_val, ZMod.natCast_val]
-        · rw [← ZMod.eq_iff_modEq_nat, ZMod.natCast_zmod_val, ZMod.natCast_val]
+        · rw [← ZMod.natCast_eq_natCast_iff, ZMod.natCast_zmod_val, ZMod.natCast_val]
+        · rw [← ZMod.natCast_eq_natCast_iff, ZMod.natCast_zmod_val, ZMod.natCast_val]
       exact ⟨left_inv, left_inv.rightInverse_of_card_le (by simp)⟩
   { toFun := to_fun,
     invFun := inv_fun,
@@ -1186,7 +1206,7 @@ instance instZModSMul : SMul (ZMod n) K where smul a x := ⟨a • x, zmod_smul_
 
 @[simp, norm_cast] lemma coe_zmod_smul (a : ZMod n) (x : K) : ↑(a • x) = (a • x : G) := rfl
 
-instance instZModModule : Module (ZMod n) K :=
+instance instZModModule : Module (ZMod n) K := fast_instance%
   Subtype.coe_injective.module _ (AddSubmonoidClass.subtype K) coe_zmod_smul
 
 end AddSubgroupClass
@@ -1206,7 +1226,7 @@ variable (G) in
 lemma ZModModule.two_le_char [NeZero n] [Nontrivial G] : 2 ≤ n := by
   have := NeZero.ne n
   have := char_ne_one n G
-  omega
+  cutsat
 
 lemma ZModModule.periodicPts_add_left [NeZero n] (x : G) : periodicPts (x + ·) = .univ :=
   Set.eq_univ_of_forall fun y ↦ ⟨n, NeZero.pos n, by
