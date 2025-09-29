@@ -1224,7 +1224,7 @@ end DenselyOrdered
 universe v u in
 
 /-- The bijection `ULift.{v} α ≃ α` as an isomorphism of orders. -/
-@[simps!]
+@[pp_with_univ, simps!]
 def ULift.orderIso {α : Type u} [Preorder α] :
     ULift.{v} α ≃o α :=
   Equiv.ulift.toOrderIso (fun _ _ ↦ id) (fun _ _ ↦ id)
