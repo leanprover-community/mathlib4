@@ -71,7 +71,9 @@ theorem _root_.PowerBasis.ofAdjoinEqTop_dim {x : S} (hx : IsIntegral K x)
     (hx' : adjoin K {x} = ⊤) :
     (PowerBasis.ofAdjoinEqTop hx hx').dim = (minpoly K x).natDegree := rfl
 
-@[deprecated (since := "2025-09-29")] alias PowerBasis.ofGenMemAdjoin := PowerBasis.ofAdjoinEqTop
+@[deprecated "Use in combination with `PowerBasis.adjoin_eq_top_of_gen_mem_adjoin` to recover the \
+  deprecated definition" (since := "2025-09-29")] alias PowerBasis.ofGenMemAdjoin :=
+  PowerBasis.ofAdjoinEqTop
 
 end Algebra
 
