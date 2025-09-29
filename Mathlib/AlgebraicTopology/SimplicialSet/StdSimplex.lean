@@ -310,7 +310,6 @@ def nonDegenerateEquiv {n d : ℕ} :
   invFun s := ⟨objEquiv.symm (.mk s.toOrderHom), by
     simpa [mem_nonDegenerate_iff_strictMono] using s.strictMono⟩
   left_inv _ := by aesop
-  right_inv _ := rfl
 
 end stdSimplex
 
