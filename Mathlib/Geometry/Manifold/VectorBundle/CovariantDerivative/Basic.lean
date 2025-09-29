@@ -409,7 +409,12 @@ lemma congr {f g : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : 
     -- Is this too strong? Will see!
     (hfg : ∀ {X : Π x : M, TangentSpace I x},
       ∀ {σ : Π x : M, V x}, ∀ {x}, x ∈ s → f X σ x = g X σ x) :
-    IsCovariantDerivativeOn F g s := sorry
+    IsCovariantDerivativeOn F g s where
+  addX hX hX' hσ hx := by simp [← hfg hx, hf.addX hX hX' hσ]
+  smulX hX hσ hg hx := by simp [← hfg hx, hf.smulX hX hσ hg]
+  addσ hX hσ hσ' hx := by simp [← hfg hx, hf.addσ hX hσ hσ']
+  leibniz hX hσ hf' hx := by simp [← hfg hx, hf.leibniz hX hσ hf']
+  smul_const_σ a hX hσ hx := by simp [← hfg hx, hf.smul_const_σ a hX hσ]
 
 end
 
