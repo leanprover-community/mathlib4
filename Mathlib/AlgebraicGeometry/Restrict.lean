@@ -760,16 +760,6 @@ noncomputable def arrowResLEAppIso (f : X ⟶ Y) (U : Y.Opens) (V : X.Opens) (e 
 
 end MorphismRestrict
 
-/-- The open cover of a scheme `X` from an open cover of the underlying topological space. -/
-def openCoverOfIsOpenCover {X : Scheme.{u}} {ι : Type v} (U : ι → X.Opens)
-    (hU : TopologicalSpace.IsOpenCover U) : X.OpenCover where
-  I₀ := ι
-  X x := (U x).toScheme
-  f x := (U x).ι
-  idx x := (hU.exists_mem x).choose
-  covers x := Scheme.Opens.range_ι _ ▸ (hU.exists_mem x).choose_spec
-  map_prop := inferInstance
-
 /-- The restriction of an open cover to an open subset. -/
 @[simps! I₀ X f]
 noncomputable
