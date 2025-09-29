@@ -464,10 +464,6 @@ given `f : E₁ × E₂ → F` and its two partial derivatives, the second inver
 instance of the `ImplicitFunctionData` data structure and extract `ψ : E₁ → E₂` with the desired
 properties. This functionality is wrapped by `HasStrictFDerivAt.implicitFunOfProdDomain`. A formula
 for the first derivative of `ψ` is immediately derived.
-
-## TODO
-
-* Derive formulae for the higher derivatives of `ψ`.
 -/
 
 variable {𝕜 E₁ E₂ F : Type*} [NontriviallyNormedField 𝕜]
