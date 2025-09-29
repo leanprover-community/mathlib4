@@ -71,7 +71,7 @@ lemma mem_ofSimplex_obj {n : ℕ} (x : X _⦋n⦌) :
   Subpresheaf.mem_ofSection_obj x
 
 lemma ofSimplex_le_iff {n : ℕ} (x : X _⦋n⦌) (A : X.Subcomplex) :
-     ofSimplex x ≤ A ↔ x ∈ A.obj _ :=
+    ofSimplex x ≤ A ↔ x ∈ A.obj _ :=
   Subpresheaf.ofSection_le_iff _ _
 
 section
