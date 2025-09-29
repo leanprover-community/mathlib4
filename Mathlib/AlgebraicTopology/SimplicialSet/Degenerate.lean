@@ -237,7 +237,7 @@ namespace Subcomplex
 variable {X} (A : X.Subcomplex)
 
 lemma mem_degenerate_iff {n : ℕ} (x : A.obj (op (.mk n))) :
-    x ∈ degenerate A n ↔ x.1 ∈ X.degenerate n := by
+    x ∈ degenerate A n ↔ x.val ∈ X.degenerate n := by
   rw [SSet.mem_degenerate_iff, SSet.mem_degenerate_iff]
   constructor
   · rintro ⟨m, hm, f, _, ⟨y, rfl⟩⟩
