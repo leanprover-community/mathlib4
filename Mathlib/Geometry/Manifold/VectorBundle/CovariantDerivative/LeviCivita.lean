@@ -1076,16 +1076,16 @@ theorem LeviCivitaConnection.christoffelSymbol_symm [FiniteDimensional ℝ E] (x
       have : Subsingleton (TangentSpace I y) := inferInstanceAs (Subsingleton E)
       apply Subsingleton.eq_zero X
     have (X : Π y : M, TangentSpace I y) : X = 0 := sorry
-    intro hx''
-    intro i j k
-    simp only [LeviCivitaConnection, LeviCivitaConnection_aux]
+    intro x'' hx'' i j k
+    simp only [LeviCivitaConnection_aux]
     unfold lcCandidate
     simp only [lcCandidateAux, hE, ↓reduceDIte]
 
     letI t := trivializationAt E (TangentSpace I) x;
     letI hs := (Basis.ofVectorSpace ℝ E).localFrame_isLocalFrameOn_baseSet I 1 t
-    --have : ChristoffelSymbol I 0 hs i j k = 0 := christoffelSymbol_zero I t.baseSet hs i j k
-    sorry -- this should do it!
+    have : ChristoffelSymbol I 0 hs i j k = 0 := christoffelSymbol_zero I t.baseSet hs i j k
+    -- now, use a congruence result and the first `have`
+    sorry
   -- Note that hs is not necessarily an orthonormal frame, so we cannot simply rewrite
   -- the Christoffel symbols as Γᵢⱼᵏ = ⟪∇ᵍ X Y, Z⟫`: however, the result we wants to prove boils
   -- down to proving the same.
