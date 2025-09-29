@@ -38,12 +38,12 @@ variable {X}
 /-- Constructor in order to promote a simplex `s : X.S` into
 a term in `X.N`. -/
 @[simps toS]
-def mk' (s : X.S) (hs : s.2 ∈ X.nonDegenerate _) : X.N where
+def mk' (s : X.S) (hs : s.simplex ∈ X.nonDegenerate _) : X.N where
   toS := s
   nonDegenerate := hs
 
 lemma mk'_surjective (s : X.N) :
-    ∃ (t : X.S) (ht : t.2 ∈ X.nonDegenerate _), s = mk' t ht :=
+    ∃ (t : X.S) (ht : t.simplex ∈ X.nonDegenerate _), s = mk' t ht :=
   ⟨s.toS, s.nonDegenerate, rfl⟩
 
 /-- Constructor for the type of non degenerate simplices of a simplicial set. -/
@@ -53,8 +53,8 @@ def mk {n : ℕ} (x : X _⦋n⦌) (hx : x ∈ X.nonDegenerate n) : X.N where
   nonDegenerate := hx
 
 lemma mk_surjective (x : X.N) :
-    ∃ (n : ℕ) (y : X.nonDegenerate n), x = N.mk _ y.2 :=
-  ⟨x.1.1, ⟨_, x.nonDegenerate⟩, rfl⟩
+    ∃ (n : ℕ) (y : X.nonDegenerate n), x = N.mk _ y.prop :=
+  ⟨x.dim, ⟨_, x.nonDegenerate⟩, rfl⟩
 
 instance : Preorder X.N := Preorder.lift toS
 
@@ -62,10 +62,10 @@ lemma le_iff {x y : X.N} : x ≤ y ↔ x.subcomplex ≤ y.subcomplex :=
   Iff.rfl
 
 lemma le_iff_exists_mono {x y : X.N} :
-    x ≤ y ↔ ∃ (f : ⦋x.1.1⦌ ⟶ ⦋y.1.1⦌) (_ : Mono f), X.map f.op y.1.2 = x.1.2 := by
+    x ≤ y ↔ ∃ (f : ⦋x.dim⦌ ⟶ ⦋y.dim⦌) (_ : Mono f), X.map f.op y.simplex = x.simplex := by
   simp only [le_iff, CategoryTheory.Subpresheaf.ofSection_le_iff,
     Subcomplex.mem_ofSimplex_obj_iff]
-  exact ⟨fun ⟨f, hf⟩ ↦ ⟨f, X.mono_of_nonDegenerate ⟨_, x.2⟩ f _ hf, hf⟩, by tauto⟩
+  exact ⟨fun ⟨f, hf⟩ ↦ ⟨f, X.mono_of_nonDegenerate ⟨_, x.nonDegenerate⟩ f _ hf, hf⟩, by tauto⟩
 
 lemma dim_le_of_le {x y : X.N} (h : x ≤ y) : x.dim ≤ y.dim := by
   rw [le_iff_exists_mono] at h
@@ -149,7 +149,7 @@ lemma existsUnique_n (x : X.S) : ∃! (y : X.N), y.subcomplex = x.subcomplex :=
   existsUnique_of_exists_of_unique (by
     obtain ⟨n, x, hx, rfl⟩ := x.mk_surjective
     obtain ⟨m, f, _, y, rfl⟩ := X.exists_nonDegenerate x
-    refine ⟨N.mk y.1 y.2, le_antisymm ?_ ?_⟩
+    refine ⟨N.mk _ y.prop, le_antisymm ?_ ?_⟩
     · simp only [Subcomplex.ofSimplex_le_iff]
       have := isSplitEpi_of_epi f
       have : Function.Injective (X.map f.op) := by
