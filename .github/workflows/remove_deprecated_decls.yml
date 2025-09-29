@@ -195,7 +195,7 @@ jobs:
         DEPRECATION_DATE_TO: ${{ steps.process_dates.outputs.to_date }}
 
     - name: Send Zulip message
-      if: false # TODO: change to "steps.pr.outcome == 'success'" once everything is working
+      #if: false # TODO: change to "steps.pr.outcome == 'success'" once everything is working
       uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
