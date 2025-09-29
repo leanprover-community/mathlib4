@@ -321,7 +321,7 @@ lemma degenerate_iff_of_isIso (f : X ⟶ Y) [IsIso f] {n : ℕ} (x : X _⦋n⦌)
 
 lemma nonDegenerate_iff_of_isIso (f : X ⟶ Y) [IsIso f] {n : ℕ} (x : X _⦋n⦌) :
     f.app _ x ∈ Y.nonDegenerate n ↔ x ∈ X.nonDegenerate n := by
-  simp only [mem_nonDegenerate_iff_notMem_degenerate,
+  simp [mem_nonDegenerate_iff_notMem_degenerate,
     degenerate_iff_of_isIso]
 
 attribute [local simp] nonDegenerate_iff_of_isIso in
