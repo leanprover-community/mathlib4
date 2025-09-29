@@ -76,21 +76,9 @@ lemma natCard_rootsOfUnity (M : Type*) [CommMonoid M] (n : ℕ) [NeZero n]
     rw [← Units.val_inj, Units.val_pow_eq_pow_val, IsUnit.unit_spec, h.pow_eq_one, Units.val_one]
 
 lemma of_card_le {R : Type*} [CommRing R] [IsDomain R] {n : ℕ} [NeZero n]
-    (h : n ≤ Fintype.card (rootsOfUnity n R)) : HasEnoughRootsOfUnity R n := by
-  have := rootsOfUnity.isCyclic R n
-  obtain ⟨⟨g, hg'⟩, hg⟩ := IsCyclic.exists_ofOrder_eq_natCard (α := rootsOfUnity n R)
-  rw [Nat.card_eq_fintype_card, ← orderOf_submonoid, ← orderOf_units,
-    le_antisymm (card_rootsOfUnity R n) h] at hg
-  dsimp only at hg
-  have hn : (g : R) ^ n = 1 := by simpa [← hg] using pow_orderOf_eq_one g.val
-  refine ⟨⟨(g : Rˣ), ?_, fun k hk ↦ ?_⟩, this⟩
-  · simpa [Units.ext_iff] using hg'
-  · refine Nat.dvd_of_mod_eq_zero ?_
-    contrapose! hk
-    rw [← Nat.div_add_mod k n, pow_add, pow_mul]
-    simp only [hn, one_pow, one_mul, ne_eq]
-    apply pow_ne_one_of_lt_orderOf hk
-    exact (Nat.mod_lt _ (Nat.pos_of_neZero _)).trans_eq hg.symm
+    (h : n ≤ Fintype.card (rootsOfUnity n R)) : HasEnoughRootsOfUnity R n where
+  prim := card_rootsOfUnity_eq_iff_exists_isPrimitiveRoot.mp (le_antisymm (card_rootsOfUnity R n) h)
+  cyc := rootsOfUnity.isCyclic R n
 
 end HasEnoughRootsOfUnity
 
