@@ -65,6 +65,7 @@ def ofStabilizer (a : α) : SubMulAction (stabilizer G a) α where
     rw [hgx, ← smul_eq_iff_eq_inv_smul]
     exact g.prop
 
+-- TODO rename
 @[to_additive]
 theorem ofStabilizer_carrier (a : α) : (ofStabilizer G a).carrier = {a}ᶜ :=
   rfl
@@ -80,6 +81,7 @@ theorem notMem_val_image {a : α} (t : Set (ofStabilizer G a)) :
   rintro ⟨b, hb⟩
   exact b.prop (by simp [hb])
 
+-- TODO rename
 @[to_additive]
 theorem neq_of_mem_ofStabilizer (a : α) {x : ofStabilizer G a} : ↑x ≠ a :=
   x.prop
