@@ -914,7 +914,8 @@ def ChartedSpace.sum_of_nonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
 
 open scoped Classical in
 instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') := by
-  by_cases! h : Nonempty H · exact ChartedSpace.sum_of_nonempty
+  by_cases! h : Nonempty H
+  · exact ChartedSpace.sum_of_nonempty
   have : IsEmpty M := isEmpty_of_chartedSpace H
   have : IsEmpty M' := isEmpty_of_chartedSpace H
   exact empty H (M ⊕ M')
@@ -1494,5 +1495,3 @@ def PartialHomeomorph.toStructomorph {e : PartialHomeomorph M H} (he : e ∈ atl
       mem_groupoid := fun _ c' _ ⟨_, ⟨x, _⟩, _⟩ ↦ (this.false x).elim }
 
 end HasGroupoid
-
-set_option linter.style.longFile 1700
