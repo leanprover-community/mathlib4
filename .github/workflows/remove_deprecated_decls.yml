@@ -157,7 +157,13 @@ jobs:
         } | tee -a "${tmplean}"
         echo "::endgroup::"
 
-        # This will add the new files, whose names end in `_with_option.lean`.
+        # This will add the new files, whose names end in `_with_option.lean` and with the
+        # `commandRanges` linter on.  Building these files gives access to the ranges of all
+        # the commands in the files with deprecations to be removed.
+        # These files ending in `_with_option.lean` get erased after they have been build.
+        # If the `really` flag is passed, then the deprecations are removed from the appropriate
+        # files.  Otherwise, they are only logged as an output, but the original files are left
+        # untouched.
         echo "::group::Building ${tmplean} file -- this may take a while"
         lake build "${tmplean}"
         echo "::endgroup::"
