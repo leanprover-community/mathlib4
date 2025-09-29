@@ -898,9 +898,7 @@ this is unique up to the value on non-differentiable vector fields.
 If you know the Levi-Civita connection already, you can use `IsLeviCivitaConnection` instead. -/
 noncomputable def LeviCivitaConnection [FiniteDimensional ℝ E] :
     CovariantDerivative I E (TangentSpace I : M → Type _) :=
-  -- TODO: somehow choose an ordering here, how to do this right?
-  -- let ⟨r, o⟩ := exists_wellOrder (↑(Basis.ofVectorSpaceIndex ℝ E))
-  LeviCivitaConnection_aux I M sorry
+  LeviCivitaConnection_aux I M (Classical.choose (exists_wellOrder _))
 
 -- TODO: move this section to `Torsion.lean`
 section
