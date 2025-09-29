@@ -268,8 +268,7 @@ def isoNerve (n : ℕ) :
       invFun f :=
         SimplexCategory.Hom.mk
           (ULift.orderIso.toOrderEmbedding.toOrderHom.comp f.toOrderHom)
-      left_inv _ := by aesop
-      right_inv _ := by rfl }))
+      left_inv _ := by aesop }))
 
 @[simp]
 lemma isoNerve_hom_app_apply {n d : ℕ}
