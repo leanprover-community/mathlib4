@@ -714,6 +714,13 @@ def equateScalars {a b : Q($A)} (va : ExSum q($sAlg) a) (vb : ExSum q($sAlg) b) 
 #check simpTarget
 
 #check Simp.Simproc
+
+def runSimp (f : Simp.Result → MetaM Simp.Result) (g : MVarId) : MetaM MVarId := do
+  let mut cfg := {}
+  let e ← g.getType
+  let r ← RingNF.cleanup cfg {expr := e, proof? := none}
+  applySimpResultToTarget g e r
+
 def matchScalarsAux (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) : MetaM (List MVarId) :=
   do
   let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
@@ -732,13 +739,7 @@ def matchScalarsAux (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) 
   have e₁ : Q($A) := e₁; have e₂ : Q($A) := e₂
   let ⟨eq, mids⟩ ← AtomM.run .instances <| algCore q($sAlg) e₁ e₂
   -- surely there's a better way to apply the cleanup routine to each goal.
-  let mut res : List MVarId := []
-  for id in mids do
-    let mut cfg := {}
-    let e ← id.getType
-    let r ← RingNF.cleanup cfg {expr := e, proof? := none}
-    let id' ← applySimpResultToTarget id e r
-    res := id' :: res
+  let res ← mids.mapM (runSimp (RingNF.cleanup {}))
   g.assign eq
   return res
 where
