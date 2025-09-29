@@ -51,7 +51,6 @@ theorem card_eq_finrank [IsGaloisGroup G K L] : Nat.card G = Module.finrank K L 
     exact (FixedPoints.finrank_eq_card G L).symm
   · rw [Nat.card_eq_zero_of_infinite, eq_comm]
     contrapose! hG
-    rw [not_infinite_iff_finite]
     have : FiniteDimensional K L := FiniteDimensional.of_finrank_pos (Nat.zero_lt_of_ne_zero hG)
     exact Finite.of_injective (MulSemiringAction.toAlgAut G K L)
       (fun _ _ ↦ (faithful K).eq_of_smul_eq_smul ∘ DFunLike.ext_iff.mp)

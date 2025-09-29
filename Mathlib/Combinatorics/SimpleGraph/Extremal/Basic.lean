@@ -98,7 +98,7 @@ theorem card_edgeFinset_le_extremalNumber (h : H.Free G) :
 /-- If `G` has more than `extremalNumber (card V) H` edges, then `G` contains a copy of `H`. -/
 theorem IsContained.of_extremalNumber_lt_card_edgeFinset
     (h : extremalNumber (card V) H < #G.edgeFinset) : H ⊑ G := by
-  contrapose! h
+  contrapose h; push_neg
   exact card_edgeFinset_le_extremalNumber h
 
 /-- `extremalNumber (card V) H` is at most `x` if and only if every `H`-free simple graph `G` has
