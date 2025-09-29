@@ -75,13 +75,14 @@ theorem finite (pb : PowerBasis R S) : Module.Finite R S := .of_basis pb.basis
 /--
 Construct a power basis from a basis consisting of powers of an element.
 -/
-def ofBasis {ι : Type*} [Fintype ι] (B : Basis ι R S) {x : S}
+def _root_.Module.Basis.PowerBasis {ι : Type*} [Fintype ι] (B : Basis ι R S) {x : S}
     (e : ι ≃ Fin (Fintype.card ι)) (hx : ∀ i, B i = x ^ (e i : ℕ)) :
     PowerBasis R S := ⟨x, Fintype.card ι, B.reindex e, fun i ↦ by simp [hx]⟩
 
 @[simp]
-theorem ofBasis_gen {ι : Type*} [Fintype ι] (B : Basis ι R S) {x : S} (e : ι ≃ Fin (Fintype.card ι))
-    (hx : ∀ i, B i = x ^ (e i : ℕ)) : (PowerBasis.ofBasis B e hx).gen = x := rfl
+theorem _root_.Module.Basis.PowerBasis_gen {ι : Type*} [Fintype ι] (B : Basis ι R S) {x : S}
+    (e : ι ≃ Fin (Fintype.card ι)) (hx : ∀ i, B i = x ^ (e i : ℕ)) :
+    (B.PowerBasis e hx).gen = x := rfl
 
 theorem finrank [StrongRankCondition R] (pb : PowerBasis R S) :
     Module.finrank R S = pb.dim := by

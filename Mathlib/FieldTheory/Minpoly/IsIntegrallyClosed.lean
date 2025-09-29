@@ -171,20 +171,17 @@ theorem _root_.Algebra.adjoin.powerBasis'_gen (hx : IsIntegral R x) :
   rw [Algebra.adjoin.powerBasis', PowerBasis.map_gen, AdjoinRoot.powerBasis'_gen, equivAdjoin,
     AlgEquiv.ofBijective_apply, Minpoly.toAdjoin, liftHom_root]
 
-/-- The power basis given by `x` if `B.gen ∈ adjoin R {x}`. -/
-noncomputable def _root_.PowerBasis.ofGenMemAdjoin' (B : PowerBasis R S) (hint : IsIntegral R x)
-    (hx : B.gen ∈ adjoin R ({x} : Set S)) : PowerBasis R S :=
-  (Algebra.adjoin.powerBasis' hint).map <|
-    (Subalgebra.equivOfEq _ _ <| PowerBasis.adjoin_eq_top_of_gen_mem_adjoin hx).trans
-      Subalgebra.topEquiv
-
 /--
 If `x` generates `S` over `R` and is integral over `R`, then it defines a power basis.
 See `PowerBasis.ofAdjoinEqTop` for a version over a field.
 -/
-def _root_.PowerBasis.ofAdjoinEqTop' {x : S} (hx : IsIntegral R x) (hx' : adjoin R {x} = ⊤) :
+noncomputable def _root_.PowerBasis.ofAdjoinEqTop' {x : S} (hx : IsIntegral R x)
+  (hx' : adjoin R {x} = ⊤) :
     PowerBasis R S :=
   (adjoin.powerBasis' hx).map ((Subalgebra.equivOfEq _ _ hx').trans Subalgebra.topEquiv)
+
+@[deprecated (since := "2025-09-28")] alias _root_.PowerBasis.ofGenMemAdjoin' :=
+  _root_.PowerBasis.ofAdjoinEqTop'
 
 @[simp]
 theorem _root_.PowerBasis.ofAdjoinEqTop'_dim {x : S} (hx : IsIntegral R x)
@@ -196,16 +193,11 @@ theorem _root_.PowerBasis.ofAdjoinEqTop'_gen {x : S} (hx : IsIntegral R x)
     (hx' : adjoin R {x} = ⊤) : (PowerBasis.ofAdjoinEqTop' hx hx').gen = x := by
   simp [PowerBasis.ofAdjoinEqTop']
 
-@[simp]
-theorem _root_.PowerBasis.ofGenMemAdjoin'_dim (B : PowerBasis R S) (hint : IsIntegral R x)
-    (hx : B.gen ∈ adjoin R ({x} : Set S)) :
-    (B.ofGenMemAdjoin' hint hx).dim = (minpoly R x).natDegree := rfl
+@[deprecated (since := "2025-09-28")] alias _root_.PowerBasis.ofGenMemAdjoin'_dim :=
+   _root_.PowerBasis.ofAdjoinEqTop'_dim
 
-@[simp]
-theorem _root_.PowerBasis.ofGenMemAdjoin'_gen (B : PowerBasis R S) (hint : IsIntegral R x)
-    (hx : B.gen ∈ adjoin R ({x} : Set S)) :
-    (B.ofGenMemAdjoin' hint hx).gen = x := by
-  simp [PowerBasis.ofGenMemAdjoin']
+@[deprecated (since := "2025-09-28")] alias _root_.PowerBasis.ofGenMemAdjoin'_gen :=
+  _root_.PowerBasis.ofAdjoinEqTop'_gen
 
 end AdjoinRoot
 
