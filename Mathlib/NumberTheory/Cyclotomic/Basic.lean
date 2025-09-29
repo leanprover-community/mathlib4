@@ -105,17 +105,12 @@ theorem iff_singleton :
       (∃ r : B, IsPrimitiveRoot r n) ∧ ∀ x, x ∈ adjoin A {b : B | b ^ n = 1} := by
   simp [isCyclotomicExtension_iff, NeZero.ne]
 
-/-- If `IsCyclotomicExtension ∅ A B`, then the image of `A` in `B` equals `B`. -/
-theorem empty [h : IsCyclotomicExtension ∅ A B] : (⊥ : Subalgebra A B) = ⊤ := by
-  simpa [Algebra.eq_top_iff, isCyclotomicExtension_iff] using h
+instance empty [h : IsCyclotomicExtension ∅ A B] : Subsingleton (Subalgebra A B) :=
+  subsingleton_of_bot_eq_top <| by simpa [Algebra.eq_top_iff, isCyclotomicExtension_iff] using h
 
 theorem eq_self_sdiff_zero :
     IsCyclotomicExtension S A B = IsCyclotomicExtension (S \ {0}) A B := by
   simp [isCyclotomicExtension_iff, and_assoc]
-
-theorem isCyclotomicExtension_zero_iff :
-    IsCyclotomicExtension {0} A B ↔ IsCyclotomicExtension ∅ A B := by
-  rw [eq_self_sdiff_zero, sdiff_self, Set.bot_eq_empty]
 
 /-- If `IsCyclotomicExtension {1} A B`, then the image of `A` in `B` equals `B`. -/
 theorem singleton_one [h : IsCyclotomicExtension {1} A B] : (⊥ : Subalgebra A B) = ⊤ :=
@@ -124,13 +119,17 @@ theorem singleton_one [h : IsCyclotomicExtension {1} A B] : (⊥ : Subalgebra A 
 
 variable {A B}
 
-/-- If `(⊥ : SubAlgebra A B) = ⊤`, then `IsCyclotomicExtension ∅ A B`. -/
+/-- If `(⊥ : SubAlgebra A B) = ⊤`, then `IsCyclotomicExtension {0} A B`. -/
 theorem singleton_zero_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
-    IsCyclotomicExtension ∅ A B := by
-  refine (iff_adjoin_eq_top _ _ _).2
-    ⟨fun s hs => by simp at hs, _root_.eq_top_iff.2 fun x hx => ?_⟩
-  rw [← h] at hx
-  simpa using hx
+    IsCyclotomicExtension {0} A B :=
+  (iff_adjoin_eq_top _ _ _).2  <| by simpa
+
+theorem isCyclotomicExtension_zero_iff :
+    IsCyclotomicExtension {0} A B ↔ Function.Surjective (algebraMap A B):= by
+  rw [surjective_algebraMap_iff, eq_comm]
+  refine ⟨?_, fun h ↦ singleton_zero_of_bot_eq_top h⟩
+  rw [eq_self_sdiff_zero, sdiff_self, Set.bot_eq_empty, subsingleton_iff_bot_eq_top]
+  exact fun _ ↦ empty A B
 
 variable (A B)
 
@@ -251,7 +250,7 @@ theorem iff_union_singleton_one :
       show S \ {0} = ∅ by aesop, empty_union, show {1} \ {0} = {1} by simp]
     refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩
     · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs _ ↦ ⟨1, by simp [mem_singleton_iff.1 hs]⟩, ?_⟩
-      simp [adjoin_singleton_one, empty]
+      simpa [adjoin_singleton_one] using subsingleton_iff_bot_eq_top.mpr inferInstance
     · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs ↦ (notMem_empty s hs).elim, ?_⟩
       simp [singleton_one]
 
@@ -260,7 +259,8 @@ variable {A B}
 /-- If `(⊥ : SubAlgebra A B) = ⊤`, then `IsCyclotomicExtension {1} A B`. -/
 theorem singleton_one_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
     IsCyclotomicExtension {1} A B := by
-  convert (iff_union_singleton_one _ A _).1 (singleton_zero_of_bot_eq_top h)
+  convert eq_self_sdiff_zero _ A B ▸
+    (iff_union_singleton_one _ A _).1 (singleton_zero_of_bot_eq_top h)
   simp
 
 /-- If `Function.Surjective (algebraMap A B)`, then `IsCyclotomicExtension {1} A B`. -/
@@ -373,7 +373,8 @@ protected theorem finite [IsDomain B] [h₁ : Finite S] [h₂ : IsCyclotomicExte
   induction S, h₁ using Set.Finite.induction_on generalizing h₂ A B with
   | empty =>
     refine Module.finite_def.2 ⟨({1} : Finset B), ?_⟩
-    simp [← top_toSubmodule, ← empty, toSubmodule_bot, Submodule.one_eq_span]
+    simp [← top_toSubmodule, ← subsingleton_iff_bot_eq_top.mpr inferInstance,
+      toSubmodule_bot, Submodule.one_eq_span]
   | @insert n S _ _ H =>
     by_cases hn : n = 0
     · have : insert n S \ {0} = S \ {0} := by simp_all
@@ -890,11 +891,6 @@ alias IsAlgClosedOfCharZero.isCyclotomicExtension := IsSepClosedOfCharZero.isCyc
 end IsSepClosed
 
 section Subalgebra
-
-theorem IsCyclotomicExtension.empty_eq (C : Subalgebra A B) [hC : IsCyclotomicExtension ∅ A C] :
-    C = ⊥ := by
-  simpa [Subalgebra.range_val] using
-    congr_arg (Subalgebra.map C.val) (IsCyclotomicExtension.empty A C).symm
 
 variable {A B} [IsDomain B]
 
