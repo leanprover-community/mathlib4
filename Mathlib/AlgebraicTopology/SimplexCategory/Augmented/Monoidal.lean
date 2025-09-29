@@ -231,7 +231,7 @@ lemma inl_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
     rw [e₁, e₂]
     simp only [SimplexCategory.eqToHom_toOrderHom, SimplexCategory.len_mk,
       OrderEmbedding.toOrderHom_coe, OrderIso.coe_toOrderEmbedding, Fin.castOrderIso_apply,
-      Fin.cast_trans, Fin.cast_eq_self, Fin.cast_inj]
+      Fin.cast_cast, Fin.cast_eq_self, Fin.cast_inj]
     conv_lhs =>
       change Fin.addCases
         (fun i ↦ Fin.castAdd (y₂.len + 1) (f₁.toOrderHom i))
@@ -257,7 +257,7 @@ lemma inr_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
     simp only [SimplexCategory.eqToHom_toOrderHom, SimplexCategory.len_mk,
       Nat.succ_eq_add_one, OrderEmbedding.toOrderHom_coe,
       OrderIso.coe_toOrderEmbedding, Fin.castOrderIso_apply,
-      Fin.cast_trans, Fin.cast_eq_self, Fin.cast_inj]
+      Fin.cast_cast, Fin.cast_eq_self, Fin.cast_inj]
     conv_lhs =>
       change Fin.addCases
         (fun i ↦ Fin.castAdd (y₂.len + 1) (f₁.toOrderHom i))
@@ -326,22 +326,22 @@ lemma inr_comp_inl_comp_associator (x y z : AugmentedSimplexCategory) :
   | _, .star, _ => by cat_disch
   | _, _, .star => by cat_disch
 
-theorem tensor_comp {x₁ y₁ z₁ x₂ y₂ z₂ : AugmentedSimplexCategory}
+theorem tensorHom_comp_tensorHom {x₁ y₁ z₁ x₂ y₂ z₂ : AugmentedSimplexCategory}
     (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) (g₁ : y₁ ⟶ z₁) (g₂ : y₂ ⟶ z₂) :
-    (f₁ ≫ g₁) ⊗ₘ (f₂ ≫ g₂) = (f₁ ⊗ₘ f₂) ≫ (g₁ ⊗ₘ g₂) := by
+    (f₁ ⊗ₘ f₂) ≫ (g₁ ⊗ₘ g₂) = (f₁ ≫ g₁) ⊗ₘ (f₂ ≫ g₂) := by
   cat_disch
 
 theorem tensor_id (x y : AugmentedSimplexCategory) : (𝟙 x) ⊗ₘ (𝟙 y) = 𝟙 (x ⊗ y) := by
   ext
   · simpa [inl, MonoidalCategoryStruct.whiskerLeft, MonoidalCategoryStruct.whiskerRight] using
-      (tensor_comp (𝟙 x) (WithInitial.starInitial.to y) (𝟙 x) (𝟙 y)).symm
+      (tensorHom_comp_tensorHom (𝟙 x) (WithInitial.starInitial.to y) (𝟙 x) (𝟙 y))
   · simpa [inr, MonoidalCategoryStruct.whiskerLeft, MonoidalCategoryStruct.whiskerRight] using
-      (tensor_comp (WithInitial.starInitial.to x) (𝟙 y) (𝟙 x) (𝟙 y)).symm
+      (tensorHom_comp_tensorHom (WithInitial.starInitial.to x) (𝟙 y) (𝟙 x) (𝟙 y))
 
 instance : MonoidalCategory AugmentedSimplexCategory :=
   MonoidalCategory.ofTensorHom
     (id_tensorHom_id := tensor_id)
-    (tensor_comp := tensor_comp)
+    (tensorHom_comp_tensorHom := tensorHom_comp_tensorHom)
     (pentagon := fun w x y z ↦ by ext <;> simp [-id_tensorHom, -tensorHom_id])
 
 end AugmentedSimplexCategory
