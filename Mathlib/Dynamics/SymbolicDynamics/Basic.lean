@@ -9,23 +9,38 @@ import Mathlib.Topology.Constructions
 import Mathlib.Data.Finset.Basic
 import Mathlib.Logic.Equiv.Defs
 /-!
-# Symbolic dynamics on groups
+# Symbolic dynamics on cancellative monoids
 
-This file develops a minimal API for symbolic dynamics over an arbitrary group `G`.
-Given a finite alphabet `A`, the ambient configuration space is the set of functions
-`G → A`, endowed with the product topology. We define the right-translation action,
-cylinders, finite patterns, their occurrences, forbidden sets, and subshifts
-(closed, shift-invariant subsets). Basic topological facts (e.g. cylinders are clopen,
-occurrence sets are clopen, forbidden sets are closed) are proved under discreteness
-assumptions on the alphabet.
+This file develops a minimal API for symbolic dynamics over an arbitrary
+**right-cancellative monoid** `G` (`[Monoid G] [IsRightCancelMul G]`).
 
-The development is group-generic. Geometry specific to `ℤ^d` (boxes/cubes and the
-box-based entropy) is deferred to a separate specialization.
+Given a finite alphabet `A`, the ambient configuration space is the set of
+functions `G → A`, endowed with the product topology. We define the
+right-translation action, cylinders, finite patterns, their occurrences,
+forbidden sets, and subshifts (closed, shift-invariant subsets). Basic
+topological facts (e.g. cylinders are clopen, occurrence sets are clopen,
+forbidden sets are closed) are proved under discreteness assumptions on
+the alphabet.
+
+The development is generic for right-cancellative monoids. This covers both
+groups (the standard setting of symbolic dynamics) and more general monoids
+where cancellation holds but inverses may not exist. Geometry specific to
+`ℤ^d` (boxes/cubes and the box-based entropy) is deferred to a separate
+specialization.
+
+## Why cancellativity?
+
+Some constructions, such as translating a finite pattern to occur at a point `v`,
+require solving equations of the form `w * v = h`. For this to have a unique
+solution `w` given `h` and `v`, we assume **right-cancellation**:
+if `a * v = b * v` then `a = b`. This allows us to define
+`patternToConfig` without using inverses, so that the theory works not only
+for groups but also for cancellative monoids.
 
 ## Main definitions
 
-* `mulShift g x` — right translation: in multiplicative notation `(mulShift g x) h = x (h * g)`;
-  additive notation `(addShift v x) u = x (u + v)`.
+* `mulShift g x` — right translation: in multiplicative notation
+  `(mulShift g x) h = x (h * g)`; additive notation `(addShift v x) u = x (u + v)`.
 * `cylinder U x` — configurations agreeing with `x` on a finite set `U ⊆ G`.
 * `Pattern A G` — finite support together with values on that support.
 * `Pattern.occursIn p x g` — occurrence of `p` in `x` at translate `g`.
@@ -103,7 +118,7 @@ section ShiftDefinition
 
 variable {A : Type*}
 variable {G : Type*}
-variable [Group G]
+variable [Monoid G]
 
 /-- Right-translation shift:
 * In multiplicative notation: `(mulShift g x) h = x (h * g)`.
@@ -118,7 +133,7 @@ end ShiftDefinition
 
 section ShiftAlgebra
 
-variable {A G : Type*} [Group G]
+variable {A G : Type*} [Monoid G]
 
 @[to_additive] lemma mulShift_apply (g h : G) (x : G → A) :
   mulShift g x h = x (h * g) := rfl
@@ -134,15 +149,13 @@ end ShiftAlgebra
 
 section ShiftTopology  -- add only topology on A
 
-variable {A G : Type*} [Group G] [TopologicalSpace A]
+variable {A G : Type*} [Monoid G] [TopologicalSpace A]
 
 @[to_additive] lemma continuous_mulShift (g : G) : Continuous (mulShift (A := A) (G := G) g) := by
   -- coordinate projections are continuous; composition preserves continuity
   continuity
 
 end ShiftTopology
-
-
 
 /-! ## Cylinders -/
 
@@ -202,7 +215,7 @@ end CylindersClosed
 
 section SubshiftDef
 variable (A : Type*) [TopologicalSpace A]
-variable (G : Type*) [Group G]
+variable (G : Type*) [Monoid G]
 
 /-- A subshift is a closed, shift-invariant subset. -/
 structure Subshift : Type _ where
@@ -218,7 +231,7 @@ end SubshiftDef
 
 section AddSubshiftDef
 variable (A : Type*) [TopologicalSpace A]
-variable (G : Type*) [AddGroup G]
+variable (G : Type*) [AddMonoid G]
 
 /-- Additive version of the definition of subshift. -/
 structure AddSubshift : Type _ where
@@ -236,7 +249,7 @@ attribute [to_additive existing SymbolicDynamics.Ambiant.AddSubshift]
 
 /-- Example: the full shift on alphabet A. -/
 @[to_additive SymbolicDynamics.Ambiant.addFullShift]
-def fullShift (A G) [TopologicalSpace A] [Group G] : Subshift A G :=
+def fullShift (A G) [TopologicalSpace A] [Monoid G] : Subshift A G :=
 { carrier := Set.univ,
   isClosed := isClosed_univ,
   shiftInvariant := by intro _ _ _; simp }
@@ -244,14 +257,14 @@ def fullShift (A G) [TopologicalSpace A] [Group G] : Subshift A G :=
 attribute [inherit_doc SymbolicDynamics.Ambiant.fullShift] SymbolicDynamics.Ambiant.addFullShift
 
 /-- A finite pattern: finite support in `G` and values on it. -/
-structure Pattern (A : Type*) (G : Type*) [Group G] where
+structure Pattern (A : Type*) (G : Type*) [Monoid G] where
   /-- Finite support of the pattern. -/
   support : Finset G
   /-- The value (symbol) at each point of the support. -/
   data : support → A
 
 /-- Additive version of `Pattern`. -/
-structure AddPattern (A : Type*) (G : Type*) [AddGroup G] : Type _ where
+structure AddPattern (A : Type*) (G : Type*) [AddMonoid G] : Type _ where
   /-- Finite support of the pattern (subset of `G`). -/
   support : Finset G
   /-- The symbol at each point of the support. -/
@@ -262,7 +275,7 @@ attribute [to_additive existing SymbolicDynamics.Ambiant.AddPattern]
 
 section Dominos
 
-variable (G : Type*) [Group G] [DecidableEq G]
+variable (G : Type*) [Monoid G] [DecidableEq G]
 
 /-- The domino supported on `{i,j}` with values `ai`,`aj`. -/
 @[to_additive addDomino]
@@ -280,7 +293,7 @@ section Forbids
 
 variable {A : Type*}
 variable {G : Type*}
-variable [Group G]
+variable [Monoid G]
 
 /-- Occurrence of a pattern `p` in `x` at position `g`. -/
 @[to_additive Pattern.addOccursIn]
@@ -301,7 +314,7 @@ end Forbids
 
 section ShiftInvariance
 
-variable {A G : Type*} [Group G]
+variable {A G : Type*} [Monoid G]
 
 /-- Shifts move occurrences as expected. -/
 @[to_additive addOccurs_addShift]
@@ -324,7 +337,7 @@ section PatternFromToConfig
 
 variable {A : Type*} [Inhabited A]
 variable {G : Type*}
-variable [Group G] [DecidableEq G]
+variable [Monoid G] [IsRightCancelMul G] [DecidableEq G]
 
 /-- Extend a pattern by `default` away from its support (anchored at the origin). -/
 @[to_additive addPatternToOriginConfig]
@@ -334,13 +347,19 @@ def patternToOriginConfig (p : Pattern A G) : G → A :=
 attribute [inherit_doc SymbolicDynamics.Ambiant.patternToOriginConfig]
   SymbolicDynamics.Ambiant.addPatternToOriginConfig
 
-/-- Translate a pattern to occur at `v`. -/
 @[to_additive addPatternToConfig]
-def patternToConfig (p : Pattern A G) (v : G) : G → A :=
-  mulShift (v⁻¹) (patternToOriginConfig p)
-
-attribute [inherit_doc SymbolicDynamics.Ambiant.patternToConfig]
-  SymbolicDynamics.Ambiant.addPatternToConfig
+noncomputable def patternToConfig (p : Pattern A G) (v : G) : G → A :=
+  fun h =>
+    if hmem : h ∈ p.support.image (· * v) then
+      -- package existence of a preimage under (_ * v)
+      let ex : ∃ w, w ∈ p.support ∧ w * v = h := by
+        simpa [Finset.mem_image] using hmem
+      let w := Classical.choose ex
+      have hw  : w ∈ p.support := (Classical.choose_spec ex).1
+      have hwv : w * v = h     := (Classical.choose_spec ex).2
+      p.data ⟨w, hw⟩
+    else
+      default
 
 /-- Restrict a configuration to a finite support, seen as a pattern. -/
 @[to_additive addPatternFromConfig]
@@ -355,22 +374,81 @@ end PatternFromToConfig
 
 section OccursAtEqCylinder
 
-variable {A G : Type*} [Group G] [Inhabited A] [DecidableEq G]
+variable {A G : Type*} [Monoid G] [IsRightCancelMul G] [Inhabited A] [DecidableEq G]
+
+/-- On the translated support, `patternToConfig` agrees with `p` at the preimage. -/
+@[to_additive addPatternToConfig_apply_of_mem]
+lemma patternToConfig_apply_of_mem
+    {A G : Type*} [Monoid G] [IsRightCancelMul G] [DecidableEq G] [Inhabited A]
+    (p : Pattern A G) (v w : G) (hw : w ∈ p.support) :
+    patternToConfig (A := A) (G := G) p v (w * v) = p.data ⟨w, hw⟩ := by
+  classical
+  -- (w*v) is in the translated support
+  have hmem : (w * v) ∈ p.support.image (· * v) :=
+    Finset.mem_image.mpr ⟨w, hw, rfl⟩
+  -- existential used in the branch
+  have ex : ∃ w', w' ∈ p.support ∧ w' * v = w * v := by
+    simpa [Finset.mem_image] using hmem
+  -- open the `if` branch as returned by the definition
+  have h1 :
+      patternToConfig (A := A) (G := G) p v (w * v)
+        = p.data ⟨Classical.choose ex, (Classical.choose_spec ex).1⟩ := by
+    simp [patternToConfig, hmem]
+  -- name the chosen witness and relate it to `w` by right-cancellation
+  let w' := Classical.choose ex
+  have hw'  : w' ∈ p.support := (Classical.choose_spec ex).1
+  have hwv' : w' * v = w * v := (Classical.choose_spec ex).2
+  have h_eq : w' = w := by simpa using (mul_right_cancel hwv')
+  -- transport membership along h_eq
+  have hw_w : w ∈ p.support := by simpa [h_eq] using hw'
+  -- identify the subtype inside `p.data` (first replace the value w' by w)
+  have h2 :
+      (⟨Classical.choose ex, (Classical.choose_spec ex).1⟩ : p.support)
+        = (⟨w, hw_w⟩ : p.support) := by
+    apply Subtype.ext
+    -- goal: Classical.choose ex = w
+    -- we have h_eq : w' = w and w' := Classical.choose ex
+    simpa [w'] using h_eq     -- <-- use `using h_eq`, only unfold `[w']`
+
+  -- then replace the proof component (same carrier w)
+  have h3 :
+      (⟨w, hw_w⟩ : p.support) = (⟨w, hw⟩ : p.support) := by
+    apply Subtype.ext
+    rfl
+
+  -- put the rewrites together
+  calc
+    patternToConfig (A := A) (G := G) p v (w * v)
+        = p.data ⟨Classical.choose ex, (Classical.choose_spec ex).1⟩ := h1
+    _   = p.data ⟨w, hw_w⟩ := by
+            -- push h2 through `p.data`
+            simpa using
+              (congrArg (fun z : {x // x ∈ p.support} => p.data z) h2)
+    _   = p.data ⟨w, hw⟩ := by
+            -- push h3 through `p.data`
+            simp [h3]
 
 /-- “Occurrence = cylinder translated by `g`”. -/
 @[to_additive addOccursAt_eq_cylinder]
-lemma occursAt_eq_cylinder (p : Pattern A G) (g : G) :
+lemma occursAt_eq_cylinder
+    {A G : Type*} [Monoid G] [IsRightCancelMul G] [Inhabited A] [DecidableEq G]
+    (p : Pattern A G) (g : G) :
     { x | p.occursIn x g } = cylinder (p.support.image (· * g)) (patternToConfig p g) := by
-  ext x
-  constructor
-  · intro H u hu
-    obtain ⟨w, hw, rfl⟩ := Finset.mem_image.mp hu
-    dsimp [patternToConfig, patternToOriginConfig, mulShift]
-    simp [dif_pos hw, H w hw]
-  · intro H u hu
-    have := H (u * g) (Finset.mem_image_of_mem _ hu)
-    dsimp [patternToConfig, patternToOriginConfig, mulShift] at this
-    simpa [mul_inv_cancel_right, mul_assoc, dif_pos hu] using this
+  classical
+  ext x; constructor
+  · -- ⇒: from an occurrence, get membership in the cylinder
+    intro H u hu
+    rcases Finset.mem_image.mp hu with ⟨w, hw, rfl⟩
+    -- want: x (w*g) = patternToConfig p g (w*g)
+    have hx : x (w * g) = p.data ⟨w, hw⟩ := H w hw
+    simpa [patternToConfig_apply_of_mem (p:=p) (v:=g) (w:=w) hw] using hx
+  · -- ⇐: from the cylinder, recover an occurrence
+    intro H u hu
+    -- H gives equality with the translated pattern on the image
+    have hx : x (u * g) = patternToConfig p g (u * g) :=
+      H (u * g) (Finset.mem_image_of_mem (· * g) hu)
+    -- rewrite the RHS by the “apply_of_mem” lemma
+    simpa [patternToConfig_apply_of_mem (p:=p) (v:=g) (w:=u) hu] using hx
 
 end OccursAtEqCylinder
 
@@ -378,7 +456,7 @@ end OccursAtEqCylinder
 
 section OccSetsOpen
 
-variable {A G : Type*} [Group G] [TopologicalSpace A] [DiscreteTopology A]
+variable {A G : Type*} [Monoid G] [IsRightCancelMul G] [TopologicalSpace A] [DiscreteTopology A]
            [Inhabited A] [DecidableEq G]
 
 /-- Occurrence sets are open. -/
@@ -406,7 +484,7 @@ end OccSetsOpen
 
 section OccSetsClosed
 
-variable {A G : Type*} [Group G] [TopologicalSpace A] [DiscreteTopology A]
+variable {A G : Type*} [Monoid G] [IsRightCancelMul G] [TopologicalSpace A] [DiscreteTopology A]
            [Inhabited A] [DecidableEq G]
 
 /-- Occurrence sets are closed. -/
@@ -422,7 +500,7 @@ section DefSubshiftByForbidden
 variable {A : Type*} [Inhabited A]
 variable {G : Type*}
 variable [TopologicalSpace A] [DiscreteTopology A]
-variable [Group G] [DecidableEq G]
+variable [Monoid G] [IsRightCancelMul G] [DecidableEq G]
 
 /-- Subshift defined by forbidden patterns. -/
 @[to_additive addX_F]
@@ -447,11 +525,11 @@ section Language
 variable {A : Type*} [Fintype A]
 variable {G : Type*}
 variable [TopologicalSpace A]
-variable [Group G]
+variable [Monoid G] [IsRightCancelMul G]
 
 /-- Patterns with fixed support `U`. -/
 @[to_additive AddFixedSupport]
-def FixedSupport (A : Type*) (G : Type*) [Group G] (U : Finset G) :=
+def FixedSupport (A : Type*) (G : Type*) [Monoid G] [IsRightCancelMul G] (U : Finset G) :=
   { p : Pattern A G // p.support = U }
 
 attribute [inherit_doc SymbolicDynamics.Ambiant.FixedSupport]
