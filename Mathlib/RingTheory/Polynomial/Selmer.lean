@@ -191,8 +191,9 @@ variable {A : Type*} [CommRing A] [IsDedekindDomain A] {P : Ideal A} (hP : P ≠
 -- need general galois group to have same cardinality as field extension
 
 include hP hQ K L in
-theorem Ideal.card_inertiaSubgroup : Nat.card (AddSubgroup.inertia Q.toAddSubgroup G) =
-    Ideal.ramificationIdx (algebraMap A B) P Q := by
+theorem Ideal.card_inertiaSubgroup [Algebra.IsSeparable (A ⧸ P) (B ⧸ Q)] :
+    Nat.card (AddSubgroup.inertia Q.toAddSubgroup G) =
+      Ideal.ramificationIdx (algebraMap A B) P Q := by
   rw [Ideal.inertiaSubgroup_eq_ker P Q G]
   have hf := Ideal.Quotient.stabilizerHom_surjective G P Q
   have : Finite ((B ⧸ Q) ≃ₐ[A ⧸ P] B ⧸ Q) := Finite.of_surjective _ hf
@@ -203,7 +204,9 @@ theorem Ideal.card_inertiaSubgroup : Nat.card (AddSubgroup.inertia Q.toAddSubgro
     have : IsMaximal Q := Ideal.IsMaximal.of_liesOver_isMaximal Q P
     let _ : Field (A ⧸ P) := Quotient.field P
     let _ : Field (B ⧸ Q) := Quotient.field Q
-    have : IsGalois (A ⧸ P) (B ⧸ Q) := sorry
+    have := Ideal.Quotient.normal G P Q
+    have := Ideal.Quotient.finite_of_isInvariant G P Q
+    have : IsGalois (A ⧸ P) (B ⧸ Q) := { __ := Ideal.Quotient.normal (A := A) G P Q }
     rw [IsGalois.card_aut_eq_finrank]
   rw [inertiaDegIn_eq_inertiaDeg P Q K L, inertiaDeg_algebraMap] at key
   rw [← h1, ← h2, ← (MulAction.stabilizer G Q).index_mul_card] at key
