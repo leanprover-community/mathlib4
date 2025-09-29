@@ -1082,38 +1082,32 @@ grind_pattern Fin.find_spec => Fin.find h
 
 /-- If `find p = i`, then `p j` does not hold for `j < i`, i.e., `i` is minimal among
 the indices where `p` holds. -/
+@[grind →]
 protected theorem find_min (h : ∃ k, p k) : {j : Fin n} → j < Fin.find h → ¬ p j := by
   induction n with | zero => exact isEmptyElim h.choose | succ n ih =>
   simp_rw [Fin.find, forall_fin_succ, apply_dite, succ_lt_succ_iff, not_lt_zero]; grind
 
-/-- If `find p = i`, then `p j` does not hold for `j < i`, i.e., `i` is minimal among
+/-- If `find p = i`, then `p j` holds only for `i ≤ j`, i.e., `i` is minimal among
 the indices where `p` holds. -/
 protected theorem find_min' (h : ∃ k, p k) {j : Fin n} :
     p j → Fin.find h ≤ j := (Fin.find_min _ <| lt_of_not_ge ·).mtr
 
-theorem find_eq_iff {i : Fin n} (h : ∃ k, p k) : Fin.find h = i ↔ p i ∧ ∀ j < i, ¬ p j := by
-  constructor
-  · grind [Fin.find_min]
-  · rintro ⟨hm, hlt⟩
-    have := Fin.find_min' h hm
-    grind
-
 @[simp] lemma find_lt_iff (h : ∃ k, p k) (i : Fin n) : Fin.find h < i ↔ ∃ m < i, p m :=
-  ⟨fun h2 ↦ ⟨Fin.find h, h2, Fin.find_spec h⟩,
-    fun ⟨_, hmn, hm⟩ ↦ Fin.lt_of_le_of_lt (Fin.find_min' h hm) hmn⟩
+  ⟨fun hi => ⟨_, hi, Fin.find_spec h⟩, fun ⟨_, hmn, hm⟩ => (Fin.find_min' h hm).trans_lt hmn⟩
 
-@[simp] lemma find_le_iff (h : ∃ k, p k) (i : Fin n) : Fin.find h ≤ i ↔ ∃ m ≤ i, p m := by
-  cases n with | zero => _ | succ n => _
-  · exact i.elim0
-  · cases i using lastCases with | last => _ | cast i => _
-    · simp only [le_last, true_and, h]
-    · simp_rw [le_castSucc_iff, find_lt_iff]
+@[simp] lemma find_le_iff (h : ∃ k, p k) (i : Fin n) : Fin.find h ≤ i ↔ ∃ m ≤ i, p m :=
+  ⟨fun hi => ⟨_, hi, find_spec _⟩, fun ⟨_, hxi, hx⟩ => (Fin.find_min' h hx).trans hxi⟩
 
-@[simp] lemma le_find_iff (h : ∃ k, p k) (i : Fin n) : i ≤ Fin.find h ↔ ∀ m < i, ¬p m := by
-  simp only [← not_lt, find_lt_iff, not_exists, not_and]
+@[simp] lemma lt_find_iff (h : ∃ k, p k) (i : Fin n) : i < Fin.find h ↔ ∀ m ≤ i, ¬p m :=
+  ⟨fun hi _ hxi => Fin.find_min h <| hxi.trans_lt hi,
+    fun hi => lt_of_not_ge (fun hif => hi _ hif <| find_spec _)⟩
 
-@[simp] lemma lt_find_iff (h : ∃ k, p k) (i : Fin n) : i < Fin.find h ↔ ∀ m ≤ i, ¬p m := by
-  simp_rw [← not_le, find_le_iff, not_exists, not_and]
+@[simp] lemma le_find_iff (h : ∃ k, p k) (i : Fin n) : i ≤ Fin.find h ↔ ∀ m < i, ¬p m :=
+  ⟨fun hi _ hxi => Fin.find_min h <| hxi.trans_le hi,
+    fun hi => le_of_not_gt (fun hif => hi _ hif <| find_spec _)⟩
+
+theorem find_eq_iff {i : Fin n} (h : ∃ k, p k) : Fin.find h = i ↔ p i ∧ ∀ j < i, ¬ p j := by
+  rw [le_antisymm_iff, find_le_iff, le_find_iff]; simp; grind
 
 @[simp] lemma find_eq_zero {p : Fin (n + 1) → Prop} [DecidablePred p] (h : ∃ k, p k) :
   Fin.find h = 0 ↔ p 0 := by simp [find_eq_iff]
