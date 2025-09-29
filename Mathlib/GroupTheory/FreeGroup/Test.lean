@@ -1,14 +1,97 @@
 import Mathlib.GroupTheory.FreeGroup.Reduce
 import Mathlib
 
-variable {α X : Type*} [Fintype α]
+variable {α X : Type*} [Fintype α]   [DecidableEq α]
 
 abbrev n := Fintype.card α
 
 variable  [MulAction (FreeGroup α) X]
 
 --- All Elements of the free Group that start with a certain letter
-def FreeGroup.startWith (w : α × Bool) :
+def FreeGroup.startWith (w : α × Bool) := {g : FreeGroup α | (FreeGroup.toWord g)[0]? = some w}
+
+def Orbit (x : X) (w : α × Bool) := {g • x | g ∈ FreeGroup.startWith w}
+
+theorem Orbit.not_one {w : α × Bool} (g : FreeGroup α)  (h : g ∈ FreeGroup.startWith w) : g ≠ 1 := by
+  sorry
+
+
+theorem Orbit_rot (x : X) (w : α × Bool) : {(FreeGroup.mk [w])⁻¹ • y | y ∈ Orbit x w} =
+      ⋃ v ∈ {z : α × Bool | z ≠ (w.1, !w.2)}, Orbit x v := by
+  ext i
+  simp only [FreeGroup.inv_mk, Set.mem_setOf_eq, ne_eq, Set.mem_iUnion, exists_prop, Prod.exists, Prod.mk.injEq,
+  not_and, Bool.not_eq_not, Bool.exists_bool, Bool.false_eq, Bool.true_eq]
+  constructor
+  . intro h
+    rcases h with ⟨y, ⟨hy1, hy2⟩⟩
+    simp [Orbit, FreeGroup.startWith] at hy1
+    rcases hy1 with ⟨g, ⟨hg1, hg2⟩⟩
+    rw [← hg2] at hy2
+    simp only [Orbit, FreeGroup.startWith, Set.mem_setOf_eq, ← hy2]
+    by_cases hC: g.toWord.length > 1
+    .
+      use (g.toWord[1]'hC).1
+      cases hg3 : (g.toWord[1]'hC).2
+      . left
+        constructor
+        . intro h
+          --- TODO lemma über aufeinanderfolgende buchstaben in g.toWord: wenn g[n].1 = g[n+1].1 → g[n].2 = !g[n+1].2
+      . sorry
+    .
+      sorry --gschenkter gaul
+  . simp only [forall_exists_index]
+
+    intro a h
+    rcases h with ⟨h1, h2⟩
+    . simp only [Orbit, FreeGroup.startWith, Set.mem_setOf_eq, exists_exists_and_eq_and] at *
+      rcases h2 with ⟨g, ⟨h2, h3⟩⟩
+      subst h3
+      use FreeGroup.mk [w] * g
+      constructor
+      . rw [List.getElem?_eq_getElem]
+        . congr
+          induction hg : g.toWord with
+          | nil => simp [FreeGroup.toWord_mul, hg]
+          | cons head tail ih =>
+            simp [FreeGroup.toWord_mul]
+            simp_rw [hg]
+            have h_head : head = (a, false) := by
+              rw [hg] at h2
+              simp only [List.length_cons, lt_add_iff_pos_left, add_pos_iff, zero_lt_one, or_true,
+                getElem?_pos, List.getElem_cons_zero, Option.some.injEq] at h2
+              exact h2
+            by_cases hC : a = w.1
+            . simp_rw [h1 hC, show (head.2 = false) by simp [h_head]]
+              simp
+            . have h : (w.1 = head.1) = false := by
+                simp [show (head.1 = a) by simp [h_head]]
+                exact fun a_1 ↦ hC (id (Eq.symm a_1))
+              simp [h]
+
+        . sorry
+      . rw [← mul_smul]
+        rw [← mul_assoc]
+        simp only [FreeGroup.mul_mk]
+        have h5 : FreeGroup.mk (FreeGroup.invRev [w] ++ [w]) = 1 := by
+          rw [← FreeGroup.mul_mk, ← FreeGroup.inv_mk, Group.inv_mul_cancel]
+        simp [h5]
+    . sorry -- das gleiche
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/-
 
 
 inductive Rot where
@@ -148,4 +231,4 @@ theorem test : {FreeGroup.mk [(Rot.a, false)] • y | y ∈ S_A_points x} =
       . rw [← mul_smul]
         simp [FreeGroup.mk_inv]
     . sorry
-    . sorry
+    . sorry -/
