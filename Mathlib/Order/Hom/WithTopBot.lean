@@ -203,40 +203,40 @@ variable [PartialOrder α] [PartialOrder β] [PartialOrder γ]
 def withTopCongr (e : α ≃o β) : WithTop α ≃o WithTop β where
   toFun := WithTop.map e
   __ := e.toOrderEmbedding.withTopMap
-  __ := e.toEquiv.optionCongr
+  __ := e.toEquiv.withTopCongr
 
 @[simp]
 theorem withTopCongr_refl : (OrderIso.refl α).withTopCongr = OrderIso.refl _ :=
-  RelIso.toEquiv_injective Equiv.optionCongr_refl
+  RelIso.toEquiv_injective Equiv.withTopCongr_refl
 
 @[simp]
 theorem withTopCongr_symm (e : α ≃o β) : e.symm.withTopCongr = e.withTopCongr.symm :=
-  RelIso.toEquiv_injective e.toEquiv.optionCongr_symm
+  RelIso.toEquiv_injective e.toEquiv.withTopCongr_symm
 
 @[simp]
 theorem withTopCongr_trans (e₁ : α ≃o β) (e₂ : β ≃o γ) :
     (e₁.trans e₂).withTopCongr = e₁.withTopCongr.trans e₂.withTopCongr :=
-  RelIso.toEquiv_injective <| e₁.toEquiv.optionCongr_trans e₂.toEquiv
+  RelIso.toEquiv_injective <| e₁.toEquiv.withTopCongr_trans e₂.toEquiv
 
 /-- A version of `Equiv.optionCongr` for `WithBot`. -/
 @[simps -fullyApplied]
 def withBotCongr (e : α ≃o β) : WithBot α ≃o WithBot β where
   toFun := WithBot.map e
   __ := e.toOrderEmbedding.withBotMap
-  __ := e.toEquiv.optionCongr
+  __ := e.toEquiv.withBotCongr
 
 @[simp]
 theorem withBotCongr_refl : (OrderIso.refl α).withBotCongr = OrderIso.refl _ :=
-  RelIso.toEquiv_injective Equiv.optionCongr_refl
+  RelIso.toEquiv_injective Equiv.withBotCongr_refl
 
 @[simp]
 theorem withBotCongr_symm (e : α ≃o β) : e.symm.withBotCongr = e.withBotCongr.symm :=
-  RelIso.toEquiv_injective e.toEquiv.optionCongr_symm
+  RelIso.toEquiv_injective e.toEquiv.withBotCongr_symm
 
 @[simp]
 theorem withBotCongr_trans (e₁ : α ≃o β) (e₂ : β ≃o γ) :
     (e₁.trans e₂).withBotCongr = e₁.withBotCongr.trans e₂.withBotCongr :=
-  RelIso.toEquiv_injective <| e₁.toEquiv.optionCongr_trans e₂.toEquiv
+  RelIso.toEquiv_injective <| e₁.toEquiv.withBotCongr_trans e₂.toEquiv
 
 end OrderIso
 
@@ -256,17 +256,17 @@ protected def withTop (f : SupHom α β) : SupHom (WithTop α) (WithTop β) wher
     | (a : α), (b : α) => congr_arg _ (f.map_sup' _ _)
 
 @[simp]
-theorem withTop_id : (SupHom.id α).withTop = SupHom.id _ := DFunLike.coe_injective Option.map_id
+theorem withTop_id : (SupHom.id α).withTop = SupHom.id _ := DFunLike.coe_injective WithTop.map_id
 
 @[simp]
 theorem withTop_comp (f : SupHom β γ) (g : SupHom α β) :
     (f.comp g).withTop = f.withTop.comp g.withTop :=
-  DFunLike.coe_injective <| Eq.symm <| Option.map_comp_map _ _
+  DFunLike.coe_injective <| Eq.symm <| WithTop.map_comp_map _ _
 
 /-- Adjoins a `⊥` to the domain and codomain of a `SupHom`. -/
 @[simps]
 protected def withBot (f : SupHom α β) : SupBotHom (WithBot α) (WithBot β) where
-  toFun := Option.map f
+  toFun := WithBot.map f
   map_sup' a b :=
     match a, b with
     | ⊥, ⊥ => rfl
@@ -276,12 +276,12 @@ protected def withBot (f : SupHom α β) : SupBotHom (WithBot α) (WithBot β) w
   map_bot' := rfl
 
 @[simp]
-theorem withBot_id : (SupHom.id α).withBot = SupBotHom.id _ := DFunLike.coe_injective Option.map_id
+theorem withBot_id : (SupHom.id α).withBot = SupBotHom.id _ := DFunLike.coe_injective WithBot.map_id
 
 @[simp]
 theorem withBot_comp (f : SupHom β γ) (g : SupHom α β) :
     (f.comp g).withBot = f.withBot.comp g.withBot :=
-  DFunLike.coe_injective <| Eq.symm <| Option.map_comp_map _ _
+  DFunLike.coe_injective <| Eq.symm <| WithBot.map_comp_map _ _
 
 /-- Adjoins a `⊤` to the codomain of a `SupHom`. -/
 @[simps]
@@ -315,7 +315,7 @@ variable [SemilatticeInf α] [SemilatticeInf β] [SemilatticeInf γ]
 /-- Adjoins a `⊤` to the domain and codomain of an `InfHom`. -/
 @[simps]
 protected def withTop (f : InfHom α β) : InfTopHom (WithTop α) (WithTop β) where
-  toFun := Option.map f
+  toFun := WithTop.map f
   map_inf' a b :=
     match a, b with
     | ⊤, ⊤ => rfl
@@ -325,17 +325,17 @@ protected def withTop (f : InfHom α β) : InfTopHom (WithTop α) (WithTop β) w
   map_top' := rfl
 
 @[simp]
-theorem withTop_id : (InfHom.id α).withTop = InfTopHom.id _ := DFunLike.coe_injective Option.map_id
+theorem withTop_id : (InfHom.id α).withTop = InfTopHom.id _ := DFunLike.coe_injective WithTop.map_id
 
 @[simp]
 theorem withTop_comp (f : InfHom β γ) (g : InfHom α β) :
     (f.comp g).withTop = f.withTop.comp g.withTop :=
-  DFunLike.coe_injective <| Eq.symm <| Option.map_comp_map _ _
+  DFunLike.coe_injective <| Eq.symm <| WithTop.map_comp_map _ _
 
 /-- Adjoins a `⊥` to the domain and codomain of an `InfHom`. -/
 @[simps]
 protected def withBot (f : InfHom α β) : InfHom (WithBot α) (WithBot β) where
-  toFun := Option.map f
+  toFun := WithBot.map f
   map_inf' a b :=
     match a, b with
     | ⊥, ⊥ => rfl
@@ -344,12 +344,12 @@ protected def withBot (f : InfHom α β) : InfHom (WithBot α) (WithBot β) wher
     | (a : α), (b : α) => congr_arg _ (f.map_inf' _ _)
 
 @[simp]
-theorem withBot_id : (InfHom.id α).withBot = InfHom.id _ := DFunLike.coe_injective Option.map_id
+theorem withBot_id : (InfHom.id α).withBot = InfHom.id _ := DFunLike.coe_injective WithBot.map_id
 
 @[simp]
 theorem withBot_comp (f : InfHom β γ) (g : InfHom α β) :
     (f.comp g).withBot = f.withBot.comp g.withBot :=
-  DFunLike.coe_injective <| Eq.symm <| Option.map_comp_map _ _
+  DFunLike.coe_injective <| Eq.symm <| WithBot.map_comp_map _ _
 
 /-- Adjoins a `⊤` to the codomain of an `InfHom`. -/
 @[simps]

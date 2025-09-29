@@ -19,7 +19,7 @@ In this file we introduce typeclasses and definitions for lattice operations.
 * `Top`: type class for the `⊤` notation
 * `Bot`: type class for the `⊥` notation
 
-## Notations
+## Notation
 
 * `xᶜ`: complement in a lattice;
 * `x ⊔ y`: supremum/join, which is notation for `max x y`;
