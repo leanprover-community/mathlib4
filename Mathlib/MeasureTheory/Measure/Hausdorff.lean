@@ -84,7 +84,7 @@ measures.
 * `MeasureTheory.hausdorffMeasure_pi_real`: for a nonempty `ι`, `μH[card ι]` on `ι → ℝ` equals
   Lebesgue measure.
 
-## Notations
+## Notation
 
 We use the following notation localized in `MeasureTheory`.
 
@@ -351,9 +351,7 @@ theorem isometry_comap_mkMetric (m : ℝ≥0∞ → ℝ≥0∞) {f : X → Y} (h
   refine surjective_id.iSup_congr id fun ε => surjective_id.iSup_congr id fun hε => ?_
   rw [comap_boundedBy _ (H.imp _ id)]
   · congr with s : 1
-    apply extend_congr
-    · simp [hf.ediam_image]
-    · intros; simp [hf.ediam_image]
+    apply extend_congr <;> simp [hf.ediam_image]
   · intro h_mono s t hst
     simp only [extend, le_iInf_iff]
     intro ht
@@ -912,8 +910,8 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
     let f : γ n := fun i =>
       ⟨⌊(x i - a i) * n⌋₊, by
         apply Nat.floor_lt_ceil_of_lt_of_pos
-        · refine (mul_lt_mul_right npos).2 ?_
-          simp only [(hx i).right, sub_lt_sub_iff_right]
+        · gcongr
+          exact (hx i).right
         · refine mul_pos ?_ npos
           simpa only [Rat.cast_lt, sub_pos] using H i⟩
     refine ⟨f, fun i => ⟨?_, ?_⟩⟩
@@ -921,9 +919,9 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
         (a i : ℝ) + ⌊(x i - a i) * n⌋₊ / n ≤ (a i : ℝ) + (x i - a i) * n / n := by
           gcongr
           exact Nat.floor_le (mul_nonneg (sub_nonneg.2 (hx i).1.le) npos.le)
-        _ = x i := by field_simp [npos.ne']
+        _ = x i := by field_simp; ring
     · calc
-        x i = (a i : ℝ) + (x i - a i) * n / n := by field_simp [npos.ne']
+        x i = (a i : ℝ) + (x i - a i) * n / n := by field_simp; ring
         _ ≤ (a i : ℝ) + (⌊(x i - a i) * n⌋₊ + 1) / n := by
           gcongr
           exact (Nat.lt_floor_add_one _).le
@@ -937,7 +935,7 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
       · filter_upwards [B] with _ hn
         apply Finset.sum_le_sum fun i _ => _
         simp only [ENNReal.rpow_natCast]
-        intros i _
+        intro i _
         exact pow_le_pow_left' (hn i) _
       · isBoundedDefault
     _ = liminf (fun n : ℕ => ∏ i : ι, (⌈((b i : ℝ) - a i) * n⌉₊ : ℝ≥0∞) / n) atTop := by
@@ -952,7 +950,7 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
             ((ENNReal.continuous_ofReal.tendsto _).comp
               ((tendsto_nat_ceil_mul_div_atTop (I i)).comp tendsto_natCast_atTop_atTop))
         apply eventually_atTop.2 ⟨1, fun n hn => _⟩
-        intros n hn
+        intro n hn
         simp only [ENNReal.ofReal_div_of_pos (Nat.cast_pos.mpr hn), comp_apply,
           ENNReal.ofReal_natCast]
       · simp only [ENNReal.ofReal_ne_top, Ne, not_false_iff]

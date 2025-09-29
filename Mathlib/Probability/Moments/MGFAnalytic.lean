@@ -8,18 +8,18 @@ import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 import Mathlib.Analysis.Calculus.Taylor
 
 /-!
-# The moment generating function is analytic
+# The moment-generating function is analytic
 
-The moment generating function `mgf X μ` of a random variable `X` with respect to a measure `μ`
+The moment-generating function `mgf X μ` of a random variable `X` with respect to a measure `μ`
 is analytic on the interior of `integrableExpSet X μ`, the interval on which it is defined.
 
 ## Main results
 
-* `analyticOn_mgf`: the moment generating function is analytic on the interior of the interval
+* `analyticOn_mgf`: the moment-generating function is analytic on the interior of the interval
   on which it is defined.
 * `iteratedDeriv_mgf`: the n-th derivative of the mgf at `t` is `μ[X ^ n * exp (t * X)]`.
 
-* `analyticOn_cgf`: the cumulant generating function is analytic on the interior of the interval
+* `analyticOn_cgf`: the cumulant-generating function is analytic on the interior of the interval
   `integrableExpSet X μ`.
 
 -/
@@ -84,7 +84,7 @@ lemma iteratedDeriv_mgf (ht : t ∈ interior (integrableExpSet X μ)) (n : ℕ) 
     rw [iteratedDeriv_succ]
     exact (hasDerivAt_iteratedDeriv_mgf ht n).deriv
 
-/-- The derivatives of the moment generating function at zero are the moments. -/
+/-- The derivatives of the moment-generating function at zero are the moments. -/
 lemma iteratedDeriv_mgf_zero (h : 0 ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     iteratedDeriv n (mgf X μ) 0 = μ[X ^ n] := by
   simp [iteratedDeriv_mgf h n]
@@ -102,7 +102,7 @@ end DerivMGF
 
 section AnalyticMGF
 
-/-- The moment generating function is analytic at every `t ∈ interior (integrableExpSet X μ)`. -/
+/-- The moment-generating function is analytic at every `t ∈ interior (integrableExpSet X μ)`. -/
 lemma analyticAt_mgf (ht : t ∈ interior (integrableExpSet X μ)) :
     AnalyticAt ℝ (mgf X μ) t := by
   rw [← re_complexMGF_ofReal']
@@ -111,7 +111,7 @@ lemma analyticAt_mgf (ht : t ∈ interior (integrableExpSet X μ)) :
 lemma analyticOnNhd_mgf : AnalyticOnNhd ℝ (mgf X μ) (interior (integrableExpSet X μ)) :=
   fun _ hx ↦ analyticAt_mgf hx
 
-/-- The moment generating function is analytic on the interior of the interval on which it is
+/-- The moment-generating function is analytic on the interior of the interval on which it is
 defined. -/
 lemma analyticOn_mgf : AnalyticOn ℝ (mgf X μ) (interior (integrableExpSet X μ)) :=
   analyticOnNhd_mgf.analyticOn
@@ -172,7 +172,7 @@ lemma analyticAt_cgf (h : v ∈ interior (integrableExpSet X μ)) : AnalyticAt �
 lemma analyticOnNhd_cgf : AnalyticOnNhd ℝ (cgf X μ) (interior (integrableExpSet X μ)) :=
   fun _ hx ↦ analyticAt_cgf hx
 
-/-- The cumulant generating function is analytic on the interior of the interval
+/-- The cumulant-generating function is analytic on the interior of the interval
   `integrableExpSet X μ`. -/
 lemma analyticOn_cgf : AnalyticOn ℝ (cgf X μ) (interior (integrableExpSet X μ)) :=
   analyticOnNhd_cgf.analyticOn

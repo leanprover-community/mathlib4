@@ -53,7 +53,7 @@ it is customary to order them using the opposite order : `MvPolynomial.X 0 > MvP
 
 -/
 
-/-- Monomial orders : equivalence of `σ →₀ ℕ` with a well ordered type -/
+/-- Monomial orders : equivalence of `σ →₀ ℕ` with a well-ordered type -/
 structure MonomialOrder (σ : Type*) where
   /-- The synonym type -/
   syn : Type*
