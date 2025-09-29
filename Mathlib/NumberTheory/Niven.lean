@@ -16,6 +16,7 @@ by π. Equivalently, the only rational numbers that occur as `cos(π * p / q)` a
 values `{-1, -1/2, 0, 1/2, 1}`.
 -/
 
+-- TODO better location
 namespace IsIntegral
 
 variable {α R : Type*} [DivisionRing α] [CharZero α] {q : ℚ} {x : α}
