@@ -25,10 +25,10 @@ variable {R : Type*} [CommRing R] [UniformSpace R] [IsUniformAddGroup R]
 
 include hI in
 /-- `IsPrecomplete I R` is equivalent to being complete in the adic topology. -/
-lemma IsAdic.isPrecomplete_iff : IsPrecomplete I R ↔ CompleteSpace R := by
+protected lemma IsAdic.isPrecomplete_iff : IsPrecomplete I R ↔ CompleteSpace R := by
   have := hI.hasBasis_nhds_zero.isCountablyGenerated
   have : (𝓤 R).IsCountablyGenerated := IsUniformAddGroup.uniformity_countably_generated
-  simp only [_root_.isPrecomplete_iff, smul_eq_mul, Ideal.mul_top, SModEq.sub_mem]
+  simp only [isPrecomplete_iff, smul_eq_mul, Ideal.mul_top, SModEq.sub_mem]
   constructor
   · intro H
     refine UniformSpace.complete_of_cauchySeq_tendsto fun u hu ↦ ?_
