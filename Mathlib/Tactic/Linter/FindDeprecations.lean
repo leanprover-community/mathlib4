@@ -266,6 +266,9 @@ elab "#clear_deprecations " oldDate:str ppSpace newDate:str really?:(&" really")
   let mut filesToRemove := #[]
   let env ← getEnv
   let sortedFMap := fmap.toArray.qsort fun ((a, _), _) ((b, _), _) => importLT env b a
+  if sortedFMap.isEmpty then
+    logInfo m!"No deprecations in the range from {oldDate} to {newDate}"
+    return
   for ((modName, fname), noDeprs) in sortedFMap do
     let (toRemove, fileWithoutDeprecations) ← rewriteOneFile fname noDeprs
     let message :=
