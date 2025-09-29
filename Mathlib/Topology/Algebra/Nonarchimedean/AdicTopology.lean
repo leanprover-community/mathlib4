@@ -204,6 +204,16 @@ theorem is_bot_adic_iff {A : Type*} [CommRing A] [TopologicalSpace A] [IsTopolog
       use 1
       simp [mem_of_mem_nhds U_nhds]
 
+omit [IsTopologicalRing R] in
+theorem IsAdic.hasBasis_nhds_zero {I : Ideal R} (hI : IsAdic I) :
+    (𝓝 (0 : R)).HasBasis (fun _ ↦ True) fun n ↦ ↑(I ^ n) :=
+  hI ▸ Ideal.hasBasis_nhds_zero_adic I
+
+omit [IsTopologicalRing R] in
+theorem IsAdic.hasBasis_nhds {I : Ideal R} (hI : IsAdic I) (x : R) :
+    (𝓝 x).HasBasis (fun _ ↦ True) fun n ↦ (x + ·) '' ↑(I ^ n) :=
+  hI ▸ Ideal.hasBasis_nhds_adic I x
+
 end IsAdic
 
 /-- The ring `R` is equipped with a preferred ideal. -/
