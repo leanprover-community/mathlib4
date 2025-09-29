@@ -760,6 +760,7 @@ noncomputable def arrowResLEAppIso (f : X ⟶ Y) (U : Y.Opens) (V : X.Opens) (e 
 
 end MorphismRestrict
 
+/-- The open cover of a scheme `X` from an open cover of the underlying topological space. -/
 def openCoverOfIsOpenCover {X : Scheme.{u}} {ι : Type v} (U : ι → X.Opens)
     (hU : TopologicalSpace.IsOpenCover U) : X.OpenCover where
   I₀ := ι
