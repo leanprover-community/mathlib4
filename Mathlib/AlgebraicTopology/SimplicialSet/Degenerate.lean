@@ -305,7 +305,7 @@ lemma degenerate_map {n : ℕ} {x : X _⦋n⦌} (hx : x ∈ X.degenerate n) (f :
   exact ⟨m, hm, g, f.app _ y, by rw [FunctorToTypes.naturality]⟩
 
 lemma degenerate_le_preimage (f : X ⟶ Y) (n : ℕ) :
-    X.degenerate n ⊆ Set.preimage (f.app _) (Y.degenerate n) :=
+    X.degenerate n ⊆ (f.app _)⁻¹' (Y.degenerate n) :=
   fun _ hx ↦ degenerate_map hx f
 
 lemma image_degenerate_le (f : X ⟶ Y) (n : ℕ) :
