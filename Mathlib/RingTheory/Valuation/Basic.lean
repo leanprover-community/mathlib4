@@ -3,6 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 -/
+import Mathlib.Algebra.GroupWithZero.Submonoid.Instances
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.RingTheory.Ideal.Maps
@@ -1070,29 +1071,15 @@ theorem ofAddValuation_apply (v : AddValuation R (Additive Γ₀)ᵒᵈ) (r : R)
     ofAddValuation v r = Additive.toMul (OrderDual.ofDual (v r)) :=
   rfl
 
-instance (v : Valuation R Γ₀) : CommMonoidWithZero (MonoidHom.mrange v) where
-  zero := ⟨0, 0, by simp⟩
-  zero_mul := by
-    intro a
-    exact Subtype.ext (zero_mul a.val)
-  mul_zero := by
-    intro a
-    exact Subtype.ext (mul_zero a.val)
+instance (v : Valuation R Γ₀) : CommMonoidWithZero (MonoidHom.mrange v) :=
+  inferInstanceAs (CommMonoidWithZero (MonoidHom.mrange (v : R →*₀ Γ₀)))
 
 @[simp]
-lemma val_mrange_zero (v : Valuation R Γ₀) : ((0 : MonoidHom.mrange v) : Γ₀) = 0 := rfl
+lemma val_mrange_zero (v : Valuation R Γ₀) : ((0 : MonoidHom.mrange v) : Γ₀) = 0 := by
+  rfl
 
 instance {Γ₀} [LinearOrderedCommGroupWithZero Γ₀] [DivisionRing K] (v : Valuation K Γ₀) :
-    CommGroupWithZero (MonoidHom.mrange v) where
-  inv := fun x ↦ ⟨x⁻¹, by
-    obtain ⟨y, hy⟩ := x.prop
-    simp_rw [← hy, ← v.map_inv]
-    exact MonoidHom.mem_mrange.mpr ⟨_, rfl⟩⟩
-  exists_pair_ne := ⟨⟨v 0, by simp⟩, ⟨v 1, by simp [- map_one]⟩, by simp⟩
-  inv_zero := Subtype.ext inv_zero
-  mul_inv_cancel := by
-    rintro ⟨a, ha⟩ h
-    simp only [ne_eq, Subtype.ext_iff] at h
-    simpa using mul_inv_cancel₀ h
+    CommGroupWithZero (MonoidHom.mrange v) :=
+  inferInstanceAs (CommGroupWithZero (MonoidHom.mrange (v : K →*₀ Γ₀)))
 
 end Valuation
