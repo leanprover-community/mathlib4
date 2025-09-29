@@ -285,7 +285,7 @@ lemma IsTree.dist_ne_of_adj (hG : G.IsTree) (u : V) {v w : V} (hadj : SimpleGrap
     exact q.length.ne_add_one.symm
   · have hv : v ∈ q.support := hG.IsAcyclic.mem_support_of_ne_mem_support_of_adj_of_isPath hq hp
       hadj.symm hw
-    rw [hG.IsAcyclic.path_concat hp hq hadj hv, p.length_concat] 
+    rw [hG.IsAcyclic.path_concat hp hq hadj hv, p.length_concat]
     exact p.length.ne_add_one
 
 end SimpleGraph
