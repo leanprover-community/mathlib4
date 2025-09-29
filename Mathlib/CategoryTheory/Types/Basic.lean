@@ -360,7 +360,7 @@ instance : SplitEpiCategory (Type u) where
 theorem isSplitEpi_iff_surjective {X Y : Type u} (f : X ⟶ Y) :
     IsSplitEpi f ↔ Function.Surjective f :=
   Iff.intro (fun _ => surjective_of_epi _)
-    fun hf => @isSplitEpi_of_epi _ _ _ _ _ _ ((epi_iff_surjective f).mpr hf)
+    fun hf => (by simp only [(epi_iff_surjective f).mpr hf, isSplitEpi_of_epi])
 
 end CategoryTheory
 
