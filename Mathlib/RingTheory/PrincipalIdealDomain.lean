@@ -487,37 +487,26 @@ variable {R}
 theorem nonPrincipals_eq_empty_iff : nonPrincipals R = ∅ ↔ IsPrincipalIdealRing R := by
   simp [Set.eq_empty_iff_forall_notMem, isPrincipalIdealRing_iff]
 
-/-- Any chain in the set of non-principal ideals has an upper bound which is non-principal.
+/-- Any nonempty chain in the set of non-principal ideals has an upper bound which is non-principal.
 (Namely, the union of the chain is such an upper bound.)
+
+If you want the existence of a maximal non-principal ideal see `Ideal.exists_maximal_not_principal`.
 -/
-@[deprecated "Use Ideal.exists_maximal_not_principal instead." (since := "2025-08-16")]
 theorem nonPrincipals_zorn (c : Set (Ideal R)) (hs : c ⊆ nonPrincipals R)
-    (hchain : IsChain (· ≤ ·) c) {K : Ideal R} (hKmem : K ∈ c) :
+    (hchain : IsChain (· ≤ ·) c) (K : Ideal R) (hKmem : K ∈ c) :
     ∃ I ∈ nonPrincipals R, ∀ J ∈ c, J ≤ I := by
-  refine ⟨sSup c, ?_, fun J hJ => le_sSup hJ⟩
-  rintro ⟨x, hx⟩
+  refine ⟨sSup c, fun ⟨x, hx⟩ ↦ ?_, fun _ ↦ le_sSup⟩
   have hxmem : x ∈ sSup c := hx.symm ▸ Submodule.mem_span_singleton_self x
   obtain ⟨J, hJc, hxJ⟩ := (Submodule.mem_sSup_of_directed ⟨K, hKmem⟩ hchain.directedOn).1 hxmem
   have hsSupJ : sSup c = J := le_antisymm (by simp [hx, Ideal.span_le, hxJ]) (le_sSup hJc)
-  specialize hs hJc
-  rw [← hsSupJ, hx] at hs
-  exact hs ⟨⟨x, rfl⟩⟩
+  exact hs hJc ⟨hsSupJ ▸ ⟨x, hx⟩⟩
 
 theorem exists_maximal_not_principal (hR : ¬IsPrincipalIdealRing R) :
     ∃ I : Ideal R, Maximal (¬·.IsPrincipal) I := by
   rw [isPrincipalIdealRing_iff, not_forall] at hR
-  obtain ⟨I, hI⟩ := hR
-  suffices ∃ M, I ≤ M ∧ Maximal (¬·.IsPrincipal) M by
-    obtain ⟨M, _, hM⟩ := this
-    exact ⟨M, hM⟩
-  refine zorn_le_nonempty₀ (nonPrincipals R) (fun C hC₁ hC₂ J hJ ↦ ⟨sSup C, ?_, fun _ ↦ le_sSup⟩)
-    I hI
-  rintro ⟨x, hx⟩
-  have : x ∈ sSup C := hx ▸ mem_span_singleton_self x
-  obtain ⟨K, K_mem_C, x_mem_K⟩ := Submodule.mem_sSup_of_directed ⟨J, hJ⟩ hC₂.directedOn |>.1 this
-  have K_eq_sSup : K = sSup C := le_antisymm (le_sSup K_mem_C)
-    (hx ▸ (span_singleton_le_iff_mem K |>.2 x_mem_K))
-  exact hC₁ K_mem_C ⟨K_eq_sSup ▸ ⟨x, hx⟩⟩
+  obtain ⟨_, hI⟩ := hR
+  obtain ⟨M, -, hM⟩ := zorn_le_nonempty₀ _ nonPrincipals_zorn _ hI
+  exact ⟨M, hM⟩
 
 end Ideal
 
