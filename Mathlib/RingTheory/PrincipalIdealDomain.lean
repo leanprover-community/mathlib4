@@ -281,7 +281,7 @@ instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincip
                 let ⟨y, hy⟩ := Ideal.mem_span_singleton.1 hx
                 hy.symm ▸ S.mul_mem_right _ hmin.1⟩⟩
       else ⟨0, Submodule.ext fun a => by
-            rw [← @Submodule.bot_coe R R _ _ _, span_eq, Submodule.mem_bot]
+            rw [← @Submodule.bot_coe R R, span_eq, Submodule.mem_bot]
             exact ⟨fun haS => by_contra fun ha0 => h ⟨a, ⟨haS, ha0⟩⟩,
               fun h₁ => h₁.symm ▸ S.zero_mem⟩⟩⟩
 
