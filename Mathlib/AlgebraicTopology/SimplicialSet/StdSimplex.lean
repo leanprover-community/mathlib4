@@ -261,6 +261,7 @@ lemma range_δ {n : ℕ} (i : Fin (n + 2)) :
 
 /-- The standard simplex identifies to the nerve to the preordered type
 `ULift (Fin (n + 1))`. -/
+@[pp_with_univ]
 def isoNerve (n : ℕ) :
     (Δ[n] : SSet.{u}) ≅ nerve (ULift.{u} (Fin (n + 1))) :=
   NatIso.ofComponents (fun d ↦ Equiv.toIso (objEquiv.trans
