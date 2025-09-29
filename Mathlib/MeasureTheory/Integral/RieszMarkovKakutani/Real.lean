@@ -418,7 +418,7 @@ theorem _root_.MeasureTheory.Measure.ext_of_integral_eq_on_compactlySupported {�
 noncomputable def integralPositiveLinearMap (μ : Measure X) [OpensMeasurableSpace X]
     [IsFiniteMeasureOnCompacts μ] : C_c(X, ℝ) →ₚ[ℝ] ℝ :=
   PositiveLinearMap.mk₀
-    { toFun f := ∫ (x : X), f x ∂μ,
+    { toFun f := ∫ x, f x ∂μ,
       map_add' f g := integral_add' f.integrable g.integrable
       map_smul' c f := integral_smul c f }
     fun _ ↦ integral_nonneg
