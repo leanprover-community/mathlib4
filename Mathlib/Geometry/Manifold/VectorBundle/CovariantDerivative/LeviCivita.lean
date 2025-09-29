@@ -763,9 +763,9 @@ noncomputable def lcCandidate [FiniteDimensional ℝ E]
 variable (X Y) in
 -- The above definition behaves well: for each compatible trivialisation e,
 -- using e on e.baseSet yields the same result as above.
-lemma bar [FiniteDimensional ℝ E] (e : Trivialization E (TotalSpace.proj: TangentBundle I M → M))
-    [MemTrivializationAtlas e] {o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)}
-    {x : M} (hx : x ∈ e.baseSet) :
+lemma lcCandidate_eq_lcCandidate_aux [FiniteDimensional ℝ E]
+    (e : Trivialization E (TotalSpace.proj: TangentBundle I M → M)) [MemTrivializationAtlas e]
+    {o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)} {x : M} (hx : x ∈ e.baseSet) :
     lcCandidate I M o X Y x = lcCandidate_aux I e o X Y x := by
   by_cases hE : Subsingleton E
   · simp [lcCandidate, lcCandidate_aux, hE]
@@ -854,7 +854,7 @@ lemma isCovariantDerivativeOn_lcCandidate_aux [FiniteDimensional ℝ E]
     have aux (i) := leviCivitaRhs_smulY_apply I hg hX hσ (this i)
     simp_rw [aux]
     trans ∑ i, (g x • leviCivitaRhs I X σ (Z i) x • Z i x)
-        + ∑ i, ((_root_.bar (g x)) ((mfderiv I 𝓘(ℝ, ℝ) g x) (X x)) • ⟪σ, Z i⟫ x) • Z i x
+        + ∑ i, ((bar (g x)) ((mfderiv I 𝓘(ℝ, ℝ) g x) (X x)) • ⟪σ, Z i⟫ x) • Z i x
     · simp only [← Finset.sum_add_distrib, add_smul, smul_assoc]
     have : ∑ i, g x • leviCivitaRhs I X σ (Z i) x • Z i x = (g • lcCandidate_aux I e o X σ) x := by
       simp only [lcCandidate_aux, hE, ↓reduceDIte, Pi.smul_apply', Finset.smul_sum]
@@ -869,7 +869,7 @@ lemma isCovariantDerivativeOn_lcCandidate [FiniteDimensional ℝ E]
     IsCovariantDerivativeOn E (lcCandidate I M o) e.baseSet := by
   apply IsCovariantDerivativeOn.congr (isCovariantDerivativeOn_lcCandidate_aux I e (o := o))
   intro X σ x hx
-  exact (bar I X σ e hx).symm
+  exact (lcCandidate_eq_lcCandidate_aux I X σ e hx).symm
 
 end
 
